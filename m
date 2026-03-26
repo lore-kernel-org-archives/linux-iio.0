@@ -1,59 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28E892E11B0;
-	Thu, 26 Mar 2026 09:22:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA5093537CD;
+	Thu, 26 Mar 2026 09:25:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774516932; cv=none; b=hzI2mX8N/AVi4HVwUpTB9hXjMe+OfjZ68+IFu3K7+0dsNjg/vC8DCwvg9FUN4NnzxnkKkrzPeOafrxZ3lUQLukeKweCbAZhuiAYOC6LnPwEx8utZcWx12weAYV6/0FLCu/OwOP7X/PZ6vvSAcM17YDEs6LyDYAsIan9PsE3HWOE=
+	t=1774517158; cv=none; b=suqo/m4zOdRkNUWiSK2BSGqvszJARXtqRlSa41VaijA40NBO33Kmt3W3hdaRwPEpAI3TmLllJmhVtZFHBtCOBuQXfI5Dfetncjt8JEq4zjqX8VCHTIfFtvHgyH+7a8ckNmYNBYcbyMoCWFxtOy5v3i5kCt26XJ906XSOTD9kRMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774516932; c=relaxed/simple;
-	bh=5SWa5jcD/GvB5R/Lld4KON/hgap4TPAs7eQCSWd+zZo=;
+	s=arc-20240116; t=1774517158; c=relaxed/simple;
+	bh=pPs/7f4zdEjxOHX9OiiOb7oamU4aIRyGZLStI6h5m4Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PfY2tLMVYh5LdWpmS18KM91daKYMX8IsdqrD5T7q82i6dGoz6htnexiRKl7aUX9JVtBleNBTY2AAc9a+AO24OfCQnHT6Tdnpowt0TKbrpp0VQCD3MCURab3fNLGZoYNAo00OcTyGwQXP0ogi7kuyX1PrSZCWlKy3MePS4rCCMD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Bl8S4aDv; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=OVtVtJCtJA5PIOWcMl3CPV6cu/ztTF5CzzCqcfGlpi7/NSsy3R6tJfsU5Ilxgf1xBDfX7WlpIT4j4rjDnCykZaxquF8t275X8QCmeYlojB/UKV8rSbOoNvar7cxKcX1CH+vKqEow5PO0RVerrgewarwtrMUQd6m2182P8VcOrXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JhGuPrfk; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bl8S4aDv"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JhGuPrfk"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774516931; x=1806052931;
+  t=1774517155; x=1806053155;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=5SWa5jcD/GvB5R/Lld4KON/hgap4TPAs7eQCSWd+zZo=;
-  b=Bl8S4aDvvCxWWXGcYb/IAsXpVfPe36yZ56Jx3xhZaUmS1JBC1CHQU+4k
-   NIo6sEicaTvhLIapE3dzfTXagaxF42+BvOwOPY5+dJywNv/dU68tgc/SJ
-   uBjrvTnw0IJVOvcs3G9OZQGre2Q9AhTRRL5/sm8postcqYP0gAzDO2Tm9
-   hDb8Qim95imep7SJ51oAGxW/LMzaPaiDrk9UHZGBxu9b7jZhCCOjJDcxw
-   uljlDBSaK4XOv+5tdfrcSYH10zfhvizT5oRJjLWmxq6pjBbzqJgqC6Vur
-   qPfciotHWaIWltAs6XYKUtIPXK1lg8D8hN53duEPTM+QUlYIAAPiGEd5D
-   w==;
-X-CSE-ConnectionGUID: mFZHUm4QRT6WgBEaTDFwTg==
-X-CSE-MsgGUID: nhFHeKKsRWOqv2pshy9EXQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11740"; a="75284988"
+  bh=pPs/7f4zdEjxOHX9OiiOb7oamU4aIRyGZLStI6h5m4Y=;
+  b=JhGuPrfkqB3oYgVB9Ut/DvV41Jpu64FyqtOx5FoXND3yJv51WbCq5tO2
+   a5oRvgrnmE0dHF0QBbtCp21oH0b5enZP2cQ4UNnrR0VL4UGPC52iWelW4
+   L46eWzMnnFhd+MwgtYEekRTvqKmq2MXcYJjzJIdNbwJzY4Dda8VKF52dY
+   U5lFs7HtRwQW7puS2n3k4JFaPMlXy5wJtdS/oPCnVBfEUkpfs2Dd2kuCw
+   Jr95qEj4wsGWIrVCGwDeUwUtKRy8YRowyy5V9aAryQK3tz6qheA2mpIlU
+   /vjIJidd2xvKbDzek0trRIPtm0BOSOLJWJUwF2Ye8DvsZrt/wvviURY3b
+   A==;
+X-CSE-ConnectionGUID: OJR+C1TQRGu6A5IPK/mSOg==
+X-CSE-MsgGUID: Yiwitok7QEmLI59OdRJufg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11740"; a="75532282"
 X-IronPort-AV: E=Sophos;i="6.23,141,1770624000"; 
-   d="scan'208";a="75284988"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 02:22:11 -0700
-X-CSE-ConnectionGUID: c3NPKbouQqSQh1+VnU/Vew==
-X-CSE-MsgGUID: 4awdqOXpRgaH0k9IvlKjlg==
+   d="scan'208";a="75532282"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 02:25:53 -0700
+X-CSE-ConnectionGUID: LBHCVUjFRI+mqAp7IK2hmg==
+X-CSE-MsgGUID: cWrFw77sSteDyFcyyAJ1PA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,141,1770624000"; 
-   d="scan'208";a="220545045"
+   d="scan'208";a="248370635"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.216])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 02:22:08 -0700
-Date: Thu, 26 Mar 2026 11:22:06 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 02:25:51 -0700
+Date: Thu, 26 Mar 2026 11:25:49 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
 	andy@kernel.org, kees@kernel.org, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] iio: ssp_sensors: ssp_spi: use guard() to release
- mutexes
-Message-ID: <acT6vokgYuUTsWcj@ashevche-desk.local>
+Subject: Re: [PATCH v4 4/4] iio: ssp_sensors: reuse preallocated RX buffer
+ for SPI transfers
+Message-ID: <acT7ndQKmAUajb_b@ashevche-desk.local>
 References: <20260326081815.925373-1-sanjayembedded@gmail.com>
- <20260326081815.925373-4-sanjayembedded@gmail.com>
+ <20260326081815.925373-5-sanjayembedded@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,86 +62,64 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260326081815.925373-4-sanjayembedded@gmail.com>
+In-Reply-To: <20260326081815.925373-5-sanjayembedded@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Mar 26, 2026 at 01:48:14PM +0530, Sanjay Chitroda wrote:
+On Thu, Mar 26, 2026 at 01:48:15PM +0530, Sanjay Chitroda wrote:
 
-> Replace explicit mutex_lock() and mutex_unlock() with the guard() macro
-> for cleaner and safer mutex handling.
+> Avoid allocating a temporary DMA buffer in the interrupt context when
+> handling hub-to-AP and AP-to-hub SPI write messages.
+> 
+> Preallocate RX buffer during probe and reuse it for SPI receive
+> operations. This removes repeated kzalloc() calls from the IRQ
+> path, reduces allocation overhead, and avoids potential allocation
+> failures under memory pressure.
+> 
+> The RX buffer size is tracked and allocated using devm_kzalloc(), ensuring
+> proper lifetime management tied to the device.
+> 
+> No functional change intended; this is an internal optimization and
+> robustness improvement.
 
-NAK. Please, be very careful when do such changes.
+NAK.
 
 ...
 
->  	msg->done = done;
+> @@ -512,6 +512,17 @@ static int ssp_probe(struct spi_device *spi)
 >  
-> -	mutex_lock(&data->comm_lock);
-> +	guard(mutex)(&data->comm_lock);
->  
->  	status = ssp_check_lines(data, false);
-> -	if (status < 0)
-> -		goto _error_locked;
-> +	if (status < 0) {
-> +		data->timeout_cnt++;
-> +		return status;
+>  	mutex_init(&data->comm_lock);
+
+Pzzz! The wrong use of managed vs. unmanaged resources.
+
+> +	data->rx_buf_size = SSP_DATA_PACKET_SIZE;
+> +	data->rx_buf = devm_kzalloc(&spi->dev,
+> +				    data->rx_buf_size,
+> +				    GFP_KERNEL | GFP_DMA);
+
+There are plenty of room on the previous lines. I think I already commented on
+something like this.
+
+> +
+
+This blank line is redundant.
+
+> +	if (!data->rx_buf) {
+
+> +		dev_err(&spi->dev,
+> +			"Failed to allocate memory for rx_buf\n");
+
+Pzzz!
+Have you read about error messages for -ENOMEM? Please, take your time and
+study this case.
+
+> +		return -ENOMEM;
 > +	}
->  
->  	status = spi_write(data->spi, msg->buffer, SSP_HEADER_SIZE);
->  	if (status < 0) {
->  		gpiod_set_value_cansleep(data->ap_mcu_gpiod, 1);
->  		dev_err(SSP_DEV, "%s spi_write fail\n", __func__);
-> -		goto _error_locked;
-> +		data->timeout_cnt++;
-> +		return status;
->  	}
->  
->  	if (!use_no_irq) {
-> -		mutex_lock(&data->pending_lock);
-> +		guard(mutex)(&data->pending_lock);
->  		list_add_tail(&msg->list, &data->pending_list);
-> -		mutex_unlock(&data->pending_lock);
->  	}
->  
->  	status = ssp_check_lines(data, true);
->  	if (status < 0) {
->  		if (!use_no_irq) {
-> -			mutex_lock(&data->pending_lock);
-> +			guard(mutex)(&data->pending_lock);
->  			list_del(&msg->list);
-> -			mutex_unlock(&data->pending_lock);
->  		}
-> -		goto _error_locked;
-> +		data->timeout_cnt++;
-> +		return status;
->  	}
+> +
+>  	for (i = 0; i < SSP_SENSOR_MAX; ++i) {
+>  		data->delay_buf[i] = SSP_DEFAULT_POLLING_DELAY;
+>  		data->batch_latency_buf[i] = 0;
 
-> -	mutex_unlock(&data->comm_lock);
-> -
-
-Pzzz! See what you are doing here...
-
->  	if (!use_no_irq && done)
->  		if (wait_for_completion_timeout(done,
->  						msecs_to_jiffies(timeout)) ==
->  		    0) {
-> -			mutex_lock(&data->pending_lock);
-> +			guard(mutex)(&data->pending_lock);
->  			list_del(&msg->list);
-> -			mutex_unlock(&data->pending_lock);
->  
->  			data->timeout_cnt++;
->  			return -ETIMEDOUT;
->  		}
->  
->  	return 0;
-> -
-> -_error_locked:
-> -	mutex_unlock(&data->comm_lock);
-> -	data->timeout_cnt++;
-> -	return status;
->  }
 
 -- 
 With Best Regards,
