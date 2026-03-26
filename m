@@ -1,63 +1,63 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC1263B19A1
-	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 08:18:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1166A3B6363
+	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 08:18:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774513110; cv=none; b=bLaG8it1ebmfaqnkoHcPxV5xiw6vBLPr1ezpiM/cft0550XYgGc8KMipwyAwFqheWwtmi6pBODtJ8qt3exni5eoioX+saqkecoNXC8ihNLhc+QmDWm8+rcUJkFcOezW726/lDS6wxR+P1K7Uc3XjK24NBuQ/bmBJ4goBFUffC1Y=
+	t=1774513113; cv=none; b=LJbCizxM3yWjzAskVGAzvkAXWS1E2X7RxmE+EwKOjiASX+DyCiQdJYWVJ6lDQJO2LLsmM2L5ch62lImG5txaMnIYfONsEo9pMdAya3L2HvlvVJVrggSu36+hArUFZeoTWwQQSqCdbkEA3GE0BKjtzZn28F21ik7Isj2MoAcgfDc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774513110; c=relaxed/simple;
-	bh=IrfAI15OeYSzF7o8VJ7lq6QuUQJ761yxN1y3FeGgJ6Q=;
+	s=arc-20240116; t=1774513113; c=relaxed/simple;
+	bh=VuTAHHFI+jyiGmHc9+R6vTChQAN82qse0bKmbCb3qO8=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=qic4kP61Rbqi86Y4lxYsqbbBJ5BPayPN8r1YZB3d6eC18g3+0Qas8UkZ86FIktyT6nK48SVpKUv3u3fHV5/e1ReUDMLSzlvAgjTwGFywind5ypWjaWs6gN3xRY6OF+b3mu/woEx92czf65B5jVaO5bkhay8an/WC+LyO55ZSaK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M0u9RzNE; arc=none smtp.client-ip=209.85.214.173
+	 MIME-Version; b=H+M2o8VWeeWh+cFPEs7yU+6rANJSdUtDuwTkrIPDccFyCJ+8M91ke+1iygiY7NMOtnoQLglAi/icmvnJxERDlFT/XAF47o28dpFIFhuqKmS8bunx8C41xzHmBQkQfkU4E2GXhTezEomQ0lsbqRT5kp0XwG1KcfzG/b5ipzIOmas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LnOuM9O0; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M0u9RzNE"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2b0c30b517aso1241005ad.3
-        for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 01:18:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LnOuM9O0"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2aae4816912so4525055ad.2
+        for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 01:18:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774513108; x=1775117908; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1774513111; x=1775117911; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bWDKafWykqmCst/+PGgYmIJsGhpBN8tnTlfr4qxhHLk=;
-        b=M0u9RzNEBdTSSesIz4846gmCH9MkDTkEpkmDtYya2x/Y8oqH6kFAuLkle0Evp6/TRM
-         SIMZPaJ5qppWDRB0+6v2bqUpa9TctPU4a/VIyTHbEIvv5i+vQXciBiDR/szCw9aPytR2
-         2pHpqja572Q+PAFRVM//nPreIS+dXuVm3USvqPuwDlZMPYAPmgrh1xrJJQoTnyGiRwRW
-         1w0PZDMRE7fc3/fSwEEiW7eLuM5lTVjEThZa2X4PP3+fXLLwVqC+oNDM8h20K60+981O
-         xKXNRysXYuKEQ3YZEqmwmpt2bc0VluoH74Ae7lEt+wP0zZmnwra1a9Pc7setKSd0nhh9
-         ERWQ==
+        bh=hW+MdHuk6SjYOPjp4FIdn/7nxTOhIxHKoo7bSolADB0=;
+        b=LnOuM9O0XUGYM29jPfIi+YESXOqFH2C0xRs8NXFGWBT8VQWg4QoVg9XHW5UqZcXnhk
+         anP4/bk9g+TRpzichchPdGaTgts0cTk+62HZ5cpwnIcYIe7IHA71fuNBhbk0jmN7o3RG
+         8jpDvGxH4CqWqq4EYVtVSIMZfZEgTs7SqhsfPxd6teGs+JCeekda1y662p7TutSsFCRq
+         iLrutTNA1zQAN18rtQdhrC4zKMAGBpPFDdu5fxfDadNeJWpbDcTcc3ZRGxSNd3XlR3+z
+         ecc8Ou4ZQbjLhcdKoyWqfY4V1T9vHm7/vrCazRnLkxvb91s4XMuKExaYtcbo9dOkaCT6
+         jYcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774513108; x=1775117908;
+        d=1e100.net; s=20251104; t=1774513111; x=1775117911;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=bWDKafWykqmCst/+PGgYmIJsGhpBN8tnTlfr4qxhHLk=;
-        b=i+SP89eyX+bVOSdB+EfEIjdu2sZYzQgBJpEMULLLhxNwVeipxPOGUfmXyK6yOE1+Ri
-         TlMM2DIDAPFZPgQBMduZC3PBx6FHwjCRGQQHGbJE+juAu13DLOMll+DTR1p4YHnu12d0
-         j+5ddxpT/zDfwe0uqVYKrZM64JHkUMMGhuCkcazGauOqDGFl/T08P0inL4J+rECWcoNP
-         RhTIsqJG0ZvCzqqp9ayq6tU+Hxw0nE6T4az1SNdtlq+BMMxhsjj7rlI1dPGyMc+D641H
-         laP1CVV9d+Q+wq6cvuxs1GeJj5USRUcFSLJOLAnK0jcY8Vs3OC1VPbdgM8x3kk7QCAWA
-         gSNA==
-X-Forwarded-Encrypted: i=1; AJvYcCU0Z2nzfQlFLSXSBvaj4qADY5BxhNzX8SzTihL4n+CLyxMdQhuehhK1rwDrTzQPqPzaXkvJpWc6vDU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzb0Sq/WjF+bcXckfAObFhcT45MkVV3VKsBNKIgoq5JgILeVhO1
-	+3wrG4Sp2QDE87nYolVY4gH0QO4hQXYEWr0RiVtub1lLWgmFzwktQ04uZBfiSg==
-X-Gm-Gg: ATEYQzxAKQlkDUOJZbjeirwAwmY+5ZJJvdgWvxYAb/tegGdIji5BH/VBG1uQ6KW73Tk
-	mIXOnIJ3UlpITlgA+Be7+7ckLTKZdkAi5feGItbr34ewNhy6pRoAGBStkPSgIuZG78WASHOFfCR
-	aRssXHp2V7f+YMqtiUgDt15xqPmcMj8oyHXlKPtfRMQfhmKGHw5avPG/RjVim2zqzp9r3o+sfM6
-	VKyYYXtLIvx+IzjPVPnwcLr4khlgnwFcFKrLPb6Bz5+f/3gcrDXAFKG0QQHFchR7z8ZjsV66N0T
-	rWlopHtc4lFCPu0lpDppm0i+hLJusHHDzIv+jhF975EuNHWqZJ8JiGEpoFm2f8fR8vQCon1a2if
-	u/yk93RRMWW/0FlaUHF6n83n5h80P+FxfvGgYYKu1nTyTXP5ExDdLFBGc2hb+wg6EqSIQnFG/50
-	CjR+fqRMChf/grv3Fwv+97bwDP9WfLMYIgNDSkI9abLWGzXp1I
-X-Received: by 2002:a17:902:ebc2:b0:2aa:d5e5:b136 with SMTP id d9443c01a7336-2b0b0af3befmr81291515ad.38.1774513107988;
-        Thu, 26 Mar 2026 01:18:27 -0700 (PDT)
+        bh=hW+MdHuk6SjYOPjp4FIdn/7nxTOhIxHKoo7bSolADB0=;
+        b=pHPkJiydsxHFEHDfq2PVxAA+6DihWVEgToTX5naMu+duSiUEn838sYXiNgpNe4xiIF
+         dvNHaThAe65v89/9TfklLgbKYNAdXfVKQ1hpgYvo1J6AAct5DwafYCilAFbkdLUne4BZ
+         0e7iKFMeS8UGuIYlf1ZigPYwSI3hT3rWS026XaIjfphpJKT7LSpUkvFLWxkDyu+PMMar
+         xSADOnvOxzPaXIbAZ1ayHTG5o++NK0vtlk2/WuHj5zFmdimFf8Lb1X8d8vGJtIeDO/mu
+         MwAlvlxDUXHjSuj2zlZ+4LduLg4gMOi7HPh8AmWMYPPsVPftQpU2BZzMYFr5Xn5yWfG0
+         N3Yw==
+X-Forwarded-Encrypted: i=1; AJvYcCUx6Fj32CD3gXeuGmSCPNy3HLWrugcoNqbUAmU0JxsTdPtUGKdVKy/ZlCa1ToF1H+EusDUC4VXoZGI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyANq2Tays9mEzg52N+i+vZAGAxKv0z/uvKfWBuKZ9eMTHJiZNU
+	r2npXfDHnYks9gScUmkhA7psZoaP58ZfHgPMiHL2NE16a5Xlw6dupK2jl4OjSA==
+X-Gm-Gg: ATEYQzymlTfx4vc9T3Ogal+0gTF35+pHjT210Xu8dVhV6Py7MNGVU16J41gODs29N72
+	jI+NVHPPEjnIVVKLh7yUwX96CrywiIdnt12C5DCmaz1W3too1hM/slaqAX8QX+4pLO0v8v4w1yW
+	zNrs1l1+ALE4L8bWjxW2uokujfb+UU69cpamGBixIC5hM7hXPW9hIBfQQbc4SJqTiHtWIKLaXgR
+	4PI7opuA4t3t92fLVjhnlzJmOSe1I6z8ZXsWGUFCmUsYSj1equq56RSZqjVoMSnJVCAYkIEH3XG
+	7xZTkKjEC4CFwMU2kIN8bSrvWVHxnObmkf8yHUX7kK+zHfdMEFLT6PWji9ya/5WrW9IImrZBeEv
+	q5k16eHAvdkXhg+xMqbQ7Mj9ogGi5jGlywn7lZagA9BU5FVhmBCqZhClO6T9MD7oyyXLb7Ji7DW
+	I/lN9kfvThg86wfwxUe1bWBLDWKBS3P+qDZ+jg/G6MNyqcaPAZ
+X-Received: by 2002:a17:903:3890:b0:2ae:66c9:494f with SMTP id d9443c01a7336-2b0b09a7b3cmr71052695ad.2.1774513111268;
+        Thu, 26 Mar 2026 01:18:31 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b0bc87e6cfsm21855535ad.39.2026.03.26.01.18.24
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b0bc87e6cfsm21855535ad.39.2026.03.26.01.18.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2026 01:18:27 -0700 (PDT)
+        Thu, 26 Mar 2026 01:18:30 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org,
@@ -68,9 +68,9 @@ Cc: kees@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	sanjayembeddedse@gmail.com
-Subject: [PATCH v4 2/4] iio: ssp_sensors: cleanup codestyle check
-Date: Thu, 26 Mar 2026 13:48:13 +0530
-Message-Id: <20260326081815.925373-3-sanjayembedded@gmail.com>
+Subject: [PATCH v4 3/4] iio: ssp_sensors: ssp_spi: use guard() to release mutexes
+Date: Thu, 26 Mar 2026 13:48:14 +0530
+Message-Id: <20260326081815.925373-4-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260326081815.925373-1-sanjayembedded@gmail.com>
 References: <20260326081815.925373-1-sanjayembedded@gmail.com>
@@ -84,42 +84,164 @@ Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Reported by checkpatch:
-FILE: drivers/iio/common/ssp_sensors/ssp_spi.c
-
-CHECK: Macro argument '...' may be better as '(...)'
-to avoid precedence issues
+Replace explicit mutex_lock() and mutex_unlock() with the guard() macro
+for cleaner and safer mutex handling.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- drivers/iio/common/ssp_sensors/ssp_spi.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Changes in v4:
+- Use guard() instead of scoped_guard() to avoid additional indentation
+  as scope is same for both APIs and add scope in switch case
+- Link to v3: https://lore.kernel.org/all/20260315125509.857195-2-sanjayembedded@gmail.com/
+---
+ drivers/iio/common/ssp_sensors/ssp_spi.c | 50 ++++++++++--------------
+ 1 file changed, 20 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-index 8c1e15d61db7..08ed92859be0 100644
+index 08ed92859be0..61a4e978d9b2 100644
 --- a/drivers/iio/common/ssp_sensors/ssp_spi.c
 +++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-@@ -6,7 +6,7 @@
- #include "ssp.h"
+@@ -189,55 +189,49 @@ static int ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
  
- #define SSP_DEV (&data->spi->dev)
--#define SSP_GET_MESSAGE_TYPE(data) (data & (3 << SSP_RW))
-+#define SSP_GET_MESSAGE_TYPE(data) ((data) & (3 << SSP_RW))
+ 	msg->done = done;
  
- /*
-  * SSP -> AP Instruction
-@@ -119,9 +119,9 @@ static inline void ssp_get_buffer(struct ssp_msg *m, unsigned int offset,
+-	mutex_lock(&data->comm_lock);
++	guard(mutex)(&data->comm_lock);
+ 
+ 	status = ssp_check_lines(data, false);
+-	if (status < 0)
+-		goto _error_locked;
++	if (status < 0) {
++		data->timeout_cnt++;
++		return status;
++	}
+ 
+ 	status = spi_write(data->spi, msg->buffer, SSP_HEADER_SIZE);
+ 	if (status < 0) {
+ 		gpiod_set_value_cansleep(data->ap_mcu_gpiod, 1);
+ 		dev_err(SSP_DEV, "%s spi_write fail\n", __func__);
+-		goto _error_locked;
++		data->timeout_cnt++;
++		return status;
+ 	}
+ 
+ 	if (!use_no_irq) {
+-		mutex_lock(&data->pending_lock);
++		guard(mutex)(&data->pending_lock);
+ 		list_add_tail(&msg->list, &data->pending_list);
+-		mutex_unlock(&data->pending_lock);
+ 	}
+ 
+ 	status = ssp_check_lines(data, true);
+ 	if (status < 0) {
+ 		if (!use_no_irq) {
+-			mutex_lock(&data->pending_lock);
++			guard(mutex)(&data->pending_lock);
+ 			list_del(&msg->list);
+-			mutex_unlock(&data->pending_lock);
+ 		}
+-		goto _error_locked;
++		data->timeout_cnt++;
++		return status;
+ 	}
+ 
+-	mutex_unlock(&data->comm_lock);
+-
+ 	if (!use_no_irq && done)
+ 		if (wait_for_completion_timeout(done,
+ 						msecs_to_jiffies(timeout)) ==
+ 		    0) {
+-			mutex_lock(&data->pending_lock);
++			guard(mutex)(&data->pending_lock);
+ 			list_del(&msg->list);
+-			mutex_unlock(&data->pending_lock);
+ 
+ 			data->timeout_cnt++;
+ 			return -ETIMEDOUT;
+ 		}
+ 
+ 	return 0;
+-
+-_error_locked:
+-	mutex_unlock(&data->comm_lock);
+-	data->timeout_cnt++;
+-	return status;
  }
  
- #define SSP_GET_BUFFER_AT_INDEX(m, index) \
--	(m->buffer[SSP_HEADER_SIZE_ALIGNED + index])
-+	((m)->buffer[SSP_HEADER_SIZE_ALIGNED + (index)])
- #define SSP_SET_BUFFER_AT_INDEX(m, index, val) \
--	(m->buffer[SSP_HEADER_SIZE_ALIGNED + index] = val)
-+	((m)->buffer[SSP_HEADER_SIZE_ALIGNED + (index)] = val)
+ static inline int ssp_spi_sync_command(struct ssp_data *data,
+@@ -355,12 +349,12 @@ int ssp_irq_msg(struct ssp_data *data)
  
- static void ssp_clean_msg(struct ssp_msg *m)
+ 	switch (msg_type) {
+ 	case SSP_AP2HUB_READ:
+-	case SSP_AP2HUB_WRITE:
++	case SSP_AP2HUB_WRITE: {
+ 		/*
+ 		 * this is a small list, a few elements - the packets can be
+ 		 * received with no order
+ 		 */
+-		mutex_lock(&data->pending_lock);
++		guard(mutex)(&data->pending_lock);
+ 		list_for_each_entry_safe(iter, n, &data->pending_list, list) {
+ 			if (iter->options == msg_options) {
+ 				list_del(&iter->list);
+@@ -376,10 +370,8 @@ int ssp_irq_msg(struct ssp_data *data)
+ 			 * check but let's handle this
+ 			 */
+ 			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
+-			if (!buffer) {
+-				ret = -ENOMEM;
+-				goto _unlock;
+-			}
++			if (!buffer)
++				return -ENOMEM;
+ 
+ 			/* got dead packet so it is always an error */
+ 			ret = spi_read(data->spi, buffer, length);
+@@ -391,7 +383,7 @@ int ssp_irq_msg(struct ssp_data *data)
+ 			dev_err(SSP_DEV, "No match error %x\n",
+ 				msg_options);
+ 
+-			goto _unlock;
++			return ret;
+ 		}
+ 
+ 		if (msg_type == SSP_AP2HUB_READ)
+@@ -409,16 +401,15 @@ int ssp_irq_msg(struct ssp_data *data)
+ 				msg->length = 1;
+ 
+ 				list_add_tail(&msg->list, &data->pending_list);
+-				goto _unlock;
++				return ret;
+ 			}
+ 		}
+ 
+ 		if (msg->done)
+ 			if (!completion_done(msg->done))
+ 				complete(msg->done);
+-_unlock:
+-		mutex_unlock(&data->pending_lock);
+ 		break;
++	}
+ 	case SSP_HUB2AP_WRITE:
+ 		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
+ 		if (!buffer)
+@@ -448,7 +439,7 @@ void ssp_clean_pending_list(struct ssp_data *data)
  {
+ 	struct ssp_msg *msg, *n;
+ 
+-	mutex_lock(&data->pending_lock);
++	guard(mutex)(&data->pending_lock);
+ 	list_for_each_entry_safe(msg, n, &data->pending_list, list) {
+ 		list_del(&msg->list);
+ 
+@@ -456,7 +447,6 @@ void ssp_clean_pending_list(struct ssp_data *data)
+ 			if (!completion_done(msg->done))
+ 				complete(msg->done);
+ 	}
+-	mutex_unlock(&data->pending_lock);
+ }
+ 
+ int ssp_command(struct ssp_data *data, char command, int arg)
 -- 
 2.34.1
 
