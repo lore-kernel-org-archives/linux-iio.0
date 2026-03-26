@@ -1,47 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29F1F25776
-	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 08:14:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D0EA311942;
+	Thu, 26 Mar 2026 08:17:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774512864; cv=none; b=uUyV1DJSlKkWzk99sTOu7NUu2MfHBFbGIscTQ+W5XcujYyl7fesJx54sx8uprlcqcsgBO0gKQZ7JHlxpzGiJiuq6CmuCzeiVfp5jpmPX6US5+FtuA9R0uSuTB09z9X5pjkIz/5bCU/Mp9wmc/W6GR+LXMnnblsZsTGi5sg7+F+4=
+	t=1774513036; cv=none; b=dwnrz2SfAN4VVvIHsSEXdoBAqDR+fnq1OtyYHskXMHEa3S0i6vOiolVcxDlvnVIniBQwe2x6wiPhG4BaHLZSlNSpyUDOfVcMRqcNu9zkZDvONzXk9Sk8l1fdv4TLO7Co2fKdMXoaAgeTppqyrC39KhksPLYVx3WDverJW3Tk0Yk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774512864; c=relaxed/simple;
-	bh=l+u3whK5LO57kB+ZuDeUNTnyQS/8L90B0JtF+UeCmMQ=;
+	s=arc-20240116; t=1774513036; c=relaxed/simple;
+	bh=o5w9pCdQJwJqIVMSOTmmS4wYOSdHSHb2HuYN1QFD+iM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=L7uFosCNHQW+jI2JvJljlKbB6R11sgjJ1fuy5tzFZDFBPmH5nBmD+TXU1rGJtxEMDOZ+rUk3R7k+NnlcrlpRaxXkJNmdkiqGRIc50hihgiv6ccePTKJLp95lGeb6kh6t6CQPXX4IFkvwdcchRCbym49xZejDzPSFWxewKFP3vzo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DXOzHYbH; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=TtPfYiHrA0wmO16QG/TddO1BJpLyBspOD69ZXBuIjjzpRijV4x3iWNgHbit7i8YeCxSGq67ywV0zzw+QMY5AJARiPjf4wavG9oO9aoJBm07dYZAvFnLgTBgHga4n5+MvcSipPIRbDeYhF5uVfrlGJ4B7v7F9DG41mkL/uENtk+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iROPofh8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DXOzHYbH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9772DC116C6;
-	Thu, 26 Mar 2026 08:14:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iROPofh8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FE0EC116C6;
+	Thu, 26 Mar 2026 08:17:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774512863;
-	bh=l+u3whK5LO57kB+ZuDeUNTnyQS/8L90B0JtF+UeCmMQ=;
+	s=k20201202; t=1774513035;
+	bh=o5w9pCdQJwJqIVMSOTmmS4wYOSdHSHb2HuYN1QFD+iM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=DXOzHYbHN4yO857eb88xDIl19NhBjPV2oTleU5tBKzgHwRbZN4aJZypDKyZHNDinp
-	 4C37sM16E6aIHDMAIDAUuo9acmMzFlXlIpwktBoS0pTMyQ34VfCMhfAvRqfIvIoZN8
-	 vhy294pGCPGvr1V2XqM8fNT0fYgvQzxLQQnRSdWcGBqSyFq4THIDtxHz+j9RQDiagH
-	 9w97wDyMlb6Z1yELPcQ0wSTVDXrep+SSvraESooHUJh5R94VF85SXEXIISPsSTV4vh
-	 BB4fjWrO3W7O+zNNZTcYZZ9FWDTRfNVsns6vhyfKHdF8+q2AMzkCS12k3bpCBmG/oJ
-	 JAqZ9iMJEQ73w==
-Date: Thu, 26 Mar 2026 08:14:17 +0000
+	b=iROPofh8FMQsZItMkKQeqjSxBOoQDko4rjzNC4WXNGgosWHZYvS0goy5tCRlc+4Np
+	 NQfss1cj9XhKsN3P4btYYz3xCJdei9fskeQ6gkEo2TXRRW67Z0wNLmn83N3YDWzxjW
+	 HSvXNMWsEbNlDy/lJP34ri9Qyzj3yV7Tz6Riou2aXLDfRr2Fkxhd6ICSzY7Zj2udDd
+	 BqvpYDjPbwWQ0sqy4gVi/TiPgbZU5rRZvHblVpDYIkwP063XKectD7noXqoy0CPFNc
+	 SteGkqLGRYTSEDHU8Hlt8ssOIt69eMUMRcO+WaC/FNB3gohnBk9LGHitDBuyCh076m
+	 jHS8YXlhSK71w==
+Date: Thu, 26 Mar 2026 08:17:08 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ad_sigma_delta: Format block comments
-Message-ID: <20260326081417.6b949211@jic23-huawei>
-In-Reply-To: <CAE7dp2oFaheJMcK_khRRSZnQpAVN8Lgsy_phZsNO=spcbJU+Rg@mail.gmail.com>
-References: <20260314111250.223788-4-giorgitchankvetadze1997@gmail.com>
-	<abfVKws8hF4bUbv5@ashevche-desk.local>
-	<20260321210833.7268a3b1@jic23-huawei>
-	<CAE7dp2qUM3Sza1endobT44VqAdwoBFqXb77MAfaFK1h8tJkOGQ@mail.gmail.com>
-	<20260325204039.582cce84@jic23-huawei>
-	<CAE7dp2oFaheJMcK_khRRSZnQpAVN8Lgsy_phZsNO=spcbJU+Rg@mail.gmail.com>
+To: "Jones, Carlos jr" <Carlosjr.Jones@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, "Hennerich,
+ Michael" <Michael.Hennerich@analog.com>, Liam Beguin
+ <liambeguin@gmail.com>, "Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Tobias Sperling <tobias.sperling@softing.com>, "Marques,
+ Jorge" <Jorge.Marques@analog.com>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
+ <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, Kyle Hsieh <kylehsieh1995@gmail.com>
+Subject: Re: [PATCH v2 0/4] Add support for LTC2305
+Message-ID: <20260326081708.05b50999@jic23-huawei>
+In-Reply-To: <SJ0PR03MB5854559AD0D2624A6251ED6FF456A@SJ0PR03MB5854.namprd03.prod.outlook.com>
+References: <20260324071331.842-1-carlosjr.jones@analog.com>
+	<20260325201931.26ca84c1@jic23-huawei>
+	<SJ0PR03MB5854559AD0D2624A6251ED6FF456A@SJ0PR03MB5854.namprd03.prod.outlook.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,51 +52,72 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 26 Mar 2026 12:06:13 +0400
-Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
+On Thu, 26 Mar 2026 02:21:28 +0000
+"Jones, Carlos jr" <Carlosjr.Jones@analog.com> wrote:
 
-> On Thu, Mar 26, 2026 at 12:40=E2=80=AFAM Jonathan Cameron <jic23@kernel.o=
-rg> wrote:
-> >
->=20
-> > > I haven=E2=80=99t done a full sweep across iio/adc yet; this was a lo=
-cal fix.
-> > > Given how broad this kind of cleanup can get(fixing formatting in
-> > > multi line comments in the entire iio/adc directory), I assumed it
-> > > would be preferred to keep the scope limited rather than risk missing
-> > > cases in a larger series.
-> >
-> > How big is it looking?  I wasn't expecting these to be particularly com=
-mon.
-> >
+> > On Tue, 24 Mar 2026 15:13:27 +0800
+> > Carlos Jones Jr <carlosjr.jones@analog.com> wrote:
+> >   
+> > > The LTC2305 is a 2-channel, 12-bit, fast ADC with an I2C interface,
+> > > compatible with the LTC2309 (which has 8 channels).
+> > >
+> > > This patch adds support for the LTC2305 by introducing a chip_info
+> > > structure to handle the different channel configurations between the
+> > > two variants. The LTC2305 exposes 2 single-ended channels and 2
+> > > differential combinations.
+> > >
+> > > Also updates the device tree bindings to include the lltc,ltc2305
+> > > compatible string and documents it in the Kconfig.
+> > > ---  
+> > 
+> > Whilst checking for what comments were in v1, I realized we have two
+> > different people looking at the same thing within a few weeks of each other.
+> > +cc Kyle.
+> > 
+> > https://urldefense.com/v3/__https://lore.kernel.org/all/20260325-
+> > add_ltc2305_driver-v5-0-
+> > e0d29daa54f9@gmail.com/*r__;Iw!!A3Ni8CS0y2Y!6jxk_dJQLHUO4PVi3Oca_
+> > VzVHN-qeFu-y2tE5xXMwuy-
+> > x2UFG5Fn3KO4Cw15QcDsqTCgFXQQLLRQrdgokg$
+> > 
+> > I guess this is just a case of neither noticing on the list?
+> > Too many similar part names, so I missed it until now.
+> > 
+> > Currently I have Kyle's patches queued up.  All else being equal that seems fair
+> > as Kyle started on this last year whereas Carlos' work on this is much more
+> > recent.
+> > 
+> > I'm seeing some small differences. Please could you work together on this.
+> > Ideally send any additional changes on top of Kyle's series.
+> > 
+> > Thanks,
+> > 
 > > Jonathan
-> >
->=20
-> Hi Jonathan,
-> I took a closer look.
-> There are a handful of similar multi-line comments across
-> drivers/iio/adc.. However, a good portion of them
-> are file headers, NOTE blocks, or structured comments that appear
-> intentional.
->=20
-> There are some cases similar to the one fixed here, but overall it
-> doesn=E2=80=99t seem particularly widespread. I think , not widespread en=
-ough
-> for patch series.
-OK.  If you want to work on this, send whatever tidy ups look sensible
-to you.  I don't mind how you break them up into patches / series as
-long as finest granularity is one per file. Somewhat coarser is also
-fine.
+> >   
+> 
+> First off, my apologies to everyone for not knowing how to check for
+> existing upstream request for the LTC2305 device before working on it
+> and wasting everyone's review time. It's a learning experience for me.
+It is pretty rare!  Only tend to see this sort of collision once every
+few years.
+
+> 
+> But it's still awesome to see how both ended up with almost the same
+> code after review.
+> 
+> I'll reply to Kyle's series to ask if the delay for LTC2305 could be included.
+Excellent!  Note I've merged Kyle's code, so patches on top please.
+Potentially the delay might be a fix if I understand it correctly.
 
 Thanks,
 
 Jonathan
 
->=20
->=20
-> Regards,
-> Giorgi
+> 
+> Kind regards,
+> Carlos
+> 
 
