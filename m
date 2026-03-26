@@ -1,78 +1,76 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+Received: from mail-dy1-f177.google.com (mail-dy1-f177.google.com [74.125.82.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F594331A49
-	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 22:04:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D37A3A5E6F
+	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 23:43:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774562699; cv=none; b=BrmQEy8aEZ8z7DjRicx8vZwu6GpllLyH6W+GsgLkgUKvAfnAXyOi6yyfqxgC41v4Mzs2NAfF7QEe1UHKIiyRyOiYNUSvT+uaHdL8YuRVELFcroVMrFfPGglc5Ytxbs7Ul2U8bZQNbuwWWzkMvowaXbuJAZuaYOiHvbisSqJ0Isk=
+	t=1774568586; cv=none; b=VmukgWo2RaaTEyqgz4mq+F6M5l2WxIz2fZ6abOM9zxKwlo+U7ct+V/1bQ1v1DChET3cmvcRWtnsCeDdbrJ/RIFM8fqcAmFoDpt3g/j7rFoFBYF+hNQCaQVzLe332VCfpVHhpHquUQIzgcv5ZuDNJISr/OGXM0LlPvqSzKvd7rVk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774562699; c=relaxed/simple;
-	bh=GBY4i+7n97Blol+zZDLhEwkVkvlwAP0FnHiMpSo+3uE=;
+	s=arc-20240116; t=1774568586; c=relaxed/simple;
+	bh=vB0ydX+eG4BaRyIca4/G0Hvvsf9bBHfPNfaaxXnWFpE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pCVRar8CxxiPRL6TJW6/Fr330WQnwc/vg8c2dBfLiQRIyrC/Ost3gsSGcPnwLu/LbrzIp27fok0tFdPUBxLjQb391n1Y11NyViPyObzJgfYyEw0MgC84cv3OzLi5VLkbOk/89OQdvhjikt4xySB5ms/EX7Gg8ej9vgGA5wC6J8k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GDhSiVDp; arc=none smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=S0nw3FmIcSBk9JbNFfTgTF6q3L00nsBB/MDr9931l/fRjD64JKaoRkQHHdezIxZbybRhY84WTGjVgPwOPIGMCgPsrK0F0k/VbzsDX8Vva8ziodEcjiWSXkAbwnz8FMnIdcfEtOLbzxrGl1RcMS6G7bWjTLp3En7+HYAAlynEikY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qbOOF+CW; arc=none smtp.client-ip=74.125.82.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GDhSiVDp"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-50b2d6f9d00so14376481cf.2
-        for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 15:04:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qbOOF+CW"
+Received: by mail-dy1-f177.google.com with SMTP id 5a478bee46e88-2ba895adfeaso1732379eec.0
+        for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 16:43:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774562697; x=1775167497; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1774568584; x=1775173384; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6RrKHhCFI1+fxT243Y633zvQyWdh9GMd1zgxuWpoC3M=;
-        b=GDhSiVDpiYWK1JY6gSIOea8QanGOiHJaeDQhXmLuNTljg9Q5gO5xe8y+uHogeo8lD8
-         mEvdQ+0TIAaGW+gZVm8dokt+eMNaE7zPU2CRqTeA8+6tXypZkeemywyOgbizyB3U2Z6d
-         m1NFUuFVmGgMNLtEtyi86K9eaebECvXL4cBLW8J8YlEtPflpEZ0BCDmQwr48OGxVU/Hy
-         77Nlc7zCF2cgy2jzWR+RBnf18ye1NRn3m2SG6XaAOKpXJgxuZQ8JGzRoZvXTNeEV1MSX
-         ty3i6GDNhRK8TuKIUGX3+Ng+h2BclM/0yZKf1Rvj1UOZ3JNZpu+XMb+esgEVr5/NT1Ud
-         QIRg==
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=b0fq2X7bSFhgpO5BzfqYdwn61zCNsu/ZvDF4WiBUP3U=;
+        b=qbOOF+CWxP36d7mhy1ObfTRR9RJQJHCJL7jYCx3iHKvJn0bPBRT3+UUdeWwDYiGQ4T
+         /6ZQOQQRvkeGUnbb7JR/XJly/9IoriWP4NfKtnRiadYGfJ5rQIlMqymbrf683jNrZGxm
+         s6LkjGsQAI/AnuEyzM38omxi/dGJ6p45CzN6kSoKHs7PxWFywojHodd6n0e/2xE0k8U4
+         AcvGscXJeFrhVpnIpdMCGEA44JOwpEZZHRppe+wCF/fT7IvEkafPdamSVS3LjmEExv/u
+         NCfm4KFupSKb6VVQ3JchfeeI3dfkVcmuSBJaPfew0fMEI1dsaoj+ya2Vi11pHerJPOrx
+         Azrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774562697; x=1775167497;
+        d=1e100.net; s=20251104; t=1774568584; x=1775173384;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6RrKHhCFI1+fxT243Y633zvQyWdh9GMd1zgxuWpoC3M=;
-        b=IQiCBL6lwJApRmUYyQfi3eg/0zOXHYL3QSbd7p/zkIK18bYhhCwpWxn0biVCz8yBpU
-         /F3db2BSXKMyt6HauGWbwQAwp6jwxmdx5E+tAQBwrph4Xbz0bhv08dBhTVqvbfHwolTu
-         c6Ox4vGaN583Y5GWknnMLsifg2GpID/i3Wh45xBJmKmbY9olD58n43ckYyu4Ob9wy1KX
-         8qu4YLcGQhTpsZknaxOXocnNVD1eAjjO5r5hvPBn9l0fzPJAF5kI9FcSf6zrgjhzTEUJ
-         H+oHhNznA4V446PLP1WoxSxVWacSPfjF0pJkpOmJ7cTnszaOi6lNsD7SgLhgAtRrdxmH
-         NXkA==
-X-Forwarded-Encrypted: i=1; AJvYcCUeNCsWC486W86R6Ps3gTNbd1pz05Ppqt2Ve8xezPBVI3SrWjw2s/Z1NK6chT70AzlAq4EUej+4hAQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwQqAcniGa14C+ncJaqS7nDUMmoH6dTTtp15RcLgqUikyTuayQU
-	1mGBlxObhm1jrAPQi7hwlXXZpUd3qQTljvFcu6Bm73XL5Z8ui+rWEM3IBLB2EodeY9k=
-X-Gm-Gg: ATEYQzwkw2txluO35Wse8Sfxcy6giXBCH63rQegQDDlBaM/3Jq/74CW93flGnLZpuyk
-	Z7bEHb7SiQCgOc1AzUWvcnZ92tITjfmzjWqTzMkswXowmFLlKuhh5JU+nM0rSpfWcsApWq46jK+
-	tGFThD7zI16YR6tzCzHkZJ9qW4FDTJqc0bM5t/YlaqOscw6BWvDiH091UlYKSr++KrmX7Cq5nkK
-	OreCDK+vnvCZX14oVymAQgHSBecjBXle8hjom0i1SurjaskVLQRWYQt+2/3uxwYZfQSMcMHkmrU
-	JSVx56eb8Vkm7nZ+RIeSmdoAT9UfNcTMig7Tpkr3Hy6wXVnOt6N3MtdzWcHGaloXr7OTKlWrEvN
-	4D9D4fGmoLV5Rwb3/K4sDJqbKnjnOutUlEd0wujXCNfHpw9jZhE40UiSWIKzC86xWUdDRTthcQp
-	MrRfWSRkieI2bZi/wp90KX3/Dk/n/I9KI5B5vwvuKkb7Fs4EOtxjyb+e5eYH1OjcUIPTlag7va+
-	h5SzJ6a2YXHctFmEb4Np1RTYS7Bkbp68UDme+4xUKAb3nYXn9dL
-X-Received: by 2002:a05:622a:99b:b0:509:34df:4f03 with SMTP id d75a77b69052e-50ba380a874mr3457191cf.15.1774562697200;
-        Thu, 26 Mar 2026 15:04:57 -0700 (PDT)
-Received: from TARS ([207.219.48.239])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89cd5aaf0cesm36120126d6.47.2026.03.26.15.04.56
+         :subject:cc:to:from:date:sender:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=b0fq2X7bSFhgpO5BzfqYdwn61zCNsu/ZvDF4WiBUP3U=;
+        b=ltBnnPjgvzsFZU8INvxtE1nP9naM4gI+XAL4UqEYJClmWFrD2uMfkALhRIpaPuY0IH
+         EOHj8b/bIZfy6W6xiTCcJuby2X4gqvUyyMqa2Y9e7QON/1kunqUUzKEosGem9BzfXNOJ
+         BYAWoUe9GxgIwN+XVnG6vy+IEmUkHKBS/X9dK4K7csuokjFVxa5Md2fVPxg1GGBJcsbU
+         3viCsApv2E86j9TVpuKGMViFS1DYQko/6S/xsdKRskYyl3NWZ1Tbk1dqB2mZK7nKAw6R
+         9B3UKD+07CZJMze6yzSoiNqUCgvhSkoiZE/RuKIN+znP21t5IQRtLmRdn2B7zUXxQoup
+         8F7Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVyScNM6DYj9C8MBVA0LmFFXqm+kdu4PEKTmv0U9i8G4upgzQovC0P0wJTmcW4k6wi+u1mB7+Q956s=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy7UV9G+oiGaMIj0QvV8iKnSNoh9yRvsCUzlqDcKlcz+EnhheMM
+	gmrMA3EkNvpupJla/liheR52CHqM1ppvxIjY9GK8pe5s6GnS94B/2e8NZ4YkWQ==
+X-Gm-Gg: ATEYQzxJRtYxr819yXLWZjoUnPXMZArwAza+uIQvzow+g+24AXgeEZTEK4kloCvOwuc
+	QVc2fj5VnVNhKotV0vnAdgZ1L99bh6ccgKyo9uyQ1ToDlJuCH4x641z734ZGpUgqGJXaSBPzlGG
+	fIeAHfYrR0B6UQfuB+UlHVuw2Dwf6e63jT9D6dMJWjdcYBBiJVfMWvBjo0xDElcNR94IBnAQpQx
+	I7JU4Wh6fByK/1BFOwr3i8XlTg881MzKYRbYlXc9kUEdvGq7UU+LuHtBWXS4oEVtkDp7520taPh
+	Tto9DwYkCEJIh9TciCa8jnkW6M/QkQTEywzwXH5Lw1uRA02+Pn6oSXgdoRKiXkcL3v3sVdLoy//
+	yZ+tWfCnZtbGzmCeNvvdoSVh5CO91BV5a5j/GmajkA3AO4kuza6HCMFfrwcDnilULZvNNrOmZ+f
+	Izu/ryQD+gmax9W47jULRWAitCfbcjgJOzvmQp
+X-Received: by 2002:a05:7300:ac8a:b0:2c1:5134:54d3 with SMTP id 5a478bee46e88-2c185e12907mr311048eec.22.1774568584153;
+        Thu, 26 Mar 2026 16:43:04 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2c16ec277edsm5333936eec.3.2026.03.26.16.43.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2026 15:04:56 -0700 (PDT)
-Date: Thu, 26 Mar 2026 18:04:53 -0400
-From: Ammar Mustafa <ammarmustafa34@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Alisa-Dariana Roman <alisa.roman@analog.com>,
+        Thu, 26 Mar 2026 16:43:03 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date: Thu, 26 Mar 2026 16:43:02 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Docs: iio: ad7191 Correct clock configuration
-Message-ID: <acWthfEL_HGtVykN@TARS>
-References: <aaHrsTS9iG-PEfue@ammar-VM2>
- <aaLIhgJjrNlp3oTy@ashevche-desk.local>
- <20260322121314.0143bda3@jic23-huawei>
+	Andy Shevchenko <andy@kernel.org>, brgl@kernel.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] hwmon: (ina2xx) drop unused platform data
+Message-ID: <5f2226b2-3dbc-4ddf-9ffa-1b8792165753@roeck-us.net>
+References: <20260326-drop-ina2xx-pdata-v1-1-c159437bb2df@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,57 +79,18 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260322121314.0143bda3@jic23-huawei>
+In-Reply-To: <20260326-drop-ina2xx-pdata-v1-1-c159437bb2df@oss.qualcomm.com>
 
-On Sun, Mar 22, 2026 at 12:13:14PM +0000, Jonathan Cameron wrote:
-> On Sat, 28 Feb 2026 12:50:46 +0200
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Thu, Mar 26, 2026 at 10:30:00AM +0100, Bartosz Golaszewski wrote:
+> Nobody defines struct ina2xx_platform_data. Remove platform data support
+> from the drivers which still have it (it's effectively dead code) and
+> remove the header.
 > 
-> > On Fri, Feb 27, 2026 at 02:08:33PM -0500, Ammar Mustafa wrote:
-> > > Correct the ad7191 documentation to match the datasheet:
-> > > - Fix inverted CLKSEL pin logic: device uses external clock when pin is
-> > >   inactive, and internal CMOS/crystal when high.  
-> > 
-> > high --> active
-> > 
-> > Thanks, this part looks good in the below documentation update.
-> > 
-> > > - Correct CMOS-compatible clock pin from MCLK2 to MCLK1.  
-> > 
-> > I haven't checked driver yet, but is it only for a single component?
-> > Can you double check that _all_ supported by the driver have the same
-> > in their datasheet(s)?
-> > 
-> > ...
-> 
-> Hi Ammar,
-> 
-> Just a quick note to say I'm going to mark this one in patchwork
-> as needing a new version given Andy's questions have been here a while.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > 
-> > > +- When CLKSEL pin is ACTIVE: Uses internal 4.92MHz clock (no clock property
-> > >    needed)
-> > > -- When CLKSEL pin is tied HIGH: Requires external clock source
-> > > +- When CLKSEL pin is INACTIVE: Requires external clock source
-> > >    - Can be a crystal between MCLK1 and MCLK2 pins
-> > > -  - Or a CMOS-compatible clock driving MCLK2 pin
-> > > +  - Or a CMOS-compatible clock driving MCLK1 pin and MCLK2 left unconnected
-> > >    - Must specify the "clocks" property in device tree when using external clock  
-> > 
-> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Acked-by: Jonathan Cameron <jonathan.cameron@huawei.com>
 
-Hi Jonathon, 
+Applied.
 
-I replied to Andy's questionm not sure if I can attach it in mutt for you,
-but we found that this driver only supports the AD7191 so no other 
-documentation needs to be updated or check for this issue. 
-Let me know if I need to do anything else to have this patch merged.
-
-Thank you,
-
-Ammar Mustafa
+Thanks,
+Guenter
