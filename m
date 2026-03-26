@@ -1,153 +1,137 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from cyan.elm.relay.mailchannels.net (cyan.elm.relay.mailchannels.net [23.83.212.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01FDB3F0777
-	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 12:11:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774527110; cv=none; b=HQO/Qhrxs6Vgn8ozVC+NCl9WLFwHVDjI+pQtIvEQ9KufYjR+VXNjkCP2oWYU+B0iFHmSZaGbv4b3atqLk6tNlnhYtII15JFutbjo45+0X0AtVIIZ83GqjqmZJW3+M02ytifs1DI8HAODJ6QNRCsIy4tAQpYntBlaPSbvymQdFgE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774527110; c=relaxed/simple;
-	bh=q5VeKQaMOeAzIRvj0zdKA5E5UwciJ+dVl5nvFwGPIVA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=PwAKFxo8suMZZfGlQfJLegydQn7g7VOi6AVWfB+kKDMxlePnnyvh1OS1Fkrsq7Yc7oTchdQd834hnpp6TfEfjBIANhoBHAkczDKvaMRNFlIU+rcLtkHLkrLukqjM2DnZrM+Dwu/pwqaRyB1olYBXYrOR0IYrrKTl0qgKbzVlvgY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FC7svJ2R; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D523139A04C;
+	Thu, 26 Mar 2026 12:19:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.212.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774527590; cv=pass; b=OEXgVmCziG7gUXDg9xkI5F25ypQhLzF4ny9EfLBE4723R2bO2YszhgChv/o9o2dvuZjqWAeFayVkwMSPCP8U9tUi5es4EYT+RVAOHVy7C4msLi59EXL/7QUjSIpOd5E6ZA5mROsGOQNlf/dt0BqkZFO/9scoJsD+vD0lky79qjY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774527590; c=relaxed/simple;
+	bh=Vz5S9H6Pby4OehJkIKEruyNQa86WKw88cdgPJyrBVwM=;
+	h=Message-ID:MIME-Version:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:Date; b=t3QXPOzeeU2mSRnmuymY5tEn+FtU1WkzVfv5Z5qf6qdgEEdwmqc9WrDV6flQxYhEZE9UXS2IuIqY1fSNNl/p+qQ/4GH8o8TatUDY3M7biS2MnLQ/DbGh+2Hpq0Xx6qAYUTwBBOXSFoMxv6zKKJvdogZsjDV0Aykx9t+RF0NUxak=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=csuMkZ9D; arc=pass smtp.client-ip=23.83.212.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FC7svJ2R"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2adbfab4501so4100285ad.2
-        for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 05:11:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774527108; x=1775131908; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jt1VHbnznQyLT9ogy/s9keX/4mRMMLiQg9FocJbWV7M=;
-        b=FC7svJ2RA1cD4RkKhptnTvP7Rf5IP8yjY64HM5Caa93WSkuIr9f4hWaqQD0UZa+ZLQ
-         6gBo/09jqUPHTfs9smmH/dWmOU3VsCfKlsK1KM/JmjaW+vTmXXPgPzf+27TJ04HachIg
-         KOMzrxXanXOPgWjP0bVpDtKcx+Yer4BJevyACdzxjioVjVji2IUZ/Sw8AZLu9LOs1WvX
-         7SLCVwDVLPRicuJ+V3y985RHH3H2VB537an9QvpB9qVSHOaEJSR7bldGkdBbKPBNkTgz
-         KQ19xIB0WwiM4qkL0xvaQuVjnW9Ismx9jVIchdzQjYNpn8IIYVrfbjdAXw7F/QeS+US2
-         DnUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774527108; x=1775131908;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Jt1VHbnznQyLT9ogy/s9keX/4mRMMLiQg9FocJbWV7M=;
-        b=cGJRi8p31zB9AN1EkRNdyqCLiaw22cqBMCF8atJwDCU+B6cnMyOsnGYEsxzB5sZMml
-         8ALphsMmlYa3m4jwCfByhu+P1IH8QXQoc326P3l7IjWo8nkmBwuaAmWytMa5x6viT8Ay
-         oZKnRhxCkhgFAvwwqsW8znBRpFDFL4+b0XOAuAqdwYprVfUOPuWMF/F4Cbpclx3jvFOy
-         Ay3nQNaJArvmDIOqpCOOWTU5asmu9xC4NVRY4+ScEn2Qt2evNJ3NRrVNKAz0TPNT8uKV
-         VbMaLXZiGMvwKaaNXv0GshUxR/Hj1kP+k6m3CDqxMit8roEyiobzzcKkbQHOIQyAgPXj
-         /GNg==
-X-Forwarded-Encrypted: i=1; AJvYcCXwrTfSpP9GCf6fXZcIIMAwWwmeA3+T9PNDJUKwY1oaoKks56bESILjqr95jbluE+DEpnQpcKRE6xk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyMOQKqmXJHmpXV4AYFkvysBT7KDbHeFNj4zx4IT/qaSMmT2eCc
-	oSHBue4GpXDTZ02+HYl6hHDRMsM4Va6h5B7UA/La6w80tKOnq0k/LoZ0
-X-Gm-Gg: ATEYQzxtfRkgkhGuYJicYqjr49D1xYdPH49Q/zQhU0M/rEKmKH8Q1QZZtYu/5ihH2oU
-	wT9BqB02XRYgX6VarJhZMs3xi6GNlZckbekGREBQJwMwKSfzQKkvYvyBb94QopzeqFZXHkNzNKw
-	hn6nkKOOpZLWof28zOImJPpBCkgKan+TrLKXZqE5NrrtIk9UUZnKyinlaWOzlA6Fa1Le0+phoEK
-	E6JN0vDNu0Ps7Pd+PYfkYPVdJKLgurRDvT8zh/AiOI7ci39kIiXDwXxp1IC/G4CnyVz5/Gzc+3G
-	v3aAGX9AGHu9fu0tQrwETfgjJrPGxNqitF+BQWjDp/+UFwU49oc8v78qByqW3g9x3xV6OLjvVR4
-	MkJjBrKuYxaHd6uFpk9dG+QqlPCBmiq0Fz/AXW/Nsb2/1JondHBXB9mSktdwGcBOzA7e38Iad3x
-	1JyOCH+Gs0TVE0dA6A/hHTGAxALxPtA1mpAHAow8Q+l6805ac=
-X-Received: by 2002:a17:903:234a:b0:2ae:4445:f39a with SMTP id d9443c01a7336-2b0b099d271mr76407185ad.7.1774527108015;
-        Thu, 26 Mar 2026 05:11:48 -0700 (PDT)
-Received: from junjungu-PC.localdomain ([223.167.147.240])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b0bc87e820sm27623345ad.50.2026.03.26.05.11.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2026 05:11:47 -0700 (PDT)
-From: Felix Gu <ustc.gu@gmail.com>
-Date: Thu, 26 Mar 2026 20:11:42 +0800
-Subject: [PATCH] iio: light: veml6070: Fix resource leak in probe error
- path
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="csuMkZ9D"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 101134E1E60;
+	Thu, 26 Mar 2026 12:01:01 +0000 (UTC)
+Received: from fr-int-smtpout19.hostinger.io (trex-green-1.trex.outbound.svc.cluster.local [100.96.16.108])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id 90FDF4E12E1;
+	Thu, 26 Mar 2026 12:00:57 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1774526460;
+	b=RHa03PlWrVDJ/85j0zUqDyMfNvYtMhq2SIz4mKQwxzJR/IE3saYfP1VEnKdHOmoiXN/cwS
+	zOPVpIEiePpyIKAo+CLrXpBK0/rFyAFAPZKBEyG/X5hIIHYRebrHM1MxYAn2UOiyG/HLZt
+	3jO24+bv+xdZf6F7GZwgdt9y+yW0W+dKZiuShgAa1iji4i0UyUPUUW3hyPGyIH8ojBBbrZ
+	khKuzdogHuhh/R/Wk6OVheFkIXlIV10fT7xoxJT/gBvIe4EwqmFQLtoaChn49277UNEhUP
+	1OTKPAxGrV4AJ7QI5I1688WyG1fq33PaePndycdEIGRgv/Zx46zLJYKbJq8Zgg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1774526460;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=WnrocUNggqvz3INtqivTHgtL/XlNGyk5luM3l6z3IRg=;
+	b=dVfs+qeTiJVbAsQv9imN6JTAwjIi+RHV4qI9Gge5vQVZ4bj0RYU3mfWNS57vAKELMkHuBq
+	p/CMW+Y2nC7hLEq8+Z4GzNniNs72sJTXgKXabxgGPUp2IoLifojzZ7MwhIZ0cbpvTMndv9
+	6NSd9GwubfBCWPo9PcKef/WXWVGHJnM5Fte4qvWrJeRE0xxkOQ7rg9ZOGMI32VW3xXbmlR
+	c79OmKxB74zohO0X0C7+dXFo+dmc/3zP3t7gUpBFyFXuFC8zMRElkg+H1QzOKjhpbHI48U
+	yvK62W11K8pvEH9tyKb9wreD6a4SeRo2kUe+Iq9KZLKY+0KG7/RebZ9AM+dGpw==
+ARC-Authentication-Results: i=1;
+	rspamd-db964497c-4fp6h;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Zesty-Interest: 7f38a29149175688_1774526460811_1763565449
+X-MC-Loop-Signature: 1774526460811:3013558152
+X-MC-Ingress-Time: 1774526460810
+Received: from fr-int-smtpout19.hostinger.io (fr-int-smtpout19.hostinger.io
+ [148.222.54.35])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.16.108 (trex/7.1.5);
+	Thu, 26 Mar 2026 12:01:00 +0000
+Received: from [IPV6:2001:448a:502c:4ea6:f59a:8eea:dae5:9f6f] (unknown [IPv6:2001:448a:502c:4ea6:f59a:8eea:dae5:9f6f])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4fhMmh2MhYz1xy3;
+	Thu, 26 Mar 2026 12:00:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1774526455;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WnrocUNggqvz3INtqivTHgtL/XlNGyk5luM3l6z3IRg=;
+	b=csuMkZ9DeSB5Mn7kzz/JWo3ZtTdopKQ3wc7i+YUjubdzDfQGpMIdRdJll1gSqayO7VOOUo
+	JfgxDa7lXKDjdCY1sv6X2AlFt8KXNBNlsCpyGqLG4uHggkUrktNwvNxwoN1wE6QkYia8jd
+	qC2XRv8an6FMejIMn8KAqHdVW0cCzcXBedOCpCNZL5MOEUVCbR5jJjCEa44PYhmBumvuhz
+	oimLN4fzFZS0OaHRL2QzN0SiaGyqROMEZDWLTiqyZCoOrBNeQu01QUSFV49DdDokLaDEaB
+	nfW+DUccsXllYaXZdQ/4Ei2dE0EyMxhVJQ3hDC3x69XmwQrlEqDJ3BVPLOEA2g==
+Message-ID: <0b85a229-219f-4457-8fe4-bd4b3545684f@smankusors.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iio: adc: qcom-pm8xxx-xoadc: add support for reading
+ channel labels
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ phone-devel@vger.kernel.org
+References: <20260326-pm8xxx-xoadc-label-v1-0-027805dad4db@smankusors.com>
+ <20260326-pm8xxx-xoadc-label-v1-2-027805dad4db@smankusors.com>
+ <acUIAh_r7mSfIiEB@ashevche-desk.local>
+Content-Language: en-US
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+In-Reply-To: <acUIAh_r7mSfIiEB@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260326-veml6070-v1-1-5d79022e76f1@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAH0ixWkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDYyMz3bLU3BwzA3MDXUMTC0tzSwsDC/OUNCWg8oKi1LTMCrBR0bG1tQD
- A1fHqWgAAAA==
-X-Change-ID: 20260326-veml6070-1489798087df
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Felix Gu <ustc.gu@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1774527105; l=1981;
- i=ustc.gu@gmail.com; h=from:subject:message-id;
- bh=q5VeKQaMOeAzIRvj0zdKA5E5UwciJ+dVl5nvFwGPIVA=;
- b=K2IRwI23jzeggJTdMGQMp2IvyQTATTfUQWdah2xnK6ps4QNcLHM7qr6sGHW+/nGsnQ+VzmDdq
- NwP6INirp/TBopVzjdX0X62+6G+72hFgAW+W2z68q8YFsYY7VV68MCQ
-X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
- pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
+Date: Thu, 26 Mar 2026 12:00:52 +0000 (UTC)
+X-CM-Analysis: v=2.4 cv=ZbRPNdVA c=1 sm=1 tr=0 ts=69c51ff7 a=1IylDFeuS8XspTXaodopzQ==:617 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=o-qGAwvgtZWI0aAfrXgA:9 a=QEXdDO2ut3YA:10
+X-CM-Envelope: MS4xfEJbGOOMJFcoSDip9GVhDzxy3RTdNLi2Pj75jTPWSN/LqpOUlqw30nxPqxINYmumlmZV09yvfURl/iz5uTi5v27joQfPArNaMKV72xu97lmprqHt7eNX 6cNvmQk68faXYMzN2jh9ucymnaoKWGB0Y99LenjoTze6jHscKYDtu3oVbsjTzAexKK/8eE+g71dQzpbYratRvQr3Sk1cQo6pnVxqGFktTTmheXT0l0O7OIRd e3Fa+6NENVm0r14LySe6rDwPACWWdR8WqUbLaWgTvEAQPmQAqGDtuENku0G4ii152UgEv/y48Pz49We12aN4SjDmdFLP86V64t1SWskKGkXcYM1q+I9FutVM sxzO2XNEwkkkKy92rOWpnz3okoSIA9rWyHmhzGz6MA0hpuyS0xj3kzAsQlJGqZMD73PcZBR68jgVAnHaNwNAPug8ITkstCsZfRW+SMKmab9fFml9hnHqqGZj 5r371m5PY6ZlDfAsfNTQ4aG/wXcwwRGS+F5NBD0S42NXWBf+7JAup+Ft80l/jKmEHquAAo3WIuWPYM6elGrx8WdDtbnKufs8BKUU2/zvOluIP4wR/orTm166 mGnyNYz3cIXGBgyHLPqhjSQIOqbaFs2suKQnhnPPKEtyGOUT/SblOnFc13u96xRncaBCH0wX0Ki2onyMKmaG9qA05Uu9Izwp0WUUDyxbg5dsHquMOQGwt3RN MTii9hQMCde6wr8oV4OCe8A9hHTZ3sBVmd7qlbhk+L0fMwSyEM21wi5IZiqJ5QoND8thTSQlH40=
+X-AuthUser: linux@smankusors.com
 
-The original code registered the i2c dummy device cleanup via
-devm_add_action_or_reset() after i2c_new_dummy_device(). If probe
-failed between these two calls, the dummy device would leak.
+On 3/26/2026 5:18 PM, Andy Shevchenko wrote:
+ >> Tested-on: Sony Xperia SP (PM8921)
+ >
+ > Interesting, never saw this tag before.
 
-Use devm_i2c_new_dummy_device() which registers cleanup atomically
-with device creation, eliminating the error-path window.
+Oh, I just realized I misremember Tested-by tag as Tested-on... Let me
+know if it's not acceptable.
 
-Fixes: 7501bff87c3e ("iio: light: veml6070: add action for i2c_unregister_device")
-Signed-off-by: Felix Gu <ustc.gu@gmail.com>
----
- drivers/iio/light/veml6070.c | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
+ >> +	if (!ch) {
+ >> +		dev_err(adc->dev, "no such channel %lu\n", chan->address);
+ >> +		return -EINVAL;
+ >> +	}
+ >
+ > Isn't it a dead code? Also poisoning dmesg with this recurrent 
+message is not
+ > good idea to begin with (the user space will have a door to flood it, 
+which
+ > might be considered as an assistance to hackers to clear immediate 
+logs after
+ > a successful attack).
 
-diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
-index 6d4483c85f30..416a9520713f 100644
---- a/drivers/iio/light/veml6070.c
-+++ b/drivers/iio/light/veml6070.c
-@@ -247,13 +247,6 @@ static const struct iio_info veml6070_info = {
- 	.write_raw = veml6070_write_raw,
- };
- 
--static void veml6070_i2c_unreg(void *p)
--{
--	struct veml6070_data *data = p;
--
--	i2c_unregister_device(data->client2);
--}
--
- static int veml6070_probe(struct i2c_client *client)
- {
- 	struct veml6070_data *data;
-@@ -283,7 +276,8 @@ static int veml6070_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		return ret;
- 
--	data->client2 = i2c_new_dummy_device(client->adapter, VEML6070_ADDR_DATA_LSB);
-+	data->client2 = devm_i2c_new_dummy_device(&client->dev, client->adapter,
-+						  VEML6070_ADDR_DATA_LSB);
- 	if (IS_ERR(data->client2))
- 		return dev_err_probe(&client->dev, PTR_ERR(data->client2),
- 				     "i2c device for second chip address failed\n");
-@@ -294,10 +288,6 @@ static int veml6070_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = devm_add_action_or_reset(&client->dev, veml6070_i2c_unreg, data);
--	if (ret < 0)
--		return ret;
--
- 	return devm_iio_device_register(&client->dev, indio_dev);
- }
- 
+Good point about the successful attack hint! I was copying the existing
+code from pm8xxx_read_raw. Do you think those checks are unnecessary for
+pm8xxx_read_raw as well?
 
----
-base-commit: 66ba480978ce390e631e870b740a3406e3eb6b01
-change-id: 20260326-veml6070-1489798087df
-
-Best regards,
--- 
-Felix Gu <ustc.gu@gmail.com>
-
+Thanks,
+Antony K. S.
