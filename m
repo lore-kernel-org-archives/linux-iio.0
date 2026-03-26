@@ -1,151 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B6539FCAD;
-	Thu, 26 Mar 2026 18:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BBFF3A16A2;
+	Thu, 26 Mar 2026 18:40:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774549943; cv=none; b=XweSbSd8E54bkzwDvKQYkFtBtJlACwC0tbgvFA42Nzq/7J7PING6gtgzI9JWu8ktK+ifNRlV+uYbOcTcxFzbABHIUSt777Y6aNDCWx2YRSmSGBiVmEU2nqSD3aOkQv7P6EBeHh1+Ps3Rv/aYqIFxku1v+p3Z3ioIXlsnJ7SW1mo=
+	t=1774550424; cv=none; b=FHIhn0jgVT4gGcjVfiDs9UzaaLjhmjesePjG2FBnaW4IHUEVHALIgfPpAHW0/Ak8vnuTeDkOd6imV+zI58CoT8Byj1KaRJhFsuyVcrooIqgA+QdhhXNvl/qBJqg/JXLFUbeBNLW/0oVlduI0mJGPEuE/TviAWwN/+3cC3qnbW9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774549943; c=relaxed/simple;
-	bh=Hom04uPizYqHH9Z7CUP6T+8bG4T7pz30VDETLsxikXo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=nXhzMb4DEIm0Rc/NMHcJB1xB4sdUErIXcxNjwa5qkanZkioFY6tQN5UO/q5qmZCIt+DyLzbBrWuBf03W0cHxLFdAWyUO94MdjHxdWnK3Ij20PTCdHhe5iRNRaJsjYvHx8ivB2kzzJWcQrELDUWy6O9laVbsl5bjSrME+XRZCzTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LRYQeNqe; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774550424; c=relaxed/simple;
+	bh=tvnHWeNCjPdPATfWPZgdcn7WnJAgTmIx9i1QRoWiu1U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RQ5M08MiErw22qqjPhn+4UAmv1ITWM0yBg0cZjXXmsSH2kDpYAMo9/ABNM0tm6c92MJEdKtllp1BBPiAccu3PBwBB/UOGmy1HAukMkWXCjwEVNYdylHdD/Fvdo9xvhWSVO8yTQf8H7hF3egT6JPIf5b8chTbh+BTI3mRj6YEkAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j676UKtQ; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LRYQeNqe"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 466C1C2BCB2;
-	Thu, 26 Mar 2026 18:32:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774549943;
-	bh=Hom04uPizYqHH9Z7CUP6T+8bG4T7pz30VDETLsxikXo=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=LRYQeNqeMxxZLZq+s/Xhf5Xwa2D9/q/z0dKdznRLzFbr75wFclTZMl77FKX8J3CeZ
-	 Lmysg/U7zRRGZ9drdG/wq7SRCOM3d0R/00HPXdpF1VD8lQSA+3+K3HOZDUfVvyTisN
-	 8bvG1GfcRW4+753rWzJqftTkMz6KCbjpRPUvAuPXccXSrw0AVcEsoZtrTWc6T/+G8G
-	 DrznNSf16NC1QUUnOzawI+nmgRoGtjUR68KO4DWfuf5uQyRt30ZA5+c/lM+JlGcJmP
-	 sld40QeyWNWvm8dTexCWPInKorDtDBXXHO26QA8hkHjAzqWtNGShpiqg7Vp3MN4946
-	 cvz1808fYUsqg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CDC10A1E63;
-	Thu, 26 Mar 2026 18:32:23 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 26 Mar 2026 18:32:17 +0000
-Subject: [PATCH v2 2/2] iio: amplifiers: ad8366: add support for adrf5702/3
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j676UKtQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774550423; x=1806086423;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tvnHWeNCjPdPATfWPZgdcn7WnJAgTmIx9i1QRoWiu1U=;
+  b=j676UKtQMP+tx5IHZ9Aj0YGVY3A1Fi1Nz0dnp0ipK1hNRdi7kZB4/EkH
+   UNoiu/cu8D5wAMHFygYaCxSxi9fMlDaBOjejaa9SU4EBVIloNQLDnSgyp
+   PXXTDF4ziVtnTS7DI/HpYixx9sbO4kqIcRS2SUROutqrc8mw5CVuzZq4F
+   z2ZdSZhbaDZR2vC5J00i04UUj8ujNYwcr+b12aYktjbTcwhH+VU1dMv26
+   qiRUmtcRCNDiaUgp9KMG+0L8fBhvu4oIZ709RTk4hoCjlA711aBFbeBaX
+   fItEd8KJ3B84NvyORDOhTqSR8xZB60NJm/IOvtSv+T05MlKFuhYiE7AMl
+   g==;
+X-CSE-ConnectionGUID: OoRgEf3uTP+MpF/bXYvI3A==
+X-CSE-MsgGUID: 0/1b3cdmRH21Psji5DM6kg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11741"; a="75335831"
+X-IronPort-AV: E=Sophos;i="6.23,142,1770624000"; 
+   d="scan'208";a="75335831"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 11:40:23 -0700
+X-CSE-ConnectionGUID: zzcsNcpKSIiNFo813Ucszg==
+X-CSE-MsgGUID: rGMNUOAkS7i/NOiEtTHyew==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,142,1770624000"; 
+   d="scan'208";a="248460025"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.216])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 11:40:19 -0700
+Date: Thu, 26 Mar 2026 20:40:17 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Felix Gu <ustc.gu@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: veml6070: Fix resource leak in probe error
+ path
+Message-ID: <acV9kcmPr9Xegd9O@ashevche-desk.local>
+References: <20260326-veml6070-v1-1-5d79022e76f1@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260326-adrf570x-iio-support-v2-2-b622a17335d0@analog.com>
-References: <20260326-adrf570x-iio-support-v2-0-b622a17335d0@analog.com>
-In-Reply-To: <20260326-adrf570x-iio-support-v2-0-b622a17335d0@analog.com>
-To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1774549942; l=3552;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=C6P6Zr+ZHRuErV9w+QMBv1TsPXudqbrh6GcR2maa73k=;
- b=ixIs+B5ItIa27KzDB0Q8Ui8rF3K+OdrI65dGqEd+ydTV2axa3QYIbvhwJmGgHcsSuwyQ3i4XR
- QVDGvhI7hOXDU2s5wJGBHUn9jdR7JbUyYnKLQvgYJP1vRS1JXbwwPFu
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260326-veml6070-v1-1-5d79022e76f1@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Thu, Mar 26, 2026 at 08:11:42PM +0800, Felix Gu wrote:
+> The original code registered the i2c dummy device cleanup via
+> devm_add_action_or_reset() after i2c_new_dummy_device(). If probe
+> failed between these two calls, the dummy device would leak.
 
-Add chip info structs and device table entries for ADRF5702 and ADRF5703
-Digital Step Attenuators.
+I see what you meant by reading the code, but the above is simply wrong.
 
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/amplifiers/Kconfig  |  2 ++
- drivers/iio/amplifiers/ad8366.c | 22 ++++++++++++++++++++++
- 2 files changed, 24 insertions(+)
+The
 
-diff --git a/drivers/iio/amplifiers/Kconfig b/drivers/iio/amplifiers/Kconfig
-index 39d280d4d437..9e24421b5e97 100644
---- a/drivers/iio/amplifiers/Kconfig
-+++ b/drivers/iio/amplifiers/Kconfig
-@@ -18,6 +18,8 @@ config AD8366
- 	    AD8366 Dual-Digital Variable Gain Amplifier (VGA)
- 	    ADA4961 BiCMOS RF Digital Gain Amplifier (DGA)
- 	    ADL5240 Digitally controlled variable gain amplifier (VGA)
-+	    ADRF5702: 0.125 dB LSB, 8-Bit, Silicon Digital Attenuator
-+	    ADRF5703: 0.25 dB LSB, 7-Bit, Silicon Digital Attenuator
- 	    ADRF5720: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator
- 	    ADRF5730: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator
- 	    ADRF5731: 2 dB LSB, 4-Bit, Silicon Digital Attenuator
-diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-index 334ca91c0f59..bbf41a1fb3a1 100644
---- a/drivers/iio/amplifiers/ad8366.c
-+++ b/drivers/iio/amplifiers/ad8366.c
-@@ -5,6 +5,8 @@
-  *   AD8366 Dual-Digital Variable Gain Amplifier (VGA)
-  *   ADA4961 BiCMOS RF Digital Gain Amplifier (DGA)
-  *   ADL5240 Digitally controlled variable gain amplifier (VGA)
-+ *   ADRF5702: 0.125 dB LSB, 8-Bit, Silicon Digital Attenuator, 50 MHz to 20 GHz
-+ *   ADRF5703: 0.25 dB LSB, 7-Bit, Silicon Digital Attenuator, 9 kHz to 20 GHz
-  *   ADRF5720: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator, 9 kHz to 40 GHz
-  *   ADRF5730: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator, 100 MHz to 40 GHz
-  *   ADRF5731: 2 dB LSB, 4-Bit, Silicon Digital Attenuator, 100 MHz to 40 GHz
-@@ -106,6 +108,22 @@ static const struct ad8366_info adl5240_chip_info = {
- 	.num_channels = 1,
- };
- 
-+static const struct ad8366_info adrf5702_chip_info = {
-+	.name = "adrf5702",
-+	.gain_min = -31875,
-+	.gain_max = 0,
-+	.gain_step = -125,
-+	.num_channels = 1,
-+};
-+
-+static const struct ad8366_info adrf5703_chip_info = {
-+	.name = "adrf5703",
-+	.gain_min = -31750,
-+	.gain_max = 0,
-+	.gain_step = -250,
-+	.num_channels = 1,
-+};
-+
- static const struct ad8366_info adrf5720_chip_info = {
- 	.name = "adrf5720",
- 	.gain_min = -31500,
-@@ -337,6 +355,8 @@ static const struct spi_device_id ad8366_id[] = {
- 	{ "ad8366", (kernel_ulong_t)&ad8366_chip_info },
- 	{ "ada4961", (kernel_ulong_t)&ada4961_chip_info },
- 	{ "adl5240", (kernel_ulong_t)&adl5240_chip_info },
-+	{ "adrf5702", (kernel_ulong_t)&adrf5702_chip_info },
-+	{ "adrf5703", (kernel_ulong_t)&adrf5703_chip_info },
- 	{ "adrf5720", (kernel_ulong_t)&adrf5720_chip_info },
- 	{ "adrf5730", (kernel_ulong_t)&adrf5730_chip_info },
- 	{ "adrf5731", (kernel_ulong_t)&adrf5731_chip_info },
-@@ -353,6 +373,8 @@ static const struct of_device_id ad8366_of_match[] = {
- 	{ .compatible = "adi,ad8366", .data = &ad8366_chip_info },
- 	{ .compatible = "adi,ada4961", .data = &ada4961_chip_info },
- 	{ .compatible = "adi,adl5240", .data = &adl5240_chip_info },
-+	{ .compatible = "adi,adrf5702", .data = &adrf5702_chip_info },
-+	{ .compatible = "adi,adrf5703", .data = &adrf5703_chip_info },
- 	{ .compatible = "adi,adrf5720", .data = &adrf5720_chip_info },
- 	{ .compatible = "adi,adrf5730", .data = &adrf5730_chip_info },
- 	{ .compatible = "adi,adrf5731", .data = &adrf5731_chip_info },
+	ret = i2c_new_dummy_device();
+	if (ret)
+		return ret; // "probe failed between these two calls"
+
+	ret = devm_add_action_or_reset();
+
+Please, rephrase.
+
+> Use devm_i2c_new_dummy_device() which registers cleanup atomically
+> with device creation, eliminating the error-path window.
+
+With the fixed commit message
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
 
 
