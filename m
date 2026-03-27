@@ -1,111 +1,233 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 481083EDAC8
-	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 13:54:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8580E55A
+	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 15:17:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774619658; cv=none; b=rxuvnqTxec1toQerokjuBMM3LqMMElicOFW0PxEMFQBglP6wR0vROtqVtmfTrS7MnMdNhbuHRvrGML8K8SRGoMMllMs4zx7hznARbaiyLk+XlzoVKk7JNuXF2z0QKYLIGF+a1mNggb8D2CtnPitGExd0Fx9S3sPRX+MFjM4/ISc=
+	t=1774624635; cv=none; b=OOk74Sx1WdGa6Ry2FAKJKykEF/DgvTxIfbbz5Cf6ObWDacpTrXI9ic9ME3UCW70yvtf49do/+pnWRUeFU8faQ5gx1p4kq62gTe/TVAIFoVzBKNOqCOMQXj2j6MA/VBUJxAp/28TrgUmBg+I5WgsMtfGcU/u5gqtEhtcxv+ZTwdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774619658; c=relaxed/simple;
-	bh=F8nqQtP6HknANaBoPAe6dwl5ApJC8kya6guOXtyTiPg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=V6P0tzmPcrqMGwAkhkrThUSDnlvxhnAhBdiLSuSrID7augSo0c4a1k3sS2JjQKYDgaikVFigwrgVhoy7wLR0Joyr6tdHOvOH1F//ltthwCt6PI0eYj1Iolz0zUKmdX3dAOieUURm0N/MYy+vbsYasGswNmiskuAtz8MAgVRpr9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=qdqYil7l; arc=none smtp.client-ip=209.85.210.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1774624635; c=relaxed/simple;
+	bh=YhMY8m8lhMloOdkQJ/lFVmybXo6krCBolUEHpLOX6vo=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YJpu36ov8VpbaZ19d7c9f2Z88TDjHbmiNeXnpTWhkVpKbDlmDgPOxGWQ0u0lqWaHRvSKJKayadixUumXzybdBbcON1DMehF/m8tvwCIzpf+00+SjO9aKVl62Q8HsvCIVCzZC9lebj2swAjC49dzEoQce6zNGDSwK1zH36Et1Dew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MuRefvmF; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="qdqYil7l"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7d8b2703f37so1898599a34.1
-        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 06:54:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MuRefvmF"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-b9382e59c0eso365318266b.0
+        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 08:17:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774619654; x=1775224454; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FsiRzlu0kDThiDmUQXOxPDfKN3XDauB2BbTLDlcDoZY=;
-        b=qdqYil7lFWwQkNZJ3e8HhdhONsP3EXh37kz47wka1qwIxUZonaujjsWcMVyldUbFnx
-         tvUoDOL46FbApR4XvgyzxIejZ0TJES7zxzdkJeaI099F2YbRwJ7NEX7i3GsC3vwEJtE8
-         v0fLXgXPKbGhUpHuT+1TiOWN1XuSa4/byLp4gPKyBRdCMYj7vx27kJB2kxg/+7StpDUa
-         ymG326PFl9vBXvXxoyUF+8c4cSlFkkJZTcf9cfl1DpwNscw+YJf0NaFhqc4B7zqeDYn5
-         QrK71+7gKCB/vsPbhg1QIaoAAFd4WkmPCYxpfSQo0GZXFaTe8ntRFpxUEr1VjhdwrEwz
-         tscg==
+        d=gmail.com; s=20251104; t=1774624632; x=1775229432; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gUuubS1+3njuAPGTqHH6+3IW1O4jcFu6Ae6+Wh76UDs=;
+        b=MuRefvmFC6lNyhIodxUchXClrn0ez7PkcDlif1BIOAfrYLV/eHpg9yLMaWtKEoVJHE
+         ed1KhaDxJlQ99qqLcmccZYgLEIcetf67o4wUc/7rQXFK5RhKdjyG95DjhbxUAYZQaqaQ
+         DgcDCaHOZ+90dntL42/U4TiMlQF0XT3/LeHFrYBLErOu0T3n8LsSBjJlQARSA+dcVNQF
+         1vtTjJYJ4DIIeEh7lZQ2Ie0LE9nrJwu4omDzLY4Rpy5NHBzmtMGvuXgeYLxuOyp73okp
+         34qpzljvLv3ajr+sd9/4yyJFl4mjE5AigmnMJmApbs5wYLMeWbrLjDREkrQK4885wZUF
+         FizA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774619654; x=1775224454;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FsiRzlu0kDThiDmUQXOxPDfKN3XDauB2BbTLDlcDoZY=;
-        b=MCpFURO2tCMM6eUfNsUWmyq/pg/fVzw+WjkRwtuWU4r9nsuUuiK2O/Kf7lHqJGw3cp
-         0Jo5bsRtksqsTBgx7Hth7gLzud/+2zkr0Zu8bpcRE5Q95dZEvDHlKAXDRemuFyoO1fVm
-         XuLGyn+GU7I8acKaALtARC0UpsMQmJoUZuPpnA5aGubV+dcj6LEYnXk2WH3BdCdPTCcx
-         dId5sq+rWdwGp8otrO3jp7fBrBaRFObmbTa5v/qmS+fNj2Q2IMj3qW4oLSVK2myVIGck
-         EiHLKQss6mmVfiT+Y2nSqEFxDFejrWuj0x/ANlvWWr6TP4h7BGFqM6TfOm3qVerX0Ehs
-         UQNA==
-X-Forwarded-Encrypted: i=1; AJvYcCWk9gFcHYrfS9u3xIq5yWlr7C1/UH3pps4wKtT3ma5bw5SK18wI2GxUU1XhhN6mxGDSoFQLHDNSC+U=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy49KXZu40blPB1YWFfviSelvzFi0S5daUngiV8ZCM5KirDB+on
-	xHZha8RFJkIHzc2CDomJ85PBYW7bs6nS3DnAgFiVWTQkXxmtKdemeTi+vsAGKnDoodY=
-X-Gm-Gg: ATEYQzyu7p6mT4SVNk2wN2MSQEp7lNax50mvjyVJE2HF8NOzNTV3x05DCjLsUUH8xJB
-	sXR0aDSq2066p8FPJBBC8cYfwvncFl6aLfnzy2Io0AXKXO23zMUaV338tnufyxVvIEuhIgMlcu+
-	4sajmGdW3fBftgCZJ/Qe4j/WG4VObR6Qy8knPcbJ9sGLnEOQXzeltSylG4W/dj+kkAkUnUz6Zfo
-	pIsSvXciStqKq5Ji95tYqbK5kZn2X86QyoMBNohtl56P2oVd+eIGRiaMDmuABz17BWDJe/HWuAG
-	BFFW9B8eK6VHFhk/Smu2wBZPbeOWxHpoLJstDUa5Ct2g4Ja/uOJbNBU1YMPb6R5QuF0geskR/5O
-	SpNpXmLJ5VaOJhcKhLVlGDRBJRHaPKUe+d/EQcQ16gVrZZFqp7OOF6pmXalALdDUrQhAeKqQx5I
-	bbk7QIBpPwOlj2yf7vrkyUmILrrRpxujJgqrypt1EhFOBcbMMASTGHtLG2KsSDLQ4pSv69DThBl
-	A==
-X-Received: by 2002:a05:6830:4392:b0:7d7:f617:3573 with SMTP id 46e09a7af769-7d9fadfd5a3mr1377794a34.10.1774619654222;
-        Fri, 27 Mar 2026 06:54:14 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:54a7:4cbc:7d2e:3b99? ([2600:8803:e7e4:500:54a7:4cbc:7d2e:3b99])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d9e724e977sm4787166a34.22.2026.03.27.06.54.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Mar 2026 06:54:13 -0700 (PDT)
-Message-ID: <3558dc31-e998-4a50-9732-0ae751b4fd7a@baylibre.com>
-Date: Fri, 27 Mar 2026 08:54:11 -0500
+        d=1e100.net; s=20251104; t=1774624632; x=1775229432;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gUuubS1+3njuAPGTqHH6+3IW1O4jcFu6Ae6+Wh76UDs=;
+        b=ERx4lBqL44fOhMerid6vzC7U5aP71NY6k3vsRHxGAZ65YnL1QBi7/sKcNlcIxgeS9C
+         jiQsKqnjoQMxRjduY4p0PQzU9IrCbxDHPP4Vi1oEEV2E2okfCtmeJ4GewOXps2GQoXTw
+         m2F+R55xYcNMWaUP10rnu4EaBb7I7NPI8XWkBCJqKxt6OcULzaC2n6LMHlrN6JlJQKxh
+         C/Eqx6EHqAbs6DOXrgcblHU7htj59zvHI7edpL07FiELSPVl6cVnTgKJ2xgY/KB0MVxu
+         EToZuapH1y8teg69Mm/LPLOgLAAuuyvdRlLZoB6eM4uedbFTNB6gSxifRkYomWfoBkLE
+         vg1g==
+X-Forwarded-Encrypted: i=1; AJvYcCXeU24bI/ReJmFxPdLoRQGD32YfqMtoNgBcU9HHrvgTfKPO7msKJRJH01c/UDFJLdL6SR64g2jyvCM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy1t255b9D7JQiKNgwW4IMBJRLAAMZRMsf6+mux8WWGHQ11N7jo
+	zVT59zNkar/M7OXRuX54XMmIggEGZpRFjGD4MzauFC4SHlQfTORGF+WZ
+X-Gm-Gg: ATEYQzxroPT9F4x+EhX1A7BZ2xEoI0V6y8RcS0OwRrBHnm3PgYKBhC2bBp/8zcEGdwd
+	R9SEdN8WDS5qmGNe7kpCM2OtsdLoFfrhmSz251HDUYiCL89TkccledC5fH2zp95vulHzMQOdslr
+	s1rfM9LICsCAyGx3ApRzW/fRl6eHmYR66wGUvzlCf/JIPahsBpRqhwLHe0RjlbX74srqdp3WuzW
+	3CAmTuEfMNY6OAAZ9GJ9wCSOFdsc52VjWoDPpD1fXtjS1T68ITF/bkRNXkppakmEsCTLCTpYMLK
+	mC1RQx0RUaiYn53CJRd8Jw/zmp4J1ECGAfw4dUr2QE8gf4Gl2IfhBGTMkFQqY+b1kXefyOEHCO1
+	wgeSqNcuDlKZGiZnXlem0y/4GiANw++P+IdvhMfWou+uK9p0gPCgSTirOccrupqj6dqeVYu3HdC
+	KWyVXiWKDQtLiUBTcDJuxwiUySw1fLyA7WjAMwcL0TBcqhgu4JVnXY8pdAEeWK+iV6vfMs2HTpu
+	ci0incNPVN9Ne972wG6nHOG4mTJU4738bhDym9gD0kQ/ftLTm8=
+X-Received: by 2002:a17:907:944c:b0:b98:45fc:241d with SMTP id a640c23a62f3a-b9b507b0b37mr184899266b.37.1774624631951;
+        Fri, 27 Mar 2026 08:17:11 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b9b20219193sm265402866b.9.2026.03.27.08.17.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Mar 2026 08:17:11 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Fri, 27 Mar 2026 15:17:05 +0000
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, rodrigo.alencar@analog.com, 
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Andrew Morton <akpm@linux-foundation.org>, Steven Rostedt <rostedt@goodmis.org>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v9 2/9] lib: vsprintf: export simple_strntoull() in a
+ safe prototype
+Message-ID: <x34d7jz7be4ommjh6efx5mcq5pbpellykwuyrqayr4ske3lywf@wh46mu3anmcz>
+References: <20260320-adf41513-iio-driver-v9-0-132f0d076374@analog.com>
+ <20260320-adf41513-iio-driver-v9-2-132f0d076374@analog.com>
+ <acZDneLrIPOmU5ci@pathway.suse.cz>
+ <acZLHAT5qJyjKTsp@ashevche-desk.local>
+ <4uijfg4efzaapu3esobez55hfwqzszwagpeb4lxej2ybmifu76@s3c57fmnsme6>
+ <acZaGUV0MwuHNDru@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iio: adc: ti-adc161s626: use DMA-safe memory for
- spi_read()
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
- kernel test robot <lkp@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Matt Ranostay <mranostay@gmail.com>, oe-kbuild-all@lists.linux.dev,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260314-iio-adc-ti-adc161s626-fix-scan-buf-v1-2-56243b11e87b@baylibre.com>
- <202603271734.pnWuSmNr-lkp@intel.com> <acZRgSH2Vvmm1Usg@ashevche-desk.local>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <acZRgSH2Vvmm1Usg@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <acZaGUV0MwuHNDru@ashevche-desk.local>
 
-On 3/27/26 4:44 AM, Andy Shevchenko wrote:
-> On Fri, Mar 27, 2026 at 05:13:16PM +0800, kernel test robot wrote:
->> Hi David,
->>
->> kernel test robot noticed the following build errors:
+On 26/03/27 12:21PM, Andy Shevchenko wrote:
+> On Fri, Mar 27, 2026 at 10:11:56AM +0000, Rodrigo Alencar wrote:
+> > On 26/03/27 11:17AM, Andy Shevchenko wrote:
+> > > On Fri, Mar 27, 2026 at 09:45:17AM +0100, Petr Mladek wrote:
+> > > > On Fri 2026-03-20 16:27:27, Rodrigo Alencar via B4 Relay wrote:
 > 
+> ...
 > 
->> All errors (new ones prefixed by >>):
->>
->>    drivers/iio/adc/ti-adc161s626.c: In function 'ti_adc_read_measurement':
->>>> drivers/iio/adc/ti-adc161s626.c:87:24: error: implicit declaration of function 'get_unaligned_be16' [-Wimplicit-function-declaration]
->>       87 |                 *val = get_unaligned_be16(data->buf);
->>          |                        ^~~~~~~~~~~~~~~~~~
->>>> drivers/iio/adc/ti-adc161s626.c:94:24: error: implicit declaration of function 'get_unaligned_be24' [-Wimplicit-function-declaration]
->>       94 |                 *val = get_unaligned_be24(data->buf);
->>          |                        ^~~~~~~~~~~~~~~~~~
+> > > > > +extern ssize_t __must_check simple_strntoull(const char *startp, const char **endp,
+> > > > > +					     unsigned int base, size_t max_chars,
+> > > > > +					     unsigned long long *res);
+> > > > 
+> > > > Sigh, naming is hard. I personally find it a bit confusing that the
+> > > > name is too similar to the unsafe API.
+> > > > 
+> > > > IMHO, the semantic of the new API is closer to kstrtoull().
+> > > > It just limits the size, so I would call it kstrntoull().
+> > > 
+> > > It's not. kstrto*() quite strict about the input, this one is actually relaxed
+> > > variant, so I wouldn't mix these two groups.
+> > > 
+> > > > Also I would use int as the return parameter, see below.
 > 
-> + linux/unaligned.h should fix this.
+> ...
 > 
+> > > TBH, I am skeptical about this approach. My main objection is max_chars
+> > > parameter. If we want to limit the input strictly to the given number of
+> > > characters, we have to copy the string and then just use kstrto*() in a normal
+> > > way. The whole idea of that parameter is to be able to parse the fractional
+> > > part of the float number as 'iiiii.fffff', where 'i' is for integer part, and
+> > > 'f' for the fractional. Since we have *endp, we may simply check that.
+> > 
+> > A max_chars would not be only useful for that. It can prevent out-of-bounds
+> > reads when the input isn't NUL-terminated (like buffers, file chunks,
+> > network packets, memory-mapped data, ....). Even if there is a NUL later in
+> > memory, a regular strtoull() function may consume characters that are outside
+> > the field one intends to parse.
+> 
+> Okay, but is it the current case or just an attempt to solve the problem that
+> doesn't exist (yet)?
 
-Jonathan caught this already [1], so should be fixed already [2].
+The current case can be seen as such. Copying the string and use regular ksrto*()
+requires an unecessary scan of string from the user side, which is something that
+_parse_integer_limit() already does, mostly because it checks for digits and stops
+at any non-digit character. In the IIO case, we also want control over the consumed
+characters because there are weird terminations like "dB", so having an implementation
+like this ends up with a cleaner sequence of steps. 
 
-[1]: https://lore.kernel.org/linux-iio/20260321204506.4b5df02a@jic23-huawei/
-[2]: https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=fixes-togreg&id=768461517a28d80fe81ea4d5d03a90cd184ea6ad
+> > > In case if we want to parse only, say, 6 digits and input is longer there are
+> > > a few options (in my personal preferences, the first is the better):
+> > > - consider the input invalid
+> > > - parse it as is up to the maximum and then do ceil() or floor() on top of that
+> > > - copy only necessary amount of the (sub)string and parse that.
+> > 
+> > Yes, my use case is the fixed point parsing, but I suppose we are implementing
+> > things here for reuse.
+> 
+> Yes, I'm full for reuse, but I want to have it balanced between complexity,
+> existing use cases and possible reuse in the future.
+
+Not seeing complexity here as in this case I am just exposing something
+that already exists! No need for a completely different implementation.
+I just want to get an agreement on the naming and interface prototype.
+
+Bringing back the discussion again just because I suppose Petr havent even
+seen the v8 of this patch series. If kstrtox.h is the right place for this,
+kstrntoull() sounds like ideal. Specially because simple_strto*() is already
+labeled as unsafe and kstrnto*() != kstrto*().
+
+> > Also, the default behavior of the previous fixed point
+> > parsing in IIO is flooring the result, which leads to the same result as
+> > ignoring further digits.
+> 
+> Correct, I also lean to implying floor() (as you can read below).
+> 
+> > > The problem with precision is that we need to also consider floor() or ceil()
+> > > and I don't think this should be burden of the library as it's individual
+> > > preference of each of the callers (users). At least for the starter, we will
+> > > see if it's only one approach is used, we may incorporate it into the library
+> > > code.
+> > > 
+> > > The easiest way out is to just consider the input invalid if it overflows the
+> > > given type (s32 or s64).
+> > > 
+> > > But we need to have an agreement what will be the representation of the
+> > > fixed-width float numbers in the kernel? Currently IIO uses
+> > > 	struct float // name is crafted for simplicity
+> > > 	{
+> > > 		int integer;
+> > > 		int fraction;
+> > > 	}
+> > 
+> > Yes, but to represent things like that, an assumption is made to the precision that
+> > "fraction" carries.
+> 
+> Correct.
+> 
+> > > This parser wants AFAIU to have at the end of the day something like
+> > > 
+> > > 	struct float
+> > > 	{
+> > > 		s64 integer;
+> > > 		s64 fraction;
+> > > 	}
+> > > 
+> > > but also wants to have the fraction part be limited in some cases to s32
+> > > or so:
+> > > 
+> > > 	struct float
+> > > 	{
+> > > 		s64 integer;
+> > > 		s32 fraction; // precision may be lost if input is longer
+> > > 	}
+> > > 
+> > > Maybe we want to have kstrtof32() and kstrtof64() for these two cases?
+> > > 
+> > > With that we will always consider the fraction part as 32- or 64-bit,
+> > > imply floor() on the fraction for the sake of simplicity and require
+> > > it to be NUL-terminated with possible trailing '\n'.
+> > 
+> > I think this is a good idea, but calling it float or fixed point itself
+> > is a bit confusing as float often refers to the IEEE 754 standard and
+> > fixed point types is often expressed in Q-format.
+> 
+> Yeah... I am lack of better naming.
+
+decimals is the name, but they are often represented as:
+
+	DECIMAL = INT * 10^X + FRAC
+
+in a single 64-bit number, which would be fine for my end use case.
+However IIO decimal fixed point parsing is out there for quite some time a
+lot of drivers use that. The interface often relies on breaking parsed values
+into an integer array (for standard attributes int val and int val2 are expected).
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
