@@ -1,130 +1,224 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC6DE3D5666
-	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 08:31:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94495391E6C
+	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 08:45:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774600286; cv=none; b=m9U1WhQ53pz6cPdK606uYoDFzRnuV67FSbSdML6ToLRxcqsd7+qRiyu4BG58uBcKA/ZVPFP1SKrVnq0wjVCgZGVTMoLL2BLzloRdFtlZegQ0fAbkiESXzDljNYFhPMnOB7wTdeXWWzzOw9LNbERpZOEUW120R/06FxW3NLHyKFE=
+	t=1774601125; cv=none; b=XqEofDUFFBJyRGI66twiuXyPIG5/JiaY3WZ1olvSwdctbiK52R4RbkSnhrl+azzvzTXQ6cSi41enxsEBPcLLoYsggzUccao3594zVGmde6QWDgZ/a78toSPVoyE4zk/WoJn4xkFr1xrMuQyF6blnZFufcDyIA1ET25mCvCZNsoE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774600286; c=relaxed/simple;
-	bh=rEvXfRjXGnFiPFkzSq7G2X0rafT0YoJFCHEzbQPw7Zw=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=m8eQRGDZkoxiTLfFbwCP4Q+jhYRtk2ZEJJxt6cem1zo+QWhih9OrwjdA4/OE4LYL+tbeLG0B36j/FINGknh7cmA8aq+96FsKFysQQkAKtfNQjWaoujFY/PKDWdcDlmsa8s7tFLFQQBar6sSeE2jylF0T0hGVnk09bLFEVGVbzas=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=fhZfLO80; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1774601125; c=relaxed/simple;
+	bh=VT5vONTAqXfveP+7n1Y8mynBHHypWw9Psl6PRU3IHMU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J1btaDHVoubRAQxIyQR2s5jmuR0SH5hrdNZawNXcF43jifZHEIEBZwxTttxHhDvAKnEKffajO79KmWQvQNqUXWJMcu/IyrJqLgLOIXhshpMZK7kED/WZnMWSlrdBjpDdJvtLT1lQRBDX7UbIVt1N+3KKkoXrvhgkrirBYpoR2ks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=btA7hp/m; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fhZfLO80"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-439b7c2788dso1073819f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 01:31:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="btA7hp/m"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-486ff201041so16290185e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 01:45:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1774600283; x=1775205083; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:date:message-id:subject
-         :references:in-reply-to:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HQ1yZdSv4qzrzrFbTamOK/pWWsZOMgXzJj/IX5g2c2E=;
-        b=fhZfLO80KOdH/xaQq+4gchwLnEZwAM81BRCBD+Hzxixf9rEKIv0MmeFkv5oSXCQx+p
-         Rodx+82lHLCDe5WxjO4Yj/OFvFXm9SlZPt0zhx7mKGt8uXpVb/9DLerSPTIcO6jiJmy/
-         emu2ziX8fBIlZMlchwbJbDyud9K3t47MDde+vQnKMNy4LvjRHw2X97GD1Ks0Imha0m+H
-         aw6v95+9mtbV+0rtldKAm4W7ovnzLj0R6ovqqUcxaTX9fjMTx11YsRsvSMU9Kmta/qpp
-         XpKn42VUtsi49IJzQboeT1qEjUr5al155ngv1uGmRjmqA51SyG4/REkAp3vD8Dx9NGtN
-         j0Iw==
+        d=suse.com; s=google; t=1774601121; x=1775205921; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zirj6VF39WLLrUARx3OP13uKy+Totnoyb4r1iN1GWX0=;
+        b=btA7hp/mENuZh3BaxfL54LVKy5O9j5p2O6idUVLXQRBzPEhykrhYdDaCo0jf8uleXb
+         9cQBygFJQ/WyaeJWxtGqQhdihrOhJcPCk8LCEAND+OlXr23p6FF56oxQ7EHBu+6uXdcS
+         cWNLND+L8MD/LyhjTPqaLM9DfAEIWmnLlThgzfm6Pyrk3uTkeUUP1MkApG+GGyyZM/Ky
+         hSXFfKFFbuzdSllbrMJQdzNzpQ+5fxFKFY0pAcqPSfIw5EVQU/oGq7RddHyzuS1KtZp6
+         FiUCa7VGMbIuAhbeR1jX9GXywUWytvCiud1tQJer2FC5e0cITX/64NWPQbh0A3dMaWHn
+         rdHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774600283; x=1775205083;
-        h=content-transfer-encoding:mime-version:date:message-id:subject
-         :references:in-reply-to:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=HQ1yZdSv4qzrzrFbTamOK/pWWsZOMgXzJj/IX5g2c2E=;
-        b=JeGI4auC1fUmnbAUITY7J8UR8U7lU+x5UkMXBvalRXPXKARastQ4Y2m4fMLEb3ZXAC
-         RYBtSD/Rl46OmynqSglmGTRzc/ziLxhJq7Md9omEzrcPMJgGKMUVAyVXxTCAAytlMznT
-         YNPZP4yvKaKxaeGaQR6GIXHzABnXBpFmGeY5C3iBJpkMvXs3L0c8WUAp/gTlHMXrayn6
-         iua6/qFVkGlOfYCKHTl3vLh1tx/VYrGS4DtoQlL55UoXQ17dMW4AiJ8CAJFsaC/MR1Fe
-         0zAT3KNqXSXa/BXj4AfvkIuAJbAiFm2KHzngc2CNelnxw7aYwJUXNLYI2HG+365NV6tX
-         VGLQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVJnIw99miLzRoy5HULwTQox7P6Rn64YW/3SNKju8a4lQqWV4AqQrzGBUYThWkLQYMcHbAQ3URDiVU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YworKBPznBe4oJFgH2DSCbaKuEfbbQjM3nWBvXAlDRn4aZ6tTEt
-	Hff4OUFsjhdPfD4J1JulwIWcgljYUx/LCbK28lKHubh6S4tRJ3LfFV2a3bQ97BP+Sh/d7eJQoWJ
-	LD543
-X-Gm-Gg: ATEYQzwZI0qaCTl74phIZ4ehAb4QdBjOQB2ykLF0B6PtEo5VvkUBVgUs9u2ul95MzWD
-	HupiphFXgtIGivjwMDHJ5FB0nJN20KGoteKLpHl8ltVXLZIQK+VzKd2vIyuK886h8Xi3FIXt9Q2
-	/Xu9aOC/uGXOUSqYWpeFX46AGBrwi8RrryH1RO+/IGi4xkh+uq3CAiFxpYhlzqEbNPIqbyEFhmO
-	vD2Qf5n+1B8H1GuLaGG6UFczpL/dGSjVKxndccOtZ6vIjAmiEW8A66qkZ4B2P//p8whVC4i1veq
-	OyzF4PrcyRtCNE9qdtMbPAiAVa6add+1fNsNicztBDMAlkXwTtkyF1TeBkQXgLYeiVA7kVTRyKx
-	0U4Me2StP1BE18OWLz7SPdbAEyQAHfquIDhf+/IHDxvkbpMVN4oDt0p3JYFicSWY+TpfDGqzRiQ
-	yb6J2kqT8GqlylE9vyr8i5SCZDA7+BX55LwNct42MwMUyS
-X-Received: by 2002:a05:6000:2505:b0:439:caf7:a5e5 with SMTP id ffacd0b85a97d-43b9ea46754mr2454666f8f.31.1774600282992;
-        Fri, 27 Mar 2026 01:31:22 -0700 (PDT)
-Received: from arrakeen.starnux.net ([2a01:e0a:106d:1080:8261:5fff:fe11:bdda])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b9179b212sm14490849f8f.0.2026.03.27.01.31.22
+        d=1e100.net; s=20251104; t=1774601121; x=1775205921;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zirj6VF39WLLrUARx3OP13uKy+Totnoyb4r1iN1GWX0=;
+        b=HkwuSv+ySaTPNvs+UyUpCkD8RtGu4idxI40yEA++Xn4rs6TYJ3dagFKinsNC0Wt8kt
+         UqgIjMAv6KjM213xLWPTX3B0WboHlTXCVtUehLFR3Xk/G20UWTN4ler+xocHU5g/oIPP
+         VfqmFYo4H4sEss2eLCKyxsdElYOrWF/r4mj6Ciw//MI2sakvTwPoDMWUdXXrH6Y5/Y7b
+         tsv6y56wlmsPcFDi/SXkJ856yPUgUSn+kWPgfw6eMsG3+0/2U6VV/t9Cu4F7FJQ/k4Zx
+         339j7Ffd/Gaxw007MwmHBE/y1vbMvQJAVCmjDuClbXRuWXGKapNtX8tpS9VVY5amKpdw
+         jKQA==
+X-Forwarded-Encrypted: i=1; AJvYcCUW4asvRUdAzfS3Lz+Ff01MSA4+JdwTyenjN4hs1oVytNXkPQ0gG64uT7S3BUNW0dpspysaxhhSvSk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxgErmJ+MS21DFhZYmC7/e4ePrKKcXWdF5AXJ7olaV+f3JW96T1
+	88OXOt86iq3ELSg5ln6HbHa8cs3qXQt4N2a51m0T9e5Q17v5bz2kac4pUjHWINi7uQE=
+X-Gm-Gg: ATEYQzzSuD1MUqmlIMCW8VaJqGn1ok6p+IZosO/uvdu0rPYAyVgD8r1BQjb5H1dBcFL
+	fa9Fb/S6ecDbf73P+GvHJEemEFZyumaxBHgeGvcsKGAFWHLW4t6c57UTUNzpYXEl/d5SSPGvxGz
+	SRUGS4vqdv3SKXcE6+9fUErfQ0HA7yJWNUGiW6A1ftIx2+6J1Xu71e7ozjzvagbLvqjo4qBwr0S
+	edf6ZqAhUjnCtQTqxG8KHG8G+9WhkG6aojRjegUsejOKp7pc6bpUivNHtHfgqNwBjxMptuwz9st
+	7yJSWwzwf4SQv/tMtvm2sCZpbqxc4OynEg6y3UC1Q/IPBa88b5QC+5ewZvp8VXEgYzHymK8TbK4
+	bqOIxG6HZBocJfKszLSwxlHf89uM6dG2VVM8qYe3dNQpfPRIHxJCah21k0y5l4lWKxDgrui1Ngs
+	vTKXBtrLbtNLPMG+RFszVremDVdA==
+X-Received: by 2002:a05:600c:4f53:b0:485:3692:e8f7 with SMTP id 5b1f17b1804b1-48727ede47amr23215565e9.25.1774601120896;
+        Fri, 27 Mar 2026 01:45:20 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4872717c3dcsm11415075e9.28.2026.03.27.01.45.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2026 01:31:22 -0700 (PDT)
-From: Neil Armstrong <neil.armstrong@linaro.org>
-To: khilman@baylibre.com, martin.blumenstingl@googlemail.com, 
- jbrunet@baylibre.com, jic23@kernel.org, dlechner@baylibre.com, 
- andy@kernel.org, Nick Xie <nick@khadas.com>
-Cc: krzk+dt@kernel.org, robh@kernel.org, conor+dt@kernel.org, 
- linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org, 
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-In-Reply-To: <20260325070618.81955-1-nick@khadas.com>
-References: <20260325070618.81955-1-nick@khadas.com>
-Subject: Re: (subset) [PATCH v3 0/4] iio: adc: meson-saradc: add support
- for Meson S4
-Message-Id: <177460028211.2323693.5107431910130043283.b4-ty@linaro.org>
-Date: Fri, 27 Mar 2026 09:31:22 +0100
+        Fri, 27 Mar 2026 01:45:20 -0700 (PDT)
+Date: Fri, 27 Mar 2026 09:45:17 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: rodrigo.alencar@analog.com
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v9 2/9] lib: vsprintf: export simple_strntoull() in a
+ safe prototype
+Message-ID: <acZDneLrIPOmU5ci@pathway.suse.cz>
+References: <20260320-adf41513-iio-driver-v9-0-132f0d076374@analog.com>
+ <20260320-adf41513-iio-driver-v9-2-132f0d076374@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.14.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260320-adf41513-iio-driver-v9-2-132f0d076374@analog.com>
 
-Hi,
-
-On Wed, 25 Mar 2026 15:06:14 +0800, Nick Xie wrote:
-> This series adds support for the SARADC IP block found in the Amlogic
-> Meson S4 (S905Y4) SoC and enables it for the Khadas VIM1S board to
-> support the onboard ADC 'Function' key.
+On Fri 2026-03-20 16:27:27, Rodrigo Alencar via B4 Relay wrote:
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> There are no known hardware differences between the SARADC on the S4
-> and the previous G12A generation. The S4 bindings utilize a fallback
-> to G12A, but a dedicated driver match entry is included to ensure the
-> correct part name is exposed to the userspace ABI.
+> Expose simple_strntoull(), by addressing its FIXME, i.e. its prototype is
+> slightly changed so that -ERANGE or -EINVAL can be evaluated by the user.
+> Flow of the function is not changed and error value is returned in the
+> end. Unsafe internal wrapper is created to reduce amount of changes.
 > 
-> [...]
+> --- a/include/linux/kstrtox.h
+> +++ b/include/linux/kstrtox.h
+> @@ -148,4 +148,8 @@ extern long simple_strtol(const char *,char **,unsigned int);
+>  extern unsigned long long simple_strtoull(const char *,char **,unsigned int);
+>  extern long long simple_strtoll(const char *,char **,unsigned int);
+>  
+> +extern ssize_t __must_check simple_strntoull(const char *startp, const char **endp,
+> +					     unsigned int base, size_t max_chars,
+> +					     unsigned long long *res);
 
-Thanks, Applied to https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git (v7.1/arm64-dt)
+Sigh, naming is hard. I personally find it a bit confusing that the
+name is too similar to the unsafe API.
 
-[3/4] arm64: dts: amlogic: meson-s4: add internal SARADC controller
-      https://git.kernel.org/amlogic/c/3b095e9b3674da0666aea3021167ca44097ed7fa
-[4/4] arm64: dts: amlogic: meson-s4-s905y4-khadas-vim1s: add Function key support
-      https://git.kernel.org/amlogic/c/97c4d4b7de6ef264fbd45300a168c2a0874d6c75
+IMHO, the semantic of the new API is closer to kstrtoull().
+It just limits the size, so I would call it kstrntoull().
 
-These changes has been applied on the intermediate git tree [1].
+Also I would use int as the return parameter, see below.
 
-The v7.1/arm64-dt branch will then be sent via a formal Pull Request to the Linux SoC maintainers
-for inclusion in their intermediate git branches in order to be sent to Linus during
-the next merge window, or sooner if it's a set of fixes.
 
-In the cases of fixes, those will be merged in the current release candidate
-kernel and as soon they appear on the Linux master branch they will be
-backported to the previous Stable and Long-Stable kernels [2].
+>  #endif	/* _LINUX_KSTRTOX_H */
+> diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+> index 800b8ac49f53..6fb880f4013b 100644
+> --- a/lib/vsprintf.c
+> +++ b/lib/vsprintf.c
+> @@ -75,25 +75,66 @@ enum hash_pointers_policy {
+>  };
+>  static enum hash_pointers_policy hash_pointers_mode __initdata;
+>  
+> +/**
+> + * simple_strntoull - convert a string to an unsigned long long with a character limit
+> + *
+> + * @startp: The start of the string
+> + * @endp: A pointer to the end of the parsed string will be placed here
 
-The intermediate git branches are merged daily in the linux-next tree [3],
-people are encouraged testing these pre-release kernels and report issues on the
-relevant mailing-lists.
+I would write:
 
-If problems are discovered on those changes, please submit a signed-off-by revert
-patch followed by a corrective changeset.
+  * @endp: A pointer to the end of the parsed string (output)
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-[3] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+> + * @base: The number base to use
+> + * @max_chars: The maximum number of characters to parse
+> + * @res: Where to write the result of the conversion on success
 
--- 
-Neil
+Nit: I would omit "on success" *res value is set to 0 on failure.
+     Instead, I would write:
 
+  * @res: Result of the conversion (output)
+
+> + *
+> + * Returns amount of processed characters on success, -ERANGE on overflow and
+> + * -EINVAL on parsing error.
+> + */
+>  noinline
+> -static unsigned long long simple_strntoull(const char *startp, char **endp, unsigned int base, size_t max_chars)
+> +ssize_t simple_strntoull(const char *startp, const char **endp,
+> +			 unsigned int base, size_t max_chars,
+> +			 unsigned long long *res)
+
+It might be enoungh to use "int" for the return value. The number
+of proceed characters is pretty limited by definition. And it
+would be similar to vsnprintf(), kstrtoull(), ...
+
+I guess that you wanted to match the "size_t max_chars" parameter.
+It makes some sense as well.
+
+Please, use "int" especially if we agreed to call the new API
+kstrntoull().
+
+>  {
+>  	const char *cp;
+> -	unsigned long long result = 0ULL;
+>  	size_t prefix_chars;
+>  	unsigned int rv;
+> +	ssize_t ret;
+>  
+>  	cp = _parse_integer_fixup_radix(startp, &base);
+>  	prefix_chars = cp - startp;
+>  	if (prefix_chars < max_chars) {
+> -		rv = _parse_integer_limit(cp, base, &result, max_chars - prefix_chars);
+> -		/* FIXME */
+> +		rv = _parse_integer_limit(cp, base, res, max_chars - prefix_chars);
+> +		if (rv & KSTRTOX_OVERFLOW)
+> +			ret = -ERANGE;
+> +		else if (rv == 0)
+> +			ret = -EINVAL;
+> +		else
+> +			ret = rv + prefix_chars;
+>  		cp += (rv & ~KSTRTOX_OVERFLOW);
+>  	} else {
+>  		/* Field too short for prefix + digit, skip over without converting */
+>  		cp = startp + max_chars;
+> +		ret = -EINVAL;
+> +		*res = 0ULL;
+>  	}
+>  
+> +	if (endp)
+> +		*endp = cp;
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(simple_strntoull);
+> +
+> +/* unsafe_strntoull ignores simple_strntoull() return value and endp const qualifier */
+> +inline
+> +static unsigned long long unsafe_strntoull(const char *startp, char **endp,
+> +					   unsigned int base, size_t max_chars)
+> +{
+> +	unsigned long long result;
+> +	const char *cp;
+> +
+> +#pragma GCC diagnostic push
+> +#pragma GCC diagnostic ignored "-Wunused-result"
+> +	simple_strntoull(startp, &cp, base, max_chars, &result);
+> +#pragma GCC diagnostic pop
+> +
+>  	if (endp)
+>  		*endp = (char *)cp;
+
+IMHO, we do not need local "cp". We could simply pass the endp
+to the new simple_strntoull. Or do I miss anything?
+
+Best Regards,
+Petr
