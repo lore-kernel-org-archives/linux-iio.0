@@ -1,209 +1,124 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5449D2DC344;
-	Fri, 27 Mar 2026 03:42:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 943AD223DD6
+	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 05:55:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774582963; cv=none; b=JALmim6UhrLm/llhBlaysgRBs2XC2ipArVrlgWEXG1ZrmOAKL2BiQxvuLiQh8xyGqFHuTYSW8UvrcugFfwa6oNyNzDwL4fyjiBQ7q/0X/vClyaD6Tbhjk53RueWFVp/zHgUoZVZHxOni3SY4a5yiOPNx4POosrJAl6JXgnE1Dc0=
+	t=1774590924; cv=none; b=lq5nMpfvOYRhHpJzg1vBSYsHB5vVLpAN9BAd49jQGTAtIy/rAIiKsi+dMcFfs68VJWRFeOMSpqhusbDXHuSg/sXEnCeNUB8FIpQIKNctGOBlPBZNE8T90sfps7M3M++oHmPdIa3H7+qBOZmebtCCKbO6W7ZUAgK1MMzbR0k2HLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774582963; c=relaxed/simple;
-	bh=haeH7OQsFQbwTmSClNSgsvTamdwjIV7GzQEI1SvHh80=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RPVwW4EQoBQSwmKkuTMI3Iq/7OnwW2nbjuSrQllZfyiyckcuNHqlk+GOZ4qHYY6je+7HuhQHxBl/DoRxjhv7G2Ys2rZHifY6S6ehr1s3YqU5S7dNaySnpSoMoxC2G6Mi3kPG5jV/zUD0IU5RjZp4aX7kRmrzKfko8Ppmfth7d6I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=LiaoZgYE; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1774590924; c=relaxed/simple;
+	bh=z06M0oYKGFXAJv6OJOJc9oOo7Oc92RStX68+8voyE+Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XYiozHvWS1na7izw0ldLrbKEJJaHLFXge6dz82dFdqD/OFgFwPWzqmgDvPF6dNywsSZWWqRoDb133XDD7LG+yDNHa7KUpVll4rW1L4L5vhRDaUDxd2qDq/oAh0GZTbCvJ3/xSEkqSY0tfaf7EbHMBMpbsPej+sJ6zeWbJZFsicY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sk02M8C5; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="LiaoZgYE"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62QKaQTo970507;
-	Thu, 26 Mar 2026 23:42:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=CgVgoDP8oXjYhE1nsUtrb/ui0uf
-	ozQI8QA6hBjpHbSY=; b=LiaoZgYEwryeX5vtTAIP+CZd+XQvoGAGLrbbhqAnY67
-	pBzeD3jhyK62Je2M3ranxpe3m2cXNjd6hlz4acjXlTaz/xB8eBG/5TIOxQE8HcIN
-	zUkh7WD34JdSuItwo20i7cPFUXvLg+Hl/Tmfs99zlUgki1AhdPyExGycy5moUFZ8
-	DOAu3OFcDxOyh6Hi5bG76eMJTgw3PmMQaTO2e2iRTP2z2CqUUARmZYD1xkvP/VdB
-	P71CrYV8kb9Dd0+NNwDuOnRoqBxbfgxHuC2kxHnSRsBMMgH4qXlVTs594rfDtu80
-	ISxHZAQz3H23xjRI/J6Eh/dnjEY3y2NGDMnzJKXtDHg==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4d45h03k7n-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 26 Mar 2026 23:42:19 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62R3gIc9021334
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 26 Mar 2026 23:42:18 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 26 Mar 2026 23:42:18 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 26 Mar 2026 23:42:18 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 26 Mar 2026 23:42:18 -0400
-Received: from CJONES7-T01.ad.analog.com (CJONES7-T01.ad.analog.com [10.116.223.230])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62R3g3fT012413;
-	Thu, 26 Mar 2026 23:42:06 -0400
-From: Carlos Jones Jr <carlosjr.jones@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        David Lechner
-	<dlechner@baylibre.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Liam Beguin <liambeguin@gmail.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?=
-	<nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Jorge Marques
-	<jorge.marques@analog.com>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] iio: adc: ltc2309: Add read delay support for LTC2305
-Date: Fri, 27 Mar 2026 11:41:59 +0800
-Message-ID: <20260327034159.15545-1-carlosjr.jones@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sk02M8C5"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-82985f42664so1061761b3a.0
+        for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 22:55:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774590923; x=1775195723; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ldF8NbzwArQflUW9AH/3x6alOg8hN4ABWwbFXUDr7ZM=;
+        b=sk02M8C52NAZSFqQNqLOZNN2FuQeB4rl3EYJP2HI7a7+46T2kPZxBVDifLicdmcpOz
+         zBWgvNLM84p/XD9e2cuGoEwcRUJQHIHO1et4uHHJ0F9+KHkTmhNYJkrrYhJCFWRAOwrZ
+         MQ0HA5L03BMDC3pdRGT7gu2p6EHcobJzEyW/poyTTOT1TYgWeTcfaGspBGmPH1ZbICcu
+         GWOTAYZi+f9tkSLRPQpdEuoy9cjXskfjmKy+d9XbpchDnkWxyXb17fZb6i0XslMlsuxU
+         5RktRp8II1ykXaMWoGEgV+HmxY3j0goZocSI9B3PmJQRPGfMbkTaHcfDkPYUP8sgGagQ
+         5f6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774590923; x=1775195723;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ldF8NbzwArQflUW9AH/3x6alOg8hN4ABWwbFXUDr7ZM=;
+        b=Sv9Iawjo1SG1M6J9Y3OpmGkAzZ///GziI1Qqq7Ua6eBN1WKwwlsXzdkZADgSP1rH2Z
+         4oIcmPiYpebfU0unCBLXjVTSQ3ntmDSqe1HtRvGtTYB1zF3eh1DHBLcVeLK2ub4A+A/j
+         OfXKGCYda1h0dFSI3Dj428bClIvXssF4lJCSAYsMIqOEtXKoLa4KpNvVp2QjKC/C8t08
+         XcqlEqV9YOa+ri3+vVON5ONxAVSz006F5Tz8cu2BAfjTgsZGTtaACu822xoL1ysL5SMt
+         jUD7VvL4Gc03h6HUDAfODw+2HdymPzGIdrhoyW7ZZaaMZv2uHCoVZhefOFTF29CgJxUI
+         +11w==
+X-Forwarded-Encrypted: i=1; AJvYcCUFmLZQ9EfkfoyewPCA8hHGHF5TdP71piRevZ4WlaaXCkcRY9XlRevjQEXKGh0xr+JipOA8a7kS+Vs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzEdwLe27LZ+ZyeLjaCx0vtFkqiLvW/PpzxveiL2KWMm6RbQ5Cj
+	5Yals82aZCqTuAy4hiuMiOLqocyEsUYQ4+y9E0C+aIX5CsiA63bthFU=
+X-Gm-Gg: ATEYQzxEFuF/slDtgMuLydBttd59rVwV6kHHOP9+ueqRveGAuTYYONwrlJB51E0ouD5
+	s/Ia03wgIaAlL+k14RNkl6BefkZTrtkuKQ2wmZcky29LsEiSvUZItR4fXc/oWPJw5lZ9NuUEdhC
+	cryv9WDj9rejaGuSJNYhXBHa8ecWqqDVcdwAaSEodWff1BWD7XYLom/q2Njyr6YaUf8nLmdULk6
+	qtkZFlGx+X+gz5S+9KNdY0gY4l+gAheQQPaxK4KgSJWwVWh+hK6h+QfUPzBR/PiIHCaqHKpS4Js
+	NUuO7QsztRUmqS3XvxzhUeyvN07MuELM6BTCk5Q0zQaLKxZmXFcZODeuk3m6SEnVf4kYPayO2wU
+	XI7ppudtokaj6BW3qPVWijORIBu/Vgp+4PRsSwqx9mU9xjdApACObhWn6ibTL5agm5EXnbvChRb
+	SrxUJCrWYQZ2SdRJMU39jGvSIZ6PoaC8x0YMQ7AbMjrNCybH5FhbKSM3Zqih1FhI4cICfyx8zHe
+	d/JmjU6KJLfGuE54+FbI+ocyOFg5tZfO5Gox3fZ
+X-Received: by 2002:a05:6a00:1a90:b0:821:8ebc:2899 with SMTP id d2e1a72fcca58-82c95b01eccmr1171550b3a.7.1774590922804;
+        Thu, 26 Mar 2026 22:55:22 -0700 (PDT)
+Received: from localhost (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com. [103.229.18.19])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82c7d3f95basm4724829b3a.59.2026.03.26.22.55.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2026 22:55:22 -0700 (PDT)
+Date: Fri, 27 Mar 2026 11:25:33 +0530
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: anshulusr@gmail.com, dlechner@baylibre.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dac: mcp4821: add configurable gain support
+Message-ID: <acYb1XOmw1yoyu_4@nik>
+References: <20260321180707.73a7ad60@jic23-huawei>
+ <20260326071242.9218-1-nikhilgtr@gmail.com>
+ <20260326203824.59e8e950@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: egsn4_AkwfoLjM3-FKyp_q7sgj5-Mz_r
-X-Authority-Analysis: v=2.4 cv=csCWUl4i c=1 sm=1 tr=0 ts=69c5fc9b cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8
- a=pGLkceISAAAA:8 a=-BrAIW7jJhjszspebQ0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: egsn4_AkwfoLjM3-FKyp_q7sgj5-Mz_r
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzI3MDAyNSBTYWx0ZWRfX43LqX5CuLKAR
- Ep39Ivp+q9GUXZMk8rqdNDpEM+YE6tUjnOlzBX3XNhN6khGwX5xnbHBCWb7yD0ApVLuR6WT0Sw2
- v1P7/P/rPHuwj4grAIleJ0EbYobPkCqeFVNVOBgSDjYVqyO3Tc4044PAz3xGfDE4ag9JBH46dp9
- zjzeqJtXZyWKlZ872Lwqp77CIvxSZrpOMhUEHBE+X07Iz2uxfz1wrezNw17firYqslgQRcfl9Wg
- 2WKSceQFRkNlPetGXImRBwPxw+fhmJ0HASljLA10e0CPX+gbrhaG1hRaKylDJJIDJIApMLJQqRQ
- TmQKKQA6wCDNvzRp5VNKp1q6144QvlGe1hq6giKK3kuCtxSyeEMlb0o2DO4QOybqYRCz3xkLD5a
- 0rHYc7Sfs672d4qVSRYXJtVK2a75cl7tRdBSyIIG/ePgwXwuXYEfWtxcM/IXf9zPalKsWm6VOd2
- 0Z4nQXYPGNt/EQOIBCA==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-26_04,2026-03-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 malwarescore=0 phishscore=0 impostorscore=0 spamscore=0
- lowpriorityscore=0 clxscore=1015 suspectscore=0 priorityscore=1501
- adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
- definitions=main-2603270025
+In-Reply-To: <20260326203824.59e8e950@jic23-huawei>
 
-The LTC2305 requires a minimum 1.6μs delay between the I2C write
-operation (channel selection) and the subsequent read operation to
-allow the chip to process the command and prepare the result. While
-not explicitly documented in the datasheet, this timing requirement
-was identified by the hardware designer as necessary for reliable
-operation.
+On Thu, Mar 26, 2026 at 08:38:24PM +0000, Jonathan Cameron wrote:
+> On Thu, 26 Mar 2026 12:42:42 +0530
+> Nikhil Gautam <nikhilgtr@gmail.com> wrote:
+> 
+> > Add support for configuring the DAC gain using the GA bit.
+> > Expose gain control via IIO_CHAN_INFO_CALIBSCALE.
+> > 
+> > Scale is updated dynamically based on selected gain:
+> > - 1x gain → 2.048V full-scale
+> > - 2x gain → 4.096V full-scale
+> > 
+> > Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+> Just one small thing from me.
+> 
+> >  static int mcp4821_probe(struct spi_device *spi)
+> > @@ -177,12 +235,15 @@ static int mcp4821_probe(struct spi_device *spi)
+> >  	const struct mcp4821_chip_info *info;
+> >  
+> >  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
+> > -	if (indio_dev == NULL)
+> > +	if (!indio_dev)
+> 
+> Not related to rest of the patch. So doesn't belong in here.
+> Also generally not worth the noise of changing these.
 
-This extends the existing LTC2305 support (commit 8625d418d24b
-("iio: adc: ltc2309: add support for ltc2305")) with the missing
-inter-transaction delay.
+Sure will remove this change in v3,
+will avoid these kind of changes in my future patches
+> 
+> >  		return -ENOMEM;
+> >  
+> >  	state = iio_priv(indio_dev);
+> >  	state->spi = spi;
+> >  
+> > +	/* default gain is 2x as GA bit is active low*/
+> > +	state->gain_1x = false;
+> > +
+> >  	info = spi_get_device_match_data(spi);
+> >  	indio_dev->name = info->name;
+> >  	indio_dev->info = &mcp4821_info;
+> 
 
-Add a read_delay_us field to chip_info to support chip-specific timing
-requirements. Use fsleep() to implement the delay, with LTC2305 set to
-2μs (1.6μs requirement rounded up). LTC2309 does not require additional
-delay beyond inherent I2C bus timing.
-
-Also optimize chip_info structure with __counted_by_ptr() annotation
-and field reordering to minimize padding.
-
-Signed-off-by: Carlos Jones Jr <carlosjr.jones@analog.com>
----
-Note: During independent development of LTC2305 support, the hardware
-designer clarified that while the I2C bus timing might inherently provide
-the 1.6μs gap in many cases, it should be explicitly guaranteed in the
-driver to ensure reliable operation across different I2C controller
-implementations and bus speeds.
-
- drivers/iio/adc/ltc2309.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/adc/ltc2309.c b/drivers/iio/adc/ltc2309.c
-index 316256edf150..87b78d0353f1 100644
---- a/drivers/iio/adc/ltc2309.c
-+++ b/drivers/iio/adc/ltc2309.c
-@@ -9,7 +9,9 @@
-  *
-  * Copyright (c) 2023, Liam Beguin <liambeguin@gmail.com>
-  */
-+#include <linux/array_size.h>
- #include <linux/bitfield.h>
-+#include <linux/delay.h>
- #include <linux/i2c.h>
- #include <linux/iio/iio.h>
- #include <linux/kernel.h>
-@@ -34,12 +36,14 @@
-  * @client:	I2C reference
-  * @lock:	Lock to serialize data access
-  * @vref_mv:	Internal voltage reference
-+ * @read_delay_us:	Chip-specific read delay in microseconds
-  */
- struct ltc2309 {
- 	struct device		*dev;
- 	struct i2c_client	*client;
- 	struct mutex		lock; /* serialize data access */
- 	int			vref_mv;
-+	unsigned int		read_delay_us;
- };
- 
- /* Order matches expected channel address, See datasheet Table 1. */
-@@ -117,20 +121,22 @@ static const struct iio_chan_spec ltc2309_channels[] = {
- 
- struct ltc2309_chip_info {
- 	const char *name;
--	const struct iio_chan_spec *channels;
-+	unsigned int read_delay_us;
- 	int num_channels;
-+	const struct iio_chan_spec *channels __counted_by_ptr(num_channels);
- };
- 
- static const struct ltc2309_chip_info ltc2305_chip_info = {
- 	.name = "ltc2305",
--	.channels = ltc2305_channels,
-+	.read_delay_us = 2,
- 	.num_channels = ARRAY_SIZE(ltc2305_channels),
-+	.channels = ltc2305_channels,
- };
- 
- static const struct ltc2309_chip_info ltc2309_chip_info = {
- 	.name = "ltc2309",
--	.channels = ltc2309_channels,
- 	.num_channels = ARRAY_SIZE(ltc2309_channels),
-+	.channels = ltc2309_channels,
- };
- 
- static int ltc2309_read_raw_channel(struct ltc2309 *ltc2309,
-@@ -151,6 +157,9 @@ static int ltc2309_read_raw_channel(struct ltc2309 *ltc2309,
- 		return ret;
- 	}
- 
-+	if (ltc2309->read_delay_us)
-+		fsleep(ltc2309->read_delay_us);
-+
- 	ret = i2c_master_recv(ltc2309->client, (char *)&buf, 2);
- 	if (ret < 0) {
- 		dev_err(ltc2309->dev, "i2c read failed: %pe\n", ERR_PTR(ret));
-@@ -206,6 +215,7 @@ static int ltc2309_probe(struct i2c_client *client)
- 
- 	ltc2309->dev = &indio_dev->dev;
- 	ltc2309->client = client;
-+	ltc2309->read_delay_us = chip_info->read_delay_us;
- 
- 	indio_dev->name = chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
-
-base-commit: 8625d418d24bc0ff463267b26b7cb2e7a612495f
--- 
-2.43.0
-
+Thanks,
+Nikhil
