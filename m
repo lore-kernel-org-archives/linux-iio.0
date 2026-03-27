@@ -1,159 +1,205 @@
-Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from 4.mo560.mail-out.ovh.net (4.mo560.mail-out.ovh.net [87.98.172.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57CFF391835
-	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 12:27:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 805176BB5B
+	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 13:10:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=87.98.172.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774614480; cv=none; b=MtATYaVySkopgLCFfNVZpMuRD1ngHk/CJc95lTgGnQsLCnYjPYQ3yzLDotolNcRdGZe1fs9n70DgLWiRGZFjYtvpPZJGTMb+gvDelDoPmtRJG2i4PRiA+9iGW/i9EvpTvMIglFtqQBSi0aJz9eJEJsBAbu1lyPEmvtt8ypzxg/0=
+	t=1774617027; cv=none; b=Xaan9QwYcX4pof9k6n8YMPfxmOEGGj55UkMS5srUXl9/lUPhmlJ87QrXvDb3Y/IEhBGc1hrWteCCRIVRiF6dSSejGmVntKAhFszwGMWj+HqZesFreufAhKE7hbwjmE1zVJdpOnN21qQMHgDIXGYUjN642YC6Zw5v/+J5RrJ/w+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774614480; c=relaxed/simple;
-	bh=Mj5HHb2stM9v+UnA4mQPvtFEf1IYBNgRKy+7R1fP3m8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=OetIuZy0E8vJsy15Vb9hT4gyMZd4WbtFvCaocpEryHgEMUJkDt2NRN/Gk1szERsJfY2L5ntqRdX58Znhi1fHenfzoAceE/V/ub4gEFYUhaIKllz39r81da59Idf92j3aHPqkssnYscyjCabEkcMSxl4Qtlk4XOGOJGzoy86EPI4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sIfOx4wq; arc=none smtp.client-ip=209.85.215.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1774617027; c=relaxed/simple;
+	bh=p7M46mNGPu1Jb0exir6Z/lbNg6LEcoDA5wj/+IolZTc=;
+	h=From:To:Subject:Message-ID:Date:MIME-Version:Content-Type; b=E5p6TbLDzfV2hOgN+kiv1zK8bd5yQnrQ4kW/GLffhmYFcS+2DCsj/M/lwmJ+yf56wxsuDC+LYW7pXhVVzEivxO1wTY9p3cmfaGm1cf0+fx0xJHKgWKGmhLiE7kUBgXdxuykJaRgwkqvWTvWlRiClesplsSHDd4td9Vz06mfbnCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yug.be; spf=pass smtp.mailfrom=yug.be; dkim=pass (2048-bit key) header.d=yug.be header.i=@yug.be header.b=bI4eIsVp; arc=none smtp.client-ip=87.98.172.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yug.be
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yug.be
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sIfOx4wq"
-Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-c7393536e53so845257a12.2
-        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 05:27:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774614479; x=1775219279; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wdNr9PIc0FbsIhNPrh7d0pILsLtmIoyXKFiWeHVC6ck=;
-        b=sIfOx4wqwoot/xDii7selOKWnMQZuTcgqHesHJLcgktNa8mkOmgxfm9rCZIaePFnhZ
-         Xp94wQYba0st7H9lJlrZNKizmjMDhZNEdc7W4jR496hFq12x7vS02gtM2YfjnEBx0Dck
-         rqVXxhLwnzQ9Z+DVS6p6wl4kt4Ng4kTOj5a0PvQINqT1UvntVOwOwMGBI+Il4sPkGdpe
-         8AR3JJl9tqGY2yksPjFC+i0JNOwQM1+LXn9LfU+yO+Dc98nGrqrSbEDMAGKA/AiTzVPx
-         H9QDbiIgmboR9M99cmevyeZqqhHTxXYhVrPKgRNkGmOl6nbeAcxeH9c/4vpyAPu0gkTd
-         pOjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774614479; x=1775219279;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wdNr9PIc0FbsIhNPrh7d0pILsLtmIoyXKFiWeHVC6ck=;
-        b=Pew7uJU6KNPZgmCu5Hatg/jHFNyVf7wD6dfSTIYslkwHUE68YmGNKfRap3OEiDJ1Lu
-         OMtXb1VuZDuWw9ursAOQeXUlzKo8adlHu3n07TvNpZoCr7cavU7vfkCa6ZV0P1NSRiQQ
-         V9jpUfA0WZmbPaaVq7b/KBJw6Cq9voHB4KeaIjz3MPxAbhIxH0Nu+e5ztZ5yYJnAGlVP
-         PCRs+l4shZH0b4avIfPgit7ttrVq1dlAfYmhQN2m115RydQcZ5UZd/lRAMQUvyHlcHIE
-         sy2WJzUj9ptLk9mLs5gM4TCBeemIgHh7D/ntyTk1oToGdUXejZr1vV+sdAG0EVZx1JU7
-         6MFg==
-X-Forwarded-Encrypted: i=1; AJvYcCWVMbq1LMRyhbpXw2WYUfrQOALNnm+WYzU/6z3UIABt3FBqksTcZlIm7AroGv0Iuy/Xk7KbZNSz9uE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx7Bhl2ocoFkl2qnofRMogHZA9K/HWR7QBV5zYvuTouwj/CaH+O
-	pb0jkaD93KSQ07R1dcYt/Rtx9z2WNTcxL26bgAegx8mTVvfgUzA43X/S
-X-Gm-Gg: ATEYQzyQh4nmxyfp77dGAzeXlXRDGMSaK9rdPnDA1DPv8Z2x/k3n58J8UaESe1kiDXN
-	8xz1lS+oNZ2nGaec51LvAZ9lAlSRNzuMircn8a2vFaGMOsV8u69YDep7teeaPNp4ZL06W3KTivG
-	6QUWi16093Z7PzJHAradl1BLMW8QoAMIBXA611Fe0V0UrM3pcjgOFbBJO2doaQZCem74Ws8w43k
-	rusg3oidqUIUJC2eR3Dj9kircbAxS4YSUbMd8iq8aYqQqieMmeoAc+imW7HiJykcLme7VWwyjnY
-	vaTujqEDYIZe4fcFZLVANSc/o3eUpxtFKaLUxD6V4edesdghBXoC64Q6GtpPGM63FZ0KAzmTqi7
-	Y97l5G2/uC25/oHypqFcz7VEQDrGpeUIpDYnL+jjHXBtDJLVBMk08VdPmreVlNCSXY+Uw0Ucghw
-	z31xFcvlIwJjRor4enHiU5j/BsQJN2LbPV8TIP
-X-Received: by 2002:a05:6a20:7f9e:b0:398:abe1:eaac with SMTP id adf61e73a8af0-39c878493a4mr2683215637.27.1774614478439;
-        Fri, 27 Mar 2026 05:27:58 -0700 (PDT)
-Received: from junjungu-PC.localdomain ([223.167.147.240])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7673931621sm4543477a12.19.2026.03.27.05.27.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2026 05:27:58 -0700 (PDT)
-From: Felix Gu <ustc.gu@gmail.com>
-Date: Fri, 27 Mar 2026 20:27:54 +0800
-Subject: [PATCH v2] iio: light: veml6070: Fix resource leak in probe error
- path
+	dkim=pass (2048-bit key) header.d=yug.be header.i=@yug.be header.b="bI4eIsVp"
+Received: from director5.ghost.mail-out.ovh.net (unknown [10.110.0.7])
+	by mo560.mail-out.ovh.net (Postfix) with ESMTP id 4fj13M5dKVzBGxS
+	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 13:00:47 +0000 (UTC)
+Received: from ghost-submission-7d8d68f679-vhwmj (unknown [10.110.113.226])
+	by director5.ghost.mail-out.ovh.net (Postfix) with ESMTPS id EACC410044E;
+	Fri, 27 Mar 2026 13:00:46 +0000 (UTC)
+Received: from yug.be ([37.59.142.98])
+	by ghost-submission-7d8d68f679-vhwmj with ESMTPSA
+	id Du/VLH5/xmnzmQYArgY44Q
+	(envelope-from <contact@yug.be>); Fri, 27 Mar 2026 13:00:46 +0000
+Authentication-Results:garm.ovh; auth=pass (GARM-98R002b5b99fa7-08e8-46ba-8bf9-d0fa9ee57900,
+                    F4592FDA3A03DEF49499D162696B7889383944B9) smtp.auth=contact@yug.be
+X-OVh-ClientIp:172.214.44.229
+From: yugmerabtene <contact@yug.be>
+To: linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org, jic23@kernel.org, gregkh@linuxfoundation.org
+Subject: [PATCH 0/3] staging: iio: convert sprintf to sysfs_emit
+Message-ID: <9ebdc790-6756-476e-9c65-63f32b8bdab2@yug.be>
+Date: Fri, 27 Mar 2026 13:00:45 +0000
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260327-veml6070-v2-1-10c3c67eb171@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAMl3xmkC/23MSw7CIBSF4a00dywGUHk4ch+mg6Zc2puU0oAhm
- oa9ix07/E9Ovh0yJsIM926HhIUyxbWFPHUwzsM6ISPXGiSXil+kYgXDorjmTFyN1dZwo52Hdt8
- Senof1LNvPVN+xfQ55CJ+6x+kCCbYzWnLpUStvHhMYaDlPMYAfa31C9/RRRagAAAA
-X-Change-ID: 20260326-veml6070-1489798087df
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Andy Shevchenko <andriy.shevchenko@intel.com>, Felix Gu <ustc.gu@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1774614476; l=2236;
- i=ustc.gu@gmail.com; h=from:subject:message-id;
- bh=Mj5HHb2stM9v+UnA4mQPvtFEf1IYBNgRKy+7R1fP3m8=;
- b=tYMZ5IC0B3UteYMjcnzwatvGOUjsyCtnSJ8t+kYeiom9JxgmoN3uwGyhldRJWC2ro7cBa8NcT
- /pJOvUpC645B8UAHNuxOXxnCLfzsJ2sAkKGrA3i0JjtQCE6B1EHHjrn
-X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
- pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
+Content-Type: multipart/mixed; boundary="--_NmP-9f6808e88c99aa09-Part_1"
+x-ovh-tracer-id: 9187061765018648537
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: 40
+X-VR-SPAMCAUSE: dmFkZTEkD4QAGs9f4xkV1yQ3yCc08BuxlG20o9U9vFRTLZbVnMvi9xcZcx+I1Vj19BlKV+0yd1XLXzlmPRSXsItQqNjrxMxFKzlLeu65eajLPz9mp8gtE5bBfkwulu2/tdBIu8mXGS4mGDdWiivKePc6oGmmdrlNKQL0EvlSB1GOW8G/qICuXktrGzCk+zCiEZuKBNqkwHEuHw6o47wGZIQyLLxe3F0fGarteP2aGAd3pLO+BbqjfL23ph2oNW+tbQPASjUw34tnmsbRZs9df5VHVWmg4b45Kqmy1rONbCa0vfkii+a0nmHsZA1YmfO7XO+Ik3fFoFPpbl5OQlJEtcG/T4OjLRsYlskBT+DX9M6DmQ6yTH3gunkhrskFbr2xPoFIpPh4IOEQU7SqCy6S561daK2j7HnH9ICG4Qhgaucihq/BBTpEC1TlgDO+/Jh7BQvwaV20Om1PwYUi8tm8IepcvacLXxW88v4xJ8X9uoCrZr/vV1nFbdPfElXzKLvnfO82HT5ARw0Of+Pjfr0v2nLg3OlgwZLIS+QyDrgAzSOi+Gu8yvMnlyBhrydvk3BX+OIdAm168a47DMmpD6Vk92hTfu76fehVAmr8GdSyeWs3vK7utSlbLV4KvNHhXV5ICg1X9kavPan+x9LAczPos6pSFQNrTmvZxcnbBsQGirQZvsuJYg
+DKIM-Signature: a=rsa-sha256; bh=p7M46mNGPu1Jb0exir6Z/lbNg6LEcoDA5wj/+IolZTc=;
+ c=relaxed/relaxed; d=yug.be; h=From; s=ovhmo4088246-selector1;
+ t=1774616447; v=1;
+ b=bI4eIsVp4QktBZa6V9IK83bh12AKRy45Iy2XvQliI9oSgzxuiaIGB99xAX8ymZm/vIVzhZ5M
+ M7Or7zs9LFkQwtu1aV4vAG0Qzg10MMRAcNYyaflmtCdaPp66MUpdneeWh8MaL0vU/DrbaNUnNwN
+ Oaj4+fywmJpbN+qqFtHe+PSnZqr3oVoDyQltagvJLGeFvjxEf4keQlPAiKEvwP16Yl+gMrTB//K
+ 2JqNH5BDKuNvcyFD3FLgLjF5eFAfL5OCUi/c463TBpkw8IRaQgQO5EoUz7Y15VjwvJ6BIAIbAWu
+ i7G50bddNTwquLWmU1p5yzvPnp/9rS2gSnxeHhYXFfhrg==
 
-The driver calls i2c_new_dummy_device() to create a dummy device,
-then calls i2c_smbus_write_byte(). If i2c_smbus_write_byte() fails and
-returns, the cleanup via devm_add_action_or_reset() was never registered,
-so the dummy device leaks.
+----_NmP-9f6808e88c99aa09-Part_1
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Switch to devm_i2c_new_dummy_device() which registers cleanup atomically
-with device creation, eliminating the error-path window.
+This series converts sprintf() to sysfs_emit() in staging IIO drivers =
+(ad7816, ad9834, ad5933) to follow kernel sysfs API best practices. All =
+changes are non-functional.
+----_NmP-9f6808e88c99aa09-Part_1
+Content-Type: application/octet-stream;
+ name=0001-staging-iio-frequency-ad9834-use-sysfs_emit-in-show-.patch
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename=0001-staging-iio-frequency-ad9834-use-sysfs_emit-in-show-.patch
 
-Fixes: 7501bff87c3e ("iio: light: veml6070: add action for i2c_unregister_device")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Felix Gu <ustc.gu@gmail.com>
----
-Changes in v2:
-- Rewrite the commit message.
-- Link to v1: https://lore.kernel.org/r/20260326-veml6070-v1-1-5d79022e76f1@gmail.com
----
- drivers/iio/light/veml6070.c | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
+RnJvbSBiZDAwZjY4YjQ3OTdmMWQ5Nzg2ZjRlM2Q3N2UyYTFlMWQ2ZmE4NWU3IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiB5dWdtZXJhYnRlbmUgPHl1Zy5tZXJhYnRlbmVAZ21haWwuY29t
+PgpEYXRlOiBGcmksIDI3IE1hciAyMDI2IDEyOjA2OjA0ICswMTAwClN1YmplY3Q6IFtQQVRDSCAx
+LzNdIHN0YWdpbmc6IGlpbzogZnJlcXVlbmN5OiBhZDk4MzQ6IHVzZSBzeXNmc19lbWl0KCkgaW4g
+c2hvdwogaGVscGVycwoKUmVwbGFjZSBzcHJpbnRmKCkgd2l0aCBzeXNmc19lbWl0KCkgaW4gYWQ5
+ODM0X3Nob3dfb3V0MF93YXZldHlwZV9hdmFpbGFibGUKYW5kIGFkOTgzNF9zaG93X291dDFfd2F2
+ZXR5cGVfYXZhaWxhYmxlIGZ1bmN0aW9ucyB0byBmb2xsb3cgdGhlIHJlY29tbWVuZGVkCnN5c2Zz
+IEFQSSBwYXR0ZXJuIGZvciBkZXZpY2UgYXR0cmlidXRlIHNob3cgbWV0aG9kcy4KClNpZ25lZC1v
+ZmYtYnk6IHl1Z21lcmFidGVuZSA8eXVnLm1lcmFidGVuZUBnbWFpbC5jb20+Ci0tLQogZHJpdmVy
+cy9zdGFnaW5nL2lpby9mcmVxdWVuY3kvYWQ5ODM0LmMgfCA0ICsrLS0KIDEgZmlsZSBjaGFuZ2Vk
+LCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9z
+dGFnaW5nL2lpby9mcmVxdWVuY3kvYWQ5ODM0LmMgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2ZyZXF1
+ZW5jeS9hZDk4MzQuYwppbmRleCBkMzM5ZDVlOGUwNDMuLjg0NGU5MmFkYzUxNyAxMDA2NDQKLS0t
+IGEvZHJpdmVycy9zdGFnaW5nL2lpby9mcmVxdWVuY3kvYWQ5ODM0LmMKKysrIGIvZHJpdmVycy9z
+dGFnaW5nL2lpby9mcmVxdWVuY3kvYWQ5ODM0LmMKQEAgLTI5MCw3ICsyOTAsNyBAQCBzc2l6ZV90
+IGFkOTgzNF9zaG93X291dDBfd2F2ZXR5cGVfYXZhaWxhYmxlKHN0cnVjdCBkZXZpY2UgKmRldiwK
+IAllbHNlCiAJCXN0ciA9ICJzaW5lIHRyaWFuZ2xlIjsKIAotCXJldHVybiBzcHJpbnRmKGJ1Ziwg
+IiVzXG4iLCBzdHIpOworCXJldHVybiBzeXNmc19lbWl0KGJ1ZiwgIiVzXG4iLCBzdHIpOwogfQog
+CiBzdGF0aWMgSUlPX0RFVklDRV9BVFRSKG91dF9hbHR2b2x0YWdlMF9vdXQwX3dhdmV0eXBlX2F2
+YWlsYWJsZSwgMDQ0NCwKQEAgLTMxMCw3ICszMTAsNyBAQCBzc2l6ZV90IGFkOTgzNF9zaG93X291
+dDFfd2F2ZXR5cGVfYXZhaWxhYmxlKHN0cnVjdCBkZXZpY2UgKmRldiwKIAllbHNlCiAJCXN0ciA9
+ICJzcXVhcmUiOwogCi0JcmV0dXJuIHNwcmludGYoYnVmLCAiJXNcbiIsIHN0cik7CisJcmV0dXJu
+IHN5c2ZzX2VtaXQoYnVmLCAiJXNcbiIsIHN0cik7CiB9CiAKIHN0YXRpYyBJSU9fREVWSUNFX0FU
+VFIob3V0X2FsdHZvbHRhZ2UwX291dDFfd2F2ZXR5cGVfYXZhaWxhYmxlLCAwNDQ0LAotLSAKMi41
+My4wCgo=
+----_NmP-9f6808e88c99aa09-Part_1
+Content-Type: application/octet-stream;
+ name=0002-staging-iio-impedance-analyzer-ad5933-use-sysfs_emit.patch
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename=0002-staging-iio-impedance-analyzer-ad5933-use-sysfs_emit.patch
 
-diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
-index 6d4483c85f30..416a9520713f 100644
---- a/drivers/iio/light/veml6070.c
-+++ b/drivers/iio/light/veml6070.c
-@@ -247,13 +247,6 @@ static const struct iio_info veml6070_info = {
- 	.write_raw = veml6070_write_raw,
- };
- 
--static void veml6070_i2c_unreg(void *p)
--{
--	struct veml6070_data *data = p;
--
--	i2c_unregister_device(data->client2);
--}
--
- static int veml6070_probe(struct i2c_client *client)
- {
- 	struct veml6070_data *data;
-@@ -283,7 +276,8 @@ static int veml6070_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		return ret;
- 
--	data->client2 = i2c_new_dummy_device(client->adapter, VEML6070_ADDR_DATA_LSB);
-+	data->client2 = devm_i2c_new_dummy_device(&client->dev, client->adapter,
-+						  VEML6070_ADDR_DATA_LSB);
- 	if (IS_ERR(data->client2))
- 		return dev_err_probe(&client->dev, PTR_ERR(data->client2),
- 				     "i2c device for second chip address failed\n");
-@@ -294,10 +288,6 @@ static int veml6070_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = devm_add_action_or_reset(&client->dev, veml6070_i2c_unreg, data);
--	if (ret < 0)
--		return ret;
--
- 	return devm_iio_device_register(&client->dev, indio_dev);
- }
- 
+RnJvbSAyYjM4MzRhNTgyOTcwNDQwODdkNTZkNDkyYzE5YTlmYjNkMTViN2Q4IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiB5dWdtZXJhYnRlbmUgPHl1Zy5tZXJhYnRlbmVAZ21haWwuY29t
+PgpEYXRlOiBGcmksIDI3IE1hciAyMDI2IDEyOjA2OjMwICswMTAwClN1YmplY3Q6IFtQQVRDSCAy
+LzNdIHN0YWdpbmc6IGlpbzogaW1wZWRhbmNlLWFuYWx5emVyOiBhZDU5MzM6IHVzZQogc3lzZnNf
+ZW1pdCgpIGluIHN5c2ZzIG91dHB1dAoKQ29udmVydCBhbGwgc3ByaW50ZigpIGNhbGxzIGluIGFk
+NTkzM19zaG93X2ZyZXF1ZW5jeSBhbmQgYWQ1OTMzX3Nob3cKYXR0cmlidXRlIGZ1bmN0aW9ucyB0
+byBzeXNmc19lbWl0KCkgdG8gY29tcGx5IHdpdGggdGhlIGtlcm5lbC1yZWNvbW1lbmRlZApzeXNm
+cyBzaG93IG1ldGhvZCBjb252ZW50aW9uIGZvciBwcm9wZXIgYnVmZmVyIGxlbmd0aCBoYW5kbGlu
+Zy4KClNpZ25lZC1vZmYtYnk6IHl1Z21lcmFidGVuZSA8eXVnLm1lcmFidGVuZUBnbWFpbC5jb20+
+Ci0tLQogLi4uL3N0YWdpbmcvaWlvL2ltcGVkYW5jZS1hbmFseXplci9hZDU5MzMuYyAgIHwgMjQg
+KysrKysrKysrLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDEy
+IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vaW1wZWRhbmNl
+LWFuYWx5emVyL2FkNTkzMy5jIGIvZHJpdmVycy9zdGFnaW5nL2lpby9pbXBlZGFuY2UtYW5hbHl6
+ZXIvYWQ1OTMzLmMKaW5kZXggODVhNDIyMzI5NWNkLi5lM2FhYjAzOGM1ZmIgMTAwNjQ0Ci0tLSBh
+L2RyaXZlcnMvc3RhZ2luZy9paW8vaW1wZWRhbmNlLWFuYWx5emVyL2FkNTkzMy5jCisrKyBiL2Ry
+aXZlcnMvc3RhZ2luZy9paW8vaW1wZWRhbmNlLWFuYWx5emVyL2FkNTkzMy5jCkBAIC0yODUsNyAr
+Mjg1LDcgQEAgc3RhdGljIHNzaXplX3QgYWQ1OTMzX3Nob3dfZnJlcXVlbmN5KHN0cnVjdCBkZXZp
+Y2UgKmRldiwKIAlmcmVxcmVnID0gKHU2NClmcmVxcmVnICogKHU2NCkoc3QtPm1jbGtfaHogLyA0
+KTsKIAlkb19kaXYoZnJlcXJlZywgQklUKDI3KSk7CiAKLQlyZXR1cm4gc3ByaW50ZihidWYsICIl
+ZFxuIiwgKGludClmcmVxcmVnKTsKKwlyZXR1cm4gc3lzZnNfZW1pdChidWYsICIlZFxuIiwgKGlu
+dClmcmVxcmVnKTsKIH0KIAogc3RhdGljIHNzaXplX3QgYWQ1OTMzX3N0b3JlX2ZyZXF1ZW5jeShz
+dHJ1Y3QgZGV2aWNlICpkZXYsCkBAIC0zMzgsMjcgKzMzOCwyNyBAQCBzdGF0aWMgc3NpemVfdCBh
+ZDU5MzNfc2hvdyhzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJbXV0ZXhfbG9jaygmc3QtPmxvY2spOwog
+CXN3aXRjaCAoKHUzMil0aGlzX2F0dHItPmFkZHJlc3MpIHsKIAljYXNlIEFENTkzM19PVVRfUkFO
+R0U6Ci0JCWxlbiA9IHNwcmludGYoYnVmLCAiJXVcbiIsCi0JCQkgICAgICBzdC0+cmFuZ2VfYXZh
+aWxbKHN0LT5jdHJsX2hiID4+IDEpICYgMHgzXSk7CisJCWxlbiA9IHN5c2ZzX2VtaXQoYnVmLCAi
+JXVcbiIsCisJCQkJIHN0LT5yYW5nZV9hdmFpbFsoc3QtPmN0cmxfaGIgPj4gMSkgJiAweDNdKTsK
+IAkJYnJlYWs7CiAJY2FzZSBBRDU5MzNfT1VUX1JBTkdFX0FWQUlMOgotCQlsZW4gPSBzcHJpbnRm
+KGJ1ZiwgIiV1ICV1ICV1ICV1XG4iLCBzdC0+cmFuZ2VfYXZhaWxbMF0sCi0JCQkgICAgICBzdC0+
+cmFuZ2VfYXZhaWxbM10sIHN0LT5yYW5nZV9hdmFpbFsyXSwKLQkJCSAgICAgIHN0LT5yYW5nZV9h
+dmFpbFsxXSk7CisJCWxlbiA9IHN5c2ZzX2VtaXQoYnVmLCAiJXUgJXUgJXUgJXVcbiIsIHN0LT5y
+YW5nZV9hdmFpbFswXSwKKwkJCQkgc3QtPnJhbmdlX2F2YWlsWzNdLCBzdC0+cmFuZ2VfYXZhaWxb
+Ml0sCisJCQkJc3QtPnJhbmdlX2F2YWlsWzFdKTsKIAkJYnJlYWs7CiAJY2FzZSBBRDU5MzNfT1VU
+X1NFVFRMSU5HX0NZQ0xFUzoKLQkJbGVuID0gc3ByaW50ZihidWYsICIlZFxuIiwgc3QtPnNldHRs
+aW5nX2N5Y2xlcyk7CisJCWxlbiA9IHN5c2ZzX2VtaXQoYnVmLCAiJWRcbiIsIHN0LT5zZXR0bGlu
+Z19jeWNsZXMpOwogCQlicmVhazsKIAljYXNlIEFENTkzM19JTl9QR0FfR0FJTjoKLQkJbGVuID0g
+c3ByaW50ZihidWYsICIlc1xuIiwKLQkJCSAgICAgIChzdC0+Y3RybF9oYiAmIEFENTkzM19DVFJM
+X1BHQV9HQUlOXzEpID8KLQkJCSAgICAgICIxIiA6ICIwLjIiKTsKKwkJbGVuID0gc3lzZnNfZW1p
+dChidWYsICIlc1xuIiwKKwkJCQkgKHN0LT5jdHJsX2hiICYgQUQ1OTMzX0NUUkxfUEdBX0dBSU5f
+MSkgPworCQkJCSIxIiA6ICIwLjIiKTsKIAkJYnJlYWs7CiAJY2FzZSBBRDU5MzNfSU5fUEdBX0dB
+SU5fQVZBSUw6Ci0JCWxlbiA9IHNwcmludGYoYnVmLCAiMSAwLjJcbiIpOworCQlsZW4gPSBzeXNm
+c19lbWl0KGJ1ZiwgIjEgMC4yXG4iKTsKIAkJYnJlYWs7CiAJY2FzZSBBRDU5MzNfRlJFUV9QT0lO
+VFM6Ci0JCWxlbiA9IHNwcmludGYoYnVmLCAiJWRcbiIsIHN0LT5mcmVxX3BvaW50cyk7CisJCWxl
+biA9IHN5c2ZzX2VtaXQoYnVmLCAiJWRcbiIsIHN0LT5mcmVxX3BvaW50cyk7CiAJCWJyZWFrOwog
+CWRlZmF1bHQ6CiAJCXJldCA9IC1FSU5WQUw7Ci0tIAoyLjUzLjAKCg==
+----_NmP-9f6808e88c99aa09-Part_1
+Content-Type: application/octet-stream;
+ name=0003-github-add-workflow-to-send-kernel-patches-via-email.patch
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename=0003-github-add-workflow-to-send-kernel-patches-via-email.patch
 
----
-base-commit: 66ba480978ce390e631e870b740a3406e3eb6b01
-change-id: 20260326-veml6070-1489798087df
-
-Best regards,
--- 
-Felix Gu <ustc.gu@gmail.com>
-
+RnJvbSBmY2Y0YjgwMGVmZGIzM2VlNjcyMjgzOGUwMjExNzE1ZDBmODczOGM5IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiB5dWdtZXJhYnRlbmUgPHl1Zy5tZXJhYnRlbmVAZ21haWwuY29t
+PgpEYXRlOiBGcmksIDI3IE1hciAyMDI2IDEzOjQ0OjUxICswMTAwClN1YmplY3Q6IFtQQVRDSCAz
+LzNdIGdpdGh1YjogYWRkIHdvcmtmbG93IHRvIHNlbmQga2VybmVsIHBhdGNoZXMgdmlhIGVtYWls
+CgotLS0KIC5naXRodWIvd29ya2Zsb3dzL3NlbmQtcGF0Y2hlcy55bWwgfCA2OCArKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysKIDEgZmlsZSBjaGFuZ2VkLCA2OCBpbnNlcnRpb25zKCspCiBj
+cmVhdGUgbW9kZSAxMDA2NDQgLmdpdGh1Yi93b3JrZmxvd3Mvc2VuZC1wYXRjaGVzLnltbAoKZGlm
+ZiAtLWdpdCBhLy5naXRodWIvd29ya2Zsb3dzL3NlbmQtcGF0Y2hlcy55bWwgYi8uZ2l0aHViL3dv
+cmtmbG93cy9zZW5kLXBhdGNoZXMueW1sCm5ldyBmaWxlIG1vZGUgMTAwNjQ0CmluZGV4IDAwMDAw
+MDAwMDAwMC4uMGY4ZTU5NGQ1NDllCi0tLSAvZGV2L251bGwKKysrIGIvLmdpdGh1Yi93b3JrZmxv
+d3Mvc2VuZC1wYXRjaGVzLnltbApAQCAtMCwwICsxLDY4IEBACituYW1lOiBTZW5kIEtlcm5lbCBQ
+YXRjaGVzCisKK29uOgorICB3b3JrZmxvd19kaXNwYXRjaDoKKyAgICBpbnB1dHM6CisgICAgICBz
+bXRwX3Bhc3N3b3JkOgorICAgICAgICBkZXNjcmlwdGlvbjogJ1NNVFAgUGFzc3dvcmQgZm9yIGNv
+bnRhY3RAeXVnLmJlJworICAgICAgICByZXF1aXJlZDogdHJ1ZQorICAgICAgICB0eXBlOiBwYXNz
+d29yZAorCitqb2JzOgorICBzZW5kLXBhdGNoZXM6CisgICAgcnVucy1vbjogdWJ1bnR1LWxhdGVz
+dAorICAgIHN0ZXBzOgorICAgICAgLSBuYW1lOiBDaGVja291dCByZXBvCisgICAgICAgIHVzZXM6
+IGFjdGlvbnMvY2hlY2tvdXRAdjQKKyAgICAgICAgd2l0aDoKKyAgICAgICAgICBmZXRjaC1kZXB0
+aDogMAorCisgICAgICAtIG5hbWU6IEdlbmVyYXRlIHBhdGNoZXMKKyAgICAgICAgcnVuOiB8Cisg
+ICAgICAgICAgZ2l0IGZvcm1hdC1wYXRjaCAtMyAtLWJhc2U9SEVBRH4zIC1vIHBhdGNoZXMvIEhF
+QUR+My4uSEVBRAorCisgICAgICAtIG5hbWU6IFNlbmQgcGF0Y2hlcyB2aWEgU01UUAorICAgICAg
+ICBydW46IHwKKyAgICAgICAgICBjYXQgPiBzZW5kX3BhdGNoZXMuanMgPDwgJ1NDUklQVCcKKyAg
+ICAgICAgICBjb25zdCBub2RlbWFpbGVyID0gcmVxdWlyZSgnbm9kZW1haWxlcicpOworICAgICAg
+ICAgIGNvbnN0IGZzID0gcmVxdWlyZSgnZnMnKTsKKyAgICAgICAgICBjb25zdCBwYXRoID0gcmVx
+dWlyZSgncGF0aCcpOworCisgICAgICAgICAgY29uc3QgdHJhbnNwb3J0ZXIgPSBub2RlbWFpbGVy
+LmNyZWF0ZVRyYW5zcG9ydCh7CisgICAgICAgICAgICBob3N0OiAnc3NsMC5vdmgubmV0JywKKyAg
+ICAgICAgICAgIHBvcnQ6IDQ2NSwKKyAgICAgICAgICAgIHNlY3VyZTogdHJ1ZSwKKyAgICAgICAg
+ICAgIGF1dGg6IHsKKyAgICAgICAgICAgICAgdXNlcjogJ2NvbnRhY3RAeXVnLmJlJywKKyAgICAg
+ICAgICAgICAgcGFzczogcHJvY2Vzcy5lbnYuU01UUF9QQVNTV09SRAorICAgICAgICAgICAgfQor
+ICAgICAgICAgIH0pOworCisgICAgICAgICAgY29uc3QgcGF0Y2hlcyA9IGZzLnJlYWRkaXJTeW5j
+KCdwYXRjaGVzJykuZmlsdGVyKGYgPT4gZi5lbmRzV2l0aCgnLnBhdGNoJykpOworCisgICAgICAg
+ICAgY29uc3QgbWFpbE9wdGlvbnMgPSB7CisgICAgICAgICAgICBmcm9tOiAneXVnbWVyYWJ0ZW5l
+IDxjb250YWN0QHl1Zy5iZT4nLAorICAgICAgICAgICAgdG86ICdsaW51eC1paW9Admdlci5rZXJu
+ZWwub3JnLCBsaW51eC1zdGFnaW5nQGxpc3RzLmxpbnV4LmRldiwgbGludXgta2VybmVsQHZnZXIu
+a2VybmVsLm9yZywgamljMjNAa2VybmVsLm9yZywgZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmcn
+LAorICAgICAgICAgICAgc3ViamVjdDogYFtQQVRDSCAwLyR7cGF0Y2hlcy5sZW5ndGh9XSBzdGFn
+aW5nOiBpaW86IGNvbnZlcnQgc3ByaW50ZiB0byBzeXNmc19lbWl0YCwKKyAgICAgICAgICAgIHRl
+eHQ6IGBUaGlzIHNlcmllcyBjb252ZXJ0cyBzcHJpbnRmKCkgdG8gc3lzZnNfZW1pdCgpIGluIHN0
+YWdpbmcgSUlPIGRyaXZlcnMgKGFkNzgxNiwgYWQ5ODM0LCBhZDU5MzMpIHRvIGZvbGxvdyBrZXJu
+ZWwgc3lzZnMgQVBJIGJlc3QgcHJhY3RpY2VzLmAsCisgICAgICAgICAgICBhdHRhY2htZW50czog
+cGF0Y2hlcy5tYXAocCA9PiAoeworICAgICAgICAgICAgICBmaWxlbmFtZTogcCwKKyAgICAgICAg
+ICAgICAgcGF0aDogcGF0aC5qb2luKCdwYXRjaGVzJywgcCkKKyAgICAgICAgICAgIH0pKQorICAg
+ICAgICAgIH07CisKKyAgICAgICAgICB0cmFuc3BvcnRlci5zZW5kTWFpbChtYWlsT3B0aW9ucywg
+KGVyciwgaW5mbykgPT4geworICAgICAgICAgICAgaWYgKGVycikgeworICAgICAgICAgICAgICBj
+b25zb2xlLmVycm9yKCdFcnJvcjonLCBlcnIpOworICAgICAgICAgICAgICBwcm9jZXNzLmV4aXQo
+MSk7CisgICAgICAgICAgICB9CisgICAgICAgICAgICBjb25zb2xlLmxvZygnUGF0Y2hlcyBzZW50
+IScsIGluZm8ucmVzcG9uc2UpOworICAgICAgICAgIH0pOworICAgICAgICAgIFNDUklQVAorCisg
+ICAgICAtIG5hbWU6IEluc3RhbGwgbm9kZW1haWxlciBhbmQgc2VuZAorICAgICAgICBlbnY6Cisg
+ICAgICAgICAgU01UUF9QQVNTV09SRDogJHt7IGlucHV0cy5zbXRwX3Bhc3N3b3JkIH19CisgICAg
+ICAgIHJ1bjogfAorICAgICAgICAgIG5wbSBpbnN0YWxsIG5vZGVtYWlsZXIgLS1zaWxlbnQgMj4v
+ZGV2L251bGwKKyAgICAgICAgICBub2RlIHNlbmRfcGF0Y2hlcy5qcwotLSAKMi41My4wCgo=
+----_NmP-9f6808e88c99aa09-Part_1--
