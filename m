@@ -1,124 +1,159 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A58B37BE80
-	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 11:43:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57CFF391835
+	for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 12:27:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774611812; cv=none; b=ruX+48dlbwvrK9mlwYcABNQRB8ipByFl834UAZEseVpfdUpwDs1v+Ud+P1ggr8TopioYZHPYyldthhiZzJrDIO+85tXaBpErexsd+RmbXe1i5VbwPBM/HzjZdvxiT4RnsnXDvaifqomSvGxXgB7JOTAITJqwgoLpfCU/Pbdep6s=
+	t=1774614480; cv=none; b=MtATYaVySkopgLCFfNVZpMuRD1ngHk/CJc95lTgGnQsLCnYjPYQ3yzLDotolNcRdGZe1fs9n70DgLWiRGZFjYtvpPZJGTMb+gvDelDoPmtRJG2i4PRiA+9iGW/i9EvpTvMIglFtqQBSi0aJz9eJEJsBAbu1lyPEmvtt8ypzxg/0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774611812; c=relaxed/simple;
-	bh=uYAApojvLTIkmyKoZpYwJZCokmKbnpF9c6WhaIacVG4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sqE1/H71xU0/eDtLU2q16FBjs8eSvRNn1OpaV8Vt9WpD9d1KcWgM/dYP2mYAZ/ginJmDC9L7ZltUknkzrm71094v46pr7p5c1GHFGtiZ0ZCGJPQ3qQvmDymrBi8vmn5ADewFGlSjObgzPjEMLFCu3ZYoJuO4Vlw7Mittn68lEWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=k4QvSzox; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1774614480; c=relaxed/simple;
+	bh=Mj5HHb2stM9v+UnA4mQPvtFEf1IYBNgRKy+7R1fP3m8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=OetIuZy0E8vJsy15Vb9hT4gyMZd4WbtFvCaocpEryHgEMUJkDt2NRN/Gk1szERsJfY2L5ntqRdX58Znhi1fHenfzoAceE/V/ub4gEFYUhaIKllz39r81da59Idf92j3aHPqkssnYscyjCabEkcMSxl4Qtlk4XOGOJGzoy86EPI4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sIfOx4wq; arc=none smtp.client-ip=209.85.215.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="k4QvSzox"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=H/mm
-	EvjF+xhmn9Wns9betMD2C6MNmROj8DyAiLE02zM=; b=k4QvSzox0bVkfsfDjzFG
-	LGuc3RY6Nc4A01kHbyNKckXguVBwpBOKFgCosfhLsRsjq4eDoNRYZpMIVCJ0O3hr
-	gfeanKsyTEOWbah1eONyp6cI2lvZTWiinFUqQ1+gY2hdjjx+hPdnLjDCYK70TUJ4
-	aFc/YaBf28GDjSGd7mxe254RWqDfD9attVFCtj8ikS1PeMOzQ7Wq1WpZ9OE7cTEW
-	LWHjg90xTnSXm5laQso2Th3BJmrtN84wxdyQWCBE0l/PveVIj91/BXi11wFJWf4A
-	0Ik6WG0aYRHLixjG/wpRM3UOW+oQhTX4llCiif+gTG5sUZ6tFSGGFUkiiWl6Oq3N
-	Rg==
-Received: (qmail 174700 invoked from network); 27 Mar 2026 12:43:25 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 27 Mar 2026 12:43:25 +0100
-X-UD-Smtp-Session: l3s3148p1@m9s6AgBO++RUhsJN
-Date: Fri, 27 Mar 2026 12:43:24 +0100
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: linux-renesas-soc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Antonio Borneo <antonio.borneo@foss.st.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Boqun Feng <boqun@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Danilo Krummrich <dakr@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, driver-core@lists.linux.dev,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-remoteproc@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-sunxi@lists.linux.dev, Mark Brown <broonie@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Samuel Holland <samuel@sholland.org>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Waiman Long <longman@redhat.com>,
-	Wilken Gottwalt <wilken.gottwalt@posteo.net>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v5 00/15] hwspinlock: move device alloc into core and
- refactor includes
-Message-ID: <acZtXL7OiM0ceyMe@shikoro>
-References: <20260319105947.6237-1-wsa+renesas@sang-engineering.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sIfOx4wq"
+Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-c7393536e53so845257a12.2
+        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2026 05:27:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774614479; x=1775219279; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=wdNr9PIc0FbsIhNPrh7d0pILsLtmIoyXKFiWeHVC6ck=;
+        b=sIfOx4wqwoot/xDii7selOKWnMQZuTcgqHesHJLcgktNa8mkOmgxfm9rCZIaePFnhZ
+         Xp94wQYba0st7H9lJlrZNKizmjMDhZNEdc7W4jR496hFq12x7vS02gtM2YfjnEBx0Dck
+         rqVXxhLwnzQ9Z+DVS6p6wl4kt4Ng4kTOj5a0PvQINqT1UvntVOwOwMGBI+Il4sPkGdpe
+         8AR3JJl9tqGY2yksPjFC+i0JNOwQM1+LXn9LfU+yO+Dc98nGrqrSbEDMAGKA/AiTzVPx
+         H9QDbiIgmboR9M99cmevyeZqqhHTxXYhVrPKgRNkGmOl6nbeAcxeH9c/4vpyAPu0gkTd
+         pOjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774614479; x=1775219279;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wdNr9PIc0FbsIhNPrh7d0pILsLtmIoyXKFiWeHVC6ck=;
+        b=Pew7uJU6KNPZgmCu5Hatg/jHFNyVf7wD6dfSTIYslkwHUE68YmGNKfRap3OEiDJ1Lu
+         OMtXb1VuZDuWw9ursAOQeXUlzKo8adlHu3n07TvNpZoCr7cavU7vfkCa6ZV0P1NSRiQQ
+         V9jpUfA0WZmbPaaVq7b/KBJw6Cq9voHB4KeaIjz3MPxAbhIxH0Nu+e5ztZ5yYJnAGlVP
+         PCRs+l4shZH0b4avIfPgit7ttrVq1dlAfYmhQN2m115RydQcZ5UZd/lRAMQUvyHlcHIE
+         sy2WJzUj9ptLk9mLs5gM4TCBeemIgHh7D/ntyTk1oToGdUXejZr1vV+sdAG0EVZx1JU7
+         6MFg==
+X-Forwarded-Encrypted: i=1; AJvYcCWVMbq1LMRyhbpXw2WYUfrQOALNnm+WYzU/6z3UIABt3FBqksTcZlIm7AroGv0Iuy/Xk7KbZNSz9uE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx7Bhl2ocoFkl2qnofRMogHZA9K/HWR7QBV5zYvuTouwj/CaH+O
+	pb0jkaD93KSQ07R1dcYt/Rtx9z2WNTcxL26bgAegx8mTVvfgUzA43X/S
+X-Gm-Gg: ATEYQzyQh4nmxyfp77dGAzeXlXRDGMSaK9rdPnDA1DPv8Z2x/k3n58J8UaESe1kiDXN
+	8xz1lS+oNZ2nGaec51LvAZ9lAlSRNzuMircn8a2vFaGMOsV8u69YDep7teeaPNp4ZL06W3KTivG
+	6QUWi16093Z7PzJHAradl1BLMW8QoAMIBXA611Fe0V0UrM3pcjgOFbBJO2doaQZCem74Ws8w43k
+	rusg3oidqUIUJC2eR3Dj9kircbAxS4YSUbMd8iq8aYqQqieMmeoAc+imW7HiJykcLme7VWwyjnY
+	vaTujqEDYIZe4fcFZLVANSc/o3eUpxtFKaLUxD6V4edesdghBXoC64Q6GtpPGM63FZ0KAzmTqi7
+	Y97l5G2/uC25/oHypqFcz7VEQDrGpeUIpDYnL+jjHXBtDJLVBMk08VdPmreVlNCSXY+Uw0Ucghw
+	z31xFcvlIwJjRor4enHiU5j/BsQJN2LbPV8TIP
+X-Received: by 2002:a05:6a20:7f9e:b0:398:abe1:eaac with SMTP id adf61e73a8af0-39c878493a4mr2683215637.27.1774614478439;
+        Fri, 27 Mar 2026 05:27:58 -0700 (PDT)
+Received: from junjungu-PC.localdomain ([223.167.147.240])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7673931621sm4543477a12.19.2026.03.27.05.27.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Mar 2026 05:27:58 -0700 (PDT)
+From: Felix Gu <ustc.gu@gmail.com>
+Date: Fri, 27 Mar 2026 20:27:54 +0800
+Subject: [PATCH v2] iio: light: veml6070: Fix resource leak in probe error
+ path
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260319105947.6237-1-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260327-veml6070-v2-1-10c3c67eb171@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAMl3xmkC/23MSw7CIBSF4a00dywGUHk4ch+mg6Zc2puU0oAhm
+ oa9ix07/E9Ovh0yJsIM926HhIUyxbWFPHUwzsM6ISPXGiSXil+kYgXDorjmTFyN1dZwo52Hdt8
+ Senof1LNvPVN+xfQ55CJ+6x+kCCbYzWnLpUStvHhMYaDlPMYAfa31C9/RRRagAAAA
+X-Change-ID: 20260326-veml6070-1489798087df
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>, Felix Gu <ustc.gu@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1774614476; l=2236;
+ i=ustc.gu@gmail.com; h=from:subject:message-id;
+ bh=Mj5HHb2stM9v+UnA4mQPvtFEf1IYBNgRKy+7R1fP3m8=;
+ b=tYMZ5IC0B3UteYMjcnzwatvGOUjsyCtnSJ8t+kYeiom9JxgmoN3uwGyhldRJWC2ro7cBa8NcT
+ /pJOvUpC645B8UAHNuxOXxnCLfzsJ2sAkKGrA3i0JjtQCE6B1EHHjrn
+X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
+ pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
 
-On Thu, Mar 19, 2026 at 11:59:22AM +0100, Wolfram Sang wrote:
-> Changes since v4:
-> 
-> * update Documentation, too, when ABI gets changed (Thanks Antonio!)
-> * rebased to 7.0-rc4
-> * added more tags (Thanks!)
-> 
-> My ultimate goal is to allow hwspinlock provider drivers outside of the
-> subsystem directory. It turned out that a simple split of the headers
-> files into a public provider and a public consumer header file is not
-> enough because core internal structures need to stay hidden. Even more,
-> their opaqueness could and should even be increased. That would also
-> allow the core to handle the de-/allocation of the hwspinlock device
-> itself.
-> 
-> This series does all that. Patches 1-2 remove the meanwhile unused
-> platform_data to ease further refactoring. Patches 3-9 abstract access
-> to internal structures away using helpers. Patch 10 then moves
-> hwspinlock device handling to the core, simplifying drivers. The
-> remaining patches refactor the headers until the internal one is gone
-> and the public ones are divided into provider and consumer parts. More
-> details are given in the patch descriptions.
-> 
-> One note about using a callback to initialize hwspinlock priv: I also
-> experimented with a dedicated 'set_priv' helper function. It felt a bit
-> clumsy to me. Drivers would need to save the 'bank' pointer again and
-> iterate over it. Because most drivers will only have a simple callback
-> anyhow, it looked leaner to me.
-> 
-> This series has been tested on a Renesas SparrowHawk board (R-Car V4H)
-> with a yet-to-be-upstreamed hwspinlock driver for the MFIS IP core. A
-> branch can be found here (without the MFIS driver currently):
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/hwspinlock/refactor-alloc-buildtest
-> 
-> Build bots reported success.
+The driver calls i2c_new_dummy_device() to create a dummy device,
+then calls i2c_smbus_write_byte(). If i2c_smbus_write_byte() fails and
+returns, the cleanup via devm_add_action_or_reset() was never registered,
+so the dummy device leaks.
 
-Sashiko found some valid issues[1], so I am already working on a v6.
+Switch to devm_i2c_new_dummy_device() which registers cleanup atomically
+with device creation, eliminating the error-path window.
 
-[1] https://sashiko.dev/#/patchset/20260319105947.6237-1-wsa%2Brenesas%40sang-engineering.com
+Fixes: 7501bff87c3e ("iio: light: veml6070: add action for i2c_unregister_device")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+---
+Changes in v2:
+- Rewrite the commit message.
+- Link to v1: https://lore.kernel.org/r/20260326-veml6070-v1-1-5d79022e76f1@gmail.com
+---
+ drivers/iio/light/veml6070.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
+index 6d4483c85f30..416a9520713f 100644
+--- a/drivers/iio/light/veml6070.c
++++ b/drivers/iio/light/veml6070.c
+@@ -247,13 +247,6 @@ static const struct iio_info veml6070_info = {
+ 	.write_raw = veml6070_write_raw,
+ };
+ 
+-static void veml6070_i2c_unreg(void *p)
+-{
+-	struct veml6070_data *data = p;
+-
+-	i2c_unregister_device(data->client2);
+-}
+-
+ static int veml6070_probe(struct i2c_client *client)
+ {
+ 	struct veml6070_data *data;
+@@ -283,7 +276,8 @@ static int veml6070_probe(struct i2c_client *client)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	data->client2 = i2c_new_dummy_device(client->adapter, VEML6070_ADDR_DATA_LSB);
++	data->client2 = devm_i2c_new_dummy_device(&client->dev, client->adapter,
++						  VEML6070_ADDR_DATA_LSB);
+ 	if (IS_ERR(data->client2))
+ 		return dev_err_probe(&client->dev, PTR_ERR(data->client2),
+ 				     "i2c device for second chip address failed\n");
+@@ -294,10 +288,6 @@ static int veml6070_probe(struct i2c_client *client)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = devm_add_action_or_reset(&client->dev, veml6070_i2c_unreg, data);
+-	if (ret < 0)
+-		return ret;
+-
+ 	return devm_iio_device_register(&client->dev, indio_dev);
+ }
+ 
+
+---
+base-commit: 66ba480978ce390e631e870b740a3406e3eb6b01
+change-id: 20260326-veml6070-1489798087df
+
+Best regards,
+-- 
+Felix Gu <ustc.gu@gmail.com>
 
