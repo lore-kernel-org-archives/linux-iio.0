@@ -1,24 +1,24 @@
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBF2537CD41;
-	Fri, 27 Mar 2026 19:26:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5A5E3750B9;
+	Fri, 27 Mar 2026 19:26:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774639584; cv=none; b=RBoVy7Gn85zo+vrk+sF1d8MaTc9KLv+D6Ca+OnS+GEgAD3IW9jzarohVySb0arVJZYtylB5o6eaMGO6CGyTZXgCMWjp0TW7EQCR8LHIFdZahPZUUfxWC425TlGmzBr9RDN3Vt/x5+GRokH1JqgXdZb+LdKbNfl6ph+ANvCUbrEo=
+	t=1774639591; cv=none; b=Q8o5ENW3qIVZ2ADq8FbY06noZiY72MJgzVv1wHA5POafYilCMeyiAeHwS+Ja96X0+RRta/NcZ7I+yFIOlnxBjN2NQUJNIWXXXzgQ9lFuw/1yUWEbrTB0QB2ZtBcmtzOeN1bBQlBb8tKW5TDOOWM4QVh7X5qOSO9fTHS+urKzlYU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774639584; c=relaxed/simple;
-	bh=iC0usF5gOebcTMo2OP0Wt9AuQh4+e6rlP3cTrBDxJoc=;
+	s=arc-20240116; t=1774639591; c=relaxed/simple;
+	bh=Ot80DxInnW1eLVVpqx2PX5Nm7DsJGE/xGpXm42N7vTE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=TweHXvZibCmQarkU8W0cXteTk40hPZqgCxYs0T1S+SFa/EYfIPYD9VBlgJbscVVasAcnmB34MPhr9XWVsCnG9KFybt5u+z+9KXirLCbFueE0TWIsWAA/4crpfw9RuLDRw8K0JeU5chZgQzNLKbOqQhThi7twxH3IVX/TsYCeP9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.172
+	 MIME-Version; b=bnaN3VA+KGZVL2ToW646F2u2+fSuKTqoRglH5iQu3DOaLCn4KDENi0iDhl4B/kxk9pIk52oJ5LJjIIs7/bGVU3xIdlfS74VPcuGFUplHCO5UCpMj/31nxQMOps4dgVkAi8E9HEOe2bHzmzJ80lEGVQ8voE9bp6u2WdlnF1Q0JXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
-X-CSE-ConnectionGUID: ILfxP6rgRxO+dEkL2dNCMg==
-X-CSE-MsgGUID: tLAaFHKqTqSrFQ07E7JunQ==
+X-CSE-ConnectionGUID: ywSHoiNqQrWYgjG7Ei0IjQ==
+X-CSE-MsgGUID: h5KLAy1AQl6rkWp7LV4lhQ==
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 28 Mar 2026 04:26:22 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 28 Mar 2026 04:26:29 +0900
 Received: from demon-pc.localdomain (unknown [10.226.93.36])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 6EFC64014C3F;
-	Sat, 28 Mar 2026 04:26:17 +0900 (JST)
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id D17C44014C3F;
+	Sat, 28 Mar 2026 04:26:23 +0900 (JST)
 From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 To: Biju Das <biju.das.jz@bp.renesas.com>,
 	Daniel Lezcano <daniel.lezcano@kernel.org>,
@@ -38,9 +38,9 @@ Cc: linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-clk@vger.kernel.org,
 	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Subject: [PATCH 10/11] arm64: dts: renesas: r9a09g077: add MTU3 support
-Date: Fri, 27 Mar 2026 21:24:24 +0200
-Message-ID: <20260327192425.438263-11-cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: [PATCH 11/11] arm64: dts: renesas: r9a09g087: add MTU3 support
+Date: Fri, 27 Mar 2026 21:24:25 +0200
+Message-ID: <20260327192425.438263-12-cosmin-gabriel.tanislav.xa@renesas.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260327192425.438263-1-cosmin-gabriel.tanislav.xa@renesas.com>
 References: <20260327192425.438263-1-cosmin-gabriel.tanislav.xa@renesas.com>
@@ -52,25 +52,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The Renesas RZ/T2H (R9A09G077) SoC has an MTU3 block.
+The Renesas RZ/N2H (R9A09G087) SoC has an MTU3 block.
 
 Add support for it.
 
 Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 ---
- arch/arm64/boot/dts/renesas/r9a09g077.dtsi | 68 ++++++++++++++++++++++
+ arch/arm64/boot/dts/renesas/r9a09g087.dtsi | 68 ++++++++++++++++++++++
  1 file changed, 68 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r9a09g077.dtsi b/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
-index 3761551c9647..fe5d206d4def 100644
---- a/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
-@@ -1116,6 +1116,74 @@ gic: interrupt-controller@83000000 {
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g087.dtsi b/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
+index f697e9698ed3..c64b532f3d23 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
++++ b/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
+@@ -1119,6 +1119,74 @@ gic: interrupt-controller@83000000 {
  			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_LOW>;
  		};
  
 +		mtu3: timer@90001200 {
-+			compatible = "renesas,r9a09g077-mtu3",
++			compatible = "renesas,r9a09g087-mtu3",
 +				     "renesas,rz-mtu3";
 +			reg = <0 0x90001200 0 0xb00>;
 +			interrupts = <GIC_SPI 420 IRQ_TYPE_EDGE_RISING>,
@@ -138,7 +138,7 @@ index 3761551c9647..fe5d206d4def 100644
 +		};
 +
  		adc0: adc@90014000 {
- 			compatible = "renesas,r9a09g077-adc";
+ 			compatible = "renesas,r9a09g087-adc", "renesas,r9a09g077-adc";
  			reg = <0 0x90014000 0 0x400>;
 -- 
 2.53.0
