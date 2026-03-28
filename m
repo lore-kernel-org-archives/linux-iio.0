@@ -1,231 +1,591 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BE6D389E16;
-	Sat, 28 Mar 2026 11:43:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28BD0342510
+	for <linux-iio@vger.kernel.org>; Sat, 28 Mar 2026 15:50:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774698223; cv=none; b=jl430+Lro9130w5Gf/Y0Uptnizo6CKxBAxiw54OqWNIFkN4rcOlymmm+x+5IYLcRKrRw45J2sbOOEnlERdAlyXhC2AdhIPhR8uuNsuMPUgpd9tp9aegS56aop1KASweVSURFgx6zGGjaPgUlHnjJnIlA3G56AIgwY7jVkDhB/mY=
+	t=1774713044; cv=none; b=oczNcLASLUT1ox8xZ5O9Dq++eDz6vys1yYkvco1HPLO5PTa7Uxpbkk2XdGVXq2sceJkEy6tYbAtJNJGH7/PEsMYu4ZbQUufVg1KvpxvvZsM/bhQxC6iRXeUvBx8iz7GraBJC6GVRGLUlmPvF6jcAwyOpnaudGeb62U14NEZZrgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774698223; c=relaxed/simple;
-	bh=EbMfcuT3CHZlu1XjAAaJ4l4qzIGRFox2tdnlCaFSWcM=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=unLaGM22Bc8t8icsA8oUM65leNusvhL2DHFFB+tX7FEFgNyaKSNlGlmVv7pc+bOYZJT2ppufflxAuJTkac6SqqQIrT5cLo2cf7XJsSYiKC59o0syjlYtFVi/NQzNmmXXdYoWS9W34K8bbLGM7JXZOw8Z861mdXXWQE1g48rykMo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=D8awfcBV; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1774713044; c=relaxed/simple;
+	bh=hi4QKuEXaFcxXNjs+RL7CC/hcxEkT49xI99F56w1mbU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=dOGyYRDJNrZ9UqvFjAA2VUO9o3xztpYDNeRhMRU/Y0v7+WNs+MrjsuetwDg54bisjNXdurG0M86T6L0LSehbY+8xbCbKexExCP+xdvvKoRHsMCre19TOBZ2UBChZjroR2hnxvjszTMLugO1TiCn5QCMwOGK9qXKnU9fsGZk8/j4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dkmvczsq; arc=none smtp.client-ip=209.85.208.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="D8awfcBV"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62S61j8s1744122;
-	Sat, 28 Mar 2026 07:43:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=jzIiY
-	k/L4ymSXxDd4i94JpVQU/rAfCVXb/aCp8CcXc4=; b=D8awfcBVaqLAOb9p2SA6+
-	KebT96KakrJCl9DjG0MWIbgYbhzXtH/3DPjgL31vOdRl92j2Xt1dDHd0mAjsiOK3
-	LEAEC+6NUaTtaXh0cEUTi92SqamRpN8LUPd0/Prk8B3za7FzKcsSDa0Il3U0D8iH
-	Eie7gz101hutiVP/POUkOj0iDwrvmUp2D8jscdXbqVzXJR2G5K2T+ZT4kL2Vh7hN
-	QAd92v25eNxdMihcuFre5PknTUnm5ganV4U4Uh24lpEUtQF4CyQcPuFdF42JcKGx
-	phodNmEu7Gfxc0nH4SP+e/c91nD/lS7dZVC04lGJJinLn3UctNCZFjArdoJPQWCH
-	g==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4d60uhj00s-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 28 Mar 2026 07:43:09 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62SBh8Rj037551
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Sat, 28 Mar 2026 07:43:08 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Sat, 28 Mar
- 2026 07:43:08 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Sat, 28 Mar 2026 07:43:08 -0400
-Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.226.156])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62SBgofv013745;
-	Sat, 28 Mar 2026 07:43:03 -0400
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v8 1/3] iio: backend: add devm_iio_backend_get_by_index()
-Date: Sat, 28 Mar 2026 13:40:48 +0200
-Message-ID: <20260328114050.46848-2-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260328114050.46848-1-antoniu.miclaus@analog.com>
-References: <20260328114050.46848-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dkmvczsq"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-38c01150eb2so23315021fa.2
+        for <linux-iio@vger.kernel.org>; Sat, 28 Mar 2026 08:50:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774713040; x=1775317840; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=uks9yLyhh7hqScl22idPSyqFo1CqasSiIe6hIodJgeQ=;
+        b=dkmvczsq1xWH+F78rf1+6FKnQGbCAMAmS2K2pbthb1AZvnkYXDS0pXhbxyACxOOgyV
+         Cc2KVJIwfTG12iAy2Y2yyHpJ2pwPaTY/MyVWmVrwGvx0n3dUyX0doRJkRDfBJ4EyLVDA
+         Mzvv1Ofj6y9/BNzVSTcptRLYraakjMfgjlFHxSs9Y/jOBKUQgHOdR9KiC0Ix/avwbHRG
+         dGTpHA49VyjMR/obgOo+ofwMIMAlnvK7t/eP2de3z+ISNYBp5tMBUBN5nlchxvCA0HB1
+         rEFUCmkm4QZ0+Kzi2kJZD6+tYqHXOVsIi23/fXcr184ffEZFDmuAolZ8uWt8ofV+RZyh
+         B54g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774713040; x=1775317840;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uks9yLyhh7hqScl22idPSyqFo1CqasSiIe6hIodJgeQ=;
+        b=MX3Wz/hdW6GX4rIfWCiK0UQvvUrGLaDBO5LMZih+U5KhTvptsCgjkJGE5MwYOXGflW
+         cvoK7TZY62V61H2Ve+Zdqle8nTZjfcu+pWTimgJOtzC/sP5g4aUUsNPdNHD3NVV/W5hz
+         YcSnFjisbmRJXZbl9FX6mjzg4Mrye6mL3gky5SshLqOMXm/ZcRiXiLr3qXhVcLb3YP9H
+         pzHieNL41NBZeQhzoUmiPEj/BS32B78BgwQ6xogahIJ9tCvIIcBLgrW3Fgyjvw+AQrIG
+         IlLphzhjNJ/kg9R/iVddAp/II3Wr91/qWXovPWHROMTJpn6WdXryr2r+kP9NmePH5nMI
+         qpqw==
+X-Gm-Message-State: AOJu0YySa9U5ksvNgTHj5rz89yOi+uMAiEb423aCBMRvhEeZEITp0wjd
+	92sarXDnB1GXnG0xxjNRmdmOFzrs2KiTG1nZ5sfFVzqWHuhmFTSNh1bg
+X-Gm-Gg: ATEYQzxSACY8Augz1wc/wux1XyGEpfqMEzoFel9/Mb55vWq1LBk8ZLu0Br6LHAJgrPT
+	xSvS4a27NhXxv0UEAKNuoQKj40vSMY/rK9i9FALDehRM8/IUz36bL8FXnsIt8nSyTI8tDbLLjLs
+	BLedV70rCUWuIGX/faUxGdqbxfBzNL8S5Uxco7v1pYsQCddVS8mZuQquC+LYM4QHtOTPc72Uepw
+	DpRxq8rm47yQ9fwyzFf29TFlicB15nMowXmy1NgKS2nN/cEgIytwPzAtSQoQOPlkcH+RfAOgfuX
+	OCAxcfVyoeOTZJoeORrVcc4dGs+7uwh7NMUOtpijMIoOOQqNGXXof++arH1dIERB+h8vXaHl9we
+	qxjtdW690gVYACCqBVx2yrj3FBfj58kerYll21pjJfBmI9+qO805BmvLtExdI5yAHk1jRDxyMn8
+	ws+oeh5WH/hV2mspwCICDIbYXFSxggz0y73xjnwFnxYB4wZhtvSyU3YIBHSIC9RdKd3i14V/gNw
+	CGCqD++rdcB
+X-Received: by 2002:a05:600c:8b6d:b0:485:35ba:1d81 with SMTP id 5b1f17b1804b1-48727eb7fb7mr93144965e9.21.1774690975407;
+        Sat, 28 Mar 2026 02:42:55 -0700 (PDT)
+Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-487305da785sm37137455e9.0.2026.03.28.02.42.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Mar 2026 02:42:54 -0700 (PDT)
+Message-ID: <324e16aba4029ec4679f7b141c5f58e8929a0da3.camel@gmail.com>
+Subject: Re: [PATCH v5 3/4] iio: adc: ad4691: add triggered buffer support
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron
+ <jic23@kernel.org>, David Lechner	 <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,  Andy Shevchenko	
+ <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski	
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
+ =?ISO-8859-1?Q?Kleine-K=F6nig?=	 <ukleinek@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown	 <broonie@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski	 <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet	 <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org
+Date: Sat, 28 Mar 2026 09:44:00 +0000
+In-Reply-To: <20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8@analog.com>
+References: 
+	<20260327-ad4692-multichannel-sar-adc-driver-v5-0-11f789de47b8@analog.com>
+	 <20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=Z8jh3XRA c=1 sm=1 tr=0 ts=69c7becd cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=IpJZQVW2AAAA:8
- a=gAnH3GRIAAAA:8 a=p0FdBKtcRgJ3IcjSWdMA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-ORIG-GUID: AFy83_c4YAqg0X-uBzHLJDQhreNnMOKx
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzI4MDA4NSBTYWx0ZWRfX7Vu/2/AV+gPh
- OQYSHg71RtHpwhyHgU6SBu5DhhJkocHCBUrww+HDDGmPToqrt6rFi0SIxiesd6zBwEEY+eLuMvo
- awjR/UDdd+stuplFDhukCp3hG0s9iwsp2JxALmblL0Xqq9ai13l02PefpI0lEXZFnpoyATbPvSP
- vfI3dO92uae6CCCsvsab8TOTGmW/HtZtcEu9lsxlB7NJQYuKLE72eq44IwF7u224uu8zHLFyW6Z
- ohaNhCZ49AZKlp50MGR9PhRdhAgbY6Dw9wNHzssSqjJIasubIQmZ7AbB4oOWt4x/USCNT1W/lPU
- HMJCqG4jMHchWWuFFCCbkyyb1rZleu3Cg1a6f4V+lygz1KU92qEpmMwn33uyz0d1sT49hkfEtAB
- 12HkQn/kRPt/R/yG9Y9v03T1/evMfgFaSwvp7P/nkH8DTgfqoP6jBYBzGAZNU00qTTHxWjQPYjE
- dKUSJen+PvVHoypbZkQ==
-X-Proofpoint-GUID: AFy83_c4YAqg0X-uBzHLJDQhreNnMOKx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-27_02,2026-03-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 malwarescore=0 adultscore=0 phishscore=0 impostorscore=0
- bulkscore=0 clxscore=1015 lowpriorityscore=0 suspectscore=0 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603280085
 
-Add a new function to get an IIO backend by its index in the
-io-backends device tree property. This is useful for multi-channel
-devices that have multiple backends, where looking up by index is
-more straightforward than using named backends.
+Hi Radu,
 
-Extract __devm_iio_backend_fwnode_get_by_index() from the existing
-__devm_iio_backend_fwnode_get(), taking the index directly as a
-parameter. The new public API devm_iio_backend_get_by_index() uses
-the index to find the backend reference in the io-backends property,
-avoiding the need for io-backend-names.
+Looking good. Just some minor stuff.
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-Changes in v8:
-  - No changes
+On Fri, 2026-03-27 at 13:07 +0200, Radu Sabau via B4 Relay wrote:
+> From: Radu Sabau <radu.sabau@analog.com>
+>=20
+> Add buffered capture support using the IIO triggered buffer framework.
+>=20
+> CNV Burst Mode: the GP pin identified by interrupt-names in the device
+> tree is configured as DATA_READY output. The IRQ handler stops
+> conversions and fires the IIO trigger; the trigger handler executes a
+> pre-built SPI message that reads all active channels from the AVG_IN
+> accumulator registers and then resets accumulator state and restarts
+> conversions for the next cycle.
+>=20
+> Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
+> reads the previous result and starts the next conversion (pipelined
+> N+1 scheme). At preenable time a pre-built, optimised SPI message of
+> N+1 transfers is constructed (N channel reads plus one NOOP to drain
+> the pipeline). The trigger handler executes the message in a single
+> spi_sync() call and collects the results. An external trigger (e.g.
+> iio-trig-hrtimer) is required to drive the trigger at the desired
+> sample rate.
+>=20
+> Both modes share the same trigger handler and push a complete scan =E2=80=
+=94
+> one u16 slot per channel at its scan_index position, followed by a
+> timestamp =E2=80=94 to the IIO buffer via iio_push_to_buffers_with_ts().
+>=20
+> The CNV Burst Mode sampling frequency (PWM period) is exposed as a
+> buffer-level attribute via IIO_DEVICE_ATTR.
+>=20
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+> ---
+> =C2=A0drivers/iio/adc/Kconfig=C2=A0 |=C2=A0=C2=A0 2 +
+> =C2=A0drivers/iio/adc/ad4691.c | 616 ++++++++++++++++++++++++++++++++++++=
+++++++++++-
+> =C2=A02 files changed, 612 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 3685a03aa8dc..d498f16c0816 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -142,6 +142,8 @@ config AD4170_4
+> =C2=A0config AD4691
+> =C2=A0	tristate "Analog Devices AD4691 Family ADC Driver"
+> =C2=A0	depends on SPI
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> =C2=A0	select REGMAP
+> =C2=A0	help
+> =C2=A0	=C2=A0 Say yes here to build support for Analog Devices AD4691 Fam=
+ily MuxSAR
+> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
+> index f930efdb9d8c..b5a7646b46ca 100644
+> --- a/drivers/iio/adc/ad4691.c
+> +++ b/drivers/iio/adc/ad4691.c
+> @@ -4,14 +4,18 @@
+> =C2=A0 * Author: Radu Sabau <radu.sabau@analog.com>
+> =C2=A0 */
+> =C2=A0#include <linux/bitfield.h>
+> +#include <linux/bitmap.h>
+> =C2=A0#include <linux/bitops.h>
+> =C2=A0#include <linux/cleanup.h>
+> =C2=A0#include <linux/delay.h>
+> =C2=A0#include <linux/device.h>
+> =C2=A0#include <linux/err.h>
+> +#include <linux/interrupt.h>
+> =C2=A0#include <linux/math.h>
+> =C2=A0#include <linux/module.h>
+> =C2=A0#include <linux/mod_devicetable.h>
+> +#include <linux/property.h>
+> +#include <linux/pwm.h>
+> =C2=A0#include <linux/regmap.h>
+> =C2=A0#include <linux/regulator/consumer.h>
+> =C2=A0#include <linux/reset.h>
+> @@ -19,7 +23,12 @@
+> =C2=A0#include <linux/units.h>
+> =C2=A0#include <linux/unaligned.h>
+> =C2=A0
 
- drivers/iio/industrialio-backend.c | 53 +++++++++++++++++++++---------
- include/linux/iio/backend.h        |  1 +
- 2 files changed, 39 insertions(+), 15 deletions(-)
+...
 
-diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index 58f7e1426095..d6e922c65347 100644
---- a/drivers/iio/industrialio-backend.c
-+++ b/drivers/iio/industrialio-backend.c
-@@ -949,23 +949,13 @@ int iio_backend_data_transfer_addr(struct iio_backend *back, u32 address)
- }
- EXPORT_SYMBOL_NS_GPL(iio_backend_data_transfer_addr, "IIO_BACKEND");
- 
--static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, const char *name,
--							 struct fwnode_handle *fwnode)
-+static struct iio_backend *__devm_iio_backend_fwnode_get_by_index(struct device *dev,
-+								  struct fwnode_handle *fwnode,
-+								  unsigned int index)
- {
- 	struct iio_backend *back;
--	unsigned int index;
- 	int ret;
- 
--	if (name) {
--		ret = device_property_match_string(dev, "io-backend-names",
--						   name);
--		if (ret < 0)
--			return ERR_PTR(ret);
--		index = ret;
--	} else {
--		index = 0;
--	}
--
- 	struct fwnode_handle *fwnode_back __free(fwnode_handle) =
- 		fwnode_find_reference(fwnode, "io-backends", index);
- 	if (IS_ERR(fwnode_back))
-@@ -981,8 +971,7 @@ static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, con
- 		if (ret)
- 			return ERR_PTR(ret);
- 
--		if (name)
--			back->idx = index;
-+		back->idx = index;
- 
- 		return back;
- 	}
-@@ -990,6 +979,24 @@ static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, con
- 	return ERR_PTR(-EPROBE_DEFER);
- }
- 
-+static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, const char *name,
-+							 struct fwnode_handle *fwnode)
-+{
-+	unsigned int index;
-+	int ret;
-+
-+	if (name) {
-+		ret = device_property_match_string(dev, "io-backend-names", name);
-+		if (ret < 0)
-+			return ERR_PTR(ret);
-+		index = ret;
-+	} else {
-+		index = 0;
-+	}
-+
-+	return __devm_iio_backend_fwnode_get_by_index(dev, fwnode, index);
-+}
-+
- /**
-  * devm_iio_backend_get - Device managed backend device get
-  * @dev: Consumer device for the backend
-@@ -1006,6 +1013,22 @@ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
- }
- EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get, "IIO_BACKEND");
- 
-+/**
-+ * devm_iio_backend_get_by_index - Device managed backend device get by index
-+ * @dev: Consumer device for the backend
-+ * @index: Index of the backend in the io-backends property
-+ *
-+ * Gets the backend at @index associated with @dev.
-+ *
-+ * RETURNS:
-+ * A backend pointer, negative error pointer otherwise.
-+ */
-+struct iio_backend *devm_iio_backend_get_by_index(struct device *dev, unsigned int index)
-+{
-+	return __devm_iio_backend_fwnode_get_by_index(dev, dev_fwnode(dev), index);
-+}
-+EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get_by_index, "IIO_BACKEND");
-+
- /**
-  * devm_iio_backend_fwnode_get - Device managed backend firmware node get
-  * @dev: Consumer device for the backend
-diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
-index 7f815f3fed6a..ce2263d4c2de 100644
---- a/include/linux/iio/backend.h
-+++ b/include/linux/iio/backend.h
-@@ -237,6 +237,7 @@ int iio_backend_extend_chan_spec(struct iio_backend *back,
- 				 struct iio_chan_spec *chan);
- void *iio_backend_get_priv(const struct iio_backend *conv);
- struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
-+struct iio_backend *devm_iio_backend_get_by_index(struct device *dev, unsigned int index);
- struct iio_backend *devm_iio_backend_fwnode_get(struct device *dev,
- 						const char *name,
- 						struct fwnode_handle *fwnode);
--- 
-2.43.0
+>=20
+> +static void ad4691_free_scan_bufs(struct ad4691_state *st)
+> +{
+> +	kfree(st->scan_xfers);
+> +	kfree(st->scan_tx);
+> +	kfree(st->scan_rx);
+> +	st->scan_xfers =3D NULL;
+> +	st->scan_tx =3D NULL;
+> +	st->scan_rx =3D NULL;
 
+Do we need NULL. Are you actually checking for that anywhere?
+
+> +}
+> +
+> +static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +	struct device *dev =3D regmap_get_device(st->regmap);
+> +	struct spi_device *spi =3D to_spi_device(dev);
+> +	unsigned int n_active =3D bitmap_weight(indio_dev->active_scan_mask,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->masklength);
+
+ditto
+
+> +	unsigned int n_xfers =3D n_active + 1;
+> +	unsigned int k, i;
+> +	int ret;
+> +
+> +	st->scan_xfers =3D kcalloc(n_xfers, sizeof(*st->scan_xfers), GFP_KERNEL=
+);
+> +	if (!st->scan_xfers)
+> +		return -ENOMEM;
+> +
+> +	st->scan_tx =3D kcalloc(n_xfers, sizeof(*st->scan_tx), GFP_KERNEL);
+> +	if (!st->scan_tx) {
+> +		kfree(st->scan_xfers);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	st->scan_rx =3D kcalloc(n_xfers, sizeof(*st->scan_rx), GFP_KERNEL);
+> +	if (!st->scan_rx) {
+> +		kfree(st->scan_tx);
+> +		kfree(st->scan_xfers);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	spi_message_init(&st->scan_msg);
+> +
+> +	k =3D 0;
+> +	iio_for_each_active_channel(indio_dev, i) {
+> +		st->scan_tx[k] =3D cpu_to_be16(AD4691_ADC_CHAN(i));
+> +		st->scan_xfers[k].tx_buf =3D &st->scan_tx[k];
+> +		st->scan_xfers[k].rx_buf =3D &st->scan_rx[k];
+> +		st->scan_xfers[k].len =3D sizeof(__be16);
+> +		st->scan_xfers[k].cs_change =3D 1;
+> +		spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
+> +		k++;
+> +	}
+> +
+> +	/* Final NOOP transfer to retrieve last channel's result. */
+> +	st->scan_tx[k] =3D cpu_to_be16(AD4691_NOOP);
+> +	st->scan_xfers[k].tx_buf =3D &st->scan_tx[k];
+> +	st->scan_xfers[k].rx_buf =3D &st->scan_rx[k];
+> +	st->scan_xfers[k].len =3D sizeof(__be16);
+> +	spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
+> +
+> +	st->scan_msg.spi =3D spi;
+> +
+> +	ret =3D spi_optimize_message(spi, &st->scan_msg);
+> +	if (ret) {
+> +		ad4691_free_scan_bufs(st);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D ad4691_enter_conversion_mode(st);
+> +	if (ret) {
+> +		spi_unoptimize_message(&st->scan_msg);
+> +		ad4691_free_scan_bufs(st);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad4691_manual_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret =3D ad4691_exit_conversion_mode(st);
+> +	spi_unoptimize_message(&st->scan_msg);
+> +	ad4691_free_scan_bufs(st);
+> +	return ret;
+> +}
+> +
+> +static const struct iio_buffer_setup_ops ad4691_manual_buffer_setup_ops =
+=3D {
+> +	.preenable =3D &ad4691_manual_buffer_preenable,
+> +	.postdisable =3D &ad4691_manual_buffer_postdisable,
+> +};
+> +
+> +static int ad4691_cnv_burst_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +	struct device *dev =3D regmap_get_device(st->regmap);
+> +	struct spi_device *spi =3D to_spi_device(dev);
+> +	unsigned int n_active =3D bitmap_weight(indio_dev->active_scan_mask,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->masklength);
+
+masklength is __private. Use iio_get_masklength(). I would expect sparse to
+complain about the above.
+
+> +	unsigned int bit, k, i;
+> +	int ret;
+> +
+> +	st->scan_xfers =3D kcalloc(2 * n_active, sizeof(*st->scan_xfers),
+> GFP_KERNEL);
+> +	if (!st->scan_xfers)
+> +		return -ENOMEM;
+> +
+> +	st->scan_tx =3D kcalloc(n_active, sizeof(*st->scan_tx), GFP_KERNEL);
+> +	if (!st->scan_tx) {
+> +		kfree(st->scan_xfers);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	st->scan_rx =3D kcalloc(n_active, sizeof(*st->scan_rx), GFP_KERNEL);
+> +	if (!st->scan_rx) {
+> +		kfree(st->scan_tx);
+> +		kfree(st->scan_xfers);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	spi_message_init(&st->scan_msg);
+> +
+> +	/*
+> +	 * Each AVG_IN read needs two transfers: a 2-byte address write phase
+> +	 * followed by a 2-byte data read phase. CS toggles between channels
+> +	 * (cs_change=3D1 on the read phase of all but the last channel).
+> +	 */
+> +	k =3D 0;
+> +	iio_for_each_active_channel(indio_dev, i) {
+> +		st->scan_tx[k] =3D cpu_to_be16(0x8000 | AD4691_AVG_IN(i));
+> +		st->scan_xfers[2 * k].tx_buf =3D &st->scan_tx[k];
+> +		st->scan_xfers[2 * k].len =3D sizeof(__be16);
+> +		spi_message_add_tail(&st->scan_xfers[2 * k], &st->scan_msg);
+> +		st->scan_xfers[2 * k + 1].rx_buf =3D &st->scan_rx[k];
+> +		st->scan_xfers[2 * k + 1].len =3D sizeof(__be16);
+> +		if (k < n_active - 1)
+> +			st->scan_xfers[2 * k + 1].cs_change =3D 1;
+> +		spi_message_add_tail(&st->scan_xfers[2 * k + 1], &st->scan_msg);
+> +		k++;
+> +	}
+> +
+> +	st->scan_msg.spi =3D spi;
+> +
+> +	ret =3D spi_optimize_message(spi, &st->scan_msg);
+> +	if (ret) {
+> +		ad4691_free_scan_bufs(st);
+> +
+Why not goto here?
+
+Alternatively, to simplify error handling with buffers you can use some hel=
+per
+variables with __free(kfree) and then in the end assign to st with no_free_=
+ptr().
+
+> 		return ret;
+> +	}
+> +
+> +	ret =3D regmap_write(st->regmap, AD4691_ACC_MASK_REG,
+> +			=C2=A0=C2=A0 (u16)~bitmap_read(indio_dev->active_scan_mask, 0,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->masklength));
+> +	if (ret)
+> +		goto err;
+> +
+> +	ret =3D regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
+> +			=C2=A0=C2=A0 bitmap_read(indio_dev->active_scan_mask, 0,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->masklength));
+> +	if (ret)
+> +		goto err;
+> +
+> +	iio_for_each_active_channel(indio_dev, bit) {
+> +		ret =3D regmap_write(st->regmap, AD4691_ACC_DEPTH_IN(bit),
+> +				=C2=A0=C2=A0 st->osr[bit]);
+> +		if (ret)
+> +			goto err;
+> +	}
+> +
+> +	ret =3D ad4691_enter_conversion_mode(st);
+> +	if (ret)
+> +		goto err;
+> +
+> +	ret =3D ad4691_sampling_enable(st, true);
+> +	if (ret)
+> +		goto err;
+> +
+> +	enable_irq(st->irq);
+> +	return 0;
+> +err:
+> +	spi_unoptimize_message(&st->scan_msg);
+> +	ad4691_free_scan_bufs(st);
+> +	return ret;
+> +}
+> +
+> +static int ad4691_cnv_burst_buffer_postdisable(struct iio_dev *indio_dev=
+)
+> +{
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	disable_irq(st->irq);
+> +
+> +	ret =3D ad4691_sampling_enable(st, false);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
+> +			=C2=A0=C2=A0 AD4691_SEQ_ALL_CHANNELS_OFF);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D ad4691_exit_conversion_mode(st);
+> +	spi_unoptimize_message(&st->scan_msg);
+> +	ad4691_free_scan_bufs(st);
+> +	return ret;
+> +}
+> +
+> +static const struct iio_buffer_setup_ops ad4691_cnv_burst_buffer_setup_o=
+ps =3D {
+> +	.preenable =3D &ad4691_cnv_burst_buffer_preenable,
+> +	.postdisable =3D &ad4691_cnv_burst_buffer_postdisable,
+> +};
+> +
+> +static ssize_t sampling_frequency_show(struct device *dev,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct device_attribute *attr,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 char *buf)
+> +{
+> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +
+> +	return sysfs_emit(buf, "%u\n", (u32)(NSEC_PER_SEC / st->cnv_period_ns))=
+;
+> +}
+> +
+> +static ssize_t sampling_frequency_store(struct device *dev,
+> +					struct device_attribute *attr,
+> +					const char *buf, size_t len)
+> +{
+> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +	int freq, ret;
+> +
+> +	ret =3D kstrtoint(buf, 10, &freq);
+> +	if (ret)
+> +		return ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	ret =3D ad4691_set_pwm_freq(st, freq);
+> +	if (ret)
+> +		return ret;
+> +
+
+Question. Is it safe or does it make sense to change the above while buffer=
+ing?
+Same question might be valid for other stuff like oversampling.
+
+> +	return len;
+> +}
+> +
+> +static IIO_DEVICE_ATTR(sampling_frequency, 0644,
+> +		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sampling_frequency_show,
+> +		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sampling_frequency_store, 0);
+> +
+> +static const struct iio_dev_attr *ad4691_buffer_attrs[] =3D {
+> +	&iio_dev_attr_sampling_frequency,
+> +	NULL
+> +};
+> +
+> +static irqreturn_t ad4691_irq(int irq, void *private)
+> +{
+> +	struct iio_dev *indio_dev =3D private;
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +
+> +	/*
+> +	 * GPx has asserted: stop conversions before reading so the
+> +	 * accumulator does not continue sampling while the trigger handler
+> +	 * processes the data. Then fire the IIO trigger to push the sample
+> +	 * to the buffer.
+> +	 */
+> +	ad4691_sampling_enable(st, false);
+> +	iio_trigger_poll(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static const struct iio_trigger_ops ad4691_trigger_ops =3D {
+> +	.validate_device =3D iio_trigger_validate_own_device,
+> +};
+> +
+> +static int ad4691_read_scan(struct iio_dev *indio_dev, s64 timestamp)
+> +{
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +	unsigned int i, k =3D 0;
+> +	int ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	ret =3D spi_sync(st->scan_msg.spi, &st->scan_msg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (st->manual_mode) {
+> +		iio_for_each_active_channel(indio_dev, i) {
+> +			st->scan.vals[i] =3D be16_to_cpu(st->scan_rx[k + 1]);
+> +			k++;
+> +		}
+> +	} else {
+> +		iio_for_each_active_channel(indio_dev, i) {
+> +			st->scan.vals[i] =3D be16_to_cpu(st->scan_rx[k]);
+> +			k++;
+> +		}
+> +
+> +		ret =3D regmap_write(st->regmap, AD4691_STATE_RESET_REG,
+> +				=C2=A0=C2=A0 AD4691_STATE_RESET_ALL);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret =3D ad4691_sampling_enable(st, true);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
+> +				=C2=A0=C2=A0=C2=A0 timestamp);
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t ad4691_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf =3D p;
+> +	struct iio_dev *indio_dev =3D pf->indio_dev;
+> +
+> +	ad4691_read_scan(indio_dev, pf->timestamp);
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> =C2=A0static const struct iio_info ad4691_info =3D {
+> =C2=A0	.read_raw =3D &ad4691_read_raw,
+> =C2=A0	.write_raw =3D &ad4691_write_raw,
+> @@ -493,6 +982,18 @@ static const struct iio_info ad4691_info =3D {
+> =C2=A0	.debugfs_reg_access =3D &ad4691_reg_access,
+> =C2=A0};
+> =C2=A0
+> +static int ad4691_pwm_setup(struct ad4691_state *st)
+> +{
+> +	struct device *dev =3D regmap_get_device(st->regmap);
+> +
+> +	st->conv_trigger =3D devm_pwm_get(dev, "cnv");
+> +	if (IS_ERR(st->conv_trigger))
+> +		return dev_err_probe(dev, PTR_ERR(st->conv_trigger),
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get cnv pwm\n");
+> +
+> +	return ad4691_set_pwm_freq(st, st->info->max_rate);
+> +}
+> +
+> =C2=A0static int ad4691_regulator_setup(struct ad4691_state *st)
+> =C2=A0{
+> =C2=A0	struct device *dev =3D regmap_get_device(st->regmap);
+> @@ -557,8 +1058,25 @@ static int ad4691_config(struct ad4691_state *st)
+> =C2=A0{
+> =C2=A0	struct device *dev =3D regmap_get_device(st->regmap);
+> =C2=A0	enum ad4691_ref_ctrl ref_val;
+> +	unsigned int gp_num;
+> =C2=A0	int ret;
+> =C2=A0
+> +	/*
+> +	 * Determine buffer conversion mode from DT: if a PWM is provided it
+> +	 * drives the CNV pin (CNV_BURST_MODE); otherwise CNV is tied to CS
+> +	 * and each SPI transfer triggers a conversion (MANUAL_MODE).
+> +	 * Both modes idle in AUTONOMOUS mode so that read_raw can use the
+> +	 * internal oscillator without disturbing the hardware configuration.
+> +	 */
+> +	if (device_property_present(dev, "pwms")) {
+> +		st->manual_mode =3D false;
+> +		ret =3D ad4691_pwm_setup(st);
+> +		if (ret)
+> +			return ret;
+> +	} else {
+> +		st->manual_mode =3D true;
+> +	}
+> +
+> =C2=A0	switch (st->vref_uV) {
+> =C2=A0	case AD4691_VREF_uV_MIN ... AD4691_VREF_2P5_uV_MAX:
+> =C2=A0		ref_val =3D AD4691_VREF_2P5;
+> @@ -609,7 +1127,87 @@ static int ad4691_config(struct ad4691_state *st)
+> =C2=A0	if (ret)
+> =C2=A0		return dev_err_probe(dev, ret, "Failed to write ADC_SETUP\n");
+> =C2=A0
+> -	return 0;
+> +	if (st->manual_mode)
+> +		return 0;
+> +
+> +	for (gp_num =3D 0; gp_num < ARRAY_SIZE(ad4691_gp_names); gp_num++) {
+> +		if (fwnode_irq_get_byname(dev_fwnode(dev),
+> +					=C2=A0 ad4691_gp_names[gp_num]) > 0)
+
+Don't love this line break. I'm also a bit puzzled. How does the above diff=
+ers from
+the trigger code? I guess this should be the same GP pin?
+
+
+- Nuno S=C3=A1
