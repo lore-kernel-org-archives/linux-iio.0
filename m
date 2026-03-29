@@ -1,124 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC8F624B28;
-	Sun, 29 Mar 2026 08:04:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A96932C027C;
+	Sun, 29 Mar 2026 11:44:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774771490; cv=none; b=iFEOxWIPc+xa169opxKQq/djwvi8S91hC78l1iLU1hdgoLU1KR+LPvcYItkgu9nrNwRd8S+haBsFLlaNO5LJDLEZj7DHeYa+B5g/psS+zkw1P82YfYEI+gkulB4swQEGhipt+FEta6KYkIk/1JUEvE48iDWJ11SfhC+1d9xY8Ww=
+	t=1774784686; cv=none; b=pv/t6gXPjON1qiVacLlCEd5AvQJLxin9qk/jB1YWpGjIq8HyPkaXTweKBDJhsAtUNd5FfOpEtvT79aE5aQTnTfzaydsnxS80tQqH3W87g5BqmvHUfq11IlgIcn+Id+HxuvVABbfnyRJn5RrZuQleKHdK3nEiS9clzIzDqAkB15M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774771490; c=relaxed/simple;
-	bh=i6SF/XNHOmRD3nw7Nr4/q/gJ9IwKNLMR8vrL1INFa/w=;
+	s=arc-20240116; t=1774784686; c=relaxed/simple;
+	bh=D5iAEQPkFQWm4injXxqIxAXkOcm7afpN1Rs3qz7Hw0Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ftOFPiDowGoN7zLJF3dhSjsnBYmKlqwlfjdMRL1nJXnwZaIoj+efUyf61/RsFd3fjjfz9d8DTyFf3OydviVAHldMe6VZugK+aJn1I4AEER+HPoYP7r1k3t/sFU5VpPKlM0J3LHIy9QzPZIT9e9vj3OKN2INMJWEM+QooLv2Dkaw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LUNOBC6W; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=JmFZMmFNxQNZ0YPaqmbVDZrTTUans2MXeIKXJ6SPXhXlIRR82Psxr/1hxHFE3fkbK4o0zREv6Oy7WfNzEwskf7kfehPcbJu7GTbqy9HiDJS84e6e+S/gjyOv/tmUzHbHyObrpjP248z1dirFQQbiwAem8KNEHnPtG6o11yH7/4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z9+OROKb; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LUNOBC6W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF8ACC116C6;
-	Sun, 29 Mar 2026 08:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774771490;
-	bh=i6SF/XNHOmRD3nw7Nr4/q/gJ9IwKNLMR8vrL1INFa/w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LUNOBC6W3siRz3O/MJUXFqKvWhmKuFuVTeOiEgUSLMA2Q2OTfOfA5bVnT1v5+G8K5
-	 yzq4CbMUnkIO4kaIVauW0xPyEhCaWxh5lzDDXtjNYdmhRqEcpJWdx1G3bvuzk1esjc
-	 NZ7buNMOsoYgX0CR9UHlehhrDlTD0GHPAQqkUFnKaAeEYJvuJ8qhMsBTTe+ZOz6opN
-	 ++9tkipFX0uRMDjx4vBhN/WYGlHkFj2zjAYTWJt9ucMQXBWCFqFDFnAlp6lKa4AgZr
-	 Yhhknt4ih4Nryxkg1ZK0/Zulz7YIGf0Q0SByyU8KV7OL4RoJlXNi04rH3+TKUIqhXD
-	 I0dE71BfmCX6Q==
-Date: Sun, 29 Mar 2026 10:04:47 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: radu.sabau@analog.com
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
-	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v5 3/4] iio: adc: ad4691: add triggered buffer support
-Message-ID: <acjaqByQo0C2Msjo@monoceros>
-References: <20260327-ad4692-multichannel-sar-adc-driver-v5-0-11f789de47b8@analog.com>
- <20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z9+OROKb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774784683; x=1806320683;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=D5iAEQPkFQWm4injXxqIxAXkOcm7afpN1Rs3qz7Hw0Y=;
+  b=Z9+OROKbhAeN5pgqsO4yFH8WR6VJ5bc1WVJ0kOmYLwg6AuR5K0hL/tYT
+   lPaUV1n7XLfLKMDVn3imZrv7ZlRPWtzFrI/waHYh4bnCJ2sAuwKJrb0Dn
+   RdqY9Bkn2+UMCJPXJ97mzW5Yk6rozTBPB8+PDVzB2CJwGXRawe2IY6sV4
+   nFo4toixdEfFGnIb5Z+5BTNG8cvZRhjA1AL/u9Q8E1pfnHzhBZ3k0K0nm
+   TRKoG0DSg7vx2DC+0jnuhPTkLAQ7QOY7+lFaGcn5/b7KP9WYrM60iJ3K8
+   lX6euOsfqWeCYbrMUgvGIU2tiG7fiehPcHdLZDx/hBzPi8n4A/hV7S8wu
+   Q==;
+X-CSE-ConnectionGUID: NxuzGoICTNu/+f17bhf9yw==
+X-CSE-MsgGUID: CFn3avyrT4qi+7Cs2eol0A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11742"; a="86101099"
+X-IronPort-AV: E=Sophos;i="6.23,148,1770624000"; 
+   d="scan'208";a="86101099"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2026 04:44:43 -0700
+X-CSE-ConnectionGUID: NZtDlPxoSDiuQ/JgPNuJuQ==
+X-CSE-MsgGUID: 8L73Jc4tSpOi9fiCQqRPKQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,148,1770624000"; 
+   d="scan'208";a="256295510"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.29])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2026 04:44:41 -0700
+Date: Sun, 29 Mar 2026 14:44:38 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, kees@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/4] iio: ssp_sensors: ssp_spi: use guard() to release
+ mutexes
+Message-ID: <ackQpuBPZva28ZMd@ashevche-desk.local>
+References: <20260326081815.925373-1-sanjayembedded@gmail.com>
+ <20260326081815.925373-4-sanjayembedded@gmail.com>
+ <acT6vokgYuUTsWcj@ashevche-desk.local>
+ <4017E54C-B25B-41AC-B4E1-F28576C2D64C@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="5etpnf3qopr55utl"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8@analog.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <4017E54C-B25B-41AC-B4E1-F28576C2D64C@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
+
+On Sat, Mar 28, 2026 at 12:24:11PM +0530, Sanjay Chitroda wrote:
+> On 26 March 2026 2:52:06 pm IST, Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> >On Thu, Mar 26, 2026 at 01:48:14PM +0530, Sanjay Chitroda wrote:
+
+> >> Replace explicit mutex_lock() and mutex_unlock() with the guard() macro
+> >> for cleaner and safer mutex handling.
+> >
+> >NAK. Please, be very careful when do such changes.
+
+...
+
+> >> -	mutex_unlock(&data->comm_lock);
+> >> -
+> >
+> >Pzzz! See what you are doing here...
+> 
+> Thank Andy for pointing this out — you’re right, using "guard(mutex)" here
+> unintentionally extends the lifetime of "comm_lock" and can hold it across
+> the completion wait, which is not safe.
+> 
+> I’ve reworked the change to keep the original locking semantics intact:
+> 
+> - "comm_lock" is still explicitly unlocked before "wait_for_completion_timeout()"
+> - No sleeping paths are executed while holding "comm_lock"
+> - Introduced small helpers to simplify the flow:
+>   - "ssp_send_and_enqueue()" for SPI write + pending list add
+>   - "ssp_dequeue_msg()" for safe removal from the pending list
+> 
+> Updated flow looks like this:
+
+If you are going to mix mutex_lock() with guard()(), it's even more NAKish
+solution (id est worse than no change).
+
+> This keeps the synchronization boundary unchanged while reducing duplication
+> around pending list handling. I’ve also limited "guard()" usage to short,
+> local critical sections only.
+> 
+> Please let me know if you’d prefer keeping the list operations inline instead
+> of helpers.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---5etpnf3qopr55utl
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH v5 3/4] iio: adc: ad4691: add triggered buffer support
-MIME-Version: 1.0
-
-On Fri, Mar 27, 2026 at 01:07:59PM +0200, Radu Sabau via B4 Relay wrote:
-> +static const char * const ad4691_gp_names[] = { "gp0", "gp1", "gp2", "gp3" };
-> +
-> +/*
-> + * Valid ACC_DEPTH values where the effective divisor equals the count.
-> + * From Table 13: ACC_DEPTH = 2^N yields right-shift = N, divisor = 2^N.
-> + */
-> +static const int ad4691_oversampling_ratios[] = { 1, 2, 4, 8, 16, 32 };
-> [...]
-> +static int ad4691_set_oversampling_ratio(struct iio_dev *indio_dev,
-> +					 const struct iio_chan_spec *chan,
-> +					 int osr)
-> +{
-> +	struct ad4691_state *st = iio_priv(indio_dev);
-> +	unsigned int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(ad4691_oversampling_ratios); i++) {
-> +		if (ad4691_oversampling_ratios[i] != osr)
-> +			continue;
-
-Given that ad4691_oversampling_ratios[i] is 1 << i; you can get rid of
-the loop using something like:
-
-	if (osr < 1 || osr > 32 || !is_power_of_2(osr))
-		return -EINVAL;
-
-	i = ilog2(osr);
-
-> +
-> +		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-> +		if (IIO_DEV_ACQUIRE_FAILED(claim))
-> +			return -EBUSY;
-> +
-> +		st->osr[chan->scan_index] = osr;
-> +		return regmap_write(st->regmap,
-> +				    AD4691_ACC_DEPTH_IN(chan->scan_index), osr);
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-
-Best regards
-Uwe
-
---5etpnf3qopr55utl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmnI3RwACgkQj4D7WH0S
-/k6zzAf+J/7TqFHxQOCCHdUOD0oRn8btWZ2pH95is3fxAKrwDQtngFy3M4CULsCg
-GqYyEx+As2PJ1gq8S4Sy8jGMn7um3xjGe/WP82wePbJ1ZnYbfyiGFGRd8Ra5IgV2
-rujUIVQnvkbiwWnvg9IYUQmkwOl3aGa+dS13XzG9FO/9hrS/SnxaBdt+rKZrPTD3
-GTFcSRG2f8op0gwLh+7uUEOQbos+jI5DhXxujrs56oEJxatRLP/0EKmz6VRVUc1f
-8h38ZNXNJP1JlEwYK4HH3PiIF7zDC4i8VFqzph2t1rKkzGwueaUDi72C1HThYl/9
-1Nc/iQRpQneT8ikWVpjN8yWMsd5pCQ==
-=0mMc
------END PGP SIGNATURE-----
-
---5etpnf3qopr55utl--
