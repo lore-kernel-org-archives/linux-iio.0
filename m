@@ -1,35 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B279E37474A
-	for <linux-iio@vger.kernel.org>; Sun, 29 Mar 2026 13:18:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA8EA3644D3
+	for <linux-iio@vger.kernel.org>; Sun, 29 Mar 2026 13:28:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774790289; cv=none; b=Vh4vSbATucHlc0IbbyWA7UPKDJ3LRMrrxIcX2qHy3YlKpuxQPH+q3AE3bi7f98mEFvI7mU/v1Rz8qU237DX9FQaamnoDSfD2SJxdFkiEGPEqGxku1b5nEXX+RHseXwaxGG8d4zB81dWeJcginEwDIY6bV9VKcFQsGTVwl4ebebA=
+	t=1774790916; cv=none; b=Z8iqvk6CK62RwpnL6jaafNy8ohD0UyJ+nXemz2NzCSHHOfVYW0aqWG3ZE9/a3Zt7ITp8kakKywNxGWocFV3ZEcqQ93OF9g0bdFEMAv4Cd3SIxzF0B6W+aImDarCEaJiSNa32X+dPXMw13Dcrpo+zfjBO+JdIHwpZdORTMpIiWf0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774790289; c=relaxed/simple;
-	bh=eApb5MD+5Z+HkOZ00xPQFiTDaP1KOTGq0sr6nsG584U=;
+	s=arc-20240116; t=1774790916; c=relaxed/simple;
+	bh=04CXUzZXYtG55ff1JEgTZdQIxC1FnHWfqxjZyYnD62o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nDQTiIJe7yyJEag/q/Ye3xdS19TmGlJ4Lw1/OfihO/KD9Njsefp0MwWkzuWfsCmbCV0qZdrWD2Efug9oXD+pRWySG7Sn6xev3iIsLlxT/58JVQ911U6rU9jcBYR+YX4mVZd2idZWRJu1Wlm9wFUgPc68F+PmK+Nb55jyF9K4mUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=bWprugWn; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=P/6TsB3K3979tRwuB+spublhjLAuaaJ12iYJmdGzbw7DXlSzwjiPRN7Y848U1p1pRmpK8Wr0qx+LdBPpPwYSOwTRxmf+9s4rXV07BeRpXpmkt9pDPsU1JdxjGrUZ1lGNH4KTT24gVHBBkNOFEI4Lq9eCA4YVBlFzDErUnlCJ8RU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=zWZ9/Xr+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="bWprugWn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDD0AC116C6;
-	Sun, 29 Mar 2026 13:18:08 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="zWZ9/Xr+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C0A4C116C6;
+	Sun, 29 Mar 2026 13:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1774790289;
-	bh=eApb5MD+5Z+HkOZ00xPQFiTDaP1KOTGq0sr6nsG584U=;
+	s=korg; t=1774790916;
+	bh=04CXUzZXYtG55ff1JEgTZdQIxC1FnHWfqxjZyYnD62o=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bWprugWnVd+WkggPVgidBwsNbDPNoltPdD6w4JG90ofbWNz6YxZLMX7Xl1NkF+wYk
-	 UKyFJ9eAr5WXxAB0Z1pfYmu+QyyjrIEC1gTbsDoUrj+Ton1MHQfkimTz3OCX9Q1gcx
-	 2Xx3JAOkJZjkERHEI8+OU45Q9OvuICVWqt820TUE=
-Date: Sun, 29 Mar 2026 14:50:08 +0200
+	b=zWZ9/Xr+Zp97AP/N2LLeEt4YWrh4ribQwSGpOhP/V8QhGvjD9wRRBrLAJm9asgugz
+	 bmHSDRx+NIaaw6bIDvcwpz0DebTbyn1bx14l7UdpLgWR5rrSwOywo/mtzPXOTyyvn0
+	 6obOaxC9g5dFDCA8wHv2VBQ9Vmq0x3R3PkTam2B0=
+Date: Sun, 29 Mar 2026 15:27:40 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org
-Subject: Re: [PULL] IIO: 2nd set of fixes for 7.0
-Message-ID: <2026032900-mastiff-bunkbed-4042@gregkh>
-References: <20260314110912.7f512f0a@jic23-huawei>
+Subject: Re: [PULL] IIO: 3rd set of fixes for the 7.0 cycle (or 7.1 merge
+ window)
+Message-ID: <2026032932-savanna-deport-0bef@gregkh>
+References: <20260329141456.0860794e@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -38,16 +39,18 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260314110912.7f512f0a@jic23-huawei>
+In-Reply-To: <20260329141456.0860794e@jic23-huawei>
 
-On Sat, Mar 14, 2026 at 11:09:12AM +0000, Jonathan Cameron wrote:
-> The following changes since commit a0b9b0f1433c845bda708753db32befef78e0f1f:
+On Sun, Mar 29, 2026 at 02:14:56PM +0100, Jonathan Cameron wrote:
+> The following changes since commit ea7e2e43d768102e2601dbbda42041c78d7a99f9:
 > 
->   rust_binder: use lock_vma_under_rcu() in use_page_slow() (2026-02-26 21:34:14 -0800)
+>   iio: imu: adis16550: fix swapped gyro/accel filter functions (2026-03-07 14:11:30 +0000)
 > 
 > are available in the Git repository at:
 > 
->   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-7.0b
+>   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-7.0c
+> 
+> for you to fetch changes up to d0b224cf9ab12e86a4d1ca55c760dfaa5c19cbe7:
 
 Pulled and pushed out, thanks.
 
