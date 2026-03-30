@@ -1,133 +1,171 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021123.outbound.protection.outlook.com [40.107.130.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 569873C9EFD;
-	Mon, 30 Mar 2026 11:21:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774869675; cv=none; b=RMMwP5q3xhJZE/98PpnlM+potaxDVo5/9s39/Xi7vP3234ID+YFK9L6o7j/VRp+ilHmgZCD9v3FfsGV+UbRiAr8YiSDQbTv9djZNFyLv+XLYhcAXpYwMpwS9O3Be3TPfa5BAn5ITi62IIEVRecQfoj4GQFF92AdQK1y2nQ3EPWw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774869675; c=relaxed/simple;
-	bh=yEm2kQ1Bm9gHwaiHulG0ZYvvXxm+s1dwkuBK2lU9eTw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oSTEGt68pho/csG3eym0kSn8I4HlDTE1p8RVohFqMneFpUkSWpYs+tzwE4O5V0gv3bGDgrqAfJCt8VpU+rooQ4dC9dH+44uUC9bt7AJuRpSV6vWB8AvQhQKVAhniSCyhZgfm8TC+TPCuPXxaJ2k32r9sekBBbZz4FkVmUdqgNs8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=SCRFUWve; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2825A3C344D;
+	Mon, 30 Mar 2026 12:02:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.123
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774872152; cv=fail; b=oKVpHJH2rydLqMzEp3uxdVyFo6KWdnIPYV+zFQBT97P/UeyfumiZJ3N4jISy402B/58kOQqZfTklHn8ajhlLbLGaJRgVDpCiB7tHdCtwMQ/YO2X2ufO/+N+VIfJMIKp/FfYcfJeOpmgFTs2uD5aQqvgmMJwZPJE2AAV08nzxLqM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774872152; c=relaxed/simple;
+	bh=xMJoVFGWbuZMxs9t04DXpXO4Zuypvi8nUv+eDCupBFc=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=eCm6xC5sf4RRnyBn2yenHXVeBknR3dDfoG8C3DKNEPQNyBu/oFUFXgaqVbL1fcI+IyVd9/HoFsz7AMqv1lcUMv8fK3t/WHXvX5UgR5wKvB3fNer3pQ0QmjNlXbX79V3HfRs53dJYY4NKT8TEB7Vk+FAowKBjABVY0dniD/o3qUc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=ytGzpRiZ; arc=fail smtp.client-ip=40.107.130.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="SCRFUWve"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62UAwCJL217176;
-	Mon, 30 Mar 2026 07:20:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=zDZaA
-	W93oGLSeJ7siRA7oSWtnbC4931eEMdEp8pbWvo=; b=SCRFUWveCECadkCjd+rfu
-	OftixpqTFhxUcseOJsJ2JKNlv8c6cU7SXSKaqVik292IrRyGnWFbJczdUH++mQfX
-	7yn6u/j+D2k98E4uYyy1JAvu3Oy1VC5Ck/Ubmj5tkADOq0or2z9rOdv1kPTdkd7Q
-	gGYw36CaBGJm76HmZ6H+mm80oFofChzvVGMe1Q7tOU7WehZHz63SJbAMpP+lTUPt
-	YnF4RwQeI4lY5/CGn7okusRmJxw7MkyUZbG6Lq1yi2lx+ghSiIDGssp4fCeW0X00
-	J+FvDXunOxRU7c1mf1OwLibYydNimlC23bs6f5zWECEBTGo+Q9tWhQ2nmaD7ARWG
-	A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4d6wab478n-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 30 Mar 2026 07:20:53 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62UBKq5n026962
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 30 Mar 2026 07:20:52 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 30 Mar 2026 07:20:51 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 30 Mar 2026 07:20:51 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 30 Mar 2026 07:20:51 -0400
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.204])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62UBKDgg014225;
-	Mon, 30 Mar 2026 07:20:43 -0400
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Jorge Marques <jorge.marques@analog.com>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        "Jonathan Cameron" <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Marcelo Schmitt
-	<marcelo.schmitt1@gmail.com>,
-        Renato Lui Geh <renatogeh@gmail.com>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH 13/13] iio: adc: ad4062: use dev_err_probe
-Date: Mon, 30 Mar 2026 14:18:56 +0300
-Message-ID: <20260330111856.121589-14-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260330111856.121589-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="ytGzpRiZ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vr58tZQSELjzwTdOvsGQ5wVoUa9QnEKIJRnSq1jtyT1r/abrZQ4YMZK7pfnq3aQ35Fz6chv6OurEuvGLYdERvOtaq1kPrx3ptU3bzHBaVq7iWO5L1wIchwFrF+/Cy6zHwhSkkFMycLyJpOi8N6ofNsoSl0Lkbn6N99dTmMrGV+T+iKoeoBm1CaOLzrBEr8OTr4LiXljUHtE2U7t8rKNpCitdnWqLe9EGc3LBU86S/HlfcyHV8emQYcG/1BV1Xb44yc5MGtmnm5U/wLpoJYPI0zjYWgnYyhs5ZQxFtBjLLE0nIeyBwUYZQmbIbTsys5YHVH6W7ZGpgpVomnWxkEPCKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pErJ+C9RR37ejBjxvSlSVhu/FW4KVsm8oFgweZcBT30=;
+ b=xvCNiYphXsvTwNmvI26heeCIg6WBfLwJzDdviPV3lm1MFQnnQT+QQnS3p3Uxx6ulIuOG0tw8x5vFa/GicYNBIQl6nYJEq/qzqD8TZYmAKir4GQ89qOcNEJ21XiGjJgIEgXST80CV9eB9HqGXq29bD1Rw4457SxzWDvql7ZUcd5mxS6EyZZd5Kyk/38hiw+npj4ndBKGzYmXYcDvC0/mSvCvSnLbHeIQgEAHemzxKIfYoGG9ChmsYcbXHUl14iswMLiDQFFT21yt02pJGsQsuUahbfbeH9XEeJ7jtSNs09xrTAT/M+4xdsflnh4qHRsuaHNZLdONxly/yDhkhXHYaqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pErJ+C9RR37ejBjxvSlSVhu/FW4KVsm8oFgweZcBT30=;
+ b=ytGzpRiZz0ki1bJa9nDCP3mCkNTCZ4MFU8W4X/DOWRtHmpZADggSccEZtrnKjBPSFrP8TEFOgnAuYZl7wq85fq3OhX/hR6um8qxfq2CyLQH/UekkogEtear8xXSBCK7hA/KuhOB1fhMTkLS51NpWzOHg8l0M9Do5KjV54cfShhvOv3DRqlVXTJvWulcXGdQRmDXpjPU3AYxNlwDPXfLw4jgmdoRmXBggHEMMUsww7h5hrKgoCbLSAaBpU7w3EOQgZ48J9Vp8wGeYzAmBnqiMMbB3BUjFpIbpU024+9oLvzE9VbLPeuDvwPOE45lhqAacS0Ml2i4/ozKH1xOZKyjwGA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from VI0PR06MB10639.eurprd06.prod.outlook.com
+ (2603:10a6:800:2f4::10) by FRZPR06MB11132.eurprd06.prod.outlook.com
+ (2603:10a6:d10:1c8::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.27; Mon, 30 Mar
+ 2026 12:02:20 +0000
+Received: from VI0PR06MB10639.eurprd06.prod.outlook.com
+ ([fe80::3a41:90d:2091:bfee]) by VI0PR06MB10639.eurprd06.prod.outlook.com
+ ([fe80::3a41:90d:2091:bfee%4]) with mapi id 15.20.9745.027; Mon, 30 Mar 2026
+ 12:02:20 +0000
+Message-ID: <e7780a82-aa32-4b59-b11f-0124347fcdb2@vaisala.com>
+Date: Mon, 30 Mar 2026 15:02:18 +0300
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 12/13] iio: adc: ad9467: use dev_err_probe
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Jorge Marques <jorge.marques@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+ Renato Lui Geh <renatogeh@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 References: <20260330111856.121589-1-antoniu.miclaus@analog.com>
+ <20260330111856.121589-13-antoniu.miclaus@analog.com>
+Content-Language: en-GB
+From: Tomas Melin <tomas.melin@vaisala.com>
+In-Reply-To: <20260330111856.121589-13-antoniu.miclaus@analog.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: GV2PEPF00023983.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:158:400::368) To VI0PR06MB10639.eurprd06.prod.outlook.com
+ (2603:10a6:800:2f4::10)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: 7Bgqrcvcms6W1iBk_GMsKIVigR3WORYb
-X-Authority-Analysis: v=2.4 cv=YJmSCBGx c=1 sm=1 tr=0 ts=69ca5c95 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=wKzcWFdhvmuAoNSPTJgA:9
-X-Proofpoint-GUID: 7Bgqrcvcms6W1iBk_GMsKIVigR3WORYb
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzMwMDA4OSBTYWx0ZWRfXw6+rYu/WDhvp
- m5ozaE5VB2eqSYT2cQP/EW0EcRFpavOlVB48PqsSBlDl98TbqXcjfQgqyupIc5INVLfyaaWGXei
- GvA/aXEP+7Jbl4gcoLCULbxj5Fd0706W8B6AZN7IETmPdwknj8uQHA7tn2Y/1Z6gxIKkzw3T/jt
- P+V0RNa9EOUHOJR2sRHN5Cicax8KPO1wlWoMP/K5ReVnc+TqGA+qhvQEmQNh/2ohHwxxjaBKzmO
- IDnPVu/PO6ytGan8bzAsoDmSpmV9g98WE29wB0hvwvchG9tXvK7Ha30CPlpRKu6Iy1XXiOhTfWL
- PgTWK6Xmy3GrhFNXETVaOSN2Q9+OhK7eTGfpoHYGeAJEXDEi3li8OXdtb5cK2+oJkhM2cKtrgNP
- cNitE7dhnSB/M9W6WarK+PgrtRp6G0kPQVlafwkitzY8KancYHXGKUkRFW9ksmylf3PYPrLSdee
- M4qxSGhMVqBHN0egx7A==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-29_05,2026-03-28_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 bulkscore=0 suspectscore=0 malwarescore=0 adultscore=0
- spamscore=0 lowpriorityscore=0 phishscore=0 clxscore=1015 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603300089
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI0PR06MB10639:EE_|FRZPR06MB11132:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f695696-7c17-4956-89fd-08de8e54322c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|1800799024|366016|921020|22082099003|18002099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	LNVibEYhdK+w2y61XNff7VxeuUCtP60lZHFt5NbLJ5jplSCD5wQrj4x8NM3qy04MMoVJnzddA0dATRe8y0TrZh9i4e0jYkKn0ZCQwprcUTxLssTk92dQG5aR6Fn84NlHmSI6miE9NGjhTJTjd98fNI1funp7u53iwRmAs9mQ+7uzH8Y+1rY4PWB4oXqKMYYNTFmtsxrF3IxRfhHv1+OpEQV9DO0IF0AgUKcrjY3TF/MJVamVqBONfBIeHA3pGKT3r4SY9HNETavpTOUlLb4XSt4OwjoMAYbGiTPKmckwXljeFXmbHpuW1Hnra28mUsUA3de3IPQLdnfzloyHmX2exyPHzF2Wj27QF3lYLbChveW2d3ptuoJFuOdReohvxQNyfv8I1bCo5b2AU/qyVyw/zmHX3Ltpsl9Q6Fq8rirA2527eDfuLJhdfORpSv29lOF9mjX97oj2TT/p65QUr/ojKwcWyG/R9WTv2SqLEtZEFFoGH1iBaLANN9Bh+7/dDGqkFYx4fzoIulXj2vYg51LBnuSt8cR/nzvdNKKkD4Lv0tIs8H2laN5bO5/vaaohdhcTgHAlPRc2zYWLW56TnyStymA147xF4g7d5q81KYQk2qBNbPSPFnsNrdtnDWahQujIvL+qHpOiVhpZj2AsmR88S7WQ+FCNEw67ovA17BC+IzyMheipY2FQ0CvXue734NDO0rf1J12RwXd7A1yUQaXfTAbTporPPKcDhKzWP5PQna4egixAVPThkxC7OtxWMQ30l9J8kerctvt2X6DOFy7uyA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI0PR06MB10639.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(921020)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?alR6TjgvcjlWYW9IdmJtc0ZiM28zUXg4Z0QxTEhaNEs2bHNmTndOejhSY2Vw?=
+ =?utf-8?B?ODlHWnMwdmxOTHllSGpSQ2tHMWRUVlNidWQrS29kMC9iTVlLVDRrZzgrSU4r?=
+ =?utf-8?B?em9LeG03b0NkQkRZSWJqNGtDK3hHVlJzTkxIbElFKzR3OEVIZHI0TXRSbWtz?=
+ =?utf-8?B?V0ZnNE5ub09ZR0lsWmtwNGRpYTNleFIwWlhzcVF6alFvcjdZSURUazFBUzA0?=
+ =?utf-8?B?STF5ZkRhRVNFZ0s0elg1MzJ1S0w1d1JGN0tRdkJFZnNnVUVVTFBrcGFOWmVX?=
+ =?utf-8?B?VHZYWFNtS2Q5U0hLS3YvTm5hWXlBUUhTcjFCTFRlazJJWFZETkUxbVVRMjNU?=
+ =?utf-8?B?OVZKVlY4WnFJSS9NSzdsZ0FncEdpdW05cUtSY0xrZ0VJNVI1M3VyY0MzTjJ3?=
+ =?utf-8?B?dndteDd5V1AwYzNLV1VZK3ZseGlZS1ErbHlCNmcwbWxHQ2N2dlpaUEhTTlhW?=
+ =?utf-8?B?ZEFGVWg0WDl0RVRsdWZSNWNHM00yR3pNT09FQTMzY054RnBwZ0FjTHZDeVU0?=
+ =?utf-8?B?UmxkMCsvdjNhRjJZYTc3K0xLd25UNHdTNGc4VVIxNFJ2SDhGZStPdERWWVVz?=
+ =?utf-8?B?ZFJnM3Q3YVM0dWYyTElRUjRHVk1rYVI4K2s1dDdxRTROaDNFNTY2a2ptbURN?=
+ =?utf-8?B?YmVEVks0QnB2dDVlbThzT1Q0QTlLTlI4UCtRN2tOblJ0M2NWT2tabDVtTXFl?=
+ =?utf-8?B?enM4OXJJQ21sV3JLRjBQOEJDQUdtTkpad2JTUGdjbHhSZW5vdnFOSmxRVldD?=
+ =?utf-8?B?WEN3eWdkZm1wYy9wRGU5dE9iSC9vYTU3eEVrbjc2ZnBxSHFzcEZUVWY3cUxn?=
+ =?utf-8?B?SjhFMHZlOURhN0dRTjhHTnhjZ1JwM0FrbnJXTEJQSHFQMXpIa3dyNDRVMzJ5?=
+ =?utf-8?B?Nm5Mei9lSjhtNHVzRlcxVnUxOUZObk5Vend6OXhVdkhsV2ZWVE9xNUxYZjhV?=
+ =?utf-8?B?Mkg1cGtoYmNwZ3FHZGgwY0dpdEgrT3NCdXhUcWVVSFA2bUlDaFRmdzNPS3dD?=
+ =?utf-8?B?UzNJalIwd3Y3ZnZsMGxKcDI4dmVmYXp6R1VidE40TExtVFEwOWRuNUYxQVRn?=
+ =?utf-8?B?NGI1TWNTZ1MwQ2RtSkhwaDNiRTQ2UmlqRmRocjNiZ25ycjlZaU1qNWVxMS9q?=
+ =?utf-8?B?R3lSNnVzSGNweGYvcVpET0F2QmlrWXVPZ3ZwWjZJRmdaSUg4Nm1raVgzMDV2?=
+ =?utf-8?B?WTVENWdzK1k0bHlYeU56YVlRTGlyNEtKc01Wa1JwN0JveW16NmtYSmdYMHFJ?=
+ =?utf-8?B?TmpVYTcyNFhUQ3MyMk5Sb3VYUWtvcHF2T2JHRGo0S29CMHU1S3FmUmU1SlBE?=
+ =?utf-8?B?UlRRMWllOFV2VE5LbU1YbVFsZ1pKbjh4ODRxYi9wVk56Snc5ODdDdUpkQW9T?=
+ =?utf-8?B?cjFDbFRPY3NibnR5SnBhUlpORjZZcUdySndmS1JOWFVsYU1Wa1VONW44STd5?=
+ =?utf-8?B?SGJ6bFRvcmw1K2EvN3N3b1lOVEVnNWExQk55KzlZYVdGbk51b2pyZG9wWjRy?=
+ =?utf-8?B?a0lwWVZDYXQrbjhYS1o4ODV0U0lNeVRHQWxZcUlsNUVXa0FjMHNzNXZUZEox?=
+ =?utf-8?B?d3VrR3ZxZis4QmNuUlE5NDZwTnk5U0lkb0NGdG5tczY2UGZtMTVaQzNFaWUr?=
+ =?utf-8?B?K05ONUl1RGg2Wk5yWHBldXFPUjZnMWJTeFB4cHBaWC9BemViaXQ4TXJuNEcz?=
+ =?utf-8?B?R0hQMkYxMlJBcjJZMUg5bkdGM09QekhKajRzM2cxbUJWbW5EaExsV3J3MzdN?=
+ =?utf-8?B?Z0lWdWxWaHQvNGdEYitDUVdONmVWdUJDOHZDN09RNmVENWUrUDRxV0w5WDc2?=
+ =?utf-8?B?RVlWVGFCcE1McjNIeThQZDJoYk5GTm8zUWFmQjlVNmZFUkt3Y0pkN1BpR2xi?=
+ =?utf-8?B?dm14RytkS2d5R05KSGRJb0l6QTY0eEh0bWdJVjltNlE5QlQ2RDdiYXNGTUpU?=
+ =?utf-8?B?VXdlQ3pXa25MalA5alIyT3hHS3V5N2VOOTFJbnlsU1gyT3VPeEFvYm9jallK?=
+ =?utf-8?B?K3ZoUk9ueDEzR0REVWRCWWFtQmM0SkNYS3pNaFZEd0QyS0hRMzM5b1lMOENu?=
+ =?utf-8?B?TzdZNGpSZlRLNmFiSnJSdmVwYjZ2ZjRCeG9nbC9iZzFBbmN6bjN2QVFDdGd6?=
+ =?utf-8?B?TDFxcGpnTHh0RW1FVFpxUGNCekFXSGpzNEl1TkVibnl0ZmFDS1JtTkVHUEx0?=
+ =?utf-8?B?S2paMmJSQUxmaXBDaVY1RDBZaFVJbEJ2U2ErL1Y3WDc1K21IZjBhSFpVdXU2?=
+ =?utf-8?B?emdKcWlxay8zd0ZZUWlOTEJQdHMveWl1RFRsUjdlTml5SDYvYll2Q3pCNWNm?=
+ =?utf-8?B?OGFUTjIrN21HK2pBYVJhSzM0UDF6TkNVVm5iTG54NzlLU2I0eTVRRkU5MW9u?=
+ =?utf-8?Q?+00Y1FbX1cY95heg=3D?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f695696-7c17-4956-89fd-08de8e54322c
+X-MS-Exchange-CrossTenant-AuthSource: VI0PR06MB10639.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 12:02:20.4670
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GjqbvNH1/7qUXLiDh8F1U8DG8+OQHV0pfFxWRx9FR57ubm5C6XQBVn2OSvjO4/NtMPRQQKIKQzdBCl+3NtsYhA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: FRZPR06MB11132
 
-Use dev_err_probe() instead of dev_err() in the probe path to ensure
-proper handling of deferred probing and to simplify error handling.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/adc/ad4062.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+On 30/03/2026 14:18, Antoniu Miclaus wrote:
+> Use dev_err_probe() instead of dev_err() in the probe path to ensure
+> proper handling of deferred probing and to simplify error handling.
+>
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 
-diff --git a/drivers/iio/adc/ad4062.c b/drivers/iio/adc/ad4062.c
-index c864de3b46ba..8942c79e8d83 100644
---- a/drivers/iio/adc/ad4062.c
-+++ b/drivers/iio/adc/ad4062.c
-@@ -436,10 +436,9 @@ static int ad4062_check_ids(struct ad4062_state *st)
- 		return ret;
- 
- 	val = be16_to_cpu(st->buf.be16);
--	if (val != AD4062_I3C_VENDOR) {
--		dev_err(dev, "Vendor ID x%x does not match expected value\n", val);
--		return -ENODEV;
--	}
-+	if (val != AD4062_I3C_VENDOR)
-+		return dev_err_probe(dev, -ENODEV,
-+				     "Vendor ID x%x does not match expected value\n", val);
- 
- 	return 0;
- }
--- 
-2.43.0
+Reviewed-by: Tomas Melin <tomas.melin@vaisala.com>
 
+> ---
+>   drivers/iio/adc/ad9467.c | 9 ++++-----
+>   1 file changed, 4 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
+> index 0bf67437508f..0c377f9a7f25 100644
+> --- a/drivers/iio/adc/ad9467.c
+> +++ b/drivers/iio/adc/ad9467.c
+> @@ -1349,11 +1349,10 @@ static int ad9467_probe(struct spi_device *spi)
+>   		return ret;
+>   
+>   	id = ad9467_spi_read(st, AN877_ADC_REG_CHIP_ID);
+> -	if (id != st->info->id) {
+> -		dev_err(dev, "Mismatch CHIP_ID, got 0x%X, expected 0x%X\n",
+> -			id, st->info->id);
+> -		return -ENODEV;
+> -	}
+> +	if (id != st->info->id)
+> +		return dev_err_probe(dev, -ENODEV,
+> +				     "Mismatch CHIP_ID, got 0x%X, expected 0x%X\n",
+> +				     id, st->info->id);
+>   
+>   	if (st->info->num_scales > 1)
+>   		indio_dev->info = &ad9467_info;
