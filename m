@@ -1,90 +1,86 @@
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE8B43A1A23
-	for <linux-iio@vger.kernel.org>; Mon, 30 Mar 2026 14:11:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B8773A1A5D
+	for <linux-iio@vger.kernel.org>; Mon, 30 Mar 2026 14:17:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774879891; cv=none; b=nf6oOkWJB3vXMOhCxN3fA82EKPIzzcK/fzrengIM0ZCllbKDINAY1cJMUFod2jqYCJuPA/TTU44gZQMZ/2Bx4nquoKBbDSBBN8iEGqFfJERpMmpXEH+CgoVbCjclc875Rxmhw0CWecnpMShjte7rtQlwVkEDBVOT7Qw1FVsg61Q=
+	t=1774880251; cv=none; b=Vu8jjEjsjsuWEmXEVXazqXtYGtxZeQcJuDI6+YeVG/1hDBD79m2ulcjD4uy1Zc9dLeXoIhGHg0L9U721iwbs3ywdTQoam5rgZoH7415MxdCPOJx/2zjXIbz0cPD6HUPl++CGcBRX4WC56cJ5qHN6L5KOYQtNA61aRdRVe+NfeYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774879891; c=relaxed/simple;
-	bh=9oKZgbFiZnKWngTE97vSPFXgerXhlxal2Pep/E1M+80=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tNs3V0Yhp64kGQ3nThtvGpfj8Pk2oIJDGuHcnbZVUQ+3zgQghpMk24RmYCstGSoM+PUXH7+oitGh5rd7D0imazw9Vf9tHPK4DG5+yNq2pD/QTbRhpD347KDaMyB+uF2iZ0393GrUzeIHLTw4GKXi6oKY3ubLLnhSaE8o5HqQZv8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=EuYgGpNO; arc=none smtp.client-ip=209.85.167.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1774880251; c=relaxed/simple;
+	bh=jWvphccgBs+CBissFExWcsmt9A6xx59JSpOT4BwXbso=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EHQlHgTFVHVxuloLHF/l283M/dt3DCuklADSq3GWLTQbzjmsibF6Y/T8tao32j5H+g5IAYKEi4HkUiAQCqyedk70pOzechu5bdYITpTmKBQS0Nabhai/EqB0xFeBrJ+Gk6x4mydK1un6z5NPDscb9BIiCaz6BqhwWI/Jutlu9zk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PELOvD6H; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="EuYgGpNO"
-Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-4670bcc40d7so1472664b6e.2
-        for <linux-iio@vger.kernel.org>; Mon, 30 Mar 2026 07:11:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PELOvD6H"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-48334ee0aeaso39414455e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 30 Mar 2026 07:17:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774879886; x=1775484686; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3ZnNU9xrISIqifOS3N0gZbMK4N8nF1kNmN47jKO7s+A=;
-        b=EuYgGpNOmT2z8sGkoJNFbpJencBEVoCTvpH1nHU58ljibnSgGxYOY4d7qcegjApz9I
-         jgbi3oezBeDgPcFeRaH6j3DdHRTmUYBlibdgn3UcPGE9401tedlnL6PW3Sob1xhzgKbu
-         G70Of2vxwbBCP5RsbYgn5ruXLqfCkmXosPmzs2uTuFQYZxigaWhx0XawCFIKyxV3JXhW
-         hDY2lB/8iQDUEgl2QzVoUkSrfhm72PicHv2btx6Jm+q/8Rbtw0GYO7Ntc2flMxoTVXTV
-         +oP0qIG2Q9hTPbYlNnylX4/e0cadNZ+1mrjfKWCs/c9wQ0utMhs8el0YNeumdY7hgGHW
-         tajA==
+        d=gmail.com; s=20251104; t=1774880248; x=1775485048; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=QXTFV6k0jK20NuLbc5kRmXLlkPvSMTXhcz7AgsD36j4=;
+        b=PELOvD6HHZ+3o20jk4vU7tJ0dlb+0ItUkwG7+KZhXtN+MeStPdLQVP9++lPZkRbL7Z
+         Vl/XOI1OgJBeK1cVwEz7/EitiBckcBGEKlYy2tNEL8jv5xSVatCCM7r8e304A/I5rrj1
+         UvKlDOM+q/5d74TAgbBz5cp4/YaGvOdSfZRUIEvRMN3tlqbpi+5HMyQcVN1t9eA8WBD6
+         XBEJLR+CkoXU+YuchCSmyOb7+BBMCWiw2BwjwGVtyBPg/molOyoj5wythWrMa4889lKJ
+         3wj2wc05yl1vCDdw1rjuFVrkn9xCbr0MHiJtKOwbOot01weB4afMaFWkuiyBVd6VXaCm
+         HfTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774879886; x=1775484686;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3ZnNU9xrISIqifOS3N0gZbMK4N8nF1kNmN47jKO7s+A=;
-        b=BvCIghXOCxuW93qGL5ZnhjumRky5243+J95vhtBE+fBcXS44jWXUO9L0nQ8IZGISPB
-         x9BJ9xqxnM9+oaLTIqfBjfW5PsUbFvWE+BmVEiIWEfNLo0pORfQCG8wEjMjhlFvDBO4z
-         AuEGnhPFDR4CZBgsbNjCFsLtmZmHqavgY+xSXoQt8NTV4rUyddoDzq9lMBRaL5PDsYBL
-         9G1EGpn4drH11hUWFx/hbPIC4XhSGF5I93ARCLqofo/qwKmjCJrcqeH7PnYsK5i0qpp+
-         SzSRO2eSGjBPk7bkiPKPbmSHj3IEGy7sAzn9/ZoFb17Ir4hMIzbipTEVMM04fn0+mgxX
-         VdRw==
-X-Gm-Message-State: AOJu0YyLvJkVv0JfGPgaagD2/MakNXzt3tS5vRHtujyyc19Uk2EzhkyC
-	oFs214Q4kQoK9lW8yVXDSL29FmW0M/dUC4keQMtQIcOJO6t/4f5ea1viLkfD0HUQiHY=
-X-Gm-Gg: ATEYQzyoNmMmzRk+QmarxS+lVxuXbyvaZHYgKu/XM9yF/P6mDYo302ORI5dMrabIrsa
-	sa074oOzG7YDGQh8t7Ov4PQ48NmiPMMxop0uU6OXxp6d0a4h+zEAGSTievI4sHosNuoQSsdKxaM
-	o8nJ/TxkaKA/JliqXlIfIulQHFxfMR0WUhqANnnQg4YAeQL1j6tKLUjJZDHyf+54nu75NQ7V9Dh
-	bW66C0X8Ti57F4gmyYE637m7FRN1wKcYbvj5nYxoKLBnhwsALznHJqsx3RP4jwMVwSns//M6ggg
-	GK5fGqU1sN/6CmDMqK5uAGtDnMJ1F4bTNKGNuHPTBJQm0/S396ulX97N7xIIMfUf691xngkI9rL
-	Y4St+YA/sg/ZYRwm1PTALHFlJYBuSR35cmrn9iKlMNgXTeS8M4ypfloeab6huoWn2dzNHmTBsxx
-	A/mAR04C7uL+KXLWy7LTnyQ84VED2xmXTcomS+kP4eli7h5p/Tzf8mOYZD2Blbg94reGddeM15P
-	A==
-X-Received: by 2002:a05:6808:4f21:b0:464:2570:8805 with SMTP id 5614622812f47-46a8a399ef2mr5639388b6e.3.1774879886563;
-        Mon, 30 Mar 2026 07:11:26 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:a67f:a092:38d7:379e? ([2600:8803:e7e4:500:a67f:a092:38d7:379e])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-46aa03a9179sm4321165b6e.14.2026.03.30.07.11.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Mar 2026 07:11:25 -0700 (PDT)
-Message-ID: <cfe07818-e040-4ce8-9407-d951df637af1@baylibre.com>
-Date: Mon, 30 Mar 2026 09:11:23 -0500
+        d=1e100.net; s=20251104; t=1774880248; x=1775485048;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QXTFV6k0jK20NuLbc5kRmXLlkPvSMTXhcz7AgsD36j4=;
+        b=Qo7Ww8AevMpOc1geyR+N8OG23uKFQWsMw0cIb7TpmOW+gsiu8r1lWYwMiuSRE9RmiI
+         MTHjFGLbIqRk+VkuP5hAKfsWKATJM1DoXp4LirJ9z/PbGdTo1h4rtr3pDJLMT5ZqcH2w
+         MhK0F9v11rD9WqCaEcwKpyPrcLAM8oI6RMiGbLaTxDZ7zispAxW8PNcDEAgqgNR68hSi
+         KniDP36rLpDVBisHTaaJzFoXaw8144OdSfd5m9cXXtss/RHBKhRmxo/lDytmbwEIBYNm
+         xY3NwgM+QJfddrJXRUdqCDCNQ7Bu9dM/XkClB0wLZKsP5Tkv+Cm7G2B8I+hUqBKcMxOY
+         C3tQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUPD4RY4qraiRCq1ztSPeuf7S7rUN5iQYUCP4UHGY/eRsRQlvYqXhF6hjwd/K/N9qryatNDPPmv8Bk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzReL/sP6AecdH4eb8PkSjcDHXjXug+aqHomw7P/LZvptfyygLU
+	136Sa0CyeXu2YZBA8xcJ57q4goet7yVdSgdqYJg2LRyAjTKM5m6arXWu
+X-Gm-Gg: ATEYQzztuFeKPJvicHoYGtmtaux8stfIsCAhG2C+LHCH1Uf6gY/P6ikoYf1Jmxrp26l
+	6d28uNFG9kXbinJCcmyNqfo1rFbdCECq/MvrL4YpFcuxAfCQN//MUeGeFXSKR4tlr7c6vNAE9jx
+	xL9XrBtMEvRN5N94zpDjInKHtBeusAtf2IQaXyuTuyNSAazMBpoNVqG5QH9NS/mHcuhR1jdEoM5
+	1OiGZ6H2ycE95uUGzpX5pWhkI3I1hdNYmmZfUPWq9TryG/UuCxj61wo0UXeY9WcoYZXWZKbYFYL
+	EyvLZOJPhHVgU7YOly4iLQ4CwrdH0qdDZ8w6Dg9SFnMSw/ljbfe27/O80vYhH60Yov3BqM5YcdP
+	UlJd2MUP0Z9/64ZFHAY+uP4y5jjmHYh1X6q2QVn85O0Hw3HygiitYKr94wmLrfJ8N1AoQpQLy8u
+	PNXBBHeEzbeC5S
+X-Received: by 2002:a05:600c:81c5:b0:46e:4e6d:79f4 with SMTP id 5b1f17b1804b1-48727e90ec7mr192177925e9.15.1774880247693;
+        Mon, 30 Mar 2026 07:17:27 -0700 (PDT)
+Received: from nsa ([45.94.208.97])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-487270dd790sm172813455e9.5.2026.03.30.07.17.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Mar 2026 07:17:27 -0700 (PDT)
+Date: Mon, 30 Mar 2026 15:18:13 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Radu Sabau <radu.sabau@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ad4695: Fix call ordering in offload buffer
+ postenable
+Message-ID: <acqEopM83muiuzJ9@nsa>
+References: <20260330-ad4696-fix-v1-1-e841e96451b2@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: adc: ad4695: Fix call ordering in offload buffer
- postenable
-To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260330-ad4696-fix-v1-1-e841e96451b2@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 In-Reply-To: <20260330-ad4696-fix-v1-1-e841e96451b2@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 
-On 3/30/26 8:34 AM, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
-> 
+On Mon, Mar 30, 2026 at 04:34:39PM +0300, Radu Sabau wrote:
 > ad4695_enter_advanced_sequencer_mode() was called after
 > spi_offload_trigger_enable(), meaning a regular SPI transfer could be in
 > flight while the offload was already active. When the offload fires its
@@ -109,16 +105,16 @@ On 3/30/26 8:34 AM, Radu Sabau via B4 Relay wrote:
 > spi_offload_trigger_enable(), resulting in a regular SPI transfer being
 > in flight while the offload was already active. This caused a kernel
 > panic in the SPI engine interrupt handler.
-
-This used to work (I spend many hours testing it to arrive at the current
-state). Are we sure there hasn't been a bug introduced in the AXI SPI Engine
-instead?
-
 > 
 > This series fixes the call ordering so all SPI bus accesses complete
 > before the offload becomes active, consistent with the constraint that
 > was already documented for the BUSY_GP_EN write in the same function.
 > ---
+
+LGTM,
+
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+
 >  drivers/iio/adc/ad4695.c | 31 ++++++++++++++-----------------
 >  1 file changed, 14 insertions(+), 17 deletions(-)
 > 
@@ -153,15 +149,6 @@ instead?
 > -	ret = ad4695_enter_advanced_sequencer_mode(st, num_slots);
 > +	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
 > +					 &config);
-
-Swapping the order here introduces a race condition. 
-
-ad4695_enter_advanced_sequencer_mode() starts sampling (triggered from the
-internal clock in the ADC) and the first sample could be completed before
-the SPI offload is enabled. If the first sample is missed, then all of the
-data will be off by one index on the buffer.
-
-
 >  	if (ret)
 > -		goto err_offload_trigger_disable;
 > +		goto err_exit_conversion_mode;
@@ -203,4 +190,6 @@ data will be off by one index on the buffer.
 > change-id: 20260330-ad4696-fix-186955a8c511
 > 
 > Best regards,
-
+> -- 
+> Radu Sabau <radu.sabau@analog.com>
+> 
