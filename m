@@ -1,151 +1,203 @@
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9523A37700F
-	for <linux-iio@vger.kernel.org>; Mon, 30 Mar 2026 16:17:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A68C43C278B
+	for <linux-iio@vger.kernel.org>; Mon, 30 Mar 2026 16:45:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774887478; cv=none; b=mPmTA48GfVBRlsLZTQOMz1xipo7l0Kh2/fdzorUX+yzpISP0/yebl385y8ktE77sg9coxyKSiHv245Lcj0694EbrlPBAUl9HUnNa+LUn+OEPH/cw0nMCPyypDW/ScUmTaD8z215REiJZqAb+yUbiANx//MwGSlWypGNEFLnUKqU=
+	t=1774889157; cv=none; b=loafXMOySx2NT0wL7Lv6WOcHsAGua3SknxiX0klNFuVo2k4kooCHt2nR5ckQih/VEgcIzlYtjynHCm3tfqxG3SEj3SstgWCJYaIkxl49n8Bq4GkP8osPNMISgHo/u/N0vt1+RnJm5c1cPdwsVPUaPVHTSYfshqWvi7mkkZqqUAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774887478; c=relaxed/simple;
-	bh=55Fpi3YNRzveKBEZXjkbJEpoQx1wD5kZYI8GBMZimyM=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=m6xhqiAmmtFSMcfKGlMoydw3x+7aDxE9JUG/wm5b1K8xQ3LzcKY3uN+g9VafpVr2jVSPEY8vXiyGg813tSYGlZC36FYeUt2s/ZLyjlr9VjH1JbsvIxHu7RcBNN+HsNaPRA83ZF7LnsL13FcUGMzZC7OX48aY9hyRDsFq/3vYqVY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LfgyTz8L; arc=none smtp.client-ip=209.85.215.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1774889157; c=relaxed/simple;
+	bh=iVc+nwzeJK2O9HDZyDVMoLikBa3zmNpdGAiqudnX+Y4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mZ7r2meQNBYcVjJ2o3xQvzr8GulF3FRqCCWQnAGM2PfG/Elt/y/sLoeGORs1V5VQ6wLNDOhbMURr7ph9FrYVv9O8/JCtg58YcjZDmYK3NX6mj2Zsf354FSw/6ntG9ahR91cNKve2xHzawoRyBDfG+7BmDwmkhw7kA0W9CpxQcMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=a09RFMgX; arc=none smtp.client-ip=209.85.160.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LfgyTz8L"
-Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-c76864f4e58so1345598a12.1
-        for <linux-iio@vger.kernel.org>; Mon, 30 Mar 2026 09:17:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="a09RFMgX"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-4043b909ed4so2870101fac.3
+        for <linux-iio@vger.kernel.org>; Mon, 30 Mar 2026 09:45:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774887477; x=1775492277; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=MjSk1KnGXpIUBj4+4g/qAzrW90+WoFTFqElwxB+FxB4=;
-        b=LfgyTz8LnGHu9MYI77A+dA4YC0SSaQ6dhOUWIe+tfQY13Te4WTiHeyuwQhgEUmd9x+
-         ZTU+k9svLBAPEGZy3yrCBdTcQQAEEJiPtiOlxoFKGNceDzEftf/tLerxfZDMl+G532nq
-         94b+vdLLu0zTi5JJTEJk0+kkYJWxMISBAH+eLCqMUPDFtTv8Wk3f9Mui+y9cOIotxHCB
-         CBlQWoqDelAgnHTh/9f5qJC+VLbC1+qKfw9ZbsQw0dKR4/YE6dnRvt7vhYxBEaLDBvYn
-         oPdcZvyfb7mRhKaRFwELyOy3TJfZTOLgYhXao2dFVgYDcZIDS0O7M8IA6/WTq79t8af9
-         Yg7Q==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774889151; x=1775493951; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lCIkeFg+7k71htisHedAK8gYyac1zTYYS5iRSjWlqe0=;
+        b=a09RFMgXtWStMdgEHvUS2v2gtwIfXdQVMtitJh6tCCGBiLDvJ/0QeCUGVD0qz5zbHe
+         7opVY6BuGofBoyeEaFT01fMmCq+VFk1DN529Zg7YykKvLRcv00waGuNjaEl66vWPSKWn
+         DFLZaFY86G662vE5/HpP5pAbU58w30Fwz0yacd/5T5Jf9iN6tphU4fh8rp8azkYi7Ip6
+         zBZJKVW4ncKxStkqXe6rOTbNMli5mbi5sA39fAkShtdCnPEaM/4Mcy5aBHMZn1X55YtP
+         fNOe6FWpusfKshBOf2RHemsnzrFnAZjpfSeOXm/EkPx8iZFF0MmxQ2lXktwEVkMvgy2a
+         L/9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774887477; x=1775492277;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MjSk1KnGXpIUBj4+4g/qAzrW90+WoFTFqElwxB+FxB4=;
-        b=iHlvi7C0qovpv3ebPem7ATsJ5x5HH4bhqXJv0Q8N5Puxg9Wczi2YkIgY6pOleA3GA2
-         EFRdbLJ/nunPstSp4IUvd0tH1uobQGZ7ZU5a0hhnPnFnX5qc6obCVnJI5KXMQp1x8+cs
-         x9Xo6PV0baxhwQ4lsVkeMb+oqC1xQYvEt/VUQ/qv/uj6M0znbX/fClFExxHI4UG4gr4Z
-         FCD04h2ioDM6O0ycU1L8IEDQ8lBIZR+nik59u2gQhAhWMb5nMTX6wwQjwv8TkdottScA
-         hUAAad8lw+9YIq0bUYuMm3OisHxfFwn9W3KpLQrRWIWGSHIFO9fHcNpC26OStO5h3S1G
-         t2uQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX0p7Ti6Ia1VCigwWrER+Y9hJi1A2Aj/wxMtixGX3pD11nLow6Cj/FchINT3RyBudep2078A8QTems=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzCjb1KnNJ3lX9SiXBt+pIQApgG44foYf/KhgStmRBDYAJX3pCw
-	PwlrL8NXM8vkWjudSexdWo8Zd10tSI8jG92/cCYDVlzGLpkfEpkTq+G6
-X-Gm-Gg: ATEYQzw+mfFuixYm3R/nDYgBCYU6DzJ7Jl7jTNdaKzpKgVlRsz6VV8zV8DcCna37+X0
-	BffmMmdpQ9dW4t/Psv8fimTi53oGVozC6u5NHRjgiUYHAerAdOGFOkf3PZq4+9A8wWe5OaAwAVL
-	BLXlKjQLu3IN9/BUGEUOLjgByeFOzeE/IbeuXoN8lMxnzrLryPllfSxdCEX5C8w9GO/KoFcpgZM
-	GrnI42Q2A09IeE5h6UW1UNSvdLw1TYMq+XpKJGPoWtgzaZZB4lDO3Tlxvl4R4thHg7/28Bt5yuH
-	7xTNTMTj5I1oYN2p/WUSiNnfsZgCKhOYaXFRxFnNVFo/a7TJuP1uMQ4rrk9qNa3OeZTOmsZBZhI
-	OPk2ylYEOVPeDXrghBC1GSTurvkn1k2n1GtYsnyV9wRvLTweW3bg6m96rUcH5YoXFAc6fzuGUYT
-	XK9HEcqeLW8kLfkTlvNRvW4chWkNKlWEgS94Y=
-X-Received: by 2002:a05:6a20:a126:b0:39c:c07:144a with SMTP id adf61e73a8af0-39c87a3c3a9mr13271334637.36.1774887476689;
-        Mon, 30 Mar 2026 09:17:56 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:ab01:67b0::55cf:3611])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82ca843bd8bsm7694484b3a.10.2026.03.30.09.17.55
+        d=1e100.net; s=20251104; t=1774889151; x=1775493951;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lCIkeFg+7k71htisHedAK8gYyac1zTYYS5iRSjWlqe0=;
+        b=WjMsDguQ+GYbLC/g5Zuc7oPVa1UZ4lutvpPqE/bOjhhExXFQ3DFLYHy1z0Us32HXL1
+         0cPOMJADhhrPs/m0mGKHZtZ/NX7/ksuM9a9Bw8K9ISSTscPS4r4jzlEnuoM1CE3gipDQ
+         ZmOqhmXj4IQwjOBCvbthW2hgozcdbtkYLaTgQiHOmVn5+wae+G01AkMk0YJh7C4rbB+x
+         I6jH3jLwohYo3fI/dFuITuUJ9Wzoz8GPYZZucxEcpca4KWGcv5o9kpe9thPjg78D0/ub
+         D/DqNRXftyzUJor2nN0ejp1ob69vJMePW0Q2zi80polB1qwbSAPW1ajMx5Hpt5U2CL1o
+         ShGg==
+X-Gm-Message-State: AOJu0YzXwhVyHvRiW2jKT7q2I4scFZvSxSJe538t/XLtNVaeGy6cE7Ul
+	Gsf+NFKp4BitaQQ6sqOdUmOsltdaobQykFpxJFYr2qhWwKmLjeMYviqbucsliawLeD4=
+X-Gm-Gg: ATEYQzxa68UAZUcISngy1m9pqHh/TM0tnJ070IMUtCfVNZsWbXPxdt3LxoUjs9LMWZ9
+	+FaxzbvwwiRAAkbxsnX25Oy4jMjSp8G2Sw0JzduCkSTPAXamiv3hmgTDinxb7V/s+tw3hSPcqQF
+	FhtSnxN5D9HQXesb7/huePmlkbOCcamuZm14ZK33fbRwxsqLWTJcm1pFSUcv/RysWnWrveXRRHK
+	6cj/CwlDlmPOgpLK7Uv3QlP5E/8Xy+0szfkmsiY85fSf4nrgBQhO5qLmtRkshOqpS3tSGzsR2vn
+	mydlWRoLFlLIG2Zh6G8k94x9lmZLKi0Jx2cb08H5xPvZgFVzglt5GmN/TbLSptKY8KDumdn8Zon
+	anqkTzAInP3vkhkoCIhAlB0snIGkyszQK6Llq+ZJ41PR+fN8Q+WuXkHPxm0YE4OlgOTW+mxXIn0
+	5/Wp1OFKOP+e7XR8XA41MSMr4cdgFmSPZau4qhsMSUAkWYYMlEnTl4u4HV6F+FSAGGcZBETWFEA
+	Q==
+X-Received: by 2002:a05:6871:eb02:b0:417:70d2:f991 with SMTP id 586e51a60fabf-41cec09effbmr6735209fac.8.1774889151045;
+        Mon, 30 Mar 2026 09:45:51 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:a67f:a092:38d7:379e? ([2600:8803:e7e4:500:a67f:a092:38d7:379e])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-41d04958090sm5896554fac.7.2026.03.30.09.45.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Mar 2026 09:17:56 -0700 (PDT)
-Date: Mon, 30 Mar 2026 21:47:52 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v4_3/4=5D_iio=3A_ssp=5Fsensors=3A_s?=
- =?US-ASCII?Q?sp=5Fspi=3A_use_guard=28=29_to_release_mutexes?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <ackQpuBPZva28ZMd@ashevche-desk.local>
-References: <20260326081815.925373-1-sanjayembedded@gmail.com> <20260326081815.925373-4-sanjayembedded@gmail.com> <acT6vokgYuUTsWcj@ashevche-desk.local> <4017E54C-B25B-41AC-B4E1-F28576C2D64C@gmail.com> <ackQpuBPZva28ZMd@ashevche-desk.local>
-Message-ID: <DE911B14-E6C9-4E90-8494-DB0501A9375A@gmail.com>
+        Mon, 30 Mar 2026 09:45:50 -0700 (PDT)
+Message-ID: <ede20708-2575-4761-9876-80df5574cb2f@baylibre.com>
+Date: Mon, 30 Mar 2026 11:45:49 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: adc: ad4695: Fix call ordering in offload buffer
+ postenable
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ "Sa, Nuno" <Nuno.Sa@analog.com>, Jonathan Cameron <jic23@kernel.org>,
+ Andy Shevchenko <andy@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20260330-ad4696-fix-v1-1-e841e96451b2@analog.com>
+ <cfe07818-e040-4ce8-9407-d951df637af1@baylibre.com>
+ <LV9PR03MB84144580E5523DC01542E56FF752A@LV9PR03MB8414.namprd03.prod.outlook.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <LV9PR03MB84144580E5523DC01542E56FF752A@LV9PR03MB8414.namprd03.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+On 3/30/26 9:31 AM, Sabau, Radu bogdan wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: David Lechner <dlechner@baylibre.com>
+>> Sent: Monday, March 30, 2026 5:11 PM
+>> To: Sabau, Radu bogdan <Radu.Sabau@analog.com>; Lars-Peter Clausen
+>> <lars@metafoo.de>; Hennerich, Michael <Michael.Hennerich@analog.com>;
+>> Sa, Nuno <Nuno.Sa@analog.com>; Jonathan Cameron <jic23@kernel.org>;
+>> Andy Shevchenko <andy@kernel.org>
+>> Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
+>> Subject: Re: [PATCH] iio: adc: ad4695: Fix call ordering in offload buffer
+>> postenable
+>>
+>> [External]
+>>
+>> On 3/30/26 8:34 AM, Radu Sabau via B4 Relay wrote:
+>>> From: Radu Sabau <radu.sabau@analog.com>
+>>>
+>>> ad4695_enter_advanced_sequencer_mode() was called after
+>>> spi_offload_trigger_enable(), meaning a regular SPI transfer could be in
+>>> flight while the offload was already active. When the offload fires its
+>>> completion interrupt concurrently with the regular transfer, the SPI
+>>> engine interrupt handler is not designed to handle both at once, leading
+>>> to a kernel panic.
+>>>
+>>> Fix this by calling ad4695_enter_advanced_sequencer_mode() before
+>>> spi_offload_trigger_enable(), ensuring all SPI bus accesses are complete
+>>> before the offload becomes active. This is consistent with the same
+>>> constraint that already applies to the BUSY_GP_EN write above it.
+>>>
+>>> Update the error unwind labels accordingly: add err_exit_conversion_mode
+>>> so that a failure of spi_offload_trigger_enable() correctly exits
+>>> conversion mode before clearing BUSY_GP_EN.
+>>>
+>>> Fixes: f09f140e3ea8 ("iio: adc: ad4695: Add support for SPI offload")
+>>> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+>>> ---
+>>> When enabling the IIO buffer for SPI offload operation on AD4695/AD4696,
+>>> ad4695_enter_advanced_sequencer_mode() was called after
+>>> spi_offload_trigger_enable(), resulting in a regular SPI transfer being
+>>> in flight while the offload was already active. This caused a kernel
+>>> panic in the SPI engine interrupt handler.
+>>
+>> This used to work (I spend many hours testing it to arrive at the current
+>> state). Are we sure there hasn't been a bug introduced in the AXI SPI Engine
+>> instead?
+>>
+> 
+> Hi David,
+> 
+> I also tried looking in the AXI SPI Engine and find something related first
+> but couldn't find anything, though I am happy to be corrected.
+> 
 
+Which commit is the HDL being built from? It could be that something
+changed in the FPGA implementation rather than the driver.
 
-On 29 March 2026 5:14:38=E2=80=AFpm IST, Andy Shevchenko <andriy=2Eshevche=
-nko@intel=2Ecom> wrote:
->On Sat, Mar 28, 2026 at 12:24:11PM +0530, Sanjay Chitroda wrote:
->> On 26 March 2026 2:52:06=E2=80=AFpm IST, Andy Shevchenko <andriy=2Eshev=
-chenko@intel=2Ecom> wrote:
->> >On Thu, Mar 26, 2026 at 01:48:14PM +0530, Sanjay Chitroda wrote:
->
->> >> Replace explicit mutex_lock() and mutex_unlock() with the guard() ma=
-cro
->> >> for cleaner and safer mutex handling=2E
->> >
->> >NAK=2E Please, be very careful when do such changes=2E
->
->=2E=2E=2E
->
->> >> -	mutex_unlock(&data->comm_lock);
->> >> -
->> >
->> >Pzzz! See what you are doing here=2E=2E=2E
->>=20
->> Thank Andy for pointing this out =E2=80=94 you=E2=80=99re right, using =
-"guard(mutex)" here
->> unintentionally extends the lifetime of "comm_lock" and can hold it acr=
-oss
->> the completion wait, which is not safe=2E
->>=20
->> I=E2=80=99ve reworked the change to keep the original locking semantics=
- intact:
->>=20
->> - "comm_lock" is still explicitly unlocked before "wait_for_completion_=
-timeout()"
->> - No sleeping paths are executed while holding "comm_lock"
->> - Introduced small helpers to simplify the flow:
->>   - "ssp_send_and_enqueue()" for SPI write + pending list add
->>   - "ssp_dequeue_msg()" for safe removal from the pending list
->>=20
->> Updated flow looks like this:
->
->If you are going to mix mutex_lock() with guard()(), it's even more NAKis=
-h
->solution (id est worse than no change)=2E
->
+Sending a regular SPI message while offload is enabled should still
+work. If there was a design decision that changed that, then we should
+also fix the AXI SPI Engine driver to return an error instead of crashing
+in this case. (I hope we can avoid this though.)
 
-Thanks =E2=80=94 agreed on not mixing "mutex_lock()"/"mutex_unlock()" with=
- "guard()"=2E
+Even if this one particular case can be worked around, I expect the same
+race condition could be a problem on other chips (or this chip in a
+different configuration). So it would be best if we could restore the
+AXI SPI Engine to the way it was working before.
 
-This patch is intended as a cleanup to switch to "guard()", not to change =
-locking semantics=2E
+>>>
+>>> This series fixes the call ordering so all SPI bus accesses complete
+>>> before the offload becomes active, consistent with the constraint that
+>>> was already documented for the BUSY_GP_EN write in the same function.
+> 
+> ...
+> 
+>>> -	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
+>>> -					 &config);
+>>> +	ret = ad4695_enter_advanced_sequencer_mode(st, num_slots);
+>>>  	if (ret)
+>>>  		goto err_disable_busy_output;
+>>>
+>>> -	ret = ad4695_enter_advanced_sequencer_mode(st, num_slots);
+>>> +	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
+>>> +					 &config);
+>>
+>> Swapping the order here introduces a race condition.
+>>
+>> ad4695_enter_advanced_sequencer_mode() starts sampling (triggered from
+>> the
+>> internal clock in the ADC) and the first sample could be completed before
+>> the SPI offload is enabled. If the first sample is missed, then all of the
+>> data will be off by one index on the buffer.
+>>
+> 
+> I thought this too at the first glance, but couldn’t be sure so I tried testing it
+> anyway using the FMCZ evaluation board and a Zedboard, and everything
+> worked as expected.
+> I have plotted buffered data and it showed exactly what the Signal Generator
+> was outputting and on the right channel, so no index was off, if that's what
+> you meant.
+> 
+> Best Regards,
+> Radu
+> 
 
-I=E2=80=99ll rework this so that it=E2=80=99s a consistent conversion:
+Does it still work correctly if you add a msleep(100); after enabling the
+sequencer and before enabling the SPI offload? (to simulate a slow/busy
+machine).
 
-- convert it fully to "guard()" without changing the lock scope (e=2Eg=2E,=
- by restructuring the critical section appropriately or limiting scope with=
- {} )=2E
+It would also help to look at the SPI signals with a logic analyzer to see
+what the timing is.
 
-Will update the patch accordingly=2E
+I guess it could still be OK since we currently only support the case of
+the PWM acting as the CNV source.
 
-
->> This keeps the synchronization boundary unchanged while reducing duplic=
-ation
->> around pending list handling=2E I=E2=80=99ve also limited "guard()" usa=
-ge to short,
->> local critical sections only=2E
->>=20
->> Please let me know if you=E2=80=99d prefer keeping the list operations =
-inline instead
->> of helpers=2E
->
