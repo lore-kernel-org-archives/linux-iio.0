@@ -1,98 +1,138 @@
-Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 895EF3EB810
-	for <linux-iio@vger.kernel.org>; Tue, 31 Mar 2026 08:50:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C0092989B7;
+	Tue, 31 Mar 2026 08:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774947054; cv=none; b=WkcGmPubAJdRmK9MW7KDjZweXaHOV2+UsjT5QYG7yspr6rVugobia1kaFD7+XijziFe74a8yAinhakYL70q8aP7MIOx7+QesJ3do6QNksjVCH8ksU7wrhmcGO4GaFTg7e5SH73mdDw5p3dFwMGoHZ8HJxmXZPEmzADSNXumTSkE=
+	t=1774947536; cv=none; b=kyJzDJalOpN1RRL+9ic+I+RiQ8LtXpPvAo9lfkwf07T+GDwqYdMY19Bn2OWDOBP6ItwZ3VADZkx6p32zcTh21ijgrBA2vfqibqslAtNz8Pt6rhArfVTaP+GHWlhmrNSmKAHVTSu76esOSOugwUHUDOJPLgAVzUQzTRnXfDkR344=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774947054; c=relaxed/simple;
-	bh=hEvrg1VgBxZ83vGHPoZyelEcdFEP9n7WwNRrQgglhPg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=tPS/fTISypwiSellOmz7HLuRlfu2aEggMlXDBssKDRwrplX7ouB75khJC1/duiNceNKNHYoVEoAVQst7wiK9t4T6t9pCLwhZRz8FD8sOrXZhB4OpR/10CnWtAXgi9tXvQW0GTI/htL40aFdv7YNMsWo4Xp+WC2fJqe6SQkJN5SA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=WE75VddU; arc=none smtp.client-ip=185.246.84.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1774947536; c=relaxed/simple;
+	bh=FUPUgjK8/+PvpwggJPyEhrpAfXGX6f/ynqW5/FOp1v4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=h8bI6y6UI1HW4jUf2Z7uvq1T40ZdwExcU2mwk+wO0tqfbDQJ1IbItXE6/tyVZBnweuYaFl1Rnj0D624k7uBPv0vbPQTaoP3xhfNnGYBeM5R6uUmj3pqNerKQSJbXBXkltU8RlsLDqp0wgiZwKcZl54kNsB3slRsZ5LysVySnsSI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XfiMuoyV; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="WE75VddU"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-02.galae.net (Postfix) with ESMTPS id 186F01A30AF;
-	Tue, 31 Mar 2026 08:50:44 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id D959B6029D;
-	Tue, 31 Mar 2026 08:50:43 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 92E3E1045049D;
-	Tue, 31 Mar 2026 10:50:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1774947043; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding; bh=g/R8nvIUjydE7o/OpG+ZQm7VsFlI0MLtO6nqskaGhjw=;
-	b=WE75VddU4+vhxp15YnMHtJ2uohhTNkS/uJuJ76AXJ1k5PpOrGIi54sSPAbaUzPe5SwBCIK
-	eO4tnHn2oS21KAeqStzhj1KFrSTStm/ycAxeWY175dELF6WkTucMNwKqEnEMPYqvrBBHyj
-	h6M7c0rAiXExdJqwEppam+bz+5957gqa0Jw13xCoaXBYSqPbWc6nt+FctYx8WOLNemRg4G
-	WQz+1avByt+94QSyKvnsUFnGGw82Cbk1dwgaFkYPcly8nB/gM447KS5gMw9d0iQuv0Nhui
-	ySOgyUV5NvrYVVqBeESo5+cWojhvD9APFsmjAG7/OIVvYpvL3bkwo1XS20LHuw==
-From: Romain Gantois <romain.gantois@bootlin.com>
-Date: Tue, 31 Mar 2026 10:49:59 +0200
-Subject: [PATCH] iio: inkern: Avoid risky abs() usage in
- iio_multiply_value()
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XfiMuoyV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774947534; x=1806483534;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FUPUgjK8/+PvpwggJPyEhrpAfXGX6f/ynqW5/FOp1v4=;
+  b=XfiMuoyV4Qjg5rojr5boMK1ojcFkCYD0ylX3/dybqy0MOZTTPYpUc0ux
+   HsIt7zYDUe3x4QMQ1H1hAW4rwOcQBNlM/TVxwg5qZbUlNAvd7P+3utiXA
+   w/ZcFvBjdFUjJhGOxXrep2WrIqvvmAp7fF8lpS6Bzd3dME0utlVU+X5nh
+   t2SXKmjiHdSgKpTqLzR+WfClkohl38iBCYMokTwzGQeVPPQCgRIcQXiSo
+   0jqTvsbazba8XN6MEOts/HJJqk9ugxsWrqo861ytcGNO5h7F/G+NFZ0DP
+   pO27chUZG8lbtMDt66lC1rxMoZTTDrPiGYkXif66Kjfu0SPctmDVMegDG
+   A==;
+X-CSE-ConnectionGUID: 83d4g1I1RuK6cPT7MKcd7w==
+X-CSE-MsgGUID: Am2LcPXNTT+r8y26gSOl3Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="93536866"
+X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
+   d="scan'208";a="93536866"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 01:58:53 -0700
+X-CSE-ConnectionGUID: DuuIgLTxRZyRcp5clt1jOA==
+X-CSE-MsgGUID: yoig1j+TR9SmrTbrMrvCTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
+   d="scan'208";a="231120906"
+Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 01:58:48 -0700
+Date: Tue, 31 Mar 2026 11:58:46 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v5 2/4] iio: adc: ad4691: add initial driver for AD4691
+ family
+Message-ID: <acuMxjX_rsfsJvMp@ashevche-desk.local>
+References: <20260327-ad4692-multichannel-sar-adc-driver-v5-0-11f789de47b8@analog.com>
+ <20260327-ad4692-multichannel-sar-adc-driver-v5-2-11f789de47b8@analog.com>
+ <acZrthJYQX-h_9p5@ashevche-desk.local>
+ <LV9PR03MB84143540CE505514E1CD84B4F752A@LV9PR03MB8414.namprd03.prod.outlook.com>
+ <CAHp75VcUCM8aeUpNaFEXnS+Cm08Mq5j+Qp2gYqWP9vCO+9CtQA@mail.gmail.com>
+ <LV9PR03MB8414CB05EB794F6974584C2AF753A@LV9PR03MB8414.namprd03.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260331-iio-multiply-abs-usage-v1-1-2ae8063e80e4@bootlin.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x2MSQqAMAwAvyI5G2graPEr4qHVqAE3GhWl+HeLx
- 4GZiSAUmATqLEKgi4W3NYHOM+gmt46E3CcGo0ypikIj84bLOR+8zw86L3iKS5apSqOtctarDlK
- 8Bxr4/sdN+74fwwiP5WgAAAA=
-X-Change-ID: 20260331-iio-multiply-abs-usage-2762180a8b0c
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Hans de Goede <hansg@kernel.org>
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, 
- Romain Gantois <romain.gantois@bootlin.com>
-X-Mailer: b4 0.14.3
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <LV9PR03MB8414CB05EB794F6974584C2AF753A@LV9PR03MB8414.namprd03.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-iio_multiply_value() passes integers val and val2 directly to abs(). This
-is problematic because if a signed argument to abs is the lowest value for
-its type, then the result is undefined due to overflow.
+On Tue, Mar 31, 2026 at 08:36:42AM +0000, Sabau, Radu bogdan wrote:
+> > -----Original Message-----
+> > From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Sent: Monday, March 30, 2026 8:24 PM
 
-Cast val and val2 to s64 before passing them to abs() to avoid this issue.
+...
 
-Fixes: 0f85406bf830 ("iio: consumers: Fix handling of negative channel scale in iio_convert_raw_to_processed()")
-Cc: stable@vger.kernel.org
-Signed-off-by: Romain Gantois <romain.gantois@bootlin.com>
----
- drivers/iio/inkern.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> > > > > +#include <linux/bitfield.h>
+> > > > > +#include <linux/bitops.h>
+> > > > > +#include <linux/cleanup.h>
+> > > > > +#include <linux/delay.h>
+> > > > > +#include <linux/device.h>
+> > > >
+> > > > Hmm... Is it used? Or perhaps you need only
+> > > > dev_printk.h
+> > > > device/devres.h
+> > > > ?
+> > 
+> > > I have checked this out and it seems device.h doesn't actually need
+> > > to be included anyway since spi.h directly includes device.h, and since
+> > > this is a SPI driver that's never going away, it's covered. Will drop it!
+> > 
+> > No, this is the wrong justification. IWYU principle is about exact
+> > match between what is used and included in a file (module). spi.h is
+> > not dev_*() provider and may not be considered for that.
+> > 
+> 
+> You are right, my justification was incorrect. Under IWYU, relying on
+> spi.h's transitive pull of device.h is not valid. However, I think device.h
+> is still needed in this case since struct device is used directly in the code
+> both as local variables and in the regmap callbacks.
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 0df0ab3de2709..59e8c01457f72 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -618,8 +618,8 @@ int iio_multiply_value(int *result, s64 multiplier,
- 			denominator = NANO;
- 			break;
- 		}
--		*result = multiplier * abs(val);
--		*result += div_s64(multiplier * abs(val2), denominator);
-+		*result = multiplier * abs((s64)val);
-+		*result += div_s64(multiplier * abs((s64)val2), denominator);
- 		if (val < 0 || val2 < 0)
- 			*result *= -1;
- 		return IIO_VAL_INT;
+Really? I can't see that.
+(Hint: use of the data type and use of its pointer is a huge difference.)
 
----
-base-commit: 6de23f81a5e08be8fbf5e8d7e9febc72a5b5f27f
-change-id: 20260331-iio-multiply-abs-usage-2762180a8b0c
+> Also dev_err_probe() is called directly and lives in device.h.
 
-Best regards,
+No, as I started with my replies. The proper header that provides it is
+dev_printk.h.
+
+> What's your take on this?
+
 -- 
-Romain Gantois <romain.gantois@bootlin.com>
+With Best Regards,
+Andy Shevchenko
+
 
