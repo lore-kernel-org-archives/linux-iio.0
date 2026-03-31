@@ -1,190 +1,127 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80C903B9608;
-	Mon, 30 Mar 2026 23:51:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80D2E31AF2D;
+	Tue, 31 Mar 2026 01:25:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774914666; cv=none; b=b3eAHHuRi1zAFbgapgCJOj6FoeYwCV7ZRUGuQsOYlrORCVnfBdgDeMK+Yk2SXh1BpnrTibGRZIdZUMntOnS8peDsgMoKDF+gjeZTG7Gi1bdBl1Qm0LDEBltpsdjqxR1v/xk2Z7O1T7jbgdyDIrirn08l+PSuX3lQ6k16B0yVmsQ=
+	t=1774920330; cv=none; b=i4TjH2Dz0mBta/h9eyLA7PTNC8i5ERlMguRS8LraV7DSobfW737PHlWcTGWweBzklGw6u+q4QSFfRE8IM7jZ71uCx9B4lalVdUHbxVl9ebzsz3CBddt+fgjdF3rcR5e1JvGL5h3jyscv3YT8LxPV9o8ET3S5JI9z1E3PDkWs0C4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774914666; c=relaxed/simple;
-	bh=3Ve9LY2wIgFdBUPZpWBHQ981zkpK8qkZE5S/h1XyfBE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PBERajMx1BCeRlxWa+JYeeN3KNZzJEMEgcD9/wpGWrr1chAWQeVfsNjU16iKRP9wBYJF9Ipw4BKoWR8NWD/FJzUUpeLqMIFMHUaV0bJBl7IEkeo4mjK15+KeQUE5ZCj2dsGHOX1RknJ1XX1gh+e+HGbMAmiI+OCpDuDE/5TRmmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PR/2km4+; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1774920330; c=relaxed/simple;
+	bh=pXrhe5ajjWq+uRfdIAQX481ZzDXZWP/RuGucxLkrWjY=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JJpCD8ZloLgZ2jU6qwSEduozSCx0vRbGeDMTeERBNnNg/miEuFLcIHhJkx/cVf6pO/r9yAI+wexg/E3en/KCsGk+FVmrh9gckaNMWRdASxsIOwvR+8la2oUv1nL1HseBFS69on3fg74wO3EyUo+4IsOSbjwkbjwjdg+Gnv4cNrk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=xBfTcdmL; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PR/2km4+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774914666; x=1806450666;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3Ve9LY2wIgFdBUPZpWBHQ981zkpK8qkZE5S/h1XyfBE=;
-  b=PR/2km4+ARthZX9vQWnlzbDCTYgOsyNcGajl4zHCIFQfgntunKmLjF1V
-   g/4Io+XE+7+8OhdjE1eIkerY2MQ0yosNFMWGbDcpgyA6L0O+qHVwRHJVX
-   aI5uVm2f96t9aaaTUoZp2sGUcvNEMvP1t9U2sgatPJDqV0tlpNEDIbHHd
-   xfVXgtiHhbt2JMMQbO7o7bhY8H5t0eY/46BtLlmRa+clEP3vwMKdebBJ9
-   gNRUEc24J+SzJxfQU8net/YFAUbIJnR6YFDNWSeiEaLyMDm57m+EsWdDm
-   sDzeppC6loH+MPOu9UNlbpT7y/8PxL/SlWpSMXn2kLMLq3qn37SGnNdbX
-   g==;
-X-CSE-ConnectionGUID: x0Dyo3z3REGDyQp6VzKVZw==
-X-CSE-MsgGUID: GpPnaW5iR8689AHhGb4XNA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="98528031"
-X-IronPort-AV: E=Sophos;i="6.23,150,1770624000"; 
-   d="scan'208";a="98528031"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2026 16:51:05 -0700
-X-CSE-ConnectionGUID: OVPUjDCUSPO9Em7wSZcCCA==
-X-CSE-MsgGUID: EYhVNtHzTaiYOy311aqwaw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,150,1770624000"; 
-   d="scan'208";a="249419287"
-Received: from lkp-server01.sh.intel.com (HELO 283bf2e1b94a) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 30 Mar 2026 16:51:00 -0700
-Received: from kbuild by 283bf2e1b94a with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w7MNk-000000001sn-41Af;
-	Mon, 30 Mar 2026 23:50:56 +0000
-Date: Tue, 31 Mar 2026 07:50:39 +0800
-From: kernel test robot <lkp@intel.com>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>
-Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-doc@vger.kernel.org, Radu Sabau <radu.sabau@analog.com>
-Subject: Re: [PATCH v5 3/4] iio: adc: ad4691: add triggered buffer support
-Message-ID: <202603310753.zLWq0JDB-lkp@intel.com>
-References: <20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8@analog.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="xBfTcdmL"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62V04L8E1140846;
+	Mon, 30 Mar 2026 21:25:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=tn4gk6nvzIpItcVWmZg7FP3TvTJ
+	ixOQZFbJ+W4Ugsmk=; b=xBfTcdmLRc6BjEursQNfIPm78YMPPTGz9HPihXyTjAF
+	p4yts6aY6fapzd+ssaKX23C14Tq8zVZJ4Cw7oZZApNqs7ngZ1RUD6cwZW8ZOa6n7
+	l1wK9+xvo8kNsFVNNJhmEefYUxpvQmHpnulVL5MZWIhWUDrbx/am96mfBpLT1+Zq
+	PMWmP/Y0r1JoyhPEz9/VWHY0C9vYjwBwozsdgJtg9AnrL+VxuuxYv3kHtb5oH7PE
+	wUo4G5r4ShfcvY8KFkOA9mZIMjU11t1mudJth2Bsdzk1TIyV0F9JbPq2HkJAP6nK
+	ZolBa41AzRx9JwOJJamoioMyPJnm7Ge/d/0evV8oXGw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4d6wab7ese-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 30 Mar 2026 21:25:24 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62V1PNqP061152
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 30 Mar 2026 21:25:23 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 30 Mar
+ 2026 21:25:23 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Mon, 30 Mar 2026 21:25:23 -0400
+Received: from CJONES7-T01.ad.analog.com (CJONES7-T01.ad.analog.com [10.116.223.230])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62V1P8RS006886;
+	Mon, 30 Mar 2026 21:25:13 -0400
+From: Carlos Jones Jr <carlosjr.jones@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        David Lechner
+	<dlechner@baylibre.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Liam Beguin <liambeguin@gmail.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Jorge Marques
+	<jorge.marques@analog.com>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 0/2] iio: adc: ltc2309: Add LTC2305 read delay and optimize chip_info
+Date: Tue, 31 Mar 2026 09:24:55 +0800
+Message-ID: <20260331012457.9324-1-carlosjr.jones@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: rxtCbZPjioYoo_NiHkDgR-c6SkkDXuKo
+X-Authority-Analysis: v=2.4 cv=YJmSCBGx c=1 sm=1 tr=0 ts=69cb2284 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=VwQbUJbxAAAA:8
+ a=gAnH3GRIAAAA:8 a=gJ0TSQIuG7uaeSNGKR4A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: rxtCbZPjioYoo_NiHkDgR-c6SkkDXuKo
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzMxMDAxMSBTYWx0ZWRfXwU6ZJ8Rf5CUi
+ jrN7ycZs4AyVi/y5boZhQqSU1wTtXKnRnoyl+K7l7/OeWBvVPYJDcD2QFelETspHjSZQInpuYuE
+ ki9ETBANYNEoPS/w63YvxcKjdzIzF2ZKp6B2Y97BxfGHefxvVwj/WS9Rb73vfl81Adteh2s7FN1
+ 9xKK9w3no+iIMizDOzAiGwulCPrbOcOlzCFVa3XW3Jm2B2DRkxR7kT302itdMYvYlot+uI8IK6E
+ WS+VLHIYIrpugX6yxMlMjJcRaYfZUZADbF5Mfh+nDb6U+T9ahAV2ff0EhWxy87c3LAloORelXha
+ z1tTVQiD+zDPi60b6vONX0TE4tPMrqLdDhSVDh9c8JW8kkmol40Ixz5eB0tpL/tpzEAtYsK+uWU
+ fPUYYFmK54nfPcBW6TvyCcvQDVkZkz6WkWmf3Fic24M3Gs0Vk8IoGHcpHkSgbuxumZQmJtNnMwf
+ H2kXuZPO8VX1od3p+Ew==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-30_02,2026-03-28_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 bulkscore=0 suspectscore=0 malwarescore=0 adultscore=0
+ spamscore=0 lowpriorityscore=0 phishscore=0 clxscore=1015 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603310011
 
-Hi Radu,
+This series adds missing read delay support for the LTC2305 and optimizes
+the chip_info structure for better memory safety and efficiency.
 
-kernel test robot noticed the following build warnings:
+The LTC2305 requires a 1.6μs delay between I2C channel selection and
+data read operations - a timing requirement identified by the hardware
+designer that wasn't captured in the initial LTC2305 support
+(commit 8625d418d24b ("iio: adc: ltc2309: add support for ltc2305")).
 
-[auto build test WARNING on 11439c4635edd669ae435eec308f4ab8a0804808]
+Additionally, the chip_info structure is enhanced with __counted_by_ptr()
+annotation for improved bounds checking and reorganized to minimize
+padding.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Radu-Sabau-via-B4-Relay/dt-bindings-iio-adc-add-AD4691-family/20260330-200546
-base:   11439c4635edd669ae435eec308f4ab8a0804808
-patch link:    https://lore.kernel.org/r/20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8%40analog.com
-patch subject: [PATCH v5 3/4] iio: adc: ad4691: add triggered buffer support
-config: i386-randconfig-r131-20260331 (https://download.01.org/0day-ci/archive/20260331/202603310753.zLWq0JDB-lkp@intel.com/config)
-compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
-sparse: v0.6.5-rc1
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260331/202603310753.zLWq0JDB-lkp@intel.com/reproduce)
+Changes in v2:
+- Split into two logical patches as suggested by Andy Shevchenko:
+  * Patch 1: Read delay functionality
+  * Patch 2: Structure optimization
+- No code changes from v1, only reorganization
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603310753.zLWq0JDB-lkp@intel.com/
+Link to v1:
+https://lore.kernel.org/linux-iio/20260327034159.15545-1-carlosjr.jones@analog.com/
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/iio/adc/ad4691.c:675:47: sparse: sparse: dereference of noderef expression
->> drivers/iio/adc/ad4691.c:675:47: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:757:47: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:757:47: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:809:46: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:809:46: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:815:40: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:815:40: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c: note: in included file:
-   include/linux/bitmap.h:797:55: sparse: sparse: shift too big (32) for type unsigned long
-   include/linux/bitmap.h:797:55: sparse: sparse: shift too big (32) for type unsigned long
+Carlos Jones Jr (2):
+  iio: adc: ltc2309: add read delay for ltc2305
+  iio: adc: ltc2309: Optimize chip_info structure layout
 
-vim +675 drivers/iio/adc/ad4691.c
-
-   668	
-   669	static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
-   670	{
-   671		struct ad4691_state *st = iio_priv(indio_dev);
-   672		struct device *dev = regmap_get_device(st->regmap);
-   673		struct spi_device *spi = to_spi_device(dev);
-   674		unsigned int n_active = bitmap_weight(indio_dev->active_scan_mask,
- > 675						      indio_dev->masklength);
-   676		unsigned int n_xfers = n_active + 1;
-   677		unsigned int k, i;
-   678		int ret;
-   679	
-   680		st->scan_xfers = kcalloc(n_xfers, sizeof(*st->scan_xfers), GFP_KERNEL);
-   681		if (!st->scan_xfers)
-   682			return -ENOMEM;
-   683	
-   684		st->scan_tx = kcalloc(n_xfers, sizeof(*st->scan_tx), GFP_KERNEL);
-   685		if (!st->scan_tx) {
-   686			kfree(st->scan_xfers);
-   687			return -ENOMEM;
-   688		}
-   689	
-   690		st->scan_rx = kcalloc(n_xfers, sizeof(*st->scan_rx), GFP_KERNEL);
-   691		if (!st->scan_rx) {
-   692			kfree(st->scan_tx);
-   693			kfree(st->scan_xfers);
-   694			return -ENOMEM;
-   695		}
-   696	
-   697		spi_message_init(&st->scan_msg);
-   698	
-   699		k = 0;
-   700		iio_for_each_active_channel(indio_dev, i) {
-   701			st->scan_tx[k] = cpu_to_be16(AD4691_ADC_CHAN(i));
-   702			st->scan_xfers[k].tx_buf = &st->scan_tx[k];
-   703			st->scan_xfers[k].rx_buf = &st->scan_rx[k];
-   704			st->scan_xfers[k].len = sizeof(__be16);
-   705			st->scan_xfers[k].cs_change = 1;
-   706			spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
-   707			k++;
-   708		}
-   709	
-   710		/* Final NOOP transfer to retrieve last channel's result. */
-   711		st->scan_tx[k] = cpu_to_be16(AD4691_NOOP);
-   712		st->scan_xfers[k].tx_buf = &st->scan_tx[k];
-   713		st->scan_xfers[k].rx_buf = &st->scan_rx[k];
-   714		st->scan_xfers[k].len = sizeof(__be16);
-   715		spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
-   716	
-   717		st->scan_msg.spi = spi;
-   718	
-   719		ret = spi_optimize_message(spi, &st->scan_msg);
-   720		if (ret) {
-   721			ad4691_free_scan_bufs(st);
-   722			return ret;
-   723		}
-   724	
-   725		ret = ad4691_enter_conversion_mode(st);
-   726		if (ret) {
-   727			spi_unoptimize_message(&st->scan_msg);
-   728			ad4691_free_scan_bufs(st);
-   729			return ret;
-   730		}
-   731	
-   732		return 0;
-   733	}
-   734	
+ drivers/iio/adc/ltc2309.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.43.0
+
