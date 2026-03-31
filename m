@@ -1,118 +1,119 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A88D3A8FE8
-	for <linux-iio@vger.kernel.org>; Tue, 31 Mar 2026 10:43:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC5343A6402
+	for <linux-iio@vger.kernel.org>; Tue, 31 Mar 2026 10:53:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774953840; cv=none; b=a70qQPmaOCn13LwTTB/qGMKJcteUVpH8lo0R1Gqz5RPkUNGwFrLOBPkkovkRpO0j6nVzsi8/4gvR2iluiaUikmRBZimSe7sG6Tu3u4gJLoxE2Egm0XCVlRMjwbdEco0Dkmvc80bhgoZbgiu81xauLIK/LufM6spjgvfzpzsQhc0=
+	t=1774954415; cv=none; b=ulwnB1ySiYckeB142LBUs9FhQ3/d1gNFJJd9u8cUBHGq1SbFpPwlf7YG7byUbhHZy3wJ9q+roAv3bz7FTKiH4HEk0CMeGE1f9oYBS8wI9FtosMyqQM8YPI67hjcO+YS4j3STQvZsQgK8iI+S89dUOEILrO3UIYXuUSY9lPpPHFA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774953840; c=relaxed/simple;
-	bh=T4dAxUI8gDhHZ2BiVXZk4vJKREBwCTcQixKEVO35Yto=;
+	s=arc-20240116; t=1774954415; c=relaxed/simple;
+	bh=1beTnN06koyNBSVTQfdbOfurajogUefCKLowuUktPxw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R8wXfWYbxUm7Vzh92ktdKWyjAxluRwbvfYrk9uTOUGSBusAUKRN4t4b9Hr5Z8ze/szEIhoiUB8bmodxWNjAunhPtFUNzvGXGCxWg5kcn7DoRpmAr9Pf/RfJ4RyGQeyyNAJN13fPDUm0p8HVCPWM9dmiYd/9zVrUOIhtUumoizhY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KQjoUwrc; arc=none smtp.client-ip=209.85.128.51
+	 Content-Type:Content-Disposition:In-Reply-To; b=VSrwHOvgELponTbH6pVuatBhcZk6l1XF+Og42gdzyImxnIKlFVZWDc8GvQS0Y3mvK3FjljTvx+tX6LAxNinoomJVAeoucTkuwwYuvmPa/YFupBfYfqyO0SVql5JsSx4xhPKWWTnZsWxgr7Mz2XzuKjZ3YFddj3sf5Gp6IwOoK68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=acAC33ly; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KQjoUwrc"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-486fd27754bso54741815e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 31 Mar 2026 03:43:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="acAC33ly"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-43cfa33a983so1513794f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 31 Mar 2026 03:53:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774953837; x=1775558637; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=nEcpPzSvC6ZEWdsfhWv80i/L2DAqClOncDeDEa5gXFU=;
-        b=KQjoUwrc1vD1lXby2MGB/1QXjeHcYpbMdGF8bycclHJVKyPdnW3VpjVUliMZmVK2zD
-         KlYVoxX6Xk3K5cJGW292M1jAWd/q/R2wTGaVvvGeghq44kFvVV9o8dcLGaoLOntM33e4
-         Yjk4OTIikW0UWjP42xAEn66S4RmOQPN123cBgYg5vXWZhiF0hzzTafn9abDqr8iGPCJx
-         V0kT6jf7pW526AKWnZq04re42jUFHgZnDYtWp7dNSXeLRxuMfXnzIB8vKC93nDPvuh7g
-         JLWZdoj/DeBVu+2JtMRoC8xZVgYw8UhI+6ONYUDagkz2a/OZO7Rq1T/AXcPGqDNjX7PR
-         H9jQ==
+        d=gmail.com; s=20251104; t=1774954413; x=1775559213; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7jBCp0gY6pbDMjUAdx0JWqcLwsV/+HgtxuJ3aV5c+VY=;
+        b=acAC33ly1flH8GgTGCpLUYK/N4jVv3eo6hVG+BIL9AJgkG9ECToSYRXAK0Yns+9+Wr
+         lGQTkZR2/rNtQqtQpnGW72WhT/c+fNqbHzr09iKfC3WWWBF3bn7YqDJ81b+470Q4c7wu
+         IOsdsfrvgZM74TY0xGf9pLsYJzN/AWpqGpKqmImZLF9gFJRW/I2Wtj4GIAm5GJ4+M/yJ
+         EmFpgR7pchLvAzL5QmyLzoOzT/LHwHKsIx8Y3OsbGVL0XeTeDR0IroPeWcpQF40OgQ0I
+         rQCbelCLodEJ7wwa1rahoAZN8b+ZuBAAvi+3j+uk1xsTsDdWVFzN7YFxLR+/yIyX8RsI
+         OqoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774953837; x=1775558637;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nEcpPzSvC6ZEWdsfhWv80i/L2DAqClOncDeDEa5gXFU=;
-        b=qxKM7zdqoCIABMw0QOyf66GqWsIS1+mSsyXZ4EiwJ0GP4DkgXx1L7108NtLd0GC94m
-         X4bYcnXgOmJvwRDJxj92KW1fINJyJf3ubnTlMyo8vfCBcIkU0a9KPvXyUTdOZZ8xxjIo
-         aURlxcWj2GpANFWLOOOxjMx2M6N2GTXMedydq7OpvIc0jd/0nCqui2DV0l1z3HdJW2Kh
-         vq/CM8DNGCH4oFdQOYX/Uz8TowwAxkUoYZpkoyTfPii8WTxRJL5fMATRdmTrwbLJLmig
-         Gh+r70VqfZF0NxKOWYwJCA6/t0LUgqfg0+uzx5KPq8Yy+nfdfNB8WVAPx0+3L5zvACQL
-         BMtA==
-X-Forwarded-Encrypted: i=1; AJvYcCUERC4/DWIx+SqPDn/wFNIt+rqJew2rUmqaJq63nE5GS6GkGtTDPxCyS7xDZdIDVIZ2YYD+r2CqCUw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywr0kq37LYkzU+c5OOcOY52nmb5s8DCQ76NniAV1hgB1o3AZ9rt
-	Mc7Wjlxru8bO/a6nsFQ551RNd64d3E2W6PHFa87Fl+F8S8wMxHf9dxmv
-X-Gm-Gg: ATEYQzzfV9eWanVmWvSnk1zjYycb53AxP+KFWTaLHQgz/g9tslcsoYXf10DwYz7hVaX
-	JlghyzlbHjGWFeBR+c8Di3A8PpBrxoJP7LGK1seYAvESmQmvo3bdsDwjPssQYmck4WADZvE9gg5
-	P4dvVBqeV7rySfwgZ6Tx0ELK2Jb+8k1yRWZJ+DKEg8+/4kyEhPdNeoQLCRzeUEIgoarJskvEKl7
-	IZ9OCD167oBGLLlWQV7APJsHIKR9gtqkKAZReSC9oAwrWJL8WswEUW/GVZO6AQIVEUb4fW4skdf
-	tHcCsWmFyWQKK1x6ux/Z937sB1zJ066w1bVsS2xb6s9mNnW+syhkdgmYDLndCzEDZ365S74yl8h
-	qJl51pC3FF8rLojhjWPOLzWBFOQxsGOj2Zx1L80BMqcsaXLOrZNqVz1diqqP+CXMTUdRhYavBlg
-	7e41aRBDxtMfmK
-X-Received: by 2002:a05:600c:a292:b0:487:2439:b7be with SMTP id 5b1f17b1804b1-4873d34639fmr72310625e9.6.1774953837486;
-        Tue, 31 Mar 2026 03:43:57 -0700 (PDT)
-Received: from nsa ([185.128.9.53])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4887e83682fsm28409995e9.7.2026.03.31.03.43.56
+        d=1e100.net; s=20251104; t=1774954413; x=1775559213;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7jBCp0gY6pbDMjUAdx0JWqcLwsV/+HgtxuJ3aV5c+VY=;
+        b=s68mnZJCi20AwcaQgALgmpNYuQGsjNEmMYHw/+7HegC0jgvMuA7CUWglRceHJMoBDe
+         isetCPWengQOyM5Z9+YnLQjcgZWDPUIS4MjzMffmOY4zDsBwEc9pGAGj90w4ZaPJ/9cQ
+         GBfg1ak8nPbbVjGsJEaVkfD0K3nPo9+jNEvh5g1tRmec1Dm+Ih5mYVvW/HBOznN3d8ks
+         BtrrUrfDxnu7RddXSbSkUj6tJStNaUzrNI9oiOdaINFdoXcJFBBp0Cgd9oX9Gu8SBEfi
+         DQDQM7B7kXKT4wK33iLO0MD8HbZYGFuECnjY/2UKthR3Z9of1ksFkZXOw0IXSbYUqSDH
+         pQGA==
+X-Forwarded-Encrypted: i=1; AJvYcCUBDhJLJuoWIk9+Ni/ZamdHrrwOB1F+kRix4793zLoCPcqy4IyTEjewalNUYC9mxuBp3hTiiNVkPrA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzhaHRysWf/dCcranpuPMvxHjubcjgKiDebjpvs6D1xqrgUdPPA
+	o5304aBExjNFuDVuQZXiGUV2RkmpbuF8rBfIhAGQ6uydaxovgPiMy9Q9
+X-Gm-Gg: ATEYQzwbOEUYn1cYZNs56uIxljVRdsWW3gr22jX3uQidWrjA2tWM8TP/IA56wbqCdim
+	wvWXx5oLj5+59QJKSHNt2K8OBz56kWdh01oi4GXuVHZMbNCr09P0ZDWA1arol9yXFKGbBd0Mdd4
+	xQn9HaDN9R1rEP1Emf9zz2CAvPW33Tyv7JtAkc+13Dq0C1dZ99E5yq7matkmuO9nPtELppND1iG
+	z9PXtSq/JA79bSd2qPSdvJldh8Ney9rMEyq3AfUSR5VJ7s0YeJzdIgk0yO2awspsg3nI0bRZPNV
+	tTOTYeUl4mnQ6CSwe45czYhfGQGL+SUmzbOq8zuSAfnpOhZFUj9rPLtkoXmpqV7c+yTYR6doEpN
+	gCsQ88AxRN69zN7TyNgl1AL5gg25SQvwpxLggAxSfAg/HtGBGmBbgLDXbNx/Vv1zsovv7LeYUIJ
+	Yv1U58JsoqZznK5SKvsqk+lnSMxrwl0A==
+X-Received: by 2002:a05:6000:18a9:b0:43d:29a:e42a with SMTP id ffacd0b85a97d-43d029ae49bmr9955894f8f.29.1774954412827;
+        Tue, 31 Mar 2026 03:53:32 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43cf2471ee2sm26444532f8f.29.2026.03.31.03.53.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Mar 2026 03:43:57 -0700 (PDT)
-Date: Tue, 31 Mar 2026 11:44:43 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Carlos Jones Jr <carlosjr.jones@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Liam Beguin <liambeguin@gmail.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Jorge Marques <jorge.marques@analog.com>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] iio: adc: ltc2309: Add LTC2305 read delay and
- optimize chip_info
-Message-ID: <aculeDmH0eojSpwD@nsa>
-References: <20260331012457.9324-1-carlosjr.jones@analog.com>
+        Tue, 31 Mar 2026 03:53:32 -0700 (PDT)
+Date: Tue, 31 Mar 2026 13:53:29 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: "Md. Mahmudul Hasan Mabud" <mdmahmudulhasan1511@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] staging: iio: adc: ad7816: redefine mode
+ constants to start from 0
+Message-ID: <acunqXdKj7im8tH7@stanley.mountain>
+References: <20260330181710.23258-1-mdmahmudulhasan1511@gmail.com>
+ <20260330181710.23258-2-mdmahmudulhasan1511@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260331012457.9324-1-carlosjr.jones@analog.com>
+In-Reply-To: <20260330181710.23258-2-mdmahmudulhasan1511@gmail.com>
 
-On Tue, Mar 31, 2026 at 09:24:55AM +0800, Carlos Jones Jr wrote:
-> This series adds missing read delay support for the LTC2305 and optimizes
-> the chip_info structure for better memory safety and efficiency.
+On Tue, Mar 31, 2026 at 12:17:07AM +0600, Md. Mahmudul Hasan Mabud wrote:
+> Redefine AD7816_FULL and AD7816_PD constants to start from 0 instead
+> of 1. This change is necessary to use these constants as direct
+> indices for the mode string array and to align with standard
+> indexing in modern sysfs helpers.
 > 
-> The LTC2305 requires a 1.6μs delay between I2C channel selection and
-> data read operations - a timing requirement identified by the hardware
-> designer that wasn't captured in the initial LTC2305 support
-> (commit 8625d418d24b ("iio: adc: ltc2309: add support for ltc2305")).
+> Signed-off-by: Md. Mahmudul Hasan Mabud <mdmahmudulhasan1511@gmail.com>
+> ---
+>  drivers/staging/iio/adc/ad7816.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> Additionally, the chip_info structure is enhanced with __counted_by_ptr()
-> annotation for improved bounds checking and reorganized to minimize
-> padding.
-> 
-> Changes in v2:
-> - Split into two logical patches as suggested by Andy Shevchenko:
->   * Patch 1: Read delay functionality
->   * Patch 2: Structure optimization
-> - No code changes from v1, only reorganization
-> 
-> Link to v1:
-> https://lore.kernel.org/linux-iio/20260327034159.15545-1-carlosjr.jones@analog.com/
-> 
-> Carlos Jones Jr (2):
->   iio: adc: ltc2309: add read delay for ltc2305
->   iio: adc: ltc2309: Optimize chip_info structure layout
-> 
->  drivers/iio/adc/ltc2309.c | 16 +++++++++++++---
->  1 file changed, 13 insertions(+), 3 deletions(-)
-> 
-> -- 
-> 2.43.0
-> 
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> index 172acf135..5acfceb90 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -22,8 +22,8 @@
+>  /*
+>   * AD7816 config masks
+>   */
+> -#define AD7816_FULL			0x1
+> -#define AD7816_PD			0x2
+> +#define AD7816_FULL			0
+> +#define AD7816_PD			1
 
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+I don't love this.  AD7816_PD used to be related to the spec but now
+it's just a random number which tricks you into thinking it has
+meaning but it doesn't.
+
+if (chip->mode == AD7816_PD) { /* operating mode 2 */
+
+regards,
+dan carpenter
 
