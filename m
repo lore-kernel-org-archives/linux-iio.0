@@ -1,47 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D734D3ED5A5;
-	Tue, 31 Mar 2026 09:30:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEBBA3A2542;
+	Tue, 31 Mar 2026 10:08:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774949415; cv=none; b=c9wSwvvDWLoL7U9/vxOhJkR/QIxcC/1NASt+7FL4YhcdDEMVd6A+kq9GkDQ8Am6pOTpJHAnyTKqUaoMj+yYvnojAB9F1IsVkxILBoJ7tgS5D1rbmO8mOEoZDSWrdDTxvVlRfMiP/jp7I677mb4ygMDKlhPtqY84eSK/5LOM74X8=
+	t=1774951713; cv=none; b=hiB0oNec2SuMVYUHm/KZ7b2kV8PakXxHW77gIfMtojh8UiM7lbuhxHgPlQBzk4KIJVuHzR5OGsfKnz9LIU4y5Z5u3byy21e1Ae8FAYSemZWsx6h0iS33VHn5mZEb8dYz84SdmarGe1UTz782UXimm5a10nEErkTOS4T5ZoFuWqo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774949415; c=relaxed/simple;
-	bh=UEz/OQmSllDsOy58O8YQZbqPNXDtYx/bKKEhUktDTYg=;
+	s=arc-20240116; t=1774951713; c=relaxed/simple;
+	bh=oJYDGXey4ybov+bfbQoWeXOWATlnqJbviRrykDJvd3s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tVq6b1Ucflbj/PqVINga4n4DGY4pSumbs8maRX+MOxexRztDIjh0joPRw4lEceTk83LzEn/6saOgHoPEMew3yNndv1yzaoZCw9KeCgqfXNU/JkwEpMfBzV4tSYkoh0wG1/4J4HAFb7dk2V1neAs3JeVT8+Ew6PXic5NcNp4S/08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SncsGh0w; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=FY2WnLvI1vC2/zNv+5QlPAAFTHZr5DF5P5iBATXqFJbWr1S4eGsxYUL9c5tOEW8XOG/fXPDa7xaqyBYOodqkzUPAzz+dia6aZU+u0BElyvca7bg1bzSAf+yQ/29O1GhW/dqFT2fXLHZp02OyqjEbhRJ9TCQUfpSPK8EExPTzO0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B2kyswgJ; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SncsGh0w"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B2kyswgJ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774949414; x=1806485414;
+  t=1774951712; x=1806487712;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=UEz/OQmSllDsOy58O8YQZbqPNXDtYx/bKKEhUktDTYg=;
-  b=SncsGh0wWd0XHR8tbgJkHoTnFptKPkjPy8BkHhzbXAIPFI4D6B6lMQyM
-   +XU7+rT1JvS5X6+I4BydG2fRAwScZkQinuCFo8iHrryOL6lSEPJitpXic
-   6VblCHX9nCZVfcMGwDJVVC89WbF3GoSQXL5UzryiBz7tQX+8ZJyNNTkD+
-   JK7RBLEpWZVP5W4BrUkECyGmqcyyYw6Rx0qC9VVO4D9e18SVvVMRqe4cN
-   FqLXwCAlzdjPAXj2XnNma22pTEHmSqMRGo0HgW1HpKxO4Wgqbxi1naB0D
-   wtc1MfL/ufH9jXvHryIhmO+KaRt5bxS0uw/3B0jox3bzG2GRzyzlovLan
+  bh=oJYDGXey4ybov+bfbQoWeXOWATlnqJbviRrykDJvd3s=;
+  b=B2kyswgJXlM0t7btqwgvR5OHQ0oKYcsyCpowZ7GpI1+pSDeDq0Z2zBRi
+   hZZ1MYjn32oe8CBeRw3q0oIotUGqY/PRCQ7XTQzRPX0zTlw5ckTfLxtgP
+   BQ8eJYunvEvhSSNBH2RyJm/aQa+4QSQGfXks+5UjUgANp3bHmwSbk7VJh
+   BoB0uSyFCIIBRnqt3Fgvn/s+LPJ5guT1iUK1c4XDM0OjJolO47PDr6wGU
+   zU/43USHCeizGBAGx+xPjNkrzWcGaj3ja/LkBKcTZpflSuPf7EzIq6GK2
+   amEfKxfEwLcnmadmnuxnCx3bWp8cEmHrY0JZXiydKYBFP8sXkadzwQZMo
    w==;
-X-CSE-ConnectionGUID: jxefE6LbR+O9SVzE5KsdzQ==
-X-CSE-MsgGUID: y9l9LswTRrKtRxT0cGyDww==
-X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="79853660"
+X-CSE-ConnectionGUID: 6z66y8RJR+aWSbMOMITFUg==
+X-CSE-MsgGUID: 6oOnirTxTKquyD+pXWxYPw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="75846546"
 X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
-   d="scan'208";a="79853660"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 02:30:13 -0700
-X-CSE-ConnectionGUID: AomyzBWqRryNz1403a34Kw==
-X-CSE-MsgGUID: Qp6cuHuLSqurunGs+wgbXA==
+   d="scan'208";a="75846546"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 03:08:32 -0700
+X-CSE-ConnectionGUID: TeDlc5jmRBSkPiM/4ugs7g==
+X-CSE-MsgGUID: zGZyXmajQ4WIjc/9IBL4PQ==
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
+   d="scan'208";a="226203156"
 Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 02:30:11 -0700
-Date: Tue, 31 Mar 2026 12:30:08 +0300
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 03:08:28 -0700
+Date: Tue, 31 Mar 2026 13:08:26 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Romain Gantois <romain.gantois@bootlin.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -54,7 +56,7 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	stable@vger.kernel.org
 Subject: Re: [PATCH] iio: inkern: Avoid risky abs() usage in
  iio_multiply_value()
-Message-ID: <acuUIFGgEbOBYNak@ashevche-desk.local>
+Message-ID: <acudGrFiD7TcAs3S@ashevche-desk.local>
 References: <20260331-iio-multiply-abs-usage-v1-1-2ae8063e80e4@bootlin.com>
  <acuT8oTnaYujC0k6@ashevche-desk.local>
 Precedence: bulk
@@ -69,13 +71,8 @@ In-Reply-To: <acuT8oTnaYujC0k6@ashevche-desk.local>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Mar 31, 2026 at 12:29:28PM +0300, Andy Shevchenko wrote:
+On Tue, Mar 31, 2026 at 12:29:22PM +0300, Andy Shevchenko wrote:
 > On Tue, Mar 31, 2026 at 10:49:59AM +0200, Romain Gantois wrote:
-> > iio_multiply_value() passes integers val and val2 directly to abs(). This
-> > is problematic because if a signed argument to abs is the lowest value for
-> > its type, then the result is undefined due to overflow.
-> > 
-> > Cast val and val2 to s64 before passing them to abs() to avoid this issue.
 
 ...
 
@@ -93,7 +90,9 @@ On Tue, Mar 31, 2026 at 12:29:28PM +0300, Andy Shevchenko wrote:
 > for the _PROCESSED some drivers keep a garbage in val2. That probably needs
 > to be addressed as well (exempli gratia: bmi270_read_raw() does that).
 
-And start from the test cases actually.
+Actually the data in the val and val2 should be aligned with the returned type,
+hence the potential bugs might only come from the untested drivers. Which means
+that this patch doesn't improve the situation.
 
 -- 
 With Best Regards,
