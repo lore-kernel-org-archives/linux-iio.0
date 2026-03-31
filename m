@@ -1,111 +1,134 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F923C2E;
-	Tue, 31 Mar 2026 11:26:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8CD83C5555;
+	Tue, 31 Mar 2026 12:13:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774956364; cv=none; b=ZfCQEk/BBtAl1gKqqPGa11KvD3eVXjH7RULZh0n0sqHMuLht40Bzl2UMZgV0XAbALAgJMNTGNPPDzy/MzJeS0gw88F3CW8/w6xHKqRGrYUC5QRnDOIKiE02Q9IzLjB44dcoQEqOJ6h3KZI66Xk4RDFYmluZga8oecX3+4vCYuv0=
+	t=1774959224; cv=none; b=p09EWxVnz39vioVxjxUI1hEDnstOL8gcBK7McsankUeZijBTaov9dCgQUgE7KYmkh/0oZkcOsZdW+ctInTFu21CrpJ481J9k1DWk/S7vwzW2AKYM+I3t7Hl15Qct3SYnP2OQJk9g1kh9ha6juJHW6RkyBZqJ6gAGxzZAWY7dt9E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774956364; c=relaxed/simple;
-	bh=NOTrhUUVowhwGx0t0rPG4rtZ1Nb6tAXMXdZrcPv++EE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ggnH7m7j0AwtuIPOWQP5rIKMvj5mR0VqsTcKgUDk5uQYaroUgeMwy4OnG3Fn6eOS2r5G1zp6i825HpdcB03IoTduB+OifukcFZGjsL9MXFl7jKj7RUI5Qt9C0KSirgZzrMoexp+9L/TNAONTFCuhRJw8NtzryJMR/9px6/JXvk0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iKjbtmdr; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1774959224; c=relaxed/simple;
+	bh=0Z9faOwXUmh9qLgJhY+ZBPIJVESNk4JcKVkmsZ8jSzI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OAQ9bcjh0OqCXBj71aJrazg52fvq7+7ZYzjHCrDOce2BZEn3RxRUXJu1odI7ndl5bsjc8gd5p9g26LnBkKsutEahGGAcAmQDJE2/8wnawlkMmmQ97YImkctKa2i4QKlZ4BvKof6bSbWEUT4S1+y8oCbouVOddjbM8+v/Yo1eTUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=pkQOni0K; arc=none smtp.client-ip=185.246.85.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iKjbtmdr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774956362; x=1806492362;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NOTrhUUVowhwGx0t0rPG4rtZ1Nb6tAXMXdZrcPv++EE=;
-  b=iKjbtmdrVrEPaZoWBlgLi/8BMGCssY5fQGYIq1chaIx8A4XYDoVt//Jd
-   bLiS8TqdWU99flLvWFrw/KVHbLNUXIjiUKqgdGZ+FYsCpHSOZPTIejhol
-   UfFlUZmsC//KWOnxnqTfCyXccO3ia35AGKZ/0z1rUeVLIWTJvb965cL8b
-   wBLHyKk2INgaBQlx/cA+mzrxj4zDa/RmWBkAX1nXVY3BcoBO7U/mOHDsy
-   9kgCfk9wGyV7YkPLZqf79jBBgc3HIotV0KjAK1qPOl4KSfiE90PygwKCC
-   75z88+0WXBdvvXHnfbHW15DQ7YboLzRniE+c/G/2K5hmNIm69pdS5UAY8
-   g==;
-X-CSE-ConnectionGUID: BF8MhGQhT1SnKqIE0Qq/bg==
-X-CSE-MsgGUID: jNu5rpLtSraN6G/1ecKTYQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="76157924"
-X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
-   d="scan'208";a="76157924"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 04:26:00 -0700
-X-CSE-ConnectionGUID: uDPvsGmPQi2c20CLpwjzrw==
-X-CSE-MsgGUID: Cd0Rxs2LQDe1SfgUw835JA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
-   d="scan'208";a="225333852"
-Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 04:25:57 -0700
-Date: Tue, 31 Mar 2026 14:25:54 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
-	dlechner@baylibre.com, jic23@kernel.org,
-	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
-	krzk+dt@kernel.org, robh@kernel.org,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V3 0/9] Add Invensense ICM42607
-Message-ID: <acuvQr0UVyGIQ7fo@ashevche-desk.local>
-References: <20260330195853.392877-1-macroalpha82@gmail.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="pkQOni0K"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-03.galae.net (Postfix) with ESMTPS id 3EBCE4E42884;
+	Tue, 31 Mar 2026 12:13:40 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 125556029D;
+	Tue, 31 Mar 2026 12:13:40 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 501861045028C;
+	Tue, 31 Mar 2026 14:13:34 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1774959219; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 in-reply-to:references; bh=pQanRxNZVj5rjDHm72RB8zAUvY47FsQWhmsFM28fyzo=;
+	b=pkQOni0Kzytfp/hYUnUFM0OgsFiePcP9VFooY1yzAMtgji+zUSfFbZ3pHYJ9mG9SfsMUk4
+	axYh2j9+P+HGl9NlogKJRqZN+VnF0gRECRhMXWYtIEg2hztXzfwk+c9kdS8cDUu1n+BkKz
+	maiD0ajt3LDA70dCZZ3a7QIcJwDfNRaHaGrrWv5qGChUS0ggrAky8BWwBHAYtj28EiI5vX
+	JeYqwKSFVmNzE4kLmn+cpfw4npJf5aPnhpcv/oB0j0/zL2vJPyn9vJ5Yypcvlii5R+WKH8
+	hvk7NwCV64lXjJWkIpdObcj+cGcUvA0//e9tGCOeI6o8q6fXH5i4pZAqga2vKA==
+From: Romain Gantois <romain.gantois@bootlin.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Hans de Goede <hansg@kernel.org>,
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject:
+ Re: [PATCH] iio: inkern: Avoid risky abs() usage in iio_multiply_value()
+Date: Tue, 31 Mar 2026 14:13:29 +0200
+Message-ID: <12864533.O9o76ZdvQC@fw-rgant>
+In-Reply-To: <acudGrFiD7TcAs3S@ashevche-desk.local>
+References:
+ <20260331-iio-multiply-abs-usage-v1-1-2ae8063e80e4@bootlin.com>
+ <acuT8oTnaYujC0k6@ashevche-desk.local> <acudGrFiD7TcAs3S@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260330195853.392877-1-macroalpha82@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: multipart/signed; boundary="nextPart5978803.DvuYhMxLoT";
+ micalg="pgp-sha512"; protocol="application/pgp-signature"
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Mon, Mar 30, 2026 at 02:58:44PM -0500, Chris Morgan wrote:
+--nextPart5978803.DvuYhMxLoT
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
+From: Romain Gantois <romain.gantois@bootlin.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Date: Tue, 31 Mar 2026 14:13:29 +0200
+Message-ID: <12864533.O9o76ZdvQC@fw-rgant>
+In-Reply-To: <acudGrFiD7TcAs3S@ashevche-desk.local>
+MIME-Version: 1.0
 
-> Add support for the ICM42607 IMU. This sensor shares the same
-> functionality but a different register layout with the existing
-> ICM42600.
+Hello Andy,
+
+On Tuesday, 31 March 2026 12:08:26 CEST Andy Shevchenko wrote:
+> On Tue, Mar 31, 2026 at 12:29:22PM +0300, Andy Shevchenko wrote:
+> > On Tue, Mar 31, 2026 at 10:49:59AM +0200, Romain Gantois wrote:
+> ...
 > 
-> This driver should work with the ICM42607 and ICM42607P over both I2C
-> and SPI, however only the ICM42607P over I2C could be tested.
+> > > -		*result = multiplier * abs(val);
+> > > -		*result += div_s64(multiplier * abs(val2), denominator);
+> > > +		*result = multiplier * abs((s64)val);
+> > > +		*result += div_s64(multiplier * abs((s64)val2), denominator);
+> > 
+> > Right, but here we get val and val2 from either static values from the
+> > driver (when it is SCALE channel), or when channel has PROCESSED support.
+> > In the latter one it might theoretically be possible to go till the
+> > INT_MIN, but practically I don't know how, except for the broken driver
+> > code in the first place. With that being said, I think it's better to
+> > validate somewhere the multipliers (when it's SCALE or PROCESSED
+> > channel). I also noted that for the _PROCESSED some drivers keep a
+> > garbage in val2. That probably needs to be addressed as well (exempli
+> > gratia: bmi270_read_raw() does that).
 > 
-> Changes Since V1:
->  - Instead of creating a new driver, merged with the existing inv_icm42600
->    driver. This necessitated adding some code to the existing driver to
->    permit using a different register layout for the same functionality.
->  - Split changes up a bit more to decrease the size of the individual
->    patches. Note that patch 0004 is still pretty hefty; if I need to split
->    further I may need to create some temporary stub functions.
->  - Used guard() and PM_RUNTIME_ACQUIRE_AUTOSUSPEND() on the new functions
->    per Jonathan's recommendations.
-> 
-> Changes Since V2:
->  - Went back to using a new driver on advice from Invensense engineer.
+> Actually the data in the val and val2 should be aligned with the returned
+> type, hence the potential bugs might only come from the untested drivers.
+> Which means that this patch doesn't improve the situation.
 
-Okay, but this should be elaborated in the cover letter. If I followed
-previous discussion correctly, the problem is the indirect subset of
-registers that are absent on the 42600 series. But would be nice to have
-the summary of what vendor engineers told you.
+I'm a bit confused: when you say "the returned type" what returning function 
+are you referring to? Also, doesn't the patch still fix the bug for potentially 
+untested drivers which use PROCESSED?
 
->  - Further split changes up into smaller chunks of functionality. Note
->    still that the largest patch is approximately 900 lines, and that while
->    the driver compiles cleanly at each commit it is not able to drive the
->    hardware until the commit that adds the Interrupt (as it also adds the
->    Makefile).
->  - Change the error to a warning when the devicetree binding does not match
->    the hardware ID.
->  - Dropped the ack on the devicetree bindings, as I am creating a new file
->    (for a new driver) instead of modifying the existing one.
+Thanks,
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Romain Gantois, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--nextPart5978803.DvuYhMxLoT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEIcCsAScRrtr7W0x0KCYAIARzeA4FAmnLumkACgkQKCYAIARz
+eA7EpA//QF4nYAISxA0588PT9pa0oAm6cCa8txaDLpXYs0EUVlvXnBYijbK+rWy/
+q/ooiddpwO6NfzNjvdt7SVjjOO5vH91nHTLTn7qlfa+0yLOgIMOBTItDzlLN15b3
+lJ3z58CSkAuNO4RADkPXMbt0HJ6Jws1yy2MUH1Q/t9ju5oJ1WbynVYBrZzwLKsS/
+S3ArOZfWW8yOH7emXiqkgERPoLuP+nRsl1fETWF+L3R4E+1LAk2QXBW90fcVwfbB
+mCXh/0L9UdzPEua/pTt0M4A6zVpmwQOqpGAOjluGv3Kd1Ft0JTLjOaGPGOnL3jj8
+Z0uekG4SfjSWjMzldzcj7+/z87pqTz2Wi3TrKy9Py0LWTHmLqcJhYtbUeEFDbB6/
+bPH/lmJqQ+4QxhPTc2Bm0HTFztVkM+oydcxL+y3O8aD60IMFt4YbjPhUAYZil+DQ
+yDusu/fSIV2Im88yadXjKkhiQP4BWHmqVc+j/NwY7WHeGMjRDinGSl99F0ZRt8lE
++nN+PobtLbo8+xGNXHcghA+LW3fJcMRpjbiqV/2KQJ+AErqnkq71bxuDryalWVUA
+4vvheAXsibFo+kQW3L2VgygsM8DyMW3j84hCxS/qy3p0a88KdWhmo/kHPhSQaHnI
+Lz3W+93s4JDVYqu8TvVEKF1EvEjwlL4Ej/sFHFa5kB/aJHjDaQo=
+=4kPg
+-----END PGP SIGNATURE-----
+
+--nextPart5978803.DvuYhMxLoT--
+
 
 
