@@ -1,194 +1,139 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azolkn19012008.outbound.protection.outlook.com [52.103.23.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F14D402435;
-	Tue, 31 Mar 2026 15:15:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.23.8
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774970161; cv=fail; b=gzcZcy5qwwa2J/QqgOyTfAA7WIT9gQbBH+60qj/AB9kLp/EmShPbBb7cW6215YDZgN2vsNBACuXW3VPc24mYruaGwHy0E3Ae2POjfAtgspmGUYgXS55rWSx4+ug2rqk3mqf84H5rDisWuUd53ShRtSHUzEuiz8ofUL1iLc8fIlg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774970161; c=relaxed/simple;
-	bh=9CwwpXen8RyUlRULCclLwYy6UejRQ6bYcB4V6nc5cdo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=gceMwkviHanS6O4fL5cjhYufZ36hxaju8D4poAZb739X4mzp8riSl4xOxmtZXbrcDllDF0Jd3pVBEOP+yOJ7ieMghJWFXIZw5jujDOY63Pcfq+5qpxwierk0aq9Qy80dlw+ZaU1c4kdrKX9MjVeqdsJD//9oZvUyFDP3IFPuFIE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=q0Ul4JfT; arc=fail smtp.client-ip=52.103.23.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7CFF40FDB2
+	for <linux-iio@vger.kernel.org>; Tue, 31 Mar 2026 15:26:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774970800; cv=none; b=H75f5oQVHvtnNZfsk27hF+SOA7PfGJwjr77gIslHAnR7N2VrsoxRUcGDtT8ftmlUbHsdE3btq3+nSOMGusnFQcTBCRCxna3WhNv6/uYU1rV+0MarNa3+zKIJ5JWA++ODlQ8kA0aaC0rYLOgXtKtQFxGxFoFsmCea0qX9nsieIIA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774970800; c=relaxed/simple;
+	bh=2lcMVU8JNhR0Rzve2wLo96oqxT19Z5alWu7tDoe1xKQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Kre3BAc05S8y6znaP+2EHGiCeex7WqFCRtJPM10pxjh0Q29Q6OWSwrNpmr25tEpb8UAaOSbUUAFy6nRPJAI8AAsegccgqPSUcTdWyyLi9VlvhExyCVkhMr+4k/KwOeb4mdm8kUSTFTAB7QXz149rY+sTFc2qLn4qbpgLwxN2ntY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FUdHl5Oi; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="q0Ul4JfT"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=LhbCv0VeIFs0bS96kvXmx+Wo9eVIp1CVncfubR1MBfwvEHTfahliNh7QaQxKQDR9tEWNUEcgYg5Yqiyar7Lynf8fwmOXDELWjwfHrQs/qjFpXyMOLozBwMwChP6JlBg7WJk4rLzLzYst/XlaY+0UMOA8iIDLhOGDaMrvQ11MAJTdrHkuDlJcf15W3DMa2DLayOXeb/ryIRqbchGFbvlAJIxZWqsYe3/1vy4oM7ScYFOSWkw17MbfZwrZfZXJUmqUzbVtz91g5LrASEoNL54+agEn0XoxVUF9kxezdrMpkot5chSqsQDpheCnOBmhoKdzVMHi7DBQpMfQ1SPj7NArAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6y5XqRXNg9WZ4Q0sXatEDcYRLAD6UB7jdv/VGgcdw7w=;
- b=zECQlfiWy+EQv4CNB2622slY9kTmEFyqw/ptXntqvffrGiWKz1OXlS0Aog/Bo70+IZLRIryTDiLCN/eDPG3RAotV/Zz9/5wBiHmSyxZ6sxO4q6qQvLPU/Q/bQUBE17BfGE3q/CG6xVq01MxzQWtEz9GQing5RWExp84xN4ODZKLstDtxKa5AZilQhhubopMzxxFp/QA2ondeNIBxbcA/AYK+eIHlXQ9WsO7NwMHYTUtroYLuElOjNtzYAG+9mINlwlHq6tPH0FihMljU/R7YTIWzOIv1rAYGPXL0zp0SiYlkah+p2VcKUfiN5+Au0nmXQ8ybYlmCkfypt+9KiQZzZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6y5XqRXNg9WZ4Q0sXatEDcYRLAD6UB7jdv/VGgcdw7w=;
- b=q0Ul4JfTOi3x9U2Uo/21si8g++9muzbr2l9EJxXrOj/VYWyXojkQvtj52M1OZUxRsabaZuK3WoNL+rPAKaagy2a2TBfF9a62emW+Ndu6vGOZGfXdxauFmn/cRTGbDAeQClT75VarmGfSPmdHz/PGHZZafG4N9UH5AH8LB4ByDe3k1dCuXGtXOoYi2dfbb8f3FBSkgZV5m2ns2ET7mbuEXJqNBJStm7RFQ8gu0P2TGM1Fqk8fV9azLySU10SIUE7RBYem3hkxN2FBQR5JV7PVx7WxPbIjKYCLNKv3yBUa/1y7GT+JpkwZ5sgaVDABTX+4fjNQePUtzkI9OkL5OgyJfw==
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18) by CYYPR19MB8101.namprd19.prod.outlook.com
- (2603:10b6:930:c5::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.24; Tue, 31 Mar
- 2026 15:15:56 +0000
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172]) by PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172%7]) with mapi id 15.20.9769.014; Tue, 31 Mar 2026
- 15:15:56 +0000
-Date: Tue, 31 Mar 2026 10:15:53 -0500
-From: Chris Morgan <macromorgan@hotmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FUdHl5Oi"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-43cfd96354aso1513798f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 31 Mar 2026 08:26:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774970797; x=1775575597; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MO5FPDdY/LQ+4ZadBlm+77MhRqH3b4TUifZXGA4guso=;
+        b=FUdHl5OikCI/hacFGfex0H0mwCbAFtiTz04Y+tvRDzL+m92M7NQ35fH+kn1aZ65yXR
+         e3pe6AQcxGomklpYfg7E7qfppqypETXtmAQOs6G9eIIIDCZOrPI9aH/r1cUPDmTDpOjQ
+         uYoQmWtXb5dDISY/ygGV1hnx+taAG9qJyh4YY1T88HF6sTU7Vmw1U2Ya1syBTizDqBAW
+         l4So11v4GQIkdLjDNxQ2aXP01AdkhOrFOM668F8qv4nD0NbTOJmSutHeVFTEKuJOo/hZ
+         4FeG/+xFGLo/yn1BvVME8M5RlxONDutmHho0MVO0v90s8j117qy/g06Q6BeX0NxpeQqN
+         0ijg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774970797; x=1775575597;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=MO5FPDdY/LQ+4ZadBlm+77MhRqH3b4TUifZXGA4guso=;
+        b=sKy7NrpAI8dvPu8SWE6RcXseMmDQRMz7wWzd3MEnXpRa+A3DFUL/t7PPw2Js87a+Et
+         R+aSjH+YE157Kf/ZvvUXyofbHbI5n8HpnoAfpL1N0rDFnx+7OrwKkAlzOesbqFGkkN8v
+         kXmbSECj/UAZbyfzD3n5JoZiC6pQ40YN6ei+PvXF/v4/nXrwehEo/kcYi2sSG2mV/PYi
+         RpiC5Yx7502krzVwDi5E9IGsLLFYqQRGeix84AMBMvuiJBX5igMQL1L/TKAZYLMxPNPe
+         nckXsYq4OnAcxrqI3K03SBWCMPVYkhnNkG12QyI7nQcfaIfbj1tNQtQbTiifAGVr3Txh
+         v8kg==
+X-Forwarded-Encrypted: i=1; AJvYcCXdPREfVm7c8gae8FVyMVoQbaXSpOWE3pW0PWZ0z1jlWu+Z49KcmNGgnDpHU91CuuMXRMv0/dPJXn8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy1buGrcWq51kcy8QYGvgcYmlqfPan2zIzGaRIXjbjAMAdffSaK
+	+IPKt2rjFF/rvOf/HBtEHp+uU3/Lmvpu7T9xAeJUetSuO/rWpDaezVxc
+X-Gm-Gg: ATEYQzzKJ9RTHBCc3uNMI9tEzwZuuURogJrFndB4StBGZYYR2zDl6erDOXaqU7d3l8q
+	YS34QgTua1ufcqDDmUKIctGfQArcSWNIcc+es/DdagiPn2aQU2phd6ZWmfelDdHhRGvXYZ8qSnL
+	LaFLviGqTiHKfQ1iQ2FB/rLzHdXjn5QEIvM0eO+ZdY/G6qtPbyyRjRbmNNgTrSDl+r0mpfNyZzg
+	Jbm0w70nYrBG7RK2zCXWiPyDJnRNWyBP8SiG5yXp/5R0L7eAADKX/YXgVQg/yrmDa4o3jfNlIxk
+	XaFWgAbhzZnkH6xs+Cua4TweRigg6DF9jhsp+cAf0XfifCTN9bymz/le1czD/hp3M0VXEqcAt1R
+	1+cGKlG4Il6nx0CiNeoyzTijRqq82g0E3osi477sBSBTTjDt6xpxRDz5+14qVFQqeguNvMXo4Id
+	o8DCST1JKC7QMqsE2pzGi3TP+85p+i1dll9c27G50Umx31+So0bP9O53b/4ZTF
+X-Received: by 2002:a05:6000:1a8c:b0:43b:43ae:8c2e with SMTP id ffacd0b85a97d-43d1512fc2amr5749f8f.51.1774970796917;
+        Tue, 31 Mar 2026 08:26:36 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43cf21e265fsm29303248f8f.1.2026.03.31.08.26.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Mar 2026 08:26:36 -0700 (PDT)
+Date: Tue, 31 Mar 2026 16:26:35 +0100
+From: David Laight <david.laight.linux@gmail.com>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
-	andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
-	jic23@kernel.org, jean-baptiste.maneyrol@tdk.com,
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-	heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org,
-	robh@kernel.org
-Subject: Re: [PATCH V3 0/9] Add Invensense ICM42607
-Message-ID:
- <PH0PR19MB997338CB9AB75EFB0DBB9BEA9AA553A@PH0PR19MB997338.namprd19.prod.outlook.com>
-References: <20260330195853.392877-1-macroalpha82@gmail.com>
- <acuvQr0UVyGIQ7fo@ashevche-desk.local>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <acuvQr0UVyGIQ7fo@ashevche-desk.local>
-X-ClientProxiedBy: SN6PR04CA0105.namprd04.prod.outlook.com
- (2603:10b6:805:f2::46) To PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18)
-X-Microsoft-Original-Message-ID: <acvlKcWjXKra09AL@wintermute.localhost.fail>
+Cc: Romain Gantois <romain.gantois@bootlin.com>, Jonathan Cameron
+ <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Hans de Goede <hansg@kernel.org>, Thomas Petazzoni
+ <thomas.petazzoni@bootlin.com>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: inkern: Avoid risky abs() usage in
+ iio_multiply_value()
+Message-ID: <20260331162635.2d8c7f70@pumpkin>
+In-Reply-To: <acuT8oTnaYujC0k6@ashevche-desk.local>
+References: <20260331-iio-multiply-abs-usage-v1-1-2ae8063e80e4@bootlin.com>
+	<acuT8oTnaYujC0k6@ashevche-desk.local>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR19MB997338:EE_|CYYPR19MB8101:EE_
-X-MS-Office365-Filtering-Correlation-Id: 88106aa4-a266-4710-6ae9-08de8f386861
-X-MS-Exchange-SLBlob-MailProps:
-	CLk2x5OX5VYv3c8Emt0jD2wdZaenNeU3c1oRDJhUY3yW/2lDTTtjOvEvDpUoHYMdeYcJDrfWMhH3rIurMrdecxNm/FcKt1sgdrOUbsDm2eIuKvoSWjSfzQjGsl9VJtDEWFAZtytaS5eBZu7UdGxRPXEyBr9zqz98JRX+Az9X0wwKIYVUJ2WLAEb/uZtsld9S+RIDINkFb+UIZql9IxJai+5aqLpA2NfFxN5Fl6ppS62XYzRUlyBNRRgXp18qhnif9/ObpvV35NKIswa3TZTXWq5KTvBldUZlwUyr5ogwctziT/MWxuYb0C7X/AVial8Gl51dbPVgt/6n+bnNGn9FM/vAbFD2apkQjDQl0YHaQiFzOk/GnTBrSzs+3I7pYzdOXqdK09e5V0WV3BTKEVOGm4IkI6u+alFC8iUV1m65k4qC9Eh9vuJuirmhrxlUvwAqcoZZ5V7gWBBI0h4cQ7PeabLuuJhkOTraw08I02BQbLeQz0GqgAVm5kcNfW1cIsAndeqAD5QYXgLw0ZWkChoPyzhdf2xJTNqcCAeqnOCGMyxb2kMhUSYooJMN1uKY0XggdxrYpOvFZuHUdrAl7tM6mh4XEuZQFfDWSVJ3f9GJ/gp+BJKcw/1St9fxa1D1Exc5fDKiP+unoF5KBWp4tcKoCwcCGpAyFYe/frap3LWD9tgt9g+7rnZ1n05r9zpbZ64cKgvg/g13x24/VvuAu8YW7A==
-X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|37011999003|25031999004|19110799012|51005399006|6090799003|5072599009|461199028|8060799015|15080799012|23021999003|26121999003|440099028|3412199025|40105399003;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?nUL61H4pdyvnTnczstLxqqjb6NCcjJHZ1WDn+Ahi0y0DrJWLNT3xqDauyKbo?=
- =?us-ascii?Q?doIu0eytoNMpLlHY/3Y99dvmEkWipOHPm4jU1bANSri4Jw73+C5mcNmIoWh7?=
- =?us-ascii?Q?19eWdyFJ/4aTqF3JH9lseZgOAPff5kkP0yyHR1qukK+IDraLWEZwjy23sgM5?=
- =?us-ascii?Q?RKiDRo+Q/0Y2twizYEB2qfSOVkgzabELg7Bx+iuLHDE/uooOEUqLTZNJJLzo?=
- =?us-ascii?Q?0Joyym6EJllQGpmi60CbMdyR3r9Jt/pkfhwPPo1aXE0roN5xYTGhoVIjXzEP?=
- =?us-ascii?Q?tm2b2fnl1uHiISEHtkzDUN5OoRW9pxmUbN4N5PsOdDulCizhhSzYvtiCLYp9?=
- =?us-ascii?Q?q7vifgTrNVHTdCRmAma/vRMQ+jcULgwOcEQoJgpqMnOuXwc7HGCvfP2t8S7y?=
- =?us-ascii?Q?r6TaV04Zcv3SCoHBFkmnce2tY1UnxrUL0H8I7qDrmAx6wFeJ2U8b+oTFuBZh?=
- =?us-ascii?Q?hVhw4XH8SOLpLZRcoTjVwa2nljl8YHwOcsxT9wWilPszLELfyJ99Uaeawz2k?=
- =?us-ascii?Q?3CLvkwqWgoQae8FVfidM9Gbbbioswps18TNxd9jHkeWRRjI0xys6izr2AtQh?=
- =?us-ascii?Q?xAFQQZ+MqzV5NK1KIgEZ1xKdBnTj0GG11xgfBEVA057NORQzysRuJY/ra6Ol?=
- =?us-ascii?Q?kqPEpEWOtYTDvFFiYWR5nLDQjdarQIK5kZy72yJWK2QGT9xnuf8HruhxpO4U?=
- =?us-ascii?Q?dps4Phtbk1RaQCdy0d386/xgE5AgLdMoCtbMDxBKrDtJ/KzAawSyNgnZsouM?=
- =?us-ascii?Q?FQxil/U/7ZNxx2KBtPpx8SftFQovVIQEBsP3J54rm7wiJ+xjzm4wciKhYMTr?=
- =?us-ascii?Q?1CuzUhf+OdqKZvFx+0eT4f8ltvwMv/ojG4GUXtUl/DSFda3f3ePA8Ql/gUcm?=
- =?us-ascii?Q?HqHUaZ9IPyKH69nVLfYAZvOvomK8Wt75xTMDZa/T//JXF4+XR0QfZDCiLgkV?=
- =?us-ascii?Q?XqD5/prZs4uGr3Qne7XcvpMgxm+tCbEimlyu4Tu3GFdELBaxIHVE+BEPocW1?=
- =?us-ascii?Q?BfIoXtMIcfL4FEHTnBwA9ILGWrltrLCKUCjragmrEacQa0Y=3D?=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?N6sOGGCslh76mF9n5v5diAm/4rVEsM3MTTU8+7Fz0lAzGEG+KPjIYfYLR/G9?=
- =?us-ascii?Q?N3gCPWJI2kpzNRR43oDpE8zITClt9QD6XrGuiowmEF8PrR6eCGGwrtoNlTrp?=
- =?us-ascii?Q?VUSxb2qkD9/01oMLHW3gYoFWbhIGQjv3ENeco/s62KR8OQaWyaeCPad6shHM?=
- =?us-ascii?Q?copKTw8AerAWZOEcOPpve+0ikqAO9x4AUbFnAZM63RGOD2pfu4htBJIRBybK?=
- =?us-ascii?Q?ikBxA/yijs7AqCAtiJ48dMcJDenvCVkydNyRtE6mrg5tME9vr2XmTUG2OUrM?=
- =?us-ascii?Q?0vdSudpBMztovAqBN9//HkAQMeVEs4+A7lmxW0awXrmKoo40UlAZeFty4x7L?=
- =?us-ascii?Q?A5/BnnydSbZcnMFApfdBXl4/okmjfyNyp9f/uF5VOriO0j0CwEEuIz6nSInt?=
- =?us-ascii?Q?UIx3kz9iKug8icwO5YaHv4j/Rj57HbKEggjMoINHvrSX5enQyX1mvWEEH3GW?=
- =?us-ascii?Q?uQ+4rbi2foSy1UE04U60SV7Vitu8CQvxIfexkq0bVQOuyz+fhNta1mWP/Xje?=
- =?us-ascii?Q?3k+Zx8zHsrZhqybzzhBcPO8iVARKCTfb44x2sfHg1EoVc4gw88QPusu6lURL?=
- =?us-ascii?Q?SQjyxBE/3fsMbPm0RjF50oabUca0PXiY9+FkeDZkMnod9zEulB+b+BmB58ZE?=
- =?us-ascii?Q?N2r9FjOs2JhberX2RftIx7Eq7uAc4hQIz0q5lTkOoW+PHwrzc42QFJfxHn7n?=
- =?us-ascii?Q?MWD0IxRpLGAM9aWgUhFgJ/YpImCgDxseGTCO3R1CztzcvHSBG3FUO/O1M/Dv?=
- =?us-ascii?Q?HfjFkrPRRyMrfsSc87+OlJ0GaXgFdD/vYtprQUxB4bEnQAgedIFKQKw0pwrI?=
- =?us-ascii?Q?Snu5JwaGCMZmBH0gGEMXFG0v/R8OzPWS3Gn9nvcQE83PxD2d4H7a8Qmk6okh?=
- =?us-ascii?Q?aoKzhmRuHPxIxhgMCMnOW9/I0iS22wzYwoNRr0UGJM2ysc3lnMDWny4/gR1a?=
- =?us-ascii?Q?YpZCmO6s2P38i/mceXIsDG+X41cOUf5FflzP6z1gCa+gTKGRKp3QdrmGn2Bj?=
- =?us-ascii?Q?eppEQQXbGSfQNbdijBtU3qSUbCDcTBXFt+tUCsn0+roNDPLD5eDDRCxbgjab?=
- =?us-ascii?Q?I13PNIIYmiJwHRUk0F1bYYe62IlUY3GfWJPXxkjBOxZYO+bGYsWwUPNpC8fP?=
- =?us-ascii?Q?XY8KObvsB2X+A6kfK6+x3NBvNCozj5Gw8MZO793cf68MA0xbZQHjLwWlijN8?=
- =?us-ascii?Q?c5JJg57q3b4yLAPyfZqQf82cuv1yW06OQwJltd7YUpBzRWgItF+RBQyvTVCw?=
- =?us-ascii?Q?OEJG7fFtTNVtYOpzeQGT8B318ywjc1DagObFp2qI7SfKn7KqiUURmMlGPJ/d?=
- =?us-ascii?Q?QmjEwekgvSYxFOZabzPL8bqmc9ONzglCQCblvwXN1EMg/9+tNXvKoxyhxd+b?=
- =?us-ascii?Q?tRE+XBPDb6LKB4kgipQ+I3YKUc3M9uQTB3Be5oEdMGb40SeOCw=3D=3D?=
-X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-990eb.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88106aa4-a266-4710-6ae9-08de8f386861
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB997338.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2026 15:15:56.7278
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR19MB8101
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Mar 31, 2026 at 02:25:54PM +0300, Andy Shevchenko wrote:
-> On Mon, Mar 30, 2026 at 02:58:44PM -0500, Chris Morgan wrote:
-> 
-> > Add support for the ICM42607 IMU. This sensor shares the same
-> > functionality but a different register layout with the existing
-> > ICM42600.
+On Tue, 31 Mar 2026 12:29:22 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+
+> On Tue, Mar 31, 2026 at 10:49:59AM +0200, Romain Gantois wrote:
+> > iio_multiply_value() passes integers val and val2 directly to abs(). This
+> > is problematic because if a signed argument to abs is the lowest value for
+> > its type, then the result is undefined due to overflow.
 > > 
-> > This driver should work with the ICM42607 and ICM42607P over both I2C
-> > and SPI, however only the ICM42607P over I2C could be tested.
-> > 
-> > Changes Since V1:
-> >  - Instead of creating a new driver, merged with the existing inv_icm42600
-> >    driver. This necessitated adding some code to the existing driver to
-> >    permit using a different register layout for the same functionality.
-> >  - Split changes up a bit more to decrease the size of the individual
-> >    patches. Note that patch 0004 is still pretty hefty; if I need to split
-> >    further I may need to create some temporary stub functions.
-> >  - Used guard() and PM_RUNTIME_ACQUIRE_AUTOSUSPEND() on the new functions
-> >    per Jonathan's recommendations.
-> > 
-> > Changes Since V2:
-> >  - Went back to using a new driver on advice from Invensense engineer.
+> > Cast val and val2 to s64 before passing them to abs() to avoid this issue.  
 > 
-> Okay, but this should be elaborated in the cover letter. If I followed
-> previous discussion correctly, the problem is the indirect subset of
-> registers that are absent on the 42600 series. But would be nice to have
-> the summary of what vendor engineers told you.
-
-Sorry, I should have elaborated you are correct. The information the
-engineer said was that the 42607 chips use an indirect register access
-method using IREG specific registers. As a result it did not make sense
-to have the 42600 and 42607 drivers combined.
-
-That said, the driver in question here does not use any of those specific
-IREG registers (but it's possible other future 42607 devices could).
-Specifically, I only have the 42607P (via I2C) to test with, which does
-not have those registers only ones that can be directly accessed.
-
-I hope this clears that up, I'll try to include that information in the
-next patch. I also want to make sure with this revision that I'm "in the
-ballpark" for breaking this down into digestable chunks.
-
-Thank you,
-Chris 
-
+> ...
 > 
-> >  - Further split changes up into smaller chunks of functionality. Note
-> >    still that the largest patch is approximately 900 lines, and that while
-> >    the driver compiles cleanly at each commit it is not able to drive the
-> >    hardware until the commit that adds the Interrupt (as it also adds the
-> >    Makefile).
-> >  - Change the error to a warning when the devicetree binding does not match
-> >    the hardware ID.
-> >  - Dropped the ack on the devicetree bindings, as I am creating a new file
-> >    (for a new driver) instead of modifying the existing one.
+> > Fixes: 0f85406bf830 ("iio: consumers: Fix handling of negative channel scale in iio_convert_raw_to_processed()")  
 > 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+> Doesn't fix any know issue for now.
 > 
+> ...
 > 
+> > -		*result = multiplier * abs(val);
+> > -		*result += div_s64(multiplier * abs(val2), denominator);
+> > +		*result = multiplier * abs((s64)val);
+> > +		*result += div_s64(multiplier * abs((s64)val2), denominator);  
+> 
+> Right, but here we get val and val2 from either static values from the driver
+> (when it is SCALE channel), or when channel has PROCESSED support.
+> In the latter one it might theoretically be possible to go till the INT_MIN,
+> but practically I don't know how, except for the broken driver code in the
+> first place. With that being said, I think it's better to validate somewhere
+> the multipliers (when it's SCALE or PROCESSED channel). I also noted that
+> for the _PROCESSED some drivers keep a garbage in val2. That probably needs
+> to be addressed as well (exempli gratia: bmi270_read_raw() does that).
+> 
+
+I've just looked at the 'work of art' that is abs().
+What is wrong with:
+#define abs(x) (sizeof(x) == sizeof(long long) ? __abs(long long, x) : \
+		__abs(int, x))
+#define __abs(type, x) \
+	({ type __abs_x = (x); __abs_x < 0 ? -__abs_x : __abs_x;})
+
+It is just as broken for u128.
+It will use the correct signedness for char (but it is unsigned now).
+It doesn't cast back to char, but that is entirely pointless unless code
+looks at the type of the expression, the return value itself is always
+promoted to int before being used.
+
+Actually replace the -__abs_x (UB for INT_MIN) with the safe:
+	(unsigned type)-(__abs_x + 1) + 1
+and the return type will be unsigned with a correct value for -INT_MIN.
+(Oh and the compiler sees through the mess.)
+
+	David
+
