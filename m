@@ -1,123 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAFDA35FF75;
-	Wed,  1 Apr 2026 15:10:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7436F36AB5E
+	for <linux-iio@vger.kernel.org>; Wed,  1 Apr 2026 15:25:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775056223; cv=none; b=TNbYDIMqvogPf14NUWQZQ9dQArMDh2w5TsMN8dOxlpeIEvXJc6LQUbQTOerRb4MG1C6jmb4FRbbNWZ1fKcXQbOmqFORIGoX5Y0KRXsgiw+FjlSADsmkdqACd0+zYhEkx0Fg0TR9WFAkuwn40femp3ve5HBJYwpd6LWU4fuN5v5g=
+	t=1775057133; cv=none; b=JPPgrbFpV4u74cre9YcJTnKNuvI/t8rb8xKbUf09tIgpi7NlpD8LGzyu4U+1LzXOBGHTWY+Bs9v7XQ3ao01rCfbzYsmlXkDkl9jYVj+eUxX10eaoJ8+j2cjVWsRV3UB7j2UzbQlkvcoxIYhEBukQjyH1jl17RuZ2OeisfP/obT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775056223; c=relaxed/simple;
-	bh=ByFJuUH+Ie4yVFpimizT/zfqfXLXJKFs0kW7xEv/8JQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dz80RYHfoZp9Vik2wUgmkXuMrHPGM7k1IfBxurT3sKvtsG4UXpe0wvHIKozF3k88QkFbe6icxQpeYNtMVvj2wvgXpziNHBHdGvJvjyZWhlbf7BFp4/fO1BBRPt7R6H5Lp6uM86bCknm04woozhC0r4bRd78ESBiLt5oXYxnhomY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PEiJmjsN; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1775057133; c=relaxed/simple;
+	bh=SRw5GADO3IOoyzHSN3n1koW1j26645CVh4z99hWUrxk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=W1yO5uxE79EZf9mbfWIa+uWRs4Fu7BlAqL4SXSe24CfLqFnLJH+f5b6sNbu6jtMOkrhUMqZsQyQ/DobtWhTO4Q9NbhgoAAvpmd92fZUSHGEfJfX1tHzguhXXijZopfy6QrJwL0M81W1LkwQ3tMZ3J97bGcGAbGlwf7paHiHBIhU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=PrKCaGmZ; arc=none smtp.client-ip=185.246.84.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PEiJmjsN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1775056222; x=1806592222;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ByFJuUH+Ie4yVFpimizT/zfqfXLXJKFs0kW7xEv/8JQ=;
-  b=PEiJmjsNuUa45NZAkWEjQe+LjSdN799etRgXVYW+peWUHfpoNBPfnBgJ
-   5zK8AU26VKECk2K+BpcgrFZw1pKPKxvt9q+b0ZhcnS4Bd2UtbPMQs2YKt
-   ihXKC8VkmKBkD1vR1UDhlAlniO1EpgCZr7uv+G5Ir0ltw9bHhmwdh2nTr
-   B76yri2NI4ooJGsyisz3caEnSMFAW3RXRZBePHEVZGvM0DSt5j4KE8V63
-   Go0xn1O4enaT5uHNHrneQNKKmcuip47hgN6yt3ionpwH6xiF8Myv4K7jQ
-   yuJ19g4j4ATiiE3gG/vTRAaYFRbTcpxN/mT8z8qclRst1NlcjfCGc8LV0
-   w==;
-X-CSE-ConnectionGUID: lIZFkxptSS+ua2vlvx85yA==
-X-CSE-MsgGUID: VojahJgRQneydqt3X/UhXw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11745"; a="93681482"
-X-IronPort-AV: E=Sophos;i="6.23,153,1770624000"; 
-   d="scan'208";a="93681482"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2026 08:10:21 -0700
-X-CSE-ConnectionGUID: eyv0yO/mTIWZoQ80p9G/5A==
-X-CSE-MsgGUID: Udf5qq5zSf6D/X7gCY0Ycw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,153,1770624000"; 
-   d="scan'208";a="249737858"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.215])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2026 08:10:18 -0700
-Date: Wed, 1 Apr 2026 18:10:16 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 2/3] iio: imu: inv_mpu6050: control vdd supply using
- devm-helpers
-Message-ID: <ac01WETv_jIcYvRL@ashevche-desk.local>
-References: <20260401082737.781018-1-andrej.skvortzov@gmail.com>
- <20260401082737.781018-3-andrej.skvortzov@gmail.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="PrKCaGmZ"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-02.galae.net (Postfix) with ESMTPS id 0B3F61A309F;
+	Wed,  1 Apr 2026 15:25:30 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id CCD24602BF;
+	Wed,  1 Apr 2026 15:25:29 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 5B07710450346;
+	Wed,  1 Apr 2026 17:25:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1775057128; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding; bh=/E0rCk8Mn+Lt+NuMlf3Rt8SdSgB7FbxJcFreMo15xpE=;
+	b=PrKCaGmZDE3xCt1GYg2FsjEH5BTK6efWLMV1+IofrDELAL3iiYPEk7dU2iYECiNm6uOPeH
+	h8gXB5wbWHfkMdNmMxInTnEB/WeLgZYYLZ05NjwVws5ensLinPOxF6leE/W3f8jA9191u4
+	S6WhMDv99IuOl8wTLF/4iGEbu50lYooxMcoEHXdJE5WluxLDctwNsLdSLW6kxC8ookLUw6
+	wks+/8PHc6JACazqknNyIiIi4QEbG0YCqgCVyuYLnWQsidkOl4iw+06y/80ukFaxiRT9lW
+	zrf6FBIzmJVouCTrRetho6ECiH9Jut23efQOO1kZ7l4NTwJo97GhnMGu1JC6Fw==
+From: =?utf-8?q?Beno=C3=AEt_Monin?= <benoit.monin@bootlin.com>
+Date: Wed, 01 Apr 2026 17:24:58 +0200
+Subject: [PATCH] iio: buffer: Fix DMA fence leak in
+ iio_buffer_enqueue_dmabuf()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260401082737.781018-3-andrej.skvortzov@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260401-iio-dma-fence-v1-1-40993adbfa96@bootlin.com>
+X-B4-Tracking: v=1; b=H4sIAMk4zWkC/yXMQQqDMBBG4avIrB3IiHbhVUoXMfljR2gsSSuCe
+ HejLr/FextlJEWmvtooYdGscyyQuiL3tnEEqy+mxjQP0xph1Zn9x3JAdOAuiMNgRRA6Ks03Ieh
+ 6/Z6v2/k/THC/c0L7fgBwPJUVcQAAAA==
+X-Change-ID: 20260401-iio-dma-fence-5f1ceba11ef5
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Paul Cercueil <paul@crapouillou.net>
+Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, James Nuss <jamesnuss@nanometrics.ca>, 
+ =?utf-8?q?Beno=C3=AEt_Monin?= <benoit.monin@bootlin.com>
+X-Mailer: b4 0.15.1
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Wed, Apr 01, 2026 at 11:27:36AM +0300, Andrey Skvortsov wrote:
-> vdd supply will be automatically disabled on error condition during a
-> probe and on driver cleanup. Since the vdd handling is moved to
-> devm-helpers, only vddio regulator has to be disabled in the
-> driver-specific cleanup action.
+iio_buffer_enqueue_dmabuf() allocates a struct iio_dma_fence (104 bytes,
+kmalloc-128) via kmalloc_obj()+dma_fence_init(), which sets the initial
+kref to 1.  It then calls dma_resv_add_fence() which takes a second
+reference (kref=2), and stores a raw pointer in block->fence.
 
-...
+On the success path the function returns without calling dma_fence_put()
+to release the initial reference, so every buffer enqueue permanently
+leaks one kmalloc-128 allocation.
 
-> -static void inv_mpu_core_disable_regulator_action(void *_data)
-> +static void inv_mpu_core_disable_regulator_vddio_action(void *_data)
+The iio_buffer_cleanup() work item only releases the temporary reference
+taken during completion signalling by iio_buffer_signal_dmabuf_done();
+the initial reference from dma_fence_init() is never released.
 
-You can rename now _data --> st...
+With four iio_rwdev instances at 240kHz and 512 samples per buffer,
+this produces ~1875 kmalloc-128 allocations per second matching the
+observed slab growth exactly. A test with ftrace confirmed that the
+dma_fence_destroy event was never triggered.
 
->  {
->  	struct inv_mpu6050_state *st = _data;
+Fix by calling dma_fence_put() after dma_resv_add_fence(), transferring
+ownership of the fence to the DMA reservation object. The DMA fence then
+gets properly discarded after being signalled.
 
-...and drop this.
+Fixes: 3e26d9f08fbe0 ("iio: core: Add new DMABUF interface infrastructure")
+Originally-by: James Nuss <jamesnuss@nanometrics.ca>
+Signed-off-by: Benoît Monin <benoit.monin@bootlin.com>
+---
+ drivers/iio/industrialio-buffer.c | 1 +
+ 1 file changed, 1 insertion(+)
 
->  	inv_mpu_core_disable_regulator_vddio(st);
->  }
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 46f36a6ed271..5c3df993bea2 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1909,6 +1909,7 @@ static int iio_buffer_enqueue_dmabuf(struct iio_dev_buffer_pair *ib,
+ 
+ 	dma_resv_add_fence(dmabuf->resv, &fence->base,
+ 			   dma_to_ram ? DMA_RESV_USAGE_WRITE : DMA_RESV_USAGE_READ);
++	dma_fence_put(&fence->base);
+ 	dma_resv_unlock(dmabuf->resv);
+ 
+ 	cookie = dma_fence_begin_signalling();
 
-...
+---
+base-commit: 7aaa8047eafd0bd628065b15757d9b48c5f9c07d
+change-id: 20260401-iio-dma-fence-5f1ceba11ef5
 
-> -	st->vdd_supply = devm_regulator_get(dev, "vdd");
-> -	if (IS_ERR(st->vdd_supply))
-> -		return dev_err_probe(dev, PTR_ERR(st->vdd_supply),
-> -				     "Failed to get vdd regulator\n");
-> -
->  	st->vddio_supply = devm_regulator_get(dev, "vddio");
->  	if (IS_ERR(st->vddio_supply))
->  		return dev_err_probe(dev, PTR_ERR(st->vddio_supply),
->  				     "Failed to get vddio regulator\n");
->  
-> -	result = regulator_enable(st->vdd_supply);
-> -	if (result) {
-> -		dev_err(dev, "Failed to enable vdd regulator: %d\n", result);
-> -		return result;
-> -	}
-> +	result = devm_regulator_get_enable(dev, "vdd");
-> +	if (result)
-> +		return dev_err_probe(dev, result, "Failed to enable vdd regulator\n");
-
-I'm not that expert in regulator framework, but this change might be sensitive.
-I dunno if regulator is exclusive or shared and if order of requesting may affect
-anything. Just needs careful review from somebody more familiar with that.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards,
+--  
+Benoît Monin, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
