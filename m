@@ -1,136 +1,120 @@
-Received: from aposti.net (aposti.net [185.119.170.32])
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B4F477E27;
-	Wed,  1 Apr 2026 16:16:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.119.170.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 751E9472764
+	for <linux-iio@vger.kernel.org>; Wed,  1 Apr 2026 16:25:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775060187; cv=none; b=aXD0N20/XFzUp3eNlhz/CsjZ8AUpL/p6X3jG6HdOO8wN57EL9+P+Gfh+w5XzBvVlfXE2YXP+1dL3fgexbXuxOq93+Et+PeNPl7d45BBd8q9MUyCupfS37k7PCevnYIb6KReL6wUBUgMuGGC3OJ5tUZ3UXIGLGYQQfc5TVEYfa3I=
+	t=1775060747; cv=none; b=me/WP000/QH7bJvHnAPQYZgndbU6NrswqBx+pG5Sibklaok3rZxQc2198cwkxauT6GVvAw2f3bQKg7yb0sbAx/nJONbgmnokjHSw3/soIh54IKry+DiKCO2dWdCyslPLqk3pvJ64lUMO62NL6bojz3FOi+1stD6ecllnVpIJ3Kc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775060187; c=relaxed/simple;
-	bh=2/P2cD9d325/MESL80iZutOvtnDXehmUR+glzRoQv2g=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Hl8JJj+RCZuWwzVGiCmfi7VHZY/s5QU0OnkBVn5lG0Sw3rkQbwIUaLY65L0EZD8wqDeqZfMlhfsDUf+DCinixwFdaCmSX6LQNHZ+b6joZBuTyjUUvGKejAqJSeMMT4FttI0ZfWsDRcCRxkuxXOiwx/HRXqYaE+2Sb5TI7beKAAw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net; spf=pass smtp.mailfrom=crapouillou.net; dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b=oN61nYm9; arc=none smtp.client-ip=185.119.170.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crapouillou.net
+	s=arc-20240116; t=1775060747; c=relaxed/simple;
+	bh=JHZaomVmYY2I/XkWsxtkjS8/76dzEdRMGcPYxXG9t6s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=C6u40rjvdqkV3jGHB1e//M2tN/mCgUuUyiol/4ecuLnu9L5vJ/UoBwJ80G1bfOPPOftaQutY45c9dv1mDhNa/zQyUsO3fMcc9mYh7bw2/V+qKqRAVWhOwv/+Z3soXbZ7P0NYdc8Vc2FwSAb1bBh0/ZGsyOPovVHHQVDTJ16x2Ck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mirrorstack.ai; spf=none smtp.mailfrom=mirrorstack.ai; dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b=DiZrhrB2; arc=none smtp.client-ip=209.85.216.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mirrorstack.ai
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=mirrorstack.ai
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="oN61nYm9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=crapouillou.net;
-	s=mail; t=1775060175;
-	bh=2/P2cD9d325/MESL80iZutOvtnDXehmUR+glzRoQv2g=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=oN61nYm9QgrsC3tlGIpXeKh0Zh+E9IcIAOwgChu0K28e5C19+AIVyW8Wn0DOut4Bi
-	 mSyU05Do6UCJdA0AbWDehW6sMvcWd7oBREHwtQl1FGP9GxtV6Wed3Z+0/9FVD5hyZM
-	 w2QWzM8ZzGdqVikbIlQymdfJd+tsj5RR+SIItJyc=
-Message-ID: <5fcda84716176de70b6ff968458ee4e4101b36ad.camel@crapouillou.net>
-Subject: Re: [PATCH] iio: buffer: Fix DMA fence leak in
- iio_buffer_enqueue_dmabuf()
-From: Paul Cercueil <paul@crapouillou.net>
-To: =?ISO-8859-1?Q?Beno=EEt?= Monin <benoit.monin@bootlin.com>, Jonathan
- Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Jonathan Cameron
-	 <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, James Nuss <jamesnuss@nanometrics.ca>
-Date: Wed, 01 Apr 2026 18:16:10 +0200
-In-Reply-To: <20260401-iio-dma-fence-v1-1-40993adbfa96@bootlin.com>
-References: <20260401-iio-dma-fence-v1-1-40993adbfa96@bootlin.com>
-Autocrypt: addr=paul@crapouillou.net; prefer-encrypt=mutual;
- keydata=mQENBF0KhcEBCADkfmrzdTOp/gFOMQX0QwKE2WgeCJiHPWkpEuPH81/HB2dpjPZNW03ZM
- LQfECbbaEkdbN4YnPfXgcc1uBe5mwOAPV1MBlaZcEt4M67iYQwSNrP7maPS3IaQJ18ES8JJ5Uf5Uz
- FZaUawgH+oipYGW+v31cX6L3k+dGsPRM0Pyo0sQt52fsopNPZ9iag0iY7dGNuKenaEqkYNjwEgTtN
- z8dt6s3hMpHIKZFL3OhAGi88wF/21isv0zkF4J0wlf9gYUTEEY3Eulx80PTVqGIcHZzfavlWIdzhe
- +rxHTDGVwseR2Y1WjgFGQ2F+vXetAB8NEeygXee+i9nY5qt9c07m8mzjABEBAAG0JFBhdWwgQ2VyY
- 3VlaWwgPHBhdWxAY3JhcG91aWxsb3UubmV0PokBTgQTAQoAOBYhBNdHYd8OeCBwpMuVxnPua9InSr
- 1BBQJdCoXBAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEHPua9InSr1BgvIH/0kLyrI3V0f
- 33a6D3BJwc1grbygPVYGuC5l5eMnAI+rDmLR19E2yvibRpgUc87NmPEQPpbbtAZt8On/2WZoE5OIP
- dlId/AHNpdgAtGXo0ZX4LGeVPjxjdkbrKVHxbcdcnY+zzaFglpbVSvp76pxqgVg8PgxkAAeeJV+ET
- 4t0823Gz2HzCL/6JZhvKAEtHVulOWoBh368SYdolp1TSfORWmHzvQiCCCA+j0cMkYVGzIQzEQhX7U
- rf9N/nhU5/SGLFEi9DcBfXoGzhyQyLXflhJtKm3XGB1K/pPulbKaPcKAl6rIDWPuFpHkSbmZ9r4KF
- lBwgAhlGy6nqP7O3u7q23hRU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b="DiZrhrB2"
+Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-35c124d2613so4505652a91.2
+        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2026 09:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mirrorstack-ai.20230601.gappssmtp.com; s=20230601; t=1775060739; x=1775665539; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=CdKWlJC7fiD6nBYqrx/pcO9OeCyCqC2Lwr6JIyiolS0=;
+        b=DiZrhrB2ih/LEIgnkmZxmi/LCjauEYWqooDiH/Y/5zfiPVvAYtKKm29SDwSNxTI9OR
+         7ctDUImxINWOws5/VciluwBgjIq6k7TqFAUzhOxhAAZ7BhzDMq/oVSE43e7ciqtRMpRo
+         GORye2kcBhzdgrKoTqgtyfhXEcGPp4kQ1NTQ4bYMqp4AR7dZZtJEY6UX4W9xAh91Xrvb
+         /ysrjWmV7T1RUHgx436MbwCIX2ml/Q7ph8hbYHdyohnFfa9Ewbp5YWkQqImC/RbsiQ83
+         bVapC95rAUwB+n6/opGyaGVXjsCMS693H9GoSGhB8Kg8xHs/UCUTi7u2oSMAiDba0Ebs
+         DgKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775060739; x=1775665539;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CdKWlJC7fiD6nBYqrx/pcO9OeCyCqC2Lwr6JIyiolS0=;
+        b=cR2lJUygEeNtHlnp4uc7Xyk+yZnu6QoACiFgCPb0Yshz9BAYTo+rdKKSoYSjKZFIaO
+         K4YeCOwvA2ZbjU0VtmI3U95Y2wF38wzq933F5I5yoTgv66EAMSuEEUw+lic2PkIGTzad
+         mC929eb4Wz2G6NCa/CG8vaDJAGj6pPWeyGFnYKgJPJ9RDXtu6EL8qb4KoGl8XU4g3ndf
+         0RBqFy71vkwaxSLeDYXNvDXnd0bBItFEtL0ejPGGYSInKxJhAe8JQJNvEo2vUC5nf4HD
+         8dDmEoMbKEb01IILuoxq0DYNnhfBUSagbAAC/1t6QI3n4GS3TcKM+9lGZumbhi8QltbM
+         uFWQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUfPQmCaYOuZDRyDw0QnQ6XErMWf9b1mOeJvPAHpegBl7rybjxxLeYXZw7lzAbzRpQzyOClme1fx1M=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynVfQhDg3oBTvYs+D9LBAW1L2aElSSxI8ZG5kkHoAis/KYEAXK
+	My5gS9k26KW2NeyQTqqaIK11446h5h1OI16yM/+aMKRG0mkhu9CJ26LhnenIg0Gg3vf4
+X-Gm-Gg: ATEYQzzTEcuBvqozOzFdnk4s0hBpK6xiLbZNNzBXJ16QB+CryFkiJMwpHV+E1UkxN+R
+	vLNjc+G5SSn1EH7GVWal8ajBsOhNn9dH9mouIuyN05eebBDRH1mm1ScbGGJAR3qBFrZz/ptaQwm
+	dG75Hr/JckeLRIh56G085HNG92Qp2OBbC3g8gSDnaPRYMHtVjUj4oyTaYPqbOAynuLzmVj0qCz7
+	VsRVrVMck0cuW6nHCog5jQSQ7IacNdtNA6S8SZ3jCoEJ/L42yXy4AhSBfw3Y5ccfa0Z5+b3UfSw
+	atT4Eq3q0TG09wYfhcfc4h+vnYbWnwZ4h2xb2dV0Z0rvhDDu4eIZ8zud0gcy2g2PpQteFJQ6hxo
+	0hcuiZETEhSJbx+4HCS0fiiTEBjNwfHI1oQMmP7lWqKgj7q38CLlUg4/RS9mXFDKOOb8QCNuksY
+	0O9A0MeGNhXrWfJ4W433Kh91WerHCLWArqyA3EDrV1V2MVOHUZ1qtXcu2C8sg22f7iJI7iVhO5w
+	1E91w8p6EqbKB/onxN3sRwn1gcd4eAMzfap4GxHhe8+4LYtTg+2
+X-Received: by 2002:a17:90b:3f4c:b0:35d:8ea1:62c3 with SMTP id 98e67ed59e1d1-35dc6e43b1dmr4400337a91.3.1775060739077;
+        Wed, 01 Apr 2026 09:25:39 -0700 (PDT)
+Received: from ip-172-26-8-186.ap-northeast-1.compute.internal ([2406:da14:e8:bc00:e546:17ee:7142:6d05])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35dd35e34eesm281813a91.2.2026.04.01.09.25.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Apr 2026 09:25:38 -0700 (PDT)
+From: Sheng Kun Chang <nothingchang@mirrorstack.ai>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	gregkh@linuxfoundation.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sheng Kun Chang <nothingchang@mirrorstack.ai>
+Subject: [PATCH 0/3] Move adis16203 inclinometer driver out of staging
+Date: Wed,  1 Apr 2026 16:24:54 +0000
+Message-ID: <20260401162458.88110-1-nothingchang@mirrorstack.ai>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Beno=C3=AEt,
+This series moves the ADIS16203 Programmable 360 Degrees Inclinometer
+driver out of staging and into drivers/iio/accel/.
 
-Le mercredi 01 avril 2026 =C3=A0 17:24 +0200, Beno=C3=AEt Monin a =C3=A9cri=
-t=C2=A0:
-> iio_buffer_enqueue_dmabuf() allocates a struct iio_dma_fence (104
-> bytes,
-> kmalloc-128) via kmalloc_obj()+dma_fence_init(), which sets the
-> initial
-> kref to 1.=C2=A0 It then calls dma_resv_add_fence() which takes a second
-> reference (kref=3D2), and stores a raw pointer in block->fence.
->=20
-> On the success path the function returns without calling
-> dma_fence_put()
-> to release the initial reference, so every buffer enqueue permanently
-> leaks one kmalloc-128 allocation.
->=20
-> The iio_buffer_cleanup() work item only releases the temporary
-> reference
-> taken during completion signalling by
-> iio_buffer_signal_dmabuf_done();
-> the initial reference from dma_fence_init() is never released.
->=20
-> With four iio_rwdev instances at 240kHz and 512 samples per buffer,
-> this produces ~1875 kmalloc-128 allocations per second matching the
-> observed slab growth exactly. A test with ftrace confirmed that the
-> dma_fence_destroy event was never triggered.
->=20
-> Fix by calling dma_fence_put() after dma_resv_add_fence(),
-> transferring
-> ownership of the fence to the DMA reservation object. The DMA fence
-> then
-> gets properly discarded after being signalled.
->=20
-> Fixes: 3e26d9f08fbe0 ("iio: core: Add new DMABUF interface
-> infrastructure")
-> Originally-by: James Nuss <jamesnuss@nanometrics.ca>
-> Signed-off-by: Beno=C3=AEt Monin <benoit.monin@bootlin.com>
+The driver already uses standard IIO channel interfaces and devm
+managed APIs. The only missing piece was devicetree binding
+documentation, which is added in patch 1.
 
-I had a look at the code and indeed, it looks like it's not releasing
-the dma_fence properly. The fix makes sense.
+Patch 1: Add devicetree binding documentation
+Patch 2: Fix MODULE_LICENSE to match SPDX identifier
+Patch 3: Move the driver from staging to drivers/iio/accel/
 
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+Sheng Kun Chang (3):
+  dt-bindings: iio: accel: add binding for adi,adis16203
+  staging: iio: adis16203: align MODULE_LICENSE with SPDX identifier
+  iio: accel: move adis16203 out of staging
 
-Cheers,
--Paul Cercueil
+ .../bindings/iio/accel/adi,adis16203.yaml     | 52 +++++++++++++++++++
+ drivers/iio/accel/Kconfig                     | 12 +++++
+ drivers/iio/accel/Makefile                    |  1 +
+ drivers/{staging => }/iio/accel/adis16203.c   |  2 +-
+ drivers/staging/iio/Kconfig                   |  1 -
+ drivers/staging/iio/Makefile                  |  1 -
+ drivers/staging/iio/accel/Kconfig             | 19 -------
+ drivers/staging/iio/accel/Makefile            |  6 ---
+ 8 files changed, 66 insertions(+), 28 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adis16203.yaml
+ rename drivers/{staging => }/iio/accel/adis16203.c (99%)
+ delete mode 100644 drivers/staging/iio/accel/Kconfig
+ delete mode 100644 drivers/staging/iio/accel/Makefile
 
-> ---
-> =C2=A0drivers/iio/industrialio-buffer.c | 1 +
-> =C2=A01 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/iio/industrialio-buffer.c
-> b/drivers/iio/industrialio-buffer.c
-> index 46f36a6ed271..5c3df993bea2 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -1909,6 +1909,7 @@ static int iio_buffer_enqueue_dmabuf(struct
-> iio_dev_buffer_pair *ib,
-> =C2=A0
-> =C2=A0	dma_resv_add_fence(dmabuf->resv, &fence->base,
-> =C2=A0			=C2=A0=C2=A0 dma_to_ram ? DMA_RESV_USAGE_WRITE :
-> DMA_RESV_USAGE_READ);
-> +	dma_fence_put(&fence->base);
-> =C2=A0	dma_resv_unlock(dmabuf->resv);
-> =C2=A0
-> =C2=A0	cookie =3D dma_fence_begin_signalling();
->=20
-> ---
-> base-commit: 7aaa8047eafd0bd628065b15757d9b48c5f9c07d
-> change-id: 20260401-iio-dma-fence-5f1ceba11ef5
->=20
-> Best regards,
-> --=C2=A0=20
-> Beno=C3=AEt Monin, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
+-- 
+2.43.0
+
