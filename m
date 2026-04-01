@@ -1,141 +1,136 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from aposti.net (aposti.net [185.119.170.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1BC37DEB2;
-	Wed,  1 Apr 2026 15:32:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B4F477E27;
+	Wed,  1 Apr 2026 16:16:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.119.170.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775057524; cv=none; b=rXN9DqkSyVLlkv7CQs33uOErXFWRu0/5Iw2tvCapk9No/7rD2bfVQmUl5QGWURjJD7Zgh83j30FfD0NBmrmiNI9rin2ayGBSW7u0QkJ5IVzCrV8NAWjKd8R0930K9BihR0D2OEBqY4H3TpcGsZtM46/lV/sno6eKNxaARlPS63c=
+	t=1775060187; cv=none; b=aXD0N20/XFzUp3eNlhz/CsjZ8AUpL/p6X3jG6HdOO8wN57EL9+P+Gfh+w5XzBvVlfXE2YXP+1dL3fgexbXuxOq93+Et+PeNPl7d45BBd8q9MUyCupfS37k7PCevnYIb6KReL6wUBUgMuGGC3OJ5tUZ3UXIGLGYQQfc5TVEYfa3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775057524; c=relaxed/simple;
-	bh=429p/PvZ4/KTADk9f1TF5m7aMFnGM3maWkf7foASWUY=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=g6DJrGfOtqXQ3raDQhNrEwh/ACunBK6RZw+7TYkUuNS8awLyfo+MkgUyhPppbCupD1WrvSy2otjq9wmmzGm8lOmHu9aShw9wrdqBp0R1+Sq1P+y5J5aysMcNip95EUEX2ymD6F+euOEaLC4BKMHnP/RYH8mvWhH0BeCvjYw8biI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=wVRw00jX; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1775060187; c=relaxed/simple;
+	bh=2/P2cD9d325/MESL80iZutOvtnDXehmUR+glzRoQv2g=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Hl8JJj+RCZuWwzVGiCmfi7VHZY/s5QU0OnkBVn5lG0Sw3rkQbwIUaLY65L0EZD8wqDeqZfMlhfsDUf+DCinixwFdaCmSX6LQNHZ+b6joZBuTyjUUvGKejAqJSeMMT4FttI0ZfWsDRcCRxkuxXOiwx/HRXqYaE+2Sb5TI7beKAAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net; spf=pass smtp.mailfrom=crapouillou.net; dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b=oN61nYm9; arc=none smtp.client-ip=185.119.170.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crapouillou.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="wVRw00jX"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 631DuU1p2772139;
-	Wed, 1 Apr 2026 11:31:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=mnls9mZ+LR40N7DY2gn+EQesj1S
-	LaGAq2AxkTJMjp1A=; b=wVRw00jXVcjYPZmLNVKqYck4q/yhSuH+ZjraqgIYuxc
-	BhR7dP6RxAT+3Ppyc+V2BWuD2l/xHIu7C+c5gBW82qQwMW2y/882Z/lcWkCfZV1T
-	ixCwh/A0JqJWGP2tAfhXPQWYAYnxTWEBybAnGYYi6ZsY6esM1ntOrHhLDb/bi5c3
-	3kLXTRRDceWvJhjiRoeQQdHDFQjxmANhIs7IkCzfKm7ltMb3JC19vJxf9r3qmeqf
-	lT0FzuGjYEUmHuNEJlCkN0hg1ANJCTJpNKkXpbl98T7PBSoJFd4EGfRyH/TCZsa3
-	XL3NzsU1v8+xIOFaWj9VgfBCSawJqGfcVxCZ3fkaAIg==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4d90rjhdgw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 01 Apr 2026 11:31:42 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 631FVfvt037275
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 1 Apr 2026 11:31:41 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 1 Apr 2026 11:31:41 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 1 Apr 2026 11:31:41 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 1 Apr 2026 11:31:41 -0400
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.240])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 631FVRq9006730;
-	Wed, 1 Apr 2026 11:31:29 -0400
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-        Alexandru-Catalin Ionita <alexandru-catalin.ionita@nxp.com>,
-        "Radu Pirea (NXP
- OSS)" <radu-nicolae.pirea@oss.nxp.com>,
-        Daniel Lezcano
-	<daniel.lezcano@linaro.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH] iio: adc: nxp-sar-adc: fix division by zero in write_raw
-Date: Wed, 1 Apr 2026 18:29:24 +0300
-Message-ID: <20260401152924.58073-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="oN61nYm9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=crapouillou.net;
+	s=mail; t=1775060175;
+	bh=2/P2cD9d325/MESL80iZutOvtnDXehmUR+glzRoQv2g=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=oN61nYm9QgrsC3tlGIpXeKh0Zh+E9IcIAOwgChu0K28e5C19+AIVyW8Wn0DOut4Bi
+	 mSyU05Do6UCJdA0AbWDehW6sMvcWd7oBREHwtQl1FGP9GxtV6Wed3Z+0/9FVD5hyZM
+	 w2QWzM8ZzGdqVikbIlQymdfJd+tsj5RR+SIItJyc=
+Message-ID: <5fcda84716176de70b6ff968458ee4e4101b36ad.camel@crapouillou.net>
+Subject: Re: [PATCH] iio: buffer: Fix DMA fence leak in
+ iio_buffer_enqueue_dmabuf()
+From: Paul Cercueil <paul@crapouillou.net>
+To: =?ISO-8859-1?Q?Beno=EEt?= Monin <benoit.monin@bootlin.com>, Jonathan
+ Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>
+Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Jonathan Cameron
+	 <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, James Nuss <jamesnuss@nanometrics.ca>
+Date: Wed, 01 Apr 2026 18:16:10 +0200
+In-Reply-To: <20260401-iio-dma-fence-v1-1-40993adbfa96@bootlin.com>
+References: <20260401-iio-dma-fence-v1-1-40993adbfa96@bootlin.com>
+Autocrypt: addr=paul@crapouillou.net; prefer-encrypt=mutual;
+ keydata=mQENBF0KhcEBCADkfmrzdTOp/gFOMQX0QwKE2WgeCJiHPWkpEuPH81/HB2dpjPZNW03ZM
+ LQfECbbaEkdbN4YnPfXgcc1uBe5mwOAPV1MBlaZcEt4M67iYQwSNrP7maPS3IaQJ18ES8JJ5Uf5Uz
+ FZaUawgH+oipYGW+v31cX6L3k+dGsPRM0Pyo0sQt52fsopNPZ9iag0iY7dGNuKenaEqkYNjwEgTtN
+ z8dt6s3hMpHIKZFL3OhAGi88wF/21isv0zkF4J0wlf9gYUTEEY3Eulx80PTVqGIcHZzfavlWIdzhe
+ +rxHTDGVwseR2Y1WjgFGQ2F+vXetAB8NEeygXee+i9nY5qt9c07m8mzjABEBAAG0JFBhdWwgQ2VyY
+ 3VlaWwgPHBhdWxAY3JhcG91aWxsb3UubmV0PokBTgQTAQoAOBYhBNdHYd8OeCBwpMuVxnPua9InSr
+ 1BBQJdCoXBAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEHPua9InSr1BgvIH/0kLyrI3V0f
+ 33a6D3BJwc1grbygPVYGuC5l5eMnAI+rDmLR19E2yvibRpgUc87NmPEQPpbbtAZt8On/2WZoE5OIP
+ dlId/AHNpdgAtGXo0ZX4LGeVPjxjdkbrKVHxbcdcnY+zzaFglpbVSvp76pxqgVg8PgxkAAeeJV+ET
+ 4t0823Gz2HzCL/6JZhvKAEtHVulOWoBh368SYdolp1TSfORWmHzvQiCCCA+j0cMkYVGzIQzEQhX7U
+ rf9N/nhU5/SGLFEi9DcBfXoGzhyQyLXflhJtKm3XGB1K/pPulbKaPcKAl6rIDWPuFpHkSbmZ9r4KF
+ lBwgAhlGy6nqP7O3u7q23hRU=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=SuadKfO0 c=1 sm=1 tr=0 ts=69cd3a5e cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=tMf5uOp-Ww8D4Z-4FK0A:9
-X-Proofpoint-GUID: nHyvf4E44vmWjAdpEYH1PtQ5Kykj6n-o
-X-Proofpoint-ORIG-GUID: nHyvf4E44vmWjAdpEYH1PtQ5Kykj6n-o
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDAxMDE0NSBTYWx0ZWRfX370SFU2aqQhO
- I69/uFfuk2Y8hLquEJI/wfyYvy/mmYgmHktHjgGWc/qyy0HJPn6K72UuvTgJDzc8lvk4BY40Wnv
- ro8AP9/CRFDlpHwOTFSpq2w+Hr161/3shsXLoAnHZlqtl+6Q5Enqac4Q3V4/+HZRqNwKlZg/ahq
- Vi4VNl2UlRk6S+sIdHulgg8WbQvYPYm7Uq2aSXkgQNDFEhFr/xTxto7Oqcy8LAxuLUhdQGWzJ6y
- tw3wSfzkO8ouBp4w3yi2iab+5nmh21lsghtX55eGDZywJLT+0wqvAF2z5SCKkO8k9jn59Imwksr
- BikWbpba+nTy37znjHap4/VwomzPJ0qKh5D9aVAZp1acEpLlHuQe6PrpXeaIE9C9g8gAnYVvq9W
- cvL5+7wKpVNYibp+JsywlvqdyVgJHmU8bywmGizQCGJQeSoGbISyP4vFcA8gAx/Fc+yD6r7CIjd
- hgaSuu5fLkRjbbVQ4SQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-01_04,2026-04-01_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 bulkscore=0 spamscore=0 impostorscore=0 phishscore=0
- adultscore=0 malwarescore=0 clxscore=1011 suspectscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2604010145
 
-Add a validation check for the sampling frequency value before using it
-as a divisor. A user writing zero or a negative value to the
-sampling_frequency sysfs attribute triggers a division by zero in the
-kernel.
+Hi Beno=C3=AEt,
 
-Also prevent unsigned integer underflow when the computed cycle count is
-smaller than NXP_SAR_ADC_CONV_TIME, which would wrap the u32 inpsamp to
-a huge value.
+Le mercredi 01 avril 2026 =C3=A0 17:24 +0200, Beno=C3=AEt Monin a =C3=A9cri=
+t=C2=A0:
+> iio_buffer_enqueue_dmabuf() allocates a struct iio_dma_fence (104
+> bytes,
+> kmalloc-128) via kmalloc_obj()+dma_fence_init(), which sets the
+> initial
+> kref to 1.=C2=A0 It then calls dma_resv_add_fence() which takes a second
+> reference (kref=3D2), and stores a raw pointer in block->fence.
+>=20
+> On the success path the function returns without calling
+> dma_fence_put()
+> to release the initial reference, so every buffer enqueue permanently
+> leaks one kmalloc-128 allocation.
+>=20
+> The iio_buffer_cleanup() work item only releases the temporary
+> reference
+> taken during completion signalling by
+> iio_buffer_signal_dmabuf_done();
+> the initial reference from dma_fence_init() is never released.
+>=20
+> With four iio_rwdev instances at 240kHz and 512 samples per buffer,
+> this produces ~1875 kmalloc-128 allocations per second matching the
+> observed slab growth exactly. A test with ftrace confirmed that the
+> dma_fence_destroy event was never triggered.
+>=20
+> Fix by calling dma_fence_put() after dma_resv_add_fence(),
+> transferring
+> ownership of the fence to the DMA reservation object. The DMA fence
+> then
+> gets properly discarded after being signalled.
+>=20
+> Fixes: 3e26d9f08fbe0 ("iio: core: Add new DMABUF interface
+> infrastructure")
+> Originally-by: James Nuss <jamesnuss@nanometrics.ca>
+> Signed-off-by: Beno=C3=AEt Monin <benoit.monin@bootlin.com>
 
-Fixes: fdee77dea4b6 ("iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms")
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/adc/nxp-sar-adc.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+I had a look at the code and indeed, it looks like it's not releasing
+the dma_fence properly. The fix makes sense.
 
-diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
-index a6e4888a8464..c611f1c612e6 100644
---- a/drivers/iio/adc/nxp-sar-adc.c
-+++ b/drivers/iio/adc/nxp-sar-adc.c
-@@ -560,6 +560,9 @@ static int nxp_sar_adc_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (val <= 0)
-+			return -EINVAL;
-+
- 		/*
- 		 * Configures the sample period duration in terms of the SAR
- 		 * controller clock. The minimum acceptable value is 8.
-@@ -568,7 +571,11 @@ static int nxp_sar_adc_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec
- 		 * sampling timing which gives us the number of cycles expected.
- 		 * The value is 8-bit wide, consequently the max value is 0xFF.
- 		 */
--		inpsamp = clk_get_rate(info->clk) / val - NXP_SAR_ADC_CONV_TIME;
-+		inpsamp = clk_get_rate(info->clk) / val;
-+		if (inpsamp < NXP_SAR_ADC_CONV_TIME)
-+			return -EINVAL;
-+
-+		inpsamp -= NXP_SAR_ADC_CONV_TIME;
- 		nxp_sar_adc_conversion_timing_set(info, inpsamp);
- 		return 0;
- 
--- 
-2.43.0
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
 
+Cheers,
+-Paul Cercueil
+
+> ---
+> =C2=A0drivers/iio/industrialio-buffer.c | 1 +
+> =C2=A01 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/iio/industrialio-buffer.c
+> b/drivers/iio/industrialio-buffer.c
+> index 46f36a6ed271..5c3df993bea2 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -1909,6 +1909,7 @@ static int iio_buffer_enqueue_dmabuf(struct
+> iio_dev_buffer_pair *ib,
+> =C2=A0
+> =C2=A0	dma_resv_add_fence(dmabuf->resv, &fence->base,
+> =C2=A0			=C2=A0=C2=A0 dma_to_ram ? DMA_RESV_USAGE_WRITE :
+> DMA_RESV_USAGE_READ);
+> +	dma_fence_put(&fence->base);
+> =C2=A0	dma_resv_unlock(dmabuf->resv);
+> =C2=A0
+> =C2=A0	cookie =3D dma_fence_begin_signalling();
+>=20
+> ---
+> base-commit: 7aaa8047eafd0bd628065b15757d9b48c5f9c07d
+> change-id: 20260401-iio-dma-fence-5f1ceba11ef5
+>=20
+> Best regards,
+> --=C2=A0=20
+> Beno=C3=AEt Monin, Bootlin
+> Embedded Linux and Kernel engineering
+> https://bootlin.com
