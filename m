@@ -1,260 +1,132 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010049.outbound.protection.outlook.com [52.101.193.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31E7643E9DC;
-	Wed,  1 Apr 2026 13:57:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9151D44D682
+	for <linux-iio@vger.kernel.org>; Wed,  1 Apr 2026 14:25:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.182
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775051881; cv=fail; b=m7xYTY9AIheGGh0qI7gz0L9eX1tEaayV4SAqjHNPF7Xztj+fY6gyqqdR/hpd2fxnlpFgcg2zEb2H1YcZfWhewVlwslBRYSTOkhHE/EXj93W2WzmckBwWsZArKbVLUwZLWKvJrJe7KEWSDkLvRigXpKbUxozsydX25mReYiJp96o=
+	t=1775053505; cv=pass; b=EuSIMQ/ww3QHdLtWiEd/N+MlpQhmJc34myvom7OTPAGBsHtz/FGa9WRib0EGyEWYgw4Xo/oQyRnylhqlRR4peptDJAZvIrtZzX2HMuOrIP8CpWpDjTeZjYxzCPDF7JSTSUCN6aQpmdiM37eJ04y2LIR5Ihypzdzpf1uVZPHeDCE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775051881; c=relaxed/simple;
-	bh=oRw9jvBGuPLazHJ2xihFeMB3zoXGBRwOlzcZcJBy3aM=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=AwwnciSr5p/DH7yuDjx4llNsJPtvsS07vLYWFGFG1AQ1dhG1VSaGO2OOltDfmBhjPLSpY0426fI6JAWc+soK5el04xBOpsOUbEd+4q6LbHAvzd5FdjEysV+y1aKUKojoeNbXkM2OrZRcnveysyC4klzo8QAfsWJJNZg71y23nPg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Sh7rv5ZL; arc=fail smtp.client-ip=52.101.193.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1775053505; c=relaxed/simple;
+	bh=gSQ6pTcuTePG32M6XmGUQnNRHQHNKydM20nRxn05ChU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cXkTDEkOUwoTRqKK3ycVq/w+hiSbdDmiW8IIrFOjlSk9mAot9RtiVcgaLf/DINDt16Es1C+B0LE6HU8j96m5AVuQlG25ihA/xBz0LDPenjQaWd7zzr2cQKg2iAekGiiRWyIGqgQdpuv3wnTovYwngAwLVKhirsd6EzXCgREMXzQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xofge9k9; arc=pass smtp.client-ip=209.85.208.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Sh7rv5ZL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=l955zDDRQwxjwFqe1908rciCY4MoMQfIT9H6rIDz0VsQdvaj75O+9RNZTI1SLuHLfypgW6hkd5fhbf6uwIWk4l2ff0oB76VScMCEW65naoezcjnUKtJN9kOaYX46NuSj1TorQ/DLRh/yWkUlMEM9Erm34cpP0U1oz2jFEI8uY9o8NtR2iktAkRCaI7iJhILbElrXHGSA8P5fH6FQGa6LDv32/AoAajfN1Y93aomhS5N9hdmV/ff6ZwZI83gAKxl5DeeD3ptg2Pk+Ts8zoQzwl8NTusA9VDapSiDmU/B7rgHMYAPdQLjtnfMvOe/ERS666CuRdNOv5n5g+9NT4+0huQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=10CUdlbAGV6Rnwg/S/TLG48/vXqrrLOUYdNzSEllSW0=;
- b=l0KxT5IDvnT1p/wJ00NgbZblBZ/iknJiulXXegQWKYcf7IwZ+UbTeEJzw4csEZUVlMBHJb0d0dZ0PfgAOTWvA9wyb0YE7wZaYVSpvG7sP3fHAS5yW+HsMEAmSiEI1owHUcfVmPO4VDCs0laQ9dhvEfoIfp8L+N+pOjXjIq7h3V/WlsFfiKw75FxF3QXgAaGFbUywOVMsZvP0BhhO4f3vT3RRDdkEoKLLgSQPvOjS06yRqrMqgYrRBmSy/W1gUm8RgjTT7hap5K1cOD0LcDB8ETQllJmsCqmsEUZ1lAskWq3a2v+PvlaBVqE0sK1dZPd7aERRkhPgbaWS46tyPWcq9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=10CUdlbAGV6Rnwg/S/TLG48/vXqrrLOUYdNzSEllSW0=;
- b=Sh7rv5ZLILCFHFSEGeSRVus9IHUuJ/Fyn5s2rb8SPrvtP4cRKA2uG1l1RWQ6ItJZIvzRyyXR92C9a1y7Z2en2JtXoHv7yHV7srMYKBevwFY+efGZSURn0emrmMXphu+g8asGknBZdJzQuSyZpUtwTYL3we8pIVG1dYagQdvlTyw=
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by DM6PR12MB4122.namprd12.prod.outlook.com (2603:10b6:5:214::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Wed, 1 Apr
- 2026 13:57:55 +0000
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550%5]) with mapi id 15.20.9769.015; Wed, 1 Apr 2026
- 13:57:55 +0000
-From: "Erim, Salih" <Salih.Erim@amd.com>
-To: "Erim, Salih" <Salih.Erim@amd.com>, "Simek, Michal"
-	<michal.simek@amd.com>, Jonathan Cameron <jic23@kernel.org>, Christofer
- Jonason <christofer.jonason@guidelinegeo.com>, "O'Griofa, Conall"
-	<conall.ogriofa@amd.com>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "dlechner@baylibre.com"
-	<dlechner@baylibre.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"andy@kernel.org" <andy@kernel.org>, "victor.jonsson@guidelinegeo.com"
-	<victor.jonsson@guidelinegeo.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>
-Subject: RE: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
- postdisable for dual mux
-Thread-Topic: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
- postdisable for dual mux
-Thread-Index: AQHcq7dnEu4MVLVXG06oIZXnf3P2bbWjB/QAgARjkoCAIuly8IAABfbwgAALDKA=
-Date: Wed, 1 Apr 2026 13:57:55 +0000
-Message-ID:
- <IA1PR12MB77369F79026F7BCB1D9C64999F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
-References: <20260304090727.1800289-1-christofer.jonason@guidelinegeo.com>
- <20260307124118.1d527749@jic23-huawei>
- <1166aeef-0c93-408d-b265-9037f2840074@amd.com>
- <IA1PR12MB7736AE6EEE95D5D184A15B9F9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
- <IA1PR12MB77361978ED21FF22F079034D9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
-In-Reply-To:
- <IA1PR12MB77361978ED21FF22F079034D9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_7ab537de-9a15-4e91-8150-78a9f873b18c_ActionId=ca8e4a71-3c93-45d8-8ffd-d61afaf2e605;MSIP_Label_7ab537de-9a15-4e91-8150-78a9f873b18c_ContentBits=0;MSIP_Label_7ab537de-9a15-4e91-8150-78a9f873b18c_Enabled=true;MSIP_Label_7ab537de-9a15-4e91-8150-78a9f873b18c_Method=Privileged;MSIP_Label_7ab537de-9a15-4e91-8150-78a9f873b18c_Name=Third
- Party_New;MSIP_Label_7ab537de-9a15-4e91-8150-78a9f873b18c_SetDate=2026-04-01T13:52:28Z;MSIP_Label_7ab537de-9a15-4e91-8150-78a9f873b18c_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;MSIP_Label_7ab537de-9a15-4e91-8150-78a9f873b18c_Tag=10,
- 0, 1, 1;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA1PR12MB7736:EE_|DM6PR12MB4122:EE_
-x-ms-office365-filtering-correlation-id: 074e620f-5969-420c-74d4-08de8ff6acda
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|7416014|366016|1800799024|38070700021|18002099003|56012099003|22082099003;
-x-microsoft-antispam-message-info:
- hOeER5+wj939gPVP8evTqgTDpA54jL1LWDLxxHBsRcOJfI5WaeiFM3qeArSCGEQakWY9LUax271XLHNyU994JNoG/KNlYtqYXzBm+LQFWzJLbS9mOZ9OgaDNK2y6fr5DS/u5qkvnOu/hVcEsOF0OynIrzJmn8lijReRVJMmuuU+juihFRZ/t5uDDpeh0PlhRzXzqZYwt+Z5PgFrDyZOHkjMQKgKM7U3jE0+cHKO7XLnhS7cdrW/91peKR2068tTLmoQYtiHosjCTyPqZEliuVQLYl/LGt8j5AB212jpPnVyG/6McK8NPbGo6VchpTihJCmFDzjn37ksR7ZeYBVIn4RGT+YrIbtHksUp+qxAYnZn+XJIRlUJSGe2N2zOD2tuUoa0G9nEhg6aGdvahhqjYNvI5Imn67STXpen8T9F5BrP1ggFzWXAmiaa0pId0TAEkS4ncpdcAfPyCSrWpx6gVb/o6tl/MQsQdI7jKuM1DXBXS+dcPfgmj2PrMCVgmuaOBQpQQpQKJAqZ07ordp1BvWTwYK33GoWa1qKUzuue8iVR6tdmZVmxScyr6vXFJYLIlQ8J/Oh39hzRaZSFZQTwXtS0XGTrUbolvYWIkp/lPj6msuxJv6bVu99VfsPIM/nARgI/GbBpeVGBZrgk2f8w5/CfB8qY5o1sK8jf5SlmQizFcxBKKRjnzZOWjdOxszI5ODFYHvlPRNvP2N/5VM1RY67dvwjkR28Ie0QEhu0xzaBQgGa8vYuE/HGp2J/1qXuu5P0R8/y8ytMeJZ8lksQgB691feObz2MBZp2SuqU1qK+k=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(38070700021)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?c+r0M6/mMCl+e/Z8h5goCm4KosKF/OOUBmj/GDQq38d8lhr7WJYw4N+viem5?=
- =?us-ascii?Q?perQ+svqL6nWUjvFPd+i2Y62HgakKbP3tWEHrg/Bpts3mCGCpECf13LxvFS8?=
- =?us-ascii?Q?tPCyrdzdDk7GVIuRSsLrF3rV0/olZQcCmFxmDqRPhPSe4rjP4ZcWLyM2/Yj9?=
- =?us-ascii?Q?rSBUMjkdS/+FRsFdTymbwSWEKmJFJGjSg/ZUalRcRbEsJbvPv40hLV8j+GhH?=
- =?us-ascii?Q?30+fp1cIkD5GMXp7u8IcQ9qLFsE2L9zVCMiOIungZFv/5B4EV+raF5bpilIB?=
- =?us-ascii?Q?2pq4K3GhCB3gqcJmsdO7n+OnnjYTIXNTeNuAvCD2ZUFLAyEGAHPM9+UqBFtp?=
- =?us-ascii?Q?Jfv3mbm9lbCcoZTSxMo/x7oRxi+1paidgv6B8PixGve5DVwTKSmgmrdzD+tb?=
- =?us-ascii?Q?zzgsRFwjyjMChM4Rr5/t0mh1AEB2O3t11cK+Ns9dsHzjuVHKsTcnhetJpSW4?=
- =?us-ascii?Q?ihsR0JZpL+5htBmjb9b79VBInBN+w76qvldhUi1+SCCCSHsarwArXE5bRsHv?=
- =?us-ascii?Q?pCrdfUNtBaKQtw/vHXoRK25SyFpVRgHbFO6GKt67GlfS4Pu50L3WL9gzy2D4?=
- =?us-ascii?Q?OPqVdXg0+k4gbCsRj5mSZaYTva9sfREgxHsLVHGfFuZQzMHCEi6YARsIZDun?=
- =?us-ascii?Q?PVI280OPUiXKpwSY4kBqPN5lKlVvbOKFETmHj9BmIEAZoE5FMlAJYgjbd0l4?=
- =?us-ascii?Q?zDNb5wzl66sIKvbuNGPk5xCBy0dDqhEwzOL/2uVOlWUKa42vLy3K66nOgMYl?=
- =?us-ascii?Q?/8BgWdT3A7lSzd/2GYPbaIWDpiubI6EJcEGbWwX9R3tb3TZ5CJJPxDv6P6px?=
- =?us-ascii?Q?z1JDxywwP+htcy++OaV61jC6SGiZ8IOdKNV0gUr4wacsZEkHTiBlo5qeOww4?=
- =?us-ascii?Q?EBkY8DtynWGQSaCuyUhc0KEMT4DYFY3V0cW+Zl03K6mbUaKMx0jiWiQeB7sh?=
- =?us-ascii?Q?1fie0AYHMMSNuGY4cGpPl+DfaBB9VpzTdeELQxUReojUUO2fF0zb5x1ni1kd?=
- =?us-ascii?Q?UZxmB7T+9ACF5SpzdmZjPHke15fFhffTtoPFVmEu8ys4T47u1ilDkiek/BS3?=
- =?us-ascii?Q?HIs0UFPwU6wA0no+PQAR1NMC7rDsgus3YTRLxY8LFMmx+GoiRZaOcVoHfR/D?=
- =?us-ascii?Q?z3+nSPnwGwDjKe3LYTz7CVWPVg6Q7PXzYUyEIyn/MLG4rcU87sc73ctkOP2C?=
- =?us-ascii?Q?7VQ1ogfNui1tCFIA/Q2f5vQC8EW4FKoCcYJx4UgjYCT5OnKgKZUxOhp778X0?=
- =?us-ascii?Q?OUxuQqPcTARTcnZZ9z1YFTsd/Ds/F01kSdYUq3QkrTfoIQBeNOxy5FLPjoh2?=
- =?us-ascii?Q?0P+gFWJMTbgW8vq36jhJs4asv2d3ohz6t70KRvKuZuS53c/7A2Hbt4wBKMJe?=
- =?us-ascii?Q?VhexRcoT7b4mo/sMIwy+uUeB9TlKHbC3O1BywikVYd3I+5lX/ZUbp9cbvKju?=
- =?us-ascii?Q?38U699Jb5QOjRnjSzY++meJf3SXeTbl4O2cHh69P73XQsPLu0XTyVIQsKBFk?=
- =?us-ascii?Q?AuRg3ciskUAp7Fyr/VmmrPXnwwBUSo4ICAsPTn8NpAWYTndVsSQtNr6TtnuU?=
- =?us-ascii?Q?hWGvdwJObHr+/nVSaujIhdOkeVW6wYRhS7eDmPORwHfEUEaLjhar8OUTQ3lY?=
- =?us-ascii?Q?a+w6rZ7yiHAMSnrF5T+OVJtKEFMjDy7T65arXbDoQjykGCsn9+ECEK6uWr0P?=
- =?us-ascii?Q?wxkZzKx4MFtyDBzNOOCn4z0ptTIkVsJl/k0OOojnvD5lFxOb?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xofge9k9"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-38a43f1f978so60513821fa.3
+        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2026 07:25:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775053503; cv=none;
+        d=google.com; s=arc-20240605;
+        b=QBrcRrmhMH26nrN3bRwN2983WrCURLzWC908GjTR1wyESCQTwjAdPfg+XCF0TUnsao
+         7Su3Qx2fqMVH//LuT3V362+J0tpzuSwe1Ojo3YcEUvnUcld9SdVTE3V9CH6hmYSduydR
+         t0WkR+pxMkBnCRmN2r6cAN3ctaKQMKZ0o9YdvE9/LHMSyTUaRv1Vcy+/4jv1cUyXT9W/
+         SDz3JLpVJDK9NsbPP0lfrtdoUomV/Sa507GPwnxW8P/MZJd/XscZL+YTDduBgB3kHBf+
+         vGMoy8GJ0tFYGv6tMlcIk2GaAJzSCbJM2D/9Clxi8dWmnPI7MdJY6nWGzrhcERyvRivT
+         NIPw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=gSQ6pTcuTePG32M6XmGUQnNRHQHNKydM20nRxn05ChU=;
+        fh=IhG3PWZQfqB9dXoB5itpnbJDC801EVsY8wvTLh34DWk=;
+        b=XhEKe1bxact2LTZzcEkbUvtY+i3++TN1XXfAN4/i/qlcQSQ48U3roKv4Jpo8kHIbrY
+         mh2B0rLRY2qPq05fVdPFlRDFsNywJSwSIHBX2gHy0bIiqLyyTBCatbhXYEXauBNI1v30
+         ZOOO91hQjhofMfsaXSHTQSRQaTxiHRQon45avB3dJ6x7K0ydpRtxA4x5nYMScrFzQYhm
+         ACNFS2/OJhpToM52P8YYxibGGFnxDOor74MA3YLenp70fsVckjECTcuozg9M2GirZD/B
+         ueGcN/82+05jStZx2JnpCE1e1zz8AUrnqzQl79Z8p8cQuiX2tFBQsR4NZUR/ZgLLdYC6
+         497w==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775053503; x=1775658303; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gSQ6pTcuTePG32M6XmGUQnNRHQHNKydM20nRxn05ChU=;
+        b=Xofge9k9RYYO7Of36FF8GfpDt/uyrCaYs6FmX3T1kxcsdFBwnS0Nvh1zd4qbrMZkL+
+         nmGPgtAtkthl3E0uPCSKWS1WURe09D0MFkwuMR4j7Wk/bly20CifWMMa+VL1PntyQKPc
+         1utfxSWMuh7ZUar3Z7OOcjQ1XQIVEIi2utvg8yaLKyjTyAO1veoYw1s53/bsGH56nVdp
+         PR/2H3Ky7FsukRQa2DsIOcWSFxaClCCy8LhU1jf4fQNe6ZCDD2l+yQUjhFMihJbD+dPc
+         UH/nbZ2bbGprgFui6fOXv+db6YTr2GzAszapfqPOluJIFA1G4sJMeAUy1Ua5YSG1AfoU
+         iV6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775053503; x=1775658303;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=gSQ6pTcuTePG32M6XmGUQnNRHQHNKydM20nRxn05ChU=;
+        b=ERfm/sHl2SVM/mW8ddJem0NeEjPuBmzLpbP4We3+Py7iWMtKSRSTZ2SEh/YqdRNR8z
+         /GTD015v2+1C/NskZNZpguPsgKZCN2PfiBa6EfLhRcR/6RKqBsW3D1GwOjzugDu1CCkZ
+         5ulYTUSKi9wNc8icjuPo1hFBBZwlDrSXWsD7yuYCqwSOv66u0UDtyd9ne0E2KL0i5Qpk
+         Z4rCxrJMHJGKiu20Uu+wm10RwvtMkl5PsN23mCPaJAyPLUcIwZISVDcx2XW0PexyVAT7
+         bXiMxnw1NZmebkJs3+4cMq2CUXYlt09WTww+WEye740k7f4bvyfWVVeT6J+L+Jtsss8T
+         CJEA==
+X-Forwarded-Encrypted: i=1; AJvYcCWca13LFD/HgybDAlKJl2J6oyNEZSdnmkYqs+QdiK4Cm4azBVYPllKtRvlhgpArR/Fc9Sxk1D4is0c=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/IZJj6B2ItCwsO4meW4J8X2v8wcywVlKOOAmvI89QQxGupHkL
+	SAg30GmfIoFz9A6GTWJmpAsJgQQVozoPzgJeZ67tpc2ygNCeE90r4mla9wN/tUzrCP3EasKtFG+
+	uBqRtiSmR57pRnv/1RBJznBfbj+vY+6o=
+X-Gm-Gg: ATEYQzy+++DpfvMEEza/iBMgk2SE6ewm0QrwQn99fLW4OW87mouGZ7rve2cj+DNkjYV
+	cOM2FEfnP8UUxucvSvFbKPuXvKwfvutO+rT/YB6/Hd5cBCu1knEB6IOe1mPmo9GJba4cRCiTHOa
+	em0LMbpIQYRLhkTy+W5gUrwdj0Y1LrOZeOjFtIopYw2xb3pn1j1WFGifWeTViBOpyyEydoGmQLd
+	WcjOho+1maLPywMMYPTbS4v2YQod/zYKJnJQ+N79xRSsCYDin33xJC+CNYDoJP8moz4ojasmpir
+	A4NHaJqzmG8OjK9kJy38MQAyXHAHnmZcJ8rpmEmMiYt4RFoxrLx9snOP7LaUZWXECwIL3e4ryyz
+	X4JeQRto=
+X-Received: by 2002:a2e:a554:0:b0:38c:3e3:953a with SMTP id
+ 38308e7fff4ca-38cc30fed48mr13856341fa.29.1775053502521; Wed, 01 Apr 2026
+ 07:25:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 074e620f-5969-420c-74d4-08de8ff6acda
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2026 13:57:55.7821
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pceztFl6813RXfZBojX5UnEkaq+xXfBsQdh9Er+KHopgd3QX0xAYzukkxVdA5Vuf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4122
+References: <20260304090727.1800289-1-christofer.jonason@guidelinegeo.com>
+ <20260307124118.1d527749@jic23-huawei> <1166aeef-0c93-408d-b265-9037f2840074@amd.com>
+ <IA1PR12MB7736AE6EEE95D5D184A15B9F9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
+ <IA1PR12MB77361978ED21FF22F079034D9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
+ <IA1PR12MB77369F79026F7BCB1D9C64999F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
+In-Reply-To: <IA1PR12MB77369F79026F7BCB1D9C64999F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 1 Apr 2026 17:24:24 +0300
+X-Gm-Features: AQROBzBoZ-LI1caYHqTvdlVWNWIbminA0-gaXJPHQ8leXNSCDNAFQN7WnRQJ33Y
+Message-ID: <CAHp75Vcg1u86z_TWwz+1Gk9QQ9RB63QmNcqpkGa5HQHZhSE=5Q@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
+ postdisable for dual mux
+To: "Erim, Salih" <Salih.Erim@amd.com>
+Cc: "Simek, Michal" <michal.simek@amd.com>, Jonathan Cameron <jic23@kernel.org>, 
+	Christofer Jonason <christofer.jonason@guidelinegeo.com>, 
+	"O'Griofa, Conall" <conall.ogriofa@amd.com>, "lars@metafoo.de" <lars@metafoo.de>, 
+	"dlechner@baylibre.com" <dlechner@baylibre.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>, 
+	"andy@kernel.org" <andy@kernel.org>, 
+	"victor.jonsson@guidelinegeo.com" <victor.jonsson@guidelinegeo.com>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"stable@vger.kernel.org" <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,=20
-
-> -----Original Message-----
-> From: Erim, Salih <Salih.Erim@amd.com>
-> Sent: Wednesday, April 1, 2026 2:13 PM
-> To: Simek, Michal <michal.simek@amd.com>; Jonathan Cameron
-> <jic23@kernel.org>; Christofer Jonason <christofer.jonason@guidelinegeo.c=
-om>;
-> O'Griofa, Conall <conall.ogriofa@amd.com>
-> Cc: lars@metafoo.de; dlechner@baylibre.com; nuno.sa@analog.com;
-> andy@kernel.org; victor.jonsson@guidelinegeo.com; linux-iio@vger.kernel.o=
-rg;
-> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> stable@vger.kernel.org
-> Subject: RE: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in post=
-disable
-> for dual mux
->=20
-> Caution: This message originated from an External Source. Use proper caut=
-ion
-> when opening attachments, clicking links, or responding.
->=20
->=20
-> [AMD Official Use Only - AMD Internal Distribution Only]
-
-I am deeply sorry about these markings. Please try to ignore them, and I wi=
-ll do my best to escape from them.
-
->=20
-> Reviewed-by: Salih Erim <salih.erim@amd.com>
->=20
+On Wed, Apr 1, 2026 at 4:58=E2=80=AFPM Erim, Salih <Salih.Erim@amd.com> wro=
+te:
 > > -----Original Message-----
-> > From: Erim, Salih
-> > Sent: Wednesday, April 1, 2026 2:12 PM
-> > To: Simek, Michal <michal.simek@amd.com>; Jonathan Cameron
-> > <jic23@kernel.org>; Christofer Jonason
-> > <christofer.jonason@guidelinegeo.com>;
-> > O'Griofa, Conall <conall.ogriofa@amd.com>
-> > Cc: lars@metafoo.de; dlechner@baylibre.com; nuno.sa@analog.com;
-> > andy@kernel.org; victor.jonsson@guidelinegeo.com;
-> > linux-iio@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> > linux-kernel@vger.kernel.org; stable@vger.kernel.org
-> > Subject: RE: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
-> > postdisable for dual mux
-> >
-> > Hi Christofer,
-> >
-> > The code change looks correct to me - it aligns postdisable with
-> > preenable by reusing xadc_get_seq_mode(), and the scope is limited to
-> > dual external mux configurations.
-> >
-> > Since this is targeting stable, could you please share what
-> > hardware/board this was tested on and how you verified that VAUX[8-15]
-> > channels return correct data with the fix applied?
-> >
-> > Reviewed-by: Salih Emin <salih.emin@amd.com>
-> >
-> > Thanks,
-> > Salih
-> >
-> >
-> > > -----Original Message-----
-> > > From: Simek, Michal <michal.simek@amd.com>
-> > > Sent: Tuesday, March 10, 2026 7:43 AM
-> > > To: Jonathan Cameron <jic23@kernel.org>; Christofer Jonason
-> > > <christofer.jonason@guidelinegeo.com>; Erim, Salih
-> > > <Salih.Erim@amd.com>; O'Griofa, Conall <conall.ogriofa@amd.com>
-> > > Cc: lars@metafoo.de; dlechner@baylibre.com; nuno.sa@analog.com;
-> > > andy@kernel.org; victor.jonsson@guidelinegeo.com;
-> > > linux-iio@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> > > linux-kernel@vger.kernel.org; stable@vger.kernel.org
-> > > Subject: Re: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
-> > > postdisable for dual mux
-> > >
-> > > +Salih, Conall,
-> > >
-> > > On 3/7/26 13:41, Jonathan Cameron wrote:
-> > > > On Wed,  4 Mar 2026 10:07:27 +0100 Christofer Jonason
-> > > > <christofer.jonason@guidelinegeo.com> wrote:
-> > > >
-> > > >> xadc_postdisable() unconditionally sets the sequencer to
-> > > >> continuous mode. For dual external multiplexer configurations this=
- is
-> incorrect:
-> > > >> simultaneous sampling mode is required so that ADC-A samples
-> > > >> through the mux on VAUX[0-7] while ADC-B simultaneously samples
-> > > >> through the mux on VAUX[8-15]. In continuous mode only ADC-A is
-> > > >> active, so VAUX[8-15] channels return incorrect data.
-> > > >>
-> > > >> Since postdisable is also called from xadc_probe() to set the
-> > > >> initial idle state, the wrong sequencer mode is active from the
-> > > >> moment the driver loads.
-> > > >>
-> > > >> The preenable path already uses xadc_get_seq_mode() which returns
-> > > >> SIMULTANEOUS for dual mux. Fix postdisable to do the same.
-> > > >>
-> > > >> Fixes: bdc8cda1d010 ("iio:adc: Add Xilinx XADC driver")
-> > > >> Cc: stable@vger.kernel.org
-> > > >> Signed-off-by: Christofer Jonason
-> > > >> <christofer.jonason@guidelinegeo.com>
-> > > >
-> > > > I'll leave this on list for a little longer as I'd really like a
-> > > > confirmation of this one from the AMD Xilinx folk.
-> > >
-> > > Salih/Conall: Please look at this patch and provide your comment or t=
-ag.
-> > >
-> > > Thanks,
-> > > Michal
+> > From: Erim, Salih <Salih.Erim@amd.com>
+> > Sent: Wednesday, April 1, 2026 2:13 PM
 
-As I mentioned earlier, I have reviewed and it looks correct to me.=20
-It would be good if Christopher could share testing environment and results=
-.
 
-Reviewed-by: Salih Emin <salih.emin@amd.com>
+> > Caution: This message originated from an External Source. Use proper ca=
+ution
+> > when opening attachments, clicking links, or responding.
+> >
+> > [AMD Official Use Only - AMD Internal Distribution Only]
+>
+> I am deeply sorry about these markings. Please try to ignore them, and I =
+will do my best to escape from them.
 
-Thanks,=20
-Salih.
+Maybe, but ignoring them might be subject to law enforcement or other
+legal actions. You must get rid of them for your OSS contributions.
 
+--=20
+With Best Regards,
+Andy Shevchenko
