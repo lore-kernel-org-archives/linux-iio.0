@@ -1,64 +1,64 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3750477E40
-	for <linux-iio@vger.kernel.org>; Wed,  1 Apr 2026 16:25:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 002DB2701CF
+	for <linux-iio@vger.kernel.org>; Wed,  1 Apr 2026 17:15:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775060759; cv=none; b=M4VAgBUbPKKpYiKLQ9Bb64qwJyYfjyqzul60MOuzGlk/xKA/wvYN7N+xlrq/CeGHy1JK8RMHnxpi5AUojHqFFHx40SKTtBX4B2tpqSq3WfzCoz8NNL1n4WfOUlqDiwh1Vzj7tc1Vc9Ye3avXaDFBJPGkvs50LNTSz1EyVDqJIH8=
+	t=1775063715; cv=none; b=AmHhpnUh0U5g1g1L8D0Vb66sp5NAOIAbyHMdYboYq3yDEAAgyu0Ab1JxM32UcRHd5ySq2CyDjcewfVkukibFlb/FiedREQqnNK08IQsaWSERqoBQjKcCfk7FwbCM3A2POV8gosnf3LOyo3NRHf98ytU6xQXTs25RnGdYyYJFEsY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775060759; c=relaxed/simple;
-	bh=/qWO8KI3tIBC0cjksLyab/irCOuK5UlJOac1HvRs0AA=;
+	s=arc-20240116; t=1775063715; c=relaxed/simple;
+	bh=LqK+F2Ypb2KsB2A32FqA6hBr8TMRaI5NPIP89Pl7v08=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=lEfpUsNP/1VRjOe0AGCgtf4pC6hlgB1Vvpy4rw/m/LEjNqdn3GW+N+hn9SRR7FuyJO+LPnvvDTLtBz/8HZzv2tG2HOzsgB2jdbOODyBzl0q8FE7hzTSsNeVTTtR/r9qsQNiHtTKFIN9oTulepqERhf9ofHv8K3bS3zxRcYskieY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mirrorstack.ai; spf=none smtp.mailfrom=mirrorstack.ai; dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b=ATBneXj3; arc=none smtp.client-ip=209.85.216.53
+	 MIME-Version; b=UoJH3vA8dSpF1MMkeDg3NopjKTvh6Ijb0mC+aExxD0V12Boxa7f+35Yv6LZFpSLlKrz0X9YXjdwQQkOwI0fFZPaX/2H1xe+OdygUPkG6M+jmZl4uGOnH7E8xN5xWcl3Cxa2zZ/qVLmRtYLB6rSo1VB4Q++jHlIum3cYyLD3VPF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mirrorstack.ai; spf=none smtp.mailfrom=mirrorstack.ai; dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b=KJGaw8jA; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mirrorstack.ai
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=mirrorstack.ai
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b="ATBneXj3"
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-35dac556bb2so2238405a91.1
-        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2026 09:25:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b="KJGaw8jA"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2b24fdac394so38663915ad.3
+        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2026 10:15:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mirrorstack-ai.20230601.gappssmtp.com; s=20230601; t=1775060749; x=1775665549; darn=vger.kernel.org;
+        d=mirrorstack-ai.20230601.gappssmtp.com; s=20230601; t=1775063713; x=1775668513; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SmuFDt4ssXwo5Kn+8E+MCnCyQLezwxIlCE02tQ8Pv3k=;
-        b=ATBneXj3E3SGVicK5Q1/mXuKr3nxxMbcAUDFKV3l2XAw09+MfkQ08kdCr6S0XkWPN1
-         YJMyWq/P73TKvyq7o0qfwKkr7bQbF0FfpfJpU7u/jC7Wa5yXrQPSnNq3xsXMdRkuyYPj
-         xR2b+zDfkbFlhtZPf0sPTVS5oL/PWAWTX6rOWkNJ8ZgTtWiEy90IJz/SZczCV6whgWbV
-         CNeO/3ZbyZKzUQzbvxrSbxl0JgbAoVxMEeh8AKYbylSvR8pUDa4+JSuR2gohK2aF7wLn
-         D050nUCLjJjz+ufi+uGXYKdUn9AJ/FNjlrXFxcbgRQwtTGdxcjJj69+iSWT16Io+GnGC
-         WUUQ==
+        bh=LqK+F2Ypb2KsB2A32FqA6hBr8TMRaI5NPIP89Pl7v08=;
+        b=KJGaw8jAEAwhi6VI/lHzcUdOY0V2hPevjh+UcVbF0CIhi/37JsgDFvTdAtetk4BpM+
+         0dRvWJWQUBdf67CiT+SlssHMIuv9lKv2XZWDjI+8IQF4WJVE6F4O5zNCkA3Atns3ypmM
+         9dZ+svR0obkETpmmSdxFx30G+fhvxHjRIOE3QWFn8yUGjqH1VRcGzAPZCaw0b5oakW2b
+         hcsY1wPtFNm2PpNpPANcOkdRHVjcxKGuGd4FSoDPepJcQ8KGrufkBJb5PAGI1F96TUBH
+         mM4oQi1GlSMXQPp/bVedDB6qAsYDr7s6aebw1uwDYvkGjzyxI/3HGTRZRdXLb1Td7E7X
+         KS5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775060749; x=1775665549;
+        d=1e100.net; s=20251104; t=1775063713; x=1775668513;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=SmuFDt4ssXwo5Kn+8E+MCnCyQLezwxIlCE02tQ8Pv3k=;
-        b=kkVFYDtBwV2rNKbrR0OVqQZoYU9rs5JEr/QeXDeQR9coCdNq8tZDgvAzl0VWgHEwaH
-         jexXTfg6fdl1g29gHfY9TuX+dVDV8EAtqu4nb8sKTyfU/6zV+w73W8quvV7FnFdmKUfi
-         GZSuDkXQgCwZQAmrUzUzSVmki2tf9auEEM2NCq0D2BfwuRGQla3B+Duy4fCapuYp1jZn
-         A/nX8O9i8WRN3sOTlgF1wXug4O02rTHyhU9dtFymc6o6NdBINKd/n695yJ+0V1MzmDF0
-         qWItCCHmmpLiycuHOZCnhojvNkgf8hFvV5QTVYiO38Z+4YiJyWoiXCAH0I6Np6UJPqNl
-         //Yw==
-X-Forwarded-Encrypted: i=1; AJvYcCVz7URBWMTkHcLQHIzn+ykcbI2czTLXlI5TEotBxelltBlBU5Pmawq9A03PedLmwR+gA1f1ZEUO2vA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxTOYcjRucw0KPm8kWTU3PbclmgMCnDNcK0E7dmXRSh22bmT5bs
-	H/8i6pjO89l9P3fBZz1jc9xxS2sW02kWeIBpFtw8NpSQl+TaUsfRU5ggDBeh4T3tPog4
-X-Gm-Gg: ATEYQzwXap8QwZU41N1Ae0iz6Nn4+Oouf7tJAC/hrFTJMNlz4Z1DtZ6dWQoHCweXpPc
-	h5oOBYcmhTTVe00xfG+O7cTjzszpfdOh0icNFE1pe1gzLvMIkeW2I76UmFrJ+7s90HOFFyvG1aX
-	XKetL2fCHRd9U6JiBE2sXeGVm92MwmDQ5wkHw4le2A1ESkJyZgZn3BlFcMpgVEPXa9NKa1C1XNJ
-	kIgHOrW6G5uhTkUEL9vzJ59l34LP2Ykhr4FKog+elwDpirKl/h1okPjL9OS/nHh9496K4L/xuM2
-	oMfHhHMgRu5nwBweZEgMOBkQTARs7Vqxgpug8OkPKu2ylkciNQmLbf1ZU/cdhPUT9gekLxlITD9
-	gJqvBv/xPidUMFz8DfZdCwkRoc7RWLSQ4So0SJmXxOyi51Yi6kq50BsTINE+YqTE7DNwICmJPFQ
-	Rxax9O6wQx9mBIOd5a5QtYZxwBNgTClG7mBsef3tLHu2VbYQzm7/bUpLfdsoEsUDUowH8uENP6F
-	/dYticrXU7QmzuPoyWtMvLX5fbIizk0KjAJVE7ajw==
-X-Received: by 2002:a17:90b:3f44:b0:354:a57c:65db with SMTP id 98e67ed59e1d1-35dc6f0128amr3633041a91.20.1775060749484;
-        Wed, 01 Apr 2026 09:25:49 -0700 (PDT)
+        bh=LqK+F2Ypb2KsB2A32FqA6hBr8TMRaI5NPIP89Pl7v08=;
+        b=PCUCq1XoirXts4bwmX+y89v37qggrvZiO8YspQGQ8QniOtqIsimfRwJW2NONm8ssOH
+         p6vm/lXN/j4EZ0uepLrJyVZPv9TIhRQUjH/cbq+V5hSclISUlnXj7X3sGeM6+OLkSGn7
+         3Q+tJDeqWiSB1lXd5KJ/eOAFnp2Zzlt2QS6JNZjniuovUD2tBHBrbkyalAynBw4nwIwo
+         fX262+TcSkqX46KMrZ//GrUqLCJ45faMkaBSnHl5R8GSZ3KV4Du3Dq00jiFt/C98hqKX
+         VujlNukXbExmi570u7oF2UaCcrFQu5P+1KeXPioYY1U4jQZFo75uMp6gmi39kqglQop2
+         GsAw==
+X-Forwarded-Encrypted: i=1; AJvYcCW/jhweDBqI2eeXmDht+Fe5v2lUmzvGKfRIQxmC3svEd+P+U77hgL8Docl7wKIOsFTZeRGlrdubBlE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzG/svaiNZagzjsPCM8kQaJzpclcHDENcxiI17CGb8lkmXKFBQC
+	tOtg8YfUpA8k6m6z7jcbVNcmPwPIysM8Wqj8eCRhC6IX+NCdyYht/vD/SHcNAha7kQr3
+X-Gm-Gg: ATEYQzwLSnw1PcrZ476t4EHTFPQV9lMiEwJt9ngBWCzlu37rzPVx6HMwiS+CopyMc/u
+	b1wcLk3UQLgLOjUSlGjBuKOCoPOXxaY6/Za7HQBo664ul7M3VbTM8VbtVTGCMfkyN66lUYUrqqa
+	/lyFDlE7UWA62yVsG+SvM3QdLkteQOaL94oMx3jugwBkeAAHVA33igFM36TQePCUm75riu7Bl9Q
+	hPV2Mej4G+wPwE9Uy4lDov4zjjd8L/kwcXsIUi7XCPjVFRbbMQDi/3hhF97utSWSQzS1HrysGwx
+	PFU7fLA7xw8oDMsrwyRSuDv5OhV48/NP4eoQiG8hlFeeygKEnxk/B4Zhzj0ajIerZKQrF8FkB23
+	cBoq+OVnulWlSX9mN/KvnebiAjoPcVhbcm2i4/LUCbWmMmYjSo+KS9WW1qHUCKijjj4uwfoScMH
+	7Rd738OgB87a41uiJCMAmg77t4f0ceWmWlDXTUAyBiAYtoWtLh6t4PUPVrz/xIPR0RxaJlJ9Wvs
+	UblBUf4eU+GgbBaZPe1VoPzOBHM/QhNuffIkrm8VQ==
+X-Received: by 2002:a17:903:4310:b0:2b0:b325:748a with SMTP id d9443c01a7336-2b269c8490bmr30058745ad.22.1775063713302;
+        Wed, 01 Apr 2026 10:15:13 -0700 (PDT)
 Received: from ip-172-26-8-186.ap-northeast-1.compute.internal ([2406:da14:e8:bc00:e546:17ee:7142:6d05])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35dd35e34eesm281813a91.2.2026.04.01.09.25.46
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b2749c38adsm3578525ad.69.2026.04.01.10.15.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Apr 2026 09:25:48 -0700 (PDT)
+        Wed, 01 Apr 2026 10:15:12 -0700 (PDT)
 From: Sheng Kun Chang <nothingchang@mirrorstack.ai>
 To: jic23@kernel.org
 Cc: lars@metafoo.de,
@@ -67,17 +67,12 @@ Cc: lars@metafoo.de,
 	nuno.sa@analog.com,
 	andy@kernel.org,
 	gregkh@linuxfoundation.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-staging@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
 	Sheng Kun Chang <nothingchang@mirrorstack.ai>
-Subject: [PATCH 3/3] iio: accel: move adis16203 out of staging
-Date: Wed,  1 Apr 2026 16:24:57 +0000
-Message-ID: <20260401162458.88110-4-nothingchang@mirrorstack.ai>
+Subject: Re: [PATCH 0/3] Move adis16203 inclinometer driver out of staging
+Date: Wed,  1 Apr 2026 17:14:25 +0000
+Message-ID: <20260401171425.89186-1-nothingchang@mirrorstack.ai>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260401162458.88110-1-nothingchang@mirrorstack.ai>
 References: <20260401162458.88110-1-nothingchang@mirrorstack.ai>
@@ -89,125 +84,18 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The adis16203 driver uses standard IIO channel interfaces, devm
-managed APIs, and has no remaining code quality issues. Move it
-from drivers/staging/iio/accel/ to drivers/iio/accel/ and remove
-the now-empty staging accel directory.
+Hi Jonathan,
 
-Signed-off-by: Sheng Kun Chang <nothingchang@mirrorstack.ai>
----
- drivers/iio/accel/Kconfig                   | 12 ++++++++++++
- drivers/iio/accel/Makefile                  |  1 +
- drivers/{staging => }/iio/accel/adis16203.c |  0
- drivers/staging/iio/Kconfig                 |  1 -
- drivers/staging/iio/Makefile                |  1 -
- drivers/staging/iio/accel/Kconfig           | 19 -------------------
- drivers/staging/iio/accel/Makefile          |  6 ------
- 7 files changed, 13 insertions(+), 27 deletions(-)
- rename drivers/{staging => }/iio/accel/adis16203.c (100%)
- delete mode 100644 drivers/staging/iio/accel/Kconfig
- delete mode 100644 drivers/staging/iio/accel/Makefile
+I noticed the existing Fixme comment on the Y-axis channel and
+Gabriel's earlier attempt to fix the single-axis representation
+(v2, April 2025). That patch was not merged.
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 3d3f8d867..2d8abec49 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -18,6 +18,18 @@ config ADIS16201
- 	  To compile this driver as a module, say M here: the module will
- 	  be called adis16201.
- 
-+config ADIS16203
-+	tristate "Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer"
-+	depends on SPI
-+	select IIO_ADIS_LIB
-+	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
-+	help
-+	  Say Y here to build support for Analog Devices adis16203 Programmable
-+	  360 Degrees Inclinometer.
-+
-+	  To compile this driver as a module, say M here: the module will
-+	  be called adis16203.
-+
- config ADIS16209
- 	tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
- 	depends on SPI
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index fa440a859..eaf8ce443 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -5,6 +5,7 @@
- 
- # When adding new entries keep the list in alphabetical order
- obj-$(CONFIG_ADIS16201) += adis16201.o
-+obj-$(CONFIG_ADIS16203) += adis16203.o
- obj-$(CONFIG_ADIS16209) += adis16209.o
- obj-$(CONFIG_ADXL313) += adxl313_core.o
- obj-$(CONFIG_ADXL313_I2C) += adxl313_i2c.o
-diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/iio/accel/adis16203.c
-similarity index 100%
-rename from drivers/staging/iio/accel/adis16203.c
-rename to drivers/iio/accel/adis16203.c
-diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
-index a60631c1f..bf6addf29 100644
---- a/drivers/staging/iio/Kconfig
-+++ b/drivers/staging/iio/Kconfig
-@@ -5,7 +5,6 @@
- menu "IIO staging drivers"
- 	depends on IIO
- 
--source "drivers/staging/iio/accel/Kconfig"
- source "drivers/staging/iio/adc/Kconfig"
- source "drivers/staging/iio/addac/Kconfig"
- source "drivers/staging/iio/frequency/Kconfig"
-diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
-index 628583535..739e4cbf9 100644
---- a/drivers/staging/iio/Makefile
-+++ b/drivers/staging/iio/Makefile
-@@ -3,7 +3,6 @@
- # Makefile for the industrial I/O core.
- #
- 
--obj-y += accel/
- obj-y += adc/
- obj-y += addac/
- obj-y += frequency/
-diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
-deleted file mode 100644
-index cee51f64b..000000000
---- a/drivers/staging/iio/accel/Kconfig
-+++ /dev/null
-@@ -1,19 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--#
--# Accelerometer drivers
--#
--menu "Accelerometers"
--
--config ADIS16203
--	tristate "Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer"
--	depends on SPI
--	select IIO_ADIS_LIB
--	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
--	help
--	  Say Y here to build support for Analog Devices adis16203 Programmable
--	  360 Degrees Inclinometer.
--
--	  To compile this driver as a module, say M here: the module will be
--	  called adis16203.
--
--endmenu
-diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
-deleted file mode 100644
-index acac7bc9b..000000000
---- a/drivers/staging/iio/accel/Makefile
-+++ /dev/null
-@@ -1,6 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--#
--# Makefile for industrial I/O accelerometer drivers
--#
--
--obj-$(CONFIG_ADIS16203) += adis16203.o
--- 
-2.43.0
+Should I address the Fixme as an additional patch in this series
+before the move, or is it fine to fix separately after moving out
+of staging?
 
+Also, if I should fix it, would it be appropriate to pick up
+Gabriel's patch with credit, or should I write a fresh fix?
+
+Thanks,
+Sheng Kun
