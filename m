@@ -1,226 +1,278 @@
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011041.outbound.protection.outlook.com [52.101.57.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F9E23B895E;
-	Wed,  1 Apr 2026 13:13:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775049182; cv=fail; b=YSndbt94fcFhY4ZKZ6d7CGYnetocPJvBOOQM1OtgRX4cvCzK0RdQu8XhfUFT2TenrSfrfZN+WjUc+zO6mnOcgOal9eXrxE/62+SPFP1/Don/dLpahgRRMRs5DjeXTXqXxLpn1RXbXrM2HlNYbYyvqARrMmNymd73ZKAY9RskcVc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775049182; c=relaxed/simple;
-	bh=0ia214xvNj2376Ei7ShXkXqF94n1ZHCdHxm1lurWG4o=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=RfEr4NfA8a4ndtR+wDyOG8BnIBmZ7t2LqjaiofaL9iPEkcfncN3jlctTRzw+D8ZeNVhpbNA067dA0FK/d0c6N/JW53O7iOPrhfGs+EElz8gkgrNQIj3ywGuDOYC+W2aSFo70BiEnA4Oc4UVWumVGz/oHKSiOdtA2Jb3WJZb6qkw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=FPz/hPQb; arc=fail smtp.client-ip=52.101.57.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45121332918
+	for <linux-iio@vger.kernel.org>; Wed,  1 Apr 2026 13:16:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775049407; cv=none; b=O/dbzedbandXnhueL7FZvA15npL8G55uE3byOTy5ktXJpjF369qBSHO5by5ZnPqpAeEzNbYUq07opqIvyKA/pC/EZsA8VeKWhrO0TiS7Nk17rlBdXI6BlR37zVg0j6Dn/fY+wnRtvVlJ33yI9IMgyASjxfrhCEaJ9NanjIobzDs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775049407; c=relaxed/simple;
+	bh=ZQ0cluxrrGAAgQmJ2b7UrPz8J+y8NMc4NZcDA7xAclU=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WhwjCIWD+kyk334uNR5NxM2VIVHLxZNgZ9exzI9zMPqtoGWxSDblxXBp+KewCw3KLI9KjZQZ04HlrYlnMiRqSLZmcb0vclj5Eg7HMbka1oMZuVzJSvHMIQhzY+QtoED+4VEDdq8aTj0r91i5cfwS3KNNP1LDQDGXBbVEpKD6jfk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rL293tua; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="FPz/hPQb"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UkXKbEFAFGoXgZ5KJhkAW1lNNWcrDnSiMGK01XCUZjvYfFjGiSlzgiWfr0NXqEMxCo4exC/T4KY49l/KhpWJl9vfOH5/zyIbXtiveK1nIf63hazc/CZpXWKpnmLWJdXEBcqXvWhbI6x1yPfnqcqc4wmVnbdH7vUXnbT1RX9n6/sGr/ERONpGNb1t6yhRprEVHe2T0GpDdVw9rnUrAdYENTOOP/lu13UuMcc2E0/u27f2fakpkebSUaZFjG11H59wba+qhMLfV7h2mXQdWyrtf7Qysy4uO5VEWrVqyrN4nJiN9pS2fq+R0KREZvfZtTjYXGBaIAUDPn8xtRMfmwGk6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1705mp9qP5lp1ejyR3nOSjroMhpKmvsYjC6kwCyl31k=;
- b=F6xrBverCichO34ReMg9LthHONCpc0zJ7apmtiv7dyAhyEOY3PNhNaEtgSOrSHYAJHgbVknQL7x3p4tKY+BBcuvZNevQH8v677Q5tXp9C7xqLuUXRnf4icsBCDeSmSFzgO45syAKNCJDRBCfrFIAQFs1EPu1rRMEbmlDc3mfEsqMCWURr8bHHWf3lYzfoYmL67pEXpF7hw9z2I1nPrqfm5W/w5ZV07Bsj2Lcp3d6L3ua54xghWB0MevFGOUTZUBdQGWZb0uxbRh7mgPull+d9Er8zrFbaV+FqCYYqN6MWbzE5lBBQADGxxjEuQElfAyNVj6yU7TPXSclptztm+BeLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1705mp9qP5lp1ejyR3nOSjroMhpKmvsYjC6kwCyl31k=;
- b=FPz/hPQbvHDz3j0II5ZqV6JL5YretkRLgl0T/t0uE/5qa1XW3RomW5DKFabAylDg2E86sFAsQQItdIZEJm4cyqoTHoi5DajrYdgRIaD1bjFY5RGo38k8lyihMtm5sp6Lp+qPwU4VZ/fkau/Ga6Oz4g2dUu3OMkm8I4oU8PqHwx8=
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by DM6PR12MB4332.namprd12.prod.outlook.com (2603:10b6:5:21e::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Wed, 1 Apr
- 2026 13:12:57 +0000
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550%5]) with mapi id 15.20.9769.015; Wed, 1 Apr 2026
- 13:12:57 +0000
-From: "Erim, Salih" <Salih.Erim@amd.com>
-To: "Simek, Michal" <michal.simek@amd.com>, Jonathan Cameron
-	<jic23@kernel.org>, Christofer Jonason <christofer.jonason@guidelinegeo.com>,
-	"O'Griofa, Conall" <conall.ogriofa@amd.com>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "dlechner@baylibre.com"
-	<dlechner@baylibre.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"andy@kernel.org" <andy@kernel.org>, "victor.jonsson@guidelinegeo.com"
-	<victor.jonsson@guidelinegeo.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>
-Subject: RE: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
- postdisable for dual mux
-Thread-Topic: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
- postdisable for dual mux
-Thread-Index: AQHcq7dnEu4MVLVXG06oIZXnf3P2bbWjB/QAgARjkoCAIuly8IAABfbw
-Date: Wed, 1 Apr 2026 13:12:57 +0000
-Message-ID:
- <IA1PR12MB77361978ED21FF22F079034D9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
-References: <20260304090727.1800289-1-christofer.jonason@guidelinegeo.com>
- <20260307124118.1d527749@jic23-huawei>
- <1166aeef-0c93-408d-b265-9037f2840074@amd.com>
- <IA1PR12MB7736AE6EEE95D5D184A15B9F9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
-In-Reply-To:
- <IA1PR12MB7736AE6EEE95D5D184A15B9F9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_dce362fe-1558-4fb5-9f64-8a6240d76441_Enabled=True;MSIP_Label_dce362fe-1558-4fb5-9f64-8a6240d76441_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;MSIP_Label_dce362fe-1558-4fb5-9f64-8a6240d76441_SetDate=2026-04-01T12:51:04.0000000Z;MSIP_Label_dce362fe-1558-4fb5-9f64-8a6240d76441_Name=AMD
- Internal Distribution
- Only;MSIP_Label_dce362fe-1558-4fb5-9f64-8a6240d76441_ContentBits=3;MSIP_Label_dce362fe-1558-4fb5-9f64-8a6240d76441_Method=Standard
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA1PR12MB7736:EE_|DM6PR12MB4332:EE_
-x-ms-office365-filtering-correlation-id: 3b7e58a0-0a16-49d9-d623-08de8ff0648c
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|1800799024|376014|7416014|366016|38070700021|22082099003|18002099003|56012099003;
-x-microsoft-antispam-message-info:
- icqrRrYEBlI+4WjAoeo95HiIPh4iDYYWZ+fLgynEquO/Z5IbKWwSKtHCRrOD5FtgVd+ezh6Kkfi94O57AbdQ56yY3XJyUFVhk4woiJMQc4wtIGiH7tIIdJN0x83KCaw1Zn2e+LX/oiHCIR73Fv3vjPORgCZmrbNwVr/GeX6FaAhBIEuL+DHHZJhF4cxCR9Nk8OjUuUb/fB/nIdftefoN6P+kwO7ahRilHnruEN46qmvwpWBmJC8cv8AV/WlEMYCvfWMdVAbKcAvvM/yBSwjnAn9MfjvQQ+T6z4U0LELdbyrL13riSRy+fjIK5nRJyuvEco/5W9YVRF80aRCrMeOzHeEpKpptZ/x1rDcppAitUujHIGquO973+WpPDD0Mku3lS0lR8k1UPbAQ4DE5uPDafZkqa5lJ0W0fJwR7nOfLP4muM3RfyWjcGbyLv9OWOw6+GR7DJVSkA5mML6wmrmH2sR4LRUH8drbZVLUmYKfYPQCq//nleSUkKm7BNOOO7Hz7dcoVZVSNFxwy4zrav74gcnhxCjJsRqfaSNlJDb1MxTLR5MmHOL2uCsswA1i03JQW9gKK+jLv7LzLARlCvglDAqXVAg3wSbA23/Cu0BHdr981TLudIL25fHA0MaybRSHo05ShzdxPJtOhjKJRc1huUhUU6iGgiuwAF8NCqPnYhES26G6cZohNH7KNs/qc0BMY2zKRg/CiyATzGB4ClnaFzH4u42BGdAoGTJwn1CbFYRCZ+olUxCbsymRNeD7ivTwaB/IdIKgmoSZs5Xp06n4StbVxAM6dMAHYOb1Lti9EvrE=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(38070700021)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?JasSGEDlbT/ACqudqn9KcGhaJxLpUEiUlRaviY/niYo/AGGfevUSdptkPA1y?=
- =?us-ascii?Q?XMmN3uTU8lR0r9lm9csTC+pR7OcqDtVdsqe0XwyWZ0VPR0m31n4LD4LH4Vx9?=
- =?us-ascii?Q?jym0TiF4jendXsXXPF9rgSDmrEGKjP7/1S9TGuHcM7t4FbLlKMwKLTDuUEeS?=
- =?us-ascii?Q?Dpn2O0DaItICcCCxPdeagp7OSN3lgEwWq+v7CW/2vDT2L6ArZv4hCXOUjxoq?=
- =?us-ascii?Q?p14Swgooh1o9qF6rCYD/ye3pIil6PzK36VVOrh+tR+n8/Uf6vgLIt0LQRFHI?=
- =?us-ascii?Q?m4TK2I/eP3R+uUT3kxyj6benexO5Np+8/X6yn1W5jNYgqk3yo0s/ixToJ5UY?=
- =?us-ascii?Q?7xfc4BF0EjNLxhLv1DsNXPind4HtJrImBdrsrHImmuq7gfUjVhzXHDjVwX5H?=
- =?us-ascii?Q?FiclhVVixRZcis2ps80Dxek/hTG78SILRNDF6lT1xOx7Swn3qXrntA9kHHzW?=
- =?us-ascii?Q?zFfh1IvJWpAaCT2BXZ2gG42BDdCDF2CcZ9z4fA9tD3/ybU+haE0cNyULUFKk?=
- =?us-ascii?Q?Q8WYZKi+qRkdaEU3jVz53ftzkLXmJQ6JGqYqJfdqUDVChoTDyqyR7H7ECeNx?=
- =?us-ascii?Q?qbjTfxBsZaco4mGGE8IvNp9zI/pyqG6moN2luwdvc2Uz4ch+1sBMQ1ceg168?=
- =?us-ascii?Q?ml6rZ5xa+VEhmhOvKWxvqjUrBLXvQo0SjzEVqmfjQsbOi7ecVR6fHyPLEEBw?=
- =?us-ascii?Q?zKmvpyKJFC4sPZuQgQ1ubF1lochfP2Y0PyvzZ540b3KNwDi2EI5JtGnjERbo?=
- =?us-ascii?Q?ml4fZC6BUDJNtJpNhhNy8XrPTjNV+8Uiy8pTukcPPwCanO6I/dedC+cr6Qes?=
- =?us-ascii?Q?uE2rAH4HPNlJpqMszI34vjDdWlta5WfsBILCdUpBDdyr5ZNwk+h1lUK22JM6?=
- =?us-ascii?Q?wX7R8b+ypupRj52lU2KQkAECuJacatoBen6MMH/d4aCJV6+diPBTe1ElNbOn?=
- =?us-ascii?Q?oZAzCpHJ5PKk7FFcXm/3hSun141qhz33qjK5y3QGiB6xHWup47D/LoERSs6z?=
- =?us-ascii?Q?M5P52G+KavVaQx4PzKlyk4FiPOccnx370ECH/Yv+xAiI6EpYScMV/ePaaY4q?=
- =?us-ascii?Q?sXGLzPVhfIX/fLk60MABJ7rQmtsdsPpMd+ei2AAtNOE3rO2u1yLzKR5lV6y0?=
- =?us-ascii?Q?sUFaJrDjv0FsE8rUOM1Fsd+PyWC9eZ+8FF5Jv1Po08smrMF/gRIMfai2Buou?=
- =?us-ascii?Q?AcJ9vS0ozTLCERYnAujpAQ9bnjW7gIu3AFSfQAoqVO9QvN33Fv9vomu18m6X?=
- =?us-ascii?Q?pudGG+KKZpdIe/gToEp79VXpPTjf0oGHie/xqRnwcxWGN/hFCPSraAC64tS2?=
- =?us-ascii?Q?MF1H0TBT8IBfJuZ6zbKcIvpKKM462FtdAg7ieS/F2Q0U2o4UBCFSWJfd1yMW?=
- =?us-ascii?Q?smLzzIVpYuUL7yQ2spgcEYA0wJ16GyGB0JFFRzLP5amh8QQdl09yaX3D9xNd?=
- =?us-ascii?Q?eGYx2sryrY9c+GYE74UpQ+yy7VRhyFSBwUTvceD6WnJm094yIRH7cQ3qjaFE?=
- =?us-ascii?Q?pcylyK2uReU2rUdC0TnVP8q7X+7dgZls7ppKcaH1yu3FKz29l/SeiK7KyEMi?=
- =?us-ascii?Q?AYp9CKpFzILR/zRU52+7GNvY4sbBLytZYGguT44qv9ErCkoPuZ0ZIc4mH1hL?=
- =?us-ascii?Q?GPFXWirpYIuXLHth6YU+9PfYOMtstXiiCiBbAFFtRolli4JITy3JWODNrUh3?=
- =?us-ascii?Q?tRtlHPrR5ZFRUeRXd+0IsFzf234cqEvzygIyXr2D9uqSP5MC?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rL293tua"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b9961e4f71bso1015333266b.3
+        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2026 06:16:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775049405; x=1775654205; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=apbYBRg9b/3DX+6GYzgJ9nE4vIASqDiH9mcyDG+Y7O4=;
+        b=rL293tuab6Ab3LMDJXyCFrElCvLeraYcfqMV5T0rDhRghL9C/AU/eiHaOaWNFjkIDa
+         6M05uARSXg0CJcTNdCm+bJIPNYv66Ky7rcG6aivbOO8/oYthyKhur0YgesCakERFgHoX
+         xbUxZFktNfikw9SYs638qW3yqd/F0Ndhaipbfa4yo6qUPSJ3hd+Wxl8u0AZJ+XbOTH6w
+         hBPd/BFDmSpDQvLqad2VBIeKPexuzZfC/RGPDKeO4EG5O8jI2CNtpzpPAiHVgEj9g4Gg
+         JNai8rWkJiZt+Vlu7t3LuyBf9+8q4N9UyvhsCLPsU7juXVwN97FjyBUHQThTSOftBD18
+         Um8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775049405; x=1775654205;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=apbYBRg9b/3DX+6GYzgJ9nE4vIASqDiH9mcyDG+Y7O4=;
+        b=q6UX2Ay1NKDsK71KNd1E6c1h0coKggX07g5DjUxAJg0wZI+8594nxeSXrN1njWoH4B
+         BZxj7ceaXXGIwClrncEVhfvsM73nHmC0J+VuhTSYp3Nso0k3vmSnj+xdDc4Qy9JyFYu4
+         gVOJoTOnsqkGG2p5SGH5pCaNRaVIVs6FoJo3doJZ913Uxo/JqgLL/UXDnGEf3kG1tuNG
+         F+yRWaQmuPnKzAQKBPG6EUWPfzw+TuRNJVyyRUlOs2sGJvbHrY9VZ1TGm4tp3EqDsclq
+         N3iqyzYKuqQPVD78V3X3Pip7QDoLmPH9TWTrj9na4jUDMAIDAuM9Jv3zDmYUax41GEgn
+         AhiQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV+0rqQCib0jbtAAA1Jo/Oi0131NWCz4R6ih2KB4667KJfK5HLlhgKnEYzPh9xxck+YY8oXYPsJTvw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy+FPoXJFYZLRD3Je4IXQD4c36ehoThWe9CywcuTzSeqbRzwDaY
+	Y1OVvIIVjk+c2XvGLwOc4kcmHG90g8ARC7JJ8t5XqU6E+TDHBGASwKty
+X-Gm-Gg: ATEYQzw9qMv0X+O6j5H5UpGnJoIU1tTkkJ5eYYirtGHccWQZfQYHthqc3ZVwwQehY5h
+	qKUKeAqdVgUvGWMfIYph5M/bI2+Dg27m/SR6LbfsfPbcpvZRRmppmVHJ2OPHKVdRCSwLxXDy1P+
+	fveYyAWXjT6kvc+27Sl6NRjVIc2Nw4pSLriHhsCtg6Y7tgJ2jToYmv5SDawpCl2eH+CeRoe1Vfd
+	/b2pAuv3+CUDHcAVQ/6ltnFAvMB/FJ/nTBIuziSArh2AIkC6wuwRU0uuapkP+rE67Vbcv8jNJ8O
+	skkM3iwYLTqtrQIHWZBtHLI7hjq9gzoxPIkgAfIDVmL5MATt/8pO8zU8T18SVk0tIjWGlyNPDAS
+	pWNvfvx756ysd5Gx0RFCAk4tC2kbin3eDC+7a/50RWslXqvJNBAZt7rSPwvWk8/sdKlWfMYd+Zv
+	sLjlyukWNwlXp5tBl0oSe1jC4x3Vf3S38xEwNv027YQ9jCGLegGXPqxpTjlX+kMLUsGo2OBYcMs
+	Axmz4rqw9ZgfssXlJbOtZAzMNC4ZoM3aYSUAxN0/dnWuWpOZ+0=
+X-Received: by 2002:a17:907:2d1f:b0:b90:8016:cfe4 with SMTP id a640c23a62f3a-b9c137a088amr261514666b.10.1775049403891;
+        Wed, 01 Apr 2026 06:16:43 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b9c0219ed95sm145275666b.29.2026.04.01.06.16.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Apr 2026 06:16:43 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Wed, 1 Apr 2026 14:16:36 +0100
+To: Petr Mladek <pmladek@suse.com>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Andrew Morton <akpm@linux-foundation.org>, Steven Rostedt <rostedt@goodmis.org>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v9 2/9] lib: vsprintf: export simple_strntoull() in a
+ safe prototype
+Message-ID: <24jfl2btofko7iqxz7rlqdbr73yjaf46plfvnrc4zj77i4zbkj@apmruc23fw6f>
+References: <20260320-adf41513-iio-driver-v9-0-132f0d076374@analog.com>
+ <20260320-adf41513-iio-driver-v9-2-132f0d076374@analog.com>
+ <acZDneLrIPOmU5ci@pathway.suse.cz>
+ <acZLHAT5qJyjKTsp@ashevche-desk.local>
+ <4uijfg4efzaapu3esobez55hfwqzszwagpeb4lxej2ybmifu76@s3c57fmnsme6>
+ <acZaGUV0MwuHNDru@ashevche-desk.local>
+ <x34d7jz7be4ommjh6efx5mcq5pbpellykwuyrqayr4ske3lywf@wh46mu3anmcz>
+ <qnb3ozrhrq5n4zkh2luitkpwr5oj4omgcuo5vnvy2gatdfdqlg@cgsgux7etcql>
+ <ac0N89sNYcKAJkAP@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b7e58a0-0a16-49d9-d623-08de8ff0648c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2026 13:12:57.4793
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dkKGYlrMRzvmSJYUPL+mZid1/6rfvMiojjHSgPHE+vvl/bKW/QkviIwOiu39igFM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4332
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ac0N89sNYcKAJkAP@pathway.suse.cz>
 
-[AMD Official Use Only - AMD Internal Distribution Only]
+On 26/04/01 02:22PM, Petr Mladek wrote:
+> On Mon 2026-03-30 13:49:48, Rodrigo Alencar wrote:
+> > On 26/03/27 03:17PM, Rodrigo Alencar wrote:
+> > > On 26/03/27 12:21PM, Andy Shevchenko wrote:
+> > > > On Fri, Mar 27, 2026 at 10:11:56AM +0000, Rodrigo Alencar wrote:
+> > > > > On 26/03/27 11:17AM, Andy Shevchenko wrote:
+> > > > > > On Fri, Mar 27, 2026 at 09:45:17AM +0100, Petr Mladek wrote:
+> > > > > > > On Fri 2026-03-20 16:27:27, Rodrigo Alencar via B4 Relay wrote:
+> > 
+> > ...
+> > 
+> > > > > > Maybe we want to have kstrtof32() and kstrtof64() for these two cases?
+> > > > > > 
+> > > > > > With that we will always consider the fraction part as 32- or 64-bit,
+> > > > > > imply floor() on the fraction for the sake of simplicity and require
+> > > > > > it to be NUL-terminated with possible trailing '\n'.
+> > > > > 
+> > > > > I think this is a good idea, but calling it float or fixed point itself
+> > > > > is a bit confusing as float often refers to the IEEE 754 standard and
+> > > > > fixed point types is often expressed in Q-format.
+> > > > 
+> > > > Yeah... I am lack of better naming.
+> > > 
+> > > decimals is the name, but they are often represented as:
+> > > 
+> > > 	DECIMAL = INT * 10^X + FRAC
+> > > 
+> > > in a single 64-bit number, which would be fine for my end use case.
+> > > However IIO decimal fixed point parsing is out there for quite some time a
+> > > lot of drivers use that. The interface often relies on breaking parsed values
+> > > into an integer array (for standard attributes int val and int val2 are expected).
+> > 
+> > Thinking about this again and in IIO drivers we end up doing something like:
+> > 
+> > val64 = (u64)val * MICRO + val2;
+> > 
+> > so that drivers often work with scaled versions of the decimal value.
+> > then, would it make sense to have a function that already outputs such value?
+> > That would allow to have more freedom over the 64-bit split between integer
+> > and fractional parts.
+> > As a draft:
+> 
+> My understanding is that you want to allow parsing frequencies
+> in the range from microHz to GHz.
 
-Reviewed-by: Salih Erim <salih.erim@amd.com>
+Correct, the ABI requires the values in Hz, and I would like to support
+micro Hz resolution, so that 10 GHz can be represensted as:
 
-> -----Original Message-----
-> From: Erim, Salih
-> Sent: Wednesday, April 1, 2026 2:12 PM
-> To: Simek, Michal <michal.simek@amd.com>; Jonathan Cameron
-> <jic23@kernel.org>; Christofer Jonason <christofer.jonason@guidelinegeo.c=
-om>;
-> O'Griofa, Conall <conall.ogriofa@amd.com>
-> Cc: lars@metafoo.de; dlechner@baylibre.com; nuno.sa@analog.com;
-> andy@kernel.org; victor.jonsson@guidelinegeo.com; linux-iio@vger.kernel.o=
-rg;
-> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> stable@vger.kernel.org
-> Subject: RE: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in post=
-disable
-> for dual mux
->
-> Hi Christofer,
->
-> The code change looks correct to me - it aligns postdisable with preenabl=
-e by
-> reusing xadc_get_seq_mode(), and the scope is limited to dual external mu=
-x
-> configurations.
->
-> Since this is targeting stable, could you please share what hardware/boar=
-d this was
-> tested on and how you verified that VAUX[8-15] channels return correct da=
-ta with
-> the fix applied?
->
-> Reviewed-by: Salih Emin <salih.emin@amd.com>
->
-> Thanks,
-> Salih
->
->
-> > -----Original Message-----
-> > From: Simek, Michal <michal.simek@amd.com>
-> > Sent: Tuesday, March 10, 2026 7:43 AM
-> > To: Jonathan Cameron <jic23@kernel.org>; Christofer Jonason
-> > <christofer.jonason@guidelinegeo.com>; Erim, Salih
-> > <Salih.Erim@amd.com>; O'Griofa, Conall <conall.ogriofa@amd.com>
-> > Cc: lars@metafoo.de; dlechner@baylibre.com; nuno.sa@analog.com;
-> > andy@kernel.org; victor.jonsson@guidelinegeo.com;
-> > linux-iio@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> > linux-kernel@vger.kernel.org; stable@vger.kernel.org
-> > Subject: Re: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
-> > postdisable for dual mux
-> >
-> > +Salih, Conall,
-> >
-> > On 3/7/26 13:41, Jonathan Cameron wrote:
-> > > On Wed,  4 Mar 2026 10:07:27 +0100
-> > > Christofer Jonason <christofer.jonason@guidelinegeo.com> wrote:
-> > >
-> > >> xadc_postdisable() unconditionally sets the sequencer to continuous
-> > >> mode. For dual external multiplexer configurations this is incorrect=
-:
-> > >> simultaneous sampling mode is required so that ADC-A samples
-> > >> through the mux on VAUX[0-7] while ADC-B simultaneously samples
-> > >> through the mux on VAUX[8-15]. In continuous mode only ADC-A is
-> > >> active, so VAUX[8-15] channels return incorrect data.
-> > >>
-> > >> Since postdisable is also called from xadc_probe() to set the
-> > >> initial idle state, the wrong sequencer mode is active from the
-> > >> moment the driver loads.
-> > >>
-> > >> The preenable path already uses xadc_get_seq_mode() which returns
-> > >> SIMULTANEOUS for dual mux. Fix postdisable to do the same.
-> > >>
-> > >> Fixes: bdc8cda1d010 ("iio:adc: Add Xilinx XADC driver")
-> > >> Cc: stable@vger.kernel.org
-> > >> Signed-off-by: Christofer Jonason
-> > >> <christofer.jonason@guidelinegeo.com>
-> > >
-> > > I'll leave this on list for a little longer as I'd really like a
-> > > confirmation of this one from the AMD Xilinx folk.
-> >
-> > Salih/Conall: Please look at this patch and provide your comment or tag=
-.
-> >
-> > Thanks,
-> > Michal
+	10000000000.000000 
+ 
+> So, you might want to support input in simple float numbers
+> with some precision, for example, 1.2GHz, 0.345Hz, ...
+> 
+> By simple, I mean that there is no x10^3 or so.
+> 
+> > static int _kstrtodec64(const char *s, unsigned int scale, u64 *res)
+> 
+> I would personally change this to something like:
+> 
+>   static int _unit_float_ktstrtodec64(const char *s, unsigned int precision, u64 *res, char **unit)
+
+I don't really need "unit" for my specific use case, IIUC this pattern is not
+something to be handled by kstrto*(), because those function should requires NUL
+termination. I am not sure why is that, but I like the idea of returning a
+const char* pointer to the end of the conversion (that was the whole point of
+having something like kstrntoull())
+ 
+> It would allow to read float number in the the format XXXX.YYYYunit,
+> for example 1.2Ghz
+> 
+> , where:
+> 
+>   + _unit_ means that it might set @unit pointer which point to the unit
+>     string right after the number part.
+
+as mentioned, the units is defined in the ABI, so this part is not really needed.
+
+>   + _float_ means that it will be able to read float numbers
+
+its a decimal fixed precision, decimal point should not float.
+
+> 
+>   + @precisions parameter defines the number of digits accepted
+>     after the radix point. It is also used as multiplier for scaling
+>     the output number.
+
+precision != scale, for this case we have a fixed precision of 64-bits.
+while scale is passed as parameter.
+
+Reference:
+	https://www.ibm.com/docs/ro/informix-servers/12.10.0?topic=types-decimalps-data 
+
+> 
+>   + @res is pointer to the read number multiplied by the given
+>     @precision
+> 
+>   + @unit will be set to string after the number
+> 
+> For example:
+> 
+>   + s="1.2GHz", precision=3 will result in *res=1200, *unit="GHz"
+>   + s="0.0100004", precision=3 will result in *res=10, *unit=""
+>   + s=1.234567GHz, precision=3 will result in *res=1235, *unit="GHz"
+> 
+> Note that the result is rounded in the last example.
+> 
+> The function might be used like simple_strtoull() in memparse(),
+> see lib/cmdline.c. Which is able to read the given size in B
+> and handle various units like kB, GB, ...
+
+As dicussed above, scaling the value based on the units is not my use case.
+
+> 
+> > {
+> > 	u64 _res = 0, _frac = 0;
+> > 	unsigned int rv;
+> > 
+> > 	if (*s != '.') {
+> > 		rv = _parse_integer(s, 10, &_res);
+> > 		if (rv & KSTRTOX_OVERFLOW)
+> > 			return -ERANGE;
+> > 		if (rv == 0)
+> > 			return -EINVAL;
+> > 		s += rv;
+> > 	}
+> > 
+> > 	if (*s == '.') {
+> > 		s++;
+> > 		rv = _parse_integer_limit(s, 10, &_frac, scale);
+> > 		if (rv & KSTRTOX_OVERFLOW)
+> > 			return -ERANGE;
+> > 		if (rv == 0)
+> > 			return -EINVAL;
+> > 		s += rv;
+> > 		if (rv < scale)
+> > 			_frac *= int_pow(10, scale - rv);
+> > 		while (isdigit(*s)) /* truncate */
+> > 			s++;
+> 
+> We might/should use the first digit to round the _frac.
+
+flooring should not be a problem if it is documented like that.
+I suppose we cannot afford to carry over all roundings from
+subsequent digits. If so, we would be parsing it all and use
+div64 which I would like avoid.
+
+> > 	}
+> > 
+> > 	if (*s == '\n')
+> > 		s++;
+> > 	if (*s)
+> > 		return -EINVAL;
+> 
+> I would omit this. Instead I would set @unit pointer so that the
+> caller might handle units defined after the number.
+
+I understand that this is the whole point of creating a kstrto*()
+function.
+
+> > 	if (check_mul_overflow(_res, int_pow(10, scale), &_res) ||
+> > 	    check_add_overflow(_res, _frac, &_res))
+> > 		return -ERANGE;
+> > 
+> > 	*res = _res;
+> > 	return 0;
+> > }
+> 
+> Otherwise, this approach looks sensible to me. IMHO, some generic
+> API for reading numbers with misc units should be usable in more
+> situations. And it would make the kernel interface more user
+> friendly.
+> 
+> Of course, we must not over-engineer it. But the above does not
+> look much more complex than we already have.
+
+I really appreciate your time looking into this, thanks.
+ 
+-- 
+Kind regards,
+
+Rodrigo Alencar
