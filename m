@@ -1,64 +1,64 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 932AF44CF29
-	for <linux-iio@vger.kernel.org>; Wed,  1 Apr 2026 16:25:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F1203F8DEC
+	for <linux-iio@vger.kernel.org>; Wed,  1 Apr 2026 16:25:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775060749; cv=none; b=A8vvWyNyD0SCMNoTT072d44zdr/NrjoODS3DfOglwFRpny4FuNCjwTXhwmxmxIySoooV1rsxhCLPw5riXAQjPfxvhi5ybajUiS8wUqdQSskSPJA+zJ6peVqwcQe+NtvpJOOP4MUzVdZkwRbqG33LctqznVL50D59wANDxIbpmiE=
+	t=1775060751; cv=none; b=SuAAEJdOwApwTIaurNWryKuuAt8FoTNVh0ODKQS5vT11X/dhkvGHRVan/fsjj4yW013qsjJDlsIRzVAv87aQDZVh0sE8s6cNovfu0Ho14DjWqU5PNOy/T81jvGwGHDhJO6b0HGkA2y4IUioPjfJCGZMenT9V2nyCuZr22Q2XFZU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775060749; c=relaxed/simple;
-	bh=y1smEGww2o/rd+W8nS0LWLrCoTwSm+mdCkNguHQRh2c=;
+	s=arc-20240116; t=1775060751; c=relaxed/simple;
+	bh=8dXLQMW8sVIcuzDqL6BA+V3ONKfbGvxIejWx1vqWCqE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=m+/3itM/G+1hWbw7UQjy+6bouJxc3R/CtYmpiUJkKbqNAAJx/n10uMRljQTKGSm/+/b97B+E1laRT0Qz0Qk6lhPdzdeuhayHFLdeFFMA0hGyDV2svqKktdYa+izF8WWTLozlGtZCapLcydKAV5zU4KuZATCuW+jlPI3Pvrr1OFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mirrorstack.ai; spf=none smtp.mailfrom=mirrorstack.ai; dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b=uIT+dRHa; arc=none smtp.client-ip=209.85.216.45
+	 MIME-Version; b=J1MbUngwKW1ZZUbS/OYsZSZUpOvT7ipzV3qh4tM2wCQo+Jnh4bO2jgvtyyFNTw6hGWXlVxNaqHBHVSsi59CibxU2fWsUvNmZoVryghkjdRA8llSCCqK8+f3APQWkeuN7T5MlzwUtoVzj2kWBRl97SerqLE30ldQtfVKKjvLnPWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mirrorstack.ai; spf=none smtp.mailfrom=mirrorstack.ai; dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b=qD7jEojr; arc=none smtp.client-ip=209.85.216.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mirrorstack.ai
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=mirrorstack.ai
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b="uIT+dRHa"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-35d94f4ee36so2746957a91.3
-        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2026 09:25:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=mirrorstack-ai.20230601.gappssmtp.com header.i=@mirrorstack-ai.20230601.gappssmtp.com header.b="qD7jEojr"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-35da9692ec3so3063845a91.1
+        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2026 09:25:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mirrorstack-ai.20230601.gappssmtp.com; s=20230601; t=1775060743; x=1775665543; darn=vger.kernel.org;
+        d=mirrorstack-ai.20230601.gappssmtp.com; s=20230601; t=1775060746; x=1775665546; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LScsGFwS6nIpkAboe0X19u7lqZkR6eLlyKmDNKTD1Lk=;
-        b=uIT+dRHazz7YL1Wru9T9TfYPikCqMhwBef+Dtch6msm/6wd4dcAwxAL0ox1IJc4znk
-         V8r5IXceynT8oUthS+AT+/ZyYm0h+r45QSQ+g5KzT8cTvJ3i08c8nn3dWr6v3dtt8K+7
-         Q4F9Yyx3YPxHes5pH8xsxdgCRxIbhSJd2ZU117XeJnce2FC0ToY7qoJps5VvGwupYQE+
-         l7nQyIhGfcNlbt4q9WEvkixJ0jb3wtWf7Zmfo4fioBguzFYaci1PeluJYnSWQ2Z0okCm
-         WbkJAtOUt1L1zXmK7kJa+la5ctoSiNg2euYeyD8KGI5yDkWN/34a31WYsz5sOJds9eGy
-         /+ZQ==
+        bh=WYbjRDMYvPXm7PwKTidWBLBGSVwyNzNOx/MgyeEmpgE=;
+        b=qD7jEojremObzSB6ufDiJ2ljuL1Am72xsEl5c20ThlHvZ17AuVapEEzS5FH9TZU783
+         h3HmDUl9OJfvvsQ8ydUgKGlfbjYTHiJ1TizYvq+LwOq/7aIUUq3MSNrfAkyVz8L/Kp27
+         nEDUQ+7Ztdauc6aLIHJO0F5r7TB59r9JXr9fr0jmZulJilEQ8dpIOsFVhYkfsmVEB6oj
+         cWBSNXpSkiuJZ0AxX/y7Mba1MlWMbkmBDYAICEc69hL5Eu8X1uNAyI221fUJ1vffvBwe
+         zPynoWFF5dvPn168ucoPEFsFiZVgoUOHBKLdDbFmVSdqi8TntL3FX3yFOyGyTG7ZxcVl
+         Tetw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775060743; x=1775665543;
+        d=1e100.net; s=20251104; t=1775060746; x=1775665546;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=LScsGFwS6nIpkAboe0X19u7lqZkR6eLlyKmDNKTD1Lk=;
-        b=aiz97u3d5AgBl6M6ymsrQyg9KOOP+nicutDXrMKWXdr22JV08P0VtHEVNUxJXgCtRb
-         gxW5rkwZo0VkkKgs/5uj/FfVtfWFtXcJDjWIAWRlXRgsGj1Lgwi3XKML5GIB54eseJpf
-         JG16K2quy3kQAv/D3ewqnnzPeEpxdopJB+6VS1RJrp4Cxa5NG3n97mXHzQYdguoFOaDc
-         yS1Lr2y0eeUS2yxNYvB4PFCNdCizEpds9klbrXWk36auLa4H+L7DWzNaTcA/CJf3U8hF
-         24LTEPCuvzEMoNB5ED9TBNO0tygYieM/Srj3O0QC3aGNgHtzCEz8E49oIB4oQ/yEbLId
-         kN6w==
-X-Forwarded-Encrypted: i=1; AJvYcCXeVV5vyzxa7El2OLtrayM50f+GP3d0vvGCbDVzwSpRG6X5j6E648ETXL8p4G0E68DzHWzy9dQpxBg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxbYJVKiBHfxf7Lo7vwppFkcDtJBaxRCgyiFGcaPlLwCwuTVF6u
-	WINexSiu35QLabc2BmNnqZzskx3k8uKT0gVJCOegbMEqGntBKJj8KlSiZKcSLqTbgNLD
-X-Gm-Gg: ATEYQzz6woOtojFa1xksXJVqYzYau6ebkW5Govx8Tdgkm4x1DoAoe4aYmV/adMTauvD
-	V7Gur1EItsgq0SCukAdXRpt5oXzJLZh2sIukBWs+iH61NDPONVSTaMbI3/bgGw2veM0nykbPHFi
-	nCKIyB11DCeqVY8kSZ+zfn7wXI1IDDoxuF96odR1euNYfBqogH0z7pNf94uZkHq/Ehbr4VfeOZX
-	Ot6eRWQm+49FxCY9cAtALX+LkmHEsQBZKHXbiscUCk55s0w8Buld6qOYs34usLyVqAXcY67byYP
-	ctJs2Gd6A4Y21KiFP3z8S19dkQVUADeOsJ4E4cw4SPj6JDVWpy4vEzL9fQ7OF1SZFxn9d+z+Xxx
-	YOf7F4VucHKkx8uDT+DGy6nCESbAdoSz3evH+Kkt5Ny02yUgr6p1xTxu1k4Em06kg0iZld9WmjD
-	w4ncBFQbGFp6oVEMKhFxi4PmMdt37IebyH412/sTy4mjzUE7ZS1/VJoNZkx4h5SpKZtsxNFq3j/
-	9Hy+AtShjTcs0CijWnBPb6B8Y138M6pc1fvgK7rQg==
-X-Received: by 2002:a17:90a:e710:b0:35d:a87b:ef69 with SMTP id 98e67ed59e1d1-35dc7070b31mr3944977a91.28.1775060742902;
-        Wed, 01 Apr 2026 09:25:42 -0700 (PDT)
+        bh=WYbjRDMYvPXm7PwKTidWBLBGSVwyNzNOx/MgyeEmpgE=;
+        b=tXd/JhCOBgBxdMbK7YjI0aTT98/2NbFPJWt9/cxlcxKGHBr4NdQ4MdZRpByA77zqt9
+         JQe3J+fmeHTfFJfHtwLUw+NhS2PeoBI6KdzlyIi7sQaGhS5j+uDlkovd/3GnZ9cCGohE
+         PRHhSGzc0Zbaqon2z8iK7dMYUHDgBzYYP2Z56m7Jvh+5KijFc40oKJcBAjIpisoZc57v
+         5zk4BczwARo+as3cg+uHdjpaWs3TtApilMkTJ2BdFvT44SOYRV8Hz74Vq/rp6yNwv821
+         +3ScrftKr79N2ZqVELvYLRdNvySB9Mbpw+aRGFNdi7fyF6qd2BnQXrQ8rldI3fiPx+Cj
+         dhcQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVlEZGIlGpZPsUUQb88RSLaM3CvauU29U1c88beVc82GJB7I+uNwr7vvaUJoiHZ0JkxDExgxO9+lS4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwGm6YrJ3UiVXVNJ56cd5D+OmUhv2M+/NznllUK0LVJoshf6Ijw
+	GP/mCtwnVy/1lXA7zTnlOqymbpk+awwYrIHR6599g8eJRkD4Kq6fLA0SRYr4Pb9Vhs4+
+X-Gm-Gg: ATEYQzzLnC7MUtPe068zZv8y7ifwxjvt6eEfhy0VrjN4Fw39HOScDlNFhxvhMImFTe5
+	2ZHjgn0YUkL41ChHVihXdZjlAysgJq36Vf8Gspcz9OR+oq1YCb1WPrPG+CknKhf6tHDplIDqk2w
+	pRTNSt5THWHGExUoAUMbhq118QBWGEdAtxoPaXkWvZuzH3SydAlB/p8AjQw169wgoiyXT/Ic6E/
+	0xf11m/+wfx27147D1fAmwo72V6/c34Yj2zw9aHpsi3O9ijM1rdy2OxuPHiHnVNQ87zavTt1GYe
+	XLOLzsgdRGC2ivrzEkDr/0/P4MvrHYm3e/H+CbFtPzrvAtt9+9vlNvGdo30I7UVE3IoaqWwukfG
+	Qi/nc5agO0JjDshnOx5g34H1S43YPBl4yh5r06IxIzzJbj7d4mhJWezUeJ5ggERzJnszQlkvPQT
+	Kc7K8YFxmVmb/plD45KJ/wZ8kTvMmWrXcLNY9inLRdwxaVJR1eQIbx2RxvMOvP6qLf/ZYdGhvX5
+	nDoq9DEGAVbaUnlizha66/qKdKcw8/ApRDWoz8Zmg==
+X-Received: by 2002:a17:90b:5107:b0:359:f3b1:6811 with SMTP id 98e67ed59e1d1-35dc6e77e5dmr3618101a91.1.1775060746179;
+        Wed, 01 Apr 2026 09:25:46 -0700 (PDT)
 Received: from ip-172-26-8-186.ap-northeast-1.compute.internal ([2406:da14:e8:bc00:e546:17ee:7142:6d05])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35dd35e34eesm281813a91.2.2026.04.01.09.25.39
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35dd35e34eesm281813a91.2.2026.04.01.09.25.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Apr 2026 09:25:42 -0700 (PDT)
+        Wed, 01 Apr 2026 09:25:45 -0700 (PDT)
 From: Sheng Kun Chang <nothingchang@mirrorstack.ai>
 To: jic23@kernel.org
 Cc: lars@metafoo.de,
@@ -75,9 +75,9 @@ Cc: lars@metafoo.de,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Sheng Kun Chang <nothingchang@mirrorstack.ai>
-Subject: [PATCH 1/3] dt-bindings: iio: accel: add binding for adi,adis16203
-Date: Wed,  1 Apr 2026 16:24:55 +0000
-Message-ID: <20260401162458.88110-2-nothingchang@mirrorstack.ai>
+Subject: [PATCH 2/3] staging: iio: adis16203: align MODULE_LICENSE with SPDX identifier
+Date: Wed,  1 Apr 2026 16:24:56 +0000
+Message-ID: <20260401162458.88110-3-nothingchang@mirrorstack.ai>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260401162458.88110-1-nothingchang@mirrorstack.ai>
 References: <20260401162458.88110-1-nothingchang@mirrorstack.ai>
@@ -89,74 +89,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add devicetree binding documentation for the Analog Devices
-ADIS16203 Programmable 360 Degrees Inclinometer, in preparation
-for moving the driver out of staging.
+The SPDX license identifier is GPL-2.0+ (GPL v2 or later) but
+MODULE_LICENSE was set to "GPL v2" which indicates GPL v2 only.
+Change to "GPL" which means GPL v2 or later, matching the SPDX
+header.
 
 Signed-off-by: Sheng Kun Chang <nothingchang@mirrorstack.ai>
 ---
- .../bindings/iio/accel/adi,adis16203.yaml     | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adis16203.yaml
+ drivers/staging/iio/accel/adis16203.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16203.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adis16203.yaml
-new file mode 100644
-index 000000000..6c5e2833c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16203.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/adi,adis16203.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ADIS16203 Programmable 360 Degrees Inclinometer
-+
-+maintainers:
-+  - Jonathan Cameron <jic23@kernel.org>
-+
-+description: |
-+  Programmable 360 degrees inclinometer with SPI interface.
-+    https://www.analog.com/en/products/adis16203.html
-+
-+properties:
-+  compatible:
-+    const: adi,adis16203
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+
-+required:
-+  - compatible
-+  - reg
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        inclinometer@0 {
-+            compatible = "adi,adis16203";
-+            reg = <0>;
-+            spi-max-frequency = <2500000>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
-+...
+diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/accel/adis16203.c
+index 830ff38fd..0ea127c9c 100644
+--- a/drivers/staging/iio/accel/adis16203.c
++++ b/drivers/staging/iio/accel/adis16203.c
+@@ -310,6 +310,6 @@ module_spi_driver(adis16203_driver);
+ 
+ MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+ MODULE_DESCRIPTION("Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer");
+-MODULE_LICENSE("GPL v2");
++MODULE_LICENSE("GPL");
+ MODULE_ALIAS("spi:adis16203");
+ MODULE_IMPORT_NS("IIO_ADISLIB");
 -- 
 2.43.0
 
