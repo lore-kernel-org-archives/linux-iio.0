@@ -1,59 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF35633F5AF;
-	Thu,  2 Apr 2026 08:39:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E87B1388E69;
+	Thu,  2 Apr 2026 08:41:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775119151; cv=none; b=fFL5H/egDsP3ymD2sY2glOLh14mP5wlMzcbyo3OjawjdQ8C0FjuOOj5Ehu0Q4/Vu7NDEOYiWUXgx5T8mBZxuMjf8CGwm1ga4ZQdgvZI0oi24YLq7Km1+Rr+vQMKu24l6xl2u+O1YqZXUV/HgEna8CE8J9D2E3hsvca5JyHG+6BU=
+	t=1775119276; cv=none; b=F27daKb3e+2UbFrDh+JFa7f1OoNuLFNmj4NmLEpmV4GDK1mh1Pc4KUarsvKifYZnJiy+HKB1AnOqlYlyjh4N/zZAzxpGj1lmYoKMfpb9wbwQI0vdLeXJRPJFMSeiFZliXG8dGYzb6H56ZVBVCGF4fkKBnLr0Z7dzA7vE/ctsI1g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775119151; c=relaxed/simple;
-	bh=xA+iDdwmvrNkYAACWh1p/hrj9tZn++7dwPc3GtxQJKo=;
+	s=arc-20240116; t=1775119276; c=relaxed/simple;
+	bh=AH31cdEdkXRJ+mzQD9yy7jphqQE0kCv+LgLq/VqHV50=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XM84TlMqqy01tvzi4KAZGTUfdCvp8RMKRMcPcog5ydNkjesHLAAWShB+bZy6q3yUBwB91DvoAmZu2hIHe+M+ae/+VhFM3KAkCExDJW3R9p0VHUr9tWSQ0phjkO3ByYK1v9JP/K1ibf1u55dGVgWvcaKkFqrU+x83OhXMH/eXkwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FbXm9Ptu; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=CzPL+yBbF5RURTR2XUaivWvRYRQmjdIuixCK4a1Ed6VhRDxFYzjIFfh+dudIoxwT/zY2m1v/i41trAwFdRrW88HckSjOLHTVpgx84i7yWuTUxdvck5k7fHIXnuA6klYdsPY+2eJ604hHuOrTDw90gqnqpaXk47HnmBhKDq3JfSE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LawKv5O5; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FbXm9Ptu"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LawKv5O5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1775119150; x=1806655150;
+  t=1775119275; x=1806655275;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=xA+iDdwmvrNkYAACWh1p/hrj9tZn++7dwPc3GtxQJKo=;
-  b=FbXm9PtueYNEIMyX8FuaOUE2u/EiFQWNCwsTA6unb3/z/SWjuc3kXybD
-   oax/2bI9pk3fgyylCCqFz/3EuSukX6ReNOfUbLJ9xeNNx9zdwFN8tIYaG
-   ZVF0X0ahy4G5C3kBN/7cwkNB9cB4Ww8vT96vXeYk/5tyYs1Ah5rYy+Vn9
-   WGUOyQr6aojcpckfDfJTR4ROPAdN7CxuOUW+1EvzuTJKgMDKXA8fQ56XL
-   9wjmssUFYGaBDmyE/megMilEBDZ9J+THVOmqRxasIHnF269cHqA2I2JBe
-   wWvzsr/v8Gn4J7DapVps0VFKrWcaMreAA9d2Myqdsd2kOSiQ3At1RhRSk
+  bh=AH31cdEdkXRJ+mzQD9yy7jphqQE0kCv+LgLq/VqHV50=;
+  b=LawKv5O5mPIKNRfPZ08V4nzFUp/qlefPOjPPSyFVvuK7QqSSM9/4jY8v
+   LzkTu5BFj4OpheNlJFCZIlt6yvqX+to5N96sAJdlOdc4ZBr+iXihUYCCe
+   PQKJt1CE73GjVRjxH3OQAn/lcblsEzCbMCQ81H1yqgJPeSiVJywzvX3sE
+   ZJWFwNv27gNWRwOHMAtrke2/umbZNJ65eI/Ia7Ur7GYTNxsySzHDXmNyG
+   TNsAQgAn6yjfuhz69uLpZtA8eCfDeOcxQaptkfaX4VJJE5whbgxaWG+g2
+   KEMBR7s+wJG6q5KaM4zLjPM62j3GZvlhY/FO5+KtMIHrPJnVGfLlU5xTo
    w==;
-X-CSE-ConnectionGUID: uZMvxes7R5WlVdsM21s3ag==
-X-CSE-MsgGUID: jCr1Lt7nRK+t49MIRMfXtQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76053719"
+X-CSE-ConnectionGUID: GS34fIBTTaeGK9TiJFxnqg==
+X-CSE-MsgGUID: CHFBMglERAGUuwZG51FBVw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76361637"
 X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="76053719"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 01:39:10 -0700
-X-CSE-ConnectionGUID: f/iQyYZERZe3pFdC72Labg==
-X-CSE-MsgGUID: s/K6uaJBS2aBregwF87vKw==
+   d="scan'208";a="76361637"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 01:41:14 -0700
+X-CSE-ConnectionGUID: g/0uBSCIQ/+4W3PD7naK9w==
+X-CSE-MsgGUID: vqHMbQQhSqGsqpFiSQQ5sw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="231863188"
+   d="scan'208";a="231716922"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.245.31])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 01:39:07 -0700
-Date: Thu, 2 Apr 2026 11:39:04 +0300
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 01:41:11 -0700
+Date: Thu, 2 Apr 2026 11:41:09 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Pengpeng Hou <pengpeng@iscas.ac.cn>
-Cc: Gyeyoung Baek <gye976@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: mhz19b: reject oversized serial replies
-Message-ID: <ac4rKEMYAl-FJ5e8@ashevche-desk.local>
-References: <20260402054015.38565-1-pengpeng@iscas.ac.cn>
+To: Sheng Kun Chang <nothingchang@mirrorstack.ai>
+Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	gregkh@linuxfoundation.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] staging: iio: adis16203: align MODULE_LICENSE with
+ SPDX identifier
+Message-ID: <ac4rpSyxTg2qPy86@ashevche-desk.local>
+References: <20260401162458.88110-1-nothingchang@mirrorstack.ai>
+ <20260401162458.88110-3-nothingchang@mirrorstack.ai>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,32 +65,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260402054015.38565-1-pengpeng@iscas.ac.cn>
+In-Reply-To: <20260401162458.88110-3-nothingchang@mirrorstack.ai>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Apr 02, 2026 at 01:40:15PM +0800, Pengpeng Hou wrote:
-> mhz19b_receive_buf() appends each serdev chunk into the fixed
-> MHZ19B_CMD_SIZE receive buffer and advances buf_idx by len without
-> checking that the chunk fits in the remaining space. A large callback
-> can therefore overflow st->buf before the command path validates the
-> reply.
-> 
-> Reset the reply state before each command and reject oversized serial
-> replies before copying them into the fixed buffer. When an oversized
-> reply is detected, wake the waiter and report -EMSGSIZE instead of
-> overwriting st->buf.
+On Wed, Apr 01, 2026 at 04:24:56PM +0000, Sheng Kun Chang wrote:
+> The SPDX license identifier is GPL-2.0+ (GPL v2 or later) but
+> MODULE_LICENSE was set to "GPL v2" which indicates GPL v2 only.
+> Change to "GPL" which means GPL v2 or later, matching the SPDX
+> header.
 
-...
+This description has nothing to do with the macro parameter. GPL is new,
+GPL v2 is just legacy alias.
 
->  	struct completion buf_ready;
->  
->  	u8 buf_idx;
-> +	bool buf_overflow;
-
-+ blank line here.
-
-(No need to resend just for this.)
+Also I think this is unneeded churn. If we want to unify this, needs to
+be done for all drivers in IIO.
 
 -- 
 With Best Regards,
