@@ -1,105 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BA71B4F09;
-	Thu,  2 Apr 2026 13:18:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD03D2C21C7
+	for <linux-iio@vger.kernel.org>; Thu,  2 Apr 2026 15:17:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775135910; cv=none; b=nbf4tv7siawLdtP4EmLdcrEBezMKmRrd7WHyq5Enzbu4ctJk1VqlUZgEihzmTzl+fa/dS1motgqZYJf1Ld7WQ6PHGkP3PFw/oHWLfErKPzAMWZjhj1gCSBQOvFKHJKDznYhS6IE91pJoGqHcBKwHF5KHAkUN/DlTD/ai/EhRtMw=
+	t=1775143056; cv=none; b=MuZ3eY9Tbk5wAnGtWTWjheOG8UYdwbhr9/XLnYiRH4CuLwfwfdr9PfsXYBIH9f6hePBnY83/ES5rcZm64cb5KniPpicrjxT6MjiPF3g8p/bFY84hFypGDT76Nv/Y06MbLrzhzMbVGbZybgPC/NEumww4FGuLsV882W1DvbLe+e0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775135910; c=relaxed/simple;
-	bh=+ty5PA1ulsJNL2tx+BC1bsQkHlYQmOcAsSW1x62Mux0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k1BMDutwLDDEbLRNZOQro8pMP0VCLZUBYG0sKpOH7BU56vB/8oAeJT3wvj1vYlHTGYhH/jRAvIKFolp98RY+nXP9znsbdjgak1Xl05oxi4Pjq3C4uVCPug/bGvvFOjnbqLDO6qxFe6AkArX/YtpKvED2iua34dm1JnpSrlMNFug=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=O57fCcqc; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1775143056; c=relaxed/simple;
+	bh=aHlNdC7p4DbRc/CSG+7y5M1Es1dchVp3/OjYYcQIzik=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=f9BbW+Q9p2EhNrJAMytXsZ5UMAzVLJqroEjn+IwE0gBrrwkZP2W68zGq70zfCNLb4bw9LhEsc3q07nYhyXmPjVvyekPKTe2x6iJh+sVPYfQzxl6yp9kxUWCj73PoAiWS5k3BCrqE8LOJdyX4ZZlwFKm5HIHRFVcqFd1mB7zDInQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D1J5V1CL; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="O57fCcqc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1775135909; x=1806671909;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+ty5PA1ulsJNL2tx+BC1bsQkHlYQmOcAsSW1x62Mux0=;
-  b=O57fCcqci30Ru2OFZ+3+V05Ue849vsrkD8OBzOkyZ65hkv1VZixlGYjb
-   8pWeIF0M3pcexRolf89SNabvEg75qJfL1bOFHJGYtMXKUoiZlkrLqCdPY
-   Xnf4wav3g+Q146MZSp6Z0anh1R/CQpVnez6qfZpLe8ZPyIFUEepeL0YhN
-   7llYbJ0VR4EwkFgSvSDAdI7L7/sfjIu3PtMWP2CpFKtm6pnpnalhcqBPb
-   RSC8Bb/d98vDEmKQBvd+2hCJ+PO7Eveq6xR/VJagVdOr1A6ysaaC8TB27
-   iU6+mJS7HF9XiscPdlswhGomgyDYJKOTdUPXPz1tH71dlCdH4crBc1JZK
-   A==;
-X-CSE-ConnectionGUID: 6XDgCOISTwuv7T+tK0raQA==
-X-CSE-MsgGUID: bNk/bZDSQP+goLzCgdYLlQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="101646361"
-X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="101646361"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 06:18:28 -0700
-X-CSE-ConnectionGUID: Gwm71YmITniMkqMejrlwpA==
-X-CSE-MsgGUID: jv7WuLawRYyyOkUJQp916g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="264909835"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.245.31])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 06:18:26 -0700
-Date: Thu, 2 Apr 2026 16:18:24 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Advait Dhamorikar <advaitd@mechasystems.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: magnetometer: st_magn: fix default DRDY pin
- selection for LIS2MDL
-Message-ID: <ac5soAtijnX3gCjY@ashevche-desk.local>
-References: <20260402113653.212043-1-advaitd@mechasystems.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D1J5V1CL"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4838c15e3cbso8312225e9.3
+        for <linux-iio@vger.kernel.org>; Thu, 02 Apr 2026 08:17:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775143053; x=1775747853; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Mntd8M4unC7CNIQW3NEt3PPWaslHcdDa4XbiAqvFdwc=;
+        b=D1J5V1CL+RbUIMNpS/eFVkg0LfnRl8NyLHRRIMhKxNzvaNiBDgMdn1fnao6hY+K18p
+         RzSFPqsAoiOyBXds8Z1ZYlUCjZsbOK3uMp2sLhgW3IYwXPdIM8xmwHvbFtW/WGuAXEh9
+         GdvH0aDZsHO4LiHCvIu+J7QwMXh6R+zaFeYstmRy4HPTczNClagRiqGULBvTEG1ylBGS
+         kj4HbH9AwVPyz+rqtvjN3HSL+tweUrGl9wEUaU3U9HCkAcuC/zTAtF4548Q1dm84Md76
+         i2qHqpGWd6QEhzAf/rwYONvEOp62YAaZzQsaNuiiUbmbJ4fs3Owo4lKFesaRMN8SyJgQ
+         TkdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775143053; x=1775747853;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Mntd8M4unC7CNIQW3NEt3PPWaslHcdDa4XbiAqvFdwc=;
+        b=STRusMUG932Mx9RJvDy1A+FDTqv7HiIPJ2fM+be807xOqidsEYqbFRovQts7Fq2wuo
+         BmCQ2jQPnve23SiUJ0zBt6RLNq35unpTglIBW7YItQeI+1/TZpg2cPT1A7KcGZYMEHTY
+         EtMqtdqmtWRENXz3i9TnuALBffQfczCBfjbk/MFZlJGRWep1poIQi0xxeW94FZX6jYxf
+         OS9oJsdnGiS/GbT6TF4w6MlfBAFVA902Wx6gKJnipeeau7AKC5Ty/d0xg17SgJ8Fh8V0
+         gm3d2APRMeYoIHnq5Ka5dVC6O55qN4htUjBcCg/WrJo5EIjFhvwRJmhlkvB2M4Upq5Gz
+         zMUg==
+X-Forwarded-Encrypted: i=1; AJvYcCUR81ucfAfleIL7hbK1MFk8gy12trVZG6l0o8xh8cDEAh+AV+3/GuSaZWvx8cpTyurYnesfnlM13mU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwMF6CEzHex6CsgQoD7tuv6VBAjzuVhbn9qZRXOgKmTyWixz1OQ
+	ayUaAP4yYuFHx/FIuiQ8rjKBM9KAeRmqPKb0mp2zFP3Lq2YWwSYMvkuI
+X-Gm-Gg: ATEYQzyNQV/uwDcL79dM50oYyMRqNIYNfuEnN7ywMApfXyoNb4EjsyIfryT/5tflswW
+	HEotHutebceudSHxsDhgUVDDnDZcpMftjBTlL6m8USUQHhBITFCIf/OfNXPHO0BoBwOmAxqzYcz
+	Mfs1r30HmyvYDCBq9fbFi8HpG1+pLhcedxa1x9tX8GzDLyf4YD1ivDZ8IuG653LTAT9WfNTael1
+	Hg+Iu4rRruHOfqKz8xjpNuYHVVtM7dU9QzTCnK3HOIKRg2U3Xnd4MRsQAafej614h7DkoRLWNNK
+	Kguk1P8VihEbW6naktZrfembEBLPYLDcrO27djsVxKP/mKNiBQCaBBqbbXr1k2k94iUSWn8Ybo1
+	hUQqsxnkwYeAgY75ea08x/jEJBemUaMqP+3PbFC4WOYnliBiWXNC5IdVH3wQfcUrFH5MG0ZBTY9
+	Gl0GAsJQf++yWdotKIURrepPUMywpC3Oq6FC0P7hmTRa5AAgtprXKd
+X-Received: by 2002:a05:600c:1e85:b0:485:4135:5c92 with SMTP id 5b1f17b1804b1-4888b5112admr64270425e9.0.1775143052811;
+        Thu, 02 Apr 2026 08:17:32 -0700 (PDT)
+Received: from aldo-conte-t14.tailf68ad9.ts.net ([217.61.173.50])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4887e80a616sm327405075e9.2.2026.04.02.08.17.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Apr 2026 08:17:32 -0700 (PDT)
+From: Aldo Conte <aldocontelk@gmail.com>
+To: jic23@kernel.org
+Cc: ktsai@capellamicro.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	skhan@linuxfoundation.org,
+	me@brighamcampbell.com,
+	linux-kernel-mentees@lists.linux.dev
+Subject: [PATCH 0/2] Subject: [PATCH 0/2] iio: light: cm3323: fix and cleanup
+Date: Thu,  2 Apr 2026 17:17:28 +0200
+Message-ID: <20260402151730.18901-1-aldocontelk@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260402113653.212043-1-advaitd@mechasystems.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 02, 2026 at 05:06:51PM +0530, Advait Dhamorikar wrote:
-> The device tree binding for st,lis2mdl does not support
-> st,drdy-int-pin property. However, when no platform data is provided
-> and the property is absent, the driver falls back to default_magn_pdata
-> which hardcodes drdy_int_pin = 2. This causes 
+This series fixes a bug and does a cleanup of the CM3323 
+color light sensor driver.
 
-Trailing white space. Please, drop.
+Patch 1 fixes data->reg_conf being incorrectly initialized with the 
+return value of the i2c_smbus_write_word_data() instead of the actual 	
+register value. Tested with i2c-stub on a Raspberri Pi 3B.
 
-> `st_sensors_set_drdy_int_pin` to fail with -EINVAL because the LIS2MDL
-> sensor settings have no INT2 DRDY mask defined.
-> 
-> Fix this by checking the sensor's INT2 DRDY mask availability at
-> probe time and selecting the appropriate default pin. Sensors that
-> do not support INT2 DRDY will default to INT1, while all others
-> retain the existing default of INT2.
+Patch 2 converts dev_err() to dev_err_probe() in the probe path.
 
-This looks like it requires a Fixes tag.
 
-...
+Aldo Conte (2):
+  iio: light: cm3323: fix reg_conf not being initialized correctly
+  iio: light: cm3323: use dev_err_probe() in probe path
 
-> -	if (!pdata)
-> -		pdata = (struct st_sensors_platform_data *)&default_magn_pdata;
-> +	if (!pdata) {
-
-> +		if (!mdata->sensor_settings->drdy_irq.int2.mask)
-> +			pdata = (struct st_sensors_platform_data *)&alt_magn_pdata;
-> +		else
-> +			pdata = (struct st_sensors_platform_data *)&default_magn_pdata;
-
-No need to use negative conditional when you have full if-else branches.
-
-> +	}
+ drivers/iio/light/cm3323.c | 24 ++++++++++--------------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.53.0
 
