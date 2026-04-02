@@ -1,127 +1,77 @@
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78B8C242D70;
-	Thu,  2 Apr 2026 05:40:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 228323793AC;
+	Thu,  2 Apr 2026 07:00:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775108426; cv=none; b=fytCnmVHsaX6mM8V2SaNWOzJbQMEExzncIwRWPVnmT+97UOgeYuUKtk7hA49WWI17Vjnuja8Ih8904+MsBYbTlqxIcrPzYkngdjVIQBm1tTPAzqVz4YRXesun11eQVqy26xhz6OP5PP3uVAkrPJdgJ7Sbyj2tUBTmmwjmzcTH98=
+	t=1775113216; cv=none; b=kpcbKNrjr7irhSMOP6qqjpuQaHkCqst4qCKue8HEoaE3EYfRJ5iiuTpDuiDXvPCr4x2f5JAnVNApUN/xbrkGryMj8ukNK5XrMONXVZsj3TVmbB/4lNtXByvCkIpOSA6zScx49PPzeUYxvqOdHzD0UO60Wi6vZl3t2TJrX8kpXtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775108426; c=relaxed/simple;
-	bh=RlWXLzbu9xrIUqlOY90vMNqryRL8/cs5dVpsRxXxeyA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nWwB0Yx7rYm73t47ADprMWpSpBL1ckXl1WQ5rZgEi+0cWF3DDZMWohlZE9vfT9vQEKVcNGlM6UGjc1k7eWSQ4gorq28awMvFt9Cohw0/gGuua8JYrP+p1/r0LBStZXyOD/t6lf35GRXMFb6T+we4DFAhA8mZ3Gds7B/NRPYDS4E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from localhost.localdomain (unknown [111.196.245.197])
-	by APP-01 (Coremail) with SMTP id qwCowAB3IW0_Ac5pOvbxCw--.16287S2;
-	Thu, 02 Apr 2026 13:40:16 +0800 (CST)
-From: Pengpeng Hou <pengpeng@iscas.ac.cn>
-To: Gyeyoung Baek <gye976@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	pengpeng@iscas.ac.cn,
-	stable@vger.kernel.org
-Subject: [PATCH] iio: chemical: mhz19b: reject oversized serial replies
-Date: Thu,  2 Apr 2026 13:40:15 +0800
-Message-ID: <20260402054015.38565-1-pengpeng@iscas.ac.cn>
-X-Mailer: git-send-email 2.50.1
+	s=arc-20240116; t=1775113216; c=relaxed/simple;
+	bh=Zp6JBstHg9TYPkcYDcVvu40/didVJC2h0/MEj+vX6LI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=K4vloFgQR7MjVq8jQbQZPd/3KAZgBJP4Ml8T5Sn9jt5AaTOUk5hpkQYhrtdZ6sqx/T0ykdvE8lGB5Ojjroe4IhwOVXNXg1X2esT9aHTjLiQJCRznl7cIf7/9AGjo1gPcuhgzoHEuBSguetBNU33dP9qPAiC6hCVeE+JUOyBdAjM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WJ0xGEbz; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WJ0xGEbz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E93EC2BCB0;
+	Thu,  2 Apr 2026 07:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1775113215;
+	bh=Zp6JBstHg9TYPkcYDcVvu40/didVJC2h0/MEj+vX6LI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=WJ0xGEbz33utGMlZXhOxiVfFbl3cql21kSHH7yxPrL7vvfmZtd4uXizh8ISEazjcH
+	 qh103mco5qyFEtR37FJP8MuranZbbVQV2Z8tV91eWJ6ebotT7dPXHsJePkxvGq1F3s
+	 8hqIo/OsfmmYXWMsLJLIXlCwcbAqqVyfBFuSRukQGAVcc5C6L2zEUYt9mmkIqc+qkr
+	 xxfKFAn9szKvOy1BQyM7G+2HHv8Y84j5rL4c3Nfhzqe5Av2prx0UwKqy4MDhvAympw
+	 a6QZ43hcyzOVAzls4WCpZ5c7mperrxCj0WalbZCsPtEg4rZmgOBN5B5NckegrxBOh8
+	 cE+t3s40coz9A==
+Date: Thu, 2 Apr 2026 09:00:13 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: dac: Add ADI AD5706R
+Message-ID: <20260402-new-venomous-groundhog-e646ee@quoll>
+References: <20260401-dev_ad5706r-v4-0-a785184a8d53@analog.com>
+ <20260401-dev_ad5706r-v4-1-a785184a8d53@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qwCowAB3IW0_Ac5pOvbxCw--.16287S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7uw4xKr47ury3ZF1kZr4fKrg_yoW8tw4fpF
-	45JF15CFy8Xr4xKr1vkrnrCFy5uFWFyayDAF4xAa43ZF15J34qkFykKFyrXr4IyrWrCa42
-	vryDKrWY9ay5ZF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-	Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-	I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r
-	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AKxVWU
-	tVW8ZwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
-	v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkG
-	c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
-	0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4U
-	MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUqeHgUUU
-	UU=
-X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260401-dev_ad5706r-v4-1-a785184a8d53@analog.com>
 
-mhz19b_receive_buf() appends each serdev chunk into the fixed
-MHZ19B_CMD_SIZE receive buffer and advances buf_idx by len without
-checking that the chunk fits in the remaining space. A large callback
-can therefore overflow st->buf before the command path validates the
-reply.
+On Wed, Apr 01, 2026 at 06:20:03PM +0800, Alexis Czezar Torreno wrote:
+> +  vref-supply:
+> +    description:
+> +      Optional external 2.5V voltage reference. If not provided, the
+> +      internal 2.5V reference is used.
+> +
+> +  pwms:
+> +    maxItems: 1
+> +    description:
+> +      Optional PWM connected to the LDAC/TGP/DCK pin for hardware
+> +      triggered DAC updates, toggle, or dither clock generation.
+> +
+> +  reset-gpios:
+> +    maxItems: 1
+> +    description:
+> +      GPIO connected to the active low RESET pin. If not provided,
+> +      software reset is used.
+> +
+> +  out-en-gpios:
 
-Reset the reply state before each command and reject oversized serial
-replies before copying them into the fixed buffer. When an oversized
-reply is detected, wake the waiter and report -EMSGSIZE instead of
-overwriting st->buf.
+Isn't this just enable-gpios from gpio-consumer-common? Does the device
+have more enable-like GPIOs?
 
-Fixes: 4572a70b3681 ("iio: chemical: Add support for Winsen MHZ19B CO2 sensor")
-Cc: stable@vger.kernel.org
-Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
----
- drivers/iio/chemical/mhz19b.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
-
-diff --git a/drivers/iio/chemical/mhz19b.c b/drivers/iio/chemical/mhz19b.c
-index 3c64154918b1..90c997191c83 100644
---- a/drivers/iio/chemical/mhz19b.c
-+++ b/drivers/iio/chemical/mhz19b.c
-@@ -52,6 +52,7 @@ struct mhz19b_state {
- 	struct completion buf_ready;
- 
- 	u8 buf_idx;
-+	bool buf_overflow;
- 	/*
- 	 * Serdev receive buffer.
- 	 * When data is received from the MH-Z19B,
-@@ -106,6 +107,10 @@ static int mhz19b_serdev_cmd(struct iio_dev *indio_dev, int cmd, u16 arg)
- 	cmd_buf[8] = mhz19b_get_checksum(cmd_buf);
- 
- 	/* Write buf to uart ctrl synchronously */
-+	st->buf_idx = 0;
-+	st->buf_overflow = false;
-+	reinit_completion(&st->buf_ready);
-+
- 	ret = serdev_device_write(serdev, cmd_buf, MHZ19B_CMD_SIZE, 0);
- 	if (ret < 0)
- 		return ret;
-@@ -121,6 +126,9 @@ static int mhz19b_serdev_cmd(struct iio_dev *indio_dev, int cmd, u16 arg)
- 		if (!ret)
- 			return -ETIMEDOUT;
- 
-+		if (st->buf_overflow)
-+			return -EMSGSIZE;
-+
- 		if (st->buf[8] != mhz19b_get_checksum(st->buf)) {
- 			dev_err(dev, "checksum err");
- 			return -EINVAL;
-@@ -240,6 +248,14 @@ static size_t mhz19b_receive_buf(struct serdev_device *serdev,
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(&serdev->dev);
- 	struct mhz19b_state *st = iio_priv(indio_dev);
-+	size_t remaining = MHZ19B_CMD_SIZE - st->buf_idx;
-+
-+	if (len > remaining) {
-+		st->buf_idx = 0;
-+		st->buf_overflow = true;
-+		complete(&st->buf_ready);
-+		return len;
-+	}
- 
- 	memcpy(st->buf + st->buf_idx, data, len);
- 	st->buf_idx += len;
--- 
-2.50.1 (Apple Git-155)
+Best regards,
+Krzysztof
 
