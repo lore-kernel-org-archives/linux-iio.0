@@ -1,72 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from iguana.tulip.relay.mailchannels.net (iguana.tulip.relay.mailchannels.net [23.83.218.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56436373C0B
-	for <linux-iio@vger.kernel.org>; Fri,  3 Apr 2026 08:54:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775206442; cv=none; b=KIty7L8whZhn6oIAGjy8CJPaCJ7f9HkEc9SdUdK5Epk2zJV7OALmQkRpYI8jX2JX08uBFrx/HRAvIBVcVybmd9jFjQjW6+6Zmtbz/l4aO+UDEEIvHLHWE1e/dDlRhzSzbKueJdpCgex7dh23fsmoJTlpN4TkioQRokeV1nSOpsg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775206442; c=relaxed/simple;
-	bh=L+cV7GB8Tn0+DZKIdVl+458ZupfgKi1zlpqMKt2hLuo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VVClCm/e0olKnrv2Cue/6+kW+kpPpqzmNyG/KAZ3lyqvXsXheZxrVqk0hzpH+V4+be+4oY6QIJaGLPtVW1RCqhCAZvRA2GFTeZbeq58+OW0PQskML6zwHZLfAgSx2GUdG4DAZo5+y+wgZSvsaHb/X/etE6l1UHvnXy7GduBpWWQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=EFYdobxg; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DBA8199FAB;
+	Fri,  3 Apr 2026 09:30:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.218.253
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775208660; cv=pass; b=S+7oEO7Ln0hmXYzjvxv9bSNq33fbH3qfW1+eZnN1ZwXG5KvHW/aJN6JTZFqwJXZSGx4NtnnyFWU13DciezsFUEBPzkddk+GeEx+AsK1y5DtdpK8u4SyByy9HLF/6j8cxYyU6qgrFrjJc/YpXx7V7/2KYJqnRzhW8gf7gNKm9cDc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775208660; c=relaxed/simple;
+	bh=MCKp5BgyrOI2gWNQS7Xq1slMRXMiXrIKzo2KXcjeeKQ=;
+	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc:Date; b=EGEircUQLcu5y0vanU498MGVnWcsy79CS1Sp2AJgjLNAv4h2Dgs4lheP+Hj4gMQTw1EzrTsmEZFF4nOflHEqQSK/oAh5ZJFYC38fyIjiS0SJRxg0NmQkWgxyIebe6r2QSLClb3aC4veWpUndmCcbTB38W+4c+J9OVwKrFgMIl14=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=UhOUmV3h; arc=pass smtp.client-ip=23.83.218.253
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="EFYdobxg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DD83C19424;
-	Fri,  3 Apr 2026 08:54:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1775206441;
-	bh=L+cV7GB8Tn0+DZKIdVl+458ZupfgKi1zlpqMKt2hLuo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EFYdobxgvWCstgPaDEAzuTFcOUK3kqDPmvGFoghKYPqlFL7HoGVbTIkKu89jbykwu
-	 9vmH8dEW3JUMWW/IhwDDwpg2J1MhuUhGe2WBzdvrVtaduArMH1HPFWtRUAEb5m92k4
-	 p38iGW4tWM0Fxm9mQZ7F7W+U237JvichkV/Qgvhs=
-Date: Fri, 3 Apr 2026 10:53:59 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: William Breathitt Gray <wbg@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [GIT PULL] Counter updates for 7.1
-Message-ID: <2026040352-overdrive-arrange-05bf@gregkh>
-References: <20260401122740.2018309-1-wbg@kernel.org>
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="UhOUmV3h"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 82AE7402876;
+	Fri, 03 Apr 2026 09:23:29 +0000 (UTC)
+Received: from de-fra-smtpout2.hostinger.io (trex-green-5.trex.outbound.svc.cluster.local [100.96.137.18])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id 965E04026D6;
+	Fri, 03 Apr 2026 09:23:24 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1775208207;
+	b=SHbt0dEkklB0un4Q5XrL/WHkD7p0l32eidXZisnzsOVZJoWnaChtCAKTk2ZI9EDNvWw9J3
+	vOUaUa/pVOTbNyGs+h6cuPX21/TLSMvTZNYsjyA0Yq2yF7OBY/TrK3POwuGQXlfuzFvBNz
+	HWRksN+brVDymQM+WRxzwhdLELhwgiqSoD0mSmK1S6jbomGlCtydya1OanZHpT10Ksb/QP
+	jAK+oI3SDpkL3EBQErRTkYZHkTN7chO4xnLMw9bL23O0ms052XNPzWWrC1se3nFnzw+4Fr
+	qVYxJFGIZ2ooDxw3KDsGogoaOWYenAoFkKc1GZApdMX2iDELknBC3NodlPiaUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1775208207;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=V/KSlXPRP0Wx65x3aW3BUrT0hLZy34Lt7a795lyhn0E=;
+	b=IEbF3gvrDUVBkEjt3emtRLG5iNKCIGlR0V+EpbttrVkDtIkJB+lWgO/4gV/9t0P3Yp0dL1
+	UgevQG3ofk+Cdikvv0vo2AXfuXwTzYoN7frggWI2d6FBBY1dm/bfXlKK97w/9hSDsEmemf
+	exES7KFsbTlrPi6B9n3deQTaD0zRWyrc7G17ARaH4niCaxuOGkEspg5NUJUNB1HxpDEK1V
+	6OKQ1fGGGzNOUYg6cwdT2/Q7Mfti6H6XgO5ETJavBHBZJIPTwIyJfuL4ilW93vKoI7WUSP
+	iBdhI1GJPpbsRHwyqDo191AvAjYV3Y+1d6oahEWttvXpISQ2xMTTbUIp7wKV/A==
+ARC-Authentication-Results: i=1;
+	rspamd-bd48b9d95-mj7k8;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Attack-Glossy: 0d5678063590201d_1775208209373_2547522738
+X-MC-Loop-Signature: 1775208209373:2709443968
+X-MC-Ingress-Time: 1775208209373
+Received: from de-fra-smtpout2.hostinger.io (de-fra-smtpout2.hostinger.io
+ [148.222.55.5])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.137.18 (trex/7.1.5);
+	Fri, 03 Apr 2026 09:23:29 +0000
+Received: from [172.17.0.2] (unknown [180.253.47.239])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4fnCvB4hlcz3wq2;
+	Fri,  3 Apr 2026 09:23:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1775208201;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=V/KSlXPRP0Wx65x3aW3BUrT0hLZy34Lt7a795lyhn0E=;
+	b=UhOUmV3hm9bvVKyaGIs8tvETzWaGWJadyOTbwDPALAuRNRJsGM5cegWvi1JgnEMl4Wjf8s
+	JdpNUbmcQmP93tOhp+Kt1l8gicsY2d2VruvjEa7EuXxGGMWq6VNCkdIzWuiCHSqDeCqiC7
+	41LMhsS8bqi/llFpgDFKVfiMGyMj5hA3SwQANFEkjK/PE7shLQrl5Qt+ZWJs7et7wzih8X
+	kByprBHDffCLWMhXgEZVrPherFk99pbJbB5d5V+5wr4xWClq2IeoBXohTdCQHvGp4IF34a
+	ecV6RxxBImEIr3AP3zcgq7MGB5HmFH1uKZCVQmk58RbdSnIabvs/EzVykL1eJw==
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+Subject: [PATCH v2 2/3] iio: adc: qcom-pm8xxx-xoadc: remove redundant error
+ logging in pm8xxx_read_raw
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260401122740.2018309-1-wbg@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260403-pm8xxx-xoadc-label-v2-2-29b50bf821e6@smankusors.com>
+References: <20260403-pm8xxx-xoadc-label-v2-0-29b50bf821e6@smankusors.com>
+In-Reply-To: <20260403-pm8xxx-xoadc-label-v2-0-29b50bf821e6@smankusors.com>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ phone-devel@vger.kernel.org, 
+ Antony Kurniawan Soemardi <linux@smankusors.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1775208191; l=1341;
+ i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
+ bh=MCKp5BgyrOI2gWNQS7Xq1slMRXMiXrIKzo2KXcjeeKQ=;
+ b=sf5Un80sWruxJjCxs+FOJ5PcoFwz0XFvBKPL7PktiqIQV7+moAX02JAkzR19zFCiG/xRW53yc
+ m3BOl1Z17E8BvEMQUoL67yLaO1xYYsRIBR1uD5a0nn+lT4ZaDnc8MYp
+X-Developer-Key: i=linux@smankusors.com; a=ed25519;
+ pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
+Date: Fri,  3 Apr 2026 09:23:18 +0000 (UTC)
+X-CM-Analysis: v=2.4 cv=ALriHGRn c=1 sm=1 tr=0 ts=69cf8709 a=EXl8KfDnlL3m3zOSb15mOw==:117 a=EXl8KfDnlL3m3zOSb15mOw==:17 a=IkcTkHD0fZMA:10 a=wxLWbCv9AAAA:8 a=KG3lkfW8n762lDnNdHkA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
+X-CM-Envelope: MS4xfD3opop/HP4BSN5rN8kz2ZdU0byhCSOx05DonNVURBJLU6d2AWy63sJln6p/obUZ8ZpjkDidR22O2emHk+ycMynC+cKRlpQT89zCaxgJ3SjnXE2Q4/5f NVUnTaaG7+pghYzE7QeIpdT7TfkIhajXK57rRkCnryg4955BWSy70EE5dFUBnmEZlTfiDla7Zaq7ONvFNB2q3LF3VTSq2rFMmgldlIakKfol5e3mU2VtSque hvN409snGnnU+PcnEk3WO8Ok8jzvCMsqMBh4M8kOH48Ot24DOV7LPv3ol/zCBpXvpMKWRStkjP7vR6l4Ptr3Q+fpdQvOMqXd6hg+aOxDUJmPQmJrNH0sZff5 hO+mORpa1W67iC6I0r8UaCBtHJOPjrd09Mm5VNZrq9KqxSnVnTTNfYQFXs21DwkebwLfRWArwjZn8iiHVXB1imqWXNfP7liNe5CzVLD5zPxbAu15U7f+NDgD I1miO70AjUrIPP1AouKYsyRduDgNR4LqIlqcp8+3Cicy01eYt8Vg85O6Hpat++V6BI7PENBL8lIgIQfgcOKWWawqSIk227ygm099cs6BbCnW1dvmWywRyUtz So+dCw2EOtekXHboF2GvUenS5cGOk/wj07m5KpcpN+BLb4qxu1adqS35/zzNjc7Ikys=
+X-AuthUser: linux@smankusors.com
 
-On Wed, Apr 01, 2026 at 09:27:39PM +0900, William Breathitt Gray wrote:
-> The following changes since commit f338e77383789c0cae23ca3d48adcc5e9e137e3c:
-> 
->   Linux 7.0-rc4 (2026-03-15 13:52:05 -0700)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/wbg/counter.git tags/counter-updates-for-7.1
-> 
-> for you to fetch changes up to cbf8db23fc58db8d516ebc7aa57c4563f36532b9:
-> 
->   counter: sysfs: remove double return in counter_sysfs_attr_add() (2026-03-21 22:41:51 +0900)
-> 
-> ----------------------------------------------------------------
-> Counter updates for 7.1
-> 
-> A cleanup patch for sysfs to remove a superfluous return statement in
-> counter_sysfs_attr_add() that was unintentionally left during an earlier
-> refactor.
-> 
-> ----------------------------------------------------------------
-> Cosmin Tanislav (1):
->       counter: sysfs: remove double return in counter_sysfs_attr_add()
-> 
->  drivers/counter/counter-sysfs.c | 2 --
->  1 file changed, 2 deletions(-)
+Remove dev_err() for missing channels and rely on -EINVAL to report
+failures, reducing unnecessary log noise.
 
-Pulled and pushed out, thanks.
+Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+---
+ drivers/iio/adc/qcom-pm8xxx-xoadc.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-greg k-h
+diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+index 31f88cf7f7f18297132d152648b312c0fb60608e..d63af84bf44776c9c7106a43473b1678496247cb 100644
+--- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
++++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+@@ -657,11 +657,8 @@ static int pm8xxx_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		ch = pm8xxx_get_channel(adc, chan->address);
+-		if (!ch) {
+-			dev_err(adc->dev, "no such channel %lu\n",
+-				chan->address);
++		if (!ch)
+ 			return -EINVAL;
+-		}
+ 		ret = pm8xxx_read_channel(adc, ch, &adc_code);
+ 		if (ret)
+ 			return ret;
+@@ -677,11 +674,8 @@ static int pm8xxx_read_raw(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_RAW:
+ 		ch = pm8xxx_get_channel(adc, chan->address);
+-		if (!ch) {
+-			dev_err(adc->dev, "no such channel %lu\n",
+-				chan->address);
++		if (!ch)
+ 			return -EINVAL;
+-		}
+ 		ret = pm8xxx_read_channel(adc, ch, &adc_code);
+ 		if (ret)
+ 			return ret;
+
+-- 
+2.34.1
+
