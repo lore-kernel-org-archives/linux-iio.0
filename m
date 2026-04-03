@@ -1,114 +1,164 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CE203EE1DD;
-	Thu,  2 Apr 2026 16:14:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 172EA221D96
+	for <linux-iio@vger.kernel.org>; Fri,  3 Apr 2026 08:06:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775146456; cv=none; b=Giv2RHsETTjpf6jz9uhK3kcXCX4Eac9iiQh6A1GrKcQVLLXnHF0OWeBYlltUTXgkexqEIcBg5NmHkOLt8Buue1Xucy52bciwXGDe40Kan7KRcVzNM0lKycJ9mwbuQE0oqVLAZTzNFf0YggBD5hNYqDPszkyuCzCtoyU/lET0cMM=
+	t=1775203588; cv=none; b=HPBZuM41DaWpzlpXnUGHs7REbZMkz3hbpAhXN8WQaM1DU6W/vNnwW1sd8fZkw2RQFsxAjY/vYdDRWlaXHzPnhuGZYGVmCHZStj348ZHDhU+MpDSbwUriYuKv7Id57dF21sFBCYhjhXriqd1pJx4V02ckuO7386psdCkQBrqeDo8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775146456; c=relaxed/simple;
-	bh=NNCjv2ZdmVCtPsLbi5cpk/LVnlCg2htihlVU122tBWE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dVriLKwwFfS7B3pBzVQLI0gV6LNfI77tD4/tjvhHd/Plt5WUJa5cQuaA7GSyS7rzARUTxnKPVHkBpHr10QCptcKNGtESrJO603DJF27OfohXNIjC+8C8JFBrEuU0EUwVq4IRsGE9VgU0KdKDshGt3iR2vLaHIGMznjt2Hm53juw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S/Yi/lbL; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1775203588; c=relaxed/simple;
+	bh=zwN0pITfJ3lXWhub6l+a/FFuVTrdHCz3d2uLlnjEChI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=QufgggRwR9Q3V4SrIz/GX5LVbBCP4KJr3aMPP27qfrc7pslyxQ63hNNXSDu0yfxWuQYvgWx0MtyTLn4Vz9HxPiF0mSHLOTHSCWDz6mj3gXCXOAebLCpSCc+Ul6WSb0APeG32OSlNdMCI0zj1pUgN0oDOy4DEhngV8FClXk0CT1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MaT4WWdg; arc=none smtp.client-ip=209.85.215.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S/Yi/lbL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1775146455; x=1806682455;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NNCjv2ZdmVCtPsLbi5cpk/LVnlCg2htihlVU122tBWE=;
-  b=S/Yi/lbLvxfHQh22dpxINDEZXJixR+4ZdfTCt5u05FgC2MetGebMw8/B
-   tllMp9vVjgTS3u/ScFeFBktfcORlXRsvIT1cuwGnSuem/kQBc63el66TT
-   Hlpcopc24osbsrwL87CXr6euNRZ2Y5wgtcUIcCym86Rrcama+i+FJEHNN
-   1p0n5XHmXz7Ffx7amh3sOREDlpUxyFolP1qcnbBeolDZQywuO+9TFeqAO
-   QpyhiIWu+La02ITK5HjckKNPSf/iaMG4hGnbiySPwYR+pbbed1eg2Q+ci
-   9FjYYttZKnO1yn2jkczPty9kkxrYsRTHFJ6FjyakIYlmPS1N0zuRzOky3
-   A==;
-X-CSE-ConnectionGUID: DMaW2DozQm6Bv4ICj30Iag==
-X-CSE-MsgGUID: 2uvsRCCQRyiCy1M4xxZxtA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11747"; a="63760010"
-X-IronPort-AV: E=Sophos;i="6.23,156,1770624000"; 
-   d="scan'208";a="63760010"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 09:14:15 -0700
-X-CSE-ConnectionGUID: b4khTNdaRVO0CSOg79OxYg==
-X-CSE-MsgGUID: ZjeNP17wSL6Iqj7IP5RM7A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,156,1770624000"; 
-   d="scan'208";a="224167458"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.245.31])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 09:14:12 -0700
-Date: Thu, 2 Apr 2026 19:14:09 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Aldo Conte <aldocontelk@gmail.com>
-Cc: jic23@kernel.org, ktsai@capellamicro.com, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, daniel.baluta@intel.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	skhan@linuxfoundation.org, me@brighamcampbell.com,
-	linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH 1/2] iio: light: cm3323: fix reg_conf not being
- initialized correctly
-Message-ID: <ac6V0WWyndrg-7pS@ashevche-desk.local>
-References: <20260402151730.18901-1-aldocontelk@gmail.com>
- <20260402151730.18901-2-aldocontelk@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MaT4WWdg"
+Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-c76bde70ec9so665109a12.2
+        for <linux-iio@vger.kernel.org>; Fri, 03 Apr 2026 01:06:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775203586; x=1775808386; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=hzTUcR1aoj1iRziUThqWuq2YXuaZb/N4OL64yRf40Lg=;
+        b=MaT4WWdgMbwHiy+XPH4qxv3PxlK2ZFAvZ/mKB1HclZNEdmW1U5BuBtVKMRGauh+ARV
+         YurUPinzPmcMuWhOcKNk6W7HMGnJix20nsB8xWmKbsrpX3ovMuLepTzLmjqjGsgHL9ka
+         2iFQMO+5s9iobDJflNEB5p/1+bki3xNyHyXx2XVmOuyc0kt8fSv/fhPOFzvwpOIA7KBD
+         3YsPvdy2Ufvmvefd7d2ju4B9xZ9A/pCAgNyAlyZ9agbg/C5QVZAaVkDJx647sMHTdoLG
+         0Vs/3gnSVmaIcGPctRAWBE6wRurCzpJnaCbHGfUIuTbuV9uYVSMZGOXTS9gYrcgavwqW
+         5/WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775203586; x=1775808386;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hzTUcR1aoj1iRziUThqWuq2YXuaZb/N4OL64yRf40Lg=;
+        b=IYyPvkL9TFXVoInPLBEtnhBch9ffRzttu89NvMu/Pv/ED4P4NXkGJ1Rs7LtBYfzVUE
+         wv1OcSqLCsERmn74EW+GLrb9F8ow2CW4y2x8s+RrY8ljVkTAT+psfo5SsTYCDI6KYHqi
+         lBVCMoU3bC4c4zB8h4LzPyoDGGCBpfaSo2SUBQl48rFlRb0v6cHqTK75Z6jrcoN7NbI6
+         NXlpiz2Uu1VEqH9EOaBINxiRixznzQSUvbtIY7f48I3fT9SAlL4laoLDqNYi8NlhwfJf
+         pHzC+gVDgoXNuuaPEMzelLva4Iip6dOY37cMWz5U0MfcBtam25rtw9I/pBI277DeAL42
+         3uLg==
+X-Forwarded-Encrypted: i=1; AJvYcCUO9UMo4yNsngvpk2+TVLiDNFwob9ZwU0w3Qiu/jm+qZBE+J3cYd1umCqogprBCBSLGwphpButrO28=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyIywL6KSxYitSz/cQcteglpvrXCZC2kxfl84iE1Mcxo/RIbKI9
+	F0JL2PYdQA2OMonYEEtr0CrSnpCoqzI+BAor/oEWzy2oxA902fDNOHH2
+X-Gm-Gg: ATEYQzyBVNmMTO3Aru8nBpH/dl7zf6ICUIDs4VnneD1zGIJb3VUdymfyAIibKCsSivy
+	zn7h0gDKDOHRit4RX1mDMYRQrY0cB+HY9jzlvCdHJsME3ZtVNNV+17ZBgch/Ee0nGtHWjZM5y7A
+	+EXu6sfgLg9ss5aj3kxlfQ+aIlQvpAV7g8wuVQPbs/BTJsQXggET3IWDbnJ5N6IMkwu9kEwee/Q
+	SiLcigDls7hVSfAueFu8t4cxFYIuc8srSHczvXu70hczPvJv/m6r9SvtOCvOVn1C9yer86IvoQd
+	Rha+eMBWJKm2lRFCeVpyACEbz301GIItLGStF4NJSCALY94gYw2hpc20JnYrLv2VxZL06GOO3O8
+	ulM3gWjNfqzb5YHpYIYWrbMoBZwItyC6spMqydVP88B3IhM7QUJvw6V7bnXew1ImyqrNYre5Li2
+	5MlFM8Oswn7s/ct0uGP2bbxpxByyzkKMRW8l9sV9HiU0IKJSJuF0zNoAqz8KZLhwSjdxBVixL6s
+	A==
+X-Received: by 2002:a05:6a21:6d9f:b0:39b:e837:5565 with SMTP id adf61e73a8af0-39f2f139280mr2236533637.28.1775203586235;
+        Fri, 03 Apr 2026 01:06:26 -0700 (PDT)
+Received: from debian.ari ([152.58.181.253])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82cf9c6ad8asm5481093b3a.40.2026.04.03.01.06.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Apr 2026 01:06:25 -0700 (PDT)
+From: Archit Anant <architanant5@gmail.com>
+To: jic23@kernel.org,
+	dlechner@baylibre.com
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Archit Anant <architanant5@gmail.com>
+Subject: [PATCH v7 0/5] iio: adc: ad799x: modernize resource management
+Date: Fri,  3 Apr 2026 13:36:09 +0530
+Message-Id: <20260403080614.14213-1-architanant5@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260402151730.18901-2-aldocontelk@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 02, 2026 at 05:17:29PM +0200, Aldo Conte wrote:
-> The code stores the return value of i2c_smbus_write_word_data()
-> in data->reg_conf; however, this value represents the result
-> of the write operation and not the value actually written to
-> the configuration register. This meant that the contents of
-> data->reg_conf did not truly reflect the contents
-> of the hardware register.
-> 
-> Instead, save the value of the register before the write
-> and use this value in the I2C write.
-> 
-> The bug was found by code inspection: i2c_smbus_write_word_data()
-> returns 0 on success, not the value written to the register.
+This series modernizes the ad799x driver by converting resource 
+management to the devm_ infrastructure. This results in cleaner 
+probe error handling, the removal of the ad799x_remove() function, 
+and improved overall code maintainability and safety.
 
-> Tested using i2c-stub on a Raspberry Pi 3B running a custom 6.19.10
-> kernel. Before loading the driver , the configuration register 0x00
+Key changes in this series include:
+- A prerequisite cleanup to sort headers alphabetically.
+- Static allocation of the rx_buf using IIO_DECLARE_BUFFER_WITH_TS()
+  to avoid dynamic memory leaks during scan mode updates.
+- Caching of VCC and VREF regulator voltages during probe() to 
+  optimize read_raw() performance and simplify power management logic.
+- Migration of regulators and mutex initialization to device-managed 
+  resources (devm).
+- Fixing a potential race condition by moving mutex initialization 
+  before IRQ registration.
+- Removal of the manual ad799x_remove() function and all goto-based 
+  error cleanup labels in ad799x_probe().
 
-Extra space needs to be removed.
+These changes ensure the teardown sequence is always correct, 
+following the reverse order of allocation, and remove unnecessary 
+boilerplate code from the driver.
 
-> CM3323_CMD_CONF was populated with 0x0030 using
-> i2cset -y 11 0x10 0x00 0x0030 w, encoding an integration time of 320ms
+Changes in v7:
+- Added a prerequisite patch (Patch 1/5) to sort the header includes
+  alphabetically as requested by Andy Shevchenko.
+- Moved devm_mutex_init() to the very beginning of probe() (before IRQ
+  request) to prevent a race condition where an interrupt could fire
+  and attempt to take an uninitialized lock.
 
-I recommend to use backquotes when providing a shell commands.
+Changes in v6:
+- Addressed style feedback from Andy Shevchenko: used '(MICRO / MILLI)'
+  for clearer unit conversion and refactored the optional VREF error
+  path for better readability.
+- Removed the phrase "Reading the regulator voltage via
+  regulator_get_voltage() can be a slow operation" from the commit
+  message of patch 3/4 as requested by Jonathan Cameron.
+- Confirmed with maintainers that the devm_add_action_or_reset() pattern
+  must remain to preserve PM functionality.
 
-`i2cset -y 11 0x10 0x00 0x0030 w`
+Changes in v5:
+- Used devm_add_action_or_reset() for regulator disabling instead of
+  devm_regulator_get_enable_read_voltage() as suggested by Jonathan 
+  Cameron. This was necessary to preserve the regulator pointers (st->reg 
+  and st->vref) required by the driver's suspend/resume power management 
+  callbacks.
+- Simplified voltage caching to use a single 'vref_uV' variable.
+- Converted mutex_init() to devm_mutex_init().
+- Resolved error path ordering issues by using devm_* exclusively, 
+  allowing for the complete removal of the ad799x_remove() function.
 
-> in bits[6:4].
-> 
-> Due to the error into the initialization of data->reg_conf in
-> cm3323_init(), the print of integration_time returns 0.040000
-> instead of the expected 0.320000. This happens because the read of the
-> integration_time depends on cm3323_get_it_bits() that is based on the
-> value of data->reg_conf, which is erroneously set to 0.
-> 
-> With this fix applied, data->reg_conf correctly saves 0x0030 after init
-> and the successive integration_time reports 0.320000 as expected.
+Changes in v4:
+- Simplified voltage caching to use a single 'vref_uV' variable as
+suggested by David Lechner.
+- Capitalized 'uV' in variable names as suggested by Andy Shevchenko.
+- Removed redundant 'if (ret < 0)' check in read_raw() (dead check).
+- Used devm_mutex_init() to replace manual mutex handling.
+- Introduced a local 'dev' pointer in probe() to simplify function calls.
+- Switched to IIO_DECLARE_BUFFER_WITH_TS() for the buffer declaration.
+- Moved goto removals into the respective patches where devm conversion
+occurs.
 
-Overall a good catch!
+Changes in v3:
+- Split the monolithic v2 patch into 4 logical commits as requested by
+  Andy Shevchenko.
+
+Changes in v2:
+- Eliminated dynamic buffer allocation (feedback from David Lechner).
+- Cached voltages to prevent devm/manual ordering hazards (feedback 
+  from Jonathan Cameron).
+
+Archit Anant (5):
+  iio: adc: ad799x: sort headers alphabetically
+  iio: adc: ad799x: use local device pointer in probe
+  iio: adc: ad799x: use a static buffer for scan data
+  iio: adc: ad799x: cache regulator voltages during probe
+  iio: adc: ad799x: convert to fully managed resources and drop remove()
+
+ drivers/iio/adc/ad799x.c | 132 ++++++++++++++++++---------------------
+ 1 file changed, 62 insertions(+), 70 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.5
 
