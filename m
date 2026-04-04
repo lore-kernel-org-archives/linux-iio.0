@@ -1,81 +1,67 @@
-Received: from buffalo.tulip.relay.mailchannels.net (buffalo.tulip.relay.mailchannels.net [23.83.218.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67C26283FCF;
-	Sat,  4 Apr 2026 03:26:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.218.24
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775273208; cv=pass; b=hNFVbY8I+VtWzSb5V8Cd2Br1Sa5WN3nSDRGVUmup70pUhqLgoCu4QerL1JHXIYRLWP77a6DRSM+s/vJBfAiH+Wf48zVXWo2Gkn82dhufJccHuUkzLQd6IBQFC8/7EZb9uUuthORGZldZ6SNdPp/YOvzm+UmL3S7hksdIlWQBj6A=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775273208; c=relaxed/simple;
-	bh=1E9VasZ2IQGVmx6ceE65CfzEGp2ECKQjTNIsETs5rmo=;
-	h=Message-ID:MIME-Version:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:Date; b=Gp0fEfGGdWDI1mgAini+FlqATsFmkG1jbIrWf6bRwJKxTbX/PkEsdWiWwNfM1w4PNfyJiatcrkBQLXswfHsZkd2WvMFXllNaVJomAaMez6honcUWLgRh8cPnUEvRnas3zwm3FhyebAy+pR9lBK9gRdNsOe6BvLLcAjPNj4YZ+xU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=jqsBbXoG; arc=pass smtp.client-ip=23.83.218.24
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5690D342CA7
+	for <linux-iio@vger.kernel.org>; Sat,  4 Apr 2026 13:43:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.178
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775310209; cv=none; b=fLCxVdZgMFQu7CanfM3ndowMi7E/TEwsK7ECdRPJ9Kp4szZYfB65HFzUKgh1N0phrC3klw25IojKD0CyBJouaGZvHQ83Cwl3okdsWTMWJivRhFiq71n063cWKKKm8CctyIHPQ7Dj4q35SDmUuK3IXmZyJlGFbYf9ppBK7wSlc9c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775310209; c=relaxed/simple;
+	bh=SdGycWIOB3BG5dloq4/UyFlmu8kZqSDXiej0RBe+/0Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jx5ZYSGX9/MKCKw8u4ICwdJuXwpEq7ltb6vybVQ5Lad/KBa865nRdpujY5c7665nP0k3tNMUwzHGmYSkFu+0pzMkyFWrIvEBeTfTj8Iik8Zyw0mfqq/kLhmIjHausy4kfRglOcgSB3DP+cs2M/jy44IbnrKO8GBr32L0TdxvyHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=B9LA0cOY; arc=none smtp.client-ip=209.85.167.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="jqsBbXoG"
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id 8FEA8401E14;
-	Sat, 04 Apr 2026 03:26:40 +0000 (UTC)
-Received: from fr-int-smtpout23.hostinger.io (100-99-26-167.trex-nlb.outbound.svc.cluster.local [100.99.26.167])
-	(Authenticated sender: hostingeremail)
-	by relay.mailchannels.net (Postfix) with ESMTPA id 843BD401DFC;
-	Sat, 04 Apr 2026 03:26:37 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
-	t=1775273200;
-	b=9hg/kyVPjnEE1MiiG8z/l7Q8G1bVxT+KTK19B2iWybMCzkknKeaB+9WDX+DA1vEt/dwSn7
-	CpEjuwEPyTznmbVUaB8mzFxboNIvWHQj8VHkDIwiL1Lkyp8tGlFeKOw9NcUChRMLIdDm3Y
-	XuYUC9QnSmCSG/vTdvqlNoYvkGWO/tKNi6+SPra/dnI7qCXWluZZuDSV1cB6G5nEJeMwE7
-	MP2ZXNmKXPXuGQ5lU21DgbUNj92DXiPKIZ4K62qc3rXfTLvxgrmVnEEP1XA7pMs6qY+qWm
-	DxxqCay4filQMpT6aCuNiUF8JM9uvo2Jn1eB6whyv7OZ409Qkx/mVA0LS5MTnw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-	s=arc-2022; t=1775273200;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:dkim-signature;
-	bh=R1SQ7fjo7+ZRuM2rzox3k9F/SpcRYsArVKq/Hhgx5MM=;
-	b=iwEBNnD9+zS2ELnF8SD0PP+OYCUbVsGYtKXAgV4IjnG7VNNIl6GcH7csMuB/MJsOHOQDtH
-	84XTXvDGrFN9dgzLaM0uuYROokD63tiC0rOWzYf3ZFBHUcYhVQTpPHpyw4srG0CvW12C7D
-	+dfX14ZHMt+BBBRmLyWqhZjEskjq6B//nMxHq9UgItV8pwce6X0UDXKU1ApHStkmAK+tBn
-	beIAlj3Zj1q58A7lk7iYS3Xm74D3NbJ4zNRhl2PpmySuqlyO3aOeSG0cZFny/Fw9pjZXHv
-	gJAALlYSLoCP0QgIrqRjyqolJyi8XRpi+lEhf17VZec5/qAfrpWS2ETMVM0cgA==
-ARC-Authentication-Results: i=1;
-	rspamd-bd48b9d95-tphdt;
-	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
-X-MailChannels-Auth-Id: hostingeremail
-X-Ski-Industry: 53c10f4b7fe8dd5b_1775273200370_2538399836
-X-MC-Loop-Signature: 1775273200369:1964789207
-X-MC-Ingress-Time: 1775273200369
-Received: from fr-int-smtpout23.hostinger.io (fr-int-smtpout23.hostinger.io
- [148.222.54.29])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.99.26.167 (trex/7.1.5);
-	Sat, 04 Apr 2026 03:26:40 +0000
-Received: from [IPV6:2001:448a:502c:15d9:9c4f:9add:4209:3123] (unknown [IPv6:2001:448a:502c:15d9:9c4f:9add:4209:3123])
-	(Authenticated sender: linux@smankusors.com)
-	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4fngx44rPsz1xnm;
-	Sat,  4 Apr 2026 03:26:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
-	s=hostingermail-a; t=1775273195;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=R1SQ7fjo7+ZRuM2rzox3k9F/SpcRYsArVKq/Hhgx5MM=;
-	b=jqsBbXoG1rC99vrEaa8FBhONnFnaAMFprZT8yns7gyEIaUgLvbk88nTIbO5GVTVzZZ29xR
-	cEE4VS5YkTsZyz9yGfJH5Ens0K4W8NKt+ok+KZ8JePI0MZARKCoGhMlMMsaXUeTET8dCFM
-	uPn7tNIbzao4LhJ54DyI7HF99D0d93m6241lAWFwpYkSk3F/7cdYGDvHAKGs42Zun8RlZG
-	LymHPMvhzT5HXgD3UTev7NcuUHEYizCMgnyYiqxp9fmqa1usRtGUvGuIuMo+S69B2m3wT4
-	IFeWcjpQOxB4poKZfukIlF/pbhkDmpYgvj6m99txbkYYkXaZ99kKlC2NtQOICQ==
-Message-ID: <1b47a581-3a2b-490c-8a39-7a2cd0ddf8f2@smankusors.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="B9LA0cOY"
+Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-464ba2bb3aeso1656064b6e.1
+        for <linux-iio@vger.kernel.org>; Sat, 04 Apr 2026 06:43:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775310205; x=1775915005; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lMIoVmSCmnePN2nBeuOGxTIYxwpaueT16pR92e6ZJEg=;
+        b=B9LA0cOYXqxY996In7WHWvbr6Wb9eyBWeumqyVq0DWXJAbWQys2+D8Fi7sF0H7ZXMo
+         1TcHNgNyiEokugMKENXs34qJ5v4K4XvmBlkLuXfUIZ1Et53X1WKAMJpSpnMC/qKUGC4S
+         kiXSKm0EGX++BKJTLSsBA2oeKtXMZh60CkzMpfKPRFhxkBUlGTqvHlBiWU7irElOCQ2l
+         MVUOxhYB3Ihe9iO1EVy5cB91Lnxu0ruHUG0HfGj5azykto0/i0Opd2XyrjKsqdCasvuN
+         4TP5tu9SbgiG5ouWlB/lMlbeciSOt321cwnDkstITRfRDGQrvJrPY4rYwkcnY6yO57m/
+         qdzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775310205; x=1775915005;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lMIoVmSCmnePN2nBeuOGxTIYxwpaueT16pR92e6ZJEg=;
+        b=RLpXaYrKdM1Am3/CBRM3thB3u3Cc2LpgNNce4be/OqWX8mfVY/U6F+DyXg10QQ93xd
+         +p4IrZpN1N2262gCVMlr3WPgs9nz/8bGM+FXyPq+sn9kwMnpVYXylSsg1L+o4pCSxVCj
+         9Czrm7udVBsOEL6f0co5TmRepNQ0+/OaH7iuCs5OfY2aRP2mSf9WlbmrWXbMJsWwzKTd
+         JxMHvVjBgtxH1uL0AHOKmV8YwoBqI5z92joKadX8FXzJ1fMLA/WvhmvMOW72n35Qfrbz
+         hur+yACbmZjULZLWftnWR1OQBCC/JQ51A1rWefEyjd2cvCFLOWa2MI59i542raPFWz4C
+         3VyA==
+X-Forwarded-Encrypted: i=1; AJvYcCWK0lggmFbj/cnWuBXIh1AO0FrPaZqfTBiCQA1kaZU69zVXGP+0YEYr/mLpwTKtCZ7NJVhoSv0w3vg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw/hy3RkUfOmBS9twmR0cnaPcprjVf0UHL0aYMARGMk9+ygtVXP
+	CcAqW4+SpZmhGKL2TRgmoDdFC8pm1Ynuypzyz/Grhp6Jd3rQbeDmAuzuPYf8nOGDfWc=
+X-Gm-Gg: AeBDiesVHdd1fc6/XqQMsbGBkmBiKgVGKVtdqasCl2EdvfXNegPVGt9OME5SgGcNcoe
+	0ZfipUjoHvTZR4XVrgPvhUz4EiSqEEbJ6tJlgwZRMasalTc6+7UH5uH3bG2SimlUGHRhTSo4zhR
+	uAI6IvGt/lStuA8X6VBMjXT0H8jS6ffjBEf/yXeZXtGfuzQSoH4jTkK1YQb6sEmVGoXJ2nVzFH/
+	GJANQh+MAKF37FYLM8I2/X4ljywBm3ryAFYfEQaI6Sg5+Pb3Vo0tPxjg9QexWC15c0Wy3HPEHch
+	/OEvaUiRDVhuZRb2PyVN7Y5vSVTwLl++r5QGQ6d8fP5WBzMOyvYq+wfnDM99aEgLz67jpjasl/3
+	an+y2hxSH3TfDHvTUvH3cOExsR+PMP1i1qmIvGd+V8q3JJ+QQtMD4N1yZjnWr5Yi8wVWYVyy8ez
+	+54Kni3CsoshGZPobjMK07Md5hFNlUP8A43pmNYG41j87KLRTefk0H0LmsTul2K3PYkDJOmqQgy
+	w==
+X-Received: by 2002:a05:6808:1a21:b0:467:8b7:4a46 with SMTP id 5614622812f47-46f01343bc3mr3240466b6e.9.1775310205076;
+        Sat, 04 Apr 2026 06:43:25 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:e14e:bcc6:3f95:26eb? ([2600:8803:e7e4:500:e14e:bcc6:3f95:26eb])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-46ff2f94b71sm1991698b6e.5.2026.04.04.06.43.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 Apr 2026 06:43:24 -0700 (PDT)
+Message-ID: <dd0dbadb-604b-4f12-8674-268b7db096fd@baylibre.com>
+Date: Sat, 4 Apr 2026 08:43:22 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,39 +69,49 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] iio: adc: qcom-pm8xxx-xoadc: remove redundant
- error logging in pm8xxx_read_raw
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+Subject: Re: [PATCH 1/2] dt-bindings: iio: dac: add support for Microchip
+ MCP48FEB02 to MCP47FEB02
+To: Ariana Lazar <ariana.lazar@microchip.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- phone-devel@vger.kernel.org
-References: <20260403-pm8xxx-xoadc-label-v2-0-29b50bf821e6@smankusors.com>
- <20260403-pm8xxx-xoadc-label-v2-2-29b50bf821e6@smankusors.com>
- <35urrjc3koye5zhlxatdsr7t2djuml5ueyhhazcucow3q3g5f2@pomnrrcwu7qr>
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Conor Dooley <conor.dooley@microchip.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260403-mcp47feb02-fix2-v1-0-da60c773550e@microchip.com>
+ <20260403-mcp47feb02-fix2-v1-1-da60c773550e@microchip.com>
 Content-Language: en-US
-From: Antony Kurniawan Soemardi <linux@smankusors.com>
-In-Reply-To: <35urrjc3koye5zhlxatdsr7t2djuml5ueyhhazcucow3q3g5f2@pomnrrcwu7qr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Date: Sat,  4 Apr 2026 03:26:32 +0000 (UTC)
-X-CM-Envelope: MS4xfDFr6qI1yLueSnYLSLZutcUNO4z6ua4xADNS38k/3ticZ91XT9Ns+eGsGeS/1wLwCn9JesiboKqwRgjlhIU+Duy5JptvWVXe8fZgTiy93+ahtmNeGjc7 iKWtt4z0WLQDwiotx+fPLtLBS6hb5dfXdtNC90CaEhKce51VnyycNTzU+NWl9PJjey1dmVLD1aAuisIeRIf/+YJ/StfmwqC818akYwBCWnWtk8AMnT26VQ1n K1QDUV2d0J/cQSPKBxm7c5kxr85NeEcX8mr6vMwMW/AjPOJ/Rw+vXiiFdveMdZMUIURKa3OFIDfK4SpjIQInbD2xqmNtkfODmqlY+WAzUx+3fy3AeHvI7tnU LegwfBWMYFT+YqnICKkxukKvOGYdtARnSsYr/NV7RXyctrt506M4NdTdCpIfZPUuHOhNXciMI5xsGrAqfWnnYpvcEVJ2pxRa12zpKDt2FJO4YFxE6Gaq/xAG M6dK++7v0C/6JVkYevm11fPm6yemq3AqfQ2Cbq12WwNMh4MvuONv8HAGHj0bF9UORo+C6z4WCO41tDKsqpaAFdeaFGup6KxdnLv7emfKuYO0auA5qIvU/vcj GMYtA1J2mKx2bJI0c2WWuWf6VmZpeShUFZq1OMaknYn1GZT6EA9Vf/1aBjRP0gkNkp0UdcgHRjJn1uSXMgEejmKYuEeIie4lBy6nmMG1FzelMFRgW8WoQthR NYfbgxCdovQt0fkQbNs+RdUJ/v2z0ylN1YMO9tgoVNqdqbTPAApzFoKbTp+J9Q+091jnzM0IzeU=
-X-CM-Analysis: v=2.4 cv=GMJaEfNK c=1 sm=1 tr=0 ts=69d084eb a=cSRZGm2KIti/amQDCKp9sg==:617 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=ehOGM-R9AHx4QcEzjFoA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-AuthUser: linux@smankusors.com
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260403-mcp47feb02-fix2-v1-1-da60c773550e@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 4/4/2026 4:54 AM, Dmitry Baryshkov wrote:
-> Does it also prevent users from spamming the dmesg?
+On 4/3/26 5:50 AM, Ariana Lazar wrote:
+> This is the device tree schema for iio driver for Microchip
+> MCP48FxBy1/2/4/8 series of buffered voltage output Digital-to-Analog
+> Converters with nonvolatile or volatile memory on top of MCP47FEB02.
+> The families support up to 8 output channels and have 8-bit, 10-bit or
+> 12-bit resolution.
+> 
 
-It should be for no such channel case. The only remaining error logs
-from pm8xxx_read_raw are timeout errors, which I don’t think would
-result in immediate spamming. Or should we remove the dev_err (at
-pm8xxx_read_channel_rsv) on timeout errors too?
+...
 
--- 
-Thanks,
-Antony K. S.
+>  examples:
+>    - |
+> @@ -280,7 +398,7 @@ examples:
+>  
+>          #address-cells = <1>;
+>          #size-cells = <0>;
+> -        dac@0 {
+> +        dac@60 {
+>            compatible = "microchip,mcp47feb02";
+>            reg = <0>;
+
+Need to change reg to 0x60 also.
+
+>            vdd-supply = <&vdac_vdd>;
+> @@ -299,4 +417,29 @@ examples:
+>            };
+>        };
+>      };
