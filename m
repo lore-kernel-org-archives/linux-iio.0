@@ -1,154 +1,489 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1296233B6FC
-	for <linux-iio@vger.kernel.org>; Sat,  4 Apr 2026 20:58:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B492813DDAA;
+	Sun,  5 Apr 2026 08:57:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775336341; cv=none; b=fW772IgrE0sMJhxTkIieN9SmtsU49wju7ad7FnFdSCrEB7nVC3tOq5hzVHkgtD0AL1ZfHdvPx9eOSdQN01pIkb2vgLk4PDNf5IGTcOFVhmrw5vfD42uQpAfqMz0IXAM7pnvXI8xeFE5wSwB8Nl6RSgecscp6p4RsZN84p8sqkr0=
+	t=1775379473; cv=none; b=lL6JWwil4KhYB8L148tQ1eFyumDAZnbSmsjduO9WQl7fXfkTHwd1XzbV64t/uAZvgxPE72T/TyDzd78OOpnGRVraW+4svb/i5me5COrnN2flSDZN9fVSyXSigGTZibSkBOkhY/qm4ksGaOS3Aly4jSUq3vD/q/9qWL8m9TAz7K4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775336341; c=relaxed/simple;
-	bh=07X/+r4FQs5VHXmMzGcuGWaMDeBFQZZjjZ/2izXOFQ0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=cpyi27EhY8V4fAVILblKWco+nqmthTkGCxYOqolLMzNgwfoT23NIbhztlLNa1dW6NCoJIswscTPIE3f1ARg3n+bq1q0ZEcmwpPbPMoCYSRtJOvff5zlQCZu9vh+E0qdq/ejEDEcCkiHJb55uttYeT4s+OGcvSosj5jxYfEGu29Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lW0RPGr3; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1775379473; c=relaxed/simple;
+	bh=XvSZnnRQNFjQPKZmdyglaM8/uF3se4KKpvHFWt5+pfs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gNLxNwsJVGR/R54DNQfUkuNB5YY795LJzhhD6A+eflHdjPEMmotwUBquQnz8pYwKX3UTFqKmFCzrJ9IYB3AkvCXUVwWkBez8yulAxjz79aL+S9vepSkMDPBpMUuM432KrAW/nzEaIUF9xwv7yuUJSi/RwNviIlI8mszPOirPFSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=booqZUxe; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lW0RPGr3"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-488a29e6110so8223935e9.3
-        for <linux-iio@vger.kernel.org>; Sat, 04 Apr 2026 13:58:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775336338; x=1775941138; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=byIWEtWcr/ZkucG4RN4fe8hAaX3tjSZ5r8jwT3XAMSQ=;
-        b=lW0RPGr333D66Dg4wHeSrXOwM2+e8jZQ7FoPdZ6bmgWYvq0u/zaf73DwDe1Zn2/Mwa
-         xe7CSC1lv10/I3pjKhoh53vUqedNXAxKjeZMIj2GaKr2opO9B5Kd1gyu8Lks3kXtEHwB
-         hPkNEH5uolwtCFBScdf7dTeCYeEH4vUI5vpWASBvtyWPMe5ck2omk5rvAjoGAT1xePhv
-         ZPOzzgKkZ5zv6MefzSEmevvckNHjUhuck3osBWSuAWVkyItxu112mKw7t7D69Th9ZquW
-         ROVA/6z7lquyB/faD00FuNSK1Sw9cDDnCoNgFmeudHyxWKttRmygwQifwgS8i6esYyhX
-         lpYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775336338; x=1775941138;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=byIWEtWcr/ZkucG4RN4fe8hAaX3tjSZ5r8jwT3XAMSQ=;
-        b=njYrd15hzPyeMdM8vjNmnHd8dEowIEazxgkUEjexEkUKQ1Kg+VPoaHe3P8IZLv3KXR
-         dqhF+d4bs+AxdiMhbeQH6hRJclXnUFF/J4ymsa0AewNe2w/fKUw123+nSQ8UNMFPgYCl
-         rfOufpGRLdMjyrOXkYTV1AfSJu2/M9S1QYlaTMIf3vbaSfAfyM0HLHe09xijWx5L9RUm
-         s02Alz2wXX/IMmalpi4J33pObN4M/w1r8y33mqQxqWWQrokjXMMhuZxjcDA9k9ORB5X9
-         rqL8yAxUKufBWjDXczabIH3qHUyM5LClSF4NXl/JMwvbOebGRveOWFKd2vtxAknrGwXv
-         XH+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUbIwxt2DQibnP3yIOugtYlPWWAWwpNh7S69242OkZ5spyzEP6FyKn724Gv8nIwWDjuHvMZDK7Mc5w=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwPpDokCL+Wes2VuNcX/z2zTa4hhkkRx9ISJMDsd/l1os9QJ14N
-	UMEFyMXzUrnjKOa4vl+oCfxJqxlSNRSIImnsRpRkThUo1OJOG6CpLXkp
-X-Gm-Gg: AeBDietOrfgIXES0ZhI+6Nl70YSx6BDcu86pb3QXul9YXYWViF6a+OOywsEGmpZ0uaR
-	FFB0pfpRJ1uBd86db6q/LYkKHK33/khsVRGbUrg5trdz0irvoM9yZb4AsdtxrDGkaqPCugILifH
-	SvMoCxANE+TXO/fixpHlZvcs6SJ6pEXZyClT5gCY9FGUUO6M+H1iR5HAyiwgHoyaqMZ6ZYL/Bl7
-	lPCPfp1HzIiMKbiSYKZ/TdW8aUf3p599nWUzn7e3BWUpOVv92BlUDMzUyyXOijvxC8xwzD7pFka
-	9ZPFk7U03CPGXTdwGNF8YS6y8QTfxTiEkTnyqQ/Ws8gigRIE2QNOhS7+ckSoPq/+ss9rIiLOiil
-	baDEuRiCTyb1Yn1dnu8Em04H1XZ/8Sh4sJsryiDRX2hJVSFzYvsnFuPKx1/ZOcyhMwiPTVDWl2v
-	2ojhtrg+0U6/0xPSqACX/8aUwfphkAUnrdWn5zMlkykwn8jM6WxeR0
-X-Received: by 2002:a05:600c:4593:b0:485:3b00:f93b with SMTP id 5b1f17b1804b1-488997e7b16mr123898775e9.31.1775336338349;
-        Sat, 04 Apr 2026 13:58:58 -0700 (PDT)
-Received: from aldo-conte-t14.tailf68ad9.ts.net ([94.164.143.38])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488a36f22b1sm84749535e9.10.2026.04.04.13.58.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Apr 2026 13:58:58 -0700 (PDT)
-From: Aldo Conte <aldocontelk@gmail.com>
-To: jic23@kernel.org
-Cc: ktsai@capellamicro.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	daniel.baluta@intel.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	me@brighamcampbell.com,
-	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH v2 2/2] iio: light: cm3323: use dev_err_probe() in probe path
-Date: Sat,  4 Apr 2026 22:58:52 +0200
-Message-ID: <20260404205853.18559-3-aldocontelk@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260404205853.18559-1-aldocontelk@gmail.com>
-References: <20260404205853.18559-1-aldocontelk@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="booqZUxe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1775379470; x=1806915470;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=XvSZnnRQNFjQPKZmdyglaM8/uF3se4KKpvHFWt5+pfs=;
+  b=booqZUxe7mqPQnVe99FHeaIGUD7f8V/6q9QZDy95HwbiY+otVq+clImF
+   /NpvSGmbIc6Ll/JlS0mCCIOMqhKY0gdnnGZmvo+bnzmHmKivvuLPZidI2
+   tVyyI3Ct+N6ZTHCdb4bYDYid3tXWCPp+AwO2izgwjVui0v0Br6TOKi0L6
+   G4PK89o6BEiy43btDvgRbJdjhxIcrG3tVpBToObPGF4O5+YChoyZwl0YD
+   lUinxhgxtIntqVqW7HP7Q9vardoAj/TFgTtwo9YXw2QYZ/fY4SWJopASO
+   IAyGo3lwfH17m4fw8T6kKqJMLZyl3D4R++/dd5FOpZZw1ekUeLbMCCMHu
+   A==;
+X-CSE-ConnectionGUID: ZGn0pq/GSsKfDpN+jCRAjg==
+X-CSE-MsgGUID: +tN/fUckQFSadln9kALN/Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11749"; a="98992875"
+X-IronPort-AV: E=Sophos;i="6.23,161,1770624000"; 
+   d="scan'208";a="98992875"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2026 01:57:49 -0700
+X-CSE-ConnectionGUID: LyOW3uRQTTmltuGGRf0HWw==
+X-CSE-MsgGUID: FfaNSo2ZRaKE1oFNif9B8A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,161,1770624000"; 
+   d="scan'208";a="232026285"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.247])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2026 01:57:44 -0700
+Date: Sun, 5 Apr 2026 11:57:41 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v6 3/4] iio: adc: ad4691: add triggered buffer support
+Message-ID: <adIkBcEoOJdvxa3Y@ashevche-desk.local>
+References: <20260403-ad4692-multichannel-sar-adc-driver-v6-0-fa2a01a57c4e@analog.com>
+ <20260403-ad4692-multichannel-sar-adc-driver-v6-3-fa2a01a57c4e@analog.com>
+ <e38e5b97-e90f-4613-a15e-6c3d08cd77f7@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <e38e5b97-e90f-4613-a15e-6c3d08cd77f7@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Replace dev_err() calls with dev_err_probe() in cm3323_init() and
-cm3323_probe(). cm3323_init() is called by cm3323_probe(),  so using
-dev_err_probe() ensures that deferred probing is handled
-correctly and simplifies error paths.
+On Sat, Apr 04, 2026 at 10:12:04AM -0500, David Lechner wrote:
+> On 4/3/26 6:03 AM, Radu Sabau via B4 Relay wrote:
 
-Remove the redundant error message in cm3323_probe().
+> > Add buffered capture support using the IIO triggered buffer framework.
+> > 
+> > CNV Burst Mode: the GP pin identified by interrupt-names in the device
+> > tree is configured as DATA_READY output. The IRQ handler stops
+> > conversions and fires the IIO trigger; the trigger handler executes a
+> > pre-built SPI message that reads all active channels from the AVG_IN
+> > accumulator registers and then resets accumulator state and restarts
+> > conversions for the next cycle.
+> > 
+> > Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
+> > reads the previous result and starts the next conversion (pipelined
+> > N+1 scheme). At preenable time a pre-built, optimised SPI message of
+> > N+1 transfers is constructed (N channel reads plus one NOOP to drain
+> > the pipeline). The trigger handler executes the message in a single
+> > spi_sync() call and collects the results. An external trigger (e.g.
+> > iio-trig-hrtimer) is required to drive the trigger at the desired
+> > sample rate.
+> > 
+> > Both modes share the same trigger handler and push a complete scan —
+> > one u16 slot per channel at its scan_index position, followed by a
+> > timestamp — to the IIO buffer via iio_push_to_buffers_with_ts().
+> > 
+> > The CNV Burst Mode sampling frequency (PWM period) is exposed as a
+> > buffer-level attribute via IIO_DEVICE_ATTR.
 
-Tested on a Raspberry Pi 3B using i2c-stub. The driver probes
-successfully and successfully read integration_time after this change.
+Tried my best to avoid clashes with David's review.
 
-Suggested-by: Andy Shevchenko <andy@kernel.org>
-Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
----
-Changes in v2:
-- Add struct device *dev local variable to shorten dev_err_probe()
-  calls to one-liners (suggested by Andy Shevchenko)
-  
- drivers/iio/light/cm3323.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+...
 
-diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
-index 0fe61b8a7029..5b36fc265c6c 100644
---- a/drivers/iio/light/cm3323.c
-+++ b/drivers/iio/light/cm3323.c
-@@ -80,22 +80,19 @@ static int cm3323_init(struct iio_dev *indio_dev)
- {
- 	int ret;
- 	struct cm3323_data *data = iio_priv(indio_dev);
-+	struct device *dev = &data->client->dev;
- 
- 	ret = i2c_smbus_read_word_data(data->client, CM3323_CMD_CONF);
--	if (ret < 0) {
--		dev_err(&data->client->dev, "Error reading reg_conf\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "Error reading reg_conf\n");
- 
- 	/* enable sensor and set auto force mode */
- 	ret &= ~(CM3323_CONF_SD_BIT | CM3323_CONF_AF_BIT);
- 	data->reg_conf = ret;
- 
- 	ret = i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF, data->reg_conf);
--	if (ret < 0) {
--		dev_err(&data->client->dev, "Error writing reg_conf\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "Error writing reg_conf\n");
- 
- 	return 0;
- }
-@@ -236,10 +233,9 @@ static int cm3323_probe(struct i2c_client *client)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	ret = cm3323_init(indio_dev);
--	if (ret < 0) {
--		dev_err(&client->dev, "cm3323 chip init failed\n");
-+	if (ret < 0)
- 		return ret;
--	}
-+
- 
- 	ret = devm_add_action_or_reset(&client->dev, cm3323_disable, indio_dev);
- 	if (ret < 0)
+> >  #include <linux/array_size.h>
+> >  #include <linux/bitfield.h>
+
+> > +#include <linux/bitmap.h>
+> >  #include <linux/bitops.h>
+
+When bitmap.h is present, it implies bitops.h, hence the latter can be simply
+replaced.
+
+> >  #include <linux/cleanup.h>
+> >  #include <linux/delay.h>
+> >  #include <linux/dev_printk.h>
+> >  #include <linux/device/devres.h>
+> >  #include <linux/err.h>
+> > +#include <linux/interrupt.h>
+> >  #include <linux/math.h>
+> >  #include <linux/module.h>
+> >  #include <linux/mod_devicetable.h>
+> > +#include <linux/property.h>
+> > +#include <linux/pwm.h>
+> >  #include <linux/regmap.h>
+> >  #include <linux/regulator/consumer.h>
+> >  #include <linux/reset.h>
+
+...
+
+> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
+> > -				    | BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> > +				    | BIT(IIO_CHAN_INFO_SAMP_FREQ)	\
+> > +				    | BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+> >  		.info_mask_separate_available =				\
+> > -				      BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> > +				      BIT(IIO_CHAN_INFO_SAMP_FREQ)	\
+> > +				    | BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+
+You may reduce churn by squeezing a new ones in between existing ones.
+Also consider use usual patter of placing the operator on the same line where
+left operand is (currently it goes with the right operand).
+
+...
+
+> >  struct ad4691_state {
+
+Just to double check, when add a new field or fields into the data structure
+check with `pahole` that the new members placed at the best or at least good
+enough locations.
+
+> >  	const struct ad4691_chip_info *info;
+> >  	struct regmap *regmap;
+> > +
+> > +	struct pwm_device *conv_trigger;
+> > +	int irq;
+> > +
+> > +	bool manual_mode;
+> > +
+> >  	int vref_uV;
+> > +	u8 osr[16];
+> >  	bool refbuf_en;
+> >  	bool ldo_en;
+> > +	u32 cnv_period_ns;
+> >  	/*
+> >  	 * Synchronize access to members of the driver state, and ensure
+> >  	 * atomicity of consecutive SPI operations.
+> >  	 */
+> >  	struct mutex lock;
+> > +	/*
+> > +	 * Per-buffer-enable lifetime resources:
+> > +	 * Manual Mode - a pre-built SPI message that clocks out N+1
+> > +	 *		 transfers in one go.
+> > +	 * CNV Burst Mode - a pre-built SPI message that clocks out 2*N
+> > +	 *		    transfers in one go.
+> > +	 */
+> > +	struct spi_message scan_msg;
+> > +	struct spi_transfer *scan_xfers;
+> > +	__be16 *scan_tx;
+> > +	__be16 *scan_rx;
+> 
+> Why not embed these arrays here? Then we don't have to deal with
+> alloc/free later.
+> 
+> > +	/* Scan buffer: one slot per channel plus timestamp */
+> > +	struct {
+> > +		u16 vals[16];
+> > +		aligned_s64 ts;
+> > +	} scan __aligned(IIO_DMA_MINALIGN);
+> 
+> Better would be IIO_DECLARE_BUFFER_WITH_TS() since we don't always
+> use all vals.
+> 
+> Also, current usage doesn't need to be DMA-safe because scan_tx
+> is being used for the actual SPI xfer.
+> 
+> >  };
+
+...
+
+> > +static int ad4691_gpio_setup(struct ad4691_state *st, unsigned int gp_num)
+> > +{
+> > +	unsigned int shift = 4 * (gp_num % 2);
+> > +
+> > +	return regmap_update_bits(st->regmap,
+> > +				  AD4691_GPIO_MODE1_REG + gp_num / 2,
+> > +				  AD4691_GP_MODE_MASK << shift,
+> > +				  AD4691_GP_MODE_DATA_READY << shift);
+
+Not sure if compiler will see % and / together, I would go with two more
+temporary variables to make it clear to it:
+
+	... _bit_off = % 2;
+	... _reg_off = / 2;
+
+The practical example is described, for example, here:
+9b3cd5c7099f ("regmap: place foo / 8 and foo % 8 closer to each other").
+
+> > +}
+
+...
+
+> > +static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct ad4691_state *st = iio_priv(indio_dev);
+> > +	struct device *dev = regmap_get_device(st->regmap);
+> > +	struct spi_device *spi = to_spi_device(dev);
+
+> > +	unsigned int n_active = bitmap_weight(indio_dev->active_scan_mask,
+> > +					      iio_get_masklength(indio_dev));
+
+In such cases please split definition and assignment. Will take two lines, but
+readability will be better.
+
+> > +	unsigned int n_xfers = n_active + 1;
+> > +	unsigned int k, i;
+> > +	int ret;
+> > +
+> > +	st->scan_xfers = kcalloc(n_xfers, sizeof(*st->scan_xfers), GFP_KERNEL);
+> 
+> Usually, we make st->scan_xfers a fixed array with the max number of possible
+> xfers. Then we don't have to deal with alloc/free.
+
+And please if it's still be required to allocate and possible use kzalloc_objs().
+
+> > +	if (!st->scan_xfers)
+> > +		return -ENOMEM;
+> > +
+> > +	st->scan_tx = kcalloc(n_xfers, sizeof(*st->scan_tx), GFP_KERNEL);
+> > +	if (!st->scan_tx) {
+> > +		kfree(st->scan_xfers);
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> > +	st->scan_rx = kcalloc(n_xfers, sizeof(*st->scan_rx), GFP_KERNEL);
+> > +	if (!st->scan_rx) {
+> > +		kfree(st->scan_tx);
+> > +		kfree(st->scan_xfers);
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> > +	spi_message_init(&st->scan_msg);
+> > +
+> > +	k = 0;
+> > +	iio_for_each_active_channel(indio_dev, i) {
+> > +		st->scan_tx[k] = cpu_to_be16(AD4691_ADC_CHAN(i));
+> > +		st->scan_xfers[k].tx_buf = &st->scan_tx[k];
+> > +		st->scan_xfers[k].rx_buf = &st->scan_rx[k];
+> > +		st->scan_xfers[k].len = sizeof(__be16);
+> > +		st->scan_xfers[k].cs_change = 1;
+> > +		spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
+> > +		k++;
+> > +	}
+> > +
+> > +	/* Final NOOP transfer to retrieve last channel's result. */
+> > +	st->scan_tx[k] = cpu_to_be16(AD4691_NOOP);
+> > +	st->scan_xfers[k].tx_buf = &st->scan_tx[k];
+> > +	st->scan_xfers[k].rx_buf = &st->scan_rx[k];
+> > +	st->scan_xfers[k].len = sizeof(__be16);
+> > +	spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
+> > +
+> > +	st->scan_msg.spi = spi;
+> 
+> This isn't how the SPI framework is intended to be used. We should
+> have st->spi = spi in probe instead.
+> 
+> > +
+> > +	ret = spi_optimize_message(spi, &st->scan_msg);
+> > +	if (ret) {
+> > +		ad4691_free_scan_bufs(st);
+> > +		return ret;
+> > +	}
+> > +
+> > +	ret = ad4691_enter_conversion_mode(st);
+> > +	if (ret) {
+> > +		spi_unoptimize_message(&st->scan_msg);
+> > +		ad4691_free_scan_bufs(st);
+> > +		return ret;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+
+...
+
+> > +static int ad4691_cnv_burst_buffer_preenable(struct iio_dev *indio_dev)
+
+As per above.
+
+...
+
+> > +static ssize_t sampling_frequency_show(struct device *dev,
+> > +				       struct device_attribute *attr,
+> > +				       char *buf)
+> > +{
+> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > +	struct ad4691_state *st = iio_priv(indio_dev);
+> > +
+> > +	return sysfs_emit(buf, "%u\n", (u32)(NSEC_PER_SEC / st->cnv_period_ns));
+
+Why casting?
+
+> > +}
+
+...
+
+> > +static IIO_DEVICE_ATTR(sampling_frequency, 0644,
+> > +		       sampling_frequency_show,
+> > +		       sampling_frequency_store, 0);
+
+IIO_DEVICE_ATTR_RW().
+
+...
+
+> > +static int ad4691_read_scan(struct iio_dev *indio_dev, s64 timestamp)
+> > +{
+> > +	struct ad4691_state *st = iio_priv(indio_dev);
+> > +	unsigned int i, k = 0;
+> > +	int ret;
+> > +
+> > +	guard(mutex)(&st->lock);
+> > +
+> > +	ret = spi_sync(st->scan_msg.spi, &st->scan_msg);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	if (st->manual_mode) {
+> > +		iio_for_each_active_channel(indio_dev, i) {
+> > +			st->scan.vals[i] = be16_to_cpu(st->scan_rx[k + 1]);
+> > +			k++;
+> > +		}
+> > +	} else {
+> > +		iio_for_each_active_channel(indio_dev, i) {
+> > +			st->scan.vals[i] = be16_to_cpu(st->scan_rx[k]);
+> > +			k++;
+> > +		}
+> 
+> I suppose this is fine, but we usually try to avoid extra copiying and
+> byte swapping of bufferes like this if we can. It seems completly doable
+> in both modes. Manual mode will just one extra two-byte buffer for the
+> throw-away conversion on the first read xfer (or just write to the same
+> element twice).
+
+And in case it's still needed, we may introduce a helper in
+include/linux/byteorder/generic.h calling it memcpy_to/from_be16().
+
+> > +		ret = regmap_write(st->regmap, AD4691_STATE_RESET_REG,
+> > +				   AD4691_STATE_RESET_ALL);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		ret = ad4691_sampling_enable(st, true);
+> > +		if (ret)
+> > +			return ret;
+> > +	}
+> > +
+> > +	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
+> > +				    timestamp);
+> > +	return 0;
+> > +}
+
+...
+
+> > +static int ad4691_setup_triggered_buffer(struct iio_dev *indio_dev,
+> > +					 struct ad4691_state *st)
+> > +{
+> > +	struct device *dev = regmap_get_device(st->regmap);
+> > +	struct iio_trigger *trig;
+> > +	unsigned int i;
+> > +	int irq, ret;
+> > +
+> > +	trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
+> > +				      indio_dev->name,
+> > +				      iio_device_id(indio_dev));
+> > +	if (!trig)
+> > +		return -ENOMEM;
+> > +
+> > +	trig->ops = &ad4691_trigger_ops;
+> > +	iio_trigger_set_drvdata(trig, st);
+> > +
+> > +	ret = devm_iio_trigger_register(dev, trig);
+> > +	if (ret)
+> > +		return dev_err_probe(dev, ret, "IIO trigger register failed\n");
+> > +
+> > +	indio_dev->trig = iio_trigger_get(trig);
+> > +
+> > +	if (!st->manual_mode) {
+> 
+> I would invert the if since the other case is shorter.
+
++1.
+
+> > +		/*
+> > +		 * The GP pin named in interrupt-names asserts at end-of-conversion.
+> > +		 * The IRQ handler stops conversions and fires the IIO trigger so
+> > +		 * the trigger handler can read and push the sample to the buffer.
+> > +		 * The IRQ is kept disabled until the buffer is enabled.
+> > +		 */
+> > +		irq = -ENODEV;
+> > +		for (i = 0; i < ARRAY_SIZE(ad4691_gp_names); i++) {
+> > +			irq = fwnode_irq_get_byname(dev_fwnode(dev),
+> > +						    ad4691_gp_names[i]);
+> > +			if (irq > 0)
+> > +				break;
+> > +		}
+> > +		if (irq <= 0)
+> > +			return dev_err_probe(dev, irq < 0 ? irq : -ENODEV,
+> > +					     "failed to get GP interrupt\n");
+> 
+> Usually we would usually just use spi->irq since it already
+> has been looked up. But I guess it is OK to do it like this.
+
+No, it's not. (Linux) IRQ shouldn't ever be 0, so this check is effectively a
+dead code.
+
+		irq = -ENXIO; // Note, this is the error code used by core for
+			      // IRQ not found.
+		...
+		if (irq < 0)
+			return dev_err_probe(dev, irq, "failed to get GP interrupt\n");
+
+> > +		st->irq = irq;
+> > +
+> > +		ret = ad4691_gpio_setup(st, i);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		/*
+> > +		 * IRQ is kept disabled until the buffer is enabled to prevent
+> > +		 * spurious DATA_READY events before the SPI message is set up.
+> > +		 */
+> > +		ret = devm_request_threaded_irq(dev, irq, NULL,
+> > +						&ad4691_irq,
+> > +						IRQF_ONESHOT | IRQF_NO_AUTOEN,
+> > +						indio_dev->name, indio_dev);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		return devm_iio_triggered_buffer_setup_ext(dev, indio_dev,
+> > +							   &iio_pollfunc_store_time,
+> > +							   &ad4691_trigger_handler,
+> > +							   IIO_BUFFER_DIRECTION_IN,
+> > +							   &ad4691_cnv_burst_buffer_setup_ops,
+> > +							   ad4691_buffer_attrs);
+> > +	}
+> > +
+> > +	return devm_iio_triggered_buffer_setup(dev, indio_dev,
+> > +					       &iio_pollfunc_store_time,
+> > +					       &ad4691_trigger_handler,
+> > +					       &ad4691_manual_buffer_setup_ops);
+> > +}
+> > +
+
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
