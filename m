@@ -1,198 +1,187 @@
-Received: from iguana.tulip.relay.mailchannels.net (iguana.tulip.relay.mailchannels.net [23.83.218.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com [209.85.221.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62C5E17D2;
-	Sun,  5 Apr 2026 17:30:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.218.253
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775410238; cv=pass; b=fuursaOU4Ro/n10BpQN8kC6nMw58J3GU1TpfU/mLDGsIk2XJU7Qmi0Xk/tMj05+15XJ+g4MxquyG4bJ7duTfBXSD6J3KRc/EMqSCZCiBH8D7RbgJfoRSMCPt4nVRIC54wfLjI/y085/s8hYz15U8vfsUwLhXrLqIm63DHUGxO4o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775410238; c=relaxed/simple;
-	bh=tbUp5zFUpe1TTvoQKrxt+Nlmg9h/6PCCg1ziNfU842U=;
-	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc:Date; b=Dapz03E5jqSOiXWaHD+GmechXt9+G9deiemOAsWwd82TrSwr2xKT0AJt+RIJujXQ0AnQplUCtV7U1nmVWWF0/aD5POHn6K4suSidDdVB3/cxZi7sFwoJLkjSap1EHBNIjNqK7hsIlofgQ+QxC6eZ8ynIMIlEXifV3hw1EAmCriQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=b9W1fboh; arc=pass smtp.client-ip=23.83.218.253
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70BC22848A7
+	for <linux-iio@vger.kernel.org>; Sun,  5 Apr 2026 21:38:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775425085; cv=none; b=sDBeFgn8yAT/Uti9uu7htZS3NPoyOYAzV3+odRcprivaXSaAAe3nVA4eRxHpUagGPkXSBkiDvJaCnvNnXxNk3O1dUR5+Hl6accUDgLUPYEZRXqO9Y5YYHps13W0DI8YYJ/iurXO4cDpYhvndysJ+eMjZSBhFuQbxPXDwM9htaI4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775425085; c=relaxed/simple;
+	bh=8nODRcvUnS4p+vn4a/5ft5GQxgjyz+ZEzZN0WfPtPIs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZD6fLI9oELOX0BpRKSe1uPhaVZv0fJnpjjIl5B8w8LSQWmiaIjFOvJcnCM0siVjAkpyvMyuy/ltrH62picKSmQSpn24uzrmEh+SwpFxgA8NtI50nSMmZalv8qXW4zh+XqSynh8pEaTJgG8uLUtXWBvX7v82KMJeCDmUv1kJcTlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=jq7elhb0; arc=none smtp.client-ip=209.85.221.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="b9W1fboh"
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id 53B867E143E;
-	Sun, 05 Apr 2026 16:52:24 +0000 (UTC)
-Received: from fr-int-smtpout21.hostinger.io (100-96-162-172.trex-nlb.outbound.svc.cluster.local [100.96.162.172])
-	(Authenticated sender: hostingeremail)
-	by relay.mailchannels.net (Postfix) with ESMTPA id E08DE7E1510;
-	Sun, 05 Apr 2026 16:52:19 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
-	t=1775407942;
-	b=eE7n/QU8ho6sM4MEqI3cgOETFOQlddv/whEYwCK35JiKnhqijxJTkwFPq7TPOrUBP9H51N
-	TEAvtlopz9glGM2xETd5V9pvl1f08nN3kbvV7tLswiXXbDLshXs9m4Z8ssE5UcBWgmaLo4
-	HENQn/ZXQYQBme9YBz7MViNhd1aQU56yIDiioEDtVhyJGErmLJIXJdQagH9HLvCeoH2hf7
-	xKuVgvv66ASmDCoKRjVNkBAN04cr5zMlY2cuh7aOZUl1S1QeHin7XZ1yw+7I7ix6+DJH6Z
-	aCpquTQh8Ix23RtROXPWHO17Kudsn1lqPWHiotskX+pcuYuM/gMK3+OmqzXjCQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-	s=arc-2022; t=1775407942;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:dkim-signature;
-	bh=Df6meE+IzbisONhLxipM53ma1q9jZudZjiD3KFI5uHA=;
-	b=UlVy0ltt+6xA/QPFENgzboh8O5fyBvCBpBtvvwOJoISOgGfT1GAmfzQTbEbQkclrpldQro
-	b34rVYg8wsXQt51jOD74A3Ps6cdLUrsH4bs53Sqij6RzlchI86SOveCB8dCRSnZ6Xt3ZvD
-	l3XsamVPyGvYnlNahG2MLsxpURtiswI75dIm6V0lRGZe7C+xzXnXJ+EALpVwE6qRs0c4v1
-	bFJiUonA31LmXmCsbm0tSBCZXDTm7uwoNcZc41awBiO/b+y7+CI6mrWTKBoqM/8sLgZl4d
-	fR1wmlOrvMpQzj+ZuY/uGsotI0j36xc0PZ+YoDdxJPcaB2uFfADxxoDdb6r53g==
-ARC-Authentication-Results: i=1;
-	rspamd-bd48b9d95-hcb2s;
-	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
-X-MailChannels-Auth-Id: hostingeremail
-X-Ruddy-Versed: 5634013042ce584c_1775407944239_2452233281
-X-MC-Loop-Signature: 1775407944239:657969050
-X-MC-Ingress-Time: 1775407944239
-Received: from fr-int-smtpout21.hostinger.io (fr-int-smtpout21.hostinger.io
- [148.222.54.33])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.96.162.172 (trex/7.1.5);
-	Sun, 05 Apr 2026 16:52:24 +0000
-Received: from [172.17.0.2] (unknown [180.247.251.74])
-	(Authenticated sender: linux@smankusors.com)
-	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4fpdmD06b8z1xmj;
-	Sun,  5 Apr 2026 16:52:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
-	s=hostingermail-a; t=1775407938;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Df6meE+IzbisONhLxipM53ma1q9jZudZjiD3KFI5uHA=;
-	b=b9W1fboh58wU8MaoPwQmhw5OkHxXlFRvjOqsSXNkaoSEOfwmNbkV3tWzFFvJU25m9Yrgo9
-	G1xtri1KyU5WiRER8xTN0wIGMfTKV54CJnTkZQOd+JD8OArivr3C7PZ9OgrTS2xB/VeeXn
-	LsxSAOFs4IooRBAcBFQG4I42O5H8EcwHi2Xr+N+pqcDLORFn6PAoBFdXR3f5kffDJXAzL8
-	G7Ti9NiyKAtvDKnX0cFXa4yu+Ajg4rXG+8WOl8Yzq6qGawtnU40ZO70b7Qcxu6LAhzgzh7
-	iZuMKnC7/0CP2PadFiK+iNjvL15+r+w2APzUZEKkNfr+N5YA8GSXdZNv0wys2A==
-From: Antony Kurniawan Soemardi <linux@smankusors.com>
-Subject: [PATCH v3 1/3] ARM: dts: qcom: pm8921: add labels for ADC channels
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="jq7elhb0"
+Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-56d9c4f7f0bso2463579e0c.2
+        for <linux-iio@vger.kernel.org>; Sun, 05 Apr 2026 14:38:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google; t=1775425081; x=1776029881; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=qX7RWL7TDJnYlYdQ9XwBC0yy7c9ACcAwBuNCuK0VzFI=;
+        b=jq7elhb0LiBpXvDGXgPSvY6wWLxMsp5k9CdVT7tLpKCYAobdGSBhnucWJ44vPLoNM+
+         3WLziCrdlaGsKtcnf7uMGLNUnxNm10Wihg5tbknqX8Ci8cUNKstPa/GeXLjw66HHSj8C
+         gH0lm2pyDo2Hv7l1I3/0GNVPWu3YcdM+OXqOAMboSfqdehX14SZq613KwXDRxYFvn2tI
+         g+9zi6oMp6Z1tfTGgN8lLd1CigWlj4md2liXFcmX2vSP5liVRXsGh545lXOlSkWo2ALz
+         +mSU3tFeFuGDAa+ToGuP3+/jlS9aDjLEThWkw61c0IKp8kJWmvqjjNhvvSyyxI4CLXrQ
+         C2rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775425081; x=1776029881;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qX7RWL7TDJnYlYdQ9XwBC0yy7c9ACcAwBuNCuK0VzFI=;
+        b=cKg0eVbp6q02th6v3bcI9Ez4a6dVTUIqjPz5rgxsqcaav/FMDgpuf/7LLnjknb7JL8
+         iPOYruXv47tBq/Lcvn8B1XXU9smhu+DR4BN/xwaND+i52P4UisYbW/cfYhHqul9SxoJe
+         6KXaOWrg5lVBizIJrwT8UutsmhvA8rhtyTtS00RCJwtCoPSZSwwV6vTDiFMeDMNo5a19
+         YwrK1HMU8T588+1ZW2s/xfqTJpRLrxBGBCaNrVtcONS1QaHrny20W3BombfgiyybE+vV
+         a++QdlhxXud/R53OXOOvxLqnu1fiJGGBKexCb6NTDMzSTZ3Fa9wv6InYESOecNpJHpfH
+         ChBQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXoEg5aUCFWaU0wHYgBXcxQ6+9QFU3jzOcGezN03xIsinm9A8WiV072ofooF84Er5nAOo21wOjDqbU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzUNLn7ngf20W5P7+Iy7VIYkncBw2VsKc7br/Xb1nL0Yv4bZDjh
+	/46COMG6BQieJkoQIKD/z+ZOU1t9LAPITYpUrVsXlditul3v9uJgaV4sfMJtGtFGEtcsqqjmv+0
+	ycz4SiY+c8g==
+X-Gm-Gg: AeBDieteDNT3bNGzE6NyQg79R+xrT5at9JrARfDJqt0ZU/iYDkK4RXBrfjUFD3r1BEk
+	mp/6hJiDwgCGU4dHVvGa8iY79/aPCL4gESwqZmJ0MmI+3kl51ensEqJt41vwx/ANdH7/EZCLn5h
+	Lov6KDsPo1GzbKQYrYxGsc1M9j5KZ5yn4DY7hxy0pEA2xa1ldWEJkwSXxL9zVi8hsYl6JJnfpwY
+	7UR/dymZ8V1S76vOnxe2m9btVQvF9nmxbj/ktLgQ4profBbAOFJjx7d2RMJj44z7OknUGSO7hJX
+	mECBkOWg5V48NY4YYZC3ikganCwIH3c+VH05d2kWcifgMciGeyK2V2eMb2WP+f4eW/tJ1BotUfW
+	sRDh1sPD44bWz3V3g2cFSSp6YrahcEXkprBmlfJgICJOskPjoXxqj5pVMUd4lJ9tIPDoJGYX5Ah
+	BenPoL6FVpnmyL64ccOcXpPxQiNBHlVnB1TCKxcAqz2tMECVLgtlsItLR0fbaxOtqzyRtaQl1I0
+	OQfm3DVd9doXMJdiyebMrxnlgKmjYAIJSw0++2d5fGKxdNZFg==
+X-Received: by 2002:a05:6122:3b84:b0:56e:eb08:21ca with SMTP id 71dfb90a1353d-56eeb082629mr1053487e0c.7.1775425081452;
+        Sun, 05 Apr 2026 14:38:01 -0700 (PDT)
+Received: from gui-host.Dlink ([177.33.104.190])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56d9bd0a8a3sm14805210e0c.17.2026.04.05.14.37.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Apr 2026 14:38:00 -0700 (PDT)
+From: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	guilherme.bozi@usp.br
+Subject: [PATCH] iio: adc: ad4170: use lookup table for gpio mask selection
+Date: Sun,  5 Apr 2026 18:37:26 -0300
+Message-ID: <20260405213725.25426-2-guilherme.bozi@usp.br>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260405-pm8xxx-xoadc-label-v3-1-9fe179c283ec@smankusors.com>
-References: <20260405-pm8xxx-xoadc-label-v3-0-9fe179c283ec@smankusors.com>
-In-Reply-To: <20260405-pm8xxx-xoadc-label-v3-0-9fe179c283ec@smankusors.com>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- phone-devel@vger.kernel.org, 
- Antony Kurniawan Soemardi <linux@smankusors.com>, 
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1775407927; l=1924;
- i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
- bh=tbUp5zFUpe1TTvoQKrxt+Nlmg9h/6PCCg1ziNfU842U=;
- b=2CqmTLbLhUfCILiV+IlIJs71ChZ3kOOD87rzW12xq20KPHQa+6DoDZz5twB26fQTBJJ8HsqbO
- UJ6W8V3kzLCB9cv+JdYLmbAYLv8eAZJO9cP0kh+qMpz8Yvr9VJv5MXA
-X-Developer-Key: i=linux@smankusors.com; a=ed25519;
- pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
-Date: Sun,  5 Apr 2026 16:52:11 +0000 (UTC)
-X-CM-Analysis: v=2.4 cv=Gq4Q+V1C c=1 sm=1 tr=0 ts=69d29342 a=iMBLmzX4nuXcozcv68JNPw==:117 a=iMBLmzX4nuXcozcv68JNPw==:17 a=IkcTkHD0fZMA:10 a=EUspDBNiAAAA:8 a=wxLWbCv9AAAA:8 a=rt3x4hDEALvJiYIjBx4A:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
-X-CM-Envelope: MS4xfA/IKxqvFQOP7VDXLiSMGTo4HyrkQk+du/KO39bBhGarA/AK25aYeKDBpSA2ULL45Fz2nGU3XgH/xXyqw9pTE3ESvoMMFzFyON1fbv6qjLFRW5tjZKCa eA3sAtIY9z0Ezshp11/vZxLzMI19i1FfxmVLMCJQQhU5sav9VgwNPEWbNxnjclZY0nBd+7xCo5qNHwn73crJ3gnDLA+MWOB8amPIwpFvubrA3VMsGN96jHO5 f56gJlqH9e/dU0zHdyVPztPXmg+TbrrTgMjiMXy8AzFa5rGwXP4s/+4E89iKxGicZP5ybHw458eoXxZq80Y3Fr1KSbBFESw+OYNEk8AS6bYW+TmTic+AJtd6 aT+jLU4Y5kVqtBOkQAjkDRR1GfaSygEEDYAWc3VS99/WBfPRLDINrwD+ZUrtK92AsS4OhZdqbVDlsvsXx4GwGa+o6mCLaCDL08DBO58A3yG4fYTyJZaQYX+A IPeRmIqLTJpRkKjm7sOws8Dd0NcrfIDqcXC4dsJD9wbXr0sLXc8yjTnos48RSKvgOEqK5XLYv+NBhYU9yPXuR8fygROwLtHd6N0kvjzOVnNAyYI89LazWo8q g9otrk34KXdB6OhXmUb4qw+6DCQswHIcROF5wl2XtAONVWzbahIM9YXL2Ja3JakqjtLy4rFwn2e0LW8P3+OgoVzmENrbXemCgJFyDmfxGHzz6iZujVa7PUKA xEgOCULNbC5PgBzyEHds0soienYpupLN2bUoJJ90v5hB+3W91OebsQ==
-X-AuthUser: linux@smankusors.com
+Content-Transfer-Encoding: 8bit
 
-Add label properties to all XOADC ADC channel nodes in the PM8921 PMIC
-device tree. This allows userspace and drivers to identify channels by
-name rather than relying on datasheet name.
+Both ad4170_gpio_direction_input() and
+ad4170_gpio_direction_output() duplicate the same switch
+statement to map a GPIO offset to its corresponding mask.
 
-Acked-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+Replace the switch with a static lookup table, simplifying the code
+and avoiding duplication. This also makes future extensions easier.
+
+No functional change intended.
+
+Signed-off-by: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
 ---
- arch/arm/boot/dts/qcom/pm8921.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/iio/adc/ad4170-4.c | 47 ++++++++++++--------------------------
+ 1 file changed, 15 insertions(+), 32 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom/pm8921.dtsi b/arch/arm/boot/dts/qcom/pm8921.dtsi
-index 535cb6a2543f69bc30abc89bff4e14a19147ce38..15246f4bd2672ccd4fc3359b66541d53d4da88b4 100644
---- a/arch/arm/boot/dts/qcom/pm8921.dtsi
-+++ b/arch/arm/boot/dts/qcom/pm8921.dtsi
-@@ -75,50 +75,62 @@ pm8921_xoadc: xoadc@197 {
+diff --git a/drivers/iio/adc/ad4170-4.c b/drivers/iio/adc/ad4170-4.c
+index 82205bfae531..d1e971649b6f 100644
+--- a/drivers/iio/adc/ad4170-4.c
++++ b/drivers/iio/adc/ad4170-4.c
+@@ -1699,34 +1699,29 @@ static int ad4170_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
+ 	return ret;
+ }
  
- 			vcoin: adc-channel@0 {
- 				reg = <0x00 0x00>;
-+				label = "vcoin";
- 			};
++static const unsigned long gpio_masks[] = {
++	AD4170_GPIO_MODE_GPIO0_MSK,
++	AD4170_GPIO_MODE_GPIO1_MSK,
++	AD4170_GPIO_MODE_GPIO2_MSK,
++	AD4170_GPIO_MODE_GPIO3_MSK,
++};
++
+ static int ad4170_gpio_direction_input(struct gpio_chip *gc, unsigned int offset)
+ {
+ 	struct iio_dev *indio_dev = gpiochip_get_data(gc);
+ 	struct ad4170_state *st = iio_priv(indio_dev);
+-	unsigned long gpio_mask;
+ 	int ret;
  
- 			vbat: adc-channel@1 {
- 				reg = <0x00 0x01>;
-+				label = "vbat";
- 			};
+ 	if (!iio_device_claim_direct(indio_dev))
+ 		return -EBUSY;
  
- 			dcin: adc-channel@2 {
- 				reg = <0x00 0x02>;
-+				label = "dcin";
- 			};
+-	switch (offset) {
+-	case 0:
+-		gpio_mask = AD4170_GPIO_MODE_GPIO0_MSK;
+-		break;
+-	case 1:
+-		gpio_mask = AD4170_GPIO_MODE_GPIO1_MSK;
+-		break;
+-	case 2:
+-		gpio_mask = AD4170_GPIO_MODE_GPIO2_MSK;
+-		break;
+-	case 3:
+-		gpio_mask = AD4170_GPIO_MODE_GPIO3_MSK;
+-		break;
+-	default:
++	if (offset >= ARRAY_SIZE(gpio_masks)) {
+ 		ret = -EINVAL;
+ 		goto err_release;
+ 	}
+-	ret = regmap_update_bits(st->regmap, AD4170_GPIO_MODE_REG, gpio_mask,
++
++	ret = regmap_update_bits(st->regmap, AD4170_GPIO_MODE_REG,
++				 gpio_masks[offset],
+ 				 AD4170_GPIO_MODE_GPIO_INPUT << (2 * offset));
  
- 			vph_pwr: adc-channel@4 {
- 				reg = <0x00 0x04>;
-+				label = "vph_pwr";
- 			};
+ err_release:
+@@ -1740,7 +1735,6 @@ static int ad4170_gpio_direction_output(struct gpio_chip *gc,
+ {
+ 	struct iio_dev *indio_dev = gpiochip_get_data(gc);
+ 	struct ad4170_state *st = iio_priv(indio_dev);
+-	unsigned long gpio_mask;
+ 	int ret;
  
- 			batt_therm: adc-channel@8 {
- 				reg = <0x00 0x08>;
-+				label = "batt_therm";
- 			};
+ 	ret = ad4170_gpio_set(gc, offset, value);
+@@ -1750,24 +1744,13 @@ static int ad4170_gpio_direction_output(struct gpio_chip *gc,
+ 	if (!iio_device_claim_direct(indio_dev))
+ 		return -EBUSY;
  
- 			batt_id: adc-channel@9 {
- 				reg = <0x00 0x09>;
-+				label = "batt_id";
- 			};
+-	switch (offset) {
+-	case 0:
+-		gpio_mask = AD4170_GPIO_MODE_GPIO0_MSK;
+-		break;
+-	case 1:
+-		gpio_mask = AD4170_GPIO_MODE_GPIO1_MSK;
+-		break;
+-	case 2:
+-		gpio_mask = AD4170_GPIO_MODE_GPIO2_MSK;
+-		break;
+-	case 3:
+-		gpio_mask = AD4170_GPIO_MODE_GPIO3_MSK;
+-		break;
+-	default:
++	if (offset >= ARRAY_SIZE(gpio_masks)) {
+ 		ret = -EINVAL;
+ 		goto err_release;
+ 	}
+-	ret = regmap_update_bits(st->regmap, AD4170_GPIO_MODE_REG, gpio_mask,
++
++	ret = regmap_update_bits(st->regmap, AD4170_GPIO_MODE_REG,
++				 gpio_masks[offset],
+ 				 AD4170_GPIO_MODE_GPIO_OUTPUT << (2 * offset));
  
- 			usb_vbus: adc-channel@a {
- 				reg = <0x00 0x0a>;
-+				label = "usb_vbus";
- 			};
- 
- 			die_temp: adc-channel@b {
- 				reg = <0x00 0x0b>;
-+				label = "die_temp";
- 			};
- 
- 			ref_625mv: adc-channel@c {
- 				reg = <0x00 0x0c>;
-+				label = "ref_625mv";
- 			};
- 
- 			ref_1250mv: adc-channel@d {
- 				reg = <0x00 0x0d>;
-+				label = "ref_1250mv";
- 			};
- 
- 			chg_temp: adc-channel@e {
- 				reg = <0x00 0x0e>;
-+				label = "chg_temp";
- 			};
- 
- 			ref_muxoff: adc-channel@f {
- 				reg = <0x00 0x0f>;
-+				label = "ref_muxoff";
- 			};
- 		};
- 	};
-
+ err_release:
 -- 
-2.34.1
+2.47.3
 
