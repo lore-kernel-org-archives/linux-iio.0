@@ -1,66 +1,66 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F358F30F532
-	for <linux-iio@vger.kernel.org>; Sun,  5 Apr 2026 16:09:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 285FA313546
+	for <linux-iio@vger.kernel.org>; Sun,  5 Apr 2026 16:09:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775405344; cv=none; b=po+A0o2t2MGokRyFenC9/B6HZUyjIRBtkguXZwSBNXtbwZ+bu0/843MboZ28Qsl5THwsSf+jEMdlSEyzVAH1wDxi1QOLrrnX/OGAhE+VTrJcHDWRs6copMTiL/yQCJREHMu9J94kspaQxRqvmPRmrKXoCzP4ExC3VGO05ru8j58=
+	t=1775405349; cv=none; b=cVzJITpnUe5qRrV+n+QEeCuFtmxpbhgrD8Wc39YHw4sIrwx27+s0FaDK5DPGhoAewQ2YVBSz4jj8tVM7xz++XvanlGM3tWJweRhVK2y2F18WsCrwxYZu+KcBKScbEqLU0rRtjo7fmT6n0O0clcSrzE2xhIHliAvFtwZwNm/iw7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775405344; c=relaxed/simple;
-	bh=N/WGkqOTtr1/EsB9ncOc03NX0oaLTzpDZdk6nWr+iVQ=;
+	s=arc-20240116; t=1775405349; c=relaxed/simple;
+	bh=v9TErxDPpsIRkhNKYWP4xtO27wbtpwBXPJW0u87VpDI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FEIxrWtBmMIFHIxSN4L08/D8PjqNINoThI8dNmZkDHorcFWrXnjhU6vK8zpD/1b0qDaEtKlCtwIiGWhyvMEtGlmgxYst5o/L0Vpszofi7SazUc7upo2G42A32zg/ioiiaJ3I+NuNiGpDXECvwrdknlKlS+3EaHBw5WHensDcdWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NUXFNIvU; arc=none smtp.client-ip=209.85.208.46
+	 In-Reply-To:To:Cc; b=uYEkw0ZiYjvucxphdjpe1565lTya3poqbmI2Nz2ej2+Xrqk3yhAHPyFkWRI+aN1zqKoevRbNFtaRuOnwrJ7DWVqt8orAMda0KHujVGqQsYsVPzbwqX9da1VN94fDr7/CnJaz2rYeKfu6UQUJr3Slv2jk17G6XOX+DHAHcAHu6TE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rQGPfP7V; arc=none smtp.client-ip=209.85.218.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NUXFNIvU"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-66e8cf72a93so1258083a12.0
-        for <linux-iio@vger.kernel.org>; Sun, 05 Apr 2026 09:09:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rQGPfP7V"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-b9c280322e0so385894866b.0
+        for <linux-iio@vger.kernel.org>; Sun, 05 Apr 2026 09:09:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775405340; x=1776010140; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1775405341; x=1776010141; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=6vrsOzQeG5kSW32wCOP8z9WhfnNMQJXqkN1XExXaUJw=;
-        b=NUXFNIvUB7OFvl11jc5l4/3yT0HlV8F0PsuJ43tLTwuCHmJ8hRHnFyPsZdU7kBWikp
-         0AlABE/ebY47bPrHbenej47YlIQFIISTpoiZ30nhDcc6MTdZBJT9GBDyrquoRCZkhoH8
-         RT18mrisXWNaniJ//O3lNHqVm/qdTB8OErgLd14KOlQD+p4drp3nQIDI5+/+HAwpkgT/
-         oaYdp74bZsTtzvHhKnRdDVHN2Hw6D8TqihbEPCsbGqLuyuJMaUrXrFqgYyTyCVbte2h3
-         ia22o7CnN/DMpf5yfwFxqkHtPhG4VipwQReW1M9UrEHnPoelwPyymjna6ei3WovbFP4T
-         EV8Q==
+        bh=VovxD7yoVP0rJaxD5qPxYVv5hPsMXk0JFRDMJJBecv8=;
+        b=rQGPfP7V6c+fdv4j56Gkks+qoqdpMkBuy76G0AcAqDPCUqsgg8QCisK21BSvdJfJCn
+         IRVA9dDjhF/oIj2Ewys15AngS83YQmv8pUMrUxvFEoWxZoxTNhcoZDkQs1lK+s5kutjQ
+         2tPgqQnYJr7GNE4uJlYhUs57Aideqb8gIlnA31UEGkTOckBaWIHX26BAyEt8Y518G5pl
+         XWBNbFuWdAgUROShYgUPs/d+q3Y0vAkD902YGE2XV9TqGKvD9B0YDozxUG6ptIoTPvf+
+         JIz6kOCmrqV1gluPefy2fBiyRxm8m2w5f86L9xvOwnSuIBBU7xHrVxLoLvUbWJiY84Cv
+         li1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775405340; x=1776010140;
+        d=1e100.net; s=20251104; t=1775405341; x=1776010141;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=6vrsOzQeG5kSW32wCOP8z9WhfnNMQJXqkN1XExXaUJw=;
-        b=JcQ3Dfa27dKirQWMkf8vrI3pqSjicJw/bvWP1+6z2o6hhOwQQfJIlOptVp8f9qwHcn
-         o3VOH+ONRsNWqSTlJQPk2361bQRfTEGZF1p1cUNcxnA1jY2kI3zBIuWlnAE/fo8sKNEj
-         3oDahAuLAtTlOzwWMbkX/8YLgzrTm9nqS6MN3ORtBhKlyMsn8SNp3Fw7/RIMry7McMIU
-         leM1ucNIQt+jbTtJEVFkY6/Ku0gusrBlPIwPEz2m8plAUaAlrLwIAKrkTqqgZ56T3ysn
-         jnBgwdybspCMLf+CUPXWIgvPvHxXTdelaOAwe8gszXl+/7s8rowxEFah0hF4ZNGIbuoG
-         auMg==
-X-Gm-Message-State: AOJu0Ywxi4pBbqLHoN9uVJ+Nex+i+IsLSs6VXRCO3KDa/pUiC7kWsJr6
-	C2SRMTrAXTQJu/l18p5k0wOfQMSSmTgddErWNuEDX4o4Yl29d2qLrilbLyVyn2tg
-X-Gm-Gg: AeBDieu8WKEvMGDD8HKsLVCjqq2tD/NUEVKKUaSJd/hq0s54OeW5BN+5krOcc7vX7FW
-	InyIQOXU+ugDp/CXdmTqENDckZjWWx8APYrRSh20uOvAa1r6I8o1CIFXFqUVHZRY9/9jVaAe0Rw
-	zUHbldzZ7gNU9elST1VSCSIVd0K7g+00Cwb4XKnGtxKNu+Dk1qMzy5jL9DK2yMEO0dBjeWyM3YW
-	/OE7OS9URRY/ZJiQFb+9TFWV6lO2QdhlF/4IP9hCMYM7EGrNAvY47HcfGIky7K7lYsORDdxVN8c
-	xjsntbhvZL+DkAqi/K/azzhoWXsltYKzh4woTH3zVtK3PcpDgJ+cnwLPFWEZWkSe2Lbohj6cvtM
-	F83rc2q1DzcLfB+w3/bG3QKKWlARHa4xImWuyRnf13Vci7yAT26saMDhSLAJYejrsNJVRNo0rdq
-	QotMRaUaHWL1ke4YUq0upYKiRIiw==
-X-Received: by 2002:a05:6402:434a:b0:66e:809f:39e1 with SMTP id 4fb4d7f45d1cf-66e809f3a61mr2627757a12.4.1775405339692;
-        Sun, 05 Apr 2026 09:08:59 -0700 (PDT)
+        bh=VovxD7yoVP0rJaxD5qPxYVv5hPsMXk0JFRDMJJBecv8=;
+        b=Wwb/4EiC9FuCV4OydKoECm3gy33izzfy7KhNJHOmCe//q0hhQNLkaFD73G69Zoqgmm
+         nY5mPcUwj0YpuPN4f6gtsMQXRYhVPkrVemBPVncY0Eu7DqrpqzTcTMjRgMQvdVtsGtjp
+         M8MXQjrTuLlh7yextFTrf30ILBFJzt/f0l4lo2VZrMFKgPglCEwMppX0PiQMFkTLHrPC
+         Uf2zPTihbReX7D4+8JfDfs/qlhNfb8QOnNmesa2iB4i/uPtbQJhLXkh0tFkXp7oIILfT
+         vcuN/loE2h4j4OT7TPriT7F4hBoMeNvdnfQ20C2uPSbNK2ab77ynuopdSk6cBjv4neME
+         egTg==
+X-Gm-Message-State: AOJu0Ywdnpt3CGBun8Klofj734DuEN/CcdFtAw40RE1pIiQn15UouriC
+	cYxdkwbQM25/orYD7Yt5ngb2/XAC+Crwg2DdndFM50nf9+EO2SJud/AEvnMMRSBc
+X-Gm-Gg: AeBDietSkW+9IO7UoB2YoGVwk8JYfB8zwM8K3wqLK62IMUtnRRImv+P5I2v/XjzLol5
+	029rjTo/nmJBChvpvIwMnFv0oicDakvH9ZKxdYXCoahtyOGaAgmXfcWjSUedFHq51aPT63kFz/5
+	3HWqDtvF6u+9zAg/bYXekzEdOX+UgYDEgPDYkG3Fdx66hvVhlB70et2p7worxKRNz736ojSOZ6R
+	hU+r72YFGaDthX64kfMS+s78oYaBXxJBjW3OhrkOyviq3yz2Kg/efquQvi+yqnyCtcZHRNT9ZuE
+	wv1f8oO3o8Hrs5JiNnnNmGi+AgDGHMfLI9OHnRF9zXDTEpoUCQ9GpycIDqurQts0rLaZ93Ss0B/
+	yZTgRIXh2mmqPKVYVu4+BiNA2BD6Bt2O55g3bSiuIdPDvraE92ltt8GGumgx+TZ5zeyvRklqq1S
+	m43jt3oTfHR02TMXoVjHgxc4SjMg==
+X-Received: by 2002:a17:907:3e0d:b0:b9c:7f55:cc6d with SMTP id a640c23a62f3a-b9c7f55cf7bmr327776766b.46.1775405341075;
+        Sun, 05 Apr 2026 09:09:01 -0700 (PDT)
 Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-66e02f389absm3195890a12.13.2026.04.05.09.08.58
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-66e02f389absm3195890a12.13.2026.04.05.09.08.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Apr 2026 09:08:58 -0700 (PDT)
+        Sun, 05 Apr 2026 09:09:00 -0700 (PDT)
 From: Erikas Bitovtas <xerikasxx@gmail.com>
-Date: Sun, 05 Apr 2026 19:08:42 +0300
-Subject: [PATCH v2 5/6] iio: light: vcnl4000: make pm_runtime_enable()
- device-managed
+Date: Sun, 05 Apr 2026 19:08:43 +0300
+Subject: [PATCH v2 6/6] iio: light: vcnl4000: register an IIO device with a
+ device-managed function
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260405-vcnl4000-drop-enum-v2-5-7c8dc98c3974@gmail.com>
+Message-Id: <20260405-vcnl4000-drop-enum-v2-6-7c8dc98c3974@gmail.com>
 References: <20260405-vcnl4000-drop-enum-v2-0-7c8dc98c3974@gmail.com>
 In-Reply-To: <20260405-vcnl4000-drop-enum-v2-0-7c8dc98c3974@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -80,52 +80,54 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Erikas Bitovtas <xerikasxx@gmail.com>
 X-Mailer: b4 0.15.1
 
-Replace pm_runtime_set_active() and pm_runtime_enable() with their
-device-managed counterpart to remove them from vcnl4000_remove().
+Use a device-managed counterpart of iio_device_register() and remove the
+redundant iio_device_unregister() call in driver remove function,
+allowing us to remove vcnl4000_remove() function altogether.
 
 Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
 ---
- drivers/iio/light/vcnl4000.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/iio/light/vcnl4000.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index d28c7abe7642..556dc9afa82c 100644
+index 556dc9afa82c..0813639b5ac1 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -2055,18 +2055,17 @@ static int vcnl4000_probe(struct i2c_client *client)
- 			return ret;
- 	}
+@@ -2062,11 +2062,7 @@ static int vcnl4000_probe(struct i2c_client *client)
+ 	pm_runtime_set_autosuspend_delay(dev, VCNL4000_SLEEP_DELAY_MS);
+ 	pm_runtime_use_autosuspend(dev);
  
--	ret = pm_runtime_set_active(dev);
-+	ret = devm_pm_runtime_set_active_enabled(dev);
- 	if (ret < 0)
- 		return ret;
- 
-+	pm_runtime_set_autosuspend_delay(dev, VCNL4000_SLEEP_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
-+
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
- 		return ret;
- 
--	pm_runtime_enable(dev);
--	pm_runtime_set_autosuspend_delay(dev, VCNL4000_SLEEP_DELAY_MS);
--	pm_runtime_use_autosuspend(dev);
+-	ret = iio_device_register(indio_dev);
+-	if (ret < 0)
+-		return ret;
 -
- 	return 0;
+-	return 0;
++	return devm_iio_device_register(dev, indio_dev);
  }
  
-@@ -2087,10 +2086,7 @@ static void vcnl4000_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ static const struct of_device_id vcnl_4000_of_match[] = {
+@@ -2082,13 +2078,6 @@ static const struct of_device_id vcnl_4000_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, vcnl_4000_of_match);
  
--	pm_runtime_dont_use_autosuspend(&client->dev);
--	pm_runtime_disable(&client->dev);
- 	iio_device_unregister(indio_dev);
--	pm_runtime_set_suspended(&client->dev);
- }
- 
+-static void vcnl4000_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-
+-	iio_device_unregister(indio_dev);
+-}
+-
  static int vcnl4000_runtime_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+@@ -2128,7 +2117,6 @@ static struct i2c_driver vcnl4000_driver = {
+ 	},
+ 	.probe = vcnl4000_probe,
+ 	.id_table = vcnl4000_id,
+-	.remove	= vcnl4000_remove,
+ };
+ 
+ module_i2c_driver(vcnl4000_driver);
 
 -- 
 2.53.0
