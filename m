@@ -1,66 +1,82 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from seahorse.cherry.relay.mailchannels.net (seahorse.cherry.relay.mailchannels.net [23.83.223.161])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 285FA313546
-	for <linux-iio@vger.kernel.org>; Sun,  5 Apr 2026 16:09:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775405349; cv=none; b=cVzJITpnUe5qRrV+n+QEeCuFtmxpbhgrD8Wc39YHw4sIrwx27+s0FaDK5DPGhoAewQ2YVBSz4jj8tVM7xz++XvanlGM3tWJweRhVK2y2F18WsCrwxYZu+KcBKScbEqLU0rRtjo7fmT6n0O0clcSrzE2xhIHliAvFtwZwNm/iw7k=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775405349; c=relaxed/simple;
-	bh=v9TErxDPpsIRkhNKYWP4xtO27wbtpwBXPJW0u87VpDI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=uYEkw0ZiYjvucxphdjpe1565lTya3poqbmI2Nz2ej2+Xrqk3yhAHPyFkWRI+aN1zqKoevRbNFtaRuOnwrJ7DWVqt8orAMda0KHujVGqQsYsVPzbwqX9da1VN94fDr7/CnJaz2rYeKfu6UQUJr3Slv2jk17G6XOX+DHAHcAHu6TE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rQGPfP7V; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E97731F92E;
+	Sun,  5 Apr 2026 16:52:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.223.161
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775407969; cv=pass; b=MKl4efTOlFRGJX33IwAbJwopkKo4XxLjZAlD4OOk2Z437nG0gHwHKhOyXsfUHDm0Yz/vklLiWs6NXRPchkw3B6vlduZQtdBI3TVhUBbvRKnnojn0M8To2g3XdQuOVsZPyJj2Pj8STFzVCjF/g8BzA+rhtuu8GfuMDq7z/geDHJQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775407969; c=relaxed/simple;
+	bh=EZvCXxmXvySQhsHp6IWve7TbCpesTjhOh1VUEuJb5Ck=;
+	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc:Date; b=iDuy9xBHCRzMzYpaXKa012r6kj9OqDWWgzaVn+YpEQ5nSqLdwRnHdB88kACGND0nS4VLUijT9GD8Wr5S53wEXvG92I6ocAVWFkK5OAfEv2hNfwRm1x8xiAfJ4dUiM+dn6S3NqtJrE4jfGSFeluOw4aL8LdWkgh0a65AClni1PpQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=q4vyiR4B; arc=pass smtp.client-ip=23.83.223.161
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rQGPfP7V"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-b9c280322e0so385894866b.0
-        for <linux-iio@vger.kernel.org>; Sun, 05 Apr 2026 09:09:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775405341; x=1776010141; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VovxD7yoVP0rJaxD5qPxYVv5hPsMXk0JFRDMJJBecv8=;
-        b=rQGPfP7V6c+fdv4j56Gkks+qoqdpMkBuy76G0AcAqDPCUqsgg8QCisK21BSvdJfJCn
-         IRVA9dDjhF/oIj2Ewys15AngS83YQmv8pUMrUxvFEoWxZoxTNhcoZDkQs1lK+s5kutjQ
-         2tPgqQnYJr7GNE4uJlYhUs57Aideqb8gIlnA31UEGkTOckBaWIHX26BAyEt8Y518G5pl
-         XWBNbFuWdAgUROShYgUPs/d+q3Y0vAkD902YGE2XV9TqGKvD9B0YDozxUG6ptIoTPvf+
-         JIz6kOCmrqV1gluPefy2fBiyRxm8m2w5f86L9xvOwnSuIBBU7xHrVxLoLvUbWJiY84Cv
-         li1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775405341; x=1776010141;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=VovxD7yoVP0rJaxD5qPxYVv5hPsMXk0JFRDMJJBecv8=;
-        b=Wwb/4EiC9FuCV4OydKoECm3gy33izzfy7KhNJHOmCe//q0hhQNLkaFD73G69Zoqgmm
-         nY5mPcUwj0YpuPN4f6gtsMQXRYhVPkrVemBPVncY0Eu7DqrpqzTcTMjRgMQvdVtsGtjp
-         M8MXQjrTuLlh7yextFTrf30ILBFJzt/f0l4lo2VZrMFKgPglCEwMppX0PiQMFkTLHrPC
-         Uf2zPTihbReX7D4+8JfDfs/qlhNfb8QOnNmesa2iB4i/uPtbQJhLXkh0tFkXp7oIILfT
-         vcuN/loE2h4j4OT7TPriT7F4hBoMeNvdnfQ20C2uPSbNK2ab77ynuopdSk6cBjv4neME
-         egTg==
-X-Gm-Message-State: AOJu0Ywdnpt3CGBun8Klofj734DuEN/CcdFtAw40RE1pIiQn15UouriC
-	cYxdkwbQM25/orYD7Yt5ngb2/XAC+Crwg2DdndFM50nf9+EO2SJud/AEvnMMRSBc
-X-Gm-Gg: AeBDietSkW+9IO7UoB2YoGVwk8JYfB8zwM8K3wqLK62IMUtnRRImv+P5I2v/XjzLol5
-	029rjTo/nmJBChvpvIwMnFv0oicDakvH9ZKxdYXCoahtyOGaAgmXfcWjSUedFHq51aPT63kFz/5
-	3HWqDtvF6u+9zAg/bYXekzEdOX+UgYDEgPDYkG3Fdx66hvVhlB70et2p7worxKRNz736ojSOZ6R
-	hU+r72YFGaDthX64kfMS+s78oYaBXxJBjW3OhrkOyviq3yz2Kg/efquQvi+yqnyCtcZHRNT9ZuE
-	wv1f8oO3o8Hrs5JiNnnNmGi+AgDGHMfLI9OHnRF9zXDTEpoUCQ9GpycIDqurQts0rLaZ93Ss0B/
-	yZTgRIXh2mmqPKVYVu4+BiNA2BD6Bt2O55g3bSiuIdPDvraE92ltt8GGumgx+TZ5zeyvRklqq1S
-	m43jt3oTfHR02TMXoVjHgxc4SjMg==
-X-Received: by 2002:a17:907:3e0d:b0:b9c:7f55:cc6d with SMTP id a640c23a62f3a-b9c7f55cf7bmr327776766b.46.1775405341075;
-        Sun, 05 Apr 2026 09:09:01 -0700 (PDT)
-Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-66e02f389absm3195890a12.13.2026.04.05.09.08.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Apr 2026 09:09:00 -0700 (PDT)
-From: Erikas Bitovtas <xerikasxx@gmail.com>
-Date: Sun, 05 Apr 2026 19:08:43 +0300
-Subject: [PATCH v2 6/6] iio: light: vcnl4000: register an IIO device with a
- device-managed function
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="q4vyiR4B"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 943CA6233B;
+	Sun, 05 Apr 2026 16:52:40 +0000 (UTC)
+Received: from fr-int-smtpout21.hostinger.io (trex-green-6.trex.outbound.svc.cluster.local [100.96.162.172])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id B25E461EE6;
+	Sun, 05 Apr 2026 16:52:32 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1775407955;
+	b=uyCSFAs831DzWou3rdSgXZD67kZStmTarnH5NAv09qvXKCng8yBj5/hyJzFoYNmB1ExFr+
+	6bQEtf2aJ/6hQOy3lNJm4MMQuyKCr8EgMZmxBk3p3QmqeosdHK38V/1mIHq5g3SE/yAFZq
+	EYbWPYoFo6X5TmD3yYCPPiQ7FITJ3OBRwSZSOGw5mvqFUVHRTudYoIVWuQiDHm2Nwusi/3
+	GnJ3GLqWWYqyuNCWahzcMUQlX2rzKkiDaZVNzGUmcmhz4zs7b/SyG9mNHPKP7NtWYgckSp
+	PPkTFVSeOy63cVVFOR675eKdU0BRlRDwKbNow1vnKZI5czr9JwITGAeXfSNmcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1775407955;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=0hEJfRZL2GIoJ9y9RUP+pRIEiyvVIB8dhWwj+cFjh/c=;
+	b=CchZ8KjU9i9oRW1hECXejOF7WEYcKUyaGsFrw2Lo5RnFsngLQeI3oC2mMG7OXdV3gcLjU3
+	pXRkjNg+IYzxp2ZFipJ3Keou39Ee04m3oI46HlMeuer8+yuRpzZOcJ1sXmjYM0z6809v4p
+	tyXeL5xGPz9P9haMzDBNSM3HFH+p8kC8Ba0Ml8hklETEpLH0aOtuQgpvUXuwjY1xS2ENFT
+	iFMawt0Z8bzkHZ8H40PWo2i5eTaaNGI+jBURZXLMA34sJL2lh9lz66K20YxZEP3y7+1Lox
+	kuS08lVj4IwhiZX5R77IuUVmyhFL0GVSWrEVJcI22PWiejsNrosMFMs6+LSZGQ==
+ARC-Authentication-Results: i=1;
+	rspamd-bd48b9d95-kfrcw;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Inform-Soft: 50b9824505a2f1ff_1775407960501_602095209
+X-MC-Loop-Signature: 1775407960501:692205676
+X-MC-Ingress-Time: 1775407960501
+Received: from fr-int-smtpout21.hostinger.io ([TEMPUNAVAIL]. [148.222.54.33])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.162.172 (trex/7.1.5);
+	Sun, 05 Apr 2026 16:52:40 +0000
+Received: from [172.17.0.2] (unknown [180.247.251.74])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4fpdmQ0t96z1xnH;
+	Sun,  5 Apr 2026 16:52:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1775407945;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0hEJfRZL2GIoJ9y9RUP+pRIEiyvVIB8dhWwj+cFjh/c=;
+	b=q4vyiR4BsEa5c/T8veVnc0lK8Er+8RLTn5Kvmlqcvuyrc22OWnsO/n2h8QKuPQOPhicUa6
+	xDKfXHss+ZX3tXHfT/smT20Iu59UHrB0oO5UcTHrSRXqIoHqeXgf4Y7FjVvSKD5yeSkG3T
+	4U1YGWGPrX5HZn3MHzZA97q+I9FHW8t/gGVcGyW6ghiRRa/7M/V4mqymZCGrWcVjKhlbf2
+	bgc6cuYtY16wLEVSTiZuSo77gBQwJTnbOr+1Wi21vgleFvU6AT6cdM+awx43WNU5bs2OCK
+	5KQhQdtWUjVkw9Vlxzfzl3GgvJCG90wJGixReE2hAiZ5nCQpdehZOmA24A1iNA==
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+Subject: [PATCH v3 3/3] iio: adc: qcom-pm8xxx-xoadc: add support for
+ reading channel labels
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,66 +85,120 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260405-vcnl4000-drop-enum-v2-6-7c8dc98c3974@gmail.com>
-References: <20260405-vcnl4000-drop-enum-v2-0-7c8dc98c3974@gmail.com>
-In-Reply-To: <20260405-vcnl4000-drop-enum-v2-0-7c8dc98c3974@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
+Message-Id: <20260405-pm8xxx-xoadc-label-v3-3-9fe179c283ec@smankusors.com>
+References: <20260405-pm8xxx-xoadc-label-v3-0-9fe179c283ec@smankusors.com>
+In-Reply-To: <20260405-pm8xxx-xoadc-label-v3-0-9fe179c283ec@smankusors.com>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Erikas Bitovtas <xerikasxx@gmail.com>
-X-Mailer: b4 0.15.1
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ phone-devel@vger.kernel.org, 
+ Antony Kurniawan Soemardi <linux@smankusors.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1775407927; l=3487;
+ i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
+ bh=EZvCXxmXvySQhsHp6IWve7TbCpesTjhOh1VUEuJb5Ck=;
+ b=aBPJMkSjbSOgeM6iloBF8lAxAAsGUf3xgrX3LHRw6FqrPRqzgEc8o2z25GX91IenLx9F0Mkqm
+ zOlGkzZn1NhAcOrRC3D2nBI+Z48P1JTIKk4kEs2/kaJBX0p4dwm5QJg
+X-Developer-Key: i=linux@smankusors.com; a=ed25519;
+ pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
+Date: Sun,  5 Apr 2026 16:52:21 +0000 (UTC)
+X-CM-Analysis: v=2.4 cv=UN2PHzfy c=1 sm=1 tr=0 ts=69d2934a a=iMBLmzX4nuXcozcv68JNPw==:117 a=iMBLmzX4nuXcozcv68JNPw==:17 a=IkcTkHD0fZMA:10 a=EUspDBNiAAAA:8 a=wxLWbCv9AAAA:8 a=RWyRNVyMI2VXGFIsuXIA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
+X-CM-Envelope: MS4xfI0nPhALSosJI+v+oJPO0SjtJmuCDvm+JLLK2keCfvqLo1cGIgAYYsVbTFd20We0Nbf9mclb1cR0e3S7BUJqlwkszZ4mYq9WOM8w8jnXH+0kf1kzCnft eKu6DUC0CY8HUv/thvbfOP/sZmbYyo8F5Q7oF96TGmC2J9+UyD6yJRbozSrale95vdNANhMJjIwdw0LFwt1sjrZ6pLYkbQEkFk9CvsDoPKMMDVoAteAHfMnE qAS053efXPMYyoSMI4yvxJZckCljAm7PyV0Bgdrt0bZLkgKwJrpRhQS+aDGhoyNUKE9N4MsJaiR5U1/kzIY9ug/MXi1JmndLVnKEV9emvDtobRbB+JYUm/qs M3zRUMTimxuqC+HuMfbgkTvciF+pj5HEtBXYuWD3fK+QQY73OcQnAL6JAfNCwdwJAIFYoc76IrbS/Q+vziwme744ZxZ1XZ/qAfqOb3qeqL8vlkosFJXGP5Sb 1vf9408FcRF6vY63tnNPbxiWYjpCq2q/Zz3UC7scvbk5sRPtPEHGFEbdHyk4LjkbJuzuOohthYFnp3/lQlnqZr32trTK9Q0lGpVfrJg8RwH12n5R2L4DTeVW 9zlJV8m1riVALUuQbMFKpp4FIzT4LvyMlHjPs1Vv3pXSs6nuPMlS8qrI+oCza6qMoYtlQ8LyAcz39TAkrwM6PWU4AMsLyyrmeetP4U2M2PcW8pbIdIyU0zf7 C61dG5TDf7I=
+X-AuthUser: linux@smankusors.com
 
-Use a device-managed counterpart of iio_device_register() and remove the
-redundant iio_device_unregister() call in driver remove function,
-allowing us to remove vcnl4000_remove() function altogether.
+Implement the .read_label callback to allow userspace to identify ADC
+channels via the "label" property in the device tree. The name field in
+pm8xxx_chan_info is renamed to label to better reflect its purpose. If
+no label is provided in the device tree, it defaults to the hardware
+datasheet name.
 
-Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+The change has been tested on Sony Xperia SP (PM8921).
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
 ---
- drivers/iio/light/vcnl4000.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+ drivers/iio/adc/qcom-pm8xxx-xoadc.c | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 556dc9afa82c..0813639b5ac1 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -2062,11 +2062,7 @@ static int vcnl4000_probe(struct i2c_client *client)
- 	pm_runtime_set_autosuspend_delay(dev, VCNL4000_SLEEP_DELAY_MS);
- 	pm_runtime_use_autosuspend(dev);
+diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+index 537b03181cbfb4cfcbcb242bcc2c7be18c4c384b..4ff9fee0dbbd9df80b97eb91744133c3db8b3bde 100644
+--- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
++++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+@@ -369,7 +369,7 @@ static const struct xoadc_channel pm8921_xoadc_channels[] = {
  
--	ret = iio_device_register(indio_dev);
--	if (ret < 0)
--		return ret;
--
--	return 0;
-+	return devm_iio_device_register(dev, indio_dev);
+ /**
+  * struct pm8xxx_chan_info - ADC channel information
+- * @name: name of this channel
++ * @label: label of this channel from device tree (defaults to datasheet name if not specified)
+  * @hwchan: pointer to hardware channel information (muxing & scaling settings)
+  * @calibration: whether to use absolute or ratiometric calibration
+  * @decimation: 0,1,2,3
+@@ -377,7 +377,7 @@ static const struct xoadc_channel pm8921_xoadc_channels[] = {
+  * calibration: 0, 1, 2, 4, 5.
+  */
+ struct pm8xxx_chan_info {
+-	const char *name;
++	const char *label;
+ 	const struct xoadc_channel *hwchan;
+ 	enum vadc_calibration calibration;
+ 	u8 decimation:2;
+@@ -446,7 +446,7 @@ static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
+ 	u8 lsb, msb;
+ 
+ 	dev_dbg(adc->dev, "read channel \"%s\", amux %d, prescale/mux: %d, rsv %d\n",
+-		ch->name, ch->hwchan->amux_channel, ch->hwchan->pre_scale_mux, rsv);
++		ch->label, ch->hwchan->amux_channel, ch->hwchan->pre_scale_mux, rsv);
+ 
+ 	mutex_lock(&adc->lock);
+ 
+@@ -718,8 +718,20 @@ static int pm8xxx_fwnode_xlate(struct iio_dev *indio_dev,
+ 	return -EINVAL;
  }
  
- static const struct of_device_id vcnl_4000_of_match[] = {
-@@ -2082,13 +2078,6 @@ static const struct of_device_id vcnl_4000_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, vcnl_4000_of_match);
- 
--static void vcnl4000_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--
--	iio_device_unregister(indio_dev);
--}
--
- static int vcnl4000_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-@@ -2128,7 +2117,6 @@ static struct i2c_driver vcnl4000_driver = {
- 	},
- 	.probe = vcnl4000_probe,
- 	.id_table = vcnl4000_id,
--	.remove	= vcnl4000_remove,
++static int pm8xxx_read_label(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, char *label)
++{
++	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
++	struct pm8xxx_chan_info *ch = pm8xxx_get_channel(adc, chan->address);
++
++	if (!ch)
++		return -EINVAL;
++	return sysfs_emit(label, "%s\n", ch->label);
++}
++
+ static const struct iio_info pm8xxx_xoadc_info = {
+ 	.fwnode_xlate = pm8xxx_fwnode_xlate,
++	.read_label = pm8xxx_read_label,
+ 	.read_raw = pm8xxx_read_raw,
  };
  
- module_i2c_driver(vcnl4000_driver);
+@@ -763,7 +775,8 @@ static int pm8xxx_xoadc_parse_channel(struct device *dev,
+ 			pre_scale_mux, amux_channel);
+ 		return -EINVAL;
+ 	}
+-	ch->name = name;
++	ch->label = hwchan->datasheet_name;
++	fwnode_property_read_string(fwnode, "label", &ch->label);
+ 	ch->hwchan = hwchan;
+ 	/* Everyone seems to use absolute calibration except in special cases */
+ 	ch->calibration = VADC_CALIB_ABSOLUTE;
+@@ -805,7 +818,7 @@ static int pm8xxx_xoadc_parse_channel(struct device *dev,
+ 
+ 	dev_dbg(dev,
+ 		"channel [PRESCALE/MUX: %02x AMUX: %02x] \"%s\" ref voltage: %d, decimation %d prescale %d/%d, scale function %d\n",
+-		hwchan->pre_scale_mux, hwchan->amux_channel, ch->name,
++		hwchan->pre_scale_mux, hwchan->amux_channel, ch->label,
+ 		ch->amux_ip_rsv, ch->decimation, hwchan->prescale.numerator,
+ 		hwchan->prescale.denominator, hwchan->scale_fn_type);
+ 
 
 -- 
-2.53.0
+2.34.1
 
