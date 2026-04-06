@@ -1,66 +1,68 @@
-Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C716B307494
-	for <linux-iio@vger.kernel.org>; Mon,  6 Apr 2026 04:39:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29C9931283A
+	for <linux-iio@vger.kernel.org>; Mon,  6 Apr 2026 04:39:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775450371; cv=none; b=WSC1xsvYOS77pdDb7zMPtL5X4pFoikHj5Crk4MqmgYbXvXybRccnW2UdDwXit5ArIO/S1TdYtJVqTKd7zb5lxWSoMfF23zBKwq05LPgccalB7Y6mHe2FtswcsKEAVclEalOjdkv7LKntgqvfUBdVHtvI+f3iLhCrLB6iRF/6/As=
+	t=1775450372; cv=none; b=aw6nzUn0RumqrXZ/KF2ShQieHTlUsR9mTzAU3JPYVuUozEp7usSz/ucNoDHePMt9bcTqrdvKzHzwqRCzdmRc01h8CpyygKS30y0YewNcpMtiSDLeD0hdTHEvNrUVPJJI6TI092M5OJoyRpXJYN0VxkMSyNRpc0Bao06o6ornjA4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775450371; c=relaxed/simple;
-	bh=RzEbZjcRmdidkNJkUegPmAYcXuIFqLW3QK+aimG4ZBo=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=o7g9cr4YfXf+NI6Le0F/h+hqs0bJC1kKjWNBUty1qY9xgyhNxmeMyA2ADGXOG08GqIfWnVozSdEObf3jmJMy0KeTzviSXk8C6nJFly/IMooJI+K4jKZnNhFOdUsO0oZleYlpiIcX/Li1Zm29SqhUWfQydxKIhyzJ3t1Ri+oMLpc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XfpIxvmc; arc=none smtp.client-ip=74.125.82.173
+	s=arc-20240116; t=1775450372; c=relaxed/simple;
+	bh=Jp11lnnBrydu78xWpI7iQkASv1g6UtX/tycmB5OGwuo=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=r7NSomK3tIddcYvyOq2JhYD7ZC6VO/+Sh8v/y3zXDrV8XGcIxBf6crp0QQSjycjckR9+UnP9qHn07jVZDhNn36YFaZ6H2PvzXJlnAON8PFsjx4TxuPV3YowUBIfmY0i6IyI/Lst0RmxcqwcLOCdV8PhQeg4xvMbDoHiaf26hjjI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LGv3t+uy; arc=none smtp.client-ip=74.125.82.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XfpIxvmc"
-Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-2c15849aa2cso4275254eec.0
-        for <linux-iio@vger.kernel.org>; Sun, 05 Apr 2026 21:39:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LGv3t+uy"
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-12776bebe9fso8410502c88.1
+        for <linux-iio@vger.kernel.org>; Sun, 05 Apr 2026 21:39:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775450369; x=1776055169; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=94bs8yeSDdB1bxNykO0LbTpY30fHjkiSTFrt3pHkIKs=;
-        b=XfpIxvmcRardypmqcJP/Eq/45nQ+nNbaLRhwNzkQaxyDnSqAJO1UHh25dKedy0HPa3
-         VeX8w2NLy4CFhgLTpJwMtSQk9UL341ctSPZcqrdZiuQR66Xtk+ikehDY5g4F5brOjeNe
-         LC81X2XsQkHm0ru9Iu9eNGq84hn/bLT/7Yc83JyCYcLZMACdPrNqqj0LavH9Fkp0FdtD
-         hTkNC0/ihJ34bON2jMzSXAd2PJ3IC2UzW7Q3pEKp4Pb+ViTSdkmOcCs0LdEpPo5t3T3K
-         AW0syZG/72SSK1DQNybip2uJHqxyFWyliE1tBfhFg+iKjd2VhbhwqoUx2+Fpiko7zIHX
-         OhbQ==
+        d=gmail.com; s=20251104; t=1775450370; x=1776055170; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bm4XXEcWjidns3Evs84tEMwqC2yXbhhjm6W1vqULni0=;
+        b=LGv3t+uykzFn4AzECoZMV3TV+6IDSpFEr9A5rcl5TmCYxvMQ4GWOvDqbqkWEnQs99w
+         WdVxwcTRyTvtsieQ7vasOOqDKuqwL8vO++Zgmjv96jli/meVRsuY/lGhWwGb0mQiMJd2
+         5VCyEu5VS+DfzYriXJeIxmrGFLfeWQ0LWm7cxtMZOF4nxQTZkbnBNhfmiyaFHCeOt0LE
+         Ox0RSQkMc6otHc59ztM4dFpEaHfbQ4cKQGFTRl21fpeNsOmldRe1JyWI9v+rT0vWr6lu
+         BtzlqOZsnCJoD/RxpWbfrwkx34EcNWc2r+D3S35ImPasbfZDVLPSn6/Pvi7Qxjm5MqMM
+         7UBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775450369; x=1776055169;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=94bs8yeSDdB1bxNykO0LbTpY30fHjkiSTFrt3pHkIKs=;
-        b=jYgpinSTiVMAAheB+/WjQxs1CCZMJvq1V1EQu37clAYdPRb9PTXfWREm/cBy00PvNk
-         ZcdlYh1d9M1UdDrjIfxRWsTvywQGAd+A+Fa25u+mJk8tDiPG2dGgPbwMeqId76vku3VN
-         Ep48t40Oxi3TS2yKq9BZJvdXfIr8YeyxZF8ckaPFdCy/i6nrkocn/A6axB6ZenQZhwl2
-         4GCeNOAKrHPZ8dYsyhNU4TiHJUKIInMb3t1zuNoZQTqaj1onYROETsB4w4x27kDOjig5
-         udGnCs2hNLcUITIAd1K1pi9RHhrp1UFErr9UxJVOBoLrRPYBtSJRQU4VDx8Q0x3X09K0
-         qpBQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUIH3l9zCfMB5/MZjcylZs3egkobBENn6Hpu/jGiPN44DvVDu/8Hgiw1/SmErBxx5Wh0QJeHOtvlyk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwymLb4CAhSUnRvNUt35PrB0l5bA98CacdSOtE4xWdbFS5dqCuZ
-	MX5V6DZNJ36/O7KuReivQga8SFfsMUqNF3la1aKfpWpX5GzKcgowfU9i
-X-Gm-Gg: AeBDieuHhWTFYuai3FJ5qCA3B/7esXqYHjgtMs0xQ9rdLDmRnVCR132vjpGYw+YBhPE
-	Ly5bmgY3gJLt0h8Ry3PWOiRi3BYf9apcTc2NHbbfGUkL41NXhOEyGVN4XpvnfLzo8oXE4IdD0+s
-	lqmYxwEirjtGWt3FYIzS/qIbpNsMJkZaAcOSRNsmiUpWEFYDZJbZK9J3AaLAjm9dy3mlPPZqAwl
-	KmxeMiAia+sKoSzswQmZJvhzGcMj+OXSNVSKF2uYDWfEyQMdFrLpnBu3XQV9KTMv4UlUVDcivCf
-	Q0dhAbxWmsXWn0w7GIwIN7mjeYtQfWjYXsoC6nZlhLUewGn/soFgCOhauIpRUKkDAokLn7Ac5QU
-	74AV0l5wtbBlzIuwVz9GeIzwyugkdyY0hziOSBJhr7y4j/au6UjLVHHtax8rSCNtVJFWrCsb1H+
-	0LpBN+9ikHQK6OaDMbQSTLT6YsFdvsP5k+QfuT2FmNv8cjgKGMWJVDiInRipa3SETpKihEtA39o
-	6LqJCHdBCwpy+A=
-X-Received: by 2002:a05:7022:43a8:b0:119:e569:f609 with SMTP id a92af1059eb24-12bfb6ecd57mr4932000c88.2.1775450368753;
-        Sun, 05 Apr 2026 21:39:28 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1775450370; x=1776055170;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=bm4XXEcWjidns3Evs84tEMwqC2yXbhhjm6W1vqULni0=;
+        b=VboeZaMZBtQkQgTqbfb/dH9n0nwGanPWJ5RZwaDg+hXRDWPH97af0RgUbKwsSkSYdu
+         PH/SMOQtUbuy+3ulQrFkcj0He0rw5cwVc0CQgR9Do5oQi7h6v92JYkd44LMKQJqItSvx
+         zjE8tLYYvusJCx4bWtEGpqEBnt/DfAGAV+LSETTn6Sn8k7aSmvzgV8rdugroNsrhGc98
+         5+ODsBkTHFg4vtYFaey7k0zPkqcpB+yDPZohhFdNI7i+RDkQDIb+kpRrmKSPDPV8soNE
+         ZJAj/dPRfYYLadfbceYaPANmJ5k1vbXTlfstfjE7h4pnlN0fYtbXaL1SITpEGGymGBrc
+         n60Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVe97YOWv34pcU2ctvTlqGNYevuk7Kc3bWujspn5Xkjx/xmAhygrG/LnpkNmvVN4fT/bmkocAapXCU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzlHzfZmg1V6lzdJUE6VV7MkzgBsYKAgYtkhXXMqs7ECTjlWma8
+	a0LXCPA667cGQBLzRzb8m8deBVKSL56RB1phNk2OuMAeHM4HPQw0VTEF
+X-Gm-Gg: AeBDieuiA8L2GZj6vbMjpaSn/gXisZ9Z4BVoFqx1qHs9SiA1Muk0h9rL0jBDqo5Gw40
+	0pIo+ULnL+zFNgXZ4/i8veHJkYCOrTMC4JCQG/IAM6jow1p9m/Uo1UjgTg54LChp4kfyd8J7mwB
+	lCQc14Pxi3Yqe1ZTg/p6B8xIWUAW4eLAlx4lz+DPDABfMN2+ekHUalknQRQLN8ckyXsku5bP6xZ
+	W9f8MZkfw34cDqlhjaSHHMBKE3zVaEWwN7M4m8Zjfjs78i9BrLX7rs4iDTDlO0p5ZL71Oa0tLgJ
+	VYZJI25rEQWyNUR25TmcQ/0JZfCYYw91VtEsB42HeYH5GrEmE3qQVE/8FwIS116jopxGQf6HlYM
+	o+7QmMHrgUoN4CO61BQPTj23HafrTt+Uh6ieSrDT9usD7XpG7dGTntHfsm3X9S7llF3z8VdSsnh
+	yZ7N0PrwPlUzUc6wm88PmMmcqANyrRZOcv7KgtIcE/ewwMWBgfvR7bb5MZABtWD2mCLkBbBGctV
+	2LtkOBasSf7n0s=
+X-Received: by 2002:a05:7022:6092:b0:128:cbc7:4c28 with SMTP id a92af1059eb24-12bfb771ab5mr5387632c88.35.1775450370259;
+        Sun, 05 Apr 2026 21:39:30 -0700 (PDT)
 Received: from dtor-ws.sjc.corp.google.com ([2a00:79e0:2ebe:8:fe13:98b9:9e98:d1bb])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12bed93f861sm15182005c88.0.2026.04.05.21.39.27
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12bed93f861sm15182005c88.0.2026.04.05.21.39.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Apr 2026 21:39:27 -0700 (PDT)
+        Sun, 05 Apr 2026 21:39:29 -0700 (PDT)
 From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH v5 0/4] ti-ads7950: fix gpio handling and facelift
-Date: Sun, 05 Apr 2026 21:39:22 -0700
-Message-Id: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
+Date: Sun, 05 Apr 2026 21:39:23 -0700
+Subject: [PATCH v5 1/4] iio: adc: ti-ads7950: switch to using guard()
+ notation
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,12 +71,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAPo402kC/23Oza7CIBAF4FcxrJ1mCqWCK9/D3AWXHzvRigFCN
- Kbvfql304XLM5Pz5bxZ9ol8ZsfdmyVfKVO8tyD3O2Ync794INcy48hH5ByhEBiXD1oiBGP9jUJ
- pB/UrhUYzyoG15iP5QM+Pev5pOaQ4Q5mSNxur183TXHdCSoWqhx7cTCW9uhJTvE6xni6zoVtn4
- 7yiE+X2eH2WVrHS/5BA+XVUFYBguAjO9QYP2m+4dVQdNgbX342hGVaOykpUdtBmayzL8gf4OJD
- WPwEAAA==
-X-Change-ID: 20260220-ti-ads7950-facelift-ad8b5390a654
+Message-Id: <20260405-ti-ads7950-facelift-v5-1-1f980ed3cf9e@gmail.com>
+References: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
+In-Reply-To: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>
 Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -85,58 +84,203 @@ Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
 X-Mailer: b4 0.16-dev-6911d
 
-The original reason for this series is to make sure ti_ads7950_get()
-returns result in range [0, 1] or a negative error code to comply with
-gpiolib requirement.
+guard() notation allows early returns when encountering errors, making
+control flow more obvious. Use it.
 
-During review David noticed the fact that the function also clobbers
-gpio state. Fixing that lead to adding cleanups using guard() and devm.
-
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 ---
-Changes in v5:
-- replace mutex_init() with devm_mutex_init() (Bartosz)
-- Link to v4: https://patch.msgid.link/20260329-ti-ads7950-facelift-v4-0-c568c508c49a@gmail.com
+ drivers/iio/adc/ti-ads7950.c | 83 +++++++++++++++++---------------------------
+ 1 file changed, 31 insertions(+), 52 deletions(-)
 
-Changes in v4:
-- rebased on top of latest next
-- dropped the 2 already applied patches
-- restored inadvertently removed mutex_init() (Andy)
-- stopped calling devm_regulator_get_enable_read_voltage() on ACPI
-  systems as it is guaranteed to fail (David, Jonathan)
-- removed call to spi_set_drvdata() since it is not needed anymore (David)
-- Link to v3: https://patch.msgid.link/20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com
-
-Changes in v3:
-
-- Added "Fixes" tags
-- Picked up reviewed-by tags for #1 and #2
-- Dropped the conversion to "error" variables
-- Avoid using scoped_guard (per David)
-- directly return results of function calls at the end of function (David)
-- Split spi_sync() error handling into a new patxch (Andy)
-- Switch to using devm_regulator_get_enable_read_voltage() (David)
-
-Changes in v2:
-
-- style fixes in #1 (per David)
-- fix to not clobber state (#2, new)
-- #3 and #4 (new)
-
----
-Dmitry Torokhov (4):
-      iio: adc: ti-ads7950: switch to using guard() notation
-      iio: adc: ti-ads7950: simplify check for spi_setup() failures
-      iio: adc: ti-ads7950: switch to using devm_regulator_get_enable_read_voltage()
-      iio: adc: ti-ads7950: complete conversion to using managed resources
-
- drivers/iio/adc/ti-ads7950.c | 197 ++++++++++++++-----------------------------
- 1 file changed, 64 insertions(+), 133 deletions(-)
----
-base-commit: 2febe6e6ee6e34c7754eff3c4d81aa7b0dcb7979
-change-id: 20260220-ti-ads7950-facelift-ad8b5390a654
-
-Thanks.
+diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+index 028acd42741f..6e9ea9cc33bf 100644
+--- a/drivers/iio/adc/ti-ads7950.c
++++ b/drivers/iio/adc/ti-ads7950.c
+@@ -299,18 +299,19 @@ static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
+ 	struct ti_ads7950_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&st->slock);
+-	ret = spi_sync(st->spi, &st->ring_msg);
+-	if (ret < 0)
+-		goto out;
+-
+-	iio_push_to_buffers_with_ts_unaligned(indio_dev, &st->rx_buf[2],
+-					      sizeof(*st->rx_buf) *
+-					      TI_ADS7950_MAX_CHAN,
+-					      iio_get_time_ns(indio_dev));
+-
+-out:
+-	mutex_unlock(&st->slock);
++	do {
++		guard(mutex)(&st->slock);
++
++		ret = spi_sync(st->spi, &st->ring_msg);
++		if (ret)
++			break;
++
++		iio_push_to_buffers_with_ts_unaligned(indio_dev, &st->rx_buf[2],
++						      sizeof(*st->rx_buf) *
++						      TI_ADS7950_MAX_CHAN,
++						      iio_get_time_ns(indio_dev));
++	} while (0);
++
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+ 	return IRQ_HANDLED;
+@@ -321,20 +322,16 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+ 	struct ti_ads7950_state *st = iio_priv(indio_dev);
+ 	int ret, cmd;
+ 
+-	mutex_lock(&st->slock);
++	guard(mutex)(&st->slock);
++
+ 	cmd = TI_ADS7950_MAN_CMD(TI_ADS7950_CR_CHAN(ch));
+ 	st->single_tx = cmd;
+ 
+ 	ret = spi_sync(st->spi, &st->scan_single_msg);
+ 	if (ret)
+-		goto out;
+-
+-	ret = st->single_rx;
+-
+-out:
+-	mutex_unlock(&st->slock);
++		return ret;
+ 
+-	return ret;
++	return st->single_rx;
+ }
+ 
+ static int ti_ads7950_get_range(struct ti_ads7950_state *st)
+@@ -400,9 +397,8 @@ static int ti_ads7950_set(struct gpio_chip *chip, unsigned int offset,
+ 			  int value)
+ {
+ 	struct ti_ads7950_state *st = gpiochip_get_data(chip);
+-	int ret;
+ 
+-	mutex_lock(&st->slock);
++	guard(mutex)(&st->slock);
+ 
+ 	if (value)
+ 		st->cmd_settings_bitmask |= BIT(offset);
+@@ -410,11 +406,8 @@ static int ti_ads7950_set(struct gpio_chip *chip, unsigned int offset,
+ 		st->cmd_settings_bitmask &= ~BIT(offset);
+ 
+ 	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
+-	ret = spi_sync(st->spi, &st->scan_single_msg);
+-
+-	mutex_unlock(&st->slock);
+ 
+-	return ret;
++	return spi_sync(st->spi, &st->scan_single_msg);
+ }
+ 
+ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+@@ -423,13 +416,12 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+ 	bool state;
+ 	int ret;
+ 
+-	mutex_lock(&st->slock);
++	guard(mutex)(&st->slock);
+ 
+ 	/* If set as output, return the output */
+ 	if (st->gpio_cmd_settings_bitmask & BIT(offset)) {
+ 		state = st->cmd_settings_bitmask & BIT(offset);
+-		ret = 0;
+-		goto out;
++		return state;
+ 	}
+ 
+ 	/* GPIO data bit sets SDO bits 12-15 to GPIO input */
+@@ -437,7 +429,7 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+ 	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
+ 	ret = spi_sync(st->spi, &st->scan_single_msg);
+ 	if (ret)
+-		goto out;
++		return ret;
+ 
+ 	state = (st->single_rx >> 12) & BIT(offset);
+ 
+@@ -446,12 +438,9 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+ 	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
+ 	ret = spi_sync(st->spi, &st->scan_single_msg);
+ 	if (ret)
+-		goto out;
+-
+-out:
+-	mutex_unlock(&st->slock);
++		return ret;
+ 
+-	return ret ?: state;
++	return state;
+ }
+ 
+ static int ti_ads7950_get_direction(struct gpio_chip *chip,
+@@ -467,9 +456,8 @@ static int _ti_ads7950_set_direction(struct gpio_chip *chip, int offset,
+ 				     int input)
+ {
+ 	struct ti_ads7950_state *st = gpiochip_get_data(chip);
+-	int ret = 0;
+ 
+-	mutex_lock(&st->slock);
++	guard(mutex)(&st->slock);
+ 
+ 	/* Only change direction if needed */
+ 	if (input && (st->gpio_cmd_settings_bitmask & BIT(offset)))
+@@ -477,15 +465,11 @@ static int _ti_ads7950_set_direction(struct gpio_chip *chip, int offset,
+ 	else if (!input && !(st->gpio_cmd_settings_bitmask & BIT(offset)))
+ 		st->gpio_cmd_settings_bitmask |= BIT(offset);
+ 	else
+-		goto out;
++		return 0;
+ 
+ 	st->single_tx = TI_ADS7950_GPIO_CMD_SETTINGS(st);
+-	ret = spi_sync(st->spi, &st->scan_single_msg);
+-
+-out:
+-	mutex_unlock(&st->slock);
+ 
+-	return ret;
++	return spi_sync(st->spi, &st->scan_single_msg);
+ }
+ 
+ static int ti_ads7950_direction_input(struct gpio_chip *chip,
+@@ -508,9 +492,9 @@ static int ti_ads7950_direction_output(struct gpio_chip *chip,
+ 
+ static int ti_ads7950_init_hw(struct ti_ads7950_state *st)
+ {
+-	int ret = 0;
++	int ret;
+ 
+-	mutex_lock(&st->slock);
++	guard(mutex)(&st->slock);
+ 
+ 	/* Settings for Manual/Auto1/Auto2 commands */
+ 	/* Default to 5v ref */
+@@ -518,17 +502,12 @@ static int ti_ads7950_init_hw(struct ti_ads7950_state *st)
+ 	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
+ 	ret = spi_sync(st->spi, &st->scan_single_msg);
+ 	if (ret)
+-		goto out;
++		return ret;
+ 
+ 	/* Settings for GPIO command */
+ 	st->gpio_cmd_settings_bitmask = 0x0;
+ 	st->single_tx = TI_ADS7950_GPIO_CMD_SETTINGS(st);
+-	ret = spi_sync(st->spi, &st->scan_single_msg);
+-
+-out:
+-	mutex_unlock(&st->slock);
+-
+-	return ret;
++	return spi_sync(st->spi, &st->scan_single_msg);
+ }
+ 
+ static int ti_ads7950_probe(struct spi_device *spi)
 
 -- 
-Dmitry
+2.53.0.1213.gd9a14994de-goog
 
