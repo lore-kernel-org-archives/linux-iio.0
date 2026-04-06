@@ -1,61 +1,63 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 053FD3043DE
-	for <linux-iio@vger.kernel.org>; Mon,  6 Apr 2026 08:08:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FCF83081D7
+	for <linux-iio@vger.kernel.org>; Mon,  6 Apr 2026 08:09:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775462940; cv=none; b=W3cFeTkA38TmwMtQSGrljRAeqv8ohkrSDbPqUXHhnJ1FcpYCTiQENF9NfupgfYYmn9X+w8M11mLHe4UMBdEweiw1ExN6BuTI/HCTIqK1lej2XDiuOFIdsJM+M72dPXYdZc2WrRRfJSNbtF6q9uYkj3HFGN8qfzunwSO0+TBEZ5U=
+	t=1775462943; cv=none; b=ofbslzu+AvPdB+sE2Iyk/xIze+ZQ4TwUs2iC2kLXMfRpDSuk1VsaPk15AqDC5ehDTyW0kV1ENwJxv1ZKXm0A6y/ou7Yge8KWX8jkL0uHwgdDr9tvNktzHeE/2MTWmQQAQSOL3LjMVQxGb34GiS/3UqbAOYEkGjfJ7I0pQopvudU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775462940; c=relaxed/simple;
-	bh=y+miQhyfleVT/QglzDlFnG37vcecfD/Kg1w1h8wolGw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=F43u46J9PAU4ZcOMQ4G5LeayuU2PrEm0oZ6XkDCUYEA0ZqxbiWUJKTKnL/qxkkc2hJZaK0YANe6kDxeTOjOh5n94cI5jZjY3tIotrhEcyeziRdY9hPvYKEcGuAh190r/oayfByWY7oaVemGcTM2EdlE1pKX2m8OvARsCFj/Ume0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J/b6PFTG; arc=none smtp.client-ip=209.85.214.172
+	s=arc-20240116; t=1775462943; c=relaxed/simple;
+	bh=yqSb+xj+j+Zsm33QL0jScZhrcDvdKz/PHFkslCX+jao=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=X2gGNq2pZdJCgQF6UraBvf+/qGTuEcavm1UhmC3CxXnY9hQQyTJDWxmB0qj+Om0DGqft9V5Py2ql0FZAc15Zi6cEnI2fMPp8pgG3nbmvcubooYI81X+dFSVtXvuoeBwwgWvyN57sQTLJdt2ynTX1o6fZqwxyR/4c50CJroR+Aw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gg6j6gO3; arc=none smtp.client-ip=209.85.216.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J/b6PFTG"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2ad21f437eeso18364435ad.0
-        for <linux-iio@vger.kernel.org>; Mon, 06 Apr 2026 01:08:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gg6j6gO3"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-35d96be7c13so2197045a91.0
+        for <linux-iio@vger.kernel.org>; Mon, 06 Apr 2026 01:09:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775462938; x=1776067738; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ig1TReV+u6rJrOh3GodDEdZe+CeQGVyzjtit5wuoEZg=;
-        b=J/b6PFTGAw+K4NTeymyIBJYliYvQWVe5r8kxoFGwpNUXuQxSsH5m8vJqrWmSVlf7EA
-         BMra8MDCjtUnPU88UhpxJAL1TX7FrYbYYPGGAalOVTkOsk8PLZgyIt4ritQhvB79QMIO
-         OTOPCKot1M8Dc6u+tbc97ZroYGqt21aibdHq237lWkLRHLvvFZhigOb4UkE3LQr9+oMI
-         IhfTNRmWcFZzQWXqnXubFE23pj0MUfISCCDGvSt81Bf5okPb7UdQvuNZ12vPm+mXJPMv
-         Wkja6UxD9v0Dh1aj6LAqsFPWkUsqJRh42+HxYczRHCQEW7eEkKwRhu6Av0rMh91yejn3
-         eY5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775462938; x=1776067738;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1775462941; x=1776067741; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Ig1TReV+u6rJrOh3GodDEdZe+CeQGVyzjtit5wuoEZg=;
-        b=JDR6DCvXJ24hLArDOY2QiMIuxGzeyJj/yfRA3CC6LqGXS7ub3Bmhw5nOKshj9CU0iM
-         /wJrDhhxHM6OhjXOsK9Ut0h/7SRbFqsp50gCAwCZhckGwVD0T79Sg7XvwEeyIi4UQAIq
-         d4iIlmCz3uIgY2dCu5Zg/l+TQYsZHEetqkMvtWJKI7+jfyYnkUvJvg4Kuj6x4bO3Xoqc
-         jvM73VN+uwSuCfyMV302+SPY9qhTFewknhnFhDc+zfZYvRDwJQnVVz9AE12wbkezfWIO
-         9uEk9OQQwwhl+huywn3vXa2O9YH4C3TZ3waf/Dw+CegGDd+SYfxKnqNerjvwz0jaIS4f
-         g5Sw==
-X-Forwarded-Encrypted: i=1; AJvYcCVpNomxFG5LGX/NTmOFpIJn16oqrqb3yyvOZ1NNBktI1GGvPx/wDk4QJVIhgxkgmXN5HjRilmSeEug=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwUUTRV+1RM04Di0EJEif6km7UxsGQDwq243RQor805VyxsPX/y
-	quXTHytw8KsRa4sjYOkzJGnewZ0ryt3L1eQA4gh7l7DqFbUAW/sNm9iE
-X-Gm-Gg: AeBDiesnf2uG744/duI2p+SZ+newo6yKLW8T5mEk5B6pDnxW/i6pGH2AGkfAIJEEzWv
-	3Cx7nc2c/k5vfrlrMhJP5EJllaWyquxSJPc5p+WsjWOJmlc9LEsiTOxppJNxe4pGF7Tat+GdCOZ
-	KJyAErLFVmLyqZsGAfGrGjz5Dhl85h3eLM37kewt/xZWgxEwsXgFJUN1s7T/kQbdOYk9QdlJfXd
-	IdHi67xlMJUTP4Jq56dCaU9ReqtRVC9XwEXT5+jH4HdlbtRZVYzOttz2APbHo9V3hyYn+T5+B9+
-	KNC5YemhM1rdiSI4aIb+W8w2AGQk20w7xAyyc3h6abctjE7jJ9Ddvl3H5GhNQiyum2PuAcoSFur
-	75B/C9SEwT+ApRKlhyyXJbfUoEnL/bCisq1kl5UaySS6vSUpeQFC8/vcWhSMFMw393HFaKMEcPb
-	avJNBOgoZv+N+Uq+DyGuvGi25rgWCCiFRQqP0hUdxrn81/p+OF+U/n9Y9ROxQ=
-X-Received: by 2002:a17:902:db04:b0:2ae:5346:d4e6 with SMTP id d9443c01a7336-2b277e8072cmr137327115ad.28.1775462938205;
-        Mon, 06 Apr 2026 01:08:58 -0700 (PDT)
+        bh=WI8mxu0XOiC3NdF7Tl4p8eKdsZm/Gey97Qxo+LUKP1k=;
+        b=gg6j6gO3+D1qmC8oyc04VsIgVRRO78WPM8E47k4KqQlcMXDKOi8W8EfU1eL+It1sDe
+         fFT5mK9lVlY9hzm3SUgSrZ1xajN6lYdhpYhG39MiY4/1oZbH3C3wO7ECoFKX14FUDf2F
+         LPcmi1TYK5XDoO/pIiIMMYfV3NqmhY57AIjLLv2ukMTqNW1CXpd3VnyrOn4q2B72yuul
+         YzR0BRVtqBj8kBDPtwsygnYQCUEwobWFfyAfHxj9tZLmGVSsZdKcdXTgffN+Qg2GRCrv
+         lndOsPjWD0pJ28uQWg0Ec/cbpl+mNalsWJlbyppNZPId7UDgXsgyHryRayrp3r6U9k5H
+         sT+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775462941; x=1776067741;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=WI8mxu0XOiC3NdF7Tl4p8eKdsZm/Gey97Qxo+LUKP1k=;
+        b=csyy4MFGm0dKYvlbTWrMM64n19CUBX3Ym4p2l1x3oG2/kcLn20d32UftIUYob9mxUB
+         cuHcikfWUtUL+Px8mgGeVACwQhaealhUjl6JhjIxYoVLdRu3kfZQI5bte4D15Rdk9F3w
+         PBFetYVUPSNBI/aQ5wrAyyJxRB4veN4O6EeLumHCBwYkCmX667cGdPdAKyAASQ0z+z9d
+         hLkZrr8v2hRqOgn1Jv+hqkIySVOXiXE3BfDWq2JcembG4KkPUKTVzNoxi02Mi0EPtfgW
+         qbtKlHK6jL6Z5v6HfyiFgsLRj0C8c/W3A7yG3ylyrmZWhUD05DrpZMnknoBqbmVDnKIP
+         Vcpw==
+X-Forwarded-Encrypted: i=1; AJvYcCUfH9oK0bJJLH3FUgQbu1Ie0ngZ7jihpXCtijkfeX5Zz9ndQifiq7ny4YGAXfnAlbqeb/uWRBAljP8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+OOyqgTC8rk20M5tMN/5O/cke4rZ9zg4YjCM6FbbYbT+wc5S9
+	6xbKlShl18zkJr4LXOY0zlblNL/udB2vOsiajbH56kw6WS8rwGIKx/7x
+X-Gm-Gg: AeBDiesOIdZum6sApFXJGS3op8jHhCjlle8nohCm26Z2nan1ySJDuJ3NPiMFFl1+V56
+	2mEL84F7AQJbNszfpKfG4CrQLm2U1kSilmEtH2p63iBWfJu8xA+xBgsb2FiFcrtKxkBIJDjgkBc
+	drfCQD3eR0qa4PMGy997dJ54VnjraHiw21wQAjmcV3K+kSwE7p5Ico6sYsW+PCcR6zCF2/oBUjI
+	NAz8uQlMZyN8zgt+g+PMiw4haBYFoXc8+zOHij9Sv91N8ZAxK2JuBzmrDMoAPejQvn+bbB3aKzJ
+	bkRK41U43ZT5R+3PrnEoh+HtR/Q1/zIjEoXH+MoyxFkNFCXsSFOC6kZu236MEtdg6Wv1EmqBDDQ
+	C3vizwY6EZxlwnstcGt+DZW1FApw2GXkgjyfuGKXFb/WF4hMVyeMgXL+R6JGTxm9ckWhIelEn7N
+	xD5q3IZcE8pudEq43BDKisEsVDCIESv7IL/QmUGaSIkl4Ijtse
+X-Received: by 2002:a17:90b:48c1:b0:35b:d795:cf5d with SMTP id 98e67ed59e1d1-35de59535camr8452884a91.5.1775462941386;
+        Mon, 06 Apr 2026 01:09:01 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b27497af19sm127961835ad.50.2026.04.06.01.08.55
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b27497af19sm127961835ad.50.2026.04.06.01.08.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2026 01:08:57 -0700 (PDT)
+        Mon, 06 Apr 2026 01:09:01 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org,
@@ -66,81 +68,46 @@ Cc: kees@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	sanjayembeddedse@gmail.com
-Subject: [PATCH v5 0/5] iio: ssp_sensors: improve resource cleanup
-Date: Mon,  6 Apr 2026 13:38:47 +0530
-Message-Id: <20260406080852.2727453-1-sanjayembedded@gmail.com>
+Subject: [PATCH v5 1/5] iio: ssp_sensors: cleanup codestyle warning
+Date: Mon,  6 Apr 2026 13:38:48 +0530
+Message-Id: <20260406080852.2727453-2-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260406080852.2727453-1-sanjayembedded@gmail.com>
+References: <20260406080852.2727453-1-sanjayembedded@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Hi all,
+Reported by checkpatch:
+FILE: drivers/iio/common/ssp_sensors/ssp_spi.c
 
-This patch series improves resource cleanup and error handling in the
-SSP IIO SPI driver by adopting the recently introduced cleanup
-helpers.
+WARNING: Prefer __packed over __attribute__((__packed__))
++} __attribute__((__packed__));
 
-The changes focus on making probe/remove paths more robust and easier
-to reason about by reducing manual unwind logic and ensuring that locks
-and dynamically allocated resources are released consistently across
-all exit paths.
+Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+---
+ drivers/iio/common/ssp_sensors/ssp_spi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Key highlights of this series:
-
-- Reuse preallocate rx buffer for SPI transfer instead of allocating new
-  DMA memory in interrupt context for write transaction between AP <-> HUB.
-- Replace dynamic resource lifetime management with device‑managed
-  (devm_) APIs to simplify cleanup and error paths.
-- Refactor common helper API, improving readability and reducing
-  duplicatation.
-- Address minor codestyle warnings introduced or exposed by the cleanup
-  refactoring.
-
-Changes in v5:
-- Drop usage of guard() helpers to avoid mixing mutex_lock() with
-  guard()(), based on reviewer feedback.
-- 0003: Refactor shared helper API, reducing duplication.
-- 0004: Convert resource allocation and teardown to devm_ managed APIs to
-  simplify error handling and probe/remove paths.
-Changes in v4:
-- Update sequence and make checkpatch style fix in base change
-- Split WARNING and CHECK change with input of Andy as 0001 and 0002
-- 0003: Use guard() instead of scoped_guard()
-- 0004: Use preallocated buffer to stash memory allocation
-
-No functional behavior changes are intended.
-
-Testing:
-  - Compiled with W=1
-  - Build-tested on QEMU x86_64
-
-Based on:
-  <linux-v7.0-rc5>
-
-Feedback and reviews are very welcome.
-
-Thanks,
-Sanjay Chitroda
-
-Sanjay Chitroda (5):
-  iio: ssp_sensors: cleanup codestyle warning
-  iio: ssp_sensors: cleanup codestyle check
-  iio: ssp_sensors: factor out pending list add/remove helpers
-  iio: ssp_sensors: use devm APIs for mutex and IRQ resources
-  iio: ssp_sensors: reuse preallocated RX buffer for SPI transfers
-
- drivers/iio/common/ssp_sensors/ssp.h     |  5 ++
- drivers/iio/common/ssp_sensors/ssp_dev.c | 48 +++++++++++--------
- drivers/iio/common/ssp_sensors/ssp_spi.c | 61 +++++++++++-------------
- 3 files changed, 62 insertions(+), 52 deletions(-)
-
+diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
+index 6c81c0385fb5..8c1e15d61db7 100644
+--- a/drivers/iio/common/ssp_sensors/ssp_spi.c
++++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
+@@ -29,7 +29,7 @@ struct ssp_msg_header {
+ 	__le16 length;
+ 	__le16 options;
+ 	__le32 data;
+-} __attribute__((__packed__));
++} __packed;
+ 
+ struct ssp_msg {
+ 	u16 length;
 -- 
 2.34.1
 
