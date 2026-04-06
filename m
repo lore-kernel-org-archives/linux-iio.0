@@ -1,65 +1,66 @@
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 803883101C2
-	for <linux-iio@vger.kernel.org>; Mon,  6 Apr 2026 15:02:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBDE926CE2D
+	for <linux-iio@vger.kernel.org>; Mon,  6 Apr 2026 16:07:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775487754; cv=none; b=pApb/SHklt6QuY5tEc8eREUBbU4u78XB4RvcwX/XGE57+01vY/1mhuUCNpZCacmTkEzm/5F3lHTwHjsqI8+NULXz072+8pToUJqxivCDUnatuaOKJqs4eaE2GkW0cPsMyi6L9I6WyJXEluB5QJAYlXJUakH5pT6R3QSaFmenDiY=
+	t=1775491677; cv=none; b=jm2kvg4gABF7yn4liQDgC1iH77p9eb1D8gpOJaloHlBSyH2yIMHQu/Pwc7PX9FgZ6tYzP9PT/7jfEWlWBTgY+26BDdINrAoKUhii2umSz8GL5e8a81rfk8/wfxixzD+Pjp60Gv+xRDMc3ePT5jkQBr3fF8f9VrcyABwIPbFSZb8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775487754; c=relaxed/simple;
-	bh=Vx0S0OEPsMTxWc2pbFyYxITTLhXEIs8IJVVZZBki8hc=;
+	s=arc-20240116; t=1775491677; c=relaxed/simple;
+	bh=zlwO+FpuKWJVktzvoDwSqRpk686HL789y1WeAACkLLM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JEoMAOPIqHixODq7ZZ7CPEAapOtk0lQNk39Q5Y97GzW/raaAFR+sbMJ3PRJomqUzW/25fqKhRIyBupHbpXT/7jIteV6nmep6tmwwOIw6+fIV4JNDDADcwl0IOCDj9DZms218HRSfntr9BeOWFfHoJJhy9D3UJO70CoeafNfjciU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=crzihiZK; arc=none smtp.client-ip=209.85.161.46
+	 In-Reply-To:Content-Type; b=IV99nMhCU01yOUIWAPgH2LPvHkuBsZrWckuXl1Cq/7QssN5TVQcd8owz2Wn+FRyleiUNQSuv6Alv3yIxT05chSbDQJ/+NuIzXbE/PudQxp9rnd/NqM6AEQyndsb2t8MiCTUEU+mCRVaMJHysieS+3bY0Av4DFbtNBcPlfhtYrc8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=pir23dDk; arc=none smtp.client-ip=209.85.161.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="crzihiZK"
-Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-68457156797so722068eaf.1
-        for <linux-iio@vger.kernel.org>; Mon, 06 Apr 2026 08:02:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="pir23dDk"
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-682baaa9f1aso727251eaf.3
+        for <linux-iio@vger.kernel.org>; Mon, 06 Apr 2026 09:07:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775487751; x=1776092551; darn=vger.kernel.org;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775491671; x=1776096471; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=zOYm5VbuAYu3Ygkfd4vye3tA8nAqOV5PzA2/v5FO7a0=;
-        b=crzihiZK3iznSPHdTQNFCTyY9tRwubZfyHEDspKG2XK2CWhL5Yqbd+Fmg/GdZGmMK4
-         uFtPptj5BZY8Jq2do2wLwLQAdNRr3wePMLbJoMzXTwfRVUUJ7m3YRACdiJ8A7WQH5cG+
-         L4wnVXckvLC/av90wdZ6+L+ItetoVONB2UbRlH+YYsSYvJgFyc5FwiJGYERwGKqYqOw6
-         HqEg7pQckRKHVKVIGKAnVO4AzWTD3mylSaPKk0rlmwEs5QfeH84KW0jywgWxIJpY/p+s
-         8DC+UNxI3ko2UftMUYUaRNWTjdeXMTxD+A1m4+LtagnAOZqq5oHVloCKwyfqcTPhgvMg
-         4nPg==
+        bh=bb/yPIBaSeKzdMTqZaiYXvUJtywcvVMfoOdb3IXyt2A=;
+        b=pir23dDkEa8r5U0Kbrmtgl0HR0Vg8WEL1zrOuKabnPTkW98BwBHNZusiDBBvjQ7T38
+         SVkv7CKHdrl4ZLrLaLShjAQSyN0bZWtLbJShDoa8meQYTvqtJdTH4F5wbfYhIx9eelWy
+         Nbrx9iCHRusvdeP0Jf/qtZpEhWPocki4AA4wNF72KaBPmptd1XRvw1KQ200Egd0sqSBM
+         T6/gmMYPJdGtSTy44EZOprIhIznbyEbJ7WgRjYTWP+gGGh6FoYzPXaWQwBJ7wr4393u1
+         YMonQyta1sjyTJpwmEnxNZeJm6EoULCHBEHX+fbg5A9ODE4DkE19PJRxJJ7bSBvOQ4GY
+         FspA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775487751; x=1776092551;
+        d=1e100.net; s=20251104; t=1775491671; x=1776096471;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=zOYm5VbuAYu3Ygkfd4vye3tA8nAqOV5PzA2/v5FO7a0=;
-        b=njeJ8v7xgLNTd1ZOjpSfSlX92uzfWpqWpSHEgNE5Hg35XmKn92A1eFcO8KortjsROV
-         PbFlD4pVmltWjN/T4UnV424JnAFhwBoAFeVcxBZMsBwje22qXFSxG6LDCUm2mFJa/tXW
-         duj7xjKR4A0zKWfF1raGZNhjWFam5W8hWBeQOiim6KyVHSSOf373Jq+Ay3FrLXn1VsXU
-         6XEa7tU3HuxUPnvOnGs+/e4jb0kOiw9fLddKzYEE2Wh49HwObD1xqTcukC6eSUHidmZ8
-         69ry97v9iRbm1U4oW3huodWj+MDvqzYhNnZNL2RLX0PnJucpnvN2HvTZoBDY0B+DC9c0
-         tgSQ==
-X-Gm-Message-State: AOJu0Yxz7mJP1JwOZYNpXWPWPHk8V+H04RQvJZ1D3zrn2Pdr9Ltm36Q+
-	RLdB0x18HnMSznUMVhmm4uNckwIVmXCNhEcfozUHWI52+Gh3qBI3m0+U+rBbpMe3O8M=
-X-Gm-Gg: AeBDiet1dE/LVOjywiaqIYBQcgAXoziq01qsfrFVXcLFINW5el7NaZC3qElLKdkDS1E
-	3msBiRApu+Lt6/i8XItWL5dvkc/fEeLKxJW/QdyvQGH4RikQx44UxIUtbOgHZWjw4XZaHsxz1pT
-	5iHteww1jgcGUGX0bO04t+LrRREBs4uqANXobC0zauY9IQUzvvZT1kZ05MBDRTPGb5Gy2DxGdpC
-	xohHmGXt4kiiHNOH39MGiyV97TTYfBMO4VCiYQWotS6EUh5Y2/h58ATiy7MEzqN90/MF9r49b/K
-	702NFk2upCukD71PHSJZTeScM/iaQvTutCpaqwme/SlFYqIpjp1jaPapXVLMVUP4sBQh86BwAfr
-	0qiDcBhDeACLITAffwd7Fd8+vel9qR3KfpMQDM/wpdfeNaC7z+amrRuPpwmQZ0z7XxSpRbtwGYE
-	rsiKSBF5o3/omApkwopWvEphQPpu8F2oEXk8sqXAL1wNit5YZqzQ7BO1WUWROcyvkqgqfz+pA=
-X-Received: by 2002:a05:6820:2905:b0:682:ecb8:c38 with SMTP id 006d021491bc7-682ecb811c6mr6352466eaf.42.1775487751272;
-        Mon, 06 Apr 2026 08:02:31 -0700 (PDT)
+        bh=bb/yPIBaSeKzdMTqZaiYXvUJtywcvVMfoOdb3IXyt2A=;
+        b=hIjw8cRgRQMHmwcVEgnGEF4wU0YX6QXO9Lz3RnV5OZNDpeUWBjTEZ/Bnh+Z5A07Wo2
+         lNpWX3UWp/NB76sDDezljl+IJRR0M5oLk3s8MljYVytOy7ne6SXaC5O6HrknS/eBmXRu
+         MYd9KSVahY5GQElYMCWSmMLnC4RE0qRH/kEVZPOwyoXBYHdHF2AVUr6//wvKakUqJioW
+         YQfAxeDZ58iBNcYKKU4Rx7JMxM6VuJoti/CvrFs1iB4X7HZniwwlE041lu9/4K+xsQxV
+         fTxMW/t6CAKP2ZPbKqraRGmnl8n6MxjNMEUDfg1xhwv37tkBXNa17Cd4t/utxFB94ldw
+         kpPA==
+X-Forwarded-Encrypted: i=1; AJvYcCW0vvb4LcqWVi8Yi5OUtPnGaGg+U2mO+t1AHE8m1/KkuUXvdldHI7DAdmGiQmpQ2Bzi46rJB1DZ1b8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzfWa2Ci5DoQ+/7vZluOdNCkm/Ib3OCqH6/Lv9W2qfiG2HFu06G
+	xpfWwY6rDMPe4KxK//VEfwmOxlpdSm/xXN54HAj6Ws+tE8/bVqSVnBv+yJiX1vuJXbk=
+X-Gm-Gg: AeBDiesRYhTPkg2O7y4I2djBD9SlmZi1P8kp5syIWgztEoqdNmfv4aV1D/+cGQ3ix/B
+	V49h/YudUTGp1XbX0QqmvP4ohfQNnoBq2kRCStIYcOHZz3OQ7Gg1Uwbz4Kq2nSo1NHjKVgOh/Kg
+	x9HTltJusw6WFOpeUrHN8ebIb0je0NVTLlxT2wBJVk3D7Q6yUgGWAn7DAZM4P4i5Lr5W4sWSO4A
+	AsG96RRf4+FThKn9W9nnOLNqYVsSDE9qIhh9C7Ot2m7KFNO+lsT/nwCBn0y8wlw5IfGH1PEFVIW
+	Rvkh3nteCDmVi9lvixMsbiEBesn8DJ+mkmGBmrRoO6wk9fY+FIYxQaktLFQvAIgihLaKX5wkBer
+	fJv8xu9KBT2QlqitCLsYpCiOBzerYvpsDevDtomiyHMF0tJp/AFZu8Qn6bi7a4TVc92Y7EKDcyu
+	hEHKzFQ4QORxtgn7zGMYTgGvVsbraCFKiqjGNkETRVG5afpdMefdLNksoive4ONEpTIUgbSds=
+X-Received: by 2002:a05:6820:3092:b0:67b:b847:f0fa with SMTP id 006d021491bc7-6821f08dcbemr7686820eaf.17.1775491671418;
+        Mon, 06 Apr 2026 09:07:51 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:90d7:b13f:c53:8ca3? ([2600:8803:e7e4:500:90d7:b13f:c53:8ca3])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-68448c1c15dsm3873975eaf.0.2026.04.06.08.02.30
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-680a882d978sm8724859eaf.10.2026.04.06.09.07.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Apr 2026 08:02:30 -0700 (PDT)
-Message-ID: <b2d4ae51-f827-44d0-94a6-2a3db6d681d9@baylibre.com>
-Date: Mon, 6 Apr 2026 10:02:29 -0500
+        Mon, 06 Apr 2026 09:07:50 -0700 (PDT)
+Message-ID: <8c5dfc4c-dff9-46a4-adcc-dbca54f0c125@baylibre.com>
+Date: Mon, 6 Apr 2026 11:07:49 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,71 +68,169 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 4/4] iio: adc: ad4691: add SPI offload support
-To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, "Sa, Nuno" <Nuno.Sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-References: <20260403-ad4692-multichannel-sar-adc-driver-v6-0-fa2a01a57c4e@analog.com>
- <20260403-ad4692-multichannel-sar-adc-driver-v6-4-fa2a01a57c4e@analog.com>
- <1d0d41c8-7867-4459-a91a-a2c6774b1885@baylibre.com>
- <LV9PR03MB84145906CC191F6AB8D2D3DAF75DA@LV9PR03MB8414.namprd03.prod.outlook.com>
- <420dba4a-0c31-47bc-b84a-5d29702b115e@baylibre.com>
- <LV9PR03MB8414CB15DEC3EBBDB8F5FDD0F75DA@LV9PR03MB8414.namprd03.prod.outlook.com>
+Subject: Re: [PATCH v5 5/5] iio: ssp_sensors: reuse preallocated RX buffer for
+ SPI transfers
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>, jic23@kernel.org,
+ nuno.sa@analog.com, andy@kernel.org
+Cc: kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260406080852.2727453-1-sanjayembedded@gmail.com>
+ <20260406080852.2727453-6-sanjayembedded@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <LV9PR03MB8414CB15DEC3EBBDB8F5FDD0F75DA@LV9PR03MB8414.namprd03.prod.outlook.com>
+In-Reply-To: <20260406080852.2727453-6-sanjayembedded@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 4/6/26 9:16 AM, Sabau, Radu bogdan wrote:
+On 4/6/26 3:08 AM, Sanjay Chitroda wrote:
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > 
+> Avoid allocating a temporary DMA buffer in the interrupt context when
+> handling hub-to-AP and AP-to-hub SPI write messages.
 > 
->> -----Original Message-----
->> From: David Lechner <dlechner@baylibre.com>
->> Sent: Monday, April 6, 2026 4:44 PM
+> Preallocate RX buffer during probe and reuse it for SPI receive
+> operations. This removes repeated kzalloc() calls from the IRQ
+> path, reduces allocation overhead, and avoids potential allocation
+> failures under memory pressure.
 > 
-> ...
+> The RX buffer size is tracked and allocated using devm_kzalloc(), ensuring
+> proper lifetime management tied to the device.
 > 
->>>
->>> This is bad documentation on my part. "channel byte" isn't used anymore,
->>> this is previous version behaviour. Right now, only 16-bits worth of actual
->>> channel data are used.
->>>
->> Then why do we need the shift if there is no other data? Can't we rework
->> the SPI message so that there is no shift?
-> 
-> I thought the shift is needed since DMA size is 32 bits, and value comes on the
-> upper word 16 bits, not on the lower ones as for CNV Burst.
+> No functional change intended; this is an internal optimization and
+> robustness improvement.
 
-That should only happen if we are reading 32-bits instead of 16 bits.
-We should be able to set up the SPI xfers so that we only read 16 bits.
+If we are going to claim this is an optimization, we should have
+some measurements to back that up.
 
 > 
-> Manual Mode layout: TX [CMD_HI CMD_LO DUMMY DUMMY], RX [DATA_HI DATA_LO DUMMY DUMMY]
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> ---
+> Changes in v5:
+> - Rebase change on top of latest v5 patch series.
+> Changes in v4:
+> - Use preallocated buffer and stash a buffer that gets reused each time instead of a fresh allocation.
+> - Link to v3: https://lore.kernel.org/all/20260315125509.857195-3-sanjayembedded@gmail.com/
+> Changes in v3:
+> - prepare series to have all respective cleanup API support for the ssp_sensors following input from Andy Shevchenko
+> - Link to v2 https://lore.kernel.org/all/20260311174151.3441429-1-sanjayembedded@gmail.com/
+> Changes in v2:
+> - split series to individual patch
+> - address review comment from Andy Shevchenko
+> - Link to v1 https://lore.kernel.org/all/20260310200513.2162018-3-sanjayembedded@gmail.com/
+> ---
+>  drivers/iio/common/ssp_sensors/ssp.h     |  5 +++++
+>  drivers/iio/common/ssp_sensors/ssp_dev.c | 12 ++++++++++++
+>  drivers/iio/common/ssp_sensors/ssp_spi.c | 19 +++----------------
+>  3 files changed, 20 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/iio/common/ssp_sensors/ssp.h b/drivers/iio/common/ssp_sensors/ssp.h
+> index f649cdecc277..aa125fd1bed5 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp.h
+> +++ b/drivers/iio/common/ssp_sensors/ssp.h
+> @@ -175,6 +175,8 @@ struct ssp_sensorhub_info {
+>   * @sensor_devs:	registered IIO devices table
+>   * @enable_refcount:	enable reference count for wdt (watchdog timer)
+>   * @header_buffer:	cache aligned buffer for packet header
+> + * @rx_buf:		buffer to receive SPI data
+> + * @rx_buf_size:	allocated size of rx_buf
+>   */
+>  struct ssp_data {
+>  	struct spi_device *spi;
+> @@ -222,6 +224,9 @@ struct ssp_data {
+>  	atomic_t enable_refcount;
+>  
+>  	__le16 header_buffer[SSP_HEADER_BUFFER_SIZE / sizeof(__le16)] __aligned(IIO_DMA_MINALIGN);
+> +
+> +	u8 *rx_buf;
+> +	size_t rx_buf_size;
 
-> CNV Burst layout: TX [REG_HI REG_LO DUMMY DUMMY], RX [DUMMY DUMMY DATA_HI DATA_LO]
+No, these can't be after _aligned(IIO_DMA_MINALIGN); without causing problems.
 
-This can be split in two xfers.
+What would work here though is:
 
-CNV Burst layout:
-	TX [REG_HI REG_LO]
-	RX [DATA_HI DATA_LO]
+	u8 rx_buf[SSP_DATA_PACKET_SIZE];
 
-And we could even set bits_per_word to 16 so that the data is CPU
-endian instead of big endian when doing SPI offloading.
+>  };
+>  
+>  void ssp_clean_pending_list(struct ssp_data *data);
+> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
+> index aab28f2a0f75..2a8d6f040ae4 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp_dev.c
+> +++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+> @@ -516,6 +516,18 @@ static int ssp_probe(struct spi_device *spi)
+>  		goto err_setup_spi;
+>  	}
+>  
+> +	data->rx_buf_size = SSP_DATA_PACKET_SIZE;
+> +	data->rx_buf = devm_kzalloc(&spi->dev,
+> +				    data->rx_buf_size,
+> +				    GFP_KERNEL | GFP_DMA);
+
+Since this is a fixed size, we don't need a separate alloc here. We can
+just embed the array in the data struct.
+
+> +
+> +	if (!data->rx_buf) {
+> +		dev_err(&spi->dev,
+> +			"Failed to allocate memory for rx_buf\n");
+> +		ret = -ENOMEM;
+> +		goto err_setup_spi;
+> +	}
+> +
+>  	for (i = 0; i < SSP_SENSOR_MAX; ++i) {
+>  		data->delay_buf[i] = SSP_DEFAULT_POLLING_DELAY;
+>  		data->batch_latency_buf[i] = 0;
+> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
+> index 7c1780e15acf..2f7445e8b4d1 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp_spi.c
+> +++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
+> @@ -383,19 +383,13 @@ int ssp_irq_msg(struct ssp_data *data)
+>  			 * but the slave should not send such ones - it is to
+>  			 * check but let's handle this
+>  			 */
+> -			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
+> -			if (!buffer) {
+> -				ret = -ENOMEM;
+> -				goto _unlock;
+> -			}
+> +			buffer = data->rx_buf;
+
+
+I don't think it is helpful to keep the buffer local variable.
+
+>  
+>  			/* got dead packet so it is always an error */
+>  			ret = spi_read(data->spi, buffer, length);
+>  			if (ret >= 0)
+>  				ret = -EPROTO;
+>  
+> -			kfree(buffer);
+> -
+>  			dev_err(SSP_DEV, "No match error %x\n",
+>  				msg_options);
+>  
+> @@ -428,22 +422,15 @@ int ssp_irq_msg(struct ssp_data *data)
+>  		mutex_unlock(&data->pending_lock);
+>  		break;
+>  	case SSP_HUB2AP_WRITE:
+> -		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
+> -		if (!buffer)
+> -			return -ENOMEM;
+> +		buffer = data->rx_buf;
+>  
+>  		ret = spi_read(data->spi, buffer, length);
+>  		if (ret < 0) {
+>  			dev_err(SSP_DEV, "spi read fail\n");
+> -			kfree(buffer);
+>  			break;
+>  		}
+>  
+> -		ret = ssp_parse_dataframe(data, buffer, length);
+> -
+> -		kfree(buffer);
+> -		break;
+> -
+> +		return ssp_parse_dataframe(data, buffer, length);
+>  	default:
+>  		dev_err(SSP_DEV, "unknown msg type\n");
+>  		return -EPROTO;
 
