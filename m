@@ -1,65 +1,67 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76673563DD;
-	Mon,  6 Apr 2026 19:16:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 898C73976A2;
+	Mon,  6 Apr 2026 19:44:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775503014; cv=none; b=fZt79escevFSapG+CxsOT83rHSo2VRCRQBtlaVeWziFofsdV3+nfD7Xc4K47ZL1MvPmWsUXjL8sq4j6S3RB4vXO287sF1Hsn70TXbN6kEhUek2pfEv7PfEdlavBZBqZ/Oz+VKkK/vByTrdlRqVPv0GtEANk6KJwcPFn57gNX9CA=
+	t=1775504660; cv=none; b=hatmFw00etUtixTdSgPzwTcgf2ofYkwXlDPqyagEKHtqNpd0amAWe5m3Hp48WZM01lUDankTRYmvcP71hMl6ev0ClNWZ42gozV8jBOrJcVxV2KFOiEdsFxc0TX08Eyx3WiBIrDYJ2SURkvX8skkbhMJxmfyxClQPMakdtFwFDPI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775503014; c=relaxed/simple;
-	bh=fRtZK14s4RtAHBuJCQCK+NbkdOScCwStGi/7YrfguDA=;
-	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AsSx6qWEG5BeB0z3DzRbBThzkjl1FYzDB2KJlWRznYnOSiqHcv3m8HPZdlMjPJ8kYmGsr3n22EzIEq5B9IX/wWtH+JAqSUIBGjGI+jvK3nauKXCgUmtNMlz+dujSBcE6Ra2SdUlZCXCESLSJ4FCWxI0HNvhmAJaZBVbBgLZCUFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=V+tx58Xv; arc=none smtp.client-ip=198.175.65.12
+	s=arc-20240116; t=1775504660; c=relaxed/simple;
+	bh=aYjZG/LiOjRzhLY5EjduFtQGkbbha0i8XWgRRRh5vHs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=URcKvFyGDvq7tLcCqiNd0CQRc41zdLMubwWuxW07b4qXmhNYzhNCnGOVA/n68VBax8X1r0spvdjwVgA7hIhf41PCIbv06DiNURsiYqFNxhs+rZKTNW/LKICQKPYJM84hvUK+qIupgzNjsL2XvjfIVb8r4RN+x19Zg1U8dXqtF38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A92RdNil; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="V+tx58Xv"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A92RdNil"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1775503013; x=1807039013;
-  h=date:from:to:subject:message-id:references:mime-version:
-   in-reply-to;
-  bh=fRtZK14s4RtAHBuJCQCK+NbkdOScCwStGi/7YrfguDA=;
-  b=V+tx58XvgbjzuzEPP9FQrDxuBNNfcRmAu0Hvp5ZVlXyWkHioqDFpeggt
-   Xyx5q2LRkEvgu9nYofpswWLkvgsexNgqiUwbzyfjxsnBMsiuyHP4kRngB
-   VZ3MpodKnw7lc2v4l4EbDn3AE1jEvB3wWLZXpRUHHA+I0RB1qJeR/E40I
-   TuWU0HUlBtlIyfRAezBz3WxctTCGP7hLW9c44p83FVsnmtQnN11aibD9h
-   HWo+h4E4f8exx9KA21FDvlfDlGfVa0ltAxnMWMhKPjRueKG5R/yltLWa+
-   HRDLD1p84j+jeEnToftiCh+QE0k69GVcMcpnHgH8aDb2gNOWXLE8rMr++
+  t=1775504659; x=1807040659;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=aYjZG/LiOjRzhLY5EjduFtQGkbbha0i8XWgRRRh5vHs=;
+  b=A92RdNilIphOmVRLF0OJ4Z/h4ucrHJnq2d5hC8gGBzjPR/bUbW0YBcCb
+   4qRdIZ0n20gIQdZdWuPwG3lmd+4df3WD41+npza2Mr/QV0iV6Qpv/Ik9r
+   moMuL8fMJWinZ91IlNbciT88K++q7yNP4MAkzfgnt6yfnwr/3brD+9Xxv
+   mHqHdpHZWmw63JfG0BNbVjAsBuNBhBzKw5U0o1xYno85WD4B7ym2W5Md4
+   Q8+mkYESOx83TXXG4UMtjSJNP1hdmOrWhze9iGDBvlRF3MHPQnBB8CxGD
+   kf3hO/oQMULZOO3/PIq8xoYhbQGp0LBOxXVb2HlPADs5zYVf4wKp/5W/8
    Q==;
-X-CSE-ConnectionGUID: t1SepqRLTWWAADoCSZDoKQ==
-X-CSE-MsgGUID: QtyfokoPT/SY2Lnqw/WRtg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11751"; a="87913604"
+X-CSE-ConnectionGUID: 968u3zvnTXq1ABF/YUpwFw==
+X-CSE-MsgGUID: Lp0Hoi7pRfuq7lJfQo3neg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11751"; a="76582650"
 X-IronPort-AV: E=Sophos;i="6.23,164,1770624000"; 
-   d="scan'208";a="87913604"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2026 12:16:53 -0700
-X-CSE-ConnectionGUID: YHbCbRsdR4S4ngxF+dm7hg==
-X-CSE-MsgGUID: By4Ayw4yR5SJAZKVi4bwEA==
+   d="scan'208";a="76582650"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2026 12:44:18 -0700
+X-CSE-ConnectionGUID: ga2Bm8tmSY25FEM0KxH4ZQ==
+X-CSE-MsgGUID: OLqkXm3lRuKYTXtRmFALjw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,164,1770624000"; 
-   d="scan'208";a="223161877"
+   d="scan'208";a="258409456"
 Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.73])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2026 12:16:49 -0700
-Date: Mon, 6 Apr 2026 22:16:47 +0300
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2026 12:44:14 -0700
+Date: Mon, 6 Apr 2026 22:44:11 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Andrey Skvortsov <andrej.skvortzov@gmail.com>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+To: Antony Kurniawan Soemardi <linux@smankusors.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 2/3] iio: imu: inv_mpu6050: control vdd supply using
- devm-helpers
-Message-ID: <adQGn5cymv3Xz6So@ashevche-desk.local>
-References: <20260401082737.781018-1-andrej.skvortzov@gmail.com>
- <20260401082737.781018-3-andrej.skvortzov@gmail.com>
- <ac01WETv_jIcYvRL@ashevche-desk.local>
- <adNYWgzZFmoBW7cj@skv.local>
+	Andy Shevchenko <andy@kernel.org>, linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, phone-devel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] iio: adc: qcom-pm8xxx-xoadc: remove redundant
+ error logs when reading values
+Message-ID: <adQNCy14vfk0FCrn@ashevche-desk.local>
+References: <20260405-pm8xxx-xoadc-label-v3-0-9fe179c283ec@smankusors.com>
+ <20260405-pm8xxx-xoadc-label-v3-2-9fe179c283ec@smankusors.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,35 +70,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <adNYWgzZFmoBW7cj@skv.local>
+In-Reply-To: <20260405-pm8xxx-xoadc-label-v3-2-9fe179c283ec@smankusors.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Apr 06, 2026 at 09:53:14AM +0300, Andrey Skvortsov wrote:
-> On 26-04-01 18:10, Andy Shevchenko wrote:
-> > On Wed, Apr 01, 2026 at 11:27:36AM +0300, Andrey Skvortsov wrote:
+On Sun, Apr 05, 2026 at 04:52:18PM +0000, Antony Kurniawan Soemardi wrote:
+> Drop dev_err() logging for -EINVAL and -ETIMEDOUT cases and rely on
+> return values to report errors, reducing unnecessary log noise.
 
 ...
 
-> > > -static void inv_mpu_core_disable_regulator_action(void *_data)
-> > > +static void inv_mpu_core_disable_regulator_vddio_action(void *_data)
-> > 
-> > You can rename now _data --> st...
-> > 
-> > >  {
-> > >  	struct inv_mpu6050_state *st = _data;
-> > 
-> > ...and drop this.
-> > 
-> > >  	inv_mpu_core_disable_regulator_vddio(st);
-> > >  }
-> 
-> thanks for the review.
-> You are right, but this variable will be added in patch 3. Do you
-> think it's still worth removing variable here and add it back in patch
-> 3? If yes, I'll change it in v2.
+>  	ret = wait_for_completion_timeout(&adc->complete,
+>  					  VADC_CONV_TIME_MAX_US);
+>  	if (!ret) {
+> -		dev_err(adc->dev, "conversion timed out\n");
+>  		ret = -ETIMEDOUT;
+>  		goto unlock;
+>  	}
 
-Yes, we do not add a dead code. Add it when it's really being used.
+In case you need a new version, the above can be replaced with a better
+alternative (assuming the ret is defined as not boolean and it is so):
+
+	if (!wait_for_...(...)) {
+		ret = ...;
+		goto ...
+	}
 
 -- 
 With Best Regards,
