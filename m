@@ -1,59 +1,55 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4B4E334681;
-	Tue,  7 Apr 2026 03:40:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58258374E66;
+	Tue,  7 Apr 2026 03:40:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775533231; cv=none; b=BQzL0n0zGsfhVlFKwjYVFbJS+HHe1OAogZn21mm1wf1TXSUC5HXiTlpo+uR1+Xitu1T5s+s6XxOAIx7ttiXwjPkAUn0EJD8tDE5/5VX3IBp3UhYU++ZCSmca+P8oGP1BNStTQ7fbNRBszfHvj9bdtZ/OxHWIXrTlnMwc+CXrTkY=
+	t=1775533234; cv=none; b=gjGfckQBEIe9YmzQQTh9FP92M7mi3+BHu+6/qGWwj6G3mACv6BXgpOnSRqVwunbpsSn5rn+6Y6vdIfP1CDFE1bNRJ2OVuzITodl4GMY86Xl+UE4RBDvqbjDwXmXqOwkQ7jQ3groTYxXlMtw4XgKDyItx2es2m1siIDZ+LlxPLMM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775533231; c=relaxed/simple;
-	bh=Lg8jxJi++f9yp516M13U17ta1iCLz+GJBQ3gPn5I/r8=;
+	s=arc-20240116; t=1775533234; c=relaxed/simple;
+	bh=u7QVplNxZf9YYvceIZcWTQHM/MaT4krmiC2cz0AXaU8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=nBHelc/NlaEhlyTWEE5RrKwe014v3ojxTykb9WB34KcIpP4ZrkdemCXkKQgA1+SnlSn8rzU6c/k7ZK2bISXoQwcQJLohzLMdvUNfoeGI9rL3O3N16sXw0yvPULw+byAMMHOualvTtD36G9Jf4sKYSW6l/IGnCSsoeNTNEyC5zvY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=GJmC1RP/; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=IWCA9IyNoE88U5kT/q0Gu3orjJRGOH6pL6hZsvaU7YD/I0zo/tCZT/aLXKKz+9P1Vg3+DNPlW+PK1ILYGF8t0ldyBroC/q9uVW2AqWyQON1BIdtbm3i71WzW1NMJCm82txB3QyeiIuAfWNKAGgVy/xzNiz6Ln6/eBfzBjGjgGGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=GV0LwSpd; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="GJmC1RP/"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 636LSSim2829277;
-	Mon, 6 Apr 2026 23:40:13 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="GV0LwSpd"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 636LT9Bn4007663;
+	Mon, 6 Apr 2026 23:40:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=tlG8A
-	aSx3SgyBMWNTocFF2e5p8HRyVYCgswR2WS96+w=; b=GJmC1RP/BO0I0EBW+S9eR
-	mQUyz7j7s6K5hdUqyBt7KJ5C/IYnKn2GvvJBpWhgnqaXAUW7Rk5hXiCncp5LaEYR
-	E0zfpBIlTkXvs2lmxgXrewMg8QFSlN8CuawWjHM6D1UgCwlJyWqTR73LPf7m+ERb
-	N74nujHGVsEEF9bREyhs3P4qYaDi3Hhpu3hc0gw0s4CySZwwOviGe2jePIfyYR0F
-	1mnJ81UUaQS+1zvzmMxs4NseBJ2CULWJwfZIwgORpzxRdMwTTZVOz3CvjFYISkja
-	FVrdR1VaVJgBqo4DL4tv4uXEad4X6TWBT/7eLZ3bQU9Ao5axwlVibYie0TEYCmc1
-	g==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=WOnse
+	Hh+4pBiS/cOZMfZs1Y+Svu4+zK9M/0igfzdSZw=; b=GV0LwSpdBkpmws0BC8kKf
+	BmBwJROVlWlLmwZsZr6GETnIdpSr/ZxjIkRaAkCWz5JUyEGsWTQWWlLwc4Kd6U1K
+	zWNpxpcoMyJr551GYGGuqiy0fgHTP2hCi3maQaw9kEs50oeIetD6aR3ZbPLANAfT
+	jVD25XGAWemz7VLr7fKR337lQUJeY5eq+OXNwm7cilsiytBJeawAf1Mu/gmvj8gR
+	98r3nbsEyi+5ROpgYCjf6TIpidZDHVL0/KjV0Se42f6oCzeCwfpcUCthcsZFkpEe
+	qyvYaK52jqj7OLcKoz+4u5qD16CqLFcYeb28qlsq1t4ONcxVnUYW/YWda9Pa4KfD
+	w==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4dcmscs0mu-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4dcmsn90ma-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 06 Apr 2026 23:40:13 -0400 (EDT)
+	Mon, 06 Apr 2026 23:40:17 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6373eCgd018040
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6373eGWn018045
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 6 Apr 2026 23:40:12 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 6 Apr 2026 23:40:12 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 6 Apr 2026 23:40:11 -0400
+	Mon, 6 Apr 2026 23:40:16 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 6 Apr
+ 2026 23:40:16 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 6 Apr 2026 23:40:11 -0400
+ Transport; Mon, 6 Apr 2026 23:40:16 -0400
 Received: from ATORRENO-L02.ad.analog.com ([10.66.6.191])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6373dsE4012886;
-	Mon, 6 Apr 2026 23:40:05 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6373dsE5012886;
+	Mon, 6 Apr 2026 23:40:09 -0400
 From: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-Date: Tue, 7 Apr 2026 11:39:44 +0800
-Subject: [PATCH v5 1/2] dt-bindings: iio: dac: Add ADI AD5706R
+Date: Tue, 7 Apr 2026 11:39:45 +0800
+Subject: [PATCH v5 2/2] iio: dac: ad5706r: Add support for AD5706R DAC
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,15 +58,15 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260407-dev_ad5706r-v5-1-a4c7737b6ae9@analog.com>
+Message-ID: <20260407-dev_ad5706r-v5-2-a4c7737b6ae9@analog.com>
 References: <20260407-dev_ad5706r-v5-0-a4c7737b6ae9@analog.com>
 In-Reply-To: <20260407-dev_ad5706r-v5-0-a4c7737b6ae9@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        "David
- Lechner" <dlechner@baylibre.com>,
+        David
+ Lechner <dlechner@baylibre.com>,
         =?utf-8?q?Nuno_S=C3=A1?=
 	<nuno.sa@analog.com>,
         Andy Shevchenko <andy@kernel.org>, Rob Herring
@@ -83,196 +79,386 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Alexis Czezar Torreno
 	<alexisczezar.torreno@analog.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1775533194; l=4907;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1775533194; l=10385;
  i=alexisczezar.torreno@analog.com; s=20250213; h=from:subject:message-id;
- bh=Lg8jxJi++f9yp516M13U17ta1iCLz+GJBQ3gPn5I/r8=;
- b=K7X7QdITG2lFLGPU849C0ZkR56qbNAxOOTbv+o6HekWO/s79a2Aj7MwHS131fa2pBP1qyL9H1
- gZFEjmzMCkqAl2knzbMfWHiQD++UqMqm238Q6+qU+w2JnD0NMMdu/Pm
+ bh=u7QVplNxZf9YYvceIZcWTQHM/MaT4krmiC2cz0AXaU8=;
+ b=5ADF0i+F/qtUJLVNfJEXGYxz2AgEPpH3uuyvvWrXDH+3540viokXl+n1ZOf2y1qXbCKmwRdej
+ Hr9rWJATIilAmL841uU722VIiL3P3mvmK0VtdeUfCxLHLhhrE/JNy0k
 X-Developer-Key: i=alexisczezar.torreno@analog.com; a=ed25519;
  pk=XpXmJnRjnsKdDil6YpOlj9+44S+XYXVFnxvkbmaZ+10=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: AKiqLd6tOP-imx0fDnrTfMJJybsZt4HX
-X-Proofpoint-ORIG-GUID: AKiqLd6tOP-imx0fDnrTfMJJybsZt4HX
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDA3MDAzMSBTYWx0ZWRfX0I16Z9Iq7JuR
- iJbUS+GSaPkcMg4XUt1MftvLWrBQT/eNapHcXoGo6750//pcEAJh5AHG+u31wwqvklrpE1A2s1z
- /RXDHU+KQvrK9WnIvkIWQY8h+ybb4kNaq+lo/6ZGmz0WYqh9T3ELHNRg4hiiCvCFdaUHJZwY/97
- RE/SFH9ycnHCFRyPOTm3OgCCaQ08/ORhYHTmUxC/EABvIpAYotxFEGJLP/lsdaX+Zlo6y9tJrp8
- X+fix3/mfPK+LxJUqQQzYhldWS3cAc35eEv+VZXLHBLUtI3kuUleIfiFkeS5zFPeAf3MFWr5tIG
- gv5kz2k7CUK69kPeFQkU4qdBgrKPxdc6v1i9PCMG6UyMtm3FWhEsjR8zV1gyK9fKwJPXeVmfgsq
- JJm3PbAm3dHZ8DnI2Bdam3RZs+bKhi8ZvPGC2FgAJZm/7weFky09IywxIbPrLYI3oRpdmH0i7pa
- 0VOKqpTZeBF7ioQenLw==
-X-Authority-Analysis: v=2.4 cv=E/n9Y6dl c=1 sm=1 tr=0 ts=69d47c9d cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDA3MDAzMSBTYWx0ZWRfXzOKEpme0T2JT
+ d5TEMGQXyxA7CCH9J7jaZ2Xz88cn1BQ1eN3j8iK7cCU67GZOjCnPrDTCz+5bcUk6DrNNvQ7mYNu
+ JHP056xonFWNtDe9GLuz10kRjVQQKGIpLgjHfYlID0btGFSnWfoHKh855KZaJXS0lWU8OVizG1c
+ es0qBzMIU4m5lZZr4tYi8JSZTxkwtm+RKNEQSsxaiwycx9TgtDAHOGoApDR4ZCd0+OSD34Ogxp0
+ bv/3v4phNFYmBGXCJjKFPEaZ1sXukVrSxXl1BI1hBI2/3nFgcdXVUSn50dwMSCTcpU0CuYwacSt
+ Gq5NHXVjX77e5Cclt2/mrAZfEtdZahyWAouQxbVFVs8q+RfQMuU/8MqjETU8+MSY+rUuupJOKn4
+ EMg4fuxYhqa3AvQsb00bLhnkcpR6pDVoHbwrbdMS0wahPGLYpcDb2s/lM9Etnt/psXJvhyMBPU/
+ /ce+/0ysgl5tPgXEf/Q==
+X-Proofpoint-GUID: O-tf7wuFztmYaAsV6YKLRljp2hEe9qG3
+X-Authority-Analysis: v=2.4 cv=D6Z37PRj c=1 sm=1 tr=0 ts=69d47ca1 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gEfo2CItAAAA:8
- a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8 a=9FN7308aedyQPFg8okQA:9 a=QEXdDO2ut3YA:10
- a=sptkURWiP4Gy88Gu7hUp:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8
+ a=VwQbUJbxAAAA:8 a=BUK1tddBQIXFRbfSOj8A:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: O-tf7wuFztmYaAsV6YKLRljp2hEe9qG3
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-04-07_01,2026-04-03_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 spamscore=0 clxscore=1015 malwarescore=0 lowpriorityscore=0
- bulkscore=0 phishscore=0 priorityscore=1501 impostorscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604010000 definitions=main-2604070031
+ priorityscore=1501 malwarescore=0 suspectscore=0 clxscore=1015
+ impostorscore=0 lowpriorityscore=0 adultscore=0 spamscore=0 bulkscore=0
+ phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604010000
+ definitions=main-2604070031
 
-Add device tree binding documentation for the Analog Devices
-AD5706R 4-channel 16-bit current output digital-to-analog converter.
+Add support for the Analog Devices AD5706R, a 4-channel 16-bit
+current output digital-to-analog converter with SPI interface.
+
+Features:
+  - 4 independent DAC channels
+  - Hardware and software LDAC trigger
+  - Configurable output range
+  - PWM-based LDAC control
+  - Dither and toggle modes
+  - Dynamically configurable SPI speed
 
 Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
 
 ---
 Changes in v5:
-  - Changed out-en-gpios to enable-gpios.
+  - Kconfig: Added select REGMAP_SPI dependency
+  - Headers: Removed device.h, errno.h, string.h; added dev_printk.h
+  - Use IIO_DMA_MINALIGN instead of ARCH_DMA_MINALIGN
+  - Replaced memcpy/memset with put_unaligned_be* for consistency
+  - Added struct device *dev shorthand in probe()
+  - Added newline to error message
+  - Other minor style edits
 
 Changes in v4:
-  - Reverted pwm and gpio entries
-  - Added missing power supply properties
-  - Clocks not added back as they were driver specific
+  - Added missing includes
+  - Converted to use regmap with custom SPI bus implementation
+  - Removed driver-specific mutex/guards in favor of regmap locking
+  - Minor style cleanups
 
 Changes in v3:
-  - Added allOf and ref to spi-peripheral-props.yaml
-  - Changed additionalProperties to unevaluatedProperties
-  - Added avdd-supply property and added it to required
+  - Removed redundant includes, added respective includes of APIs used
+  - Simplified bit manipulation in SPI read/write
+  - Fixed inconsistent trailing commas in device ID tables
+  - Removed zero initialization in spi_device_id
 
-Changes in v1:
-  - Removed clocks, clock-names, pwms, pwm-names, gpio properties
-  - Simplified example to use plain SPI bus
+Changes in v2:
+  - Removed PWM, GPIO, clock generator, debugfs, regmap, IIO_BUFFER
+  - Removed all custom ext_info sysfs attributes
+  - Simplified to basic raw read/write and read-only scale
+  - SPI read/write can handle multibyte registers
 ---
 ---
- .../devicetree/bindings/iio/dac/adi,ad5706r.yaml   | 105 +++++++++++++++++++++
- MAINTAINERS                                        |   7 ++
- 2 files changed, 112 insertions(+)
+ MAINTAINERS               |   1 +
+ drivers/iio/dac/Kconfig   |  11 +++
+ drivers/iio/dac/Makefile  |   1 +
+ drivers/iio/dac/ad5706r.c | 247 ++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 260 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..19cc744a9f0fc35907de8b8bdd9f088676620b54
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
-@@ -0,0 +1,105 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/dac/adi,ad5706r.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD5706R 4-Channel Current Output DAC
-+
-+maintainers:
-+  - Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-+
-+description: |
-+  The AD5706R is a 4-channel, 16-bit resolution, current output
-+  digital-to-analog converter (DAC) with programmable output current
-+  ranges (50mA, 150mA, 200mA, 300mA), an integrated 2.5V voltage
-+  reference, and load DAC, A/B toggle, and dither functions.
-+
-+  Datasheet:
-+    https://www.analog.com/en/products/ad5706r.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad5706r
-+
-+  reg:
-+    maxItems: 1
-+
-+  avdd-supply:
-+    description: Analog power supply (2.9V to 3.6V).
-+
-+  iovdd-supply:
-+    description: Logic power supply (1.14V to 1.89V).
-+
-+  pvdd0-supply:
-+    description: Power supply for IDAC0 channel (1.65V to AVDD).
-+
-+  pvdd1-supply:
-+    description: Power supply for IDAC1 channel (1.65V to AVDD).
-+
-+  pvdd2-supply:
-+    description: Power supply for IDAC2 channel (1.65V to AVDD).
-+
-+  pvdd3-supply:
-+    description: Power supply for IDAC3 channel (1.65V to AVDD).
-+
-+  vref-supply:
-+    description:
-+      Optional external 2.5V voltage reference. If not provided, the
-+      internal 2.5V reference is used.
-+
-+  pwms:
-+    maxItems: 1
-+    description:
-+      Optional PWM connected to the LDAC/TGP/DCK pin for hardware
-+      triggered DAC updates, toggle, or dither clock generation.
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO connected to the active low RESET pin. If not provided,
-+      software reset is used.
-+
-+  enable-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO connected to the active low OUT_EN pin. Controls whether
-+      the current outputs are enabled or in high-Z/ground state.
-+
-+required:
-+  - compatible
-+  - reg
-+  - avdd-supply
-+  - iovdd-supply
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        dac@0 {
-+            compatible = "adi,ad5706r";
-+            reg = <0>;
-+            avdd-supply = <&avdd>;
-+            iovdd-supply = <&iovdd>;
-+            pvdd0-supply = <&pvdd>;
-+            pvdd1-supply = <&pvdd>;
-+            pvdd2-supply = <&pvdd>;
-+            pvdd3-supply = <&pvdd>;
-+            vref-supply = <&vref>;
-+            spi-max-frequency = <50000000>;
-+            pwms = <&pwm0 0 1000000 0>;
-+            reset-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
-+            enable-gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
-+        };
-+    };
-+...
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 1251965d70bdfa990c66966cd77f7ab52ae3385f..17a3d2d45fccb9cd3c93fd35666fb85d17d53cde 100644
+index 17a3d2d45fccb9cd3c93fd35666fb85d17d53cde..3d7bd98b4d1b55836e40687a9a3ac9f4935a8acb 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -1496,6 +1496,13 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml
- F:	drivers/iio/adc/ad4851.c
+@@ -1502,6 +1502,7 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
++F:	drivers/iio/dac/ad5706r.c
  
-+ANALOG DEVICES INC AD5706R DRIVER
-+M:	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
-+
  ANALOG DEVICES INC AD7091R DRIVER
  M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
- L:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index db9f5c711b3df90641f017652fbbef594cc1627d..a5a328818233e3d019cddaee369dd5b7b1529031 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -178,6 +178,17 @@ config AD5624R_SPI
+ 	  Say yes here to build support for Analog Devices AD5624R, AD5644R and
+ 	  AD5664R converters (DAC). This driver uses the common SPI interface.
+ 
++config AD5706R
++	tristate "Analog Devices AD5706R DAC driver"
++	depends on SPI
++	select REGMAP_SPI
++	help
++	  Say yes here to build support for Analog Devices AD5706R 4-channel,
++	  16-bit current output DAC.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad5706r.
++
+ config AD9739A
+ 	tristate "Analog Devices AD9739A RF DAC spi driver"
+ 	depends on SPI
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index 2a80bbf4e80ad557da79ed916027cedff286984b..0034317984985035f7987a744899924bfd4612e3 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -21,6 +21,7 @@ obj-$(CONFIG_AD5449) += ad5449.o
+ obj-$(CONFIG_AD5592R_BASE) += ad5592r-base.o
+ obj-$(CONFIG_AD5592R) += ad5592r.o
+ obj-$(CONFIG_AD5593R) += ad5593r.o
++obj-$(CONFIG_AD5706R) += ad5706r.o
+ obj-$(CONFIG_AD5755) += ad5755.o
+ obj-$(CONFIG_AD5758) += ad5758.o
+ obj-$(CONFIG_AD5761) += ad5761.o
+diff --git a/drivers/iio/dac/ad5706r.c b/drivers/iio/dac/ad5706r.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..e868f25340855c5b2b54180420894372ba155116
+--- /dev/null
++++ b/drivers/iio/dac/ad5706r.c
+@@ -0,0 +1,247 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * AD5706R 16-bit Current Output Digital to Analog Converter
++ *
++ * Copyright 2026 Analog Devices Inc.
++ */
++
++#include <linux/array_size.h>
++#include <linux/bits.h>
++#include <linux/dev_printk.h>
++#include <linux/err.h>
++#include <linux/iio/iio.h>
++#include <linux/minmax.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/spi/spi.h>
++#include <linux/types.h>
++#include <linux/unaligned.h>
++
++/* SPI frame layout */
++#define AD5706R_RD_MASK			BIT(15)
++#define AD5706R_ADDR_MASK		GENMASK(11, 0)
++
++/* Registers */
++#define AD5706R_REG_DAC_INPUT_A_CH(x)		(0x60 + ((x) * 2))
++#define AD5706R_REG_DAC_DATA_READBACK_CH(x)	(0x68 + ((x) * 2))
++
++#define AD5706R_DAC_RESOLUTION		16
++#define AD5706R_DAC_MAX_CODE		BIT(16)
++#define AD5706R_MULTIBYTE_REG_START	0x14
++#define AD5706R_MULTIBYTE_REG_END	0x71
++#define AD5706R_MAX_REG			0x77
++#define AD5706R_SINGLE_BYTE_LEN		1
++#define AD5706R_DOUBLE_BYTE_LEN		2
++
++struct ad5706r_state {
++	struct spi_device *spi;
++	struct regmap *regmap;
++
++	u8 tx_buf[4] __aligned(IIO_DMA_MINALIGN);
++	u8 rx_buf[4];
++};
++
++static int ad5706r_reg_len(unsigned int reg)
++{
++	if (reg >= AD5706R_MULTIBYTE_REG_START && reg <= AD5706R_MULTIBYTE_REG_END)
++		return AD5706R_DOUBLE_BYTE_LEN;
++
++	return AD5706R_SINGLE_BYTE_LEN;
++}
++
++static int ad5706r_regmap_write(void *context, const void *data, size_t count)
++{
++	struct ad5706r_state *st = context;
++	unsigned int num_bytes, val;
++	u16 reg;
++
++	reg = get_unaligned_be16(data);
++	num_bytes = ad5706r_reg_len(reg);
++
++	struct spi_transfer xfer = {
++		.tx_buf = st->tx_buf,
++		.len = num_bytes + 2,
++	};
++
++	val = get_unaligned_be32(data);
++	put_unaligned_be32(val, st->tx_buf);
++
++	/* For single byte, copy the data to the correct position */
++	if (num_bytes == AD5706R_SINGLE_BYTE_LEN)
++		st->tx_buf[2] = st->tx_buf[3];
++
++	return spi_sync_transfer(st->spi, &xfer, 1);
++}
++
++static int ad5706r_regmap_read(void *context, const void *reg_buf,
++			       size_t reg_size, void *val_buf, size_t val_size)
++{
++	struct ad5706r_state *st = context;
++	unsigned int num_bytes;
++	u16 reg, cmd, val;
++	int ret;
++
++	reg = get_unaligned_be16(reg_buf);
++	num_bytes = ad5706r_reg_len(reg);
++
++	/* Full duplex, device responds immediately after command */
++	struct spi_transfer xfer = {
++		.tx_buf = st->tx_buf,
++		.rx_buf = st->rx_buf,
++		.len = 2 + num_bytes,
++	};
++
++	cmd = AD5706R_RD_MASK | (reg & AD5706R_ADDR_MASK);
++	put_unaligned_be16(cmd, st->tx_buf);
++	put_unaligned_be16(0, &st->tx_buf[2]);
++
++	ret = spi_sync_transfer(st->spi, &xfer, 1);
++	if (ret)
++		return ret;
++
++	/* Extract value from response (skip 2-byte command echo) */
++	if (num_bytes == AD5706R_SINGLE_BYTE_LEN)
++		val = st->rx_buf[2];
++	else if (num_bytes == AD5706R_DOUBLE_BYTE_LEN)
++		val = get_unaligned_be16(&st->rx_buf[2]);
++	else
++		return -EINVAL;
++
++	put_unaligned_be16(val, val_buf);
++
++	return 0;
++}
++
++static int ad5706r_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct ad5706r_state *st = iio_priv(indio_dev);
++	unsigned int reg, reg_val;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		reg = AD5706R_REG_DAC_DATA_READBACK_CH(chan->channel);
++		ret = regmap_read(st->regmap, reg, &reg_val);
++		if (ret)
++			return ret;
++
++		*val = reg_val;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 50;
++		*val2 = AD5706R_DAC_RESOLUTION;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad5706r_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct ad5706r_state *st = iio_priv(indio_dev);
++	unsigned int reg;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (!in_range(val, 0, AD5706R_DAC_MAX_CODE))
++			return -EINVAL;
++
++		reg = AD5706R_REG_DAC_INPUT_A_CH(chan->channel);
++		return regmap_write(st->regmap, reg, val);
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct regmap_bus ad5706r_regmap_bus = {
++	.write = ad5706r_regmap_write,
++	.read = ad5706r_regmap_read,
++	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
++	.val_format_endian_default = REGMAP_ENDIAN_BIG,
++};
++
++static const struct regmap_config ad5706r_regmap_config = {
++	.reg_bits = 16,
++	.val_bits = 16,
++	.max_register = AD5706R_MAX_REG,
++};
++
++static const struct iio_info ad5706r_info = {
++	.read_raw = ad5706r_read_raw,
++	.write_raw = ad5706r_write_raw,
++};
++
++#define AD5706R_CHAN(_channel) {				\
++	.type = IIO_CURRENT,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++			      BIT(IIO_CHAN_INFO_SCALE),	\
++	.output = 1,						\
++	.indexed = 1,						\
++	.channel = _channel,					\
++}
++
++static const struct iio_chan_spec ad5706r_channels[] = {
++	AD5706R_CHAN(0),
++	AD5706R_CHAN(1),
++	AD5706R_CHAN(2),
++	AD5706R_CHAN(3),
++};
++
++static int ad5706r_probe(struct spi_device *spi)
++{
++	struct device *dev = &spi->dev;
++	struct iio_dev *indio_dev;
++	struct ad5706r_state *st;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++	st->spi = spi;
++
++	st->regmap = devm_regmap_init(dev, &ad5706r_regmap_bus,
++				      st, &ad5706r_regmap_config);
++	if (IS_ERR(st->regmap))
++		return dev_err_probe(dev, PTR_ERR(st->regmap),
++				     "Failed to init regmap\n");
++
++	indio_dev->name = "ad5706r";
++	indio_dev->info = &ad5706r_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad5706r_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad5706r_channels);
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct of_device_id ad5706r_of_match[] = {
++	{ .compatible = "adi,ad5706r" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ad5706r_of_match);
++
++static const struct spi_device_id ad5706r_id[] = {
++	{ "ad5706r" },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, ad5706r_id);
++
++static struct spi_driver ad5706r_driver = {
++	.driver = {
++		.name = "ad5706r",
++		.of_match_table = ad5706r_of_match,
++	},
++	.probe = ad5706r_probe,
++	.id_table = ad5706r_id,
++};
++module_spi_driver(ad5706r_driver);
++
++MODULE_AUTHOR("Alexis Czezar Torreno <alexisczezar.torreno@analog.com>");
++MODULE_DESCRIPTION("AD5706R 16-bit Current Output DAC driver");
++MODULE_LICENSE("GPL");
 
 -- 
 2.34.1
