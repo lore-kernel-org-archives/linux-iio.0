@@ -1,146 +1,178 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011065.outbound.protection.outlook.com [40.93.194.65])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1C302206A7;
-	Tue,  7 Apr 2026 14:31:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775572263; cv=fail; b=eg2ZeD3bJLMThiX9KvhrooYxU06jQb5VgHQgA0xqn6LqvsVSGtoOuk+/kTRwIG6Dc7RehEtU+JTSSy+bbxLAvjxK6ttvteIx7kJ+7OspZPEgldYmiU3benmCTa8c1KnLJpxPpuIP7iyfRlEzWM5+Zsa5Ch+7HV8JKYAfBETKOts=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775572263; c=relaxed/simple;
-	bh=K9O00qhMdA05JCSEuxgzd9/xVfY7CdPhirpnOk/y0wQ=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=rE8XmFFzl86ydcg+6KSxuAH2tzpURXIUCSSw61z7XgLOQ3tUEMupC9rUcogPvy3O1Eal903JpmP1bH6UGWcVEyYs0LQuqiDGKOdBoLcIvdhCIyn4+oNWKGLCR3Uy1ZkL2dPrrb7ZysrvyWhNdnZL1IGlyErWQAd0rFjuPLoIeuk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=YUlWj9d6; arc=fail smtp.client-ip=40.93.194.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4AAF2E8DEA;
+	Tue,  7 Apr 2026 14:46:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775573176; cv=none; b=nMqxZjpw6irU/CxoI3PbOw9AWH82PWQyZw1EJt4IAOC2ahcnFYt9H9gVScUb+e509R12CoEHN468t4uur/D142gjvtng4VTD/nopplzVZ++vuWtVN5M9ITBjr5WND7z/IKaRwPMzXH6Ll6UBOsTTp+LcEyjdsO/9VaW4cF+fpTI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775573176; c=relaxed/simple;
+	bh=MBh1A7ZOApVu6tgjYRrDMhGn2k6yHcaWaU2mTjTyE84=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gxJhl7sUMlLIs2kbQV4rj71f9j8oax3yMm8o5OmNGKOxOWU662p3pKPv+J84vR4gjMVAPGC59BQ7S2Ct7YWGB57I23rRLkY8LZgo7fd/3NINc8TmXYH2PQPw5pW4c7j+Zx4o+aOGdB+D/QCQOJ6+Qu1jNdQTlUXD+tBlzgRHlpY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GwCshkM5; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="YUlWj9d6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AnI6hqEG1z3gqJGLZKPI0pwgDJiUxztrJIAVBGxfn6jd3PVI3m7uD0OT3Ohm/gUKHXiCdeXFc+tWoE5bVseM7wMscOgdyTFzraqoH6AKP8AoO09W0K16GMkvwvMcdkLC0dkESAO8hiwBqcuiNMensO/ifZLDMj27apnLtGWz3A17pr3mijtJhTK4r7x3SamkWrcKEnZO1cNsZPLefpOEynZE7GlSmUOZ10dae3NB9d2vvyFtaqs2jiOGUvx3Wlkzj6iBraXPwS/lz6kNha3y0tMT+TMmqZZqFf96U01euLg9fiJfYaqAgVa/JJr86o5qoNvRO5jVLHJOB50n8HNEzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K9O00qhMdA05JCSEuxgzd9/xVfY7CdPhirpnOk/y0wQ=;
- b=V11vJaz1NRtyxpiTg+Y+baeL7VmvM5hdzVYAGJFuB6wByI/Dgg98reOhmjbZwL0+ZUbGOKm4HlQ9526GucrcM3XQP5kZrF0Gh8azcATf/sxvy/4bx54O3yQugfMJafQKNwkGTqKCHxWplja7w3TMm2IjuXmeUlpVf0I28n6j0ZhW/x5ZanlGR/mA71yKlEHvKL1Voz5rWM2ir7Nd6Kyea5tOAnj9Fbl2dFeh3yCE09I9UKZBvUGfsDpGRfqOHoUoQidYBSOTEj9rGhEetUV3b5uB2lGNb+cEzGD7eKGvFhyqJJaSTQUlyewMC/a/NMGxqcfzZo5TjblScEKPkm71jQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K9O00qhMdA05JCSEuxgzd9/xVfY7CdPhirpnOk/y0wQ=;
- b=YUlWj9d6xMzkUplvElw7+Wabjm5qzXwdrGfmyR2drfLXawS7gsSV9CYm41KK8U+oXiutWuIRLSWAg8PTc7XYQ37bavuyHqN14D4T1c2KFdj8itcB/Fdg0Xl+rrGyCIiU5g0pKhIE7DxONGZ4TE6VwgZ+GNSuV50srXo7jOT1LFI=
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by BY5PR12MB4099.namprd12.prod.outlook.com (2603:10b6:a03:20f::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.18; Tue, 7 Apr
- 2026 14:30:58 +0000
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550%5]) with mapi id 15.20.9769.016; Tue, 7 Apr 2026
- 14:30:57 +0000
-From: "Erim, Salih" <Salih.Erim@amd.com>
-To: Christofer Jonason <christofer.jonason@guidelinegeo.com>, "Simek, Michal"
-	<michal.simek@amd.com>, Jonathan Cameron <jic23@kernel.org>, "O'Griofa,
- Conall" <conall.ogriofa@amd.com>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "dlechner@baylibre.com"
-	<dlechner@baylibre.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"andy@kernel.org" <andy@kernel.org>, Victor Jonsson
-	<victor.jonsson@guidelinegeo.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>
-Subject: RE: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
- postdisable for dual mux
-Thread-Topic: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
- postdisable for dual mux
-Thread-Index: AQHcq7dnEu4MVLVXG06oIZXnf3P2bbWjB/QAgARjkoCAIuly8IAJhQiAgAAEGeA=
-Date: Tue, 7 Apr 2026 14:30:57 +0000
-Message-ID:
- <IA1PR12MB7736D5B150CA36406ED7384A9F5AA@IA1PR12MB7736.namprd12.prod.outlook.com>
-References: <20260304090727.1800289-1-christofer.jonason@guidelinegeo.com>
- <20260307124118.1d527749@jic23-huawei>
- <1166aeef-0c93-408d-b265-9037f2840074@amd.com>
- <IA1PR12MB7736AE6EEE95D5D184A15B9F9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
- <GV3P280MB00657EB1524612E9BA0142DEF35AA@GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM>
-In-Reply-To:
- <GV3P280MB00657EB1524612E9BA0142DEF35AA@GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA1PR12MB7736:EE_|BY5PR12MB4099:EE_
-x-ms-office365-filtering-correlation-id: d2e11d38-8bae-4e9b-0523-08de94b248b5
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|7416014|376014|56012099003|38070700021|22082099003|18002099003;
-x-microsoft-antispam-message-info:
- XUq2qYwUQKRCtZh5GRnLxneNZoHyhlHzn8OFMZN4bNMdRuWSGyAawfufZ701O5kg0GsZPEQ+/GcyexjolR2FH/yhv9KXd1+eAsjGeg0WIEjlj4nzTyh8hEgUO0deoi8ZjtA10HkTXuwPp/LK74bAHexQFWViySPtG988P0Lq0SKTbhIamhUUiGL6QxMvMaVg2n2g9TuKvwFUz9oHBw9qAyVV7+qoWdz2guVQ60Ti9asdSFfIoqpK/DxjeIagsKEJDx68JHmPcQ9TdkhVOSybkaVJPszGJPIExwQ+ds+xhYsqt3thuEa/koxmJNMR5j2xuMiv3O4zBuwj64F6Rm9BRwHe+Sl8/uk4V3OWDzmgG1fcRVhfJYW8JoF5/Tb3SmZIfuD4j/gMNxBSLvCs6lraJ2U9LktecR3mrtINCtzvbcV90E3Gh2V/MFxkH6ZCGJRG8QcC81gkeuPd2B67gQADSEGrG6XI6hnLBBiKUbe9Oxbcyj+o8HyjM38KNoTs/1byKj+0Dwv/+dPlOXiHW9lQPewGzLlkzMttbQdR1YU++MGuoyGfrTWEKMyQjBKdWGipqkMVhA0zKcHPVU7v1Y0A8yhrIU0YwTWvq5JWLK4md/bJWsJ9RhLwrYJR9v5uoC1yGA1BcLDxy2UFAc5HZkYQ1kWeTK+KrByI9ugn5rGhwWc9vI4/9g7bBhWe589pFKCg56EEhTGscQXYQs35Fd0SC5OqGcGqgeMmdc216zS25no9QEpHoblMdQqfCFg/GG94P9ef3ZveUZAiSxtVrztc7vcJAswkORUyYaTyxpT5ZmY=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(56012099003)(38070700021)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?viHVkO/Oz/iLa1f1yiYDEAa29+d+lJXyTVMKHErRTAP0z/IBhjb6HNpvhyIK?=
- =?us-ascii?Q?qFnuc7Atx/gb2NFoGRZ87ng4Q2pK7zhUAxL572KvLoWZuUFQ4JJ2AMlxNuc8?=
- =?us-ascii?Q?iItppqId+hu8QqxVPGgIlypLv/mqeRnw+77c0p5p55zb7tE9Wcwj4jO6hptV?=
- =?us-ascii?Q?zOM8IzrW+1AIlWMvcunzrj1UebHtIm5vR87oAdW6gFTGcQPkPt6dKWSLg+3e?=
- =?us-ascii?Q?6zCI68MDhs8WNo3JQvZq8F444jNn2/aI21bk9Ff5KamwdNcURYutQH5xyU5t?=
- =?us-ascii?Q?GrX+u+FxCcIbVYWwNar7kVlkdoXM+ejU59/7jlt2r/MpAYxvNnOKdoF7cQPv?=
- =?us-ascii?Q?enlEA8HiUozJwHdX/PK8ZLTbh169zKORlpN58gRUtZZGg43UnMJHaaznPVhG?=
- =?us-ascii?Q?2dORY8NFheg6JzMrCtEo8KRqspwS4Ehd/qviMsEW36GsSHHjv/Q1gwgQFxnS?=
- =?us-ascii?Q?WMXtor7F8ALpZaXf1J+Hu5pJf1kvmyCetILXSABpG+QsoKREYkRRcQ9m8FTN?=
- =?us-ascii?Q?I8uxTyqBeYFjqe5+bhWQWJObx7ZHEAuTerN2P6mQ/G/901oZKWxhxmBwQOQM?=
- =?us-ascii?Q?NMhEu4tSRcsFZLvMVG6HtZP5u0E3Se3fcgk8+h6hNwJ+Sde1zhbcQH1Ddj7U?=
- =?us-ascii?Q?CWAHHsr2hWf6ZspCBOD7klRMvPcxRESlJuMdVrTeW9151sz/3tRAPEJS9Emr?=
- =?us-ascii?Q?xltiXckVPqzfgUQxTqwqcx5b7uLq22CALnwvB9jNvB88kTRbm0d/L+WRUdkA?=
- =?us-ascii?Q?b+FeMpvdosX9t2I3FDvbIhVub3ET4r6/KPRLA3fyytgruttSG1WICyFPVlMP?=
- =?us-ascii?Q?Zynt3HPxNX9Ea76wZq4upAg/CGXo6rzrtLLKywDNDJFqgwTzkQdRykWM7gHo?=
- =?us-ascii?Q?cR8sW/lGrzkjnBUHaQIS5C0wq6BG6kd+UhUZqS7mItIb1sOyfoht6lzFerKR?=
- =?us-ascii?Q?6jT6xOuHZ3YHOJrBXPFs2krlAG/yOKpG2V5iCNvA4OqsZ6v7cq2MRTzp69oV?=
- =?us-ascii?Q?xEwdXtyIA3UNrnAxtuSF9EYsDQfmYNfs+nM5zl9HUon/KspnkowfLTPvWdkL?=
- =?us-ascii?Q?WESSXegxRlSxD6wxtqKIXDTzgCD8d/eAqEGxv1OYt5XGQ8DYXlFtWwE2eohy?=
- =?us-ascii?Q?fkZy1eoX6BYhMUtX56sLMtw1ixouQDCzIrX0lFHKsJgOkOc6DF1pVPfopYZi?=
- =?us-ascii?Q?qZW6I6MD5KJ5DKoMcvHgOveyJlWruttm72EcaKk9Q337UthiNxU2ysSEguNf?=
- =?us-ascii?Q?B6uOq+VxA9HIxZtCows1xPvXA7obRT3Kt3EKtWq5rIWSHO1qDC0p7fn/nHeS?=
- =?us-ascii?Q?dKZScdVaxpwfhU1+lSlqiLjlMRWe3s2pExMlLXuGCYtIfHbeGhtiYIuZuvjS?=
- =?us-ascii?Q?ltcZSyNBEp/oNMPdyRcM5UyWx7uifHepBfe9WxQ2+MQm279DCEPqVdO1j00n?=
- =?us-ascii?Q?+paBMdvM+MuQ2D7ghnuDty3uebGI0HdAIccFm4AYD3/3ao3IDkULMWEf5ojb?=
- =?us-ascii?Q?x0jy50AL3zJHgERB6geJtd5Jms2g0WFEzVhnYeIM8Oiej4kLtxvCdUjjufR3?=
- =?us-ascii?Q?CbfQu9fGEIGjOziDAXUdKm3mFUuvAnoYiubkMnQE+Dn7JzYw6rdp1y1AxykO?=
- =?us-ascii?Q?br/nUmzWkY0ro8qhg880z3ZO1DlGUlF1iZJdFb86+KURAJtf9qUzwINJ66f5?=
- =?us-ascii?Q?0G/4FjMKTAIZSc6aPE1w5vUudEe3K3Ks8UkisIadDsgugQqV?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GwCshkM5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1775573172; x=1807109172;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MBh1A7ZOApVu6tgjYRrDMhGn2k6yHcaWaU2mTjTyE84=;
+  b=GwCshkM56ClNa6VVT1J6eTAT5SKj3E21fgXjqZ3MEfyE3ci11/E9lyLG
+   9mPXjiiJ9VjoKToGdXrshVdxWtS2bPW7Sjoj47gTaB9HMco58ljrm2YGq
+   mKlHXAIXAlPsf+F6CqRTnHwDt01EjVY8kzzxaycKGzI0x+JneItSeRcSm
+   rY7fPWP2Hy6e+E6hGfmU2DBR/W6uQyumXjy3ifB89voKuoIkffWk1qIB7
+   Qc8v8PlkIlSOPgmpODJyFwRhVewUzQPeX1fZ4pDXmNeslXMisgy4lqAED
+   GwcUEykRPW/Ub7C2SiBSOKGLM4fV+0go9uhWJGdMcNGXTVQikC4NOKWrk
+   g==;
+X-CSE-ConnectionGUID: zX+nWBAXRfGRjVjLzqwVqQ==
+X-CSE-MsgGUID: QGE1r1qzRjaLi7FU8x9J4w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11752"; a="87241310"
+X-IronPort-AV: E=Sophos;i="6.23,165,1770624000"; 
+   d="scan'208";a="87241310"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2026 07:46:10 -0700
+X-CSE-ConnectionGUID: gvCoZNvwQiGe5nCmpGl+Jg==
+X-CSE-MsgGUID: Eh7srEzQQkiEWGlZvU5wOQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,165,1770624000"; 
+   d="scan'208";a="228450985"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.182])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2026 07:46:07 -0700
+Date: Tue, 7 Apr 2026 17:46:05 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] iio: dac: ad5706r: Add support for AD5706R DAC
+Message-ID: <adUYrSWiX-oexxGN@ashevche-desk.local>
+References: <20260407-dev_ad5706r-v5-0-a4c7737b6ae9@analog.com>
+ <20260407-dev_ad5706r-v5-2-a4c7737b6ae9@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2e11d38-8bae-4e9b-0523-08de94b248b5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2026 14:30:57.7510
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: BeeQ6SCEAFEAiILFYvmTSMVlJRw7x3fs4oEqrpTQpgeSbKjRpn1oHLbJHCa5dPWf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4099
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260407-dev_ad5706r-v5-2-a4c7737b6ae9@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Christofer,
+On Tue, Apr 07, 2026 at 11:39:45AM +0800, Alexis Czezar Torreno wrote:
+> Add support for the Analog Devices AD5706R, a 4-channel 16-bit
+> current output digital-to-analog converter with SPI interface.
+> 
+> Features:
+>   - 4 independent DAC channels
+>   - Hardware and software LDAC trigger
+>   - Configurable output range
+>   - PWM-based LDAC control
+>   - Dither and toggle modes
+>   - Dynamically configurable SPI speed
 
-Thanks for the details. That confirms it.
+Mostly okay, see minor comments below, the main one is about treating void * as
+__be16/__be32 * without any validation.
 
-Jonathan - this one is good to go from our side.
+...
+
+> +static int ad5706r_regmap_write(void *context, const void *data, size_t count)
+> +{
+> +	struct ad5706r_state *st = context;
+> +	unsigned int num_bytes, val;
+> +	u16 reg;
+> +
+> +	reg = get_unaligned_be16(data);
+> +	num_bytes = ad5706r_reg_len(reg);
+> +
+> +	struct spi_transfer xfer = {
+> +		.tx_buf = st->tx_buf,
+> +		.len = num_bytes + 2,
+> +	};
+
+> +	val = get_unaligned_be32(data);
+
+Is it safe? The data is void *, no size of it is counted here...
+
+> +	put_unaligned_be32(val, st->tx_buf);
+> +
+> +	/* For single byte, copy the data to the correct position */
+> +	if (num_bytes == AD5706R_SINGLE_BYTE_LEN)
+> +		st->tx_buf[2] = st->tx_buf[3];
+> +
+> +	return spi_sync_transfer(st->spi, &xfer, 1);
+> +}
+
+> +static int ad5706r_regmap_read(void *context, const void *reg_buf,
+> +			       size_t reg_size, void *val_buf, size_t val_size)
+> +{
+> +	struct ad5706r_state *st = context;
+> +	unsigned int num_bytes;
+> +	u16 reg, cmd, val;
+> +	int ret;
+> +
+> +	reg = get_unaligned_be16(reg_buf);
+> +	num_bytes = ad5706r_reg_len(reg);
+> +
+> +	/* Full duplex, device responds immediately after command */
+> +	struct spi_transfer xfer = {
+> +		.tx_buf = st->tx_buf,
+> +		.rx_buf = st->rx_buf,
+> +		.len = 2 + num_bytes,
+> +	};
+> +
+> +	cmd = AD5706R_RD_MASK | (reg & AD5706R_ADDR_MASK);
+> +	put_unaligned_be16(cmd, st->tx_buf);
+
+For the consistency's sake use &st->tx_buf[0].
+
+> +	put_unaligned_be16(0, &st->tx_buf[2]);
+> +
+> +	ret = spi_sync_transfer(st->spi, &xfer, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Extract value from response (skip 2-byte command echo) */
+> +	if (num_bytes == AD5706R_SINGLE_BYTE_LEN)
+> +		val = st->rx_buf[2];
+> +	else if (num_bytes == AD5706R_DOUBLE_BYTE_LEN)
+> +		val = get_unaligned_be16(&st->rx_buf[2]);
+> +	else
+> +		return -EINVAL;
+> +
+> +	put_unaligned_be16(val, val_buf);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +#define AD5706R_CHAN(_channel) {				\
+> +	.type = IIO_CURRENT,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+> +			      BIT(IIO_CHAN_INFO_SCALE),	\
+
+Missing indentation at the end with tabs.
+
+> +	.output = 1,						\
+> +	.indexed = 1,						\
+> +	.channel = _channel,					\
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Thanks,
-Salih.
