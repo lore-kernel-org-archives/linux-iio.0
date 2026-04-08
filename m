@@ -1,204 +1,178 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56CE83A1E67
-	for <linux-iio@vger.kernel.org>; Wed,  8 Apr 2026 08:29:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 717C53B583E;
+	Wed,  8 Apr 2026 10:32:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775636997; cv=none; b=hfoONRMoSLC+T99vbag0ZlXRG8qNZUpo/w8t6lr9iTWdXyDUKsFcF/ASUZcNlAQEjrNP8tgDnZ7SF3GxwGIAv1zX0bkoGSU/L2UBSrscer1LX9q6QGs6O66+Xf2Vl5UYBu4UPwY319hEerQL40NWUpCq/EC71HfUleaZIQ2HY8M=
+	t=1775644339; cv=none; b=ZWb8CHpSqsgV9R8u2/btpoSj99zwt36Z7dATPGGmEg7TUHoxI9sml/2uUZyd5MLH3vd2/xbUejLVSqnsHA0w0Dg8OOWysIJCvbfr6QSCNcNjEHvCBfiGDkUfBjJEHPHRsoiaqsimTKZDW5dBtathjKgo2048p/jwbLJnxUtliFg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775636997; c=relaxed/simple;
-	bh=/N9nDgGBUx2xNQj/8J/V+x1gepv5/QyqrTKMRR9IgJU=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=MiQpZzrOy+2iIJaJrTDhMJ8d8Z9Xelub8MpsiZbeKdIi3nw5HxiA7CmyKFfX1RL7VaSgYQeY+eyXc1kzmC35RLyFsK/ioTKPXPqGe9Z+YVpMtF+GUPZ2sDGlHdAdUIr2g5nXWhx8O7ePOFsUDTbhVYYq+YT3v171C7zttFn7VaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F1HDNG3Y; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1775644339; c=relaxed/simple;
+	bh=cBchJ+EKmsukYB8TS4yvuEzAnxauSUKiuKhljDi4NjU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=MMsWoxWSWhcwbjjDKFH0zR64xYGJyfdmE3IUCrseUh1YgFKlJQs2IwzSvwXz2theXNZS44phJ0ksmjqeOozj60oLum74HDYrzGJraLInEB9F7hQ5y32UVon8twvtKQsK2mIx1JcIokdlWuXgvzI5AYOXJrhEKbBkVMwlTgZ/QKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tEdm7NMK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F1HDNG3Y"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2aaf43014d0so41507545ad.2
-        for <linux-iio@vger.kernel.org>; Wed, 08 Apr 2026 01:29:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775636996; x=1776241796; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=D3GLS/fnV1kV6HHNA7BZp2uu/52HjF+3WXvNfbBxqW4=;
-        b=F1HDNG3YLIkSjVat6tNy5BaEAgBk8aymxNBIj2jT7UWQ5lZZW1xKS7HfFk9UOLkezc
-         kKixG0V5UQVDSpsdDT4C3k82jirEoPNI2ayvQiKOjG3Quk3OVw+2HcwyPDBQvxcMcAMe
-         6a0uHLQA03B/4z1VMST3JlqsL8TB7cFVMImJmV/Y4yEsZaxaPkvtsmMEFwFv6axexMpe
-         JlQTVAoRgX3sZuV9STX0GgHJ4SURJaHb5rBQb1yhRe3ALXl5D6X8c+Q/Zgbo/J29+dnX
-         KDinfXaaIt1exHe9DK0woO8XkUgbkhKaR1rqqjtnG54+qEMKOKhRvZxFckfsV9XizgvB
-         mGoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775636996; x=1776241796;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=D3GLS/fnV1kV6HHNA7BZp2uu/52HjF+3WXvNfbBxqW4=;
-        b=EDkQAGfAKtcOjaFocb3I0/6BKiTkqhRm4jtRZrD+hmiKovt+lAhUAXjnEnJFMRwE/n
-         rHwNgWStbItzZWnoT2FiSlXe7/+ccXmWOXXrGNYvB9TBPc00k2sSQIAQoaHPn1VdEuix
-         xjr+Syfnlc9N65sQSPgE8CqVmmGTQ47/NJLjDnLESoCFKFe/pMZsp8a1rJLy2P5PqDnr
-         NUcVO/3K20qN3x3/oTnkVwLgGcV6MJmg8rZyqgWtOazL54IYg8zju3CoWkCieeZzfsTg
-         r5u6JtjWqa21Prd24CVciw2PZjpI9k2EbGPFzfbTF/mvO1OjaI2/E+a4BVRLMnNoKAHN
-         HHwg==
-X-Forwarded-Encrypted: i=1; AJvYcCVIpxpuD00TN0c+tu2e69/E2EV6ZxSAU74zXDfAuaIxS+n7MwUYda9fJW286pFfepMpGZxl5XzUO5I=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyDksOP2MqUCujkKiykbs4U158ZOg8cozZ1l1afAyVKcZrQlsUq
-	XC1qeOtfrk0GZmBIrfoNNsZ6cHgW5vt4fYbrbsjuikqdNnrRouJCNhys
-X-Gm-Gg: AeBDiesjQylXlX3kBxSnNjbIccPH18QCta77azW+Bt2D7a06WT2u81WmpS+f6kwaZW9
-	kpWwCkH9w5aW4A3XTrSM1cQTRKG3yAtCbdkRS97pCvOZ2U6HoE6OfcB1gTQzfRH7XVtxsZBBEW3
-	OmghyJWJjpJT1hDYRApIcK6kvzAI6qeNJ+j9vVMxEBNVw1Bp8Aj2QvCkqRhnmg+E1wPwGKPeRJM
-	rt2Ifgv3NpxDgzn3fKujF5biPj4aSaD+XwKblXGieP0VPIPlXLbimhZyNrNZpXAl2KeduKkN+5z
-	q/FMyMi4D0Boh6mEvngRchuEECk47RW8EDhKz6pYBHiCfyQDawrxm3x+emnJjmCocupWxXzwXFH
-	RUlPV3LGKol7qD3Ll0BhV+ElDHZdIZtteAYokhKVOQq4n+aam0udPkRc0ylxqL+wCiPSacr1opj
-	oV8ZqdWQ6DaixwTkQm0WcuYMItV/AUjn1xNVJBXsjx3iSpvo4=
-X-Received: by 2002:a17:903:3205:b0:2b2:4eec:9806 with SMTP id d9443c01a7336-2b28182ca4cmr238395465ad.8.1775636995535;
-        Wed, 08 Apr 2026 01:29:55 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:ac07:a748:addf:cbb4:8118:a551])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b27472d1a2sm209392515ad.7.2026.04.08.01.29.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Apr 2026 01:29:55 -0700 (PDT)
-Date: Wed, 08 Apr 2026 13:52:08 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v5_3/5=5D_iio=3A_ssp=5Fsensors=3A_fa?=
- =?US-ASCII?Q?ctor_out_pending_list_add/remove_helpers?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <adQR2ZKVOavHlJDt@ashevche-desk.local>
-References: <20260406080852.2727453-1-sanjayembedded@gmail.com> <20260406080852.2727453-4-sanjayembedded@gmail.com> <adQR2ZKVOavHlJDt@ashevche-desk.local>
-Message-ID: <6878A01C-C546-4719-86F5-F1571B4A198C@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tEdm7NMK"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3097CC19424;
+	Wed,  8 Apr 2026 10:32:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1775644339;
+	bh=cBchJ+EKmsukYB8TS4yvuEzAnxauSUKiuKhljDi4NjU=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=tEdm7NMKE25TVeY7SK/KyG6i0JJfbNbc1WjsTrT6xop6S+HX2gvmm/aMQw9EyuIN3
+	 Cmxja7LOAFDbWS8jEl/pv+dnBJIR4cNejZOQfLXNrJo5WboUJGv15iFB+ZlAckLCvZ
+	 XO2jzgO5vj6qnMZCKsA5AwLr5DXdJU4393ft20kWkYUkMzo5r+YAnYbhEIBO8TIHaj
+	 FCMve8qnHkJkNS8wqh9PgOeqLRif8bhcVdn7y7E5z0xxKD4Hk7UDwAWzA3U7si24ya
+	 qXy7lNN+rq9X33fKYGlKrejUL8IgQgBkRHd1+Sd5dk249GnKNhby3IBK6javs+9Eg0
+	 cFFqrrxhlsVOA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B960FD5F79;
+	Wed,  8 Apr 2026 10:32:19 +0000 (UTC)
+From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Date: Wed, 08 Apr 2026 13:32:13 +0300
+Subject: [PATCH v3] iio: adc: ad4695: Fix call ordering in offload buffer
+ postenable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260408-ad4696-fix-v3-1-37fe6e8d1d25@analog.com>
+X-B4-Tracking: v=1; b=H4sIAKwu1mkC/22MSwrCMBQAryJvbSQvPxNX3kNcpO2zDWgjiQSl9
+ O6m3UjB5QzMTJApBcpw2k2QqIQc4lhB7nfQDn7siYWuMgguDJeSM98p4wy7hTdDa5zW3rYaEWr
+ wTFT1OrtcKw8hv2L6rO+Ci/27KciQkVVIziiNjTj70d9jf2jjA5ZPEb9Wcdy0orZCWd44L/lRu
+ U07z/MXOl9JJuEAAAA=
+X-Change-ID: 20260330-ad4696-fix-186955a8c511
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ Radu Sabau <radu.sabau@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1775644333; l=4155;
+ i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
+ bh=meaEx+5eOnCshzOryh8iUzRER3yLb0rU+9apvG7SJTo=;
+ b=roQ+/kwyq4jo5nJ/F/IT42iRBsxtEIe7m7HOZFYKRjAjzkqCyVp/crF9AjaeFGn4gZ4Eal49a
+ 2x7z7Ic9aINDosW5CHCQSH5qTbw/6vpfEUovRDyWVUItZJVZOPPAfQw
+X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
+ pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
+X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
+ auth_id=642
+X-Original-From: Radu Sabau <radu.sabau@analog.com>
+Reply-To: radu.sabau@analog.com
+
+From: Radu Sabau <radu.sabau@analog.com>
+
+ad4695_enter_advanced_sequencer_mode() was called after
+spi_offload_trigger_enable(). That is wrong because
+ad4695_enter_advanced_sequencer_mode() issues regular SPI transfers to
+put the ADC into advanced sequencer mode, and not all SPI offload capable
+controllers support regular SPI transfers while offloading is enabled.
+
+Fix this by calling ad4695_enter_advanced_sequencer_mode() before
+spi_offload_trigger_enable(), so the ADC is fully configured before the
+first CNV pulse can occur. This is consistent with the same constraint
+that already applies to the BUSY_GP_EN write above it.
+
+Update the error unwind labels accordingly: add err_exit_conversion_mode
+so that a failure of spi_offload_trigger_enable() correctly exits
+conversion mode before clearing BUSY_GP_EN.
+
+Fixes: f09f140e3ea8 ("iio: adc: ad4695: Add support for SPI offload")
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+---
+ad4695_enter_advanced_sequencer_mode() issues regular SPI transfers to
+configure the ADC. These must complete before spi_offload_trigger_enable()
+enables the PWM/CNV trigger, because once CNV pulses are live the offload
+engine owns the SPI bus.
+
+This fixes the call ordering and updates the error unwind path accordingly.
+---
+Changes in v3:
+- Reword commit message: "the offload engine owns the SPI bus; any
+  concurrent regular SPI transfer produces undefined behaviour" →
+  "not all SPI offload capable controllers support regular SPI
+  transfers while offloading is enabled".
+- Rename err_trigger_disable → err_offload_trigger_disable to reduce
+  diff churn.
+- Link to v2: https://lore.kernel.org/r/20260401-ad4696-fix-v2-1-2480b9a30749@analog.com
+
+Changes in v2:
+- Reword commit message to explain the correct bus-ownership
+  invariant directly, without reference to the HDL bug that
+  exposed it.
+- Remove unnecessary comment since the error path changed.
+- Link to v1: https://lore.kernel.org/r/20260330-ad4696-fix-v1-1-e841e96451b2@analog.com
+---
+ drivers/iio/adc/ad4695.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/iio/adc/ad4695.c b/drivers/iio/adc/ad4695.c
+index cda419638d9a..53642de7330d 100644
+--- a/drivers/iio/adc/ad4695.c
++++ b/drivers/iio/adc/ad4695.c
+@@ -876,14 +876,14 @@ static int ad4695_offload_buffer_postenable(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		goto err_unoptimize_message;
+ 
+-	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
+-					 &config);
++	ret = ad4695_enter_advanced_sequencer_mode(st, num_slots);
+ 	if (ret)
+ 		goto err_disable_busy_output;
+ 
+-	ret = ad4695_enter_advanced_sequencer_mode(st, num_slots);
++	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
++					 &config);
+ 	if (ret)
+-		goto err_offload_trigger_disable;
++		goto err_exit_conversion_mode;
+ 
+ 	mutex_lock(&st->cnv_pwm_lock);
+ 	pwm_get_state(st->cnv_pwm, &state);
+@@ -895,23 +895,16 @@ static int ad4695_offload_buffer_postenable(struct iio_dev *indio_dev)
+ 	ret = pwm_apply_might_sleep(st->cnv_pwm, &state);
+ 	mutex_unlock(&st->cnv_pwm_lock);
+ 	if (ret)
+-		goto err_offload_exit_conversion_mode;
++		goto err_offload_trigger_disable;
+ 
+ 	return 0;
+ 
+-err_offload_exit_conversion_mode:
+-	/*
+-	 * We have to unwind in a different order to avoid triggering offload.
+-	 * ad4695_exit_conversion_mode() triggers a conversion, so it has to be
+-	 * done after spi_offload_trigger_disable().
+-	 */
+-	spi_offload_trigger_disable(st->offload, st->offload_trigger);
+-	ad4695_exit_conversion_mode(st);
+-	goto err_disable_busy_output;
+-
+ err_offload_trigger_disable:
+ 	spi_offload_trigger_disable(st->offload, st->offload_trigger);
+ 
++err_exit_conversion_mode:
++	ad4695_exit_conversion_mode(st);
++
+ err_disable_busy_output:
+ 	regmap_clear_bits(st->regmap, AD4695_REG_GP_MODE,
+ 			  AD4695_REG_GP_MODE_BUSY_GP_EN);
+
+---
+base-commit: 11439c4635edd669ae435eec308f4ab8a0804808
+change-id: 20260330-ad4696-fix-186955a8c511
+
+Best regards,
+-- 
+Radu Sabau <radu.sabau@analog.com>
 
 
-
-On 7 April 2026 1:34:41=E2=80=AFam IST, Andy Shevchenko <andriy=2Eshevchen=
-ko@intel=2Ecom> wrote:
->On Mon, Apr 06, 2026 at 01:38:50PM +0530, Sanjay Chitroda wrote:
->
->> The SSP SPI transfer path manipulates the pending message list in
->> multiple places, each time open-coding the same locking and list
->> operations=2E
->>=20
->> Re-factor the pending list add and delete logic into small helper
->> functions to avoid duplication and simplify transfer flow to follow=2E
->>=20
->> No functional change intended=2E
->
->Suggested-by?
->
-
-Requesting your input on which email is recommended to tag with your name=
-=2E
-
-Shall I use intel=2Ecom ?
-
->=2E=2E=2E
->
->> +static inline void ssp_pending_add(struct ssp_data *data,
->> +				   struct ssp_msg *msg)
->
->Make it rather:
->
->static inline void ssp_pending_add(struct ssp_data *data, struct ssp_msg =
-*msg)
->{
->	if (msg->length)
->		return;
->	=2E=2E=2E
->}
-
-It should be not, right ?
-
-{
-if (!msg->length)
-        return;
-=2E=2E=2E
-}
-
- const bool use_no_irq =3D msg->length =3D=3D 0;
- if (!use_no_irq) {add/del}
-
-If message length is 0 then no interrupt
-
->
->> +{
->> +	mutex_lock(&data->pending_lock);
->> +	list_add_tail(&msg->list, &data->pending_list);
->> +	mutex_unlock(&data->pending_lock);
->> +}
->> +
->> +static inline void ssp_pending_del(struct ssp_data *data,
->> +				   struct ssp_msg *msg)
->> +{
->> +	mutex_lock(&data->pending_lock);
->> +	list_del(&msg->list);
->> +	mutex_unlock(&data->pending_lock);
->> +}
->
->(in the same manner)
->
->=2E=2E=2E
->
->> -	if (!use_no_irq) {
->> -		mutex_lock(&data->pending_lock);
->> -		list_add_tail(&msg->list, &data->pending_list);
->> -		mutex_unlock(&data->pending_lock);
->> -	}
->> +	if (!use_no_irq)
->> +		ssp_pending_add(data, msg);
->
->=2E=2E=2Eand then it will become
->
->	ssp_pending_add(data, msg);
->
->>  	status =3D ssp_check_lines(data, true);
->>  	if (status < 0) {
->> -		if (!use_no_irq) {
->> -			mutex_lock(&data->pending_lock);
->> -			list_del(&msg->list);
->> -			mutex_unlock(&data->pending_lock);
->> -		}
->> +		if (!use_no_irq)
->> +			ssp_pending_del(data, msg);
->>  		goto _error_locked;
->>  	}
->
->=2E=2E=2E
->
->>  		if (wait_for_completion_timeout(done,
->>  						msecs_to_jiffies(timeout)) =3D=3D
->>  		    0) {
->> -			mutex_lock(&data->pending_lock);
->> -			list_del(&msg->list);
->> -			mutex_unlock(&data->pending_lock);
->> +			ssp_pending_del(data, msg);
->> =20
->>  			data->timeout_cnt++;
->>  			return -ETIMEDOUT;
->
->Also rewrite this to follow the style (missing {}, better indentation):
->
->	if (msg->length && done &&
->	    !wait_for_completion_timeout(done, msecs_to_jiffies(timeout))) {
->		ssp_pending_del(data, msg);
->
->		data->timeout_cnt++;
->		return -ETIMEDOUT;
->	}
->
->And kill that use_no_urq altogether=2E Move the comment rather to a helpe=
-r(s)=2E
-
-Understood, will follow and drop this variable in next series=2E
-
->
