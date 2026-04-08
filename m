@@ -1,127 +1,73 @@
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com [209.85.222.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7952D2475E3
-	for <linux-iio@vger.kernel.org>; Wed,  8 Apr 2026 07:58:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8770B39A07F
+	for <linux-iio@vger.kernel.org>; Wed,  8 Apr 2026 08:03:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775635090; cv=none; b=JlqrERxM+dLxWyNvl/u+eJv9oCclRwUZAAG6jIu2ZH38Ms7It+xl+X6Za1UeKUxxWpL1tWcUCKNSMH8/sM6nDfMRunwIn24NI84l0MVs/uGGSP27ik+lmF3TSmQe/xJFxupYM3GrlJTD5/cP/AfZIqXOnQhJHSSFM2Y2m/nL+zE=
+	t=1775635385; cv=none; b=uOMg6OzH1Ed/nrLITO8XEYeTUS/GI5ZCQxiqgHPdoyzebCpVwTul7JMnnlJ8ovoYWVSs3eEKrBAc/tm55KIqpslU0EJgO8YxC0o3oyejvcS+pfekYJQQxtHrk7TT1pl8oMZF5DJhDq78OK1z+Tr3DIQ4eyhyPz2AbYQ+Z1mhInM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775635090; c=relaxed/simple;
-	bh=tb5ayrKCU1QRWz4F+1quo/d9UHKE8nDLKnD4uurIqwQ=;
+	s=arc-20240116; t=1775635385; c=relaxed/simple;
+	bh=q3m6wCafPPHnDhGN/jVfGwXg9ud8SIGXMM4cDcDzTb4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Otmz7WqjjKNM9eVd5wedfBiL3NA5gNgfvTg20ntNkrkNYXMQOL1R6zNEzCftByvDMTCwOh5B0NcC4umtVED1lslGeu2n67MSgNy1nIN08WSS14MCnqdcH0zu7qVwLORYbNKJN2PwtNM6Nvi5lhS9WjLcPvSmA5FT8rTEt7EECuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f41.google.com with SMTP id a1e0cc1a2514c-953943f7a33so2545935241.0
-        for <linux-iio@vger.kernel.org>; Wed, 08 Apr 2026 00:58:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775635088; x=1776239888;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=s4R92sE+3j+L6v6U2wW4n9L1aU391JVM9cT4kRUC3wo=;
-        b=qQMG28kIQWfOVOhanJebiDCKkKJn/fhGNaG3dE6DE4e5Bdc64H1mNPWFyXB4aZHr8B
-         I69gw0oihUJwvlm4VSxr7nfZT8GDfKENs/0FpbPZl3su/HbK3nIFZNE3XE3C/fahp9Mz
-         RDDL0QwVC5ago+odpmNBZyew6EZZMxFNRplE8lWmmc54BipAdsZDs+RMz9JaG22+NLA+
-         k3RWy4EdjM+CC71KGY1zeywNo+KADoTVcYhxzyhQp5qHdmD8Md/ImCdAeVwYPtzl1ynb
-         CwUcdF+nVv/iXmsa9MGj1Eg01r8bMcEf+z68IqfydqG7mTRKbQxXnKv+y7nNCzYC192T
-         6n7w==
-X-Forwarded-Encrypted: i=1; AJvYcCVLqBJuuPqYxwDkP1fuOmoZc6UQzNMjBM+4DamL7swBSaqZaiwR4oHl7YQ7+43sEmdR+dnmk5Lyhjs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwgEyRBlWOCmbPkr1JTN7f+2j0upNn23YmXtZOPZ1SOdHV9yrB6
-	yzr5dbUEhlffuYPnNKb/mWvhWA5tOX7I1ObjMMND5tMZZgCwSOiUhYZOLnuiuxLg
-X-Gm-Gg: AeBDies5UrdUeFGSKJsJH1wMCkvC7wH9L0jHjhisfGom/KsLW/DF3G59jY/73eg8mpn
-	7hcnFw63PExU6bC+vlfXl24Tc96JNquOYhYkQIBMk3oO7YWjjKGXbv5p1yuGbhwRD46uENm+aJ2
-	sXyCA9PVRb1xHc2qexTvWZiVY8nwUSe44gZUenFOmGg6Jm5SHD0nhLoR8jEfLgxj2uwOnjzfVH/
-	Efcm6UwpuyNabdzK3fuU3RO6/xT9qbWq+o5ctcbP7iMp9y4V2CUPDDV+6EHzLxXyYCEFqtP9So8
-	ExuTtQM8nT8KP8IE0lYqIQXrItyoOyHKq1ryMWU0W2AsJ5MjogPZ5YTyt+X5R4Ih48N4rUbnVYX
-	DCW67jb66o7cSA385o1GrTsLMxQHJzBueBEm1BiX6lttTDltWswlON8tBrsOtbn9M6XUaJd97If
-	f37PAMkw3XjNeYxN+6ubUMMLR5w7mUnetgPzrdn1lUevVL+JeXJBPM45pzZc6eL/X9X/mT6rA=
-X-Received: by 2002:a67:ef49:0:b0:607:9443:b29d with SMTP id ada2fe7eead31-6079443b7a2mr1482597137.7.1775635088227;
-        Wed, 08 Apr 2026 00:58:08 -0700 (PDT)
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com. [209.85.217.50])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-60582e730e9sm20151873137.6.2026.04.08.00.58.07
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Apr 2026 00:58:07 -0700 (PDT)
-Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-605def5b7f8so1983696137.1
-        for <linux-iio@vger.kernel.org>; Wed, 08 Apr 2026 00:58:07 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUXErz5RJfFFSpuOEk7T2VQvkb1i7E9oYZBSCu+JMeCT8+8WwIWtQr2U9RB0OgY2yOQTQj1fLS6te4=@vger.kernel.org
-X-Received: by 2002:a67:e718:0:b0:604:e315:6eb1 with SMTP id
- ada2fe7eead31-605a4e92bb0mr8578869137.14.1775635086837; Wed, 08 Apr 2026
- 00:58:06 -0700 (PDT)
+	 To:Cc:Content-Type; b=gv5AVsIXAVi1yZLTkw/VZlyE93IBe9MfcIfChjGLD/XHuE/t2F7qb6cLiDE55Y7hhBbjU4xWFgP6jEJe7rU4zdjM4k+GcLcQ7KHQOmTEMYQ+KejKCxwqt1Dz6MBTK+nmxjMeLmEK3oMROhzmCV5WXp3X+XJ+nYfEtkkIrfykcr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OmXigSd7; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OmXigSd7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41AF2C2BCB5
+	for <linux-iio@vger.kernel.org>; Wed,  8 Apr 2026 08:03:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1775635385;
+	bh=q3m6wCafPPHnDhGN/jVfGwXg9ud8SIGXMM4cDcDzTb4=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=OmXigSd7dUjgYicAwaScNhN259Z7kjeTittgYtUSTjZUy8G+MSfxFsS5cOIA2WZwf
+	 K7qW3zB6NxEYhY0BJJjvc/OKDsC2nfRZGP2t38wXsk4yDHsW2tOzTakg+uBElctxM5
+	 U/W3SOKavtDuyoLb0zhgmsfBvVo10IzqtI+w+rrQ8kQgfMHSomAdW0pc3KZBPG+Xjy
+	 ssAaEkbpmP8G9+FiPHDSDfQjM3yjEDE6DtZL/puKc2isV919jJsKpedzhXvqlaBBCR
+	 9a8s+HUBw0BzW/DbmqySbLNDruNWiWtRDKlJGslm9eSQbZ13+gazDnuW3ysc1A87Eg
+	 8xzpwviJPsHHg==
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-7991db3dc98so64826737b3.0
+        for <linux-iio@vger.kernel.org>; Wed, 08 Apr 2026 01:03:05 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXR4gC6FtS4x6rn0XGKfBRd5r8d+IQrLPa4lYIcNrXnZYOzIHF7A1R5ns33+wJ4T74G/yR+M/KXMxQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/rYgXp3qekwUgLd/gUclMfginBlH7LkN0/3XZdtYkYrmnep+R
+	2+in4ZJ2dm1VZ+lXxY3ZtPWDlR4mRfl6+Prp69dKU0DBhmvkWKwMxnJEgCFZcZZw2Pb9eDfdNCh
+	jXDUO6VPv56B3Mu+cPk/6oNFRxK2y1vA=
+X-Received: by 2002:a05:690c:6e84:b0:79a:1f7e:fca7 with SMTP id
+ 00721157ae682-7a4d2ff2407mr203983157b3.12.1775635384512; Wed, 08 Apr 2026
+ 01:03:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260327192425.438263-1-cosmin-gabriel.tanislav.xa@renesas.com> <20260327192425.438263-7-cosmin-gabriel.tanislav.xa@renesas.com>
-In-Reply-To: <20260327192425.438263-7-cosmin-gabriel.tanislav.xa@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 8 Apr 2026 09:57:55 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXkh0Q0_O4VZ=DoJ26=+QiddsLi_CwTVwK-L+Q5zb6wPg@mail.gmail.com>
-X-Gm-Features: AQROBzCZCuwf6NF6rEXqKfmkxTjFfqDW2pSk-I-eqOP6g3EoYNQgB2zRxA-RYgI
-Message-ID: <CAMuHMdXkh0Q0_O4VZ=DoJ26=+QiddsLi_CwTVwK-L+Q5zb6wPg@mail.gmail.com>
-Subject: Re: [PATCH 06/11] dt-bindings: timer: renesas,rz-mtu3: remove TCIU8 interrupt
-To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
-	Thomas Gleixner <tglx@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-clk@vger.kernel.org
+References: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
+In-Reply-To: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 8 Apr 2026 10:02:53 +0200
+X-Gmail-Original-Message-ID: <CAD++jLmCGH1aOyprFpXEpo5G3pyDbGaxw+V1GyJjc89kx9kqQQ@mail.gmail.com>
+X-Gm-Features: AQROBzAP4gjmXq6GtnmeMKyxAcxNOuzOxwPpSgs8d0UzMVk7Bb90YznRPcjpNSM
+Message-ID: <CAD++jLmCGH1aOyprFpXEpo5G3pyDbGaxw+V1GyJjc89kx9kqQQ@mail.gmail.com>
+Subject: Re: [PATCH v5 0/4] ti-ads7950: fix gpio handling and facelift
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Cosmin,
+On Mon, Apr 6, 2026 at 6:39=E2=80=AFAM Dmitry Torokhov
+<dmitry.torokhov@gmail.com> wrote:
 
-Thanks for your patch!
+> The original reason for this series is to make sure ti_ads7950_get()
+> returns result in range [0, 1] or a negative error code to comply with
+> gpiolib requirement.
 
-On Fri, 27 Mar 2026 at 20:25, Cosmin Tanislav
-<cosmin-gabriel.tanislav.xa@renesas.com> wrote:
-> Based on the following pages in the User Manuals, the MTU3 block does
-> not have a TCIU8 interrupt, only a TCIV8 interrupt, as the row where
-> TCIU8 should have been is marked as reserved, and the GIC SPI numbers
-> stop at 212.
->
->  * Page 486, Table 8.2 Interrupt mapping (7/13) in the Renesas RZ/G2UL
->    Rev.1.40 User Manual
+This looks awesome. Thanks for all attention to detail and elegance.
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-According to the Revision History:
-
-    8. Interrupt Controller page 486
-    Table 8.2 Interrupt mapping
-    The =E2=80=9CCause of Interrupt=E2=80=9D column, modified (TCIU8 =E2=86=
-=92 =E2=80=94)
-
-So this interrupt was definitely documented before, and I think it would be
-good to document that it was removed, instead of saying "it does not have".
-
->  * Page 363, Table 8.2 Interrupt Mapping (6/13) in the Renesas RZ/Five
->    Rev.1.30 User Manual
->  * Page 528, Table 8.2 Interrupt mapping (7/13) in the Renesas RZ/G2L
->    and RZ/G2LC Rev.1.50 User Manual
->  * Page 540, Table 8.2 Interrupt mapping (7/13) in the Renesas RZ/V2L
->    Rev.1.50 User Manual
->
-> Remove the TCIU8 interrupt.
->
-> Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Yours,
+Linus Walleij
