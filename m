@@ -1,178 +1,124 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 717C53B583E;
-	Wed,  8 Apr 2026 10:32:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821A837D105;
+	Wed,  8 Apr 2026 11:36:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775644339; cv=none; b=ZWb8CHpSqsgV9R8u2/btpoSj99zwt36Z7dATPGGmEg7TUHoxI9sml/2uUZyd5MLH3vd2/xbUejLVSqnsHA0w0Dg8OOWysIJCvbfr6QSCNcNjEHvCBfiGDkUfBjJEHPHRsoiaqsimTKZDW5dBtathjKgo2048p/jwbLJnxUtliFg=
+	t=1775648181; cv=none; b=WZBjqmPTLbqLG6HnMnDtljE/JT5MxPo5LcO7XzeWznRkhUQzOMMRdqqbfYqeNNIehxXHalVvl/6Qk6U7p1aHGGNlsPUiWPbQ5+z8JRtG/UygE+aqMIuBP1n4UX+5ibjZeaU5oalemdOzD/xLRBPJKlmWEWX0wSse244horaS9N4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775644339; c=relaxed/simple;
-	bh=cBchJ+EKmsukYB8TS4yvuEzAnxauSUKiuKhljDi4NjU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=MMsWoxWSWhcwbjjDKFH0zR64xYGJyfdmE3IUCrseUh1YgFKlJQs2IwzSvwXz2theXNZS44phJ0ksmjqeOozj60oLum74HDYrzGJraLInEB9F7hQ5y32UVon8twvtKQsK2mIx1JcIokdlWuXgvzI5AYOXJrhEKbBkVMwlTgZ/QKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tEdm7NMK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775648181; c=relaxed/simple;
+	bh=1TDPGtygqzYEHFncW8hn011RsZuogmikZdlgF3nIzQk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WZxCCElZy7prbLyDLDLaITatc36N1wUW6EjdEHRuSZjosBXOjQzvxGn/wM8AjoCCVYCjwMoJYc55d+A4CYnIj20UYCKtIuNc5pZZTAd6LPVXc1giplZsDTIWrSvoXMYmiiXWcB2XlkpyCWat8WAWMyTH24oF3FlJKQ/ZArHt3gA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WKCAhrFe; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tEdm7NMK"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3097CC19424;
-	Wed,  8 Apr 2026 10:32:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775644339;
-	bh=cBchJ+EKmsukYB8TS4yvuEzAnxauSUKiuKhljDi4NjU=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=tEdm7NMKE25TVeY7SK/KyG6i0JJfbNbc1WjsTrT6xop6S+HX2gvmm/aMQw9EyuIN3
-	 Cmxja7LOAFDbWS8jEl/pv+dnBJIR4cNejZOQfLXNrJo5WboUJGv15iFB+ZlAckLCvZ
-	 XO2jzgO5vj6qnMZCKsA5AwLr5DXdJU4393ft20kWkYUkMzo5r+YAnYbhEIBO8TIHaj
-	 FCMve8qnHkJkNS8wqh9PgOeqLRif8bhcVdn7y7E5z0xxKD4Hk7UDwAWzA3U7si24ya
-	 qXy7lNN+rq9X33fKYGlKrejUL8IgQgBkRHd1+Sd5dk249GnKNhby3IBK6javs+9Eg0
-	 cFFqrrxhlsVOA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B960FD5F79;
-	Wed,  8 Apr 2026 10:32:19 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Wed, 08 Apr 2026 13:32:13 +0300
-Subject: [PATCH v3] iio: adc: ad4695: Fix call ordering in offload buffer
- postenable
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WKCAhrFe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1775648180; x=1807184180;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=1TDPGtygqzYEHFncW8hn011RsZuogmikZdlgF3nIzQk=;
+  b=WKCAhrFeLHHtrFfFu5kVFMIKbguyQAzIOmHYaAv4rwi+KoVa9vH8ACGL
+   mqSw0bu3ORsMdSb8ccgktzHoY54WEFeR9HTecwrdnlYBOcV+Jn+cep9CG
+   h+0qMChl9wF3+VMujLQLQv3vz91N8YBjz78wvD05ncVq/ZxnV7CaJ3/+Y
+   nhrcaJBzSIeA94T9OEvqj0vTb6D8IncEqXhgSUNbDNHzvTiFD7Ykjq6ir
+   JG4IvKKilhiOy7UzT4WE7/a7OrwZvq7UICwtbYeMBSuY7hxxAH7djZ3ch
+   mb1R3RNDaXpFKq+4JdMsBA3RHhEcwG2iXg9jMk4Ue3/XlyTYOo+Yqngig
+   g==;
+X-CSE-ConnectionGUID: /959CEbXTGKgP7DqIREbUw==
+X-CSE-MsgGUID: GvU17J+nT3eIaWNjdSnulA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11752"; a="75798506"
+X-IronPort-AV: E=Sophos;i="6.23,167,1770624000"; 
+   d="scan'208";a="75798506"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2026 04:36:20 -0700
+X-CSE-ConnectionGUID: V6RS7qp/Sv6vInkdQQU3/A==
+X-CSE-MsgGUID: WyuUuRAgQlGeN/HKWXwL6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,167,1770624000"; 
+   d="scan'208";a="225270050"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.72])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2026 04:36:18 -0700
+Date: Wed, 8 Apr 2026 14:36:15 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Sanjay Embedded_SE <sanjayembeddedse@gmail.com>
+Cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"dlechner@baylibre.com" <dlechner@baylibre.com>,
+	"nuno.sa@analog.com" <nuno.sa@analog.com>,
+	"andy@kernel.org" <andy@kernel.org>,
+	"kees@kernel.org" <kees@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 3/5] iio: ssp_sensors: factor out pending list
+ add/remove helpers
+Message-ID: <adY9r23FEXcqYZZa@ashevche-desk.local>
+References: <20260406080852.2727453-1-sanjayembedded@gmail.com>
+ <20260406080852.2727453-4-sanjayembedded@gmail.com>
+ <adQR2ZKVOavHlJDt@ashevche-desk.local>
+ <FA511CDD-1F98-4E66-BCE8-5156DBAF4359@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Message-Id: <20260408-ad4696-fix-v3-1-37fe6e8d1d25@analog.com>
-X-B4-Tracking: v=1; b=H4sIAKwu1mkC/22MSwrCMBQAryJvbSQvPxNX3kNcpO2zDWgjiQSl9
- O6m3UjB5QzMTJApBcpw2k2QqIQc4lhB7nfQDn7siYWuMgguDJeSM98p4wy7hTdDa5zW3rYaEWr
- wTFT1OrtcKw8hv2L6rO+Ci/27KciQkVVIziiNjTj70d9jf2jjA5ZPEb9Wcdy0orZCWd44L/lRu
- U07z/MXOl9JJuEAAAA=
-X-Change-ID: 20260330-ad4696-fix-186955a8c511
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- Radu Sabau <radu.sabau@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1775644333; l=4155;
- i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=meaEx+5eOnCshzOryh8iUzRER3yLb0rU+9apvG7SJTo=;
- b=roQ+/kwyq4jo5nJ/F/IT42iRBsxtEIe7m7HOZFYKRjAjzkqCyVp/crF9AjaeFGn4gZ4Eal49a
- 2x7z7Ic9aINDosW5CHCQSH5qTbw/6vpfEUovRDyWVUItZJVZOPPAfQw
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
- auth_id=642
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
+In-Reply-To: <FA511CDD-1F98-4E66-BCE8-5156DBAF4359@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Radu Sabau <radu.sabau@analog.com>
+On Wed, Apr 08, 2026 at 07:32:48AM +0000, Sanjay Embedded_SE wrote:
+> On 7 April 2026 1:34:41 am IST, Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> >On Mon, Apr 06, 2026 at 01:38:50PM +0530, Sanjay Chitroda wrote:
 
-ad4695_enter_advanced_sequencer_mode() was called after
-spi_offload_trigger_enable(). That is wrong because
-ad4695_enter_advanced_sequencer_mode() issues regular SPI transfers to
-put the ADC into advanced sequencer mode, and not all SPI offload capable
-controllers support regular SPI transfers while offloading is enabled.
+...
 
-Fix this by calling ad4695_enter_advanced_sequencer_mode() before
-spi_offload_trigger_enable(), so the ADC is fully configured before the
-first CNV pulse can occur. This is consistent with the same constraint
-that already applies to the BUSY_GP_EN write above it.
+> >Suggested-by?
+> 
+> Requesting your input on which email is recommended to tag with your name.
+> 
+> Shall I use intel.com ?
 
-Update the error unwind labels accordingly: add err_exit_conversion_mode
-so that a failure of spi_offload_trigger_enable() correctly exits
-conversion mode before clearing BUSY_GP_EN.
+The one that was used in the message which suggested this change. I don't
+remember which one I have used.
 
-Fixes: f09f140e3ea8 ("iio: adc: ad4695: Add support for SPI offload")
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Reviewed-by: David Lechner <dlechner@baylibre.com>
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
-ad4695_enter_advanced_sequencer_mode() issues regular SPI transfers to
-configure the ADC. These must complete before spi_offload_trigger_enable()
-enables the PWM/CNV trigger, because once CNV pulses are live the offload
-engine owns the SPI bus.
+...
 
-This fixes the call ordering and updates the error unwind path accordingly.
----
-Changes in v3:
-- Reword commit message: "the offload engine owns the SPI bus; any
-  concurrent regular SPI transfer produces undefined behaviour" →
-  "not all SPI offload capable controllers support regular SPI
-  transfers while offloading is enabled".
-- Rename err_trigger_disable → err_offload_trigger_disable to reduce
-  diff churn.
-- Link to v2: https://lore.kernel.org/r/20260401-ad4696-fix-v2-1-2480b9a30749@analog.com
+> >> +static inline void ssp_pending_add(struct ssp_data *data,
+> >> +                               struct ssp_msg *msg)
+> >
+> >Make it rather:
+> >
+> >static inline void ssp_pending_add(struct ssp_data *data, struct ssp_msg *msg)
+> >{
+> >       if (msg->length)
+> >               return;
+> >       ...
+> >}
 
-Changes in v2:
-- Reword commit message to explain the correct bus-ownership
-  invariant directly, without reference to the HDL bug that
-  exposed it.
-- Remove unnecessary comment since the error path changed.
-- Link to v1: https://lore.kernel.org/r/20260330-ad4696-fix-v1-1-e841e96451b2@analog.com
----
- drivers/iio/adc/ad4695.c | 23 ++++++++---------------
- 1 file changed, 8 insertions(+), 15 deletions(-)
+> It should be not, right ?
 
-diff --git a/drivers/iio/adc/ad4695.c b/drivers/iio/adc/ad4695.c
-index cda419638d9a..53642de7330d 100644
---- a/drivers/iio/adc/ad4695.c
-+++ b/drivers/iio/adc/ad4695.c
-@@ -876,14 +876,14 @@ static int ad4695_offload_buffer_postenable(struct iio_dev *indio_dev)
- 	if (ret)
- 		goto err_unoptimize_message;
- 
--	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
--					 &config);
-+	ret = ad4695_enter_advanced_sequencer_mode(st, num_slots);
- 	if (ret)
- 		goto err_disable_busy_output;
- 
--	ret = ad4695_enter_advanced_sequencer_mode(st, num_slots);
-+	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
-+					 &config);
- 	if (ret)
--		goto err_offload_trigger_disable;
-+		goto err_exit_conversion_mode;
- 
- 	mutex_lock(&st->cnv_pwm_lock);
- 	pwm_get_state(st->cnv_pwm, &state);
-@@ -895,23 +895,16 @@ static int ad4695_offload_buffer_postenable(struct iio_dev *indio_dev)
- 	ret = pwm_apply_might_sleep(st->cnv_pwm, &state);
- 	mutex_unlock(&st->cnv_pwm_lock);
- 	if (ret)
--		goto err_offload_exit_conversion_mode;
-+		goto err_offload_trigger_disable;
- 
- 	return 0;
- 
--err_offload_exit_conversion_mode:
--	/*
--	 * We have to unwind in a different order to avoid triggering offload.
--	 * ad4695_exit_conversion_mode() triggers a conversion, so it has to be
--	 * done after spi_offload_trigger_disable().
--	 */
--	spi_offload_trigger_disable(st->offload, st->offload_trigger);
--	ad4695_exit_conversion_mode(st);
--	goto err_disable_busy_output;
--
- err_offload_trigger_disable:
- 	spi_offload_trigger_disable(st->offload, st->offload_trigger);
- 
-+err_exit_conversion_mode:
-+	ad4695_exit_conversion_mode(st);
-+
- err_disable_busy_output:
- 	regmap_clear_bits(st->regmap, AD4695_REG_GP_MODE,
- 			  AD4695_REG_GP_MODE_BUSY_GP_EN);
+Yes, too many negations, perhaps even better to spell it as msg->length == 0.
 
----
-base-commit: 11439c4635edd669ae435eec308f4ab8a0804808
-change-id: 20260330-ad4696-fix-186955a8c511
+> {
+> if (!msg->length)
+>         return;
+> ...
+> }
+> 
+>  const bool use_no_irq = msg->length == 0;
+>  if (!use_no_irq) {add/del}
 
-Best regards,
+> If message length is 0 then no interrupt
+
 -- 
-Radu Sabau <radu.sabau@analog.com>
+With Best Regards,
+Andy Shevchenko
 
 
