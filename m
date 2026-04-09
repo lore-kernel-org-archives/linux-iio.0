@@ -1,101 +1,80 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0EDC2DF132;
-	Thu,  9 Apr 2026 06:52:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6064C38C2D8;
+	Thu,  9 Apr 2026 09:29:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775717540; cv=none; b=oLIUh90aUhjbCbQZLidGUAaFJqlqe0Yr2rFgKXN5y3TpEIQIIf7BXHqKAguIsSUIGx1rD1jKr5KuonLudeLQICADITabyGLq0ylp5KvQLPwSIbAtwuiQ96oWkJrCpwRRXQ3cqRpWJbLZY8+KGliZOdbIy6n3SDJ7VXdXYslARRk=
+	t=1775726982; cv=none; b=dm1maBgusM5P1MOY5lG4OWskpR/aMQGW/gExS+O3oCts36Z1a+ChxceHlGLJjszfCozXqIz06G1nS3EQ21DNac2KuUNsSWUiNUoKwQ9Ww5/Wo7iYhha8elIUWbEl7866tgEtCwG0nVvwddHrtYO1dMmLQI6OUM+3Bch9tb8IATs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775717540; c=relaxed/simple;
-	bh=Np5Lt5ETnUEaipPxhdY64Brx8L+nmKdeJoYDj9q6ynY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=b+wXqc7sAKZ4Y5oRappJ1TMTswHUwleLYXUxXIrzDsDK4mco4GmnXASwaiEmeK/r3qdmqsGc9ZO6horjadAYL6QJJiCLtTkWcRyF6DCCSYJ3BlYfIu7AE9tjfR2e/naeHG3sb994lHBLtn9qqbhqA1fuWUMpxY0wDA/9ClGCJXc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=BcF8Kb7O; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1775726982; c=relaxed/simple;
+	bh=XnKx2MkzYvigN1NdHgK8JUvv9eo4psSstsni3PB6dDk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IKZeCmcc9JSXOQ6C+6IHfjtbVDI+OWWxHrG5q/U8Kq2v84uuxiAVgM6bstginIXr2BnTDVylCi31JlC8paRnitJUh/XiM5MYeIHt7a0aWd7+ZJhwEgXTXQoN1wU2CbPmTg99tZuR9Rjtx3yuEQH+6EV8+ak23BkyUnOensJFqVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MoMlMs2W; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="BcF8Kb7O"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=td
-	6JF46MJVa/vlsyoVQQDQ8QJpiXMdq2Ddm53feU6OU=; b=BcF8Kb7OtHYkJwRi9t
-	SQka+hvI/c/Srni/fKJHLNqyA1ztu1b5v52YFRiP2NInvUUzAJo5ttrJbdQHGxqB
-	B7Qi9eSHnXaw70TKBrb9N/V+fc8tMX2Iqu8hgeE3OYO+2TYIeHZD1tSlfaoOwE5v
-	zQypDSyZNI+hVvqmq8dVRh8WE=
-Received: from pek-lpg-core5.wrs.com (unknown [])
-	by gzga-smtp-mtada-g1-1 (Coremail) with SMTP id _____wCHUbCDTNdp0ADzDw--.61243S2;
-	Thu, 09 Apr 2026 14:51:49 +0800 (CST)
-From: Robert Garcia <rob_garcia@163.com>
-To: stable@vger.kernel.org,
-	Nuno Sa <nuno.sa@analog.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Robert Garcia <rob_garcia@163.com>,
-	Zicheng Qu <quzicheng@huawei.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Daniel Junho <djunho@gmail.com>,
-	Alexandru Ardelean <alexandru.ardelean@analog.com>,
-	linux-iio@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MoMlMs2W"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1775726980; x=1807262980;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XnKx2MkzYvigN1NdHgK8JUvv9eo4psSstsni3PB6dDk=;
+  b=MoMlMs2WlmViEtTXIf3m5CpOwdi/OhL3/CDHe4MTXTnxKSuX2Tu/6ghI
+   Z3QmatV/q0PuDl+FkE1nUBHfpHsbfGfA0lar36TTFrMOAQwXrU2f/rK0u
+   mKA3rLwvsXLeQJQuTWs8LixFnF8bsiBrR9mYNVAaleQtIfgMXDkxobvK/
+   BB+1rkT/6K0tb8d4qp2WKRUF2YP5v3S3yRVysYSZRty99+X6vFz8IDCFX
+   b/81UBo0BfVzGwbSxxwGEOUFamP+173G9G6xgG2tof6mil57atV8T+3kc
+   ZEFG68NfsNfUjem4EbBMuOlGbMFpp6dpFSmuF5eIPGPdj8MT7Db7vcuGW
+   A==;
+X-CSE-ConnectionGUID: ew0gA4sbSx+n1Bk654UOcA==
+X-CSE-MsgGUID: oXD9zZyZRJGxCd8oUjIuSg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11753"; a="64267751"
+X-IronPort-AV: E=Sophos;i="6.23,169,1770624000"; 
+   d="scan'208";a="64267751"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2026 02:29:39 -0700
+X-CSE-ConnectionGUID: 09NRn/j/S8O3SPiwjUvWIQ==
+X-CSE-MsgGUID: bS+1Ng7XTdu7Ip2WQmLTng==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,169,1770624000"; 
+   d="scan'208";a="222224744"
+Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.162])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2026 02:29:38 -0700
+Date: Thu, 9 Apr 2026 12:29:35 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Erikas Bitovtas <xerikasxx@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 5.15.y] iio: adc: ad7923: Fix buffer overflow for tx_buf and ring_xfer
-Date: Thu,  9 Apr 2026 14:51:47 +0800
-Message-Id: <20260409065147.136824-1-rob_garcia@163.com>
-X-Mailer: git-send-email 2.34.1
+Subject: Re: [PATCH v2 2/6] iio: light: vcnl4000: move device tree entries
+ into one line
+Message-ID: <addxfwFDto5JuT4X@ashevche-desk.local>
+References: <20260405-vcnl4000-drop-enum-v2-0-7c8dc98c3974@gmail.com>
+ <20260405-vcnl4000-drop-enum-v2-2-7c8dc98c3974@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wCHUbCDTNdp0ADzDw--.61243S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7WF4kXw43WrW7CFW8Kw1xKrg_yoW8XFyrpF
-	4YkrWjkF47CF1UCF45Ww1UCFWfWa1DKry2ganrCa9Ivr15ZFy5CrWUK34FvF1rJFW7C39F
-	vr1q9ry5Ww109rUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pESfODUUUUU=
-X-CM-SenderInfo: 5uresw5dufxti6rwjhhfrp/xtbC5QWE72nXTIV5+gAA3-
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260405-vcnl4000-drop-enum-v2-2-7c8dc98c3974@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Nuno Sa <nuno.sa@analog.com>
+On Sun, Apr 05, 2026 at 07:08:39PM +0300, Erikas Bitovtas wrote:
+> Make device tree entries one line each to save space and LOC.
 
-[ Upstream commit 3a4187ec454e19903fd15f6e1825a4b84e59a4cd ]
+I think this patch is better to make after the conversion is done.
 
-The AD7923 was updated to support devices with 8 channels, but the size
-of tx_buf and ring_xfer was not increased accordingly, leading to a
-potential buffer overflow in ad7923_update_scan_mode().
-
-Fixes: 851644a60d20 ("iio: adc: ad7923: Add support for the ad7908/ad7918/ad7928")
-Cc: stable@vger.kernel.org
-Signed-off-by: Nuno Sa <nuno.sa@analog.com>
-Signed-off-by: Zicheng Qu <quzicheng@huawei.com>
-Link: https://patch.msgid.link/20241029134637.2261336-1-quzicheng@huawei.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-[ Context change fixed. ]
-Signed-off-by: Robert Garcia <rob_garcia@163.com>
----
- drivers/iio/adc/ad7923.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-index b8cc94b7dd80..a8e59fd2dcf3 100644
---- a/drivers/iio/adc/ad7923.c
-+++ b/drivers/iio/adc/ad7923.c
-@@ -47,7 +47,7 @@
- 
- struct ad7923_state {
- 	struct spi_device		*spi;
--	struct spi_transfer		ring_xfer[5];
-+	struct spi_transfer		ring_xfer[9];
- 	struct spi_transfer		scan_single_xfer[2];
- 	struct spi_message		ring_msg;
- 	struct spi_message		scan_single_msg;
-@@ -63,7 +63,7 @@ struct ad7923_state {
- 	 * Length = 8 channels + 4 extra for 8 byte timestamp
- 	 */
- 	__be16				rx_buf[12] ____cacheline_aligned;
--	__be16				tx_buf[4];
-+	__be16				tx_buf[8];
- };
- 
- struct ad7923_chip_info {
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
