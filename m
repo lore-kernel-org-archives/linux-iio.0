@@ -1,43 +1,43 @@
-Received: from mail-10630.protonmail.ch (mail-10630.protonmail.ch [79.135.106.30])
+Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D7683E1234
-	for <linux-iio@vger.kernel.org>; Thu,  9 Apr 2026 16:24:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.30
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2A723B9D99;
+	Thu,  9 Apr 2026 16:24:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775751849; cv=none; b=VBep7C8dCYWxexoLCOp5hn7bIEwmh+Im+jTu+rMbsKrw31XULK8PHMujMO1Dz6CicQJ8HAvc+9Fk4XQ23EnrnvKY9Vl5b1myazxN/VD+V4BJ7onGK81Epi4EvlZ2fEYwYTsjz6ntu9Dmfliy+hmfSg2dUGkYuwpWGpnbxuVo79Q=
+	t=1775751860; cv=none; b=KCoJu6t19WlsLwIOCgJBCLdna5NHs3rg2Gbbv4rwpR8inWtBX756vuAyvzJu+exKdsPMHfBt2hb4QN2Hlc4rxau/uSADK/9QlsCEmhuVDzULklN+ZtDg+FdTW+iqbxp2BGD5vtam3vUNmu6Ime717wo9LoyMl1UF5vV4di4/O+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775751849; c=relaxed/simple;
-	bh=rt69GKfvtm6r7L6ZdS0LmDtC2CKxY+kKDxYTToslLME=;
+	s=arc-20240116; t=1775751860; c=relaxed/simple;
+	bh=FHqavf4x2LMnpKhwYIAJLhWWLpu5loE7rr7KuHjSJBs=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=C0FCEIrgEuS89lmnIGRq3r1JKkv9kcyRC0agHmDjolIsWcyTQt2T93hiNGWsK9adM9V5ljpCRTKxZr60Uwam4bIuKcGyWeRV8IxhV/LLnXe2VhHcmT16Amd5BhlCpkEMGLIou3gph3iAyR6N69GAPcIkAXDNtfCpY6LUrHNcmTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=TLvXAfcG; arc=none smtp.client-ip=79.135.106.30
+	 MIME-Version:Content-Type; b=Q7YjRv+Bwo0NjrfpzwlfMjidheRrUBnDWwVuMItTp/rkt6BYx5k0R29fcttAt1WYtCZVL2JXgAqRDWyeQz38z+dGANZzbT9tf4kEukoXQCTyaTuC1uq2KjIbL6JilyVotGZvKvaXf1lnoblitCqCuAu87StbNrBMfR6VKneIZoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=W3WtiRWC; arc=none smtp.client-ip=185.70.43.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="TLvXAfcG"
+	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="W3WtiRWC"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-	s=protonmail3; t=1775751839; x=1776011039;
-	bh=W/g6MIBZ3+LHjZsDhg8NMVRAvD8105CPrmbxQAoiqUo=;
+	s=protonmail3; t=1775751851; x=1776011051;
+	bh=MyqNqpuNtgV8td1byNhhPh0LwJSSFfPtn7H4KgGMCEY=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
 	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
 	 Message-ID:BIMI-Selector;
-	b=TLvXAfcGlUIzXKBLeb9f6W58aVdB+B5MkHrgh9D0LEucpZQNAedg4X/04HPssC1LA
-	 f4NwweZkCfwEC7Rwu2wdnJHr53D1OaiA+3pTLfepcoNFje6YFtlfn2eoDeAopocMPD
-	 pf37+m/O8mktsO5fnEs1OBg8Ld51Qq7UX6Tkobf2DM85xEEnzsYlbPmeUyJRj37qK1
-	 Z02wrzBNZ8oOxo27+rgHcPtp+nxFlPXwiI+GHlw6sOytfzNTIHhA+HyQm/2h1kxFXX
-	 ksZnV8DPWqUKrott8saTU9oPXWc4UdC7tO+ZDYFOGRmxYUY6hdmOsMz5j5/JKhFivl
-	 aoM4ShiSx0Ctw==
-Date: Thu, 09 Apr 2026 16:23:53 +0000
+	b=W3WtiRWCUQMsjfJgajIHTMq2Qmaa8uqUIuw6M7Jj0STqXFJ2Apgtyc34+FDHpGXtQ
+	 xgvfJLGuU3w19OUVS1mhYbFBUqA5vSNKqPCYWX0TJKXeGgCDylACcNSe3O09ulN7qs
+	 t38hAQmHa44z42R5al+v5JN4JPhW0mjCeUf2LnBFd0m51k/wT4+r3DjyHGeKJZbr3e
+	 8ctDfUsxtNsPLsuY/kosLUv2AqbDovsdAFg7vguG1WWlazftTsze5CFTJbsgvFuCNf
+	 emKn/vxs6eQqFAcDIqqON6Z1iVa4k0RMeUKWCNOF1eMyoVs5xznCaK/cIuYPjCR1FW
+	 Y3ZnfYhiR92rA==
+Date: Thu, 09 Apr 2026 16:24:05 +0000
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 From: Hardik Phalet <hardik.phalet@pm.me>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Brigham Campbell <me@brighamcampbell.com>, Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev, Hardik Phalet <hardik.phalet@pm.me>
-Subject: [PATCH 1/4] dt-bindings: vendor-prefixes: Add QST Corporation
-Message-ID: <20260409162308.2590385-2-hardik.phalet@pm.me>
+Subject: [PATCH 2/4] dt-bindings: iio: magnetometer: Add binding for QST QMC5883P
+Message-ID: <20260409162308.2590385-3-hardik.phalet@pm.me>
 In-Reply-To: <20260409162308.2590385-1-hardik.phalet@pm.me>
 References: <20260409162308.2590385-1-hardik.phalet@pm.me>
 Feedback-ID: 166659585:user:proton
-X-Pm-Message-ID: af7bf9a7adb12b7898c0e4fbd07ebd168d8a52a8
+X-Pm-Message-ID: 56cf74d2e6e82df571b58112540e55c2da1541cd
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -47,28 +47,76 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-Add the vendor prefix 'qst' for QST Corporation, a manufacturer of
-MEMS sensors.
+Add the device tree binding document for the QST QMC5883P, a 3-axis
+anisotropic magneto-resistive (AMR) sensor with a 16-bit ADC that
+communicates over I2C. The binding exposes the required 'compatible'
+and 'reg' properties along with an optional 'vdd-supply' for the
+2.5 V=E2=80=933.6 V VDD rail.
 
 Signed-off-by: Hardik Phalet <hardik.phalet@pm.me>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ .../iio/magnetometer/qst,qmc5883p.yaml        | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/qst,=
+qmc5883p.yaml
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Docum=
-entation/devicetree/bindings/vendor-prefixes.yaml
-index 5d2a7a8d3ac6..71a1b9087c5e 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -1244,6 +1244,8 @@ patternProperties:
-     description: Shenzhen QiShenglong Industrialist Co., Ltd.
-   "^qnap,.*":
-     description: QNAP Systems, Inc.
-+  "^qst,.*":
-+    description: QST Corporation
-   "^quanta,.*":
-     description: Quanta Computer Inc.
-   "^radxa,.*":
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/qst,qmc5883=
+p.yaml b/Documentation/devicetree/bindings/iio/magnetometer/qst,qmc5883p.ya=
+ml
+new file mode 100644
+index 000000000000..84fec10d8b9a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/magnetometer/qst,qmc5883p.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/magnetometer/qst,qmc5883p.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: QST QMC5883P 3-axis magnetometer
++
++maintainers:
++  - Hardik Phalet <hardik.phalet@pm.me>
++
++description:
++  The QMC5883P is a 3-axis anisotropic magneto-resistive (AMR) sensor with=
+ a
++  16-bit ADC. It communicates over I2C (standard and fast modes) and is
++  targeted at compass, navigation, and industrial applications.
++
++properties:
++  compatible:
++    const: qst,qmc5883p
++
++  reg:
++    maxItems: 1
++    description: I2C address of the device; the default address is 0x2c.
++
++  vdd-supply:
++    description:
++      VDD power supply (2.5 V to 3.6 V). Powers all internal analog and
++      digital functional blocks.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells =3D <1>;
++        #size-cells =3D <0>;
++
++        magnetometer@2c {
++            compatible =3D "qst,qmc5883p";
++            reg =3D <0x2c>;
++            vdd-supply =3D <&vdd_3v3>;
++        };
++    };
++...
 --=20
 2.53.0
 
