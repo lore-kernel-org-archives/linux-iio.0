@@ -1,107 +1,94 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8490D2C21F7
-	for <linux-iio@vger.kernel.org>; Thu,  9 Apr 2026 13:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775741648; cv=pass; b=cPd85mVIxt4ALJ+s9QqEr1BS3SDzWO+vovIpc9mNMDkx42YVcZLv8mLVFG9HsFAQZ2No1RkQrCx18HPOfyLCvdjk+NGLG+djQJ4JBOTBt8QNbG5WL1SMr6y+9TLX2TZ4RpnSXyGdIWBL1AI8oOsZ0Qn9/TedNXrHSP8GdqvxnrY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775741648; c=relaxed/simple;
-	bh=2PeriTX7MX0tbuSVy3tWdm89iPjHYIvNlwIK9zEkOlc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mVcNBfNS9Ko7mnjFXiFTjoovRMT9I0TCc09x/fMyt3BvU9iPahU08vd3h3RJ66j7z505HCOpo6IsymhO1t72mm2lDgFXJ8kXybEnSA2TQBXklHkK9JdHfAEgB97xx2Vig85NRN8COTseMN95GJWcCN1sG93ofmAhRgOmXZI6IWc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IbEI8oTO; arc=pass smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06FFF31327D;
+	Thu,  9 Apr 2026 13:40:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775742053; cv=none; b=nMwRyF/ggKIUMyFJxDsNDCF/HykVuzAR5ayLbLwzZNIdTrHcNsYK3DtmVBmK/kbvMoeWO88SXrkp9xUFGvPVBLmIGPXXUeFIqsbapem8DNegQi4cA8HxrVbQ6TCJDwRC+Nub+VlQq4GIJWG3wcSq/S/XnilmrWDO+OpkgRsjfiQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775742053; c=relaxed/simple;
+	bh=bnm6PNNbRbPaCyxln4y5oe9lF9XI/Z51cTMOZon79kg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Mk9DJGNYfxpjf5zFBLO0oZLcdRcsaarnNAE2GaEsQcH2+JgJQLh7pFDYAfiflNnSH2/HnUPe7n2zzvKHZ74ppwbyrZPrYoYMBr97pntTcVKIDTY2wXZelOPt7id8pYyYUo0awA5fkzxgd56HVSpBefpZ2jhIlpSRCkqftrZlrW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=sT5oR4X8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IbEI8oTO"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-43d572f7437so658920f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 09 Apr 2026 06:34:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1775741646; cv=none;
-        d=google.com; s=arc-20240605;
-        b=a+nWJGDoKtFqf7SpRafkuy0qaqvHImDsJXSi1PAi1Hgih5depazQ0du1Lemasj0Q8I
-         Cv0erNbkmgEC/w3v2yhE4oa40Cyd5EqhX5IlnBthS4cLFrLwqJz+0SKrRAv9YVCbuNOK
-         NdWjPOEDi6oXlhxahBwYRYImAT6joKpa2gEGy4EI11M/cYqbPLsXEg5WunJRGAOdVqn4
-         Vp1DyzUv2K+bThMWE7QC4gm5BK/2IrL0pK1EmZKd/JBXGjIrzqjgXNkEm1AnW8rUYijS
-         m1OZmxkSbITwNavi33vy9DUm2dO7JRnN7AAwoG1cMYFK5J0kjWMM/+BSr3RzXRupPuFd
-         j7Hw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=eIemmBZ3pLlz8ppJLiiEXVO89W7y0afNwFKQfoclPgE=;
-        fh=AKIyU+AhREUAmdeBeLEzXYiX06r6ZJbFXRx0JdeIRug=;
-        b=AqPKUTXRZSVZBE1MqKODV4HpayMhOlCYjoT2UpPmwuNKgH/Xy43ScvjG/n0d3vHbOv
-         ObFw6XchaqVyz1ItQ6tcsTe12FoksgJ7sBU1GIBjkWpJHMTGTbUa/4LNaN38btlDlZ20
-         zEA1cXK+vUb4vQMCcigYiOC7bKXvrwfdW420Wz6L4qutKKneUAIBJ74B6FFvvMTzaHxc
-         anzCJTZd53wSG2jbjq3adjdc1Vc7TWMoZrwWEPeWQ6RjT9LqUZoAmkUuaizKb21fVLqE
-         ITeYKsmKyNdBsFpL5xkbsEsFnQpZ29ty8n7NmhMGpAymgmClu3Oz6ie/Z725dzPju5HC
-         8jtA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775741646; x=1776346446; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=eIemmBZ3pLlz8ppJLiiEXVO89W7y0afNwFKQfoclPgE=;
-        b=IbEI8oTOKpb9szolvVADJ/KhYOdAOC29u6BgBW13eexRx8IE1+7gcDBJXj+0MWk0fl
-         gEN86Xcau1AMRngC8i/5cr08GBVpdm+dzgCLZC+dTCpSdOKy6/mMCLFD3j0qPW9XSItY
-         0YPqGLPfhhF58mhyZ0kmpiclDnpD2v4m7iR/dwl7T45cWEGKxW8SXr5uu7UDSc8xx5IC
-         gHmB0DoF6gb04jM7ciuAZS03+liGJL4ONk70dtjASRPJXrOFtXC4HAZUxnifgN4RieUn
-         VDUFQSzOHcpvjBI3iflBfjkFDGxxL8mS78gOZxsXvayoZZWUyeyoVz77Ei5pPR30rlit
-         pyjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775741646; x=1776346446;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eIemmBZ3pLlz8ppJLiiEXVO89W7y0afNwFKQfoclPgE=;
-        b=Mx57+uQyVgGJ10VYwxHjagMFOVxXbGlKiXHVBhK2jM0fX4xA0TjBqiCbI+rEA2THTy
-         NXCvX3T9CYQ2CCsBP/QrCfbDTrJEsGLAFu7ZPDnwT3zTGHFd6DAKNXrKdRzpebOC4E66
-         fTgxzzA9UiYhmmpR0/AMzrR4fMZ2FwGgrCurmUmzihCsYNSP4gQ30roT74rybH93Dewb
-         EsFng0H1l03lZRgJ7H01nxpsCO/Unt/4AKsm86JxfdbrNHCk/SvgDUE2W6rxGW39opHq
-         jH+j3Ql5PeAK8Qj8OD2Ph97TEpREg5ZDHLqYUSPWN2YcuxOFzemaJlsCn6y4EF41PStL
-         kWiw==
-X-Forwarded-Encrypted: i=1; AJvYcCW5tTKJhqkcaNELa/RP09m0rA3kHqhxb/MPPMJfNxFz1jfGQ9k1Wa/KRvpvRshtU1nGsaxZdfaWewA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZV8P5/jA20RwlgwwZY03N3ftXMBlC4E4cXaZV6T7OrnMQLvJz
-	Sl7oeFxs73NJ9dpjWZCXoZn9GpvzlUyIkN3IZcsDCAhWtW5cNbv6VffMObyzyL6l4GdClI7mAE+
-	yOblzztzi0MAkhHos/LwSEjBHOwQl3Cc=
-X-Gm-Gg: AeBDiesxQKCaMWQagMt5W4wKK4viRbHE7NXZW8QkCjB4iG07mnDleHRLDe+SeWZoQZk
-	IQ/G+hJxWe93P2BYdfzjPQWr/SH7oEKcaWFyAfXcaeewGZBk7Dh466ibB7YY0pbbdso/FX+5Tv4
-	BX0owQeVoX1K5YRUZ5XDVP0Nf+Tma77bvqoOW1HQywZzS1eAOrAw8WnlQ9PBD9tnNL/kXI/sc1E
-	lqjVaQVEXPIn010tLf0g/J/X0SsvlcO61v3iBydTiur2KiztLhoP1JYMnriZvAKPI0xx0/XGDSS
-	td4WB3kRJJPwLzjITallbPLKjC6DMrTkx7cF2nKj1RrSVCjImV1yan7JrmDpLzuh2YUBo8tRNKp
-	l7DDz3wpRXtjf/tjuffd1vA3cRg==
-X-Received: by 2002:a5d:5f91:0:b0:43c:fde7:f4 with SMTP id ffacd0b85a97d-43d5a129b1amr4809509f8f.3.1775741645768;
- Thu, 09 Apr 2026 06:34:05 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="sT5oR4X8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58EF0C4CEF7;
+	Thu,  9 Apr 2026 13:40:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1775742052;
+	bh=bnm6PNNbRbPaCyxln4y5oe9lF9XI/Z51cTMOZon79kg=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=sT5oR4X8jmJJYgzjT99nw8aoAVJQEk7aeGH0JIjCJ/iCgyy80qOKLCc2dltalNjEq
+	 Bph2jjJWVphw08v++8+d+HpwTFOKbE5f1kmVba+Pv0c23e5FEQ5TfrIuFjWXhunmPg
+	 tTZokl7abWtvG4JJp/UT92b/wQVggFumTuXITfxk=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lorenzo Bianconi <lorenzo@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	stable <stable@kernel.org>
+Subject: [PATCH 2/3] iio: imu: st_lsm6dsx: fix stack leak in tagged FIFO buffer
+Date: Thu,  9 Apr 2026 15:40:48 +0200
+Message-ID: <2026040949-ferment-reload-abcd@gregkh>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <2026040947-overhang-fax-02d0@gregkh>
+References: <2026040947-overhang-fax-02d0@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260409131823.1289-1-joshua.crofts1@gmail.com>
-In-Reply-To: <20260409131823.1289-1-joshua.crofts1@gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Thu, 9 Apr 2026 15:34:02 +0200
-X-Gm-Features: AQROBzB7z-34upBtwQp9GXXo8paMA0qshk6phPef30jROSYsQ15JY22dxBSxK1s
-Message-ID: <CALoEA-zR-4xv4UkHqZmwHodVzNu02xRTJ+RDcfaU_EbnDdQahg@mail.gmail.com>
-Subject: Re: [PATCH] iio: frequency: ad983x: replace do_div() with div64_ul().
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
-	Greg KH <gregkh@linuxfoundation.org>, nuno.sa@analog.com
-Cc: dlechner@baylibre.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1772; i=gregkh@linuxfoundation.org; h=from:subject:message-id; bh=bnm6PNNbRbPaCyxln4y5oe9lF9XI/Z51cTMOZon79kg=; b=owGbwMvMwCRo6H6F97bub03G02pJDJnX1yQ+NtEuTEmtDEt9ZnSR0S7s38265qeJRQ+ss3x/P H75a0FsRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEzkgg7DXIE/r6qZrI4uCbm0 qL5qVpNvsO5UH4b5UWdmRa56EmCw8UapV21RnN+FBf+uAgA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 
-On Thu, 9 Apr 2026 at 15:18, Joshua Crofts <joshua.crofts1@gmail.com> wrote:
->
-> Coccinelle reported the following in both ad983x drivers:
-> do_div() does a 64-by-32 division, please consider using
-> div64_ul instead.
+The tagged FIFO path declares iio_buff on the stack with __aligned(8)
+but no initializer, but there is a hole in the structure, which will
+then leak to userspace as ST_LSM6DSX_SAMPLE_SIZE bytes (6) will be
+copied, but the space between that and the timestamp are not
+initialized.
 
-Apologies, I typoed Greg's and Nuno's emails in the original CC list.
+Commit c14edb4d0bdc ("iio:imu:st_lsm6dsx Fix alignment and data leak
+issues") moved the untagged FIFO path to a kzalloc'd buffer in hw->scan,
+but for the tagged path it only added the alignment qualifier and not
+the initializer :(
 
+Fix this by just zero-initializing the structure on the stack.
+
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>
+Cc: "Nuno Sá" <nuno.sa@analog.com>
+Cc: Andy Shevchenko <andy@kernel.org>
+Fixes: c14edb4d0bdc ("iio:imu:st_lsm6dsx Fix alignment and data leak issues")
+Cc: stable <stable@kernel.org>
+Assisted-by: gregkh_clanker_t1000
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+index 5b28a3ffcc3d..48291203d1cd 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+@@ -609,7 +609,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+ 	 * must be passed a buffer that is aligned to 8 bytes so
+ 	 * as to allow insertion of a naturally aligned timestamp.
+ 	 */
+-	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE] __aligned(8);
++	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE] __aligned(8) = { };
+ 	u8 tag;
+ 	bool reset_ts = false;
+ 	int i, err, read_len;
 -- 
-Kind regards
+2.53.0
 
-CJD
