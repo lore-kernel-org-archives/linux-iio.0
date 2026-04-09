@@ -1,165 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-244123.protonmail.ch (mail-244123.protonmail.ch [109.224.244.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5D462F83A2;
-	Thu,  9 Apr 2026 15:57:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 553A53D903C
+	for <linux-iio@vger.kernel.org>; Thu,  9 Apr 2026 16:23:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775750232; cv=none; b=crMY1ud/zaoJCbnSx/bAZFJAtrIE6+pcZWIoMIRsd5ncFe1kUtxhM7kgCT17AY1IqxnC4DQJsLZ+yo1GyhZ98EWVyOyPHzyKy6pz844F8g4iY6uThl+gNzMyidPDHOkQrX1CunvcxT0V3RtcrWP0CbXWmU9SkSIEhbBALATG88o=
+	t=1775751844; cv=none; b=WXUKZnoA0eY8nwyCWlG/AVURBmarJDdu2Pif04x6cPKM4WMBsp0B4cPhLkjDLemWDYDDoZsttUIY3NiPEX+29qCVgU0j2XpPAnKBenP2DsPWxtN6qsOiZhfAIcj6tUXPOW0UruQkmI2TRaZMIcsQD5NNxGqz3gLtspwHKl475vU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775750232; c=relaxed/simple;
-	bh=WR+qzP41usMsL+U2CHUcv+sT27DtSgM6KltIpwfZcnY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GMJkXW5qszJ5WEAjzZPsgLI4jcmmayMXNupt+lhNzjXMytmcCgYigQjOPbnmDWzlTNUSLQ+YE8kdmAktT5laiGzWYsLmko8JGs4EeDpw6GZ8fWgH6fvLbzcmE2P+YWtJizWpp3UjMxCo9hrxLdoD5GzZ1tNf6bRwGpvo6E1Z98c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tD+Traxk; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775751844; c=relaxed/simple;
+	bh=NOLBsWb1UEgcwN1zO96wDZDNdUUsAbH5wlEcUETSEkg=;
+	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=m3l2A6Pz9XQUZCr2lCSdAugNyER9g7pI80Tyc8H6q0pVoVbHPNRIVCG3Bo6Sn1eRd7SMp4ewXN+g9tTOctPOAjzguJ4Els1VQupZVyQszrIhxpyoGKcSHoj9giyBdohI4wmsZouH/awm6KEoVtsUhC6qchI8g1qauxHmDlGvYyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=LkJOUiUl; arc=none smtp.client-ip=109.224.244.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tD+Traxk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 768C0C4CEF7;
-	Thu,  9 Apr 2026 15:57:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775750232;
-	bh=WR+qzP41usMsL+U2CHUcv+sT27DtSgM6KltIpwfZcnY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=tD+TraxkBSWzV1OrvrD/QSp3BLnXIyQ/r5VEw6Ssz3oVkX62k9yBe3TLQioa/1soi
-	 pwx5mlxqS6foCBa5LNeuMMUU16bHPdrWEfieNxK+dyyT+lyEaiFtCE2rRc+83+PC5a
-	 K/2pOvpJ0ECptyYkObH3plHWEH1NYAkS6HHUESwGZki2P/UqMiwpiIZjucJN39BENx
-	 OBo4WsN5BqX+ULmrxtpN3dIJnAgIXmLrFEp5Co2xDwD5ek+foaAd2xxGQHGc7qHwRt
-	 Xqb9KwwQypnh1KRJ3vALlj/mwQqaexs+JkfB5teKHDpMco9wLLTzVsA+gA/tSA3FGc
-	 FYT/GUmKcq9yQ==
-Date: Thu, 9 Apr 2026 16:57:06 +0100
-From: Conor Dooley <conor@kernel.org>
-To: radu.sabau@analog.com
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 1/6] dt-bindings: iio: adc: add AD4691 family
-Message-ID: <20260409-headwear-condense-c119f423095b@spud>
-References: <20260409-ad4692-multichannel-sar-adc-driver-v7-0-be375d4df2c5@analog.com>
- <20260409-ad4692-multichannel-sar-adc-driver-v7-1-be375d4df2c5@analog.com>
+	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="LkJOUiUl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+	s=protonmail3; t=1775751830; x=1776011030;
+	bh=P1y9CsmR0lT8aryOEbQahzPNi+Lv9pGRP43rGVLL/Bw=;
+	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
+	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=LkJOUiUlYWJlsoUXyaEAdKAHFy9OBZykoNEDwsbLzmW/cFphMFyQ176SsDaE8fq5s
+	 VRrSnw0L09SwHv7+AqQPAmAvARN0Da1EKZYehjntDraTbtAgnlCsdtfpvrv14cfYV7
+	 TsXqLZYy0GaekqIcKCX14rr3sq5CNURZOSNOpeB1DDBzxT0cJIHcad3yAbccAweAov
+	 CTAOtkexFMxnmg/a8uwbYnx2RtF9+16EaZK8iitBgyCATgcxkYdTh2kQiKE6DK9DiK
+	 vMi7u6/Ev84ftNor2ROagy3d/vjkn/qbCerrtGXFqmH6bTIAXzHTPNFamQN154s9al
+	 Ghg9RDAhiC7eQ==
+Date: Thu, 09 Apr 2026 16:23:44 +0000
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Hardik Phalet <hardik.phalet@pm.me>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Brigham Campbell <me@brighamcampbell.com>, Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev, Hardik Phalet <hardik.phalet@pm.me>
+Subject: [PATCH 0/4] Add QST QMC5883P magnetometer driver
+Message-ID: <20260409162308.2590385-1-hardik.phalet@pm.me>
+Feedback-ID: 166659585:user:proton
+X-Pm-Message-ID: 562626e2cc90d3abc72c3aff791bd9ec3705ed32
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="6AiVT6msxNHZX0tI"
-Content-Disposition: inline
-In-Reply-To: <20260409-ad4692-multichannel-sar-adc-driver-v7-1-be375d4df2c5@analog.com>
-
-
---6AiVT6msxNHZX0tI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 09, 2026 at 06:28:22PM +0300, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
->=20
-> Add DT bindings for the Analog Devices AD4691 family of multichannel
-> SAR ADCs (AD4691, AD4692, AD4693, AD4694).
->=20
-> The binding describes the hardware connections:
->=20
-> - Power domains: avdd-supply (required), vio-supply, ref-supply or
->   refin-supply (external reference; the REFIN path enables the
->   internal reference buffer), and an optional ldo-in-supply, that if
->   absent, means the on-chip internal LDO will be used.
->=20
-> - Optional PWM on the CNV pin selects CNV Burst Mode; when absent,
->   Manual Mode is assumed with CNV tied to SPI CS.
->=20
-> - An optional reset GPIO (reset-gpios) for hardware reset.
->=20
-> - Up to four GP pins (gp0..gp3) usable as interrupt sources,
->   identified in firmware via interrupt-names "gp0".."gp3".
->=20
-> - gpio-controller with #gpio-cells =3D <2> for GP pin GPIO usage.
->=20
-> - #trigger-source-cells =3D <1>: one cell selecting the GP pin number
->   (0-3) used as the SPI offload trigger source.
->=20
-> Two binding examples are provided: CNV Burst Mode with SPI offload
-> (DMA data acquisition driven by DATA_READY on a GP pin), and Manual
-> Mode for CPU-driven triggered-buffer or single-shot capture.
->=20
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
->  .../devicetree/bindings/iio/adc/adi,ad4691.yaml    | 162 +++++++++++++++=
-++++++
->  MAINTAINERS                                        |   7 +
->  2 files changed, 169 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml b/=
-Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
-> new file mode 100644
-> index 000000000000..81d2ca4e0e22
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
-> @@ -0,0 +1,162 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/adi,ad4691.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD4691 Family Multichannel SAR ADCs
-> +
-> +maintainers:
-> +  - Radu Sabau <radu.sabau@analog.com>
-> +
-> +description: |
-> +  The AD4691 family are high-speed, low-power, multichannel successive
-> +  approximation register (SAR) analog-to-digital converters (ADCs) with
-> +  an SPI-compatible serial interface. The ADC supports CNV Burst Mode,
-> +  where an external PWM drives the CNV pin, and Manual Mode, where CNV
-> +  is directly tied to the SPI chip-select.
-> +
-> +  Datasheets:
-> +    * https://www.analog.com/en/products/ad4691.html
-> +    * https://www.analog.com/en/products/ad4692.html
-> +    * https://www.analog.com/en/products/ad4693.html
-> +    * https://www.analog.com/en/products/ad4694.html
-> +
-> +$ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad4691
-> +      - adi,ad4692
-> +      - adi,ad4693
-> +      - adi,ad4694
+This series adds initial Linux support for the QST QMC5883P, a 3-axis
+anisotropic magneto-resistive (AMR) magnetometer with a 16-bit ADC that
+communicates over I2C. To my knowledge there is no existing upstream
+driver for this device.
 
-Please add a note to the commit message about why these devices are not
-compatible. With that,
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+The driver supports:
+  - Raw magnetic field readings on X, Y, and Z axes
+  - Four selectable full-scale ranges (=C2=B12 G, =C2=B18 G, =C2=B112 G, =
+=C2=B130 G)
+  - Configurable output data rate (10, 50, 100, 200 Hz)
+  - Configurable oversampling ratio (1, 2, 4, 8)
+  - Configurable downsampling ratio (1, 2, 4, 8) via a custom sysfs
+    attribute
+  - Runtime PM with a 2 s autosuspend delay
+  - System suspend/resume via pm_runtime_force_suspend/resume
 
---6AiVT6msxNHZX0tI
-Content-Type: application/pgp-signature; name="signature.asc"
+Regmap with an rbtree cache is used throughout. CTRL_1 and CTRL_2
+bit fields are accessed via regmap_field to avoid read-modify-write
+races. The STATUS register is marked precious so regmap never reads
+it speculatively and clears the DRDY/OVFL bits unexpectedly.
 
------BEGIN PGP SIGNATURE-----
+The init sequence on probe is: soft reset =E2=86=92 wait 1 ms =E2=86=92 dea=
+ssert
+reset =E2=86=92 configure SET/RESET control =E2=86=92 apply default ODR/OSR=
+/DSR/RNG
+=E2=86=92 enter normal mode. This ordering was determined empirically on
+hardware to produce reliable, non-zero axis readings.
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCadfMUgAKCRB4tDGHoIJi
-0g4LAQCDFiL/WYpD2A+CMZGioBuUJdp7MxiycZ1eF9K+aAushQD+K4LkAPI6pd7C
-hvPe16l+EF68AU12LiKpOM8XZ7AdZAg=
-=it+N
------END PGP SIGNATURE-----
+The driver is placed under drivers/staging/iio/magnetometer/ with a
+TODO file tracking the remaining work before it can graduate:
+  - Triggered buffer support (iio_triggered_buffer_setup)
+  - DRDY interrupt support
+  - Self-test implementation
 
---6AiVT6msxNHZX0tI--
+Patches:
+  1/4 - dt-bindings: vendor-prefixes: Add 'qst' for QST Corporation
+  2/4 - dt-bindings: iio: magnetometer: Add binding for QST QMC5883P
+  3/4 - staging: iio: magnetometer: Add QST QMC5883P driver
+  4/4 - MAINTAINERS: Add entry for QST QMC5883P magnetometer driver
+
+Testing
+-------
+Tested on a Raspberry Pi 4B running a mainline kernel (aarch64) with a
+GY-271 HM-246 board connected via I2C bus 1. The chip was confirmed to
+enumerate at address 0x2C via i2cdetect.
+
+The driver was cross-compiled from Fedora (x86_64) targeting aarch64
+and loaded as a module (qmc5883p.ko) with the Device Tree overlay
+pointing at i2c1:0x2c.
+
+Verification steps performed:
+  - Chip ID register (0x00) reads back 0x80 on probe, confirming the
+    correct device is present
+  - All three axes (in_magn_x_raw, in_magn_y_raw, in_magn_z_raw) return
+    non-zero, stable values when the board is held still and change
+    appropriately when the board is rotated
+  - in_magn_x_scale (and Y, Z) returns the expected fractional value for
+    the default =C2=B18 G range (1/37500000)
+  - in_magn_sampling_frequency / _available, in_magn_oversampling_ratio /
+    _available, and downsampling_ratio / downsampling_ratio_available all
+    read and write correctly; the chip responds without error to each
+    valid setting
+  - Runtime PM: after 2 s of inactivity the device enters suspend mode
+    (MODE =3D 0x00 confirmed via i2cdump); the next sysfs read correctly
+    resumes the device and returns valid data
+  - System suspend/resume (echo mem > /sys/power/state) leaves the
+    driver in a consistent state; readings remain valid after resume
+  - dt_binding_check passes for patch 2/4
+  - Kernel builds cleanly with W=3D1 and no new warnings
+
+Hardik Phalet (4):
+  dt-bindings: vendor-prefixes: Add QST Corporation
+  dt-bindings: iio: magnetometer: Add binding for QST QMC5883P
+  Subject: [PATCH 3/4] staging: iio: magnetometer: Add QST QMC5883P
+    driver
+  MAINTAINERS: Add entry for QST QMC5883P magnetometer driver
+
+ .../iio/magnetometer/qst,qmc5883p.yaml        |  48 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   7 +
+ drivers/staging/iio/Kconfig                   |   1 +
+ drivers/staging/iio/Makefile                  |   1 +
+ drivers/staging/iio/magnetometer/Kconfig      |  20 +
+ drivers/staging/iio/magnetometer/Makefile     |   7 +
+ drivers/staging/iio/magnetometer/TODO         |   5 +
+ drivers/staging/iio/magnetometer/qmc5883p.c   | 819 ++++++++++++++++++
+ 9 files changed, 910 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/qst,=
+qmc5883p.yaml
+ create mode 100644 drivers/staging/iio/magnetometer/Kconfig
+ create mode 100644 drivers/staging/iio/magnetometer/Makefile
+ create mode 100644 drivers/staging/iio/magnetometer/TODO
+ create mode 100644 drivers/staging/iio/magnetometer/qmc5883p.c
+
+--=20
+2.53.0
+
+
