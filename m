@@ -1,64 +1,64 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 188AE365A17
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 19:37:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 823F736AB5E
+	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 19:37:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775849866; cv=none; b=Ya9Fl4WdpAQKEb0vDB9Ssh3ftNORPLfPkwLD4fv6z6F18Ht0ZGpFckVzlFcHr+z5v/iBP5kzvzXTjFav2oLWT/CDACedDNi03WvA9cAP3O/dZngozpqztqY6GziZwYwAyUrMSl3E6LQRJlHhP30kJWpZJRc1BO/NcDI1Yed3Okw=
+	t=1775849867; cv=none; b=D/sWr8bvU8WEsO43Ne5J48bdPcngtk9p37HaLRzeUsEng6ij3AP3FIc1YBZl5V78RSdibGdVy2PeVdI0UvEPLtwhw7czZe02oW+77ykGGs5FESd/uoTfg7/exMClYtAUNz8W7cfGkdRELtI7FpCPSbFSVBEDtyQ29058SKJEYxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775849866; c=relaxed/simple;
-	bh=S3lgvEBcAj1n1zYoDPurzykZ0cedeVsf9vodlAjga8c=;
+	s=arc-20240116; t=1775849867; c=relaxed/simple;
+	bh=3EHYN5vEXp464OOy+UC1yNhA1XEN9AYMsTv7UjS5bNA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=A+tjsNzzH0+LaXnGKf4qzSrUNu5xBinxc2EloBf7bbVeAiC1B/3LVlzzb56IqOVxJaM+ePTrzexfAWeZKT2hFQRcMTD57mbp0xVPmZe3awd4TaOXMptgVmQyQ4iLUHrXV2GuEPyxsYtYPcZHk9PXZNyRwFHX11YCV2ofgsvOHWw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ReMIIQyy; arc=none smtp.client-ip=209.85.128.45
+	 MIME-Version; b=sQvmo3P1TkQUfY7jACCxKoYTinv/HsCxB1o7VkJz/f9yqORA7w+u5Y4MbaY1o+Z3H3TudyjnuZn7fskLdxEEdQUv0uqh3OwTO7G4oJX7cSgiPGS69JOzsFscJeq696CiRA1X/3UZNkRUEt7hrIqY3spOK1q+kD3z7vM+VopVb4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AACdi/xT; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ReMIIQyy"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-48374014a77so33647215e9.3
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 12:37:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AACdi/xT"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-43cf3ee0fc1so1505691f8f.1
+        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 12:37:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775849863; x=1776454663; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1775849865; x=1776454665; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bC+NTB9QrnUqEiewv4maV3b9X6T0/r14MS4an8UAFs4=;
-        b=ReMIIQyyBbrcc2gpvgKGS0V+9UrcBN8sJq8zpY4Fg+RMxZeMvFjz9oSExR0XPtPwKP
-         KNGk0fqqEqUSGsqy7cbfhUVuhQR/Lee93phjnTsGJp8Go9dHO0kieAlkMPgMLIj0Q1fv
-         THymiGNhaKcej7zpFADIh29hnbY+wuXVkuYg65XaPaiFIN6usAQjvU5h/tV7DNTyjyf3
-         WnleytwNA2Re2dT2xSsKt+OC36/QYxCb3+lhyn17dosfMX7epsgha6/J4fNpySHjXPFT
-         vWc5MffD+pmUxXufAAlaaHazvshkKjZIIb7g2PGUIH2txrRpUZHKe2AgqeVER9EjTKqB
-         3cbQ==
+        bh=s0upwr7QVyz3Qfcv33A2Rb83Y4U57V9lVUbvCh3flZs=;
+        b=AACdi/xT8WMcGFJq2v7QFHSDZJyfRaIDDump7O7xnm5F+hD59tsNL3ji/PxeNDt4jV
+         uh0kC5LVM2No7WcHeODWlgKz1/8ED0YHIyyLyZXMTn8E0z5+I1bl4Pphg3tWBU+7ojOS
+         lbtv2tyCWyQJSCQiZ8jULGPB9/pQQVFX4O1EyN6+usd7BwiyvfDBg8Hp5gtGF1vwetSY
+         Iw0bF2yqK/HaVYgwgjhNc0VVvvQiVAH5UG8ER4v/84oIc2JX9Y9CNzmnmTcgypwUX5EF
+         yYObHFCCZc3TR10T33F14OO8sz3QnXxE3rp2AbRrPviSxVFiTybRBZcB3ah0+AV+Jptc
+         3bpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775849863; x=1776454663;
+        d=1e100.net; s=20251104; t=1775849865; x=1776454665;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=bC+NTB9QrnUqEiewv4maV3b9X6T0/r14MS4an8UAFs4=;
-        b=RTPw6/i01GZJuWy5PBoAVx97tx3EPxk4UhOYoe+bdzuFBJR2t4tdfSAdCijjBEZGYv
-         syjBwjG/NTFFvDEJ1fFLkJ0Z1M7OIT0BrIr4IssylIl6jsdAnV6qfvs/4Gw52NzDngDq
-         aTDeV1JFpm6cU6kZqs//pLLeNNjLp6fw2bbX1Gv0XzK9lz1E9kxPaeCTb3//0i2XXhPw
-         rDZ/4QNtJtcNiYmiy9Z9WoetrnUyEa0yO8hDY1f91AfHBxRmE1oPQkoHstpDK14M1ppy
-         3b2UsKFDYFEv1SYAyhXfaKqWqa2PFPrylYQDJgWT6DvqAxiRr0CKK+PTs50k35JiJQaV
-         icwA==
-X-Forwarded-Encrypted: i=1; AJvYcCUBDz2qHkYUDb6NaG8auxzN3ODazwDs+eDwfFcRhNSUTozdVDm5jyICq2t86TnmqVQDtaxzl0WYeVg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzpx2yiUUfVfArFSHgknDvpzEUGI927cRHXJSIW6XEjcTFfxPPz
-	l+5inOsJu5rJPt1R9iDFOWLTTQO90EkdT2Qart1mFsPa8CCVdSTdOQT5
-X-Gm-Gg: AeBDiesFqerIFTGWPWyrB7SwfXjRg6f0+K5/DbkySeBNq338RPCfXLBwSuAF+ZiG+DL
-	XeaDCawx+LENYT/rht6Kn++4r0b9Fi8WYDrOLoJO/jgzlcyIJDWmj44LYxtuDeoyuRrx38ZwZ19
-	IQjQVp2/7gP/wyo5qLnK2/LrdGzT4F4rmIKWgKnhGFP5s4kZERkRdMUaUresC6edI6WW+mL6z6x
-	UfEExL9zFe3kvelswhnyuUXIckPgAyvQTm4puZFThUS2VnThT9uyM5PdmdJXtxF/CnBXTzdv+g6
-	VRcrYTqVpnXo4hmIydW3aQrgfhjqzIIwSEoL/JGkTjU9vP8h9VxCLden/q4v1Oc5M/inJZgmq9P
-	/bmhcxbcIiyXYCBVeYCj7+Pjfx7X1YkvXySQZDqYAFdFGNrQQX88BgmbZEZCYSbxHRYQ33Lg5Ru
-	+XDZZjq0lC5fYpvpt2rlrsMPAcoYeDuApMBWm7O9Eh9GQqFin+6A4NU0rgBHlgKXFBehz+Uepnd
-	/W1sTMmHcaYQIA/UbajVFY=
-X-Received: by 2002:a05:6000:40de:b0:43c:ef4f:79dc with SMTP id ffacd0b85a97d-43d6427b8e2mr6800271f8f.8.1775849863493;
-        Fri, 10 Apr 2026 12:37:43 -0700 (PDT)
+        bh=s0upwr7QVyz3Qfcv33A2Rb83Y4U57V9lVUbvCh3flZs=;
+        b=V6nRvbbZ/LCSWkVTQBg1aU/ik2lGk9kCtqiEHCRFmlWfjeZZ2LEMNR9cadgzxWNFuV
+         bD/IR2I7cT9psVCyQGuSK93qBgh25NN2/FVMY7DJYT7aH8gzxnd4z2xmiC3rUOfcbCgv
+         vkS4sQEWm1rnzwN0tX77fyqmNlNM3lTHAiD/7uE4t7/j69XTdE3oDoIJAIU0WTHBJGUO
+         ep95oAuoHavF5yrp8htBugybpw7hQ7H66yHiOjR2LZfpkGcZo6au+5AGpA1UOPVmsZlc
+         4L8RX5WXb5vS2tsvVhwTI8KCm132Akx1tQV+acC/W4Llq+x7ev+UbDqu/ywAydz4rsTA
+         oGOQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUvDB7Z4Y8Z1O9bHMWhCMRAwSDH4ZtNNwiWWLE3i34A6jzForuuHs4PcCQF95QK2mCOZ1jIBgZhw3Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxvdJZtYGEZlW02hcZKWEkR4NN9DnGtVo6bu1SvtKJNLU0DUSBA
+	zJxsZiSFC1qt/rMyI7vIsGcLFpZR6YCl44uRGvDxfdD5RJBxJru8oe0+
+X-Gm-Gg: AeBDieu9H/TqXxLuYPE70eB6FjugDVtRDm0BEsqPjsLRGnPdW6VO7LeYDPT547/dXaZ
+	ukbQvQLwJxY5PjdR49crsOFkLSq21WjtXBWyN1c9St6tuumxHYngKxckRNwCDG4xCgIM1M7cDbJ
+	JgENUtRjH7QzQvk03vpXB+BXXuUFryW0+V9nsvjNqV4itJQYiidRlK/eqxMGWN2lryI+7zYUxil
+	fyXhVdbseaCT9xokvJz635aP3nSmPJbraUalWwGBoXI/Sd7YFQaBId2cJ2R8+MUDMUx0qcSy9Eo
+	t8ZN0ThbayyMlUJl6J8HkxQ1qJ671G4gj0LYXP5V98xqBQbDEIZrhSIEDlLaOy/vZU8nZ+5F2I2
+	t3kXMsWQIo8+k5j91Weg5Lw2b9v2ZFT75Tsu9cxdL1Iogi/UV/UMDo2uuDdtj2hXSUdj09UP/1p
+	zqiFjbvuZTpLbk+Ht4eU3Y3XRa5aRiRnT3i1M36nrMqVMHcQX+ofw9q/fWO4jBNPrRewP1GouxF
+	9apLhAfm78C
+X-Received: by 2002:a05:6000:25ca:b0:43d:2d34:8963 with SMTP id ffacd0b85a97d-43d6497b775mr7087922f8f.17.1775849864834;
+        Fri, 10 Apr 2026 12:37:44 -0700 (PDT)
 Received: from dohko.chello.ie (188-141-5-72.dynamic.upc.ie. [188.141.5.72])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d63e50044sm9690425f8f.25.2026.04.10.12.37.42
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d63e50044sm9690425f8f.25.2026.04.10.12.37.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2026 12:37:42 -0700 (PDT)
+        Fri, 10 Apr 2026 12:37:44 -0700 (PDT)
 From: David Carlier <devnexen@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	linux-iio@vger.kernel.org
@@ -71,9 +71,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Cosmin Tanislav <cosmin.tanislav@analog.com>,
 	linux-kernel@vger.kernel.org,
 	David Carlier <devnexen@gmail.com>
-Subject: [PATCH 1/7] iio: dac: ad3552r: Use devm_mutex_init()
-Date: Fri, 10 Apr 2026 20:37:31 +0100
-Message-ID: <20260410193737.35905-2-devnexen@gmail.com>
+Subject: [PATCH 2/7] iio: dac: ad7303: Use devm_mutex_init()
+Date: Fri, 10 Apr 2026 20:37:32 +0100
+Message-ID: <20260410193737.35905-3-devnexen@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260410193737.35905-1-devnexen@gmail.com>
 References: <20260410193737.35905-1-devnexen@gmail.com>
@@ -89,24 +89,24 @@ Use devm_mutex_init() which is helpful with CONFIG_DEBUG_MUTEXES.
 
 Signed-off-by: David Carlier <devnexen@gmail.com>
 ---
- drivers/iio/dac/ad3552r.c | 4 +++-
+ drivers/iio/dac/ad7303.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad3552r.c b/drivers/iio/dac/ad3552r.c
-index 93c33bc3e1be..a2713b0c176e 100644
---- a/drivers/iio/dac/ad3552r.c
-+++ b/drivers/iio/dac/ad3552r.c
-@@ -629,7 +629,9 @@ static int ad3552r_probe(struct spi_device *spi)
- 	if (!dac->model_data)
- 		return -EINVAL;
+diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
+index a88cc639047d..1c2960fa9743 100644
+--- a/drivers/iio/dac/ad7303.c
++++ b/drivers/iio/dac/ad7303.c
+@@ -218,7 +218,9 @@ static int ad7303_probe(struct spi_device *spi)
  
--	mutex_init(&dac->lock);
-+	err = devm_mutex_init(&spi->dev, &dac->lock);
-+	if (err)
-+		return err;
+ 	st->spi = spi;
  
- 	err = ad3552r_init(dac);
- 	if (err)
+-	mutex_init(&st->lock);
++	ret = devm_mutex_init(&spi->dev, &st->lock);
++	if (ret)
++		return ret;
+ 
+ 	st->vdd_reg = devm_regulator_get(&spi->dev, "Vdd");
+ 	if (IS_ERR(st->vdd_reg))
 -- 
 2.53.0
 
