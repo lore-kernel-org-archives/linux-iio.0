@@ -1,24 +1,24 @@
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 520293DDDAD;
-	Fri, 10 Apr 2026 16:36:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E72033DDDD9;
+	Fri, 10 Apr 2026 16:36:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775839000; cv=none; b=NdcKNh42ofuTaOr3sULJBwWkQMW+ddki6tie1PLQ0h+nN2ZSSjoYnm2BIj4/oDR+ssBXAOyCzaTGF4oLl2XwJtjs828sJ6xtGaa6A/x1pmIaqz65divsewpV4GIBW3ROe/Ws7CepLDBOGoPofbuMWr+fhJd7GRtIyXZehh1b1oQ=
+	t=1775839005; cv=none; b=p/FxzjbfWFmz0TWfMGVrO2RoZ1VeAJurETysZs3Hkk76gCwga6eBorrZ5JfXJQrWlcHEEia1Q2AboVgqhpzqJmpqRAsbJt0xawsMK5E90KYyHMuELjWxbtPn63QloyNUzxPpD0a2EAKulNRzPut/PvjJI66TkFocgARWlpqK0Zo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775839000; c=relaxed/simple;
-	bh=XP13TavRqncbnzZii8QKSdiH96sPJ0mpHdniWjxZF7Q=;
+	s=arc-20240116; t=1775839005; c=relaxed/simple;
+	bh=sufVuvNQinHIAexUa5MPTsuAmyuW3dk6GU8kl9oUA8s=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ph5yu0Yp/bZnYHkvF+0fhh4qclJdgLcQOm7K7r3eLz9H9CFktKYiYuYW46TKBIidOP1LI1vf96c9J19RMk4Uboj6fJxnI+f45CfI0ysS4+Jxh8k/56AIYvf6BJ5xA2v8Nkc6580RJZLBMvt1Jr1RymDM1Yp7otY3ntXXzakOLO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.171
+	 MIME-Version; b=fhuetSnoi4jEzFr7foO7kLj0yU7+7TbbQhbL3LdOgYBfsK9HLoTjvbJbnO+cP6NB3edqz4Qq3kFW1KkgmBfN2mCJpIpgUJdlQzIAxEd2P8Bugka4Rdc4dzz4kmAzUWllw5HGTkmPkXz1T0NRgbLic3w7Gf5chaEdB6hmN6hAZUI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
-X-CSE-ConnectionGUID: Ol4vk9UYR2SE0VH01/+jjQ==
-X-CSE-MsgGUID: 0FeSHw9eQwqqq8IA7I9k9w==
+X-CSE-ConnectionGUID: GeagbUUMS5eEFNX3ujPp0Q==
+X-CSE-MsgGUID: zhNL1ewLRxGICuMZmBRUHA==
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 11 Apr 2026 01:36:29 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 11 Apr 2026 01:36:42 +0900
 Received: from demon-pc.localdomain (unknown [10.226.93.85])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 4D23B400CD4E;
-	Sat, 11 Apr 2026 01:36:24 +0900 (JST)
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 1DAEB400CD4E;
+	Sat, 11 Apr 2026 01:36:36 +0900 (JST)
 From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 To: Biju Das <biju.das.jz@bp.renesas.com>,
 	Daniel Lezcano <daniel.lezcano@kernel.org>,
@@ -38,9 +38,9 @@ Cc: linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-clk@vger.kernel.org,
 	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Subject: [PATCH v2 01/10] clk: renesas: r9a09g077: add MTU3 module clock
-Date: Fri, 10 Apr 2026 19:35:21 +0300
-Message-ID: <20260410163530.383818-2-cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: [PATCH v2 03/10] mfd: rz-mtu3: use device-managed mfd_add_devices()
+Date: Fri, 10 Apr 2026 19:35:23 +0300
+Message-ID: <20260410163530.383818-4-cosmin-gabriel.tanislav.xa@renesas.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260410163530.383818-1-cosmin-gabriel.tanislav.xa@renesas.com>
 References: <20260410163530.383818-1-cosmin-gabriel.tanislav.xa@renesas.com>
@@ -52,11 +52,10 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The Renesas RZ/T2H (R9A09G077) and RZ/N2H (R9A09G087) SoCs have a MTU3
-block connected to the PCLKH and with a module clock controlled by
-register 0x308, bit 0.
+Replace mfd_add_devices() and the custom cleanup action with
+devm_mfd_add_devices().
 
-Add support for the module clock.
+Remove the ret variable as it is now unused.
 
 Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 ---
@@ -64,20 +63,48 @@ Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 V2:
  * no changes
 
- drivers/clk/renesas/r9a09g077-cpg.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mfd/rz-mtu3.c | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/clk/renesas/r9a09g077-cpg.c b/drivers/clk/renesas/r9a09g077-cpg.c
-index 93b15e06a19bc..f777601a23b93 100644
---- a/drivers/clk/renesas/r9a09g077-cpg.c
-+++ b/drivers/clk/renesas/r9a09g077-cpg.c
-@@ -257,6 +257,7 @@ static const struct mssr_mod_clk r9a09g077_mod_clks[] __initconst = {
- 	DEF_MOD("spi0", 104, CLK_SPI0ASYNC),
- 	DEF_MOD("spi1", 105, CLK_SPI1ASYNC),
- 	DEF_MOD("spi2", 106, CLK_SPI2ASYNC),
-+	DEF_MOD("mtu3", 200, R9A09G077_CLK_PCLKH),
- 	DEF_MOD("adc0", 206, R9A09G077_CLK_PCLKH),
- 	DEF_MOD("adc1", 207, R9A09G077_CLK_PCLKH),
- 	DEF_MOD("adc2", 225, R9A09G077_CLK_PCLKM),
+diff --git a/drivers/mfd/rz-mtu3.c b/drivers/mfd/rz-mtu3.c
+index 6b9c6831dffa9..3be6f6c900b82 100644
+--- a/drivers/mfd/rz-mtu3.c
++++ b/drivers/mfd/rz-mtu3.c
+@@ -300,11 +300,6 @@ void rz_mtu3_disable(struct rz_mtu3_channel *ch)
+ }
+ EXPORT_SYMBOL_GPL(rz_mtu3_disable);
+ 
+-static void rz_mtu3_mfd_remove(void *data)
+-{
+-	mfd_remove_devices(data);
+-}
+-
+ static const struct mfd_cell rz_mtu3_devs[] = {
+ 	{
+ 		.name = "rz-mtu3-counter",
+@@ -320,7 +315,6 @@ static int rz_mtu3_probe(struct platform_device *pdev)
+ 	struct rz_mtu3_priv *priv;
+ 	struct rz_mtu3 *ddata;
+ 	unsigned int i;
+-	int ret;
+ 
+ 	ddata = devm_kzalloc(&pdev->dev, sizeof(*ddata), GFP_KERNEL);
+ 	if (!ddata)
+@@ -353,13 +347,8 @@ static int rz_mtu3_probe(struct platform_device *pdev)
+ 		mutex_init(&ddata->channels[i].lock);
+ 	}
+ 
+-	ret = mfd_add_devices(&pdev->dev, 0, rz_mtu3_devs,
+-			      ARRAY_SIZE(rz_mtu3_devs), NULL, 0, NULL);
+-	if (ret < 0)
+-		return ret;
+-
+-	return devm_add_action_or_reset(&pdev->dev, rz_mtu3_mfd_remove,
+-					&pdev->dev);
++	return devm_mfd_add_devices(&pdev->dev, 0, rz_mtu3_devs,
++				    ARRAY_SIZE(rz_mtu3_devs), NULL, 0, NULL);
+ }
+ 
+ static const struct of_device_id rz_mtu3_of_match[] = {
 -- 
 2.53.0
