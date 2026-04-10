@@ -1,122 +1,113 @@
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ADD1150997
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 19:32:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6166129BDAA
+	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 19:37:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775849526; cv=none; b=RWcw4GIcYTY6l5TZr4MwOGVCvwnEbEop/3/7SkaLGimBx0dcxmDrmj00L+GgpjSiPzZkP5B2U3NwuLtg7HGfyn91HZAKda3imIMB4UN5tk/6NFHytcISZ0mSQ8uCMuMHohKbdbS7S5b+KsKgE9FaogmnFXq1vHdgihX976YjkaE=
+	t=1775849865; cv=none; b=ZCXUt4csdeMQAy1zE6cJFALh6hNrjUlL+jCRLbRQRfGauS5Yg2xYyK4iD+eBbJwtuHWLX1fLy5gP2SL2qfhiRhK78rKEUoCJ9/nQiAcNhqsJbKlhCykGlJK6iYehx/AlOcv67EFxaQf34IX4Goa5j9wibiM2vP5IEXwizNOErCE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775849526; c=relaxed/simple;
-	bh=4aNMebw4ACxsWJKNNvkW1wZZlAGBiQcTpUbCeZqns+g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ItZiV5tNiL1k4OuCaoE9kEChWjURP4WFHoLULFz9/YpGiAM1ZAz2eqgRZfoh1NEqC+AdFjoQHScTOeKJAoFv3peJwauTZ7sTXUXAf7yk3v59ArwZ8/yn5R3Apkkt0EL4pPFK6j6DmiTgoVU1Tu41GWVIYCIppb+paiRuHUS3/k4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=q+RSi9PH; arc=none smtp.client-ip=209.85.167.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1775849865; c=relaxed/simple;
+	bh=u+1vrPfWfzmaWyGb6ZH31nPX7PYtUg9mdWTr4tZRD8g=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ue40eSC0i5W3z8sEe6pXRcuN06ZTWkNdGkDoEzeRox5JkblWdGy5j72tAq+0kbQ7E4v5XkbjqeZROiBK9bGQjmyBLJIRtfIvlEHKFgXp+Ep+qlF9tARyeOItmWjn0GD/bTMfFbqVDc0xViOEFiXZdVi/bXOidDa2XO8WcGj1in4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YyClS5Z0; arc=none smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="q+RSi9PH"
-Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-466ec4c6846so875238b6e.3
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 12:32:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YyClS5Z0"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-43cfde3c3f3so2350069f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 12:37:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775849523; x=1776454323; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VBCELTROl5Mnj4WGXA1yUGtxFKCFwOhFgSR2ya34Ti4=;
-        b=q+RSi9PHyFrMSMrPO+05CpvGczM4yyr4UIZJrdPu3nVdTYzSEyKbC5p7N9Kn/3yS6x
-         VV8c8ptbPrUPoGDzAie2Kd5mzfIYv7WtWS6LbdO/fcRTNLKQnu3hcN02SxYx3EHFceeF
-         yEiSavpAsH+WqBYFGrHA/heSsYGCQZ1D8L/BUZR3+a0WIzbDNIeeRyfiQGdN/FqdWAxV
-         6zm5yu4adBRMmRMr6afUsmCQN/6WY3iomfzP5DBpM9At1dDPMVE4wZ7Nk/lIkbqMG1kP
-         oVI5a4uh4BRsu7xQofJ0xhAFadJvTPHF/8dsgJAVSEOxeWJjHqJ65ziXGfRj9js/1di2
-         YwDA==
+        d=gmail.com; s=20251104; t=1775849863; x=1776454663; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=R6U/GC1NbMIaWhVGEM7MpaD+iSm/Pta7nRj5dtvFeGk=;
+        b=YyClS5Z0LPnkClc1tc8f0ofJrLYk+7P0BYAlbwN+WIrfjow48nBYwBKovY3ohFIT1B
+         SCf/kQdyYbbSeHkLE0ZtftgDrFxQ4egP0ccyPVYKWT9eE75dCnt+Mf3/CDMAaZC0KQOM
+         w/R6ee1yg1leBxfOFnsvSf62umMdyZCk0DR6f/Y89OMeOkkLXKIXEHl9gH7QtOQvIkMP
+         lfKuFggNML5MhF/57MCrJcrcVGp0oG7cwWcW+SvXDr2q166e/6Pa9is3Ad2m4K/iOzcD
+         CNHj3y6EZ0qHa3n8meTILwnCovqkuXzEPtoHVt+jjdfr7uJSZebfR2IaCv/3KELldYGC
+         X48Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775849523; x=1776454323;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VBCELTROl5Mnj4WGXA1yUGtxFKCFwOhFgSR2ya34Ti4=;
-        b=Hz+NsuHJy9RUxwbAZjj2AzKeAw+TviTF9Dt6mAN/ZCiYxu7c7oGTGqBgLDbHUcTlCe
-         FvWgKg7YCAXE0tZItE/6PsQyZiMkvzsbYTm39zec8D6R5cR93y3vqlEgxjxsBbYHrjgf
-         sQYoITNFQH7On0S+y7SOQl9vnYebUx7mimNqphS7+7t/rMFTom9yrJIlEu/hEgBtb4rp
-         hVFm8t+hgxu3axSDMXs4rAp3ur68kACvm+scdSIrolhh1qzexVscLIE0YcDPwpMJhRP6
-         rWxjIx1iKKEgMg3rBads2ENZ4wRIJLozU3F+UgYvf/P96z1nX5Ai92uzjmZjh3Ec0ExQ
-         NuWw==
-X-Forwarded-Encrypted: i=1; AJvYcCVVNNEsaZSbBegvfRIr2zaXexjg61APKWTBwHKSndfzQ3zxq2IiHtlp+oP9wnYNjNhlIuY5SIgjglQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz4eTbnlTqz/Xm6Oi6FKVvMP1rYLWxFIQBUG22JAicpj5PKQ0Qg
-	P0cAqbwwM5fo7pgOP+RHJlCh36dSaZoPT6WyC/EAqyRL5mtg48xI63rRU+PE1UB8pkvRgYTem21
-	1jrck
-X-Gm-Gg: AeBDietBzKjgwtTQV5DlNAn/H6FE1SN/2dyGcUi62fZaVr0i2wMjBoxjGT99KdWgEB3
-	d58OfOktKSfi0P9Myd29+vk/PIP/F/8aZcV7JFtGrCFduyA7zQcp340N+B+MDzK7qIlOk6BLjys
-	38q3+Xy621uWHkNmj+YhTUea+OaGgHWgM7mPVtwSdHyCkhGwfn9bb//1qcDXc07ujTeEZiy4ks1
-	XVWATvFL/63JUvBCAZ/tcIfaJr/C5RnDbPrUNWatAI7QH8qdk4GVQvwrBvcY03ys2v3pL0CZmAB
-	4nbgxWRUVaCYh88mwOnbW3VQFu9hw6iwVcMkgKqbQ9xfkmT5w8qYZTnQfkck/SyevuOxrNJYHMx
-	qZITjjW3HEOsGwHej0nHwApfKjvh9cE0fhcVNcn7xbYpw67soDxoQ0aa7jl0roD73X8c2IRPvaW
-	8GXYotaDUnUeA7QnEM/LBllmqcbdBgsFZPN7JC5rVKORbmcny/U0YP8dctzM1cDEW7ldp6FTZRy
-	g==
-X-Received: by 2002:a05:6808:17aa:b0:474:b050:bf5d with SMTP id 5614622812f47-478a141398fmr2178834b6e.43.1775849523024;
-        Fri, 10 Apr 2026 12:32:03 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b75d:2440:dc10:808b? ([2600:8803:e7e4:500:b75d:2440:dc10:808b])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-478a131c049sm2060468b6e.8.2026.04.10.12.32.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Apr 2026 12:32:02 -0700 (PDT)
-Message-ID: <0fd8a01c-0ca9-4caf-946b-5e0e756e4cab@baylibre.com>
-Date: Fri, 10 Apr 2026 14:32:01 -0500
+        d=1e100.net; s=20251104; t=1775849863; x=1776454663;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R6U/GC1NbMIaWhVGEM7MpaD+iSm/Pta7nRj5dtvFeGk=;
+        b=Vvucj408/UGXS+IH0H4z5xYJf+5UlwRB96RxoDCL51yyQQk7OCxZNc0w444czMAtVW
+         uarWci1T1mvKSh4Sz+NuV3l4KC/bMxhIcrnSKbvxRFsrmYbEocLjEQjY/9oKR2VbjkQ9
+         a77P/WM9OJqR5gWrrYrAyOuzISV8hSyOxooPpKzbU1OtPQEsUDgNflcOqj2qlfQiHoRF
+         qI1L36qJ4slyCJGaR/8aTdykEy03LB+AlESmg0W5Unr4mrCtNOkSjJF0z/q0eQj3MNTP
+         Ti2ItQ4vwinFkZ+bqSSwgIfWmsFOd2s5kEFU04WgXYvLO5QaVJ2Ft10ZRTS6XRhaIZcD
+         9uYg==
+X-Forwarded-Encrypted: i=1; AJvYcCUAD8xCs7uafOy+IpxUn+RT1Im75ZO/T2+7oClv0zBjNY5KXPW/+9qUugkIihp/AwuJMeazVTrS6Ic=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWIRUw+blJmt0HpBes9nnVTojLAFvhW33/aO21J46Kj62qGeca
+	EGcmWOHN7OHhvUQaXIkodfiF4o6hpHYBhvju4TIhVZjVLOfhypBNPeoY
+X-Gm-Gg: AeBDietW6cfC1blm+uhTa8IFi1psw3n/GTo/AW065yVlZC7ug/9FNDs1ql9FbzAXd3d
+	kMdOQJBqy0e8Hvu2tD2nVq9IHDufNzaV90/3xGh5hiv+THFvIe3kKQQw1SL+nksz527qeGbvMEq
+	eFXriCmLFUIHknyqTFqIqpqDE/gkBb6syZIcZZlJkUD0elA2QNVKW8TqD3I1R5yTR/6yMDGpnHV
+	iWEUcutuFj9a6iqSXdNDPy8ZWb2PVTqR3G3ZE4O1uGNgbfNChA94FeHrH929JTsPqWt2JEx4Mfb
+	XllxiAwHppdisRQOktQNbwg8+oFW0WJTO+raQSzAEZ6RQDVu3cXDPuF16Ozk3Tdl3beZRizRHHV
+	bFlhWRhfVM4uFjh3UgcsdUS3n0cmmR8kpkdF1q1lne1pb2nmtGJJwCnJyJMOe/UZJ57e3XpU+EC
+	MziKRuJ6AYe7fU7YvEwlo8BbiyKQXZpnZw1mHPlGWsbc/oO8zkxUkkfeljhF0yc/41i2UolPlGR
+	ZMposPy9xI/mrGmJV+oCXM=
+X-Received: by 2002:a5d:5d02:0:b0:43d:1df7:ed24 with SMTP id ffacd0b85a97d-43d642a64b1mr6593078f8f.21.1775849862359;
+        Fri, 10 Apr 2026 12:37:42 -0700 (PDT)
+Received: from dohko.chello.ie (188-141-5-72.dynamic.upc.ie. [188.141.5.72])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d63e50044sm9690425f8f.25.2026.04.10.12.37.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Apr 2026 12:37:41 -0700 (PDT)
+From: David Carlier <devnexen@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Kim Seer Paller <kimseer.paller@analog.com>,
+	Cosmin Tanislav <cosmin.tanislav@analog.com>,
+	linux-kernel@vger.kernel.org,
+	David Carlier <devnexen@gmail.com>
+Subject: [PATCH 0/7] iio: dac: Convert several drivers to devm_mutex_init()
+Date: Fri, 10 Apr 2026 20:37:30 +0100
+Message-ID: <20260410193737.35905-1-devnexen@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] MAINTAINERS: Add entry for QST QMC5883P
- magnetometer driver
-To: Hardik Phalet <hardik.phalet@pm.me>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Brigham Campbell
- <me@brighamcampbell.com>, Shuah Khan <skhan@linuxfoundation.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-References: <20260409210639.3197576-1-hardik.phalet@pm.me>
- <20260409210639.3197576-5-hardik.phalet@pm.me>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260409210639.3197576-5-hardik.phalet@pm.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 4/9/26 4:07 PM, Hardik Phalet wrote:
-> Add a MAINTAINERS entry for the QST QMC5883P staging IIO driver,
-> covering the driver source and its device tree binding.
-> 
-> Signed-off-by: Hardik Phalet <hardik.phalet@pm.me>
-> ---
->  MAINTAINERS | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a92290fffa16..d0b9bfceb283 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -20274,6 +20274,13 @@ F:	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
->  F:	drivers/bus/fsl-mc/
->  F:	include/uapi/linux/fsl_mc.h
->  
-> +QST QMC5883P MAGNETOMETER DRIVER
-> +M:	Hardik Phalet <hardik.phalet@pm.me>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/magnetometer/qst,qmc5883p.yaml
-> +F:	drivers/staging/iio/magnetometer/
-> +
->  QT1010 MEDIA DRIVER
->  L:	linux-media@vger.kernel.org
->  S:	Orphan
 
-This should be split up and added in the patches that actually
-add the F: files. Most of it will go with the dt-bingings patch
-and the one line added later with the driver.
+This series converts seven iio DAC/ADDAC drivers to use devm_mutex_init()
+instead of mutex_init(). These drivers currently call mutex_init() in
+probe but have no .remove() callback, so mutex_destroy() is never called
+on device unbind.
+
+Same pattern already accepted in iio for other drivers (e.g. ad5446,
+ltc2688, ad7124, ad7606, vcnl4000, etc.).
+
+David Carlier (7):
+  iio: dac: ad3552r: Use devm_mutex_init()
+  iio: dac: ad7303: Use devm_mutex_init()
+  iio: dac: ad5758: Use devm_mutex_init()
+  iio: dac: ad5755: Use devm_mutex_init()
+  iio: dac: ad5686: Use devm_mutex_init()
+  iio: dac: ltc2664: Use devm_mutex_init()
+  iio: addac: ad74115: Use devm_mutex_init()
+
+ drivers/iio/addac/ad74115.c | 5 ++++-
+ drivers/iio/dac/ad3552r.c   | 4 +++-
+ drivers/iio/dac/ad5686.c    | 4 +++-
+ drivers/iio/dac/ad5755.c    | 5 +++--
+ drivers/iio/dac/ad5758.c    | 4 +++-
+ drivers/iio/dac/ad7303.c    | 4 +++-
+ drivers/iio/dac/ltc2664.c   | 4 +++-
+ 7 files changed, 22 insertions(+), 8 deletions(-)
+
+-- 
+2.53.0
+
