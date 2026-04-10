@@ -1,299 +1,117 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32507346781
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 21:00:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 264403A7595
+	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 21:13:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775854850; cv=none; b=d+z1kcpVQCuL1miW5So3S+CtcBeL1sjedazoyRmkZR0YFXO9TU3ng7OrskK0H3wwpuz3mQ7Z40dKjIRhed84D7iDA8ZFFofz4iTeQ7BrAhla+z4vbKtmin2+T5DG+U45mpnK6BpNRgydKMx6aDjB29KRaHhudlO5bPc+POfldr0=
+	t=1775855621; cv=none; b=R7+i0+H9BIPKhbdrvaVlgw5YoGOwy7+Fs4n7G87qyRMTePfeYI5/Gtxy5UeyUqcFQcYg8N/XNnZ6BLIj4MtFMn/wz5+O9iO1hD1ZbE40rDobJBqGTsqh4kfJFog9H53VNyIaroyc1dBgy68g+Mhe69EaJhEF9c+0nJg8JglVaiw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775854850; c=relaxed/simple;
-	bh=6rP/2NeocjyaqMUftXzW/8uQUv6ELa/rQzdfz7/fRSg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MRIq4vcYBRd4p3gVhXy/eJe6zM6B7+N5ts52+9rsNkdfxQUZix5JNGWNke+CY8V9eN42mh1rHUpXhUczYbqALbvBmdrWqiRbbHhLO4dywFKzhJ5WLd3zevwjEoY9zMk1VgzXwzM82bJN1g53IccUdgnjFTUacteThg3jODRp1mU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=kfMDwnux; arc=none smtp.client-ip=209.85.167.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1775855621; c=relaxed/simple;
+	bh=RAozP+VbHyQFKYgEz45qjCh1Ow7iRHc6sS2QirPeX6k=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NdmHjc3mjkF6syHiKQi6HitL9jzXgHe1GL6T5OU5AiFdNhrl725DAAcNnOf3JtpQmIzLdC9QH0cvtED5oEcozY68datbymNloDi8KipJQGfkxNY8C4E01AFFZYMVst6o2kGZtxq/oz+BOA5a/TDgzi1ejMa2WPeMHAaRAgSB37s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Bpy1eBNx; arc=none smtp.client-ip=209.85.216.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="kfMDwnux"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-471618e20a5so1337533b6e.1
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 14:00:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bpy1eBNx"
+Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-35d90833cacso1733698a91.2
+        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 14:13:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775854846; x=1776459646; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zjiDa43R9nZMxJdozPmDaP5r3lj4EBR+Ho5duYukD5Y=;
-        b=kfMDwnuxX208vL6zZvAkBA23GL9w75AFNCa22xIW/a9zPHibIsn2cZeajisN6A4zyV
-         hv0TPZOirjkRj/H8gG44ElTS3KhdKXkBG7nRfzJ/VLV3ZmyGsc4KWXijmLyGnu949MXm
-         OEqM2Exi7tu5BUcmTDgGIiXKq+cWffJv/BCttYzL0TT2Xx+ifb4Vbj67kb0tYSQF/pm8
-         FbwO88DcDJh3A4VHBjQxQ/69Z3KgdCZHWUY05vPK+RSLvNIz3pfYwW9JGmvwJr9KynxG
-         Bu/FCocUDT5NhJVrnib+MOmKNllCTDTeIRaUQQGjElWicxWKuWNdO8MZa3X5ULK0kQGK
-         adgA==
+        d=gmail.com; s=20251104; t=1775855619; x=1776460419; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Oa7RWE7GfngIzdmApNxMxE+R7EIFKob9N3wDr4D9W60=;
+        b=Bpy1eBNxfC0IKIYGwYGLYenMjS9XC2URwEY+oOWKg0tutMKAo9dkPXn9lcH++bl3bn
+         R8Pi7+wuCcNQWpuNoDC84FUVsls3rjNxDb85SVG2rkZQOfLXLSPwNzM6El3j1o2bXmgN
+         7rocMDB1ATitoAP5IrYMKjI09b4OFNG8ljHPkT5/hLCmF+b5VGEwV476+DxTsEuYVgnp
+         0Eo/Op1ebLhOLACWBF7Ny9srn3a4u6fM/miK2s7mwudyolgBUUYpL8TNs+qWQM9/gd5g
+         ufDhqxipVQp07xbgE80GXWNY5f7B9egGL51hn3oT0Jui0jHeZ0MP3xgXcJO1/BZ4sz70
+         W5og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775854846; x=1776459646;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zjiDa43R9nZMxJdozPmDaP5r3lj4EBR+Ho5duYukD5Y=;
-        b=L9XOhHSlEdoF8Gj7xS0c3tXPTBQn+Zl26hXY3Xj8sq5LKdsZsQGm96iUfAdrzRyFAO
-         wPu5EKdNnoO4GEmjhNIuSne+DvcYh/cGNU5ZMV8/JOL+qSzG0zZcH78OngvdOYFESMZi
-         7VpefWdpMoMa3jN9vaecUuNXWItfqN2+w19NYlVyuY66jQCUphJdd5TAi5bSwcnOdjuQ
-         WBYZiJwGh0Vk2TZwigG1iG2pAdwG+DZ//2c4pmIg2/KlcKHxv5cTj7/FAQHsUd5kAATA
-         c+Zkuj8iwAobY+CMC/z7P/jpnzqc49xl64xP64nPouxsDNl3A7wFQh1OL875PCYFT0NV
-         HW+g==
-X-Gm-Message-State: AOJu0YzaegEDZj9rpvAxrZ3vW03qZ/keQs1LWDJMIG4vvYWbqqQAbz2G
-	QU9V5t6uIKCSZuO9gT4AinJb1qoRIK7UujN/gUlC9pf9BbzJGJ/JzF3VYeb0Jxct4Xc=
-X-Gm-Gg: AeBDiesMldsitQ9UYGdfmqUu1RrN/2MqxKAwUPwLRUkIpigiTCNeHa9Jmr6fC+5QR6f
-	IpCbJ2QfBdz1TQOVpJAbd6NeYPw5LsIutTQMHTK4kLT+36GOc2s6mq4M3htNXfc3qweWbPK0MDR
-	fpZbRCmlWLlHPnusOnJqf6rHvXWikeyZXkjazUvfHsveLikNIk6zhKhqSM0hyzLdbu8mPZK5o3/
-	iZ8Vxqx9xd6us2FbSD47FdbxC29+M+MbbFCG0w/cITzcoGfKcT9pZRJqDusn1tv5ZuYw+4r2LJq
-	n2wGxXisGGiNgbsTT9nUTuk/194mqVieVlqUTkDPW1v6rNUI0R5zmPF/DVfePfoYSCeEBvVA7qx
-	50eeHgJcD4T4XViK+HD4vCQP6v7xhwoaiud5dBCiMsOO3zxeMtGmdR5RQdpAJw0NkIazB4ERfqx
-	4Mi6z+FfN5eP5iGQ480tLgFNKi+aVrIcuhYNNzc2NnM6kYTWGidm8rtolVRrDeXx22GKWojmQOp
-	SXPJSFfnR1g
-X-Received: by 2002:a05:6808:470b:b0:46c:cdf4:1bde with SMTP id 5614622812f47-4789ca3aaadmr2638671b6e.10.1775854846014;
-        Fri, 10 Apr 2026 14:00:46 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b75d:2440:dc10:808b? ([2600:8803:e7e4:500:b75d:2440:dc10:808b])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-478a3a78204sm2094472b6e.18.2026.04.10.14.00.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Apr 2026 14:00:44 -0700 (PDT)
-Message-ID: <1170956f-da05-4280-990f-64306ca905c2@baylibre.com>
-Date: Fri, 10 Apr 2026 16:00:42 -0500
+        d=1e100.net; s=20251104; t=1775855619; x=1776460419;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Oa7RWE7GfngIzdmApNxMxE+R7EIFKob9N3wDr4D9W60=;
+        b=ocWvquik6+YV8EmzVlDcFIM4uMJw4MII98gxyjJE8mRZO3G1zkzgls8QW7yfr6s/NJ
+         VBJdqb0q6gI6YV7bjHD7jcWk1QlfiABuGOtq+raNcRVfgRGrjRTAdBDCfzZrZqqD/V1p
+         abQR9bgS9Vcsbpguh/jkRo7p3UScyfYM6wizGgiPcF42/qfNmFiuetyus6E2fcj8PHnf
+         5IDWTX5Iov4L6t91Kil/M7bRvAdNIBpXBIbTf4wOmSdmBkl26qFwDAdpuO9Q9/gd9e3E
+         iBi0uNW9RrMEPDDPKrsNJaza3Mw0zafgibbs7FSWFlkjUj7leYUm3a2Rf8IQII+P971b
+         RNxw==
+X-Forwarded-Encrypted: i=1; AJvYcCV/ASaj/DCpRbOoPMR105IOyOUAyvNKFJUhu8yJXR+VU8iB4Dn5LAT5wjyofV/Q4d7tq6dU1r7zHlI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw9eVPSEGLG7qELJnFZkwqhz5uwzNjxG0fElaBwexXDpPWciCq5
+	RTg2OpD2lpn8O902hL3C/qjcI6GCDPQNFXri645W8UIAZOUGBkBzcnil
+X-Gm-Gg: AeBDiettU9kylyAnfDTyrvJaHeK0ulbs1kaFUe18YG5vC2DC05TDO/Kj1pltSz0qZMq
+	oZiYDUpFQt5EovxQ/CMWUV8D++3JtDmncsSQctxzU/hRI3RZ5cZpIx3BVMZX4mZ5YyQLoaSTRTJ
+	uOhPC8dvTuPbqrAue3uTiDwVaFUsBis0SdljJ1+QWIWyzCvyJ8qI8ASvCXMZQ0uo6I0DYPgH5tG
+	Tb45Zv9I2TcwaPXWj4fUBlXbK8JSiQhQ/r5HSoHoTts4Ps406qd6RXu/ZlQ+DD2nEdTAaBcJtSn
+	63TYwT1bYO5VsRXSd+zps70b+17qGx6Uss/MFHGeEL1ssIUc56fmBZpS4v65dDf71jj8/Buqsg6
+	40feTKqKnjXEPtiV99deITTqVASm/xuqiaWIAOpv40Ol9do1PeeGIR2xfPJetD7qsxU5Fs/0JAn
+	AKuvd6dhk8l/S7IetYYuoRKCqm91q6XmT3UA2B5nqIsAm0vgXik9j59GsUdLxqG1/pZ8wkKPXD6
+	IRMvto10PdJxJOddj+vp3VpxdaYIktYbJ4RFvPZJlVE3t9oECk=
+X-Received: by 2002:a17:90b:2c88:b0:35b:b907:370 with SMTP id 98e67ed59e1d1-35e423fc9f7mr5274097a91.0.1775855619461;
+        Fri, 10 Apr 2026 14:13:39 -0700 (PDT)
+Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.. ([2405:201:31:d01f:a107:5c92:b303:910a])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35e35178460sm7684743a91.16.2026.04.10.14.13.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Apr 2026 14:13:37 -0700 (PDT)
+From: Piyush Patle <piyushpatle228@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Alexandru-Catalin Ionita <alexandru-catalin.ionita@nxp.com>,
+	Felix Gu <ustc.gu@gmail.com>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: nxp-sar-adc: use field_get() for EOC bit check
+Date: Sat, 11 Apr 2026 02:43:24 +0530
+Message-ID: <20260410211329.185147-1-piyushpatle228@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/6] iio: adc: ad4691: add SPI offload support
-To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20260409-ad4692-multichannel-sar-adc-driver-v7-0-be375d4df2c5@analog.com>
- <20260409-ad4692-multichannel-sar-adc-driver-v7-4-be375d4df2c5@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260409-ad4692-multichannel-sar-adc-driver-v7-4-be375d4df2c5@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 4/9/26 10:28 AM, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
-> 
-> Add SPI offload support to enable DMA-based, CPU-independent data
-> acquisition using the SPI Engine offload framework.
-> 
-> When an SPI offload is available (devm_spi_offload_get() succeeds),
-> the driver registers a DMA engine IIO buffer and uses dedicated buffer
-> setup operations. If no offload is available the existing software
-> triggered buffer path is used unchanged.
-> 
-> Both CNV Burst Mode and Manual Mode support offload, but use different
-> trigger mechanisms:
-> 
-> CNV Burst Mode: the SPI Engine is triggered by the ADC's DATA_READY
-> signal on the GP pin specified by the trigger-source consumer reference
-> in the device tree (one cell = GP pin number 0-3). For this mode the
-> driver acts as both an SPI offload consumer (DMA RX stream, message
-> optimization) and a trigger source provider: it registers the
-> GP/DATA_READY output via devm_spi_offload_trigger_register() so the
-> offload framework can match the '#trigger-source-cells' phandle and
-> automatically fire the SPI Engine DMA transfer at end-of-conversion.
-> 
-> Manual Mode: the SPI Engine is triggered by a periodic trigger at
-> the configured sampling frequency. The pre-built SPI message uses
-> the pipelined CNV-on-CS protocol: N+1 16-bit transfers are issued
-> for N active channels (the first result is discarded as garbage from
-> the pipeline flush) and the remaining N results are captured by DMA.
-> 
-> All offload transfers use 16-bit frames (bits_per_word=16, len=2).
-> The channel scan_type (storagebits=16, shift=0, IIO_BE) is shared
-> between the software triggered-buffer and offload paths; no separate
-> scan_type or channel array is needed for the offload case. The
-> ad4691_manual_channels[] array introduced in the triggered-buffer
-> commit is reused here: it hides the IIO_CHAN_INFO_OVERSAMPLING_RATIO
-> attribute, which is not applicable in Manual Mode.
-> 
-> Kconfig gains a dependency on IIO_BUFFER_DMAENGINE.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
->  drivers/iio/adc/Kconfig  |   2 +
->  drivers/iio/adc/ad4691.c | 398 ++++++++++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 395 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index d498f16c0816..fdc6565933c5 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -143,8 +143,10 @@ config AD4691
->  	tristate "Analog Devices AD4691 Family ADC Driver"
->  	depends on SPI
->  	select IIO_BUFFER
-> +	select IIO_BUFFER_DMAENGINE
->  	select IIO_TRIGGERED_BUFFER
->  	select REGMAP
-> +	select SPI_OFFLOAD
->  	help
->  	  Say yes here to build support for Analog Devices AD4691 Family MuxSAR
->  	  SPI analog to digital converters (ADC).
-> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
-> index 3e5caa0972eb..839ea7f44c78 100644
-> --- a/drivers/iio/adc/ad4691.c
-> +++ b/drivers/iio/adc/ad4691.c
-> @@ -22,6 +22,8 @@
->  #include <linux/regulator/consumer.h>
->  #include <linux/reset.h>
->  #include <linux/spi/spi.h>
-> +#include <linux/spi/offload/consumer.h>
-> +#include <linux/spi/offload/provider.h>
->  #include <linux/units.h>
->  #include <linux/unaligned.h>
->  
-> @@ -43,6 +45,11 @@
->  
->  #define AD4691_CNV_DUTY_CYCLE_NS		380
->  #define AD4691_CNV_HIGH_TIME_NS			430
-> +/*
-> + * Conservative default for the manual offload periodic trigger. Low enough
-> + * to work safely out of the box across all OSR and channel count combinations.
-> + */
-> +#define AD4691_OFFLOAD_INITIAL_TRIGGER_HZ	(100 * HZ_PER_KHZ)
->  
->  #define AD4691_SPI_CONFIG_A_REG			0x000
->  #define AD4691_SW_RESET				(BIT(7) | BIT(0))
-> @@ -95,6 +102,8 @@
->  #define AD4691_ACC_IN(n)			(0x252 + (3 * (n)))
->  #define AD4691_ACC_STS_DATA(n)			(0x283 + (4 * (n)))
->  
-> +#define AD4691_OFFLOAD_BITS_PER_WORD		16
+The driver uses FIELD_GET() for constant-mask fields but falls back
+to a raw bit test for the per-channel EOC bit, as the mask depends
+on the runtime channel index. A TODO notes that this should switch
+to field_get() when available.
 
-This is just the same as realbits in scan info. So could use that
-directly instead.
+Use field_get() here now that runtime-mask support exists, and drop
+the obsolete TODO. Since NXP_SAR_ADC_EOC_CH(c) is BIT(c), the
+resulting !-test is semantically identical.
 
-> +
->  static const char * const ad4691_supplies[] = { "avdd", "vio" };
->  
->  enum ad4691_ref_ctrl {
-> @@ -114,6 +123,7 @@ struct ad4691_chip_info {
->  	const char *name;
->  	unsigned int max_rate;
->  	const struct ad4691_channel_info *sw_info;
-> +	const struct ad4691_channel_info *offload_info;
->  };
->  
->  #define AD4691_CHANNEL(ch)						\
-> @@ -177,6 +187,18 @@ static const struct ad4691_channel_info ad4693_sw_info = {
->  	.num_channels = ARRAY_SIZE(ad4693_channels),
->  };
->  
-> +static const struct ad4691_channel_info ad4691_offload_info = {
-> +	.channels = ad4691_channels,
-> +	/* No soft timestamp; num_channels caps access to 16. */
-> +	.num_channels = 16,
+No functional change.
 
-`ARRAY_SIZE(ad4691_channels) - 1` would make sense too.
+Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
+---
+ drivers/iio/adc/nxp-sar-adc.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-> +};
-> +
-> +static const struct ad4691_channel_info ad4693_offload_info = {
-> +	.channels = ad4693_channels,
-> +	/* No soft timestamp; num_channels caps access to 8. */
-> +	.num_channels = 8,
-> +};
-> +
->  /*
->   * Internal oscillator frequency table. Index is the OSC_FREQ_REG[3:0] value.
->   * Index 0 (1 MHz) is only valid for AD4692/AD4694; AD4691/AD4693 support
-> @@ -207,24 +229,36 @@ static const struct ad4691_chip_info ad4691_chip_info = {
->  	.name = "ad4691",
->  	.max_rate = 500 * HZ_PER_KHZ,
->  	.sw_info = &ad4691_sw_info,
-> +	.offload_info = &ad4691_offload_info,
->  };
->  
->  static const struct ad4691_chip_info ad4692_chip_info = {
->  	.name = "ad4692",
->  	.max_rate = 1 * HZ_PER_MHZ,
->  	.sw_info = &ad4691_sw_info,
-> +	.offload_info = &ad4691_offload_info,
->  };
->  
->  static const struct ad4691_chip_info ad4693_chip_info = {
->  	.name = "ad4693",
->  	.max_rate = 500 * HZ_PER_KHZ,
->  	.sw_info = &ad4693_sw_info,
-> +	.offload_info = &ad4693_offload_info,
->  };
->  
->  static const struct ad4691_chip_info ad4694_chip_info = {
->  	.name = "ad4694",
->  	.max_rate = 1 * HZ_PER_MHZ,
->  	.sw_info = &ad4693_sw_info,
-> +	.offload_info = &ad4693_offload_info,
-> +};
-> +
-> +struct ad4691_offload_state {
-> +	struct spi_offload *spi;
+diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
+index 58103bf16aff..d6c2a0d50bb4 100644
+--- a/drivers/iio/adc/nxp-sar-adc.c
++++ b/drivers/iio/adc/nxp-sar-adc.c
+@@ -316,11 +316,7 @@ static int nxp_sar_adc_read_data(struct nxp_sar_adc *info, unsigned int chan)
+ 
+ 	ceocfr = readl(NXP_SAR_ADC_CEOCFR0(info->regs));
+ 
+-	/*
+-	 * FIELD_GET() can not be used here because EOC_CH is not constant.
+-	 * TODO: Switch to field_get() when it will be available.
+-	 */
+-	if (!(NXP_SAR_ADC_EOC_CH(chan) & ceocfr))
++	if (!field_get(NXP_SAR_ADC_EOC_CH(chan), ceocfr))
+ 		return -EIO;
+ 
+ 	cdr = readl(NXP_SAR_ADC_CDR(info->regs, chan));
+-- 
+2.43.0
 
-I would call this "offload" or "instance". "spi" is usally the SPI
-device handle.
-
-> +	struct spi_offload_trigger *trigger;
-> +	u64 trigger_hz;
-> +	u8 tx_cmd[17][2];
-> +	u8 tx_reset[4];
->  };
->  
-
-...
-
-> +
-> +static int ad4691_cnv_burst_offload_buffer_predisable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad4691_state *st = iio_priv(indio_dev);
-> +	struct ad4691_offload_state *offload = st->offload;
-> +	int ret;
-> +
-> +	spi_offload_trigger_disable(offload->spi, offload->trigger);
-> +
-> +	ret = ad4691_sampling_enable(st, false);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
-> +			   AD4691_SEQ_ALL_CHANNELS_OFF);
-
-Why this extra step? We don't have it when unwinding in the
-error path of the postenable function.
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	spi_unoptimize_message(&st->scan_msg);
-> +
-> +	return ad4691_exit_conversion_mode(st);
-> +}
-> +
-> +static const struct iio_buffer_setup_ops ad4691_cnv_burst_offload_buffer_setup_ops = {
-> +	.postenable = &ad4691_cnv_burst_offload_buffer_postenable,
-> +	.predisable = &ad4691_cnv_burst_offload_buffer_predisable,
-> +};
-> +
->  static ssize_t sampling_frequency_show(struct device *dev,
->  				       struct device_attribute *attr,
->  				       char *buf)
