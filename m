@@ -1,127 +1,135 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFEFF386439
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 10:43:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775817815; cv=pass; b=KiJh+ZrfyEPT4Dk9NdzXpFvOcXHDM/dbUNPLweledL0/yoo9K6W7AYaEidQ4BzdghdPJQEimmSF8sclPnMS+Qom9vhQrbbBee3XjpsLAQ59h/fcinISkAoZ0eF0pYs4adljGJCY2YNoONHNAYiOF9HZ1OyIhH2k55zjE42KLrZ4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775817815; c=relaxed/simple;
-	bh=dK6d2FA9a77nfb1jYHoRrb6E5MltM8le7HGTiqOX994=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ehnWqoPxUablOvdYcQmmrR9VQN5CoCi6TyFgYT+VH67lLUwF7vGzXMoS2KoyAFOTgbbjR0J3LXp1YmgZTG/ZGrIa9d3y2WV0e5hExnmdRB76JZH/yCWYJPAvu/HZC1PhcDhCD5U1F3eZ3uWdz4ZynaVeaXFl3p6txmwFqJX7Ieo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T18jQfi4; arc=pass smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C644135DD1C
+	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 16:13:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775837582; cv=none; b=AjA83YhNfeRj6tI50bJT2QowJU9SCxy7AsZAjx2dIz6kjwjVRjnBou1d40MwlhWJmHeywzN5HCFbytrIxdttMIcddFG74Sh8hyZXlJMmVo5VOdfpWs+OGczHiLEpNBR8nPNzcif8jVBZemPfd/9scNQzXudmos2B1q0yC3anO3w=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775837582; c=relaxed/simple;
+	bh=iHOrEOPukBDw2OMmEmWqNyYObEXpDlsGXACdw/giA24=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=M9TPS6AWBPeU5+pvlo9EEslyLAWvJX3Q0ORRgWnT7+zkjZM57t05vabzeA9NAc0UUMLFowMgIvyrx9byhHA1UUMA70AiNOkRYCnP+vCamsrmdGluZc16QxWcFwdXSzBhVXSoNPXeyoVaB3O4ZqW9hhgyN3F4otGcThlhpkDXlh4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HnX/jd5q; arc=none smtp.client-ip=209.85.128.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T18jQfi4"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-66e6d9610d8so2767223a12.0
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 03:43:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1775817812; cv=none;
-        d=google.com; s=arc-20240605;
-        b=U5+RRgE8yKPMGTobsw8TJEe9sTlw848ZCDOd0CDNcSq+Z3NkUHVl5BW/WEU3zin04b
-         wqcCzMLW6LdevLk4tFQ6Y9WMcgGotA2wjqpFeVBmheYb7DZGal44hrP3R9pmcG1itEuu
-         BTO6q9d7DpxM0StnglAh+Wn7N2pHw4TJNO1Eq4PE2IjCWrx/iJtzzWhEwXmgjxswRW9K
-         u4g9bTu8jc7C8JY++R88gUegcbgdBoF3jSvARODAZMDbQB1SgwTB4LKh7+bcLJA0Tyyl
-         cWnseO0HD2xoPbZHc7485rKUkq8u62M6H6iHEnQMl9PPA/ODx4Oq2bFX7nz850C2C+Tn
-         KgwA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=BdoIj5BlxYESHpYC3v+AXBrtUvLBmx12sFmAxpINGgI=;
-        fh=dNKQ/OQb5xb1Q/bbTGpkmkRl8SXaJhzm2/ves0vPjwU=;
-        b=a4CrJoAmxbyz6wipxo7v4eTFkm9p6gn4kt7me4pkudZSd0WTAwbwLDs7AKQ6HOViqe
-         wNNHS5ld92DBYXDPxIejcTzyLQww9oQWnLVygsgRTnTgLwN4v8Yrl/XfKhRi4BOMJEno
-         MHc4Pe9Fb0ZdAZPZNiw25f5XXKsubPUKVB0610HKiQ+ExKb4KSCrtbOoM9lyCfY3R5H9
-         OLCVCklSPL7t5lTVgc/tKZtBwd/MQ+2w5vP2tfeakj9LFEgIU6oXwuvjfF/T0BMRgTC9
-         CvJh4NJvo2Qzg6pCcUPyF5GSWWxwNZGKB86HRnqwAfru85u5TcQN0Y6XAZo3dVZBUuzV
-         hskQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HnX/jd5q"
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-7927261a3acso22464807b3.0
+        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 09:13:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775817812; x=1776422612; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BdoIj5BlxYESHpYC3v+AXBrtUvLBmx12sFmAxpINGgI=;
-        b=T18jQfi4QgeFAiCoIwmNHRIueTQND4Wzp6Y+oL1IAwIrxpC/dArKdUXo+FYV65FNV2
-         x9By0c55sQSpD68sS/n9QplC3SxhD9lorg1SKoxstfFJYG40zSpp+Z0DzI6L/4Aj/nmX
-         jSnj1i/UG5YDV5+zIZVqwtzRzB7k4QAhcuDMqHSGGcwF8hgvOkd/vHl0fPC+MyNg5SU8
-         lJx+uDkTV5UHvaSdABjeMD3KNY5ytkBbDyy0FYTMCeYj/OrLppNVIb0COxqlXzK2Prws
-         KJVutYczc1td6KKK4a/sMcVtT+TNraMN5YZy2PXuCuGva40Xt5r8V8wt99rZ3m65SKsN
-         QAaQ==
+        d=gmail.com; s=20251104; t=1775837580; x=1776442380; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=GdpRnrT8EdM9Ad4fwPo90RwHr69ZTTQZqjwzgeAcqUM=;
+        b=HnX/jd5qqbRu+qJG5J8XSsDaZcLjiidBjJKNd5MWtivVi7ImRpltPxbAH1N/WTekRK
+         Qe1qoL9TSYDu2pOFOsB0w7ZA2QSOU3LY/m51BglQXEIIR5MU0Hn/0P7d1NS1oQikTcXc
+         VGu6ifY5Lzo0A8UNWuojsgPqmWszXBoL8dTxbIFgGzofF5ZANzaOKEVr0jUH5UtJsEk6
+         xf/HNOlGfjCgi5n4z4qJ8hYhGL7GQh+LWLArJilRuKsCn0Th0yg5adX7HdfS0uF1ipyx
+         0C8E1tLYthFx95K2c6zkcoz7Tao6p3yQOhwUb8y/chjGzz69rfIeFhSAtO2dqiFbRvsG
+         GEpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775817812; x=1776422612;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=BdoIj5BlxYESHpYC3v+AXBrtUvLBmx12sFmAxpINGgI=;
-        b=R0eJTGgZXaX/IbNQp0WeqHgX+PBOKz3pGW7Maay94srtfXf1cVmr1Zrl+yoxVw+P+P
-         grjbbrGtjUlSkmj5ZhynoQ+TKaSqlJ5xyFW6MNNvzNWO30Rs1v3MTl/gV+AGn/Ph1lNq
-         o2lDejpbOG08w/Zad8kGMxV4BhcJGK2MkaGIS5hqUTnoWAOU1/68+q5FNSwwQ+CjVTId
-         kbW6ZAX5oMArXXV+nB8maPjLwPPnm4hNef0DxD7zCsboJqK2gu0iXKmB7UTMZ6xZLcXB
-         Cp44xqjuVNH1qfeZp1xZN/R2Q3jAi+oQi0XgYeF7Ou1veEcsHOxISGuXL0Ml6gLqd+/3
-         DIUw==
-X-Forwarded-Encrypted: i=1; AJvYcCV9UfAZnFPRW2AFk2mMtMpYYRyS7LY+NmyUEpCdUbmqwqyjaHDrIxIkbru76K76E4pqmRPWsLseJEw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwoVecEzMmv0LQO1shnP9XFHehlxcRv5f5Y9z4aAPZQKoufIlXg
-	meUEglFh+hERtEDwK1sHvkmrKF1+niOVn/yFJK7b7+bLZZR/nn/ukYzi9gRphhQcLagjMPlKw/U
-	mX/TYnyrYilzd0+Pk1n674KNbrkpxSR0f2EgP
-X-Gm-Gg: AeBDieuf5HHZjH90zoa3+iykeH6bHLD5mykXTiTFBargZhGfj3ukJLTRHjlZZsDTIYG
-	uBDpArLsDekA8S1nF1yxMNKi6glKh8I3W9g+eSqj9l7JZGNmslwUsi4wpmqz1UH1BuobWqe4hR+
-	xm6dh75R/iMQ3Mrz4KDNMVHOrmTGhBRGvenccL0lOoc73eg6suwXsYhfG9RBK4RDz19MDNCE1HO
-	AZ+abv9f1WpnxJfyENZb4cgeDgVOJ28T5jWKtAN7CcXEeogFX0kb4H+gWQ4T0iLWOQT7jJfIGsD
-	r2EboV4zPTOUS0BZG7K3ZBK68BSs2xppUrT2PrEKSTfn0E+/IAbURavrn0CvLSeVwTzAzy1l2p7
-	gH08NbCs=
-X-Received: by 2002:a17:907:e107:b0:b8e:796a:fd5d with SMTP id
- a640c23a62f3a-b9d7277c0d1mr84942166b.39.1775817811836; Fri, 10 Apr 2026
- 03:43:31 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1775837580; x=1776442380;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GdpRnrT8EdM9Ad4fwPo90RwHr69ZTTQZqjwzgeAcqUM=;
+        b=Hh4J+CEXkllkxbJNCDNQ7C/kieAskJ0o4tfOTcJqILIENhn0Hc7BKeuFHeV2gFn2Aw
+         s2DklCnq9K4jdEOpZyAhyQpLk/BofJWZHSGhV5a5dLj1DBarshe9ydBTSJaeZ5vMSeJd
+         VsnB4ewVgzAwsSEko3BSX9WqvRw5WdxLzLWmJeU+5oMKbj6mqGw4sEUWr9uiIabVPbHT
+         2Vs1JjqrJRM+faapy8abkAxTGh2jCB9iL0EBnTJgyaKS69p2Yx3xANLQDOdDdlksMY4w
+         k+zuPKhM1fthLBfWxFVZPxsQCboCCA/wBCbAUQ5Fo6qo8CnkfZFrCu70C734j8iMTMRc
+         lg8A==
+X-Gm-Message-State: AOJu0YzW9HgzCY/ay2kG6E5/1cjQTlkNGV1wBJaAr7ctuEZM3A3axxrG
+	QZfodhoe1GYyLzDnJCDDbQVqOEMhu4XnQubNcqPrQenkYXBMexkmDODR
+X-Gm-Gg: AeBDiev/lewN0691rBp57sLUQsu6X5gk9yg1EQvDPUJBgLgy7WF99xQuVGy7IB2uLrV
+	xffmj2Trl7lovSE5rgeL3CuVMuZFcPYaNGxp+mJTdmMaaH1E1tupQVNaOd947wlLaKyJmUnxGBV
+	LWnePCwxzUcEh769bki6kywtk6vgKbFMU6iaZgVefkoRz98B+VRzLIirMmiYO5BUg9jDCWmlXjY
+	8vsUukN2IqGWlB2IcGM7drdkIAclx57/87YzIxeoTxf37D2acCPYH3fk/UtnMTvIrfVaf4xq7wd
+	Gvvr5ZlYkcMWsBV9qRfP+WjiiNW9zq/DVZrj2tlR8TTvh9Et7OtRrsUfHGhfRIak7aMv+ruZUpK
+	wu2pNqjMruC1mW7apgZlYH0Dj7LQX4O1cuBVn7mTp/wUGxfZAQP188qbro512MeHEZk3Jx+0y0o
+	4VA4Jn0it00XvVPKXrMWlsBe7jug==
+X-Received: by 2002:a05:690c:9d:b0:79b:cced:2349 with SMTP id 00721157ae682-7af71a57a49mr42863057b3.37.1775837579765;
+        Fri, 10 Apr 2026 09:12:59 -0700 (PDT)
+Received: from [192.168.0.39] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7af3fa05b48sm15408337b3.33.2026.04.10.09.12.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Apr 2026 09:12:59 -0700 (PDT)
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Subject: [PATCH v3 0/6] iio: light: vcnl4000: drop enum ID table and use
+ device-managed register
+Date: Fri, 10 Apr 2026 19:11:16 +0300
+Message-Id: <20260410-vcnl4000-drop-enum-v3-0-2ea2bc6f5dfb@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260410100832.1388-1-joshua.crofts1@gmail.com> <20260410100832.1388-2-joshua.crofts1@gmail.com>
-In-Reply-To: <20260410100832.1388-2-joshua.crofts1@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 10 Apr 2026 13:42:55 +0300
-X-Gm-Features: AQROBzA5dWSSOv5xrYv2iUH2sXBet1J7jbnIYb0CT0Ni_O_MSKkvwnOAMkLfXQ8
-Message-ID: <CAHp75VdPhg_5gOZtfsZyMkFf5iZ8-wtZ_2Ta2UaWYKbVzgAB4Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: frequency: ad9832: remove kernel.h proxy header.
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
-	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/33NTQ6CMBCG4auQrq2Z/gjFlfcwLsi0hSbQklYbD
+ eHuFlYsjMv3S+aZhSQTnUnkWi0kmuySC76EOFUEh873hjpdmnDgNUhgNKMfJQBQHcNMjX9NFLh
+ QUDOL1ipSDudorHvv6P1RenDpGeJn/5HZtv7lMqNArdUcmAVUUt36qXPjGcNENi7zI3H5SfBCN
+ Kg0tgpF28gjsa7rF5d+W0z3AAAA
+X-Change-ID: 20260401-vcnl4000-drop-enum-0238061fcff8
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Erikas Bitovtas <xerikasxx@gmail.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.15.1
 
-On Fri, Apr 10, 2026 at 1:08=E2=80=AFPM Joshua Crofts <joshua.crofts1@gmail=
-.com> wrote:
->
-> Remove kernel.h proxy header and add bitops.h for
-> better dependency control and code clarity.
+This patch series drops the enum ID table for device enumeration and
+instead adds pointers to chip ID structs directly. Necessary
+information about the device is then taken from i2c_get_match_data()
+call. This removes the association between enum ID table and struct
+table and allows for easier addition and removal of new devices.
 
-...
+Along with that, an iio_device_register() call is replaced with its
+device-managed counterpart, to ensure that device is unregistered
+automatically.
 
->  #include <asm/div64.h>
->
->  #include <linux/bitfield.h>
-> +#include <linux/bitops.h>
->  #include <linux/bits.h>
+No functional changes are intended.
 
-bitops.h also implies bits.h.
+Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+---
+Changes in v3:
+- Reordered the commit for moving device tree entries into one line
+  after the commit dropping enum table.
+- After a failed iio_device_register(), added
+  pm_runtime_set_suspended().
+- Reordered device-managed IIO device register to come before setting
+  autosuspend, as it was before this patch series.
+- Link to v2: https://patch.msgid.link/20260405-vcnl4000-drop-enum-v2-0-7c8dc98c3974@gmail.com
 
->  #include <linux/clk.h>
->  #include <linux/device.h>
->  #include <linux/err.h>
-> -#include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/slab.h>
+Changes in v2:
+- Moved device tree table entries into one line.
+- Moved power state function in probe into a device-managed action.
+- Replaced call to pm_runtime_set_active() and pm_runtime_enable() with
+  its device-managed counterpart.
+- Removed vcnl4000_remove function(), as all the clean up is done by
+  device-managed functions.
+- Link to v1: https://lore.kernel.org/r/20260401-vcnl4000-drop-enum-v1-0-ffd201f0c848@gmail.com
 
+---
+Erikas Bitovtas (6):
+      iio: light: vcnl4000: validate device by prod ID instead of table ID
+      iio: light: vcnl4000: drop enum id table in favor of chip structs
+      iio: light: vcnl4000: move device tree entries into one line
+      iio: light: vcnl4000: move power state function into device-managed action
+      iio: light: vcnl4000: make pm_runtime_enable() device-managed
+      iio: light: vcnl4000: register an IIO device with a device-managed function
 
---=20
-With Best Regards,
-Andy Shevchenko
+ drivers/iio/light/vcnl4000.c | 276 +++++++++++++++++++------------------------
+ 1 file changed, 123 insertions(+), 153 deletions(-)
+---
+base-commit: 64450c940b89dd8fdc74178fba2f31718afd8c71
+change-id: 20260401-vcnl4000-drop-enum-0238061fcff8
+
+Best regards,
+--  
+Erikas Bitovtas <xerikasxx@gmail.com>
+
