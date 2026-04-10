@@ -1,131 +1,85 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E68DB3D47DB
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 16:20:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A280E3DD51B;
+	Fri, 10 Apr 2026 16:36:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775838006; cv=none; b=ewAZuv41DsVkiYplwLcUCtKNjzOrFUVo2jp2AI7WcwTwbJL5571EoqmkxyySljT/UEFq33NnBNvSdPtimRY0yibKIgBjIgkUFofwzG/FOxmCU5rF8CRVbDHnd2wtolTGJ83tFEchQPZygdHJGcLjxDDOWEvC+ePRTGgyXPuvrmU=
+	t=1775838993; cv=none; b=GS8Y3+20n5aLrst/eoB+DSNTGFhgf8w3cua/1x7rGbiXb5Z0gVrnO6mWCe+Km4FSwd4dcXYNhpbNT5+NXsYsT/ieW4B2OMtt8mxapxAWyRIe7Yl8d5JFX4OiaJJ5Rhuq/1VMMl74sJz/uQsDx5DeeesjA5jUG+2S5z+4iOmn//I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775838006; c=relaxed/simple;
-	bh=r/jXjAutn0sgIrFPdW80ckJd7XRi5ViYFyeURSC8krg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=C4q3LGn2C8C/eiu3cXnTI8WUAarA/qX4c9wxLTUEnOyEXb7kDIiGGd2+mjIsL7nd9U63NhebYKtj7Pnjjo6qdePKrGF9f2OfTKDJK0dIIQElJdHPyq3gIJ8YpHjWJdHSgGj3r4nJ9B9xain919PhBOnNdIf7iQVnnS1C1jCMP78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CKUAsJz8; arc=none smtp.client-ip=209.85.128.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CKUAsJz8"
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-7982c3b7da9so20400907b3.1
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 09:20:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775838004; x=1776442804; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nnHBqJA8JZ40KTknuTFFFFvoEdkYaSYsNZRBUHIVWOQ=;
-        b=CKUAsJz8o4OOD6t39PRfV2QZet5EVucFxQZkZPNIknyS4EYsnV7JgUORYjAKx1/w79
-         PyN0UdgkOz1ph5/wsrBQ2GG7oEVqxnMUO+xw57WNhoE36XlSZBZltOlBwFLiQrRYZjgU
-         styfi+6P7Njzgoa3Sg4K4nAFi5+O962vvTNvo0dF9ef0yYRZOoMQyraPDjDhwFMVKIwo
-         waGfg0fjLNNKNhI10HINDbMuFs+g7s2VL/5Eww5Aw+JrLEhjynWzxvQMe45pDCiVuZoY
-         vOhlBH2LKEelfI6or823xt0Khm7dsLLouFFk5xAk6RTMs07DH2dRI1tCWWVQllfQd/bU
-         E32g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775838004; x=1776442804;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=nnHBqJA8JZ40KTknuTFFFFvoEdkYaSYsNZRBUHIVWOQ=;
-        b=kgJMyfY3ppAX7KRcfz3aBtoYnll4oX9C54W6WEItzo3dJaBzDKzdhKcwCP4U49G4Qt
-         8feF4YBkVymiJVuEQ88vIFePILKbbXOZgSizK5/krC7LOZFlh8AEB3VrIVh2XtCP3eTh
-         Mfh3/TWJi0vTWx4Xj8DCwRIFxxIF/6qniGYaeJQPfCqO30Ety7po9KNBDpqPxlFQ7Z+u
-         4mF7rYCyW+eo/xxdjbzZNt/sdOkDp+LWlkqp2CwPNhsSK0T6kl09W2fVgjmD/VfxHChx
-         PpOHerVDI2i/vBtpdvamYxjvLYIYaC5I/3hbFswQv9vurri0DJxgEnfGAn4w4YELtQTf
-         ouVA==
-X-Gm-Message-State: AOJu0YxisDQwwK0MWvqeuy055TyGnIBkPFhRgOaR410wdALeZC5u+RpH
-	3/i7dyTt4lfjYvGWiRf4i+9E7iXB81q+ntumSIx6y28kzkGToAg4olPG
-X-Gm-Gg: AeBDieu7DdshDpiTk+niOumR3ga5G3l+k960ycAzVgmZjr3ppHeUsKSWyIGeSoQhFVt
-	q5SwXYkFAr7YL9SuONSEeQjX0zTfR12J/CUszgVYEc3A/Q2Xh7EYq6LWNkf1ej+v34CgejM+iC5
-	CohlObOo+cMuJYL0FbSUYXeqyNnyPQyDpiaHLESJzEFvSSeIJP23Igs+4YaauShl/XZVdNcfLJA
-	KF2M9B60VK6os9nhUAKx5Z6/BlXz7Ag5+n8ANJpN1QK8uMhq2bThnILk7/LILw2wpdEnSs4sf1F
-	QBjI/MY3dZfck8LSwSO1EmcntfMStIIIczWA/7Inho0nBwkPxWj1OIuiC0pv4Tw90KvZKGtNRuz
-	ipb2HGAKcsxHk5aJj1yIX/XAxfdYycGBfGFf5c4ivBs5bJAV/XdPfAvB2NazbTz7gicnzL0UCyW
-	fQ8ym6Rxwt2xTJLOVGx8L70HuGgg==
-X-Received: by 2002:a05:690c:d94:b0:797:d386:44e4 with SMTP id 00721157ae682-7af6fa02e95mr44067907b3.16.1775838003818;
-        Fri, 10 Apr 2026 09:20:03 -0700 (PDT)
-Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7af3fa05b48sm15408337b3.33.2026.04.10.09.19.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2026 09:20:03 -0700 (PDT)
-From: Erikas Bitovtas <xerikasxx@gmail.com>
-Date: Fri, 10 Apr 2026 19:11:22 +0300
-Subject: [PATCH v3 6/6] iio: light: vcnl4000: register an IIO device with a
- device-managed function
+	s=arc-20240116; t=1775838993; c=relaxed/simple;
+	bh=MHsuapnVqVvtErwyI+RLIPBL2U+Tz9GyW/nkEUEMkhs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=G0N7sKok0+1lOyRDJhXD80c4oKFCvK7cT1YaDoV2qI4XOtZdnRgwciNquSKYu+fVdwedoTn6DxmJkIrCN85JFO3Na2ApWObK3X0SfMEEO3iQpskoPw3a39YTCCNjoY9xohANFolfv2hs2nakPl6rr7b/ecyLAzgaHNW9WR+g6Sw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
+X-CSE-ConnectionGUID: uxruXWlLRKmiakba6A6Wig==
+X-CSE-MsgGUID: bp8J//fcReioQBLYlud6ag==
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 11 Apr 2026 01:36:23 +0900
+Received: from demon-pc.localdomain (unknown [10.226.93.85])
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id C7AFF400CD4C;
+	Sat, 11 Apr 2026 01:36:17 +0900 (JST)
+From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+To: Biju Das <biju.das.jz@bp.renesas.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>
+Cc: linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: [PATCH v2 00/10] Add MTU3 for RZ/T2H and RZ/N2H
+Date: Fri, 10 Apr 2026 19:35:20 +0300
+Message-ID: <20260410163530.383818-1-cosmin-gabriel.tanislav.xa@renesas.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260410-vcnl4000-drop-enum-v3-6-2ea2bc6f5dfb@gmail.com>
-References: <20260410-vcnl4000-drop-enum-v3-0-2ea2bc6f5dfb@gmail.com>
-In-Reply-To: <20260410-vcnl4000-drop-enum-v3-0-2ea2bc6f5dfb@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Erikas Bitovtas <xerikasxx@gmail.com>
-X-Mailer: b4 0.15.1
+Content-Transfer-Encoding: 8bit
 
-Use a device-managed counterpart of iio_device_register() and remove the
-redundant iio_device_unregister() call in driver remove function,
-allowing us to remove vcnl4000_remove() function altogether.
+The Renesas RZ/T2H (R9A09G077) and RZ/N2H (R9A09G087) SoCs have an MTU3
+block. Add support for them and fix the non-existing TCIU8 interrupt.
 
-Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
----
- drivers/iio/light/vcnl4000.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+V2:
+ * reword to mention that TCIU8 used to exist
+ * squash "move required resets to conditional" into
+   "document RZ/{T2H,N2H}"
+ * disable the resets in the else branch of the condition
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index b08cb6b33d33..c2d3121be687 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -2059,8 +2059,8 @@ static int vcnl4000_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
--	ret = iio_device_register(indio_dev);
--	if (ret < 0)
-+	ret = devm_iio_device_register(dev, indio_dev);
-+	if (ret)
- 		return ret;
- 
- 	pm_runtime_set_autosuspend_delay(dev, VCNL4000_SLEEP_DELAY_MS);
-@@ -2082,13 +2082,6 @@ static const struct of_device_id vcnl_4000_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, vcnl_4000_of_match);
- 
--static void vcnl4000_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--
--	iio_device_unregister(indio_dev);
--}
--
- static int vcnl4000_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-@@ -2128,7 +2121,6 @@ static struct i2c_driver vcnl4000_driver = {
- 	},
- 	.probe = vcnl4000_probe,
- 	.id_table = vcnl4000_id,
--	.remove	= vcnl4000_remove,
- };
- 
- module_i2c_driver(vcnl4000_driver);
+Cosmin Tanislav (10):
+  clk: renesas: r9a09g077: add MTU3 module clock
+  mfd: rz-mtu3: use device-managed reset deassert
+  mfd: rz-mtu3: use device-managed mfd_add_devices()
+  mfd: rz-mtu3: store &pdev->dev in local variable
+  mfd: rz-mtu3: make reset optional
+  dt-bindings: timer: renesas,rz-mtu3: remove TCIU8 interrupt
+  dt-bindings: timer: renesas,rz-mtu3: document RZ/{T2H,N2H}
+  arm64: dts: renesas: r9a07g0{43,44,54}: remove TCIU8 interrupt from
+    MTU3
+  arm64: dts: renesas: r9a09g077: add MTU3 support
+  arm64: dts: renesas: r9a09g087: add MTU3 support
+
+ .../bindings/timer/renesas,rz-mtu3.yaml       | 26 +++++--
+ arch/arm64/boot/dts/renesas/r9a07g043.dtsi    |  5 +-
+ arch/arm64/boot/dts/renesas/r9a07g044.dtsi    |  5 +-
+ arch/arm64/boot/dts/renesas/r9a07g054.dtsi    |  5 +-
+ arch/arm64/boot/dts/renesas/r9a09g077.dtsi    | 68 +++++++++++++++++++
+ arch/arm64/boot/dts/renesas/r9a09g087.dtsi    | 68 +++++++++++++++++++
+ drivers/clk/renesas/r9a09g077-cpg.c           |  1 +
+ drivers/mfd/rz-mtu3.c                         | 39 +++--------
+ 8 files changed, 173 insertions(+), 44 deletions(-)
 
 -- 
 2.53.0
