@@ -1,115 +1,109 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FACC28D8DA
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 10:08:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 053D837C11E
+	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 10:12:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775815724; cv=none; b=IoXYGfCe75SPMBKetN+YKqFNLymnMO9T3ZpaD8WOXeG45aA23KlwWIgkFgCBUFPZaoNdWfTu6ztotRdF+pBUUkPGvgXtgswfzXy2tUkaLJz0TT2+6jTKO5KUAaawPhqLH6ct5Lrftf/bxrRyitQBHUNwikqtj5P/fxqxk5VJUls=
+	t=1775815940; cv=none; b=Akd/5M8cBRT4IgoJ54bwfTWoRLvc6ZsZrrTscOMwR1RsRpy+zNLQ2tIGV23Gx3n4pk4mMi+GcZ9mglT87IZWAYFnIPwvWnxNR6BFXeXxW3pr/GTrmi1I9cfRY8XeW9YIneHIQ34LKsiDzhIV7UUhcW0t/V2Vd3WXyxWUBqSDie0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775815724; c=relaxed/simple;
-	bh=zTnHLQD2HNQS3TBUN35WzG70fp7XRFIXVsjGjAp3eAc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AzLc1LA44j1Td7tgL+bZ135ONLML+TeOORioL+PqJ8tpTjQ0NzI2aAR2ON85zgjdtkbbnE+Tx7d9IavKnTQezqt+CB15I65cq6td+2Ldw99d0VeKZySWN0LySqI3l+Yxlot9kfm5kgmIWK8wvAHZGeD4O9O0we0FUU2If4UKFiY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nWgJizWC; arc=none smtp.client-ip=209.85.208.44
+	s=arc-20240116; t=1775815940; c=relaxed/simple;
+	bh=H0fXTkWi3cEW1grzTO2UpwdTEZU5njLYXMU7g8OxhcQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=N9bov8Pmzx8wb6aSPu1EUFKIh0RnCxTHEaF3CPWeOVEIcVaObZ77OJhqhvdyya95UOWWXSvfIcwQcKaKGYO4RSB7SF8rhIaDBm80UpoN2ASudmF8345IQ/nGQxYL+JHTKPxrzE5nCbyjLxN4gXxuwzMJylv5yQ0Mv7PQH6n/XJI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gGEwk05u; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nWgJizWC"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-670af4fc2f1so163237a12.1
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 03:08:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gGEwk05u"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4888375f735so18246625e9.3
+        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 03:12:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775815721; x=1776420521; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gEmRdRU8ohaMy0h7XL4yvnjYX1agG/OYKNFzIwdN3F4=;
-        b=nWgJizWCdZApaEFugpctGuZeVdC+5XBK1pOXUyv6D/uZ5blbU8yQ9Zaww+pzCF3CHc
-         bAPhbIwAatcVj7D7M6DSy4H6W/T6+T/bFBEt+dj9IORrq2K9uJClC6EvHSZkyhFRGvTU
-         1miDDSIatRePABfd7FTdHVgqdmZCjUOFqi3UivrGw4ow5WOboyc5tepheHBseubScmVC
-         doTyLXIOWmS22Iy/ZrEPn0xzRCoAefMKHwMTitOqrclEvbz+ZXnnMpZeMX/YfK2uhY59
-         fab7AGeCrQIPHaL21hdGfSZ0pDjwhBpYqB1wBSWG/aRvINLmJzJYsL34PO6twLjbrGXO
-         +Mfg==
+        d=gmail.com; s=20251104; t=1775815937; x=1776420737; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2joo26VZqK/l7L0t7ywj7SByOmdQBrAhyw+E9lx2JP0=;
+        b=gGEwk05u65i7OyrFU09sm3cibL2EYJ3yVES5ZR4aCtwm+o5T5hvE1D/aFwqvuDvoto
+         6x4+Q6rCSxgCNbNIxyyeON19h0981U1gOM7HMkqSpIANW9XKHNFLUgvsz1/mu/65+N6M
+         SyiIjbVLPi2FJyfxp7M5tv5qnLXcQHvCiIFCdrIUcmM1+v+l1QsobnglzCazgoUqIRZ5
+         sPm6/x5vQ/wFZB/ub8OAPxIm9D262LqIplHmSIw2bMLDfAYzx+Eah9zAcRFGh1JU68xi
+         Dpr4GiuPbeSYD+S5S5MKr+OvZN0mdqIl2qC+sAbeBJdf2MAtLx5P/QI05FylJN6Z1xcw
+         AxnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775815721; x=1776420521;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gEmRdRU8ohaMy0h7XL4yvnjYX1agG/OYKNFzIwdN3F4=;
-        b=Dg7rjTldPh4FTatmqDeU9i7ubkC0z7h1JwARMyFtlVkyM4IKkCypjtnNyji4mshT+M
-         Q/Z7ljNQo0ghMQ1HBNCAeBYpbpBQYgeht448JyfLFhWskwixUlAs2uMPX13GCMxQD08c
-         mPSNZlyh0tp9obSoqDXYfcsiGtx/QLbszjxj8ukxgLIVk+9B3ep5Hx2ZWGb2KiBdBQq5
-         /gPeWd/FfqHlXsrYzqUF2jXDrtXBwnAYVaCIp1WYTsZkfZIm8+iPUNqRDkaLqgvtTgpL
-         Vzd0yBA8n5IzbHPJ6czoRfxAkhzq6ne6MK2mDvESutVK+gIw967rc3453Qy1XX7IU+LQ
-         X8Yg==
-X-Forwarded-Encrypted: i=1; AJvYcCWloYOCLGsrr3NTnSNjrPkBHIF2MjS/Aa2Kqx82fBYLJkxP+Z1aYr5sqhG4ggelX8RZZhKM07tR7SI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwSyjjr8P/G+IBjpxZ+HCP0RMbjiUSL63u/nqLDELVESsCtu3tI
-	7sSTIr7X0vjaXaA8dl150cKC/xzLXXLLFPwdrEJ9sttbNHbhYOAwzjEm
-X-Gm-Gg: AeBDiesjSxjmB8iGcbYkkpZwBibL0KegJBupZIGMf27pmUjsX1PlBvzNYr3MXx7VuuN
-	VFiQubotI23K1Rvas5jA+ccTIgbxkwyU70fUsiHGaViTTVT0lO5+7BAWtOmp+Hb4gYoWCj8W+qp
-	aVeIF5huH5MyFB/GAdghLTUGhleK++GdxYK1ZBvS2zD9QSaOwaOIS4UnuMkJnddygnaP0ybAtLS
-	ufphfg/hRKd/raIGW8kfotfm+b/8ruENotwvmHri4KHtLV0XjrkLuLwfKtOcjugh75haalngwxz
-	R6aCAwiPQoCFwe1UWoMX7H4oXE68Ej1HwfcXOQqMaJ64FkKVg2YKEk06HCiLWJE/+S1U39V02jY
-	EOk3NVmA+2RF8d9foiO0M2+8/ZcU2zbpTHaYV0twdFkAxPCPFYyLQiy/lSmLh5TgshxzYESUr2s
-	I4YMYOs7zaxDv6TEhy2XzwHk12VV81g6VWXtBrKGm+0fnba7xiQX/6HsAoL38hf4I7uBnyBYpa5
-	5QueSsw9LTGXf0BfampyKHDg8vGTv0sV70A+E1C25Hl7qmX0Atmdvkb4DGKqCLlj/woyN6fGPwa
-	GijtFxkWsELszdrSiH3Nnym3NIklOBx9MhZBItK1TCxN219lhHvrFM+8PxtB8BYI/34dQiDaV8A
-	3JRzNIMaMcfh1qhWO6gY2tBP2YT4Xhg==
-X-Received: by 2002:a05:6402:2486:b0:66f:9480:c1e6 with SMTP id 4fb4d7f45d1cf-6707b1066d4mr1095629a12.26.1775815721312;
-        Fri, 10 Apr 2026 03:08:41 -0700 (PDT)
-Received: from cs-280612103108-default.europe-west4-a.c.od237066db22328bb-tp.internal (216.153.158.34.bc.googleusercontent.com. [34.158.153.216])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-670703f1340sm433488a12.10.2026.04.10.03.08.41
+        d=1e100.net; s=20251104; t=1775815937; x=1776420737;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2joo26VZqK/l7L0t7ywj7SByOmdQBrAhyw+E9lx2JP0=;
+        b=ku2isFu5ARsjs6xiCbKiW3vhwtGeqPu+gZmp7FlqR6L8C5B8j8v9xK1v50wcf/NfsL
+         rUZZJgqcSWtf8gSkuzw+pHpKKaaeV13nQkvkDGExdAk6K4K/BT7KxvvXmV13cdsRj1PA
+         /I9aVOAye8pS6N5TBhtS9y4UvIrJbrTPkQdoiVa858pxR2Mm4IdJeY/uPM3uw+nrwO4A
+         SBF6qwcgBC6+5NQrcWOp6TmsGsMxVT7p9iCWMh0yOtdxWD3y62X5ADjr2OGhQoQORvnd
+         FbIfnKAg6uXRdHLqOZe204TJ2YThkFgzxVqg4nLxpYQwVBa5yUD21NOqHbC0TP0YJ2eO
+         OFpw==
+X-Forwarded-Encrypted: i=1; AJvYcCVcMhbGdcc31m/RYj9W1fTDIpY9JK9ZncCaXokPWEYoqQ/uPXFUhRZ6/7601odoM2Nj/CDAVq9Pk1k=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/HlI0Ac5yLWD+ppw0uliluZ3Zo/2bzI3lqQNcK3k254Zg5T+W
+	3IgqbKScISpWen9Xm3ugU4NEunBF8bdTCSb+SH777noGqT/zS1ccixyt
+X-Gm-Gg: AeBDietfA0l1rtcgy8XrIU0sPTZuGtDkwviXezhAv1VLPbSaotm4rzKYrYy06bTN2Os
+	UBGUCNpe/PwUi/eSHi7/kWCF2qaDiIvsvCoSHDetY2v0YJRBd6aMIul6fBM3VSas+RY71EptJBT
+	3Bdm5xgTzJv8HjWL6UqJGzSOcTqfC6H3EbZtrCFF51XMMTzIpZ1yWaKuh4pS+FpctU6s/AA1vXA
+	FoUzkjoi+gqKlgt5KOKhnroVjAvCvcBBzkjLx0hb2Id+fmW4g8yjI3D7xxrvZiT/LHpuUCSa2OS
+	LMR34AXwvRXlID/fNsWBo5GhQ9c1N9fE+WzJXx014fWDmOXHAU5QV3myN2rZeGb2AmLAw10kmmV
+	dQjbk/HIlnv1+cjjdspya165aaMZYuuv/curU86l8GypLKmjQ8hxxIoAxTMiN4eoSCSGjKBaoib
+	FEZ8NEHNYYx/KqnctnR9g=
+X-Received: by 2002:a05:600c:a109:b0:488:b239:77ec with SMTP id 5b1f17b1804b1-488d683d510mr22075085e9.17.1775815937325;
+        Fri, 10 Apr 2026 03:12:17 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488d5b3cbb2sm63943005e9.13.2026.04.10.03.12.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2026 03:08:41 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	gregkh@linuxfoundation.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Joshua Crofts <joshua.crofts1@gmail.com>
-Subject: [PATCH 2/2] iio: frequency: ad9832: simplify bitwise math
-Date: Fri, 10 Apr 2026 10:08:32 +0000
-Message-ID: <20260410100832.1388-3-joshua.crofts1@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260410100832.1388-1-joshua.crofts1@gmail.com>
-References: <20260410100832.1388-1-joshua.crofts1@gmail.com>
+        Fri, 10 Apr 2026 03:12:16 -0700 (PDT)
+Date: Fri, 10 Apr 2026 13:12:13 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Dan Carpenter <error27@gmail.com>, linux-arm-msm@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org
+Subject: [PATCH next] iio: adc: qcom-spmi-adc5-gen3: Fix off by one in
+ adc5_gen3_get_fw_channel_data()
+Message-ID: <adjM_ZXs9IoIYjyN@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
 
-Refactor the ad9832_calc_freqreg by adding a BIT_ULL()
-macro instead of manual bit shifting for better
-readability.
+The > in "if (chan > ADC5_MAX_CHANNEL)" should be >= to prevent an out
+of bound read of the adc->data->adc_chans[] array.
 
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Fixes: baff45179e90 ("iio: adc: Add support for QCOM PMIC5 Gen3 ADC")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
 ---
- drivers/staging/iio/frequency/ad9832.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+This email is a free service from the Smatch-CI project [smatch.sf.net].
 
-diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-index 1f6ece79b8..260c2e3a9b 100644
---- a/drivers/staging/iio/frequency/ad9832.c
-+++ b/drivers/staging/iio/frequency/ad9832.c
-@@ -113,8 +113,7 @@ struct ad9832_state {
+ drivers/iio/adc/qcom-spmi-adc5-gen3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+index f8168a14b907..48c793b18d11 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
++++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+@@ -482,7 +482,7 @@ static int adc5_gen3_get_fw_channel_data(struct adc5_chip *adc,
+ 	sid = FIELD_GET(ADC5_GEN3_VIRTUAL_SID_MASK, chan);
+ 	chan = FIELD_GET(ADC5_GEN3_CHANNEL_MASK, chan);
  
- static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
- {
--	unsigned long long freqreg = (u64)fout *
--				     (u64)((u64)1L << AD9832_FREQ_BITS);
-+	unsigned long long freqreg = (u64)fout * BIT_ULL(AD9832_FREQ_BITS);
- 	do_div(freqreg, mclk);
- 	return freqreg;
- }
+-	if (chan > ADC5_MAX_CHANNEL)
++	if (chan >= ADC5_MAX_CHANNEL)
+ 		return dev_err_probe(dev, -EINVAL,
+ 				     "%s invalid channel number %d\n",
+ 				     name, chan);
 -- 
-2.47.3
+2.53.0
 
