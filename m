@@ -1,66 +1,66 @@
 Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 237723DB648
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 16:18:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 997823DA5B1
+	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 16:19:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775837908; cv=none; b=PbzK1/NqVyeIkcA48aajz28yu96cGZAZi/486E93Jr+f9F4F/O7kSbOshiJNT6RndfGdVkiLW7wlXtIYaXWchzB4w0aVBZIv2qnOlmN7q10JvQPWzlDt6phuG7tG0vq0SrK/PxDUzyXN6vPRquAYu6erl6FY8hF8ZiagL46LWYY=
+	t=1775837962; cv=none; b=XQ/VS3NCAZ4OAdEyLJT/uj0OUElDhzSgYD4rFW+F5BQdfwxE6R3Gnw7koVB4rdYeXp1Olq9VINy1ULtSHZu2xGlqeaOng04pfxo7e3Sv99StZP3vF0al7oJIz7LNDnKdenv4lNOICbqqg4M3UN9gknUE5rWLxuZUxDujkVVdnkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775837908; c=relaxed/simple;
-	bh=UWCf9yxUH0KSymAnEJkJ2BEH4P7e3mxEvJRji5s6cPk=;
+	s=arc-20240116; t=1775837962; c=relaxed/simple;
+	bh=jF7QrJPWozjagYtKlcGbAqUjNIO6FBn/dqF4amW6Mmw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=XJQ01YhVORQ4wBVh9DrsvtgdZm+jbKed6D3WBmtRtUiKigoHOTdvi3bYhHmXf/YY0exY4fEBcZk2tkw9GFJxZ+OBYfnDhx8p09w113Q7ZxtykmCC37ymoCO8WOl1JtYKI0zFNdEkxIJlnzA8dTqvrMFW2o//pIlLhT8FRfk50Gg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XV78dHec; arc=none smtp.client-ip=209.85.128.181
+	 In-Reply-To:To:Cc; b=B3jgNjhyQjX5Xj/5xcModir8TFI16kCGGk+Di2ybTUuHdXadyGaJvXh6xcaEHlBZ7EPlP06iLRx6A42jmemc1jVPVf3zmpqex1d7jgMJCThJjawooxH5s2RlHYqe0cLWL4B9NSJ1kKO4O5sz0WVLHptd8DMJBzSXIl8wHKak1VI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jc12SOZf; arc=none smtp.client-ip=209.85.128.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XV78dHec"
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-79a60975dc5so25500027b3.0
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 09:18:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jc12SOZf"
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-7982c3b7dfcso22952727b3.0
+        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 09:19:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775837906; x=1776442706; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1775837960; x=1776442760; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=EaDXs1KL4TBYMnF8Pcyas7BLMGtBZ4AvI2WNsZOhvxk=;
-        b=XV78dHecI4iYrbMpgmBJV9sSATOL8pA+Ldqj1QRbIfKEt3OYaoAagZxxzqbZ0mAaoV
-         a5cZVCUFcfvexeWf9JNWYR+0sPErOzynEjcARcx3JiNY4sAv7bEqlakcI9zODNHn1V3e
-         0wNm5tkwpRraZ2kiZJ81c4cYzM3DgkUiooOd01OBGF+VI8MmzGhCLLBGcFaWPE54LoXY
-         LiperhN7ig9yNNczPDFGmApHaDd9/Sq4u/J+VbR8o2L9Gw81dcOIJzW5mHU0x6Jyul0T
-         8giDBx7mgoNKdWJ2rX98VkB0gl6HVhYI69FaVNpo9X9qtaxQGtMcjzLFNiX/X7aMCVs6
-         UXPw==
+        bh=00/sSIScn/UuAAJmy+1XJn6CWmZCg/mywV0xNQGgwVU=;
+        b=jc12SOZfK+eA2erg5nVouYDIHB3sIKA0LsTr7/f6indrOXNGpbnHrOf9v7gC6Q7laH
+         3n5vHOUTqPZqIi07kzveLYJprHohucCWgKgcFGB/n1HeZB4OBLP5voc7ao58apbq/bx9
+         xbxzBoVytQYu6zHtC8NP5DV6/mPp13RNvcO62C6iP0JSIFVumaiglActA6UlJgOrsroz
+         V8eG2tdz+V65G1Q8z78amA0TBNTC7nPsrCHDSUCwXypBKqw7NTNteDfQq+/nPA2IHhak
+         EoSOllkN67oUVpm0Pn3UxBhcJAK1EUN3h5PxJKwC926oqfqGL1CV0F6oGzYB6KwWU67l
+         36LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775837906; x=1776442706;
+        d=1e100.net; s=20251104; t=1775837960; x=1776442760;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=EaDXs1KL4TBYMnF8Pcyas7BLMGtBZ4AvI2WNsZOhvxk=;
-        b=cvzvtJpsSzTNdNJeJ4XtCZJ/NrnNByQEWMvdtB3uTQ5bN/1mLAVMKy+7aCydu2bukH
-         jaSNGcJwYVePxk7hGrx84Y0WSTRn3xGVW6q1qMniigv5IZchxSS2xU3vREYl7xBszBP8
-         f4icgX5gCQkohe8Kkdpc6ZSmqEoi2mGdoadzR8xY5kX1TWDJKcjUDrP8wQn59P3vVIsM
-         iDcjUOLA/NeBZ1tXMx0j/IOtCrkJztQxR0+V7yL9zezt3oQtQr/WhiUVtA0jo438eGvO
-         WD9/iRc6nKUZzJBGBPV6RPqRxviYzfMFnjbkZQFP1CECc6T+rUpr+jS+cb76mUcDJCPF
-         eyIw==
-X-Gm-Message-State: AOJu0YxpWFdGjfr/iwveONqzWnhXgjvXJPXRL/8zCf3RWKzhgHSPZwVx
-	kDHb2vNH1+UJ0BEshkvZbQxjQ7BT2IbNaCKdLsfuLj3wNM/FBgTo57wk
-X-Gm-Gg: AeBDieuxatlbDIoLxDqf3HFPsbCAg3pezauZzTkeNRjz69dnDHDfRGCU3ZrZFjja10y
-	VRUq298VjdeUYjbX33EeZhnT/Uj/FLGoi0Ga7t3NPHgOmxDzSl3tY8VLC2Z6YgkCRclRjDrRmFL
-	gauTskyf1QV9+4rmH5/6PZ4xYCAbV7MyBLF8vvzLH9sTf3/KvTX/O7+jICN8gF9N5AVyIvL7LHG
-	3B9mS/ezfkTqZpQH3FhSxdmZkAwcFAyT6QgvRWThYfTJ2Je2AkXI0/td3mCEGbscHv5E9sPLqxD
-	JAIkc8A67ki5xRjnH7/WY3ZuyQo1ggDEcuV1ptN/vxuP73ntjjcoay66w11Qgxae0E5MFBmi7ov
-	JShX8u9TKcllnhChZ8247fW93Y3IqCMluR/7DKLF5G7ETROU7vDwcmKWoXoQvetyZFIy0tzRxP7
-	VwqWA5XVoUmD6foF1dHRdZzYX+cQ==
-X-Received: by 2002:a05:690c:e3cd:b0:7a3:20e7:fbd6 with SMTP id 00721157ae682-7af7213ee0bmr41471737b3.45.1775837905872;
-        Fri, 10 Apr 2026 09:18:25 -0700 (PDT)
+        bh=00/sSIScn/UuAAJmy+1XJn6CWmZCg/mywV0xNQGgwVU=;
+        b=jUhnDaiBpxCGPiJREpFhFU6pjzWIoPLmH4cm98D3ixL+m+ot9h6Wz5iKdhIXlkFW2/
+         L9E4L1ZwE4/PyDP/P1t9FZIYlAcg8ZVun1DgUKZnLd1RnFPcRUZXmjMGMSiAQXneMYzW
+         DF/tOtxFaueD0MwocmpA4iZKJq3sKnuFzE2rjJSbzKCldhi9ZUbITzg7FsV81XjJxxMS
+         fQoJ2pKgHv+xtOr6uRuqdHcrwYvwYs60eI9jMVuGmj3KAT9mMlaBqx7To8c6lSpfswVh
+         Vedtj2DLdBJahMg/O1Rl7OvBw5Ba0nLOuDYPBvFD2K7wMhVXjvmAaJ6GX5zghKGl44xU
+         AkgQ==
+X-Gm-Message-State: AOJu0Yz5lkDziPs0IHxq/STg8dP9hVdDFgrVo5izHF6rz8G5+NQnZlJy
+	/LX7R/0kmrfjMBTkB9AocdQvhjl9uPp5kUhyNFpwtj/P7MTuUUiI96pC
+X-Gm-Gg: AeBDiesq/hUYNxpUkbqVidi19GXqRXEiQ8ffkVfsHOGpwYa93oXuUQhHKj5N6lx+KFE
+	FJN/wP5rKPOMTMlHiZ5WtDswOTATJCQrLPJZSBJRcMAeF4XxLnhB9+gD6svPdfdYg2CsgxpCJ3M
+	98ACgTnrbpcQr+5vRqjYVtjiqnr7NYweBhXlmUMC81BeMPAeVylK2RQyWA0/pA20FZf/oQiaLXY
+	NJRJ0/3n999In8hKxuhNDC7dIU7GxDbMaMpwrj3nGMpJbT92qXTKlXaY8ll61WWb59jMC2L4QiT
+	9fR6hwQ3wY3+IgBlG5IM/74qHHF/899MeMEzCiploFwiVMEnF6vRT4f1kCzCWxUHK/r0OZ55R/X
+	46vAsOMsWjwRj/0Bh37ayMtwaNPrN31nLWy6tk3xEepWEZIYNUQUKGj0Uv0Sf2idOz/QSLjC2Er
+	/xO55cJsiIdxcnagSNe3ZF0ZE95w==
+X-Received: by 2002:a05:690c:e04e:b0:799:1d0a:aca8 with SMTP id 00721157ae682-7af6f80be65mr32206387b3.19.1775837960646;
+        Fri, 10 Apr 2026 09:19:20 -0700 (PDT)
 Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7af3fa05b48sm15408337b3.33.2026.04.10.09.17.22
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7af3fa05b48sm15408337b3.33.2026.04.10.09.18.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2026 09:18:25 -0700 (PDT)
+        Fri, 10 Apr 2026 09:19:20 -0700 (PDT)
 From: Erikas Bitovtas <xerikasxx@gmail.com>
-Date: Fri, 10 Apr 2026 19:11:20 +0300
-Subject: [PATCH v3 4/6] iio: light: vcnl4000: move power state function
- into device-managed action
+Date: Fri, 10 Apr 2026 19:11:21 +0300
+Subject: [PATCH v3 5/6] iio: light: vcnl4000: make pm_runtime_enable()
+ device-managed
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260410-vcnl4000-drop-enum-v3-4-2ea2bc6f5dfb@gmail.com>
+Message-Id: <20260410-vcnl4000-drop-enum-v3-5-2ea2bc6f5dfb@gmail.com>
 References: <20260410-vcnl4000-drop-enum-v3-0-2ea2bc6f5dfb@gmail.com>
 In-Reply-To: <20260410-vcnl4000-drop-enum-v3-0-2ea2bc6f5dfb@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -80,89 +80,53 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Erikas Bitovtas <xerikasxx@gmail.com>
 X-Mailer: b4 0.15.1
 
-Move power state setting into a device-managed action to get rid of
-fail_poweroff goto label and remove it from vcnl4000_remove() function.
+Replace pm_runtime_set_active() and pm_runtime_enable() with their
+device-managed counterpart to remove them from vcnl4000_remove().
 
 Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
 ---
- drivers/iio/light/vcnl4000.c | 32 +++++++++++++++++++++-----------
- 1 file changed, 21 insertions(+), 11 deletions(-)
+ drivers/iio/light/vcnl4000.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index bbb84b71f226..1a8672564cc4 100644
+index 1a8672564cc4..b08cb6b33d33 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -1970,6 +1970,18 @@ static int vcnl4010_probe_trigger(struct iio_dev *indio_dev)
- 	return devm_iio_trigger_register(&client->dev, trigger);
- }
+@@ -2055,23 +2055,18 @@ static int vcnl4000_probe(struct i2c_client *client)
+ 			return ret;
+ 	}
  
-+static void vcnl4000_cleanup(void *data)
-+{
-+	struct iio_dev *indio_dev = data;
-+	struct vcnl4000_data *chip = iio_priv(indio_dev);
-+	struct device *dev = &chip->client->dev;
-+	int ret;
-+
-+	ret = chip->chip_spec->set_power_state(chip, false);
+-	ret = pm_runtime_set_active(dev);
+-	if (ret < 0)
++	ret = devm_pm_runtime_set_active_enabled(dev);
 +	if (ret)
-+		dev_warn(dev, "Failed to power down (%pe)", ERR_PTR(ret));
-+}
-+
- static int vcnl4000_probe(struct i2c_client *client)
- {
- 	const char * const regulator_names[] = { "vdd", "vio", "vled" };
-@@ -2004,6 +2016,10 @@ static int vcnl4000_probe(struct i2c_client *client)
- 	if (ret)
  		return ret;
- 
-+	ret = devm_add_action_or_reset(dev, vcnl4000_cleanup, indio_dev);
-+	if (ret)
-+		return ret;
-+
- 	dev_dbg(dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
- 		data->chip_spec->prod, data->rev);
- 
-@@ -2041,19 +2057,20 @@ static int vcnl4000_probe(struct i2c_client *client)
- 
- 	ret = pm_runtime_set_active(dev);
- 	if (ret < 0)
--		goto fail_poweroff;
-+		return ret;
  
  	ret = iio_device_register(indio_dev);
  	if (ret < 0)
--		goto fail_poweroff;
-+		goto fail_register;
+-		goto fail_register;
++		return ret;
  
- 	pm_runtime_enable(dev);
+-	pm_runtime_enable(dev);
  	pm_runtime_set_autosuspend_delay(dev, VCNL4000_SLEEP_DELAY_MS);
  	pm_runtime_use_autosuspend(dev);
  
  	return 0;
--fail_poweroff:
--	data->chip_spec->set_power_state(data, false);
-+
-+fail_register:
-+	pm_runtime_set_suspended(dev);
- 	return ret;
+-
+-fail_register:
+-	pm_runtime_set_suspended(dev);
+-	return ret;
  }
  
-@@ -2073,18 +2090,11 @@ MODULE_DEVICE_TABLE(of, vcnl_4000_of_match);
- static void vcnl4000_remove(struct i2c_client *client)
+ static const struct of_device_id vcnl_4000_of_match[] = {
+@@ -2091,10 +2086,7 @@ static void vcnl4000_remove(struct i2c_client *client)
  {
  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--	struct vcnl4000_data *data = iio_priv(indio_dev);
--	int ret;
  
- 	pm_runtime_dont_use_autosuspend(&client->dev);
- 	pm_runtime_disable(&client->dev);
+-	pm_runtime_dont_use_autosuspend(&client->dev);
+-	pm_runtime_disable(&client->dev);
  	iio_device_unregister(indio_dev);
- 	pm_runtime_set_suspended(&client->dev);
--
--	ret = data->chip_spec->set_power_state(data, false);
--	if (ret)
--		dev_warn(&client->dev, "Failed to power down (%pe)\n",
--			 ERR_PTR(ret));
+-	pm_runtime_set_suspended(&client->dev);
  }
  
  static int vcnl4000_runtime_suspend(struct device *dev)
