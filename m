@@ -1,176 +1,232 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF61A1A304A
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 05:50:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24F2133E368;
+	Fri, 10 Apr 2026 06:49:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775800230; cv=none; b=Tmw5UUqfugJz2wCMZudo+BF0bTOO0GYHSBgVSfKJ5//oa5CMbwD2nNNqr1uYMq6jaVjwRDb1KsSSclMxqjrEHLQgYCgzQ9+LUV4bdd8g+HbfvtrTXCZE1EVCdXacp40E/T1XjDrivEg3veWUEBSsxWjcnlZqujdKa9/XKypHZCQ=
+	t=1775803744; cv=none; b=eLy3vPqnKwEn9Pve8Xt60yRoaMQrf0x3093mAQ6GIi6YdJPBafZH7oMCrIyubxjQU7EKcg9cNdU5VIBaLVVu0+ht3v80s3tdoWlacNTnN9HjiNtnAcdxVooklPivlho0+PwcpMaPdM7QFjDq/TJKzKEUpsrR0aYJkAziumWs+Ow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775800230; c=relaxed/simple;
-	bh=mTPfpgT8nfFyakW5GjPHwbHmREoIRAfnpaQCb2yG0yE=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=f6JMZnOVMadKRfSxJ0KJLq7AqhzNkikf9mzNJY1/p9THcaujU+FEmg2dLV9b8g8oUAgCKVuo8SDyOnYG0wSlcxr0f577GQsV5x/fH3g/ShEq4MexYa8vm3u+Z1G5gEXZr89DWzMERwiMf+9x3RiBGO/CvbhDCpZRwKc6BjK01q4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EeAW9tq8; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1775803744; c=relaxed/simple;
+	bh=Xq85+Mga7BpmjnuwBxpzsGLZr7D1SMBO7+wTLLEk6HU=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=uTUIioBTuecA7ieon6Xn18VsxnYWYDGrdrMOfYu8pjaqulCcTqNOrN8iB5fMxrb8Gv6REVTHvUGqykqj6+DSgT++ZIa6GZcs3snp1ieyi2RDPD8Ff7O91d0h702TpElXA3h2hj6Fl0UiRyKKR0wiedFePfoMNgR7tPF2Z77KdH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=lJaThq1L; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EeAW9tq8"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-488b8bc6bc9so11183485e9.3
-        for <linux-iio@vger.kernel.org>; Thu, 09 Apr 2026 22:50:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775800227; x=1776405027; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=X3JY9f77CKP8Yny85hBL9UJZyyCOm+gzN/aKDYGQMyk=;
-        b=EeAW9tq8Hg9sG8ZVGY9+7T6C8DIZnUdG0KB0+yy+WG9bUzr6e4b5znUtPhdD5yICee
-         wme4xby6/XTLY4ur7Hml/T0ZuTyV2u6uDbT9NXzY7MlEdXqp68jFkwkwCf6YhbU/BRs9
-         P9IGOOqS5zg+hiMY/rgJdM7GT0/F++pvKdR7sYmjH/8MgRtMgAyP0X+37bD1JZrGHU50
-         xqrvpXTXgCiGSZNvy9NBXXHX6ZgEEe/nnrkTsFxAAd2NiOWpShAwuj28nYoJ7sQTXXWS
-         dnB0wTLOrKKonqwoYGQ7UQUM4KiKZR6GfcwKrZhji49NJWQcUA5vFiSERI80mpqst80u
-         bpvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775800227; x=1776405027;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=X3JY9f77CKP8Yny85hBL9UJZyyCOm+gzN/aKDYGQMyk=;
-        b=VclOlTnwzYjqVgrHfu7b8fRRFCembCUOE9SCqk4U7EItAnudWEiei6ZuQY1/OI+4x/
-         /+S783R8knuCSzjE7TqEb6c48SwYGsaI5ifJOqtjYWIIX8luE4HwG3cY2iLHlpfE+tyP
-         J6FHRdsSr0e54G3jNENuY0UXPbwcj+xW9PuNjNPmWhBm+584Y7bYpybm1McKVQAieizv
-         1Hd4rex+t/5R0bV5kt2bA4x6nWatdwJyhDSXt2Vh+MB9NOz1sR9OQ6a7KgwKmTmQ1Xbm
-         HO0fpj+0FtfjtuwQM9DmVni/KeB80Nf7+4bioAaWzuf2m8PdkhsUlHZB+U7ex4zWie41
-         W6rg==
-X-Forwarded-Encrypted: i=1; AJvYcCU75fauYHeuFtfG4Tg0bvtXIpZPB/wKsFHY6lLTyCV+LIagnErMHXxbJf/9XcjmTGKSUJfpccDgEEI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzzA8p74l82gtBgbCCa9XpPGQGMn6eTb3D+hspHYhKC7dH+JamN
-	8Pu7XsMC00yqsEjEVNIsD5D9OiSNv3cm8xzY+9SY9CjClTS6IN8XLRCi
-X-Gm-Gg: AeBDietsp5Iqgqxurbqr1sQ5w/P7PEeAkPQvw7OedfHGN8X5nvOekVvZN3BxcJiyIvH
-	9qMO4KqJkvyrcGVZOt4XXxJHg3YykOcX+QqijUMEa1+aL1Iu6UDHJZYrZvwnQ58sh1kNV0KdT/p
-	WcZ6V6iJThvaUivDtIuBuNmU1//gzsumyge98YRpC6SjSJjbfnVweu+Aqjl0O8zHYTmlBC9AOQY
-	ftDS1N0D+1gvvG/tQDRik/0UyTRCGlTdosz7SKDCYyIFB3wbvBzLnzubqhH9vRLY5x0UH3NXInu
-	jkIPJLYxdu8+QxLIOqDvLPpepUZNYAl+94E/dG5YSljvHdxpr5AbZfX1QgRTGgt8iz64dmOWoyD
-	vimqoQmN9wkOxXSbaxdv2MCmT8ZHTiGrwTJ0G3rwJ/R/MNzU5NWTwR+sjNHToS5qa+wbWQJtNvi
-	6VYT52NtgR01ybatMDfEo=
-X-Received: by 2002:a05:600c:450a:b0:488:a882:b7 with SMTP id 5b1f17b1804b1-488d6ad17e6mr17563295e9.29.1775800226882;
-        Thu, 09 Apr 2026 22:50:26 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488d5d85ae9sm17892895e9.3.2026.04.09.22.50.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Apr 2026 22:50:25 -0700 (PDT)
-Date: Fri, 10 Apr 2026 08:50:22 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Ariana Lazar <ariana.lazar@microchip.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org
-Subject: [bug report] iio: dac: mcp47feb02: Fix Vref validation [1-999] case
-Message-ID: <adiPnla0M5EzvgD-@stanley.mountain>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="lJaThq1L"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63A5Gvml166957;
+	Fri, 10 Apr 2026 02:48:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=jpXuHIiKUEHf6PqYFzbpnWQ4bC6
+	h7XXS6yroJiskFXs=; b=lJaThq1LHIM2svyqjFHBZfEkzfcOvEfJbrC9gbzHdHY
+	nxEslX1NVeXF9zDimeUtDdMiU7uFFWYUXJq2sNVKwIYBfnpWEyM7rU6S1vOYOK+c
+	61x9H6l0EP8SthVRNHhw+q6wnCPeTzmgXwH7UFlsvIB1PCA0a9Io0IAFyAipvYED
+	ZpWOTCrV9VPftMjj4aAdn5ANGv5GuYB4qVrTn769qiz5VcNW9a+WtxcuL9BlyvF/
+	exo+DPaQyH6n7QVz2ZgKpsr9ZuyFJIk4EiPklTKILZQfN50sYVXfeNS2j97b1iA1
+	tg5+EWcOjBv/y9vQNxPluXL1/VDj1A0Mr9wYu/vdIOA==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4de9a6ky9u-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Apr 2026 02:48:46 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 63A6mjsa034825
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 10 Apr 2026 02:48:45 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 10 Apr
+ 2026 02:48:44 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 10 Apr 2026 02:48:44 -0400
+Received: from ATORRENO-L02.ad.analog.com ([10.66.6.192])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 63A6mMJ6020190;
+	Fri, 10 Apr 2026 02:48:25 -0400
+From: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+Subject: [PATCH v7 0/2] Add support for AD5706R DAC
+Date: Fri, 10 Apr 2026 14:48:15 +0800
+Message-ID: <20260410-dev_ad5706r-v7-0-af93a4caa186@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAC+d2GkC/23QTWrEMAwF4KsMXtfF8p+cWfUepRQ7smcMbVKcY
+ lqG3L1ONpNMunyC7wnpxqZYcpzY+XRjJdY85XFoAZ9OrL/64RJ5ppaZFNIKKQWnWN89GRS2cAn
+ CRCCSnQ+sia8SU/5Z217fWr7m6Xssv2t5hWX6f08FLjhKo0Ig1M51L37wH+PluR8/2VJU5R0rg
+ D2WDSdlW1AUCMIBqy12e6waNiTQJQ2xc+6A9R1r8bBZN+zRGXDaOzLqgM0W4x6bBeseUWGwPh5
+ vthsMDw+z682JvOkkpKh3eJ7nP7VCnRDYAQAA
+X-Change-ID: 20260220-dev_ad5706r-2105e1dd29ab
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        =?utf-8?q?Nuno_S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Alexis Czezar Torreno
+	<alexisczezar.torreno@analog.com>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski@oss.qualcomm.com>,
+        Andy Shevchenko
+	<andriy.shevchenko@intel.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1775803702; l=4698;
+ i=alexisczezar.torreno@analog.com; s=20250213; h=from:subject:message-id;
+ bh=Xq85+Mga7BpmjnuwBxpzsGLZr7D1SMBO7+wTLLEk6HU=;
+ b=i2930KFYFBVV7rNFRw5Y/F0lcVQtvvycX+mVFJXZFFtNAhfYdcx2UigojHDbIaOYU5PV4AJL7
+ vucAJEsja1YB58BE8Hpd6xWVji+lCRB4BvuU2IaAKf8REeR/dqr25Ui
+X-Developer-Key: i=alexisczezar.torreno@analog.com; a=ed25519;
+ pk=XpXmJnRjnsKdDil6YpOlj9+44S+XYXVFnxvkbmaZ+10=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDEwMDA2MSBTYWx0ZWRfX6Nz1WXa+tNn+
+ vjuFsRVbu0JlBggXBsBPiWJ6hUMAskhz18w06WffCnAOr0wOfc1N1zjXm4rfkOQ9dIEGoCWMlEM
+ BRN/AhpnoNuvePFk0sfPZm9Q0rpBzDfogB4ho3gB1EMihhvo4Tan96MJfE24wDJaDT/b72bXzj0
+ OsY+uK5HKe/KmFx8Ls/oLRzIRz3EgK0gigqDK2k3G/CM983roBOz2rLBDwjTm8qsHvp4LA1tfn+
+ i0SbByfO3ERqhAw8jcR9JJfChxTCAJKvhbT0rFMrs0w9T55/x9CEjSYcEsBGWhL4BmDB8R8w0AJ
+ a+VM7N4Nd5gUfBJnREP7KNnXYSUdKfBf2hsDbAdyuEWXgQVssLw+z0rkjeBIGB6i+FhSzDATI2V
+ Im9D/g2GkO2gAeepqpQAHDIAxNumQ0luUWakSNkAdW7J6yS049Jo0oQ5dNPiBJkeXysfyOaoSqW
+ X4H7L8+skQx8c7jo8mA==
+X-Proofpoint-GUID: 5CjUbGoATzkOW1w7pkf8eW6722EsgE6o
+X-Authority-Analysis: v=2.4 cv=M9F97Sws c=1 sm=1 tr=0 ts=69d89d4e cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8
+ a=VwQbUJbxAAAA:8 a=mW3XGZRhfHrgJpV7rlMA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: 5CjUbGoATzkOW1w7pkf8eW6722EsgE6o
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-10_02,2026-04-09_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 priorityscore=1501 malwarescore=0 lowpriorityscore=0 adultscore=0
+ spamscore=0 clxscore=1015 impostorscore=0 phishscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604010000 definitions=main-2604100061
 
-Hello Ariana Lazar,
+This series adds support for the Analog Devices AD5706R, a 4-channel
+16-bit current output digital-to-analog converter with SPI interface.
 
-Commit dd154646d292 ("iio: dac: mcp47feb02: Fix Vref validation
-[1-999] case") from Mar 10, 2026 (linux-next), leads to the following
-Smatch static checker warning:
+The AD5706R features:
+  - 4 independent current output DAC channels
+  - Configurable output ranges (50mA, 150mA, 200mA, 300mA)
+  - Hardware and software LDAC trigger with configurable edge selection
+  - Toggle and dither modes per channel
+  - Internal or external voltage reference selection
+  - PWM-controlled LDAC
+  - Dynamic change SPI speed
 
-	drivers/iio/dac/mcp47feb02.c:1165 mcp47feb02_probe()
-	error: uninitialized symbol 'vref1_uV'.
+The driver exposes standard IIO raw/scale/offset channel attributes for
+DAC output control, sampling frequency for PWM-based LDAC timing, and
+extended attributes for device configuration including output range
+selection, trigger mode, and multiplexer output.
 
-drivers/iio/dac/mcp47feb02.c
-    1094 static int mcp47feb02_probe(struct i2c_client *client)
-    1095 {
-    1096         const struct mcp47feb02_features *chip_features;
-    1097         struct device *dev = &client->dev;
-    1098         struct mcp47feb02_data *data;
-    1099         struct iio_dev *indio_dev;
-    1100         int vref1_uV, vref_uV, vdd_uV, ret;
-    1101 
-    1102         indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-    1103         if (!indio_dev)
-    1104                 return -ENOMEM;
-    1105 
-    1106         data = iio_priv(indio_dev);
-    1107         chip_features = i2c_get_match_data(client);
-    1108         if (!chip_features)
-    1109                 return -EINVAL;
-    1110 
-    1111         data->chip_features = chip_features;
-    1112 
-    1113         if (chip_features->have_eeprom) {
-    1114                 data->regmap = devm_regmap_init_i2c(client, &mcp47feb02_regmap_config);
-    1115                 indio_dev->info = &mcp47feb02_info;
-    1116         } else {
-    1117                 data->regmap = devm_regmap_init_i2c(client, &mcp47fvb02_regmap_config);
-    1118                 indio_dev->info = &mcp47fvb02_info;
-    1119         }
-    1120         if (IS_ERR(data->regmap))
-    1121                 return dev_err_probe(dev, PTR_ERR(data->regmap), "Error initializing i2c regmap\n");
-    1122 
-    1123         indio_dev->name = chip_features->name;
-    1124 
-    1125         ret = mcp47feb02_parse_fw(indio_dev, chip_features);
-    1126         if (ret)
-    1127                 return dev_err_probe(dev, ret, "Error parsing firmware data\n");
-    1128 
-    1129         ret = devm_mutex_init(dev, &data->lock);
-    1130         if (ret)
-    1131                 return ret;
-    1132 
-    1133         ret = devm_regulator_get_enable_read_voltage(dev, "vdd");
-    1134         if (ret < 0)
-    1135                 return ret;
-    1136 
-    1137         vdd_uV = ret;
-    1138 
-    1139         ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-    1140         if (ret > 0) {
-    1141                 vref_uV = ret;
-    1142                 data->use_vref = true;
-    1143         } else {
-    1144                 vref_uV = 0;
-    1145                 dev_dbg(dev, "using internal band gap as voltage reference.\n");
-    1146                 dev_dbg(dev, "Vref is unavailable.\n");
-    1147         }
-    1148 
-    1149         if (chip_features->have_ext_vref1) {
-    1150                 ret = devm_regulator_get_enable_read_voltage(dev, "vref1");
-    1151                 if (ret > 0) {
-    1152                         vref1_uV = ret;
-    1153                         data->use_vref1 = true;
-    1154                 } else {
-    1155                         vref1_uV = 0;
-    1156                         dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
-    1157                         dev_dbg(dev, "Vref1 is unavailable.\n");
-    1158                 }
-    1159         }
+This driver is developed and tested on the Cora Z7S platform using
+the AXI SPI Engine and AXI CLKGEN IP cores. The 'clocks' property
+enables dynamic SPI clock rate management via the CLKGEN.
 
-vref1_uV is uninitialized if ->have_ext_vref1 is false.
+Datasheet: https://www.analog.com/en/products/ad5706r.html
 
-    1160 
-    1161         ret = mcp47feb02_init_ctrl_regs(data);
-    1162         if (ret)
-    1163                 return dev_err_probe(dev, ret, "Error initialising vref register\n");
-    1164 
---> 1165         ret = mcp47feb02_init_ch_scales(data, vdd_uV, vref_uV, vref1_uV);
+Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+---
+Changes in v7:
+- driver:
+  - Moved/added size validation before data access in write()/read()
+- Link to v6: https://lore.kernel.org/r/20260410-dev_ad5706r-v6-0-f3fda5921fe4@analog.com
 
-Passing uninitialized variables is not allowed even if the variable
-is not used.  (Unless the function is inlined and then it's not really
-"passing" anything is it?)
+Changes in v6:
+- driver:
+  - Added size validation in regmap_write()
+  - Used &st->tx_buf[0] consistently in _be32/be16 calls
+  - Added missing indent in AD5706R_CHAN
+- Link to v5: https://lore.kernel.org/r/20260407-dev_ad5706r-v5-0-a4c7737b6ae9@analog.com
 
-    1166         if (ret)
-    1167                 return ret;
-    1168 
-    1169         return devm_iio_device_register(dev, indio_dev);
-    1170 }
+Changes in v5:
+- dt-bindings:
+  - Changed out-en-gpios to enable-gpios
+- driver:
+  - Kconfig: Added select REGMAP_SPI
+  - Headers: Removed device.h, errno.h, string.h; added dev_printk.h
+  - Use IIO_DMA_MINALIGN instead of ARCH_DMA_MINALIGN
+  - Replaced memcpy/memset with put_unaligned_be* for consistency
+  - Added struct device *dev shorthand in probe()
+  - other minor style edits
+- Link to v4: https://lore.kernel.org/r/20260401-dev_ad5706r-v4-0-a785184a8d53@analog.com
 
-This email is a free service from the Smatch-CI project [smatch.sf.net].
+Changes in v4:
+- dt-bindings:
+  - Reverted pwm and gpio entries.
+  - Added missing power supply properties
+  - Clocks not added back as they were driver specific, not device
+    properties
+- driver:
+  - Added missing includes
+  - Converted to use regmap with custom SPI bus implementation.
+    spi_write_then_read not applied as suggested, prevents future
+    need to change SPI speed
+  - removed driver speciifc mutex/guards in favor of regmap internal
+    locking
+  - Minor style cleanups
+- Link to v3: https://lore.kernel.org/r/20260318-dev_ad5706r-v3-0-5d078f41e988@analog.com
 
-regards,
-dan carpenter
+Changes in v3:
+- Added MAINTAINERS entry, files added on each patch
+- dt-bindings:
+  - Added allOf and ref to spi-peripheral-props.yaml
+  - Changed additionalProperties to unevaluatedProperties
+  - Added avdd-supply property and added it to required
+- driver:
+  - Removed redundant includes, added respective includes of APIs used
+  - Simplified bit manipulation in SPI read/write, used feedback from v2
+  - Fixed inconsistent trailing commas in device ID tables
+  - Removed zero initialization in spi_device_id
+- Link to v2: https://lore.kernel.org/r/20260311-dev_ad5706r-v2-0-f367063dbd1b@analog.com
+
+Changes in v2:
+- Stripped driver down to basic DAC functionality (read/write raw,
+  read-only scale) as suggested.
+- Removed PWM (LDAC), GPIO (reset/shutdown), clock generator,
+  SPI engine frequency switching, debugfs streaming, and all
+  custom ext_info sysfs attributes
+- Removed regmap, IIO_BUFFER, and iio/sysfs.h dependencies
+- Simplified SPI read/write to use standard spi_sync_transfer
+  without clock mode logic
+- Scale reports default 50mA range as read-only using
+  IIO_VAL_FRACTIONAL_LOG2; writable range selection deferred
+  to future follow-up series
+- Simplified DT binding to only require compatible, reg, and
+  spi-max-frequency
+- Link to v1: https://lore.kernel.org/r/20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com
+
+---
+Alexis Czezar Torreno (2):
+      dt-bindings: iio: dac: Add ADI AD5706R
+      iio: dac: ad5706r: Add support for AD5706R DAC
+
+ .../devicetree/bindings/iio/dac/adi,ad5706r.yaml   | 105 +++++++++
+ MAINTAINERS                                        |   8 +
+ drivers/iio/dac/Kconfig                            |  11 +
+ drivers/iio/dac/Makefile                           |   1 +
+ drivers/iio/dac/ad5706r.c                          | 253 +++++++++++++++++++++
+ 5 files changed, 378 insertions(+)
+---
+base-commit: 3674f3ca92730d9a07b42b311f1337d83c4d5605
+change-id: 20260220-dev_ad5706r-2105e1dd29ab
+
+Best regards,
+-- 
+Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+
