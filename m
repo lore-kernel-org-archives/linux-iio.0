@@ -1,65 +1,66 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C644135DD1C
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 16:13:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A29E8288C2D
+	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 16:15:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775837582; cv=none; b=AjA83YhNfeRj6tI50bJT2QowJU9SCxy7AsZAjx2dIz6kjwjVRjnBou1d40MwlhWJmHeywzN5HCFbytrIxdttMIcddFG74Sh8hyZXlJMmVo5VOdfpWs+OGczHiLEpNBR8nPNzcif8jVBZemPfd/9scNQzXudmos2B1q0yC3anO3w=
+	t=1775837720; cv=none; b=ZqzzZe0ELOVL24Sm8TzdEjk/KSmd4gBSTHbT4OOb/eRmfOlnDQ1/UWEg8BxaueIJVN7viQEZFMy2sxmI4RwJ08/0uu4eQ9swLwH6RiEEdMhXfae3cOYzY/NA+b0Xdavbka1fElmx/rztZCZ8x+bkBEVs2nTOtAbeQW92F2vQsL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775837582; c=relaxed/simple;
-	bh=iHOrEOPukBDw2OMmEmWqNyYObEXpDlsGXACdw/giA24=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=M9TPS6AWBPeU5+pvlo9EEslyLAWvJX3Q0ORRgWnT7+zkjZM57t05vabzeA9NAc0UUMLFowMgIvyrx9byhHA1UUMA70AiNOkRYCnP+vCamsrmdGluZc16QxWcFwdXSzBhVXSoNPXeyoVaB3O4ZqW9hhgyN3F4otGcThlhpkDXlh4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HnX/jd5q; arc=none smtp.client-ip=209.85.128.180
+	s=arc-20240116; t=1775837720; c=relaxed/simple;
+	bh=v2rZtfsGEcqvkNleqRX3XjmSo2Lct8wNsREjYiEreN4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=FaDdBzl4VfQYg5ZItabwkKUrSGNqazmk9rc6Pg9xYN4vUB8PjNffLlD8mCW4ONeYrRiXfJyLPnP9y8/WXOyUPaUcSQkyf/+3S10o/S0irHhB3R1YzTXpYb4J69KU469m3htse6Je0rmeAoeDLmAzL4xcgH9ekeqGWY81O7WKQTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lhzgmgzY; arc=none smtp.client-ip=74.125.224.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HnX/jd5q"
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-7927261a3acso22464807b3.0
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 09:13:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lhzgmgzY"
+Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-6507a833e68so2337948d50.1
+        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 09:15:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775837580; x=1776442380; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GdpRnrT8EdM9Ad4fwPo90RwHr69ZTTQZqjwzgeAcqUM=;
-        b=HnX/jd5qqbRu+qJG5J8XSsDaZcLjiidBjJKNd5MWtivVi7ImRpltPxbAH1N/WTekRK
-         Qe1qoL9TSYDu2pOFOsB0w7ZA2QSOU3LY/m51BglQXEIIR5MU0Hn/0P7d1NS1oQikTcXc
-         VGu6ifY5Lzo0A8UNWuojsgPqmWszXBoL8dTxbIFgGzofF5ZANzaOKEVr0jUH5UtJsEk6
-         xf/HNOlGfjCgi5n4z4qJ8hYhGL7GQh+LWLArJilRuKsCn0Th0yg5adX7HdfS0uF1ipyx
-         0C8E1tLYthFx95K2c6zkcoz7Tao6p3yQOhwUb8y/chjGzz69rfIeFhSAtO2dqiFbRvsG
-         GEpQ==
+        d=gmail.com; s=20251104; t=1775837718; x=1776442518; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AdS8fPV/eM7tvbU7iuT8bTWahQQCYtva+pfa9FZ/WIw=;
+        b=lhzgmgzY/A9HvmJaGznZK/ej1FVUiAgO5bQA6uhJCSD9943x3pKKhRakg/66gHIRaL
+         4AUa2NEDyTOXSU7gcUp5etiIUfLFwnSoBSX4ZYIzQrOVNOoNYlplIxbNelxDsOpVILTX
+         Ad1YZqkaFno7905TYVjP4uiGFMfEVVpoR6P5ljO5174N0xJrQaAyl3P/n3gRVAmRWGwq
+         1JHlp1HCDEY88VLlaPRJ5jj6VehjfOy1MmoUnh1VjQMRPh7qYc3uNQMlrtmNN7blGsUq
+         bNq7DGo9OxSQGHqsxR2/RYOApAd930TKrM5Dtg01LG28lheztpv+0+nc5msx3cG0ROmv
+         fEMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775837580; x=1776442380;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GdpRnrT8EdM9Ad4fwPo90RwHr69ZTTQZqjwzgeAcqUM=;
-        b=Hh4J+CEXkllkxbJNCDNQ7C/kieAskJ0o4tfOTcJqILIENhn0Hc7BKeuFHeV2gFn2Aw
-         s2DklCnq9K4jdEOpZyAhyQpLk/BofJWZHSGhV5a5dLj1DBarshe9ydBTSJaeZ5vMSeJd
-         VsnB4ewVgzAwsSEko3BSX9WqvRw5WdxLzLWmJeU+5oMKbj6mqGw4sEUWr9uiIabVPbHT
-         2Vs1JjqrJRM+faapy8abkAxTGh2jCB9iL0EBnTJgyaKS69p2Yx3xANLQDOdDdlksMY4w
-         k+zuPKhM1fthLBfWxFVZPxsQCboCCA/wBCbAUQ5Fo6qo8CnkfZFrCu70C734j8iMTMRc
-         lg8A==
-X-Gm-Message-State: AOJu0YzW9HgzCY/ay2kG6E5/1cjQTlkNGV1wBJaAr7ctuEZM3A3axxrG
-	QZfodhoe1GYyLzDnJCDDbQVqOEMhu4XnQubNcqPrQenkYXBMexkmDODR
-X-Gm-Gg: AeBDiev/lewN0691rBp57sLUQsu6X5gk9yg1EQvDPUJBgLgy7WF99xQuVGy7IB2uLrV
-	xffmj2Trl7lovSE5rgeL3CuVMuZFcPYaNGxp+mJTdmMaaH1E1tupQVNaOd947wlLaKyJmUnxGBV
-	LWnePCwxzUcEh769bki6kywtk6vgKbFMU6iaZgVefkoRz98B+VRzLIirMmiYO5BUg9jDCWmlXjY
-	8vsUukN2IqGWlB2IcGM7drdkIAclx57/87YzIxeoTxf37D2acCPYH3fk/UtnMTvIrfVaf4xq7wd
-	Gvvr5ZlYkcMWsBV9qRfP+WjiiNW9zq/DVZrj2tlR8TTvh9Et7OtRrsUfHGhfRIak7aMv+ruZUpK
-	wu2pNqjMruC1mW7apgZlYH0Dj7LQX4O1cuBVn7mTp/wUGxfZAQP188qbro512MeHEZk3Jx+0y0o
-	4VA4Jn0it00XvVPKXrMWlsBe7jug==
-X-Received: by 2002:a05:690c:9d:b0:79b:cced:2349 with SMTP id 00721157ae682-7af71a57a49mr42863057b3.37.1775837579765;
-        Fri, 10 Apr 2026 09:12:59 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1775837718; x=1776442518;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=AdS8fPV/eM7tvbU7iuT8bTWahQQCYtva+pfa9FZ/WIw=;
+        b=C1/Xc3AddyNE5ZkjP5aQ6DNqlIoRo3Ad7NkHRjJHgDz20Xwjah9M/IF9NuNeQNx8me
+         9d0kPdOdKUkGXJnlirVdLGXM1chGb6rjA+uFPHSVaJgd1GBPo2Rxw9SHaqboHCvqexf9
+         TwbQmPDSComFE1sCIKEGctyW0ii1iEoCxJ9D6zKWhFx07K1AadAiIkpOUGFrq3miRl5a
+         wRwFOpq1/Gc6KCxCCxepSuqkQheeTsJeRxSt6MrDXBqzEJj3VFa3FJyfam/dTQfO5T/8
+         ogiG/5DsDk0qCvrFs8U/LZxbJgTdHUgA9609K1KqTqfZELycyXUK0ogXU1A9J3ve/SMQ
+         wdHA==
+X-Gm-Message-State: AOJu0Yy0GWwkE+9VTnzfULbJ8a1TOsJ8vjXEqkqbmvDoe+TPcGzK/QFZ
+	0mAQUpkWSq+PZg8XG75ysnvOuXRl6EHL3577HcqbKr6iUX+EZ7d2Wfn4
+X-Gm-Gg: AeBDieu3Zt5Tufv8pqLdWVmHNBcrgC4OwuCGx1ehiJn5koYlWj5eB9GnIVFKBj0Jbz7
+	Hg/8TiDiyjDO8RhpvyEphHpkNctNB3ZydnyG+IdEL3vDIa+/D5mW8u/k8aUdxi8+/tB6pBQdiFF
+	fy93LiriTDhatXMNohRPl8bUYSssAYUBYKv0SEm7y9VwyGsvZpH7GgLugZfQhzkPwyYD4uHcO9V
+	uVYnaSbc34jRi+hc2XgX4DRVFNam8S5qJQPTYP8T3mLmSxJ1REp5Mhqo5pyl8f8TUPPCqe4QXRV
+	xC5lG/fppHWe1ZShvPKd87k+yqfScrWYeo9VY+qcmQCoUP9RUUd6F8TJdEfgimxscYTIFdy148Z
+	agpccMuTLBjaFygsLC3p32RP+Ym5C+69aa22t7SEFio7ji3AjTvbcaDan/GXx7bpgFC81sYGzzm
+	5taa1GZWoJuWZpRR3AFwcl1qcQibQslBWKpECh
+X-Received: by 2002:a05:690c:6b01:b0:79d:67bd:53f9 with SMTP id 00721157ae682-7af6ec4c6e4mr40745757b3.4.1775837718433;
+        Fri, 10 Apr 2026 09:15:18 -0700 (PDT)
 Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7af3fa05b48sm15408337b3.33.2026.04.10.09.12.00
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7af3fa05b48sm15408337b3.33.2026.04.10.09.13.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2026 09:12:59 -0700 (PDT)
+        Fri, 10 Apr 2026 09:15:17 -0700 (PDT)
 From: Erikas Bitovtas <xerikasxx@gmail.com>
-Subject: [PATCH v3 0/6] iio: light: vcnl4000: drop enum ID table and use
- device-managed register
-Date: Fri, 10 Apr 2026 19:11:16 +0300
-Message-Id: <20260410-vcnl4000-drop-enum-v3-0-2ea2bc6f5dfb@gmail.com>
+Date: Fri, 10 Apr 2026 19:11:17 +0300
+Subject: [PATCH v3 1/6] iio: light: vcnl4000: validate device by prod ID
+ instead of table ID
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,11 +69,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/33NTQ6CMBCG4auQrq2Z/gjFlfcwLsi0hSbQklYbD
- eHuFlYsjMv3S+aZhSQTnUnkWi0kmuySC76EOFUEh873hjpdmnDgNUhgNKMfJQBQHcNMjX9NFLh
- QUDOL1ipSDudorHvv6P1RenDpGeJn/5HZtv7lMqNArdUcmAVUUt36qXPjGcNENi7zI3H5SfBCN
- Kg0tgpF28gjsa7rF5d+W0z3AAAA
-X-Change-ID: 20260401-vcnl4000-drop-enum-0238061fcff8
+Message-Id: <20260410-vcnl4000-drop-enum-v3-1-2ea2bc6f5dfb@gmail.com>
+References: <20260410-vcnl4000-drop-enum-v3-0-2ea2bc6f5dfb@gmail.com>
+In-Reply-To: <20260410-vcnl4000-drop-enum-v3-0-2ea2bc6f5dfb@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -82,54 +81,85 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.15.1
 
-This patch series drops the enum ID table for device enumeration and
-instead adds pointers to chip ID structs directly. Necessary
-information about the device is then taken from i2c_get_match_data()
-call. This removes the association between enum ID table and struct
-table and allows for easier addition and removal of new devices.
+Add a new field for vcnl4000_chip_spec and check if we have the right
+device by that instead of the index from enum table. This leaves the
+enum table being used only for picking the right vcnl4000_chip_spec,
+allowing us to drop it later on.
 
-Along with that, an iio_device_register() call is replaced with its
-device-managed counterpart, to ensure that device is unregistered
-automatically.
-
-No functional changes are intended.
-
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
 ---
-Changes in v3:
-- Reordered the commit for moving device tree entries into one line
-  after the commit dropping enum table.
-- After a failed iio_device_register(), added
-  pm_runtime_set_suspended().
-- Reordered device-managed IIO device register to come before setting
-  autosuspend, as it was before this patch series.
-- Link to v2: https://patch.msgid.link/20260405-vcnl4000-drop-enum-v2-0-7c8dc98c3974@gmail.com
+ drivers/iio/light/vcnl4000.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Changes in v2:
-- Moved device tree table entries into one line.
-- Moved power state function in probe into a device-managed action.
-- Replaced call to pm_runtime_set_active() and pm_runtime_enable() with
-  its device-managed counterpart.
-- Removed vcnl4000_remove function(), as all the clean up is done by
-  device-managed functions.
-- Link to v1: https://lore.kernel.org/r/20260401-vcnl4000-drop-enum-v1-0-ffd201f0c848@gmail.com
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 9650dbc41f2b..72d68d54864e 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -234,6 +234,7 @@ struct vcnl4000_chip_spec {
+ 	const int(*als_it_times)[][2];
+ 	const int num_als_it_times;
+ 	const unsigned int ulux_step;
++	const int prod_id;
+ };
+ 
+ static const struct i2c_device_id vcnl4000_id[] = {
+@@ -265,12 +266,12 @@ static int vcnl4000_init(struct vcnl4000_data *data)
+ 	prod_id = ret >> 4;
+ 	switch (prod_id) {
+ 	case VCNL4000_PROD_ID:
+-		if (data->id != VCNL4000)
++		if (data->chip_spec->prod_id != VCNL4000_PROD_ID)
+ 			dev_warn(&data->client->dev,
+ 					"wrong device id, use vcnl4000");
+ 		break;
+ 	case VCNL4010_PROD_ID:
+-		if (data->id != VCNL4010)
++		if (data->chip_spec->prod_id != VCNL4010_PROD_ID)
+ 			dev_warn(&data->client->dev,
+ 					"wrong device id, use vcnl4010/4020");
+ 		break;
+@@ -1901,6 +1902,7 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.int_reg = VCNL4040_INT_FLAGS,
+ 		.ps_it_times = &vcnl4040_ps_it_times,
+ 		.num_ps_it_times = ARRAY_SIZE(vcnl4040_ps_it_times),
++		.prod_id = VCNL4040_PROD_ID,
+ 	},
+ 	[VCNL4000] = {
+ 		.prod = "VCNL4000",
+@@ -1911,6 +1913,7 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.channels = vcnl4000_channels,
+ 		.num_channels = ARRAY_SIZE(vcnl4000_channels),
+ 		.info = &vcnl4000_info,
++		.prod_id = VCNL4000_PROD_ID,
+ 	},
+ 	[VCNL4010] = {
+ 		.prod = "VCNL4010/4020",
+@@ -1924,6 +1927,7 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.irq_thread = vcnl4010_irq_thread,
+ 		.trig_buffer_func = vcnl4010_trigger_handler,
+ 		.buffer_setup_ops = &vcnl4010_buffer_ops,
++		.prod_id = VCNL4010_PROD_ID,
+ 	},
+ 	[VCNL4040] = {
+ 		.prod = "VCNL4040",
+@@ -1941,6 +1945,7 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.als_it_times = &vcnl4040_als_it_times,
+ 		.num_als_it_times = ARRAY_SIZE(vcnl4040_als_it_times),
+ 		.ulux_step = 100000,
++		.prod_id = VCNL4040_PROD_ID,
+ 	},
+ 	[VCNL4200] = {
+ 		.prod = "VCNL4200",
+@@ -1958,6 +1963,7 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.als_it_times = &vcnl4200_als_it_times,
+ 		.num_als_it_times = ARRAY_SIZE(vcnl4200_als_it_times),
+ 		.ulux_step = 24000,
++		.prod_id = VCNL4200_PROD_ID,
+ 	},
+ };
+ 
 
----
-Erikas Bitovtas (6):
-      iio: light: vcnl4000: validate device by prod ID instead of table ID
-      iio: light: vcnl4000: drop enum id table in favor of chip structs
-      iio: light: vcnl4000: move device tree entries into one line
-      iio: light: vcnl4000: move power state function into device-managed action
-      iio: light: vcnl4000: make pm_runtime_enable() device-managed
-      iio: light: vcnl4000: register an IIO device with a device-managed function
-
- drivers/iio/light/vcnl4000.c | 276 +++++++++++++++++++------------------------
- 1 file changed, 123 insertions(+), 153 deletions(-)
----
-base-commit: 64450c940b89dd8fdc74178fba2f31718afd8c71
-change-id: 20260401-vcnl4000-drop-enum-0238061fcff8
-
-Best regards,
---  
-Erikas Bitovtas <xerikasxx@gmail.com>
+-- 
+2.53.0
 
