@@ -1,67 +1,68 @@
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF42345738
-	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 19:12:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF7633FE09
+	for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 19:26:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775848336; cv=none; b=l3CE7ZJXCzJwywIUOsErqDkVZEUApXT6zqIvkGgofsmlQANiZf4CtMizibno20mZPE880Jrml/FUooFyTwIMZv+Rz9UEpkKqMCBBKjPEf5/b+nWQczftymhVUaqqbCamm725nb5KnEGm00xDQHZ9hZbVsm++8GaUJ7TAPXPWvj0=
+	t=1775849167; cv=none; b=Ta433Lpbazd5DUHM5g5CEUbuEknHs1kIuFRPyCMji9UQ241NX3HHvbA5zX0+LG6CmjCi6b2a0moNMk5h95vnf1yDuW0JcCeQ89ON8YSnU5TVBMR3B/e9ZOZqdmbzVXc6IZ3uds8q6PC7eA1xmPChLMZLKDC2I7rZtwE8+9X6KGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775848336; c=relaxed/simple;
-	bh=xS5yxi31tQpIlRofqULfInSdfXxuzoD45QSLJ04eDEE=;
+	s=arc-20240116; t=1775849167; c=relaxed/simple;
+	bh=s6wEwwesVR26iVgn/tsSt+twoNPoH8F2NzpaStGjxl0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=M5/HFXrvBv0+7MJY3bVHxFYGOYKb5l/HpzlQIfXFGLQL+0nM5S6VWUOx/F01Jmw2nAg9NWEBR/l9BRsz8BRpE/QmnpcH9GqtLDJ/EYJmHAR8hscjuGOsiiqwZGYaijx7nCPBKf73K92K3SyzK/exKsxmsvhFeW02Z3oYmGaNhGo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=xktwtcaZ; arc=none smtp.client-ip=209.85.167.173
+	 In-Reply-To:Content-Type; b=j2P3dyihflAQ32tJW+WHwLyFSYXcg3qWauolwjvOTqhBD4RUhUbiof/J9arZ8OSrkuWr2LEPvH3mlbR9XfGJg2AZ9m+e8RM+MoOd9OQ1CYoHqdXdA4Eq7bDM+sJ5S/ISKQL0x6EhOfBgB+/r53zSG2zKoxAQE3ZHp5j1GTKrcK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=btaVtpvR; arc=none smtp.client-ip=209.85.210.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="xktwtcaZ"
-Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-471618e20a5so1278676b6e.1
-        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 12:12:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="btaVtpvR"
+Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-7d9b21d1461so2288998a34.1
+        for <linux-iio@vger.kernel.org>; Fri, 10 Apr 2026 12:26:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775848332; x=1776453132; darn=vger.kernel.org;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775849165; x=1776453965; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=zLsRMFsMCnWy/dE1MVi6bp8gCipvA2+DQtfeIR8z2qA=;
-        b=xktwtcaZ1lM2v+fOqPkOcDHe900D7TX5gJc+6Sa+fKoBwA/TK4T9riBoB+gXPHzthh
-         jMtt+jx0IqKuJz/NzUuwRPuEhEXy84UX40UvMQm1+yXGwRLDw7OhNJL4MR8YKZGiZ9wE
-         oQW4xNGnKrm767VEDZQejHmAJWCCYlK733hKX5J9tArM1L1JpzPGeEk7Mz4/C4EUr4TZ
-         924sgXMABWgbHyKhKGszgtjEaL0odv77uSdg+eT+1UUZSgjbfx+iuLwO1Va340R0joaV
-         Wq1Ewh1i9dwPoNiHtc7Tb6EatQuMCYtFmI+nuEDdVSyG2507YfX3hIBeJRnq7cqnN1DB
-         i96Q==
+        bh=iKiBe8rgBpLHxLTkNsa5b/bSw+gXJRM0EijygM+CrR8=;
+        b=btaVtpvRxz+asaplnw0u8J0cuCm5irmHOotU9PqcQ7yo+51RhUeCrOyD7Bg0aasLKp
+         5ICQm9SuxufAX0ArKH+zesAlQabUvbOKiv56k/mum6wUcluZldlru3gYqNxVjcWNqh2Q
+         ygevjbKksPZP4Q0TdALKsAQNz64CQO4EujtCVlEBsmVc3eY54OOFNhgm4P8cEDnQQSzF
+         BTGH/eWPP64A7f4OO5vIafl6UwJ8Gx7uaD7IzxeZ+/VhPR6IZATukDr+ald9I+r5HKHH
+         I7DliDQCinwG6Sc1geMDsA8bn1bT/tSOu10sR1gWX0zM/HHZIiJhbAJYXCQ2672dNmJa
+         5yFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775848332; x=1776453132;
+        d=1e100.net; s=20251104; t=1775849165; x=1776453965;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=zLsRMFsMCnWy/dE1MVi6bp8gCipvA2+DQtfeIR8z2qA=;
-        b=lLei/Alg0l8lOorM1KliwFpvy+e0p6lXngUj31R9beVHCM7mBW4mFjw8CjQuyeiuNm
-         Gqx/Pe2ruyhVYQcbn5Jf6qBrJC+oZLVa697GhJBE+7uf9ni3Fq18xJS1oCHy63VS8KYe
-         kboOmhDhFsMZSRJu9ebAe7HaO+dex2TIM30sN4oCTe8B92a8pIOWrIOLBTgqgRCcn7zp
-         7zu4geZmgktCv2qUVGAtnIud2Nu9F32Dais5Pmn2mHPt0wVso0gq0JsjDOsI1ae9imoo
-         tyPN3x8+txEgB20NhpHJ+XrHPbTYmLdkOF8i60awLDoqhgE6pwAGuOvhMdKWpZe6CxKf
-         8Ejg==
-X-Forwarded-Encrypted: i=1; AJvYcCUAPnaUcIbrIHg+lwimPtnbxnxamrynfI0xQcD3x2VuGFmujee74A+v+1GnIIMVhWp4xz5EFdozKF0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YytQNLHNo2IrFtcSiBCw+KD7pZmTKzBHSfzsFaJqtQLUd7BJUgV
-	zXFc/KnwiQ5VPTgHvbSmGQWJlscF5T5/Hq3xoyHvo8Lbw9FBcz3/Blq5MpvsYcD/rAo=
-X-Gm-Gg: AeBDieuFutOGbkZTF68R+9Cf6pdrO9lYIm5Q6CKaikp4I4o2bRtKmsO/y5yAImp2HvG
-	SUxaNaYrq2DBX/EpcujnFCzywcGzRujILtYZ/HWzB193H7WqNY4jfgLqMyBM9224CuVnrDdqFw6
-	m+P4a7+FDnfq/GLoisfo6WpMk34ukQD2jTh3tHuAlN9SgLhyaDkE1veWNV2269gDesqmnKrSs5/
-	WAnxmfjaDw2bcCRfjtnsttU3U07tydTs8Aa1vfjoCFcZaTZu2MF9FFhB0yo/WAjroBG3sPJnjdX
-	SDwWf6HUa0RgsFEO/cNrU5CSMfmbuFW8+z39o7/EZ9fzdRd8by4UHqaLuW09wmEfMX60J7/w4qk
-	L3ncN8Ua/QtgBa+DA97DjlTRctHGGg08tMlGkCByMALFvML0N1R9u/PUSOeVojJ1D8XJdTTBFIr
-	xGtDa9Yw7tRkY8eKFZEfRcAmlQP4P1fCBjlPPNSYs352gSPVuH8Ux7C+09QoxDko15iafXQZ3Iw
+        bh=iKiBe8rgBpLHxLTkNsa5b/bSw+gXJRM0EijygM+CrR8=;
+        b=l1P0HjFxZOW1hRWaXr8Au5fA6gUaKhQUrdLTVxvz1wnPjtBedTjkTminBBodL0oDTR
+         THo67WjIwvLW2bGjfwK3TE7A6pX5KZWWQaMMByf4Xi2Q0M7MvIa5yjYl0EJPSpAMDMow
+         8K0PouQKRU9WQr5vqp0Z7xoLkIbS5L3A0quHTwtT3z5kMU07fN++MWsOrXJTfPm1kmxv
+         yS8xxZeEIIahMhS5AL0P4LBNz+ftaDR/P4fanArHubHCKevsNdEW2zOpo3cxMbO+XfIB
+         k4LUwHI8I8rlpPgw+HbOimoBhhCcvOxYojTFj99R4wxrvCsGSfld/TKuqdPvyu92g4jE
+         AoNw==
+X-Forwarded-Encrypted: i=1; AJvYcCWaNXJh+gPOWgeOMbbUpM2blXgh78KNNwUBA0CthXA5hIBmVK0nmclShwV/rGwZVo3NqcCPrbqmoeQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzBOfjfzZfKbTwI0pnZNHxI/cbtrvS0l11XjDLqdeOz5hkrZ7V7
+	ker9YpMHBSphDr9xbQVk6k4+wDMlJcNgcjeVBqMgvIPjIRtsg/gSEz6ul9I7U2gIMxA9Wh1o5Nx
+	Jqhyi
+X-Gm-Gg: AeBDievZ+FV8qpY2oli9AY41u8RQzSPsaTCpAa8je1fblIa0mb/Ht9jUZjj4FDk5eBl
+	zIh1XkCZNQgcqhqg0EdkkqySC//rszmiy/HNavww9RkmA9sjXw3oK2P4lsQoiOkTBeQ6Thm6VPG
+	DPFWRFfU6sJ+i8FbMTFmt31l0hMZ7b3TCNV4iVoh1CynNet8cUoeW6rQVK6aO8rRp08+ekWFwVt
+	xR9hvtwoHUiAWzs3TtkUFuTtJtRFBfC0aF/XDiMxCC9gjYk/Nko/pRP54ylnXBuOxUa7HImesTV
+	ertULv2RXByomJyIuR7i0WKHjvcicHF4YRT3KVpGGVhWinNyrEXZ1qszaw8K9CSYX3kMpvvGBvK
+	HiRvO+wDQRNsxcB8bTqao0oCFFRQDxxVXKTGic9f5tsi793LEMLLDSZZykgCXOSZtxbkYMzdtkw
+	jKlGnd/eiADi2yyE68t6GeKO9RL13Ap5v9bxeMKvr3/cLT7rOg1x36jnWDOtOZy2Jh+ODi3F4C4
 	Q==
-X-Received: by 2002:a05:6808:67ca:b0:467:27d2:96a7 with SMTP id 5614622812f47-4789d33ff74mr2585325b6e.15.1775848332294;
-        Fri, 10 Apr 2026 12:12:12 -0700 (PDT)
+X-Received: by 2002:a9d:7b4b:0:b0:7db:a297:9e62 with SMTP id 46e09a7af769-7dc17632cfbmr3187099a34.8.1775849164720;
+        Fri, 10 Apr 2026 12:26:04 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:b75d:2440:dc10:808b? ([2600:8803:e7e4:500:b75d:2440:dc10:808b])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-478a3666dbfsm1887177b6e.15.2026.04.10.12.12.11
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7dc2664157fsm2580273a34.12.2026.04.10.12.26.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Apr 2026 12:12:11 -0700 (PDT)
-Message-ID: <2c29f960-1e0b-4d66-858d-576e685f0812@baylibre.com>
-Date: Fri, 10 Apr 2026 14:12:11 -0500
+        Fri, 10 Apr 2026 12:26:04 -0700 (PDT)
+Message-ID: <ac8912f2-3bee-483f-91f1-72c5346792c6@baylibre.com>
+Date: Fri, 10 Apr 2026 14:26:03 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,46 +70,65 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iio: frequency: ad9832: simplify bitwise math
-To: Joshua Crofts <joshua.crofts1@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, jic23@kernel.org, gregkh@linuxfoundation.org
-Cc: nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260410100832.1388-1-joshua.crofts1@gmail.com>
- <20260410100832.1388-3-joshua.crofts1@gmail.com>
+Subject: Re: [PATCH v2 0/4] Add QST QMC5883P magnetometer driver
+To: Hardik Phalet <hardik.phalet@pm.me>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Brigham Campbell
+ <me@brighamcampbell.com>, Shuah Khan <skhan@linuxfoundation.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+References: <20260409210639.3197576-1-hardik.phalet@pm.me>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260410100832.1388-3-joshua.crofts1@gmail.com>
+In-Reply-To: <20260409210639.3197576-1-hardik.phalet@pm.me>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 4/10/26 5:08 AM, Joshua Crofts wrote:
-> Refactor the ad9832_calc_freqreg by adding a BIT_ULL()
-> macro instead of manual bit shifting for better
-> readability.
+On 4/9/26 4:07 PM, Hardik Phalet wrote:
+
+For a series this be, please wait at least a week for more feedback
+before submitting the next revision.
+
+> This series adds initial Linux support for the QST QMC5883P, a 3-axis
+> anisotropic magneto-resistive (AMR) magnetometer with a 16-bit ADC that
+> communicates over I2C. To my knowledge there is no existing upstream
+> driver for this device.
 > 
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
->  drivers/staging/iio/frequency/ad9832.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> The driver supports:
+>   - Raw magnetic field readings on X, Y, and Z axes
+>   - Four selectable full-scale ranges (±2 G, ±8 G, ±12 G, ±30 G)
+>   - Configurable output data rate (10, 50, 100, 200 Hz)
+>   - Configurable oversampling ratio (1, 2, 4, 8)
+>   - Configurable downsampling ratio (1, 2, 4, 8) via a custom sysfs
+
+What is the difference between oversampling and downsampling? I think
+we have used some filter attribute for downsampling/decimation in some
+other drivers so maybe that could be a good fit?
+
+>     attribute
+>   - Runtime PM with a 2 s autosuspend delay
+>   - System suspend/resume via pm_runtime_force_suspend/resume
 > 
-> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> index 1f6ece79b8..260c2e3a9b 100644
-> --- a/drivers/staging/iio/frequency/ad9832.c
-> +++ b/drivers/staging/iio/frequency/ad9832.c
-> @@ -113,8 +113,7 @@ struct ad9832_state {
->  
->  static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
->  {
-> -	unsigned long long freqreg = (u64)fout *
-> -				     (u64)((u64)1L << AD9832_FREQ_BITS);
-> +	unsigned long long freqreg = (u64)fout * BIT_ULL(AD9832_FREQ_BITS);
+> Regmap with an rbtree cache is used throughout. CTRL_1 and CTRL_2
+> bit fields are accessed via regmap_field to avoid read-modify-write
+> races. The STATUS register is marked precious so regmap never reads
+> it speculatively and clears the DRDY/OVFL bits unexpectedly.
+> 
+> The init sequence on probe is: soft reset → wait 1 ms → deassert
+> reset → configure SET/RESET control → apply default ODR/OSR/DSR/RNG
+> → enter normal mode. This ordering was determined empirically on
+> hardware to produce reliable, non-zero axis readings.
+> 
+> The driver is placed under drivers/staging/iio/magnetometer/ with a
+> TODO file tracking the remaining work before it can graduate:
+>   - Triggered buffer support (iio_triggered_buffer_setup)
+>   - DRDY interrupt support
+>   - Self-test implementation
 
-If we are touching this line anyway, I would change `unsigned long long`
-to `u64` to make the type name consistent with the cast and makes the
-line shorter.
-
->  	do_div(freqreg, mclk);
->  	return freqreg;
->  }
+These are not reasons to have the driver in staging. It is fine
+to have a driver that doesn't implement all functionality. We should
+be able to add those features without breaking anything.
 
