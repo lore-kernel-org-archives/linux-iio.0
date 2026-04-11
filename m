@@ -1,67 +1,67 @@
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 315A51D5151
-	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 19:28:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4A7BEAC7
+	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 19:48:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775935693; cv=none; b=d4rgIOsJ3PLqhxCB+6IlodaoFfSeAP0Tic8qyIxvynZHimb1D9h3ZMN6TxSxp58asGvQMzLWCU/9PQ+vquSFeZFF0iUyLbspmZVSLgVrKpc6aUQqXRBskbtz9A6VpgAFFRmQSR36RARs1jQoIszmi+vEMa7iaxMDhGfWhgObchc=
+	t=1775936906; cv=none; b=FqEOPc0yi7rsJNYsWyIu3P5HNv/QTcP4IuPDmNPL7hxAJ3bhjyrgWyQ6hEhR6iRuqxKYlHVrcyGKDzt5yCn0DrwFAONYfA0cm/S10qukMKZtODbehKOfRW9GUWuU5G2nLxtdZ+yW1Dv6u5uU8CnrGBMC4N8a+Ulnw+s8KXmi5xg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775935693; c=relaxed/simple;
-	bh=2sNIdWrd945IOGQtxtsSGClheuILfCTJ1X0VSYffb3Y=;
+	s=arc-20240116; t=1775936906; c=relaxed/simple;
+	bh=ym8GfoIBqrIMcc4pKwd5Jh5e2DuzzYrSfMQzWAkR/Po=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=p+eaAUiDppho0HGVuwPpAK6Hq/kDBG7c7o/A2WRTbcFWVvNIQfZsjLekw0KBO6jkZ8rc+bPGEXEnOT2VruvC8J4PUEFioJuWLX0F9+DjX/ldknqe27+3ULNYOA5mF/C7qXKYYz8T25kBn+t7qF0aYNdpVErBimnJD1EDZr8tDTg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=OfD8PSMf; arc=none smtp.client-ip=209.85.160.46
+	 In-Reply-To:Content-Type; b=gz30GasPA7AqPEXD3ddyyBd9K8abNJlIAllMHrfe3W8/WoqFjX+HZFzy0SRINVN9TFMvkJPlw26/mo67sHsDZ1b2izsYuqr3zAd2FBSWnGbVsH80JZLglxLyxw7PxuWCcLop/dsaF9eUzfZfuF7xh3HVCIdNyZUwDH124kSfKDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=qFsLpz3w; arc=none smtp.client-ip=209.85.160.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="OfD8PSMf"
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-40ef10ec84cso2111850fac.2
-        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 12:28:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="qFsLpz3w"
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-40ede943bf0so1942031fac.2
+        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 12:48:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775935689; x=1776540489; darn=vger.kernel.org;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1775936903; x=1776541703; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=AyJL0kUnDxM6166F9pMjNO09u6R1nYa0DYiABdU9bA4=;
-        b=OfD8PSMf+n1pf8O8cg9Kh/rmckbNCsJsvUXIwXeNuTYMSND320timfkaRKr1pBEX79
-         cyBF0GEeq6ZPp0hSQHV9legUtafhj77bJbm+2HTqOkW7FstqKtnftaprc+B+LSJH8NOv
-         S88FC9fq7CwGaPTiy+vcGjnZfvDy7zZYkGhC2JvFpddwWbbhwLMLvPaBh7BiNUNAi4vr
-         GeFerurGSYvi0FyfHzE+dBYxEPhh1u74ov/D42y1VmSlxDDIcToBc8HT/QBxd8c9niLw
-         4N2afyGQ+FeF6dwE+WWtbWJTn2osJ7Td/GtSrtUl+N0u6lIGF+4oL7unASXbQzQWZ4DQ
-         cgZg==
+        bh=arKhOc5Bz7HGwOSw+V6oF9pwALnDqmL4gyLcqB7kdsg=;
+        b=qFsLpz3wQ2kBfW3z6pJNUmASCA6/DZCau6SJ3Rg+0I1f7whAAh3lpEP6JA1YsZlUXn
+         Vw/cqd8sNOJnVZiNvYTRvxewxPxG2JY+MxExKh2KhdoRYQ+C4hFjw2wueOnqQxFLwYMh
+         lSGInvXHX+xn6nNWCmrCfQt1nXU8k/DaO3wGvc+nLbSktwxXi3/GDvxr4qE03lZDAjoR
+         e2Mjvzg81TPQT+T1OUckarEffrn8wibgbNClpQIyfoMn4z8WWSH2vvOO3OGfcP0em5wi
+         AS4cnrMZ10Z6qpOfXq8NyWPn7sj21Z/4//cheiHFHQGET1+2aVb8s6pyFXufb+e49mZw
+         rkEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775935689; x=1776540489;
+        d=1e100.net; s=20251104; t=1775936903; x=1776541703;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=AyJL0kUnDxM6166F9pMjNO09u6R1nYa0DYiABdU9bA4=;
-        b=KITtfZnWx/feAkKDSghOmCnIT+P5Dc6FjiJc0u0BynQZgADWizEKL5IiVjlFlkZewD
-         Eu0itnfx2/wyStlbUBKmg5aErvJSWd98GZK0E3pPINymP99sGqj3BB8wNyISaidpmEbH
-         G+1hhbHSG5hrPAm4LEQiz3G3oQ/daLRynLC18lHQeB+MU4/+E1CMMKzEWyDQ7KDg51PO
-         4zCIoJUXgxRbNL0fNt+eK4xlQ8xBWvZ3xUM+x5cJH4XqMzRZzDNL/4itryjK/myy0LdF
-         fFNs+dee3MfOGPkkVHQae+amwAFjqykETss7tfKn3gOk7oNyDiAuLlEApbvlvCf22sDP
-         mvWA==
-X-Forwarded-Encrypted: i=1; AJvYcCV5oS5VMQ4xbkAwXU5I/5O406/MhWDUQR5IP+siUDkPPm9d1RuSPL4qYr3V4LpyphV+KzpOCpDYEfk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyJEBl8rCJENkPBCbGIMfPlL7K1n3IMIpy9JbLKsDDKrXqLwwaE
-	kqNypKHACkCe6q5sm2ii0MF+ddgRLsYhTBr0b3TVmYP6wtLBaVoht+cjVwrQAiwNjAE=
-X-Gm-Gg: AeBDiev6k++NgNXCHuYjrTTCkclNVzF7eNzmkpPnkDRcuIn/3abZitMn0PxOW7pUwhO
-	hj4e9a/0EKrqPfy5RJJ6ZFVjIph/lYzQfN0k8C5KUjTrCrIjoTW9RgU6TkyziP1ivgLssAfOuiq
-	UcWWYrPYGLAYpme9Ano2Q0C3IJItI6mePzDDrxuOVODhFgjprJW3FhfNhMJchvhDagUqtGCzlba
-	QELOxYro6bFyDuwU/9xdTZv2VcvsIlp5sZ1ImKa6Arvza0BHLs+/pFdDzdX1LwlfO5ff6c3SN25
-	9AYTxLMe9tUosX+jlRUbtK2y7x772VcM7YufOBJvhBDXKhP1Xm/WFzjzQa5qAicammUJlb9zcim
-	2NbCnETonLRACq6Ggb0gzSI/2D0O3v8t524WEPCsYZfHo6NjCwURjn1tiAbyJXQLkWhim8g1E4x
-	5PSF6iQEC9/0RYnURH2lHPW/PUQqtkDjv5zrW7guR9Lxay3qmiRNeCNlxrUhXjFqLjAN2PgT6yq
-	6pl8UQWCTb3
-X-Received: by 2002:a05:6870:d06:b0:422:f606:1420 with SMTP id 586e51a60fabf-423e113c410mr4250749fac.34.1775935689020;
-        Sat, 11 Apr 2026 12:28:09 -0700 (PDT)
+        bh=arKhOc5Bz7HGwOSw+V6oF9pwALnDqmL4gyLcqB7kdsg=;
+        b=aRtZoYDb5hrYTrgRkrFvmop8MVJQfc7NhS+Qc2jbX9byzSyYUzGgR11RG/aNKRiWPn
+         TY4vq94Of1iX4FJYOuxScD6Y3oi1BllNHD3SIogx/rKF/nIZoLC/ZSrymagMJs4wRV0y
+         HCXSgrIZSD+bMTJcIFACST2QtTLR15vSVGe5VvPTUqjbnM+/v1vt9Oxg7PdSB3HufB+5
+         XLk4aPhOl+VNy5NplDDYfAtA5Zw0y2skMGa3kFJRn9tiuBwxP7dLwkm4KreB9Gj6qjm4
+         nppCpcpXPnuPYuLVKZd9BAkyM+p7Zsrsmil96qI+M0UyV28CeFA1NLc3Cf2pR4Ntie18
+         JJjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXhuVdQ5intZpCHMHqM2rUzDB/TYJGuAQvc4FqpurVIWqKi4qnhMhkI2GEBlDHEbaJUjtEAUMvKZHY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzxtxDJA49cy5lmL2qsE1Z5ECKQFikd9IUbVoldfDH1jAomg+py
+	Ku0LKhvPo8oU3ur9+ZZO1epy1+ah9a8lCj5+diJu7hbrnceMiBMddWx5W0mRnTRLero=
+X-Gm-Gg: AeBDiesae1K/ScFgqW4ecO+w/FWvg8+j5o7VM8dpaPbeizAZi4kUuS/diWkHzoCoKMT
+	ecPm9Y5z6fpat5K4r1x74vOySDH1jVvsIoj7u0EC86cleUSFH30TFdo4jiY/iCtkfAknY1ULLNG
+	EIJUF+9pD7IFONqzmPTRPvXEGVkmWdPQjGhU3mXRD+YoxU8FSbjM7yHDCBa0xmBL4VdkIURFSaN
+	ailrU5ZLIFLnhBKeMVTA9wL19SiPMR3d5gLukH6f0LhmtNn4tM44m6BT1MRJBEwoF1V3f8n9tWo
+	VLhhLOVGz1qkThzFWGaNqeeWn6ziBMjxkapviWfHrhYTodbWe8hzc5JMnY0VaqgbDjs0MhZ7OuS
+	UdRY4OJY2KnTx6XAOIySZ5K3I1Vtn7iPoWDRDFhlypDe5cgSCUTqFH4P0jbVZnohE74TAr+uTBP
+	/8SEAA3KImNJkt8hyay3rYMlaqOXU/DnVKmQWs2qBzE9XahiKB4jGE2BHU9XGdg7oe6akBE+K2s
+	A==
+X-Received: by 2002:a05:6870:45aa:b0:41c:6512:8419 with SMTP id 586e51a60fabf-423e10dbd2cmr4318652fac.28.1775936902735;
+        Sat, 11 Apr 2026 12:48:22 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:d2e5:c81c:5b23:fe55? ([2600:8803:e7e4:500:d2e5:c81c:5b23:fe55])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-423dd420bd2sm4761399fac.6.2026.04.11.12.28.08
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-423ddb20c0fsm4920432fac.11.2026.04.11.12.48.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Apr 2026 12:28:08 -0700 (PDT)
-Message-ID: <ceb7a191-2e6d-4711-b108-e91a2fcaf2d7@baylibre.com>
-Date: Sat, 11 Apr 2026 14:28:07 -0500
+        Sat, 11 Apr 2026 12:48:22 -0700 (PDT)
+Message-ID: <45f6a6dc-e027-4616-8cea-9be8d006521a@baylibre.com>
+Date: Sat, 11 Apr 2026 14:48:20 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,67 +69,250 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: imu: bmi323: Fix potential out-of-bounds access of
- bmi323_hw[]
-To: gerben@altlinux.org, jagathjog1996@gmail.com
-Cc: jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- lvc-project@linuxtesting.org
-References: <20260327103202.459143-1-gerben@altlinux.org>
+Subject: Re: [PATCH v3] iio: dac: mcp4821: add configurable gain support
+To: Nikhil Gautam <nikhilgtr@gmail.com>, jic23@kernel.org
+Cc: anshulusr@gmail.com, linux-iio@vger.kernel.org
+References: <acYb1XOmw1yoyu_4@nik>
+ <20260327061802.13043-1-nikhilgtr@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260327103202.459143-1-gerben@altlinux.org>
+In-Reply-To: <20260327061802.13043-1-nikhilgtr@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 3/27/26 5:32 AM, gerben@altlinux.org wrote:
-> From: Denis Rastyogin <gerben@altlinux.org>
+Please don't send new revisions in reply to previous revisions. It breaks
+some tools. Always start a new thread for a new revision.
+
+On 3/27/26 1:18 AM, Nikhil Gautam wrote:
+> Add support for configuring the DAC gain using the GA bit.
+> Expose gain control via IIO_CHAN_INFO_CALIBSCALE.
 > 
-> The bmi323_channels[] array defines a channel with chan->type =
-> IIO_TEMP and enables the IIO_CHAN_INFO_SCALE mask. As a result,
-> bmi323_write_raw() may be called for this channel. However,
-> bmi323_iio_to_sensor() returns -EINVAL for IIO_TEMP, and if this
-> value is not validated, it can lead to an out-of-bounds access
-> when used as an array index.
+> Scale is updated dynamically based on selected gain:
+> - 1x gain → 2.048V full-scale
+> - 2x gain → 4.096V full-scale
 > 
-> A similar case is properly handled in bmi323_read_raw() and does
-> not result in an error.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Fixes: 8a636db3aa57 ("iio: imu: Add driver for BMI323 IMU")
-> Signed-off-by: Denis Rastyogin <gerben@altlinux.org>
+> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
 > ---
->  drivers/iio/imu/bmi323/bmi323_core.c | 2 ++
->  1 file changed, 2 insertions(+)
+> Changes in v2:
+> - Drop header reordering
+> - Move MCP4821_GAIN_ENABLE define before MCP4802_SECOND_CHAN
+> - Use IIO_CHAN_INFO_SCALE instead of CALIBSCALE since full scale changes
+> - Restore original -EINVAL handling in default cases
 > 
-> diff --git a/drivers/iio/imu/bmi323/bmi323_core.c b/drivers/iio/imu/bmi323/bmi323_core.c
-> index 6bcb9a436581..64ead4f667e0 100644
-> --- a/drivers/iio/imu/bmi323/bmi323_core.c
-> +++ b/drivers/iio/imu/bmi323/bmi323_core.c
-> @@ -1713,6 +1713,8 @@ static int bmi323_write_raw(struct iio_dev *indio_dev,
->  		iio_device_release_direct(indio_dev);
->  		return ret;
+> Changes in v3:
+> - Restored NULL check in indio_dev alloc
+> ---
+>  drivers/iio/dac/mcp4821.c | 103 ++++++++++++++++++++++++++++++--------
+>  1 file changed, 82 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/mcp4821.c b/drivers/iio/dac/mcp4821.c
+> index 748bdca9a964..9160812219f9 100644
+> --- a/drivers/iio/dac/mcp4821.c
+> +++ b/drivers/iio/dac/mcp4821.c
+> @@ -12,7 +12,6 @@
+>   *	MCP48x2: https://ww1.microchip.com/downloads/en/DeviceDoc/20002249B.pdf
+>   *
+>   * TODO:
+> - *	- Configurable gain
+>   *	- Regulator control
+>   */
+>  
+> @@ -26,12 +25,32 @@
+>  #include <linux/unaligned.h>
+>  
+>  #define MCP4821_ACTIVE_MODE BIT(12)
+> +#define MCP4821_GAIN_ENABLE BIT(13)
+>  #define MCP4802_SECOND_CHAN BIT(15)
+>  
+> -/* DAC uses an internal Voltage reference of 4.096V at a gain of 2x */
+> -#define MCP4821_2X_GAIN_VREF_MV 4096
+> +/* DAC uses an internal Voltage reference of 2.048V */
+> +#define MCP4821_VREF_MV 2048
+>  
+> -enum mcp4821_supported_drvice_ids {
+> +/*
+> + * MCP48xx DAC output:
+> + *
+> + * Vout = (Vref * D / 2^N) * G
+> + *
+> + * where:
+> + *  - Vref = 2.048V (internal reference)
+> + *  - N = DAC resolution (12 bits for MCP4821)
+> + *  - G = gain selection:
+> + *        1x when GA bit = 1
+> + *        2x when GA bit = 0 (default)
+> + *
+> + * Therefore full-scale voltage is:
+> + *  - 1x gain: 2.048V
+> + *  - 2x gain: 4.096V
+> + *
+> + * Scale = Vfull-scale / 2^N
+> + */
+> +
+> +enum mcp4821_supported_device_ids {
+
+Unrelated change. Spelling error should be fixed in a separate patch.
+
+>  	ID_MCP4801,
+>  	ID_MCP4802,
+>  	ID_MCP4811,
+> @@ -43,6 +62,7 @@ enum mcp4821_supported_drvice_ids {
+>  struct mcp4821_state {
+>  	struct spi_device *spi;
+>  	u16 dac_value[2];
+> +	bool gain_1x;
+>  };
+>  
+>  struct mcp4821_chip_info {
+> @@ -57,6 +77,7 @@ struct mcp4821_chip_info {
+>  		.channel = (channel_id),                              \
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),         \
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+> +		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE), \
+>  		.scan_type = {                                        \
+>  			.realbits = (resolution),                     \
+>  			.shift = 12 - (resolution),                   \
+> @@ -122,8 +143,13 @@ static int mcp4821_read_raw(struct iio_dev *indio_dev,
+>  		state = iio_priv(indio_dev);
+>  		*val = state->dac_value[chan->channel];
+>  		return IIO_VAL_INT;
+> +
 >  	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_TEMP)
+> -		*val = MCP4821_2X_GAIN_VREF_MV;
+
+
+> +		state = iio_priv(indio_dev);
+
+I would start with a separate patch to move setting state to where it
+is declared so that we don't have to duplicate this line in each case.
+
+
+> +		if (state->gain_1x)
+> +			*val = MCP4821_VREF_MV;
+> +		else
+> +			*val = MCP4821_VREF_MV * 2;
+
+Why not make the variable store the gain value instead of being bool?
+
+Then this can just be:
+
+		*val = MCP4821_VREF_MV * state->gain;
+
+>  		*val2 = chan->scan_type.realbits;
+>  		return IIO_VAL_FRACTIONAL_LOG2;
+>  	default:
+> @@ -140,34 +166,66 @@ static int mcp4821_write_raw(struct iio_dev *indio_dev,
+>  	__be16 write_buffer;
+>  	int ret;
+>  
+> -	if (val2 != 0)
+> -		return -EINVAL;
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+>  
+> -	if (val < 0 || val >= BIT(chan->scan_type.realbits))
+> -		return -EINVAL;
+> +		if (val2 != 0)
 > +			return -EINVAL;
->  		if (!iio_device_claim_direct(indio_dev))
->  			return -EBUSY;
->  		ret = bmi323_set_scale(data, bmi323_iio_to_sensor(chan->type),
+>  
+> -	if (mask != IIO_CHAN_INFO_RAW)
+> -		return -EINVAL;
+> +		if (val < 0 || val >= BIT(chan->scan_type.realbits))
+> +			return -EINVAL;
+> +
+> +		write_val = MCP4821_ACTIVE_MODE | val << chan->scan_type.shift;
+> +		if (chan->channel)
+> +			write_val |= MCP4802_SECOND_CHAN;
+> +		if (state->gain_1x)
+> +			write_val |= MCP4821_GAIN_ENABLE;
+>  
+> -	write_val = MCP4821_ACTIVE_MODE | val << chan->scan_type.shift;
+> -	if (chan->channel)
+> -		write_val |= MCP4802_SECOND_CHAN;
+> +		write_buffer = cpu_to_be16(write_val);
+> +		ret = spi_write(state->spi, &write_buffer, sizeof(write_buffer));
+> +		if (ret) {
+> +			dev_err(&state->spi->dev, "Failed to write to device: %d", ret);
+> +			return ret;
+> +		}
+>  
+> -	write_buffer = cpu_to_be16(write_val);
+> -	ret = spi_write(state->spi, &write_buffer, sizeof(write_buffer));
+> -	if (ret) {
+> -		dev_err(&state->spi->dev, "Failed to write to device: %d", ret);
+> -		return ret;
+> +		state->dac_value[chan->channel] = val;
+> +		return 0;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
 
-This is OK, but why not check and propagate the error return?
 
- 	case IIO_CHAN_INFO_SCALE:
-		ret = bmi323_iio_to_sensor(chan->type);
-		if (ret < 0)
-			return ret;
+> +		if (val == 1)
+> +			state->gain_1x = true;
+> +		else if (val == 2)
+> +			state->gain_1x = false;
+> +		else
+> +			return -EINVAL;
 
-  		if (!iio_device_claim_direct(indio_dev))
-  			return -EBUSY;
-  		ret = bmi323_set_scale(data, ret, val, val2);
-		...
+And this can be:
 
-And even if we shouldn't hit the error in other case statements,
-it seems like it would be good practice to still check for error
-there too.
+		if (!in_range(val, 1, 2))
+			return -EINVAL;
+
+		state->gain = val;
+
+> +		return 0;
+> +	default:
+> +		return -EINVAL;
+>  	}
+> +}
+>  
+> -	state->dac_value[chan->channel] = val;
+> +static const int mcp4821_gain_avail[] = {1, 2};
+
+The attribute is the scale attribute, not gain, so these need to
+be: { MCP4821_VREF_MV, 2 * MCP4821_VREF_MV } combined with...
+
+>  
+> -	return 0;
+> +static int mcp4821_read_avail(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      const int **vals, int *type, int *length,
+> +			      long info)
+> +{
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*vals = mcp4821_gain_avail;
+> +		*type = IIO_VAL_INT;
+
+... IIO_VAL_FRACTIONAL_LOG2.
+
+The idea is that the scale_available attribute should return the same
+values as the scale attribute.
+
+> +		*length = 2;
+> +		return IIO_AVAIL_LIST;
+
+> +	default:
+> +		return -EINVAL;
+> +	}
+>  }
+>  
+>  static const struct iio_info mcp4821_info = {
+>  	.read_raw = &mcp4821_read_raw,
+>  	.write_raw = &mcp4821_write_raw,
+> +	.read_avail = &mcp4821_read_avail,
+>  };
+>  
+>  static int mcp4821_probe(struct spi_device *spi)
+> @@ -183,6 +241,9 @@ static int mcp4821_probe(struct spi_device *spi)
+>  	state = iio_priv(indio_dev);
+>  	state->spi = spi;
+>  
+> +	/* default gain is 2x as GA bit is active low*/
+> +	state->gain_1x = false;
+> +
+>  	info = spi_get_device_match_data(spi);
+>  	indio_dev->name = info->name;
+>  	indio_dev->info = &mcp4821_info;
 
