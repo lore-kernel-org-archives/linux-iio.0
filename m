@@ -1,118 +1,100 @@
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ACC9259CBD
-	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 13:35:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCC43266581
+	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 13:42:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775914532; cv=none; b=KGijGiz/7xXMfnJQjvQZ+rBpaw2ePz9mwuyQfVR52O1zXsxu0GAeKV7fSMy3QGNxN+kVPGeo4Tydesm4Kj8TmxGexE+9+YNhk3q5MOT7IjKvbILE5oenJij2QUYoYChKxNfFjnptzloZJP/vv39v1RnvIFCz+h3zp93zE0Y+rz4=
+	t=1775914970; cv=none; b=Yy69T8MHNpeau4RECu5k1+jKh1kt7wobeVEEp5kWc6CSPEndp/pjVxB7YRQNICiWnhsKqTd0zCSx+cEo18NdZojTRCFS9kMTWRjUKIrHhf22NlwzQ3YWWXt6a+QDctVihLrSBQO6xPI0fub0SrotiLXj99XoZn1S9ZOAnQl+xfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775914532; c=relaxed/simple;
-	bh=OtSFvIvNO2UsQhwYhpaoeFLi0Y5BtoWJurPvxz8r300=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GLNx5icWu5zJID24RqYWLvXMeaWzwMBsBPjNFPXj/5lpd+EYUJ1/ouQqmQGrXFwNWUNNRcrzPJ0lvdmE2RvpA8ehidulRE4oBFsm09rZGG1RUH1Ooj0sAujG7tWN8Cf+2BjD57uyd7dHx3pXXZdsKAdnkyUejsEtzQXeo6clvUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R4GZP5k3; arc=none smtp.client-ip=209.85.216.47
+	s=arc-20240116; t=1775914970; c=relaxed/simple;
+	bh=R/TqCiWCIzn4/vtN8yh2bzIUxADossHVkhRjXL16E3c=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=YGRB0EPu911gtqYzo7QosoG8GV+Mbn4jgI7QAQBJS+b1Kwc9AVskt1tSmF8ZjpmTB+kuZ9veQbhABnJKk0EpUIwU0FLP67DVdYiibV2nl1ssjVO4hiBjrqQueFhjzFkzM/EXRwLbztLybUVlV9u0FZLh2XBE//PV7QuBPST1dcY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yi2Ry4ZU; arc=none smtp.client-ip=209.85.221.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R4GZP5k3"
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-35d90833cacso1941787a91.2
-        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 06:35:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yi2Ry4ZU"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-43cfb723793so2006861f8f.2
+        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 06:42:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775914529; x=1776519329; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=d0Or23BS7mDFDSkUDM2f976vD3FVKjgJPHCZRQcp6vA=;
-        b=R4GZP5k3LAAU99ggcXw+Wc2U+v9ARuD/zhbCXFfF0kFgK9WtrjuBNbELhSrxf+xo8v
-         oNmOQRrlxY42ILDrJQBkhwF2HXYCRYFBDifzYjf/p7FdHJf4Mo/KlTIsk7mUegx9SJ2P
-         RipYTnLJIk1iWSDFneKS+FgznfQpPEhd/KaIJO/KmsMRcEtVpSSWOtC9zAjsWKA7J67K
-         FH2OtWHyHDU4ssvZ+iA+geguULjEySVfwenE0b2HoHjdrruc7hV9dkMs0+I2kQXMivXl
-         FYYI0tDcfojCMnhFSvgcuQlwoSwqDuGk4aQBhjAZCs7Y0gPjvUjczXBHZvhN5Xg3x2Mk
-         0Dig==
+        d=gmail.com; s=20251104; t=1775914967; x=1776519767; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=R/TqCiWCIzn4/vtN8yh2bzIUxADossHVkhRjXL16E3c=;
+        b=Yi2Ry4ZUL9IvpvX0s0DTyOzG71BZoRUvpStTrTlQplWzNNwaUx24T5MfeZ5ezCjaJy
+         5ZojxwJoqerH+L0CoSmLfxnua6rplGYuBbHCZq3cKrMH3V9m2AjrrszkQv/tuWONde8k
+         p4QfrADNOa/ACRv/klU9UrKpqWqR+htwyOZyWQuQOIqP39PiRZY9j5OUblygUsneCThk
+         p1FqBvGAZbTW3ssIxVhH9TuSJu7R7ub0XWrJpwhINm3SUZIWKVKWepOmNyVWEeaz86Hd
+         38HWXSLMFD3r8WQlhcocf33udxQaLczvRAs8ELkNrz6VGJ0gYqfeXr3M0mLtBg7a9JML
+         uRSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775914529; x=1776519329;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d0Or23BS7mDFDSkUDM2f976vD3FVKjgJPHCZRQcp6vA=;
-        b=KPgFfkZBprtwbeLotYxlFVQMYshw/iWkV3Ys+dCFg3WjXsm3DWfcZDNVKC4u9jKZgF
-         /3PpOPGeB/lp8DsfsT4KnK/Q5D5zCP52eLIDheu68HXA8GgbDfnkN4srQ3P1ubaTSTX2
-         HYzUo5xpw4P6Aqn0fTN7c9kEtuS0F65DScDg8yn6HUokuP1ljsjLFarF9uqv+eyYnX9P
-         VUun9KkPArKyyAnkq0c3zDbq8gLeObpscOxJrVo/izLhaiRYbgtcJ2xxnbu5c8IJ/MKo
-         TGxNZOmxJbFatCJLBSFo/o+qQ1/DHFxbVpaORC5fDAVXw5ayD3unuDKgDpueHj0Y7c2S
-         mxyA==
-X-Forwarded-Encrypted: i=1; AJvYcCURDOaz/3A7qFd0rsM6Sk6ed3TKU3Bwpb526WyY4LfXq9U9FWbsDPb+GecX8sEodnBcsjSe00JAYHI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz0ZtwbKl1ZAH+V92TDyt3jna70G4PexrWJYlOya4Ix0I64gVLk
-	dcJZ7wvp30NBF6L9/WZozbrI1Z1qvMXz0WHjjiquk8R0mAC1nPStjKu7
-X-Gm-Gg: AeBDieu0b/4UpYb+0kOC1BNSt1y9ArnUH76XtyFIgtdBK6Qs8UsYOBFo8ALvxbXY9Vx
-	hmzME+R9uRxBbM6/tFxyk0zi7O2aP0qTbk/n70JEqvldPk+GHjJhMmxCZQiorCR4LBRlpk6BNK2
-	amj5DXbw5vLw2ldV0v/G6BhWQLk0wVZHypIHMM4iX4NCCvrsK9KCjenUTChBJEH+GygrJr9XQJH
-	3WtsrblSMtKh3tjaF1QOJRBDVlmHnOmzo5rzn8+hmh3m4eZEyF3bR0KQaePmuiZsdzoKHyRpwcL
-	d4lF4/057UoqcvIjxwT9XUHu3mi0XijRYEQyesZCo8yjEMmInqCGUXqFgF8gNJj6SvBm6d9dMta
-	GOaLK/tV3w+TYyOK761tN2LVFMtGdQ2Pnast0MsOQgsXX80UK5V8sFA2jA6qswqEEFY5Y4eKKFz
-	Wy7fAVsle5w61bgcvXGC7INw==
-X-Received: by 2002:a17:90a:741:b0:35e:5723:85e3 with SMTP id 98e67ed59e1d1-35e5723894dmr364580a91.9.1775914529394;
-        Sat, 11 Apr 2026 06:35:29 -0700 (PDT)
-Received: from lgs.. ([112.224.67.108])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35e34e959bcsm10056720a91.0.2026.04.11.06.35.23
+        d=1e100.net; s=20251104; t=1775914967; x=1776519767;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=R/TqCiWCIzn4/vtN8yh2bzIUxADossHVkhRjXL16E3c=;
+        b=gfMkALE5hgJpTk3HxWPSNG3pKOllzeFPUomaMqIooiTO4WLpvw82IHP4+oVYAVkBqJ
+         8rSE1MseQWhuw/ymGjYrMSlJVB9rfov0X5bx7i731RuKx0qHtk6R/twqzT7Z+znyuZFA
+         H9o3RhUuXrh+2uhF/7tMaIXftAth28UNQ9LFkhRIb3wY+ktwRhcngRalInpyMFJETwEj
+         1eBtHeDGACcSZqnqQ4aNOWaB65jSSznM/Ev2yqQj+VgCCFWH+PuUMeTMA8VTROhNg5pU
+         H6EPctslORMmzAVGg6OnslpZgN+rhtr5zZiChd5wQp1xjHts3kD1gPlWeX4H/RSefy3t
+         UttA==
+X-Forwarded-Encrypted: i=1; AJvYcCX9iA/ZgJjv2/SE1E/eD/XNNxkgpATuPZpV0mfrob+ZiMF8NefnCNntv9CCxqfeUnmC4Iz5wR/VVJI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyi1ejX2IuQFz8Mo5oE6kctcWWqVvzGJSNwwmglAFSDRaACTXAT
+	K0BcvjNGNd1EVhw+dCUp8OpzLWTw9de6LN8YBnG5LbOH3OmlojoXIcwS
+X-Gm-Gg: AeBDieviCCJvUAhPCJSF9cZPjOuAO8IWzyQ8UvP9phFoT+8R8SQQY+sRlo8uRllX+Eg
+	DQ1T/qC8Hui9Z2XFVAt2ahs72vwKA/cmdKG4MUTCV4vNzc6D6TLp+XcO4H1hhbGUpg1pvOGwgk1
+	xQ1aIiG6Hag3u30XQlzXFE16Qr2FoDlyOYul0v6tiFnQaWMNw41b2PIEv21vH4aPbzW0w1pSgXQ
+	KBRwEXNBzlahuMO8d8qMIqV73u+bscyNTJfph2vrUgdaiBk7uYksLb2N9yyPKhlvWjlvPwvsPT8
+	tddAw/K/DyaHd7tE5kxBIF6WflBubLbMZUklZul9JoBTYjX5bbwcLFveOAiymwEIV4yFcuUEtSQ
+	oOlPT/P7h8RMT0r/ZyGSIdkbHVjiaKvbPQ1DTuIVwHCFTEAz6EJJo88SC26qH34zZcbzmbYGxuA
+	M5hvKSRwL5x0kWd/wLdWU1E1J0bE7Cr0aHnLKglXD/K7qUQxSwqPjL/dQnQ3iSNefQFQdjgancp
+	g==
+X-Received: by 2002:a05:6000:2c0a:b0:43c:ef70:d69a with SMTP id ffacd0b85a97d-43d642dcc6fmr10004329f8f.50.1775914966879;
+        Sat, 11 Apr 2026 06:42:46 -0700 (PDT)
+Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d63e469ddsm15988205f8f.17.2026.04.11.06.42.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Apr 2026 06:35:29 -0700 (PDT)
-From: Guangshuo Li <lgs201920130244@gmail.com>
-To: William Breathitt Gray <wbg@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	linux-iio@vger.kernel.org,
+        Sat, 11 Apr 2026 06:42:46 -0700 (PDT)
+Message-ID: <6db4332ece9b86ce9b13565677b2962f01eebd3b.camel@gmail.com>
+Subject: Re: [PATCH v2 0/2] iio: frequency: ad9832: cleanups
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>, lars@metafoo.de, 
+	Michael.Hennerich@analog.com, jic23@kernel.org, gregkh@linuxfoundation.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, linux-staging@lists.kernel.org, 
 	linux-kernel@vger.kernel.org
-Cc: Guangshuo Li <lgs201920130244@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] counter: Fix refcount leak in counter_alloc() error path
-Date: Sat, 11 Apr 2026 21:35:11 +0800
-Message-ID: <20260411133511.2214024-1-lgs201920130244@gmail.com>
-X-Mailer: git-send-email 2.43.0
+Date: Sat, 11 Apr 2026 13:43:56 +0100
+In-Reply-To: <20260411084402.71837-1-joshua.crofts1@gmail.com>
+References: <20260411084402.71837-1-joshua.crofts1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-After device_initialize(), the lifetime of the embedded struct device
-is expected to be managed through the device core reference counting.
+On Sat, 2026-04-11 at 10:44 +0200, Joshua Crofts wrote:
+> This series cleans up issues in the AD9832 driver,
+> including proxy header removal and bit math
+> simplification.
+>=20
+> v2:
+> =C2=A0- PATCH 1: removed redundant bits.h include as it
+> =C2=A0=C2=A0 is implied in bitops.h
+> =C2=A0- PATCH 2: changed ull to u64 type
+>=20
+> Joshua Crofts (2):
+> =C2=A0 iio: frequency: ad9832: remove kernel.h proxy header.
+> =C2=A0 iio: frequency: ad9832: simplify bitwise math
+>=20
+> =C2=A0drivers/staging/iio/frequency/ad9832.c | 7 +++----
+> =C2=A01 file changed, 3 insertions(+), 4 deletions(-)
 
-In counter_alloc(), if dev_set_name() fails after device_initialize(),
-the error path removes the chrdev, frees the ID, and frees the backing
-allocation directly instead of releasing the device reference with
-put_device(). This bypasses the normal device lifetime rules and may
-leave the reference count of the embedded struct device unbalanced,
-resulting in a refcount leak and potentially leading to a use-after-free.
-
-Fix this by using put_device() in the dev_set_name() failure path and
-let counter_device_release() handle the final cleanup.
-
-Fixes: 4da08477ea1f ("counter: Set counter device name")
-Cc: stable@vger.kernel.org
-Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
----
- drivers/counter/counter-core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index 50bd30ba3d03..12dc18c78672 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -123,10 +123,10 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
- 	return counter;
- 
- err_dev_set_name:
-+	put_device(dev);
-+	return NULL;
- 
--	counter_chrdev_remove(counter);
- err_chrdev_add:
--
- 	ida_free(&counter_ida, dev->id);
- err_ida_alloc:
- 
--- 
-2.43.0
-
+Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
