@@ -1,122 +1,255 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63C0D341ADD
-	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 12:14:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5277429D26B
+	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 12:17:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775909696; cv=none; b=IGOZk0h+a5ugJEPZOxFYwtGTQ3l4ypEgzugWv5gbmL0j/CXle3PV2UF95v4q62MasO9GafZkStG9LrooEt8BwlmlHa+f60sUhtfEXuye5DdnhrhA68R6bsd7ekL0KjtQlYflYMUIyRmJnRo8mFt192Y9x8lpJQB2t3/BNqiLzn0=
+	t=1775909833; cv=none; b=gxLyF1BJ7qt9EgDIyvMTKDu2lElMeOGN6ApIyms7CU34e/LSW7kxTRSpoxHdyYNzxoj0DAo+HNvDjrmwG+sytdrbJTYEQfy4gNMKJ3FwoagXGpQC4585YT08p/sqhGG5fhWU+6u66dP3FTBzmU3KqJjaq0yAQ8UX0xvH5hfbLc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775909696; c=relaxed/simple;
-	bh=2InDKLRqh0DuggcRtnhrHBDrAqUvpvrz41sgY2+D8GE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cD6at0XmAkmmLranfb0PlhKPGTBZ/oKq7T76mm5ewIEKNc41l8r1zCc3bybjQzbpDmpgNqhOvfh64XUQYu5j77b/XE7lcbVz/tyTYrEhf1whogA17264PXIka834XhDn+NJb/nya7N0Add1XYun1Y9mkFHkj0amNT0QsgpdAeBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m1rhG9Jr; arc=none smtp.client-ip=209.85.128.41
+	s=arc-20240116; t=1775909833; c=relaxed/simple;
+	bh=n6rP9/A8t0fjLsv8Wntg2MW55QnenI8NlmtRj0+DDOE=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=e5ZeoKcxDi6IJenOAwRX+/BALvhHCDW8UK+v+YGO5OtRbRWzQYWi30anJA/84DMYhKSYIBUdQMfT13iI5wGMzyuBa/dZdDZ+HsvCu9PRq6YLxdqVhHQRDSEGXZZP+GRMKZwcNpsPsROXgYWhQvggDiPPjWh3fFlxqSSUpHkwAiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qHU0zx3i; arc=none smtp.client-ip=209.85.215.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m1rhG9Jr"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488a29e6110so32508215e9.3
-        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 05:14:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qHU0zx3i"
+Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-c736261ee8dso1152117a12.1
+        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 05:17:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775909694; x=1776514494; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a3MIy4wgZvvmccJEQOMTQ0bwn2OnPjm1qEMF1v7R22c=;
-        b=m1rhG9JrVaqJnG4qHoVcIhNbkbUg7DPHdBfxJ0NC2uoXEwfWLXO9lyyy9A4yFRjZhw
-         OTYQ+VhmDYm9MyiVSr+RJF53APslyYnHn1tSxNJUm/9wuPTxVZFWytDzSNTaXWmBxEFK
-         itb5VSG0HO1UgMJZo3FH0HzamEtSlgGKCVjlLvZTJe2fDWRezZELSa1rcwPylOOdqIWb
-         0AM6PBMb+xM4gMQqjUdP8StV1oxElTJBeADU1LuTEBQEttApQYuku4DUUlRNufkqbS4o
-         g7AqEdpFjq0Ua8QHuFg4ggVXGLLD5BlP9KqPxLoKKBVkFHBHFkRrnyHsSKGTHkd7jdcD
-         /Vug==
+        d=gmail.com; s=20251104; t=1775909832; x=1776514632; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=sWPGLZHkUvIGjDcTNuB6cYL96SSQ6TMjGBJoDLwMWr8=;
+        b=qHU0zx3iAIl6Y0rVY+82foONIDdoN9cVERIt4uTKhZAAbjMiB7zc1vk1da7Q1RKnzj
+         2QWr6Vde29413eJ2Imju0jRneLQBrp964+az8oc+34X2GPT30wycrsLqtQZg/MsRItRv
+         wp7XNn2hvGZ4rnbe9zyjyIkyu8U018zJbqhMozzTgAWxnxrxpww9DNt39A5mO8HKhRQX
+         VEI3cM2sDuUegtwsPrYF0sJSUy2ZTFHt6z52yCRACW/V5D1dF2ycKAOCp9F+PXmZ0Sms
+         wROlAlVJ/zlaZ0oA+e8PQWi+w30ZieY9qjiD7yLNa9ykk++ia3wns0dkHp5pRljmJdms
+         P0Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775909694; x=1776514494;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=a3MIy4wgZvvmccJEQOMTQ0bwn2OnPjm1qEMF1v7R22c=;
-        b=TUlbesMxZkS1qH7LM1p6Ajb0T/NoxCGc43IH6tc5Eohmq91PhMF6at3UZ0iqB0KSug
-         O4lJwqPtb8v+8GtG5mWNv1739okn3Lv/MHYKc5D9HHe+6RvDx6ipTaxFmKjX8MqG/U9n
-         /4vUQc1o/6eg0y6AupMHM7Taqh/rqX7FfTABZ5PAMrI6R0Z8u4FJluaVojiKu/dlPNUL
-         Z9oTiYPiXrcpf0mp0dJpOy5LXLwsyTmbi9sgoA5yDEvAQxXeM1n0i8r7nQlsM+ima+gJ
-         KUg6GP6yurRkFW8l25tNSlsDyiuRWRGZVPeFBDcYsgxxP0Xfa1rpdSIAlQq4gDauJL8W
-         s7pA==
-X-Forwarded-Encrypted: i=1; AJvYcCVy1T+CwNWqibnrwgmeduosyza8fGK3xvOrAmAKICaIrt3QVaufMCXYg1O6gmBGk3Xc1z+sAabTYAs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx+hNyuI8Pfp/p/uySD7QdkzvMhDwVTZvryYlKqsI65ki8NMs5H
-	pQLjYGK4C6f+bmt8UhvG/EJ2cgR5cwmpPuj34vLmZQLVGQEocpGIRn+T
-X-Gm-Gg: AeBDieu8zVqT5uSxnRQaNx1bgEWHQwn24SHitX7Zr2eVcdLjQs6NwJazqMPid/9+I/0
-	hdpq97JrNNxnuYY0IV7fIzMhhv3WPqIjORFhY7U3VUKlVnmuUjS8lfF9xw8cDSA9o0l2SW04Odm
-	15kvL/1PCGzez4KHXXeg7Is74YHIpuY7mOXGg3rIcbGW4vLU2373HDYeXoHI2J2bOxHlpbcFQak
-	JzQW2I9mDmyP7U4BwMzfdeBjgv98uPL92NorvMYAxFdze1WyjrqgoRu081dhyglklRNyD7lxB3b
-	u1QiGf3wJYjhvE0ZuvdQ7OkTNgwLQUWT/EOh0UZRdLOL8bRUL9MAtj2LWgsNlcnkl5ZQFfvzru4
-	HngAVpVZqYTbvQyzC704A+H988UVGE6t0bmiV41BiOX4Duwjn/2G5JXV3SQNL09bsGMebPgOW0K
-	HtcNEEUhoNEbXHdou2cBZLu1gx8nFOxXp7m+nJFQBdUJN37HYC5ooIh27rweWq/T/W
-X-Received: by 2002:a05:600c:1507:b0:485:3a27:a961 with SMTP id 5b1f17b1804b1-488d7f23b18mr45963215e9.0.1775909693681;
-        Sat, 11 Apr 2026 05:14:53 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488d5df260bsm46167175e9.13.2026.04.11.05.14.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Apr 2026 05:14:53 -0700 (PDT)
-Date: Sat, 11 Apr 2026 13:14:51 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Piyush Patle <piyushpatle228@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>, linux-iio@vger.kernel.org, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Daniel Lezcano
- <daniel.lezcano@kernel.org>, Alexandru-Catalin Ionita
- <alexandru-catalin.ionita@nxp.com>, Felix Gu <ustc.gu@gmail.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: nxp-sar-adc: use field_get() for EOC bit
- check
-Message-ID: <20260411131451.1e8af16d@pumpkin>
-In-Reply-To: <c885c62c-f0d0-4dae-87d2-e6fb7257cafc@baylibre.com>
-References: <20260410211329.185147-1-piyushpatle228@gmail.com>
-	<c885c62c-f0d0-4dae-87d2-e6fb7257cafc@baylibre.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        d=1e100.net; s=20251104; t=1775909832; x=1776514632;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sWPGLZHkUvIGjDcTNuB6cYL96SSQ6TMjGBJoDLwMWr8=;
+        b=sgbMns2yAuZv/6R6gWz1wxkmPP04acsX6QVrK3edpvgXP0mQri32epFWLe1SF+VjxW
+         vxSKbZWJqDdswev61775qWEaPZsHVGpNsaog2PH6pKKDgV170KoDkUgBJ4i6CADcGbWT
+         of+rLxj0rzdafZ3P8rreWDWzIHAt16wAN0Pb2V7Rovd+DD/J8ztw4IA0Wk8GOvr7Kvc0
+         6QUKdUwy8XN/JifEs0cQ1rmWdXJqf200nOWf07Qe00TT9/yx7mqxLdz8ke+JGxu59eP9
+         eLLeF5gTHNB/kq6TBv0ImxCKxkscowdye0bLgUKeRfjdLZgD5zU7PO8D9IDDx75ge9RO
+         TSug==
+X-Forwarded-Encrypted: i=1; AJvYcCUYPLJqQiZVF/PQalFJKpEQ8pWm9kD9D3XGoRA6yuJNKxNwQtoBhW/b6/3uSjFjyeu4DyN8GvOBTI8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywwf4P9dFRfCOBej4miZb6alqlZdk5A80q2ql5ZTNTaS1SU1fEC
+	wxOY1e36bRcVd58AznPEqIo7TVdn6dVjY3SpBzbkkjWRcGgpnO/1qDAI
+X-Gm-Gg: AeBDievDSEqDgbO8WfXZE0eLNovRcWRrzxK2gUHuxvopslABbBGIwoQd/BvtSx2T1ZO
+	O1R6XfnKkntr+6O/9gUdT/Q9KyVjjMcki0rp/cMuYWcqPmuiy81/nBFF/WZT2fIGrNSiTZzfI0B
+	LmAZxxyH1CZDmPPnnOG6pfKC/ar9X1QGJd9H17OC8h6WKiVRNbCXOold3sxeCWUJxoRSbi4ih7G
+	5NzpsY5I/vaVTPsipsWvduz6DTOYO/PAmAVMa36KHQW7DciKAMTcyd8+XN9dWZA7ffPm95pIPkk
+	obRU2pgGDB+tk79q7AK/o5n9nVgc5koBoKz9Kx/K7fJM0GjG2vQOMu+DQkkOYLufzFtbz4DbKVu
+	Vr/ftHZaN3vo+plRrUpYsultj7EZ5in8qrCcZa4K1kRvhcAL40wf2VB86hLDEI720swkHZD8KxH
+	a95tp4GYyHY28xE2FPPvpaH+LYzTZYQPl4ZojWdf4=
+X-Received: by 2002:a05:6a00:b4b:b0:82a:fc5:fb81 with SMTP id d2e1a72fcca58-82f0c1ce8c6mr7307039b3a.5.1775909831507;
+        Sat, 11 Apr 2026 05:17:11 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:1955:aff9:1:0:8c78:2328])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f0c50a70csm5362576b3a.55.2026.04.11.05.17.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 11 Apr 2026 05:17:11 -0700 (PDT)
+Date: Sat, 11 Apr 2026 17:47:01 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: David Lechner <dlechner@baylibre.com>, jic23@kernel.org, nuno.sa@analog.com,
+ andy@kernel.org
+CC: kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v5_5/5=5D_iio=3A_ssp=5Fsensors=3A_reus?=
+ =?US-ASCII?Q?e_preallocated_RX_buffer_for_SPI_transfers?=
+User-Agent: Thunderbird for Android
+In-Reply-To: <8c5dfc4c-dff9-46a4-adcc-dbca54f0c125@baylibre.com>
+References: <20260406080852.2727453-1-sanjayembedded@gmail.com> <20260406080852.2727453-6-sanjayembedded@gmail.com> <8c5dfc4c-dff9-46a4-adcc-dbca54f0c125@baylibre.com>
+Message-ID: <ACDA46EE-53D8-4E1E-89FE-FACA53F78F51@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 10 Apr 2026 16:26:05 -0500
-David Lechner <dlechner@baylibre.com> wrote:
 
-> On 4/10/26 4:13 PM, Piyush Patle wrote:
-> > The driver uses FIELD_GET() for constant-mask fields but falls back
-> > to a raw bit test for the per-channel EOC bit, as the mask depends
-> > on the runtime channel index. A TODO notes that this should switch
-> > to field_get() when available.  
-> 
-> Could drop this first paragraph, it is a bit redundant.
-> 
-> > 
-> > Use field_get() here now that runtime-mask support exists, and drop  
-> 
-> We like for commit messages to start with the verb like this, so
-> this would be ideal for the first paragraph of the commit message.
-> 
-> > the obsolete TODO. Since NXP_SAR_ADC_EOC_CH(c) is BIT(c), the
-> > resulting !-test is semantically identical.
-> > 
-> > No functional change.
-> > 
-> > Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> > ---  
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> 
-> 
-> And if you are interested in doing more like this, search the IIO
-> subsystem for __ffs. If it is used with << or >> then there is a
-> good chance it could be replaced with field_get() or field_prep().
-> 
-> 
 
-And likely make the code larger and slower :-)
-At least run the bloat-o-meter.
+On 6 April 2026 9:37:49=E2=80=AFpm IST, David Lechner <dlechner@baylibre=
+=2Ecom> wrote:
+>On 4/6/26 3:08 AM, Sanjay Chitroda wrote:
+>> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>>=20
+>> Avoid allocating a temporary DMA buffer in the interrupt context when
+>> handling hub-to-AP and AP-to-hub SPI write messages=2E
+>>=20
+>> Preallocate RX buffer during probe and reuse it for SPI receive
+>> operations=2E This removes repeated kzalloc() calls from the IRQ
+>> path, reduces allocation overhead, and avoids potential allocation
+>> failures under memory pressure=2E
+>>=20
+>> The RX buffer size is tracked and allocated using devm_kzalloc(), ensur=
+ing
+>> proper lifetime management tied to the device=2E
+>>=20
+>> No functional change intended; this is an internal optimization and
+>> robustness improvement=2E
+>
+>If we are going to claim this is an optimization, we should have
+>some measurements to back that up=2E
+>
+>>=20
+>> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> ---
+>> Changes in v5:
+>> - Rebase change on top of latest v5 patch series=2E
+>> Changes in v4:
+>> - Use preallocated buffer and stash a buffer that gets reused each time=
+ instead of a fresh allocation=2E
+>> - Link to v3: https://lore=2Ekernel=2Eorg/all/20260315125509=2E857195-3=
+-sanjayembedded@gmail=2Ecom/
+>> Changes in v3:
+>> - prepare series to have all respective cleanup API support for the ssp=
+_sensors following input from Andy Shevchenko
+>> - Link to v2 https://lore=2Ekernel=2Eorg/all/20260311174151=2E3441429-1=
+-sanjayembedded@gmail=2Ecom/
+>> Changes in v2:
+>> - split series to individual patch
+>> - address review comment from Andy Shevchenko
+>> - Link to v1 https://lore=2Ekernel=2Eorg/all/20260310200513=2E2162018-3=
+-sanjayembedded@gmail=2Ecom/
+>> ---
+>>  drivers/iio/common/ssp_sensors/ssp=2Eh     |  5 +++++
+>>  drivers/iio/common/ssp_sensors/ssp_dev=2Ec | 12 ++++++++++++
+>>  drivers/iio/common/ssp_sensors/ssp_spi=2Ec | 19 +++----------------
+>>  3 files changed, 20 insertions(+), 16 deletions(-)
+>>=20
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp=2Eh b/drivers/iio/commo=
+n/ssp_sensors/ssp=2Eh
+>> index f649cdecc277=2E=2Eaa125fd1bed5 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp=2Eh
+>> +++ b/drivers/iio/common/ssp_sensors/ssp=2Eh
+>> @@ -175,6 +175,8 @@ struct ssp_sensorhub_info {
+>>   * @sensor_devs:	registered IIO devices table
+>>   * @enable_refcount:	enable reference count for wdt (watchdog timer)
+>>   * @header_buffer:	cache aligned buffer for packet header
+>> + * @rx_buf:		buffer to receive SPI data
+>> + * @rx_buf_size:	allocated size of rx_buf
+>>   */
+>>  struct ssp_data {
+>>  	struct spi_device *spi;
+>> @@ -222,6 +224,9 @@ struct ssp_data {
+>>  	atomic_t enable_refcount;
+>> =20
+>>  	__le16 header_buffer[SSP_HEADER_BUFFER_SIZE / sizeof(__le16)] __align=
+ed(IIO_DMA_MINALIGN);
+>> +
+>> +	u8 *rx_buf;
+>> +	size_t rx_buf_size;
+>
+>No, these can't be after _aligned(IIO_DMA_MINALIGN); without causing prob=
+lems=2E
+>
 
-	David
+I misunderstood the __aligned() constraints=2E
+
+I have reworked the struct so the DMA aligned buffer is the last member an=
+d replaced pointer with fixed size buffer as suggested=2E
+
+>What would work here though is:
+>
+>	u8 rx_buf[SSP_DATA_PACKET_SIZE];
+>
+>>  };
+>> =20
+>>  void ssp_clean_pending_list(struct ssp_data *data);
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec b/drivers/iio/c=
+ommon/ssp_sensors/ssp_dev=2Ec
+>> index aab28f2a0f75=2E=2E2a8d6f040ae4 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
+>> +++ b/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
+>> @@ -516,6 +516,18 @@ static int ssp_probe(struct spi_device *spi)
+>>  		goto err_setup_spi;
+>>  	}
+>> =20
+>> +	data->rx_buf_size =3D SSP_DATA_PACKET_SIZE;
+>> +	data->rx_buf =3D devm_kzalloc(&spi->dev,
+>> +				    data->rx_buf_size,
+>> +				    GFP_KERNEL | GFP_DMA);
+>
+>Since this is a fixed size, we don't need a separate alloc here=2E We can
+>just embed the array in the data struct=2E
+>
+>> +
+>> +	if (!data->rx_buf) {
+>> +		dev_err(&spi->dev,
+>> +			"Failed to allocate memory for rx_buf\n");
+>> +		ret =3D -ENOMEM;
+>> +		goto err_setup_spi;
+>> +	}
+>> +
+>>  	for (i =3D 0; i < SSP_SENSOR_MAX; ++i) {
+>>  		data->delay_buf[i] =3D SSP_DEFAULT_POLLING_DELAY;
+>>  		data->batch_latency_buf[i] =3D 0;
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec b/drivers/iio/c=
+ommon/ssp_sensors/ssp_spi=2Ec
+>> index 7c1780e15acf=2E=2E2f7445e8b4d1 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>> +++ b/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>> @@ -383,19 +383,13 @@ int ssp_irq_msg(struct ssp_data *data)
+>>  			 * but the slave should not send such ones - it is to
+>>  			 * check but let's handle this
+>>  			 */
+>> -			buffer =3D kmalloc(length, GFP_KERNEL | GFP_DMA);
+>> -			if (!buffer) {
+>> -				ret =3D -ENOMEM;
+>> -				goto _unlock;
+>> -			}
+>> +			buffer =3D data->rx_buf;
+>
+>
+>I don't think it is helpful to keep the buffer local variable=2E
+>
+>> =20
+>>  			/* got dead packet so it is always an error */
+>>  			ret =3D spi_read(data->spi, buffer, length);
+>>  			if (ret >=3D 0)
+>>  				ret =3D -EPROTO;
+>> =20
+>> -			kfree(buffer);
+>> -
+>>  			dev_err(SSP_DEV, "No match error %x\n",
+>>  				msg_options);
+>> =20
+>> @@ -428,22 +422,15 @@ int ssp_irq_msg(struct ssp_data *data)
+>>  		mutex_unlock(&data->pending_lock);
+>>  		break;
+>>  	case SSP_HUB2AP_WRITE:
+>> -		buffer =3D kzalloc(length, GFP_KERNEL | GFP_DMA);
+>> -		if (!buffer)
+>> -			return -ENOMEM;
+>> +		buffer =3D data->rx_buf;
+>> =20
+>>  		ret =3D spi_read(data->spi, buffer, length);
+>>  		if (ret < 0) {
+>>  			dev_err(SSP_DEV, "spi read fail\n");
+>> -			kfree(buffer);
+>>  			break;
+>>  		}
+>> =20
+>> -		ret =3D ssp_parse_dataframe(data, buffer, length);
+>> -
+>> -		kfree(buffer);
+>> -		break;
+>> -
+>> +		return ssp_parse_dataframe(data, buffer, length);
+>>  	default:
+>>  		dev_err(SSP_DEV, "unknown msg type\n");
+>>  		return -EPROTO;
+>
