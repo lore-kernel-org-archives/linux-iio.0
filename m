@@ -1,179 +1,168 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50C7D3845C8
-	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 14:20:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4C063845D0
+	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 14:23:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775917258; cv=none; b=lHpyOJfq84VLqEwDumQosBJ2nVYR3tZ+39V4DbBw3jY1D90ItdFIZrJ5wy1tEBg7DA3oYVjMDZCZixK8oGg1m5bFO3vpUOCW1Cudl2nY+grIXgst0Gi+ktyAzpcSeWrRt0r0uAmYxrXlU0TKOAKq1smRK0JG1v5v/UzdfhPgncM=
+	t=1775917437; cv=none; b=X/0O4MCcGukKsHbY4emQwW8mjRPB8I4Zv8KohCST0dwdENv4Jdmje1ndnlW/e0yx3mhYEWTO6HyXLIKVUDJPVeuWgREiwaPO9xTosvp8XGj74aUNStGjCtDcEwc2TrZo5b1ydy38zZKFB6jDdyhiCsfJXDV0E46tRJ4a67tGVM8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775917258; c=relaxed/simple;
-	bh=LTzMqV66tyhip/FzmM7s7If76qHy7vcOmvyi8SDooxg=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=QtAuYO8AgKMEbSz1r14xY2vHIDPWmiaLLcOu9FYT4e3TlfXz6dTApAltAEKG269TNx+uz2IK0O98l/srn7EsZFYKLXw7lRjq/vYhHetJ3cskecE2R5zo2fIlTxhHUrqVTKD6bUzBqHh0YC6N+No9RlTuQXafP+GuXWiP1t5bVZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X2MhXjHH; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1775917437; c=relaxed/simple;
+	bh=HCjpfHU9DRjs/0HO1xqpnQ5SMAYdtvRUQTrSyjOqwp4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=R7Bb6ie3eso3+zkbY4ZwAISoY6dsiasrfAJQlUtY3tXAqNPo55TnMGYi+O5E7jCzexA2gZSZhplofXyzeCR4PmK5rBB2cZFN2o4arGvmiETPGhWo+NZrbPzRYiFJ8YTO5EVVlRD+9W5TdGbfo3EyFgvg8Qwnh1+4XRerD4T4hRI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=kMKrsXnP; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=V5zgGOF0; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X2MhXjHH"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-488b0e1b870so47107855e9.2
-        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 07:20:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="kMKrsXnP";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="V5zgGOF0"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63B7uhkE3336200
+	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 14:23:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	41coO8MNC2PFEkmPS4P+D7ydAu/kwwruLRjuaYLQ7pQ=; b=kMKrsXnPsb8j6yXa
+	ntjMXwHVZcayWR1to03C0TjqFRe/JeHV3ajNPS3sMk5TaekgLN938wK9HG4pb5yS
+	NP64eD19YB3jaQ0dqvNIlKK/3dtYK0okHjgpVfForPDmprOSIrWrFk4at2KbDuxg
+	Caq4ts799UxjBSS42idegrrJeAEzc2KdF+mARUnG/RtFDFqbPA2TSsRAG90zLvZ6
+	RG7Y/knbgFBia7JPeHSqX7HAS1JrFZtmOrNAq0gZHdPdu7dQidZEE7xeE/+PD7Gh
+	uvsbApKOWUm92UfMCiHZ9Q+48nw9BOMBkI5AOzHuHMMGY19PbDRJ7VBPNblw5ZE+
+	DP4qQg==
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dfjbp8ghy-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 14:23:55 +0000 (GMT)
+Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-50b6f869676so57358181cf.2
+        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 07:23:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775917256; x=1776522056; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FJkmdJIDvUIR+BOt7Z1x81oQy5AgLCZSqyJ6Q903sZI=;
-        b=X2MhXjHHWTWUb5AvptjtO1aW6ZZze4vNN8/HnLMEqlJITrKNYu3T1cGYOHJeD6D4qH
-         mEnxT5Yux4pj/mlYdX0VNyjLzSAAbtO8OeRAKsqVgoDJOTCKP6twKDeWbct/4abp/G3z
-         AjpBfMaa5EEXZ7E1C0A5ywTo45lhZJoDhBFNsO/rMmthhTFfcdsCr9xC3bB4Dwo7iXf2
-         PmOXz6tdhpvlOyuIM85Qq0FijLVweZVa31HPu9Dpq5vUlgZlhaLcvTTw2o7nz5tPJABy
-         tCx+LrjFvCrbRaqFYvowvyLfVssIcIJkiZkWaNWLyTjR6ZqooIhwv0p1ZjBUXpJr+SiG
-         DBQA==
+        d=oss.qualcomm.com; s=google; t=1775917434; x=1776522234; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=41coO8MNC2PFEkmPS4P+D7ydAu/kwwruLRjuaYLQ7pQ=;
+        b=V5zgGOF0VzoocEez1qQGg64o5om/7js7Y2XvRZ3gmr5MLl7tmaocWQheB+Q6o73Foo
+         YHgkSfVLYJzOMjG/RFDT5q2eVrPJXVN6P/7meGE181sRD8rD3WPoV+vpqXhbQxwgQYmv
+         yWnhhnDmGA+9HHK1EZ/n6xHSsr5s4howcycUiej9qEn12z9mR/dBNKIrB4P1vAdtX1NN
+         ybJNFNRb/Ay14L/W57q1UIvCdluKi5gn5N1Rj2c0hDHeAyw0fXnptkfJBtmexVq5d5kQ
+         LrtzqFRzb/eMtlRDGRMqaG4/vmkaAEtsq4iCCVD7Scb4Fuk5MICwSqpuZjN7p2g2H/XD
+         /psw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775917256; x=1776522056;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FJkmdJIDvUIR+BOt7Z1x81oQy5AgLCZSqyJ6Q903sZI=;
-        b=NPrfGAhEwIjkaX1DJ6IiHRke1J/s+LunKAr5WWlpMuQBNLLz06zqvhZphHBEG/wp8U
-         M7T1yCx4trZrZvQZIqP63X2XSv+WNQey+UXHgDjYUV3vUa8xr/+TrJqFErWS57NiuJs3
-         dEUlG1SO4yhB5KSTFYFfD3Yj8IbnT50oy6y+f3do0Kj8Y0B/xhmM2UiECavkKaovOv8f
-         904eC2kLC6+v4kUfRKFZF6nNpaBW1SK5CCiQ/k+pwCNBfd8bDRnEeclvsUlYWtv7oslK
-         TLdBclE49yvK4rB+yzX6QjDm+ZJQ4FDU3Gy53fxQAJmKXwJO75xvjWUcA/xzR1rNPSbx
-         PW6Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWz6xiEcMSkIC4u4C1UuUISarmyQOwrRUmLKGj96L5cWq2DJAACA0Aiov8HnzdSDBOVIDf41NdnSCk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YykHateyXO1sdTnx5a8hFEBApOFKSseOLIZjFbg3S7YTPPXUhGG
-	Q+HdlSwgyz2tIFM1EzlrGXkEgKZO2nOJwNBBfOHf5LydybDqRG/XHYXA
-X-Gm-Gg: AeBDietdqbRFEF7Wyc2/RHarROSXCl47jH0uZ+3LXz94DJycPTdmmFu8yDKGPBB3Tbt
-	WvNjJxnev5/VECsKGbXXsB2gM/3Ou8Hj6k2x528AOisgphGtXOn/uKkCupwWaY3EmwHl9mhk6Ts
-	FMPRHk5pUrYFVyMMjm10y9JNBKIemExZfNuO75kMKEk5fma84JMoOKrUiSkY35IeZKOqKZlciMF
-	6V01ffjC7NUqsyZ9Y2Tg2HMeznRnm6xWdYuscPMRx2WGqOH2zKXQJ/4ejgwtpkQ0nkTQJ5O6DUS
-	8hB64wzjDeBrH1DF+qnrZC2whm8+jg5O4kBw9AR1B4wwN+TDhB4ej2oS5ZekY7eUmJMWDES19NW
-	Z4nrfLsqR4eOg08X6pDWfLtLZD1gCCAkA+H16HYLMaqgc1G5lUlRg5S3OHrIt3Nkt0pN8qGTPyY
-	KeFwhpzqN/nVcqS+NDzV3H2WAK/13VfkQWsUKU4EcMyOo8wap2EWFYedibBsTyb5FepGNk51ICa
-	w==
-X-Received: by 2002:a05:600c:1987:b0:485:5ba3:37d8 with SMTP id 5b1f17b1804b1-488d67bf736mr88949475e9.5.1775917255487;
-        Sat, 11 Apr 2026 07:20:55 -0700 (PDT)
-Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d63de343bsm15566131f8f.8.2026.04.11.07.20.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Apr 2026 07:20:55 -0700 (PDT)
-Message-ID: <deaaa498f1036ef39e66cca3d00b54148f4d7547.camel@gmail.com>
-Subject: Re: [PATCH v2 3/3] iio: imu: inv_mpu6050: fix unbalanced
- regulator_disable calls, when probe fails
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Andrey Skvortsov <andrej.skvortzov@gmail.com>, Jean-Baptiste Maneyrol	
- <jean-baptiste.maneyrol@tdk.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Andy Shevchenko	 <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,  Jonathan Marek
- <jonathan@marek.ca>, Brian Masney <masneyb@onstation.org>, Rob Herring
- <robh@kernel.org>
-Date: Sat, 11 Apr 2026 14:22:04 +0100
-In-Reply-To: <20260401082737.781018-4-andrej.skvortzov@gmail.com>
-References: <20260401082737.781018-1-andrej.skvortzov@gmail.com>
-	 <20260401082737.781018-4-andrej.skvortzov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+        d=1e100.net; s=20251104; t=1775917434; x=1776522234;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=41coO8MNC2PFEkmPS4P+D7ydAu/kwwruLRjuaYLQ7pQ=;
+        b=nLo6VBqmfkVbs9qJGkcCKwtj9A9EhWBPXfCxdldGhUZEXsihbhHbS0VCqGibHSztpK
+         +tEIRtSy7UqqM5ZPzizQvZF8sPLrmzOiM/HV/vGoJeKMcUDIw+tvgdXIhVgM5MeTBf0v
+         SXhSRXDJUnnT/NcIPe6+qTVZyJDUqlmNgk2rFR4R4WVNphtmgIPRl9pPsegu8L+lmaX6
+         LxnnlCZVSKEtqqmkRjbXHKlLnf31OdqIdoOIvHDWdlZcuDJRdgMGP2Ma06MTD5KnrVMZ
+         tcWeGtX2IRavgZUMKT4+eAEXznu/p5U8L0oIsMSR/khRWvbiXnpqCU5ld73eVxdD9Yjj
+         XXUA==
+X-Forwarded-Encrypted: i=1; AJvYcCULT7FjK1Cts2yogBJrCTcn3JYI4UvSNpph8tPw+yAfIA1UjiwtJkr+eQcWXPFVz5jMm2VYC64WzSQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwhdWEGxWB7XmgVoi5nGYHtiXZREZM/JHOFf+TxMt980VgiAYX/
+	bOYbzVfzSXxRNWnHP04Y7nkg2J0CX5UaF/oldlDANuzWq0aIAQmuNWbk8Vjd7JEuo2/hBSvi5RR
+	p8E1ZBihjMrihnzJWQ5p2l0nyblI151L/buuNd3CYlXm8+23Aell4bqpjbt4bbFY=
+X-Gm-Gg: AeBDiesibg9wkOmleyrg97bmL5eKRi3WVCN/UgWmiBBQ8NBdCkFvjoDq/0+/A1X2kCB
+	7T53VBvlJYtDA6CSi8gsngGI+o5jQV6QxHkUSPydjUjaxu/8PMPR4eavOEcor5ILsuMdJm81Fe/
+	8PU9YMsCFYVk45Brjjy2+oUS5yZLFzcf+xYHeqdFnsgqyc/J1NsI8ndc4jMsTcJAZGKK9/SHucl
+	yuq9hflg0wWB1uNpSDQFmON2N2ETNauMn+S7Ju1SclDoC+arHah55CyJeweDnxX3rMrZdbPLAcb
+	tZ7mnefMARkd3gwGtfdeC8hC8HkOmKC8Zg+rTuQzqh2Z1LXB9kNx7pLtTHfhw8gFVCpveeQ9qgh
+	FBBR0GtCD0XSfb96zrONZs2FcRGCpORg2FMFoU0y3/OMt9BhvFKwJ8gDcfXDlf0ivKXm9rSstvA
+	BzbldkjcNc
+X-Received: by 2002:ac8:5ac8:0:b0:509:120d:4311 with SMTP id d75a77b69052e-50dd5c02761mr104005921cf.60.1775917434098;
+        Sat, 11 Apr 2026 07:23:54 -0700 (PDT)
+X-Received: by 2002:ac8:5ac8:0:b0:509:120d:4311 with SMTP id d75a77b69052e-50dd5c02761mr104005571cf.60.1775917433640;
+        Sat, 11 Apr 2026 07:23:53 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:4c22:1fff:c4de:2c96? ([2a05:6e02:1041:c10:4c22:1fff:c4de:2c96])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488d681edd2sm47937695e9.18.2026.04.11.07.23.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 11 Apr 2026 07:23:52 -0700 (PDT)
+Message-ID: <58af4ec0-f00b-42d9-89a9-542228488980@oss.qualcomm.com>
+Date: Sat, 11 Apr 2026 16:23:50 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: adc: nxp-sar-adc: use field_get() for EOC bit
+ check
+To: Piyush Patle <piyushpatle228@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        Alexandru-Catalin Ionita <alexandru-catalin.ionita@nxp.com>,
+        Felix Gu <ustc.gu@gmail.com>, linux-kernel@vger.kernel.org
+References: <your-message-id>
+ <20260410214130.188694-1-piyushpatle228@gmail.com>
+Content-Language: en-US
+From: Daniel Lezcano <daniel.lezcano@oss.qualcomm.com>
+In-Reply-To: <20260410214130.188694-1-piyushpatle228@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=PuijqQM3 c=1 sm=1 tr=0 ts=69da597b cx=c_pps
+ a=JbAStetqSzwMeJznSMzCyw==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22 a=IpJZQVW2AAAA:8
+ a=pGLkceISAAAA:8 a=EUspDBNiAAAA:8 a=JwGy_oeBAWJtcqKhl6AA:9 a=QEXdDO2ut3YA:10
+ a=uxP6HrT_eTzRwkO_Te1X:22 a=IawgGOuG5U0WyFbmm1f5:22
+X-Proofpoint-ORIG-GUID: UxwP2X2Lz6CB3e4mLzifY1ElUJIU-KGW
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDExMDEyMyBTYWx0ZWRfX8KF3+jXHcNC+
+ NtZRGcbI8JzcEj7a5sD3G4/3ozSltGXSJrXOv6uPLlAusMM+k6n4MufKxzapETXAtZegZyrKOaW
+ e/Oo4Dsle3plHdlx0xA6GWps/lqn6KChM+7lmg2/CMWr5lQOozlG55NlOsl3gTE8pVTno5WlToI
+ 6+X7eB2so+30nQxugXVmsMHv1mWdKijJ+sZ3AnLhzsLJiQTruIoJXMofXteNlZHSDllz5eMr6Om
+ 0tl4S7GNJhfTpfpLy5dqqDihd3oUMB1q3Xvimc93RgLtbxJkhjuQDJyfJoZn45ZyjIyV8Hthc4E
+ 8RAiwnfTJqG3wsUpHew21EK/2sc3NIeDzYwo4SWwpAE9S/3CHhVU/jdpmNsj4zM09NyN0UqSMfK
+ Pl/Z1SzFkfz9Ld/be0jRY9NLHKN1qkpuyubhLO5bzm4CFelaKjyGirQCnb0VubLZk8oMvwFYBsU
+ G8kydvZ62KUfAi4h8qA==
+X-Proofpoint-GUID: UxwP2X2Lz6CB3e4mLzifY1ElUJIU-KGW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-11_04,2026-04-09_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 lowpriorityscore=0 suspectscore=0 spamscore=0 phishscore=0
+ malwarescore=0 clxscore=1015 impostorscore=0 adultscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604010000 definitions=main-2604110123
 
-On Wed, 2026-04-01 at 11:27 +0300, Andrey Skvortsov wrote:
-> During a probe functions after all regulators are enabled, runtime pm
-> is enabled. Before probe function finishes, runtime pm triggers and
-> disables vddio regulator. When probe function fails after that,
-> inv_mpu_core_disable_regulator_action tries to disable already
-> disabled by runtime pm vddio regulator causing following backtrace:
->=20
-> =C2=A0 inv-mpu6050-i2c 1-0068: trigger probe fail -19
-> =C2=A0 WARNING: drivers/regulator/core.c:3244 at _regulator_disable+0x2ac=
-/0x600
-> =C2=A0 Call trace:
-> =C2=A0=C2=A0 _regulator_disable+0x2ac/0x600 (P)
-> =C2=A0=C2=A0 regulator_disable+0xac/0x148
-> =C2=A0=C2=A0 inv_mpu_core_disable_regulator_vddio_action+0x3c/0xb0 [inv_m=
-pu6050]
-> =C2=A0=C2=A0 devm_action_release+0x4c/0x88
-> =C2=A0=C2=A0 release_nodes+0xd8/0x178
-> =C2=A0=C2=A0 devres_release_group+0x214/0x3c8
-> =C2=A0=C2=A0 i2c_device_probe+0x6fc/0x9b0
-> =C2=A0 ...
-> =C2=A0 inv-mpu6050-i2c 1-0068: Failed to disable vddio regulator: -5
->=20
-> Fix the issue by checking runtime suspend status, when vddio regulator
-> is disabled. To handle this correctly pm_runtime active status has to
-> be set early before vddio regulator setup.
+On 4/10/26 23:41, Piyush Patle wrote:
+> Use field_get() here now that runtime-mask support exists, and drop
+> the obsolete TODO. Since NXP_SAR_ADC_EOC_CH(c) is BIT(c), the
+> resulting !-test is semantically identical.
+> 
+> No functional change.
+> 
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
 
-The above looks a bit hacky. We're playing with runtime status for things t=
-o work.
-Also, setting the active state makes sense logically when the device is up =
-and
-running.
+Acked-by: Daniel Lezcano <daniel.lezcano@oss.qualcomm.com>
 
-Maybe we should just move enabling runtime to the end of the probe function=
-?
-
-Also, fixes should come first in the series in case we want to backport the=
-m.
-
-- Nuno S=C3=A1
->=20
-> Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-> Fixes: 07c12b1c007c ("iio: imu: mpu6050: add support for regulator framew=
-ork")
 > ---
-> =C2=A0drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 12 ++++++++----
-> =C2=A01 file changed, 8 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 3a57a3f440526..86e4d42c4d3d1 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -1862,8 +1862,10 @@ static int inv_mpu_core_disable_regulator_vddio(st=
-ruct
-> inv_mpu6050_state *st)
-> =C2=A0static void inv_mpu_core_disable_regulator_vddio_action(void *_data=
-)
-> =C2=A0{
-> =C2=A0	struct inv_mpu6050_state *st =3D _data;
-> +	struct device *dev =3D regmap_get_device(st->map);
-> =C2=A0
-> -	inv_mpu_core_disable_regulator_vddio(st);
-> +	if (!pm_runtime_status_suspended(dev))
-> +		inv_mpu_core_disable_regulator_vddio(st);
-> =C2=A0}
-> =C2=A0
-> =C2=A0
-> @@ -1953,6 +1955,11 @@ int inv_mpu_core_probe(struct regmap *regmap, int =
-irq, const
-> char *name,
-> =C2=A0
-> =C2=A0	msleep(INV_MPU6050_POWER_UP_TIME);
-> =C2=A0
-> +	/* set pm_runtime active early for disable vddio resource cleanup */
-> +	result =3D pm_runtime_set_active(dev);
-> +	if (result)
-> +		return result;
-> +
-> =C2=A0	result =3D inv_mpu_core_enable_regulator_vddio(st);
-> =C2=A0	if (result)
-> =C2=A0		return result;
-> @@ -1996,9 +2003,6 @@ int inv_mpu_core_probe(struct regmap *regmap, int i=
-rq, const
-> char *name,
-> =C2=A0	}
-> =C2=A0
-> =C2=A0	/* chip init is done, turning on runtime power management */
-> -	result =3D pm_runtime_set_active(dev);
-> -	if (result)
-> -		goto error_power_off;
-> =C2=A0	pm_runtime_get_noresume(dev);
-> =C2=A0	result =3D devm_pm_runtime_enable(dev);
-> =C2=A0	if (result)
+>   drivers/iio/adc/nxp-sar-adc.c | 6 +-----
+>   1 file changed, 1 insertion(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
+> index 58103bf16aff..d6c2a0d50bb4 100644
+> --- a/drivers/iio/adc/nxp-sar-adc.c
+> +++ b/drivers/iio/adc/nxp-sar-adc.c
+> @@ -316,11 +316,7 @@ static int nxp_sar_adc_read_data(struct nxp_sar_adc *info, unsigned int chan)
+>   
+>   	ceocfr = readl(NXP_SAR_ADC_CEOCFR0(info->regs));
+>   
+> -	/*
+> -	 * FIELD_GET() can not be used here because EOC_CH is not constant.
+> -	 * TODO: Switch to field_get() when it will be available.
+> -	 */
+> -	if (!(NXP_SAR_ADC_EOC_CH(chan) & ceocfr))
+> +	if (!field_get(NXP_SAR_ADC_EOC_CH(chan), ceocfr))
+>   		return -EIO;
+>   
+>   	cdr = readl(NXP_SAR_ADC_CDR(info->regs, chan));
+
