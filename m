@@ -1,118 +1,173 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CC923382F4
-	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 08:59:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775897961; cv=none; b=nYwfhde4ukR4atrJErV0vXbcaODaaAGX3Tz7N9yu0R/4zHHoTHPleVOoDJC6E4v31F4JcGNra7legANEaRn3hGi+o3mgQoiick4G6JTPYDqCSKvsxd06+K5dRDSL8bIPCsTg6B4wS5653rm2RH56gSnoGhqVw2BWrdF3bI2BQRI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775897961; c=relaxed/simple;
-	bh=7Q5mva72tlCTFYBzwEvO2ZFGsF1JnnlsFqj/wvcMAdE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=rE5Nwar6uqLmGDhGQBGoC6DEivzjJnVwQ03tB4AgiMOk2ye6Tgj6pdoPXFluErk9YCJaHhN/jEJbiqqhB7o1L3cD6eX4U6Oqq9e72WDGSDQMZjp/9tDPZ5NAuYlXVA67eGGW1ExRKu5HOOzvTPghLQuO++v5n2rOYuzCFJaoi7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dJ8JvKUg; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 328493346A0
+	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 09:30:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.172
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775899851; cv=pass; b=HaDDtsYXesESQheylKTLwf35ZkZ2kSGWM9GLaDTsmQRTGLxEcL0lA0qEGw0bFfvpQlfPb+FPHmz2Y8n9NF0O3PU4K+h/wedhdqGBzHVuzzIY7yRMRhrto54j6nJXIzmdjG9oixTz9+sNMhvBYJBB4V+yD2J6udNlr6Dpr0KuaIQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775899851; c=relaxed/simple;
+	bh=cXKSu8prgsxZ7y3532Cei9WNm8Ushqsy6GopGdEKFM8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LNSuudUi8F9cEhK5sMz1S2g6UfM4M2lt/M9qSZ5PkJIYRbpKR8d19zsSCqHagKanFJO4pfkKQkoBVqEa4XoM1X0TtVvgn0vg+5GkuxlyJFH3hyXTjPW7pcy/e6SelSkecMPezWMsZRpw7D0JGEOF1vEfn8PE0kyw/A9Dgo/wxr8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LK4gK+37; arc=pass smtp.client-ip=209.85.128.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dJ8JvKUg"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-43b8982c2f4so1672998f8f.2
-        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 01:59:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LK4gK+37"
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-7927261a3acso27837207b3.0
+        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 02:30:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775899848; cv=none;
+        d=google.com; s=arc-20240605;
+        b=YsMZYLCfr34vB5uDkCh+sYKtZaV3VX6S7Z7CLmqsM/W1MCCUrnSPYxoX97GZkr1SIs
+         MffkEmCSqsFA0VXMUfV4Cut/07fCwSIZFcnEJjj6FoY4w0dj/CkfITbPlw0q9TKuR9kK
+         oaS0gHrOjrBZWkQzoUAHMGlknvajv5fWRsSBJJda32I/RZiXzbj2qUf3I3uBTV79DaDy
+         50iIHWBjs9xHZNe8MF5sC2F7y0twOwt7Y5dBC+ZES4K1ZK8KvS7NyYgbdQm0QZHEmcUw
+         8c6OBPRDV4Lwm9OMIjxYO+w1TWXY3vzARh02LqAS6r9td037Gl3nbNWwlZ62iVDEdXQ6
+         SEbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=iN2MFAihUm9pub9DergW5aGrGxNQSBEtqfIR07hdE9Y=;
+        fh=e/7Xu5j3N7g0INo/U2RWswoM0fyFPD4C2hUNMJ9gV7Y=;
+        b=TE81G6K9IaNFNFFXXqX8d4YsjPprwiR/iLBH5ZS575DszTGfe+9yRW7DNSOwHYL4I2
+         ZLWYRmfOHeynJn1TAYhTdwl4/ayhoaJ/7qzYZFmH1Hz9lacD7Pm9GGwUetx1Tn0VGTvM
+         EUbNkcarRXjlNWC95KwJ9x5lrTeGbCKrDBzGewB/JOh2u7LCKckhdk9BVdM99VOZqNOG
+         BN3FV+UTzS31mpKMCJih2gyMhbvXlOln79RaldOTSb6c6jxUt7Cyrk4PUUM3Tf0v1M7U
+         KiMvcF1ttGHaOnLJ9KIUyfxvFrG6/vjhDEkB21vuO4gXphKyph8a2llt/nDzSQe6p/cd
+         iGTg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775897959; x=1776502759; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/z9NrwlpQUG/cW4s7HQM8LOZblhF59Jnsa4w00A3aEw=;
-        b=dJ8JvKUgHpRiKHM2cdpKDwLdwTk+d8LQiXDkbFoQxF0McJLP7Y0kpchbvGLt8xrvtm
-         HMXltQDVK7/i5/wIgq5HZX88aoFGB0tEIt9dLb/DPyFhpCweQzDUesN90E4Moy90RM/p
-         3w+M1JASSymFipFaHq87C4kJM+rozEqGzPGD9U/8plwj+fuDrjx5uGs8IhhyBXUN9gum
-         blKGbyVlKeUPNlmQRlMiXETZLmaT1/fme0a5kDaaVBJLjGCjomiTZm92pjIH2QYtIbcs
-         TLkp7etj26I4sY5fKUGOWdJrNqF5o2ToOYH3rEllzkQBQiBBWKUQBP2i72oXfhF0wnD6
-         pfYQ==
+        d=gmail.com; s=20251104; t=1775899848; x=1776504648; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=iN2MFAihUm9pub9DergW5aGrGxNQSBEtqfIR07hdE9Y=;
+        b=LK4gK+37mea3KWvKKsx9KX9lJGDt5QvfMiRy1WP+KGKHZFA6ah8VSd182mJCRfWI8u
+         BvLi/V5Oo74ZEFQzzChtXgh8AfmH9Xlii258Xf4arQfhrWPDJPuPsbuv+MlZy9ZpMB34
+         Ybz3zhhmBNgPWi/g4n4LdDZ9EkVn26dikvl38kg7GlH/skamBXf9qwWyHy2jl6HrRm7y
+         nR3ZXX2oYRASUBkrKhKtRkRBj+qAbZVrFYtY4CTTPPIODxKYBbE5ueDk3ZNLD58Nrv9+
+         pbI7E41oG51nibf5bHdLyTLFlYU5pTfB6uUkV6eg7sGspN6USdIopQYedUib6DF9llfK
+         eAwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775897959; x=1776502759;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=/z9NrwlpQUG/cW4s7HQM8LOZblhF59Jnsa4w00A3aEw=;
-        b=CBczkspUFWW+eHAF3SVs5Yc/VgG1lcnB0juemfULEJ3HxV0TvReW3AxYXUhYtjehHO
-         EobJuf5Am3TbhoIRMENehlrupADKowAj5sggi843JF372WxIhs4kPPKbZbK9Zhvulzzp
-         y1HH5ZElmR913hzdfYWLXs2bnSlXVFwhVDM7rzudI78Hcv+PojI08ZevCdaJqv2F/zZH
-         LDf4K0N9wllrTShlbWbDdpivNcb95Xu6w1phYDcxPQGiIIv6qUCUTc+kBAvIo6hXvm+R
-         Fp6163v0O/CudTm3+q4LiD9s6SGYqYftCugsXxsiBtdK9/arjS+69lEAS9WU/N9sbun3
-         M5wg==
-X-Forwarded-Encrypted: i=1; AJvYcCUWIhO9GXFs6IEGPZ0OXv/aIzcUmphif9fOcNTFzYHtqvsj5PbSQPQg7kI0wk95XweRJ21jvFS7mLs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzyih6qz5CkrtPbQufG55jU7qnb7zSa8yal5Tslg67OHbL1lVqw
-	kYWORO41oC12uJ1NLMPPLAX66vhLPWBwdk4LTNPFcXyTJqrJldyHaoXn
-X-Gm-Gg: AeBDietvYmD2GzgOY/8yQ+oMRD1pEvVeM9MxrAzPhzvwOxoulZj4bnf0AcCNT9qk1Al
-	q2ffOFVeryZLbsDnvBixzHLnPAnKBCk5sRKEE6eqERnVgku4MJSXfO/8iUCphzyNjAIkPP5R3CI
-	g/BgA5EU6bVCldKxSgY0WXwazJsDMz4lkOeCPRt3cWHO6ouosx60BKa13KVvkmONHUL1QSkeTk9
-	0tC6UGoCHhucOxczyVbBOVWAqCUoVnEs8cEN4q1rPxSyfqSs3/pb8EWQVxMart/kYRJxgTSIn00
-	0EX/jghANVAU/kCTpHvifdAzfE5u3lA2y2DxvRCU6iOJr9u+Q9/4uhfDN+kwbgmVLRUO+KEayvC
-	0udHxiVGlH4ZBD4qYehiHuDEfD/nwpSgjynIv2hMb4gp7dt0Rw86ljUezLQuLaXjvqOQEq4u4eP
-	d40BOvEAJkUfyZK/UDGRrgT8wQVU10UwYiSOmuxwfG/BKwZq3sfk60a5qq9d7rJHs5BLZVlC1lN
-	IXrShwyq4Y4rmRUSfZJ0i3AxLOxrTaOaua2e+e+3Pc/EBzUs3kulsZLlZLLCfjPObtlxCOwOiqi
-	PDfgTH7sv40iMLXiYJI=
-X-Received: by 2002:a05:6000:1a86:b0:43d:6e0:9458 with SMTP id ffacd0b85a97d-43d642c08b5mr9723343f8f.39.1775897958932;
-        Sat, 11 Apr 2026 01:59:18 -0700 (PDT)
-Received: from localhost.localdomain (ip-86-49-246-182.bb.vodafone.cz. [86.49.246.182])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d63de2a69sm14483593f8f.4.2026.04.11.01.59.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Apr 2026 01:59:18 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	gregkh@linuxfoundation.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Joshua Crofts <joshua.crofts1@gmail.com>
-Subject: [RESEND PATCH v2 2/2] iio: frequency: ad9832: simplify bitwise math
-Date: Sat, 11 Apr 2026 10:58:48 +0200
-Message-Id: <20260411085848.75381-3-joshua.crofts1@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260411085848.75381-1-joshua.crofts1@gmail.com>
-References: <20260411085848.75381-1-joshua.crofts1@gmail.com>
+        d=1e100.net; s=20251104; t=1775899848; x=1776504648;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iN2MFAihUm9pub9DergW5aGrGxNQSBEtqfIR07hdE9Y=;
+        b=F7Kk8J5itxHnfRnrBa83EOxYJKt/KrF6aji7XfyzNeO0fxK6RZClnK7tV+bZqXZoCt
+         Yxtj2VZjCyzeB8Fj8ZAkeAcsb7h6Q9SZlj4MCM6U6C6NQjTiCnaphCyS71yK9wwMTkPh
+         37DdTINy9ephq7KXVFeeX8wchv60ba0WtI9UWAuA/P/OtfzanY44gPpi+Y/UXe0ywA1d
+         Tx/TwUWaWRR2WBFhcDlxHq1aMo409RMRzIjjNsx/PCcJvUqYKqDHThSj2JhGI90EE3N7
+         wzDEUTfg12bqBX7T8rcdWvENnZF/fXyniSIGgc7FKFkVRpE0cGzyZ8O4E5qJBaxfR/9i
+         gRYQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9rSIdUmxutYrWjR5TH85CtMI4xZ+lp3i4kZic0e4s8LBdQ3oV+PBiDr4YM/QYwvwq/zkaCf7R1BDU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyy+nCD02U+SVzG+AVE2Y+WNyz4CVclyaPNItKGqkQ2dsNwiSfm
+	vl90zIduPlCsrg9EBovaZgcIz375NvEEm6NQhdaOLcSfcb7fPz2l3Klx5BBakT8xKCV5ivoGd93
+	wYuRWqGsAXPsqC9Qe3PagjjFrZBFsGf0=
+X-Gm-Gg: AeBDiesLJ4u6xX5Xi3q0zsfLVrIHRyxsZ0oOwCKXdh6y6biv8QMZfy6yadkhaYVJOaD
+	ebVIbDr6KoYsBfAkmP+gEfzsiLGWgHezrmUGhQqbvTxwrNustPIAKkcnaqSLhqV/1o8PDcleirE
+	Woub0Y25AL397D+tS8aVmtRsSDO3mZpgD6Z1NQZyCbhpwTtBV69FUtVjFsxEm+NYblQSbh77p3q
+	3HLfuaa7IUQpzfcsL6PPAg2iU6DDlW/SvFWm4H58beMTv+Nxa5nABa0auMJfiaG6YX+ovgceywv
+	CLBsSmk=
+X-Received: by 2002:a05:690c:768f:b0:79b:deb2:f5e2 with SMTP id
+ 00721157ae682-7af6ee49711mr58014857b3.11.1775899847966; Sat, 11 Apr 2026
+ 02:30:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260411080435.2125626-1-lgs201920130244@gmail.com> <adoEfbDRO_ZsIUx6@stanley.mountain>
+In-Reply-To: <adoEfbDRO_ZsIUx6@stanley.mountain>
+From: Guangshuo Li <lgs201920130244@gmail.com>
+Date: Sat, 11 Apr 2026 17:30:36 +0800
+X-Gm-Features: AQROBzDz53mV2WKlgnrPeDto-2h3oj2JZDFfc_Y9BjGEHLf9CUWBJA3INxTEoPs
+Message-ID: <CANUHTR-CY2WdPqdheQHHsFqj=y88zs3iiVn=5rE6gh9mRmsong@mail.gmail.com>
+Subject: Re: [PATCH] iio: trigger: Fix refcount leak in viio_trigger_alloc()
+ error path
+To: Dan Carpenter <error27@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Refactor the ad9832_calc_freqreg by adding a BIT_ULL()
-macro instead of manual bit shifting for better
-readability.
+Hi Dan,
 
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
-v2:
- - changed ull to u64 type
+Thank you very much for your review and for pointing this out.
 
- drivers/staging/iio/frequency/ad9832.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+The kernel version on our side is `v6.19-rc8-214-ge7aa57247700`. For
+clarity, below is the full `viio_trigger_alloc()` function in our
+tree:
 
-diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-index 8873a6d11e..4221e51dc4 100644
---- a/drivers/staging/iio/frequency/ad9832.c
-+++ b/drivers/staging/iio/frequency/ad9832.c
-@@ -112,8 +112,8 @@ struct ad9832_state {
- 
- static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
- {
--	unsigned long long freqreg = (u64)fout *
--				     (u64)((u64)1L << AD9832_FREQ_BITS);
-+	u64 freqreg = (u64)fout * BIT_ULL(AD9832_FREQ_BITS)i;
-+
- 	do_div(freqreg, mclk);
- 	return freqreg;
- }
--- 
-2.34.1
+```c
+struct iio_trigger *viio_trigger_alloc(struct device *parent,
+       struct module *this_mod,
+       const char *fmt,
+       va_list vargs)
+{
+struct iio_trigger *trig;
+int i;
 
+trig = kzalloc(sizeof(*trig), GFP_KERNEL);
+if (!trig)
+return NULL;
+
+trig->dev.parent = parent;
+trig->dev.type = &iio_trig_type;
+trig->dev.bus = &iio_bus_type;
+device_initialize(&trig->dev);
+INIT_WORK(&trig->reenable_work, iio_reenable_work_fn);
+
+mutex_init(&trig->pool_lock);
+trig->subirq_base = irq_alloc_descs(-1, 0,
+    CONFIG_IIO_CONSUMERS_PER_TRIGGER,
+    0);
+if (trig->subirq_base < 0)
+goto free_trig;
+
+trig->name = kvasprintf(GFP_KERNEL, fmt, vargs);
+if (trig->name == NULL)
+goto free_descs;
+
+INIT_LIST_HEAD(&trig->list);
+
+trig->owner = this_mod;
+
+trig->subirq_chip.name = trig->name;
+trig->subirq_chip.irq_mask = &iio_trig_subirqmask;
+trig->subirq_chip.irq_unmask = &iio_trig_subirqunmask;
+for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
+irq_set_chip(trig->subirq_base + i, &trig->subirq_chip);
+irq_set_handler(trig->subirq_base + i, &handle_simple_irq);
+irq_modify_status(trig->subirq_base + i,
+  IRQ_NOREQUEST | IRQ_NOAUTOEN, IRQ_NOPROBE);
+}
+
+return trig;
+
+free_descs:
+irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+free_trig:
+kfree(trig);
+return NULL;
+}
+```
+
+So in this version, both error paths are reached after `device_initialize()`.
+
+That was why I thought `put_device(&trig->dev)` would be more
+appropriate here than freeing `trig` directly with `kfree()`.
+
+Also, since `irq_alloc_descs()` can return a negative error code, I
+thought changing the release-side check to `trig->subirq_base >= 0`
+was needed as well.
+
+I may be missing something here, so I would very much appreciate any
+correction if my understanding is off.
+
+Best regards,
+Guangshuo
