@@ -1,74 +1,74 @@
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 388041E633C
-	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 11:41:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9675D231C9F
+	for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 12:14:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775907695; cv=none; b=jUI7E03gzQuyv5L6PZklLA6NqTUDZrzW9C0utCtnXSI9Bs5u1ZkbQfsYUgRkFJ0hMf0NyzynT2AAZZ7kRNaS2YoWZdsLW66JpeONxH9DKbfWBzE75f27HXNIRtwMQB0GYbfi2VKIsMWf0BVbRVZz7gVaG+3926dQUwW1jWH434Y=
+	t=1775909646; cv=none; b=szoU1si5lksJRbZVVNiAwye0fdt66DVXt0AiI9QkUc1VCPhYNjz4pMO0YJ6g5YY3FwN0q0G1a0r8peai9JtXQQXhGw0cuYw9v0OVBRPmcfJlT3AZ00EUMDo5bSaoSJ+PFNgMkXTztOhtKpvt7zVTqAsyJsNRd2YQRXP+ku3hMVE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775907695; c=relaxed/simple;
-	bh=W1nOInobauqhWR55LUyEwXQV2pJv56J3u5fSBwMoa7E=;
+	s=arc-20240116; t=1775909646; c=relaxed/simple;
+	bh=WiaWCOtI99U5c9sp0hhrP6eQqd/wM0LqySzZ2/tIFsg=;
 	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=LOAJtPTneUuIrNkejiUM6d4O08uiY0SMrcOcfQP6024IB30N6tjQvhGeJQMnnG+VI2Cwsj3QCB4aE2Lsk1hjqvVIsafITJULvCRN2/F84MZWgxfhH323IyrrSig1VUq8nzdYRzRvGxhkTcYuoDy+BYruPfT2DMgT7Y3B4EQ+1pE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dnBTamRl; arc=none smtp.client-ip=209.85.216.52
+	 MIME-Version:Content-Type; b=rIbuSk/dQqEOhp4cVYZd4lgPLQqtVsfVx9zAvyPOqeg+sjHsJ3BSKIgJ32StSi0lunRWK20pUPyIxHc6TMwWMmLgWiG2RPrppr63sbMc4icjr07AutI9MZmYQYS6Ds3xKEDV6RdXivhVeJ5S279df227/2OTsJBfqNR6JcgC1ps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Rno5qHhP; arc=none smtp.client-ip=209.85.214.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dnBTamRl"
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-35d971fb6f1so2596325a91.0
-        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 04:41:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rno5qHhP"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2aae4816912so20026035ad.2
+        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2026 05:14:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775907693; x=1776512493; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1775909645; x=1776514445; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:references
          :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=Qj/YA69tK8OayNqIO/aiIJnQgpjfgWaqvEfEq2cuNao=;
-        b=dnBTamRl3xyaFkizCovn/JUcFxB6QIu5y11vc2NR+9sa4GAYzQMqAFROSDyiyi7Kke
-         x5yIDmSQc5CK2ptbKJS9bUpHadtdxaqv/FacJoUMgRHwI/32JKIRiQYA2E6CAmerLFIt
-         hbciccw+d1rgvdW+udCvPuZFqjAn1pr8X3nga5opHLadcfupO1OT9IIHcmTUUXPT9nmc
-         w7NLVA5uTtLKR0+MRihTF3f/LOvQdKkjhP7Kyeda+AQaWPhkWC8BQOaY8pLXiVHyXuXS
-         t0mMrJVxNSJl5wXMXb4R8YVEk/sGMIM8s9fnD8G7jVabjC0r792y27GfSd0PDCC6PrT8
-         KQSA==
+        bh=PkFAub7hRXynXWsH4tT7kR+2SO1S/nFQFHvZunhxrD8=;
+        b=Rno5qHhPYTImG8XYJyNCSyGXkavGFIEqBfFjqnduNWFFuW/c2UzQTGWosXk07kSJu9
+         NB1nR307elO9ua89MndyA2syqxwZbMpoAU0yT++GKkBiGnzrNkzBq37jGOaIy2K08TT/
+         dfQOG0wd+YwhIRfJiFBvg2E14WUjYNxqTEn/Y7DZkbEYsKW47orY3uoynqqQEoCJliwD
+         UfVSg3y21ldIhlE1GphyIyMxRGDO+6aW4Y8Yof1QS/4Xz1rZAjshuZ+C3KX4g/HINHZe
+         FdsRmsf45HXDF9+MqjYmKhoi2XvnZPBVfDPqPE37CjkMOiCSzpZctfhDc9tLD0NcQPj7
+         vWeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775907693; x=1776512493;
+        d=1e100.net; s=20251104; t=1775909645; x=1776514445;
         h=content-transfer-encoding:mime-version:message-id:references
          :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Qj/YA69tK8OayNqIO/aiIJnQgpjfgWaqvEfEq2cuNao=;
-        b=nK/rwWheAf40Tbjnn41bjyB4KyS2J6nJ6lAUaCmUf/nSiRbGAYeVHtLvVIZ81K5Tvr
-         mo2D0usScjBbIL0P6VR9jtCuo0vpTPgdU1T43gEVB1QAHtQk/jq7LNfN9sVUdB+fxYKN
-         ww1RhdOUbOZCRkyPGxs20wNG0m1T4ELBCGxCdymeBs3Bb5Ck439nIux0maLwWyK9mNYy
-         1Ko6L5ZbTWGOeb2DwvnuRKLLpTYv0v+6EJcdhA6KOEHqywNPUXXzlUv/T87nEIH4R+iT
-         fGJfoZ/gN/8dLExbjtAfyrdTXQLRpm2ZiPtib9thHVIcxKNxqNzqHRhqISp6QeN7ajtM
-         oDNw==
-X-Forwarded-Encrypted: i=1; AJvYcCX5YZBeh7bl7VVbKIgFO7zsfqXJb8OoeL0NTJSKqWf8qFu9+1wfPjeocB4DRDQZzAY+HtL06F2MnzE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzdxVR5L5SQelrsJbBw5k/zkwzhsrrQ/Pi9BmEPBwTmz+RZf/vf
-	+TyZ7LqfOsFLCsW/oxV3MH0SBrkQdV8/9Et16IoQQFak42/EixT5JOuL
-X-Gm-Gg: AeBDievleo+PfcY2ywA2XHD1M+fMvQi6LwcFH8QAUvexal/fgxPbEhfuBiJyTh/7NxG
-	pYgmLgl33fbnfSAMdo8THf+KtgJf40y9+DJJPuGOqAbjbe3qRtTqu+Xxhnto49jS/ViBnTOqIdO
-	KYbB3/kv2f07VXAmUqmgHaEgipGHubeOjnUS8fyCagzXsT7N6A8yQNQg9CSyAs3dUWIyQKNiSkj
-	LO5odKd3NGqdORE+2Ah4ITlcQkMzy/DJdcRv0lLUpmYKLQawsggXodvwi8RpWVcW12IzGeATvCK
-	91AgDbF0KhGWiKN3Kuvp81TomdB3ygdrJZ2wvKcEJmCgxEsoVKVg//SYuk5xfn3ckPqACHvNv2g
-	QCxD+djErx9UUHfF56oqcr2GvsgksUL7bI6zqKD1QlMFK61UeKVOianX5xvOeyY58NdnvXfNR+w
-	Rssn0/aZ2oCScGqHvCVi9b/nsGTzOqVsHBAh21mx4=
-X-Received: by 2002:a17:90b:5285:b0:35d:95eb:879a with SMTP id 98e67ed59e1d1-35e4282be05mr7062476a91.13.1775907693519;
-        Sat, 11 Apr 2026 04:41:33 -0700 (PDT)
+        bh=PkFAub7hRXynXWsH4tT7kR+2SO1S/nFQFHvZunhxrD8=;
+        b=FN+EPt/qsb9dywKdr2sTVik01DHyYKBwZScTlLKmnTlUHqk6VPJBuBN12E6Qz/LbhI
+         gvy+PQdhuNBG6flVJJlj5gAh/C+z0WQp42Pmo1RaGFDKP9Jnf4P3Bx08ZyzattWo47fM
+         PWeEaF5ZhRYWJ/xZZIv+YgRwvbE8JorsrNxo6B6PZBU6SeWiuucWSWugRmOCMcyuX9Mi
+         b0cLCqlom1XfPs0Hfm01S9e/GiWaimc9T5+NN79GqCx7EyTvKL1VcMNhupz7uVbahG9P
+         2xcC7EyaJfUP69teU7aos+XLSUglAB3lBiu9wcOdtm1+bqzOz0m+pQdlexobpt8AjXLk
+         5QSg==
+X-Forwarded-Encrypted: i=1; AJvYcCUmEK/5RJV6r6KJCLsnhsEUkVMhyWGutm4WXdhjSmXwfPf7aQr3D4ipB5MDv32Xs2mXHkY06fi6upY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz02aOYkWZ7oA8kp+lohWdpjw1XRR94+0RKFOpDB/b7YtinZ7tS
+	tR/7fW4lomSlmkikxRQJRwOzOJcFHwLu60Z5beQ60hYeFmcjn1CAqtP/S58L5Q==
+X-Gm-Gg: AeBDiesk/5pbVnxLfU7GWRapiQZBoNMaXQUaNnHfKt2gpZCo91FPgsMbBaHFhwBfzqJ
+	661VXVvxLRpzkSrHqwBviHn7dvcNzlMwrGiKV93pk1ScVh994a8l5Ef728NuIiX+e9OrYWWpFNt
+	41YL9v6JbTuMOgH+E5ek3ztoNypAY1ZC3IGtRrI1UNwF7vLW6cVh15wfZeV+dS8TLIMfyOnHfec
+	+rmcwKbB7G4kOapLJDVb6NNzMRYKJ/x/kPvLNu/qT1YhckeIekl/nW/0GQN+2cqdDguhnWaGEcY
+	j923tU/hZZ/Vm+Q1CBQM8W4+WMcI0klgln0VU2wRuAZPLRs+prw3bHZbTXcc1C/e9XZanhYHRXk
+	iqEIi6t6nHCxjfy67GM4wDfHe+3qW0Tj1SsxDb5YH6sdJt8NBhGL60C6ogxlWROlj4LDhq+eTeS
+	e1fy9AiwvYoqpUwC2M8k9B2fnoSd/yzaIxC9LIxbA=
+X-Received: by 2002:a17:902:6bc3:b0:2b0:6e60:9586 with SMTP id d9443c01a7336-2b2d599adedmr49896055ad.17.1775909644921;
+        Sat, 11 Apr 2026 05:14:04 -0700 (PDT)
 Received: from ehlo.thunderbird.net ([2401:4900:1955:aff9:1:0:8c78:2328])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35e4133743bsm6347786a91.15.2026.04.11.04.41.31
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b2d4dd610esm58604875ad.20.2026.04.11.05.14.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Apr 2026 04:41:33 -0700 (PDT)
-Date: Sat, 11 Apr 2026 17:05:47 +0530
+        Sat, 11 Apr 2026 05:14:03 -0700 (PDT)
+Date: Sat, 11 Apr 2026 17:27:18 +0530
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 To: David Lechner <dlechner@baylibre.com>, jic23@kernel.org, nuno.sa@analog.com,
  andy@kernel.org
 CC: kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v5_4/5=5D_iio=3A_ssp=5Fsensors=3A_us?=
- =?US-ASCII?Q?e_devm_APIs_for_mutex_and_IRQ_resources?=
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v5_5/5=5D_iio=3A_ssp=5Fsensors=3A_reus?=
+ =?US-ASCII?Q?e_preallocated_RX_buffer_for_SPI_transfers?=
 User-Agent: Thunderbird for Android
-In-Reply-To: <e7ac60dc-fcf6-4ed8-847a-dc29ecfca142@baylibre.com>
-References: <20260406080852.2727453-1-sanjayembedded@gmail.com> <20260406080852.2727453-5-sanjayembedded@gmail.com> <e7ac60dc-fcf6-4ed8-847a-dc29ecfca142@baylibre.com>
-Message-ID: <438F2B61-7F4D-4488-82D0-E1EE23FBF766@gmail.com>
+In-Reply-To: <8c5dfc4c-dff9-46a4-adcc-dbca54f0c125@baylibre.com>
+References: <20260406080852.2727453-1-sanjayembedded@gmail.com> <20260406080852.2727453-6-sanjayembedded@gmail.com> <8c5dfc4c-dff9-46a4-adcc-dbca54f0c125@baylibre.com>
+Message-ID: <2C46168B-17F7-4D00-ACEA-B0A85F120D47@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,156 +81,188 @@ Content-Transfer-Encoding: quoted-printable
 
 
 
-On 6 April 2026 9:44:33=E2=80=AFpm IST, David Lechner <dlechner@baylibre=
+On 6 April 2026 9:37:49=E2=80=AFpm IST, David Lechner <dlechner@baylibre=
 =2Ecom> wrote:
 >On 4/6/26 3:08 AM, Sanjay Chitroda wrote:
 >> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
 >>=20
->> Convert mutex initialization and IRQ registration to use devm-managed
->> helpers, tying their lifetime to the device=2E
+>> Avoid allocating a temporary DMA buffer in the interrupt context when
+>> handling hub-to-AP and AP-to-hub SPI write messages=2E
 >>=20
->> This removes the need for explicit cleanup in the error and remove
->> paths, as the resources are automatically released on probe failure
->> or device unbind=2E
+>> Preallocate RX buffer during probe and reuse it for SPI receive
+>> operations=2E This removes repeated kzalloc() calls from the IRQ
+>> path, reduces allocation overhead, and avoids potential allocation
+>> failures under memory pressure=2E
 >>=20
->> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->> ---
->>  drivers/iio/common/ssp_sensors/ssp_dev=2Ec | 36 +++++++++++-----------=
---
->>  1 file changed, 17 insertions(+), 19 deletions(-)
+>> The RX buffer size is tracked and allocated using devm_kzalloc(), ensur=
+ing
+>> proper lifetime management tied to the device=2E
 >>=20
->> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec b/drivers/iio/c=
-ommon/ssp_sensors/ssp_dev=2Ec
->> index da09c9f3ceb6=2E=2Ef4fc869fc770 100644
->> --- a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
->> +++ b/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
->> @@ -510,7 +510,11 @@ static int ssp_probe(struct spi_device *spi)
->>  	data->spi =3D spi;
->>  	spi_set_drvdata(spi, data);
->> =20
->> -	mutex_init(&data->comm_lock);
->> +	ret =3D devm_mutex_init(&spi->dev, &data->comm_lock);
->> +	if (ret < 0) {
->> +		dev_err(&spi->dev, "Failed to init comm_lock mutex\n");
->> +		goto err_setup_spi;
->> +	}
->> =20
->>  	for (i =3D 0; i < SSP_SENSOR_MAX; ++i) {
->>  		data->delay_buf[i] =3D SSP_DEFAULT_POLLING_DELAY;
->> @@ -523,7 +527,11 @@ static int ssp_probe(struct spi_device *spi)
->> =20
->>  	data->time_syncing =3D true;
->> =20
->> -	mutex_init(&data->pending_lock);
->> +	ret =3D devm_mutex_init(&spi->dev, &data->pending_lock);
->> +	if (ret < 0) {
->> +		dev_err(&spi->dev, "Failed to init pending_lock mutex\n");
->> +		goto err_setup_spi;
->> +	}
->>  	INIT_LIST_HEAD(&data->pending_list);
->> =20
->>  	atomic_set(&data->enable_refcount, 0);
->> @@ -533,13 +541,13 @@ static int ssp_probe(struct spi_device *spi)
->> =20
->>  	timer_setup(&data->wdt_timer, ssp_wdt_timer_func, 0);
->> =20
->> -	ret =3D request_threaded_irq(data->spi->irq, NULL,
->> -				   ssp_irq_thread_fn,
->> -				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
->> -				   "SSP_Int", data);
->> +	ret =3D devm_request_threaded_irq(&spi->dev, data->spi->irq, NULL,
->> +					ssp_irq_thread_fn,
->> +					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
->> +					"SSP_Int", data);
->>  	if (ret < 0) {
->>  		dev_err(&spi->dev, "Irq request fail\n");
->> -		goto err_setup_irq;
->> +		goto err_setup_spi;
->>  	}
->> =20
->>  	/* Let's start with enabled one so irq balance could be ok */
->> @@ -553,21 +561,16 @@ static int ssp_probe(struct spi_device *spi)
->>  		ret =3D ssp_initialize_mcu(data);
->>  		if (ret < 0) {
->>  			dev_err(&spi->dev, "Initialize_mcu failed\n");
->> -			goto err_read_reg;
->> +			goto err_setup_spi;
->>  		}
->>  	} else {
->>  		dev_err(&spi->dev, "Firmware version not supported\n");
->>  		ret =3D -EPERM;
->> -		goto err_read_reg;
->> +		goto err_setup_spi;
->>  	}
->> =20
->>  	return 0;
->> =20
->> -err_read_reg:
->> -	free_irq(data->spi->irq, data);
->> -err_setup_irq:
->> -	mutex_destroy(&data->pending_lock);
->> -	mutex_destroy(&data->comm_lock);
->>  err_setup_spi:
->>  	mfd_remove_devices(&spi->dev);
->> =20
->> @@ -589,14 +592,9 @@ static void ssp_remove(struct spi_device *spi)
->> =20
->>  	ssp_clean_pending_list(data);
->> =20
->> -	free_irq(data->spi->irq, data);
+>> No functional change intended; this is an internal optimization and
+>> robustness improvement=2E
 >
->Do we need to replace this with an irq_disable() so make sure
->no more timers/work is scheduled after we delete them below?
+>If we are going to claim this is an optimization, we should have
+>some measurements to back that up=2E
 >
->If it is safe the way it is, add an explanation to the commit
->message=2E
->
->Alternative would be to use devm_add_action_or_reset() to
->handle all of the other cleanup functions in the correct order
->still and get rid of the remove function entirely=2E
 
 Hi David,
 
-Thank you for the input and feedback=2E
+Thank you for your inputs and feedback=2E
 
-Understood, will check and accordingly plan to update commit message or ha=
-ve devm_add_action_or_reset()=2E
 
-In my opinion usage of devm API to drop remove() would be better one=2E
-
+>>=20
+>> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> ---
+>> Changes in v5:
+>> - Rebase change on top of latest v5 patch series=2E
+>> Changes in v4:
+>> - Use preallocated buffer and stash a buffer that gets reused each time=
+ instead of a fresh allocation=2E
+>> - Link to v3: https://lore=2Ekernel=2Eorg/all/20260315125509=2E857195-3=
+-sanjayembedded@gmail=2Ecom/
+>> Changes in v3:
+>> - prepare series to have all respective cleanup API support for the ssp=
+_sensors following input from Andy Shevchenko
+>> - Link to v2 https://lore=2Ekernel=2Eorg/all/20260311174151=2E3441429-1=
+-sanjayembedded@gmail=2Ecom/
+>> Changes in v2:
+>> - split series to individual patch
+>> - address review comment from Andy Shevchenko
+>> - Link to v1 https://lore=2Ekernel=2Eorg/all/20260310200513=2E2162018-3=
+-sanjayembedded@gmail=2Ecom/
+>> ---
+>>  drivers/iio/common/ssp_sensors/ssp=2Eh     |  5 +++++
+>>  drivers/iio/common/ssp_sensors/ssp_dev=2Ec | 12 ++++++++++++
+>>  drivers/iio/common/ssp_sensors/ssp_spi=2Ec | 19 +++----------------
+>>  3 files changed, 20 insertions(+), 16 deletions(-)
+>>=20
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp=2Eh b/drivers/iio/commo=
+n/ssp_sensors/ssp=2Eh
+>> index f649cdecc277=2E=2Eaa125fd1bed5 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp=2Eh
+>> +++ b/drivers/iio/common/ssp_sensors/ssp=2Eh
+>> @@ -175,6 +175,8 @@ struct ssp_sensorhub_info {
+>>   * @sensor_devs:	registered IIO devices table
+>>   * @enable_refcount:	enable reference count for wdt (watchdog timer)
+>>   * @header_buffer:	cache aligned buffer for packet header
+>> + * @rx_buf:		buffer to receive SPI data
+>> + * @rx_buf_size:	allocated size of rx_buf
+>>   */
+>>  struct ssp_data {
+>>  	struct spi_device *spi;
+>> @@ -222,6 +224,9 @@ struct ssp_data {
+>>  	atomic_t enable_refcount;
+>> =20
+>>  	__le16 header_buffer[SSP_HEADER_BUFFER_SIZE / sizeof(__le16)] __align=
+ed(IIO_DMA_MINALIGN);
+>> +
+>> +	u8 *rx_buf;
+>> +	size_t rx_buf_size;
 >
->> -
->>  	timer_delete_sync(&data->wdt_timer);
->>  	cancel_work_sync(&data->work_wdt);
+>No, these can't be after _aligned(IIO_DMA_MINALIGN); without causing prob=
+lems=2E
+>
+>What would work here though is:
+>
+>	u8 rx_buf[SSP_DATA_PACKET_SIZE];
+>
+
+Okay, packet size is 960 bytes; to avoid using static memory i have used d=
+ynamic memory with devm API=2E
+
+However following your input I will update change in next series with stat=
+ic allocation=2E
+
+>>  };
 >> =20
->> -	mutex_destroy(&data->comm_lock);
->> -	mutex_destroy(&data->pending_lock);
->> -
->>  	mfd_remove_devices(&spi->dev);
->>  }
+>>  void ssp_clean_pending_list(struct ssp_data *data);
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec b/drivers/iio/c=
+ommon/ssp_sensors/ssp_dev=2Ec
+>> index aab28f2a0f75=2E=2E2a8d6f040ae4 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
+>> +++ b/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
+>> @@ -516,6 +516,18 @@ static int ssp_probe(struct spi_device *spi)
+>>  		goto err_setup_spi;
+>>  	}
 >> =20
+>> +	data->rx_buf_size =3D SSP_DATA_PACKET_SIZE;
+>> +	data->rx_buf =3D devm_kzalloc(&spi->dev,
+>> +				    data->rx_buf_size,
+>> +				    GFP_KERNEL | GFP_DMA);
+>
+>Since this is a fixed size, we don't need a separate alloc here=2E We can
+>just embed the array in the data struct=2E
+>
 
-Also, I observed that in remove() path, there is duplicate of following wi=
-th ssp_disable_wdt_timer():
+Yes, understood=2E
 
-static void ssp_remove(struct spi_device *spi)
-{
-        =2E=2E=2E
-        ssp_disable_wdt_timer(data);
+>> +
+>> +	if (!data->rx_buf) {
+>> +		dev_err(&spi->dev,
+>> +			"Failed to allocate memory for rx_buf\n");
+>> +		ret =3D -ENOMEM;
+>> +		goto err_setup_spi;
+>> +	}
+>> +
+>>  	for (i =3D 0; i < SSP_SENSOR_MAX; ++i) {
+>>  		data->delay_buf[i] =3D SSP_DEFAULT_POLLING_DELAY;
+>>  		data->batch_latency_buf[i] =3D 0;
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec b/drivers/iio/c=
+ommon/ssp_sensors/ssp_spi=2Ec
+>> index 7c1780e15acf=2E=2E2f7445e8b4d1 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>> +++ b/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>> @@ -383,19 +383,13 @@ int ssp_irq_msg(struct ssp_data *data)
+>>  			 * but the slave should not send such ones - it is to
+>>  			 * check but let's handle this
+>>  			 */
+>> -			buffer =3D kmalloc(length, GFP_KERNEL | GFP_DMA);
+>> -			if (!buffer) {
+>> -				ret =3D -ENOMEM;
+>> -				goto _unlock;
+>> -			}
+>> +			buffer =3D data->rx_buf;
+>
+>
+>I don't think it is helpful to keep the buffer local variable=2E
+>
+I will keep buffer at top of ssp_irq_msg() instead of local to specific sw=
+itch case=2E
 
-        =2E=2E=2E=2E
-
-        timer_delete_sync(&data->wdt_timer);
-        cancel_work_sync(&data->work_wdt);
-
-        =2E=2E=2E
-}
-
-static void ssp_disable_wdt_timer(data)(struct spi_device *spi)
-{
-        timer_delete_sync(&data->wdt_timer);
-        cancel_work_sync(&data->work_wdt);
-}
-
-At first glance looks redundant, do we require both ?
+>> =20
+>>  			/* got dead packet so it is always an error */
+>>  			ret =3D spi_read(data->spi, buffer, length);
+>>  			if (ret >=3D 0)
+>>  				ret =3D -EPROTO;
+>> =20
+>> -			kfree(buffer);
+>> -
+>>  			dev_err(SSP_DEV, "No match error %x\n",
+>>  				msg_options);
+>> =20
+>> @@ -428,22 +422,15 @@ int ssp_irq_msg(struct ssp_data *data)
+>>  		mutex_unlock(&data->pending_lock);
+>>  		break;
+>>  	case SSP_HUB2AP_WRITE:
+>> -		buffer =3D kzalloc(length, GFP_KERNEL | GFP_DMA);
+>> -		if (!buffer)
+>> -			return -ENOMEM;
+>> +		buffer =3D data->rx_buf;
+>> =20
+>>  		ret =3D spi_read(data->spi, buffer, length);
+>>  		if (ret < 0) {
+>>  			dev_err(SSP_DEV, "spi read fail\n");
+>> -			kfree(buffer);
+>>  			break;
+>>  		}
+>> =20
+>> -		ret =3D ssp_parse_dataframe(data, buffer, length);
+>> -
+>> -		kfree(buffer);
+>> -		break;
+>> -
+>> +		return ssp_parse_dataframe(data, buffer, length);
+>>  	default:
+>>  		dev_err(SSP_DEV, "unknown msg type\n");
+>>  		return -EPROTO;
 >
