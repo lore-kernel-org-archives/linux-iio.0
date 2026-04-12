@@ -1,47 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30F0122D785;
-	Sun, 12 Apr 2026 13:40:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13A35125A9;
+	Sun, 12 Apr 2026 13:49:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776001230; cv=none; b=kt1gLgcdE8BWp0MrzvyGARyGEZehCN0CTVwHCIerbSgwzhVApaJMkqJgrSnlEN4TeCb/EQhHzNMpTZLT5ulqtwnNRyvPKhzjo6iv97f4G1xHEV4C6WHXoaLIje2UDmJJPG6VWMH2LgsToYKhRTvuUT5N/+xnrfaeWQONiSEA5Lw=
+	t=1776001742; cv=none; b=GJLKWO26dBHUE2luMjKiazjkVnTMk83DVMyetIkmxWhGspdk1IW/uKZ6AUhFVHiEAs/Hjj6LkJiv4Wh+++7ibO9jlND4HmeRh3WfZkd7ahUK6AYMYVAXlWZ1dhsRaD1ZFqrHGZqzlI/pPJpojj8Uy+YrWwerWfIlhXziN7AAg+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776001230; c=relaxed/simple;
-	bh=oTR9m4IsEdRT37DGUiCRgUO1bMrjc6Xl/DqLoqBprrI=;
+	s=arc-20240116; t=1776001742; c=relaxed/simple;
+	bh=xRit3coA5ALjqymrXb9Jm+t1aohcwzdracpGa7ViDpo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=I0j73qxbIraCnGboeTbI7n0mBQ+Vnhw7EEI92WKEtPLqnnJHlPOBBchELzvFW581q9dgOUcqASpzEFaPCiJn5bL2asMbZMLrcGaqhyUwyiodRGCTYOWwc4uJnyC23ZguqAQQxfMUmAuZMFSdDRsCavOdjbjAqqkNlDrNF6bpagY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HMgPRB+b; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Bn3yyaBkiKp2c2WsxcIDweJ0pZ+JwRGDO98OdjvXVqHjwRDievBr3UBzc9F6Bf9EUVrTciYOFjIU8yTcY01fJC5CjHPMkzPG5fNL+plvs9Ovd4SZMc3FubwGcl+g5P29iBdkSFKf2wc6amsZtLpjRYjcFDWoGJM36O4om60fa+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eHX78UPP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HMgPRB+b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36E42C19424;
-	Sun, 12 Apr 2026 13:40:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eHX78UPP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 884BAC19424;
+	Sun, 12 Apr 2026 13:48:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776001229;
-	bh=oTR9m4IsEdRT37DGUiCRgUO1bMrjc6Xl/DqLoqBprrI=;
+	s=k20201202; t=1776001741;
+	bh=xRit3coA5ALjqymrXb9Jm+t1aohcwzdracpGa7ViDpo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=HMgPRB+bb79b5Qo/jRH8bx8vI5NHnJNicJMT8lKaUt+kCDfruYcD+1T+wd/Ukiu1Z
-	 oPQNxlObgdNrDoUJ5MwDxb/LdjQBU6X6l15FiqtzKNlc6vHHrEnMla8KnsQna09uPw
-	 5EmnRUd38l9R/FSid37SgKyoGlwkFybDzSMjlyMZbbmsLu41ql9GDivUELS9pximki
-	 rGQfYwLSbfnARvovK/onc8vr45ec+z4oe6kaLSwGr+saauzihJdlqw3SJ6IXi2x9eX
-	 bCUrV/O7z7ESoqC4DSuHRPPrtnVRB3+CG24SKVIj52p9Q5F3HPGWRM6dgBl1BeZlEc
-	 UZ5nUxYraOGMg==
-Date: Sun, 12 Apr 2026 14:40:20 +0100
+	b=eHX78UPPYC/i5w0AO0mnUByU5g2ysz2YmpabquM/5ppN2V9E56Qgvj7Lcg6T9aVbC
+	 uSBq28PYKBa4i+muvHMAunaMqlz7DBwxPVuXQEdapBwqKnIzgTWg53xj8yFMQIADkh
+	 w96UWBZKuPkKF65t5MHym5ZWqVk+siKUaYpoL8QVta2JFl37W7GBh4VjTesaNz8CrQ
+	 T3AhjeeyWbJnLJp6bR+wTRV8VlwgI67/Qn3IeJDDlpz9w/dhPAZLkTwSOsGH7jeQ2T
+	 MD4r3fdxTJeO38gJ8yMOcdW8H4pYC3Lr4MOIbZd4uVKhM/6PvslZ2qg/S5HGClrtMG
+	 5F0VL8EDEB8Jg==
+Date: Sun, 12 Apr 2026 14:48:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Ammar Mustafa
- <ammarmustafa34@gmail.com>, Alisa-Dariana Roman <alisa.roman@analog.com>,
- David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jonathan Corbet
- <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- linux-iio@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Docs: iio: ad7191 Correct clock configuration
-Message-ID: <20260412144020.502dafd9@jic23-huawei>
-In-Reply-To: <CAMuHMdUcDrDR-1f5eXjdyDR3-HcTFFeGsmYU2whV=fQhzsCNtg@mail.gmail.com>
-References: <aaHrsTS9iG-PEfue@ammar-VM2>
-	<aaLIhgJjrNlp3oTy@ashevche-desk.local>
-	<CAMuHMdUcDrDR-1f5eXjdyDR3-HcTFFeGsmYU2whV=fQhzsCNtg@mail.gmail.com>
+To: "Erim, Salih" <Salih.Erim@amd.com>
+Cc: Christofer Jonason <christofer.jonason@guidelinegeo.com>, "Simek,
+ Michal" <michal.simek@amd.com>, "O'Griofa, Conall"
+ <conall.ogriofa@amd.com>, "lars@metafoo.de" <lars@metafoo.de>,
+ "dlechner@baylibre.com" <dlechner@baylibre.com>, "nuno.sa@analog.com"
+ <nuno.sa@analog.com>, "andy@kernel.org" <andy@kernel.org>, Victor Jonsson
+ <victor.jonsson@guidelinegeo.com>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
+ <stable@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
+ postdisable for dual mux
+Message-ID: <20260412144852.3173a284@jic23-huawei>
+In-Reply-To: <IA1PR12MB7736D5B150CA36406ED7384A9F5AA@IA1PR12MB7736.namprd12.prod.outlook.com>
+References: <20260304090727.1800289-1-christofer.jonason@guidelinegeo.com>
+	<20260307124118.1d527749@jic23-huawei>
+	<1166aeef-0c93-408d-b265-9037f2840074@amd.com>
+	<IA1PR12MB7736AE6EEE95D5D184A15B9F9F50A@IA1PR12MB7736.namprd12.prod.outlook.com>
+	<GV3P280MB00657EB1524612E9BA0142DEF35AA@GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM>
+	<IA1PR12MB7736D5B150CA36406ED7384A9F5AA@IA1PR12MB7736.namprd12.prod.outlook.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,31 +59,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 30 Mar 2026 10:09:28 +0200
-Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+On Tue, 7 Apr 2026 14:30:57 +0000
+"Erim, Salih" <Salih.Erim@amd.com> wrote:
 
-> On Sat, 28 Feb 2026 at 11:51, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Fri, Feb 27, 2026 at 02:08:33PM -0500, Ammar Mustafa wrote:  
-> > > Correct the ad7191 documentation to match the datasheet:
-> > > - Fix inverted CLKSEL pin logic: device uses external clock when pin is
-> > >   inactive, and internal CMOS/crystal when high.  
-> >
-> > high --> active  
+> Hi Christofer,
 > 
-> Thanks for your patch, which is now commit d2a4ec19d2a2e54c ("Docs:
-> iio: ad7191 Correct clock configuration") in char-misc-next and
-> iio/togreg.
+> Thanks for the details. That confirms it.
 > 
-> That commit message still says "inactive" and "high", thus adding to
-> the confustion.
+> Jonathan - this one is good to go from our side.
 > 
-> Gr{oetje,eeting}s,
 > 
->                         Geert
+Applied to the fixes-togreg branch of iio.git
+Very unlikely I'll do another pull request before rebasing that tree
+on rc1 though, so it will be a few weeks.
+
+> Thanks,
+> Salih.
 > 
 
-Ah.  Sorry, I missed that and can't really do anything to fix it up
-now :(  All got a bit rushed as I was off on holiday.
-
-Jonathan
