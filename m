@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47B72313E24;
-	Sun, 12 Apr 2026 15:12:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993CE26E71F;
+	Sun, 12 Apr 2026 15:17:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776006740; cv=none; b=ZSwc3D/aGruG13afvUVvheSG2UWL6rXlJKlUSnmA6Tumk2LjOzdNB/qf+vw+1EMUfIU8mwpfV9I00wg3zjcxuTYJgQNVYxr+ylNIBmX/cjTKdDVll31QnEWtd1SPIYx075mb3/L+m4/F+2/ux2ANjHdscWiV/feorTTVas9CGBM=
+	t=1776007020; cv=none; b=GQd0pHg7/m/8SQGDosujY1HiA4GBs9wrd0Yr9AlAt+P0Knb9mz+uAl0BOmcsIkRs8AWSHmdywbmKn/sYrJibIieKYxfFD9KHMyHr+e0amxwklf5YjjnYs+6I5GDBtyq0k4hZnaSB5Lns/3ao7NH+QPv494YSp6AFQkq8ZgdAjxo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776006740; c=relaxed/simple;
-	bh=yNxjtNBMRJIlc17pgiUYYiOp5Ofx8ypvvY3pLXk4msI=;
+	s=arc-20240116; t=1776007020; c=relaxed/simple;
+	bh=5zef6enKB5ySdyV6i+5YPI+rubdsXOoMloPeHZAGqaQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=iRnYaT5QLIXX/Q9ew76lB7VOGepYeMtAePal5EvytwSyQ9UPRQoWQVzU9Aai4khTEU2n8IeXnQaZdh6ebrjgS7hOLssnuQF5xn5uzyW3N9VaWGL1f8F60G/4oaxEOTBOR+2jadyIUNVS4qQjW+EFtUPE0iwKgHBMbiaea2r9r1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D0aonE/D; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=YdJzGWOH+pv0xBVkTMVeSpN+2YB8v5faB5hhEWAzDI/gWe1AZNARc6tcquLnTWfqNSQPTzEYEds/mWrObcVGG2UsdjiHjuI3MYO3TilG9dUyUxk5XGxPWgzJSRCxHwR5muBljwJan0HuF0rBP6UAftADLDu37/kjvOa+AaoTp7I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R+le5F8U; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D0aonE/D"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 432A6C19424;
-	Sun, 12 Apr 2026 15:12:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R+le5F8U"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B38EAC19424;
+	Sun, 12 Apr 2026 15:16:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776006739;
-	bh=yNxjtNBMRJIlc17pgiUYYiOp5Ofx8ypvvY3pLXk4msI=;
+	s=k20201202; t=1776007020;
+	bh=5zef6enKB5ySdyV6i+5YPI+rubdsXOoMloPeHZAGqaQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=D0aonE/Dh1zOK6AM48HbJw1Qq3lP87X7BG1PYoHbZ0GbeIv7flAcB3KX2vWc3P1sH
-	 w9x26M1icSktosfpabla5b+gUb4oFeyC7mdY603186G6cOWfqi8Ig4er/Jtb8Y6pll
-	 DrtX31CbBgPb5tnFKWQJagVwwHVwSQzqtKyDfjEztGKdJTwqeyQuhFU30JgpsAl0RS
-	 03NzFuVGqd3rGaL2rrAjK3vO6/iqKByZitJSgG+6Sefj6nMdXlp0CSgXhMxdk90f8+
-	 VgAgI8siwa/sUc0p2VbiI25w5LWuw81ovldwpLXSZj22/KX7GV2LoWg1/uiowIO2ie
-	 jj5nw5g35iL/g==
-Date: Sun, 12 Apr 2026 16:12:12 +0100
+	b=R+le5F8UT4rF8r3/IO4T90e5P2z+XSrdsi6VeJJtPQODVjN8AJvp7CNXTTbO48vk2
+	 AcAFPlTtNOnXXx3HuUPQSSTKLZnXtjGnJi3sjMLpAhhle4UG4yMI7IaysVXlScxlb7
+	 0FegLuHidt3kZs9a+M18aeWyNx/3YT6BaEv8mFRDyTpe5OH6JfbpPenBFBsR+unBfG
+	 IZNOuE9Fk4CGcgZwtWGVOCr4ZH3Q7aKoAIyobjdHIUl0w5G69pWA+xskPAjzGQWWaz
+	 ARMEt3o0yuMvMXT0MNshgfrX6ZidFUMumL2hbtjsV+xFWSYFsXMjICW/JJ54MIRAt2
+	 raplHc9VlMeCw==
+Date: Sun, 12 Apr 2026 16:16:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Pengpeng Hou <pengpeng@iscas.ac.cn>
-Cc: linux-iio@vger.kernel.org, Gyeyoung Baek <gye976@gmail.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Pengpeng Hou <pengpeng@iscas.ac.cn>, Gyeyoung Baek <gye976@gmail.com>,
+ David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: chemical: mhz19b: bound receive buffer copy
-Message-ID: <20260412161212.0f0e24c1@jic23-huawei>
-In-Reply-To: <20260322134807.16217-1-pengpeng@iscas.ac.cn>
-References: <20260322031923.58031-1-pengpeng@iscas.ac.cn>
-	<20260322134807.16217-1-pengpeng@iscas.ac.cn>
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH] iio: chemical: mhz19b: reject oversized serial replies
+Message-ID: <20260412161651.3479e47e@jic23-huawei>
+In-Reply-To: <ac4rKEMYAl-FJ5e8@ashevche-desk.local>
+References: <20260402054015.38565-1-pengpeng@iscas.ac.cn>
+	<ac4rKEMYAl-FJ5e8@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,48 +49,41 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 22 Mar 2026 21:48:07 +0800
-Pengpeng Hou <pengpeng@iscas.ac.cn> wrote:
+On Thu, 2 Apr 2026 11:39:04 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> `mhz19b_receive_buf()` appends bytes to the fixed 9-byte command buffer
-> without first checking that the new chunk fits in the remaining space.
-> A single receive callback can therefore write past the end of `st->buf`
-> before the driver sees that the command is complete.
+> On Thu, Apr 02, 2026 at 01:40:15PM +0800, Pengpeng Hou wrote:
+> > mhz19b_receive_buf() appends each serdev chunk into the fixed
+> > MHZ19B_CMD_SIZE receive buffer and advances buf_idx by len without
+> > checking that the chunk fits in the remaining space. A large callback
+> > can therefore overflow st->buf before the command path validates the
+> > reply.
+> > 
+> > Reset the reply state before each command and reject oversized serial
+> > replies before copying them into the fixed buffer. When an oversized
+> > reply is detected, wake the waiter and report -EMSGSIZE instead of
+> > overwriting st->buf.  
 > 
-> Drop overlong chunks and reset the partial command state before the
-> copy.
+> ...
+> 
+> >  	struct completion buf_ready;
+> >  
+> >  	u8 buf_idx;
+> > +	bool buf_overflow;  
+> 
+> + blank line here.
+> 
+> (No need to resend just for this.)
+> 
 
-This 'before the copy' part of this implies the copy still happens.
-I don't think that is true.
+This version addressed the comment I just made on v2 so all good.
 
-> 
-> Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
-> ---
->  drivers/iio/chemical/mhz19b.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/iio/chemical/mhz19b.c b/drivers/iio/chemical/mhz19b.c
-> index 3c64154918b1..fbd7f14483b3 100644
-> --- a/drivers/iio/chemical/mhz19b.c
-> +++ b/drivers/iio/chemical/mhz19b.c
-> @@ -240,6 +240,12 @@ static size_t mhz19b_receive_buf(struct serdev_device *serdev,
->  {
->  	struct iio_dev *indio_dev = dev_get_drvdata(&serdev->dev);
->  	struct mhz19b_state *st = iio_priv(indio_dev);
-> +	size_t remaining = sizeof(st->buf) - st->buf_idx;
-> +
-> +	if (unlikely(len > remaining)) {
-> +		st->buf_idx = 0;
-> +		return len;
-Given this doesn't complete we will see a timeout error if this is hit?
-That is rather misleading. I think I'd at least print a message in this
-path to provide a hint of what happened.
+I tweaked whilst applying.
+Applied to the fixes-togreg branch of iio.git.
+
+Note I'm unlikely to send another fixes pull request this cycle, so
+I'll rebase that branch on rc1 once available and send out then.
+
+Thanks,
 
 Jonathan
-
-
-> +	}
->  
->  	memcpy(st->buf + st->buf_idx, data, len);
->  	st->buf_idx += len;
-
