@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A878313E24;
-	Sun, 12 Apr 2026 14:32:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 831522D47F1
+	for <linux-iio@vger.kernel.org>; Sun, 12 Apr 2026 14:34:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776004340; cv=none; b=bJHiw/Y7FJpCFVji3emx029qDbRaGwPRXuvE6EjUEvB1vC/hi/3dccFAXHxI57KJ92/BemCBcyI9GYasIzgV5Glth02RgVbj11AuCGJZGBol014KKyBlZds2s/jA0Ubf3VjJm3XdSNoiG8EdxgUw0tvVWBSDiir9EP6EgDYtQFQ=
+	t=1776004455; cv=none; b=eytNzEE7P3XuE1DFWs8YwtGgCcEddfmFP4GYYgnhJVcMP4mby7lZBtvHlz3vLnJ798+l2xExbLwlGkYfeDBznPRxCIdg5zeOzt6Dmsw7gfThWrO52IRTgWCMtTxrkTh5IMae8fLebCnFvIqSWmOntrLMU/n71yKONNedLApPvec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776004340; c=relaxed/simple;
-	bh=7WfdRn6Z59E+7VmpdZJQMn56lCZNgJBwwEK5R50/aRQ=;
+	s=arc-20240116; t=1776004455; c=relaxed/simple;
+	bh=LKIOlXJQ9dkZ3cB/K/lt168j5QthpmS7AOiwKtSKH+8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sGuaCbnM4WnOsMgQPNlmRfb4N846a6BgYCHHUCZQUW5r7ddHgxMDZLKF8MOwU9KmpDaycuQUFb5m+5rBcfpwG+eCz9azLZnc2BL7myzc9cvDasV+EpNqUYsG+6VrLyVipWSYQb9pQvK1xNZ8f7ftc7CPcVyWQjPfH3dMXrVb7nA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vvxlmyge; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=MzPqNe2FPr9Eg27rFSMOhV+1l/fru38SNz09j9UBwJpp3u5DFuWTgZvRsuDt1VVb5cQIOqJvzI+d4zSdONODro73RzIcLW7VlVYI3mKVfH3XGPPgw/NnSRqxrFFpPGaKZWYSNL3KfGPnXXoC8VQ9+Mm+CpzywT2m3uFWu6PxZ2c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DpVDovK0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vvxlmyge"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F8BEC19424;
-	Sun, 12 Apr 2026 14:32:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DpVDovK0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E33F7C19424;
+	Sun, 12 Apr 2026 14:34:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776004339;
-	bh=7WfdRn6Z59E+7VmpdZJQMn56lCZNgJBwwEK5R50/aRQ=;
+	s=k20201202; t=1776004455;
+	bh=LKIOlXJQ9dkZ3cB/K/lt168j5QthpmS7AOiwKtSKH+8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=VvxlmygeZdaNIoPYJJd7/+WoLnb5Mfh8oZRWBlihPBuUb8ARf3gwSxdIPJIBf3/vQ
-	 V4RiYm/dcfjEtiHJ82jwwyW//7DmK/kcap5VqZhIqBWfeL2k/ZoyWZ4nby8lcqMQ38
-	 fts0+buQww3/rlrmq5k9ivCPkuAMj4jzkY//CpsUyYwL6tB1Ck3BID8DLii5uiBFrW
-	 OvfFoTqQnghevZ4T8X1r236Xy2+l49tfWSOPgrgIOtF3U0kshYwnfnCLo/6bMmPI+3
-	 NnWYkW+g8lTi8IdGrDtoYiDMMPkEo2a05ReAVhb+tgYdLgky623bCjEw0+ntAcCgwS
-	 dT387CYr2Cewg==
-Date: Sun, 12 Apr 2026 15:32:12 +0100
+	b=DpVDovK0JdyDiBpE2bqVvUtc6Xyx6GRnLpkADMg1ep7NZZu1728kx9MbosgBgBagJ
+	 gFJzyx2TmuDl5ANEC8SEFg+Hty/cCQnPPnQxmRW6F93RRY/2trZ5v7HKgOLjOdNF7k
+	 VM9rTpcjeyPLMq7BwXxKafAa83Jsj8WDtBDfUSRJsJzWoItNFrlToueZ6gsennRG/5
+	 FFifdF+YRcUyWKkmjRgtpIGpRgA5iUnWeIhI2dMtBWxiutSzjkfyLVwTVR9m1s30Sg
+	 1HncscspeP4A4XX6VHJ7vlIVc/9hfLZomqoC7LM/Avpo5ox9XRU1HGg627B7qDoUwz
+	 Z4OKsySCgbwVQ==
+Date: Sun, 12 Apr 2026 15:34:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: health: max30100: drop unnecessary cast
-Message-ID: <20260412153212.62a27aa5@jic23-huawei>
-In-Reply-To: <20260321205646.207ac77f@jic23-huawei>
-References: <20260314-iio-health-max301000-drop-int-cast-v1-1-ed4982d559f5@baylibre.com>
-	<abfojPjXKhI6V9e-@ashevche-desk.local>
-	<20260321205646.207ac77f@jic23-huawei>
+To: Rob Herring <robh@kernel.org>
+Cc: Chuang Zhu <git@chuang.cz>, linux-iio@vger.kernel.org, Marc Titinger
+ <mtitinger@baylibre.com>, Stefan =?UTF-8?B?QnLDvG5z?=
+ <stefan.bruens@rwth-aachen.de>
+Subject: Re: [PATCH v3] iio: adc: ina2xx: add INA236 support
+Message-ID: <20260412153347.539c5eee@jic23-huawei>
+In-Reply-To: <20260408155520.GA2256298-robh@kernel.org>
+References: <20260315182304.613783-1-git@chuang.cz>
+	<20260408155520.GA2256298-robh@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,41 +47,42 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 21 Mar 2026 20:56:46 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 8 Apr 2026 10:55:20 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-> On Mon, 16 Mar 2026 13:25:00 +0200
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> 
-> > On Sat, Mar 14, 2026 at 05:33:01PM -0500, David Lechner wrote:  
-> > > Drop an unnecessary cast in max30100_led_init().
-> > > 
-> > > val is defined as unsigned int val[2]; so the cast is not needed, nor
-> > > is the address-of operator &.
-> > > 
-> > > Also fix alignment with ( while we are touching this.    
-> >   
-> > >  	ret = device_property_read_u32_array(dev, "maxim,led-current-microamp",
-> > > -					(unsigned int *) &val, 2);
-> > > +					     val, 2);    
+> On Mon, Mar 16, 2026 at 02:23:04AM +0800, Chuang Zhu wrote:
+> > The calibration divisor is not directly specified in the datasheet, but can be calculated:
 > > 
-> > You want to have ARRAY_SIZE() as well.
+> > I = Current_LSB * Current
+> > Current = ShuntVoltage * CAL / calibration_divisor
+> > CAL = 0.00512 / (Current_LSB * Rshunt)
+> > ShuntVoltage = Vshunt / ShuntVoltage_LSB
 > >   
-> Should we make val a u32 val[2]?
+> > => I = (0.00512 / (calibration_divisor*ShuntVoltage_LSB)) * (Vshunt / Rshunt)  
+> > 
+> > Ohm's law, I = Vshunt / Rshunt  
+> > => 0.00512 / (calibration_divisor*ShuntVoltage_LSB) = 1  
+> > 
+> > ShuntVoltage_LSB = 2.5 uV = 0.0000025 V  
+> > => calibration_divisor = 2048  
+> > 
+> > Signed-off-by: Chuang Zhu <git@chuang.cz>  
 > 
-> Obviously we all know the unsigned int is that big, but in theory that might
-> not always be so...
 > 
-> This is the only place where it's passed as a pointer rather than value from
-> one of the elements I think.
+> > @@ -1082,6 +1117,10 @@ static const struct of_device_id ina2xx_of_match[] = {
+> >  		.compatible = "ti,ina231",
+> >  		.data = (void *)ina226
+> >  	},
+> > +	{
+> > +		.compatible = "ti,ina236",  
 > 
-David, this question is outstanding so I've marked it 'changes requested'
-in patchwork.
+> This is not documented. Please add/extend a binding for it.
+Good point. I missed that.
 
-Thanks,
+As this has gone upstream now, follow up patch please.
 
 Jonathan
 
 > 
-> 
+> Rob
 
