@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2997F31715B;
-	Sun, 12 Apr 2026 18:39:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E32D469D;
+	Sun, 12 Apr 2026 18:42:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776019146; cv=none; b=iy/kl92vEbDeChnbgOCTv6nRAJpOIXEnB8gqiEkfrCUE/xJQMVX5lRS/c4yjftKENZWzkWX1KDR2qbfuoa8FsgmgWa62yaGRWVQrV8e2vdCnqbxY68VmskhiMPRDwvBfsrHH6+V9HMKXmMjnvCsrj9Qwop2oP+8aVjv6+bSr3gU=
+	t=1776019332; cv=none; b=Dq1zmYVNTmdknKJzSs1S/GVSFuXla58KpvIy57ABSqXUarnUl8NnDpCr9Df1+GhDHNEE/mnziwYoA/5mvoaNKNopWhGFZHg8ae1hmLtOyVYpd6Sx4DNBuVAikonQgqn9apsVfJ32h9OYV2wR+2SyGG4+uLtYd2UYZ+1fJ3eunPI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776019146; c=relaxed/simple;
-	bh=dcEmLLApXacngjPzNKE1xU1CKZHtpcpVKqDIJLur2U8=;
+	s=arc-20240116; t=1776019332; c=relaxed/simple;
+	bh=qbj7C2qSGrrNMPXr+xiekXxOla9aCb8ohmHN8mIPtZg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Ny79pzn84pDkRQnQ7rwnFrOflc1VAbCFuMYTa9f+Rb1Q8O7GCsf8fvy+wfBHSNkCuZsWK2iZBE1aVMeUs1869eqxL7yG8AYwWzPGI3Oq/omENplO+hSklQPHE03y10gCSRCrrhKk4BHgJJhuxoGhucM/q8sL7/T+/TmP7W7v0qk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eTMo0zkI; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=mlSGcQeqsFUBIFQ2rLZ5wU9LpqFPHXji0wsxMFj6ylW3etG872pt1iFd9XxSv3/BI92RaPptysZNCqUc2NQnEaqeWzNnOHF0axIiqE3qOfStnO5IDgjsX18oplBftL7xNOs3ha1DqlbCHKn1PCOqbkooWK3WnZUbGwboYST3IXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BtRYNF5I; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eTMo0zkI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD81C19424;
-	Sun, 12 Apr 2026 18:39:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BtRYNF5I"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52FB2C19424;
+	Sun, 12 Apr 2026 18:42:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776019146;
-	bh=dcEmLLApXacngjPzNKE1xU1CKZHtpcpVKqDIJLur2U8=;
+	s=k20201202; t=1776019331;
+	bh=qbj7C2qSGrrNMPXr+xiekXxOla9aCb8ohmHN8mIPtZg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=eTMo0zkIUUeF6lyasmTl6lFK+3IXyJJ2A47grKKjO73UoBb/vx/bPVj9fgCmZ7DjV
-	 KsK2Fdm1V9T0yDnMILSdsg6inXYa33DeGNOYPs9kex+x1eyS86mcgQI0Dgx60V/S6r
-	 Is9Vh5DPY0byN1xjcHUoS15PjtWzWwTKzK/29hQDc6Q0F5uCZxB7vxPC8ptp8mnOIe
-	 DNO3sgpg9dwt1HbaiD7fV2S7TlW8bjplECwDDJxOgI2Jl/OJ+oaHrOjIpaE9hXo0Ud
-	 D4muoqdJp8Uf6bsTyS1b3ZGtX7Ik14xEAVYYp0nzOza1dOLU/zyL+XPB2ofbqQFYp1
-	 PpMSZ3pw5htnA==
-Date: Sun, 12 Apr 2026 19:38:56 +0100
+	b=BtRYNF5IlgkyFcv3qh7+Iu1KVfVCULxboa3w81OhwsyS8XlZFaFVqe7lfSw3XT1dd
+	 zLDGcHrTOpBRm6L1LRCYDQsNM0ec0lvsRBbcK26JdASgOVfjEmtixldmKNYfTYbEgy
+	 8x6kDwI7pk4fjRL+tjj/ldexJaOIc9CqJV4C72AAJ1YdSkVtQqHXZeGZIju7JGnH/B
+	 yQbKEM+8U6LsIe8jTOkHV40RPswrwkymAGb5xX+poh3gzYa1BiQxDeiHydSsRDFTLZ
+	 OTJHVSvNYbBzQpxfnCpg5IEGZ96jH16RAkjERq5TqbBUWQTASybNHVmoFscNo5ipVw
+	 lTQJArmt0qQ3g==
+Date: Sun, 12 Apr 2026 19:42:06 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-Subject: Re: [PATCH v5 0/4] ti-ads7950: fix gpio handling and facelift
-Message-ID: <20260412193856.1300770b@jic23-huawei>
-In-Reply-To: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
-References: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: "Md. Mahmudul Hasan Mabud" <mdmahmudulhasan1511@gmail.com>,
+ lars@metafoo.de, Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: adc: ad7816: use sysfs_streq() instead of
+ strcmp()
+Message-ID: <20260412194206.70ea9781@jic23-huawei>
+In-Reply-To: <acpL0OgqPYoVbzb-@ashevche-desk.local>
+References: <20260330074850.12638-1-mdmahmudulhasan1511@gmail.com>
+	<acpL0OgqPYoVbzb-@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,65 +50,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 05 Apr 2026 21:39:22 -0700
-Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
+On Mon, 30 Mar 2026 13:09:20 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> The original reason for this series is to make sure ti_ads7950_get()
-> returns result in range [0, 1] or a negative error code to comply with
-> gpiolib requirement.
+> On Mon, Mar 30, 2026 at 01:48:50PM +0600, Md. Mahmudul Hasan Mabud wrote:
+> > Use sysfs_streq() to compare the input buffer with the mode strings.
+> > This is more robust as it ignores trailing newlines, making it safer
+> > for sysfs store functions.  
 > 
-> During review David noticed the fact that the function also clobbers
-> gpio state. Fixing that lead to adding cleanups using guard() and devm.
+> ...
 > 
-Applied to the testing branch of iio.git. I'll rebase that on rc1 once available.
-
-Thanks for persisting with this. Indeed a nice facelift ;)
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> >  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
+> >  
+> > -	if (strcmp(buf, "full") == 0) {
+> > +	if (sysfs_streq(buf, "full")) {
+> >  		gpiod_set_value(chip->rdwr_pin, 1);
+> >  		chip->mode = AD7816_FULL;  
+> 
+> I think it might be better to do more work on this.
+> First of all, convert to use IIO_DEVICE_ATTR_RW().
+> Second, convert to use sysfs_emit() instead of sprintf().
+> But with that, switch to use a static array
+> 
+> static const char * const modes[] = {
+> 	[_FULL] = "full";
+> 	[_PD] = "power-save";
+> };
+> 
+> This will need redefinition to start from 0 (I don't see why it needs to
+> start from 1).
+> 
+> #define _FULL	0
+> #define _PD	1
+> 
+> This allows to switch to sysfs_match_string() and return an error on
+> unrecognized input (which is absent right now).
+> 
+> So, something like series out of ~3-4 patches is expected.
+> 
+Hmm. ok I guess to cleaning this up, but worth noting that this
+bit of ABI is custom and very very likely to go away in the longer
+term if this driver is cleaned up enough to move out of staging,
 
 Jonathan
-
-> ---
-> Changes in v5:
-> - replace mutex_init() with devm_mutex_init() (Bartosz)
-> - Link to v4: https://patch.msgid.link/20260329-ti-ads7950-facelift-v4-0-c568c508c49a@gmail.com
-> 
-> Changes in v4:
-> - rebased on top of latest next
-> - dropped the 2 already applied patches
-> - restored inadvertently removed mutex_init() (Andy)
-> - stopped calling devm_regulator_get_enable_read_voltage() on ACPI
->   systems as it is guaranteed to fail (David, Jonathan)
-> - removed call to spi_set_drvdata() since it is not needed anymore (David)
-> - Link to v3: https://patch.msgid.link/20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com
-> 
-> Changes in v3:
-> 
-> - Added "Fixes" tags
-> - Picked up reviewed-by tags for #1 and #2
-> - Dropped the conversion to "error" variables
-> - Avoid using scoped_guard (per David)
-> - directly return results of function calls at the end of function (David)
-> - Split spi_sync() error handling into a new patxch (Andy)
-> - Switch to using devm_regulator_get_enable_read_voltage() (David)
-> 
-> Changes in v2:
-> 
-> - style fixes in #1 (per David)
-> - fix to not clobber state (#2, new)
-> - #3 and #4 (new)
-> 
-> ---
-> Dmitry Torokhov (4):
->       iio: adc: ti-ads7950: switch to using guard() notation
->       iio: adc: ti-ads7950: simplify check for spi_setup() failures
->       iio: adc: ti-ads7950: switch to using devm_regulator_get_enable_read_voltage()
->       iio: adc: ti-ads7950: complete conversion to using managed resources
-> 
->  drivers/iio/adc/ti-ads7950.c | 197 ++++++++++++++-----------------------------
->  1 file changed, 64 insertions(+), 133 deletions(-)
-> ---
-> base-commit: 2febe6e6ee6e34c7754eff3c4d81aa7b0dcb7979
-> change-id: 20260220-ti-ads7950-facelift-ad8b5390a654
-> 
-> Thanks.
-> 
-
