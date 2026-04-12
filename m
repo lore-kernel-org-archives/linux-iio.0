@@ -1,259 +1,213 @@
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-10631.protonmail.ch (mail-10631.protonmail.ch [79.135.106.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83AAB367F3B
-	for <linux-iio@vger.kernel.org>; Sun, 12 Apr 2026 09:38:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 769B0375ACB
+	for <linux-iio@vger.kernel.org>; Sun, 12 Apr 2026 09:54:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.31
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775986709; cv=none; b=PzzagsDnTEwYvPXInf7hJWjCFq1JsRXFd/hWhsZrmKQMbYq+gUsNbWENQfaiRAvg6awsIgZ71muGg1RY9aGo3fQRWR81xOKMgCp3OoNs5jmXoUto9YqNJJ2k4YGVnu08fMLcsp2vmx/hx30khxmBBFmRT1dUYmJUaERs+mnngrk=
+	t=1775987668; cv=none; b=TKIBMLSBqdhS86eQWxvDEl5e+UMwOExZfF5OKYpA9QZSk0ka9uTzQ3t5hMCh0Oimmr70Dbl50EQeK5NnQ5SjzquEGhYACpBFDHd8GpKmYl6f+Ehz6bhEjSrVji4m8cHD/wSR9GlYbl1Nw02YUtXbSu1PYCsDe7clhZ+6Pxms6vo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775986709; c=relaxed/simple;
-	bh=fKhxy+uUkv7uyoUtuBiGeXl0glQsbzn+BjMiYVG5E10=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ZngUPS1luvcWBUPUU9FuyhhCCqu6eL74z0HOz3RxZtwxl/CLiPieKdxWbZSFf9kBZNYKmZBENym3HRPrFFJstf11yVManbvT9Q8PaNzl8/IZhMjJQnZoOz1vC0xok//qpQ0gZDiBsPqsMBQq7uFy0BVIUoCF1p9t5Pbj7GXLkDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=tDMKJSrI; arc=none smtp.client-ip=209.85.210.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1775987668; c=relaxed/simple;
+	bh=iXA+hI/Efvr0jnAb4U1G+XY4odCQ7UR4/pCLV7jSlWQ=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=e0tTIbKi0SOQ+0Ytq+jISu1eXlLa2qDOK0W3CylAtywsPjWnL0BFpBUqDr53KcJo+3VSuoKbfTmp9tCq9rqY3sKEGrWKYfQ/dqYZYQtNQSt1lVD+lyKhrpj22to9yIYOS/yPKlx4dLWjUM+MYu95AOx86lsHPpiWqoy/oWtQHN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=minvURCS; arc=none smtp.client-ip=79.135.106.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tDMKJSrI"
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-824c9da9928so2476999b3a.3
-        for <linux-iio@vger.kernel.org>; Sun, 12 Apr 2026 02:38:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775986708; x=1776591508; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=I5lS9m0YKF/AhL70UDdpLWZKYq+rkGRCMnHCx58rcr0=;
-        b=tDMKJSrIJgC1UC4OoirqjIw8UXeRMvAwFDU6Ul5uiGz2IcoYRx57aeLFykBcj3RJwv
-         bq2oGqqKmUpk1h0/hQtlGJ4UM9yulo8DBSrd00DfefHSlFe5v6/4QaXzdBX0391BYPzD
-         87r3X31IQBpoDYCJPoLq9oLzfiTktShe+BOXLAy8ABUE7+a8P3mz4Fz5a1e4OMxchPSP
-         WvRaIz1Dq/bpJAm0bL2ztftUZkFxvmdpchXpHo9gg/uChGtwgrPi5XIOELixvRfvgbL6
-         Z/uqZfpR9I4ld9BotVqus6+KX7/A8jXDMG7+zQbZfi52FzV6FlczcQXko7QdMGhay4oY
-         Cfxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775986708; x=1776591508;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=I5lS9m0YKF/AhL70UDdpLWZKYq+rkGRCMnHCx58rcr0=;
-        b=lPZKmMGxt4TafzRoVeQDnHELFn+6RlC8H8pBM2TZ/xbpwYdFGQnj3RdYifSe6t6kTZ
-         TKoWDA3Qqqs6vXcz2e5y0YPoeJy/WgbW7O2/BJOXgDa+lRGrclLhaTUyWoLHk6JtAL2X
-         pEvPpUlS6W23CAvUUrA/3dwuY1/UrYS0NBE+E6WygH8Awu0LrM0rHjPpxOuFDn69ecai
-         +Cu7hBKTgFJSGcZsPKFaRRKAGSuvl+Gkpnjz6p3ivUvZfAW/hRTtOHoIsyeqt2szZ/xk
-         aQGaH8uoKPhL/E0CXEUJeuq2hflu3MKzQxfT1pGBA/ozL4J1cCyloOrXtbaC6lLbINCs
-         yCmw==
-X-Forwarded-Encrypted: i=1; AJvYcCVeP3n6h9Z/iHrZamxqxKps92zRXBcmOgLL2hMIeGEIV/kh08foCS/aWfBhEJBCJi/CJ5gC8CNIqHs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy2MbWm3w9mKc/Fg5dlWlrtjEhbGvpbjhbyXROi0uJal61wJLmH
-	ZsgplvNVlV0YRvoAeLqRwmpy7qRIQ+ND7VUM/O5Gt2c0G13fH0ylQ/FV
-X-Gm-Gg: AeBDiescXQ0xPzomC1jRcOkk2AL6FJE6HwcUN+1w30YAuq2flyct66hwut9SW6Cc9wp
-	tXi2wtM4Y6l6ia/0LrxZ38ZEEmp4mYvub7XMSAPTo8PkTVXVpZg/W66wLcJH39pI4vTRJQ8cND0
-	JXa7VK3la9lHxgMhnMjTvzWOeJ0bY3VGX49xnLUv2HRxO2kCBwv69WLCMjkUjUi/ay+FZUqHM7q
-	CZqkYzk7r2lrA38ZkGSW+KtYcvaWR7o99B87j3p0jPyav8g7rgv5XuTNnX9f/vBn6HyfWatE5Af
-	XzqpqrOiLZ51yK8TrwWfHFzhaVpKwxhg0zYncUt7kqzM9UYYDrIvgxO+gRmzdKG+WGsvfKMxKoR
-	NZ6UbUXH1QFgWj9QbAYWNfTlNctkDQTTF3BMqsj6uuFUDrJv29pATHApM9cjTMEanr8ah2FB7lJ
-	EpzfTJ4az66/QjrEMI21OLu1Ob6C7K6lmW4wK2CkI1f4egKWJmyvhm9VeioEziqiu4wE7L01On
-X-Received: by 2002:a05:6a00:408d:b0:82a:8163:4bf4 with SMTP id d2e1a72fcca58-82f0c27749cmr10120883b3a.46.1775986707878;
-        Sun, 12 Apr 2026 02:38:27 -0700 (PDT)
-Received: from debian.ari ([152.56.156.42])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f0c36130csm7885038b3a.24.2026.04.12.02.38.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Apr 2026 02:38:27 -0700 (PDT)
-From: Archit Anant <architanant5@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Archit Anant <architanant5@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v8 5/5] iio: adc: ad799x: convert to fully managed resources and drop remove()
-Date: Sun, 12 Apr 2026 15:07:39 +0530
-Message-Id: <20260412093739.17116-6-architanant5@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20260412093739.17116-1-architanant5@gmail.com>
-References: <20260412093739.17116-1-architanant5@gmail.com>
+	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="minvURCS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+	s=protonmail3; t=1775987658; x=1776246858;
+	bh=dJttnkqYgp1JUqhsR0KFuNpwYldDjOyoJeaymBvYBdY=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=minvURCSKSJC6sGObre815pZm2CkhejwLOGYxRuZdnk0jygOpJxkOKvwJtVWCtKI0
+	 0qDUdM8+dqZ/DykHvfvKR8SKqyK2lvdiWpLGc9zg2w3DGBEXIe39Tme0typ9h+JEO9
+	 iY/J4GldVCIPeMVkuZrbKw1PSgXmR05NYtXYMn/7zCqxPa4oUNa5dnlFliInG13MZB
+	 Z7D9HD37D5ZEE94m9p7XZ1lbnofxta9yX88p8HMvRQbxVaoth0avHbVGq0Y87xiLPF
+	 Gj7qJ5j5gP9I/RRboKn7rcoyQWlNcbar5CX1ZCD8sXOiHfoOoL3d+e5bF7lbya/gxU
+	 aPT+VeDW7NYTQ==
+Date: Sun, 12 Apr 2026 09:54:12 +0000
+To: David Lechner <dlechner@baylibre.com>, Hardik Phalet <hardik.phalet@pm.me>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Hardik Phalet <hardik.phalet@pm.me>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Brigham Campbell <me@brighamcampbell.com>, Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: Re: [PATCH v2 3/4] staging: iio: magnetometer: Add QST QMC5883P driver
+Message-ID: <DHR32TA81G99.14OO5FKEDU8CB@pm.me>
+In-Reply-To: <736964f9-1e93-47e7-80ca-1a89f239a353@baylibre.com>
+References: <20260409210639.3197576-1-hardik.phalet@pm.me> <20260409210639.3197576-4-hardik.phalet@pm.me> <736964f9-1e93-47e7-80ca-1a89f239a353@baylibre.com>
+Feedback-ID: 166659585:user:proton
+X-Pm-Message-ID: f945d8a8660e08a8b18a72b33cd71943d441fff6
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Convert the driver's remaining manual resource management to use the
-devm_ infrastructure, allowing for the complete removal of the
-ad799x_remove() function and the simplification of the probe error paths.
+On Sat Apr 11, 2026 at 1:32 AM IST, David Lechner wrote:
+> On 4/9/26 4:07 PM, Hardik Phalet wrote:
+>
+> This is a little bit much to review all in one patch. Could be nice
+> to split out power management to a separate patch.
+>
+> Oversampling/downsampling could be split to a separate patch or two
+> as well.
+>
+Noted David. I will handle it in v3. I think downsampling can be another
+patch.
 
-Specifically:
-- Initialize the mutex using devm_mutex_init() and move it to the top
-  of probe() (before IRQ registration) to prevent a race condition where
-  an interrupt could attempt to take an uninitialized lock.
-- Use devm_add_action_or_reset() to ensure that the VCC and VREF
-  regulators are disabled safely and in the correct order during driver
-  teardown or probe failure.
-- Refactor the optional VREF error handling path for better readability.
-- Convert iio_triggered_buffer_setup() and iio_device_register() to
-  their devm_ variants.
+>> +#define QMC5883P_REG_Y_MSB 0x04
+>> +#define QMC58
+>> 83P_REG_Z_LSB 0x05
+>
+> Were you manually editing the patch?
+No. Maybe it's my email client (AERC). I will make sure the next version
+is tight.
 
-Because all resources are now managed by the devm core, the unwinding
-order is guaranteed to follow the reverse order of allocation. All manual
-error handling goto labels in ad799x_probe() have been removed.
+>
+>> +#define QMC5883P_RSTCTRL_SET_RESET \
+>> +=090x00 /* Set and reset on, i.e. the offset of device is renewed */
+>> +#define QMC5883P_RSTCTRL_SET_ONLY 0x01 /* Set only on */
+>> +#define QMC5883P_RSTCTRL_OFF 0x02 /* Set
+>> and reset off */
+>
+> Or maybe you mail client mangled the patch? These wraps are
+> happening in many places.
+>
+Yes. Exactly this.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Suggested-by: David Lechner <dlechner@baylibre.com>
-Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Reviewed-by: David Lechner <dlechner@baylibre.com>
-Signed-off-by: Archit Anant <architanant5@gmail.com>
----
- drivers/iio/adc/ad799x.c | 70 +++++++++++++++++-----------------------
- 1 file changed, 29 insertions(+), 41 deletions(-)
+>> +=09if (regval !=3D QMC5883P_CHIP_ID)
+>> +=09=09return dev_err_probe(data->dev, -ENODEV,
+>
+> We don't consider ID match an error. It has happened too many times
+> that there is a compatible part with a different ID. This can just
+> be dev_info() and return success.
+>
+Noted. Will handle in v3.
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index e37bb64edd2b..0ceedea5df0b 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -775,6 +775,11 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 	},
- };
- 
-+static void ad799x_reg_disable(void *reg)
-+{
-+	regulator_disable(reg);
-+}
-+
- static int ad799x_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
-@@ -794,6 +799,10 @@ static int ad799x_probe(struct i2c_client *client)
- 	/* this is only used for device removal purposes */
- 	i2c_set_clientdata(client, indio_dev);
- 
-+	ret = devm_mutex_init(dev, &st->lock);
-+	if (ret)
-+		return ret;
-+
- 	st->id = id->driver_data;
- 	if (client->irq > 0 && chip_info->irq_config.info)
- 		st->chip_config = &chip_info->irq_config;
-@@ -809,15 +818,19 @@ static int ad799x_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
-+	ret = devm_add_action_or_reset(dev, ad799x_reg_disable, st->reg);
-+	if (ret)
-+		return ret;
-+
- 	/* check if an external reference is supplied */
- 	if (chip_info->has_vref) {
- 		st->vref = devm_regulator_get_optional(dev, "vref");
- 		ret = PTR_ERR_OR_ZERO(st->vref);
--		if (ret) {
--			if (ret != -ENODEV)
--				goto error_disable_reg;
-+		if (ret == -ENODEV) {
- 			st->vref = NULL;
- 			dev_info(dev, "Using VCC reference voltage\n");
-+		} else if (ret) {
-+			return ret;
- 		}
- 
- 		if (st->vref) {
-@@ -825,10 +838,15 @@ static int ad799x_probe(struct i2c_client *client)
- 			extra_config |= AD7991_REF_SEL;
- 			ret = regulator_enable(st->vref);
- 			if (ret)
--				goto error_disable_reg;
-+				return ret;
-+
-+			ret = devm_add_action_or_reset(dev, ad799x_reg_disable, st->vref);
-+			if (ret)
-+				return ret;
-+
- 			ret = regulator_get_voltage(st->vref);
- 			if (ret < 0)
--				goto error_disable_vref;
-+				return ret;
- 			st->vref_uV = ret;
- 		}
- 	}
-@@ -836,7 +854,7 @@ static int ad799x_probe(struct i2c_client *client)
- 	if (!st->vref) {
- 		ret = regulator_get_voltage(st->reg);
- 		if (ret < 0)
--			goto error_disable_reg;
-+			return ret;
- 		st->vref_uV = ret;
- 	}
- 
-@@ -851,12 +869,12 @@ static int ad799x_probe(struct i2c_client *client)
- 
- 	ret = ad799x_update_config(st, st->chip_config->default_config | extra_config);
- 	if (ret)
--		goto error_disable_vref;
-+		return ret;
- 
--	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
- 		&ad799x_trigger_handler, NULL);
- 	if (ret)
--		goto error_disable_vref;
-+		return ret;
- 
- 	if (client->irq > 0) {
- 		ret = devm_request_threaded_irq(dev,
-@@ -868,39 +886,10 @@ static int ad799x_probe(struct i2c_client *client)
- 						client->name,
- 						indio_dev);
- 		if (ret)
--			goto error_cleanup_ring;
-+			return ret;
- 	}
- 
--	mutex_init(&st->lock);
--
--	ret = iio_device_register(indio_dev);
--	if (ret)
--		goto error_cleanup_ring;
--
--	return 0;
--
--error_cleanup_ring:
--	iio_triggered_buffer_cleanup(indio_dev);
--error_disable_vref:
--	if (st->vref)
--		regulator_disable(st->vref);
--error_disable_reg:
--	regulator_disable(st->reg);
--
--	return ret;
--}
--
--static void ad799x_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--	struct ad799x_state *st = iio_priv(indio_dev);
--
--	iio_device_unregister(indio_dev);
--
--	iio_triggered_buffer_cleanup(indio_dev);
--	if (st->vref)
--		regulator_disable(st->vref);
--	regulator_disable(st->reg);
-+	return devm_iio_device_register(dev, indio_dev);
- }
- 
- static int ad799x_suspend(struct device *dev)
-@@ -970,7 +959,6 @@ static struct i2c_driver ad799x_driver = {
- 		.pm = pm_sleep_ptr(&ad799x_pm_ops),
- 	},
- 	.probe = ad799x_probe,
--	.remove = ad799x_remove,
- 	.id_table = ad799x_id,
- };
- module_i2c_driver(ad799x_driver);
--- 
-2.39.5
+>> +static int qmc5883p_chip_init(struct qmc5883p_data *data)
+>> +{
+>> +=09int ret;
+>> +
+>> +=09ret =3D regmap_field_write(data->rf.sftrst, 1);
+>> +=09if (ret)
+>> +=09=09return ret;
+>> +
+>> +=09usleep_range(1000, 2000);
+>
+> Use fsleep() instead and add a comment explaining why this specific durat=
+ion
+> was selected.
+>
+Noted, will handle in v3.
+
+>> +=09ret =3D regmap_field_write(data->rf.odr, QMC5883P_DEFAULT_ODR);
+>> +=09if (ret)
+>> +=09=09return ret;
+>
+> Since we just reset the chip, why do we need to set everything to a
+> new default instead of using the chip's default? If there is a good
+> reason, add a comment, otherwise we can leave this out.
+>
+These were simply more aligned with my usecase, so more of a development
+artifact. Chip defaults are sufficient. I will leave this out.=20
+
+>> +
+>> +=09return regmap_field_write(data->rf.mode, QMC5883P_MODE_NORMAL);
+>
+> Does this start sampling? Seems like it could be out of place here.
+>
+Yes, normal mode starts sampling data. Your point makes sense, I will
+remove it in the next version. Incorrect mental model, I apologise.
+
+>> +=09ret =3D regmap_read_poll_timeout(data->regmap, QMC5883P_REG_STATUS,
+>> +=09=09=09=09       status, status & QMC5883P_STATUS_DRDY,
+>> +=09=09=09=09       QMC5883P_DRDY_POLL_US, 150000);
+>
+> Numbers with lots of 0s are easier to read as 150 * (MICRO / MILLI).
+>
+My bad, will handle in v3.
+
+>> +static IIO_DEVICE_ATTR(downsampling_ratio, 0644, downsampling_ratio_sho=
+w,
+>> +=09=09       downsampling_ratio_store, 0);
+>> +static IIO_CONST_ATTR(downsampling_ratio_available, "1 2 4 8");
+>
+> As mentioned in the cover letter, we'd like to know more about what
+> this actually does. If there is a good reason it doesn't fit with
+> any existing filter attribute, then we'll need a patch to document
+> the sysfs ABI as well.
+>
+In the device datasheet, OSR2("Down sampling ratio") is mentioned like this=
+:
+"Another filter is added for better noise performance; the depth can be
+adjusted through OSR2". OSR2's defintion is called "down sampling ratio"
+in a table. Nowhere else. I didn't know what attribute to map it to in
+this case.
+
+> Could save some dupilcation by making a macro that takes X/Y/Z
+> as parameter. e.g.
+>
+> #define QMC5883P_CHAN(ch) \
+> =09...=09=09=09=09\
+> =09.channel2 =3D IIO_MOD_##ch,=09\
+> =09...=09=09=09=09\
+> =09.address =3D AXIS_##ch,=09=09\
+> =09...
+>
+Noted. Will do this in v3.
+
+>> +=09ret =3D devm_regulator_get_enable_optional(dev, "vdd");
+>> +=09if (ret && ret !=3D -ENODEV)
+>> +=09=09return dev_err_probe(dev, ret,
+>> +=09=09=09=09"failed to get vdd regulator\n");
+>> +
+>> +=09/* Datasheet specifies up to 50 ms supply ramp + 250 us POR time. */
+>> +=09fsleep(50000);
+>> +
+>> +=09i2c_set_clientdata(client, indio_dev);
+>> +
+>> +=09ret =3D qmc5883p_rf_init(data);
+>
+> Would be more logical to move this up right after regmap is declared.
+>
+Makes sense, I will move it up in v3.
+
+>> +=09ret =3D devm_iio_device_register(dev, indio_dev);
+>
+> Usually, we just return directly here. This pretty much doesn't ever fail=
+.
+>
+Okay. Will remove the dev_err_probe() in v3.=20
+
+>> +=09ret =3D regmap_field_write(data->rf.mode, QMC5883P_MODE_NORMAL);
+>> +=09if (ret)
+>> +=09=09return ret;
+>> +
+>> +=09usleep_range(10000, 11000);
+>
+> Again, fsleep() and comment.
+>
+Noted.
+
+
+>> +static const struct i2c_device_id qmc5883p_id[] =3D {
+>> +=09{ "qmc5883p", 0 },
+>> +=09{},
+>
+> IIO style for this is:
+>
+> =09{ }
+>
+> space between braces and no trailing comma.
+>
+Noted. Will take it up in v3.
+
+Thanks for the in-depth review David. I really appreciate it.
+
+Regards,
+Hardik
 
