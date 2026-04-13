@@ -1,152 +1,79 @@
-Received: from algol.kleine-koenig.org (algol.kleine-koenig.org [162.55.41.232])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F89B3932FF;
-	Mon, 13 Apr 2026 07:57:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.55.41.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 571DF392828;
+	Mon, 13 Apr 2026 08:20:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776067025; cv=none; b=KycBOpy1A1ac33Vcv71q/rYhV8RkeFJHC5Iy8BxhgiZafoTOiyO/63VCESbesKB8FzYG1XrofQXkN0fDVhEHK17J+6tjkbFCeaKbwLV3SfIXN7z4i87JCsRRVu3Svp2bRdc+llR4VHVWtSijW7HdNtY2FavsoVoPVGyT6n3PbOs=
+	t=1776068435; cv=none; b=MlVOPCchW8IsANqyelq8P7w3XDyiELVnNj7TlAeGkOhtwtPLOM4mj+Tlq15RwlCJToXX+BwvrW2uzpzZBYp5xqaiOeADrMBBvwKXDcYHR+ypN1T3rRk11pbe5nVqA+BHSFWYo07A8W4oZquihPDXdl1dzGfwhwTKNrbY40w9obs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776067025; c=relaxed/simple;
-	bh=pnI+xxVxDqXDIhTjkgLxIPlUhrTxzcIQbkFUGrxtmtQ=;
+	s=arc-20240116; t=1776068435; c=relaxed/simple;
+	bh=W27WMl84+IzwRaMfyrbEg3c9ya9XL0Jz/3iyZOn8Tjk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NLpVe0pQhxJr3AjaQASfQ1HVWCXKHme3jTKhcX9ANsV+d8pSQEujzOBSzz0c8ziNdA+OW4RRnVSyyngW1tSvtQtxWUU94Y0BvBpEw19VXDKJkiza5Lm6HCu8ceNk77l5bOK0zbvlo210KhQVd2PviTsVj1acrIJQM8IgmBTtSzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=kleine-koenig.org; arc=none smtp.client-ip=162.55.41.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kleine-koenig.org
-Received: by algol.kleine-koenig.org (Postfix, from userid 1000)
-	id D5F491193CA6; Mon, 13 Apr 2026 09:47:04 +0200 (CEST)
-Date: Mon, 13 Apr 2026 09:47:04 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Guangshuo Li <lgs201920130244@gmail.com>
-Cc: William Breathitt Gray <wbg@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org
-Subject: Re: [PATCH] counter: Fix refcount leak in counter_alloc() error path
-Message-ID: <adyb3Cdr1p3p76h6@monoceros>
-References: <20260411133511.2214024-1-lgs201920130244@gmail.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=OJMyUTV8W59z3JlJ2oKj7Ba0rEWo4hWvmodoI4YQc93FeAZTyAxIUWQaiq6zyuSwdze342lWeQQ3wy4KLSkooZOhqUngtOmONiUoSJf7mKFNQiK9mx9HSJj/c5Aazll5wzd2LkBtTvxa1guO9u7kpz18YyhZ/C1StNBpDhJLwR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ASYZ+7GT; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ASYZ+7GT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67015C116C6;
+	Mon, 13 Apr 2026 08:20:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776068435;
+	bh=W27WMl84+IzwRaMfyrbEg3c9ya9XL0Jz/3iyZOn8Tjk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ASYZ+7GT2WLrYZZZsQeZsWp7/f4bqvikryjxEeszOilfha38p8drPj4Wtk3ofYgX7
+	 bK0AhE9UuxrVSJT1cIuKp6zXO6krqNlbyfJGZf8533XEsIPvJ7UX8QyRvFwvHoYGDX
+	 w7eRRP+PlCUY7ObyF17zuWqGMWEf1ZXwBzjIFqge7O8m5l28BAlwgaYx2wxU88ITDu
+	 3SJ7eLdV/3s2Turwvg6jSEtAhUXSdxA8WBP/GJyCSNUBIf0KfsmIzakGXHVd1Cd3zX
+	 xQodO/awjZ7LTaW20MB6Z7kaEuVc7gDY5BaDRg7RihrznnZpo97hg5rPKA+81avLIj
+	 GXQn0SLbxdxRg==
+Date: Mon, 13 Apr 2026 10:20:32 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Harpreet Saini <sainiharpreet29@yahoo.com>
+Cc: jic23@kernel.org, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Neil Armstrong <neil.armstrong@linaro.org>, Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>, 
+	Marek Vasut <marex@nabladev.com>, Kael D'Alcamo <dev@kael-k.io>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: light: Add PixArt PAJ7620 gesture
+ sensor
+Message-ID: <20260413-antique-bright-gerbil-87674c@quoll>
+References: <20260413000308.7618-1-sainiharpreet29.ref@yahoo.com>
+ <20260413000308.7618-1-sainiharpreet29@yahoo.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="kpnjgihwq7j2npzh"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260411133511.2214024-1-lgs201920130244@gmail.com>
+In-Reply-To: <20260413000308.7618-1-sainiharpreet29@yahoo.com>
 
-
---kpnjgihwq7j2npzh
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] counter: Fix refcount leak in counter_alloc() error path
-MIME-Version: 1.0
-
-Hello,
-
-On Sat, Apr 11, 2026 at 09:35:11PM +0800, Guangshuo Li wrote:
-> After device_initialize(), the lifetime of the embedded struct device
-> is expected to be managed through the device core reference counting.
->=20
-> In counter_alloc(), if dev_set_name() fails after device_initialize(),
-> the error path removes the chrdev, frees the ID, and frees the backing
-> allocation directly instead of releasing the device reference with
-> put_device(). This bypasses the normal device lifetime rules and may
-> leave the reference count of the embedded struct device unbalanced,
-> resulting in a refcount leak and potentially leading to a use-after-free.
->=20
-> Fix this by using put_device() in the dev_set_name() failure path and
-> let counter_device_release() handle the final cleanup.
->=20
-> Fixes: 4da08477ea1f ("counter: Set counter device name")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
+On Sun, Apr 12, 2026 at 08:02:55PM -0400, Harpreet Saini wrote:
+> Signed-off-by: Harpreet Saini <sainiharpreet29@yahoo.com>
 > ---
->  drivers/counter/counter-core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-cor=
-e.c
-> index 50bd30ba3d03..12dc18c78672 100644
-> --- a/drivers/counter/counter-core.c
-> +++ b/drivers/counter/counter-core.c
-> @@ -123,10 +123,10 @@ struct counter_device *counter_alloc(size_t sizeof_=
-priv)
->  	return counter;
-> =20
->  err_dev_set_name:
-> +	put_device(dev);
-> +	return NULL;
-> =20
-> -	counter_chrdev_remove(counter);
->  err_chrdev_add:
-> -
->  	ida_free(&counter_ida, dev->id);
->  err_ida_alloc:
 
-This patch is technically correct. Looking in more detail however I
-wonder why 4da08477ea1f ("counter: Set counter device name") was created
-in the presence of
+Please run scripts/checkpatch.pl on the patches and fix reported
+warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
+patches and (probably) fix more warnings. Some warnings can be ignored,
+especially from --strict run, but the code here looks like it needs a
+fix. Feel free to get in touch if the warning is not clear.
 
-	static const struct bus_type counter_bus_type =3D {
-		...
-		.dev_name =3D "counter",
-	};
+> This is part 1 of a 2-patch series proposing a driver for the PixArt
+> PAJ7620 gesture sensor. This patch adds the Device Tree bindings and 
+> registers the "pixart" vendor prefix. The driver patch will follow in 
+> a succeeding branch.
 
-	int device_add(struct device *dev)
-	{
-		...
-		if (dev->bus && dev->bus->dev_name)
-			error =3D dev_set_name(dev, "%s%u", dev->bus->dev_name, dev->id);
-		...
-	}
+No, we do not want bindings without users. The driver patch must follow
+here. We also do not work with branches, but patches on mailing list.
 
-The only upside I can see is that the name is already set before
-device_add() is called.=20
+Please read submitting patches documents - both, so also the one in DT
+binding dir.
 
-Assuming the dev_set_name() call should be kept, I think that
+I finished the review here.
 
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index 50bd30ba3d03..69f042ce4418 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -114,12 +114,12 @@ struct counter_device *counter_alloc(size_t sizeof_pr=
-iv)
- 	if (err < 0)
- 		goto err_chrdev_add;
-=20
--	device_initialize(dev);
--
- 	err =3D dev_set_name(dev, COUNTER_NAME "%d", dev->id);
- 	if (err)
- 		goto err_dev_set_name;
-=20
-+	device_initialize(dev);
-+
- 	return counter;
-=20
- err_dev_set_name:
+Best regards,
+Krzysztof
 
-also fixes the issue.
-
-Best regards
-Uwe
-
---kpnjgihwq7j2npzh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmncn3YACgkQj4D7WH0S
-/k6Fawf/X+HU86tYVBm8GkrsWc4YJnj8yB87NGb1+LPlDl39GNeWt4bpu9z7JA4h
-hdLRWcdY6COMe9WQ9T99uie9ZASjlsnlCVGwZ/THTVVrT9Wew3eDwbBoO6SEmSzD
-BlV476vO0XLV2+L7KfDS9g8BVMy8lM6+F6mR7deucbdgHFajD6KCV+cj+aRMjY4U
-92eBMQz58MB+4lE/W0oTww5I6Ev+U2wyV/vTbeeHYbGsMGU0UbTMz+ds9D+x5PIR
-oz01Wh+uLc5+zYkYx1EJEvCDYcGcGY5IpwfJlI+FbVmGz9Ol9AVsjocQfjRM7bVT
-OkA7yn14UYSsyaz9fEc1HOKmOq+eug==
-=qbIY
------END PGP SIGNATURE-----
-
---kpnjgihwq7j2npzh--
