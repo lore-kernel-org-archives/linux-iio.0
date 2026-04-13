@@ -1,118 +1,93 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BBA93CE494
-	for <linux-iio@vger.kernel.org>; Mon, 13 Apr 2026 13:46:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DE51363C4E
+	for <linux-iio@vger.kernel.org>; Mon, 13 Apr 2026 14:09:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776087977; cv=none; b=MM+j8mJBYGK171r8M0grLtmyQL4bvL1lv8weP5N6Zk1kDF750l1m4XRMa6fiOVP7fwwrsQ2irEDRFqTM8K5LN2/9gaG9CVHBBKwTo7y5XLMz4qeDicQ4suV1t1mlqjbNZdkeApO2u9WaPRcxs7KcD94QqJ43o4ssKGM5SH1F7x4=
+	t=1776089359; cv=none; b=d7TyCHihwG2q/0yj8vvTwqS0H6W76cQxhW6Il7Epxez5rHv66LZwlCXw0ymXX/xkN8hw0tK2HJvEdWWU+JdttNt6cUH9j/69clTGATHJfaVl+n7wMNoIscgQH4WnC20XmrNX1vVBPNu04RtfgskILJjtolnaO6qaF1GvKJR/7g8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776087977; c=relaxed/simple;
-	bh=ZdQbCoPJwZCB3uMPJtQnV69MkLE1kKA2QPk0Ij15LxM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=K8wYBAh2+KY7AQtjx39sSilQuq/lhCdaufnbwOZf/5ZydLogcCro1lVR1Zsdf1/8Woga/euy23B7V7iClsCWGZWXKbx4g1XqyPSOwayVj9Xo067Ct5ftKYIjPNaHC0hRAldl9Emh9VNdxKViFEFDj/xqhngwyD7XB5aNi7ng4vQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jlRp7Iad; arc=none smtp.client-ip=209.85.216.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776089359; c=relaxed/simple;
+	bh=l9aiLJ5QGBBLI+Zctdtkf1pvFopO6KFzXq7yPcIxYUE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=o6igLZO2Y6nkewhEWJtye+xAjQE8QOHg3L8pWPBjCoPdGH8lm4ha1kOFLdgRcqTEEAPOIdOgXvK7Mj5ILJ7XcMbaSTeoe9qdQil62ozGWdQ0tnILSoLh0D59USD6ZcgN3R8TNInRL/qSp4c2mkI8fBfvx6mCEGRtkVJdP3v9cgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=XLEDAYod; arc=none smtp.client-ip=209.85.160.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jlRp7Iad"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-35e563b0ee7so663222a91.1
-        for <linux-iio@vger.kernel.org>; Mon, 13 Apr 2026 06:46:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="XLEDAYod"
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-415b23dd6e5so1800726fac.3
+        for <linux-iio@vger.kernel.org>; Mon, 13 Apr 2026 07:09:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776087976; x=1776692776; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ITeUfxAmccwJWBoBKTfUrPUP9cp6D5ar5cCPRAU5JZg=;
-        b=jlRp7IadOuiByJXyze8DdZwPC1SshDd0cWkjO4Lik0qOaNJ6uHqdQDWQHvdX2VbR/y
-         s3NVLDdPu6m8jQqo/3tJpfow/ZaBmX4cH9AKlaE/Ljo1NF2kOr1rc47tZLN5fIitlj4U
-         sbWBThkB92qMu4X9mNaNYLAxmeVTE9W7hQcfeYOAnzx4fuAqBYUnTcKu1H7sqwNI3mg9
-         xOvHuiKS9i1Za01YsmEhkDSJEv5Hnsc/tbolf9QXla5biB7BJaZLhwvniSa77sMSyWq7
-         C8CpDCsZ2Hh0QuEaMDI9qIG0NdnYHp7Cmx/bBoxgKw0ZYMls+3ZX3dtLHXDU4X23LfSy
-         lmaw==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776089356; x=1776694156; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DsukjqKonCsZQuiZ1n+YCyyj13cDdNS//eoYMO56Ma0=;
+        b=XLEDAYodjrUb8JMopTgZ/9Rz7OhMpx5zbyaTJWPq9ONu0hyxB02h37YEDY+iGx5fI9
+         UEnAo9DIqKILP4yd1KGjItzFNZxHKCO5kFy9PaJTltATGi0MD3/M5u+6hQ8BLKzYmgN5
+         0xYHScXBEXw60DkWfEST/kTtMC8v0yGSMnaJM5syc6KbsygJel0PK3vZTgDwgFSW8AUL
+         XQBIFSVs0Bcj8jqP7m51gbJ4orNzfMla7P7RVTbVC0CNDGpQULkZGXcqRLKi0I75m9m3
+         tDeJmIzuuVRebHYXhfb6s2irShoqtIaYqGy9lYIztFw53vykslhXuBv19ScCdOI0Wv+7
+         gTow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776087976; x=1776692776;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ITeUfxAmccwJWBoBKTfUrPUP9cp6D5ar5cCPRAU5JZg=;
-        b=aQC3GrWpj3rImqXLtAi+U1D4dNJ/esuVxOf+3gLF32hOGoZd6bVg4DEd5CmmsLeeGE
-         /4e0glZWUR+1RVlhmHsBsN0+8dO6bs4HtY57Man+TQJfraqba2hsHgao1fkAIaIlxFDX
-         irgT5vMfjukF98qmVnKsPNvsy2k5hzk/9K16LVkAc0sHQKTmfYQf571iERpKAZz+F0H/
-         xj/prstPz0eGA6zCJTvzL0xshVQmLQlaJysNfAI6AU+6qPzdYaiqysraQ+ya6WJAw5wM
-         OyUOI8BzI8/dD6b5Ds48DzDT3x1eAVASgU4U/FtTzZx1aa61ROdjWtYNt3pNFDbWyA4I
-         jTJQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/PRZ6Jx7x0dOQx/3qPTkSagrzeoUMj0ZGVNXl5s24p2mmka7Wjafnjjie0NgmerTEOgcuqLvfB1Ws=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxBuVKdRnbNvEf1KUKRaGtLsQm3cCUwawkJxUDCcBnJ1YHl7MJK
-	E+nrocMLWDdM0IO643MvZedGWiiVGKCgZxyPklkvZCa11vZPVZ9/uPib
-X-Gm-Gg: AeBDieuvhXQ3Uzisq/gb1yklSeHw1KlQ4tUoh16vT8c3n+mPbYhvYAPy0iV74uPeyBL
-	GOmuEacqSzn/YlOn5TIyCGpBV//WswDYkL9/Ax/kquYSKW1kyERgaSX0onpiNQlh4/WPugA5tUW
-	HMKmbcmjyPe0/gOFqqHd77/fFqNzazg4O4tyr17XP84ggzx3Xt0piy2s0saO/Lx/3/OorhdGiMU
-	4q789isj6oB9hUG5vghuDhRGHZYPVtUC4Udgq9uukcgAsIpnFgYaWF0GxvfQFp9VecsHJJ3Ck+B
-	51ttvVLc+Yd+ZLkuG6qmYYwVnz4uVv+7jr9P0/MgVpFUs5QWX1c/9yuwOKMj1L3gaq6mOQ0yt42
-	3TlyzUn52C0GgOBmBzba8rcOqawvjJq9XNVtyfkkf19JJwzFn/lwZds1SP/B1m6d48t7VxpBQm2
-	3WL97b4ikXam6D6NYVfpZGRLSBM6//mWhFp2JR6LsOkw==
-X-Received: by 2002:a17:90b:1d91:b0:35f:b57e:7f33 with SMTP id 98e67ed59e1d1-35fb57e8053mr3108234a91.14.1776087975591;
-        Mon, 13 Apr 2026 06:46:15 -0700 (PDT)
-Received: from lgs.. ([2409:893d:1188:142d:6c67:74e8:5200:1f39])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35e34e959bcsm15974386a91.0.2026.04.13.06.46.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Apr 2026 06:46:15 -0700 (PDT)
-From: Guangshuo Li <lgs201920130244@gmail.com>
-To: William Breathitt Gray <wbg@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Guangshuo Li <lgs201920130244@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v2] counter: Fix refcount leak in counter_alloc() error path
-Date: Mon, 13 Apr 2026 21:46:04 +0800
-Message-ID: <20260413134604.2861772-1-lgs201920130244@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        d=1e100.net; s=20251104; t=1776089356; x=1776694156;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DsukjqKonCsZQuiZ1n+YCyyj13cDdNS//eoYMO56Ma0=;
+        b=kbolc71e/NE6ShJtSJ3JVCSesNG6hPLNm2C4cOtiNLFS7yQrUuYgJxGptbTWaVM0dK
+         EUK7Pk5efYorPDPzkpfsfoWZgZO8CbvQ/K2nbJmIrb8P/bdloMOz0mZqZPi8hFqQb40M
+         oToo8LtcnYKdZxu/m95WRTDM096seixksBWIUgDieqK9lnFnnz+0niz2rGWLbls4rXNl
+         Ebf4Qf13I9HFxRlsW310/o5zYrjlFUpZO+a+VJeaK6XTBIBrKEYFPkPeUxedR5Mf1OQO
+         quksrjawcTEIfa5LGlm2jwUPFCI7i6TM/68ERChvbtgVG2wMt9BB8wAtoLc0PW1dnHCV
+         d+eA==
+X-Forwarded-Encrypted: i=1; AFNElJ/WFmWbZlZ7Y6+w0Js9nKAJgogBibDYlePzkHGHhne5dcIwLFO2MRCae2Fo8eyE1uA+T47qz3ovtSw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YySqBEgjINWyQiK8AVgPAcCAlFx+Pu5xVBAzfUORCYysydxqh8m
+	HwIOmjxUC36+o1I95WvJHhPxp0tdqRMA0Unkker6MyPUSicgup85NiNHRxC+/5LGLbE=
+X-Gm-Gg: AeBDiet/ZmWER5Ro/XsVHvw0OZ6lOrQ8BT4Cw9S5r9oTJSEwdVJt6TvkaQIzAYj2mV6
+	ws6ge+F2bzz8KJJOxtz8XsBcYRKcPXsfQ2RqJYMMuxQX6yuF3hnBDNWYXX0jiSQmedloWUq6gWf
+	mvXUsPotyGZBwrZY7+mYQAVWiGoEyuKpG1asJyitIHsc1FTaGk4JthEAMy+ZEi18kmiTOFCS9y2
+	vIudwYYc+EfPvwMLd2lnCe01xMtyZYqBDes3O8xGqxUNgZ3thFMMyp5wDfG3C819/YWYmshlYZ1
+	AuU2AV2vd4cQx3GFlgZyvuYBXXm8cSYoPKV/kw/ArczXjy7TfZaFEa6rfhQJVyk1RSfd9q8IXSQ
+	wbK6LMA7jCu91uk92Wx++5ziEDxG49f2NjVFMV/Z5NFiZPnySLZK0ITfxw6Lc8F4kRdVyCUOjwN
+	TFNy94lvi3gVMzaVIg2SMwGd2FEeK3WxxaVXRLJgC1FDIJa5B6LuXgv/QpOVdgqj6E7UYBvTs=
+X-Received: by 2002:a05:6870:ab16:b0:417:3307:e1cb with SMTP id 586e51a60fabf-423e100b3dcmr7703050fac.21.1776089356535;
+        Mon, 13 Apr 2026 07:09:16 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:1963:d48d:f7b2:862? ([2600:8803:e7e4:500:1963:d48d:f7b2:862])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-423ddb9c461sm9248293fac.16.2026.04.13.07.09.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Apr 2026 07:09:16 -0700 (PDT)
+Message-ID: <43c5cae7-9689-4dad-ace8-e8165e5fe6e2@baylibre.com>
+Date: Mon, 13 Apr 2026 09:09:15 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/3] iio: adc: ad7173: codestyle cleanup
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, jic23@kernel.org
+Cc: nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260413134223.2331911-1-sanjayembedded@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260413134223.2331911-1-sanjayembedded@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-After device_initialize(), the lifetime of the embedded struct device
-is expected to be managed through the device core reference counting.
+On 4/13/26 8:42 AM, Sanjay Chitroda wrote:
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> 
+> Hi all,
+> 
+> This patch series clean up error, warning(s) and a check reported
+> with checkpatch and no functional behavior changes are intended.
 
-In counter_alloc(), if dev_set_name() fails after device_initialize(),
-the error path removes the chrdev, frees the ID, and frees the backing
-allocation directly instead of releasing the device reference with
-put_device(). This bypasses the normal device lifetime rules and may
-leave the reference count of the embedded struct device unbalanced,
-resulting in a refcount leak.
+I'm pretty sure someone sent a series just like this already.
 
-The issue was identified by a static analysis tool I developed and
-confirmed by manual review.
-
-Fix this by using put_device() in the dev_set_name() failure path and
-let counter_device_release() handle the final cleanup.
-
-Fixes: 4da08477ea1f ("counter: Set counter device name")
-Cc: stable@vger.kernel.org
-Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
----
- drivers/counter/counter-core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index 50bd30ba3d03..0b1dac61b7b5 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -124,7 +124,8 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
- 
- err_dev_set_name:
- 
--	counter_chrdev_remove(counter);
-+	put_device(dev);
-+	return NULL;
- err_chrdev_add:
- 
- 	ida_free(&counter_ida, dev->id);
--- 
-2.43.0
-
+Patches 2 and 3 were rejected. Patch 1 is probably OK.
