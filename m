@@ -1,45 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C12DE3E3C48;
-	Mon, 13 Apr 2026 19:45:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE5822E3FE;
+	Mon, 13 Apr 2026 19:50:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776109512; cv=none; b=E21xadNf1P/TYjK2pmz+5I2wKlYFpCN6WsR0D4fd30J4yAQWTteKPLLo4SlOQ7RYgtCssM013Hmjs6YT+iJ17OuijghLkwQsj5t/jCmq1OBT3JfIR2sLcsGncEmYrHpCkLxjv2wUbSauoJAIczgjxFA+x8F0iUc8aPqaa4Ne+ck=
+	t=1776109852; cv=none; b=Yu8QTY8umsncGWs7/BlDPHheVLLmtDd6pqTfJNmO65le02Dydww5AawlXGsCoK7Ru3lvu1rKWA5F8eUv2IY4pJxpMGbchy38gMdvjr0oRovD+hlkF3XH3Qyjkt4pRxOXLaVuXAyEKtSoKRnPpxtxFLenuwfry77Lm1n/DQgN44w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776109512; c=relaxed/simple;
-	bh=Xzf3ggL1FDtaOntJ7X8LJh18CfZgywP2PKlRL6D4aXo=;
+	s=arc-20240116; t=1776109852; c=relaxed/simple;
+	bh=L38VbUrCM/Y9/BqRWJZzGWXTZGQajiSuOZsrqVudQ6w=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bP6xLlwiNkmUF7nlp5WB/7ox49tcX0W2L4I0kw5LvDbE5BkYofhSLDPNSjIs8elUz/16mzq3R2wG7OOjAat+Cn1wUPYpIDNPLCsEqFkFcgkWt6QAqt424qcxCx6q5uJDEBoDYarzB7Pj1SK0IvCCMtRY3++7ofHdD5kI7Sf/H+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aELn3pAh; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=CflCGRNuH28LaKNPbL/l9GesR9PK8QFL0QRUj6dDSbMr9hwU/vawt7GfGD6kX/wSkk6537ZSaTQdqhrLYhKrTOhtNl9KM0gje1mBV+D/EFIfHMJxlgyvvERG1N2bvwZYxAedeQ2Jt/vzfNsernwtjI+y01t0IuXLNO5ob4lzscE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rfr97mUR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aELn3pAh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 212CBC2BCB0;
-	Mon, 13 Apr 2026 19:45:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rfr97mUR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C91AC2BCB0;
+	Mon, 13 Apr 2026 19:50:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776109512;
-	bh=Xzf3ggL1FDtaOntJ7X8LJh18CfZgywP2PKlRL6D4aXo=;
+	s=k20201202; t=1776109852;
+	bh=L38VbUrCM/Y9/BqRWJZzGWXTZGQajiSuOZsrqVudQ6w=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=aELn3pAhNgeziFQaGuFSXVImlzqrLKtJXU4OkST38W55JMKhMt/6e8tQbsv5fTgWI
-	 KBrfzYraHQf4kEOrczck2YTokSKH3sBhntmsfCPW08G8P10AUyQ9RNsvkjtMXadAnH
-	 wxS/FA8TV2CUBqbnecvclOCQoUHnEa9qjTtwLq+3y7keIvdM2iQc0rqRY2+FgfWFjX
-	 L7H2uAEsD83LR2f/oyU2X3D1ewfF9m6WVbSVKNUZTFAR7HY2miQ8AZ8KDIRgnsamLW
-	 RYZvGJR4c0eGqWyEsS5i+bqfNhR57klTHd86NBbEt8W8r7aaWA+joJuBlt91LdOY8M
-	 Hfgpm+PB6NXhQ==
-Date: Mon, 13 Apr 2026 20:45:03 +0100
+	b=rfr97mUR8oH8G2A+sd5SMZWOQBIK7BieIle+ssb4yUlpz9fTn+7XuELVn+oZYa+tB
+	 7K6pZM2+4PErkMR4zqgoe9nDm0JNCY5C6xXMA1H8psNQ5f8tbGRQpvqFJCINycRyVr
+	 wvlrq1/Zvx7ZNNjDBzaVzCQlyzqMJ7a+LXRHXjz5iBqtx8eUfd3fsqgNUIvHxhgof2
+	 oNi0T0Np5+AzWZ6ps5l13JeGoUWBJ7yeVwAnY0yO78ClyJjWdkNGR/YZ/VYYjcrXiu
+	 YFQBt9KHBw2GFXgPyu5ikG2As04zKHr4JmCq81Shx84M+I1qVHWxQ5v/zmsIlyT6/v
+	 8+T9vquRLDG5w==
+Date: Mon, 13 Apr 2026 20:50:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Greg Kroah-Hartman <gregkh@suse.de>, Barry Song
- <Barry.Song@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: adis16260: fix division by zero in write_raw
-Message-ID: <20260413204503.444cca81@jic23-huawei>
-In-Reply-To: <acuqM42TLd4edTWZ@nsa>
-References: <20260331101300.15853-1-antoniu.miclaus@analog.com>
-	<acuqM42TLd4edTWZ@nsa>
+To: Matheus Giarola <matheustpgiarola@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, matheusgiarola@usp.br, arthurpilone@usp.br,
+ davidbtadokoro@ime.usp.br
+Subject: Re: [PATCH v4] iio: adc: ad7280a: replace mutex_lock() with
+ guard(mutex)
+Message-ID: <20260413205043.43f8833c@jic23-huawei>
+In-Reply-To: <20260412154748.24937-1-matheusgiarola@usp.br>
+References: <20260412154748.24937-1-matheusgiarola@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,48 +45,165 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 31 Mar 2026 12:04:45 +0100
-Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+On Sun, 12 Apr 2026 12:47:48 -0300
+Matheus Giarola <matheustpgiarola@gmail.com> wrote:
 
-> On Tue, Mar 31, 2026 at 01:13:00PM +0300, Antoniu Miclaus wrote:
-> > Add a validation check for the sampling frequency value before using it
-> > as a divisor. A user writing zero to the sampling_frequency sysfs
-> > attribute triggers a division by zero in the kernel.
-> >=20
-> > Fixes: 089a41985c6c ("staging: iio: adis16260 digital gyro driver")
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > --- =20
->=20
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+> Use guard(mutex) instead of mutex_lock()/mutex_unlock(),
+> ensuring the mutex is released automatically when leaving
+> the function scope. The change improves error handling and
+> avoids issues such as missing unlocks. It also simplifies the
+> code by removing 'err_unlock' label and several mutex_unlock()
+> calls.
+> 
+> As suggested, in ad7280_read_raw(), wrap the IIO_CHAN_INFO_RAW
+> case in braces, providing a scope for the implicit variable
+> declared by guard(mutex).
+> 
+> Also, limit guard(mutex) scope in ad7280_show_balance_timer()
+> to keep it locked just when necessary.
+> 
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Matheus Giarola <matheusgiarola@usp.br>
+> ---
+> v4:
+> - limit guard(mutex) scope in ad7280_show_balance_timer()
 
-Thanks,
+Some confusion has occured here.  The braces thing works for some
+places (where we bring only trivial extra operations under the lock)
+but don't use it where scoped_guard() is cleaner.
 
-Jonathan
+> 
+> v3:
+> - correct v2 patch tags
+> 
+> v2:
+> - fix missing scope in ad7280_read_raw() by wrapping IIO_CHAN_INFO_RAW
+>   case in braces so as to fix build errors.
+> 
+>  drivers/iio/adc/ad7280a.c | 34 +++++++++++++---------------------
+>  1 file changed, 13 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7280a.c b/drivers/iio/adc/ad7280a.c
+> index ba12a3796e2b..f3cbf8810daa 100644
+> --- a/drivers/iio/adc/ad7280a.c
+> +++ b/drivers/iio/adc/ad7280a.c
+...
 
->=20
-> >  drivers/iio/gyro/adis16260.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >=20
-> > diff --git a/drivers/iio/gyro/adis16260.c b/drivers/iio/gyro/adis16260.c
-> > index 586e6cfa14a9..91b9c5f18ec4 100644
-> > --- a/drivers/iio/gyro/adis16260.c
-> > +++ b/drivers/iio/gyro/adis16260.c
-> > @@ -287,6 +287,9 @@ static int adis16260_write_raw(struct iio_dev *indi=
-o_dev,
-> >  		addr =3D adis16260_addresses[chan->scan_index][1];
-> >  		return adis_write_reg_16(adis, addr, val);
-> >  	case IIO_CHAN_INFO_SAMP_FREQ:
-> > +		if (val <=3D 0)
-> > +			return -EINVAL;
-> > +
-> >  		if (spi_get_device_id(adis->spi)->driver_data)
-> >  			t =3D 256 / val;
-> >  		else
-> > --=20
-> > 2.43.0
-> >  =20
+> @@ -519,10 +518,11 @@ static ssize_t ad7280_show_balance_timer(struct iio_dev *indio_dev,
+>  	unsigned int msecs;
+>  	int ret;
+>  
+> -	mutex_lock(&st->lock);
+> -	ret = ad7280_read_reg(st, chan->address >> 8,
+> +	{
+> +		guard(mutex)(&st->lock);
+> +		ret = ad7280_read_reg(st, chan->address >> 8,
+>  			      (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG);
+> -	mutex_unlock(&st->lock);
+
+Not this.  For this case you scoped_guard() or just take the view
+that it doesn't matter if we hold the lock a bit longer.
+
+
+> +	}
+>  
+>  	if (ret < 0)
+>  		return ret;
+> @@ -551,11 +551,10 @@ static ssize_t ad7280_store_balance_timer(struct iio_dev *indio_dev,
+>  	if (val > 31)
+>  		return -EINVAL;
+>  
+> -	mutex_lock(&st->lock);
+> +	guard(mutex)(&st->lock);
+>  	ret = ad7280_write(st, chan->address >> 8,
+>  			   (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG, 0,
+>  			   FIELD_PREP(AD7280A_CB_TIMER_VAL_MSK, val));
+> -	mutex_unlock(&st->lock);
+>  
+>  	return ret ? ret : len;
+>  }
+> @@ -737,7 +736,7 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+>  	if (val2 != 0)
+>  		return -EINVAL;
+>  
+> -	mutex_lock(&st->lock);
+> +	guard(mutex)(&st->lock);
+>  	switch (chan->type) {
+>  	case IIO_VOLTAGE:
+>  		value = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
+> @@ -760,8 +759,7 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+Just above this is:
+			if (ret)
+				break;
+
+Make that
+			if (ret)
+				return ret;
+
+and same for other such breaks on error.
+
+
+>  			st->cell_threshlow = value;
+>  			break;
+>  		default:
+> -			ret = -EINVAL;
+> -			goto err_unlock;
+> +			return -EINVAL;
+>  		}
+>  		break;
+>  	case IIO_TEMP:
+> @@ -785,18 +783,12 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+>  			st->aux_threshlow = value;
+>  			break;
+>  		default:
+> -			ret = -EINVAL;
+> -			goto err_unlock;
+> +			return -EINVAL;
+>  		}
+>  		break;
+>  	default:
+> -		ret = -EINVAL;
+> -		goto err_unlock;
+> +		return -EINVAL;
+>  	}
+> -
+> -err_unlock:
+> -	mutex_unlock(&st->lock);
+> -
+>  	return ret;
+maybe with the changes suggested above used throughout we might not
+be able to get here with out ret == 0;
+In which case make that obvious with
+	return 0;
+
+>  }
+>  
+> @@ -884,14 +876,13 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
+>  	int ret;
+>  
+>  	switch (m) {
+> -	case IIO_CHAN_INFO_RAW:
+> -		mutex_lock(&st->lock);
+> +	case IIO_CHAN_INFO_RAW: {
+> +		guard(mutex)(&st->lock);
+>  		if (chan->address == AD7280A_ALL_CELLS)
+>  			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
+>  		else
+>  			ret = ad7280_read_channel(st, chan->address >> 8,
+>  						  chan->address & 0xFF);
+> -		mutex_unlock(&st->lock);
+>  
+>  		if (ret < 0)
+>  			return ret;
+> @@ -899,6 +890,7 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
+>  		*val = ret;
+>  
+>  		return IIO_VAL_INT;
+> +	}
+>  	case IIO_CHAN_INFO_SCALE:
+>  		if ((chan->address & 0xFF) <= AD7280A_CELL_VOLTAGE_6_REG)
+>  			*val = 4000;
 
