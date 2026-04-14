@@ -1,74 +1,60 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 422973BA222
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:36:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B4D12F90C5;
+	Tue, 14 Apr 2026 09:38:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776159374; cv=none; b=DemqK1/e4qMW7q1zZvAOBTWhvyt9tFGnF3c84rKCpVkt4U4J2AgNodeUguLGuFhCUrtdax/Rg6zaOkoh9qH6SxBrcFuTvtDvix9ar3f0DpWOiG3SWzCCkBYsUho1KNVY/OMURPtqcbpPsie3jQLBp8mE+6HLbO1XZ3rkHXEs2QE=
+	t=1776159487; cv=none; b=OLH2dYfJhCeKfyAKXK/5fssdCVIJxK0LZVVW2MwDirgb19+2gjBsoUZYLTdnqp1TDWXVPDbmoQjX7ANToeH+jOSd/mJJ3uXRgAv/XmdMmQ6fIJA2Zkbv84uebVD6/mgrgaJiONgF/+Vrqosm5NIyua8wpEOE7wP4lNeI8QNZ1MM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776159374; c=relaxed/simple;
-	bh=I4E3BJ64QNjlDpPRGxu26mcEgdKOcJ4HAqG0DuEZpuY=;
+	s=arc-20240116; t=1776159487; c=relaxed/simple;
+	bh=Fmukk9SdjloevDp/tG1ja0J0e4LMhkqaQDM1HnccJyk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iQpQ+5OTp738REY2PWfJhawgwCOzT9Ndk4S3hhkZQuiaMbSD3NwqAf2AlLg/oUeyKdXHZjdz39XFmc6WxK761CUKKUH4gk60v5EQGCcMrgA3Ow1UYP+HcWaHn+Ds7HWSPixABgucaAV/PBNLWzJjNbZkbwDn5E05JcihBwLNWHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MEsAibVs; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ULCR/Ba024u8zjEcbFWwVhCJpWzT9l8du4yCF4ptMgrmPFl5IKZxrArM7twAgEgxM1hVYspxNOPhXqU5Xka24WbYSMcU76TudhavvvysdE3jpLy6uJI9022i7ZBv1l+kalN1NY4/li+ee1orwvOZEFDG1y0WgOlDvEOaZXZTPjk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DoH6o44X; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MEsAibVs"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-488b0046078so52995105e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 02:36:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776159372; x=1776764172; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kq5csPkEyD+lw4ZkaxgkRlgf+I1PvGk3IpXK+2wCzQQ=;
-        b=MEsAibVsGExIR5Y4j2ln7/QG2WXYPAPCxFwFJFf19AlLOg8+bDaQlX9wz4vMQ6cBQt
-         2JFktkhWtjh21bsfqF5ClUo4heub3Imm1ieJzzLNTuNx8U5BqyQOWfIAM9Qh4M2FooRB
-         G51i0ekeekt/QetRGcEC2lkBwa2iNn8O/V+w1qSBeVyNe18+VDhEF63ejZvuuvIXwnR8
-         zQucgOUEAshdipEXPzOV6QtB8OXukLVi8NZVaPdCB1qOixNFDEJN6N2s3npLN5spKXLX
-         k/VJ5fG+IaEC00zbtrdLlXb1RST7iVvCUJT8LK31JKTv/PfioBHZWaqLgvuzMTGu4ad9
-         fJXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776159372; x=1776764172;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kq5csPkEyD+lw4ZkaxgkRlgf+I1PvGk3IpXK+2wCzQQ=;
-        b=ojpjE+T9Hjv5/KWec0KSAz9+coMfArENPU6k7rkfMmRiJVXrIwNGDPrRbCk9JZgaeE
-         GY2La58Lxb8ne/UADuDU0bfr/aGilt7h/evLhFBHySjWZVICOzWR/gEo/FBGsdQQujD6
-         zBVlcmoflKghmBnM78Ui3mPXpzf2FErk3R18b8pj+UK7xLBTfoHJm1O48MZuMJlxykdk
-         HP4W2r4hynjkiS5JnMsyMkmJ7Ryvsaj0eWy/V9GpBA9JHjAWSikcYgsq72Ue74VaQpUV
-         dy6LmtUthmA6Dskl9F5VeM+XCPKGl29koPvwprs349u+lgLXkhtI/fyjLMwvEvT3QW7C
-         piaw==
-X-Forwarded-Encrypted: i=1; AFNElJ+YjTzUMem9T4Re4yId0HYlNdlPpLCxgEbcDihIn1yN28laHOtKlE+TrCPtGPi4ax1QCK362euBktY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxeA604Dxc6zGnIQQIZPX39zZ29iT3OEPA4s5gKpSjdToWig01c
-	wbyQ/lF55MVoR+Vx/955yxJoibzRv73HLczwS/gsPeAfPi9z/EIcMypv
-X-Gm-Gg: AeBDiesUk3IN/XC0YfP06e4W9DUNGfEK9Z+nESi67+NZty8x72PfXORLMsX+knccMkh
-	0Mg43XAmIGaozjKn7TEmbrXart1drtjo2Z5uU2dg5iZf9v5+wkJAtCU+CEPoF2mJiTqrFRCpK1R
-	l2dPhtm6AhF6d/s1kJR54lrP4jPyKI9qCrFdDnhJeDnoq2DeC1Dl61cYU2vShmwesIs1Kr7X+Qf
-	AJSmQTe9K36EJaUhe5FKbDeozEveLD9ipuGwIvjEVOjqvxRrxnKAWDH/kLiM+5wKWUKyKaPfjNX
-	T7M4To6T/CcjNRFIGdYt6hYEj6UWv48WQqG1lLPybcJG5Dw3NMGsYOP+EqlAY7J4QGsiM0WqBw0
-	NtT3j0oa1bjOQZJgdY0BJUZyU2zNwgixVvphMCKnPTDvWVgKOyCNUEnCmTyHcghqrUMVFMU9aQb
-	aGHCOAPCAWjtuuYcqIz5eF/sz7sNw=
-X-Received: by 2002:a05:600c:c088:b0:486:fa35:aef2 with SMTP id 5b1f17b1804b1-488d67bf744mr163761685e9.4.1776159371565;
-        Tue, 14 Apr 2026 02:36:11 -0700 (PDT)
-Received: from localhost ([41.210.143.51])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43ea764eff2sm2500276f8f.27.2026.04.14.02.36.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 02:36:10 -0700 (PDT)
-Date: Tue, 14 Apr 2026 12:36:02 +0300
-From: Dan Carpenter <error27@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DoH6o44X"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776159487; x=1807695487;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Fmukk9SdjloevDp/tG1ja0J0e4LMhkqaQDM1HnccJyk=;
+  b=DoH6o44X87dxFbEQDmS/jLs49e3cahPDEJq2i3gU2w6UZogB1Wjxme08
+   7Yn3akYL41BSPgo7InReAtbGYv5Z4QWVNBtz/nKmCwdTsyMl/zF/zUKps
+   UTKawu4wsGUghwIqiGyxtBKX9vbWJYj0mgY8nVy4J8l3izOGv+Us4+1HS
+   Z9QLOJyd9qk/iB/wbWSqVYpUChuDNWrqiUSLrwlZHg/wVRxYJLxqVyuLb
+   mqDY9kSt/wFzg6/DS+vNLe5ltLdxqbpWzq9xAzt+dwd0fQODEZ7Kt7y9M
+   FxVmevbl553dHN7FSIasVQDikvYDLmOL9AeLTeLnTmJNQNTjqYanl+oPJ
+   w==;
+X-CSE-ConnectionGUID: fO9pbG9GSMqnEolL6DX17Q==
+X-CSE-MsgGUID: +JcVZLsnQw+LOp1eY09ujw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="94511504"
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="94511504"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:38:06 -0700
+X-CSE-ConnectionGUID: oZebxG6PQX6IER3i7uacNA==
+X-CSE-MsgGUID: jbCYAYfJTfSlCf3bOBF+/Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="230271427"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:38:02 -0700
+Date: Tue, 14 Apr 2026 12:38:00 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Joshua Crofts <joshua.crofts1@gmail.com>
 Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
 	gregkh@linuxfoundation.org, dlechner@baylibre.com,
 	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
 	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: frequency: ad9834: add mutex_lock() when
- reading st->control
-Message-ID: <ad4KgkcR58lQwPaD@stanley.mountain>
-References: <20260414091250.1295-1-joshua.crofts1@gmail.com>
- <20260414091250.1295-4-joshua.crofts1@gmail.com>
+Subject: Re: [PATCH v3 1/2] iio: frequency: ad9832: remove kernel.h proxy
+ header.
+Message-ID: <ad4K-K3MpwD3U4F-@ashevche-desk.local>
+References: <20260411123512.84739-1-joshua.crofts1@gmail.com>
+ <20260411123512.84739-2-joshua.crofts1@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,22 +63,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260414091250.1295-4-joshua.crofts1@gmail.com>
+In-Reply-To: <20260411123512.84739-2-joshua.crofts1@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Apr 14, 2026 at 09:12:50AM +0000, Joshua Crofts wrote:
-> Add mutex_lock() and mutex_unlock() when reading st->control to
-> prevent data races as st->control is actively modified by
-> sysfs _write and _store functions.
-> 
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
+On Sat, Apr 11, 2026 at 02:35:11PM +0200, Joshua Crofts wrote:
+> Remove kernel.h proxy header and add bitops.h for
+> better dependency control and code clarity.
 
-This doesn't matter in real life.  "Oops, the root user tried
-really hard to do something stupid and got "square" as the output
-a fraction of a milisecond longer than they were supposed to."
+...
 
-Is there a tool which detects and complains about this?
+>  #include <asm/div64.h>
 
-regards,
-dan carpenter
+While at it, you can move asm/* to go after generic linux/* ones as asm is more
+custom than linux.
+
+>  #include <linux/bitfield.h>
+> -#include <linux/bits.h>
+> +#include <linux/bitops.h>
+>  #include <linux/clk.h>
+
+>  #include <linux/device.h>
+
+What about this one? Is it used?
+
+Many drivers just need dev_printk.h + device/devres.h. Some indeed require
+device.h. Please, double check.
+
+>  #include <linux/err.h>
+> -#include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/slab.h>
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
