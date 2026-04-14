@@ -1,60 +1,70 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8620F258EE9;
-	Tue, 14 Apr 2026 16:31:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72C99264619
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 16:44:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776184272; cv=none; b=Vm6rDZfQGAIJRl/mPo51YzLcgaUwLuBTkQ0tme8j3xH58Pk/Mcg4u7+Mw0l/iEnIIN399GNGgPNpH3kA1u+Ao0IHoXFDhynaS4thQFfksCKFoOCb81DeH4I/KwQeWAeNiFHocjAgRMR6wr2BEmlyI4eZO/9BPzroweBmnZjRv7Q=
+	t=1776185056; cv=none; b=ET2lZd4S5UNBabzdrXccMdwXGqE9trAkSTluEXutBu+sR8cIqv0iCc3m3OzUAmgj3w+TBLnh8FTodw/hHXx0KRQn7yT+r7EyEyMswGaLxjxZBhPaeWkiBibGZy6lW3MCPL8yQi6lRnt7+2J94NBXUepvrUjb80h1aH2KzCJmTpM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776184272; c=relaxed/simple;
-	bh=rjrXG/fVyY6byz0kt1CWhNqhaRn96R9C0pVAAtPPUVU=;
+	s=arc-20240116; t=1776185056; c=relaxed/simple;
+	bh=i4KQwkIap6IvD8uRPHLY1UCwRBZH1zADMa3/wRtjsLM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ce0YI8GSdpD+GRXt1NS/pPwNpdBuuw0RU+m0zz9KWmOugvkg4B3AVabyLqG8ou/sNejerm3HM4e+w1F4M2dhmbS3B97H0vIYzvOq+xaARvERv4H6sJ5PkTsl9FrRr8CDgrepUuiaHQSRbgoXrWQejA6PYQDRaFyY7ekIBEgmTDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JOMirWGD; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=GMGw4uXTqIDHnSShj2IwwOBB6sggge2D6nnfoAw2xauqggh1v46sbhg7EE6xXh2LmDbG5m1Kg7L99Mu0Q8xCyBvl5n7tE0GJtedi6ChA2opYQde5gceKZLc9H8Lm+20ZJpZKKrtrVRlB6dyiAUW1Lus4GTwP0mcj3O+fNTxOyJI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RJ9zW16Q; arc=none smtp.client-ip=209.85.215.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JOMirWGD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776184271; x=1807720271;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rjrXG/fVyY6byz0kt1CWhNqhaRn96R9C0pVAAtPPUVU=;
-  b=JOMirWGDe7xJMRNAcn8k2GfEtLh5eErzdXSeL78RY2Ks3XZxpD0UWfK/
-   2zWJHj64Vk+Zn6kutxg0C+HSI4hF8l191DQtH6dGOhm1/i/pNz3ujem5m
-   PmIY4ov3eMsAGi8tWIm5xsu+jMFPKGHd/m0LgWAr7pLLATSAsh73zVdKL
-   egV4uXZXV8Y8xQ5OQGwpEnhl9bds7eEPSWkSsPAEzZG/iUHVRtZuNZm+T
-   9dcxbRHADvyhrSir6m/Tv1UkSe5UtEINUN3sLBxXt0+5XJ6DFKGn3Gg8I
-   Dd8GhhJQWDOP4kNnHplOvAaAS68WQHX2TwyObhtE9q4nE9YokgChsB2hw
-   w==;
-X-CSE-ConnectionGUID: ecRuRvZPRkOsNGD25coo/g==
-X-CSE-MsgGUID: 4a+yRhbuQbSitpcEOPmiBQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="81011781"
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="81011781"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 09:31:11 -0700
-X-CSE-ConnectionGUID: CO1JMd6SQNGxj5tg4k+akg==
-X-CSE-MsgGUID: iBZSd8JMQyuyeHBeMdOAsQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="234185885"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.247])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 09:31:10 -0700
-Date: Tue, 14 Apr 2026 19:31:07 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RJ9zW16Q"
+Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-c76b95e652bso2514844a12.3
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:44:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776185055; x=1776789855; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0v5pdTBRiwulMsfGJwsXdYIRI07fHSulknVhkgAQPRI=;
+        b=RJ9zW16QCSvoIGEQyFommjxpuYWq7l8i9+G0+x0DG0fu8BmzwORS1x3HO/APuQGA6i
+         6gLI4l98MH1nH8DA7fHSo1igy4+z8Oli+jcASWW5CQVeCcpTOzv2C4rlABPovQzX7+BM
+         M6WWhYlBFBTJ20CJeAAj2+SrJjvp6t+AVJOUPmQStsOEekGhriN+D4pQR0oPldwPWT9x
+         OlIqFjWlUYc5dTSkYFnoGfTU+EQs9tDTCtkUtgos1YayRO51XevUKBuqPR6o6utRTUm3
+         N0Vp9phhTgehPBNtTUrhxmdAL1bMQ7/XilAFyNRvKHW1m+jE9px3XitZU4xsufRuj3yC
+         D9pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776185055; x=1776789855;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0v5pdTBRiwulMsfGJwsXdYIRI07fHSulknVhkgAQPRI=;
+        b=ivIYp4a+a/nHMOmG/VXxgSz/WtfvxbuPip/2VKn+EebLgF6F5zkjrnOHz4ADLmVFyI
+         1xPAibvzkIrokzrZqrOilBN2GRlEyvXuIIVUlE4otEl84rBfEUh5Tcohutul0PC6zM3L
+         ej0BEERpWV3X/Q5IYD8de/WZpDpP0weQfnPkqJ9XbV974sttJeTy/VuND81t5mIaPEGd
+         yE3KtTrDuVsS1HOrtMDfGRoZV5l2ThmDrM5PmD48ShtSSa4/L9VBpQlckPVg5pb8MNld
+         gAZfzJ583MoqfuAghTaC5KKrLs8gzTrKH0CbuUberwxPs0bhaP/ZzxScV+45OYKpNmBD
+         x/GA==
+X-Gm-Message-State: AOJu0Yyqzw7SEELx0Nn3jTErhDtFLbfuhmfiWKwFk7qgQVqOn5mig3iH
+	E7AY4cu1aby27LMarwW6BqJHzKEpxpbejJJ4CnTJE+wwCAaxSVbR3XU=
+X-Gm-Gg: AeBDiety1VvVxe0MEjwqO0gbgwu4Qx0aA3gDNciFjdwg5Zf07Dry87lJ4Wub3aKyKDK
+	VdfKyT1eHzkEo3JxvbdDN5LRv27Zyi3/2mTW8PsvDu/y54jyJ6ccQ4CujVbrkJrP4EnKAsdDPki
+	PT4/zpuyt9+UJcqehOobsyynCfSqJp5q6e/Ns1zYrhJund9zwuRvDa+vubqYz0O7c6UPgjN1/yS
+	mX4w12atRDwaB0hkyTda4YKuan62K6XmwMNPAFPuYvzo48hGwKtzSVrjzjyfPeCcOtYf1NBdZbv
+	O1/VI4e4AxE9lj9zz4KurSI1nV8xD2EtblCQtUn39K85s7/NttvNN3qqpAdQJNbthFkW6eKSnbY
+	XwyVNwp5p5rMsYgrei/3JMAkv7UlKJFWKp4dBub6T4yFeXw2kbzC432FXuRKhZYwNRhAAshXGRW
+	HZkFerJf911gW5sxdRQXyp/zFFVHETxvdLe4jlCnKkN2IHItVQ
+X-Received: by 2002:a05:6a20:7354:b0:39b:c469:6c81 with SMTP id adf61e73a8af0-39fe3f1a673mr19565053637.33.1776185054605;
+        Tue, 14 Apr 2026 09:44:14 -0700 (PDT)
+Received: from localhost ([101.0.62.236])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c79216ff41dsm12095653a12.2.2026.04.14.09.44.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Apr 2026 09:44:13 -0700 (PDT)
+Date: Tue, 14 Apr 2026 22:14:05 +0530
+From: Nikhil Gautam <nikhilgtr@gmail.com>
 To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-ads7950: use spi_optimize_message()
-Message-ID: <ad5ry4i6OPOS156E@ashevche-desk.local>
-References: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
- <ad4OywqHDC7aYapD@ashevche-desk.local>
- <d14d23df-0fad-4b87-8e57-67241b29fc30@baylibre.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [PATCH v5 3/3] iio: dac: mcp4821: add configurable gain support
+Message-ID: <ad5u1Z4pgkjN36sJ@nik>
+References: <20260414092254.34883-1-nikhilgtr@gmail.com>
+ <20260414092254.34883-4-nikhilgtr@gmail.com>
+ <dd2c2d45-ea48-4024-8d35-c3f482515fd7@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,55 +73,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d14d23df-0fad-4b87-8e57-67241b29fc30@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <dd2c2d45-ea48-4024-8d35-c3f482515fd7@baylibre.com>
 
-On Tue, Apr 14, 2026 at 08:29:29AM -0500, David Lechner wrote:
-> On 4/14/26 4:54 AM, Andy Shevchenko wrote:
-> > On Sat, Apr 11, 2026 at 05:13:33PM -0500, David Lechner wrote:
-> >> Use spi_optimize_message() to reduce CPU usage during buffered reads.
-> >>
-> >> On hardware with support for SPI_CS_WORD, this reduced the CPU usage
-> >> of the threaded interrupt by about 5%. On hardware without support, this
-> >> should reduce CPU usage even more since it won't have to split the SPI
-> >> transfers each time the interrupt handler is called.
-> >>
-> >> The update_scan_mode callback hand to be moved to the buffer preenable
+On Tue, Apr 14, 2026 at 08:57:35AM -0500, David Lechner wrote:
+> On 4/14/26 4:22 AM, Nikhil Gautam wrote:
 > 
-> s/hand/had/
+> > +	*val = div_s64_rem(tmp, 1000000LL, &micro);
+> > +	*val2 = micro;
 > 
-> >> callback since the SPI transfer mode can't be changed after
-> >> spi_optimize_message() has been called. (The buffer postenable callback
-> >> can't be used because it happens after the trigger is enabled, so the
-> >> SPI message needs to be optimized before that.)
-> >>
-> >> The indent of ti_ads7950_read_raw is changed since there is no longer
-> >> anything else in the struct to align with since we removed
-> >> ti_ads7950_update_scan_mode.
-> > 
-> > Some of the func() are mentioned w/o parentheses and I got lost which one is
-> > which. Also callbacks usually mentioned as .callback() (with a leading dot).
+> Technically, IIO_VAL_FRACTIONAL_LOG2 can print up to 9 digits after
+> the decimal, so this would be safer to do nano instead of micro.
 > 
-> I didn't put () in the last paragraph because I was talking about the function
-> pointer, not the function. I guess I missed update_scan_mode() though.
+> For that, we need to also implement a write_raw_get_fmt() callback.
+>
 
-Then probably spell it as "pointer to func()" ?
+Thanks for the suggestion.
 
-> > The second paragraph doesn't tell me clearly if there is a behaviour change
-> > from user perspective.
-> 
-> It is not clear that the difference the user can notice is that there are
-> some CPU cycles freed up for other tasks?
+Currently the driver uses IIO_VAL_FRACTIONAL_LOG2 for the scale
+attribute this format is sufficient for all supported chips
+(8, 10 and 12-bit), the resulting scale values
+are exact and can be represented without loss of precision.
 
-He-he :-)
+The write path validates the scale values based on exact matches of the
+expected values, so additional precision (e.g. nano) is not required.
 
-I asked more about possible behaviour changes in ABI (note, that [significant]
-delays moved around might affect ABI if some user's program times out due to
-that). But I think it's not the case here.
+Using INT_PLUS_NANO would also require changing the existing format and
+implementing write_raw_get_fmt(), which does not seem necessary here.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+So keeping IIO_VAL_FRACTIONAL_LOG2 for both read and write paths.
