@@ -1,209 +1,356 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out203-205-221-202.mail.qq.com (out203-205-221-202.mail.qq.com [203.205.221.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE5822E3FE;
-	Mon, 13 Apr 2026 19:50:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5E30237713
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 06:47:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776109852; cv=none; b=Yu8QTY8umsncGWs7/BlDPHheVLLmtDd6pqTfJNmO65le02Dydww5AawlXGsCoK7Ru3lvu1rKWA5F8eUv2IY4pJxpMGbchy38gMdvjr0oRovD+hlkF3XH3Qyjkt4pRxOXLaVuXAyEKtSoKRnPpxtxFLenuwfry77Lm1n/DQgN44w=
+	t=1776149239; cv=none; b=OEHTaZhJtgN+F+RG4omyT3j21liPpzCbL6dhFt095hQwo2ApffKTkS2U9EmDT65UWyUoAMcn/IP+koJrlLEr+QxtCQjzKxLGxOwhL22U6MmbP/hTaIA2fEXGmSEV6JqC7fluN+8cK6IdpQMQpvqVKW4D8MJyu+X+gl7fuW8P5Ns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776109852; c=relaxed/simple;
-	bh=L38VbUrCM/Y9/BqRWJZzGWXTZGQajiSuOZsrqVudQ6w=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CflCGRNuH28LaKNPbL/l9GesR9PK8QFL0QRUj6dDSbMr9hwU/vawt7GfGD6kX/wSkk6537ZSaTQdqhrLYhKrTOhtNl9KM0gje1mBV+D/EFIfHMJxlgyvvERG1N2bvwZYxAedeQ2Jt/vzfNsernwtjI+y01t0IuXLNO5ob4lzscE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rfr97mUR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776149239; c=relaxed/simple;
+	bh=DpZCdQs4b8+LwP5vOJC4yNhUFG0XN7Mekxfml7YimkM=;
+	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=sR/VO3SAPjKagiryhH1BJYMWVMssCQXYfuDdP7bj2dCiIZK+PuNQxNWOQ8hVxJ53ulLJ+4n2oQL1jz016Zlg/lX+xtSBURh1uHCuAx8gEKcsnFcXqlOMqABYB5H0uaCr/a5e818iHgpVOxYfbX3mnSsSH+s1YK8ZQbIxYsGMCnM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=H+mMU16p; arc=none smtp.client-ip=203.205.221.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rfr97mUR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C91AC2BCB0;
-	Mon, 13 Apr 2026 19:50:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776109852;
-	bh=L38VbUrCM/Y9/BqRWJZzGWXTZGQajiSuOZsrqVudQ6w=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=rfr97mUR8oH8G2A+sd5SMZWOQBIK7BieIle+ssb4yUlpz9fTn+7XuELVn+oZYa+tB
-	 7K6pZM2+4PErkMR4zqgoe9nDm0JNCY5C6xXMA1H8psNQ5f8tbGRQpvqFJCINycRyVr
-	 wvlrq1/Zvx7ZNNjDBzaVzCQlyzqMJ7a+LXRHXjz5iBqtx8eUfd3fsqgNUIvHxhgof2
-	 oNi0T0Np5+AzWZ6ps5l13JeGoUWBJ7yeVwAnY0yO78ClyJjWdkNGR/YZ/VYYjcrXiu
-	 YFQBt9KHBw2GFXgPyu5ikG2As04zKHr4JmCq81Shx84M+I1qVHWxQ5v/zmsIlyT6/v
-	 8+T9vquRLDG5w==
-Date: Mon, 13 Apr 2026 20:50:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matheus Giarola <matheustpgiarola@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, matheusgiarola@usp.br, arthurpilone@usp.br,
- davidbtadokoro@ime.usp.br
-Subject: Re: [PATCH v4] iio: adc: ad7280a: replace mutex_lock() with
- guard(mutex)
-Message-ID: <20260413205043.43f8833c@jic23-huawei>
-In-Reply-To: <20260412154748.24937-1-matheusgiarola@usp.br>
-References: <20260412154748.24937-1-matheusgiarola@usp.br>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="H+mMU16p"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1776149228; bh=WwN0f6XKuujjTb0gJTYkPaL3YR7Zj7pYP0YCfeToHmM=;
+	h=From:To:Cc:Subject:Date;
+	b=H+mMU16peTTvXodNQnbUqn3qvSben/UAzGvQO65k1GBQ/Wk4JlJqkJEyjVRLkkufw
+	 gQd0MrnT2Hd2OVtpJWGppuaSxQGBOKLalqfVu9siwyXxsqVQIg6JTwyx7nc7y2HjcY
+	 MYIfOIpiLq2vgZYDe5tydqIQPspKyx64eTQFy43k=
+Received: from NTT-kernel-dev ([60.247.85.88])
+	by newxmesmtplogicsvrsza63-0.qq.com (NewEsmtp) with SMTP
+	id B75018D0; Tue, 14 Apr 2026 14:45:53 +0800
+X-QQ-mid: xmsmtpt1776149153trz5913pw
+Message-ID: <tencent_B4E5A4D17E67F7C7096F7BF8A4C701223008@qq.com>
+X-QQ-XMAILINFO: NVJuObMcvoCvI7KlUgVHao/m62b+xO7xT4B6qbN2gQn4HfCZ9e92aJPs0t7VQB
+	 vKjtNIwr2fVXevhyoun5GPYxJyKtTdNqaClLInwtoWmugGrXT728H6ZUeFweVfwWWx56JIvS10eZ
+	 zbVRLrQ4I4nZnTgXwrc22HWRsu2YpFHfia5/Jmx6aH9WTHGtok6ugz6knvCxTrmwOvaD0c5A/ray
+	 ijxqZopytqR5N7cO1VtMTM/XdLjrM1/ELtMRdb1R0IbwY+jatmIh5cqkNZ/LtgbfFt6s6Il6GqTD
+	 HAyWfL8tc7gj8eYvzr4dIu8A+q+SwjLGj1b7to77QhwFl28PxwwBZazhlGrAIDX5kit1XDpRwkQ5
+	 vV8xXON6YvEwCws5Rj/SsHd8eLu3JAFG+yiVbSN7HEPm4rhgr55gSP8198HLpGbk1+Kamz6xqbeu
+	 oRPH0qtcfCZva7toVlrfZsUKC+3dTlwqqTYwYNQVdUkDaLyyoAJpm9bHVcbZRgBNU1Am5cIOnH//
+	 lM1KBEyNUFcjUJpG3eRbx6VW2fHDZJmh11zmaWf4mSwoyBI0R97bisJtH98AJljm/klWsFIkLW0R
+	 9eYPf19YGOdfT3fKGdMUHRNeAgUlNb7SQLKArZnJj5rlLrTdH9fiLg1DqYqFnnPG6qNFUbV8xXbp
+	 oMvtwb0FQQsiT4EM2NbVRxLSRjXEWcfEdVdIouJuX1wrFlI1vfCksj2tgsXJHYKqueW/C1NqjGCW
+	 dzhJq+ISVcpSP31MnIYZZINyzsnLprUoACnY+g7Hnf+hevLh5t+j76yh9e4ufGdEt4X1N0QFV9ue
+	 bRt4negeBEbhQGgc69AL6YgjKVITN3YgHDWMgBJg1fB1HdoMKjOi8udJ0I/xAymRuijKAgnK4CvH
+	 dTacAVvR9hZcY00kF9GIJxRG71ixz2W/q9aiPGk2NczcYR33Gm9mVqJtMESSLxRLhyuo9NEKq5xU
+	 D3yiS9y4+GEv6dEszyOMGn86Rbe94nK0tpHhqwMwMWVkhVYlYGpTHw9X6W3K5xpC+mqAyp4PCmub
+	 FyapwFkwpug+kqQw9zwmXr4QxAqGrxFXEVvBKkX0xQuDHSDXovY/DxJy9l2XXlsMFu/A5qvSn3zd
+	 CG3rq5
+X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+From: Fang Wang <32840572@qq.com>
+To: maudspierings@gocontroll.com,
+	gregkh@linuxfoundation.org,
+	stable@vger.kernel.org
+Cc: patches@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	dimitri.fedrau@liebherr.com,
+	markus.koeniger@liebherr.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	Jonathan.Cameron@huawei.com
+Subject: [PATCH 6.6.y] iio: common: st_sensors: Fix use of uninitialize device structs
+Date: Tue, 14 Apr 2026 14:45:53 +0800
+X-OQ-MSGID: <20260414064553.151857-1-32840572@qq.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sun, 12 Apr 2026 12:47:48 -0300
-Matheus Giarola <matheustpgiarola@gmail.com> wrote:
+From: Maud Spierings <maudspierings@gocontroll.com>
 
-> Use guard(mutex) instead of mutex_lock()/mutex_unlock(),
-> ensuring the mutex is released automatically when leaving
-> the function scope. The change improves error handling and
-> avoids issues such as missing unlocks. It also simplifies the
-> code by removing 'err_unlock' label and several mutex_unlock()
-> calls.
-> 
-> As suggested, in ad7280_read_raw(), wrap the IIO_CHAN_INFO_RAW
-> case in braces, providing a scope for the implicit variable
-> declared by guard(mutex).
-> 
-> Also, limit guard(mutex) scope in ad7280_show_balance_timer()
-> to keep it locked just when necessary.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Matheus Giarola <matheusgiarola@usp.br>
-> ---
-> v4:
-> - limit guard(mutex) scope in ad7280_show_balance_timer()
+[ Upstream commit 9f92e93e257b33e73622640a9205f8642ec16ddd ]
 
-Some confusion has occured here.  The braces thing works for some
-places (where we bring only trivial extra operations under the lock)
-but don't use it where scoped_guard() is cleaner.
+Throughout the various probe functions &indio_dev->dev is used before it
+is initialized. This caused a kernel panic in st_sensors_power_enable()
+when the call to devm_regulator_bulk_get_enable() fails and then calls
+dev_err_probe() with the uninitialized device.
 
-> 
-> v3:
-> - correct v2 patch tags
-> 
-> v2:
-> - fix missing scope in ad7280_read_raw() by wrapping IIO_CHAN_INFO_RAW
->   case in braces so as to fix build errors.
-> 
->  drivers/iio/adc/ad7280a.c | 34 +++++++++++++---------------------
->  1 file changed, 13 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad7280a.c b/drivers/iio/adc/ad7280a.c
-> index ba12a3796e2b..f3cbf8810daa 100644
-> --- a/drivers/iio/adc/ad7280a.c
-> +++ b/drivers/iio/adc/ad7280a.c
-...
+This seems to only cause a panic with dev_err_probe(), dev_err(),
+dev_warn() and dev_info() don't seem to cause a panic, but are fixed
+as well.
 
-> @@ -519,10 +518,11 @@ static ssize_t ad7280_show_balance_timer(struct iio_dev *indio_dev,
->  	unsigned int msecs;
->  	int ret;
->  
-> -	mutex_lock(&st->lock);
-> -	ret = ad7280_read_reg(st, chan->address >> 8,
-> +	{
-> +		guard(mutex)(&st->lock);
-> +		ret = ad7280_read_reg(st, chan->address >> 8,
->  			      (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG);
-> -	mutex_unlock(&st->lock);
+The issue is reported and traced here: [1]
 
-Not this.  For this case you scoped_guard() or just take the view
-that it doesn't matter if we hold the lock a bit longer.
+Link: https://lore.kernel.org/all/AM7P189MB100986A83D2F28AF3FFAF976E39EA@AM7P189MB1009.EURP189.PROD.OUTLOOK.COM/ [1]
+Cc: stable@vger.kernel.org
+Signed-off-by: Maud Spierings <maudspierings@gocontroll.com>
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
+Link: https://... [1]
+Link: https://patch.msgid.link/20250527-st_iio_fix-v4-1-12d89801c761@gocontroll.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Fang Wang <32840572@qq.com>
+---
+ drivers/iio/accel/st_accel_core.c             | 10 +++---
+ .../iio/common/st_sensors/st_sensors_core.c   | 36 +++++++++----------
+ .../common/st_sensors/st_sensors_trigger.c    | 20 +++++------
+ 3 files changed, 31 insertions(+), 35 deletions(-)
 
-
-> +	}
->  
->  	if (ret < 0)
->  		return ret;
-> @@ -551,11 +551,10 @@ static ssize_t ad7280_store_balance_timer(struct iio_dev *indio_dev,
->  	if (val > 31)
->  		return -EINVAL;
->  
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
->  	ret = ad7280_write(st, chan->address >> 8,
->  			   (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG, 0,
->  			   FIELD_PREP(AD7280A_CB_TIMER_VAL_MSK, val));
-> -	mutex_unlock(&st->lock);
->  
->  	return ret ? ret : len;
->  }
-> @@ -737,7 +736,7 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
->  	if (val2 != 0)
->  		return -EINVAL;
->  
-> -	mutex_lock(&st->lock);
-> +	guard(mutex)(&st->lock);
->  	switch (chan->type) {
->  	case IIO_VOLTAGE:
->  		value = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
-> @@ -760,8 +759,7 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
-Just above this is:
-			if (ret)
-				break;
-
-Make that
-			if (ret)
-				return ret;
-
-and same for other such breaks on error.
-
-
->  			st->cell_threshlow = value;
->  			break;
->  		default:
-> -			ret = -EINVAL;
-> -			goto err_unlock;
-> +			return -EINVAL;
->  		}
->  		break;
->  	case IIO_TEMP:
-> @@ -785,18 +783,12 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
->  			st->aux_threshlow = value;
->  			break;
->  		default:
-> -			ret = -EINVAL;
-> -			goto err_unlock;
-> +			return -EINVAL;
->  		}
->  		break;
->  	default:
-> -		ret = -EINVAL;
-> -		goto err_unlock;
-> +		return -EINVAL;
->  	}
-> -
-> -err_unlock:
-> -	mutex_unlock(&st->lock);
-> -
->  	return ret;
-maybe with the changes suggested above used throughout we might not
-be able to get here with out ret == 0;
-In which case make that obvious with
-	return 0;
-
->  }
->  
-> @@ -884,14 +876,13 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
->  	int ret;
->  
->  	switch (m) {
-> -	case IIO_CHAN_INFO_RAW:
-> -		mutex_lock(&st->lock);
-> +	case IIO_CHAN_INFO_RAW: {
-> +		guard(mutex)(&st->lock);
->  		if (chan->address == AD7280A_ALL_CELLS)
->  			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
->  		else
->  			ret = ad7280_read_channel(st, chan->address >> 8,
->  						  chan->address & 0xFF);
-> -		mutex_unlock(&st->lock);
->  
->  		if (ret < 0)
->  			return ret;
-> @@ -899,6 +890,7 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
->  		*val = ret;
->  
->  		return IIO_VAL_INT;
-> +	}
->  	case IIO_CHAN_INFO_SCALE:
->  		if ((chan->address & 0xFF) <= AD7280A_CELL_VOLTAGE_6_REG)
->  			*val = 4000;
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 51d8de18e6d6..45d2268e042e 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -1342,6 +1342,7 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
+ 	union acpi_object *ont;
+ 	union acpi_object *elements;
+ 	acpi_status status;
++	struct device *parent = indio_dev->dev.parent;
+ 	int ret = -EINVAL;
+ 	unsigned int val;
+ 	int i, j;
+@@ -1360,7 +1361,7 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
+ 	};
+ 
+ 
+-	adev = ACPI_COMPANION(indio_dev->dev.parent);
++	adev = ACPI_COMPANION(parent);
+ 	if (!adev)
+ 		return -ENXIO;
+ 
+@@ -1369,8 +1370,7 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
+ 	if (status == AE_NOT_FOUND) {
+ 		return -ENXIO;
+ 	} else if (ACPI_FAILURE(status)) {
+-		dev_warn(&indio_dev->dev, "failed to execute _ONT: %d\n",
+-			 status);
++		dev_warn(parent, "failed to execute _ONT: %d\n", status);
+ 		return status;
+ 	}
+ 
+@@ -1446,12 +1446,12 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	ret = 0;
+-	dev_info(&indio_dev->dev, "computed mount matrix from ACPI\n");
++	dev_info(parent, "computed mount matrix from ACPI\n");
+ 
+ out:
+ 	kfree(buffer.pointer);
+ 	if (ret)
+-		dev_dbg(&indio_dev->dev,
++		dev_dbg(parent,
+ 			"failed to apply ACPI orientation data: %d\n", ret);
+ 
+ 	return ret;
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index c77d7bdcc121..78f5728417d5 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -154,7 +154,7 @@ static int st_sensors_set_fullscale(struct iio_dev *indio_dev, unsigned int fs)
+ 	return err;
+ 
+ st_accel_set_fullscale_error:
+-	dev_err(&indio_dev->dev, "failed to set new fullscale.\n");
++	dev_err(indio_dev->dev.parent, "failed to set new fullscale.\n");
+ 	return err;
+ }
+ 
+@@ -231,8 +231,7 @@ int st_sensors_power_enable(struct iio_dev *indio_dev)
+ 					     ARRAY_SIZE(regulator_names),
+ 					     regulator_names);
+ 	if (err)
+-		return dev_err_probe(&indio_dev->dev, err,
+-				     "unable to enable supplies\n");
++		return dev_err_probe(parent, err, "unable to enable supplies\n");
+ 
+ 	return 0;
+ }
+@@ -241,13 +240,14 @@ EXPORT_SYMBOL_NS(st_sensors_power_enable, IIO_ST_SENSORS);
+ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+ 					struct st_sensors_platform_data *pdata)
+ {
++	struct device *parent = indio_dev->dev.parent;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+ 
+ 	/* Sensor does not support interrupts */
+ 	if (!sdata->sensor_settings->drdy_irq.int1.addr &&
+ 	    !sdata->sensor_settings->drdy_irq.int2.addr) {
+ 		if (pdata->drdy_int_pin)
+-			dev_info(&indio_dev->dev,
++			dev_info(parent,
+ 				 "DRDY on pin INT%d specified, but sensor does not support interrupts\n",
+ 				 pdata->drdy_int_pin);
+ 		return 0;
+@@ -256,29 +256,27 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+ 	switch (pdata->drdy_int_pin) {
+ 	case 1:
+ 		if (!sdata->sensor_settings->drdy_irq.int1.mask) {
+-			dev_err(&indio_dev->dev,
+-					"DRDY on INT1 not available.\n");
++			dev_err(parent, "DRDY on INT1 not available.\n");
+ 			return -EINVAL;
+ 		}
+ 		sdata->drdy_int_pin = 1;
+ 		break;
+ 	case 2:
+ 		if (!sdata->sensor_settings->drdy_irq.int2.mask) {
+-			dev_err(&indio_dev->dev,
+-					"DRDY on INT2 not available.\n");
++			dev_err(parent, "DRDY on INT2 not available.\n");
+ 			return -EINVAL;
+ 		}
+ 		sdata->drdy_int_pin = 2;
+ 		break;
+ 	default:
+-		dev_err(&indio_dev->dev, "DRDY on pdata not valid.\n");
++		dev_err(parent, "DRDY on pdata not valid.\n");
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (pdata->open_drain) {
+ 		if (!sdata->sensor_settings->drdy_irq.int1.addr_od &&
+ 		    !sdata->sensor_settings->drdy_irq.int2.addr_od)
+-			dev_err(&indio_dev->dev,
++			dev_err(parent,
+ 				"open drain requested but unsupported.\n");
+ 		else
+ 			sdata->int_pin_open_drain = true;
+@@ -336,6 +334,7 @@ EXPORT_SYMBOL_NS(st_sensors_dev_name_probe, IIO_ST_SENSORS);
+ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 					struct st_sensors_platform_data *pdata)
+ {
++	struct device *parent = indio_dev->dev.parent;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+ 	struct st_sensors_platform_data *of_pdata;
+ 	int err = 0;
+@@ -343,7 +342,7 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 	mutex_init(&sdata->odr_lock);
+ 
+ 	/* If OF/DT pdata exists, it will take precedence of anything else */
+-	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
++	of_pdata = st_sensors_dev_probe(parent, pdata);
+ 	if (IS_ERR(of_pdata))
+ 		return PTR_ERR(of_pdata);
+ 	if (of_pdata)
+@@ -370,7 +369,7 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 		if (err < 0)
+ 			return err;
+ 	} else
+-		dev_info(&indio_dev->dev, "Full-scale not possible\n");
++		dev_info(parent, "Full-scale not possible\n");
+ 
+ 	err = st_sensors_set_odr(indio_dev, sdata->odr);
+ 	if (err < 0)
+@@ -405,7 +404,7 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 			mask = sdata->sensor_settings->drdy_irq.int2.mask_od;
+ 		}
+ 
+-		dev_info(&indio_dev->dev,
++		dev_info(parent,
+ 			 "set interrupt line to open drain mode on pin %d\n",
+ 			 sdata->drdy_int_pin);
+ 		err = st_sensors_write_data_with_mask(indio_dev, addr,
+@@ -594,21 +593,20 @@ EXPORT_SYMBOL_NS(st_sensors_get_settings_index, IIO_ST_SENSORS);
+ int st_sensors_verify_id(struct iio_dev *indio_dev)
+ {
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
++	struct device *parent = indio_dev->dev.parent;
+ 	int wai, err;
+ 
+ 	if (sdata->sensor_settings->wai_addr) {
+ 		err = regmap_read(sdata->regmap,
+ 				  sdata->sensor_settings->wai_addr, &wai);
+ 		if (err < 0) {
+-			dev_err(&indio_dev->dev,
+-				"failed to read Who-Am-I register.\n");
+-			return err;
++			return dev_err_probe(parent, err,
++					     "failed to read Who-Am-I register.\n");
+ 		}
+ 
+ 		if (sdata->sensor_settings->wai != wai) {
+-			dev_err(&indio_dev->dev,
+-				"%s: WhoAmI mismatch (0x%x).\n",
+-				indio_dev->name, wai);
++			dev_warn(parent, "%s: WhoAmI mismatch (0x%x).\n",
++				 indio_dev->name, wai);
+ 			return -EINVAL;
+ 		}
+ 	}
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+index a0df9250a69f..b900acd471bd 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -127,7 +127,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 	sdata->trig = devm_iio_trigger_alloc(parent, "%s-trigger",
+ 					     indio_dev->name);
+ 	if (sdata->trig == NULL) {
+-		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
++		dev_err(parent, "failed to allocate iio trigger.\n");
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -143,7 +143,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 	case IRQF_TRIGGER_FALLING:
+ 	case IRQF_TRIGGER_LOW:
+ 		if (!sdata->sensor_settings->drdy_irq.addr_ihl) {
+-			dev_err(&indio_dev->dev,
++			dev_err(parent,
+ 				"falling/low specified for IRQ but hardware supports only rising/high: will request rising/high\n");
+ 			if (irq_trig == IRQF_TRIGGER_FALLING)
+ 				irq_trig = IRQF_TRIGGER_RISING;
+@@ -156,21 +156,19 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 				sdata->sensor_settings->drdy_irq.mask_ihl, 1);
+ 			if (err < 0)
+ 				return err;
+-			dev_info(&indio_dev->dev,
++			dev_info(parent,
+ 				 "interrupts on the falling edge or active low level\n");
+ 		}
+ 		break;
+ 	case IRQF_TRIGGER_RISING:
+-		dev_info(&indio_dev->dev,
+-			 "interrupts on the rising edge\n");
++		dev_info(parent, "interrupts on the rising edge\n");
+ 		break;
+ 	case IRQF_TRIGGER_HIGH:
+-		dev_info(&indio_dev->dev,
+-			 "interrupts active high level\n");
++		dev_info(parent, "interrupts active high level\n");
+ 		break;
+ 	default:
+ 		/* This is the most preferred mode, if possible */
+-		dev_err(&indio_dev->dev,
++		dev_err(parent,
+ 			"unsupported IRQ trigger specified (%lx), enforce rising edge\n", irq_trig);
+ 		irq_trig = IRQF_TRIGGER_RISING;
+ 	}
+@@ -179,7 +177,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 	if (irq_trig == IRQF_TRIGGER_FALLING ||
+ 	    irq_trig == IRQF_TRIGGER_RISING) {
+ 		if (!sdata->sensor_settings->drdy_irq.stat_drdy.addr) {
+-			dev_err(&indio_dev->dev,
++			dev_err(parent,
+ 				"edge IRQ not supported w/o stat register.\n");
+ 			return -EOPNOTSUPP;
+ 		}
+@@ -214,13 +212,13 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 					sdata->trig->name,
+ 					sdata->trig);
+ 	if (err) {
+-		dev_err(&indio_dev->dev, "failed to request trigger IRQ.\n");
++		dev_err(parent, "failed to request trigger IRQ.\n");
+ 		return err;
+ 	}
+ 
+ 	err = devm_iio_trigger_register(parent, sdata->trig);
+ 	if (err < 0) {
+-		dev_err(&indio_dev->dev, "failed to register iio trigger.\n");
++		dev_err(parent, "failed to register iio trigger.\n");
+ 		return err;
+ 	}
+ 	indio_dev->trig = iio_trigger_get(sdata->trig);
+-- 
+2.34.1
 
