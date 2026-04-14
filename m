@@ -1,97 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 680683B2BA;
-	Tue, 14 Apr 2026 17:10:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E603430C615
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 17:51:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776186604; cv=none; b=pTUjJeTffIfZw/MisD+nQtuzdPVKtdVyOEzvntrOmPOiyMHOTrCfkHR2GohhmGxSvsEpdS5Vd7Vi0ri9Pjv+YuHpO8WqSqEhtIYM8HJzscjCNmd4qs2NNZtzm2bdMryX1FFLo21lmEnOHTB6U1EYuHcmJTvj0PyMg+w/vDtfSrw=
+	t=1776189097; cv=none; b=G1M8ro5An/Y5ZejAE7aZRDPqT8dZNLwo1OCkgUcXXt65j1vsGSelXX9Dr4QR1S2Hv0XzePDXLsq//XUboMnv8mNh+CRHIHy0RLNeJAG90axOhi39R60hch2fuS+jfPNFV8HPrzv/+nixS2pto4sVU00jypZ+KUrrdtbVhOyObRA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776186604; c=relaxed/simple;
-	bh=CAo+uRjqi5k/KOmrg3V898ihkEa6qCe6uWZ+vO1sqmI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EUCkR8GTA/S5uCK6GAXzblWwn6+jpwIg8+gxPEirQxOccxAy2KFDzc5PkP6jF3xH6ag6Vc8o6CVoSRUu4H+Kg8flMFjFOTEJm5nt7++7Sb3u9w+FvM3rnPq3Q2PLNoFA0coXSTXm0sSayKJqAD8obSIs4MqK6ItjSFwWrbSgDFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SZeXMRro; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776189097; c=relaxed/simple;
+	bh=d14NjL6TUAAsqgHD4vIJJ2NeE/xtNU7dJEoouEAWEEg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=C1UA/Oru/tC/y/T5D8Tr5U+4E0LMRL7r4hINN7HcLHIx1Y04ZXG3kO5S30SfScv13J09OxqZXZiFIOv8aI1ezATFKvi2Z7StybFkflqu2XUMEOvR5pcYPCXlx0Hv/FnxnE/QK+9EJOEYLkZnohYKwrvGYlaSgor9vrESYvlzW0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=n5/Y0iCk; arc=none smtp.client-ip=209.85.167.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SZeXMRro"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776186603; x=1807722603;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CAo+uRjqi5k/KOmrg3V898ihkEa6qCe6uWZ+vO1sqmI=;
-  b=SZeXMRromxvtBUgFDy4wGl+RMi/T5GmAJyL1KJyLS+M05mynqdH5kuwm
-   dqpvAlE+dnY0XJ+gPKdDHD8EkBy6CNYxN7ddrDFaaMzg+XHnxs/OhDgh6
-   MBiTYijqbxC+ftcZAjeLvvxRAsXEPzclzcWMGdVRFgzdePzohF5u6v0BH
-   Lw8k+CQ/QbkElW5hA6X741kIiwLa2x8upDWxLCyxO11PK6K3uHE7UMquQ
-   YAVZY4zlGpQ/63EsLsY1a/Qt7eTQoH6GjtqNqGJwbVCBDVRLMdKaEnnxr
-   D5lwBi6xnbDLGqvUogNDpg/spJGd5HXjiTX0r3/PrV91aIFQyXnvhRAUe
-   g==;
-X-CSE-ConnectionGUID: +MY3fVemTcOszM5LEy864g==
-X-CSE-MsgGUID: p6xHLDb1QDqMnzva6OfkLw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="88533228"
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="88533228"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 10:10:03 -0700
-X-CSE-ConnectionGUID: JZ0cB85xQ62yFFowBWpj8w==
-X-CSE-MsgGUID: 3WEpdOghRL+F+/wBv+PMkQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="229286780"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.247])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 10:10:00 -0700
-Date: Tue, 14 Apr 2026 20:09:58 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Archit Anant <architanant5@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, lars@metafoo.de,
-	Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 0/5] iio: adc: ad799x: modernize resource management
-Message-ID: <ad505ojCcZgkyIFg@ashevche-desk.local>
-References: <20260412093739.17116-1-architanant5@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="n5/Y0iCk"
+Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-47930edbc7bso1197970b6e.1
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 10:51:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776189094; x=1776793894; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rwFLRWgnSYIiUfJhzR5C7sJtzSx4H5hgea7vK363pWo=;
+        b=n5/Y0iCkj3Yo5feKGUB2eDpz0q258iXzr0R2QduLqdfgCR6yOk4dIOtr8CUOm2HgI8
+         Pgm4vCz0rzPSojwfntaHkYuKWjxd8dsGvYasZNRZUu5klbtWdBv9TJh7xXVDxqrW0WHo
+         AurbDq5bp3WbzxpMQFTr4FpLXqfQB4boC30ZzMmfl4ErDVwCDD15RoD+wUMXcbzWuY2s
+         Z+Ufuxm7UDcwnJbum9Msi7e6H0VQgBn/9ufkS0Vtcvx65L2pU4C5I6SP39bFZDdtb0+7
+         4UsENmYrrFlqQxj2YYOU+C8RErFV3Ou0T0y/dywCEMQhIW5qDbg/U0G/Eljhx0aBW6sn
+         f80A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776189094; x=1776793894;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rwFLRWgnSYIiUfJhzR5C7sJtzSx4H5hgea7vK363pWo=;
+        b=pETuBFA4iA0NeJuKo78EGDr5//jSjWYYjcAdbe9YK+9vD1T/NpI1ffxunuAi0fLmiI
+         pa+wWN4b2LJn9c28+lIPUnw+jwgLlw1HA6AiCsxjVeBMX4+J3+hW3f7ev/CtUfm3HiFT
+         UFXgjhmcYxAkMdVpe0CFZ6xUs9k2W1X4owcrKlGIBcNgLRtdbvzRnySZGL4pn1UmHn2L
+         HjFnaewQy/x+Lm0CU3rdKlR/Y5ej4Ia241DIA20LRQilnNQ3i7mEi03TppSJ7aSQU7oa
+         1N7JRzpvmDszKRrpqn/TMIKPxkDU6jPJ+0xr8tVimM0LqXMQZ2W8WRB1RXkDMTxsE0W4
+         Nt+A==
+X-Forwarded-Encrypted: i=1; AFNElJ9Evy2ppJLSLVCJK7IhbDftJ4c09w/bXOdAnr7dLGj6naIhpsv2RTWTQS7M2MFUZdPbAF250OPBc3Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwBlBdWg5oAgFL3kECDzt2cLW1tzO37C2F1u/CIP70lUHDJhT7O
+	B0D6k469x54sWJ1q9LSmoQ/dlYTOwJMmsHAYVnHzNjapz0S1yen92pSV09oIile/ylg=
+X-Gm-Gg: AeBDievfpoFvEwA0YxikUB5pWjIsQzp+hdaqXGSOyLU7NfqqoHBWTv1e+FpV2zZqbx9
+	3KIFbk6890PdwmoOhx3YFTysNXnMmRjzuPzHFYO5fatTXLqELXjrbfCTS0OZ4j8lAHs3K4RZDqz
+	R6z1FNHc6Uwuh9OEDEjGNaCu8SIpUTVV7mGVncsF8iYwHoizruEfytY2Mx5BGAVfG1a/gPNnj4Q
+	/Ns4GAPd8PTIgVFeC/CvLC0/5yx1peKIXBBKrzOWfixWS7kdXU7kjiLcRhsSXhmuLmpAhlDDLKg
+	U3tG90as3RpU2TlXqgELQaLzRp+MdNZ+odtD8E6Io/o+Mk2+ohonroWKZI0eEDU95R7A2NC0v31
+	+VYNXn9yqYYxtz/pArz6U0ubSKBFaUCmYpFLgqViDo8kvVgm/tn/BvKHePm3qANk1318maw9kYK
+	AShxM0WPET5oNHBSZeolsI2b1Pff5PAkb4ucbHdQnJRwQun0cpVYTPs6wtL7xt+jZdO6UcllylH
+	H8RLxwgF3H2
+X-Received: by 2002:a05:6808:10cf:b0:45f:481c:e258 with SMTP id 5614622812f47-4789ef07666mr9746716b6e.16.1776189093887;
+        Tue, 14 Apr 2026 10:51:33 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:5bfd:a817:5527:c417? ([2600:8803:e7e4:500:5bfd:a817:5527:c417])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-423ddb9c461sm12107675fac.16.2026.04.14.10.51.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Apr 2026 10:51:33 -0700 (PDT)
+Message-ID: <b9c61657-bed5-41ef-9dd3-e2fc04a4785c@baylibre.com>
+Date: Tue, 14 Apr 2026 12:51:32 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260412093739.17116-1-architanant5@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 0/3] iio: dac: mcp4821: add configurable gain support
+To: Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org
+Cc: jic23@kernel.org
+References: <20260414170309.6151-1-nikhilgtr@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260414170309.6151-1-nikhilgtr@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Apr 12, 2026 at 03:07:34PM +0530, Archit Anant wrote:
-> This series modernizes the ad799x driver by converting resource 
-> management to the devm_ infrastructure. This results in cleaner 
-> probe error handling, the removal of the ad799x_remove() function, 
-> and improved overall code maintainability and safety.
+On 4/14/26 12:03 PM, Nikhil Gautam wrote:
+> This series updates the MCP4821 DAC driver to support configurable gain.
 > 
-> Key changes in this series include:
-> - A prerequisite cleanup to sort headers alphabetically.
-> - Static allocation of the rx_buf using IIO_DECLARE_BUFFER_WITH_TS()
->   to avoid dynamic memory leaks during scan mode updates.
-> - Caching of VCC and VREF regulator voltages during probe() to 
->   optimize read_raw() performance and simplify power management logic.
-> - Migration of regulators and mutex initialization to device-managed 
->   resources (devm).
-> - Fixing a potential race condition by moving mutex initialization 
->   before IRQ registration.
-> - Removal of the manual ad799x_remove() function and all goto-based 
->   error cleanup labels in ad799x_probe().
+> Patch 1 fixes a spelling issue in an enum name.
+> Patch 2 performs a small refactor to simplify state handling.
+> Patch 3 adds configurable gain support using the GA bit and
+> adds support for writing to the scale attribute to select the gain.
 > 
-> These changes ensure the teardown sequence is always correct, 
-> following the reverse order of allocation, and remove unnecessary 
-> boilerplate code from the driver.
-
-Some pieces still can be polished, but this is good enough, let's go with it!
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> The scale attribute is used to control gain selection. Writing supported
+> scale values selects the corresponding gain setting. The implementation
+> supports all variants of the MCP48xx family (8, 10, and 12-bit devices).
+> 
+Reviewed-by: David Lechner <dlechner@baylibre.com>
