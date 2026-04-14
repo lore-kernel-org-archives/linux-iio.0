@@ -1,67 +1,67 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E0293D9DCD
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 13:29:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F039A189B84
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 13:33:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776173373; cv=none; b=M9yPoUYD2AK9qKCsMxbL1mRqz9wwnH/DYTaKHIWYv5Z3HDZMhIBRybqQ51Bf4xwdAA0r3cVrwhVN/Flp0Dz9ecej23YtNXbVhZlbD/VmZcVvzx7C/H7Nxo+91+HRp/j7adzXosAEsXoM4G07WwyjNmEhw2bayvehUgMcyFSX+ZE=
+	t=1776173625; cv=none; b=ncPPqY07M7xSgse58twutr7eZt46TdJSTjP1Y/g/jpNd2usJO5Dxr268HJUQTNhram3RZcXBZYbyO3Fax6lNnI/4GU/zKi0cgNtr5XRN925eNSU3Rmnt1nZIlO5fCx8le2lpX1KiSR+cOr+f6yvq2jhDvbkJ2v/JWGnyqtDsCFQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776173373; c=relaxed/simple;
-	bh=k/zOuY30RNZr0YbjvGcrxGgRUgTIN7ZoknxfX5JPDqI=;
+	s=arc-20240116; t=1776173625; c=relaxed/simple;
+	bh=U0thgPs3iFPY/UIGjVWHqrQHsFd8h6HWaEkLXa7Lbok=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XAVZMci8OfWmg5YipxE6PeBnLcvQc7f/96xlzrjJQHebaWPqKGYfOUKrg3UjhcQq4BWJXq+vI0D1SWPlZ5DZkqgSoTFWtBdL2PlQQVsB4tzZYHRrpyHFvSOHVO5/15gsmUrbXCnw02LEU1ufCXl8ALfaib4LeJXSGLBgykaYJ6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=ako3t7ey; arc=none smtp.client-ip=209.85.210.42
+	 In-Reply-To:Content-Type; b=duITluFCxkfVN8bgWDW/i87SaWBa+EtUeroEkV4rrMiieGc+vAqNMQFrHho18QqnkctR5nfJaNJT55PQLQcQxjtpF6C669bbHzbO3CNOIDsdUXTG8NQO+4p2k2o7fYCwHhrnzDBbRvR6M0AVhKvcp6HnxiqspiKnOhUPc8/MkLA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=lVoJORNc; arc=none smtp.client-ip=209.85.161.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="ako3t7ey"
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7dbdcb85067so4709844a34.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 06:29:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="lVoJORNc"
+Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-68a5e7b5b52so2305695eaf.0
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 06:33:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776173371; x=1776778171; darn=vger.kernel.org;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776173623; x=1776778423; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=buTfI+KLeDeg8uKm1bRoRg/Dor/qBDBfQYYxVgfbj80=;
-        b=ako3t7eykb7nWHR1drxfB1+oWz5O4exDrK/55H2xpnEG7lzBW1g0l/47HZOU4MzprQ
-         2rz2gzqQ4+WxsTs/JeOhHnsn2N8afKzUPS1N74dDOzEmdQTpgg5w5e/hbrU+YFt0u7p4
-         ftcIxFHBaWnZcS4xRa0OsMwlgj2xFubAVQrF9B82RpcY6fCVviidMXB2OwbQL1k2+2CA
-         b2HdEMgwQn+h3OEVeC7RiF1C6QJpnE8AMfOUGtdrE6XQYs9Y+mCxbcJunX+M55fMTjTL
-         /Td0cywUsmBoHKhBiUNynk3ExwOG0vS/2roRj2mSyeZq72ux2MXkejs1heLQAQ4r/eNq
-         i8Xg==
+        bh=K3sBeAdRcheJ57AeKgPv+bUh2d9hadJz8qaxyVYm8Lk=;
+        b=lVoJORNcu7wBFd2vQjYzXuMSkMR5tdc6juve/CTKegvT4OmhfNLcEkWRCEwjN8PC4l
+         u7S4Isfc/fTykXUk8a9dzOOJEJRJtSa9wZ1Zkvc9W4Yq9+e1ZqTk409jKso9m9AcNNEu
+         igQVFyZAG2QUFHLWgPty4NpcMmFw1gQcpF80X6aDael0RIrAs/6TMBg2nh9be5Ksfvfi
+         3aCSj0Wm+ULyqXL64dwJwoBxuWGwprSlfyn3p0nYh+HY/5s8nAtIVFRyWZguwtJ/RVaH
+         9P6+ZWgFhBM2tDRVpAjoT+wHfbKgoyN/z4f8HX5gds7KpwnqkrxM9OiSAkJmIqYRLBsr
+         H+7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776173371; x=1776778171;
+        d=1e100.net; s=20251104; t=1776173623; x=1776778423;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=buTfI+KLeDeg8uKm1bRoRg/Dor/qBDBfQYYxVgfbj80=;
-        b=nFbYA/+1M4x3qSoHBNe3wGyAMGONHP/HyBR586rDKjF6tAVBjIUenSSFkGgtBd3KFD
-         bsImt4EQQXLbQ1XmoY+40wXKbz7wXAQvkyZkE58u3lmcCul1BD0MtmxnGRrU8B6/kVL3
-         Tz3Grqa4HYgan+4Hc0E0tLLBbdKfFIzx84l9JjyZpdNKiFcOOyJvZZd2H6joO5P7si0F
-         8YskgAMC82ddCnfteRK4nKATQEEuxv00pCVjE9G9sXnGorDMkeKzLjZ2a9hHSdUWUvSd
-         wgXkRPnEW2oNewRr8W2QIWAdbIttuf2vW7sJffXEesUfyjtdGmG2C8Ghl4Jf7u/mptLr
-         WwmA==
-X-Forwarded-Encrypted: i=1; AFNElJ/ESh5Nocl1Go723k1Q6aypt8MC/ayhvV/MOPJITCUDzN2hsfGVcqnLs5cxdIqfUwUSlfX3qgnkPFU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx4Qz790VBNQPS3KRuXX9mWBOO5FePlc63v40ddyOHm7oU+qTSa
-	IO7LcaqAo+WkgRmMWGrG+Ou/jlz3tCA8WMGUpJlKXA1uYLSBug72uzSXsMuISMr7U2Q=
-X-Gm-Gg: AeBDiesqgMHRXBCfAbW38JVPCy0ZYUzauQUehZGimT9dphw9aL922as5tAKmtASmlCQ
-	bSIpttCVtSIS2hhBvEbu6WlqVr2YYef4OGXGmD1z24cXtnc4LctUULOltZrzD8Oe+cRxviIcCYZ
-	3z47HoMOFOiOsrA+Bd1bW1afRJ0uZx2a6+x/3ITGEbEbF6Wolv32xyUo/avGlHgE9nuc5499irX
-	vm5KIxa7HzT3OjPf5goGF8GwFI4Ck5TJd5v2qXJP9azRSTyYecF1tLC0ltDt2GCw9owawWgJDJa
-	VKD2WlATA+oKztirdYP43A4X5iGYpqEWwXOyMFP+FaE3KFjKUkXSYYA6VSWM/EKcIajp9JqEaaA
-	+poNrvdfT0aj3OKbM/lftM3mVS/TKkBHacmVfTI0BneWBXkIxSfwlVia+8gXkHHAuKCsS/Bgn91
-	ZXaNbrshlZl/5n4p2DPT/Rqyb32fg4UDK1VZ6c6hKHfEgtLD9n0txiOWhAl/mr127arNizSyshI
-	g==
-X-Received: by 2002:a05:6820:98b:b0:681:aa84:a8ff with SMTP id 006d021491bc7-68be5c5f183mr9275886eaf.12.1776173371135;
-        Tue, 14 Apr 2026 06:29:31 -0700 (PDT)
+        bh=K3sBeAdRcheJ57AeKgPv+bUh2d9hadJz8qaxyVYm8Lk=;
+        b=LbZ9zrAhzERas2hmI/VuIkCLDCi6uhpQCT3EJTQEzDU5rlhIKWAHQViibkAA5U3vwt
+         /chy3db22fQ/tAAnm2SzaT1D1MPAeeOvc9LgrSC1ooCC55jIs3/LqxiFBgm91P/QN8vp
+         UE8EDvJNIHemkRHtnZIPfwFVKRd6f09eB1fGjvbEQtuUht6s+7GeBPfJ5lIk5PzJ98GE
+         qy8WZvZMZ+eTswgiIuy0pQIID8ouzhIDKRbgH7zzRL6BrIRkOs7oExPoLr8dM45oGL4r
+         ifoSbr0DD5MHBFJM89+VDAF5OYwSPIaMV3YORMSQdDFVCnpc7GRYD9ALV1dqXcxpT0Rf
+         Mu7A==
+X-Forwarded-Encrypted: i=1; AFNElJ+u/Xso64CqIURG8zkUuVKKDcyyeay2QrtfY/vI80pXLFJ5iN2HPWO6gnbUyVq+0DzJkEBm7Q4tWQY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy596962ippmlaEUa0MiiEiSSFNLPWquoCYa0MO619Zxip/dOdc
+	LJBz2b7tgDyLIIrUHJzkjstZZnuGjcuQf1wvlQHdt/cb4kocJS+5UmlV7d6xiXo/mVQ=
+X-Gm-Gg: AeBDieuSVZFjDNTI0z+UaQ+Gtt+20mSntchfRMueSNMlDHxpabfnMffvTbgL2/20k78
+	7SUQckxvctlpaudRBoH5SdR/79oKSfAgiazidfRt5BGX8noNUvCrL766imkLAv06XbmoHVG9AtM
+	NnwXXbEX2BUtHraZ+yI0MOWLT6w/hpcb5jzq6hCu+jDf2ef4BYp2IR7QhVbaTw94Gc0//1nmJwq
+	E0Q4Fp6Z37/cPlnczZb9cGl78jFnwTvV8bMaf8iC6OT2w7b42/6UhtN523iHL/Nh4pv+iiwZRqb
+	0EM6EC0Ywx0x4+Fn7IQ5fe0aSQYMJz88E0CGfPczOlHDdls56dooD/JHrmhpKfR/f0VdCIj2AX1
+	a6KvoUOwPbzJjIcgiWz505Pq/ECGTh0vvKy0kwth2zkTcMWDmOc1MEjWSvnIIezYgaR/KIK86Ti
+	75qD1AIWEe6TbnVjgA87SJItdCQq+evByfsd/XMoSUgbTwnKAeUoacrh9i1l8eW6ylwlrZbB4IW
+	A==
+X-Received: by 2002:a4a:b682:0:b0:67e:3d3e:db54 with SMTP id 006d021491bc7-68a653e50d8mr7024671eaf.0.1776173622933;
+        Tue, 14 Apr 2026 06:33:42 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:5bfd:a817:5527:c417? ([2600:8803:e7e4:500:5bfd:a817:5527:c417])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-68bcacc9931sm7466199eaf.11.2026.04.14.06.29.30
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-423dd396960sm11509905fac.2.2026.04.14.06.33.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Apr 2026 06:29:30 -0700 (PDT)
-Message-ID: <d14d23df-0fad-4b87-8e57-67241b29fc30@baylibre.com>
-Date: Tue, 14 Apr 2026 08:29:29 -0500
+        Tue, 14 Apr 2026 06:33:42 -0700 (PDT)
+Message-ID: <dbdc637c-463f-486f-91e5-f4b48af1094a@baylibre.com>
+Date: Tue, 14 Apr 2026 08:33:41 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,51 +69,47 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: adc: ti-ads7950: use spi_optimize_message()
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
- <ad4OywqHDC7aYapD@ashevche-desk.local>
+Subject: Re: [PATCH v5 2/3] iio: dac: mcp4821: move state initialization
+ outside switch
+To: Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org
+Cc: jic23@kernel.org
+References: <20260414092254.34883-1-nikhilgtr@gmail.com>
+ <20260414092254.34883-3-nikhilgtr@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <ad4OywqHDC7aYapD@ashevche-desk.local>
+In-Reply-To: <20260414092254.34883-3-nikhilgtr@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 4/14/26 4:54 AM, Andy Shevchenko wrote:
-> On Sat, Apr 11, 2026 at 05:13:33PM -0500, David Lechner wrote:
->> Use spi_optimize_message() to reduce CPU usage during buffered reads.
->>
->> On hardware with support for SPI_CS_WORD, this reduced the CPU usage
->> of the threaded interrupt by about 5%. On hardware without support, this
->> should reduce CPU usage even more since it won't have to split the SPI
->> transfers each time the interrupt handler is called.
->>
->> The update_scan_mode callback hand to be moved to the buffer preenable
-
-s/hand/had/
-
->> callback since the SPI transfer mode can't be changed after
->> spi_optimize_message() has been called. (The buffer postenable callback
->> can't be used because it happens after the trigger is enabled, so the
->> SPI message needs to be optimized before that.)
->>
->> The indent of ti_ads7950_read_raw is changed since there is no longer
->> anything else in the struct to align with since we removed
->> ti_ads7950_update_scan_mode.
+On 4/14/26 4:22 AM, Nikhil Gautam wrote:
+> Move the iio_priv() call outside the switch statement in
+> mcp4821_read_raw() to avoid repeating it in multiple cases.
 > 
-> Some of the func() are mentioned w/o parentheses and I got lost which one is
-> which. Also callbacks usually mentioned as .callback() (with a leading dot).
+> This is a cleanup change with no functional impact.
 
-I didn't put () in the last paragraph because I was talking about the function
-pointer, not the function. I guess I missed update_scan_mode() though.
+This is still not a "cleanup". It is preparing for the next patch.
 
 > 
-> The second paragraph doesn't tell me clearly if there is a behaviour change
-> from user perspective.
+> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+> ---
+>  drivers/iio/dac/mcp4821.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
+> diff --git a/drivers/iio/dac/mcp4821.c b/drivers/iio/dac/mcp4821.c
+> index 29187f2a9d3c..102ae3718514 100644
+> --- a/drivers/iio/dac/mcp4821.c
+> +++ b/drivers/iio/dac/mcp4821.c
+> @@ -115,11 +115,10 @@ static int mcp4821_read_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *chan, int *val,
+>  			    int *val2, long mask)
+>  {
+> -	struct mcp4821_state *state;
+> +	struct mcp4821_state *state = iio_priv(indio_dev);
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		state = iio_priv(indio_dev);
+>  		*val = state->dac_value[chan->channel];
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
 
-It is not clear that the difference the user can notice is that there are
-some CPU cycles freed up for other tasks?
