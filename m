@@ -1,136 +1,136 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5639B39A7E1
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 10:01:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F3A3A0E80;
+	Tue, 14 Apr 2026 10:04:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776160877; cv=none; b=Vzh9dzOGShE6RUxiMMUYhGqqt0VYT2axnAFyLqyiRL32c29q1j99b1duD51J+Uhn1SRdXGxUofULmM7AT1BhytoTqhm2FjwcDiTvf9Ix/MJzj5sY94oJtZpGg2G67u1ySt9/7WIvyVUEOi8vn2S3KrFvfIluwvg424nkmkR6B08=
+	t=1776161082; cv=none; b=bqh303IIYsTR8WsUlr9k5xp/M879iSm4/zay70LPh2L/hWf9MksiyyJbyTFM4fVLwfFYi7N2DgL6IF+G1kKySBKGBQqbjHwidYWcXanulAg5CWxlPlsXqaS+/uK3EclsgUpTBx9OYUQ6zT1alyQRd+2SpVD8dKddmeyv+0sAIZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776160877; c=relaxed/simple;
-	bh=TWATlZzi4X3A/WHpzDDEDpfZXW5I0qaXm1jnhT2bBQ4=;
+	s=arc-20240116; t=1776161082; c=relaxed/simple;
+	bh=p7DZIoBmA2wN6KmMdoSx188+rw4x3RljsLKbDdiYkbU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AU0B96nAb5Wppztd6BptKqEbgkMPwPkidKGRcGw/gHotDTTIF7HvvGIwZKM8IdF5CW1WInI2LzT/4ErlynlukW8KhR+OoAVraYG+d+N3DTdO4yvNQNvWGnyijDWkn2gdSG6TknDQofoOJmFRsBf/WO33XrsqQYk9RqD5cAGev3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EhO4uBYu; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=GyiM9Fex7K5lCXsZyOQI0sY+aaguM/WVw8mLFWl5f7HFsdObQBeIDLzWrsH3XeiUbjqCJoaNomzA0lYKBH2Y2X5AUpPSEsNOIJ314Wr7NwoyQvOOLgV8rtttdUC7Dpys//vEE4X7TRHfkhDM+GVi6MOOGCBo69y9cV5C2O6DZkg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WY5LRmw+; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EhO4uBYu"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-488ba6366a7so66834815e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 03:01:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776160875; x=1776765675; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=vod8BXIWHFvHjyIgPVqzoMi7Ge1BDJsuhw5OvwgKjQg=;
-        b=EhO4uBYu+sWRH/xBkWXX/XsfNnslnF1rhdVuIElmAKeKsHDrjqY0jVfcJW9YeWDIga
-         PbVvd4lY9lnKuHKbCwAnbl04JseOCIwlByJUGLu32IbiNrk9n47mpbA08MC1+nCKbIgx
-         IxqCBYfLypNtzfshT7eYxMtyrRUwjgPU6NwoCgjjik2Rm+JvXPzHHdpJMHX1jkYwnXuq
-         VuUbSL7c3NBeNuwhd+fBolCvYQOyd3NgZcyQCqmKWEMwTCxw4h8rBD1ju+LxetC64Rqd
-         h/wIdAqRC3v0QvR+QNt7NEzX/99JMUaEHQMEgYUAhfqAtTAaa2r2GJ1phpIEjgwU5C2J
-         NSsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776160875; x=1776765675;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vod8BXIWHFvHjyIgPVqzoMi7Ge1BDJsuhw5OvwgKjQg=;
-        b=cGEmSTTPw8xMqWMltkkZLt9F7bZ2YxbnfLUfHv/Hj94qrb+Vg/D70Q8U220pKgQlz0
-         J6WT26rVF5PRQK68JHZswCdSZ4ntefJQTRyLCur+1oOT7+mgoXgcEbE/RLStHlTmYrb/
-         eZCvhBNwdudfqxEzskpbsNdoh9FfefiAieSZ12IXfTKYgUucyOBZcFkWCZYKZSArLWEL
-         mlM3vPmTEWkI9SeKx2BSheNAo3g9hgNuKoSTZPf+gkrBx/yoBG9xzQmd5OMhlWVlMvKb
-         Px85FjkolAj7q53JybM6C4Tv4NpXdnJDU1JrS12Wg6KpR9EnBtvrasQcklctBM8ZLGYz
-         uynQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/oNhxYzZofYzOrhhUNX308Vrnk59x6U+NM4hCk/S0hlJr2nTUZZoL6nVNw9oNDy6OLIFVThUes02Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy3CVX5DefMocTfER0tku6rPhK230B86qfEiq8XrYgseTiB05cb
-	e75dRLQfeEgKAdhgtLRythpYMqRDR9cbR49ndvhhUwnmX2TNGwaokUKA
-X-Gm-Gg: AeBDieux4phM2dSR1kyT8iqK/lg3/nbO/Gz4qmI817yvPSHJoNYn9dXFfM5rRzafw/c
-	5wBnoYm1T/Tfo44PMEopDC3XhBMXP3CKKjbbP3CasZMRoQcxsIIAEHy5yixRJ0tj0cNT076zUvm
-	yxoM0vAV/WFuqJGtiKbCTLY9tA5CqhJICgvd9hgLniwq6v1t0uhHwFLlhPZ6NGdqBogvETpGJbs
-	jZbZPpV6p4fX6E+o1dar26o69czH0lSvunvhKLBXmfhCCMKrJ+wPOjGiuhgbwMCX2qbyxqwaWP/
-	db+va+hObjy7gYCg11bPcAw9pqX/H8KN5EBaQnJy7cuumrd2djOG5v5sEi+fR3Y9evt2iQpOX6i
-	TWsn/5dpLQwHgr0Sll/bPhTOBQo4vXVdqWpQkIiD9iHQSFgFNsAtRG5/LzWI4ok0HAIkOzQf9ov
-	5iRxd0RB9kBy4/sg==
-X-Received: by 2002:a05:600c:6990:b0:488:a2ac:a34c with SMTP id 5b1f17b1804b1-488d67f5bf5mr239725405e9.12.1776160874458;
-        Tue, 14 Apr 2026 03:01:14 -0700 (PDT)
-Received: from nsa ([45.94.208.102])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488ee019d9bsm38436665e9.14.2026.04.14.03.01.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 03:01:13 -0700 (PDT)
-Date: Tue, 14 Apr 2026 11:02:02 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Andy Shevchenko <andy.shevchenko@gmail.com>, Alisa-Dariana Roman <alisadariana@gmail.com>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Alisa-Dariana Roman <alisa.roman@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/1] iio: adc: ad7191: Don't check for specific errors
- when parsing properties
-Message-ID: <ad4QXydZlq5L-JS7@nsa>
-References: <20260219143936.2276366-1-andriy.shevchenko@linux.intel.com>
- <c59c19d923d369eac2a0a46405e13e41836591c2.camel@gmail.com>
- <CAHp75VcpuxP=3cGuVrJoSuirQ3vPNR9LLWkf5CyaGcghJ2hzag@mail.gmail.com>
- <abkv_76b1cue1bGK@ashevche-desk.local>
- <20260412153040.0e6f2d7f@jic23-huawei>
- <ad4Dd2hlVdw16xgg@nsa>
- <ad4JXGgVLkwjLHwb@ashevche-desk.local>
- <ad4J_iWzGpwXsxFz@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WY5LRmw+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776161080; x=1807697080;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=p7DZIoBmA2wN6KmMdoSx188+rw4x3RljsLKbDdiYkbU=;
+  b=WY5LRmw+ivY/HG0ony4n0UNldqxAwC6rFMGRbvtPP2y1WvoJEinq6mia
+   2vSfKCP6ZZexhEuZVZO1no0C/ge+INjI5cgzZjgk6D9uZG4kkfMo8LU+H
+   rk5m2GSYHPX46OHC8AWCDeJykp6s6r/UAdv9McXGjmuSJ/LCeP9d7cvEF
+   asbYJmZbViXXfORU92F+JJQTFL6eTJkUsA5NH2qszI7i0M9kvJVR0ILze
+   0z3m/Uurm5pYmcY9gaIymRVIuiWZ6u9+GePd7zFz6hTWtLcF8JTK/imNA
+   Q3NBO74eIcyREj0z7nAt9syKqKJwECepzL791+Vf/zucm1BILCJCVv4a+
+   Q==;
+X-CSE-ConnectionGUID: 7XlJ2283QSWqBWAlhI6YmQ==
+X-CSE-MsgGUID: W5jxvUnMTbuRoUBO25TtrA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="77081706"
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="77081706"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 03:04:40 -0700
+X-CSE-ConnectionGUID: 8F7NurjgTN6hNLEO3PwBiA==
+X-CSE-MsgGUID: 7AMoNrw/T7uzfd7ALaW48A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="229926197"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 03:04:37 -0700
+Date: Tue, 14 Apr 2026 13:04:34 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+Cc: Salih Erim <salih.erim@amd.com>,
+	Conall O'Griofa <conall.ogriofa@amd.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Michal Simek <michal.simek@amd.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: adc: xilinx-ams: refactor alarm mapping to
+ table-driven approach
+Message-ID: <ad4RMqwGR3Mya0vY@ashevche-desk.local>
+References: <20260414093018.7153-1-guilherme.bozi@usp.br>
+ <20260414093018.7153-4-guilherme.bozi@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ad4J_iWzGpwXsxFz@ashevche-desk.local>
+In-Reply-To: <20260414093018.7153-4-guilherme.bozi@usp.br>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Apr 14, 2026 at 12:33:50PM +0300, Andy Shevchenko wrote:
-> On Tue, Apr 14, 2026 at 12:31:14PM +0300, Andy Shevchenko wrote:
-> > On Tue, Apr 14, 2026 at 10:10:38AM +0100, Nuno Sá wrote:
-> > > On Sun, Apr 12, 2026 at 03:30:40PM +0100, Jonathan Cameron wrote:
-> > > > On Tue, 17 Mar 2026 12:42:07 +0200
-> > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Tue, Apr 14, 2026 at 06:29:30AM -0300, Guilherme Ivo Bozi wrote:
+> Replace multiple open-coded switch statements that map between
+> scan_index, alarm bits, and register offsets with a centralized
+> table-driven approach.
 > 
-> ...
+> Introduce a struct-based alarm_map to describe the relationship
+> between scan indices and alarm offsets, and add a helper to
+> translate scan_index to event IDs. This removes duplicated logic
+> across ams_get_alarm_offset(), ams_event_to_channel(), and
+> ams_get_alarm_mask().
 > 
-> > > > I left this one for a while to see if the discussion would continue but seems not.
-> > > > I'm not sure it is always the case, but in this particular example I think the
-> > > > resulting code is a little nicer to read so applied.
-> > > > 
-> > > > So for me, case by case basis for this sort of change.
-> > > 
-> > > Yeah, I missed this one! Anyways seems the way will be to explicitly
-> > > use device_property_present() to check property presence. Still don't
-> > > love the dual call thing so I might just stop checking for -EINVAL (was
-> > > not doing it religiously anyways).
-> > > 
-> > > Maybe we could have a set of optional variants of the API like
-> > > device_property_read_*_optional() kind of thing where we just return 0
-> > > if the property is not present. But might also be too noisy...
-> > 
-> > I think that's what usually Sakari likes (tons of wrappers for each case :-).
-> > I prefer be on the compromise side.
-> 
-> Ah, and note, now we have kernel-doc updated to point out that _present is
-> recommended way of unambiguously checking for the property presence.
-> 
-> 70fa0c308aa2 ("device property: Document how to check for the property presence")
+> The new approach improves maintainability, reduces code size,
+> and makes it easier to extend or modify alarm mappings in the
+> future, while preserving existing behavior.
 
-Yes, I did looked at it! That's why I said
+...
 
-"Anyways seems the way will be to explicitly use device_property_present()..."
+> +#define AMS_ALARM_INVALID		-1
 
-- Nuno Sá
+This value sounds like out of the range, also signed.
+Can't 0x000 be used instead?
 
-> 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+#define AMS_ALARM_NONE			0x000 /* not a real offset */
+
+>  #define AMS_ALARM_TEMP			0x140
+>  #define AMS_ALARM_SUPPLY1		0x144
+>  #define AMS_ALARM_SUPPLY2		0x148
+
+...
+
+> +struct ams_alarm_map {
+> +	enum ams_ps_pl_seq scan_index;
+> +	int base_offset;
+
+With the above we put this as u32 (or whatever is used for offsets).
+
+> +};
+
+...
+
+> +static int ams_scan_index_to_event(int scan_index)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(alarm_map); i++) {
+
+	for (unsigned int i = 0; i < ARRAY_SIZE(alarm_map); i++) {
+
+> +		if (alarm_map[i].base_offset == AMS_ALARM_INVALID)
+> +			continue;
+> +
+> +		if (alarm_map[i].scan_index == scan_index)
+> +			return i;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
