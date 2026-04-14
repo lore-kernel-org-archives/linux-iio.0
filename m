@@ -1,105 +1,98 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DE3724E4A8
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 16:52:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C7D3DA7C3;
+	Tue, 14 Apr 2026 16:59:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776185521; cv=none; b=BqULnIawB0IUaHx4bgGBl2UX0qrJf/GRSnwryYWIQg9/1GY9/Nol+GWprYNJPsIDSME/PASVx4Nl09+aWSX0yjcYk3UpCv/M6vrngJRcc2ohK+/UJLx8ZIAwEeQa7oP+xa4RoKSo//8fR6MkpehDDSEx4nGkJC2HrWtT0Hh1Buw=
+	t=1776185968; cv=none; b=sNe6pdGenj/zIRPGAtJNg5GJebN3EUz2BaSCmHHAHWgHwsbIo0pM2RNAEI1jhfEaNiIrOcbO3HVe0cLddZEV5jOxcpR2H4stkm4NBytTrP+R8IzbhBklQX795iLy/nbOo2bU8aDwg/v+czYtqyxGAh8+DZuX2eKXcWgUewAtNsc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776185521; c=relaxed/simple;
-	bh=/ij2d71mc2Et6yN4ppdwQSyZAPq+qpiKVHLB0QB8pS8=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=UwZvaQalYCSNaVMRfi7jmFHf+d0OJ4izQtpi5Y0Ry8kbM3VSvIKizlMZrvmVFy7HDQtj9YIEh4o5ipmDANBjCwFV5XPCy7J2G8h8BHkeUmhdIv+BUQWPy8O/3lYFSeyLXGfCZkACZw749921YQ0JEwMnLd3NKbqs356u2XH8iQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N112tpRi; arc=none smtp.client-ip=209.85.210.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776185968; c=relaxed/simple;
+	bh=jOEyb/KuyVjIePfZvdwqF0VJR5q0TCEVCq2cdDlHJkg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sSYwdlkoS/dP0PYFmHXEPgAUCxrElHtAbz7kdih8Y9qTbSHTDyB2+F7aRObRQ3Tr05MtCCbpuKuQc1G1xNqF684aoWdmyeXhq+1ZgjmbXkLpM0twodtWzAgSzwH2qgd8v4+xZ4n8CIvLiuU4xwMjs2AEpLziLMIHArArpRxZZGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mFPaJmSA; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N112tpRi"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-82f33d28c1dso1525553b3a.3
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776185520; x=1776790320; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=/ij2d71mc2Et6yN4ppdwQSyZAPq+qpiKVHLB0QB8pS8=;
-        b=N112tpRinsAtHPh7+LHmNlDozi/2U0uU2vfdBJELU9lG264SKoDbFqZyaNo/6WEmj4
-         uzz4N7BfJFDGsb76TByNsGSvnIvYvprw7Xqy8hd0vfYp+4h+TIp9pgvMfAv4+igsMw3k
-         m2yuGHo2ERmUyuv5Vp8yYFVrUM0i/y/YKnHMtbmAcvuYqE4K0y29XCfTogZmVxaeJfKl
-         yMxi75k5qM6sONXeqgT8TbJ+6KMwVQ32OwlYK44a1fK6K+sEut5cpz9BD50QYfFxsi01
-         IlThJQK303U6ykvPQpMWn2WU7nAIjoMKrrHk8d6VIlal1i0l1vfiyzImt5pZ9o47Nzi8
-         OaxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776185520; x=1776790320;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/ij2d71mc2Et6yN4ppdwQSyZAPq+qpiKVHLB0QB8pS8=;
-        b=Jwy9/a0t/d/ZvwcT/tAzKV4tKA6yfIQ54ABN+zsUZfnjnkvIeDuOUHdXC1Otd/ftRe
-         u4peOi7Q+4bmqceCMjof0Mnybw6/BpE9fKzA/eSURk63rnZ0lj9MP5gFBc6hu+rcSg+9
-         NW+67O9XP3y/gvV3Ls40omBGF6PJCK+MwIlXlCxkfuemuNltPig2CHqErnngVgAOlVyS
-         SoLc+OC5Mi5DOtXQpYdRKyKEnewHFiusUW3QStm3IGaB6JRbO0uZco9PSiX0C6Y/DCrn
-         LkIAlafW3Kl83G9Pln15JCsh6Z+EJFOhV8DKp1EKLv90S/KbxPGtq1FR7QGmoPZsBajh
-         AHbQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/I3UDxtT/Ge3y4UtvwaIF2L+IHnj9aUnbOzdz0EzbyJQ1Lv90MGC525bagh4mKUoHPbGJwoT0Zyck=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyRLj+Qv98zD2LYlJ46rMr6laECKMI5RExBU0qq2zwOMM7A14rW
-	Jxvq69+KNUTLplj44eVJt7bvwxO7JAEcAQYOJ+6M9iSwkZ3NSUh9r3SR2qtnDw==
-X-Gm-Gg: AeBDietmKEwN+Wapx6ZG3jc8ycyJytjLI5gXdhWjsYpYbHGP4gMj8QpboT/ha9hkwKX
-	7GlbB3ms3XzAOdyht4gafUi7W2ihD0jtcFd2BVu+SS0Cst+s4+sy9803P6Mrg1N/TTp1DJ2pRSl
-	s/AOZcG2YdL+PGaOFy3TRBX/A65TSEnwGPa//wxONeKR0WayAd2hYfFgLEcHAJzCxcxfxrylHZd
-	8v9ytfZQDUP9wO0PqBbZ+3ZuXAHzq8J/ks0WWFOhnWRzUg1QAzaDxQLfNURdGja4RP+lJGwIMLS
-	2OWe//Ks+DTPJJoW7nDMolMRPhfl/j2ZUytOYhhA9vpYbP2fWbAK/PcjGiiOzeOtAlM1Zug3/Lt
-	kH4O5gz1WKyst68K/2SzzAZt3qCOd2/tST2M5SIlv251IHdUo4nFklLwx3sEsXnxrk90yhsjnGC
-	KyRQjc2DylnIFMrZmATA2IydJn2RT2OaJIhyk8d9sHapfZ3jkrAPH8QDYALg==
-X-Received: by 2002:a05:6a00:3c8a:b0:82f:5576:2853 with SMTP id d2e1a72fcca58-82f55762a9cmr3913259b3a.30.1776185519664;
-        Tue, 14 Apr 2026 09:51:59 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:ac12:a4a1:b77e:33f7:8c2a:3842])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f0c36130csm14838251b3a.24.2026.04.14.09.51.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Apr 2026 09:51:59 -0700 (PDT)
-Date: Tue, 14 Apr 2026 22:21:52 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_3/3=5D_iio=3A_adc=3A_ad7173=3A_cle?=
- =?US-ASCII?Q?anup_codestyle_check_and_spell_correct?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <ad3zd34HnrzB0TMH@ashevche-desk.local>
-References: <20260413134223.2331911-1-sanjayembedded@gmail.com> <20260413134223.2331911-4-sanjayembedded@gmail.com> <ad3zd34HnrzB0TMH@ashevche-desk.local>
-Message-ID: <F9A182CC-62C0-445C-BAF0-9CDB7FFB3868@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mFPaJmSA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776185966; x=1807721966;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jOEyb/KuyVjIePfZvdwqF0VJR5q0TCEVCq2cdDlHJkg=;
+  b=mFPaJmSAAtEXeftugz3+gesbmTENb9ZfC45wOsCroXQJnu/1DxrHWX08
+   BZl+Y6X+RhCKmAXW0SD4s42qOwBetaMpdhTtC1nerPh5Gyv5zqp5yY2pR
+   J0GhkK4aVmGbViFcauU4S8aE31gsw67KBmR7SAE5VGAGw5ydeF/7V0HTC
+   oJsQ40ueOj0TVVdLD7IQT+Flu0apBAEGLUclt78X6USzxFVLneQFfdvut
+   hqZ9t4qBddm97v25e9FVMIRrwWAWpKs1rtdgWYL5Vx+ySI9uuPGHljiQu
+   c5HRkbVZmTLT0DCyQ3FZk/BmQ9MdD2NJqVR8TbkHrgnimHkIv8kY2XgR2
+   g==;
+X-CSE-ConnectionGUID: YMpOFPHES8ahsouDIzHk3Q==
+X-CSE-MsgGUID: B/nE79bQQ6qJRyT5eLlNqw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="79737535"
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="79737535"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 09:59:26 -0700
+X-CSE-ConnectionGUID: jzclmp2lR7SCzBe3wzGPzg==
+X-CSE-MsgGUID: XlmNrgNrRumr35GY8vsTlQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="268124205"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.247])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 09:59:23 -0700
+Date: Tue, 14 Apr 2026 19:59:20 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Dan Carpenter <error27@gmail.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org,
+	gregkh@linuxfoundation.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: frequency: ad9832: simplify bitwise math
+Message-ID: <ad5yaDeXhqn7KLmy@ashevche-desk.local>
+References: <CALoEA-wfx3=eVq=omiNmDeSaZpNP85KZd32A=GBiU-DVZ6btAQ@mail.gmail.com>
+ <ad40MI2oyvDeu4Gh@ashevche-desk.local>
+ <ad465p5LVaSMlTUa@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad465p5LVaSMlTUa@stanley.mountain>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
+
+On Tue, Apr 14, 2026 at 04:02:30PM +0300, Dan Carpenter wrote:
+> On Tue, Apr 14, 2026 at 03:33:52PM +0300, Andy Shevchenko wrote:
+> > On Tue, Apr 14, 2026 at 12:45:31PM +0200, Joshua Crofts wrote:
+> > > On Tue, 14 Apr 2026 at 11:57, Andy Shevchenko
+> > > <andriy.shevchenko@intel.com> wrote:
+> > > > It's up to you. (u64) casting here is not bad per se. And it's more robust
+> > > > against changes in the second operand the type of which is hidden currently.
+> > > > (Reading again what I just wrote, it seems I objecting my own suggestion!)
+> > 
+> > > If I'm not mistaken, the compiler would always do a type promotion of the
+> > > "smaller" operand (in this case fout). By casting at this point we're just doing
+> > > the work for it, so I guess it doesn't matter.
+> > 
+> > Yes, and the problem here that BIT_ULL() is (semi)hidden on what it returns for
+> > smaller values.
+> 
+> There is no way we'd implement a BIT_ULL() that doesn't give you a ULL.
+
+I meant that it's not crystal clear, one needs to know the naming convention of
+BIT_ULL() and/or check the implementation. Reading (u64) is much clearer in
+that sense. Also in case of BIT_ULL() parameter being < 32 it may be replaced
+with BIT().
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-On 14 April 2026 1:27:43=E2=80=AFpm IST, Andy Shevchenko <andriy=2Eshevche=
-nko@intel=2Ecom> wrote:
->On Mon, Apr 13, 2026 at 07:12:23PM +0530, Sanjay Chitroda wrote:
->
->> Reported by checkpatch:
->> FILE: drivers/iio/adc/ad7173=2Ec
->>=20
->> CHECK: Avoid CamelCase: <AD7173_TEMP_SENSIIVITY_uV_per_C>
->
->Fix checkpatch, please, to make it understand the Syst=C3=A8me Internatio=
-nal d'unit=C3=A9s=2E
->
-
-Hi Andy,=20
-Thank you for the valuable input=2E
-
-KTODO: update checkpatch to understand system international d'units=2E=20
-
-e=2Eg=2E Standard unit list:
-Prefixes: u, m, k, M, G
-Units: V, A, Hz, Ohm, C, K, s, W, etc=2E
