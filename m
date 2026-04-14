@@ -1,136 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F3A3A0E80;
-	Tue, 14 Apr 2026 10:04:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776161082; cv=none; b=bqh303IIYsTR8WsUlr9k5xp/M879iSm4/zay70LPh2L/hWf9MksiyyJbyTFM4fVLwfFYi7N2DgL6IF+G1kKySBKGBQqbjHwidYWcXanulAg5CWxlPlsXqaS+/uK3EclsgUpTBx9OYUQ6zT1alyQRd+2SpVD8dKddmeyv+0sAIZA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776161082; c=relaxed/simple;
-	bh=p7DZIoBmA2wN6KmMdoSx188+rw4x3RljsLKbDdiYkbU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GyiM9Fex7K5lCXsZyOQI0sY+aaguM/WVw8mLFWl5f7HFsdObQBeIDLzWrsH3XeiUbjqCJoaNomzA0lYKBH2Y2X5AUpPSEsNOIJ314Wr7NwoyQvOOLgV8rtttdUC7Dpys//vEE4X7TRHfkhDM+GVi6MOOGCBo69y9cV5C2O6DZkg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WY5LRmw+; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63733CCFA1
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 10:12:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776161528; cv=pass; b=mqo35+Uaz5cmqDJsOg2RdKYnoDnXegQVBXfopbhtv8/gAyvJ9lyiSjF0/Cl0AaoK0ht2Slv7okmMeAChivYI42QpWeCG5GKeWKZP/EVDITqxesLIZ0P/mFJwjjBs5jToBWgChDe2Q1cmqQVFjL8y7Xvm6NqpgYbje6TI5CvkuDA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776161528; c=relaxed/simple;
+	bh=gktpKhrLyiZgsXkbC8Mv5N7h3N0Dx5x75ujNhIydRv4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=oWZ526wn3yAerZzJ8BdsCmtnjA9wput7sJsq6HDVxsRK/ft6RWigQIDk0eJcJv6FXLRMZduc+R1nSmIGipwS9Wt+AC9j6vWrwtUc225gZmy6mf61YRozy05O09sUhOfmzgvDgKwnFVX29tp4GOAx81ZFvnvw2bOr3AbWIGenHlg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gEHDEA+A; arc=pass smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WY5LRmw+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776161080; x=1807697080;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=p7DZIoBmA2wN6KmMdoSx188+rw4x3RljsLKbDdiYkbU=;
-  b=WY5LRmw+ivY/HG0ony4n0UNldqxAwC6rFMGRbvtPP2y1WvoJEinq6mia
-   2vSfKCP6ZZexhEuZVZO1no0C/ge+INjI5cgzZjgk6D9uZG4kkfMo8LU+H
-   rk5m2GSYHPX46OHC8AWCDeJykp6s6r/UAdv9McXGjmuSJ/LCeP9d7cvEF
-   asbYJmZbViXXfORU92F+JJQTFL6eTJkUsA5NH2qszI7i0M9kvJVR0ILze
-   0z3m/Uurm5pYmcY9gaIymRVIuiWZ6u9+GePd7zFz6hTWtLcF8JTK/imNA
-   Q3NBO74eIcyREj0z7nAt9syKqKJwECepzL791+Vf/zucm1BILCJCVv4a+
-   Q==;
-X-CSE-ConnectionGUID: 7XlJ2283QSWqBWAlhI6YmQ==
-X-CSE-MsgGUID: W5jxvUnMTbuRoUBO25TtrA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="77081706"
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="77081706"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 03:04:40 -0700
-X-CSE-ConnectionGUID: 8F7NurjgTN6hNLEO3PwBiA==
-X-CSE-MsgGUID: 7AMoNrw/T7uzfd7ALaW48A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="229926197"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 03:04:37 -0700
-Date: Tue, 14 Apr 2026 13:04:34 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
-Cc: Salih Erim <salih.erim@amd.com>,
-	Conall O'Griofa <conall.ogriofa@amd.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Michal Simek <michal.simek@amd.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: adc: xilinx-ams: refactor alarm mapping to
- table-driven approach
-Message-ID: <ad4RMqwGR3Mya0vY@ashevche-desk.local>
-References: <20260414093018.7153-1-guilherme.bozi@usp.br>
- <20260414093018.7153-4-guilherme.bozi@usp.br>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gEHDEA+A"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43cfe71e5d3so4094982f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 03:12:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776161523; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Xoxi8bDihj5f05W08WXDrv6jnAw9DWNR3uODPX9PTJE+Y72F6bYViOcQl4yPdXGhij
+         2NHspp3s7uOD2PLf4gC9vZk+qCHu+EzwPgIJojCIZ4ZnNgt3UuChUcXZQEFhE5biXPg6
+         GgML83n03ri+UTz91HcVDgyusEeymFNO9DG8IaPgIMg6xYXt4HYqgmUcz7x/8ZkMoHQz
+         ATYMLyQ/Az7rUNJAP5sE1KAmlaeOKUb6pKEqgdVYmmRX8/014jnsAw/Kob0zkprTFIK5
+         EM7BnFyClNW5KJ+6wnzAde7Xp9W2e/f/odB83UnvZZuYEeRzXL72zOYSt90g5Z9pQnXo
+         DxhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=amSnPIDL2qKtCh2y1p48A0D0mHm9vsTeEabdiNpio4A=;
+        fh=A6PYs1hnSyPsYyNgLSSDGtVSgYpK6hvmE0kXQaS55VM=;
+        b=eanfMKsPtaNrfZ0nuCzKHDI/dtO6Ouqy+ank1TGaTatoOQUnf4C/mSo3bDf3sSAqgj
+         jNINVCxjQKhxvwQGfD/mDmkByRh99q2MMimtELDoL5aYtY957Mgq7hqXOStLhSkdO5L6
+         tv0YvozppSiWw7nbtiHpACQ/tobW2zNDSjJqx/W/gsV4PS1ovionzHe+QXiOKabPNo23
+         gJ9Qhv37+cq1d37pPjEaitFTQWO1IilbkGq9tQ7ZnHccBOniFbxTNRgyJjdvSsiy5TYb
+         kacY1/JYmZX3oaiIFojX9+1IrKAjRcFYeZArEXawREBy6D07J2t2Gjjv/V9pqcy8Rdag
+         3R8Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776161523; x=1776766323; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=amSnPIDL2qKtCh2y1p48A0D0mHm9vsTeEabdiNpio4A=;
+        b=gEHDEA+Ayrvj2fuqjB8jA+D87d62jBX4WY/jTondsrEEL3RNErs5nAC4d0l6qwYb5S
+         tlTeZzLrl+N3C2rnOZcJSK2TeEgWC0fpelaM2FoduaZHZLbQUUU/vRbzMifu83NxLP4A
+         V1XferrFkpeTSY2b53a7AlcrYZO282yRCFZot0RbV1zbS0VByIWSa669mBC+MS/C01ma
+         PHf7r3qFDx3yOcAgrleZRanq6Dic7VIvs18ocRi/jXnxJFFqYlqplo+iUQDyY0SsgX3+
+         MUM0KGQe6dKBZOf2hrKm6RYTfhnubtj0cB2js0Ao80UdoQz7a3U4MgilaNbnwLWdS2/5
+         xGtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776161523; x=1776766323;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=amSnPIDL2qKtCh2y1p48A0D0mHm9vsTeEabdiNpio4A=;
+        b=ju+eZFQek0UT5CdaC4kG49NZikhwg9Bl89BuqpZaJsPLSuCjLwIncWPc2qPl9IVbCu
+         dINynw7t2EWNd9gzoTPW1f3xoBC+kL6Uo6uOaJj5RTQWJb/c9M6G2b2cdMcMn3vywyY7
+         hvsv90iPQ0Bz/tATM3E1/6DIJptOKIecfW1yx9z/acErvDDpg6XRspBHG1+g+jxn0wH0
+         eCNLKqtyg1IJvR/Zb9GAQ/ygQgusThwKMwqtHZ9UlFRhC2bYNiXqDlegTmx7eVyEoPU2
+         3eruRwy1qUqqtONL1LbfssYiXy3NlrXBaVrL/lVuktpLCZsyFTzGECWJ537VNr1CjRX3
+         j1aA==
+X-Forwarded-Encrypted: i=1; AFNElJ8WTq0NH/sAgjZnMpQPrheJjKhDYUAwtx51TahfUcKZUH6Ioc48JJtCVXyYJfcVijqGlAitZPmq3sc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxLA3ULYYFbowWkjtd7JBxFzGZsrv0YcS4G+y36EtzuSkRD9k0Q
+	Yr3LGs9+h0sn36DWLJuE8cboEMZjx5x+O0WXqavBr77vnfOvFlcYsTMldeojpMFJJavvh4CqopZ
+	qUyVIYjPoQs2J/XUjEzj9QAK6PoRnuYlTk4hP8sI=
+X-Gm-Gg: AeBDiesLalq3j9Be1MG63N+y/WEVvAa3PS16/GOIVMAR3RVJYiuI5BVrQC1QBKt+dxX
+	4DssucH6Fmvk6GLHocKFa3LkXuPIaRpmBZA3TVV+3Qxm2wSxRzEP526QO+oD0u9mfO48EcCphFm
+	cb0Qc81xAAtHmNrCgBComJXHy0Ga45VzRZZr6a6fC36dOfnsKrqV2frzbHf6z29XNkuctO7Qyia
+	0IsdYrzW/B82xP32aVYacqZJQtJLUl/9/3ukEf2pblXBsZyVAePystmhMsA+HCaLTHAMa9X05xF
+	FRNo3PCRT4CbjNTVFOZ3epmBSZPLoRV3QYsgtZAmtCiOCW/cnobMqNdD8Fu6KQJxENLRaowQlF+
+	vlK6roDOEtQPf9XtvBuiv5uzu1ouLPHlK1FkIl+XQ/fOruO9OnURUQgxv5YOKHzRErscXxpjiL7
+	VgrMpa5j1Iohsom/LK
+X-Received: by 2002:a05:6000:238a:b0:43d:7883:87c2 with SMTP id
+ ffacd0b85a97d-43d788389b2mr10338819f8f.39.1776161523503; Tue, 14 Apr 2026
+ 03:12:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260414093018.7153-4-guilherme.bozi@usp.br>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260411123512.84739-1-joshua.crofts1@gmail.com>
+ <20260411123512.84739-2-joshua.crofts1@gmail.com> <ad4K-K3MpwD3U4F-@ashevche-desk.local>
+In-Reply-To: <ad4K-K3MpwD3U4F-@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Tue, 14 Apr 2026 12:12:02 +0200
+X-Gm-Features: AQROBzAAlcUriNQtY5Q61vVA1lrvNQ_aeSTgeXl_TJZkOdu94zvGGZu5fUYB2i0
+Message-ID: <CALoEA-wikg1aDAfhgHYR10ep8a0Ab+hJ4mAUyAR4nuV4Uysj+g@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] iio: frequency: ad9832: remove kernel.h proxy header.
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Apr 14, 2026 at 06:29:30AM -0300, Guilherme Ivo Bozi wrote:
-> Replace multiple open-coded switch statements that map between
-> scan_index, alarm bits, and register offsets with a centralized
-> table-driven approach.
-> 
-> Introduce a struct-based alarm_map to describe the relationship
-> between scan indices and alarm offsets, and add a helper to
-> translate scan_index to event IDs. This removes duplicated logic
-> across ams_get_alarm_offset(), ams_event_to_channel(), and
-> ams_get_alarm_mask().
-> 
-> The new approach improves maintainability, reduces code size,
-> and makes it easier to extend or modify alarm mappings in the
-> future, while preserving existing behavior.
+On Tue, 14 Apr 2026 at 11:38, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> >  #include <asm/div64.h>
+>
+> While at it, you can move asm/* to go after generic linux/* ones as asm is more
+> custom than linux.
 
-...
+Sure.
 
-> +#define AMS_ALARM_INVALID		-1
+> >  #include <linux/device.h>
+>
+> What about this one? Is it used?
+>
+> Many drivers just need dev_printk.h + device/devres.h. Some indeed require
+> device.h. Please, double check.
 
-This value sounds like out of the range, also signed.
-Can't 0x000 be used instead?
-
-#define AMS_ALARM_NONE			0x000 /* not a real offset */
-
->  #define AMS_ALARM_TEMP			0x140
->  #define AMS_ALARM_SUPPLY1		0x144
->  #define AMS_ALARM_SUPPLY2		0x148
-
-...
-
-> +struct ams_alarm_map {
-> +	enum ams_ps_pl_seq scan_index;
-> +	int base_offset;
-
-With the above we put this as u32 (or whatever is used for offsets).
-
-> +};
-
-...
-
-> +static int ams_scan_index_to_event(int scan_index)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(alarm_map); i++) {
-
-	for (unsigned int i = 0; i < ARRAY_SIZE(alarm_map); i++) {
-
-> +		if (alarm_map[i].base_offset == AMS_ALARM_INVALID)
-> +			continue;
-> +
-> +		if (alarm_map[i].scan_index == scan_index)
-> +			return i;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
+I compiled it with the include combination above and it passed, but looking into
+the generated .i file I can see a full struct device definition, so I
+assume there's
+some sort of transitive include behavior (spi.h or something)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
