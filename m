@@ -1,112 +1,110 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE773C3447
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:31:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D9C397E9D;
+	Tue, 14 Apr 2026 09:31:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776159064; cv=none; b=rqDqEj1sqZ6oK+Rzafu4WUUz+xYZxwFST0JzdmzMpw3+vTAH41n93P+nbjLDON8tIrIZKJYwJauWynAD647ygk54Xz8MlE9AQVcAsbJoI6gVmoODuBcGlXiCFIBRJYvP8+7K09UiAUnuHkAy0SFPjEvIpFjIb3SKDl810b40uHA=
+	t=1776159076; cv=none; b=IlQ+fhfq5sGCM/9DZElDciCGQc6YquDe0xkaGqw6bgN5u6hRfhMGdnBP6YoXaQWRcoN4ERMyEsxvhC/H5nOYI0Wmf/sKL+M/MeMp6702MWmpmGRKv7IoqbJBph+hwoUBJDZedkHDbztWcINSx/OfkOmSlr5yEto7MG/h896Y0jQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776159064; c=relaxed/simple;
-	bh=MtE8HFy8h/E4hGPSqldnQm4F4trB5xVe2YBSkRUcE/o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C4CJsQOvquG24Qr0mOH6tGRJheh3dL4gMVYJYL5yPZT+3XEXUwIDlZ1BcLYxJpTOnRBofCTEWuuVIOMyhNz11mWZtlZRholAfCyzo42SKkORbceAHwXPVhf+dMZ99q3UvMaNyX7KX52ARmbkf8aydMLJF2GaPQbvXdxzjVllnUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bSRh34/l; arc=none smtp.client-ip=209.85.208.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776159076; c=relaxed/simple;
+	bh=abl20JDx6bagNJSy1bhe+N9jkg8MU1E+XHYCwNvxLbc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Rd5pzBID6HdcKOkuwhl8Mo6WKjshXGnLAI+d9EH3x2w+JjcASE3eqsh6FRH+xhHkOmuNPyY+MscAfntc4igXUVn3160k4l0HmrcZVbCvlXyvUNB0F/4IZ2KpEYH/QeA5/HmCLCsGd8wXl7nYtB62locwhhXgisu6cxcMAS3naE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SKtY7DAR; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bSRh34/l"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-38de18126e7so51554081fa.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 02:31:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776159062; x=1776763862; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Y6KmFQ5DD/wIKsr9qgRDL3vC75y03HZ0DpNlcZqmlE0=;
-        b=bSRh34/l0qAHhmvkDeUliqsi3EG+bclbKaRd9D0tl0URitgIIKIEVTypKxS9+b6430
-         OaT0HiCJWScKzlqHt0o5c+f2o7eMxZrFfcvxbTgxHEpnJScOvgHetxXMBrqhu5Ov4ovS
-         x1p793v+bJJSkt37d55I9CXNdVFM3aSw1+JdPUZwMnY4D6KwKdEM0NMe6r0chzSt4RlG
-         A7PeloMVSpqMODYe07CCjjMDgu4F3ovtvcyvIaXrpBi1kwJe3+Y/tmEz2uilg+7xcDM+
-         a6aQ1EmQ6BsdYsX3EVQW0diOhf1YKlJrQXtStbUCxQXe9MlTQrezERhqt9T+9TvpfJ+q
-         EtHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776159062; x=1776763862;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Y6KmFQ5DD/wIKsr9qgRDL3vC75y03HZ0DpNlcZqmlE0=;
-        b=Ziyf1saD0/uJlWe5e3001qf/XoqiSrv0Qs/6fQMvcasb76J8WMTCvSgHewebHChJOQ
-         e2QkECFuyzwGbTvCoGq1pEXRiL9HXoGAuFOEQatZI3fXyYd+YhdTvQ2pVEBwKBlM2Siw
-         +/yfLdKZtyeruv8Y8C8EsFK8PO0PXMC2rP4gfvzXAYs9UiJ3zkRX0gfi7FmUI58fFDEM
-         i+vto0ikoP3lq6Dj0NytqWN/4NunxYdc1R3KHHvaV+/fTTWWUVp8sp0AXdupOdYNC7FI
-         LlrfvzWl9DjeTWNT2zWaG8zgyb5kHkxOLHM7lebxqYztGerzA8plCLs4uepHZKWBiE7u
-         9iQw==
-X-Forwarded-Encrypted: i=1; AFNElJ8KelPFduo8SqGiPV9TDYpALTOtOb9OFabRM6jyRud1DJKUea74CHf9tyukqe/A3RDltSZO0jJEyZE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw6DSRg4k1BgaBS9AUOgLJ0hoObCphnK1+dxOYFO+/coIhFuzII
-	KiGSBQ+/RL3ZkR2FT4HuN5uZYppyN7AAzyK+CqY3p/zW4DF+mLWOtjKzkpFKs+BG
-X-Gm-Gg: AeBDieuba74EVb9m+9ud/Aj7EblHD2OoaepUa+b4ekSh/wELh4TBJtFMpFIe1G0mKYM
-	co92KLwzqMq5WzEV4aaTvxe1R+tO2d3jJxKKcdMsdbh8K5D0GTg+adRk5WFXr7lgs/Blqi9b9gd
-	DkTJxBlAbK3AfqzFV3qHFYFCC/BK2nI7QS+/T0PPD5KvP3YAgG08VxO4+K6IIkPsBKdaEKf6lL0
-	SUOD7CWkhMxtc2xbhm8ZncpRvR4W7D2jS0cvz+9/qoI6X35KegBLAdejcvagqQt26LmmHr83XHF
-	o4YFMN+QLL5GLZ1laDljOCAr3vtomhV6zyBG/0aiAscQ153JbNkF3dOmjBnQ6XkJLJuIWNFam81
-	/5kuheRHiRjufjHR3zAk59+AzTstd8r/CjpFxSaDGkXHWArXivrfDOgoGYAGWwXcuPQK3fefJW9
-	quDRwJJuwf3LiePqXssDZStbYG6UdWAqWaI6nQx0heAraIWijzCw8rD0cE3VmzvGP8+fIh4PYz4
-	C5RV62X4Keca4/u2eCbR8FOAM5Lj8lCj0NLTr/4A5aCNxAC4d/xfId45qJshs6KgVa9UV9/miFy
-X-Received: by 2002:a05:651c:4185:b0:38a:4dd9:23f5 with SMTP id 38308e7fff4ca-38e4bf41e5amr34175321fa.22.1776159061284;
-        Tue, 14 Apr 2026 02:31:01 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:6e:3100:fa75:bb3f:af4f:b222? (2001-14ba-6e-3100-fa75-bb3f-af4f-b222.rev.dnainternet.fi. [2001:14ba:6e:3100:fa75:bb3f:af4f:b222])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-38e49a4a6f9sm27242431fa.31.2026.04.14.02.31.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Apr 2026 02:31:00 -0700 (PDT)
-Message-ID: <461bc8a7-b2e8-469d-8988-2f080e23a624@gmail.com>
-Date: Tue, 14 Apr 2026 12:30:59 +0300
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SKtY7DAR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776159075; x=1807695075;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=abl20JDx6bagNJSy1bhe+N9jkg8MU1E+XHYCwNvxLbc=;
+  b=SKtY7DARq97259TE1qZEAoyU75F3kSLrEIDQcXMXfIamuAoO5+WmWgGF
+   wkyWqXSQoUjhAeWYh90/F3/yUCwsYjqOC/PZYx8+y1lWtujdhMabZFiIM
+   qQbMO1fnJgW6jI48fAYImkzddxFrshldVzL44ZCCfrYWyQJnadHByMjGK
+   fguKqNWofp1Rex6+gLrcDmZIYWDY6DOEZIao82Ge3JqCwLStHZEEvjdu2
+   6IQthS/m19VhwVruSWULUpA6qqR3zZM/Se8Q6VRRq/2YcXz8Tr9K1yzOS
+   d3aFyL8ff3zOKj3T6uSqHhyGzxIbzZ5rXWg0jJ7tskF1OTPOJKiNPZVDJ
+   Q==;
+X-CSE-ConnectionGUID: xTaeNfpxQdy1jWvRp6Y/Nw==
+X-CSE-MsgGUID: OrsCRnzqRJKcmqsxLYVSZw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="77222028"
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="77222028"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:31:14 -0700
+X-CSE-ConnectionGUID: 6/7nLVadSRW3DYieRZdzyw==
+X-CSE-MsgGUID: 4hnEFu1ZTCG5GgLOSvHN2g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="225741180"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:31:11 -0700
+Date: Tue, 14 Apr 2026 12:31:08 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Alisa-Dariana Roman <alisadariana@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Alisa-Dariana Roman <alisa.roman@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: adc: ad7191: Don't check for specific errors
+ when parsing properties
+Message-ID: <ad4JXGgVLkwjLHwb@ashevche-desk.local>
+References: <20260219143936.2276366-1-andriy.shevchenko@linux.intel.com>
+ <c59c19d923d369eac2a0a46405e13e41836591c2.camel@gmail.com>
+ <CAHp75VcpuxP=3cGuVrJoSuirQ3vPNR9LLWkf5CyaGcghJ2hzag@mail.gmail.com>
+ <abkv_76b1cue1bGK@ashevche-desk.local>
+ <20260412153040.0e6f2d7f@jic23-huawei>
+ <ad4Dd2hlVdw16xgg@nsa>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iio: hid-sensors: Use software trigger
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- linux-iio@vger.kernel.org, bigeasy@linutronix.de, spasswolf@web.de,
- linux-kernel@vger.kernel.org
-References: <20260220224514.471348-1-srinivas.pandruvada@linux.intel.com>
- <7ef87de7-9731-46fb-9608-34c07fcf03cd@gmail.com>
- <20260412143840.349400ca@jic23-huawei>
-Content-Language: en-US
-From: =?UTF-8?B?SGFubmUtTG90dGEgTcOkZW5ww6TDpA==?= <hannelotta@gmail.com>
-In-Reply-To: <20260412143840.349400ca@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <ad4Dd2hlVdw16xgg@nsa>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 4/12/26 4:38 PM, Jonathan Cameron wrote:
-> The patch was merged a while ago and in the discussions in the related
-> threads we decide it was too invasive to handle as a fix for what is a
-> warning print, not a failure.
-> 
-> The closes tag without a fixes would trigger various bot warnings.
-> It could have been there as a Link however.
-> 
-> Also, the small temporal issue of the fix predating the bugzilla
-> entry made it trickier!  I could have added it when merging but
-> we didn't have confirmation that the two were definitely the same
-> issue at that time and I chose not to connect up the dots.
-> 
-> Your reply may well help anyone looking to find the issue though
-> so thanks for that.
-> 
-> Jonathan
-> 
-> 
+On Tue, Apr 14, 2026 at 10:10:38AM +0100, Nuno S� wrote:
+> On Sun, Apr 12, 2026 at 03:30:40PM +0100, Jonathan Cameron wrote:
+> > On Tue, 17 Mar 2026 12:42:07 +0200
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Thanks for replying. The warning doesn't appear in kernel v7.0.0-rc-7.
+...
 
-Good to know about the Closes / Fixes tags.
+> > I left this one for a while to see if the discussion would continue but seems not.
+> > I'm not sure it is always the case, but in this particular example I think the
+> > resulting code is a little nicer to read so applied.
+> > 
+> > So for me, case by case basis for this sort of change.
+> 
+> Yeah, I missed this one! Anyways seems the way will be to explicitly
+> use device_property_present() to check property presence. Still don't
+> love the dual call thing so I might just stop checking for -EINVAL (was
+> not doing it religiously anyways).
+> 
+> Maybe we could have a set of optional variants of the API like
+> device_property_read_*_optional() kind of thing where we just return 0
+> if the property is not present. But might also be too noisy...
 
-Best Regards,
+I think that's what usually Sakari likes (tons of wrappers for each case :-).
+I prefer be on the compromise side.
 
-Hanne-Lotta Mäenpää
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
