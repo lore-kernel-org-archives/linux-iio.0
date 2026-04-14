@@ -1,115 +1,96 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17D553C5546
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:51:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776160267; cv=pass; b=aohZDunl1PVQLDEoZg7ugJBrHBiDbyGkLc1G0oAtSrWdPQ6tVfBC65A6L5qJD3e3II2pVlANyfgUmNS/k5oCR0rLvMQ07rPkIk6uiZi5USVUnrv4P6Vyr+W19Z7y5O9tS7/7bEFC5RD5IMw32Ha6Zo7Hjcyl4CewURp9gB5dsXw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776160267; c=relaxed/simple;
-	bh=4LjW/qXhlw27jyCxexFHShkpdwDpih2uFl9wB6QWweU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=o8K4HBRRbG04rxd9cWzWDV5N2rwFRh0oAy7GEFrrLFSgIhdABrGF8WjKLFvPTWfdRXDQoMwjFd4RlZ1ZQOoSR939tlO5+P6xUgbgLYs7nwHC4ptGZVDTh70RvEnSeMt2vKWWbyEgfEzVCxl3+F+6O0Qdu/wiGclr9YrpvO3hR2Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eUkkIX1x; arc=pass smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79CA8381AFE;
+	Tue, 14 Apr 2026 09:54:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776160472; cv=none; b=svJmEEgPC+nrUrAXHHrR5yJRjMvvfzOUPTHXf5ECEYKm6W+O+jzTpb06TOaLvHTYoKyG5ZRyiKCoDBG9yvhB9CX+yxynjxXffvJjX4YjzKLdMhFfXJcPDDObntBfKnUWdd+KiikXdP16RohBKdJhdAqi3aHZvuAeddZneTYEIiM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776160472; c=relaxed/simple;
+	bh=39waVrRTtqMeYSz6KvKaWKBiwsMgoqAbG3WXrQml1qY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Vz6K/sLBjtOgP1Cx7eOVQkNu3b8inhREMPcJAPRa1dZ8wu5mUHOWNqofDWHFzEN0/0uZxmISUeSgn91UokAdudb2pu7xvRwAHTfnhOtNMcjx4wSdxOZvybhOrzSg8nojcPlWTxzp5XKKtqHknvrX5thWOCSq6FhyhqHY3sLJ+hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A3bZqudU; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eUkkIX1x"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43d73352cf2so1852537f8f.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 02:51:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776160264; cv=none;
-        d=google.com; s=arc-20240605;
-        b=lCmKvXT89nFOuqK9vZk3w14qSwBz61RWoCe1y+aNlrQyFE0wF6gKq9vrKNrciD7EKb
-         j6Xd729V1B/aQB51h9OmvGYtuF49dQSk3VghRHHusGDAu5u0PCpMdSbdKcMj0dTP6az4
-         Vk6sPAaF3c23vCy4y4m+t9D5rUI/H9Oz7ykfb0ia2O0uWklU2vw/P4jPK0iz+fD+o1UA
-         qoaCumwhBpfS9jPxLOaE2U15xOV7XV9PpGiB0rrfmw9JzXu3rIvgfXYscHcsb5WmfdbF
-         pxOsxkrADLspktWsOlWjFHlsHkzyJcvdNUtU7s57c2WcHUuyit8LxDY6+uYVdLDvZEk8
-         i+Cg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=Kl1qXM31lG42LlVmPxw85Pw2BbaLgJlNP4rATMlCHS0=;
-        fh=j6nIcyuVlgLAoZCnP/8LjgNZ7Mpyp6peb5Fo/X0jYmU=;
-        b=OnN1hgisVV1s9bAXbFS+UmlnJahO6LOgqkObInzLmYr55t7D4CIEdjbZ3xeTuz6eLL
-         joExHJ18VGIf6QI9hpqbs8DRwatmujbVMDMhwR4SmuHpP7RUaDOrrJSF995LkNRxfdev
-         YtvyQQsn3pCqPSdrnk+LfZ2+k2O1CS5CNrbp3zoScMKW5EeCk5apESVQhHyO5F8ZeiaN
-         bEj9a0Ok+PW+6lwrdtQL/LgVaKEBEiwWJUUVRotDot0ilf28c19iKJ6/GynvLTYRu8Ww
-         T5BTVs/nOyFC87siJgpYWVpIYaRxDW7B1+xsBnmPI4QSR+T4pW3SaTVHlV+TUIfWiYh2
-         heCQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776160264; x=1776765064; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kl1qXM31lG42LlVmPxw85Pw2BbaLgJlNP4rATMlCHS0=;
-        b=eUkkIX1xlE1ICN5cydgD2lXeQFfph27ShXwgg8TH9s7259Go/u7ygyXaWvd6MWD8N1
-         FUQ5/tqHs/I1M5n4zmqDsVLzkKgxCUuDjvcO2lkFHFN/ganzzaRWTS7nuY4pldtGryfg
-         e01QYo1nIamU2DDNYusb/vAuDb7ZO+6TPgKRAKkwgOqK+y562wY8AaYNXaRltoMPn5G5
-         BZtJvVnaUovostgng0c1g1pAm08KdpUBZ+dmd4xWeADUQdiLvGsZwH9cAn9jycJMyCza
-         TYPHRJYPVArzsDa4+0muwRRrT9zLUCheAO1DXev4QFQnY2Pwa3JVInlrmrwaUCXJfFXZ
-         tTVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776160264; x=1776765064;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Kl1qXM31lG42LlVmPxw85Pw2BbaLgJlNP4rATMlCHS0=;
-        b=MSYAro2iA/h0uCJgxbYMrOikN5w2p7+ybr4jU+ykaDWMIMBMJlI/jq1N2O7jTsKQtm
-         2VbT0nKZGjyMnR+6BsPVsmFybllrleA+PRVLsv1oc23OCoJcyKON5bnqGJH79jWqm3Rq
-         YGpsFBjMl6XMC44fM6Q7KCjuro8r5XaqwfgwztdqWJJqiPRkKVW0W6EWv1i3QZrO4zqy
-         Obh9WIh8Jv3kx5xsuz9pbfi8800So2ZgQD2Sv4tWRiGJ+P3z2WgS4/3B/ofHHW7QQqDf
-         8g5MepxF7YI6sgY9hqjRjq/qnd1Zkd6YZpTXBhiDSQHKhOhX81VwYTbIGRKSANR4VrUj
-         MJXg==
-X-Forwarded-Encrypted: i=1; AFNElJ/CFNmfbSv4nUQrgSWbf4gFjYVjsDOg/C7/KXkk0SVQXWhzdEvsgx+5Y/RT98AoN3hK9CqjDdOjX90=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx/KGsILfegnSrmkh2O4Flg/y6BfwLgEcPhG6+sgOJreWvunt4E
-	STN2QYI20tKrkMAY2AYqZ3KUSyyoUBN4ITc1+P4T32xUxCtHjT+zHkfdu0lpBDtune1Iju4T+WO
-	ihgETyr161njyeYghNrAqtEcwv+rZTpY=
-X-Gm-Gg: AeBDies/TTOX/IlOLUmlmtirfrOHGwi/OQf8TfTHrFbyIw31o//KStm49PoAinx/G6d
-	rt4rbOHfSpsKu0DXOgsQ81gz5s1RSHoZzJnkXDNstX6Z7h3CHgKurDYysiIzJwjIIMD00nLKkes
-	irmCZpJ/Ii24gD2lbowvmnMhEnQNlzP3Y7B0w2GSIbe3odiQK5a0ViIQMBsaXmax/MjfJ2Q/3Mu
-	+fP+iV+1Bz3HbVCReudb/p4GozINNTL+MMfngeBGfUeM5HfrKI2uZvzIB0HCx2vznjy5MWclHU5
-	QU+kDzi+ygkvhDeBUKrOabI3ktWJ4m9/Zggx8BEFgbs7MiaHf4qwIH35qUNkhEhjxG0/LU41vzG
-	z+5/1bBVw5nK4EzODvtShRdRTbciSPyDJ4fI6qTUe3/+QHtYxI3jlvK1M9CwMDSID+/QZ1h3dPv
-	g9MVa+YhggRHTv8QBfeSRxHJITDMI=
-X-Received: by 2002:a05:6000:200f:b0:439:b8b2:fabc with SMTP id
- ffacd0b85a97d-43d642a1f1emr25593544f8f.21.1776160264405; Tue, 14 Apr 2026
- 02:51:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A3bZqudU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776160470; x=1807696470;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=39waVrRTtqMeYSz6KvKaWKBiwsMgoqAbG3WXrQml1qY=;
+  b=A3bZqudUQWGXoMiwrezCm/9JNxbsPTx6YVcWxXiPXflgghYUtTPZ5UHJ
+   ykcNmydg3Y0le/oq6QVyweZslCeHP0xoLgppuju2W2BxSd8YthaDmMhB6
+   9JK/ljP4viBAKFYUJnaU8mqcWLKmRI8N1A/Ru/KU3H5bJG9TvK3JgrJeD
+   bDXqMZRM9szCOvlliW26+rMVEFa8v4YsKGvjL6zxGX8yydiMZJKqS8gO/
+   E072GOoEjjz8E29IxuIaWjYAFfRH9+3I75X6q8sQwG2QKNXLW1QZ8Kp0W
+   uI+N6bLZhsDasYsEILzUh7TvBfLTTI91GRKJdtX9DtIf00ystByTh7ATk
+   A==;
+X-CSE-ConnectionGUID: Rhxa+F9mQ4eoBGWt/C3x8w==
+X-CSE-MsgGUID: UVbyuN4JSzWlUmDdCUsFFQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="87735302"
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="87735302"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:54:24 -0700
+X-CSE-ConnectionGUID: QzHJxYbSSPyBDmDJiqXGog==
+X-CSE-MsgGUID: UrsyleK0TPOPOuQoAdrFLA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="260476872"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:54:22 -0700
+Date: Tue, 14 Apr 2026 12:54:19 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads7950: use spi_optimize_message()
+Message-ID: <ad4OywqHDC7aYapD@ashevche-desk.local>
+References: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260411123512.84739-1-joshua.crofts1@gmail.com>
- <20260411123512.84739-3-joshua.crofts1@gmail.com> <ad4MbnpAfBEXKDzm@ashevche-desk.local>
-In-Reply-To: <ad4MbnpAfBEXKDzm@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 14 Apr 2026 11:51:03 +0200
-X-Gm-Features: AQROBzC6rguiJabYsZOY4_RYkbulpgJEphpTychgiYWAeFDC4PxCQbEE7STdgG4
-Message-ID: <CALoEA-ye9aKD4DyciFNZBW2TSd=pw162DD28rdvRw8O2OJvcqw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] iio: frequency: ad9832: simplify bitwise math
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
-	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 14 Apr 2026 at 11:44, Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
-> It can even be just like this:
->
->         u64 freqreg = fout * BIT_ULL(AD9832_FREQ_BITS);
->
-> if I understand the integer promotion for unsigned types here
-> and the * operator correctly.
+On Sat, Apr 11, 2026 at 05:13:33PM -0500, David Lechner wrote:
+> Use spi_optimize_message() to reduce CPU usage during buffered reads.
+> 
+> On hardware with support for SPI_CS_WORD, this reduced the CPU usage
+> of the threaded interrupt by about 5%. On hardware without support, this
+> should reduce CPU usage even more since it won't have to split the SPI
+> transfers each time the interrupt handler is called.
+> 
+> The update_scan_mode callback hand to be moved to the buffer preenable
+> callback since the SPI transfer mode can't be changed after
+> spi_optimize_message() has been called. (The buffer postenable callback
+> can't be used because it happens after the trigger is enabled, so the
+> SPI message needs to be optimized before that.)
+> 
+> The indent of ti_ads7950_read_raw is changed since there is no longer
+> anything else in the struct to align with since we removed
+> ti_ads7950_update_scan_mode.
 
-Sure, at least I'll ensure that the reviewed-by tag is incorporated
-correctly.
+Some of the func() are mentioned w/o parentheses and I got lost which one is
+which. Also callbacks usually mentioned as .callback() (with a leading dot).
+
+The second paragraph doesn't tell me clearly if there is a behaviour change
+from user perspective.
 
 -- 
-Kind regards
+With Best Regards,
+Andy Shevchenko
 
-CJD
+
