@@ -1,62 +1,64 @@
-Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 789B938AC8E
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 22:43:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00D6438B15B
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 22:43:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776206585; cv=none; b=NH853vUVFRQHrr8nTPjnb/1i71X4w5sp7PEBYze5/8z4zOGTWRtW4smGKIPl76rnDKpx7g6zLw7ekbUQqxizjm3R5wdk3AWe31mZ4oUazrWmthBYhySslg5Xm1UXLoM4k4X72H7BXoR7BUiXQc0UKwhLfQECI++naBsCtEvceH0=
+	t=1776206602; cv=none; b=Csve3V4ky03+bkYmvIJSW5OCmrNrKMZ2rwtjLSmETOgBzBlImC4hlzY/j0SojMTLZksMvKSQEnTFY585N72gg7ZY542HSYenE/Dc1aAH60Yb74kMgYabmmiBmk74IxZe7yOKuu+40Z+vYUhChhWJiwCBpUqZiaQHkNpj8mHFkRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776206585; c=relaxed/simple;
-	bh=PJ0wXrCJwRZB6Cz8UmYg3CjBCouUvrNMwy2eugg6LQI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Y99/EgpjIsI+CdUNdiihR1Pu1oKhum4YrBbd4YGL3NpthevoDYjHZaGFIgmDhxOw5IbzUpIw0q/P4wqVzd8Fp32iKULKeRlchQgHI0a5RMnO7KCcA02wCMuVm7bBjyyHzO6XuKFhQTHu4YcuJklFSWJRU4jVrV9oe8KhP/cJFIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=jeANqBSD; arc=none smtp.client-ip=74.125.82.173
+	s=arc-20240116; t=1776206602; c=relaxed/simple;
+	bh=vNRA6J2+Nh5kk+8wVzqvkREK5Nenp0Br7khYY03UGDc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=fr/LKYtLAZ8wnV2I62L/ZEj1KKC2nB/K10WXQ7ZpZ9N3D/pEaR4kUyVg76MRoHYkqsrNDrWttTI+fIOBx0XGjSLUVQ7i1dBGGDJyDXnnZBxfm3rrGF22V1CCN1gbgygtVR6ZQ7PB0DXTTPXpIVb0PoXhRxuzETB9ycP+mpgOlas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=SjccCrv4; arc=none smtp.client-ip=74.125.82.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="jeANqBSD"
-Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-2bdd40d3c61so5487795eec.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 15:43:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="SjccCrv4"
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-2bdcf5970cdso3850606eec.0
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 15:43:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776206580; x=1776811380; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=rb3BLemqhdiX3ZwvRyrWGWGBqhlheXx+K5Ge+Z0UaZU=;
-        b=jeANqBSDQEFnjLJ5UJM5/VjJI7XCBrBPawAivpnstIyoTAq5DTJhtSyzIwtOuW35ey
-         VZEq4Bp5MTatUMeWyA4Jucf1LbY51AssnVNyg0Ztb83HbRCPpN/W65pcznQXJopxPJZ5
-         fSt6iqmsxmNu67T34KVmPE0l9CovCRav7PRimVxrl25WkoyWHoAVBVUdLha0kPN/QNxd
-         yga1DToWQxjUT6xYoJNiKmWJaq9txPwXywR0ROSkJKQEN8F9SurMf4s4yBnDhoaO1EqG
-         LH0Gv55RXkZ851KnhqaS8L0uJl/U2VqrLsk9UblxkvLeZ1twJxfeNl7CzC6I6JdtYTMK
-         4QhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776206580; x=1776811380;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=usp.br; s=usp-google; t=1776206599; x=1776811399; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=rb3BLemqhdiX3ZwvRyrWGWGBqhlheXx+K5Ge+Z0UaZU=;
-        b=sBudkeQDcYqk0ryMyFwfhv4WvbqJoieISGDQ1gSB9sN5yxmx0T3ZwKj+aAzahiwaFK
-         vxWK2WRGMmHK+gTifwsRtZqhqxn9oWRP3yvA/UardAdCfkQM09ZX932vDpOw6zZFGukT
-         cXIhcHqGyFGbwLh7vT03yd++qrtR5na9f6ekpRVhTjDGvIs8FKi1znxctXalsCx91ZcZ
-         +vdi3x2/bVvhu5qqd7w1ZkLqV8VxtUCXmPEflwa90pvXy1qXAk/Kx/Ejf8Adyju7unKk
-         19mQoSBkmxF2MfmLehH9hBJeGGA+p5XvImAbInlpBaWq7ls9MA8PheSbkLzv7Fyde9tD
-         tj5Q==
-X-Forwarded-Encrypted: i=1; AFNElJ9Y02VJxSVE7GQf8Yky7EuwQnoWh3upfa8lyeKq2kngoFfUud/3xHSQRv8JDy1ofRETplFH5UL3nt8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzvPAHauReneaPGFlEgm+TFbnDMASkE+QbBMH1CVpyFHOvlASPP
-	uvYcQEBuW7jxoIUInd9bXmUV4rcRsHcGpi/cmvQbmR0NekiLcWnt+Ga1LgRnRvQu8Mk=
-X-Gm-Gg: AeBDiet8iz5tBa3wkwj7Q4q050EPhsqpPez1NO8cP2yUAVmR6NhnEkh7VauRgrwkotF
-	hb9CTxbcnFfkyp/5X7vbn7Vr8/kk/bhP/EtCyUgYLhW4HSbP6vhQJnvIunqT75H0iVNJQhzm5Qu
-	eeTVmcwd0uDfDmhQY06JHcbMe0BfIaU7YIr9b+xwLMftMasCjDZ8V58i0TONCT4wSi8SdaHDVtS
-	J90JT+wnaJY/UAAjoLVuqligDieeYYa4RTTFyLSE7krmRlRpRoVwO6YQebJtXIxGXQHyJmy1L7A
-	Uy7lGzCE+HfVtFs66oLn0kDDldhqog2rsXs6gzm2yF8Aza/TkjV7WF2L/dAw1D5KXxVaZNwmBDM
-	GgA7z8UKYnO7VuHKlHStZSWg4moC9XPtluvvTO+qOUxwfDBGyS5yLMI+bqWW4YBgQpMfq4cbUVV
-	AAERnTH8S0PpbiAO6bjvFAgdj/jGf25ZNZkAtmU2vOJElroY4OIvqhiB5Utinfxoh6gcYtakaU2
-	JfGGqo/96SZbWLQdI3NuQjq97jIlHwxTxWzgGUnuci5Gx3/Zw==
-X-Received: by 2002:a05:7301:1f05:b0:2da:1a81:588 with SMTP id 5a478bee46e88-2da1a906cbdmr5452024eec.14.1776206580488;
-        Tue, 14 Apr 2026 15:43:00 -0700 (PDT)
+        bh=8xVaqx2bA0uX9Kc1Awl/FAoEiMPC51tiJH6XAaQB8+g=;
+        b=SjccCrv4PlnV3GHaggNSfArQxDA/2uwZjjrobAMxHFvYkVDwxFkdJ0hAwmEPWwopVA
+         JG4o2w09JoEUAslelG1d8gYXwiUPAD1XpQDUh1B/ydCES8jmpnY0bBg3BITVeSdUAxob
+         AxgR3rsMgIXEzncgDoLUEB8xvQjhOO3yFiUoZRsSL9JGA7W3+Zlne29LHpL6WuPokOy1
+         tE2LWGdWN8zvP8iw/X3wR/jIDh/CwaOON7D0L1/tCsdQ/W1pm+dGyAaFPPi+QCmieMru
+         6uLpUFMVDkUPfEV5H9cH9p2TvOJsSK+H9sJKhtd2ZUxKTFwdmjea18gMKspom0tZst1v
+         bOYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776206599; x=1776811399;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=8xVaqx2bA0uX9Kc1Awl/FAoEiMPC51tiJH6XAaQB8+g=;
+        b=mnllKirRPG/vmjK2MI94d/TfTLGdctoSVzY9Y/mOQ23yVKWJCDi6tKpJZViSXD2w2f
+         hvm67pb7n5qHN+qIUEmfCZe6LirUSsoAsrckLla0ioU8vDrSxpGMueYn48DCmfPYpxZX
+         g2sjmCVgKMGmUCUdmaYN8ykUN9gdRitFpIwLoH+w8etyWjlUZfMJ//gInk1FcvVdzjVV
+         6sGoLvobLt9GbLKQCudr5qCOkfa/V2OK9CHvJJhflBmBuq8jxEUuhdMfuDFHPMo1eH8g
+         jCQ1sf7wSsxgnORTcM9/yry03Uc1Av3c2eJqDh/ioV4K+c3Ar9+D/v+I0H97UOUXpil/
+         QaQw==
+X-Forwarded-Encrypted: i=1; AFNElJ/06lSi95un2n73G9OWUlz5U/5L3d5V5Utxl+0JwUMwj5Jtq5AX6PXzbd8s3JraKye1KlNLt8Lf45g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YznXGRVabpBero+lenKx65AG2mCnPqJdwxk3xlz2jxAMe/Xp4Jp
+	QrlFntGqgIacgUPsh5cfdMdgN18fBLJ1fXDZDFQKLmIJTEuH3AKNThbJDEnj77pbkWE=
+X-Gm-Gg: AeBDietujRZAcVS6VvxFIkfZkrJI+8ej1CC1WVRTueflrerErVsNhF/25Kc9K/81FJo
+	N52yvMCBOGeRh0KL3ztwEzz25NtC+93eANNzmLrh3yBSfoApN2JOx3gA1Rtdtetx2JiKa8Rl72+
+	XIqdHpgTgBGAXHbz2WHGLb3Bp5TWUMcAEyfYgTcYe6hSbkJHoiMtC5UvyP5tZ9aOCOoKznU6xIm
+	B6yVOA9RUHxA2t/FYSW+aTfsxx5b4xlD0lloUdLLy++Isi37CdyaoyW+XOuWXWz4ZeXhoOFwdwu
+	22xLqxbVh9OAxV6xpu9f66fEzuIq5mHs8J3W623N49uwRcOTTKnwhnBAP34GtB28yL5qRq8+9mR
+	qlb9G9YmhNjBZ3XuR15DtnUKmCl1Hg/XZTXisIv7XydJurdi15M1AQwQUtIvXIh0h7O+3lHaLvy
+	jmtIlu80keCr0BhqJkQC1frlSFP47mne3sw3U4Rh9bcrvrTdhmyOnrzU28hAvZtFhQgyIFXm+gQ
+	9Y4hTBOmzKVIj6jVzfVFEsf7uLB/YLM89KQKcjro3hIC1w7/g==
+X-Received: by 2002:a05:7301:2a27:b0:2be:acac:af7f with SMTP id 5a478bee46e88-2d40e3e6960mr10640030eec.7.1776206598921;
+        Tue, 14 Apr 2026 15:43:18 -0700 (PDT)
 Received: from gui-host.Dlink ([177.33.104.190])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2dd32dc2827sm4650361eec.23.2026.04.14.15.42.56
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2dd32dc2827sm4650361eec.23.2026.04.14.15.43.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 15:42:59 -0700 (PDT)
+        Tue, 14 Apr 2026 15:43:18 -0700 (PDT)
 From: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
 To: Salih Erim <salih.erim@amd.com>,
 	Conall O'Griofa <conall.ogriofa@amd.com>,
@@ -69,10 +71,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Guilherme Ivo Bozi <guilherme.bozi@usp.br>
-Subject: [PATCH v3 0/3] iio: adc: xilinx-ams: refactor alarm handling to table-driven design
-Date: Tue, 14 Apr 2026 19:40:32 -0300
-Message-ID: <20260414224245.8493-1-guilherme.bozi@usp.br>
+Subject: [PATCH v3 1/3] iio: adc: xilinx-ams: fix out-of-bounds channel lookup in event handling
+Date: Tue, 14 Apr 2026 19:40:33 -0300
+Message-ID: <20260414224245.8493-2-guilherme.bozi@usp.br>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260414224245.8493-1-guilherme.bozi@usp.br>
+References: <20260414224245.8493-1-guilherme.bozi@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,43 +85,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series addresses significant code duplication in alarm handling
-logic across the Xilinx AMS IIO driver.
+ams_event_to_channel() may return a pointer past the end of
+dev->channels when no matching scan_index is found. This can lead
+to invalid memory access in ams_handle_event().
 
-To address this, the series introduces a centralized table-driven
-mapping (alarm_map) that replaces multiple switch statements spread
-across the driver.
+Add a bounds check in ams_event_to_channel() and return NULL when
+no channel is found. Also guard the caller to safely handle this
+case.
 
-This improves:
-- maintainability (single source of truth for mappings)
-- readability (removes repeated switch logic)
-- extensibility (new alarms require only table updates)
+Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+Signed-off-by: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+---
+ drivers/iio/adc/xilinx-ams.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-No functional changes are intended.
-
-Series overview:
-- Patch 1: fix out-of-bounds channel lookup 
-- Patch 2: convert mutex handling to guard(mutex) 
-- Patch 3: introduce table-driven alarm mapping
-
-v1 -> v2:
-- Fixed Fixes tag format
-- Replaced AMS_ALARM_INVALID with AMS_ALARM_NONE
-- Changed alarm_map base_offset type
-
-v2 -> v3:
-- Replace 'i >= num_channels' with 'i == num_channels'
-- Add missing trailing comma in alarm_map array initializer
-
-Guilherme Ivo Bozi (3):
-  iio: adc: xilinx-ams: fix out-of-bounds channel lookup in event
-    handling
-  iio: adc: xilinx-ams: use guard(mutex) for automatic locking
-  iio: adc: xilinx-ams: refactor alarm mapping to table-driven approach
-
- drivers/iio/adc/xilinx-ams.c | 190 +++++++++++++----------------------
- 1 file changed, 71 insertions(+), 119 deletions(-)
-
+diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+index 124470c92529..6191cd1b29a5 100644
+--- a/drivers/iio/adc/xilinx-ams.c
++++ b/drivers/iio/adc/xilinx-ams.c
+@@ -871,6 +871,9 @@ static const struct iio_chan_spec *ams_event_to_channel(struct iio_dev *dev,
+ 		if (dev->channels[i].scan_index == scan_index)
+ 			break;
+ 
++	if (i == dev->num_channels)
++		return NULL;
++
+ 	return &dev->channels[i];
+ }
+ 
+@@ -1012,6 +1015,8 @@ static void ams_handle_event(struct iio_dev *indio_dev, u32 event)
+ 	const struct iio_chan_spec *chan;
+ 
+ 	chan = ams_event_to_channel(indio_dev, event);
++	if (!chan)
++		return;
+ 
+ 	if (chan->type == IIO_TEMP) {
+ 		/*
 -- 
 2.47.3
 
