@@ -1,62 +1,64 @@
-Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
+Received: from mail-dy1-f179.google.com (mail-dy1-f179.google.com [74.125.82.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A51B3BD22E
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:30:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70FE03C1976
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:30:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776159031; cv=none; b=IOmeERrMJY6+7qNPie4GnuXM6LPLEsmmS1r7eC7JhcaxrdVna1f69GxttpSUcPTlQ5mOzW6zIV0w81FQazwOBkfGSgs0a1U3zmnlBiQHbsNvhJX1BcUA93as6Ss9SEEXj4KXRX4ReFbPSal2QHvnuFIenyoPlEhvOymhOypepGk=
+	t=1776159042; cv=none; b=fj8vGW2GmsspQYxG+WvKX30x/tsrgkPs+d7lhdxYT1L2qMQ8MV1JBsFvTDqIhqVNdyATGIGgmbsHkeD84mjkA9R2iUX7oPY80+ED4mQoasO8dq1cZF57SBqsofzPWOm/bgjgRdC90nKnpw5vag6nrIpMZVdVfJTrxYG6kYPoK0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776159031; c=relaxed/simple;
-	bh=nA6q9uc1XooEXzBX8iGdxfjdQCrmPN1pYn9bUtcfSEA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KfvOp/3rXpqDoueKtxlF5k+DGgdMhWMEIkDYQZEPofK9tSuo1JAaYappZm9UwjKlIlwgx3dr1W8RDCxS+MZSDKa4tthhCqhHuhp+VX+tlZ+YmFTSQjVYax417uj8uvd4Xi1qVMKYQisJXNVLOflWCJP/zzy21PdkoaPaUqCe8r8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=ebL4qlSQ; arc=none smtp.client-ip=74.125.82.45
+	s=arc-20240116; t=1776159042; c=relaxed/simple;
+	bh=VUfNPwGa2375crqZ/0zGkobnkQ0w09es8kbsRO8BuKc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=pni36hwzBm++D1g/mDNzy6/X/BEnfIa5oMx5bcHZZfnmt7rxuMHoEFM5sXJQXP1F9PRbHwpRpF0/GLY9aE5rDGnfMEYWUm2RSIfiF7ncEDylgaqrnU7uDK/3or1CseI5PH1quDSgIZWvY9Ib7hoSr9QOD2e0y7SdwALC+ANUVN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=hY/ybHz5; arc=none smtp.client-ip=74.125.82.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="ebL4qlSQ"
-Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-12c565dd3a7so163454c88.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 02:30:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="hY/ybHz5"
+Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-2d96243c91fso3336400eec.1
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 02:30:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776159027; x=1776763827; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4SIzmfde5277ChYiQL5qk9STfDI4POt60DO+vrLKpk8=;
-        b=ebL4qlSQb0JF9Z55JCHuwk9CrVPDj06c9vDRWJkphS9r1t4QnVSZcHTkuVjsXSImxP
-         t6n/EqRInhFGDk9vzHvG49RR44q7LBJDc4I1N7KLMe2pZPmDrNCs33x+iQ7rsgJDoJe7
-         crueo5jyFtSop0eVy6QhBwCe42SFRh122sSneEka5aeleRNi0NG0/ZTtOm6SEKRoMgy0
-         zCP/PVqxTnZTpew6hmkuiAmlX4Gz7SBuXRAJMM/I0xRUk+2c5pkK556GE4zolVt5uY7d
-         rceLVJF5b/x1MOU1KSdGThKW1DUeESFK5jopYb+MrSJa4dMj4AmhmjJdGTatDtXuWwLI
-         4W4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776159027; x=1776763827;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=usp.br; s=usp-google; t=1776159041; x=1776763841; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4SIzmfde5277ChYiQL5qk9STfDI4POt60DO+vrLKpk8=;
-        b=qd3vGojb0jmy0fMvtszjs8lM8JcGQz/LSJG74AXPn5awQZzXsBYdGlDpCWtM7QnWxA
-         VaUAeCzygvKu0d0Q+kPMAqJ5EJ+MCtrDG4KFdthrSAUlWRfc+GzmHwUuBTP3Lc6O1Dfr
-         r9rvMYWgpz1V8BS33delXv6BJSnaRWFyeL/J74DJjbKomoFB6G6PWI9FmTEgH3vA5uSB
-         uZwpPL65yi/dOss/pmikk++JnSjf03ebJoMIViZdHCaH3S6N0YUuIzJQ+n9+jeWD9VAe
-         2QKDuq7WNuX/0CFc+wuMLkLkuTuADIhn9IIcn8KvklmdrlgROea+Gg6qQXE7JNS2BeV2
-         FBSw==
-X-Forwarded-Encrypted: i=1; AFNElJ8sTIFcPTD/90lmMZKTpJ3uKOXWusIsDHnwwfep791vRuRiZh0EVKC8yMfWNtfTWOdBBQlsdZOdqOo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw4CXGH0BjWUOzs3uho8wZcl2I9fTRuCF1ZtQV2FydwPIefe1qu
-	PzZwRMBt16TIOwhD4wrtGqeE4/c/CeijVrcu11uSI51u8OSLLpB2gJV82YBxnidZjY8=
-X-Gm-Gg: AeBDietYCm5nn80/91ybUKwK0qjpVizPB6aaX9p5s03VbqKlOg9yod3xxK80xL2Sl+y
-	LMZ84RmPaYY0oPD+WvYeytSdnEofMi1f5zdk3QiEKSnqNKl4ZPeLqQceH2UDvMftr50XcvXyI6w
-	/t6SD9dIS6Oqe4Ij4FgZkTngzL0+04sHsNr1mVsXJzWYEJdsYMITDt7P73O/r4exue9sd86rr/o
-	ryzJc+WevIdlJ67Tf8LcsfE9dDjWLp04U1c/XxUOC8+GwSgPst0OLr9B4ozKJDtlQfUMmvYHXQt
-	hp9gmYBaCjNZpnNs6YF7FdBwpbEEKG6ataHflfEtCpRdggRB7n27fUCTpFMVcxWMwi6Hzjle/9t
-	yY1IEGxNbo9Sx0Ps07ObknqGUYxJaFWG+gRRxwGLxpHA5z6On+xPeQvIM809PH2E+suM4tCpn5A
-	1oZLXkhzAITrN7SVAW+qg5IxsSnSKNX/kqB3ESR5Q0ySAVjAuPKzvMtyZSBJNtIp8xl+TvQJaCd
-	22BuqJXteU1GWG0NPGVskcCGrfe9wCKbtPUPaHJsT5J0QnamA==
-X-Received: by 2002:a05:7301:4089:b0:2be:a2d8:e9e3 with SMTP id 5a478bee46e88-2d58a2a171fmr9796479eec.29.1776159026550;
-        Tue, 14 Apr 2026 02:30:26 -0700 (PDT)
+        bh=awUe3e2jpc4F1xQVkktJdoRgPIx6DXz98TwiAeCpRmw=;
+        b=hY/ybHz5aUbZkp6F1pDKMrR9aEs3D1c1m5WEkqPYvHcdAe9V+kg4AoGw6kj/BkSAuy
+         fYq+38pZ0gZF2GxiJ1J21oM1HdgBdAWTFYEx4HQ4HahsjqYvkZK7qancMZFIQOm5eVLG
+         0ix5sEYDhfq0g8ndm0eNsoTiTlBdetkNIVg8ZfKVtK9jGWIAqXxIopkCCcHQnZcGbZ9L
+         2Zy6djCnrYX9g2WgU/W41IMBle4QVbFCiacujWaM67agKzQ3QThZVw2W3rmeujmqIVc8
+         AhLcLb38zgFx+1mVpFWZDupGrXYyyyWcR6G7grNx9auSHCSl1gi7T7gF0jEwUH2d2QIj
+         Zvrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776159041; x=1776763841;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=awUe3e2jpc4F1xQVkktJdoRgPIx6DXz98TwiAeCpRmw=;
+        b=GMLF4/6BZVD1PkHwUvFKcPdCwPSyx9vMM+AXv9hXJ7Q2g96BxVbWi7RmyOoWGIpmAx
+         UaWe9o/se5stBws3bPYbcx3nLdRujd7xe5C/WW25lGA6iVwaii2L/Nf2BzfJEwfae+8P
+         8IvEoJ+Zp58o6/FG5/EcbxaclC/beUb1vs8mRKcMWFycjpCQ6HMetwGmrUPNgSegjXYm
+         bZKlUJuqN2o+jEPOvsDjbkWNnlnmFDLpKvT8wIlNtUHuDP6NECsbrzjbdSD9P+F81FmO
+         SV+GU0mkdkJvREzvpv7cD6lfNsAXujyDb4B9X94zMeE//nTfyuJyU1J1rPkHFh6Noklh
+         i0Gg==
+X-Forwarded-Encrypted: i=1; AFNElJ+ciARIhZBGyMR7VmIRgfNLE9mhALvS/y5mw27qRFWK9DT0Gp0Ne0yclcMT0beerJcoj7knEX6DeFU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwQyWcNrM9qzvgdUszsxz5H/WOeMeideCu1tRouF6UmI4SvYVOb
+	DbzIPGmSQPyPTLdYCpym6S80bIlpM92jt0S4pLEp0tfR+XNLIZkXzaoj85Mk4iFkXQ8=
+X-Gm-Gg: AeBDietdaLgx7kZ3G7MuAmAFgn0txshPz09uXKEzgppJUI/ieTGt59EAAVMLeWHRV+l
+	o3aR+PIUj/HBn3vvDZ+Y2Q8vS8wSHiUFA1UWq/ox0yxzKp1usefLo3nlYO/FRDk/FHcM3Bmr1dM
+	Khd5t4YWWBfqQwcXUDzVAX/7o2AXfKt/8YOqyiSVdmL8eBiloDG4CmRbJxXhKNkiusJPKjVBO7z
+	CNXZehEwOc3nWI2soGd3qDAv0pPLI6dXlzZ1BQLHvLW33725g6pzFRT90nIAI0Ixw66tIBFc5lE
+	rmVqmnQx4dWw/yazCD2fpFkpm4nau6epW8cOCJLWo1w6XBlblRUafo1fO2s9KSINZe5MM51GN+/
+	bKhc3xOCux79Wj/fuOnIMW06JEPGSI7laNdQyz0TCcXGIidIAiTW3OvpEm5ClodjyPkRNoZlRxK
+	qQ2D6V1yvaiP+Gb9Y7+QrlN/xxPmhzBHYsQAxlvRlkxhyKhPYBN5SwrMwmmyiEPoWiSlEU5FHHy
+	iWR4GbfyDxNfglBENY3GZg9cRUE5I82ymqn+VAlIKrxQtEyLQ==
+X-Received: by 2002:a05:693c:26c2:b0:2d8:7302:d21 with SMTP id 5a478bee46e88-2d8730215b3mr3347154eec.16.1776159040566;
+        Tue, 14 Apr 2026 02:30:40 -0700 (PDT)
 Received: from gui-host.Dlink ([177.33.104.190])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2d562db6ac8sm20327599eec.26.2026.04.14.02.30.22
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2d562db6ac8sm20327599eec.26.2026.04.14.02.30.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 02:30:25 -0700 (PDT)
+        Tue, 14 Apr 2026 02:30:40 -0700 (PDT)
 From: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
 To: Salih Erim <salih.erim@amd.com>,
 	Conall O'Griofa <conall.ogriofa@amd.com>,
@@ -69,10 +71,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Guilherme Ivo Bozi <guilherme.bozi@usp.br>
-Subject: [PATCH 0/3] iio: adc: xilinx-ams: refactor alarm handling to table-driven design
-Date: Tue, 14 Apr 2026 06:29:27 -0300
-Message-ID: <20260414093018.7153-1-guilherme.bozi@usp.br>
+Subject: [PATCH 1/3] iio: adc: xilinx-ams: fix out-of-bounds channel lookup in event handling
+Date: Tue, 14 Apr 2026 06:29:28 -0300
+Message-ID: <20260414093018.7153-2-guilherme.bozi@usp.br>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260414093018.7153-1-guilherme.bozi@usp.br>
+References: <20260414093018.7153-1-guilherme.bozi@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,38 +85,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series addresses significant code duplication in alarm handling
-logic across the Xilinx AMS IIO driver.
+ams_event_to_channel() may return a pointer past the end of
+dev->channels when no matching scan_index is found. This can lead
+to invalid memory access in ams_handle_event().
 
-An analysis of the codebase (ArKanjo explorer) revealed multiple
-duplicated mappings between scan_index, alarm bits, and register
-offsets.
+Add a bounds check in ams_event_to_channel() and return NULL when
+no channel is found. Also guard the caller to safely handle this
+case.
 
-To address this, the series introduces a centralized table-driven
-mapping (alarm_map) that replaces multiple switch statements spread
-across the driver.
+Fixes: <d5c70627a79455154f5f636096abe6fe57510605>
+Signed-off-by: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+---
+ drivers/iio/adc/xilinx-ams.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-This improves:
-- maintainability (single source of truth for mappings)
-- readability (removes repeated switch logic)
-- extensibility (new alarms require only table updates)
-
-No functional changes are intended.
-
-Series overview:
-- Patch 1: fix out-of-bounds channel lookup 
-- Patch 2: convert mutex handling to guard(mutex) 
-- Patch 3: introduce table-driven alarm mapping
-
-Guilherme Ivo Bozi (3):
-  iio: adc: xilinx-ams: fix out-of-bounds channel lookup in event
-    handling
-  iio: adc: xilinx-ams: use guard(mutex) for automatic locking
-  iio: adc: xilinx-ams: refactor alarm mapping to table-driven approach
-
- drivers/iio/adc/xilinx-ams.c | 192 +++++++++++++----------------------
- 1 file changed, 73 insertions(+), 119 deletions(-)
-
+diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+index 124470c92529..f364e69a5a0d 100644
+--- a/drivers/iio/adc/xilinx-ams.c
++++ b/drivers/iio/adc/xilinx-ams.c
+@@ -871,6 +871,9 @@ static const struct iio_chan_spec *ams_event_to_channel(struct iio_dev *dev,
+ 		if (dev->channels[i].scan_index == scan_index)
+ 			break;
+ 
++	if (i >= dev->num_channels)
++		return NULL;
++
+ 	return &dev->channels[i];
+ }
+ 
+@@ -1012,6 +1015,8 @@ static void ams_handle_event(struct iio_dev *indio_dev, u32 event)
+ 	const struct iio_chan_spec *chan;
+ 
+ 	chan = ams_event_to_channel(indio_dev, event);
++	if (!chan)
++		return;
+ 
+ 	if (chan->type == IIO_TEMP) {
+ 		/*
 -- 
 2.47.3
 
