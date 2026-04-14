@@ -1,80 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79AD01E511;
-	Tue, 14 Apr 2026 18:29:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17417225A38;
+	Tue, 14 Apr 2026 18:37:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776191364; cv=none; b=PbymFub+aXJCjadmUJTsFfKWpH51HoYaXFs/UCILnQb51TPLCqzSga0e3j8knCM7/fw7d0nikvAh2s2zkbdg3SRFU4ZpmZK79qCr3r9jbw2tJYDvk5T/VbmYyQOpwpivlm8heynHbhlaQaPNrnsuvPqaGm8AivqYbNJCP4Ziqnw=
+	t=1776191831; cv=none; b=Vcs4vNiTo9JJRcm+VT30fp7S8wsJeMf1FHjN+3lAnpBZ/26B5FYMCB4W4YET9h0kH8UNRqTkfT4jR+20MRdtEfHonzscGEhmdO4IH0VOsNSxIPYDoK/TH4uyiOgqQOxJb3vihwiKUWmjStnwwEbeoj4zpN2UBHj7ByUDgPsU5MM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776191364; c=relaxed/simple;
-	bh=bZhOSn23zxWxgujY4eCddNVUXmuhP+1hxbBgE3l3NJE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Z9+V6hPGZ8LWdjAsItFXYVwKzLA8MVfUGny5Iv5sJZRXGt4rbFYyyy8pcSzEABbX8ox+6nwP0bxsTmwYqEVpjLH4SMjbLm2loj5AFWoOGTo8MSl+F/1B1zYn4QXwvpHhgDMd0Cy2FKY7c43KgAW5dwrHQB9Hug34U4nzhbIwer0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RzdLSAF7; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776191831; c=relaxed/simple;
+	bh=+z4szrI8wNpQTGK93+rDAEUGrK79H8kuR2I7Oz6xiDw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=G9lMJUholNzHxgvK6bhyupfBVEjm5IYg4ZDxtfwmRKYYddG3YwDpKa0936DfYEsRxXaaIGD+CYXHz3PmXsfY/PFNV5U23T21hyG/rRNpUu9kTTa/YIfSDHAow/3W1aGO6SiihPOczlblgW9nUguXo7/3YB1I+Je/0oHEBF9eK6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mHEu3vrL; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RzdLSAF7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00AD6C19425;
-	Tue, 14 Apr 2026 18:29:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776191364;
-	bh=bZhOSn23zxWxgujY4eCddNVUXmuhP+1hxbBgE3l3NJE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=RzdLSAF7SCjY1x3Ksr02OMk2D9F+QBPgy0OglB9AUj5Ow9wfpjacx2uJoEjD0jetk
-	 6e6Zn6hj3HALkv8OGTy0B857v4C38fgEQ3o5DPp4uLakPld8UokMiVHd7l0y2kiV0B
-	 /q3McSRY1rV8Rifen3pPi+QfzO9EMX0dB6TQ25Pl/Bx3FQ3cADcNksK/RpBFCYIfnX
-	 lpaMN1UPQ6KY/9NlIuHkMNWHbA53SsBXl8pYXY+7mIcw232IUeatRRhb/507jqLFnr
-	 h51yCifXOVLvAewTmqdfHhRkvMpD/wMxZhkv6LvlcXz+ecd8kIqXULyyY1Jd/juw0e
-	 jI7D82POV3pYw==
-Date: Tue, 14 Apr 2026 19:29:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
- andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
- jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
- devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
- krzk+dt@kernel.org, robh@kernel.org, Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V3 2/9] iio: imu: inv_icm42607: Add Core for
- inv_icm42607 Driver
-Message-ID: <20260414192914.3661409b@jic23-huawei>
-In-Reply-To: <ad3paMbRXtq6BrCu@ashevche-desk.local>
-References: <20260330195853.392877-1-macroalpha82@gmail.com>
-	<20260330195853.392877-3-macroalpha82@gmail.com>
-	<20260413200547.75bfd672@jic23-huawei>
-	<ad3paMbRXtq6BrCu@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mHEu3vrL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776191831; x=1807727831;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+z4szrI8wNpQTGK93+rDAEUGrK79H8kuR2I7Oz6xiDw=;
+  b=mHEu3vrLEvE6BfCF6HfhXqaIb9OrJvM73+wvoGcQYHMeP1sxxJCxl7LR
+   YEOTJKKJtQdMZrpfKnUQ6+1h0P/rhvMv6XhGT+E5iSuPvAhpL4b3zuZmG
+   K8GUZAYuh0QOTt8eURzr/tD3hOV+0UWg2XZPBRpJqZt28fsfLrbQBSjp3
+   XIa+QqL0ZYV98QlKA58TLYFiPbxXSIx5QwE+489oYRdQHCAHky4nkUyyN
+   2+oxlTJR6Bc31v+4Yt38euZR2FwW/HWvTO7u/unHZ6bnXGPg5Tfn6h+R3
+   b2knVGKwxrjIxCsDHn+HJGNCJsJOIMrNmUPD9EshRJhbahD6hNeYZc5cJ
+   Q==;
+X-CSE-ConnectionGUID: Af5IM6SjTviW+QcZwto7Vw==
+X-CSE-MsgGUID: TQTbO9IyRtmK1a5k50TdZA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="77036884"
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="77036884"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 11:37:10 -0700
+X-CSE-ConnectionGUID: j/kMmFV3TuS4aKTnxxpCUg==
+X-CSE-MsgGUID: SS2HCm0xQUu61aZDwAgUTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
+   d="scan'208";a="231925127"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.247])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 11:37:07 -0700
+Date: Tue, 14 Apr 2026 21:37:04 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+Cc: Salih Erim <salih.erim@amd.com>,
+	Conall O'Griofa <conall.ogriofa@amd.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Michal Simek <michal.simek@amd.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: adc: xilinx-ams: fix out-of-bounds channel
+ lookup in event handling
+Message-ID: <ad6JUHXNCyB4J6QZ@ashevche-desk.local>
+References: <20260414093018.7153-1-guilherme.bozi@usp.br>
+ <20260414103316.18455-1-guilherme.bozi@usp.br>
+ <20260414103316.18455-2-guilherme.bozi@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260414103316.18455-2-guilherme.bozi@usp.br>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 14 Apr 2026 10:14:48 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, Apr 14, 2026 at 07:29:17AM -0300, Guilherme Ivo Bozi wrote:
+> ams_event_to_channel() may return a pointer past the end of
+> dev->channels when no matching scan_index is found. This can lead
+> to invalid memory access in ams_handle_event().
+> 
+> Add a bounds check in ams_event_to_channel() and return NULL when
+> no channel is found. Also guard the caller to safely handle this
+> case.
 
-> On Mon, Apr 13, 2026 at 08:06:54PM +0100, Jonathan Cameron wrote:
-> > On Mon, 30 Mar 2026 14:58:46 -0500
-> > Chris Morgan <macroalpha82@gmail.com> wrote:  
-> 
-> ...
-> 
-> > > +	if (!conf->temp_en)
-> > > +		val |= INV_ICM42607_PWR_MGMT0_ACCEL_LP_CLK_SEL;  
-> > 
-> > Could make this 
-> > 	val |= FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_LP_CLK_SEL,
-> > 			  !conf->temp_en);
-> > Not particularly important though if you prefer the if.  
-> 
-> Isn't this becomes FIELD_MODIFY()?
-> 
-Yes, in this particular case as the bit has never been set before
-this line, they end up the same. If the compiler fails to notice it
-doesn't need to zero the bit if conf->temp_en is true might make it more
-efficient to do it the way I had it but given this isn't a fast
-path, FIELD_MODIFY() is fine.
+...
 
-Jonathan
+> +	if (i >= dev->num_channels)
+
+The '==' is clearer. Otherwise, please justify the '>' part.
+
+> +		return NULL;
+
+...
+
+TBH I do not see how this code is not a dead code. But for the sake of
+robustness it might be added. I leave it up to the maintainer.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
