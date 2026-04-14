@@ -1,118 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E0653C2770;
-	Tue, 14 Apr 2026 09:33:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 422973BA222
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:36:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776159236; cv=none; b=b6470A7+W+4bGtJpUNxhRiQPskhB1pfjUTlDoT39CE59gvuRsYE1QPS0YxwrEAfyAKWW7pd+oAsmwhzSj2BqHwpeIuwh2F40IgeIHDfVP+S0IL5Xf+QPK/VCqDfu5qh9wBiX0jgU7rRL8BdwBtBD4uF3QQJ2kzRDMa9H/441Iws=
+	t=1776159374; cv=none; b=DemqK1/e4qMW7q1zZvAOBTWhvyt9tFGnF3c84rKCpVkt4U4J2AgNodeUguLGuFhCUrtdax/Rg6zaOkoh9qH6SxBrcFuTvtDvix9ar3f0DpWOiG3SWzCCkBYsUho1KNVY/OMURPtqcbpPsie3jQLBp8mE+6HLbO1XZ3rkHXEs2QE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776159236; c=relaxed/simple;
-	bh=cNk6gwFQ+fqFB2KgDR+hkbweRQe4ri+OsMpQNFHSr5Y=;
+	s=arc-20240116; t=1776159374; c=relaxed/simple;
+	bh=I4E3BJ64QNjlDpPRGxu26mcEgdKOcJ4HAqG0DuEZpuY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uPr8eYuqyptStcndztr5ZEfmhPCaUzM8mGF+8mnBuVvkbRn+sLVbcV+iCRtb4Dk96OzLD9/34O7596LxtjWhtCfCtKzoF9H2RxmUAWEXxWOoO1WPjD8eWXFfoDp87dxzeqFfm1FSQkqXmZQgta0NyLn1MamaYAbrxkTAiVb3zwc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ixw7B2gJ; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=iQpQ+5OTp738REY2PWfJhawgwCOzT9Ndk4S3hhkZQuiaMbSD3NwqAf2AlLg/oUeyKdXHZjdz39XFmc6WxK761CUKKUH4gk60v5EQGCcMrgA3Ow1UYP+HcWaHn+Ds7HWSPixABgucaAV/PBNLWzJjNbZkbwDn5E05JcihBwLNWHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MEsAibVs; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ixw7B2gJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776159236; x=1807695236;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=cNk6gwFQ+fqFB2KgDR+hkbweRQe4ri+OsMpQNFHSr5Y=;
-  b=Ixw7B2gJWFHZX9q76293KnkmW+WRpCaZQWTSp+JJDstLTtY57MMGm2D+
-   ooE4BicKJquWZMGba2IqstcGb23rX7VEGRT7bf2LeYZQbQJVcya7a12d0
-   JmQbViQ3s/71gfak93ia/WCzi+lYin/eCQr7zrdE7fCHB55Qmr5fkvmOC
-   UGWq/N7p8+Cz8JOmIv6Rd+sMbGp/RsvkLhKmIfPZmlBen415IiZZtW1Ii
-   OHT9s37x3TaejbzsLNJbw4rt3yTv3d2EwjDPJHpJgYSRlkcusXIL+jJA3
-   ofW9tfqJkEqopSaAUlC4nuwQukDcte8URf6BnV9atMM+TjMMMh3XSjUPb
-   Q==;
-X-CSE-ConnectionGUID: sE+FXR2gTn+CCcy/r0Ny1Q==
-X-CSE-MsgGUID: S5adqFZFSyOUkm150qlfzg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="64646136"
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="64646136"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:33:55 -0700
-X-CSE-ConnectionGUID: ICrbowPORQqPyxUb8lsvtA==
-X-CSE-MsgGUID: 8IimmQLOSzab/N25HvvDuQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="226870931"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:33:52 -0700
-Date: Tue, 14 Apr 2026 12:33:50 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Alisa-Dariana Roman <alisadariana@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Alisa-Dariana Roman <alisa.roman@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/1] iio: adc: ad7191: Don't check for specific errors
- when parsing properties
-Message-ID: <ad4J_iWzGpwXsxFz@ashevche-desk.local>
-References: <20260219143936.2276366-1-andriy.shevchenko@linux.intel.com>
- <c59c19d923d369eac2a0a46405e13e41836591c2.camel@gmail.com>
- <CAHp75VcpuxP=3cGuVrJoSuirQ3vPNR9LLWkf5CyaGcghJ2hzag@mail.gmail.com>
- <abkv_76b1cue1bGK@ashevche-desk.local>
- <20260412153040.0e6f2d7f@jic23-huawei>
- <ad4Dd2hlVdw16xgg@nsa>
- <ad4JXGgVLkwjLHwb@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MEsAibVs"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-488b0046078so52995105e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 02:36:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776159372; x=1776764172; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=kq5csPkEyD+lw4ZkaxgkRlgf+I1PvGk3IpXK+2wCzQQ=;
+        b=MEsAibVsGExIR5Y4j2ln7/QG2WXYPAPCxFwFJFf19AlLOg8+bDaQlX9wz4vMQ6cBQt
+         2JFktkhWtjh21bsfqF5ClUo4heub3Imm1ieJzzLNTuNx8U5BqyQOWfIAM9Qh4M2FooRB
+         G51i0ekeekt/QetRGcEC2lkBwa2iNn8O/V+w1qSBeVyNe18+VDhEF63ejZvuuvIXwnR8
+         zQucgOUEAshdipEXPzOV6QtB8OXukLVi8NZVaPdCB1qOixNFDEJN6N2s3npLN5spKXLX
+         k/VJ5fG+IaEC00zbtrdLlXb1RST7iVvCUJT8LK31JKTv/PfioBHZWaqLgvuzMTGu4ad9
+         fJXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776159372; x=1776764172;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kq5csPkEyD+lw4ZkaxgkRlgf+I1PvGk3IpXK+2wCzQQ=;
+        b=ojpjE+T9Hjv5/KWec0KSAz9+coMfArENPU6k7rkfMmRiJVXrIwNGDPrRbCk9JZgaeE
+         GY2La58Lxb8ne/UADuDU0bfr/aGilt7h/evLhFBHySjWZVICOzWR/gEo/FBGsdQQujD6
+         zBVlcmoflKghmBnM78Ui3mPXpzf2FErk3R18b8pj+UK7xLBTfoHJm1O48MZuMJlxykdk
+         HP4W2r4hynjkiS5JnMsyMkmJ7Ryvsaj0eWy/V9GpBA9JHjAWSikcYgsq72Ue74VaQpUV
+         dy6LmtUthmA6Dskl9F5VeM+XCPKGl29koPvwprs349u+lgLXkhtI/fyjLMwvEvT3QW7C
+         piaw==
+X-Forwarded-Encrypted: i=1; AFNElJ+YjTzUMem9T4Re4yId0HYlNdlPpLCxgEbcDihIn1yN28laHOtKlE+TrCPtGPi4ax1QCK362euBktY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxeA604Dxc6zGnIQQIZPX39zZ29iT3OEPA4s5gKpSjdToWig01c
+	wbyQ/lF55MVoR+Vx/955yxJoibzRv73HLczwS/gsPeAfPi9z/EIcMypv
+X-Gm-Gg: AeBDiesUk3IN/XC0YfP06e4W9DUNGfEK9Z+nESi67+NZty8x72PfXORLMsX+knccMkh
+	0Mg43XAmIGaozjKn7TEmbrXart1drtjo2Z5uU2dg5iZf9v5+wkJAtCU+CEPoF2mJiTqrFRCpK1R
+	l2dPhtm6AhF6d/s1kJR54lrP4jPyKI9qCrFdDnhJeDnoq2DeC1Dl61cYU2vShmwesIs1Kr7X+Qf
+	AJSmQTe9K36EJaUhe5FKbDeozEveLD9ipuGwIvjEVOjqvxRrxnKAWDH/kLiM+5wKWUKyKaPfjNX
+	T7M4To6T/CcjNRFIGdYt6hYEj6UWv48WQqG1lLPybcJG5Dw3NMGsYOP+EqlAY7J4QGsiM0WqBw0
+	NtT3j0oa1bjOQZJgdY0BJUZyU2zNwgixVvphMCKnPTDvWVgKOyCNUEnCmTyHcghqrUMVFMU9aQb
+	aGHCOAPCAWjtuuYcqIz5eF/sz7sNw=
+X-Received: by 2002:a05:600c:c088:b0:486:fa35:aef2 with SMTP id 5b1f17b1804b1-488d67bf744mr163761685e9.4.1776159371565;
+        Tue, 14 Apr 2026 02:36:11 -0700 (PDT)
+Received: from localhost ([41.210.143.51])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43ea764eff2sm2500276f8f.27.2026.04.14.02.36.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Apr 2026 02:36:10 -0700 (PDT)
+Date: Tue, 14 Apr 2026 12:36:02 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	gregkh@linuxfoundation.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: frequency: ad9834: add mutex_lock() when
+ reading st->control
+Message-ID: <ad4KgkcR58lQwPaD@stanley.mountain>
+References: <20260414091250.1295-1-joshua.crofts1@gmail.com>
+ <20260414091250.1295-4-joshua.crofts1@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ad4JXGgVLkwjLHwb@ashevche-desk.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260414091250.1295-4-joshua.crofts1@gmail.com>
 
-On Tue, Apr 14, 2026 at 12:31:14PM +0300, Andy Shevchenko wrote:
-> On Tue, Apr 14, 2026 at 10:10:38AM +0100, Nuno Sá wrote:
-> > On Sun, Apr 12, 2026 at 03:30:40PM +0100, Jonathan Cameron wrote:
-> > > On Tue, 17 Mar 2026 12:42:07 +0200
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-...
-
-> > > I left this one for a while to see if the discussion would continue but seems not.
-> > > I'm not sure it is always the case, but in this particular example I think the
-> > > resulting code is a little nicer to read so applied.
-> > > 
-> > > So for me, case by case basis for this sort of change.
-> > 
-> > Yeah, I missed this one! Anyways seems the way will be to explicitly
-> > use device_property_present() to check property presence. Still don't
-> > love the dual call thing so I might just stop checking for -EINVAL (was
-> > not doing it religiously anyways).
-> > 
-> > Maybe we could have a set of optional variants of the API like
-> > device_property_read_*_optional() kind of thing where we just return 0
-> > if the property is not present. But might also be too noisy...
+On Tue, Apr 14, 2026 at 09:12:50AM +0000, Joshua Crofts wrote:
+> Add mutex_lock() and mutex_unlock() when reading st->control to
+> prevent data races as st->control is actively modified by
+> sysfs _write and _store functions.
 > 
-> I think that's what usually Sakari likes (tons of wrappers for each case :-).
-> I prefer be on the compromise side.
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> ---
 
-Ah, and note, now we have kernel-doc updated to point out that _present is
-recommended way of unambiguously checking for the property presence.
+This doesn't matter in real life.  "Oops, the root user tried
+really hard to do something stupid and got "square" as the output
+a fraction of a milisecond longer than they were supposed to."
 
-70fa0c308aa2 ("device property: Document how to check for the property presence")
+Is there a tool which detects and complains about this?
 
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+regards,
+dan carpenter
 
