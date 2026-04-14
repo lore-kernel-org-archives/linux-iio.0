@@ -1,67 +1,68 @@
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E603430C615
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 17:51:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B4DD313272
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 17:52:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776189097; cv=none; b=G1M8ro5An/Y5ZejAE7aZRDPqT8dZNLwo1OCkgUcXXt65j1vsGSelXX9Dr4QR1S2Hv0XzePDXLsq//XUboMnv8mNh+CRHIHy0RLNeJAG90axOhi39R60hch2fuS+jfPNFV8HPrzv/+nixS2pto4sVU00jypZ+KUrrdtbVhOyObRA=
+	t=1776189173; cv=none; b=e1bLl85J7oJ1i/y7vj9inHUD5iBABpcGIxfCi2QRtcapgsA/ALcKXujS1+5f9QrZGJMaw2FP3nvVXxYdtxqPyBz4mHh1Vo6i2uTBx7l3AM/y5mIegEGlxTpBGOLPZQjBidfpWcsvBokJHUr0PKbhWgTt8wAb2sUu+AvcK8SojwM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776189097; c=relaxed/simple;
-	bh=d14NjL6TUAAsqgHD4vIJJ2NeE/xtNU7dJEoouEAWEEg=;
+	s=arc-20240116; t=1776189173; c=relaxed/simple;
+	bh=REjQkR+edEnkg4p0CQ7AKc+sFxZJARFL3lANqLYf4PU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C1UA/Oru/tC/y/T5D8Tr5U+4E0LMRL7r4hINN7HcLHIx1Y04ZXG3kO5S30SfScv13J09OxqZXZiFIOv8aI1ezATFKvi2Z7StybFkflqu2XUMEOvR5pcYPCXlx0Hv/FnxnE/QK+9EJOEYLkZnohYKwrvGYlaSgor9vrESYvlzW0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=n5/Y0iCk; arc=none smtp.client-ip=209.85.167.177
+	 In-Reply-To:Content-Type; b=hnFnZEvAwUvRF9qQ11anIzGOUSkCq2x7rmMCsWWXgQ5bVL0L4G8N+aEsUylah2bqyfl2VtFH+0rGWDhZp2Pf15dSuWqeuR4xtx/EFg9WEbZu7SSGo1xDY/Z/uUtb/JfejO/13JS3hiWEaBymk0V5YFcscxL6tzaRJa/g8MID1lk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=HUxkp/i7; arc=none smtp.client-ip=209.85.210.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="n5/Y0iCk"
-Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-47930edbc7bso1197970b6e.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 10:51:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="HUxkp/i7"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7dc51aa8926so1221026a34.3
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 10:52:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776189094; x=1776793894; darn=vger.kernel.org;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776189171; x=1776793971; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=rwFLRWgnSYIiUfJhzR5C7sJtzSx4H5hgea7vK363pWo=;
-        b=n5/Y0iCkj3Yo5feKGUB2eDpz0q258iXzr0R2QduLqdfgCR6yOk4dIOtr8CUOm2HgI8
-         Pgm4vCz0rzPSojwfntaHkYuKWjxd8dsGvYasZNRZUu5klbtWdBv9TJh7xXVDxqrW0WHo
-         AurbDq5bp3WbzxpMQFTr4FpLXqfQB4boC30ZzMmfl4ErDVwCDD15RoD+wUMXcbzWuY2s
-         Z+Ufuxm7UDcwnJbum9Msi7e6H0VQgBn/9ufkS0Vtcvx65L2pU4C5I6SP39bFZDdtb0+7
-         4UsENmYrrFlqQxj2YYOU+C8RErFV3Ou0T0y/dywCEMQhIW5qDbg/U0G/Eljhx0aBW6sn
-         f80A==
+        bh=9vrhfGgTmoKRpC1hiMmRSSKFyU1STXFQ673v9mh9T58=;
+        b=HUxkp/i7uQ9Xqg15KLYL85NRSc8kANCMC2Ua1ty3pfM8ab46zInb6cxYTbYQ61lOK/
+         9C61N3pkWk5laCA4edVRk2W0t3Rs2nLqleJ1EGX7+fdySymSQbC5vdUXBtndu+a3EJoz
+         Ke4Ejp32vGeIViKgHOmaXI7MOFY5JTEYVDtHZWVBTtyc4kPIEO+vv9/TXxDGNIcTnBNA
+         YZow681mNQutjJ6dNwiDK+Jv2cCN5In6xzmPsMW5NZzo7gY30BxhD3jIowwAlg2Xe/OD
+         VYiTRsEg9KQIy5D6beNbl1EL57VXmLmxETzq9FlbYZSLeeA2lZtY93tLQbuYVBTAQexf
+         gX+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776189094; x=1776793894;
+        d=1e100.net; s=20251104; t=1776189171; x=1776793971;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=rwFLRWgnSYIiUfJhzR5C7sJtzSx4H5hgea7vK363pWo=;
-        b=pETuBFA4iA0NeJuKo78EGDr5//jSjWYYjcAdbe9YK+9vD1T/NpI1ffxunuAi0fLmiI
-         pa+wWN4b2LJn9c28+lIPUnw+jwgLlw1HA6AiCsxjVeBMX4+J3+hW3f7ev/CtUfm3HiFT
-         UFXgjhmcYxAkMdVpe0CFZ6xUs9k2W1X4owcrKlGIBcNgLRtdbvzRnySZGL4pn1UmHn2L
-         HjFnaewQy/x+Lm0CU3rdKlR/Y5ej4Ia241DIA20LRQilnNQ3i7mEi03TppSJ7aSQU7oa
-         1N7JRzpvmDszKRrpqn/TMIKPxkDU6jPJ+0xr8tVimM0LqXMQZ2W8WRB1RXkDMTxsE0W4
-         Nt+A==
-X-Forwarded-Encrypted: i=1; AFNElJ9Evy2ppJLSLVCJK7IhbDftJ4c09w/bXOdAnr7dLGj6naIhpsv2RTWTQS7M2MFUZdPbAF250OPBc3Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwBlBdWg5oAgFL3kECDzt2cLW1tzO37C2F1u/CIP70lUHDJhT7O
-	B0D6k469x54sWJ1q9LSmoQ/dlYTOwJMmsHAYVnHzNjapz0S1yen92pSV09oIile/ylg=
-X-Gm-Gg: AeBDievfpoFvEwA0YxikUB5pWjIsQzp+hdaqXGSOyLU7NfqqoHBWTv1e+FpV2zZqbx9
-	3KIFbk6890PdwmoOhx3YFTysNXnMmRjzuPzHFYO5fatTXLqELXjrbfCTS0OZ4j8lAHs3K4RZDqz
-	R6z1FNHc6Uwuh9OEDEjGNaCu8SIpUTVV7mGVncsF8iYwHoizruEfytY2Mx5BGAVfG1a/gPNnj4Q
-	/Ns4GAPd8PTIgVFeC/CvLC0/5yx1peKIXBBKrzOWfixWS7kdXU7kjiLcRhsSXhmuLmpAhlDDLKg
-	U3tG90as3RpU2TlXqgELQaLzRp+MdNZ+odtD8E6Io/o+Mk2+ohonroWKZI0eEDU95R7A2NC0v31
-	+VYNXn9yqYYxtz/pArz6U0ubSKBFaUCmYpFLgqViDo8kvVgm/tn/BvKHePm3qANk1318maw9kYK
-	AShxM0WPET5oNHBSZeolsI2b1Pff5PAkb4ucbHdQnJRwQun0cpVYTPs6wtL7xt+jZdO6UcllylH
-	H8RLxwgF3H2
-X-Received: by 2002:a05:6808:10cf:b0:45f:481c:e258 with SMTP id 5614622812f47-4789ef07666mr9746716b6e.16.1776189093887;
-        Tue, 14 Apr 2026 10:51:33 -0700 (PDT)
+        bh=9vrhfGgTmoKRpC1hiMmRSSKFyU1STXFQ673v9mh9T58=;
+        b=QXndQ2E71oI/ql6AtpdQLNPGTx8fr7SzRIqPY2mPV+dfy9HjjbRwQHiUv/X3MNS/fg
+         yPjSnMfz8Mff90nIzdXLi2T6an9F2f2T+mAIZGEuaAleSPZBEVHZQS+ih5RlkKbdJ8Z9
+         tJ2R6zoOSIgCSbB7ATICZMmYppSuKFBuHNYiG8fHlQ8k0PLp5ybGWVTMZGE62lTUuMC8
+         74RL81kllsBDtHcfL67946e+35FZkmt9oplMgkW3SOI1mhz37foOeguBn+i2ziiRoFza
+         oMpKpkCrHkXVu0IS2Qtp1pMd4PKB4W/p+C7nbISbalszyS+UYXgPAHe1IsNqpx5nkImQ
+         Hm2A==
+X-Forwarded-Encrypted: i=1; AFNElJ+TK2UKgWqE+PJ+UmJ+hnkAfoB/JnehDFs5fzsyRTGekcVa6VTJx6EPDuC18w3hjXOE2uXzNyp78Zs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyh8umYX0q6+PkUNf0EfTVse1UCARxx1JTv1vQoCPA68BDrjKFb
+	Fc6Ap2TaKxjS3jZSfdtOY16Ia2LnobqKyWxdscgfr3ebPv3bFSz3zJGxQwY7Rtcu5/6z+ganS5S
+	IjKl+
+X-Gm-Gg: AeBDiev9x31RHQFLoR1cxVGzPCMLgF4vUk/s4xBDQM7NyKJk8xZUwiH9hxizbxnq2c/
+	Mfe57O4qNSl+RcoDVe0uvsGRDEiROZed5wgWeSQqUtqo+etBjLDOjt8iUqdIrJPyCuL33EEtZ9G
+	oljmuhHiK6u3C3e1yjIUP+ahVDBQi/zH+l4YStZy0hXhjg27F0EUXaMnMCyp69DGpzTue9dViAd
+	CJtw1eZ+lJVbRay58KIpLukp6y2OIw5Xvzfuf6CIMh9J1mV+3jalOr7rAcoq594YcgSYdhER0R0
+	yHzId/jAmkPYJN57JQWQOpQDO+jmieLiAPYw6OrS2bhHakEKpUMNlB9VwingLo60ZiqxJIgrNYj
+	y7/X1DfnU6+Zic+lVQqmtrX2zui6zPPOK9G465F6/b0hsx2qhn0R4nWYG6/kwDnRBEUzTrZmDbR
+	UdvzD9R2IHiis/7+lJOvTYW2ETTX1z6QV+RopS3wSwrDvJ8i7+dhjT9yfEdCKnKG9Coe5jlf0fv
+	A==
+X-Received: by 2002:a05:6830:82e1:b0:7da:557:b9aa with SMTP id 46e09a7af769-7dc27c63d59mr11159411a34.6.1776189171298;
+        Tue, 14 Apr 2026 10:52:51 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:5bfd:a817:5527:c417? ([2600:8803:e7e4:500:5bfd:a817:5527:c417])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-423ddb9c461sm12107675fac.16.2026.04.14.10.51.33
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7dc265c2c66sm12262179a34.8.2026.04.14.10.52.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Apr 2026 10:51:33 -0700 (PDT)
-Message-ID: <b9c61657-bed5-41ef-9dd3-e2fc04a4785c@baylibre.com>
-Date: Tue, 14 Apr 2026 12:51:32 -0500
+        Tue, 14 Apr 2026 10:52:50 -0700 (PDT)
+Message-ID: <03ea65e3-4c34-4a20-b638-966abad78d7d@baylibre.com>
+Date: Tue, 14 Apr 2026 12:52:49 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,26 +70,64 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 0/3] iio: dac: mcp4821: add configurable gain support
-To: Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org
-Cc: jic23@kernel.org
-References: <20260414170309.6151-1-nikhilgtr@gmail.com>
+Subject: Re: [PATCH] iio: adc: ti-ads7950: use spi_optimize_message()
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
+ <ad4OywqHDC7aYapD@ashevche-desk.local>
+ <d14d23df-0fad-4b87-8e57-67241b29fc30@baylibre.com>
+ <ad5ry4i6OPOS156E@ashevche-desk.local>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260414170309.6151-1-nikhilgtr@gmail.com>
+In-Reply-To: <ad5ry4i6OPOS156E@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 4/14/26 12:03 PM, Nikhil Gautam wrote:
-> This series updates the MCP4821 DAC driver to support configurable gain.
+On 4/14/26 11:31 AM, Andy Shevchenko wrote:
+> On Tue, Apr 14, 2026 at 08:29:29AM -0500, David Lechner wrote:
+>> On 4/14/26 4:54 AM, Andy Shevchenko wrote:
+>>> On Sat, Apr 11, 2026 at 05:13:33PM -0500, David Lechner wrote:
+>>>> Use spi_optimize_message() to reduce CPU usage during buffered reads.
+>>>>
+>>>> On hardware with support for SPI_CS_WORD, this reduced the CPU usage
+>>>> of the threaded interrupt by about 5%. On hardware without support, this
+>>>> should reduce CPU usage even more since it won't have to split the SPI
+>>>> transfers each time the interrupt handler is called.
+>>>>
+>>>> The update_scan_mode callback hand to be moved to the buffer preenable
+>>
+>> s/hand/had/
+>>
+>>>> callback since the SPI transfer mode can't be changed after
+>>>> spi_optimize_message() has been called. (The buffer postenable callback
+>>>> can't be used because it happens after the trigger is enabled, so the
+>>>> SPI message needs to be optimized before that.)
+>>>>
+>>>> The indent of ti_ads7950_read_raw is changed since there is no longer
+>>>> anything else in the struct to align with since we removed
+>>>> ti_ads7950_update_scan_mode.
+>>>
+>>> Some of the func() are mentioned w/o parentheses and I got lost which one is
+>>> which. Also callbacks usually mentioned as .callback() (with a leading dot).
+>>
+>> I didn't put () in the last paragraph because I was talking about the function
+>> pointer, not the function. I guess I missed update_scan_mode() though.
 > 
-> Patch 1 fixes a spelling issue in an enum name.
-> Patch 2 performs a small refactor to simplify state handling.
-> Patch 3 adds configurable gain support using the GA bit and
-> adds support for writing to the scale attribute to select the gain.
+> Then probably spell it as "pointer to func()" ?
 > 
-> The scale attribute is used to control gain selection. Writing supported
-> scale values selects the corresponding gain setting. The implementation
-> supports all variants of the MCP48xx family (8, 10, and 12-bit devices).
+>>> The second paragraph doesn't tell me clearly if there is a behaviour change
+>>> from user perspective.
+>>
+>> It is not clear that the difference the user can notice is that there are
+>> some CPU cycles freed up for other tasks?
 > 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
+> He-he :-)
+> 
+> I asked more about possible behaviour changes in ABI (note, that [significant]
+> delays moved around might affect ABI if some user's program times out due to
+> that). But I think it's not the case here.
+> 
+
+No, I don't expect any other changes either.
