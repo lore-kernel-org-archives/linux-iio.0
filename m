@@ -1,62 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96A3B3E0C41;
-	Tue, 14 Apr 2026 11:43:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C8C41FC8;
+	Tue, 14 Apr 2026 12:10:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776167014; cv=none; b=E5m0ivEFIacyAgxn/GMqelGet/sltjHToQ3OcoAj0o9d4gURAtCDM4NJlZvy6MAGvjmQjOYdMJrQv+60lpe+O84ODO0H1viXB75BU7STcVfc8OVpkHAapGJnkiaqknxZBnNj/Oz7o5eoNZ/bKDSER0a/Vu1ArOKHSyhndWEmJ4g=
+	t=1776168613; cv=none; b=H8KLVn6KYCoQV2EPlmRskUBYT1x0NDCVQt/5HICUyFgT966iPk9zfPB7lUyyZ+hL29OMdr/L4u3tbB1Vfveeppm3R/fLIoOIy3z/9QdkmsdICIhP9RPhLbyG+hLbj+djtQIuDbZiMuuZmt0hT9ib+L0x6GWu+r0rx9Z33i24Rw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776167014; c=relaxed/simple;
-	bh=ZNGgs+XbbY0TR3N6oX8WbSlvugKITUCjPmHZ0zIpzDc=;
+	s=arc-20240116; t=1776168613; c=relaxed/simple;
+	bh=u5kb03nvZ48mxdSo6PxIOY6V9LAhwq9og0vesRHxseU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=am9j72xxVNFRP6RU3GxocQ5L1QELJnEQ4vSedHLV+p7PvMcloqRckOv35zJPCGdCPMaRBebEbjH2rT/rTnV7K9S3OHVKZG1HKcOK23iA5ShhwqqsXHYrtZ98K4psGiP+WuPmHMEOhWu/qhr5EmB56ig6jGqSqyDgLaK4R9/oS+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QUwkeqPe; arc=none smtp.client-ip=192.198.163.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=fd8fZ065Ivmk9XJlIV4IrlcRlYOCzXqIH2PWWaJYulGMib7jce/RWn+8FSP9Fjil0n2GmDWPlzajmMRd4crMoWOnr4/PP2HVLJJUZm61MFJBR8EEvK6WtQZfK3ompOFFBwbx/STXWg0ceryInuXsdt8d1EhnLAGHD0NvaBKMWI4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hg9L3a/g; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QUwkeqPe"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hg9L3a/g"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776167013; x=1807703013;
+  t=1776168612; x=1807704612;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ZNGgs+XbbY0TR3N6oX8WbSlvugKITUCjPmHZ0zIpzDc=;
-  b=QUwkeqPep2wFhl+qAlwePFK24QoovpEHmT4Ib3Kabv9J0bvo0E4nYHSt
-   pYcHKvk2CcPUIRAZMLfduAfundIeXXxJ9ZgvYcdk+uwWEm3KnkjFQ8dEm
-   pVAgPd2hyW/NDeVjiZyvTnblUIbFcAq+GfYiJ/rQgwz1OAfIIZl4CJHvT
-   66ZL/R5blFgI6bILt/d2JKGQpFIk2x08o5kAPu2ibcW8S+RqWHVBsYV45
-   bPWuUWDSsnPPkdjb3Lk5jO1J1czAIcZ82eaThxtkaj1iQp6Is/5EL46Pd
-   H0QHk2qW3ZlRlF9f+Bn6czeQ2xQiXYhS3ulWOTN6rAoNKtcW4m801/YT+
-   g==;
-X-CSE-ConnectionGUID: OmY4+2/ZRAOaN9pP0QfD9Q==
-X-CSE-MsgGUID: VEzuyIMyRr6SWkpdcAWqdQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="64656848"
+  bh=u5kb03nvZ48mxdSo6PxIOY6V9LAhwq9og0vesRHxseU=;
+  b=hg9L3a/gNXQuXCIPN5cY971IRM3xm56SbTN9KEyh4V8ycaPKFzUm4OgB
+   2GnvF92hrBBmnBnPTVl/Z7MWCLEOdL9O7qF1TtsKOM3Wg7jpVRsqKWsn0
+   yl6pqFVryxZD+1q1p1YkPbPaRVZTuJl4TNOmM8zo8GHtQyAlCpUNWRMQU
+   2+Y1nzkvUHVEy5fX7kFhaFrHpZ9SLt6y61n7hjWqZfO6x5DPIz82LSW3C
+   gS8yzI4LEZmDKmPOliiWmD3oU945duvBqEwfs7gCehBzJcHNqcvxJfPQw
+   EPeQxRHcySciehGaO9gSyy5f74l5m5NHrnPQjSKhWSQcRjFq/MjP5C1da
+   Q==;
+X-CSE-ConnectionGUID: 2i5lwK9HT4aNBxSOtVgOSw==
+X-CSE-MsgGUID: oOFzAX3CTg2GC9Y8d9+pxA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="77194667"
 X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="64656848"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 04:43:32 -0700
-X-CSE-ConnectionGUID: kqwDVv1vQqOgXTpJSlO3Kg==
-X-CSE-MsgGUID: KbUtcPRcRVurijS8LwbW3g==
+   d="scan'208";a="77194667"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 05:10:11 -0700
+X-CSE-ConnectionGUID: 6tYP6XptRzKG2BhUPwDnUw==
+X-CSE-MsgGUID: 8InQsNzPTPOZgxiqmMsucA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="223575525"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 04:43:30 -0700
-Date: Tue, 14 Apr 2026 14:43:27 +0300
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 05:10:08 -0700
+Date: Tue, 14 Apr 2026 15:10:06 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	gregkh@linuxfoundation.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iio: frequency: ad9832: remove kernel.h proxy
- header.
-Message-ID: <ad4oX0Py3T8j9Y7h@ashevche-desk.local>
-References: <20260411123512.84739-1-joshua.crofts1@gmail.com>
- <20260411123512.84739-2-joshua.crofts1@gmail.com>
- <ad4K-K3MpwD3U4F-@ashevche-desk.local>
- <CALoEA-wikg1aDAfhgHYR10ep8a0Ab+hJ4mAUyAR4nuV4Uysj+g@mail.gmail.com>
+To: David Carlier <devnexen@gmail.com>
+Cc: Tomer Maimon <tmaimon77@gmail.com>, Andy Shevchenko <andy@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Avi Fishman <avifishman70@gmail.com>,
+	Tali Perry <tali.perry1@gmail.com>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Patrick Venture <venture@google.com>, Nancy Yuen <yuenn@google.com>,
+	Benjamin Fair <benjaminfair@google.com>, openbmc@lists.ozlabs.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: npcm: fix unbalanced clk_disable_unprepare()
+Message-ID: <ad4unjKuC6Ff_yse@ashevche-desk.local>
+References: <20260414095929.11257-1-devnexen@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,36 +65,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALoEA-wikg1aDAfhgHYR10ep8a0Ab+hJ4mAUyAR4nuV4Uysj+g@mail.gmail.com>
+In-Reply-To: <20260414095929.11257-1-devnexen@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Apr 14, 2026 at 12:12:02PM +0200, Joshua Crofts wrote:
-> On Tue, 14 Apr 2026 at 11:38, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
+On Tue, Apr 14, 2026 at 10:59:29AM +0100, David Carlier wrote:
+> The driver acquired the ADC clock with devm_clk_get() and read its
+> rate, but never called clk_prepare_enable(). The probe error path and
+> npcm_adc_remove() both called clk_disable_unprepare() unconditionally,
+> causing the clk framework's enable/prepare counts to underflow on
+> probe failure or module unbind.
+> 
+> The issue went unnoticed because NPCM BMC firmware leaves the ADC
+> clock enabled at boot, so the driver happened to work in practice.
+> 
+> Switch to devm_clk_get_enabled() so the clock is properly enabled
+> during probe and automatically released by the device-managed
+> cleanup, and drop the now-redundant clk_disable_unprepare() from
+> both the probe error path and remove().
+
+Also need to mention the message drop here.
+
+"While at it, drop the duplicate error message on ..."
+
+> Fixes: 9bf85fbc9d8f ("iio: adc: add NPCM ADC driver")
+> Signed-off-by: David Carlier <devnexen@gmail.com>
+> ---
+> v2: drop redundant dev_err() on devm_request_irq() failure since the
+>     IRQ core already logs it, and remove the now-single-statement
+>     braces (Andy Shevchenko).
 
 ...
 
-> > >  #include <linux/device.h>
-> >
-> > What about this one? Is it used?
-> >
-> > Many drivers just need dev_printk.h + device/devres.h. Some indeed require
-> > device.h. Please, double check.
-> 
-> I compiled it with the include combination above and it passed, but looking into
-> the generated .i file I can see a full struct device definition, so I
-> assume there's
-> some sort of transitive include behavior (spi.h or something)
+>  		if (PTR_ERR(info->vref) != -ENODEV) {
+>  			ret = PTR_ERR(info->vref);
+> -			goto err_disable_clk;
+> +			return ret;
 
-Please, avoid following the suggestions blindly. This work needs a careful
-check of what's exactly is being used and which header should provide the
-necessary information. While it may compile it might be still wrong. You
-need to (briefly) read the code in full. I don't use iwyu tool with tweaks
-by Jonathan Cameron, old school guy, but you can also try it [1].
+Now it's simply
 
-[1]: https://lore.kernel.org/linux-iio/20250629183649.184479-1-jic23@kernel.org/
-Read the whole thread, it's not big.
+			return PTR_ERR(info->vref);
+
+>  		}
+
+...
+
+With those two being addressed, feel free to add
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
