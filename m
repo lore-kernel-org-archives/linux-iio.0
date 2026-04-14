@@ -1,58 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79CA8381AFE;
-	Tue, 14 Apr 2026 09:54:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 638213BAD89;
+	Tue, 14 Apr 2026 09:57:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776160472; cv=none; b=svJmEEgPC+nrUrAXHHrR5yJRjMvvfzOUPTHXf5ECEYKm6W+O+jzTpb06TOaLvHTYoKyG5ZRyiKCoDBG9yvhB9CX+yxynjxXffvJjX4YjzKLdMhFfXJcPDDObntBfKnUWdd+KiikXdP16RohBKdJhdAqi3aHZvuAeddZneTYEIiM=
+	t=1776160627; cv=none; b=dhwH140NmeqA0KQ0+OloNEQDv0L82sfdqhFN7dxwz1hhXFee42n9RDkjM/Chgi3qDwmp+NTpmZhBkkN4ytqNurhg679wn82yxvlfcbLqXVLagrUK+F/vOMec+KexmUDArDNBKSUVeSXyY++PjUR8WhonMpUNkAOyl8//B+XL930=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776160472; c=relaxed/simple;
-	bh=39waVrRTtqMeYSz6KvKaWKBiwsMgoqAbG3WXrQml1qY=;
+	s=arc-20240116; t=1776160627; c=relaxed/simple;
+	bh=/lODIGFErRqc14HEdpGS9fqazISGvImIA0CYwTqFe2g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vz6K/sLBjtOgP1Cx7eOVQkNu3b8inhREMPcJAPRa1dZ8wu5mUHOWNqofDWHFzEN0/0uZxmISUeSgn91UokAdudb2pu7xvRwAHTfnhOtNMcjx4wSdxOZvybhOrzSg8nojcPlWTxzp5XKKtqHknvrX5thWOCSq6FhyhqHY3sLJ+hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A3bZqudU; arc=none smtp.client-ip=192.198.163.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yvlbbn+HO59n6hP5cbXFt+cTfwwB7xlayV4Ou5bAx7bwDgrm03vShHhC7X0plICQWA8pD0z+r0x9EsbWyTde90DxhvwaUVkDsv4XsZfimX5s71gYnVYqbAALi1bII0N2Jc2AQk+h5mZzqFwk0jgfl9EkmKglAw6mXcnYcaI6/yk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=moeihqC8; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A3bZqudU"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="moeihqC8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776160470; x=1807696470;
+  t=1776160626; x=1807696626;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=39waVrRTtqMeYSz6KvKaWKBiwsMgoqAbG3WXrQml1qY=;
-  b=A3bZqudUQWGXoMiwrezCm/9JNxbsPTx6YVcWxXiPXflgghYUtTPZ5UHJ
-   ykcNmydg3Y0le/oq6QVyweZslCeHP0xoLgppuju2W2BxSd8YthaDmMhB6
-   9JK/ljP4viBAKFYUJnaU8mqcWLKmRI8N1A/Ru/KU3H5bJG9TvK3JgrJeD
-   bDXqMZRM9szCOvlliW26+rMVEFa8v4YsKGvjL6zxGX8yydiMZJKqS8gO/
-   E072GOoEjjz8E29IxuIaWjYAFfRH9+3I75X6q8sQwG2QKNXLW1QZ8Kp0W
-   uI+N6bLZhsDasYsEILzUh7TvBfLTTI91GRKJdtX9DtIf00ystByTh7ATk
+  bh=/lODIGFErRqc14HEdpGS9fqazISGvImIA0CYwTqFe2g=;
+  b=moeihqC8F8tuExOSSXGlNhx7GLsegCbiqf6bfl6Rt+/s38N26GE0j5sN
+   Qv19HmI+yjTQNYFDijSg8Xm89J2+xduFmsY4O81kfxtoNy5v2Q+tjbj+7
+   HpgxzIzans5Xa+ztn400my3418CTT00g/Yuuyoa+X3T/QM1Pk5LtQjSQC
+   EyxN7BYNXaKWokqD/LxIcK74d0Hucx34JoqFP9RGpOwd0/4SD1s7N+gky
+   1cSg+h7Bq2A//MWdi9JSOI8MbOXelam8f6AkLXj5jUn6adQBPDdiSBjpm
+   e39iTPgb7WuCyr5/eoj2NVsuWl3Nps9iJw+4ACRSj98DpyoZwT+zzHZYd
    A==;
-X-CSE-ConnectionGUID: Rhxa+F9mQ4eoBGWt/C3x8w==
-X-CSE-MsgGUID: UVbyuN4JSzWlUmDdCUsFFQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="87735302"
+X-CSE-ConnectionGUID: CjRRs1eqRZaIwwDnucwutw==
+X-CSE-MsgGUID: KNoN4+23Tt+GL77BqZWX2w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="77293796"
 X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="87735302"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:54:24 -0700
-X-CSE-ConnectionGUID: QzHJxYbSSPyBDmDJiqXGog==
-X-CSE-MsgGUID: UrsyleK0TPOPOuQoAdrFLA==
+   d="scan'208";a="77293796"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:57:05 -0700
+X-CSE-ConnectionGUID: MGN5058NTWSU4hlRwF965A==
+X-CSE-MsgGUID: Jui7WWrgSDuUkwgayQOCnQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="260476872"
+   d="scan'208";a="234980474"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:54:22 -0700
-Date: Tue, 14 Apr 2026 12:54:19 +0300
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:57:02 -0700
+Date: Tue, 14 Apr 2026 12:57:00 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-ads7950: use spi_optimize_message()
-Message-ID: <ad4OywqHDC7aYapD@ashevche-desk.local>
-References: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	gregkh@linuxfoundation.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: frequency: ad9832: simplify bitwise math
+Message-ID: <ad4PbCcHUMgjGMlP@ashevche-desk.local>
+References: <20260411123512.84739-1-joshua.crofts1@gmail.com>
+ <20260411123512.84739-3-joshua.crofts1@gmail.com>
+ <ad4MbnpAfBEXKDzm@ashevche-desk.local>
+ <CALoEA-ye9aKD4DyciFNZBW2TSd=pw162DD28rdvRw8O2OJvcqw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,33 +64,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
+In-Reply-To: <CALoEA-ye9aKD4DyciFNZBW2TSd=pw162DD28rdvRw8O2OJvcqw@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Apr 11, 2026 at 05:13:33PM -0500, David Lechner wrote:
-> Use spi_optimize_message() to reduce CPU usage during buffered reads.
+On Tue, Apr 14, 2026 at 11:51:03AM +0200, Joshua Crofts wrote:
+> On Tue, 14 Apr 2026 at 11:44, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > It can even be just like this:
+> >
+> >         u64 freqreg = fout * BIT_ULL(AD9832_FREQ_BITS);
+> >
+> > if I understand the integer promotion for unsigned types here
+> > and the * operator correctly.
 > 
-> On hardware with support for SPI_CS_WORD, this reduced the CPU usage
-> of the threaded interrupt by about 5%. On hardware without support, this
-> should reduce CPU usage even more since it won't have to split the SPI
-> transfers each time the interrupt handler is called.
-> 
-> The update_scan_mode callback hand to be moved to the buffer preenable
-> callback since the SPI transfer mode can't be changed after
-> spi_optimize_message() has been called. (The buffer postenable callback
-> can't be used because it happens after the trigger is enabled, so the
-> SPI message needs to be optimized before that.)
-> 
-> The indent of ti_ads7950_read_raw is changed since there is no longer
-> anything else in the struct to align with since we removed
-> ti_ads7950_update_scan_mode.
+> Sure, at least I'll ensure that the reviewed-by tag is incorporated
+> correctly.
 
-Some of the func() are mentioned w/o parentheses and I got lost which one is
-which. Also callbacks usually mentioned as .callback() (with a leading dot).
-
-The second paragraph doesn't tell me clearly if there is a behaviour change
-from user perspective.
+It's up to you. (u64) casting here is not bad per se. And it's more robust
+against changes in the second operand the type of which is hidden currently.
+(Reading again what I just wrote, it seems I objecting my own suggestion!)
 
 -- 
 With Best Regards,
