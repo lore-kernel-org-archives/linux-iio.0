@@ -1,111 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 239F73B7760;
-	Tue, 14 Apr 2026 09:47:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776160059; cv=none; b=XQ2bpdPwM/qlrQTJAsRljyGsO2uqJ3LVqmh4/eNfNE0Pl+f+/49xzbv5FeQHFZ2CLCaZjF+dEme7/laUF8qEVE3YPW0ewhRCcmNBSQfmDI1i9iQigXk1ESjo7+h8V+MfisPy8DU6ZZ5wFCdHRcPbBWIffoFFb+ISY1PwYpTtlrM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776160059; c=relaxed/simple;
-	bh=S6nCurOQ/aSSm/hzQvBR3TEYFOv+6J6EAIHgqFXPsSg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qsS6/skWWwqV85toOkz2zW5sgomrzYZ9mLeyFjz9ssI8yeT65fjulbMh12JP77rcAJpLT6TenEqRlyV1vEgS4DFaAuO0t9oyDO7LdjjCqNHcVjG+7X4XIVug9wJw/DUTVZksbUgbGLnTGIIU7ZK3MeNdmxIy2G2ADgRItFs7Uvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WNq92tv6; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17D553C5546
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 09:51:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776160267; cv=pass; b=aohZDunl1PVQLDEoZg7ugJBrHBiDbyGkLc1G0oAtSrWdPQ6tVfBC65A6L5qJD3e3II2pVlANyfgUmNS/k5oCR0rLvMQ07rPkIk6uiZi5USVUnrv4P6Vyr+W19Z7y5O9tS7/7bEFC5RD5IMw32Ha6Zo7Hjcyl4CewURp9gB5dsXw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776160267; c=relaxed/simple;
+	bh=4LjW/qXhlw27jyCxexFHShkpdwDpih2uFl9wB6QWweU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=o8K4HBRRbG04rxd9cWzWDV5N2rwFRh0oAy7GEFrrLFSgIhdABrGF8WjKLFvPTWfdRXDQoMwjFd4RlZ1ZQOoSR939tlO5+P6xUgbgLYs7nwHC4ptGZVDTh70RvEnSeMt2vKWWbyEgfEzVCxl3+F+6O0Qdu/wiGclr9YrpvO3hR2Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eUkkIX1x; arc=pass smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WNq92tv6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776160058; x=1807696058;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=S6nCurOQ/aSSm/hzQvBR3TEYFOv+6J6EAIHgqFXPsSg=;
-  b=WNq92tv6MuERfasmw0TRy+veoa4ZvwLTzEwsnusU0hW1u5qURtHQysjH
-   evGeDq48FrE1ww4WBWDoNchvLK04Px1LbfS3zOB1NsliJDYNO1hJ4xpJT
-   t7qMndcrk8n5GLPK5gxgXIgMS16FMLuwrBtT8k/0Lbiqo8kTVYtVn9pQf
-   sWDIi6k25/v/tHTUXJF4etlDhi3iC2sFLy1ZCtWZK2ZtIdp4//kmGtzIZ
-   YaGeH4YvkHfJ+ktOn2sEOM5OzXnKYXSTkYRQFDQqgGD3xtFIuORd/8Ie1
-   bFdLVgB08IL6O2J7WScGfM2SeRTFBqERRFJl9G0qWggt5UVBR5XaQPEkA
-   g==;
-X-CSE-ConnectionGUID: zFwZa4PuSSavBlpfJZ7x9Q==
-X-CSE-MsgGUID: TqSrfwwvTU6m3ITF5i8a5g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="80975304"
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="80975304"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:47:38 -0700
-X-CSE-ConnectionGUID: JnsxHiXhStm4l/sMUbWCJw==
-X-CSE-MsgGUID: pQLRpibpRkSY/uG2O+TQrg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="229983802"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 02:47:35 -0700
-Date: Tue, 14 Apr 2026 12:47:32 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	gregkh@linuxfoundation.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: frequency: ad9834: clean up includes
-Message-ID: <ad4NNMV2uqUXjfJY@ashevche-desk.local>
-References: <20260414091250.1295-1-joshua.crofts1@gmail.com>
- <20260414091250.1295-2-joshua.crofts1@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eUkkIX1x"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43d73352cf2so1852537f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 02:51:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776160264; cv=none;
+        d=google.com; s=arc-20240605;
+        b=lCmKvXT89nFOuqK9vZk3w14qSwBz61RWoCe1y+aNlrQyFE0wF6gKq9vrKNrciD7EKb
+         j6Xd729V1B/aQB51h9OmvGYtuF49dQSk3VghRHHusGDAu5u0PCpMdSbdKcMj0dTP6az4
+         Vk6sPAaF3c23vCy4y4m+t9D5rUI/H9Oz7ykfb0ia2O0uWklU2vw/P4jPK0iz+fD+o1UA
+         qoaCumwhBpfS9jPxLOaE2U15xOV7XV9PpGiB0rrfmw9JzXu3rIvgfXYscHcsb5WmfdbF
+         pxOsxkrADLspktWsOlWjFHlsHkzyJcvdNUtU7s57c2WcHUuyit8LxDY6+uYVdLDvZEk8
+         i+Cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=Kl1qXM31lG42LlVmPxw85Pw2BbaLgJlNP4rATMlCHS0=;
+        fh=j6nIcyuVlgLAoZCnP/8LjgNZ7Mpyp6peb5Fo/X0jYmU=;
+        b=OnN1hgisVV1s9bAXbFS+UmlnJahO6LOgqkObInzLmYr55t7D4CIEdjbZ3xeTuz6eLL
+         joExHJ18VGIf6QI9hpqbs8DRwatmujbVMDMhwR4SmuHpP7RUaDOrrJSF995LkNRxfdev
+         YtvyQQsn3pCqPSdrnk+LfZ2+k2O1CS5CNrbp3zoScMKW5EeCk5apESVQhHyO5F8ZeiaN
+         bEj9a0Ok+PW+6lwrdtQL/LgVaKEBEiwWJUUVRotDot0ilf28c19iKJ6/GynvLTYRu8Ww
+         T5BTVs/nOyFC87siJgpYWVpIYaRxDW7B1+xsBnmPI4QSR+T4pW3SaTVHlV+TUIfWiYh2
+         heCQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776160264; x=1776765064; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Kl1qXM31lG42LlVmPxw85Pw2BbaLgJlNP4rATMlCHS0=;
+        b=eUkkIX1xlE1ICN5cydgD2lXeQFfph27ShXwgg8TH9s7259Go/u7ygyXaWvd6MWD8N1
+         FUQ5/tqHs/I1M5n4zmqDsVLzkKgxCUuDjvcO2lkFHFN/ganzzaRWTS7nuY4pldtGryfg
+         e01QYo1nIamU2DDNYusb/vAuDb7ZO+6TPgKRAKkwgOqK+y562wY8AaYNXaRltoMPn5G5
+         BZtJvVnaUovostgng0c1g1pAm08KdpUBZ+dmd4xWeADUQdiLvGsZwH9cAn9jycJMyCza
+         TYPHRJYPVArzsDa4+0muwRRrT9zLUCheAO1DXev4QFQnY2Pwa3JVInlrmrwaUCXJfFXZ
+         tTVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776160264; x=1776765064;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Kl1qXM31lG42LlVmPxw85Pw2BbaLgJlNP4rATMlCHS0=;
+        b=MSYAro2iA/h0uCJgxbYMrOikN5w2p7+ybr4jU+ykaDWMIMBMJlI/jq1N2O7jTsKQtm
+         2VbT0nKZGjyMnR+6BsPVsmFybllrleA+PRVLsv1oc23OCoJcyKON5bnqGJH79jWqm3Rq
+         YGpsFBjMl6XMC44fM6Q7KCjuro8r5XaqwfgwztdqWJJqiPRkKVW0W6EWv1i3QZrO4zqy
+         Obh9WIh8Jv3kx5xsuz9pbfi8800So2ZgQD2Sv4tWRiGJ+P3z2WgS4/3B/ofHHW7QQqDf
+         8g5MepxF7YI6sgY9hqjRjq/qnd1Zkd6YZpTXBhiDSQHKhOhX81VwYTbIGRKSANR4VrUj
+         MJXg==
+X-Forwarded-Encrypted: i=1; AFNElJ/CFNmfbSv4nUQrgSWbf4gFjYVjsDOg/C7/KXkk0SVQXWhzdEvsgx+5Y/RT98AoN3hK9CqjDdOjX90=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx/KGsILfegnSrmkh2O4Flg/y6BfwLgEcPhG6+sgOJreWvunt4E
+	STN2QYI20tKrkMAY2AYqZ3KUSyyoUBN4ITc1+P4T32xUxCtHjT+zHkfdu0lpBDtune1Iju4T+WO
+	ihgETyr161njyeYghNrAqtEcwv+rZTpY=
+X-Gm-Gg: AeBDies/TTOX/IlOLUmlmtirfrOHGwi/OQf8TfTHrFbyIw31o//KStm49PoAinx/G6d
+	rt4rbOHfSpsKu0DXOgsQ81gz5s1RSHoZzJnkXDNstX6Z7h3CHgKurDYysiIzJwjIIMD00nLKkes
+	irmCZpJ/Ii24gD2lbowvmnMhEnQNlzP3Y7B0w2GSIbe3odiQK5a0ViIQMBsaXmax/MjfJ2Q/3Mu
+	+fP+iV+1Bz3HbVCReudb/p4GozINNTL+MMfngeBGfUeM5HfrKI2uZvzIB0HCx2vznjy5MWclHU5
+	QU+kDzi+ygkvhDeBUKrOabI3ktWJ4m9/Zggx8BEFgbs7MiaHf4qwIH35qUNkhEhjxG0/LU41vzG
+	z+5/1bBVw5nK4EzODvtShRdRTbciSPyDJ4fI6qTUe3/+QHtYxI3jlvK1M9CwMDSID+/QZ1h3dPv
+	g9MVa+YhggRHTv8QBfeSRxHJITDMI=
+X-Received: by 2002:a05:6000:200f:b0:439:b8b2:fabc with SMTP id
+ ffacd0b85a97d-43d642a1f1emr25593544f8f.21.1776160264405; Tue, 14 Apr 2026
+ 02:51:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260414091250.1295-2-joshua.crofts1@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260411123512.84739-1-joshua.crofts1@gmail.com>
+ <20260411123512.84739-3-joshua.crofts1@gmail.com> <ad4MbnpAfBEXKDzm@ashevche-desk.local>
+In-Reply-To: <ad4MbnpAfBEXKDzm@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Tue, 14 Apr 2026 11:51:03 +0200
+X-Gm-Features: AQROBzC6rguiJabYsZOY4_RYkbulpgJEphpTychgiYWAeFDC4PxCQbEE7STdgG4
+Message-ID: <CALoEA-ye9aKD4DyciFNZBW2TSd=pw162DD28rdvRw8O2OJvcqw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] iio: frequency: ad9832: simplify bitwise math
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Apr 14, 2026 at 09:12:48AM +0000, Joshua Crofts wrote:
-> Clean up includes by removing proxy kernel.h header,
-> add bitops.h header and order includes for better
-> readability.
+On Tue, 14 Apr 2026 at 11:44, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> It can even be just like this:
+>
+>         u64 freqreg = fout * BIT_ULL(AD9832_FREQ_BITS);
+>
+> if I understand the integer promotion for unsigned types here
+> and the * operator correctly.
 
-...
-
-> +#include <asm/div64.h>
-
-This should go after generic linux/*. In other words, it was originally placed
+Sure, at least I'll ensure that the reviewed-by tag is incorporated
 correctly.
 
-> +#include <linux/bitops.h>
->  #include <linux/clk.h>
-> -#include <linux/interrupt.h>
-> -#include <linux/workqueue.h>
-
->  #include <linux/device.h>
-
-Also check for usage of this one.
-
-> -#include <linux/kernel.h>
-> -#include <linux/slab.h>
-> -#include <linux/sysfs.h>
-> -#include <linux/list.h>
-> -#include <linux/spi/spi.h>
-> -#include <linux/regulator/consumer.h>
->  #include <linux/err.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/list.h>
->  #include <linux/module.h>
-> -#include <asm/div64.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/slab.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/workqueue.h>
-
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
