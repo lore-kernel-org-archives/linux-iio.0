@@ -1,73 +1,78 @@
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08BBE2BE655
-	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 19:20:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 789B938AC8E
+	for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 22:43:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776194453; cv=none; b=qHxiD/dzwvDQceXCrMr1BPmsaIID2CPD/hiBJtd3n7NTyyD0sszlkq9pS5iotnO0xD7tXPwViWBlRgdy/mbd9GCaD0Ibx42WIYwApTrTN4IqIrkDsXQvZCWyqoXlCfNKvRzMj5x6He3yWJsDTMWbuueJVV6tkO5UPfTHHogKCIg=
+	t=1776206585; cv=none; b=NH853vUVFRQHrr8nTPjnb/1i71X4w5sp7PEBYze5/8z4zOGTWRtW4smGKIPl76rnDKpx7g6zLw7ekbUQqxizjm3R5wdk3AWe31mZ4oUazrWmthBYhySslg5Xm1UXLoM4k4X72H7BXoR7BUiXQc0UKwhLfQECI++naBsCtEvceH0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776194453; c=relaxed/simple;
-	bh=xf9U71+HN2MDMd9BJrUzZQJ4H3oJNadiw9CcQzzV50k=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=bstmNchmOQC6Gtu9U9kZw80c2tl0VPDPUh1wPJ1m7oZ6U8SkLl6zpnLRGntxQXyPVHZconieaZVMWnDZXCYT8dyxcbiFc1ahgrPo+qjvyr4sJ668ACu/lbUWjFhY65IGY0VLdZxxH1aeB9ByclWoIxtX9MdFLMTTBY42qAi0ufE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D6eG6Dam; arc=none smtp.client-ip=209.85.216.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776206585; c=relaxed/simple;
+	bh=PJ0wXrCJwRZB6Cz8UmYg3CjBCouUvrNMwy2eugg6LQI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Y99/EgpjIsI+CdUNdiihR1Pu1oKhum4YrBbd4YGL3NpthevoDYjHZaGFIgmDhxOw5IbzUpIw0q/P4wqVzd8Fp32iKULKeRlchQgHI0a5RMnO7KCcA02wCMuVm7bBjyyHzO6XuKFhQTHu4YcuJklFSWJRU4jVrV9oe8KhP/cJFIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=jeANqBSD; arc=none smtp.client-ip=74.125.82.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D6eG6Dam"
-Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-35d90833cacso3606634a91.2
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 12:20:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="jeANqBSD"
+Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-2bdd40d3c61so5487795eec.1
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 15:43:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776194451; x=1776799251; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1776206580; x=1776811380; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wj2VwVqKMzG7UWku83Fv86KFnQXu2AODJQTwQwZquGA=;
-        b=D6eG6DamBEQhxtMeayvhCFPqYvDTjdu/QbCQHqkV44ar5Lu1VU2Q2FJi3/wHMlZrvf
-         y+TNAIkltYtSrMqDv4iNKV+NoTDRqNWYcCJMW0Iz8b+CjmJqU08DRVPCA5mNBn9DjE1X
-         LSrod7rPWZrEPAra2zMtMhZCOnDAn+s+vDYfD8PgSIGCeK2Y4YVlHEF1m2m4Fqzoz3Vf
-         2330jobO4ILr62xBL51oYZ6f7BdqGbkXQy8LBOKjgb/spUrSmZ8WmrTvcXMkR6uZTRMj
-         9hGOkcanmMwXMj4e8ANO2YLJAjy1ALnQHa9iQDT3ScAW4PxiHdJYSs6TdJXQJrAdNWPI
-         wlvw==
+        bh=rb3BLemqhdiX3ZwvRyrWGWGBqhlheXx+K5Ge+Z0UaZU=;
+        b=jeANqBSDQEFnjLJ5UJM5/VjJI7XCBrBPawAivpnstIyoTAq5DTJhtSyzIwtOuW35ey
+         VZEq4Bp5MTatUMeWyA4Jucf1LbY51AssnVNyg0Ztb83HbRCPpN/W65pcznQXJopxPJZ5
+         fSt6iqmsxmNu67T34KVmPE0l9CovCRav7PRimVxrl25WkoyWHoAVBVUdLha0kPN/QNxd
+         yga1DToWQxjUT6xYoJNiKmWJaq9txPwXywR0ROSkJKQEN8F9SurMf4s4yBnDhoaO1EqG
+         LH0Gv55RXkZ851KnhqaS8L0uJl/U2VqrLsk9UblxkvLeZ1twJxfeNl7CzC6I6JdtYTMK
+         4QhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776194451; x=1776799251;
+        d=1e100.net; s=20251104; t=1776206580; x=1776811380;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Wj2VwVqKMzG7UWku83Fv86KFnQXu2AODJQTwQwZquGA=;
-        b=k0Zx94WkFHriyYPQ6N4ErDtgLNKGGXmh9Z5ZFMu6VtGkMNzn8TPlRdAOcemnBe2yp9
-         eNgAQn67R4l3rgZdy5LsIgRO745roa5ZLU//J63WkYpkkvtIaAOoAQEQLAsx8W6DygKG
-         m0UbNYAbFX53aCGe820pkBlGKMdMgJbGj2IH3k4W2ceXMZ7W1ObmIuFIuv8zhezCTgTS
-         ojdmoh7Rb0hTl8rHJL97+5rVa9dTg99r0PX3LqL70dKz/XD0deMe7wtdDrHBYrBzhgJ2
-         W8+5/9UNCqXnyqSThyTYSL6jINA/hS61cozMFv9+Flrk7apiIevYtT+8Wo/H3FCAoYDE
-         zuzQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/s2TG4V4AQYjdltyn9vcSj7tqx6NjJDCrWDkzfihLngmATCJNiKazqjHZ/8dn3rmKE4+FQVW1KigY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyzX2/RLbXDhGs8yPk/O4fwnem+93p01XcQ90pl43uyB+upT34V
-	K8gDwsmADNhRiUsYUl39keY+IE8gp52JaP/954P3wVlfcZSSHtY+jmlM
-X-Gm-Gg: AeBDies1ItfkxJeXnZ8m3VTCZ7Gb+cXTj+cAlh0sFDfS4GkUdexUjkWOy3VbYMrK4Ma
-	zU+8kCD+TJHfB8gMkEb2/TDIF/YrXt44PqZ4OhIB8m6Q7mc3AOMQ+hNHh/qMTzCdcBU3o8kJaie
-	rmPC3018CdnS3qbAuNgrVU0MjHf9htHRO5bJGX95c9lQZPKbuBdQ1Rjk9vVaVGqxMeIM/8TI9o6
-	Tw5JllrMSQYxHQZzOHQYN9IlTIYrpB+oDP5yJXSnkTLZkFufNsdX+0Rr1KvGB2lfTwUlVzbbrMe
-	+vIxJknWmK+9qYVgG9/4mckhK9oobQmccvlHcYkQY/owFm2jSs/QyP8if66sMMvaLIYVrgmxerT
-	m9yjJNHzMZae73Tg9CBICnlrxWGKj92DylT42FEYYC5jiiMnxMUv+B9QKH7ScoI7kFnjEpb8oM7
-	BTn+oTLE4Bd71OHH+lVrMVj2q7jVSWho5riGX+C7aUPt7/KMY2y/rpNyei29w=
-X-Received: by 2002:a17:90a:10d6:b0:35e:581c:6bca with SMTP id 98e67ed59e1d1-35e581c724cmr7917600a91.3.1776194451177;
-        Tue, 14 Apr 2026 12:20:51 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35fcdfb923bsm496773a91.15.2026.04.14.12.20.48
+        bh=rb3BLemqhdiX3ZwvRyrWGWGBqhlheXx+K5Ge+Z0UaZU=;
+        b=sBudkeQDcYqk0ryMyFwfhv4WvbqJoieISGDQ1gSB9sN5yxmx0T3ZwKj+aAzahiwaFK
+         vxWK2WRGMmHK+gTifwsRtZqhqxn9oWRP3yvA/UardAdCfkQM09ZX932vDpOw6zZFGukT
+         cXIhcHqGyFGbwLh7vT03yd++qrtR5na9f6ekpRVhTjDGvIs8FKi1znxctXalsCx91ZcZ
+         +vdi3x2/bVvhu5qqd7w1ZkLqV8VxtUCXmPEflwa90pvXy1qXAk/Kx/Ejf8Adyju7unKk
+         19mQoSBkmxF2MfmLehH9hBJeGGA+p5XvImAbInlpBaWq7ls9MA8PheSbkLzv7Fyde9tD
+         tj5Q==
+X-Forwarded-Encrypted: i=1; AFNElJ9Y02VJxSVE7GQf8Yky7EuwQnoWh3upfa8lyeKq2kngoFfUud/3xHSQRv8JDy1ofRETplFH5UL3nt8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzvPAHauReneaPGFlEgm+TFbnDMASkE+QbBMH1CVpyFHOvlASPP
+	uvYcQEBuW7jxoIUInd9bXmUV4rcRsHcGpi/cmvQbmR0NekiLcWnt+Ga1LgRnRvQu8Mk=
+X-Gm-Gg: AeBDiet8iz5tBa3wkwj7Q4q050EPhsqpPez1NO8cP2yUAVmR6NhnEkh7VauRgrwkotF
+	hb9CTxbcnFfkyp/5X7vbn7Vr8/kk/bhP/EtCyUgYLhW4HSbP6vhQJnvIunqT75H0iVNJQhzm5Qu
+	eeTVmcwd0uDfDmhQY06JHcbMe0BfIaU7YIr9b+xwLMftMasCjDZ8V58i0TONCT4wSi8SdaHDVtS
+	J90JT+wnaJY/UAAjoLVuqligDieeYYa4RTTFyLSE7krmRlRpRoVwO6YQebJtXIxGXQHyJmy1L7A
+	Uy7lGzCE+HfVtFs66oLn0kDDldhqog2rsXs6gzm2yF8Aza/TkjV7WF2L/dAw1D5KXxVaZNwmBDM
+	GgA7z8UKYnO7VuHKlHStZSWg4moC9XPtluvvTO+qOUxwfDBGyS5yLMI+bqWW4YBgQpMfq4cbUVV
+	AAERnTH8S0PpbiAO6bjvFAgdj/jGf25ZNZkAtmU2vOJElroY4OIvqhiB5Utinfxoh6gcYtakaU2
+	JfGGqo/96SZbWLQdI3NuQjq97jIlHwxTxWzgGUnuci5Gx3/Zw==
+X-Received: by 2002:a05:7301:1f05:b0:2da:1a81:588 with SMTP id 5a478bee46e88-2da1a906cbdmr5452024eec.14.1776206580488;
+        Tue, 14 Apr 2026 15:43:00 -0700 (PDT)
+Received: from gui-host.Dlink ([177.33.104.190])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2dd32dc2827sm4650361eec.23.2026.04.14.15.42.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 12:20:50 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
+        Tue, 14 Apr 2026 15:42:59 -0700 (PDT)
+From: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+To: Salih Erim <salih.erim@amd.com>,
+	Conall O'Griofa <conall.ogriofa@amd.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Michal Simek <michal.simek@amd.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: accel: mma8452: use pm_ptr() for dev_pm_ops
-Date: Wed, 15 Apr 2026 00:50:45 +0530
-Message-Id: <20260414192045.3598010-1-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+Subject: [PATCH v3 0/3] iio: adc: xilinx-ams: refactor alarm handling to table-driven design
+Date: Tue, 14 Apr 2026 19:40:32 -0300
+Message-ID: <20260414224245.8493-1-guilherme.bozi@usp.br>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,46 +81,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+This series addresses significant code duplication in alarm handling
+logic across the Xilinx AMS IIO driver.
 
-Use pm_ptr() so the PM ops pointer is automatically set to
-NULL when CONFIG_PM is disabled. This avoids unused-function warnings
-and follows modern kernel power-management conventions.
+To address this, the series introduces a centralized table-driven
+mapping (alarm_map) that replaces multiple switch statements spread
+across the driver.
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- drivers/iio/accel/mma8452.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+This improves:
+- maintainability (single source of truth for mappings)
+- readability (removes repeated switch logic)
+- extensibility (new alarms require only table updates)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 15172ba2972c..f2b71077574b 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1744,7 +1744,6 @@ static void mma8452_remove(struct i2c_client *client)
- 	regulator_disable(data->vdd_reg);
- }
- 
--#ifdef CONFIG_PM
- static int mma8452_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-@@ -1812,7 +1811,6 @@ static int mma8452_runtime_resume(struct device *dev)
- 
- 	return ret;
- }
--#endif
- 
- static const struct dev_pm_ops mma8452_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
-@@ -1835,7 +1833,7 @@ static struct i2c_driver mma8452_driver = {
- 	.driver = {
- 		.name	= "mma8452",
- 		.of_match_table = mma8452_dt_ids,
--		.pm	= &mma8452_pm_ops,
-+		.pm	= pm_ptr(&mma8452_pm_ops),
- 	},
- 	.probe = mma8452_probe,
- 	.remove = mma8452_remove,
+No functional changes are intended.
+
+Series overview:
+- Patch 1: fix out-of-bounds channel lookup 
+- Patch 2: convert mutex handling to guard(mutex) 
+- Patch 3: introduce table-driven alarm mapping
+
+v1 -> v2:
+- Fixed Fixes tag format
+- Replaced AMS_ALARM_INVALID with AMS_ALARM_NONE
+- Changed alarm_map base_offset type
+
+v2 -> v3:
+- Replace 'i >= num_channels' with 'i == num_channels'
+- Add missing trailing comma in alarm_map array initializer
+
+Guilherme Ivo Bozi (3):
+  iio: adc: xilinx-ams: fix out-of-bounds channel lookup in event
+    handling
+  iio: adc: xilinx-ams: use guard(mutex) for automatic locking
+  iio: adc: xilinx-ams: refactor alarm mapping to table-driven approach
+
+ drivers/iio/adc/xilinx-ams.c | 190 +++++++++++++----------------------
+ 1 file changed, 71 insertions(+), 119 deletions(-)
+
 -- 
-2.34.1
+2.47.3
 
