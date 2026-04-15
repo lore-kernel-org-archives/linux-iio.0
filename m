@@ -1,110 +1,224 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-244108.protonmail.ch (mail-244108.protonmail.ch [109.224.244.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44D76344DAC;
-	Wed, 15 Apr 2026 15:44:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C2533264F3
+	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 16:09:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776267847; cv=none; b=diNp91LzpTdauGfKBCcGSr0UZTu0aP5Cr1bnC8yTRfuDh3flLov8X6i/TEvEQbBvwarKdMH4X2jy/1NaWEFP7/Wn26Xrz5joPsXvCpvJ4eZZCxdydhriR9bd4ZcJe3RAEyU67A+Q9JDI1gv5TTe9oa3+UmHzHcZ4oKcxVYX6C98=
+	t=1776269357; cv=none; b=LEIGPDaIUPQ5ggUTrltTwKK2dy3rMb55Vv7bHfxFvVeZWBsq2FkD/kjLRg8L8FQj0ttl6cw3qcqY7hRPipaNt6aaj5Ch/ucYNKB6Gy0nbOgxBGZNlRH+mc6F4TEbNPiDSmmm/imR2DStv2XIkY5aylJ+VtivPGZvrPLqsg9LYRU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776267847; c=relaxed/simple;
-	bh=1Rml2uZbF3K3y7EMMrJGe51K78HqnYsNwGvhIUt/8f8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=p54Rf33aYydQXHZ3WiPUYE+HTWDWphmHx6S2Rkt1PEG/EwXEIY1ZiZRIOMn52+4d7F2k6rETZ1B5txkq01KdoBGUwPSe21DHZXsd4LhUgTFJskZxowWtfAm6hrmTV09y4TQqo2fIMUupA8sE6+T9L0M2D38zxmTKq99KLFR8VMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q8drgf46; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776269357; c=relaxed/simple;
+	bh=7Y1CBwNHDDsbDsvqFKnGK9gukn7Udrh9iJJpw/ZB2ZI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FieBc7fwIZDtTrtNsE6IyieVi5LsJ9mvSodR5ilS95vg7OiVatKo7RfT7SXATkrYD1QoTevAiTdOKj65g/z70Qz6Y1DZv8YAPpXmdIo3JdEyanoPza+G8EsGXNxvH7p58bgpHYZEIu18ztGxc6D0hGEmyPlVZB1xSuvftnn7k9U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ciziks.com; spf=pass smtp.mailfrom=ciziks.com; dkim=pass (2048-bit key) header.d=ciziks.com header.i=@ciziks.com header.b=hprwZ5sc; arc=none smtp.client-ip=109.224.244.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ciziks.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ciziks.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q8drgf46"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CA838C19424;
-	Wed, 15 Apr 2026 15:44:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776267846;
-	bh=1Rml2uZbF3K3y7EMMrJGe51K78HqnYsNwGvhIUt/8f8=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=Q8drgf46MQrH2j2TukG5zqtGlb8+Ld4Ja76gN3pdNPaPvadTOivI0RnCZeSaHVFqp
-	 cuCGp61ZQO/LXbYcX5IBa+USRO0N0meg2MvZPFBIpU0d6kh/1t6GKT9UE+L8QSVWLJ
-	 2UmQdRG2cCX5RtCuyaKLOkbMkqCRa4YcfFTwz86q2R+Lsmj8Xeo7N21o3z+juvfgDo
-	 M/2dd0cpHIHsT4EO6Lxf2MU9Oz/yF/NKxF+SQKyM6lZJct5qVWguGzK2ZALm0auvD7
-	 RzTs3DZvQScV6KcVO1tbtOOJ4zAO1Zd/NJo6UUl9BsDfLB3BzkDM3LHZdhBX2eatZR
-	 eSQvSJyYIPaXQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B612EF4384D;
-	Wed, 15 Apr 2026 15:44:06 +0000 (UTC)
-From: Vishwas Rajashekar via B4 Relay <devnull+vishwas.dev.vrajashkr.com@kernel.org>
-Date: Wed, 15 Apr 2026 21:13:40 +0530
-Subject: [PATCH] dt-bindings: iio: gyroscope: add mount-matrix for bmg160
+	dkim=pass (2048-bit key) header.d=ciziks.com header.i=@ciziks.com header.b="hprwZ5sc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ciziks.com;
+	s=protonmail; t=1776269344; x=1776528544;
+	bh=Zs9GceeqQxB9GqUQDH+vH49Hs/Bo2gVnBObl4WLcvOo=;
+	h=From:To:Cc:Subject:Date:Message-ID:From:To:Cc:Date:Subject:
+	 Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=hprwZ5scEghEwRSIgn4u5d1HQrLJX5765VhNfhv7aDugwK3prHz1yymjTkmM/rHSJ
+	 SyxkWzR4noLq3fZ2eNjBvB+SlKiE2FK8rV0uK58iUglkNDzDf5AjA54FBfIHXi5G7R
+	 0cqG3WZ9Dyx/I6szAJiVpjKIxfKKOOH+fq3p5VPyrWOtZ19RGmWh+/4tNwS6a/MVL7
+	 2fOrY/MQ8RzYFcgueJ5pXkLM5ul2js7YCnyBTIb/rCWqcOjuh/v/CA87Eux7YjA3O8
+	 EPYBNf2qcxwhyTqaLVTNDcryZBugc96QoPeQh192EAjhLiq8SsH9vxErhX706eMkxJ
+	 V/07UzDmsDE1Q==
+X-Pm-Submission-Id: 4fwmKm1R8Yz2SchM
+From: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: Felipe Ribeiro de Souza <felipers@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2] iio: adc: ad7280a: use cleanup helpers guard() and scoped_guard() for mutex locking
+Date: Wed, 15 Apr 2026 13:08:38 -0300
+Message-ID: <20260415160856.22231-1-lucas@ciziks.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260415-bmg160-mount-matrix-dt-binding-v1-1-0e2c85964ee6@vrajashkr.com>
-X-B4-Tracking: v=1; b=H4sIACuy32kC/yXNTQqDMBBA4avIrDuQSEh/rlK6MM6YTiFjSWIRx
- Ls3tctv894GhbNwgVu3QeaPFJm1wZ46GJ+DRkahZuhN742zDkOK1htM86IV01CzrEgVgyiJRuS
- zJyK+uov30CLvzJOsx+D++Lss4cVj/VVh37+XPsTsggAAAA==
-X-Change-ID: 20260414-bmg160-mount-matrix-dt-binding-e76ddde94866
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, luca@lucaweiss.eu, 
- Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776267845; l=1356;
- i=vishwas.dev@vrajashkr.com; s=20260414; h=from:subject:message-id;
- bh=pcuRd/qLKaTlnrY5W5w/EZ94X8GzaogVmcptT8JzSSA=;
- b=uQx0SBFlnI+dg9jmGonNeL4eQ04Ym5InA6iB5YcWxwwhTuTMW8gSv+WrnBJbd7/TmVL0K9hZt
- 9XlHHMTbG3dBXOZ3w1Z7qBCYe2NFkOuziTT7kXTkNz+b18VC+wwryLj
-X-Developer-Key: i=vishwas.dev@vrajashkr.com; a=ed25519;
- pk=OvZgoGVJ7ofrIn3w/YijdoJ0IexAy1kREY51mGZPm9M=
-X-Endpoint-Received: by B4 Relay for vishwas.dev@vrajashkr.com/20260414
- with auth_id=734
-X-Original-From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-Reply-To: vishwas.dev@vrajashkr.com
+Content-Transfer-Encoding: 8bit
 
-From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
+Replace open-coded mutex_lock/unlock pairs with the cleanup-based
+guard() and scoped_guard() helpers in ad7280a_write_thresh(),
+ad7280_show_balance_timer(), ad7280_store_balance_sw(),
+ad7280_store_balance_timer() and ad7280_read_raw().
 
-Adds mount-matrix as an optional property to dt-bindings
-for the bmg160 gyroscope as the driver reads this optional
-property during probe.
+This removes the need for the err_unlock label and explicit
+mutex_unlock() calls, as the lock is now automatically released
+when the function returns or the guarded scope exits, regardless
+of the exit path.
 
-Signed-off-by: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
+Signed-off-by: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
+Co-developed-by: Felipe Ribeiro de Souza <felipers@usp.br>
+Signed-off-by: Felipe Ribeiro de Souza <felipers@usp.br>
 ---
-The bmg160 driver reads an optional mount-matrix using
-"iio_read_mount_matrix" in "bmg160_core_probe" and stores
-this orientation data in "struct bmg160_data". As the "mount-matrix"
-property is used by the driver, this change proposes to add it to
-the corresponding dt-bindings.
+v2:
+  - Replace scoped_guard with guard as suggested by Andy Shevchenko (Code Legibility).
+  - Fix indentation issues.
 ---
- Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/adc/ad7280a.c | 53 ++++++++++++++++-----------------------
+ 1 file changed, 22 insertions(+), 31 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-index 3c6fe74af0b8..ea8689660adf 100644
---- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-@@ -22,6 +22,9 @@ properties:
-   vdd-supply: true
-   vddio-supply: true
+diff --git a/drivers/iio/adc/ad7280a.c b/drivers/iio/adc/ad7280a.c
+index ba12a3796e2b..89e1eda92851 100644
+--- a/drivers/iio/adc/ad7280a.c
++++ b/drivers/iio/adc/ad7280a.c
+@@ -496,7 +496,8 @@ static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
+ 	devaddr = chan->address >> 8;
+ 	ch = chan->address & 0xFF;
  
-+  mount-matrix:
-+    description: an optional 3x3 mounting rotation matrix.
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
 +
-   spi-max-frequency:
-     maximum: 10000000
+ 	if (readin)
+ 		st->cb_mask[devaddr] |= BIT(ch);
+ 	else
+@@ -505,7 +506,6 @@ static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
+ 	ret = ad7280_write(st, devaddr, AD7280A_CELL_BALANCE_REG, 0,
+ 			   FIELD_PREP(AD7280A_CELL_BALANCE_CHAN_BITMAP_MSK,
+ 				      st->cb_mask[devaddr]));
+-	mutex_unlock(&st->lock);
  
-
----
-base-commit: 591cd656a1bf5ea94a222af5ef2ee76df029c1d2
-change-id: 20260414-bmg160-mount-matrix-dt-binding-e76ddde94866
-
-Best regards,
---  
-Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-
+ 	return ret ? ret : len;
+ }
+@@ -519,10 +519,9 @@ static ssize_t ad7280_show_balance_timer(struct iio_dev *indio_dev,
+ 	unsigned int msecs;
+ 	int ret;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
+ 	ret = ad7280_read_reg(st, chan->address >> 8,
+ 			      (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG);
+-	mutex_unlock(&st->lock);
+ 
+ 	if (ret < 0)
+ 		return ret;
+@@ -551,11 +550,11 @@ static ssize_t ad7280_store_balance_timer(struct iio_dev *indio_dev,
+ 	if (val > 31)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	ret = ad7280_write(st, chan->address >> 8,
+ 			   (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG, 0,
+ 			   FIELD_PREP(AD7280A_CB_TIMER_VAL_MSK, val));
+-	mutex_unlock(&st->lock);
+ 
+ 	return ret ? ret : len;
+ }
+@@ -737,7 +736,8 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+ 	if (val2 != 0)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	switch (chan->type) {
+ 	case IIO_VOLTAGE:
+ 		value = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
+@@ -748,22 +748,20 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+ 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+ 					   1, value);
+ 			if (ret)
+-				break;
++				return ret;
+ 			st->cell_threshhigh = value;
+-			break;
++			return 0;
+ 		case IIO_EV_DIR_FALLING:
+ 			addr = AD7280A_CELL_UNDERVOLTAGE_REG;
+ 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+ 					   1, value);
+ 			if (ret)
+-				break;
++				return ret;
+ 			st->cell_threshlow = value;
+-			break;
++			return 0;
+ 		default:
+-			ret = -EINVAL;
+-			goto err_unlock;
++			return -EINVAL;
+ 		}
+-		break;
+ 	case IIO_TEMP:
+ 		value = (val * 10) / 196; /* LSB 19.6mV */
+ 		value = clamp(value, 0L, 0xFFL);
+@@ -773,31 +771,23 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+ 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+ 					   1, value);
+ 			if (ret)
+-				break;
++				return ret;
+ 			st->aux_threshhigh = value;
+-			break;
++			return 0;
+ 		case IIO_EV_DIR_FALLING:
+ 			addr = AD7280A_AUX_ADC_UNDERVOLTAGE_REG;
+ 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+ 					   1, value);
+ 			if (ret)
+-				break;
++				return ret;
+ 			st->aux_threshlow = value;
+-			break;
++			return 0;
+ 		default:
+-			ret = -EINVAL;
+-			goto err_unlock;
++			return -EINVAL;
+ 		}
+-		break;
+ 	default:
+-		ret = -EINVAL;
+-		goto err_unlock;
++		return -EINVAL;
+ 	}
+-
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-
+-	return ret;
+ }
+ 
+ static irqreturn_t ad7280_event_handler(int irq, void *private)
+@@ -884,14 +874,14 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (m) {
+-	case IIO_CHAN_INFO_RAW:
+-		mutex_lock(&st->lock);
++	case IIO_CHAN_INFO_RAW: {
++		guard(mutex)(&st->lock);
++
+ 		if (chan->address == AD7280A_ALL_CELLS)
+ 			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
+ 		else
+ 			ret = ad7280_read_channel(st, chan->address >> 8,
+ 						  chan->address & 0xFF);
+-		mutex_unlock(&st->lock);
+ 
+ 		if (ret < 0)
+ 			return ret;
+@@ -899,6 +889,7 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
+ 		*val = ret;
+ 
+ 		return IIO_VAL_INT;
++	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if ((chan->address & 0xFF) <= AD7280A_CELL_VOLTAGE_6_REG)
+ 			*val = 4000;
+-- 
+2.47.3
 
