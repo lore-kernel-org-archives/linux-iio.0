@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB37E344030;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C53F43451CC;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776246738; cv=none; b=a8Xm31Y5z2fVtKT/17SCR+GFRN7Oo9Zw32686t7KNRs5cEKCNNQTv/YjJbAEaaY1PjieNtOF0fug2X8eUUxZz+xCWhUJ7hVM0PXgOia62GpYt3n9G33b4YdXgGjn5zz5l6AqjP8ajR8cC75OH/1FN1kXHU2fzvh+NONQx96nCtk=
+	t=1776246738; cv=none; b=m0hbKjIDsxbJuHnOZZ2EjEBa4IxXhZUVpdWDZPNuwUfkjj86ZwyNULh8IEm+07auMmPTkCgYlbyzzp4/24CfJtTLqoDaYmO03TFW8XvVnwc7m8p7LsKS43rL2dpaoDeqtHIzFsC3RjITx9m/4oPHJIiWUIhEEG82RH+VAbMIk+Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776246738; c=relaxed/simple;
-	bh=RNYDtXqT1zPcbr9VepIxSH0SXBfwTx2GpBllBP9ixHg=;
+	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=YS6TIu7XBZkFdaMVZ4PHWQcOSEiYEqk4AAj7XstyaBKPrTlryVy4Wv2tOzKFRix6GY9WYR5UQbPTO6Af0e0KNoDPGloFgRjVHuJW6It/e5l+AMteY9sD31HKpoTftJmdlQJXvVCleP9tbm7/DiVqDNF8EMI4TAidOSvpBArE1t0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j/NB5G27; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ubkXOpKYXhrjQLkJ+3rnSXtvFzc7lcZ1QCNb0mpvyOo7J7lhl390U5DIrW7sRyfHNvDk6N+pnlOHrR+ZNbdXxUaDE5BxtaPdiQQ/bKwDIF0QcR/9KaCQMhZKzvy4mD+ieYdweDIOqNAwVxPMETchz5FEUEun43NcdhnajtJaC3o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kZDAG51Q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j/NB5G27"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 87217C2BCC7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kZDAG51Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 98C11C4AF0F;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776246738;
-	bh=RNYDtXqT1zPcbr9VepIxSH0SXBfwTx2GpBllBP9ixHg=;
+	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=j/NB5G27ewb5MjI19hpyRJpV+UGFmq3i4UmFBSEwD3yveUdUUpJMKN7GTPREkDWm2
-	 FWU1P0yypq35GuE6uY9ebVGofinGwawL0QYVTpXZQ5FCfhtI4g/tXd9+2qSkifhYj3
-	 nSbSIA4jMu/KZB7yevBbgibXKPneu5j3EUmjqfcRHo82tcmBDhYRnmxfPYMujOary5
-	 jBZsDNo1myuiPPadp+8C+gDoxniSo9dEQubvcfTrOtuFahjjGGjbXSN69PuglbEEKd
-	 kbtQLeWYByb7YFBbi1NzHQ5fCklhJCSqf2SecbeFlKsO7wtsorNxVjhbR9+GRbQeqV
-	 m1+BRQO1ub1gA==
+	b=kZDAG51Q60gMOKz0hRK+Oirn8cMJ9phYP8/be5On9P0opQ+6oCQ+2LsBSFXjuP3ys
+	 0bl5zN2Bkd0ya9YKb2ZGOFzff/aEEYHkArE1oNHaQPZpLxF6YxVg5ydIiaoXIkLL9L
+	 HaKFAl2e5Zypn/Hi27MvgbZEFtF8Jv69h/R6me5usKPmhfgJ+hhfwEkSScuL0FwwRV
+	 BPOkpiYQMGmKjyxyAESlyO6NEB5KVmWnvzW9mdgBDzBAXC6MIvB7mWAnDI6Ndd+blE
+	 vtTno4OLXLFXrr9Y1Oc6NNFurE/vUOPWR/+eokxSLjd3Ee219AUOoKTQAjPYIXJmOi
+	 6fTtUyNZn6F3Q==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE2EF41987;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D521F4198D;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 15 Apr 2026 10:51:53 +0100
-Subject: [PATCH v10 10/11] docs: iio: add documentation for adf41513 driver
+Date: Wed, 15 Apr 2026 10:51:54 +0100
+Subject: [PATCH v10 11/11] Documentation: ABI: testing: add common ABI file
+ for iio/frequency
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,8 +40,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260415-adf41513-iio-driver-v10-10-df61046d5457@analog.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260415-adf41513-iio-driver-v10-11-df61046d5457@analog.com>
 References: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
 In-Reply-To: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -59,11 +60,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776246736; l=9001;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776246736; l=2210;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=44S046rKQ8vJjwYP3E0/B2wareoeDdEt/WCnvjcW9yk=;
- b=gNVYoZ/qJxM7zXNL3TMwPofCDiuRjPTdzjf3I009BrlO1wbR/kCqOr677BJFdXH8EEsFdcBG8
- qdL200KfzNWA57FsTTRp2SgNVeKxtrc/2OGIxKwyFNloaWHiyJVDVTY
+ bh=OhPLAamt4hmbeCatH+/iPHehi/HIntujTnWeOacWI/A=;
+ b=jVKPi+ySD9retpXx91x/DPGFm6uXP4JfoI+dsgC86R+zCxB8G4gYqZIbIelYX9DptQHEjSFuR
+ 3NadidVcBXmDJ34fTjrL5jyjAsTSN3BDUi0k5kA0aFDixAiMt6ou+7/
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -73,246 +74,50 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add documentation for ADF41513 driver, which describes the device
-driver files and shows how userspace may consume the ABI for various
-tasks.
+Add ABI documentation file for PLL/DDS devices with frequency_resolution
+sysfs entry attribute used by both ADF4350 and ADF41513.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- Documentation/iio/adf41513.rst | 199 +++++++++++++++++++++++++++++++++++++++++
- Documentation/iio/index.rst    |   1 +
- MAINTAINERS                    |   1 +
- 3 files changed, 201 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio-frequency         | 11 +++++++++++
+ Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 | 10 ----------
+ 2 files changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/iio/adf41513.rst b/Documentation/iio/adf41513.rst
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
 new file mode 100644
-index 000000000000..4193c825b532
+index 000000000000..1ce8ae578fd6
 --- /dev/null
-+++ b/Documentation/iio/adf41513.rst
-@@ -0,0 +1,199 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+===============
-+ADF41513 driver
-+===============
-+
-+This driver supports Analog Devices' ADF41513 and similar SPI PLL frequency
-+synthesizers.
-+
-+1. Supported devices
-+====================
-+
-+* `ADF41510 <https://www.analog.com/ADF41510>`_
-+* `ADF41513 <https://www.analog.com/ADF41513>`_
-+
-+The ADF41513 is an ultralow noise frequency synthesizer that can be used to
-+implement local oscillators (LOs) as high as 26.5 GHz in the upconversion and
-+downconversion sections of wireless receivers and transmitters. The ADF41510
-+is a similar device that supports frequencies up to 10 GHz.
-+
-+Both devices support integer-N and fractional-N operation modes, providing
-+excellent phase noise performance and flexible frequency generation
-+capabilities.
-+
-+Key Features:
-+
-+- **ADF41510**: 1 GHz to 10 GHz frequency range
-+- **ADF41513**: 1 GHz to 26.5 GHz frequency range
-+- Integer-N and fractional-N operation modes
-+- Ultra-low phase noise (-235 dBc/Hz integer-N, -231 dBc/Hz fractional-N)
-+- High maximum PFD frequency (250 MHz integer-N, 125 MHz fractional-N)
-+- 25-bit fixed modulus or 49-bit variable modulus fractional modes
-+- Programmable charge pump currents with 16x range
-+- Digital lock detect functionality
-+- Phase resync capability for consistent output phase
-+
-+2. Device attributes
-+====================
-+
-+The ADF41513 driver provides the following IIO extended attributes for
-+frequency control and monitoring:
-+
-+Each IIO device has a device folder under ``/sys/bus/iio/devices/iio:deviceX``,
-+where X is the IIO index of the device. Under these folders reside a set of
-+device files that provide access to the synthesizer's functionality.
-+
-+The following table shows the ADF41513 related device files:
-+
-++----------------------+-------------------------------------------------------+
-+| Device file          | Description                                           |
-++======================+=======================================================+
-+| frequency            | RF output frequency control and readback (Hz)         |
-++----------------------+-------------------------------------------------------+
-+| frequency_resolution | Target frequency resolution control (Hz)              |
-++----------------------+-------------------------------------------------------+
-+| powerdown            | Power management control (0=active, 1=power down)     |
-++----------------------+-------------------------------------------------------+
-+| phase                | RF output phase adjustment and readback (radians)     |
-++----------------------+-------------------------------------------------------+
-+
-+2.1 Frequency Control
-+----------------------
-+
-+The ``frequency`` attribute controls the RF output frequency with sub-Hz
-+precision. The driver automatically selects between integer-N and fractional-N
-+modes to achieve the requested frequency with the best possible phase noise
-+performance.
-+
-+**Supported ranges:**
-+
-+- **ADF41510**: 1,000,000,000 Hz to 10,000,000,000 Hz (1 GHz to 10 GHz)
-+- **ADF41513**: 1,000,000,000 Hz to 26,500,000,000 Hz (1 GHz to 26.5 GHz)
-+
-+The frequency is specified in Hz, for sub-Hz precision use decimal notation.
-+For example, 12.102 GHz would be written as "12102000000.000000".
-+
-+2.2 Frequency Resolution Control
-+--------------------------------
-+
-+The ``frequency_resolution`` attribute controls the target frequency resolution
-+that the driver attempts to achieve. This affects the choice between integer-N
-+and fractional-N modes, including fixed modulus (25-bit) and variable modulus
-+(49-bit) fractional-N modes:
-+
-+- **Integer-N**: Resolution = f_PFD
-+- **Fixed modulus**: Resolution = f_PFD / 2^25 (~3 Hz with 100 MHz PFD)
-+- **Variable modulus**: Resolution = f_PFD / 2^49 (µHz resolution possible)
-+
-+Default resolution is 1 Hz (1,000,000 µHz).
-+
-+2.3 Phase adjustment
-+--------------------
-+
-+The ``phase`` attribute allows adjustment of the output phase in radians.
-+Setting this attribute enables phase adjustment. It can be set from 0 to 2*pi
-+radians. Reading this attribute returns the current phase offset of the output
-+signal. To create a consistent phase relationship with the reference signal,
-+the phase resync feature needs to be enabled by setting a non-zero value to the
-+``adi,phase-resync-period-ns`` device property, which triggers a phase
-+resynchronization after locking is achieved.
-+
-+3. Operating modes
-+==================
-+
-+3.1 Integer-N Mode
-+------------------
-+
-+When the requested frequency can be achieved as an integer multiple of the PFD
-+frequency (within the specified resolution tolerance), the driver automatically
-+selects integer-N mode for optimal phase noise performance.
-+
-+In integer-N mode:
-+
-+- Phase noise: -235 dBc/Hz normalized floor
-+- Frequency resolution: f_PFD (same as PFD frequency)
-+- Maximum PFD frequency: 250 MHz
-+- Bleed current: Disabled
-+
-+3.2 Fractional-N Mode
-+---------------------
-+
-+When sub-integer frequency steps are required, the driver automatically selects
-+fractional-N mode using either fixed or variable modulus.
-+
-+**Fixed Modulus (25-bit)**:
-+
-+- Used when variable modulus is not required
-+- Resolution: f_PFD / 2^25
-+- Simpler implementation, faster settling
-+
-+**Variable Modulus (49-bit)**:
-+
-+- Used for maximum resolution requirements
-+- Resolution: f_PFD / 2^49 (theoretical)
-+- Exact frequency synthesis capability
-+
-+In fractional-N mode:
-+
-+- Phase noise: -231 dBc/Hz normalized floor
-+- Maximum PFD frequency: 125 MHz
-+- Bleed current: Automatically enabled and optimized
-+- Dithering: Enabled to reduce fractional spurs
-+
-+3.3 Automatic Mode Selection
-+----------------------------
-+
-+The driver automatically selects the optimal operating mode based on:
-+
-+1. **Frequency accuracy requirements**: Determined by frequency_resolution setting
-+2. **Phase noise optimization**: Integer-N preferred when possible
-+3. **PFD frequency constraints**: Different limits for integer vs fractional modes
-+4. **Prescaler selection**: Automatic 4/5 vs 8/9 prescaler selection based on frequency
-+
-+4. Usage examples
-+=================
-+
-+4.1 Basic Frequency Setting
-+----------------------------
-+
-+Set output frequency to 12.102 GHz:
-+
-+.. code-block:: bash
-+
-+    root:/sys/bus/iio/devices/iio:device0> echo 12102000000 > out_altvoltage0_frequency
-+
-+Read current frequency:
-+
-+.. code-block:: bash
-+
-+    root:/sys/bus/iio/devices/iio:device0> cat out_altvoltage0_frequency
-+    12101999999.582767
-+
-+4.2 High Resolution Frequency Control
-+-------------------------------------
-+
-+Configure for sub-Hz resolution and set a precise frequency:
-+
-+.. code-block:: bash
-+
-+    # Set resolution to 0.1 Hz (100,000 µHz)
-+    root:/sys/bus/iio/devices/iio:device0> echo 0.1 > out_altvoltage0_frequency_resolution
-+
-+    # Set frequency to 12.102 GHz (1 µHz precision)
-+    root:/sys/bus/iio/devices/iio:device0> echo 12102000000 > out_altvoltage0_frequency
-+    root:/sys/bus/iio/devices/iio:device0> cat out_altvoltage0_frequency
-+    12101999999.980131
-+
-+4.3 Monitor Lock Status
-+-----------------------
-+
-+When lock detect GPIO is configured, check if PLL is locked:
-+
-+.. code-block:: bash
-+
-+    # Read frequency - will return error if not locked
-+    root:/sys/bus/iio/devices/iio:device0> cat out_altvoltage0_frequency
-+
-+If the PLL is not locked, the frequency read will return ``-EBUSY`` (Device or
-+resource busy).
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-index ba3e609c6a13..605871765c78 100644
---- a/Documentation/iio/index.rst
-+++ b/Documentation/iio/index.rst
-@@ -30,6 +30,7 @@ Industrial I/O Kernel Drivers
-    ad7625
-    ad7944
-    ade9000
-+   adf41513
-    adis16475
-    adis16480
-    adis16550
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 4e28f54cb34f..37fc22dc525b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1660,6 +1660,7 @@ L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
-+F:	Documentation/iio/adf41513.rst
- F:	drivers/iio/frequency/adf41513.c
- 
- ANALOG DEVICES INC ADF4377 DRIVER
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
+@@ -0,0 +1,11 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
++KernelVersion:	6.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Stores channel Y frequency resolution/channel spacing in Hz for PLL
++		devices. The given value directly influences the operating mode when
++		fractional-N synthesis is required, as it derives values for
++		configurable modulus parameters used in the calculation of the output
++		frequency. It is assumed that the algorithm that is used to compute
++		the various dividers, is able to generate proper values for multiples
++		of channel spacing.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
+index 1254457a726e..76987a119feb 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
+@@ -1,13 +1,3 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
+-KernelVersion:	3.4.0
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Stores channel Y frequency resolution/channel spacing in Hz.
+-		The value given directly influences the MODULUS used by
+-		the fractional-N PLL. It is assumed that the algorithm
+-		that is used to compute the various dividers, is able to
+-		generate proper values for multiples of channel spacing.
+-
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_refin_frequency
+ KernelVersion:	3.4.0
+ Contact:	linux-iio@vger.kernel.org
 
 -- 
 2.43.0
