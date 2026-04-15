@@ -1,103 +1,156 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 829251F2380;
-	Wed, 15 Apr 2026 04:52:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE9C1E5207
+	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 05:07:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776228771; cv=none; b=GmA1XOvDphH0/JSYaXLLWZdXEluldsvSQYlKyQCxNFr++NLu8BOy63Eu/zHS0FxaX0LYeV19lNHiEniH592sYLKgx+AyNlRMMw86NpfjeO6as4g/o8aBdmVn7u+JZU1xq+hoMFTHxU80osV/TUp0P6aSeizdCyD6NMckyvYq72Q=
+	t=1776229677; cv=none; b=PZf8FnPOb7zlZm50ZmZagDa7zKshkuCwkJqBobJ6h2Etlic5IP0NrPMIyZENn7sTZDbZK0wxigMcyTzrQF40ugiiL93cq2zGvOOTl3phZ040zLSKwePXarJS0wCdH+prrvfw5D/Siyp7efZmz4n5GwCOFBphB6apedHB0XvXQbM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776228771; c=relaxed/simple;
-	bh=wE54XjqV/Mc+zVuNbW4dmvSFEl+O6H8mzJLili8gt8A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vFMjzKzVjgXTz7kNEAbvsW355A03q2mu7/MD25ZtUnl2sK4arGWlo0VovufUYnmU3FXmHhIc0In/HBuSh+zTaWhs+yZd0C7ttgCi8BQrw0Rq+N6zmq70+ICbi7CmDHHlmWBeGyNoiYObGeYFeNn+q+hWyVoZL+n9jJnwD9i4y5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B01rwa4w; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776229677; c=relaxed/simple;
+	bh=qcpGYaAjoWZMDk3gUJniK9BI9Qn5rZCkB+eQVXlu5GM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=i5k43jJyowCB8Ash8DzK5CD7h+2AmDPr1G1iq96YINeP53lSHcceRkrlPCNpQsgatbMR7HGwbHIzGXhBrf0Gsb5ipJVfWf2fPAryVH4TlNsrVX/h9LnjNxsP8B+zpeGfrXfRriPCc5/I4Yw8RGc8VWJLeonm4QRyKhFzOIhkVSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NyDAED4+; arc=none smtp.client-ip=209.85.210.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B01rwa4w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776228770; x=1807764770;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wE54XjqV/Mc+zVuNbW4dmvSFEl+O6H8mzJLili8gt8A=;
-  b=B01rwa4wQSD7qkqcBQTSrjoZlxADXe/fIudzQaxv7lUzco6Az3xhiR92
-   RH8p65fQaDmG6fxaU8g1o/eJebiNak2uQsiT+nF5ZY78FTrISFElZ3C/o
-   uPJyRb4ojXPsEZO/n4FY+P5IgCYzyUKJ+PuPeiHYi6J7CmAODAsunkNFc
-   MxV8ENPjB1i6Idd8t2GTB+SkImpnyy6jgSGrRTxb31L6IAkqefXDar77e
-   QcQlR5GFloStmchQfzfa/lrdVGHNQVD9nMSCZgh673dOk7tI6CsZ1t2+x
-   52dRuyYYfr6OU7lpNJEzAO0cZFS6ueO6sokdbJazWycZnXy/qwgtD0GGe
-   A==;
-X-CSE-ConnectionGUID: mY+Fqw5KTCKV5JojZHjxZw==
-X-CSE-MsgGUID: 1ZVbRtdUSJ6nVgeFmC84uA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="88578476"
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="88578476"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 21:52:49 -0700
-X-CSE-ConnectionGUID: OsfhTPXvR5uTKLN7asx5+w==
-X-CSE-MsgGUID: 8xxbdzCjSCOYaFK3TnYcwQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="225601433"
-Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.34])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 21:52:47 -0700
-Date: Wed, 15 Apr 2026 07:52:44 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Torreno, Alexis Czezar" <AlexisCzezar.Torreno@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 2/2] iio: dac: ad5706r: Add support for AD5706R DAC
-Message-ID: <ad8ZnOZ_mmx5I6BZ@ashevche-desk.local>
-References: <20260410-dev_ad5706r-v7-0-af93a4caa186@analog.com>
- <20260410-dev_ad5706r-v7-2-af93a4caa186@analog.com>
- <20260414195400.60d39158@jic23-huawei>
- <PH0PR03MB6351E875581B45ED279785D0F1222@PH0PR03MB6351.namprd03.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NyDAED4+"
+Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-82f5dc076ddso738319b3a.0
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 22:07:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776229676; x=1776834476; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=NLD1BRP/gok9Ohl7X/j3O931d92BKJ1ZjnQd79EeekY=;
+        b=NyDAED4+ZQxQmHvGHBpH7iom5e4USuo5PEMjEXB2M0nFsw/lSHhYWMZExLbXWSaMz+
+         WR/RHbOLjP2TkEx6sDyRa7ucNirax4hxgrkd/qvzlQca46Gpglh5PlFyw4D2nFgzbNZf
+         U4xmjNblN5sLu1XutNEU2emOn8kqIBJJwMJbRPQpL2SR8+Ictf9lT6OuTSL3Y86YH3L4
+         hcgGu2JGJ7nwRb5caIvfi4E92ptzHmY9jeEFCdIG3m7JjmULyuy6brMxx9ZJhxPeJTSU
+         LvR1F57DJrQH+Yuhhvx5EgTu2oQCMfvZU1gbym14frY3WMylan83dURoi1q5aORmEuO/
+         EKCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776229676; x=1776834476;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NLD1BRP/gok9Ohl7X/j3O931d92BKJ1ZjnQd79EeekY=;
+        b=XfYsY0fl96UD3W2UhvLoyhQslUCjdg8i7IRMCEa0M+gEkPkwmfK92gQ2SRC///MHuL
+         z02mFJ+iMnLEJ5pfu4N/62MXhcQ+nxs2C7TOUvDfA/PYkwlz3F0V2iR5kawVkpgs5JVz
+         lvvb/CREeoLP8IG90rPwe1xAinw8Ff6wRETUtdpcLVtgf2N3DbCu6+1fl7Gpa1ZQiTOJ
+         0+RAJqQN73h2QqqF7PtIU1TlnJzYn7/2ZxZe+c4QDcr3sBO3+GRsTp9YtkFzPOHQgR49
+         wSmzmamzNCwhfLpevKIlxmJSpzfJzm7EDA+4ZYwCN98LhUgL+3ciilzUyk684tBqwAv7
+         BxLQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+ep8sTk+L+tb3u3TaPOyr01K2/XKAzD5pGRQcOUb6X4d8gS/3DRhVIP2gKceX89EBqxhZJ9T/5hPs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwSxo/KJDkdpD9nuTwrTpSLj6ALT+4opJ6rQKbGc4Xi2xy6zuZy
+	6ZRt24UEu4b7DkJVTpmYXL0ROSJdNs2cgqHRJA1OIdcJYI0mWXt/9Eyz
+X-Gm-Gg: AeBDiev3eKMJH6LE8yNu1Idd9Rhvfh49Ft9262+VSLSrrU6UjAs0JlQRfPpAMrv7swS
+	w3wpjVsQvCWLU4ASIaHiNP6UM9+l9Oijd2W/9TTRc57HzQL8NPhpmStiUEbHAzBsV5boB6FEnIV
+	3EdEJU7P64ZbI+fxxm9DG62pMLlnul5G+TYw7p7P0OyEcTHhvnTye5FdFByv6D/HEK+kRgXn+6s
+	IMX4x0PLJT/5i0d49NXH4ZqYUyD+kafDNR9X5St6kWufFyL9N4uRysNJSeAzIOp6qMfgXr2Q+ov
+	X+gLeKu6yxoeINiGZxgI6nBnAorzEFFicpVyMKBguze4j0dBYOP4YSrsFj7p4vXWpsIfdqucZwD
+	lAMy/1u6F2XmIV2B7fhgYcTz8F26WYEhitmC9hrj3Kq3phYqgIYj7ci35GoTuvj9Qj8xfymsDvc
+	xl2tEM6M6gvQBqihILKyG4BLuYRt3S9535UlHcLtDnIlZjLWXrXd9hK8DKhWg=
+X-Received: by 2002:a05:6a00:6906:b0:82f:c9a:d335 with SMTP id d2e1a72fcca58-82f0c9adb55mr14329234b3a.40.1776229675901;
+        Tue, 14 Apr 2026 22:07:55 -0700 (PDT)
+Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f67469dc3sm763706b3a.58.2026.04.14.22.07.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Apr 2026 22:07:55 -0700 (PDT)
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	sanjayembeddedse@gmail.com,
+	tglx@kernel.org,
+	christophe.jaillet@wanadoo.fr,
+	mingo@kernel.org,
+	nabijaczleweli@nabijaczleweli.xyz,
+	kees@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v6 0/7] iio: ssp_sensors: improve resource cleanup
+Date: Wed, 15 Apr 2026 10:37:42 +0530
+Message-Id: <20260415050749.3858046-1-sanjayembedded@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR03MB6351E875581B45ED279785D0F1222@PH0PR03MB6351.namprd03.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 15, 2026 at 01:10:09AM +0000, Torreno, Alexis Czezar wrote:
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-...
+Hi all,
 
-> > > +	case IIO_CHAN_INFO_RAW:
-> > > +		if (!in_range(val, 0, AD5706R_DAC_MAX_CODE))
-> > 
-> > I'm not seeing a strong reason to use in_range() here (hopefully I didn't
-> > suggest it in an earlier review ;)  It make sense when we have a  val >= base &&
-> > val < base + length. With base as 0 and MAX_CODE not 'obviously' from it's
-> > name being the length (it only is becauset he base is 0) this seems odd.
-> > 
-> > 		if (val < 0 || val >= AD5706R_DAC_MAX_CODE) Though see
-> > above on MAX_CODE not being the maximum code...
-> 
-> I think around v3 Andy suggested the use of in_range, as the function itself helps
-> document what the line does. Is this a style preference?
+This patch series improves resource cleanup and error handling in the
+SSP IIO SPI driver by adopting the recently introduced cleanup
+helpers.
 
-I believe it was me, who suggested that, but we can open code it. Indeed, it's
-just a style preference in this case.
+The changes focus on making probe/remove paths more robust and easier
+to reason about by reducing manual unwind logic and ensuring that locks
+and dynamically allocated resources are released consistently across
+all exit paths.
+
+Key highlights of this series:
+
+- Reuse embedded rx buffer for SPI transfer instead of allocating new
+  DMA memory in interrupt context for write transaction between AP <-> HUB.
+- Replace dynamic resource lifetime management with device‑managed
+  (devm_) APIs to simplify cleanup and error paths.
+- Refactor common helper API, improving readability and reducing
+  duplicatation.
+- Address minor codestyle warnings and use dev_err_probe in probe path.
+
+Changes in v6:
+- 0005: Drop remove() path using devm action with input from David
+- 0007: Replace dynamic memory allocation with embedded fixed size struct buffer
+- 0004: new: drop duplication in remove()
+- 0006: new: Use dev_err_probe in driver probe()
+Changes in v5:
+- Drop usage of guard() helpers to avoid mixing mutex_lock() with
+  guard()(), based on reviewer feedback.
+- 0003: Refactor shared helper API, reducing duplication.
+- 0004: Convert resource allocation and teardown to devm_ managed APIs to
+  simplify error handling and probe/remove paths.
+Changes in v4:
+- Update sequence and make checkpatch style fix in base change
+- Split WARNING and CHECK change with input of Andy as 0001 and 0002
+- 0003: Use guard() instead of scoped_guard()
+- 0004: Use preallocated buffer to stash memory allocation
+
+No functional behavior changes are intended.
+
+Testing:
+  - Compiled with W=1
+  - Build-tested on QEMU x86_64
+
+Based on:
+  <linux-v7.0-rc5>
+
+Feedback and reviews are very welcome.
+
+Thanks,
+Sanjay Chitroda
+
+Sanjay Chitroda (7):
+  iio: ssp_sensors: cleanup codestyle warning
+  iio: ssp_sensors: cleanup codestyle check
+  iio: ssp_sensors: factor out pending list add/remove helper(s)
+  iio: ssp_sensors: drop duplicated wdt timer and work cleanup
+  iio: ssp_sensors: convert probe and teardown to devm-managed resources
+  iio: ssp_sensors: Use dev_err_probe
+  iio: ssp_sensors: reuse embedded RX buffer for SPI transfers
+
+ drivers/iio/common/ssp_sensors/ssp.h     |   3 +
+ drivers/iio/common/ssp_sensors/ssp_dev.c | 119 ++++++++++-------------
+ drivers/iio/common/ssp_sensors/ssp_spi.c |  83 +++++++---------
+ 3 files changed, 88 insertions(+), 117 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
