@@ -1,49 +1,49 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A9CB329C6B;
-	Wed, 15 Apr 2026 09:22:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ECA4324B2C;
+	Wed, 15 Apr 2026 09:25:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776244979; cv=none; b=T5KuaIjsKNR26mmenmXP2h2sJV2gZQtQi1EspPUoPhcmezlk6RYhQC2W51a0yP6EyIonuYsFVfTFeas7WP4trMQH81glh91juXqQaAhqlHhfvKLj97FNNvtKlmEWrGpzL95lTrE8x9Oe2QCxMQ18EoFm+3Ntbm/Im7C8y/LMcg8=
+	t=1776245125; cv=none; b=AhUSqXX6DlTVdgZwQ45tpCruq6F8an5HedOJSLYqIzI7xC2QJqKuRn+K+UqP0hD0QLju3j4NIqbxuKTLO3MuhJg5gDd/87ETs/AynxDjIQq601QV7v0v6wUas//pgWdwUosmGb9ufiUr5+fy0PgUMQbTEFdolDPwNl57veaCOJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776244979; c=relaxed/simple;
-	bh=FwMuDLVtDkdQq8o6iSQyEVk+FJBZjNYRfWX2S41AlpQ=;
+	s=arc-20240116; t=1776245125; c=relaxed/simple;
+	bh=xcmNHAl3LN9HGd4dNRcqe7RjpVJa4GmUMprvIl0lvzc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uZHYR4cdTQyUGJkCz4sq5w60WkWIJrCM7VlglxsbvfXB3qM2QNWeSbFGLL3oEkqFGUPOYlGge4E+hN2w/ySsZfZb0tOOj3Z556nc0BDVDA/YJ5BL1vUt2o+CbacebfUeChXTJUj12vdDZa9e+Wsw6U4Ecza+iApu7Y541Ih5Mtg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cOqDK/LR; arc=none smtp.client-ip=198.175.65.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=AABI26vQqiOvS49bUBWhiLQtG/whpK8wA8gA+BDvUl8TRFEBKLTON1mlm/NHYqXsXmFClShZ0eLwTdXJ+X9qK6SMDYcp09qVeUSYvDNYdSkk0w/4j4T+fNOKXMAYG57zLqbLFKl593zSlv+6ROa0L2OybwHdjGzbMFLUq6BY9ik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=epFDhCv/; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cOqDK/LR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="epFDhCv/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776244977; x=1807780977;
+  t=1776245124; x=1807781124;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=FwMuDLVtDkdQq8o6iSQyEVk+FJBZjNYRfWX2S41AlpQ=;
-  b=cOqDK/LREYhUYO+cpJHZ/Ls0qkZaqyJx0ZwvBaqNJ8Ot1MjsVIhOmZol
-   Hwbn6F2cSBI0fdcwF0L10sZUONTAKeFLF2nk04E5BeeMQE6X2SDZmehOp
-   8h/zNEbAuxs+2pAxPMD3QAtZ+QmwXRjnKgaifj11YcX2TPEDvJFctFEz0
-   4TMNJnUMAshkWa6xAXP24Cj4DJO15YgX/EZjKWCcK9LlmVehKfe28DUsa
-   xcSE368ftF/fDt1gWC+G5HXTOFqTFtq2Vst2xPPjqhesFTOr1Bn4u3QBB
-   DFaHdSiS8RcyIyHGcytxkeG0JYNNmkiFceaIKnLtsSVBHhXF+8r8gYrp1
-   w==;
-X-CSE-ConnectionGUID: IflMMsveRPG3f7ZYxJP2Og==
-X-CSE-MsgGUID: Men0ErWfRUyEBVYt3Hv7iQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="99857821"
+  bh=xcmNHAl3LN9HGd4dNRcqe7RjpVJa4GmUMprvIl0lvzc=;
+  b=epFDhCv/ZlpdRMjwrNY6pgFVQwBxaGyXMFK6Xry87tknOdsshZwCMauv
+   MxEdrn42Dg1sJkGrud7O6WaFegX50NN4pcitlRnAl/LsGkiwHnNX7x0ZG
+   oSxwCnmpDqnOUteKSAve6P3Lsx2JZqRRx2YiXlyu+vgax9hPTBzq34Z1a
+   QBkgcwppUWg7+Dtzx976rzIKOIXQeyIZhXJn9LJxUYrOIG/P2X8ufzmyz
+   n30NV2IiVdPlw0byThDQa6AAIwfVKhqJkEJLtw5FyaUk0GQSr6CW/ivzH
+   CcJjwPUFaQeRwPezpkUxU1KbF7NIQHoEcnwbHUXaOIoFLbdUNXphQlCMi
+   Q==;
+X-CSE-ConnectionGUID: qzImOkusTSivWJKkqdC14Q==
+X-CSE-MsgGUID: 6+/hYWU8STqJHnI83E20vg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="99858018"
 X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="99857821"
+   d="scan'208";a="99858018"
 Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2026 02:22:57 -0700
-X-CSE-ConnectionGUID: tTMAPzULTvWhLnooAPH6Vg==
-X-CSE-MsgGUID: G3zNy5EoQ8ObZN82RKw2hQ==
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2026 02:25:24 -0700
+X-CSE-ConnectionGUID: 0KuYynOoSo2LmaU4SDVEqQ==
+X-CSE-MsgGUID: RM+GlkoQSo6/GKrJ74l2eg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="253781601"
+   d="scan'208";a="253782345"
 Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.34])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2026 02:22:54 -0700
-Date: Wed, 15 Apr 2026 12:22:51 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2026 02:25:21 -0700
+Date: Wed, 15 Apr 2026 12:25:19 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
@@ -53,7 +53,7 @@ Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v6 3/7] iio: ssp_sensors: factor out pending list
  add/remove helper(s)
-Message-ID: <ad9Y6-WHWs09hkbe@ashevche-desk.local>
+Message-ID: <ad9Zf2fAIp6ggoJh@ashevche-desk.local>
 References: <20260415050749.3858046-1-sanjayembedded@gmail.com>
  <20260415050749.3858046-4-sanjayembedded@gmail.com>
 Precedence: bulk
@@ -80,27 +80,23 @@ On Wed, Apr 15, 2026 at 10:37:45AM +0530, Sanjay Chitroda wrote:
 > 
 > No functional change intended.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-after addressing below nit-picks.
-
 ...
 
-> +static inline void ssp_pending_add(struct ssp_data *data,
-> +				   struct ssp_msg *msg)
+> -	/*
+> -	 * check if this is a short one way message or the whole transfer has
+> -	 * second part after an interrupt
+> -	 */
 
-It's perfectly a single line (we have limit 80, so up to and including 80 is
-allowed).
+One more thing, please, move this comment to the same condition in ssp_pending_add().
+The ssp_pending_del() can survive without it as they are close to each other. Or you
+can add a short one to refer to the comment in ssp_pending_add().
 
-static inline void ssp_pending_add(struct ssp_data *data, struct ssp_msg *msg)
+While moving, fix the style as well.
 
-(it's only 78 here).
-
-...
-
-> +static inline void ssp_pending_del(struct ssp_data *data,
-> +				   struct ssp_msg *msg)
-
-Ditto.
+	/*
+	 * Check if this is a short one way message or the whole transfer has
+	 * second part after an interrupt.
+	 */
 
 -- 
 With Best Regards,
