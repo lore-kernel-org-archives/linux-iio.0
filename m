@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F8EB33F5A0;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6078B33C536;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776246738; cv=none; b=W1IoysLLE0jsCcWxkKFjoYXgALbxN3CrVknf8uFfkjLonFIdm28pHz5yYTz8OH7DWnbs8hnQ5eetfRoFUPlesIYCtBLmoWYSzeUYDTLTD804XFABBEEcfpD2/kolT7MGBm50OpVLUglHrBEwBhx0MStaSdVm02eUa9zyp/0aOfU=
+	t=1776246738; cv=none; b=mrqut14ZYtKuzw7FGE63FF1mJ62x7NtOyLnj2hX5/GcEtyEj4lxQ4BTb7AyynFZtgR6TNzfPTqxKYboZ8IeD6vdmlh0kAYthynDSr129+bp8Z/G1mOE40xeETnjyDS1lGNHspJW0uXhrWp/WVskM8j3KsILqqovD2+qizpVANjA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776246738; c=relaxed/simple;
-	bh=Gl8BKoBCF2V77XMlkR0lJ8OgLBba8DD++QnrWkI3lII=;
+	bh=+PnoWBfKnfV07TYFgJMKkg0KM9nPZ2plTh6bMfU0YFo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=IwhxClVDY7yhdqP3OBDoRIXBhSQBwuBzp0YmudegTwZ+QQrHaWw1+iNZ8jm0suieQmNWQNkza+n/Mad8xvFiJTrGGf3Q2/R0P/9pStAfS3oeAu1p8A/uHzqc4LgUG8e4Zhsv6r2pH7u/wKjPU0j9Kx2NCaGWukllqV4MExzo584=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ie1LDbkp; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=OTOsuEYdmMflIOhZ5NwWffC9+ih2FiokE1uOwVIy15cScnS/5i4u7J7hUX5BXJ/CCP/dngzp7WSnNzFoYrl6bSi3sQ7UhQOnuwv/Zyu+ej1ECsm3SABeYujO00NBFbdjE5kqUq2iTc7aFa7fvY6c1/fsqFdUZBnB1brfV3m69dY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ho/pCNK3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ie1LDbkp"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4650AC2BCF7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ho/pCNK3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 249ECC2BCB8;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776246738;
-	bh=Gl8BKoBCF2V77XMlkR0lJ8OgLBba8DD++QnrWkI3lII=;
+	bh=+PnoWBfKnfV07TYFgJMKkg0KM9nPZ2plTh6bMfU0YFo=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ie1LDbkpoq6T+IBYz6e6VprVz3HvKJMffyhC3wTDqWXvur7ZaTIugMcuYb98ruZoI
-	 VmkUSVbtg5nXQzHzdft8kL0ZdZplCeRDSpn8qzg3aoeUE5q91OxIGAoaHanL0ayyqT
-	 Uq63Q+OjahPRwRQ2eQuRSnEzNgPpJ+XOW4kGXBRv2mRO2jjzroWZ5f6/VrZhpzG+Cy
-	 kUQANWXHXRkYAo+jxi2M50yZMT3sV9PUVWhKhgeaLuNjJcCz/uEUhnphGRP6t3t/rJ
-	 uj5iAAX8CnO2aDhF3qzd+JkByJN9HpgQ31VZpxrIcZTul0UxPDl1P8pS+ykbsG4Bke
-	 QlnAgyy7TVaAQ==
+	b=ho/pCNK3GeKMEK2GtWNZ8XB4rjh10RkaI/opiqnL2MU2MQVE1BJ5Ixk7NxtKPZcQX
+	 2vpBNgFW4FvfBjvWKOPNMQP3vsh6IHdsydp57PitkztjxcqDu4IqEzOPg6tLJzHrQH
+	 BwyEaMMqoxjcZksZvBWP6JGDer3SsYkU8qSL+3mgVIO5OY5BUHNjbXTmkztzDmxNHK
+	 9TBwITDAET0bPOxOa5EWlDwLLNPTunPz9ldD9xV+wxHocgU36O8pWdZQ2URUXKALLl
+	 jtDNtReMoVkrQneFigwVVXitevs/Drh/MJzzZ6zFnD/9DTghIeI9wK+oWgf29dSNwv
+	 dEAp4wxEi4Z1Q==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E42DF41987;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0D7F41987;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 15 Apr 2026 10:51:49 +0100
-Subject: [PATCH v10 06/11] iio: test: iio-test-format: add test case for
- decimal format
+Date: Wed, 15 Apr 2026 10:51:47 +0100
+Subject: [PATCH v10 04/11] lib: math: div64: add div64_s64_rem()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260415-adf41513-iio-driver-v10-6-df61046d5457@analog.com>
+Message-Id: <20260415-adf41513-iio-driver-v10-4-df61046d5457@analog.com>
 References: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
 In-Reply-To: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -60,11 +59,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776246736; l=6713;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776246736; l=2261;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=z+7GfhAI5DqW1tt8XtRcWYlfgn90H7P6U7JnxowjBIY=;
- b=rzyoEcqfHx+2Y4y396typJDQ9QONd3E96mwvAahpoIc3dSaMHaNtU09iPg5lrhob3cfYl7M4D
- QbzkLl6up6BAT+mZDZFOJvnZaZidXuQoZagdnBaIIuq+2UOC4+Fr5fP
+ bh=2v2lygWWRh+YYmi1idrGFbtPNUJ9kh0HFK3mhrgB4es=;
+ b=dWSk7W28BiSoqqG798KAJG0PjF1a0g0ucyax7n98whSjDtc+hwbi/OMSGk5InQY9DqI4nAuED
+ CazcA3ZR+TrCb49CH5CIhAtBPraxW9Kd3TxXP7z+Tvr9l+PEwX7+ugQ
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -74,159 +73,78 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add iio_test_iio_format_value_decimal_64() kunit test case for decimal
-value formatting, exploring different scales types. Also, the same
-iio_val_s64_array_populate() macro used to populate local array is used in
-iio_test_iio_format_value_integer_64().
+Add div64_s64_rem() function, with 32-bit implementation that uses
+div64_u64_rem() and a branchless approach to resolve the sign of the
+remainder and quotient (negation in two's complement).
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/test/iio-test-format.c | 97 +++++++++++++++++++++++++++++---------
- 1 file changed, 75 insertions(+), 22 deletions(-)
+ include/linux/math64.h | 18 ++++++++++++++++++
+ lib/math/div64.c       | 15 +++++++++++++++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
-index 872dd8582003..a2a9b4360c92 100644
---- a/drivers/iio/test/iio-test-format.c
-+++ b/drivers/iio/test/iio-test-format.c
-@@ -200,56 +200,108 @@ static void iio_test_iio_format_value_multiple(struct kunit *test)
- static void iio_test_iio_format_value_integer_64(struct kunit *test)
- {
- 	int values[2];
--	s64 value;
- 	char *buf;
- 	int ret;
- 
- 	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
- 
--	value = 24;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(24, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "24\n");
- 
--	value = -24;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(-24, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-24\n");
- 
--	value = 0;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(0, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0\n");
- 
--	value = UINT_MAX;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(UINT_MAX, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "4294967295\n");
- 
--	value = -((s64)UINT_MAX);
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(-((s64)UINT_MAX), values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-4294967295\n");
- 
--	value = LLONG_MAX;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(LLONG_MAX, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854775807\n");
- 
--	value = LLONG_MIN;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(LLONG_MIN, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036854775808\n");
+diff --git a/include/linux/math64.h b/include/linux/math64.h
+index cc305206d89f..99189410d4bb 100644
+--- a/include/linux/math64.h
++++ b/include/linux/math64.h
+@@ -57,6 +57,20 @@ static inline u64 div64_u64_rem(u64 dividend, u64 divisor, u64 *remainder)
+ 	return dividend / divisor;
  }
  
-+static void iio_test_iio_format_value_decimal_64(struct kunit *test)
++/**
++ * div64_s64_rem - signed 64bit divide with 64bit divisor and remainder
++ * @dividend: signed 64bit dividend
++ * @divisor: signed 64bit divisor
++ * @remainder: pointer to signed 64bit remainder
++ *
++ * Return: sets ``*remainder``, then returns dividend / divisor
++ */
++static inline s64 div64_s64_rem(s64 dividend, s64 divisor, s64 *remainder)
 +{
-+	int values[2];
-+	char *buf;
-+	int ret;
-+
-+	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
-+
-+	/* DECIMAL64_MILLI: positive >= 1, value 1.234 */
-+	iio_val_s64_array_populate(1234, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.234\n");
-+
-+	/* DECIMAL64_MICRO: positive >= 1, value 3.141592 */
-+	iio_val_s64_array_populate(3141592, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "3.141592\n");
-+
-+	/* DECIMAL64_MILLI: positive < 1, value 0.042 */
-+	iio_val_s64_array_populate(42, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.042\n");
-+
-+	/* DECIMAL64_MILLI: negative <= -1, value -1.234 */
-+	iio_val_s64_array_populate(-1234, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-1.234\n");
-+
-+	/* DECIMAL64_MILLI: negative > -1, value -0.123 */
-+	iio_val_s64_array_populate(-123, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.123\n");
-+
-+	/* DECIMAL64_MILLI: zero */
-+	iio_val_s64_array_populate(0, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000\n");
-+
-+	/* DECIMAL64_NANO: value 1.000000001 */
-+	iio_val_s64_array_populate(1000000001, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.000000001\n");
-+
-+	/* DECIMAL64_MICRO: large value using upper 32 bits */
-+	iio_val_s64_array_populate(5000000000000042LL, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "5000000000.000042\n");
-+
-+	/* limits */
-+	iio_val_s64_array_populate(LLONG_MAX, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372.036854775807\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036.854775807\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854.775807\n");
-+
-+	iio_val_s64_array_populate(LLONG_MIN, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372.036854775808\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036.854775808\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036854.775808\n");
++	*remainder = dividend % divisor;
++	return dividend / divisor;
 +}
 +
- static struct kunit_case iio_format_test_cases[] = {
- 		KUNIT_CASE(iio_test_iio_format_value_integer),
- 		KUNIT_CASE(iio_test_iio_format_value_fixedpoint),
-@@ -257,6 +309,7 @@ static struct kunit_case iio_format_test_cases[] = {
- 		KUNIT_CASE(iio_test_iio_format_value_fractional_log2),
- 		KUNIT_CASE(iio_test_iio_format_value_multiple),
- 		KUNIT_CASE(iio_test_iio_format_value_integer_64),
-+		KUNIT_CASE(iio_test_iio_format_value_decimal_64),
- 		{ }
- };
+ /**
+  * div64_u64 - unsigned 64bit divide with 64bit divisor
+  * @dividend: unsigned 64bit dividend
+@@ -102,6 +116,10 @@ extern s64 div_s64_rem(s64 dividend, s32 divisor, s32 *remainder);
+ extern u64 div64_u64_rem(u64 dividend, u64 divisor, u64 *remainder);
+ #endif
  
++#ifndef div64_s64_rem
++extern s64 div64_s64_rem(s64 dividend, s64 divisor, s64 *remainder);
++#endif
++
+ #ifndef div64_u64
+ extern u64 div64_u64(u64 dividend, u64 divisor);
+ #endif
+diff --git a/lib/math/div64.c b/lib/math/div64.c
+index d1e92ea24fce..0b10ded09a9b 100644
+--- a/lib/math/div64.c
++++ b/lib/math/div64.c
+@@ -158,6 +158,21 @@ u64 div64_u64(u64 dividend, u64 divisor)
+ EXPORT_SYMBOL(div64_u64);
+ #endif
+ 
++#ifndef div64_s64_rem
++s64 div64_s64_rem(s64 dividend, s64 divisor, s64 *remainder)
++{
++	s64 quot, t, rem;
++
++	quot = div64_u64_rem(abs(dividend), abs(divisor), (u64 *)&rem);
++	t = dividend >> 63;
++	*remainder = (rem ^ t) - t;
++	t = (dividend ^ divisor) >> 63;
++
++	return (quot ^ t) - t;
++}
++EXPORT_SYMBOL(div64_s64_rem);
++#endif
++
+ #ifndef div64_s64
+ s64 div64_s64(s64 dividend, s64 divisor)
+ {
 
 -- 
 2.43.0
