@@ -1,204 +1,115 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49F731C567
-	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 05:08:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776229707; cv=none; b=XB1kfh0Sn4zbbTgKXbv7KHsYa8TVk7+Zu7dQFfLPBxdiNZ3OTLY2aaY7dTnNbLG3rl5U0DkXL6q2WAsA9nA/h9cFzFtIJuAUdXreIBTMtHeH+xa4Hy591ivOrfRqPf0tEbnERQA49rh5HjQLg4u0wqb2IaF+FgB1+rwyJNHwqi8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776229707; c=relaxed/simple;
-	bh=xo1DgEm+v+4CitQlUArtOELjVVPqS7ieeA8SZvBdteo=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=dTu2z0gmThJsREv/33BNoT1o+s6T6cPmqebOrSGgPnBoQLN4LwGwPM+Y5CHAUycaC7gsyMWKnErPBQlk4KzmvPPU6dhqxUbvWoLzE/FF5mMlZTx7y3b4X/KTyKycm3dGrDrP6j8LJLWwDQEVfNfe3szNY4868//UsdnIHZLkX60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VzamlGx1; arc=none smtp.client-ip=209.85.210.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0076639BFE8
+	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 07:18:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776237497; cv=pass; b=FfXkBHOo5IEpc3k9IszxOzyneHoTA4ygyU9LhcO5gy9dOK805becujFJW9G7Gsv6j07agCG4WoXuKqdaG5/h0yKAuzR1T9SaYTt2ajBxUJQA0qlo70jPFJnFJnJ2tTDPsMjWu0221Ig9Gpwe3FaclTbn8uqSkrJFxC37Xs0qZrE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776237497; c=relaxed/simple;
+	bh=h0rQ4cS9dWXY9la8FpZjuD/RIneVPSi9ZeQGJ/Hz3as=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lKvqhJUl3jAteyMrTtJaidLNNZpXsf2adWKsepRRb3yw9zcnLXsYGdukkycapw0piv0a7j//h9PjIOGvceINnefTRr42bJE0M8KLjHOUjt8E86mZDzEpIhyXwbhpsB317tCO1AWlxudOmiAxRYPX/1qR7dyclhqTDI+zTL2V9fk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e7F3wO8o; arc=pass smtp.client-ip=209.85.221.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VzamlGx1"
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-82f68b3aaf7so72423b3a.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 22:08:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e7F3wO8o"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-43cfd96354aso3849342f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 00:18:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776237494; cv=none;
+        d=google.com; s=arc-20240605;
+        b=b8TD02V1ZUF9rxfxj6TimJOE7rBlszAf7fVnQv0rosLenOkwUeJrrfEZh+QT0RMxha
+         1PA1jhfKcfysLotOvH6zLcqR3yywC9e3FEmG9JoxDIB7/udETD6xayX9Clu5uTR9ZZz+
+         Wj+E9x9um8Q8Yn/mDdPSBQOeP93tKjTGmUgg53aeTc76YEIErYPdOq1GKVja7K/BBo8B
+         1zhw823wU2XYLqfsRNPH6GcT2fghIfnOT5E0SKgKBvBv/uh4Zx1UbWaa4TIdcOPIvJH2
+         rlTm7S119dv6tyqJvpPrZS4Xayp3sjPZ2m8NBw4mxzZ5Y+w0CqHevxxUeKzF0caU4uqQ
+         JGqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=2nuKBbGlq7w6y0tHaaXEOwvqGYtxbGC9tRxpbGm9Imo=;
+        fh=LXglLoBjaDUjQbsSahulKOj1tLH0xLZoGhCyMyIwIMw=;
+        b=Bk8lzRelgBArjwpJTSp+HV3TTFrtzE/JxRSQ7sa3KTo4ZnCRYfxZ+G5QKZ7emKBEXR
+         iwWRgZQzs/aOyZ+DPYXAatmIr43kQVubDUDMek3Z+5W1P6eUNPSTTrntVj3eYZoDrsbF
+         7Q7r6WZ+aWwzTSHnpZaJwpHWgJlgF760Eu5c7FNjVbBV3foTyLRPB3B+gJIYK00UQ97L
+         qTGuBhYXkts37fQP0zK702sKArSfoplSsjHDHbaOdjc6B5wnXgpKfruWPGYlM9u/4v3d
+         VsQov3SDzIQc7A1DFhAx/wUv4JCkp1z3SCrbrhU50AIYHxuy7yD+cwaNGngXrJu0i3tX
+         AYAg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776229705; x=1776834505; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eD/sVoyPZ+3rAECULNElpo4ngJXCE777D1kzkyumRTc=;
-        b=VzamlGx1FHnm4FQpEmzOCgrqcyUpYR4vOiyetk0os8/u3SKsDCd6h5vtdwrWYmt0MQ
-         njnhBMTz/9ATuxeMsdMEW2WWcfHKrqfQNowBmh1a/ShDqERhVhwhdFTSqITExitIky1s
-         KUtX5Htj7kFEIDI1/Ldw0jpYEFALKOOcBL20M2TnE2Vp98C/a+/wA/wjObPZc4UHrSi1
-         poROuwJOwnXSxm+TjwyVmuFmlblNPq4/F3W5hY2+6GDFyxokw9bR1v4EhIHP7hqr7QIE
-         j+61sXxeygWXA9jjzujxn+yxBW13pb/NOKRAWL0M7jeZDqL8Fs19SuTo7++XrzVzRP5M
-         WHgw==
+        d=gmail.com; s=20251104; t=1776237494; x=1776842294; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=2nuKBbGlq7w6y0tHaaXEOwvqGYtxbGC9tRxpbGm9Imo=;
+        b=e7F3wO8o3RJ1ckqHPU06zOWFt3FaHTI3wRV3GURsmRbtdQu5HrfwzGfLFsYKpch/+j
+         8G3BO+pUX5Wf3yOF9S8Qml6JvGYKAdGlZ6RMRl+5uPorUnORpXbzvuarStvxB3zqy0im
+         SHZZ7lSVrPsQ0jt23RVD1jQ18cZ5ZcltoVmi8iCL5NEEfSid3gI2rCfSEHo3ugoGZMaD
+         HmXNeakInXSOZ3tD7k+4C5LsQrOg47otv4TqwLWkP0+3+21z+J4+zfUewJA08PKAmQS0
+         JKr0W+bOyLXJo3eREt+oKoLDhcuvy7KYJpJlKX8teZd3Rzgid25ktLXDF4Q2R204wySD
+         Yr9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776229705; x=1776834505;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=eD/sVoyPZ+3rAECULNElpo4ngJXCE777D1kzkyumRTc=;
-        b=iewnCH/gduz60teLwfPG0RkwN8B8TGLDtcA531tPUfVzOC6mYt7X3CM6J4gUt48Ttq
-         RMRtj26+OvSUazlPCZo+UGegFkwk8+NcWnLnAarPWrpZPQmktOMIIEeFHMRetbNlQ+FM
-         Op3docakvVhYz0I+c89i/QeSRRxlePFp41soERuzOm6Sp5qxYGidFcA6kddjQgVR9FoD
-         co1m+Ypb1r84MoFJDs18R1gJGp8FJO7eylUQuvzJTh7zRuh4Xa3BNOhyMu1nvytSkMI/
-         beZi8UCz/lKpQMGk2bWmHFhqQp0GitwMhtqVCDgpPNjqABaRvxCVGNuEIb6aHP0JiPqV
-         AMkQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/b+tS6RqSdfG/IsKXpVThU5AkWSFlYyueMRMMqJLUrJufnf82y2M5XTLB3Q3+ly+kJD2PmbCtBLGM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyBGw3WPWbM3H00jVvR4hnCE7KsSIe+DMYgtARLajvy+EFnK6oE
-	JlnwaxHEMPB5HmZBYthDWYrwlXWFWuxAurNqbW5v2NLGmsWKrvwwroDn
-X-Gm-Gg: AeBDieu+2w5vHLHoP8PTyHnXplMpvnTLZmYJWcWePTMX/66uTmZbx+nQttzypzE+5Zb
-	VDgTSu/P8aGK+CGZucB72ruxPQSATtkgTRuWqHi3zLTfu51/hgjwhWh1F3f90fepUq7mXLb4kxm
-	KiEtdkyx+K4rOOMSHaNVHQSys/tYkrq04/iMoSmZGZ4dnsiiRtIzpLC+LTY1QAQQmEvI100T6y6
-	0dEpw5W9h6wsdI/f6z4h9nEGSod1kPdb/YPMtT5Znc/AUfalZwsRtxjJxSEsWb2eMy3zUU5Qrem
-	63oewjeypnBYzekMBdPTnX81L2ZvAuauwy29a1RaQlw7OCCh5sFDExzF7xRQb2rlWgEpQtzmNKN
-	7JGDM7r+OBEOjGcT5tn3b8cJRtb7uEDLc5pEvR6d76lCgDmqT/pHFwKmpPmHu+0+RGPnzR/5goE
-	0uaMY7Qml2IdYO7kgKNJd4qClE0y0t9tkt3x8kDC+5yaj37iqvyXYMJQ0xC/c=
-X-Received: by 2002:a05:6a00:1ca9:b0:82f:5a27:10c9 with SMTP id d2e1a72fcca58-82f5a271a59mr4065059b3a.51.1776229705114;
-        Tue, 14 Apr 2026 22:08:25 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f67469dc3sm763706b3a.58.2026.04.14.22.08.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 22:08:24 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	sanjayembeddedse@gmail.com,
-	tglx@kernel.org,
-	christophe.jaillet@wanadoo.fr,
-	mingo@kernel.org,
-	nabijaczleweli@nabijaczleweli.xyz,
-	kees@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v6 7/7] iio: ssp_sensors: reuse embedded RX buffer for SPI transfers
-Date: Wed, 15 Apr 2026 10:37:49 +0530
-Message-Id: <20260415050749.3858046-8-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260415050749.3858046-1-sanjayembedded@gmail.com>
-References: <20260415050749.3858046-1-sanjayembedded@gmail.com>
+        d=1e100.net; s=20251104; t=1776237494; x=1776842294;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2nuKBbGlq7w6y0tHaaXEOwvqGYtxbGC9tRxpbGm9Imo=;
+        b=qIBv50iVJpTOEh3vJPsHtcfTIuir9vQi6F3FbWEe30zzgBh7GQwlcFGiT7+/bz8KAs
+         TEegWP5JTc3b8WdUVaOCjBpaZDEIFa9uirveNlSVSMxXZy5+OVvMFgk4dfihT1PBshK7
+         KFb0BIsMjUPXsy5VOBgT//UGSi29aRYVYVe41yMktyFabVr02LDFahrOfuvgmGnsySSx
+         ClfagO2jejgCo/MuhaVoq/ZCqOQtndplr63uqAM5rbMIwAO9PGMLDVtzAfJKcZAiCPe4
+         sMf/Vqr4/3Lm66qpLVE+pYelF2N0ftXmxH7d9ckWryhIPwP7XrjfkVtWZ1AkH7gN/T2g
+         7c/w==
+X-Forwarded-Encrypted: i=1; AFNElJ9qPNLLAqRsorAF82qqyo4uUA27q+jFk78pOLFIRkyUv3HYvrl6UrIwrQOtAsNfVBXmh/BFnl9gPuM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+/c7EI7B2vpJk8R9GtrjyN0I1uXcJCoKDRLYO0D6cxlD1w23t
+	dWhaoyKINUCq2mQwDQFzXeOHvgeV4Hb162B7nINZoB07v+PQA2GmOD9pxRdEb16ShxbZvKhYenn
+	kjPxHGQ5zfAGIJxC+plOuiS2yPzD7Rc8=
+X-Gm-Gg: AeBDievMTiCG0R5uCe+8FP6LvtRuv1KxCCHaTp5mBzFj6OEhpxvOh7GrP5pcHN/OJZJ
+	Zzk3WJGDPm3YohOzOvDqSUT22rxzgjyrGvxHWoCtKbpBOnDWFZjsaHoB6ezWtYcRwF+xJYjvEe0
+	CwbGAOdwsf13fJlxPXtpKfSoyG3GUiGNasoZ6Uj/Iu3yAtFXliOZNnzCT/hiKXp5w8i/ZYoLFH2
+	pDjbGYyTsZ04K70HISmESkjp6KjKztbhdQLMUA2dyMKC0/bF0XqmqH0c3Y5qwV0dkvV+fHX7kst
+	AGrgfL84pTDI2Y4cYzAgfVDFireVMkuEksNd5DFc2Z9vfGQ5jYx68p9/D4OU5cIfx7fssZHiXHs
+	BG8gD4OYRNVrmGhsBnQdsgUr89I7c5pCXpcl3Ywht/dFWxfBPlaTiLCOqLy/sgqkoezfWu2Koxp
+	BnRAvuKm6MAxgC3D/O
+X-Received: by 2002:a05:6000:1ac9:b0:43d:7d24:b51e with SMTP id
+ ffacd0b85a97d-43d7d24b893mr13620760f8f.14.1776237494064; Wed, 15 Apr 2026
+ 00:18:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260411123512.84739-1-joshua.crofts1@gmail.com>
+ <20260411123512.84739-2-joshua.crofts1@gmail.com> <ad4K-K3MpwD3U4F-@ashevche-desk.local>
+ <CALoEA-wikg1aDAfhgHYR10ep8a0Ab+hJ4mAUyAR4nuV4Uysj+g@mail.gmail.com>
+ <ad4oX0Py3T8j9Y7h@ashevche-desk.local> <CALoEA-zbi1VOv86FrU2Skkuota0UGcMyHVJwffyEY7+ZsMSNcw@mail.gmail.com>
+ <ad5zXNdMTxbt1GHS@ashevche-desk.local>
+In-Reply-To: <ad5zXNdMTxbt1GHS@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 15 Apr 2026 09:18:13 +0200
+X-Gm-Features: AQROBzB4RhFtUOA-KA34_X6NSkJKMmJIUrhiZ_fFhqXxMp5KZX-F5S4m5xUEeZo
+Message-ID: <CALoEA-wKJsjyOuVMOAyOVetB=N_E_K8X+85Kg6JVEthX3JWVpQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] iio: frequency: ad9832: remove kernel.h proxy header.
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Tue, 14 Apr 2026 at 19:03, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> Up to you, but that would need to be a separate patch, because it does
+> the opposite to what your patch is doing. And justification is most likely
+> that it's preferred to use linux/ generic over asm/ in the drivers. Or
+> something in those lines...
 
-Avoid allocating a temporary DMA buffer in the interrupt context when
-handling hub-to-AP and AP-to-hub SPI write messages.
+Okay, I'll send it once I get this patch series done.
 
-Replace the dynamically allocated RX buffer with a fixed-size,
-preallocated buffer embedded in the driver structure and reused for all
-SPI receive operations. This removes memory allocation from the
-IRQ path, simplifies lifetime management.
-
-No functional change intended.
-
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
-Changes in v6:
-- Replace dynamically allocated RX buffer with embedded fixed-size buffer
-- Fix struct layout to satisfy DMA alignment constraints comment from David
-- Link to v5: https://lore.kernel.org/all/20260406080852.2727453-1-sanjayembedded@gmail.com/
-Changes in v5:
-- Rebase change on top of latest v5 patch series.
-Changes in v4:
-- Use preallocated buffer and stash a buffer that gets reused each time instead of a fresh allocation.
-- Link to v3: https://lore.kernel.org/all/20260315125509.857195-3-sanjayembedded@gmail.com/
-Changes in v3:
-- prepare series to have all respective cleanup API support for the ssp_sensors following input from Andy Shevchenko
-- Link to v2 https://lore.kernel.org/all/20260311174151.3441429-1-sanjayembedded@gmail.com/
-Changes in v2:
-- split series to individual patch
-- address review comment from Andy Shevchenko
-- Link to v1 https://lore.kernel.org/all/20260310200513.2162018-3-sanjayembedded@gmail.com/
----
- drivers/iio/common/ssp_sensors/ssp.h     |  3 +++
- drivers/iio/common/ssp_sensors/ssp_spi.c | 20 ++------------------
- 2 files changed, 5 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/iio/common/ssp_sensors/ssp.h b/drivers/iio/common/ssp_sensors/ssp.h
-index f649cdecc277..8295bb7062a3 100644
---- a/drivers/iio/common/ssp_sensors/ssp.h
-+++ b/drivers/iio/common/ssp_sensors/ssp.h
-@@ -174,6 +174,7 @@ struct ssp_sensorhub_info {
-  * @pending_list:	pending list for messages queued to be sent/read
-  * @sensor_devs:	registered IIO devices table
-  * @enable_refcount:	enable reference count for wdt (watchdog timer)
-+ * @rx_buf:		buffer to receive SPI data
-  * @header_buffer:	cache aligned buffer for packet header
-  */
- struct ssp_data {
-@@ -221,6 +222,8 @@ struct ssp_data {
- 	struct iio_dev *sensor_devs[SSP_SENSOR_MAX];
- 	atomic_t enable_refcount;
- 
-+	u8 rx_buf[SSP_DATA_PACKET_SIZE];
-+
- 	__le16 header_buffer[SSP_HEADER_BUFFER_SIZE / sizeof(__le16)] __aligned(IIO_DMA_MINALIGN);
- };
- 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-index 92418721ff82..bab84b25edff 100644
---- a/drivers/iio/common/ssp_sensors/ssp_spi.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-@@ -336,7 +336,7 @@ static int ssp_parse_dataframe(struct ssp_data *data, char *dataframe, int len)
- /* threaded irq */
- int ssp_irq_msg(struct ssp_data *data)
- {
--	char *buffer;
-+	char *buffer = data->rx_buf;
- 	u8 msg_type;
- 	int ret;
- 	u16 length, msg_options;
-@@ -380,19 +380,12 @@ int ssp_irq_msg(struct ssp_data *data)
- 			 * but the slave should not send such ones - it is to
- 			 * check but let's handle this
- 			 */
--			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
--			if (!buffer) {
--				ret = -ENOMEM;
--				goto _unlock;
--			}
- 
- 			/* got dead packet so it is always an error */
- 			ret = spi_read(data->spi, buffer, length);
- 			if (ret >= 0)
- 				ret = -EPROTO;
- 
--			kfree(buffer);
--
- 			dev_err(SSP_DEV, "No match error %x\n",
- 				msg_options);
- 
-@@ -425,22 +418,13 @@ int ssp_irq_msg(struct ssp_data *data)
- 		mutex_unlock(&data->pending_lock);
- 		break;
- 	case SSP_HUB2AP_WRITE:
--		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
--		if (!buffer)
--			return -ENOMEM;
--
- 		ret = spi_read(data->spi, buffer, length);
- 		if (ret < 0) {
- 			dev_err(SSP_DEV, "spi read fail\n");
--			kfree(buffer);
- 			break;
- 		}
- 
--		ret = ssp_parse_dataframe(data, buffer, length);
--
--		kfree(buffer);
--		break;
--
-+		return ssp_parse_dataframe(data, buffer, length);
- 	default:
- 		dev_err(SSP_DEV, "unknown msg type\n");
- 		return -EPROTO;
 -- 
-2.34.1
+Kind regards
 
+CJD
