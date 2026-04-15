@@ -1,63 +1,63 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2CCD338939
-	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 05:08:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00D323368A9
+	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 05:08:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776229681; cv=none; b=plmAuABRoOK1ueOm6uXGLC0KFf0GjsGqwyhc9dHD4qQC0R9DeLXTrE4nGt9A3MbAlRK3npP356BkhB4t9lSTmTZAfne148VQ5ICO+msbca0onPAjlBB2HJmXdYyXYJ4XJ3v/xjUvdAPOzRSdJvOmLIc1127yOQfnYeSUDu5Rd+U=
+	t=1776229686; cv=none; b=UA/qBKVCKFEP9y5B8DCMNEc2YWS5tLt/18LDE+JDwjAmZSXFrvNo9Nd28CIh6ZNPm7C6lyY7rMTd78FcgIWDLdGienx/K11CKcCtXt/r2AJusf9FVPwykiHscd5+EbdcjXVVDHjn//iyAA1hhszrRY4m5jbztk9kAIE4ZyU/NIA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776229681; c=relaxed/simple;
-	bh=QXrG+TuFDlDz3tXsO9LNxvG3qjS1y8ULhRPOEGUq1hk=;
+	s=arc-20240116; t=1776229686; c=relaxed/simple;
+	bh=IrfAI15OeYSzF7o8VJ7lq6QuUQJ761yxN1y3FeGgJ6Q=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=F2s2Z3D9KbvAqlOEQ6m7riO5IzHEJISNPtjG9r/ogSwE/UguiLmAm3MQloVY0DxcUqPVKNKQVSyUMtaaxYU7lnw4oa6EiNzdzSWGgw1Ygat2/5Uxcl9GtL1s2jyJUPwClz5OlgIr/tnHr5m8GmwAwfrmarHzmSXndU/mS6+yQBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IhQWAzkY; arc=none smtp.client-ip=209.85.210.173
+	 MIME-Version; b=L0qftRTVJuOOiU2EEcotrHoD/bJsYESZ0AblRXS1+ledWuRqn0HOTvc0zxoatHOjxjtf8Df+AnEojftthA4bsUWeWzw0Wq6BFvNCjEJBkgyw6BgaVbdynKtfytSHtfYtCbppYOJV+3Y0n1AT01fUknnyH4CEyQTCAV2COuCC5sQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g/oshrV9; arc=none smtp.client-ip=209.85.210.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IhQWAzkY"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-82f41fce3e6so1368907b3a.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 22:08:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g/oshrV9"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-82cebbdbdccso3132625b3a.1
+        for <linux-iio@vger.kernel.org>; Tue, 14 Apr 2026 22:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776229680; x=1776834480; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1776229684; x=1776834484; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qYy8AAiohTN8C2YtR+3ofOomrQuUpW2DvTjg+vRZlMA=;
-        b=IhQWAzkYHO9LfedMZDTQ5zWCw/EUnYGqRzQ6KHjPTEUJoul5VBGBFzC0H+eCnG3pKL
-         W5YNvAVh8crz4JeLenhknFXYwPrt8QO7XOyBn0rKpMIphAj9pseMauc1/VJ9FQEajj40
-         kYGHGK3uKV/0cRa39j7qoUwT1QKWNQGsS42oRQ9+M08ps2/EgcQJ3WD5ayY/qchugo3n
-         b6A54ohApP/IWjDUEowVJZ53pnPpMqkXH4buhLFLWbLoPhLBzIbXCTLPuFv7FVWP4xsM
-         cJNX/7Sy8aJ6erHYzEgAKKBIFAYFSyIfjZrtFKgJw1X+ug3KeDlxRUEjwqY/uTVTSAs+
-         Izkg==
+        bh=bWDKafWykqmCst/+PGgYmIJsGhpBN8tnTlfr4qxhHLk=;
+        b=g/oshrV9f6FIlTWrRwABn3EYZ6/sDkDYwboqNEfdFhGkDWGoobCnE0mcqBo4xfzZ4t
+         ScwnDkS8+GPcCA61NTPxcVjy/rdJcdShDDH6dZhoRtsyLA0jnQsJDC9+8JuVu+WDhE+D
+         Plsws/HaJ3GUriQnuqPqoaKo9+YAJdMKHx1OeEjk902JjWyplcBmzBUOV70ZvTGBWM79
+         pF8peWzEONN7xO/t/eC/yCICI4F21Hapvtp0dJWZesS891NcuwctnIinb3uE2WtDKhjc
+         boGaZahVVqZ+VTpHchN6h1NxYuIMYDWm/1U3AdC6DAC5bXMZcIL0zfVdLuqp85YS1mqx
+         DKPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776229680; x=1776834480;
+        d=1e100.net; s=20251104; t=1776229684; x=1776834484;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=qYy8AAiohTN8C2YtR+3ofOomrQuUpW2DvTjg+vRZlMA=;
-        b=MnachPyWJjY5NJjpuZePGw8gSPWztSa6J4+NqydWiPn6GNx/6ZO0AmzNNXXuGdPxby
-         lOZfDCX3sNh/PWpZvAPrEDY8dSO9QZXkBCIXVpgOgtccdMoO6h2UzztAeCP2nr6kpHFa
-         qCbt4VRmep43tJUrkftMcvrJ8eM8WEYLXN71mXR5+ScnGCdlYQi7wDqYirUb33FGKmUn
-         S8q3rkxgC+1GKOs6SR22sfjwNyw042Z6mTvHlmUKOFcKqe1VEPrSP/hNX//IZrpjg5i2
-         NPEsRrclOXxndg4iqKMhYHjS8CRSkvKG/YyFI6v7422q1S5w8hQ4qlcoI4yZ/mkpFq94
-         HkzQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/1hC4W3le8IxBx5wvzTkwdAwLPkuhPJSqpaw0YwUc1rcctX4ijfMqc7R9MtfJGkVoV+nP4FpwtyZg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx+VTHcu50AOgJD78rEC5vLIQ2oUFq3U/KZUME9zwpk9S/pkisM
-	+CIbj5XZR5owYaTlqSdrGXyQhZv/yNutIs1By006odgUS/UnhOv5R1zM
-X-Gm-Gg: AeBDiesm4ZpKr607ve6mEOO5TDFpIirr+y4oiNCnnzNbcux53TBgAtjG200cLu+RWIF
-	F4FJ4Vc40DeN7eGO8/6a/1UKMMOqSjmuUTxGWTsmAX2URPrA22X8RrAgTfTsz6wqG3OIcUBA0jX
-	tZsEhoko5wbtKW6ZFZ0YjFGauiQ7tOlTLUoi96M7Lj1tMCbjiCki6gwv2GOG5WT2568OE4UyRDG
-	TfLhWhEWIcGZzCgtn5VsW8DyGbgSQNaF2mv3ZAbyvquMqwcOZ+FxCw1XMxIG1nj0drhhXI0UaEn
-	jcRnsaQsZ4LVUXdPAl7nea7ySmvxwKWeLkwLkJT9wIQmKo7tZP4DxkZqRIBpVmXIIqVLV2TaEHL
-	XnAqBylejeEEfxhnnT8XJ0BD/cFe6rKdCEgdy6lV5K5o6qdbkzLqKKwSc0C2MnmDdRIYp8Gz1H9
-	RJ+R8JUb7ZBOw1tH3ZftUuOz9XowTw21M0HT18Ekn8akg3xZlat//zBQ3DVEE=
-X-Received: by 2002:a05:6a00:140f:b0:82c:dd31:b844 with SMTP id d2e1a72fcca58-82f0c316a23mr20393930b3a.40.1776229680042;
-        Tue, 14 Apr 2026 22:08:00 -0700 (PDT)
+        bh=bWDKafWykqmCst/+PGgYmIJsGhpBN8tnTlfr4qxhHLk=;
+        b=DbXoF4Sy1++LON0aKZXwySsNmEl3sxDSlYZ7ng4DVElZg2SQmgTE4OG6dcIe7VQbGS
+         2yyy6fv8Z6dZwX6C2R844e2ccgm3WGebZ5s/hWpl9FOd/PNvpt+sKnoBVD3Ghw4drqvg
+         NWRtuZp0lBkdTfXc3P27pRe/5WYzBUpKB8+//K1esOPUAepWw5dxcf+B3zZz8mcme/55
+         yMw0MZgbMAMORpVRF1R+k5Q1O0IAqv6X15nt8iLrG/VTIO0oKeKWsLq12E2qg/lnmB43
+         Ldo4GChBVSZmrN5/aMjn9FQYYW/rflE6bC9uVMqHubwAHwbZXFT6MS4EuMjB6uw6s1J0
+         RbyQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/KytePcsu4GxTwbmst4weWgaaaWuCj5WaMpQcXPLuJphV6iClyb3xMfwoTipEru6GV+gRvC7JLlcI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWRQdWNoxwoA9moh0oStV1Ec7iwyrxbM3lq3N8Subk8dTczDOy
+	WSXB/+5sObqcZdIKJn2sEbczCT+wdPG/Mh2Y3jOTlcnc11leiRJCtCN7
+X-Gm-Gg: AeBDievZreDX1H5z5DnUYrhQUA5xs25EvIHwz5u65TZMSj5VdrV+7RztjfKn1rwEhUI
+	gKSxAtcox+Jd55qAnRUnylzQorghCTpa6n2U9er453ziyL0uxLnfYTsBl00a/k8R2Yi4LXHkJ2d
+	bAfj4jSlUcOwDW4I6YAgvpTuLfgyIhdfywRBGjBlAZT522EBOxxbsBY68WuOx3BFFN1b05Kcd1V
+	ZRGNe1GpWjxiUhLFCwVEYH3PAiEpgB4ihRVXhLYJqG2jnnckcMSPeV11kXuHC6+KXClRwq3TTpJ
+	x+QutOtRYQ6twk3v3HXT/Bx4fnQ8rgedAh1oWvXnKpvSdArUWwJzb08yZs1mZMoYBCLgYEk6NLS
+	m/oDlnv+pq9Qr80WO7lwMheLgfTAYTjpFKsa5fuD9FAnknBPb7ZLiCKSpOxhJfYt73eFDGOlLJV
+	dNETbzsZ6fuRGJ4NfOeFeFPmGWecXSTP3G9X7RJ1wJsgipyrXOiCJxDgbWw+eNa6zsSZRfxw==
+X-Received: by 2002:a05:6a00:bd08:b0:82c:1cd0:2f7e with SMTP id d2e1a72fcca58-82f0d23f825mr16349417b3a.20.1776229684189;
+        Tue, 14 Apr 2026 22:08:04 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f67469dc3sm763706b3a.58.2026.04.14.22.07.56
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f67469dc3sm763706b3a.58.2026.04.14.22.08.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 22:07:59 -0700 (PDT)
+        Tue, 14 Apr 2026 22:08:03 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org
@@ -72,9 +72,9 @@ Cc: dlechner@baylibre.com,
 	kees@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v6 1/7] iio: ssp_sensors: cleanup codestyle warning
-Date: Wed, 15 Apr 2026 10:37:43 +0530
-Message-Id: <20260415050749.3858046-2-sanjayembedded@gmail.com>
+Subject: [PATCH v6 2/7] iio: ssp_sensors: cleanup codestyle check
+Date: Wed, 15 Apr 2026 10:37:44 +0530
+Message-Id: <20260415050749.3858046-3-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260415050749.3858046-1-sanjayembedded@gmail.com>
 References: <20260415050749.3858046-1-sanjayembedded@gmail.com>
@@ -91,28 +91,39 @@ From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Reported by checkpatch:
 FILE: drivers/iio/common/ssp_sensors/ssp_spi.c
 
-WARNING: Prefer __packed over __attribute__((__packed__))
-+} __attribute__((__packed__));
+CHECK: Macro argument '...' may be better as '(...)'
+to avoid precedence issues
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
- drivers/iio/common/ssp_sensors/ssp_spi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/common/ssp_sensors/ssp_spi.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-index 6c81c0385fb5..8c1e15d61db7 100644
+index 8c1e15d61db7..08ed92859be0 100644
 --- a/drivers/iio/common/ssp_sensors/ssp_spi.c
 +++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-@@ -29,7 +29,7 @@ struct ssp_msg_header {
- 	__le16 length;
- 	__le16 options;
- 	__le32 data;
--} __attribute__((__packed__));
-+} __packed;
+@@ -6,7 +6,7 @@
+ #include "ssp.h"
  
- struct ssp_msg {
- 	u16 length;
+ #define SSP_DEV (&data->spi->dev)
+-#define SSP_GET_MESSAGE_TYPE(data) (data & (3 << SSP_RW))
++#define SSP_GET_MESSAGE_TYPE(data) ((data) & (3 << SSP_RW))
+ 
+ /*
+  * SSP -> AP Instruction
+@@ -119,9 +119,9 @@ static inline void ssp_get_buffer(struct ssp_msg *m, unsigned int offset,
+ }
+ 
+ #define SSP_GET_BUFFER_AT_INDEX(m, index) \
+-	(m->buffer[SSP_HEADER_SIZE_ALIGNED + index])
++	((m)->buffer[SSP_HEADER_SIZE_ALIGNED + (index)])
+ #define SSP_SET_BUFFER_AT_INDEX(m, index, val) \
+-	(m->buffer[SSP_HEADER_SIZE_ALIGNED + index] = val)
++	((m)->buffer[SSP_HEADER_SIZE_ALIGNED + (index)] = val)
+ 
+ static void ssp_clean_msg(struct ssp_msg *m)
+ {
 -- 
 2.34.1
 
