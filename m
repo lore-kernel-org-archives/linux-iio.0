@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6910833F360;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F8EB33F5A0;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776246738; cv=none; b=Id9Y+1xD12lXYcBU+dGp54u+g/2Q6wKxat3nVGCtPFGdObpuTCA2wotD341iiH1PpLfcmEZ69iP4EElsv4NCu7+of2j2lCPgRh/Q4bNHX7fUiDVNYYQwegnluH+gNeEh8dSc2+rK/c4q+ro/WQ5wtzY8QK5y3QMdYkPVc8NZ4Jk=
+	t=1776246738; cv=none; b=W1IoysLLE0jsCcWxkKFjoYXgALbxN3CrVknf8uFfkjLonFIdm28pHz5yYTz8OH7DWnbs8hnQ5eetfRoFUPlesIYCtBLmoWYSzeUYDTLTD804XFABBEEcfpD2/kolT7MGBm50OpVLUglHrBEwBhx0MStaSdVm02eUa9zyp/0aOfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776246738; c=relaxed/simple;
-	bh=unUKaotBgd2qq2mXtCY2CK7EaUUEtQ3a+Kh4cMvBRGM=;
+	bh=Gl8BKoBCF2V77XMlkR0lJ8OgLBba8DD++QnrWkI3lII=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=jZiv6jfr9r9sYVT/IlTFJGmsNW6P+S5Y3mr0JsAkB52Q5cFDpXBxNC9or06XaNIp1DpWVB6rxl7jtEbrqFB4V0qooWpHW4prmM7tczqmEPZH+z7iS6SfaWGldPYp4HbdGwQI230+xUKpEIhHZ17J4S2Acf1nsRbt9lySN2pAQkU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EGKMicc9; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=IwhxClVDY7yhdqP3OBDoRIXBhSQBwuBzp0YmudegTwZ+QQrHaWw1+iNZ8jm0suieQmNWQNkza+n/Mad8xvFiJTrGGf3Q2/R0P/9pStAfS3oeAu1p8A/uHzqc4LgUG8e4Zhsv6r2pH7u/wKjPU0j9Kx2NCaGWukllqV4MExzo584=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ie1LDbkp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EGKMicc9"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 362E4C2BCC4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ie1LDbkp"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4650AC2BCF7;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776246738;
-	bh=unUKaotBgd2qq2mXtCY2CK7EaUUEtQ3a+Kh4cMvBRGM=;
+	bh=Gl8BKoBCF2V77XMlkR0lJ8OgLBba8DD++QnrWkI3lII=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=EGKMicc9Tq/VSHx4Emak8f/wnBEe/mDKO7M0S/zanu+AB2vWyu0/yMv/hv5pFuaeM
-	 3eCxMzXJrPxMimcxvAalYHGKm+cw8x8A5uRm7PsA4jdoh/XwPXWbslwpBgNrCoN18n
-	 qN1JIkIKAu2Md/wS48M/3N+6zkxhn76eqx9kRg0rr8wOlRT524ODAe3UjSETI8Yfzy
-	 yS4YckxGXahpLh3CjpoX3RgznBUjy06KExFelU/kt1q/rq250R0EDD2QjnpQogXgXr
-	 LrNlX4YFmSAxZKL5hi4b9+f08qirdwEF4f/QzXAzDXJxSCK9KSwd01pwIAoGLikYW8
-	 15/7RPbscjF9w==
+	b=ie1LDbkpoq6T+IBYz6e6VprVz3HvKJMffyhC3wTDqWXvur7ZaTIugMcuYb98ruZoI
+	 VmkUSVbtg5nXQzHzdft8kL0ZdZplCeRDSpn8qzg3aoeUE5q91OxIGAoaHanL0ayyqT
+	 Uq63Q+OjahPRwRQ2eQuRSnEzNgPpJ+XOW4kGXBRv2mRO2jjzroWZ5f6/VrZhpzG+Cy
+	 kUQANWXHXRkYAo+jxi2M50yZMT3sV9PUVWhKhgeaLuNjJcCz/uEUhnphGRP6t3t/rJ
+	 uj5iAAX8CnO2aDhF3qzd+JkByJN9HpgQ31VZpxrIcZTul0UxPDl1P8pS+ykbsG4Bke
+	 QlnAgyy7TVaAQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D810F41984;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E42DF41987;
 	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 15 Apr 2026 10:51:48 +0100
-Subject: [PATCH v10 05/11] iio: core: add decimal value formatting into
- 64-bit value
+Date: Wed, 15 Apr 2026 10:51:49 +0100
+Subject: [PATCH v10 06/11] iio: test: iio-test-format: add test case for
+ decimal format
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260415-adf41513-iio-driver-v10-5-df61046d5457@analog.com>
+Message-Id: <20260415-adf41513-iio-driver-v10-6-df61046d5457@analog.com>
 References: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
 In-Reply-To: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -60,11 +60,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776246736; l=5995;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776246736; l=6713;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=lY64PRQ5Ca0xe9W1hLlAEr5MdEHp4nUoXKfx41OisA4=;
- b=ljJjCeJNuW38vUFalEDEqqHPLWd1VeNTZ7JbiqXkgk5OE+cTsHIq4td6uXSik+JyNXtJMxsWy
- orR9QE8A8laBE4EGI2GcVuN3g6UWZpqe5VptFixDo97RZFhAJe0HRQh
+ bh=z+7GfhAI5DqW1tt8XtRcWYlfgn90H7P6U7JnxowjBIY=;
+ b=rzyoEcqfHx+2Y4y396typJDQ9QONd3E96mwvAahpoIc3dSaMHaNtU09iPg5lrhob3cfYl7M4D
+ QbzkLl6up6BAT+mZDZFOJvnZaZidXuQoZagdnBaIIuq+2UOC4+Fr5fP
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -74,183 +74,159 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
-defines the representation of fixed decimal point values into a single
-64-bit number. This new format increases the range of represented values,
-allowing for integer parts greater than 2^32, as bits are not "wasted"
-in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
-IIO_VAL_INT_PLUS_NANO. Helper macros are created to compose and decompose
-64-bit decimals into integer values used in IIO formatting interfaces,
-which creates consistency and avoid error-prone manual assignments when
-using wordpart macros. When doing the parsing, kstrtodec64() is used with
-the scale defined by the specific decimal format type.
+Add iio_test_iio_format_value_decimal_64() kunit test case for decimal
+value formatting, exploring different scales types. Also, the same
+iio_val_s64_array_populate() macro used to populate local array is used in
+iio_test_iio_format_value_integer_64().
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-core.c | 46 +++++++++++++++++++++++++++++++++--------
- include/linux/iio/types.h       | 33 +++++++++++++++++++++++++++++
- 2 files changed, 70 insertions(+), 9 deletions(-)
+ drivers/iio/test/iio-test-format.c | 97 +++++++++++++++++++++++++++++---------
+ 1 file changed, 75 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index bd6f4f9f4533..24bc1577fdac 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -19,6 +19,7 @@
- #include <linux/idr.h>
- #include <linux/kdev_t.h>
- #include <linux/kernel.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/poll.h>
-@@ -26,7 +27,6 @@
- #include <linux/sched.h>
- #include <linux/slab.h>
- #include <linux/wait.h>
--#include <linux/wordpart.h>
- 
- #include <linux/iio/buffer.h>
- #include <linux/iio/buffer_impl.h>
-@@ -707,8 +707,25 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
- 	case IIO_VAL_CHAR:
- 		return sysfs_emit_at(buf, offset, "%c", (char)vals[0]);
- 	case IIO_VAL_INT_64:
--		tmp2 = (s64)((((u64)vals[1]) << 32) | (u32)vals[0]);
-+		tmp2 = iio_val_s64_from_array(vals);
- 		return sysfs_emit_at(buf, offset, "%lld", tmp2);
-+	case IIO_VAL_DECIMAL64_MILLI:
-+	case IIO_VAL_DECIMAL64_MICRO:
-+	case IIO_VAL_DECIMAL64_NANO:
-+	case IIO_VAL_DECIMAL64_PICO:
-+	{
-+		s64 frac;
-+		unsigned int scale = type - IIO_VAL_DECIMAL64_BASE;
-+
-+		tmp2 = div64_s64_rem(iio_val_s64_from_array(vals),
-+				     int_pow(10, scale), &frac);
-+		if (tmp2 == 0 && frac < 0)
-+			return sysfs_emit_at(buf, offset, "-0.%0*lld", scale,
-+					     abs(frac));
-+		else
-+			return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2,
-+					     scale, abs(frac));
-+	}
- 	default:
- 		return 0;
- 	}
-@@ -977,7 +994,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
+diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
+index 872dd8582003..a2a9b4360c92 100644
+--- a/drivers/iio/test/iio-test-format.c
++++ b/drivers/iio/test/iio-test-format.c
+@@ -200,56 +200,108 @@ static void iio_test_iio_format_value_multiple(struct kunit *test)
+ static void iio_test_iio_format_value_integer_64(struct kunit *test)
  {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret, fract_mult = 100000;
-+	int type, ret, fract_mult = 100000, dec_scale = 0;
- 	int integer, fract = 0;
- 	long long integer64;
- 	bool is_char = false;
-@@ -988,9 +1005,11 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 	if (!indio_dev->info->write_raw)
- 		return -EINVAL;
+ 	int values[2];
+-	s64 value;
+ 	char *buf;
+ 	int ret;
  
--	if (indio_dev->info->write_raw_get_fmt)
--		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
--			this_attr->c, this_attr->address)) {
-+	if (indio_dev->info->write_raw_get_fmt) {
-+		type = indio_dev->info->write_raw_get_fmt(indio_dev,
-+							  this_attr->c,
-+							  this_attr->address);
-+		switch (type) {
- 		case IIO_VAL_INT:
- 			fract_mult = 0;
- 			break;
-@@ -1006,12 +1025,19 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 		case IIO_VAL_CHAR:
- 			is_char = true;
- 			break;
-+		case IIO_VAL_DECIMAL64_MILLI:
-+		case IIO_VAL_DECIMAL64_MICRO:
-+		case IIO_VAL_DECIMAL64_NANO:
-+		case IIO_VAL_DECIMAL64_PICO:
-+			dec_scale = type - IIO_VAL_DECIMAL64_BASE;
-+			fallthrough;
- 		case IIO_VAL_INT_64:
- 			is_64bit = true;
- 			break;
- 		default:
- 			return -EINVAL;
- 		}
-+	}
+ 	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
  
- 	if (is_char) {
- 		char ch;
-@@ -1020,12 +1046,14 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 			return -EINVAL;
- 		integer = ch;
- 	} else if (is_64bit) {
--		ret = kstrtoll(buf, 0, &integer64);
-+		if (dec_scale)
-+			ret = kstrtodec64(buf, dec_scale, &integer64);
-+		else
-+			ret = kstrtoll(buf, 0, &integer64);
- 		if (ret)
- 			return ret;
+-	value = 24;
+-	values[0] = lower_32_bits(value);
+-	values[1] = upper_32_bits(value);
++	iio_val_s64_array_populate(24, values);
+ 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "24\n");
  
--		fract = upper_32_bits(integer64);
--		integer = lower_32_bits(integer64);
-+		iio_val_s64_decompose(integer64, &integer, &fract);
- 	} else {
- 		ret = __iio_str_to_fixpoint(buf, fract_mult, &integer, &fract,
- 					    scale_db);
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 4e3099defc1d..52285adf46ef 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -7,6 +7,7 @@
- #ifndef _IIO_TYPES_H_
- #define _IIO_TYPES_H_
+-	value = -24;
+-	values[0] = lower_32_bits(value);
+-	values[1] = upper_32_bits(value);
++	iio_val_s64_array_populate(-24, values);
+ 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-24\n");
  
-+#include <linux/wordpart.h>
- #include <uapi/linux/iio/types.h>
+-	value = 0;
+-	values[0] = lower_32_bits(value);
+-	values[1] = upper_32_bits(value);
++	iio_val_s64_array_populate(0, values);
+ 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0\n");
  
- enum iio_event_info {
-@@ -34,6 +35,38 @@ enum iio_event_info {
- #define IIO_VAL_FRACTIONAL_LOG2 11
- #define IIO_VAL_CHAR 12
+-	value = UINT_MAX;
+-	values[0] = lower_32_bits(value);
+-	values[1] = upper_32_bits(value);
++	iio_val_s64_array_populate(UINT_MAX, values);
+ 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "4294967295\n");
  
-+#define IIO_VAL_DECIMAL64_BASE		100
-+#define IIO_VAL_DECIMAL64_MILLI		(IIO_VAL_DECIMAL64_BASE + 3)
-+#define IIO_VAL_DECIMAL64_MICRO		(IIO_VAL_DECIMAL64_BASE + 6)
-+#define IIO_VAL_DECIMAL64_NANO		(IIO_VAL_DECIMAL64_BASE + 9)
-+#define IIO_VAL_DECIMAL64_PICO		(IIO_VAL_DECIMAL64_BASE + 12)
+-	value = -((s64)UINT_MAX);
+-	values[0] = lower_32_bits(value);
+-	values[1] = upper_32_bits(value);
++	iio_val_s64_array_populate(-((s64)UINT_MAX), values);
+ 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-4294967295\n");
+ 
+-	value = LLONG_MAX;
+-	values[0] = lower_32_bits(value);
+-	values[1] = upper_32_bits(value);
++	iio_val_s64_array_populate(LLONG_MAX, values);
+ 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854775807\n");
+ 
+-	value = LLONG_MIN;
+-	values[0] = lower_32_bits(value);
+-	values[1] = upper_32_bits(value);
++	iio_val_s64_array_populate(LLONG_MIN, values);
+ 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036854775808\n");
+ }
+ 
++static void iio_test_iio_format_value_decimal_64(struct kunit *test)
++{
++	int values[2];
++	char *buf;
++	int ret;
 +
-+#define iio_val_s64_compose(_val0, _val1)				\
-+	({ (s64)((((u64)(_val1)) << 32) | (u32)(_val0)); })
++	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
 +
-+#define iio_val_s64_from_array(_vals)					\
-+	({								\
-+		const int *_arr = (const int *)(_vals);			\
-+		s64 _dec64 = iio_val_s64_compose(_arr[0], _arr[1]);	\
-+									\
-+		_dec64;							\
-+	})
++	/* DECIMAL64_MILLI: positive >= 1, value 1.234 */
++	iio_val_s64_array_populate(1234, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.234\n");
 +
-+#define iio_val_s64_decompose(_dec64, _val0, _val1)			\
-+	do {								\
-+		s64 _tmp64 = (s64)(_dec64);				\
-+									\
-+		*(_val0) = lower_32_bits(_tmp64);			\
-+		*(_val1) = upper_32_bits(_tmp64);			\
-+	} while (0)
++	/* DECIMAL64_MICRO: positive >= 1, value 3.141592 */
++	iio_val_s64_array_populate(3141592, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "3.141592\n");
 +
-+#define iio_val_s64_array_populate(_dec64, _vals)			\
-+	do {								\
-+		int *_arr = (int *)(_vals);				\
-+									\
-+		iio_val_s64_decompose((_dec64), &_arr[0], &_arr[1]);	\
-+	} while (0)
++	/* DECIMAL64_MILLI: positive < 1, value 0.042 */
++	iio_val_s64_array_populate(42, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.042\n");
 +
- enum iio_available_type {
- 	IIO_AVAIL_LIST,
- 	IIO_AVAIL_RANGE,
++	/* DECIMAL64_MILLI: negative <= -1, value -1.234 */
++	iio_val_s64_array_populate(-1234, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-1.234\n");
++
++	/* DECIMAL64_MILLI: negative > -1, value -0.123 */
++	iio_val_s64_array_populate(-123, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.123\n");
++
++	/* DECIMAL64_MILLI: zero */
++	iio_val_s64_array_populate(0, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000\n");
++
++	/* DECIMAL64_NANO: value 1.000000001 */
++	iio_val_s64_array_populate(1000000001, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.000000001\n");
++
++	/* DECIMAL64_MICRO: large value using upper 32 bits */
++	iio_val_s64_array_populate(5000000000000042LL, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "5000000000.000042\n");
++
++	/* limits */
++	iio_val_s64_array_populate(LLONG_MAX, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372.036854775807\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036.854775807\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854.775807\n");
++
++	iio_val_s64_array_populate(LLONG_MIN, values);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372.036854775808\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036.854775808\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036854.775808\n");
++}
++
+ static struct kunit_case iio_format_test_cases[] = {
+ 		KUNIT_CASE(iio_test_iio_format_value_integer),
+ 		KUNIT_CASE(iio_test_iio_format_value_fixedpoint),
+@@ -257,6 +309,7 @@ static struct kunit_case iio_format_test_cases[] = {
+ 		KUNIT_CASE(iio_test_iio_format_value_fractional_log2),
+ 		KUNIT_CASE(iio_test_iio_format_value_multiple),
+ 		KUNIT_CASE(iio_test_iio_format_value_integer_64),
++		KUNIT_CASE(iio_test_iio_format_value_decimal_64),
+ 		{ }
+ };
+ 
 
 -- 
 2.43.0
