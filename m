@@ -1,81 +1,45 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-244106.protonmail.ch (mail-244106.protonmail.ch [109.224.244.106])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F44A332918
-	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 11:21:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8214E342524
+	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 11:26:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776252064; cv=none; b=B2FZGTJ/LoG3Wz9iJob2acrzxp0rVMmfgrzJOHMcRj75Di5zhwzJ9/Q7MAws1VaeoRWirSlCBzmTu+UbkelnCyh8GqAIyXH0c0cLSL09dq/DXLBYnm7jU6krF8L6y06fBSXe3hZ3W0sqqXZJddArgNYr28bZM9N5KOOWmMHr3sk=
+	t=1776252384; cv=none; b=HZYLnFN22/SWmAgSOc+wdKGIqnBqNC1cfdI8uYWG9iE45GyYxa1JQ3CB162gr9fezKfLYAwaP19blrOUi/mWMDKU78nnVavrcVPIWyK3hQpEbOZeAzRURBaH2siM/2RSJjETDiYxUQ8RiS7N41IoJQHAtAepD1sGympYORmUwz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776252064; c=relaxed/simple;
-	bh=4q8s68gE50AUTBX5ByZ5704etDStoIxQttjAftpTluo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=c/Lr5LQMs8M0unIrgsV4iNgpjGuifqffY46O54mEzwQ3wK3DIDZRF6Je9TUV6erqzAKA/Fa7xAX1KZMGigEOf+7SeyvVObPQMfIQBG7OV0Ckx3TLA0D+97WlK6D1VDlmkEpN0evux3y+OP8MJEy4b+nzwmGyGir/Uy8bNb3zVXw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PGFwD6wo; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776252384; c=relaxed/simple;
+	bh=/xMMw1Qd5SM52H0mQuA5dqekWMfR325nIEShNlC7UDM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UTCXG+IPX/x46wuqLbEGZwhZqt/2xQeI2t9itOKZiAQjmidK8eOox/znizxb8+rlrhaifSGykU1qjKaxqNLDsqfNilrb3pvE+HSszmjL1Yh2zVASI8jKLKvfKDz5VVStKHugRSRv9w6pgDAXP+Zw4lQqJN7bXelCyGJHxTSIptA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ciziks.com; spf=pass smtp.mailfrom=ciziks.com; dkim=pass (2048-bit key) header.d=ciziks.com header.i=@ciziks.com header.b=LO9UYgCp; arc=none smtp.client-ip=109.224.244.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ciziks.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ciziks.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PGFwD6wo"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-671a2f4fd28so4211979a12.3
-        for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 04:21:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776252062; x=1776856862; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7lgH8IHB2BEbMC4PzGbxkkl5jh/6dQ/P8CyFJN1sen8=;
-        b=PGFwD6wojQRAyyCzzQsTxBSLIfxt0ti8snXgSf4NQ3KPlJwhfBnHYWfb8cQhnHslo5
-         P9Mgm4+RUSrJzrBQcGd60OQAjaZJAFyhQFKpgsyofAuyXupPawg4cFtKPiZA3zxbjT/0
-         blritS1PFYRqLPamtw/oEai/iyEGxxavNa3sLOtX+Frz/YHbU/8FdEtBUeCdKMGy9U1G
-         lUdCHTVGrvDrLEYqQmddTamZWHZfs98vdj/VdWW7j3KnUtMck2hQKqWwfiqRF9EVh3xA
-         lw35tLJylhCX7Y/nD2IzwIUtG27Ka+xQ/KSmcVDuZL+sjYY/e2gipmhNtPvEj1XcXArv
-         3zcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776252062; x=1776856862;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7lgH8IHB2BEbMC4PzGbxkkl5jh/6dQ/P8CyFJN1sen8=;
-        b=ZgbDenEGo2IV3be+xTh+HttguXcrzTdlUsAIR3hRbTTSwrRE7aDw20zaSeff7WRyc2
-         DRkSI5yQ/tbZFIhuRSDgunEY5zYpVktLzRG6v6B6zEU9hUDZAQkn5ZIdnYUZhMskvanr
-         7QQG0llvwayraekv4uAUMy070yijBMi1jt9/m8j/xEzkXpM43jB6sLBX6yN6AifBUN3b
-         70Boga2m+K/ZZCeoB2T0iFbbSJTm+od9hcETGLVkQMGfyZ+pWS/ygtpFl9KM3LvfjaTH
-         xfqBxlObSD6hynyUl5qt+OEV5zRrYtL+thIxPALzq7eo7wbiL6ZnGIEeh2FFe7CEmTx/
-         85eQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8OxFG7VERd67Pp3qtEjJY+AO0Y6DW+ADId3aN1etEyAl6sUwO+dBLUPIde14CYq4QmGBOm46eTL1Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzI4Wk/Rc20NecOhqM90cBnJpeOYT0I7SFWnP0s3gUDxfRfOClq
-	aFc+FbEcnyySy9osDq/mS2FGiAcw3KAT0XowUH2WnsTQgD3Yl2xsTR/Bre+Sy3oNubE=
-X-Gm-Gg: AeBDietH0fY2bOBCF71yt4XjjpD357zcS6l4BoaKD+vrIEfaa1148jegoYuHXQDz4jJ
-	tDiQvtM7YqqWweNjz0ijVgp9tOStdlE706Bl+MQHFBvy0ClG0EeitL3g588CCgGvsrJ+QbHjdVX
-	mdw8HQUaUVH9G61d9e/efYuxa5m+AqGqPwGZwtComd/zBT1mvbQyp4jPgRx/yen0eoDJZlhVSkr
-	Ps9XxJGQAiVOvSmJ0DCDjuLEJFRGjE1v9FCFZtrHGo3pXdqg7Nng7P69au5ZRkvJsBLyDeluqq+
-	Zj3URB5OEQyH65Xvz73+Y0N6Upk2bfwO1FDXqxgnWjA1XngEgIJ4+Lc9b7u+yp4rgG7y0z7BGKO
-	j2YYKmP4eFmlE1vaDHnoHLyIEK1oHCeHpP4BKnQYSN3sME0jX12SRHDVBWUrFuXKIccxIBdDFgz
-	GyMtkSG0+x8sFFcbhHR1s42K1gz6aIY3E7Tz0IcrrNSaTvKCJdiZc6YGqXMTJuWFftS2PL+9HG4
-	56aOVKVzqqWp4cDYu579FNC7RGQOlNGL/IjPxU4ZPO4D+I1AbwaneNd3B8yIwbO6tqC3XCgH2y9
-	Jrq/xNsQWPrFqLIwR0luPV3g/Rmrd1M2u6NWd8ZbnK1RFZhIKis2hr9KoRO53kbfeYvUrLySU1g
-	H82K3niUtFZjiQwzamep7OOIjjHy6LI48Jt1BwaXZr+RMFiT3FihAu9BdQdCfRtSRvoT+Ex4yRT
-	JC4A==
-X-Received: by 2002:a05:6402:1d4e:b0:66e:5662:2112 with SMTP id 4fb4d7f45d1cf-6707950b1b9mr10446575a12.12.1776252061547;
-        Wed, 15 Apr 2026 04:21:01 -0700 (PDT)
-Received: from cs-280612103108-default.europe-west4-a.c.od237066db22328bb-tp.internal (8.159.12.34.bc.googleusercontent.com. [34.12.159.8])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-67237d78933sm325485a12.6.2026.04.15.04.21.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Apr 2026 04:21:01 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
+	dkim=pass (2048-bit key) header.d=ciziks.com header.i=@ciziks.com header.b="LO9UYgCp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ciziks.com;
+	s=protonmail; t=1776252372; x=1776511572;
+	bh=8hk6Z5BZiy08dUMJOA0QX1KJPb6mSJoNL4bVnWxdHkU=;
+	h=From:To:Cc:Subject:Date:Message-ID:From:To:Cc:Date:Subject:
+	 Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=LO9UYgCpQNNlLQSIZxaVF1Uh+OhBsHk3m/PaJOp2IUXlch9pLleQsy2KTRMj4hbC9
+	 wyPUj4Ed2S87QTMZpdEduZesGtsaXzKcg/NYJvfR9QxFE2b7g3PWQP9TLdU9AZzynl
+	 gXne9H7LBMMMHCL5QzLqI+fRDAWz1jA6sybdWt4LRayJjHsSqGA/RwQi3ZdLQETEOe
+	 lMhAxuMbXdz3gVcITNRMhNcZFdGGWbh2D8O5fhiv3rugrlksiUKJs4RkvPCOOKJg0a
+	 7lR9T7+LMgG4Z1hzsnivZP1M7mpiUeUi7yjTOqW3gPluDdRHNcO1pkOlY+UsK51AiC
+	 cNrlBu4o950/g==
+X-Pm-Submission-Id: 4fwf3L2YMHz2Schl
+From: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
 	jic23@kernel.org,
-	gregkh@linuxfoundation.org
-Cc: dlechner@baylibre.com,
+	dlechner@baylibre.com,
 	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Joshua Crofts <joshua.crofts1@gmail.com>
-Subject: [PATCH v2] iio: frequency: ad9834: clean up includes
-Date: Wed, 15 Apr 2026 11:20:30 +0000
-Message-ID: <20260415112030.1324-1-joshua.crofts1@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	andy@kernel.org
+Cc: Felipe Ribeiro de Souza <felipers@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: adc: ad7280a: use cleanup helpers guard() and scoped_guard() for mutex locking
+Date: Wed, 15 Apr 2026 08:25:48 -0300
+Message-ID: <20260415112602.3938-1-lucas@ciziks.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -84,52 +48,173 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Cleanup include headers by removing proxy kernel.h
-header and unnecessary list.h, interrupt.h, workqueue.h
-and slab.h headers. Reordered remaining drivers
-alphabetically.
+Replace open-coded mutex_lock/unlock pairs with the cleanup-based
+guard() and scoped_guard() helpers in ad7280a_write_thresh(),
+ad7280_show_balance_timer(), ad7280_store_balance_sw(),
+ad7280_store_balance_timer() and ad7280_read_raw().
 
-Verified using IWYU.
+This removes the need for the err_unlock label and explicit
+mutex_unlock() calls, as the lock is now automatically released
+when the function returns or the guarded scope exits, regardless
+of the exit path.
 
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Signed-off-by: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
+Co-developed-by: Felipe Ribeiro de Souza <felipers@usp.br>
+Signed-off-by: Felipe Ribeiro de Souza <felipers@usp.br>
 ---
-v2:
- - dropped patches from from previous iteration of
-   patch series
- - removed additional unused headers
- - returned bits.h as driver only uses BIT() macro
+ drivers/iio/adc/ad7280a.c | 68 +++++++++++++++++----------------------
+ 1 file changed, 29 insertions(+), 39 deletions(-)
 
- drivers/staging/iio/frequency/ad9834.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index d339d5e8e0..465b2fa7a4 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -5,18 +5,15 @@
-  * Copyright 2010-2011 Analog Devices Inc.
-  */
+diff --git a/drivers/iio/adc/ad7280a.c b/drivers/iio/adc/ad7280a.c
+index ba12a3796e2b..904ef815a5f1 100644
+--- a/drivers/iio/adc/ad7280a.c
++++ b/drivers/iio/adc/ad7280a.c
+@@ -496,7 +496,7 @@ static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
+ 	devaddr = chan->address >> 8;
+ 	ch = chan->address & 0xFF;
  
-+#include <linux/bits.h>
- #include <linux/clk.h>
--#include <linux/interrupt.h>
--#include <linux/workqueue.h>
- #include <linux/device.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
--#include <linux/spi/spi.h>
--#include <linux/regulator/consumer.h>
- #include <linux/err.h>
- #include <linux/module.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
-+#include <linux/sysfs.h>
+-	mutex_lock(&st->lock);
++	scoped_guard(mutex, &st->lock) {
+ 	if (readin)
+ 		st->cb_mask[devaddr] |= BIT(ch);
+ 	else
+@@ -505,7 +505,7 @@ static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
+ 	ret = ad7280_write(st, devaddr, AD7280A_CELL_BALANCE_REG, 0,
+ 			   FIELD_PREP(AD7280A_CELL_BALANCE_CHAN_BITMAP_MSK,
+ 				      st->cb_mask[devaddr]));
+-	mutex_unlock(&st->lock);
++	}
+ 
+ 	return ret ? ret : len;
+ }
+@@ -519,10 +519,10 @@ static ssize_t ad7280_show_balance_timer(struct iio_dev *indio_dev,
+ 	unsigned int msecs;
+ 	int ret;
+ 
+-	mutex_lock(&st->lock);
++	scoped_guard(mutex, &st->lock) {
+ 	ret = ad7280_read_reg(st, chan->address >> 8,
+ 			      (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG);
+-	mutex_unlock(&st->lock);
++	}
+ 
+ 	if (ret < 0)
+ 		return ret;
+@@ -551,11 +551,11 @@ static ssize_t ad7280_store_balance_timer(struct iio_dev *indio_dev,
+ 	if (val > 31)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&st->lock);
+-	ret = ad7280_write(st, chan->address >> 8,
+-			   (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG, 0,
+-			   FIELD_PREP(AD7280A_CB_TIMER_VAL_MSK, val));
+-	mutex_unlock(&st->lock);
++	scoped_guard(mutex, &st->lock) {
++		ret = ad7280_write(st, chan->address >> 8,
++					(chan->address & 0xFF) + AD7280A_CB1_TIMER_REG, 0,
++					FIELD_PREP(AD7280A_CB_TIMER_VAL_MSK, val));
++	}
+ 
+ 	return ret ? ret : len;
+ }
+@@ -737,7 +737,8 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+ 	if (val2 != 0)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
 +
- #include <asm/div64.h>
+ 	switch (chan->type) {
+ 	case IIO_VOLTAGE:
+ 		value = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
+@@ -748,22 +749,20 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+ 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+ 					   1, value);
+ 			if (ret)
+-				break;
++				return ret;
+ 			st->cell_threshhigh = value;
+-			break;
++			return 0;
+ 		case IIO_EV_DIR_FALLING:
+ 			addr = AD7280A_CELL_UNDERVOLTAGE_REG;
+ 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+ 					   1, value);
+ 			if (ret)
+-				break;
++				return ret;
+ 			st->cell_threshlow = value;
+-			break;
++			return 0;
+ 		default:
+-			ret = -EINVAL;
+-			goto err_unlock;
++			return -EINVAL;
+ 		}
+-		break;
+ 	case IIO_TEMP:
+ 		value = (val * 10) / 196; /* LSB 19.6mV */
+ 		value = clamp(value, 0L, 0xFFL);
+@@ -773,31 +772,23 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
+ 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+ 					   1, value);
+ 			if (ret)
+-				break;
++				return ret;
+ 			st->aux_threshhigh = value;
+-			break;
++			return 0;
+ 		case IIO_EV_DIR_FALLING:
+ 			addr = AD7280A_AUX_ADC_UNDERVOLTAGE_REG;
+ 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+ 					   1, value);
+ 			if (ret)
+-				break;
++				return ret;
+ 			st->aux_threshlow = value;
+-			break;
++			return 0;
+ 		default:
+-			ret = -EINVAL;
+-			goto err_unlock;
++			return -EINVAL;
+ 		}
+-		break;
+ 	default:
+-		ret = -EINVAL;
+-		goto err_unlock;
++		return -EINVAL;
+ 	}
+-
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-
+-	return ret;
+ }
  
- #include <linux/iio/iio.h>
+ static irqreturn_t ad7280_event_handler(int irq, void *private)
+@@ -885,14 +876,13 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		mutex_lock(&st->lock);
+-		if (chan->address == AD7280A_ALL_CELLS)
+-			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
+-		else
+-			ret = ad7280_read_channel(st, chan->address >> 8,
+-						  chan->address & 0xFF);
+-		mutex_unlock(&st->lock);
+-
++		scoped_guard(mutex, &st->lock) {
++			if (chan->address == AD7280A_ALL_CELLS)
++				ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
++			else
++				ret = ad7280_read_channel(st, chan->address >> 8,
++					chan->address & 0xFF);
++		}
+ 		if (ret < 0)
+ 			return ret;
+ 
 -- 
 2.47.3
 
