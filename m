@@ -1,125 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C53F43451CC;
-	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776246738; cv=none; b=m0hbKjIDsxbJuHnOZZ2EjEBa4IxXhZUVpdWDZPNuwUfkjj86ZwyNULh8IEm+07auMmPTkCgYlbyzzp4/24CfJtTLqoDaYmO03TFW8XvVnwc7m8p7LsKS43rL2dpaoDeqtHIzFsC3RjITx9m/4oPHJIiWUIhEEG82RH+VAbMIk+Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776246738; c=relaxed/simple;
-	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ubkXOpKYXhrjQLkJ+3rnSXtvFzc7lcZ1QCNb0mpvyOo7J7lhl390U5DIrW7sRyfHNvDk6N+pnlOHrR+ZNbdXxUaDE5BxtaPdiQQ/bKwDIF0QcR/9KaCQMhZKzvy4mD+ieYdweDIOqNAwVxPMETchz5FEUEun43NcdhnajtJaC3o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kZDAG51Q; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1616F33DEC8
+	for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 09:53:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776246828; cv=pass; b=m+JFkUpgQncIZZnEeAWSruAP/iHM9YrKs+I0/d7BKck6pGcXnFY2+b3G6PRqEON4hxVhW2Wh7SNy2vkFhs7F+58NNRR8ci2kJ/Uc2CtwwpjzHR2b7c/L4DNPa6puVDYCNdUI0kObL/JOpOY6568DFOXyEVfI1vP2MKHPZ9J+82U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776246828; c=relaxed/simple;
+	bh=64pWA8gqgt0wzz7YiTG8HCy7q3pqFAxMuGk0ywsSwTQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=O96ux51lKRU2bd/KAYmpAezDGVV/CB6q4a6WIk3ToY3lYqzAp5NkxBRb1K+v+tsGXrkjqv7ChNQjhI5qN9YDKkYrlN9o49Uj31tdh0WAwqoABG1pKFwDUyWHw7bZOf9jDs+MAjqY7hXC3YXcKQLGkmS2BU07iabQb9YAeP1gvLg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gp6LDQyz; arc=pass smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kZDAG51Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 98C11C4AF0F;
-	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776246738;
-	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=kZDAG51Q60gMOKz0hRK+Oirn8cMJ9phYP8/be5On9P0opQ+6oCQ+2LsBSFXjuP3ys
-	 0bl5zN2Bkd0ya9YKb2ZGOFzff/aEEYHkArE1oNHaQPZpLxF6YxVg5ydIiaoXIkLL9L
-	 HaKFAl2e5Zypn/Hi27MvgbZEFtF8Jv69h/R6me5usKPmhfgJ+hhfwEkSScuL0FwwRV
-	 BPOkpiYQMGmKjyxyAESlyO6NEB5KVmWnvzW9mdgBDzBAXC6MIvB7mWAnDI6Ndd+blE
-	 vtTno4OLXLFXrr9Y1Oc6NNFurE/vUOPWR/+eokxSLjd3Ee219AUOoKTQAjPYIXJmOi
-	 6fTtUyNZn6F3Q==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D521F4198D;
-	Wed, 15 Apr 2026 09:52:18 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 15 Apr 2026 10:51:54 +0100
-Subject: [PATCH v10 11/11] Documentation: ABI: testing: add common ABI file
- for iio/frequency
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gp6LDQyz"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-43d6fbd0954so2753259f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 15 Apr 2026 02:53:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776246825; cv=none;
+        d=google.com; s=arc-20240605;
+        b=dWq53yVS1BqClD13zGSaKcRqg9eUy+yiU5TMsBckNQWKDYPH4HZQZyoNtrsPTMvEb4
+         o8rO4tmPpIh3egPaNLDx3g/seTifuYsoZiHVmRxlN99y/eVHIi2mk9nGMKFkuDzm4dFO
+         hrhu2DXGXSidBhhRSfmSYDVIW27VZ8LpRU5aTx5TYSBfNKG2zztG73bRzBJbpPH3QL59
+         JB84PEt3NhoPK5qPANn3HtJqkXqZb8snG2ZKPwZJZuUUeydZ7GKMQQmMF3JoUwhk+G4g
+         CraShg3zCX1V2/yOTY3LUubAg3ci/v71tOi5/AAJrSJ45BYSG1BMK5YC0bYwjRWGHIC0
+         /hmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=e8FrQl1GORWoRsVAUx4h50KKCzvWu9t45dZie8lyW6s=;
+        fh=KljSYrDJwMhbbTt6pqJc5oYiXJXdGUT8QCdj1l18GvM=;
+        b=FNjgSBJgftojWKrgvuqWW9/+zJ0G2n5+vHemUz6ZSRR4HG0BvgyrTSgkZUkl4poVWh
+         lrYfQDoUsTFLrcCIxB53iey5PU/ygmSJ8bHKZFh3EgYlCD8SnGHUCU84SdHablyy3Ntw
+         kfCzR257RN/iQQwCgd8MIsNujTe0keERkl9ijQUr2GMXTHiI8rvLExnY1T969NWzBBHX
+         MBvg1lQyh9B0CZUC4njtdNj9P7NgX+U0YvT8WVMfwqKZljv3Vl7kGx8iDbq5QCmXt836
+         wFQ1HFjXvrB9CD/+So6eLs7FKjpfITyIKrFEhYxPktCEX2FGU4uDjmMZBHbepqNivjar
+         nz8A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776246825; x=1776851625; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=e8FrQl1GORWoRsVAUx4h50KKCzvWu9t45dZie8lyW6s=;
+        b=gp6LDQyz39uOi6ZuFMSbNifyK9BIE+35bbM9ZOmk+oXd4cs6pM/rRqIynNgbG4C1E6
+         q3qKEn8rk/E4e153NhMu3oyvsf9jL65Snfi3EJNL4akLh5B6Cq0DlCk27EE8Ud5g6oIz
+         QxAhBdfQ4LUbW/8MQs6SLry1aVBGv8Mv14ZbRh6O65xxPU7TV9PovVnUjfbHynpkKmdb
+         KyccljqRqcsDs53+Ryo0TUO+WF+fEOL+ForytZ1YLMVWnSpDtjraYsWyiqrZGbYViHYH
+         ku7PPanUgk9FbfXRWwlABpVdojWIB8nr7FdmKKRF8SfDZ8LXcPigmEXJhJUbTQ3p9d0K
+         Hw3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776246825; x=1776851625;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=e8FrQl1GORWoRsVAUx4h50KKCzvWu9t45dZie8lyW6s=;
+        b=MfJhVzSY6/d1RBTya8j8TznRB6WJcUlUTSIbRHQtGiiZd++uBmSHbXkTR43IQpEcah
+         /vfpAGGEbYI3ihILlqu0pbmvp/2U5izK0fo6lxlQE5onHaGZL3bbGSP933kfocSdKxvi
+         gfcBPhrEji5Ag0/FANTnfISiiNlFUetZoYHNdq8o1xbPwhVKSQ8PtqQyDYfUpDLapmY2
+         sizqazaOAds1ZmAh3D+q7cnVTm/iqo7uQo0ZJ6gweWmp5+BLvUr/acl1qAkAN67X/Y/u
+         e7Oyk74YX5o1x0P0WPVjt54S8bhThOGDAPgcHlejcDm5BdWvlDus84ACN9LvIAbSKijj
+         Pnew==
+X-Forwarded-Encrypted: i=1; AFNElJ+qsjjsKeIywBANrZp83hKH32iNpHx2+ISXTSrQs7vA/AZqYgICrtWYzMjNdo28qG2QUx5bQvpgJMc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz8PblGzCxgL4iNvIHoiwCRR2WVPGgqT8HCMz+JN8mT+Y/ec/1i
+	LeDf5KVPlcNhLWdyYgfnlumYHbOQyETqVRMJ6/5u6tYUF8oYD6xHM8wYT22zmBrS/VPkd4YyS6O
+	nF3fA9J+ri1inQaf3ftjRHH8gXtY72HU=
+X-Gm-Gg: AeBDieuLvICRUYQbjDw/hpV349jl70l/D8MMuKrY2GeOl9GzQ3Jqc1RD2kQB+W+I32c
+	dPyVQfCPmmWCYH5vjuwshufH9kDpu8MZ2PwXuH8CxqOBkR9hF1x3ZZye6kiuyC33DnowXuZOEHy
+	NG5slPiVyIJpSwXYjPx2iE/UXjao/L9li+KzCRkdzWqGeP7GsL1Ijh5n6UbzUUOC1G8uxkGJx6H
+	vEZ5VRhRPoaR+SfWBzAhgjpvokVVbTy9IYM9WtQVRXom2IwTlHrUXlkIldMDp/OCOrqNe/z8LBN
+	yzgo6Zx+ut4cD85L0rtcnQ6Sq/AzRqwZn2v60RI1qsS7VfxoJEfwlj9WMTVgXHRTyCjvPndBw+j
+	dxCTMRlC0+CsgB/OLHLW2X+27FrIPIfdvpruVjlk8WVW7bNuYNFjLxRLAkPvb2j7jp7Xstw8mPZ
+	V2ye/yrWeUd1JcFD9xevA53m8Rmeg=
+X-Received: by 2002:a05:6000:25c8:b0:43d:7dcf:ae26 with SMTP id
+ ffacd0b85a97d-43d7dcfb1f9mr14007527f8f.34.1776246825171; Wed, 15 Apr 2026
+ 02:53:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260415-adf41513-iio-driver-v10-11-df61046d5457@analog.com>
-References: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
-In-Reply-To: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
- Steven Rostedt <rostedt@goodmis.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
- Sergey Senozhatsky <senozhatsky@chromium.org>, 
- Shuah Khan <skhan@linuxfoundation.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776246736; l=2210;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=OhPLAamt4hmbeCatH+/iPHehi/HIntujTnWeOacWI/A=;
- b=jVKPi+ySD9retpXx91x/DPGFm6uXP4JfoI+dsgC86R+zCxB8G4gYqZIbIelYX9DptQHEjSFuR
- 3NadidVcBXmDJ34fTjrL5jyjAsTSN3BDUi0k5kA0aFDixAiMt6ou+7/
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+References: <20260415080812.1284-1-joshua.crofts1@gmail.com>
+ <20260415080812.1284-2-joshua.crofts1@gmail.com> <ad9SzwJDwRNldv_z@ashevche-desk.local>
+In-Reply-To: <ad9SzwJDwRNldv_z@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 15 Apr 2026 11:53:44 +0200
+X-Gm-Features: AQROBzCFhXFv_nN56n8S4WhxYSp-dtwkJjw5Ad513tzAZnMniuen8n29OrvXZnM
+Message-ID: <CALoEA-xy6WApV+ZUavnEipTKiAezYkXMwiE++TjtHuxkVdR1mw@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] iio: frequency: ad9832: remove kernel.h proxy header.
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Wed, 15 Apr 2026 at 10:56, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> > Checked with IWYU.
+>
+> We have a (recently new) tag: Assisted-by or so. Can we use it here?
 
-Add ABI documentation file for PLL/DDS devices with frequency_resolution
-sysfs entry attribute used by both ADF4350 and ADF41513.
-
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- Documentation/ABI/testing/sysfs-bus-iio-frequency         | 11 +++++++++++
- Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 | 10 ----------
- 2 files changed, 11 insertions(+), 10 deletions(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-new file mode 100644
-index 000000000000..1ce8ae578fd6
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-@@ -0,0 +1,11 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
-+KernelVersion:	6.20
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Stores channel Y frequency resolution/channel spacing in Hz for PLL
-+		devices. The given value directly influences the operating mode when
-+		fractional-N synthesis is required, as it derives values for
-+		configurable modulus parameters used in the calculation of the output
-+		frequency. It is assumed that the algorithm that is used to compute
-+		the various dividers, is able to generate proper values for multiples
-+		of channel spacing.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-index 1254457a726e..76987a119feb 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-@@ -1,13 +1,3 @@
--What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
--KernelVersion:	3.4.0
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Stores channel Y frequency resolution/channel spacing in Hz.
--		The value given directly influences the MODULUS used by
--		the fractional-N PLL. It is assumed that the algorithm
--		that is used to compute the various dividers, is able to
--		generate proper values for multiples of channel spacing.
--
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_refin_frequency
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
+BTW, I thought that the Assisted-by tag only applied to AI coding assistants,
+per the documentation.
 
 -- 
-2.43.0
+Kind regards
 
-
+CJD
