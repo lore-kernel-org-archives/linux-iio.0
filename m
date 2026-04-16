@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18EB638C2A3;
-	Thu, 16 Apr 2026 09:18:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47F0D39A05F;
+	Thu, 16 Apr 2026 09:18:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776331132; cv=none; b=uVTsdcqIem99T6ub9NKdWNlWgzDYE+jftR5QrHVXK1/jnvS2Fb89Lagrsn0CQJPB4SjY9uNcAFDCbNzQGUIpNcqZb402wb+8Fnmfk4E7XMcdZT9vD2YbQmmNk0hRZi6RZH006jYs1fa6+M2pTy92qsCla3tIxQC/7TUgzdjOYxI=
+	t=1776331132; cv=none; b=UGhasKSpNLuE43IG3L9+lomdtJ+Rg0+6Yscd6e9iuyZDY3VdRkwWbkdLMJGcLm8V5fV+2fhAvdPdeQjXn/IDARbSFrclkggXhythV6rVjiaMgvIMlGTfTNKCtO1XcuNcHja6qSHM0jYF6lr/2TwSi9w7qKne/VGVOU7ku4+zyFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776331132; c=relaxed/simple;
-	bh=bzEwSJMPKsXyvI//s9/x28DJqejy79/b5QiDMUs+dx8=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=EwWHOWeswuuBGg3bOFyyjT4NtPYll2SeEuAiNc3OcIrzqflxWraRy4EJubnDkx8GjbZ2HA0lB3lv5cw+yopjkg+dcN7VsJZpRYPG0Kx/VpulgNwpZK0Pizus+9cjIf7aUtxnRQEooaAz+I+uZb5J2iHaLZhCM2iway3mWGAK+Lc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vx+/wVrG; arc=none smtp.client-ip=10.30.226.201
+	bh=1RFSjV/KoHdG1vc0zOdMqnodO+soE2e8L2HtgCilC/E=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=WGa+RxVCgqlMaicThm50vvjciKtuXVLYoYbh1v8ppPdlTIWxPzT8w1diRwH3tci2J5E+p+yLrbiCpqiyzL8zSOLiJigEfy9aK73d+vp6w2Vhq8ZgWHWmsiPXVxq66k0aeOt4Jesaj+6HhRcgVF725w03qJTF1RG9IF7ZDI/EghY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cbg9+KGj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vx+/wVrG"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B2162C2BCAF;
-	Thu, 16 Apr 2026 09:18:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cbg9+KGj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 011C0C2BCF6;
+	Thu, 16 Apr 2026 09:18:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776331131;
-	bh=bzEwSJMPKsXyvI//s9/x28DJqejy79/b5QiDMUs+dx8=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=Vx+/wVrGGBRzl0ywj1C3w1+8Sx/60RlF24TlHivzSJ+6um8CDQqTtIbiBXDWR5fgt
-	 BfMZNYVDO8u0tAdRAc4ii6r4UJ8lLVtYLpDjx+JXhcOxPZyd0ONb2GvUI2ycCVweS1
-	 8HBOEHcYNvvbfUwaRJYZV0kpVorjiPs3MN2PYnCHHqhPHjoicrNzLqKin5d5KcGrwd
-	 iibT14qA1t9sebPBG1QAYgs9OxZrNzhgjNwyv8LLIEvuHV1xRd7EYHNq8KiVIUumPc
-	 qytzzfRL38H3uQkHG0fC9Gk4BdWsSBlbfY0OUd8wJSLtDtbo4dLQNp9FMTE/e3JKrS
-	 FvM1awFNrZ5hA==
+	s=k20201202; t=1776331132;
+	bh=1RFSjV/KoHdG1vc0zOdMqnodO+soE2e8L2HtgCilC/E=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=cbg9+KGjkWAr10AdkLQYXT/jdgTMuXG7+UzUmEeDb363jEaWhnGDRjz9FG3P2GMZN
+	 ZpwgT65lxD5P/9wRp4OHVLwYjPvWFNh0eQ316a/00JI7irrnT+q3MylxEVqTXq1N8o
+	 k67hCLucW9+MqZar1GlX+4rIu/n80ZPGIG62opdRT8QDA4ZlD9xYi2nfRdhd0GgACK
+	 U5cak52/2ZHRC8cRErYUU8scW2/ix+WYVQK6Dn/4BjfaJk4NMfCPidKs6KrsTzkdrd
+	 jJ4JsR9W8aeTDMJEGfPPF/b3PcL3US2WQmel+YkP6WMLnYhXB8cG8WYLCJNKuHIozj
+	 fg+5H2SmUXPjw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5706F8A14A;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91E3F8A145;
 	Thu, 16 Apr 2026 09:18:51 +0000 (UTC)
 From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Subject: [PATCH v8 0/6] iio: adc: ad4691: add driver for AD4691
- multichannel SAR ADC family
-Date: Thu, 16 Apr 2026 12:18:45 +0300
-Message-Id: <20260416-ad4692-multichannel-sar-adc-driver-v8-0-c415bd048fa3@analog.com>
+Date: Thu, 16 Apr 2026 12:18:48 +0300
+Subject: [PATCH v8 3/6] iio: adc: ad4691: add triggered buffer support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,13 +40,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAHap4GkC/43QwWrDMAwG4FcpPs/DluXY2WnvMXZQbKU1pMlwu
- rBR8u5zCmMZuRidfmE+Sb6LmXPiWbyc7iLzkuY0jSX4p5MIFxrPLFMsWYCCRhkFkiI2Lcjr53B
- L24uRBzlTLv0gY04LZ+k8Y0SMgB2IAn1k7tPXY8jbe8mXNN+m/P2Yueit+8vbGn7RUkljGoCWf
- AzBvdJIw3R+DtNVbP4CO1OrKhOKGduu88SdZX00zd40VaYpZodRY/SatNcHE3cm1O2JxVQWgla
- 2lKODafemqzJtMbXunW8jo+v8wWz+TFR1tzfF7AlIabIuIB9MtzfbKtNt/8nG2Yixh2D/meu6/
- gCvh4ufzQIAAA==
-X-Change-ID: 20260302-ad4692-multichannel-sar-adc-driver-78e4d44d24b2
+Message-Id: <20260416-ad4692-multichannel-sar-adc-driver-v8-3-c415bd048fa3@analog.com>
+References: <20260416-ad4692-multichannel-sar-adc-driver-v8-0-c415bd048fa3@analog.com>
+In-Reply-To: <20260416-ad4692-multichannel-sar-adc-driver-v8-0-c415bd048fa3@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
@@ -63,14 +58,13 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
  linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org, 
- Radu Sabau <radu.sabau@analog.com>, 
- Conor Dooley <conor.dooley@microchip.com>
+ Radu Sabau <radu.sabau@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776331127; l=16406;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776331127; l=23834;
  i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=bzEwSJMPKsXyvI//s9/x28DJqejy79/b5QiDMUs+dx8=;
- b=GBpa8FzaVXFC9aqRxUuQeK9yv5CnGtACdMUosU5x7pZyt9MxRDm/wXVjC0jDRDoLrP4JpfuZ7
- nzD5SKm0ql/B9j2auItqZ0NiJ1afecTbM6FJ6CZtQcD4p8wLtD07fvc
+ bh=6WvvRyJG06yp8+r2MfuKaLHJ0vm9HtSlYrZETVC9Qk4=;
+ b=OA0U+YpbISbJXcN5XwOtfToaifIE9ZVWRNxkeW3p27rqbyewT4Yb+bABDZHIKQVRPcq5smaXN
+ jPZNGuL9oM0DmUrEfsJTL5v6Mzex8ZCIWZ5BZ6PempDJKRjbdsJssYN
 X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
  pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
 X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
@@ -78,294 +72,773 @@ X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
 X-Original-From: Radu Sabau <radu.sabau@analog.com>
 Reply-To: radu.sabau@analog.com
 
-This series adds support for the Analog Devices AD4691 family of
-high-speed, low-power multichannel successive approximation register
-(SAR) ADCs with an SPI-compatible serial interface.
+From: Radu Sabau <radu.sabau@analog.com>
 
-The family includes:
-  - AD4691: 16-channel, 500 kSPS
-  - AD4692: 16-channel, 1 MSPS
-  - AD4693: 8-channel, 500 kSPS
-  - AD4694: 8-channel, 1 MSPS
+Add buffered capture support using the IIO triggered buffer framework.
 
-The devices support two operating modes, auto-detected from the device
-tree:
-  - CNV Burst Mode: external PWM drives CNV independently of SPI;
-                    DATA_READY on a GP pin signals end of conversion
-  - Manual Mode: CNV tied to SPI CS; each SPI transfer reads
-                  the previous conversion result and starts the
-                  next (pipelined N+1 scheme)
+CNV Burst Mode: the GP pin identified by interrupt-names in the device
+tree is configured as DATA_READY output. The IRQ handler stops
+conversions and fires the IIO trigger; the trigger handler executes a
+pre-built SPI message that reads all active channels from the AVG_IN
+accumulator registers and then resets accumulator state and restarts
+conversions for the next cycle.
 
-A new driver is warranted rather than extending ad4695: the AD4691
-data path uses an accumulator-register model — results are read from
-AVG_IN registers, with ACC_MASK, ADC_SETUP, DEVICE_SETUP, and
-GPIO_MODE registers controlling the sequencer — none of which exist
-in AD4695. CNV Burst Mode (PWM drives CNV independently of SPI) and
-Manual Mode (pipelined N+1 transfers) also have no equivalent in
-AD4695's command-embedded single-cycle protocol.
+Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
+reads the previous result and starts the next conversion (pipelined
+N+1 scheme). At preenable time a pre-built, optimised SPI message of
+N+1 transfers is constructed (N channel reads plus one NOOP to drain
+the pipeline). The trigger handler executes the message in a single
+spi_sync() call and collects the results. An external trigger (e.g.
+iio-trig-hrtimer) is required to drive the trigger at the desired
+sample rate.
 
-The series is structured as follows:
-  1/6 - DT bindings (YAML schema) and MAINTAINERS entry
-  2/6 - Initial driver: register map via custom regmap callbacks,
-        IIO read_raw/write_raw, both operating modes, single-channel
-        reads via internal oscillator (Autonomous Mode)
-  3/6 - Triggered buffer support: IRQ-driven (DATA_READY on a GP pin
-        selected via interrupt-names) for CNV Burst Mode; external IIO
-        trigger for Manual Mode to handle the pipelined N+1 SPI protocol
-  4/6 - SPI Engine offload support: DMA-backed high-throughput
-        capture path using the SPI offload subsystem
-  5/6 - Per-channel oversampling ratio support for CNV Burst Mode
-  6/6 - Driver documentation (Documentation/iio/ad4691.rst)
+Both modes share the same trigger handler and push a complete scan —
+one u16 slot per channel at its scan_index position, followed by a
+timestamp — to the IIO buffer via iio_push_to_buffers_with_ts().
 
-Datasheets:
-  https://www.analog.com/en/products/ad4691.html
-  https://www.analog.com/en/products/ad4692.html
-  https://www.analog.com/en/products/ad4693.html
-  https://www.analog.com/en/products/ad4694.html
+The CNV Burst Mode sampling frequency (PWM period) is exposed as a
+buffer-level attribute via IIO_DEVICE_ATTR.
 
 Signed-off-by: Radu Sabau <radu.sabau@analog.com>
 ---
-Changes in v8:
-- dt-bindings: add commit message note explaining why four separate
-  compatible strings are required (channel count and max rate both
-  differ between variants);
-- initial driver: sizeof(tx) instead of literal 2 in ad4691_reg_read;
-  U8_MAX/U16_MAX instead of 0xFF/0xFFFF in ad4691_reg_write
-- initial driver: extract ad4691_samp_freq_start() helper
-- initial driver: fix regulator model — vdd-supply (external 1.8V,
-  internal LDO disabled) and ldo-in-supply (feeds internal LDO) are
-  mutually exclusive; add vdd-supply to binding and driver
-- initial driver: add comment in ad4691_reset explaining why
-  devm_reset_control_get_optional_exclusive_deasserted() cannot be
-  used (datasheet requires ≥300 µs reset pulse)
-- initial driver: REF_CTRL and OSC_FREQ_REG: regmap_update_bits /
-  regmap_assign_bits → regmap_write (reserved bits are 0 at reset)
-- initial driver: use dev instead of &spi->dev in devm_iio_device_alloc
-- triggered buffer: scan_tx: add __aligned(IIO_DMA_MINALIGN);
-  scan struct: IIO_DECLARE_DMA_BUFFER_WITH_TS(__be16, vals, 16)
-- triggered buffer: full memset of scan_xfers and scan_tx in both
-  preenable functions; move buffer-dma.h / buffer-dmaengine.h to
-  commit 4; spi_optimize_message fail path: return ret directly in
-  cnv_burst_buffer_preenable; reduce devm_iio_trigger_alloc wrapping
-- SPI offload: drop AD4691_OFFLOAD_BITS_PER_WORD; use local
-  bpw = channels[0].scan_type.realbits; num_channels: ARRAY_SIZE - 1
-- SPI offload: rename offload_state.spi → .offload; remove spurious
-  STD_SEQ_CONFIG write from cnv_burst_offload predisable; extract
-  local acc_mask variable for ACC_MASK_REG write
-- SPI offload: sampling_frequency_store: IIO_DEV_ACQUIRE_DIRECT_MODE
-  for auto-release; remove explicit iio_device_release_direct calls
-- oversampling: in_voltageN_sampling_frequency now represents the
-  effective output rate (osc_freq / osr[N]), matching ad4695
-- oversampling: in_voltageN_sampling_frequency_available computed
-  dynamically from the channel's current OSR; only oscillator entries
-  divisible by osr[N] shown as effective rates; list becomes sparser
-  as OSR increases, capping at max_rate / osr[N]
-- oversampling: writing sampling_frequency snaps down to the largest
-  oscillator entry ≤ freq * osr[N] that is divisible by osr[N],
-  guaranteeing integer read-back; writing oversampling_ratio stores
-  the new depth only — target_osc_freq_Hz unchanged; the two
-  attributes are orthogonal
-- oversampling: ad4691_write_osc_freq() called from
-  ad4691_enter_conversion_mode() after manual mode early return,
-  covering all CNV burst buffer enable paths
-- oversampling: (osr + 1) oscillator period wait in single_shot_read
-  (osr for accumulation, +1 pipeline margin)
-- docs: new commit — Documentation/iio/ad4691.rst, userspace-facing
-  only; oversampling section describes effective-rate SF semantics;
-  LDO supply section corrected (vdd-supply vs ldo-in-supply)
-- Link to v7: https://lore.kernel.org/r/20260409-ad4692-multichannel-sar-adc-driver-v7-0-be375d4df2c5@analog.com
+ drivers/iio/adc/Kconfig  |   2 +
+ drivers/iio/adc/ad4691.c | 537 +++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 524 insertions(+), 15 deletions(-)
 
-Changes in v7:
-- Fix CNV burst triggered-buffer preenable: the state-reset value
-  transfer had tx_buf assigned the return value of cpu_to_be16()
-  (an integer) instead of a pointer to a buffer, which would cause
-  a kernel oops on buffer enable; extend scan_tx[] from 17 to 18
-  entries to hold the extra slot and fix the pointer assignment
-- Extend memset in ad4691_cnv_burst_buffer_preenable to cover the
-  two state-reset transfer slots (previously left with stale data
-  across buffer enable/disable cycles if the active channel count
-  changed)
-- Fix format specifier %u -> %lu for NSEC_PER_SEC in
-  sampling_frequency_show (NSEC_PER_SEC is unsigned long on 32-bit)
-- Fix missing iio_device_release_direct() on spi_offload_trigger_-
-  validate() error path in sampling_frequency_store
-- Correct SPI offload commit message: the implementation uses 16-bit
-  SPI frames (bits_per_word=16, len=2), not 32-bit; storagebits
-  remains 16 (not promoted to 32); there is no shift=16 for manual
-  mode; ad4691_manual_channels[] hides IIO_CHAN_INFO_OVERSAMPLING_-
-  RATIO (not applicable in manual mode), not encodes shift=16
-- Link to v6: https://lore.kernel.org/r/20260403-ad4692-multichannel-sar-adc-driver-v6-0-fa2a01a57c4e@analog.com
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 3685a03aa8dc..d498f16c0816 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -142,6 +142,8 @@ config AD4170_4
+ config AD4691
+ 	tristate "Analog Devices AD4691 Family ADC Driver"
+ 	depends on SPI
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	select REGMAP
+ 	help
+ 	  Say yes here to build support for Analog Devices AD4691 Family MuxSAR
+diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
+index 61b5f74205af..98c079e8ded3 100644
+--- a/drivers/iio/adc/ad4691.c
++++ b/drivers/iio/adc/ad4691.c
+@@ -5,16 +5,20 @@
+  */
+ #include <linux/array_size.h>
+ #include <linux/bitfield.h>
+-#include <linux/bitops.h>
++#include <linux/bitmap.h>
+ #include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+ #include <linux/device/devres.h>
++#include <linux/dmaengine.h>
+ #include <linux/err.h>
++#include <linux/interrupt.h>
+ #include <linux/limits.h>
+ #include <linux/math.h>
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
++#include <linux/property.h>
++#include <linux/pwm.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/reset.h>
+@@ -22,7 +26,12 @@
+ #include <linux/units.h>
+ #include <linux/unaligned.h>
+ 
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
+ 
+ #define AD4691_VREF_uV_MIN			2400000
+ #define AD4691_VREF_uV_MAX			5250000
+@@ -31,6 +40,9 @@
+ #define AD4691_VREF_3P3_uV_MAX			3750000
+ #define AD4691_VREF_4P096_uV_MAX		4500000
+ 
++#define AD4691_CNV_DUTY_CYCLE_NS		380
++#define AD4691_CNV_HIGH_TIME_NS			430
++
+ #define AD4691_SPI_CONFIG_A_REG			0x000
+ #define AD4691_SW_RESET				(BIT(7) | BIT(0))
+ 
+@@ -38,6 +50,7 @@
+ #define AD4691_CLAMP_STATUS1_REG		0x01A
+ #define AD4691_CLAMP_STATUS2_REG		0x01B
+ #define AD4691_DEVICE_SETUP			0x020
++#define AD4691_MANUAL_MODE			BIT(2)
+ #define AD4691_LDO_EN				BIT(4)
+ #define AD4691_REF_CTRL				0x021
+ #define AD4691_REF_CTRL_MASK			GENMASK(4, 2)
+@@ -45,13 +58,18 @@
+ #define AD4691_OSC_FREQ_REG			0x023
+ #define AD4691_OSC_FREQ_MASK			GENMASK(3, 0)
+ #define AD4691_STD_SEQ_CONFIG			0x025
++#define AD4691_SEQ_ALL_CHANNELS_OFF		0x00
+ #define AD4691_SPARE_CONTROL			0x02A
+ 
++#define AD4691_NOOP				0x00
++#define AD4691_ADC_CHAN(ch)			((0x10 + (ch)) << 3)
++
+ #define AD4691_OSC_EN_REG			0x180
+ #define AD4691_STATE_RESET_REG			0x181
+ #define AD4691_STATE_RESET_ALL			0x01
+ #define AD4691_ADC_SETUP			0x182
+ #define AD4691_ADC_MODE_MASK			GENMASK(1, 0)
++#define AD4691_CNV_BURST_MODE			0x01
+ #define AD4691_AUTONOMOUS_MODE			0x02
+ /*
+  * ACC_MASK_REG covers both mask bytes via ADDR_DESCENDING SPI: writing a
+@@ -61,6 +79,8 @@
+ #define AD4691_ACC_DEPTH_IN(n)			(0x186 + (n))
+ #define AD4691_GPIO_MODE1_REG			0x196
+ #define AD4691_GPIO_MODE2_REG			0x197
++#define AD4691_GP_MODE_MASK			GENMASK(3, 0)
++#define AD4691_GP_MODE_DATA_READY		0x06
+ #define AD4691_GPIO_READ			0x1A0
+ #define AD4691_ACC_STATUS_FULL1_REG		0x1B0
+ #define AD4691_ACC_STATUS_FULL2_REG		0x1B1
+@@ -84,19 +104,23 @@ enum ad4691_ref_ctrl {
+ 	AD4691_VREF_5P0   = 4,
+ };
+ 
+-struct ad4691_chip_info {
++struct ad4691_channel_info {
+ 	const struct iio_chan_spec *channels;
+-	const char *name;
+ 	unsigned int num_channels;
++};
++
++struct ad4691_chip_info {
++	const char *name;
+ 	unsigned int max_rate;
++	const struct ad4691_channel_info *sw_info;
+ };
+ 
+ #define AD4691_CHANNEL(ch)						\
+ 	{								\
+ 		.type = IIO_VOLTAGE,					\
+ 		.indexed = 1,						\
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
+-				    | BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++				      BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+ 		.info_mask_separate_available =				\
+ 				      BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+ 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE),	\
+@@ -106,6 +130,7 @@ struct ad4691_chip_info {
+ 			.sign = 'u',					\
+ 			.realbits = 16,					\
+ 			.storagebits = 16,				\
++			.endianness = IIO_BE,				\
+ 		},							\
+ 	}
+ 
+@@ -126,6 +151,7 @@ static const struct iio_chan_spec ad4691_channels[] = {
+ 	AD4691_CHANNEL(13),
+ 	AD4691_CHANNEL(14),
+ 	AD4691_CHANNEL(15),
++	IIO_CHAN_SOFT_TIMESTAMP(16),
+ };
+ 
+ static const struct iio_chan_spec ad4693_channels[] = {
+@@ -137,6 +163,17 @@ static const struct iio_chan_spec ad4693_channels[] = {
+ 	AD4691_CHANNEL(5),
+ 	AD4691_CHANNEL(6),
+ 	AD4691_CHANNEL(7),
++	IIO_CHAN_SOFT_TIMESTAMP(8),
++};
++
++static const struct ad4691_channel_info ad4691_sw_info = {
++	.channels = ad4691_channels,
++	.num_channels = ARRAY_SIZE(ad4691_channels),
++};
++
++static const struct ad4691_channel_info ad4693_sw_info = {
++	.channels = ad4693_channels,
++	.num_channels = ARRAY_SIZE(ad4693_channels),
+ };
+ 
+ /*
+@@ -163,38 +200,43 @@ static const int ad4691_osc_freqs_Hz[] = {
+ 	[0xF] = 1250,
+ };
+ 
++static const char * const ad4691_gp_names[] = { "gp0", "gp1", "gp2", "gp3" };
++
+ static const struct ad4691_chip_info ad4691_chip_info = {
+-	.channels = ad4691_channels,
+ 	.name = "ad4691",
+-	.num_channels = ARRAY_SIZE(ad4691_channels),
+ 	.max_rate = 500 * HZ_PER_KHZ,
++	.sw_info = &ad4691_sw_info,
+ };
+ 
+ static const struct ad4691_chip_info ad4692_chip_info = {
+-	.channels = ad4691_channels,
+ 	.name = "ad4692",
+-	.num_channels = ARRAY_SIZE(ad4691_channels),
+ 	.max_rate = 1 * HZ_PER_MHZ,
++	.sw_info = &ad4691_sw_info,
+ };
+ 
+ static const struct ad4691_chip_info ad4693_chip_info = {
+-	.channels = ad4693_channels,
+ 	.name = "ad4693",
+-	.num_channels = ARRAY_SIZE(ad4693_channels),
+ 	.max_rate = 500 * HZ_PER_KHZ,
++	.sw_info = &ad4693_sw_info,
+ };
+ 
+ static const struct ad4691_chip_info ad4694_chip_info = {
+-	.channels = ad4693_channels,
+ 	.name = "ad4694",
+-	.num_channels = ARRAY_SIZE(ad4693_channels),
+ 	.max_rate = 1 * HZ_PER_MHZ,
++	.sw_info = &ad4693_sw_info,
+ };
+ 
+ struct ad4691_state {
+ 	const struct ad4691_chip_info *info;
+ 	struct regmap *regmap;
++	struct spi_device *spi;
++
++	struct pwm_device *conv_trigger;
++	int irq;
+ 	int vref_uV;
++	u32 cnv_period_ns;
++
++	bool manual_mode;
+ 	bool refbuf_en;
+ 	bool ldo_en;
+ 	/*
+@@ -202,8 +244,45 @@ struct ad4691_state {
+ 	 * atomicity of consecutive SPI operations.
+ 	 */
+ 	struct mutex lock;
++	/*
++	 * Per-buffer-enable lifetime resources:
++	 * Manual Mode - a pre-built SPI message that clocks out N+1
++	 *		 transfers in one go.
++	 * CNV Burst Mode - a pre-built SPI message that clocks out 2*N
++	 *		    transfers in one go.
++	 */
++	struct spi_message scan_msg;
++	/* max 16 + 1 NOOP (manual) or 2*16 + 2 (CNV burst). */
++	struct spi_transfer scan_xfers[34];
++	/*
++	 * CNV burst: 16 AVG_IN addresses + state-reset address + state-reset
++	 * value = 18.  Manual: 16 channel cmds + 1 NOOP = 17.
++	 */
++	__be16 scan_tx[18] __aligned(IIO_DMA_MINALIGN);
++	/*
++	 * Scan buffer: one BE16 slot per active channel, plus timestamp.
++	 * DMA-aligned because scan_xfers point rx_buf directly into vals[].
++	 */
++	IIO_DECLARE_DMA_BUFFER_WITH_TS(__be16, vals, 16);
+ };
+ 
++/*
++ * Configure the given GP pin (0-3) as DATA_READY output.
++ * GP0/GP1 → GPIO_MODE1_REG, GP2/GP3 → GPIO_MODE2_REG.
++ * Even pins occupy bits [3:0], odd pins bits [7:4].
++ */
++static int ad4691_gpio_setup(struct ad4691_state *st, unsigned int gp_num)
++{
++	unsigned int bit_off = gp_num % 2;
++	unsigned int reg_off = gp_num / 2;
++	unsigned int shift = 4 * bit_off;
++
++	return regmap_update_bits(st->regmap,
++				  AD4691_GPIO_MODE1_REG + reg_off,
++				  AD4691_GP_MODE_MASK << shift,
++				  AD4691_GP_MODE_DATA_READY << shift);
++}
++
+ static int ad4691_reg_read(void *context, unsigned int reg, unsigned int *val)
+ {
+ 	struct spi_device *spi = context;
+@@ -497,6 +576,333 @@ static int ad4691_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+ 	return regmap_write(st->regmap, reg, writeval);
+ }
+ 
++static int ad4691_set_pwm_freq(struct ad4691_state *st, int freq)
++{
++	if (!freq)
++		return -EINVAL;
++
++	st->cnv_period_ns = DIV_ROUND_UP(NSEC_PER_SEC, freq);
++	return 0;
++}
++
++static int ad4691_sampling_enable(struct ad4691_state *st, bool enable)
++{
++	struct pwm_state conv_state = {
++		.period     = st->cnv_period_ns,
++		.duty_cycle = AD4691_CNV_DUTY_CYCLE_NS,
++		.polarity   = PWM_POLARITY_NORMAL,
++		.enabled    = enable,
++	};
++
++	return pwm_apply_might_sleep(st->conv_trigger, &conv_state);
++}
++
++/*
++ * ad4691_enter_conversion_mode - Switch the chip to its buffer conversion mode.
++ *
++ * Configures the ADC hardware registers for the mode selected at probe
++ * (CNV_BURST or MANUAL). Called from buffer preenable before starting
++ * sampling. The chip is in AUTONOMOUS mode during idle (for read_raw).
++ */
++static int ad4691_enter_conversion_mode(struct ad4691_state *st)
++{
++	int ret;
++
++	if (st->manual_mode)
++		return regmap_update_bits(st->regmap, AD4691_DEVICE_SETUP,
++					  AD4691_MANUAL_MODE, AD4691_MANUAL_MODE);
++
++	ret = regmap_update_bits(st->regmap, AD4691_ADC_SETUP,
++				 AD4691_ADC_MODE_MASK, AD4691_CNV_BURST_MODE);
++	if (ret)
++		return ret;
++
++	return regmap_write(st->regmap, AD4691_STATE_RESET_REG,
++			    AD4691_STATE_RESET_ALL);
++}
++
++/*
++ * ad4691_exit_conversion_mode - Return the chip to AUTONOMOUS mode.
++ *
++ * Called from buffer postdisable to restore the chip to the
++ * idle state used by read_raw. Clears the sequencer and resets state.
++ */
++static int ad4691_exit_conversion_mode(struct ad4691_state *st)
++{
++	if (st->manual_mode)
++		return regmap_update_bits(st->regmap, AD4691_DEVICE_SETUP,
++					  AD4691_MANUAL_MODE, 0);
++
++	return regmap_update_bits(st->regmap, AD4691_ADC_SETUP,
++				  AD4691_ADC_MODE_MASK, AD4691_AUTONOMOUS_MODE);
++}
++
++static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++	unsigned int prev_i, k, i;
++	bool first;
++	int ret;
++
++	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
++	memset(st->scan_tx, 0, sizeof(st->scan_tx));
++
++	spi_message_init(&st->scan_msg);
++
++	first = true;
++	prev_i = 0;
++	k = 0;
++	iio_for_each_active_channel(indio_dev, i) {
++		st->scan_tx[k] = cpu_to_be16(AD4691_ADC_CHAN(i));
++		st->scan_xfers[k].tx_buf = &st->scan_tx[k];
++		/*
++		 * The pipeline means xfer[0] receives the residual from the
++		 * previous sequence, not a valid sample for channel i. Point
++		 * it at vals[i] anyway; xfer[1] (or the NOOP when only one
++		 * channel is active) will overwrite that slot with the real
++		 * result, so no separate dummy buffer is needed.
++		 */
++		if (first) {
++			st->scan_xfers[k].rx_buf = &st->vals[i];
++			first = false;
++		} else {
++			st->scan_xfers[k].rx_buf = &st->vals[prev_i];
++		}
++		st->scan_xfers[k].len = sizeof(__be16);
++		st->scan_xfers[k].cs_change = 1;
++		spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
++		prev_i = i;
++		k++;
++	}
++
++	/* Final NOOP transfer retrieves the last channel's result. */
++	st->scan_xfers[k].tx_buf = &st->scan_tx[k]; /* scan_tx[k] == 0 == NOOP */
++	st->scan_xfers[k].rx_buf = &st->vals[prev_i];
++	st->scan_xfers[k].len = sizeof(__be16);
++	spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
++
++	ret = spi_optimize_message(st->spi, &st->scan_msg);
++	if (ret)
++		return ret;
++
++	ret = ad4691_enter_conversion_mode(st);
++	if (ret) {
++		spi_unoptimize_message(&st->scan_msg);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int ad4691_manual_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ret = ad4691_exit_conversion_mode(st);
++	spi_unoptimize_message(&st->scan_msg);
++	return ret;
++}
++
++static const struct iio_buffer_setup_ops ad4691_manual_buffer_setup_ops = {
++	.preenable = &ad4691_manual_buffer_preenable,
++	.postdisable = &ad4691_manual_buffer_postdisable,
++};
++
++static int ad4691_cnv_burst_buffer_preenable(struct iio_dev *indio_dev)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++	unsigned int k, i;
++	int ret;
++
++	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
++	memset(st->scan_tx, 0, sizeof(st->scan_tx));
++
++	spi_message_init(&st->scan_msg);
++
++	/*
++	 * Each AVG_IN read needs two transfers: a 2-byte address write phase
++	 * followed by a 2-byte data read phase. CS toggles between channels
++	 * (cs_change=1 on the read phase of all but the last channel).
++	 */
++	k = 0;
++	iio_for_each_active_channel(indio_dev, i) {
++		st->scan_tx[k] = cpu_to_be16(0x8000 | AD4691_AVG_IN(i));
++		st->scan_xfers[2 * k].tx_buf = &st->scan_tx[k];
++		st->scan_xfers[2 * k].len = sizeof(__be16);
++		spi_message_add_tail(&st->scan_xfers[2 * k], &st->scan_msg);
++		st->scan_xfers[2 * k + 1].rx_buf = &st->vals[i];
++		st->scan_xfers[2 * k + 1].len = sizeof(__be16);
++		st->scan_xfers[2 * k + 1].cs_change = 1;
++		spi_message_add_tail(&st->scan_xfers[2 * k + 1], &st->scan_msg);
++		k++;
++	}
++
++	st->scan_tx[k] = cpu_to_be16(AD4691_STATE_RESET_REG);
++	st->scan_xfers[2 * k].tx_buf = &st->scan_tx[k];
++	st->scan_xfers[2 * k].len = sizeof(__be16);
++	spi_message_add_tail(&st->scan_xfers[2 * k], &st->scan_msg);
++	st->scan_tx[k + 1] = cpu_to_be16(AD4691_STATE_RESET_ALL << 8);
++	st->scan_xfers[2 * k + 1].tx_buf = &st->scan_tx[k + 1];
++	st->scan_xfers[2 * k + 1].len = sizeof(__be16);
++	st->scan_xfers[2 * k + 1].cs_change = 1;
++	spi_message_add_tail(&st->scan_xfers[2 * k + 1], &st->scan_msg);
++
++	ret = spi_optimize_message(st->spi, &st->scan_msg);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
++			   bitmap_read(indio_dev->active_scan_mask, 0,
++				       iio_get_masklength(indio_dev)));
++	if (ret)
++		goto err_unoptimize;
++
++	ret = regmap_write(st->regmap, AD4691_ACC_MASK_REG,
++			   ~bitmap_read(indio_dev->active_scan_mask, 0,
++				iio_get_masklength(indio_dev)) & GENMASK(15, 0));
++	if (ret)
++		goto err_unoptimize;
++
++	ret = ad4691_enter_conversion_mode(st);
++	if (ret)
++		goto err_unoptimize;
++
++	ret = ad4691_sampling_enable(st, true);
++	if (ret)
++		goto err_exit_conv;
++
++	enable_irq(st->irq);
++	return 0;
++
++err_exit_conv:
++	ad4691_exit_conversion_mode(st);
++err_unoptimize:
++	spi_unoptimize_message(&st->scan_msg);
++	return ret;
++}
++
++static int ad4691_cnv_burst_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++	int ret;
++
++	disable_irq(st->irq);
++
++	ret = ad4691_sampling_enable(st, false);
++	if (ret)
++		return ret;
++
++	ret = ad4691_exit_conversion_mode(st);
++	spi_unoptimize_message(&st->scan_msg);
++	return ret;
++}
++
++static const struct iio_buffer_setup_ops ad4691_cnv_burst_buffer_setup_ops = {
++	.preenable = &ad4691_cnv_burst_buffer_preenable,
++	.postdisable = &ad4691_cnv_burst_buffer_postdisable,
++};
++
++static ssize_t sampling_frequency_show(struct device *dev,
++				       struct device_attribute *attr,
++				       char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ad4691_state *st = iio_priv(indio_dev);
++
++	return sysfs_emit(buf, "%lu\n", NSEC_PER_SEC / st->cnv_period_ns);
++}
++
++static ssize_t sampling_frequency_store(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ad4691_state *st = iio_priv(indio_dev);
++	int freq, ret;
++
++	ret = kstrtoint(buf, 10, &freq);
++	if (ret)
++		return ret;
++
++	ret = iio_device_claim_direct(indio_dev);
++	if (ret)
++		return ret;
++
++	ret = ad4691_set_pwm_freq(st, freq);
++	iio_device_release_direct(indio_dev);
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR_RW(sampling_frequency, 0);
++
++static const struct iio_dev_attr *ad4691_buffer_attrs[] = {
++	&iio_dev_attr_sampling_frequency,
++	NULL
++};
++
++static irqreturn_t ad4691_irq(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct ad4691_state *st = iio_priv(indio_dev);
++
++	iio_trigger_poll(indio_dev->trig);
++	/*
++	 * Keep the DATA_READY IRQ disabled until the trigger handler has
++	 * finished reading the scan, to prevent a new assertion mid-transfer.
++	 * The PWM continues running uninterrupted; the IRQ is re-enabled in
++	 * ad4691_trigger_handler once spi_sync completes.
++	 *
++	 * IRQF_ONESHOT already masks the hardware line during this threaded
++	 * handler, so disable_irq_nosync here ensures the IRQ stays disabled
++	 * even after IRQF_ONESHOT unmasks on return.
++	 */
++	disable_irq_nosync(st->irq);
++
++	return IRQ_HANDLED;
++}
++
++static const struct iio_trigger_ops ad4691_trigger_ops = {
++	.validate_device = iio_trigger_validate_own_device,
++};
++
++static int ad4691_read_scan(struct iio_dev *indio_dev, s64 timestamp)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++	int ret;
++
++	guard(mutex)(&st->lock);
++
++	ret = spi_sync(st->spi, &st->scan_msg);
++	if (ret)
++		return ret;
++
++	/*
++	 * rx_buf pointers in scan_xfers point directly into scan.vals, so no
++	 * copy is needed. The scan_msg already includes a STATE_RESET at the
++	 * end (appended in preenable), so no explicit reset is needed here.
++	 */
++	iio_push_to_buffers_with_ts(indio_dev, st->vals, sizeof(st->vals),
++				    timestamp);
++	return 0;
++}
++
++static irqreturn_t ad4691_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad4691_state *st = iio_priv(indio_dev);
++
++	ad4691_read_scan(indio_dev, pf->timestamp);
++	if (!st->manual_mode)
++		enable_irq(st->irq);
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
+ static const struct iio_info ad4691_info = {
+ 	.read_raw = &ad4691_read_raw,
+ 	.write_raw = &ad4691_write_raw,
+@@ -504,6 +910,18 @@ static const struct iio_info ad4691_info = {
+ 	.debugfs_reg_access = &ad4691_reg_access,
+ };
+ 
++static int ad4691_pwm_setup(struct ad4691_state *st)
++{
++	struct device *dev = regmap_get_device(st->regmap);
++
++	st->conv_trigger = devm_pwm_get(dev, "cnv");
++	if (IS_ERR(st->conv_trigger))
++		return dev_err_probe(dev, PTR_ERR(st->conv_trigger),
++				     "Failed to get cnv pwm\n");
++
++	return ad4691_set_pwm_freq(st, st->info->max_rate);
++}
++
+ static int ad4691_regulator_setup(struct ad4691_state *st)
+ {
+ 	struct device *dev = regmap_get_device(st->regmap);
+@@ -583,6 +1001,22 @@ static int ad4691_config(struct ad4691_state *st)
+ 	unsigned int val;
+ 	int ret;
+ 
++	/*
++	 * Determine buffer conversion mode from DT: if a PWM is provided it
++	 * drives the CNV pin (CNV_BURST_MODE); otherwise CNV is tied to CS
++	 * and each SPI transfer triggers a conversion (MANUAL_MODE).
++	 * Both modes idle in AUTONOMOUS mode so that read_raw can use the
++	 * internal oscillator without disturbing the hardware configuration.
++	 */
++	if (device_property_present(dev, "pwms")) {
++		st->manual_mode = false;
++		ret = ad4691_pwm_setup(st);
++		if (ret)
++			return ret;
++	} else {
++		st->manual_mode = true;
++	}
++
+ 	switch (st->vref_uV) {
+ 	case AD4691_VREF_uV_MIN ... AD4691_VREF_2P5_uV_MAX:
+ 		ref_val = AD4691_VREF_2P5;
+@@ -636,6 +1070,75 @@ static int ad4691_config(struct ad4691_state *st)
+ 	return 0;
+ }
+ 
++static int ad4691_setup_triggered_buffer(struct iio_dev *indio_dev,
++					 struct ad4691_state *st)
++{
++	struct device *dev = regmap_get_device(st->regmap);
++	struct iio_trigger *trig;
++	unsigned int i;
++	int irq, ret;
++
++	trig = devm_iio_trigger_alloc(dev, "%s-dev%d", indio_dev->name,
++				      iio_device_id(indio_dev));
++	if (!trig)
++		return -ENOMEM;
++
++	trig->ops = &ad4691_trigger_ops;
++	iio_trigger_set_drvdata(trig, st);
++
++	ret = devm_iio_trigger_register(dev, trig);
++	if (ret)
++		return dev_err_probe(dev, ret, "IIO trigger register failed\n");
++
++	indio_dev->trig = iio_trigger_get(trig);
++
++	if (st->manual_mode)
++		return devm_iio_triggered_buffer_setup(dev, indio_dev,
++						       &iio_pollfunc_store_time,
++						       &ad4691_trigger_handler,
++						       &ad4691_manual_buffer_setup_ops);
++
++	/*
++	 * The GP pin named in interrupt-names asserts at end-of-conversion.
++	 * The IRQ handler stops conversions and fires the IIO trigger so
++	 * the trigger handler can read and push the sample to the buffer.
++	 * The IRQ is kept disabled until the buffer is enabled.
++	 */
++	irq = -ENXIO;
++	for (i = 0; i < ARRAY_SIZE(ad4691_gp_names); i++) {
++		irq = fwnode_irq_get_byname(dev_fwnode(dev),
++					    ad4691_gp_names[i]);
++		if (irq > 0)
++			break;
++	}
++	if (irq < 0)
++		return dev_err_probe(dev, irq, "failed to get GP interrupt\n");
++
++	st->irq = irq;
++
++	ret = ad4691_gpio_setup(st, i);
++	if (ret)
++		return ret;
++
++	/*
++	 * IRQ is kept disabled until the buffer is enabled to prevent
++	 * spurious DATA_READY events before the SPI message is set up.
++	 */
++	ret = devm_request_threaded_irq(dev, irq, NULL,
++					&ad4691_irq,
++					IRQF_ONESHOT | IRQF_NO_AUTOEN,
++					indio_dev->name, indio_dev);
++	if (ret)
++		return ret;
++
++	return devm_iio_triggered_buffer_setup_ext(dev, indio_dev,
++						   &iio_pollfunc_store_time,
++						   &ad4691_trigger_handler,
++						   IIO_BUFFER_DIRECTION_IN,
++						   &ad4691_cnv_burst_buffer_setup_ops,
++						   ad4691_buffer_attrs);
++}
++
+ static int ad4691_probe(struct spi_device *spi)
+ {
+ 	struct device *dev = &spi->dev;
+@@ -648,6 +1151,7 @@ static int ad4691_probe(struct spi_device *spi)
+ 		return -ENOMEM;
+ 
+ 	st = iio_priv(indio_dev);
++	st->spi = spi;
+ 	st->info = spi_get_device_match_data(spi);
+ 
+ 	ret = devm_mutex_init(dev, &st->lock);
+@@ -675,8 +1179,11 @@ static int ad4691_probe(struct spi_device *spi)
+ 	indio_dev->info = &ad4691_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	indio_dev->channels = st->info->channels;
+-	indio_dev->num_channels = st->info->num_channels;
++	indio_dev->channels = st->info->sw_info->channels;
++	indio_dev->num_channels = st->info->sw_info->num_channels;
++	ret = ad4691_setup_triggered_buffer(indio_dev, st);
++	if (ret)
++		return ret;
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
 
-Changes in v6:
-- Replace device.h with dev_printk.h + device/devres.h; add array_size.h
-- Rename osc_freqs[] → osc_freqs_Hz[] with explicit [0xN] index designators
-- Move loop variable into for() declaration in set_sampling_freq
-- Convert multi-line block comment to single-line in single_shot_read
-- Replace (u16)~ cast with ~BIT() & GENMASK(15, 0) for ACC_MASK_REG write;
-  GENMASK(15, 0) is still needed, otherwise maximum value condition line
-  in reg_write() would fail.
-- Extract osc_idx/period_us temporaries in single_shot_read; add comment
-- Use devm_regulator_bulk_get_enable() for avdd + vio supplies
-- Reformat reset_gpio_probe() comment; remove (GPIOD_OUT_HIGH) detail
-- Extract REF_CTRL value into temporary before regmap_update_bits
-- Use regmap_assign_bits for OSC_FREQ_REG in config
-- Remove ad4691_free_scan_bufs NULL assignments; they are not checked.
-- Replace indio_dev->masklength with iio_get_masklength() throughout
-- Fix spi_optimize_message error path to use goto err in preenable
-- Add iio_buffer_enabled() guard in sampling_frequency_store and
-  set_oversampling_ratio
-- Move ad4691_gpio_setup call from ad4691_config into
-  setup_triggered_buffer after IRQ lookup; remove duplicate
-  fwnode_irq_get_byname loop
-- Replace oversampling ratio search loop with is_power_of_2 + ilog2
-- Link to v5: https://lore.kernel.org/r/20260327-ad4692-multichannel-sar-adc-driver-v5-0-11f789de47b8@analog.com
-
-Changes in v5:
-- Reorder datasheets numerically
-- Fix interrupt-names: use enum with minItems/maxItems
-- Remove if/then block requiring interrupts — driver detail, not hardware constraint
-- Remove redundant .shift = 0 from channel macro
-- Write max_rate comparison as 1 * HZ_PER_MHZ
-- Invert set_sampling_freq loop to use continue
-- Fix fsleep() line break; remove blank line in read_raw
-- Reorder supply init: vio immediately after avdd
-- Move comment rewrites and OSC_FREQ_REG condition into the base driver patch
-- Add bit-15 READ comment in reg_read
-- Rewrite ldo-in handling with cleaner if/else-if pattern
-- Drop redundant refbuf_en = false; invert if (!rst) in reset
-- Drop reset_control_assert() — GPIO already asserted at probe
-- Use regmap_update_bits/assign_bits in config
-- Remove tab-column alignment of state struct members
-- Declare osc_freqs[] as const int, eliminating explicit casts
-- Drop obvious AUTONOMOUS mode comment
-- Rename ACC_COUNT_LIMIT → ACC_DEPTH_IN to match datasheet
-- Use bitmap_weight()/bitmap_read() for active_scan_mask access;
-  add #include <linux/bitmap.h>
-- Fix channel macro line-continuation tab alignment
-- Use IIO_CHAN_SOFT_TIMESTAMP(8) for 8-channel variants
-- Use aligned_s64 ts in scan struct
-- Add comment explaining start-index removal in set_sampling_freq
-- Remove trailing comma after NULL in buffer_attrs[]
-- Add IRQF_NO_AUTOEN rationale comment
-- Remove unreachable manual_mode guards in sampling_frequency_show/store
-- Remove st->trig; use indio_dev->trig directly
-- Move max_speed_hz param to the offload patch where it is used
-- Use DIV_ROUND_UP for CNV period; use compound pwm_state initializer
-- Move offload fields into a separately allocated sub-struct
-- Build TX words via u8* byte-fill; fixes sparse __be32 warnings
-- Add three scan types (NORMAL/OFFLOAD_CNV/OFFLOAD_MANUAL) with
-  get_current_scan_type; triggered buffer path uses storagebits=16
-- Fix IIO_CHAN_INFO_SCALE: use iio_get_current_scan_type() for realbits
-- Add MODULE_IMPORT_NS("IIO_DMAENGINE_BUFFER")
-- Add Documentation/iio/ad4691.rst
-- Link to v4: https://lore.kernel.org/r/20260320-ad4692-multichannel-sar-adc-driver-v4-0-052c1050507a@analog.com
-
-Changes in v4:
-- dt-bindings: add avdd-supply (required) and ldo-in-supply (optional);
-  rename vref-supply → ref-supply, vrefin-supply → refin-supply;
-  corrected reset-gpios polarity (active-high → active-low); remove
-  clocks and pwm-names; extend interrupts to up to 4 GP pins with
-  interrupt-names "gp0".."gp3"; reduce #trigger-source-cells to
-  const: 1 (GP pin number); add gpio-controller / #gpio-cells = <2>;
-  drop adi,ad4691.h header; update binding examples
-- driver: rename CNV Clock Mode → CNV Burst Mode throughout
-- driver: add avdd-supply (required) and ldo-in-supply; track ref vs.
-  refin supply for REFBUF_EN; set LDO_EN in DEVICE_SETUP when ldo-in
-  is present; add software reset fallback via SPI_CONFIG_A register
-- driver: merge ACC_MASK1_REG / ACC_MASK2_REG into ACC_MASK_REG with
-  a single ADDR_DESCENDING 16-bit SPI write
-- driver: remove clocks usage; set PWM rate directly without ref clock
-- driver: rename chip info structs (ad4691_chip_info etc.); rename
-  *chip → *info in state struct; replace adc_mode enum with manual_mode
-  bool; replace ktime sampling_period with u32 cnv_period_ns
-- driver: move IIO_CHAN_INFO_SAMP_FREQ to info_mask_separate with an
-  available list for the internal oscillator frequency
-- driver: use regcache MAPLE instead of RBTREE
-- triggered buffer: derive DATA_READY GP pin from interrupt-names in
-  firmware ("gp0".."gp3") instead of assuming GP0
-- triggered buffer: use regmap_update_bits for DEVICE_SETUP mode toggle
-  to avoid clobbering LDO_EN when toggling MANUAL_MODE bit
-- triggered buffer: split buffer setup ops into separate Manual and
-  CNV Burst variants (mirrors offload path structure)
-- SPI offload: promote channel storagebits from 16 to 32 to match DMA
-  word size; introduce ad4691_manual_channels[] with shift=16 (data in
-  upper 16 bits of the 32-bit word); update triggered-buffer paths to
-  the same layout for consistency
-- SPI offload: derive GP pin from trigger-source args[0] instead of
-  hardcoding GP0; split offload buffer setup ops per mode
-- replace put_unaligned_be32() + FIELD_PREP() with cpu_to_be32() and
-  plain bit-shift ops for SPI offload message construction
-- multiple reviewer-requested code style and correctness fixes
-  (Andy Shevchenko, Nuno Sá, Uwe Kleine-König, David Lechner)
-- Link to v3: https://lore.kernel.org/r/20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com
-
-Changes in v3:
-- Replace GPIO reset handling with reset controller framework
-- Replace two regmap_write() calls for ACC_MASK1/ACC_MASK2 with regmap_bulk_write()
-- Move conv_us declaration closer to its first use
-- Derive spi_device/dev from regmap instead of storing st->spi
-- ad4691_trigger_handler(): use guard(mutex)() and iio_for_each_active_channel()
-- ad4691_setup_triggered_buffer(): return -ENOMEM/-ENOENT directly instead of
-  wrapping in dev_err_probe(); fix fwnode_irq_get() check (irq <= 0 → irq < 0)
-- Add GENMASK defines for SPI offload 32-bit message layout; replace manual
-  bit-shifts with put_unaligned_be32() + FIELD_PREP()
-- Use DIV_ROUND_CLOSEST_ULL() instead of div64_u64()
-- ad4691_set_sampling_freq(): fix indentation; drop unnecessary else after return
-- ad4691_probe(): use PTR_ERR_OR_ZERO() for devm_spi_offload_get()
-- Link to v2: https://lore.kernel.org/r/20260310-ad4692-multichannel-sar-adc-driver-v2-0-d9bb8aeb5e17@analog.com
-
-Changes in v2:
-- Drop adi,spi-mode DT property; operating mode now auto-detected
-  from pwms presence (CNV Clock Mode if present, Manual Mode if not)
-- Reduce from 5 operating modes to 2 (CNV Clock Mode, Manual Mode);
-  Autonomous, SPI Burst and CNV Burst modes removed as user-selectable
-  modes; Autonomous Mode is now the internal idle/single-shot state
-- Single-shot read_raw always uses internal oscillator (Autonomous
-  Mode), independent of the configured buffer mode
-- Replace bulk regulator API with devm_regulator_get_enable() and
-  devm_regulator_get_enable_read_voltage()
-- Use guard(mutex) and IIO_DEV_ACQUIRE_DIRECT_MODE scoped helpers
-- Replace enum + indexed chip_info array with named chip_info structs
-- Remove product_id field and hardware ID check from probe
-- Factor IIO_CHAN_INFO_RAW body into ad4691_single_shot_read() helper
-- Use fwnode_irq_get(dev_fwnode(dev), 0); drop interrupt-names from
-  DT binding
-- Use devm_clk_get_enabled(dev, NULL); drop clock-names from DT
-  binding
-- Use spi_write_then_read() for DMA-safe register writes
-- Use put_unaligned_be16() for SPI header construction
-- fsleep() instead of usleep_range() in single-shot path
-- storagebits 24->32 for manual-mode channels (uniform DMA layout)
-- Collect full scan into vals[16], single iio_push_to_buffers_with_ts()
-- Use pf->timestamp instead of iio_get_time_ns() in trigger handler
-- Remove IRQF_TRIGGER_FALLING (comes from firmware/DT)
-- Fix offload xfer array size ([17]: N channels + 1 state reset)
-- Drop third DT binding example per reviewer request
-- Link to v1: https://lore.kernel.org/r/20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com
-
----
-Radu Sabau (6):
-      dt-bindings: iio: adc: add AD4691 family
-      iio: adc: ad4691: add initial driver for AD4691 family
-      iio: adc: ad4691: add triggered buffer support
-      iio: adc: ad4691: add SPI offload support
-      iio: adc: ad4691: add oversampling support
-      docs: iio: adc: ad4691: add driver documentation
-
- .../devicetree/bindings/iio/adc/adi,ad4691.yaml    |  180 ++
- Documentation/iio/ad4691.rst                       |  205 +++
- Documentation/iio/index.rst                        |    1 +
- MAINTAINERS                                        |    9 +
- drivers/iio/adc/Kconfig                            |   15 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/ad4691.c                           | 1792 ++++++++++++++++++++
- 7 files changed, 2203 insertions(+)
----
-base-commit: 11439c4635edd669ae435eec308f4ab8a0804808
-change-id: 20260302-ad4692-multichannel-sar-adc-driver-78e4d44d24b2
-
-Best regards,
 -- 
-Radu Sabau <radu.sabau@analog.com>
+2.43.0
 
 
