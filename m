@@ -1,138 +1,334 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EA0423D2A1;
-	Thu, 16 Apr 2026 15:03:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4EB33346A8;
+	Thu, 16 Apr 2026 15:16:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776351840; cv=none; b=isneq3zpnavMz4Iz1qHmLcEq9T+YvXJf+m/tc2E+gsgZO6MJuYEAVIAuXgtwBrvrRu8OAM/NxAmIB0TAs+XonAS00VGr3+qmEoK6EHKAipvkcAhAX6CnmXonBCPGVvDc2WBs+RvKlWsav6IYjioHuJjZUd+lRY1n8jkBoJs7Egs=
+	t=1776352564; cv=none; b=I0i20bSrgeFYUtyeRKkDA7bVhdP9Y8FbNuNOZxtGr1ultz1+gzyjjvyYn5do6vf3G0NTwbPckqXk3XVAFZIxYbxz2CcEWGX9AQHnrS9ojddt/+g3arFtVIniAZUYrHlZDJcFlM5NBMUJsj/1LBsmaSow/UT569fONo7P0VFxJtE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776351840; c=relaxed/simple;
-	bh=TtxQ25ugjQqEn/0GVI+Kwju7HwWI+zLS6AZ8AAcaCNM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=dnB8Wsk9H0Uw/dWSoqnSAdCrnztjMIc6MN01NYeJcZBSD16+uu7TNzuloJL4JxOklV2pguto2dvuSy6iJKtR/msZ+7LqqidcwMkF4Xfm6m3iHaUDaG/htW/gF0EY8l0/TKMfbTo1/zjEqrh870w/11dN2Twl6M2Yn6iImME/6iI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FRT0JTKR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776352564; c=relaxed/simple;
+	bh=l6bkkSP7Cmuntn0/tS/mtGEL2aXlh377Zwdwnpd9BdE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rVzdX6OHn9yeOF+bhiO4EVtx8XpJt6BVdE0dpW++UPlxIZZu8+v7uCUz4dDHXfv21Oli6ywZ6f/OccJgqcAzp/oTtT9rsVwhF9SKoaq0UqhA+AD+Wu8v8hXgSLoPMTwGOt5aUSsHAiBvNkh+qu8KQfowdwbqc91QEJxFxgxMtb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D+jR5nKe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FRT0JTKR"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E2BFC2BCAF;
-	Thu, 16 Apr 2026 15:03:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D+jR5nKe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC40DC2BCB3;
+	Thu, 16 Apr 2026 15:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776351839;
-	bh=TtxQ25ugjQqEn/0GVI+Kwju7HwWI+zLS6AZ8AAcaCNM=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=FRT0JTKRNadIEGBabm2tdgUxGyWf5W/I+VW31i4HgsolOZxW71Ib9QtRAzjYC2BXw
-	 qmoJRIoqsLBxfR9SLHKpc5ecR/VwSuJpk5MatxRF+sjDwmJLrz3WhuXcdIRwdPg9Ya
-	 /QAfAoY9VsljVqw78rZivoE8QNyX3EAffBkQzVbmcdWR8jifCgKc4HX7bBHtJSl3dq
-	 E//KQgQDgNLVQq5lafyctBFSxA0b+ezjrcIOl7dyxwwnqS0CtnC8LbjCT6vdN+kvOJ
-	 PeYZXlb5zXi/1icaB5lRzMMU1yCYqJbvJxmGQbe2tc8FxRdVxEZffIBFq2+bR+Oadv
-	 sJ7xqLQbjuMIg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CBCF8D758;
-	Thu, 16 Apr 2026 15:03:59 +0000 (UTC)
-From: Vishwas Rajashekar via B4 Relay <devnull+vishwas.dev.vrajashkr.com@kernel.org>
-Date: Thu, 16 Apr 2026 20:33:21 +0530
-Subject: [PATCH v2] dt-bindings: iio: gyroscope: add mount-matrix for
- bmg160
+	s=k20201202; t=1776352564;
+	bh=l6bkkSP7Cmuntn0/tS/mtGEL2aXlh377Zwdwnpd9BdE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=D+jR5nKeynY2aEyqnc6T5ILVfh1jl10pceofGTAJcAzW01jV9lG7uN7nhD0DQIVDb
+	 6k4z/TZ2wGTlmAWi57GlVb7Bet0wnraauU6ahNGWJ5+6KZWNmHaKyOzrdCY65e2HBc
+	 G/hvdt1PhIwal753iipUzIYaYqprT2l+/dSIgSbS9so+LGTfpAs4PJOD1XJrbm+4m7
+	 D0WznRIpBHl/NC9GECVnJI/ePiZ9kXO+zoV1F72Q2XMdoERowD2wKSK/z8g3V/ZVxh
+	 WKzQK0KQhtPRj9lrB9/eofXdWiQgoQ7ZdIwPihFO6tW1CN7icWHMzn/dHFEAtvFogl
+	 qA2d8/YLGbd8w==
+Date: Thu, 16 Apr 2026 16:15:59 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: dac: mcp47feb02: Fix binding issues
+Message-ID: <20260416-primate-robust-c9de03e50946@spud>
+References: <20260416-mcp47feb02-fix5-v1-1-9656c2fed6d2@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260416-bmg160-mount-matrix-dt-binding-v2-1-e66cf5cff8e8@vrajashkr.com>
-X-B4-Tracking: v=1; b=H4sIADj64GkC/4WOwQ6CMBAFf4X07BralAqe/A/DodAVFkNr2tJgC
- P8uYDx7nGTy5i0soCcM7JotzGOiQM5uIE4Za3ttOwQyGzORC5VLLqEZO65yGN1kI4w6eprBRGj
- IGrId4EUZY7CSpVJsG3l5fNB8BO71l8PUDNjGfXU3egrR+ffxIPHd+8WKf7HEgUOOoi2LSklEd
- UteDzr0T39u3cjqdV0/YT6KAuIAAAA=
-X-Change-ID: 20260414-bmg160-mount-matrix-dt-binding-e76ddde94866
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, luca@lucaweiss.eu, 
- Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776351838; l=2298;
- i=vishwas.dev@vrajashkr.com; s=20260414; h=from:subject:message-id;
- bh=qRb9CnV1TwnBxT50+KBIUXpmD3krYMm9jJ/eSLpyL4w=;
- b=3rJPFOLddnYeZ6nDRzDvfyekFvmCXMJ+FQJDwf7lncGsDgttqUVf5PNmHjbJoD146/VhjQ30t
- 38st+cWJm2TAvCvFCuWJ20gZkDyctIHZeP6ZzDUsQWs5adzDWRK6HrI
-X-Developer-Key: i=vishwas.dev@vrajashkr.com; a=ed25519;
- pk=OvZgoGVJ7ofrIn3w/YijdoJ0IexAy1kREY51mGZPm9M=
-X-Endpoint-Received: by B4 Relay for vishwas.dev@vrajashkr.com/20260414
- with auth_id=734
-X-Original-From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-Reply-To: vishwas.dev@vrajashkr.com
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="JQ4o0TT4kWMfmrhu"
+Content-Disposition: inline
+In-Reply-To: <20260416-mcp47feb02-fix5-v1-1-9656c2fed6d2@microchip.com>
 
-From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
 
-Adds mount-matrix as an optional property to dt-bindings
-for the bmg160 gyroscope as the driver reads this optional
-property during probe.
+--JQ4o0TT4kWMfmrhu
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
----
-The bmg160 driver reads an optional mount-matrix using
-"iio_read_mount_matrix" in "bmg160_core_probe" and stores
-this orientation data in "struct bmg160_data". As the "mount-matrix"
-property is used by the driver, this change proposes to add it to
-the corresponding dt-bindings.
----
-Changes in v2:
-- Addressed review feedback: add mount-matrix example for bmg160
-- Link to v1: https://patch.msgid.link/20260415-bmg160-mount-matrix-dt-binding-v1-1-0e2c85964ee6@vrajashkr.com
+Hey,
 
-To: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+On Thu, Apr 16, 2026 at 04:33:36PM +0300, Ariana Lazar wrote:
+> Change maxItems value from 8 to 1 for the channel number reg property.
+> Change example reg value from 0 to 0x60.
+> Fix a few typos in property descriptions.
+> Sort the part numbers in the enum list lexicographically.
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-index 3c6fe74af0b8..ec97778cca78 100644
---- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-@@ -22,6 +22,9 @@ properties:
-   vdd-supply: true
-   vddio-supply: true
- 
-+  mount-matrix:
-+    description: an optional 3x3 mounting rotation matrix.
+Hmm, this looks like 3 or 4 patches to me. The maxItems change probably
+qualifies for a fixes tag, none of the rest do.
+
+>=20
+> Fixes: 4ba12d304175 ("dt-bindings: iio: dac: adding support for Microchip=
+ MCP47FEB02")
+
+> Reported-by: Conor Dooley <conor@kernel.org>
+> Closes: https://lore.kernel.org/all/20260403-speed-childless-1360de358229=
+@spud/
+
+I didn't report anything, I just commented on something that you had
+already "reported" when you fixed it yourself.
+
+> Reported-by: David Lechner <dlechner@baylibre.com>
+> Closes: https://lore.kernel.org/all/dd0dbadb-604b-4f12-8674-268b7db096fd@=
+baylibre.com/
+
+David didn't report anything either, he just gave you review feedback on
+the change you made to the example.
+
+> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+> ---
+>  .../bindings/iio/dac/microchip,mcp47feb02.yaml     | 57 +++++++++++-----=
+------
+>  1 file changed, 28 insertions(+), 29 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb=
+02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.ya=
+ml
+> index d2466aa6bda2106a8b695347a0edf38462294d03..88a1495f2967a3d821ada7e7e=
+9a7fbb466401040 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+> @@ -61,29 +61,29 @@ properties:
+>    compatible:
+>      enum:
+>        - microchip,mcp47feb01
+> -      - microchip,mcp47feb11
+> -      - microchip,mcp47feb21
+>        - microchip,mcp47feb02
+> +      - microchip,mcp47feb04
+> +      - microchip,mcp47feb08
+> +      - microchip,mcp47feb11
+>        - microchip,mcp47feb12
+> +      - microchip,mcp47feb14
+> +      - microchip,mcp47feb18
+> +      - microchip,mcp47feb21
+>        - microchip,mcp47feb22
+> +      - microchip,mcp47feb24
+> +      - microchip,mcp47feb28
+>        - microchip,mcp47fvb01
+> -      - microchip,mcp47fvb11
+> -      - microchip,mcp47fvb21
+>        - microchip,mcp47fvb02
+> -      - microchip,mcp47fvb12
+> -      - microchip,mcp47fvb22
+>        - microchip,mcp47fvb04
+> -      - microchip,mcp47fvb14
+> -      - microchip,mcp47fvb24
+>        - microchip,mcp47fvb08
+> +      - microchip,mcp47fvb11
+> +      - microchip,mcp47fvb12
+> +      - microchip,mcp47fvb14
+>        - microchip,mcp47fvb18
+> +      - microchip,mcp47fvb21
+> +      - microchip,mcp47fvb22
+> +      - microchip,mcp47fvb24
+>        - microchip,mcp47fvb28
+> -      - microchip,mcp47feb04
+> -      - microchip,mcp47feb14
+> -      - microchip,mcp47feb24
+> -      - microchip,mcp47feb08
+> -      - microchip,mcp47feb18
+> -      - microchip,mcp47feb28
+> =20
+>    reg:
+>      maxItems: 1
+> @@ -111,13 +111,13 @@ properties:
+>          - for single-channel device: Vout0;
+>          - for dual-channel device: Vout0, Vout1;
+>          - for quad-channel device: Vout0, Vout2;
+> -        - for octal-channel device: Vout0, Vout2, Vout6, Vout8;
+> +        - for octal-channel device: Vout0, Vout2, Vout4, Vout6;
+> =20
+>    vref1-supply:
+>      description: |
+>        Vref1 pin may be used as a voltage reference when this supply is s=
+pecified.
+>        The internal reference will be taken into account for voltage refe=
+rence
+> -      beside VDD if this supply does not exist.
+> +      besides VDD if this supply does not exist.
+
+ngl, I don't think this is a typo, the sentence doesn't make sense
+either before or after the change. Should this be something like "The
+internal reference and VDD will be used as the voltage reference if this
+supply does not exist?
+
+> =20
+>        This supply will be voltage reference for the following outputs:
+>          - for quad-channel device: Vout1, Vout3;
+> @@ -141,7 +141,7 @@ properties:
+>      description:
+>        Enable buffering of the external Vref/Vref0 pin in cases where the
+>        external reference voltage does not have sufficient current capabi=
+lity in
+> -      order not to drop it=E2=80=99s voltage when connected to the inter=
+nal resistor
+> +      order not to drop its voltage when connected to the internal resis=
+tor
+>        ladder circuit.
+> =20
+>    microchip,vref1-buffered:
+> @@ -149,7 +149,7 @@ properties:
+>      description:
+>        Enable buffering of the external Vref1 pin in cases where the exte=
+rnal
+>        reference voltage does not have sufficient current capability in o=
+rder not
+> -      to drop it=E2=80=99s voltage when connected to the internal resist=
+or ladder
+> +      to drop its voltage when connected to the internal resistor ladder
+>        circuit.
+> =20
+>  patternProperties:
+> @@ -161,8 +161,7 @@ patternProperties:
+>      properties:
+>        reg:
+>          description: The channel number.
+> -        minItems: 1
+> -        maxItems: 8
+> +        maxItems: 1
+> =20
+>        label:
+>          description: Unique name to identify which channel this is.
+> @@ -227,12 +226,12 @@ allOf:
+>          compatible:
+>            contains:
+>              enum:
+> -              - microchip,mcp47fvb04
+> -              - microchip,mcp47fvb14
+> -              - microchip,mcp47fvb24
+>                - microchip,mcp47feb04
+>                - microchip,mcp47feb14
+>                - microchip,mcp47feb24
+> +              - microchip,mcp47fvb04
+> +              - microchip,mcp47fvb14
+> +              - microchip,mcp47fvb24
+>      then:
+>        patternProperties:
+>          "^channel@[0-3]$":
+> @@ -245,12 +244,12 @@ allOf:
+>          compatible:
+>            contains:
+>              enum:
+> -              - microchip,mcp47fvb08
+> -              - microchip,mcp47fvb18
+> -              - microchip,mcp47fvb28
+>                - microchip,mcp47feb08
+>                - microchip,mcp47feb18
+>                - microchip,mcp47feb28
+> +              - microchip,mcp47fvb08
+> +              - microchip,mcp47fvb18
+> +              - microchip,mcp47fvb28
+>      then:
+>        patternProperties:
+>          "^channel@[0-7]$":
+> @@ -280,9 +279,9 @@ examples:
+> =20
+>          #address-cells =3D <1>;
+>          #size-cells =3D <0>;
+> -        dac@0 {
+> +        dac@60 {
+>            compatible =3D "microchip,mcp47feb02";
+> -          reg =3D <0>;
+> +          reg =3D <0x60>;
+>            vdd-supply =3D <&vdac_vdd>;
+>            vref-supply =3D <&vref_reg>;
+> =20
+> @@ -297,6 +296,6 @@ examples:
+>              reg =3D <0x1>;
+>              label =3D "Adjustable_voltage_ch1";
+>            };
+> -      };
+> +        };
+>      };
+
+This whitespace change looks odd. You've aligned the opening and closing
+braces, but the indent is not consistent as there's mixed 4- and 2-space
+indentation used in this example. I think you need to do:
+diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02=
+=2Eyaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.ya=
+ml
+index d2466aa6bda21..a36874c4ae276 100644
+--- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+@@ -278,25 +278,25 @@ examples:
+   - |
+     i2c {
+=20
++      #address-cells =3D <1>;
++      #size-cells =3D <0>;
++      dac@0 {
++        compatible =3D "microchip,mcp47feb02";
++        reg =3D <0>;
++        vdd-supply =3D <&vdac_vdd>;
++        vref-supply =3D <&vref_reg>;
 +
-   spi-max-frequency:
-     maximum: 10000000
- 
-@@ -52,6 +55,9 @@ examples:
-             reg = <0x69>;
-             interrupt-parent = <&gpio6>;
-             interrupts = <18 IRQ_TYPE_EDGE_RISING>;
-+            mount-matrix = "0", "1", "0",
-+                           "1", "0", "0",
-+                           "0", "0", "1";
-         };
+         #address-cells =3D <1>;
+         #size-cells =3D <0>;
+-        dac@0 {
+-          compatible =3D "microchip,mcp47feb02";
++        channel@0 {
+           reg =3D <0>;
+-          vdd-supply =3D <&vdac_vdd>;
+-          vref-supply =3D <&vref_reg>;
++          label =3D "Adjustable_voltage_ch0";
++        };
+=20
+-          #address-cells =3D <1>;
+-          #size-cells =3D <0>;
+-          channel@0 {
+-            reg =3D <0>;
+-            label =3D "Adjustable_voltage_ch0";
+-          };
+-
+-          channel@1 {
+-            reg =3D <0x1>;
+-            label =3D "Adjustable_voltage_ch1";
+-          };
++        channel@1 {
++          reg =3D <0x1>;
++          label =3D "Adjustable_voltage_ch1";
++        };
+       };
      };
  ...
 
----
-base-commit: 591cd656a1bf5ea94a222af5ef2ee76df029c1d2
-change-id: 20260414-bmg160-mount-matrix-dt-binding-e76ddde94866
+Cheers,
+Conor.
 
-Best regards,
---  
-Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
+>  ...
+>=20
+> ---
+> base-commit: d2a4ec19d2a2e54c23b5180e939994d3da4a6b91
+> change-id: 20260416-mcp47feb02-fix5-26994c5b428c
+>=20
+> Best regards,
+> --=20
+> Ariana Lazar <ariana.lazar@microchip.com>
+>=20
 
+--JQ4o0TT4kWMfmrhu
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaeD9LwAKCRB4tDGHoIJi
+0gFcAP9TedHY+84n7m1trbDiJ7xC2ULT4pkNyU53avTjzYo1EQD/T0yjOB9fivEM
+H0SAkgv5TL4VytP9I5cQsZjb7rhv9ws=
+=QboO
+-----END PGP SIGNATURE-----
+
+--JQ4o0TT4kWMfmrhu--
