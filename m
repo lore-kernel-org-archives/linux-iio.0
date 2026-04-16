@@ -1,212 +1,161 @@
-Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA9C0370D5F
-	for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2026 21:17:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 822C21C84D7
+	for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2026 22:21:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776374230; cv=none; b=p3YtHGKAXmtreXRVKDJslmwkAaH2EUHY81jr1QebA3p54MPbt9ZVYbgq7d4b4XuB17EeHncqBBzEJQ4rh+AvqgOAN9Sld399h07Tmw3116u/aY7eQBX/iPVXnKdD+fSv/luU+bl+Mqe6kMNuycmccjTaRnf1hlCASFGkElR6bXQ=
+	t=1776378104; cv=none; b=WpBOrvBbt0OIRf2Dre6A7KKeGX2CY+H1/wkrJkfxHgWlB59g3DsKpAUuskPZkEmBKn9S8IcO/r6/MeFaM5++L1XBPDluuwQ5bAo4gff9asybM0H98AAiL/yVU3lpMdKp9CihCJ8DIQwMJ5YRLr/JZ95In7EFWqasPMmBwpVwan0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776374230; c=relaxed/simple;
-	bh=jrQQ8GnLLyFlIpkEBixWwjrWF4yIInytWUnjjZBuoN4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VPr25KSvNviCR9C7dTYFlb4jSnZ8CcEKX3V3VCJzO3u15V/2rcaE4q4I6SAsvF6wWGDNOMtAl+KT1PLmfAvv0gSmRTUtwFt6YusUi2sboBF6CL5m4jvBAZnZhKDkYjZZL/dnGRmMVtvd1/rRuGJ2jCMIHYI1dW0MQmKHJGPDTNo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=f2WitWS8; arc=none smtp.client-ip=74.125.82.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1776378104; c=relaxed/simple;
+	bh=whrgW5d5KlyW6bmlSZG7Qk7kFuFyfu4hmZkSYhcpyIg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lpWbHfo7LPhHmmXrXHkJO9F8VMEgN3BEKrOsF3JKBsY5csnZjbNIqxpUc+fK6K4TTeNSPQsLh1J+jchWkJ0+sxDv1nKjzqydlBD0mcJu8b3QOhlT7zlpH/khIK379JlgrOTwDgaaQtFmHb+bmeAKEcJXPJZjVxSzBcIy0zJoDYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LBE7788d; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="f2WitWS8"
-Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-2de831d2b20so4730392eec.1
-        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2026 14:17:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LBE7788d"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4887f49ec5aso521915e9.1
+        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2026 15:21:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776374227; x=1776979027; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=qrWUHBWPGk7xz7aVqNg/zcaSXhJR2KOUk9wGxT0fGqA=;
-        b=f2WitWS8anMPUH46kpzPHp0F1EzhS8GNuf62u2UAugDhnYUKHkoKMhu34IGKc1Iugc
-         LSTam4vaMGEKAWV4jCt6LOVBhfw0YHOqThKyymbBYQL4sKB9zyTAQ9T4a8MnxWzqDGjn
-         lkUBqmcc7mbMwVqqAr33MW6r3EHo74+u/SYu43ZTgCEJUe5qFTw+F1myRR+WrB1EMaop
-         3IItiURQYMpeBTnFnt0Y3uCVI3DskcExtOHC0BQh2dpvnm1i79FMhBuZqKeH9okO1JiO
-         bu3SiDFjfzrv5cViRpdkm2D03VSFcYf6P3LEvIKmB+kdWuk98Mn5tLjMCjCb1Sa+dXJz
-         LtqA==
+        d=gmail.com; s=20251104; t=1776378101; x=1776982901; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:mail-followup-to:message-id:subject:cc:to
+         :from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sWp5CoFLY8d29IHfqc/3dRjNfeku6+UGKmZys1drG5k=;
+        b=LBE7788dRwJO4vL4uvgBcPZXW2a6UyynHcfcaE2zyNBePVN1D/t1aqoajl6zFlOl6P
+         64J6VSUysHiNn0HlrwBC1lbtdsPQiMifAtwry+/M9TC38Vn5xQlG3SkCEYB34BKsIaWf
+         8u3Hk4r7iCMTdnPbn66uGMKgWbVb9Y40zCC5nIx05Q6Hk9bLB1Bf3t7BvW6BCERZSJOS
+         dPYxmG1trC5rdfHGobQwetvAa5Xf5URyVuueyMbNqhx3rVU9C+KFoALZLpwkFdPnaf34
+         hEHsX/HO1lgLWfGcKrVNsPoeEh2AM6YYXpVvqFSguiqZ4c/8DYNbxZF+NBqomiWRBJON
+         61mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776374227; x=1776979027;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1776378101; x=1776982901;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:mail-followup-to:message-id:subject:cc:to
+         :from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qrWUHBWPGk7xz7aVqNg/zcaSXhJR2KOUk9wGxT0fGqA=;
-        b=PYi+RAb5UV8o2HhMcO9NmxrzDk0+Sqe+NrQAH7giVG7pDTvAlBVgk3xesOmZymDfwv
-         4br9VyfTPySPSCNm9jOhX8ngXhrVpov8kegOaRVxEC8zgIns9onQST1qRT3ZopY3HVCi
-         BP/Kfh47wWMqTKYm0Ap7zluHV7HlRXWi9FUW2LXJomlXu9fvAtLiixTcjPft1LNDM3rE
-         zWB3SEBcOgRBnHl0/BRmzJXx/pZs3FOpNT64ngRLksKDauzjNlzEWovLlQOd2W9QAfGK
-         U1M1pHklBz/asL35qZEFviFIkQi5fhpQWvoa9jUEPmyuPSSa8iqv+gMfztxPhnT1vO0j
-         1BOg==
-X-Forwarded-Encrypted: i=1; AFNElJ+10ACmOJudjjMYT2cvg2DFEOXAKZkZUS2Ctei8DQp+PTIoHP8fFcjENZmep+SsYeXERb4vaOlu4Io=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwDtUOGNwaCwK5dyx0beYlmwVu6QYeFrNqCJYsksQvOwCfXQTvB
-	jweVy3tmszVIGcBRYgrHWcxg7RbEWM8sxeWf8wXnEuMpVAR51hQktOQqcCPgY/aQte8=
-X-Gm-Gg: AeBDievh3xFXqc0QMGMygDMVIhQAjJ6T3wLEjUW3eiXLaRJ4dEMgF1JWtDsnudEM9S6
-	G5DhowLdWsPqTCuRvp1Q2vBxOGDTcu4Vks5PwoL9thBZ+9iYiTSqDgGoPLYwbkBkYNuuRjD2wxH
-	qVIlsgRQ/4syss/dXDobmiG7sosPP2uB5kuomPs8K4gt3IpIhPSplRRmJ1owLnB5pGy7xarv/Cx
-	5fUuOtaNMdBtvmiEpw4MtoGVdyfGnjvssm8DjNDgvzIh1WQb/R7j/c+qc5WgKQaFeVMHtSCfbCr
-	MZfUcm/fGyIem3nu3Wosj3fswEn7ihhD5K/mqw8NvyP4c+m5M3md6NQk0enq1D/64BGAL86q+x5
-	Rie5Du9bZYc5qj7UYh47baNyh0egHeHEamAsktlFttq/MxglA4SgJPsuRM8FNwjGsKOUOD9Sg0j
-	Cc3L0+Acrl69vdedAmlGdMwRi1FhTmSRpqI7jDPOk=
-X-Received: by 2002:a05:7300:b58b:b0:2c5:220c:5673 with SMTP id 5a478bee46e88-2e2e348a3cdmr579394eec.5.1776374226711;
-        Thu, 16 Apr 2026 14:17:06 -0700 (PDT)
-Received: from yukhui.semfio.usp.br (nat.ime.usp.br. [143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2de8c90cd7esm11241697eec.13.2026.04.16.14.17.03
+        bh=sWp5CoFLY8d29IHfqc/3dRjNfeku6+UGKmZys1drG5k=;
+        b=JTDMT50sK8kaYrAdl5wluydzPBYK30Jp7khrX71CUnxf0Rj9ACvYHBjUzMK8U6ZKS+
+         hPmQFIVAg1elL2zr86wI771VbVvTD1NzAIB/MytXiP20dabtj+DXE1d6Ds2YKu+mvxPi
+         Lkb58x+WzGiMin26GQgageGbQGaW6QsjlhLAe4I+DFokWDz5enlYXuTQtXQAjHwb7J9N
+         RFPp1o0uAkwNHXuEV/LJh3E08devZV0nia+FVtSSIFutDecd98Gh4m9wAN+cN3s5LFsa
+         ilgPlrcyhVHxupybaaWvtc/Jfn9C3hbb8g8jo8U7eAbJJjuF/jzanfK3AD6vW9H2iLgn
+         A43w==
+X-Forwarded-Encrypted: i=1; AFNElJ+BWKas+K673XxEqzI72wyPpmBiVcwYX64ZXqCowYjYNus16zHewojBgkkXKikGE0nsE+cgi4u6/D0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw+YPj43HLtfaAthQRfrxdv4O1PdHC2BKc0SOPO7w8akUhpkF9b
+	eomBcDMA3Avf94D3VYlfTUKLrufANJpte1+4zwiEafKuV0C76BYs9jKa
+X-Gm-Gg: AeBDieuo2Nka1QqJ6xsV2/YLujezEAUPmAPvoYKr+7KEVR6guqMWi/N+UsGSkBwcHth
+	zJV+CIzmSc+LKF71mBIaTGisSmu8BSI/d7ALTWxAUGx+qF4nValYaNVCVdj33XgV8tFDHzlkclU
+	vVHU0ZsuSULPl9jhjwuPNZoU/YtqqgDeB4uc2eE+07fTFy8sB3dvk2/MKbuv5Ki6IXuPpqCzagv
+	LD2AAccgiYqzSkOPFvDqdeOR1YmCbMgtQl2XeXcgNII64SZ5EY7er0ph3gXcxVSo081jhGp9PSC
+	vpGIMezVnrwsXD2w40AGa6TBAUraXRJZFjQF5Yhe1AzgLBmOyqfaxy2h5DrM0Dsv5qDQLJLUFhT
+	RcyW6VBhfesfGMx+AmyjwwlMFf2qVdcn7MDI1fIkm3CinwzYULa0Rp1a/yl4G/evViC71DMJIXh
+	WBa+YOj1sIzDxQz7nbO9ksWo4BO0BFVHKVttn+EQ==
+X-Received: by 2002:a05:600c:4e4f:b0:488:a2ac:a34c with SMTP id 5b1f17b1804b1-488fb7433ddmr5186215e9.12.1776378100610;
+        Thu, 16 Apr 2026 15:21:40 -0700 (PDT)
+Received: from localhost ([94.19.228.143])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488f584e39dsm89464335e9.9.2026.04.16.15.21.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2026 14:17:06 -0700 (PDT)
-From: Raffael Raiel Trindade <raffaelraiel@usp.br>
-X-Google-Original-From: Raffael Raiel Trindade
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Raffael Raiel Trindade <raffaelraiel@usp.br>,
-	Kim Carvalho <kim.ca@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] iio: light: vcnl4000: use lock guard()
-Date: Thu, 16 Apr 2026 18:16:48 -0300
-Message-ID: <20260416211651.9625-1-raffaelraiel@usp.br>
-X-Mailer: git-send-email 2.51.0
+        Thu, 16 Apr 2026 15:21:40 -0700 (PDT)
+Date: Fri, 17 Apr 2026 01:21:39 +0300
+From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+To: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 3/3] iio: imu: inv_mpu6050: fix unbalanced
+ regulator_disable calls, when probe fails
+Message-ID: <aeFg80qug_B4CWok@skv.local>
+Mail-Followup-To: Andrey Skvortsov <andrej.skvortzov@gmail.com>,
+	Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
+References: <20260401082737.781018-1-andrej.skvortzov@gmail.com>
+ <20260401082737.781018-4-andrej.skvortzov@gmail.com>
+ <deaaa498f1036ef39e66cca3d00b54148f4d7547.camel@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <deaaa498f1036ef39e66cca3d00b54148f4d7547.camel@gmail.com>
 
-From: Raffael Raiel Trindade <raffaelraiel@usp.br>
+Hi,
 
-Use guard() for handling mutex lock instead of manually locking and
-unlocking. Remove gotos in error handling logic. This prevents forgotten
-locks on early exits.
+On 26-04-11 14:22, Nuno Sá wrote:
+> On Wed, 2026-04-01 at 11:27 +0300, Andrey Skvortsov wrote:
+> > During a probe functions after all regulators are enabled, runtime pm
+> > is enabled. Before probe function finishes, runtime pm triggers and
+> > disables vddio regulator. When probe function fails after that,
+> > inv_mpu_core_disable_regulator_action tries to disable already
+> > disabled by runtime pm vddio regulator causing following backtrace:
+> > 
+> >   inv-mpu6050-i2c 1-0068: trigger probe fail -19
+> >   WARNING: drivers/regulator/core.c:3244 at _regulator_disable+0x2ac/0x600
+> >   Call trace:
+> >    _regulator_disable+0x2ac/0x600 (P)
+> >    regulator_disable+0xac/0x148
+> >    inv_mpu_core_disable_regulator_vddio_action+0x3c/0xb0 [inv_mpu6050]
+> >    devm_action_release+0x4c/0x88
+> >    release_nodes+0xd8/0x178
+> >    devres_release_group+0x214/0x3c8
+> >    i2c_device_probe+0x6fc/0x9b0
+> >   ...
+> >   inv-mpu6050-i2c 1-0068: Failed to disable vddio regulator: -5
+> > 
+> > Fix the issue by checking runtime suspend status, when vddio regulator
+> > is disabled. To handle this correctly pm_runtime active status has to
+> > be set early before vddio regulator setup.
+> 
 
-Signed-off-by: Raffael Raiel Trindade <raffaelraiel@usp.br>
-Co-developed-by: Kim Carvalho <kim.ca@usp.br>
-Signed-off-by: Kim Carvalho <kim.ca@usp.br>
----
- drivers/iio/light/vcnl4000.c | 30 ++++++++++--------------------
- 1 file changed, 10 insertions(+), 20 deletions(-)
+> The above looks a bit hacky. We're playing with runtime status for things to work.
+> Also, setting the active state makes sense logically when the device is up and
+> running.
+> 
+Thanks for the review. Approach with setting active state just before
+regulator is enabled was taken from recent commit in inv_icm4500
+driver [1].
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 9650dbc41f2b..0201dd1cc957 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -18,6 +18,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/i2c.h>
-@@ -288,11 +289,11 @@ static ssize_t vcnl4000_write_als_enable(struct vcnl4000_data *data, bool en)
- {
- 	int ret;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	if (en)
- 		ret &= ~VCNL4040_ALS_CONF_ALS_SHUTDOWN;
-@@ -301,9 +302,6 @@ static ssize_t vcnl4000_write_als_enable(struct vcnl4000_data *data, bool en)
- 
- 	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, ret);
- 
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
- 	return ret;
- }
- 
-@@ -311,11 +309,11 @@ static ssize_t vcnl4000_write_ps_enable(struct vcnl4000_data *data, bool en)
- {
- 	int ret;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	if (en)
- 		ret &= ~VCNL4040_PS_CONF1_PS_SHUTDOWN;
-@@ -324,9 +322,6 @@ static ssize_t vcnl4000_write_ps_enable(struct vcnl4000_data *data, bool en)
- 
- 	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, ret);
- 
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
- 	return ret;
- }
- 
-@@ -680,19 +675,17 @@ static ssize_t vcnl4040_write_ps_it(struct vcnl4000_data *data, int val)
- 
- 	data->vcnl4200_ps.sampling_rate = ktime_set(0, val * 60 * NSEC_PER_USEC);
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	regval = (ret & ~VCNL4040_PS_CONF2_PS_IT) |
- 	    FIELD_PREP(VCNL4040_PS_CONF2_PS_IT, index);
- 	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
- 					regval);
- 
--out:
--	mutex_unlock(&data->vcnl4000_lock);
- 	return ret;
- }
- 
-@@ -1500,13 +1493,13 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 	u16 val, mask;
- 	struct vcnl4000_data *data = iio_priv(indio_dev);
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	switch (chan->type) {
- 	case IIO_LIGHT:
- 		ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 		if (ret < 0)
--			goto out;
-+			return ret;
- 
- 		mask = VCNL4040_ALS_CONF_INT_EN;
- 		if (state)
-@@ -1521,7 +1514,7 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 	case IIO_PROXIMITY:
- 		ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 		if (ret < 0)
--			goto out;
-+			return ret;
- 
- 		if (dir == IIO_EV_DIR_RISING)
- 			mask = VCNL4040_PS_IF_AWAY;
-@@ -1538,9 +1531,6 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 		break;
- 	}
- 
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
- 	return ret;
- }
- 
+Another solution could be that pm_runtime_set_active(dev) is left,
+where it's now, where pm runtime is initialized. So there is no
+playing with runtime status. And just after that devm_add_action_or_reset(dev,
+inv_mpu_core_disable_regulator_action, st) is called.
+
+And if probe fails before inv_mpu_core_disable_regulator_action action
+is set, than regulators will be disabled explicitly in error paths
+(goto error_vddio_power_off).
+
+Is this approach ok?
+
+1. https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/drivers/iio/imu/inv_icm45600?id=2617595538be8a2f270ad13fccb9f56007b292d7
+
+> Maybe we should just move enabling runtime to the end of the probe
+> function?
+The problem is not that pm runtime is enabled so early during a probe,
+but that action to disable regulators has to be aware of changes made
+to regulators by runtime pm. Action is called, when probe fails (for
+example, before pm runtime is enabled) and when driver is unloaded. 
+To work correctly action has to be set after pm_runtime_set_active.
+
+> 
+> Also, fixes should come first in the series in case we want to backport them.
+Thanks, I'll fix that in the next version.
+
 -- 
-2.51.0
-
+Best regards,
+Andrey Skvortsov
