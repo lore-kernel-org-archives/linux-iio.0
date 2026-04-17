@@ -1,104 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC7A3D1712;
-	Fri, 17 Apr 2026 10:00:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776420010; cv=none; b=M21GM14OSqgTlG0SPEikeZjneaRThyJ0N54NA2faQTpqjc+tPPP5oQ4MkHZHQ6IvPFoseYR5xBtfyqBDZxMGp3Kbau1DdZtLexYbO6/859A30IusGuFgSqX/8S4U4oh2WMV/FFKeHK/YgJ2w4tcK+dnlqC22YD8YskRVqO2UilE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776420010; c=relaxed/simple;
-	bh=UNMTxtos7VGB7+j7mhl3k85/Qt7mOCDfYjjW2ncm2C8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p/fK9C4rABTsLUzInPuy2acjlqfk5zSHyHeSLIZbTiw34acSR7IsnVqKqfLhlejrLnupXCP28i75mjL4SsMh10dSn9/pODm86Re3BjUg5JbvJF5b7t8Uusg1t7uRIS1EcdML3XCaboreop9FcIz6LzBGNgIdu7bjWE99KJfgKzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k2clUR3u; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 743C53624A9
+	for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 10:05:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776420324; cv=pass; b=oWX0ZAaQzkXKuuT7eIpIW9oZElD3+aaqHgOHzXsn1PMhXsW0/fNiZippr5aEs8FFFeDkCFMerAOOf5qyjfgP2vzCyy0xgooZR0bjenNHZcLF/IGSWZgfSyOFl2FTi4f+89V2qr/0nimwWkALud6tHxFmay6mWgoqrzgEMM2JQp4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776420324; c=relaxed/simple;
+	bh=+7oR4wXUnn8Gaj0KwrKTZhj7xplX1SNhcNEyEcGuKkA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=A34RWQ/AM1rF7TprDLDCMTg+IRHQdyc0BnB9VqG4D2jCYgKz3daNGFTB1HMSAUjkY13r3hwYLK3nwwjAemW+Ikfki2pe4AmcJdCH6YL79RiwSRSWhrl4wwwnkw7KHDYWZ/jIXilJXmQWeocpMe84HD+E80cxJEElkQOnP7V0Pzc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ksUf+ybl; arc=pass smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k2clUR3u"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776420008; x=1807956008;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UNMTxtos7VGB7+j7mhl3k85/Qt7mOCDfYjjW2ncm2C8=;
-  b=k2clUR3uQyYHV3MtzBkoioU1qwuVur/6VaRRKXYaVCWf18ptZqCch+PN
-   Z2O+7C6Yzyx/vHevR+OVbM2KM6LkFWIl5Lqgem0n15P9IJ2NJGEHLFY64
-   /ELOuThnvjHeveHs3WSpBBki4JWiAU109h2v5Y8YxsNPALOjwCkQ+Ys+L
-   o+C0Mb5yR5dq0KIZzx4d6fKEe9M3mzwNruagmeaqUVhR0tnVUpqcbT4+f
-   Iwyj8vag52inqQgog9m0bKe8S1jUABZebwFoTym1D+YRtisR4+LnR5qiQ
-   g9xwwDd9KCUd4LOS7gX1L4ihrMRTHOjEW78latXqXQzX9SfnPxJgcNFVg
-   Q==;
-X-CSE-ConnectionGUID: qfcr1aFtRVC9ce1ZgbCAhg==
-X-CSE-MsgGUID: I/yMP0EaQS68SMwzh6QL8g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11761"; a="77303853"
-X-IronPort-AV: E=Sophos;i="6.23,184,1770624000"; 
-   d="scan'208";a="77303853"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 03:00:06 -0700
-X-CSE-ConnectionGUID: /ULVo7rtSjmYIlFMtG1WHg==
-X-CSE-MsgGUID: OgeZg8QsTP6iMHjJkCc49w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,184,1770624000"; 
-   d="scan'208";a="230924764"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 03:00:03 -0700
-Date: Fri, 17 Apr 2026 13:00:00 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	gregkh@linuxfoundation.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] iio: frequency: ad9832: remove kernel.h proxy
- header
-Message-ID: <aeIEoJnkzO03Rz01@ashevche-desk.local>
-References: <20260416065118.1299-1-joshua.crofts1@gmail.com>
- <20260416065118.1299-2-joshua.crofts1@gmail.com>
- <aeCe9Za3aGPiRFC1@ashevche-desk.local>
- <CALoEA-wTk+32wUv3M_wLX-+4Fi=6BjLh6UsRZYqQM1Wcf+-+5Q@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ksUf+ybl"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-43d73422431so353237f8f.2
+        for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 03:05:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776420322; cv=none;
+        d=google.com; s=arc-20240605;
+        b=a6yIAtPU2ATMjUQiptyiu8jfKmPP6GXHU7z4FBW5NoYtQznTRRAgg6/PiNqIkr0Bii
+         LK/MefaNWCw1xZR7R6XYzkY/UEPd3aXK0b/lSjzKruGBzxvmg8BS/M5VTYFfmaOGJxlC
+         6brqdrzqmbkBrPgLMTEhoT8uCwjeO9MK911wZ4atluvZfey3p9uyH0q+5QkGnpc2k1KL
+         B5q7i6SL0ygIo7AfAW0EVzj4R1eI7GUUypriHjc0PcFwBM0P22ba5Dig8IIPQzLK3zeK
+         Xs1Z7MuAj1kY7Xo0nymbD7R5EEW6LDsIzXvCLiUEGG0d1z8a1gIJxpVhqkzLl9FCOtSl
+         tebg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=WHpdlUHvf0JqP8JKy4n96Wp7a43y4nLGj3BUPXsQMgY=;
+        fh=BI0WBTPD1mYM+bzxeLwBJOnlsr90REpwWQI+hO12SFs=;
+        b=EBbLxlc4o9DBI3PZvOAAdhnTPLqm4uIg0iZ5Ds6NsyeUfmFXek2XcioIcJpoKpJ8Ro
+         zuJFtZ5cJcJlXlppD5ObolURTT+zytn3vjC02dTcmb2MNQ9CGuHUjM5aoC/hJAXVOytF
+         ts6xQim9ctFYWaxTc26sHiqBMfafpYEszrHECAu62J/rcNtDH45TAO7CgrJ0CaL9BkuK
+         U8DwI+vuvT9XCF6yvzIGDU1piQEa5r6o1h9heTLV0yc4MYhZpSP2ljo9blEOkipNvQos
+         3zacyZDfoH9NdR4o0t71fcAOtmdRH7+9htW8uGTL7cn6MuDodbAim12eZJyw/BffSBZ6
+         8KFg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776420322; x=1777025122; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=WHpdlUHvf0JqP8JKy4n96Wp7a43y4nLGj3BUPXsQMgY=;
+        b=ksUf+yblp3EB/AKB3r7QoFNerST80M0pytcpKLmSE4VVWWLU8zA4WU/vDkg6QH20WR
+         h0Ql3xq781Uo3nVcQuzie8ziX48Xf9B3ypq7YgOJaiOPYSEa39z0NFFHzNP80YdPiRXD
+         IUalSlkY1VBOtw8pGP0PW90OLiMybSZIAQjx7G10KiGTR8TcsR91R7lk4lb3br/qTEz/
+         m8ttpbKIovd8OurhjOduMveIwpuyPv3UqRKSrJtK/+VOYI7mILqTiNcg8JaLMUzZM9Mx
+         ZcluVcwfVJeq17ishK10tpa7l3k9M81siaa/3+zL6PmI0kaON3lvgCgwulQAW7YMrDfY
+         SYFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776420322; x=1777025122;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WHpdlUHvf0JqP8JKy4n96Wp7a43y4nLGj3BUPXsQMgY=;
+        b=ncRhUAzjY0+9M3wkG0B6k0sSyPh3bYYd9qJKfVIv66qTJWLJhWppoFtbZvO5ENcGq6
+         1WSpRdRZDk4pR8Vlb89QIpNrA397vhpVvQFaGlo6BA9kpaLW+A7oPssHhAt0Tv7Jd68v
+         DFIz13BOsbkZqPgU8qYXJFb+wpZ9xW/xoFrq0EzLwRS/BDlLlGWG+4Q9vFkvkVSMIG01
+         naFx20vhU2JV3qR2Ek+ouquWq4Obv9jdp6HAqC13jMkHH66/MFfXFsVVbWVhkin4tqw9
+         H1UDKB1c2+MJKvUI9f7CVwYru/KoogBoPs/XmOonyIDK63PgrkghtRHP2lrSdfy/hjtZ
+         JlCw==
+X-Forwarded-Encrypted: i=1; AFNElJ96q3zfunr1OhAAYe4oU9EIDdT+HeueVZODy/D0SKpVbecV+s+8qMJwwuf0MiVaNGysBxiE+qj8hAw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwmTrd5gndYK6RKAAjv/XoOYJ4oLVqOZmJPfICA4kjaPWFrqE6E
+	vYhKbsu5JVhYDhYVPTLF6Tr+ez7I820EqFUKTIJHCtgT/d8q94G6biaZC3S5UBzIL6upqbXxtR3
+	rXJJbyzf/Nn8/zqVKtAGcPiMabnDIO8s=
+X-Gm-Gg: AeBDievWXCUJMWSA4fkwsoPk2E3XgrUlA2VUSuOPM8ToH8mUsSAvqnVkj/38Z/DEKta
+	Os8g/9QtAWNoRXoPk00Fgl0HKi9HcCl4FomLBfvJjhDi/TZkfR8IuB2t0JrsK2i21Wrbncy+TlA
+	C15BIs08F5CgQ2RbST8JIk7toTgbF3ojM/jXxebDS3/2yMfPCQ4RT7Yvz9ShphJIPcQzvi1oc0y
+	Uz5FsGWHVkSDH2byLvR9v5xU7rUn9+eKhV5BPO5TM6+RIfJ0+WN4S4WwFWGgBavfkuqYP2MChJk
+	aLAPymobfep/EtTd9SQbRcGBdzPYHtdzOc4ALhstsXD8B5dWHTcB9KrnTvteAaFoNRXOLa7V9r6
+	riI2xTCmB5agfcE/JhNAX6j8dFJikEBoUSc1cxVga864tTa5otWyk1jGORUvTLubO1BI5CPSE0o
+	o5ZnPeGSo+ziuNrlvc
+X-Received: by 2002:a05:6000:40cb:b0:43e:aa43:243 with SMTP id
+ ffacd0b85a97d-43fe3e24eaamr3235593f8f.43.1776420320937; Fri, 17 Apr 2026
+ 03:05:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALoEA-wTk+32wUv3M_wLX-+4Fi=6BjLh6UsRZYqQM1Wcf+-+5Q@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260416065118.1299-1-joshua.crofts1@gmail.com>
+ <20260416065118.1299-2-joshua.crofts1@gmail.com> <aeCe9Za3aGPiRFC1@ashevche-desk.local>
+ <CALoEA-wTk+32wUv3M_wLX-+4Fi=6BjLh6UsRZYqQM1Wcf+-+5Q@mail.gmail.com> <aeIEoJnkzO03Rz01@ashevche-desk.local>
+In-Reply-To: <aeIEoJnkzO03Rz01@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Fri, 17 Apr 2026 12:05:09 +0200
+X-Gm-Features: AQROBzCuv-2guxSm5zgImEeJHUB-bHU1_mWumwCgD8f3XtHrpLE5GMtbr-NeQDc
+Message-ID: <CALoEA-zf2sVtH3OgauPSTy9O1xaXrUKNHDBhZ71eqkMn-9XYBA@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] iio: frequency: ad9832: remove kernel.h proxy header
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Apr 17, 2026 at 11:41:28AM +0200, Joshua Crofts wrote:
-> On Thu, 16 Apr 2026 at 10:34, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > While I gave a tag, it still seems need an improvement, id est
-> > there are missing headers:
-> >
-> > array_size.h
-> > dev_printk.h
-> > kstrtox.h
-> > mod_devicetable.h
-> > mutex.h
-> > types.h
-> >
-> > asm/byteorder.h
-> >
-> > and unneeded one(s):
-> > device.h
-> 
-> Adding the headers above is fine, but removing device.h even
-> if there are things like struct device_attribute in the code?
+On Fri, 17 Apr 2026 at 12:00, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> I don't see it's in use. The pointer to it yes, but it's a huge
+> difference.  https://en.wikipedia.org/wiki/Opaque_pointer
 
-I don't see it's in use. The pointer to it yes, but it's a huge
-difference.  https://en.wikipedia.org/wiki/Opaque_pointer
-
-> I know linux/iio/iio.h includes device.h but I thought that we're trying to
-> eliminate these "includes in includes" unless they're trivial (like
-> linux/bits.h in linux/bitops.h).
+My bad, that was an oversight on my part. Thanks for the
+clarification. I'll send the updated patch soon.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
