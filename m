@@ -1,120 +1,102 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7A3C39C006
-	for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 12:50:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0733137883E;
+	Fri, 17 Apr 2026 12:50:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776430211; cv=none; b=lXOZOq8OtP+lIncZBk/jJUmgZYUQ+O6a0NQcWojn6X17HDX3+bOua5cFYFR7sssOd7RRI2js/apuuNF5/NnRsiDkZemlg2T7rMqyAdszjpFVcMZ8chQ+bDHLBkd3SwwgDQjmlvJDTFTF3oI3WPPuSqM3Rog8KBAIac6Dbq0sxCw=
+	t=1776430250; cv=none; b=jydyn2HprNtQs5sHvlniF3oMivvKx6Pf2JKX1/AJDGeVnFx426wSnuqFc2NvLTRnh+pIzXIoDnvU3EfQ0Zrd662wLBUMCmG1RFhS+ckQGeDrfPbnWid1VqjMFeAI8L/a+mVUuF6ZPZnLy5PYyVeEgOvXctQbcuI//MA83hdGh44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776430211; c=relaxed/simple;
-	bh=TarAZlGuEdwHhc5/39Ow2rqN+MI5stQ5673+V9XGau0=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=BR3q1LdvLY7pKq94IpoRhPea874WbkQdsth1695QpVXpkoH4J2wRKjeZ7XWDcJSD7j+dgd7nbohArmZsmsuqWlujFIEf56emy9Kvfl0LqU1XzCYw2GPPIxi6E4ilDwmWJqeX++r94/wfnmc7oCI7x9E398G3YUFdKslpHDFX7uI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LRCnmZPm; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LRCnmZPm"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2aaf59c4f7cso2911165ad.1
-        for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 05:50:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776430210; x=1777035010; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=imMh6hJBu2Zu1gcmhOVix7OG/ll3BvoGNjzRdYH94g0=;
-        b=LRCnmZPm27LwUw/rR0UXr8Xt51QdURdC4iqAgGFbgu7GMy37FOxVIzstH2mRrn1AUI
-         yGC0LrkEMz84g4ZrSaoLmz4bgodMe939aX3HKJU3z6uVQk9vMPzEHSDbThBRI8qOY/MT
-         aObY0MirvpkZDVFHLJDvm/TRtOibSsm7/uciZXwdRwkZy0N9Ak2f1s5IzKKoIvPyBTK+
-         JjDn8TEu/mb2V+OS49KzChCDzbHZvHyjBS8d2xUYHGbOH/k876F2CJsvJbzt2Z+MJw5Y
-         WkDzomTZ8SFRq4bNUW3/J9g0qp3eH/ZENoIlLadFqmqcEZv2Kt/zLHhSRRJv2HyNxfNL
-         +YPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776430210; x=1777035010;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=imMh6hJBu2Zu1gcmhOVix7OG/ll3BvoGNjzRdYH94g0=;
-        b=aJZfim/XaPhS2ygW9hz4L0YS8/nbev8ZgmuTa6vIlFARZ8ipb8RWL0pOl+dVDkjAxb
-         NVRHLzrox4Iw1r6BkuYCi7HsI33NGXX+e58crhPqgbequBSpYUtL+MqnhnnB8uel1LJ7
-         iXAG1ozvX6/Yetfs95KGwFPmWLQThpBmZhY0tabDuonf/vyYL+MP1IUkXJP0Im1pXR/W
-         qFJAw/3jjuNxQPA5r/CxJXI/m+p+vSq+IHrAiNyhZCEL43a6B/V293z/bs3NpLJsMl6L
-         edesvYtm+yJmpo+icgBXnVBlop7yeV0FZfxE/fHAsunsB2VXpm9LCl9RMo+tjWGnEfan
-         7gbw==
-X-Forwarded-Encrypted: i=1; AFNElJ/czmOKo2MoXGmA23yU3LV5DCF1vP1C/g/OqSZn0ml74hWAnnNL7+p4MRfCp2glRu+4IK+aW7tLl7c=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz5jCPskSLSTGj+Q6CEy7IYPTbFhFhQSKIwi07a9msMhA8NOX/m
-	xsYSM/PkcowDMx7XOnDilb6aXl5BUAnZ1VGkEAsCtslMNzwXvKyD2h6k
-X-Gm-Gg: AeBDievA+qFXpoimq2uxfb4E9mEzu/W7mV3BR4FEuSJZs6QGc4jYjqPTEQjkT38B6/n
-	2UzrG/KZewpsTLx9xkE0b5Er+Lt4ZMFPkxoKewOegaSeUNox2+xkTVyPeFZnx41oJYRASHkrzQG
-	E4MKlZz3tt0znPwx4iZhei6jHld+/qW264gkZ4U5l6xOk3IpSP3rl6je5+lP4UZOE8Uq9WvSLAf
-	CdNiUn2RnpbZiRsTf3xWTpCf16dXPgvJF6nS/FBE6tvh6LHs9feTmrzC7aoNqYufqBlUP9UzEHT
-	A55X9MqBjpnJMviGxT8mFEhKjqEwWEhasRs9rekAr5vxdQ2tFHRQz8cQjb3W4kEcLpN1TGgL+Te
-	NIX6f9BcpDIB/vs4XrB/aNFrVjSdSqYbef1Yx6lRD8Hdr5GdccA8JoUggQMj6d9eyYTYvvIoqeV
-	xdBR2ZsZ8aOuLUuCS5hTtB34FacJsg6qinE6wnxNAyWnAXkNYZX2rqEjKi0Iw=
-X-Received: by 2002:a17:902:db0d:b0:2b2:4fe3:7b89 with SMTP id d9443c01a7336-2b5f9f52879mr26795615ad.38.1776430210102;
-        Fri, 17 Apr 2026 05:50:10 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5fab0cb92sm19428855ad.50.2026.04.17.05.50.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Apr 2026 05:50:09 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: lucas.p.stankus@gmail.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	puranjay@kernel.org,
-	cosmin.tanislav@analog.com,
-	marcelo.schmitt@analog.com,
-	antoniu.miclaus@analog.com,
-	ramona.gradinariu@analog.com
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 8/8] iio: accel: adxl372: Use dev_err_probe
-Date: Fri, 17 Apr 2026 18:19:24 +0530
-Message-Id: <20260417124924.353189-9-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260417124924.353189-1-sanjayembedded@gmail.com>
-References: <20260417124924.353189-1-sanjayembedded@gmail.com>
+	s=arc-20240116; t=1776430250; c=relaxed/simple;
+	bh=1YAn/wYNj/UQGeI0IlF8OED47ycG5/Qd+c5F536VrsU=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RiaAVIJp/4M2WvXH7SGa5MHO/G1sRY1mKgF9kSmRReOaahiv9uscHRnZxsLd6GFbxT0ap5b17g5RTGZAgNPZTwRveLHfjKVaTzZPOVXT2bgHPyPfg6FwOo92Kun8mzjuAbKpHRLp3YldgKPOOvbJiaCglfj7gNjvHyMGXDo/UFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.224.150])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4fxvqD0TydzJ46DW;
+	Fri, 17 Apr 2026 20:50:00 +0800 (CST)
+Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
+	by mail.maildlp.com (Postfix) with ESMTPS id 7C72440572;
+	Fri, 17 Apr 2026 20:50:46 +0800 (CST)
+Received: from localhost (10.203.86.132) by dubpeml500005.china.huawei.com
+ (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Fri, 17 Apr
+ 2026 13:50:45 +0100
+Date: Fri, 17 Apr 2026 13:50:44 +0100
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: Junxiao Chang <junxiao.chang@intel.com>, <jic23@kernel.org>,
+	<dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>,
+	<gye976@gmail.com>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <lars@metafoo.de>
+Subject: Re: [PATCH v2] iio: buffer: fix warning in requesting threaded irq
+Message-ID: <20260417135044.000037dd@huawei.com>
+In-Reply-To: <aeIZw2gvbZGJEXy9@ashevche-desk.local>
+References: <20260418002334.3643504-1-junxiao.chang@intel.com>
+	<20260418085156.121947-1-junxiao.chang@intel.com>
+	<aeIZw2gvbZGJEXy9@ashevche-desk.local>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml500011.china.huawei.com (7.191.174.215) To
+ dubpeml500005.china.huawei.com (7.214.145.207)
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Fri, 17 Apr 2026 14:30:11 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-dev_err_probe() makes error code handling simpler and handles
-deferred probe nicely (avoid spamming logs).
+> On Sat, Apr 18, 2026 at 04:51:56PM +0800, Junxiao Chang wrote:
+> > IRQF_ONESHOT is for threaded IRQ. If there is no threaded IRQ
+> > handler, this flag should not be set.
+> > 
+> > This change fixes a warning during booting with kernel v7.0-rc3:
+> > 
+> > WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x1639/0x2510, CPU#3: iio-sensor-prox/974  
+Please provide details on which driver is in use to hit this corner case.
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- drivers/iio/accel/adxl372.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+That may help people identify if the bug applies to what they are seeing
+and also provide some background on how urgent this is to get upstream + backported.
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index 1a6ba94f54f4..e375d068a3f5 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -1316,10 +1316,8 @@ int adxl372_probe(struct device *dev, struct regmap *regmap,
- 	}
- 
- 	ret = adxl372_setup(st);
--	if (ret < 0) {
--		dev_err(dev, "ADXL372 setup failed\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "ADXL372 setup failed\n");
- 
- 	if (chip_info->fifo_supported) {
- 		ret = adxl372_buffer_setup(indio_dev);
--- 
-2.34.1
+Jonathan
+
+> 
+> > RIP: 0010:__setup_irq+0x1639/0x2510  
+> 
+> Unneeded line (it dups the previous one).
+> 
+> > Call Trace:
+> > request_threaded_irq+0x2c7/0x490
+> > iio_trigger_attach_poll_func+0x353/0x6b0
+> > __iio_update_buffers+0x2420/0x2c70
+> > enable_store+0x183/0x270
+> > dev_attr_store+0x5e/0x90  
+> 
+> > sysfs_kf_write+0x1e8/0x290
+> > kernfs_fop_write_iter+0x406/0x5f0
+> > vfs_write+0x71c/0xea0  
+> 
+> These 3 lines are also redundant.
+> 
+> > v2: using ternary and drop temp variable  
+> 
+> Changelog should go...
+> 
+> > Fixes: 23f2d735a932 ("iio: Add helper function for initializing triggered buffers")
+> > Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+> > ---  
+> 
+> ...here, when it doesn't go to the commit message. One may find this in the
+> lore archive.
+> 
+> ...
+> 
+> Code wise now it looks good.
+> 
 
