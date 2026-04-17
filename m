@@ -1,67 +1,41 @@
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galaxy.gendns.com (galaxy.gendns.com [66.235.175.158])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5025313539
-	for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 15:26:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 889B729898B;
+	Fri, 17 Apr 2026 15:45:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.235.175.158
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776439606; cv=none; b=d9FonL4UmuDVl3ngafvDI7ArYStajF2Wjfk0RGJu/tn41ieXnoUHhPI7mN17r9gpHkc/2Mxj3MpoBMQVLc4sHr4xPr0WT18RVEnugEO0Xb0cic/sGLkv3OzYrP6PSeo5mRWMEqtQf6cWqQBPqIm8Blu2PbH+2i6m3/n7l984zXE=
+	t=1776440712; cv=none; b=jwsbYX4kQozzg2P8pLQ7gnL1aIVuh5W+6U6s48KpmrIWQ1d/herNcNvw8lKV6S+rg4Ahq7gOj4qinVcwoQvVZpqVRbA6INnordXiEbuUr2JrWDtTecX/OXeSkcLISBKXHNWxYHaAkj/1R+mbzfM/m99do9niKvkIu4mao3sJFJM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776439606; c=relaxed/simple;
-	bh=8xZLHQa61+Ivb1WiPiCAAgPj2mnS+qCO84XViConO10=;
+	s=arc-20240116; t=1776440712; c=relaxed/simple;
+	bh=XvsDbWlfAG0OYfoZWD/4lYgy6k9FS9zetpPqWnhmd8E=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rdMZiruL8XHAczcm24OS9RBxLMCwa9P43AKd3kisaspOByHE70U0Zd1X3TEEKxTqt5PKm2Yxmn8JF5HfEMjdTO8qtRYR/36koWdJzVZn598XrZ8XQeD7KPI4swLR9qdfvR8/ZZOprX9iMdyNl9+AUDQDCuGkPmpXNKzd3Avzv8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=E9eZamUr; arc=none smtp.client-ip=209.85.161.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 In-Reply-To:Content-Type; b=IgMhZESxDxP/zUZ8qN6YqRtBLfpRcDedxC3KHO9jyB6mv1CwSo68pRJVeSotOXKO/20jLg2r3Klg1dT3xyHm8MgMurfQAp2f5GjrFtTQWahAeqpFCQU75mQzBuHGWqm/DELcrRqgsLPT4GqfWCl4yhHwUxeXahttThWCdjORa/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com; spf=pass smtp.mailfrom=lechnology.com; dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b=iY3AaN9a; arc=none smtp.client-ip=66.235.175.158
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lechnology.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="E9eZamUr"
-Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-68244d317e5so496783eaf.0
-        for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 08:26:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776439604; x=1777044404; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Q4h9F4+veahZHv6ouokvBNavgYCSXgwqEuSCU+Mrc2c=;
-        b=E9eZamUrDl5gtmoYhGXz23M327RW71mlW6tpmQDsfkXO0RpNhzf414JhXys0S/mDlQ
-         wkHdsMohyrdtki/oA7VHAGqAeU4z4ZqoLpVIQux0KwqMcUvHjvaUn/qWejBbR62FV7f5
-         hqNO6lJaU0wth8rN0qaCzgyw7nPMNb72fRDF0wPtkaC4TM2txlMGhNLWJO3tXr0rYZGX
-         ZWFwXponVciR5vVnODC9OSxrY7skdOIanRmnVWLI0l0kq8QM21VDmCnTfCTGheDI7r82
-         el4CHhzVvmiACwZx/lFeyL+U9aSgq2Q0p09U5bNDRNFDkncCMkQVM94V4rigWSxU4mKA
-         YjXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776439604; x=1777044404;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Q4h9F4+veahZHv6ouokvBNavgYCSXgwqEuSCU+Mrc2c=;
-        b=kKGzP1Jit9TfoCHEAOLjLnzgBAF3p+wcfmigBynO3TqW4LTKoUEpqsduP/ccNvDPHS
-         ni3g4UBbgcTrva5S3Vv9tBvD3RBCMoiQiQ+UELWTkD5kHPt0u+xJ6Ca3d5RThBTpQluZ
-         zO7RQlfzENzDCe1RugrH2AfcN62gua6ZC/R/JHQTc+QovR4tw5NbjZY/V3DxC529Zl3H
-         lXbRmsMBTs0ACxrDUa6wUCK9KiUy4wgdonqeJd9TI4kxRxBdCgy4jmOMFS3VOC4xDaqT
-         Qr1kQFrZ4dFZgd9KRKUnkuUzZpfAq1LQsLFwhrQ1g+lgdmyWslPwblSvhhHda1/S/RAt
-         R+lg==
-X-Forwarded-Encrypted: i=1; AFNElJ91N64yMF6cQsArDkJH5xWIBAHWOsnEaq+2OiCOl828D60aq1YdkSr8IjotIgJXhojgh8VJLmjxTr8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yws15VTEQKAlefheiktiI6ng84eJ/FG/R3W7G3CSqr9b1kTX84K
-	8KjZF0uMkD4cd8r9IWptoUEK3u0Oe+Dxsq0Z3x4k0UUIQnXW5TY3o3trXhDV5Vdn6gM=
-X-Gm-Gg: AeBDieu9sqOBHJ1q+Tg0voZdoI/MfNkxCGbkqubvofkq8r17ZMtMgdDcZVNNyVyejXN
-	Mv8wWTso9bvsz9MptgWIhUTBU5yDTGeKfZMKL3zAGrQOmJJh8bkicH25uS5zv/bgBO81qhVFmki
-	8Td/z0PoLmBwZ0BpahoTE0cxbfvNJ3YMi5wlJdx9YpV8meVqmD+tMDRBNNgV/ojuSbwZRtVTwWe
-	Go1k4YhmpxMuF43gawOwWaTmODFe7fxvvH7MkDMxA4Uo7GoxPfTOv9s/cpIMHqLXcRDMQYs9rJi
-	S6zba9No4/Uv6SYNLoDrv/gwbuRbVFlKUh2c4TEuKj1TMxKgNAJYgs63KxSV/AOLPFhlqCznMhk
-	2HADPyN3dupn1UGKwshcBhPoWOCsgHuCH8L31n0/Twyc6dsMVkgxxy+4bnbRgHz0Xoxs4np/3es
-	bE00qcnrwYmsjTr6XdQjdIagLHXFKZSgl8vMar74Yup+hNmB55em7l6K4zg4FmjP01T3X9vuO0y
-	Ajx2lg/IA==
-X-Received: by 2002:a05:6820:308a:b0:67e:3e99:1289 with SMTP id 006d021491bc7-69462f3572bmr1547103eaf.46.1776439603831;
-        Fri, 17 Apr 2026 08:26:43 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:ef27:3314:b886:cd3? ([2600:8803:e7e4:500:ef27:3314:b886:cd3])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69465edde74sm907249eaf.10.2026.04.17.08.26.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Apr 2026 08:26:43 -0700 (PDT)
-Message-ID: <120a34be-bc0d-4202-9996-c5da8cf15963@baylibre.com>
-Date: Fri, 17 Apr 2026 10:26:42 -0500
+	dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="iY3AaN9a"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=qoxQSd3ELdNFxmKbqKKBcSVbmT0ubtuVChxqkqdEm1A=; b=iY3AaN9a+Pk+vNSzksIsVHyWwE
+	F+OpxTFH6VOGy5jYGsmsyBv1Lyf9TDDbEbU2FeQnEuyidPgGiPvF33xrhQmZ2aO0w0tA/1Z9UYXgq
+	xxqn43i6RkhiqkX0VMO1Goy8hiG6wX00atTBZbgVSHHucKJ4VjWTDiHeAJKJjSa8qxOlW/Q7TUwkY
+	3KYnaoEuhL6xdV28NXLZ6ORd07zBfAm2Zy0moaeU3reXoUiHFyKeD3K24cLO2iRD1p53QxsSceBJ7
+	gqbAWP8NbfS0uwryzPRaoNQpT7vCIXiRrg3YKzU/ViKJ2iORWXV2aUMRDePOnt6hpdDDOpWHfSJ3D
+	VJDYu7Jg==;
+Received: from ip98-183-112-25.ok.ok.cox.net ([98.183.112.25]:56546 helo=[192.168.1.142])
+	by galaxy.gendns.com with essmtpa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
+	(Exim 4.99.1)
+	(envelope-from <david@lechnology.com>)
+	id 1wDkzP-00000008Xbb-1Fic;
+	Fri, 17 Apr 2026 11:20:11 -0400
+Message-ID: <54fe62e2-2134-4ea4-96ae-4534c559dbe4@lechnology.com>
+Date: Fri, 17 Apr 2026 10:20:11 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,59 +43,138 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] dt-bindings: iio: dac: mcp47feb02: Fix maxItems value
- for reg property
-To: Ariana Lazar <ariana.lazar@microchip.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: Conor Dooley <conor.dooley@microchip.com>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260417-mcp47feb02-fix5-v2-1-6592ea499cce@microchip.com>
+Subject: Re: [PATCH] counter: ti-eqep: fix runtime PM leak in probe error path
+To: Felix Gu <ustc.gu@gmail.com>, William Breathitt Gray <wbg@kernel.org>,
+ Judith Mendez <jm@ti.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Linux PM <linux-pm@vger.kernel.org>
+References: <20260417-ti-eqep-v1-1-a7db4642d9d0@gmail.com>
 Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260417-mcp47feb02-fix5-v2-1-6592ea499cce@microchip.com>
+From: David Lechner <david@lechnology.com>
+Autocrypt: addr=david@lechnology.com; keydata=
+ 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
+In-Reply-To: <20260417-ti-eqep-v1-1-a7db4642d9d0@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - galaxy.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: galaxy.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: galaxy.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-On 4/17/26 8:38 AM, Ariana Lazar wrote:
-> Change maxItems value from 8 to 1 for the channel number reg property.
+My knowledge of pm_runtime is a bit lacking, so I would suggest
+to include that mailing list on the CC to get more expert review.
 
-The commit message needs to explain why this is the correct thing to do.
 
+On 4/17/26 10:06 AM, Felix Gu wrote:
+> In ti_eqep_probe(), if devm_clk_get_enabled() fails, the function
+> returns without cleaning up the runtime PM state.
 > 
-> Fixes: 4ba12d304175 ("dt-bindings: iio: dac: adding support for Microchip MCP47FEB02")
-> Link: https://lore.kernel.org/all/20260403-speed-childless-1360de358229@spud/
-> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+> Fixes: 0cf81c73e4c6 ("counter: ti-eqep: enable clock at probe")
+> Signed-off-by: Felix Gu <ustc.gu@gmail.com>
 > ---
-> Changes in v2:
-> - keep just maxItems value update in this patch
-> - remove Reported-by from commit message
-> - Link to v1: https://lore.kernel.org/r/20260416-mcp47feb02-fix5-v1-1-9656c2fed6d2@microchip.com
-> ---
->  Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  drivers/counter/ti-eqep.c | 19 ++++++++++++-------
+>  1 file changed, 12 insertions(+), 7 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> index d2466aa6bda2106a8b695347a0edf38462294d03..f2efa0ccbaa32482dcdc69d98c1565518538793f 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> @@ -161,8 +161,7 @@ patternProperties:
->      properties:
->        reg:
->          description: The channel number.
-> -        minItems: 1
-> -        maxItems: 8
-> +        maxItems: 1
+> diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+> index d21c157e531a..dfa945b3eec6 100644
+> --- a/drivers/counter/ti-eqep.c
+> +++ b/drivers/counter/ti-eqep.c
+> @@ -548,17 +548,22 @@ static int ti_eqep_probe(struct platform_device *pdev)
+
+Can we use devm_pm_runtime_enable() to partially solve this?
+
+>  	pm_runtime_get_sync(dev);
+
+I don't think we should have non-devm stuff before devm stuff
+so this needs to be moved later of have some kind of devm cleanup.
+
 >  
->        label:
->          description: Unique name to identify which channel this is.
+>  	clk = devm_clk_get_enabled(dev, NULL);
+> -	if (IS_ERR(clk))
+> -		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
+> +	if (IS_ERR(clk)) {
+> +		err = dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
+> +		goto disable_pm;
+> +	}
+>  
+>  	err = counter_add(counter);
+
+This can be changed to devm_counter_add().
+
+> -	if (err < 0) {
+> -		pm_runtime_put_sync(dev);
+> -		pm_runtime_disable(dev);
+> -		return err;
+> -	}
+> +	if (err < 0)
+> +		goto disable_pm;
+>  
+>  	return 0;
+> +
+> +disable_pm:
+> +	pm_runtime_put_sync(dev);
+> +	pm_runtime_disable(dev);
+> +
+> +	return err;
+>  }
+>  
+>  static void ti_eqep_remove(struct platform_device *pdev)
+
+And once everything is converted to devm, we can drop the
+remove callback.
+
 > 
 > ---
-> base-commit: d2a4ec19d2a2e54c23b5180e939994d3da4a6b91
-> change-id: 20260416-mcp47feb02-fix5-26994c5b428c
+> base-commit: 452c3b1ea875276105ac90ba474f72b4cd9b77a2
+> change-id: 20260417-ti-eqep-8efb9cc713ea
 > 
 > Best regards,
 
