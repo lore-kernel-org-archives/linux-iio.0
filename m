@@ -1,89 +1,148 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE2C6354AF8;
-	Fri, 17 Apr 2026 18:36:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03F20487BE;
+	Fri, 17 Apr 2026 18:41:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776450967; cv=none; b=b8Iq7BC9isPgdFcr74ZNvMuquxlgIGQ3DqapN8wIq2zGdzx2KIRxcrD92gVFrn6nfgMzVxSRi4lpHgOyyRqklDr4VVAUcg5jOv/7d46pIsA47WXU7I9uaoz2B9rI20WECazuQ3XJ3cWdJakuQsKBNNRtcsbbPw05fKY4gCwGVQI=
+	t=1776451288; cv=none; b=gJxAI8keG2Dq5hp1WarubPPNkUxoALoYlMl/JI0N2l+VXN4OhR+DJfPPbyOR+K4nCpodFmnkCsE5cx+ttLt7GCfyj7uJsL997UKybqYUMn/F4XeROfFBHOwC7CAV+IpI2Vk25cBhG+vq9MPNoL1g7ueFkdtqbqJmXG0l1+BiK5c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776450967; c=relaxed/simple;
-	bh=GhaMXEbQp0JwIqOvWrMIM5Qmw3fgXbBIpJz+EHGdFBw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eMYCatZ9UhVI0o4kJw5/vsytdLfKj5cH/MrVmU7jHFO/W+55WM9JwN20sTeb5HGwlPdzqOGGOnvZlZEq00PnbUsNMl7OgAIW88tOpxcS0WFBE6rGEcfeUU3f2GJehqVmfz/Px9V2ruJrNMBrfaTm5qNd+SJri/HY2XEsTvGukX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gREOGmxC; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776451288; c=relaxed/simple;
+	bh=5risQFavyvSUG+7hlUkPBMK3PweOdQMNAioAGmE/5Z8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Pnf0hTyOcg/sYFWVIuyFSkdu6WmOWspaT3O+VnyB4aeoSzCmfmpM7eIE5Kz3xPzyLypSczt/gyLGQsn+wVbScBqOUnAkmOy7zyAp3PwDw+B92MMgNwa0R3fd70pj8ShbXK0PtaUKAOtZSCq+jer9XhYDUUkYyIlRAqSweIQ/ghw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jO5Nmm8d; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gREOGmxC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776450966; x=1807986966;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GhaMXEbQp0JwIqOvWrMIM5Qmw3fgXbBIpJz+EHGdFBw=;
-  b=gREOGmxCrMtI2x3qTgo/gkch8qS7nUWfD/kc3FCYasasQIsAXlRW9+ua
-   sMEILXErsnVCc/hd0ADgdXFa3WLld8N9CalwVUhuIj74fXkX4GvKLdEBD
-   MgBb+pCtVUHczGsvR++ri7GXeYEnYgsTl+OrxHjZDVibF4BJIUE+7bJll
-   m4YCpZ3eIfQwr2docN4gSH4yIJAPR7VRFu3b77JdbU5LK0T+JmqRhDSQL
-   R0yDRcBYRIUwZct0UgiFEGFh+8BR9hHayin3hB2Dw1/L2DL2PfXJZbnl0
-   IJc7QaC5+tCvpRPmzhVQz63sqV5l/BNuc8+rXUjN3JbvSCC/9+OfE8aN4
-   Q==;
-X-CSE-ConnectionGUID: C1uVjU8PQNiunH1u7Aph6A==
-X-CSE-MsgGUID: 0ZXDne2RRx+WXuS6ciGCrw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="76634664"
-X-IronPort-AV: E=Sophos;i="6.23,184,1770624000"; 
-   d="scan'208";a="76634664"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 11:36:05 -0700
-X-CSE-ConnectionGUID: 1AeHJcpXTruo4CBbqZti4Q==
-X-CSE-MsgGUID: +GTOWz1ZSIO2H/LLGSyMfA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,184,1770624000"; 
-   d="scan'208";a="227973256"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 11:36:01 -0700
-Date: Fri, 17 Apr 2026 21:35:59 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: lucas.p.stankus@gmail.com, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org, puranjay@kernel.org,
-	cosmin.tanislav@analog.com, marcelo.schmitt@analog.com,
-	antoniu.miclaus@analog.com, ramona.gradinariu@analog.com,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/8] iio: accel: adxl313: Use dev_err_probe
-Message-ID: <aeJ9j6g9J7JUdg8p@ashevche-desk.local>
-References: <20260417124924.353189-1-sanjayembedded@gmail.com>
- <20260417124924.353189-3-sanjayembedded@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jO5Nmm8d"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7D608C2BCB3;
+	Fri, 17 Apr 2026 18:41:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776451287;
+	bh=5risQFavyvSUG+7hlUkPBMK3PweOdQMNAioAGmE/5Z8=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=jO5Nmm8dpQj3FhYE0twDtq/gJTZC62DBB0F0CuWWyDeT5G5ZLfxZ+uN6B74QLb0Em
+	 fY7Ss1BE9+tcAzJlBxYef4yGOPUA6zowYdjRbrO1GNQjZs5Kq8w/IdbIYvdwzRGcWc
+	 lPp7x7m7h1rHAznsKuaM6rCK2mfxdM6hUIfhXsyuQL3biQcfh7+g8H2rdSm2XrnzwN
+	 Zo7JdssZ0mQFx+wJDSDBQMtDq5IucmHqbCnFDwRyEvB1/teEKh5psXNpcynvVnDTKX
+	 /tMDqkXyiitQorrN26SW00jaz5jCcGQq+epJ0A5AlKa5YKRpK0xew0kiajRjay6Tbr
+	 TIT16bqgcMjKg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 682C0F8D75C;
+	Fri, 17 Apr 2026 18:41:27 +0000 (UTC)
+From: Vishwas Rajashekar via B4 Relay <devnull+vishwas.dev.vrajashkr.com@kernel.org>
+Date: Sat, 18 Apr 2026 00:11:09 +0530
+Subject: [PATCH v3] dt-bindings: iio: gyroscope: add mount-matrix for
+ bmg160
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260417124924.353189-3-sanjayembedded@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260418-bmg160-mount-matrix-dt-binding-v3-1-ce8020ecbf9a@vrajashkr.com>
+X-B4-Tracking: v=1; b=H4sIAMR+4mkC/4WOQQ6CMBBFr0K6dgytMIIr72FcQDvAaCimLQ3Gc
+ HdBY2LcuHzJz3v/ITw5Ji8OyUM4iux5sAvsNonQXWVbAjYLC5UqTDOZQd23ElPoh9EG6KvgeAI
+ ToGZr2LZAezTGUJkViGKR3Bw1PL0Cp/Ob/VhfSIfVui469mFw99eDKNfdJ5b/i0UJElJSushLz
+ IjwGF11qXx3dVs99GINRvWtxL9KtSgJUTe5bpqCil/lPM9PO6E29TUBAAA=
+X-Change-ID: 20260414-bmg160-mount-matrix-dt-binding-e76ddde94866
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, luca@lucaweiss.eu, 
+ Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776451286; l=2793;
+ i=vishwas.dev@vrajashkr.com; s=20260414; h=from:subject:message-id;
+ bh=0hFO4pVSk29VQGp7JRnLEM4OixgjM26nPl8qocDmLp8=;
+ b=mT7mV223BgKj7ZWEZJn3VqZ2EIir63jVXxPLfx9vXSf2O8OgVVd6O+ftcBRxN7lLdJ6rW/9m6
+ HAHcRbKh0a2DmtX84n4DqNiVFG1X2kkMLKNkkGdrz7hEVDB2w3tf85Q
+X-Developer-Key: i=vishwas.dev@vrajashkr.com; a=ed25519;
+ pk=OvZgoGVJ7ofrIn3w/YijdoJ0IexAy1kREY51mGZPm9M=
+X-Endpoint-Received: by B4 Relay for vishwas.dev@vrajashkr.com/20260414
+ with auth_id=734
+X-Original-From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
+Reply-To: vishwas.dev@vrajashkr.com
 
-On Fri, Apr 17, 2026 at 06:19:18PM +0530, Sanjay Chitroda wrote:
+From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
 
-> dev_err_probe() makes error code handling simpler and handles
-> deferred probe nicely (avoid spamming logs).
+The mount-matrix property supplies a 3x3 matrix that is used
+to transform the values from the gyroscope to get vector
+values that are relative to the way the sensor has been mounted
+on the device. When the property is not specified, the identity
+matrix is used.
 
-In the Subject also should be "dev_err_probe()".
+This change adds mount-matrix as an optional property to the
+dt-bindings for the bmg160 gyroscope.
 
-...
+Signed-off-by: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
+---
+The bmg160 driver reads an optional mount-matrix using
+"iio_read_mount_matrix" in "bmg160_core_probe" and stores
+this orientation data in "struct bmg160_data". As the "mount-matrix"
+property is used by the driver, this change proposes to add it to
+the corresponding dt-bindings.
+---
+Changes in v3:
+- Addressed review feedback: updated the commit message to indicate
+  relevance to hardware and remove references to the Linux driver.
+- Link to v2: https://patch.msgid.link/20260416-bmg160-mount-matrix-dt-binding-v2-1-e66cf5cff8e8@vrajashkr.com
 
-> +	return adxl313_core_probe(dev, regmap,
->  				  chip_data, &adxl313_spi_setup);
+Changes in v2:
+- Addressed review feedback: add mount-matrix example for bmg160
+- Link to v1: https://patch.msgid.link/20260415-bmg160-mount-matrix-dt-binding-v1-1-0e2c85964ee6@vrajashkr.com
 
-Now it may be a single line.
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: linux-iio@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
--- 
-With Best Regards,
-Andy Shevchenko
+diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
+index 3c6fe74af0b8..ec97778cca78 100644
+--- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
++++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
+@@ -22,6 +22,9 @@ properties:
+   vdd-supply: true
+   vddio-supply: true
+ 
++  mount-matrix:
++    description: an optional 3x3 mounting rotation matrix.
++
+   spi-max-frequency:
+     maximum: 10000000
+ 
+@@ -52,6 +55,9 @@ examples:
+             reg = <0x69>;
+             interrupt-parent = <&gpio6>;
+             interrupts = <18 IRQ_TYPE_EDGE_RISING>;
++            mount-matrix = "0", "1", "0",
++                           "1", "0", "0",
++                           "0", "0", "1";
+         };
+     };
+ ...
+
+---
+base-commit: 591cd656a1bf5ea94a222af5ef2ee76df029c1d2
+change-id: 20260414-bmg160-mount-matrix-dt-binding-e76ddde94866
+
+Best regards,
+--  
+Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
 
 
