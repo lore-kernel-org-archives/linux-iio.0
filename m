@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDBB53AA18B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF693AA50B;
 	Fri, 17 Apr 2026 08:17:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776413870; cv=none; b=feei1ybOLUzp4dplu9HbpDF82mdQRawxRFDUbbCN9b3DFgVcO+UvUdsVmY/5ZRLkFKr6pPWoquLnGoDQmggm0XBj0opB00Q5Dl/nB7tRDXfveZvb387gLDzmcsSnf7o824Es4pcwCjqv8RbXqOJh9TnnCWdul9bCaVp5wHdpfiA=
+	t=1776413870; cv=none; b=rduTXFbqTaLw12vfbR5U+HLVV/k85xaUQh4yxj8Gt6MLTocFC0di7fCetLh2k5jyajqcToVD1EaUpvonq8TETZtRFBma9fVA4B7kKSsDBdaTESYsomSwREFJUV5phOpBvVExaMbmCXMNM8ujZlg94xNrA8cbRpv5ZbRCc5hdPOw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776413870; c=relaxed/simple;
-	bh=WJDDvTNSHOuzICNpTczoY/QXlZKf1N2HhF4Q7EjYEWo=;
+	bh=/Fbm0eKjvy8W/5XKpRKPJFvXissxWu3M2NP/JDvAWw4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Yb+aS3yVK0yzbW+qVqroUfLtN/h9hyutdTgRLM6Ro83LXHADHZQLr11yaFoKLwFouBvR4x5kw2O4EgI6MDFpMRPqzdOOhASY4ynXQKHp2rZsDoi/Ka9eWr0FcowULYXLZ4PiB+6JZfe0IoShj35HSylj9Step6RMEMCQ1wa4RuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NeUDFqd/; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=D48Pc9K2GnP38K5FgeChEtfKvAC1I0rFuT5OaBf/Jt1VNZXPyoh1mbI0VjNf17V3ZDUXXhNPKYkI1/eNgh+uWU8aF7ZVN9F1E+IqYH/stnDDJ+vXYiBCU+hSmQjdKy5bCekcHoBIZMTFn6H7z1GDdVM042O+sIQqbyvNqSu+JTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qknmRY2U; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NeUDFqd/"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B273AC2BCB9;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qknmRY2U"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C25B1C19425;
 	Fri, 17 Apr 2026 08:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776413869;
-	bh=WJDDvTNSHOuzICNpTczoY/QXlZKf1N2HhF4Q7EjYEWo=;
+	bh=/Fbm0eKjvy8W/5XKpRKPJFvXissxWu3M2NP/JDvAWw4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=NeUDFqd/8m0YvtvUVnIYD/xR/QK0wHTFL1JZmdGxB3Smey8e8nFDWk08VRKRMtucG
-	 9hlY6G/tWCL/5KrIbRJn4ay6vomhcxXVfIwtUv6GpAyphypYQeEcP0nymbzor3omth
-	 iRtCoOnvJr8nDNGoOcgpdqC7/MhwTv67JBcP6W4Aur7PKDjSqlkTYLVlSVlUv2atBp
-	 EF0BkrSDwWhTfmCe5FrBWzv8AggQDr8U4Q1mEEv67gr91e2g+eaXleoka1mX/2ri81
-	 E5daacEjAntlrB9RiJIUyG6WYzhTsVyHUHIS/OMR9gclreFf8AqH0Bume/ofcvC8EB
-	 FBWtSgWhJ8u4g==
+	b=qknmRY2UMXVW6VhGaGPumTMohlkoUBVYYdzzXufCzEG/rOEmkRCQGbXjU9ngicNlh
+	 K86KSk9huQ02bRpY3VNIc6pMnCILoGQatSwMvqq3ThehuyONgH5vA/+REyPbOKSmEu
+	 duXRRfXvAH8sF2N6V+VVPfkFOMVH4gbcbsPsFTmCY6qSCTGkdVj8FXtqJrAahek0TB
+	 SvzKbWdoA23aw6koBhmXDcgWjf780KykhzW6odV5lPbv8VTCRGUWyI1y8uJ69kd4V5
+	 7Ogl0nNMhEh7mzLj7mqHt9gYxXWARr21VquMzV4ABeJfWS80gGLRRiqg9rMAVrJrUt
+	 L20eIEB+aalIw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A909EF8D75C;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA399F433DE;
 	Fri, 17 Apr 2026 08:17:49 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 17 Apr 2026 09:17:36 +0100
-Subject: [PATCH RFC v3 7/9] iio: frequency: ad9910: add channel labels
+Date: Fri, 17 Apr 2026 09:17:37 +0100
+Subject: [PATCH RFC v3 8/9] Documentation: ABI: testing: add docs for
+ ad9910 sysfs entries
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260417-ad9910-iio-driver-v3-7-29b93712a228@analog.com>
+Message-Id: <20260417-ad9910-iio-driver-v3-8-29b93712a228@analog.com>
 References: <20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com>
 In-Reply-To: <20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -56,11 +57,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776413867; l=1840;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776413867; l=3746;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=135hAwfMg9NdwoUEbgF/+pVbdNhBQedFCd2GfQfQhok=;
- b=ffoTOLAldI/iBynNJz+WCRFiVAIPZE3m+nGQhF4LB47Z+WodWtNUZ22K36r6+XVz5dOtevjEZ
- Irol4U+Ok1lACTyktCbRctBociZVQFMeB4Orl41USyuI/w+OoFid2Vo
+ bh=X/nP5kexLBl62iqsKB8+rasjCa5LGKYgLRPHdgVXK8o=;
+ b=Ri7x0ZtAET4VYDGOCLadvZRMUHRyDCLgEFj0SDLWzZaSpaMgZIDZWfckY+movK1xPD0CtpIIZ
+ k3g5dInyWwFAWLvVM4xfc+BRLgujbXBCJM2CWFXogiY78HC4mHJ48AN
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -70,54 +71,94 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add human-readable labels for all AD9910 IIO channels via the read_label
-callback.
+Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
+control Parallel Port, Digital Ramp Generator and OSK parameters.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/frequency/ad9910.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ .../ABI/testing/sysfs-bus-iio-frequency-ad9910     | 62 ++++++++++++++++++++++
+ MAINTAINERS                                        |  1 +
+ 2 files changed, 63 insertions(+)
 
-diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
-index e43df6265fd4..50d97ce937c7 100644
---- a/drivers/iio/frequency/ad9910.c
-+++ b/drivers/iio/frequency/ad9910.c
-@@ -1816,10 +1816,36 @@ static const struct fw_upload_ops ad9910_ram_fwu_ops = {
- 	.cancel = ad9910_ram_fwu_cancel
- };
- 
-+static const char * const ad9910_channel_str[] = {
-+	[AD9910_CHAN_IDX_PHY] = "phy",
-+	[AD9910_CHAN_IDX_PROFILE_0] = "profile[0]",
-+	[AD9910_CHAN_IDX_PROFILE_1] = "profile[1]",
-+	[AD9910_CHAN_IDX_PROFILE_2] = "profile[2]",
-+	[AD9910_CHAN_IDX_PROFILE_3] = "profile[3]",
-+	[AD9910_CHAN_IDX_PROFILE_4] = "profile[4]",
-+	[AD9910_CHAN_IDX_PROFILE_5] = "profile[5]",
-+	[AD9910_CHAN_IDX_PROFILE_6] = "profile[6]",
-+	[AD9910_CHAN_IDX_PROFILE_7] = "profile[7]",
-+	[AD9910_CHAN_IDX_PARALLEL_PORT] = "parallel_port",
-+	[AD9910_CHAN_IDX_DRG] = "digital_ramp_generator",
-+	[AD9910_CHAN_IDX_DRG_RAMP_UP] = "digital_ramp_up",
-+	[AD9910_CHAN_IDX_DRG_RAMP_DOWN] = "digital_ramp_down",
-+	[AD9910_CHAN_IDX_RAM] = "ram_control",
-+	[AD9910_CHAN_IDX_OSK] = "output_shift_keying",
-+};
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+new file mode 100644
+index 000000000000..fabc2a5417d1
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+@@ -0,0 +1,62 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_offset
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that allows frequency control through buffers, this
++		represents the base frequency value in Hz. The actual output frequency
++		is a result with the sum of this value.
 +
-+static int ad9910_read_label(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     char *label)
-+{
-+	return sysfs_emit(label, "%s\n", ad9910_channel_str[chan->address]);
-+}
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_scale
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that allows frequency control through buffers, this
++		represents the frequency modulation gain. This value multiplies the
++		buffer input sample value before it is added to a frequency offset.
 +
- static const struct iio_info ad9910_info = {
- 	.read_raw = ad9910_read_raw,
- 	.write_raw = ad9910_write_raw,
- 	.write_raw_get_fmt = ad9910_write_raw_get_fmt,
-+	.read_label = ad9910_read_label,
- 	.debugfs_reg_access = &ad9910_debugfs_reg_access,
- };
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase_offset
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that allows phase control through buffers, this
++		represents the base phase value in radians. The actual output phase
++		is a result with the sum of this value.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_offset
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that allows amplitude control through buffers, this
++		represents the value for a base amplitude scale. The actual output
++		amplitude scale is a result with the sum of this value.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_step
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Channels that sweep frequency values at determined rate use this value
++		to set the frequency step size in Hz.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase_step
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Channels that sweep phase values at determined rate use this value
++		to set the phase step size in radians.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_step
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Channels that sweep amplitude values at determined rate use this value
++		to set the amplite scale step.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_pinctrl_en
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Channels that supports pin control to enable/disable its output use
++		this attribute to set the pin control mode. When set to 1, the output
++		state is controlled by a physical pin, and the channel is enabled when
++		the pin is active. When set to 0, only software control is used to
++		enable/disable the channel output.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6403439b530d..edd87ee7da5f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1635,6 +1635,7 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+ F:	drivers/iio/frequency/ad9910.c
  
 
 -- 
