@@ -1,142 +1,127 @@
-Received: from mail-4323.protonmail.ch (mail-4323.protonmail.ch [185.70.43.23])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64AD6242D6C;
-	Fri, 17 Apr 2026 19:07:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.23
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 948BD34A3C5
+	for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 19:20:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776452858; cv=none; b=HKIH/G9auJYM9J1Xb8lMS4D+lRpn36XhiUr9UlN7TmUHWMBljrqsOYOshhsZRWMRqptP9cQeFyKC07bNb7zWZHvAX5K+z/MIKWmsZjNteZBxgBCHIp9iL++7IkEy2zfpYBhyX/McZENfWLHcTJxzVYd/2lu6GDrdjMJnQFQbizg=
+	t=1776453632; cv=none; b=As6D2BuZ23SS2rJwXVTIJl93St2Xk76icAX24PouJlldef9clTxO7VfQNDvxVHK0zR59BIwcR6Q59EQdAxO0xtG9Gxh3OL9hgaOW50+jQZ7xd8GXrHt/Adqoo1poUrG5Mdvoo+gl8X4l4abYfhqlBU97sMgGan+IzSdCGsDXENE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776452858; c=relaxed/simple;
-	bh=qAS0e48uAVyRkB1PEyF7MtvwBshJ2+J0XnQwyWlnmUE=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nhnGEDoDTLxLbTAo+UzSA1na9WvmiTBp5xAOkcMVRI7PUZdEuyWILcFaqtFXITbS2mjHf99T3L3wOxb/HZ5WkEa4kQ9axc3ybFCJHSBGKHGconJXBc5Gby/FkTdtCyVxID05NbxwdaKWznjl43cqIIEvqpmw36j4H7DjSMwOpL0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vrajashkr.com; spf=pass smtp.mailfrom=vrajashkr.com; dkim=pass (2048-bit key) header.d=vrajashkr.com header.i=@vrajashkr.com header.b=US5xJZ4v; arc=none smtp.client-ip=185.70.43.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vrajashkr.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vrajashkr.com
+	s=arc-20240116; t=1776453632; c=relaxed/simple;
+	bh=AhQ2P0ZW6jv37dh8PeYA5rxTC3ZYK6WkCOfPN0CfbhY=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=m4J+vOvFnpgtL9fOBr5ZcpZFl7CulVkwmpwiiAF0Iqo+/jUsg7C0k0Yt3pF/dNOEpbgJjCWj/OrnmG2PY7xHaokBwFmQVanpVTHHkQUMarPmhfdzS6zGnyL7qj6xGmRsMlKtOK7qPMyK7rdktNSDxC8kyF1WxWPvibPP8Eh+UCY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C7cxiUrY; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vrajashkr.com header.i=@vrajashkr.com header.b="US5xJZ4v"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vrajashkr.com;
-	s=protonmail3; t=1776452848; x=1776712048;
-	bh=ReQYU+/EBwCXhXoTvP1t9mmtth4hJCVc+tkZ18BSp9w=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=US5xJZ4vXTxQ8CpRxdWVr0CGa6DZ7iKxWmT3H0ftJp2Wdq6YHRRbcErqRTNRaCAwW
-	 bPt0Kg5iEulYbj5xvDASlHD//m2/kxOoZhOj4KodipBNYrBqu9KSCLOOxasWDXDg9c
-	 ATU6UXMTI7flD+ysHDKN/kKIxJPKL56EfttVJBkIH+j+aOpAlEKAp539me1m75o8gy
-	 nayv2QSy1MoV566KpGdEzmEg7DsDWMH2JXVh1H815cQ8+g6eDFW9c9pME9sEZhXAYO
-	 PIGEd3h0lbP6nPZAVq3XtAg+eVmDS5cV+JD/pN0BOyMSWt3ylDsuD+0TxD/AIcFIPA
-	 G00KwhlZmISbg==
-Date: Fri, 17 Apr 2026 19:07:25 +0000
-To: Conor Dooley <conor@kernel.org>
-From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, "H. Nikolaus Schaller" <hns@goldelico.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, luca@lucaweiss.eu
-Subject: Re: [PATCH v2] dt-bindings: iio: gyroscope: add mount-matrix for bmg160
-Message-ID: <xt0iLerdioxyPfs9gFZaQbsip_uxDE-hplc8YGNA7BCet-ZT9B0U3Y3TNXZg3gScVK6avywf-3YDK5Psjud3iLqll12DafMyvovfFfUTWAA=@vrajashkr.com>
-In-Reply-To: <20260416-level-unbitten-eb3bf8d4a6c7@spud>
-References: <20260416-bmg160-mount-matrix-dt-binding-v2-1-e66cf5cff8e8@vrajashkr.com> <20260416-level-unbitten-eb3bf8d4a6c7@spud>
-Feedback-ID: 192380685:user:proton
-X-Pm-Message-ID: 1bcacc1de08cc8ee01a8e9ac340e5a6e253b51fc
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C7cxiUrY"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2b458ca2296so7832765ad.0
+        for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 12:20:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776453631; x=1777058431; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=BEIIMeFGRLV2ppfXjLD5mOZum5LaVU5zRLgkJrDi3qM=;
+        b=C7cxiUrYKwVMB+/nSnVvPG452KqWtCsDDUxZoFhMbu/RyG24S94qXwS5M2NPzZyI7B
+         vddiORnY5S1MUsk8jHnlqHUsdimpym7Vt5c6inEY+GpvGDayGY5nz/8nGwhg4ClFj3VL
+         pRfKadpFh55ZTkfRrn/yiY9SZvofwFqIXojwvspXzNjZti6pqTK4SvZVpYdDCUec+iig
+         lVOYMdLv1n3itNxpVSwiRfpmJbgMLe9biaYhBPihtShmM71DGORZVCjAy7spo4nCkHcS
+         ppgQi2vaQoTB3bpZ3SNtSchUSHz8zgTHLNz5mpg1zV85ipws0t1zH5+xAX9aM+8enHDu
+         gdVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776453631; x=1777058431;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BEIIMeFGRLV2ppfXjLD5mOZum5LaVU5zRLgkJrDi3qM=;
+        b=VPU1/VATGUHLg2rxo3OZSJZ3K09U0Pm3WtSgs8bfX/LM50DxOHGxFtDh9ctOlJzF4k
+         ZdT7gLyBMhsRzr5unFiwcZbHxA90P4hLatRsfZSsTzO5zVnfQbUpFifNkt9SWSLU3YGF
+         CUSDkA6ns9qfScyzHnvD3IKf5bzCv0LCLru9BSuGIFz6q4pZmQ/fhg3TJLwXUAz0zymY
+         9sfiqdJW0TysqEEINUF72VyEOxralVI1uu+hDxK9a81TwGgh0EMhrZxHXTXOZ8v5gSS4
+         W9yyVEpK9jeYXq3bvBPVJmzXnIC5XZA0TilqMDUCjuJpmc/oFpkBZGs4/z819ck7KWi0
+         1eeQ==
+X-Gm-Message-State: AOJu0YyxM2WCRCvgtI9Dna4UuC8zQv/Eqq9IB0XSKCx3COgK6RQtUmlA
+	0Yydw0YsBpckkDAG82uhOGT5C8dqlLyhTz14ndmC7wkMgokUWOWvFnBf
+X-Gm-Gg: AeBDieui26fqyNIF0cFlBGywaXs/+ddylBZ9mmMMo4axBXQX8lOP/1LwbqGRDaat1yL
+	njXT2sCWgW5LwM9jPsJBE3/kUVjcKYtSH4I9RkHJZBk7KYkhYsZ+BnMj17kdphrMNhFRu34/8Qn
+	HNTuYjLaneoIuRGgP7iuzDTm5K2SOoRrNiwwpgbn2HIscEBKhlgqk34d8wPDID5BogkDhLtcVnr
+	yEf520UuJPMpNBab5sdPVuJDXMgoPsWw5OU1y2EkUGjfmTeeEh8TokdC9MmgnlS32odG5aC7r6j
+	wnBDYn2IBkCAC2kIvSOlng+SGyFo+sixYOoGnxd4sUUGH9y0ZonKI5F27gK7KkfBJM8ct2cG6SJ
+	2GBGggcMWVd52a7AFlyGe2P7TBt0SSC4XN62qaJBVxTWtNnwBtXsryAGkZcjEILTDhbbIzTuznd
+	EE75WAolbdt8hG5L66nJ2enoD1kGkn9CWLdpfhHk0Sr3aVmpFGPm2DiFccUw==
+X-Received: by 2002:a17:903:1a88:b0:2b0:5ec1:97c1 with SMTP id d9443c01a7336-2b5f9e85ceemr42488755ad.7.1776453630826;
+        Fri, 17 Apr 2026 12:20:30 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:791a:1e7a:b20d:a410:390e:ad9c])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5faa2f129sm25417035ad.29.2026.04.17.12.20.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Apr 2026 12:20:30 -0700 (PDT)
+Date: Sat, 18 Apr 2026 00:50:17 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: jic23@kernel.org, cosmin-gabriel.tanislav.xa@renesas.com,
+ demonsingur@gmail.com
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 8/8] iio: accel: adxl372: Use dev_err_probe
+User-Agent: Thunderbird for Android
+In-Reply-To: <20260417124924.353189-9-sanjayembedded@gmail.com>
+References: <20260417124924.353189-1-sanjayembedded@gmail.com> <20260417124924.353189-9-sanjayembedded@gmail.com>
+Message-ID: <11AEFA5E-58EF-47BA-A533-E996D395CB15@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Thursday, April 16th, 2026 at 21:12, Conor Dooley <conor@kernel.org> wro=
-te:
 
-> On Thu, Apr 16, 2026 at 08:33:21PM +0530, Vishwas Rajashekar via B4 Relay=
- wrote:
-> > From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-> >=20
-> > Adds mount-matrix as an optional property to dt-bindings
-> > for the bmg160 gyroscope as the driver reads this optional
-> > property during probe.
->=20
-> Ultimately, what the driver does is not relevant here. All that matters
-> is that the property is relevant to the hardware. Please come up with a
-> commit message that avoids mentioning linux drivers and instead explains
-> why it is relevant to the hardware.
->=20
-> pw-bot: changes-requested
->=20
-> Cheers,
-> Conor.
->=20
 
-Thank you for the feedback! I've updated the commit message in v3.
-
-> >=20
-> > Signed-off-by: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-> > ---
-> > The bmg160 driver reads an optional mount-matrix using
-> > "iio_read_mount_matrix" in "bmg160_core_probe" and stores
-> > this orientation data in "struct bmg160_data". As the "mount-matrix"
-> > property is used by the driver, this change proposes to add it to
-> > the corresponding dt-bindings.
-> > ---
-> > Changes in v2:
-> > - Addressed review feedback: add mount-matrix example for bmg160
-> > - Link to v1: https://patch.msgid.link/20260415-bmg160-mount-matrix-dt-=
-binding-v1-1-0e2c85964ee6@vrajashkr.com
-> >=20
-> > To: Jonathan Cameron <jic23@kernel.org>
-> > To: David Lechner <dlechner@baylibre.com>
-> > To: Nuno S=C3=A1 <nuno.sa@analog.com>
-> > To: Andy Shevchenko <andy@kernel.org>
-> > To: Rob Herring <robh@kernel.org>
-> > To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> > To: Conor Dooley <conor+dt@kernel.org>
-> > To: "H. Nikolaus Schaller" <hns@goldelico.com>
-> > Cc: linux-iio@vger.kernel.org
-> > Cc: devicetree@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > ---
-> >  Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml | 6 =
-++++++
-> >  1 file changed, 6 insertions(+)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg1=
-60.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > index 3c6fe74af0b8..ec97778cca78 100644
-> > --- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > @@ -22,6 +22,9 @@ properties:
-> >    vdd-supply: true
-> >    vddio-supply: true
-> > =20
-> > +  mount-matrix:
-> > +    description: an optional 3x3 mounting rotation matrix.
-> > +
-> >    spi-max-frequency:
-> >      maximum: 10000000
-> > =20
-> > @@ -52,6 +55,9 @@ examples:
-> >              reg =3D <0x69>;
-> >              interrupt-parent =3D <&gpio6>;
-> >              interrupts =3D <18 IRQ_TYPE_EDGE_RISING>;
-> > +            mount-matrix =3D "0", "1", "0",
-> > +                           "1", "0", "0",
-> > +                           "0", "0", "1";
-> >          };
-> >      };
-> >  ...
-> >=20
-> > ---
-> > base-commit: 591cd656a1bf5ea94a222af5ef2ee76df029c1d2
-> > change-id: 20260414-bmg160-mount-matrix-dt-binding-e76ddde94866
-> >=20
-> > Best regards,
-> > -- =20
-> > Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
-> >=20
-> >=20
+On 17 April 2026 6:19:24=E2=80=AFpm IST, Sanjay Chitroda <sanjayembeddedse=
+@gmail=2Ecom> wrote:
+>From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>
+>dev_err_probe() makes error code handling simpler and handles
+>deferred probe nicely (avoid spamming logs)=2E
+>
+>Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>---
+> drivers/iio/accel/adxl372=2Ec | 6 ++----
+> 1 file changed, 2 insertions(+), 4 deletions(-)
+>
+>diff --git a/drivers/iio/accel/adxl372=2Ec b/drivers/iio/accel/adxl372=2E=
+c
+>index 1a6ba94f54f4=2E=2Ee375d068a3f5 100644
+>--- a/drivers/iio/accel/adxl372=2Ec
+>+++ b/drivers/iio/accel/adxl372=2Ec
+>@@ -1316,10 +1316,8 @@ int adxl372_probe(struct device *dev, struct regma=
+p *regmap,
+> 	}
 >=20
+> 	ret =3D adxl372_setup(st);
+>-	if (ret < 0) {
+>-		dev_err(dev, "ADXL372 setup failed\n");
+>-		return ret;
+>-	}
+>+	if (ret < 0)
+>+		return dev_err_probe(dev, ret, "ADXL372 setup failed\n");
+>=20
+> 	if (chip_info->fifo_supported) {
+> 		ret =3D adxl372_buffer_setup(indio_dev);
 
-Regards,
-Vishwas
+Hi Cosmin,
+
+Your email address listed in MAINTAINERS (cosmin=2Etanislav@analog=2Ecom) =
+appears to be bouncing=2E
+
+I noticed recent commits from you using cosmin-gabriel=2Etanislav=2Exa@ren=
+esas=2Ecom and demonsingur@gmail=2Ecom, so I plan to update the entry accor=
+dingly=2E
+
+Could you please confirm whether you are still maintaining this subsystem =
+with renesas/gmail account ?
+
+Thanks,=20
+Sanjay Chitroda
