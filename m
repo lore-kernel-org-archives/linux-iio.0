@@ -1,190 +1,189 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com [209.85.217.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C440063CB;
-	Fri, 17 Apr 2026 00:29:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0776819995E
+	for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 00:51:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776385769; cv=none; b=YLgzlrx9YK+o14q6roS6pH/BqbFt847m4BQF1U2k4uREc2BikBLJkJHaP9TenCfZLp98sZjVp8tZVaqBMLJYpRWoMltoyuQXLh2kncnVG/28EWHLOHndafa9RuWSol9BXLzVOU8klbfDC7ocoyp2fd5jvzvYd68K74KgyPm0ptE=
+	t=1776387075; cv=none; b=EKLAUfnKoBzx4ZBosBKmCRdJdfdFToxIfnzuRLBrdQCp+xvAazGGU8YCDhYICs1DVGmTHR9yZtoKrzEEGiEzAi0v4WhuFTgwWcflTJhi9RR0ko3C8LiqeQ3O7Aox/j00SYycsmDq1zH24MEr6WFjJjmHQseYw8XOb30NJtkzWA4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776385769; c=relaxed/simple;
-	bh=w3KzewaqSR/F4Ted4YsQScaPGEr/h8Rg5GTjj4Hb2PU=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=h0AUVXIswx/Jc73Y9EHo4y2NBSOlhFuCjK8p7ZTjjglzTgzyUpzmUc75GLn+TS4B6F+KoycFVpmIMol4qj+rigatEcdZngJ/STNjLQ0dFup2KZVIZ1ZvWKZry+67SFlU1nSMq4pdleairiGGMGvyygK9Xe4g1CHlx2IMk2cOpAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=T5wVQmc+; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776387075; c=relaxed/simple;
+	bh=FHw3hDoedxqM7jrSk4Ox7v2kyPR9viJ+hZIDFBKK34o=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=sVIGxqcdhz/H42T5EelgZ36n9PlhZhOJlOIUQwIvh+SEz1gtGubNzEHeskewTP9did1jB6E6NiGuCk/SToJgtuTc7gRvSXHmybg8XF57XdV8QWafU2GdBnUGSVeUFz+Tl/qscTJzGQZ9KPNlCSd3Y4D0QF9PqWrJqQ6TasAGz2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=fi1RnodE; arc=none smtp.client-ip=209.85.217.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T5wVQmc+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776385768; x=1807921768;
-  h=from:to:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=w3KzewaqSR/F4Ted4YsQScaPGEr/h8Rg5GTjj4Hb2PU=;
-  b=T5wVQmc+Ncpe0A4u/4cUcgc64yEVLSeViBl3TbVXaKfiPCnUV9zj3+Ax
-   mBlc+PFi5b5b91MREAs7jMxmmEKK+3B5JOUPhmKNsiSBBiJFkZCjHvJH9
-   JIug4kFRoFieHdNYNz1hqbKRjaTDqBfNPG69IRm9hyb+lUFw0y/dybdcu
-   kWoaUQo71yDcdBiRX/h+eF6YOXLGBaWbFBh/uA1jna0HCAH4sPjuqFmQj
-   TbLEHONOdvzscDfzUeSBJpNn9gtir4HLCOJm+a9zLC3LftMioy5s23fXG
-   5KcChnP1Rvy4QwjSeA9D82v45sh5AuvCU9VO19V8yIjE8R3solDvQQGXa
-   w==;
-X-CSE-ConnectionGUID: lUBIx2OxRu+7srzCy5Xo+g==
-X-CSE-MsgGUID: 6qgW2h9hQHWcIhiNUk+lNg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11761"; a="80998736"
-X-IronPort-AV: E=Sophos;i="6.23,183,1770624000"; 
-   d="scan'208";a="80998736"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2026 17:29:27 -0700
-X-CSE-ConnectionGUID: P1aez2PsQEy2rmH3A6oiqQ==
-X-CSE-MsgGUID: X8ehzYhJT2CjcncbCh5bMQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,183,1770624000"; 
-   d="scan'208";a="226535651"
-Received: from junxiao.bj.intel.com ([10.238.152.69])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2026 17:29:24 -0700
-From: Junxiao Chang <junxiao.chang@intel.com>
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="fi1RnodE"
+Received: by mail-vs1-f48.google.com with SMTP id ada2fe7eead31-6058a955e04so123717137.0
+        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2026 17:51:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google; t=1776387070; x=1776991870; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=k9YwyMF5JlyEibEyL5rY/08LB16Jwk11gInJ/3AQN/o=;
+        b=fi1RnodE03pCva8/HcIVDLS7HMSXWyIr9ztsfUqPG1qJiRz9wzS/Xhx4D7WaorUVOP
+         76IAkI0yO3J5lvVnmHB1c7I30pIIVwP8tlGHqbkdZzIbPN4jWoGddTzHCDvYhMeFfP5I
+         gJAywWgoO8XCHLGfk/4LGkg9sY1YCVy5LFnttNgareeYI3NHLPFDaM4kZoIlSX+UmJf4
+         TPVogP+6RIkYTPntk2vUytKUStJhOTxKrqxxomp7IcZNSLtwjSc80Z6bB+eTqVByhqYA
+         yt+hf4EGKVP0gx2WLPg9WrPPJHY8/xp50+afAxNBZh5njqbQitMzXSHJrW6ytXu2ZHF+
+         8n2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776387070; x=1776991870;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=k9YwyMF5JlyEibEyL5rY/08LB16Jwk11gInJ/3AQN/o=;
+        b=hKbqLg6txl8VP+OCsLZniqUnJ8tuVC9nIjGo/OnzIPftEdQdKkibB6hbpTZUk3St0U
+         9SgGzVbOcFTPrqoPf/cHm2V1bKczdKofwWCjPthbP0jgp7ERxqEYhFcPJgXgyXpUxcZn
+         ltIWhROsG3PZZTyiYtrFeCcoJLxiX/48X0sN7YprKN85cI/l0hU5hvcyt6dgLE8+4QbB
+         FZ4dvLAyWkoJ31I1HpQKMdaZDAYj2uw/HL88Mr9Z9aw/Amz6tyGwSgKMK0SNA2Gq5eYQ
+         5HmNuoLipM3W55xz3FkGn8ojFEsOvxlYHPqIfFEsj8/cLMmDhalBCgpPjQ1rrxJWYa75
+         0+wQ==
+X-Forwarded-Encrypted: i=1; AFNElJ89q7z8C4UWemktV7G8pYTHhBeINI3VM0RxIeAY4Hl4lrlVfH3CJOFVi2Re+PGa9XjwDOOi0eocIYA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw5w9i2zFNz76lYVSffuOUysw7UzmUruemnqSe/CfqoaJMDWa2b
+	pup48e1/U3IvkoHf22PIG5DG1PzsWEeJOBOtYVFhkQjlBwvozbbCKqjFHiL1EUKiPMQ=
+X-Gm-Gg: AeBDievYgM/Gscrb84/QwVnxkIUS9qPtFSPR/fcv8Au2CgxRwG0AkQ2IMuL7uylH0Xg
+	f1kdkGtf+T1qFqLVDifjd0zeys8ngPF64Z+ZAOxV6BRW2cPdovodAs+hfBsA/TK6+ReRAzi0mF9
+	M0WVCzcXDrSSVpU19fxRIQ4RF43N21c9QA48oj1jfNnlFFATjE560f7B0xYKwnu3EM+LMscAr7b
+	uUZPpVDV1nfU4Ijo54PmQ/lil2S65TcNPU951f7WKEq3SkBdEaSC75byOxLVWu169czJPXIJGV5
+	O54LBRPPjwz0q1s9GvL73w69guz/pXOldn6NAO5D7GhJfWdun1ycZaHs79wNVFRZB00L9YDxJNi
+	ZrbQVL6JwO5grgsqBTMGJAAL2Nxx103jL6CYq23OoB1QJmQXp7ILWtlpqgwF9hPL9GM5BQJ/RJj
+	QVKibUdRamuUKTQpJ6HYN9nFhgT+zuYzMREVEuQvBypR/sP/rNEGbA6IjZnfBb
+X-Received: by 2002:a05:6102:5114:b0:608:cdd9:2bcd with SMTP id ada2fe7eead31-616fe05a9fcmr278012137.15.1776387069947;
+        Thu, 16 Apr 2026 17:51:09 -0700 (PDT)
+Received: from avocado.. (mvx-177-92-77-170.mundivox.com. [177.92.77.170])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-958909bd5e4sm40040241.6.2026.04.16.17.51.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Apr 2026 17:51:08 -0700 (PDT)
+From: Marcelo Machado Lage <marcelomlage@usp.br>
 To: jic23@kernel.org,
 	dlechner@baylibre.com,
 	nuno.sa@analog.com,
-	andy@kernel.org,
-	gye976@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	lars@metafoo.de,
-	junxiao.chang@intel.com
-Subject: [PATCH] iio: buffer: fix warning in requesting threaded irq
-Date: Sat, 18 Apr 2026 08:23:34 +0800
-Message-ID: <20260418002334.3643504-1-junxiao.chang@intel.com>
-X-Mailer: git-send-email 2.43.0
+	andy@kernel.org
+Cc: Marcelo Machado Lage <marcelomlage@usp.br>,
+	Vinicius Lira <vinilira@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: adc: mcp3422: write bit operations with bitfield macros
+Date: Thu, 16 Apr 2026 21:50:40 -0300
+Message-Id: <20260417005041.484742-1-marcelomlage@usp.br>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-IRQF_ONESHOT is for threaded IRQ. If there is no threaded IRQ
-handler, this flag should not be set.
+Replace manual bit manipulations with GENMASK(), FIELD_GET(),
+FIELD_PREP() and FIELD_MODIFY() calls. The resulting code is more
+readable and maintainable, and some macros previously defined in the
+header are not needed anymore.
 
-This change fixes a warning during booting with kernel v7.0-rc3:
-
-[   18.322081] WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x1639/0x25=
-10, CPU#3: iio-sensor-prox/974
-[   18.322097] Modules linked in: snd_hda_intel snd_sof_pci_intel_mtl snd_s=
-of_intel_hda_generic soundwire_intel snd_sof_intel_hda_sdw_bpt snd_sof_inte=
-l_hda_common snd_soc_hdac_hda snd_sof_intel_hda_mlink snd_sof_intel_hda sou=
-ndwire_cadence snd_sof_pci snd_sof_xtensa_dsp snd_soc_sdw_utils snd_sof snd=
-_sof_utils snd_hda_ext_core snd_hda_codec snd_hda_core snd_intel_dspcfg snd=
-_intel_sdw_acpi snd_soc_acpi_intel_match snd_soc_acpi_intel_sdca_quirks sou=
-ndwire_generic_allocation snd_soc_acpi snd_hwdep soundwire_bus snd_soc_sdca=
- snd_soc_core snd_compress intel_uncore_frequency ac97_bus intel_uncore_fre=
-quency_common snd_pcm_dmaengine x86_pkg_temp_thermal intel_powerclamp snd_p=
-cm coretemp snd_seq_midi snd_seq_midi_event kvm_intel snd_rawmidi i915(+) b=
-infmt_misc snd_seq kvm snd_seq_device snd_timer irqbypass prime_numbers cmd=
-linepart ghash_clmulni_intel processor_thermal_device_pci drm_buddy snd aes=
-ni_intel processor_thermal_device spi_nor ttm nls_iso8859_1 mei_gsc_proxy i=
-ntel_rapl_msr wmi_bmof rapl mtd intel_cstate drm_client_lib
-[   18.322243]  processor_thermal_wt_hint i2c_i801 hid_sensor_rotation hid_=
-sensor_incl_3d soundcore hid_sensor_accel_3d hid_sensor_prox hid_sensor_mag=
-n_3d hid_sensor_custom_intel_hinge hid_sensor_als hid_sensor_gyro_3d platfo=
-rm_temperature_control hid_sensor_trigger processor_thermal_soc_slider indu=
-strialio_triggered_buffer intel_pmc_core crc8 i2c_mux platform_profile kfif=
-o_buf processor_thermal_rfim i2c_smbus drm_display_helper hid_sensor_iio_co=
-mmon processor_thermal_rapl industrialio intel_vpu cec intel_rapl_common me=
-i_me processor_thermal_wt_req rc_core drm_shmem_helper processor_thermal_po=
-wer_floor mei idma64 i2c_algo_bit drm_kms_helper processor_thermal_mbox int=
-3403_thermal pmt_telemetry int340x_thermal_zone pmt_discovery pmt_class int=
-3400_thermal intel_pmc_ssram_telemetry acpi_thermal_rel intel_pmc_pwrm_tele=
-metry intel_hid input_leds acpi_tad acpi_pad sparse_keymap joydev mac_hid s=
-ch_fq_codel msr parport_pc ppdev lp parport efi_pstore nfnetlink dmi_sysfs =
-autofs4 hid_sensor_custom ucsi_acpi typec_ucsi hid_sensor_hub
-[   18.322391]  typec spi_pxa2xx_platform uas dw_dmac dw_dmac_core ahci usb=
-_storage usbhid hid_generic spi_pxa2xx_core libahci e1000e thunderbolt vmd =
-video pinctrl_meteorpoint pinctrl_meteorlake wmi pinctrl_intel
-[   18.322435] CPU: 3 UID: 0 PID: 974 Comm: iio-sensor-prox Not tainted 7.0=
-.0-rc3 #16 PREEMPT(lazy)
-[   18.322443] Hardware name: Intel Corporation Arrow Lake Client Platform/=
-MTL-S UDIMM 1DPC EVCRB, BIOS MTLSEMI1.R00.5124.D41.2504210658 04/21/2025
-[   18.322447] RIP: 0010:__setup_irq+0x1639/0x2510
-[   18.322455] Code: b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f =
-84 75 f0 ff ff 48 8b 7d c8 e8 21 ea 99 00 e9 67 f0 ff ff e8 87 2f 21 00 <0f=
-> 0b 31 ff 44 89 ee e8 3b 25 21 00 45 85 ed 0f 84 f0 f1 ff ff bb
-[   18.322461] RSP: 0018:ffff8881387c7698 EFLAGS: 00010246
-[   18.322467] RAX: 0000000000000000 RBX: 0000000000002000 RCX: 00000000000=
-00000
-[   18.322471] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000000=
-00000
-[   18.322475] RBP: ffff8881387c7748 R08: 0000000000000000 R09: 00000000000=
-00000
-[   18.322479] R10: 0000000000000000 R11: 0000000000000000 R12: 00000000000=
-00400
-[   18.322483] R13: 0000000000000000 R14: ffff888102718f20 R15: ffff8881027=
-18f00
-[   18.322488] FS:  0000700e74a2a900(0000) GS:ffff8888ab3c4000(0000) knlGS:=
-0000000000000000
-[   18.322493] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   18.322497] CR2: 0000574bb155c068 CR3: 000000010ae6e006 CR4: 0000000000f=
-72ef0
-[   18.322502] PKRU: 55555554
-[   18.322505] Call Trace:
-[   18.322507]  <TASK>
-[   18.322510]  ? kasan_save_track+0x14/0x40
-[   18.322519]  ? __kasan_kmalloc+0xc3/0xd0
-[   18.322525]  request_threaded_irq+0x2c7/0x490
-[   18.322533]  iio_trigger_attach_poll_func+0x353/0x6b0 [industrialio]
-[   18.322603]  ? __bitmap_equal+0xcb/0x1d0
-[   18.322614]  __iio_update_buffers+0x2420/0x2c70 [industrialio]
-[   18.322800]  ? do_syscall_64+0xcf/0x15d0
-[   18.322813]  ? __pfx___iio_update_buffers+0x10/0x10 [industrialio]
-[   18.322858]  ? __kasan_check_write+0x14/0x30
-[   18.322869]  ? __pfx_mutex_lock+0x10/0x10
-[   18.322877]  enable_store+0x183/0x270 [industrialio]
-[   18.322926]  ? __pfx_enable_store+0x10/0x10 [industrialio]
-[   18.322975]  ? __pfx__copy_from_iter+0x10/0x10
-[   18.322986]  ? __pfx_enable_store+0x10/0x10 [industrialio]
-[   18.323035]  dev_attr_store+0x5e/0x90
-[   18.323046]  ? __pfx_dev_attr_store+0x10/0x10
-[   18.323053]  sysfs_kf_write+0x1e8/0x290
-[   18.323062]  kernfs_fop_write_iter+0x406/0x5f0
-[   18.323068]  ? __pfx_sysfs_kf_write+0x10/0x10
-[   18.323076]  vfs_write+0x71c/0xea0
-
-Fixes: 23f2d735a932 ("iio: Add helper function for initializing triggered b=
-uffers")
-Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+Signed-off-by: Marcelo Machado Lage <marcelomlage@usp.br>
+Co-developed-by: Vinicius Lira <vinilira@usp.br>
+Signed-off-by: Vinicius Lira <vinilira@usp.br>
 ---
- drivers/iio/buffer/industrialio-triggered-buffer.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iio/adc/mcp3422.c | 43 ++++++++++++++++-----------------------
+ 1 file changed, 18 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/i=
-io/buffer/industrialio-triggered-buffer.c
-index 9bf75dee7ff86..e0fc51bd78bee 100644
---- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-+++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-@@ -44,6 +44,7 @@ int iio_triggered_buffer_setup_ext(struct iio_dev *indio_=
-dev,
- 	const struct iio_dev_attr **buffer_attrs)
- {
- 	struct iio_buffer *buffer;
-+	unsigned long flags =3D 0;
- 	int ret;
-=20
- 	/*
-@@ -62,9 +63,11 @@ int iio_triggered_buffer_setup_ext(struct iio_dev *indio=
-_dev,
- 		goto error_ret;
- 	}
-=20
-+	if (thread)
-+		flags |=3D IRQF_ONESHOT;
- 	indio_dev->pollfunc =3D iio_alloc_pollfunc(h,
- 						 thread,
--						 IRQF_ONESHOT,
-+						 flags,
- 						 indio_dev,
- 						 "%s_consumer%d",
- 						 indio_dev->name,
---=20
-2.43.0
+diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+index 50834fdcf738..d93036bf9a85 100644
+--- a/drivers/iio/adc/mcp3422.c
++++ b/drivers/iio/adc/mcp3422.c
+@@ -13,6 +13,7 @@
+  * voltage unit is nV.
+  */
+ 
++#include <linux/bitfield.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+ #include <linux/module.h>
+@@ -25,9 +26,9 @@
+ #include <linux/iio/sysfs.h>
+ 
+ /* Masks */
+-#define MCP3422_CHANNEL_MASK	0x60
+-#define MCP3422_PGA_MASK	0x03
+-#define MCP3422_SRATE_MASK	0x0C
++#define MCP3422_CHANNEL_MASK	GENMASK(6, 5)
++#define MCP3422_PGA_MASK	GENMASK(1, 0)
++#define MCP3422_SRATE_MASK	GENMASK(3, 2)
+ #define MCP3422_SRATE_240	0x0
+ #define MCP3422_SRATE_60	0x1
+ #define MCP3422_SRATE_15	0x2
+@@ -38,13 +39,9 @@
+ #define MCP3422_PGA_8	3
+ #define MCP3422_CONT_SAMPLING	0x10
+ 
+-#define MCP3422_CHANNEL(config)	(((config) & MCP3422_CHANNEL_MASK) >> 5)
+-#define MCP3422_PGA(config)	((config) & MCP3422_PGA_MASK)
+-#define MCP3422_SAMPLE_RATE(config)	(((config) & MCP3422_SRATE_MASK) >> 2)
+-
+-#define MCP3422_CHANNEL_VALUE(value) (((value) << 5) & MCP3422_CHANNEL_MASK)
+-#define MCP3422_PGA_VALUE(value) ((value) & MCP3422_PGA_MASK)
+-#define MCP3422_SAMPLE_RATE_VALUE(value) ((value << 2) & MCP3422_SRATE_MASK)
++#define MCP3422_CHANNEL(config)		FIELD_GET(MCP3422_CHANNEL_MASK, config)
++#define MCP3422_PGA(config)			FIELD_GET(MCP3422_PGA_MASK, config)
++#define MCP3422_SAMPLE_RATE(config)	FIELD_GET(MCP3422_SRATE_MASK, config)
+ 
+ #define MCP3422_CHAN(_index) \
+ 	{ \
+@@ -138,10 +135,10 @@ static int mcp3422_read_channel(struct mcp3422 *adc,
+ 
+ 	if (req_channel != MCP3422_CHANNEL(adc->config)) {
+ 		config = adc->config;
+-		config &= ~MCP3422_CHANNEL_MASK;
+-		config |= MCP3422_CHANNEL_VALUE(req_channel);
+-		config &= ~MCP3422_PGA_MASK;
+-		config |= MCP3422_PGA_VALUE(adc->pga[req_channel]);
++
++		FIELD_MODIFY(MCP3422_CHANNEL_MASK, &config, req_channel);
++		FIELD_MODIFY(MCP3422_PGA_MASK, &config, adc->pga[req_channel]);
++
+ 		ret = mcp3422_update_config(adc, config);
+ 		if (ret < 0) {
+ 			mutex_unlock(&adc->lock);
+@@ -211,10 +208,8 @@ static int mcp3422_write_raw(struct iio_dev *iio,
+ 			if (val2 == mcp3422_scales[sample_rate][i]) {
+ 				adc->pga[req_channel] = i;
+ 
+-				config &= ~MCP3422_CHANNEL_MASK;
+-				config |= MCP3422_CHANNEL_VALUE(req_channel);
+-				config &= ~MCP3422_PGA_MASK;
+-				config |= MCP3422_PGA_VALUE(adc->pga[req_channel]);
++				FIELD_MODIFY(MCP3422_CHANNEL_MASK, &config, req_channel);
++				FIELD_MODIFY(MCP3422_PGA_MASK, &config, adc->pga[req_channel]);
+ 
+ 				return mcp3422_update_config(adc, config);
+ 			}
+@@ -241,10 +236,8 @@ static int mcp3422_write_raw(struct iio_dev *iio,
+ 			return -EINVAL;
+ 		}
+ 
+-		config &= ~MCP3422_CHANNEL_MASK;
+-		config |= MCP3422_CHANNEL_VALUE(req_channel);
+-		config &= ~MCP3422_SRATE_MASK;
+-		config |= MCP3422_SAMPLE_RATE_VALUE(temp);
++		FIELD_MODIFY(MCP3422_CHANNEL_MASK, &config, req_channel);
++		FIELD_MODIFY(MCP3422_SRATE_MASK, &config, temp);
+ 
+ 		return mcp3422_update_config(adc, config);
+ 
+@@ -377,9 +370,9 @@ static int mcp3422_probe(struct i2c_client *client)
+ 
+ 	/* meaningful default configuration */
+ 	config = (MCP3422_CONT_SAMPLING
+-		| MCP3422_CHANNEL_VALUE(0)
+-		| MCP3422_PGA_VALUE(MCP3422_PGA_1)
+-		| MCP3422_SAMPLE_RATE_VALUE(MCP3422_SRATE_240));
++		| FIELD_PREP(MCP3422_CHANNEL_MASK, 0)
++		| FIELD_PREP(MCP3422_PGA_MASK, MCP3422_PGA_1)
++		| FIELD_PREP(MCP3422_SRATE_MASK, MCP3422_SRATE_240));
+ 	err = mcp3422_update_config(adc, config);
+ 	if (err < 0)
+ 		return err;
+-- 
+2.34.1
 
