@@ -1,110 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEFB23A0B1D;
-	Fri, 17 Apr 2026 08:57:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776416274; cv=none; b=AEmDgHd1nbujzs5Pogsue/EAgrjTEsRttcAWvQZd0UYV8n4b7PEAfbGJI4wGaO9oDOwEQwtVjTZMqBqBTwV1wd5sDiCny4+/TPJo7Uo4o6iojIJnqGX4jgJ+u0xSilYKdorspUFh6NRaXPHBAvNyVw0eQF0WZz12onugyo5/9KM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776416274; c=relaxed/simple;
-	bh=fbAp3aqHBovUzDTm4xwPW3hSnIqJnovhr4kePKGtDKo=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=r587rhJlr/upR0+x7s004NVI+bh04bnSgesDGIGG46zu4pBf7VnKyfMoMUc5tR0HkGI1UUUjb6UOAWI1BMgYd++cvp4m058HC3MlFwKt7aXH3ZElSwiJz/ST5YKBF3CiCUgofP2gQpNRhxNWuiiSWyuG7W27JuKYULNJKVj2LTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nyapiF5A; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6934939FCD7
+	for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 09:41:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776418902; cv=pass; b=O+A3nOJmFUpBG9XdjxY4hFXmey35e0wEEXeg+Lu9SzdxIRMr9P/KwAjIxTFQ/SzV4q4PLHkrBMRtWIQFotgTX3Af6+yQ/HTvQIEgzjfvhQpT4322TinZmQgaJlSIMtJiAGHCXxRTAmbxQrZTUzMSZVGEp5jw3VYumwaYIhUZ9t8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776418902; c=relaxed/simple;
+	bh=JfJAqk5oIrZsohve8ZfE/wBhlkGru1jKp17SUQ6K+xQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=favPLJI5tSRfmCnnKAC27las5znbZXjLHDzIAp6MjMkq9Kg+AEUv0mVfyF9fcdW4d6o1Ad1saTGCn2jRTrLmOIgJjTtaoag4Vt9wzunK4EHAvi/U8onFbZqaC3+wvhar2SXbodU4cZzStjLFsTiY7Zhl9FJyTt/YCMezO6BhBfA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rkpKUZ9Y; arc=pass smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nyapiF5A"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776416273; x=1807952273;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=fbAp3aqHBovUzDTm4xwPW3hSnIqJnovhr4kePKGtDKo=;
-  b=nyapiF5AXT6SwGXio3rKEdtrUxZvd1xZiBIz9qMpyzG7/DANbGTJiWfJ
-   +yz1mTCuQVhvcby6fJmJoeIm30DQyyNvZdPEFud+c1eLmag3lmPNxz3do
-   uqPbZSl7sKMEYAzeiVy+64uoTrvO+FQevH/jUqwTQWthDzCcET/EgIPc9
-   3SNSgT/yttbShxWerbjka19Cs+3zI1tRoUir11MX7CJH34RFQckz5SX8C
-   VG4Sk5sQuAO8AV+AeBkOs/s/pd0sEcuNGnSKaTO0KTGk8/T+1s+gQov4P
-   MdH7RzqLEXFCtC+OhSC1qS9eRCJsXDYA5hpQL/PZuO83+kCjwbbaa+YiE
-   A==;
-X-CSE-ConnectionGUID: Q4fKDiseSRG8lkgAQ5M1Bg==
-X-CSE-MsgGUID: sP5za14jRvaPWowou2qhAA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11761"; a="77338369"
-X-IronPort-AV: E=Sophos;i="6.23,184,1770624000"; 
-   d="scan'208";a="77338369"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 01:57:52 -0700
-X-CSE-ConnectionGUID: btDKY4XqTU2mKdrAHTr1Cg==
-X-CSE-MsgGUID: 0HUu8PNVT9yNmJRWZlZdUg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,184,1770624000"; 
-   d="scan'208";a="235941672"
-Received: from junxiao.bj.intel.com ([10.238.152.69])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 01:57:49 -0700
-From: Junxiao Chang <junxiao.chang@intel.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	gye976@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	lars@metafoo.de,
-	junxiao.chang@intel.com
-Subject: [PATCH v2] iio: buffer: fix warning in requesting threaded irq
-Date: Sat, 18 Apr 2026 16:51:56 +0800
-Message-ID: <20260418085156.121947-1-junxiao.chang@intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260418002334.3643504-1-junxiao.chang@intel.com>
-References: <20260418002334.3643504-1-junxiao.chang@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rkpKUZ9Y"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-48897fd88ebso5100375e9.2
+        for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 02:41:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776418900; cv=none;
+        d=google.com; s=arc-20240605;
+        b=NdOMJaIrtCTV7ed7cJiF3Cm7iq2Yc+x4jzC3/xZnrAnYMNXKMN662k+5IMs3doVkg1
+         pkQjZatEeJbqkqxyvbacepYnmoaqyQ8aPb2e1VD31CRKHXy/v7Y9FvJtLQHl+Tyizvpg
+         CCp/irsy8IPYkHocY6FQmIaWjEkwvM67e40oCumryLv3WO3UI+obSk44Wa+Ji0ZuuPzf
+         zxySai+tF3Y1F3c9J3ACZABcYKqWsZkS5kxCSd6aKcTvrPeI62HkUb0tmVouR4kWuvps
+         bROLy1lHMJaIbgArgJsHejgDrBPjpnjrf0GzkchJSNp5O5bZOF/8R9xvXIK4QinCu+GR
+         /emw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=QrDrIe8FR3tZyBg9NmE79HAi9ciGBsGaf6xAQfWRS8o=;
+        fh=VFw0yyaIVXxU6d4V1WOIgJ8a6EYXcKUj6Ms9AxxCTlA=;
+        b=IIl1NKr4yqRiIDQKnIpWoVxQ+jYQf3aNkVUqidlMIDtGOfkR9IMM3jsk9Jgzdl2OFm
+         ih12UCDOYoTRxoCuvZIXRrZJDPsxF1LJvVJqd7EOdPrf+UqPhyizyuByaDLwExNvho9c
+         XtKlDtWe6hGPK5qeHJlEDiaVUM+VNnW3Fl42Koi1OB0ljc1orpFw/qef1VMYtyWpDW7F
+         vvf9MQs3emrPiYuyZ+MeE6f2YLBz4XOsYjReFtQzug+CIES1GL6mXcaAUsDJE2mnmGoR
+         Lv6SyOMhSi9t2XkSGBzC6Jr7ELWEqbIYkTLLc/PbuVqQAgOO0aV4p+2tnluSSlgBEAp5
+         bdpg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776418900; x=1777023700; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=QrDrIe8FR3tZyBg9NmE79HAi9ciGBsGaf6xAQfWRS8o=;
+        b=rkpKUZ9YtpVMpNO4u1+NfQVvCSINYZlHUvZayQokEqXUEFOE7MY3IqvYhr83xNRkPY
+         tb3CMokn2e1AFXWOGzlGRJ10bERx07zbbYN81pyYn085hBbpd4W9efKA/baidfy37A2m
+         TdzxnuY9im2bGfsO0yfKgHw5wLM/J3VnRqH2+A5Z1j/Ap49w8c8ITI7LICU6XPT5m8uG
+         I84u/3de3sxwz7/Ww2UxA/KhJxFnV6A9S2BAFotu7PMle69x20kgj82AbLjRxuq5uo2Q
+         0wkH3Njdv3KS1z3W30TPdxZgb2udbJ3gTpBCdvEsQw0q9NCAcLKP6KQj34/Ag0ougbwJ
+         2tFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776418900; x=1777023700;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QrDrIe8FR3tZyBg9NmE79HAi9ciGBsGaf6xAQfWRS8o=;
+        b=nKeV0L9+DSOXSTewQVEJYw6G/Xe4OCYwTKoaZmNJeSG4awE6GWTJon0gMAdiHqgFW3
+         68014yScXJeQDDHfTBTluzCbZy7Z0AV+glJLZYEZpNFPQXXt0tDvTGocY2eK8IGuKOX/
+         B4iormr/xdSNwcG8P5/Tnohu1HUtx/EM9o9O736shMdbrN9VeenP0yUZ/KX7+EqG1tfw
+         Jgx5Z33aONTQtY/i0ndGI6zgZDBdOY1HbM0E4jF5VOPm4nq8uOzSuh0BRoFz5dVGZ9pp
+         UFJyleJcB52aZzqbbmTOvn4AB6f3XNxSMUOBDjEU1gqE/oDq8suk30p8IVDrliHXxCIz
+         ZETA==
+X-Forwarded-Encrypted: i=1; AFNElJ+aa6e+X58gRa7RD7MmF+WnItN19rsdxSM1vE6a4UjPTayrxLgyskgoukS20eR7ZP3e2SLI5y/jFLg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YweTTwTxZBoAc6vWMLgpozORX0fEyyaG6eT3lZsDa4Tnom7oAYs
+	eZAezIfhHSqMtWj4YWyeBJsr5S8n5sRprQZj8MKsVMZBTgAATno7/RGtPHVhxrKi/JLvVWlKCKZ
+	7xPROC52FTaI9jk2rTYbJySGfyizqikI=
+X-Gm-Gg: AeBDieusTXt1ISIPXkqJ2yY5Nvovaf1wTMn1lukBnBv9AjUCsakZQfxDyPTISf+s1DZ
+	TX5j6bxkxk8ITJpZ4XdhjV/JwCTodFpsD+0uMv0/9J9o4bCPhF2orp8tQpReu/2YKubtJlpvWE9
+	mMPUD1vpY5RF42ritsnbT3vJGRDuSd98xjuUTlkiFOJxiRvxoUcBMZ7i26jIJALshSsHb/q669n
+	IcpLVVc/kzrorHiQ+YaDFk1HFz2k0ZHiDDgBaLdbpUPfzjgD/nUiYewlkRGB1+tX+DQg+dSJb2o
+	kwXW7cqTgfYes0QPNXOXvOWdrMOqWPLQjga9a0j0XgO16ZiLRJhy6nN9F2i5JGe8sZbOWS5AOPt
+	yOx3DvHtHLgTfbGTDXRHz86EEm19pPlXBUtJkzDxKbBc0bDaiTCZ8wylFUilFrGgOu0FjYhOVZz
+	pHGcIlfqYahU7Mbftf
+X-Received: by 2002:a05:600c:8587:b0:488:a797:f0ac with SMTP id
+ 5b1f17b1804b1-488fb7880bdmr19258525e9.28.1776418899584; Fri, 17 Apr 2026
+ 02:41:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260416065118.1299-1-joshua.crofts1@gmail.com>
+ <20260416065118.1299-2-joshua.crofts1@gmail.com> <aeCe9Za3aGPiRFC1@ashevche-desk.local>
+In-Reply-To: <aeCe9Za3aGPiRFC1@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Fri, 17 Apr 2026 11:41:28 +0200
+X-Gm-Features: AQROBzDqnTOn1YvsDC2Rr16HAGzs8AJwRihGFl_bNTLs3HtHHbMW3-SABh6dQ6I
+Message-ID: <CALoEA-wTk+32wUv3M_wLX-+4Fi=6BjLh6UsRZYqQM1Wcf+-+5Q@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] iio: frequency: ad9832: remove kernel.h proxy header
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-IRQF_ONESHOT is for threaded IRQ. If there is no threaded IRQ
-handler, this flag should not be set.
+On Thu, 16 Apr 2026 at 10:34, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> While I gave a tag, it still seems need an improvement, id est
+> there are missing headers:
+>
+> array_size.h
+> dev_printk.h
+> kstrtox.h
+> mod_devicetable.h
+> mutex.h
+> types.h
+>
+> asm/byteorder.h
+>
+> and unneeded one(s):
+> device.h
 
-This change fixes a warning during booting with kernel v7.0-rc3:
+Adding the headers above is fine, but removing device.h even
+if there are things like struct device_attribute in the code? I know
+linux/iio/iio.h includes device.h but I thought that we're trying to
+eliminate these "includes in includes" unless they're trivial (like
+linux/bits.h in linux/bitops.h).
 
-WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x1639/0x2510, CPU#3: iio-sensor-prox/974
-RIP: 0010:__setup_irq+0x1639/0x2510
-Call Trace:
-request_threaded_irq+0x2c7/0x490
-iio_trigger_attach_poll_func+0x353/0x6b0
-__iio_update_buffers+0x2420/0x2c70
-enable_store+0x183/0x270
-dev_attr_store+0x5e/0x90
-sysfs_kf_write+0x1e8/0x290
-kernfs_fop_write_iter+0x406/0x5f0
-vfs_write+0x71c/0xea0
-
-v2: using ternary and drop temp variable
-
-Fixes: 23f2d735a932 ("iio: Add helper function for initializing triggered buffers")
-Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
----
- drivers/iio/buffer/industrialio-triggered-buffer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-index 9bf75dee7ff86..40eea3a447246 100644
---- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-+++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-@@ -64,7 +64,7 @@ int iio_triggered_buffer_setup_ext(struct iio_dev *indio_dev,
- 
- 	indio_dev->pollfunc = iio_alloc_pollfunc(h,
- 						 thread,
--						 IRQF_ONESHOT,
-+						 thread ? IRQF_ONESHOT : 0,
- 						 indio_dev,
- 						 "%s_consumer%d",
- 						 indio_dev->name,
 -- 
-2.43.0
+Kind regards
 
+CJD
