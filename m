@@ -1,135 +1,299 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF981F8691
-	for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 08:11:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 952533A8759;
+	Fri, 17 Apr 2026 08:17:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776413469; cv=none; b=frVANdPgNz7p1+mXLy25P3q/Eh/0QaJ0gzownw0n8ZR6vUUd8FNL0JEAqSbc6gKZAlZUnnHFtNqA8KVCFHa50xbk+QaliXM5124gs6n+0mpCWdR14FUUgohaMPgCYPggztbbEdAvaxf89QPGe3e7QPPD2M/pUQZe6qeBf+lwWOQ=
+	t=1776413869; cv=none; b=S3ejzKb0CncYEJWZ8a+XM7y1VbASh0AUGnIG7N4P6sdvHHIcbs/uBe2RpckIJsSsJ3Om9SPGK78fLHb3CKl0CyC0VdZGQWyH8fOq0C2JQIIom/orGUW+uj+qxq0wsSySJmEA525D3lSkqfXhV9KNhHE4cgnSBjUQhmaFGMJyn90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776413469; c=relaxed/simple;
-	bh=vhJmsnMAV13fwB4/U5ycUrf5t31EAp4u2+QBqVJ4NCs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HC8kxog/BXSi/fO+YaXY/JP2UI/N55R3qLozSv7fo7LwGb1o10Rotm9rxUMQKKyB6vHxuACl37j6vwLG8wSbKA0DCDpe0oPdjCF8heCphZGwe5hGuH4YoXyxHPLqkAiuFGMOLlpP4hCcGf7U2V7sykSehnuth/GhSs5zrS8LUwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K7wOuKUE; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776413869; c=relaxed/simple;
+	bh=4tx/I4KZrOHl5ZyQjk4uNIfQAmNtr7c+7CPYxEI5GS8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=lg2AeroFQpOF7ehWiKdPj6PTgFqcLmSXg++j6GG/BcV1GEa8rShAlVPaGfEsxmVRW7rcTUcE0PNuC12dkReMIJTYfQBAB9BjeJp0kR5hpNfXGRaXWQRqt5S291ojbKxN1AK+KWS/kU3+Qx9ubEQrza7Guj4eOvNQ98tewvbpe7k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EmsALWUO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K7wOuKUE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776413468; x=1807949468;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vhJmsnMAV13fwB4/U5ycUrf5t31EAp4u2+QBqVJ4NCs=;
-  b=K7wOuKUEqwe5QO6BoEfam3xmo9VxXqn4t7EN1D8Su85BMoZGHD/atbvi
-   am53C+pf9JrA0V24GIE81SzLy622EDB6zqwZ4bcw/ohauqItxFc4zz8IE
-   B6YgVb5NNtx2g8GH+Efog1ZrPKPT7Vvc2Rr39FgLGJNUA3oy/2COlOjtS
-   QvHN0zPcP+uSq6zZNpgfbPY76/5Rpw5QpyFDA4TSvd4CgVar716rn+5xK
-   1qBdg3YWefv3a29X9UspXSDuGsAlPzN9KpRoEaM+W/4guJw2SYtpzbYNF
-   tl+VOb7qRQSWMZZRW0amAsHC9H9A8ilYjfC8rAjUzbReR2HHbpC5tSMyz
-   g==;
-X-CSE-ConnectionGUID: m5lyC8rRS3i+fVUyGA58tQ==
-X-CSE-MsgGUID: cfV4Wr3AQBKykfsrdsksdg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11761"; a="77127157"
-X-IronPort-AV: E=Sophos;i="6.23,183,1770624000"; 
-   d="scan'208";a="77127157"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 01:11:07 -0700
-X-CSE-ConnectionGUID: RkZl6yQ2T4C4tNoPBERIcg==
-X-CSE-MsgGUID: C4H9ePU0QYWBTqd3vvQWwg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,183,1770624000"; 
-   d="scan'208";a="226624444"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 01:11:05 -0700
-Date: Fri, 17 Apr 2026 11:11:03 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rafasales@usp.br
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, "Gustavo C. Arakaki" <gustavo.arakaki@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: light: ltr501: Use automatic cleanup of locks
-Message-ID: <aeHrF5HsRoWqazzR@ashevche-desk.local>
-References: <20260415203345.195557-1-rafasales@usp.br>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EmsALWUO"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4C7ABC2BCB5;
+	Fri, 17 Apr 2026 08:17:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776413869;
+	bh=4tx/I4KZrOHl5ZyQjk4uNIfQAmNtr7c+7CPYxEI5GS8=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=EmsALWUOnPP/7YfOoZiqCNktBIOwi7XLKeBxZUw9H//MU95dLn39PqTGopJa+eAjf
+	 irSadm+3AhmoIhAlHI8H6b1oM8o/j5TAwAdXd0kQMHjY8umpBb0xvv6NhfpsovVvGW
+	 fTFsSqCDty3XK9/r3SDUAacYhquXMPwhWkI+nWMnztOjmPRx0pVgpoHjqKIcp73/Ju
+	 i31aqwq2kqo6fl3y19mtlJTtck0kf8NVafB5McPyDeBkRbMvUKYud4bjhZPt6p33Zs
+	 lNLuCyDnDBQKXj1FGlSag9Y2duKIgjv3ypci6adTBA4Bqrx4hqwOtsWVJ8JDXewarX
+	 ndlPEh7pfr7fA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F9FF433DE;
+	Fri, 17 Apr 2026 08:17:49 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Fri, 17 Apr 2026 09:17:30 +0100
+Subject: [PATCH RFC v3 1/9] dt-bindings: iio: frequency: add ad9910
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260415203345.195557-1-rafasales@usp.br>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260417-ad9910-iio-driver-v3-1-29b93712a228@analog.com>
+References: <20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com>
+In-Reply-To: <20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+ linux-hardening@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+ Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776413867; l=6418;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=jpnU+PdYYLxqGgaOYBAedYfqrN5HXtXF5AnH1zRbRnQ=;
+ b=l5b6JqTuRYOxKceYQOj29K3elwjyjbCFPx9/OmgZ2cYsqlQTbDuQdXoD/Hbdo/jvJvWogcm7S
+ 6IEdBIGrXVDB0J8w8nq4JdnxVW5XGYue7Ta2rkhGRgXO3SmlUJ7zMWV
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Wed, Apr 15, 2026 at 05:33:30PM -0300, rafasales@usp.br wrote:
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-> Replace `mutex_lock` and `mutex_unlock` with `guard(mutex)` and
-> scoped_guard(mutex)` to reduce boilerplate and allow for
-> easy-to-read code blocks.
+DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+configurations for clocks, DAC current, reset and basic GPIO control.
 
-We refer to the functions as func().
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ .../bindings/iio/frequency/adi,ad9910.yaml         | 189 +++++++++++++++++++++
+ MAINTAINERS                                        |   7 +
+ 2 files changed, 196 insertions(+)
 
-...
-
-> -	mutex_lock(&data->lock_als);
-> +	guard(mutex)(&data->lock_als);
-
-This requires a header. But looking at the driver, please add a new patch to
-make header inclusion block sorted and followed IWYU principle.
-
->  	ret = regmap_field_write(data->reg_als_rate, i);
-> -	mutex_unlock(&data->lock_als);
->  
->  	return ret;
-
-Now this is simple
-
-	return regmap_field_write(...);
-
-Same comment to other similar cases below.
-
-...
-
-> -		mutex_lock(&data->lock_als);
-> +		guard(mutex)(&data->lock_als);
-
-This is not an equivalent. Please, care to explain why does the critical
-section need now additional stuff?
-
->  		ret = regmap_field_write(data->reg_als_prst, new_val);
-> -		mutex_unlock(&data->lock_als);
->  		if (ret >= 0)
->  			data->als_period = period;
-
-Ditto for other similar cases below.
-
-...
-
->  	switch (chan->type) {
->  	case IIO_INTENSITY:
-> -		mutex_lock(&data->lock_als);
-> +		guard(mutex)(&data->lock_als);
-
-I don't think you can use guard()() in this scope. Please, double check that
-this compiles and behaves well.
-
->  		ret = ltr501_read_als(data, buf);
-> -		mutex_unlock(&data->lock_als);
->  		if (ret < 0)
->  			return ret;
-
->  		*val = le16_to_cpu(chan->address == LTR501_ALS_DATA1 ?
->  				   buf[0] : buf[1]);
-
-In any case, why is this now part of the critical section?
-
->  		return IIO_VAL_INT;
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+new file mode 100644
+index 000000000000..61e879bca5c2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+@@ -0,0 +1,189 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD9910 Direct Digital Synthesizer
++
++maintainers:
++  - Rodrigo Alencar <rodrigo.alencar@analog.com>
++
++description:
++  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
++  14-bit DAC. It features single tone mode with 8 configurable profiles,
++  a digital ramp generator, RAM control, OSK, and a parallel data port for
++  high-speed streaming.
++
++  https://www.analog.com/en/products/ad9910.html
++
++properties:
++  compatible:
++    const: adi,ad9910
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 70000000
++
++  clocks:
++    minItems: 1
++    maxItems: 2
++    description:
++      First clock is always the reference clock (REF_CLK), while the second
++      clock is an optional synchronization clock (SYNC_IN).
++
++  clock-names:
++    oneOf:
++      - items:
++          - const: ref_clk
++      - items:
++          - const: ref_clk
++          - const: sync_in
++
++  '#clock-cells':
++    const: 1
++
++  clock-output-names:
++    minItems: 1
++    maxItems: 3
++    items:
++      enum: [ sync_clk, pdclk, sync_out ]
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++
++  interrupt-names:
++    minItems: 1
++    maxItems: 2
++    items:
++      enum: [ drover, ram_swp_ovr ]
++
++  dvdd-io33-supply:
++    description: 3.3V Digital I/O supply.
++
++  avdd33-supply:
++    description: 3.3V Analog DAC supply.
++
++  dvdd18-supply:
++    description: 1.8V Digital Core supply.
++
++  avdd18-supply:
++    description: 1.8V Analog Core supply.
++
++  reset-gpios:
++    description:
++      GPIOs controlling the Main Device reset.
++
++  io-reset-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_RESET pin.
++
++  powerdown-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the EXT_PWR_DWN pin.
++
++  update-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_UPDATE pin.
++
++  profile-gpios:
++    minItems: 3
++    maxItems: 3
++    description:
++      GPIOs controlling the PROFILE[2:0] pins for profile selection.
++
++  sync-err-gpios:
++    maxItems: 1
++    description:
++      GPIO used to read SYNC_SMP_ERR pin status.
++
++  adi,pll-enable:
++    type: boolean
++    description:
++      Indicates that a loop filter is connected and the internal PLL is enabled.
++      Often used when the reference clock is provided by a crystal or by a
++      single-ended on-board oscillator.
++
++  adi,charge-pump-current-microamp:
++    minimum: 212
++    maximum: 387
++    default: 212
++    description:
++      PLL charge pump current in microamps. Only applicable when the internal
++      PLL is enabled. The value is rounded to the nearest supported step. This
++      value depends mostly on the loop filter design.
++
++  adi,refclk-out-drive-strength:
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [ disabled, low, medium, high ]
++    default: disabled
++    description:
++      Reference clock output (DRV0) drive strength. Only applicable when
++      the internal PLL is enabled.
++
++  adi,dac-output-current-microamp:
++    minimum: 8640
++    maximum: 31590
++    default: 20070
++    description:
++      DAC full-scale output current in microamps.
++
++dependencies:
++  adi,charge-pump-current-microamp: [ 'adi,pll-enable' ]
++  adi,refclk-out-drive-strength: [ 'adi,pll-enable' ]
++  interrupts: [ interrupt-names ]
++  clocks: [ clock-names ]
++  '#clock-cells': [ clock-output-names ]
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - dvdd-io33-supply
++  - avdd33-supply
++  - dvdd18-supply
++  - avdd18-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        dds@0 {
++            compatible = "adi,ad9910";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++            clocks = <&ad9910_refclk>;
++            clock-names = "ref_clk";
++
++            dvdd-io33-supply = <&vdd_io33>;
++            avdd33-supply = <&vdd_a33>;
++            dvdd18-supply = <&vdd_d18>;
++            avdd18-supply = <&vdd_a18>;
++
++            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
++            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
++            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
++            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
++            profile-gpios = <&gpio 4 GPIO_ACTIVE_HIGH>,
++                            <&gpio 5 GPIO_ACTIVE_HIGH>,
++                            <&gpio 6 GPIO_ACTIVE_HIGH>;
++
++            adi,pll-enable;
++            adi,charge-pump-current-microamp = <387>;
++            adi,refclk-out-drive-strength = "disabled";
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 08d8ddf4ef68..2ca8b68e5daa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1630,6 +1630,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
+ F:	drivers/iio/dac/ad9739a.c
+ 
++ANALOG DEVICES INC AD9910 DRIVER
++M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
++
+ ANALOG DEVICES INC MAX22007 DRIVER
+ M:	Janani Sunil <janani.sunil@analog.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.43.0
 
 
