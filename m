@@ -1,134 +1,102 @@
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65BDA2E718B
-	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 16:34:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 589772222A9
+	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 17:05:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776530087; cv=none; b=YUODfdG50SmvUgqcQBtJXYVg0ZJkA1rlLWeru174iuMkJbIB9m7j9uJgpItFYI6RN1E4M89i+x6EIGW1unrq3l6dUgk0WEToU4z59gWMAp5J0ySPHdnd2NgC16cWr41L9xE3z1ZXy2EV19eJwZPQbvNbViswtrkm8ZNkWFRsIRo=
+	t=1776531929; cv=none; b=AhqxMqP9gcjA+Eco42jUCWU6OsVhM1fGAYnH0sFdeOOZk5dEuPoNZEllIFs+qqiRY8bm2ylTDZQrQicPEaP4HRpIESuLjRc0Y0PNJHqBxw1DyUUeuLaJKPM0wigXJcw/G9InBgWL7qYQOTuSNDgLocw+vgQizFpk7bt20ovYBeA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776530087; c=relaxed/simple;
-	bh=JDb1n0t863YlJpB5pT612flyJ3Euv3WQtPT8N/udF8Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uEWMSMhaT8bRsESDZJsTsgo2tFC0hhOp69OaPa2GYnetQloPabDrIJ9/ZhlONbU2k/GQnar7nkyDGR/nCE3D4snjQ//zhuOH4VAnnSgIqdidFRGhp8fBFcNFEfFtty2+Y6u5FT/l/WrDFS191UjyIu0mek37Q2PnozMQQwEQfqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=bUhH5EDV; arc=none smtp.client-ip=209.85.210.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1776531929; c=relaxed/simple;
+	bh=neIqv33XDkWCxv5AJkbIxD2kIAFYCAOzQOTm8Hy9v9o=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NvMM/XIK3dgbegewu3EShm57GDuieGazcs567Ns4PfUfjqD8DVWWfBkQH8QHn1G0EXE5aMxa8dvP55xC/i3s6dwNfSTLp/9fIo5EBFFO6rjGd+OvAKsJIxmtMeat0j6+W4VeFZoeX7hINquWZ3pbR0XGCfwi0uE2MtJp/5nLbiU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lhJdqZmZ; arc=none smtp.client-ip=209.85.210.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="bUhH5EDV"
-Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7dbff06e4a6so1734128a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 09:34:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lhJdqZmZ"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-82f69adeecbso760813b3a.2
+        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 10:05:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776530081; x=1777134881; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=UX2ZgJgegyCweH5KbrBLfo8wosIMbfIymwStHkqgwVA=;
-        b=bUhH5EDVTURdBhZEaKuXgXyf9/+3rlJNzWbIvrbeTMjzYTmFHEXkVRiT461cfA8Afp
-         WHshbiUH3ykhsrKaU8HqvhmxW7WVmHI/tLL12HAlmB1AZh9oTD0islkUJ2D06wSeG6DY
-         5aIEgAjODXG1WFP6Ndj05ocbOkvrW0VHHb18bFgqfwjnaJXmQVjsy/W38NbhA0iRYfuD
-         kDdQbMfo0eaSFEOi5ybYZ0HncGKPpybVQMoFueNWtugCEiSoFfmS9ks4tIdZttinAgDh
-         UMDZRzUSsB+yFM910cR6OQo2afvsDJX1nHaDytd+0JPAhNI5DJNR/hQ7XDalU2wHlYke
-         5i8Q==
+        d=gmail.com; s=20251104; t=1776531928; x=1777136728; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3MR+0rwyJXAQ9d2qblUNtIVZrppwjIymKB9Q8yoxGiY=;
+        b=lhJdqZmZnLs53OEoLjtSn9DF6ijKyEQ98W/P4C1870FWCBfIphh/zV0CH5zB6FuKGc
+         MKq/CwJySj5Lfa6X04ZQ/PDU5d6aWBeH7lLZLYh6ToP1VfnVOrYrEpi7GGBPWNvGhPqn
+         JfYW+iN4n4k/QOTCM1RnSsfx58A7aJ4IIKeTkiwzcQSSzjkItc+wcLxIN8n3FGQSRj6/
+         siELZG8rUwnyJZ30VUGeFQa0dp1my8IQCaBbm5jCIjGgbJab9tX66+ZCqNw9IHEkhHKb
+         BzFsw2Ge9YrqPTnAx2YTOKbhDHidPWQbiuchfVfRtBUfao9Qiq649crsVw4dLz+dGly2
+         1mbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776530081; x=1777134881;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UX2ZgJgegyCweH5KbrBLfo8wosIMbfIymwStHkqgwVA=;
-        b=Ae2dW1dqWB+fTZZUYDxzfqMugjyAEfSkygg0dflQzO3uCevFRfocJxi6o7/U2mZEeW
-         By/kSagFAGECuiYTr2+LN6njhY2iQ38nRN9+/gOJH/jv9+i4uugh7Y01Z+ZnuTjfZqpk
-         MD0iCHb4LijyGCXM5YzTPa9J6rVHNRtu3x4mQaSiIFujO8H4AkdaePqZR19ZqlJCsq6t
-         c0WvV/a2zchsHYBdzeBMAouIRclTvqWcfdOahLN7962OeqUPXNoq4astHhCDPQ8u9Zce
-         ahvBtQXirHYnnGSqqtMSW4oQuENR3uNVjZDOVrOYIvQipNPu2Dh/tkaDnIROVku9Ya4Q
-         lI6A==
-X-Forwarded-Encrypted: i=1; AFNElJ8kgq+r2VqdXXAuODuVFtoETIHmWrxsfPN7jrWtd2wu1t8QklRyP9LfeXaBLuQPdTWNzkZcfBFgkLc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwCs+sDReV6WPhRM+/18c+LGHyEzwwKtmDewy2a8jGLscDgbVDI
-	ZOIjwnLR4y/NpeKkw0UoAWsZArAgfyojqOiu2elG2ma7+nb22zipU15L3I4szSjp1fU=
-X-Gm-Gg: AeBDiesRR/I015V34K1iM7W6P5FZRkhrsW/iKJbFK+mSTpAoztclgVYmq8VrCwW2JYu
-	fga+gWsieCl1iixSREAfsbSIfKAmc/hhQoHbHZf6L1KR1mtD4DN6/rk7tAE7xlE5ZzXOnvZ5CNx
-	1VOhsM0Qb5xoeHDDMw1FClqZa4aPcmeI4lMvc5iYnesS4vgSB49QPRsLnks+1KxH7Xu2mJ7eO2J
-	ItXcGj3WmfdRQafUYNKnNQSjkINc9ixWbI+k4WfXOWnqrINVe1O4Jq8VxRt1zCBwj560K2NC9/E
-	f2Paqeweu9ISj6EyZM4jsx9ly7usgUPlMkRikcoPVP2YhgtsZoz8R9AOUPBYNtzmNDRJoQDtFRc
-	h7ZC1PrehqQxfisf1aoeGek49wCXRxNwbyFWQhWB4+WFiNdMmMVoyOo2BK3zngCcX565FmpfjwL
-	bCKucIAAELVaJZSyln55xnxBJhrq2JTVOo7Bo6Q+kbXLl2BR0p5OsOKBRBDJBVP6GIXB2qGNYG7
-	Vi84AbEQg+8
-X-Received: by 2002:a05:6830:929:b0:7d7:cf7f:6fd with SMTP id 46e09a7af769-7dc95273245mr4540726a34.25.1776530081368;
-        Sat, 18 Apr 2026 09:34:41 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b1f8:aabe:74d7:21ba? ([2600:8803:e7e4:500:b1f8:aabe:74d7:21ba])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7dc975034e7sm4027334a34.6.2026.04.18.09.34.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2026 09:34:40 -0700 (PDT)
-Message-ID: <565d1633-0f6e-4364-8dbc-8995595f8c12@baylibre.com>
-Date: Sat, 18 Apr 2026 11:34:40 -0500
+        d=1e100.net; s=20251104; t=1776531928; x=1777136728;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3MR+0rwyJXAQ9d2qblUNtIVZrppwjIymKB9Q8yoxGiY=;
+        b=Th/imr0yjAHt4BnACQaaAynlF6VZckQsXvtEX3BY8Iz1jRtJt5jJhhRWOOajuZ6fuS
+         BtzGp8yat8jx2zFc6ESljP6bHFOyt2zAzbJdW1d0+AGv6FTw1zsez2FeBISyy/ZZM2Be
+         VA+5hGNmW2oO6uhGA63yoHY5mGrfbJXqHY1sfWmkWvSIUp5krhxz9rZCRAzT/Y0PtCR6
+         +o1a6mouGKmlEjl+b7VOqXIw9KIGSb46i9RmgcFwGyLnYvW/Gd87d2PViI1hb+gMU+5Y
+         a3ZsORKC4cAT0CjulUd/N/SYbF9V1oGqyZvxmPPNdhD/zbVj6T9NyP+ZhBABm6vXZrCg
+         Us3w==
+X-Gm-Message-State: AOJu0YyALoecJwv7WQ5H0QU59ZWqCRrGbRJMDjsxI5oFp3kmA0Qm8D1h
+	/Snm5dH4tsTmC3vaECmX6h3bhgbBXRoA4yzg5qwv0NcbYr6GJwFT+Yei
+X-Gm-Gg: AeBDiev42GfE8YrsuVAce+ZsLE4Q8HUCj5Hbg1yjBwCNB3fo4d+ch5QFY+DvQNmNwfP
+	KMKDlcs6bI2slI0g0ibPlhT1TkUy+4nQQsTTbjtpJ0EgGWC+9RuOsfc6zItcRM8gUc7BZa6eZ+y
+	ep0g9t0onoAwVTLs62FmH+57JZZqO5cdworoCcGVjHDeDdqa3m2aT9ndj/p8nur6bZZ6KGR/q7m
+	wO1YnfpklpZv0wnS4SD3B3v0ezVxpGeeTk5lf7YPJ5WcQFLCHyr7G9mBTqQ7VcaH1xq2fZsJc2i
+	KkooFnmjOX34pVUXH39NGWXKaNbmnLE3ARpx4shCnqS4gWpCwfvv+RNNlEfrD1r+1OnGxpTQr8m
+	Q7MV+gIo2RLH1KmLOlFcCiQsmTQhFdd7LPzi3HKn6f5vaagtS2VcMUAtcK90hRBUce5D0+jfXKk
+	6sXKM2kLx4zLSIyer4nTMCKdD3pIeg1u83kzp4x3cqW+wDpGa/Voax2uBdRKDJBY9IxUKAPSwHF
+	VMPIXbUuLsu/x7LPqqm1gcVhiBYqfEsDcn8Zp/p2sqpPuvcY8Q=
+X-Received: by 2002:a05:6a00:bd86:b0:82a:5ef0:210b with SMTP id d2e1a72fcca58-82f8c8a5d89mr7538662b3a.15.1776531927647;
+        Sat, 18 Apr 2026 10:05:27 -0700 (PDT)
+Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.. ([2405:201:31:d016:3ec3:66e6:8cde:aa47])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ea02ef7sm4966352b3a.25.2026.04.18.10.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Apr 2026 10:05:27 -0700 (PDT)
+From: Piyush Patle <piyushpatle228@gmail.com>
+To: jic23@kernel.org,
+	ak@it-klinger.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/2] iio: adc: hx711: add HX710B support
+Date: Sat, 18 Apr 2026 22:35:13 +0530
+Message-ID: <20260418170519.312360-1-piyushpatle228@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5/7] iio: light: HID: Replace method
- prox_adjust_channel_bit_mask()
-To: =?UTF-8?Q?Nat=C3=A1lia_Salvino_Andr=C3=A9?= <natalia.andre@ime.usp.br>,
- andy@kernel.org, bentiss@kernel.org, jic23@kernel.org, jikos@kernel.org,
- nuno.sa@analog.com, srinivas.pandruvada@linux.intel.com
-Cc: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-References: <20260417225959.16688-1-natalia.andre@ime.usp.br>
- <20260417225959.16688-6-natalia.andre@ime.usp.br>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260417225959.16688-6-natalia.andre@ime.usp.br>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 4/17/26 5:58 PM, Natália Salvino André wrote:
-> Replace method prox_adjust_channel_bit_mask()
-> with helper method hid_sensor_adjust_channel_bit_mask().
-> 
-> Signed-off-by: Natália Salvino André <natalia.andre@ime.usp.br>
-> Co-developed-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
-> Signed-off-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
-> ---
->  drivers/iio/light/hid-sensor-prox.c | 13 +------------
->  1 file changed, 1 insertion(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-> index efa904a70d0e..61f4627cffab 100644
-> --- a/drivers/iio/light/hid-sensor-prox.c
-> +++ b/drivers/iio/light/hid-sensor-prox.c
-> @@ -67,17 +67,6 @@ static const struct iio_chan_spec prox_channels[] = {
->  	PROX_CHANNEL(false, 0),
->  };
->  
-> -/* Adjust channel real bits based on report descriptor */
-> -static void prox_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-> -					int channel, int size)
-> -{
-> -	channels[channel].scan_type.sign = 's';
-> -	/* Real storage bits will change based on the report desc. */
-> -	channels[channel].scan_type.realbits = size * 8;
-> -	/* Maximum size of a sample to capture is u32 */
-> -	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
-> -}
-> -
->  /* Channel read_raw handler */
->  static int prox_read_raw(struct iio_dev *indio_dev,
->  			      struct iio_chan_spec const *chan,
-> @@ -250,7 +239,7 @@ static int prox_parse_report(struct platform_device *pdev,
->  		st->scan_mask[0] |= BIT(index);
->  		channels[index] = prox_channels[i];
->  		channels[index].scan_index = index;
-> -		prox_adjust_channel_bit_mask(channels, index,
-> +		hid_sensor_adjust_channel_bit_mask(channels, index,
->  					     st->prox_attr[index].size);
+Add support for the HX710B ADC, a variant of the HX711 with the same
+GPIO interface but a different channel and gain model.
 
-Make sure to fix the alignment with `(`. Check the other patches too.
+The first patch updates the devicetree binding to add the
+`avia,hx710b` compatible and document the variant-specific behavior.
+The second patch extends the driver with per-chip configuration, HX710B
+channel selection through trailing pulse counts, and fixed-scale
+handling for the variant.
 
-If it makes the line too long, just use one tab indent more than the previous line.
+Tested on PocketBeagle2 with an HX710B breakout module. The device
+probed successfully and raw readings were stable.
 
->  		dev_dbg(&pdev->dev, "prox %x:%x\n", st->prox_attr[index].index,
->  			st->prox_attr[index].report_id);
+Piyush Patle (2):
+  dt-bindings: iio: adc: avia-hx711: add avia,hx710b compatible
+  iio: adc: hx711: add support for HX710B
 
+ .../bindings/iio/adc/avia-hx711.yaml          |  36 ++-
+ drivers/iio/adc/Kconfig                       |   9 +-
+ drivers/iio/adc/hx711.c                       | 222 ++++++++++++++----
+ 3 files changed, 214 insertions(+), 53 deletions(-)
+
+-- 
+2.43.0
