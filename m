@@ -1,175 +1,123 @@
-Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F15C113AA2D
-	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 20:52:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF4394A02
+	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 21:21:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776545563; cv=none; b=VL1X10bxGs5gxftvnWn2k6NGfxxSkwxgvmApaxjsWlPuGqVB2NJg/42JT9eccWvvqGBW2qCe7TfyDXZEAfjOd5MEIZWMNMVzkp6Wx5eqQaM/CSMP6OflEOt9NL09+eJ33VB+sVEh1mdDSPHknMDrd8A3OVl1/IDSrguCORQ8RUg=
+	t=1776547292; cv=none; b=btWQK02zBwbSPDf0svA1rFHs9ZGTzKlUo01INKw4NcN+OMdfEQolIUdCuB8WTGCUkCad05BandDeObU4KLPJblC7xt9jWATCH4wRkwAw/anTNFCNXHUDvRvlPnBIZ3j7LdaW56lAdus5KJl/RlA1Z7Idc3jMPBYf69FysD8UrJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776545563; c=relaxed/simple;
-	bh=k0zIWNiqztBu59uU8v9A+AuJtHZrCMC4C8GSIfOb1ys=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=giX8YOvTdkaSpqz16IRPk/urqxNn/HQz1rc+0XKTyAqcIfLLNxG6QztyIJYkX6LvITIiuNW4F4s41Qc21/l70Hu6qLuqbOtL3sCNnX5uUgS9+W3Z3+8/0ZHIvtBKaecARcyLm9K/PYGl/a5TNYRXULO6gPpKncVIQo9CDTsr3zM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=wzMq0FZj; arc=none smtp.client-ip=74.125.82.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1776547292; c=relaxed/simple;
+	bh=Q0SLlBPnb6nmFUOZSGbrBB30HzbmKUI86cOE3Hz9BLw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oDhuiJps5lC9m0hnBcH+3PXfKkmOyQLwIlk7Deu5wzj3+fD4CqET3vamPU435NFn5dFXsDEpJlhZqwIFFfzg9XgR+getXUqDcg9AFYXmEGvEQyqeCHaK3ZBttSCks4dZN0BbYR0GeRVtKSEyNlqzlSdzFwd09IyLmv4PhsL+meU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=lS9q9ZrB; arc=none smtp.client-ip=209.85.160.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="wzMq0FZj"
-Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-12c726ef332so2062606c88.1
-        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 13:52:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="lS9q9ZrB"
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-40f387a688dso1458384fac.0
+        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 14:21:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776545559; x=1777150359; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=uIvpHJfLdwXFNrcu0Iy1WHK173eb9+R/v0WGKHYF/h4=;
-        b=wzMq0FZjLgW2uT9x3wJTePnS36Vp7vvmxos2Lgm4cpm/qYf/AjAsCVAPN15EUldOYT
-         rXRbLs3BiJKOnwafOcN0Pr/JFGtukT+b9UeG8Y76FR7ORjZtIhEAOUNcyRWwhLz93Y+k
-         MFpC1gDq7Vko7ebqYGXPWlbroKQLQ71NkmGJxOMUTTpOiGQ1AbdWE1gRcV9csUXU2lmD
-         uLvCu8fHXLmXVIJrjjnE8cL9Rbwq9kZrNd/0qXNGzFnIbiGScjhr0L0IZ1HV8m0970bB
-         djI9h0cy1ZySQZw7FiyjeMphHNPe3BksisX1PHoqdRD98OGLE/PpA1N5O7R8nOvBDMC+
-         625A==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776547289; x=1777152089; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BRfKGu3Ox/77zoofS0Nh7wP21jYiThZ67G85IowYo28=;
+        b=lS9q9ZrBaee6r2yfwYsFJbIzDDTnl3FkvlIUKbSzlrs+tSQYHxPVXoZJZKnxPOBN+r
+         lfRQ25db9tSOSQbyM/NWpJeUwNgXyucnyLBLc89GeRxz8zKCs0cpUY5OqATaeSnj+TYN
+         9lTOFlZdt8kmJMUAm5U9F5zy3SbT6ahs1P85LSF/3mVgvUVLy7Bf380fIO2M9YLN6YFF
+         z6r4nlW6wzZQkOYkHjzPYRua7E3dOLwrPQaGidS6KY1HARjZdaqY3kaTAcPFFGqcbm0k
+         zAQRbUZBf1uHjSyLVvkiiN+PWtsHEfFMw/leebjNXYVRNHQYdgpDfLFjo7CABtfLMyWG
+         2gIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776545559; x=1777150359;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uIvpHJfLdwXFNrcu0Iy1WHK173eb9+R/v0WGKHYF/h4=;
-        b=XowmsEZ5Eys7l0lWxI2ZM8DcAmCv7TdpjEKbAMndPLpVp81Qb4qvBQoJxoXE5/4wYZ
-         9w+if5s8tf/U6khGqf4mswKkgHBuwsnzZtFUzgrX5tfqf6FqQgXKM72/sMnmTXp1lHxc
-         MDrBGFZgLifU520D1HUl6Neg4vxG1o2hyZ6EQGNcAxqKX9Fd8L7ktDepVGenwqkkwVKs
-         m6EH41E5QlhunfOZRNJEb8G8lYKP0kx9/BkhL/tYXZxX/pmJU+AGqRMC5B2HZn33zdWB
-         5jLCV8Oe3FWuxFINfyyIpDTCEgeGeYYCCJ4BIHrlGwxpd6P82YplT6YT8wrli/Ni8xLp
-         IRzA==
-X-Forwarded-Encrypted: i=1; AFNElJ/5JA4KxM8+Jz5E6UCpmDkyraDLXl4KNwHX1RsB+cRgOdpcFe8M2kKaASGlDblOkIRZ11xZqpiwD20=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyeqHnGAGta9ViiLjW5Nz6nE0pYej16N09ihvtdB9eKo6rjQwuf
-	LVnY0K1M1xE0HNCmCR6XGCOKfi2Ab24UMWDEF2e5zCcZY1DFtxn+cSTl1k5A8lYivBE=
-X-Gm-Gg: AeBDieuCLvjCuz8rRFTmnOwNe6d9eAXSgmJR4w2DgKcZe7Qf4HPyhETtSTIeyC1N9KL
-	cPLDXgXZJYfTzqWWPXFIePb0xcNfgN9GFu5BLSMc8KHOsI2k6MZKfS3BqaT5otOZbbmPOA9Y68+
-	dUGkQVsd/XLPX9WtpDJQZdy5qoa9Y5fmH2hOuf48fNwkG4N3Eo6s6/FTiMMWTRNhuyA0HCAcYno
-	OqV8UNgOx9itAe0fVofYWWCTmqkMXC7izNuhhtF0oL5SyEKMHrEDDKbLlkl8gEqpsslJeFlbBv/
-	0OoeeJloM5x/eZs4LmZiQ5qOQnv1Zk28Mk/BReBNIHMqyCLcze6DoC86KT2ErbCaq89rbVuj3iL
-	zRrawUHS6/vySwu3TUIktEr/2c6rp8mE07UJ9ooDsL7/QVR1IS2XYc6kr/GynPLD4WmhlICu78g
-	YnBQAQ9q4e1y7YiAGwjRYarsi3dQQkkZsFUQ==
-X-Received: by 2002:a05:7022:6b96:b0:12c:3d3c:ac08 with SMTP id a92af1059eb24-12c73f6d728mr3578783c88.4.1776545559119;
-        Sat, 18 Apr 2026 13:52:39 -0700 (PDT)
-Received: from fedora ([2804:14c:4c:af50:c408:26e5:33b0:662b])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e53a4a64e5sm7634756eec.7.2026.04.18.13.52.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Apr 2026 13:52:38 -0700 (PDT)
-From: Luiz Mugnaini <luizmugnaini@usp.br>
-X-Google-Original-From: Luiz Mugnaini
-To: cmo@melexis.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Luiz Mugnaini <luizmugnaini@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] iio: temperature: mlx90614: use guard(mutex) for EEPROM access locking
-Date: Sat, 18 Apr 2026 17:51:36 -0300
-Message-ID: <20260418205151.172046-1-luizmugnaini@usp.br>
-X-Mailer: git-send-email 2.53.0
+        d=1e100.net; s=20251104; t=1776547289; x=1777152089;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BRfKGu3Ox/77zoofS0Nh7wP21jYiThZ67G85IowYo28=;
+        b=gEVDbw70+aTrodS24yxKi8K3J/XgLU7KBJj08JqHNHny+9Ohjw2WoHim7Cz4NBp5e9
+         iELfjWBS+C+PWn2XD1F54/DT18xdDDTqq3Dr8FccQIK6zjUTmeN819bq1+leVM2Wrgsg
+         w9oTL+UNOdWuEpY3fVSmvWPRKq7e1gvVEYwaY4uhihPxoi5J4ez2GYAKcBLxHGd7PBoo
+         S1BXBxqJ5Ed6OgNc2gPGJwK3dfawY4qIdYvplBlIrlqBznOIFUu3pkJ1V1MHsncXEv+u
+         6WPqpgorK96GN/UNJRpZuNXaAflTgdUVvIHEEWPgSpLD+IfwFeYh8viavyBzB6OE9m+U
+         OSgQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8WWfxX7tdKdbfwU+X+asXJNVSiMISrLszcZfSneeN8xlDtMQYRe8dJNqUbB9sxSVg3DLx/SGgxx8o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwkEkBF0iEsDNZJhAmaybF4RoIoMEY9AVwJFtl6r2g3k7fqng0e
+	CbrwdNneJwGMnxsVULiNNDv4hx0PW26NH6ins8Go75ywVdCuDo0kdm2HytXGi88teZ0=
+X-Gm-Gg: AeBDievZMMatNMA1kn+Cu75kMk8BYGDHyjuH2huFOsj9XNJ7d3IznAAvQGfSeDjyj4b
+	QGwPgLUWqqOztxxYqVg+lJHYFMD+XBGrCW6EqgHBs/TAGvRF7ZGZBYsRf7JBu2MZI0eEbJaEVA0
+	j69mMmwfFIjpyra1NuhLVuPOlaeT2RpG1S0rxnK0IZ39hGoBAVewMvq8ebsJMSTQVtIYqPYrnwV
+	4+9kE4KuoQu+2OWRLuuay4mSqxECSEMhRxtJ+YsFoRA3dxYHvn9KuNMcfeaIuqsdzae2Q/7an+h
+	O8Z7SEpDczpaXDHO6/4Crt0i1WN6eeK/hqIQktcjHO8CYo06+G27EQwBt/66jjTbLHAHjsRW4Cv
+	uazOm2NFuMHTPeCyyE2JqC2srQdcxLfIsB4b8NaEBcMy436qFdY1SAyuaPB2TrGMhOhxh9UI5wX
+	HgRgGKLhdiifUOaw4YGZcGqxDNgnv1qQps0Qvuy5aDS5YTc8B9eXos+ZZQACYKuki77IOerdb6x
+	6ifD7hAJUHr
+X-Received: by 2002:a05:6870:d8a:b0:428:2838:223 with SMTP id 586e51a60fabf-42abf2eb022mr4709688fac.9.1776547288785;
+        Sat, 18 Apr 2026 14:21:28 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:b1f8:aabe:74d7:21ba? ([2600:8803:e7e4:500:b1f8:aabe:74d7:21ba])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-42b930bd9f2sm4302062fac.8.2026.04.18.14.21.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 18 Apr 2026 14:21:28 -0700 (PDT)
+Message-ID: <363f9a39-e535-42ba-ab5d-faaf9920a8ae@baylibre.com>
+Date: Sat, 18 Apr 2026 16:21:27 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: light: tsl2591: reduce code duplication in
+ tsl2591_persist_* functions
+To: LucasRabaquim <lucas.rabaquim@usp.br>, jic23@kernel.org,
+ nuno.sa@analog.com, andy@kernel.org
+Cc: Matheus Feitosa <matheus.feitosa@usp.br>, linux-iio@vger.kernel.org
+References: <20260418185422.166542-1-lucas.rabaquim@usp.br>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260418185422.166542-1-lucas.rabaquim@usp.br>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Luiz Mugnaini <luizmugnaini@usp.br>
+On 4/18/26 1:54 PM, LucasRabaquim wrote:
+> Add tsl2591_persist_table as a bidirectional lookup table for
+> tsl2591_persist_cycle_to_lit and tsl2591_persist_lit_to_cycle functions
+> 
+> These functions were prone to errors in the case of adding or updating
+> TSL2591_PRST_ALS_INT_CYCLE_* values. The functions utilize a for-loop
 
-Replace mutex_lock()/mutex_unlock() pairs with guard(mutex) from
-cleanup.h for cleaner and safer mutex handling. The lock protects
-EEPROM access across five call sites in mlx90614_read_raw(),
-mlx90614_write_raw(), and mlx90614_sleep().
+Isn't the new table also prone to errors? Neither is very complicated.
 
-In all cases, the code between mutex_unlock() and the end of scope
-is either trivial computation, a return statement, or a call to
-mlx90614_power_put() (which only schedules a deferred autosuspend
-via pm_runtime_put_autosuspend()). The slightly extended lock scope
-is negligible compared to the existing hold times, which include
-EEPROM write cycles with 40ms sleeps.
+Seems like the advantage is rather the reduction in verbosity.
 
-Signed-off-by: Luiz Mugnaini <luizmugnaini@usp.br>
----
- drivers/iio/temperature/mlx90614.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+> like in the function tsl2591_als_time_to_fval, allowing it to compare
+> the cycle value with tsl2591_persist_table[i].cycle and return lit
+> value with tsl2591_persist_table[i].lit as defined in the new type
+> tsl2591_persist_entry, reducing the risk of logic mismatches.
+> 
+> Signed-off-by: LucasRabaquim <lucas.rabaquim@usp.br>
+> Co-developed-by: Matheus Feitosa <matheus.feitosa@usp.br>
+> Signed-off-by: Matheus Feitosa <matheus.feitosa@usp.br>
+> ---
+>  drivers/iio/light/tsl2591.c | 104 +++++++++++++-----------------------
+>  1 file changed, 38 insertions(+), 66 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
+> index c5557867ea43..86483f0b2e01 100644
+> --- a/drivers/iio/light/tsl2591.c
+> +++ b/drivers/iio/light/tsl2591.c
+> @@ -170,6 +170,12 @@ struct tsl2591_chip {
+>  	bool events_enabled;
+>  };
+>  
+> +/* Persist cycle conversion table mapping register cycles to lit values */
+> +struct tsl2591_persist_entry {
+> +	u8 cycle;
+> +	int lit;
 
-diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
-index 1ad21b73e..adf100756 100644
---- a/drivers/iio/temperature/mlx90614.c
-+++ b/drivers/iio/temperature/mlx90614.c
-@@ -23,6 +23,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/gpio/consumer.h>
-@@ -296,10 +297,9 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			return ret;
- 
--		mutex_lock(&data->lock);
-+		guard(mutex)(&data->lock);
- 		ret = i2c_smbus_read_word_data(data->client,
- 					       chip_info->op_eeprom_emissivity);
--		mutex_unlock(&data->lock);
- 		mlx90614_power_put(data);
- 
- 		if (ret < 0)
-@@ -319,10 +319,9 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			return ret;
- 
--		mutex_lock(&data->lock);
-+		guard(mutex)(&data->lock);
- 		ret = i2c_smbus_read_word_data(data->client,
- 					       chip_info->op_eeprom_config1);
--		mutex_unlock(&data->lock);
- 		mlx90614_power_put(data);
- 
- 		if (ret < 0)
-@@ -358,10 +357,9 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			return ret;
- 
--		mutex_lock(&data->lock);
-+		guard(mutex)(&data->lock);
- 		ret = mlx90614_write_word(data->client,
- 					  chip_info->op_eeprom_emissivity, val);
--		mutex_unlock(&data->lock);
- 		mlx90614_power_put(data);
- 
- 		return ret;
-@@ -373,10 +371,9 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			return ret;
- 
--		mutex_lock(&data->lock);
-+		guard(mutex)(&data->lock);
- 		ret = mlx90614_iir_search(data->client,
- 					  val * 100 + val2 / 10000);
--		mutex_unlock(&data->lock);
- 		mlx90614_power_put(data);
- 
- 		return ret;
-@@ -476,12 +473,11 @@ static int mlx90614_sleep(struct mlx90614_data *data)
- 
- 	dev_dbg(&data->client->dev, "Requesting sleep");
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 	ret = i2c_smbus_xfer(data->client->adapter, data->client->addr,
- 			     data->client->flags | I2C_CLIENT_PEC,
- 			     I2C_SMBUS_WRITE, chip_info->op_sleep,
- 			     I2C_SMBUS_BYTE, NULL);
--	mutex_unlock(&data->lock);
- 
- 	return ret;
- }
--- 
-2.53.0
+Why not u8 for both?
 
+> +};
+> +
