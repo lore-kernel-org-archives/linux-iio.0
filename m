@@ -1,113 +1,134 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 671DA18A6A8
-	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 00:34:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0B33175A67
+	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 00:52:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776472455; cv=none; b=dFByYEkdzvxQ3pVh6LFuvrhSlHLgnXq5h9gk/FP8eYuYJWSZOqSl4gL+jfTV/AfhNUF1Z+Um8XO3NZ3Y9OSUnr2lIRCEOMRomVUxPSWkoet0a08LXg0JNp+XxtVARSIVANO5ZVUQnOJUm3LH3vHOIYP1wGi/e79jWDQB8o7Aadw=
+	t=1776473546; cv=none; b=Uz2LCFVmKRUok+WeNYsKLheXZXNYPy47wE1qUYC5Ndp0EgCAO5gD8olP6q6uU+ZbUufOKytmrANrtBuEHtdn9WKQOb51QjJDkAJb6hhbosxu1borlu78CB6Dl3JXccz+vhROrFY//Un61yZaylpgY0jC8PC2Mh1c2m7t7PIQuXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776472455; c=relaxed/simple;
-	bh=WO8hRJ7KCsodO0D7OkJN5Xe5KFhMrZyl2ubuS8KlJmk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=StaZvNxY1OoYUu4lWb+ScB5RQ+8UtrhxzDvW2jgm++0CgXiZ+JZdhzdBVv5NidObavTFNn9qUf7k9Fq/NK0/O1n0SszLOkA8dxjBRusMOllxmFWIGVA1bJnZ6/UClE4mC70P9HOczBsNhBqb/94ZTMnopayyE3pXCD/nKzcYKZ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HFbYzi7n; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776473546; c=relaxed/simple;
+	bh=IgvV76mhiepFn41sPiCCpHE+hyFnJxWxzclBRIbikpc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YXnSCnRPvIYJctAYqMatbR+uE8nY8MjRbDQncMtge1xw7gGf8K9FN+JyOkfEKw7NTISk2HQHCqs5+1mvIEImh0XGXnRtW2PCcC014HVDqyJu8qX62KJoWcNqUjXclTUANJFQPdhb/aBWFISpNp5e0DjR8VqX+MAV3Vq/ozmBkFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IWKRWMne; arc=none smtp.client-ip=209.85.210.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HFbYzi7n"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776472452; x=1808008452;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WO8hRJ7KCsodO0D7OkJN5Xe5KFhMrZyl2ubuS8KlJmk=;
-  b=HFbYzi7nsA3zRt7s/BsHubYIaFNLjpDe2QuWmFzz4dllAbMNgbkV4PTE
-   WYX26xlM2E9KbxLpNO+jwDmAnRbto+DBXPrrAatPACv3c3ovLn+NaoWN2
-   W05qzgtUi9Daa/y0SWoREekLPKQxWK1fMCMcqIA6Ryz7V6aR2rMjQbjdS
-   JVOHYG42BLnOJrkg28HWduH8Y0TbnFhDGd2lx8Kw0WPH5rpqLPRD4ITkD
-   NrCUMBZjq51VGgho/ivGJgwELQoAA+hRDLBpCZfDeBCiTofoHpo4VuDWi
-   coY6JMnzXUsALGDw/UG55ZxKu8sbSzZ4Q9J8D19J4YSfgrNRf/jeAN11U
-   Q==;
-X-CSE-ConnectionGUID: LmTs8ffpSIGbydo6msFOdw==
-X-CSE-MsgGUID: PJCftZShSomMt9jqeleDwg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77563342"
-X-IronPort-AV: E=Sophos;i="6.23,185,1770624000"; 
-   d="scan'208";a="77563342"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 17:34:11 -0700
-X-CSE-ConnectionGUID: XVL//FWFRT2GD2b3jxp2Sw==
-X-CSE-MsgGUID: QR07AGEQQnmUCXyePTvirA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,185,1770624000"; 
-   d="scan'208";a="226494931"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.225])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 17:34:09 -0700
-Date: Sat, 18 Apr 2026 03:34:07 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Marcelo Machado Lage <marcelomlage@usp.br>, y@ashevche-desk.local
-Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
-	nuno.sa@analog.com, Vinicius Lira <vinilira@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: adc: mcp3422: write bit operations with
- bitfield macros
-Message-ID: <aeLRfy4k_9hLhEpG@ashevche-desk.local>
-References: <20260417165747.507487-1-marcelomlage@usp.br>
- <20260417165747.507487-3-marcelomlage@usp.br>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IWKRWMne"
+Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7dbccb6ae20so716622a34.3
+        for <linux-iio@vger.kernel.org>; Fri, 17 Apr 2026 17:52:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776473544; x=1777078344; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xrWZOkSGwAlRRgBDBv1Jzc41071sReDN2QLXfPsn6jY=;
+        b=IWKRWMneBPWk1swNZTZyt5NDenMFx0pIUvnHyiLjfJZUNjG4gAdaQw4xsAssQ0+yoW
+         kVthZNGtda6nootuJhb1M91Qjz1mAmNHs5i5xCG8cm6wEbmbfp2jg4v+RzBqFGQZp060
+         HBqbGvSRnv/TRLMJeZk1WfKnxi55GgV51Rx76FnGRK2+Ncr92UGK2CeQbBTumQ8f1Jfx
+         5dW9hXfjIkTGqiSe1BVBYgwYB8l0D7NE2cNLhMvyXhsi/rjX6Zg0OVAOtByN9/FeD4pu
+         h2tFh0SNj7QnXgHJt8mMgVFnTDzo3gM+VDsP/i3DtpgjD8kz8guYYOXoqGLfSwDCGLsV
+         EWCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776473544; x=1777078344;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xrWZOkSGwAlRRgBDBv1Jzc41071sReDN2QLXfPsn6jY=;
+        b=SjJRx19yrbAomkXuXYHC+SsXfdVWLOYzA2fA1ttR9NUIC4YrPfbSp2mulgApL1AcR6
+         as2YvcX2bu/KdeKoiiomFrpRrFdCuT47ua358wBS857GLXKmQsDNyEGATXyV4t8kgz9W
+         AnO+B1UQraR9F7jlQ+i3ldUpA/rZl+f1bkQO0YG2f63QLu+OkuugQnRvTBUEno+efapQ
+         k0PH6tr/CsjRUh9AUmUyDb7SzaPz2yXWSxQdrvRjuB2ZMpgUYB7aefmGUX6iB+NHKKg2
+         tzyD4U+d8Ql2psDHxcCzKjHsCPVbDgBl5jlVXuCya1s8N1QoC7nLSTJGDIXjJ4CER7ZT
+         hjPQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/btbMgwHm0IcYtCEUrjr0MYXZeOaHA1XDNbJixnbfPU4NTjlJ6/Qhl69nEq1z7sufnbV8E6JccopA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YygOsPIj+XCHl95Sild59htbb/983+9fFZU2MNkjCs1opl/BTH/
+	JG9cvR1YfWDcr4kWMdW/jUSBNX6xcqpjiiv+P1U380om345fbJY8KWF7
+X-Gm-Gg: AeBDieucrdPsdyXWsQgnkcWBnWMZR8+zV5AzjZc+LjH34M+KpWoHKEq2Mi/WG5MzVRe
+	d2/h92kyV6WE+y900xGPDR3zb4fAkxq99DKGM/9VwqqVqlqsGb+9Kbl/vKhU4oLNw/+UuX1Bvuc
+	EKPNnkDpUadVaZuH8zARZx8x4XnXGc34INkJLdW8ptexAE7oZsaeVeCzj3+146wKs8IwK+/phlb
+	YmoL3PtN7zoZeKXArD/FuIdGp0kEmx6Txkf/ShgBF7T8oqZK3yuyKVWlBxIKVG3Fram6vAze+OM
+	/HXTgppFferIqtgn9Y65P1yrLmS9W36iNnELpl+cNwH2hQFxYPUBsx/sVycCwx/jA9zVLp/vCJj
+	xGsZz0nhYHYLmBVdv6haFNLqeX0zX9gHTomF/FZ0FjZEhhxHrqYzT5U/uOFoyl5EtM7JrLd9AeI
+	BdkoVL0Di+VxhZZOv+RCpV6H2QeZLbnZQoXdIHithF+/qCCB4lGE9vLwMILFW6Gl0qeLmG
+X-Received: by 2002:a05:6830:67f9:b0:7d7:d0d5:5bf6 with SMTP id 46e09a7af769-7dc9521e6d5mr3103694a34.21.1776473544492;
+        Fri, 17 Apr 2026 17:52:24 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7dca6f589d0sm159665a34.27.2026.04.17.17.52.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Apr 2026 17:52:24 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: ak@it-klinger.de,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: proximity: srf08: replace sprintf with sysfs_emit
+Date: Fri, 17 Apr 2026 19:52:04 -0500
+Message-ID: <20260418005203.85696-2-m32285159@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260417165747.507487-3-marcelomlage@usp.br>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Apr 17, 2026 at 01:57:47PM -0300, Marcelo Machado Lage wrote:
-> Replace manual bit manipulations with FIELD_GET(), FIELD_PREP() and
-> FIELD_MODIFY() calls. The resulting code is more readable and
-> maintainable, and 6 macros previously defined in the header are not
-> needed anymore.
+This patch replaces sprintf function calls with sysfs_emit and
+sysfs_emit_at. This removes unsafe functions and makes the driver more
+stable and modern, by ensuring that boundary checks take place.
 
-> Following a request by Jonathan Cameron, this version of the patch
-> has 3 less macros than v1, now replaced by inline calls of FIELD_GET().
-> Thanks, Jonathan! 
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+---
+ drivers/iio/proximity/srf08.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-This paragraph has to be in the comment block...
-
-> Signed-off-by: Marcelo Machado Lage <marcelomlage@usp.br>
-> Co-developed-by: Vinicius Lira <vinilira@usp.br>
-> Signed-off-by: Vinicius Lira <vinilira@usp.br>
-> ---
-
-...id est somewhere here.
-
->  drivers/iio/adc/mcp3422.c | 51 +++++++++++++++------------------------
->  1 file changed, 20 insertions(+), 31 deletions(-)
-
-...
-
-> static int mcp3422_read_raw(struct iio_dev *iio,
-
->  	struct mcp3422 *adc = iio_priv(iio);
->  	int err;
->  
-> -	u8 sample_rate = MCP3422_SAMPLE_RATE(adc->config);
-> -	u8 pga		 = MCP3422_PGA(adc->config);
-> +	u8 sample_rate = FIELD_GET(MCP3422_SRATE_MASK, adc->config);
-> +	u8 pga		 = FIELD_GET(MCP3422_PGA_MASK, adc->config);
-
-Please, use common practices and be aligned with the already used style in this
-driver. These lines:
-- has to be part of the definition block (no blank lines)
-- use a single-space indentation approach (no need many spaces before =)
-- be located in the form of longest line first (reversed xmas tree order)
-
+diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
+index d7e4cc48cfbf..6d38a894ecd3 100644
+--- a/drivers/iio/proximity/srf08.c
++++ b/drivers/iio/proximity/srf08.c
+@@ -226,7 +226,7 @@ static int srf08_read_raw(struct iio_dev *indio_dev,
+ static ssize_t srf08_show_range_mm_available(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
+ {
+-	return sprintf(buf, "[0.043 0.043 11.008]\n");
++	return sysfs_emit(buf, "[0.043 0.043 11.008]\n");
+ }
+ 
+ static IIO_DEVICE_ATTR(sensor_max_range_available, S_IRUGO,
+@@ -238,7 +238,7 @@ static ssize_t srf08_show_range_mm(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct srf08_data *data = iio_priv(indio_dev);
+ 
+-	return sprintf(buf, "%d.%03d\n", data->range_mm / 1000,
++	return sysfs_emit(buf, "%d.%03d\n", data->range_mm / 1000,
+ 						data->range_mm % 1000);
+ }
+ 
+@@ -316,10 +316,10 @@ static ssize_t srf08_show_sensitivity_available(struct device *dev,
+ 
+ 	for (i = 0; i < data->chip_info->num_sensitivity_avail; i++)
+ 		if (data->chip_info->sensitivity_avail[i])
+-			len += sprintf(buf + len, "%d ",
++			len += sysfs_emit_at(buf, len, "%d ",
+ 				data->chip_info->sensitivity_avail[i]);
+ 
+-	len += sprintf(buf + len, "\n");
++	len += sysfs_emit_at(buf, len, "\n");
+ 
+ 	return len;
+ }
+@@ -334,7 +334,7 @@ static ssize_t srf08_show_sensitivity(struct device *dev,
+ 	struct srf08_data *data = iio_priv(indio_dev);
+ 	int len;
+ 
+-	len = sprintf(buf, "%d\n", data->sensitivity);
++	len = sysfs_emit(buf, "%d\n", data->sensitivity);
+ 
+ 	return len;
+ }
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.53.0
 
