@@ -1,62 +1,62 @@
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91AE138F259
-	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 14:47:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4526E3290D2
+	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 14:47:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776523675; cv=none; b=iPNuaeo6PVkKsxWkrmYIIZvw1FVSVrsme2BaAjGbaFbNOYCnG+KFGojeuO0G/f5IIudtRJ/r8G7O3akElPMogynQIFPz6aZ0LRvOZrx4C+FtEOGbPkHKiHE3VtbynQ7T9shJlC9U2fDjFvRE49soMsM1vhl+EfFMUQgPBSIZvHY=
+	t=1776523677; cv=none; b=bPIHR5xAsfFrH8/aRzmtw/vMmgHj3LmjHvHMZdkI2F4NTaUNExOyTnNRydJCiPneLKWCusVIlcTXwLSPYH8Zeu5MqtdF9PzGB3SAFhpgdtZgtdBU+QQB7+F/yq9277QbAuDXOGImFnxlwFQhJzhdZ1BlJ1DBkQGXIs6c4Fsb+5E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776523675; c=relaxed/simple;
-	bh=XKtOaV+bu3GvFb00eX45ajrX/DX5a1syVpVsKIHtT+Y=;
+	s=arc-20240116; t=1776523677; c=relaxed/simple;
+	bh=l6nManMeR7Jg1MhkwUdhEH7FHLLqb5lCwS/P/91//S4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=cEActRzX1lMbSPtA14druBfo3L8SPpg7y0XdXECkJBNO6LtiJG2RYMnXzvpMfn8BUZorgtQ2df7uuRHHiMnVagrYrUG+npAqoO9GcWWppnIWGQvF8qAmhhUlJdIlDvyF9qZkiyq7zg3hYnQCLLvMuD9NXHJ1JY4nEDq6Hm7kl1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QwHZS1HB; arc=none smtp.client-ip=209.85.208.169
+	 MIME-Version; b=o0K4a1YH2EhV1hK+CR0JaDuWFomFDX4FycbcwLckOnHqxpmvH6XuYUAEw1AGp+Vrbv301noX7hgF4AsPhNaXaSW3Wq4IgRxJALe+Qe97oWVNgRxS9Imb1PL7RG34XEYIPBkFlRC8wqJ4gJPHlrqfcRagNJaetHoT206T8d03rq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HwX/3Dpa; arc=none smtp.client-ip=209.85.167.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QwHZS1HB"
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-38e7d983f50so18175351fa.1
-        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 07:47:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HwX/3Dpa"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-59e5aa4ca41so1606285e87.2
+        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 07:47:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776523671; x=1777128471; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1776523674; x=1777128474; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CjixepHmZluQFzutL7IUoBNMtxTYec1nzIsEup2SLc4=;
-        b=QwHZS1HB7y2cHsS0zZaLVw5mgiblgjtZL9OQg4LWZS7YHSOrwTACoGfkc+nBgrTwjJ
-         l0CiPXZhHIQVP+DT5NlNUIOlDX2JhKdQh2rzLfcrPOC2WXuLpYhdaYqFWPRsYAoHI1VF
-         im+iyRR0RFPhr4fH+bjE15Vf84b1sCnHos0710rtGpIygt5d+0T7l6bEYO+g2LpLlUAq
-         YLc2nGAquDJmz4uHAEXiw8g0tqGoADWRJunJe5B5TkyvrKfzybR8Kj/IHGbQDN+d/Bo5
-         1UgTxWWOmwM0eCz2R3OdS6DCpsseOndxbgeTKsNW32kCv7NM0Xq65ITzu0mvcwhBHV5u
-         2tCw==
+        bh=BjNK/Cg8+mI3iZeqCtPR1pHEgjWGhrHjIwJvfOxtDFI=;
+        b=HwX/3DpampM+CMwhED1aecYg/VaICmqO9bw106y9Vw42qmuqKkHg/aZ3eTfmRy6UxS
+         EdYjzv44WxovYglJ+muO6qBfy/bv1qEPgU2urnuM3pwWO7hjhjIMaoKHy1COtqH7SBoH
+         EAToDzRq4edXme7kdhxYP30rwASQ+eo8T3qMbctuMTk4OI4VKn//6Uysey0//aEMZx7b
+         lRBgKcAuRMm+e2GJIh/gL2Xh5K3YzpbI6bLaGlmSAW5Y6mjlcu03StySMyce9pG/DNVe
+         YN5WysbE8B1Gw+IjU7UrXY3pWs5dcGY7xxCjC0EA+BtV+2DxIwhb2Gtbaib3Po2olVec
+         dCYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776523671; x=1777128471;
+        d=1e100.net; s=20251104; t=1776523674; x=1777128474;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=CjixepHmZluQFzutL7IUoBNMtxTYec1nzIsEup2SLc4=;
-        b=HMwki3nSP5luhOwQj/oN+2lt3j2YaTfD2Cf3FwvAkeVz2nREyxSnFwnyoG9g0xhkKd
-         CmwGBzrjyv1bV/mmtjsn5GkZ/uNqMocOwDp3fJrR129RnjgKy3C7pQLKf8308mb8fR56
-         EHrkIkumwJXtC+av6n8Q7j0lZnna5D4/TSLsGy1oTOHinrcZbE4zdIQd3VwGS98itfh/
-         Gfgyq+aC9TljZd5YFBYK8hjxkHNcH4N7Tv869nKhgPOixZlzynPtct9Ajj8laGbNopb+
-         bP8vOglJgTe7MLwO1KERsl53p0Y0FBP6rS+Up2shlQejDrTnqtwkySpAC9a8g/sciLyj
-         rckg==
-X-Gm-Message-State: AOJu0YwxSuJHfH1RFQkMXCjMrNNQmiAWZpFXD6WzkEUN/caIQuwmNteb
-	UgmT0ojATbsUTArE2jPxlBN1bZgJ4/lDwqXBrD0TkjfKwiHOEd1mDSvV
-X-Gm-Gg: AeBDiesGV0MU6anAbLKgSclPyI3gdDZFtYmOYV/1uxt1oxCU5KBHhRWoQQ1guVunHvP
-	sHxCJB2nupzqBfayepHs8D/nx7MPlzYWGo7Ts/tx69vgGp/8IVCkjzlSUlq+3cUOczSRxjT5dtA
-	psVPUSsaYLK8PpiBLfEUr2/JdnwoS/9n2AFM0nJavuMnOIVprx/IoCikBdMkEQxljWEmXy2qanr
-	BvbzSmbSEc+NuriBafiqVwDCzCGXFJSJC44rJmcfySTrQuZ1pd09Vr4Q451xHr0bVYsSZSwkgKh
-	+X677Wbx7xVZ5hqvcgA94FgAdGdIfA5b9z2p/sXlcYPvEiCBLOZkKgoAUExy2xi40pMKx2UZPFp
-	NCOszoFO1pFhYMaelzZvW1fEbscAofvJHBfkK5ObTa3g4rRDwRREdmVUHqDLxw6Z4XKGCC+4tKu
-	ftyl6soUXOoQHPL1kXUdbV5l4=
-X-Received: by 2002:a05:651c:144a:b0:38b:f0f0:e3f7 with SMTP id 38308e7fff4ca-38ec77f4afbmr20680301fa.7.1776523670642;
-        Sat, 18 Apr 2026 07:47:50 -0700 (PDT)
+        bh=BjNK/Cg8+mI3iZeqCtPR1pHEgjWGhrHjIwJvfOxtDFI=;
+        b=qn27x722YpO+cH0WEZ5LPuOfXD/BL5XZ9934qdkyIe6XzfSAw2Z1VZE7FOimCv6Aok
+         299Vv2OUzdLXr2HXEv/9svVNmkTdFz1H3Em/+QND/HNx2WqCN5J49W3Pht7f+7GJx+3o
+         5fFEEtXmukY6t91vVEABK/swtcEU1Pk+PVqOgmDvXJsf4lSXwaXZg5VY/xjy6cLdrOpc
+         mVcqeVfGeIYsALgYvSpqHF6Jgb/l1QGQTdZKy13aokQgryXWygHNQeVNSfDMnrvcmvXO
+         KMAlmTgMmjyPrsNHVt9FU/+FOSZeHm/q4J4VB+R2KTvzpJhZHGz+08HknrMkWiF+wrVz
+         iBSw==
+X-Gm-Message-State: AOJu0YzysLmAzAJzh7srphyuDeOI+N9uP0yph0ydDcehhNsrKYsHkdig
+	RFkyv3rCdfefrQdJVJ6V7toKUMSJri3nPNzRLKPQGUq+Bf5CI2Xx8qyr
+X-Gm-Gg: AeBDieuLa2P+RbHHW/APq/QuAHTQzZwnE/OUmThOE/DCu3GeJRuHkNiKgcJWs8+1j3f
+	mnS9La50sHp3hG0SE8EDs2q7MquDHo0YP5qLsLixaobVMx1gxkZo+wHlLZUg+PBMPH2axM591Yb
+	Uqs3ALVXUCaKjZYYicnSrhyjoruLHKqGYdUJXWA3KvqCXfG02owqjgw5KFRBKoUOcFqrs1C9c0A
+	CCV9TR+Sa5l0PJuKrX44yLu1VAZmLHV4BQuSxrweQAdXwOgINDofEKKELKNjYhne7BIIf71JkGO
+	C/T1YXwdDxZ3I57dpfvGGJP5+BAIA2HDSxirWmhYtpjdq91mFeRcXYzKPoe6cZgkAPG0zKxOeau
+	9hcpsgQ0F6hbhjzmA8SPQhKn0nvBWvNdzyEDEjHGrkU4TTO91ML3l3crUQ0mCOsKW0nUDqhBDVQ
+	fIfHR+WuclJFptGvG9SVjgr5s=
+X-Received: by 2002:a05:6512:1242:b0:5a4:640:9f07 with SMTP id 2adb3069b0e04-5a4172e7b8bmr2429015e87.31.1776523674389;
+        Sat, 18 Apr 2026 07:47:54 -0700 (PDT)
 Received: from xeon ([188.163.112.56])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-38ecb4f51easm10901001fa.6.2026.04.18.07.47.48
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-38ecb4f51easm10901001fa.6.2026.04.18.07.47.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Apr 2026 07:47:49 -0700 (PDT)
+        Sat, 18 Apr 2026 07:47:53 -0700 (PDT)
 From: Svyatoslav Ryhel <clamor95@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v1 3/5] misc: apds990x: Drop Vled supply
-Date: Sat, 18 Apr 2026 17:47:14 +0300
-Message-ID: <20260418144716.132936-4-clamor95@gmail.com>
+Subject: [PATCH v1 5/5] misc: apds990x: Drop IRQF_TRIGGER_LOW trigger
+Date: Sat, 18 Apr 2026 17:47:16 +0300
+Message-ID: <20260418144716.132936-6-clamor95@gmail.com>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260418144716.132936-1-clamor95@gmail.com>
 References: <20260418144716.132936-1-clamor95@gmail.com>
@@ -86,89 +86,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-According to the APDS9900/9901 documentation, this chip has only one
-supply, VDD; hence, drop the Vled supply. Additionally, supply has been
-set to lowercase for consistency.
+Predefined IRQF_TRIGGER_LOW causes a conflict when setting triggers in the
+device tree node. Remove IRQF_TRIGGER_LOW from the interrupt; it can be
+specified in the device tree if needed.
 
 Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
 ---
- drivers/misc/apds990x.c | 27 +++++++++++----------------
- 1 file changed, 11 insertions(+), 16 deletions(-)
+ drivers/misc/apds990x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/misc/apds990x.c b/drivers/misc/apds990x.c
-index 742ab331a221..264335b581c1 100644
+index 557c8476ea80..51037cdc2c47 100644
 --- a/drivers/misc/apds990x.c
 +++ b/drivers/misc/apds990x.c
-@@ -113,7 +113,7 @@ struct apds990x_chip {
- 	struct apds990x_platform_data	*pdata;
- 	struct i2c_client		*client;
- 	struct mutex			mutex; /* avoid parallel access */
--	struct regulator_bulk_data	regs[2];
-+	struct regulator		*vdd_supply;
- 	wait_queue_head_t		wait;
+@@ -1183,8 +1183,8 @@ static int apds990x_probe(struct i2c_client *client)
+ 	}
  
- 	int	prox_en;
-@@ -179,10 +179,6 @@ static const u8 again[]	= {1, 8, 16, 120}; /* ALS gain steps */
- static const u16 arates_hz[] = {10, 5, 2, 1};
- static const u8 apersis[] = {1, 2, 4, 5};
- 
--/* Regulators */
--static const char reg_vcc[] = "Vdd";
--static const char reg_vled[] = "Vled";
--
- static int apds990x_read_byte(struct apds990x_chip *chip, u8 reg, u8 *data)
- {
- 	struct i2c_client *client = chip->client;
-@@ -597,8 +593,9 @@ static int apds990x_detect(struct apds990x_chip *chip)
- #ifdef CONFIG_PM
- static int apds990x_chip_on(struct apds990x_chip *chip)
- {
--	int err	 = regulator_bulk_enable(ARRAY_SIZE(chip->regs),
--					chip->regs);
-+	int err;
-+
-+	err = regulator_enable(chip->vdd_supply);
- 	if (err < 0)
- 		return err;
- 
-@@ -615,7 +612,7 @@ static int apds990x_chip_on(struct apds990x_chip *chip)
- static int apds990x_chip_off(struct apds990x_chip *chip)
- {
- 	apds990x_write_byte(chip, APDS990X_ENABLE, APDS990X_EN_DISABLE_ALL);
--	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
-+	regulator_disable(chip->vdd_supply);
- 	return 0;
- }
- 
-@@ -1108,14 +1105,12 @@ static int apds990x_probe(struct i2c_client *client)
- 	chip->prox_persistence = APDS_DEFAULT_PROX_PERS;
- 	chip->prox_continuous_mode = false;
- 
--	chip->regs[0].supply = reg_vcc;
--	chip->regs[1].supply = reg_vled;
--
--	err = devm_regulator_bulk_get(dev, ARRAY_SIZE(chip->regs), chip->regs);
--	if (err)
--		return dev_err_probe(dev, err, "failed to get supplies\n");
-+	chip->vdd_supply = devm_regulator_get(dev, "vdd");
-+	if (IS_ERR(chip->vdd_supply))
-+		return dev_err_probe(dev, PTR_ERR(chip->vdd_supply),
-+				     "failed to get vdd-supply\n");
- 
--	err = regulator_bulk_enable(ARRAY_SIZE(chip->regs), chip->regs);
-+	err = regulator_enable(chip->vdd_supply);
- 	if (err < 0)
- 		return dev_err_probe(dev, err, "cannot enable regulators\n");
- 
-@@ -1164,7 +1159,7 @@ static int apds990x_probe(struct i2c_client *client)
- error_pm:
- 	pm_runtime_disable(dev);
- error_regulator:
--	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
-+	regulator_disable(chip->vdd_supply);
- 
- 	return err;
- }
+ 	err = devm_request_threaded_irq(dev, client->irq, NULL, apds990x_irq,
+-					IRQF_TRIGGER_FALLING | IRQF_TRIGGER_LOW |
+-					IRQF_ONESHOT, "apds990x", chip);
++					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++					"apds990x", chip);
+ 	if (err) {
+ 		dev_err(dev, "could not get IRQ %d\n", client->irq);
+ 		goto error_pm;
 -- 
 2.51.0
 
