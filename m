@@ -1,135 +1,229 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA6E330E827
-	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 17:14:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776532493; cv=pass; b=XrDAiKnKvHM8f9UEJcmQ4QvfXoIXcnf8VPH89Ym9RCQx84xRvgzGR25S8CGJasEvjWzWadHOOuoO1XA3PrA3Bsvwjq1JzcxHNk2ygIr0Juf51GvRGrjSXy/OZZf3Pks18Px+bUMZ+Qw6MQ+T7Ici3U9Y+izqVCcbRs+Gc3fFpjM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776532493; c=relaxed/simple;
-	bh=sV0zNh/sRR3qUcdeumqRVy/BQwK8Krmc5MR7xdnyuRI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qK6Dkto12URG7XiEzUwSM7GSpqZlGTf+loQQeXPKWXaHp5nCHtc+R1F6d09nnyjJPxEKgbxtobkB9T/gTgzc5/y7mj+McFksMk/Ve1TBsMgwmPnpTLGjOSBAsC5NzLj1yuPADHmpg6wgQf8Gf7PKd2H8VxP2wqVoRfZVrQBttgc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=r0xUWQ5k; arc=pass smtp.client-ip=209.85.167.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FD8F1C84BC
+	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 18:55:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776538557; cv=none; b=agu/PbFWWzvTsCrjcVmLFMwX8cT8Oz4n+x0ffd096q6+peN5rIfWuL1Wz/FWGem1H0mvoqXtkrNqnrp1JJF3wv60gtKcSCbkGWTKxMltgE/aIECKJSsAdeZ4iy3J9hxt/KNmif+72LOpoviIfjjF/3MiJyksEIq9he2btOCGDNA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776538557; c=relaxed/simple;
+	bh=vgd8SUC1EghmT1I9vG8BhBRDHuetUa3gam/yCrySoJA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PUGRLc0gfLKm15BiCrH89Ce4J/XAvRRRGYZWZHxqiBt+o7Jp2GVPzTwsZEL/qwlC4oTt2EnXwZacGdu2vs2hDOpdw4lqQSTWGQxdPDkAPehSSEOzZK1A5a+7fuxoYAZIMA1ZPWaP6gDlZiPjxTCLzChbj5WVpq4xo6pXgjVOHMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=wEqBI+wF; arc=none smtp.client-ip=74.125.82.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r0xUWQ5k"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5a3be187ffbso2641986e87.0
-        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 10:14:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776532490; cv=none;
-        d=google.com; s=arc-20240605;
-        b=NW+4Tj1kSEKA3XjzZyuPiD4hILlXZ8mJ8g3VNWBKsA5lkqkFjnzw4ZzIKg33rWEQLc
-         gUjinTeGZQxjZXVv6gyZ9dOk+LavB8Ptqmod3Er8htZWxrgfmh1jaFvmx4sRysKZKvhf
-         oGVJ+kCnHoXnklid5v65gVJZTwWssAvv4K6e+KQ7U1hPPhDiMUSBex+9QuSkXEaf06yx
-         j/ImO188WmRiX6lzPgihOlu8gzWjUgVXlGH8zieMLoHSKkhIoh5RF0if52/mfEZ52gX7
-         8ABSwENS3UNXTI6M8zVsbFK3tmZo4vM/vTon3/l7NuNLGwlLL9Hyt1DaTGpYp8l997ze
-         dBNQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=PuZMhlpckJoKVLIuFK48UQUUnmgpJ0RcJudBMWzHgRI=;
-        fh=X4Tk8nG74/PqfJW2/2CgAuJmeo2W6rlhGPNgdv08xdk=;
-        b=S4z33QJSZ6kI1yJoAuYa0QXkie5UPCVTP/tiDW3Wr/frjUtlrfoIKedo9V9XPkFaXo
-         B7nCcef8fT2774M0oITUQ5QR+4D2hb13rrroXuavmwHDh0EKU+QpxrbgjTfCOfKnFUbJ
-         AIu/vz+iosr4DbWJwt/AkJDyn4MAoMgyVy1FolGdOjiQzJ71t3/CUkZyzCKUG6kLuNB4
-         zyXtGwMcZySlhr2Mhgr3dxZf5o8wQTuYsl2npis1qv7KsLjkQqARYPxs08CVtyUrRAqN
-         /bsYD8Xqjx29EbgWsR3snmwYYoCA7RynWWeeNOrDk/9nhc+uXsXjvUZDJrnYNHaty6GK
-         BzsA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="wEqBI+wF"
+Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-2e6b6167d7cso34159eec.1
+        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 11:55:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776532490; x=1777137290; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PuZMhlpckJoKVLIuFK48UQUUnmgpJ0RcJudBMWzHgRI=;
-        b=r0xUWQ5ksmDutA3A5mijju8ZzKFY0J/fOoBoY29KUX9Ryn7U5NVoApLocXt0I2jDtj
-         A6OKeHlyMnymsGogyaQcepmUHLaK879YHav5bzeU0y82Ro+dn0OSw0xU/ktfLHhTo9pn
-         HlvuVoAAJoOddQO5HcapAatgDpQRSXbYGVTLAMvFzayiAk5OVSydXCaWQZz0GSfGFLRS
-         yTENgBgq61LoKgqFS6UKp4JIr9yjpZn/8X3BP8HYZbjYn07cubjlg5qRQzED99QQsITA
-         jaIN5Z2JT8j6ubWQiDpxkSI5pufNvyTaJtW8wnk1RpZoa8p+Mv6l6fWcP4TzPD2hgSEX
-         NwVQ==
+        d=usp.br; s=usp-google; t=1776538553; x=1777143353; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3EXvngyd+7SDsQ3J34kXhozlsNIp7lAIo44ViwpcH1g=;
+        b=wEqBI+wFxH9Mnbr4FxIoePOsmVZ6jeb78op91es0GW9rzwyqQNOVF0rxpwtInyRyBY
+         znh9Wx4uec80xE35mf04OKIrZw1rkypVbdXHOqTHl9t2HEXetGWQHlmaJ4PfkqoyF0mb
+         +KgGeWUwfKM7q6Q69ISfpNif3KtXeJJfmkECLL4NT4DLO0kgQcHHNqIfMYBwckuSKl8V
+         harm7wiAw6y2xIVMwhPFyJgaPdIdgUI8ctvZE/Ao65u0vQ5E579j/aNwBvBGknidhq40
+         KtyqvTI5yPbBnxnongaO7S8sVuc3ubhbFbu6c7+gAgzAcnUadfFzhppZuVqVGqWMMzBz
+         zZmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776532490; x=1777137290;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=PuZMhlpckJoKVLIuFK48UQUUnmgpJ0RcJudBMWzHgRI=;
-        b=ow5VKJpyKYHno47XXx301MWWLXTNAsaPRWlKKEiN3hdbaT5/hnbkBACuaI1kIfO9yo
-         kRSEdOK24mIvxktKu4COTDjeY4u2ztlmT5tB+eVDqG+gLs/Fgv3nBkbZgvM8K/3To5Db
-         NTjoQzJtv1DZnF88aIy6LKDNc3JW9/YwzsBMsRRcaJLa28nZcjUcGHP8yM6/+lsgIsp0
-         mMpgrh1y9wfU2jqQ4VC71ibQ88oG0e1ukBR4r1duDBo5JHdIiTL3QoqKUjo29aiPmPMK
-         42BqlEn/xs9X9HLSwNBGbRDpvxIwGATMg5nq+lhPdZw8zkMbMelp7S1cfrfHYHfNguiF
-         qVnA==
-X-Gm-Message-State: AOJu0YwdPaPSF1iP0DvBo9UE6Z1mrCrIvAWKLiWn3ZHUuI0d+GxRCHjU
-	WfD89A5sofgp1sBz4Iw/CF5tzgD1Jx4mBs65RR1lqKYkm5ziNjzjQZpjvKRoM9fLP0110gT0AkD
-	G95DWVzlMs4TDAlnsW62zdtCW6ZbwDXg=
-X-Gm-Gg: AeBDietOVTB5H/r9NPUAvb5IZF19S9A4sTn2PxTDcZjes3WWc7+rJFTtXFDYPBwsXna
-	uR1nT9MmVkngVHsFJaSXH7jGH6y/PSbLWNWK23H8hZlkUP6aIv0vXrgsSN/+2OPoTgSOQOvsleI
-	30cvuwKQMIV/+pI+RjAWP5D0Pmr2mOMQWe/QYbfAJ1s63aXe8+752Fz1gNYalDjRJC2H16SWoXi
-	HfMCCos3OczhGWgEU4vsCrMwmRButYWfNeOzD927H+i2blXQ9XCtTdCMXunjwEy0LUrgLXS/xDF
-	MsCBaSlBvirEpv29JWFPHn39/jRwb3PAifTM+ZDvB9P3MOn7AviOVkSlSQCpzL3AlflopgiYn8l
-	7Fou3
-X-Received: by 2002:a05:6512:3e20:b0:5a2:c962:59f1 with SMTP id
- 2adb3069b0e04-5a4172a3042mr1890849e87.16.1776532489400; Sat, 18 Apr 2026
- 10:14:49 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1776538553; x=1777143353;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3EXvngyd+7SDsQ3J34kXhozlsNIp7lAIo44ViwpcH1g=;
+        b=oV1zkPOzcrjpJlP70nYlsNTQTqyYHuVB+SoEB5vEMycUUVsLqWDI4vv5Pozgh9Q5VY
+         NGC4OQhq6qBNhYO/t+qvzoIP8D0ebReXLDgaPbAXhmMDFJ8mSch6Ug2nSTIRRnb8wnm6
+         rNRkL5bFZabPAMJ7P/OBmUeZ4uK5CF2KWmLyYNYBRpGtguJPch736p90gT6sKkrgTZ1f
+         ZUNTlf4d07FNV7o2CVWUqjdNva8kY2rdX9bCyotCcZM76PZK7NeQMhi1fdmMGETEbWDb
+         I5vxeGbIQn2KhditFDI+dDdn/UEQ+wR1EolcfYxWFDMZEwDeHkcaoWoiVrEUpUuzpOGU
+         19sw==
+X-Forwarded-Encrypted: i=1; AFNElJ8zDsXwu4MwpfggCrpXapmZYW8mA0RosW88TI3Y10XkyQKDGjYFEnzM+YMq9Az7T1G4Q8Dx8bFfhHs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy2o6h/pak2U0HwYETcsFYp5qt+f0eSMwhsrA5zG/nkWXf0UUpq
+	ssyYWcKW/Sebtq+Rg4rHv0c3uqwlfwDhaIVPGr1iT/AkKfAvzv3h8P1I3NK7ktJQpDE=
+X-Gm-Gg: AeBDieuGSZeMCkb1k07i9VkhZicx9zDkGPLvxS6doyvk/dG4BofTT9TjJellacsW8iO
+	zWvd7czQgr0tMtBAcEiNBViHwUBiEKtyc3FE2bSy2tozvk39m/Ru+69pq3ZenZzH3TDT12UPeZf
+	msMY9Q7FgXX3fpQk7KzpgjYYNyCW74rVTalWIFs0c+FPI/H4acD0pWHazrZoqOQgqR9H3IwiTdQ
+	e2TDSwJ4RCVPp6uprVWO0tF7yFgqbpAubk0Gxi/qDD8NUiQleDbnnhE+CHSPZ8hfigKHNKwp8Nf
+	5NCJtsb+rEm3xWzqhhRyKyBqjsKiYM2xMpKfoZiROCG5dD3LDOe+CROwmfBB3GG6qsBpgEzlV1l
+	LV0eUHUpwlbmKdcPc4wPbOmiTRDg8GjNcxqE33e2CZ5DiQooRkv4abKCkvOlp4XwtiFFqtlWcrS
+	DkRFTmxfr40nvP0wEEww0Njdb3C1ST+x0Ek9fwBe9Tm75jKpoFwQmCcZL0C1H3xI41pYe87TsH4
+	oxGGvrgCg==
+X-Received: by 2002:a05:7022:397:b0:11a:2020:ac85 with SMTP id a92af1059eb24-12c73f94982mr1578600c88.4.1776538553286;
+        Sat, 18 Apr 2026 11:55:53 -0700 (PDT)
+Received: from localhost.localdomain ([177.188.223.123])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c749d29f3sm10217883c88.5.2026.04.18.11.55.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Apr 2026 11:55:52 -0700 (PDT)
+From: LucasRabaquim <lucas.rabaquim@usp.br>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: LucasRabaquim <lucas.rabaquim@usp.br>,
+	Matheus Feitosa <matheus.feitosa@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: light: tsl2591: reduce code duplication in tsl2591_persist_* functions
+Date: Sat, 18 Apr 2026 15:54:09 -0300
+Message-ID: <20260418185422.166542-1-lucas.rabaquim@usp.br>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260418170519.312360-1-piyushpatle228@gmail.com>
-In-Reply-To: <20260418170519.312360-1-piyushpatle228@gmail.com>
-From: Piyush Patle <piyushpatle228@gmail.com>
-Date: Sat, 18 Apr 2026 22:44:12 +0530
-X-Gm-Features: AQROBzBBCbg4dCGQ8KU0ltOkiVUm7YvY31quP6XQxNirjtuyywhboqwz25V-rbI
-Message-ID: <CAMB+xkYGHctzwy-nezULY38yvmnmh-ygWgOATmtCXj0nFbPRmA@mail.gmail.com>
-Subject: Re: [PATCH v1 0/2] iio: adc: hx711: add HX710B support
-To: jic23@kernel.org, ak@it-klinger.de, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sat, Apr 18, 2026 at 10:35=E2=80=AFPM Piyush Patle <piyushpatle228@gmail=
-.com> wrote:
->
-> Add support for the HX710B ADC, a variant of the HX711 with the same
-> GPIO interface but a different channel and gain model.
->
-> The first patch updates the devicetree binding to add the
-> `avia,hx710b` compatible and document the variant-specific behavior.
-> The second patch extends the driver with per-chip configuration, HX710B
-> channel selection through trailing pulse counts, and fixed-scale
-> handling for the variant.
->
-> Tested on PocketBeagle2 with an HX710B breakout module. The device
-> probed successfully and raw readings were stable.
->
-> Piyush Patle (2):
->   dt-bindings: iio: adc: avia-hx711: add avia,hx710b compatible
->   iio: adc: hx711: add support for HX710B
->
->  .../bindings/iio/adc/avia-hx711.yaml          |  36 ++-
->  drivers/iio/adc/Kconfig                       |   9 +-
->  drivers/iio/adc/hx711.c                       | 222 ++++++++++++++----
->  3 files changed, 214 insertions(+), 53 deletions(-)
->
-> --
-> 2.43.0
+Add tsl2591_persist_table as a bidirectional lookup table for
+tsl2591_persist_cycle_to_lit and tsl2591_persist_lit_to_cycle functions
 
-The two patches in this series were sent without proper In-Reply-To
-threading by mistake.
+These functions were prone to errors in the case of adding or updating
+TSL2591_PRST_ALS_INT_CYCLE_* values. The functions utilize a for-loop
+like in the function tsl2591_als_time_to_fval, allowing it to compare
+the cycle value with tsl2591_persist_table[i].cycle and return lit
+value with tsl2591_persist_table[i].lit as defined in the new type
+tsl2591_persist_entry, reducing the risk of logic mismatches.
 
-Patch 1/2:
-[PATCH v1 1/2] dt-bindings: iio: adc: avia-hx711: add avia,hx710b compatibl=
-e
+Signed-off-by: LucasRabaquim <lucas.rabaquim@usp.br>
+Co-developed-by: Matheus Feitosa <matheus.feitosa@usp.br>
+Signed-off-by: Matheus Feitosa <matheus.feitosa@usp.br>
+---
+ drivers/iio/light/tsl2591.c | 104 +++++++++++++-----------------------
+ 1 file changed, 38 insertions(+), 66 deletions(-)
 
-Patch 2/2:
-[PATCH v1 2/2] iio: adc: hx711: add support for HX710B
+diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
+index c5557867ea43..86483f0b2e01 100644
+--- a/drivers/iio/light/tsl2591.c
++++ b/drivers/iio/light/tsl2591.c
+@@ -170,6 +170,12 @@ struct tsl2591_chip {
+ 	bool events_enabled;
+ };
+ 
++/* Persist cycle conversion table mapping register cycles to lit values */
++struct tsl2591_persist_entry {
++	u8 cycle;
++	int lit;
++};
++
+ /*
+  * Period table is ALS persist cycle x integration time setting
+  * Integration times: 100ms, 200ms, 300ms, 400ms, 500ms, 600ms
+@@ -229,80 +235,46 @@ static int tsl2591_multiplier_to_gain(const u32 multiplier)
+ 	}
+ }
+ 
++static const struct tsl2591_persist_entry tsl2591_persist_table[] = {
++	{ TSL2591_PRST_ALS_INT_CYCLE_ANY,  1  },
++	{ TSL2591_PRST_ALS_INT_CYCLE_2,    2  },
++	{ TSL2591_PRST_ALS_INT_CYCLE_3,    3  },
++	{ TSL2591_PRST_ALS_INT_CYCLE_5,    5  },
++	{ TSL2591_PRST_ALS_INT_CYCLE_10,   10 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_15,   15 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_20,   20 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_25,   25 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_30,   30 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_35,   35 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_40,   40 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_45,   45 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_50,   50 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_55,   55 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_60,   60 },
++};
++
+ static int tsl2591_persist_cycle_to_lit(const u8 als_persist)
+ {
+-	switch (als_persist) {
+-	case TSL2591_PRST_ALS_INT_CYCLE_ANY:
+-		return 1;
+-	case TSL2591_PRST_ALS_INT_CYCLE_2:
+-		return 2;
+-	case TSL2591_PRST_ALS_INT_CYCLE_3:
+-		return 3;
+-	case TSL2591_PRST_ALS_INT_CYCLE_5:
+-		return 5;
+-	case TSL2591_PRST_ALS_INT_CYCLE_10:
+-		return 10;
+-	case TSL2591_PRST_ALS_INT_CYCLE_15:
+-		return 15;
+-	case TSL2591_PRST_ALS_INT_CYCLE_20:
+-		return 20;
+-	case TSL2591_PRST_ALS_INT_CYCLE_25:
+-		return 25;
+-	case TSL2591_PRST_ALS_INT_CYCLE_30:
+-		return 30;
+-	case TSL2591_PRST_ALS_INT_CYCLE_35:
+-		return 35;
+-	case TSL2591_PRST_ALS_INT_CYCLE_40:
+-		return 40;
+-	case TSL2591_PRST_ALS_INT_CYCLE_45:
+-		return 45;
+-	case TSL2591_PRST_ALS_INT_CYCLE_50:
+-		return 50;
+-	case TSL2591_PRST_ALS_INT_CYCLE_55:
+-		return 55;
+-	case TSL2591_PRST_ALS_INT_CYCLE_60:
+-		return 60;
+-	default:
+-		return -EINVAL;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
++		if (als_persist == tsl2591_persist_table[i].cycle)
++			return tsl2591_persist_table[i].lit;
+ 	}
++
++	return -EINVAL;
+ }
+ 
+ static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
+ {
+-	switch (als_persist) {
+-	case 1:
+-		return TSL2591_PRST_ALS_INT_CYCLE_ANY;
+-	case 2:
+-		return TSL2591_PRST_ALS_INT_CYCLE_2;
+-	case 3:
+-		return TSL2591_PRST_ALS_INT_CYCLE_3;
+-	case 5:
+-		return TSL2591_PRST_ALS_INT_CYCLE_5;
+-	case 10:
+-		return TSL2591_PRST_ALS_INT_CYCLE_10;
+-	case 15:
+-		return TSL2591_PRST_ALS_INT_CYCLE_15;
+-	case 20:
+-		return TSL2591_PRST_ALS_INT_CYCLE_20;
+-	case 25:
+-		return TSL2591_PRST_ALS_INT_CYCLE_25;
+-	case 30:
+-		return TSL2591_PRST_ALS_INT_CYCLE_30;
+-	case 35:
+-		return TSL2591_PRST_ALS_INT_CYCLE_35;
+-	case 40:
+-		return TSL2591_PRST_ALS_INT_CYCLE_40;
+-	case 45:
+-		return TSL2591_PRST_ALS_INT_CYCLE_45;
+-	case 50:
+-		return TSL2591_PRST_ALS_INT_CYCLE_50;
+-	case 55:
+-		return TSL2591_PRST_ALS_INT_CYCLE_55;
+-	case 60:
+-		return TSL2591_PRST_ALS_INT_CYCLE_60;
+-	default:
+-		return -EINVAL;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
++		if (als_persist == tsl2591_persist_table[i].lit)
++			return tsl2591_persist_table[i].cycle;
+ 	}
++
++	return -EINVAL;
+ }
+ 
+ static int tsl2591_compatible_int_time(struct tsl2591_chip *chip,
+-- 
+2.47.3
 
-Apologies!
