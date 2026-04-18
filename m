@@ -1,145 +1,175 @@
-Received: from fout-a6-smtp.messagingengine.com (fout-a6-smtp.messagingengine.com [103.168.172.149])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DD402E62A4;
-	Sat, 18 Apr 2026 20:21:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F15C113AA2D
+	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 20:52:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776543669; cv=none; b=OGjVuQUrGk7raaIbuWLswahSfK/dFca0sUDn+sRodGJCSU3F1mQWHJf55z6Ee1ToCZpmuvKlCZqRBvNvaDUwNXjOIbgQpzCr/m0gmgNLlXQdu2ci3j8BJBJjnIQX2ERaxg40t0R5Ma9QwcPTpW79CxzeXpvpus8PlCq81hyne7A=
+	t=1776545563; cv=none; b=VL1X10bxGs5gxftvnWn2k6NGfxxSkwxgvmApaxjsWlPuGqVB2NJg/42JT9eccWvvqGBW2qCe7TfyDXZEAfjOd5MEIZWMNMVzkp6Wx5eqQaM/CSMP6OflEOt9NL09+eJ33VB+sVEh1mdDSPHknMDrd8A3OVl1/IDSrguCORQ8RUg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776543669; c=relaxed/simple;
-	bh=uKWlxl3GBp17vJ8wClbLm2X803+Dflk0Su16uBstMpY=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=qj1DjesWknWgVMnizgmleoG0csZJBM3f1OH1MOLzWwCqJSCVzYx3fcBGQwRNmr0xybilH1imaZ/VIffz26Ux9xnXipSTp66cDWY/wwXxRBu9i4Mwy1zay0SfTCswj4/jaZp15lX1N8tTCE6lUxJz68FzWip+95WQuI6Kw4gf7xs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=RuQQ49jy; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=KUi3qRQN; arc=none smtp.client-ip=103.168.172.149
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1776545563; c=relaxed/simple;
+	bh=k0zIWNiqztBu59uU8v9A+AuJtHZrCMC4C8GSIfOb1ys=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=giX8YOvTdkaSpqz16IRPk/urqxNn/HQz1rc+0XKTyAqcIfLLNxG6QztyIJYkX6LvITIiuNW4F4s41Qc21/l70Hu6qLuqbOtL3sCNnX5uUgS9+W3Z3+8/0ZHIvtBKaecARcyLm9K/PYGl/a5TNYRXULO6gPpKncVIQo9CDTsr3zM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=wzMq0FZj; arc=none smtp.client-ip=74.125.82.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="RuQQ49jy";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="KUi3qRQN"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfout.phl.internal (Postfix) with ESMTP id 43269EC017E;
-	Sat, 18 Apr 2026 16:21:06 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-04.internal (MEProxy); Sat, 18 Apr 2026 16:21:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1776543666;
-	 x=1776630066; bh=hPYP9eUQ/eFYZOJFHq/Y0RBvgQgoNH9PKsqBaOrxT80=; b=
-	RuQQ49jyWjn6Jom0CeSAIywm+FP+ccY6QfhsaL4mHv1Qjp4DSIdRcn0MXKyBYXpO
-	9x/v/UJ/Ej/9PxZ0qllDKipoerwj9NnPqsvS/Zx8wnxUEr0bfLxvUpUxSCpmaG8/
-	v3fQhpG/kTSh0wXrZ/WLWvD4NjGqiwAvlanBI5wSYJPZv9Q51xYnar96YEEz72lZ
-	2BTtXVTpueX+MkoJFlAKZZ1MWlV82xsY5JbC6YhjelDMP+d4UUAqS9aLFUQ0c4CE
-	KfwXauoJfc6bllK4Yv/SLGWCEX/c66igcT5GjJ1iCfPvawKT0AQj2sNDr88Yf4SO
-	H7SxBJnB3mRZFitPvTYOAQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1776543666; x=
-	1776630066; bh=hPYP9eUQ/eFYZOJFHq/Y0RBvgQgoNH9PKsqBaOrxT80=; b=K
-	Ui3qRQNyT2ETE/LFDvK9Ld+axPSR3FvEJKbWhg/GBz1NR0NNL/tbVYAkq1V21FdK
-	jYeY0wgTDg2SPM2QNSMI4Z94NZv/BiHapJux60u8ZTG93j5btuIR+N+g5wedb+xp
-	cBqfpHxyr98g8UlJyatS8q+g3Bg5iLlTLSX9uCPLNEotxXYkZNv3WRjVfuGaUYv9
-	CKP6m9/Sd2UpuRFVrZAXwY8FMa8KhCCxUn04Vkd4DkZroqEOEJI8p47KViRDuo/x
-	HH953lr2fHRF7T7GsuHl6iIUEQItFAZK/i+vckjkQ1KK1re3TAj5/QY9Sk2LmqqS
-	SEsfU652mTUgqB5gkxWmw==
-X-ME-Sender: <xms:sefjafQETE3ukY_1sqjBw9Xhoy0upLAje-pBeuitv8ltOpWXeY0SJw>
-    <xme:sefjabknUDqeOiPkznVbNq3XW5YJoeeZ224-Gg3lfnliFUlB9BUV-7M90Zzz3wVAb
-    C0rTexlOJcFAN3f7BZz3S3chKmwh0QNABzV4glg0ElnSpcg-dQv5pAO>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdehfeejudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpefoggffhffvvefkjghfufgtgfesthejredtredttdenucfhrhhomhepfdetrhhnugcu
-    uegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtthgvrh
-    hnpefhtdfhvddtfeehudekteeggffghfejgeegteefgffgvedugeduveelvdekhfdvieen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnug
-    esrghrnhgusgdruggvpdhnsggprhgtphhtthhopedufedpmhhouggvpehsmhhtphhouhht
-    pdhrtghpthhtohepnhhunhhordhsrgesrghnrghlohhgrdgtohhmpdhrtghpthhtohepug
-    hlvggthhhnvghrsegsrgihlhhisghrvgdrtghomhdprhgtphhtthhopegtlhgrmhhorhel
-    heesghhmrghilhdrtghomhdprhgtphhtthhopehrughunhhlrghpsehinhhfrhgruggvrg
-    gurdhorhhgpdhrtghpthhtoheprghnugihsehkvghrnhgvlhdrohhrghdprhgtphhtthho
-    pegtohhnohhrodgutheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepjhhitgdvfeeskh
-    gvrhhnvghlrdhorhhgpdhrtghpthhtohepkhhriihkodgutheskhgvrhhnvghlrdhorhhg
-    pdhrtghpthhtoheprhhosghhsehkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:sefjaSALFtMZeX9IYriJ7JPFKlxgpcGTKtjXCEgGpZlTZ1tvJbAgPQ>
-    <xmx:sefjaQNwp03WnTpqiia_87zeRhXzQNCcrCFlh5PQm77TCBEvXpog-w>
-    <xmx:sefjaeOwKCNdEs-08Iqe4BxJ_ACR9kRhH1a84aY4FOEeEW2JxYwBaw>
-    <xmx:sefjaSKKA6Mrsb8pnfgH9i5upaJX0piegCIlng0Rll1q22Wr7H0E_A>
-    <xmx:sufjafiMrWZufyXkudmOG-EETmERMknbnGOp27aBU6FeYlFl5hh8pC-8>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 8FAEE700065; Sat, 18 Apr 2026 16:21:05 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="wzMq0FZj"
+Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-12c726ef332so2062606c88.1
+        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 13:52:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google; t=1776545559; x=1777150359; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=uIvpHJfLdwXFNrcu0Iy1WHK173eb9+R/v0WGKHYF/h4=;
+        b=wzMq0FZjLgW2uT9x3wJTePnS36Vp7vvmxos2Lgm4cpm/qYf/AjAsCVAPN15EUldOYT
+         rXRbLs3BiJKOnwafOcN0Pr/JFGtukT+b9UeG8Y76FR7ORjZtIhEAOUNcyRWwhLz93Y+k
+         MFpC1gDq7Vko7ebqYGXPWlbroKQLQ71NkmGJxOMUTTpOiGQ1AbdWE1gRcV9csUXU2lmD
+         uLvCu8fHXLmXVIJrjjnE8cL9Rbwq9kZrNd/0qXNGzFnIbiGScjhr0L0IZ1HV8m0970bB
+         djI9h0cy1ZySQZw7FiyjeMphHNPe3BksisX1PHoqdRD98OGLE/PpA1N5O7R8nOvBDMC+
+         625A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776545559; x=1777150359;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uIvpHJfLdwXFNrcu0Iy1WHK173eb9+R/v0WGKHYF/h4=;
+        b=XowmsEZ5Eys7l0lWxI2ZM8DcAmCv7TdpjEKbAMndPLpVp81Qb4qvBQoJxoXE5/4wYZ
+         9w+if5s8tf/U6khGqf4mswKkgHBuwsnzZtFUzgrX5tfqf6FqQgXKM72/sMnmTXp1lHxc
+         MDrBGFZgLifU520D1HUl6Neg4vxG1o2hyZ6EQGNcAxqKX9Fd8L7ktDepVGenwqkkwVKs
+         m6EH41E5QlhunfOZRNJEb8G8lYKP0kx9/BkhL/tYXZxX/pmJU+AGqRMC5B2HZn33zdWB
+         5jLCV8Oe3FWuxFINfyyIpDTCEgeGeYYCCJ4BIHrlGwxpd6P82YplT6YT8wrli/Ni8xLp
+         IRzA==
+X-Forwarded-Encrypted: i=1; AFNElJ/5JA4KxM8+Jz5E6UCpmDkyraDLXl4KNwHX1RsB+cRgOdpcFe8M2kKaASGlDblOkIRZ11xZqpiwD20=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyeqHnGAGta9ViiLjW5Nz6nE0pYej16N09ihvtdB9eKo6rjQwuf
+	LVnY0K1M1xE0HNCmCR6XGCOKfi2Ab24UMWDEF2e5zCcZY1DFtxn+cSTl1k5A8lYivBE=
+X-Gm-Gg: AeBDieuCLvjCuz8rRFTmnOwNe6d9eAXSgmJR4w2DgKcZe7Qf4HPyhETtSTIeyC1N9KL
+	cPLDXgXZJYfTzqWWPXFIePb0xcNfgN9GFu5BLSMc8KHOsI2k6MZKfS3BqaT5otOZbbmPOA9Y68+
+	dUGkQVsd/XLPX9WtpDJQZdy5qoa9Y5fmH2hOuf48fNwkG4N3Eo6s6/FTiMMWTRNhuyA0HCAcYno
+	OqV8UNgOx9itAe0fVofYWWCTmqkMXC7izNuhhtF0oL5SyEKMHrEDDKbLlkl8gEqpsslJeFlbBv/
+	0OoeeJloM5x/eZs4LmZiQ5qOQnv1Zk28Mk/BReBNIHMqyCLcze6DoC86KT2ErbCaq89rbVuj3iL
+	zRrawUHS6/vySwu3TUIktEr/2c6rp8mE07UJ9ooDsL7/QVR1IS2XYc6kr/GynPLD4WmhlICu78g
+	YnBQAQ9q4e1y7YiAGwjRYarsi3dQQkkZsFUQ==
+X-Received: by 2002:a05:7022:6b96:b0:12c:3d3c:ac08 with SMTP id a92af1059eb24-12c73f6d728mr3578783c88.4.1776545559119;
+        Sat, 18 Apr 2026 13:52:39 -0700 (PDT)
+Received: from fedora ([2804:14c:4c:af50:c408:26e5:33b0:662b])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e53a4a64e5sm7634756eec.7.2026.04.18.13.52.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Apr 2026 13:52:38 -0700 (PDT)
+From: Luiz Mugnaini <luizmugnaini@usp.br>
+X-Google-Original-From: Luiz Mugnaini
+To: cmo@melexis.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: Luiz Mugnaini <luizmugnaini@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: temperature: mlx90614: use guard(mutex) for EEPROM access locking
+Date: Sat, 18 Apr 2026 17:51:36 -0300
+Message-ID: <20260418205151.172046-1-luizmugnaini@usp.br>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: A4Pw2mV9al1B
-Date: Sat, 18 Apr 2026 22:18:47 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "David Lechner" <dlechner@baylibre.com>,
- "Svyatoslav Ryhel" <clamor95@gmail.com>,
- "Jonathan Cameron" <jic23@kernel.org>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Randy Dunlap" <rdunlap@infradead.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Message-Id: <6e9e830b-edb6-46a6-919c-8772b904262e@app.fastmail.com>
-In-Reply-To: <36e3611d-642e-42de-9a56-cf81c3e06832@baylibre.com>
-References: <20260418144716.132936-1-clamor95@gmail.com>
- <36e3611d-642e-42de-9a56-cf81c3e06832@baylibre.com>
-Subject: Re: [PATCH v1 0/5] Update APDS990x ALS to support device trees
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sat, Apr 18, 2026, at 18:24, David Lechner wrote:
-> On 4/18/26 9:47 AM, Svyatoslav Ryhel wrote:
->> Document Avago APDS9900/9901 ALS/Proximity sensor in schema and modernize
->> its driver to support OF bindings.
->> 
->> Svyatoslav Ryhel (5):
->>   dt-bindings: iio: light: Document Avago APDS9900/9901 ALS/Proximity
->>     sensor
->>   misc: apds990x: Use more device managed approach in the probe
->>   misc: apds990x: Drop Vled supply
->>   misc: apds990x: Convert to use OF bindings
->>   misc: apds990x: Drop IRQF_TRIGGER_LOW trigger
->> 
->>  .../bindings/iio/light/avago,apds9900.yaml    |  83 ++++++++
->>  drivers/misc/apds990x.c                       | 197 +++++++++---------
->
-> As mentioned in my reply to the dt-bindings patch, there is already an
-> IIO driver that looks like it could be compatible. I'm guessing that
-> this misc driver pre-dates the IIO subsystem. I would have a look at it
-> instead (drivers/iio/light/tsl2772.c).
+From: Luiz Mugnaini <luizmugnaini@usp.br>
 
-I see that we have a number of ALS drivers like this one in drivers/misc:
+Replace mutex_lock()/mutex_unlock() pairs with guard(mutex) from
+cleanup.h for cleaner and safer mutex handling. The lock protects
+EEPROM access across five call sites in mlx90614_read_raw(),
+mlx90614_write_raw(), and mlx90614_sleep().
 
-drivers/misc/apds9802als.c
-drivers/misc/apds990x.c
-drivers/misc/bh1770glc.c
-drivers/misc/isl29020.c
-drivers/misc/isl29003.c
+In all cases, the code between mutex_unlock() and the end of scope
+is either trivial computation, a return statement, or a call to
+mlx90614_power_put() (which only schedules a deferred autosuspend
+via pm_runtime_put_autosuspend()). The slightly extended lock scope
+is negligible compared to the existing hold times, which include
+EEPROM write cycles with 40ms sleeps.
 
-As far as I can tell, all of these are entirely unused, with nothing
-in the kernel creating the platform devices. The drivers that used
-instead have all been converted to drivers/iio a long time ago.
+Signed-off-by: Luiz Mugnaini <luizmugnaini@usp.br>
+---
+ drivers/iio/temperature/mlx90614.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-Is it time to remove all of the above?
+diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+index 1ad21b73e..adf100756 100644
+--- a/drivers/iio/temperature/mlx90614.c
++++ b/drivers/iio/temperature/mlx90614.c
+@@ -23,6 +23,7 @@
+  */
+ 
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/gpio/consumer.h>
+@@ -296,10 +297,9 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		mutex_lock(&data->lock);
++		guard(mutex)(&data->lock);
+ 		ret = i2c_smbus_read_word_data(data->client,
+ 					       chip_info->op_eeprom_emissivity);
+-		mutex_unlock(&data->lock);
+ 		mlx90614_power_put(data);
+ 
+ 		if (ret < 0)
+@@ -319,10 +319,9 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		mutex_lock(&data->lock);
++		guard(mutex)(&data->lock);
+ 		ret = i2c_smbus_read_word_data(data->client,
+ 					       chip_info->op_eeprom_config1);
+-		mutex_unlock(&data->lock);
+ 		mlx90614_power_put(data);
+ 
+ 		if (ret < 0)
+@@ -358,10 +357,9 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		mutex_lock(&data->lock);
++		guard(mutex)(&data->lock);
+ 		ret = mlx90614_write_word(data->client,
+ 					  chip_info->op_eeprom_emissivity, val);
+-		mutex_unlock(&data->lock);
+ 		mlx90614_power_put(data);
+ 
+ 		return ret;
+@@ -373,10 +371,9 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		mutex_lock(&data->lock);
++		guard(mutex)(&data->lock);
+ 		ret = mlx90614_iir_search(data->client,
+ 					  val * 100 + val2 / 10000);
+-		mutex_unlock(&data->lock);
+ 		mlx90614_power_put(data);
+ 
+ 		return ret;
+@@ -476,12 +473,11 @@ static int mlx90614_sleep(struct mlx90614_data *data)
+ 
+ 	dev_dbg(&data->client->dev, "Requesting sleep");
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 	ret = i2c_smbus_xfer(data->client->adapter, data->client->addr,
+ 			     data->client->flags | I2C_CLIENT_PEC,
+ 			     I2C_SMBUS_WRITE, chip_info->op_sleep,
+ 			     I2C_SMBUS_BYTE, NULL);
+-	mutex_unlock(&data->lock);
+ 
+ 	return ret;
+ }
+-- 
+2.53.0
 
-The notable exception is drivers/misc/tsl2550.c, which is instantiated
-from both arch/arm/boot/dts/ti/omap/am335x-evm.dts and
-drivers/i2c/busses/i2c-taos-evm.c. There is a similarly named
-drivers/iio/light/tsl2563.c driver, but unfortunately that uses
-a completely different register level interface.
-
-      Arnd
