@@ -1,40 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EC3C28DC4
-	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 17:49:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 239BA2DCBFC
+	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 17:50:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776620960; cv=none; b=EQJz92usMP5d9mpg9pfApZ0FeI3/RaMliMCWuTQEYfz5YjRRJa8H/Fe5a+XUFB1Ic6BYW3I8ZbkJten5ONP4yCrMxSvPLMcO2xwLaxvkCkp2SoOgaAOnY/0P8rAvegqnqFrgZh1eupSsAJ4jiS9knkBCC/D9hIvg8spPkZfc1oU=
+	t=1776621048; cv=none; b=S9oR+h6Lw4A9+4qUCBmV99+Lkxz25qYVZhXKkApiSUM2zoCNS67r7d+m1rIAuPtxS0Q9mkz9aiES6aqemeDDnyX6G8Owht4L1kHvhu2d0MqplyIMXLQzOdykHdTSoIHboWbS1EONgirVoaUwhYcMvBiRli2G4xgGLQFqef5Ol9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776620960; c=relaxed/simple;
-	bh=yJ7iXhGje1z6sgf7XtFNxZ2zfdlRID0zmFIc0JMqLmk=;
+	s=arc-20240116; t=1776621048; c=relaxed/simple;
+	bh=hmkXXp1ISw5In54C++6P2HwDNlRK7vs83vlnSGBXxCI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SI12db67QkToXEAViCi8A5bwzbjFNi+1A3AzkkUYn5mmT3LuyEAHymG1xfkeH70C/oZXoSmiKDl5CDzztTLQIkzJkAVfN7m60nHJMzoMPI2hCXJLxoYQu7/4++J79dDg8IshNqSGRDtumzo0L+Zd7iS+doTz9voVwH+t4N7Isq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Lf9Ze9ys; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=hRMPhLp8yHfdswO4nRlWP+/SQmofBzuZUQAJVvvWFNdZuXzaYGWGrPpsjqWftTt4dlkdXeyW02zJvu+zFZRjfD6m8p2Dk8HU04HwpwrTUbZBDSi6zqwjASjMa50OYn4lYzFwxRfO0k+MxxLJGEGubzc84RkG2YsaV6Acu1Gkkdc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VyOid7OC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Lf9Ze9ys"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3B8DC2BCAF;
-	Sun, 19 Apr 2026 17:49:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VyOid7OC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC800C2BCAF;
+	Sun, 19 Apr 2026 17:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776620960;
-	bh=yJ7iXhGje1z6sgf7XtFNxZ2zfdlRID0zmFIc0JMqLmk=;
+	s=k20201202; t=1776621047;
+	bh=hmkXXp1ISw5In54C++6P2HwDNlRK7vs83vlnSGBXxCI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Lf9Ze9ysQBFAhP+2y3jKP3Zm4oO0y6f4mKVWj/LY2NgpAjVRIjGjzBp4lnIYEX3ZV
-	 sGYGX2l4hWT36JOrPq6pI3pwm6AANFLq7+y9jUQ/DG6I032lSmbqjJ28g4eDatRXkk
-	 e/PDfXabosonPi/123CctbijYFBU6k7jWs+cp19z4P8A4besLz7gv0N697yATE/6II
-	 8gSwgIuCXl+03i1TGMIastccqa7EC+LMg3q+XKs3ws6ldF5eJseZI83pBFcA82F1LL
-	 tSFSSxzCIU0nGBr1b6iLvddqslZFjAU9/jfsSB5M/1WfVoYeqm0QnKYFyemc37b7YV
-	 3xDah+2xxye7w==
-Date: Sun, 19 Apr 2026 18:49:13 +0100
+	b=VyOid7OCraKaGryPo/jbom/0upBvx8dYui5qf+IxEK1bC2W+kGbu0adaDFfHIN7nq
+	 Ja2onTkMRH/xBPO6M2TR2LMN6CPub24ldxLGTfFTFw6A3vUJL3HHpi4WCJ0l2KMfSt
+	 k+0/MN0cQO9v/2pzJYJSdjluFZgkf3CQ7L7fLMRVs5a7Q4RE+w2AzEzsccOoYW1eNw
+	 8MAwSxTPX3Fr/sx24Jtr7wcG5beWV6PDVocVqokXejtIOgLaTAqVxKujMZ7vc0tHrz
+	 8Mi2TZ4g7PeQJzWcj6TNV87HHDc9FH3H224qz1+RBccfD8A53k6bVvWN1PlY1rIoko
+	 iNXG/4/Iju9eQ==
+Date: Sun, 19 Apr 2026 18:50:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: David Lechner <dlechner@baylibre.com>
-Cc: Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v6 0/3] iio: dac: mcp4821: add configurable gain support
-Message-ID: <20260419184913.091242ad@jic23-huawei>
-In-Reply-To: <b9c61657-bed5-41ef-9dd3-e2fc04a4785c@baylibre.com>
-References: <20260414170309.6151-1-nikhilgtr@gmail.com>
-	<b9c61657-bed5-41ef-9dd3-e2fc04a4785c@baylibre.com>
+Cc: Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org,
+ nuno.sa@analog.com, andy@kernel.org
+Subject: Re: [PATCH] iio: chemical: bme680: remove unused
+ BME680_NUM_CHANNELS macro
+Message-ID: <20260419185041.705d2db2@jic23-huawei>
+In-Reply-To: <710e2da4-2815-4137-84c4-1f148ec0a23f@baylibre.com>
+References: <20260407090327.4987-1-nikhilgtr@gmail.com>
+	<710e2da4-2815-4137-84c4-1f148ec0a23f@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,26 +47,53 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 14 Apr 2026 12:51:32 -0500
+On Tue, 7 Apr 2026 09:28:54 -0500
 David Lechner <dlechner@baylibre.com> wrote:
 
-> On 4/14/26 12:03 PM, Nikhil Gautam wrote:
-> > This series updates the MCP4821 DAC driver to support configurable gain.
+> On 4/7/26 4:03 AM, Nikhil Gautam wrote:
+> > The BME680_NUM_CHANNELS macro is not used anywhere in the driver.
+> > Remove it to avoid keeping dead code and to improve readability.
 > > 
-> > Patch 1 fixes a spelling issue in an enum name.
-> > Patch 2 performs a small refactor to simplify state handling.
-> > Patch 3 adds configurable gain support using the GA bit and
-> > adds support for writing to the scale attribute to select the gain.
+> > No functional change intended.
 > > 
-> > The scale attribute is used to control gain selection. Writing supported
-> > scale values selects the corresponding gain setting. The implementation
-> > supports all variants of the MCP48xx family (8, 10, and 12-bit devices).
-> >   
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> > Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+> > ---
+> >  drivers/iio/chemical/bme680.h | 1 -
+> >  1 file changed, 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/chemical/bme680.h b/drivers/iio/chemical/bme680.h
+> > index 7d86ed8b02e6..e10d3aaaca23 100644
+> > --- a/drivers/iio/chemical/bme680.h
+> > +++ b/drivers/iio/chemical/bme680.h
+> > @@ -68,7 +68,6 @@
+> >  /* Datasheet Section 1.1, Table 1 */
+> >  #define BME680_STARTUP_TIME_US			2000
+> >  
+> > -#define BME680_NUM_CHANNELS			4
+> >  #define BME680_NUM_BULK_READ_REGS		15
+> >  
+> >  /* Calibration Parameters */  
+> 
+> It looks like it was intended to be used in drivers/iio/chemical/bme680_core.c:
+
+Agreed. I think probably better to use it than remove it?
+
+
+> 
+> struct bme680_data {
+> 	struct regmap *regmap;
+> 	struct bme680_calib bme680;
+> 	struct mutex lock; /* Protect multiple serial R/W ops to device. */
+> 	u8 oversampling_temp;
+> 	u8 oversampling_press;
+> 	u8 oversampling_humid;
+> 	u8 preheat_curr_mA;
+> 	u16 heater_dur;
+> 	u16 heater_temp;
+> 
+> 	struct {
+> 		s32 chan[4];
+> 		aligned_s64 ts;
+> 	} scan;
 > 
 
-Applied to the testing branch of iio.git
-
-Thanks,
-
-Jonathan
