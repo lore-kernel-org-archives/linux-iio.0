@@ -1,41 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CEE33446DA
-	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 11:43:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F6DB2628D;
+	Sun, 19 Apr 2026 11:47:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776599027; cv=none; b=HAbSYXe5EQGvZ7FjapaYO1aGMjQB6cV4axooCjA42b/8bIvdqtc8QkML1n7/M83y5TugldgeipTc6y0obXidWjqpa4LYeG4yoZrPX6Cve981pHlsQ0FLZPhcNqfppGCkW2jh+LsThTCEaBQ+eYHWEDzYD9YXaI6ec0gal7xrTEg=
+	t=1776599230; cv=none; b=cSdMw/CxlpcU82Xvhmp+LRVWVIpRJeXXHG/EuytxKqJfqqbO0e25TzCTBMAT4JGEds7Iq+f/WNFixmZan9VM3HaDKDwa0F/DVp6S/mNuq5EIymdeKwKAYYNokZ0LskhvNdWJFYwp/M3zevGqrGGOdTyqkp+SZH/7hCVHc70uV+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776599027; c=relaxed/simple;
-	bh=zOTxzwb3i2Ov70tGpkIZZurB0+0xuRuf+PUjCB8fw30=;
+	s=arc-20240116; t=1776599230; c=relaxed/simple;
+	bh=p8PjFK4m/ZNB+eG85BhAL7e42OvxjRbIgvS/IEZAL8k=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gEVTCL5BiKhH6CXPeLelOfTc/5E1e4bR6Ac63cb4WmTzwBhygRkhakQ5qKeLaK+m+gRDHS7x/aojTRXnuHxWwd02p8wEYUcxgX/rSqEcgqhF82u+J3e3XimdA4tDhDLio65+748B8zG8va6otovXJqhe116DEmipC9oOBjRYB1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G6ktPYOS; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=hqp1d5JJAWIIAwSMjqhbxEQwyS0akZ5KYMmIM15ETqsHg7h/UDBLrgAl0c8jtIYBmg6lg+ERMz0DxC0gwhIkA1Z1oOrRwJaVdISqSfvdAyuViNtfnDJ/Ae6Jejg0fXik/dNorWNXdle4sZni56M6er2olouqoWp5ho9Ydy8Bjxk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=olUQvuQM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G6ktPYOS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59D1FC2BCAF;
-	Sun, 19 Apr 2026 11:43:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="olUQvuQM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA6FDC2BCAF;
+	Sun, 19 Apr 2026 11:47:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776599027;
-	bh=zOTxzwb3i2Ov70tGpkIZZurB0+0xuRuf+PUjCB8fw30=;
+	s=k20201202; t=1776599229;
+	bh=p8PjFK4m/ZNB+eG85BhAL7e42OvxjRbIgvS/IEZAL8k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=G6ktPYOSst1inuQH3NrVa/r3wZ/Yrt5dYC7vJznKoBOLe9cFScYRt91ZA/i6G9X+R
-	 xoMCC+zac/cJgQd5HNWOVOIxMrmQYv1JcrESZDXcdyIDS/gpDbCn9BSmd8dfM2CpS9
-	 9LnbgBPUU5n422/FVAssp47qb6Sr7tVviA2A4dUk8B4stt5Stj962y6btXo3d4XjgW
-	 DXxAUDvUOS0ony0f55+z+VRrh3cUMhHdUEoFG+qEKZt9rHQquIIQoIZNdDUUwZcZ02
-	 W81pHgJxikrB7ZmoKExAJLQcBYdXJXVK0NwDywhFYc2Viz6GJIFvyJx35j8VJbPyf4
-	 2MflVD3ZNzs7A==
-Date: Sun, 19 Apr 2026 12:43:41 +0100
+	b=olUQvuQMishHCAxCFtC83e7ipQgNJLTqtBu/yfkNkfOxz9b8i5OVnVBF1NA3ZGjRo
+	 ofqBpMx6Xaw1nRqQ/g7e7QqVlAxLilHXv+Y/M/zeuvIfsj/rrXVHvg7wfUT84jfb2q
+	 kZ5iD2B2q2sw2IrT3nOQ1m0DChwlra3BcTE2D/EFAdv/kvSJ7Sk5zB11loBYp/Aww7
+	 UGA3F1T2AJjKNOGrVecH3Mw/CDa94+sNH1YQnYfIbSZ43lqb3Oquir+s0sbfBFP7J9
+	 nMYaPXGBVIK2jp1PCzE4QjUIpuOGgyoNTX4KoMZSKuLRL7h66SOK94TQ+2cqdy4GMD
+	 RxZppjsNjR0HQ==
+Date: Sun, 19 Apr 2026 12:47:00 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Luiz Mugnaini <luizmugnaini@usp.br>
-Cc: cmo@melexis.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: temperature: mlx90614: use guard(mutex) for EEPROM
- access locking
-Message-ID: <20260419124341.465353af@jic23-huawei>
-In-Reply-To: <20260418205151.172046-1-luizmugnaini@usp.br>
-References: <20260418205151.172046-1-luizmugnaini@usp.br>
+To: Andreas Klinger <ak@it-klinger.de>
+Cc: David Lechner <dlechner@baylibre.com>, Piyush Patle
+ <piyushpatle228@gmail.com>, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] dt-bindings: iio: adc: avia-hx711: add
+ avia,hx710b compatible
+Message-ID: <20260419124700.69c262b7@jic23-huawei>
+In-Reply-To: <aeRlftUuHrTgz9OF@mail.your-server.de>
+References: <20260418170549.312446-1-piyushpatle228@gmail.com>
+	<23a00548-feac-4ce6-9a71-509b7636b372@baylibre.com>
+	<aeRlftUuHrTgz9OF@mail.your-server.de>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,130 +51,102 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 18 Apr 2026 17:51:36 -0300
-Luiz Mugnaini <luizmugnaini@usp.br> wrote:
+On Sun, 19 Apr 2026 07:17:50 +0200
+Andreas Klinger <ak@it-klinger.de> wrote:
 
-> From: Luiz Mugnaini <luizmugnaini@usp.br>
+> Hi,
 > 
-> Replace mutex_lock()/mutex_unlock() pairs with guard(mutex) from
-> cleanup.h for cleaner and safer mutex handling. The lock protects
-> EEPROM access across five call sites in mlx90614_read_raw(),
-> mlx90614_write_raw(), and mlx90614_sleep().
+> David Lechner <dlechner@baylibre.com> schrieb am Sa, 18. Apr 16:46:
+> > On 4/18/26 12:05 PM, Piyush Patle wrote:  
 > 
-> In all cases, the code between mutex_unlock() and the end of scope
-> is either trivial computation, a return statement, or a call to
-> mlx90614_power_put() (which only schedules a deferred autosuspend
-> via pm_runtime_put_autosuspend()). The slightly extended lock scope
-> is negligible compared to the existing hold times, which include
-> EEPROM write cycles with 40ms sleeps.
+> [...]
 > 
-> Signed-off-by: Luiz Mugnaini <luizmugnaini@usp.br>
-Hi Luiz,
-
-When making this sort of modernization change I'd suggest taking
-a look at the feedback and final form of other similar patches.
-Pretty much everyone gets the same feedback on these and you'd have
-saved everyone time if you'd realized it applies here as well.
-
-I'd also consider if having a locked reader helper might be
-worth doing here as well
-
-Something like
-
-static xxx mlx90614_read_word_data_locked(xxxx)
-{
-	guard(mutex)(&data->lock);
-	return i2c_smbus_read_word_data();
-}
-> ---
->  drivers/iio/temperature/mlx90614.c | 16 ++++++----------
->  1 file changed, 6 insertions(+), 10 deletions(-)
+> > >  
+> > >    Specifications about the driver can be found at:
+> > >    http://www.aviaic.com/ENProducts.aspx
+> > > @@ -23,11 +33,12 @@ properties:
+> > >    compatible:
+> > >      enum:
+> > >        - avia,hx711
+> > > +      - avia,hx710b
+> > >  
+> > >    sck-gpios:
+> > >      description:
+> > >        Definition of the GPIO for the clock (output). In the datasheet it is
+> > > -      named PD_SCK
+> > > +      named PD_SCK.  
+> > 
+> > Save the cleanups for a separate patch to keep the adding HX710B changes clear.
+> > 
+> > I'm guessing the existing binding for HX711 is quite old because it is quite
+> > incomplete.
+> > 
+> > It has avdd-supply, but is missing vsup-supply and dvdd-supply.
+> > 
+> > It should probably also have a way to describe how the rate pin is wired.
+> > 
+> > And it should have a clocks property instead of clock-frequency.  
 > 
-> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
-> index 1ad21b73e..adf100756 100644
-> --- a/drivers/iio/temperature/mlx90614.c
-> +++ b/drivers/iio/temperature/mlx90614.c
-> @@ -23,6 +23,7 @@
->   */
->  
->  #include <linux/bitfield.h>
-> +#include <linux/cleanup.h>
->  #include <linux/delay.h>
->  #include <linux/err.h>
->  #include <linux/gpio/consumer.h>
-> @@ -296,10 +297,9 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
->  
-> -		mutex_lock(&data->lock);
-> +		guard(mutex)(&data->lock);
+> The real meaning is a wait time until the DOUT is stable. As a submitted the
+> driver many years ago my suggestion of a wait time property was not accepted
+> because it would have introduced a new property which didn't exit in those days.
+> The suggestion was to name it clock-frequency because it already existed. This
+> clock-frequency made the driver also a little bit more complicated because at
+> the end we needed a waiting time and not a frequency.
+> 
+> Today i see there is as "wait-delay" property already introduced at other
+> bindings. This would also simplify the driver a bit.
+> 
+> @robh@kernel.org, @krzk+dt@kernel.org, @conor+dt@kernel.org:
+> Would this change in the binding be acceptable?
+> 
+> If yes, i could prepare a driver and binding patch separate of this patchset to
+> clean it up.
 
-What is the scope of this guard?  Hint, that gets 'interesting' when in a switch
-case statement and there is a standard solution for that...
+You would need to maintain backwards compatiblity with the old binding.
+Might be fine to deprecate it.
 
->  		ret = i2c_smbus_read_word_data(data->client,
->  					       chip_info->op_eeprom_emissivity);
-> -		mutex_unlock(&data->lock);
->  		mlx90614_power_put(data);
->  
->  		if (ret < 0)
-> @@ -319,10 +319,9 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
->  
-> -		mutex_lock(&data->lock);
-> +		guard(mutex)(&data->lock);
-Same applies here and probably a load more cases below.
+Jonathan
 
->  		ret = i2c_smbus_read_word_data(data->client,
->  					       chip_info->op_eeprom_config1);
-> -		mutex_unlock(&data->lock);
->  		mlx90614_power_put(data);
-It may make sense to take a closer look at whether we can use cleanup magic
-to handle the power management as well though that would need more substantial
-refactors so wouldn't belong in this patch.
-
-
->  
->  		if (ret < 0)
-> @@ -358,10 +357,9 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
->  
-> -		mutex_lock(&data->lock);
-> +		guard(mutex)(&data->lock);
->  		ret = mlx90614_write_word(data->client,
->  					  chip_info->op_eeprom_emissivity, val);
-> -		mutex_unlock(&data->lock);
->  		mlx90614_power_put(data);
->  
->  		return ret;
-> @@ -373,10 +371,9 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
->  
-> -		mutex_lock(&data->lock);
-> +		guard(mutex)(&data->lock);
->  		ret = mlx90614_iir_search(data->client,
->  					  val * 100 + val2 / 10000);
-> -		mutex_unlock(&data->lock);
->  		mlx90614_power_put(data);
->  
->  		return ret;
-> @@ -476,12 +473,11 @@ static int mlx90614_sleep(struct mlx90614_data *data)
->  
->  	dev_dbg(&data->client->dev, "Requesting sleep");
->  
-> -	mutex_lock(&data->lock);
-> +	guard(mutex)(&data->lock);
->  	ret = i2c_smbus_xfer(data->client->adapter, data->client->addr,
->  			     data->client->flags | I2C_CLIENT_PEC,
->  			     I2C_SMBUS_WRITE, chip_info->op_sleep,
->  			     I2C_SMBUS_BYTE, NULL);
-> -	mutex_unlock(&data->lock);
->  
->  	return ret;
-	reutrn i2c_smbus_xfer();
-
->  }
+> 
+> > It would make sense to have two clocks, on for XI/XO and one for PD_SCK.
+> > The second one being optional because of sck-gpios.
+> > 
+> > HX710B has many fewer pins, so we will need an:
+> > 
+> > allOf:
+> >   - if:
+> >       properties:
+> > 	compatible:
+> > 	  const: avia,hx710b
+> > 
+> > section that sets anything for pins that chip doesn't have to false, like
+> > vsup-supply.
+> > 
+> > HX710B also has a vref-supply that HX711 doesn't have. (Unless these are the
+> > same thing by a different name?)
+> > 
+> >   
+> > >      maxItems: 1
+> > >  
+> > >    dout-gpios:
+> > > @@ -43,6 +54,9 @@ properties:
+> > >        Definition of the regulator used as analog supply
+> > >  
+> > >    clock-frequency:
+> > > +    description:
+> > > +      Bit-bang clock frequency on PD_SCK. Keep the PD_SCK high time below
+> > > +      the chip power-down threshold.  
+> > 
+> > I suspect that this was meant to be the crystal frequency (XI/XO), not PD_SCK
+> > since sck-gpios already exists for PD_SCK  
+> 
+> see above
+> 
+> [...]
+> 
+> Best regards,
+> 
+> Andreas
+> 
 
