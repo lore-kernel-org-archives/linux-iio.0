@@ -1,137 +1,256 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE9232BE621
-	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 17:38:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6CB28DC4;
+	Sun, 19 Apr 2026 17:39:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776620317; cv=none; b=pmaf5yDhgNaDYK2emMD1y21vb/7dBC3246MZ84w68NaNmoCEjEq2pOxWBagITyfgtzrefclL+5ijIPQrfJjD4Z3m5fVZrJEi58EtL9J7DbhkzLx9iLmXbrQm50kJD903fw/EEi7eKFrpK/mA5NNDTj1RUL8zMbd8LThA2RIgisc=
+	t=1776620368; cv=none; b=aPXFj79mpmFrDZtAB71zElR4lWzuJtGwmk3k3rnHlUqGu0QtwrBMqvdHA/PdeXJw12NKCvxXMg42Sf5ng59W9+3HfpnG87U4mgyOba+RwG4IdpQhSn0Duqos2bOyhhNtgu1iG7zACvrKtUAkqebUJRU10g3DZDIV0zwFEvsneiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776620317; c=relaxed/simple;
-	bh=M4mfZCn7gG9R+iPUYZohSjdnClSIA2jYN+n//g0oTKI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=P2RIBjHHh/6gC37sV9EfTSf8c4TvFXqvcoSZkhE8WjY67Z0geBBHuRrcwo9DoxbejNDgai+0rOy9oBZVbcwbqZSGFo3+cCUVeE2a0/ImXMKL3GaWCxKFk6XN4ZC4vAbCKBHzs2XfGnAQ3/sM5q6unHjTk1HajYKjk4XX07jD030=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NpZ0Gb14; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776620368; c=relaxed/simple;
+	bh=cpG+I3oWWNUTrOkoPFvRT+owRe5XR2S1NLz5g0bf59o=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=AEmbd+kWRS1ux0ZVUjWdd2JLE+CBabgtoBu8tShLQegTmPli3U+wGuVxQsINyOdocq/jHl1f1z8DWDlrYnr3fpJpesFBuN+CPadOhNuw/dJvv6UBXOS2FaN4kK75/aO/Y1R/WfO8bMP0J/lPGhklSpySmPs4HnqTUNgKmpeD6Qw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cCdEbziJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NpZ0Gb14"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-82f69a286dbso1789877b3a.2
-        for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 10:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776620315; x=1777225115; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=b6njRl5ekiKUvWfvYHnr1mDhPwUIgo7rYzrXqRJ2Lqo=;
-        b=NpZ0Gb14S71vDjSTZQThq8Ou/ocC+K7mId9vnZ+CJcLY0hC1dngiJSreMuTZMog8Ld
-         gfp5Ju46O7jN1jH2Ax2edWvUgKcd1Vt5cKhMZ85KWg4Nf6XEXsRq+RuAXF4TmvF8YUuZ
-         Q1R4MA1L3bHPV9dSV8+GqNy81sK0DPfcung1ig3y39rPg8b6vsn62WkVWFrIKm+rB6bw
-         kFjbZWE/0BxsBP9ZHOGKXdHgqFnVopa1jkNdXkerk3A0aOV5b6jzgzegDchSJ1L37w98
-         BV9PWHHgF13wWNJuMk4C75A8/YID4F1cRYf0CyjULQhxA6YS6r6VANzaPy0rohDuY7N2
-         FsSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776620315; x=1777225115;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=b6njRl5ekiKUvWfvYHnr1mDhPwUIgo7rYzrXqRJ2Lqo=;
-        b=etTLDeb7bZ+Uox2pxC6SNiAhCOCRhXnSa1f62W8LeG0XOmIS01LbTDo3m2Yt2IYeCb
-         FQyMtqrihBtx9f7rJcslGB7FXVi9S91gjs4tz714Lv9MsnKpS/0cOEQblBfJByaekILo
-         0/fkj2Kb/A2Oq5je6A+8OKVa6TjkgAbWoyzPzAT3Qh9Vq7VFlH+ilQeX5hBi0D9hoH2S
-         N+G7G0gW6nsUxlI0q75y2FQ74PAVFtfEQZkRgbe1x6zQ059L94ljM7RuR/iimyIAaKAg
-         96/6ZqTHmVM/NhZT//fAcPTcu9/qV3aHq2tGMASuVYBbYFLPzEFYigcfy4WfrWt35kaK
-         yj4g==
-X-Gm-Message-State: AOJu0Yx8z0yStipNP6EQ3L5fTmDmibq4jl7uojeB8L+mJFrJNDpAv5yE
-	hTG4L0O58fDdMiSKWjWgXWt4PoEW2jgwwLhgACblxHDnt6t/Sy9kBwUS
-X-Gm-Gg: AeBDievcQM7CQ0VHVR82pneCwxa91ANiOmzNLYlMQOkZLsw+aE4VtRRxOZjj+HDgkO5
-	uYKiwm8C8H3nPViDpH02g/9pdLSB0SEwlUeV3CjfBSQAM4RpWDHzwyhvH1ZaqqD/khn7ojOpOMT
-	vsmAkSpJ7NrNZlHskJ7ZMK+xaC6NdKBiG94Fo+OJTG/AnDcMIWUuGa+ynE2IFEF/q2J5MhqMi8+
-	tXZ/oVqoeJfsH87HtUq5umpGFGUuAAmAv0xEDDqsjFnUDKCdB34b8z7jG2UXw2IDNojXCcuV7xd
-	xNO2wgk7Zy2S/aZAshqa2xdmVwK1e7zZZiHAUqZKSpnycW1s1+MqNGZlC8cJEZ+yx2yYheZ1pwt
-	Pe1gHd2Woef6rbKi2xLVRCOXkyzGlNsFOG7EB2Fc0JD6dLccTMLHav41+d+2h9SjrzxESYmxTNk
-	+9cvFdbVEWtUXqM0vv0TVVn6MH25DXu0JTvugzvY/XbKBRSVrE8FCLECTukWM=
-X-Received: by 2002:a05:6a21:e081:b0:399:196:1430 with SMTP id adf61e73a8af0-3a08d74fc7cmr10070886637.20.1776620315278;
-        Sun, 19 Apr 2026 10:38:35 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c797703059fsm6051069a12.24.2026.04.19.10.38.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Apr 2026 10:38:34 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org,
-	nuno.sa@analog.com
-Cc: linux-iio@vger.kernel.org,
-	demonsingur@gmail.co,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] MAINTAINERS: Update maintainer for iio driver(s)
-Date: Sun, 19 Apr 2026 23:08:30 +0530
-Message-Id: <20260419173830.2802263-1-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260419122338.29911625@jic23-huawei>
-References: <20260419122338.29911625@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cCdEbziJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B9D9C2BCAF;
+	Sun, 19 Apr 2026 17:39:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776620368;
+	bh=cpG+I3oWWNUTrOkoPFvRT+owRe5XR2S1NLz5g0bf59o=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=cCdEbziJFfRFUyVPrpN5B5pszdaVtVQnhGfB9Xyn5Ij6or3MGXyzWXHlcCwtc5yeH
+	 pAMbDg0nNKe/Oy4EDK7L9QMYuD28bZNeWY4nzJk9g1xhLtZ/SDDjK3UuSZ5BVGhoSi
+	 mhFGGXU/g96P/p/MeSLcBPUFfSQNYVK/eneQyo5EYYTyMZLn2U/nWUb/07Zu3ONOo5
+	 dpidkOjDNEgolrBa85SjWePxmQH6YsXljq2CLvLv/tKrGuzGd+X5i66fXLWgFVVXyh
+	 rCTmo80LV4KW1rLqPSmsHsGNPBRdwy848B5vvOo4eNu6u2XZ779lACt7z5aoK59MdA
+	 n6dbWI6A+E1kQ==
+Date: Sun, 19 Apr 2026 18:39:18 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ tglx@kernel.org, christophe.jaillet@wanadoo.fr, mingo@kernel.org,
+ nabijaczleweli@nabijaczleweli.xyz, kees@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 5/7] iio: ssp_sensors: convert probe and teardown to
+ devm-managed resources
+Message-ID: <20260419183918.23a22e12@jic23-huawei>
+In-Reply-To: <20260415050749.3858046-6-sanjayembedded@gmail.com>
+References: <20260415050749.3858046-1-sanjayembedded@gmail.com>
+	<20260415050749.3858046-6-sanjayembedded@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Wed, 15 Apr 2026 10:37:47 +0530
+Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 
-The listed maintainer analog domain email for Cosmin Tanislav is no
-longer valid, and he would no longer maintain this driver(s).
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> 
+> Convert SSP driver resource management to use devm-managed helpers
+> and devm actions, tying the lifetime of all resources to the device.
+> 
+> Mutex initialization, IRQ registration, work items, timers, and MFD
+> resource are now managed using devm APIs. Cleanup logic previously
+> handled explicitly in probe error paths and the remove callback is
+> replaced with devm_add_action_or_reset(), ensuring correct teardown
+> ordering and consistent behaviour on probe failure and device unbind.
+> 
+> This simplifies the probe path by removing goto-based error handling,
+> eliminates the remove callback entirely.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Hi Sanjay.
 
-Cosmin suggested adding Nuno from Analog Devices for further handling
-this driver(s). Add Nuno as maintainer.
+Devm conversions often get complex and end up raising questions
+that weren't as obvious when doing an explicit remove() callback.
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- MAINTAINERS | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+One of those inline.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c981cbdff500..f86a398d1a35 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -644,7 +644,7 @@ F:	drivers/iio/accel/adxl355_i2c.c
- F:	drivers/iio/accel/adxl355_spi.c
- 
- ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
--M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
-+M:	Nuno Sá <nuno.sa@analog.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
-@@ -1461,7 +1461,7 @@ F:	Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
- F:	drivers/iio/adc/ad4080.c
- 
- ANALOG DEVICES INC AD4130 DRIVER
--M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
-+M:	Nuno Sá <nuno.sa@analog.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
-@@ -1549,7 +1549,7 @@ F:	Documentation/devicetree/bindings/iio/dac/adi,ad7293.yaml
- F:	drivers/iio/dac/ad7293.c
- 
- ANALOG DEVICES INC AD74115 DRIVER
--M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
-+M:	Nuno Sá <nuno.sa@analog.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
-@@ -1557,7 +1557,7 @@ F:	Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
- F:	drivers/iio/addac/ad74115.c
- 
- ANALOG DEVICES INC AD74413R DRIVER
--M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
-+M:	Nuno Sá <nuno.sa@analog.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
--- 
-2.34.1
+Thanks
+
+Jonathan
+
+> ---
+> Changes in v6:
+> - Drop remove path completely using devm_action with review comment from David
+> - Convert MFD device to manage resource along with mutex and IRQ
+> - Link to v5: https://lore.kernel.org/all/20260406080852.2727453-1-sanjayembedded@gmail.com/
+> ---
+> 
+>  drivers/iio/common/ssp_sensors/ssp_dev.c | 88 ++++++++++--------------
+>  1 file changed, 38 insertions(+), 50 deletions(-)
+> 
+> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
+> index cb4c26a6b76c..94ecc794f926 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp_dev.c
+> +++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+> @@ -194,6 +194,16 @@ static void ssp_disable_wdt_timer(struct ssp_data *data)
+>  	cancel_work_sync(&data->work_wdt);
+>  }
+>  
+> +static void ssp_shutdown_action(struct ssp_data *data)
+> +{
+> +	if (ssp_command(data, SSP_MSG2SSP_AP_STATUS_SHUTDOWN, 0) < 0)
+> +		dev_err(&data->spi->dev,
+> +			"SSP_MSG2SSP_AP_STATUS_SHUTDOWN failed\n");
+> +
+> +	ssp_enable_mcu(data, false);
+> +	ssp_clean_pending_list(data);
+Where this is called below, it's not obvious to me what particular
+actions it is undoing.  So I think you need comments on that somewhere.
+
+General alarm bell was that it was undoing multiple things.
+
+> +}
+> +
+>  /**
+>   * ssp_get_sensor_delay() - gets sensor data acquisition period
+>   * @data:	sensorhub structure
+> @@ -491,9 +501,9 @@ static int ssp_probe(struct spi_device *spi)
+>  		return -ENODEV;
+>  	}
+>  
+> -	ret = mfd_add_devices(&spi->dev, PLATFORM_DEVID_NONE,
+> -			      sensorhub_sensor_devs,
+> -			      ARRAY_SIZE(sensorhub_sensor_devs), NULL, 0, NULL);
+> +	ret = devm_mfd_add_devices(&spi->dev, PLATFORM_DEVID_NONE,
+> +				   sensorhub_sensor_devs,
+> +				   ARRAY_SIZE(sensorhub_sensor_devs), NULL, 0, NULL);
+>  	if (ret < 0) {
+>  		dev_err(&spi->dev, "mfd add devices fail\n");
+>  		return ret;
+> @@ -503,14 +513,16 @@ static int ssp_probe(struct spi_device *spi)
+>  	ret = spi_setup(spi);
+>  	if (ret < 0) {
+>  		dev_err(&spi->dev, "Failed to setup spi\n");
+> -		goto err_setup_spi;
+> +		return ret;
+>  	}
+>  
+>  	data->fw_dl_state = SSP_FW_DL_STATE_NONE;
+>  	data->spi = spi;
+>  	spi_set_drvdata(spi, data);
+>  
+> -	mutex_init(&data->comm_lock);
+> +	ret = devm_mutex_init(&spi->dev, &data->comm_lock);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	for (i = 0; i < SSP_SENSOR_MAX; ++i) {
+>  		data->delay_buf[i] = SSP_DEFAULT_POLLING_DELAY;
+> @@ -523,7 +535,9 @@ static int ssp_probe(struct spi_device *spi)
+>  
+>  	data->time_syncing = true;
+>  
+> -	mutex_init(&data->pending_lock);
+> +	ret = devm_mutex_init(&spi->dev, &data->pending_lock);
+> +	if (ret < 0)
+> +		return ret;
+>  	INIT_LIST_HEAD(&data->pending_list);
+>  
+>  	atomic_set(&data->enable_refcount, 0);
+> @@ -533,14 +547,17 @@ static int ssp_probe(struct spi_device *spi)
+>  
+>  	timer_setup(&data->wdt_timer, ssp_wdt_timer_func, 0);
+>  
+> -	ret = request_threaded_irq(data->spi->irq, NULL,
+> -				   ssp_irq_thread_fn,
+> -				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> -				   "SSP_Int", data);
+> -	if (ret < 0) {
+> -		dev_err(&spi->dev, "Irq request fail\n");
+> -		goto err_setup_irq;
+> -	}
+> +	ret = devm_add_action_or_reset(&spi->dev,
+> +				       ssp_disable_wdt_timer, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_request_threaded_irq(&spi->dev, data->spi->irq, NULL,
+> +					ssp_irq_thread_fn,
+> +					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> +					"SSP_Int", data);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	/* Let's start with enabled one so irq balance could be ok */
+>  	data->shut_down = false;
+> @@ -548,53 +565,24 @@ static int ssp_probe(struct spi_device *spi)
+>  	/* just to avoid unbalanced irq set wake up */
+>  	enable_irq_wake(data->spi->irq);
+>  
+> +	ret = devm_add_action_or_reset(&spi->dev,
+> +				       ssp_shutdown_action, data);
+
+See above. At minimum this needs some explanatory comments on why
+the stuff in there needs to be called from this point onwards.
+Before this patch it wasn't called if there was an error in the next
+few lines.
+
+
+> +	if (ret)
+> +		return ret;
+> +
+>  	data->fw_dl_state = ssp_check_fwbl(data);
+>  	if (data->fw_dl_state == SSP_FW_DL_STATE_NONE) {
+>  		ret = ssp_initialize_mcu(data);
+>  		if (ret < 0) {
+>  			dev_err(&spi->dev, "Initialize_mcu failed\n");
+> -			goto err_read_reg;
+> +			return ret;
+>  		}
+>  	} else {
+>  		dev_err(&spi->dev, "Firmware version not supported\n");
+> -		ret = -EPERM;
+> -		goto err_read_reg;
+> +		return -EPERM;
+>  	}
+>  
+>  	return 0;
+> -
+> -err_read_reg:
+> -	free_irq(data->spi->irq, data);
+> -err_setup_irq:
+> -	mutex_destroy(&data->pending_lock);
+> -	mutex_destroy(&data->comm_lock);
+> -err_setup_spi:
+> -	mfd_remove_devices(&spi->dev);
+> -
+> -	dev_err(&spi->dev, "Probe failed!\n");
+> -
+> -	return ret;
+> -}
+> -
+> -static void ssp_remove(struct spi_device *spi)
+> -{
+> -	struct ssp_data *data = spi_get_drvdata(spi);
+> -
+> -	if (ssp_command(data, SSP_MSG2SSP_AP_STATUS_SHUTDOWN, 0) < 0)
+> -		dev_err(&data->spi->dev,
+> -			"SSP_MSG2SSP_AP_STATUS_SHUTDOWN failed\n");
+> -
+> -	ssp_enable_mcu(data, false);
+> -	ssp_clean_pending_list(data);
+> -
+> -	free_irq(data->spi->irq, data);
+> -
+> -	ssp_disable_wdt_timer(data);
+> -
+> -	mutex_destroy(&data->comm_lock);
+> -	mutex_destroy(&data->pending_lock);
+> -
+> -	mfd_remove_devices(&spi->dev);
+>  }
+>  
+>  static int ssp_suspend(struct device *dev)
 
