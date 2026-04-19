@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980538834;
-	Sun, 19 Apr 2026 13:33:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D33D244661;
+	Sun, 19 Apr 2026 13:38:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776605637; cv=none; b=bKFmRkPer4kqsgOg2itRRhHkKn4CJ8k2WcaUXIgkv+pUyNXu6xEouK/dFCzLisRubw1yPVroBUQ3nEUwRZpKeiIWo850QfzvpDCWKkkmS55zaAfSkpT+hN0gCgES1NKvf1xKLZTK0Fz8N/KyC+sd9g966X6bFAoHPGTFE7VLIHM=
+	t=1776605881; cv=none; b=f2V480DDgXkUQMqfnlfr2b4iHs/+EDaYCYqbX10aqraRur4yC1YtP2ApX9jFHpcsPN6NUOMMaC30nw6Dl9gFFavCGjri1qkn18kY1ouEEXPYgA8aZ1XQRKrmbLXifMXLGLcFWsOSw6vXb1Lf1iHx6420Z2sWiSQC01n7SKFTuwU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776605637; c=relaxed/simple;
-	bh=PN0KWt9UBkV0/n988jdngDmSjDH7FRRxV8CnMr1y2M4=;
+	s=arc-20240116; t=1776605881; c=relaxed/simple;
+	bh=6WY595BorbNWnGnJ/EDvEz8w+H+97ZbIq0Q2Gf00ZGE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Bfy+63HgjI7rwHDHdMSQhmCjo9eBGUUzBKMwtbtJ3vnLAvecEWoxJi6+p8SOKarkgv2GoEegKNxtMNDVeLd9djGWUAtu4tF/aIsJ/nfTvyaRFv/Xxqr3NzBsTGM+U5LdV44xcgdOIP/brtdsrz95O+PsyqXKVOoiBc0xjx7FJ70=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fz5J/ILx; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=gInONJzT4xe9JZon3esFHvKvj9zm0eQaLX2zkD55rgMO7y7k6GEC3yKFH4yBX1SoO4j3r1aFqLLkGr7gflhvj1LrBWWNiU0OoixtTOz/cIXB5B/avtvzsJTiNlvTbGSmFlErbTkJl47Hz6dDSF6OyHq2lgYRrIy+eIXUc8dnJrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=onyzH2b1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fz5J/ILx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A3ACC2BCAF;
-	Sun, 19 Apr 2026 13:33:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="onyzH2b1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B086BC2BCAF;
+	Sun, 19 Apr 2026 13:37:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776605637;
-	bh=PN0KWt9UBkV0/n988jdngDmSjDH7FRRxV8CnMr1y2M4=;
+	s=k20201202; t=1776605881;
+	bh=6WY595BorbNWnGnJ/EDvEz8w+H+97ZbIq0Q2Gf00ZGE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Fz5J/ILxpY7243N/yp4TIQIb3TSI04aTmab6+fS/DMEyW/6A09NubwZKXFCbgnSGf
-	 b60HmkbVGSTTV1EVwF9IayrJrw+qT3058CQlrb3ti2KnkWymyqcVJ3a7q+CXuxoB+k
-	 pTjID+rJvoU0UPvOC6bXzwq7p641KD4uTXjGVqQ+z+8XLbnUimi0KOdCz2IZOrW6VI
-	 9svlhO9k63UQyuaPICLWp7entRxw54ioTyfqMEDslnW+uBX2dB1zZe08/oanBGnmhJ
-	 AakfHLN+SNe9+cCnE74luUXeX5DL+1D6Xc+/XFqXxvEHIoma974i/nLR5ojeol6KP+
-	 qapnIKY4k/Ysg==
-Date: Sun, 19 Apr 2026 14:33:46 +0100
+	b=onyzH2b10RsdQQo0RQ9VXTWosVZynAK1s3DXlO7TMz/4WZoXj7QgUVE0UwqpMJEwP
+	 SFehCsCc+xgE7MOqArqdXbrl2U8PEtDTrxc9I8qM2e8USsZLmjxIq36nV/RtdlJg/s
+	 xEFRT7QjTs1gnz5J/XA78XGt2MUYTAXJXnRSzx4sBxVlQ3m8dMj2wbeOrZK1r8UaDy
+	 SDAGclHdy4hbikShrLOBCNOU6IK5tJI31hxK73e1WeqPZzl9hrDCv3FW4Egw2KDJal
+	 AVVObspcarz6so0QpcG7zjFXxGkk8zFDVyDBqg1nBUIJSEj41moZ9yg5xUerT1aUXU
+	 I1Od5V6AgR8vg==
+Date: Sun, 19 Apr 2026 14:37:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Svyatoslav Ryhel <clamor95@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -38,11 +38,12 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <rdunlap@infradead.org>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] misc: Remove old APDS990x driver
-Message-ID: <20260419143346.45ed78c2@jic23-huawei>
-In-Reply-To: <20260419083125.35572-4-clamor95@gmail.com>
+Subject: Re: [PATCH v2 2/3] iio: tsl2772: add support for Avago
+ APDS9900/9901 ALS/Proximity sensor
+Message-ID: <20260419143751.11ec0b69@jic23-huawei>
+In-Reply-To: <20260419083125.35572-3-clamor95@gmail.com>
 References: <20260419083125.35572-1-clamor95@gmail.com>
-	<20260419083125.35572-4-clamor95@gmail.com>
+	<20260419083125.35572-3-clamor95@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,36 +54,72 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 19 Apr 2026 11:31:24 +0300
+On Sun, 19 Apr 2026 11:31:23 +0300
 Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-> The Avago APDS9900/9901 ALS/Proximity sensor is now supported by tsl2772
-> IIO driver so there is no need to keep this old implementation. Remove it.
+> The Avago APDS990x has the same register set as the TAOS/AMS TSL2772 so
+
+A Sashiko review comment makes me wonder about one thing below if the
+register set does match.  Maybe it's a bit more subtle than this
+patch description suggests?
+
+> just add the correct bindings and the appropriate LUX table derived from
+> the values in the datasheet. Driver was tested on the LG Optimus Vu P895.
 > 
 > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
 > ---
->  Documentation/misc-devices/apds990x.rst |  128 ---
-Sashiko AI reviewing is now running on anything that hits linux-iio@vger.kernel.org
+>  drivers/iio/light/tsl2772.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
+> index c8f15ba95267..8dab34bf00ca 100644
+> --- a/drivers/iio/light/tsl2772.c
+> +++ b/drivers/iio/light/tsl2772.c
+> @@ -127,6 +127,7 @@ enum {
+>  	tmd2672,
+>  	tsl2772,
+>  	tmd2772,
+> +	apds990x,
+>  	apds9930,
+>  };
+>  
+> @@ -221,6 +222,12 @@ static const struct tsl2772_lux tmd2x72_lux_table[TSL2772_DEF_LUX_TABLE_SZ] = {
+>  	{     0,      0 },
+>  };
+>  
+> +static const struct tsl2772_lux apds990x_lux_table[TSL2772_DEF_LUX_TABLE_SZ] = {
+> +	{ 52000,  115960 },
+> +	{ 36400,   73840 },
+> +	{     0,       0 },
+> +};
+> +
+>  static const struct tsl2772_lux apds9930_lux_table[TSL2772_DEF_LUX_TABLE_SZ] = {
+>  	{ 52000,  96824 },
+>  	{ 38792,  67132 },
+> @@ -238,6 +245,7 @@ static const struct tsl2772_lux *tsl2772_default_lux_table_group[] = {
+>  	[tmd2672] = tmd2x72_lux_table,
+>  	[tsl2772] = tsl2x72_lux_table,
+>  	[tmd2772] = tmd2x72_lux_table,
+> +	[apds990x] = apds990x_lux_table,
+>  	[apds9930] = apds9930_lux_table,
+>  };
+>  
+> @@ -289,6 +297,7 @@ static const int tsl2772_int_time_avail[][6] = {
+>  	[tmd2672] = { 0, 2730, 0, 2730, 0, 699000 },
+>  	[tsl2772] = { 0, 2730, 0, 2730, 0, 699000 },
+>  	[tmd2772] = { 0, 2730, 0, 2730, 0, 699000 },
+> +	[apds990x] = { 0, 2720, 0, 2720, 0, 696000 },
+>  	[apds9930] = { 0, 2730, 0, 2730, 0, 699000 },
+>  };
+>  
+> @@ -316,6 +325,7 @@ static const u8 device_channel_config[] = {
+>  	[tmd2672] = PRX2,
+>  	[tsl2772] = ALSPRX2,
+>  	[tmd2772] = ALSPRX2,
+> +	[apds990x] = ALSPRX,
 
-I'm slowly getting into the habit of checking out what it finds though
-I'm 500+ emails behind so it might not be that thorough today :*
+This is different from tsl2772?
 
-Anyhow, it caught an easy one here.
+>  	[apds9930] = ALSPRX2,
+>  };
 
-This file is referenced from Documentation/misc-devices/index.rst
-so that needs an update as well.
- 
-There is the obvious point of ABI compatibility raised as well, but given
-we don't seem to be getting much push back on that maybe that's not a significant
-concern.
-
-Jonathan
-
->  drivers/misc/Kconfig                    |   10 -
->  drivers/misc/Makefile                   |    1 -
->  drivers/misc/apds990x.c                 | 1284 -----------------------
->  include/linux/platform_data/apds990x.h  |   65 --
->  5 files changed, 1488 deletions(-)
->  delete mode 100644 Documentation/misc-devices/apds990x.rst
->  delete mode 100644 drivers/misc/apds990x.c
->  delete mode 100644 include/linux/platform_data/apds990x.h
