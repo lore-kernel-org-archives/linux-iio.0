@@ -1,155 +1,153 @@
-Received: from www571.your-server.de (www571.your-server.de [78.46.3.230])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DBF033122A;
-	Sun, 19 Apr 2026 05:46:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.46.3.230
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776577572; cv=none; b=Lu7Vod3+cnHUPbLnB195dsFVp8a+kszA2bf+DZdFs2ooUXQdZxeZT1gHK2X9w21Og8neyNjXUu/gHe6W+BLZH70uslUvnnry3jlg0XsL0yknWJDpaZFnZAvSIzUR0lxWHu47SnYBJ5i3A9HUIqiIsh3MUV6J2WkD/Yo+e5Z5O4c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776577572; c=relaxed/simple;
-	bh=eSqbLHhgHh/ZJRww73fcoSmu95b67ftPVA72Xee322E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ieTZvlbhKe6KTKvsXP4/j+qNDEEweMfxSQ/L/I8Uo5t8SPUCcM7Qkqsusrd2f17Lw6pfvhSBJl/AH1wcV7mXqag0wtqkKeZBed3zHgncR/mBxbdeYaDnJn1eI/Ej9rNg25WEZnp6/uY8QxH+U5ev1ah8dAfm4nfWN5qqHLxiopc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de; spf=pass smtp.mailfrom=it-klinger.de; dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b=H4wCScQD; arc=none smtp.client-ip=78.46.3.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=it-klinger.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6DD12FB965
+	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 08:00:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776585649; cv=pass; b=sT+KcxxxOt1MdbELmescuSwIYQsEAEXrbCbHUhRi1g04HTuHjVxlnsio9FutU/AtFZVBj2YALzyTU+H7WkEytrmRuiNzKwq6p+PITZsaloYOOImSDxpPZk9REEwybFHuanach6KzgGE8SuI8NavnUIGi+28BmBOrq1vR+WeC1Uk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776585649; c=relaxed/simple;
+	bh=2abiZr7o5o9n3MgDZZRlE7z5cwnYcdepAd/MNqbQdzA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rEWLFH5zka8q6JQ3Y1rSPl6VD6T50gri20fb2Xd12UMlWkiOXNBWsZMePfVTwL2lhzgoM0IVF4ZtOtl/ed3qBGCM5+3TDIC7k07uJUkjc+BBQCBUT+CJR9ZzkOz8kl2B81aA2HHIVdl5ooEPvxU9bXLqQMZoXywqxEkIiySSjvA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MbOltDvJ; arc=pass smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b="H4wCScQD"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=it-klinger.de; s=default2502; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=o+V0Ka/TX2zNmL71sdJ1/xjziRZ4oqntm65AuSQ+qyA=; b=H4wCScQDFecegr7zhqMDh7rTw+
-	uJrMjiNkBfZUmRq1PLDEqOqF0lw9IXFGFc1agGATmGGzWhJq90QmtJA+OJOQt+0kTmcR443DbeENu
-	JMzK0cMIusqus2Gk62jwQJWc2stOPcJX6aATYyij3r38dsRVzU42lGmd1y509ATBAUXaPAHWCldjr
-	zeTpXpbpfYlWu8CSonRFsfw6EUmWB8fzNUPUV0vAtLFepA9kLnpvcP/YrgopJVyghINiK4v2Cn4TR
-	ldvXj7pu7JwXn/BkLYwtGxTOJtVxeEDwMrMLRgh5VoVkX9E497VBW8xEu6e2tfhchVEmmFsH+Eh6P
-	tyqncSMA==;
-Received: from sslproxy07.your-server.de ([78.47.199.104])
-	by www571.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96.2)
-	(envelope-from <ak@it-klinger.de>)
-	id 1wEKXY-00019T-1h;
-	Sun, 19 Apr 2026 07:17:52 +0200
-Received: from localhost ([127.0.0.1])
-	by sslproxy07.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <ak@it-klinger.de>)
-	id 1wEKXY-000DUY-0z;
-	Sun, 19 Apr 2026 07:17:52 +0200
-Date: Sun, 19 Apr 2026 07:17:50 +0200
-From: Andreas Klinger <ak@it-klinger.de>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Piyush Patle <piyushpatle228@gmail.com>, jic23@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] dt-bindings: iio: adc: avia-hx711: add
- avia,hx710b compatible
-Message-ID: <aeRlftUuHrTgz9OF@mail.your-server.de>
-References: <20260418170549.312446-1-piyushpatle228@gmail.com>
- <23a00548-feac-4ce6-9a71-509b7636b372@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MbOltDvJ"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-488ad135063so15440605e9.0
+        for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 01:00:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776585646; cv=none;
+        d=google.com; s=arc-20240605;
+        b=fn2AAVD8jCyWpDKXHnPzEDSiL37AxAnAxBcIUQDmqJYuwuGuNCPe7N6XfpPpnAZ2Bm
+         4wF0cA+OYIXqfNGMPPT/LAVzKupgkcroF8676fOTJnjfZUT2xi2ttSJQFtRoQ5lplVRu
+         P8zD51eZvGNsYIUviOO2uajLuilei11kndgu9wovsZuvWeWkLdbSpvkLzVQmX35YsMYF
+         t2kM0Er750+dY+ONqY0GpWV260yapuAJgfKWQxGSE9ltkSCzLzfBdNqA1Y/MB+jp5In0
+         93ky6+w7pGepwN+e7rzULN6S5zq59CT0tKBWXZ/cBbvtzxUA1IXiXIEwqJEBe5PXI5tE
+         T3/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=5bJj2YUX3nt/Dk+iVGu4h6btDy49Kr3dD0yeQxG9Eyc=;
+        fh=c2svtbfiVC0hBHPnTEf75a7OUnSrX5a1xgQtTXOGrSY=;
+        b=LVEdL80vtthpQYLEiwW6oGig/XY+KUoyTWVOcElguHOrX8YzNZfe8q0hrfE9R/h8Vi
+         ylCVWdhC3Xu71P14ZZLPRutl7eH3i3xau8eEgOCCjYLSZ8z2K8txrvfrwP25TrjpUgap
+         VE+GfCQpZ+IUemqAq9o6+PCfK6muOan92ujOAtsq+pBLKjoQIDV4UeqHDRBaLl6qrc4k
+         O9TRstvvdkURvrukl5xnxNQsaFQgHvH4AIsuLMW3ST9K7NFBuO2y570YOj3IKYsS0CWj
+         6LvuyCf/Y0bkcxzeH5nF71T6klvsAkvLw3f+TSj7N8Mm5RYEw5Slyr09NdXK3B6p/tWL
+         2QgQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776585646; x=1777190446; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5bJj2YUX3nt/Dk+iVGu4h6btDy49Kr3dD0yeQxG9Eyc=;
+        b=MbOltDvJtASpsG26qpvrdPFnGtCDFtUaZJr1oVJI3C2yUIiefEzbAXEJdeepDGQsMA
+         Qz0TFYWyyhZd6rH2PzqAdtr0HUYRD0bs2CVVicoCA2hhr/oOztIKqQKJ+zEpwo9eS8oZ
+         JucRWen+PJq67eKLXqePOIhdUFwoaf1BZZwXOiLReOKCiLDDeZcool6Qbh9Rkd890Rlb
+         3S+9aJODCqN8YXImzTMpbxaBoZtfaj16fiPa+oUexjjMZODMZnBFte+RIv8vtv5NR8Ba
+         u4m/EWKt6qzFnit5QnE/B0v2OyHeG/EdtMDqnd3gOYH9l4lo6IoEggcWK9e6ry96/isd
+         OZow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776585646; x=1777190446;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=5bJj2YUX3nt/Dk+iVGu4h6btDy49Kr3dD0yeQxG9Eyc=;
+        b=M51Kf372qrcg8EQI07foI146c99yKr3l7URRBtkWWkC8T74F1oXyFjUkGSE4/x2omh
+         Qko91asO6VkyRYn9SI27+BuoXeGdQ3PAjwn/8+bqSbxGxR95/AstZNgPuLk/pjt9Vt6q
+         +lmX2JQwImsVt+KBlZe8vsPjc8uNgerzx2v7Qxku4GxvwagVmiBtPCx06jEawMfg5J8B
+         SjVlyCn4SynPNoyUKF+RTk+FLMLY96ivEuhP9llYtuNEtgqHMmzo6zSAzchUGFomK3Ih
+         Wvuisc2aqqrq7H6MZKKUVuaxbUAUwFcNLHYg2IHJ1ZXkpM7ap5Q7mrvO3+Ynhnp+ZjKi
+         YwIQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+S20LyJWNPdyEDmU0AKlALxLd5g7Fp0oA9/2XvaYUAx02/sEHSc9/4MMzwNDuSG3XK7jQidkhfSqc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxr9LPeO4NJKq4QXOk6vNrYcIMH1njUzM5hIQWEOtg0tnBvNMpe
+	Mnq3EkAtt44C6Dg8pY5wwPCOB9DlTffkW0Ll5No42HjzHTArCR7OrvMeZyGxEnmtH031esXDKwF
+	eZ40ogpq0dibwgcQpFfVE6qptTl0JrBU=
+X-Gm-Gg: AeBDietaga09RmJXPoWW8zynWeCXKrQ07Agq+VRmgA4/HBY/mz6HlSob3lGXqoW4ohG
+	7EeR6edvMm7I5ZcKown7nC3cbNUur8CHGrISXg0bRkJiGLCmIzMzpbAPH9O7MssObrGD7LVUobs
+	vPhaw3C7KSnbfdTFbqUm25Z5iu2mFba6tJru/Hcxwu2F8mGdLq8zWOuxfDr1QLIbd3et+tpSZfz
+	xn7Nl5oghpIIHj3GjFfas44rb3dM4v0UuH16cIoY+cyWCqnr7B+WBYmBwFQOwPy9CFFmJJ6wxAN
+	0xyg+XiGWP4mNK7g4OY=
+X-Received: by 2002:a05:600c:c082:b0:488:b043:5efd with SMTP id
+ 5b1f17b1804b1-488fb75f7a6mr100818975e9.13.1776585646094; Sun, 19 Apr 2026
+ 01:00:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <23a00548-feac-4ce6-9a71-509b7636b372@baylibre.com>
-X-Virus-Scanned: Clear (ClamAV 1.4.3/27975/Sat Apr 18 08:26:10 2026)
+References: <20260418144716.132936-1-clamor95@gmail.com> <36e3611d-642e-42de-9a56-cf81c3e06832@baylibre.com>
+ <6e9e830b-edb6-46a6-919c-8772b904262e@app.fastmail.com>
+In-Reply-To: <6e9e830b-edb6-46a6-919c-8772b904262e@app.fastmail.com>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Sun, 19 Apr 2026 11:00:34 +0300
+X-Gm-Features: AQROBzC_6dKFSrI53kHXOiNihW66xoqTF2Ed7YHGg9qcbRld_e4zc7ORuN_gh-s
+Message-ID: <CAPVz0n3_jbun+rem3Z95BmniDcLMw+H8aRXGKftv0ScToMWVRg@mail.gmail.com>
+Subject: Re: [PATCH v1 0/5] Update APDS990x ALS to support device trees
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+=D1=81=D0=B1, 18 =D0=BA=D0=B2=D1=96=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 23:2=
+1 Arnd Bergmann <arnd@arndb.de> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On Sat, Apr 18, 2026, at 18:24, David Lechner wrote:
+> > On 4/18/26 9:47 AM, Svyatoslav Ryhel wrote:
+> >> Document Avago APDS9900/9901 ALS/Proximity sensor in schema and modern=
+ize
+> >> its driver to support OF bindings.
+> >>
+> >> Svyatoslav Ryhel (5):
+> >>   dt-bindings: iio: light: Document Avago APDS9900/9901 ALS/Proximity
+> >>     sensor
+> >>   misc: apds990x: Use more device managed approach in the probe
+> >>   misc: apds990x: Drop Vled supply
+> >>   misc: apds990x: Convert to use OF bindings
+> >>   misc: apds990x: Drop IRQF_TRIGGER_LOW trigger
+> >>
+> >>  .../bindings/iio/light/avago,apds9900.yaml    |  83 ++++++++
+> >>  drivers/misc/apds990x.c                       | 197 +++++++++--------=
+-
+> >
+> > As mentioned in my reply to the dt-bindings patch, there is already an
+> > IIO driver that looks like it could be compatible. I'm guessing that
+> > this misc driver pre-dates the IIO subsystem. I would have a look at it
+> > instead (drivers/iio/light/tsl2772.c).
+>
+> I see that we have a number of ALS drivers like this one in drivers/misc:
+>
+> drivers/misc/apds9802als.c
+> drivers/misc/apds990x.c
+> drivers/misc/bh1770glc.c
+> drivers/misc/isl29020.c
+> drivers/misc/isl29003.c
+>
+> As far as I can tell, all of these are entirely unused, with nothing
+> in the kernel creating the platform devices. The drivers that used
+> instead have all been converted to drivers/iio a long time ago.
+>
+> Is it time to remove all of the above?
+>
 
-David Lechner <dlechner@baylibre.com> schrieb am Sa, 18. Apr 16:46:
-> On 4/18/26 12:05 PM, Piyush Patle wrote:
+I will remove APDS990x from misc in v2 since this one I can convert it
+to use tsl2772 instead.
 
-[...]
-
-> >  
-> >    Specifications about the driver can be found at:
-> >    http://www.aviaic.com/ENProducts.aspx
-> > @@ -23,11 +33,12 @@ properties:
-> >    compatible:
-> >      enum:
-> >        - avia,hx711
-> > +      - avia,hx710b
-> >  
-> >    sck-gpios:
-> >      description:
-> >        Definition of the GPIO for the clock (output). In the datasheet it is
-> > -      named PD_SCK
-> > +      named PD_SCK.
-> 
-> Save the cleanups for a separate patch to keep the adding HX710B changes clear.
-> 
-> I'm guessing the existing binding for HX711 is quite old because it is quite
-> incomplete.
-> 
-> It has avdd-supply, but is missing vsup-supply and dvdd-supply.
-> 
-> It should probably also have a way to describe how the rate pin is wired.
-> 
-> And it should have a clocks property instead of clock-frequency.
-
-The real meaning is a wait time until the DOUT is stable. As a submitted the
-driver many years ago my suggestion of a wait time property was not accepted
-because it would have introduced a new property which didn't exit in those days.
-The suggestion was to name it clock-frequency because it already existed. This
-clock-frequency made the driver also a little bit more complicated because at
-the end we needed a waiting time and not a frequency.
-
-Today i see there is as "wait-delay" property already introduced at other
-bindings. This would also simplify the driver a bit.
-
-@robh@kernel.org, @krzk+dt@kernel.org, @conor+dt@kernel.org:
-Would this change in the binding be acceptable?
-
-If yes, i could prepare a driver and binding patch separate of this patchset to
-clean it up.
-
-> It would make sense to have two clocks, on for XI/XO and one for PD_SCK.
-> The second one being optional because of sck-gpios.
-> 
-> HX710B has many fewer pins, so we will need an:
-> 
-> allOf:
->   - if:
->       properties:
-> 	compatible:
-> 	  const: avia,hx710b
-> 
-> section that sets anything for pins that chip doesn't have to false, like
-> vsup-supply.
-> 
-> HX710B also has a vref-supply that HX711 doesn't have. (Unless these are the
-> same thing by a different name?)
-> 
-> 
-> >      maxItems: 1
-> >  
-> >    dout-gpios:
-> > @@ -43,6 +54,9 @@ properties:
-> >        Definition of the regulator used as analog supply
-> >  
-> >    clock-frequency:
-> > +    description:
-> > +      Bit-bang clock frequency on PD_SCK. Keep the PD_SCK high time below
-> > +      the chip power-down threshold.
-> 
-> I suspect that this was meant to be the crystal frequency (XI/XO), not PD_SCK
-> since sck-gpios already exists for PD_SCK
-
-see above
-
-[...]
-
-Best regards,
-
-Andreas
-
--- 
-
+> The notable exception is drivers/misc/tsl2550.c, which is instantiated
+> from both arch/arm/boot/dts/ti/omap/am335x-evm.dts and
+> drivers/i2c/busses/i2c-taos-evm.c. There is a similarly named
+> drivers/iio/light/tsl2563.c driver, but unfortunately that uses
+> a completely different register level interface.
+>
+>       Arnd
