@@ -1,45 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33ABC40DFCD;
-	Sun, 19 Apr 2026 13:08:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81C8836A033;
+	Sun, 19 Apr 2026 13:11:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776604095; cv=none; b=pJMe8Y0tvcYYLz1H5E8RSlmyrcpbAA7OkeYgdyrMGCU8UgXYXobwEih0HWrWjqLHOK3V2j8mpKmGFawd7Ubzb70Qv0xgQj7jM5K5Jg/V/UuUI4tRV91wEur5c8Lk2qAF5RlAW9hveoa161p8WiB5CyA6uRsosdmwMKHKoHX+htM=
+	t=1776604264; cv=none; b=ewGfbGjsP98Qtmi8c6PyZtPgEomSpbpHNIrkDYHrWOH5thfCTNSha7ntLM+bnsRflJesOA9IEjoWj+5oT1YvRdq+5fQfJduZqPHS217pSSFRvVGQMOjjR5dhTTEW3uv9/HcuzL2agqmKw/G/Kxse7tie8s93H3ZuKN3JYYZrys4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776604095; c=relaxed/simple;
-	bh=w6CAnNqt+aoUM+IJR0zIfwnmuV4nhsG3WFfasi3BcsE=;
+	s=arc-20240116; t=1776604264; c=relaxed/simple;
+	bh=qlW2n7rRtX92Ozsh+NeUYTuGmVNLg3xBhGV32Iuhc2Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QbVWIYjc2GGA7paoEgheF00pi3DANhKMJJdtq8CTnxZvmEEYGXsHBM1+H76KkkcJ4a43KhW7KQVgRvJfjzrkuFKENZhIak3U5vo5rdFwbOmFeVQ0CV7UKA6NrZtQ8F1547CMtUaEButsLE15Wm9DfGatMoyVxWhRGvaEXz/iRSU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OcuBrFjM; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=XpfZOdHsh1r2uoVH+9QvPfKGK2HIWLx9Cfo8qqvhl5RuCCbCwfB19fy2uuxabqiWGWqKFnH44JBNLJljElon98MTZV5JEsjw8BrEq5ks/5SdJTPlwLK4JvLeQ6EqUGi6xbPRZsPmuA2ZUQapJXqjw+I4jWUYTwMZrKmdQogTn2k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jp8L/oH8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OcuBrFjM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3AF9C2BCB3;
-	Sun, 19 Apr 2026 13:08:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jp8L/oH8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2BFEC2BCAF;
+	Sun, 19 Apr 2026 13:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776604094;
-	bh=w6CAnNqt+aoUM+IJR0zIfwnmuV4nhsG3WFfasi3BcsE=;
+	s=k20201202; t=1776604264;
+	bh=qlW2n7rRtX92Ozsh+NeUYTuGmVNLg3xBhGV32Iuhc2Y=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=OcuBrFjMssC3Vw+k6waXSXBPneLWgag/Uhc/2wj0mt5c+z8jLVt50aO/JTERo2qmV
-	 jhRh4GKxM+6etxd58H2UN2UOuDp2srsJlSiqxIaI5FdTPjOWTk0gjko73YEzqG8/SF
-	 eXAch3ouRkhugJ7n+3vBW0pnR9WZf4VhcKJ8YEfm0CKe2j4ky+JWr38VWhezqIG6lW
-	 QWQnI7vxM6ehTUbkgNVdm/CdjJ6vyXkCAE1HA8C/ybfg8VPbO7MJWqXbOSCyN/4UJa
-	 O46pgNDq+CYl5S1Ge1cR91GMixEOQ05n39HSxzMHlbAH+M/X6q9tZ9OE8B5KRbyUhb
-	 LeMwHsxnRT3Jw==
-Date: Sun, 19 Apr 2026 14:08:05 +0100
+	b=Jp8L/oH8tolLDmRpoClWYDmNp7I1hzZ/Q+XhXziGjBwKbVeS2saKbQvoM+P68pbuP
+	 G7QokF/G+qEgp4iNUs8mURTJhGYeQsTLWmgFfyWEulGuW+FAjgaOHj/p4mcv+x/JPR
+	 VtMOQQocnX+YqgFU2QSUkS4+b+8PMEg7FnMnxX+kzxJnvNtYr+MLU+m1XECoN4iAo3
+	 IL8PndPnPgXD61oIV3GiGkDyTvSkv/My1VlLji3jtSmN4/x3uglB0LfP8BB2rqdtE4
+	 gKAq3NuzUbrAY3kRxDa3vyXRGQd8kX77X5M+SRXlsyhH+kQflKpREXtR3HsxRIxmSg
+	 NS0wjgiIpQcNA==
+Date: Sun, 19 Apr 2026 14:10:56 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Junxiao Chang
- <junxiao.chang@intel.com>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
- <andy@kernel.org>, <gye976@gmail.com>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <lars@metafoo.de>
-Subject: Re: [PATCH v2] iio: buffer: fix warning in requesting threaded irq
-Message-ID: <20260419140805.6abc77ce@jic23-huawei>
-In-Reply-To: <20260417135044.000037dd@huawei.com>
-References: <20260418002334.3643504-1-junxiao.chang@intel.com>
-	<20260418085156.121947-1-junxiao.chang@intel.com>
-	<aeIZw2gvbZGJEXy9@ashevche-desk.local>
-	<20260417135044.000037dd@huawei.com>
+To: =?UTF-8?B?TmF0w6FsaWE=?= Salvino =?UTF-8?B?QW5kcsOp?=
+ <natalia.andre@ime.usp.br>
+Cc: andy@kernel.org, bentiss@kernel.org, dlechner@baylibre.com,
+ jikos@kernel.org, nuno.sa@analog.com, srinivas.pandruvada@linux.intel.com,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 0/7] iio: HID: Add helper method
+ hid_sensor_adjust_channel_bit_mask()
+Message-ID: <20260419141056.64abf777@jic23-huawei>
+In-Reply-To: <20260417225959.16688-1-natalia.andre@ime.usp.br>
+References: <20260417225959.16688-1-natalia.andre@ime.usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,77 +45,37 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 17 Apr 2026 13:50:44 +0100
-Jonathan Cameron <jonathan.cameron@huawei.com> wrote:
+On Fri, 17 Apr 2026 19:58:43 -0300
+Nat=C3=A1lia Salvino Andr=C3=A9 <natalia.andre@ime.usp.br> wrote:
 
-> On Fri, 17 Apr 2026 14:30:11 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> 
-> > On Sat, Apr 18, 2026 at 04:51:56PM +0800, Junxiao Chang wrote:  
-> > > IRQF_ONESHOT is for threaded IRQ. If there is no threaded IRQ
-> > > handler, this flag should not be set.
-> > > 
-> > > This change fixes a warning during booting with kernel v7.0-rc3:
-> > > 
-> > > WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x1639/0x2510, CPU#3: iio-sensor-prox/974    
-> Please provide details on which driver is in use to hit this corner case.
-> 
-> That may help people identify if the bug applies to what they are seeing
-> and also provide some background on how urgent this is to get upstream + backported.
+> This patch series introduces a generic helper function to handle channel =
+bit mask adjustments=20
+> for HID sensors. Currently, multiple drivers implement identical logic fo=
+r this task
+>=20
+Other than the stuff David already raised, all looks fine to me.=20
 
-Another thing I just noticed related to upstream process.
-Please don't send a new version in reply to the older one.
-Send it as a new email thread.  It doesn't matter a massive amount in a
-simple case like this but when things get more complex threads can become
-unmanageable if using this style.
-
-Another practical thing if you want to get code merged is many reviewers
-do what I'm doing today and, when they have a massive backlog to review,
-start with the latest emails that they see.  In this case your
-patch ends up further back in history so is less likely to get reviews
-in the short term
-
-Jonathan
-
-> 
-> Jonathan
-> 
-> >   
-> > > RIP: 0010:__setup_irq+0x1639/0x2510    
-> > 
-> > Unneeded line (it dups the previous one).
-> >   
-> > > Call Trace:
-> > > request_threaded_irq+0x2c7/0x490
-> > > iio_trigger_attach_poll_func+0x353/0x6b0
-> > > __iio_update_buffers+0x2420/0x2c70
-> > > enable_store+0x183/0x270
-> > > dev_attr_store+0x5e/0x90    
-> >   
-> > > sysfs_kf_write+0x1e8/0x290
-> > > kernfs_fop_write_iter+0x406/0x5f0
-> > > vfs_write+0x71c/0xea0    
-> > 
-> > These 3 lines are also redundant.
-> >   
-> > > v2: using ternary and drop temp variable    
-> > 
-> > Changelog should go...
-> >   
-> > > Fixes: 23f2d735a932 ("iio: Add helper function for initializing triggered buffers")
-> > > Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
-> > > ---    
-> > 
-> > ...here, when it doesn't go to the commit message. One may find this in the
-> > lore archive.
-> > 
-> > ...
-> > 
-> > Code wise now it looks good.
-> >   
-> 
-> 
+> Nat=C3=A1lia Salvino Andr=C3=A9 (7):
+>   iio: HID: Add helper method hid_sensor_adjust_channel_bit_mask()
+>   iio: accel: HID: Replace method accel_3d_adjust_channel_bit_mask()
+>   iio: gyro: HID: Replace method gyro_3d_adjust_channel_bit_mask()
+>   iio: light: HID: Replace method als_adjust_channel_bit_mask()
+>   iio: light: HID: Replace method prox_adjust_channel_bit_mask()
+>   iio: magnetometer: HID: Replace method
+>     magn_3d_adjust_channel_bit_mask()
+>   iio: pressure: HID: Replace method press_adjust_channel_bit_mask()
+>=20
+>  drivers/iio/accel/hid-sensor-accel-3d.c             | 13 +------------
+>  .../iio/common/hid-sensors/hid-sensor-attributes.c  | 11 +++++++++++
+>  drivers/iio/gyro/hid-sensor-gyro-3d.c               | 13 +------------
+>  drivers/iio/light/hid-sensor-als.c                  | 13 +------------
+>  drivers/iio/light/hid-sensor-prox.c                 | 13 +------------
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c       | 13 +------------
+>  drivers/iio/pressure/hid-sensor-press.c             | 13 +------------
+>  include/linux/hid-sensor-hub.h                      |  3 +++
+>  8 files changed, 20 insertions(+), 72 deletions(-)
+>=20
 
