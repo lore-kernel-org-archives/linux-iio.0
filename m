@@ -1,49 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DCE930F803;
-	Sun, 19 Apr 2026 11:30:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82CE124A067;
+	Sun, 19 Apr 2026 11:33:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776598202; cv=none; b=q/f25+cTRf7giH6y+/vdJtAPnFhnzqIJ/zkDPF+Q954P/HC+ZiTaqwPdYb00R3svpXxpKLGEDadWJREII4RQMbVlWNJMXbQiBl8p8CL7own6uhYk1yyLuFxAWG9qdKuh2Kv9vwqMtZYhVg1TFgVCR3lr49yRPYNXeHU/ecg+SEg=
+	t=1776598395; cv=none; b=aZjC3gxr0rlpu3gQMdCP/j7pMlYq0lYCLWZuzZvxIAmcb4Bb3ne/KcAaaFKJ9RUX0WprSQiKR52UDkMVcU0XaCx8R/SCIM7YTCpEd7I5LfYqZuvrP6fRJhVo8YnCpRHtcraZkmGeNBQOaXxiKtoZvP7J0Y9Y473JnRds8fJDPFU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776598202; c=relaxed/simple;
-	bh=CHB4/6+0UEiC/NOhE0jTVNiOoZM6X5MNmZ8tDCiMuYk=;
+	s=arc-20240116; t=1776598395; c=relaxed/simple;
+	bh=Ab17lz/SYmO7qcwXpipLPL/SCQi0X6Ebie0sjtodmkQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=A0VBQxnsSNK2LgBhDjyptqzJg8WbcUjAYIDHpga8+n4Pkz85J0JnQg/UGlbj9+YvB85TfY8Yyx6kuMhnw/DZGom4svI18RyPV3HAV4fVnP8Rleqhn/ghQKoz5mN+OFDzj97D3/Ph3XmEMSlUHFhaXNAHubNCuBa70woqdDDzqtM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OLA4WNsv; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=D7TnDhMkK2LTM05d0PSEg6XD8mj7/plZK3u6LOW9ZwswNmGl7f/LrPA9XWZjo7cYVnN8oah8GFN2eIYMcgXP7qA2r6LE0R8ADtIU9PoYcKhyvKzNCdJI5FwZVLrzQyrsvkc1MdOawT9T5oUKDcgQWxLbf97iNrIVNBchYTqiDtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LMo6JNHT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OLA4WNsv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 225EAC2BCAF;
-	Sun, 19 Apr 2026 11:29:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LMo6JNHT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9160C2BCAF;
+	Sun, 19 Apr 2026 11:33:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776598201;
-	bh=CHB4/6+0UEiC/NOhE0jTVNiOoZM6X5MNmZ8tDCiMuYk=;
+	s=k20201202; t=1776598395;
+	bh=Ab17lz/SYmO7qcwXpipLPL/SCQi0X6Ebie0sjtodmkQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=OLA4WNsveo1tU8lw+9Wf0KVQhwYkwgLbftZ6QU0ltrNthIzHFh7YY84NHYLb3NtFL
-	 QGLu+DKfL53LBBBPKzmkCtqinWSZKaOBMnt9rEzXvxQw7qHbxmYFNjEnmymMK5uSor
-	 CIvO10CDqrx+Z5lpe41cMEmctEOp/TQOERZNKce5usKvpWOO5CgCjQI3kBM6EODIu3
-	 wPwBYqmDjVZ8JjwhGpRQejOKfHgIsFZs3OF4rXpUnP89cnVlZWbdyHOTDNTTGbGzx9
-	 l9RPRTc10XMMfc49NaBJTovd6fQntVXC7Pu1XpsIvnGc53N8rhOMEBi90Atci9Rca/
-	 QjNfUOYuMYIuA==
-Date: Sun, 19 Apr 2026 12:29:50 +0100
+	b=LMo6JNHT6E6BVS+a1ycdkJCUBz+PBBlYHsRcPpfkqMsiQT7RR+Z7zzOK8usyNldwl
+	 u18fbb05ga+XnLkIs2I5elke7UDobConDSfOrBMAozRdQbJ2qiJWRrGsnYgncKEviG
+	 NWfBV4ty+9pm30JRa3617BZNnIrYn0v6UsyCNLYRQZxJYX5PTww0tve8jreEii8ifi
+	 xy4VpC0pZDy51Aaw7+s20VpijwXyN9SuSabhb4ZBGRmHMgjAlWeYb8bWCTeGfHvlm0
+	 /z4XKIG0HD4OWngOe9h4LXE6oi9Ob9QMJeUo5kYAYExcIrdaNN9p9LUia5YDmdr9u9
+	 9GxnwSMhFViNw==
+Date: Sun, 19 Apr 2026 12:33:06 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Randy Dunlap
- <rdunlap@infradead.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: tsl2772: add support for Avago
- APDS9900/9901 ALS/Proximity sensor
-Message-ID: <20260419122950.67355f4c@jic23-huawei>
-In-Reply-To: <20260419083125.35572-3-clamor95@gmail.com>
-References: <20260419083125.35572-1-clamor95@gmail.com>
-	<20260419083125.35572-3-clamor95@gmail.com>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
+ gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org, "Md. Mahmudul Hasan Mabud"
+ <mdmahmudulhasan1511@gmail.com>
+Subject: Re: [PATCH] staging: iio: adc: ad7816: replace sprintf with
+ sysfs_emit
+Message-ID: <20260419123306.1e0bb59b@jic23-huawei>
+In-Reply-To: <20260419010537.116002-1-m32285159@gmail.com>
+References: <20260419010537.116002-1-m32285159@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,45 +49,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 19 Apr 2026 11:31:23 +0300
-Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+On Sat, 18 Apr 2026 20:05:37 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
-> The Avago APDS990x has the same register set as the TAOS/AMS TSL2772 so
-> just add the correct bindings and the appropriate LUX table derived from
-> the values in the datasheet. Driver was tested on the LG Optimus Vu P895.
+> This patch replaces sprintf calls in ad7816.c with sysfs_emit to help
+> modernize the driver, ensure bounds checking, and to increase stability.
 > 
-> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-Hi Svyatoslav,
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+Hi Maxwell,
 
-Just one small thing. 
+There is a more substantial rework of this code undergoing revisions.
+https://lore.kernel.org/all/20260331072453.6530-1-mdmahmudulhasan1511@gmail.com/
 
-Experience has given me a strong aversion to the use of wildcards
-in naming within drivers.  They go wrong too often because companies
-can seem to resist using similar names for very different parts.
+Both because that's been underway for a little time and because it makes
+a wider set of improvements, I'd rather we took that one forwards.
+However, as I noted in that thread, the ABI is likely to go away anyway as
+part of dragging this driver into a state suitable for moving out of staging.
+I don't mind cleaning it up as an intermediate state however as that graduation
+from staging may take a while!
 
-> ---
->  drivers/iio/light/tsl2772.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
-> index c8f15ba95267..8dab34bf00ca 100644
-> --- a/drivers/iio/light/tsl2772.c
-> +++ b/drivers/iio/light/tsl2772.c
-> @@ -127,6 +127,7 @@ enum {
->  	tmd2672,
->  	tsl2772,
->  	tmd2772,
-> +	apds990x,
-
-As above, just name this after one of the supported parts. apds9900
-That doesn't stop you using it for multiple compatible devices.
-
-Same applies for all the uses of x as a wildcard.
-
-thanks,
+Thanks,
 
 Jonathan
 
->  	apds9930,
->  };
 
