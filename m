@@ -1,43 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D061287257;
-	Sun, 19 Apr 2026 17:28:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AA1E13777E;
+	Sun, 19 Apr 2026 17:33:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776619738; cv=none; b=ha2yQbbHzHhIZUTb1cbb30wdu549T0A9U2tkhrVnsqWdcWeBweUrJrqBhEKfJT2VmxN/RYQDWVJ+8fBkD5rjG92qFyN4aAxhwiywqV2M0jeWOmVv7r4R9CTNVVIfNOH97OO51HjGdtGONVLagbpV62fbH1wstagcykjgfBBD8Bw=
+	t=1776619999; cv=none; b=qYtrxUAT1WPVQHck/BOWKg6xgBzWgAPfr8+2Np0igu3QyIDRE4J0ODAIISw9hUIc+LhYr4DnEmSpqUXNIh5Su/2I7QgZDi3DWol9JPWC+P376qZgps/NYTfG1D4vlBNxraQQ+l3cCBX/NBCDp/RR0mKIg2/T0d5RcCmwL5HJV5w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776619738; c=relaxed/simple;
-	bh=nG1QbJuzRuPOHbqJ8bI8ZCcJXovGLw+NF0udyjmR9ko=;
+	s=arc-20240116; t=1776619999; c=relaxed/simple;
+	bh=i1pmlLoqELmYbKsEHe3eukxqNMsLns7Mcr0bfI7ekvE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XgCokzHRIgsQkpTOyIjJPMcdeQkFxGQoFAMqxoJ+0bb7azj5snoI163cp6zhjvkRgge1zQXcq2EMYBUPDGlc7OACQyvJel2fNuLU2vQKH23NQ83QQA+vXcQOT/aN8CWW5e/wkIqonOn33C13qS5CL71swdf/VeZf6OsdHBtW0Hs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DQETjFMt; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=OQZMXMfLqW49okQLvDvHl6n2jwjendU4KvMI0B1CNBv/ulvVYzGps4uzkHQV6I+F+IlfwxJnVczldi/xrWY9/pl0Oz7IM5lRlSoBAWXL6R6qlsN+VvZ+Uvuv9BsfmGJp101S6BhxxCqaF/SMc1M9ckt3e8IYkHzIlFnowNzM9xs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aHdd1+Jm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DQETjFMt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 213C6C2BCAF;
-	Sun, 19 Apr 2026 17:28:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aHdd1+Jm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCDA5C2BCAF;
+	Sun, 19 Apr 2026 17:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776619738;
-	bh=nG1QbJuzRuPOHbqJ8bI8ZCcJXovGLw+NF0udyjmR9ko=;
+	s=k20201202; t=1776619999;
+	bh=i1pmlLoqELmYbKsEHe3eukxqNMsLns7Mcr0bfI7ekvE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=DQETjFMtsVMNAkIn0PPekAsDJ7IDIgGbXzl3BbeMWjEpieC6ykkjHaOfkHjaUbqcs
-	 EdnUncCTHp2AW8t5TE8VNLBxh5dqsKj7NRE6faN8lyPyM2Gts08kj8YPCmyiSwLWRB
-	 fRvjgC31JWu/XE489HCaBRAlSmKsniEjfUNaz4XR8fZ2Y1lQM8v4YtGhPknpjxvfKo
-	 B8UbCDHBH7Qhu0KARW361wA2xLFeNWlNSFee8pVbkm1vjObf6VlXPjyMcTXccnwauK
-	 tmm6CP67QrRph0K7U2+k8KUR//ML1epIgUDSiaSZ9UlYtjmAUZaBIYzF8KqsLyct69
-	 A5tDUbPwcU5UQ==
-Date: Sun, 19 Apr 2026 18:28:48 +0100
+	b=aHdd1+Jm0EAsErN3PaTQ2MCsLA62fvsbIblN6CwQl1o3J3FdjEF6OD7K/2Vva8NB1
+	 Y30msr4BsG8wQE6gvY1X/sr4B0EFuhFaFLWPRlII9yCry1zcwqtRoQG+W1OUJk/pAj
+	 bzqRXVQuSn80pJKhwoK3n9py4DK3hKXrcCk8KQF6IlsfhV4a/S/WHmTjBpzoX9IpkY
+	 EzUEfC0/7VzONsf0Wepbj9BS0LhlFTtkAbSkGb3lGr8pvNHNSIfhYN7mtRbCQBDUOB
+	 vPSgPVU4iYQuKtdEYTAjVHYgxchypCOSfJx1MI52McIPxb02HaXfrV3OcsoIKBtBC+
+	 A5bYXLmfmyzEQ==
+Date: Sun, 19 Apr 2026 18:33:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- tglx@kernel.org, christophe.jaillet@wanadoo.fr, mingo@kernel.org,
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, tglx@kernel.org,
+ christophe.jaillet@wanadoo.fr, mingo@kernel.org,
  nabijaczleweli@nabijaczleweli.xyz, kees@kernel.org,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/7] iio: ssp_sensors: cleanup codestyle warning
-Message-ID: <20260419182848.7c6182b8@jic23-huawei>
-In-Reply-To: <20260415050749.3858046-2-sanjayembedded@gmail.com>
+Subject: Re: [PATCH v6 2/7] iio: ssp_sensors: cleanup codestyle check
+Message-ID: <20260419183310.2a2cec25@jic23-huawei>
+In-Reply-To: <ad9XBFb_xCw3mShv@ashevche-desk.local>
 References: <20260415050749.3858046-1-sanjayembedded@gmail.com>
-	<20260415050749.3858046-2-sanjayembedded@gmail.com>
+	<20260415050749.3858046-3-sanjayembedded@gmail.com>
+	<ad9XBFb_xCw3mShv@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,43 +50,18 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 15 Apr 2026 10:37:43 +0530
-Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
+On Wed, 15 Apr 2026 12:14:44 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> On Wed, Apr 15, 2026 at 10:37:44AM +0530, Sanjay Chitroda wrote:
 > 
-> Reported by checkpatch:
-> FILE: drivers/iio/common/ssp_sensors/ssp_spi.c
+> > Reported by checkpatch:
+> > FILE: drivers/iio/common/ssp_sensors/ssp_spi.c
+> > 
+> > CHECK: Macro argument '...' may be better as '(...)'
+> > to avoid precedence issues  
 > 
-> WARNING: Prefer __packed over __attribute__((__packed__))
-> +} __attribute__((__packed__));
-> 
-> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-In interests of cutting down on how many patches are in flight
-I'm going to pick up at least the first few patches from your series.
-If another version is needed for others don't resend the ones I've
-picked up.
-
-Applied this one.
-
-thanks,
-
-> ---
->  drivers/iio/common/ssp_sensors/ssp_spi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-> index 6c81c0385fb5..8c1e15d61db7 100644
-> --- a/drivers/iio/common/ssp_sensors/ssp_spi.c
-> +++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-> @@ -29,7 +29,7 @@ struct ssp_msg_header {
->  	__le16 length;
->  	__le16 options;
->  	__le32 data;
-> -} __attribute__((__packed__));
-> +} __packed;
->  
->  struct ssp_msg {
->  	u16 length;
 
+Applied.
