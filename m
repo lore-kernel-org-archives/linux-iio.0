@@ -1,43 +1,57 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81C8836A033;
-	Sun, 19 Apr 2026 13:11:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A9A92580F2;
+	Sun, 19 Apr 2026 13:19:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776604264; cv=none; b=ewGfbGjsP98Qtmi8c6PyZtPgEomSpbpHNIrkDYHrWOH5thfCTNSha7ntLM+bnsRflJesOA9IEjoWj+5oT1YvRdq+5fQfJduZqPHS217pSSFRvVGQMOjjR5dhTTEW3uv9/HcuzL2agqmKw/G/Kxse7tie8s93H3ZuKN3JYYZrys4=
+	t=1776604750; cv=none; b=mkAU2VugrQlNxpd3/v6Ilcsg9qtnKw5eArflZw5LcR/0whEXaiTUaS+/eZWJWm1cq6eAa2Nr2L1WHpfrRVhNhClv8MvqtdtxBp+0KV+QzoKgDXcC5EMVY8Ran0+vDBqKuBa7Z2mjs4BmFz7LFxWZVLjyByfmIzojhfIWhFgGBSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776604264; c=relaxed/simple;
-	bh=qlW2n7rRtX92Ozsh+NeUYTuGmVNLg3xBhGV32Iuhc2Y=;
+	s=arc-20240116; t=1776604750; c=relaxed/simple;
+	bh=AvLVvkGMx5KNZbNVEJf7B+DrKxVga6LUIBz3jALnThw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XpfZOdHsh1r2uoVH+9QvPfKGK2HIWLx9Cfo8qqvhl5RuCCbCwfB19fy2uuxabqiWGWqKFnH44JBNLJljElon98MTZV5JEsjw8BrEq5ks/5SdJTPlwLK4JvLeQ6EqUGi6xbPRZsPmuA2ZUQapJXqjw+I4jWUYTwMZrKmdQogTn2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jp8L/oH8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=E/3fPuMCXwAJ8HguKGMu36C+LeagGxcPMHbGZBQNB+hqk95kWYzB4/gh4fYc7ursGnbGT9TdD/fNRhc3Q8a7mdPkJDVYR5z9BTi122ucuAUIEirKIeMucLh/aBcOzlKKshAGleBADHskpHCwjRQD/me/mrONuZkKnVApPzP3PPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dzlJqSQ0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jp8L/oH8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2BFEC2BCAF;
-	Sun, 19 Apr 2026 13:11:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dzlJqSQ0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A533EC2BCAF;
+	Sun, 19 Apr 2026 13:18:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776604264;
-	bh=qlW2n7rRtX92Ozsh+NeUYTuGmVNLg3xBhGV32Iuhc2Y=;
+	s=k20201202; t=1776604750;
+	bh=AvLVvkGMx5KNZbNVEJf7B+DrKxVga6LUIBz3jALnThw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Jp8L/oH8tolLDmRpoClWYDmNp7I1hzZ/Q+XhXziGjBwKbVeS2saKbQvoM+P68pbuP
-	 G7QokF/G+qEgp4iNUs8mURTJhGYeQsTLWmgFfyWEulGuW+FAjgaOHj/p4mcv+x/JPR
-	 VtMOQQocnX+YqgFU2QSUkS4+b+8PMEg7FnMnxX+kzxJnvNtYr+MLU+m1XECoN4iAo3
-	 IL8PndPnPgXD61oIV3GiGkDyTvSkv/My1VlLji3jtSmN4/x3uglB0LfP8BB2rqdtE4
-	 gKAq3NuzUbrAY3kRxDa3vyXRGQd8kX77X5M+SRXlsyhH+kQflKpREXtR3HsxRIxmSg
-	 NS0wjgiIpQcNA==
-Date: Sun, 19 Apr 2026 14:10:56 +0100
+	b=dzlJqSQ08YUJ03UQYUUa4fEA/Tc9oM4uFmVjqf9VoH4oXrUMBIG2h7I33q6bSbTKo
+	 1XHc9p/U675xQntON8jfbD0tr7Y4SdqJi+Sg2sKf00RyWFbhmtQROiyKxDxilZEGxM
+	 xndvM+MS70K4sO51ukS52IWkQmsH9QwPB3sxWS05tBXEbzrooMRhXylneIGqfwNFMU
+	 NWN5DykZONDBOGw3axSIbr5IlBHRW01sh95v4LPImFtUd7wsHBH6jkNbWEVfBP1lGa
+	 t0aoJnSsz0WPb6AHBeXLcvbEHKVh1M9icSF+ubZEcK4pYEx9RuRvRVgOptO9ohjugQ
+	 518ZGkSyqGs0g==
+Date: Sun, 19 Apr 2026 14:18:53 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: =?UTF-8?B?TmF0w6FsaWE=?= Salvino =?UTF-8?B?QW5kcsOp?=
- <natalia.andre@ime.usp.br>
-Cc: andy@kernel.org, bentiss@kernel.org, dlechner@baylibre.com,
- jikos@kernel.org, nuno.sa@analog.com, srinivas.pandruvada@linux.intel.com,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 0/7] iio: HID: Add helper method
- hid_sensor_adjust_channel_bit_mask()
-Message-ID: <20260419141056.64abf777@jic23-huawei>
-In-Reply-To: <20260417225959.16688-1-natalia.andre@ime.usp.br>
-References: <20260417225959.16688-1-natalia.andre@ime.usp.br>
+To: Yury Norov <ynorov@nvidia.com>
+Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Andy Lutomirski
+ <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Ping-Ke Shih <pkshih@realtek.com>, Richard
+ Cochran <richardcochran@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+ <pabeni@redhat.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Yury Norov <yury.norov@gmail.com>, Rasmus Villemoes
+ <linux@rasmusvillemoes.dk>, Hans de Goede <hansg@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Sakari Ailus <sakari.ailus@linux.intel.com>, Salah
+ Triki <salah.triki@gmail.com>, Achim Gratz <Achim.Gratz@Stromeko.DE>, Ben
+ Collins <bcollins@watter.com>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-wireless@vger.kernel.org,
+ netdev@vger.kernel.org, linux-rtc@vger.kernel.org
+Subject: Re: [PATCH 3/9] iio: intel_dc_ti_adc: switch to using
+ FIELD_GET_SIGNED()
+Message-ID: <20260419141853.586ae273@jic23-huawei>
+In-Reply-To: <20260417173621.368914-4-ynorov@nvidia.com>
+References: <20260417173621.368914-1-ynorov@nvidia.com>
+	<20260417173621.368914-4-ynorov@nvidia.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,37 +59,40 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 17 Apr 2026 19:58:43 -0300
-Nat=C3=A1lia Salvino Andr=C3=A9 <natalia.andre@ime.usp.br> wrote:
+On Fri, 17 Apr 2026 13:36:14 -0400
+Yury Norov <ynorov@nvidia.com> wrote:
 
-> This patch series introduces a generic helper function to handle channel =
-bit mask adjustments=20
-> for HID sensors. Currently, multiple drivers implement identical logic fo=
-r this task
->=20
-Other than the stuff David already raised, all looks fine to me.=20
+> Switch from sign_extend32(FIELD_GET()) to the dedicated
+> FIELD_GET_SIGNED() and don't provide the fields length explicitly.
+> 
+> Signed-off-by: Yury Norov <ynorov@nvidia.com>
 
-> Nat=C3=A1lia Salvino Andr=C3=A9 (7):
->   iio: HID: Add helper method hid_sensor_adjust_channel_bit_mask()
->   iio: accel: HID: Replace method accel_3d_adjust_channel_bit_mask()
->   iio: gyro: HID: Replace method gyro_3d_adjust_channel_bit_mask()
->   iio: light: HID: Replace method als_adjust_channel_bit_mask()
->   iio: light: HID: Replace method prox_adjust_channel_bit_mask()
->   iio: magnetometer: HID: Replace method
->     magn_3d_adjust_channel_bit_mask()
->   iio: pressure: HID: Replace method press_adjust_channel_bit_mask()
->=20
->  drivers/iio/accel/hid-sensor-accel-3d.c             | 13 +------------
->  .../iio/common/hid-sensors/hid-sensor-attributes.c  | 11 +++++++++++
->  drivers/iio/gyro/hid-sensor-gyro-3d.c               | 13 +------------
->  drivers/iio/light/hid-sensor-als.c                  | 13 +------------
->  drivers/iio/light/hid-sensor-prox.c                 | 13 +------------
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c       | 13 +------------
->  drivers/iio/pressure/hid-sensor-press.c             | 13 +------------
->  include/linux/hid-sensor-hub.h                      |  3 +++
->  8 files changed, 20 insertions(+), 72 deletions(-)
->=20
+Assuming any remaining discussion on the implementation of the macro
+shakes out, this looks like a good little cleanup to me.
+
+Not sure how you want to merge this but if it's going through another tree.
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+
+> ---
+>  drivers/iio/adc/intel_dc_ti_adc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/intel_dc_ti_adc.c b/drivers/iio/adc/intel_dc_ti_adc.c
+> index 0fe34f1c338e..b5afad713e2d 100644
+> --- a/drivers/iio/adc/intel_dc_ti_adc.c
+> +++ b/drivers/iio/adc/intel_dc_ti_adc.c
+> @@ -290,8 +290,8 @@ static int dc_ti_adc_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		return ret;
+>  
+> -	info->vbat_zse = sign_extend32(FIELD_GET(DC_TI_VBAT_ZSE, val), 3);
+> -	info->vbat_ge = sign_extend32(FIELD_GET(DC_TI_VBAT_GE, val), 3);
+> +	info->vbat_zse = FIELD_GET_SIGNED(DC_TI_VBAT_ZSE, val);
+> +	info->vbat_ge = FIELD_GET_SIGNED(DC_TI_VBAT_GE, val);
+>  
+>  	dev_dbg(dev, "vbat-zse %d vbat-ge %d\n", info->vbat_zse, info->vbat_ge);
+>  
 
