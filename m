@@ -1,141 +1,230 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11AE31E98E3
-	for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 22:18:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A05F10F1
+	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 00:36:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776550740; cv=none; b=QaC0QBsP6N4LmYPtdAgtU9z3sGfPT7kwSa873UCGx+dcBOWKxCdkXmGZSoLLnBmGLjLlT0r2sZHbIDBdhKFYUAJfYCEJgHjfubOXallkFA+aVRRd8tfmN2EotiQVRsL56DhWuU7ZAX8ZwSeQc+2EZyQf4895m9JR/2dRy505yyg=
+	t=1776558974; cv=none; b=g+23J/1gIn6jm6gYsUGabNP9bahSTJi4pgE9JZFiDOkFE+zBfNVyr8m4vyqy4M5cJSEO7TSlOp5vf/4/M7zGIKDWc42NXQd3cGbzTbKvG4TEKH0/Ps8+K4K281PHCIoEVlday1ZQqDuobvTPMIKUXckSxZ3KdfJaxXHYyxVD0ZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776550740; c=relaxed/simple;
-	bh=1+qBHzyq/RyZJbREu6jXeYPnrwObeNp0SVWFjo3/mGQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BxSgRgp2zUU2kxM3EhNecMCLBNk+IlDIOnhp2C5R5fdj3twQ1WCKaVvqMkAhTg4HEUgOF1Aq090DenNRfx1PNF9sEKezYyPYlKSlSm2OQgFOeAXIqKYZS1Wa9iiUxM7kN2Svq1TIRGNP+JpkqVzV+utxxOUWtxCCWznDu4rF7ig=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=IEMZ9JNc; arc=none smtp.client-ip=209.85.210.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1776558974; c=relaxed/simple;
+	bh=53RGE1t2+7saBafrrL6B8/T4U0qGClratEd4TrMk70g=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Wx/kG/kEQZkeo+oFSZRVyqWiFgKo/J38POF318YW17KB14LURT6NCmXM0Fl6Fhd9DLOsRMp/TaIiLYy2uLHyxKEF2xz30hfeNlve/ofaKW7O4OQeg9DM7nmgLhOzugXHk4yjy5DVZxg7s0vTxA4fMApjTYeM2nlsy6SqFAi7PPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=W2eWYWun; arc=none smtp.client-ip=74.125.82.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="IEMZ9JNc"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7d4c12ff3d5so1714664a34.2
-        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 15:18:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="W2eWYWun"
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-2d96243c8a1so118808eec.3
+        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2026 17:36:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776550736; x=1777155536; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7jUgfQx3lTPA8+l0sSnmwFwjO5apfcViqgnRKAaYZmE=;
-        b=IEMZ9JNcgs0Ak5I8FQwmUlIRJtdvoa6yVVIV9F6oMBOiM1V991pGkew57G3GScZXZj
-         d+OoHl/1cTtC2fjeRPgZKqgURtfWa+STRAJaPqGM+55IIkOUJ99tLuOnA7QE5NvL0Hfk
-         YR2f2YfNhk2Kz/N4C7BXS5U5AvENK9aMgdgZnylTp9wOs8j0kz3jLTwoHCPQ/ChEO0zn
-         0VmxfszJc67nSb4Hhu7QYkrvfRn+MQe/2u11PBe+qCNav9m+D2TCVGVPnQI3VSJK7MpA
-         xgH0SnLcgieElPO+CKK8hhjDfUiMXlG6Z+rj5LRuV+QfEjHcVdfVTepA2ek1eK+j+SD8
-         tRqA==
+        d=usp.br; s=usp-google; t=1776558970; x=1777163770; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KYAQit1qpWD2EbbKRlZhtnJXb/3TTPBbnFppv8glLdA=;
+        b=W2eWYWun8xP0fXo37EwWmJaQDluNbPwfTt6YuxHcdmdn39aDlG2ohheqJKlkyXX5tT
+         QuwJiUEYNrbGy94NALb3QApXIkBgP5xY/GRTBESdPNqm1O3l2QVkpZpTWLuaiT4Gf3WN
+         01US/OYr57V4Fwc2mdWl8Nq3kpQ6/OB/3ttBuYYdTCBsaUTKI6XoNj8LhlQrcMTKy8n5
+         pFItdpPFHs22eBt1uRVFxRKVG6hqOaVmQvCwMIofRN+sYPMKiBD9znhnwlUBYsoqj5Ka
+         O7/SIrcbsr6i6EjC/Ca+4WbciWnKwl3Qe/ItZkn/IY1xTjI2luwbHLSzdcuI/cMaStc3
+         sazA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776550736; x=1777155536;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7jUgfQx3lTPA8+l0sSnmwFwjO5apfcViqgnRKAaYZmE=;
-        b=Z0tw5iKwg2K2I6W6ohopReq6S1pbjPXCnFjwDF2lMS1DoBDWCYMWj/0r9oht4eS+fa
-         Hs2ds3JreJFDg6q6bSdyRKkfpDcfnMcdgA0RLdYkni7eiqO65nBi82bBaieKKkaTqW5y
-         hNjTOCPYf+7gdW8kTd7OMG2A8T0BvcDZx0llWT9OmIlhB5sCieUS0DLj7jnheazpsHk5
-         wH4cg25eqZ4TqViZSIN7/M454o+B781pR3hnB9XbhOsQbSyHcwOxe7ULR/DSB8DVGtM3
-         c6M0s+7eNwE5EJAjVKA6T7LjJBUnH5dBSG1J5gwt4dlPYyCyPZlYnt5/Y6Dy45YA8Ut5
-         bcGg==
-X-Forwarded-Encrypted: i=1; AFNElJ+FVEwipyVVx3BmzTuMxxX4t47D39E7DOTIJY+4SUCjNkOF2+djyUFHOtOFoNKNMRYO3oIkHfBjHZo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwB9xgBEHAMNb4Dh0A4/GkGPzunY7kR+JElhBPh9EQunKAg+/xw
-	JCdlKkT9EaGzqg8RjuZm0/rggdN+eUC2GKYc2esAze3W9Jpjr1lVJN2b4fYGOY060MY=
-X-Gm-Gg: AeBDietJXvY3+3nxbc5p66TRAcybn0IR2MOzlxouT4eTsXLr91NxRigEWyviK8noMOU
-	8flJrh3h8XAhMhiREXR9FF3/8tYLEE0hqTvDdGQDEF+Dv8mRuUBHzb0H6r7NE97mGARGIp8zhCT
-	5KiLG15EDHNBuTjYQ5Kmyp6LmfBUtctLAaxSm9ydLAC5r6+yqRY3rYV6UZ0d/DiAdqDvgeT4f53
-	ueSaTDQmdgqw/npawTkDbMSC4wbfBUfNE+60/axcrGm3XEwoPtxsq4EEpWSZG2cJ7vqzCGblAPx
-	6bfz6DJjea+pS8G5kfKwE1jR/e9MPHzxTY/yZsCrO3xoqbA6F46XuexYx2Scxvp2JIFahIfYxcs
-	L+hCcwGWH//pPHfijtfr2wLtaRmvXryxtCvRZv+z3YMFCkJ35Ad45RmCxNvyAbgRrsOVV06CbBf
-	EpDb+P2vascCpcbf9uUsectlPrwCk3yKr3VXzA3nhtMLDOKs1A1enqhJRDfjE3jhzfoGQnWPYOX
-	Tj7Va28Qu7I
-X-Received: by 2002:a05:6830:2b0a:b0:7d7:da43:387 with SMTP id 46e09a7af769-7dc9518bfffmr5451502a34.16.1776550735928;
-        Sat, 18 Apr 2026 15:18:55 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b1f8:aabe:74d7:21ba? ([2600:8803:e7e4:500:b1f8:aabe:74d7:21ba])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7dc975b19fesm4638922a34.22.2026.04.18.15.18.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2026 15:18:55 -0700 (PDT)
-Message-ID: <ebd1fd7b-ee47-40e7-b953-cfe7bff41961@baylibre.com>
-Date: Sat, 18 Apr 2026 17:18:54 -0500
+        d=1e100.net; s=20251104; t=1776558970; x=1777163770;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KYAQit1qpWD2EbbKRlZhtnJXb/3TTPBbnFppv8glLdA=;
+        b=J37twfNp21RMbR8sDVAFdswX/m9mzz8woKG9saOgTxD71lHQ9VmUAzJ91s7rTBnAMx
+         /5Iki9uNIs1OCWnpjdGbNpML8td1dGn7nn3XMtLv8uDakW4oPWBD5+JRE3Y8ecTVoae+
+         4H6WxsraYjDElDpvIqw/f/jqPGq+3mLsRquSCmFqQaziX+fcHCoUDFXoaguoicXUazQg
+         wEi6Af+9UVaMcWusUbkBuZDdX7wLinjts3lWZJzKTm/Q7+xKKS8QnfGZ8kTAkd7vHO/1
+         qPqBUUNKpFvHSm/MsyGmfh1uC9vhiQKNpawTr8my3nTZt3W3yc5YhaIT8yGs3jucOIOt
+         8VTQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8gDhW/y389zA2B2LRw3HlGRc6aizWQRGFHqmJ2v27BH6R0/MP5mZ5b3gpnp7nGr+rrOvBoWK1ZK9Q=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yylf9n4MeHhrYu2bfvogVtCCjhuwkykW4fZmvJMP99PAenlIC4F
+	oTpbPB5u4krGySsfdax1DN2p2Yr7tnVDYEwLS++Yn+qoPS99HoftR/moCVnbAX4xZmF+8+AKBrN
+	NuaWh5V0=
+X-Gm-Gg: AeBDieu2ks8TxP0J9rMsDquJq4R/sbrOKkzZsImjlemuPs96iLX2Ot6jYcVSw4GUIhr
+	RZQIlpdT5G/perLKzXgnb9Hx1z7aS3BVHXFZ8aN28hkW5wil2NAqpYwCrYXqhmp2P9tB/ztucww
+	2od8I/m0EhjUu7lKSAywhBHs0N3/uHdAEEzJvmKCpxVOyL22PDvA7uJiDdU4HWvjX3TS/lyauX4
+	r5pfWQgyHM5aLc2O4F079gGkqclPMQg4iP5mrfU+RPMAjr6GKyVvBLBU+sLzP9oDAjOYBNZJsNn
+	qLcjcTWf9c+VQysMTTHsblHdjyRNlo06wGNYSXCQOVRYjRFm2tYLxdElniFvJW9mGF91C/HsLhF
+	bWCw9HGnwt/lpjXRQYY/2XEMhQdIH32Pmi7ELaaOtqZjQXupkMcikZYzR8juFJxMZsK1wRFMluR
+	4kwRAgGgBCnJgBN6X2bPxYo4Dfsho1EL9Mn4UgGJUZ1qGLbKFs6RZQphB6q3UAmqKGJnItcvYGD
+	RmpcydiFw==
+X-Received: by 2002:a05:7301:6785:b0:2da:a813:a629 with SMTP id 5a478bee46e88-2e466044070mr1711863eec.2.1776558969578;
+        Sat, 18 Apr 2026 17:36:09 -0700 (PDT)
+Received: from localhost.localdomain ([177.188.223.123])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e53d2ce98csm7853585eec.20.2026.04.18.17.36.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Apr 2026 17:36:09 -0700 (PDT)
+From: LucasRabaquim <lucas.rabaquim@usp.br>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: LucasRabaquim <lucas.rabaquim@usp.br>,
+	Matheus Feitosa <matheus.feitosa@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2] iio: light: tsl2591: simplify tsl2591_persist functions via lookup table
+Date: Sat, 18 Apr 2026 21:35:43 -0300
+Message-ID: <20260419003557.45287-1-lucas.rabaquim@usp.br>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 0/5] Update APDS990x ALS to support device trees
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260418144716.132936-1-clamor95@gmail.com>
- <36e3611d-642e-42de-9a56-cf81c3e06832@baylibre.com>
- <CAPVz0n1ph0Cjw9WOqoVPaEywF0MzaNXeEjw6=0rKf4qLWiJZtw@mail.gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <CAPVz0n1ph0Cjw9WOqoVPaEywF0MzaNXeEjw6=0rKf4qLWiJZtw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 4/18/26 2:48 PM, Svyatoslav Ryhel wrote:
-> сб, 18 квіт. 2026 р. о 19:24 David Lechner <dlechner@baylibre.com> пише:
->>
->> On 4/18/26 9:47 AM, Svyatoslav Ryhel wrote:
->>> Document Avago APDS9900/9901 ALS/Proximity sensor in schema and modernize
->>> its driver to support OF bindings.
->>>
->>> Svyatoslav Ryhel (5):
->>>   dt-bindings: iio: light: Document Avago APDS9900/9901 ALS/Proximity
->>>     sensor
->>>   misc: apds990x: Use more device managed approach in the probe
->>>   misc: apds990x: Drop Vled supply
->>>   misc: apds990x: Convert to use OF bindings
->>>   misc: apds990x: Drop IRQF_TRIGGER_LOW trigger
->>>
->>>  .../bindings/iio/light/avago,apds9900.yaml    |  83 ++++++++
->>>  drivers/misc/apds990x.c                       | 197 +++++++++---------
->>
->> As mentioned in my reply to the dt-bindings patch, there is already an
->> IIO driver that looks like it could be compatible. I'm guessing that
->> this misc driver pre-dates the IIO subsystem. I would have a look at it
->> instead (drivers/iio/light/tsl2772.c).
->>
-> 
-> tsl2772 driver fits, thanks for pointing out. Maybe you know how
-> apds9930 lux table was calculated? It is quite obscure to me.
+Replace the switch-case logic in tsl2591_persist_cycle_to_lit()
+and tsl2591_persist_lit_to_cycle() with a bidirectional
+lookup table tsl2591_persist_table.
 
-The tsl2772 driver says:
+These functions have redundant switch-cases. Now they use a for-loop,
+like in tsl2591_als_time_to_fval(). The change simplifies
+addition or modification of TSL2591_PRST_ALS_INT_CYCLE_* values by
+associating cycle and lit values in a single entry defined by
+tsl2591_persist_entry type, reducing code duplication and verbosity.
 
-/*
- * Different devices require different coefficents, and these numbers were
- * derived from the 'Lux Equation' section of the various device datasheets.
- * All of these coefficients assume a Glass Attenuation (GA) factor of 1.
- * The coefficients are multiplied by 1000 to avoid floating point operations.
- * The two rows in each table correspond to the Lux1 and Lux2 equations from
- * the datasheets.
- */
+Signed-off-by: LucasRabaquim <lucas.rabaquim@usp.br>
+Co-developed-by: Matheus Feitosa <matheus.feitosa@usp.br>
+Signed-off-by: Matheus Feitosa <matheus.feitosa@usp.br>
+---
+ drivers/iio/light/tsl2591.c | 104 +++++++++++++-----------------------
+ 1 file changed, 38 insertions(+), 66 deletions(-)
 
-So probably just need to look up the A tsl datasheet and compare it to the
-apds datasheet. The apds has some equations with GA, so just need to figure
-out what Lux1 and Lux2 correspond to.
-
-> 
-> Obviously this patchset is obsolete and different set of changes is required.
-> 
->>>  include/linux/platform_data/apds990x.h        |  65 ------
->>>  3 files changed, 187 insertions(+), 158 deletions(-)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/light/avago,apds9900.yaml
->>>  delete mode 100644 include/linux/platform_data/apds990x.h
->>>
->>
+diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
+index c5557867ea43..3fe34a48ec2b 100644
+--- a/drivers/iio/light/tsl2591.c
++++ b/drivers/iio/light/tsl2591.c
+@@ -170,6 +170,12 @@ struct tsl2591_chip {
+ 	bool events_enabled;
+ };
+ 
++/* Persist cycle conversion table mapping register cycles to lit values */
++struct tsl2591_persist_entry {
++	u8 cycle;
++	u8 lit;
++};
++
+ /*
+  * Period table is ALS persist cycle x integration time setting
+  * Integration times: 100ms, 200ms, 300ms, 400ms, 500ms, 600ms
+@@ -229,80 +235,46 @@ static int tsl2591_multiplier_to_gain(const u32 multiplier)
+ 	}
+ }
+ 
++static const struct tsl2591_persist_entry tsl2591_persist_table[] = {
++	{ TSL2591_PRST_ALS_INT_CYCLE_ANY,  1  },
++	{ TSL2591_PRST_ALS_INT_CYCLE_2,    2  },
++	{ TSL2591_PRST_ALS_INT_CYCLE_3,    3  },
++	{ TSL2591_PRST_ALS_INT_CYCLE_5,    5  },
++	{ TSL2591_PRST_ALS_INT_CYCLE_10,   10 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_15,   15 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_20,   20 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_25,   25 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_30,   30 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_35,   35 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_40,   40 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_45,   45 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_50,   50 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_55,   55 },
++	{ TSL2591_PRST_ALS_INT_CYCLE_60,   60 },
++};
++
+ static int tsl2591_persist_cycle_to_lit(const u8 als_persist)
+ {
+-	switch (als_persist) {
+-	case TSL2591_PRST_ALS_INT_CYCLE_ANY:
+-		return 1;
+-	case TSL2591_PRST_ALS_INT_CYCLE_2:
+-		return 2;
+-	case TSL2591_PRST_ALS_INT_CYCLE_3:
+-		return 3;
+-	case TSL2591_PRST_ALS_INT_CYCLE_5:
+-		return 5;
+-	case TSL2591_PRST_ALS_INT_CYCLE_10:
+-		return 10;
+-	case TSL2591_PRST_ALS_INT_CYCLE_15:
+-		return 15;
+-	case TSL2591_PRST_ALS_INT_CYCLE_20:
+-		return 20;
+-	case TSL2591_PRST_ALS_INT_CYCLE_25:
+-		return 25;
+-	case TSL2591_PRST_ALS_INT_CYCLE_30:
+-		return 30;
+-	case TSL2591_PRST_ALS_INT_CYCLE_35:
+-		return 35;
+-	case TSL2591_PRST_ALS_INT_CYCLE_40:
+-		return 40;
+-	case TSL2591_PRST_ALS_INT_CYCLE_45:
+-		return 45;
+-	case TSL2591_PRST_ALS_INT_CYCLE_50:
+-		return 50;
+-	case TSL2591_PRST_ALS_INT_CYCLE_55:
+-		return 55;
+-	case TSL2591_PRST_ALS_INT_CYCLE_60:
+-		return 60;
+-	default:
+-		return -EINVAL;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
++		if (als_persist == tsl2591_persist_table[i].cycle)
++			return tsl2591_persist_table[i].lit;
+ 	}
++
++	return -EINVAL;
+ }
+ 
+ static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
+ {
+-	switch (als_persist) {
+-	case 1:
+-		return TSL2591_PRST_ALS_INT_CYCLE_ANY;
+-	case 2:
+-		return TSL2591_PRST_ALS_INT_CYCLE_2;
+-	case 3:
+-		return TSL2591_PRST_ALS_INT_CYCLE_3;
+-	case 5:
+-		return TSL2591_PRST_ALS_INT_CYCLE_5;
+-	case 10:
+-		return TSL2591_PRST_ALS_INT_CYCLE_10;
+-	case 15:
+-		return TSL2591_PRST_ALS_INT_CYCLE_15;
+-	case 20:
+-		return TSL2591_PRST_ALS_INT_CYCLE_20;
+-	case 25:
+-		return TSL2591_PRST_ALS_INT_CYCLE_25;
+-	case 30:
+-		return TSL2591_PRST_ALS_INT_CYCLE_30;
+-	case 35:
+-		return TSL2591_PRST_ALS_INT_CYCLE_35;
+-	case 40:
+-		return TSL2591_PRST_ALS_INT_CYCLE_40;
+-	case 45:
+-		return TSL2591_PRST_ALS_INT_CYCLE_45;
+-	case 50:
+-		return TSL2591_PRST_ALS_INT_CYCLE_50;
+-	case 55:
+-		return TSL2591_PRST_ALS_INT_CYCLE_55;
+-	case 60:
+-		return TSL2591_PRST_ALS_INT_CYCLE_60;
+-	default:
+-		return -EINVAL;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
++		if (als_persist == tsl2591_persist_table[i].lit)
++			return tsl2591_persist_table[i].cycle;
+ 	}
++
++	return -EINVAL;
+ }
+ 
+ static int tsl2591_compatible_int_time(struct tsl2591_chip *chip,
+-- 
+2.47.3
 
