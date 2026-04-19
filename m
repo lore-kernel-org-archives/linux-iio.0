@@ -1,75 +1,73 @@
-Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC46B1632DD
-	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 15:29:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9A5E277029
+	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 15:58:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776612579; cv=none; b=ZIvP3KSDEgbD56vENCRP4/NyLcHpXKKfAEhhdnwE0K7dOw88hwiR7bpqzf8qUWbZJMj1Q5G4IRRicoWa0tmgR5JQoexiW9SosjGQfJAtbBIPSWzL1T1QP4MX2Z5CBwc+ITtwxxsHyedE7OqJ7WC4TPN1WgDS5q/TN/wF9WNFfS8=
+	t=1776614291; cv=none; b=PPZiyZAW14AMMwc9P9f9/7OG52lzFo7C82FvRqnMKFVyG4rcvhR5M/hW4FkMh7pKexnTl8gqbWQK6ty5j9KC0XJc7X3sCqFqRierqZH5+kvyE6+Hz2sKt7ph5EdIAAmyNDRu3rZ6Q5d6YuXbhcPgXzlee45VINKm4O4nJlTenbQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776612579; c=relaxed/simple;
-	bh=dZk4AYRSuixTeHEtwFeJ5/QcTEkmu2JXEkI4wa5yfBc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=L89S0hCJuXrDT0q1jwr3JdTTY/qG8XpF9LVA9TT2CUs0p8/3Kg93rGltuWDh6n961o796GFbUy5W8t8RoqHf3xF0oUfcJT6ANwwuWBua1O6QxFW0TIEqjDtohhTPMrf4KdfuLGCeQEMRT/mO1gCFT+gHFx8qoA6ibW/zTShPWrQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=oXSfuqLL; arc=none smtp.client-ip=74.125.82.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
+	s=arc-20240116; t=1776614291; c=relaxed/simple;
+	bh=IY4Tb05zIpSJbPYx7yaQqKIDo/3qLKitKdlPvPxU3vY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iX0sLrXQ+0Q5vSXphHPZaAAi8LCi4prr7jV9S0Gg1ySKZBzP5uDgUmWrMz2uG3zf7bRn4JyBamKmuZb+A5OtQ2BwqCW1bnruL8UePCbnR/WSpxU3sBHHJ6l6SUTaf3lbgPobcmzAmKyHV/4kYNE1pTOAxPLzu6o2Lb02kjbuVSo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Srpq0Mpn; arc=none smtp.client-ip=209.85.167.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="oXSfuqLL"
-Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-12c19d23b19so2788303c88.0
-        for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 08:29:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Srpq0Mpn"
+Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-46aa216a5edso1364682b6e.0
+        for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 08:58:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776612575; x=1777217375; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1776614288; x=1777219088; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=B/CPL0C+I2VNJFtpTpEIDtJx0mavuJN+qudj0GJw0BM=;
-        b=oXSfuqLLY34ObRFDnD3iqBx9cID0Ba1KOsXQClnF7ZxUyUoGdSPna7x6W7qcmM99ir
-         hPFxF8QIFjO+xzNeFmO/NCdyRDbFBJYAVhKkxAvD+5S7Vbw5/6LiFKuFiVEZUjazAvN2
-         NgGqKj6hkc3uCnKLs8HqXT3b5B/78C9XlQBj84dknX2qn+CZ2TMz80XFcUG13emfKXC2
-         Aym3FFPJKohTv7NYtj7jYMVo7oHYbh4Ri3c6B+M9AMbjIDmg2K+EI0QIvYz4SLbWbdzP
-         z4tj8zCY8hyN3RPHmtLfXVtcUIDRSEJ5EjLRHDzVZJ5dZKLsVxy7AHWjSAEmhtaFMY+a
-         dTFg==
+        bh=Jur9/mGgXw7k0n94gBTBUaysjrdjZmBm5Vjpg1Eid/A=;
+        b=Srpq0MpnqA3AqyNQSfsPRy46fHu9qt06qurBS2oSuUjLPU045hGbMxL2U5ixg6FYfN
+         d7VdZ1xVTDya66s9MpMZya45fJ7vYcc2+TEMe4se3BGNcWXqlATMPiGnJAe+1PS7RO1W
+         o4jQtCfBsK3NEJ6SttE2rRE5qQa0NxNh9Orch63I9OD7WP8bM/37YZJCaYKl6ftcXO36
+         rWdLZYdCb4KjfRDjfwtuBsfZSLkj7AikvcqE6vKoafXw90p/1hPtlVxdew6RleahY12H
+         sxMHwwuGFD+PoYV++LCQ9iF9qfodt/p7X/ZIGlBo3FdHXkt2/bmEfL5jNX8LYlWN+8gS
+         kopg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776612575; x=1777217375;
+        d=1e100.net; s=20251104; t=1776614288; x=1777219088;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B/CPL0C+I2VNJFtpTpEIDtJx0mavuJN+qudj0GJw0BM=;
-        b=KAAlRzaNVoRH9GrCi5ze7sz/Wc7dpvxamugdmTFZkBROOu+I5YYuiV6zthB47/9y9S
-         uk4Ne1X2ZRYJct7D/pMzHL063iUo5KUn+51O/v8TaQeqAV+fOdqlCH1oTKaz6xDy9gWm
-         l6OhZlqhljpN6Z9lqiMlrqbe/p66sSKj1+o4reo7H16dy5GwvRV5+Lh+ATwgwzRmZ75c
-         Q+/RvmYhkwKHIdQD8qYWQgvk/k/8JWmwunHCmg4pjuanKGHLTwbpaF7pdhURy+4tGm+0
-         OAuvb/41Pgj7/GB5GEZyW/HeawOtSnEoK0irmnCXoYqcOUoyf3Az+N0KRAIER5osAc0Y
-         nhhw==
-X-Forwarded-Encrypted: i=1; AFNElJ/ENRALq72ak/eIBtauZmqfsv1LBHLc23YBSzVWbuf90l+HyJoWy0IBtTUBFaVmO7g6hLRpQy8qdZA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywa9qGIoo4ZoE24cVsMyc7mq4itA9odMDUuIpG1vxHzmBT5P3RE
-	zTWUwCKcST/rc/duxzTaBE6SmT4Zhw28jA1cFOAnDGKFYBakn0qDQWgXDYuStH8oQuI=
-X-Gm-Gg: AeBDievXcO/gMx4dW1oBrbOezbjxHaM6vShlLwwQOQMykH8DdmYX4Cmed1r7VlbZ3QJ
-	t5Rq8QhwOvImgng9aKG1CikY0TylU8EBzM/24E3DyvEHmQlR88fo1hFLcJsp1GP9rHR86MQ/oE5
-	nwmvNiiBdZ5lLDoB3i9Wz25pveBXmAhg/mSpFgax7vzAI4SHMckmND9qvhZ+Ik8/ZikNFJPpPRv
-	U5pplUQgnlV10nTk5+2Gjg6zCPYX8zqlR5PsetAkkE+Nwm5r/+VRtl1XBcjI/f8z/RxRId+t4Yo
-	nbfRVUi75S2d2TxmAunTqaXvv1o6MmBo8NKMK/PaGNRDmLhZIa9nqtChojnsDOZPYgB4Kd2Mo9F
-	ZR66VirHLku9owpaN2FSzl4Ut+OBGkhD0Qr8tb/T1v8Cd5YSqLKGpO7L0MA8+Mv7n0ozmPAtYeK
-	wQanImW6r9GrsIE7VF5EhwRq8DTiZRJe9VZ49IZk46Nqu9k9gpG5dhdD396g==
-X-Received: by 2002:a05:7022:458d:b0:12b:f616:1a4e with SMTP id a92af1059eb24-12c73fa362emr4062955c88.23.1776612574962;
-        Sun, 19 Apr 2026 08:29:34 -0700 (PDT)
-Received: from localhost.localdomain ([179.119.81.104])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c831d5b29sm6246038c88.8.2026.04.19.08.29.30
+        bh=Jur9/mGgXw7k0n94gBTBUaysjrdjZmBm5Vjpg1Eid/A=;
+        b=UlCW90hLcQO4/CGbdkb6DEbj3U3FUf8QD837gYvgZG6qC5/fJf2CTpmOvmO/+HC7ib
+         i1hkA3sAd3AV5nxd4v+TanD4jQQ97igi7bddKZr0xnqYkTKosZi50lkN0tOSq15muVHC
+         +CJnTKdktbOdly9p5nOnXxdYkBkHVRnAXHuuRyLo+45sghgue8TuHx09hQkQp4HBTkG6
+         ycUaUmRQsfFWXChcY4ow3fFqDsE8D5IXVpgQOEe3X9YbWtxJnYwo/X86KI1Fy/8BngUn
+         VG+VfxZ8a8QUqQc2+yV3ckrJaFXARcv77IUupor3f7vl7VCxLuN2P8rDb2q8rJIx3Ac0
+         Q/lA==
+X-Forwarded-Encrypted: i=1; AFNElJ/RVJ9thgIlUz9ANThQdAKQMETi+SCL+frsEnOXsFuYz5GQxsrX92it+dL33HbFERuIkS1RLDNtjiQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzEByWyVvGWQGmXz6fnXWv7lR07SAqb0+ewdFrBQiuUyMedlCK5
+	acy6DTjvEDFuvvgounY1Iz1dMM9hdaFyy/QMlw1STmQ/Tc2zEhLSsu88
+X-Gm-Gg: AeBDiesgm8ESwyQILQPTpB3xH9rAAFyGIx0vM1/sQqJvf5qZOs7poPgPFy9wP1bYjWo
+	xpQb2ya62hOj2/8V0zpYY5shwGiX9CPyVGHAoDlzhcI0omRpiUBX+JeXXl5/yPkRG0I49zoDtWK
+	qkJbKFOoyYoQY1MXdM3Qp3O+ABAi5Fbh80LYvdfVGyF/7u/96k0MMGRsJi9VwQ34HHeGjf/GyfC
+	21Sl0E4+gGmsAgcfBDF3CxE8ISqtFnCtRSTU2rswzNb82bXpEkra4YrmwRLo7FR3LGRiN8hYwUp
+	2vR4iagbU53c1IXdwhrDWhzxsFJFSfyfr7PVkUbma2umlWvreH4KOue1796NrRXiEv8YG29ry7f
+	/SMTtpiIO9IaeBKSSGu/VnxqdMeNaE240mCbGfkr5JPeHLEnZA1aOADVlJhc+zpMnCI28zn24Ju
+	5OcrjHluoDpaYOEuiDjT1Mx4uwj9KhA1bdxVBBYAFjr5HDVyfM9/WXPUrM7HF0timZDbOf
+X-Received: by 2002:a05:6808:1442:b0:46a:cf7e:4b5e with SMTP id 5614622812f47-4799ca7fbcemr4813598b6e.43.1776614288602;
+        Sun, 19 Apr 2026 08:58:08 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-42b9304b7f6sm6805312fac.1.2026.04.19.08.58.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Apr 2026 08:29:34 -0700 (PDT)
-From: Felipe Ribeiro de Souza <felipers@ime.usp.br>
-To: paul@crapouillou.net,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
+        Sun, 19 Apr 2026 08:58:08 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: ak@it-klinger.de,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
 	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Felipe Ribeiro de Souza <felipers@ime.usp.br>,
-	Lucas Ivars Cadima Ciziks <lucas@ciziks.com>,
-	linux-mips@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: adc: ingenic-adc: use guard(mutex)(&lock) to handle synchronisation
-Date: Sun, 19 Apr 2026 12:27:34 -0300
-Message-ID: <20260419152917.8984-1-felipers@ime.usp.br>
-X-Mailer: git-send-email 2.43.0
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: proximity: srf08: replace sprintf with sysfs_emit
+Date: Sun, 19 Apr 2026 10:58:06 -0500
+Message-ID: <20260419155806.208741-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,170 +76,71 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace mutex_lock(&lock) and mutex_unlock(&lock) calls with
-guard(mutex)(&lock) in functions ingenic_adc_set_adcmd(),
-ingenic_adc_set_config(), ingenic_adc_enable(), ingenic_adc_capture(),
-and with scoped_guard(mutex, &lock) in function
-ingenic_adc_read_chan_info_raw().
+This patch replaces sprintf function calls with sysfs_emit and
+sysfs_emit_at. This removes unsafe functions and makes the driver more
+stable and modern, by ensuring that boundary checks take place.
 
-This removes the need to call the unlock function, as the lock is
-automatically released when the function return or the scope exits
-for any other case.
-
-Signed-off-by: Felipe Ribeiro de Souza <felipers@ime.usp.br>
-Co-developed-by: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
-Signed-off-by: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
 ---
-v2:
-  - Adjust order of #include.
-  - Replace guard() in ingenic_adc_read_chan_info_raw() by scoped_guard()
-    to preserve original behavior.
----
- drivers/iio/adc/ingenic-adc.c | 69 ++++++++++++++++-------------------
- 1 file changed, 32 insertions(+), 37 deletions(-)
+ v2:
+ - Fixed indenting of sysfs_emit call in function srf08_show_range_mm.
+ - Optimized return sequence in function srf08_show_sensitivity by
+   directly returning instead of modifying a variable and then
+   returning.
 
-diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
-index 1e802c8779a4..5f914d5e5362 100644
---- a/drivers/iio/adc/ingenic-adc.c
-+++ b/drivers/iio/adc/ingenic-adc.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <dt-bindings/iio/adc/ingenic,adc.h>
-+#include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
-@@ -115,7 +116,7 @@ static void ingenic_adc_set_adcmd(struct iio_dev *iio_dev, unsigned long mask)
+ drivers/iio/proximity/srf08.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
+index d7e4cc48cfbf..604e89f89fe3 100644
+--- a/drivers/iio/proximity/srf08.c
++++ b/drivers/iio/proximity/srf08.c
+@@ -226,7 +226,7 @@ static int srf08_read_raw(struct iio_dev *indio_dev,
+ static ssize_t srf08_show_range_mm_available(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
  {
- 	struct ingenic_adc *adc = iio_priv(iio_dev);
- 
--	mutex_lock(&adc->lock);
-+	guard(mutex)(&adc->lock);
- 
- 	/* Init ADCMD */
- 	readl(adc->base + JZ_ADC_REG_ADCMD);
-@@ -162,8 +163,6 @@ static void ingenic_adc_set_adcmd(struct iio_dev *iio_dev, unsigned long mask)
- 
- 	/* We're done */
- 	writel(0, adc->base + JZ_ADC_REG_ADCMD);
--
--	mutex_unlock(&adc->lock);
+-	return sprintf(buf, "[0.043 0.043 11.008]\n");
++	return sysfs_emit(buf, "[0.043 0.043 11.008]\n");
  }
  
- static void ingenic_adc_set_config(struct ingenic_adc *adc,
-@@ -172,13 +171,11 @@ static void ingenic_adc_set_config(struct ingenic_adc *adc,
+ static IIO_DEVICE_ATTR(sensor_max_range_available, S_IRUGO,
+@@ -238,8 +238,8 @@ static ssize_t srf08_show_range_mm(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct srf08_data *data = iio_priv(indio_dev);
+ 
+-	return sprintf(buf, "%d.%03d\n", data->range_mm / 1000,
+-						data->range_mm % 1000);
++	return sysfs_emit(buf, "%d.%03d\n", data->range_mm / 1000,
++				data->range_mm % 1000);
+ }
+ 
+ /*
+@@ -316,10 +316,10 @@ static ssize_t srf08_show_sensitivity_available(struct device *dev,
+ 
+ 	for (i = 0; i < data->chip_info->num_sensitivity_avail; i++)
+ 		if (data->chip_info->sensitivity_avail[i])
+-			len += sprintf(buf + len, "%d ",
++			len += sysfs_emit_at(buf, len, "%d ",
+ 				data->chip_info->sensitivity_avail[i]);
+ 
+-	len += sprintf(buf + len, "\n");
++	len += sysfs_emit_at(buf, len, "\n");
+ 
+ 	return len;
+ }
+@@ -332,11 +332,8 @@ static ssize_t srf08_show_sensitivity(struct device *dev,
  {
- 	uint32_t cfg;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct srf08_data *data = iio_priv(indio_dev);
+-	int len;
  
--	mutex_lock(&adc->lock);
-+	guard(mutex)(&adc->lock);
- 
- 	cfg = readl(adc->base + JZ_ADC_REG_CFG) & ~mask;
- 	cfg |= val;
- 	writel(cfg, adc->base + JZ_ADC_REG_CFG);
+-	len = sprintf(buf, "%d\n", data->sensitivity);
 -
--	mutex_unlock(&adc->lock);
+-	return len;
++	return sysfs_emit(buf, "%d\n", data->sensitivity);
  }
  
- static void ingenic_adc_enable_unlocked(struct ingenic_adc *adc,
-@@ -201,9 +198,8 @@ static void ingenic_adc_enable(struct ingenic_adc *adc,
- 			       int engine,
- 			       bool enabled)
- {
--	mutex_lock(&adc->lock);
-+	guard(mutex)(&adc->lock);
- 	ingenic_adc_enable_unlocked(adc, engine, enabled);
--	mutex_unlock(&adc->lock);
- }
- 
- static int ingenic_adc_capture(struct ingenic_adc *adc,
-@@ -218,7 +214,7 @@ static int ingenic_adc_capture(struct ingenic_adc *adc,
- 	 * probably due to the switch of VREF. We must keep the lock here to
- 	 * avoid races with the buffer enable/disable functions.
- 	 */
--	mutex_lock(&adc->lock);
-+	guard(mutex)(&adc->lock);
- 	cfg = readl(adc->base + JZ_ADC_REG_CFG);
- 	writel(cfg & ~JZ_ADC_REG_CFG_CMD_SEL, adc->base + JZ_ADC_REG_CFG);
- 
-@@ -229,7 +225,6 @@ static int ingenic_adc_capture(struct ingenic_adc *adc,
- 		ingenic_adc_enable_unlocked(adc, engine, false);
- 
- 	writel(cfg, adc->base + JZ_ADC_REG_CFG);
--	mutex_unlock(&adc->lock);
- 
- 	return ret;
- }
-@@ -643,41 +638,41 @@ static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
- 	}
- 
- 	/* We cannot sample the aux channels in parallel. */
--	mutex_lock(&adc->aux_lock);
--	if (adc->soc_data->has_aux_md && engine == 0) {
-+	scoped_guard(mutex, &adc->lock) {
-+		if (adc->soc_data->has_aux_md && engine == 0) {
-+			switch (chan->channel) {
-+			case INGENIC_ADC_AUX0:
-+				cmd = 0;
-+				break;
-+			case INGENIC_ADC_AUX:
-+				cmd = 1;
-+				break;
-+			case INGENIC_ADC_AUX2:
-+				cmd = 2;
-+				break;
-+			}
-+	
-+			ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_AUX_MD, cmd);
-+		}
-+	
-+		ret = ingenic_adc_capture(adc, engine);
-+		if (ret)
-+			goto out;
-+	
- 		switch (chan->channel) {
- 		case INGENIC_ADC_AUX0:
--			cmd = 0;
--			break;
- 		case INGENIC_ADC_AUX:
--			cmd = 1;
--			break;
- 		case INGENIC_ADC_AUX2:
--			cmd = 2;
-+			*val = readw(adc->base + JZ_ADC_REG_ADSDAT);
-+			break;
-+		case INGENIC_ADC_BATTERY:
-+			*val = readw(adc->base + JZ_ADC_REG_ADBDAT);
- 			break;
- 		}
--
--		ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_AUX_MD, cmd);
--	}
--
--	ret = ingenic_adc_capture(adc, engine);
--	if (ret)
--		goto out;
--
--	switch (chan->channel) {
--	case INGENIC_ADC_AUX0:
--	case INGENIC_ADC_AUX:
--	case INGENIC_ADC_AUX2:
--		*val = readw(adc->base + JZ_ADC_REG_ADSDAT);
--		break;
--	case INGENIC_ADC_BATTERY:
--		*val = readw(adc->base + JZ_ADC_REG_ADBDAT);
--		break;
-+	
-+		ret = IIO_VAL_INT;
- 	}
--
--	ret = IIO_VAL_INT;
- out:
--	mutex_unlock(&adc->aux_lock);
- 	clk_disable(adc->clk);
- 
- 	return ret;
+ static ssize_t srf08_write_sensitivity(struct srf08_data *data,
 -- 
-2.43.0
+2.53.0
 
