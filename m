@@ -1,45 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AD015478D;
-	Sun, 19 Apr 2026 16:34:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D691D13D503;
+	Sun, 19 Apr 2026 16:42:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776616459; cv=none; b=RORSXT8X3USlHdiJTkPjPnYme85eIZmQ3q3b2WVWtxr9pKugYk2iNokIgFN48fhOSZT3k0AqwcivkxM8g+SWnkgCKT5Ny8NRVk7diFIAlu6RICaq9zb7abfOMpqqRuwwlAlM8IuJeFa16txAy2nUbhwIcrw8W9Tgq2I9ong2zkI=
+	t=1776616925; cv=none; b=gJftfjjBem06nskx9EkLP/FeSWqBtKMuv4vr4yVG+xZP/bef9/SfJRmbWEuELpsuJpXxrqNneiqRFkULoyLWWS+Ejt1c201j1Blffb7bxYlG3ltuua2xVk5mKvoYXo5P/NPR75uA8oSPy7HpYkucSjCKBc9+fIq+Zr3u5hmM5x8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776616459; c=relaxed/simple;
-	bh=h4RkHO96BK7LoSw6tLGh2J6H83pq3bsB6xmRty3H440=;
+	s=arc-20240116; t=1776616925; c=relaxed/simple;
+	bh=3vMDOsZ8iBfMgLnL1HSaOAfD6P/SZ/Z6a6f9MS0Ad9M=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=BGGddYkYaGREmM3WI14tuATeHafhtsop3j2sBf+rIRNvlY8w69eMBN/IlFu+rJ5XpVO+X+dbdcApmuX1sLQnAvyb4+q8zNPVI0GXkUG5aBThdWj69+IbuTF8qYjwVjeLiiFMrV8Zo9IK5irjj0d/vEakaXvjlT66dmxDNxCQ7RY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CDrW26Sh; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=lDXKT/3TLUc+WbOr9+UWI4plhJgmN+oKbG8OKUQ8T9SEALf5AN/WV2jOuuNsTxoW419ele+r4mrV6LZIGr/4vYI0RWkcq8Mhn++tL3G8QMyqUhaNqJr0LOI089T5dixQZnTITycSPHdNHafJ1uKlqq319fqmaAPLRME+9hPR3Jw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uIM5ZK0C; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CDrW26Sh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59921C2BCB5;
-	Sun, 19 Apr 2026 16:34:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uIM5ZK0C"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3324FC2BCAF;
+	Sun, 19 Apr 2026 16:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776616458;
-	bh=h4RkHO96BK7LoSw6tLGh2J6H83pq3bsB6xmRty3H440=;
+	s=k20201202; t=1776616925;
+	bh=3vMDOsZ8iBfMgLnL1HSaOAfD6P/SZ/Z6a6f9MS0Ad9M=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CDrW26Shd3P7e4HtfYdMdVF7glvR4wXtrXmldL4lMTARqlSL6AqMQ0fV/Sf4h0Ljj
-	 FMBVz/ThLUObKGVlPavYFkAKFFceuXk6CnHzYPZZ1vr+uGRxETq2fpXJ6pLFrY7bWB
-	 uyOlHwLu8jWxGnwBt0D0oBeJMoB2ykP8skwAErNtAKpx8lFj1fBhbWO0Vx3bd+8Jcp
-	 r13b1qXbAR3GcpjlYLHNqsnhh0dRUXOMUqviyGlj7prA++AxVHieQroSUEJgN18Qu7
-	 rLyBo1HLO0eQpFDq6b/6k8yx2fVZW1khQ3UJtRbStSHnSC1s880lzLUZQUSX2FYgL+
-	 a57w4wQGGg5nw==
-Date: Sun, 19 Apr 2026 17:34:08 +0100
+	b=uIM5ZK0CE/6WnubZRat37tGLAv9UGVQYfueyWdo0TKcWI6bzO0mN4f8q/9nlTyMmh
+	 duMnrsMSwAN4ba1lxEYwiGaf+kZwCD/yEBG7elNDRmmZ8NQNSgS5PYrApSgori/1WM
+	 Y5ZqAjYU/vXlHwr/cS06FYy+QdHovFTJmhY8jeCVqDKev0/gdMTmpWh841NZM4C0yj
+	 97Z2x32f9F6w/Km7yTIwWDZ0Y8KQw5TAnVR7Bh4qWDpU3jFvbi74Vm9qhbDegw5q1X
+	 qIz8/EL3L1NHDDaYO9a+KsF8KYM1Nxh80s77ujbLFz2Dzc+mnBKs39FhtAYLviketq
+	 M102jv7WZ4Gjw==
+Date: Sun, 19 Apr 2026 17:41:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: lucas.p.stankus@gmail.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, puranjay@kernel.org,
- cosmin.tanislav@analog.com, marcelo.schmitt@analog.com,
- antoniu.miclaus@analog.com, ramona.gradinariu@analog.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] iio: accel: small cleanups and error-handling
- improvements
-Message-ID: <20260419173408.0d17995a@jic23-huawei>
-In-Reply-To: <20260417124924.353189-1-sanjayembedded@gmail.com>
-References: <20260417124924.353189-1-sanjayembedded@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jonathan.cameron@huawei.com>, Alexis Czezar Torreno
+ <alexisczezar.torreno@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 2/2] iio: dac: ad5706r: Add support for AD5706R DAC
+Message-ID: <20260419174155.312a8380@jic23-huawei>
+In-Reply-To: <aeJ2clUsHk-VTr0F@ashevche-desk.local>
+References: <20260417-dev_ad5706r-v8-0-ef87dff62b57@analog.com>
+	<20260417-dev_ad5706r-v8-2-ef87dff62b57@analog.com>
+	<aeHwwN2sFJBzQ21H@ashevche-desk.local>
+	<20260417135624.000030e5@huawei.com>
+	<aeJ2clUsHk-VTr0F@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,75 +55,48 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 17 Apr 2026 18:19:16 +0530
-Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
+On Fri, 17 Apr 2026 21:05:38 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> On Fri, Apr 17, 2026 at 01:56:24PM +0100, Jonathan Cameron wrote:
+> > On Fri, 17 Apr 2026 11:35:12 +0300
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
+> > > On Fri, Apr 17, 2026 at 04:27:16PM +0800, Alexis Czezar Torreno wrote:  
 > 
-> Hi all,
+> ...
 > 
-> This series contains a few small cleanups and robustness improvements to
-> adxl313, adxl380, adxl355, adxl367 and adxl372 IIO accelerometer drivers.
+> > > > +#define AD5706R_DAC_RESOLUTION		16
+> > > > +#define AD5706R_DAC_MAX_CODE		GENMASK(15, 0)    
+> > > 
+> > > I know Jonathan asked for this, hence it's comment for him.
+> > > I think that BIT() notation in a form of (BIT(16) - 1) is
+> > > also appropriate here as it gives the relationship to the
+> > > resolution of the given register / bitfield in HW.
+> > > 
+> > > GENMASK() works for me, but it might require an additional
+> > > operation to deduce the above.
+> > > 
+> > > (Note, there is no request to change or resend for you, Alexis. It's just
+> > >  a remark to make Jonathan to think about which one suits better. He might
+> > >  change that whilst applying.)
+> > >  
+> > I'm not against that form.  It was more being against bare BIT(16) as that was
+> > 1 greater than the maximum value it can take.
+> > However making the relationship explicit would be even better.
+> > 
+> > #define AD5705_DAC_MAX_CODE	(BIT(AD5706R_DAC_RESOLUTION) - 1)  
+> 
+> While that's technically correct, I would still prefer an explicit number
 
-0/2  in patch title? It's fine for that bit to change from version to version.
+With the resolution stated on the line above I'd slightly prefer the explicit coupling
+that is lost with the number being repeated.  Meh, I don't care that much.
 
-Anyhow, I tweaked as Andy suggested whilst applying and picked up the lot.
-
-Note however, that the advantage of devm_mutex_init() is minor at best,
-which is why we didn't bother with mutex_destroy() most of the time
-before this convenient way of calling it existed.  Combined with
-dev_err_probe() being nice but minor cleanup, I'd generally reserved these
-sorts of changes for when someone is otherwise working on a driver or
-doing a more thorough modernisation.
-
-I don't mind people doing this sort of thing for one of their first
-few patches, so what you have here is fine, but it's not suitable material
-for a mass cleanup of the whole subsystem!
-
-Thanks,
-
-Jonathan
 
 > 
-> The changes modernize mutex handling using devm-managed helpers.
-> In addition, error handling during probe is cleaned up by switching to
-> dev_err_probe() to better handle deferred probing.
+> #define AD5705_DAC_MAX_CODE	(BIT(16) - 1)
 > 
-> Changes in v2:
-> - Drop guard() changes as it's already available in iio/testing.
-> - Rebase changes on top of iio/testing with guidance from Andy.
-> - Added new change for additional iio accel drivers.
+> Note, GENMASK() is also fine with me, this is really a minor difference.
 > 
-> No functional changes are intended.
+> > I might tweak it when picking this up.  
 > 
-> Testing:
->   - Compiled with W=1
->   - Build-tested on QEMU x86_64
-> 
-> Thanks,
-> Sanjay Chitroda
-> 
-> Sanjay Chitroda (8):
->   iio: accel: adxl313_core: Use devm-managed mutex initialization
->   iio: accel: adxl313: Use dev_err_probe
->   iio: accel: adxl380: Use devm-managed mutex initialization
->   iio: accel: adxl355_core: Use devm-managed mutex initialization
->   iio: accel: adxl355: Use dev_err_probe
->   iio: accel: adxl367: Use devm-managed mutex initialization
->   iio: accel: adxl372: Use devm-managed mutex initialization
->   iio: accel: adxl372: Use dev_err_probe
-> 
->  drivers/iio/accel/adxl313_core.c | 10 +++++-----
->  drivers/iio/accel/adxl313_i2c.c  | 10 ++++------
->  drivers/iio/accel/adxl313_spi.c  | 10 ++++------
->  drivers/iio/accel/adxl355_core.c | 28 +++++++++++-----------------
->  drivers/iio/accel/adxl355_i2c.c  | 11 ++++-------
->  drivers/iio/accel/adxl355_spi.c  | 11 ++++-------
->  drivers/iio/accel/adxl367.c      |  4 +++-
->  drivers/iio/accel/adxl372.c      | 10 +++++-----
->  drivers/iio/accel/adxl380.c      |  4 +++-
->  9 files changed, 43 insertions(+), 55 deletions(-)
-> 
-> 
-> base-commit: 0ccdcdc698b7ba52f2c9bc09bfdf9f020ca0e6e6
 
