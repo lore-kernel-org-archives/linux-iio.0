@@ -1,42 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6DA922578D
-	for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 13:24:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980538834;
+	Sun, 19 Apr 2026 13:33:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776605054; cv=none; b=WEAT08cgrELQqL9JHb2BjCvw3d/uOCbIWUJNo0BTHs4xITyBAvBtOUQ11t7AylfzZtIT15bdGu3OIhBnosCridHhwGamlKXODaiszKYyVlNcCTrsOXRzUnIeE4B6BUkrD3t52V4D4V+nGZ0D8dYcZjzmJ+43HXExA28KuyEItns=
+	t=1776605637; cv=none; b=bKFmRkPer4kqsgOg2itRRhHkKn4CJ8k2WcaUXIgkv+pUyNXu6xEouK/dFCzLisRubw1yPVroBUQ3nEUwRZpKeiIWo850QfzvpDCWKkkmS55zaAfSkpT+hN0gCgES1NKvf1xKLZTK0Fz8N/KyC+sd9g966X6bFAoHPGTFE7VLIHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776605054; c=relaxed/simple;
-	bh=uXTDstJSty11+g36yLq/lXxd/aTol4U8lS5n/z1Ykwc=;
+	s=arc-20240116; t=1776605637; c=relaxed/simple;
+	bh=PN0KWt9UBkV0/n988jdngDmSjDH7FRRxV8CnMr1y2M4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kYuuckcg+6QCirAUG282H/4aI463OBbkIZ5AinYG59GivmLY6Fwh8HWbwJHB2LWnbHztsKgYj+gfdO5OhsJK5zstGKABDZImtIRJesvhVRhnZJ695TRKBI04liQC+KWJ3Jh+8wsyxeGBAYRe2Oj+ROXhuYnCPmapUf6+GwI7fhk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C61h2oP8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Bfy+63HgjI7rwHDHdMSQhmCjo9eBGUUzBKMwtbtJ3vnLAvecEWoxJi6+p8SOKarkgv2GoEegKNxtMNDVeLd9djGWUAtu4tF/aIsJ/nfTvyaRFv/Xxqr3NzBsTGM+U5LdV44xcgdOIP/brtdsrz95O+PsyqXKVOoiBc0xjx7FJ70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fz5J/ILx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C61h2oP8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 361E5C2BCAF;
-	Sun, 19 Apr 2026 13:24:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fz5J/ILx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A3ACC2BCAF;
+	Sun, 19 Apr 2026 13:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776605054;
-	bh=uXTDstJSty11+g36yLq/lXxd/aTol4U8lS5n/z1Ykwc=;
+	s=k20201202; t=1776605637;
+	bh=PN0KWt9UBkV0/n988jdngDmSjDH7FRRxV8CnMr1y2M4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=C61h2oP8Gt/xdS4I7FEbJvsL4cE6q1bhD4XtC/RSflRXJG9VrKjFcYcIzec+uhtbi
-	 MU1uVYFQLr+yF1Qvqk7ZnoN87mKp81Rin8pLJfYU6lH+OJ7v3PxksoVqr1q3EY4dtb
-	 85492hBKe8xieC8XC3dhmcptvUm7tIzShZW6xzWV0Yo7IvxK7XvJTdkhXoRiDCsYGV
-	 r9dk0YAcs33AlZPkchFFYx/GBLdCvjMqzSSwJRVr4Bn6DRmErvwwCjSqb3dvtiKh+i
-	 LMmmHE4Cui/MPn7l52J5cV2eKBd8yko7mcUu5L8yKngrzLmVZos+ZavV6wXkfrQYQF
-	 N5l0W5d5ZyESw==
-Date: Sun, 19 Apr 2026 14:24:07 +0100
+	b=Fz5J/ILxpY7243N/yp4TIQIb3TSI04aTmab6+fS/DMEyW/6A09NubwZKXFCbgnSGf
+	 b60HmkbVGSTTV1EVwF9IayrJrw+qT3058CQlrb3ti2KnkWymyqcVJ3a7q+CXuxoB+k
+	 pTjID+rJvoU0UPvOC6bXzwq7p641KD4uTXjGVqQ+z+8XLbnUimi0KOdCz2IZOrW6VI
+	 9svlhO9k63UQyuaPICLWp7entRxw54ioTyfqMEDslnW+uBX2dB1zZe08/oanBGnmhJ
+	 AakfHLN+SNe9+cCnE74luUXeX5DL+1D6Xc+/XFqXxvEHIoma974i/nLR5ojeol6KP+
+	 qapnIKY4k/Ysg==
+Date: Sun, 19 Apr 2026 14:33:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Machado Lage <marcelomlage@usp.br>
-Cc: andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, Vinicius
- Lira <vinilira@usp.br>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iio: adc: mcp3422: rewrite mask macros using
- bitfield macros
-Message-ID: <20260419142407.4a8b7dec@jic23-huawei>
-In-Reply-To: <20260417165747.507487-2-marcelomlage@usp.br>
-References: <20260417165747.507487-1-marcelomlage@usp.br>
-	<20260417165747.507487-2-marcelomlage@usp.br>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Randy Dunlap
+ <rdunlap@infradead.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] misc: Remove old APDS990x driver
+Message-ID: <20260419143346.45ed78c2@jic23-huawei>
+In-Reply-To: <20260419083125.35572-4-clamor95@gmail.com>
+References: <20260419083125.35572-1-clamor95@gmail.com>
+	<20260419083125.35572-4-clamor95@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,59 +53,36 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 17 Apr 2026 13:57:46 -0300
-Marcelo Machado Lage <marcelomlage@usp.br> wrote:
+On Sun, 19 Apr 2026 11:31:24 +0300
+Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-> Rewrite MCP3422_CHANNEL_MASK, MCP3422_PGA_MASK, MCP3422_PGA_MASK
-> and MCP3422_CONT_SAMPLING using GENMASK() and BIT() macros from
-> bitfield.h.
+> The Avago APDS9900/9901 ALS/Proximity sensor is now supported by tsl2772
+> IIO driver so there is no need to keep this old implementation. Remove it.
 > 
-> The other macros MCP3422_SRATE_{240, 60, 15, 3} were not changed
-> because they are also used as array indices.
-> 
-> Signed-off-by: Marcelo Machado Lage <marcelomlage@usp.br>
-> Co-developed-by: Vinicius Lira <vinilira@usp.br>
-> Signed-off-by: Vinicius Lira <vinilira@usp.br>
+> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
 > ---
->  drivers/iio/adc/mcp3422.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
-> index 50834fdcf738..59bf73304588 100644
-> --- a/drivers/iio/adc/mcp3422.c
-> +++ b/drivers/iio/adc/mcp3422.c
-> @@ -13,6 +13,7 @@
->   * voltage unit is nV.
->   */
->  
-> +#include <linux/bits.h>
->  #include <linux/err.h>
->  #include <linux/i2c.h>
->  #include <linux/module.h>
-> @@ -25,9 +26,9 @@
->  #include <linux/iio/sysfs.h>
->  
->  /* Masks */
+>  Documentation/misc-devices/apds990x.rst |  128 ---
+Sashiko AI reviewing is now running on anything that hits linux-iio@vger.kernel.org
 
-This comment covers the first few defines, but not the reset.
-Delete it whilst you are here to avoid future confusion.
+I'm slowly getting into the habit of checking out what it finds though
+I'm 500+ emails behind so it might not be that thorough today :*
 
-> -#define MCP3422_CHANNEL_MASK	0x60
-> -#define MCP3422_PGA_MASK	0x03
-> -#define MCP3422_SRATE_MASK	0x0C
-> +#define MCP3422_CHANNEL_MASK	GENMASK(6, 5)
-> +#define MCP3422_PGA_MASK	GENMASK(1, 0)
-> +#define MCP3422_SRATE_MASK	GENMASK(3, 2)
->  #define MCP3422_SRATE_240	0x0
->  #define MCP3422_SRATE_60	0x1
->  #define MCP3422_SRATE_15	0x2
-> @@ -36,7 +37,7 @@
->  #define MCP3422_PGA_2	1
->  #define MCP3422_PGA_4	2
->  #define MCP3422_PGA_8	3
-> -#define MCP3422_CONT_SAMPLING	0x10
-> +#define MCP3422_CONT_SAMPLING	BIT(4)
->  
->  #define MCP3422_CHANNEL(config)	(((config) & MCP3422_CHANNEL_MASK) >> 5)
->  #define MCP3422_PGA(config)	((config) & MCP3422_PGA_MASK)
+Anyhow, it caught an easy one here.
 
+This file is referenced from Documentation/misc-devices/index.rst
+so that needs an update as well.
+ 
+There is the obvious point of ABI compatibility raised as well, but given
+we don't seem to be getting much push back on that maybe that's not a significant
+concern.
+
+Jonathan
+
+>  drivers/misc/Kconfig                    |   10 -
+>  drivers/misc/Makefile                   |    1 -
+>  drivers/misc/apds990x.c                 | 1284 -----------------------
+>  include/linux/platform_data/apds990x.h  |   65 --
+>  5 files changed, 1488 deletions(-)
+>  delete mode 100644 Documentation/misc-devices/apds990x.rst
+>  delete mode 100644 drivers/misc/apds990x.c
+>  delete mode 100644 include/linux/platform_data/apds990x.h
