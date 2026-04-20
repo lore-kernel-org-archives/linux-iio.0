@@ -1,45 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49D2E399019;
-	Mon, 20 Apr 2026 13:03:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 124093750BC;
+	Mon, 20 Apr 2026 13:06:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776690232; cv=none; b=JMslb6FtxRD0W2fHL4WQ/xNw3grWZFcNuGD8ZFwIIu7SGCHfu+BlgUGXAQAspl8EuHreKvvU5tf/rbAh9K6hWyEKqDdkHgct83AkSBPbISpcO5jP+Bek1DGI/yawWDw5sJTXBVx955T84/2DM/3xmOiwjIvv42ujnr4abeaE2Zg=
+	t=1776690378; cv=none; b=Q55gzLNgtH9jRQFYqJRqQlt5+vhwWfT8f6k5jODMBi+P876LPfzwMnabSwWBjedIsCVYzwo6+SvLyF0uzAOIheJy1dJvmDTxJNQWAmPHezIhtvl8VL5jX7Y7Z/i3gjT7Sf0kTtIpmFLnIaMTAZCnWhbw6RYGch5qPMTTcycTof0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776690232; c=relaxed/simple;
-	bh=FWYzDiOArELacVGV7TzEmUdoIKAyf3T/LPGLv7hZXEs=;
+	s=arc-20240116; t=1776690378; c=relaxed/simple;
+	bh=aVygnoZzWXaB/Bd3/LxS0wJNIpS4jAsA7pC9S52E1dQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fOpzA0sgg0L6qmXtbRJUCemE7CBCxWY0/kAWg4kTmxfOpnrrFiS/QRZoXN+wTfGzAN/QLfQTyFf3wtPP8SQqEzNlrW9tDFwgE3Jjhr0b6hicl/rXze2SGBUglNEJ5NJpmkvKY2oe9CX3BmshicRpLHZCr2EAbhWp/bWrzyOos5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N3tKTdu4; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=thz3Mf14SjiDqvkZ6rUIVWk597V5/hDiKG9ynNVpPjlvkVirMrX7NamBxu96SnOK18UR2/LUGa18/euY+Ft0JZOE4UNCR7BaHW5up2Ei+U53ZmnnHitNbMPDFi8fXeXVfgWM79Sk70epVHM2i/lp2YKWDOrWGx1puNhqPOdrtjM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vmdt7GNe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N3tKTdu4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77191C19425;
-	Mon, 20 Apr 2026 13:03:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vmdt7GNe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C64C19425;
+	Mon, 20 Apr 2026 13:06:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776690231;
-	bh=FWYzDiOArELacVGV7TzEmUdoIKAyf3T/LPGLv7hZXEs=;
+	s=k20201202; t=1776690377;
+	bh=aVygnoZzWXaB/Bd3/LxS0wJNIpS4jAsA7pC9S52E1dQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=N3tKTdu4Pv+jvOEXJNbSnxP7OO7Ii/79maL5un9RCk4ciAXmHCA5Sni5jvUBRv4Rh
-	 WcOMUuCWX6UOvyBt8C3cwSPkyoojbmv5m4vK08jeKx/am6RDyl3tMRIfF1TLWRFg8t
-	 WYPlgyn6Vi7oqtPTzPvo/qLpO9P67KsTUgI2c0/n0kFhPsDN+8UB0qFw8TwLIsZ5EB
-	 iJECYpFYAv/OokK2+Jr3SSbbkfQd7XZFvROTKaXDiBJzDWUndO9Wh+isSrhLemTvzj
-	 +7YXmgeD0eLQwctHMfp6oyZGF8hHZ/+jDvmQwK6rfm847Yia4UAxkWCgztd+FgkN3b
-	 VsQJ3NM8UrFhA==
-Date: Mon, 20 Apr 2026 14:03:44 +0100
+	b=Vmdt7GNe2/k+1/pm1+R/ple7nW0QeEZRqhM4GKHXGKO6q1cB5T1m6gXP+9weF84fv
+	 1DAJS54ggsW96PNAMMQyVS/UNMa7pzwGQ9j/3uAhKZJ7dGy07vRzO701E0JtPMvJdF
+	 n++8mV7OnmcvCKEXurKr2OnFMIBq8M0aGaswjeW04mPovED0HW1bKowWrWarodtMvB
+	 2LGDSXa3rJy1LVELDMsMr1o91tZHyvF1/7tKjiQfC9ooKCHWe20iG1eMWq971RN9rn
+	 mUfioHgiJhDS30lsPm2s2Yh8Wcx6rGlmxAjNDhUHPFnTFJTZsAR8NDXFwrZDz3AJdf
+	 3syWXjYcmiE8Q==
+Date: Mon, 20 Apr 2026 14:06:09 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-ads7950: use spi_optimize_message()
-Message-ID: <20260420140344.0f2ae510@jic23-huawei>
-In-Reply-To: <03ea65e3-4c34-4a20-b638-966abad78d7d@baylibre.com>
-References: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
-	<ad4OywqHDC7aYapD@ashevche-desk.local>
-	<d14d23df-0fad-4b87-8e57-67241b29fc30@baylibre.com>
-	<ad5ry4i6OPOS156E@ashevche-desk.local>
-	<03ea65e3-4c34-4a20-b638-966abad78d7d@baylibre.com>
+To: Advaith Neelacantan <advaith.neelacantan@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: frequency: ad9832:  use guard(mutex) for
+ locking
+Message-ID: <20260420140609.62887df7@jic23-huawei>
+In-Reply-To: <20260411072503.106621-2-advaith.neelacantan@gmail.com>
+References: <20260411072503.106621-2-advaith.neelacantan@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,56 +49,48 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 14 Apr 2026 12:52:49 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Sat, 11 Apr 2026 12:55:04 +0530
+Advaith Neelacantan <advaith.neelacantan@gmail.com> wrote:
 
-> On 4/14/26 11:31 AM, Andy Shevchenko wrote:
-> > On Tue, Apr 14, 2026 at 08:29:29AM -0500, David Lechner wrote:  
-> >> On 4/14/26 4:54 AM, Andy Shevchenko wrote:  
-> >>> On Sat, Apr 11, 2026 at 05:13:33PM -0500, David Lechner wrote:  
-> >>>> Use spi_optimize_message() to reduce CPU usage during buffered reads.
-> >>>>
-> >>>> On hardware with support for SPI_CS_WORD, this reduced the CPU usage
-> >>>> of the threaded interrupt by about 5%. On hardware without support, this
-> >>>> should reduce CPU usage even more since it won't have to split the SPI
-> >>>> transfers each time the interrupt handler is called.
-> >>>>
-> >>>> The update_scan_mode callback hand to be moved to the buffer preenable  
-> >>
-> >> s/hand/had/
-> >>  
-> >>>> callback since the SPI transfer mode can't be changed after
-> >>>> spi_optimize_message() has been called. (The buffer postenable callback
-> >>>> can't be used because it happens after the trigger is enabled, so the
-> >>>> SPI message needs to be optimized before that.)
-> >>>>
-> >>>> The indent of ti_ads7950_read_raw is changed since there is no longer
-> >>>> anything else in the struct to align with since we removed
-> >>>> ti_ads7950_update_scan_mode.  
-> >>>
-> >>> Some of the func() are mentioned w/o parentheses and I got lost which one is
-> >>> which. Also callbacks usually mentioned as .callback() (with a leading dot).  
-> >>
-> >> I didn't put () in the last paragraph because I was talking about the function
-> >> pointer, not the function. I guess I missed update_scan_mode() though.  
-> > 
-> > Then probably spell it as "pointer to func()" ?
-I tweaked this a bit and applied.
-
-J
-> >   
-> >>> The second paragraph doesn't tell me clearly if there is a behaviour change
-> >>> from user perspective.  
-> >>
-> >> It is not clear that the difference the user can notice is that there are
-> >> some CPU cycles freed up for other tasks?  
-> > 
-> > He-he :-)
-> > 
-> > I asked more about possible behaviour changes in ABI (note, that [significant]
-> > delays moved around might affect ABI if some user's program times out due to
-> > that). But I think it's not the case here.
-> >   
+> Replace mutex lock/unlock pairs with
 > 
-> No, I don't expect any other changes either.
+> guard(mutex) for automatic scope-based locking.
+> 
+> Simplifies code by removing need to manually unlock.
+> 
+> Signed-off-by: Advaith Neelacantan <advaith.neelacantan@gmail.com>
+
+What everyone else has stated indeed applies, though I'm more flexible
+if you are doing this part of driver cleanup that is more substantial
+and touches nearby code.
+
+However, it's buggy. Read the guidance in cleanup.h and make sure
+you understand why.  Note that LLVM will warn about the problem,
+GCC currently does not.
+
+> ---
+>  drivers/staging/iio/frequency/ad9832.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+> index b87ea1781..73c47a049 100644
+> --- a/drivers/staging/iio/frequency/ad9832.c
+> +++ b/drivers/staging/iio/frequency/ad9832.c
+> @@ -181,7 +181,7 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+>  	if (ret)
+>  		goto error_ret;
+>  
+> -	mutex_lock(&st->lock);
+> +	guard(mutex)(&st->lock);
+>  	switch ((u32)this_attr->address) {
+>  	case AD9832_FREQ0HM:
+>  	case AD9832_FREQ1HM:
+> @@ -239,7 +239,6 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+>  	default:
+>  		ret = -ENODEV;
+>  	}
+> -	mutex_unlock(&st->lock);
+>  
+>  error_ret:
+>  	return ret ? ret : len;
 
