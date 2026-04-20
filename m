@@ -1,119 +1,83 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CC5B39F18A;
-	Mon, 20 Apr 2026 17:26:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F79378803;
+	Mon, 20 Apr 2026 17:48:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776706002; cv=none; b=H56NdWbAzT4sBVYpdl/wGsMPSFEryyOTtZaZJCA3DPWXSdsgL2A1n1tIjm1/7wrjXV/YGjYm/F7LIHTz/bJJXAIHo8Lspw6v9uSEgsiJezfMOSsOFnE63GjYej33Vv/zllSA8nQB4Ox3ug9JKv6grCNUXLkNaqNOOr9XvtapzIU=
+	t=1776707329; cv=none; b=R04aFxvVnYkobFeFIvKriqRVnRSS6D742bEA63mFm9an314Pm5EwK766e0UL3R4mnxrubrANZZkokrlQ9jPpIRS7NyZxbQHQTt4DEKmgpEAUtchLZKoe69x8SNIC3qL3ap7TnN/aoQlBbwTT6T4xXRFx3FwW0gKHVBhXO9cyrb0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776706002; c=relaxed/simple;
-	bh=pX/+idWInI69yJGAkt28ov6BkECfOCkMPjQZ8bY8xOo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JJ0r/Mev1Yu3oARZDqg0IO74p6NBGQ0lrr4C+FoiOL0D+3TAzhyH3VRr2cFPXLM0SUi4SxLmidCiYpyAgban22XIGQT6v2IjYsUxAZ3C0HZdzc7vUXGDLevUEav9Vs76Jbavtp/TK7lyCeLPXISs/hhl+XgqS+ur5VGj67IhfGo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=moLGd8/T; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776707329; c=relaxed/simple;
+	bh=8dAhoJj+XWifRzYfbUJkR3J4rnTxtjMK2Ayc584/x28=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=YKX80rQzs1oKvFFy1p0C1IqdO5BRuFLy3RX1fqVCpFqT/AiN2xiSymOL9vQ6OVDTdongkQ9Kdgmvon+B38z+hr6Bwufn6P6t31foEgyoqdTq1T2G44fXETV4iR+BZhLMptYWMAMzq0TO/epPE+mTwFWprzmkLtuo9rBk7PGDSCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jezvRzLd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="moLGd8/T"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776706001; x=1808242001;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pX/+idWInI69yJGAkt28ov6BkECfOCkMPjQZ8bY8xOo=;
-  b=moLGd8/T3IuxY3jSSa4KMxYVxb3tDEulJ8yDQ0u1l8vpuLuP1iKOtbWk
-   yf1AbZywGxa3ycCohYg/U9bvniUYgVpAtU7/RgcgyC9ed3uTZS+YgrxH+
-   CJEc3kFFCYGIIJs9MgkzkXbGqPTo5LcqwunHBOUGQSaG9Y1Fkfpwj4FwU
-   RO6ICsizRhS6SBdfOx3XEaCRyxuRomMHMR4Gi7+5JTz9Tcv73hUefu56I
-   iSiLEZ1NNbMT2al48TzL7Nfslg7u6Wwkis7EBt09w6Nj5X3aM5spbVITO
-   39vW+bwJHOh//7j20rwKeDeov6WHyjpG5cBznpZTWKht42Ch37zP57w6R
-   A==;
-X-CSE-ConnectionGUID: ckWIOxGRT924ZtpgURbs+w==
-X-CSE-MsgGUID: IRuy7MQWRLO9jznx93pLHA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77334108"
-X-IronPort-AV: E=Sophos;i="6.23,190,1770624000"; 
-   d="scan'208";a="77334108"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 10:26:41 -0700
-X-CSE-ConnectionGUID: uF2Toyh4T9GwKRnkbgdxTw==
-X-CSE-MsgGUID: 8x+COHeuScyvFn/+AqhLFw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,190,1770624000"; 
-   d="scan'208";a="231658750"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 10:26:39 -0700
-Date: Mon, 20 Apr 2026 20:26:36 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/4] iio: magnetometer: ak8975: modernize polling loops
- with iopoll() macros
-Message-ID: <aeZhzETQk6afaw6y@ashevche-desk.local>
-References: <20260420110804.1353-1-joshua.crofts1@gmail.com>
- <20260420110804.1353-5-joshua.crofts1@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jezvRzLd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 749DAC19425;
+	Mon, 20 Apr 2026 17:48:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776707328;
+	bh=8dAhoJj+XWifRzYfbUJkR3J4rnTxtjMK2Ayc584/x28=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=jezvRzLdxtj8jFR5SRtO328o0qBVVNe8PaF4SGmpSCWN9hrLZLGv0TZ6VKSmIhTaG
+	 8YwgB7TcWFeuUnWzbXt7qIwU0njQVgmzepyCGmVMusCzPD1Pw+UO2VgdoBqof+KzwV
+	 4o/3W7m1BPUx+85rvzcKgbLKMvc7UUCDgyY4nAJb6hlwPu7+Ta2aQQ1FhugAeQiXS4
+	 OCN7lIWTuC/74AIe5FoRvfXxSU/r30PC3c5AX2CURLiP2DKlmNeGOXycOHSUqD85Zr
+	 XCJ7Hioubb4L4jWrMU1qoB0SYUf8BKzuwB37P0CkkXnSlMyZSds3Cgq0LKMoxtoMS5
+	 Syok5KylgyHeg==
+Date: Mon, 20 Apr 2026 18:48:39 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Sheng Kun Chang <nothingchang@mirrorstack.ai>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, gregkh@linuxfoundation.org,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: Re: [PATCH 0/3] Move adis16203 inclinometer driver out of staging
+Message-ID: <20260420184839.4ab3d9a2@jic23-huawei>
+In-Reply-To: <20260401171425.89186-1-nothingchang@mirrorstack.ai>
+References: <20260401162458.88110-1-nothingchang@mirrorstack.ai>
+	<20260401171425.89186-1-nothingchang@mirrorstack.ai>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260420110804.1353-5-joshua.crofts1@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Apr 20, 2026 at 11:08:04AM +0000, Joshua Crofts wrote:
-> The driver currently uses while loops and msleep() for polling during
-> conversion waits.
+On Wed,  1 Apr 2026 17:14:25 +0000
+Sheng Kun Chang <nothingchang@mirrorstack.ai> wrote:
+
+> Hi Jonathan,
 > 
-> Replace the custom polling loops with readx_poll_timeout() and
-> read_poll_timeout() macros from <linux/iopoll.h>. This reduces
-> boilerplate, standardizes timeout handling and improves overall code
-> readability, keeping the original timing and error behaviour.
+> I noticed the existing Fixme comment on the Y-axis channel and
+> Gabriel's earlier attempt to fix the single-axis representation
+> (v2, April 2025). That patch was not merged.
+> 
+> Should I address the Fixme as an additional patch in this series
+> before the move, or is it fine to fix separately after moving out
+> of staging?
+> 
+> Also, if I should fix it, would it be appropriate to pick up
+> Gabriel's patch with credit, or should I write a fresh fix?
 
-...
+If Gabriel's patch does the job pick that up and add your SoB to
+indicate you handled the patch. Looking at what I think is latest
+version of that I had some feedback.  
+https://lore.kernel.org/all/20250421125357.571c429e@jic23-huawei/
 
->  	/* Wait for the conversion to complete. */
-> -	while (timeout_ms) {
-> -		msleep(AK8975_CONVERSION_DONE_POLL_TIME);
-> -		if (gpiod_get_value(data->eoc_gpiod))
-> -			break;
-> -		timeout_ms -= AK8975_CONVERSION_DONE_POLL_TIME;
-> -	}
-> -	if (!timeout_ms) {
-> +	ret = readx_poll_timeout(gpiod_get_value, data->eoc_gpiod, val, val != 0,
+If you make substantial changes whilst integrating this feel
+free to add a Co-developed-by tag.
 
-' != 0' is not needed, but perhaps okay in this case to explicitly hint that
-this is used as boolean conditional.
+Thanks,
 
-> +							 AK8975_CONVERSION_DONE_POLL_TIME * 1000,
-> +							 AK8975_MAX_CONVERSION_TIMEOUT * 1000);
+Jonathan
 
-Somebody broke the indentation...
 
-> +
 
-...and added unneeded blank line.
-
-Also, use multipliers from time.h, id est USEC_PER_MSEC.
-
-> +	if (ret) {
->  		dev_err(&client->dev, "Conversion timeout happened\n");
->  		return -EINVAL;
->  	}
-
-...
-
->  static int wait_conversion_complete_polled(struct ak8975_data *data)
-
-Same comments as per above.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> 
+> Thanks,
+> Sheng Kun
 
