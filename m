@@ -1,212 +1,220 @@
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+Received: from mail-dl1-f49.google.com (mail-dl1-f49.google.com [74.125.82.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1165D1E5724
-	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 21:00:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5029235A925
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 21:25:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776718836; cv=none; b=GhNsJZldEqyY8A+ymDo76GfnzJQLayMg0YDpKImuSrDUKMUCo3qxW14wB0LvSHfxkwnX2wx6K/u+J6+DslGsfuB5b8dgsRQKrJQKKEYSc9x26Er9HQG7fXO4HFpjx8FEX1Yg8ALan7xv4oQEHFq8Avd6vghu0zu7C1YnIS84+Zo=
+	t=1776720318; cv=none; b=kM/gEtN/5Nhhj36ASELcUr2/xMpLtuRH8WhAUuweS2QFYY7OgZGXopmQtnCBMag2OQtV5AtMB5TTrX4hyvI77xpVIrJ53y/PvfAkpqB/4NaEyyFHuPLCwPLipSomLR4jjJWWfNnA18F+ZOf9rUTYbLXzcwFmNjYfp+wOc+veiR0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776718836; c=relaxed/simple;
-	bh=XKR2lk7zr4HQiraJN6Bw/X/+LzT8sCignNs0wY6dRWA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XqU3m9EMrEw7QtiOAhw5ztA8VZdLFtvvp/VWOezQdDAQl1pgdA/Jzd6eV45qHPlXZq6F2fR3TK9SnY76njqxiKL3+yHGjxY/oZgWhistbq0SvzfJPD3M4WT3NBWDeMNbli98iD2aqCzDVbEvXMhNSrtuegXauIod1BzcSdmMsuA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=O29nd82V; arc=none smtp.client-ip=209.85.160.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1776720318; c=relaxed/simple;
+	bh=k3wWhO1OkFuqlVr0NRYtiAKhJRQAkfvzr3hIyRnAXzQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=k1+EruD/OLmTr+QOEmCLsR7i1HXdVBYoxfieNmM9VO7T9RpoG7L+6a/8Qe0oEwGhjj7Zd43Bvf63MyX8t6Cu8GFOw6JLF4auOE7af/4TTM5BlyiexXiI9ShwyT5N0DtaUgam31guuXO9v+NopBStjodVuJY8tg0LBne2Tln8kOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=kX24MVY4; arc=none smtp.client-ip=74.125.82.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="O29nd82V"
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-409de4132b5so2201886fac.1
-        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 14:00:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="kX24MVY4"
+Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-12c45281a06so4637861c88.1
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 14:25:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776718833; x=1777323633; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zNz6rDdwfLQZgTV2/unumMktA67Lz634Z8Ok1nd1/uA=;
-        b=O29nd82VC9MEjsV+qivwF4Rx58t0i9bRtONkbPfhaHz/B0tovZhtIT6Tx2DvcEHrjY
-         sP95MsdGIE+xVfZFkWMzzjB9qqxXm/K8AZuYdr8qtUMsnXaTOY+3kPdyAjaZ2WvHxNaJ
-         fEBACJlRe4RZ/tmE4U8seTIlzYSm7/U1cXMuHie3lJrnc7mTKk/Lajk3zOZFPCuznSX7
-         OxQNYAt/fJyMWPv3f9r8XwUUOiLB+6zMg+YLzJpilUUuMZ7dLYEIq57HTnyFjFDb46+3
-         mxhyu8EfQJXfnrblhV/A6jMYxSTOpsHbGq/aexJuTMwlh7F2pYMrK/sisYmUfH+9xhE4
-         7Ymg==
+        d=usp.br; s=usp-google; t=1776720313; x=1777325113; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=7yOBRqIXNGraVLHUEBXwwEDYRVvousxME4ehp+RqjG0=;
+        b=kX24MVY4iW2iU20/WjWN3/ZXGFIIPQG/6PZ/4eR7GKEmEpt+toAGQYidTe5X360YQ9
+         hfetod41UJvtiPljrsk8axSysRBwtvQ6MgAyB9AZNZSInCNWWh2bVh8f6XvE1hL9xRiX
+         25yF+77dwe4qeoxGxqELV5lp8S4exiH/seKazTt6xHunylbmFZ3c2smbMt1Vys2E/Rh2
+         GfWRJ530NSCRlwQ/C7rDdqAwzRiYB5JcCVq1rkAq52sYGojf0ctc/hU6lh8bxQv47toK
+         FFx8ksf2hzCk7hIJz82M2u44FhvGf9LZVlV1JzupsErVFyQMR0OUo7cyXCe+XmdLko0Y
+         W2Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776718833; x=1777323633;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zNz6rDdwfLQZgTV2/unumMktA67Lz634Z8Ok1nd1/uA=;
-        b=rprHvEut49kfVoSZna4uOMACnN8jfx5AB75IeLDY6OGi6rsOTluhBz39paN2aY2jvJ
-         N37I8vL8m6GyE0NROs1jDNaw2IaVnad44u18cjyojeVStvOGlOBwa3fgHfHdkBsNRDkt
-         ff/7wiWw1SRBfTawFK2sm7ZyjcE7i3/VIGfRX7qNp0OjW6R838iLUqj2Wk9cfoDjnvag
-         aKtlaY0zLCHiNSYsFhv0Lset+NTfTOjj2zvK7zz7wr1HzpwBRTxi0Zu1+S9d5J3/Hb6d
-         giD//5nSSIfumFsySMG47y0nJ4G5BaoFGFw7l6gHI4y7wGjDYMVJTpQcemaa60aaba0R
-         sw9w==
-X-Forwarded-Encrypted: i=1; AFNElJ/2y26dnGFMFMglwhxfD4VFTshvSbsStP+P/wzK25JmwaWe0xkqIgo1wl5+g2zs+1wrzGzCaWeQJec=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzmKIWJIAweUHqImM8iqEt53s8ZvnjxYCvgOx0ZA1h1Bkb9mTZI
-	CQbOsWxTTltlLvBBmYgyharISitiZl7y/mh5wSkdz6YwmziALr/PuDIXvhkZMv3H5zA=
-X-Gm-Gg: AeBDietqYqwayscpzH6X3EzyvIfpFGLH7l8Pa0ngtiqDEKw44QQPPo/3pdPWwtGkd0Y
-	eaUOqhxt4bn92d6hRRHml6gTZsR0f7WcRK+N44ycwwiuyuvm3ftldp80hROAAVDU8xiDGzzUpFJ
-	W1GFEZYnByAPL+5ARUpLW/ORI4eZutbHzraIdnaXWkSmLR+CCkEhJLKw6Bvz02tU2FU79IvE4Fr
-	rIe1ayo802BJNe4bnLliEFC1aPGZM81imjtYbD4PM4Hb3ckz3xbKWNtZmJEUwCH0Ky9KwZMVDF9
-	FT+6i3i4x0L8+Dz4QLfg/sR9bl2mEfk0wGp2SpAjG0J1B7377ASzVO1ncV4zGJ00sJuuW1Rzd9D
-	DrwV883aHRR1dPX9lObSOPDxZGxZefYqJlaHtpQ0E+YJ5qKvfWioVMFQEjOjhzCc8/uioyexBUw
-	PosVsB4kSkc4K+BcHvQC9nVvEjYWeHk/o4bfeOE1e3vWqSZFMQJ9//4Qu8+D2+SLXeELmPk00fz
-	CE0ZocdfVst
-X-Received: by 2002:a05:6870:7a16:b0:417:304f:5011 with SMTP id 586e51a60fabf-42abf307da6mr8395753fac.17.1776718832856;
-        Mon, 20 Apr 2026 14:00:32 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:49fb:b337:a968:94e7? ([2600:8803:e7e4:500:49fb:b337:a968:94e7])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-42b9ac6f2a3sm10410463fac.16.2026.04.20.14.00.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2026 14:00:32 -0700 (PDT)
-Message-ID: <26330121-79bd-4273-b8e4-17efa19454eb@baylibre.com>
-Date: Mon, 20 Apr 2026 16:00:31 -0500
+        d=1e100.net; s=20251104; t=1776720313; x=1777325113;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7yOBRqIXNGraVLHUEBXwwEDYRVvousxME4ehp+RqjG0=;
+        b=XrRtiKKV/wlqUNMLUi/ISu0rByBNazxHivowXM1WYF6/VKBE/fhVsE/SJYH3BO+kT3
+         /rNMOUPowbkeV+czU2xm/GzW2MRquGjXbj4cmEkGapRtGQPad5rGHbCQDhmqR1EsUQm1
+         NlXDzvxukorxOg7zBp8tviNAE9u2QfZxu7BeGsVVlNZA8I68d4hAx6QYnFK5PoIYURl+
+         ettepPa6dJ+k5Vo+8jJEHrT8lXg/ckCXIpuonpzDPS7S11zxOFsb0B79KILxiJKK97ov
+         JH6xvJBSZ8fUnt7sZ41IzCgpzgVzEowYFEaKVmGrQOg5FCth+PnaYRCCFGw3VspjHk5w
+         ALVQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8JeqDMK4S/HMNVK+//RoGvZp1WK8FamfgBBv3OZ5UEASSY1BT2/7m6q/EKHQn4D/djyv0/tswQZ4M=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy4Z34niFgFculMXDnnejeTzGo2r+svooxtkNcAMZtBQeamcr/q
+	GgiJVq645w33X1+xqfRIqlSXmNxGMBGx62/a1u7MUjvfHTRmzXH+9V5wW0kM6JboIis=
+X-Gm-Gg: AeBDievc5p5qlp4l8fd8EkQFu6QlQq2KS0xH795NbEa9Hk1oQxpJ8W0McI9lDOQZ1SG
+	kRHDEC9Wz2qkD2wt5FpCGzKn5QHgtmh2Iuet+Wfuw6pt4NAR9bHQNe3+OyfFykYaKGJFJAc5kuk
+	0HcoKA+pNJLF2hcv5cfAjpD5F+njVvANlH0x3oOlNB3PG52f5DOu4LZBRSCPNbTTA2eROJ5Ui19
+	ERr86KfmBUaDS5IedpVJPedyNbgNmSuSQWntah1lBaInyeNd4MzO9YV7bYWUp46BCQlgMx/WmFh
+	LjI5ckV96K7uu3c7+7z+DF2QMMC9suO6BuaEcoZQOeI+T3M5Gdlyr2e4X/69Drve8Qjb0oPl/nz
+	vsm6cr4yLBJbGxd1KoXjYJP0G3HtkMkMSRgLJ9WieHlO2zdyLbZuStir6c5zr+6f7dEfX9KY2DV
+	NPEPxl5lR81l5pW9lysc/5ShZKqqC3icDKYGgOQT9AR6IMKLmx4H0TVZHdPf89QMHp6ZRY4A==
+X-Received: by 2002:a05:7022:6728:b0:128:cf5c:535a with SMTP id a92af1059eb24-12c73f7595emr8841885c88.11.1776720313150;
+        Mon, 20 Apr 2026 14:25:13 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14c:190:8d7a:86f3:7ac8:d737:1a02])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c749d29cdsm16890469c88.6.2026.04.20.14.25.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2026 14:25:12 -0700 (PDT)
+From: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: Gustavo Pagnotta Faria <gustavo.pangotta@ime.usp.br>,
+	Eduardo Augusto <eduardoaugustoabc@ime.usp.br>,
+	Christian Barry <christian.barry@ime.usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: adc: mcp320x: refactor driver to use bitfield API
+Date: Mon, 20 Apr 2026 18:23:47 -0300
+Message-ID: <20260420212405.11789-1-gustavo.pagnotta@ime.usp.br>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: light: veml6030: Generalize hw_init for veml6030 and
- veml6035
-To: Gabriel Braga Lagrotaria <gabrielblo@ime.usp.br>,
- javier.carrasco.cruz@gmail.com, jic23@kernel.org, nuno.sa@analog.com,
- andy@kernel.org
-Cc: Ricardo H H Kojo <ricardo.kojo@ime.usp.br>,
- Ellian Carlos <elliancarlos@gmail.com>, linux-iio@vger.kernel.org
-References: <20260420201441.18055-1-gabrielblo@ime.usp.br>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260420201441.18055-1-gabrielblo@ime.usp.br>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 4/20/26 3:14 PM, Gabriel Braga Lagrotaria wrote:
-> Add a new veml603x_hw_init() function to deduplicate the setup logic
-> for veml6030_hw_init() and veml6035_hw_init().
-> 
-> Additionally, introduce struct veml603x_hw_init_config to store and
-> pass the custom configuration values specific to each device variation.
-> 
-> Signed-off-by: Gabriel Braga Lagrotaria <gabrielblo@ime.usp.br>
-> Co-developed-by: Ricardo H H Kojo <ricardo.kojo@ime.usp.br>
-> Signed-off-by: Ricardo H H Kojo <ricardo.kojo@ime.usp.br>
-> Co-developed-by: Ellian Carlos <elliancarlos@gmail.com>
-> Signed-off-by: Ellian Carlos <elliancarlos@gmail.com>
-> ---
->  drivers/iio/light/veml6030.c | 98 +++++++++++++++---------------------
->  1 file changed, 41 insertions(+), 57 deletions(-)
-> 
-> diff --git a/drivers/iio/light/veml6030.c b/drivers/iio/light/veml6030.c
-> index 6bcacae38..84a551683 100644
-> --- a/drivers/iio/light/veml6030.c
-> +++ b/drivers/iio/light/veml6030.c
-> @@ -963,19 +963,38 @@ static int veml6030_regfield_init(struct iio_dev *indio_dev)
->  	return 0;
->  }
->  
-> -/*
-> - * Set ALS gain to 1/8, integration time to 100 ms, PSM to mode 2,
-> - * persistence to 1 x integration time and the threshold
-> - * interrupt disabled by default. First shutdown the sensor,
-> - * update registers and then power on the sensor.
-> - */
-> -static int veml6030_hw_init(struct iio_dev *indio_dev, struct device *dev)
-> +struct veml603x_hw_init_config {
+From: Gustavo Pagnotta Faria <gustavo.pangotta@ime.usp.br>
 
-Generally we try to avoid "x" wildcard in names as it is not particularly
-future-proof. We can just use veml6030 since that is the driver name.
+Update the mcp320x driver to use the standard Linux bitfield
+API (<linux/bitfield.h>) instead of manual bitwise shifts and masks.
 
-> +	const struct iio_gain_sel_pair *gain_sel;
-> +	int gain_sel_size;
-> +	int gain_max_scale_int;
-> +	int gain_max_scale_nano;
-> +	unsigned int reg_als_conf_value;
-> +};
+This replaces the hardcoded shift operations in the TX data
+preparation (mcp320x_channel_to_tx_data) with FIELD_PREP()
+and replaces the manual masking in the RX data extraction
+(mcp320x_adc_conversion) with FIELD_GET(). Explicit masks
+using GENMASK() and BIT() were also introduced for both transmit
+configurations and receive extractions.
 
-Would it make sense to add this to the chip info instead of creating
-new tables?
+Signed-off-by: Gustavo Pagnotta Faria <gustavo.pangotta@ime.usp.br>
+Co-developed-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
+Signed-off-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
+Co-developed-by: Christian Barry <christian.barry@ime.usp.br>
+Signed-off-by: Christian Barry <christian.barry@ime.usp.br>
+---
+ drivers/iio/adc/mcp320x.c | 58 +++++++++++++++++++++++++++------------
+ 1 file changed, 41 insertions(+), 17 deletions(-)
 
-> +
-> +static const struct veml603x_hw_init_config veml6030_hw_init_config = {
-> +	.gain_sel = veml6030_gain_sel,
-> +	.gain_sel_size = ARRAY_SIZE(veml6030_gain_sel),
-> +	.gain_max_scale_int = 2,
-> +	.gain_max_scale_nano = 150400000,
-> +	.reg_als_conf_value = 0x1001,
-> +};
-> +
-> +static const struct veml603x_hw_init_config veml6035_hw_init_config = {
-> +	.gain_sel = veml6035_gain_sel,
-> +	.gain_sel_size = ARRAY_SIZE(veml6035_gain_sel),
-> +	.gain_max_scale_int = 0,
-> +	.gain_max_scale_nano = 409600000,
-> +	.reg_als_conf_value = VEML6035_SENS | VEML6035_CHAN_EN | VEML6030_ALS_SD,
-> +};
-> +
-
-Or if we want to keep these to avoid duplication...
-
-> +static int veml603x_hw_init(struct iio_dev *indio_dev, struct device *dev,
-> +			    const struct veml603x_hw_init_config *cfg)
->  {
->  	int ret, val;
->  	struct veml6030_data *data = iio_priv(indio_dev);
->  
-> -	ret = devm_iio_init_iio_gts(dev, 2, 150400000,
-> -				    veml6030_gain_sel, ARRAY_SIZE(veml6030_gain_sel),
-> +	ret = devm_iio_init_iio_gts(dev, cfg->gain_max_scale_int, cfg->gain_max_scale_nano,
-> +				    cfg->gain_sel, cfg->gain_sel_size,
->  				    veml6030_it_sel, ARRAY_SIZE(veml6030_it_sel),
->  				    &data->gts);
->  	if (ret)
-> @@ -985,7 +1004,7 @@ static int veml6030_hw_init(struct iio_dev *indio_dev, struct device *dev)
->  	if (ret)
->  		return dev_err_probe(dev, ret, "can't shutdown als\n");
->  
-> -	ret = regmap_write(data->regmap, VEML6030_REG_ALS_CONF, 0x1001);
-> +	ret = regmap_write(data->regmap, VEML6030_REG_ALS_CONF, cfg->reg_als_conf_value);
->  	if (ret)
->  		return dev_err_probe(dev, ret, "can't setup als configs\n");
->  
-> @@ -1019,6 +1038,17 @@ static int veml6030_hw_init(struct iio_dev *indio_dev, struct device *dev)
->  	return ret;
->  }
->  
-> +/*
-> + * Set ALS gain to 1/8, integration time to 100 ms, PSM to mode 2,
-> + * persistence to 1 x integration time and the threshold
-> + * interrupt disabled by default. First shutdown the sensor,
-> + * update registers and then power on the sensor.
-> + */
-> +static int veml6030_hw_init(struct iio_dev *indio_dev, struct device *dev)
-> +{
-> +	return veml603x_hw_init(indio_dev, dev, &veml6030_hw_init_config);
-> +}
-> +
-
-... then drop these wrapper functions and just put the pointer to the
-hw_init_config in the chip info.
-
->  /*
->   * Set ALS gain to 1/8, integration time to 100 ms, ALS and WHITE
->   * channel enabled, ALS channel interrupt, PSM enabled,
-
-I think this comment and the one a bit above would mame more sense now
-on the hw_init_config structs since that is where the actual parameters
-are defined.
-
-> @@ -1028,53 +1058,7 @@ static int veml6030_hw_init(struct iio_dev *indio_dev, struct device *dev)
->   */
->  static int veml6035_hw_init(struct iio_dev *indio_dev, struct device *dev)
->  {
-
-...
-
-> +	return veml603x_hw_init(indio_dev, dev, &veml6035_hw_init_config);
->  }
->  
->  static int veml6030_probe(struct i2c_client *client)
+diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+index 57cff3772ebe..b7523e5ea903 100644
+--- a/drivers/iio/adc/mcp320x.c
++++ b/drivers/iio/adc/mcp320x.c
+@@ -44,6 +44,29 @@
+ #include <linux/mod_devicetable.h>
+ #include <linux/iio/iio.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++
++/* MCP3x02/04/08 Tx Data configuration */
++#define MCP3X02_START_BIT	BIT(4)
++#define MCP3X02_SGL_DIFF	BIT(3)
++#define MCP3X02_CH_MASK		BIT(2)
++
++#define MCP3X04_08_START_BIT	BIT(6)
++#define MCP3X04_08_SGL_DIFF	BIT(5)
++#define MCP3X04_08_CH_MASK	GENMASK(4, 2)
++
++/* MCP Rx Data extraction masks */
++#define MCP3001_DATA_MASK	GENMASK(12, 3)
++#define MCP300X_DATA_MASK	GENMASK(15, 6)
++#define MCP3201_DATA_MASK	GENMASK(12, 1)
++#define MCP320X_DATA_MASK	GENMASK(15, 4)
++#define MCP3301_DATA_MASK	GENMASK(12, 0)
++
++/* MCP355X Data and Status bits */
++#define MCP355X_DATA_MASK	GENMASK(31, 8)
++#define MCP355X_SGN		BIT(23)
++#define MCP355X_OVR		BIT(22)
+ 
+ enum {
+ 	mcp3001,
+@@ -99,19 +122,19 @@ struct mcp320x {
+ static int mcp320x_channel_to_tx_data(int device_index,
+ 			const unsigned int channel, bool differential)
+ {
+-	int start_bit = 1;
+-
+ 	switch (device_index) {
+ 	case mcp3002:
+ 	case mcp3202:
+-		return ((start_bit << 4) | (!differential << 3) |
+-							(channel << 2));
++		return FIELD_PREP(MCP3X02_START_BIT, 1) |
++		       FIELD_PREP(MCP3X02_SGL_DIFF, !differential) |
++		       FIELD_PREP(MCP3X02_CH_MASK, channel);
+ 	case mcp3004:
+ 	case mcp3204:
+ 	case mcp3008:
+ 	case mcp3208:
+-		return ((start_bit << 6) | (!differential << 5) |
+-							(channel << 2));
++		return FIELD_PREP(MCP3X04_08_START_BIT, 1) |
++		       FIELD_PREP(MCP3X04_08_SGL_DIFF, !differential) |
++		       FIELD_PREP(MCP3X04_08_CH_MASK, channel);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -140,26 +163,27 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+ 	if (ret < 0)
+ 		return ret;
+ 
++	u16 raw16 = be16_to_cpup((__be16 *)adc->rx_buf);
++
+ 	switch (device_index) {
+ 	case mcp3001:
+-		*val = (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
++		*val = FIELD_GET(MCP3001_DATA_MASK, raw16);
+ 		return 0;
+ 	case mcp3002:
+ 	case mcp3004:
+ 	case mcp3008:
+-		*val = (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
++		*val = FIELD_GET(MCP300X_DATA_MASK, raw16);
+ 		return 0;
+ 	case mcp3201:
+-		*val = (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
++		*val = FIELD_GET(MCP3201_DATA_MASK, raw16);
+ 		return 0;
+ 	case mcp3202:
+ 	case mcp3204:
+ 	case mcp3208:
+-		*val = (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
++		*val = FIELD_GET(MCP320X_DATA_MASK, raw16);
+ 		return 0;
+ 	case mcp3301:
+-		*val = sign_extend32((adc->rx_buf[0] & 0x1f) << 8
+-				    | adc->rx_buf[1], 12);
++		*val = sign_extend32(FIELD_GET(MCP3301_DATA_MASK, raw16), 12);
+ 		return 0;
+ 	case mcp3550_50:
+ 	case mcp3550_60:
+@@ -170,17 +194,17 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+ 		if (!(adc->spi->mode & SPI_CPOL))
+ 			raw <<= 1; /* strip Data Ready bit in SPI mode 0,0 */
+ 
++		raw = FIELD_GET(MCP355X_DATA_MASK, raw);
+ 		/*
+ 		 * If the input is within -vref and vref, bit 21 is the sign.
+ 		 * Up to 12% overrange or underrange are allowed, in which case
+ 		 * bit 23 is the sign and bit 0 to 21 is the value.
+ 		 */
+-		raw >>= 8;
+-		if (raw & BIT(22) && raw & BIT(23))
++		if ((raw & MCP355X_OVR) && (raw & MCP355X_SGN))
+ 			return -EIO; /* cannot have overrange AND underrange */
+-		else if (raw & BIT(22))
+-			raw &= ~BIT(22); /* overrange */
+-		else if (raw & BIT(23) || raw & BIT(21))
++		else if (raw & MCP355X_OVR)
++			raw &= MCP355X_OVR; /* overrange */
++		else if ((raw & MCP355X_SGN) || (raw & BIT(21)))
+ 			raw |= GENMASK(31, 22); /* underrange or negative */
+ 
+ 		*val = (s32)raw;
+-- 
+2.43.0
 
