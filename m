@@ -1,166 +1,112 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D22D081AA8;
-	Mon, 20 Apr 2026 12:28:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFE4239EF39;
+	Mon, 20 Apr 2026 12:30:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776688125; cv=none; b=nLxs/jdA4tiu6R0Yi6ivYn/wH368McGIWh5OBc8tw7JuLvDW1N+Tj4zYfbBi9TLw9DZ6AwrJRsfRZLGZ+4Pc1+/q/NGfn6BtG2EuXIwbr91PkuaA1i3dHZUl8z/P5jISpvAYdMIbjWvJvTRDRBKHTcwfM/vchpzjmS4Su8UvqWI=
+	t=1776688203; cv=none; b=ur5E2r7Pwaw9u1fpqSunEIBRq+0ZWCgp4ayskj4jVwXE8ioWoXXoZ/09H3SK8NmcYGSmgQmSM4zCGmmIEAllWJq92qv59z3sOebKiCo2IwMrz3rvBQMS2on3gjL5eUd3eaXCL7Zkna8vil8bO1h+sTEOpJaBRiwW12twVc5XpXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776688125; c=relaxed/simple;
-	bh=PWbi3uYEMLYl5AB0E9ZA8pTD7EAbj4oPfcLDQJ5dlTE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GBIbDJCFOtuAHWy7xU4w3RiVWUEyQ2BbitUGf6atWKncScQv1EsGWtNyGb3ir1MzKaArUaiYA94uEOiums5Bg5ZpJ4vcKvwotruitRzPhim7FXUJjqa8j8gxzaTRw/F4Ip/GxcqZBLQYXFtZDAktaJ0rKLVIKUqFGxjWyWCTJr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b03Nikmd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776688203; c=relaxed/simple;
+	bh=u5RHybGS7aakJPQukyaQiEACQxJsxT3epyS+cMhenZQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SdIzmvBh9Ax9As5Uya4ieErEE1rdW6WhbXd1Ol4NXpHxObq4OWAaeIr6lbROWs3hIVU5s4dHCgkSuGmc+dzsWlsMHQcIJ7sNnW8nNA9u0m9XlV7tSd8DTC5ieiwHcgJNP5Qu64bP3jdnw5DlgjLdqt2JzKVSatqUIgav7kiUP7I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g3i9GLOy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b03Nikmd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFA23C2BCB4;
-	Mon, 20 Apr 2026 12:28:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g3i9GLOy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C38DC19425;
+	Mon, 20 Apr 2026 12:30:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776688125;
-	bh=PWbi3uYEMLYl5AB0E9ZA8pTD7EAbj4oPfcLDQJ5dlTE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=b03NikmdD9k3sKoZWaBDQQ583FdvvV7wLwVmW259D07WRaPT9GkHTVqeh4t9cA9K7
-	 n62DM7AW/HMU2PBzjaE4ds/khF2bwr9zuxVPmyeSPOvqvre41Lo5dD5vQtgffBlYD2
-	 1skE86YqGO5RLoOa6pjLk+dPixvXgiVWbrCXnyGRREXEjW3kxr5umi/zzPR24oqjlS
-	 PWWpA+YFDD94YYjbWbQw/58AJut6Er0d0T9By/LeM2Efo5+ejHXO41TZRhT4zr43vu
-	 Dsylx0uX5mlAvXepUawKNh4U+8KizNECwWkpn62y5Rj7zeyGyir0n42C248YSMNoGo
-	 aNvitnb6wk9lA==
-Date: Mon, 20 Apr 2026 13:28:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Carlier <devnexen@gmail.com>
-Cc: tmaimon77@gmail.com, avifishman70@gmail.com, tali.perry1@gmail.com,
- andrew@codeconstruct.com.au, venture@google.com, yuenn@google.com,
- benjaminfair@google.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, andriy.shevchenko@intel.com, openbmc@lists.ozlabs.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: adc: npcm: fix unbalanced
- clk_disable_unprepare()
-Message-ID: <20260420132838.147d18b6@jic23-huawei>
-In-Reply-To: <20260414123006.262152-1-devnexen@gmail.com>
-References: <20260414123006.262152-1-devnexen@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20201202; t=1776688203;
+	bh=u5RHybGS7aakJPQukyaQiEACQxJsxT3epyS+cMhenZQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=g3i9GLOyfXSRVaL2wFmejnGKhAexRM08gORnHbNH5t6zQN4LqG08vcrxmVZSObVD6
+	 Dqjyakllx+foW6+KoUIOjsUpLd+x1F+zc6atZoDono0mkfC+nZ7zCF0fcyGGmfyjEg
+	 uILxvy1hViuNN6Y82+V1t7ZyBMc1r/OOZZMSwmnCloz+9w/9bk4VMRTQ265su/lqwY
+	 TR+EL0ENEXxxX/NnLJth4sTqt+u2joBhUHKBs57ui/hCyV3Oihp4Rip6aOh3OtukNM
+	 +PuHnOH9W5LYNn5PIeWqKLPUxPoN+swCJw+Pc1OoSvu8y6v/wQnObDatkg5kmBSChf
+	 i72hiFLRcVP4A==
+Message-ID: <62892ab6-3692-4169-9469-4e7f87fe7235@kernel.org>
+Date: Mon, 20 Apr 2026 14:29:58 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: iio: dac: mcp47feb02: Fix I2C address in
+ example
+To: Ariana Lazar <ariana.lazar@microchip.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: Conor Dooley <conor.dooley@microchip.com>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260420-mcp47feb02-fix6-v1-1-ae1808fea11d@microchip.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260420-mcp47feb02-fix6-v1-1-ae1808fea11d@microchip.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Tue, 14 Apr 2026 13:30:06 +0100
-David Carlier <devnexen@gmail.com> wrote:
+On 20/04/2026 12:36, Ariana Lazar wrote:
+> Change example reg value from 0 to 0x60 in order to use a valid I2C address
+> 
+> Fixes: 4ba12d304175 ("dt-bindings: iio: dac: adding support for Microchip MCP47FEB02")
 
-> The driver acquired the ADC clock with devm_clk_get() and read its
-> rate, but never called clk_prepare_enable(). The probe error path and
-> npcm_adc_remove() both called clk_disable_unprepare() unconditionally,
-> causing the clk framework's enable/prepare counts to underflow on
-> probe failure or module unbind.
-> 
-> The issue went unnoticed because NPCM BMC firmware leaves the ADC
-> clock enabled at boot, so the driver happened to work in practice.
-> 
-> Switch to devm_clk_get_enabled() so the clock is properly enabled
-> during probe and automatically released by the device-managed
-> cleanup, and drop the now-redundant clk_disable_unprepare() from
-> both the probe error path and remove().
-> 
-> While at it, drop the duplicate error message on devm_request_irq()
-> failure since the IRQ core already logs it.
-> 
-> Fixes: 9bf85fbc9d8f ("iio: adc: add NPCM ADC driver")
-> Signed-off-by: David Carlier <devnexen@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Applied to the fixes-togreg branch of iio.git. Note I'll rebase that on rc1
-once available, before sending a pull request.
+No bug here, that's just example DTS, so drop the fixes. Otherwise
+please explain the bug in commit msg.
 
-Thanks,
+> Link: https://lore.kernel.org/all/dd0dbadb-604b-4f12-8674-268b7db096fd@baylibre.com/
 
-Jonathan
+So you got this report 2 weeks ago and what happened exactly? What are
+you fixing here?
 
-> ---
-> v3: mention the dev_err drop in the commit log and collapse the
->     single-statement -ENODEV branch (Andy Shevchenko).
-> v2: drop redundant dev_err() on devm_request_irq() failure since the
->     IRQ core already logs it, and remove the now-single-statement
->     braces (Andy Shevchenko).
-> 
->  drivers/iio/adc/npcm_adc.c | 25 ++++++++-----------------
->  1 file changed, 8 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
-> index ddabb9600d46..61c8b825bda1 100644
-> --- a/drivers/iio/adc/npcm_adc.c
-> +++ b/drivers/iio/adc/npcm_adc.c
-> @@ -231,7 +231,7 @@ static int npcm_adc_probe(struct platform_device *pdev)
->  	if (IS_ERR(info->reset))
->  		return PTR_ERR(info->reset);
->  
-> -	info->adc_clk = devm_clk_get(&pdev->dev, NULL);
-> +	info->adc_clk = devm_clk_get_enabled(&pdev->dev, NULL);
->  	if (IS_ERR(info->adc_clk)) {
->  		dev_warn(&pdev->dev, "ADC clock failed: can't read clk\n");
->  		return PTR_ERR(info->adc_clk);
-> @@ -244,17 +244,13 @@ static int npcm_adc_probe(struct platform_device *pdev)
->  	info->adc_sample_hz = clk_get_rate(info->adc_clk) / ((div + 1) * 2);
->  
->  	irq = platform_get_irq(pdev, 0);
-> -	if (irq < 0) {
-> -		ret = irq;
-> -		goto err_disable_clk;
-> -	}
-> +	if (irq < 0)
-> +		return irq;
->  
->  	ret = devm_request_irq(&pdev->dev, irq, npcm_adc_isr, 0,
->  			       "NPCM_ADC", indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(dev, "failed requesting interrupt\n");
-> -		goto err_disable_clk;
-> -	}
-> +	if (ret < 0)
-> +		return ret;
->  
->  	reg_con = ioread32(info->regs + NPCM_ADCCON);
->  	info->vref = devm_regulator_get_optional(&pdev->dev, "vref");
-> @@ -262,7 +258,7 @@ static int npcm_adc_probe(struct platform_device *pdev)
->  		ret = regulator_enable(info->vref);
->  		if (ret) {
->  			dev_err(&pdev->dev, "Can't enable ADC reference voltage\n");
-> -			goto err_disable_clk;
-> +			return ret;
->  		}
->  
->  		iowrite32(reg_con & ~NPCM_ADCCON_REFSEL,
-> @@ -272,10 +268,8 @@ static int npcm_adc_probe(struct platform_device *pdev)
->  		 * Any error which is not ENODEV indicates the regulator
->  		 * has been specified and so is a failure case.
->  		 */
-> -		if (PTR_ERR(info->vref) != -ENODEV) {
-> -			ret = PTR_ERR(info->vref);
-> -			goto err_disable_clk;
-> -		}
-> +		if (PTR_ERR(info->vref) != -ENODEV)
-> +			return PTR_ERR(info->vref);
->  
->  		/* Use internal reference */
->  		iowrite32(reg_con | NPCM_ADCCON_REFSEL,
-> @@ -314,8 +308,6 @@ static int npcm_adc_probe(struct platform_device *pdev)
->  	iowrite32(reg_con & ~NPCM_ADCCON_ADC_EN, info->regs + NPCM_ADCCON);
->  	if (!IS_ERR(info->vref))
->  		regulator_disable(info->vref);
-> -err_disable_clk:
-> -	clk_disable_unprepare(info->adc_clk);
->  
->  	return ret;
->  }
-> @@ -332,7 +324,6 @@ static void npcm_adc_remove(struct platform_device *pdev)
->  	iowrite32(regtemp & ~NPCM_ADCCON_ADC_EN, info->regs + NPCM_ADCCON);
->  	if (!IS_ERR(info->vref))
->  		regulator_disable(info->vref);
-> -	clk_disable_unprepare(info->adc_clk);
->  }
->  
->  static struct platform_driver npcm_adc_driver = {
-
+Best regards,
+Krzysztof
