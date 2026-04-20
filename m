@@ -1,92 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 386D040DFBF;
-	Mon, 20 Apr 2026 07:26:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71897298CA5;
+	Mon, 20 Apr 2026 07:36:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776670010; cv=none; b=smuMbhpCb8FRzSVXR7uFW7XhH3/vOvRGR1nKR91GCQaS3vl9cB0v5GISyEUrQLkAiQ7sAkP3l9D4QcQ15qwdTH+f4aif8CLwQOhqybsDiEo5JEhKLA3cbJEf2hnhfOgMsMoNT/rv0abAV1d3ESFJyhIxcAtRjqKYYGdvw/UHZTo=
+	t=1776670609; cv=none; b=YDvWfNemIvsUyV0rH98H/vP/SdMLvRWwM7iirlJvN2meQdeKioahSoxdZrwyKfzpqMUaCcMj5G7mOJ7UP91w5PcvSkbkpSpngzIjn4wJ7vpoabFA1fegFH3iKtMlyhqgrxSylkBfasnHQA0RcZhyoqiPllGf+Eyw2mHQqEm5AlA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776670010; c=relaxed/simple;
-	bh=BHLoB5la0oSO7Y//mKsL18bavdN5WFq98N2xw7QaRCE=;
+	s=arc-20240116; t=1776670609; c=relaxed/simple;
+	bh=8whNwNLICqb+0Yx7LD1vb3V7QW1bBxZ6Jc58zR1F0BI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Y0sYMP1boWuSsLhAe+kemZQI4SBGD7Baf+v4mQtReu5zO1gB4dXlBW7coMFKGGA9YMmw4g3+pfujnYOM3s6BBgdzkZ23de1xratZcKvwGgq8m8+mCo1De7yKomLIx6dACLWRC99Jub/R4fz03EnOWZ6LxIG/4xmAaWkN8SwKep0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PWFN4ePx; arc=none smtp.client-ip=192.198.163.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hl6cmLqUSXpnju5WxD1F4Updeq3sr4hC3hl/iDuxf37fdrSaF2JsQBW7jH8yzk8VEz01TKusitnZ5+9xjeM6+S2+HcqXzRTcUcHp3VPap7R+K+9RrnTK73CIr9JdrOWcRr1AuvtcmoA5eMBmsPBftSQ6/E2xcM6/1JZg4p47SgY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JyG838VN; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PWFN4ePx"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JyG838VN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776670009; x=1808206009;
+  t=1776670608; x=1808206608;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BHLoB5la0oSO7Y//mKsL18bavdN5WFq98N2xw7QaRCE=;
-  b=PWFN4ePxA0Y7BnM13dRkV0feLEn/SrCTbFH9jtKmJLJmaBHUmDSIuz14
-   fM7GgdqKW+M/+EyRr4iBrTAsdZIdxNUzR08l4QWZ7ytEiupNpm+q/UANc
-   xpRTMzhLrpEQfh/KKX6tuqK7BLWaF6XBT/q8q1HeuVXIqcqqQKgZHOGCj
-   mEnZwPCAxS3pvdRDG2dHI4bCW0Gcy+njdNxzjTBvOgbSItOH3lvE62dJP
-   4TzaYo6CDim/89dIjBdesGa3/MRGw6UzdcCDEdS0CVL42qElonvx0Q62R
-   x4GclQMMSeZUBJ+8iR76Oiu5Abiq90EmGynOBtjxsrWzf2OGKUuh2PyV3
-   A==;
-X-CSE-ConnectionGUID: r7B7Fxw6RIiLnHMVWxouHA==
-X-CSE-MsgGUID: U2KFfNZsSTeF0fSBgxbG9Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77702991"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=8whNwNLICqb+0Yx7LD1vb3V7QW1bBxZ6Jc58zR1F0BI=;
+  b=JyG838VNzly/d3sq8OpSRfwlc3rLkXanzy61Z1X1P4Jj75Z/bQgfsi3m
+   d2xO0h50FH1tOxmKfIzDtjF4a0hsgXbgYsuuC3w7YRtJ7YMaePuaDx0YJ
+   uxQBRP4od1/XiPXx3GE5IJKP8RGWkiFR04bicVXsG6uidmBDIc4iyT3Jh
+   hQUPjjimOGPe0UkL4g1zSQCANm5AI6/Ig+gysG1/96I1VIWMglJK31Fh7
+   jztLcx+qK/tVmPIUFEF4rfT8zW/MMaZ/bfkKZJr9lQ4hKxdsrGP+q9oOq
+   vpKD7IvN2KY4mH+/rQ8dMg7ZYQl3ODlqtqVplC+oVwOZ9LQdrUpDiHp4z
+   w==;
+X-CSE-ConnectionGUID: 4vbydUHFQjuaT/ygFjjb8A==
+X-CSE-MsgGUID: usjrjGYLQXCBVXYIPNz/7w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77284671"
 X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="77702991"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:26:48 -0700
-X-CSE-ConnectionGUID: INwgVck0SpaYmgAFs8edCg==
-X-CSE-MsgGUID: +FSETbmNT32ThwRhOpK+kA==
+   d="scan'208";a="77284671"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:36:47 -0700
+X-CSE-ConnectionGUID: AzzR7xmGR5m7ww3S0hWYqg==
+X-CSE-MsgGUID: awcxNqqNQWuitTiBhq/dcw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="230775068"
+   d="scan'208";a="228964209"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:26:47 -0700
-Date: Mon, 20 Apr 2026 10:26:43 +0300
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:36:43 -0700
+Date: Mon, 20 Apr 2026 10:36:41 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: ak@it-klinger.de, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: proximity: srf08: replace sprintf with sysfs_emit
-Message-ID: <aeXVB0ZQKOTTWsEH@ashevche-desk.local>
-References: <20260418005203.85696-2-m32285159@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: =?iso-8859-1?Q?Nat=E1lia_Salvino_Andr=E9?= <natalia.andre@ime.usp.br>,
+	andy@kernel.org, bentiss@kernel.org, jic23@kernel.org,
+	jikos@kernel.org, nuno.sa@analog.com,
+	srinivas.pandruvada@linux.intel.com,
+	Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 1/7] iio: HID: Add helper method
+ hid_sensor_adjust_channel_bit_mask()
+Message-ID: <aeXXiWGJIvdhdBMQ@ashevche-desk.local>
+References: <20260417225959.16688-1-natalia.andre@ime.usp.br>
+ <20260417225959.16688-2-natalia.andre@ime.usp.br>
+ <1c49e011-ae23-4c6f-ad6f-f0b494c2dbbc@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20260418005203.85696-2-m32285159@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1c49e011-ae23-4c6f-ad6f-f0b494c2dbbc@baylibre.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Apr 17, 2026 at 07:52:04PM -0500, Maxwell Doose wrote:
-> This patch replaces sprintf function calls with sysfs_emit and
-
-sysfs_emit()
-
-> sysfs_emit_at. This removes unsafe functions and makes the driver more
-
-sysfs_emit_at()
-
-> stable and modern, by ensuring that boundary checks take place.
+On Sat, Apr 18, 2026 at 11:32:13AM -0500, David Lechner wrote:
+> On 4/17/26 5:58 PM, Natália Salvino André wrote:
+> > Add helper method to deduplicate code in HID sensors.
 
 ...
 
-> -	return sprintf(buf, "%d.%03d\n", data->range_mm / 1000,
-> +	return sysfs_emit(buf, "%d.%03d\n", data->range_mm / 1000,
->  						data->range_mm % 1000);
+> > +	/* Real storage bits will change based on the report desc. */
+> > +	channels[channel].scan_type.realbits = size * 8;
+> 
+> There is a BITS_PER_BYTE macro that would make sense here.
 
-While at it, we may rewrap it to follow the logical split:
+> > +	/* Maximum size of a sample to capture is u32 */
+> > +	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
+> 
+> and here.
 
-	return sysfs_emit(buf, "%d.%03d\n",
-			  data->range_mm / 1000, data->range_mm % 1000);
-
-No need to resend for this. And maybe Jonathan has better idea of this.
+FWIW, we have BYTES_TO_BITS().
 
 -- 
 With Best Regards,
