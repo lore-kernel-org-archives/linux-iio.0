@@ -1,163 +1,94 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A660231E83D;
-	Mon, 20 Apr 2026 13:54:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776693257; cv=pass; b=aL4Jnkb3oQWVvd23fcR7E5wZx31qr/5Piwnw/Rk9qYzuP2yATHEdmSvn7xuEHCz+WZ+2FvskNhsEJEP+2fyh1mV+/f/vVj9mymXVlv6DTK2Cd3L7HijcWB5FQ+U3CIxdwQ/+yC80CMF08dMZZkFoHrAExkEU/223DEEBafr1rik=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776693257; c=relaxed/simple;
-	bh=7nxH65M+nVV6F8JGySK3S8PzTWwDQbriCEZGH0kEsio=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BLtrjzkvpxOyl1MHDqKg/u4jhIdyppo8Sssdyjg+ecMq1TIZOhaejiQbneQvEvQrd2zKHFWsEJyQXXm6LTX/HvS5tZKgAGJSQMviqllYV+cHQa/bjEYlNmDBdLuw5jv5T8L566MyNTV8uUJ42Xd8nH4b4Ykok0/PEPa/puyyPSU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=diKJZQKQ; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D089033436A
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 13:54:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776693285; cv=none; b=tm5wlPbyjZqmbTCFLya9rPaQpk+UCgnP0WA39+i35B4FI5AnKjOqszNytHiwWaLisKr1yo3D6PRn3Yyps93ZTrP4DTlqRv30nVx7P8tqO9tCGdiA6/Ia4KIjhkmyhBy0naRvRX5B8Adj6oR9uIwGdRmkD3Pkb6LUSb3oaHkWvMc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776693285; c=relaxed/simple;
+	bh=X/sCA35vFOvvORX04tkckmfa9UgTGg8SVbzaASPtIpM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tz4egRr6uIB5d13C6UG137+r2DxCIip9gdelPjNL27fCV/nRC4zJaxn4TqxnYk56PAtxTIxSMpyxQxhWnjvwzDTDjLspoZXuEdGP0Qt/RRb2+J3LnD4HzPTntX74t0zKCe9hd+YDHMemmGvTvgITGQX5WbWjkD12yJa9f39wcOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sIwEmePa; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="diKJZQKQ"
-ARC-Seal: i=1; a=rsa-sha256; t=1776693232; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=ZmRGHhCbVVuntIQN7Lwlw8IHc47PIo9QgzlRXcIOHN1ifbnllB7EL07s2o/T+lVGBVlXcHXQv0vGu0swmOsfkpxB3FzHHc4vyrjEUlWibDWgRNvB2UhV56CcfIKKFLVdMaIiMAlXMG2JID2jBkOgwCshHTFgr1GqpEMTB4Un8ac=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1776693232; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=r4cDyWh6L3sYfjSwYgHFLsyc+ptcJlt/BspUsjzlPPc=; 
-	b=a5NFLqCLaZt8JyFsHCyRJC0Nvrkj1dfRcg3lsoWEmjcSAvBbrd0Afd68nf7Oklpv2jc+HA2GwVgrIgubqW1nzbj3RfwtP5KOQwFylFIpfinJQ4rhqUdiXW0q8V7SHgPjVCBMQOxOqz8sizHxCpap0LgY0MpJfqAX1gByczcDAb8=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
-	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1776693232;
-	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
-	h=From:From:Date:Date:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Message-Id:References:In-Reply-To:To:To:Cc:Cc:Reply-To;
-	bh=r4cDyWh6L3sYfjSwYgHFLsyc+ptcJlt/BspUsjzlPPc=;
-	b=diKJZQKQ2PpHUhWXUMICWt4DiEYfNOX1onWvh6SxNmsKKVeFvouD/3vXnnmRsw3e
-	3jTszb8usASmgBb4s4ThmT1nu5QUi+b8JTlpKdLnPeMKDnwR8VW0jDONwK5qnGoydgC
-	NgxXJXuzOWAx5c8RyovPTJB6YvHfQB2Eb/KhLuOY=
-Received: by mx.zohomail.com with SMTPS id 1776693229607341.23138685458855;
-	Mon, 20 Apr 2026 06:53:49 -0700 (PDT)
-From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-Date: Mon, 20 Apr 2026 15:52:43 +0200
-Subject: [PATCH v5 6/6] arm64: dts: rockchip: Add cooling fan to ROCK 4D
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sIwEmePa"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-488a8ca4aadso42447095e9.3
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 06:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776693282; x=1777298082; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Hm2ZrQCDBXbvG0flA6wLHxmfqP2GwLTFudbVpMDZjZc=;
+        b=sIwEmePaTePYruco7kBupAk2HWLRw2306zqygsSSw6DWgp5aSf5k41F7mUeuqHyUT8
+         YniA5FFKz/hf2KVxBIUXtO2tauA7AtFZwA2g7eeCPalfEH86QZJ81oTyX1CzWUbz8p8T
+         YDYoxLpxcU/5ALFSs5BamD79q9Tu8plhGtfqJ3RMeT5FQxVrg3cCuR2FPrYqWLIAPSSk
+         4n5PsKXWaHkYYwRKFnKwk5tkF7ZGjEhUMDhGaZM/9t51XmuD9ZroQ0Ku5ue3Ixq1ka3E
+         Vv+iCGpghZ0x6Okr8Z8YpYW4AHCl3g7TTeSH4J/jSDrFEUEQMMfwfcL/SOXERx+lJGWb
+         sCHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776693282; x=1777298082;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Hm2ZrQCDBXbvG0flA6wLHxmfqP2GwLTFudbVpMDZjZc=;
+        b=EW/yMy+LIARDc7AHHV1GTIIMZ9100Qslnl1lxfcx224boINBT9ZLKefr2O1FGVOLX8
+         bN/VySVKTlCSOrbY0ppY25HvWSKZU/eCM5OF2Jdpn9vSo5IFIBr/ZRqtF4Sx4RgmQpG6
+         6DpFoCKHBsAiJ7n/QdyO5GnTtNrPS4TLK2ZU2CcP1jn58JyXgFOvz7Ma/T9gEj9lE+BT
+         2LkWqQRWrpJl4Chf5erQ1YCExtnhSRGp4LJNKBGyOxgK/GTCUQhSS9KVbFQY7Q5JhwRH
+         5k7M9XjLXylxNrs3Cpk8CYFEyeAel/58v8fg8zZYxtxHEBNWcG4tb6QPzWHz6QFfpDqO
+         oLgg==
+X-Forwarded-Encrypted: i=1; AFNElJ+6YkvW+OJGww4bHaksrJXQXyUuFINL//i9zRBZAlxJRtBG49DrqY+/SIJVJP74YKpJ8ijNxvZm1TY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywkd0qIM/ZIn1ldf5IOsXO2fBE117czuj6ZIhNgr1o3wh1oUHiK
+	r+qIFVvA/QxL+3q/9tjYjxAmuo+ARqP6zhhDpIJrA7z/g9hUjlwWrnBk
+X-Gm-Gg: AeBDietaluo5oaOzmCZg0Wf78aScWk0vtmjiYoYKYrtwed2EUS+oKMRuDksy/RH6Fbo
+	krWaIEbiTAV2SzYipGjtnxfZiz1IJPvqcYntVe/v+e1I2Q89a6KlrnGURSQ43Hc3rua1IfU7VSH
+	ydvuJw8yz7UejvxMlo/HnezbHzZxayTE0kIpDzsELm9A2ftztbjpfdNAGWDnqTNnfsdg66NsEu2
+	/5savLAEdhmnFp/KYB1cQJRY2IKsXz5xd88evtCeJ22+iBYx5ApjyLY/wPIxK7vNRH2GMzeyOTN
+	jTPcxNXCSqbEMgjRDVMr+FyZVrvXYswPa0jyFJV0TGeBzONkEmPDXlGqBlw1tZ2498UhCdE9Bwf
+	C6Av0AmoYhTOB2kA6gROYBVhmYiOJ5wtS4CQDgYr79bNyaKMdy/TikfSUGiBEWENos2ngLIMXap
+	W8OpPgJ30wZjoGccJDT+LkEbVTMP6LWA==
+X-Received: by 2002:a05:600c:4f13:b0:489:1a65:dd6e with SMTP id 5b1f17b1804b1-4891a65de3emr80115755e9.8.1776693282087;
+        Mon, 20 Apr 2026 06:54:42 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a4b329542sm49978285e9.3.2026.04.20.06.54.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2026 06:54:41 -0700 (PDT)
+Date: Mon, 20 Apr 2026 16:54:37 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	gregkh@linuxfoundation.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: adc: ad7816: replace sprintf with
+ sysfs_emit
+Message-ID: <aeYwHbngIdVRLqpQ@stanley.mountain>
+References: <20260419010537.116002-1-m32285159@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260420-rk3576-pwm-v5-6-ae7cfbbe5427@collabora.com>
-References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
-In-Reply-To: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
-To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
- Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>, 
- Damon Ding <damon.ding@rock-chips.com>
-Cc: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>, 
- kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>, 
- Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org, 
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- linux-iio@vger.kernel.org
-X-Mailer: b4 0.15.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260419010537.116002-1-m32285159@gmail.com>
 
-The ROCK 4D has a header to connect a small cooling fan. This fan is
-driven by one of the SoC's PWM outputs driving a transistor, that in
-turn controls the fan's power.
+On Sat, Apr 18, 2026 at 08:05:37PM -0500, Maxwell Doose wrote:
+> This patch replaces sprintf calls in ad7816.c with sysfs_emit to help
+> modernize the driver, ensure bounds checking, and to increase stability.
 
-With the introduction of PWM support, add a description of this cooling
-fan, as well as the additional trips and cooling-maps for it.
+This says that changing to sysfs_emit() will increase the stability of
+the driver, but actually that's not true.  I am fine with these sorts of
+hardening patches but I want the commit message to say that "The original
+code is fine as is" instead of implying it is unstable.
 
-Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
----
- arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts | 50 +++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+If the commit did fix a real issue, then we would need a Fixes tag.
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-index 899a84b1fbf9..2d5ede010ad0 100644
---- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-@@ -45,6 +45,14 @@ rfkill {
- 		shutdown-gpios = <&gpio2 RK_PD1 GPIO_ACTIVE_HIGH>;
- 	};
- 
-+	fan: pwm-fan {
-+		compatible = "pwm-fan";
-+		cooling-levels = <0 180 205 230 255>;
-+		fan-supply = <&vcc_5v0_sys>;
-+		pwms = <&pwm2_8ch_5 0 60000 0>;
-+		#cooling-cells = <2>;
-+	};
-+
- 	leds: leds {
- 		compatible = "gpio-leds";
- 		pinctrl-names = "default";
-@@ -711,6 +719,36 @@ rgmii_phy0: ethernet-phy@1 {
- 	};
- };
- 
-+&package_thermal {
-+	polling-delay = <100>;
-+
-+	trips {
-+		package_fan0: package-fan0 {
-+			temperature = <50000>;
-+			hysteresis = <2000>;
-+			type = "active";
-+		};
-+
-+		package_fan1: package-fan1 {
-+			temperature = <60000>;
-+			hysteresis = <2000>;
-+			type = "active";
-+		};
-+	};
-+
-+	cooling-maps {
-+		map1 {
-+			trip = <&package_fan0>;
-+			cooling-device = <&fan THERMAL_NO_LIMIT 1>;
-+		};
-+
-+		map2 {
-+			trip = <&package_fan1>;
-+			cooling-device = <&fan 2 THERMAL_NO_LIMIT>;
-+		};
-+	};
-+};
-+
- &pcie0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pcie_reset>;
-@@ -720,6 +758,13 @@ &pcie0 {
- };
- 
- &pinctrl {
-+	fan {
-+		fan_pwm: fan-pwm {
-+			rockchip,pins =
-+				<4 RK_PC5 14 &pcfg_pull_down_drv_level_5>;
-+		};
-+	};
-+
- 	hym8563 {
- 		hym8563_int: hym8563-int {
- 			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>;
-@@ -770,6 +815,11 @@ wifi_en_h: wifi-en-h {
- 	};
- };
- 
-+&pwm2_8ch_5 {
-+	pinctrl-0 = <&fan_pwm>;
-+	status = "okay";
-+};
-+
- &sai6 {
- 	status = "okay";
- };
-
--- 
-2.53.0
+regards,
+dan carpenter
 
