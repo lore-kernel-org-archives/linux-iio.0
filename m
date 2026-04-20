@@ -1,130 +1,191 @@
-Received: from cvsmtppost02.nm.naver.com (cvsmtppost02.nm.naver.com [114.111.35.100])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB136332614
-	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 11:37:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.111.35.100
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776685055; cv=none; b=kOclWG4wguuTCbVGRZIe6D4Rsa5HRtrathJX3ayXbjEscwKwJiVsKvu7h+9UAdY/FgDnrPTESeVyr1uYl8mEKwiJl1YbWLjlD+5qYp91WAT7EpSHWMbwxWaTxlJUAFo08iK0IuzQTbsqaagJXiINMSnSP9Whl5evHtczyayc1hU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776685055; c=relaxed/simple;
-	bh=8XifmBjRXAmCF05BRVFiftLmsRfF3B+6jLWYzxxr2rU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=e7oiTTbg5SF3+gohCPHSwfxRhqA+OcRjmpQ4yCheC0uGKWnD3vzmiXjKN7oSZEizz26L3i2i2+OKZNcuWnlPLxWxa5guIR4URe0kmobPsCX+46rLWHHv/G//ASXrWHDUanR5QDSmq1K0oiohD1dNjghrlaEq/zbzHe300KOGn1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=naver.com; spf=pass smtp.mailfrom=naver.com; dkim=pass (2048-bit key) header.d=naver.com header.i=@naver.com header.b=Z4P3jw6f; arc=none smtp.client-ip=114.111.35.100
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=naver.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=naver.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51DD81E5724;
+	Mon, 20 Apr 2026 12:02:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776686563; cv=pass; b=X7RPqDugmrC/xhDLPDBZYzJRj5WF7lfQ6ay1NNfFW7Dr28tB/WRG41xN2XybU49x0bsCdzkaHNt25OkAcQ6WBqIJt91PyPXbMck2OuRle672WlNguHDLXQkH8HZi4xPVdVmugJDrwrXFx/KyHgZcqf2BZ+Us+b0N3GdOapg8s6U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776686563; c=relaxed/simple;
+	bh=RcPc1OlRKwWMBhXzycGc+rGrbxc0ZUaYQ6Zh6lfuvmc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VjjHD28xLE3+f67qIfDi8bqVitJoldRsvnpT99PYQ3LG0qr49cn2UhkIjKeXOlNN/77BOk3Fdzdeoo8l/3gq7h34MSDU+3z0c85gMUKGLL+tUQuASpudg54dMQ3QE7sLOm5TxtwPzqLjXMn2uANf1Ppz1fsuRYvW2+JjIJ0tA2Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=JznioJN5; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=naver.com header.i=@naver.com header.b="Z4P3jw6f"
-Received: from cvsendbo031.nm ([10.112.22.37])
-  by cvsmtppost02.nm.naver.com with ESMTP id NvqzIGC6QUuJmM4xH0piTQ
-  for <linux-iio@vger.kernel.org>;
-  Mon, 20 Apr 2026 11:27:24 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=naver.com; s=s20171208;
-	t=1776684444; bh=8XifmBjRXAmCF05BRVFiftLmsRfF3B+6jLWYzxxr2rU=;
-	h=From:To:Subject:Date:Message-ID:From:Subject:Feedback-ID:
-	 X-Works-Security;
-	b=Z4P3jw6f2BrkPmJHfgXRQ4YYFp8YRuJ01nnrmFNzdZju7Viob1FnGPtU1jROeJdaF
-	 G0vqlwL9snjdrVI8v6d8wf5MlJ5Ip8lMshUiLKiLkbrAhFHST4t0Gq271Gb1d0UKcW
-	 ZOUHeTVQvd30gf/Q/Ad5MkRL7ST3zDp2sN1/9ovVzR3qKpD6yXHOjCohslsSyUDdNP
-	 /tSavAQ6er4GWC1nJ/tOlXD/OYzaz6Ufi1YjeO/5uYekzi7DKkt5d+dx4jCskSY0tS
-	 aDafbDGb+SyC4LpLd3ZTjWfcdQiIhxwRhsH+A9D2iNrPsBlEwy5DXYJ7u2nBX0UtV2
-	 ZqPFPjIikYaiA==
-X-Session-ID: KRQO1LvrS-yNLCVyk89Zpg
-X-Works-Send-Opt: p/Y/jAJYjHmwKo2qKqJYFquqFNwkx0eFjAJYKg==
-X-Works-Smtp-Source: gwn9FoMXFqJZ+HmdFAgZ+6E=
-Received: from JMW-Ubuntu.. ([14.38.141.199])
-  by cvnsmtp006.nm.naver.com with ESMTP id KRQO1LvrS-yNLCVyk89Zpg
-  for <multiple recipients>
-  (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
-  Mon, 20 Apr 2026 11:27:24 -0000
-From: Minu Jin <s9430939@naver.com>
-To: lars@metafoo.de,
-	jic23@kernel.org,
-	Michael.Hennerich@analog.com,
-	gregkh@linuxfoundation.org
-Cc: andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Minu Jin <s9430939@naver.com>
-Subject: [PATCH] iio: adc: ad7816: use sysfs_emit() instead of sprintf()
-Date: Mon, 20 Apr 2026 20:27:20 +0900
-Message-ID: <20260420112720.1662703-1-s9430939@naver.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="JznioJN5"
+ARC-Seal: i=1; a=rsa-sha256; t=1776686532; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=D4wV3c/yZdK1eU7KT/phx0dwslxU6lVYK+XH3o6odSa2T2bsmVNuPGkpPokO9odCGebd1VL6x+JQmJochSSU2+ZygtUA8PJjzyUuX0A9Qrl0XWGmVojg77UaxS/3Sny5w7IefWTfwjsdGx5f10vKP7mNZOOq3/lOb08dGJ1R+HE=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1776686532; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=x5mFNmk8QCjW303+12nnTbEnOf0gTpLfX0AgHqHSXVk=; 
+	b=O4SRXC9WiJ06iz4jU46oIS5HKKrQZDbZtgXUWFYVGQe2rswu3bj3BkygH+aWXgqxyyPaddoz9B1yPHO/KFVDzIh7GqYMIRjQejUCYGzFYaYlP5w7SL1/EArLcQBvCc9zv7INEtZGigKIoJ6D0I7RXLUuoYFc0bOQaEYeUm3rmnU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
+	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1776686531;
+	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
+	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+	bh=x5mFNmk8QCjW303+12nnTbEnOf0gTpLfX0AgHqHSXVk=;
+	b=JznioJN5R98NhLocaRwmQa8qpR7kvDOKjtwdelsT7L3l+7wbXLNSQEEGVvn+u95v
+	UZwrLnpD0cFG5havrVDsKzAvRnbR7/565GTMHbXmCLQpi0wwBdn9P0HWyPwh07tJV4A
+	s58b6CDl+WyyoJFKqUp6qGkh+0pcHFfjfmEpk9Mw=
+Received: by mx.zohomail.com with SMTPS id 1776686529459133.0396587303926;
+	Mon, 20 Apr 2026 05:02:09 -0700 (PDT)
+From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+To: William Breathitt Gray <wbg@kernel.org>
+Cc: William Breathitt Gray <wbg@kernel.org>,
+ Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+ Lee Jones <lee@kernel.org>, kernel@collabora.com,
+ Jonas Karlman <jonas@kwiboo.se>, Alexey Charkov <alchark@gmail.com>,
+ linux-rockchip@lists.infradead.org, linux-pwm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 4/5] counter: Add rockchip-pwm-capture driver
+Date: Mon, 20 Apr 2026 14:02:03 +0200
+Message-ID: <oA6h2S_2RQulBS91CKXxhw@collabora.com>
+In-Reply-To: <20251206093419.40067-1-wbg@kernel.org>
+References:
+ <20251027-rk3576-pwm-v3-4-654a5cb1e3f8@collabora.com>
+ <20251206093419.40067-1-wbg@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
 
-Replace sprintf() with sysfs_emit().
-sysfs_emit() is preferred than sprintf() in show() functions.
-It has aware of the PAGE_SIZE buffer limit and ensures safe buffer handling.
+Hi,
 
-Signed-off-by: Minu Jin <s9430939@naver.com>
----
- drivers/staging/iio/adc/ad7816.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+finally got an opportunity to work on this again.
 
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 172acf135f3b..0e32a2295990 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -124,8 +124,8 @@ static ssize_t ad7816_show_mode(struct device *dev,
- 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
- 
- 	if (chip->mode)
--		return sprintf(buf, "power-save\n");
--	return sprintf(buf, "full\n");
-+		return sysfs_emit(buf, "power-save\n");
-+	return sysfs_emit(buf, "full\n");
- }
- 
- static ssize_t ad7816_store_mode(struct device *dev,
-@@ -156,7 +156,7 @@ static ssize_t ad7816_show_available_modes(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
- {
--	return sprintf(buf, "full\npower-save\n");
-+	return sysfs_emit(buf, "full\npower-save\n");
- }
- 
- static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
-@@ -169,7 +169,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
- 
--	return sprintf(buf, "%d\n", chip->channel_id);
-+	return sysfs_emit(buf, "%d\n", chip->channel_id);
- }
- 
- static ssize_t ad7816_store_channel(struct device *dev,
-@@ -231,9 +231,9 @@ static ssize_t ad7816_show_value(struct device *dev,
- 		data &= AD7816_TEMP_FLOAT_MASK;
- 		if (value < 0)
- 			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
--		return sprintf(buf, "%d.%.2d\n", value, data * 25);
-+		return sysfs_emit(buf, "%d.%.2d\n", value, data * 25);
- 	}
--	return sprintf(buf, "%u\n", data);
-+	return sysfs_emit(buf, "%u\n", data);
- }
- 
- static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
-@@ -281,9 +281,9 @@ static ssize_t ad7816_show_oti(struct device *dev,
- 		value = AD7816_BOUND_VALUE_MIN +
- 			(chip->oti_data[chip->channel_id] -
- 			AD7816_BOUND_VALUE_BASE);
--		return sprintf(buf, "%d\n", value);
-+		return sysfs_emit(buf, "%d\n", value);
- 	}
--	return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
-+	return sysfs_emit(buf, "%u\n", chip->oti_data[chip->channel_id]);
- }
- 
- static inline ssize_t ad7816_set_oti(struct device *dev,
--- 
-2.43.0
+I'll respond to some things in-line. If a review isn't directly
+addressed, you can assume I acknowledge it and will address it
+in the next revision with no further comment needed.
+
+On Saturday, 6 December 2025 10:34:17 Central European Summer Time William Breathitt Gray wrote:
+> > +struct rockchip_pwm_capture {
+> > +	struct rockchip_mfpwm_func *pwmf;
+> > +	struct counter_device *counter;
+> 
+> Is this structure member used at all? If not, you should just remove it.
+
+The counter member is used in the interrupt handler. I actually
+noticed that I request the interrupt before pc->counter is set,
+so if an interrupt fires before the probe function finishes then
+I think the handler would run with a NULL counter member. Oops,
+I'll rectify that.
+
+> > +	bool is_enabled;
+> 
+> Does this device offer some way to probe whether PWM capture mode is
+> enabled? I suspect so, because I see PWM_ENABLE.pwm_en enables the
+> channel and PWM_CTRL.pwm_mode selects capture mode, so perhaps we're
+> able to read the current state of those registers. If you're able to
+> read those registers to determine the enable state, I'd suggest wrapping
+> that into a helper function and calling it when you need to determine
+> whether the capture mode is currently enabled.
+
+I'm going to read the hardware state in the next revision, you're right
+that this is generally a better idea.
+
+> 
+> If we're not able to probe the enable state, is it safe to assume we're
+> in a disabled state when the module loads, or should we ensure it by
+> unconditionally disabling PWM capture mode during
+> rockchip_pwm_capture_probe()?
+
+In my next revision, I've now modified it to mfpwm_acquire if the hardware
+state has the counter enabled during probe. This sounds niche but I'm also
+doing this on the PWM output side, where Uwe rightfully pointed out that
+a bootloader may have enabled PWM output in hardware and Linux needs to
+recognise that state without any heavy-handed actions. For the counter
+PWM capture side, resetting it to a known state wouldn't be disruptive in
+the same way as it would be for PWM output, but I think it's a good idea
+to keep the state as-is since we can read it.
+
+> [... snip ...]
+
+> > +static int rkpwmc_count_read(struct counter_device *counter,
+> > +			     struct counter_count *count, u64 *value)
+> > +{
+> > +	struct rockchip_pwm_capture *pc = counter_priv(counter);
+> > +
+> > +	guard(spinlock)(&pc->enable_lock);
+> > +
+> > +	if (!pc->is_enabled) {
+> > +		*value = 0;
+> > +		return 0;
+> > +	}
+> 
+> I don't think there's a need to check whether capture mode is disabled.
+> The user should be aware of the enable state of the Count by checking
+> the respective "enable" attribute; and if they ignore that, a value of
+> "0" doesn't inherently tell them that the Count is disabled which makes
+> it moot to do so. I'd suggest just removing this check entirely and
+> returning the register values unconditionally.
+
+I see what you're going for, but if the counter isn't enabled, we can't
+rely in the counter having an mfpwm_acquire, and consequently, we can't
+rely on the PWM core clock being on, which is required for reading the
+registers.
+
+In my next revision, I'll still be returning 0 if the counter is disabled,
+but the is_enabled member is gone, so there's a new function called
+rkpwmc_acquire_if_enabled to still make this correct.
+
+I could of course also extend the core driver to let me poke at these
+non-shared registers without exclusive control over the hardware, but
+that may be more trouble than it's worth.
+
+I'll also no longer return 0 on bogus count IDs when the counter is
+disabled.
+
+> > +
+> > +	switch (count->id) {
+> > +	case COUNT_LPC:
+> > +		*value = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_LPC);
+> > +		return 0;
+> > +	case COUNT_HPC:
+> > +		*value = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_HPC);
+> > +		return 0;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +}
+> > +
+> > +static const struct counter_ops rkpwmc_ops = {
+> > +	.count_read = rkpwmc_count_read,
+> > +};
+> 
+> You should implement a signal_read() callback if its possible to probe
+> the current state of PWM Clock. You should implement action_read() if
+> its possible to probe the current polarity of "pwm_in" in order to set
+> which Synapse is currently active.
+
+Unfortunately, it doesn't seem like the hardware allows direct access to
+read the signal. "pwm_in" as it appears in the block diagram seems to be
+an entirely internal signal that's not accessible through MMIO.
+
+Thank you for the reviews!
+
+Kind regards,
+Nicolas Frattaroli
+
+> 
+> William Breathitt Gray
+> 
+> [^1] https://opensource.rock-chips.com/images/3/36/Rockchip_RK3506_TRM_Part_1_V1.2-20250811.pdf
+> 
+
+
+
 
