@@ -1,97 +1,139 @@
-Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77578388E55;
-	Mon, 20 Apr 2026 08:43:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3186740DFC7
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 08:45:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776674619; cv=none; b=kGQs4234L4fCf8yQNyZdu8p5bYDhQ7HOKr2rU3SHWvDdCgU77z/zxBcdNNNZa7QLm2Ts+HJe/1CbmrNIksguVpyjRHSuRP9WxuXFRPlvmlNq3mk9dqB3dLDLgBaoKefsgz41RYC4IH8tDpbKuWRLDA2G5QHF4Ko3fRX/s+a77zg=
+	t=1776674752; cv=none; b=QVR0MNMSqXBfwfIk1BMQAinczY2M4KQ1FwMqC99Q4OCqFbo9//7lGnr4iQL3Ts2ch8hAsh/vsCseDHirc6tfaizQLsDbIF1l4n9eNNZbv0PvaajvzdhJ/RKA0W830FQGAQbT+nwuJEliWPztw+124Gjdipj0okUaGVbmaemxioo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776674619; c=relaxed/simple;
-	bh=SiMpNsxuTqKdP4Nz+xuM9/8Xeay8LMcqJNpsrYjeZvo=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=MwUlJmGID/IQqY6F6R9bKeg7P6mQTbBo2yJ3IeLovFrJD7wGi8ys4aDp5lgMfgRCAANXW7UNJ6gys7H7fjHg9e9DoTBY8o9Yygypd2VL5KeKciptYVK9zRK80Steym1FQxS8dFxEJVecCPc0x0xzMvi3lCd0b9gXVbEy/rRJV7I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=uz6d47vl; arc=none smtp.client-ip=168.119.38.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
+	s=arc-20240116; t=1776674752; c=relaxed/simple;
+	bh=+HNr687+JmUm1hbA/e71Pu2qRadvk7+sGg0I0Y49exI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=olss9G8nO6ZLY3B5A/EHYdgeiOhaU3YHNJG0KrLcgIL0Invn2iBR6dHJzwKbxhy51m1qXqtHeL2wb/Ful+Kg7LyGt6QM+vBJGmMQAmUpIR0dG7x3GnnvyvtEfTPQq1i6NZ902LPbyXb68D539BRoYW98WMECzRhQWlTmI+0x1Ew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nRAOlQNN; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="uz6d47vl"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:To:From:Subject:Message-ID:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-	Resent-Cc:Resent-Message-ID; bh=VfLK/SrgHChF08QO9elV83WJzRM3AfcVpMSg5MkeJSI=;
-	t=1776674618; x=1777884218; b=uz6d47vlZu5MiuflER/yHSzrX8EkzBYciv1iUjxdWThoUMj
-	UyEY8FdDdMF/yXwO/CLvGBGluRn1OCaK8c08rFXkgAd1y1dpw2IHO0ZEBgl5Jt6b+Cnvu4WT4BYdn
-	y8UcFTgKf58lQtLv44ddAQ1dcFN8QeMyX0DDa19qSR1jG85ObfSrEHANTPIPtgmm3eYSwqzHJk43U
-	gpe2uUWhwH5deEBcSlrhDpvhaUWmTEVP/onWiv2KP0GEMSY7Y3ggdd11SyYxVLCZSwOMemyM/jVy/
-	T3K+rvDX3nsFqL6odOlU+aQe9G6wTS+wFl6izpoIQLkHBx8cO7f/RLypSO4xQtow==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.98.2)
-	(envelope-from <johannes@sipsolutions.net>)
-	id 1wEkDn-00000002Jm3-1bMo;
-	Mon, 20 Apr 2026 10:43:11 +0200
-Message-ID: <6170788fcab2ec835597e3d7411928d36850c20a.camel@sipsolutions.net>
-Subject: Re: [PATCH 1/9] bitfield: add FIELD_GET_SIGNED()
-From: Johannes Berg <johannes@sipsolutions.net>
-To: Yury Norov <ynorov@nvidia.com>, Thomas Gleixner <tglx@kernel.org>, Ingo
- Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen	
- <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
- <hpa@zytor.com>,  Andy Lutomirski	 <luto@kernel.org>, Peter Zijlstra
- <peterz@infradead.org>, Jonathan Cameron	 <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Ping-Ke Shih	 <pkshih@realtek.com>,
- Richard Cochran <richardcochran@gmail.com>, Andrew Lunn	
- <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet	 <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
- Abeni	 <pabeni@redhat.com>, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, Yury Norov <yury.norov@gmail.com>, Rasmus
- Villemoes <linux@rasmusvillemoes.dk>, Hans de Goede	 <hansg@kernel.org>,
- Linus Walleij <linusw@kernel.org>, Sakari Ailus	
- <sakari.ailus@linux.intel.com>, Salah Triki <salah.triki@gmail.com>, Achim
- Gratz <Achim.Gratz@Stromeko.DE>, Ben Collins <bcollins@watter.com>, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-rtc@vger.kernel.org
-Date: Mon, 20 Apr 2026 10:43:08 +0200
-In-Reply-To: <20260417173621.368914-2-ynorov@nvidia.com>
-References: <20260417173621.368914-1-ynorov@nvidia.com>
-	 <20260417173621.368914-2-ynorov@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nRAOlQNN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776674751; x=1808210751;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+HNr687+JmUm1hbA/e71Pu2qRadvk7+sGg0I0Y49exI=;
+  b=nRAOlQNNId9TpgsH+FRn3pwdHxCZ92RvmXEBQuYfNBQ9c1YOx1KrEPMG
+   6w2nB6jfV8N9n9GQ6HYqGkPWcQuG4nfrLpXt6rk0YT74NfwXHvA5zggW6
+   XwhK7UXhaT8/UsKsX6s5rk+3tDEWVqLydf65vmQPDPzRBnmU7RJwXl3/I
+   kd+y3yr8npl30JKiIEUTep3KUSQW183rhr++2OroI4Tn0xRcJqre7IA65
+   pCzkvvqpaMIDp/GlJG1aB6//I+Jq2pT2CdAfZOnq1ri0xF2IF8kJA3WpC
+   O0cd6gaVRJCojYAPEKLlE8gjq+lfyIH/9X6YpRx4NbzH1H/0gu3pn5JTQ
+   Q==;
+X-CSE-ConnectionGUID: nUxbdCsWT9S64me5lCgByg==
+X-CSE-MsgGUID: 6ThXnTUQTt2sHCoTjKvP8Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="94986708"
+X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
+   d="scan'208";a="94986708"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 01:45:50 -0700
+X-CSE-ConnectionGUID: 1nGz1puTT223+DbQKE53Eg==
+X-CSE-MsgGUID: tDAZink/RRaOOLwctxklQg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
+   d="scan'208";a="228977565"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 01:45:48 -0700
+Date: Mon, 20 Apr 2026 11:45:46 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Pedro Barletta Gennari <pedro.pbg@usp.br>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: light: iqs621-als: use lock guards
+Message-ID: <aeXnujb9-aui4ArO@ashevche-desk.local>
+References: <20260419213202.68356-1-pedro.pbg@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260419213202.68356-1-pedro.pbg@usp.br>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, 2026-04-17 at 13:36 -0400, Yury Norov wrote:
-> The bitfields are designed in assumption that fields contain unsigned
-> integer values, thus extracting the values from the field implies
-> zero-extending.
->=20
-> Some drivers need to sign-extend their fields, and currently do it like:
->=20
-> 	dc_re +=3D sign_extend32(FIELD_GET(0xfff000, tmp), 11);
-> 	dc_im +=3D sign_extend32(FIELD_GET(0xfff, tmp), 11);
+On Sun, Apr 19, 2026 at 06:31:23PM -0300, Pedro Barletta Gennari wrote:
+> Use guard(mutex)() for handling mutex lock instead of
+> manually locking and unlocking the mutex. This prevents forgotten
+> locks due to early exits and remove the need of gotos.
 
-That's indeed pretty awful...
+...
+
+> @@ -15,6 +15,7 @@
+>  #include <linux/notifier.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/regmap.h>
+> +#include <linux/cleanup.h>
+
+Keep the list ordered.
+
+...
+
+>  		ret = iqs621_als_init(iqs621_als);
+>  		if (ret) {
+>  			dev_err(indio_dev->dev.parent,
+>  				"Failed to re-initialize device: %d\n", ret);
+> -			ret = NOTIFY_BAD;
+> +			return NOTIFY_BAD;
+>  		} else {
+
+Now 'else' is redundant.
+
+> -			ret = NOTIFY_OK;
+> +			return NOTIFY_OK;
+>  		}
+> -
+> -		goto err_mutex;
+
+...
+
+>  	struct iqs621_als_private *iqs621_als = iio_priv(indio_dev);
+
+>  	int ret = IIO_VAL_INT;
+
+Drop it, use the value explicitly inline in each of the cases below.
+
+>  
+> -	mutex_lock(&iqs621_als->lock);
+> +	guard(mutex)(&iqs621_als->lock);
+>  
+>  	switch (dir) {
+>  	case IIO_EV_DIR_RISING:
+>  		*val = iqs621_als->thresh_light * 16;
+> -		break;
+> +		return ret;
+>  
+>  	case IIO_EV_DIR_FALLING:
+>  		*val = iqs621_als->thresh_dark * 4;
+> -		break;
+> +		return ret;
+>  
+>  	case IIO_EV_DIR_EITHER:
+>  		if (iqs621_als->ir_flags_mask == IQS622_IR_FLAGS_TOUCH)
+>  			*val = iqs621_als->thresh_prox * 4;
+>  		else
+>  			*val = iqs621_als->thresh_prox;
+> -		break;
+> +		return ret;
+>  
+>  	default:
+> -		ret = -EINVAL;
+> +		return -EINVAL;
+>  	}
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> +#define FIELD_GET_SIGNED(mask, reg)					\
->=20
-
-[...]
-
-I (personally) tend to prefer the "__MAKE_OP" versions (*_get_bits()
-etc.), in particular because WiFi and firmware interfaces deal a lot
-with fixed endian fields.
-
-Any chance it'd be simple to generate u32_get_bits_signed() etc.? Could
-be especially useful for le32_get_bits_signed() for example, to have the
-endian conversion built-in unlike FIELD_GET_SIGNED().
-
-johannes
