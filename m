@@ -1,144 +1,94 @@
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BBA33B7756
-	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 13:39:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 300D513C9C4;
+	Mon, 20 Apr 2026 13:44:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776692365; cv=pass; b=ObrGF0ZM/VGUlxJr2eVufSVewHRxNUQ4028VDut7vh437yzqOIFRcr9REUWU0OUza7+3AQ3tRlj5ayy1Tj5FjIoOgDFYHkk97lfqbdA/5kZQrEJLFyPdIOvbVs6XibqOca5m9oG8akE+iXQL5q2jxa5R59I4vfULlEYedbiSaH0=
+	t=1776692685; cv=pass; b=DRrwrZas53dwhailMYd/MZMk4gIXoEBT2lHyvz/t11LbN3yxR9cpmYt9vzZCcoWNLnL2qmyZsCDsVVuSsFulrvrC1bRjvXOjhwZeJoy9KRUodZCiZK0/S8gqXdDA7PYus5AiQwSXsedB7SopRvzeorrFE7tqoJfSkFrqtbq7m1Q=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776692365; c=relaxed/simple;
-	bh=O+/x8AvmMb7+rX0uK7+niBHBwGIx7nhJpHuy4AJ2c0A=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QWCjNXHBODRPKGOFlYJ8vVbR8msOpzFyBO5WofbSYgQTX6w08NqLLZk1VnZBJFeHQnvAjFZ3T/HhVD0xbYgD7HbkRm2nPdxdEQhWaOfjBaFc9drWOHutuWfkwRPkZsi0/VIxJQawcmQJ7EIVgbY7G9FHHVbxA91nJCGrPvaoOVU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZlDIV28j; arc=pass smtp.client-ip=209.85.160.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776692685; c=relaxed/simple;
+	bh=sNIWRbAV3+NPzvh4QoLTVBs2+aGwD7SqO1y5ZMLcUjg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Uxr6KZwFHa0kpYsKF7XJbda0Wf6HwKAbc47jUDe1hrosAcscua2yC+pNbWn+o1v0GIq2vQ3TuZhq1UluG9jMxWJJ51UdoJwnaxDSHJGylMR/wszbAYEPs42P72c4NvTC7bibEAoyYBmLivoyY2xhFqAfNYjrqGYc0N8GJlLbee0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=e0yYgZgA; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZlDIV28j"
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-40ef10ec84cso2464618fac.2
-        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 06:39:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776692363; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Re0OxTXQXWZWuNpoLiMmwo3DQMccNQbZOi6/mWYxc77pgJBTleNWuVsHj01lHE3FjR
-         XfzmVAlC05rRpntzV5Isk2F3WavRXMEqwb6ylGRROWJmVzdbRWr0pCK4J3BN6+abDGCC
-         CFl8wRccOimkawoJUEnrkO6M97QfzRLUAlmoZp2D73voLGSitEZOjnjLpFDFcNsO+xtF
-         L9cNO+j4bJkU40w483KK+Yk+w3v9cvVkAXnNZD+eNzAznvxAO/LB4ukXAEJTZ6n68Bpm
-         +219vViDLSnShKBFBFW+SDmVfOtb6skcM86MdkawYrM9swzl8HoMA0Y1V5+0jFc50Zkp
-         /y4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=+Sd3d3cpNtLYAro4qMWTE2P4rnOA83jC2nXa7sXMDDw=;
-        fh=WDQY2ohnGWXyV4pNRlgIHSPOgqQFOlWWJcYuSnN4R4A=;
-        b=LZze2X4zLus4t2UOkBQVrCUqufnbNSSLch+zS2vvTE7TnAPFWCQouIs25xfOm/iJOl
-         uwl/cEcVbBbRV2SIZb1VvWVyj/HgMa1kckCoEX+K/NXrYotyP8C4uqCLyN0mLG7eFS0b
-         zRd2DxtS/R1NwDqEtU+p3nwW+f4jt/QFqmlTzaD38W4o+MFIdenAOiAFJZ+tvKbp60Op
-         XDBYoTYyZXiyH4OFAp0f2jBu92MUUaVapndX47vj7/aoXyjyp0gPa4vqgrnS0KfUiYAT
-         w4C8t9eunaDxCbX6vv1UD3jAFWoSLeYKpQFW3vQI6xYKY0KsIltNJ0Mw2EKOM0xSju/r
-         yp6Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776692363; x=1777297163; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+Sd3d3cpNtLYAro4qMWTE2P4rnOA83jC2nXa7sXMDDw=;
-        b=ZlDIV28j6jbgzkYfz9iLVTR0ZM0olbqc2twFaSdNaj2LtKg4T8mePPBjSoFIuZvOuY
-         Fo58f8nztrUnCM5iKTS1VnJIBBRzxvyyVVQ2zNdpgzjsjZ9KRpNgF12k8yoUZSl3xdzS
-         SSUAD7ldsGR00Pu/sAOU0MDsYY+Xvb1ajP0tq46WIfX5jclD9qVbrTfklP1FlB7HF7Lt
-         0maDGJi3DlHoQCWOhL/5eQd0r1QMwy6RCIvNbBAXnEcdjPwLrAUKVOVo2o3Kz/tHEIri
-         f4E8q7u5WNKM6UguADcBG3SMl0VP8mFODQzqdRVcEItU6c6aT5HoRuMFfyMtbUZa/Q7P
-         LHCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776692363; x=1777297163;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+Sd3d3cpNtLYAro4qMWTE2P4rnOA83jC2nXa7sXMDDw=;
-        b=Cq3ew8PCzWlHG99dCRO0trnoro0WrZwy5UiNoMnN7G0Hbq65iyr00jHs8iZSzzCjw6
-         qpDaBsaQyGlQwEInFFqj8w6zUI91M+GY5yiupE5aBn8rNM617Kw/epswiaftnVJyP2Bu
-         Tdqkv62Zy35mRxataWcXsr3orsXpwyZ497Jt0ghY6Grz9YJZ9CPR4033UFJntcinGZt8
-         /yyMKqt7W2hoj1aBLVUuGtCDIRrcHeqKvC6mC8w0d+uxS9cz3t79Th7lvpERvzuNBvPW
-         EX7bzq7xOHlSCDcx1Il2hd2mbsj5+yphF3uDv3Cm75p+FSMJF7xSJbhpEJf+DnTifLqr
-         kOMA==
-X-Forwarded-Encrypted: i=1; AFNElJ+U954X/gWLyv4WHJzciRin8JP+17IHr+NcDjYpo329xCF0+qewylYPqC3ZVh6IHmfRQCTQe47gOBo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyZ+GJ1voBjpMqAprMU8ksHyv+O2gsstYrwpO8nawX6CsUs7wZK
-	e+3oZdKcH2smATLSFgzWa3rTuhZcCTBS/tkAu5IMJExirWv6Qj3ro8u7C0PJsgrDWyRc2wYHbC4
-	jDGUnqPkRxSHVjgO4u1bncL9QiGrIItQ=
-X-Gm-Gg: AeBDievV84zu6W4bMIfDqFB1tXAD2naq2Jjpg8o3RXsTs3zKDORZVpTJnVd8ujdV2Mg
-	Srg6Qlj+g3sgiCyImeJaAgdCjrxO3d3E5IZJ+qxzdXJoXdUVcEqNKhjZrA9ALcJDKxWxJWdWc8R
-	GIQ8Na8cTAC0ekK3jqIrEwnNqys/FZMx3tddECCkO4pfmFskwnL0CyBvd3/z1whrSSBZ/OjQRhP
-	DdlIdfGMu5o6HokqHTSbbD6ZVHfPSeHwqH4pXW2TQX2WxC32AAMKEeRxmeY2DAUhNS+MVovSZpx
-	qCYLfjdoFpoxyuzHxK8PvHvgRY2fkMQe0GtSLevPQGZaxYYh
-X-Received: by 2002:a05:6870:d8cc:b0:409:7a01:6e2f with SMTP id
- 586e51a60fabf-42abf2eef66mr8177587fac.11.1776692363371; Mon, 20 Apr 2026
- 06:39:23 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="e0yYgZgA"
+ARC-Seal: i=1; a=rsa-sha256; t=1776692659; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=mkcwrM2zd34qpqDcVR6YMrm683IYTNFwsnrcnqxXc6QfyMACLBM9776F9ysKorGVEK2v5XKxTUkCdbYJ6JhqCK5ofdRtXhBB7y3/inV66/60tpz48tRUzv0+CT35vpax+hIbjgCWck7D/Ykfy+RzBKYTUeW6pruZk5FLjaYBmSI=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1776692659; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=1V3GuJpNnFWJCfMVIGdTdAgiX6h8PD58kcy6YMlRmyg=; 
+	b=WB27jklrsxoT2MtVUad/IT9wsRm0zzUx4og1biUR0t3/KOxIYvo9noN98ctcKY1s/WbEIkh5GzANyH9DmMvMmL43k2mAQje762NCtJfK8E2wdIG9MmEksSVV2jK7CSFLtuIiNJXFY/6rEuXZ/vS45r9nL8lo/hadSfpD5z485j4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
+	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1776692658;
+	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
+	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+	bh=1V3GuJpNnFWJCfMVIGdTdAgiX6h8PD58kcy6YMlRmyg=;
+	b=e0yYgZgAY6nsZsSsAPvVGSdH5P1MJJs7vvPiCsZXWVYhL0E7HOLvx/sKsb+q3sVl
+	WgOsEKk9ClrKgrH30latvBAEHpcZ1enwaenfSQnr8RKUtPozJWIb+FrdjyLKRzNrXb/
+	AzxJGRCZ3swvSlmNxhyq9Wtin00TR6wgOyfwZUMI=
+Received: by mx.zohomail.com with SMTPS id 1776692658154201.29359424090717;
+	Mon, 20 Apr 2026 06:44:18 -0700 (PDT)
+From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+ Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>,
+ Damon Ding <damon.ding@rock-chips.com>
+Cc: kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
+ Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
+ linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v4 3/5] pwm: Add rockchip PWMv4 driver
+Date: Mon, 20 Apr 2026 15:44:13 +0200
+Message-ID: <AP7g6gy2QFms8ov59vex7A@collabora.com>
+In-Reply-To: <20260420-rk3576-pwm-v4-3-421738c7bf28@collabora.com>
+References:
+ <20260420-rk3576-pwm-v4-0-421738c7bf28@collabora.com>
+ <20260420-rk3576-pwm-v4-3-421738c7bf28@collabora.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260410193737.35905-1-devnexen@gmail.com> <60c2cdbc-2ee3-49ce-8a94-590230899cbc@baylibre.com>
- <20260420142158.2d8b05e9@jic23-huawei>
-In-Reply-To: <20260420142158.2d8b05e9@jic23-huawei>
-From: David CARLIER <devnexen@gmail.com>
-Date: Mon, 20 Apr 2026 14:39:09 +0100
-X-Gm-Features: AQROBzCymbI2-fFWH7slMTP6eriNyPrtR7E32j8ay_OcJ-TLG6bOa5wFcv6C8Yc
-Message-ID: <CA+XhMqzMfheQrwsDKHR2d8pTckn3+ZSZrkvYLSkmv533472OTA@mail.gmail.com>
-Subject: Re: [PATCH 0/7] iio: dac: Convert several drivers to devm_mutex_init()
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Kim Seer Paller <kimseer.paller@analog.com>, 
-	Cosmin Tanislav <cosmin.tanislav@analog.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
 
-Hi Jonathan and thanks for your review, I ll remember for next times. Cheers.
+On Monday, 20 April 2026 15:35:21 Central European Summer Time Nicolas Frattaroli wrote:
+> The Rockchip RK3576 brings with it a new PWM IP, in downstream code
+> referred to as "v4". This new IP is different enough from the previous
+> Rockchip IP that I felt it necessary to add a new driver for it, instead
+> of shoehorning it in the old one.
+> 
+> Add this new driver, based on the PWM core's waveform APIs. Its platform
+> device is registered by the parent mfpwm driver, from which it also
+> receives a little platform data struct, so that mfpwm can guarantee that
+> all the platform device drivers spread across different subsystems for
+> this specific hardware IP do not interfere with each other.
+> 
+> Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+> ---
+>  MAINTAINERS                            |   2 +
+>  drivers/counter/Kconfig                |  11 +
+>  drivers/counter/Makefile               |   1 +
+>  drivers/counter/rockchip-pwm-capture.c | 307 ++++++++++++++++++++++++++
+>  drivers/pwm/Kconfig                    |  11 +
+>  drivers/pwm/Makefile                   |   1 +
+>  drivers/pwm/pwm-rockchip-v4.c          | 383 +++++++++++++++++++++++++++++++++
+>  7 files changed, 716 insertions(+)
+> 
 
-On Mon, 20 Apr 2026 at 14:22, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Fri, 10 Apr 2026 15:03:33 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
->
-> > On 4/10/26 2:37 PM, David Carlier wrote:
-> > >
-> > > This series converts seven iio DAC/ADDAC drivers to use devm_mutex_init()
-> > > instead of mutex_init(). These drivers currently call mutex_init() in
-> > > probe but have no .remove() callback, so mutex_destroy() is never called
-> > > on device unbind.
-> > >
-> > > Same pattern already accepted in iio for other drivers (e.g. ad5446,
-> > > ltc2688, ad7124, ad7606, vcnl4000, etc.).
-> > >
-> > > David Carlier (7):
-> > >   iio: dac: ad3552r: Use devm_mutex_init()
-> > >   iio: dac: ad7303: Use devm_mutex_init()
-> > >   iio: dac: ad5758: Use devm_mutex_init()
-> > >   iio: dac: ad5755: Use devm_mutex_init()
-> > >   iio: dac: ad5686: Use devm_mutex_init()
-> > >   iio: dac: ltc2664: Use devm_mutex_init()
-> > >   iio: addac: ad74115: Use devm_mutex_init()
-> > >
-> >
-> > Jonathan has mentioned before that he doesn't care to take patches like this
-> > unless we are making other cleanups to the driver too. So we'll see what he
-> > says this time.
-> >
->
-> The one time I'm more flexible on taking small changes is when they come
-> from someone new to the kernel.  A quick look suggests that's not quite true
-> of David, but David also doesn't seem to be an old hand.  So I'll take
-> this set, but no more of these please unless part of a more general
-> cleanup of a driver.  Maybe at somepoint in the future we'll have few enough
-> of these that it makes sense to do this for all of them, but right now there
-> are ~300 mutex_init() calls in IIO and don't want anywhere near that level
-> of churn when there are more useful things to do!
->
-> Applied to the testing branch of iio.git.
->
-> Thanks,
->
-> Jonathan
+Ah jeez, I accidentally squashed the counter driver into this commit.
+time to send out a v5, please ignore this.
+
+
+
