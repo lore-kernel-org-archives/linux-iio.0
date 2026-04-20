@@ -1,119 +1,108 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 825443815E2;
-	Mon, 20 Apr 2026 08:21:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E5CD388360
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 08:24:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776673272; cv=none; b=fP0FuXj/kx0/hbWAUv2ZxWDJQu7WIuofDjDf5X6kMMkm3nLtd4rEh2smu13oIg1VuFhPbKYpl9VmZsH1o5pYugwidLU9vnqqCy9gn4SGzu2ttyWRqGNTkCPyclLwJmHuwJBHcJkYpBgZ28Ig0sfnYAjyw7F+uAawlBywORu46HI=
+	t=1776673487; cv=none; b=Fqj1ez2TiCEJ+UyBo1RpVcryT3lbFYCA6uaoD7rtl1J9AbyhVYBiGcBoUwPnXJVg6PDqGMJW/94VfdVYhFa9csb3023P/E/1VfZ+AaCfvubx84IDqwuHvP6xOyjWNrQ2BLZyeOqBK0/DIPaq0aaX+XWx0DJk2THqpJnd50sqSig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776673272; c=relaxed/simple;
-	bh=Hox/NHC7DWBH5XJcwgjkput1zansHFHSyXXfPoX2t5k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WBloDX08B9dGDGerU+8x6RxH+ttNbxARKLp5ylfuSXkNjgDoNTnpZt18oi4ydskw5NJIenOvD26pa9VPHjcBWb/yJUJjzl6FSUE7+LrZ1/cr8ch7YvycalV5ibhU1qqtXpQxjW61UN+Umt+tDxlGksGcNnFoCRdcoNa7rOdsalc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DwYz1E8L; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776673487; c=relaxed/simple;
+	bh=Lr8kUyIHvNKl2R1SYvP+op9vdcsSpWm1kCDtDV1J9iE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=r1uXbbmHEZkZdzYFXbMQFU3j5f4gL8kM+XMlpSbcJTwWY4RxD3dV7sTjJkd0T+A40S9JTSLJrqep6WfKvZJC9rSmiEs/ezdtynwEJomBMVpzvU8k/WAZrO8nKKChCRa2x/XBrw5Ke79hJtepnAAkKM2dK2O2oDLjUZXkN+739Ms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZOM3UlN1; arc=none smtp.client-ip=209.85.216.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DwYz1E8L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776673269; x=1808209269;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Hox/NHC7DWBH5XJcwgjkput1zansHFHSyXXfPoX2t5k=;
-  b=DwYz1E8LUtEFZIzm+WqNkfWyOpU8tpvKG+WgYZDWPWuDWyepJ6hqBKiT
-   6HST9fJImirxJ28jLSCP5p7YbDmKaKgoKa7Rw0tNiIU0e4MPPYfowMfrS
-   1WxKDlXyJjR1MFThhNpa4XsVt4ouUp0dezlLWU/ZY7qBECzKPCSu63Q/s
-   IEFq6rrbdk+pWFkZV5JPRiTAKDDsNMjBMin8XSnr06GVvcIoIocG69qJx
-   a2+GdLKRM2IPq4+e8QMpOHzpmFZtXXDTbfRYqBOHUcTQ+lC65uTQLa16k
-   2PzvOp/q8lIme7JHRixgdoFnoH3VXcWHijapgZ2ACu2hdpcgJiVW3qAPC
-   w==;
-X-CSE-ConnectionGUID: pWT3f+qkRXq4mgqpgqHgKQ==
-X-CSE-MsgGUID: 2AnngaU1S2uNr2HM6ftDBA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77708023"
-X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="77708023"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 01:21:08 -0700
-X-CSE-ConnectionGUID: V2u56sirQEKzIe9a6xKgIw==
-X-CSE-MsgGUID: kLqsftOGQ3+po7Gfon1drg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="269695083"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 01:21:04 -0700
-Date: Mon, 20 Apr 2026 11:21:02 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Svyatoslav Ryhel <clamor95@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] misc: Remove old APDS990x driver
-Message-ID: <aeXh7j410AxESy4U@ashevche-desk.local>
-References: <20260419083125.35572-1-clamor95@gmail.com>
- <20260419083125.35572-4-clamor95@gmail.com>
- <20260419143346.45ed78c2@jic23-huawei>
- <CAPVz0n1qrSYr16zSSqRHuTWVkRfdC+c9w+mxAhtzgfHzL41XFw@mail.gmail.com>
- <20260419172216.3cf10e51@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZOM3UlN1"
+Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-35d90833cacso1614320a91.2
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 01:24:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776673483; x=1777278283; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/+h4BSr0vg2KmncNClXlM0YEviPH3JJGrtGmbcMzsxY=;
+        b=ZOM3UlN1k/6qkt7FtoJ3RZLzQwAK+KeUkjczjvwMVWkYBES8jOxGQdGwhhExEtSUWf
+         Yy237Um53PtDtRAo2Poc09f/i6rBSMGmFpsZq3Y7BrYj3Sl0apSFHUIjtVGaO5t6Mzgp
+         clPNfNJypzp4g/FsxEwr/nrKofakMwTWzHfwhfW+el2oZKyOVWKQ2Zy33pYo36SayfFJ
+         +arNGrZ0WgQtp49m63IErMOlvvlU2f6rd9TYBE2Absci55vI3BpjnjF34qGOREnujVLI
+         1S0zgScX+yUo/k5WTfrLr56UACSmYyg6d0sOUYSmMan/IQ2JODZBIhIX+MaOZ4X77AsX
+         N73w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776673483; x=1777278283;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/+h4BSr0vg2KmncNClXlM0YEviPH3JJGrtGmbcMzsxY=;
+        b=cdksxXX7rhc3ynbgOfpSgnRnvdgnRQAZEG7CBu0QoIr/Ma7Z6Qk0J414Rs9Ge8CQJ+
+         eN2MQwuRRzEW7w8ELcwfZdvDgDdzTq4o/Sm3hlLXgvykpwUQZ0UpYj3O3AseZA6id0kF
+         jgz7NkeQt4HMbHjvTQ5Wf/oexKeH6Ql7E1E+LLJyV+37VD5H2JhrI+AXWa1ijSmXTrKb
+         nN180otbWEM2HAi9v/V7XGaZoKCnLHhak/SWhzvpVq1vwTlYmhyArKDlgTcK1FKkARrC
+         /gpfmnXFMyiZocW5+a04CiX6p+/yp7rOnrsLF9MRvYDkJXbNpkJZvEmJ9x9c54aUuahL
+         dZgA==
+X-Gm-Message-State: AOJu0Yz2WL8aC1iGtlY8mFBNuwc3algstwSIpm/0hxVYVDtRQHlYSQj6
+	ZWlFVbOBSUUZaG30mXiv0HzMCkI88V16kCGxGAA3cm5EFn9l0kByin53uW04pbefsQ==
+X-Gm-Gg: AeBDiesYUe/h4S21Oo3cWg302ZxmBqFW2qRNTdZl3T+FBjIhPY3eF4TzOl64bYFj9QA
+	MNYz1Lo+WpWarAblwB6g9e4QyG3C/nvMoHXMp8dp2tRnKRHQIA3v4AfEl3DZZ4KL8jpUwSKxh+F
+	EXMnbaynBttYnQw3t7roh/eGx5p4MHEHnNQVSlagb+ODJbSiglPQ0z+h5MPJ4lHW+2CXLnItwsb
+	T2NU2iT8xYngfnSGYHIYur2OePDDvfHEdnB7NsQH/aa9Rf9PIw8stkRFA9xZC7vrTTFcP0CknBL
+	c5+rTCQ8S3J3QrhYzmfeBsLqfeNBASLU7GocvfXIVJvrw6G64yGfg7+ZFKDwt/kEzB5M41FGpIH
+	J66ywJLaSfCV8qrz2heU0mji0ZWCkkTwhO/OtJa/5wSjPINHtBE/9LhhTwxMGBpkquM6kVLrZV3
+	pRcEfD2z+4V8N6ncM7VgzL9FRx/I88ULLmod+vWanDUor9u8fJ2yd/
+X-Received: by 2002:a17:90a:da8c:b0:35e:581c:6bca with SMTP id 98e67ed59e1d1-361403ca597mr12990415a91.3.1776673483027;
+        Mon, 20 Apr 2026 01:24:43 -0700 (PDT)
+Received: from nik.. ([101.0.62.224])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5fab20e80sm99464395ad.57.2026.04.20.01.24.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2026 01:24:41 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH v2 0/1] iio: chemical: bme680: use BME680_NUM_CHANNELS
+Date: Mon, 20 Apr 2026 13:54:35 +0530
+Message-Id: <20260420082436.7223-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260419172216.3cf10e51@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Apr 19, 2026 at 05:22:16PM +0100, Jonathan Cameron wrote:
-> On Sun, 19 Apr 2026 16:41:24 +0300
-> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
-> > нд, 19 квіт. 2026 р. о 16:33 Jonathan Cameron <jic23@kernel.org> пише:
-> > > On Sun, 19 Apr 2026 11:31:24 +0300
-> > > Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+Hi,
 
-...
+This patch updates the BME680 driver to use the existing
+BME680_NUM_CHANNELS macro instead of a hardcoded value in the
+scan buffer.
 
-> > > There is the obvious point of ABI compatibility raised as well, but given
-> > > we don't seem to be getting much push back on that maybe that's not a significant
-> > > concern.  
-> > 
-> > I did not found any ABI in the Documentation/ABI regarding this sensor
-> > using grep,
+In the previous version, the macro was proposed for removal as it
+appeared unused. However, it was pointed out during review that
+it is intended to represent the number of channels in the scan
+buffer.
 
-The code is what is in use, it has an ABI. The question if it's in use or not.
+This version addresses that feedback by using the macro instead
+of removing it, improving readability and maintainability.
 
-> > maybe you are more familiar?
+Changes in v2:
 
-> Doesn't matter if it's documented explicitly (many older drivers are not).
-> The question is whether anyone has supported parts and userspace code that
-> makes use of the sysfs files this driver provides.
-> 
-> Their userspace will be broken by dropping it.  The lack of upstream users
-> makes this less critical but it can be argued it's still a possible regression.
+Use BME680_NUM_CHANNELS instead of hardcoded value
+Keep the macro instead of removing it
+Address review feedback from Jonathan Cameron
 
-Usual recommendation is to google, and check Debian code search engine.
-I randomly chose a couple of sysfs nodes and only kernel code refers to them.
-So, at least there is a good sign that it likely not in use. But one has
-to perform more checks (all attributes, more sources of information) and
-summarise that in the commit message.
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+
+Thanks,
+Nikhil Gautam
+
+Nikhil Gautam (1):
+  iio: chemical: bme680: use BME680_NUM_CHANNELS for scan buffer
+
+ drivers/iio/chemical/bme680_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
