@@ -1,85 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from aposti.net (aposti.net [185.119.170.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6446034E746;
-	Mon, 20 Apr 2026 15:01:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CB822C375E;
+	Mon, 20 Apr 2026 15:12:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.119.170.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776697279; cv=none; b=kPE7laCu/a/PVtc/mwEfIsevfprNCI7eOR3RD60MkjMaH2lFgrOpIZPw5WwnpWxgcT0QaIJrbWpqe2DZQSaGw/1uOfkykKI9WD2nYtOsdNkiWGTaxfbIEiZ8R6hrnp92uQfkekhd5sVc39IJ8FNt5KyzyrLsJ5GZl+06vxsWjJg=
+	t=1776697981; cv=none; b=TDVy/4/KyIisUpd2/AuhU08Bjollp/rpDRqJ8KyYFsIG1pW40oGH9jG9VL+j6iyGydoK2cMK/9ozHZGNCHIp5xFLNsp/aahny3RDelyPqTzhV6Ek6YDQX8kJxYI3tdcPYtLl+YpjnDu8JDASf+pvusmHTbii+p3mPGkHqicwvCU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776697279; c=relaxed/simple;
-	bh=0+jyjM0Uy5qmCUUkrw0ZUslYImT7Dy2hq65NWqQk5pk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p6vmPlIvxLq7IUUDDNcO5pG3B2g/zYWNZBTnT93z5JCOv8JiK/H1H7iGr4Ja+VUEtipQqYZgKOzHWc4Z7QfLBghFVIgSmgcnItze4V6E9OqgPbz7QukgkD/a0bmwxkmIls+UO6wdNINLIFbO96pFwH7Ex8XKJ+M3cojRXgwbzys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HuPRO6I9; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776697981; c=relaxed/simple;
+	bh=Rjqp6mFQ7RsGG8V2E9tUb++0htlcACVIf0oiwADhmj4=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=WBPwXeV2cTdyPvcaOq8ODKMC/CrUKgb70YITIyrKyLDdx8PI5NiEB94LOLip77j4Kgbc1bknvw7WfRpZ0PRRH1pRR80dEbHC/jFBNpuHzJ5YzlL5GeCnXjpBLWFFoobb00aq82hHwvZbrMs5XzFWVZ5weY6TV53IQ4z2Ubve3fo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net; spf=pass smtp.mailfrom=crapouillou.net; dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b=ctu1WH4h; arc=none smtp.client-ip=185.119.170.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crapouillou.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HuPRO6I9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B9FC2BCB6;
-	Mon, 20 Apr 2026 15:01:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776697279;
-	bh=0+jyjM0Uy5qmCUUkrw0ZUslYImT7Dy2hq65NWqQk5pk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=HuPRO6I9Q84sN/XKi57ht0RX5uGSAYGttTfsI5s8DYy36r8oqbuIzsI8aDYLNpQ/o
-	 uOvt2qA8Ph5X+u/rfvor/UlOvplH25DGdv7OZuHWoXLzBAIrscRIXzv4ATd3ubC4UQ
-	 AxXnd5tH6IlRKkEQdSC58qkbNN2NthZxqWEu5WCzcvNKMomB5k9gQf0xOUXyKW6RFg
-	 kOYSN6KRNPmGk4Hg21Fbz46W7SE0glufuj2NyK7FncF2vWV7noelKHKD1uFU8ijl+V
-	 XAas1LRvLVTAAmDHIBv22c37MN1d9PvHz8E/R+vk+Q9FrGMZOe1t1zLbH7Pw2n4V1Z
-	 Ayl6q9YAhiUUw==
-Date: Mon, 20 Apr 2026 10:01:16 -0500
-From: Rob Herring <robh@kernel.org>
-To: Ariana Lazar <ariana.lazar@microchip.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: iio: dac: mcp47feb02: Fix maxItems value
- for reg property
-Message-ID: <20260420150116.GA2486072-robh@kernel.org>
-References: <20260417-mcp47feb02-fix5-v2-1-6592ea499cce@microchip.com>
+	dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="ctu1WH4h"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=crapouillou.net;
+	s=mail; t=1776697971;
+	bh=Rjqp6mFQ7RsGG8V2E9tUb++0htlcACVIf0oiwADhmj4=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=ctu1WH4hwhApJUgQEufRaAOLpsQhsaa9/1uf9XOxgv9Zlarf972WovNtROODTokRg
+	 aiGwjrm5XTd9GfBqEIeZ1JWwlzDS0NXjg5sIikTi/T7lo3ZHiVGYqiEXVyQOaDpKj7
+	 PHJhcnJymejLbM5JNqvEcvSFvaPoycCi09Hzp6JM=
+Message-ID: <b3e77a9289eb934a342fd18512f27bdfb368a716.camel@crapouillou.net>
+Subject: Re: [PATCH] iio: buffer: Fix DMA fence leak in
+ iio_buffer_enqueue_dmabuf()
+From: Paul Cercueil <paul@crapouillou.net>
+To: =?ISO-8859-1?Q?Beno=EEt?= Monin <benoit.monin@bootlin.com>, Jonathan
+ Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>
+Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Jonathan Cameron
+	 <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, James Nuss <jamesnuss@nanometrics.ca>
+Date: Mon, 20 Apr 2026 17:12:46 +0200
+In-Reply-To: <20260401-iio-dma-fence-v1-1-40993adbfa96@bootlin.com>
+References: <20260401-iio-dma-fence-v1-1-40993adbfa96@bootlin.com>
+Autocrypt: addr=paul@crapouillou.net; prefer-encrypt=mutual;
+ keydata=mQENBF0KhcEBCADkfmrzdTOp/gFOMQX0QwKE2WgeCJiHPWkpEuPH81/HB2dpjPZNW03ZM
+ LQfECbbaEkdbN4YnPfXgcc1uBe5mwOAPV1MBlaZcEt4M67iYQwSNrP7maPS3IaQJ18ES8JJ5Uf5Uz
+ FZaUawgH+oipYGW+v31cX6L3k+dGsPRM0Pyo0sQt52fsopNPZ9iag0iY7dGNuKenaEqkYNjwEgTtN
+ z8dt6s3hMpHIKZFL3OhAGi88wF/21isv0zkF4J0wlf9gYUTEEY3Eulx80PTVqGIcHZzfavlWIdzhe
+ +rxHTDGVwseR2Y1WjgFGQ2F+vXetAB8NEeygXee+i9nY5qt9c07m8mzjABEBAAG0JFBhdWwgQ2VyY
+ 3VlaWwgPHBhdWxAY3JhcG91aWxsb3UubmV0PokBTgQTAQoAOBYhBNdHYd8OeCBwpMuVxnPua9InSr
+ 1BBQJdCoXBAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEHPua9InSr1BgvIH/0kLyrI3V0f
+ 33a6D3BJwc1grbygPVYGuC5l5eMnAI+rDmLR19E2yvibRpgUc87NmPEQPpbbtAZt8On/2WZoE5OIP
+ dlId/AHNpdgAtGXo0ZX4LGeVPjxjdkbrKVHxbcdcnY+zzaFglpbVSvp76pxqgVg8PgxkAAeeJV+ET
+ 4t0823Gz2HzCL/6JZhvKAEtHVulOWoBh368SYdolp1TSfORWmHzvQiCCCA+j0cMkYVGzIQzEQhX7U
+ rf9N/nhU5/SGLFEi9DcBfXoGzhyQyLXflhJtKm3XGB1K/pPulbKaPcKAl6rIDWPuFpHkSbmZ9r4KF
+ lBwgAhlGy6nqP7O3u7q23hRU=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260417-mcp47feb02-fix5-v2-1-6592ea499cce@microchip.com>
 
-On Fri, Apr 17, 2026 at 04:38:29PM +0300, Ariana Lazar wrote:
-> Change maxItems value from 8 to 1 for the channel number reg property.
-> 
-> Fixes: 4ba12d304175 ("dt-bindings: iio: dac: adding support for Microchip MCP47FEB02")
-> Link: https://lore.kernel.org/all/20260403-speed-childless-1360de358229@spud/
-> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+Hi Beno=C3=AEt,
+
+By the way, I did the exact same mistake in the functionfs code
+(drivers/usb/gadget/function/f_fs.c), do you want to fix it there too?
+
+(or I'll do it myself eventually)
+
+Cheers,
+-Paul
+
+Le mercredi 01 avril 2026 =C3=A0 17:24 +0200, Beno=C3=AEt Monin a =C3=A9cri=
+t=C2=A0:
+> iio_buffer_enqueue_dmabuf() allocates a struct iio_dma_fence (104
+> bytes,
+> kmalloc-128) via kmalloc_obj()+dma_fence_init(), which sets the
+> initial
+> kref to 1.=C2=A0 It then calls dma_resv_add_fence() which takes a second
+> reference (kref=3D2), and stores a raw pointer in block->fence.
+>=20
+> On the success path the function returns without calling
+> dma_fence_put()
+> to release the initial reference, so every buffer enqueue permanently
+> leaks one kmalloc-128 allocation.
+>=20
+> The iio_buffer_cleanup() work item only releases the temporary
+> reference
+> taken during completion signalling by
+> iio_buffer_signal_dmabuf_done();
+> the initial reference from dma_fence_init() is never released.
+>=20
+> With four iio_rwdev instances at 240kHz and 512 samples per buffer,
+> this produces ~1875 kmalloc-128 allocations per second matching the
+> observed slab growth exactly. A test with ftrace confirmed that the
+> dma_fence_destroy event was never triggered.
+>=20
+> Fix by calling dma_fence_put() after dma_resv_add_fence(),
+> transferring
+> ownership of the fence to the DMA reservation object. The DMA fence
+> then
+> gets properly discarded after being signalled.
+>=20
+> Fixes: 3e26d9f08fbe0 ("iio: core: Add new DMABUF interface
+> infrastructure")
+> Originally-by: James Nuss <jamesnuss@nanometrics.ca>
+> Signed-off-by: Beno=C3=AEt Monin <benoit.monin@bootlin.com>
 > ---
-> Changes in v2:
-> - keep just maxItems value update in this patch
-> - remove Reported-by from commit message
-> - Link to v1: https://lore.kernel.org/r/20260416-mcp47feb02-fix5-v1-1-9656c2fed6d2@microchip.com
+> =C2=A0drivers/iio/industrialio-buffer.c | 1 +
+> =C2=A01 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/iio/industrialio-buffer.c
+> b/drivers/iio/industrialio-buffer.c
+> index 46f36a6ed271..5c3df993bea2 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -1909,6 +1909,7 @@ static int iio_buffer_enqueue_dmabuf(struct
+> iio_dev_buffer_pair *ib,
+> =C2=A0
+> =C2=A0	dma_resv_add_fence(dmabuf->resv, &fence->base,
+> =C2=A0			=C2=A0=C2=A0 dma_to_ram ? DMA_RESV_USAGE_WRITE :
+> DMA_RESV_USAGE_READ);
+> +	dma_fence_put(&fence->base);
+> =C2=A0	dma_resv_unlock(dmabuf->resv);
+> =C2=A0
+> =C2=A0	cookie =3D dma_fence_begin_signalling();
+>=20
 > ---
->  Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> index d2466aa6bda2106a8b695347a0edf38462294d03..f2efa0ccbaa32482dcdc69d98c1565518538793f 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> @@ -161,8 +161,7 @@ patternProperties:
->      properties:
->        reg:
->          description: The channel number.
-> -        minItems: 1
-> -        maxItems: 8
-> +        maxItems: 1
-
-Perhaps there are 8 channels and 'maximum: 8' is what was intended?
-
-Rob
+> base-commit: 7aaa8047eafd0bd628065b15757d9b48c5f9c07d
+> change-id: 20260401-iio-dma-fence-5f1ceba11ef5
+>=20
+> Best regards,
+> --=C2=A0=20
+> Beno=C3=AEt Monin, Bootlin
+> Embedded Linux and Kernel engineering
+> https://bootlin.com
