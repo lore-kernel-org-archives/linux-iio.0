@@ -1,43 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F2D389E05;
-	Mon, 20 Apr 2026 12:21:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41E7C2E8B71;
+	Mon, 20 Apr 2026 12:22:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776687718; cv=none; b=TAWcmzNoMqgTZwbyaVLackrTdMcDho/s/CGeuq1QylWQtfTzuz63S4aZl0HL/hiwkI7UrEWqekDrKliUf+u+gPAA5ZynhSS8AZCqAWmDEGBZe2BCkZUxRfSPjI6q3hiA1IBqvkqmi++TE1FupKOergC6BuGztVH7/+pRsOfeFbE=
+	t=1776687776; cv=none; b=RenEipbaos7sVGPpKVe8dnkMrIa/Px1wMbLCQfX46Ixvk+vsJfNsHA4QmVwntgaZZKV/fi7JeX5ZH4TwablkMdB3BvcwXpvhamSPeWmKyGeaeWbiQVL5Hq/u9PrYJt07ICP4zQmHoXsovkQIgdxLgavsQrwgqonp317ol6dW5c8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776687718; c=relaxed/simple;
-	bh=fmbF8m+zdfoTWRc4DTs8+j6cO4Jamz+R9xbjsP693V8=;
+	s=arc-20240116; t=1776687776; c=relaxed/simple;
+	bh=FWT2AHE8AHc5mbnJuF7YTb4hMU+BSua0uQas/x6u7aE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aBh0iALiQVPS4dQauZM3knjxC1xRRY9rx8YMt8eyJHIDMFmF7nXzUJF9ah/Th5QJU3bBI5OFRH1bJ27ZflWN0zCAXTJG5RQtJ43px4kRR5sb1bZCYkhreL22o27vshvztUYmYOhFWa7QDW+/lwSonUNKk2BmZ/CTZabZMhc2IvI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=atyYUwml; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=UHCqt1d/vLf+u6mSKTQAUIfPBbolJ/yjS+ofu72BGMThhndn0IM3CskPJvUw/rTPlz6Q1iel8k2BhYIfXv9QJciEHvXpF1+zdfKgONCeK93BWwbtTMGppT/SeKUWLpXsAF+KkJl0Z5U1YSetDdmReBcFuj11Hzjhy9wkI4xRptE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fwWh3krC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="atyYUwml"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 546F8C2BCB4;
-	Mon, 20 Apr 2026 12:21:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fwWh3krC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA295C19425;
+	Mon, 20 Apr 2026 12:22:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776687718;
-	bh=fmbF8m+zdfoTWRc4DTs8+j6cO4Jamz+R9xbjsP693V8=;
+	s=k20201202; t=1776687775;
+	bh=FWT2AHE8AHc5mbnJuF7YTb4hMU+BSua0uQas/x6u7aE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=atyYUwmlLhjhgH08P1vHi2eIQYhicw31NbJ4cKl7jwtlzdLVxkXGlaw2guVREPX4t
-	 dK9tC1ERSB6RSctAk1+S4W2II+A+qdS13i/z4vsTUcxsZ6nxI3oflAEMga6YMB3EAO
-	 Wqm3DgKNY5FfdCQ2JHtqLygfQ7Iv6/+r2qa642Zci0lSfkA7TQQXBneoh3Gb+Gs9V7
-	 IJ4zSMZQt18a2aiQQCNhBIytnDk14gEVTrGhIm34Ptf6ANCZ1RMGvLE5oOCKjc/tO5
-	 sffH6hI6ObXJT9qbPK9uTGM1VkaB6CN4tXh4oFqPGeTXdeEyVwyusSXfO/4wRbu/XE
-	 yRn7BMnp++OoA==
-Date: Mon, 20 Apr 2026 13:21:49 +0100
+	b=fwWh3krCsa6eLMRjKVFuyfO6jWzFfJkasUdYZ45vsjgb38ZVHmXcAwaQ3Mj/JhdSy
+	 /F/L7Zo+Asa1onUEy5vF6EiLqPVsvzPnAzKjEeA5zvsEimExeN/1S1BWJKsZWmE0qr
+	 aFT+D2GHacpz5NWDIg7O/ljNWuWVA7z4qzp7Q6wh5rBaDrK5LNxjmfW2M4+cPXgu/B
+	 e1oRHH6hqQZBnVK+KMCmFpjSRqfSNPWAEvRAx11EbJTu3rCD2j0GhGFkK7S5Weykij
+	 CS89itfiUl081RB/MOBckGSDjrBYdjFhTq0uGUf3siXCmPlohfz3HwVK3nv+dFvJjY
+	 IeGj9k1TFrEwA==
+Date: Mon, 20 Apr 2026 13:22:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Ariana Lazar <ariana.lazar@microchip.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, Dan Carpenter <error27@gmail.com>
-Subject: Re: [PATCH v2] iio: dac: mcp47feb02: Fix passing uninitialized
- vref1_uV for no Vref1 case
-Message-ID: <20260420132149.2ed9f4b1@jic23-huawei>
-In-Reply-To: <20260420-mcp47feb02-fix4-v2-1-8b758eaa8bcf@microchip.com>
-References: <20260420-mcp47feb02-fix4-v2-1-8b758eaa8bcf@microchip.com>
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Conor Dooley <conor.dooley@microchip.com>, Jonathan
+ Cameron <Jonathan.Cameron@huawei.com>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: iio: dac: mcp47feb02: Fix I2C address in
+ example
+Message-ID: <20260420132248.466cdc84@jic23-huawei>
+In-Reply-To: <20260420-mcp47feb02-fix6-v1-1-ae1808fea11d@microchip.com>
+References: <20260420-mcp47feb02-fix6-v1-1-ae1808fea11d@microchip.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,84 +50,68 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 20 Apr 2026 11:04:12 +0300
+On Mon, 20 Apr 2026 13:36:02 +0300
 Ariana Lazar <ariana.lazar@microchip.com> wrote:
 
-> Ensure that if a device has Vref1 but reading the regulator returns an
-> error, mcp47feb02_init_ctrl_regs() is not called with an uninitialized
-> vref1_uV value.
-Just to make it easier for folk to tell if this is critical or not:
-Is it a real bug?  See my reply (just now) to v1.
-
-Otherwise, same thing I just raised on v1.  Forgot to check if a new
-version had come in today.
-
+> Change example reg value from 0 to 0x60 in order to use a valid I2C address
 > 
-> Also add a device_property_present() check for the Vref1 supply before
-> reading the regulator.
-> 
-> Fixes: dd154646d292 ("iio: dac: mcp47feb02: Fix Vref validation [1-999] case")
-> Reported-by: Dan Carpenter <error27@gmail.com>
-> Closes: https://lore.kernel.org/all/adiPnla0M5EzvgD-@stanley.mountain/
+> Fixes: 4ba12d304175 ("dt-bindings: iio: dac: adding support for Microchip MCP47FEB02")
+> Link: https://lore.kernel.org/all/dd0dbadb-604b-4f12-8674-268b7db096fd@baylibre.com/
 > Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
 > ---
-> Changes in v2:
-> - return the reading regulator error to not use vref1_uV uninitialized in
->    mcp47feb02_init_ctrl_regs() call 
-> - add device_property_present() check for the Vref1
-> - Link to v1: https://lore.kernel.org/r/20260414-mcp47feb02-fix4-v1-1-9d71badfd25e@microchip.com
-> ---
->  drivers/iio/dac/mcp47feb02.c | 21 +++++++++++----------
->  1 file changed, 11 insertions(+), 10 deletions(-)
+>  .../bindings/iio/dac/microchip,mcp47feb02.yaml     | 32 +++++++++++-----------
+>  1 file changed, 16 insertions(+), 16 deletions(-)
 > 
-> diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
-> index faccb804a5ed548088aaf83266b16ed45a92916c..a876ed71ecdf101784e0f98668a1681a1cd19ed0 100644
-> --- a/drivers/iio/dac/mcp47feb02.c
-> +++ b/drivers/iio/dac/mcp47feb02.c
-> @@ -1095,9 +1095,10 @@ static int mcp47feb02_probe(struct i2c_client *client)
->  {
->  	const struct mcp47feb02_features *chip_features;
->  	struct device *dev = &client->dev;
-> +	int vdd_uV, vref_uV, vref1_uV;
->  	struct mcp47feb02_data *data;
->  	struct iio_dev *indio_dev;
-> -	int vref1_uV, vref_uV, vdd_uV, ret;
-Solution is fine but this change seems to be unrelated noise.
+> diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+> index d2466aa6bda2106a8b695347a0edf38462294d03..95ddc8321eff34ed27dab8ce712210d2cb9ae785 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+> @@ -280,23 +280,23 @@ examples:
+>  
+>          #address-cells = <1>;
+>          #size-cells = <0>;
+> -        dac@0 {
+> -          compatible = "microchip,mcp47feb02";
+> -          reg = <0>;
+> -          vdd-supply = <&vdac_vdd>;
+> -          vref-supply = <&vref_reg>;
+> +        dac@60 {
+> +            compatible = "microchip,mcp47feb02";
+Why is this indent changing?
 
-> +	int ret;
+> +            reg = <0x60>;
+> +            vdd-supply = <&vdac_vdd>;
+> +            vref-supply = <&vref_reg>;
 >  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -1146,16 +1147,16 @@ static int mcp47feb02_probe(struct i2c_client *client)
->  		dev_dbg(dev, "Vref is unavailable.\n");
->  	}
+> -          #address-cells = <1>;
+> -          #size-cells = <0>;
+> -          channel@0 {
+> -            reg = <0>;
+> -            label = "Adjustable_voltage_ch0";
+> -          };
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +            channel@0 {
+> +                reg = <0>;
+> +                label = "Adjustable_voltage_ch0";
+> +            };
 >  
-> -	if (chip_features->have_ext_vref1) {
-> +	if (chip_features->have_ext_vref1 && device_property_present(dev, "vref1")) {
->  		ret = devm_regulator_get_enable_read_voltage(dev, "vref1");
-> -		if (ret > 0) {
-> -			vref1_uV = ret;
-> -			data->use_vref1 = true;
-> -		} else {
-> -			vref1_uV = 0;
-> -			dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
-> -			dev_dbg(dev, "Vref1 is unavailable.\n");
-> -		}
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		vref1_uV = ret;
-> +		data->use_vref1 = true;
-> +	} else {
-> +		vref1_uV = 0;
-> +		dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
->  	}
->  
->  	ret = mcp47feb02_init_ctrl_regs(data);
+> -          channel@1 {
+> -            reg = <0x1>;
+> -            label = "Adjustable_voltage_ch1";
+> -          };
+> -      };
+> +            channel@1 {
+> +                reg = <0x1>;
+> +                label = "Adjustable_voltage_ch1";
+> +            };
+> +        };
+>      };
+>  ...
 > 
 > ---
-> base-commit: 51e7665ab81f02adc80a1219c260ee678e9c6eb8
-> change-id: 20260414-mcp47feb02-fix4-614de9334f22
+> base-commit: d2a4ec19d2a2e54c23b5180e939994d3da4a6b91
+> change-id: 20260417-mcp47feb02-fix6-bd6694d84750
 > 
 > Best regards,
 
