@@ -1,151 +1,144 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FE533D411A;
-	Mon, 20 Apr 2026 13:37:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776692274; cv=none; b=mbmYHYx5wMXYCpLKvGAXgJWSGHNR0LBXEhgCzWARdLAuiCX26A3E70zOg57/frWayvmwe8/duHEkLPYLgs7h3S6UyQU4RsvZ0Wne7rXGK8q2C5E9Vqw9qqThl1M8dPTc2166X6Zq7JpBdXHQjgsqyT5bCZDgJ8BSAKkYnD6jhFg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776692274; c=relaxed/simple;
-	bh=VQKHomIJ8wUs6jjB1/NiO3QUKnCZu/i13ZYm5jdV80I=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PDIpbtHyMnBmtGxtP3+dxckvFQ8Els475Dhvt0k9vUZi7xGvktoLyUacC2B2+CiSEHdF/BY8sRQ38f2ldX4LpctMJbDc4tMaJpqfAcWXWlmuoYCe/kHFKmkhYi7wUN/VAI9SB3KCyKwIBtMcSZWg645s3FDImOtgXphFlci8wGU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z/tFWdJR; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BBA33B7756
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 13:39:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776692365; cv=pass; b=ObrGF0ZM/VGUlxJr2eVufSVewHRxNUQ4028VDut7vh437yzqOIFRcr9REUWU0OUza7+3AQ3tRlj5ayy1Tj5FjIoOgDFYHkk97lfqbdA/5kZQrEJLFyPdIOvbVs6XibqOca5m9oG8akE+iXQL5q2jxa5R59I4vfULlEYedbiSaH0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776692365; c=relaxed/simple;
+	bh=O+/x8AvmMb7+rX0uK7+niBHBwGIx7nhJpHuy4AJ2c0A=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QWCjNXHBODRPKGOFlYJ8vVbR8msOpzFyBO5WofbSYgQTX6w08NqLLZk1VnZBJFeHQnvAjFZ3T/HhVD0xbYgD7HbkRm2nPdxdEQhWaOfjBaFc9drWOHutuWfkwRPkZsi0/VIxJQawcmQJ7EIVgbY7G9FHHVbxA91nJCGrPvaoOVU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZlDIV28j; arc=pass smtp.client-ip=209.85.160.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z/tFWdJR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A425C19425;
-	Mon, 20 Apr 2026 13:37:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776692274;
-	bh=VQKHomIJ8wUs6jjB1/NiO3QUKnCZu/i13ZYm5jdV80I=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Z/tFWdJRawQJ/l0sW+p4YLYKmdoAldOFR9Xo8mheWYv3kuSIJXsPTRC/RX3IXrxpN
-	 r1Vd5+B05slIJaHUePyQFXttXdJYhA+oBYe88OxnokJpWVoukZZ5cvToCBwg0n6x1D
-	 gOWVQHy3D6nmoqUCDj6vkI856OVn5EoujPVU/tP+Ligw1vjpMVe0P3tylJL7wOkIPN
-	 AojxfD6+6zdRgXzPaPqTSeQXjA4FLhrGs7G/QU9OO2JDbx93Sh3CvpShNlR7KVAxL0
-	 7Z+l1AigzhmU4nhYazouZUbsbuf1YxefoiR8+MOXJv0se8k+KdPrriMn7NADiKuCJp
-	 W16El2xOIq8Kw==
-Date: Mon, 20 Apr 2026 14:37:42 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Hardik Phalet <hardik.phalet@pm.me>
-Cc: gregkh@linuxfoundation.org, andy@kernel.org, conor+dt@kernel.org,
- devicetree@vger.kernel.org, dlechner@baylibre.com, krzk+dt@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-staging@lists.linux.dev, me@brighamcampbell.com, nuno.sa@analog.com,
- robh@kernel.org, skhan@linuxfoundation.org, Hardik Phalet
- <hardik.phalet@gmail.com>
-Subject: Re: [PATCH v3 2/5] dt-bindings: iio: magnetometer: QSTCORP QMC5883P
-Message-ID: <20260420143742.1dfe8833@jic23-huawei>
-In-Reply-To: <20260420-qmc5883p-driver-v3-2-da1e97088f8b@pm.me>
-References: <20260420-qmc5883p-driver-v3-0-da1e97088f8b@pm.me>
-	<20260420-qmc5883p-driver-v3-2-da1e97088f8b@pm.me>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZlDIV28j"
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-40ef10ec84cso2464618fac.2
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 06:39:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776692363; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Re0OxTXQXWZWuNpoLiMmwo3DQMccNQbZOi6/mWYxc77pgJBTleNWuVsHj01lHE3FjR
+         XfzmVAlC05rRpntzV5Isk2F3WavRXMEqwb6ylGRROWJmVzdbRWr0pCK4J3BN6+abDGCC
+         CFl8wRccOimkawoJUEnrkO6M97QfzRLUAlmoZp2D73voLGSitEZOjnjLpFDFcNsO+xtF
+         L9cNO+j4bJkU40w483KK+Yk+w3v9cvVkAXnNZD+eNzAznvxAO/LB4ukXAEJTZ6n68Bpm
+         +219vViDLSnShKBFBFW+SDmVfOtb6skcM86MdkawYrM9swzl8HoMA0Y1V5+0jFc50Zkp
+         /y4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=+Sd3d3cpNtLYAro4qMWTE2P4rnOA83jC2nXa7sXMDDw=;
+        fh=WDQY2ohnGWXyV4pNRlgIHSPOgqQFOlWWJcYuSnN4R4A=;
+        b=LZze2X4zLus4t2UOkBQVrCUqufnbNSSLch+zS2vvTE7TnAPFWCQouIs25xfOm/iJOl
+         uwl/cEcVbBbRV2SIZb1VvWVyj/HgMa1kckCoEX+K/NXrYotyP8C4uqCLyN0mLG7eFS0b
+         zRd2DxtS/R1NwDqEtU+p3nwW+f4jt/QFqmlTzaD38W4o+MFIdenAOiAFJZ+tvKbp60Op
+         XDBYoTYyZXiyH4OFAp0f2jBu92MUUaVapndX47vj7/aoXyjyp0gPa4vqgrnS0KfUiYAT
+         w4C8t9eunaDxCbX6vv1UD3jAFWoSLeYKpQFW3vQI6xYKY0KsIltNJ0Mw2EKOM0xSju/r
+         yp6Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776692363; x=1777297163; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+Sd3d3cpNtLYAro4qMWTE2P4rnOA83jC2nXa7sXMDDw=;
+        b=ZlDIV28j6jbgzkYfz9iLVTR0ZM0olbqc2twFaSdNaj2LtKg4T8mePPBjSoFIuZvOuY
+         Fo58f8nztrUnCM5iKTS1VnJIBBRzxvyyVVQ2zNdpgzjsjZ9KRpNgF12k8yoUZSl3xdzS
+         SSUAD7ldsGR00Pu/sAOU0MDsYY+Xvb1ajP0tq46WIfX5jclD9qVbrTfklP1FlB7HF7Lt
+         0maDGJi3DlHoQCWOhL/5eQd0r1QMwy6RCIvNbBAXnEcdjPwLrAUKVOVo2o3Kz/tHEIri
+         f4E8q7u5WNKM6UguADcBG3SMl0VP8mFODQzqdRVcEItU6c6aT5HoRuMFfyMtbUZa/Q7P
+         LHCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776692363; x=1777297163;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+Sd3d3cpNtLYAro4qMWTE2P4rnOA83jC2nXa7sXMDDw=;
+        b=Cq3ew8PCzWlHG99dCRO0trnoro0WrZwy5UiNoMnN7G0Hbq65iyr00jHs8iZSzzCjw6
+         qpDaBsaQyGlQwEInFFqj8w6zUI91M+GY5yiupE5aBn8rNM617Kw/epswiaftnVJyP2Bu
+         Tdqkv62Zy35mRxataWcXsr3orsXpwyZ497Jt0ghY6Grz9YJZ9CPR4033UFJntcinGZt8
+         /yyMKqt7W2hoj1aBLVUuGtCDIRrcHeqKvC6mC8w0d+uxS9cz3t79Th7lvpERvzuNBvPW
+         EX7bzq7xOHlSCDcx1Il2hd2mbsj5+yphF3uDv3Cm75p+FSMJF7xSJbhpEJf+DnTifLqr
+         kOMA==
+X-Forwarded-Encrypted: i=1; AFNElJ+U954X/gWLyv4WHJzciRin8JP+17IHr+NcDjYpo329xCF0+qewylYPqC3ZVh6IHmfRQCTQe47gOBo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyZ+GJ1voBjpMqAprMU8ksHyv+O2gsstYrwpO8nawX6CsUs7wZK
+	e+3oZdKcH2smATLSFgzWa3rTuhZcCTBS/tkAu5IMJExirWv6Qj3ro8u7C0PJsgrDWyRc2wYHbC4
+	jDGUnqPkRxSHVjgO4u1bncL9QiGrIItQ=
+X-Gm-Gg: AeBDievV84zu6W4bMIfDqFB1tXAD2naq2Jjpg8o3RXsTs3zKDORZVpTJnVd8ujdV2Mg
+	Srg6Qlj+g3sgiCyImeJaAgdCjrxO3d3E5IZJ+qxzdXJoXdUVcEqNKhjZrA9ALcJDKxWxJWdWc8R
+	GIQ8Na8cTAC0ekK3jqIrEwnNqys/FZMx3tddECCkO4pfmFskwnL0CyBvd3/z1whrSSBZ/OjQRhP
+	DdlIdfGMu5o6HokqHTSbbD6ZVHfPSeHwqH4pXW2TQX2WxC32AAMKEeRxmeY2DAUhNS+MVovSZpx
+	qCYLfjdoFpoxyuzHxK8PvHvgRY2fkMQe0GtSLevPQGZaxYYh
+X-Received: by 2002:a05:6870:d8cc:b0:409:7a01:6e2f with SMTP id
+ 586e51a60fabf-42abf2eef66mr8177587fac.11.1776692363371; Mon, 20 Apr 2026
+ 06:39:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260410193737.35905-1-devnexen@gmail.com> <60c2cdbc-2ee3-49ce-8a94-590230899cbc@baylibre.com>
+ <20260420142158.2d8b05e9@jic23-huawei>
+In-Reply-To: <20260420142158.2d8b05e9@jic23-huawei>
+From: David CARLIER <devnexen@gmail.com>
+Date: Mon, 20 Apr 2026 14:39:09 +0100
+X-Gm-Features: AQROBzCymbI2-fFWH7slMTP6eriNyPrtR7E32j8ay_OcJ-TLG6bOa5wFcv6C8Yc
+Message-ID: <CA+XhMqzMfheQrwsDKHR2d8pTckn3+ZSZrkvYLSkmv533472OTA@mail.gmail.com>
+Subject: Re: [PATCH 0/7] iio: dac: Convert several drivers to devm_mutex_init()
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Kim Seer Paller <kimseer.paller@analog.com>, 
+	Cosmin Tanislav <cosmin.tanislav@analog.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Sun, 19 Apr 2026 22:32:32 +0000
-Hardik Phalet <hardik.phalet@pm.me> wrote:
+Hi Jonathan and thanks for your review, I ll remember for next times. Cheers.
 
-> Add the device tree binding document for the QST QMC5883P, a 3-axis
-> anisotropic magneto-resistive (AMR) sensor with a 16-bit ADC that
-> communicates over I2C.
-> 
-> Add a MAINTAINERS entry for the QSTCORP QMC5883P devicetree binding.
-> 
-> Signed-off-by: Hardik Phalet <hardik.phalet@pm.me>
-
-Google fed me a break out board for this that has a drdy pin?
-If so include that as an interrupt as the binding should attempt
-to be as complete as possible from the start.
-
-> ---
->  .../iio/magnetometer/qstcorp,qmc5883p.yaml         | 48 ++++++++++++++++++++++
->  MAINTAINERS                                        |  6 +++
->  2 files changed, 54 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/qstcorp,qmc5883p.yaml b/Documentation/devicetree/bindings/iio/magnetometer/qstcorp,qmc5883p.yaml
-> new file mode 100644
-> index 000000000000..72cc3fef2226
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/magnetometer/qstcorp,qmc5883p.yaml
-> @@ -0,0 +1,48 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/magnetometer/qstcorp,qmc5883p.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: QSTCORP QMC5883P 3-axis magnetometer
-> +
-> +maintainers:
-> +  - Hardik Phalet <hardik.phalet@pm.me>
-> +
-> +description:
-> +  The QMC5883P is a 3-axis anisotropic magneto-resistive (AMR) sensor with a
-> +  16-bit ADC. It communicates over I2C (standard and fast modes) and is
-
-If you are spinning again I'd drop the standard and fast modes thing.
-It's rare that a device doesn't support those two.  High speed mode is another thing
-entirely as that changes the protocol quite a bit (I think - it's been a while
-since I spec dived on these).
-
-> +  targeted at compass, navigation, and industrial applications.
-> +
-> +properties:
-> +  compatible:
-> +    const: qstcorp,qmc5883p
-> +
-> +  reg:
-> +    maxItems: 1
-> +    description: I2C address of the device; the default address is 0x2c
-> +
-> +  vdd-supply:
-> +    description:
-> +      VDD power supply (2.5 V to 3.6 V). Powers all internal analog and
-> +      digital functional blocks.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        magnetometer@2c {
-> +            compatible = "qstcorp,qmc5883p";
-> +            reg = <0x2c>;
-> +            vdd-supply = <&vdd_3v3>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 48fda1f8332e..d41f6b33d0e5 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -21554,6 +21554,12 @@ F:	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
->  F:	drivers/bus/fsl-mc/
->  F:	include/uapi/linux/fsl_mc.h
->  
-> +QSTCORP QMC5883P MAGNETOMETER DRIVER
-> +M:	Hardik Phalet <hardik.phalet@pm.me>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/magnetometer/qstcorp,qmc5883p.yaml
-> +
->  QT1010 MEDIA DRIVER
->  L:	linux-media@vger.kernel.org
->  S:	Orphan
-> 
-
+On Mon, 20 Apr 2026 at 14:22, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Fri, 10 Apr 2026 15:03:33 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
+>
+> > On 4/10/26 2:37 PM, David Carlier wrote:
+> > >
+> > > This series converts seven iio DAC/ADDAC drivers to use devm_mutex_init()
+> > > instead of mutex_init(). These drivers currently call mutex_init() in
+> > > probe but have no .remove() callback, so mutex_destroy() is never called
+> > > on device unbind.
+> > >
+> > > Same pattern already accepted in iio for other drivers (e.g. ad5446,
+> > > ltc2688, ad7124, ad7606, vcnl4000, etc.).
+> > >
+> > > David Carlier (7):
+> > >   iio: dac: ad3552r: Use devm_mutex_init()
+> > >   iio: dac: ad7303: Use devm_mutex_init()
+> > >   iio: dac: ad5758: Use devm_mutex_init()
+> > >   iio: dac: ad5755: Use devm_mutex_init()
+> > >   iio: dac: ad5686: Use devm_mutex_init()
+> > >   iio: dac: ltc2664: Use devm_mutex_init()
+> > >   iio: addac: ad74115: Use devm_mutex_init()
+> > >
+> >
+> > Jonathan has mentioned before that he doesn't care to take patches like this
+> > unless we are making other cleanups to the driver too. So we'll see what he
+> > says this time.
+> >
+>
+> The one time I'm more flexible on taking small changes is when they come
+> from someone new to the kernel.  A quick look suggests that's not quite true
+> of David, but David also doesn't seem to be an old hand.  So I'll take
+> this set, but no more of these please unless part of a more general
+> cleanup of a driver.  Maybe at somepoint in the future we'll have few enough
+> of these that it makes sense to do this for all of them, but right now there
+> are ~300 mutex_init() calls in IIO and don't want anywhere near that level
+> of churn when there are more useful things to do!
+>
+> Applied to the testing branch of iio.git.
+>
+> Thanks,
+>
+> Jonathan
