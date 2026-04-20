@@ -1,138 +1,160 @@
-Received: from fout-a5-smtp.messagingengine.com (fout-a5-smtp.messagingengine.com [103.168.172.148])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4489D377558;
-	Mon, 20 Apr 2026 08:33:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.148
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 768F438CFE9;
+	Mon, 20 Apr 2026 08:38:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776674025; cv=none; b=jVN1r4X2ynQ7Ao109oMyKZ0/WZJ43NzU9sxSRcLjqGD/x3IGmkhS799dwfrYVAWOngxbNJpk9BAN3TCwLCyleknjYgOW2fbyyJYARRqTDtXke8mIxRYDl270kT0YikiIbV07jh7PVV8wybEn9SAmLzSZjgqIKX6fOsgHI/xneE4=
+	t=1776674283; cv=none; b=NFTgIWH2aLrBsDmOYRad2MjLwrdtcrxIYWHToJ67i1AL8ENIIkkuE3B/qHakHiwWg0ywpu3Lir2ZolTvJUmo7j2QLDxt78sgUXdn60eMHohkYZ0NvpDUh1PKMouff0QKlwsFPWk/37/Wlk7O1fZAUOZ0lRy0/DFa3wrmcTVoZwM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776674025; c=relaxed/simple;
-	bh=ZE03wWhZsUseRUuH0pap4nkT/0vVyl3JaI1R/jMFHk8=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=lVbIYwFpQCVGyDeG+g1VEzQIuwlLbkz6rrhRBfJYvA/1/OAF9POexaIj75EcW8GS1xqh8AgFTxhHKejLX6JqzrnN6xC1bTpb/g9FV8OSUgrEJzEaMUfC0ohWmUsVuPhlkY2jSi3fyfC49fv0LTSr2GWYFOhn8qHRF/r8S1hipYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=AGfjwo7D; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=qjkyUWd5; arc=none smtp.client-ip=103.168.172.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1776674283; c=relaxed/simple;
+	bh=Gbya5oXKaAMZhy9lQDSpzS07YizLz6mOef1S9GPA278=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kUB0Plziojl1UI3Z2obH1V2Xho/u86gjG2i1DsRqvgIwIkrTdTlNqQxTM1dVZozb/zdMK4eskGHZUiUmhcn5moUcg9TtRmCEcmL7OCdMVEf+gvaZgi+Zmu9lJmo/dTLhEOQ7ZrBil538qBbsPGU5wuzMQ9HomZSsGNxH0HTRwlA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=T1AMVAbX; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="AGfjwo7D";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="qjkyUWd5"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfout.phl.internal (Postfix) with ESMTP id 8D9EAEC02D0;
-	Mon, 20 Apr 2026 04:33:43 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-04.internal (MEProxy); Mon, 20 Apr 2026 04:33:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1776674023;
-	 x=1776760423; bh=tXaO/nAR364cIIXq3MDm75ZMhdZ7UuAUWKwuLrwZUUw=; b=
-	AGfjwo7DotA/7U7GcjidNAmPidJ9HfmBEeQYBOrSx19cax0M1rhsTcPalsn1HctY
-	yYiL+PYusVawDGIXyt87dBvl6wAas+rN5l828AxTURP6gEukZZQBADHY5IGZuTB0
-	RgLjBVSmwKBfeCwN4DHIW6jVbsXTYHgw5pRY6thLo6G56JMq7ZJRshNiCp6x7h2N
-	RJHBTFOwcj4v/SCZY8fGxrgrI5M8BRDQVnOoThDsn2trEu8WHSgaxaz1eP7zH688
-	F0ufnXE+sYUlbJb6+S5buhcmKv9qqwJXI8Kl7Kmm70yVnBDYevqtCqfPAG8KiadD
-	lxiP6tW35TyPZkupt5GYIw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1776674023; x=
-	1776760423; bh=tXaO/nAR364cIIXq3MDm75ZMhdZ7UuAUWKwuLrwZUUw=; b=q
-	jkyUWd5xIAm/xzyAlgr9W2lqGk3LTmziPofvuLDb78khAiDudYhyFe4c8nXjVurC
-	ZU+VIMsqLTPtvQOaX5f7RFtiujgHL6oTT349RHK/AzbvhGkKZuaeRQHOr6EVXLMN
-	GKfRlsdToKzNFR+SHDHGjTfecJTOwLoVvws8dFWGidEK84ofK6yvygGbU/HPk/fV
-	bgBLcV84uho3JNp6Ayo7j28zcUdty02iSl94+rSPbc8ut9fxBL91BIgbJDD5hKj0
-	FyP+o9ZYrWxVwGhcjLiTdR6mH9uMhYzJhHXynvWb8AhnRzeR2OUwfXdm7m3RwSA1
-	vF4FBysPVO/yeZrPy5Acw==
-X-ME-Sender: <xms:5uTlaWaVbr7y47rZSQ8c6EtUXo13oeA7eflBzhVLwomEKxsnnAJ8LA>
-    <xme:5uTlaUMU5niuCsa7IHlu9RF45nUElPNNUQhbGcfvA9i0WJOaSc6Bd6DQBa_wmv0K7
-    Ny_mFSeVO_VIg4CJEgWg0LRApb3qmLddt1jZN31xQ5ha8BQsROj1w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdehkedthecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpefoggffhffvvefkjghfufgtgfesthhqredtredtjeenucfhrhhomhepfdetrhhnugcu
-    uegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtthgvrh
-    hnpedvhfdvkeeuudevfffftefgvdevfedvleehvddvgeejvdefhedtgeegveehfeeljeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnug
-    esrghrnhgusgdruggvpdhnsggprhgtphhtthhopedujedpmhhouggvpehsmhhtphhouhht
-    pdhrtghpthhtohepnhhunhhordhsrgesrghnrghlohhgrdgtohhmpdhrtghpthhtohepug
-    hlvggthhhnvghrsegsrgihlhhisghrvgdrtghomhdprhgtphhtthhopegtlhgrmhhorhel
-    heesghhmrghilhdrtghomhdprhgtphhtthhopehrughunhhlrghpsehinhhfrhgruggvrg
-    gurdhorhhgpdhrtghpthhtoheprghnughrihihrdhshhgvvhgthhgvnhhkohesihhnthgv
-    lhdrtghomhdprhgtphhtthhopegrnhguhieskhgvrhhnvghlrdhorhhgpdhrtghpthhtoh
-    eptghonhhorhdoughtsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehjihgtvdefsehk
-    vghrnhgvlhdrohhrghdprhgtphhtthhopehkrhiikhdoughtsehkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:5uTlaSmZnjeoDKBryYtTwZsVA6Qy8uDXRx4Q8Qinnw-aKxvKM-IYFg>
-    <xmx:5uTlaVzLMjUKP_h_vXJglemObjU2HAT9HIx7VQS-B0K-uS2SGmsiaQ>
-    <xmx:5uTlaWzaBk1Vz1zkamR3L-F1UCeUKOHirF5G3FwVhp05w3f0wQm9nQ>
-    <xmx:5uTlac_gXRrZc7NHwzl4WCzRjRFxa1qjAeFect2HqGwFXD_9w03nfQ>
-    <xmx:5-TlaXrNE3mB-7CCnE-U5kjbMDGOXO4quzldIfCmZl4ZhwZcsuSiMxvL>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id C8E1A700069; Mon, 20 Apr 2026 04:33:42 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T1AMVAbX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776674281; x=1808210281;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Gbya5oXKaAMZhy9lQDSpzS07YizLz6mOef1S9GPA278=;
+  b=T1AMVAbXx2fgx7hqrNTRK7o41pA6kD8QMhq0md/nC8OKzGub5Emb3m1M
+   0ATvVeVB3t0HT5Pw8LfekGSzNGsy7PEyPCram6FqBYqPEWHgOWdmvkVBW
+   hYiwOO17PQEnBy25Sao03OJdAlsJ+e5YS5cRU81urEfeeLycdILXAHLd1
+   Wuo+eValmQU6v+NK1gNTu+fAYx+nCiGHF+Hs1zQEF/Ez+Dk65XzJwPeNy
+   q/h4FXqOlMdQo5nezjWkBuTV+5Z9Qhvt84XXWEg27d8mJLMRnvPnvPhx2
+   2cP6j68jAj+yrEkHaliUuipb6dQgkg3fsfvdBf2nK/73ubD7uXsmyjq/2
+   A==;
+X-CSE-ConnectionGUID: eKxCeZb4SES1TW2KKjDMrQ==
+X-CSE-MsgGUID: XvTgCH92TA+eOwZrwx0+NA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="103050555"
+X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
+   d="scan'208";a="103050555"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 01:38:00 -0700
+X-CSE-ConnectionGUID: jPoRTTOQTd6fzvT1G7mBeg==
+X-CSE-MsgGUID: IPCeMjJRSy6C3LyKzrnPJQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
+   d="scan'208";a="236041746"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 01:37:58 -0700
+Date: Mon, 20 Apr 2026 11:37:56 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Felipe Ribeiro de Souza <felipers@ime.usp.br>
+Cc: paul@crapouillou.net, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org,
+	Lucas Ivars Cadima Ciziks <lucas@ciziks.com>,
+	linux-mips@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ingenic-adc: use guard(mutex)(&lock) to
+ handle synchronisation
+Message-ID: <aeXl5BO91iRUqNWp@ashevche-desk.local>
+References: <20260419152917.8984-1-felipers@ime.usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: AyRRm7xDvSp7
-Date: Mon, 20 Apr 2026 10:33:22 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Andy Shevchenko" <andriy.shevchenko@intel.com>,
- "Jonathan Cameron" <jic23@kernel.org>
-Cc: "Svyatoslav Ryhel" <clamor95@gmail.com>,
- "David Lechner" <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>, "Jonathan Corbet" <corbet@lwn.net>,
- "Shuah Khan" <skhan@linuxfoundation.org>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Randy Dunlap" <rdunlap@infradead.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org
-Message-Id: <68c671b4-6754-49df-9fdb-2b3382033fb3@app.fastmail.com>
-In-Reply-To: <aeXh7j410AxESy4U@ashevche-desk.local>
-References: <20260419083125.35572-1-clamor95@gmail.com>
- <20260419083125.35572-4-clamor95@gmail.com>
- <20260419143346.45ed78c2@jic23-huawei>
- <CAPVz0n1qrSYr16zSSqRHuTWVkRfdC+c9w+mxAhtzgfHzL41XFw@mail.gmail.com>
- <20260419172216.3cf10e51@jic23-huawei> <aeXh7j410AxESy4U@ashevche-desk.local>
-Subject: Re: [PATCH v2 3/3] misc: Remove old APDS990x driver
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260419152917.8984-1-felipers@ime.usp.br>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Apr 20, 2026, at 10:21, Andy Shevchenko wrote:
-> On Sun, Apr 19, 2026 at 05:22:16PM +0100, Jonathan Cameron wrote:
->> On Sun, 19 Apr 2026 16:41:24 +0300 Svyatoslav Ryhel <clamor95@gmail.c=
-om> wrote:
->> > =D0=BD=D0=B4, 19 =D0=BA=D0=B2=D1=96=D1=82. 2026=E2=80=AF=D1=80. =D0=
-=BE 16:33 Jonathan Cameron <jic23@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+On Sun, Apr 19, 2026 at 12:27:34PM -0300, Felipe Ribeiro de Souza wrote:
+> Replace mutex_lock(&lock) and mutex_unlock(&lock) calls with
+> guard(mutex)(&lock) in functions ingenic_adc_set_adcmd(),
+> ingenic_adc_set_config(), ingenic_adc_enable(), ingenic_adc_capture(),
+> and with scoped_guard(mutex, &lock) in function
+> ingenic_adc_read_chan_info_raw().
+> 
+> This removes the need to call the unlock function, as the lock is
+> automatically released when the function return or the scope exits
+> for any other case.
 
->>=20
->> Their userspace will be broken by dropping it.  The lack of upstream =
-users
->> makes this less critical but it can be argued it's still a possible r=
-egression.
->
-> Usual recommendation is to google, and check Debian code search engine.
-> I randomly chose a couple of sysfs nodes and only kernel code refers t=
-o them.
-> So, at least there is a good sign that it likely not in use. But one h=
-as
-> to perform more checks (all attributes, more sources of information) a=
-nd
-> summarise that in the commit message.
+...
 
-I think in this case it's sufficient to point out that there is no
-devicetree support in the driver, and no pre-DT board file ever
-declared a platform_device with apds990x_platform_data in mainline
-kernels. The ambient light sensor drivers in drivers/misc/ were
-all added in before the change from boardfile to DT, and from custom
-ABI to drivers/iio.
+>  	/* We cannot sample the aux channels in parallel. */
+> -	mutex_lock(&adc->aux_lock);
+> -	if (adc->soc_data->has_aux_md && engine == 0) {
+> +	scoped_guard(mutex, &adc->lock) {
 
-     Arnd
+This makes a bit noisy refactoring, hard to follow. Perhaps, split out
+the helper function first (in a separate change) and then use guard()()
+there.
+
+> +		if (adc->soc_data->has_aux_md && engine == 0) {
+> +			switch (chan->channel) {
+> +			case INGENIC_ADC_AUX0:
+> +				cmd = 0;
+> +				break;
+> +			case INGENIC_ADC_AUX:
+> +				cmd = 1;
+> +				break;
+> +			case INGENIC_ADC_AUX2:
+> +				cmd = 2;
+> +				break;
+> +			}
+> +	
+> +			ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_AUX_MD, cmd);
+> +		}
+> +	
+> +		ret = ingenic_adc_capture(adc, engine);
+> +		if (ret)
+> +			goto out;
+> +	
+>  		switch (chan->channel) {
+>  		case INGENIC_ADC_AUX0:
+> -			cmd = 0;
+> -			break;
+>  		case INGENIC_ADC_AUX:
+> -			cmd = 1;
+> -			break;
+>  		case INGENIC_ADC_AUX2:
+> -			cmd = 2;
+> +			*val = readw(adc->base + JZ_ADC_REG_ADSDAT);
+> +			break;
+> +		case INGENIC_ADC_BATTERY:
+> +			*val = readw(adc->base + JZ_ADC_REG_ADBDAT);
+>  			break;
+>  		}
+> -
+> -		ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_AUX_MD, cmd);
+> -	}
+> -
+> -	ret = ingenic_adc_capture(adc, engine);
+> -	if (ret)
+> -		goto out;
+> -
+> -	switch (chan->channel) {
+> -	case INGENIC_ADC_AUX0:
+> -	case INGENIC_ADC_AUX:
+> -	case INGENIC_ADC_AUX2:
+> -		*val = readw(adc->base + JZ_ADC_REG_ADSDAT);
+> -		break;
+> -	case INGENIC_ADC_BATTERY:
+> -		*val = readw(adc->base + JZ_ADC_REG_ADBDAT);
+> -		break;
+> +	
+> +		ret = IIO_VAL_INT;
+>  	}
+> -
+> -	ret = IIO_VAL_INT;
+>  out:
+> -	mutex_unlock(&adc->aux_lock);
+>  	clk_disable(adc->clk);
+>  
+>  	return ret;
+
+Alternatively, propose the respective ACQUIRE*() macros to CCF.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
