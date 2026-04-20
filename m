@@ -1,61 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 632F7386551;
-	Mon, 20 Apr 2026 09:18:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF0B3386551;
+	Mon, 20 Apr 2026 09:21:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776676696; cv=none; b=R9hb69B2otTeKXJ1vzxoENM07kMfJ0rmU0bERpeYed8EuitVh7fuKQl95Y6ckx6/qbcZTO1UmUxRiElAWkOvJQ51C30wJFS94pzsp+TEohuYCtNdk+azPWUJKHKcU67vYOZ+kQdoWh3NO2taL1vWgGi6fVaWd18WMUOMKluAMfk=
+	t=1776676909; cv=none; b=XzRutWFHczrDdzEw5EMnSMoeuzKrVFaF6xVYdmW2fItT2ta2arFlgVYtAb8a4s0cePopEYAtxVwpu8Eo1DAjccKOFkBIhKSD9Ghi0Id5th9EFWST7MVjhs+l/DPQ2Ir67MWgsY/yU6v95UljaUZWMOs5lDjmBETP4CLXxTwECxA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776676696; c=relaxed/simple;
-	bh=Ews81qwbWTDLy8MrQh7L0w6xh1yIz+OzmwfX9X6ZxTA=;
+	s=arc-20240116; t=1776676909; c=relaxed/simple;
+	bh=nT9TOhxd3gox0+1XBOdyXoZMbU4M/tmT3wao+uStV3I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kpLokOzhLMGMk5Mz/jnYbPM1KsILyvIPFf0Xdmmtx3kLavI69f8V37MumKYbal8gxKMpHueivhZtnKn+gH1ieuB+j07bfejLW3RGaAPaQhVkuTriIbFNaBcVkQgTjFJf0j4eypHqI2MXdiAwOqS0EEnjbZ/FwXSEl2VzvtXdAJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RgUwpoFr; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=hB3MstuBc1hvxVe5nQj6C/ESiws9dEwHU8Lg33ltEohom/8V5XZOEx2va4a7ArD2yDbwfxohaczY2ALHDBTKaqscR1fqxJ0owq01yWkA1Kqz7Zd7eSnU28Mf73o+nb9V1JEGRqhGvoxImtX0GWOV7/Ij2JQsr0A9l83jSXO0LUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ONnqyl4a; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RgUwpoFr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ONnqyl4a"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776676694; x=1808212694;
+  t=1776676908; x=1808212908;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Ews81qwbWTDLy8MrQh7L0w6xh1yIz+OzmwfX9X6ZxTA=;
-  b=RgUwpoFr9muuN6zL3r3PmM59rU9jSuf3aAZPe7XtgwQ6nYYeVDj8OXzG
-   JU+TM0OdMxTCvpvDOVSoC13TCGbi5zkTq1/BFW1hdGTO4R8ID7a5OoCq5
-   0R8oStevjxzhd1CKq6tfZAy60wYN3ibhoBkBk3MSpwisBICzbBwVphdz3
-   LWfuGAzlU4yT2tjf08KSEgRcZpzyfAq/FZFTSP1ktzYd6QLSMMjzp2a23
-   rJKGRTFvFv36lc/MZvcWZtSMjcAddD3em1fuGFSfr0TdITn9I8yrdV9Ei
-   XWpz1WLe5Yy+dWLkb0qevImTZzb6tpmaaSNQ9BuTNO9JYzRDGMBvqwFPR
+  bh=nT9TOhxd3gox0+1XBOdyXoZMbU4M/tmT3wao+uStV3I=;
+  b=ONnqyl4ahQc5joouE1nKRGCnAjvbfKGki9Pyw/rG95MXmOLRjS1fJqhP
+   F/J+BHrNl57DAZ3kNAkLdFhEcRvIU5ekrHgAX0E6gkNu8LOBTMYDTo6/n
+   F7rQyi/cyM3lJT41U6Z37mM4ogosdQU5wkAmT3mTq8jTPm7pL8FYeGKqp
+   eeksbw4NfYESOzdJCSiZqKKF5axzE5DjwfHYzv2yFucSzWIJVBCKzC0LH
+   /PpsNPWghyyBxXUfe0d6c099w8FbiW5Fz9WltR3kMtidMIY8sKWkt3X4r
+   upaEGzl8JSJoKRLflkkKpi+17AytnQFw9CGjcg65ivNzTKTXNP7Xq1bY3
    w==;
-X-CSE-ConnectionGUID: Wx8+A8GqQhaz8nY9bkaLVQ==
-X-CSE-MsgGUID: fhUWwgo6Qu+HFvE1yrZJ+g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77601899"
+X-CSE-ConnectionGUID: m1UBdV1rTyeLfW68axEfcQ==
+X-CSE-MsgGUID: 1BOlVy0HRLSYVqpqAFFFxQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="95149325"
 X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="77601899"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 02:18:14 -0700
-X-CSE-ConnectionGUID: B8Y1CBUqSsGXj998AkT6CA==
-X-CSE-MsgGUID: 85T12Jz/QYu9Svnq2XYHSg==
+   d="scan'208";a="95149325"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 02:21:47 -0700
+X-CSE-ConnectionGUID: Blm0GayOR9WtVN1FU+50bw==
+X-CSE-MsgGUID: cfY1FMsSQ7O5p8FX6JuOLw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="236048689"
+   d="scan'208";a="228986084"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 02:18:10 -0700
-Date: Mon, 20 Apr 2026 12:18:07 +0300
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 02:21:45 -0700
+Date: Mon, 20 Apr 2026 12:21:43 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Hardik Phalet <hardik.phalet@pm.me>
-Cc: gregkh@linuxfoundation.org, jic23@kernel.org, andy@kernel.org,
-	conor+dt@kernel.org, devicetree@vger.kernel.org,
-	dlechner@baylibre.com, krzk+dt@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-staging@lists.linux.dev, me@brighamcampbell.com,
-	nuno.sa@analog.com, robh@kernel.org, skhan@linuxfoundation.org,
-	Hardik Phalet <hardik.phalet@gmail.com>
-Subject: Re: [PATCH v3 0/5] iio: magnetometer: add driver for QST QMC5883P
-Message-ID: <aeXvTwLXeAaB5bvE@ashevche-desk.local>
-References: <20260420-qmc5883p-driver-v3-0-da1e97088f8b@pm.me>
+To: Junxiao Chang <junxiao.chang@intel.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, gye976@gmail.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, lars@metafoo.de
+Subject: Re: [PATCH] iio: buffer: fix warning in requesting threaded irq
+Message-ID: <aeXwJyBlktTSX7eG@ashevche-desk.local>
+References: <20260421015252.621393-1-junxiao.chang@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,54 +60,45 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260420-qmc5883p-driver-v3-0-da1e97088f8b@pm.me>
+In-Reply-To: <20260421015252.621393-1-junxiao.chang@intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Apr 19, 2026 at 10:32:09PM +0000, Hardik Phalet wrote:
-> This series adds an IIO driver for the QST QMC5883P, a 3-axis
-> anisotropic magneto-resistive (AMR) magnetometer with a 16-bit ADC,
-> communicating over I2C. To my knowledge there is no existing
-> upstream driver for this device (see "Prior-art register-map check"
-> below).
+On Tue, Apr 21, 2026 at 09:52:52AM +0800, Junxiao Chang wrote:
+> IRQF_ONESHOT is for threaded IRQ. If there is no threaded IRQ
+> handler, this flag should not be set.
 > 
-> The driver supports:
->   - Raw magnetic field readings on X, Y and Z axes
->   - Four full-scale ranges (+/-2 G, +/-8 G, +/-12 G, +/-30 G),
->     selectable via IIO_CHAN_INFO_SCALE
->   - Four output data rates (10, 50, 100, 200 Hz), selectable via
->     IIO_CHAN_INFO_SAMP_FREQ
->   - Four oversampling ratios (1, 2, 4, 8), selectable via
->     IIO_CHAN_INFO_OVERSAMPLING_RATIO
->   - Runtime PM with a 2 s autosuspend delay
->   - System suspend/resume delegated to the runtime callbacks
+> This change fixes a warning during booting with kernel v7.0-rc3:
 > 
-> Regmap with an rbtree cache is used throughout. CTRL_1 and CTRL_2
+> WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x1639/0x2510, CPU#3: iio-sensor-prox/974
+> Call Trace:
+> request_threaded_irq+0x2c7/0x490
+> iio_trigger_attach_poll_func+0x353/0x6b0
+> __iio_update_buffers+0x2420/0x2c70
+> enable_store+0x183/0x270
+> dev_attr_store+0x5e/0x90
 
-I'm not sure this paragraph answers the question "why not maple tree?"
+> sysfs_kf_write+0x1e8/0x290
+> kernfs_fop_write_iter+0x406/0x5f0
+> vfs_write+0x71c/0xea0
 
-> bit fields are accessed via regmap_field to avoid read-modify-write
-> races. The STATUS register is marked precious so regmap never reads
-> it speculatively and clears the DRDY/OVFL bits unexpectedly.
-> 
-> The probe-time init sequence is: soft reset, wait 300 us for POR
-> to complete, deassert reset, drop the register cache so subsequent
-> RMW writes read fresh values, then enter normal mode. 300 us
-> comfortably covers the 250 us POR time given in the datasheet.
-> 
-> Patches:
->   1/5 - dt-bindings: vendor-prefixes: Add QST Corporation
->   2/5 - dt-bindings: iio: magnetometer: QSTCORP QMC5883P
->   3/5 - iio: magnetometer: add driver for QST QMC5883P
->   4/5 - iio: magnetometer: qmc5883p: add oversampling ratio support
->   5/5 - iio: magnetometer: qmc5883p: add PM support
-> 
-> Patches 4 and 5 are split out from the main driver so that the core
-> (1-3) can be reviewed and picked independently, per review feedback
-> on v2. 4/5 exposes the CTRL_1 OSR field via
-> IIO_CHAN_INFO_OVERSAMPLING_RATIO. 5/5 adds runtime PM that puts the
-> chip into MODE_SUSPEND when idle and wakes it to MODE_NORMAL on
-> demand.
+These 3 lines do not bring much value.
+
+> v3: remove unneeded log in git message
+
+No, it's still there.
+
+> v2: use ternary and drop temp variable
+
+Also the changelog is still noise part of the commit message.
+
+Whatever, I leave it to Jonathan who usually tweaks the patches whilst
+applying.
+
+...
+
+What it worth is to add a summary of the driver (and platform, if available)
+in use.
 
 -- 
 With Best Regards,
