@@ -1,73 +1,73 @@
-Received: from mail-dl1-f49.google.com (mail-dl1-f49.google.com [74.125.82.49])
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5029235A925
-	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 21:25:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E222E7F39
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 21:50:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776720318; cv=none; b=kM/gEtN/5Nhhj36ASELcUr2/xMpLtuRH8WhAUuweS2QFYY7OgZGXopmQtnCBMag2OQtV5AtMB5TTrX4hyvI77xpVIrJ53y/PvfAkpqB/4NaEyyFHuPLCwPLipSomLR4jjJWWfNnA18F+ZOf9rUTYbLXzcwFmNjYfp+wOc+veiR0=
+	t=1776721841; cv=none; b=mqzYuCAic1DJIwhteSrUVM0xRauBe9IxX899BI5IMlx9ZAy/tFjLBLXLLTf8dLCo1wIPog6JIZkGWA4asN3TqZKuLTNqincdVFsvCNNiKM+wLG20kpCjCsarNXqmgmiXb8PLfGPN3HUvDMMDLKRvjyru7K7L571wcYddka9pyFg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776720318; c=relaxed/simple;
-	bh=k3wWhO1OkFuqlVr0NRYtiAKhJRQAkfvzr3hIyRnAXzQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=k1+EruD/OLmTr+QOEmCLsR7i1HXdVBYoxfieNmM9VO7T9RpoG7L+6a/8Qe0oEwGhjj7Zd43Bvf63MyX8t6Cu8GFOw6JLF4auOE7af/4TTM5BlyiexXiI9ShwyT5N0DtaUgam31guuXO9v+NopBStjodVuJY8tg0LBne2Tln8kOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=kX24MVY4; arc=none smtp.client-ip=74.125.82.49
+	s=arc-20240116; t=1776721841; c=relaxed/simple;
+	bh=YEl54vqHTAaczVa7q87j1DtnYpMxlzP86X/iTlUa8zQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HL80I8u5ySI1wOEHbgb2gCHhTtQyMgzVIIPiJpYpptxWU9Lzvq5vosqCIJbUOKky1B1bPROGtYiBFuBnSIsrHsPV18PG3ql9Nwi3Ne1lxgqzI9gWye4ZWTGQ4+ulBCEEAy6pvVYEJquAzoLMmEc+kYPnaTmBdQPMfGtSZ8PSu14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=Y4lu0x2O; arc=none smtp.client-ip=74.125.82.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="kX24MVY4"
-Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-12c45281a06so4637861c88.1
-        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 14:25:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="Y4lu0x2O"
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-1279eced0b9so5150953c88.0
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 14:50:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776720313; x=1777325113; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1776721838; x=1777326638; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7yOBRqIXNGraVLHUEBXwwEDYRVvousxME4ehp+RqjG0=;
-        b=kX24MVY4iW2iU20/WjWN3/ZXGFIIPQG/6PZ/4eR7GKEmEpt+toAGQYidTe5X360YQ9
-         hfetod41UJvtiPljrsk8axSysRBwtvQ6MgAyB9AZNZSInCNWWh2bVh8f6XvE1hL9xRiX
-         25yF+77dwe4qeoxGxqELV5lp8S4exiH/seKazTt6xHunylbmFZ3c2smbMt1Vys2E/Rh2
-         GfWRJ530NSCRlwQ/C7rDdqAwzRiYB5JcCVq1rkAq52sYGojf0ctc/hU6lh8bxQv47toK
-         FFx8ksf2hzCk7hIJz82M2u44FhvGf9LZVlV1JzupsErVFyQMR0OUo7cyXCe+XmdLko0Y
-         W2Lg==
+        bh=nbL57stPwR16oPpmLMsV/qMQhFFKmTDRsvi5/awaCW0=;
+        b=Y4lu0x2OzvqG9dUv53vuJQU3dxLB/E3uqHk2gFnr1T74LEWuEkRn6s/NG3pil38rFJ
+         hYMkF9JL21xD0UPc7uYNq4JFZqBkj1x/DX/bGM3CQqr1yNzl6F0lRZcwyLhsRUZkV204
+         k6WntJviFtVdCwT/byHAmKeUvtlRWaeIF4zeqQ6t/0Sf6enMRXRBtx5m0+73pluro7Lm
+         TyHS7NbXQ0M7uMIeneVrZW6HWi2wowegdWwM/x0BWagftrUxxYEg4fYW+/y27TY2NQuU
+         fLbwux4SOdNLqZ4azNNu0rp7psFptH0Louc0kFp5duU1ju2SDg3C0Vt23EbMit4m5uvb
+         0PBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776720313; x=1777325113;
+        d=1e100.net; s=20251104; t=1776721838; x=1777326638;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7yOBRqIXNGraVLHUEBXwwEDYRVvousxME4ehp+RqjG0=;
-        b=XrRtiKKV/wlqUNMLUi/ISu0rByBNazxHivowXM1WYF6/VKBE/fhVsE/SJYH3BO+kT3
-         /rNMOUPowbkeV+czU2xm/GzW2MRquGjXbj4cmEkGapRtGQPad5rGHbCQDhmqR1EsUQm1
-         NlXDzvxukorxOg7zBp8tviNAE9u2QfZxu7BeGsVVlNZA8I68d4hAx6QYnFK5PoIYURl+
-         ettepPa6dJ+k5Vo+8jJEHrT8lXg/ckCXIpuonpzDPS7S11zxOFsb0B79KILxiJKK97ov
-         JH6xvJBSZ8fUnt7sZ41IzCgpzgVzEowYFEaKVmGrQOg5FCth+PnaYRCCFGw3VspjHk5w
-         ALVQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8JeqDMK4S/HMNVK+//RoGvZp1WK8FamfgBBv3OZ5UEASSY1BT2/7m6q/EKHQn4D/djyv0/tswQZ4M=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy4Z34niFgFculMXDnnejeTzGo2r+svooxtkNcAMZtBQeamcr/q
-	GgiJVq645w33X1+xqfRIqlSXmNxGMBGx62/a1u7MUjvfHTRmzXH+9V5wW0kM6JboIis=
-X-Gm-Gg: AeBDievc5p5qlp4l8fd8EkQFu6QlQq2KS0xH795NbEa9Hk1oQxpJ8W0McI9lDOQZ1SG
-	kRHDEC9Wz2qkD2wt5FpCGzKn5QHgtmh2Iuet+Wfuw6pt4NAR9bHQNe3+OyfFykYaKGJFJAc5kuk
-	0HcoKA+pNJLF2hcv5cfAjpD5F+njVvANlH0x3oOlNB3PG52f5DOu4LZBRSCPNbTTA2eROJ5Ui19
-	ERr86KfmBUaDS5IedpVJPedyNbgNmSuSQWntah1lBaInyeNd4MzO9YV7bYWUp46BCQlgMx/WmFh
-	LjI5ckV96K7uu3c7+7z+DF2QMMC9suO6BuaEcoZQOeI+T3M5Gdlyr2e4X/69Drve8Qjb0oPl/nz
-	vsm6cr4yLBJbGxd1KoXjYJP0G3HtkMkMSRgLJ9WieHlO2zdyLbZuStir6c5zr+6f7dEfX9KY2DV
-	NPEPxl5lR81l5pW9lysc/5ShZKqqC3icDKYGgOQT9AR6IMKLmx4H0TVZHdPf89QMHp6ZRY4A==
-X-Received: by 2002:a05:7022:6728:b0:128:cf5c:535a with SMTP id a92af1059eb24-12c73f7595emr8841885c88.11.1776720313150;
-        Mon, 20 Apr 2026 14:25:13 -0700 (PDT)
+        bh=nbL57stPwR16oPpmLMsV/qMQhFFKmTDRsvi5/awaCW0=;
+        b=NHiaUQFt8+Qu7X/MWTBWlneW7mnmMuOVYoiCdrZrIVKCMJQE+wVvZ1qalP5mTFlRG9
+         RfUUg2JGKgaECyjwdyjMXPppteecMeynem8KNMe3aj5pbXviv28ZgTdd+qveHc+0Ypjn
+         39RtV0uDBavjKKVO88fT2K9iIoj20GOmbWtdn7IHwkBBFPD0Zh6PiD4vEc27dOOzOGAt
+         Gb3Cv3w6v7f+lAbsalCBzbZVg9Rr6iodW2QreZb1be6NS6uug19tAec92uzpnawKswOa
+         CaE+sZqxROG2Kp49SnyiH/531LN2jO4nqzxf/+Rx1hFvjIB6rp6vQqmqPMKVmq/g3pbi
+         s6TQ==
+X-Forwarded-Encrypted: i=1; AFNElJ96VC4pY++PRs2TwJd1Yq18FxjVT9sgvHcpK5dRDY7eY3+VwYYbRT7ylOyao8Da+qVK3DPrmZUghW8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxhM8j7Eo0qF1k01utd9K2iKLRvc6Q1D9h/wUZ9yymWFULe0P8c
+	W3YQRK92iRHkVg7tIuOkJAHM9UloIwEYcHEUMN8nnDpIYlIPU2AT5eok71caAeTtJ1M=
+X-Gm-Gg: AeBDietqsWMkk1erLQ+wGpqLDJJFmffrx5jh4FSOX1VBymorEkgfLMPWdYSSeAghxZG
+	5h0+hwVJURKBCIMzCu8vXRfKdwHEduqI+tjPhNJ4P+uuPnqOjVBXQaNEjcsMmuf0mToJcWNl3bS
+	u1LDou1/5bS86ICAPVaOwdtNvvu63uWUO+D1MLwmNf0HtE4KLTkr25Nyl3WtPfqfmdht53TbTO5
+	fNdgVhEPwhKjZe792fC4HaEl3zh/ax4MT/Og6izlxTgn0y2XX4uWcZLDIXZMsNbfQy4ZL5VJGHR
+	1l6vY/UFYr/kvY7OY574YCRFyjkAxvshbarnZJ2I7oTHRf74UThxGpKgUrpURzaynekqLaEN1YO
+	NQcc6CVhHKBKg+yS8I/ZD+csrfzdfFmddkD4lpfD8jkoseIrBkaNH4OFcoGr2xPtZy9jBOHYdUc
+	t+J/Pvfp/lebpeYHiKCXxO1l7BK+8XNkYVPU/+Cst9b8H7WMOT/N7HoH/69M0=
+X-Received: by 2002:a05:7022:6b97:b0:11a:342e:8a98 with SMTP id a92af1059eb24-12c73e2ad32mr7992640c88.0.1776721837882;
+        Mon, 20 Apr 2026 14:50:37 -0700 (PDT)
 Received: from localhost.localdomain ([2804:14c:190:8d7a:86f3:7ac8:d737:1a02])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c749d29cdsm16890469c88.6.2026.04.20.14.25.09
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c837f7feasm14403351c88.0.2026.04.20.14.50.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2026 14:25:12 -0700 (PDT)
+        Mon, 20 Apr 2026 14:50:37 -0700 (PDT)
 From: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
 To: jic23@kernel.org,
 	dlechner@baylibre.com,
 	nuno.sa@analog.com,
 	andy@kernel.org
-Cc: Gustavo Pagnotta Faria <gustavo.pangotta@ime.usp.br>,
+Cc: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>,
 	Eduardo Augusto <eduardoaugustoabc@ime.usp.br>,
 	Christian Barry <christian.barry@ime.usp.br>,
 	linux-iio@vger.kernel.org
 Subject: [PATCH] iio: adc: mcp320x: refactor driver to use bitfield API
-Date: Mon, 20 Apr 2026 18:23:47 -0300
-Message-ID: <20260420212405.11789-1-gustavo.pagnotta@ime.usp.br>
+Date: Mon, 20 Apr 2026 18:49:18 -0300
+Message-ID: <20260420215021.14112-1-gustavo.pagnotta@ime.usp.br>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -76,8 +76,6 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-
-From: Gustavo Pagnotta Faria <gustavo.pangotta@ime.usp.br>
 
 Update the mcp320x driver to use the standard Linux bitfield
 API (<linux/bitfield.h>) instead of manual bitwise shifts and masks.
@@ -89,7 +87,7 @@ and replaces the manual masking in the RX data extraction
 using GENMASK() and BIT() were also introduced for both transmit
 configurations and receive extractions.
 
-Signed-off-by: Gustavo Pagnotta Faria <gustavo.pangotta@ime.usp.br>
+Signed-off-by: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
 Co-developed-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
 Signed-off-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
 Co-developed-by: Christian Barry <christian.barry@ime.usp.br>
