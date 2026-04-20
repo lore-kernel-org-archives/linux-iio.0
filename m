@@ -1,103 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E11FD39D6D5
-	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 17:52:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4055B36C0D2;
+	Mon, 20 Apr 2026 17:53:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776707527; cv=none; b=i/p42ryFx2W3PKFHp+nsF23oc/MfwVTHHAVOZdIWJgn1mZmsT4G/CUZSYqL6hConI40Gb4x9uEP63wv/dmiAO3Zdo3fvf2qH0XQdiZDA06XnBgdxtyN1NtulApJOOdvzd4ErMEpI9cvFD79ylKwHdDiaKc2QquBwYaFpOuWKBMw=
+	t=1776707622; cv=none; b=MIvM6R6RAiHBCfN4Im5DW17k95J++1QcJYQek7Pn8Z4RISwCxzinZajpE8tQnswEbfnSmoRQYcudZaVB/L9X/5Y0orL/YLZolhkHFR96SX0oIJ6RjjXWsxvP6f7+hhiOVSVFq2LaaCCH8tibuMxYpT6EE4pk5w2pTbTY1z5CiJo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776707527; c=relaxed/simple;
-	bh=eMYGOMBl8PjAXmzUoCU7eoG0nBsUaAMorPEk4AOeCSM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZUo+xH5d2YUZax8XZdeZCa4rLE/m2aZDB6rZ41mKR49pIT9ls0au3/OdxeaQSNIDYVGn+fUQXfEByHSsa467ioOVk1sBHg2kJpqYycEfgEp0xLd6LWEwP3Bvf19km1VuUusL+efXIPeGhYi1KldLg040TscAHHaWBINI5RZKF60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KmJXn6BG; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776707622; c=relaxed/simple;
+	bh=5acI+o4HFsnh2ccQchJrDcTLRKWq+npsKM/iml/SAhA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LeiJjX3RNWS02MefRnyupOf7LOi4JreJtsIv9/gFCOT0RjR07CkQt97aoH4Kl+WBIxE/Op2L32ciIy0B/SIQiP/B7mb5OccHL4opovWrF8bYHr3WzRFjcrDU2Kgq1dDPsbl5QdG2rSwwJx9f7DzNTXzae07rRQPgqffyWAnMxj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MmctomMo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KmJXn6BG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776707526; x=1808243526;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eMYGOMBl8PjAXmzUoCU7eoG0nBsUaAMorPEk4AOeCSM=;
-  b=KmJXn6BGJcu4iq4T/nTRzGTsj3cYAij41ZqWdikLKWxybMRWwQPnaylQ
-   7M0/tIolWyo7/CDNVKTn/vaSQaZNLZz6QNNfMKEOK3Nt6MRNwD8gtgL2H
-   jGzvp9PKc+oqGROJymLAeGyWnPR3jnfWLJ/DEvRlhbBzFDU2wY+Lwqqai
-   Swh74/TJSlfAWXIE8/kkIGbuuaqOZFDt0qICONAmkH0aieS1rsg4jua3K
-   LF6WVYAnAYJkRbmr+1Oxs0b7q5SFNanAHEGHgN0CAFcI+x88tQ64T3gyO
-   XQkIrcVNecUHneL6k9aFsMofvpibvJrfwiQiCr65F65HKiZOLc6ywi/jl
-   w==;
-X-CSE-ConnectionGUID: +5wQP9wZSW6Ql1QqXC8pEg==
-X-CSE-MsgGUID: C6zvly62T6q0HI0UPnLYOw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77543482"
-X-IronPort-AV: E=Sophos;i="6.23,190,1770624000"; 
-   d="scan'208";a="77543482"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 10:52:05 -0700
-X-CSE-ConnectionGUID: nwlypzOARlqdrw9SoApc0g==
-X-CSE-MsgGUID: wIkDkUkbRLqUq9utO9z7Rg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,190,1770624000"; 
-   d="scan'208";a="235802152"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 10:52:03 -0700
-Date: Mon, 20 Apr 2026 20:52:00 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Luiz Mugnaini <luizmugnaini@usp.br>
-Cc: cmo@melexis.com, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: temperature: mlx90614: use guard(mutex) for
- EEPROM access locking
-Message-ID: <aeZnwBmq67YZaHbQ@ashevche-desk.local>
-References: <20260420141512.196932-1-luizmugnaini@usp.br>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MmctomMo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB77FC19425;
+	Mon, 20 Apr 2026 17:53:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776707621;
+	bh=5acI+o4HFsnh2ccQchJrDcTLRKWq+npsKM/iml/SAhA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=MmctomMooNTfxbttxGS4jWZDvQFgaRS/lcnrYkBc67tnLAmLa67ZLHAViQkSYoXr9
+	 A168dlKbqK/dVFzxlVcQYkboWySA0EG7bM6lRau/OBOKi5bfco2+gUn2qhTrz+iahv
+	 jvON8U8qypnlOCmLyRDO4ZBeH7WD35d1qsitRLfV3X7oIT7OOVPtZaKHAgspPH/huP
+	 tLJsH2yFTdHZIJCyjKPJnyTq329kz6e85BE9rEM8jIn90aN4lmcqF11RUSjrgX2Sve
+	 Tm9J9CwCz64KcVQzc8Tjo7gq3+cKp+f1twtIzsMZ8qjHigEXb0AH6dyGyJubPtyxHF
+	 LVzn9SxUN1npA==
+Date: Mon, 20 Apr 2026 18:53:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Aldo Conte <aldocontelk@gmail.com>
+Cc: ktsai@capellamicro.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, daniel.baluta@intel.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+ me@brighamcampbell.com, linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH v4 1/2] iio: light: cm3323: fix reg_conf not being
+ initialized correctly
+Message-ID: <20260420185333.3bab224d@jic23-huawei>
+In-Reply-To: <20260407151702.15208-2-aldocontelk@gmail.com>
+References: <20260407151702.15208-1-aldocontelk@gmail.com>
+	<20260407151702.15208-2-aldocontelk@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260420141512.196932-1-luizmugnaini@usp.br>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Apr 20, 2026 at 11:14:29AM -0300, Luiz Mugnaini wrote:
+On Tue,  7 Apr 2026 17:17:01 +0200
+Aldo Conte <aldocontelk@gmail.com> wrote:
 
-> Replace mutex_lock()/mutex_unlock() pairs with guard() and
-> scoped_guard() from cleanup.h for cleaner and safer mutex handling. The
-> lock protects EEPROM access across five call sites in
-> mlx90614_read_raw(), mlx90614_write_raw(), and mlx90614_sleep().
+> The code stores the return value of i2c_smbus_write_word_data()
+> in data->reg_conf; however, this value represents the result
+> of the write operation and not the value actually written to
+> the configuration register. This meant that the contents of
+> data->reg_conf did not truly reflect the contents
+> of the hardware register.
 > 
-> In all cases, the code between mutex_unlock() and the end of scope is
-> either a return statement, or a call to mlx90614_power_put() followed by
-> trivial computation. In the later cases we prefer the use of
-> scoped_guard() to avoid holding the lock longer than needed.
+> Instead, save the value of the register before the write
+> and use this value in the I2C write.
+> 
+> The bug was found by code inspection: i2c_smbus_write_word_data()
+> returns 0 on success, not the value written to the register.
+> 
+> Tested using i2c-stub on a Raspberry Pi 3B running a custom 6.19.10
+> kernel. Before loading the driver, the configuration register 0x00
+> CM3323_CMD_CONF was populated with 0x0030 using
+> `i2cset -y 11 0x10 0x00 0x0030 w`, encoding an integration time of 320ms
+> in bits[6:4].
+> 
+> Due to incorrect initialization of data->reg_conf in
+> cm3323_init(), the print of integration_time returns 0.040000
+> instead of the expected 0.320000. This happens because the read of the
+> integration_time depends on cm3323_get_it_bits() that is based on the
+> value of data->reg_conf, which is erroneously set to 0.
+> 
+> With this fix applied, data->reg_conf correctly saves 0x0030 after init
+> and the successive integration_time reports 0.320000 as expected.
+> 
+> Fixes: 8b0544263761 ("iio: light: Add support for Capella CM3323 color sensor")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+Applied this patch, but patch 2 will need to wait for this to make its way
+into upstream - probably middle of the next cycle before that is in place.
 
-...
+thanks,
 
-> @@ -139,6 +140,7 @@ static s32 mlx90614_write_word(const struct i2c_client *client, u8 command,
->  	return ret;
+Jonathan
+
+> ---
+>  drivers/iio/light/cm3323.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
+> index 79ad6e2209ca..0fe61b8a7029 100644
+> --- a/drivers/iio/light/cm3323.c
+> +++ b/drivers/iio/light/cm3323.c
+> @@ -89,15 +89,14 @@ static int cm3323_init(struct iio_dev *indio_dev)
+>  
+>  	/* enable sensor and set auto force mode */
+>  	ret &= ~(CM3323_CONF_SD_BIT | CM3323_CONF_AF_BIT);
+> +	data->reg_conf = ret;
+>  
+> -	ret = i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF, ret);
+> +	ret = i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF, data->reg_conf);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error writing reg_conf\n");
+>  		return ret;
+>  	}
+>  
+> -	data->reg_conf = ret;
+> -
+>  	return 0;
 >  }
 >  
-> +
->  /*
->   * Find the IIR value inside iir_values array and return its position
->   * which is equivalent to the bit value in sensor register
-
-Stray change.
-
-...
-
->  	dev_dbg(&data->client->dev, "Requesting sleep");
-
-Side note: consider dropping this kind of debug messages. They can be easily
-enabled by ftrace infrastructure without being explicitly coded.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
 
