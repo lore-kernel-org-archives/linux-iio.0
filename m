@@ -1,49 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57DF73A7F41;
-	Mon, 20 Apr 2026 18:00:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D90D3A0E9A;
+	Mon, 20 Apr 2026 18:01:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776708007; cv=none; b=k0X0ZbuuZyQY38Izp4AtgvqBBQEiS1mnRa7tBrVeBl8R9Uj+1Q2wjumKcYbAcbRsFaoIQ5HijIWj0qZmBQNNYeLXbIhWQbN/x3a85BUSTjcGxJo+0jWhAzfC0GJPif8L3oHzKL/eNLhS1t0XpkxpZimyiXrYjzLDEmk9YCFZTQY=
+	t=1776708109; cv=none; b=UrJ5aQ37M/a24E3AzUSZkoFXFoHT/BeK7zVGBtjsNpMiBJEVkVlhKTlUYGggTIk/WGSmAKbt34FG0fXfqYpZF8Dtk/cRj/2SXgyQ1cglxJZB3yzQQcGUed9Zo+E2QuDIS1oqOJBlWePWdSRz16oT2I1e64mL8HHIULK0wxpJI/A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776708007; c=relaxed/simple;
-	bh=r1fIjUeSxsMecxMdPKeTMgbmN3KqMTf+MAqPY/2AiHM=;
+	s=arc-20240116; t=1776708109; c=relaxed/simple;
+	bh=5ZOBj2MSfadqjAlNaI7TAzdRXrp3vqbSeTQUJ7kkoYs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YgQuTBTRvKedYdDI11+tjk31AqgF0NKuv+J69M1SaByykhvMlc9mveSH28uGBeJddRRaxSBX9WRapTwogcDiwgiIGlqUsHf2QXyT5WPzLKQljJOwdlcBCs0atz51Ye5xPZbR4A9UZyRieObayYk1T6ZcEQcpW7qYg5R315FcJrw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rDmrENMF; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=jTTogQl84VFLPxL0sY9270G6xeawltYKcLLXzVSotIU27DEjQ8lPTaZBbd5sIWWOGWsqQ1RGTEcuPG3P6YQFCybvC/B7/jHhXkpmnOXs1bwD8ETnNKj7oSt2ofONVx640FlNUhuDn++0TLJhfg2s3xpafu3SZ68dB5/dBjbbXfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kbfIs14D; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rDmrENMF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8720CC19425;
-	Mon, 20 Apr 2026 18:00:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kbfIs14D"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA493C19425;
+	Mon, 20 Apr 2026 18:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776708007;
-	bh=r1fIjUeSxsMecxMdPKeTMgbmN3KqMTf+MAqPY/2AiHM=;
+	s=k20201202; t=1776708108;
+	bh=5ZOBj2MSfadqjAlNaI7TAzdRXrp3vqbSeTQUJ7kkoYs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=rDmrENMFMMPsT0h2fXOMJ7AAA8j7HcPYGmfobYZYzqeL088bTuvnxd8LyXw0xXFcR
-	 yEBVUi0Hy4ZcbWMdywfmgN/l7J3IERNKu7MT7/pCDOaeI03foHSlpMWgqRzp4qRxPx
-	 wT4stMkJ6SLwEP+NB+l9Nn+ifuY3laFgg6cnAhthyDoejHGoUvoGEjgCxFvCNej57X
-	 i8l3qJjf7Ej8Bbt3js7wpDYjp7Qes2nOgQe4vK7fXJlZFDIoPzc+DGTJgD7QWgIJ9s
-	 8+mmOdr1rzJArUWQJ4/ygsTFyKUekhxUmAEprf543MSx7BocZTT5k5n/IZsubDpaCf
-	 nvAHKrzqFoB1w==
-Date: Mon, 20 Apr 2026 18:59:55 +0100
+	b=kbfIs14Duo4FZYd6HfO3OSuPn9o0zu1yh9e9iUuJbKhylchg1IXOSv8r3MQeSk3+8
+	 JwTd8IkUkfdm+om7dU/ObltOE7L4mMYUS3GKuCKvmiBxEcumJv/nXo9jgYYP/jRWAh
+	 gVjElQmeAe8coIOmGRMjkHoIVM/gIiR9AegmlV/nDOKqZxLUoJEE6471ZjfjXemZcE
+	 +scs6Kr1pHTJK7KR4BjyPeqfxPAq9uNxwjeacQxglxaoQN0T0ejVgia7exredcXpfm
+	 mQsN8vxdqygbziqt+3SyrATy4E2+MpI9kV+nKWXS313bYKnT4tpCu5lWiefuNC8mcn
+	 IHHeO92efBTWw==
+Date: Mon, 20 Apr 2026 19:01:39 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Antony Kurniawan Soemardi <linux@smankusors.com>, Bjorn Andersson
- <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- phone-devel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] iio: adc: qcom-pm8xxx-xoadc: remove redundant
- error logs when reading values
-Message-ID: <20260420185955.79031fc5@jic23-huawei>
-In-Reply-To: <adQNCy14vfk0FCrn@ashevche-desk.local>
-References: <20260405-pm8xxx-xoadc-label-v3-0-9fe179c283ec@smankusors.com>
-	<20260405-pm8xxx-xoadc-label-v3-2-9fe179c283ec@smankusors.com>
-	<adQNCy14vfk0FCrn@ashevche-desk.local>
+Cc: Guilherme Ivo Bozi <guilherme.bozi@usp.br>, Marcelo Schmitt
+ <marcelo.schmitt@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ad4170: use lookup table for gpio mask
+ selection
+Message-ID: <20260420190139.37377770@jic23-huawei>
+In-Reply-To: <adQOnSHRS3baSTLv@ashevche-desk.local>
+References: <20260405213725.25426-2-guilherme.bozi@usp.br>
+	<adQOnSHRS3baSTLv@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,37 +51,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 6 Apr 2026 22:44:11 +0300
+On Mon, 6 Apr 2026 22:50:53 +0300
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Sun, Apr 05, 2026 at 04:52:18PM +0000, Antony Kurniawan Soemardi wrote:
-> > Drop dev_err() logging for -EINVAL and -ETIMEDOUT cases and rely on
-> > return values to report errors, reducing unnecessary log noise.  
+> On Sun, Apr 05, 2026 at 06:37:26PM -0300, Guilherme Ivo Bozi wrote:
+> > Both ad4170_gpio_direction_input() and
+> > ad4170_gpio_direction_output() duplicate the same switch
+> > statement to map a GPIO offset to its corresponding mask.
+> > 
+> > Replace the switch with a static lookup table, simplifying the code
+> > and avoiding duplication. This also makes future extensions easier.
+> > 
+> > No functional change intended.  
 > 
-> ...
+> If this churn is okay by maintainers,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
-> >  	ret = wait_for_completion_timeout(&adc->complete,
-> >  					  VADC_CONV_TIME_MAX_US);
-> >  	if (!ret) {
-> > -		dev_err(adc->dev, "conversion timed out\n");
-> >  		ret = -ETIMEDOUT;
-> >  		goto unlock;
-> >  	}  
-> 
-> In case you need a new version, the above can be replaced with a better
-> alternative (assuming the ret is defined as not boolean and it is so):
-> 
-> 	if (!wait_for_...(...)) {
-> 		ret = ...;
-> 		goto ...
-> 	}
-> 
-Given we are early in the cycle and have lots of time I would like this
-change made.  It avoids the current slightly nasty meaning changes of
-ret where sometimes it being 0 is good, sometimes bad.
-So a v4 please with this form that Andy suggested.
+Applied.
 
 Thanks,
 
-Jonathan
+J
 
