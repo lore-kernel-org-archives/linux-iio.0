@@ -1,148 +1,131 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com [209.85.222.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94EDA385536;
-	Mon, 20 Apr 2026 08:04:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5378F3822A8
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 08:06:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776672281; cv=none; b=i54ZaxbjWPTFgaKWduzbiUANoNq4IYpdfd3bqGhvGQ7Gb1cPDCvbKXiWkJxjn3goo58qMdnkYPE+9aqPAGWoe1L8//iJvzXr6SHPuB0jlDL6JspSKpiRau7DIAgF0ACluFi8rZtUeOR97kXc7+2g7qy41q/gW46i3k+w0VPa9FM=
+	t=1776672390; cv=none; b=YxChLg4BXxY8l1pHtpCqjKh4ZOA27Z6FvCJOZy+pWBpuvWS2ai7soXZdks32TIQwOajBDTjYbvjgQUx53+noSeW4Pb8SPcQTP3VbFiAlsjOBEzKieUeqPLuXt11FIzxucvofdHIyUcrMZhmVqZUpITO/UM8YMjPxBS/BVm0EyQU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776672281; c=relaxed/simple;
-	bh=pTa8pq24A5FijSPJIQX3I3UFOHq3WQ2bKXjFwa3xFWM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=hjHVYK9nnIQJwqUefI0NsDp6j9TDuy8ybuPpnOSBwkaYrt0Wr/osMIz8f9yPTOQfSaQotqUVYzxODe62V+LvPXAKAJYeNodQHVgEyi7ciAGUkOpEj8jRn7Bv7Giw8NB3tL/UMdZAKgjwJTWOYMAm9KcubSfW55WwW8XMhjvDrWo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=wAJgtUBD; arc=none smtp.client-ip=68.232.153.233
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="wAJgtUBD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1776672280; x=1808208280;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:to:cc;
-  bh=pTa8pq24A5FijSPJIQX3I3UFOHq3WQ2bKXjFwa3xFWM=;
-  b=wAJgtUBDNtfvg+S10La4xXepBMV12/k0cHItMFTh9GFsDTSPAvM1CcL8
-   Rxae7s74a/OpQ1/y8beeDNU3bknVe11EdikE0ptfjXs10yJSdqjH0Hc9h
-   f0kmzBkBEGfrF5fapsFKRGJ7F+kAHep2xhW44+wvCnO43HI10xMBDMxhU
-   IHOpW0SyPDTTOPGfausEN1OEKnM076H6dNfWovgXcMrcfskZ/CojIIxjQ
-   y0kk6nr/b//qNvjc3hXISo6Gw0TYH0W+Xz/F0k1uUCYR+Vtfy3EDnO+Ax
-   MrmNSVtnjuBZGhbFZE1BWWkYbB7z3L9hrbtgW1OaVDo9ROyYCUckTumBW
-   w==;
-X-CSE-ConnectionGUID: h/A3Lf4mRPGPlmSnDFY3Jw==
-X-CSE-MsgGUID: ZKTt1tviSFyj7nnIOuKE1A==
-X-IronPort-AV: E=Sophos;i="6.23,189,1770620400"; 
-   d="scan'208";a="64343728"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 01:04:33 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.87.152) by
- chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.35; Mon, 20 Apr 2026 01:04:25 -0700
-Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Mon, 20 Apr 2026 01:04:23 -0700
-From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Mon, 20 Apr 2026 11:04:12 +0300
-Subject: [PATCH v2] iio: dac: mcp47feb02: Fix passing uninitialized
- vref1_uV for no Vref1 case
+	s=arc-20240116; t=1776672390; c=relaxed/simple;
+	bh=KLhc8MHd8tL/SDyjk15u4oHHHuvXYcZ3C+ThQ3+0iN4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=n+AUO2Mjs7nsWaXK6RaflTM8ilXjnXg0XsHjW4SFN8JfiHL6dcGpytM+OAy6ZT0W5VCMvsy4ch4Npa3dphCwYJplYLyaOXJirXsuHMywDe3+PXL1b2UJhKVAwpG49nTOtvZcNEdZagxj+uEuT6Pyt227r+uQSFk2YklzSBgTscE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ua1-f50.google.com with SMTP id a1e0cc1a2514c-95697b46831so1694203241.0
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 01:06:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776672388; x=1777277188;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=swS+z/M+higPeDEQGwZrHmQKmmCSiMojyvHgCRclIkM=;
+        b=i7aY+8T2aHfG3h8cH44a5kEVsCtqB3GmF8sVutfA4bOfsJZz4gaiFT7AtU3Ae9JNgA
+         QkCOLFIbIFP1r7FKcTIF7c+ydBXywQqsG4bDeEES7NwgTbtdYi0uojcR6Mc5KqwkZaJK
+         lhiuIoK3984oxoGNRRNwPEh90HNHelqdaw3KBbsR6Qbx0lpiUUR4jjihYhKHa7MoP937
+         ierjOSE0zA2I9ubw3Ja5hip1+QrSnpHmbT56oUOfyTyAF1zcrFGvFSm4TRQEtA59MVvD
+         JnmXC12gWWzTTDE+iDrDGZruao6l+oYzvD1cDBXdSb5P/hyNJx8ubrs/CasGcpHHBAz6
+         GpUA==
+X-Forwarded-Encrypted: i=1; AFNElJ9KdHa5vbTe7NMiW+EMqqzu6Z1vA/9LYg3OxUYRGxX8aE6J3QkXLzbR/gOZMcjmqHgkmFhUPXxJCwo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyTY9AKjjyujnwjBh/CxrfzI33dTwcP4bfq4nuwUf8etmO1mX8J
+	lrh+B9LxHFUv+zT/EhyXRTD6uQMmz5u+2Nyf7tlc4cYKmRqWNFPfhQpkfI9Rs5F9
+X-Gm-Gg: AeBDievuSdohyf0O7An0Osze3Zocr2r+bMS5t/s2NhiY1Gd5xXwT2BWwLLyBgUqICsy
+	bKjR2mPTDR9NDIwQNl0kuEcEOYpEG2wX4Ni5utqUA1TW38Pm1akD08ivclnoCQuMR98oW5BZQXd
+	h+HjbtYg/QKCiyiuhoEMDVP8T0PEJqh/OzpRpE+MBQsDrbCNRo7eNpNnvO02S99yu//QaDQKoQK
+	jUYaxKbMvohWQPFifsYQjJRA6WoadBwU8UH5o8SuAZQL7xIJj8K/XVHrrU+qckUZN/eYYTA+TNx
+	Y7F9Dq85EUD4c+9swLUt9fQcbjop9dSvNnRUFlfet5oUPDo9kwf1q5Xs7e6Aw6Fj0bgP8PShXXh
+	55AXYOCqpt9rOAlWeW8JoOVwSonfWpu7HAg5jIrxQOY7w4JZGVS1WaO2GEkjOvLUu+hLZSbMi6A
+	mUD30xKZI2+LTrSoAuCfIEkqP2U3FC+afFx1V9AH/49kIAA5g7Crmi/1C5PH94sKsczTl3V63/0
+	BFedzr0dmlp5g==
+X-Received: by 2002:a05:6102:160d:b0:5fe:af0c:79f5 with SMTP id ada2fe7eead31-616f4538251mr5728554137.5.1776672388395;
+        Mon, 20 Apr 2026 01:06:28 -0700 (PDT)
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com. [209.85.221.175])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-95890bcbbc7sm4294532241.9.2026.04.20.01.06.27
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Apr 2026 01:06:27 -0700 (PDT)
+Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-56739adfa1aso2094730e0c.0
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 01:06:27 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ8wdcYNbkaeo5Idsiq4CIFD/UBFLKBSXwpfWDiv6qExfzCcZt/vzQg98VqxDsVkgqhgOSCXOUdpFUg=@vger.kernel.org
+X-Received: by 2002:a05:6122:4b82:b0:56d:451b:e4dd with SMTP id
+ 71dfb90a1353d-56fa5a232c6mr5348565e0c.12.1776672386884; Mon, 20 Apr 2026
+ 01:06:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260420-mcp47feb02-fix4-v2-1-8b758eaa8bcf@microchip.com>
-X-B4-Tracking: v=1; b=H4sIAPvd5WkC/3WNQQ6CMBBFr0JmbQ0zVAiuuIdhAe1UZgElrWk0p
- He3snf5XvLfPyByEI5wrw4InCSK3wrQpQKzTNuTldjCQDW1tUatVrPrzvFck3Ly1qpFbblvGu2
- IoKz2wMWfxcdYeJH48uFzHiT82f+thApVbzucJ+ss3XhYxQRvFtmvxq8w5py/6fbnF7IAAAA=
-X-Change-ID: 20260414-mcp47feb02-fix4-614de9334f22
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>
-CC: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Dan Carpenter
-	<error27@gmail.com>, Ariana Lazar <ariana.lazar@microchip.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776672263; l=2520;
- i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=pTa8pq24A5FijSPJIQX3I3UFOHq3WQ2bKXjFwa3xFWM=;
- b=ArUgK7nq65/jMRsLn/SSFvsPQg7/FLIk+dUTcntHXxTyPNKgSOl/rA8JAIj+BL7uU77HOZGmp
- 4rVW8lj0AFTDsRtkyVvL+VRQY0TRKkHfTjOGhDxlc01OCFcWGt30X4h
-X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
- pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
+References: <20260414192045.3598010-1-sanjayembedded@gmail.com>
+In-Reply-To: <20260414192045.3598010-1-sanjayembedded@gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 20 Apr 2026 10:06:14 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXCYxrCoi7zdUfmbgxXwdwiSKB3YczG-odUQLgvUJ9HQA@mail.gmail.com>
+X-Gm-Features: AQROBzDLtPnWNAl-Z8Hnu1eLF7JeWxlb0Ot639dfJ05nzskER9DymDPClItnw_o
+Message-ID: <CAMuHMdXCYxrCoi7zdUfmbgxXwdwiSKB3YczG-odUQLgvUJ9HQA@mail.gmail.com>
+Subject: Re: [PATCH] iio: accel: mma8452: use pm_ptr() for dev_pm_ops
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Ensure that if a device has Vref1 but reading the regulator returns an
-error, mcp47feb02_init_ctrl_regs() is not called with an uninitialized
-vref1_uV value.
+Hi Sanjay,
 
-Also add a device_property_present() check for the Vref1 supply before
-reading the regulator.
+On Tue, 14 Apr 2026 at 21:20, Sanjay Chitroda
+<sanjayembeddedse@gmail.com> wrote:
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+>
+> Use pm_ptr() so the PM ops pointer is automatically set to
+> NULL when CONFIG_PM is disabled. This avoids unused-function warnings
+> and follows modern kernel power-management conventions.
+>
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Fixes: dd154646d292 ("iio: dac: mcp47feb02: Fix Vref validation [1-999] case")
-Reported-by: Dan Carpenter <error27@gmail.com>
-Closes: https://lore.kernel.org/all/adiPnla0M5EzvgD-@stanley.mountain/
-Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
----
-Changes in v2:
-- return the reading regulator error to not use vref1_uV uninitialized in
-   mcp47feb02_init_ctrl_regs() call 
-- add device_property_present() check for the Vref1
-- Link to v1: https://lore.kernel.org/r/20260414-mcp47feb02-fix4-v1-1-9d71badfd25e@microchip.com
----
- drivers/iio/dac/mcp47feb02.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+Thanks for your patch!
 
-diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
-index faccb804a5ed548088aaf83266b16ed45a92916c..a876ed71ecdf101784e0f98668a1681a1cd19ed0 100644
---- a/drivers/iio/dac/mcp47feb02.c
-+++ b/drivers/iio/dac/mcp47feb02.c
-@@ -1095,9 +1095,10 @@ static int mcp47feb02_probe(struct i2c_client *client)
- {
- 	const struct mcp47feb02_features *chip_features;
- 	struct device *dev = &client->dev;
-+	int vdd_uV, vref_uV, vref1_uV;
- 	struct mcp47feb02_data *data;
- 	struct iio_dev *indio_dev;
--	int vref1_uV, vref_uV, vdd_uV, ret;
-+	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -1146,16 +1147,16 @@ static int mcp47feb02_probe(struct i2c_client *client)
- 		dev_dbg(dev, "Vref is unavailable.\n");
- 	}
- 
--	if (chip_features->have_ext_vref1) {
-+	if (chip_features->have_ext_vref1 && device_property_present(dev, "vref1")) {
- 		ret = devm_regulator_get_enable_read_voltage(dev, "vref1");
--		if (ret > 0) {
--			vref1_uV = ret;
--			data->use_vref1 = true;
--		} else {
--			vref1_uV = 0;
--			dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
--			dev_dbg(dev, "Vref1 is unavailable.\n");
--		}
-+		if (ret < 0)
-+			return ret;
-+
-+		vref1_uV = ret;
-+		data->use_vref1 = true;
-+	} else {
-+		vref1_uV = 0;
-+		dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
- 	}
- 
- 	ret = mcp47feb02_init_ctrl_regs(data);
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -1744,7 +1744,6 @@ static void mma8452_remove(struct i2c_client *client)
+>         regulator_disable(data->vdd_reg);
+>  }
+>
+> -#ifdef CONFIG_PM
+>  static int mma8452_runtime_suspend(struct device *dev)
+>  {
+>         struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> @@ -1812,7 +1811,6 @@ static int mma8452_runtime_resume(struct device *dev)
+>
+>         return ret;
+>  }
+> -#endif
+>
+>  static const struct dev_pm_ops mma8452_pm_ops = {
+>         SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
 
----
-base-commit: 51e7665ab81f02adc80a1219c260ee678e9c6eb8
-change-id: 20260414-mcp47feb02-fix4-614de9334f22
+You are still getting defined but not used warnings, as reported by
+the kernel test robot, due to the use of SET_SYSTEM_SLEEP_PM_OPS()
+and SET_RUNTIME_PM_OPS().  Please define the structure using
+DEFINE_RUNTIME_DEV_PM_OPS() to fix this.
 
-Best regards,
+> @@ -1835,7 +1833,7 @@ static struct i2c_driver mma8452_driver = {
+>         .driver = {
+>                 .name   = "mma8452",
+>                 .of_match_table = mma8452_dt_ids,
+> -               .pm     = &mma8452_pm_ops,
+> +               .pm     = pm_ptr(&mma8452_pm_ops),
+>         },
+>         .probe = mma8452_probe,
+>         .remove = mma8452_remove,
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-Ariana Lazar <ariana.lazar@microchip.com>
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
