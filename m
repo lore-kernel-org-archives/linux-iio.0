@@ -1,77 +1,56 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from cvsmtppost02.nm.naver.com (cvsmtppost02.nm.naver.com [114.111.35.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D2D9386552
-	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 11:35:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB136332614
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 11:37:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.111.35.100
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776684932; cv=none; b=Pg3dkf9jLMTjv0gfzzq1SNu+Y1LSrqRxFUaSEwRmpDX6uIJC51izZ+duFdFN4HRDYkq4nXIfaJmvVWbUrHlBUUdmcjQchL+AGAmNJaMwNoP9JpEoEBZWqzpNDe9YSBY1la424tm4nf6MM4EhgJpZopV3RsAjzUXpoY4+ZSqhq38=
+	t=1776685055; cv=none; b=kOclWG4wguuTCbVGRZIe6D4Rsa5HRtrathJX3ayXbjEscwKwJiVsKvu7h+9UAdY/FgDnrPTESeVyr1uYl8mEKwiJl1YbWLjlD+5qYp91WAT7EpSHWMbwxWaTxlJUAFo08iK0IuzQTbsqaagJXiINMSnSP9Whl5evHtczyayc1hU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776684932; c=relaxed/simple;
-	bh=vmov1pEJBH+Rs3GpKL7hdtxpWbbPQv3pfJjcajOE0ec=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=eBzaqanW8mqDCayRXRGZR5otkj4gOMXmxLFsu0WqCNoWUKh9+KDcT2i/eUXZb0lB48bw4FOkmLIttkJRiNe5ZM+ulGc10DJqljDu8u4LYjgf2YvcxGbPnJV9MVSv53DutDTBmfVPAhq04QgAd6XJjt9kI8fpYVJAgLpiwhGHihk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rrNBZEYZ; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776685055; c=relaxed/simple;
+	bh=8XifmBjRXAmCF05BRVFiftLmsRfF3B+6jLWYzxxr2rU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=e7oiTTbg5SF3+gohCPHSwfxRhqA+OcRjmpQ4yCheC0uGKWnD3vzmiXjKN7oSZEizz26L3i2i2+OKZNcuWnlPLxWxa5guIR4URe0kmobPsCX+46rLWHHv/G//ASXrWHDUanR5QDSmq1K0oiohD1dNjghrlaEq/zbzHe300KOGn1o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=naver.com; spf=pass smtp.mailfrom=naver.com; dkim=pass (2048-bit key) header.d=naver.com header.i=@naver.com header.b=Z4P3jw6f; arc=none smtp.client-ip=114.111.35.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=naver.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=naver.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rrNBZEYZ"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-43d7dab87e1so192304f8f.3
-        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 04:35:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776684929; x=1777289729; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=hz+pmA33HsYlT05KYLULHj0zn0MHmQJIrBIibT5vZ8w=;
-        b=rrNBZEYZVhZr3x2pc3RDcmLA7LdPfpCURhdIKbZHM+LlomkgiSsQMClZ0sr7Ce3KGr
-         8ufrLp09LejkCVJ8PEqoWt5Ops6+72ieRBZn4l4YTiEw1o97PEYBIzAIZyBU4qK7OPnb
-         86jAtfdTWSOpo8TkyKpD63ptdwR/hLxNNmc2wLtfux84dnoNsvJ9Daf3UBsJDG+Mdxe+
-         HqYZS16moBAzdee53JqptCOkruVZoDkEB+IODJqzyyEHZpu2oNfQyE64JaGFGMD1paQi
-         uAvgPNvyKr+/3VOCHXzwUQUbMTDPEFywVP7EzCIrYi/b3koXshQWMKodVjudJIWqwAEB
-         OrHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776684929; x=1777289729;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hz+pmA33HsYlT05KYLULHj0zn0MHmQJIrBIibT5vZ8w=;
-        b=T/3L+RIM7Mhr6UJij0k86i48DpaC1f/SOEVbIW9C41rKumyHMPd7CrNx9uMYlSZXkC
-         4LEjNGtJuQKKkD82qI9MlE3R5u1wO41gIiCPM75RQ3oZ1oweYLugXvVOuhWFX+Idh0AK
-         3h8BDsB6BGu3NfSrQQV09mrCo0LLd5ZV8MYghBkoE7Zg/oKRqyNPaBfj9f42ModSVXD6
-         Jw+KWq9mcVzHyBoIBbQzbTIWA3SD6OqTQJKAQ+XjIcnXVFK7OjG3dFJl/kTolIqTcLuz
-         tDn9lDE82dCvFgynD8Lw78S04X1MtIN7yRA+aBIxry5EHUXWtTz/3AUEPZ0M4g3Ha/IP
-         nsww==
-X-Forwarded-Encrypted: i=1; AFNElJ9adBzVUNAgWWK03ncs2Sbqt2OTvmTpAYTecR8JxEMHqfkehG0RF9Lhq9rGlX/EZLj8qftRXqDgx5M=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyBSr2zgIOAw2NsvOlWP8IuinXyJn9uTuphvuLVVmE/Bji3SlCy
-	2UQb+mE+/uncuQ0j+ueKpGMa5+pJWsewes8+SRNWGBwYG/HvMnifurHB
-X-Gm-Gg: AeBDietseEK7aJ35ApRFqgFHLzRS5ISXK+UBVIoY8BLYLjI0xrl1vNDK7W0Ljbxmi92
-	EZ8q3LLbRBcNBji+itAp2kxheeyVRS+Wi14Zke1h8jlX8AC/KvCd4HGsB1XFyny+G3hFDIJjxbx
-	FMOVbcMCUy0Qa/LV5bTAqgAvJR4zVHyIAAmIOsj4jUMjWbe0FgxIst3Zlv9+JH3Cm/oJrrM6Hx9
-	UshrpOdOhs9oXOO3+HnZrdnt3edCGUGRS3dvG7Fx/aSSUzgmIYWA+OuDCGNScers5vh3DWsjBWV
-	hM6IzsfPcMdq/T2ThMe8Oy3YDVIXZc5fLjFCdh/k/Gqzw7jxoNpDVACrnedv145y/KCkp9mns8D
-	hykY0ETnTeRdkRdaCiECcXY7fxm27C5mQltTAanbFeqXYm1mcnpnB5LEPILv8/rC8jj9rJlYTmT
-	gtIAOVd/bq5rulpKZLeN98JBg3dBqXJMYi5AlkejZMPc34E8XRA2ehQ/7cnLW7qpQ0RkAReW5bV
-	OZtjRHVE8Tud2T6nAWgztfS0VCbQgaKzefNYUQxYu/+3SK5kYFZBnZi9cPlnMs=
-X-Received: by 2002:a05:600c:4247:b0:489:1dc6:d6e with SMTP id 5b1f17b1804b1-4891dc60e71mr11320735e9.1.1776684929103;
-        Mon, 20 Apr 2026 04:35:29 -0700 (PDT)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4891c320084sm119227705e9.2.2026.04.20.04.35.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2026 04:35:28 -0700 (PDT)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: antoniu.miclaus@analog.com,
-	lars@metafoo.de,
+	dkim=pass (2048-bit key) header.d=naver.com header.i=@naver.com header.b="Z4P3jw6f"
+Received: from cvsendbo031.nm ([10.112.22.37])
+  by cvsmtppost02.nm.naver.com with ESMTP id NvqzIGC6QUuJmM4xH0piTQ
+  for <linux-iio@vger.kernel.org>;
+  Mon, 20 Apr 2026 11:27:24 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=naver.com; s=s20171208;
+	t=1776684444; bh=8XifmBjRXAmCF05BRVFiftLmsRfF3B+6jLWYzxxr2rU=;
+	h=From:To:Subject:Date:Message-ID:From:Subject:Feedback-ID:
+	 X-Works-Security;
+	b=Z4P3jw6f2BrkPmJHfgXRQ4YYFp8YRuJ01nnrmFNzdZju7Viob1FnGPtU1jROeJdaF
+	 G0vqlwL9snjdrVI8v6d8wf5MlJ5Ip8lMshUiLKiLkbrAhFHST4t0Gq271Gb1d0UKcW
+	 ZOUHeTVQvd30gf/Q/Ad5MkRL7ST3zDp2sN1/9ovVzR3qKpD6yXHOjCohslsSyUDdNP
+	 /tSavAQ6er4GWC1nJ/tOlXD/OYzaz6Ufi1YjeO/5uYekzi7DKkt5d+dx4jCskSY0tS
+	 aDafbDGb+SyC4LpLd3ZTjWfcdQiIhxwRhsH+A9D2iNrPsBlEwy5DXYJ7u2nBX0UtV2
+	 ZqPFPjIikYaiA==
+X-Session-ID: KRQO1LvrS-yNLCVyk89Zpg
+X-Works-Send-Opt: p/Y/jAJYjHmwKo2qKqJYFquqFNwkx0eFjAJYKg==
+X-Works-Smtp-Source: gwn9FoMXFqJZ+HmdFAgZ+6E=
+Received: from JMW-Ubuntu.. ([14.38.141.199])
+  by cvnsmtp006.nm.naver.com with ESMTP id KRQO1LvrS-yNLCVyk89Zpg
+  for <multiple recipients>
+  (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
+  Mon, 20 Apr 2026 11:27:24 -0000
+From: Minu Jin <s9430939@naver.com>
+To: lars@metafoo.de,
+	jic23@kernel.org,
 	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
+	gregkh@linuxfoundation.org
+Cc: andy@kernel.org,
 	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Subject: [PATCH v2] iio: adc: ti-ads7924: Use guard(mutex) in ADC read helper
-Date: Mon, 20 Apr 2026 15:34:45 +0400
-Message-ID: <20260420113445.126516-2-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+	Minu Jin <s9430939@naver.com>
+Subject: [PATCH] iio: adc: ad7816: use sysfs_emit() instead of sprintf()
+Date: Mon, 20 Apr 2026 20:27:20 +0900
+Message-ID: <20260420112720.1662703-1-s9430939@naver.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,51 +59,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace mutex_lock()/mutex_unlock() pair with guard(mutex)()
-and move the lock into ads7924_get_adc_result(). Keeping the guard
-in the helper makes the locking scope match the operation being protected.
+Replace sprintf() with sysfs_emit().
+sysfs_emit() is preferred than sprintf() in show() functions.
+It has aware of the PAGE_SIZE buffer limit and ensures safe buffer handling.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Signed-off-by: Minu Jin <s9430939@naver.com>
 ---
-Changes in v2:
- - Move guard(mutex)() into ads7924_get_adc_result().
- - Drop the extra scope from ads7924_read_raw().
- 
- drivers/iio/adc/ti-ads7924.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/ad7816.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-ads7924.c b/drivers/iio/adc/ti-ads7924.c
-index bbcc4fc22b6e..5f294595a415 100644
---- a/drivers/iio/adc/ti-ads7924.c
-+++ b/drivers/iio/adc/ti-ads7924.c
-@@ -12,6 +12,7 @@
-  */
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 172acf135f3b..0e32a2295990 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -124,8 +124,8 @@ static ssize_t ad7816_show_mode(struct device *dev,
+ 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
  
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/gpio/consumer.h>
- #include <linux/init.h>
-@@ -198,6 +199,8 @@ static int ads7924_get_adc_result(struct ads7924_data *data,
- 	if (chan->channel < 0 || chan->channel >= ADS7924_CHANNELS)
- 		return -EINVAL;
+ 	if (chip->mode)
+-		return sprintf(buf, "power-save\n");
+-	return sprintf(buf, "full\n");
++		return sysfs_emit(buf, "power-save\n");
++	return sysfs_emit(buf, "full\n");
+ }
  
-+	guard(mutex)(&data->lock);
-+
- 	if (data->conv_invalid) {
- 		int conv_time;
+ static ssize_t ad7816_store_mode(struct device *dev,
+@@ -156,7 +156,7 @@ static ssize_t ad7816_show_available_modes(struct device *dev,
+ 					   struct device_attribute *attr,
+ 					   char *buf)
+ {
+-	return sprintf(buf, "full\npower-save\n");
++	return sysfs_emit(buf, "full\npower-save\n");
+ }
  
-@@ -227,9 +230,7 @@ static int ads7924_read_raw(struct iio_dev *indio_dev,
+ static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
+@@ -169,7 +169,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		mutex_lock(&data->lock);
- 		ret = ads7924_get_adc_result(data, chan, val);
--		mutex_unlock(&data->lock);
- 		if (ret < 0)
- 			return ret;
+-	return sprintf(buf, "%d\n", chip->channel_id);
++	return sysfs_emit(buf, "%d\n", chip->channel_id);
+ }
  
+ static ssize_t ad7816_store_channel(struct device *dev,
+@@ -231,9 +231,9 @@ static ssize_t ad7816_show_value(struct device *dev,
+ 		data &= AD7816_TEMP_FLOAT_MASK;
+ 		if (value < 0)
+ 			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
+-		return sprintf(buf, "%d.%.2d\n", value, data * 25);
++		return sysfs_emit(buf, "%d.%.2d\n", value, data * 25);
+ 	}
+-	return sprintf(buf, "%u\n", data);
++	return sysfs_emit(buf, "%u\n", data);
+ }
+ 
+ static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
+@@ -281,9 +281,9 @@ static ssize_t ad7816_show_oti(struct device *dev,
+ 		value = AD7816_BOUND_VALUE_MIN +
+ 			(chip->oti_data[chip->channel_id] -
+ 			AD7816_BOUND_VALUE_BASE);
+-		return sprintf(buf, "%d\n", value);
++		return sysfs_emit(buf, "%d\n", value);
+ 	}
+-	return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
++	return sysfs_emit(buf, "%u\n", chip->oti_data[chip->channel_id]);
+ }
+ 
+ static inline ssize_t ad7816_set_oti(struct device *dev,
 -- 
-2.52.0
+2.43.0
 
