@@ -1,52 +1,52 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07E553939BA;
-	Mon, 20 Apr 2026 10:13:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84A9639478C;
+	Mon, 20 Apr 2026 10:13:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776679990; cv=none; b=MowBdEQgkJ+/lPENH2GoINTWQ/qdzaSDEcZ/mc2bxXgROR7XQ104SWLNKUwpJUzVYwzrZgp5aTHrcUEUO/Mk2EJjJbzJ0E8CWQwVaLa84F9FXgxQtVYUPkdTZNGdnxN+yIWibSVAswrlZapiGN2C3Ig/1L2HAZLgqHr2Nca6BMY=
+	t=1776679991; cv=none; b=WwJ3ZAU2EMTI9s3AC7xCyObuTtzBQS67y9QdykdPFJOdDSOHJPa/BPZ7MKAq5lANTotkNzvtwFDezSZZ6Gf4ySvP+y9yBk8H3ea/VM2fdCNKA+2yOoS3AerFTp031UcGttHqL7r3mFbgrm5OLdI+H89nwp5Nrw39k+VNd43ERQ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776679990; c=relaxed/simple;
-	bh=jZ+kLuPLs960w8moOPtuIkrATw8/VTmjhMz9XzlcFVA=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dkNqDO1+mpvZn7iuKg5ZvFn0a092KBQ4AjjkJO2pTf4/YSRlJnH8k6GiYSW0PcYdHZQUYRIerOFOxBZtgRxs196CzPR0kJjgkxpYy3VvkofJz7wTIrVma381X6nGKjPd7T8taSN3ZtR3sbe0L7cp9Jh+IHS+ktNwpOZry57BBaY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=KnoQ3MDr; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1776679991; c=relaxed/simple;
+	bh=hMuhE74fEfzq2kSQLc0fcLDuT38xnIfRWj0LRq+z+Lw=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=SjhWApmBkkSIYu/m0M8l+Gqc2cbceu2NHvS26s9ChfEunN4hnqw+9BFqTZjhoLIa9KnDxzUc85p3cnx1XCE6YL4gA5w9dVMDc1fXSPoRIlhEralyS0bjeKhRqUTHNeYt/L106pLmq7bk4QtsqJdiMyVdVdmTiuwB6WnQVXV8rZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ly1LKF7t; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="KnoQ3MDr"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63KA2Vfp985454;
-	Mon, 20 Apr 2026 06:12:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=/gPeK
-	A8g2CV5MCapvqegK+XV7F/MehIcuBjTeT6NxXc=; b=KnoQ3MDrMcwwBSVJU9DgZ
-	+Gv3GTgPHD/4WTtDnlTZCZuTndxMBsmD/P3NHittCaRll6sIDus0KoB/grEtLJzv
-	ZgaEzrgmGL8g5cPII+1GOFJcdw0JDjRWN2mxFnTbTzg+xfeqRcMYRBlXgZU6cJFn
-	GMxclijsTI2R6tuVgi3E08BQdB5wPDZm6WYq+z2HrWds7wNK/5/1R6QnuChKCasd
-	wz0/dX8c5mGuRAL8FNzMi6SZ5zkth6SpJhhBjobL6w8PwtH6gXU1n0mLlleOxiq0
-	Fc7CBtuloKj1NobuEjz5gEsZtMw9c9JPp7SJ82mEwQ+JoeSx68TdyVephqoB8+jo
-	Q==
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ly1LKF7t"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63K5Y4gl2512401;
+	Mon, 20 Apr 2026 06:12:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=vAuwk
+	+tvkNzIu7lLeB4jlfv1Pi5uG3RKE/nAozNZ4Co=; b=ly1LKF7tTOMsgBWmnEhSw
+	kkak9nZpJujQBAEhvcKh8X7pgDFevX3acWDzfDP/YF6jwjAUxY+ylJF/9lw51JBh
+	gJgISAoWuazdleJcQKt0jzCGdmB34Oj9138kIxXvh1E4zRHzQLmqmWLk3fTFWe2c
+	49BXJxfW2lvdbWAuJJsSFanm3U/WaQy2l4RcrNr0w2oTDpRK6CKC25Zv6MQO5kT8
+	d2N5uQoR0DNzPbjYiZ51uNXzrVOVlg1lSlogN0LequHXFD1hEAd/KbKHw1dYP5ck
+	2QqQCYjDR43sTRpTu/rkH6CvPScGZTjanWpKFM8SjRIbNCpkU2HTgDjEGMl4brGc
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4dm3t1dq1j-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4dmu9f33k8-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 20 Apr 2026 06:12:50 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 63KACnMI007711
+	Mon, 20 Apr 2026 06:12:46 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 63KACjER007707
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 20 Apr 2026 06:12:49 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+	Mon, 20 Apr 2026 06:12:45 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 20 Apr
- 2026 06:12:49 -0400
+ 2026 06:12:45 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 20 Apr 2026 06:12:49 -0400
+ Transport; Mon, 20 Apr 2026 06:12:45 -0400
 Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.213])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 63KACUKP006189;
-	Mon, 20 Apr 2026 06:12:43 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 63KACUKO006189;
+	Mon, 20 Apr 2026 06:12:40 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich
@@ -63,10 +63,9 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
         Olivier Moysan <olivier.moysan@foss.st.com>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-CC: Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v9 2/3] dt-bindings: iio: adc: ad4080: add AD4880 support
-Date: Mon, 20 Apr 2026 13:12:24 +0300
-Message-ID: <20260420101225.4173-3-antoniu.miclaus@analog.com>
+Subject: [PATCH v9 1/3] iio: backend: add devm_iio_backend_get_by_index()
+Date: Mon, 20 Apr 2026 13:12:23 +0300
+Message-ID: <20260420101225.4173-2-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260420101225.4173-1-antoniu.miclaus@analog.com>
 References: <20260420101225.4173-1-antoniu.miclaus@analog.com>
@@ -76,145 +75,158 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=NKjlPU6g c=1 sm=1 tr=0 ts=69e5fc23 cx=c_pps
+X-Proofpoint-GUID: -4RQdcWviTtvgqUmKDiR8UoTwgIWxZti
+X-Proofpoint-ORIG-GUID: -4RQdcWviTtvgqUmKDiR8UoTwgIWxZti
+X-Authority-Analysis: v=2.4 cv=TZumcxQh c=1 sm=1 tr=0 ts=69e5fc1e cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=XYAwZIGsAAAA:8 a=IpJZQVW2AAAA:8
- a=eYjWAXzLS8b0uuH4XOwA:9 a=E8ToXWR_bxluHZ7gmE-Z:22 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDIwMDA5OSBTYWx0ZWRfX5tvvfek9zV8I
- 4QxfHmyhbP1p9ou0BULexNwsj7qOqkujh25QKVWWLfU0CQyprJbHFanqZ0sxVX2cYsudahZXGcG
- nY/OuQYtSXMG7RP1eaEbwF7h9gYGI7ZCu+ZVRAImJNt8PX8ZUyi75XXfww3bw7gVjgG/fbLSSCd
- SC5rdFVOlzxRXMV0AmmkJeZl3Kl0luFT7yVaaO9y4HaXGvO9cHiiGPIK8Oe1atmPojOCWm0qLQJ
- ScywnICLmduzNqooqREuvpoHnfBaMu7++nQe9HYxEW7vntogWPnMiy8+XPEvDmMO8kdpG4YixIn
- CyqiJ4fodBU0JOtX+PnmaZcscexOyar4ZzVv0EBEaoFxhZ1MySxLwCgyXSA28+/Upfmk/08+ioz
- Oq7ooyetx8oSJWh+xb8A7GWZF7lQcnQrGwpM0mv8sbOEm2aMkIVvyfFBiyb0LAIaQwhoy5Sh8xy
- PRt/ga2wsbJwdQWO5qA==
-X-Proofpoint-ORIG-GUID: D6l9K0FsUkmkMWs4OYVa7SOB70ilcqhP
-X-Proofpoint-GUID: D6l9K0FsUkmkMWs4OYVa7SOB70ilcqhP
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=IpJZQVW2AAAA:8
+ a=gAnH3GRIAAAA:8 a=p0FdBKtcRgJ3IcjSWdMA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=IawgGOuG5U0WyFbmm1f5:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDIwMDA5OSBTYWx0ZWRfX/AoKSjW3gHLu
+ 6E7FEf77/o36uXKiHw0siIgeNQgYnuk3kL/tK9BjFdrwiB4ck8K1b8IrX0btqiBXQEn1yGNUys3
+ 4QRzz2mbC1WYg3bYAYCysHzLWbr4Ay5h0C5OZuE138toA287w6n9GEd9vLNjMS0els+uh8Ri1Rr
+ txGYOphXeBWBDTMhTx5UkL8migtnEXf9ZvItISSrtuZ0mfRh6xoM7LnihYLeRRTGmaTJr0XQFhK
+ T6T4AIRcKBpnuPJUSKTe35KTjCnBVVBzyUsgMMOyom8dstLXDOFGcHdcLvavj/+5RP8roJBV+rH
+ j5XGYF13rWDmbXobE2cDa95jkljj/5O0/dgL1lRNNlhqoDQsLzbUPm8bDIKfA8cNP1DBuZ2bXYO
+ CdCaQL9/7+CZMCluJ/WozMhFbvSOnQ7EVnxBqKRvqlwDj4+vJ9rgsJIuhzj5Nu/IWekHHI4QUq3
+ PW17FADYcJM3dSc2lyg==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-04-20_02,2026-04-17_04,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 priorityscore=1501 malwarescore=0 phishscore=0 clxscore=1015
- impostorscore=0 lowpriorityscore=0 bulkscore=0 adultscore=0 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604200099
+ impostorscore=0 clxscore=1015 priorityscore=1501 suspectscore=0
+ malwarescore=0 adultscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
+ phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604070000
+ definitions=main-2604200099
 
-Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC
-with integrated fully differential amplifiers (FDA).
+Add a new function to get an IIO backend by its index in the
+io-backends device tree property. This is useful for multi-channel
+devices that have multiple backends, where looking up by index is
+more straightforward than using named backends.
 
-The AD4880 has two independent ADC channels, each with its own SPI
-configuration interface. This requires:
-- Two entries in reg property for primary and secondary channel
-  chip selects
-- Two io-backends entries for the two data channels
+Extract __devm_iio_backend_fwnode_get_by_index() from the existing
+__devm_iio_backend_fwnode_get(), taking the index directly as a
+parameter. The new public API devm_iio_backend_get_by_index() uses
+the index to find the backend reference in the io-backends property,
+avoiding the need for io-backend-names.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Reviewed-by: David Lechner <dlechner@baylibre.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
 Changes in v9:
-  - Add Conor's ack
+  - No changes
 
- .../bindings/iio/adc/adi,ad4080.yaml          | 53 ++++++++++++++++++-
- 1 file changed, 51 insertions(+), 2 deletions(-)
+ drivers/iio/industrialio-backend.c | 53 +++++++++++++++++++++---------
+ include/linux/iio/backend.h        |  1 +
+ 2 files changed, 39 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
-index 79df2696ef24..9c6a56c7c8ef 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
-@@ -18,7 +18,11 @@ description: |
-   service a wide variety of precision, wide bandwidth data acquisition
-   applications.
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index 10e689f49441..138ebebc9c0d 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -964,23 +964,13 @@ int iio_backend_data_transfer_addr(struct iio_backend *back, u32 address)
+ }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_data_transfer_addr, "IIO_BACKEND");
  
-+  The AD4880 is a dual-channel variant with two independent ADC channels,
-+  each with its own SPI configuration interface.
+-static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, const char *name,
+-							 struct fwnode_handle *fwnode)
++static struct iio_backend *__devm_iio_backend_fwnode_get_by_index(struct device *dev,
++								  struct fwnode_handle *fwnode,
++								  unsigned int index)
+ {
+ 	struct iio_backend *back;
+-	unsigned int index;
+ 	int ret;
+ 
+-	if (name) {
+-		ret = device_property_match_string(dev, "io-backend-names",
+-						   name);
+-		if (ret < 0)
+-			return ERR_PTR(ret);
+-		index = ret;
+-	} else {
+-		index = 0;
+-	}
+-
+ 	struct fwnode_handle *fwnode_back __free(fwnode_handle) =
+ 		fwnode_find_reference(fwnode, "io-backends", index);
+ 	if (IS_ERR(fwnode_back))
+@@ -996,8 +986,7 @@ static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, con
+ 		if (ret)
+ 			return ERR_PTR(ret);
+ 
+-		if (name)
+-			back->idx = index;
++		back->idx = index;
+ 
+ 		return back;
+ 	}
+@@ -1005,6 +994,24 @@ static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, con
+ 	return ERR_PTR(-EPROBE_DEFER);
+ }
+ 
++static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, const char *name,
++							 struct fwnode_handle *fwnode)
++{
++	unsigned int index;
++	int ret;
 +
-   https://www.analog.com/media/en/technical-documentation/data-sheets/ad4080.pdf
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/ad4880.pdf
- 
- $ref: /schemas/spi/spi-peripheral-props.yaml#
- 
-@@ -34,9 +38,15 @@ properties:
-       - adi,ad4086
-       - adi,ad4087
-       - adi,ad4088
-+      - adi,ad4880
- 
-   reg:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 2
-+    description:
-+      SPI chip select(s). For single-channel devices, one chip select.
-+      For multi-channel devices like AD4880, two chip selects are required
-+      as each channel has its own SPI configuration interface.
- 
-   spi-max-frequency:
-     description: Configuration of the SPI bus.
-@@ -60,7 +70,10 @@ properties:
-   vrefin-supply: true
- 
-   io-backends:
--    maxItems: 1
-+    minItems: 1
-+    items:
-+      - description: Backend for channel A (primary)
-+      - description: Backend for channel B (secondary)
- 
-   adi,lvds-cnv-enable:
-     description: Enable the LVDS signal type on the CNV pin. Default is CMOS.
-@@ -81,6 +94,25 @@ required:
-   - vdd33-supply
-   - vrefin-supply
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: adi,ad4880
-+    then:
-+      properties:
-+        reg:
-+          minItems: 2
-+        io-backends:
-+          minItems: 2
-+    else:
-+      properties:
-+        reg:
-+          maxItems: 1
-+        io-backends:
-+          maxItems: 1
++	if (name) {
++		ret = device_property_match_string(dev, "io-backend-names", name);
++		if (ret < 0)
++			return ERR_PTR(ret);
++		index = ret;
++	} else {
++		index = 0;
++	}
 +
- additionalProperties: false
- 
- examples:
-@@ -101,4 +133,21 @@ examples:
-           io-backends = <&iio_backend>;
-         };
-     };
-+  - |
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
++	return __devm_iio_backend_fwnode_get_by_index(dev, fwnode, index);
++}
 +
-+        adc@0 {
-+          compatible = "adi,ad4880";
-+          reg = <0>, <1>;
-+          spi-max-frequency = <10000000>;
-+          vdd33-supply = <&vdd33>;
-+          vddldo-supply = <&vddldo>;
-+          vrefin-supply = <&vrefin>;
-+          clocks = <&cnv>;
-+          clock-names = "cnv";
-+          io-backends = <&iio_backend_cha>, <&iio_backend_chb>;
-+        };
-+    };
- ...
+ /**
+  * devm_iio_backend_get - Device managed backend device get
+  * @dev: Consumer device for the backend
+@@ -1021,6 +1028,22 @@ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
+ }
+ EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get, "IIO_BACKEND");
+ 
++/**
++ * devm_iio_backend_get_by_index - Device managed backend device get by index
++ * @dev: Consumer device for the backend
++ * @index: Index of the backend in the io-backends property
++ *
++ * Gets the backend at @index associated with @dev.
++ *
++ * RETURNS:
++ * A backend pointer, negative error pointer otherwise.
++ */
++struct iio_backend *devm_iio_backend_get_by_index(struct device *dev, unsigned int index)
++{
++	return __devm_iio_backend_fwnode_get_by_index(dev, dev_fwnode(dev), index);
++}
++EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get_by_index, "IIO_BACKEND");
++
+ /**
+  * devm_iio_backend_fwnode_get - Device managed backend firmware node get
+  * @dev: Consumer device for the backend
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index 4d15c2a9802c..3f95ed1fdf9e 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -261,6 +261,7 @@ int iio_backend_extend_chan_spec(struct iio_backend *back,
+ bool iio_backend_has_caps(struct iio_backend *back, u32 caps);
+ void *iio_backend_get_priv(const struct iio_backend *conv);
+ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
++struct iio_backend *devm_iio_backend_get_by_index(struct device *dev, unsigned int index);
+ struct iio_backend *devm_iio_backend_fwnode_get(struct device *dev,
+ 						const char *name,
+ 						struct fwnode_handle *fwnode);
 -- 
 2.43.0
 
