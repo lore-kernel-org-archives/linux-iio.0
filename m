@@ -1,107 +1,132 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEA591C28E;
-	Mon, 20 Apr 2026 01:58:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E410B312825
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 04:28:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776650331; cv=none; b=bPg3gwTx0ZPUplD5dgo/bKd/UQsdPULv+WHCcEbkvfP47lL1ZYwRiE6fXScFrcr6xDf59+wRt1E7ImCYQ/nZUG+15sVd+7vUOTOZS+of3768AAM3KHedBF7MNh8AGSSia88pezb2nBqMlMZDqDr6gkkO8pmiJYGHPds+0VvKbus=
+	t=1776659340; cv=none; b=LmKM246VJcKibSYWP5D5cESUqumhWubYHkB2TwkAukYVgxu3GwJIP3z8YiHFPuiRcvOl3H0bcwQxKtYvo7g0CJ9RvaAoo981fTKt+KzpARpWADiIeeV2HfEovni2z0iHcrp5xsj3T6w4HXF8pKhEh0tczdtuzXWJF3PBhnfFqP8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776650331; c=relaxed/simple;
-	bh=1OAv1qHwn1+12iuqL4ooZC8TIeubR/WmsIzn0acNPmI=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=dCRL2Ou85YnrL8Jb27QhJyJiAGoHatA+5vYgJKZfzpCNCfw3zv6wUlrTvVu4BTg4zQSLps4SbvyBdKcLCHzyuiBPfiSulkSs6X1mMA6ptYXbOpZr+iYjrO7NsPnehHEroP/UpEthMppBf6QjnXdD8beZM2+nE2GVnWrLG6iTEqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ni7l7iOY; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776659340; c=relaxed/simple;
+	bh=oqu+kqPmSsJ64x3op4poFhP/ka6AgkUpq56PB06FUZY=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=pZxj/wlcTTuoVuoZPIafT1Fb8JaE9Em0i3qAtWVUjgZgz51wgLQn51UkVNckCTrQvsPNZmAdhd7DITrddp1qkPYi8axp5WY8UDlUwkGQkQ2HfS90OFb+Qk4trKYMoFPTELCd+Vnmw6KikEEaasR66210rX/2ZmR1B6KKHodS8Pg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q8c95GSG; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ni7l7iOY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776650330; x=1808186330;
-  h=from:to:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1OAv1qHwn1+12iuqL4ooZC8TIeubR/WmsIzn0acNPmI=;
-  b=ni7l7iOYow5k6T1XJrk2pg2anBjxGADdJ8xMt93lOlaSCk6XwkzRIurT
-   rIdBkT2WR7Hnfsnqrp85LvNgoJbPXAE+CwtTUv9qpAOoRFZnkO1IixM0c
-   20RA8LAWXrA2kxgqdjkdhTXzKOV57u8uBTfn6XH41Q52CfbVbHeEXYxN2
-   B1Cs2GlG1kXDEzZLh57ZceO2cBdSwg7f8NjNtQv6P1KCDFEJMQoiYF3YH
-   Tr35GzJB/YiLlO5BHqtdc2/ziSSOJlRghRsuJJHy3/zXhGKURUqt9f17x
-   Tu7Oi+RWl50mtZGQN8+97+ebbamZ1R1nsuxWR/cP6MyXOoLouqPvtrug+
-   A==;
-X-CSE-ConnectionGUID: bOrJOCkOSCCXxGrg5HObjA==
-X-CSE-MsgGUID: CleBskstRleOSuw9dfn14Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77431254"
-X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="77431254"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2026 18:58:49 -0700
-X-CSE-ConnectionGUID: OgrV/iSQQTuCOjof/WmakA==
-X-CSE-MsgGUID: oh9yUxKKROinVL5j46kUlw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="228435227"
-Received: from junxiao.bj.intel.com ([10.238.152.69])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2026 18:58:47 -0700
-From: Junxiao Chang <junxiao.chang@intel.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	gye976@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	lars@metafoo.de,
-	junxiao.chang@intel.com
-Subject: [PATCH] iio: buffer: fix warning in requesting threaded irq
-Date: Tue, 21 Apr 2026 09:52:52 +0800
-Message-ID: <20260421015252.621393-1-junxiao.chang@intel.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q8c95GSG"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2b25cf1b5f0so14803505ad.3
+        for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 21:28:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776659338; x=1777264138; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=0BLw8c3lehsvxuLUDkwPuN4uiZnY4mtPCv+yKi1Kr1o=;
+        b=q8c95GSG3+ckTaPIMe4PjXKFxJOQ25g3RKI+cfq8aAuYKPwUaMTIkfc+zeR18kjVrA
+         EhTA7kDPEbBi71arGRoNB+f1F/9GlAx8eDd4N413Gs7e+MiqI92rqfJjIw/jnMm5DZKn
+         dSF9pNvB1D3gH/kB5GcVWx33ZIlDIs5s0QBsox/t94QU3jGgdl19/3y89wmeSmxmh/fI
+         DIR/RWH8wLEelrWCabgFKytqidNct9Lb27XUxotOGGCEfoVcBaEXG2OU6X6xDKU6qool
+         lZR1cRM9qU4TtfULGn3/2htJ5F9lhrze3ZJumg9h/cI6E0edKcGDYT4U6PrFWYMRqUez
+         BM/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776659338; x=1777264138;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0BLw8c3lehsvxuLUDkwPuN4uiZnY4mtPCv+yKi1Kr1o=;
+        b=aBKmemT3YuO0cgMPcDRUx81ohBeotMeePTjG8jbDndJh9B3kXFnCiObN0Smio5JQWb
+         G4kvCvjM34wGrePVXQpeOKQWHImuN6OSwuQItB2YFiJMG/I8wxXDOEAGbReQrYpIwdo3
+         k6j8wONnW3daxtE9HdKtAzlrSn1Fdg+23hGtgaCFHHnHEEq0hw+XjMcgqAYv+jtVQvUc
+         QNzTaSGH9niSloQds4/f083Mf+tdsGfQP5ok8C6+sV968mdV65eC0qLAQhfcETGDvx2S
+         HPUipmg4QLUJ0nkedO9o+mJKtkkRVuZkgUSpYhW8SYD7ABDrjll3Pbv5OWkJvL4Rs9Jo
+         Xy9g==
+X-Forwarded-Encrypted: i=1; AFNElJ9VQR0EIK0mZTDwoDe6E0fczIsCOEIVcNFMYD4G3flKSWKqWR2hM/W8KsqTkCSYHVI9lCs00Atet80=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzpRi8EqTsJfe89HN3A2mhKoQMqlBMIfmvPdF1RYTxv9nu9CHJK
+	0kH2t91DDjvpevKpNQ5gzlW//JdpxxI98vIrEwUh2IrVZ27kQ3s6+BXR
+X-Gm-Gg: AeBDievUTgZFcdu4bECex7NVt55VbP58P0btp1kSrwaZzrV8n4RFGNRixXmQJbzXH5v
+	ZIG2WG+8qsBOZ937P+b93g3gAo20J7Bhlt+20K1OIAFreHGp3PGiUqDerdJkJFpPJ7t7uraz9zE
+	0Rh0zBc+RnagBp/nj8agYa0r1a9i3L1rzziTcVeixDauVKx1cD3RU+4mVfTkVHjYLjt2sMAUnvJ
+	VOF4HJOk8U3+9VMI1ppgQbLwktzHRB989Vf0kZn/IJfX94l+qMCCr0js6dfPjFOz2AoOsOjyxNf
+	jxicLjCzCSKMkoXD7+F1wcF1hB4XiXmJP8LT1Xd0BDF+n7hNgFtoBgLkaoldbah1WuAes4xCI4x
+	91HGBauY5tvhsQak5GJuGtnuGn/N30RpW6P5QO7numu1C+dvbBXomT/n30/9aPAtG/ES3w5grwW
+	tPjdx7z6Pwc1bmonl60+8/T7SKgEoJGtpTTioPQJKvsCjceQuuJSkNRXUR
+X-Received: by 2002:a17:903:2291:b0:2b4:678c:5f27 with SMTP id d9443c01a7336-2b5f9f3c5cbmr131949335ad.34.1776659338313;
+        Sun, 19 Apr 2026 21:28:58 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:ae51:6985:a95:3211:21d3:390a])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5fab0cddfsm128552745ad.49.2026.04.19.21.28.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 19 Apr 2026 21:28:57 -0700 (PDT)
+Date: Mon, 20 Apr 2026 09:58:53 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, tglx@kernel.org,
+ christophe.jaillet@wanadoo.fr, mingo@kernel.org,
+ nabijaczleweli@nabijaczleweli.xyz, kees@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 1/7] iio: ssp_sensors: cleanup codestyle warning
+User-Agent: Thunderbird for Android
+In-Reply-To: <20260419182848.7c6182b8@jic23-huawei>
+References: <20260415050749.3858046-1-sanjayembedded@gmail.com> <20260415050749.3858046-2-sanjayembedded@gmail.com> <20260419182848.7c6182b8@jic23-huawei>
+Message-ID: <2AA53122-CDDB-42C1-9674-C2C83478C1FA@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-IRQF_ONESHOT is for threaded IRQ. If there is no threaded IRQ
-handler, this flag should not be set.
 
-This change fixes a warning during booting with kernel v7.0-rc3:
 
-WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x1639/0x2510, CPU#3: iio-sensor-prox/974
-Call Trace:
-request_threaded_irq+0x2c7/0x490
-iio_trigger_attach_poll_func+0x353/0x6b0
-__iio_update_buffers+0x2420/0x2c70
-enable_store+0x183/0x270
-dev_attr_store+0x5e/0x90
-sysfs_kf_write+0x1e8/0x290
-kernfs_fop_write_iter+0x406/0x5f0
-vfs_write+0x71c/0xea0
+On 19 April 2026 10:58:48=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=
+=2Eorg> wrote:
+>On Wed, 15 Apr 2026 10:37:43 +0530
+>Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom> wrote:
+>
+>> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>>=20
+>> Reported by checkpatch:
+>> FILE: drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>>=20
+>> WARNING: Prefer __packed over __attribute__((__packed__))
+>> +} __attribute__((__packed__));
+>>=20
+>> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> Reviewed-by: Andy Shevchenko <andriy=2Eshevchenko@intel=2Ecom>
+>In interests of cutting down on how many patches are in flight
+>I'm going to pick up at least the first few patches from your series=2E
+>If another version is needed for others don't resend the ones I've
+>picked up=2E
+>
+>Applied this one=2E
+>
+>thanks,
+>
 
-v3: remove unneeded log in git message
-v2: use ternary and drop temp variable
+Understood, thanks=2E
+This will also reduce overhead to maintain patches which are already good =
+and reviewed by=2E
 
-Fixes: 23f2d735a932 ("iio: Add helper function for initializing triggered buffers")
-Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
----
- drivers/iio/buffer/industrialio-triggered-buffer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-index 9bf75dee7ff86..40eea3a447246 100644
---- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-+++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-@@ -64,7 +64,7 @@ int iio_triggered_buffer_setup_ext(struct iio_dev *indio_dev,
- 
- 	indio_dev->pollfunc = iio_alloc_pollfunc(h,
- 						 thread,
--						 IRQF_ONESHOT,
-+						 thread ? IRQF_ONESHOT : 0,
- 						 indio_dev,
- 						 "%s_consumer%d",
- 						 indio_dev->name,
--- 
-2.43.0
-
+>> ---
+>>  drivers/iio/common/ssp_sensors/ssp_spi=2Ec | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>=20
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec b/drivers/iio/c=
+ommon/ssp_sensors/ssp_spi=2Ec
+>> index 6c81c0385fb5=2E=2E8c1e15d61db7 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>> +++ b/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>> @@ -29,7 +29,7 @@ struct ssp_msg_header {
+>>  	__le16 length;
+>>  	__le16 options;
+>>  	__le32 data;
+>> -} __attribute__((__packed__));
+>> +} __packed;
+>> =20
+>>  struct ssp_msg {
+>>  	u16 length;
+>
