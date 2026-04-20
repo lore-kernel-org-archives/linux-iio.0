@@ -1,75 +1,76 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E410B312825
-	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 04:28:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01A9F3806D6
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 04:29:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776659340; cv=none; b=LmKM246VJcKibSYWP5D5cESUqumhWubYHkB2TwkAukYVgxu3GwJIP3z8YiHFPuiRcvOl3H0bcwQxKtYvo7g0CJ9RvaAoo981fTKt+KzpARpWADiIeeV2HfEovni2z0iHcrp5xsj3T6w4HXF8pKhEh0tczdtuzXWJF3PBhnfFqP8=
+	t=1776659362; cv=none; b=L+aA8pZ3tdb8Q6YG3ncN9TOxoE3bsP73r4RkivPLnLqEILb4j8BCFyeB8O9AY/floQUM5xLq079FZiOg+eEECKeWUkrLBtFsAMXa+UD8zLS9xS9Gj7cPfgNUDZspamsTKvzOfYBJAIfIeuQxKjER4KwI/g7uLsBFiJT9wgOA3QM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776659340; c=relaxed/simple;
-	bh=oqu+kqPmSsJ64x3op4poFhP/ka6AgkUpq56PB06FUZY=;
+	s=arc-20240116; t=1776659362; c=relaxed/simple;
+	bh=SccmvMNkQlBRFcxV7skeaaHf/mnZSiCPSfEcqk4rgeI=;
 	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=pZxj/wlcTTuoVuoZPIafT1Fb8JaE9Em0i3qAtWVUjgZgz51wgLQn51UkVNckCTrQvsPNZmAdhd7DITrddp1qkPYi8axp5WY8UDlUwkGQkQ2HfS90OFb+Qk4trKYMoFPTELCd+Vnmw6KikEEaasR66210rX/2ZmR1B6KKHodS8Pg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q8c95GSG; arc=none smtp.client-ip=209.85.214.171
+	 MIME-Version:Content-Type; b=XpG4kwOpmNBCiiRg9R9WV8KkKrdL7WQl7RQqepew2efuQWPr6HeZLoxUH5uS8kqik98l20dUCM7a6d9HCcH/PeZ7HP9Ijs454a28YvNX41dxHBzwP2qMH9rgAvv0bQyT4IuX7a3tXj6spIwOnBruybR1AoMzpvF/rveq6qAjmvs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cWciCdLC; arc=none smtp.client-ip=209.85.215.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q8c95GSG"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2b25cf1b5f0so14803505ad.3
-        for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 21:28:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cWciCdLC"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-c7980c060cfso399501a12.2
+        for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2026 21:29:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776659338; x=1777264138; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1776659360; x=1777264160; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:references
          :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=0BLw8c3lehsvxuLUDkwPuN4uiZnY4mtPCv+yKi1Kr1o=;
-        b=q8c95GSG3+ckTaPIMe4PjXKFxJOQ25g3RKI+cfq8aAuYKPwUaMTIkfc+zeR18kjVrA
-         EhTA7kDPEbBi71arGRoNB+f1F/9GlAx8eDd4N413Gs7e+MiqI92rqfJjIw/jnMm5DZKn
-         dSF9pNvB1D3gH/kB5GcVWx33ZIlDIs5s0QBsox/t94QU3jGgdl19/3y89wmeSmxmh/fI
-         DIR/RWH8wLEelrWCabgFKytqidNct9Lb27XUxotOGGCEfoVcBaEXG2OU6X6xDKU6qool
-         lZR1cRM9qU4TtfULGn3/2htJ5F9lhrze3ZJumg9h/cI6E0edKcGDYT4U6PrFWYMRqUez
-         BM/w==
+        bh=SccmvMNkQlBRFcxV7skeaaHf/mnZSiCPSfEcqk4rgeI=;
+        b=cWciCdLCiYJKUUl8Ki+5gUskyyX8oKxUPASJlavrbV7/1N7Lr/oOpGyn9ZPhMkwvb/
+         qC0/qXdQNP9FFaj//UjRkJ3iq5ShnNqlhrC3TTRpe5HAxbgl5vt34kRZfcpZTW/QlSJV
+         4YqOymzNfFZ4R0WgdpOQvUmn5a2IKVudnCMx3rF0f50vJFfLpu7y+OcFqvRGJqUsa6W2
+         eYeMiHOceZg+hxKsh83BiyOcOifo0F3QLtLN8EMvQ6+5b5b+hJuc/P+G94ElMpS69+l9
+         RVao0fs7WblnHmypXvJy6gjdMrwsnjcktr46suQJ8WrC4077NgM8kswRabwF481r13m1
+         f1gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776659338; x=1777264138;
+        d=1e100.net; s=20251104; t=1776659360; x=1777264160;
         h=content-transfer-encoding:mime-version:message-id:references
          :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0BLw8c3lehsvxuLUDkwPuN4uiZnY4mtPCv+yKi1Kr1o=;
-        b=aBKmemT3YuO0cgMPcDRUx81ohBeotMeePTjG8jbDndJh9B3kXFnCiObN0Smio5JQWb
-         G4kvCvjM34wGrePVXQpeOKQWHImuN6OSwuQItB2YFiJMG/I8wxXDOEAGbReQrYpIwdo3
-         k6j8wONnW3daxtE9HdKtAzlrSn1Fdg+23hGtgaCFHHnHEEq0hw+XjMcgqAYv+jtVQvUc
-         QNzTaSGH9niSloQds4/f083Mf+tdsGfQP5ok8C6+sV968mdV65eC0qLAQhfcETGDvx2S
-         HPUipmg4QLUJ0nkedO9o+mJKtkkRVuZkgUSpYhW8SYD7ABDrjll3Pbv5OWkJvL4Rs9Jo
-         Xy9g==
-X-Forwarded-Encrypted: i=1; AFNElJ9VQR0EIK0mZTDwoDe6E0fczIsCOEIVcNFMYD4G3flKSWKqWR2hM/W8KsqTkCSYHVI9lCs00Atet80=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzpRi8EqTsJfe89HN3A2mhKoQMqlBMIfmvPdF1RYTxv9nu9CHJK
-	0kH2t91DDjvpevKpNQ5gzlW//JdpxxI98vIrEwUh2IrVZ27kQ3s6+BXR
-X-Gm-Gg: AeBDievUTgZFcdu4bECex7NVt55VbP58P0btp1kSrwaZzrV8n4RFGNRixXmQJbzXH5v
-	ZIG2WG+8qsBOZ937P+b93g3gAo20J7Bhlt+20K1OIAFreHGp3PGiUqDerdJkJFpPJ7t7uraz9zE
-	0Rh0zBc+RnagBp/nj8agYa0r1a9i3L1rzziTcVeixDauVKx1cD3RU+4mVfTkVHjYLjt2sMAUnvJ
-	VOF4HJOk8U3+9VMI1ppgQbLwktzHRB989Vf0kZn/IJfX94l+qMCCr0js6dfPjFOz2AoOsOjyxNf
-	jxicLjCzCSKMkoXD7+F1wcF1hB4XiXmJP8LT1Xd0BDF+n7hNgFtoBgLkaoldbah1WuAes4xCI4x
-	91HGBauY5tvhsQak5GJuGtnuGn/N30RpW6P5QO7numu1C+dvbBXomT/n30/9aPAtG/ES3w5grwW
-	tPjdx7z6Pwc1bmonl60+8/T7SKgEoJGtpTTioPQJKvsCjceQuuJSkNRXUR
-X-Received: by 2002:a17:903:2291:b0:2b4:678c:5f27 with SMTP id d9443c01a7336-2b5f9f3c5cbmr131949335ad.34.1776659338313;
-        Sun, 19 Apr 2026 21:28:58 -0700 (PDT)
+        bh=SccmvMNkQlBRFcxV7skeaaHf/mnZSiCPSfEcqk4rgeI=;
+        b=WGfggF18yXxLPbRnX5PktnPUIJ7hjqeS252bF9AWvlOZSeXq3RWNHi8QUbwnlKjb3J
+         9mkLS+zd03nsBP/k9KLF8AYgV0CUMPgZUdEdPkjfvUHujbU9mc8RXYkVdN/Ng/4dWnqz
+         mIgSSLxJcgagx0UxIJYvHkPzNGi7OKmCjj1jC3UECk/6H8v6QCZoVkmErJ3L96imCoB/
+         4Dz1BF0m+Nh2ETKTRp8Ovhbji2CxgQDgk339nF9CS+f4M3jtZ/g/o1PxGp5fYgIhACv3
+         iwjPBkcZj3dpPW+JzZxiIj3Gb8UE80ZQue8/X1kwUjXRWNb3O1nOuuMMJUdQM3o7mPQl
+         WVew==
+X-Forwarded-Encrypted: i=1; AFNElJ8+yLjGY9PZZI8wflYOdqoYx+pps4aedQTLENIuKPfrcngOfyXA/ivfQu5Zsjk7PbmefZQ2p3mQXHI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyGw3ZrCkHDBfks+xcnbVuvHyL/7ichkhfw0LNRRIyf2jQPJH8F
+	f0e35vyhge4WqscHFL3CPpCLdBrs5+eaQZUfjSrPmgwEdYWvXJzQsBnG
+X-Gm-Gg: AeBDiev2M8XbxEBIU9cP86uSxwARMt+dOAU/osmMPKJKpmQ1EcOE8I3gJ0zH8UJdnSH
+	NSPe2X5dS9OnWRaK9//+sEFh0NJxwrRQpXOlL4q6hrr2U6UFP0rEhHW5Fj2PdjyhjjpkZuL9oC/
+	hT2adVFkbc79RuJxYWMTri5v4PaaxtpOnA7+qrY3XGWUJ/Iq6mJ8EnlnxHsvGQn6eTMOoideKew
+	hErv5Bafb/JPPI6R9bnLViXxdDRFveTxU06BSI0ugXkgWRVUoL3boZFh+d5XXDe0EQAjLZuJzYo
+	v03QogPuNinJ8PZTUtXoo3377csF1URkt1iPi5aCbiW2h4zZUbuTsJ/apmcNn4X+qXvLPYJ2a7v
+	4DJ9b1Lv4BcsqnAKpRC+73cDjiLJAwGnlLWLzeHuofEVIUq8R7bZ4CvvlkeTdPH1vzJgK3A+o65
+	YODFLxSRQ+ssGuxSg7DVm3j3cxu1DjmHqTGOmBCrNtqgVQuaAN9maTE6Rq
+X-Received: by 2002:a05:6a00:92a7:b0:827:4bca:f1a2 with SMTP id d2e1a72fcca58-82f8c87e27fmr12225881b3a.10.1776659360338;
+        Sun, 19 Apr 2026 21:29:20 -0700 (PDT)
 Received: from ehlo.thunderbird.net ([2401:4900:ae51:6985:a95:3211:21d3:390a])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5fab0cddfsm128552745ad.49.2026.04.19.21.28.56
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ec06cbfsm10653984b3a.58.2026.04.19.21.29.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Apr 2026 21:28:57 -0700 (PDT)
-Date: Mon, 20 Apr 2026 09:58:53 +0530
+        Sun, 19 Apr 2026 21:29:19 -0700 (PDT)
+Date: Mon, 20 Apr 2026 09:59:15 +0530
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 CC: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, tglx@kernel.org,
  christophe.jaillet@wanadoo.fr, mingo@kernel.org,
  nabijaczleweli@nabijaczleweli.xyz, kees@kernel.org,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/7] iio: ssp_sensors: cleanup codestyle warning
+Subject: Re: [PATCH v6 2/7] iio: ssp_sensors: cleanup codestyle check
 User-Agent: Thunderbird for Android
-In-Reply-To: <20260419182848.7c6182b8@jic23-huawei>
-References: <20260415050749.3858046-1-sanjayembedded@gmail.com> <20260415050749.3858046-2-sanjayembedded@gmail.com> <20260419182848.7c6182b8@jic23-huawei>
-Message-ID: <2AA53122-CDDB-42C1-9674-C2C83478C1FA@gmail.com>
+In-Reply-To: <20260419183310.2a2cec25@jic23-huawei>
+References: <20260415050749.3858046-1-sanjayembedded@gmail.com> <20260415050749.3858046-3-sanjayembedded@gmail.com> <ad9XBFb_xCw3mShv@ashevche-desk.local> <20260419183310.2a2cec25@jic23-huawei>
+Message-ID: <112AB66C-DF43-4219-9139-2628EBA9B907@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,51 +83,21 @@ Content-Transfer-Encoding: quoted-printable
 
 
 
-On 19 April 2026 10:58:48=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=
+On 19 April 2026 11:03:10=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=
 =2Eorg> wrote:
->On Wed, 15 Apr 2026 10:37:43 +0530
->Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom> wrote:
+>On Wed, 15 Apr 2026 12:14:44 +0300
+>Andy Shevchenko <andriy=2Eshevchenko@intel=2Ecom> wrote:
 >
->> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> On Wed, Apr 15, 2026 at 10:37:44AM +0530, Sanjay Chitroda wrote:
 >>=20
->> Reported by checkpatch:
->> FILE: drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>> > Reported by checkpatch:
+>> > FILE: drivers/iio/common/ssp_sensors/ssp_spi=2Ec
+>> >=20
+>> > CHECK: Macro argument '=2E=2E=2E' may be better as '(=2E=2E=2E)'
+>> > to avoid precedence issues =20
 >>=20
->> WARNING: Prefer __packed over __attribute__((__packed__))
->> +} __attribute__((__packed__));
->>=20
->> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
 >> Reviewed-by: Andy Shevchenko <andriy=2Eshevchenko@intel=2Ecom>
->In interests of cutting down on how many patches are in flight
->I'm going to pick up at least the first few patches from your series=2E
->If another version is needed for others don't resend the ones I've
->picked up=2E
->
->Applied this one=2E
->
->thanks,
->
-
-Understood, thanks=2E
-This will also reduce overhead to maintain patches which are already good =
-and reviewed by=2E
-
->> ---
->>  drivers/iio/common/ssp_sensors/ssp_spi=2Ec | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
 >>=20
->> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec b/drivers/iio/c=
-ommon/ssp_sensors/ssp_spi=2Ec
->> index 6c81c0385fb5=2E=2E8c1e15d61db7 100644
->> --- a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
->> +++ b/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
->> @@ -29,7 +29,7 @@ struct ssp_msg_header {
->>  	__le16 length;
->>  	__le16 options;
->>  	__le32 data;
->> -} __attribute__((__packed__));
->> +} __packed;
->> =20
->>  struct ssp_msg {
->>  	u16 length;
 >
+>Applied=2E
+Thanks, will take care=2E
