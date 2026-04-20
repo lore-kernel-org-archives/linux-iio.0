@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EADDA385525;
-	Mon, 20 Apr 2026 12:10:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA7F2C11DE;
+	Mon, 20 Apr 2026 12:11:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776687004; cv=none; b=lLeCRzQkGBn3Hyw2TYEl3PrVfxT05MRmK+V+mfK5Xo9CkmZo8j62rh5gCakFhfCmpdWSiV2vsFObuiQZIfKthraWaX7OncMJff5+YgO7Sdk79AJ1VNzqauMmzl050M2VVIY9R7CBOqY5FdgbKo9CkC+0F5fzbKfbiW2XnsW5mCM=
+	t=1776687105; cv=none; b=RGMgNrwc/ZaAdpHAEsb+aLC23hNLyhFLwx184kHhdU8L7REXMv7g29Bj6NjyKlFgCaDOCw+XaDF8PsNppSc/KA1ExdGoNi2VNlgd5sBbED5KSsaNk89JZ5+Hdyn56qwHlT4CV2Pb4h6VITzXMJIhADCrTtSawGMWJPMEBgVu8IU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776687004; c=relaxed/simple;
-	bh=9PSiOjy2HqcK8tJ9oRArf+tqRTaBQBQt+JoJ0C/5bT0=;
+	s=arc-20240116; t=1776687105; c=relaxed/simple;
+	bh=893zaj1e2JM2woVFdRnYt7YiI+4n2cKbt2gdPIN+waI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ajoyUgeXMFPhq6T72ai/kQQQZewd9jbM4ScxuRKadLzjZ6g2VHAchEcSPr1ttbmmkyh9c5/pe71DWLSgRRy+u/5WJIHeLbsiQWwWBvVr1ERIVN2/mlttRgcSBi/2YmuLJcTBzxDve6wwNGRBaO3cE+iy9vG1y6hBU3lzu/UZgZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EPN1GWtO; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=JhHU+O2HOzqXPGmOGb9cLiYZk95nld2tnKJOZfxmLhUlWxKgW7G/kJMmcVOIHtjX9MdG57s6lydyhkRRbOoM/K78q1HY8XNCvn75tNVBUKgvRSUcsqbuq2kRMSuREKr2saTMi81LQLh5boCFIsSH6YOdoryu8/Gx5bHEBHMPjoI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HosL66xF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EPN1GWtO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA4B1C19425;
-	Mon, 20 Apr 2026 12:10:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HosL66xF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C2D8C19425;
+	Mon, 20 Apr 2026 12:11:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776687003;
-	bh=9PSiOjy2HqcK8tJ9oRArf+tqRTaBQBQt+JoJ0C/5bT0=;
+	s=k20201202; t=1776687104;
+	bh=893zaj1e2JM2woVFdRnYt7YiI+4n2cKbt2gdPIN+waI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=EPN1GWtON4AfPkPPmp+iTdQlhEJ9Rc/9Dac/ljbnB4szKv70CO3OyWHz5ahJKcd4J
-	 WUzmiTT0lUZ/PRByNgCUmUWkNAtrMaTdSeJI4y0LuYMq9p+hTqlqbLxN8c+M2B66Ce
-	 CUfVsE8SRK8BwNkR7+7j+paH/e0BCD6dg5e9/Q85cH5X+jq02cAIUduMB2dAsQsRS0
-	 VOPTPiMv2MaaDAqfMlepgrivpTU6kyKb6pWlYV3p6cn1E3pir6X0AUJyKkV6yIjzoK
-	 xveRrm+elHeNFUMmVzRzHFLuo7GYQ4DlQngiXJgJxyeG0MyL1wtIhi7Ip5v/uxJBIt
-	 EyGyPFqRqGx8Q==
-Date: Mon, 20 Apr 2026 13:09:55 +0100
+	b=HosL66xFEEhF4TbbTXaBQ2l0jOY9SNuenY6t7SDP7YNS6dgSq3FH8GUYG/u9+tPEF
+	 9GzX4KL5FU1sSpJYf6uaLyXqIQi8hvsrRoYvizo4yBqlr0OBcMv4SNWhXyDZCcSPUD
+	 cQHagZD8cYSTHiY6oMToyr0RUzwt7MsB3BFJeiDF/A3V8dkfyAGAk3CdEnBU5JdrwO
+	 8OCn+SpdazeMwFm97XwWmC9fn4qWtHJHSCerLS/0gZjIAZwkmQxQok9THZe97wBV7K
+	 c5NsxDWzygQGTKUZguxTwd+we5dFtC11LkGIFVzP1b2rxS9NE0t8crooXyx7/LuvFe
+	 x1C66U4uTmIaA==
+Date: Mon, 20 Apr 2026 13:11:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Erikas Bitovtas <xerikasxx@gmail.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v4 0/6] iio: light: vcnl4000: drop enum ID table and use
- device-managed register
-Message-ID: <20260420130955.628babaa@jic23-huawei>
-In-Reply-To: <20260414-vcnl4000-drop-enum-v4-0-59fde2932a0f@gmail.com>
-References: <20260414-vcnl4000-drop-enum-v4-0-59fde2932a0f@gmail.com>
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, Dan Carpenter <error27@gmail.com>
+Subject: Re: [PATCH] iio: dac: Fix passing uninitialized vref1_uV for no
+ Vref1 case
+Message-ID: <20260420131136.6f3857dd@jic23-huawei>
+In-Reply-To: <20260414-mcp47feb02-fix4-v1-1-9d71badfd25e@microchip.com>
+References: <20260414-mcp47feb02-fix4-v1-1-9d71badfd25e@microchip.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,25 +48,63 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 14 Apr 2026 15:37:16 +0300
-Erikas Bitovtas <xerikasxx@gmail.com> wrote:
+On Tue, 14 Apr 2026 15:33:38 +0300
+Ariana Lazar <ariana.lazar@microchip.com> wrote:
 
-> This patch series drops the enum ID table for device enumeration and
-> instead adds pointers to chip ID structs directly. Necessary
-> information about the device is then taken from i2c_get_match_data()
-> call. This removes the association between enum ID table and struct
-> table and allows for easier addition and removal of new devices.
+> Initialize vref1_uV variable to 0 before calling
+> mcp47feb02_init_ch_scales() in mcp47feb02_probe() to avoid passing an
+> uninitialized value when have_ext_vref1 is false.
 > 
-> Along with that, an iio_device_register() call is replaced with its
-> device-managed counterpart, to ensure that device is unregistered
-> automatically.
+> Fixes: dd154646d292 ("iio: dac: mcp47feb02: Fix Vref validation [1-999] case")
+> Reported-by: Dan Carpenter <error27@gmail.com>
+> Closes: https://lore.kernel.org/all/adiPnla0M5EzvgD-@stanley.mountain/
+> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+> ---
+>  drivers/iio/dac/mcp47feb02.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> No functional changes are intended.
-> 
-> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
-Applied to the testing branch of iio.git which I'll rebase on rc1 once
-available and then push out for linux-next to pick up.
+> diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
+> index faccb804a5ed548088aaf83266b16ed45a92916c..efd4847913e46a4fa1b671aa9c5bd3e1430406b7 100644
+> --- a/drivers/iio/dac/mcp47feb02.c
+> +++ b/drivers/iio/dac/mcp47feb02.c
+> @@ -1095,9 +1095,10 @@ static int mcp47feb02_probe(struct i2c_client *client)
+>  {
+>  	const struct mcp47feb02_features *chip_features;
+>  	struct device *dev = &client->dev;
+> +	int vdd_uV, vref_uV, vref1_uV;
+>  	struct mcp47feb02_data *data;
+>  	struct iio_dev *indio_dev;
+> -	int vref1_uV, vref_uV, vdd_uV, ret;
+I haven't caught up with the rest of the discussion yet, but this change
+seems to be superficial style stuff. Doesn't belong in a fix patch.
 
 Thanks,
 
 Jonathan
+
+> +	int ret;
+>  
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>  	if (!indio_dev)
+> @@ -1146,13 +1147,13 @@ static int mcp47feb02_probe(struct i2c_client *client)
+>  		dev_dbg(dev, "Vref is unavailable.\n");
+>  	}
+>  
+> +	vref1_uV = 0;
+>  	if (chip_features->have_ext_vref1) {
+>  		ret = devm_regulator_get_enable_read_voltage(dev, "vref1");
+>  		if (ret > 0) {
+>  			vref1_uV = ret;
+>  			data->use_vref1 = true;
+>  		} else {
+> -			vref1_uV = 0;
+>  			dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
+>  			dev_dbg(dev, "Vref1 is unavailable.\n");
+>  		}
+> 
+> ---
+> base-commit: 51e7665ab81f02adc80a1219c260ee678e9c6eb8
+> change-id: 20260414-mcp47feb02-fix4-614de9334f22
+> 
+> Best regards,
+
