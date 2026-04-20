@@ -1,79 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA5CF34750A;
-	Mon, 20 Apr 2026 18:20:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A713A2D0C64;
+	Mon, 20 Apr 2026 18:22:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776709245; cv=none; b=j4lmw7g9PBP+SrprudaONIcRKTzd+NSjYI2QVFF898KrxYu1luP1nXs5ThGbNK2L3FQhvi7wb9xRYhgv7FwBtuNxIGwCaNgx1omSNsJyajqkxZcwpP1En5S8eXRka+MQ6iwWT6u1b5H6jqrv9GfD3Y/XGjdXoBWL2j549NShsVo=
+	t=1776709358; cv=none; b=NOnoo4IerqN+k72QJSKAWV1ypnByIIbvKuGJ6vD8gPS8I3Uov+pAvfwIdEpidxV91r8Bm/2GaxvNjgnD4gkovh4KjbItqnWjOcyyKgh82kdbAu0e5D2G2Murb1yee0vk3GJTOsvelb5fAb4WksfzLKS5sQrbMWtKUIFNoFOWrhs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776709245; c=relaxed/simple;
-	bh=xyeRDtZDj0oH6E4L3jUBiadAoSK9S8jIIBhaItlh29U=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IS4CtfcrxvT0jH1gIacMTFqXbfaQalL1j4UCsH8V1jjCUwqsCJA552FCiHJMWjPgKv8ZZaZFcCMvL8wOvQWLg8WhQwrNvpVvnA0wFHxOmqPsf5P0sUyZQQbCBVBsSQ8gpuFD8VJsfccbui6EfuQ1t5KAXt1jn8mgfYInQHvDLIA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ohUXXFeI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776709358; c=relaxed/simple;
+	bh=TtsWasBb5ImTTzc3W/be5q8qYDc5s5SbmUhAVMr0O9Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MthaGboCJwdUQ4ENZPNbFEOrqlnkTt2j/RiWuN79OgMGMJvD3Vn9TcP0gvBNrQuErk2kYpWgbSWwp+UzDmZ3pt48YYiW7Whm60yxR3z7TuTlaGyknZ9SP6YY6owYY27CCtojdrToBURAehsT0tUj3OnBw8molyposGm9JEknC0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cxwptElp; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ohUXXFeI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69320C19425;
-	Mon, 20 Apr 2026 18:20:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776709245;
-	bh=xyeRDtZDj0oH6E4L3jUBiadAoSK9S8jIIBhaItlh29U=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ohUXXFeIvf5BQK6FTD+i2OjnMvnH68krr2J8yWztmC7VSy5igrs80SCvNf4a+43PN
-	 n8u7FwHar85hMKyUeMNQBIK6PIasDIAAqLzQQFJEm9ac+6hHaSvxsRp7FR+bcivsNh
-	 kJy0Vv3fEfo0J7GzZR4cYadP5yHjzZxe2TSs0p6jyRMCk9jbJAtka7XllknvBNzlEG
-	 rLhOqog6bODNnvIfgwfJ7SpD2V9y+Ny5y3dZX08vampm7IOE3IJpfLMpKmfd+rNup/
-	 sdvTf9MtylLB5jcElKcsSkswqlrC/foh/dJgCnIKnggV+khXxvGvLomqgmPYJR7Jyp
-	 q6d5lXL0HG81w==
-Date: Mon, 20 Apr 2026 19:20:37 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- stable <stable@kernel.org>
-Subject: Re: [PATCH 1/3] iio: pressure: bmp280: fix stack leak in bmp580
- trigger handler
-Message-ID: <20260420192037.2ce1a50e@jic23-huawei>
-In-Reply-To: <84e57bae-358b-43f6-9455-ee6c84b576cb@baylibre.com>
-References: <2026040947-overhang-fax-02d0@gregkh>
-	<84e57bae-358b-43f6-9455-ee6c84b576cb@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cxwptElp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776709357; x=1808245357;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TtsWasBb5ImTTzc3W/be5q8qYDc5s5SbmUhAVMr0O9Q=;
+  b=cxwptElpS8BwqKlRI6Yqj9U9TOlY8bYvAFJCpaa4srKp9+/YFXaVuQuM
+   20zTYEVJdUlWw3pGOTmuT9w/8wg4dTJWaph+FlDH6q+hVKsMqEsh+FgP2
+   GAelHhP3frDhhAvSHjmiMz49NoyDMCbYGx7MIKqnp6bmsa4kljKFTovuK
+   6VOCR4AyGK0yfsa5hzmz9y1tlplZySKjcEEMT8Wsz+AWCliwTmdZS7MPB
+   x4+2r0L218/We4S48xhO2AMGvuH9PQlKaUOoxilZ9hBO01pG1mQNTDyWJ
+   fK96MZHNQLYmox0wV/4J8X3T+cDiX4KPuabfipBS1H3h7RpHpuODPdILf
+   A==;
+X-CSE-ConnectionGUID: TG3CvOzhQ2Sl5A1nuSz47w==
+X-CSE-MsgGUID: sCD3c/IDQk2oLztqHR6SWQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="65169188"
+X-IronPort-AV: E=Sophos;i="6.23,190,1770624000"; 
+   d="scan'208";a="65169188"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 11:22:36 -0700
+X-CSE-ConnectionGUID: AjnDA9z7RpKAdDntsYjfOQ==
+X-CSE-MsgGUID: 18rUKD+dRQKEavptMctsBA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,190,1770624000"; 
+   d="scan'208";a="236789366"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 11:22:32 -0700
+Date: Mon, 20 Apr 2026 21:22:29 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Antony Kurniawan Soemardi <linux@smankusors.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, phone-devel@vger.kernel.org,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Subject: Re: [PATCH v3 3/3] iio: adc: qcom-pm8xxx-xoadc: add support for
+ reading channel labels
+Message-ID: <aeZu5eI8ECxzKiUS@ashevche-desk.local>
+References: <20260405-pm8xxx-xoadc-label-v3-0-9fe179c283ec@smankusors.com>
+ <20260405-pm8xxx-xoadc-label-v3-3-9fe179c283ec@smankusors.com>
+ <adQNlfiq4aaOJ2ll@ashevche-desk.local>
+ <20260420185807.24817684@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260420185807.24817684@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, 9 Apr 2026 10:01:43 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Mon, Apr 20, 2026 at 06:58:07PM +0100, Jonathan Cameron wrote:
+> On Mon, 6 Apr 2026 22:46:29 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Sun, Apr 05, 2026 at 04:52:21PM +0000, Antony Kurniawan Soemardi wrote:
 
-> On 4/9/26 8:40 AM, Greg Kroah-Hartman wrote:
-> > bmp580_trigger_handler() declares its scan buffer on the stack without
-> > an initializer and then memcpy()s 3 bytes of 24-bit sensor data into
-> > each 4-byte __le32 field.  The high byte of comp_temp and comp_press is
-> > left uninitialized, and the channel storagebits is 32, so two bytes of
-> > stack are pushed to userspace per scan.
+...
+
+> > > +static int pm8xxx_read_label(struct iio_dev *indio_dev,
+> > > +			     struct iio_chan_spec const *chan, char *label)
+> > > +{
+> > > +	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);  
 > > 
-> > This is a regression from when the buffer lived in the private data, the
-> > move to a stack-local struct dropped the implicit zeroing.
-> > bme280_trigger_handler() was fixed up to handle this bug, but this
-> > driver was not fixed because there was no padding hole, but rather a
-> > short-fill issue.
+> > > +	struct pm8xxx_chan_info *ch = pm8xxx_get_channel(adc, chan->address);  
 > > 
-> > Fix this all by just zero-initializing the structure on the stack.
-> >   
+> > When you have a validation the better style is to split definition and
+> > assignment. This makes code robust against (theoretically) possible changes
+> > that might reuse the same variable for something else.
 > 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> I think you just mean
 
-Series applied to the fixes-togreg branch of iio.git.
-I'll be rebase on rc1 once available before sending out a pull request
-but in the meantime it can get some build coverage
+Yes.
 
-Thanks,
+> 	struct pm8xx_chan_info *ch;
+> 
+> 	ch = pm8xx_get_...
+> 	if (!ch)
+> 		return -EINVAL?
 
-Jonathan
+> I suppose slightly better but it's a very small function and unlikely to have
+> much complexity added to it.
+
+I am also on the educational side. If we learn how to do things right from the
+beginning...
+
+> > > +	if (!ch)
+> > > +		return -EINVAL;
+> > > +	return sysfs_emit(label, "%s\n", ch->label);
+> > > +}  
+> > 
+> > Again, no need to resend now, just make it in the next version if that version
+> > is asked for.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
