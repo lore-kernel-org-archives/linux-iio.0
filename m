@@ -1,42 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 915002772D;
-	Mon, 20 Apr 2026 18:07:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FAA73A5E75;
+	Mon, 20 Apr 2026 18:15:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776708458; cv=none; b=GicDI+fKtUk1l+DLaVzFo0qFFBc9pi+zt9Bp3ui9xZzZZX02P5wXtlx8/L2/MEgifDXRQdLrZeeLQqK1M5e4hpYCe8jLFAHGggNi8M1E3q9QHqZ+JvojKDwGC3B1/MZWWkpu3l2VQLk1bSR7NlpmHCvbyxCzy7zJ8kKOFFn/Eto=
+	t=1776708927; cv=none; b=J7NyZif6L29pcKl0YjL6q0Hrg1cgI4rZV51rzXsCKXpm+4QWGtWL1xyM+oubyrKQ7QAK1lzEvNQhq6+BqBykax64KIroVzDmATEAALxmF/vBpBtiAN6z9Rrn9r6HMkOjktmbod0WBv2oj2CEi/zkiwReH8XcmmSoBWc74/KHRy0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776708458; c=relaxed/simple;
-	bh=3rt/k7qepHzsDq/tWxANgKuz13QqJne5j6k9TZhky/A=;
+	s=arc-20240116; t=1776708927; c=relaxed/simple;
+	bh=yq/QOSQF+GF8jcOgjqBWByPYclByv7msNihyzmEa+Wk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qBbA9hccSvsKkNti5a69zppk1rqKeHQaYYFJXXntT08+W0pPBYD/sRNcEEA8VtkcgiDczhmykcEMXAKde3C5WnkIO3rzcbm3/z69ChLU26X5PVdvFwFn0tSyGsCtQ5lx0JHEXFZQHZadnfEG0ThXIxupeWo17E3aSvCJuBWKET0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k3OVzRm3; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=H8VkT8Z2bn3c7E9jBfBujFlTIp1RnNFg8Let0VE3rwYk+5UwXnfbQ7UyOMqallx/yO1urZEC+uBv9CFySifCTMpAN8QD/ienkGD51bYLVpL05c784gI+oHJwGSjDlnY8Zkrqf+RZnzCH7G0qf8WAqW8AfP94mrwJ731rVfNaTJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LzfyYK6O; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k3OVzRm3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D553C19425;
-	Mon, 20 Apr 2026 18:07:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LzfyYK6O"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF68AC19425;
+	Mon, 20 Apr 2026 18:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776708458;
-	bh=3rt/k7qepHzsDq/tWxANgKuz13QqJne5j6k9TZhky/A=;
+	s=k20201202; t=1776708927;
+	bh=yq/QOSQF+GF8jcOgjqBWByPYclByv7msNihyzmEa+Wk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=k3OVzRm3and3ukRjEIksRYcty9o9e2wg+TOvA5DyN+0jCO043txQ+GfgOtsilO9ZT
-	 qWL+V7LqDtPwlY7FyNyzuI2FHt/5bAEa9DqBGDr+TfrhY8ztXlvNODTAnpoeIm25Yi
-	 I7qJLG+MVZPsFUlTkxjzAR+kcM6lrK8wg3ghg/xmdW6TAaTzPHTodtQ4vBI6XhvO/5
-	 zYSeM5DykZbO8Hk/ioYgGVmYLCmZnjEm5Uu0AdXt9agjOZKGQURbkeFD6/1j2XWIMt
-	 mLa/L0SYrAw/Rsmrc1m5LN+rSHaMzJpo3LjEhLCyF5jIzZJHR9cIAeJozgu2OEBSrP
-	 Aj0LlkDlqQOsg==
-Date: Mon, 20 Apr 2026 19:07:30 +0100
+	b=LzfyYK6OVuxS9qsZaLkbja02bQoJ2UoQ8org6vpUdv8NWN+jZFY6uZSpBY1vPVnbI
+	 q0DIwkuKiDHpowh63fFCjF0UEDrYu8MSp/8ddAba0LoK9FZD2OcKp2xC2PszyB+MTC
+	 pO0YZOK8rPNZfViUM+n3o5x0Bq3vlqbh2mibH/BLgHylcLcQv1kVi1zOrvgP1jdZpd
+	 RejlUAHaX6OjHtLemZIzKTqOEP2XlZ+6VGBmW8TzSuki+fzFlU6/ajvBhmhLiCOB8U
+	 REzToUopZ0XkycggImAqXZeRGZRvHeMflFW8MqNtNiv7vvhNcSUruiAlhZ/CE41Uvu
+	 pNi8ppmtBfRIA==
+Date: Mon, 20 Apr 2026 19:15:19 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Shuvam Pandey <shuvampandey1@gmail.com>, Nuno =?UTF-8?B?U8Oh?=
+To: Gabriel Rondon <grondon@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: nxp-sar-adc: zero-initialize dma_slave_config
-Message-ID: <20260420190730.439c304d@jic23-huawei>
-In-Reply-To: <3c24723f-801c-46a5-9257-910f3c181235@baylibre.com>
-References: <20260406095324.99671-1-shuvampandey1@gmail.com>
-	<3c24723f-801c-46a5-9257-910f3c181235@baylibre.com>
+Subject: Re: [PATCH] iio: accel: bmc150: use guard(mutex) for mutex handling
+Message-ID: <20260420191519.43604fb0@jic23-huawei>
+In-Reply-To: <20260408082843.35716-1-grondon@gmail.com>
+References: <20260408082843.35716-1-grondon@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,71 +46,134 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 6 Apr 2026 08:59:34 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Wed,  8 Apr 2026 09:28:42 +0100
+Gabriel Rondon <grondon@gmail.com> wrote:
 
-> On 4/6/26 4:53 AM, Shuvam Pandey wrote:
-> > nxp_sar_adc_start_cyclic_dma() only fills the RX-side members of
-> > dma_slave_config before passing it to dmaengine_slave_config().
-> > 
-> > Zero-initialize the structure so unused members do not contain stack
-> > garbage. Some DMA engines consult optional dma_slave_config fields, so
-> > leaving them uninitialized can cause DMA setup failures.
-> > 
-> > Fixes: 4434072a893e ("iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms")
-> > Signed-off-by: Shuvam Pandey <shuvampandey1@gmail.com>
-> > ---
-> >  drivers/iio/adc/nxp-sar-adc.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
-> > index 9efa883c277d..7d7b5a580167 100644
-> > --- a/drivers/iio/adc/nxp-sar-adc.c
-> > +++ b/drivers/iio/adc/nxp-sar-adc.c
-> > @@ -659,7 +659,7 @@ static void nxp_sar_adc_dma_cb(void *data)
-> >  static int nxp_sar_adc_start_cyclic_dma(struct iio_dev *indio_dev)
-> >  {
-> >  	struct nxp_sar_adc *info = iio_priv(indio_dev);
-> > -	struct dma_slave_config config;
-> > +	struct dma_slave_config config = {};  
+> Replace manual mutex_lock()/mutex_unlock() pairs with guard(mutex)
+> from cleanup.h in functions where the mutex protects the entire
+> function body. This simplifies error paths by removing the need for
+> explicit unlock calls before returning.
 > 
-> IIO style is to have space between braces.
+> Converted functions:
+>   - bmc150_accel_get_temp()
+>   - bmc150_accel_write_event_config()
+>   - bmc150_accel_get_fifo_watermark()
+>   - bmc150_accel_get_fifo_state()
+>   - bmc150_accel_set_watermark()
+>   - bmc150_accel_fifo_flush()
+>   - bmc150_accel_trigger_set_state()
+Not sure this list is useful in the commit log. Rather verbose.
 > 
-> Wait and see if Jonathan asks for a new version first though
-> before sending one for trivial changes like that.
+> Functions where the mutex is released before subsequent non-trivial
+> work (e.g. bmc150_accel_get_axis, bmc150_accel_trigger_handler) are
+Add () after those function names.
+
+I took a quick look and can't see anything beyond an if (ret) check in
+bmc150_accel_get_axis()
+
+If it's the only one left I'd use scoped_guard() for bmc150_accel_trigger_handler()
+
+I'm not against a mix of guard and not as appropriate in a given place, but
+when there is only one left it seems silly to make a reader have to consider
+both styles!
+
+> left unchanged to preserve the existing lock scope.
 > 
-> >  	struct dma_async_tx_descriptor *desc;
-> >  	int ret;
-> >    
+> Signed-off-by: Gabriel Rondon <grondon@gmail.com>
+Good patch in general but there is room for further simplifications
+in the code being touched.
+
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c | 49 ++++++++-------------------
+>  1 file changed, 15 insertions(+), 34 deletions(-)
 > 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> 
-Note I picked this up and tweaked as above, so the following is
-just thoughts on how we might do similar in future. 
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index 42ccf0316ce5..6a2d7a133d2e 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -7,6 +7,7 @@
+>  #include <linux/module.h>
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+> +#include <linux/cleanup.h>
+>  #include <linux/delay.h>
+>  #include <linux/slab.h>
+>  #include <linux/acpi.h>
+> @@ -597,21 +598,18 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+>  static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
+>  {
+>  	struct device *dev = regmap_get_device(data->regmap);
+> -	int ret;
+>  	unsigned int value;
+> +	int ret;
 
-It is a bigger change but maybe it's worth 
+Unrelated change - here it just acts as noise for the real changes so don't
+do this sort of code movement of lines we aren't otherwise touching.
 
-	struct dma_slave_config config;
+>  
+> -	mutex_lock(&data->mutex);
+> +	guard(mutex)(&data->mutex);
+>  
+>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_TEMP, &value);
+>  	if (ret < 0) {
+>  		dev_err(dev, "Error reading reg_temp\n");
+> -		mutex_unlock(&data->mutex);
+>  		return ret;
+>  	}
+>  	*val = sign_extend32(value, 7);
+>  
+> -	mutex_unlock(&data->mutex);
+> -
+>  	return IIO_VAL_INT;
+>  }
+>  
 
-...
+> @@ -847,9 +842,8 @@ static ssize_t bmc150_accel_get_fifo_watermark(struct device *dev,
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+>  	int wm;
+>  
+> -	mutex_lock(&data->mutex);
+> +	guard(mutex)(&data->mutex);
+>  	wm = data->watermark;
+> -	mutex_unlock(&data->mutex);
+>  
+>  	return sprintf(buf, "%d\n", wm);
 
-	config = (struct dma_slave_config) {
-		.direction = DMA_DEV_TO_MEM,
-		.src_addr_width = NXP_SAR_ADC_DMA_SAMPLE_SZ,
-		.src_addr = NXP_SAR_ADC_CDR(info->regs_phys, info->buffered_chan[0]),
-		.src_port_window_size = info->channels_used,
-		.src_maxburst = info->channels_used,
-	};
-Which will ensure whole thing is set at the point of use rather than clear
-and then fill stuff in later as this patch does.
+	return sprintf(buf, "%d\n", data->watermark);
 
-Given this has been sat a while, lets go for good enough and it's a more
-minimal patch which is always nice for a fix.
+>  }
+> @@ -862,9 +856,8 @@ static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+>  	bool state;
+>  
+> -	mutex_lock(&data->mutex);
+> +	guard(mutex)(&data->mutex);
+>  	state = data->fifo_mode;
+> -	mutex_unlock(&data->mutex);
+>  
+>  	return sprintf(buf, "%d\n", state);
 
-Applied to the fixes-togreg branch of iio.git and marked for
-stable.
+	return sprintf(buf, "%d\n", data->fifo_mode);
 
-Thanks,
+Though, given we are touching them anyway maybe also
+	return sysfs_emit(buf, %d\n", data->fifo_mode);
+is appropriate.
 
-Jonathan
+>  }
+> @@ -906,9 +899,8 @@ static int bmc150_accel_set_watermark(struct iio_dev *indio_dev, unsigned val)
+>  	if (val > BMC150_ACCEL_FIFO_LENGTH)
+>  		val = BMC150_ACCEL_FIFO_LENGTH;
+
+Unrelated but if I were reviewing this code today I'd have suggested
+	val = min(val, BMC150_ACCEL_FIFO_LENGTH);
+
+>  
+> -	mutex_lock(&data->mutex);
+> +	guard(mutex)(&data->mutex);
+>  	data->watermark = val;
+> -	mutex_unlock(&data->mutex);
+>  
+>  	return 0;
+>  }
+
 
