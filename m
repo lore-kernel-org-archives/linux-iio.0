@@ -1,191 +1,72 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51DD81E5724;
-	Mon, 20 Apr 2026 12:02:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776686563; cv=pass; b=X7RPqDugmrC/xhDLPDBZYzJRj5WF7lfQ6ay1NNfFW7Dr28tB/WRG41xN2XybU49x0bsCdzkaHNt25OkAcQ6WBqIJt91PyPXbMck2OuRle672WlNguHDLXQkH8HZi4xPVdVmugJDrwrXFx/KyHgZcqf2BZ+Us+b0N3GdOapg8s6U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776686563; c=relaxed/simple;
-	bh=RcPc1OlRKwWMBhXzycGc+rGrbxc0ZUaYQ6Zh6lfuvmc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VjjHD28xLE3+f67qIfDi8bqVitJoldRsvnpT99PYQ3LG0qr49cn2UhkIjKeXOlNN/77BOk3Fdzdeoo8l/3gq7h34MSDU+3z0c85gMUKGLL+tUQuASpudg54dMQ3QE7sLOm5TxtwPzqLjXMn2uANf1Ppz1fsuRYvW2+JjIJ0tA2Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=JznioJN5; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EADDA385525;
+	Mon, 20 Apr 2026 12:10:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776687004; cv=none; b=lLeCRzQkGBn3Hyw2TYEl3PrVfxT05MRmK+V+mfK5Xo9CkmZo8j62rh5gCakFhfCmpdWSiV2vsFObuiQZIfKthraWaX7OncMJff5+YgO7Sdk79AJ1VNzqauMmzl050M2VVIY9R7CBOqY5FdgbKo9CkC+0F5fzbKfbiW2XnsW5mCM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776687004; c=relaxed/simple;
+	bh=9PSiOjy2HqcK8tJ9oRArf+tqRTaBQBQt+JoJ0C/5bT0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ajoyUgeXMFPhq6T72ai/kQQQZewd9jbM4ScxuRKadLzjZ6g2VHAchEcSPr1ttbmmkyh9c5/pe71DWLSgRRy+u/5WJIHeLbsiQWwWBvVr1ERIVN2/mlttRgcSBi/2YmuLJcTBzxDve6wwNGRBaO3cE+iy9vG1y6hBU3lzu/UZgZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EPN1GWtO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="JznioJN5"
-ARC-Seal: i=1; a=rsa-sha256; t=1776686532; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=D4wV3c/yZdK1eU7KT/phx0dwslxU6lVYK+XH3o6odSa2T2bsmVNuPGkpPokO9odCGebd1VL6x+JQmJochSSU2+ZygtUA8PJjzyUuX0A9Qrl0XWGmVojg77UaxS/3Sny5w7IefWTfwjsdGx5f10vKP7mNZOOq3/lOb08dGJ1R+HE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1776686532; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=x5mFNmk8QCjW303+12nnTbEnOf0gTpLfX0AgHqHSXVk=; 
-	b=O4SRXC9WiJ06iz4jU46oIS5HKKrQZDbZtgXUWFYVGQe2rswu3bj3BkygH+aWXgqxyyPaddoz9B1yPHO/KFVDzIh7GqYMIRjQejUCYGzFYaYlP5w7SL1/EArLcQBvCc9zv7INEtZGigKIoJ6D0I7RXLUuoYFc0bOQaEYeUm3rmnU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
-	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1776686531;
-	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
-	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-	bh=x5mFNmk8QCjW303+12nnTbEnOf0gTpLfX0AgHqHSXVk=;
-	b=JznioJN5R98NhLocaRwmQa8qpR7kvDOKjtwdelsT7L3l+7wbXLNSQEEGVvn+u95v
-	UZwrLnpD0cFG5havrVDsKzAvRnbR7/565GTMHbXmCLQpi0wwBdn9P0HWyPwh07tJV4A
-	s58b6CDl+WyyoJFKqUp6qGkh+0pcHFfjfmEpk9Mw=
-Received: by mx.zohomail.com with SMTPS id 1776686529459133.0396587303926;
-	Mon, 20 Apr 2026 05:02:09 -0700 (PDT)
-From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-To: William Breathitt Gray <wbg@kernel.org>
-Cc: William Breathitt Gray <wbg@kernel.org>,
- Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, kernel@collabora.com,
- Jonas Karlman <jonas@kwiboo.se>, Alexey Charkov <alchark@gmail.com>,
- linux-rockchip@lists.infradead.org, linux-pwm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 4/5] counter: Add rockchip-pwm-capture driver
-Date: Mon, 20 Apr 2026 14:02:03 +0200
-Message-ID: <oA6h2S_2RQulBS91CKXxhw@collabora.com>
-In-Reply-To: <20251206093419.40067-1-wbg@kernel.org>
-References:
- <20251027-rk3576-pwm-v3-4-654a5cb1e3f8@collabora.com>
- <20251206093419.40067-1-wbg@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EPN1GWtO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA4B1C19425;
+	Mon, 20 Apr 2026 12:10:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776687003;
+	bh=9PSiOjy2HqcK8tJ9oRArf+tqRTaBQBQt+JoJ0C/5bT0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=EPN1GWtON4AfPkPPmp+iTdQlhEJ9Rc/9Dac/ljbnB4szKv70CO3OyWHz5ahJKcd4J
+	 WUzmiTT0lUZ/PRByNgCUmUWkNAtrMaTdSeJI4y0LuYMq9p+hTqlqbLxN8c+M2B66Ce
+	 CUfVsE8SRK8BwNkR7+7j+paH/e0BCD6dg5e9/Q85cH5X+jq02cAIUduMB2dAsQsRS0
+	 VOPTPiMv2MaaDAqfMlepgrivpTU6kyKb6pWlYV3p6cn1E3pir6X0AUJyKkV6yIjzoK
+	 xveRrm+elHeNFUMmVzRzHFLuo7GYQ4DlQngiXJgJxyeG0MyL1wtIhi7Ip5v/uxJBIt
+	 EyGyPFqRqGx8Q==
+Date: Mon, 20 Apr 2026 13:09:55 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Erikas Bitovtas <xerikasxx@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v4 0/6] iio: light: vcnl4000: drop enum ID table and use
+ device-managed register
+Message-ID: <20260420130955.628babaa@jic23-huawei>
+In-Reply-To: <20260414-vcnl4000-drop-enum-v4-0-59fde2932a0f@gmail.com>
+References: <20260414-vcnl4000-drop-enum-v4-0-59fde2932a0f@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi,
+On Tue, 14 Apr 2026 15:37:16 +0300
+Erikas Bitovtas <xerikasxx@gmail.com> wrote:
 
-finally got an opportunity to work on this again.
-
-I'll respond to some things in-line. If a review isn't directly
-addressed, you can assume I acknowledge it and will address it
-in the next revision with no further comment needed.
-
-On Saturday, 6 December 2025 10:34:17 Central European Summer Time William Breathitt Gray wrote:
-> > +struct rockchip_pwm_capture {
-> > +	struct rockchip_mfpwm_func *pwmf;
-> > +	struct counter_device *counter;
+> This patch series drops the enum ID table for device enumeration and
+> instead adds pointers to chip ID structs directly. Necessary
+> information about the device is then taken from i2c_get_match_data()
+> call. This removes the association between enum ID table and struct
+> table and allows for easier addition and removal of new devices.
 > 
-> Is this structure member used at all? If not, you should just remove it.
-
-The counter member is used in the interrupt handler. I actually
-noticed that I request the interrupt before pc->counter is set,
-so if an interrupt fires before the probe function finishes then
-I think the handler would run with a NULL counter member. Oops,
-I'll rectify that.
-
-> > +	bool is_enabled;
+> Along with that, an iio_device_register() call is replaced with its
+> device-managed counterpart, to ensure that device is unregistered
+> automatically.
 > 
-> Does this device offer some way to probe whether PWM capture mode is
-> enabled? I suspect so, because I see PWM_ENABLE.pwm_en enables the
-> channel and PWM_CTRL.pwm_mode selects capture mode, so perhaps we're
-> able to read the current state of those registers. If you're able to
-> read those registers to determine the enable state, I'd suggest wrapping
-> that into a helper function and calling it when you need to determine
-> whether the capture mode is currently enabled.
-
-I'm going to read the hardware state in the next revision, you're right
-that this is generally a better idea.
-
+> No functional changes are intended.
 > 
-> If we're not able to probe the enable state, is it safe to assume we're
-> in a disabled state when the module loads, or should we ensure it by
-> unconditionally disabling PWM capture mode during
-> rockchip_pwm_capture_probe()?
+> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+Applied to the testing branch of iio.git which I'll rebase on rc1 once
+available and then push out for linux-next to pick up.
 
-In my next revision, I've now modified it to mfpwm_acquire if the hardware
-state has the counter enabled during probe. This sounds niche but I'm also
-doing this on the PWM output side, where Uwe rightfully pointed out that
-a bootloader may have enabled PWM output in hardware and Linux needs to
-recognise that state without any heavy-handed actions. For the counter
-PWM capture side, resetting it to a known state wouldn't be disruptive in
-the same way as it would be for PWM output, but I think it's a good idea
-to keep the state as-is since we can read it.
+Thanks,
 
-> [... snip ...]
-
-> > +static int rkpwmc_count_read(struct counter_device *counter,
-> > +			     struct counter_count *count, u64 *value)
-> > +{
-> > +	struct rockchip_pwm_capture *pc = counter_priv(counter);
-> > +
-> > +	guard(spinlock)(&pc->enable_lock);
-> > +
-> > +	if (!pc->is_enabled) {
-> > +		*value = 0;
-> > +		return 0;
-> > +	}
-> 
-> I don't think there's a need to check whether capture mode is disabled.
-> The user should be aware of the enable state of the Count by checking
-> the respective "enable" attribute; and if they ignore that, a value of
-> "0" doesn't inherently tell them that the Count is disabled which makes
-> it moot to do so. I'd suggest just removing this check entirely and
-> returning the register values unconditionally.
-
-I see what you're going for, but if the counter isn't enabled, we can't
-rely in the counter having an mfpwm_acquire, and consequently, we can't
-rely on the PWM core clock being on, which is required for reading the
-registers.
-
-In my next revision, I'll still be returning 0 if the counter is disabled,
-but the is_enabled member is gone, so there's a new function called
-rkpwmc_acquire_if_enabled to still make this correct.
-
-I could of course also extend the core driver to let me poke at these
-non-shared registers without exclusive control over the hardware, but
-that may be more trouble than it's worth.
-
-I'll also no longer return 0 on bogus count IDs when the counter is
-disabled.
-
-> > +
-> > +	switch (count->id) {
-> > +	case COUNT_LPC:
-> > +		*value = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_LPC);
-> > +		return 0;
-> > +	case COUNT_HPC:
-> > +		*value = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_HPC);
-> > +		return 0;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static const struct counter_ops rkpwmc_ops = {
-> > +	.count_read = rkpwmc_count_read,
-> > +};
-> 
-> You should implement a signal_read() callback if its possible to probe
-> the current state of PWM Clock. You should implement action_read() if
-> its possible to probe the current polarity of "pwm_in" in order to set
-> which Synapse is currently active.
-
-Unfortunately, it doesn't seem like the hardware allows direct access to
-read the signal. "pwm_in" as it appears in the block diagram seems to be
-an entirely internal signal that's not accessible through MMIO.
-
-Thank you for the reviews!
-
-Kind regards,
-Nicolas Frattaroli
-
-> 
-> William Breathitt Gray
-> 
-> [^1] https://opensource.rock-chips.com/images/3/36/Rockchip_RK3506_TRM_Part_1_V1.2-20250811.pdf
-> 
-
-
-
-
+Jonathan
