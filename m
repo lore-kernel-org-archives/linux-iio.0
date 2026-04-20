@@ -1,93 +1,220 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71897298CA5;
-	Mon, 20 Apr 2026 07:36:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19B872DFA5B
+	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 07:44:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776670609; cv=none; b=YDvWfNemIvsUyV0rH98H/vP/SdMLvRWwM7iirlJvN2meQdeKioahSoxdZrwyKfzpqMUaCcMj5G7mOJ7UP91w5PcvSkbkpSpngzIjn4wJ7vpoabFA1fegFH3iKtMlyhqgrxSylkBfasnHQA0RcZhyoqiPllGf+Eyw2mHQqEm5AlA=
+	t=1776671083; cv=none; b=a2zNhOzn61fvTpAmtQYnCzzRmHLouVQpl1m8FcfpClAE+H3OpwDL3XA4sP0PFhSdcRht/vhA52CgA6MH+yQ+27KuiaF61cfgXuVL5RVHZYNWa7rnTAwAx9GXqB2wBM85L/V3bPSHdo9FTxgOSQpAeHZr07PrBb4gT3qcts6sVSw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776670609; c=relaxed/simple;
-	bh=8whNwNLICqb+0Yx7LD1vb3V7QW1bBxZ6Jc58zR1F0BI=;
+	s=arc-20240116; t=1776671083; c=relaxed/simple;
+	bh=qY5sW6mUoQ6mXDMe+8oxrEAAUyMHH9ftl+9VSHLKkC8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hl6cmLqUSXpnju5WxD1F4Updeq3sr4hC3hl/iDuxf37fdrSaF2JsQBW7jH8yzk8VEz01TKusitnZ5+9xjeM6+S2+HcqXzRTcUcHp3VPap7R+K+9RrnTK73CIr9JdrOWcRr1AuvtcmoA5eMBmsPBftSQ6/E2xcM6/1JZg4p47SgY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JyG838VN; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=S4hVL+p8f4TBiGTg8T5VWs0AAYTGmRJK8o0GQXfRpUrDQ1HrS1VJPlVwrl4RlXqIoGWmvYK/J8zbhNMePO9EkPN8sjneRy+yKWwVBz8Ok76pU9MV+1/E1yS5AFuu+P9E6Kf6FgJstI40fPk4o+bdBuQnyPzH/0QfpqEUgm+BpcY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R1Cyg9mg; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JyG838VN"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R1Cyg9mg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776670608; x=1808206608;
+  t=1776671081; x=1808207081;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=8whNwNLICqb+0Yx7LD1vb3V7QW1bBxZ6Jc58zR1F0BI=;
-  b=JyG838VNzly/d3sq8OpSRfwlc3rLkXanzy61Z1X1P4Jj75Z/bQgfsi3m
-   d2xO0h50FH1tOxmKfIzDtjF4a0hsgXbgYsuuC3w7YRtJ7YMaePuaDx0YJ
-   uxQBRP4od1/XiPXx3GE5IJKP8RGWkiFR04bicVXsG6uidmBDIc4iyT3Jh
-   hQUPjjimOGPe0UkL4g1zSQCANm5AI6/Ig+gysG1/96I1VIWMglJK31Fh7
-   jztLcx+qK/tVmPIUFEF4rfT8zW/MMaZ/bfkKZJr9lQ4hKxdsrGP+q9oOq
-   vpKD7IvN2KY4mH+/rQ8dMg7ZYQl3ODlqtqVplC+oVwOZ9LQdrUpDiHp4z
-   w==;
-X-CSE-ConnectionGUID: 4vbydUHFQjuaT/ygFjjb8A==
-X-CSE-MsgGUID: usjrjGYLQXCBVXYIPNz/7w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77284671"
+   mime-version:in-reply-to;
+  bh=qY5sW6mUoQ6mXDMe+8oxrEAAUyMHH9ftl+9VSHLKkC8=;
+  b=R1Cyg9mgXPZRhxGjoVNszEI/VVYdSN7SwPhXvpr5hw5MYcCujg5fuihs
+   OYd+aVY0VW22Wi7m3WotDqyrNubRAfYgDpZ5zNAMqskiwLbEHbl8z4ym8
+   8BSXuCpOHLReisA/gtMwd0QhArHjnHr9AguC4XIWsVrJmJaJ+pTY/qpoV
+   +9hLKIeGMDouhhppEx7LBYMNPc5QIsMUHN+YnVWJlKBMWtmK859VsrDhi
+   zsS1WgC8WGsbJonJQC1ccPPtNPu23qp6g04ryXnTI3y4YFHcqotDDCoRB
+   BxWz+szQ99uhV1zlSszTBosnUmt1+H27A+HI2yDI4OA+j8cyabyFfgNZ5
+   Q==;
+X-CSE-ConnectionGUID: jsoVLh2xRZCCRAYm2u1MoQ==
+X-CSE-MsgGUID: JuWNq+20S9u+uv9BXJxcpw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="77449944"
 X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="77284671"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:36:47 -0700
-X-CSE-ConnectionGUID: AzzR7xmGR5m7ww3S0hWYqg==
-X-CSE-MsgGUID: awcxNqqNQWuitTiBhq/dcw==
+   d="scan'208";a="77449944"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:44:40 -0700
+X-CSE-ConnectionGUID: J1kvtW9NRi6L5VL2aCX5gA==
+X-CSE-MsgGUID: JbL9yCY9RzuXbxKfqGqwmQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="228964209"
+   d="scan'208";a="231523266"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:36:43 -0700
-Date: Mon, 20 Apr 2026 10:36:41 +0300
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:44:38 -0700
+Date: Mon, 20 Apr 2026 10:44:35 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: =?iso-8859-1?Q?Nat=E1lia_Salvino_Andr=E9?= <natalia.andre@ime.usp.br>,
-	andy@kernel.org, bentiss@kernel.org, jic23@kernel.org,
-	jikos@kernel.org, nuno.sa@analog.com,
-	srinivas.pandruvada@linux.intel.com,
-	Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 1/7] iio: HID: Add helper method
- hid_sensor_adjust_channel_bit_mask()
-Message-ID: <aeXXiWGJIvdhdBMQ@ashevche-desk.local>
-References: <20260417225959.16688-1-natalia.andre@ime.usp.br>
- <20260417225959.16688-2-natalia.andre@ime.usp.br>
- <1c49e011-ae23-4c6f-ad6f-f0b494c2dbbc@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: LucasRabaquim <lucas.rabaquim@usp.br>, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org,
+	Matheus Feitosa <matheus.feitosa@usp.br>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: tsl2591: simplify tsl2591_persist
+ functions via lookup table
+Message-ID: <aeXZY2Nj71Em7Z6y@ashevche-desk.local>
+References: <20260419003557.45287-1-lucas.rabaquim@usp.br>
+ <20260419123604.591dc3ec@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1c49e011-ae23-4c6f-ad6f-f0b494c2dbbc@baylibre.com>
+In-Reply-To: <20260419123604.591dc3ec@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Apr 18, 2026 at 11:32:13AM -0500, David Lechner wrote:
-> On 4/17/26 5:58 PM, Natália Salvino André wrote:
-> > Add helper method to deduplicate code in HID sensors.
+On Sun, Apr 19, 2026 at 12:36:04PM +0100, Jonathan Cameron wrote:
+> On Sat, 18 Apr 2026 21:35:43 -0300
+> LucasRabaquim <lucas.rabaquim@usp.br> wrote:
+
+> First a general process thing.  Slow down!  You might well have
+> gotten more feedback on v1 if it had been on list without being
+> replaced for more than a day.  I'd advise generally not sending new
+> versions for at least a week so multiple reviewers have time to look
+> at the changes.
+> 
+> In general the change looks good, but I'll leave it on list for
+> a while before considering picking it up.
+
+Indeed.
 
 ...
 
-> > +	/* Real storage bits will change based on the report desc. */
-> > +	channels[channel].scan_type.realbits = size * 8;
-> 
-> There is a BITS_PER_BYTE macro that would make sense here.
+> > +static const struct tsl2591_persist_entry tsl2591_persist_table[] = {
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_ANY,  1  },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_2,    2  },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_3,    3  },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_5,    5  },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_10,   10 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_15,   15 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_20,   20 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_25,   25 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_30,   30 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_35,   35 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_40,   40 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_45,   45 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_50,   50 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_55,   55 },
+> > +	{ TSL2591_PRST_ALS_INT_CYCLE_60,   60 },
+> > +};
 
-> > +	/* Maximum size of a sample to capture is u32 */
-> > +	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
-> 
-> and here.
+Instead, make this to be an index of the just an array of u8:s.
 
-FWIW, we have BYTES_TO_BITS().
+	...
+	[TSL2591_PRST_ALS_INT_CYCLE_30] = 30,
+	[TSL2591_PRST_ALS_INT_CYCLE_35] = 35,
+	...
+
+...
+
+> >  static int tsl2591_persist_cycle_to_lit(const u8 als_persist)
+> >  {
+> > -	switch (als_persist) {
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_ANY:
+> > -		return 1;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_2:
+> > -		return 2;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_3:
+> > -		return 3;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_5:
+> > -		return 5;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_10:
+> > -		return 10;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_15:
+> > -		return 15;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_20:
+> > -		return 20;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_25:
+> > -		return 25;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_30:
+> > -		return 30;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_35:
+> > -		return 35;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_40:
+> > -		return 40;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_45:
+> > -		return 45;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_50:
+> > -		return 50;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_55:
+> > -		return 55;
+> > -	case TSL2591_PRST_ALS_INT_CYCLE_60:
+> > -		return 60;
+> > -	default:
+> > -		return -EINVAL;
+> > +	int i;
+> > +
+> > +	for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
+
+Besides the style of
+
+	for (unsigned int i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
+
+> > +		if (als_persist == tsl2591_persist_table[i].cycle)
+> > +			return tsl2591_persist_table[i].lit;
+> >  	}
+
+...this loop now not needed at all.
+
+	if (als_persist < 1 || als_persist >= ARRAY_SIZE(tsl2591_persist_table))
+		return -EINVAL;
+
+	return tsl2591_persist_table[als_persist];
+
+> > +	return -EINVAL;
+> >  }
+
+...
+
+> >  static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
+> >  {
+> > -	switch (als_persist) {
+> > -	case 1:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_ANY;
+> > -	case 2:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_2;
+> > -	case 3:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_3;
+> > -	case 5:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_5;
+> > -	case 10:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_10;
+> > -	case 15:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_15;
+> > -	case 20:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_20;
+> > -	case 25:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_25;
+> > -	case 30:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_30;
+> > -	case 35:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_35;
+> > -	case 40:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_40;
+> > -	case 45:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_45;
+> > -	case 50:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_50;
+> > -	case 55:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_55;
+> > -	case 60:
+> > -		return TSL2591_PRST_ALS_INT_CYCLE_60;
+> > -	default:
+> > -		return -EINVAL;
+> > +	int i;
+> > +
+> > +	for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
+> > +		if (als_persist == tsl2591_persist_table[i].lit)
+> > +			return tsl2591_persist_table[i].cycle;
+> >  	}
+> > +
+> > +	return -EINVAL;
+> >  }
+
+Ditto.
 
 -- 
 With Best Regards,
