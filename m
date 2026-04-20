@@ -1,101 +1,148 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B058379EFF
-	for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 07:59:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94EDA385536;
+	Mon, 20 Apr 2026 08:04:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776671993; cv=none; b=aRAhN4HKMiQaCRXREUq/umZvhpsNFVm/PzIZ4Jt5C3BTU1+M30BeN5VvENm+QiK5n5Ixi6ExUwcUs1y8OYCvHJ8dGNlCVbUGAN8bJXr8t0sERk+SKluGQZ0xNkiJeE3VZJLw2Z9a6s3AZ7Akpodb8iP3p+nLQBecg6G2EXUUEW0=
+	t=1776672281; cv=none; b=i54ZaxbjWPTFgaKWduzbiUANoNq4IYpdfd3bqGhvGQ7Gb1cPDCvbKXiWkJxjn3goo58qMdnkYPE+9aqPAGWoe1L8//iJvzXr6SHPuB0jlDL6JspSKpiRau7DIAgF0ACluFi8rZtUeOR97kXc7+2g7qy41q/gW46i3k+w0VPa9FM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776671993; c=relaxed/simple;
-	bh=GdykDU6dFx8ea/dxwRcmPED7I8z9VrfGfQF2RcwWxTA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RoBmAy5+aX7VuHJtWDlVjo+Ek7PVmNEmUKi2vCqvFtxJ/yXqxAzxRoYY0p+5fmFrZ2ZZ15sRFrB5YgG5fpJ63l1qPDtZG1zOMPL5KYOU8L9t8fFmAp7xel0Le/Hz/HlppkyDyRuPp9WSDIBjs7zab2HjHweGstdDJCOENFdm5Os=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OdWx+gQY; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1776672281; c=relaxed/simple;
+	bh=pTa8pq24A5FijSPJIQX3I3UFOHq3WQ2bKXjFwa3xFWM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=hjHVYK9nnIQJwqUefI0NsDp6j9TDuy8ybuPpnOSBwkaYrt0Wr/osMIz8f9yPTOQfSaQotqUVYzxODe62V+LvPXAKAJYeNodQHVgEyi7ciAGUkOpEj8jRn7Bv7Giw8NB3tL/UMdZAKgjwJTWOYMAm9KcubSfW55WwW8XMhjvDrWo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=wAJgtUBD; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OdWx+gQY"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="wAJgtUBD"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776671991; x=1808207991;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GdykDU6dFx8ea/dxwRcmPED7I8z9VrfGfQF2RcwWxTA=;
-  b=OdWx+gQYzhXU9nxqzKMzmF6vh2Z6LRTBwRNGiaesY17d3qEJT6g4RxEY
-   Xh/2gZ/6wCoMk4g7P280YI+BJRPewtCtVpwWLrg05mOo8UVQLFQbYShsh
-   n2MP7B+54a6sFbSIymuiV453aCeMtTVdab2Nc9YITwEDBrW8wiMrDa0oT
-   5EqidPIbyaQwB61lhqP3DvevqCXC2hAVJeKXt+XCRRNWumRWcAQhBkjTq
-   yOvAPsNgdu6UxDguUwfCrjV2i3bXYJlWKYtu3jMA8/7VZyu3M+q0L7xQ7
-   g6Ad9fQtVFOgpqSySAMm7tkDpDcgwhRW5s7/hT6i8YMS07AbUFmCqvEGo
-   A==;
-X-CSE-ConnectionGUID: WWTjOW3KQHW7G35eCTAyyA==
-X-CSE-MsgGUID: an0SB6riRoGSLnR0J9FvoQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="87882070"
-X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="87882070"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:59:51 -0700
-X-CSE-ConnectionGUID: D2KDncEXSQyC5SdGH7R+TA==
-X-CSE-MsgGUID: hI4z1shDTdyll35Ij4ZbNA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
-   d="scan'208";a="262038262"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.90])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 00:59:49 -0700
-Date: Mon, 20 Apr 2026 10:59:46 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Luiz Mugnaini <luizmugnaini@usp.br>
-Cc: cmo@melexis.com, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: temperature: mlx90614: use guard(mutex) for EEPROM
- access locking
-Message-ID: <aeXc8o94OiDRFy0b@ashevche-desk.local>
-References: <20260418205151.172046-1-luizmugnaini@usp.br>
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1776672280; x=1808208280;
+  h=from:date:subject:mime-version:content-transfer-encoding:
+   message-id:to:cc;
+  bh=pTa8pq24A5FijSPJIQX3I3UFOHq3WQ2bKXjFwa3xFWM=;
+  b=wAJgtUBDNtfvg+S10La4xXepBMV12/k0cHItMFTh9GFsDTSPAvM1CcL8
+   Rxae7s74a/OpQ1/y8beeDNU3bknVe11EdikE0ptfjXs10yJSdqjH0Hc9h
+   f0kmzBkBEGfrF5fapsFKRGJ7F+kAHep2xhW44+wvCnO43HI10xMBDMxhU
+   IHOpW0SyPDTTOPGfausEN1OEKnM076H6dNfWovgXcMrcfskZ/CojIIxjQ
+   y0kk6nr/b//qNvjc3hXISo6Gw0TYH0W+Xz/F0k1uUCYR+Vtfy3EDnO+Ax
+   MrmNSVtnjuBZGhbFZE1BWWkYbB7z3L9hrbtgW1OaVDo9ROyYCUckTumBW
+   w==;
+X-CSE-ConnectionGUID: h/A3Lf4mRPGPlmSnDFY3Jw==
+X-CSE-MsgGUID: ZKTt1tviSFyj7nnIOuKE1A==
+X-IronPort-AV: E=Sophos;i="6.23,189,1770620400"; 
+   d="scan'208";a="64343728"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 01:04:33 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.87.152) by
+ chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.2562.35; Mon, 20 Apr 2026 01:04:25 -0700
+Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
+ Transport; Mon, 20 Apr 2026 01:04:23 -0700
+From: Ariana Lazar <ariana.lazar@microchip.com>
+Date: Mon, 20 Apr 2026 11:04:12 +0300
+Subject: [PATCH v2] iio: dac: mcp47feb02: Fix passing uninitialized
+ vref1_uV for no Vref1 case
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260418205151.172046-1-luizmugnaini@usp.br>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20260420-mcp47feb02-fix4-v2-1-8b758eaa8bcf@microchip.com>
+X-B4-Tracking: v=1; b=H4sIAPvd5WkC/3WNQQ6CMBBFr0JmbQ0zVAiuuIdhAe1UZgElrWk0p
+ He3snf5XvLfPyByEI5wrw4InCSK3wrQpQKzTNuTldjCQDW1tUatVrPrzvFck3Ly1qpFbblvGu2
+ IoKz2wMWfxcdYeJH48uFzHiT82f+thApVbzucJ+ss3XhYxQRvFtmvxq8w5py/6fbnF7IAAAA=
+X-Change-ID: 20260414-mcp47feb02-fix4-614de9334f22
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>
+CC: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Dan Carpenter
+	<error27@gmail.com>, Ariana Lazar <ariana.lazar@microchip.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776672263; l=2520;
+ i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
+ bh=pTa8pq24A5FijSPJIQX3I3UFOHq3WQ2bKXjFwa3xFWM=;
+ b=ArUgK7nq65/jMRsLn/SSFvsPQg7/FLIk+dUTcntHXxTyPNKgSOl/rA8JAIj+BL7uU77HOZGmp
+ 4rVW8lj0AFTDsRtkyVvL+VRQY0TRKkHfTjOGhDxlc01OCFcWGt30X4h
+X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
+ pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-On Sat, Apr 18, 2026 at 05:51:36PM -0300, Luiz Mugnaini wrote:
+Ensure that if a device has Vref1 but reading the regulator returns an
+error, mcp47feb02_init_ctrl_regs() is not called with an uninitialized
+vref1_uV value.
 
-> Replace mutex_lock()/mutex_unlock() pairs with guard(mutex) from
-> cleanup.h for cleaner and safer mutex handling. The lock protects
-> EEPROM access across five call sites in mlx90614_read_raw(),
-> mlx90614_write_raw(), and mlx90614_sleep().
-> 
-> In all cases, the code between mutex_unlock() and the end of scope
-> is either trivial computation, a return statement, or a call to
-> mlx90614_power_put() (which only schedules a deferred autosuspend
-> via pm_runtime_put_autosuspend()). The slightly extended lock scope
-> is negligible compared to the existing hold times, which include
-> EEPROM write cycles with 40ms sleeps.
+Also add a device_property_present() check for the Vref1 supply before
+reading the regulator.
 
-...
+Fixes: dd154646d292 ("iio: dac: mcp47feb02: Fix Vref validation [1-999] case")
+Reported-by: Dan Carpenter <error27@gmail.com>
+Closes: https://lore.kernel.org/all/adiPnla0M5EzvgD-@stanley.mountain/
+Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+---
+Changes in v2:
+- return the reading regulator error to not use vref1_uV uninitialized in
+   mcp47feb02_init_ctrl_regs() call 
+- add device_property_present() check for the Vref1
+- Link to v1: https://lore.kernel.org/r/20260414-mcp47feb02-fix4-v1-1-9d71badfd25e@microchip.com
+---
+ drivers/iio/dac/mcp47feb02.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-> -		mutex_lock(&data->lock);
-> +		guard(mutex)(&data->lock);
->  		ret = i2c_smbus_read_word_data(data->client,
->  					       chip_info->op_eeprom_emissivity);
-> -		mutex_unlock(&data->lock);
->  		mlx90614_power_put(data);
+diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
+index faccb804a5ed548088aaf83266b16ed45a92916c..a876ed71ecdf101784e0f98668a1681a1cd19ed0 100644
+--- a/drivers/iio/dac/mcp47feb02.c
++++ b/drivers/iio/dac/mcp47feb02.c
+@@ -1095,9 +1095,10 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ {
+ 	const struct mcp47feb02_features *chip_features;
+ 	struct device *dev = &client->dev;
++	int vdd_uV, vref_uV, vref1_uV;
+ 	struct mcp47feb02_data *data;
+ 	struct iio_dev *indio_dev;
+-	int vref1_uV, vref_uV, vdd_uV, ret;
++	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -1146,16 +1147,16 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ 		dev_dbg(dev, "Vref is unavailable.\n");
+ 	}
+ 
+-	if (chip_features->have_ext_vref1) {
++	if (chip_features->have_ext_vref1 && device_property_present(dev, "vref1")) {
+ 		ret = devm_regulator_get_enable_read_voltage(dev, "vref1");
+-		if (ret > 0) {
+-			vref1_uV = ret;
+-			data->use_vref1 = true;
+-		} else {
+-			vref1_uV = 0;
+-			dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
+-			dev_dbg(dev, "Vref1 is unavailable.\n");
+-		}
++		if (ret < 0)
++			return ret;
++
++		vref1_uV = ret;
++		data->use_vref1 = true;
++	} else {
++		vref1_uV = 0;
++		dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
+ 	}
+ 
+ 	ret = mcp47feb02_init_ctrl_regs(data);
 
-How do you sure that the code:
-- is not slowed down due to unneeded things in the critical section
-- doesn't introduce no deadlocks
-?
+---
+base-commit: 51e7665ab81f02adc80a1219c260ee678e9c6eb8
+change-id: 20260414-mcp47feb02-fix4-614de9334f22
 
-How did you test this, please?
-
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Ariana Lazar <ariana.lazar@microchip.com>
 
