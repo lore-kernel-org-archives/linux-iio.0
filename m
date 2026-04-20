@@ -1,42 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BF452EC54A;
-	Mon, 20 Apr 2026 12:57:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49D2E399019;
+	Mon, 20 Apr 2026 13:03:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776689848; cv=none; b=fMcdtd2u+sQ19L6iKfMP024EN2zDljAOy4RXow4GuFMwGoAefoSMCnBLvaUgwJ775WQjLuBXgKqgZTyuO3TqBUGEyD7Xz9NvEYJewcOP7mTJ2zFUZc/DNDqdMoi5aPAQPAG4yUfdxIig1Xa2HvXlBzqnxyivj5BdTrPsxeXQnrA=
+	t=1776690232; cv=none; b=JMslb6FtxRD0W2fHL4WQ/xNw3grWZFcNuGD8ZFwIIu7SGCHfu+BlgUGXAQAspl8EuHreKvvU5tf/rbAh9K6hWyEKqDdkHgct83AkSBPbISpcO5jP+Bek1DGI/yawWDw5sJTXBVx955T84/2DM/3xmOiwjIvv42ujnr4abeaE2Zg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776689848; c=relaxed/simple;
-	bh=htaGDVOWZumW1shSQuT4U+VueFbsGDux33MOQCdC5f4=;
+	s=arc-20240116; t=1776690232; c=relaxed/simple;
+	bh=FWYzDiOArELacVGV7TzEmUdoIKAyf3T/LPGLv7hZXEs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pLoTCtLafwi03Z2x/fFtAbMwfBeQlyPXfGVDEyIy2bBMWOgRcwBMWExQNrvF9BEraiVWgzn5JhwQzYevE/yInorGsppfMDxLfVaeIxOV5VmoAiKvJAMtR0ioqjatnANdLj3U+TiYZCFNq1SIYG/zm7qV8bRl/JAbRnM12QsWCfQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u2Z5nO5B; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=fOpzA0sgg0L6qmXtbRJUCemE7CBCxWY0/kAWg4kTmxfOpnrrFiS/QRZoXN+wTfGzAN/QLfQTyFf3wtPP8SQqEzNlrW9tDFwgE3Jjhr0b6hicl/rXze2SGBUglNEJ5NJpmkvKY2oe9CX3BmshicRpLHZCr2EAbhWp/bWrzyOos5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N3tKTdu4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u2Z5nO5B"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59568C19425;
-	Mon, 20 Apr 2026 12:57:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N3tKTdu4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77191C19425;
+	Mon, 20 Apr 2026 13:03:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776689847;
-	bh=htaGDVOWZumW1shSQuT4U+VueFbsGDux33MOQCdC5f4=;
+	s=k20201202; t=1776690231;
+	bh=FWYzDiOArELacVGV7TzEmUdoIKAyf3T/LPGLv7hZXEs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=u2Z5nO5BLH8MqAyTFglYIeO8IR+RLPZ7qYLPcFBzcQAJMIKIDS+Nm9WGFqYlk5/UR
-	 aF4Q+4CLa8Tbdl66o0WUu4LO/ywiRYOtf1f4Wj6PThxvRSEdM+DEhyfiLhLj6Mxy6E
-	 NPZj1KBPd9XrjvdeF/2LJqeKPKxehwbZZDeEZd9/7aj4UbC/5hXJuApSBU+L9rW9vZ
-	 bspPV4eEHVQPddakRFoYCBFGB1akaOTlNp8BQRo/MkyxNSFG+hZGVQ11zNHIgwXnEj
-	 xes06OsdsQdn0Hzf5qWjIrmaUocHiHd/i+e1w1PXKg2qJjsJ65OuXronF2k7CjR9ti
-	 hPluvsuRBBm+A==
-Date: Mon, 20 Apr 2026 13:57:18 +0100
+	b=N3tKTdu4Pv+jvOEXJNbSnxP7OO7Ii/79maL5un9RCk4ciAXmHCA5Sni5jvUBRv4Rh
+	 WcOMUuCWX6UOvyBt8C3cwSPkyoojbmv5m4vK08jeKx/am6RDyl3tMRIfF1TLWRFg8t
+	 WYPlgyn6Vi7oqtPTzPvo/qLpO9P67KsTUgI2c0/n0kFhPsDN+8UB0qFw8TwLIsZ5EB
+	 iJECYpFYAv/OokK2+Jr3SSbbkfQd7XZFvROTKaXDiBJzDWUndO9Wh+isSrhLemTvzj
+	 +7YXmgeD0eLQwctHMfp6oyZGF8hHZ/+jDvmQwK6rfm847Yia4UAxkWCgztd+FgkN3b
+	 VsQJ3NM8UrFhA==
+Date: Mon, 20 Apr 2026 14:03:44 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Archit Anant <architanant5@gmail.com>, dlechner@baylibre.com,
- lars@metafoo.de, Michael.Hennerich@analog.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 0/5] iio: adc: ad799x: modernize resource management
-Message-ID: <20260420135718.520b0641@jic23-huawei>
-In-Reply-To: <ad505ojCcZgkyIFg@ashevche-desk.local>
-References: <20260412093739.17116-1-architanant5@gmail.com>
-	<ad505ojCcZgkyIFg@ashevche-desk.local>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads7950: use spi_optimize_message()
+Message-ID: <20260420140344.0f2ae510@jic23-huawei>
+In-Reply-To: <03ea65e3-4c34-4a20-b638-966abad78d7d@baylibre.com>
+References: <20260411-iio-adc-ti-ads7950-spi-optimize-msg-v1-1-617766ef2e38@baylibre.com>
+	<ad4OywqHDC7aYapD@ashevche-desk.local>
+	<d14d23df-0fad-4b87-8e57-67241b29fc30@baylibre.com>
+	<ad5ry4i6OPOS156E@ashevche-desk.local>
+	<03ea65e3-4c34-4a20-b638-966abad78d7d@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,39 +50,56 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 14 Apr 2026 20:09:58 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 14 Apr 2026 12:52:49 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> On Sun, Apr 12, 2026 at 03:07:34PM +0530, Archit Anant wrote:
-> > This series modernizes the ad799x driver by converting resource 
-> > management to the devm_ infrastructure. This results in cleaner 
-> > probe error handling, the removal of the ad799x_remove() function, 
-> > and improved overall code maintainability and safety.
+> On 4/14/26 11:31 AM, Andy Shevchenko wrote:
+> > On Tue, Apr 14, 2026 at 08:29:29AM -0500, David Lechner wrote:  
+> >> On 4/14/26 4:54 AM, Andy Shevchenko wrote:  
+> >>> On Sat, Apr 11, 2026 at 05:13:33PM -0500, David Lechner wrote:  
+> >>>> Use spi_optimize_message() to reduce CPU usage during buffered reads.
+> >>>>
+> >>>> On hardware with support for SPI_CS_WORD, this reduced the CPU usage
+> >>>> of the threaded interrupt by about 5%. On hardware without support, this
+> >>>> should reduce CPU usage even more since it won't have to split the SPI
+> >>>> transfers each time the interrupt handler is called.
+> >>>>
+> >>>> The update_scan_mode callback hand to be moved to the buffer preenable  
+> >>
+> >> s/hand/had/
+> >>  
+> >>>> callback since the SPI transfer mode can't be changed after
+> >>>> spi_optimize_message() has been called. (The buffer postenable callback
+> >>>> can't be used because it happens after the trigger is enabled, so the
+> >>>> SPI message needs to be optimized before that.)
+> >>>>
+> >>>> The indent of ti_ads7950_read_raw is changed since there is no longer
+> >>>> anything else in the struct to align with since we removed
+> >>>> ti_ads7950_update_scan_mode.  
+> >>>
+> >>> Some of the func() are mentioned w/o parentheses and I got lost which one is
+> >>> which. Also callbacks usually mentioned as .callback() (with a leading dot).  
+> >>
+> >> I didn't put () in the last paragraph because I was talking about the function
+> >> pointer, not the function. I guess I missed update_scan_mode() though.  
 > > 
-> > Key changes in this series include:
-> > - A prerequisite cleanup to sort headers alphabetically.
-> > - Static allocation of the rx_buf using IIO_DECLARE_BUFFER_WITH_TS()
-> >   to avoid dynamic memory leaks during scan mode updates.
-> > - Caching of VCC and VREF regulator voltages during probe() to 
-> >   optimize read_raw() performance and simplify power management logic.
-> > - Migration of regulators and mutex initialization to device-managed 
-> >   resources (devm).
-> > - Fixing a potential race condition by moving mutex initialization 
-> >   before IRQ registration.
-> > - Removal of the manual ad799x_remove() function and all goto-based 
-> >   error cleanup labels in ad799x_probe().
+> > Then probably spell it as "pointer to func()" ?
+I tweaked this a bit and applied.
+
+J
+> >   
+> >>> The second paragraph doesn't tell me clearly if there is a behaviour change
+> >>> from user perspective.  
+> >>
+> >> It is not clear that the difference the user can notice is that there are
+> >> some CPU cycles freed up for other tasks?  
 > > 
-> > These changes ensure the teardown sequence is always correct, 
-> > following the reverse order of allocation, and remove unnecessary 
-> > boilerplate code from the driver.  
+> > He-he :-)
+> > 
+> > I asked more about possible behaviour changes in ABI (note, that [significant]
+> > delays moved around might affect ABI if some user's program times out due to
+> > that). But I think it's not the case here.
+> >   
 > 
-> Some pieces still can be polished, but this is good enough, let's go with it!
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
-Applied to the testing branch of iio.git.
-
-thanks,
-
-Jonathan
-
+> No, I don't expect any other changes either.
 
