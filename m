@@ -1,111 +1,166 @@
-Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41413B0ADF
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 09:49:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776764959; cv=pass; b=EWR6lfz6aqCJaOzFfMt9Rbz0qo5wEh9wzTkj6spo+piEOy9EdRNiwqM5oAAUfqKOsZIIg1G+9OU4MXfExuzGAXtXxc2YuNIY5PzX6HkKEYCniIqI0h8VhIHw5WHyyidQgb/raN7G6DYJo4Yc7EH0IHQzDj4pSppaNIDWVozjz1w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776764959; c=relaxed/simple;
-	bh=YXy/1+WV5O4imXKlloP9TggNn7W+ZDz4Sg0HPiawucY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KAQE/fpFibxHlR1CGoRgkTdISGt+43J133d6f6CeErUs5VOgKh0bFiDN6E59/e7WwfPY7vdzRCCfmkcgrSLIlZJ4rj3aLe0aWkDqLwRIuVfn1yzAcFlZud+TP0iZliPi1xzG7LyrSZ09xGkrgr/kyckYxEKWAWv7prpL/g7Y0r0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NtenQqU5; arc=pass smtp.client-ip=74.125.82.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA2862472AA;
+	Tue, 21 Apr 2026 09:51:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776765073; cv=none; b=aK3r8Ktq7GzMIqWp/jIIZ5wO8zlvGjIb8Z4hWWQOMYoOxee60zW+IN/y54lOfQJLdH8bZ03uzlpmU7HxiCHexbtsUDL2hWLX1ubEQvwLhQ9BCu3VqWF5vOUeGZ8N8E+a6wIMyJqtlyVzRLDxodpvVATPFPsheuswE+fd1/SPEYQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776765073; c=relaxed/simple;
+	bh=VtkQ1i0kAqBUciLoNuo/gKk3cDHAmSHLUuMH5VOnMOk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NmTOEBfY2p9zm4vhl8QCdFtntU2P4r37rTJqzrCCvbz118R1xiD6o2XJO9hhW8a8h05EIcdbE6SJJmgKMG3VO9FgBFPlU+d1167wGQ20Qa/YbzE3V7IZCDyXnBjPpN2zcJ0B3ejyEiDwMBqwf+5h9l1dIN+zptvAg8kdJbPO87w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kdFrDMJW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NtenQqU5"
-Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-12c750eaf4cso127269c88.0
-        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 02:49:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776764957; cv=none;
-        d=google.com; s=arc-20240605;
-        b=UiK0wCKvqLMrVM95Q5oxfGAyn9g0o3JdgwHTgEdVJxZvVr3ScSlgcS2CBjErkPxTok
-         wS9mWs6nk8u62NDqJ5MQyMFcsnbMZ+/l9ajLCKGdgKMfGw6X554FLyI3uKgS8t11VzIh
-         KHaY1J4sVx20l055ZkGf2gvuwUi0mFZSaUEN6Jza6bjqwT8z/BTlaDcRRNBKMfD5LsSz
-         9jcDNrGK8cvx+jRx7DwB2A4jBxv2R2Ujs6lT934a+iRvNvJTvNpU6gkyp3rS/9ggZWp7
-         7gibmMbep4hGpnPn/w8OrpFhUIvw+WLzMk9/J5dOkJdxcNYmTzWA/g8pNDSwqBrdusZx
-         NsFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=rcIuPWx+5GLeMldNKEJ++icQE8nEP0msdBF7TbQJvOg=;
-        fh=qhr/cJKAW59o58vovl4GZ5m90OAnPzVpQiXsQbC3Ta0=;
-        b=Ulp403a2vO4sZhQf7jr+FRfXsRR9wd2zqMqCRP/Nul20C+GG0dxkFMmpyj41Ej74X4
-         ThPqUzCa0iTJK3vIP8svyqKRnmXVzSXKk08pI0Aq29zjLsVhziRq3HRwMezSs53svs/u
-         fJUxp9fIanC4DjK3OrqNfZQMg5vRQjcP5l39mkqmpfZKjF7xURCPuPm6D5/DmKRhGKr1
-         bxkqje9W3Eng2Kj4hLPj4M7gUdFNZk2FJF9phnqSp5wIy4gxVaFXlu3EOBsWfd9NABjn
-         QG5rwsfEA7gEOwL7NAGhRh+voDg4p01szX3jB3Uv1asfIKMB5rPXGUeHINbm5tWPDQFm
-         k39Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776764957; x=1777369757; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rcIuPWx+5GLeMldNKEJ++icQE8nEP0msdBF7TbQJvOg=;
-        b=NtenQqU5UoyWqKUh55GXGO+I7P9MK2dCEBtxRT+/zbb6SJlQGnC5Hl/j1s5BHEykrV
-         G0X+w9weknHr0V9bKTSWWOBCa51d8qRT942FXES//nTW4elZpWt+gkjq+mcvDcZA3zAh
-         mZeiZb7YHkeUmcmQI1llToU/qJsuS07qgpIRNnw4Zj4FPkzW+IWpdlwVyymMleEFrYdr
-         OVcebvAwt0pFt775pgw9alto7NCVJgqpJtEtI2Ic+VEZMuSDoxIBrhxJCqYaUxL99sU4
-         laSs0ZlCpk6j3Ui6LXc2dOgelqpQPWrCPhPssjn5Tx2ygzfzN9jGFDt/HDVnc2VrGk17
-         zEog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776764957; x=1777369757;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=rcIuPWx+5GLeMldNKEJ++icQE8nEP0msdBF7TbQJvOg=;
-        b=K9nCb08YJ+xFlQ9WiaY7jNmhRXemaoYwhh5agD1XwlpLqH6tMLTnqIbU3PDOudEcSF
-         kx+/QDYLG2AvnIwMEy1uALu+LQI66s5boCK/iVjztBqRSudFb7S+vxFDyGclJ42F1UNI
-         Z6TPIJ6GgovIKpADFhnC+VUmgOhlvYY3hfh7dV5diV5wUUQuHtW4WeZcY54UkcQiXE1H
-         mPw81wZqAuu3R5Tz9UiYs0Eh1jAevJDaQoPaAgDyb2kdpHbTDd885xF6CRFDogxZiBMU
-         0Zonq0XNjKzO0VHsPBb1hbi3iQPMBco2R7LhAd0sHfRdHwzlLv5co6XYpB3oH2dBNYSF
-         iyKw==
-X-Forwarded-Encrypted: i=1; AFNElJ+UQVapztCo220eBhBs1+scA0Pc8vdbgbOat8Z1Ywnt2RF3SQQm7piT+VFtUOXQe2wrsRqgoLuXcJo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyNAel912216Ve4PQIvc1y04hbz1cPDX4frySzKMoIUArj2Uf0B
-	0cor6FByuo2CNuy5KG3pkslDt7+77QPxjOiIotfrzccxX349CfgTEIkfFe+1hX8bwzRc+6BYFNv
-	0/p/GHSxCTPzlFn3J77+HnenURAta8Qc=
-X-Gm-Gg: AeBDieunIf0R0+uapP0tM9FWDVvVbIy49F2CiVdIQfomRAbRnNzKWS55KlHTngMSTTN
-	2JiWPeluDdul2wynToyX16YJ2MgHNLjtwhFpSTSNZRPOVBbPnJNFE5iJktyUOfju0Al0l9k32S+
-	7fUswrukTS/we+fE/7DR4EE1fekdYpE7dYwndr34DqSX1fn/NVHcujSQt/tHeR0xKmEDrWpjJ4Z
-	phnLnfuZFld6qaxYuQPfObc0oLVF0SjL7Fg35waHkvItfqZ2XmVRjf1t9Cev575I6suFbzBofDI
-	x7yyB1CCj3LECEVaWffKtTf97r9ig9fRvpieqOhoVSGK4UTrdPRD3DQtBmQbXEfYVMuWVC9/s0T
-	ivuj5+jKHuw8fLHxaB8EUr+IK5gaZ8AzeNwDBXGxM5zKp
-X-Received: by 2002:a05:7301:128d:b0:2dd:5641:ef0 with SMTP id
- 5a478bee46e88-2e47930f7b4mr4083612eec.6.1776764956745; Tue, 21 Apr 2026
- 02:49:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kdFrDMJW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 906D5C2BCB0;
+	Tue, 21 Apr 2026 09:51:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776765072;
+	bh=VtkQ1i0kAqBUciLoNuo/gKk3cDHAmSHLUuMH5VOnMOk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=kdFrDMJWgkALWv1eAW1AKxT9k7qcx3gNv3FL/C8W0J19NTYR+xBeE73JGwPIGkQiT
+	 xm3VNrMgm+GJXfVUIvX//rdPdocqBzGY2bh1SRQxCkNy7ACC6N9Ec8foChYJW1Fg+c
+	 4gl2hNaH31uT2THEL5GZq5yjPXJRi0g6ikbezFWuyiZCGtMTqnfhV9hW0R64+Deg8P
+	 ILfR82VuoAqQ5kjBBOh6Wf8W7tWjnPC7nSCGyh6ft6NHZp/8mPj9djlnLJab10aLkg
+	 s2FRYWyoO0O70ir1jrp073u7a2wFC+7Yn4ctebQbn98++8wwnDGkSEL0B+EbasgGi4
+	 E5Q5dW2yvqMpA==
+Date: Tue, 21 Apr 2026 10:51:04 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Sudharshan <sudharsanam346@gmail.com>
+Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, robh@kernel.org
+Subject: Re: [PATCH v2] dt-bindings: iio: adc: adi,ad7816: add binding for
+ AD7816/7/8
+Message-ID: <20260421105104.199b2162@jic23-huawei>
+In-Reply-To: <20260421060011.12917-1-sudharsanam346@gmail.com>
+References: <20260421060011.12917-1-sudharsanam346@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260419151327.26306-1-muchamadcoirulanwar@gmail.com> <20260420193320.22df4979@jic23-huawei>
-In-Reply-To: <20260420193320.22df4979@jic23-huawei>
-From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date: Tue, 21 Apr 2026 11:49:03 +0200
-X-Gm-Features: AQROBzDAAzftt6pbRJZemN5AYHUZ7t5X_PvujovlzEk77pQ5L8tWWRpcKeKc4uc
-Message-ID: <CANiq72kKkRW7vwYKi38dvsM4HCtKGwzOF4ujMS-X=peGb_Vi3Q@mail.gmail.com>
-Subject: Re: [RFC PATCH] [RFC PATCH] iio: position: rust: add initial AS5600 driver
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Miguel Ojeda <ojeda@kernel.org>, Frank Zago <frank@zago.net>, linux-iio@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Apr 20, 2026 at 8:33=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-> Do we have a rust equivalent of BIT()?  That tends to be easier to compar=
-e with
-> datasheets that don't use hex for this.
+On Tue, 21 Apr 2026 11:30:11 +0530
+Sudharshan <sudharsanam346@gmail.com> wrote:
 
-We do! Please see:
+> Add device tree binding documentation for Analog Devices AD7816,
+> AD7817 and AD7818 10-bit ADC with on-chip temperature sensor.
+> 
+> The devices communicate over SPI and expose:
+>   - up to 4 analog input channels (AD7817)
+>   - on-chip temperature sensor
+>   - a busy GPIO to signal ongoing conversion
+> 
+> Signed-off-by: Sudharshan <sudharsanam346@gmail.com>
+> ---
 
-  https://rust.docs.kernel.org/kernel/bits/
+I'm a little confused on why this is v2 as I can't find v1 and there
+is no change log here.
 
-Cheers,
-Miguel
+There are various things missing. I'm not even sure you could make the chip
+work with the subset represented here. Note bindings should be as complete
+as possible even if the current driver doesn't use everything.
+
+
+>  .../bindings/iio/adc/adi,ad7816.yaml          | 64 +++++++++++++++++++
+>  1 file changed, 64 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
+> new file mode 100644
+> index 000000000000..6780510aaeb9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
+> @@ -0,0 +1,64 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/adi,ad7816.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices AD7816/AD7817/AD7818 temperature sensor and ADC
+> +
+> +maintainers:
+> +  - Michael Hennerich <michael.hennerich@analog.com>
+> +
+> +description: |
+> +  The AD7816/AD7817/AD7818 are 10-bit analog to digital converters
+> +  with an on-chip temperature sensor. They communicate over SPI bus
+> +  and are commonly used in robotics and industrial applications for
+> +  temperature monitoring and analog signal conversion.
+> +
+> +  Specifications on the converters can be found at:
+> +    AD7816:
+> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7816.pdf
+> +    AD7817:
+> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7817.pdf
+> +    AD7818:
+> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7818.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,ad7816
+> +      - adi,ad7817
+> +      - adi,ad7818
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 1000000
+> +
+> +  busy-gpios:
+
+The data sheet calls out he most likely use of this which is not sensing when
+it is busy but:
+"The signal can be used to interrupt a microcontroller when a conversion
+has finished."  That is how it is used in the driver in staging which reinforces
+that view.  So make this one an interrupt.
+
+However, there are other pins... For instance the !CONVST signal which I think
+is best represented as a gpio.  There also seems to be a rd/!wr pin which you
+don't have in this binding.
+
+Hence this is far from complete and you should go take another look.
+Also included power supplies which should be 'required' in the binding
+if they are needed for the chip to work (at least some always are!) even if
+the driver currently doesn't turn them on and off.
+
+Thanks,
+
+Jonathan
+
+
+> +    description:
+> +      GPIO connected to the busy pin of the AD7816/7/8.
+> +      The line is active high and indicates the chip is
+> +      performing a conversion.
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        adc@0 {
+> +            compatible = "adi,ad7816";
+> +            reg = <0>;
+> +            spi-max-frequency = <1000000>;
+> +            busy-gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;
+> +        };
+> +    };
+
