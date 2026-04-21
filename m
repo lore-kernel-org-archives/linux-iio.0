@@ -1,43 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 876BB2C187;
-	Tue, 21 Apr 2026 15:17:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80B8330FC34;
+	Tue, 21 Apr 2026 15:19:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776784650; cv=none; b=DOJOMwP7GMOIV6bkOHhgjryftrM0KVv3gvfmEGmq/5VsR14oPPs6ZUlQ8bVSv1Xrq5rOfhMWEgCnkNdphbXrNS3amB0+jRaAzDz9+pOOuNG0sE4TTDI5eWFZiJZn+XBKypeLWhAc7ChTGK7z1xeKAkj6KrK+PhLZ2YfUQSfBTC8=
+	t=1776784798; cv=none; b=scsyizzV6ycTSfoE9zGhOpQ1wR1AcL3bNLeWC6Gap9iVShtSdmJqWaU2ylUEoD7VwRmXszSmdPOfLuycd9JMPrTmuKlJ9d1v/8Q0W2ulLc/7DDgTBlfYo1IVvPvkRN+0p3QKsWogqUwpO0rp9V2XPoBQ9DmAy5hr72RTQeT5Npk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776784650; c=relaxed/simple;
-	bh=d/1JZ54gtzvNdNgYBO7YYoNv00Q60YBfszmfvI/YAjs=;
+	s=arc-20240116; t=1776784798; c=relaxed/simple;
+	bh=TQjHAUUN14hAMMNQyEXtHvygR34qe5mSJ4/h00NJdi0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lk2gTBibXi0/v9cdataiGY+7BVzaHv+N0Ogs/KsJez5hjEXS/6M8S8DGRWmBUZ7Z97LtU2xI916+wiW+DP2C76VNQ6vESaIXqqOfjSrF+Nqf4NvImxGNgOGO/rcMVVNaUeqgJdaCzs2JriUB39NW7oa1kG6KTdBrT54tOJ0zy7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jPKp5/7S; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ik4gslVQt/T0bE0v4X/lWmDVJV36gKHhQwM5Ll4ptr7RC8MoywC172t37A6bayNqwhV7uVNT0le783Dt4MXE3A+8SCVVkhpd+Wbblu1CrqOz8BuyQ7M8HvpyFk0UgMZSO8q6rFWK5LjA9kNlVJ9TYrJcKjMd0cvRYH116pihhxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UedHJinW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jPKp5/7S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA786C2BCB0;
-	Tue, 21 Apr 2026 15:17:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UedHJinW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82D38C2BCB0;
+	Tue, 21 Apr 2026 15:19:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776784650;
-	bh=d/1JZ54gtzvNdNgYBO7YYoNv00Q60YBfszmfvI/YAjs=;
+	s=k20201202; t=1776784798;
+	bh=TQjHAUUN14hAMMNQyEXtHvygR34qe5mSJ4/h00NJdi0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=jPKp5/7S/VBfgolrkNzr3FfVONKSO3asPcoyJLtWmKpkO7IZvJKESONmxWe8Nc5Gi
-	 IkdJpKy++sNPmMS5gfn/Fu0pCUCyzXQq75HTou6mp5yKFFcXoCtiEiPcn/XvsFSuo2
-	 e/Ry4U2xaa/XomID2nvec1WTYRfaeKgx9GbN/UuOouzXREaYBHaPxFdK4ahv9BMNv6
-	 NpboiIUxLHlJxepcLVK1HabznAZTB64CdTGRlHonB2lGo66AfBliEUFHKnKMvN/nwe
-	 92+/ektnkuegdlRK5CZnW5VDt3uQmfjt3FfDc0UHRs3jFk/t4qFLx3Z2oUkFd8B8/O
-	 VxBlHBNOVherw==
-Date: Tue, 21 Apr 2026 16:17:20 +0100
+	b=UedHJinWsfjIcvDOxoOupoYRMFHAWZtDBjCTppIra8/voxzo4IFZiFlRsTh5QQnwY
+	 iILwmsVMSrx+c7A7phFUDcdbUwT17iu9Ecu6UzFR2CxitIsgMsvkupeUfyiUBSCOo+
+	 /P700UoSU98dSBu3vqR1N1Nu5ar2i4CitG3hghmollGAWmnSDPwgrIPSKaK6qcNoCj
+	 9FHrOIQneytDYx5aQBSvevZroVNUg8vhVrGgSq3JOjQ5U+kgyzbzC49ko70fzqUhsh
+	 1SqSGsS6zdZRSuKHEyzh1zDtAB9Gn/nD7G9cjieOSrO+PB6rxpH9Lc+SqAjhv8IT77
+	 DJBXmbUF0bE8g==
+Date: Tue, 21 Apr 2026 16:19:50 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: ak@it-klinger.de, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: adc: hx711: add support for HX710B
-Message-ID: <20260421161720.43dd97a3@jic23-huawei>
-In-Reply-To: <20260419174654.683692-3-piyushpatle228@gmail.com>
-References: <20260419174654.683692-1-piyushpatle228@gmail.com>
-	<20260419174654.683692-3-piyushpatle228@gmail.com>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, nuno.sa@analog.com,
+ demonsingur@gmail.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: Update maintainer for iio driver(s)
+Message-ID: <20260421161950.2f2cb53a@jic23-huawei>
+In-Reply-To: <30AD35B9-E7DE-4F9C-AA15-4EEAED583F16@gmail.com>
+References: <20260418211336.1800221-1-sanjayembedded@gmail.com>
+	<278F44B5-A962-470D-A0F5-CA7C6F11FBDB@gmail.com>
+	<aeYGrMh59pQEgWx8@nsa>
+	<20260420125035.6a098add@jic23-huawei>
+	<30AD35B9-E7DE-4F9C-AA15-4EEAED583F16@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,125 +47,117 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 19 Apr 2026 23:16:40 +0530
-Piyush Patle <piyushpatle228@gmail.com> wrote:
+On Mon, 20 Apr 2026 20:44:37 +0530
+Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 
-> The HX711 uses trailing SCK pulses after each 24-bit conversion to
-> select the channel and gain for the next measurement: 1 pulse gives
-> channel A at gain 128, 2 pulses give channel B at gain 32, and 3 pulses
-> give channel A at gain 64.
-> 
-> The HX710B works differently: gain is fixed at 128 and the trailing
-> pulses select only the channel. One trailing pulse selects the
-> differential input (channel 0, 10 SPS) and two trailing pulses select
-> the DVDD-AVDD supply monitor (channel 1, 40 SPS).
-> 
-> Refactor the driver around a per-chip hx711_chip_info structure so both
-> variants can share the same core. Each chip provides its own
-> iio_chan_spec array and iio_info pointer. The HX710B stores per-channel
-> trailing pulse counts in chan->address (1 for channel 0, 2 for
-> channel 1) instead of a separate array. A bool fixed_gain flag and
-> fixed_gain_val field in hx711_chip_info distinguish the fixed-gain path
-> from the HX711's user-selectable gain path without conflating unrelated
-> properties. The HX710B differential input channel is described with
-> .differential=1 and .channel2=1 as required by the IIO ABI.
-> 
-> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
+> On 20 April 2026 5:20:35=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel.o=
+rg> wrote:
+> >On Mon, 20 Apr 2026 12:00:15 +0100
+> >Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+> > =20
+> >> On Sun, Apr 19, 2026 at 02:46:10AM +0530, Sanjay Chitroda wrote: =20
+> >> >=20
+> >> >=20
+> >> > On 19 April 2026 2:43:36=E2=80=AFam IST, Sanjay Chitroda <sanjayembe=
+ddedse@gmail.com> wrote:   =20
+> >> > >From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> >> > >
+> >> > >The listed maintainer analog domain email for Cosmin Tanislav is no
+> >> > >longer valid, and he would no longer maintain this driver(s).
+> >> > >
+> >> > >Cosmin suggested adding Nuno from Analog Devices for further handli=
+ng
+> >> > >this driver(s). Add Nuno as maintainer.
+> >> > >
+> >> > >Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> >> > >---
+> >> > > MAINTAINERS | 8 ++++----
+> >> > > 1 file changed, 4 insertions(+), 4 deletions(-)
+> >> > >
+> >> > >diff --git a/MAINTAINERS b/MAINTAINERS
+> >> > >index c981cbdff500..f86a398d1a35 100644
+> >> > >--- a/MAINTAINERS
+> >> > >+++ b/MAINTAINERS
+> >> > >@@ -644,7 +644,7 @@ F:	drivers/iio/accel/adxl355_i2c.c
+> >> > > F:	drivers/iio/accel/adxl355_spi.c
+> >> > >=20
+> >> > > ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
+> >> > >-M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
+> >> > >+M:	Nuno S=C3=A1 <nuno.sa@analog.com>
+> >> > > L:	linux-iio@vger.kernel.org
+> >> > > S:	Supported
+> >> > > W:	https://ez.analog.com/linux-software-drivers
+> >> > >@@ -1461,7 +1461,7 @@ F:	Documentation/devicetree/bindings/iio/adc/=
+adi,ad4080.yaml
+> >> > > F:	drivers/iio/adc/ad4080.c
+> >> > >=20
+> >> > > ANALOG DEVICES INC AD4130 DRIVER
+> >> > >-M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
+> >> > >+M:	Nuno S=C3=A1 <nuno.sa@analog.com>
+> >> > > L:	linux-iio@vger.kernel.org
+> >> > > S:	Supported
+> >> > > W:	https://ez.analog.com/linux-software-drivers
+> >> > >@@ -1549,7 +1549,7 @@ F:	Documentation/devicetree/bindings/iio/dac/=
+adi,ad7293.yaml
+> >> > > F:	drivers/iio/dac/ad7293.c
+> >> > >=20
+> >> > > ANALOG DEVICES INC AD74115 DRIVER
+> >> > >-M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
+> >> > >+M:	Nuno S=C3=A1 <nuno.sa@analog.com>
+> >> > > L:	linux-iio@vger.kernel.org
+> >> > > S:	Supported
+> >> > > W:	https://ez.analog.com/linux-software-drivers
+> >> > >@@ -1557,7 +1557,7 @@ F:	Documentation/devicetree/bindings/iio/adda=
+c/adi,ad74115.yaml
+> >> > > F:	drivers/iio/addac/ad74115.c
+> >> > >=20
+> >> > > ANALOG DEVICES INC AD74413R DRIVER
+> >> > >-M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
+> >> > >+M:	Nuno S=C3=A1 <nuno.sa@analog.com>
+> >> > > L:	linux-iio@vger.kernel.org
+> >> > > S:	Supported
+> >> > > W:	https://ez.analog.com/linux-software-drivers   =20
+> >> >=20
+> >> > Hi Nuno,
+> >> >=20
+> >> > As discussed in the previous thread https://lore.kernel.org/all/d6d8=
+660e-c5d2-4f02-a5fc-2f8b49d2e0d7@gmail.com, updating the MAINTAINERS entry.
+> >> >=20
+> >> > Nuno, please let me know if you are okay to be listed as maintainer
+> >> > for this drivers, or if someone else would be more appropriate.   =20
+> >>=20
+> >> I'm ok with it but maybe a better alternative would be to include
+> >> linux@analog.com? Jonathan anything against it? Should always have
+> >> someone capable of taking over and more important, it should not become
+> >> invalid (at least it should be less likely) =20
+> >
+> >That's fine by me.
+> > =20
+>=20
+> Hi Jonathan,
+>=20
+> Thank you for the confirmation.
+> I hope there won't be any maintainer and also this List should be added l=
+ike following, right ?
+>=20
+> L: linux@analog.com (moderated for non-subacribers)
+>=20
+> similar to what some company has added or without () also should be fine.
+>=20
+> Accordingly, I will send next version.
+>=20
+L yes, not the bracketed bit. I'd imagine it's impossible to read if you ar=
+en't in analog
+devices?
 
-I'm slowly incorporating looking at the feedback that the sashiko LLM based
-code review is providing.  In amongst some stuff I'm fairly sure was
-garbage it did raise some stuff that needs a closer look. See inline...
+> >>=20
+> >> - Nuno S=C3=A1
+> >>  =20
+> >> >=20
+> >> > Thanks,
+> >> > Sanjay Chitroda   =20
+> > =20
 
-> @@ -246,27 +275,50 @@ static int hx711_set_gain_for_channel(struct hx711_data *hx711_data, int chan)
->  	return 0;
->  }
->  
-> -static int hx711_reset_read(struct hx711_data *hx711_data, int chan)
-> +/* Select HX710B channel for the next conversion. */
-> +static int hx710b_set_channel(struct hx711_data *hx711_data,
-> +			      const struct iio_chan_spec *chan)
->  {
->  	int ret;
-> -	int val;
->  
-> -	/*
-> -	 * hx711_reset() must be called from here
-> -	 * because it could be calling hx711_read() by itself
-> -	 */
-> +	if (hx711_data->channel_set == chan->channel)
-> +		return 0;
-> +
-> +	hx711_data->channel_set = chan->channel;
-Sashiko raises what sound like a plausible issue here.  If the read
-that follows fails is the current channel updated?  I.e. should we
-set this or not?
-https://sashiko.dev/#/patchset/20260419174654.683692-1-piyushpatle228%40gmail.com
-(be careful with these AI reviews. Some of the other things it says are - I think
-not true!)
-
-> +
-> +	ret = hx711_read(hx711_data, chan->address);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return hx711_wait_for_ready(hx711_data);
-> +}
-
->  static const struct iio_chan_spec hx711_chan_spec[] = {
->  	{
->  		.type = IIO_VOLTAGE,
-> @@ -455,10 +516,69 @@ static const struct iio_chan_spec hx711_chan_spec[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(2),
->  };
->  
-> +/*
-> + * HX710B channels.
-> + * Channel 0: differential input (IN+ vs IN-), 10 SPS, 1 trailing pulse.
-> + * Channel 1: DVDD-AVDD supply monitor,         40 SPS, 2 trailing pulses.
-This triggered a sashiko question...
-https://sashiko.dev/#/patchset/20260419174654.683692-1-piyushpatle228%40gmail.com
-
-Specifically if the fixed scale is correct for the supply monitor or not.
-It seems unlikely we'd want a large gain on a supply monitor.
-
-
-> + * .address holds the trailing pulse count used by hx710b_set_channel().
-> + */
-> +static const struct iio_chan_spec hx710b_chan_spec[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.differential = 1,
-> +		.channel = 0,
-> +		.channel2 = 1,
-> +		.indexed = 1,
-> +		.address = 1,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.channel = 1,
-> +		.indexed = 1,
-> +		.address = 2,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 1,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(2),
-> +};
