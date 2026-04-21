@@ -1,90 +1,106 @@
-Received: from mg.richtek.com (mg.richtek.com [220.130.44.152])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEAAA25F988
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 01:56:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.130.44.152
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54EED1A9FA0
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 02:03:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776736593; cv=none; b=tpIKEEBhxaPxs6cvcS6Gye3XusJj9iVC7rzOryJ0qBhOSB+N+ody2Aclv1my9HjKVINu+DlUd0QwxLJPV7iHXZQfB4l8ItoSVXO3VUKVnKLEfxI/EnRib39FCwFf43mrWfwF0B1MJaMYKz09qQOr7dYEu1hJixEY7VzpfKtEsl4=
+	t=1776737022; cv=none; b=En86ozHJgxUWCVOyPXDUkK/J0ZhHWnNkPWanjUclc+ejUJe0rC/JQSUm7rdP/Z9M1mzCw0XB+SEr1H+aIRzHY0gQE/HOXj7jtFz67hqGDEvEx0CVxi9DL7UdC9H+3mJfLtYWdiPhewxCqppxLEYSE8mZ6dxZYzB3Ylp9HqByrvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776736593; c=relaxed/simple;
-	bh=nLQHXtixbiiCSFHDVuEFUufqLl0TgEWa4Uvmy0A5jrc=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nm0O6tvkr6dFXqPOu2gGmp9X/euQ1fzu/K31sGgJBOY8CDoJTqpb/e3uo/h4SHeklGFBe6u1fzJIU7LREIxvFcAeXla3EVH3WmU24GIjLH2/NWpfp5MScBpItQiFKGxwQezjdB+QwpkBKrAx6H9v+sKJMSAfsaXd97lbSk/cbpw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=richtek.com; spf=pass smtp.mailfrom=richtek.com; dkim=pass (2048-bit key) header.d=richtek.com header.i=@richtek.com header.b=vvRkrc2h; arc=none smtp.client-ip=220.130.44.152
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=richtek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=richtek.com
+	s=arc-20240116; t=1776737022; c=relaxed/simple;
+	bh=/Dv8cvp4dyydKcDv8Uj6PeNSb/LTw5WxdHCmfDaVWQA=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=qWMOjNDRKkbjft5QERG+EgdVh1P4LD3XuqJpOmE4vNJMqZJBwenhFz8vno8GjN7gbrFRMbv8MPo9v5GEGYQ1jwbfxJ1W+A5sZJPB7owxhbyARyvk44qLNtlCeTSZwrkiHY4B5O49aHQxtmxJnl9rlHv8QDGaBW+3IDb/ubU3N/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q4OlvWCY; arc=none smtp.client-ip=209.85.210.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=richtek.com header.i=@richtek.com header.b="vvRkrc2h"
-X-MailGates: (SIP:2,PASS,NONE)(compute_score:DELIVER,40,3)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=richtek.com;
-	s=richtek; t=1776736582;
-	bh=346+yF1poLqwHVsI0ue/vA6Zm2woM6F3tsa06yU27bQ=; l=954;
-	h=Date:From:To:Subject:Message-ID:MIME-Version;
-	b=vvRkrc2h1OxQIrIg7GJU++nN65e3pBGzGZkWhKs+R+EOVzhWsL94hOTXAid+SNZAa
-	 ql0IEqAnSNj+Wb2vr1OAl209iOB7gNoQ4r2Kj0lKjgSJwebjwFX47OsdCLQ2xdJZzj
-	 2kQadlOsNbPKVEck2jjf8/GZe2VbdxsTd7LSAPwTjx37P27rkAhorNs2Ovr1JgLaOh
-	 eCEvglSf0bNUws8JPYyy8SW0UGV1jxELi5nynl3ZyaYwG8//nc0E2MzgfhNIA9jKsh
-	 RzjY8Dw/pE5bs39J+gfQvGFdUcaoi+C+FgCmz7RsfUBg01p2UAD8COUJ54xqsaEnLE
-	 CC3BL0Rq53+ag==
-Received: from 192.168.10.47
-	by mg.richtek.com with MailGates ESMTPS Server V6.0(1227023:0:AUTH_RELAY)
-	(envelope-from <cy_huang@richtek.com>)
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256); Tue, 21 Apr 2026 09:56:07 +0800 (CST)
-Received: from ex4.rt.l (192.168.10.47) by ex4.rt.l (192.168.10.47) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.26; Tue, 21 Apr
- 2026 09:56:07 +0800
-Received: from git-send.richtek.com (192.168.10.154) by ex4.rt.l
- (192.168.10.45) with Microsoft SMTP Server id 15.2.1748.26 via Frontend
- Transport; Tue, 21 Apr 2026 09:56:07 +0800
-Date: Tue, 21 Apr 2026 09:56:07 +0800
-From: ChiYuan Huang <cy_huang@richtek.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: David Lechner <dlechner@baylibre.com>, Nuno =?iso-8859-1?Q?S=E1?=
-	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Kevin Tung
-	<kevin.tung.openbmc@gmail.com>, Lucas Tsai <lucas_tsai@richtek.com>,
-	<kevin.tung@quantatw.com>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: rtq6056: Fix the manual device instantiation
- via sysfs
-Message-ID: <aebZN39+vev78GHD@git-send.richtek.com>
-References: <db4f5ded64ca7d2e56abfa30c6a174342c44fabb.1776735120.git.cy_huang@richtek.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q4OlvWCY"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-82fcd0aa2dbso87787b3a.0
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 19:03:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776737021; x=1777341821; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=hy29epMyfsYUurE4pd5MGoUMpPF9IzGtxLeHSnRuzNM=;
+        b=q4OlvWCYyYoaxhpQOR1fMVaxFiQ79R2yabBUFv/tnJot0rSwfrjWTk6kkGQMNXoMBB
+         yNkKbcRA/vX4voICkcScVWJo+51e2p/zDzRBt+/K5riE/knxSNaeTW4F1n/EvEXzlGG2
+         EaURviheocga7X61wFnEQapx/OunM5Q1ISAW7DeOF+lHp40HYah17plAta/QFd2pt7i2
+         VvO9WcLRMRO+iWW0JPODnp+Zfeh/mB3eBKNry0DAGsakJGkbnsIGQ8r2I9QzkdbLhGWF
+         rS7LWEUE9RFD39hfVjWN8QinD+QYs31oa+9/vs11cA7m9hFD1K7lQl9s5NXrTh9EEHqn
+         dZ3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776737021; x=1777341821;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hy29epMyfsYUurE4pd5MGoUMpPF9IzGtxLeHSnRuzNM=;
+        b=RQYokRcdWRk12b/wLXJtqY877lOvOHGZpjM5jUhxxqgfWMMOje3ROmvd7UlalEBtFe
+         w0MgoHpBTCfzdOiMPHW0s3/9KszeaDcLS7sqU2GnyyYIYXrIewesSCEzYMZHL79sOafv
+         Ra24UWuGI92+8wppWLLRbWh8e/c7mwkPE/5qjGoQmpkPK/S9YpaPFzOXewd+7xcC1NJl
+         PCPVn7nhl7zvWOVorGtkhiZITmGeCUDEvJ7SbMeHj7W9m1vJzp3QA3pVPzcm4x/2GwgI
+         e8dNvq7XO3yikitrkLwh6c+NCsE43EVEzE5sOw1zlT67ODiIK0Igo7swfwRhArtwswAE
+         ug7w==
+X-Forwarded-Encrypted: i=1; AFNElJ82MsmbVboAHZrKpNtF/StcfMyFxHRA1r+ZouAvhRBOHLBju0wu18haIZUe07oXohKjRzcfooIxVjI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyNhJy4R6mMMqASGrqHxQJeFB912PgeIXx3vml4+fRglo/q2nGj
+	cfZwFeeEf6fzqdBhZAxeScZcmHyFeZa+EjIHVRpvokbMFdxSB403VXp3uF7enw==
+X-Gm-Gg: AeBDiesOieGRNmV+QMH7irl8+ZYVV0qkRC4skVVij6v/BYr1oE742VcbMr892/6A7JF
+	bYshec441k9VV5H9aPQ7ZiEadBUWZU39QawlWsMnjTsRuw+yenEIK7i/Si8uJPR9zlgdA33cv/y
+	LKIZWy4BuRkaZCb63jXf/Mx3g6xe264gVzRjwHAjGUyILM3PzL3DQOYi9PpRHxIMzzW56O8f1S8
+	c2MtA2EJsl/R6eVSSgceiRX0kA3CpImMfRuWxOmRBnrITeQ0/nWBbM7kRAUeas/bi+RNTKM2VcS
+	/O4jXsy0NzMtMcnbnCJn1F9M2h1xtrwJrhlZfokdobMT0lhoF7FVki2yCNxTJJoNTiWFiG/HClO
+	jDZIDqoKPBVaTA/EDeWs4bDUvbsYxCp9Fyb2fm82PnOuUgowtMfYavC9sRJ2NhYd1wSvuSlnNFo
+	Jmt0/hjAkre1ysQHr3BzGE5rcgzVXwD9FUJb3L0Gahdm9994/XU6LZXddTCQ==
+X-Received: by 2002:a05:6a00:4b01:b0:82f:49b5:cfc3 with SMTP id d2e1a72fcca58-82f8b551df5mr13447987b3a.18.1776737020637;
+        Mon, 20 Apr 2026 19:03:40 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:ae21:d323:b31b:43e0:4f1e:901c])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ec05391sm12529130b3a.56.2026.04.20.19.03.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Apr 2026 19:03:40 -0700 (PDT)
+Date: Tue, 21 Apr 2026 07:23:41 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: mma8452: use pm_ptr() for dev_pm_ops
+User-Agent: Thunderbird for Android
+In-Reply-To: <ad9dd_-lLmazqD5g@ashevche-desk.local>
+References: <20260414192045.3598010-1-sanjayembedded@gmail.com> <ad9dd_-lLmazqD5g@ashevche-desk.local>
+Message-ID: <01DD8F0A-6CB9-4C98-91B9-0754E82BC588@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <db4f5ded64ca7d2e56abfa30c6a174342c44fabb.1776735120.git.cy_huang@richtek.com>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 21, 2026 at 09:41:17AM +0800, cy_huang@richtek.com wrote:
-> From: Kevin Tung <kevin.tung.openbmc@gmail.com>
-> 
-> Add i2c_device_id to support sysfs manual device instantiation.
-> 
-> Fixes: 89a1034cd841 ("iio: adc: rtq6056: Add support for the whole RTQ6056 family")
-> Signed-off-by: Kevin Tung <kevin.tung.openbmc@gmail.com>
-> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> Cc: <stable@vger.kernel.org>
-> ---
-> Hi, Jonathan:
-> 
-> For some BSP limit, still some user instantiate rtq6056 deivce via sysfs.
-> Therefore, add old style i2c id to make it compatible for this kind of usage.
-> 
-> BR,
-> ChiYuan.
-Hi,
 
-Please ignore this patch. I have seen Kevin submit the patch in the
-following link.
-https://lore.kernel.org/lkml/20260420-rtq6056_support_sysfs_instantiation-v1-1-483ccee27b63@gmail.com/
-> ---
->  drivers/iio/adc/rtq6056.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> -- 
-> 2.34.1
-> 
+
+On 15 April 2026 3:12:15=E2=80=AFpm IST, Andy Shevchenko <andriy=2Eshevche=
+nko@intel=2Ecom> wrote:
+>On Wed, Apr 15, 2026 at 12:50:45AM +0530, Sanjay Chitroda wrote:
+>
+>> Use pm_ptr() so the PM ops pointer is automatically set to
+>> NULL when CONFIG_PM is disabled=2E This avoids unused-function warnings
+>> and follows modern kernel power-management conventions=2E
+>
+>=2E=2E=2E
+>
+>>  static const struct dev_pm_ops mma8452_pm_ops =3D {
+>>  	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_re=
+sume)
+>
+>You also want to change this to DEFINE_RUNTIME_DEV_PM_OPS()=2E
+>
+
+Hi Andy,
+
+Thank you for the review and feedback=2E
+I will update changes in next version=2E
+
+Thank,
+Sanjay Chitroda
