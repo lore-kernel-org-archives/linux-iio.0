@@ -1,80 +1,198 @@
-Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B650837B01F;
-	Tue, 21 Apr 2026 09:13:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB06D3A5E65
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 09:27:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776762795; cv=none; b=s8Z4DZNcemckGVmqp7BoGiN/i0hSs/73XZPZ452vVFSHO8YKC/gmAwn85TB60ugNhP/zw1jzWoYOpex2YuVsIKybHfcvKq5+gIB8d7gWSgibqXog11HccsR+T4sj/9tFU+F+VanzraEdmTwR7+dhbmuO96TaGuemXjZOVpHaFQs=
+	t=1776763670; cv=none; b=RsuvdNxQkZqINxIPFTb1R5Psj0cqnxkQTHWj3Jl/Y7YIMEP5OSywqggRsC0/P2yLO7/lRS5Z5yFej5iPy6Sygky7+7li0hH3VvESGS0yhBGDY/+x2Mf4au8EHbv7kYMApmxanZKUgPVMXb4XCJ/T3i2GPI/v/AkkjRd3EwlbtF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776762795; c=relaxed/simple;
-	bh=dmociZFz2IYYNo4xHUQTB1XzzkNBHzfsm8nH1/Lj3UE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UWSwQVYecqPU9+hAfEWji0JL4j3FLkolheMbpIT5k2KWe/l8fyNa0YeaUQYBmwp+ZFN1cJZg3KN7GxCuWXNGAwKXTcaCmo5Rn8P47k0qaELW1i7JVymcNf1El0yJOf70xNtmNs8tztnyke3XPLRyES8e8H4p7VJusfcgNW7z3yM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=FlyJl7lG; arc=none smtp.client-ip=185.246.85.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1776763670; c=relaxed/simple;
+	bh=NWVPQ/ix6la1A9YnRnDlxRH64UYZgVvj6dWNHNlWfm0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Zb7y+hc/bLlY20nEKSjxX9k6xxYnjkVVNyA4muVdwL6qjUazJ/Uf8mAi9R4RtBa8hdNffwPr2GkeDX/2ITbzVI8zuiyA4exz+8t/tBRDwFiKYl9sOT4cEU6Iq7+fQc5y9JFnlIZjmaOyBoo3tvfG8dn2+YWnwFtw6QFbNs+VghQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KP0YHrJK; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="FlyJl7lG"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-03.galae.net (Postfix) with ESMTPS id 8F3BD4E42A87;
-	Tue, 21 Apr 2026 09:13:05 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 463E9600D2;
-	Tue, 21 Apr 2026 09:13:05 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9714010460A48;
-	Tue, 21 Apr 2026 11:13:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1776762784; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=dmociZFz2IYYNo4xHUQTB1XzzkNBHzfsm8nH1/Lj3UE=;
-	b=FlyJl7lGx4eMMQbCRev9mpvt+7BSTACXMwFG0/G4GCcU9PtfNXDKpav3Wrgho0q3qzOVz2
-	uLNwe2kHl1h9N7Vkt8JdSC8z4PN7c4hCbaa1sZwAvD/WVUzr2F0HO6D5AdtqMbWVQ4oylV
-	jBYgpqOJJhaFMvUbB0v3PBIMXDxxtQp9Bdl/TpY8cPLngwiBlQU4kACwqFm29ZM52r4LxZ
-	IMqMOaXDyVKU4AGlgYaIaLLUL6/SGj9W/PJzkMmnOJhv4kVap2OEsjZ4GZ2qJrc/3pwQ6r
-	Y9S9ik9A2Fnnq0+sGVJW23nt5/DVrFVgyXjrBt5sW/Pk/w4iRcHNpVU8FZSImw==
-From: =?UTF-8?B?QmVub8OudA==?= Monin <benoit.monin@bootlin.com>
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>,
- Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, James Nuss <jamesnuss@nanometrics.ca>
-Subject:
- Re: [PATCH] iio: buffer: Fix DMA fence leak in iio_buffer_enqueue_dmabuf()
-Date: Tue, 21 Apr 2026 11:12:59 +0200
-Message-ID: <MjitYxUvQZ2Xg6TvxwuU6g@bootlin.com>
-In-Reply-To: <b3e77a9289eb934a342fd18512f27bdfb368a716.camel@crapouillou.net>
-References:
- <20260401-iio-dma-fence-v1-1-40993adbfa96@bootlin.com>
- <b3e77a9289eb934a342fd18512f27bdfb368a716.camel@crapouillou.net>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KP0YHrJK"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-43d73422431so3426594f8f.2
+        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 02:27:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776763667; x=1777368467; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2SK+aw4ngOkm9hF+ynW9KrB9F3h620ajY5HNLbxZ/XI=;
+        b=KP0YHrJKrICGVmlUQNpi+20Q7UPpVxplJOquT+Zqh5wyKP1DFRAT7kdVdPEmcAtOJU
+         brV2ROn1BQQz1KG0Et0nKatui0DkB9eOcKqCe0j55c/oDql4jqlcVe2INgsEj0oYNzsv
+         v4I5gJbI1rbqnzhgEyyCzaFL957VWDYW4GuiX9CSdJK+KYx8hbbz5XGalDkv4CZ0svzP
+         Us87q4HoGBFt6XaW9f+srHB+DxtWbVlIqdrWBMgH57xVDqxUZVkdyFAxN8W0e9FeM1pw
+         oUlSAwAmh3T6pilJgybq1eLs9wpLgcIqAn6PInRw+GpDo3f1p+g9kBingnGSBOlIcuB3
+         OEBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776763667; x=1777368467;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=2SK+aw4ngOkm9hF+ynW9KrB9F3h620ajY5HNLbxZ/XI=;
+        b=jaCdGGirIdXkKCyG1/8hyvwxm/rAoc8PZQWVBGitggN6sDp98HMqR88pvgz4QD++sc
+         D1Wufpe8DTLZt+CIsLKOeighc/TrNQUBo93BI2hxa4BvHlLIdYgv3Zx0Y2dQ4jbrVUrR
+         XgKeyG4VZc58PuHRezc57NQDakmEq/Iza4c2YnsJ8GGv8s+iJ+vqGvx6Hg4P43AZuhhP
+         10fHKHDXF7f7qdDWtDbi62RgSsdxtI9D6jhd6Ftqmoc56jSWnXXblWtxsm/FgTxGTqSm
+         OwRpyElOBy2rWXOEx/3+9mJZwkmLXbHKlT6c4dFvFEnofWWOGQ9YYOMREe+5nDfmd0sD
+         /K5w==
+X-Forwarded-Encrypted: i=1; AFNElJ+BU3bmh519jCuk0A8BO/3Y/PMdJCiqcONthrOMZ8sohjWtO+T5nyuIjnQr+dZPiKQpbzPFQJi1wqY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyXRJmGTBChaj/WvPCVlmYn7Eaz8t7bt0h0HLYdR1hBCPfV/8ln
+	jd0QzTtwR5lstaLNbINdLxF2EmJU3x42IpFF0XgKLfukeU+Ahm+LA7BP
+X-Gm-Gg: AeBDieupIngbyPG78GA1ybNP7AMShOZzlhPOyW176+1qRTpNEpmL8eqDcDe/ZyCQddI
+	i75EbVl2w8eURNvAYt4eHxL5dP8WXKZ3nzomo3pr5pfFNeLjsmgUX7kg8hZxi1w+3OOw4mtMqxM
+	AojFBbhftrQGwZZ7YYUL1m5z/vC/boK/iU2Vt6KuSt/IcibhWydOk23CMeBeTD/ckq4blKhaPu3
+	JraWGQa3oFyOoblkUxiX3ns1jpxmw4e3HtHKciLLXkrBPW7hmv5+litXFrd1k97w/lvK3tGKIhK
+	02KMIj/o0HkWNPHmDry+1TOuAWUih5u7bq3TD+iAqOxIk3nq0qZLiPEktlK5H0dWCBu9uQqLCY5
+	P9wegC3oDGXPn5JeWbGp1AX0/s05HoLSdj+viK/7e7bsWDiQmuKb5WiJJUHYnh7DXShUa0RMzx+
+	lxUNxxl5YjCWtPak6HzfEC9Bu1Ftdm+NdEvgZGcojlHm1CcS8YmpTsuf7QUdY3qPWbiWwP7s6bj
+	ptQ+vHmJWTU4g==
+X-Received: by 2002:a05:6000:1a89:b0:43d:7125:e79f with SMTP id ffacd0b85a97d-43fe3e25c89mr27107393f8f.47.1776763666796;
+        Tue, 21 Apr 2026 02:27:46 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4cb1405sm35116597f8f.4.2026.04.21.02.27.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2026 02:27:46 -0700 (PDT)
+Date: Tue, 21 Apr 2026 10:27:44 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Yury Norov <ynorov@nvidia.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Thomas Gleixner
+ <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+ <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Ping-Ke Shih <pkshih@realtek.com>, Richard Cochran
+ <richardcochran@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>, "David S.
+ Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub
+ Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Alexandre
+ Belloni <alexandre.belloni@bootlin.com>, Yury Norov <yury.norov@gmail.com>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>, Hans de Goede
+ <hansg@kernel.org>, Linus Walleij <linusw@kernel.org>, Sakari Ailus
+ <sakari.ailus@linux.intel.com>, Salah Triki <salah.triki@gmail.com>, Achim
+ Gratz <Achim.Gratz@stromeko.de>, Ben Collins <bcollins@watter.com>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ linux-rtc@vger.kernel.org
+Subject: Re: [PATCH 1/9] bitfield: add FIELD_GET_SIGNED()
+Message-ID: <20260421102744.6bd30e50@pumpkin>
+In-Reply-To: <aeZocbNjbvzMZO8b@yury>
+References: <20260417173621.368914-1-ynorov@nvidia.com>
+	<20260417173621.368914-2-ynorov@nvidia.com>
+	<20260420111940.GE3102624@noisy.programming.kicks-ass.net>
+	<aeZocbNjbvzMZO8b@yury>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Paul,
+On Mon, 20 Apr 2026 13:54:57 -0400
+Yury Norov <ynorov@nvidia.com> wrote:
 
-On Monday, 20 April 2026 at 17:12:46 CEST, Paul Cercueil wrote:
-> By the way, I did the exact same mistake in the functionfs code
-> (drivers/usb/gadget/function/f_fs.c), do you want to fix it there too?
->=20
-> (or I'll do it myself eventually)
->=20
-I have never used functionfs so I will let you fix it.
+> On Mon, Apr 20, 2026 at 01:19:40PM +0200, Peter Zijlstra wrote:
+> > On Fri, Apr 17, 2026 at 01:36:12PM -0400, Yury Norov wrote:  
+> > > The bitfields are designed in assumption that fields contain unsigned
+> > > integer values, thus extracting the values from the field implies
+> > > zero-extending.
+> > > 
+> > > Some drivers need to sign-extend their fields, and currently do it like:
+> > > 
+> > > 	dc_re += sign_extend32(FIELD_GET(0xfff000, tmp), 11);
+> > > 	dc_im += sign_extend32(FIELD_GET(0xfff, tmp), 11);
+> > > 
+> > > It's error-prone because it relies on user to provide the correct
+> > > index of the most significant bit and proper 32 vs 64 function flavor.
+> > > 
+> > > Thus, introduce a FIELD_GET_SIGNED() macro, which is the more
+> > > convenient and compiles (on x86_64) to just a couple instructions:
+> > > shl and sar.
+> > > 
+> > > Signed-off-by: Yury Norov <ynorov@nvidia.com>
+> > > ---
+> > >  include/linux/bitfield.h | 16 ++++++++++++++++
+> > >  1 file changed, 16 insertions(+)
+> > > 
+> > > diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
+> > > index 54aeeef1f0ec..35ef63972810 100644
+> > > --- a/include/linux/bitfield.h
+> > > +++ b/include/linux/bitfield.h
+> > > @@ -178,6 +178,22 @@
+> > >  		__FIELD_GET(_mask, _reg, "FIELD_GET: ");		\
+> > >  	})
+> > >  
+> > > +/**
+> > > + * FIELD_GET_SIGNED() - extract a signed bitfield element
+> > > + * @mask: shifted mask defining the field's length and position
+> > > + * @reg:  value of entire bitfield
+> > > + *
+> > > + * Returns the sign-extended field specified by @_mask from the
+> > > + * bitfield passed in as @_reg by masking and shifting it down.
+> > > + */
+> > > +#define FIELD_GET_SIGNED(mask, reg)					\
+> > > +	({								\
+> > > +		__BF_FIELD_CHECK(mask, reg, 0U, "FIELD_GET_SIGNED: ");	\
+> > > +		 ((__signed_scalar_typeof(mask))((long long)(reg) <<	\
+> > > +		 __builtin_clzll(mask) >> (__builtin_clzll(mask) +	\
+> > > +						__builtin_ctzll(mask))));\
+> > > +	})  
+> > 
+> > IIRC clz is count-leading-zeros and ctz is count-trailing-zeros. Most of
+> > the other FIELD things use __bf_shf() which is defined in terms of ffs -
+> > 1 (which is another way of writing ctz).
+> > 
+> > So how about you start by redefining __bf_shf() in ctz, and then add
+> > another helper for the clz and write the thing something like:
+> > 
+> > 	((long long)(reg) << __bf_clz(mask)) >> (__bf_clz(mask) + __bf_shf(mask));  
+> 
+> So...
+> 
+> I like the shorter form, but whatever we add in the bitfield.h - we'll
+> have to support it.
+> 
+> For example, __bf_shf() wasn't intended to be used outsize of the
+> header, thus double underscored. But there's over 100 external users
+> now. And to make it worse, it's broken for GCC 14 and earlier:
 
-Best regards,
-=2D-=20
-Beno=C3=AEt Monin, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+For anyone who hasn't followed the gory details it isn't 'very broken'.
+Basically __builtin_ffsll() doesn't always generate an 'integer constant
+expression' from constant input so you can get a compile fail.
 
+> https://lore.kernel.org/all/20260409-field-prep-fix-v1-1-f0e9ae64f63c@imgtec.com/
+> 
+> So needs to get fixed.
+> 
+> The bitfield.h has two __bf macros: __bf_shf() and __bf_cast_unsigned().
+> They are thin wrappers,
 
+__bf_cast_unsigned() isn't exactly thin.
+
+	David
+
+> but after all do something with the corresponding
+> builtins output. The __bf_cls() would be a pure renaming. I'm OK with
+> that, but some people don't:
+> 
+> https://lore.kernel.org/all/20260303182845.250bb2de@kernel.org/
+> 
+> That's why I didn't make FIELD_GET_SIGNED() implementation looking nicer.
+> If you strongly prefer the shorter version, I can do that in v2.
+>  
+> > Also, since the order of the shifts is rather important, I think it
+> > makes sense to add this extra pair of (), even when not strictly needed,
+> > just to make it easier to read.  
+> 
+> Sure, will do.
+> 
 
