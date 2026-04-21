@@ -1,41 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FE002C2363;
-	Tue, 21 Apr 2026 14:42:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65A7B3D902E
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 14:50:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776782528; cv=none; b=lmv7+0DKm2f9mUXbUAomdraKbNz/Fi+0IIdWrYM4CJvDq1U5mcmqOAUn3HCLBIcKlnTEKmcB7KJRiZPjj0n0wITlQy/UDFu/YcFmWmCfcplHO0cPRBKd6UC1uj21Lmz7OWG/+R33M0lB4poZuUw6amjBkDxY4V7YGNeltku4Jh4=
+	t=1776783000; cv=none; b=IbpGf4M7Ny+WqzGeU1Xv+LCdZcPa86tNU10DA582Gisx/dygQEPzrV0OqjG/z1KTwDP6UlGZnoe1LGuUCHtHh35BO0VXi7uZXDAiocz7JY+NZwc/jLs6VPpyIN3L6viWYNLJvudxX9yv88GvowTeMCntSl+9uQaOXUQduHK0ZQ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776782528; c=relaxed/simple;
-	bh=QHjeAaDeTm1KTQk03p1jbjW6OdIYW8kO1yzahqg5KrQ=;
+	s=arc-20240116; t=1776783000; c=relaxed/simple;
+	bh=PrL5mq8synLEqVGxMH4/wOKYi5FgKI1OA09m3Ym3+Dc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kriwCmHeUqj1YSkpeBLKwV6K/ZSrOxKxpIslEkAuxm0cWtMBiLd2khSSoflOBOeTgZBiXtzmK9XafdrFjNOIOUugNf3fZ4HMkMUb1p+zCH6a3G9Yw5iWOGMAF2wSyose//ngEotr7VWuOfh0k4urNSO9I8nuE9VdqVDBBX6SS7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hAAnWk9U; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=WO+Wo3LqCdmBzZAAQjGTrjYA8QxWrEDcNFZV5IYEQ8c+hrf/YqDaalwrKO+2pa82kRSDdLCMJhgn5SMlINaUNCnQCf6AecH46H8maGqWAWDjSac5rQE7NDZQUuBzFlWE2FjQw62jF3dpLN1cf/EGw+0+lUH90RgM9gbngZAqNas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V3voDJz9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hAAnWk9U"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29624C2BCB0;
-	Tue, 21 Apr 2026 14:42:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V3voDJz9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D874FC2BCB0;
+	Tue, 21 Apr 2026 14:49:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776782528;
-	bh=QHjeAaDeTm1KTQk03p1jbjW6OdIYW8kO1yzahqg5KrQ=;
+	s=k20201202; t=1776783000;
+	bh=PrL5mq8synLEqVGxMH4/wOKYi5FgKI1OA09m3Ym3+Dc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=hAAnWk9UGz7m4EEQ9A0KKzoU9sTQLttcsI8Rs3eeEN6sV9MOgTxMJH4kPBm1/Zr+z
-	 rPbhQqaWJBkGOjXoOCE3a1ghOIseQirDGNprZKqjM62FPeiFoJR2zyU/JNcNJ0UrHv
-	 aDTHdi6FoVfhvkcsuzlBtQv6ZqWtmMUCDW5xAdpohArphT+TvR3xSze9i0N+CCv06R
-	 ERpWxi1UGnZ9F7Gx5v3Ix/vu2o+E/9icBSlLPOmKZkg72Fs3oV6AlFGBVDoI9i3b/W
-	 zTzGwIMka+Cw66vHdv1K8ubwdVXyw5Q5hsvetEVNNegyQoEW6/0Iu4sgdeOlD31GWi
-	 UL0ZkUDXn6JOw==
-Date: Tue, 21 Apr 2026 15:42:01 +0100
+	b=V3voDJz9s9Nv+Yup3OTmukM1eXrdw0Y15S1ElxH+qjOzzne/Dv7pSrHlnRMMXb9ez
+	 e7x10oEdJr0CwJ/LvkF5bf6MhgataTyZt55yNKUPMYIYdGCvYW5Pob+aVltBQqOEww
+	 f9AH/Qbdrnu32dUrk8/8NpfdNTuxmZUHlIY7MCVw8lOFlbgbN6XZ2i6h1wp11EMjVB
+	 ULnJdn42GcMq1Yo6ELfcHk/QIBu4KrEBwkInLt2NHVWFfdr4VPkP9ztT1OV+3Himr9
+	 73f1AlYJmRtKaozddlS2Nz1MxUprYBxLrG2Vcu6MkubfOMPAH63JOuE6uxcAkPzk6u
+	 qLMQeApCK+dKg==
+Date: Tue, 21 Apr 2026 15:49:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: ak@it-klinger.de, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: proximity: srf08: replace sprintf() with
- sysfs_emit()
-Message-ID: <20260421154201.041f03c5@jic23-huawei>
-In-Reply-To: <20260420230813.25985-1-m32285159@gmail.com>
-References: <20260420230813.25985-1-m32285159@gmail.com>
+To: Raffael Raiel Trindade <raffaelraiel@usp.br>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, Kim Carvalho
+ <kim.ca@usp.br>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3] iio: light: vcnl4000: use lock guard()
+Message-ID: <20260421154952.5784d2bb@jic23-huawei>
+In-Reply-To: <20260420200047.102159-1-raffaelraiel@usp.br>
+References: <20260420200047.102159-1-raffaelraiel@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,88 +45,95 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 20 Apr 2026 18:08:13 -0500
-Maxwell Doose <m32285159@gmail.com> wrote:
+On Mon, 20 Apr 2026 16:59:33 -0300
+Raffael Raiel Trindade <raffaelraiel@usp.br> wrote:
 
-> This patch replaces sprintf() function calls with sysfs_emit() and
-> sysfs_emit_at(). While the current code is fine, sysfs_emit() is
-> preferred over sprintf(), and will help modernize the driver.
+> From: Raffael Raiel Trindade <raffaelraiel@usp.br>
 > 
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
-> ---
->  v2:
->  - Fixed indenting of sysfs_emit call in function srf08_show_range_mm.
-
-Not true unfortunately. Now broken differently.
-
->  - Optimized return sequence in function srf08_show_sensitivity by
->    directly returning instead of modifying a variable and then
->    returning.
+> Use guard() for handling mutex lock instead of manually locking and
+> unlocking. Remove gotos in error handling logic. This prevents forgotten
+> locks on early exits.
 > 
->  v3:
->  - Changed indenting of sysfs_emit() call in function
->    srf08_show_range_mm() per Andy Shevchenko's request.
->  - Clarified commit message details.
-> 
->  drivers/iio/proximity/srf08.c | 15 ++++++---------
->  1 file changed, 6 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
-> index d7e4cc48cfbf..e92526459dcf 100644
-> --- a/drivers/iio/proximity/srf08.c
-> +++ b/drivers/iio/proximity/srf08.c
-> @@ -226,7 +226,7 @@ static int srf08_read_raw(struct iio_dev *indio_dev,
->  static ssize_t srf08_show_range_mm_available(struct device *dev,
->  				struct device_attribute *attr, char *buf)
->  {
-> -	return sprintf(buf, "[0.043 0.043 11.008]\n");
-> +	return sysfs_emit(buf, "[0.043 0.043 11.008]\n");
->  }
->  
->  static IIO_DEVICE_ATTR(sensor_max_range_available, S_IRUGO,
-> @@ -238,8 +238,8 @@ static ssize_t srf08_show_range_mm(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct srf08_data *data = iio_priv(indio_dev);
->  
-> -	return sprintf(buf, "%d.%03d\n", data->range_mm / 1000,
-> -						data->range_mm % 1000);
-> +	return sysfs_emit(buf, "%d.%03d\n",
-> +			data->range_mm / 1000, data->range_mm % 1000);
-Should be:
-	return sysfs_emit(buf, "%d.%03d\n",
-			  data->range_mm / 1000, data->range_mm % 1000);
-Or
-	return sysfs_emit(buf, "%d.%03d\n", data->range_mm / 1000,
-			  data->range_mm % 1000);
+> Signed-off-by: Raffael Raiel Trindade <raffaelraiel@usp.br>
+> Co-developed-by: Kim Carvalho <kim.ca@usp.br>
+> Signed-off-by: Kim Carvalho <kim.ca@usp.br>
 
 
->  }
+There are some functions in here where guard() is useful but you haven't
+updated. e.g. vcnl4000_measure(), vcnl4040_write_als_it()
+vcnl4040_write_als_period() and maybe more.
+
+I don't mind a mix of guard() and non guard() but only when that is
+because one approach is better suited to a particular bit of code than the other.
+Here it looks like at least some other functions would benefit similar to the
+changes this patch makes.
+
+So I'd like a more complete patch.
+
+One other thing inline.
+
+Thanks,
+
+Jonathan
+
+
+
+
+> @@ -1480,13 +1466,13 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
+>  	u16 val, mask;
+>  	struct vcnl4000_data *data = iio_priv(indio_dev);
 >  
->  /*
-> @@ -316,10 +316,10 @@ static ssize_t srf08_show_sensitivity_available(struct device *dev,
+> -	mutex_lock(&data->vcnl4000_lock);
+> +	guard(mutex)(&data->vcnl4000_lock);
 >  
->  	for (i = 0; i < data->chip_info->num_sensitivity_avail; i++)
->  		if (data->chip_info->sensitivity_avail[i])
-> -			len += sprintf(buf + len, "%d ",
-> +			len += sysfs_emit_at(buf, len, "%d ",
->  				data->chip_info->sensitivity_avail[i]);
+>  	switch (chan->type) {
+>  	case IIO_LIGHT:
+>  		ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
+>  		if (ret < 0)
+> -			goto out;
+> +			return ret;
 >  
-> -	len += sprintf(buf + len, "\n");
-> +	len += sysfs_emit_at(buf, len, "\n");
+>  		mask = VCNL4040_ALS_CONF_INT_EN;
+>  		if (state)
+> @@ -1495,13 +1481,11 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
+>  			val = (ret & ~mask);
 >  
->  	return len;
->  }
-> @@ -332,11 +332,8 @@ static ssize_t srf08_show_sensitivity(struct device *dev,
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct srf08_data *data = iio_priv(indio_dev);
-> -	int len;
+>  		data->als_int = FIELD_GET(VCNL4040_ALS_CONF_INT_EN, val);
+> -		ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF,
+> -						val);
+> -		break;
+> +		return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, val);
+>  	case IIO_PROXIMITY:
+>  		ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
+>  		if (ret < 0)
+> -			goto out;
+> +			return ret;
 >  
-> -	len = sprintf(buf, "%d\n", data->sensitivity);
+>  		if (dir == IIO_EV_DIR_RISING)
+>  			mask = VCNL4040_PS_IF_AWAY;
+> @@ -1511,17 +1495,10 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
+>  		val = state ? (ret | mask) : (ret & ~mask);
+>  
+>  		data->ps_int = FIELD_GET(VCNL4040_PS_CONF2_PS_INT, val);
+> -		ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
+> -						val);
+> -		break;
+> +		return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, val);
+>  	default:
+> -		break;
+> +		return ret;
+
+		return -EVINAL;
+
+and drop the intialization of ret.
+
+>  	}
 > -
-> -	return len;
-> +	return sysfs_emit(buf, "%d\n", data->sensitivity);
+> -out:
+> -	mutex_unlock(&data->vcnl4000_lock);
+> -
+> -	return ret;
 >  }
 >  
->  static ssize_t srf08_write_sensitivity(struct srf08_data *data,
+>  static irqreturn_t vcnl4040_irq_thread(int irq, void *p)
 
