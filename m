@@ -1,41 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA2862472AA;
-	Tue, 21 Apr 2026 09:51:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92E7537FF60
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 09:58:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776765073; cv=none; b=aK3r8Ktq7GzMIqWp/jIIZ5wO8zlvGjIb8Z4hWWQOMYoOxee60zW+IN/y54lOfQJLdH8bZ03uzlpmU7HxiCHexbtsUDL2hWLX1ubEQvwLhQ9BCu3VqWF5vOUeGZ8N8E+a6wIMyJqtlyVzRLDxodpvVATPFPsheuswE+fd1/SPEYQ=
+	t=1776765521; cv=none; b=VlkSC05vh08IR1/MaAQW/9okNAtht3zH4t34rHxc0f/X5bAPYzbzETj/9RkJf/5sHPxFZyYBxVE4EKxwqqUiahbE4szMw7n3WUWKHIPjqe4x2tvPdKOt9tXI0/FsEm0THJvMnZHBKz6xrQsBYlWil42iieQuOTPCAloYfrDDkr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776765073; c=relaxed/simple;
-	bh=VtkQ1i0kAqBUciLoNuo/gKk3cDHAmSHLUuMH5VOnMOk=;
+	s=arc-20240116; t=1776765521; c=relaxed/simple;
+	bh=kNH6HaNBlswyUL4GdgIcWIlpccFBiNVfzPrBQKf9qw0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NmTOEBfY2p9zm4vhl8QCdFtntU2P4r37rTJqzrCCvbz118R1xiD6o2XJO9hhW8a8h05EIcdbE6SJJmgKMG3VO9FgBFPlU+d1167wGQ20Qa/YbzE3V7IZCDyXnBjPpN2zcJ0B3ejyEiDwMBqwf+5h9l1dIN+zptvAg8kdJbPO87w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kdFrDMJW; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=g/h95Paeinpz5SyngnVh/E6abiwpk9bjTbvuiUtfnpIQcRDCa+zoX962Djz0awD/s9+AtTlts34VW16YkYvyqufVlQiN86wHCdvucMw6KTaCkrA5kYHKv29ne9t/avJjR67MXeW8gyJ1fjpvlXN0vmDLavWcYLbr1qA7z91Sx1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qiaXV+EC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kdFrDMJW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 906D5C2BCB0;
-	Tue, 21 Apr 2026 09:51:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qiaXV+EC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A23C2BCB8;
+	Tue, 21 Apr 2026 09:58:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776765072;
-	bh=VtkQ1i0kAqBUciLoNuo/gKk3cDHAmSHLUuMH5VOnMOk=;
+	s=k20201202; t=1776765521;
+	bh=kNH6HaNBlswyUL4GdgIcWIlpccFBiNVfzPrBQKf9qw0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=kdFrDMJWgkALWv1eAW1AKxT9k7qcx3gNv3FL/C8W0J19NTYR+xBeE73JGwPIGkQiT
-	 xm3VNrMgm+GJXfVUIvX//rdPdocqBzGY2bh1SRQxCkNy7ACC6N9Ec8foChYJW1Fg+c
-	 4gl2hNaH31uT2THEL5GZq5yjPXJRi0g6ikbezFWuyiZCGtMTqnfhV9hW0R64+Deg8P
-	 ILfR82VuoAqQ5kjBBOh6Wf8W7tWjnPC7nSCGyh6ft6NHZp/8mPj9djlnLJab10aLkg
-	 s2FRYWyoO0O70ir1jrp073u7a2wFC+7Yn4ctebQbn98++8wwnDGkSEL0B+EbasgGi4
-	 E5Q5dW2yvqMpA==
-Date: Tue, 21 Apr 2026 10:51:04 +0100
+	b=qiaXV+ECTMlxuO62bmrpm0ynOvvQYuhRDCu890mkWSkZEJZeuDzLIuYSVaAGuy8k5
+	 zts9QSvdDYan+gctU75LSskN0JnaGoXcLGMp6F8koGq9YaDoWigSI6BH2EVQW8zmZR
+	 1YKztFfHh3VdtPkqxtbICsXbTD0ajjrs41raxqiCLvFbkXc69Caf09rBGHHH2dePwC
+	 6nHn275OH22waJ81z8MbDR9CCbHFA1mG8kZMlbDFVaq6zGNWCZ/KsDz4Txt8IYFEkm
+	 Ei//vGA6mMR/+PXFuyYQym0ZVAo5VyxL+N5cyfX/vPpp+mFiy99LqRCmqCBo3HHaJq
+	 qoxRuunhqL4MA==
+Date: Tue, 21 Apr 2026 10:58:34 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sudharshan <sudharsanam346@gmail.com>
-Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, robh@kernel.org
-Subject: Re: [PATCH v2] dt-bindings: iio: adc: adi,ad7816: add binding for
- AD7816/7/8
-Message-ID: <20260421105104.199b2162@jic23-huawei>
-In-Reply-To: <20260421060011.12917-1-sudharsanam346@gmail.com>
-References: <20260421060011.12917-1-sudharsanam346@gmail.com>
+To: Pedro Barletta Gennari <pedro.pbg@usp.br>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: iqs621-als: use lock guards
+Message-ID: <20260421105834.0d6ebd98@jic23-huawei>
+In-Reply-To: <20260421040313.21029-1-pedro.pbg@usp.br>
+References: <20260421040313.21029-1-pedro.pbg@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,121 +45,214 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 21 Apr 2026 11:30:11 +0530
-Sudharshan <sudharsanam346@gmail.com> wrote:
+On Tue, 21 Apr 2026 01:00:11 -0300
+Pedro Barletta Gennari <pedro.pbg@usp.br> wrote:
 
-> Add device tree binding documentation for Analog Devices AD7816,
-> AD7817 and AD7818 10-bit ADC with on-chip temperature sensor.
+> Use guard(mutex)() for handling mutex lock instead of
+> manually locking and unlocking the mutex. This prevents forgotten
+> locks due to early exits and remove the need of gotos.
 > 
-> The devices communicate over SPI and expose:
->   - up to 4 analog input channels (AD7817)
->   - on-chip temperature sensor
->   - a busy GPIO to signal ongoing conversion
-> 
-> Signed-off-by: Sudharshan <sudharsanam346@gmail.com>
+> Signed-off-by: Pedro Barletta Gennari <pedro.pbg@usp.br>
 > ---
+> v2:
+>   - Keep include list ordered
+>   - Remove redundant 'else'
+>   - Remove unnecessary variable 'ret'
+Hi Pedro,
 
-I'm a little confused on why this is v2 as I can't find v1 and there
-is no change log here.
+The changes here enable a few additional code improvements that
+I'd like to see made in the same patch.
 
-There are various things missing. I'm not even sure you could make the chip
-work with the subset represented here. Note bindings should be as complete
-as possible even if the current driver doesn't use everything.
-
-
->  .../bindings/iio/adc/adi,ad7816.yaml          | 64 +++++++++++++++++++
->  1 file changed, 64 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
-> new file mode 100644
-> index 000000000000..6780510aaeb9
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
-> @@ -0,0 +1,64 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/adi,ad7816.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD7816/AD7817/AD7818 temperature sensor and ADC
-> +
-> +maintainers:
-> +  - Michael Hennerich <michael.hennerich@analog.com>
-> +
-> +description: |
-> +  The AD7816/AD7817/AD7818 are 10-bit analog to digital converters
-> +  with an on-chip temperature sensor. They communicate over SPI bus
-> +  and are commonly used in robotics and industrial applications for
-> +  temperature monitoring and analog signal conversion.
-> +
-> +  Specifications on the converters can be found at:
-> +    AD7816:
-> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7816.pdf
-> +    AD7817:
-> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7817.pdf
-> +    AD7818:
-> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7818.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad7816
-> +      - adi,ad7817
-> +      - adi,ad7818
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 1000000
-> +
-> +  busy-gpios:
-
-The data sheet calls out he most likely use of this which is not sensing when
-it is busy but:
-"The signal can be used to interrupt a microcontroller when a conversion
-has finished."  That is how it is used in the driver in staging which reinforces
-that view.  So make this one an interrupt.
-
-However, there are other pins... For instance the !CONVST signal which I think
-is best represented as a gpio.  There also seems to be a rd/!wr pin which you
-don't have in this binding.
-
-Hence this is far from complete and you should go take another look.
-Also included power supplies which should be 'required' in the binding
-if they are needed for the chip to work (at least some always are!) even if
-the driver currently doesn't turn them on and off.
+See below,
 
 Thanks,
 
 Jonathan
 
+> ---
+>  drivers/iio/light/iqs621-als.c | 85 +++++++++++-----------------------
+>  1 file changed, 28 insertions(+), 57 deletions(-)
+> 
+> diff --git a/drivers/iio/light/iqs621-als.c b/drivers/iio/light/iqs621-als.c
+> index b9f230210f07..8d08f28c642d 100644
+> --- a/drivers/iio/light/iqs621-als.c
+> +++ b/drivers/iio/light/iqs621-als.c
+> @@ -5,6 +5,7 @@
+>   * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
+>   */
+>  
+> +#include <linux/cleanup.h>
+>  #include <linux/device.h>
+>  #include <linux/iio/events.h>
+>  #include <linux/iio/iio.h>
+> @@ -107,25 +108,21 @@ static int iqs621_als_notifier(struct notifier_block *notifier,
+>  	indio_dev = iqs621_als->indio_dev;
+>  	timestamp = iio_get_time_ns(indio_dev);
+>  
+> -	mutex_lock(&iqs621_als->lock);
+> +	guard(mutex)(&iqs621_als->lock);
+>  
+>  	if (event_flags & BIT(IQS62X_EVENT_SYS_RESET)) {
+>  		ret = iqs621_als_init(iqs621_als);
+>  		if (ret) {
+>  			dev_err(indio_dev->dev.parent,
+>  				"Failed to re-initialize device: %d\n", ret);
+> -			ret = NOTIFY_BAD;
+> -		} else {
+> -			ret = NOTIFY_OK;
+> +			return NOTIFY_BAD;
+>  		}
+> -
+> -		goto err_mutex;
+> +		return NOTIFY_OK;
+>  	}
+>  
+>  	if (!iqs621_als->light_en && !iqs621_als->range_en &&
+>  	    !iqs621_als->prox_en) {
+ 	if (!iqs621_als->light_en && !iqs621_als->range_en && !iqs621_als->prox_en)
 
-> +    description:
-> +      GPIO connected to the busy pin of the AD7816/7/8.
-> +      The line is active high and indicates the chip is
-> +      performing a conversion.
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        adc@0 {
-> +            compatible = "adi,ad7816";
-> +            reg = <0>;
-> +            spi-max-frequency = <1000000>;
-> +            busy-gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;
-> +        };
-> +    };
+After change noted below, I'd just make this a slightly long single line.
+We have gotten more relaxed on going a little over 80 chars since this
+code was written.
+
+> -		ret = NOTIFY_DONE;
+> -		goto err_mutex;
+> +		return NOTIFY_DONE;
+>  	}
+
+Single statement so { } not needed
+
+>  
+
+>  
+>  static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+> @@ -278,11 +262,11 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+>  	unsigned int val;
+>  	int ret;
+>  
+> -	mutex_lock(&iqs621_als->lock);
+> +	guard(mutex)(&iqs621_als->lock);
+>  
+>  	ret = regmap_read(iqs62x->regmap, iqs62x->dev_desc->als_flags, &val);
+>  	if (ret)
+> -		goto err_mutex;
+> +		return ret;
+>  	iqs621_als->als_flags = val;
+>  
+>  	switch (chan->type) {
+> @@ -293,7 +277,7 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+>  									 0xFF);
+>  		if (!ret)
+>  			iqs621_als->light_en = state;
+> -		break;
+> +		return ret;
+Same as two cases below
+>  
+>  	case IIO_INTENSITY:
+>  		ret = regmap_update_bits(iqs62x->regmap, IQS620_GLBL_EVENT_MASK,
+> @@ -302,12 +286,12 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+>  									 0xFF);
+>  		if (!ret)
+>  			iqs621_als->range_en = state;
+> -		break;
+> +		return ret;
+As below, flip this to
+		if (ret)
+			return ret;
+
+		iqs621_als->range_en = state;
+
+		return 0;
+
+>  
+>  	case IIO_PROXIMITY:
+>  		ret = regmap_read(iqs62x->regmap, IQS622_IR_FLAGS, &val);
+>  		if (ret)
+> -			goto err_mutex;
+> +			return ret;
+>  		iqs621_als->ir_flags = val;
+>  
+>  		ret = regmap_update_bits(iqs62x->regmap, IQS620_GLBL_EVENT_MASK,
+> @@ -315,16 +299,11 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+>  					 state ? 0 : 0xFF);
+>  		if (!ret)
+>  			iqs621_als->prox_en = state;
+
+Please flip this to the more common form. Makes reading the code a little easier
+if errors are handled out of line as early as possible.
+
+		if (ret)
+			return ret;
+
+		iqs621_als->prox_en = state;
+
+		return 0;
+
+> -		break;
+> +		return ret;
+>  
+>  	default:
+> -		ret = -EINVAL;
+> +		return -EINVAL;
+>  	}
+> -
+> -err_mutex:
+> -	mutex_unlock(&iqs621_als->lock);
+> -
+> -	return ret;
+>  }
+
+>  static int iqs621_als_write_event_value(struct iio_dev *indio_dev,
+> @@ -377,7 +351,7 @@ static int iqs621_als_write_event_value(struct iio_dev *indio_dev,
+>  	u8 ir_flags_mask, *thresh_cache;
+>  	int ret = -EINVAL;
+
+Drop this initialization and instead return the specific value on error paths.
+
+>  
+> -	mutex_lock(&iqs621_als->lock);
+> +	guard(mutex)(&iqs621_als->lock);
+>  
+>  	switch (dir) {
+>  	case IIO_EV_DIR_RISING:
+> @@ -426,29 +400,26 @@ static int iqs621_als_write_event_value(struct iio_dev *indio_dev,
+>  			break;
+>  
+>  		default:
+> -			goto err_mutex;
+> +			return ret;
+>  		}
+>  
+>  		thresh_cache = &iqs621_als->thresh_prox;
+>  		break;
+>  
+>  	default:
+> -		goto err_mutex;
+> +		return ret;
+
+return -EINVAL;
+
+>  	}
+>  
+>  	if (thresh_val > 0xFF)
+> -		goto err_mutex;
+> +		return ret;
+
+return -EINVAL;
+
+>  
+>  	ret = regmap_write(iqs62x->regmap, thresh_reg, thresh_val);
+>  	if (ret)
+> -		goto err_mutex;
+> +		return ret;
+>  
+>  	*thresh_cache = thresh_val;
+>  	iqs621_als->ir_flags_mask = ir_flags_mask;
+>  
+> -err_mutex:
+> -	mutex_unlock(&iqs621_als->lock);
+> -
+>  	return ret;
+>  }
+>  
 
