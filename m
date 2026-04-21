@@ -1,63 +1,64 @@
-Received: from mail-dl1-f47.google.com (mail-dl1-f47.google.com [74.125.82.47])
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E935039A80E
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 22:22:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C4DD35A933
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 22:22:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776810161; cv=none; b=ZjaGu6ZaDx3KUB9Qdsw8qom+Z7byUxQwxnvSDlZWLG7MBA1s3tersoHZzgpgweyPfofik8yYrXOuEhtChZtcddZv0QYU5uE3hFb/9NBrWwaNJS4jzQ/+pL4PL3x0McEqlFaBiaDaKhXAtZwQVhz0ygpnkhVBq1A5d0dBLEldLaw=
+	t=1776810166; cv=none; b=ZX+V5xh4T60PrG3ICB/SeQsemUiS4qMEZOG+GaYHYHFNokZw3vIw/1WOHylf0Zp39JCxyfEYX4bzyfkHi/E4mWk77h2rbBmypz2MKmptl4IwnR9UOX5cIKFD9sdIzUJMF+yd7Ghc8TxRHgMtiV6EO0TAC+pRudgr8a88LqhkHq4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776810161; c=relaxed/simple;
-	bh=QZmdT8mQpsW48c+AhT01ZTMmhKAfG+ya7zAI8C3nqXo=;
+	s=arc-20240116; t=1776810166; c=relaxed/simple;
+	bh=eCC6yVhlSGbXxjAtm1zFk0Z/YZCK4kdvM+kp9IYdVvY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VZnMkkAdJ3dFfQH3788XuLI31FcybEIuNHdlxz609gVoZqJMtDx23g82zKAkUmluSS3GUIls8ALOyjcfPPqCF2SxB9DgZybDCi1jPFNGwRQssNqRKyrMTgLJnDar7tmoZtmVyo3ymHYcgwAvNy6inkijlj8+gzMQK+EzImmMx78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=zMw3SDZ7; arc=none smtp.client-ip=74.125.82.47
+	 MIME-Version:Content-Type; b=nT3W+WKumb28IXns1+ofxGCxy3RM06j/0nV1S6FagdgKBctsdA4WOjYPiUmNwju4ILBWvZ4VUhlT3wlgzuF0+0Hdl8xSw+78G/bEfkVx2tFa1FBYB/tgQ0esLZ+7VkVT1AKgXQIvce76uNF25Wyb0FRKHnG4KY2nmlu/bOaFQDk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=lfLpuvIV; arc=none smtp.client-ip=74.125.82.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="zMw3SDZ7"
-Received: by mail-dl1-f47.google.com with SMTP id a92af1059eb24-12c6df0b9bbso2141165c88.1
-        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 15:22:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="lfLpuvIV"
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-12c8ccc7755so3711021c88.0
+        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 15:22:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776810159; x=1777414959; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1776810165; x=1777414965; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3Q3QuGRdKHHhCPwwItXJr3sR9N+64pPFE1filzk7mOo=;
-        b=zMw3SDZ7gh2mFVa5bvorgH2Td+OxbGfdBSCxAnO/dn9J/J2sE9dtkoThz+KiM1Gv29
-         98UELv0DL24lO5tDiSEo/0NPBCf+TKX8O4doEl0xauR1shu1w5Kg33btA4GAfbd5/jEg
-         muaHJeF528V0YigvojscAKWjsfUdz/aEGNZuxFYJekP79JAEgezrMLsrXHq130cGSsd5
-         Bk9awGQNDbDo88E5mqhsZwILiZEzNhAKq1ZJceGxXnps2T4Yte2JRQaaIRfeoC3pKFN9
-         V0Lz8k4ZK7IL/WSMFg3u4beZxsyh6FzElvCfcMDtRW5e3eVyxaIQJODy9E5pPggUqqw3
-         cKgQ==
+        bh=5Tcngu2dDOn3aDHxb6aD/LxS9N/rnEJxjuYL8TyI0Mk=;
+        b=lfLpuvIV9nmZ7qxelCelkVbiBBNtJzTULDbCGLQKM1LcxaaInFhrfT5rRVFIrjZ9lm
+         idr6eTbYrhHiXre40ops6wphmOvyFNcxhwsTn2s6zntvkdye8R8Cal+YByW/hxqslezM
+         x2k3M3FkEh4gB0yf5xI/YFs0wKkumKYn1Aec1+0TPc7hdUnHlHF7gSd/uE5JBXRIRRYU
+         mrFekfqvGtR+x5/F8Lp99R/+f4Xunf/iEp+/o7ut2IGfsLXh1WBfz3783M46P0Alw4Ch
+         /GyOeFYhm1jnC0kD0Mvak+8o1cy9dt2onl9L6BEGT2llqWSdGg6MoojIUtIq2WfOECdq
+         p35A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776810159; x=1777414959;
+        d=1e100.net; s=20251104; t=1776810165; x=1777414965;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=3Q3QuGRdKHHhCPwwItXJr3sR9N+64pPFE1filzk7mOo=;
-        b=EeCNGeGLadhISQf4U6scbF4FWDEUPtDoNcwK+fBPEMfka3ZDdz81mli/B/TaXlhEYt
-         SBJFX9zX7HdrxebL+nE18VPlnvRb6k7XBqpP5fykb3Fa9OJAilqDHMrPqoh56GhDROLi
-         XLvINMUJW+pUuKljDcfU9zFcRc2zlys54xqD2v86m44UvAGsLms1C8qxKrsNaJGE8QfJ
-         9kiaWWOoZfL6hx3qHgTrHZluSIYZ83tvTp2ZUrjnVpLoVQQJxjwMqI50ZeSul7/NzoNK
-         TtFCPUHhSPkI+JOMBn7CJcZFXSb0NQQx8dWhAF95tP5lWAxFjeKkWPDEFPUWjvBxAzkr
-         +0hQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/umlYc75M31EUshHj1aFzHBb/ONizK1WWs2wV2tt0SGunxVUcs2SaLwq/iJIqambU/Tg0Hy/+M1gw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxacAfKvYCflGbYRDFVZ89g8kce60Ob0DRFcpQlM7aZO5N6KArV
-	mRPu/zNVUmz6sZkbrRmozDMcHEirkf+DQo3QlR4DDEMPhuBPW2pNrGbJzug+fVsMLCI=
-X-Gm-Gg: AeBDiesB1XtZkYuKboUaNUE+YuytKsao9S5T87MKyUlCDtBykBQt8Z55KZF8U1Cpse1
-	kwo3A8LQODww6LFTGF2CTLLWKYZiAE3UWiCPt4lnkzORitTi8Ov9hKWozg9tkAhk7KclKx++hrV
-	A6O6CTssZoJJvndcwi46V5W4ZwqsmwCF5W/PcS9zD1MPk6QcnB0568TohX01lQx3GyZ+gS6vbwl
-	BWtAimVcuErunBy5lAyYn0F7KJ/VszkTnIY9jHugBSiDJzr+fZb2JHfxtXdj2LpmFqhIUi7EZ3M
-	2qkTF12fq1KgA6p4L6yjkRGchCmRBd6Qw7oWD7Xw53N76PKzHwiICMTY3D7J3SD9K93qYq0fbHG
-	LU2cDFAEqTjal1BhD7G2xX1dThO0SvVx/mGQ6zk0DWVTLqkyHv6nMjVQayiMnyz1R9uM8weZNwJ
-	xcak/5+trvRkSzrDwD9WO7lpUUwtrZlZdQi2r3RA==
-X-Received: by 2002:a05:7022:6289:b0:11b:b179:6e17 with SMTP id a92af1059eb24-12c73fb26famr11626547c88.34.1776810158871;
-        Tue, 21 Apr 2026 15:22:38 -0700 (PDT)
+        bh=5Tcngu2dDOn3aDHxb6aD/LxS9N/rnEJxjuYL8TyI0Mk=;
+        b=lh62dcJRJ2SCrWWF9OMg7Vrmp/3aK4hpHo9P5ks5ltEf1wfuaxtv0x5w6Cqd1b2c5b
+         rBAzUWY3Cgnl6MUbYoABNBQIDj3dILYsyV1kSFfCTPWN6WZJw8km/543xklFqRIP/Sfu
+         qY7uMA4GkaPXf4H13NlIdhHZLirJK1HY76gagGGqjO1EbqxtsE0tGlqPzPHdj1YGcykq
+         ttithEEOAuYn6qPxMSinur3TaQ8d1BHD5CqlYr0km27a4MVinxQ5x7eQ5YHRSEAYQ+oh
+         CuH44NhfxUr8f/HzEp/G+BBkzxKruLSgxxCjEuBJXPE5ltIVhOFIeRmnlydGgJc2TccW
+         gN+A==
+X-Forwarded-Encrypted: i=1; AFNElJ/by6wuP45VtByQSNHVT2ntOqYDpgXuVoyOhvpEnk9zmkXgagtVxYN1z9c7OyWtjhVPRPgKhTlcCfI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyDnX658cjU5ghnC7HcX3MInjQXqrce3Zq8jOBHujmEtD8qYoLl
+	Ml3tzaT+pXLElGp9LmWfAQBtpFuW2DwWQnZlI6qfkuo81mwHqCDTw4u8Eua1dP0qd2PD9jC+88P
+	bZjDcV0wPZQ==
+X-Gm-Gg: AeBDietU/mx8r/rCN4HTOpzACMjLjS1sgs5/9QI3tcbiGErpIMg8Y7dSAFjUw1sJoiO
+	kw0d2tZwCFQLU7XXpt/WrJZiTGzHK9y/QlU2t34kcJTs9jIx7N16tJtceq/o3cY91kXoD+zPZ35
+	aFP2nWn9F+PNOIJC9w4IEyiH9kJwDaILVgqvJaZexfMgcFcmn85eo/uwg+Bd7nwmgoqx6oaIrtc
+	0jsbuuKl0YWjmKDmISAyOFP1IN6G7FnY5R8bJaGFKCdnNjm5osrGh/xKZ1FjPmnMxSVWImKca0v
+	n8HFF0ykHRZvAGw/zrioA0Mts86oVR50oWktapyRR90bDYhQ/p9UMB4z2aDc8GFE9LM9A7+t6v3
+	gjegVnFEYq3lzXC4inRIzdmNVs+FqS2CG6qzmtKuRNL/FJU/PZxHsb5ZHyjjTLkmXi55SMkLBIb
+	teH/G4+u1QUu6fG9FpDKPZ0PAG4r7Uzp+FruqDtQ==
+X-Received: by 2002:a05:7022:3d87:b0:124:9fd8:4ba9 with SMTP id a92af1059eb24-12c73f6cd01mr10951388c88.12.1776810164706;
+        Tue, 21 Apr 2026 15:22:44 -0700 (PDT)
 Received: from natalia-pc ([187.116.73.68])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c831d5b29sm20129785c88.8.2026.04.21.15.22.34
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c831d5b29sm20129785c88.8.2026.04.21.15.22.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2026 15:22:38 -0700 (PDT)
+        Tue, 21 Apr 2026 15:22:44 -0700 (PDT)
 From: =?UTF-8?q?Nat=C3=A1lia=20Salvino=20Andr=C3=A9?= <natalia.andre@ime.usp.br>
 To: andy@kernel.org,
 	bentiss@kernel.org,
@@ -70,9 +71,9 @@ Cc: =?UTF-8?q?Nat=C3=A1lia=20Salvino=20Andr=C3=A9?= <natalia.andre@ime.usp.br>,
 	Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>,
 	linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org
-Subject: [PATCH v2 2/7] iio: accel: HID: Replace method accel_3d_adjust_channel_bit_mask()
-Date: Tue, 21 Apr 2026 19:20:34 -0300
-Message-ID: <20260421222210.16016-3-natalia.andre@ime.usp.br>
+Subject: [PATCH v2 3/7] iio: gyro: HID: Replace method gyro_3d_adjust_channel_bit_mask()
+Date: Tue, 21 Apr 2026 19:20:35 -0300
+Message-ID: <20260421222210.16016-4-natalia.andre@ime.usp.br>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260421222210.16016-1-natalia.andre@ime.usp.br>
 References: <20260421222210.16016-1-natalia.andre@ime.usp.br>
@@ -85,26 +86,26 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Replace method accel_3d_adjust_channel_bit_mask()
+Replace method gyro_3d_adjust_channel_bit_mask()
 with helper method hid_sensor_adjust_channel_bit_mask().
 
 Signed-off-by: Natália Salvino André <natalia.andre@ime.usp.br>
 Co-developed-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
 Signed-off-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c | 17 +++--------------
+ drivers/iio/gyro/hid-sensor-gyro-3d.c | 17 +++--------------
  1 file changed, 3 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index 2ff591b3458f..ac4ab69f80b9 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -119,17 +119,6 @@ static const struct iio_chan_spec gravity_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIMESTAMP),
+diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+index c340cc899a7c..e8d8ad884fcb 100644
+--- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
++++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+@@ -82,17 +82,6 @@ static const struct iio_chan_spec gyro_3d_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIMESTAMP)
  };
  
 -/* Adjust channel real bits based on report descriptor */
--static void accel_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
+-static void gyro_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
 -						int channel, int size)
 -{
 -	channels[channel].scan_type.sign = 's';
@@ -115,21 +116,21 @@ index 2ff591b3458f..ac4ab69f80b9 100644
 -}
 -
  /* Channel read_raw handler */
- static int accel_3d_read_raw(struct iio_dev *indio_dev,
+ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
  			      struct iio_chan_spec const *chan,
-@@ -307,9 +296,9 @@ static int accel_3d_parse_report(struct platform_device *pdev,
- 				&st->accel[CHANNEL_SCAN_INDEX_X + i]);
+@@ -258,9 +247,9 @@ static int gyro_3d_parse_report(struct platform_device *pdev,
+ 				&st->gyro[CHANNEL_SCAN_INDEX_X + i]);
  		if (ret < 0)
  			break;
--		accel_3d_adjust_channel_bit_mask(channels,
+-		gyro_3d_adjust_channel_bit_mask(channels,
 -				CHANNEL_SCAN_INDEX_X + i,
--				st->accel[CHANNEL_SCAN_INDEX_X + i].size);
+-				st->gyro[CHANNEL_SCAN_INDEX_X + i].size);
 +		hid_sensor_adjust_channel_bit_mask(channels,
 +			CHANNEL_SCAN_INDEX_X + i,
-+			st->accel[CHANNEL_SCAN_INDEX_X + i].size);
++			st->gyro[CHANNEL_SCAN_INDEX_X + i].size);
  	}
- 	dev_dbg(&pdev->dev, "accel_3d %x:%x, %x:%x, %x:%x\n",
- 			st->accel[0].index,
+ 	dev_dbg(&pdev->dev, "gyro_3d %x:%x, %x:%x, %x:%x\n",
+ 			st->gyro[0].index,
 -- 
 2.51.0
 
