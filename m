@@ -1,46 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B32227BF93;
-	Tue, 21 Apr 2026 15:01:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 876BB2C187;
+	Tue, 21 Apr 2026 15:17:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776783696; cv=none; b=hgQ3bnQIfe7K3XIm4W4d5FGGYwADkRNc5uDSl/sFiF/bwT7LtJeph9U0rIVMHHk5pp2QY7irfO5EXsTa66HaADcy1ZQrOejpU9YR5BUR4UFHqz1lcDfLhLIoA4co0+/OF5URkI4jdujvKYwxYLvkW3xYC2qgQl9kAVrMKbxkBIU=
+	t=1776784650; cv=none; b=DOJOMwP7GMOIV6bkOHhgjryftrM0KVv3gvfmEGmq/5VsR14oPPs6ZUlQ8bVSv1Xrq5rOfhMWEgCnkNdphbXrNS3amB0+jRaAzDz9+pOOuNG0sE4TTDI5eWFZiJZn+XBKypeLWhAc7ChTGK7z1xeKAkj6KrK+PhLZ2YfUQSfBTC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776783696; c=relaxed/simple;
-	bh=VQeRrmctsGVyMCLDdbIphZuXqI75VCWfyMmoEikg/Ks=;
+	s=arc-20240116; t=1776784650; c=relaxed/simple;
+	bh=d/1JZ54gtzvNdNgYBO7YYoNv00Q60YBfszmfvI/YAjs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XdEG7rQSRCNzC3fby84e4WqBZyv4ewvdKImSPHABd20An6yKCPBkzz34sawojIk9KrHY4fROFii6SarHmFx1bCW6ABSiXZ0x5t48w3jUGT3Da4IaLLv2hGMTncsEYxz9CK1bsOjTKO7ucZnx+plMRuat7rGXkJyUCCYRtDuo2bc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U5oo9r2V; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=lk2gTBibXi0/v9cdataiGY+7BVzaHv+N0Ogs/KsJez5hjEXS/6M8S8DGRWmBUZ7Z97LtU2xI916+wiW+DP2C76VNQ6vESaIXqqOfjSrF+Nqf4NvImxGNgOGO/rcMVVNaUeqgJdaCzs2JriUB39NW7oa1kG6KTdBrT54tOJ0zy7s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jPKp5/7S; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U5oo9r2V"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA2DC2BCB0;
-	Tue, 21 Apr 2026 15:01:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jPKp5/7S"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA786C2BCB0;
+	Tue, 21 Apr 2026 15:17:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776783696;
-	bh=VQeRrmctsGVyMCLDdbIphZuXqI75VCWfyMmoEikg/Ks=;
+	s=k20201202; t=1776784650;
+	bh=d/1JZ54gtzvNdNgYBO7YYoNv00Q60YBfszmfvI/YAjs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=U5oo9r2VyYRhWGZYLUNQpJExG8UxFqop53AKrkILkrK3o0tbZDMzVG55Dbv4HN3vy
-	 22jr3MeXjvZJ3zPjHfsAcgvvXCBxShiM4svCt0mWnVBKKf9oeQ8VwYd4Jeqe1mK1Sd
-	 iLt+Nf0F+E5b+LXY2SQBj5H6UjXTmyYsQ4wEZWYm+PZ3AINOzU9f6EhxAU9pXta1/X
-	 exfUe4lOCDlB9Mnxs6+VzG0A7woDdarZMUvDFdZARjhZgyPpTm5lmzVxFsbfNWnwi+
-	 ZnjW0OIvq35RqCq11aMPe+KSpyErOY3/phIYtdt8zQt6Gb4jGqNrW6I+AAUqGKyWZn
-	 WBFG5W4ljwNLg==
-Date: Tue, 21 Apr 2026 16:01:26 +0100
+	b=jPKp5/7S/VBfgolrkNzr3FfVONKSO3asPcoyJLtWmKpkO7IZvJKESONmxWe8Nc5Gi
+	 IkdJpKy++sNPmMS5gfn/Fu0pCUCyzXQq75HTou6mp5yKFFcXoCtiEiPcn/XvsFSuo2
+	 e/Ry4U2xaa/XomID2nvec1WTYRfaeKgx9GbN/UuOouzXREaYBHaPxFdK4ahv9BMNv6
+	 NpboiIUxLHlJxepcLVK1HabznAZTB64CdTGRlHonB2lGo66AfBliEUFHKnKMvN/nwe
+	 92+/ektnkuegdlRK5CZnW5VDt3uQmfjt3FfDc0UHRs3jFk/t4qFLx3Z2oUkFd8B8/O
+	 VxBlHBNOVherw==
+Date: Tue, 21 Apr 2026 16:17:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: <Ariana.Lazar@microchip.com>
-Cc: <dlechner@baylibre.com>, <nuno.sa@analog.com>,
- <Conor.Dooley@microchip.com>, <Jonathan.Cameron@huawei.com>,
- <robh@kernel.org>, <linux-iio@vger.kernel.org>, <andy@kernel.org>,
- <krzk+dt@kernel.org>, <linux-kernel@vger.kernel.org>,
- <conor+dt@kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: iio: dac: mcp47feb02: Fix I2C address in
- example
-Message-ID: <20260421160126.03a410f5@jic23-huawei>
-In-Reply-To: <3b12b49f8dfa8bbdd4d19eed8718a2f10a294ecf.camel@microchip.com>
-References: <20260420-mcp47feb02-fix6-v1-1-ae1808fea11d@microchip.com>
-	<20260420132248.466cdc84@jic23-huawei>
-	<3b12b49f8dfa8bbdd4d19eed8718a2f10a294ecf.camel@microchip.com>
+To: Piyush Patle <piyushpatle228@gmail.com>
+Cc: ak@it-klinger.de, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: adc: hx711: add support for HX710B
+Message-ID: <20260421161720.43dd97a3@jic23-huawei>
+In-Reply-To: <20260419174654.683692-3-piyushpatle228@gmail.com>
+References: <20260419174654.683692-1-piyushpatle228@gmail.com>
+	<20260419174654.683692-3-piyushpatle228@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,94 +45,125 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 21 Apr 2026 14:09:48 +0000
-<Ariana.Lazar@microchip.com> wrote:
+On Sun, 19 Apr 2026 23:16:40 +0530
+Piyush Patle <piyushpatle228@gmail.com> wrote:
 
-> Hello Jonathan,
->=20
-> > > @@ -280,23 +280,23 @@ examples:
-> > >=20
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #address-cells =3D <=
-1>;
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #size-cells =3D <0>;
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dac@0 {
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 compatible =
-=3D "microchip,mcp47feb02";
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 reg =3D <0>;
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vdd-supply =
-=3D <&vdac_vdd>;
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vref-supply =
-=3D <&vref_reg>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dac@60 {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 c=
-ompatible =3D "microchip,mcp47feb02"; =20
-> > Why is this indent changing?
-> >  =20
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r=
-eg =3D <0x60>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 v=
-dd-supply =3D <&vdac_vdd>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 v=
-ref-supply =3D <&vref_reg>;
-> > >=20
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #address-cell=
-s =3D <1>;
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #size-cells =
-=3D <0>;
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 channel@0 {
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r=
-eg =3D <0>;
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 l=
-abel =3D "Adjustable_voltage_ch0";
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #=
-address-cells =3D <1>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #=
-size-cells =3D <0>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 c=
-hannel@0 {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 reg =3D <0>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 label =3D "Adjustable_voltage_ch0";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
-> > >=20
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 channel@1 {
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r=
-eg =3D <0x1>;
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 l=
-abel =3D "Adjustable_voltage_ch1";
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 c=
-hannel@1 {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 reg =3D <0x1>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 label =3D "Adjustable_voltage_ch1";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
-> > > =C2=A0=C2=A0=C2=A0=C2=A0 };
-> > > =C2=A0... =20
-> >  =20
->=20
-> Thank you for the review.
->=20
->    1. I updated the example indentation in order to use consistent 4-
->       space indentation, instead of mixing with 2-space as in the
->       previous version.
->=20
-If that is needed, two patches.  One that makes the address fix, then
-a follow up to fix the indentation with no functional changes.
+> The HX711 uses trailing SCK pulses after each 24-bit conversion to
+> select the channel and gain for the next measurement: 1 pulse gives
+> channel A at gain 128, 2 pulses give channel B at gain 32, and 3 pulses
+> give channel A at gain 64.
+> 
+> The HX710B works differently: gain is fixed at 128 and the trailing
+> pulses select only the channel. One trailing pulse selects the
+> differential input (channel 0, 10 SPS) and two trailing pulses select
+> the DVDD-AVDD supply monitor (channel 1, 40 SPS).
+> 
+> Refactor the driver around a per-chip hx711_chip_info structure so both
+> variants can share the same core. Each chip provides its own
+> iio_chan_spec array and iio_info pointer. The HX710B stores per-channel
+> trailing pulse counts in chan->address (1 for channel 0, 2 for
+> channel 1) instead of a separate array. A bool fixed_gain flag and
+> fixed_gain_val field in hx711_chip_info distinguish the fixed-gain path
+> from the HX711's user-selectable gain path without conflating unrelated
+> properties. The HX710B differential input channel is described with
+> .differential=1 and .channel2=1 as required by the IIO ABI.
+> 
+> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
 
-thanks,
+I'm slowly incorporating looking at the feedback that the sashiko LLM based
+code review is providing.  In amongst some stuff I'm fairly sure was
+garbage it did raise some stuff that needs a closer look. See inline...
 
-Jonathan
+> @@ -246,27 +275,50 @@ static int hx711_set_gain_for_channel(struct hx711_data *hx711_data, int chan)
+>  	return 0;
+>  }
+>  
+> -static int hx711_reset_read(struct hx711_data *hx711_data, int chan)
+> +/* Select HX710B channel for the next conversion. */
+> +static int hx710b_set_channel(struct hx711_data *hx711_data,
+> +			      const struct iio_chan_spec *chan)
+>  {
+>  	int ret;
+> -	int val;
+>  
+> -	/*
+> -	 * hx711_reset() must be called from here
+> -	 * because it could be calling hx711_read() by itself
+> -	 */
+> +	if (hx711_data->channel_set == chan->channel)
+> +		return 0;
+> +
+> +	hx711_data->channel_set = chan->channel;
+Sashiko raises what sound like a plausible issue here.  If the read
+that follows fails is the current channel updated?  I.e. should we
+set this or not?
+https://sashiko.dev/#/patchset/20260419174654.683692-1-piyushpatle228%40gmail.com
+(be careful with these AI reviews. Some of the other things it says are - I think
+not true!)
 
-> Best regards,
-> Ariana
->=20
+> +
+> +	ret = hx711_read(hx711_data, chan->address);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return hx711_wait_for_ready(hx711_data);
+> +}
 
+>  static const struct iio_chan_spec hx711_chan_spec[] = {
+>  	{
+>  		.type = IIO_VOLTAGE,
+> @@ -455,10 +516,69 @@ static const struct iio_chan_spec hx711_chan_spec[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(2),
+>  };
+>  
+> +/*
+> + * HX710B channels.
+> + * Channel 0: differential input (IN+ vs IN-), 10 SPS, 1 trailing pulse.
+> + * Channel 1: DVDD-AVDD supply monitor,         40 SPS, 2 trailing pulses.
+This triggered a sashiko question...
+https://sashiko.dev/#/patchset/20260419174654.683692-1-piyushpatle228%40gmail.com
+
+Specifically if the fixed scale is correct for the supply monitor or not.
+It seems unlikely we'd want a large gain on a supply monitor.
+
+
+> + * .address holds the trailing pulse count used by hx710b_set_channel().
+> + */
+> +static const struct iio_chan_spec hx710b_chan_spec[] = {
+> +	{
+> +		.type = IIO_VOLTAGE,
+> +		.differential = 1,
+> +		.channel = 0,
+> +		.channel2 = 1,
+> +		.indexed = 1,
+> +		.address = 1,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 24,
+> +			.storagebits = 32,
+> +			.endianness = IIO_CPU,
+> +		},
+> +	},
+> +	{
+> +		.type = IIO_VOLTAGE,
+> +		.channel = 1,
+> +		.indexed = 1,
+> +		.address = 2,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 1,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 24,
+> +			.storagebits = 32,
+> +			.endianness = IIO_CPU,
+> +		},
+> +	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(2),
+> +};
