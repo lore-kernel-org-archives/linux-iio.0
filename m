@@ -1,63 +1,63 @@
-Received: from mail-dl1-f51.google.com (mail-dl1-f51.google.com [74.125.82.51])
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4123A453D
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 22:22:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 516AF3A453D
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 22:23:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776810179; cv=none; b=Q2geBYXS631XOxkzusCrM245m/gVaNZQ2gdcL9pX6Ojr5vE0wgIoVDHbqd1CojdlZRE7j2d5lPM/y2131FuN58kcDTgaHAEFnIaC+wENE4mxhqqeQ+d60fw1/6OVZw8ebKEtQwjrTEUykO4kP5bg+lvxBdn2SCWwFY7TKQrCAjY=
+	t=1776810184; cv=none; b=FJ/qgW9w5R/BBK68tg0vc4rYX+GmiAR9DVhi/bpc+25B/dpqtbtZBvT3knhnnywtJPNGqcB7ONjU9QKdALa4dbRLIQgdsOtK1lEwWIXP1xev/rcuZ3IBHAXDl+a2LK32YcdoOwJJyTX4yQR7tJZ6oxLPhpvp1SOLV8aHzAesemY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776810179; c=relaxed/simple;
-	bh=zoDXe/amBCbF67yguHQAyDyiMJmjso9zdJd07aRn2Zg=;
+	s=arc-20240116; t=1776810184; c=relaxed/simple;
+	bh=JBGxskPAlxesezIsmdBy4JBF6ffl9IJu9YrIIh4DFo4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ClBAMjiafAWWJdSyjO0Qw8t5F499nl3KXALZ5wulQRgINX8yGGGCzCTCD5bZBix9wF1p1LNsNpssVvxMmi3PsO/4MwXpktHFrG9rsKKzN6qnf+0APHOF9r/RD/zvaLlweuT9phR3cVQDbpyVk9nAYwbFYkkTyP92alqleXoi4B0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=t2z9n6hb; arc=none smtp.client-ip=74.125.82.51
+	 MIME-Version:Content-Type; b=SLoobXWUU9Z9jy5IDF2doRUVZZvwBZzX9s4KNctgEuoVQZh3fxqIGmKUNbViUr57ws0DwiMlX7M5zNeXdRLkqKM88cGOLVd3QQaVNCuXnHDr09OjealvrNbccohNvZfvaHgE7Zz8tOZUXN+qHXLs1f/OF2k4VjEWN/fQ5W/tI1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=h2l60K/G; arc=none smtp.client-ip=74.125.82.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="t2z9n6hb"
-Received: by mail-dl1-f51.google.com with SMTP id a92af1059eb24-12c45281a06so6436291c88.1
-        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 15:22:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="h2l60K/G"
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-12c1a170a50so5909463c88.0
+        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 15:23:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776810176; x=1777414976; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1776810182; x=1777414982; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=w9lbi8e6VwOVyX64bxJDCkDYKiTEVA9LxEP2x8IkxrA=;
-        b=t2z9n6hbeeXf5vMWRaIwX1nFLJzpgbwGmS1/TxofiOGJGWKQCXM9NdCn4lGd6m2AWS
-         6mURXrDZuDJmxXlEXLq6VC+XTT59ILelIjMQODhkfAUll23UETzUYcc7wRAEg4hy4SeO
-         ZjbQwX+0R73oh7glIogh1c9jaOMKUR1MZpgUwb+902JwDV/N9+Q/Ok5um+HbxSAWv714
-         g7bQVv3INANKMPrUCftSxfzq0cwo0eqhmF3fzRrCYbaGlDazoUt+LRYtctybIpuzLZHz
-         ocoJF4SbiBwI1vGtedQTt2dbXWXKC63vjFDaofPGSDLpqBRTcabgmeMW16biMzUS3e0w
-         Z/5w==
+        bh=SMgcC6xmHzm251G4tD4kusrT9SwebP5b/OJN5LCz8G8=;
+        b=h2l60K/GbUaXeNw/45Vh04iBV8WL5o/JF6gAsoT6dgFvkgp83Xu4u/r/ns9uzTr3In
+         jB7LGj63phD1ztbl1U0Jjs7bO9a3qNnO+pkxYvi51HHoEJhpLj2BIVmh76J/w9vhewl5
+         bwGQssCt34aiS2K+XvHKNqgV/Zlk8XRjaHSdXj0oWlh0g4NJlchDuosTjzuD058VtKsu
+         IjwjWy2GqOLHItnBTWaQYgJ4rACJidUeVyKdMe1TvOgTDjPTGCtz122dtiYPTUg0qEJ0
+         8NRQ3L2OHvdaLGPEggRv9VxQiUhiTNGIJLLG15nRIFY+4K+e71mgBzo7RCx0CMOJqwxd
+         SbjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776810176; x=1777414976;
+        d=1e100.net; s=20251104; t=1776810182; x=1777414982;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=w9lbi8e6VwOVyX64bxJDCkDYKiTEVA9LxEP2x8IkxrA=;
-        b=InZZS8HLpPpv5SgClF8heH9zSY9Oiw9ld13kioxQ4OUbhsn1dldPc4N/buNHF2woZa
-         d/WhswU0NTuUD9DNw7QU3EY6DLVAhliYZphhYmWbdTvBlx9/+4RrR3ipijXKSFaz7Ac4
-         xG2hUlgDwyJksOTl9uY8COr91WLXHhUtc7U6q9lGM0KGlMU39twbpHTnxpNyRD7MUT5b
-         uYNjmTnS77dY46//kfIT09aAp9wpw053y7zgXRiwVtbY/R3KIOKIAa9wKCmEdi5PZhps
-         Xzpcfw8c+J9jBRJRFzkreAAIt5hnGadoSNfoS1GswzSGM+RB2grbVMkG6LBGFuVMq1NT
-         XvBw==
-X-Forwarded-Encrypted: i=1; AFNElJ9aBsne/vEYemPplXrWl2aNguW7wDqNRkzB8eNJmQr2pEs0ee+F1CCZhVusQpVy7Ennfg3jxHaNhRg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyIIprGIsD1La3wGjctY4rrYYwgHk6o+dtkjgpsK8zrl8aljc4I
-	pL1jfDbyjvR3iNhcIlIGOvs0MPkNIpf+QPD+Alb+aS0uMOGdjF7BsboQdO5pNtemCiw=
-X-Gm-Gg: AeBDiesJ8m0iFGTc7EsACcfjVTvuQYDOeN5IqhQNTedNJqZ2IhIKFZJnxmGU6JX1vKN
-	TeZ2czo8q7474lfvebV8UI4mAJLdn4a6HmFgPvObArS5yQNYN8LquR/gIWGTXSZYuQofAN5zk+n
-	/kFeeAgdc2gCp8iTBoBqb+MFbN/j3KKwk+KIJU565jOWpOIToWDJToJj3BBSV5JtuBc+UdRtJXb
-	MW3rCoJVaUyzH6hUuuRcW18lEcQUka9ig0XXMfRx2HJKTVYs/hqimOtmEBKnUwNBuGrhkUxmzYY
-	XdUsWTcC9cQXTvNJ+sgOaho36ns9meqJOR2zuHDmsF5pxdWAAeZ9B5dimq2fryKdKWzNn7H/WmZ
-	lJ8jrJMu8QUOJ0YmaGpKkhryZwM2kY/l/ApX2BWc7r6ENrx8/fu1l2Tlp3v5zP6bW2mFlry6c2X
-	EOCmCq8pAfPxQRIggvKrvBK7w5HmCQZ8cZkHcDmg==
-X-Received: by 2002:a05:7022:1282:b0:11b:e21e:5653 with SMTP id a92af1059eb24-12c73f995b5mr9246680c88.19.1776810176494;
-        Tue, 21 Apr 2026 15:22:56 -0700 (PDT)
+        bh=SMgcC6xmHzm251G4tD4kusrT9SwebP5b/OJN5LCz8G8=;
+        b=jXez3JsHLXWgCTYCt39VBlL2kL0e4CQj58BVUd+VOuQd84AAVgeN603OrN9uMX/a1y
+         +Hc/l2DxvOg2oHI4Eso/1Iprh4fckbOB/6ZNKbolRxDlDHbvliZ/ndwWQ5tBb4vuE4qr
+         Oe1QYhhBUF9IskRt92ojNnaKU7ZMjs/PHgApSCCMsXTr5lKhBH+RCEbJftVdhzhOWtJF
+         4A0Y1YrxpkzJssfjZI+oy4HPM14P4VINRioTRcyjwmTiPDDDPHnQrwLuPHMIepfVkQZT
+         crBSJi9KJ3dMwz84MoX7jd3BwVmB5sdwUY05/FfSJZB+nNKuGTdq1AjVKwQDy9vBYhlO
+         02Eg==
+X-Forwarded-Encrypted: i=1; AFNElJ/74IPmkNOAHQvr/xr2Mm3xsBlvD2Fyj/OxmMDtVZSdSbxKmdn4/oVg/O7+2n01fcjcmEhxCI0hesc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YydEq194qlBGMaFo6Uczrb2P3NT2U3rMhMpGGc9KeNyOsB2cnBR
+	dApKkzCnkFhnXrVp8JHGlGVbiKP8tFT5ngSzRXYTknpVDNfbj2vULFPz9gPqof+ewbI=
+X-Gm-Gg: AeBDietSP1r2pqYSG3yR/p3QimaxiPngXCBVVV0WXCZBT7n75M7t2EAUb4IezXsPOZ3
+	b6p76PzhjIJxWNAxbv8IPbL+GZ1azN9RoLI8LaO/zD3p0M8JPYmK6pbMgWY/ERpIoVexXlc9dqx
+	Dtr6QfTp+MgMBZiusWrNNdirHHWFNfFd0bM9s2TBD6T2UHdD3k4CFtkX1nGIPU+YIM/S1UBHQ17
+	VYIYrJtB9l56xUsxjza3cw+IvHCZ+OUNUWmypXVrCNID1hHm+wbjfOTlIEtkd5+/Q136Y4ph66M
+	qQ7+4rIRbAcqTi9rlOz3amzsQ1zMwtbkcF5ilBjElqVNKUg/7d95pUaXXbDzXrtHaenQkHexPMJ
+	YxxR16Xo4shsaIloB2cvNg8hAXeBhsGdRIxlovLMJiXUoj8wQp1ugDDEYZ2y+7eqBpwLBLA4y3Y
+	/GTlincIf2EINfntmR3o9TftRCxx8Y0JZoPKJP0puICRPzQVMY
+X-Received: by 2002:a05:7022:1282:b0:122:33e:6d41 with SMTP id a92af1059eb24-12c73f975e0mr8682377c88.23.1776810182431;
+        Tue, 21 Apr 2026 15:23:02 -0700 (PDT)
 Received: from natalia-pc ([187.116.73.68])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c831d5b29sm20129785c88.8.2026.04.21.15.22.52
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c831d5b29sm20129785c88.8.2026.04.21.15.22.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2026 15:22:56 -0700 (PDT)
+        Tue, 21 Apr 2026 15:23:02 -0700 (PDT)
 From: =?UTF-8?q?Nat=C3=A1lia=20Salvino=20Andr=C3=A9?= <natalia.andre@ime.usp.br>
 To: andy@kernel.org,
 	bentiss@kernel.org,
@@ -70,9 +70,9 @@ Cc: =?UTF-8?q?Nat=C3=A1lia=20Salvino=20Andr=C3=A9?= <natalia.andre@ime.usp.br>,
 	Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>,
 	linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org
-Subject: [PATCH v2 5/7] iio: light: HID: Replace method prox_adjust_channel_bit_mask()
-Date: Tue, 21 Apr 2026 19:20:37 -0300
-Message-ID: <20260421222210.16016-6-natalia.andre@ime.usp.br>
+Subject: [PATCH v2 6/7] iio: magnetometer: HID: Replace method magn_3d_adjust_channel_bit_mask()
+Date: Tue, 21 Apr 2026 19:20:38 -0300
+Message-ID: <20260421222210.16016-7-natalia.andre@ime.usp.br>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260421222210.16016-1-natalia.andre@ime.usp.br>
 References: <20260421222210.16016-1-natalia.andre@ime.usp.br>
@@ -85,27 +85,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Replace method prox_adjust_channel_bit_mask()
+Replace method magn_3d_adjust_channel_bit_mask()
 with helper method hid_sensor_adjust_channel_bit_mask().
 
 Signed-off-by: Natália Salvino André <natalia.andre@ime.usp.br>
 Co-developed-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
 Signed-off-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
 ---
- drivers/iio/light/hid-sensor-prox.c | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index efa904a70d0e..edf76af76dfd 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -67,17 +67,6 @@ static const struct iio_chan_spec prox_channels[] = {
- 	PROX_CHANNEL(false, 0),
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index c673f9323e47..f1939da22e0d 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -132,17 +132,6 @@ static const struct iio_chan_spec magn_3d_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(7)
  };
  
 -/* Adjust channel real bits based on report descriptor */
--static void prox_adjust_channel_bit_mask(struct iio_chan_spec *channels,
--					int channel, int size)
+-static void magn_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
+-						int channel, int size)
 -{
 -	channels[channel].scan_type.sign = 's';
 -	/* Real storage bits will change based on the report desc. */
@@ -115,19 +115,21 @@ index efa904a70d0e..edf76af76dfd 100644
 -}
 -
  /* Channel read_raw handler */
- static int prox_read_raw(struct iio_dev *indio_dev,
+ static int magn_3d_read_raw(struct iio_dev *indio_dev,
  			      struct iio_chan_spec const *chan,
-@@ -250,8 +239,8 @@ static int prox_parse_report(struct platform_device *pdev,
- 		st->scan_mask[0] |= BIT(index);
- 		channels[index] = prox_channels[i];
- 		channels[index].scan_index = index;
--		prox_adjust_channel_bit_mask(channels, index,
--					     st->prox_attr[index].size);
-+		hid_sensor_adjust_channel_bit_mask(channels, index,
-+			st->prox_attr[index].size);
- 		dev_dbg(&pdev->dev, "prox %x:%x\n", st->prox_attr[index].index,
- 			st->prox_attr[index].report_id);
- 		st->scale_precision[index] =
+@@ -418,9 +407,9 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 			if (i != CHANNEL_SCAN_INDEX_TIMESTAMP) {
+ 				/* Set magn_val_addr to iio value address */
+ 				st->magn_val_addr[i] = &st->iio_vals[*chan_count];
+-				magn_3d_adjust_channel_bit_mask(_channels,
+-								*chan_count,
+-								st->magn[i].size);
++				hid_sensor_adjust_channel_bit_mask(_channels,
++					*chan_count,
++					st->magn[i].size);
+ 			}
+ 			(*chan_count)++;
+ 		}
 -- 
 2.51.0
 
