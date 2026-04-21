@@ -1,114 +1,228 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41D713CF67C
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 14:19:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A81319858
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 14:32:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776781190; cv=none; b=MR3n/ZSAv9zEH0bEqGjQ+F4ea0bNQsM7RJY/6EN0VjX+HVeBD/Hvhv7mBiYzaw3d8hdNfhRdUiaCaopZzkBBOu3znyrlsKRoy8PyKWNAnwjUU/b0jxXBkbYtks/dT9TI7tAzUyGcHOD6vZRubz/WnyMZPjCyDbcdMy8FjeEjVg0=
+	t=1776781943; cv=none; b=YrnulED9k5IJH9dLP7aABcnLsSFW5quNU1V/0RQ92f3rMe/e+VeANXGGNI6ipsYjiKfGvgF5iFvuoPM+hF6zYhlMHr9C3zng0E1AHh6wa1QJGeGC3re5/yNGFnE/b4kng7PfLLRcW4kzLLFcTHbKQaVpX8xwsgtuVKiwimayXzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776781190; c=relaxed/simple;
-	bh=UWPQCfgf316qPUguCLiEFmB2ZXHdeN0sOy21ZYEMOWo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EF71Ge/dBu9kcXZPYlpVe8say3JlBlhaLCNdLqmkGW49wQARv1k/KXQeA9QFmnjSrww6YpQuYL5OukvPMwqPyjWFquvXmr+VhqUo2++jpiXkaM0aBLBfQwziiSIYkbFzjDaAJAtA5GiFF/cJXh4WW4i1rhhO27NXUbIfZImBTOI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=Y2p/7jYg; arc=none smtp.client-ip=209.85.167.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1776781943; c=relaxed/simple;
+	bh=2W5aFHf2yf7tmuTGoQKVKM4bXthLxrmSjkLyCk1hIrg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=kq7QbOVsb1oxBklhhySuuI71fFzcMwHKKHKaxJJ+DJGXJe5HLyUCAfpqR+phyWiKWC1tEgug97dLuA2ALGjTc4o/Q0IqYgfRAXE5kGeukALLOCbweF+sg14z+GnIRmZ765YZONe8UMANAOoZpLK8FINlpgW992dzyQPLE2u0qis=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B7ExaPeX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="Y2p/7jYg"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-479d9b155deso677822b6e.3
-        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 07:19:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776781186; x=1777385986; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ya9KQ8AG7Y9lezf9EpBb7uASqYKD1uqcvJf1BeHB1ns=;
-        b=Y2p/7jYgEuH1+I7MUMEh33jpigc6gHDFNZ3kxhcfDJj+m3wXd13qKM5lAcSl7+68Ef
-         VQFptxE3Js2158B8xtORWckMaP0rUEHz6mdYDZcsKXlgG9ZG/rBVBj0jQVlzmCApzPxp
-         Iye+7f+A0tDgbPT0X2r1/BHli8JkOWb7duzEH4N3tzEuKk/P/yzBSONuzOBWpTsrP2UH
-         ZW9flHnFzEQ8nIgp1zZSd3Xuu8BFmo0Gci3mA2PuqkzBPOPqT1nDtoocA/xiHl+QTUXz
-         AJbwKI3k9Xyykg7JSzbXUT5FHR3citteukHoLz6LQLP+jWv2lkinu4ryVnRvDYzq1rFL
-         RV/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776781186; x=1777385986;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ya9KQ8AG7Y9lezf9EpBb7uASqYKD1uqcvJf1BeHB1ns=;
-        b=JdpsYoQj0rRq/qk7H8Gg8x9BoIXVksQU833xFwAUThdddx8VGUauYK3wWymdBu5Yny
-         sEgUltnLHu87Ud3NXWzurJbYsjcz9WexvlSgTjFGCsgClUmLNjXu1Djnf5Pnp25aP4db
-         tfnyMZ0/MK3lvTxGkrxiFYZQolItP6IumeLAfXn+0zQ4HRbsLgRtsSdV5prKZ0uzEEqH
-         cGX6zPEZDhUDalRtwSnVH5HkX4i9dWf9EJFhJIiHrtUt59c4czn8v/NZPyqyEPg5NFZE
-         ccJmtkzMgeci2ow39uSR+jwUS7tevljkC+WY5YKmZ8ASkDMwyROVIdkEIeoa1K4hEqba
-         niqg==
-X-Forwarded-Encrypted: i=1; AFNElJ8bG4CsbmnAN/fALw0bM3DNAAK89DmvJlZ2HCt5z7TNTt+AulKL4/No+vkhqnVR3L78oGTBLD2QsNo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz0I8JfHjtXRKpUkMJVp18bv5ICXs6c68NFg2/fctAWq5SBNDGU
-	lnVMYzpA5wrD0rufhmOGs1PdLGsHKLCf0pLm6jR5Et5QWolsFtWzmwzBk20cP2Fb4FI=
-X-Gm-Gg: AeBDievnQYcrO12lPaXvB4hTOURND++wf43OlTYXFJb4YjHFTOMCJ2UztjDM4EsIuL2
-	oMKEugkU8vSrHpX279TyxqpkGieL5EZIpu4YHHVV8Xt9o6kwjpHYGKxih9+2e3MSt4HiWqDIuNO
-	O/KDE6VTsiczG2a2N1nYVM1aISHCskTDdibbCErQubvFY+k+malMFIZaGPGnU8w8ZK6ETLDbABD
-	MpRWxsN3SEW1C5fLMcdnvy7IpzJtvL9LaWrv8HYgHyz8xd/IYICYPbtXiHPyxjlVL0txxIzIRRy
-	rtS31Dv1cUUoxMtDF7tTq2eQPiE9Gp2GSCEQ5GiX0GGzFqvO5oHFzcEmC3lzzj2byQj7vK1PbeV
-	roDz/n12w53sBG3HUutAU9wchCwIa73oxHNwqtEMFcEfPpBB1O1vIblTfuGoEH42DltQMJT7ty/
-	2x8tnN+XcYH4J8aIUpOvSXECBgRSvOetpboczVYl3zMSZq7rGgSi9rkDmRfqgLdzM5rsaa+2LVG
-	5NSzMqaVFxx
-X-Received: by 2002:a05:6808:2507:b0:467:3f4:9073 with SMTP id 5614622812f47-4799c882ed4mr9496713b6e.16.1776781186245;
-        Tue, 21 Apr 2026 07:19:46 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:dc5a:64e5:1cd3:94d5? ([2600:8803:e7e4:500:dc5a:64e5:1cd3:94d5])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-42b930bd9f2sm10716833fac.8.2026.04.21.07.19.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Apr 2026 07:19:45 -0700 (PDT)
-Message-ID: <60e5cb91-e82a-47be-a7a0-c89f5f1b04ee@baylibre.com>
-Date: Tue, 21 Apr 2026 09:19:44 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B7ExaPeX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA7D6C2BCB0;
+	Tue, 21 Apr 2026 14:32:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776781942;
+	bh=2W5aFHf2yf7tmuTGoQKVKM4bXthLxrmSjkLyCk1hIrg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=B7ExaPeXs6sayA0MFM/P3bmb/gA1yoLv68ahQvuYgwXCl9qoGmQh2rme8RCl9XEz/
+	 NW8iI8tdI5USaQeDO4IYOZE250bPhZKkw6xbFkauvEY5PBNg5w25d47VkVoTCMtcZd
+	 2MHqsEzj8/H1w8uxN+k47X0XxT5bShuGCwpXqTpmDUSAUHjCDJ9d46qSlrwwB4xwXp
+	 9GBOSN30RR210rz71AcW9cz/UFhNXmGPbIsh/2C0yiEPBfUFQmABBpN2e4IZQWmwAw
+	 wX99G5XBfS2kNOkqxXn6Azi2RaQadLcztQCFw8ktNwmnZ123oh5lwED3wnMXAO5Aiy
+	 1mRJr2s7kA1DA==
+Date: Tue, 21 Apr 2026 15:32:14 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, Eduardo
+ Augusto <eduardoaugustoabc@ime.usp.br>, Christian Barry
+ <christian.barry@ime.usp.br>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: mcp320x: refactor driver to use bitfield API
+Message-ID: <20260421153214.755c40be@jic23-huawei>
+In-Reply-To: <20260420215021.14112-1-gustavo.pagnotta@ime.usp.br>
+References: <20260420215021.14112-1-gustavo.pagnotta@ime.usp.br>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] dt-bindings: iio: dac: mcp47feb02: Fix maxItems value
- for reg property
-To: Ariana.Lazar@microchip.com, robh@kernel.org
-Cc: Conor.Dooley@microchip.com, nuno.sa@analog.com,
- Jonathan.Cameron@huawei.com, devicetree@vger.kernel.org, jic23@kernel.org,
- krzk+dt@kernel.org, andy@kernel.org, linux-iio@vger.kernel.org,
- conor+dt@kernel.org, linux-kernel@vger.kernel.org
-References: <20260417-mcp47feb02-fix5-v2-1-6592ea499cce@microchip.com>
- <20260420150116.GA2486072-robh@kernel.org>
- <8a57341539af3a96ad42004be2389370b76a1a56.camel@microchip.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <8a57341539af3a96ad42004be2389370b76a1a56.camel@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 4/21/26 9:11 AM, Ariana.Lazar@microchip.com wrote:
-> Hello Rob,
-> 
->>> @@ -161,8 +161,7 @@ patternProperties:
->>>      properties:
->>>        reg:
->>>          description: The channel number.
->>> -        minItems: 1
->>> -        maxItems: 8
->>> +        maxItems: 1
->>
->> Perhaps there are 8 channels and 'maximum: 8' is what was intended?
-> 
-> 
-> 
-> Thank you for the review.
-> 
-> Indeed, I mistakenly set maxItems to the maximum number of channels,
-> rather than to a single entry for the reg property (reg value is
-> between 0 and max 7 based on the part number).
-> 
+On Mon, 20 Apr 2026 18:49:18 -0300
+Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br> wrote:
 
-> If preferred, I can also add minimum: 0 and maximum: 7 to specify the
-> valid range for the channel number.
-> 
+> Update the mcp320x driver to use the standard Linux bitfield
+> API (<linux/bitfield.h>) instead of manual bitwise shifts and masks.
 
-Yes, that sounds like the right idea.
+Even though you replied to v1 with why this was being sent, this
+should still be clearly marked as [PATCH V2] in the patch title to
+reduce the risk of the wrong version getting picked up.
+
+> 
+> This replaces the hardcoded shift operations in the TX data
+> preparation (mcp320x_channel_to_tx_data) with FIELD_PREP()
+> and replaces the manual masking in the RX data extraction
+> (mcp320x_adc_conversion) with FIELD_GET(). Explicit masks
+> using GENMASK() and BIT() were also introduced for both transmit
+> configurations and receive extractions.
+> 
+> Signed-off-by: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
+> Co-developed-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
+> Signed-off-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
+> Co-developed-by: Christian Barry <christian.barry@ime.usp.br>
+> Signed-off-by: Christian Barry <christian.barry@ime.usp.br>
+> ---
+>  drivers/iio/adc/mcp320x.c | 58 +++++++++++++++++++++++++++------------
+>  1 file changed, 41 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+> index 57cff3772ebe..b7523e5ea903 100644
+> --- a/drivers/iio/adc/mcp320x.c
+> +++ b/drivers/iio/adc/mcp320x.c
+> @@ -44,6 +44,29 @@
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +
+> +/* MCP3x02/04/08 Tx Data configuration */
+> +#define MCP3X02_START_BIT	BIT(4)
+
+I'm not sure how this driver got in with a wild card in the name but let's
+not make it worse.   Manufacturers are far too inconsistent on naming
+for them to be 'safe' so just name these after the lowest numbered part
+they are relevant to.  Same applies to all wild cards in here.
+
+
+> +#define MCP3X02_SGL_DIFF	BIT(3)
+> +#define MCP3X02_CH_MASK		BIT(2)
+> +
+> +#define MCP3X04_08_START_BIT	BIT(6)
+> +#define MCP3X04_08_SGL_DIFF	BIT(5)
+> +#define MCP3X04_08_CH_MASK	GENMASK(4, 2)
+
+As noted below. This is only really the mask for the 8 channel
+parts.  They should be split.
+
+> +
+> +/* MCP Rx Data extraction masks */
+> +#define MCP3001_DATA_MASK	GENMASK(12, 3)
+> +#define MCP300X_DATA_MASK	GENMASK(15, 6)
+
+Here's an immediate example of why wild cards are inappropriate.
+That clearly includes 3001 and I only have to go up one line
+to see it doesn't.
+
+> +#define MCP3201_DATA_MASK	GENMASK(12, 1)
+> +#define MCP320X_DATA_MASK	GENMASK(15, 4)
+> +#define MCP3301_DATA_MASK	GENMASK(12, 0)
+> +
+> +/* MCP355X Data and Status bits */
+> +#define MCP355X_DATA_MASK	GENMASK(31, 8)
+
+Not sure why this wasn't done as a 24 bit transfer. Ah well,
+not something to touch in this patch (or without hardware to test
+on!)
+
+> +#define MCP355X_SGN		BIT(23)
+> +#define MCP355X_OVR		BIT(22)
+
+These are odd enough that I'd add something short to reference
+that there are more details on when these are or aren't part of the data
+mask as in the comment in the mcp320x_adc_conversion function.
+
+>  
+>  enum {
+>  	mcp3001,
+> @@ -99,19 +122,19 @@ struct mcp320x {
+>  static int mcp320x_channel_to_tx_data(int device_index,
+>  			const unsigned int channel, bool differential)
+>  {
+> -	int start_bit = 1;
+> -
+>  	switch (device_index) {
+>  	case mcp3002:
+>  	case mcp3202:
+> -		return ((start_bit << 4) | (!differential << 3) |
+> -							(channel << 2));
+> +		return FIELD_PREP(MCP3X02_START_BIT, 1) |
+> +		       FIELD_PREP(MCP3X02_SGL_DIFF, !differential) |
+> +		       FIELD_PREP(MCP3X02_CH_MASK, channel);
+>  	case mcp3004:
+>  	case mcp3204:
+>  	case mcp3008:
+>  	case mcp3208:
+> -		return ((start_bit << 6) | (!differential << 5) |
+> -							(channel << 2));
+> +		return FIELD_PREP(MCP3X04_08_START_BIT, 1) |
+> +		       FIELD_PREP(MCP3X04_08_SGL_DIFF, !differential) |
+> +		       FIELD_PREP(MCP3X04_08_CH_MASK, channel);
+
+Given you are using an explicit mask rather simply shifting, I'd break appart
+the 4 channel and 8 channel devices.
+
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -140,26 +163,27 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	u16 raw16 = be16_to_cpup((__be16 *)adc->rx_buf);
+
+This only applies to some of the case statements. Whilst
+it might seem like a lot of duplication I'd move it into the
+ones where it applies.
+
+> +
+>  	switch (device_index) {
+>  	case mcp3001:
+> -		*val = (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
+> +		*val = FIELD_GET(MCP3001_DATA_MASK, raw16);
+>  		return 0;
+>  	case mcp3002:
+>  	case mcp3004:
+>  	case mcp3008:
+> -		*val = (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+> +		*val = FIELD_GET(MCP300X_DATA_MASK, raw16);
+>  		return 0;
+>  	case mcp3201:
+> -		*val = (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
+> +		*val = FIELD_GET(MCP3201_DATA_MASK, raw16);
+>  		return 0;
+>  	case mcp3202:
+>  	case mcp3204:
+>  	case mcp3208:
+> -		*val = (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
+> +		*val = FIELD_GET(MCP320X_DATA_MASK, raw16);
+>  		return 0;
+>  	case mcp3301:
+> -		*val = sign_extend32((adc->rx_buf[0] & 0x1f) << 8
+> -				    | adc->rx_buf[1], 12);
+> +		*val = sign_extend32(FIELD_GET(MCP3301_DATA_MASK, raw16), 12);
+>  		return 0;
+>  	case mcp3550_50:
+>  	case mcp3550_60:
+> @@ -170,17 +194,17 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+>  		if (!(adc->spi->mode & SPI_CPOL))
+>  			raw <<= 1; /* strip Data Ready bit in SPI mode 0,0 */
+>  
+> +		raw = FIELD_GET(MCP355X_DATA_MASK, raw);
+>  		/*
+>  		 * If the input is within -vref and vref, bit 21 is the sign.
+>  		 * Up to 12% overrange or underrange are allowed, in which case
+>  		 * bit 23 is the sign and bit 0 to 21 is the value.
+>  		 */
+> -		raw >>= 8;
+> -		if (raw & BIT(22) && raw & BIT(23))
+> +		if ((raw & MCP355X_OVR) && (raw & MCP355X_SGN))
+>  			return -EIO; /* cannot have overrange AND underrange */
+> -		else if (raw & BIT(22))
+> -			raw &= ~BIT(22); /* overrange */
+> -		else if (raw & BIT(23) || raw & BIT(21))
+> +		else if (raw & MCP355X_OVR)
+> +			raw &= MCP355X_OVR; /* overrange */
+> +		else if ((raw & MCP355X_SGN) || (raw & BIT(21)))
+>  			raw |= GENMASK(31, 22); /* underrange or negative */
+>  
+>  		*val = (s32)raw;
+
