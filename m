@@ -1,133 +1,118 @@
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mg.richtek.com (mg.richtek.com [220.130.44.152])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 870F8347C6
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 01:15:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE45246BC0
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 01:41:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.130.44.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776734161; cv=none; b=VGuNx3flhEOygV4NsML7kku68GwrENcPdRkRdmslxq6XH+ZSDuk7x4jk7va8nRQLaTga4h1Dwl26MvgBKIIT69N8/EmKmdn37m05t8zfjksU8pLNOx1fKF1RFhdvzltmXM2CAOHNyy8R2KJrJMNiTNSAmbu4QzzZY5N8AE0v1Q8=
+	t=1776735714; cv=none; b=bdgixD+mkaYOCsoi9GlIWtDepN/j9V1zeYd2PXuN00KmHh1ToAWNIbnJt1s/tE2CZ8XUaZTmrTme8oU45zme4M/oZu5OAVJIwGhKheGiulNPnHjwOzhFUDZmyIYUDFMZx/EVPvITH5mFVHyGs2cdu5lDuk4vfqiGWjDFPG/kHpE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776734161; c=relaxed/simple;
-	bh=ScqLkOqlRPLu3bY7vL17bSkC4LCmVV6rPgLEKaAB3Y0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jSPTpgmGd0P77pvYz+UOopaOYejEiEQX8DD8gmO+lBztPEush0cfpFJzJQ7EIX+Beo3kqhk1MyuCdUet6DXrouAesaO99IMGSz081CdA3pce1llT3rXljO4EGc/mti0huUfurz2Fs75xxYfcU/EB0mItrEgkCpTDEOZ0Nhnvhok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=YFNOZtVM; arc=none smtp.client-ip=209.85.221.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1776735714; c=relaxed/simple;
+	bh=c6q9oQkbovfdRANQ03O3aL99Sm5ehXOdqaDo9UPMz/U=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=evVhBYJwFIep6A917LOG2wQvAbIJPd0VruMQr/2bY4tPzk+q+64vW+23k6+NFYa/zImcVwZtDCi30sDjQoBChxFCEgjYF8KJgHbCRiqXJ3xFvBru96WThIKmGrx1Rk1vSgObuOHkTV3F0zAVCR0z4AjWPeU7JVzlWKZKMa+6H8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=richtek.com; spf=pass smtp.mailfrom=richtek.com; dkim=pass (2048-bit key) header.d=richtek.com header.i=@richtek.com header.b=j6Elo5wC; arc=none smtp.client-ip=220.130.44.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=richtek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=richtek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="YFNOZtVM"
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-5673804da95so1137057e0c.0
-        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2026 18:15:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776734156; x=1777338956; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V0D0S1YElB8h8YSBlbuL7UOCjGyrllWQRf3Xk+lHdOU=;
-        b=YFNOZtVMeuTgIBkfT7Xwv67ii4cKRjn8IcMjMOmK9u2tqDl37xf0uwsJKWUWOuIZNW
-         qO4aIz0fIfClrEdReVjKv+maVZ/22srmuz0zJIUkEJUPljCGEJq6HbGPz/Pf4YKEAIXQ
-         8+Czk7yYpDiEmwRlL35TotGnAKbixQxs//njzNt4BQRTjOJg/hLPt5SjXtvH0oTJwIWh
-         nW0bhwny25S6l8YtqywQKJbg4PtiZNtgCCvF+eUT8ljQZsO6aevkNApdlLJxdG2SBrpT
-         I+7Zd/Z6NrU9+tRcxYgbF8En4zKUF3sJY2tHWUjfG7Xtl6Ub14nCPeauZNupGjaJEi3x
-         416g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776734156; x=1777338956;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=V0D0S1YElB8h8YSBlbuL7UOCjGyrllWQRf3Xk+lHdOU=;
-        b=kXIUblxKsm4ZDSLInb/Qi/c7BOIGz6M0Iqi2BjgtAUUORcYFSk9Uk0pVOzw9tXtbWT
-         q48X3RF5ct0heU5kGRMrVeWuid/sQtzck5XYD7QjrOJphMtaNt6dLUzY8+N9/Sngpldw
-         BdiYg8gEnNj2n0LgMNWFJNwP5bdczYD4y+tQ+HkgDWy0JkpVtzKx8MxFGg2Q2awusO9o
-         HTD7DwP4xXZfAPJpkOsav+tesxxpU4U0duPbaqkaAJx0XYqtUD7t53bSLqcFxNZoPuyh
-         FFCZbPdHQ211qbYDY+LmUUM5bhyt2gq/XPqRz9sUW9nQ2KJm8NxxFBG3FMf1xOdj+/Q4
-         3v6w==
-X-Forwarded-Encrypted: i=1; AFNElJ9SyszQP68/G/wn5XshFLAPNOqs/GlljiZSNf/AQhuYxryNz6w8UkA2hPZjH6FqTZ7HYjpIu7/ZQ/o=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw3iDgpmDOdeZkA95LengyfYEqS2z/pSqpYCRiagmTnCUtUYxCT
-	erdmdBNvftCVBfF5UCjDLMRPzYWrRCtlpyVVVmtbQ3s4besFbMNraX13Y6QgJpLIHgE=
-X-Gm-Gg: AeBDiesCkSGrYcjywQJ5sD0obFnPhOMeEaeEwcT9grwaUbwWATPJrvvmda8RiH4XZOc
-	UXgmkuP88EcJn4bAM3NDClV3CcELjQoG0sDEf2ngWhXeCkXZk9ZHb1sFc6dxxl6z/VXJq736R1Y
-	z2KsTIQkedmUu2x3kjLZ+po28/I6PYhtij2vv3A5phLWnWGmLqiUA4WAInxVjlWk84YDu0Jk6yq
-	uAi1Jt3/RkS6rhpmv3iLqmMyrHyY138r7Bt3L/cyKVE3/ZVbZQ2+Y1/n+R03TkX4ejtvaROit2/
-	8dJnSMewQ5ums8yeOlGdu4dgSlmFJwjnB7EnS6C23QjwRoBM033RY+56918n6gB93vMylX/nDEM
-	8IiL3y4YPns8YB9oN4BXOwx3Gn1rHN0zTQTVfIkXl8B7wJ9b3uqLpybUIpXSmIud5LKRvVylfsx
-	tpahIs8UvDt6WD5ZckHZDidxi6uxUobCbYJXkgfnYv
-X-Received: by 2002:a05:6122:4693:b0:570:f670:587d with SMTP id 71dfb90a1353d-570f670593cmr1328120e0c.12.1776734156278;
-        Mon, 20 Apr 2026 18:15:56 -0700 (PDT)
-Received: from sales-arch ([2804:7f0:d889:b103:1320:e321:eae6:2f6e])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56fa91bf90fsm6995616e0c.1.2026.04.20.18.15.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2026 18:15:54 -0700 (PDT)
-From: rafasales@usp.br
-To: andriy.shevchenko@intel.com
-Cc: andy@kernel.org,
-	dlechner@baylibre.com,
-	gustavo.arakaki@usp.br,
-	jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	nuno.sa@analog.com,
-	rafasales@usp.br
-Subject: Re: [PATCH] iio: light: ltr501: Use automatic cleanup of locks
-Date: Mon, 20 Apr 2026 22:15:39 -0300
-Message-ID: <20260421011540.555773-1-rafasales@usp.br>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <aeHrF5HsRoWqazzR@ashevche-desk.local>
-References: <aeHrF5HsRoWqazzR@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=richtek.com header.i=@richtek.com header.b="j6Elo5wC"
+X-MailGates: (SIP:2,PASS,NONE)(compute_score:DELIVER,40,3)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=richtek.com;
+	s=richtek; t=1776735700;
+	bh=hgJYTfLM6ixBP8ZTg+ugrd/LAtv9wxJUHiWP3SanoKU=; l=1778;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=j6Elo5wCSIM8z5gvJTMXoe996oIs3z/w503GY8zefCWw/Zt5nbfRXTLYK9UaaIvSK
+	 VS710a/FL4qchlmHvDmxOQEiXQs3RnesHF9Qz6kzUSopl/pA36coaz8hYIB4SG8xZ+
+	 ZmeRNGG1b7Oco6THvytvKgvKHqYAXZVvNpvGTRyVeXHNGhcCIrj9zd8C4/ygOk/g0s
+	 zr8ptz7a+xB+j4bhOUwLn2i9TAUaLAODywPOKkbIyPaojGazTYPBip+ZM4rwUcZP3T
+	 6e0gZaZyv0d0Mbhdy2mYEyikg4b++C+BdlTr9rkuaKqsk+PM/CODaFhsMrQhPl2jVP
+	 umBeI+OBiBI+A==
+Received: from 192.168.10.47
+	by mg.richtek.com with MailGates ESMTPS Server V6.0(1227023:0:AUTH_RELAY)
+	(envelope-from <cy_huang@richtek.com>)
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256); Tue, 21 Apr 2026 09:41:22 +0800 (CST)
+Received: from ex4.rt.l (192.168.10.47) by ex4.rt.l (192.168.10.47) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.26; Tue, 21 Apr
+ 2026 09:41:21 +0800
+Received: from git-send.richtek.com (192.168.10.154) by ex4.rt.l
+ (192.168.10.45) with Microsoft SMTP Server id 15.2.1748.26 via Frontend
+ Transport; Tue, 21 Apr 2026 09:41:21 +0800
+From: <cy_huang@richtek.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: David Lechner <dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Kevin Tung
+	<kevin.tung.openbmc@gmail.com>, ChiYuan Huang <cy_huang@richtek.com>, "Lucas
+ Tsai" <lucas_tsai@richtek.com>, <kevin.tung@quantatw.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<stable@vger.kernel.org>
+Subject: [PATCH] iio: adc: rtq6056: Fix the manual device instantiation via sysfs
+Date: Tue, 21 Apr 2026 09:41:17 +0800
+Message-ID: <db4f5ded64ca7d2e56abfa30c6a174342c44fabb.1776735120.git.cy_huang@richtek.com>
+X-Mailer: git-send-email 2.43.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-> This requires a header. But looking at the driver, please add a new patch to
-> make header inclusion block sorted and followed IWYU principle.
+From: Kevin Tung <kevin.tung.openbmc@gmail.com>
 
-Will add a separate patch to the set that ensures the driver follows IWYU.
+Add i2c_device_id to support sysfs manual device instantiation.
 
-...
+Fixes: 89a1034cd841 ("iio: adc: rtq6056: Add support for the whole RTQ6056 family")
+Signed-off-by: Kevin Tung <kevin.tung.openbmc@gmail.com>
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+Cc: <stable@vger.kernel.org>
+---
+Hi, Jonathan:
 
-> Now this is simple
-> 
->    return regmap_field_write(...);
-> 
-> Same comment to other similar cases below.
+For some BSP limit, still some user instantiate rtq6056 deivce via sysfs.
+Therefore, add old style i2c id to make it compatible for this kind of usage.
 
-I will apply this where possible. This doesn’t work in switch cases with 
-`scoped_guard()` due to implicit fall-through warnings, so those cases will 
-need to remain unchanged.
+BR,
+ChiYuan.
+---
+ drivers/iio/adc/rtq6056.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-...
+diff --git a/drivers/iio/adc/rtq6056.c b/drivers/iio/adc/rtq6056.c
+index 2bf3a09ac6b0..e7036dc7d7b9 100644
+--- a/drivers/iio/adc/rtq6056.c
++++ b/drivers/iio/adc/rtq6056.c
+@@ -728,7 +728,7 @@ static int rtq6056_probe(struct i2c_client *i2c)
+ 	if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+ 		return -EOPNOTSUPP;
+ 
+-	devdata = device_get_match_data(dev);
++	devdata = i2c_get_match_data(i2c);
+ 	if (!devdata)
+ 		return dev_err_probe(dev, -EINVAL, "Invalid dev data\n");
+ 
+@@ -878,6 +878,13 @@ static const struct of_device_id rtq6056_device_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, rtq6056_device_match);
+ 
++static const struct i2c_device_id rtq6056_id[] = {
++	{ "rtq6056", (kernel_ulong_t)&rtq6056_devdata },
++	{ "rtq6059", (kernel_ulong_t)&rtq6059_devdata },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, rtq6056_id);
++
+ static struct i2c_driver rtq6056_driver = {
+ 	.driver = {
+ 		.name = "rtq6056",
+@@ -885,6 +892,7 @@ static struct i2c_driver rtq6056_driver = {
+ 		.pm = pm_ptr(&rtq6056_pm_ops),
+ 	},
+ 	.probe = rtq6056_probe,
++	.id_table = rtq6056_id,
+ };
+ module_i2c_driver(rtq6056_driver);
+ 
+-- 
+2.34.1
 
-> > -		mutex_lock(&data->lock_als);
-> > +		guard(mutex)(&data->lock_als);
-> 
-> This is not an equivalent. Please, care to explain why does the critical
-> section need now additional stuff?
-> 
-> >  		ret = regmap_field_write(data->reg_als_prst, new_val);
-> > -		mutex_unlock(&data->lock_als);
-> >  		if (ret >= 0)
-> >  			data->als_period = period;
-> 
-> Ditto for other similar cases below.
-
-Agreed, changing the original lock boundaries like this is just bad practice.
-
-I'll revert this on v2 keeping the original scope (ditto for similar 
-cases below).
-
-...
-
-> >  	switch (chan->type) {
-> >  	case IIO_INTENSITY:
-> > -		mutex_lock(&data->lock_als);
-> > +		guard(mutex)(&data->lock_als);
-> 
-> I don't think you can use guard()() in this scope. Please, double check that
-> this compiles and behaves well.
-
-You are right that guards in switch cases can lead to undesirable behavior.
-I will switch to using `scoped_guard()` here on v2 which will address this.
