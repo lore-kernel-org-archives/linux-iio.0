@@ -1,41 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A81319858
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 14:32:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 948A43D904F
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 14:38:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776781943; cv=none; b=YrnulED9k5IJH9dLP7aABcnLsSFW5quNU1V/0RQ92f3rMe/e+VeANXGGNI6ipsYjiKfGvgF5iFvuoPM+hF6zYhlMHr9C3zng0E1AHh6wa1QJGeGC3re5/yNGFnE/b4kng7PfLLRcW4kzLLFcTHbKQaVpX8xwsgtuVKiwimayXzA=
+	t=1776782287; cv=none; b=Dbv88FGajsqEiiSGKWMAbEhwmVuaqA03MrwOWmDr5rgfhT9KVO+/eIsmkz2EGjD7rLDta9sBRai4k+uAib9uP0FAqoJM/3FGJJXPrgPFjljuaqeEmYVH7MSrqNxG0OwZzVO5c9KVJA4o0e3yRsfNsn9pczlj7icj5tN3PDqAYZM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776781943; c=relaxed/simple;
-	bh=2W5aFHf2yf7tmuTGoQKVKM4bXthLxrmSjkLyCk1hIrg=;
+	s=arc-20240116; t=1776782287; c=relaxed/simple;
+	bh=LwzB1RpcdhydPdoiQBUfDxnOm/+WgF4/emr+VXwhb6U=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kq7QbOVsb1oxBklhhySuuI71fFzcMwHKKHKaxJJ+DJGXJe5HLyUCAfpqR+phyWiKWC1tEgug97dLuA2ALGjTc4o/Q0IqYgfRAXE5kGeukALLOCbweF+sg14z+GnIRmZ765YZONe8UMANAOoZpLK8FINlpgW992dzyQPLE2u0qis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B7ExaPeX; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=bYQfYX+l3ZJM6P7sZXxRvHAkW0ZcIwc8bxiCvnul75XmKynQjTqI50Vx/xpA8dCtK1KY+YhiFUAswkIN9Nve0MHCHlp/I9PWkqVucTBPqU+JymKkof8u2+9hbSshqVIK3SbxHbpVk2L0J/AfauMqZSntffLXpHa5+vWmbMnStFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dfIIRQ8R; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B7ExaPeX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA7D6C2BCB0;
-	Tue, 21 Apr 2026 14:32:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dfIIRQ8R"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6BE3C2BCB0;
+	Tue, 21 Apr 2026 14:38:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776781942;
-	bh=2W5aFHf2yf7tmuTGoQKVKM4bXthLxrmSjkLyCk1hIrg=;
+	s=k20201202; t=1776782287;
+	bh=LwzB1RpcdhydPdoiQBUfDxnOm/+WgF4/emr+VXwhb6U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=B7ExaPeXs6sayA0MFM/P3bmb/gA1yoLv68ahQvuYgwXCl9qoGmQh2rme8RCl9XEz/
-	 NW8iI8tdI5USaQeDO4IYOZE250bPhZKkw6xbFkauvEY5PBNg5w25d47VkVoTCMtcZd
-	 2MHqsEzj8/H1w8uxN+k47X0XxT5bShuGCwpXqTpmDUSAUHjCDJ9d46qSlrwwB4xwXp
-	 9GBOSN30RR210rz71AcW9cz/UFhNXmGPbIsh/2C0yiEPBfUFQmABBpN2e4IZQWmwAw
-	 wX99G5XBfS2kNOkqxXn6Azi2RaQadLcztQCFw8ktNwmnZ123oh5lwED3wnMXAO5Aiy
-	 1mRJr2s7kA1DA==
-Date: Tue, 21 Apr 2026 15:32:14 +0100
+	b=dfIIRQ8RAN+48PpjFQivytgEUM2A/0X4T1cf+8VpyRfa3uycLXT4p4J8B8UYWevan
+	 ihv7HNKWxr9leaiJqrOG1g5ZhnyTo1CurxcYlsEhScydCMJnPGlbHKGL9l2OhWmYyF
+	 eAg3EGPkPxDi9i6xKcBgIt6XgOMZv/j2ptMxAz3peY7MsTAYjebHa+q1ummPtm7UxO
+	 e05ongBBl8imdLg0pq5MfoYdS8279T9BoqG3+kKHedaTeZQpe1DnddJ3IfsPA/7EPN
+	 fsmV6g4OC5E6CJ4EF7p71hu00+Zboy4qyeWcXEMzVLabSUOTr8HiEmpyI3y35cbmUU
+	 88J2onI//H8jA==
+Date: Tue, 21 Apr 2026 15:38:02 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, Eduardo
- Augusto <eduardoaugustoabc@ime.usp.br>, Christian Barry
- <christian.barry@ime.usp.br>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: mcp320x: refactor driver to use bitfield API
-Message-ID: <20260421153214.755c40be@jic23-huawei>
-In-Reply-To: <20260420215021.14112-1-gustavo.pagnotta@ime.usp.br>
-References: <20260420215021.14112-1-gustavo.pagnotta@ime.usp.br>
+To: Luiz Mugnaini <luizmugnaini@usp.br>
+Cc: cmo@melexis.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: temperature: mlx90614: use guard(mutex) for
+ EEPROM access locking
+Message-ID: <20260421153802.7a5426d5@jic23-huawei>
+In-Reply-To: <20260420141512.196932-1-luizmugnaini@usp.br>
+References: <20260420141512.196932-1-luizmugnaini@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,183 +46,159 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 20 Apr 2026 18:49:18 -0300
-Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br> wrote:
+On Mon, 20 Apr 2026 11:14:29 -0300
+Luiz Mugnaini <luizmugnaini@usp.br> wrote:
 
-> Update the mcp320x driver to use the standard Linux bitfield
-> API (<linux/bitfield.h>) instead of manual bitwise shifts and masks.
-
-Even though you replied to v1 with why this was being sent, this
-should still be clearly marked as [PATCH V2] in the patch title to
-reduce the risk of the wrong version getting picked up.
-
+> From: Luiz Mugnaini <luizmugnaini@usp.br>
 > 
-> This replaces the hardcoded shift operations in the TX data
-> preparation (mcp320x_channel_to_tx_data) with FIELD_PREP()
-> and replaces the manual masking in the RX data extraction
-> (mcp320x_adc_conversion) with FIELD_GET(). Explicit masks
-> using GENMASK() and BIT() were also introduced for both transmit
-> configurations and receive extractions.
+> Replace mutex_lock()/mutex_unlock() pairs with guard() and
+> scoped_guard() from cleanup.h for cleaner and safer mutex handling. The
+> lock protects EEPROM access across five call sites in
+> mlx90614_read_raw(), mlx90614_write_raw(), and mlx90614_sleep().
 > 
-> Signed-off-by: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
-> Co-developed-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
-> Signed-off-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
-> Co-developed-by: Christian Barry <christian.barry@ime.usp.br>
-> Signed-off-by: Christian Barry <christian.barry@ime.usp.br>
+> In all cases, the code between mutex_unlock() and the end of scope is
+> either a return statement, or a call to mlx90614_power_put() followed by
+> trivial computation. In the later cases we prefer the use of
+> scoped_guard() to avoid holding the lock longer than needed.
+> 
+> Signed-off-by: Luiz Mugnaini <luizmugnaini@usp.br>
+Hi Luiz,
+
+Thanks for the patch.
+
+This one is very marginal benefit.
+
+I'm all in favour of guard() usage when it simplifies things a fair bit
+because we can have returns where previously goto magic was needed.
+When it's just 
+mutex_lock();
+// oneline
+mutex_unlock();
+
+To me the churn is just not worthwhile - these really short lock
+regions are not a cause of bugs.
+
+The power management in this particular driver is what makes this
+a bad idea.
+
+So sorry, but I won't be picking this one up
+
+Jonathan
+
+
+
 > ---
->  drivers/iio/adc/mcp320x.c | 58 +++++++++++++++++++++++++++------------
->  1 file changed, 41 insertions(+), 17 deletions(-)
+> Changes in v2:
+> - Prefer using scoped_guard() instead of guard() for cases where we
+>   don't immediately return. This avoids adding more code to the critical
+>   section and preserves the same semantics as the previous mutex_lock()
+>   and mutex_unlock() pairs.
+> - Removed the intermediate variable ret from mlx_90614_sleep() as
+>   suggested.
 > 
-> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-> index 57cff3772ebe..b7523e5ea903 100644
-> --- a/drivers/iio/adc/mcp320x.c
-> +++ b/drivers/iio/adc/mcp320x.c
-> @@ -44,6 +44,29 @@
->  #include <linux/mod_devicetable.h>
->  #include <linux/iio/iio.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +
-> +/* MCP3x02/04/08 Tx Data configuration */
-> +#define MCP3X02_START_BIT	BIT(4)
-
-I'm not sure how this driver got in with a wild card in the name but let's
-not make it worse.   Manufacturers are far too inconsistent on naming
-for them to be 'safe' so just name these after the lowest numbered part
-they are relevant to.  Same applies to all wild cards in here.
-
-
-> +#define MCP3X02_SGL_DIFF	BIT(3)
-> +#define MCP3X02_CH_MASK		BIT(2)
-> +
-> +#define MCP3X04_08_START_BIT	BIT(6)
-> +#define MCP3X04_08_SGL_DIFF	BIT(5)
-> +#define MCP3X04_08_CH_MASK	GENMASK(4, 2)
-
-As noted below. This is only really the mask for the 8 channel
-parts.  They should be split.
-
-> +
-> +/* MCP Rx Data extraction masks */
-> +#define MCP3001_DATA_MASK	GENMASK(12, 3)
-> +#define MCP300X_DATA_MASK	GENMASK(15, 6)
-
-Here's an immediate example of why wild cards are inappropriate.
-That clearly includes 3001 and I only have to go up one line
-to see it doesn't.
-
-> +#define MCP3201_DATA_MASK	GENMASK(12, 1)
-> +#define MCP320X_DATA_MASK	GENMASK(15, 4)
-> +#define MCP3301_DATA_MASK	GENMASK(12, 0)
-> +
-> +/* MCP355X Data and Status bits */
-> +#define MCP355X_DATA_MASK	GENMASK(31, 8)
-
-Not sure why this wasn't done as a 24 bit transfer. Ah well,
-not something to touch in this patch (or without hardware to test
-on!)
-
-> +#define MCP355X_SGN		BIT(23)
-> +#define MCP355X_OVR		BIT(22)
-
-These are odd enough that I'd add something short to reference
-that there are more details on when these are or aren't part of the data
-mask as in the comment in the mcp320x_adc_conversion function.
-
+>  drivers/iio/temperature/mlx90614.c | 37 ++++++++++++++----------------
+>  1 file changed, 17 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+> index 1ad21b73e..6c58375de 100644
+> --- a/drivers/iio/temperature/mlx90614.c
+> +++ b/drivers/iio/temperature/mlx90614.c
+> @@ -23,6 +23,7 @@
+>   */
 >  
->  enum {
->  	mcp3001,
-> @@ -99,19 +122,19 @@ struct mcp320x {
->  static int mcp320x_channel_to_tx_data(int device_index,
->  			const unsigned int channel, bool differential)
->  {
-> -	int start_bit = 1;
-> -
->  	switch (device_index) {
->  	case mcp3002:
->  	case mcp3202:
-> -		return ((start_bit << 4) | (!differential << 3) |
-> -							(channel << 2));
-> +		return FIELD_PREP(MCP3X02_START_BIT, 1) |
-> +		       FIELD_PREP(MCP3X02_SGL_DIFF, !differential) |
-> +		       FIELD_PREP(MCP3X02_CH_MASK, channel);
->  	case mcp3004:
->  	case mcp3204:
->  	case mcp3008:
->  	case mcp3208:
-> -		return ((start_bit << 6) | (!differential << 5) |
-> -							(channel << 2));
-> +		return FIELD_PREP(MCP3X04_08_START_BIT, 1) |
-> +		       FIELD_PREP(MCP3X04_08_SGL_DIFF, !differential) |
-> +		       FIELD_PREP(MCP3X04_08_CH_MASK, channel);
-
-Given you are using an explicit mask rather simply shifting, I'd break appart
-the 4 channel and 8 channel devices.
-
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -140,26 +163,27 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
->  	if (ret < 0)
+>  #include <linux/bitfield.h>
+> +#include <linux/cleanup.h>
+>  #include <linux/delay.h>
+>  #include <linux/err.h>
+>  #include <linux/gpio/consumer.h>
+> @@ -139,6 +140,7 @@ static s32 mlx90614_write_word(const struct i2c_client *client, u8 command,
+>  	return ret;
+>  }
+>  
+> +
+>  /*
+>   * Find the IIR value inside iir_values array and return its position
+>   * which is equivalent to the bit value in sensor register
+> @@ -296,10 +298,10 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>  		if (ret < 0)
+>  			return ret;
+>  
+> -		mutex_lock(&data->lock);
+> -		ret = i2c_smbus_read_word_data(data->client,
+> -					       chip_info->op_eeprom_emissivity);
+> -		mutex_unlock(&data->lock);
+> +		scoped_guard(mutex, &data->lock)
+> +			ret = i2c_smbus_read_word_data(data->client,
+> +					chip_info->op_eeprom_emissivity);
+> +
+>  		mlx90614_power_put(data);
+>  
+>  		if (ret < 0)
+> @@ -319,10 +321,10 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>  		if (ret < 0)
+>  			return ret;
+>  
+> -		mutex_lock(&data->lock);
+> -		ret = i2c_smbus_read_word_data(data->client,
+> -					       chip_info->op_eeprom_config1);
+> -		mutex_unlock(&data->lock);
+> +		scoped_guard(mutex, &data->lock)
+> +			ret = i2c_smbus_read_word_data(data->client,
+> +					chip_info->op_eeprom_config1);
+> +
+>  		mlx90614_power_put(data);
+>  
+>  		if (ret < 0)
+> @@ -358,10 +360,10 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+>  		if (ret < 0)
+>  			return ret;
+>  
+> -		mutex_lock(&data->lock);
+> -		ret = mlx90614_write_word(data->client,
+> +		scoped_guard(mutex, &data->lock)
+> +			ret = mlx90614_write_word(data->client,
+>  					  chip_info->op_eeprom_emissivity, val);
+> -		mutex_unlock(&data->lock);
+> +
+>  		mlx90614_power_put(data);
+>  
 >  		return ret;
+> @@ -373,10 +375,9 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+>  		if (ret < 0)
+>  			return ret;
 >  
-> +	u16 raw16 = be16_to_cpup((__be16 *)adc->rx_buf);
-
-This only applies to some of the case statements. Whilst
-it might seem like a lot of duplication I'd move it into the
-ones where it applies.
-
-> +
->  	switch (device_index) {
->  	case mcp3001:
-> -		*val = (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
-> +		*val = FIELD_GET(MCP3001_DATA_MASK, raw16);
->  		return 0;
->  	case mcp3002:
->  	case mcp3004:
->  	case mcp3008:
-> -		*val = (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
-> +		*val = FIELD_GET(MCP300X_DATA_MASK, raw16);
->  		return 0;
->  	case mcp3201:
-> -		*val = (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
-> +		*val = FIELD_GET(MCP3201_DATA_MASK, raw16);
->  		return 0;
->  	case mcp3202:
->  	case mcp3204:
->  	case mcp3208:
-> -		*val = (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
-> +		*val = FIELD_GET(MCP320X_DATA_MASK, raw16);
->  		return 0;
->  	case mcp3301:
-> -		*val = sign_extend32((adc->rx_buf[0] & 0x1f) << 8
-> -				    | adc->rx_buf[1], 12);
-> +		*val = sign_extend32(FIELD_GET(MCP3301_DATA_MASK, raw16), 12);
->  		return 0;
->  	case mcp3550_50:
->  	case mcp3550_60:
-> @@ -170,17 +194,17 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
->  		if (!(adc->spi->mode & SPI_CPOL))
->  			raw <<= 1; /* strip Data Ready bit in SPI mode 0,0 */
+> -		mutex_lock(&data->lock);
+> -		ret = mlx90614_iir_search(data->client,
+> +		scoped_guard(mutex, &data->lock)
+> +			ret = mlx90614_iir_search(data->client,
+>  					  val * 100 + val2 / 10000);
+> -		mutex_unlock(&data->lock);
+>  		mlx90614_power_put(data);
 >  
-> +		raw = FIELD_GET(MCP355X_DATA_MASK, raw);
->  		/*
->  		 * If the input is within -vref and vref, bit 21 is the sign.
->  		 * Up to 12% overrange or underrange are allowed, in which case
->  		 * bit 23 is the sign and bit 0 to 21 is the value.
->  		 */
-> -		raw >>= 8;
-> -		if (raw & BIT(22) && raw & BIT(23))
-> +		if ((raw & MCP355X_OVR) && (raw & MCP355X_SGN))
->  			return -EIO; /* cannot have overrange AND underrange */
-> -		else if (raw & BIT(22))
-> -			raw &= ~BIT(22); /* overrange */
-> -		else if (raw & BIT(23) || raw & BIT(21))
-> +		else if (raw & MCP355X_OVR)
-> +			raw &= MCP355X_OVR; /* overrange */
-> +		else if ((raw & MCP355X_SGN) || (raw & BIT(21)))
->  			raw |= GENMASK(31, 22); /* underrange or negative */
+>  		return ret;
+> @@ -467,7 +468,6 @@ static const struct iio_info mlx90614_info = {
+>  static int mlx90614_sleep(struct mlx90614_data *data)
+>  {
+>  	const struct mlx_chip_info *chip_info = data->chip_info;
+> -	s32 ret;
 >  
->  		*val = (s32)raw;
+>  	if (!data->wakeup_gpio) {
+>  		dev_dbg(&data->client->dev, "Sleep disabled");
+> @@ -476,14 +476,11 @@ static int mlx90614_sleep(struct mlx90614_data *data)
+>  
+>  	dev_dbg(&data->client->dev, "Requesting sleep");
+>  
+> -	mutex_lock(&data->lock);
+> -	ret = i2c_smbus_xfer(data->client->adapter, data->client->addr,
+> +	guard(mutex)(&data->lock);
+> +	return i2c_smbus_xfer(data->client->adapter, data->client->addr,
+>  			     data->client->flags | I2C_CLIENT_PEC,
+>  			     I2C_SMBUS_WRITE, chip_info->op_sleep,
+>  			     I2C_SMBUS_BYTE, NULL);
+> -	mutex_unlock(&data->lock);
+> -
+> -	return ret;
+>  }
+>  
+>  static int mlx90614_wakeup(struct mlx90614_data *data)
 
