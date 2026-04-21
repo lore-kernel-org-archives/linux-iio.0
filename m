@@ -1,67 +1,67 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A5483B4EB7
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 10:07:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5766C23EA8A
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 10:07:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776766053; cv=none; b=KX4Sd5Tr1JLR2qWR9Bm8LnrN5ZAsC58v+mNQP9TTZ9NSY0Z4jVZlIHa+QyVYjev/U8Iv2wBpRPEXr9SED9ki6kGxBP8xoiwCvlMxn0Wh31t5aJjuAcoFzdZrMt14jas491mcGJ8BTWIX6v4uHxtHEc1sd1JxjO26Q0YbL7mCPs4=
+	t=1776766053; cv=none; b=Z9f7jFjNsy6JZTmrfFdPzVvUq4aGiNlmOJRp3ZO1c0s34FUVdUE4JsTCmEhRQDPxxz7/OAL9koRNKFtYvMIRX4/CYeYj2luPBI9yvhNu9hajZN95x/q16G/KeLUCWkLz4r4RYwaT7W8hTC/76scTwO2T+7cygxckgfKZ01NKs50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776766053; c=relaxed/simple;
-	bh=uGnCrDcHqdMBp00UrXvV1RoASwvo3lyR3NSMunjbafo=;
+	bh=jv5le2D5EbAVobcQl4K8mICiTBy2Y5lGGpeklsY0EIs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Pl2da9N6jJy8u9oTACxG+RbMFTdeytjjdJVAb43aHoZFIyLVzrcDFv6e4ZHaJZW6xZptQS155lukQXi9kcUwmfFlGsCXVO7CEwrpwFyl+EGjz3RwnUxmatKdJTg2VKy+tPfHc3QGH4n+SUyYy9J8F1c+767swqIV28DPnwIgKxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=p6teRMKx; arc=none smtp.client-ip=209.85.208.44
+	 MIME-Version; b=orl2E/2qwZmAz72B9SX5oi+PLEyfX0w4omSX/i/IoCJusJkve0WhYb4gfg9IQMx/m32Ma+FSVXJffkzq+qRSQlBwfzshZ1mbfpBQRuJehTyr1ffqJr1/sV87EIsUNWP2Dkb/y6ujpXZPChkNTzKyTpALUb8poOlOQlZ/vAiFdhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SSelN3ay; arc=none smtp.client-ip=209.85.218.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p6teRMKx"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-676a89de629so930287a12.1
-        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 03:07:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SSelN3ay"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-ba6838e76f2so305405966b.2
+        for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 03:07:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776766050; x=1777370850; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1776766049; x=1777370849; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Br2jImMMYeE7t2tYM9ZpVum10sRJKQ+6TUXHeuHOpkg=;
-        b=p6teRMKxN98FSJAflunBFpu322PbuzrLwwrK/rVQK3GkN7ral0wJZ6cd+80uUzgOlP
-         zeBtoFhlDDVLFg/FKVCSdWTZLrzVgMqIWDsSWU72LInqRfQliv0nEC+6RH/NYkdGZ1sz
-         +NvteHVDIcWAXAGsXlC/Dy0Hx1jw1rE6xTAB59q3rSMVwTseqrCOodY3pIRbv76XDJQb
-         LTIFGqtEYi/DW6pO0u3Mf7IXaxAMtvBqTyyyEWVSzkNs/oduOWpdKCd+IaKo5/efdV3T
-         cCWtIhiEWk0DO+si9oOI1ol7f7MfDxzEWqxOqnRO/7w/qpmEYJU8BHyvK8TlxKstQgtj
-         GDJA==
+        bh=oWhq7zuQ7ZD7wnMDRQ+VFtxgKDNHDIDYxhdC6tKzuNw=;
+        b=SSelN3ayYBTJJ0QW4VTOejFpXLmGj8SZqg3J3PhDHiseJ+1IaMyDxnsP2IPVkaxYqB
+         HpSN1UzbwK5t/j8gxGZcL1+0HxpTINXBbPCLu2UrCcrXPFgZ8umcu9khfD8v5xh7WRxj
+         M95X8HT6fBrtifhqNClzbUy8HATOxDZ0bjywzBQ63zriIN0xH8bdUc9Rll0d5uLVsdxK
+         xe36wE9F6vyI0miXw8nwizJteTBY94hfrZE3WEbBVbuhrN5/3Vqd3QvZS/Lv4r17MxQ0
+         zIiw0yKLK9/EXHRL6ysKpI9lulXDCZ37+pivUbXs6OvAOhwkAQQCFEQX+hqY65gmURlM
+         V2Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776766050; x=1777370850;
+        d=1e100.net; s=20251104; t=1776766049; x=1777370849;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Br2jImMMYeE7t2tYM9ZpVum10sRJKQ+6TUXHeuHOpkg=;
-        b=Q0nE8C//16AzIdlaq3Gd4oU9KjYsmA73tiUZiS/DLCJMVwxZ8LjtCjUlg6ztPLJ8fP
-         YXkmBiGhzx+mbtXpPkhQvymrIOVDvgfClDpMuTEFYLFELQ4e1WYpDnj/n7Dv1kSxcr2r
-         jmZeZDNGwixSp2yoLT1khC7q+fUZQNR7ll6b+rTA3q2/V6kMr1V2E+HH07hilaHNci7g
-         2sYt+jEN7X1Okc7lhsqFDp0GRZLzGGtY1B5MfuaR/yOiOVXb7Tu5rr9ZAOmqrPifFqS7
-         LSbk8TW509zoozZoBBsx95F10xzfuaqPmONIufJIYAYbUgLjpI5dIBRq+d9oatY6siTu
-         kmpA==
-X-Forwarded-Encrypted: i=1; AFNElJ+n0EPTKdUyHdAA9VcS7+oeLdJ5+W2CkbElRDk3fqY8Z2061ptL4QwSiT6E79YQwyxOq0bao9/r4XA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxj38f7T69LGQEeRyexwqjYiWxmek5WaIsoMAvJUKvZCxDx16jc
-	EO9HAiSq9FkQewsBhO09P+MpRxma+Xy6oliadQS80yO8c6Zy2j7xjfKO
-X-Gm-Gg: AeBDietEkxseWHQERZ4SGXPf2knkjKcdJMkwWUl5wPvHaMFMtBSA/X0MSYLEIUk8EOw
-	5WuqSAp0HtX4WhlE9vS8fXvnMuOt5FEv035pMliAB72PqOayQlxFygXzVxzmTvXVgFHwSvwV+Tj
-	wFpUSaRXj+mOyzK8HAof6e86cn+0YSjrBj39Vs7i10rJZimkvTQTMVjyT/YE+t1aJcgvOfeAVoo
-	fsyhNlmWHBHY9cJQRCAi7kn0mhYV/GxGPB6dpFVpuX/SeJluHhC53qufGr3gl931BLunFDXQe6O
-	S0gkOuC1fPTOP438FXwz4rYrgUi9a2ANxk4Z/JIg4rCKPVELps1cpW9TvlGb2wUtWPcSTmp/9oG
-	W0AG5AtH5A1pd8H6mPu9vCr6qNqY5RxOQ4T/FYsORdoOA5q2MLx1xPTruo4s7nznBZQv6DQLzG5
-	qcIZGkKJGuEw2IQpEo9F64HwcUi9FUaL+Wg3TBl1aftFALjedr/tPiw1P64yxU4rbzRfEt2US0A
-	0n9scvAoenTHSeg6OjmbLxped6vVH1BcJ/IzjMedItDZ8HD/Bvt0OErQxivEaV8SOsp9Hg+Mrqw
-	vClSQcmGuRf8EdNRXksTo1VPNTXr0Nw6bvjc9CnZHvYGiefZHqhdlVtajyPqZB8kiE30MMudVXU
-	GUNG/erh2ufcrpDZZSX82iyqfa6KTdZFJ8xVcFXa1ZAagbANUNbs5vSTy8Pu3wC+LvaWX72U8V6
-	iQaN411baDA+Ho6B6UPw==
-X-Received: by 2002:a17:906:f593:b0:ba5:234:13cb with SMTP id a640c23a62f3a-ba502347802mr760983166b.4.1776766049603;
-        Tue, 21 Apr 2026 03:07:29 -0700 (PDT)
+        bh=oWhq7zuQ7ZD7wnMDRQ+VFtxgKDNHDIDYxhdC6tKzuNw=;
+        b=WuyCaSb/9fM3RxGm3ZmS+X048UeLXtO7tAt98MAH/cm9i7byqqJ4colyZY+jaLz9Lf
+         Wnu0Xc656rzZmSp6Hlvc/pzZbQ149rNLsVTLpFb3uJ2CPNZ/dCK6U/JeAE02ptZwlkg8
+         yk0eXDLIUKzKtPmxEVYW31g5ppZTRFVs5yFB4TJarmYp2zF1gDkpwwGt9I+CWayda86d
+         vjHAt1Wl6pcRVCHiaNCmFHKbDbEPoJx+fVmGGUje6SSsR3vGfKhclrKYRnt95VUWXPSx
+         IOiPxS65UnmAh+T62nqQiQ8SX4YgCcSDcb39SOa8/c5uYNRuNeJ9GEROLZcMPZWNBqNw
+         YkPA==
+X-Forwarded-Encrypted: i=1; AFNElJ8wP9LKLLcO7tDr1zD5En7L74PzVG1bsl9y+vGwubssPLl+Lf8a6YpHSHYJ22duFHsQY99wAgkW9VI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxVqYqD0gsA+dSLPokM8A6u15vNHnZ65F7Jt9v/Xeag7nEQ0uf/
+	r/FSsCCyeshD+USFIdQSMX8Xw1EjQxI+CgX1NBiV1lbT79v3ylur2BEl
+X-Gm-Gg: AeBDievV5cHd806taxrYgK+N2MSrcy34ykfQNlt+yDuwDvxMAzvTYMycKYvRLjGZCw2
+	64A7Pyu3q/UMHd7HEMfjYxvx03k+XEgvHKeOxXwmHOlEA6T16q7ZzvU1w5y4ZwqxY2woc9aBX5F
+	nMe5aLFdMPY+QxMYKRKDV+WYe8I92Cy0YLFnU1CfxaenuaUYC/qvnnkWXIDx13sRhVYEPd+/rdy
+	ML+mBdJ11VdWMQsT3Sz8sAWBEf/BhK+WABlfGyL8A02gsKaTnf8vm+zauCsfDDDGttlj6tj3h/d
+	xWWjrTECO+I1Wm6ffug4yM2BWtkp0pLxq5A3am5pcjQAnvZFuMejBcfh71a0XBzA26G6UusmHFM
+	CQ1qygIZZtq/UvWhr5D2ZmWIE6TGMOkUBGS4cZX4qnegOPcYJVcV8EI7u1ROsmDuYzeSQLEw/Tc
+	9WVK6GfGyxR75PQHVBst0T5ctS7l/MPz8YYiwGdtVJQKkSy9rGTn0NDFflfn5zFMjdRDWsHeK06
+	1+gulWl5XN543SDg+OAnbDKU0H6qIC/ujdlHVFPOjGQ4oW1WywXA+UcW3XPxB+Kn/5tgHChahzN
+	+ycAViTT5oa6251EwJa30fOfibi3jVH6GG76xb1m3cgLn6SjM4iNGFaBP5gByc7h6Q9J2QLm9gd
+	xRULtXl+/KHObzr5n+u49ZtbiqXWsVVuf3qcyxEPr5zP4VIbSf+Y/TRynFYQP+IMx0CgbsoMofZ
+	NBAgsYH80=
+X-Received: by 2002:a17:907:60cf:b0:ba6:be92:a595 with SMTP id a640c23a62f3a-ba6be92a79emr486075966b.37.1776766048491;
+        Tue, 21 Apr 2026 03:07:28 -0700 (PDT)
 Received: from cs-280612103108-default.europe-west4-a.c.od237066db22328bb-tp.internal (238.77.147.34.bc.googleusercontent.com. [34.147.77.238])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ba4550468d6sm428078766b.52.2026.04.21.03.07.29
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ba4550468d6sm428078766b.52.2026.04.21.03.07.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2026 03:07:29 -0700 (PDT)
+        Tue, 21 Apr 2026 03:07:27 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -70,9 +70,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Joshua Crofts <joshua.crofts1@gmail.com>
-Subject: [PATCH v2 4/4] iio: magnetometer: ak8975: modernize polling loops with iopoll() macros
-Date: Tue, 21 Apr 2026 10:07:22 +0000
-Message-ID: <20260421100722.1296-5-joshua.crofts1@gmail.com>
+Subject: [PATCH v2 2/4] iio: magnetometer: ak8975: replace usleep_range() with fsleep()
+Date: Tue, 21 Apr 2026 10:07:20 +0000
+Message-ID: <20260421100722.1296-3-joshua.crofts1@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260421100722.1296-1-joshua.crofts1@gmail.com>
 References: <20260421100722.1296-1-joshua.crofts1@gmail.com>
@@ -84,103 +84,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The driver currently uses while loops and msleep() for polling during
-conversion waits.
+Replace usleep_range() calls with fsleep(), passing the minimum value
+required by the sensor for hardware delays.
 
-Replace the custom polling loops with readx_poll_timeout() and
-read_poll_timeout() macros from <linux/iopoll.h>. This reduces
-boilerplate, standardizes timeout handling and improves overall code
-readability, keeping the original timing and error behaviour.
+fsleep() automatically selects the optimal sleep mechanism, simplifying
+driver code and time management.
 
-Assisted-by: Gemini:3.1-Pro
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 44 ++++++++++++++-----------------
- 1 file changed, 20 insertions(+), 24 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index d0d95d3914a..1b9386b7521 100644
+index a829bee4cf8..7c37faaa4d9 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -21,9 +21,11 @@
- #include <linux/array_size.h>
- #include <linux/delay.h>
- #include <linux/dev_printk.h>
-+#include <linux/iopoll.h>
- #include <linux/irqreturn.h>
- #include <linux/minmax.h>
- #include <linux/property.h>
-+#include <linux/time.h>
- #include <linux/types.h>
- #include <linux/wait.h>
- 
-@@ -653,17 +655,15 @@ static int ak8975_setup(struct i2c_client *client)
- static int wait_conversion_complete_gpio(struct ak8975_data *data)
- {
- 	struct i2c_client *client = data->client;
--	u32 timeout_ms = AK8975_MAX_CONVERSION_TIMEOUT;
- 	int ret;
-+	int val;
- 
- 	/* Wait for the conversion to complete. */
--	while (timeout_ms) {
--		msleep(AK8975_CONVERSION_DONE_POLL_TIME);
--		if (gpiod_get_value(data->eoc_gpiod))
--			break;
--		timeout_ms -= AK8975_CONVERSION_DONE_POLL_TIME;
--	}
--	if (!timeout_ms) {
-+	ret = readx_poll_timeout(gpiod_get_value, data->eoc_gpiod, val,
-+				 val != 0,
-+				 AK8975_CONVERSION_DONE_POLL_TIME * USEC_PER_MSEC,
-+				 AK8975_MAX_CONVERSION_TIMEOUT * USEC_PER_MSEC);
-+	if (ret) {
- 		dev_err(&client->dev, "Conversion timeout happened\n");
- 		return -EINVAL;
- 	}
-@@ -678,30 +678,26 @@ static int wait_conversion_complete_gpio(struct ak8975_data *data)
- static int wait_conversion_complete_polled(struct ak8975_data *data)
- {
- 	struct i2c_client *client = data->client;
--	u8 read_status;
--	u32 timeout_ms = AK8975_MAX_CONVERSION_TIMEOUT;
- 	int ret;
-+	int val;
- 
- 	/* Wait for the conversion to complete. */
--	while (timeout_ms) {
--		msleep(AK8975_CONVERSION_DONE_POLL_TIME);
--		ret = i2c_smbus_read_byte_data(client,
--					       data->def->ctrl_regs[ST1]);
--		if (ret < 0) {
--			dev_err(&client->dev, "Error in reading ST1\n");
--			return ret;
--		}
--		read_status = ret;
--		if (read_status)
--			break;
--		timeout_ms -= AK8975_CONVERSION_DONE_POLL_TIME;
-+	ret = read_poll_timeout(i2c_smbus_read_byte_data, val, val != 0,
-+				AK8975_CONVERSION_DONE_POLL_TIME * USEC_PER_MSEC,
-+				AK8975_MAX_CONVERSION_TIMEOUT * USEC_PER_MSEC,
-+				true,
-+				client, data->def->ctrl_regs[ST1]);
-+	if (val < 0) {
-+		dev_err(&client->dev, "Error in reading ST1\n");
-+		return val;
- 	}
--	if (!timeout_ms) {
+@@ -462,7 +462,8 @@ static int ak8975_power_on(const struct ak8975_data *data)
+ 	 * and the minimum wait time before mode setting is 100us, in
+ 	 * total 300us. Add some margin and say minimum 500us here.
+ 	 */
+-	usleep_range(500, 1000);
++	fsleep(500);
 +
-+	if (ret == -ETIMEDOUT) {
- 		dev_err(&client->dev, "Conversion timeout happened\n");
- 		return -EINVAL;
- 	}
- 
--	return read_status;
-+	return val;
+ 	return 0;
  }
  
- /* Returns 0 if the end of conversion interrupt occurred or -ETIME otherwise */
+@@ -552,7 +553,7 @@ static int ak8975_set_mode(struct ak8975_data *data, enum ak_ctrl_mode mode)
+ 
+ 	data->cntl_cache = regval;
+ 	/* After mode change wait at least 100us */
+-	usleep_range(100, 500);
++	fsleep(100);
+ 
+ 	return 0;
+ }
 -- 
 2.47.3
 
