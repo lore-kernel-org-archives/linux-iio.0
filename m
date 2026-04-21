@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 336BE3A257C;
-	Tue, 21 Apr 2026 14:54:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AEFF1F151C;
+	Tue, 21 Apr 2026 14:57:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776783275; cv=none; b=FC2mgbPkpXKBXV4JTtHq0DHKgqydhlqx7baOy2seJvk7kHWomL0FvCGJnXAOhFlwKc479+rgFzb11neHlIAIALZePFM/O314JR/DUR98XTqdYrIK0I775EVjfNM6zgGYUW777Uz3clu217zYw711e22hinPA+AiDBuyUotlFaPM=
+	t=1776783449; cv=none; b=XXfK2jB2EXogUJnyV3/yRN4S+xGFfUeCmT3JPqFQaGUDBq4zUpvg8wgc3O2OEDSa7Tc9serks43lTxW+YwION728RcK/XyQ66Oh8MY5khzOEUON9K0xl/sFBl76b5Dd9/GqutsrBNaDKfV+zc6AmkSCQe2JUK48YlxslwOxqDss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776783275; c=relaxed/simple;
-	bh=5jKl8uNO/WW+7Qxm+luGw5/n6QGbni4P1DlLF4vEuUI=;
+	s=arc-20240116; t=1776783449; c=relaxed/simple;
+	bh=HcsHWLjszcRC2B2e0v8iOr4a2qTwSQ8ZSEtPCq29cf4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=azptsdGh5dxvuVjGxeEruS7mKzGTWI7bLm4DFixf0OIrSIIYT1RjU9nVVZcBf7xqkbZG1yVzbmU2RI4HTqEAZH/acmOyez35x9PeSEofzF5cRqIGBxemXpSVVI0lR1xQmhZ1A7M+28zraX2BF9HoL62LdHDN0sqdAbEQM6nH+yA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jk72cN3s; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=KfTvGWhTPev1FD11uOnUBZX+9eSqDntyim/AQbmWpWkyFaatThULm/sKNWuEkgivAYXKVtUebpQA1iGNK2ufx5efkvj78LXICZ3TvTzo9dk1J+kWh08rvQcFyJvWVc/evqOL9Z97JhpbTlAXOyXaVj5VONYnw60o/KF8f/TdQic=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vLYxpyTJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jk72cN3s"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95D13C2BCB0;
-	Tue, 21 Apr 2026 14:54:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vLYxpyTJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 757D1C2BCB0;
+	Tue, 21 Apr 2026 14:57:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776783274;
-	bh=5jKl8uNO/WW+7Qxm+luGw5/n6QGbni4P1DlLF4vEuUI=;
+	s=k20201202; t=1776783448;
+	bh=HcsHWLjszcRC2B2e0v8iOr4a2qTwSQ8ZSEtPCq29cf4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Jk72cN3sdkHmry0XxfbE/n3TkIpQeMiL/UXmmOjtbrdABPkqcdz5PLouo0SE0aFx/
-	 QFjzN8TLuhUUJJlxHm5gX5FaRG4iqE30QBpU7rxq6dc+c3RAp6dG9jBjJbzo8EZNwd
-	 OK38w5mye9shCUJbom6QbCQ4+zD9AWuT2mG9OJK9pwO70Bd9gHXUVFzRCvwC4axCqR
-	 NevqKsvhhgSpUST4TikPnJwoM0G/Q6TAFWVLd2Q1CJ5KecxE7jiZucuHVkhKoWE/T5
-	 hnZcOyMWp8yl4JKbJHLYeWO5IJZyGIaWNBCTAPPQsP7r80wjgDDszO/vKSs2w6xtJY
-	 Wz8o9hwOpmarQ==
-Date: Tue, 21 Apr 2026 15:54:26 +0100
+	b=vLYxpyTJH3VjAnllhNl3C62E+wpaU5LK/tSDHuGgl4X0ZvMC3MQsPbvd7X/WorGpR
+	 mrvvO40IplUrvRsp2XZ9czxu8CaCnTqwUnFlDpcA0GjTc8Zr/pZ0ujQlPHQf47AFf7
+	 0xGqlcJPrATC5xvcUZQyZsrNrYWP+OE6tl3V1sQpxqFGT13i3HA2ZtyqMPApMtLXrL
+	 LvQTe3GkieQqT2VADXJ0amijmaHLlhzWPg5ii2JGhjZDFn2MDhJVlewJEwHTLeqdg5
+	 aqUj8kPcKvofJjidEJSqBo/kQ+AMFkjyh7kRb4yKBml7RKURON4DiwamdrbwJqR8rG
+	 W9bjxK/6Qs97A==
+Date: Tue, 21 Apr 2026 15:57:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Kevin Tung <kevin.tung.openbmc@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Kevin Tung <Kevin.Tung@quantatw.com>
-Subject: Re: [PATCH] iio: adc: rtq6056: add i2c_device_id support
-Message-ID: <20260421155426.45043750@jic23-huawei>
-In-Reply-To: <aeZekWfdcsSkm4SE@ashevche-desk.local>
-References: <20260420-rtq6056_support_sysfs_instantiation-v1-1-483ccee27b63@gmail.com>
-	<aeZekWfdcsSkm4SE@ashevche-desk.local>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Minu Jin <s9430939@naver.com>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ad7816: use sysfs_emit() instead of sprintf()
+Message-ID: <20260421155720.7c4a8474@jic23-huawei>
+In-Reply-To: <2026042032-unbeaten-magnetism-677c@gregkh>
+References: <20260420112720.1662703-1-s9430939@naver.com>
+	<2026042032-unbeaten-magnetism-677c@gregkh>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,15 +47,34 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 20 Apr 2026 20:12:49 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 20 Apr 2026 14:30:05 +0200
+Greg KH <gregkh@linuxfoundation.org> wrote:
 
-> On Mon, Apr 20, 2026 at 08:52:52PM +0800, Kevin Tung wrote:
-> > Add i2c_device_id table to support legacy I2C instantiation.
-> > Update probe to use i2c_get_match_data() so device data can be
-> > retrieved consistently for both OF and legacy I2C instantiation.  
+> On Mon, Apr 20, 2026 at 08:27:20PM +0900, Minu Jin wrote:
+> > Replace sprintf() with sysfs_emit().
+> > sysfs_emit() is preferred than sprintf() in show() functions.  
 > 
-> Maybe someone finds this useful...
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> For _new_ functions, not existing ones.
 > 
-Applied.
+> > It has aware of the PAGE_SIZE buffer limit and ensures safe buffer handling.  
+> 
+> Are any of the current usages incorrect?  If not, no need to change
+> this.
+> 
+
+I wouldn't mind it if part of more general cleanup and modernisation, particularly
+if that was touching the relevant bit of the code.
+
+Before sending a patch check if anything similar is on list.
+There is one other near identical one I rejected and a more significant
+cleanup series that is undergoing revisions...
+
+Thanks,
+
+Jonathan
+
+> thanks,
+> 
+> greg k-h
+> 
+
