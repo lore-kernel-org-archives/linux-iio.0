@@ -1,42 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC0F420E334
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 15:55:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12FD4279DC3;
+	Tue, 21 Apr 2026 15:57:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776786901; cv=none; b=S7QDJKxSRrL4gEtl4tK8i+Dy5RdBpn3yEblLUcAavqIrTXWv3O32qvM25A7Gwg7+X/IL9+7ENuDSycyIEfyRFybwYwNNIpAZI2yAv+ZhwNN3zrs4MAqkLiLRFdyYl704VJiSZ1h2Bl9qO9PDRhx8LZL+Idpktd1jxaV7qybjeBQ=
+	t=1776787025; cv=none; b=RNhs1IIxnZwZaO5UuOiFeBgTk8pLQeY7a7fPLCrOR8zFcmtBBNfDopWvQRxeo0r5DVJJl83G2ebrINEQOuanbPwUvzsRvt0r0EN1hNebyXTELvG2t6f9nNJ9oQutw/pQ2cSp+TWBX24PtNo8jHV5+6M9Fptkh+P/yV470GasdM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776786901; c=relaxed/simple;
-	bh=DSsw5BTMo3nXm/Xt9LqkJDLkgXsio/Srvohw2vQgfiw=;
+	s=arc-20240116; t=1776787025; c=relaxed/simple;
+	bh=L6jvH0KdJ/2HnktukZo98gY67hTXlHukwUOYENICdEM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fGr/9Lc/MyS5MM4+z2sj1EFF0QDWpQgccH0/bGb05XM2os+9tFr4Z290h6/az2ddJCGvss1yuwha5Q+JS8j+4WXglZ+WUu8BdgEF4uMgkkx7F16XR1bW/LXQxIBoMvgfGhyqtbpKEdQRzSs9D01UPghs9OsbGLhdFknl1e7DVsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xbrbbzk5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=EpIX2OrQNd1PZLK9aGtpsBtqbKOR2aG3bqkQq37/K39YZWc5r6Q0kHHmHbMA6MrH3ZECGHEwOocfkefaF/05QmOC/v6tD0W7VdwOIR3megQzYdKWobFpetFC+DDDGkyoMGO7eTQNXpOlFcv90rTkfMTvHZoR0OwLPFpIb3VBzFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PPXgxuER; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xbrbbzk5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A94C2BCB6;
-	Tue, 21 Apr 2026 15:54:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PPXgxuER"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E06BFC2BCB3;
+	Tue, 21 Apr 2026 15:57:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776786900;
-	bh=DSsw5BTMo3nXm/Xt9LqkJDLkgXsio/Srvohw2vQgfiw=;
+	s=k20201202; t=1776787024;
+	bh=L6jvH0KdJ/2HnktukZo98gY67hTXlHukwUOYENICdEM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Xbrbbzk5Bl1XNQmT3qFqV4ajXn6YvLxin2RAS3Lqu1uOEDhZXBCKuw3RC5G59kUKf
-	 CA8/ahF055GiwZmbDzH1IK+NgYiqjv8bv8rdIb9gTda0XGxWereDN1CAFayo3KKb9X
-	 xZKaa5n8DGlQIRgkbfQa/sGvmLxStWacr1EheF5j0dUspCgc1h7mYikOgwhskNHtep
-	 mtfeeW4zIc1cICdvp195Jptjg+dnj37O55IZPIt4CBBVpQ4e/xu5vwU2r6LiBbHBFV
-	 66yoUYKPoDUa23PSSwvDbPe9279fifqBOdLU3prEgorJbhLT4x0hjF3Ap3g3iDvXE9
-	 wRBzu1Mczj3KA==
-Date: Tue, 21 Apr 2026 16:54:52 +0100
+	b=PPXgxuERL7AW+4y8s76kQ7QH7zwyVD6XUCEvLOfHXtqa7ZqZ6db1DGYJ5QMECqtMt
+	 qkvfPYlinLnOFalZEzrzh1e1cWV6Z6u1iUjpt/aMYPmPZbxpUknCjTWnBlf0kq1m5B
+	 gzbpcwoo9pRWrq6hwwayrxAnWtTUAeCMdM/TtLTaP5b17jCDZA07EKtmxGqcNN+fCc
+	 6MjHWP/o/JFOBVDlD8/VNHUm8j3ProgEMufhzRK7c/9VX2Pgp0N674ZzPO1hOzvlkY
+	 SsNPZ9anUtD7OF6MVP/UxlJf95iolfVM17lw/WUXzc1ZEfvMUFBoKOgVdhs/ihjVnb
+	 z4qcRK0ceAruw==
+Date: Tue, 21 Apr 2026 16:56:56 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Machado Lage <marcelomlage@usp.br>
-Cc: andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, Vinicius
- Lira <vinilira@usp.br>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iio: adc: mcp3422: rewrite mask macros using
- bits.h macros
-Message-ID: <20260421165452.76df9b7c@jic23-huawei>
-In-Reply-To: <20260420191455.529923-2-marcelomlage@usp.br>
-References: <20260420191455.529923-1-marcelomlage@usp.br>
-	<20260420191455.529923-2-marcelomlage@usp.br>
+To: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, Lee Jones
+ <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>, Damon Ding
+ <damon.ding@rock-chips.com>, kernel@collabora.com, Jonas Karlman
+ <jonas@kwiboo.se>, Alexey Charkov <alchark@gmail.com>,
+ linux-rockchip@lists.infradead.org, linux-pwm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Conor Dooley
+ <conor.dooley@microchip.com>
+Subject: Re: [PATCH v5 0/6] Add Rockchip RK3576 PWM Support Through MFPWM
+Message-ID: <20260421165656.168fe262@jic23-huawei>
+In-Reply-To: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
+References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,24 +53,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 20 Apr 2026 16:14:54 -0300
-Marcelo Machado Lage <marcelomlage@usp.br> wrote:
+On Mon, 20 Apr 2026 15:52:37 +0200
+Nicolas Frattaroli <nicolas.frattaroli@collabora.com> wrote:
 
-> Rewrite MCP3422_CHANNEL_MASK, MCP3422_PGA_MASK, MCP3422_PGA_MASK
-> and MCP3422_CONT_SAMPLING using GENMASK() and BIT() macros from
-> bits.h.
-https://sashiko.dev/#/patchset/20260420191455.529923-1-marcelomlage%40usp.br
-pointed out repetition of PGA_MASK.
+> This series introduces support for some of the functions of the new PWM
+> silicon found on Rockchip's RK3576 SoC. Due to the wide range of
+> functionalities offered by it, including many parts which this series'
+> first iteration does not attempt to implement for now. The drivers are
+> modelled as an MFD, with no leakage of the MFD-ness into the binding, as
+> it's a Linux implementation detail.
 
-The other comments are a mixed bag but it's worth taking a look to see
-if you think any of them matter.  They are all really about the existin
-code.
+Just thought I'd point out that as this includes the linux-iio
+list sashiko took a look at it.  Quite a few things and at least
+the first one I looked at was valid (a dereference before a validity
+check)
 
+https://sashiko.dev/#/patchset/20260420-rk3576-pwm-v5-0-ae7cfbbe5427%40collabora.com
 
-> 
-> The other macros MCP3422_SRATE_{240, 60, 15, 3} were not changed
-> because they are also used as array indices.
-> 
-> Signed-off-by: Marcelo Machado Lage <marcelomlage@usp.br>
-> Co-developed-by: Vinicius Lira <vinilira@usp.br>
-> Signed-off-by: Vinicius Lira <vinilira@usp.br>
+Whilst this tool does generate some false positives, it also finds
+quite a few things it seems us humans fail to spot.
+
+Jonathan
