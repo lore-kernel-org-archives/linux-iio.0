@@ -1,41 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 979B5282F39
-	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 10:19:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52A333B2FDA
+	for <linux-iio@vger.kernel.org>; Tue, 21 Apr 2026 10:29:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776766768; cv=none; b=JnR5ZLENY7okHFNER0zH3d+W6AT2Q8gR0YgWKDcSpBH1cTsmKtR67TCemwmw6OIfNuiAqLknuo8yq0/6M/goRjYCAPvjzNsTKPvp6bmsCG+gf+gRek/l1C4BLiM7eRnvNwoRWVGJE7QwlqtRUcXpnex6Ign3uAk17X0Sryyl7Xs=
+	t=1776767382; cv=none; b=JSqK58tVxyVDeN3MkrpVlPUUubgNBhtF6BvkrPG8u9KxEgjEYJFINj8QgvDeUc2yYWyPZGnzc7RLhhYlOvQ550oWwWXVTODiUD2Xuj7pz2mACq7eJDtqAhmTfde/yRspzLXNEfQnpJUyAdebo+XWmpbP3Vnk87wHKZXaFnNYNEI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776766768; c=relaxed/simple;
-	bh=pdGypf6YcCZLIWNN0kgNCUMdreWvH9RJ4w4ScHAAhTw=;
+	s=arc-20240116; t=1776767382; c=relaxed/simple;
+	bh=YT18/9jmP61Yg7XOAZ23tnIRw4XvzEZIIlU3o+/zewU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=inTtpYeyhDl828YR06jDHRXRQnWFjOmCFRRy6L9r5wAaah+ZtvHtmORZ2PKIK3fhiz8Vat2pjWXygm58REAhQEnShTDnLoIQn5g04ZAqJOkbjj2fKJ5COwEJqzaWMkbn4wk0j81RsrFO1cb4fitITYl2FKsrGjxHCMUqdDZjG/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CjbHnmkh; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=E5bF8oTjhSMdHMg6LK01Q2d8a1t4zEpK/8bESpbbof0MWVLKuJVampLl2bNzsof5gXwigYs5u3W2b72Cf1Lw48XkwpkQZKmaXvV1rvKuT/W3YMQFP722oX0K2f36Gjl9CICOI32u46KbCE3SfSZV8ckDswVAOnR4Dj0AlQwuY1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ja5d7M8m; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CjbHnmkh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78AD3C2BCB0;
-	Tue, 21 Apr 2026 10:19:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ja5d7M8m"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E230C2BCB0;
+	Tue, 21 Apr 2026 10:29:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776766768;
-	bh=pdGypf6YcCZLIWNN0kgNCUMdreWvH9RJ4w4ScHAAhTw=;
+	s=k20201202; t=1776767382;
+	bh=YT18/9jmP61Yg7XOAZ23tnIRw4XvzEZIIlU3o+/zewU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CjbHnmkh2vZ3fHBuDfRVYO/st1Jn9GwSl4s6mDWHdzYP17qRpRn7vtZqgUwNe96D6
-	 S2MlCRNK+hMQuPtHVSjiNz7u3UJ83Fr65HaGTKQctz7l4jpJf3SXFN9jH9sQqVX9Z4
-	 FK75HnNwClT5AGmeFDr+rdFb0eKGhU5K9/bmr+Mwx10BiBlG7CDQkb4F0naIMf61kb
-	 ouYoeIVloNpoeIrZ5pU4f2gp0oqwhsmvrrYfzMAPpx8pag1NrCon89Jj128nOcgWnf
-	 hG6OW6/jdhyLYYViu7yZTx8wX4HUzAFxe7ke1K+i0PdG/lfDz5l0qTOavROoYl14j0
-	 cUs0EBkeWVV5A==
-Date: Tue, 21 Apr 2026 11:19:19 +0100
+	b=Ja5d7M8mQx77+Oi39eOqdIDYBQAIn3uSKoLJe/sn/Mv7SPKkivsNknu5dUSrPuqPI
+	 vG8nHoNFPH9gSrzIPk07UgHz8j42lH5Rz2ImZL73ZX78Zv0ZlcDFVA7wr74scnlvc8
+	 IcV006DaCNJkiFUdDk0ISF48F8WtSG7AQSjHb2CoU0j7O7y4N/o7pkjDlYNFHj8JWX
+	 hfrq6GPDPmKifBlw8v+j3xdOB8X2zOhgTiCDfZQQm/yMpfD0NMvxux1qFmpcGlOd12
+	 is+S67POjZVkTjLklSgYkyvz5wEDgqa3svehGccowv1IRTh0uY/4TajYmW/siA+POo
+	 oIie3ik4R77fQ==
+Date: Tue, 21 Apr 2026 11:29:34 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: rafasales@usp.br
 Cc: andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, "Gustavo C.
  Arakaki" <gustavo.arakaki@usp.br>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iio: light: ltr501: update header inclusions
-Message-ID: <20260421111919.5ad809fb@jic23-huawei>
-In-Reply-To: <20260421021023.563290-2-rafasales@usp.br>
+Subject: Re: [PATCH v2 2/2] iio: light: ltr501: use automatic cleanup of
+ locks
+Message-ID: <20260421112934.737107c8@jic23-huawei>
+In-Reply-To: <20260421021023.563290-3-rafasales@usp.br>
 References: <20260421021023.563290-1-rafasales@usp.br>
-	<20260421021023.563290-2-rafasales@usp.br>
+	<20260421021023.563290-3-rafasales@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,116 +47,197 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 20 Apr 2026 23:10:00 -0300
+On Mon, 20 Apr 2026 23:10:01 -0300
 rafasales@usp.br wrote:
 
 > From: "Rafael B. Sales" <rafasales@usp.br>
 > 
-> Update header inclusions to follow IWYU (Include What You Use)
-> principle
+> Replace `mutex_lock()` and `mutex_unlock()` calls with guards
+> to reduce boilerplate and allow for simpler code blocks.
 > 
 > Signed-off-by: Rafael B. Sales <rafasales@usp.br>
 > Co-developed-by: Gustavo C. Arakaki <gustavo.arakaki@usp.br>
 > Signed-off-by: Gustavo C. Arakaki <gustavo.arakaki@usp.br>
-Hi,
 
-One of the issues with the kernel view of IWYU is it's a bit fuzzy
-(and not well documented yet).
-That means there are some headers we assume will always include
-certain others. So if you need the 'outer' header the inner one
-is not normally included as well.
+I think a few of these can be done in a cleaner fashion - see below.
 
-So the comments below are very much my opinion on what should
-and should not be there.  Others may have different views and
-it is always a little flexible for some of them.
+Jonathan
 
-> ---
->  drivers/iio/light/ltr501.c | 36 +++++++++++++++++++++++++++---------
->  1 file changed, 27 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-> index 4d99ae336f61..75a49fd9bce0 100644
-> --- a/drivers/iio/light/ltr501.c
-> +++ b/drivers/iio/light/ltr501.c
-> @@ -9,20 +9,38 @@
->   * TODO: IR LED characteristics
->   */
 >  
-> -#include <linux/module.h>
-> -#include <linux/mod_devicetable.h>
-> -#include <linux/i2c.h>
-> -#include <linux/err.h>
-> +#include <asm/page.h>
-asm headers if they are needed are always in a separate block
-after all the linux/ ones
-
-However, it is very rare to see asm/page.h in a driver. Why do
-you need it here? 
-
-I'm going to guess it is for PAGE_SIZE?
-
-That bit of code needs a rework to use sysfs_emit_at()
-instead. If you have time please could you make that change as well
-as a precursor to this patch and then we won't need this one.
-
-Alternative would be to convert to using read_avail().
-That would be even better but is a more complex change.
-
-> +#include <linux/array_size.h>
-> +#include <linux/bitops.h>
-I think it is always safe to assume bitops.h will include bits.h
-
-> +#include <linux/bits.h>
-> +#include <linux/byteorder/generic.h>
-> +#include <linux/cleanup.h>
-
-Is this used at this point?  I think this might want to be in the following patch.
-
->  #include <linux/delay.h>
-> -#include <linux/regmap.h>
-> -#include <linux/regulator/consumer.h>
-
-> -
-> -#include <linux/iio/iio.h>
-> +#include <linux/dev_printk.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/errno.h>
-
-It's a bit indirect but I think we can always assume err.h will include
-errno.h
-
-> +#include <linux/i2c.h>
-> +#include <linux/iio/buffer.h>
->  #include <linux/iio/events.h>
-> +#include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/trigger_consumer.h>
-> -#include <linux/iio/buffer.h>
->  #include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/types.h>
-Common practice (as this driver was previously doing) is to keep the
-iio headers in a separate block at the end.  I don't tend to enforce this
-but given the driver was already doing so, I think keeping it that way makes sense.
-
-> +#include <linux/interrupt.h>
-> +#include <linux/irqreturn.h>
-
-interrupt.h will always include irqreturn.h so don't need
-irqreturn.h
-
-> +#include <linux/math.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/pm.h>
-> +#include <linux/property.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/sprintf.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/types.h>
+>  static int ltr501_als_read_samp_period(const struct ltr501_data *data, int *val)
+> @@ -505,9 +499,8 @@ static int ltr501_write_intr_prst(struct ltr501_data *data,
+>  		if (new_val < 0 || new_val > 0x0f)
+>  			return -EINVAL;
 >  
->  #define LTR501_ALS_CONTR 0x80 /* ALS operation mode, SW reset */
->  #define LTR501_PS_CONTR 0x81 /* PS operation mode */
+> -		mutex_lock(&data->lock_als);
+> -		ret = regmap_field_write(data->reg_als_prst, new_val);
+> -		mutex_unlock(&data->lock_als);
+> +		scoped_guard(mutex, &data->lock_als)
+> +			ret = regmap_field_write(data->reg_als_prst, new_val);
+>  		if (ret >= 0)
+>  			data->als_period = period;
+>  
+> @@ -525,9 +518,8 @@ static int ltr501_write_intr_prst(struct ltr501_data *data,
+>  		if (new_val < 0 || new_val > 0x0f)
+>  			return -EINVAL;
+>  
+> -		mutex_lock(&data->lock_ps);
+> -		ret = regmap_field_write(data->reg_ps_prst, new_val);
+> -		mutex_unlock(&data->lock_ps);
+> +		scoped_guard(mutex, &data->lock_ps)
+> +			ret = regmap_field_write(data->reg_ps_prst, new_val);
+>  		if (ret >= 0)
+>  			data->ps_period = period;
+This and the one above are more complex as we'd not want to imply protection of
+ps_period by including it in the lock if that doesn't make sense.
+
+>  
+> @@ -669,18 +661,16 @@ static int ltr501_read_info_raw(struct ltr501_data *data,
+>  
+>  	switch (chan->type) {
+>  	case IIO_INTENSITY:
+> -		mutex_lock(&data->lock_als);
+> -		ret = ltr501_read_als(data, buf);
+> -		mutex_unlock(&data->lock_als);
+> +		scoped_guard(mutex, &data->lock_als)
+> +			ret = ltr501_read_als(data, buf);
+>  		if (ret < 0)
+>  			return ret;
+>  		*val = le16_to_cpu(chan->address == LTR501_ALS_DATA1 ?
+>  				   buf[0] : buf[1]);
+
+This is cheap and local stuff only. For these two cases i'd use {} + guard() as below and
+not worry about doing this under the lock.
+
+>  		return IIO_VAL_INT;
+>  	case IIO_PROXIMITY:
+> -		mutex_lock(&data->lock_ps);
+> -		ret = ltr501_read_ps(data);
+> -		mutex_unlock(&data->lock_ps);
+> +		scoped_guard(mutex, &data->lock_ps)
+> +			ret = ltr501_read_ps(data);
+>  		if (ret < 0)
+>  			return ret;
+>  		*val = ret & LTR501_PS_DATA_MASK;
+> @@ -705,9 +695,8 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+>  			if (!iio_device_claim_direct(indio_dev))
+>  				return -EBUSY;
+>  
+> -			mutex_lock(&data->lock_als);
+> -			ret = ltr501_read_als(data, buf);
+> -			mutex_unlock(&data->lock_als);
+> +			scoped_guard(mutex, &data->lock_als)
+> +				ret = ltr501_read_als(data, buf);
+This use of scoped_guard() does make sense as there is non trivial work to
+do afterwards.
+>  			iio_device_release_direct(indio_dev);
+>  			if (ret < 0)
+>  				return ret;
+> @@ -820,9 +809,8 @@ static int __ltr501_write_raw(struct iio_dev *indio_dev,
+>  			if (val != 0)
+>  				return -EINVAL;
+I'd use a guard here (see below) for same reasons. It'll just be after this
+initial sanity check.
+
+>  
+> -			mutex_lock(&data->lock_als);
+> -			ret = ltr501_set_it_time(data, val2);
+> -			mutex_unlock(&data->lock_als);
+> +			scoped_guard(mutex, &data->lock_als)
+> +				ret = ltr501_set_it_time(data, val2);
+
+>  			return ret;
+>  		default:
+>  			return -EINVAL;
+> @@ -971,18 +959,16 @@ static int ltr501_write_thresh(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  		switch (dir) {
+>  		case IIO_EV_DIR_RISING:
+> -			mutex_lock(&data->lock_als);
+> -			ret = regmap_bulk_write(data->regmap,
+> -						LTR501_ALS_THRESH_UP,
+> -						&val, 2);
+> -			mutex_unlock(&data->lock_als);
+> +			scoped_guard(mutex, &data->lock_als)
+> +				ret = regmap_bulk_write(data->regmap,
+> +							 LTR501_ALS_THRESH_UP,
+> +							 &val, 2);
+See below.
+
+>  			return ret;
+>  		case IIO_EV_DIR_FALLING:
+> -			mutex_lock(&data->lock_als);
+> -			ret = regmap_bulk_write(data->regmap,
+> -						LTR501_ALS_THRESH_LOW,
+> -						&val, 2);
+> -			mutex_unlock(&data->lock_als);
+> +			scoped_guard(mutex, &data->lock_als)
+> +				ret = regmap_bulk_write(data->regmap,
+> +							 LTR501_ALS_THRESH_LOW,
+> +							 &val, 2);
+See below.
+>  			return ret;
+>  		default:
+>  			return -EINVAL;
+> @@ -992,18 +978,16 @@ static int ltr501_write_thresh(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  		switch (dir) {
+>  		case IIO_EV_DIR_RISING:
+> -			mutex_lock(&data->lock_ps);
+> -			ret = regmap_bulk_write(data->regmap,
+> -						LTR501_PS_THRESH_UP,
+> -						&val, 2);
+> -			mutex_unlock(&data->lock_ps);
+> +			scoped_guard(mutex, &data->lock_ps)
+> +				ret = regmap_bulk_write(data->regmap,
+> +							 LTR501_PS_THRESH_UP,
+> +							 &val, 2);
+See below.
+>  			return ret;
+>  		case IIO_EV_DIR_FALLING:
+> -			mutex_lock(&data->lock_ps);
+> -			ret = regmap_bulk_write(data->regmap,
+> -						LTR501_PS_THRESH_LOW,
+> -						&val, 2);
+> -			mutex_unlock(&data->lock_ps);
+> +			scoped_guard(mutex, &data->lock_ps)
+> +				ret = regmap_bulk_write(data->regmap,
+> +							 LTR501_PS_THRESH_LOW,
+> +							 &val, 2);
+See below.
+>  			return ret;
+>  		default:
+>  			return -EINVAL;
+> @@ -1100,14 +1084,12 @@ static int ltr501_write_event_config(struct iio_dev *indio_dev,
+>  
+>  	switch (chan->type) {
+>  	case IIO_INTENSITY:
+> -		mutex_lock(&data->lock_als);
+> -		ret = regmap_field_write(data->reg_als_intr, state);
+> -		mutex_unlock(&data->lock_als);
+> +		scoped_guard(mutex, &data->lock_als)
+> +			ret = regmap_field_write(data->reg_als_intr, state);
+>  		return ret;
+for these I'd rather see the pattern
+
+	case IIO_INTENSITY: {
+		guard(mutex)(&data->lock_als);
+		return regmap_field_write();
+	}
+
+The scoped_guard() has some annoying issues wrt to compilers and their ability to
+see that the loop (it's a for loop underneath) is always entered and so you can't
+move the return in there.  The bare guard() form doesn't have that problem.
+
+>  	case IIO_PROXIMITY:
+> -		mutex_lock(&data->lock_ps);
+> -		ret = regmap_field_write(data->reg_ps_intr, state);
+> -		mutex_unlock(&data->lock_ps);
+> +		scoped_guard(mutex, &data->lock_ps)
+> +			ret = regmap_field_write(data->reg_ps_intr, state);
+As above.
+
+>  		return ret;
+>  	default:
+>  		return -EINVAL;
 
