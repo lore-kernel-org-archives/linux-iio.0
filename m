@@ -1,236 +1,107 @@
-Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EAF03F166C
-	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 19:27:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4C7370D44;
+	Wed, 22 Apr 2026 19:30:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776886049; cv=none; b=q/rPu48z9OF7Ip1TmuC7ouLER4N6gifr0eHmKajWmG+sckYkOCZ/YEBQl4tZlvdK+emLhsaD4K0LwAUsboHzbvjGLkCw537+ITaBOQi9DVHLjbVw7RZ8yEjXma8oiR4vw0LMKdzPuBfoKsOYg/lL8jEFE7BUyhuv5TU04o/uT70=
+	t=1776886219; cv=none; b=kz3yOTxYo+rcF1UIQnJXTsTwOlB6l7axrjJGvSoO+dXqvkB66z9bf+1CvmqLZpNIfwR7uRUp+4H0dK23rB0rBOAIcNON1ax1J5R2vRTxhSxMYIJSHziV8I6FjD9rhpzeM45A175IEnplFBk2uRCfZyzsTorJBzZyxrTqA1aU4RA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776886049; c=relaxed/simple;
-	bh=74uMZIqMTGiCbmVgHh/ItkusQdu4gxP0QcoPV6iDJoo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=WNqKgCRoyQ2Q1qmcgEN7sPJNYKcE6UzFDE7fzy7kqrg0/e+GLQvZ61LH9hOCnDrpUuXtns9l9fYiPyKUaKQ3v3iKCbW61F/U9OyHu0xvuzdrH752XX/OpOqdBBYfl6gtPJK57i4DBQxSe1moXBGK6bovK13BooycLiGCic1sm+Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=gApSuJWx; arc=none smtp.client-ip=74.125.82.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1776886219; c=relaxed/simple;
+	bh=H5tft6W49RubSDPHsjuuGwukGK8MKAOmHqniirnmiXY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=amwmFFO+oSKYIEok3PteeB4mDW1I+s9jFmkgkG6Mql+5+tpU0rcW036dUPTYIHEM2yF9+MADfHMpf9JQn9hebch1aditw8gwBtcVS2iPaPOrZQWxTu3O4+ux/ZU6CGYOIZIATs+WQa2j2hDSb9SxQR/36XwSZWYRrluR//eCD+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qq3OO6Bx; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="gApSuJWx"
-Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-2d8ffdc31d0so3135627eec.0
-        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 12:27:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776886038; x=1777490838; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+9hvR5jDgqqdhVjQ1Reqh4HP73mZmpI9VtwqzI8TwQs=;
-        b=gApSuJWx1WOok27YRE6540l9MU9wElzNP1nDHgZN/JpYmaB0FyAfF9b5gXqC2y0QTj
-         HZhauSjijVDTRKODAxL5xa9jGmRd44f1dMTw/Rpgrna1ypvml6nE1t9EaLNIp3YwxKRl
-         kWQGDfrNHKvnqyyAYm4iRh9UDIQFP/9C/ha4fJQY2FPmmfvwwiasR0qsvsyBaCWKYwkX
-         jOUpi/Dn7fpBNfLrWcI90MgXwVGQzwo82inRBjzZFmvDx5HMpCFVBNYmgP9L58DXbZe9
-         xgV0OZO+3G+oaCcDXgkX338HrmhcxhslnpEKob6egGYcNeqwcqGYQoNC7k3w3TQNonNn
-         70Qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776886038; x=1777490838;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+9hvR5jDgqqdhVjQ1Reqh4HP73mZmpI9VtwqzI8TwQs=;
-        b=K4xESdw4RTr7Sk3IW+HcWyxRxk5oyS+gN1w843kgaE4jS1TNRnVCF3F9Xcdsz5YO6A
-         laa3DcdhF0LgN+pjOB7CoEXif3JygaoYjgqMBuX+KIWzu8adDyFUQKGz19bamMR8FSWC
-         dOihmdpwMMQ7FC0NPNXFeMiTkLxYX2KieJX6bLKgbk6m+C7rgbMg5fLItoVyuDA4zR+H
-         sx28kPlLMUZvczxSGdy6qtr7/1H4v2btgvAczebrPna6elkRSHdvkOFiYUmscuIBgGHU
-         FgHDNlOq+ziad5+yPh2U4Zvcr8mm9Owp0LtqmdtlsvyaXLwbYz6RfcnBZGmAvrBbL/yD
-         dpPg==
-X-Forwarded-Encrypted: i=1; AFNElJ9X6krsUZk4U6vu9sJA/az7LC69xDyXLzRB32J8pUkIlI7vi9Gt7LFcnkkVSlOA0gscqkTQVzWDKl4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxWStqTE8zybq2X6D5nfluOtMjjSpqk90LVtswcGOg0Z/27mrRy
-	4dZAgkluA7Zt4PQ2NdzDcQhfhU+YlPJlIv0tE0EN2Iew8sVPCybyFEVm+5kRMtDdn5s=
-X-Gm-Gg: AeBDiettr8uxlJeXEiw0oHlUv/f91noYgXJluJYrc3dwSuqpygshNewZBBoYSXHcJaW
-	OXOkrNFJi/uw02ncNDqFmk7foziRBcP+IQsY24Am8sVMayXjAHjcHjImmS8+t4W6CC3qWjqBKbQ
-	x6efVy5mHh3esLgR04CyBcpTVqskUcct32jdTwQnaizDxOEUuHFWD5XUA/Y6MjFM+FAXO5g9cUJ
-	l6VrlBIsMnrolQoKtnyEvg4n0Sj/ZQSYoqTV7kWroDKWqf7woO4JqCTMeaI04aQ20b84oC3Oniq
-	UMnt0/58v4E4BTaQISORsXkcr8/KBgP44UlHpEQW+wmNS9Xj3vnM6zWitx4buPyJOTVVw+jOt7i
-	24+zjmPnIEeQRWHjAJmSXcjM/g9XeXdoe3JnOlixQME2UqX7deST0THQbKY3yXzKlUddB0hLmhv
-	zl7+bwZ8nb0BUg33whep0n2t/r7bNEzXNkULspWWXCCL8ajLC6Cy0=
-X-Received: by 2002:a05:7301:4586:b0:2c8:7172:3b7b with SMTP id 5a478bee46e88-2e478646190mr15401513eec.18.1776886037620;
-        Wed, 22 Apr 2026 12:27:17 -0700 (PDT)
-Received: from Arkham.. ([2804:7f0:b2c0:99a2:bdde:cdd:fa83:d648])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e539fa3ce1sm23370313eec.4.2026.04.22.12.27.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2026 12:27:17 -0700 (PDT)
-From: Guilherme Dias <guilhermeabreu200105@usp.br>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	nish.malpani25@gmail.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Guilherme Dias <guilhermeabreu200105@usp.br>,
-	=?UTF-8?q?Jo=C3=A3o=20Paulo=20Menezes=20Linaris?= <jplinaris@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] iio: gyro: adxrs290: Use guard(mutex) in lieu of manual lock+unlock
-Date: Wed, 22 Apr 2026 16:24:36 -0300
-Message-ID: <20260422192521.7472-1-guilhermeabreu200105@usp.br>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qq3OO6Bx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776886217; x=1808422217;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=H5tft6W49RubSDPHsjuuGwukGK8MKAOmHqniirnmiXY=;
+  b=Qq3OO6BxdubvYK8e//n5rnABSA5XrinSAJhh8Jki9cvegrQJ2vaFTK1m
+   AmLIAbQFf/6sg1FehXxG/SojlnWjVcmg+NXizkx/+gwQv+FyGFBe7pIVD
+   XvHtbZ+WgM0j72BVw837ely+kV+3SG+Q58e/alz7VDioZ3Qp00osWTOI1
+   faC/0iWebR+wG6jTfCaySiMZqW2zdYURnLqOZ8ISjb2P5i0Vj6xHQxZ6n
+   b8BIgZWpdwQbUt2L6wSRIjNNWdZ/1XvCV40PX/CGxthRfeGaASE9IYrvh
+   ierR2wjjmzWg4BUFJOKK08fiwSfmByssl6ti/3nXxRCrRG2o0XLXVh7dU
+   A==;
+X-CSE-ConnectionGUID: 0vJJvrgNTKOcO51FQRju2Q==
+X-CSE-MsgGUID: x8tlo1//QeqItkZiWxUXMg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11764"; a="95264710"
+X-IronPort-AV: E=Sophos;i="6.23,193,1770624000"; 
+   d="scan'208";a="95264710"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 12:30:15 -0700
+X-CSE-ConnectionGUID: Y0+GkkTySl67QgjfxXllWQ==
+X-CSE-MsgGUID: An1QVX0DT0W9ph28zrDdQw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,193,1770624000"; 
+   d="scan'208";a="229262422"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.201])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 12:30:13 -0700
+Date: Wed, 22 Apr 2026 22:30:10 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, sakari.ailus@linux.intel.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] iio: accel: mma8452: sort headers alphabetically
+Message-ID: <aekhwk14at43zT7f@ashevche-desk.local>
+References: <20260422165643.2148195-1-sanjayembedded@gmail.com>
+ <20260422165643.2148195-3-sanjayembedded@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260422165643.2148195-3-sanjayembedded@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Use guard(mutex) to clean up adxrs290's error+unlock handling.
+On Wed, Apr 22, 2026 at 10:26:39PM +0530, Sanjay Chitroda wrote:
 
-Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
-Co-developed-by: João Paulo Menezes Linaris <jplinaris@usp.br>
-Signed-off-by: João Paulo Menezes Linaris <jplinaris@usp.br>
----
- drivers/iio/gyro/adxrs290.c | 57 ++++++++++---------------------------
- 1 file changed, 15 insertions(+), 42 deletions(-)
+> Sort include headers alphabetically to improve readability.
 
-diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
-index 3efe385ebedc..86893aeeb710 100644
---- a/drivers/iio/gyro/adxrs290.c
-+++ b/drivers/iio/gyro/adxrs290.c
-@@ -115,65 +115,47 @@ static const int adxrs290_hpf_3db_freq_hz_table[][2] = {
- static int adxrs290_get_rate_data(struct iio_dev *indio_dev, const u8 cmd, int *val)
- {
- 	struct adxrs290_state *st = iio_priv(indio_dev);
--	int ret = 0;
- 	int temp;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	temp = spi_w8r16(st->spi, cmd);
- 	if (temp < 0) {
--		ret = temp;
--		goto err_unlock;
-+		return temp;
- 	}
- 
- 	*val = sign_extend32(temp, 15);
--
--err_unlock:
--	mutex_unlock(&st->lock);
--	return ret;
- }
- 
- static int adxrs290_get_temp_data(struct iio_dev *indio_dev, int *val)
- {
- 	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_TEMP0);
- 	struct adxrs290_state *st = iio_priv(indio_dev);
--	int ret = 0;
- 	int temp;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	temp = spi_w8r16(st->spi, cmd);
- 	if (temp < 0) {
--		ret = temp;
--		goto err_unlock;
-+		return temp;
- 	}
- 
- 	/* extract lower 12 bits temperature reading */
- 	*val = sign_extend32(temp, 11);
--
--err_unlock:
--	mutex_unlock(&st->lock);
--	return ret;
- }
- 
- static int adxrs290_get_3db_freq(struct iio_dev *indio_dev, u8 *val, u8 *val2)
- {
- 	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_FILTER);
- 	struct adxrs290_state *st = iio_priv(indio_dev);
--	int ret = 0;
- 	short temp;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	temp = spi_w8r8(st->spi, cmd);
- 	if (temp < 0) {
--		ret = temp;
--		goto err_unlock;
-+		return temp;
- 	}
- 
- 	*val = FIELD_GET(ADXRS290_LPF_MASK, temp);
- 	*val2 = FIELD_GET(ADXRS290_HPF_MASK, temp);
--
--err_unlock:
--	mutex_unlock(&st->lock);
--	return ret;
- }
- 
- static int adxrs290_spi_write_reg(struct spi_device *spi, const u8 reg,
-@@ -220,11 +202,11 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
- 	if (st->mode == mode)
- 		return 0;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	ret = spi_w8r8(st->spi, ADXRS290_READ_REG(ADXRS290_REG_POWER_CTL));
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	val = ret;
- 
-@@ -237,21 +219,17 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
- 		break;
- 	default:
- 		ret = -EINVAL;
--		goto out_unlock;
-+		return ret;
- 	}
- 
- 	ret = adxrs290_spi_write_reg(st->spi, ADXRS290_REG_POWER_CTL, val);
- 	if (ret < 0) {
- 		dev_err(&st->spi->dev, "unable to set mode: %d\n", ret);
--		goto out_unlock;
-+		return ret;
- 	}
- 
- 	/* update cached mode */
- 	st->mode = mode;
--
--out_unlock:
--	mutex_unlock(&st->lock);
--	return ret;
- }
- 
- static void adxrs290_chip_off_action(void *data)
-@@ -506,22 +484,17 @@ static irqreturn_t adxrs290_trigger_handler(int irq, void *p)
- 	u8 tx = ADXRS290_READ_REG(ADXRS290_REG_DATAX0);
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	/* exercise a bulk data capture starting from reg DATAX0... */
- 	ret = spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
- 				  sizeof(st->buffer.channels));
--	if (ret < 0)
--		goto out_unlock_notify;
--
-+	if (ret < 0){
-+		iio_trigger_notify_done(indio_dev->trig);
-+		return IRQ_HANDLED;
-+	}
- 	iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
- 					   pf->timestamp);
--
--out_unlock_notify:
--	mutex_unlock(&st->lock);
--	iio_trigger_notify_done(indio_dev->trig);
--
--	return IRQ_HANDLED;
- }
- 
- #define ADXRS290_ANGL_VEL_CHANNEL(reg, axis) {				\
+...
+
+> -#include <linux/module.h>
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
+>  #include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/property.h>
+> -#include <linux/i2c.h>
+> +#include <linux/types.h>
+> +
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/events.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> -#include <linux/iio/buffer.h>
+>  #include <linux/iio/trigger.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+> -#include <linux/iio/events.h>
+> -#include <linux/delay.h>
+> -#include <linux/pm_runtime.h>
+
+> +
+>  #include <linux/regulator/consumer.h>
+> -#include <linux/types.h>
+
+For this driver the regulator/consumer is a regular header and can be moved to
+be between property.h and types.h.
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
