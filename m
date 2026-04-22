@@ -1,87 +1,114 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A91553EB7E8;
-	Wed, 22 Apr 2026 13:16:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776863791; cv=none; b=s74QUD4LZEyeY1qTBtnQWXRbjLloZPYMuP2bWH7ljRsXVOp63xyclavISs0IW4QV240XWs5016cVdch4OtM5uw8uA1BTgS+BxFQZct9gVXswEkpggPxFdpXfpoCoLCalbacZoBZ9BYUEzrOuh1txlae0qKQdoWZwo4QFeXG0RjU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776863791; c=relaxed/simple;
-	bh=wiIjrmcktkrvvGCbgDTyj+CcNrw7dra9Q6dtVdyfipU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AhVN2fXWdm2Ew9YZHeozKVA4Dnxlul9rskalJXf+t8W9OvJALx14ocwhuPPZfEsA1coatxf1EJlPoxmXSpgAzM6WI8Up+l7b8d0nLgs2H0Y5y5PFdYt3UIvZhvNojxE6KY7E6XKG2n9VPDjI+AVo0uKR1N1+25tkeLz9Wi6sQ64=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lQiFLgqx; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F9903EBF1F
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 13:20:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776864042; cv=pass; b=Pxl5ZXSeqTyL3v1JI5Kr7fzW5IZ/avZQhMQbMvmNnyD3KaOtUVZ6ho83kRdd6oCsR1TfWbIZpvwIfzFh5LsaTkmVDEeVr9hlTpstW6OQzcMtNUy551GiEkayEdpfpU74Nt0AeDg5eFWasnXepTtPkUnwbxliqfpyFP2zfALtHCY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776864042; c=relaxed/simple;
+	bh=+wjeIqfqElPskXZKpXQYaHAM/xf2yZoO/YfpSl8mt8g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=g3Wtx8ULKwPMP7TuJpDAxiTShKyMMpEcnLhww7PAq2ba4AaSY+QvkgxeYESjGCp5S06mhO2C8WgUruBk5Lcts7a/vopXU/UdGRFITacsyONixpWBStDkH60r3ayjw12vcZYuzvHQIxmtSrNzlc74xUDDkvgdJbujRxfoyXXQ89Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yk78KVFf; arc=pass smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lQiFLgqx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776863789; x=1808399789;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wiIjrmcktkrvvGCbgDTyj+CcNrw7dra9Q6dtVdyfipU=;
-  b=lQiFLgqxhpLs6FJN8Ilo+/KrO+VvE01boyruREZVSxOEFxmeuTg+6LXA
-   5fcmLRnt3UCtwA5EHfnEUWzccoYBgcnU1zW7Gqo7Ni9v63pYE3ZEZUjTW
-   gw5x7nn8aVe9IRk0DSXVHEgwRhjcl6UOdwsi/nDSHeNlsCPIvG9dhfDUF
-   Yft9QicKfd2vsg7UJHEQOYOrBeL/VYKvGZOwanypXgtDlFunOh1HMAUQ1
-   NuR6y+hpvGjGv8SoDz85uMYqWzTQhz+2F0TrXBsv9XNyUIxHc2VlC9D1P
-   Ym6tHvgqhNODFBjPuMhpfQwzPPNDks8I5l7zeiyakjXA8n5k6a99TnKF3
-   A==;
-X-CSE-ConnectionGUID: /I3jUqEIR6CE9zOAewb1mw==
-X-CSE-MsgGUID: 9LgQZUhTTRiOnG+ZMOCEbA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11764"; a="65350309"
-X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="65350309"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 06:16:29 -0700
-X-CSE-ConnectionGUID: NvUPB1U4RP+C5JAOo0MXlg==
-X-CSE-MsgGUID: lmh2Lii1S1CiSR3tMWJSLg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="270454556"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.201])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 06:16:28 -0700
-Date: Wed, 22 Apr 2026 16:16:24 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/6] iio: magnetometer: ak8975: modernize and cleanup
- driver
-Message-ID: <aejKKKD4JdxIzlk0@ashevche-desk.local>
-References: <20260422112207.1313-1-joshua.crofts1@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yk78KVFf"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-488ad135063so47713185e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 06:20:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776864038; cv=none;
+        d=google.com; s=arc-20240605;
+        b=iRRIgfyteuAv92JMr45Ik2ZQHa0sBAmWRbFbICUt54xT29//oiTCiXCvXjmFuxD9mg
+         RIhC+5bVKOaV6uoewx2Cs1Qsw2Vm2DkllhJyoMbrZ8EFEGlnwSbEANS3UnbVKN+firi/
+         w/iXIZWQBW2dviyZG/rYwFeEyOB1OnqsiTCuxD+KwxBUC29iyxLGEyJwonGJKbyS2adh
+         KdiP0XUXqMRzpCk/H4PKu9IUtkvWkz7ne+s+3DqtybBqxuaWvtNyM0Y5NJjW+IkWHrMO
+         0BAQAGhEGKZtw6MtBSN6D+leCzSelsswEZ+B901xWV2gq6pmiWXd0HfnLllAVbbCpYBV
+         erxg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=cQz9B1hpNtjt5JlRs2zfI5fKVPFKXhoeS9Or0FnxExE=;
+        fh=ekNm7/YyfcbL4LOXR2UhYpEmgA3lRFtMFwCEN6TnxNM=;
+        b=OAFP6IFgvhaPzOahP6xq66WrbpEQc1IyO+IOW48qbEI+1qiH4QI3VaQkdyfwBa97Vd
+         0+UT4r84BsAWfTxs1ik4njuOK7QBY+jDAwK0ZGNxJhswsDCsBF+BiaVTaM8seis6Ik6g
+         YmyPrM0ndj96EUNfRtxSIVuXMC1pR54HP2qPdTFH4sICPdEoYgk10QT69FTCL9E1oP4W
+         wtkf7Q8Epq2IZluZQ7xaH2PNl/DM+rxi7LI7TZopEYwO/711KgnvWnBwDOqkmvwrLCas
+         vWd0bUzjhU5sEGlPPqKc1UIM3ld2TjUVBm5muItPslrszBUuX040YJtBljgxmoFPhSE2
+         5zWQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776864038; x=1777468838; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=cQz9B1hpNtjt5JlRs2zfI5fKVPFKXhoeS9Or0FnxExE=;
+        b=Yk78KVFfwzEQTfmBMqyPPSnhr+X8boPzA/QM0sCNJ4XphHlJ9yej85Mlc2R0QowuYQ
+         sbRfiy4dEzW4ISD4umFQwEBw63xv5gfHfqhKDB3dG+KqEsl5XAvzpgVFvyR45cnZYjGZ
+         mL9/YYJwhCmaSxNhL/Yk8loLL1edJ72q8haQVWJyZlWq2iPvI+bpmfbgfwNAgXhC1U13
+         AQGfdL84oYd5zFCOJ6mvOGSgQDCpLScUKUTppd2sTYpdTzz6g1ORTBR8Ixq4YEkHxCmN
+         9tVpY44VqdbDGDPK6QbBTK7aubWslZR8HleJbuexmpDR0ODQLzQAcbQiurJfj7ifTkhb
+         N31g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776864038; x=1777468838;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cQz9B1hpNtjt5JlRs2zfI5fKVPFKXhoeS9Or0FnxExE=;
+        b=VQlSxGbJn0uZ5QTf3HzkN724J7VzbXUViLLZBgRi2jccZHz8T/wS7b6XifblTIpyMQ
+         2e2LeR6eM+66wzZ74281daKkAqlGJFHOBu7FoSUF5/UDRBxpQTmSm1juPWABKUO9/EeJ
+         TsHEiYZY6Ys0CLuSfizD214oUOjSES7Gry0yLSCOuKccFqxnjT0Hog2Anir005IX4uZC
+         b7r9YtngSN9swnONCGWVXlOSBrS5LuF3Si648poRJ/C6swUkDgbRA+7x3efIY3PWiK6c
+         wcRbgjAspFsMoJLcsJFrc9x2hanG+nTe7vTLM+UmZr8+NJqEujuSvM+uF1+CSqrn0lTS
+         JWHQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/JsEoxsaBar0/BIqNmAOobHBhTjyfyIJ8/8kZciBcV+kO+44TcPDfknaRFOttEHqoBrEB6w+TYF18=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzNp5QoULhS4Pa9xfLmTwPRdVwjnHsQH2KXexh4J7r8uKP4qKEm
+	rc+3uqAbuBa+t8TKNptyNsllgrat3a7VmmvjNnrR2nDJXUAGtfIt07g2dkD0nNubzRDJpK6AMDH
+	AopQ55q+QGGELs37dxWuflMRRA5DDxI4=
+X-Gm-Gg: AeBDieur5k/SgA0WC85Tu+kJNMykP1r+Z9dQ19NWDnLtYhcEhTR1E1tYM/qIwZaRqut
+	H7V/FrrhpScjhO9piFIVyIvx5YtBHD3HWQMAx0mrDVpXpsR7dWVOGhUNq3ryKI1QlnsTLj8x4jU
+	92vxrwtWd5dq13AlYah9Bg5vXUvLpOgkSFYD7Ghl4mVMhzoNvHsuAJexS1ykoNH7uXZ2tva93IF
+	nuPOBg7vluLN8gI4IDQ+NXdMH5dIqOwtPjBeYLN7W+m06E1ngZrpOpQej9Lk6xTxI8WmvNrGsLp
+	eCgqxmLJv9ImJMictRWo1GntMrSLtFSNUKzADb3KkzjW+ioFv7yDHsw5oHsa/f0zLuTQvcI4mmM
+	58KuELsAf5ePfLjMuZCs9JyM2HJIZuq63TKoReiddY6vlxQLRvqkVO+vGXUgFgyLLKH8mgmYpDX
+	B8B77BUmyDTZDQkj4o
+X-Received: by 2002:a05:600c:628c:b0:48a:52d4:888c with SMTP id
+ 5b1f17b1804b1-48a52d48985mr147979535e9.3.1776864037644; Wed, 22 Apr 2026
+ 06:20:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260422112207.1313-1-joshua.crofts1@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260422112207.1313-1-joshua.crofts1@gmail.com> <aejKKKD4JdxIzlk0@ashevche-desk.local>
+In-Reply-To: <aejKKKD4JdxIzlk0@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 22 Apr 2026 15:20:26 +0200
+X-Gm-Features: AQROBzDuXgoF7DyCdachQ6bdlvYilKxrsGw4G8rikxb9MuF5XMwaqNUWJft5W0g
+Message-ID: <CALoEA-yaUTX-brKE8OZZmZbWWJ0=q+MR=kGnmicXciYZYKbQTw@mail.gmail.com>
+Subject: Re: [PATCH v3 0/6] iio: magnetometer: ak8975: modernize and cleanup driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Apr 22, 2026 at 11:22:01AM +0000, Joshua Crofts wrote:
-> This series modernizes and cleans up the ak8975 driver, migrating to
-> more modern kernel APIs and cleaning up legacy code.
-> 
-> Changes include:
->  - replacing usleep_range() with fsleep() for optimization
->  - migrating to iopoll macros for better device polling
->  - removing unused headers and adding new ones
->  - checkpatch.pl fixes
+On Wed, 22 Apr 2026 at 15:16, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> 5 out of 6 are good, one needs a bit more as it's a new patch in this version.
 
-5 out of 6 are good, one needs a bit more as it's a new patch in this version.
-Also, wait a bit I'll send a couple more that you may incorporate in your
-series. Btw, are you familiar with `b4` tool? If not, good time to start
-playing with it.
+Considering this is my second patch series, I'll take this as a compliment :)
+
+> Also, wait a bit I'll send a couple more that you may incorporate in your
+> series. Btw, are you familiar with `b4` tool? If not, good time to start
+> playing with it.
+
+Only a little bit, I only really do 'b4 am' on patches but I'll check
+out the manual
+a bit more.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
