@@ -1,70 +1,75 @@
-Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
+Received: from mail-dl1-f44.google.com (mail-dl1-f44.google.com [74.125.82.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43F772D3EF2
-	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 21:06:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FCB73624C3
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 21:11:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776891980; cv=none; b=MR9K7YH1T/u9J5RscZgIytvdR7Dlac3i2xtBpkNjugki9ztSpveOMat0b55xKAHmY4g/xeF//+QCTyeqgP59A3Qu4Uzcns7pzTppNHj95l9mTcXNzHqVNnT40NyQbrMXrM0IsKBtVG7sncGpGfzojTUGV5cAUS4+06Zd8juYSfM=
+	t=1776892321; cv=none; b=AAYIRySZEZetWuBsKci0aPNVxcITPxtoIN8Rq6l8qIyUatfZaESoxjGV11uITyX3cDNVsMmFTBH4J8etkjTaXFR7TyINfqxOxMso1ehLfA7SmD1wdG59IJVkmP26Dwu2QbZAn3MA2qZihy2kZcJiRpw76G4WIBHbitOgfCKmDPc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776891980; c=relaxed/simple;
-	bh=/CSekN1zYPe2NdQLVZ/FR7/OfxhQn229eTGbrz9rXb0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=dywnMfQMxWizcInAjrbXEEPt3qUcY7G0mWWtmFguFSqJowcKuZw2n/CrTH8ykCAKpkeZwiHizP8meSmN+PZG5MvCzEo09v3xnNJTlxG8C0D5OclhOFTYQ/dsWTCMhFpplnmcdmKrqLX8xV84zHVEHAnDVBOiipxU3dc4HjcGuH4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=oSxXTsZr; arc=none smtp.client-ip=74.125.82.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1776892321; c=relaxed/simple;
+	bh=Gt/uar/oIK4Mnuu1/gqNjS5RMsUkmaiTnEqNdPU6xYY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LqMtzyMUmnTP0RPtFvv9kOkuhkhkqIss2OpNMvtJ2MjwojVScweNqiHLEbF0v+WHIQjg5XxemWVdKLfK+gjlWjwgWXJAZqUFpNHS5DCnZHVfHIYck//2GfZeqTV6HFD9OiAaDCOU8a+M3n1JWw0gwxlkp5gZQ9vIkQF1zVjl7rQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=Pp6rdjd3; arc=none smtp.client-ip=74.125.82.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="oSxXTsZr"
-Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-2dee127b3c5so7752694eec.1
-        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 14:06:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="Pp6rdjd3"
+Received: by mail-dl1-f44.google.com with SMTP id a92af1059eb24-12c8ccc7755so5280471c88.0
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 14:11:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776891976; x=1777496776; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1776892317; x=1777497117; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=pudKEV+xOP3hs/5+HMikr1MXRiTumODEI/eME8g3ldM=;
-        b=oSxXTsZrUYF4jjpRK2Hv96s8+jZ51g1QV4zP1dZYD8dhzi6IYeAs48DxyO8TodX2FL
-         vApRwe9oZLT5Cj7G5/qL0A2CMKddDEDngct9wKL7RewZJXP14kwHU4zzz49TYc0FluhM
-         TbIcNtCV9REugh0ErJ8TbWvUqayrBp5+tN8Lu9lLG6Gz3/Ga0fKQmQA5GIe4MFvHgWJV
-         NtgxcAAHlb6Tja8qJBbj73JNfwqVKe+u6RG7W417fNm5YBrK0G9Ogpl5+QCiussLPXgc
-         qjpwqRfTuYwSpylj40zQs7w4VGFBq9gipOqvFirwSlFIP0ltKkTbSnG7PwOMnMcZWhkO
-         bE8A==
+        bh=I4Z+puxdAQHIEw9u3fWE4f9kOBWFtbBRHFAkLT0CY0w=;
+        b=Pp6rdjd3VIkuTJPr3iFcW3EOH3QLAI+NzMeydHJf33hGUa/H36rRFZTlbSm5NY9CvT
+         +tbc1+kXeFLNyRz/4U6O04klFMvYZLRQkIjqIdq7QMaKNGLbqpQWvjFqYjzgP3Xe73jX
+         Wb0aTMfzj02qE37YuTw8TcyhapzRJC+oSDB0QaVSaqg789PWy4d9+ieWEAGKlgtCU/vT
+         F5ZRJT+NWSTTfjqY8wofA+ZlQG69eayu2pZVo/FmQWFr4IYLakUC985GvPilLntGHSFl
+         CyVHM7Wjdg0vudp0ucfgJj7/GjbDPmzrZZcpWNlqSuSACAk8ZdtR1CnS/kaX7/IBeueE
+         mpTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776891976; x=1777496776;
+        d=1e100.net; s=20251104; t=1776892317; x=1777497117;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=pudKEV+xOP3hs/5+HMikr1MXRiTumODEI/eME8g3ldM=;
-        b=OMAYBTXLN6vOLfYrz3+tBo+8I9tf9ZvTJ9i3J59lc0QOjTmh/si7EwWca/ObvgEwRz
-         cMl/iPoIw9u/o0tc5Ze94MEyQcpObMAZFgHn+6Kua/Wz0UQPWLKdGIZ8pWLiQmcMkCr6
-         dSGs7xvkCsBK6l4WkFvZMWm4YSOJnF7wGDacOoLj8eOpvG2FxXFIXJ/OfFjnlvdG/PZh
-         PubzWjydgS5u1IjLI2wGtMZseuAEfHhJTz0rr9K0TYCxSa6EUFsJ7Cr7W4kfBCt5ZeFS
-         q32kfd4A8JMJhRM22tFz/s8YkbChwN/amYUCYMx1Uc7Vk56LZr60TKePVr9Xd0X8HZ4X
-         fmvw==
-X-Forwarded-Encrypted: i=1; AFNElJ/6OommWZYXMkfu96tPc+Pp6scL4UQ29svTxriYGHsnzHpWVCl+4QVKWywQ4nMZwFb/Q5OneVDVSIc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx+u8/pqFD3u5f0RAreMHZt2lSF7ZpIrGalhy/To6Usg7qzKdFh
-	4bfsuuEKZWXVY38yM/1k5mph6KgV7EMtlHsNjfxqzLTBewSH6Is98FnRe/NXL2SJu74=
-X-Gm-Gg: AeBDiesyGFd9i30X9nB5caRj9K801urBevJ2Z+a8ckJk2dYOSvx9YWK/WMt6TDJTLsF
-	62P6yq8IMBtoEnxSij31kKhmsCZETn/hyqgYc2Cp7p7XRkU12q81n/vrzC7KSvyPsNVbYIlMiYb
-	NwXehGRT9hB00zqzKDf7favzc3s5vlIpcig6VgB3cvdXynUciGHLfpDBP08rQh0wJn320vrDnjt
-	hPft1cUCsiSh+V8atNm3vWFFHJv/9SWcPXRxy5ItkgClzkvqVwaO+ZQvDsGMlnXuFliwtuhVoBw
-	+iw7FytR8EfqoTb1VtZP885GTu4zMPACzIYnJOl8nluyt7XrD9WwYcL+VsiOOiGvBgmswANHtiI
-	RzbFiKh2fGN20hign69InI3EbVQGhj0w/lIUR9stH8y/fyfEZMIAAOJTg4CenE/bN/ix+c0LAID
-	0fhAkKhDhLb9OheE5rKuN5uirt46lQ/xcApnJnBLFyMcS0Ic8i/KQsKiBfnEhkHQ==
-X-Received: by 2002:a05:7301:4185:b0:2d9:fa9c:87a9 with SMTP id 5a478bee46e88-2e464ea79b5mr13855071eec.5.1776891976066;
-        Wed, 22 Apr 2026 14:06:16 -0700 (PDT)
-Received: from monstruoso.. ([177.141.56.164])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e539fa3ce1sm23704336eec.4.2026.04.22.14.05.57
+        bh=I4Z+puxdAQHIEw9u3fWE4f9kOBWFtbBRHFAkLT0CY0w=;
+        b=J8K+9avSyGbvS/ZhiKoFQ3ehBe+sj1Ctn9AKMQ6L43DOiegDxDgLyiCf9QRWUqmsTw
+         /8srWIQtpW3RsnSsM7PpJXW5OclzVYsxMVQp1YFUxr5d8Eij3nXf4jRVx2ah4wOaFimS
+         34FLtMSyLCc1GVb/t12tJeJHG+vCqwQXQuj3o1OdikBndOMlK6OtKIK/ua19j4qe75ds
+         7so9x2y2LcM88WMPUfL5Uq6+aj3WbP3grYhNQVKkzKy55/irfLItMzPXNw5j6BcG8nQj
+         dlo0WuDWE0BoHkoC3VMICAFiv6GKY26rLooyC7ZatqE8rJ0a60tlx6C0r2e2pWAqRb8C
+         WbTg==
+X-Forwarded-Encrypted: i=1; AFNElJ9YWFAzOiez/wTRKv7o2dmSd31kpUYC/rbAJWzdltikstWIaJ6XSPjs2uNDYdffWjOPGTsRGHv51nM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyPlFFt3PbhURC8R3ky4JOAiTph4suBWhubioiRPZFf8M8tsr5E
+	0BJ3nGN3V0aNS6FAtuteY0XlNDkYRno6CaOBXTmX/88lIIZ5Z1cqYUzM6Gy4QL79IVVsuaigaZM
+	0eqRt1RVbMw==
+X-Gm-Gg: AeBDies4ZMfqI7JwpHGg6RoWG9wupigzcqq7njfMTA4Z9ifX9SguTQ9mCTXB5FJByyu
+	aXfFIlcR5MB1apiBX2lQjXODwphD1Hf5rlQeyXaW0UMuQZFKnmcIJohm7frcdYLTAMeXj+bX6f+
+	n17UdKYILTPHB3tdEd77Ln9aIkspWggUV9q2+DYWW9XmjqJCWVjqc/41AKGamEFPZB4v5V6Zsjd
+	sClp0mNNPig08Nysq99D1dM292Fh7/+pUF0tiwzA4kjNRDfIT3/XkZiTxM4/2GNndq1KLAT3X2M
+	QupYCXwbBcLfPywTIGK8m+KrH1WqIzzVYyHGz17+aMicPFd2bV+GvgDVC6n8WMbyiIAImYrNXsC
+	gdIZXQfUW5X6LdIpdNckxWDMElP4DPGxHayMNKGmTGmIhC2DQzDAhuN2DpYlGRnu4M36lOJUGSS
+	B+n9KzP58fB/iFbSFm8kmtSWQfVWxUGNCxUQ2Li46Kw1oLR5lp+iwecgQcGlayxXUqXpit1r3qQ
+	m31TAssR/MzfFGaT3v4glgjwktZjltdv8dcIRdzMvXG
+X-Received: by 2002:a05:7022:b87:b0:128:d375:f1d4 with SMTP id a92af1059eb24-12c73f98f83mr12766707c88.28.1776892317133;
+        Wed, 22 Apr 2026 14:11:57 -0700 (PDT)
+Received: from eduardo-Inspiron-3583.. ([191.181.58.135])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c8e837beasm16682218c88.11.2026.04.22.14.11.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2026 14:06:15 -0700 (PDT)
-From: Joao Paulo Menezes Linaris <jplinaris@usp.br>
-To: ilpo.jarvinen@linux.intel.com,
-	wbg@kernel.org
-Cc: Joao Paulo Menezes Linaris <jplinaris@usp.br>,
-	Guilherme Dias <guilhermeabreu200105@usp.br>,
+        Wed, 22 Apr 2026 14:11:56 -0700 (PDT)
+From: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>,
+	Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>,
+	Christian Barry <christian.barry@ime.usp.br>,
 	linux-iio@vger.kernel.org
-Subject: [PATCH] counter: intel-qep: Replace manual mutex logic with lock guards
-Date: Wed, 22 Apr 2026 18:05:37 -0300
-Message-Id: <20260422210537.12127-1-jplinaris@usp.br>
+Subject: [PATCH] iio: adc: mcp320x: Use guard(mutex) for lock handling
+Date: Wed, 22 Apr 2026 18:11:05 -0300
+Message-Id: <20260422211105.48158-1-eduardoaugustoabc@ime.usp.br>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -74,195 +79,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use scoped_guard() for handling mutex lock instead of locking and unlocking mutex explicitly. This improves readability by eliminating the need for gotos and by clearly indicating mutex will be locked only when execution is in scoped_guard() scope.
+Replace the explicit mutex_lock() and mutex_unlock() calls in
+mcp320x_read_raw() with guard(mutex)().
 
-Signed-off-by: Joao Paulo Menezes Linaris <jplinaris@usp.br>
-Co-developed-by: Guilherme Dias <guilhermeabreu200105@usp.br>
-Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
+This simplifies the error handling paths by removing the need for
+the explicit unlock label while keeping the locking semantics
+unchanged.
+
+Signed-off-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
+Co-developed-by: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
+Signed-off-by: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
+Co-developed-by: Christian Barry <christian.barry@ime.usp.br>
+Signed-off-by: Christian Barry <christian.barry@ime.usp.br>
 ---
- drivers/counter/intel-qep.c | 126 +++++++++++++++++-------------------
- 1 file changed, 58 insertions(+), 68 deletions(-)
+ drivers/iio/adc/mcp320x.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
-index c49c17805..199a8d562 100644
---- a/drivers/counter/intel-qep.c
-+++ b/drivers/counter/intel-qep.c
-@@ -188,25 +188,22 @@ static int intel_qep_ceiling_write(struct counter_device *counter,
- 				   struct counter_count *count, u64 max)
- {
- 	struct intel_qep *qep = counter_priv(counter);
--	int ret = 0;
+diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+index 57cff3772..799756f4c 100644
+--- a/drivers/iio/adc/mcp320x.c
++++ b/drivers/iio/adc/mcp320x.c
+@@ -44,6 +44,7 @@
+ #include <linux/mod_devicetable.h>
+ #include <linux/iio/iio.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/cleanup.h>
  
- 	/* Intel QEP ceiling configuration only supports 32-bit values */
- 	if (max != (u32)max)
- 		return -ERANGE;
- 
--	mutex_lock(&qep->lock);
--	if (qep->enabled) {
--		ret = -EBUSY;
--		goto out;
--	}
-+	/* Lock mutex while execution in scoped_guard() scope */
-+	scoped_guard(mutex, &qep->lock){
-+		if (qep->enabled) 
-+			return -EBUSY;
- 
--	pm_runtime_get_sync(qep->dev);
--	intel_qep_writel(qep, INTEL_QEPMAX, max);
--	pm_runtime_put(qep->dev);
-+		pm_runtime_get_sync(qep->dev);
-+		intel_qep_writel(qep, INTEL_QEPMAX, max);
-+		pm_runtime_put(qep->dev);
-+	}
- 
--out:
--	mutex_unlock(&qep->lock);
--	return ret;
-+	return 0;
- }
- 
- static int intel_qep_enable_read(struct counter_device *counter,
-@@ -226,28 +223,28 @@ static int intel_qep_enable_write(struct counter_device *counter,
- 	u32 reg;
- 	bool changed;
- 
--	mutex_lock(&qep->lock);
--	changed = val ^ qep->enabled;
--	if (!changed)
--		goto out;
+ enum {
+ 	mcp3001,
+@@ -198,8 +199,7 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+ 	struct mcp320x *adc = iio_priv(indio_dev);
+ 	int ret = -EINVAL;
+ 	int device_index = 0;
 -
--	pm_runtime_get_sync(qep->dev);
--	reg = intel_qep_readl(qep, INTEL_QEPCON);
--	if (val) {
--		/* Enable peripheral and keep runtime PM always on */
--		reg |= INTEL_QEPCON_EN;
--		pm_runtime_get_noresume(qep->dev);
--	} else {
--		/* Let runtime PM be idle and disable peripheral */
--		pm_runtime_put_noidle(qep->dev);
--		reg &= ~INTEL_QEPCON_EN;
-+	/* Lock mutex while execution in scoped_guard() scope */
-+	scoped_guard(mutex, &qep->lock){
-+		changed = val ^ qep->enabled;
-+		if (!changed) 
-+			return 0;
-+
-+		pm_runtime_get_sync(qep->dev);
-+		reg = intel_qep_readl(qep, INTEL_QEPCON);
-+		if (val) {
-+			/* Enable peripheral and keep runtime PM always on */
-+			reg |= INTEL_QEPCON_EN;
-+			pm_runtime_get_noresume(qep->dev);
-+		} else {
-+			/* Let runtime PM be idle and disable peripheral */
-+			pm_runtime_put_noidle(qep->dev);
-+			reg &= ~INTEL_QEPCON_EN;
-+		}
-+		intel_qep_writel(qep, INTEL_QEPCON, reg);
-+		pm_runtime_put(qep->dev);
-+		qep->enabled = val;
- 	}
--	intel_qep_writel(qep, INTEL_QEPCON, reg);
--	pm_runtime_put(qep->dev);
--	qep->enabled = val;
+-	mutex_lock(&adc->lock);
++	guard(mutex)(&adc->lock);
  
--out:
--	mutex_unlock(&qep->lock);
- 	return 0;
- }
+ 	device_index = spi_get_device_id(adc->spi)->driver_data;
  
-@@ -279,7 +276,6 @@ static int intel_qep_spike_filter_ns_write(struct counter_device *counter,
- 	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
- 	bool enable;
--	int ret = 0;
+@@ -208,7 +208,7 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+ 		ret = mcp320x_adc_conversion(adc, channel->address,
+ 			channel->differential, device_index, val);
+ 		if (ret < 0)
+-			goto out;
++			return ret;
  
- 	/*
- 	 * Spike filter length is (MAX_COUNT + 2) clock periods.
-@@ -300,25 +296,23 @@ static int intel_qep_spike_filter_ns_write(struct counter_device *counter,
- 	if (length > INTEL_QEPFLT_MAX_COUNT(length))
- 		return -ERANGE;
+ 		ret = IIO_VAL_INT;
+ 		break;
+@@ -216,7 +216,7 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		ret = regulator_get_voltage(adc->reg);
+ 		if (ret < 0)
+-			goto out;
++			return ret;
  
--	mutex_lock(&qep->lock);
--	if (qep->enabled) {
--		ret = -EBUSY;
--		goto out;
-+	/* Lock mutex while execution in scoped_guard() scope */
-+	scoped_guard(mutex, &qep->lock){
-+		if (qep->enabled)
-+			return -EBUSY;
-+
-+		pm_runtime_get_sync(qep->dev);
-+		reg = intel_qep_readl(qep, INTEL_QEPCON);
-+		if (enable)
-+			reg |= INTEL_QEPCON_FLT_EN;
-+		else
-+			reg &= ~INTEL_QEPCON_FLT_EN;
-+		intel_qep_writel(qep, INTEL_QEPFLT, length);
-+		intel_qep_writel(qep, INTEL_QEPCON, reg);
-+		pm_runtime_put(qep->dev);
+ 		/* convert regulator output voltage to mV */
+ 		*val = ret / 1000;
+@@ -225,9 +225,6 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+ 		break;
  	}
  
--	pm_runtime_get_sync(qep->dev);
--	reg = intel_qep_readl(qep, INTEL_QEPCON);
--	if (enable)
--		reg |= INTEL_QEPCON_FLT_EN;
--	else
--		reg &= ~INTEL_QEPCON_FLT_EN;
--	intel_qep_writel(qep, INTEL_QEPFLT, length);
--	intel_qep_writel(qep, INTEL_QEPCON, reg);
--	pm_runtime_put(qep->dev);
--
 -out:
--	mutex_unlock(&qep->lock);
--	return ret;
-+	return 0;
+-	mutex_unlock(&adc->lock);
+-
+ 	return ret;
  }
  
- static int intel_qep_preset_enable_read(struct counter_device *counter,
-@@ -342,28 +336,24 @@ static int intel_qep_preset_enable_write(struct counter_device *counter,
- {
- 	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
--	int ret = 0;
--
--	mutex_lock(&qep->lock);
--	if (qep->enabled) {
--		ret = -EBUSY;
--		goto out;
--	}
- 
--	pm_runtime_get_sync(qep->dev);
--	reg = intel_qep_readl(qep, INTEL_QEPCON);
--	if (val)
--		reg &= ~INTEL_QEPCON_COUNT_RST_MODE;
--	else
--		reg |= INTEL_QEPCON_COUNT_RST_MODE;
-+	/* Lock mutex while execution in scoped_guard() scope */
-+	scoped_guard(mutex, &qep->lock){
-+		if (qep->enabled) 
-+			return -EBUSY;
- 
--	intel_qep_writel(qep, INTEL_QEPCON, reg);
--	pm_runtime_put(qep->dev);
-+		pm_runtime_get_sync(qep->dev);
-+		reg = intel_qep_readl(qep, INTEL_QEPCON);
-+		if (val)
-+			reg &= ~INTEL_QEPCON_COUNT_RST_MODE;
-+		else
-+			reg |= INTEL_QEPCON_COUNT_RST_MODE;
- 
--out:
--	mutex_unlock(&qep->lock);
-+		intel_qep_writel(qep, INTEL_QEPCON, reg);
-+		pm_runtime_put(qep->dev);
-+	}
- 
--	return ret;
-+	return 0;
- }
- 
- static struct counter_comp intel_qep_count_ext[] = {
 -- 
 2.34.1
 
