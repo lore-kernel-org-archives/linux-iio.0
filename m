@@ -1,132 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0C803CBE89;
-	Wed, 22 Apr 2026 10:09:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A65BD3BFE4D
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 11:22:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776852591; cv=none; b=FzaMpnunDALK2UcckCyzrvTsrjooLIi+xGMYnSrLeI5oSWiLvj67ii1Eqa0EdX0A7Y6GK2YqNj3Wt4c1cIHCkzOyQ9aPMkGAk2BknIZ2lGt+JL03GJqy/seWwebTF5V22NU5l9PpEdFIMd/2qX28F1KMATbdfuhygAY5pNs9SaU=
+	t=1776856934; cv=none; b=kfNuoF7ch1+TO7DccfYLai3h7lNvMaXRzDMEr8EoqLbuPl0DM2YmeOi8SHTur4lb4z2EjB4+P+77TlqpvKcn+4vhqbUqDuYVUdxczWRotCdS+Mh0k8YKDRpy3ApFNv+Mky9rLFdO1HZjiY01+wBfklwDQhDT9Fb0zJxm+u7LT/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776852591; c=relaxed/simple;
-	bh=7ys1RZCvPNfZCaHMJJye59Pev//UtvgGOn7nZKjFzCA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lepIDDc79DQFNu/nubjgikx1/TrCiaG2Hh24g9nAjqQ4wmVTEEoKL6aS3qrpdDB3evY2E0nP7nYR2gt2Uq465HOH9sdVzwAGurm9LkvIgs155rSFrS+VwTJhhx4aQlHKO7spOzGgtI2LGssH/UHlfmJoqNVjgG0FEJh8WXSX4Ds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G4cGOTk4; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776856934; c=relaxed/simple;
+	bh=G8jsdvtp87OlJ8uJd3pwmkg1IzyqeVHJhgdLUXFfu+k=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nMHxFwuFaOgus3knHyiZ6+5zmo5U59o7haEbBmnCqiZ9W7HdmA3hOhzgqP7hNdv+uqLnImggf+UvXTBwHtLTrfTsslieDFdV6BqNoAYEZclGjUFPeY/RwRziTdTK+ci4Kq6ePa+4dMioSvszmnOUmKT9rF4iwlCWz5CN3r2dscg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GbqeAEtB; arc=none smtp.client-ip=209.85.218.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G4cGOTk4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9B2FC19425;
-	Wed, 22 Apr 2026 10:09:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776852589;
-	bh=7ys1RZCvPNfZCaHMJJye59Pev//UtvgGOn7nZKjFzCA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=G4cGOTk4vbfxuedRSK7ir/uStL8eVuj1SdezZ67OOKki1ZA30WsbkYhfVRYCqrd5P
-	 HWCmMCQcTRkqnnClHuiXbKCxwMDFpvNcwSFfcCxutpmsp5zil+sel+G6VpvttH35wC
-	 w8WuZ868bPJMM94/7QZLKV16sEH0g0nz+93zsjvESnUGiJSgXWWbHMJIyOC6bcZcW5
-	 2bymkc+HNdJzHGBgskhzHVVVBYxxMP4tTgnyDLa3hgJWUk/bA8UebZK6r6qKB7QyuO
-	 UqYWyNqg7s0zjpskvniKAnwovBU+AJmvk/GCZV8JFD8N9rO9lBIFJBRvnhegOstdqo
-	 rBo86YPrVbqxg==
-Date: Wed, 22 Apr 2026 11:09:40 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Junxiao Chang <junxiao.chang@intel.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- gye976@gmail.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- lars@metafoo.de
-Subject: Re: [PATCH v5] iio: buffer: fix warning in requesting threaded irq
-Message-ID: <20260422110940.261e9083@jic23-huawei>
-In-Reply-To: <20260423014426.1999735-1-junxiao.chang@intel.com>
-References: <20260423014426.1999735-1-junxiao.chang@intel.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GbqeAEtB"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-b9c603ec2dfso706266866b.1
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 04:22:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776856931; x=1777461731; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=j0Fj033YEDjAZz3YbFYJoJOXRn+iWTo/zlcLxqFJWzY=;
+        b=GbqeAEtBszC/M53c+7mzNB0ElJSzN4Bk4p83FcSOjmuA3RxtTVxhyaXwrSI3RIcR9K
+         a0VZjwyLjDeMtzruq0yAV4VBStOId+ZfloL8r7bQM9tCM57t+lqylH4snI63JCwOLfsK
+         LqAK87deamzxXzAjqOG8aY7lV+8ol7zBSoKCd03eNQnbBeLg7CfE5rudwDfxi9XbCiGO
+         1A45j/Spq0gBrnNItanMzv+RFESr9E9ULMEnoncxcYIwYzelWd/xWQQ8xwW2hnbjW65j
+         HWGBr2YfgNgwLtSyz3LOKCFRTXmkV9I/v9wjrSU46IDWs9vHb07zXhsKQt4oeDsiB6sr
+         +gFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776856931; x=1777461731;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=j0Fj033YEDjAZz3YbFYJoJOXRn+iWTo/zlcLxqFJWzY=;
+        b=nzu2xrItP0GYvxBDh+vSn4cJnXUGmF+POPrnhiLBSMalg9p3wxkqwbRxN+Cv9x5g3k
+         wNvWNRqkDBTQxxwXivQsWXv2bmebBM4qevK3n6GSrGZlVBe+jd0bYCrktX1Lq/4Y2NEX
+         e9tMqdAaPfx0361NuelsYfe0FpSfYIr3AV9WoVuRevTM0LQOWqvxgXxVbkbcEspNlFaf
+         3IwzVFJZxrG8B7KqqraA+2cU150XShPDuOK5OpgnqLk1P5RxnWFUY3Bhn03ecx/9g6qd
+         s7M8jQ1AovuHzUe6k2/TPupSZzenlWxhcCzmLcZ5N5ATY08j52GvByOG1M0kQ8v+/4AK
+         xz+w==
+X-Forwarded-Encrypted: i=1; AFNElJ+mbn6DYdkcRJRLTHnzuLeoVeYGtVlVbaZX/TWg2GdWJK6WzWDusZOgTPB4VRvy7LN8V47mJQ6mt54=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwFX33bQQhKd2hnXjf+EGBo3HeH+T+BYU3Pc3Cwg5L6+aLE+sCK
+	nmTZN+llhRrkH4GJkuCcvJZ3A3VF+L2InoVsEDUaeyhA58qQdweZVVOoTSJh9sGjC8rb3Q==
+X-Gm-Gg: AeBDiet2ZZyxN/8YbMK+uJ81J2zOCag7MjYTMdMxtXfz76ncAG18rTdNQ2bWkEDDgkR
+	RKKrz7GLT4tXki/29onvsaeAMNrIsYBTTn2oWo3AEJeqFQPrGFSf7E1md+h7hy65lp8ccJDKtqD
+	6hiolDCmB2jwy/TNr92jJg1cfvROveXJ4lM976hkoX54pGQx5zxlXIKoJ47DMhVZQ8hXCH/QfIw
+	MfpDpHMGx0/khG1Jyrdmc9VyjGVx/0VZ76B/8jAqJ+AVclkyWtnp9nk4j2Ggzo7A72Ot7chnLRQ
+	PfnyKi2jNi1hKFS6ldxzYzP5ey1arr6Zfk56Q/LaNlkKMuI6WlmvGazy3OMju+opXJDLdU6wsUJ
+	WXKO4UEd86jcsIKDIVpew48/RkL5x6Ieky7Bp2h5Gz9iC3eHyqLrAHa6lCbQA7qtgawXCI60/FS
+	qOu406ZbITAsc36uCjAro7gaDZ0iiKwX4i1WB0yLlHLjNTJdj1oFbaihskoDc1LPfnVdGULA9g3
+	1nN/ikuZttbIrbj/bmhh8gdbNKgKXy/phJCnNxxZ5/nKNmGMoQXMdLx4q+HygitN/0j9hFJVzVY
+	f+EyBn1jHmu+QJRid91zdsboJVpO7gdwcVGkHCuYlH1GKJLRNRqkYYt/iF/JaDgv0BeGBsLElC+
+	tsABkGldUdO86YdAIN49LCurPFuAU2wharXYzq0YSek/ASRVul8h2luGijWz0caclaSfVlBify5
+	IToDiMfuM=
+X-Received: by 2002:a17:907:78c:b0:baa:3b6a:629e with SMTP id a640c23a62f3a-baa3b6a6998mr275816966b.41.1776856930549;
+        Wed, 22 Apr 2026 04:22:10 -0700 (PDT)
+Received: from cs-280612103108-default.europe-west4-b.c.od237066db22328bb-tp.internal (25.236.141.34.bc.googleusercontent.com. [34.141.236.25])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ba6366452c6sm395156866b.11.2026.04.22.04.22.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2026 04:22:10 -0700 (PDT)
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/6] iio: magnetometer: ak8975: modernize and cleanup driver
+Date: Wed, 22 Apr 2026 11:22:01 +0000
+Message-ID: <20260422112207.1313-1-joshua.crofts1@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, 23 Apr 2026 09:44:26 +0800
-Junxiao Chang <junxiao.chang@intel.com> wrote:
+This series modernizes and cleans up the ak8975 driver, migrating to
+more modern kernel APIs and cleaning up legacy code.
 
-> IRQF_ONESHOT is for threaded IRQ. If there is no threaded IRQ
-> handler, this flag should not be set.
-> 
-> This change fixes a warning during booting with kernel v7.0-rc3.
-> Hardware: ARLs(Ultra 9 285) desktop
-> Software: Ubuntu 24.04 + v7.0-rc3 kernel.
-> 
-> WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x1639/0x2510, CPU#3: iio-sensor-prox/974
-> Call Trace:
-> request_threaded_irq+0x2c7/0x490
-> iio_trigger_attach_poll_func+0x353/0x6b0
-> __iio_update_buffers+0x2420/0x2c70
-> enable_store+0x183/0x270
-> dev_attr_store+0x5e/0x90
-> 
-> There is no threaded handler in thiggered buffer setup, e.g. vf610_adc
-> and hid-sensor. They might introduce this warning.
-> 
-> Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
-Sashiko just did us a big favour:
-https://sashiko.dev/#/patchset/20260423014426.1999735-1-junxiao.chang%40intel.com
-I was making too many assumptions on what the vf610 driver was doing.
-The issue here isn't in the core at all (though maybe what you are fixing
-here is relevant to other drivers) it's in the vf610 driver. 
+Changes include:
+ - replacing usleep_range() with fsleep() for optimization
+ - migrating to iopoll macros for better device polling
+ - removing unused headers and adding new ones
+ - checkpatch.pl fixes
 
-It registers a triggered buffer, but not trigger and yet actually pushes
-the data from the interrupt service routine.  That is fairly nasty misuse
-of the IIO infrastructure.  There are two ways to solve this.
-1) Rip out the triggered buffer infrastructure and use the buffer directly.
-If we need to 'pretend' that's still relevant use the same approach we used
-in the hid sensors driver to keep the current_trigger interface (it just
-won't do anything).
-https://lore.kernel.org/all/20260220224514.471348-1-srinivas.pandruvada@linux.intel.com/
-2) Actually implement a trigger. Then the isr will call iio_trigger_poll()
-and the vf610_adc_read() will occur in the trigger bottom half with timestamp coming
-form the top half that is currently registered.
+v2:
+ - PATCH 1: reverted alphabetical header ordering per logical change
+   separation
+ - PATCH 2: added newline between fsleep() and return
+ - PATCH 3: fixed open parenthesis formatting
+ - PATCH 4: fixed whitespace issues, added <linux/time.h> for
+   USEC_PER_MSEC macro
+v3:
+ - PATCH 1 & 2: split alphabetical ordering and header removal into two
+   separate patches
+ - PATCH 4: commit message fix
+ - PATCH 5 & 6: split error handling and polling loop replacement into
+   two separate patches
 
-I'd slightly prefer option 2.
+Joshua Crofts (6):
+  iio: magnetometer: ak8975: sort headers alphabetically
+  iio: magnetometer: ak8975: remove unused headers
+  iio: magnetometer: ak8975: replace usleep_range() with fsleep()
+  iio: magnetometer: ak8975: change 'u8*' to 'u8 *' in cast
+  iio: magnetometer: ak8975: fix wrong errno on return
+  iio: magnetometer: ak8975: modernize polling loops with iopoll()
+    macros
 
-Any idea what trigger your userspace is trying to use with this driver?
-
-No idea if you are up for fixing this - if not I can have a go but have no means
-to test that the driver isn't broken.  I don't have time to emulate this device
-just now.
-
-Now that's not to say there aren't drivers doing what I was assuming was happening
-here (having foolishly not checked the particular driver) and registering only
-a custom top half in the poll func.  For those, your fix would be the correct one.
-I'm just not sure they exist.  Maybe we can merge that anyway on basis there is
-a latent bug that future drivers might hit, but we should also fix the vf610 properly.
-
-Jonathan
+ drivers/iio/magnetometer/ak8975.c | 92 +++++++++++++++----------------
+ 1 file changed, 45 insertions(+), 47 deletions(-)
 
 
-> ---
-> V4 -> V5: remove Fixes tag and add back change log
-> V3 -> V4: remove unneeded backtrace log
-> V2 -> V3: remove unneeded log in git message
-> V1 -> V2: use ternary and drop temp variable
-> 
-> V3/V4: https://lore.kernel.org/linux-iio/20260421103807.7ca935e9@jic23-huawei/T/#t
-> V2: https://lore.kernel.org/linux-iio/20260418002334.3643504-1-junxiao.chang@intel.com/T/#mc0803722dce6585bbc8c9e0ec8289bd96afe99aa
-> V1: https://lore.kernel.org/linux-iio/20260418002334.3643504-1-junxiao.chang@intel.com/T/#mf0eba6c23049d15c2b43ea5528b5f5a47e216c58
-> 
->  drivers/iio/buffer/industrialio-triggered-buffer.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> index 9bf75dee7ff86..40eea3a447246 100644
-> --- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-> +++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> @@ -64,7 +64,7 @@ int iio_triggered_buffer_setup_ext(struct iio_dev *indio_dev,
->  
->  	indio_dev->pollfunc = iio_alloc_pollfunc(h,
->  						 thread,
-> -						 IRQF_ONESHOT,
-> +						 thread ? IRQF_ONESHOT : 0,
->  						 indio_dev,
->  						 "%s_consumer%d",
->  						 indio_dev->name,
+base-commit: c65f27cae0deda3316ed49899df4492a3896e38c
+-- 
+2.47.3
 
