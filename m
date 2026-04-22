@@ -1,134 +1,112 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F5FA23E33D;
-	Wed, 22 Apr 2026 13:40:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE60728A1E6
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 14:26:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776865258; cv=none; b=EjOQM2Iu6H2mwvtmtQNk933nhEDIb7ia4uNmc23lHb99XbkpXDCdMwT+8MesNdkrtAP86JdT+xzGXiGgQqE3RjXpxDpYNBKCRa8Hj6J1zG4LfOHhspP23VPYymEaYLJqY3iJZRfXkHJKGXlW0GBVGe5/JoaVITIgngJgbgYQfqo=
+	t=1776867972; cv=none; b=W1aIZqDGOU+kWo6oNUXp4sCdCSae4qsWi8BTyikRHV+0WZPTelrIdTG72pv/QHDkDFNJZP/TPMR8GZe++BE/Df2MYQlAtGxm72MDx5cJOciFsH930mRm/sJ7BF5sXkJrf5sIWaxuFHrFYPcZCEqM5TiGSA1enfvzgH0pMspo2cE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776865258; c=relaxed/simple;
-	bh=iv8NQZu8jNVkAJbPXfcqwXfyHsB60Q0RjPt2lXfIB8c=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=sqLdNrNgdoaMVj7j+aBJEeiFpnrH9MlOtLtnPR6eBJ0850v+hBg+cQoef9oMLnIJ720MWi38u6OOR8JvSHywIkfBDPVwYKIyuci0n5GwDhnslFM/xEawq+hdIdRseU+DxwpZ+0gZ0CFXiLr5vO3pKoHZVbmQzLEzgHxA+dXkyzA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=d3fQdrxS; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1776867972; c=relaxed/simple;
+	bh=htdelNWDPK1h9voUhXP24C/rSnHgDpw31fhwSXtf1zI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NsWqv1DTZay1NPWfAQyT33nCIbZHPPv7BeiqWaqLGwfrS1u5eGdWP27ZpLbq4UDse2l5xKPp82L5h68r6/t4dfTo3T7WnQ7n359MoI+qkF+MzKYX49OM6M0ojVWDxntgtO+qCbvXFx9gVPFpN9HdHBrzh5SFozIhHmWIewMlhNE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fs0A173k; arc=none smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="d3fQdrxS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1776865257; x=1808401257;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:to:cc;
-  bh=iv8NQZu8jNVkAJbPXfcqwXfyHsB60Q0RjPt2lXfIB8c=;
-  b=d3fQdrxSML6w5VX2Rtzp9BIQsC2Qb1ZkbGJ+rG0yHrkhcVaru61tjLMD
-   6TaxmsXTPXgEna89L3V3jopw2sxdJvWaS8GlxYxQW3Y+QSqOMMjA6fkG4
-   BOQACrlNrRBoudrz3/TIHAqFqChyZtvZxMNzQGCV6+Bjuz7Q/Uq+A3wOa
-   8J5CdQwhaGl2wK/l5N9I7AkqA3UDnk5Crg4qLGJQiACYOx3GiO8dcZAhc
-   r+MUtVuiPki55ceCpLp0Sf+tNCU8hLxRfeJcFjoMY3TbWXm9odII8Awlp
-   yqSS2LWHfB397a95Y5+cBUX0QRAsnu5a3bthLRiWZyMJI6CfLt4X90Txe
-   g==;
-X-CSE-ConnectionGUID: y3iZcVPqS2eSi2dpvi2QuQ==
-X-CSE-MsgGUID: 36xl3ZS0QLeIvDX1YfY/+g==
-X-IronPort-AV: E=Sophos;i="6.23,193,1770620400"; 
-   d="scan'208";a="55696481"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 22 Apr 2026 06:40:56 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Wed, 22 Apr 2026 06:40:55 -0700
-Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Wed, 22 Apr 2026 06:40:53 -0700
-From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Wed, 22 Apr 2026 16:40:52 +0300
-Subject: [PATCH] dt-bindings: iio: dac: mcp47feb02: fix example indentation
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fs0A173k"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43cf7190580so480638f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 07:26:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776867969; x=1777472769; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nA/Qsic7tn3FJI7mCYVyNzkZbREQ3JqwDGoh/Arrujc=;
+        b=fs0A173k4BNehgz3wZ/yPp2bbxBuyZfb97OVJKaCX95/V8nMGX4DsbRvAV9AwWrWxQ
+         2W6bxgCQdOw2YzCfgfN+dP6tvq3dxW0loBpo2vgMWm8HWmCCSUmO8lJtSReLlVsF37gq
+         lNXlO1aC/lgZz+zGCP+E1iaYvfzb+Y6YsUPdPKX9DncrIZoyEwTjxElE2j1/cnaGIH+y
+         5h8v+CRZzSo+okJaWqBZVSlKVHtOxx/KXGaiwK6p+t2qPeAEVtx+celk4KBEnGL2MsI9
+         Womu57OXP7lazhqVjnr8GDgsrYGhwNY41adyN0R1bS2hyMtZxKQBXacngQJLWfeE8Xrx
+         1uJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776867969; x=1777472769;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nA/Qsic7tn3FJI7mCYVyNzkZbREQ3JqwDGoh/Arrujc=;
+        b=jVQVNZFQhACPMJi6rZPykmYIXBuLfz9ZZebOFF05Udx0NuX/n4j1QQncAuYjJrZIPI
+         NXkajOyKx/5XC5L/i4Qc8wJf/V+Cr4xhKToThlECur8TDC+BPlcskHbAZxleTJ5vHebX
+         ltBFIPaMjVxjH4mXOwobpS6xIkHi51CsJqSSLmj0hUhQAH7LhOYEsrDQMgnvmSSWYWc/
+         ToUEnmSOvhLQwF8CGiTxgGl0N0o7/0PXUCjkLoii662A9WIblImYNa1qF3nqL+TBOqUx
+         m3EE45dqDQ7r5i3Se9kk3U/IcV9r0ZUcc66EmpOaluo8J2DJ9fRg1m+FNJVFtYtdK/e5
+         OqXg==
+X-Forwarded-Encrypted: i=1; AFNElJ8oSTO3o4jpYpdz2vCHir/L4MT40zC2cvoV1jy7Nlg+RKKcPEpGN2IXVHgkkk8XG1BX3gC7/QcDSSg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw7+2FYVMyDS/5sNBKWMvgJhn2WND6I6Z7kKZCpNBga9qmxp8b2
+	hRJLjb6oe8b4uj+IcI0TuQXNKjavgs38thplRPpWabARKZe/qBSIHgrk
+X-Gm-Gg: AeBDievkU9wCLiHkTtiT6tgbFJfLEbx1IttTw8EQxCxUDBlrMnT/e4tlkCKOVa7OJ95
+	saKM3cWjd2UESLVGtrQKr28JxlhcaOqYHw43gr/0NIOmHwjRtjQjVFrob/FHCV8HSAZ0Xz1yc8J
+	XRgv5D6x0m3mBHvgRvPMrLWw02hOlUhJRWIszECNBn2q1WqEA0XlfOu4XGxro2/q9UsH74b0Gto
+	jx5yFtnNOb8Eha1i1CggAMDC7BhXi4Ukfhf73Ln8FP2qV+d0IDRJjhQaA/ULvlu9ACSzORK7k/b
+	exPaPLjUHbZxd0DX3amGVgE2s1QiVvuugDEoaECPxf4+uugM+ZrHFZ14X1hnAgKoP1hqTjSbNKG
+	LBHlerzoo+ub70cZ8MyJXVr/Ik3TFRql23VV9+uc3GdPk7UZcWXKNionX+960sk4bHDjWL2BxoC
+	z1+PSXU4jrLqxPsP21RKz2ry4MRXXqlP214NCiTj3en6FtCnMlrhwnlWE8r4BbwNs5RhnfqPKpo
+	gEpihy0wGtRCtJY8iYFepWvGOvLTAh+T4HiTI7If+DeVtB1G3sbByqeI7uPEIU=
+X-Received: by 2002:a05:6000:25e1:b0:43d:3b74:b659 with SMTP id ffacd0b85a97d-43fe3e29bf5mr14858456f8f.8.1776867968741;
+        Wed, 22 Apr 2026 07:26:08 -0700 (PDT)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4e46898sm48204769f8f.27.2026.04.22.07.26.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2026 07:26:08 -0700 (PDT)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Subject: [PATCH] iio: adc: ad7625: fix type mismatch in clamp() macro
+Date: Wed, 22 Apr 2026 18:25:42 +0400
+Message-ID: <20260422142541.160365-2-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260422-mcp47feb02-fix7-v1-1-709c7c02799e@microchip.com>
-X-B4-Tracking: v=1; b=H4sIAOPP6GkC/x2MSQqAMBDAviJztlCHLuJXxEOXqc7BhRZEKP7d4
- jGBpEKhzFRg6ipkurnweTQY+g7C5o6VBMfGgBKNVIhiD5eyibxEkfixIroQUVs9Gm+hVVem5v/
- jvLzvB/DJnLlhAAAA
-X-Change-ID: 20260422-mcp47feb02-fix7-dacd257586b7
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776865252; l=1917;
- i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=iv8NQZu8jNVkAJbPXfcqwXfyHsB60Q0RjPt2lXfIB8c=;
- b=CqXnswnjudYgDMXJRD1luUL2PbW+U+74iREVx7WiqFyju+CF1obgXw03DLv4dEJOQhxc0YsD9
- naEjW+Xv3YrByJFYd//CMnBV6C7l4nPWpK5Pelu/dS182jw6dmjNCR/
-X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
- pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
+Content-Transfer-Encoding: 8bit
 
-Correct inconsistent indentation in the example and use consistent 4-space
-indentation.
+Smatch reports a type mismatch warning in ad7625_set_sampling_freq()
+where the clamp() macro is evaluating differing types:
+- `target` is a u32
+- `100` evaluates as a signed int
+- `10 * KILO` evaluates as an unsigned long (due to KILO being 1000UL)
 
-Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+Replace clamp() with clamp_t(u32, ...) to explicitly cast the bounds
+to match the u32 target variable.
+
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
 ---
- .../bindings/iio/dac/microchip,mcp47feb02.yaml     | 30 +++++++++++-----------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/iio/adc/ad7625.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-index d2466aa6bda2106a8b695347a0edf38462294d03..ad078137a8eb78e70544dfdd8e3153f2cc91777f 100644
---- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-@@ -281,22 +281,22 @@ examples:
-         #address-cells = <1>;
-         #size-cells = <0>;
-         dac@0 {
--          compatible = "microchip,mcp47feb02";
--          reg = <0>;
--          vdd-supply = <&vdac_vdd>;
--          vref-supply = <&vref_reg>;
--
--          #address-cells = <1>;
--          #size-cells = <0>;
--          channel@0 {
-+            compatible = "microchip,mcp47feb02";
-             reg = <0>;
--            label = "Adjustable_voltage_ch0";
--          };
-+            vdd-supply = <&vdac_vdd>;
-+            vref-supply = <&vref_reg>;
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            channel@0 {
-+                reg = <0>;
-+                label = "Adjustable_voltage_ch0";
-+            };
+diff --git a/drivers/iio/adc/ad7625.c b/drivers/iio/adc/ad7625.c
+index 0466c0c7eae4..fb0fe2434c68 100644
+--- a/drivers/iio/adc/ad7625.c
++++ b/drivers/iio/adc/ad7625.c
+@@ -180,7 +180,7 @@ static int ad7625_set_sampling_freq(struct ad7625_state *st, u32 freq)
+ 	int ret;
  
--          channel@1 {
--            reg = <0x1>;
--            label = "Adjustable_voltage_ch1";
--          };
--      };
-+            channel@1 {
-+                reg = <0x1>;
-+                label = "Adjustable_voltage_ch1";
-+            };
-+        };
-     };
- ...
-
----
-base-commit: d2a4ec19d2a2e54c23b5180e939994d3da4a6b91
-change-id: 20260422-mcp47feb02-fix7-dacd257586b7
-
-Best regards,
+ 	target = DIV_ROUND_UP(NSEC_PER_SEC, freq);
+-	cnv_wf.period_length_ns = clamp(target, 100, 10 * KILO);
++	cnv_wf.period_length_ns = clamp_t(u32, target, 100, 10 * KILO);
+ 
+ 	/*
+ 	 * Use the maximum conversion time t_CNVH from the datasheet as
 -- 
-Ariana Lazar <ariana.lazar@microchip.com>
+2.52.0
 
