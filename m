@@ -1,99 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBDFA377575;
-	Wed, 22 Apr 2026 08:38:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6C5F3BFE5C;
+	Wed, 22 Apr 2026 08:41:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776847115; cv=none; b=jfqMQ+fz1AznwJPcWA5akcncxY7C1wHYwmUrwXhSD3H41eHOvYDHaFjCZjAe5gMAyZTEvStlFqhC4jpD1CF02VzYCXPdBka6cb4q8EEBhF2DxrXMWTbGwUrhdHrVaXzCuOKf0190jADgapRQ9RfC/bPgT92o8KrUXls26QXxKrM=
+	t=1776847275; cv=none; b=AiqFZN5yzISBOcsC261Bjesg5mlM2lMZukjlzwMmLw5KoJwltNpCBFuApIjyiO57RCoOWNcLNw2MVQ3xrFopze1Z9MfujBhi5zxGWWvuOpo+xxkd2DxhdPErxjlGJ0Kr6pUssFO0t/NtWjrfl1GdZh1koRqOQUpqQWy3CqGnB0Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776847115; c=relaxed/simple;
-	bh=SGFiszYWwELiHAMEag3AphiHYHhVkHzsdYJds8nekqs=;
+	s=arc-20240116; t=1776847275; c=relaxed/simple;
+	bh=/pVYTyXvUYC7oHHEY2udeqBONAs6bUtawkH8/DRwLHI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VHKnzNQX12RvSwJbdCiseBCuWPOw9c2xQyGIPtVFGlIpQTPsN3ZV3ZTNWXvgx7NuVIQMregY7+Vcjxu30X3IxPMsu7WN1RIaRcCNYTmaAjBkYZT3AZV1SS19CnqG7LDD9Xzt6FNChEt8IwsGLYOINYQmLBoJ9EFSmvPwCGpaAl4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Sf701QAj; arc=none smtp.client-ip=198.175.65.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=gsOxGleSYKHoVt9X46QOTaFMX5s63tpcoYdsfiQA76Bceb7+hSxNr8+wtx6AtnGHYEm4oOrgOk5rdOwwRwtzz1YaifCWYZYaB1RQRtsBg63xozflTEddpcwpxQwdpYyqlsim/e14X3yT7vz4Av5UOSIARWhckUPMrtDBBWSAORY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MFjR78bZ; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Sf701QAj"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MFjR78bZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776847114; x=1808383114;
+  t=1776847272; x=1808383272;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=SGFiszYWwELiHAMEag3AphiHYHhVkHzsdYJds8nekqs=;
-  b=Sf701QAj3xDh727Yo38oNTiqO0UVP31J8jMTGXC8TzGSBMdD4yzTCMVK
-   2wXLT7cmATYcAFoGuq3TtGLUt4QXeTg73q1sNy6Xi6ZICny5BANTJ3z72
-   viAeyjZG6/8ldANPvUwtlFHKZnuiERex5sARBVzUMiSNy8qotCmqUDjk9
-   9yRiPWU7UtytmJlU5PgGPUWvoNk18PxWfQXrqcUQYgdBaCZtaY4tfVUZk
-   EoQ8/6quMm43R4mFLVm8n1nVVVNiBqQfasPGVVajpF30U555xcOtsKRHS
-   gJSXMZbwtS0apSYTqM39Zs5v1VWCAZkcO2TwRqEn61lQ/ZYX19e3x1W0w
-   Q==;
-X-CSE-ConnectionGUID: YMKHspj+Tv+lhKVUowwUvQ==
-X-CSE-MsgGUID: RUaJU5myR2OcLt3TYprPPQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="77980099"
+   mime-version:in-reply-to;
+  bh=/pVYTyXvUYC7oHHEY2udeqBONAs6bUtawkH8/DRwLHI=;
+  b=MFjR78bZOEh0oe4hqMRx8B2zAG688AJH/7thA8131g/ouPhEl6yWuOr8
+   w0cr8lsPv/N5TeEePfyPkP0WGtvSpELG3unLj577W85jzvgdBfjYqTI1S
+   nofr6m/2tAPppmrK3WcEDNH95Vgx1T2RfU4wk760DhTO8SHB4ainOJBAm
+   4p34bkYrFguzZep31J1M1HMoumeV3+kugvLMafEeWEsQoJjahTq2DjOwN
+   JNWSKksCmin4VEqXECd0XdAwgUjfYLtB5M2iIpPhQ8Ce2N/ntQcsSKEsy
+   16h1qjHWEqMDowkK2xFNMOietzL79uHMZldNVxVtzUtlB3Sb5/07lVbQf
+   w==;
+X-CSE-ConnectionGUID: rquouoMCSn+usTtBxxVGIg==
+X-CSE-MsgGUID: eAaf2R8VQbCCNOKnSpI5hg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="77672201"
 X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="77980099"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 01:38:34 -0700
-X-CSE-ConnectionGUID: VfyumcftS7WCEwTf9dp9mQ==
-X-CSE-MsgGUID: EpVLnCZbTzeeis9CLTqPJw==
+   d="scan'208";a="77672201"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 01:41:12 -0700
+X-CSE-ConnectionGUID: oz5BCi1wTp+hzXLfvnAZQA==
+X-CSE-MsgGUID: jtK8P0u0R+ynPRlvsjMHrA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="232200985"
+   d="scan'208";a="229623517"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.201])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 01:38:30 -0700
-Date: Wed, 22 Apr 2026 11:38:28 +0300
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 01:41:09 -0700
+Date: Wed, 22 Apr 2026 11:41:07 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: jic23@kernel.org, ak@it-klinger.de, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: adc: hx711: add support for HX710B
-Message-ID: <aeiJBMjI0Frs3h26@ashevche-desk.local>
-References: <20260419174654.683692-1-piyushpatle228@gmail.com>
- <20260419174654.683692-3-piyushpatle228@gmail.com>
- <aeXryRD34RLveqDi@ashevche-desk.local>
- <CAMB+xka2ZXbT-G-RUMAusJm8KsOjpCVwjijG2eUaPxBYahQrgg@mail.gmail.com>
+To: Felipe Ribeiro de Souza <felipers@ime.usp.br>
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+	nuno.sa@analog.com, paul@crapouillou.net,
+	Lucas Ivars Cadima Ciziks <lucas@ciziks.com>,
+	linux-iio@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] iio: adc: ingenic-adc: refactor
+ ingenic_adc_read_chan_info_raw()
+Message-ID: <aeiJo3RCKFLEGLEt@ashevche-desk.local>
+References: <20260421221629.70401-1-felipers@ime.usp.br>
+ <20260421221629.70401-2-felipers@ime.usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMB+xka2ZXbT-G-RUMAusJm8KsOjpCVwjijG2eUaPxBYahQrgg@mail.gmail.com>
+In-Reply-To: <20260421221629.70401-2-felipers@ime.usp.br>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Apr 22, 2026 at 11:19:15AM +0530, Piyush Patle wrote:
-> On Mon, Apr 20, 2026 at 2:33 PM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Sun, Apr 19, 2026 at 11:16:40PM +0530, Piyush Patle wrote:
+On Tue, Apr 21, 2026 at 07:14:58PM -0300, Felipe Ribeiro de Souza wrote:
+> Extract the sample logic from ingenic_adc_read_chan_info_raw() into
+> a new helper function ingenic_adc_read_chan_locked() to improve code
+> readability and modularity.
+> 
+> The helper handles the mutex-protected section for sampling channels,
+> while the main function manages clock enabling/disabling.
 
 ...
 
-> > > +struct hx711_chip_info {
-> > > +     const char                      *name;
-> > > +     const struct iio_chan_spec      *channels;
-> > > +     int                             num_channels;
-> >
-> > Why signed?
-> 
-> num_channels cannot be negative, so unsigned int is
-> more appropriate. The same applies to fixed_gain_val. Will fix both.
+> +static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
+> +					  struct iio_chan_spec const *chan,
+> +					  int *val)
+> +{
+> +	int ret;
+> +	struct ingenic_adc *adc = iio_priv(iio_dev);
 
-Thanks for pointing on that, now I see one more thing: please, run `pahole`
-and check if the layout is optimised (to me sounds like it has unneeded memory
-gaps).
+Please, keep it as in reversed xmas tree order.
 
-> > > +     const struct iio_info           *iio_info;
-> > > +     bool                            fixed_gain;
-> > > +     int                             fixed_gain_val;
-> > > +};
+> +	ret = clk_enable(adc->clk);
+
+> +
+
+Redundant blank line.
+
+> +	if (ret) {
+> +		dev_err(iio_dev->dev.parent, "Failed to enable clock: %d\n",
+> +			ret);
+
+Make it a single line. It's fine to go a bit over 80 for readability purposes.
+
+> +		return ret;
+> +	}
+> +
+> +	ret = ingenic_adc_read_chan_locked(adc, chan, val);
+> +
+>  	clk_disable(adc->clk);
+>  
+>  	return ret;
 
 -- 
 With Best Regards,
