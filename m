@@ -1,127 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD1634FF5A;
-	Wed, 22 Apr 2026 16:56:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EC5F38238F
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 16:56:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776876961; cv=none; b=MQRqblltz8fkCh7S5EnszC+plwg5Ah7rNmLcjL4AOFKRGQYqqDH6iGXrI9dhf+wkXbO+CSHo7J5B/Nvf2m10Xv9It3yicCeD9aCHkM+gG2y3Xj9RMvDp5mSiHSd9v64LAc1HnjtA8mcrMMHo64eb1TmdD/vam7xrRa6bwINRQ/k=
+	t=1776877012; cv=none; b=OoUvpMxPmcIMHpv2TWyyTFCUmNE8NM9DXjT5NBi+RV5yL7K/9KrIPAzGE8ZLY04wjXe1O8c4rpRrAKTT4dB2fhRBTZoMAKXFiCyUelOkpOJI01Aoo82sA8HvY2eliM8nXWXmiIUc8jDO2ZbWEPfUHDexV4s/XXoM8V0iKeGwSFI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776876961; c=relaxed/simple;
-	bh=F+oQPA3XtmzG9pRI88oWKDlZiM0r5+Q9T+0KFwetuHk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cyHjOJ5QPBXDwQEioHWQWKKg4MSz2QJ4868dz0gZqN60qp9hRmBxaShVaFJCGSyFB8es8qITCGFZ+IGHXWx7gOM8oaUz2vJm68GjXZFkAuIwLCKTcSs1SufPbC5YNSV0s5dpoymqd4Ex5JLxTSDT3tuQquTdGrEPVst+SX/9LfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NxCQOGOE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776877012; c=relaxed/simple;
+	bh=TLvBOSNObsLvJIgCJSNv/jblDRz7/reew0opuXHeWBo=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=p2l9HN+cy9NDqmJ8cR9jim0NB7ec+mHR1ZI52HSSRUswsyMM3pWq4T3u716E1fE+M0p69WA+vdw4Nfa+WxSFZ4qMei5jYsZ1RnlMzjvpSPh7AFELeAEayptzhfmEb8s//zapvehrXSfY/nhKNmdqxTUEBFOe5btfs1wm5qkQQmY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RPTmxrD0; arc=none smtp.client-ip=209.85.215.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NxCQOGOE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342B6C19425;
-	Wed, 22 Apr 2026 16:55:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776876960;
-	bh=F+oQPA3XtmzG9pRI88oWKDlZiM0r5+Q9T+0KFwetuHk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NxCQOGOEWQLPyFLOgZLMe0hPRuHKIqp2l6I+sZcUMLmjxMwEWZxmWV4X0F3tCKl15
-	 72xym+JLo5WwrQUMBuf6ExRmYvstkQoGOdeB/D9KHce2KwtIBJKBUZQM4t0KwZkuBw
-	 q+9PPLDpgGF1U2S3Zg9X+QXK6iK9datQMzDs32lVKgTUxyNZzj15HUEHm+4wsZEcKE
-	 3/I93XKr9xjCFLFpjg3f0Gt/N4Z3ymqFlHmwiGzlhacOIl4ytm3r7MTHT2c3+QyNfW
-	 oIik0wzXFFEhUEzBHlmXbGKyI6yXtHIwNtk29zUHQs0I/ftCTeg2AaZ964bM7FvH0T
-	 XB2ILwrKOktGg==
-Date: Wed, 22 Apr 2026 17:55:55 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Ariana Lazar <ariana.lazar@microchip.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RPTmxrD0"
+Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-c7b9f54d3deso78356a12.1
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 09:56:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776877009; x=1777481809; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=K12TcbgsT+4ST9MSMjjIqCkvressiDAJI7GqkumZjUM=;
+        b=RPTmxrD0Qx4DvKSwXT8uvbx7Thc6lAljDR6a/ABvpL6vVTuysRnQ6RAvC6GJxGJTdv
+         s7Ve6UY50BGAzcoCT9IWwz/ABKEzKhxQuoEctAYgyLCiaGeWG7Wl2gkLEp77Qbq7/k5L
+         zSFdstrx9Ig0wTa9T2SceUB7g9JpzbJjSxsWHMN5oQEMwesvPSzICmHgUHwDjQeEsvfW
+         FLobt4ly+ZOJR8Z1LTEvGSqJUnn1HsQeuSpMoeg4K1T5sHVKuuyMzAr7qfrYlrfk/g3k
+         PN3kfxf2iZmAb5In2atDOeVNJ36S+4GtugmjH9iaSmZcBDd5zlxhDh/RjAQZ2Bs0cubA
+         GUHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776877009; x=1777481809;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=K12TcbgsT+4ST9MSMjjIqCkvressiDAJI7GqkumZjUM=;
+        b=LmExrH7mbu9Hv/LLV9huC8pHYr+XoiKchMT8lNqo8oCDr/0JUDOxiykam1of8Htl96
+         021X+3vec02qqVYahMGOWePPDSo9FsQVbiiJAxJgeRiSaYJby+4kW79RcxewlgghV1vR
+         muFrtv2N0B7e8hbZxdgKxHLxY2V/CKEMiEteIhJj2vJlFsZDagy5D0XpWGaIkoA42ZMo
+         WkovSlADG74d/0Hd0OxzA3JE4fD6u8n6o7+4GEQMCRm3XfzCv16Vd6UcNEjCau4yI8x1
+         21rQS/QF9/lSS3WYqcDi4TU5cyPNBEfFmO/emE4lc+t+utu8xNanOaTUCbluTjQLBC5X
+         P4Xw==
+X-Forwarded-Encrypted: i=1; AFNElJ9UXt22Tv4Vu1yc4/Lhm9CBf41VjyzeokikJ7cj7O7CyNmgLu254Jgm1fOWdaG5HCSQMYLeMVwIgXE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzB5FJd/3u5VWTJyW/vkY5vg0JuS8Sctmjn3hUPryiMpQ2mR66a
+	HgAg4vwa1IEtzX2y4cr8RDZ4qgayyIgmnvPYyqookK+xZXiiJ77aWAej
+X-Gm-Gg: AeBDieum36YJYwUAOUKcIibvDcFAEngMEtADwU8Kp2xiCXLO8VRBmnaRjo6hm5Uys/a
+	FIa20ix6Z4Yt0KtxrWoVu/2o+ElcRCcJK9NkLPorhjRXQt9x8ya4mSFEwZ4n0G8XbDJB9Fr4gpn
+	hvDBVr+VEtksmvip8kcGTDIXfjNGjTCzWfvqBdLHjwa9gBJNxqYKh6tovTRTBuL/arKm9ah8W4y
+	JmVJr69L3gPO0MSG05pUxUS0RzgEyTl8sILibvu4bZRegoUQYW2Q/Qes44pYwTFER1B6O3F+wou
+	sPv4d4RxcXVzd4SlIEy0BUCd78JiOwscEbbtO2wDBfNoFSm94l8GMrNUzPZX1TXjgniaCaUQNZ5
+	+4igbI9UFlJ28J0/mRqRUAI2Pv5zffCalPxfVKBxWikdLL+nn1oeNh+N3f/vH7HygbEgj3SXqLu
+	kiEKVkKJMD8hRwWj3Sw43YMFlqwlSts56nPhVxmu96f46CDlU808aUIWxgKTM=
+X-Received: by 2002:a05:6a21:3389:b0:39f:3ca8:a315 with SMTP id adf61e73a8af0-3a08d74a3f4mr26659015637.19.1776877009270;
+        Wed, 22 Apr 2026 09:56:49 -0700 (PDT)
+Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7976fa3604sm11908675a12.14.2026.04.22.09.56.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2026 09:56:48 -0700 (PDT)
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	sanjayembeddedse@gmail.com,
+	sakari.ailus@linux.intel.com,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] dt-bindings: iio: dac: mcp47feb02: fix reg property
- value bounds
-Message-ID: <20260422-hull-naming-2d7e822976a0@spud>
-References: <20260422-mcp47feb02-fix5-v3-1-e742cbab1dad@microchip.com>
+Subject: [PATCH v2 0/6] iio: accel: mma8452: improve coding style, pm and resource cleanup
+Date: Wed, 22 Apr 2026 22:26:37 +0530
+Message-Id: <20260422165643.2148195-1-sanjayembedded@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="J0bG6QMKAX2kEJSO"
-Content-Disposition: inline
-In-Reply-To: <20260422-mcp47feb02-fix5-v3-1-e742cbab1dad@microchip.com>
+Content-Transfer-Encoding: 8bit
+
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+
+Hi all,
+
+This series contains a small cleanup and improvements to use modern kernel
+helper API and coding style for mma8452 accelarator driver.
+
+The changes modernize mutex with guard(), dev_err_probe usage,
+resolve checkpatch CHECKS and pm_ptr macro usage.
+
+Changes in v2:
+- 0005: address review comment from Andy and Geert
+  and use DEFINE_RUNTIME_DEV_PM_OPS macro
+- Added new cleanup channges in mma8452 driver
+
+No functional behavior changes are intended.
+
+Testing:
+  - Compiled with W=1
+  - Build-tested on QEMU x86_64
+
+Feedback and reviews are very welcome.
+
+Thanks,
+Sanjay Chitroda
+
+Sanjay Chitroda (6):
+  iio: accel: mma8452: cleanup codestyle warning
+  iio: accel: mma8452: sort headers alphabetically
+  iio: accel: mma8452: use local struct device
+  iio: accel: mma8452: Use dev_err_probe()
+  iio: accel: mma8452: use pm_ptr() for dev_pm_ops
+  iio: accel: mma8452: use guard() to release mutexes
+
+ drivers/iio/accel/mma8452.c | 161 +++++++++++++++++-------------------
+ 1 file changed, 76 insertions(+), 85 deletions(-)
 
 
---J0bG6QMKAX2kEJSO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+base-commit: eade2b843d9b1f668fc1775f15611bb0a1999cd9
+-- 
+2.34.1
 
-On Wed, Apr 22, 2026 at 02:53:14PM +0300, Ariana Lazar wrote:
-> Replace minItems/maxItems with minimum/maximum to describe the reg
-> property as a single channel number with 8 possible values (0-7)
->=20
-> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
-> ---
-> Changes in v3:
-> - Replace minItems/maxItems with minimum/maximum reg property value bounds
-> - Link to v2: https://lore.kernel.org/r/20260417-mcp47feb02-fix5-v2-1-659=
-2ea499cce@microchip.com
->=20
-> Changes in v2:
-> - keep just maxItems value update in this patch
-> - remove Reported-by from commit message
-> - Link to v1: https://lore.kernel.org/r/20260416-mcp47feb02-fix5-v1-1-965=
-6c2fed6d2@microchip.com
-
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
-
-> ---
->  Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml | 4 =
-++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb=
-02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.ya=
-ml
-> index d2466aa6bda2106a8b695347a0edf38462294d03..da4897a6fd8d2522ea7fa3cb8=
-c4bfd91520487b7 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> @@ -161,8 +161,8 @@ patternProperties:
->      properties:
->        reg:
->          description: The channel number.
-> -        minItems: 1
-> -        maxItems: 8
-> +        minimum: 0
-> +        maximum: 7
-> =20
->        label:
->          description: Unique name to identify which channel this is.
->=20
-> ---
-> base-commit: d2a4ec19d2a2e54c23b5180e939994d3da4a6b91
-> change-id: 20260416-mcp47feb02-fix5-26994c5b428c
->=20
-> Best regards,
-> --=20
-> Ariana Lazar <ariana.lazar@microchip.com>
->=20
-
---J0bG6QMKAX2kEJSO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaej9mwAKCRB4tDGHoIJi
-0lRCAP9IyxxkySJsPbwFWSBc1Ax7m0FCECRgRTfAsxJDL1ZFHwD/XHMRqJaDYOEi
-AiTd2ln7PF+zxt04bCG/ANO22Plr4AA=
-=UYb5
------END PGP SIGNATURE-----
-
---J0bG6QMKAX2kEJSO--
