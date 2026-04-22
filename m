@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D05E7345CDC;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4DC534846E;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776869184; cv=none; b=RxbYVm9J6WUfdfhFjQjtB+68ffXhBhfD7nFcmCaV+q9o7Seci3WomDy7w/Nhq096372k7EwzwazzJeL4d3St6s7ScXGdXw2ZRKPksDF9vK2Ta6jWynUxqLNL8uWFId0/Ga2PYdfO29zutBSzv12G4gG9Mrn8aWdVndtVp4wU3jc=
+	t=1776869185; cv=none; b=XZk0MoL3Ix2qZ1m+0LtQpz0aNIXldngoAYIO+Dmb9QJlov4eVDdgftapMJcR2ZkDFtGMElpZEEceQ2tiJw5KZ/2UDbC3Okyi+1sRGbRl/4SEwSbrffGUEegsM5yPnLwOvWPmTuXVHJpCHHViVWGe8tAqedTVvaz+Atg8ZNX1iw4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776869184; c=relaxed/simple;
-	bh=fxSwh5YZV0lJwNqSnII1QOTZVKAjsKtIukTH30xl2OE=;
+	s=arc-20240116; t=1776869185; c=relaxed/simple;
+	bh=3hESn832CfVD1qGqLh7+GlKm0U4NhAxkZ7Jm+PmxZfo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=V7VBHRaSY1hqniefppe9Zc0IQusdRUH4OezTayjmHf/ObKCX85Nr4l9dakcqu7OFNN3VpTxJbe2y3l2PO/xDJFeKhTWBWKcwEdFid6AU5nadF1bw/UiSYmiy5Ai0wJc3ve2eJpzNRM+4Kqi+hsTYfk9j9oHy0IwmQ49Va9C8iFw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VKbhA42z; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=A9214TDxYpR+HJdktt15gis06C+jA7s8aOXixjRLwdE8aOmoP24CyCSTTNYv1S0Bp33U+yQC/nkztfuavD2JM3vpfabU8mbzpkcvLP3X4bKeSfb9XjDA3lGeWE9Ql25uz6ee+JcyagmhlFRqx029Xasv6bkVrfXlAHyhq6ClcQk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JNg2yGLo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VKbhA42z"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A9A04C4AF19;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JNg2yGLo"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BEA9FC2BCC7;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776869184;
-	bh=fxSwh5YZV0lJwNqSnII1QOTZVKAjsKtIukTH30xl2OE=;
+	bh=3hESn832CfVD1qGqLh7+GlKm0U4NhAxkZ7Jm+PmxZfo=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=VKbhA42z5pTeKTR83QwZzXsi2Iu6DfE0gCqqcGxTV3K321c0xo77BioKtZV7VC0qv
-	 XGjJ6s2sZg9zO2ixuOJ4eERaAzfQd3Kfmi3Mf7HLbQhxUcz+1owB8RfS+OA34Tt00Y
-	 8iOwpQJ1iWQwme46oZIgPnNAvCJEqxMaRzjuu12lCj9pGfjqkQACovG3TB51D2b35C
-	 wdSdJWanvXqIRoEq2ls9kUzfqagKpEFLNHgoTkOIHnVSnXMWxV6hwA3lwOO8fnRkdV
-	 v0uJtE3eV6ke7+Rw2fiP/LqiC0vGBfJdGBTQUkoumAjDNWaTAGgAsr25JDVlOokGex
-	 LYbfnv+77bKPw==
+	b=JNg2yGLoFpsOWkyeVaMnv1zbEpzRsezV66/C8WGBGgsm2VvANZqIPn0dDWk0jbKyL
+	 +UzscNWQaohkZ6AcjfVj+0X0CJTC1FVuH5O52ktcH8Abcc6ofiYzFzLUZT8AcfpPXD
+	 nF2kA4rvzsp3fh0q16HHSY+wrZovUsCzmdZTc6vLFhGF3h/njlkmD8m+VKMy/2OGEw
+	 F9wtNYFup3iHzODgdGCr+IXprswlYnCxLxoktxukhQ3h4QprAmMz+WjUeTnQa+1DOg
+	 p0iYGmJDr9VTej+nxnoHp4AmXp9gg7yPlBy3ShcZ+vVhJJiaIURgEpEG0Q6qgxET7b
+	 Ts6/bkrMUw1XQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEA8F9EDF7;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B259DF9EDF8;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 22 Apr 2026 15:45:47 +0100
-Subject: [PATCH 13/22] iio: dac: ad5686: fix input raw value check
+Date: Wed, 22 Apr 2026 15:45:48 +0100
+Subject: [PATCH 14/22] iio: dac: ad5686: add support for missing power
+ supplies
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260422-ad5313r-iio-support-v1-13-ed7dca001d1b@analog.com>
+Message-Id: <20260422-ad5313r-iio-support-v1-14-ed7dca001d1b@analog.com>
 References: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 In-Reply-To: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
@@ -55,11 +56,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Philipp Zabel <p.zabel@pengutronix.de>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=852;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=2155;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=f6PzyqSsWxOZZP4d7ht2aA8eC0y4w+JduFiMQSa6zy8=;
- b=2zDSyBy3PiTZVEfheySnluorFvGYtbMC503N7GbMqpmFI4Jm1nUdvB3I0thMUFSWM83HzqcPR
- NgfzkzxSvc8Bm+dugDpgBA2e98CPjy2VtBOwH6QPUNsVoKE+kSQZMgm
+ bh=Z/GezyWiY80ZBSqa1VITaQKZTnq4hO/6275dv+f3m1U=;
+ b=3RNNPvTq3x/z9VtYoeaK53SU6Z31sVadzXzmfwmHfmiQ1pvHV4I33R/F4W2EhjmkTg99iK7pz
+ +l2nVz2SAebAnHLN9tvaJdY1s4MrN+OLbB61Auk/w6PfQPM1Z66ZzZm
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,29 +70,60 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Use in_range() to fix range check for input raw value, which is off by
-one, i.e., for a 10-bit DAC the max valid value is 1023, but 1 << 10
-equals 1024, which passes the previous check, allowing an out-of-range
-write.
+Get optional regulators for vdd, vlogic and vref input power pins. vdd is
+the input power supply, while vlogic powers the digital side. vref is
+replacing vcc, which is being deprecated, but still supported. The value
+of vref_mv is checked so that a device without internal voltage reference
+cannot proceed without an explicit supply. Error report uses
+dev_err_probe(), which helps debugging an init issue.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dac/ad5686.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 19d791c655b7..07a944311f0e 100644
+index 07a944311f0e..4989404a7b6e 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -185,7 +185,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
+@@ -7,6 +7,7 @@
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > (1 << chan->scan_type.realbits) || val < 0)
-+		if (!in_range(val, 0, 1 << chan->scan_type.realbits))
- 			return -EINVAL;
+ #include <linux/array_size.h>
+ #include <linux/bitfield.h>
++#include <linux/dev_printk.h>
+ #include <linux/err.h>
+ #include <linux/export.h>
+ #include <linux/module.h>
+@@ -471,13 +472,27 @@ int ad5686_probe(struct device *dev,
+ 	st->read = read;
+ 	st->chip_info = chip_info;
  
- 		mutex_lock(&st->lock);
+-	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
++	ret = devm_regulator_get_enable_optional(dev, "vdd");
++	if (ret && ret != -ENODEV)
++		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
++
++	ret = devm_regulator_get_enable_optional(dev, "vlogic");
++	if (ret && ret != -ENODEV)
++		return dev_err_probe(dev, ret, "failed to enable vlogic supply\n");
++
++	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
++	if (ret == -ENODEV) /* vcc-supply is deprecated, but supported still */
++		ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+ 	if (ret < 0 && ret != -ENODEV)
+-		return ret;
++		return dev_err_probe(dev, ret, "failed to read vref voltage\n");
+ 
+ 	st->use_internal_vref = ret == -ENODEV;
+ 	st->vref_mv = st->use_internal_vref ? st->chip_info->int_vref_mv : ret / 1000;
+ 
++	if (!st->vref_mv)
++		return dev_err_probe(dev, -EINVAL,
++				     "invalid or not provided vref voltage\n");
++
+ 	/* Set all the power down mode for all channels to 1K pulldown */
+ 	st->pwr_down_mode = ~0U;
+ 	st->pwr_down_mask = ~0U;
 
 -- 
 2.43.0
