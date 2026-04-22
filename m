@@ -1,251 +1,158 @@
-Received: from mail-dl1-f46.google.com (mail-dl1-f46.google.com [74.125.82.46])
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F0813644DE
-	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 22:27:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.46
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776896827; cv=none; b=oYTC5sNBo6Og3zaY0EUfQbDiKZd7OmO1il6/Lw1cXaoMDL0Kxw8GZPIcL9k1AN0g0KThxbjW3jyP+MsaVKKHBm3hKOlchMMPGr+k5lS2fbkN2O7xR2cHl2+E15s6Y6JlzNxiCR1K8u7W2GiOg8sGUcLVX9pJlzVIKPc/rbXUoFQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776896827; c=relaxed/simple;
-	bh=eaCxG8SgmUQSpvNRctUno+Gw8GheuKX8N13RrYq3nc0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IVxgYxKEWcV+lJEUza3M0mcckc0UZ53p3b9jcTHiHj/Fu7fcxxWUVS3j18cfkJfiRhAHndLmfnAPa+EDKcgUPig67gMIv1GAnzSwHcB+IRrPCGnYCtfVFQPavvDIlAY8jJB4ysDDvOo0nW51oBEJH72ASUGu/3g98ooQu3UD/nI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=vnEXxhp7; arc=none smtp.client-ip=74.125.82.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C15392BFC60
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 23:03:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.174
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776899037; cv=pass; b=rQCZ6oZM3AGcGaI6Q3Ox67L/3sJkyldGactMPuM8GCP351QmqC/H3UiDLfC1g67ymZJvv48k5TtYTkr7Lkbzx1pPfps3LHXxx+LmWAvta2m/pPKfI0yu5vW4YREr6Ge5RftTRcI16RSjKY8QiroHl9E/czuCOGlRaVM0MRgZ+D8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776899037; c=relaxed/simple;
+	bh=KXO4RmZONLexDJA6cNlzp+sXYrBZSdnXXkmeFz+SI2U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Fb/ulIbLBPbUCsCZjj6jymNZFFg68cEZtBrdLVfC84hgxpBHjLty7svJWUZybipBDGnOU/Xvx9J6Lhm2anJfO6eoRauFBKHq0tYBqujKc1Dx2DAeChlnEkxoUrcln6xdR9BGF/3U90iJ1L1ibaB+0SL2d8hXMCQtCJBL3kSrVS4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jVQhgUDa; arc=pass smtp.client-ip=209.85.128.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="vnEXxhp7"
-Received: by mail-dl1-f46.google.com with SMTP id a92af1059eb24-12dbd0f8063so2393347c88.0
-        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 15:27:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jVQhgUDa"
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-79495b1aaa7so60701717b3.1
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 16:03:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776899035; cv=none;
+        d=google.com; s=arc-20240605;
+        b=auwvyuDCIfvcqJJzt3VFDsMWxTZq6Dc9904NWDlXULPQEVVeg9s4i/rssz9fDfr6+b
+         DSGfL1zvS3xbYhwG0Irmag5nw1X42NdwFN8HGwZTOgt5p7VZOLJBfxuiBhjVP6o2W8Jb
+         Nlq69VYBEVkwCReIyPWLJ+bQhsHUmJ1191zmb812sIqVEPnOnJi5jTVz+d7vXMcflmre
+         18ah9Gl5lD/wKK54lpXwyNLB96iIR2cNCd6Bqi8T2m4YYMuph7/txVkG9mpWEEuTAXfJ
+         PDhBTgrba9llOdV8mNM1TFeBRYaGIhp2D5HYBs84pRcgwP4RbGj01GHZAGC5eA15M7zs
+         q5TA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=12x19t+iPik2XUzxukezkJLRNb4tdhI1WAaLB0ymjGA=;
+        fh=2snsTeQLiON3NOWskYzjCzUYM4V/LjETDCbHjrFGlzg=;
+        b=aRGEK4HALQjeUcbjlE6ATOrr3B/EKuR89qKmYwlbnGRCSpQPoLUgEgonpX5GB1jwcw
+         q7EbR4LKSU51jQtw0mNTs6v9kk32NRTU3B4sFstSPxXjyu2fjTvVDAC54HGEcaQEMS+O
+         GOqYlrhSZAI5FdYZaCev1hJNisVntnyNqs5jH5exZx9fA95bya2xOb4i9Xe8hM13LXOI
+         WHnWStg0fOIrWkdky9I7AVt5pj8mvDuUibaFHPi8t8ei/xSNHiwv6T63xFIJdMuruCSM
+         AGXAWhnYleewJRfIJ+Haj/g96ghSBAXiS14Ppu6n6htmPD5xDS2xq2pj3B2Js6I9EbrY
+         uSxQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776896824; x=1777501624; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1776899035; x=1777503835; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=w4hqzeKA0O3ZFuxHzGa4rvgRiaeuj0MO205Rf22UDFg=;
-        b=vnEXxhp7mr20jZchbvb03mjT7NdNCipipORpsEYifODWmkMp78TXVmOlN3nqzXpP7+
-         ZpxqB8MI1j1DAiMqHyGhpIMC69gmZIkZ24lM17jn05j3gJwlC6VFjwI4tH2Nj13vxzrj
-         lH7DUBEsH4r+d9gGiGiab8+pyS7+CWvF128YZ6jij0J+5FV74R+GmNHgO75s2s2IxmHF
-         yTBsZFzqFDmZdHKc4UoQfl/w5EbQYNEdJgY2RO4JDmwfKy6BOu+Pf7xaEu+ohm6BxjUs
-         gySMO8sqIEXoDMc4dZxvHcxK+70UN609QHt0jEAmsfEuE/znMddWXrbRsURYGX97YpTl
-         eMSg==
+        bh=12x19t+iPik2XUzxukezkJLRNb4tdhI1WAaLB0ymjGA=;
+        b=jVQhgUDagP+VKQ+2VSuXtVDC1sDQd7H5rpvFaaa5YY6apjIouI5W5jGg6azFp8Ajti
+         uJ7t8f/DU5DyUH2GkSt7+Qksh24WkqaoUr303MNqnyEI5Vc+Nw88h9ecFvH30iZ2yqf0
+         eTujL8RFoHYUymaUbpZp0Wjt0gE0Qpo04XJEjpUlTNr1qgN+n8gaR7uFQOi4RQwPbFPZ
+         qMAhMbJgcKQWuglPMfvVd4YjLEPW7Gm/8PkEAyDCLXN56lXQW6uOO3A8UkXX0GYUbMoR
+         rTxEeOuNH52i3/48OvzeZWecoqDqqgh3CHhFccCcWKf0szudh9CkAZu8p3ggEZSO1FMx
+         1KLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776896824; x=1777501624;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20251104; t=1776899035; x=1777503835;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=w4hqzeKA0O3ZFuxHzGa4rvgRiaeuj0MO205Rf22UDFg=;
-        b=SMAAT5IH5UuEh/9FCdWHKsI3OKSOQSZheBO6GHSUy7Dm/32SkFP8INlvTv9TJBTAAb
-         QJi8HTx0pzxc+H6uiCJWgSYJRLX32F6mbdMBx8ejLZwnVApyKlTO+xO/bZQO/w8EG3+A
-         Cu5SHn/tc7UQ6iuQfc0sIkYv9yAw7PqoeletbYIq7lulf+rI295JBTyhBbH9f5npZSXP
-         WXW0GHjGcdYhs1LDFW/7UwpP561S9rRumCPewy5V5rGwlR+anzq7x96GpCRbjgDCEuhU
-         fHQQdgqkbVpochBebWk/XWKW3WbICDT2AziDIkN+7dQoHHYtrhPDdnF9SMDSEUPz1I8i
-         T7CQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/zVhwWHUk4TGLdTb9Xn/2iLicfskp0Gv9GD1beXmiFJSHOtmYU5wHC2+v7v2A2ygtkxiR8Mv7gudg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzutvNPOO7z6CBVBOvgPUVXVu1RFBNfPdP7iEsHT0CF8QAYonLq
-	22BCv83jry0kN6/y7QlrQi5fTJmrCGL1Ujhs1crl2LSgbBsWFMEJqapxWeI+q+gbC0U=
-X-Gm-Gg: AeBDiesTXC+d8ACZcD2rKs0Es7acvx8E34GAdXFdE89JHsHY9s+S5nxFZO7gGp/+WgN
-	zwykOmRh3JKl5AdwXHZXk19ujDxQo3ErAIGWyHuXk+BZI6NbeVmgTFkMhHT7AGs8XrtNZl20GLk
-	menj9r/fl2Q63IK9BjqsP0BxA9cJYPLo3GHZsTUEp8Cy73iJd2rEldamLAlUhHAxrBV3AWU6fj1
-	pYspC/1EbzSF5/+31fTa/gFPzrFYDLTzCSNqN7HFoIu8w+KvXIkMv0E5eK4u208JfaVj/usokCV
-	n7QNDZh1ipDi9KGv+8gjwyatEWpK4c99vn5GypUAaAc7q1QYLvayHgM9K+zscpgDiPGl5ytXuXQ
-	UqIvUjWdZbAtSCn26xn6hLgNFaxh8pMdmfiqqyJMigREzH73aBDEGIe2FudGOC8buJbns4IEGIn
-	bDtlisqLS+4psGfsduOe1nPS83od5H7rtHc5UD/hVpG3CKs1tLpUAA5X7Y
-X-Received: by 2002:a05:7022:4199:b0:12c:8b9:71db with SMTP id a92af1059eb24-12c73f97587mr13686082c88.21.1776896824283;
-        Wed, 22 Apr 2026 15:27:04 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:190:8d7a:cdbd:474a:802:34b])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c837f7feasm26293952c88.0.2026.04.22.15.27.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2026 15:27:03 -0700 (PDT)
-From: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
-To: andy@kernel.org,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
-	nuno.sa@analog.com
-Cc: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>,
-	Eduardo Augusto <eduardoaugustoabc@ime.usp.br>,
-	Christian Barry <christian.barry@ime.usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v4 2/2] iio: adc: mcp320x: refactor driver to use bitfield API
-Date: Wed, 22 Apr 2026 19:14:13 -0300
-Message-ID: <20260422222553.67660-3-gustavo.pagnotta@ime.usp.br>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260422222553.67660-1-gustavo.pagnotta@ime.usp.br>
-References: <20260422222553.67660-1-gustavo.pagnotta@ime.usp.br>
+        bh=12x19t+iPik2XUzxukezkJLRNb4tdhI1WAaLB0ymjGA=;
+        b=NpDiV97EzQ9Yjt6x9dp0P6YB4SMRWNTDFFeNEom1tB9UTouiiT19eRs1KLxiZZ/3wZ
+         KPg4wrYIM1Ds1abDxAnpZO9QkilJrKK5SVA4NiZDMXYGEDG1R+L2cMAXyCZiEG1EwVtt
+         G0joEk1o+/Ta5GwBfkW+oylvJPMImdizZfOMS974TGNLEvVGh2O5fc+bqsbjrfhfsS8g
+         XzZeUWWP9O7ZYROyA8sAaeRpFquD1SDI1+zel5YdkN/r7nBU8PmuxmFIAyqK+Z881c/X
+         kdFXlBnZ9hGrY06MWI9tN8mjLkAmX6JkZNWvEerYUKOkxQ/YZrcE+ras5dLyWmJo04Px
+         JNRQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/W+N3vHCFHrNFpNvI7IgTZvusichcEfNZvj7r3nAEhTsU6seQXou9Qll6T+znjt+3/yFkfMXeabW4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxfMWDZolaF6JVtFXYZHDbP9by2RAyEPxkRTDaYCZWpOqYVWjbX
+	ZWg9hQSfzahHG+2wIgKkYHVfyHNdRBsowqFII8tJ/IkXnT0nHRUnoXQjUWUUJemjvnGoTjEufaU
+	f0tg3CrHB9E11QImiGgt9zDPnUlJkbnI=
+X-Gm-Gg: AeBDies0ItZ6IJlUgSRs8piZYpFectt1D184hgOuB/vYtLey8UOt0sLhhM0Nznmk8qU
+	PWPB0s+stTIR9RAQUjqBZwfxFidjg4JBJ1b0R6Dojpd2fYx5yaz9fBVK3tTa9egPhY8c/uriKZI
+	ipG9np+KLGrGltscMrhXXQRNytAWyewaRUp7OmykKzw86cIpzpvxy0BanWKY19UtIZpKbsoG2Gg
+	H3aDC6V18Ki6Gb+sp5PVSazj7/1Y+RgJp2DdkKfOJwy00b9C7k9wQb2AoGnyPQpaZ0AIsA0ptbJ
+	mbz4+EFXMbi+HtQbgg==
+X-Received: by 2002:a53:b608:0:b0:651:b7f5:14f5 with SMTP id
+ 956f58d0204a3-65310a11307mr18278799d50.31.1776899034766; Wed, 22 Apr 2026
+ 16:03:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260421190855.24132-1-matheusgiarola@usp.br> <aeh8Xu90pyUBBzj5@ashevche-desk.local>
+ <aeh8wfWGGkWppTe-@ashevche-desk.local>
+In-Reply-To: <aeh8wfWGGkWppTe-@ashevche-desk.local>
+From: Matheus Giarola <matheustpgiarola@gmail.com>
+Date: Wed, 22 Apr 2026 20:03:43 -0300
+X-Gm-Features: AQROBzCKAFAUGMtIXMBBdLqx3J4_DRmiMwSURZmNrlB_kPeqUZf3hMOLrc4-AcA
+Message-ID: <CABGH8=a77fmjW01gsmBZnKz1bSkQHA4MrVu-_9snpm-Zv3z54g@mail.gmail.com>
+Subject: Re: [PATCH v5] iio: adc: ad7280a: replace mutex_lock() with guard(mutex)
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	matheusgiarola@usp.br, arthurpilone@usp.br, davidbtadokoro@ime.usp.br
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Update the mcp320x driver to use the standard Linux
-bitfield API (<linux/bitfield.h>) instead of manual
-bitwise shifts and masks.
+Hi Andy,
+Thanks for the review. I noticed that there's another student working on th=
+e
+same change, so we decided to join efforts and continue on his patch,
+dropping this one.
 
-This replaces the hardcoded shift operations in the TX
-data preparation (mcp320x_channel_to_tx_data) with FIELD_PREP()
-and replaces the manual masking in the RX data extraction
-(mcp320x_adc_conversion) with FIELD_GET(). Explicit masks using
-GENMASK() and BIT() were also introduced for both transmit
-configurations and receive extractions.
+The other patch can be found at:
+https://lore.kernel.org/linux-iio/20260417131029.12568-1-lucas@ciziks.com/
 
-Signed-off-by: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
-Co-developed-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
-Signed-off-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
-Co-developed-by: Christian Barry <christian.barry@ime.usp.br>
-Signed-off-by: Christian Barry <christian.barry@ime.usp.br>
----
- drivers/iio/adc/mcp320x.c | 81 +++++++++++++++++++++++++++++----------
- 1 file changed, 61 insertions(+), 20 deletions(-)
+Best regards,
+Matheus.
 
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index d011f1732bd7..454494a6edd2 100644
---- a/drivers/iio/adc/mcp320x.c
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -37,6 +37,8 @@
-  * http://ww1.microchip.com/downloads/en/DeviceDoc/21950D.pdf  mcp3550/1/3
-  */
- 
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/iio/iio.h>
-@@ -44,6 +46,37 @@
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
- #include <linux/spi/spi.h>
-+#include <linux/unaligned.h>
-+
-+/* MCP3002 Tx Data configuration */
-+#define MCP3002_START_BIT	BIT(4)
-+#define MCP3002_SGL_DIFF	BIT(3)
-+#define MCP3002_CH_MASK		BIT(2)
-+
-+/* MCP3004 Tx Data configuration */
-+#define MCP3004_START_BIT	BIT(6)
-+#define MCP3004_SGL_DIFF	BIT(5)
-+#define MCP3004_CH_MASK		GENMASK(3, 2)
-+
-+/* MCP3008 Tx Data configuration */
-+#define MCP3008_START_BIT	BIT(6)
-+#define MCP3008_SGL_DIFF	BIT(5)
-+#define MCP3008_CH_MASK		GENMASK(4, 2)
-+
-+/* MCP Rx Data extraction masks */
-+#define MCP3001_DATA_MASK	GENMASK(12, 3)
-+#define MCP3002_DATA_MASK	GENMASK(15, 6)
-+#define MCP3201_DATA_MASK	GENMASK(12, 1)
-+#define MCP3202_DATA_MASK	GENMASK(15, 4)
-+#define MCP3301_DATA_MASK	GENMASK(12, 0)
-+
-+/*
-+ * MCP3550 Data and Status bits
-+ * See mcp320x_adc_conversion() for details on when these are used.
-+ */
-+#define MCP3550_DATA_MASK	GENMASK(31, 8)
-+#define MCP3550_SGN		BIT(23)
-+#define MCP3550_OVR		BIT(22)
- 
- enum {
- 	mcp3001,
-@@ -99,19 +132,22 @@ struct mcp320x {
- static int mcp320x_channel_to_tx_data(int device_index,
- 			const unsigned int channel, bool differential)
- {
--	int start_bit = 1;
--
- 	switch (device_index) {
- 	case mcp3002:
- 	case mcp3202:
--		return ((start_bit << 4) | (!differential << 3) |
--							(channel << 2));
-+		return FIELD_PREP(MCP3002_START_BIT, 1) |
-+		       FIELD_PREP(MCP3002_SGL_DIFF, differential ? 0 : 1) |
-+		       FIELD_PREP(MCP3002_CH_MASK, channel);
- 	case mcp3004:
- 	case mcp3204:
-+		return FIELD_PREP(MCP3004_START_BIT, 1) |
-+		       FIELD_PREP(MCP3004_SGL_DIFF, differential ? 0 : 1) |
-+		       FIELD_PREP(MCP3004_CH_MASK, channel);
- 	case mcp3008:
- 	case mcp3208:
--		return ((start_bit << 6) | (!differential << 5) |
--							(channel << 2));
-+		return FIELD_PREP(MCP3008_START_BIT, 1) |
-+		       FIELD_PREP(MCP3008_SGL_DIFF, differential ? 0 : 1) |
-+		       FIELD_PREP(MCP3008_CH_MASK, channel);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -142,45 +178,50 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
- 
- 	switch (device_index) {
- 	case mcp3001:
--		*val = (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
-+		*val = FIELD_GET(MCP3001_DATA_MASK, get_unaligned_be16(adc->rx_buf));
- 		return 0;
- 	case mcp3002:
- 	case mcp3004:
- 	case mcp3008:
--		*val = (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
-+		*val = FIELD_GET(MCP3002_DATA_MASK, get_unaligned_be16(adc->rx_buf));
- 		return 0;
- 	case mcp3201:
--		*val = (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
-+		*val = FIELD_GET(MCP3201_DATA_MASK, get_unaligned_be16(adc->rx_buf));
- 		return 0;
- 	case mcp3202:
- 	case mcp3204:
- 	case mcp3208:
--		*val = (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
-+		*val = FIELD_GET(MCP3202_DATA_MASK, get_unaligned_be16(adc->rx_buf));
- 		return 0;
--	case mcp3301:
--		*val = sign_extend32((adc->rx_buf[0] & 0x1f) << 8
--				    | adc->rx_buf[1], 12);
-+	case mcp3301: {
-+		u16 rx_val = get_unaligned_be16(adc->rx_buf);
-+		u16 raw = FIELD_GET(MCP3301_DATA_MASK, rx_val);
-+
-+		*val = sign_extend32(raw, 12);
- 		return 0;
-+		}
- 	case mcp3550_50:
- 	case mcp3550_60:
- 	case mcp3551:
- 	case mcp3553: {
--		u32 raw = be32_to_cpup((__be32 *)adc->rx_buf);
-+		u32 rx_val = get_unaligned_be32(adc->rx_buf);
-+		u32 raw;
- 
- 		if (!(adc->spi->mode & SPI_CPOL))
--			raw <<= 1; /* strip Data Ready bit in SPI mode 0,0 */
-+			rx_val <<= 1; /* strip Data Ready bit in SPI mode 0,0 */
- 
- 		/*
- 		 * If the input is within -vref and vref, bit 21 is the sign.
- 		 * Up to 12% overrange or underrange are allowed, in which case
- 		 * bit 23 is the sign and bit 0 to 21 is the value.
- 		 */
--		raw >>= 8;
--		if (raw & BIT(22) && raw & BIT(23))
-+		raw = FIELD_GET(MCP3550_DATA_MASK, rx_val);
-+
-+		if ((raw & MCP3550_OVR) && (raw & MCP3550_SGN))
- 			return -EIO; /* cannot have overrange AND underrange */
--		else if (raw & BIT(22))
--			raw &= ~BIT(22); /* overrange */
--		else if (raw & BIT(23) || raw & BIT(21))
-+		else if (raw & MCP3550_OVR)
-+			raw &= ~MCP3550_OVR; /* overrange */
-+		else if ((raw & MCP3550_SGN) || (raw & BIT(21)))
- 			raw |= GENMASK(31, 22); /* underrange or negative */
- 
- 		*val = (s32)raw;
--- 
-2.43.0
-
+On Wed, Apr 22, 2026 at 4:46=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Wed, Apr 22, 2026 at 10:44:36AM +0300, Andy Shevchenko wrote:
+> > On Tue, Apr 21, 2026 at 04:08:55PM -0300, Matheus Giarola wrote:
+>
+> ...
+>
+> > > static ssize_t ad7280_show_balance_timer(struct iio_dev *indio_dev,
+> >
+> > >     unsigned int msecs;
+> > >     int ret;
+> > >
+> > > -   mutex_lock(&st->lock);
+> > > -   ret =3D ad7280_read_reg(st, chan->address >> 8,
+> > > +   scoped_guard(mutex, &st->lock) {
+> > > +           ret =3D ad7280_read_reg(st, chan->address >> 8,
+> > >                           (chan->address & 0xFF) + AD7280A_CB1_TIMER_=
+REG);
+> > > -   mutex_unlock(&st->lock);
+> > > +   }
+> >
+> > Not sure if we need {} here (as it's one statement body), but the inden=
+tation
+> > now got broken of the second line there.
+> >
+> > What about
+> >
+> >       u8 devaddr =3D chan->address >> 8;
+> >       u8 addr =3D chan->address;
+>
+> Just checked the second one s/addr/ch/ as per ad7280_store_balance_sw()
+> implementation.
+>
+> >       // ...or use existing names in the driver for the same things
+> >
+> >       scoped_guard(mutex, &st->lock)
+> >               ret =3D ad7280_read_reg(st, devaddr, addr + AD7280A_CB1_T=
+IMER_REG);
+> >
+> > ?
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
