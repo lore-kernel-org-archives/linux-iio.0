@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B41832143F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7860D32C924;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776869184; cv=none; b=kbNa1KrDsT9AW5y7CwrgK/a1iUIPXHe5lf7pKEKY2HqKYDhLDC7vFC9XE+ilVoLC2AmcZNwaZSKozssujfk8Bp5YYv1RNPWWiLKpN8+f7bnMBiDjzk/0hJKZJP+S5fc9o5d5rihWCRgdE8fUTJU/s7D0P0jfOdddggKW1PNWO4E=
+	t=1776869184; cv=none; b=GHl1/IIoD6XVhbccXOZnkdDvRvsdJAiMnKxAPmajm40k9AlC/kciV43mU0ZaYm9e0Vlz+YKT2PSLrx2ge4xS7GZWiRg5bjZbiH9ovZyd+Uxu0GO8Y3dMSjnhoHIdymSBU2qa1yfprGtEygwis+OWfXgDHX6oFf5drUH7MG7xENk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776869184; c=relaxed/simple;
-	bh=LjIJCXNKBloKa8J7crgRBq9nzi+vvSVTBMwFFcTVU3Q=;
+	bh=l+N2eTpdCf7SDD+ccsaQ4RMwN1LY4hOleoPt5R0zvgM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=dHe/7IpJY0KhKqaN2ZVMctUeJvy0C1mjI6Pwqo436Xh843/l/iE3Wzvz6oti9+iYETOZLFaBN1BW9fKa+P1zSUiOBnJLSAfdeZZcaT9xhvp++9cHAF4VlAm+MnQbUP7qrZKe/KvkceK9TCR43c9KxTeP4tplfa1jITBw0XwQnj4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M4Ak0ppw; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=NmEJ6vipMo50TLp4C5exC6dz3Vj3v/fsdsrGqJH6OY/64uYlhQJ8vtU0VkUy9wXWWQrmGMsm6QCgtb+ezdO/XUvGlUESgNc2fCDgOl3ZgXpua4x3/o8fhaQLuN/Uq5C/VJLAQCra+d++o8XqB/0yMxdD8+4X6rTE7FXuL4aPMHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cPctFswy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M4Ak0ppw"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1784AC2BCC6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cPctFswy"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3D810C2BCFA;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776869184;
-	bh=LjIJCXNKBloKa8J7crgRBq9nzi+vvSVTBMwFFcTVU3Q=;
+	bh=l+N2eTpdCf7SDD+ccsaQ4RMwN1LY4hOleoPt5R0zvgM=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=M4Ak0ppwPn/Z8mNaj8sU+/hW6nC7NMZzbx/41OSyyg4HWxbmqRadtBXX5PpKitQJE
-	 5JHHXeaNHLepAXALXOurmRd7OLpvq/It3t2tmwVg/jUixH8ghHlpMaD9Lqqv8xDIFT
-	 ISg0PLPpSAhRpv78kv6iCBLo7ILPVDsW420FYRGYTP++RiEJoKH9MD2T6GCzUBY+KA
-	 PrwASQBp+/SpPfb3qDRRwRqO49+Ed0OHgeExFRR2Ht3Pm+FAKhDv/e0ZP3T91kTTcU
-	 U4c5XmiLtbRhSyCjrBcNkT5PC26sdvJ1oRoFUv5wt8hceiE0sHzyE38GaTYHTNmXYm
-	 GrfoX88IcUx0A==
+	b=cPctFswya3Op/IZD7IAmz9WIGDkgsI9sYsbmcSppfgRucoYVGLJqrpkTlqHwoE7om
+	 rdlzSiRsZG6BU6RAXtrY68xz1HYXtltQD2QFzLY/l6Di5egJ2Tfneg8NDXnnEgioIO
+	 ZccikrhILe194ELbu3Rji/MIAr35AMPrT/BcH/GcY9Z3SXGE9FzUea2ypmuwVlbayG
+	 U+um1habYfIX+bJkHt7e/fEZSUktY5GqGOT7C8uV42K5HcUs4PsdUNlBa8qf6RCAiK
+	 7mfHfzmPxoyIkiBdFdcTFEvsDnPZrX3GvMy+wSh05u0Y0paIuO8px+IFYxW2jeSAb8
+	 n3WKBq2R729Jg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6B5F9EDF3;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3497CF9EDEB;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 22 Apr 2026 15:45:39 +0100
-Subject: [PATCH 05/22] dt-bindings: iio: dac: ad5686: add reset/ldac/gain
- gpio support
+Date: Wed, 22 Apr 2026 15:45:41 +0100
+Subject: [PATCH 07/22] iio: dac: ad5686: refactor include headers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260422-ad5313r-iio-support-v1-5-ed7dca001d1b@analog.com>
+Message-Id: <20260422-ad5313r-iio-support-v1-7-ed7dca001d1b@analog.com>
 References: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 In-Reply-To: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
@@ -56,11 +55,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Philipp Zabel <p.zabel@pengutronix.de>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=2213;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=2739;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=wOaYAWpRRj1O+OF2FPPEqrEtz1565nfRtvyzOVFlG90=;
- b=8BI4DkEzHrNYUf9/2froJpEW7mtscJs2/ss1S4CEv0HHqsIy+jobBQCH1Ys6i943nVdznkW3i
- gUUCqqdMXqrDkB2KzeudibwdxyW5MQI3eKaFwcGYnwRYI0pyuBgTTYw
+ bh=6tt5M1kuQh7zLk0nCE7kXKPrQzBvjK2aZ4Ndo8TiE2w=;
+ b=Du8u4IVD/tTMb/rLnXhyQEMXCVQy6QWhra+qgP4VdWZW/2KoscdYbVaYt+bNLzhpFVcYZL0jI
+ 8xPhOzMl9R7Bf3qxi4jxXrJAqCu1keF/YgBQSmxTFnYcCyiecRJCECO
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -70,76 +69,104 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add GPIO property for RESET, LDAC and GAIN pin. RESET is active-low, LDAC
-is used to load DAC channels with values from input registers and GAIN
-can double the voltage in output channels. The gain-gpios property is
-not available to all supported parts.
+Apply IWYU principle, replacing unused/generic headers for
+specific/missing headers. The resulting include directive list is sorted
+accordingly.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../devicetree/bindings/iio/dac/adi,ad5686.yaml    | 31 ++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/iio/dac/ad5686-spi.c |  8 ++++++--
+ drivers/iio/dac/ad5686.c     | 13 ++++---------
+ drivers/iio/dac/ad5686.h     |  5 ++---
+ drivers/iio/dac/ad5696-i2c.c |  9 ++++++---
+ 4 files changed, 18 insertions(+), 17 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-index cb035741529f..543ee181f7b3 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-@@ -43,17 +43,46 @@ properties:
-   vcc-supply:
-     description: If not supplied the internal reference is used.
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index df8619e0c092..b4df06f6bf02 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -8,11 +8,15 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
  
-+  reset-gpios:
-+    description: Active-low RESET pin to reset the device.
-+    maxItems: 1
+-#include "ad5686.h"
+-
++#include <asm/byteorder.h>
++#include <linux/array_size.h>
++#include <linux/err.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/spi/spi.h>
+ 
++#include "ad5686.h"
 +
-+  ldac-gpios:
-+    description:
-+      Active-low LDAC pin used to asynchronously update the DAC channels.
-+    maxItems: 1
+ static int ad5686_spi_write(struct ad5686_state *st,
+ 			    u8 cmd, u8 addr, u16 val)
+ {
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 9a384c50929b..1a6eb3832f22 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -5,17 +5,12 @@
+  * Copyright 2011 Analog Devices Inc.
+  */
+ 
+-#include <linux/interrupt.h>
+-#include <linux/fs.h>
+-#include <linux/device.h>
++#include <linux/array_size.h>
++#include <linux/err.h>
++#include <linux/export.h>
+ #include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/regulator/consumer.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
++#include <linux/sysfs.h>
+ 
+ #include "ad5686.h"
+ 
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index e7d36bae3e59..3fcc792ea656 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -8,10 +8,9 @@
+ #ifndef __DRIVERS_IIO_DAC_AD5686_H__
+ #define __DRIVERS_IIO_DAC_AD5686_H__
+ 
+-#include <linux/types.h>
+-#include <linux/cache.h>
++#include <linux/bits.h>
+ #include <linux/mutex.h>
+-#include <linux/kernel.h>
++#include <linux/types.h>
+ 
+ #include <linux/iio/iio.h>
+ 
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index d3327bca0e07..587f53228bae 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -7,10 +7,13 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
+ 
+-#include "ad5686.h"
+-
+-#include <linux/module.h>
++#include <asm/byteorder.h>
++#include <linux/err.h>
+ #include <linux/i2c.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
 +
-+  gain-gpios:
-+    description:
-+      GAIN pin that sets a multiplier for the DAC output voltage. When high,
-+      the DAC output voltage is multiplied by 2, otherwise it is unchanged.
-+    maxItems: 1
-+
- required:
-   - compatible
-   - reg
++#include "ad5686.h"
  
- allOf:
-   - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            anyOf:
-+              - const: adi,ad5310r
-+              - const: adi,ad5681r
-+              - const: adi,ad5682r
-+              - const: adi,ad5683
-+              - const: adi,ad5683r
-+    then:
-+      properties:
-+        gain-gpios: false
- 
- unevaluatedProperties: false
- 
- examples:
-   - |
-+    #include <dt-bindings/gpio/gpio.h>
-     spi {
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -61,6 +90,8 @@ examples:
-             reg = <0>;
-             compatible = "adi,ad5310r";
-             vcc-supply = <&dac_vref0>;
-+            reset-gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
-+            ldac-gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
-         };
-     };
- ...
+ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
+ {
 
 -- 
 2.43.0
