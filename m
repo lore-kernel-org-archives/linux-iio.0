@@ -1,59 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4868A1A6815
-	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 07:26:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A247E370D5D
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 07:30:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776842788; cv=none; b=RCgGHzNsWoE9uGGrghIktSwT//rHXrJSqiYh7fPqP63GMjhjGZmE6iIeQx4YiID/uFAz7CMngPdjOQo/GOTt/1frAZ5S9agfwKLv3RMz1sfnfN7D973V/wEbGVji8TthumgjTCH4gRBquLtlXhp+BDZTepw3+drSJREeSy49DY8=
+	t=1776843004; cv=none; b=uvC/9H6Vryfz4AmHu9/CTA7u0XDS7Yci7E60pQGwHAoQQMZ7/RmZSwDHkUeBUyWbmY1dgidtGRkkM9Qal0wCODBmnRvNppzcLHclNqaff58BTcW1z0+Nscw0OS0jQkyTm8bwn92ZiaCvnEhXPs8H14cgdc7gsdWYL3tLTCasr4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776842788; c=relaxed/simple;
-	bh=NVz9mwCcCGwHG3cNvMZCGNijkfmsuQnxkYEewIsuARI=;
+	s=arc-20240116; t=1776843004; c=relaxed/simple;
+	bh=MHUsP1z4L1I8pLqpKYLpIZH/GHDTwWTJRKJ2zbnHLVY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o6lFgruD9JfC/cJvYtafMx/bs1twdDL48w0l99ufN2ukOg/BGQ0x5KrtgGKxfPIka5xXX2Z7uOpy9jQ8VsqV+bLRSrLKzTWobyqmkqCpa6D4b6jDezw3XRGr8ym+cK+GYVX223J8etIw9iZH29pBwpsD7wlSaGYsDOkO/53UpQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eshrKq3T; arc=none smtp.client-ip=198.175.65.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z4Og0BAX64Wvw+acrAadlQSJYge2SJahNKVM7HuxmKdZZUvqgZQpqoTWg4wIhmeOqW8rPBObQRestqyzxHzLsqGLZLj92Fc3klJU3plT6qv3615hN24wUmjsm3Uo4oi+rqAmNDjcI85ZYdU91E8EGecx5OTP0stwsas7CqSJsRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WgSEuyYE; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eshrKq3T"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WgSEuyYE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776842787; x=1808378787;
+  t=1776843003; x=1808379003;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=NVz9mwCcCGwHG3cNvMZCGNijkfmsuQnxkYEewIsuARI=;
-  b=eshrKq3TWmScd4XCNeIRnv8bwTIZhPf2SFh0j50y8EoYGQX2AX1BMYo6
-   oGksNtrEv+oyiWYLw3NIzK1rF4obfvrooL4RBAJkndjdX2Evj9daAE5i+
-   C7pphmIo/w0HpaQ6F5LfXMt59b9MmXQ/SqhGGipS7H/IJJwTxECrWKptz
-   rXRJtJk61Gte1YUeu/VNN48jy9d0vg3RONBe3gHMpTgHkO0RkkmXB733a
-   2Qkf4peuYO2OX0vDZwiT12B6m8ZOwqK9Kj/W8qkrGgOJbXVjD/le0GBGs
-   mppycspv3EBS7VuFshhxH80eKMQYTASB7z8jNnpjuAgdos/ORz/ORnU02
-   A==;
-X-CSE-ConnectionGUID: y74M1daZRuifyT0SaMQ+Kg==
-X-CSE-MsgGUID: 6VhzlxpuSCOv7x+TI3dX1w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="81654999"
+  bh=MHUsP1z4L1I8pLqpKYLpIZH/GHDTwWTJRKJ2zbnHLVY=;
+  b=WgSEuyYEol4whM6BJxBkVzRQrlKkO887PigFg4JoRhJ/0KJnUJxq8Q2M
+   eoAq6Kfry6BIA0cxkQnnUFNdvKB/rZbSCfgP98SigfesC7Sq668jqYCua
+   7QOKH/gvwU6zjJlFF0EuwEp548hihvM1JGcm042efS+L4rbBUef349s2a
+   B5cqK4yyrz/vrD8PTGwE7VHpuVf4RJSdv7e0vHpWuKG9K6+FNLQVPDu71
+   j6wLmJGkJBWDlKtgG1mDkxrBQzkR1F3KHZ0oG6mgIGqypNCTCUggrIeuC
+   SL921dYofyJPZLLYy4ZtedVrSCAMmpWTls2XwWcJp5PXz1uHM54/4fo/A
+   g==;
+X-CSE-ConnectionGUID: A58zTcEkTZS1xW22foqC0A==
+X-CSE-MsgGUID: 4fjedGkAQGWo5EmBJPM+bg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="88091870"
 X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="81654999"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 00:26:27 -0700
-X-CSE-ConnectionGUID: X4bChWVWRRi6v0f2OUwx5w==
-X-CSE-MsgGUID: jh6RSULvTtiseS6gtAqc1Q==
+   d="scan'208";a="88091870"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 00:30:02 -0700
+X-CSE-ConnectionGUID: nB6802IJStK4Gz9dGG4zNA==
+X-CSE-MsgGUID: +jN3GZQiQduDmGY+z9HYMQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="231386857"
+   d="scan'208";a="232573713"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.201])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 00:26:26 -0700
-Date: Wed, 22 Apr 2026 10:26:23 +0300
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 00:30:00 -0700
+Date: Wed, 22 Apr 2026 10:29:58 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Laura Arakaki <lauraarakaki23@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org
+To: lauraarakaki <lauraarakaki23@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org
 Subject: Re: [PATCH] iio: temperature: tsys02d: Use guard(mutex) in
  tsys02d_write_raw()
-Message-ID: <aeh4H0GS2fgBRbix@ashevche-desk.local>
+Message-ID: <aeh49pjtFDNpgqCJ@ashevche-desk.local>
 References: <20260421154007.1114389-1-lauraarakaki23@gmail.com>
- <20260421185019.64411e62@jic23-huawei>
- <CAJN_CScSHkrXGsF9pjWna5eYnRsPiwj47+7NbVYSVBGkwL3AJw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,29 +60,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJN_CScSHkrXGsF9pjWna5eYnRsPiwj47+7NbVYSVBGkwL3AJw@mail.gmail.com>
+In-Reply-To: <20260421154007.1114389-1-lauraarakaki23@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Apr 21, 2026 at 06:47:09PM -0300, Laura Arakaki wrote:
-> Hi,
+On Tue, Apr 21, 2026 at 12:40:01PM -0300, lauraarakaki wrote:
+> Replace the manual mutex_lock()/mutex_unlock() pair in
+> tsys02d_write_raw() with guard(mutex)() from the scope-based
+> cleanup helpers (include/linux/cleanup.h).
 > 
-> Thanks for the review.
+> The previous code stored the return value of
+> ms_sensors_write_resolution() in a local variable solely to
+> bridge the gap between the manual mutex_unlock() call and the
+> return statement. Using guard(mutex)() removes the need for
+> both the intermediate variable and the explicit unlock call,
+> since the mutex is released automatically when the function
+> goes out of scope.
 > 
-> I'll address the issues:
-> 
-> - Fix scope in switch case by adding proper braces for guard(mutex)
-> - Simplify the commit message
-> - Remove unrelated changes
-> 
-> I'll send a v2 shortly.
+> No functional change intended.
 
-No, please slow down. Take your time to review patches from others in this area
-(IIO subsystem), read documentation, et cetera.
+> Signed-off-by: lauraarakaki <lauraarakaki23@gmail.com>
 
-There are too many patches now that overload the capacity of the human reviewers.
-Also by reviewing others' patches you will learn a lot without even submitting
-anything.
+Read documentation, you need to use real name (as in documents).
+
+> ---
+>  
+> +#include <linux/cleanup.h>
+>  #include <linux/init.h>
+>  #include <linux/device.h>
+>  #include <linux/kernel.h>
+
+Preferable to get a prerequisite that sorts headers alphabetically and
+(optionally) another patch to move to follow IWYU principle.
+
+...
+
+Now the most important point of this review. All of the above you may
+get by helping in reviewing the patches in Linux IIO mailing list
+(lore.kernel.org/linux-iio).
+
+TL;DR: I will be glad to see a newcomer to participate in the reviewing
+first.
 
 -- 
 With Best Regards,
