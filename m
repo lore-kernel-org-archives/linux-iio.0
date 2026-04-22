@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5526B31F9BA;
-	Wed, 22 Apr 2026 14:46:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5551432143D;
+	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776869184; cv=none; b=AXHVP5mjkQ+fJIFdJ1vJv1A09Zy+riKQsBKB8Nv/eSuEh14ApmDWgOatzKuYxgvxM2ZyTf1gE9oKcKDMVHZM+k6LnB5zPsGxkY1dIjyBLQza/3CcHW70E+Qq9K/cOmxFvtc0379qDqQJrnNtWQWp1+x6ZuE65Jq601S61OpCtVU=
+	t=1776869184; cv=none; b=AGkvvvU1d56UTTWEVGGqS9nQE2LjOvvEqTapawtWolqTDtS+o0tvbIUu9YXJmnqnH62/rK5VL9cWhsR/IHTBmCuPp/oGAG13uZY9OKx09qXTZ/UVgTR9H/A3ODpIMyWypGJOHTE+Q41eyuRARasbVMUzt1Dnw5pk4WJrzeJvQ2Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776869184; c=relaxed/simple;
-	bh=+jyI2fVMyjIivhQsiJU3XcRjwvd0On+YXNM0kRRkZrM=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=k0tyJJ42EXQjGD8Y0U3FVKAMFbXVKBGilUrrbc2I52NS0T279LNxAsiIQOsrWbDfxGHsscivBmTcYONzpjXJ/9R2J1ijOMUJ8++/dF1PUsdWi9jV8IQCYZGYLCTQY35QcS9fhdfg7zLorJvi13Dv6zQ5rra/v3eLJ+S6exbhT+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NJydrSpG; arc=none smtp.client-ip=10.30.226.201
+	bh=wYMJ0asaxMRDeWv5Nx7Q3Fd4tXlmnv2sQIesKgmiuEg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=fzbf4W6pVDYIyJkKGMpgps8s215aRjc4gp9XM22TMnWibVO764sbkMZfdRvmb4L/9t5QEAquTNZc3uKU/r+WzzXlcHUWC3b4GwiYyHbFV3cgbs6/IZq6eU7bnXclSBaCwpEDNWj+ulUTFM6MjJCV4do1xuhjMwrTbaykmwxRUj0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eoANxEWj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NJydrSpG"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C1974C2BCAF;
-	Wed, 22 Apr 2026 14:46:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eoANxEWj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 05F89C2BCB8;
+	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776869183;
-	bh=+jyI2fVMyjIivhQsiJU3XcRjwvd0On+YXNM0kRRkZrM=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=NJydrSpGnjpZmWfAGndTMimbILDBCJIpYHc6/zUYVUEmx7H8+gz6lArGm6Vqw6e7s
-	 gOyg4yLF1rHAC3uH4yRySof/zcrqchX0l63CSPTAtUK3QADZLdk7KPs7vjjOQVcpRf
-	 eN6wR1Q7NaeKtZkWfzFE/ifSYPgfxBRTqdzMRxQD7IZjNyTI1w/id4nfdPXmNoQC7Z
-	 PX3S2bhAKucH0i2h1eMGorwEF2BuuQYyd6iKlEHf6yE92WWKBpjCFbrgyGcHzURpbh
-	 46mmwoq3a/TD5rcToIfOgCuEvoxeCmVxnHcvf2iIq8rYe45K3pro9OnubKVOQm0TtJ
-	 m9toL3tuqBzIQ==
+	s=k20201202; t=1776869184;
+	bh=wYMJ0asaxMRDeWv5Nx7Q3Fd4tXlmnv2sQIesKgmiuEg=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=eoANxEWjqfFkPmW2yZ2lyTpaYGwKtMXzIhbjwf6iKaxs3tJtqdl3GJ7B7JOaAfug2
+	 E5EnPMMidvs3q4v47cx723fyPzisFd9+qGkw5PXmYDnwt2x3T3Qg0clIj3CmzjUkGX
+	 UEur+Ad6eb5pzEyrMbm3btPCaPrheTpmIKCSL2vsSZ7SA5yHugX7xhEdk/OOxnBV4M
+	 70dR3hrm6Rpw9emMnPVAUJcHiIC6z3ReIXfZwrLtttfFvG7bvf6LXBQi+ovyc+GRx3
+	 oVn9jizaoAxrEmsv9mhFBLouIjh5NDa2vIb8xdEBlZSa8GIHNEN+QHMhXvnQF4fjlM
+	 mSXjzaqhSUx1A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B12F1F9EDC9;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F24CFF9EDC9;
 	Wed, 22 Apr 2026 14:46:23 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH 00/22] Extend device support for AD5686 driver
-Date: Wed, 22 Apr 2026 15:45:34 +0100
-Message-Id: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
+Date: Wed, 22 Apr 2026 15:45:38 +0100
+Subject: [PATCH 04/22] dt-bindings: iio: dac: ad5686: extend device support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,10 +40,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAA/f6GkC/x3MMQqAMAxA0atIZgO2oaJeRRyKjZrFllRFEO9uc
- XzD/w9kVuEMQ/WA8iVZ4l5g6grmze8ro4RisI1tG7IOfXBkSFEkYj5Tinpg11kfqCfXsoFSJuV
- F7v86Tu/7AZ1g67FlAAAA
-X-Change-ID: 20260325-ad5313r-iio-support-882ad39356e1
+Message-Id: <20260422-ad5313r-iio-support-v1-4-ed7dca001d1b@analog.com>
+References: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
+In-Reply-To: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Michael Auchter <michael.auchter@ni.com>, linux-hardening@vger.kernel.org
@@ -56,11 +55,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Philipp Zabel <p.zabel@pengutronix.de>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=3288;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=1669;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=+jyI2fVMyjIivhQsiJU3XcRjwvd0On+YXNM0kRRkZrM=;
- b=GiE3VtANGmnhUKacLVTpE7nQ/MtzrJgeV+U/UQENXckFs3ws6ToShYeSp0T8QsXg2PYUHEMAc
- bupTL1waAPvAe3PDqhZVTuUSHy6RdPm/8aZZW3RE4R2f1+Eq23+utFS
+ bh=HqOQ9v1hLDh+jrtLmYJHNFXNPvRsvM+6yK2HXF19r28=;
+ b=cHWHdVPDJIqbj+S6F/eVxycOYC4pyjly5Gl0bzbdm6grFkRPv+GWsRvR7XhXvPovUjPQJb425
+ wZlCBBDGyifByfTkcEZSY/J6BLPzkhBCoxOYItNNwAj4iDYjErdaUJU
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,74 +67,60 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-This series adds support for multiple nanoDAC parts, adding triggered
-buffer and gain control support to the ad5686 DAC driver family, along
-with a number of driver cleanups and fixes.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Initial patches update the device-tree bindings:
-- Add compatible entries for missing and new parts;
-- Add GPIO properties for RESET, GAIN and LDAC pins;
-- Add missing power supplies properties.
-
-Driver cleanups and fixes:
-- Refactor include headers (IWYU);
-- Switch to device managed mutex initialization;
-- Drop enum chip id in favor of per-device chip_info structs;
-- Fix voltage reference control on single-channel devices;
-- Fix powerdown control on dual-channel devices;
-- Introduce bus ops struct with a sync() operation for batching
-  bus transfers.
-
-New functionality:
-- Device support for: AD5316R, AD5675, AD5697R, AD5313R, AD5317R,
-  AD5674, AD5679, AD5687, AD5687R, AD5689 and AD5689R;
-- Consume optional reset and new power supplies;
-- LDAC GPIO handling (active-low, held low when unused);
-- SPI bus sync() implementation for batching multiple transfers;
-- Triggered buffer support, leveraging LDAC and sync() to flush
-  all channel writes atomically;
-- Gain control support through the scale property.
+Add compatible entries for AD5313R, AD5317R, AD5674, AD5679, AD5687,
+AD5687R, AD5689, AD5689R. These devices have unique combination of channel
+count, bit resolution and supported command set, so that fallback
+compatibles are not used. Also, a small copy-and-paste error is fixed to
+the title field.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Rodrigo Alencar (22):
-      dt-bindings: iio: dac: ad5696: extend device support
-      dt-bindings: iio: dac: ad5696: add reset/ldac/gain gpio support
-      dt-bindings: iio: dac: ad5696: rework on power supplies
-      dt-bindings: iio: dac: ad5686: extend device support
-      dt-bindings: iio: dac: ad5686: add reset/ldac/gain gpio support
-      dt-bindings: iio: dac: ad5686: rework on power supplies
-      iio: dac: ad5686: refactor include headers
-      iio: dac: ad5686: remove redundant register definition
-      iio: dac: ad5686: drop enum id
-      iio: dac: ad5686: add of_match table to the spi driver
-      iio: dac: ad5686: fix ref bit initialization for single-channel parts
-      iio: dac: ad5686: fix powerdown control
-      iio: dac: ad5686: fix input raw value check
-      iio: dac: ad5686: add support for missing power supplies
-      iio: dac: ad5686: create bus ops struct
-      iio: dac: ad5686: extend device support with new parts
-      iio: dac: ad5686: update device list description
-      iio: dac: ad5686: consume optional reset signal
-      iio: dac: ad5686: add ldac gpio
-      iio: dac: ad5686: implement new sync() op for the spi bus
-      iio: dac: ad5686: add triggered buffer support
-      iio: dac: ad5686: add gain control support
+ Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
- .../devicetree/bindings/iio/dac/adi,ad5686.yaml    |  61 +-
- .../devicetree/bindings/iio/dac/adi,ad5696.yaml    |  60 +-
- drivers/iio/dac/Kconfig                            |  18 +-
- drivers/iio/dac/ad5686-spi.c                       | 200 ++++--
- drivers/iio/dac/ad5686.c                           | 775 +++++++++++++--------
- drivers/iio/dac/ad5686.h                           | 144 ++--
- drivers/iio/dac/ad5696-i2c.c                       |  94 +--
- 7 files changed, 906 insertions(+), 446 deletions(-)
----
-base-commit: eade2b843d9b1f668fc1775f15611bb0a1999cd9
-change-id: 20260325-ad5313r-iio-support-882ad39356e1
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
+index 713f535bb33a..cb035741529f 100644
+--- a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/iio/dac/adi,ad5686.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Analog Devices AD5360 and similar SPI DACs
++title: Analog Devices AD5686 and similar SPI DACs
+ 
+ maintainers:
+   - Michael Hennerich <michael.hennerich@analog.com>
+@@ -14,10 +14,14 @@ properties:
+   compatible:
+     enum:
+       - adi,ad5310r
++      - adi,ad5313r
++      - adi,ad5317r
+       - adi,ad5672r
++      - adi,ad5674
+       - adi,ad5674r
+       - adi,ad5676
+       - adi,ad5676r
++      - adi,ad5679
+       - adi,ad5679r
+       - adi,ad5681r
+       - adi,ad5682r
+@@ -28,6 +32,10 @@ properties:
+       - adi,ad5685r
+       - adi,ad5686
+       - adi,ad5686r
++      - adi,ad5687
++      - adi,ad5687r
++      - adi,ad5689
++      - adi,ad5689r
+ 
+   reg:
+     maxItems: 1
 
-Best regards,
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+2.43.0
 
 
