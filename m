@@ -1,63 +1,63 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D96F387594
-	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 16:57:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1918D390200
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 16:57:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776877027; cv=none; b=NZVX6xjPYUAflSP8enqbQNMbTGyag57m4ab1G5s4XISACG//sOugzr3bLa9FtE3QrcGimbfCPhr0hz/UNqfLuxp9vLWPdvAJ+MnUXdx9WEvkn9E30gaKGYjB+uMdiIiwyUhFg9ZvyQFdLUy0uBMPYmXSfJz7ChfAoh+uX6GRsMo=
+	t=1776877030; cv=none; b=acT08ckM43Mt0VVD9hpX8osQMnvA5Q4GoqBbxxANqh8cscQugnUhPSv0XroVNqKmgK951rASvTqDytG8LGOHzotOdYwTpzMF7Ie0x9YMLdYtVIDbz8Z/czo24DMHKeOQtp3wG4vqETMwQBKLa3TLJGaT1eOmg0yP8LMAqt7F+0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776877027; c=relaxed/simple;
-	bh=ezpzTaXiSS5tWwZbT+HyQP2Q5+ghg+y+4Ax/LVTfoN8=;
+	s=arc-20240116; t=1776877030; c=relaxed/simple;
+	bh=phuovY5LGPNUA1tGMKpHr8w+7ex72MZcp1bQbV/VAnM=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=c60oC1iVvoIO/D5yJdHvbgbgq86xQRntegnrLPfgbRXiRTTBilROIlfssIUFdh5qzLhnEQenMyV5Cv4LsTVRD4rxWz2q+upOhqoaC3SJayi2HaZzCSymBooFhTgi97yIQ4g4OLnDNE9W9oIUPGQsvLFgBRQLJEX9lGKiZCYnBlw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=r0YszkYe; arc=none smtp.client-ip=209.85.215.169
+	 MIME-Version; b=jHLo54+uuOnT0qoFBmC0XF2lklFCnr1i/IZ1sX35vV4pFHQqB6Hw+f3NPIoWQdRhQgmJe28t9cIU96qfVGhjzndRhXWkZN90mODlDWYRlD98ybWRDGhUYqFxZOo+xRSaTrwVVngwz8Pv6BY1FPRAVyrGkRA2OQFCabFcs5/zouM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fGqrn23G; arc=none smtp.client-ip=209.85.216.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r0YszkYe"
-Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-c7961d7bc09so2138755a12.1
-        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 09:57:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fGqrn23G"
+Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-35fc258aaa4so3611515a91.2
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 09:57:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776877025; x=1777481825; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1776877028; x=1777481828; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=N7IfPX2Kd1lFJfKogZTn7YfG18XsUl0K/gq6N+2NVm4=;
-        b=r0YszkYext8Y+3LVqg+ACvLKp/cWR8Zf1K+2KTTwbx/HQnq8nPi4Mw/cFdvL+Y5LJX
-         Hk0iRwQziTrRDbxaLRyRwEEuiA51SH5OElCOhmXAmkUhBmva58Sqlnfo/v+8ieqHt66h
-         BOVzoAy7VCxGYICfhrdZAanjM1nwr1zdvx8VMZWDOwzijKaFawW444mVp1iGWrQe4qF2
-         j8II3qZp0hV05WCDQwhmBjucFy7USMUQjjk0HBA+9HzYuF7KwxRh6K4bPbbW0a892sKH
-         O1oYYkvL0Q246AN1GzbMsffhyvtfQPXkp5STMpC/3ht1kiMBka/xLdhAbfLq7asIAZTt
-         x/Xg==
+        bh=N7RWTZe2CgWdqhLVIQJNNjEv3qVx1AKFr1CFK8ZC+yg=;
+        b=fGqrn23Gj5KQuYQYYjQGh5V8JaO8y/RPEtA/kyQ5tfXz/iViFAKPrGpDvctFZEsdP3
+         3rWjys0Ar0WBIO2J/F+5SH+F80Bi7VYwMplqDO8nHyZH3++ERLyw8S0T/uY+2ivTfIQL
+         Wtz2b1BZsvr+44LwRUM5HxKAHeu/JyLIfHV6UW5vKD7SybAXaL8cBHVM4L1cuTaihi1Y
+         SYfOPRTXM/BEY9uw+6SGm1tlLeW0dkl07rFn6YTl77VbeMl8IWFzemvzlhcLEb4DjN3W
+         DzygcxiTxRp6XYZ/dAPIyNZFcbLHmxcC2yP66Lv70ICOIo9tap08aOCuQgyPIdPooZWR
+         7sMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776877025; x=1777481825;
+        d=1e100.net; s=20251104; t=1776877028; x=1777481828;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=N7IfPX2Kd1lFJfKogZTn7YfG18XsUl0K/gq6N+2NVm4=;
-        b=Lfql7v0XAlZI6nRVYsXCC5YfXEDKNTr23LQBFXZE6FrDQHtbdV2hRhUPBa2C3d7Yok
-         P5S4jyNkvmsIYFwYTRd4fvzto94ofAeMa9Rh7VIJdusRRq7rbwS6vU10NaUi+noOWrbg
-         PjwSwFWi2itQQdALJ3mIMmzpB3C1iHWM1IkS49JIykmT/ZCJOxJIxvUXOCSi8KPQxunG
-         NTRHRmFGqLH/BL2Wx2ShJLFkPys9nPDtIb1EBVDAaQ1tuAZdEaUUuqIQ6EaK4Q/mzb3g
-         AtHgQrOluKIr7cyXrfLutuzebDzKiKBeTI2fiy2BYR5rbl+Eyu8H0g1LGXa8gzK7K/5d
-         obAA==
-X-Forwarded-Encrypted: i=1; AFNElJ9uYSdQHMWEXjIn+kvRGxpl3LhZcYZDbECwF4svW5YO/0hvdDVGUmqAsGtbAeJV/N7dokLyVa99XCM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxQRgsS3z1sbwuU20egjH/SFVAPf3ekARpVVmr666pMrjGPvA6g
-	QvesarOQ28rkaiNgXhGKZsSkGIlixF3Q8x1+srJY7c9GmpBgcghE/wgP
-X-Gm-Gg: AeBDietsP9xCIg5kHl7TGtBj+iXoU9WhW1Pg0YW3xS+feMEgTrMTzq7MRz6qh/rT6RP
-	4s+RvIFD9eu26upwFSUGw+BQbSEPK4IMPYBkhacYgm0AF/bkPpbfE3PL4HywQkycY5jgwYEwsZr
-	tUam1pBdK1M/uWd7RPznASTxiaTx0dxbBpwYJhCsASGK+rSwpRYqH15FfWVFO9z2le0ap+SV3/d
-	dvWhwPVbrAsuhiXgGbdidknDJHj7n7f075D+xz4r4ny6eVvfXWk4RdlMjW1QKrx64ocw8C1Os4E
-	QFCAOklXHtr6m2nyUq0+CK0GqW7+RvjQnplscx9eVoc8JYQAI8UUHd/+m5EasCCcOk3HTppgU+b
-	6kmCdfCLzA0mBXSP/WlzIhoJ9Uzns67P0G9sSVHtAb919cp9QX8xtUVDSszNr/HlcQqRi+BxS35
-	O2XLg1bXuGh33U4vpfKFQTNvWJi8dia6+1bbdALGHtBgnvXP2/vMTH2jidbpw=
-X-Received: by 2002:a05:6a20:9194:b0:39f:2b9e:e472 with SMTP id adf61e73a8af0-3a08d68775cmr26519211637.3.1776877025271;
-        Wed, 22 Apr 2026 09:57:05 -0700 (PDT)
+        bh=N7RWTZe2CgWdqhLVIQJNNjEv3qVx1AKFr1CFK8ZC+yg=;
+        b=chvQIHOgyhgMNUmPBvpnkNpSsdIUmsMloRqkAzFkhLZ5IrDRc3/joamGuQPfL4j+uS
+         udQXWHZCj14ywQOcczSDlWWblBM5y5lCRpU4xDf9IMmRdsAL5JsuduleWgimYvwLWMeq
+         KaqFxui+0EewgjTX20TVbcAVdRd3XuHilZdxfGCuUV+eJSxnzdb3rfYPvqtz9QDlVF0e
+         w6zexMxkJdqaLo2XjBFkKKoIlnTTYHaHf9MdYHvTeoNC13W37Zxck/Oeaz0KyuSvw02k
+         ZR7SY1bG2D8HOFtMFSRKI4qQmaImWWQK+m60QVOveARujwUEC2qNiRCf5VsLCjI1lFrh
+         oKrw==
+X-Forwarded-Encrypted: i=1; AFNElJ8DWehsjMvpNbWgRqJ2I0fz0nBbjr3gsw/LqR5rMx19b/NYhdhCPuPqgpBPoA3l8Z7YfohPDZe/At8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxcU865QRO3p7Co0QO5gPrmytzh6HSNqSpNda8/wZYBNUdUmvir
+	DB0tsVQ8dCwW0ZB1O84FxTIE2F93uW5waLvVznOUOkoJjwWDNzKZF4TX
+X-Gm-Gg: AeBDietK1r46qjQLzSowMrzdgp7VoCasEIz8anmhngA/ozC6Vx93yPR1Qcs2PaOSkEf
+	VeLFCrPmi6PL6StxLFqK2z3Yd8LA6QG/UDhmZNZEdY+ATHhSWn3d3EEa0yBdX8p6NZ27DsnVT1p
+	dCDjOjBOiGyQS1HItuoH4DJ1tpuS4Dl+KfPrDeyhjwYhfFdSVHIrnZJ7fN4/h1NPtl52Tlrupsa
+	7r7vanwwAGA+TxKVvIqDAykL1UEpIwU7ieSGD+Vq6ChX5x2Y3OZuaBV98NXaQFYD6kmPq7eqbj4
+	rakB/O/lDIzwX/a1usTMUP+ayf5bWlogu9OihmoRh1NQbf9x+pWpDX6XDK3v++3zmNbST6aMm+L
+	xW+WdsS0gBgCBsJktzVh3CiU6hbe1fOl3Zn41gssEj74VPRfFDP74pH6urHmgR17Kn3AJWEtYVx
+	FrX1qdiDEp22MlvRcQ6MjA/aCHOujjuuYR2JHuoHH/zHkXA1izz/CKajYy8DU=
+X-Received: by 2002:a05:6a21:3282:b0:39b:f026:6f8e with SMTP id adf61e73a8af0-3a08d897d89mr26229089637.34.1776877028436;
+        Wed, 22 Apr 2026 09:57:08 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7976fa3604sm11908675a12.14.2026.04.22.09.57.02
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7976fa3604sm11908675a12.14.2026.04.22.09.57.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2026 09:57:04 -0700 (PDT)
+        Wed, 22 Apr 2026 09:57:08 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org
@@ -68,9 +68,9 @@ Cc: dlechner@baylibre.com,
 	sakari.ailus@linux.intel.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 5/6] iio: accel: mma8452: use pm_ptr() for dev_pm_ops
-Date: Wed, 22 Apr 2026 22:26:42 +0530
-Message-Id: <20260422165643.2148195-6-sanjayembedded@gmail.com>
+Subject: [PATCH v2 6/6] iio: accel: mma8452: use guard() to release mutexes
+Date: Wed, 22 Apr 2026 22:26:43 +0530
+Message-Id: <20260422165643.2148195-7-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260422165643.2148195-1-sanjayembedded@gmail.com>
 References: <20260422165643.2148195-1-sanjayembedded@gmail.com>
@@ -84,56 +84,94 @@ Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Use pm_ptr() and DEFINE_RUNTIME_DEV_PM_OPS() so the PM ops pointer is
-automatically handle when CONFIG_PM is enabled/disabled. This follows
-modern kernel power-management conventions.
+Replace explicit mutex_lock() and mutex_unlock() with the guard() and
+scoped_guard() macro for cleaner and safer mutex handling.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
-Changes in v2:
-- Use DEFINE_RUNTIME_DEV_PM_OPS to address review comment and resolve 0-day bot warning
-- Link to v1: https://lore.kernel.org/all/20260414192045.3598010-1-sanjayembedded@gmail.com/
----
- drivers/iio/accel/mma8452.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/iio/accel/mma8452.c | 31 ++++++++++++-------------------
+ 1 file changed, 12 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index d1ae2bf37409..9983f76a8bcd 100644
+index 9983f76a8bcd..1c284bdcc44a 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -1747,7 +1747,6 @@ static void mma8452_remove(struct i2c_client *client)
- 	regulator_disable(data->vdd_reg);
+@@ -18,6 +18,7 @@
+  * TODO: orientation events
+  */
+ 
++#include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
+ #include <linux/mod_devicetable.h>
+@@ -500,9 +501,8 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 		if (!iio_device_claim_direct(indio_dev))
+ 			return -EBUSY;
+ 
+-		mutex_lock(&data->lock);
+-		ret = mma8452_read(data, buffer);
+-		mutex_unlock(&data->lock);
++		scoped_guard(mutex, &data->lock)
++			ret = mma8452_read(data, buffer);
+ 		iio_device_release_direct(indio_dev);
+ 		if (ret < 0)
+ 			return ret;
+@@ -600,36 +600,30 @@ static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
+ 	int ret;
+ 	int is_active;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	is_active = mma8452_is_active(data);
+-	if (is_active < 0) {
+-		ret = is_active;
+-		goto fail;
+-	}
++	if (is_active < 0)
++		return is_active;
+ 
+ 	/* config can only be changed when in standby */
+ 	if (is_active > 0) {
+ 		ret = mma8452_standby(data);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 	}
+ 
+ 	ret = i2c_smbus_write_byte_data(data->client, reg, val);
+ 	if (ret < 0)
+-		goto fail;
++		return ret;
+ 
+ 	if (is_active > 0) {
+ 		ret = mma8452_active(data);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 	}
+ 
+-	ret = 0;
+-fail:
+-	mutex_unlock(&data->lock);
+-
+-	return ret;
++	return 0;
  }
  
--#ifdef CONFIG_PM
- static int mma8452_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-@@ -1815,13 +1814,9 @@ static int mma8452_runtime_resume(struct device *dev)
+ static int mma8452_set_power_mode(struct mma8452_data *data, u8 mode)
+@@ -1753,9 +1747,8 @@ static int mma8452_runtime_suspend(struct device *dev)
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+ 	int ret;
  
- 	return ret;
- }
--#endif
- 
--static const struct dev_pm_ops mma8452_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
--	SET_RUNTIME_PM_OPS(mma8452_runtime_suspend,
--			   mma8452_runtime_resume, NULL)
--};
-+static DEFINE_RUNTIME_DEV_PM_OPS(mma8452_pm_ops, mma8452_runtime_suspend,
-+				 mma8452_runtime_resume, NULL);
- 
- static const struct i2c_device_id mma8452_id[] = {
- 	{ "fxls8471", (kernel_ulong_t)&mma_chip_info_table[fxls8471] },
-@@ -1838,7 +1833,7 @@ static struct i2c_driver mma8452_driver = {
- 	.driver = {
- 		.name	= "mma8452",
- 		.of_match_table = mma8452_dt_ids,
--		.pm	= &mma8452_pm_ops,
-+		.pm	= pm_ptr(&mma8452_pm_ops),
- 	},
- 	.probe = mma8452_probe,
- 	.remove = mma8452_remove,
+-	mutex_lock(&data->lock);
+-	ret = mma8452_standby(data);
+-	mutex_unlock(&data->lock);
++	scoped_guard(mutex, &data->lock)
++		ret = mma8452_standby(data);
+ 	if (ret < 0) {
+ 		dev_err(dev, "powering off device failed\n");
+ 		return -EAGAIN;
 -- 
 2.34.1
 
