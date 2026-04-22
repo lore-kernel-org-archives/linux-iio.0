@@ -1,137 +1,130 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F3323EB7F1
-	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 13:27:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776864441; cv=pass; b=L5nwVBFlxbqDmwJia4sADztOHr3Qw7ZbDr5v8ShjLg61F3knnC41M9Zy9tq76pJxLLwqTmS/o2nTQJnGaemEr8BijoI2g+XbD9/mgMvjXB+byGbtq2CXSz4DUrk2T2H2AaS0RniSnsc+uldfehtRxDhsMKJ9N2w8UhUAlEGoxjQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776864441; c=relaxed/simple;
-	bh=nyhnbShwnjgJmpIUNoi2xlZ24z2ZIEb716uK6JFmCr4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DVVDKD0bTlwvHeC9sS+PFuWhMf9Ww+sVB8/8hpfUXnX+lL5JYCI7ynFCCYaq+kQzMrRkkTUwK9W+HFoV+OsAt4vCbLClrRmn+GC86ogj7K00h1stBZpGojKFcXFsoDFZbeNZsPnfPgpPkEo/hl7DXzrx9Tz4JlVlPfRhDgkeErY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EG2TVqVm; arc=pass smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E09B3D16FB
+	for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 13:28:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776864510; cv=none; b=qtlpIpyLJhBpkjnXLOLl0DSS8x7Zk07+OXfacGC3IfzPGsLRPurydD+R5qvDYQw5MXsgaoICM/vufhJF7IOh6UQ6i8/BkIW/OH6unkHcLmm5jJMvnqiucflS52/Hd9UNhQDpgfoGW+QFHZWfGIl7o+EI4l3o0DStvY8Lva+WJaU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776864510; c=relaxed/simple;
+	bh=Ls8R0v4nHceKVBL1Grl2e5FhI0eNEP/FpUXARtHXqAQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LXnIqZkWpG8d4k47SN9om3P9sL2NGuy5dmGmK9+dNdua96RB1zbfFgiViGMp0oTxYDjjAXV+CZa9VxN3N+Xj7ZnDynMczWBhMGUsPPGh3aH2cq5wUIIFa8nKbIukZbrBU4LgXd3K4WEaFRSzusWQDKL0NnodR1d9Om0TaYbVwAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TKZgeR9T; arc=none smtp.client-ip=209.85.208.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EG2TVqVm"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488b0e1b870so89465635e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 06:27:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776864439; cv=none;
-        d=google.com; s=arc-20240605;
-        b=hmWnmFxiCb7l1xYdpFSpEwjiolkfuApZIUhrICkntQmMdfxkuI2ljZoWsFqaBHlImg
-         vNDfU7ERaRh0VxWT/PwMkNA0Xx4NUcgETdbZtU8gNhtQq4G2KTTo7d8DvXPW4ad7GdW8
-         B1+Trm1YQ2QEISggSEKz+w090P90xh3poaOsJA5mCjjV3Ra+Sa2xJHFgxQmv4wNPkkc8
-         oIDqHAC8070jEt/5fzC9BSZE6C6dOtpCm/4ymfv1efZb+DHgBDoBijYqrkwZYWeVkcgw
-         d5O4yaPF5l9nJp12Lz/DOXbzMICG5Y8CVfIPPf86TyRg4LtnIxNdZq7HE3YPzghyO6xu
-         lbFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=qaLQ4z3YbIhMe03JaJHoYI4M783VJJ16HoQcQScsDAg=;
-        fh=fpIk5mulnrRLzDUR+5zrRN6MnmDBMRWF3455PQ/gxbk=;
-        b=BzL2oRXdXqVfatP/W4gAvQDXFYkcJ6nsznntoGk47MlpQhqYVhSm4YvfJDEytmAtS/
-         Gr/GVoBVx4/m03mVcw96td7uusT0HAOGCkYlYfxMR4FN9qUwqRi46kRQbJw40YV/oNte
-         OkM+pHTglel4ImmnTTUeSquTzHW0DEc7NCd3y8eU5j+ZCFSJRBtCqur0qGzS0r4iJHYj
-         d/zmOQ9hJFXhNyAvGQwwpk6lxS9ilOWasCkXT+TyWKJ/F737JiVVTBAWeQAiok9+/SyV
-         UYuxd2RCsXjAoRL8B2yc9l3UsYR0LT89LbqzUyvY+kMS/WgtpnIRHROOy6DeIU/2OFKk
-         tJPA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TKZgeR9T"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-38a01c80c34so51467441fa.0
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 06:28:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776864439; x=1777469239; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=qaLQ4z3YbIhMe03JaJHoYI4M783VJJ16HoQcQScsDAg=;
-        b=EG2TVqVm62wNfusEnOv0p8DLRFsKInJqsfaB5paSemEStQLEvjG4/P6vTa6j1d18U9
-         mg62tUDRUqkummhDsPjKG2/cIGIF8/w543CVI39/XjwhelLBJ4COJ8ARcHITeNwyGX2M
-         +FesUNqg0AKhbwoK1nRBPM04mNJCiU/efMV2jUOGYqfggpqeBHBbnPCdPAlD3xfi+KlI
-         PUkw7neCL9JmmYfzxu4KB8namKz0RYDckNewE+xz6hBolHODYd0uZv2jxW9015QMHGAp
-         BEyCWcov1oiI4gjlGB+P4ZFO4Zq+tVc4N9pgTTDs0wg3GUWZcOvcpbyoXqUEtuX1BtBQ
-         i1Ig==
+        d=gmail.com; s=20251104; t=1776864507; x=1777469307; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=B7DZdG1ygeQjm+QsijNr56ROnVch8sEGbGnDlhLN7s8=;
+        b=TKZgeR9TDzb5bP+sVNbWc0b1a57TnGi1Y9lp5SO7srnudW4GiTBZekRi71vVmeKWZR
+         Lc9mA0yWrMu7EgtiwIdknwcaEp2ERarxHnxFwe3QKzcQkt8SVAxN+K2vSZ67j9BgrEpA
+         Wt42XH7R2tcOyHzwHL3vTpdkQWVLaS5sFvJAq01Q3ZHCQcbxzoHP+euL5Sad1stAwHKv
+         PxH8rEe2NKapAWrkOgkder27nsEKQ/bxVFQ0GT0KJZlrC7eHGqmytHayv7PexA9DWWL1
+         nHofASGab1FXsWEoMGWfz9JlCwvo8VGjiOgAYa1DlYJ0oDM0IdjwTHqdaj0MdQ2XNP7Q
+         Rurg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776864439; x=1777469239;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qaLQ4z3YbIhMe03JaJHoYI4M783VJJ16HoQcQScsDAg=;
-        b=iJDL5a9w42xmOHXGYc6B73q6Oj9f6IxGAllFDFeef1DakpmLpzS3I01eSwn/v7Fnkc
-         wBDwEoJ4Ha/RBv0cI9kjERBwUl1vU3IiK56UDxx4c3J+Wp1zp65q9PmR4pL/lajF7+qV
-         P6dAHLwKM2McI12YcoBcE1gBdi1a4EF0ETjZaCJKDxr6wO7pVzbcIS74RqLDHo96x8aT
-         hqJgP4siD/SryFFztd48hslndjmrSJJCnKNk7wlkxCQpZj6Q6Q5fcqrCuTHB6s0qMAF1
-         UG4XH0TPmY32YGl9tGOsMEFDQTjjEb4W3VnxM5AdeDd7RX0iMthtZQXlra1xUHCldzZe
-         KCDQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8NDOA3yANn6CA8l1Bd7UV5LDmUuhFpWdWCyG1LCpyWkQtp5worpDp/ZRuO7qVg5CdMu9nhBYrubxA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxI2R9EiqD22KDTHyFfu/Njo+wE7mtlvtSWmjVg6RaLCn52+bhm
-	c/JA/BlHnTm5Gjewcm5nm9PRfCHPthldPlIQp/4DExA1wV48DKXieJN5ITXw/eE3Z9dDkCRxTaX
-	42ihUWW9e9pLNZ5gxSHkB4jxJLOWgj+A=
-X-Gm-Gg: AeBDieuqWxr7x3qfG3wRp3Kt2629GwWBLNyy1sz53Rbk63YL/JeEdBMOp7wxMNO/b8L
-	kcHgzYq9JJoBtdBHpXn1/tPananHhECu7R5xfzxphV/5zq7/e1ErEvFMuGGHVAwvTg8yNPch2k7
-	L8CZsttFJYi7+TiihmErSs9eH6eMJan4UcQm9/eha9w/lZRSMG9UOlgjkQJJxGIrgQUT1iRVTzU
-	HP8bsQdEKPhh29UR9+RBe4kNpiDan3XF9uSHPdxHabbrYDTfrw0ExUb21vHqHaq62Cw+c3iKoQp
-	qdALPp5wovznW4CH2AcgvtSxofuUqrM5lAURBGNbJcHJj80S6dNhU+M0PI5Ylkf1dDc7BHsFizc
-	YG60yqRkg8uwz7igVz2A2TiGa56QsmsarNiOsJROBblOvwTxB6+Wx6uzyUJFwOXDbDSh5ONjF+S
-	OvhZrlRG5E7SowE0x5
-X-Received: by 2002:a05:600c:350e:b0:488:a82f:bb95 with SMTP id
- 5b1f17b1804b1-488fb7861c0mr331999065e9.29.1776864438525; Wed, 22 Apr 2026
- 06:27:18 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1776864507; x=1777469307;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=B7DZdG1ygeQjm+QsijNr56ROnVch8sEGbGnDlhLN7s8=;
+        b=XgZIL+ANrMdbW+6n2JuQ5rSTHmsuCLz9jBh4wXXqfgPSJOKaaI2N5mmwcnbVMufXn8
+         As9/SuRrtsIcXIX1wfJDaQStdvEmyGkOXP+tN+JUs6SnvvrjVgctnMnDUBXV3CoVC4bw
+         iTYpFiCrra+FnUj9FnLuePib4xd+TTOcUH5eXfST1GNe+yguWjcf+RUE+ARzMJynSZZA
+         JL8wiin8qHfW7yfPztddY9O5ZV7mQc3xA+bCycpw7dxftDdbaoQ+DtNH39Gcpt376Zto
+         uuUSIOn751ofG25IRtgk1Wq1pi0fAWmHAYX6rJLFOwQx7tUI6hSWs34ULKprfDok161L
+         jngw==
+X-Forwarded-Encrypted: i=1; AFNElJ9gzEos+KH98PGeOBM886q1Jj+oqUpZugwg5BTIOZ446YHV8eCFNVNYQsua1fzA3mjAjtFHsucU3o8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzB5hQy8FwVTb3YVKBLgxDqW141mIqQVRBLZUWTlGNarsFmOoGz
+	0nBQfLnk+XUouG5QfCERfRvuprOmtkPbjplzcAylo3sj/li4A/WvUDTv
+X-Gm-Gg: AeBDietdS+TWlaMOoENwp287UOBbQg7S/feBD6KqI9rjg4RmR9DaSzxoOqz6Cky8k9v
+	bsbBl/cjFngNO92OZiUiKnm/+Ldy4xWdPmsSSMGqtiWWoYMJzheJZv9tSUY8V3zsGgw82pDF/8l
+	xLEbMkZibALMmSzjyDxyaghhr8cbNWgM74rJjfWNMVIUDE15RbGBm2szRnXgpdLgMZuMcT/5gtB
+	BTPh3MwMuVGwjxIJDijk/i5eSgMFx+Ihm7TNGudsdRnq7Nw+8WZL/lyFznyZ/ek9aLOgfdcAenP
+	GR1vsfIUUXaHR6EeLD7ZZsZoUINj5JKB3ANMEP6RtxsGgK7UO492GYpxKuKc1rTbZj1E4dXYCyA
+	qpQWO58DklFjzjNzel6yczRILMgW8vtnfF3IOxSybwN0yKpg/AgzP1+5svXnOVZ2kgDO+plpTXt
+	ecmwSRQuvNd4AZXigKS/FpXpxdv5ebRty948y+AGQwUVAt1mCAukZe14jprXIEnMv2b/xHH0ZHy
+	0H323pCNuZyw/aJ1A==
+X-Received: by 2002:a2e:be1a:0:b0:38d:e220:8dc2 with SMTP id 38308e7fff4ca-38ec7adb720mr71809041fa.20.1776864507102;
+        Wed, 22 Apr 2026 06:28:27 -0700 (PDT)
+Received: from ?IPV6:2a00:1fa0:727:24c4:8ea5:6d98:549c:1687? ([2a00:1fa0:727:24c4:8ea5:6d98:549c:1687])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-38ecb4f5119sm33473551fa.2.2026.04.22.06.28.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Apr 2026 06:28:26 -0700 (PDT)
+Message-ID: <e62e3f14-c1fe-45bc-ae9e-760058dfca1d@gmail.com>
+Date: Wed, 22 Apr 2026 16:28:24 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260422112207.1313-1-joshua.crofts1@gmail.com>
- <20260422112207.1313-6-joshua.crofts1@gmail.com> <aejJjusTGt1Dv0WR@ashevche-desk.local>
-In-Reply-To: <aejJjusTGt1Dv0WR@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 22 Apr 2026 15:27:07 +0200
-X-Gm-Features: AQROBzDiScAeD-9sWjBRhtSlIw1kPC_lcWkiy1Y8JTglK897Jh9M5ze3RQXoYP0
-Message-ID: <CALoEA-wm6Jez_GZf7vC2FrT7kufpCWXHi=bdtN3g41pYUTbvjQ@mail.gmail.com>
-Subject: Re: [PATCH v3 5/6] iio: magnetometer: ak8975: fix wrong errno on return
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/2] iio: adc: ingenic-adc: refactor
+ ingenic_adc_read_chan_info_raw()
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Felipe Ribeiro de Souza <felipers@ime.usp.br>
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+ nuno.sa@analog.com, paul@crapouillou.net,
+ Lucas Ivars Cadima Ciziks <lucas@ciziks.com>, linux-iio@vger.kernel.org,
+ linux-mips@vger.kernel.org
+References: <20260421221629.70401-1-felipers@ime.usp.br>
+ <20260421221629.70401-2-felipers@ime.usp.br>
+ <aeiJo3RCKFLEGLEt@ashevche-desk.local>
+Content-Language: en-US
+From: Sergey Shtylyov <sergei.shtylyov@gmail.com>
+In-Reply-To: <aeiJo3RCKFLEGLEt@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, 22 Apr 2026 at 15:13, Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
-> The idea is to drop messages because this is well established error code
-> and we have a POSIX message being associated with that (meaning all libc
-> implementations should follow). That said, it's not described by the error
-> code, it can simply be retrieved from libc *based on the error code*.
->
-> Can you rephrase that?
+On 4/22/26 11:41 AM, Andy Shevchenko wrote:
+[...]
 
-Sure, I know that these are just regular errno.h codes, I could've elaborated
-a bit more in the commit message.
+>> Extract the sample logic from ingenic_adc_read_chan_info_raw() into
+>> a new helper function ingenic_adc_read_chan_locked() to improve code
+>> readability and modularity.
+>>
+>> The helper handles the mutex-protected section for sampling channels,
+>> while the main function manages clock enabling/disabling.
+> 
+> ...
+> 
+>> +static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
+>> +					  struct iio_chan_spec const *chan,
+>> +					  int *val)
+>> +{
+>> +	int ret;
+>> +	struct ingenic_adc *adc = iio_priv(iio_dev);
+> 
+> Please, keep it as in reversed xmas tree order.
+> 
+>> +	ret = clk_enable(adc->clk);
+> 
+>> +
+> 
+> Redundant blank line.
 
-> You also want to align the code in
-> https://elixir.bootlin.com/linux/v7.0/source/drivers/iio/magnetometer/ak8975.c#L700
->
-> The all three wait_conv...*() are called by the same user in a single
-> if-else-if chain.
->
-> There are two definitions:
->
-> #define ETIME           62      /* Timer expired */
-> #define ETIMEDOUT       110     /* Connection timed out */
->
-> For IO the first one makes no sense.
+   Yep.
 
-That is odd, it definitely should be -ETIMEDOUT.
+> 
+>> +	if (ret) {
+>> +		dev_err(iio_dev->dev.parent, "Failed to enable clock: %d\n",
+>> +			ret);
+> 
+> Make it a single line. It's fine to go a bit over 80 for readability purposes.
 
-> The driver says
->
-> `       /* Wait for the conversion to complete. */
->
-> which implies the IO with the device, and "Connection timed out" maybe not
-> the clearest form of it but better than "Timer expired" which rather misleading.
+   And BTW the new checkpatch limit is 100 columns. :-)
 
-This driver has more issues than I expected...
+[...]
 
--- 
-Kind regards
+MBR, Sergey
 
-CJD
