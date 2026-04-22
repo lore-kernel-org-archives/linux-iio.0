@@ -1,102 +1,120 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 350163D16E9;
-	Wed, 22 Apr 2026 11:32:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776857524; cv=pass; b=l/tI/nZgqDIbYvaJaCgwVMP9fFk+m7hILnCbIgszEDT9NuUwnu28pDYd7zj/qWtLB2O65hE1WoW0R/5JuWmnhx+5GnVsWJxjJwBpTu4jo3VN1HTitMqKJI0MMcxyk1mv/E3Ze7zvnzznhQ4TvHY/koS8Ws6gq7QRwbRpME311M4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776857524; c=relaxed/simple;
-	bh=73d6xedjq/TrIi2MX7wO7DWMhYuG5U97itdIBmvEPts=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ISBF7QTCijTaK72+3adcfrfrJLFiNc0PMljUw9o9hpqUccxxvn5lRRIxhSmSRdRCvGK/saWp/YOX0A3S9Io/kTuAja+nvrJc5kdj7imhzcHXDYBi/onDFoT5KJxWXGFjyEEMhtF/s0+8j2cHBVnJUSskeQSdLM1GHrbDn7XE5Dw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=Ksp9vjk/; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF8D03BF698;
+	Wed, 22 Apr 2026 11:53:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776858808; cv=none; b=q43qrndVg9A20HMbeFjK6seiXaqhxIJzdKglsRe6yoIvI3ThZcWCqXhdAQXmmtnvv8R1NXJ4VkyvV0D0HhdwyIK5u5bLq9wJKsAwJkP8sv1RMJm5P2TDba5uGyb3Q9FfKSEUByKiN+UAUd1RRCxcPOir/8EnC7ID6RL69P/uCIM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776858808; c=relaxed/simple;
+	bh=o6zzEpWVusCTrwqkamGPCEy+eg5MZNhPZo78gDid0ko=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=ffwNtchu4NoWr+SwiKd88KnRduTcN7Qp5aGQG/r6HJ+tBwdEfnEgopKU1OxY6tMvVA1emd0HMQCzhloVN1TAB6/ofVRfc/Ea3r2oopR31GuYNSIc+uYJPX5Ei0toYw/ERHn00/ZpjD6arTpBIQ9rHOqkmVmSz+lMoCJ17bf5Nks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=podidT+7; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="Ksp9vjk/"
-ARC-Seal: i=1; a=rsa-sha256; t=1776857483; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=MimHX1btavL7aACKXbdbvysrgAWp7/h5gFGy0xHKQ/Du6bp0FIO7a0p9vtNaUdkOBhW2/75EBsNoXOj3Io204G1/L5hjkdnDKU/xpnaSOCPKZpFuXkOCXyh6OIcCU7tRAiZ6/XnYAvKteHNXCr1SKTpqwrYEwkm0P5QVS9IGBvg=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1776857483; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=IKttHRgNksRfLVo0DvEk3tP1JHxpksMPWqcmRaCbT+I=; 
-	b=hPmNYIiolteG3jpCgdNyLhqBseheqVImT3aQo7VSf3ifAMe0hRCvmjcW4aHj0wRdINyu3V09bcVvxgYTCoQhHT67qP2v0H1dUePSPyYyyF/Lpoi9eUaTx2XGs6lDT7ips0weDGhWx1euRa3LOU6XJLwPYlgG5CErywroJr3jI8k=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
-	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1776857483;
-	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
-	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-	bh=IKttHRgNksRfLVo0DvEk3tP1JHxpksMPWqcmRaCbT+I=;
-	b=Ksp9vjk/uOy3DfAI6qlRjw4lwueKETLEFdNgnDwMmrGjLB3l5DNYzPKkVRpmGmI3
-	SvPNgAdV2bFvWOmI2esOq6C98aHebioFu+d4fAjUswv5b3Z1WDw9tU3P1FSPRJ07zsh
-	aF5AsAg8GR4EePlaQM/B82/lHqEHQXf8qtzBtQIM=
-Received: by mx.zohomail.com with SMTPS id 1776857481494503.366495114184;
-	Wed, 22 Apr 2026 04:31:21 -0700 (PDT)
-From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>,
- Damon Ding <damon.ding@rock-chips.com>, kernel@collabora.com,
- Jonas Karlman <jonas@kwiboo.se>, Alexey Charkov <alchark@gmail.com>,
- linux-rockchip@lists.infradead.org, linux-pwm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v5 0/6] Add Rockchip RK3576 PWM Support Through MFPWM
-Date: Wed, 22 Apr 2026 13:31:14 +0200
-Message-ID: <dB_doorKQsK5TdJ40Tv8Lw@collabora.com>
-In-Reply-To: <20260421165656.168fe262@jic23-huawei>
-References:
- <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
- <20260421165656.168fe262@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="podidT+7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1776858805; x=1808394805;
+  h=from:date:subject:mime-version:content-transfer-encoding:
+   message-id:to:cc;
+  bh=o6zzEpWVusCTrwqkamGPCEy+eg5MZNhPZo78gDid0ko=;
+  b=podidT+7FFg0eHAoFqvq1ADdozB88EH5TFcY3XUinaGgD612r0jQ+D0s
+   aGcgKOLYg+Ze35V1mGO0tPlWIOGgeSmXk8u2zs08m4ZzUmXXOvbwjCmU4
+   T0Nx4QvWdMcuEs1kIgGccS9k3vbduPuely/deYlRRjefBm9xqziJCLJoS
+   73KuH84qZQFsPmzsEVzU0B1qd02DhXeYoVxJNtggKJQzVHJVswA+1QTIT
+   gh5I6cDth+r5byqzzHBAv5v3DIYwMEPc1y3WShYl0EaDz9KTpgpeNhEE5
+   dvd5a7+jOPMHUyEiaI1rNJwScmMAQCSxliRsba95W5E8hyCwtwaI3d93O
+   A==;
+X-CSE-ConnectionGUID: LaFJkMUDR/uLr1spsUO5nQ==
+X-CSE-MsgGUID: xdRK6knZTDWLKjjPYU31qQ==
+X-IronPort-AV: E=Sophos;i="6.23,192,1770620400"; 
+   d="scan'208";a="223710776"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 22 Apr 2026 04:53:18 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.58; Wed, 22 Apr 2026 04:53:19 -0700
+Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
+ Transport; Wed, 22 Apr 2026 04:53:16 -0700
+From: Ariana Lazar <ariana.lazar@microchip.com>
+Date: Wed, 22 Apr 2026 14:53:14 +0300
+Subject: [PATCH v3] dt-bindings: iio: dac: mcp47feb02: fix reg property
+ value bounds
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20260422-mcp47feb02-fix5-v3-1-e742cbab1dad@microchip.com>
+X-B4-Tracking: v=1; b=H4sIAKm26GkC/3XNQQ6CMBCF4auQrq2hY1ssK+9hXMAwyCygpDWNh
+ nB3Cyujcfm/ZL5ZRKTAFEVdLCJQ4sh+ynE6FAKHZrqT5C63gBJsqZWVI8666qktQfb8NBKscxp
+ Nq+GMIl/NgfK+i9db7oHjw4fX/iCpbf1vJSWVdNZYhJ4628FlZAweB56P6EexeQk+jerXgGxY4
+ 4Aa7RwifRvrur4BIcAwN/YAAAA=
+X-Change-ID: 20260416-mcp47feb02-fix5-26994c5b428c
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+CC: Conor Dooley <conor.dooley@microchip.com>, Jonathan Cameron
+	<Jonathan.Cameron@huawei.com>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Ariana Lazar
+	<ariana.lazar@microchip.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776858795; l=1596;
+ i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
+ bh=o6zzEpWVusCTrwqkamGPCEy+eg5MZNhPZo78gDid0ko=;
+ b=vP5thrWnMXtEmIc77TydaSr857G6H6ZLJZc0QgMH1HDg6sYUD7i54aCEUsFjbCqMOMpuJtB1Z
+ 8P9WaqiiWWNDqxam+AmPdUb2PAzMHidzixzvyKlBsNFWWqgYD/t4iXZ
+X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
+ pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-On Tuesday, 21 April 2026 17:56:56 Central European Summer Time Jonathan Cameron wrote:
-> On Mon, 20 Apr 2026 15:52:37 +0200
-> Nicolas Frattaroli <nicolas.frattaroli@collabora.com> wrote:
-> 
-> > This series introduces support for some of the functions of the new PWM
-> > silicon found on Rockchip's RK3576 SoC. Due to the wide range of
-> > functionalities offered by it, including many parts which this series'
-> > first iteration does not attempt to implement for now. The drivers are
-> > modelled as an MFD, with no leakage of the MFD-ness into the binding, as
-> > it's a Linux implementation detail.
-> 
-> Just thought I'd point out that as this includes the linux-iio
-> list sashiko took a look at it.  Quite a few things and at least
-> the first one I looked at was valid (a dereference before a validity
-> check)
-> 
-> https://sashiko.dev/#/patchset/20260420-rk3576-pwm-v5-0-ae7cfbbe5427%40collabora.com
-> 
-> Whilst this tool does generate some false positives, it also finds
-> quite a few things it seems us humans fail to spot.
-> 
-> Jonathan
-> 
+Replace minItems/maxItems with minimum/maximum to describe the reg
+property as a single channel number with 8 possible values (0-7)
 
-While I'm not entirely opposed to this, I do think reviews should happen
-on-list when possible. Sashiko is a Google service, so it has about a 50%
-chance of still being around in 2 years time. One of the benefits of the
-kernel development workflow is that discussion going back decades is still
-accessible.
+Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+---
+Changes in v3:
+- Replace minItems/maxItems with minimum/maximum reg property value bounds
+- Link to v2: https://lore.kernel.org/r/20260417-mcp47feb02-fix5-v2-1-6592ea499cce@microchip.com
 
-The reason why these aren't posted to list goes into the other thing
-that I currently am not stoked about, which is that I'd have to act as
-a filter for a Bring-Your-Own-Brain noise generator to pick out the
-parts that aren't convincing lies.
+Changes in v2:
+- keep just maxItems value update in this patch
+- remove Reported-by from commit message
+- Link to v1: https://lore.kernel.org/r/20260416-mcp47feb02-fix5-v1-1-9656c2fed6d2@microchip.com
+---
+ Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+index d2466aa6bda2106a8b695347a0edf38462294d03..da4897a6fd8d2522ea7fa3cb8c4bfd91520487b7 100644
+--- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+@@ -161,8 +161,8 @@ patternProperties:
+     properties:
+       reg:
+         description: The channel number.
+-        minItems: 1
+-        maxItems: 8
++        minimum: 0
++        maximum: 7
+ 
+       label:
+         description: Unique name to identify which channel this is.
+
+---
+base-commit: d2a4ec19d2a2e54c23b5180e939994d3da4a6b91
+change-id: 20260416-mcp47feb02-fix5-26994c5b428c
+
+Best regards,
+-- 
+Ariana Lazar <ariana.lazar@microchip.com>
 
