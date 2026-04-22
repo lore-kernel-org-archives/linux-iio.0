@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68FBF30CDAE;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8093D32F764;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776869184; cv=none; b=XbXDkz5ZB79FD41e/pAKwYMEB2sBHkiBIVpLTLrqmDBUVx37uL7Rr7EXx+uBQNxXPPlYbEl1J5kOz5UtoEUSHcoiwfcy441sP0G6xjBTpq0DNQ+gOPLRtlqOAx8PKRz+sZM8DJvUF98pfxIxbjalM3v8Yj5oByAkUJd06sXWR70=
+	t=1776869184; cv=none; b=POsDXNchSG8LTv51YSmwf34IIUlwRHcaXX5/nmoarL38TYCDnhppWSJ/7wrULT6cofBC6OM+R340I82tViYatYuXAACI4I44nzliSGPVWsWOaXDDenra3h0y+S6KNriOTd1TaeiUSo8PfkxFfxZn+B2rRRJmtBvJ0gWPrAMozoI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776869184; c=relaxed/simple;
-	bh=DzIZnucRYUqqamp1ggNd1WrAaNj54va5kduJMehc5ps=;
+	bh=F9Nr0dL97FhuwgP6JQ6EOPNw/sgLvryAOIT0llXjf58=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=WlteKhS2loYvS3Oqf487ua+0G1r+shdHQglin6EcnNqwy1TGsBPGD89LL04+3St4BtHYHCHLTsK16YUFcmYjOpAEL+LaxwZ4JholYKny58nvFOse5gyH5Yr8U255iZR25dRzOY3Ha2EqIfb37Ma5gutUx/7SH/BsDSTVjDqbDQA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FNxQtq3P; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=UFWqXwmrl/8+V5e1i0ARZibmEFrOQVdprJwpBRR+Byppl8yxDpbdMfVKThxnA6fDHdcM6yEsXlPovc36Y5ff8Cry+xJoNpAQtJ534efovMeoQ40f/On7CY0kDQSao3Ns5KASd859l+PgeByxYnwW7Y6LExYcUfXAFv9yIGk2h38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dM+Lo0kC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FNxQtq3P"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A36FC2BCC4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dM+Lo0kC"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4F381C4AF15;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776869184;
-	bh=DzIZnucRYUqqamp1ggNd1WrAaNj54va5kduJMehc5ps=;
+	bh=F9Nr0dL97FhuwgP6JQ6EOPNw/sgLvryAOIT0llXjf58=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=FNxQtq3PZadoEV09tdAaNUUp+S7PABEoZiP3AtgXD+QjfoR6lk4XHHgcxojC8B+r6
-	 M4r3ppVNhasJlpfh6FvkkiZ/CPkiDgtlm3iFpbRk5+YqOX+KaEu+JEme6rIeyqqSvS
-	 Hw91A2bALLB3Cwy/OJxTjfA49gz6M+/FcIabPcnx9RprZmZGgaYbxChWqRTOMO4oPK
-	 w3Koh/ScH2d5HPHbTWVSc6uYBNC3aJcLk9IsrtH65V4vUIe2Quikok5B03ZfZm/htG
-	 08fSKb7JpgX/98zRWacFQY7N1NzrMyGKEMNMpRqCg1Ob8/zIammuhgyD9mUaFGqMt+
-	 sUEVINONQseuw==
+	b=dM+Lo0kCsHbMM0ajj1yIvZuM1pWf2bv2iPI09Y2Yb0XwlVfw5bHcZtWQTAfh4MimO
+	 pjkc/gji4Bmo1e7bL9Rbsr8ZawULAILJkEZs7oMU/gb05m8YBvzPph1zXBaDlaj/ww
+	 zPOcYpC12V5wd076aLM618VoGHSwi191zmTe/cX+l78u3P3RLH6MgajjAhe1c9i3ro
+	 DVcXPCWsWXcBrfIJ2Tsu7H1bZdZ+E0fvXxblrD2RhiSKRQbOQbO1ObMzgTFDNpVGAC
+	 eD0G9gaBONWwHAN9OHLbQ5X6ND2Ng6oZDyFXlgVO67GSvOpCR75aY0UgbpaUf8/QMC
+	 awv6X6pJqyHKw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20ABDF9EDF1;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46136F9EDC9;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 22 Apr 2026 15:45:40 +0100
-Subject: [PATCH 06/22] dt-bindings: iio: dac: ad5686: rework on power
- supplies
+Date: Wed, 22 Apr 2026 15:45:42 +0100
+Subject: [PATCH 08/22] iio: dac: ad5686: remove redundant register
+ definition
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260422-ad5313r-iio-support-v1-6-ed7dca001d1b@analog.com>
+Message-Id: <20260422-ad5313r-iio-support-v1-8-ed7dca001d1b@analog.com>
 References: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 In-Reply-To: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
@@ -56,11 +56,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Philipp Zabel <p.zabel@pengutronix.de>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=1922;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=2846;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=9yk2gkX45ghKrgYSGht1grG7IvZtcYAKJWf3zLMMNP4=;
- b=dcBqGtLLVkbxf4wEq7VPlN9iVaG0HiLPdYiiUkS9NeZGHpveLr/vt4Lbdz7p1ltswxjyeDR3G
- nAN4LC5D/vfCmOzorRCWQNWxC15iFdmcs6icw4r37pUpeBeCcHf1FLk
+ bh=ohjQW1AWDwRd84EWTvh6fCxsW2xwkyxLY5jzdH+7/fM=;
+ b=qxDCy61RCTrZvVxcG8tC7f+4uoyo/zcsS/ec1eJJ3Wa2EkE8J9O1RVCm/uwwJGf8S9kyw9ZZP
+ T/TaWDBqmogAa7fr38zUKzWEft2UIXBAMh459R2VgNLjOvH8CMuzdGV
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -70,55 +70,102 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add supplies for VDD, VLOGIC and VREF input voltage pins. The vcc-supply
-property is deprecated. Certain devices require vref-supply to be
-available once an internal reference voltage is absent. Still, this patch
-does not add those as 'required' so that the ABI is not broken.
+AD5683_REGMAP and AD5693_REGMAP behave the same way in the common code,
+and that is because they target single channel devices from the same
+sub-family. There is no reason to separate them and it will make things
+simpler when refactoring the chip info table.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../devicetree/bindings/iio/dac/adi,ad5686.yaml      | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ad5686.c | 19 +++++--------------
+ drivers/iio/dac/ad5686.h |  2 --
+ 2 files changed, 5 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-index 543ee181f7b3..3292d5190b70 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-@@ -40,8 +40,22 @@ properties:
-   reg:
-     maxItems: 1
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 1a6eb3832f22..0bc925bd827e 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -93,10 +93,6 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
+ 		if (chan->channel > 0x7)
+ 			address = 0x8;
+ 		break;
+-	case AD5693_REGMAP:
+-		shift = 13;
+-		ref_bit_msk = AD5693_REF_BIT_MSK;
+-		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -277,7 +273,7 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+ 		.channels = ad5311r_channels,
+ 		.int_vref_mv = 2500,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5337R] = {
+ 		.channels = ad5337r_channels,
+@@ -399,24 +395,24 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+ 		.channels = ad5691r_channels,
+ 		.int_vref_mv = 2500,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5692R] = {
+ 		.channels = ad5692r_channels,
+ 		.int_vref_mv = 2500,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5693] = {
+ 		.channels = ad5693_channels,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5693R] = {
+ 		.channels = ad5693_channels,
+ 		.int_vref_mv = 2500,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5694] = {
+ 		.channels = ad5684_channels,
+@@ -508,11 +504,6 @@ int ad5686_probe(struct device *dev,
+ 		cmd = AD5686_CMD_INTERNAL_REFER_SETUP;
+ 		ref_bit_msk = 0;
+ 		break;
+-	case AD5693_REGMAP:
+-		cmd = AD5686_CMD_CONTROL_REG;
+-		ref_bit_msk = AD5693_REF_BIT_MSK;
+-		st->use_internal_vref = !has_external_vref;
+-		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index 3fcc792ea656..fe6482e84178 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -45,7 +45,6 @@
  
-+  vdd-supply:
-+    description: Input power supply.
-+
-+  vlogic-supply:
-+    description:
-+      Digital power supply. If not supplied, it is assumed to be the same as
-+      vdd-supply. VLOGIC may be hardwired to VDD in some board designs or
-+      internally connected in small packages.
-+
-+  vref-supply:
-+    description:
-+      Reference voltage supply. If not supplied the internal reference is used.
-+
-   vcc-supply:
--    description: If not supplied the internal reference is used.
-+    deprecated: true
-+    description: Use vref-supply instead.
+ #define AD5310_REF_BIT_MSK			BIT(8)
+ #define AD5683_REF_BIT_MSK			BIT(12)
+-#define AD5693_REF_BIT_MSK			BIT(12)
  
-   reset-gpios:
-     description: Active-low RESET pin to reset the device.
-@@ -89,7 +103,9 @@ examples:
-         dac@0 {
-             reg = <0>;
-             compatible = "adi,ad5310r";
--            vcc-supply = <&dac_vref0>;
-+            vdd-supply = <&dac_vdd>;
-+            vlogic-supply = <&dac_vlogic>;
-+            vref-supply = <&dac_vref>;
-             reset-gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
-             ldac-gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
-         };
+ /**
+  * ad5686_supported_device_ids:
+@@ -88,7 +87,6 @@ enum ad5686_regmap_type {
+ 	AD5310_REGMAP,
+ 	AD5683_REGMAP,
+ 	AD5686_REGMAP,
+-	AD5693_REGMAP
+ };
+ 
+ struct ad5686_state;
 
 -- 
 2.43.0
