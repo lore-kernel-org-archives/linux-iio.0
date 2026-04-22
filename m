@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7860D32C924;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68FBF30CDAE;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776869184; cv=none; b=GHl1/IIoD6XVhbccXOZnkdDvRvsdJAiMnKxAPmajm40k9AlC/kciV43mU0ZaYm9e0Vlz+YKT2PSLrx2ge4xS7GZWiRg5bjZbiH9ovZyd+Uxu0GO8Y3dMSjnhoHIdymSBU2qa1yfprGtEygwis+OWfXgDHX6oFf5drUH7MG7xENk=
+	t=1776869184; cv=none; b=XbXDkz5ZB79FD41e/pAKwYMEB2sBHkiBIVpLTLrqmDBUVx37uL7Rr7EXx+uBQNxXPPlYbEl1J5kOz5UtoEUSHcoiwfcy441sP0G6xjBTpq0DNQ+gOPLRtlqOAx8PKRz+sZM8DJvUF98pfxIxbjalM3v8Yj5oByAkUJd06sXWR70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776869184; c=relaxed/simple;
-	bh=l+N2eTpdCf7SDD+ccsaQ4RMwN1LY4hOleoPt5R0zvgM=;
+	bh=DzIZnucRYUqqamp1ggNd1WrAaNj54va5kduJMehc5ps=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=NmEJ6vipMo50TLp4C5exC6dz3Vj3v/fsdsrGqJH6OY/64uYlhQJ8vtU0VkUy9wXWWQrmGMsm6QCgtb+ezdO/XUvGlUESgNc2fCDgOl3ZgXpua4x3/o8fhaQLuN/Uq5C/VJLAQCra+d++o8XqB/0yMxdD8+4X6rTE7FXuL4aPMHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cPctFswy; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=WlteKhS2loYvS3Oqf487ua+0G1r+shdHQglin6EcnNqwy1TGsBPGD89LL04+3St4BtHYHCHLTsK16YUFcmYjOpAEL+LaxwZ4JholYKny58nvFOse5gyH5Yr8U255iZR25dRzOY3Ha2EqIfb37Ma5gutUx/7SH/BsDSTVjDqbDQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FNxQtq3P; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cPctFswy"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3D810C2BCFA;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FNxQtq3P"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A36FC2BCC4;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776869184;
-	bh=l+N2eTpdCf7SDD+ccsaQ4RMwN1LY4hOleoPt5R0zvgM=;
+	bh=DzIZnucRYUqqamp1ggNd1WrAaNj54va5kduJMehc5ps=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=cPctFswya3Op/IZD7IAmz9WIGDkgsI9sYsbmcSppfgRucoYVGLJqrpkTlqHwoE7om
-	 rdlzSiRsZG6BU6RAXtrY68xz1HYXtltQD2QFzLY/l6Di5egJ2Tfneg8NDXnnEgioIO
-	 ZccikrhILe194ELbu3Rji/MIAr35AMPrT/BcH/GcY9Z3SXGE9FzUea2ypmuwVlbayG
-	 U+um1habYfIX+bJkHt7e/fEZSUktY5GqGOT7C8uV42K5HcUs4PsdUNlBa8qf6RCAiK
-	 7mfHfzmPxoyIkiBdFdcTFEvsDnPZrX3GvMy+wSh05u0Y0paIuO8px+IFYxW2jeSAb8
-	 n3WKBq2R729Jg==
+	b=FNxQtq3PZadoEV09tdAaNUUp+S7PABEoZiP3AtgXD+QjfoR6lk4XHHgcxojC8B+r6
+	 M4r3ppVNhasJlpfh6FvkkiZ/CPkiDgtlm3iFpbRk5+YqOX+KaEu+JEme6rIeyqqSvS
+	 Hw91A2bALLB3Cwy/OJxTjfA49gz6M+/FcIabPcnx9RprZmZGgaYbxChWqRTOMO4oPK
+	 w3Koh/ScH2d5HPHbTWVSc6uYBNC3aJcLk9IsrtH65V4vUIe2Quikok5B03ZfZm/htG
+	 08fSKb7JpgX/98zRWacFQY7N1NzrMyGKEMNMpRqCg1Ob8/zIammuhgyD9mUaFGqMt+
+	 sUEVINONQseuw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3497CF9EDEB;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20ABDF9EDF1;
 	Wed, 22 Apr 2026 14:46:24 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 22 Apr 2026 15:45:41 +0100
-Subject: [PATCH 07/22] iio: dac: ad5686: refactor include headers
+Date: Wed, 22 Apr 2026 15:45:40 +0100
+Subject: [PATCH 06/22] dt-bindings: iio: dac: ad5686: rework on power
+ supplies
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260422-ad5313r-iio-support-v1-7-ed7dca001d1b@analog.com>
+Message-Id: <20260422-ad5313r-iio-support-v1-6-ed7dca001d1b@analog.com>
 References: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 In-Reply-To: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
@@ -55,11 +56,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Philipp Zabel <p.zabel@pengutronix.de>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=2739;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776869181; l=1922;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=6tt5M1kuQh7zLk0nCE7kXKPrQzBvjK2aZ4Ndo8TiE2w=;
- b=Du8u4IVD/tTMb/rLnXhyQEMXCVQy6QWhra+qgP4VdWZW/2KoscdYbVaYt+bNLzhpFVcYZL0jI
- 8xPhOzMl9R7Bf3qxi4jxXrJAqCu1keF/YgBQSmxTFnYcCyiecRJCECO
+ bh=9yk2gkX45ghKrgYSGht1grG7IvZtcYAKJWf3zLMMNP4=;
+ b=dcBqGtLLVkbxf4wEq7VPlN9iVaG0HiLPdYiiUkS9NeZGHpveLr/vt4Lbdz7p1ltswxjyeDR3G
+ nAN4LC5D/vfCmOzorRCWQNWxC15iFdmcs6icw4r37pUpeBeCcHf1FLk
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,104 +70,55 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Apply IWYU principle, replacing unused/generic headers for
-specific/missing headers. The resulting include directive list is sorted
-accordingly.
+Add supplies for VDD, VLOGIC and VREF input voltage pins. The vcc-supply
+property is deprecated. Certain devices require vref-supply to be
+available once an internal reference voltage is absent. Still, this patch
+does not add those as 'required' so that the ABI is not broken.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686-spi.c |  8 ++++++--
- drivers/iio/dac/ad5686.c     | 13 ++++---------
- drivers/iio/dac/ad5686.h     |  5 ++---
- drivers/iio/dac/ad5696-i2c.c |  9 ++++++---
- 4 files changed, 18 insertions(+), 17 deletions(-)
+ .../devicetree/bindings/iio/dac/adi,ad5686.yaml      | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-index df8619e0c092..b4df06f6bf02 100644
---- a/drivers/iio/dac/ad5686-spi.c
-+++ b/drivers/iio/dac/ad5686-spi.c
-@@ -8,11 +8,15 @@
-  * Copyright 2018 Analog Devices Inc.
-  */
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
+index 543ee181f7b3..3292d5190b70 100644
+--- a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
+@@ -40,8 +40,22 @@ properties:
+   reg:
+     maxItems: 1
  
--#include "ad5686.h"
--
-+#include <asm/byteorder.h>
-+#include <linux/array_size.h>
-+#include <linux/err.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/spi/spi.h>
- 
-+#include "ad5686.h"
++  vdd-supply:
++    description: Input power supply.
 +
- static int ad5686_spi_write(struct ad5686_state *st,
- 			    u8 cmd, u8 addr, u16 val)
- {
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 9a384c50929b..1a6eb3832f22 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -5,17 +5,12 @@
-  * Copyright 2011 Analog Devices Inc.
-  */
- 
--#include <linux/interrupt.h>
--#include <linux/fs.h>
--#include <linux/device.h>
-+#include <linux/array_size.h>
-+#include <linux/err.h>
-+#include <linux/export.h>
- #include <linux/module.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/regulator/consumer.h>
--
--#include <linux/iio/iio.h>
--#include <linux/iio/sysfs.h>
-+#include <linux/sysfs.h>
- 
- #include "ad5686.h"
- 
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index e7d36bae3e59..3fcc792ea656 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -8,10 +8,9 @@
- #ifndef __DRIVERS_IIO_DAC_AD5686_H__
- #define __DRIVERS_IIO_DAC_AD5686_H__
- 
--#include <linux/types.h>
--#include <linux/cache.h>
-+#include <linux/bits.h>
- #include <linux/mutex.h>
--#include <linux/kernel.h>
-+#include <linux/types.h>
- 
- #include <linux/iio/iio.h>
- 
-diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-index d3327bca0e07..587f53228bae 100644
---- a/drivers/iio/dac/ad5696-i2c.c
-+++ b/drivers/iio/dac/ad5696-i2c.c
-@@ -7,10 +7,13 @@
-  * Copyright 2018 Analog Devices Inc.
-  */
- 
--#include "ad5686.h"
--
--#include <linux/module.h>
-+#include <asm/byteorder.h>
-+#include <linux/err.h>
- #include <linux/i2c.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
++  vlogic-supply:
++    description:
++      Digital power supply. If not supplied, it is assumed to be the same as
++      vdd-supply. VLOGIC may be hardwired to VDD in some board designs or
++      internally connected in small packages.
 +
-+#include "ad5686.h"
++  vref-supply:
++    description:
++      Reference voltage supply. If not supplied the internal reference is used.
++
+   vcc-supply:
+-    description: If not supplied the internal reference is used.
++    deprecated: true
++    description: Use vref-supply instead.
  
- static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
- {
+   reset-gpios:
+     description: Active-low RESET pin to reset the device.
+@@ -89,7 +103,9 @@ examples:
+         dac@0 {
+             reg = <0>;
+             compatible = "adi,ad5310r";
+-            vcc-supply = <&dac_vref0>;
++            vdd-supply = <&dac_vdd>;
++            vlogic-supply = <&dac_vlogic>;
++            vref-supply = <&dac_vref>;
+             reset-gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
+             ldac-gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
+         };
 
 -- 
 2.43.0
