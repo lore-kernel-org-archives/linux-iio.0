@@ -1,85 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C1763C1969;
-	Wed, 22 Apr 2026 09:21:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50E633C1401;
+	Wed, 22 Apr 2026 09:23:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776849685; cv=none; b=an3w+0lkkPn0wAiTpKQDyThOqdDDsMGXM3VxkOzJwLtH33YXOxJYZRvUfVHWiaL87EnXHym/ZDMfzHhY3SCPpg49G6WsGuoMFAYDTP6ZWXZ9E5JxpQHdpr+7iwqL6CiB2Ouf9Bym7wCy+fwnPR6O6bpVh2dtC01zbqx7C9XRvsk=
+	t=1776849805; cv=none; b=UOusQx8GglLQu3Bv5YvvjoctsTMI7XpHiKWE3Gm1ziE/a+11VEfonUBYz4Y9HMLbv78xi2SaIqAJEPxTEx8T6JX3na+Bbqy7pjbKzR0zkqbDxXZOOcx+4hM5RSX6tfM6HV9zkJeTPcYza5c2p533cuuX19csU4lDV+7iOJt2A78=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776849685; c=relaxed/simple;
-	bh=PdXiKgN1WwkW7fLQ8YPU2cLfn8tsQW6SDMXfqR+rJOc=;
+	s=arc-20240116; t=1776849805; c=relaxed/simple;
+	bh=CkR69VxmlCOoplLrM+KwSG8Br7V+OXosWD61iWEpOTI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eRJN3UWnvgYCuzdfDS7FbLZqS0zep77LEMqx8r7gR3tuc7clBdQA33toa14DeYEZLZisCjhGaQDAyVRWdtTl27hquNbZsYjGDiEFdcligdF+LVr8oi3HYBbH/xZYKj/wOc20ChCjC5f+fXyz0QcJxrjJdqlqPY+S4dpNhjyA6Po=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Vn657MiR; arc=none smtp.client-ip=192.198.163.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=gKbbcb3YMzxKnzpZhtkguY9QLouDZ1gIuLAD4kf/z7aDz/h2A2oGEeQz25AsguaRIi96u0H5bI4O70ehJ1U5eDnz+Bhsku0qfQD8zkFTt4S2nNAPyEq/zkTD8sHmTj3je+olQvJECCRm1iZnKPs8cPYOtuC/8Ro0Fq0/8IkEGVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=exjbOYVm; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Vn657MiR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="exjbOYVm"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776849684; x=1808385684;
+  t=1776849804; x=1808385804;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=PdXiKgN1WwkW7fLQ8YPU2cLfn8tsQW6SDMXfqR+rJOc=;
-  b=Vn657MiRDCYQfiN7EA1N/lU5p0M0RWmURFMtwVzXyfrRhDfY24TEHlLJ
-   UDe7G0GD7el6qQCkbUOUpsj7Iw157T316Oh7fU//W0Wxe+C0kE3g5fjgW
-   fweXKp4AhMrS99tL5B8pjPqipwqPvpu57+GY9Czv1SvoZ4UnSpUb/4Z5D
-   Er6jmqxIHOrlFyMm6wPb6eEWx6032inwB7p6TcdeCBRlVAZ79wVyFONWv
-   GFryiUXa/lKUX20hZcCzPo8oy0Ne87+h/akyWVdXRSE1TZZPkdZA2N5uk
-   OoQGImT2cCg0DlM4jfYHaajNvhCNtD52H1LRXjIAWSrsdvMu8yHCg+4nZ
-   Q==;
-X-CSE-ConnectionGUID: lXYXKrhoRqGnx/nxvbEmvg==
-X-CSE-MsgGUID: CQjojAIDQoWCzInizox3lw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="80385172"
+   mime-version:in-reply-to;
+  bh=CkR69VxmlCOoplLrM+KwSG8Br7V+OXosWD61iWEpOTI=;
+  b=exjbOYVmfSskLozUzkDzhYChk1jsn4sQS7AuMTYkho/YGjoThMKNQn1d
+   TQFwmc7FWvxFR5NBRsUS0DAV5qnK7yhNDsc/Rd9mkoL9lefSO3i8+bySG
+   GQvnXKm89dclONzXkivLFgHFOBZvLeYpfi83iL+JIXg9OnDx5Y9DoGs/e
+   YerK4rx7oZ3csRrmTZ2loGiza9LU/3xA1fKYAiPV2C7oGFUXTygbyZneZ
+   79e6lD1CzgaQ/I6gXLKJHJVQwYbXlFpmQXXxJyYrtzzQJIqjXn/vj4Yb7
+   iDu57TP2WsPRyVCj0DakkEbWk8y6kVeoPPXsMG6icI//lGCoc9Ywjnzzt
+   w==;
+X-CSE-ConnectionGUID: FiaPP1zMSt2Z82HSMHpLzQ==
+X-CSE-MsgGUID: lpDBx3VSQRG6WTqS9fkUWg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="88494246"
 X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="80385172"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 02:21:23 -0700
-X-CSE-ConnectionGUID: hYBTP+mJQ4uQY6u71ZZb6g==
-X-CSE-MsgGUID: xtF/MAFAQDqD3lJ8LRpqVw==
+   d="scan'208";a="88494246"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 02:23:24 -0700
+X-CSE-ConnectionGUID: pMuUEDqFRT6k0HkzK1ZeTQ==
+X-CSE-MsgGUID: bX/mTto5TbmGMECxGhAEaA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="232167738"
+   d="scan'208";a="255565007"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.201])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 02:21:21 -0700
-Date: Wed, 22 Apr 2026 12:21:18 +0300
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 02:23:22 -0700
+Date: Wed, 22 Apr 2026 12:23:19 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: =?iso-8859-1?Q?Nat=E1lia_Salvino_Andr=E9?= <natalia.andre@ime.usp.br>
-Cc: andy@kernel.org, bentiss@kernel.org, dlechner@baylibre.com,
-	jic23@kernel.org, jikos@kernel.org, nuno.sa@analog.com,
-	srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH v2 0/7] Add helper method
- hid_sensor_adjust_channel_bit_mask()
-Message-ID: <aeiTDr511xGLBkGx@ashevche-desk.local>
-References: <20260421222210.16016-1-natalia.andre@ime.usp.br>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] iio: magnetometer: ak8975: change 'u8*' to 'u8 *'
+ in cast
+Message-ID: <aeiTh6uw6yLW-D43@ashevche-desk.local>
+References: <20260421100722.1296-1-joshua.crofts1@gmail.com>
+ <20260421100722.1296-4-joshua.crofts1@gmail.com>
+ <aeiMPrBs4BJE0H_k@ashevche-desk.local>
+ <CALoEA-w7T-15paJ2j2kGyaWjeK9FpHynS+vD0rpv1dBKEo3gcg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260421222210.16016-1-natalia.andre@ime.usp.br>
+In-Reply-To: <CALoEA-w7T-15paJ2j2kGyaWjeK9FpHynS+vD0rpv1dBKEo3gcg@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Apr 21, 2026 at 07:20:32PM -0300, Natália Salvino André wrote:
-> This patch series introduces a generic helper function to handle channel bit mask adjustments
-> for HID sensors. Currently, multiple drivers implement identical logic for this task
+On Wed, Apr 22, 2026 at 11:19:06AM +0200, Joshua Crofts wrote:
+> On Wed, 22 Apr 2026 at 10:52, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > "While at it, fix the indentation of the parameters in ...func...() call."
+> 
+> Indentation is fine, but the email client clipped it.
+> https://lore.kernel.org/linux-iio/20260421100722.1296-4-joshua.crofts1@gmail.com/
 
-This message should be wrapped on ~72 characters. Some of the maintainers may
-use cover letter as fake-merge commit message. And even if not, the standards
-in the kernel for the cover letter and commit messages are the same in terms of
-writing rules.
+I was not clear enough. There are double quotes on purpose. They has to be
+interpreted as
 
-Basically this is the biggest issue in the whole series: missed proper
-indentation / wrapping.
+Please also add to your commit message this sentence:
 
-Code wise looks good, thanks for doing this!
+" ... the example of the sentence ... "
 
 -- 
 With Best Regards,
