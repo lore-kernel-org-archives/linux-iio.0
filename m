@@ -1,136 +1,124 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 942F02737F9
-	for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 19:16:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E51E52C032E
+	for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 20:45:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.49
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776971770; cv=pass; b=lWe+bzYML0JpFLoCD24iZMebyvNqKA45gSasxHSpvwtpVTJ3bvsZMJ9PSuQui/HSgOGi+sUo90FagUl+pSyx+eoZNlWhIJ0NDgAMPr9IYYDn4SkfgQPLqgdvNyDDLoogZTPV8JU1obColVj2dSQ2r3HCJpDJuNqIAo6kcLN+n1w=
+	t=1776977125; cv=pass; b=b1HA7vW1cRL3+KwCU+QoWn0yRBY34QL5UQXHJj2v5rxQ7bCKyr8TRNUuGYNN2b+/HIZV8DCM8vFTZIvB0TFQqty1BM6blQXbk401p4mFqXGteaCeHHvsTTb/kyU3srCrNXPTNW+1z5nvhAkumkzFi3vy+oQMyrHW/BMvqaD6Czo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776971770; c=relaxed/simple;
-	bh=MKhulYEgFTHvPD2QXL5QCt9OQeVVDUfrot+j7lHqO+Y=;
+	s=arc-20240116; t=1776977125; c=relaxed/simple;
+	bh=VoJN8ufs/Gsb5LP8C3MnoNgy/aPAmOiF+Cb+60vginY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nt6fxRjc7M4/G+nXPFWemK1UEY8L0UrsIhfGujmJd1rmhBjyT6ep0iskI2let9IGl/E5PB9EwXXEQpN+h8dzbIDvJWOPmcFEUEN5FRLtl61c0yp2N8nkp6Qa0958Rh5Wg/E5VfK18lpcaFyrybgve8uTOd/0lBFS5A9pyaLD34A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=OZ1QqfEh; arc=pass smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	 To:Cc:Content-Type; b=HChBmdjvbRQo4SvdfWJnum2dcVdHPaffTR6YFxpoJizt3xwvijXOqcv6u4qVPky6ib7P2F0H8pVfqChcRfgblE5LKIIZg0HLL/jxy76LbuSaj5kp6jxcMimnlR+JDMuQYol/1uBEOStuzOJfic1uujgogzrKFuRsUBqE+q6Unkc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=AenqN42G; arc=pass smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="OZ1QqfEh"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-676a89de629so5603839a12.1
-        for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 12:16:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776971765; cv=none;
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="AenqN42G"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-67389cf78b0so12803418a12.2
+        for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 13:45:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776977120; cv=none;
         d=google.com; s=arc-20240605;
-        b=RIRYQhnV6xCQrl8D2jPToAe9n5EW+hwMXKAMZeDNNEYV5GskavMQNUYBPSfBUWTTsr
-         evHAnzRDw/po509fEf0DxeMExxSpo46W+4juUnhE3B4gEe99HoBRny0ijbYWWRste1ez
-         sdMsD3nzFjy7JKxg0UYRp+2tmJV+i3+atjmSTeZPWvoFBqBkw9qWcXJ5NtWy00ccfM+g
-         kQouTQHU3sdRb4pflPP3BpwX5KaVoRzIPkmrQjwzLoFzM4wRuv190A4yX+O+8T6/YsNl
-         MJIsV3fzm0cpfcl/Fb6wszp1xD7YnA37r8SS+BZq+A5qBaYzTuJP0VI7bhXT+7JqY04a
-         IEmA==
+        b=GKvD46JQQVxDVOIO4rCDcivIksiX6CQ78a4LXrt3N2uWOyMOaxmteHdRQTPrCj78Hz
+         Z9lgkFM/R3FShnufHk2tXmQpXSNmy+pC2s338gdsKhiFH8MFu4xyAzsa9Cykn/D+fZ0/
+         zX+Gyjx0r2mehzRa3ywoBQbdCaHnblgcUnIQyDYwHUskDkD9YSoaqD1sxwnGy7GrOdNM
+         DonDbwHx+O6zEjaXZuhvIxZVviYkEbodqNbB1Xi9glXBt5Gjo1m+AUxDtMER5wQtrsQD
+         /rjA9/zmjktuSdZXD4gH+qgJpTLB2SadERMZoPC/XHL72g1ug8zE0CkZary3WG4c3eAu
+         IFGQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=k+OwFwXILla4Bmz88+Po4DQbi1rj0xGA0OG7tNHA6rA=;
-        fh=FJIjbU8zdWBkMK0xiEEX5TXzAu/KgviZyWFRH/RlhCA=;
-        b=XVDSTQikplHpICg38Ycpe7DUBSl3Bc0c5Q3TSIIETawez2v6WpyWLuY3gEgz+ADwO7
-         Cg95I3iFKXkjQw0wub3TW7S9ez0GxZEEuGmMkBLe+Qk+tJiOJpvw2qRNml1a0kUIaD5k
-         TxLCVq1pxoBwZt+/U2g9xhCywJRqYuzC4Id7+GlcAf6X7dc9aJT9dFYztBZcBDrETazQ
-         2TK1hwp1XykYcJfdBwVePPkDnvweBdPHitNfehYUOREhehpJnwyDMon0hpFQUpX7ewuq
-         gBXMSPbs7nNaKJMx56SZFyi8BwMuppV1b1S7U9pGto/TcrCEuvNCJlO029xhWAdGuOrp
-         hclQ==;
+        bh=VoJN8ufs/Gsb5LP8C3MnoNgy/aPAmOiF+Cb+60vginY=;
+        fh=z++0pKAcXdgECQuZnv/9P10NKhzaKhMc6UkUZxom2GY=;
+        b=BzLZMkEdxTmtuI9Uo/sxA1uFPi2yDu/iCE1NYqFwTpfwWImBXEp2cPpfFsbq9ZQO0p
+         KUXQTAon9BlnjD8RoNFlvXYuQwoiDiRt45Ca3cXvchbiRVJhdnumTClv9OYlDKKph8PW
+         2QpnLV0SITGceXQnHenKJQe8BzEgjsDuCn7i6MoGdJ9dpQmkSsdU7pb6go2hu96Ukh6h
+         6ffVGOj6ZXp0E+ZDkSjuSpJjSdPoBUC8i7KDmURy6k6fUXpYOZsKnNohSvkNJN1xyKQz
+         gv0U57LzpSCVHSRBe68yhGt2tBV45S0TJ27DZdvp7DlZqeVu/CBLLQqCA5DdivvE6Ogq
+         1y0A==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776971765; x=1777576565; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1776977120; x=1777581920; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=k+OwFwXILla4Bmz88+Po4DQbi1rj0xGA0OG7tNHA6rA=;
-        b=OZ1QqfEh9MS0zqMqm4wFHlFbX9gzEm5w2gRPSDCrfFLc+zJbf1PaRKqb64YFy/7itL
-         S8kGsNmdnA0KARn+vg62HvGslhmN77u+4fUpLw7I82pomXWgTltgZGHxguP9ocfytcUl
-         TiMqMF7u0F1vtiwXxSdrkcVK/3rAy0geZy/TcbhiO4wY72JCc1LyUPtbpG8a3rKy9O26
-         r+CTb7aoaqYLv9O9HAHn+Lun5qXRDhIpLVAmM8u3h54z1UnPfhlXQlJT5GQnTivZVH+M
-         VIUMMQVQg3L5tp+H7eYMJEgeBudmTEhIJXCFAeIylclpRad0Zkcvcsgx420uklz6P4//
-         ggPA==
+        bh=VoJN8ufs/Gsb5LP8C3MnoNgy/aPAmOiF+Cb+60vginY=;
+        b=AenqN42GLOXzaZG1SLUktxYeQZpEoLX49Wkhv+RqlBKkuZQPElNSh2uVKMdWFsg4JU
+         CbZVmVOLd3kVduo4LwdcrjRJoYKaanHtiGW6hMkN6YKsFxTnCebyJT8/MhHCEmohy0dh
+         kByeCIzDaOpSjtv69SbfgupxpsLHJ3TK0rUGMFflwjqttnZUFEvMBFZGgxak0riAWd3A
+         JXjZd3pslxVmZhgcu/3n/YZu4u5uAsLPVEO6pX7AKm1QP54n/76AdmONuuPGjlrJrFJo
+         HrGu1BxLacsuB/+1zSJXCJZFL5EygC9VdWGl2dytXY8SA6J8fDF9Yo98fMTnRBK1pmhO
+         MA+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776971765; x=1777576565;
+        d=1e100.net; s=20251104; t=1776977120; x=1777581920;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=k+OwFwXILla4Bmz88+Po4DQbi1rj0xGA0OG7tNHA6rA=;
-        b=ebg0Au8oZA85wvUqldIvIZrQZO7ZMm+ZX7ZS5R4YVUumQGClFtfDepkmFQK1X09Aor
-         7llaPlYiKGrHkKR5i1CaWcibbjzJpi4fLv3RetHPKqhB52voYxEIjjO1H98hA1h42Mh7
-         uBU75EIKLQ/g2DJakSUBy6BsxUsyEy/7XRtu8KxAW871t51i97fq/F8noMucvP1jOBWI
-         wiL0yZeNAvVeWfna38HIYS6DeDA5HUDw80FcDMV5ud58Y2xEs7lXJQChOUfiOtQZD4QV
-         OSLGiB8/sRgUen7OW/40meydxFr3krAEgc01chj9fgbQTAU+Bi+GsRl5srDaFJsXAKOW
-         CS2A==
-X-Forwarded-Encrypted: i=1; AFNElJ+sJG4GRNCvCksNZvMyVxqmX+ccqBn6uKmSouZjeurOncOvySkYEGKmUmMfLJ9HQPobz5nWAqXMRPI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzM2lckXSJFNnxYpA1aGLgFHkngEMbvF/klHD+dZ4w1ZhlN9fbw
-	ccy48P+FcC7K3dxfirJH3c7OJH5ZeAV17NFYDndxsowdoNbuTsvhL2Uo5hAQle8MuKxuVztL5hE
-	IdpqtL7b3d079Kynt9TqQ7UAIQQ/P/gQJAmKQ+RaURA==
-X-Gm-Gg: AeBDietMW9IA8SkdU+MgDjzO/IL8flkhnw6r4xrDFwsVqxU7QhTj9LohaER1dgUQdNS
-	ow0JojdiORAfeU1KgMsOm1j13Eb7Mgo0qI8Jn/de4kzB3xENbPWfWtBw9ZxO6y54AQuwApIptpy
-	fZeWtLvWPYtP/v0yFrk5h5+Hjfb67Edyf0XcyWzKWXqnfFC+H173BteLVhM1sskcdj6Ks3kQ0YY
-	k/DQVfl6mdYJJkjUU+rlirIJKULQSiibrYN8OruDCUr8PaiyeenLV3wbozbzJ5rOxkyOzXbBu+8
-	eQEJ+UMkupLybeXp6isKuBiWtBWk
-X-Received: by 2002:a17:907:3f1e:b0:ba5:60e1:2ef2 with SMTP id
- a640c23a62f3a-ba560e138c1mr1302959766b.22.1776971764666; Thu, 23 Apr 2026
- 12:16:04 -0700 (PDT)
+        bh=VoJN8ufs/Gsb5LP8C3MnoNgy/aPAmOiF+Cb+60vginY=;
+        b=pJs/EP76grzOz6VW1zOcylh8LKcFu9N3w+L9lbDnv1yb9cBj0WvlFX77wjDPmfw3Ex
+         KHHWq8UyKOZnyMP+IAQD3opCrZtxrJkm0tsJFF+vRjGHlSy139+QvhSFSot0trlNuJYd
+         HQQqWGmzFCPkEcBC6WvRlO/dD9FFDsGUD8StwaT9X775ubN7tghoNB6aPbQxe1YGZ7fh
+         1TDTh2zUhie5LAML0i05jnbLYJjj00iYjCgSv8WO/8qYywjTEzQQwik+UqGECE47RB7x
+         p71v6ezQHlwEWLR9bysgm/GRkMl8quA/UpsT2ie+0VshEgZ4yKVmX0h55JG2bkBl0gNR
+         aYOg==
+X-Forwarded-Encrypted: i=1; AFNElJ/uqfnTQjDYoej9JvYMdhjiZnyvQU70SxYMaDe7S5Rxe8TPXyj0QkAuIgBZdSih+RcR7iuCadlj5gA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz8n4GRb+yyid2NhD5sJFrSGXp6Fdyl/gEDI+lABQKBm1FHR1tA
+	xYoI8QmvWQigNsBs5CyVPQLz4p8/BgDecBAHTq0GpnIaEo5SwWQHooNSOlFmI367PvefTSmCLjp
+	pc++Fy6dPcdmqdNglMEpQxr1p+QEEH3DupS855WLfLtoAoZLqnFMmSBgtnA==
+X-Gm-Gg: AeBDietfKz20fAAi3eaYjGik0nMF10x4DQEm9CJr0oQc2PPex31nlqExIkXWRo/x4t9
+	b9DzOTfqJB5JVPs7LwCqS/GKCXlmDOC1IvXXN6/fSl4+P+fjx/ugD8+r1sgdx1PRd/oGcYFwosd
+	LL01aaPUS8c3REIoXy4/lUCwQl/KVsadB1smaAAyheB/BnBIEAUpnNcvKpyJBiseYXpRSH2Y2Lh
+	aGSMp9GAqU40+Fj+Yd4hkE2Qc22/rUPAsBSYLoMhraZ7U95VydInacN5Wdn7SNcUdd32gxa5CXU
+	3iXJ8bGD0+f+H/qbvWtmKDkd/7FDNxsIqhppixLMFiJzlPiK
+X-Received: by 2002:a17:906:c146:b0:ba6:6c2d:5c81 with SMTP id
+ a640c23a62f3a-ba66c2d5e63mr691297966b.44.1776977119849; Thu, 23 Apr 2026
+ 13:45:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260420191455.529923-1-marcelomlage@usp.br> <20260420191455.529923-2-marcelomlage@usp.br>
- <20260421165452.76df9b7c@jic23-huawei>
-In-Reply-To: <20260421165452.76df9b7c@jic23-huawei>
-From: Marcelo Machado Lage <marcelomlage@usp.br>
-Date: Thu, 23 Apr 2026 16:15:54 -0300
-X-Gm-Features: AQROBzBF_nKXuL3SIqh8CfWmG7teX_o4me-yy6-4NGv4RuWgmEtAg_Xdq3r-I3A
-Message-ID: <CAO=vGZrJjwsPtFeo+Nj1k8rKpHehsVUhwFCxzeTAeJinTL_ssw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] iio: adc: mcp3422: rewrite mask macros using
- bits.h macros
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	Vinicius Lira <vinilira@usp.br>, linux-iio@vger.kernel.org
+References: <20260422222553.67660-1-gustavo.pagnotta@ime.usp.br>
+ <20260422222553.67660-2-gustavo.pagnotta@ime.usp.br> <aepa8jD4uBrtY4WV@ashevche-desk.local>
+In-Reply-To: <aepa8jD4uBrtY4WV@ashevche-desk.local>
+From: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
+Date: Thu, 23 Apr 2026 17:45:08 -0300
+X-Gm-Features: AQROBzDC4QkRxk-HzuEojfY9zh10mRlegaMd_GwOGDOC1w42oz13HVOZa8YcQgY
+Message-ID: <CAD7rJs=gNZoS7=HfhUoi6K0myMQmo-9Wd_-oYcfkX8cAtpBJbw@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] iio: adc: mcp320x: sort headers alphabetically
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org, 
+	nuno.sa@analog.com, Eduardo Augusto <eduardoaugustoabc@ime.usp.br>, 
+	Christian Barry <christian.barry@ime.usp.br>, linux-iio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Dear Jonathan,
-Thank you for your comments. We will correct the mistake in the commit
-message in the next version of the patch.
-Regarding the comments at
-https://sashiko.dev/#/patchset/20260420191455.529923-1-marcelomlage%40usp.b=
-r,
-we appreciate the opportunity to learn about this resource. However,
-after going through the content there, we do not feel confident to
-address other pre-existing issues in the code at the moment.
-Best regards,
-Marcelo and Vin=C3=ADcius
+On Thu, Apr 23, 2026 at 20:46:26 +0300, Andy Shevchenko wrote:
+> Is this SoB chain for real? If you want to give credits to mentors or so,
+> it should be done differently.
 
+Hi Andy,
 
-Em ter., 21 de abr. de 2026 =C3=A0s 12:55, Jonathan Cameron
-<jic23@kernel.org> escreveu:
->
-> On Mon, 20 Apr 2026 16:14:54 -0300
-> Marcelo Machado Lage <marcelomlage@usp.br> wrote:
->
-> > Rewrite MCP3422_CHANNEL_MASK, MCP3422_PGA_MASK, MCP3422_PGA_MASK
-> > and MCP3422_CONT_SAMPLING using GENMASK() and BIT() macros from
-> > bits.h.
-> https://sashiko.dev/#/patchset/20260420191455.529923-1-marcelomlage%40usp=
-.br
-> pointed out repetition of PGA_MASK.
->
-> The other comments are a mixed bag but it's worth taking a look to see
-> if you think any of them matter.  They are all really about the existin
-> code.
->
->
-> >
-> > The other macros MCP3422_SRATE_{240, 60, 15, 3} were not changed
-> > because they are also used as array indices.
-> >
-> > Signed-off-by: Marcelo Machado Lage <marcelomlage@usp.br>
-> > Co-developed-by: Vinicius Lira <vinilira@usp.br>
-> > Signed-off-by: Vinicius Lira <vinilira@usp.br>
+Yes, the chain is real. Eduardo, Christian, and I are classmates at the
+University of S=C3=A3o Paulo (IME-USP), and we are working on this driver
+together as a group assignment.
+
+We are doing mob programming on the same machine, which is why we
+included the Co-developed-by tags for everyone involved in the changes.
+They are not my mentors or professors.
+
+However, I understand that having three authors for such a trivial patch
+(like sorting headers) looks highly unusual. I also realize that, as the
+sender of the patch, my Signed-off-by should have been placed at the
+very bottom of the chain.
+
+For the upcoming v5, would you prefer me to keep the Co-developed-by
+tags on the main refactoring patch (Patch 2) and leave only my
+Signed-off-by on this trivial header sorting one?
+
+--
+Thank you for the review and the guidance,
+Gustavo Pagnotta
