@@ -1,96 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1D12178372;
-	Thu, 23 Apr 2026 07:51:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9229F26ADC;
+	Thu, 23 Apr 2026 07:54:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776930675; cv=none; b=lb7IbxLWNLbSsXu2AEKp3iV/qTnpAiTX+uejSKxnzRduRuod8QFOyD1iKwfgFT3Tf+RceMteArqIwGY9P5wPuaP5E2oS34enaLTgIBogTqWKmRcf9j28F0jq/asBXVrGUeyuCqQEmQhU5AFf/ZczdU6LFGPgPRl/BuBJ7hYkryo=
+	t=1776930878; cv=none; b=KhYNWjA9rUp+9sbiL7V3DyBLr3CPePfIuSMkZoRj3swmXu/pf4vzKgFGGoAr+vhG3zHji2EbzsA9WELpnG8U6aXAT+5y1x5MG6s1i4BXVdDQ3DYNG2Xl5U/CYYoVS4YYGgs8LYTBNThTQyS4fm2CxJiU7N1btt2vo749hy/tEBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776930675; c=relaxed/simple;
-	bh=xuLwZuuTypbJn1lu0ZUZOuR+xB0AmlyFNC4+1TplaSc=;
+	s=arc-20240116; t=1776930878; c=relaxed/simple;
+	bh=XuZlJQJa0/9nvq1fexTS1sKbvIch201jw4T1tYmur6A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JTgeQhr17gVGDcsBFKg36HA+XGv2Lp8hwr2x+nTVgVCt4/77HGiNxOrgCYfyofKYLRV5WVKjts24nuCxjlOAjOwBCDuWe5LSqzQ00n0E8mbKlGADAeNVlTANhw/pBkqXlzy5wHhsIM0d/5J7LZcJ5FlTOqMvQ9FqZLOMFo9dQnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ADmk4ngQ; arc=none smtp.client-ip=192.198.163.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=SWKOyS5bz/0d7fzlUR2qZyRHB5QSeTJSQeVbh4OPkmEgVUwBdI1A9DDoLU/yywOIoo0YAhT0oRyK9xZuwmve2btV5r6ZRBZgB/fxt3klEfEDOOzqhuH3O9L6+Eyh3SjvIuSfoq0TkjyKXj/r++Ad9hMa8IKSYQ0PtWzPL4oR43o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QbG/FV3O; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ADmk4ngQ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QbG/FV3O"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776930674; x=1808466674;
+  t=1776930877; x=1808466877;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=xuLwZuuTypbJn1lu0ZUZOuR+xB0AmlyFNC4+1TplaSc=;
-  b=ADmk4ngQVYeOF5QNipG3ZUgMW/0B6K9nBuRSdP22fcknsUQ6TmzzqX7A
-   GMSeaYdoznJqUKazY0WL7u9Rjc5ptYVMrWxyeOHZZlTV958ruZwvrj8Zf
-   9+yr8/metuitVOJesDWCv035r/NDSIqqXdyS3qyTzJuv1mfP/SKX7ny8+
-   23g3D/McuiOrAskOtq2uJ4CCl4hHBBIVS9aBLR73LW7Lo9ujFhETPh/Ob
-   nVDN0JWBvxZzOoNmlhPjX5KqJkf+55KE6M88p/77YVNGrzXb+64qwUqM3
-   vyM08uv7ktPzhwmwmcF0NG4oMknzMFjAPwC2Xo6VM4jZqP7Vw7CsHZCXz
-   A==;
-X-CSE-ConnectionGUID: TuCgdwmUTx2T/mhrSVPUpg==
-X-CSE-MsgGUID: e855oWVNR3KxsmQ01PQVmQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11764"; a="77772115"
+  bh=XuZlJQJa0/9nvq1fexTS1sKbvIch201jw4T1tYmur6A=;
+  b=QbG/FV3ODr58P1YD7UdalSzZLWeyErHOgSBhUZMsVNKbiaVKNNhQKxqf
+   WKhDeHjfHQZCyPkFeJOuFzsQ2vWGqkNSoKKSdE29tCuaKMKFpJluYd6Zn
+   s/C8AwFM6mipc5Dbr/7NZBycpIB6sVZGjHBS0QebbP8l/JlEdrKTF8yKQ
+   tAfYRnQMuUWiD7GBbcGXNU0wQyy3YIl6M/dE3CCrfjRnn7Amx1I8lcbNC
+   smq7aBMU2crBvL6nv3S8ywKpfB8FjCytzGV+jN/0N1yIMSCpxUWcqzmln
+   xflQM0YZeIN+MvUsYTg42xb+nSlrw3NMLJFWmZARw1HOWgjlNvtw0R0EW
+   g==;
+X-CSE-ConnectionGUID: EF4AWwHgSxOTL6JFsLUj9Q==
+X-CSE-MsgGUID: F/83vqA0T/qFPfA//eIDOQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11764"; a="88974679"
 X-IronPort-AV: E=Sophos;i="6.23,194,1770624000"; 
-   d="scan'208";a="77772115"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 00:51:13 -0700
-X-CSE-ConnectionGUID: KS4N2qAgQqamn4fGdaomFw==
-X-CSE-MsgGUID: 72fLrZ78SbqtM+NZ4d+56w==
+   d="scan'208";a="88974679"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 00:54:36 -0700
+X-CSE-ConnectionGUID: flgbvjnwTSOb2dPTxuUSYw==
+X-CSE-MsgGUID: pwUwnOVoRiKzMfEMyuiz2Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,194,1770624000"; 
-   d="scan'208";a="237570335"
+   d="scan'208";a="229405044"
 Received: from mjarzebo-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.163])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 00:51:09 -0700
-Date: Thu, 23 Apr 2026 10:51:09 +0300
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 00:54:32 -0700
+Date: Thu, 23 Apr 2026 10:54:30 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, sakari.ailus@linux.intel.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] iio: accel: mma8452: use local struct device
-Message-ID: <aenPbdqSifpsH5HR@ashevche-desk.local>
-References: <20260422165643.2148195-1-sanjayembedded@gmail.com>
- <20260422165643.2148195-4-sanjayembedded@gmail.com>
- <aekjBaFT8xvM64zh@ashevche-desk.local>
- <BA5F2EF9-C439-47A2-BE91-4ED6E12F2EBA@gmail.com>
+To: Zhang Lixu <lixu.zhang@intel.com>
+Cc: natalia.andre@ime.usp.br, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, andy@kernel.org, bentiss@kernel.org,
+	dlechner@baylibre.com, jic23@kernel.org, jikos@kernel.org,
+	nuno.sa@analog.com, srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH v2 1/7] iio: HID: Add helper method
+ hid_sensor_adjust_channel_bit_mask()
+Message-ID: <aenQNrLHqGxbiipb@ashevche-desk.local>
+References: <20260421222210.16016-1-natalia.andre@ime.usp.br>
+ <20260421222210.16016-2-natalia.andre@ime.usp.br>
+ <20260423032038.233475-1-lixu.zhang@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <BA5F2EF9-C439-47A2-BE91-4ED6E12F2EBA@gmail.com>
+In-Reply-To: <20260423032038.233475-1-lixu.zhang@intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Apr 23, 2026 at 08:06:20AM +0530, Sanjay Chitroda wrote:
-> On 23 April 2026 1:05:33â€¯am IST, Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> >On Wed, Apr 22, 2026 at 10:26:40PM +0530, Sanjay Chitroda wrote:
+On Thu, Apr 23, 2026 at 11:20:38AM +0800, Zhang Lixu wrote:
+> On Tue, Apr 21, 2026 at 07:20:33PM -0300, Natália Salvino André wrote:
+> > Add helper method to deduplicate code in HID sensors.
 
 ...
 
-> >>  	int ret;
-> >> +	struct device *dev = &client->dev;
-> >
-> >Keep it in reversed xmas tree order.
-> >
-> Understood, along with headers would attempt to keep all local variables also
-> in chronological order.
+> > +void hid_sensor_adjust_channel_bit_mask(struct iio_chan_spec *channels,
+> > +					int channel, int size)
+> > +{
+> > +	channels[channel].scan_type.format = 's';
+> 
+> There is no 'format' field in struct iio_scan_type. This should be:
+>         channels[channel].scan_type.sign = 's';
 
-I'm not sure. What does chronological mean in this case?
+Your information is outdated, I believe.
 
-Reversed xmas tree order means to have longest lines first. The assignments may
-have dependencies, hence must follow that first and then the reversed xmas
-tree. Returned variable might go last in some cases even if it's slightly longer
-than other variables for giving it a better visibility.
+> > +	/* Real storage bits will change based on the report desc. */
+> > +	channels[channel].scan_type.realbits = size * BITS_PER_BYTE;
+> > +	/* Maximum size of a sample to capture is u32 */
+> > +	channels[channel].scan_type.storagebits = sizeof(u32) * BITS_PER_BYTE;
+> > +}
 
-
--- 
 With Best Regards,
 Andy Shevchenko
 
