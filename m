@@ -1,97 +1,73 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9229F26ADC;
-	Thu, 23 Apr 2026 07:54:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F274363C4B;
+	Thu, 23 Apr 2026 08:05:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776930878; cv=none; b=KhYNWjA9rUp+9sbiL7V3DyBLr3CPePfIuSMkZoRj3swmXu/pf4vzKgFGGoAr+vhG3zHji2EbzsA9WELpnG8U6aXAT+5y1x5MG6s1i4BXVdDQ3DYNG2Xl5U/CYYoVS4YYGgs8LYTBNThTQyS4fm2CxJiU7N1btt2vo749hy/tEBI=
+	t=1776931536; cv=none; b=JeXtTDGNuavcBB+iwbRRo9kHixFoLPdDYtqi7vqB9rFj7HFhPHOUeCqzhNs9N6GsQfnkLCGkV01qpKTdBqKDNKJC80ooR2QIkhr0NOo4EoGrm34Xk2afiqhNAVeYqKsS34vq0bgNPO09cfgjxtL3eD9LUSaTwqFUSDUa31gA1rQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776930878; c=relaxed/simple;
-	bh=XuZlJQJa0/9nvq1fexTS1sKbvIch201jw4T1tYmur6A=;
+	s=arc-20240116; t=1776931536; c=relaxed/simple;
+	bh=7rkkN+VqoLd6RHME3M+2tu7KACqyhFTH9C25nKv/qv0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SWKOyS5bz/0d7fzlUR2qZyRHB5QSeTJSQeVbh4OPkmEgVUwBdI1A9DDoLU/yywOIoo0YAhT0oRyK9xZuwmve2btV5r6ZRBZgB/fxt3klEfEDOOzqhuH3O9L6+Eyh3SjvIuSfoq0TkjyKXj/r++Ad9hMa8IKSYQ0PtWzPL4oR43o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QbG/FV3O; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Uh3v+70AKoGPEPiWl5hOThA1SDNPJvtOdS4A5Q+6/h5WA8jFsDjz0wQfLm3oeYybOr5S2sG9YoutMvjtmY1YZfov7IJMQ3tJm2Ih2yk6yrIg43rBvk6W7ZbCkIzZP5cNCChkNAyVqG1Esif+ntBh+2U+TzN8fAuHJDQuOzZw7gE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VDWEgaAu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QbG/FV3O"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776930877; x=1808466877;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=XuZlJQJa0/9nvq1fexTS1sKbvIch201jw4T1tYmur6A=;
-  b=QbG/FV3ODr58P1YD7UdalSzZLWeyErHOgSBhUZMsVNKbiaVKNNhQKxqf
-   WKhDeHjfHQZCyPkFeJOuFzsQ2vWGqkNSoKKSdE29tCuaKMKFpJluYd6Zn
-   s/C8AwFM6mipc5Dbr/7NZBycpIB6sVZGjHBS0QebbP8l/JlEdrKTF8yKQ
-   tAfYRnQMuUWiD7GBbcGXNU0wQyy3YIl6M/dE3CCrfjRnn7Amx1I8lcbNC
-   smq7aBMU2crBvL6nv3S8ywKpfB8FjCytzGV+jN/0N1yIMSCpxUWcqzmln
-   xflQM0YZeIN+MvUsYTg42xb+nSlrw3NMLJFWmZARw1HOWgjlNvtw0R0EW
-   g==;
-X-CSE-ConnectionGUID: EF4AWwHgSxOTL6JFsLUj9Q==
-X-CSE-MsgGUID: F/83vqA0T/qFPfA//eIDOQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11764"; a="88974679"
-X-IronPort-AV: E=Sophos;i="6.23,194,1770624000"; 
-   d="scan'208";a="88974679"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 00:54:36 -0700
-X-CSE-ConnectionGUID: flgbvjnwTSOb2dPTxuUSYw==
-X-CSE-MsgGUID: pwUwnOVoRiKzMfEMyuiz2Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,194,1770624000"; 
-   d="scan'208";a="229405044"
-Received: from mjarzebo-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.163])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 00:54:32 -0700
-Date: Thu, 23 Apr 2026 10:54:30 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Zhang Lixu <lixu.zhang@intel.com>
-Cc: natalia.andre@ime.usp.br, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, andy@kernel.org, bentiss@kernel.org,
-	dlechner@baylibre.com, jic23@kernel.org, jikos@kernel.org,
-	nuno.sa@analog.com, srinivas.pandruvada@linux.intel.com
-Subject: Re: [PATCH v2 1/7] iio: HID: Add helper method
- hid_sensor_adjust_channel_bit_mask()
-Message-ID: <aenQNrLHqGxbiipb@ashevche-desk.local>
-References: <20260421222210.16016-1-natalia.andre@ime.usp.br>
- <20260421222210.16016-2-natalia.andre@ime.usp.br>
- <20260423032038.233475-1-lixu.zhang@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VDWEgaAu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9270DC2BCAF;
+	Thu, 23 Apr 2026 08:05:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776931535;
+	bh=7rkkN+VqoLd6RHME3M+2tu7KACqyhFTH9C25nKv/qv0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VDWEgaAugasr928sOcH0MeVZh3XUuwkwej9OTlDlRp1z9qrQ16xeEQPcYN1GPW+ul
+	 Q05iGcmitgHrFd5N/UMojvY4AR0rDDzfCMXxV8IkxoBoLJvKyEfvic4Gc/U3+PP4pX
+	 F5tYf6KpoQbGo7PZjsxf8MY5P7MBCBYOrjOPcZEL3FxCltMLYBep4SJ3EzCjjHRvgL
+	 NfC/dQjxZtWKFHdEQoH3a4Mpc3f1Qmp/LT1M+bIgwcr83gDMlLRdthj5txZj9YeFIN
+	 EzBtno/7/TSqqFesrHbIquHZ+f3Wf6Z2XFM9AEyAEFX7hMaHyiiAZ89+XVCSqJ7O1b
+	 1tZxiJcEjaGpQ==
+Date: Thu, 23 Apr 2026 10:05:32 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Piyush Patle <piyushpatle228@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Andreas Klinger <ak@it-klinger.de>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@intel.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] dt-bindings: iio: adc: avia-hx711: add
+ avia,hx710b compatible
+Message-ID: <20260423-famous-tody-of-opposition-73c8af@quoll>
+References: <20260422175910.1258579-1-piyushpatle228@gmail.com>
+ <20260422175910.1258579-2-piyushpatle228@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260423032038.233475-1-lixu.zhang@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260422175910.1258579-2-piyushpatle228@gmail.com>
 
-On Thu, Apr 23, 2026 at 11:20:38AM +0800, Zhang Lixu wrote:
-> On Tue, Apr 21, 2026 at 07:20:33PM -0300, Natália Salvino André wrote:
-> > Add helper method to deduplicate code in HID sensors.
-
-...
-
-> > +void hid_sensor_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-> > +					int channel, int size)
-> > +{
-> > +	channels[channel].scan_type.format = 's';
+On Wed, Apr 22, 2026 at 11:29:08PM +0530, Piyush Patle wrote:
+> The HX710B shares the same two-wire interface as the HX711 but differs
+> in its channel and gain model: gain is fixed at 128 and the number of
+> trailing PD_SCK pulses selects the input channel rather than the gain.
 > 
-> There is no 'format' field in struct iio_scan_type. This should be:
->         channels[channel].scan_type.sign = 's';
+> Add avia,hx710b to the compatible enum. Document the chip differences
+> in the description and add chip-specific supply properties (dvdd-supply,
+> vsup-supply) for the HX711, a rate-gpios property for the HX711 RATE
+> pin, and an allOf constraint that forbids HX711-only properties on
+> HX710B nodes. Clarify the clock-frequency description to reflect its
+> actual purpose: controlling the SCK bit-bang timing.
+> 
+> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
+> ---
+> Changes in v3:
 
-Your information is outdated, I believe.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-> > +	/* Real storage bits will change based on the report desc. */
-> > +	channels[channel].scan_type.realbits = size * BITS_PER_BYTE;
-> > +	/* Maximum size of a sample to capture is u32 */
-> > +	channels[channel].scan_type.storagebits = sizeof(u32) * BITS_PER_BYTE;
-> > +}
-
-With Best Regards,
-Andy Shevchenko
-
+Best regards,
+Krzysztof
 
