@@ -1,63 +1,64 @@
 Received: from mail-dl1-f49.google.com (mail-dl1-f49.google.com [74.125.82.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5A0D219303
-	for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 01:20:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53C7C219303
+	for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 01:20:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776907251; cv=none; b=jmQg4te45IjpfsskmvRvXKpG874RvKt8FMhMPrfuXl19w7xRez7ai2uqb47mlG+q2OdN5aNfOwIUATeGxN/piS6nsfpsGShqTrTI/sISr/Zm7mRguNaLKH5vW4Rd5vTdFNARwRot4rfGmMU6FaFDRndAGCXHiPJPldhDgOkNA6g=
+	t=1776907259; cv=none; b=YJnnrl4SfKVW1uLIYIJLuxiLbg8ikqGKbexjaq+dRqsiVW+duDVk3XWdlgOHzZZ0nLSIV/dnmbqj/w3988OxyrPFqFbq90BYeBXqE0DAXWT7RJJ1Eaob8aBC/Mc9I9ZHlI01sjE6XHMGRTg0GZZlPvXbLd7Qai8mA0RfPbEoFVk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776907251; c=relaxed/simple;
-	bh=ii1o11+bJleLQbIf0IzWcB8eQPNGW4qwDC6++JDm43Y=;
+	s=arc-20240116; t=1776907259; c=relaxed/simple;
+	bh=4DrNjwo8uIwCDNducjAx4yUSrQy5oGs+c+60R2z7No8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=D7q4DN8ziYb9TBS5hLGOIhPfF9DLaDaFNt/ecNIqm/4E6lrWYl75x4/TvPLH1LQ1m0pHoV8MCOsOBESQbro57363CQ+GpHiqUCGQPBwIrypvcps/mbdpmvKSVYEzA7l+V5ukbslwLLpC6KiufjZMPhMO0PKJjdQVzIwOwtgHd5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=KsmppuDC; arc=none smtp.client-ip=74.125.82.49
+	 MIME-Version; b=JeSUUC+F+d19Ed49XV+XQ9zk6rl8mecBd7RQnm/4pRpjjC39c8S0/K9c9fJsXTCBcXmSa+b+3tEuT/OX5Sl69xjvDA2Awvps3cySxwkrK0s7rm+ddtF2yajc8GONhLgBQUvfesrWDkjiOyYhQbdAk3WaB3lkha4DU2p2DVBmWSM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=b3g08thV; arc=none smtp.client-ip=74.125.82.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="KsmppuDC"
-Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-12c565476d7so14974228c88.1
-        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 18:20:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="b3g08thV"
+Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-12c19d23b19so7889375c88.0
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2026 18:20:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776907248; x=1777512048; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1776907257; x=1777512057; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=yeSe76m5JOq4TxmOghOzbF5DZ8GPv4in/IzlHhZA4qI=;
-        b=KsmppuDCyVe3Z+ma/NmRaoGbOIaEtay1zAycXdEpcmsG1Nhb7BqnEMNw2a6wf/J8Rf
-         gmVMKQLCzgTIllPfJYDk1qqjL5A9O1jPKMtyYomkPIklbAKHDQMdgXcuHKYdGZTwcADC
-         Z43YmqojBMLSbDucJwzL+qWJFLIvxN4P7AHtX0bJ8gnt8gVMgySI8LQhTvWrh4lphkua
-         H+h0ldev98dA47vh59d+NG7H48n59Ye1oG0RFTQCW5ypIZxlJETfHPLU/4w+kE4Ny2dC
-         PTv42YvGqzCgZoJLnf0pntWuUhObj9qBs3ijysjkawNHnesx3Z/jq5YIy+2DHX/qdD9I
-         TM9g==
+        bh=4WacU78F8QYGrv10AUSXrlUWShZ6Ipzv7ZroO0zW8aE=;
+        b=b3g08thVq045+owgpUuOgiZ5KFPgNGxZtWIbbS/VElKxymHhjln5sz2FKMpTxuCsH3
+         Ey4W78btJB5M7G/FmLmNOvorxDSwNHR5rzRwMRacnFPL7oZZ986KehgbRRybZO+LGVWq
+         rtr3mqQwzqTe120kIcLQxOiNYEHdJyZQM2CxnS9RSSGoAJ5RPP3FBIxd3YbfuLY4ZE1V
+         wXo1INW9mQ3YX/cBar/Phk/6M/FP2E3/UPxw0gLKMelidtQStx1Na/1Dw9ty9GiZDADo
+         JKpL62254+LzvmO0p3CJXntySoPjOaVWrARw33sGVdftgD163sKjx6xFsTujunQuaFZ5
+         D61Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776907248; x=1777512048;
+        d=1e100.net; s=20251104; t=1776907257; x=1777512057;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=yeSe76m5JOq4TxmOghOzbF5DZ8GPv4in/IzlHhZA4qI=;
-        b=iJQzuGZCYX8iYSozzIV6BCTg+HxDvUJAekKvt5ax601XVRd8WF/l1CksEHE4MDjkxV
-         1bWn5Zc5a2RVksY0lH97pIbOk9vTyL3Ih5VvLZIwQMk0TbKc/y+qFVKUfUTpb9OiHasF
-         EO1HIz2P4zd0tg6Wy3dKwUUYpEO2RSSJdkZL0hPtdIj2TOee3ZmiMV5ct1wcfkpgJ5BK
-         AXg0+1kodmAt6QuSa8yHNKkS1ejVH6uYO+sJC4XVsGBPvLJiw02Tg8fLwJLdkLMsnHKK
-         8imjVJlKjqMVyZ1pB1HlUm1trRQWoufufdn3d4cX69/W2+yiwZR4r57aujZRxUeKapK+
-         jtPg==
-X-Forwarded-Encrypted: i=1; AFNElJ+aF7+xGJKfI6IUoHvomBTmaP8fKhUgUY31tjDjqZ979qU7zw99v+kXSU67tOeY/G2QuUBy9jtz4Dc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywu1ZE4s4dhosVqeDDredcTQLckvIHWu+/b4RwTNfnkPx0/xTg8
-	V7pWgVoOhpLeTwlUyKJ10KKghNP0/G6oP0S1rHB00UKM5e8s/4Z1QSIi2a31B+s7W30=
-X-Gm-Gg: AeBDieuK/H7OQcb4WodvgHg4BsgVXGtxU8uuPgXLkECy0F/GQAThIg1vwjnePp6NCIb
-	97l04SJagID48Nd3/7LeQTW6IH+zcDkTqBo/Q5OHk1092DdbgBXJH0LYrauFVCN+oAFfwq6gdfm
-	gQARNJeO+v4PYdIRiKuRupnmHOPN6p3BbWBGTHWiyvhGeaUg3vdlj6tADnyTkTqEPJhdGq54wYH
-	FCkjsKcC8vgJEgDW6mN/fpoiiJYqnJSQ4z8RNVmUTt4rHIuDI6WzwNjbTB7vknpbJP8AGV4Q8up
-	6/CmEsMEinM9XXWCxvSIZeBeL/zelGpaTj1Vm04ArqPKdzgmnekoqeVodWOfofSUxY/qBdPwSIf
-	PE9GmoA1wqPEGcK2vz7iX8QBI+94IBssQWbXk68qjNEvXKtjn+7fEiTtz4h71ETx0lpw2X1EKyt
-	FZDTcIfmyjAFVZ7MChHp8Uju9HtXlRqS4RJ4Ovlh0L8Gn0jmR7VLRf+8x8
-X-Received: by 2002:a05:7022:f9c:b0:128:d24a:a5c1 with SMTP id a92af1059eb24-12c73fa5bf6mr13388981c88.28.1776907247649;
-        Wed, 22 Apr 2026 18:20:47 -0700 (PDT)
+        bh=4WacU78F8QYGrv10AUSXrlUWShZ6Ipzv7ZroO0zW8aE=;
+        b=UHICdsVyAx20y6kpXCeJFzDftcmHQ8Sahr8QpmAn54lbrt9O+LlPnWOKZmAuBbcbcr
+         uYbzanZABL0vWTT310+t6waRzywCuUPBW9ssWfeaz0ubFEoyMgL4NRP6A+4WjJkxKXgl
+         hhdX5w7xPxr+43RYtUAR1s6Qg7FXLZ14UFICsrXL8fhRz5HXfyS5PoIJNgsU98qpW2tW
+         qKAXtnP+UGDR1WHrX9wlG8rxCesXFlqxwcnK9c5SiMTFK8MTE4Iwl9hGmKlb4qd4bqfQ
+         D+gw8L5+lVAgFJjywNFf48Y/Wf4YXzsil+IJ5uLQTRqN96PuPR7I0DM8UD2qaxGnLQnr
+         qYLw==
+X-Forwarded-Encrypted: i=1; AFNElJ9xS0yr2sgTOEEMDQokNzDNOy5DQ2hC/siUEFHYv1XmUnovFFfop8xBYYy2fPs+b/XE/XWXxjixvb4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwYMlQ6//AKYy/DjI7G+qVaVY4EKDvQ7aEjMtOUShl/KnwPE/rm
+	8m1Ysz6vXt55iHHRoQ4y0sexZWiNimbIi/wLy2Qwt5Cv9sJLSCu3WRiiVCi6EbMznH4eheaTOx0
+	SxAuU
+X-Gm-Gg: AeBDies/IN5h5pPXydJQIMgmeIa2EYXASrhiSULsDDR96u1dStEpZnLMZ1mKt7Rwldw
+	pq3MNnojtY3lfbEaXUpe7C+LQQYJSioK7PUGSHXiZI2kukAH1MhCqY1IfN8nCxRUhwyVWRWoBpG
+	6f2zYUA8LkUkUgbPFnPDplMBmphhwT85VNbZ94yqNuCJ5BvhUld9wFokZanDt0omYSnd5n0NdIT
+	z4E+yrCAS3nQE7iNJbrE1UdWhxbXLQecS4EzLYtA/DLhv4VvDb/ilux3tJ4ilUc5KHuZfZvp3qc
+	RVE/iAZrUn5TTo7mRchK7FYazK8DXlHl7mfrx6UZMTTrJU7qcuK+UXFctMu0gc/W3Xmt1qGhc0/
+	0NoykXcy1Gm7IocFA8KaFUUEzwIC9uR8ZhsZ4d6l72xUGv0flFN0KuOcyGvppKsfDaqNk7+Aono
+	8HUKuU8LrEw5SFa4F5ivT2P00yxqV/NyOo4G9U4O8DKrVE7g==
+X-Received: by 2002:a05:7022:223:b0:12c:8e70:c32e with SMTP id a92af1059eb24-12c8e70c78dmr7761080c88.5.1776907257500;
+        Wed, 22 Apr 2026 18:20:57 -0700 (PDT)
 Received: from localhost.localdomain ([177.81.10.105])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c919266f6sm18139235c88.1.2026.04.22.18.20.42
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c919266f6sm18139235c88.1.2026.04.22.18.20.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2026 18:20:47 -0700 (PDT)
+        Wed, 22 Apr 2026 18:20:57 -0700 (PDT)
 From: Felipe Ribeiro de Souza <felipers@ime.usp.br>
 To: andy@kernel.org,
 	dlechner@baylibre.com,
@@ -68,9 +69,9 @@ Cc: Felipe Ribeiro de Souza <felipers@ime.usp.br>,
 	Lucas Ivars Cadima Ciziks <lucas@ciziks.com>,
 	linux-iio@vger.kernel.org,
 	linux-mips@vger.kernel.org
-Subject: [PATCH v4 1/2] iio: adc: ingenic-adc: refactor ingenic_adc_read_chan_info_raw()
-Date: Wed, 22 Apr 2026 22:18:30 -0300
-Message-ID: <20260423012011.41001-2-felipers@ime.usp.br>
+Subject: [PATCH v4 2/2] iio: adc: ingenic-adc: use guard()() to handle synchronisation
+Date: Wed, 22 Apr 2026 22:18:31 -0300
+Message-ID: <20260423012011.41001-3-felipers@ime.usp.br>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260423012011.41001-1-felipers@ime.usp.br>
 References: <20260423012011.41001-1-felipers@ime.usp.br>
@@ -82,12 +83,14 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Extract the sample logic from ingenic_adc_read_chan_info_raw() into
-a new helper function ingenic_adc_read_chan_locked() to improve code
-readability and modularity.
+Replace mutex_lock() and mutex_unlock() calls with guard()()
+in functions ingenic_adc_set_adcmd(), ingenic_adc_set_config(),
+ingenic_adc_enable(), ingenic_adc_capture() and
+ingenic_adc_read_chan_locked().
 
-The helper handles the mutex-protected section for sampling channels,
-while the main function manages clock enabling/disabling.
+This removes the need to call the unlock function, as the lock is
+automatically released when the function return or the scope exits
+for any other case.
 
 Signed-off-by: Felipe Ribeiro de Souza <felipers@ime.usp.br>
 Co-developed-by: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
@@ -103,66 +106,114 @@ v3:
 v4:
   - Adjust code style for better readability.
 ---
- drivers/iio/adc/ingenic-adc.c | 34 +++++++++++++++++++++++-----------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+ drivers/iio/adc/ingenic-adc.c | 26 +++++++++-----------------
+ 1 file changed, 9 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
-index 1e802c8779a4c..ad1b7bbc059a4 100644
+index ad1b7bbc059a4..5622b62840e6e 100644
 --- a/drivers/iio/adc/ingenic-adc.c
 +++ b/drivers/iio/adc/ingenic-adc.c
-@@ -628,22 +628,15 @@ static int ingenic_adc_read_avail(struct iio_dev *iio_dev,
- 	}
+@@ -7,6 +7,8 @@
+  */
+ 
+ #include <dt-bindings/iio/adc/ingenic,adc.h>
++
++#include <linux/cleanup.h>
+ #include <linux/clk.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+@@ -115,7 +117,7 @@ static void ingenic_adc_set_adcmd(struct iio_dev *iio_dev, unsigned long mask)
+ {
+ 	struct ingenic_adc *adc = iio_priv(iio_dev);
+ 
+-	mutex_lock(&adc->lock);
++	guard(mutex)(&adc->lock);
+ 
+ 	/* Init ADCMD */
+ 	readl(adc->base + JZ_ADC_REG_ADCMD);
+@@ -162,8 +164,6 @@ static void ingenic_adc_set_adcmd(struct iio_dev *iio_dev, unsigned long mask)
+ 
+ 	/* We're done */
+ 	writel(0, adc->base + JZ_ADC_REG_ADCMD);
+-
+-	mutex_unlock(&adc->lock);
  }
  
--static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
--					  struct iio_chan_spec const *chan,
--					  int *val)
-+static int ingenic_adc_read_chan_locked(struct ingenic_adc *adc,
-+					struct iio_chan_spec const *chan,
-+					int *val)
+ static void ingenic_adc_set_config(struct ingenic_adc *adc,
+@@ -172,13 +172,11 @@ static void ingenic_adc_set_config(struct ingenic_adc *adc,
  {
- 	int cmd, ret, engine = (chan->channel == INGENIC_ADC_BATTERY);
--	struct ingenic_adc *adc = iio_priv(iio_dev);
--
--	ret = clk_enable(adc->clk);
--	if (ret) {
--		dev_err(iio_dev->dev.parent, "Failed to enable clock: %d\n",
--			ret);
--		return ret;
--	}
+ 	uint32_t cfg;
  
- 	/* We cannot sample the aux channels in parallel. */
- 	mutex_lock(&adc->aux_lock);
-+
- 	if (adc->soc_data->has_aux_md && engine == 0) {
- 		switch (chan->channel) {
- 		case INGENIC_ADC_AUX0:
-@@ -678,6 +671,25 @@ static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
- 	ret = IIO_VAL_INT;
- out:
- 	mutex_unlock(&adc->aux_lock);
-+
-+	return ret;
-+}
-+
-+static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
-+					  struct iio_chan_spec const *chan,
-+					  int *val)
-+{
-+	struct ingenic_adc *adc = iio_priv(iio_dev);
-+	int ret;
-+
-+	ret = clk_enable(adc->clk);
-+	if (ret) {
-+		dev_err(iio_dev->dev.parent, "Failed to enable clock: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = ingenic_adc_read_chan_locked(adc, chan, val);
-+
- 	clk_disable(adc->clk);
+-	mutex_lock(&adc->lock);
++	guard(mutex)(&adc->lock);
+ 
+ 	cfg = readl(adc->base + JZ_ADC_REG_CFG) & ~mask;
+ 	cfg |= val;
+ 	writel(cfg, adc->base + JZ_ADC_REG_CFG);
+-
+-	mutex_unlock(&adc->lock);
+ }
+ 
+ static void ingenic_adc_enable_unlocked(struct ingenic_adc *adc,
+@@ -201,9 +199,8 @@ static void ingenic_adc_enable(struct ingenic_adc *adc,
+ 			       int engine,
+ 			       bool enabled)
+ {
+-	mutex_lock(&adc->lock);
++	guard(mutex)(&adc->lock);
+ 	ingenic_adc_enable_unlocked(adc, engine, enabled);
+-	mutex_unlock(&adc->lock);
+ }
+ 
+ static int ingenic_adc_capture(struct ingenic_adc *adc,
+@@ -218,7 +215,7 @@ static int ingenic_adc_capture(struct ingenic_adc *adc,
+ 	 * probably due to the switch of VREF. We must keep the lock here to
+ 	 * avoid races with the buffer enable/disable functions.
+ 	 */
+-	mutex_lock(&adc->lock);
++	guard(mutex)(&adc->lock);
+ 	cfg = readl(adc->base + JZ_ADC_REG_CFG);
+ 	writel(cfg & ~JZ_ADC_REG_CFG_CMD_SEL, adc->base + JZ_ADC_REG_CFG);
+ 
+@@ -229,7 +226,6 @@ static int ingenic_adc_capture(struct ingenic_adc *adc,
+ 		ingenic_adc_enable_unlocked(adc, engine, false);
+ 
+ 	writel(cfg, adc->base + JZ_ADC_REG_CFG);
+-	mutex_unlock(&adc->lock);
  
  	return ret;
+ }
+@@ -635,7 +631,7 @@ static int ingenic_adc_read_chan_locked(struct ingenic_adc *adc,
+ 	int cmd, ret, engine = (chan->channel == INGENIC_ADC_BATTERY);
+ 
+ 	/* We cannot sample the aux channels in parallel. */
+-	mutex_lock(&adc->aux_lock);
++	guard(mutex)(&adc->aux_lock);
+ 
+ 	if (adc->soc_data->has_aux_md && engine == 0) {
+ 		switch (chan->channel) {
+@@ -655,7 +651,7 @@ static int ingenic_adc_read_chan_locked(struct ingenic_adc *adc,
+ 
+ 	ret = ingenic_adc_capture(adc, engine);
+ 	if (ret)
+-		goto out;
++		return ret;
+ 
+ 	switch (chan->channel) {
+ 	case INGENIC_ADC_AUX0:
+@@ -668,11 +664,7 @@ static int ingenic_adc_read_chan_locked(struct ingenic_adc *adc,
+ 		break;
+ 	}
+ 
+-	ret = IIO_VAL_INT;
+-out:
+-	mutex_unlock(&adc->aux_lock);
+-
+-	return ret;
++	return IIO_VAL_INT;
+ }
+ 
+ static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
 -- 
 2.43.0
 
