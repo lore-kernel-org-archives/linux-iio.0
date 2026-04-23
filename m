@@ -1,73 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F274363C4B;
-	Thu, 23 Apr 2026 08:05:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B03BF351C22
+	for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 08:09:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776931536; cv=none; b=JeXtTDGNuavcBB+iwbRRo9kHixFoLPdDYtqi7vqB9rFj7HFhPHOUeCqzhNs9N6GsQfnkLCGkV01qpKTdBqKDNKJC80ooR2QIkhr0NOo4EoGrm34Xk2afiqhNAVeYqKsS34vq0bgNPO09cfgjxtL3eD9LUSaTwqFUSDUa31gA1rQ=
+	t=1776931800; cv=none; b=raPWouFuVdl1l26KKqrtSGF0ljIV6qh/Z9nphcuf2kATCi0VyQ92xrMPuDC6LtCuITaTdleG+qWH0D5QRuZpiMtCG/kvwm06xKbe3q4iOu9bQ5EMlh7q+gI9s3ousILCYt14KVkCb65TuteMwlaljhY0DxUF5KcmDHYSxCnwXGI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776931536; c=relaxed/simple;
-	bh=7rkkN+VqoLd6RHME3M+2tu7KACqyhFTH9C25nKv/qv0=;
+	s=arc-20240116; t=1776931800; c=relaxed/simple;
+	bh=HBIsOoFkm0oYFKCnWs68+X8RUzZ6JdgtHqtmA6nWToQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Uh3v+70AKoGPEPiWl5hOThA1SDNPJvtOdS4A5Q+6/h5WA8jFsDjz0wQfLm3oeYybOr5S2sG9YoutMvjtmY1YZfov7IJMQ3tJm2Ih2yk6yrIg43rBvk6W7ZbCkIzZP5cNCChkNAyVqG1Esif+ntBh+2U+TzN8fAuHJDQuOzZw7gE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VDWEgaAu; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=G3A0Rsp4LTwfdRw5My+DoftsI6/TmXzcMTls4sX4nh5LbA8ESN6UbS/6RNjO8t40lSNgQyLaGAHXvmFd5rNdsNeaJjdXRXKjdAcQJTyV+cdFn2wXO/d1sPnammcF+87oejgMXRF8GeTshmH24PgaO/uvEWCKz8bdJ0wSEJ0ei8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S8qDw1mj; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VDWEgaAu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9270DC2BCAF;
-	Thu, 23 Apr 2026 08:05:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776931535;
-	bh=7rkkN+VqoLd6RHME3M+2tu7KACqyhFTH9C25nKv/qv0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VDWEgaAugasr928sOcH0MeVZh3XUuwkwej9OTlDlRp1z9qrQ16xeEQPcYN1GPW+ul
-	 Q05iGcmitgHrFd5N/UMojvY4AR0rDDzfCMXxV8IkxoBoLJvKyEfvic4Gc/U3+PP4pX
-	 F5tYf6KpoQbGo7PZjsxf8MY5P7MBCBYOrjOPcZEL3FxCltMLYBep4SJ3EzCjjHRvgL
-	 NfC/dQjxZtWKFHdEQoH3a4Mpc3f1Qmp/LT1M+bIgwcr83gDMlLRdthj5txZj9YeFIN
-	 EzBtno/7/TSqqFesrHbIquHZ+f3Wf6Z2XFM9AEyAEFX7hMaHyiiAZ89+XVCSqJ7O1b
-	 1tZxiJcEjaGpQ==
-Date: Thu, 23 Apr 2026 10:05:32 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Andreas Klinger <ak@it-klinger.de>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@intel.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] dt-bindings: iio: adc: avia-hx711: add
- avia,hx710b compatible
-Message-ID: <20260423-famous-tody-of-opposition-73c8af@quoll>
-References: <20260422175910.1258579-1-piyushpatle228@gmail.com>
- <20260422175910.1258579-2-piyushpatle228@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S8qDw1mj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776931797; x=1808467797;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=HBIsOoFkm0oYFKCnWs68+X8RUzZ6JdgtHqtmA6nWToQ=;
+  b=S8qDw1mjr3dBdrkXdM223pxAJGND6w8fEZl/QmUXcrxK4PzfurBSZYfQ
+   b5dPLmjKGw94UwcwCq3UTkYTBskXsHVfzynI3a939Uc+iFVOUsAAko/cv
+   qyhKQQajhMxeMjpkuWPZJfy6FMtxjdq6FPWcfzDxucErRGw8RVJdeT/AS
+   OfnKoiK0jU3T5VSmxhpC1l8Bi489yj4mMrulwO+xdQ6Y2nt4RVsBqEL6M
+   1xb77WM6YcXRIzR7vPmIRGn8GEZ/0iIBWjUP+woz1Mrs69s8iaSRksMTJ
+   qVaXEhDs8h5kOKd1jAXcZZ80MTJqthnZxfQXVVskZ2jU0GeBAQ5pu21lj
+   g==;
+X-CSE-ConnectionGUID: WhSp6pjoSNeG9e43K0/YiA==
+X-CSE-MsgGUID: ht1ay7WJSsuNc3QhCDYLRA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11764"; a="77912090"
+X-IronPort-AV: E=Sophos;i="6.23,194,1770624000"; 
+   d="scan'208";a="77912090"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 01:09:56 -0700
+X-CSE-ConnectionGUID: 4/JeBXjJQGuqxmiEUcDcmA==
+X-CSE-MsgGUID: FJl7ormPTwuNBJwF6vj8jQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,194,1770624000"; 
+   d="scan'208";a="234379991"
+Received: from mjarzebo-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.163])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 01:09:38 -0700
+Date: Thu, 23 Apr 2026 11:09:36 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: =?iso-8859-1?Q?Jo=E3o?= Fernandes <joaovictor.fernandes@usp.br>
+Cc: jean-baptiste.maneyrol@tdk.com, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org,
+	Otavio Capobianco <gcotavio@usp.br>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: inv_icm42600: refactor sensors config
+Message-ID: <aenTwHN57ltcqcP9@ashevche-desk.local>
+References: <20260423020922.4057-1-joaovictor.fernandes@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20260422175910.1258579-2-piyushpatle228@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260423020922.4057-1-joaovictor.fernandes@usp.br>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Apr 22, 2026 at 11:29:08PM +0530, Piyush Patle wrote:
-> The HX710B shares the same two-wire interface as the HX711 but differs
-> in its channel and gain model: gain is fixed at 128 and the number of
-> trailing PD_SCK pulses selects the input channel rather than the gain.
-> 
-> Add avia,hx710b to the compatible enum. Document the chip differences
-> in the description and add chip-specific supply properties (dvdd-supply,
-> vsup-supply) for the HX711, a rate-gpios property for the HX711 RATE
-> pin, and an allOf constraint that forbids HX711-only properties on
-> HX710B nodes. Clarify the clock-frequency description to reflect its
-> actual purpose: controlling the SCK bit-bang timing.
-> 
-> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> ---
-> Changes in v3:
+On Wed, Apr 22, 2026 at 11:09:20PM -0300, João Fernandes wrote:
+> gyro and accel configs were refactored to reduce code duplication
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Please, use proper English grammar and punctuation.
+Also Submitting Patches documentation (which is assumed that you have
+studied before sending patches) points out on imperative mood.
 
-Best regards,
-Krzysztof
+...
+
+> -	/* Sanitize missing values with current values */
+> +	/* choose context for old configuration */
+
+One has to be consistent with the existing style in the driver. Or, if you
+disagree, convert the driver to a style you prefer and provide _a very good_
+justification why it should be done.
+
+...
+
+> +	if (is_accel)
+> +		oldconf = &st->conf.accel;
+> +	else
+> +		oldconf = &st->conf.gyro;
+
+Here and below the function is completely uglified. Even kernel documentation
+suggests to avoid bool parameters like this.
+
+If you need a common code, make it agnostic first (using parameters), and then
+use small wrappers for each of the cases (accel, gyro).
+
+...
+
+>  int inv_icm42600_set_gyro_conf(struct inv_icm42600_state *st,
+>  			       struct inv_icm42600_sensor_conf *conf,
+>  			       unsigned int *sleep_ms)
+>  {
+> -	struct inv_icm42600_sensor_conf *oldconf = &st->conf.gyro;
+
+You see, this has to stay in the wrapper.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
