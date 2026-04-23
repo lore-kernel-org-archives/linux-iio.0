@@ -1,174 +1,136 @@
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8016B386567
-	for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 18:45:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776969919; cv=none; b=SNFs9dmhkSzS2NbimH7A8UMzQ7Qv3BUaHqjnl7tT2sC80PHZhf/7JBww5bi72Oaqiu0Y07A3daSTjv4HjpaUjBwo65D91KYZXHDpmVcp2jOtq/mgJwRRVhbElXbwed23+NA1gwnmRbVEEBfUMdbAlIL287zu3IiIIA6lcLselrs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776969919; c=relaxed/simple;
-	bh=azt7suwh3NmTsvQzKwKi7RuA/MtpuKtvyVvMUc5uBPs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tgN0931opsRXvPJhvdDomecwb7uxQs51VEFmDZ5gQaXHjI9rLgocmrDyClWI7/eSY7pXdruIuVClPpD67fAEAewk2sqOGXIDz5orRxMBD0lkPZC9ZWFF77yJTxR+AxoF+ZkxWARXS3ixJtn7oYlYGSNQIr1Th+HY4cOvt8SZpRM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=rNgKKUE+; arc=none smtp.client-ip=209.85.161.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 942F02737F9
+	for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 19:16:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776971770; cv=pass; b=lWe+bzYML0JpFLoCD24iZMebyvNqKA45gSasxHSpvwtpVTJ3bvsZMJ9PSuQui/HSgOGi+sUo90FagUl+pSyx+eoZNlWhIJ0NDgAMPr9IYYDn4SkfgQPLqgdvNyDDLoogZTPV8JU1obColVj2dSQ2r3HCJpDJuNqIAo6kcLN+n1w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776971770; c=relaxed/simple;
+	bh=MKhulYEgFTHvPD2QXL5QCt9OQeVVDUfrot+j7lHqO+Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nt6fxRjc7M4/G+nXPFWemK1UEY8L0UrsIhfGujmJd1rmhBjyT6ep0iskI2let9IGl/E5PB9EwXXEQpN+h8dzbIDvJWOPmcFEUEN5FRLtl61c0yp2N8nkp6Qa0958Rh5Wg/E5VfK18lpcaFyrybgve8uTOd/0lBFS5A9pyaLD34A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=OZ1QqfEh; arc=pass smtp.client-ip=209.85.208.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="rNgKKUE+"
-Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-68244d317e5so4149646eaf.0
-        for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 11:45:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="OZ1QqfEh"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-676a89de629so5603839a12.1
+        for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 12:16:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776971765; cv=none;
+        d=google.com; s=arc-20240605;
+        b=RIRYQhnV6xCQrl8D2jPToAe9n5EW+hwMXKAMZeDNNEYV5GskavMQNUYBPSfBUWTTsr
+         evHAnzRDw/po509fEf0DxeMExxSpo46W+4juUnhE3B4gEe99HoBRny0ijbYWWRste1ez
+         sdMsD3nzFjy7JKxg0UYRp+2tmJV+i3+atjmSTeZPWvoFBqBkw9qWcXJ5NtWy00ccfM+g
+         kQouTQHU3sdRb4pflPP3BpwX5KaVoRzIPkmrQjwzLoFzM4wRuv190A4yX+O+8T6/YsNl
+         MJIsV3fzm0cpfcl/Fb6wszp1xD7YnA37r8SS+BZq+A5qBaYzTuJP0VI7bhXT+7JqY04a
+         IEmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=k+OwFwXILla4Bmz88+Po4DQbi1rj0xGA0OG7tNHA6rA=;
+        fh=FJIjbU8zdWBkMK0xiEEX5TXzAu/KgviZyWFRH/RlhCA=;
+        b=XVDSTQikplHpICg38Ycpe7DUBSl3Bc0c5Q3TSIIETawez2v6WpyWLuY3gEgz+ADwO7
+         Cg95I3iFKXkjQw0wub3TW7S9ez0GxZEEuGmMkBLe+Qk+tJiOJpvw2qRNml1a0kUIaD5k
+         TxLCVq1pxoBwZt+/U2g9xhCywJRqYuzC4Id7+GlcAf6X7dc9aJT9dFYztBZcBDrETazQ
+         2TK1hwp1XykYcJfdBwVePPkDnvweBdPHitNfehYUOREhehpJnwyDMon0hpFQUpX7ewuq
+         gBXMSPbs7nNaKJMx56SZFyi8BwMuppV1b1S7U9pGto/TcrCEuvNCJlO029xhWAdGuOrp
+         hclQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776969914; x=1777574714; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=h7B9//ZIs2xqUgapk+BAH8bzTkTMhU5fRky03+jOP4c=;
-        b=rNgKKUE+vqkUqzg29eBHxVhFGXiLBHcNA68qZqlzAgbxzAZBLpqxzFnSL1oUOZeqtr
-         3uNWiINzRRq+g6dGRxBIRkv/gvmB/1GuMbfSrgiiBvI/D+6kmjQtjn0aLwWfOWzY7l63
-         gph5f8rydWSbb7ZJFSXYxdjL5KvQhBljZtMuDkEJSaXEysJxHdiwd/DcSBPp0iKK1AAe
-         X4yclSWSGMZZMH6KabRm2F+7Ji8n8wMnhip3scoJ6CpApzrNsxRpgMTKsBfsuT9diAut
-         tepSTXhNX5sOcdjH/Uim8DRBY+FohcDsHEhLFk1tiZhKluYqyTqzg5C4J2b0XtGeC2Sh
-         zdzw==
+        d=usp.br; s=usp-google; t=1776971765; x=1777576565; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=k+OwFwXILla4Bmz88+Po4DQbi1rj0xGA0OG7tNHA6rA=;
+        b=OZ1QqfEh9MS0zqMqm4wFHlFbX9gzEm5w2gRPSDCrfFLc+zJbf1PaRKqb64YFy/7itL
+         S8kGsNmdnA0KARn+vg62HvGslhmN77u+4fUpLw7I82pomXWgTltgZGHxguP9ocfytcUl
+         TiMqMF7u0F1vtiwXxSdrkcVK/3rAy0geZy/TcbhiO4wY72JCc1LyUPtbpG8a3rKy9O26
+         r+CTb7aoaqYLv9O9HAHn+Lun5qXRDhIpLVAmM8u3h54z1UnPfhlXQlJT5GQnTivZVH+M
+         VIUMMQVQg3L5tp+H7eYMJEgeBudmTEhIJXCFAeIylclpRad0Zkcvcsgx420uklz6P4//
+         ggPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776969914; x=1777574714;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=h7B9//ZIs2xqUgapk+BAH8bzTkTMhU5fRky03+jOP4c=;
-        b=lrMIoAa4Puk6WlU8OxYSkS8hSgJeJJKqzB7Nsm4uWv9bjGBSyklkrQeN5hnEpZlSDH
-         kuF0rGDQLvT34C1yZ5QCDQ7FfuqdcCuDVKXklvls/i6D9KLEa0ymbQKyk+oA8kGnmu9v
-         qh1s7lfjIU9LnMHmCCUpRfA6cY8GmfJYGVXRHK0R3dteUU6Y/XrUlIwegstV7evGHikd
-         MAVb134PFUD+mCCflwP9HPSB5cP5dwRZLqLEoNxvt2ZjlFwEOijoJku977LaeB2Fcid2
-         a0CQ6sqsHUauBRpntQk4HOiD+1He6kWF29NnTGjnO0Bh8tL9STKZk1g8cCRydjuOy1I8
-         nj0Q==
-X-Gm-Message-State: AOJu0YxnKIHyccxOJ5VC84fa7Xj4u8dEm4fMI1VWt1VjxjH6Pzy1h4hB
-	wiPuBz1SrvnnP1+4KcoqtgdcdlgCcf9h8IplwpuQL/d/aBrx2VH2zFIF46LdJtMsTi4=
-X-Gm-Gg: AeBDieuY9VJWmo8MPX07HYjEzZXkjoRxWoh9beWKnqmL7ZV9tkWBsDGTXORQdKyqN2e
-	3bs2gL7ewKHn75yDknmdDkWiDTfA0gYN7Ja3OS7HDwPi4h6DM+FTXF3ZsrUMkHvIYCOJxHOEbG2
-	ACwOhXlI6d2VjMisIU2VuQmOwEgbE80TxNbj7tIpIv26Rih3JROn7sZID2izlpJmAn7AZ7EW5PK
-	jfkQOlfwNhZKvpW1JyQy5rcJcwDOBOfrLyCYHRQqcuD6G0Nwx8hhR2KazbRP4BS3DvillEF1Cgg
-	omwwR186ns976Zg0S/Q64hYXs5zP7r053b1/8qjbDD22zKU/KeTAMiqYis9bgjgG2XfpIeJHG3/
-	ncTNpQdLGoX8JD4jWY4opl/hP/ekYoj9OYAKH//o8l7yLvtMoIOvy8Y3W6FsJujcgEiumhcU55q
-	wUCDD0qo7rJOkx8kvxryAwic2GkSSRk0A27xeofYby4dZmOHnhElf0pq3Ng+A3IFrr2vFalIjBK
-	YVbYSEt7Qc0
-X-Received: by 2002:a05:6820:629:b0:696:1a25:fdda with SMTP id 006d021491bc7-6961a26036amr2084343eaf.26.1776969913953;
-        Thu, 23 Apr 2026 11:45:13 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:3cc7:689f:be44:d58a? ([2600:8803:e7e4:500:3cc7:689f:be44:d58a])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-694994277a4sm5442766eaf.4.2026.04.23.11.45.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Apr 2026 11:45:13 -0700 (PDT)
-Message-ID: <a9307e04-3754-465e-a610-92c6e83cc3e6@baylibre.com>
-Date: Thu, 23 Apr 2026 13:45:12 -0500
+        d=1e100.net; s=20251104; t=1776971765; x=1777576565;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=k+OwFwXILla4Bmz88+Po4DQbi1rj0xGA0OG7tNHA6rA=;
+        b=ebg0Au8oZA85wvUqldIvIZrQZO7ZMm+ZX7ZS5R4YVUumQGClFtfDepkmFQK1X09Aor
+         7llaPlYiKGrHkKR5i1CaWcibbjzJpi4fLv3RetHPKqhB52voYxEIjjO1H98hA1h42Mh7
+         uBU75EIKLQ/g2DJakSUBy6BsxUsyEy/7XRtu8KxAW871t51i97fq/F8noMucvP1jOBWI
+         wiL0yZeNAvVeWfna38HIYS6DeDA5HUDw80FcDMV5ud58Y2xEs7lXJQChOUfiOtQZD4QV
+         OSLGiB8/sRgUen7OW/40meydxFr3krAEgc01chj9fgbQTAU+Bi+GsRl5srDaFJsXAKOW
+         CS2A==
+X-Forwarded-Encrypted: i=1; AFNElJ+sJG4GRNCvCksNZvMyVxqmX+ccqBn6uKmSouZjeurOncOvySkYEGKmUmMfLJ9HQPobz5nWAqXMRPI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzM2lckXSJFNnxYpA1aGLgFHkngEMbvF/klHD+dZ4w1ZhlN9fbw
+	ccy48P+FcC7K3dxfirJH3c7OJH5ZeAV17NFYDndxsowdoNbuTsvhL2Uo5hAQle8MuKxuVztL5hE
+	IdpqtL7b3d079Kynt9TqQ7UAIQQ/P/gQJAmKQ+RaURA==
+X-Gm-Gg: AeBDietMW9IA8SkdU+MgDjzO/IL8flkhnw6r4xrDFwsVqxU7QhTj9LohaER1dgUQdNS
+	ow0JojdiORAfeU1KgMsOm1j13Eb7Mgo0qI8Jn/de4kzB3xENbPWfWtBw9ZxO6y54AQuwApIptpy
+	fZeWtLvWPYtP/v0yFrk5h5+Hjfb67Edyf0XcyWzKWXqnfFC+H173BteLVhM1sskcdj6Ks3kQ0YY
+	k/DQVfl6mdYJJkjUU+rlirIJKULQSiibrYN8OruDCUr8PaiyeenLV3wbozbzJ5rOxkyOzXbBu+8
+	eQEJ+UMkupLybeXp6isKuBiWtBWk
+X-Received: by 2002:a17:907:3f1e:b0:ba5:60e1:2ef2 with SMTP id
+ a640c23a62f3a-ba560e138c1mr1302959766b.22.1776971764666; Thu, 23 Apr 2026
+ 12:16:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: fix header includes across multiple drivers
-To: Caio Morais <caiomorais@usp.br>, jic23@kernel.org, nuno.sa@analog.com,
- andy@kernel.org, michal.simek@amd.com
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20260423183349.636757-1-caiomorais@usp.br>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260423183349.636757-1-caiomorais@usp.br>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20260420191455.529923-1-marcelomlage@usp.br> <20260420191455.529923-2-marcelomlage@usp.br>
+ <20260421165452.76df9b7c@jic23-huawei>
+In-Reply-To: <20260421165452.76df9b7c@jic23-huawei>
+From: Marcelo Machado Lage <marcelomlage@usp.br>
+Date: Thu, 23 Apr 2026 16:15:54 -0300
+X-Gm-Features: AQROBzBF_nKXuL3SIqh8CfWmG7teX_o4me-yy6-4NGv4RuWgmEtAg_Xdq3r-I3A
+Message-ID: <CAO=vGZrJjwsPtFeo+Nj1k8rKpHehsVUhwFCxzeTAeJinTL_ssw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] iio: adc: mcp3422: rewrite mask macros using
+ bits.h macros
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	Vinicius Lira <vinilira@usp.br>, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 4/23/26 1:33 PM, Caio Morais wrote:
-> From: Caio Morais <caiomorais@usp.br>
-> 
-> Remove unnecessary includes and add missing ones as reported by the
-> include-what-you-use (IWYU) tool.
-> 
-> Files changed:
-> - drivers/iio/adc/xilinx-xadc-events.c
-> - drivers/iio/buffer/industrialio-triggered-buffer.c
-> - drivers/iio/common/st_sensors/st_sensors_i2c.c
-> - drivers/iio/common/st_sensors/st_sensors_spi.c
+Dear Jonathan,
+Thank you for your comments. We will correct the mistake in the commit
+message in the next version of the patch.
+Regarding the comments at
+https://sashiko.dev/#/patchset/20260420191455.529923-1-marcelomlage%40usp.b=
+r,
+we appreciate the opportunity to learn about this resource. However,
+after going through the content there, we do not feel confident to
+address other pre-existing issues in the code at the moment.
+Best regards,
+Marcelo and Vin=C3=ADcius
 
-We'll want to split these up, one patch per file in case they every
-need to be backported as a dependency to a fix.
 
-> 
-> Signed-off-by: Caio Morais <caiomorais@usp.br>
-> ---
->  drivers/iio/adc/xilinx-xadc-events.c               | 4 ++--
->  drivers/iio/buffer/industrialio-triggered-buffer.c | 8 ++++----
->  drivers/iio/common/st_sensors/st_sensors_i2c.c     | 2 +-
->  3 files changed, 7 insertions(+), 7 deletions(-)
-
-This looks like sorting alphabetically, not actually adding or removing
-any headers as seen by the equal number of insertions and deletions.
-
-Usually we don't bother with sorting unless we are making other
-changes on top of that.
-
-> 
-> diff --git a/drivers/iio/adc/xilinx-xadc-events.c b/drivers/iio/adc/xilinx-xadc-events.c
-> index d16e61953..20b796ec7 100644
-> --- a/drivers/iio/adc/xilinx-xadc-events.c
-> +++ b/drivers/iio/adc/xilinx-xadc-events.c
-> @@ -7,11 +7,11 @@
->   */
->  
->  #include <linux/bitmap.h>
-> -#include <linux/types.h>
->  #include <linux/errno.h>
-> -#include <linux/mutex.h>
->  #include <linux/iio/events.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/mutex.h>
-> +#include <linux/types.h>
->  
->  #include "xilinx-xadc.h"
->  
-> diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> index 601a26398..5796c9da7 100644
-> --- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-> +++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> @@ -5,15 +5,15 @@
->   */
->  
->  #include <linux/errno.h>
-> -#include <linux/linkage.h>
-> -#include <linux/module.h>
-> -#include <linux/stddef.h>
-> -#include <linux/iio/iio.h>
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/buffer_impl.h>
-> +#include <linux/iio/iio.h>
->  #include <linux/iio/kfifo_buf.h>
->  #include <linux/iio/triggered_buffer.h>
->  #include <linux/iio/trigger_consumer.h>
-> +#include <linux/linkage.h>
-> +#include <linux/module.h>
-> +#include <linux/stddef.h>
->  
->  /**
->   * iio_triggered_buffer_setup_ext() - Setup triggered buffer and pollfunc
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-> index 6ab143498..974e349ae 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-> @@ -10,10 +10,10 @@
->  #include <linux/device.h>
->  #include <linux/err.h>
->  #include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
->  #include <linux/linkage.h>
->  #include <linux/module.h>
->  #include <linux/regmap.h>
-> -#include <linux/iio/iio.h>
-
-On this one, it would be more logical to move the iio header
-down one line to group it with the one below.
-
->  
->  #include <linux/iio/common/st_sensors_i2c.h>
->  
-
+Em ter., 21 de abr. de 2026 =C3=A0s 12:55, Jonathan Cameron
+<jic23@kernel.org> escreveu:
+>
+> On Mon, 20 Apr 2026 16:14:54 -0300
+> Marcelo Machado Lage <marcelomlage@usp.br> wrote:
+>
+> > Rewrite MCP3422_CHANNEL_MASK, MCP3422_PGA_MASK, MCP3422_PGA_MASK
+> > and MCP3422_CONT_SAMPLING using GENMASK() and BIT() macros from
+> > bits.h.
+> https://sashiko.dev/#/patchset/20260420191455.529923-1-marcelomlage%40usp=
+.br
+> pointed out repetition of PGA_MASK.
+>
+> The other comments are a mixed bag but it's worth taking a look to see
+> if you think any of them matter.  They are all really about the existin
+> code.
+>
+>
+> >
+> > The other macros MCP3422_SRATE_{240, 60, 15, 3} were not changed
+> > because they are also used as array indices.
+> >
+> > Signed-off-by: Marcelo Machado Lage <marcelomlage@usp.br>
+> > Co-developed-by: Vinicius Lira <vinilira@usp.br>
+> > Signed-off-by: Vinicius Lira <vinilira@usp.br>
