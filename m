@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FDB336D50D;
-	Thu, 23 Apr 2026 17:33:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01BC51D6DB5;
+	Thu, 23 Apr 2026 17:34:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776965635; cv=none; b=bVmSc/d+W8PH7BYbgKlL//cLyjUyX7tGuRRHDnWJKH+HNofo9mNUC7jff3BYYsEBma7zgeAFTf50FD80w9ZFWYfb9txxPwkqb115HP8H2y9Rkk3FpGEx0qczt3ckJo7W+0GjhQoq66X7mNtsM4kscfOlfOIDAFZxDzYRiH+j0Gs=
+	t=1776965665; cv=none; b=hS+TGtwo50TMxwQYYOhofWHGRjcJPh/+FvKQSR1UQTi79rHTMjV3IkEqDpk95F8J0Go+nskvMAIbnCucDCl5v5WJqpgKoKmFTxsrB7Lq2NJXmODlGXK8Mnkzrn5yuJef63csghUdLKQk5yPTJfx8arPJgk18PrVwViIlJ4TZFjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776965635; c=relaxed/simple;
-	bh=tt5/Ww8988AYNsNKeEDvzGi+qjrkqv2y2R4NebJOvGY=;
+	s=arc-20240116; t=1776965665; c=relaxed/simple;
+	bh=XRkotRM1nrtvqCw949rXTGVdaXdpigdHID7iQz+3OGE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JoQlqsGtmsotBs/o3uANMwQE4yMkaDzLPwyGuYZVX9LysJH/QdwG9BkwNiCK5qoJGawG8hmflvkSuAYeEyOmh93b7xNaGeDLiM6kPB5SC0rWRCBCej3A7LW/Yt8JsNxLAJGEK8QpK4q5s1r5429riMcYx6+QjGxr6SfyWzK1V20=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FzKLrXWJ; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=Lc/2CsiD8FdELt8rpJzjtVOylCMLF9uW4UYRlp+D4I7bITtUgxSHWcYtPDiVhEzVWixcpWi3buFzHXJrQTNf+9WJ4JylboqRtY6wKq4heYiMQM4l1/E3W/LS2lSZ9vqd31LWtGNuK6U2oktZ6ox4UhfF2j/M2aeFHYPEEgbH39I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kiTDhIMg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FzKLrXWJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F39C2BCAF;
-	Thu, 23 Apr 2026 17:33:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kiTDhIMg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 772ECC2BCAF;
+	Thu, 23 Apr 2026 17:34:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776965635;
-	bh=tt5/Ww8988AYNsNKeEDvzGi+qjrkqv2y2R4NebJOvGY=;
+	s=k20201202; t=1776965664;
+	bh=XRkotRM1nrtvqCw949rXTGVdaXdpigdHID7iQz+3OGE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=FzKLrXWJxAEzdm2qgj9Uut1t7lFZ1VCnRf8b0jUA+2P2P5Pga9mJyoeHPy7aQCEs1
-	 A6y11cFQAEMYXw6J8STV29o4KBDcZkciPj8Ok8YIaPLIw1Z1v/kM+Q1AbrqjTvfvvb
-	 Rp8s1ctia7ryqzDx7yQqSpWSTls9t/MfoxxWRREj5cFEv2jxwAyKutWuccwhCoO/dM
-	 dt31EtVndZWURNd/WilfwSHeHRh5hKKZsIvr5A4knvHtcZrDAEi3kXTvgCRjRgA3fv
-	 9tYvMppLbEzgEuzp7Oeh0tKoK0RnUKEFXt/Eu3ductWXW8XPbXp8kcFcqf7XURQzIz
-	 SQnFCIxfoRu8w==
-Date: Thu, 23 Apr 2026 18:33:50 +0100
+	b=kiTDhIMgNdhjf5lG76zEhBAC71pXJChGwsgcF8IQIenuW4Eb4MRjOKsUfedk1XdBu
+	 mVTJyWEyVIVFD9WTIwd0nqbpnRcJCsr4HMvrpK+IoRRxLrM+nKk4z4D3Zu8U1BdBSH
+	 C5fMsAQmNe6p3CXlFeIQ5SAASbA4Qa49nu48C+vjQXrygJiALeSSFQg2LdSpPU5c+b
+	 pTQp5sZP0TyI2ahfLDQNXW6gMtz6wKE+urKZMet/QUuRj7uvuZwBscsL6uYgFYz7PV
+	 +Nvs9u//3StbiF6lADzXNjfZnRofkkIdpPC5Vr45Sade3brDaUts9EpJam/ktlgWe+
+	 /06VpJeZ23vLg==
+Date: Thu, 23 Apr 2026 18:34:19 +0100
 From: Conor Dooley <conor@kernel.org>
 To: rodrigo.alencar@analog.com
 Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
@@ -41,11 +41,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Conor Dooley <conor+dt@kernel.org>, Kees Cook <kees@kernel.org>,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
 	Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH 04/22] dt-bindings: iio: dac: ad5686: extend device
- support
-Message-ID: <20260423-voucher-clarity-b7a9b1f39113@spud>
+Subject: Re: [PATCH 05/22] dt-bindings: iio: dac: ad5686: add reset/ldac/gain
+ gpio support
+Message-ID: <20260423-spousal-deacon-26c51d60da92@spud>
 References: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
- <20260422-ad5313r-iio-support-v1-4-ed7dca001d1b@analog.com>
+ <20260422-ad5313r-iio-support-v1-5-ed7dca001d1b@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -53,27 +53,27 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="eX7l1Snd4pmcBd/p"
+	protocol="application/pgp-signature"; boundary="DUNMBqXHPWKvTe/g"
 Content-Disposition: inline
-In-Reply-To: <20260422-ad5313r-iio-support-v1-4-ed7dca001d1b@analog.com>
+In-Reply-To: <20260422-ad5313r-iio-support-v1-5-ed7dca001d1b@analog.com>
 
 
---eX7l1Snd4pmcBd/p
+--DUNMBqXHPWKvTe/g
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
 Acked-by: Conor Dooley <conor.dooley@microchip.com>
 pw-bot: not-applicable
 
---eX7l1Snd4pmcBd/p
+--DUNMBqXHPWKvTe/g
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaepX/QAKCRB4tDGHoIJi
-0u/JAQCpJTgINsdJwH8L+zCdAHezgrKL2T+oNXFm9EQd4mS83QEArS+jUh9ktEht
-IZSpMUMfH3YunjDN/pYKAJkzA6CRNwc=
-=gz1E
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaepYGwAKCRB4tDGHoIJi
+0nWCAQCBFpRzLjMf+rEEsMiXnaPfK2WcCT2L172Z9PuOiv1oKwEAr0uiSeaE2Tb8
+TBS+D7a0HTa5YxDkrpPrfwXEIBcA8AU=
+=6NcM
 -----END PGP SIGNATURE-----
 
---eX7l1Snd4pmcBd/p--
+--DUNMBqXHPWKvTe/g--
