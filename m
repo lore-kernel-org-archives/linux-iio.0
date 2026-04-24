@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CFAA3CEBA6;
-	Fri, 24 Apr 2026 17:45:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03FEE340A6C;
+	Fri, 24 Apr 2026 17:45:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777052705; cv=none; b=fndihd0V8BMcBcMp6L4WYacY1WI3h0sAw7tvmF4cg884JwMqBv5jWV/4Gx+pkfytZjgz3c8wV7FUa2wCxTLbHPlH/gk5ZJBP1unkjHuRmtd864VGpo6PnSE8iXrN5jC1ZIfb3s8FDI6BIuctJvKUbwFlVXjgWluBoHDrUBK6MDE=
+	t=1777052730; cv=none; b=LY2rni1sOKr9f+ihEKx3LYoGlJsmG4mdQ3V8VSmr4Z7YNK3UVe+MEaFZ+G/0Ksam4uWqdCkZ7Q9c8MuffwPex+jqtlihPfz2+ViEfJnmru7bxlKMjewJS6kBH57Lo7S3wzblg6EuuSXhjRN2Lnvt99+1BctcNrLBwqhLoeEfTf0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777052705; c=relaxed/simple;
-	bh=1+efIVr0IPYZv0TKRGx6CfxqlruBvhFjjX61GHEFlNk=;
+	s=arc-20240116; t=1777052730; c=relaxed/simple;
+	bh=0pUcwKSaN2IYoAKf9yaef1dDw3E3dJewVX2FK3HvAvo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LbsK4GkWOSz869oYSHHAVRrGhtLmSLm8erymzcweHFLMu4wYGZD6A1a7w5sEmPArwmbtgB/wozAom4hqFrRhnmgjpWSOUq9A00hSKmJyC4KwqBjfSkauY5/ZHNQBEh1L2GEe2gpxroZjb3JtEfzKXvU2UsMz1KdCjPtDvIEatgk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XZyYWtCG; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=dCtgKJpF3JwhV4nKd/cW14dj3XVLzgAgD/tH64zVSAZfUVlD7HjTnUQxzb/uYc0pufO/6ArOzrzgMf73VSCFBdRs06upO7Ju0JVsACeAAS8fa4VatduZnywjiviFXW5Im+jjKZXaRVE6BOxqOcgIPWk5+oTrqayXkiZMwLMz6ck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RdMYwEFf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XZyYWtCG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD1A2C2BCB0;
-	Fri, 24 Apr 2026 17:44:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RdMYwEFf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D3D0C2BCB0;
+	Fri, 24 Apr 2026 17:45:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777052705;
-	bh=1+efIVr0IPYZv0TKRGx6CfxqlruBvhFjjX61GHEFlNk=;
+	s=k20201202; t=1777052729;
+	bh=0pUcwKSaN2IYoAKf9yaef1dDw3E3dJewVX2FK3HvAvo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XZyYWtCGzf4VORQ/xnNaAX1Bm9z4WtKGBLzL/PrB9FWkUh831gOT1q/UMTljeQ3ZB
-	 8oZAf1yGRnxgjR7I6RjMVROisYFgqk2xPJkEmF/eQq+REU1q/EdmW6xDt29QCgF/fj
-	 C21rtsI+Zzegtr62UtlUduqvFJ8T4WYFbaGK2RT9RYxevYQ5UCOMrAHNWF1ewPcaCm
-	 8z50NrVDl8kmCHG2K8qYW50BY0arjfSTnkPf3aKk9pY5T3wqVtzGzLL3tCFQF8sOSz
-	 1SAStrfh3kzqAdEHbGiybS5o0/urYkiHhufvU1iJQkrNugN9prkP9r8kBZG193W4zq
-	 tMXIR32DUUrdA==
-Date: Fri, 24 Apr 2026 18:44:54 +0100
+	b=RdMYwEFf3sDsXtWov4Tuf2dfpF3K4OTF/kZItHcKtMU2HW5MoGcA5XhCBhDQEAOeM
+	 TGRzaQCkGhYFMlEJpNR/fkWTc43pqCCvfMov8aBE2iLf8jKpr158uBnJESeEt5DqXu
+	 K5P52UmOxeIpki1M0AsUa49R2hJPo+GpBcfJdhYi9TTU5y9BbsWMbY00oqkxMWQtje
+	 M6lVspguo/NeNwaPInyH7r730sZ4VifYvUmaBsGBGY/vBxZU2iLKzrrSGbWw+KalJ/
+	 PQTe3w9tsos83VIXWLnN2xTrJ1SsUlhTD70Zvg3bUmN/aAQOnc/bzxLe0ZlvJS4zHa
+	 sPFRCcznHj0Ww==
+Date: Fri, 24 Apr 2026 18:45:19 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Conor Dooley <conor@kernel.org>
 Cc: Ariana Lazar <ariana.lazar@microchip.com>, David Lechner
@@ -36,12 +36,12 @@ Cc: Ariana Lazar <ariana.lazar@microchip.com>, David Lechner
  Dooley <conor.dooley@microchip.com>, Jonathan Cameron
  <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: iio: dac: mcp47feb02: Fix I2C address
- in example
-Message-ID: <20260424184454.74c3e7be@jic23-huawei>
-In-Reply-To: <20260422-magnitude-improve-0266ea916c36@spud>
-References: <20260422-mcp47feb02-fix6-v2-1-4ca4d5cfab07@microchip.com>
-	<20260422-magnitude-improve-0266ea916c36@spud>
+Subject: Re: [PATCH v3] dt-bindings: iio: dac: mcp47feb02: fix reg property
+ value bounds
+Message-ID: <20260424184519.41fdbf60@jic23-huawei>
+In-Reply-To: <20260422-hull-naming-2d7e822976a0@spud>
+References: <20260422-mcp47feb02-fix5-v3-1-e742cbab1dad@microchip.com>
+	<20260422-hull-naming-2d7e822976a0@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,60 +52,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 22 Apr 2026 17:54:25 +0100
+On Wed, 22 Apr 2026 17:55:55 +0100
 Conor Dooley <conor@kernel.org> wrote:
 
-> On Wed, Apr 22, 2026 at 02:56:59PM +0300, Ariana Lazar wrote:
-> > Change example reg value from 0 to 0x60 in order to use a valid I2C address
+> On Wed, Apr 22, 2026 at 02:53:14PM +0300, Ariana Lazar wrote:
+> > Replace minItems/maxItems with minimum/maximum to describe the reg
+> > property as a single channel number with 8 possible values (0-7)
 > > 
 > > Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
 > > ---
+> > Changes in v3:
+> > - Replace minItems/maxItems with minimum/maximum reg property value bounds
+> > - Link to v2: https://lore.kernel.org/r/20260417-mcp47feb02-fix5-v2-1-6592ea499cce@microchip.com
+> > 
 > > Changes in v2:
-> > - drop fixes from commit message
-> > - keep just the address fix
-> > - Link to v1: https://lore.kernel.org/r/20260420-mcp47feb02-fix6-v1-1-ae1808fea11d@microchip.com  
+> > - keep just maxItems value update in this patch
+> > - remove Reported-by from commit message
+> > - Link to v1: https://lore.kernel.org/r/20260416-mcp47feb02-fix5-v1-1-9656c2fed6d2@microchip.com  
 > 
 > Acked-by: Conor Dooley <conor.dooley@microchip.com>
 > pw-bot: not-applicable
-> 
-> This really should be in series with your other patches, so that
-> Jonathan doesn't have to figure out which order they apply in.
-There doesn't seem to be an order... Either order of this
-or the next one is failing. I'll apply them by hand.
-Too many things in flight so I'm keen to merge some stuff.
-
-So please check result.
-
-Applied.
-
-> 
-> > ---
-> >  Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> > index d2466aa6bda2106a8b695347a0edf38462294d03..350e80e4dbe05dd10e3c6fb00f74d58c56c54bc8 100644
-> > --- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-> > @@ -280,9 +280,9 @@ examples:
-> >  
-> >          #address-cells = <1>;
-> >          #size-cells = <0>;
-> > -        dac@0 {
-> > +        dac@60 {
-> >            compatible = "microchip,mcp47feb02";
-> > -          reg = <0>;
-> > +          reg = <0x60>;
-> >            vdd-supply = <&vdac_vdd>;
-> >            vref-supply = <&vref_reg>;
-> >  
-> > 
-> > ---
-> > base-commit: d2a4ec19d2a2e54c23b5180e939994d3da4a6b91
-> > change-id: 20260417-mcp47feb02-fix6-bd6694d84750
-> > 
-> > Best regards,
-> > -- 
-> > Ariana Lazar <ariana.lazar@microchip.com>
-> >   
-
+Applied. before the space adding patch.
