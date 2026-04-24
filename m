@@ -1,47 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBDAA33E36A;
-	Fri, 24 Apr 2026 16:48:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A369233D6D5;
+	Fri, 24 Apr 2026 16:50:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777049316; cv=none; b=kyIompuEv9PceXTHRW/sVKrKKsAYzQFCeoAPOWLROBBRiC1DFoilESfxzuK2Zhxx5ilMCFHL/hiZnPoX2DJqiGC8tvHYzJsn/MsWIzeOQrQKP4IFen6J/zmPP/Z3oTSVAiNc+NvObVRz7ZJWRaOJBu1zd/MIrYKVJ79OXFWYQAw=
+	t=1777049441; cv=none; b=PVCj6GBg74/Mz1ZsF7LMT/UITOBYQp3Z/7yEREhLd4hnz+7PfzVyS0Gn1oq8J3WlzYgW/JjdTC6MWbxU7igfVisZo2OMmMHnCrW9v1cPGrAH5gek9JUO1oJ8jlROWRPy07Nt2DRK8OloG5tI1GWicylPcxKCxd8eloR8kbr33XU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777049316; c=relaxed/simple;
-	bh=aYxO9NVY0EzrniJok7YG8oRF8dsAo+0G/cL+306ozF4=;
+	s=arc-20240116; t=1777049441; c=relaxed/simple;
+	bh=y0wDYNpwZm3PC8kTlwPJ5TJrjG3dC0aflc/oD3XFG10=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pv5rxM+fVNUfsleotzHGwN1igclhSF4+mJS+yeT6VaQU6FZ2ahFVWHJfElVstpZskJdAXxwiTzGydDZIrLN5BewXl2kfhctzktdrye5VvTtIHquWv9jL2B7+dRGlm33NeJyyDJDUE57fQFbK6QQpsj5tkz4XXyLftFENSD78C8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dGKaD+Az; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=h4IJTq9tXSxA+arrN4WwyBA0vKB4W6azUunaQLMGBBXw0X1smtNSsgSxa7Lz3CL/g6tZqgGK3CVMoCsgL2Ogtxv+OJqjE+iY07GlMe1sSw1VpRV2/CZAuRzLRAcVo5EV6UD4gVg/9OglwLf/Kjcoizvc+G/AgfQEgyoiwg53YoI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M8bAeCuj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dGKaD+Az"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4546AC2BCB9;
-	Fri, 24 Apr 2026 16:48:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M8bAeCuj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89549C2BCC9;
+	Fri, 24 Apr 2026 16:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777049316;
-	bh=aYxO9NVY0EzrniJok7YG8oRF8dsAo+0G/cL+306ozF4=;
+	s=k20201202; t=1777049441;
+	bh=y0wDYNpwZm3PC8kTlwPJ5TJrjG3dC0aflc/oD3XFG10=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dGKaD+Azc+MTzATbmEcfNRFbnKwKfQGiJSHL5/YwdnECjk9uHZqgzUyM7AlDqLRxS
-	 6o6sjcUd7FiKKxeScMJxA7Tea1CQBjyMhFlzvCcfM/yjJYsbTsWfiEVLQKi7U/JDnw
-	 FvmIjW52ZEwgjK97SRNKzV8hXc0cOz/qEzHDuL1xPx98BkcgwH7VtrxYPdwzN86Enk
-	 IqVThpbo0xlSwY1Jgp4LM2EeKXxCzml56uXEGZtUuJzubw5Ekud3rSqMg2w5mjP6kP
-	 YFhEFHbssHDBT4WNKPggAWN74eHTb22Z+BTfDWMtWkpsFBhAyzArUq7FsrEZHXYBDh
-	 EfsIa2AexDDgw==
-Date: Fri, 24 Apr 2026 17:48:27 +0100
+	b=M8bAeCujknvZOR+NWBUcSss6sADhqc5dXVo1Sv/E6v1km/+WUq7X4QrYnKlyRUYAa
+	 /VEZubhsVebbZgTM0q2QCbyQ9XFWqVbtOa/lm806qHumwjbYgnScy2PLyYDmyVfHL6
+	 nndA3oB2ofmdgqjl1SD10PSPAn8Q8wcSV344udTlkWYVV3MjHRzxGNXARu+z304wor
+	 XxMbCDuu23Ax2ZK/NXX4vUWIxLUBA0pMpXY3j4Ezibfksa97fuSC/3z1gxWTnwewJk
+	 75QnTiagxs/xN+vqQqg01Fw48fDj7Pv20mza+BjkT5BdLSWBYR2KJDWNYrbRj1zEpn
+	 viFBAlvuTSd/w==
+Date: Fri, 24 Apr 2026 17:50:32 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: <Ariana.Lazar@microchip.com>
-Cc: <dlechner@baylibre.com>, <nuno.sa@analog.com>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <robh@kernel.org>, <linux-kernel@vger.kernel.org>, <andy@kernel.org>,
- <krzk+dt@kernel.org>, <conor+dt@kernel.org>
-Subject: Re: [PATCH 2/2] iio: dac: add support for Microchip MCP48FEB02
-Message-ID: <20260424174827.363f8b00@jic23-huawei>
-In-Reply-To: <3ecc683135c742e097ec6ba91f275cbf5d8202ce.camel@microchip.com>
-References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
-	<20260212-mcp48feb02-v1-2-ce5843db65db@microchip.com>
-	<20260215175857.4085bc2c@jic23-huawei>
-	<f7f45b4327c9ce5c806cd878bd9b53e8fcbf7785.camel@microchip.com>
-	<20260424111920.61765602@jic23-huawei>
-	<3ecc683135c742e097ec6ba91f275cbf5d8202ce.camel@microchip.com>
+To: kunjinkao-os <kunjinkao.jp@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: adc: ad7816: Replace sprintf() with
+ sysfs_emit()
+Message-ID: <20260424175032.7335f5c3@jic23-huawei>
+In-Reply-To: <20260424150617.28194-1-kunjinkao.jp@gmail.com>
+References: <20260424150617.28194-1-kunjinkao.jp@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,73 +47,82 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Apr 2026 13:30:59 +0000
-<Ariana.Lazar@microchip.com> wrote:
+On Fri, 24 Apr 2026 23:06:17 +0800
+kunjinkao-os <kunjinkao.jp@gmail.com> wrote:
 
-> Hi Jonathan,
->=20
-> >=20
-> > The statement above about it not being possible to use the internal
-> > band gap
-> > if a vref is wired leaves me with more questions about this.
-> >=20
-> > I'm a bit concerned about cases like:
-> >=20
-> > Vref is wired and eeprom is set for internal reference.=C2=A0=C2=A0 Sho=
-uld we
-> > be very careful to not enable vref until that situation is resolved?
-> > It might be on anyway but we can at least make sure we are reponsible
-> > for turning it on.
-> >=20
-> > Maybe the chip has sufficient protective elements to cope with that
-> > though obviously it won't give sensible output whilst this is true.
-> >=20
-> > If all those are fine, dev_info() makes sense to me.
-> > I wonder if we should return -EBUSY for attempts to read the voltage
-> > back whilst in this state as well?=C2=A0 Might provide some additional
-> > indication something is mismatched and we don't expect the device to
-> > work
-> > correctly.
-> >  =20
->=20
-> There are 2 possible ways to handle this:
->=20
-> - Keep the current approach, since restoring a mismatching
-> configuration at power-up should not damage the device.
-If it were just the device I'd agree, but the provision of vref
-is an external thing.  Say some other OS was loaded in between
-and didn't enable that regulator, + chose to use the internal
-vref (maybe with resistor to pull up or down on that pin if no one
-is driving it).=20
+> sysfs_emit() is the preferred function for sysfs show callbacks as it
+> is aware of the PAGE_SIZE buffer and prevents potential buffer overflows.
+> No functional change intended.
+> 
+> Signed-off-by: kunjinkao-os <kunjinkao.jp@gmail.com>
 
-> - As you suggested, only read the external regulator voltage at probe
-> to compute the related scale and enable the regulator when user space
-> first selects that scale.
-To me this seems slightly better. Though if the device is actually fine
-(if non functioning correctly) with internal band gap on and vref at
-max voltage then doesn't matter.
+Before sending a patch out, check if anyone else is working on the same code.
+Currently this is the 3rd instance of the same thing.  I think
+the first one was in this series:
+https://lore.kernel.org/all/20260331072453.6530-1-mdmahmudulhasan1511@gmail.com/
 
->=20
-> In both cases, if you agree, I can return -EBUSY for RAW access until
-> the correct scale is written from user space.
-
-I think that probably makes sense if we are in a state that we
-believe won't read a value that is correct.
-
->=20
-> I will also improve the current messages in order to ensure the user
-> sets the correct configuration before attempting to read voltage.
->=20
-> Best regards,
-> Ariana
->=20
->=20
->=20
->=20
->=20
->=20
->=20
+> ---
+>  drivers/staging/iio/adc/ad7816.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> index 172acf135f3b..0e32a2295990 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -124,8 +124,8 @@ static ssize_t ad7816_show_mode(struct device *dev,
+>  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
+>  
+>  	if (chip->mode)
+> -		return sprintf(buf, "power-save\n");
+> -	return sprintf(buf, "full\n");
+> +		return sysfs_emit(buf, "power-save\n");
+> +	return sysfs_emit(buf, "full\n");
+>  }
+>  
+>  static ssize_t ad7816_store_mode(struct device *dev,
+> @@ -156,7 +156,7 @@ static ssize_t ad7816_show_available_modes(struct device *dev,
+>  					   struct device_attribute *attr,
+>  					   char *buf)
+>  {
+> -	return sprintf(buf, "full\npower-save\n");
+> +	return sysfs_emit(buf, "full\npower-save\n");
+>  }
+>  
+>  static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
+> @@ -169,7 +169,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
+>  
+> -	return sprintf(buf, "%d\n", chip->channel_id);
+> +	return sysfs_emit(buf, "%d\n", chip->channel_id);
+>  }
+>  
+>  static ssize_t ad7816_store_channel(struct device *dev,
+> @@ -231,9 +231,9 @@ static ssize_t ad7816_show_value(struct device *dev,
+>  		data &= AD7816_TEMP_FLOAT_MASK;
+>  		if (value < 0)
+>  			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
+> -		return sprintf(buf, "%d.%.2d\n", value, data * 25);
+> +		return sysfs_emit(buf, "%d.%.2d\n", value, data * 25);
+>  	}
+> -	return sprintf(buf, "%u\n", data);
+> +	return sysfs_emit(buf, "%u\n", data);
+>  }
+>  
+>  static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
+> @@ -281,9 +281,9 @@ static ssize_t ad7816_show_oti(struct device *dev,
+>  		value = AD7816_BOUND_VALUE_MIN +
+>  			(chip->oti_data[chip->channel_id] -
+>  			AD7816_BOUND_VALUE_BASE);
+> -		return sprintf(buf, "%d\n", value);
+> +		return sysfs_emit(buf, "%d\n", value);
+>  	}
+> -	return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
+> +	return sysfs_emit(buf, "%u\n", chip->oti_data[chip->channel_id]);
+>  }
+>  
+>  static inline ssize_t ad7816_set_oti(struct device *dev,
 
