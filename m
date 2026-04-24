@@ -1,181 +1,118 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F22476025
-	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 01:52:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4B3A30EF89
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 07:35:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776995564; cv=none; b=WAA9QQQyhmK51FgW5R9eAJPWQ7HDAS30OcVQSuH2BFhsYWw9U0xFUUgHkfdls7ovIE9ZZePByZuRDW5akFZSithBr/LqMswbVQ4EoJAop57oM5xhMxB9l82oe7nxGH014BMGEC4Y5QsPO4a5xDn1+ESLcRrYlxkuSYMtS+BEiHU=
+	t=1777016158; cv=none; b=fXWw5NCKZrqC8EkrmGbPdST5JqQ6bDePQJHxc5hA0b7sdYkIZutO+qda/Cfg6JdWkTnzo1gKBgWfXQBcUJaa64AGeZ5Fr7jw9uIF3BZRZO6ONYke5h07C4pgwDJNuRoH7F5WQCUbMMEWPisJhzOtooyA7kApYT8hkpbljpaLMA4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776995564; c=relaxed/simple;
-	bh=FjKbW3QeLz48VQ8kJwhIfHRD4AToGOuWxZikEd4mAC0=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=d7aStGTyQ9F5pshACWpQwWumRBuL/K42mqYiFmVsP9v8IUIRmN9Ik2wyfSc5D7u4n3CkzHP9SVKmRqjX2AjISSITNrSEPyE2a8T0wxuqsaUo0h++aAgF3kp1oH6UPTrChkOZrs9NBb8pQES/ItVTwpvV5cZD+wAga3AZ1u6OC3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RNjPrG0e; arc=none smtp.client-ip=209.85.210.174
+	s=arc-20240116; t=1777016158; c=relaxed/simple;
+	bh=wDgcirggJduBcVdRsft7PykNXrKztvJ+7d8v88xJsoc=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cQY2/XcGQ/nV+YQ2Jj1bBZ9A1sN4sRDZSm2nNftZB8MPSiUOmMhlM21seCPc/WktI3vUnpG3cgwPpTby4Xk/CtIGElN2TT5nFVQ1Y8CtNctUtqbyrLdg3XI60auBdmmBCz0QkLvBc+70tpGwcRi0yzPVqbgJemt3IKQMgU9mOLw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cOLd6VB6; arc=none smtp.client-ip=209.85.221.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RNjPrG0e"
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-82fb2d0c5d1so3181907b3a.0
-        for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 18:52:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cOLd6VB6"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-43cf8d550bdso6438999f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 00:35:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776995563; x=1777600363; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=dA4COagFILOeWH/SG7H9tln3mHa5hwZ6NIKUz643EAQ=;
-        b=RNjPrG0e5d/l5nGTmIS9bwrK6aP08cP/KdtKbT2V9B+pqbtZniC8Zk9iRVPjerM8KD
-         +S937DwATtGF+WvDGwRAySsu+RNbVa/AW+35KyQaT7jWfTEZNm89/PTtbFGmG9NWSjVI
-         ys8Eprx/4PNksqXMnNnsY8XH8MZJDyFa9HashxjOSR8aJYball3WO9y01u4QDij/RFPV
-         KTnnts8JYN4+mNsfr9QxKgx57WcVNI5ehbwbeKcxtswkYt31NeJziYC9KPVYiKg78ogY
-         bVtZD4OvBp18L/mjfgKES3uFYQi6/CR50g511XxnENJ1h2U5/iTsov/tuLYYdOMDG+6W
-         aP6w==
+        d=gmail.com; s=20251104; t=1777016155; x=1777620955; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3o7ZPgK+KU82N6aJZP72mCPOuaPHic03cUfPsM2xL1A=;
+        b=cOLd6VB6ZrbG0bDWdLWwbBehZiOi8Z1uPvgzo8dMz14WINH2iKKGA291sNLlIsjxWF
+         VvRogTcwHflCsnbGKYy5QvE48D9H6sufRPlOHi5Kl3wIWW1fiwejVIGRV32aC58pySlm
+         qfboBujzyP8yucqLRB3MkY7/eQCl3pcRzSJxpMPcLYMpRRHxpwr3EZxHZZHf39qGPQSF
+         POp424KwlMib8NTmgZFTgoWKXMWNT/cg0tIVNnVJChSM4Szp2VKcf0OKuPgKeTvH3oJz
+         tqP/0zarMpqkV5/FYF+QYGb+huqU0udwVX/ze4tgTXONYn+5Ucci5Pj9j5k3CX70BrGR
+         bs/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776995563; x=1777600363;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dA4COagFILOeWH/SG7H9tln3mHa5hwZ6NIKUz643EAQ=;
-        b=tEoeqTota8D3HkSF/D6yJ6SrFIsFSrLlPx5BD/8D8Nh0t4auqv64XC6YZVHJK9or7k
-         gLJ6dVbDvvrFvFKxrcW4eQue4UGLRYjLW8NtNK/Ysj4Fz/2pIwh5Vl9zSBN51b0zoqri
-         wf/ptKNOUMPUqyGYoVF/mmYcmQMSCekjdaABoJSOcsHtrwX+pKjbRYSbIVDu5BcVnZxC
-         bVfVi2zO4Le+DQF0bx01LlvMUyQw9XhJltulOA9ILTzrdlENOAUUK/XctUjCFoh88tk+
-         C/2SvUJoQm7cRF1qMNO70mfyLgrGw2ucjRGKUpD9dotM4RLTAIKDaONHN99gJFUmMi+W
-         Pbvw==
-X-Forwarded-Encrypted: i=1; AFNElJ+8gLawAs2jmTa1uT5FV8D9EwktWJU6cP1VuaF3S5B9qZMLbXJa9k8oyFvaKExFvvMnlyPFght4rLs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzMRsa9mY+q95U9D+P5ZMy3I0Nc2S03xqm5i2AXMjqiBUJKoHtN
-	lQt/9iqfSHPRmBABgId1hiUdy1u1c/Vf27p8cYgdgI8vIUzA5kiAWvRx
-X-Gm-Gg: AeBDieujEaNy3GIJc//opmtXcK2FlKdMw93I+iCiBDreE7dwbnHElf3H+xG98yuMVzT
-	d2mKgZftQDIMdy5xNFKcGXqao4cnkCpvAHVx3TXLSd2WmfhOxe7KfORoiUeHKcycUva1th2y+z1
-	WrZG9Fsnkn2R4z6ikVo3Y304QcieUaGorFOmIEtWmsa9kQzfIxuf8U/PcQxAmgiNAlsSYyg3i1x
-	tn6uqGTdZuQuILqzHL/JZMJqtdTahPGetVBb/t8D7+K7R/uOgAnI3YLsX26lW7WdQjZmu8fgWR0
-	8z4+SS0O8y1pOieTxTZmVJCgMymK8NupQK0S6J28lOuHem4MuXLJMexPjTdcuE2nCgVa4XFfOhc
-	y5+ziABMIFOJf/JySVnmqym9LNNhnbOLXaCCUKkMFq18X9Gw+ppZc9cCNiw6aSpEsxEiT9XDgS5
-	z4J0GZjmuHOoOjroEJhGw67uisw918KiNLOM30RZNCTFAzlXBM2PuVmRIoaw==
-X-Received: by 2002:a05:6a00:1bc6:b0:82f:684a:84ea with SMTP id d2e1a72fcca58-82f8b50fb97mr23687506b3a.13.1776995562827;
-        Thu, 23 Apr 2026 18:52:42 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:ac05:e3c5:4f57:3515:1f92:c0c2])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ebb38ddsm20733487b3a.34.2026.04.23.18.52.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Apr 2026 18:52:42 -0700 (PDT)
-Date: Fri, 24 Apr 2026 07:22:37 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: =?ISO-8859-1?Q?Nuno_S=E1?= <noname.nuno@gmail.com>
-CC: jic23@kernel.org, nuno.sa@analog.com, linux-iio@vger.kernel.org,
- demonsingur@gmail.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] MAINTAINERS: Update maintainer for iio driver(s)
-User-Agent: Thunderbird for Android
-In-Reply-To: <aenU2WZnVJ-esibn@nsa>
-References: <20260421165856.2245598-1-sanjayembedded@gmail.com> <aenU2WZnVJ-esibn@nsa>
-Message-ID: <8C4ED753-72A9-4A34-920D-A5C5E8DB1840@gmail.com>
+        d=1e100.net; s=20251104; t=1777016155; x=1777620955;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3o7ZPgK+KU82N6aJZP72mCPOuaPHic03cUfPsM2xL1A=;
+        b=CA7OhBA1otpFwN2ZqhZ+NMTA51kD/5IJMHdgQesG8Rj+pkVzxlhSoX5IUI+jqWL+VZ
+         It6X3sYyEYq51Jror7wFSvGD4HUejU4iTqnM2J2fZHXbXSKMXjilrV3+fcVRGQpAN6Qm
+         LiKGDGZRTc9tEocaQmsruxZVqLdYl+FDItAHoXfNcSp3gEn7RFY19Uuk3BQtkiKOplWF
+         3UyxsYZRhQE7VEU34tfkaMMHUXx76ecy8xHr9/tYbFKyq4n0LZl8WGCFdp3KbPxTdSR5
+         7da9y01bnc30tutbbfuNm9DD116cm7ofDAJX7fjcwLIk5SmM2Nu8nMLJxQBctX+lkMJM
+         pvfw==
+X-Forwarded-Encrypted: i=1; AFNElJ/aNWWJ7hOIuGN9dRE9JlaB9rFOniNgs0lqxZIrT9nUCZH6stVAmlMkb33b46xdQQVntW0KigRQ9kk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzZj2cAM33FTXF2gXc6SsErfhOe3TQLGU2LmOAvCezlEJbIV2FU
+	XdsL/nsC+8qNrzZjJwRWtqJoU4B48OQIS3zshav7W1DtEGfZbtOj5rGm
+X-Gm-Gg: AeBDiesBh7h4LqfSXSG25cx/0x3QYvVJAOvREZ2sqfWNCaMs/sx0/nmyORoUh8+9bMb
+	+2WvvbZrn2YbOJgEPXKe3PhbbAo4z1VAcSLNjYTCxF9a1nHYuPCabktlPCdjCenZ+ZrfDSKY0BQ
+	b4ThsQXmkfjJk+LYvFESrPKxsZvgf4OR4P/O3SchRwRa93LTApiK8RyrQDwDg2DyNWlx20Ng1bt
+	aHXfT8aED6E55DeHGz+3pZ9+4m8swszmC/iDZkf8RNR449kcgPRC30TunVBKZTQG90EfkhlRwqW
+	T9KVfSREPsFLs5glvJS94QijgrznzUl7FjSjzfUs7Q4iWRms23RV0Srzt6mlPu8Pgbr2rQR/yJZ
+	kVMuD3RIrrR0ojIExEMyRMmbWl5NolBb0wXVCzq/QVXxKbCFfjeOC45ja1RoYnepff6qRJpkHVC
+	YIQbD8ERL0HIg1osIdhp9kYr9cnDDwsyvPNLjSJSTL7gAvf8mx8BHU7BKkiqeTvl/8DqYNFoBMH
+	1jgVW3/R6kTwtQ9gMGO9EOimWXhAgpOguTxIVQy68dGtqZHf3Z1Mnb2rPBemg==
+X-Received: by 2002:a05:6000:2284:b0:43b:42af:75e with SMTP id ffacd0b85a97d-43fe3e23abbmr47806405f8f.44.1777016154793;
+        Fri, 24 Apr 2026 00:35:54 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4cb1176sm59625994f8f.3.2026.04.24.00.35.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Apr 2026 00:35:54 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Fri, 24 Apr 2026 08:35:51 +0100
+To: Conor Dooley <conor@kernel.org>, rodrigo.alencar@analog.com
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Michael Auchter <michael.auchter@ni.com>, linux-hardening@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH 06/22] dt-bindings: iio: dac: ad5686: rework on power
+ supplies
+Message-ID: <p76mchyeawpgqghojx6ww4yrw3fxxv7u32clkn4wwa7hzb3yx4@52ivn6p5hxu2>
+References: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
+ <20260422-ad5313r-iio-support-v1-6-ed7dca001d1b@analog.com>
+ <20260423-revenue-sensation-c62f759e457a@spud>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260423-revenue-sensation-c62f759e457a@spud>
 
+On 26/04/23 06:32PM, Conor Dooley wrote:
+> On Wed, Apr 22, 2026 at 03:45:40PM +0100, Rodrigo Alencar via B4 Relay wrote:
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Add supplies for VDD, VLOGIC and VREF input voltage pins. The vcc-supply
+> > property is deprecated. Certain devices require vref-supply to be
+> 
+> Why is it deprecated? Is the naming incorrect?
 
+Yes, vcc does not exist. It is also misleading as it may sound as the input
+power supply, but in fact it is being used a voltage reference for the DAC output,
+which has a proper name, vref.
+ 
+> > available once an internal reference voltage is absent. Still, this patch
+> > does not add those as 'required' so that the ABI is not broken.
 
-On 23 April 2026 1:46:32=E2=80=AFpm IST, "Nuno S=C3=A1" <noname=2Enuno@gma=
-il=2Ecom> wrote:
->On Tue, Apr 21, 2026 at 10:28:56PM +0530, Sanjay Chitroda wrote:
->> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->>=20
->> The listed maintainer analog domain email for Cosmin Tanislav is no
->> longer valid, and he would no longer maintain this driver(s)=2E
->>=20
->> Replacing email maintainer with list, to keep it valid all the time=2E
->>=20
->> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->> ---
->> Changes in v3:
->> - Following input from Nuno and confirmation from Jonathan,
->>   replacing domain specific maintainer with mailing list=2E
->> - Link to v1: https://lore=2Ekernel=2Eorg/all/20260418211336=2E1800221-=
-1-sanjayembedded@gmail=2Ecom/
->> ---
->
->While you're doing this, could you take the opportunity and also update
->this entry?
->
->https://elixir=2Ebootlin=2Ecom/linux/v7=2E0/source/MAINTAINERS#L1837
->
->Thanks!
->- Nuno S=C3=A1
->
-Hi Nuno S=C3=A1,
+...
 
-Are you suggesting to have separate change to add mailing list in analog d=
-evices and iio driver which you pointed ?=20
+> > +  vref-supply:
+> > +    description:
+> > +      Reference voltage supply. If not supplied the internal reference is used.
+> > +
+> >    vcc-supply:
+> > -    description: If not supplied the internal reference is used.
+> > +    deprecated: true
+> > +    description: Use vref-supply instead.
 
-This change is specific to email debounce due to Cosmin analog domain acco=
-unt=2E
+-- 
+Kind regards,
 
-Also, I had take a glance on MAINTAINERS, it looks there are good amount o=
-f drivers which are maintained by you and Michael Hennerich from analog=2E =
-If you suggest I can plan to add analog mailing list in all respective plac=
-es in separate change=2E
-
-This way all analog device maintained drivers will have mailing list of an=
-alog=2Ecom
-
-Kindly share your thoughts on the same=2E
-
-Thanks,
-Sanjay Chitroda=20
-
-
-
->>  MAINTAINERS | 8 ++++----
->>  1 file changed, 4 insertions(+), 4 deletions(-)
->>=20
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index c981cbdff500=2E=2E6498f0aed1ff 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -644,7 +644,7 @@ F:	drivers/iio/accel/adxl355_i2c=2Ec
->>  F:	drivers/iio/accel/adxl355_spi=2Ec
->> =20
->>  ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
->> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
->> +L:	linux@analog=2Ecom
->>  L:	linux-iio@vger=2Ekernel=2Eorg
->>  S:	Supported
->>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
->> @@ -1461,7 +1461,7 @@ F:	Documentation/devicetree/bindings/iio/adc/adi,=
-ad4080=2Eyaml
->>  F:	drivers/iio/adc/ad4080=2Ec
->> =20
->>  ANALOG DEVICES INC AD4130 DRIVER
->> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
->> +L:	linux@analog=2Ecom
->>  L:	linux-iio@vger=2Ekernel=2Eorg
->>  S:	Supported
->>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
->> @@ -1549,7 +1549,7 @@ F:	Documentation/devicetree/bindings/iio/dac/adi,=
-ad7293=2Eyaml
->>  F:	drivers/iio/dac/ad7293=2Ec
->> =20
->>  ANALOG DEVICES INC AD74115 DRIVER
->> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
->> +L:	linux@analog=2Ecom
->>  L:	linux-iio@vger=2Ekernel=2Eorg
->>  S:	Supported
->>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
->> @@ -1557,7 +1557,7 @@ F:	Documentation/devicetree/bindings/iio/addac/ad=
-i,ad74115=2Eyaml
->>  F:	drivers/iio/addac/ad74115=2Ec
->> =20
->>  ANALOG DEVICES INC AD74413R DRIVER
->> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
->> +L:	linux@analog=2Ecom
->>  L:	linux-iio@vger=2Ekernel=2Eorg
->>  S:	Supported
->>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
->> --=20
->> 2=2E34=2E1
->>=20
+Rodrigo Alencar
