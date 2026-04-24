@@ -1,247 +1,181 @@
-Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79246263F4A
-	for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 22:40:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F22476025
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 01:52:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776984034; cv=none; b=qsvVmdU9te7T149RwW1DKomMyrur+kFs/YE8mOz8A2t3/jJAuizmms5B3aJTnCEMOJFiZZPKZSx0D+z+AKCB2uEpG2ry+kqCQdCprHucrAxpVnTIG/k0ggp5qz5Zb1k4ozrSVY/ygUq2IsCsPe1lIHpD2DF4nz9lL6LHd2VTsBs=
+	t=1776995564; cv=none; b=WAA9QQQyhmK51FgW5R9eAJPWQ7HDAS30OcVQSuH2BFhsYWw9U0xFUUgHkfdls7ovIE9ZZePByZuRDW5akFZSithBr/LqMswbVQ4EoJAop57oM5xhMxB9l82oe7nxGH014BMGEC4Y5QsPO4a5xDn1+ESLcRrYlxkuSYMtS+BEiHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776984034; c=relaxed/simple;
-	bh=+9RtrJdE1JpsZJpABQaGb4aDsO4LuUSNkTm7x9Q/cig=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=LWSCDUE1LC7uUGRRSaXDLcKSPmhRDn6CWESizxJhYxWXGmbr/TzsJMwG7oXPVM/czR6JN4X53axo4V91usHGSaiJXd7fNQKXTJZ6B9JM4AbvG/j1dWYDkYskl+v0Bh/LFH1czzsARbf7Xwu+F0ILtDIrotbYqggVeXJEAyyJMXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=Hw9Yi/Y9; arc=none smtp.client-ip=74.125.82.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1776995564; c=relaxed/simple;
+	bh=FjKbW3QeLz48VQ8kJwhIfHRD4AToGOuWxZikEd4mAC0=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=d7aStGTyQ9F5pshACWpQwWumRBuL/K42mqYiFmVsP9v8IUIRmN9Ik2wyfSc5D7u4n3CkzHP9SVKmRqjX2AjISSITNrSEPyE2a8T0wxuqsaUo0h++aAgF3kp1oH6UPTrChkOZrs9NBb8pQES/ItVTwpvV5cZD+wAga3AZ1u6OC3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RNjPrG0e; arc=none smtp.client-ip=209.85.210.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="Hw9Yi/Y9"
-Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-2eadb000b8cso766901eec.0
-        for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 15:40:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RNjPrG0e"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-82fb2d0c5d1so3181907b3a.0
+        for <linux-iio@vger.kernel.org>; Thu, 23 Apr 2026 18:52:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1776984030; x=1777588830; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jcel8yFzvjQLbN7QIxGyEVzu8gDLD1L5rbvBmgsgXHs=;
-        b=Hw9Yi/Y9sHj3KkAhQxDc9lQgastK28WLJRNsJfE7Nin+k2adkyA9BgaEcQnSqUPAHx
-         eJrcX9iHRX6BJQvRGsbq2TLTLmLxAztc8lxNW56v2by6EZQJYbgn8vEkPnZYpTqNl0r7
-         OOHfIyg11IzRg7kwuz0FbwP+0cNSQlZ/H/xsMIcyvR4KJnhI5PEqsWm9Oc7v2IbjFnOX
-         o89xkjCW5U/Ez6inrQo2+rFOl/WjvDPM2nRAl0y/015q/J+RFlV7dk311L8QEOeeD4sk
-         GTauQvkGymRCO3V9XoFKItA1jq6ch0U+drT74r/jpP0qJQYKvX+fskGda14pY9D75SdE
-         2ygw==
+        d=gmail.com; s=20251104; t=1776995563; x=1777600363; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=dA4COagFILOeWH/SG7H9tln3mHa5hwZ6NIKUz643EAQ=;
+        b=RNjPrG0e5d/l5nGTmIS9bwrK6aP08cP/KdtKbT2V9B+pqbtZniC8Zk9iRVPjerM8KD
+         +S937DwATtGF+WvDGwRAySsu+RNbVa/AW+35KyQaT7jWfTEZNm89/PTtbFGmG9NWSjVI
+         ys8Eprx/4PNksqXMnNnsY8XH8MZJDyFa9HashxjOSR8aJYball3WO9y01u4QDij/RFPV
+         KTnnts8JYN4+mNsfr9QxKgx57WcVNI5ehbwbeKcxtswkYt31NeJziYC9KPVYiKg78ogY
+         bVtZD4OvBp18L/mjfgKES3uFYQi6/CR50g511XxnENJ1h2U5/iTsov/tuLYYdOMDG+6W
+         aP6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776984030; x=1777588830;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Jcel8yFzvjQLbN7QIxGyEVzu8gDLD1L5rbvBmgsgXHs=;
-        b=h2uC4JKiuUWpshffOWi59s2Y98ZP2vmQRl6k8LkgLLDI8JEOcOJM729hShxGMNI2O1
-         BCt5TFJ2W8OIempst5d2Atn7tqj2PRolu1hVeeAGBknjNmRpwBV0LDFuiCjywUHFp2am
-         EyBlwQzE9+yVwzHS0lEoLxEfMqyb/vEVmAVNnpmtt4+QNpb9/+kEa3jWOYZY5Lln27EY
-         CxJS0MiQAcE4Z3ydH1xmA6jiGy+EQ7/yJTPKbxuTiDg2YS34QqJPmtGjpsb3q2FFTcZR
-         QyA7dR4xkh1a7xfWaYMiKgffSA59wk1UUA6gqX05YIE3kwMYklaklnGycWPaxjcTRJAw
-         GDtg==
-X-Forwarded-Encrypted: i=1; AFNElJ/oTkBjqUuK/jyv1Hj81ezd0o2C2wDHg22chwwQrCfX9Gq2M0FKiaCDwpxD5mT2nDzdAq8MM8pg9WI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwqLDVPIYb6ut/fenwsO9LhMdf7e2Yk3NLspR/C/tX61m11XIg+
-	HKPgYbTA1qjQLQzfccL/eCHh59O2Gt5u2Huosrx1jPys1Hus3qOqMpkUlwHLS4DXV6Q=
-X-Gm-Gg: AeBDietgLk8CWl8YLyCNcDQ+Z3Y9gUXRADjE02s4sq+l2iZo+0/rr7pdKG486guN4mz
-	7IF3iAdIOZYVYnULCdMH7+lpjhrdtI+4sSIqAXKidh9HrrA8jwzdA0W9pIujKlrlT5z23xhwD3A
-	J+4XUxMRg8aMZtA9yUqCNmt014yB5F8tuhbtNr7gaBW9MStCwP2bQLKixIHkoVFTtMpmDOCLq9w
-	YCeDPK4t0ioh5ISdO13IV4MoPksf+ejY2XXCRM3UFwSR3t6zV3NqkpXQDPMYUPBxyQ1rKCNm4kI
-	o5+a/5VNY1I7ZngW3z/jHMoTN4dHhUxmJhCxznLLUax2gLiFZ4lQuwFVKq15wtJWWoF1k3ihMo4
-	ZHTYmMISiJvbXlQgP4RzfAUWclVp+S5L3kPzRAeGHoD5fJTDOtP/xhEniqwBkRIZa6imHH2G1gH
-	rHo2LR7w2ZKj3UlXv/KjqcMomzkKiEbBHHCf4DGU7CDg==
-X-Received: by 2002:a05:693c:3009:b0:2dd:6937:79c8 with SMTP id 5a478bee46e88-2eada6d7359mr1053447eec.5.1776984030380;
-        Thu, 23 Apr 2026 15:40:30 -0700 (PDT)
-Received: from Arkham.. ([2804:7f0:b2c0:99a2:9a46:6b1f:9788:7b72])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e53d8b3dd9sm29272538eec.27.2026.04.23.15.40.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Apr 2026 15:40:30 -0700 (PDT)
-From: Guilherme Dias <guilhermeabreu200105@usp.br>
-To: nish.malpani25@gmail.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Guilherme Dias <guilhermeabreu200105@usp.br>,
-	=?UTF-8?q?Jo=C3=A3o=20Paulo=20Menezes=20Linaris?= <jplinaris@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: gyro: adxrs290: Use guard(mutex) in lieu of manual lock+unlock
-Date: Thu, 23 Apr 2026 19:37:51 -0300
-Message-ID: <20260423223958.100487-1-guilhermeabreu200105@usp.br>
-X-Mailer: git-send-email 2.43.0
+        d=1e100.net; s=20251104; t=1776995563; x=1777600363;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dA4COagFILOeWH/SG7H9tln3mHa5hwZ6NIKUz643EAQ=;
+        b=tEoeqTota8D3HkSF/D6yJ6SrFIsFSrLlPx5BD/8D8Nh0t4auqv64XC6YZVHJK9or7k
+         gLJ6dVbDvvrFvFKxrcW4eQue4UGLRYjLW8NtNK/Ysj4Fz/2pIwh5Vl9zSBN51b0zoqri
+         wf/ptKNOUMPUqyGYoVF/mmYcmQMSCekjdaABoJSOcsHtrwX+pKjbRYSbIVDu5BcVnZxC
+         bVfVi2zO4Le+DQF0bx01LlvMUyQw9XhJltulOA9ILTzrdlENOAUUK/XctUjCFoh88tk+
+         C/2SvUJoQm7cRF1qMNO70mfyLgrGw2ucjRGKUpD9dotM4RLTAIKDaONHN99gJFUmMi+W
+         Pbvw==
+X-Forwarded-Encrypted: i=1; AFNElJ+8gLawAs2jmTa1uT5FV8D9EwktWJU6cP1VuaF3S5B9qZMLbXJa9k8oyFvaKExFvvMnlyPFght4rLs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzMRsa9mY+q95U9D+P5ZMy3I0Nc2S03xqm5i2AXMjqiBUJKoHtN
+	lQt/9iqfSHPRmBABgId1hiUdy1u1c/Vf27p8cYgdgI8vIUzA5kiAWvRx
+X-Gm-Gg: AeBDieujEaNy3GIJc//opmtXcK2FlKdMw93I+iCiBDreE7dwbnHElf3H+xG98yuMVzT
+	d2mKgZftQDIMdy5xNFKcGXqao4cnkCpvAHVx3TXLSd2WmfhOxe7KfORoiUeHKcycUva1th2y+z1
+	WrZG9Fsnkn2R4z6ikVo3Y304QcieUaGorFOmIEtWmsa9kQzfIxuf8U/PcQxAmgiNAlsSYyg3i1x
+	tn6uqGTdZuQuILqzHL/JZMJqtdTahPGetVBb/t8D7+K7R/uOgAnI3YLsX26lW7WdQjZmu8fgWR0
+	8z4+SS0O8y1pOieTxTZmVJCgMymK8NupQK0S6J28lOuHem4MuXLJMexPjTdcuE2nCgVa4XFfOhc
+	y5+ziABMIFOJf/JySVnmqym9LNNhnbOLXaCCUKkMFq18X9Gw+ppZc9cCNiw6aSpEsxEiT9XDgS5
+	z4J0GZjmuHOoOjroEJhGw67uisw918KiNLOM30RZNCTFAzlXBM2PuVmRIoaw==
+X-Received: by 2002:a05:6a00:1bc6:b0:82f:684a:84ea with SMTP id d2e1a72fcca58-82f8b50fb97mr23687506b3a.13.1776995562827;
+        Thu, 23 Apr 2026 18:52:42 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:ac05:e3c5:4f57:3515:1f92:c0c2])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ebb38ddsm20733487b3a.34.2026.04.23.18.52.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Apr 2026 18:52:42 -0700 (PDT)
+Date: Fri, 24 Apr 2026 07:22:37 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: =?ISO-8859-1?Q?Nuno_S=E1?= <noname.nuno@gmail.com>
+CC: jic23@kernel.org, nuno.sa@analog.com, linux-iio@vger.kernel.org,
+ demonsingur@gmail.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] MAINTAINERS: Update maintainer for iio driver(s)
+User-Agent: Thunderbird for Android
+In-Reply-To: <aenU2WZnVJ-esibn@nsa>
+References: <20260421165856.2245598-1-sanjayembedded@gmail.com> <aenU2WZnVJ-esibn@nsa>
+Message-ID: <8C4ED753-72A9-4A34-920D-A5C5E8DB1840@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Use guard(mutex) to automatically release the lock on scope exit,
-simplifying the error handling path and removing the need for
-explicit unlock and goto-based cleanup.
 
-Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
-Co-developed-by: João Paulo Menezes Linaris <jplinaris@usp.br>
-Signed-off-by: João Paulo Menezes Linaris <jplinaris@usp.br>
----
-v2:
- - added returns mistakenly removed
- - remove unnecessary ret in adxrs290_get_rate_data(),
-   adxrs290_get_temp_data() and adxrs290_get_3db_freq()
- - invert condition in adxrs290_trigger_handler() to eliminate goto
 
- drivers/iio/gyro/adxrs290.c | 65 ++++++++++++-------------------------
- 1 file changed, 20 insertions(+), 45 deletions(-)
+On 23 April 2026 1:46:32=E2=80=AFpm IST, "Nuno S=C3=A1" <noname=2Enuno@gma=
+il=2Ecom> wrote:
+>On Tue, Apr 21, 2026 at 10:28:56PM +0530, Sanjay Chitroda wrote:
+>> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>>=20
+>> The listed maintainer analog domain email for Cosmin Tanislav is no
+>> longer valid, and he would no longer maintain this driver(s)=2E
+>>=20
+>> Replacing email maintainer with list, to keep it valid all the time=2E
+>>=20
+>> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> ---
+>> Changes in v3:
+>> - Following input from Nuno and confirmation from Jonathan,
+>>   replacing domain specific maintainer with mailing list=2E
+>> - Link to v1: https://lore=2Ekernel=2Eorg/all/20260418211336=2E1800221-=
+1-sanjayembedded@gmail=2Ecom/
+>> ---
+>
+>While you're doing this, could you take the opportunity and also update
+>this entry?
+>
+>https://elixir=2Ebootlin=2Ecom/linux/v7=2E0/source/MAINTAINERS#L1837
+>
+>Thanks!
+>- Nuno S=C3=A1
+>
+Hi Nuno S=C3=A1,
 
-diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
-index 3efe385ebedc..25b6dd6e986d 100644
---- a/drivers/iio/gyro/adxrs290.c
-+++ b/drivers/iio/gyro/adxrs290.c
-@@ -115,65 +115,47 @@ static const int adxrs290_hpf_3db_freq_hz_table[][2] = {
- static int adxrs290_get_rate_data(struct iio_dev *indio_dev, const u8 cmd, int *val)
- {
- 	struct adxrs290_state *st = iio_priv(indio_dev);
--	int ret = 0;
- 	int temp;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	temp = spi_w8r16(st->spi, cmd);
--	if (temp < 0) {
--		ret = temp;
--		goto err_unlock;
--	}
-+	if (temp < 0)
-+		return temp;
- 
- 	*val = sign_extend32(temp, 15);
--
--err_unlock:
--	mutex_unlock(&st->lock);
--	return ret;
-+	return 0;
- }
- 
- static int adxrs290_get_temp_data(struct iio_dev *indio_dev, int *val)
- {
- 	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_TEMP0);
- 	struct adxrs290_state *st = iio_priv(indio_dev);
--	int ret = 0;
- 	int temp;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	temp = spi_w8r16(st->spi, cmd);
--	if (temp < 0) {
--		ret = temp;
--		goto err_unlock;
--	}
-+	if (temp < 0)
-+		return temp;
- 
- 	/* extract lower 12 bits temperature reading */
- 	*val = sign_extend32(temp, 11);
--
--err_unlock:
--	mutex_unlock(&st->lock);
--	return ret;
-+	return 0;
- }
- 
- static int adxrs290_get_3db_freq(struct iio_dev *indio_dev, u8 *val, u8 *val2)
- {
- 	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_FILTER);
- 	struct adxrs290_state *st = iio_priv(indio_dev);
--	int ret = 0;
- 	short temp;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	temp = spi_w8r8(st->spi, cmd);
--	if (temp < 0) {
--		ret = temp;
--		goto err_unlock;
--	}
-+	if (temp < 0)
-+		return temp;
- 
- 	*val = FIELD_GET(ADXRS290_LPF_MASK, temp);
- 	*val2 = FIELD_GET(ADXRS290_HPF_MASK, temp);
--
--err_unlock:
--	mutex_unlock(&st->lock);
--	return ret;
-+	return 0;
- }
- 
- static int adxrs290_spi_write_reg(struct spi_device *spi, const u8 reg,
-@@ -220,11 +202,11 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
- 	if (st->mode == mode)
- 		return 0;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	ret = spi_w8r8(st->spi, ADXRS290_READ_REG(ADXRS290_REG_POWER_CTL));
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	val = ret;
- 
-@@ -237,20 +219,17 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
- 		break;
- 	default:
- 		ret = -EINVAL;
--		goto out_unlock;
-+		return ret;
- 	}
- 
- 	ret = adxrs290_spi_write_reg(st->spi, ADXRS290_REG_POWER_CTL, val);
- 	if (ret < 0) {
- 		dev_err(&st->spi->dev, "unable to set mode: %d\n", ret);
--		goto out_unlock;
-+		return ret;
- 	}
- 
- 	/* update cached mode */
- 	st->mode = mode;
--
--out_unlock:
--	mutex_unlock(&st->lock);
- 	return ret;
- }
- 
-@@ -506,21 +485,17 @@ static irqreturn_t adxrs290_trigger_handler(int irq, void *p)
- 	u8 tx = ADXRS290_READ_REG(ADXRS290_REG_DATAX0);
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	scoped_guard(mutex, &st->lock){
- 
- 	/* exercise a bulk data capture starting from reg DATAX0... */
- 	ret = spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
- 				  sizeof(st->buffer.channels));
--	if (ret < 0)
--		goto out_unlock_notify;
--
--	iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
-+	if (ret >= 0)
-+		iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
- 					   pf->timestamp);
-+	}
- 
--out_unlock_notify:
--	mutex_unlock(&st->lock);
- 	iio_trigger_notify_done(indio_dev->trig);
--
- 	return IRQ_HANDLED;
- }
- 
--- 
-2.43.0
+Are you suggesting to have separate change to add mailing list in analog d=
+evices and iio driver which you pointed ?=20
 
+This change is specific to email debounce due to Cosmin analog domain acco=
+unt=2E
+
+Also, I had take a glance on MAINTAINERS, it looks there are good amount o=
+f drivers which are maintained by you and Michael Hennerich from analog=2E =
+If you suggest I can plan to add analog mailing list in all respective plac=
+es in separate change=2E
+
+This way all analog device maintained drivers will have mailing list of an=
+alog=2Ecom
+
+Kindly share your thoughts on the same=2E
+
+Thanks,
+Sanjay Chitroda=20
+
+
+
+>>  MAINTAINERS | 8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>=20
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index c981cbdff500=2E=2E6498f0aed1ff 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -644,7 +644,7 @@ F:	drivers/iio/accel/adxl355_i2c=2Ec
+>>  F:	drivers/iio/accel/adxl355_spi=2Ec
+>> =20
+>>  ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
+>> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> +L:	linux@analog=2Ecom
+>>  L:	linux-iio@vger=2Ekernel=2Eorg
+>>  S:	Supported
+>>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> @@ -1461,7 +1461,7 @@ F:	Documentation/devicetree/bindings/iio/adc/adi,=
+ad4080=2Eyaml
+>>  F:	drivers/iio/adc/ad4080=2Ec
+>> =20
+>>  ANALOG DEVICES INC AD4130 DRIVER
+>> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> +L:	linux@analog=2Ecom
+>>  L:	linux-iio@vger=2Ekernel=2Eorg
+>>  S:	Supported
+>>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> @@ -1549,7 +1549,7 @@ F:	Documentation/devicetree/bindings/iio/dac/adi,=
+ad7293=2Eyaml
+>>  F:	drivers/iio/dac/ad7293=2Ec
+>> =20
+>>  ANALOG DEVICES INC AD74115 DRIVER
+>> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> +L:	linux@analog=2Ecom
+>>  L:	linux-iio@vger=2Ekernel=2Eorg
+>>  S:	Supported
+>>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> @@ -1557,7 +1557,7 @@ F:	Documentation/devicetree/bindings/iio/addac/ad=
+i,ad74115=2Eyaml
+>>  F:	drivers/iio/addac/ad74115=2Ec
+>> =20
+>>  ANALOG DEVICES INC AD74413R DRIVER
+>> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> +L:	linux@analog=2Ecom
+>>  L:	linux-iio@vger=2Ekernel=2Eorg
+>>  S:	Supported
+>>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> --=20
+>> 2=2E34=2E1
+>>=20
