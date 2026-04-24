@@ -1,42 +1,61 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3436E2BDC23;
-	Fri, 24 Apr 2026 15:14:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E4B929AB1A
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 15:42:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777043671; cv=none; b=p3OToMkrNsvN6wKy0gakjv5vVspvVIgCaDiVcbb5sq4J8uLBkL/OYBVqa6qH46Rr4luwgelpWBcV4wrc1FZuHNdxRAW/Vmw8yx0u5uEyBrpHj11ZBAaEKIvWk8uQbrLu6IprF8o4jkDiz+PjqLSrmVKhKcddUWCz+aEK09WgCQ4=
+	t=1777045371; cv=none; b=SfjeSbB7cwzEKXtbJdHKPEpLNziREiTF6KvQ2VDML8It8K4nWHD4Tou32VFLEn3ibHqHNMz4JE1kJRRBmmSSwAdz6FIQO4OfL2jXD1ECOEYm8VH4fw1OU5EA4YGMqnaBtcl8WFWgFxIOm4By7LZLDBZmzAIcVoZLEEAE+lMev58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777043671; c=relaxed/simple;
-	bh=4He5zd0X6Q3m/S1JQmYc48fl0nraa9F1DjbDYMe+rxY=;
+	s=arc-20240116; t=1777045371; c=relaxed/simple;
+	bh=C4zaCFa2yPnuOBLs9gsOq/mSLxXyoZz8iQH7Eret1Zk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eXZlB0zStak6JQF43VLbC1L2AWOCV6PPzhBrwuhkwKvWzChYAS8FunscirUlg7l2MeC57MK/Iao4JiX3bRxB1aPnv1RUWS/nFmsfIsuw+Sy8t1JSr5Tg0kopBXUe1BldFyOirXPxLdTUbFPiAwPf2QX2LdmZBWFt7y4t4EVgKr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=icZj26Dt; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=L4nTuzfuiC1wqq8kGWupfLTzz17izTdPuJ20/OQCbeGJ5105DiOPuXTV/IDLcFWz0XMxQZjNbkmTmfwnVfTil1b9BJDTG62r8SY1JF5mogtXX/Ul4Po9eURWSK50j5yemrEJvOa2H1cA8XqcpLllzt3u2vGa7336KeVIwnyXGJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S4sV7ed6; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="icZj26Dt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96302C2BCB2;
-	Fri, 24 Apr 2026 15:14:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1777043670;
-	bh=4He5zd0X6Q3m/S1JQmYc48fl0nraa9F1DjbDYMe+rxY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=icZj26DtCnbgqqOv7N9N7FtpQTkZ9PC9WeANjvXhDicnuxx5FIOCpXLWJEubkCq49
-	 hSFLBPkR+fA6SVdZi/CjI9Kg4803MvNwXpAFTAfJ9+GUB/NmEBmeMZQBehyHZoKAH7
-	 v8alcMzE6hZGEe1EU++DjrOT8TRz3QvDI0AYRpBs=
-Date: Fri, 24 Apr 2026 17:14:28 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: kunjinkao-os <kunjinkao.jp@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: adc: ad7816: Replace sprintf() with
- sysfs_emit()
-Message-ID: <2026042412-dictator-preschool-7acc@gregkh>
-References: <20260424150617.28194-1-kunjinkao.jp@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S4sV7ed6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777045367; x=1808581367;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=C4zaCFa2yPnuOBLs9gsOq/mSLxXyoZz8iQH7Eret1Zk=;
+  b=S4sV7ed6FC6wV6JIIooUBnX14eEMLdCgGfAvnFOS2gG60/AJWx8K6RKh
+   MBttC++TiSs6BssYDOq/uSNraGxcY3+4dgw6bV+UBwnr22KdgnI2mwNrR
+   /q7S2d7yh0HUElbSAhRdGfu5F3iSPTg0cbKKcR6sAy+tCxo6CL2MztMYr
+   jrMt4pjDYickeoN5NoQOYtWfFGMzs18HZ/NUc+a+v7F4LHQD8DGtW7ZqI
+   T19sDhzj3pBBXgbICEmUOJNkD6Dy+pGkMOGHceN6Cywzn26XyULdTmSG+
+   QG5K2r/McqNMMnm9/AvrCtuu9nVjJpcc9cNwcPeV4clsjvX9ua24+uNdi
+   w==;
+X-CSE-ConnectionGUID: qsKdNu0CQoaj/N5oijXMcg==
+X-CSE-MsgGUID: 1maRRRsQQie5/l2dE/KEkA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11766"; a="88335375"
+X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
+   d="scan'208";a="88335375"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 08:42:46 -0700
+X-CSE-ConnectionGUID: qsIde9X4RG+q2FavJy/W8Q==
+X-CSE-MsgGUID: nRQ+SCrHTjqtaxxYwr2xLQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
+   d="scan'208";a="233278885"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.71])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 08:42:43 -0700
+Date: Fri, 24 Apr 2026 18:42:41 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+	lars@metafoo.de, Michael.Hennerich@analog.com, nuno.sa@analog.com,
+	Matheus Giarola <matheusgiarola@usp.br>,
+	Felipe Ribeiro de Souza <felipers@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 1/2] iio: adc: ad7280a: Extract chan->address bit
+ fields into named local variables
+Message-ID: <aeuPcIyq_IRMj8HE@ashevche-desk.local>
+References: <20260424125001.17822-1-lucas@ciziks.com>
+ <20260424125001.17822-2-lucas@ciziks.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -45,108 +64,27 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260424150617.28194-1-kunjinkao.jp@gmail.com>
+In-Reply-To: <20260424125001.17822-2-lucas@ciziks.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Apr 24, 2026 at 11:06:17PM +0800, kunjinkao-os wrote:
-> sysfs_emit() is the preferred function for sysfs show callbacks as it
-> is aware of the PAGE_SIZE buffer and prevents potential buffer overflows.
-> No functional change intended.
+On Fri, Apr 24, 2026 at 09:43:39AM -0300, Lucas Ivars Cadima Ciziks wrote:
+> Extract the upper and lower bytes of chan->address into named local
+> variables devaddr and ch across ad7280_read_raw(),
+> ad7280_show_balance_timer() and ad7280_store_balance_timer() to improve
+> readability and avoid inline bit manipulation in function calls.
 > 
-> Signed-off-by: kunjinkao-os <kunjinkao.jp@gmail.com>
-> ---
->  drivers/staging/iio/adc/ad7816.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index 172acf135f3b..0e32a2295990 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -124,8 +124,8 @@ static ssize_t ad7816_show_mode(struct device *dev,
->  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
->  
->  	if (chip->mode)
-> -		return sprintf(buf, "power-save\n");
-> -	return sprintf(buf, "full\n");
-> +		return sysfs_emit(buf, "power-save\n");
-> +	return sysfs_emit(buf, "full\n");
->  }
->  
->  static ssize_t ad7816_store_mode(struct device *dev,
-> @@ -156,7 +156,7 @@ static ssize_t ad7816_show_available_modes(struct device *dev,
->  					   struct device_attribute *attr,
->  					   char *buf)
->  {
-> -	return sprintf(buf, "full\npower-save\n");
-> +	return sysfs_emit(buf, "full\npower-save\n");
->  }
->  
->  static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
-> @@ -169,7 +169,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
->  
-> -	return sprintf(buf, "%d\n", chip->channel_id);
-> +	return sysfs_emit(buf, "%d\n", chip->channel_id);
->  }
->  
->  static ssize_t ad7816_store_channel(struct device *dev,
-> @@ -231,9 +231,9 @@ static ssize_t ad7816_show_value(struct device *dev,
->  		data &= AD7816_TEMP_FLOAT_MASK;
->  		if (value < 0)
->  			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
-> -		return sprintf(buf, "%d.%.2d\n", value, data * 25);
-> +		return sysfs_emit(buf, "%d.%.2d\n", value, data * 25);
->  	}
-> -	return sprintf(buf, "%u\n", data);
-> +	return sysfs_emit(buf, "%u\n", data);
->  }
->  
->  static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
-> @@ -281,9 +281,9 @@ static ssize_t ad7816_show_oti(struct device *dev,
->  		value = AD7816_BOUND_VALUE_MIN +
->  			(chip->oti_data[chip->channel_id] -
->  			AD7816_BOUND_VALUE_BASE);
-> -		return sprintf(buf, "%d\n", value);
-> +		return sysfs_emit(buf, "%d\n", value);
->  	}
-> -	return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
-> +	return sysfs_emit(buf, "%u\n", chip->oti_data[chip->channel_id]);
->  }
->  
->  static inline ssize_t ad7816_set_oti(struct device *dev,
-> -- 
-> 2.43.0
-> 
+> Signed-off-by: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
+> Co-developed-by: Matheus Giarola <matheusgiarola@usp.br>
+> Signed-off-by: Matheus Giarola <matheusgiarola@usp.br>
+> Co-developed-by: Felipe Ribeiro de Souza <felipers@usp.br>
+> Signed-off-by: Felipe Ribeiro de Souza <felipers@usp.br>
 
-Hi,
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-You are receiving this message because of the following common error(s)
-as indicated below:
 
-- It looks like you did not use your "real" name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file,
-  Documentation/process/submitting-patches.rst for how to do this
-  correctly.
-
-- You sent a patch that has been sent multiple times in the past few
-  days, and is identical to ones that has been recently rejected.
-  Please always look at the mailing list traffic to determine if you are
-  duplicating other people's work.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
