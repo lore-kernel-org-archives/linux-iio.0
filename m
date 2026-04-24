@@ -1,47 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03FEE340A6C;
-	Fri, 24 Apr 2026 17:45:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 541943E7168;
+	Fri, 24 Apr 2026 17:53:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777052730; cv=none; b=LY2rni1sOKr9f+ihEKx3LYoGlJsmG4mdQ3V8VSmr4Z7YNK3UVe+MEaFZ+G/0Ksam4uWqdCkZ7Q9c8MuffwPex+jqtlihPfz2+ViEfJnmru7bxlKMjewJS6kBH57Lo7S3wzblg6EuuSXhjRN2Lnvt99+1BctcNrLBwqhLoeEfTf0=
+	t=1777053215; cv=none; b=nhftna7QAnn1+bQhgDBiiz1bxxCwzvfH3Exyw0YtEsG4TcRL0ZpZO3P0DJwya/lKpt2R2NsRaRTg+pPCvWAjJPv+5+lCOn5/TqbPrgmlfbe3qvD/aKoVTLO24zBQoMYplJghyG0Dyb8ltTvPse1ybftnlgWTCWMMx5DnWjoGMGU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777052730; c=relaxed/simple;
-	bh=0pUcwKSaN2IYoAKf9yaef1dDw3E3dJewVX2FK3HvAvo=;
+	s=arc-20240116; t=1777053215; c=relaxed/simple;
+	bh=8MiFVOL8pqE/jqmzctH8jeJa4QIQG+8++LO+dGmbNLk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dCtgKJpF3JwhV4nKd/cW14dj3XVLzgAgD/tH64zVSAZfUVlD7HjTnUQxzb/uYc0pufO/6ArOzrzgMf73VSCFBdRs06upO7Ju0JVsACeAAS8fa4VatduZnywjiviFXW5Im+jjKZXaRVE6BOxqOcgIPWk5+oTrqayXkiZMwLMz6ck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RdMYwEFf; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=WM/OZ2OVTQg2M4zoMlU5/MXyOymNhcLKJaRp/qlGAZW+JBovD+xUM+KqZdzCEw+hXlUXobYJD1s6LxuiVz1YK3xD105EGiDbWekoPDy+64AYIG0R/TIp/KGiAKHiCNV/FRUOgfiSW0wFo9grFhcoF/49FlV+KZE3mVfePs4lrjA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u5IW6mro; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RdMYwEFf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D3D0C2BCB0;
-	Fri, 24 Apr 2026 17:45:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u5IW6mro"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1472C19425;
+	Fri, 24 Apr 2026 17:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777052729;
-	bh=0pUcwKSaN2IYoAKf9yaef1dDw3E3dJewVX2FK3HvAvo=;
+	s=k20201202; t=1777053214;
+	bh=8MiFVOL8pqE/jqmzctH8jeJa4QIQG+8++LO+dGmbNLk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=RdMYwEFf3sDsXtWov4Tuf2dfpF3K4OTF/kZItHcKtMU2HW5MoGcA5XhCBhDQEAOeM
-	 TGRzaQCkGhYFMlEJpNR/fkWTc43pqCCvfMov8aBE2iLf8jKpr158uBnJESeEt5DqXu
-	 K5P52UmOxeIpki1M0AsUa49R2hJPo+GpBcfJdhYi9TTU5y9BbsWMbY00oqkxMWQtje
-	 M6lVspguo/NeNwaPInyH7r730sZ4VifYvUmaBsGBGY/vBxZU2iLKzrrSGbWw+KalJ/
-	 PQTe3w9tsos83VIXWLnN2xTrJ1SsUlhTD70Zvg3bUmN/aAQOnc/bzxLe0ZlvJS4zHa
-	 sPFRCcznHj0Ww==
-Date: Fri, 24 Apr 2026 18:45:19 +0100
+	b=u5IW6mroIurHtjrOXV7tr7wlTO3ZMlI/+kbPEBH8iZScH9J5LzlgDEu8mCyhAP4Yj
+	 gffTUkN4iv8I0wh641ttnadJNoYAIRqF5xV6ErMehTDVE4wOqlmJPuiQZhEZFWtGL4
+	 bK+PUx3+q4YxKRXs/67NLWue/BVSWpACm8N/iDRew4IHuEAe0Gfypa0EE2nfxgMT/D
+	 v58Q/snr7H3kj+9zSzw/Bs5kmgM7daVfhToqEJwnnxwC6uWgEuuUjl7puL5gJBlwHJ
+	 AR3t1o9EJhOoeKcO93xB7SgJa1EvIGHSqh3yiDWJEppIxGPmtu+6Qr5lbD1CtrFF4l
+	 9sQpeJpJ5Lk/w==
+Date: Fri, 24 Apr 2026 18:53:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Ariana Lazar <ariana.lazar@microchip.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Conor
- Dooley <conor.dooley@microchip.com>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] dt-bindings: iio: dac: mcp47feb02: fix reg property
- value bounds
-Message-ID: <20260424184519.41fdbf60@jic23-huawei>
-In-Reply-To: <20260422-hull-naming-2d7e822976a0@spud>
-References: <20260422-mcp47feb02-fix5-v3-1-e742cbab1dad@microchip.com>
-	<20260422-hull-naming-2d7e822976a0@spud>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Maxwell Doose <m32285159@gmail.com>, ak@it-klinger.de,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5] iio: proximity: srf08: Replace sprintf() with
+ sysfs_emit()
+Message-ID: <20260424185327.66914793@jic23-huawei>
+In-Reply-To: <aejE42knD_s5rsGy@ashevche-desk.local>
+References: <20260422124505.8875-1-m32285159@gmail.com>
+	<aejE42knD_s5rsGy@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,24 +48,56 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 22 Apr 2026 17:55:55 +0100
-Conor Dooley <conor@kernel.org> wrote:
+On Wed, 22 Apr 2026 15:53:55 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Wed, Apr 22, 2026 at 02:53:14PM +0300, Ariana Lazar wrote:
-> > Replace minItems/maxItems with minimum/maximum to describe the reg
-> > property as a single channel number with 8 possible values (0-7)
-> > 
-> > Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
-> > ---
-> > Changes in v3:
-> > - Replace minItems/maxItems with minimum/maximum reg property value bounds
-> > - Link to v2: https://lore.kernel.org/r/20260417-mcp47feb02-fix5-v2-1-6592ea499cce@microchip.com
-> > 
-> > Changes in v2:
-> > - keep just maxItems value update in this patch
-> > - remove Reported-by from commit message
-> > - Link to v1: https://lore.kernel.org/r/20260416-mcp47feb02-fix5-v1-1-9656c2fed6d2@microchip.com  
+> On Wed, Apr 22, 2026 at 07:45:05AM -0500, Maxwell Doose wrote:
+> > Replace sprintf() function calls with sysfs_emit() and
+> > sysfs_emit_at(). While the current code is fine, sysfs_emit() is
+> > preferred over sprintf(), and will help modernize the driver.  
 > 
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> pw-bot: not-applicable
-Applied. before the space adding patch.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> ...
+> 
+> >  v5:
+> >  - Reversed decision to put sysfs_emit() call on one line per Jonathan
+> >    Cameron's request.  
+> 
+> Oh, I missed that. In any case I consider my suggestion is still better,
+> it keeps driver in limits and makes the wrap on logical boundary.
+I'm a bit lost on which of us is asking for what and can't figure it out
+from the patch history.  Anyhow, I did make one tweak whilst applying -
+I think some confusion occurred as I don't think we'd disagree on this one
+and you called it out in an earlier review.
+
+diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
+index 2ec8d0732763..92a37ba331f6 100644
+--- a/drivers/iio/proximity/srf08.c
++++ b/drivers/iio/proximity/srf08.c
+@@ -317,7 +317,7 @@ static ssize_t srf08_show_sensitivity_available(struct device *dev,
+        for (i = 0; i < data->chip_info->num_sensitivity_avail; i++)
+                if (data->chip_info->sensitivity_avail[i])
+                        len += sysfs_emit_at(buf, len, "%d ",
+-                               data->chip_info->sensitivity_avail[i]);
++                                            data->chip_info->sensitivity_avail[i]);
+ 
+        len += sysfs_emit_at(buf, len, "\n");
+
+It's only just over 80 chars and flipping to 
+		if (!data->chip_info->sensitivity_avail[i])
+			continue;
+		len += sysfs_emit_at(..
+
+doesn't seem worth the effort.
+ 
+With that applied to the testing branch of iio.git.
+
+Thanks,
+
+Jonathan
+
+> 
+> >  - Fixed some of my editor's tab-spacing issues  
+> 
+
