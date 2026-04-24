@@ -1,175 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAB3B346E6D;
-	Fri, 24 Apr 2026 19:27:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 555FE3290C2
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 21:37:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777058855; cv=none; b=nfTuNCGjVoIet3CrqYonehn2AijiEVC7axT8Q7GxD529/PkrhYq8lZ+Ha5bwPM/aelZJorhh4z7BlUVOv5auXufQNsBT+4S+T40fLZDpxk/freD8YHROqU6yF0j3w2VcVL0XsPmMuzRD38EHkS0iZ/eyH4BKS+Puc0lx3FuhNKI=
+	t=1777066641; cv=none; b=s12gaKZGCNPl4BMaTd+UKHTLxrpv9b9x7g9bOElOgOQpxiHs5zsolpviSJLrUpSPFvqlB4Mfe1siv3Az9lxNkvTE0dFVdxd4bVqkVIwVWehbryCusz0O46jnJVWUbLR0dXcnm9a52IFP9rsC8zFV+5f9eTNNJga6ArqZbv7gTRY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777058855; c=relaxed/simple;
-	bh=31QoA+YPJM3Bol9fh7NBAwIgp0iiAP0PcThEkLmgXIA=;
+	s=arc-20240116; t=1777066641; c=relaxed/simple;
+	bh=id1+Z0RiZnu9fcpdygHTv8Hyka13BoEKIX1ryJU4/AU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cOS2qDai0dNVpMSqP2W8yN4rQk8AsOdjkjKfEFoMm0VKuEkI4KadZ9OcU69FhhkutPyy63fDSqcR21zIfhS1JEzcYh2XFiL13vdefrI7abXHlDGSLCbrL71pdeBAoHM1vBz9kQo7JDdS8AS4VzusPMA7GRTq4pymXOM8Ngx0U0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vs4nSjUb; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=LWgOttN8iAyDeGUDxa9MRISTEd7NqL58aSZuB0VqJOu8HIZ8nfEGh6lssiedju0GXogdOiJRkMWHasn5XLANVHEfrQM1jd3jRZssUjWMH5aEr5GCK1zIALzfPdZCDoLP/crIO5twTxRfqIwqJC9OD3be7txlsT2xdU5+b5Be3K0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=elJ7JsCX; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vs4nSjUb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30697C19425;
-	Fri, 24 Apr 2026 19:27:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777058855;
-	bh=31QoA+YPJM3Bol9fh7NBAwIgp0iiAP0PcThEkLmgXIA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Vs4nSjUbZA79ZD5CxaLkG2bNM7tFiYrixMjZgqbBuDkCxK5pGpzEdrm8RR7AGdhP5
-	 H8AQDo+ubNtxv1xbd7Fe6E1/m4x+tawnv66hYgdE9s4XB9lIw1j6t4eqmc3VNWC/ej
-	 VI06fuVLXswGjeGUIQFlcTIlF+TQ7Qu2AaUas91QJB8T4HYCsX8kW9FnUGJ67Hl/2B
-	 mMMaQAZICBKbVhR0wvSVbyFAD89iZ4MQ4apsqNAz05a10EORFag/ysvYFEIfTj+4/7
-	 0KoEgFZ0zBOFJp/7NfSHGSBqEBGaW1Tzh/8vvlhH0DF3PIaX/2l5XaZdtLKiP/2You
-	 45eItwvq/U2hA==
-Date: Fri, 24 Apr 2026 20:27:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, nuno.sa@analog.com,
- linux-iio@vger.kernel.org, demonsingur@gmail.com,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] MAINTAINERS: Update maintainer for iio driver(s)
-Message-ID: <20260424202727.1b880766@jic23-huawei>
-In-Reply-To: <aeskNzhWtKPNYb4R@nsa>
-References: <20260421165856.2245598-1-sanjayembedded@gmail.com>
-	<aenU2WZnVJ-esibn@nsa>
-	<8C4ED753-72A9-4A34-920D-A5C5E8DB1840@gmail.com>
-	<aeskNzhWtKPNYb4R@nsa>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="elJ7JsCX"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-48909558b3aso78431705e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 14:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777066639; x=1777671439; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1ykeieCQiiUZi3J/2eeufITWyJmr5d8BX3l3RZUjInI=;
+        b=elJ7JsCXqJWdvJle66uJiCMSLgrZivJZQPqvHT4akq6ynIrF3JAgq4mnxu4Uldqux4
+         o3I/nDQBUtCVvt/YtDSGFbETohJ2ZKIonzDsMw9xgSt8kO+SzM2fWx0LjlOUr3kIj2bI
+         4sVcyluttCkHiI0LgAq2e6JWRgrZOA7/u98ec6iic+yaYZo76QRDrYhwrNHAGgYj01pG
+         oZ2caMsOXZdOic6AzK/dGarNuw2sMbil2PLjwEw/Jp05/QMgNPdjWS7mf9smswjbZ0z7
+         F7vNG3QDUs4jgo9/EXZWksIJO1YeqOJbBuBmr68UjYC5LQrSwPvwQ6I5lykr0uVEtJU/
+         RlOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777066639; x=1777671439;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=1ykeieCQiiUZi3J/2eeufITWyJmr5d8BX3l3RZUjInI=;
+        b=JCkuurm2XVVsXdRngQk2A6dvGaVk7yA3rCT/gkio2Lvm5Lblot/uS+dvRtoJyeGq51
+         vug044Em7IRDzKEXoPQ0fkGzUQutQCkhAB3Oie4FuzcUA4I/3OM6NGOOno0+7XZg0Tl/
+         Sl9BdDTHtdBz+LH7xBEx6iMGU4t4gGrJnLKMtUSeNUcTkVv6i3FFRHRoJMMZAo6caygu
+         ATa+UvUPPC5OVHkMGhFCZVrF4HFIKGpOrDGyh5BliNR8vVcMj1Dkqn0uA4rwGuuZFFtC
+         hcH39X3O+MJ7g8roYspEfl4rj3CR/+0WSPC2yE2xCmVlxGn1tMM8b3HKvAZMO/PD5173
+         hMqg==
+X-Forwarded-Encrypted: i=1; AFNElJ8rFk6wkO7m50lF/dp81p0UYo2C7fu0Hj0dN4wwXmelVvZuseR7Vlkr0J9JH9LVEhzu+PAuJlEHu2c=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzpeqWycckeZy8EpeJzaPBoaHPKKS7gGY3SmO69O4Ai5xSaFax8
+	WC7Ey81L0q2WW1Ky5nbYFCSenAwVCujvglUWUuKbEjJlzGRnoN6AH6zB
+X-Gm-Gg: AeBDiesNI8dWQXIo87zqoZgsIGRXCcpda2CYI0lCb0Dfz1he51hCP3+zAtNwIr+y1rl
+	llElBezKGggxw/CGudqaCNJF+t6vmiRF95hhJM+f09nE3KPIwYs76E2L7wnkFFBjbio+sM7eJ9w
+	Tw0sD6QrCNVaFrwz4+jG7IcH9pQQjF2CEpdoi2oF00qMZuKTXpUu42asMccdaEVzUGK53XLy9Wz
+	ADVRpgcGtGpNQ2lrM0ZFEwtWlo9t59YLvkojpfsslrSl9Nkl+N/gZWoYj3pk7/TivsouniFiGqX
+	2f5G3Mi3HNgqPfmegrtdnoyRVIeFIuJbBCrLryySnylfaAMiByshk0dH/7oqI1zKrqRLN8ew0fh
+	dflUWpwhJrqiD5Vy46DJSaNsSvovzNSLOF2VCjrzbOPTtAOWTa3tVaCmaXZu+GGwpk5EvfKeoxT
+	O633QcM0V2P8w0/v0g1ER/GZMGKnz/Qwzu1FSRRJ8Y3ja4zreubspcOaz6Oq1Zl6ggb+DMLuyq2
+	kw=
+X-Received: by 2002:a05:600c:37c4:b0:48a:5501:7995 with SMTP id 5b1f17b1804b1-48a55017b71mr283475335e9.18.1777066638544;
+        Fri, 24 Apr 2026 14:37:18 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a5aa3ae83sm424493425e9.12.2026.04.24.14.37.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Apr 2026 14:37:18 -0700 (PDT)
+Date: Fri, 24 Apr 2026 22:37:15 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Yury Norov <ynorov@nvidia.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>, Thomas Gleixner
+ <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+ <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Ping-Ke Shih
+ <pkshih@realtek.com>, Richard Cochran <richardcochran@gmail.com>, Andrew
+ Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
+ Abeni <pabeni@redhat.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Yury Norov <yury.norov@gmail.com>, Rasmus
+ Villemoes <linux@rasmusvillemoes.dk>, Hans de Goede <hansg@kernel.org>,
+ Linus Walleij <linusw@kernel.org>, Sakari Ailus
+ <sakari.ailus@linux.intel.com>, Salah Triki <salah.triki@gmail.com>, Achim
+ Gratz <Achim.Gratz@stromeko.de>, Ben Collins <bcollins@watter.com>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ linux-rtc@vger.kernel.org
+Subject: Re: [PATCH 1/9] bitfield: add FIELD_GET_SIGNED()
+Message-ID: <20260424223715.077288e8@pumpkin>
+In-Reply-To: <aeub59FBHbCy-KKP@yury>
+References: <20260417173621.368914-1-ynorov@nvidia.com>
+	<20260417173621.368914-2-ynorov@nvidia.com>
+	<6170788fcab2ec835597e3d7411928d36850c20a.camel@sipsolutions.net>
+	<aeub59FBHbCy-KKP@yury>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Apr 2026 09:08:37 +0100
-Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+On Fri, 24 Apr 2026 12:35:51 -0400
+Yury Norov <ynorov@nvidia.com> wrote:
 
-> On Fri, Apr 24, 2026 at 07:22:37AM +0530, Sanjay Chitroda wrote:
-> >=20
-> >=20
-> > On 23 April 2026 1:46:32=E2=80=AFpm IST, "Nuno S=C3=A1" <noname.nuno@gm=
-ail.com> wrote: =20
-> > >On Tue, Apr 21, 2026 at 10:28:56PM +0530, Sanjay Chitroda wrote: =20
-> > >> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> > >>=20
-> > >> The listed maintainer analog domain email for Cosmin Tanislav is no
-> > >> longer valid, and he would no longer maintain this driver(s).
-> > >>=20
-> > >> Replacing email maintainer with list, to keep it valid all the time.
-> > >>=20
-> > >> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> > >> ---
-> > >> Changes in v3:
-> > >> - Following input from Nuno and confirmation from Jonathan,
-> > >>   replacing domain specific maintainer with mailing list.
-> > >> - Link to v1: https://lore.kernel.org/all/20260418211336.1800221-1-s=
-anjayembedded@gmail.com/
-> > >> --- =20
-> > >
-> > >While you're doing this, could you take the opportunity and also update
-> > >this entry?
-> > >
-> > >https://elixir.bootlin.com/linux/v7.0/source/MAINTAINERS#L1837
-> > >
-> > >Thanks!
-> > >- Nuno S=C3=A1
-> > > =20
-> > Hi Nuno S=C3=A1,
-> >=20
-> > Are you suggesting to have separate change to add mailing list in analo=
-g devices and iio driver which you pointed ?=20
-> >=20
-> > This change is specific to email debounce due to Cosmin analog domain a=
-ccount. =20
->=20
-> Yes, it makes more sense for it to be a separate patch. I also suggested
-> that one because it's an entry covering a lot of driver's and
-> includes Lars which has been silent for some time now so maybe it's bette=
-r no
-> to "spam" him like that :)
+...
+> > Any chance it'd be simple to generate u32_get_bits_signed() etc.? Could
+> > be especially useful for le32_get_bits_signed() for example, to have the
+> > endian conversion built-in unlike FIELD_GET_SIGNED().  
+> 
+> Maybe this:
+> 
+>         x = FIELD_GET_SIGNED(mask, le32_to_cpu(reg))
 
-If we are adding the entry to the catch all, do these individual entries
-bring any benefit. Maybe we should just drop them?
+But if you are going to follow it by:
+	  x1 = FIELD_GET_SIGNED(mask1, le32_to_cpu(reg))
 
->=20
-> >=20
-> > Also, I had take a glance on MAINTAINERS, it looks there are good amoun=
-t of drivers which are maintained by you and Michael Hennerich from analog.=
- If you suggest I can plan to add analog mailing list in all respective pla=
-ces in separate change.
-> >=20
-> > This way all analog device maintained drivers will have mailing list of=
- analog.com =20
->=20
-> Yeah, I'm not sure if it makes sense to go change all of those. I would
-> focus on bouncing emails and we (ADI) need to make sure to also include
-> that list from now on.
->=20
-> - Nuno S=C3=A1
->=20
-> >=20
-> > Kindly share your thoughts on the same.
-> >=20
-> > Thanks,
-> > Sanjay Chitroda=20
-> >=20
-> >=20
-> >  =20
-> > >>  MAINTAINERS | 8 ++++----
-> > >>  1 file changed, 4 insertions(+), 4 deletions(-)
-> > >>=20
-> > >> diff --git a/MAINTAINERS b/MAINTAINERS
-> > >> index c981cbdff500..6498f0aed1ff 100644
-> > >> --- a/MAINTAINERS
-> > >> +++ b/MAINTAINERS
-> > >> @@ -644,7 +644,7 @@ F:	drivers/iio/accel/adxl355_i2c.c
-> > >>  F:	drivers/iio/accel/adxl355_spi.c
-> > >> =20
-> > >>  ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
-> > >> -M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
-> > >> +L:	linux@analog.com
-> > >>  L:	linux-iio@vger.kernel.org
-> > >>  S:	Supported
-> > >>  W:	https://ez.analog.com/linux-software-drivers
-> > >> @@ -1461,7 +1461,7 @@ F:	Documentation/devicetree/bindings/iio/adc/a=
-di,ad4080.yaml
-> > >>  F:	drivers/iio/adc/ad4080.c
-> > >> =20
-> > >>  ANALOG DEVICES INC AD4130 DRIVER
-> > >> -M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
-> > >> +L:	linux@analog.com
-> > >>  L:	linux-iio@vger.kernel.org
-> > >>  S:	Supported
-> > >>  W:	https://ez.analog.com/linux-software-drivers
-> > >> @@ -1549,7 +1549,7 @@ F:	Documentation/devicetree/bindings/iio/dac/a=
-di,ad7293.yaml
-> > >>  F:	drivers/iio/dac/ad7293.c
-> > >> =20
-> > >>  ANALOG DEVICES INC AD74115 DRIVER
-> > >> -M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
-> > >> +L:	linux@analog.com
-> > >>  L:	linux-iio@vger.kernel.org
-> > >>  S:	Supported
-> > >>  W:	https://ez.analog.com/linux-software-drivers
-> > >> @@ -1557,7 +1557,7 @@ F:	Documentation/devicetree/bindings/iio/addac=
-/adi,ad74115.yaml
-> > >>  F:	drivers/iio/addac/ad74115.c
-> > >> =20
-> > >>  ANALOG DEVICES INC AD74413R DRIVER
-> > >> -M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
-> > >> +L:	linux@analog.com
-> > >>  L:	linux-iio@vger.kernel.org
-> > >>  S:	Supported
-> > >>  W:	https://ez.analog.com/linux-software-drivers
-> > >> --=20
-> > >> 2.34.1
-> > >>  =20
+you really want to to the byteswap once, best as:
+	reg = le32_to_cpu(struct->member);
+
+	David
+	
+> 
+> Thanks,
+> Yury
+> 
 
