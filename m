@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE15333987E;
-	Fri, 24 Apr 2026 17:02:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4971D33E34C;
+	Fri, 24 Apr 2026 17:04:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777050166; cv=none; b=iFriZ5jqAKnZkfaUEW7PXlKsoPJNm4YSirLvOnMZMWoKg/OUVyn+XpFblu9qrXh8TbX0eGleyJzG/t+KsPWc3inCWlIPEPh8Fj7ftdeDkx9kdQeKwWrv96cGQqh0X/rNwA2Bgz28n5TfKgOfynzEswrAmO7Lv48yjVbalpn3S7o=
+	t=1777050288; cv=none; b=QRrv+9RJzmUXgbWhFVXvic66GFHljD/6wHeTfE74lksfEI1F3w5Pr0jrNQ3e1IwTtRrBbG4NYGa8pgFL5tIelef1TZe4iRnxjzjhEmQY0roWbu6I0Dg8+WJHuzgrh2En5TTJk5e5VtTpPvh3JNms4p9AC5wFtLuMc8r40tljjG8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777050166; c=relaxed/simple;
-	bh=uqzsbccj3Dgkca8d0rOxX0X6qxKogMm1MwQifoj5s+0=;
+	s=arc-20240116; t=1777050288; c=relaxed/simple;
+	bh=fjDu/mnC+1ECscvmaAHzDugmAtICITz9ijc9sTxrptU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PJDsYksAdTqX5F7oMl+m8yWWdrcInHEx9BoXqG93cr8EW35ZgFKGXKSkH7fgCOTOw8GWmW1/6iBDwBnuJTG+o0NRi3D/M9DnsrprsGjNm8CAw9ov1abxGcW2Msa7zZROB15VANsFNRxv1p6Pkg3dJm0Fy+M8yMCtRaOTZQcRRf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U91G8c1d; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=eLtIS4+Atx/4svnBOetNHs9q4XFC3f24dzmuSMJ9jbgSu6712H0TdOCp40CIqHtyW6BcS22lT4dL4NH31YNi4BfR5k2dfz8smPCtgx8PBqhmXiPmDmvflXFx0bepqhiVDcNEF0HLaMTcDptAiZjou1HNNc08FvZ88VoVVJCbqoA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BlUMvdU0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U91G8c1d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB1A3C19425;
-	Fri, 24 Apr 2026 17:02:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BlUMvdU0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5C7C2BCB2;
+	Fri, 24 Apr 2026 17:04:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777050166;
-	bh=uqzsbccj3Dgkca8d0rOxX0X6qxKogMm1MwQifoj5s+0=;
+	s=k20201202; t=1777050287;
+	bh=fjDu/mnC+1ECscvmaAHzDugmAtICITz9ijc9sTxrptU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=U91G8c1dElZdqg38sSti1bxHVAUCMGBVP6aenc+n4DABi+M2jKLTMDYKLCI1RyRC9
-	 mvvI3iyXIDvDPyQwA+84qbpnMFEhT1ilX13xScPgYpDAUL/KC+tAf3EKQMsVOU7pU8
-	 LLWZALhMWrvBMx6QNxp8PWh/WL+T3jyutQSdN+PZ4S62zyuATLed1Kf8daqYb+V4EO
-	 rvhFLXbQgpXk4rAKGl2VGpmc6msgCRSGIo1Vsu1Z2C07HldKBs3Orv67xS+p8VvMSG
-	 RhozLzdNIgxyGdQCEJq/4drQYFTaVq+BwBf7XJWLIC1qq0aAlMleJsfN7962sv2YsZ
-	 rgYnRp+3+uj2A==
-Date: Fri, 24 Apr 2026 18:02:35 +0100
+	b=BlUMvdU0LWN/zizjRxBsqPek5wICbHxttHFypwL1gPQUAHSK/BVyqIJiI8ORZi/1n
+	 KcGCThTbrcPYZ5ucD06T6X4i0KBHb0bvpoNbefhGqehu4u4uqyR8knaNqnDmUj9eck
+	 c/s5CiCQbqItjqxyABtBc6mRa/898xgV7yd+3+fbCevWOsN2fvISSUKtkogIQFHpKV
+	 nwGBBYVHMmJu0E4sd1usu3xJtFwfyvivZkK2anoWVgyDEW2uLT6tyZn039u4yTBh/o
+	 Q+mieUDgW0Z8QJSwqQnLhqMuuxOMUK7cr8/3o0ruxNG2mcPWRmJ60PFSkxCKDFe38Z
+	 PeQuOUhP0iXIA==
+Date: Fri, 24 Apr 2026 18:04:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
 Cc: Rodrigo Alencar via B4 Relay
@@ -40,14 +40,14 @@ Cc: Rodrigo Alencar via B4 Relay
  Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Kees
  Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>,
  Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH 20/22] iio: dac: ad5686: implement new sync() op for the
- spi bus
-Message-ID: <20260424180235.22bdf98c@jic23-huawei>
-In-Reply-To: <umhebqm7nwcg6h5y77egrh7nirtpjpin5t42oxifo5em4jmsyj@gavxnwsadyuh>
+Subject: Re: [PATCH 03/22] dt-bindings: iio: dac: ad5696: rework on power
+ supplies
+Message-ID: <20260424180436.674fc09e@jic23-huawei>
+In-Reply-To: <g5a3zky54agp5juxbpn4yy6abhugazgzbyfau5va6r5bmrebxz@o4c5kf6ki24h>
 References: <20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com>
-	<20260422-ad5313r-iio-support-v1-20-ed7dca001d1b@analog.com>
-	<20260423191833.0de9fb8c@jic23-huawei>
-	<umhebqm7nwcg6h5y77egrh7nirtpjpin5t42oxifo5em4jmsyj@gavxnwsadyuh>
+	<20260422-ad5313r-iio-support-v1-3-ed7dca001d1b@analog.com>
+	<20260423184723.54ddbd67@jic23-huawei>
+	<g5a3zky54agp5juxbpn4yy6abhugazgzbyfau5va6r5bmrebxz@o4c5kf6ki24h>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -58,79 +58,90 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Apr 2026 09:58:39 +0100
+On Fri, 24 Apr 2026 08:44:21 +0100
 Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-> On 26/04/23 07:18PM, Jonathan Cameron wrote:
-> > On Wed, 22 Apr 2026 15:45:54 +0100
+> On 26/04/23 06:47PM, Jonathan Cameron wrote:
+> > On Wed, 22 Apr 2026 15:45:37 +0100
 > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 > >   
 > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > > > 
-> > > Use of local SPI bus data to manage a collection of SPI transfers and
-> > > flush them to the SPI platform driver with the sync() operation. This
-> > > allows for faster handling of multiple channel DAC writes, avoiding kernel
-> > > overhead per spi_sync() call, which will be helpful when enabling
-> > > triggered buffer support.
-> > > 
-> > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>  
-> > Interesting approach to potentially optimise for SPI.  Do you have
-> > perf numbers or similar to support it being worth the effort?  
-> 
-> Short answer is no, I can try to produce some benchmarks, but I am not sure it
-> is needed. The implementation here prepares the ground for triggered buffer support,
-> which adds the capability of implementing a control loop in userspace that updates
-> all the enabled channels at once. That will happen in a trigger handler, then we want
-> that to be as fast as possible, so it can be prepared for the next trigger event.
-> It is not really about calling a function once rather than multiple times, but the
-> problem happens when the device is sharing the spi bus with other devices and how busy the
-> system is in general, so there may be context switches in the spi platform driver with
-> one or two mutex acquire/release operations, which may add bigger delays between
-> transfers, which depends on what the other devices are doing. I suppose that devices with
-> high channel count like 8 or 16 can benefit with this.
-
-Fair enough.  There is enough complexity here that maybe a perf
-number would strengthen the argument.  I'm reasonably happy with
-that complexity anyway so this would be if anyone else pushed back.
-
-> 
-> > Otherwise a few minor comments inline.  
-> 
-> ...
-> 
-> > > @@ -84,8 +107,18 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
-> > >  				      AD5686_ADDR(addr));
-> > >  	st->data[1].d32 = cpu_to_be32(AD5686_CMD(AD5686_CMD_NOOP));
-> > >  
-> > > -	ret = spi_sync_transfer(spi, t, ARRAY_SIZE(t));
-> > > -	if (ret < 0)
-> > > +	xfer[0].tx_buf = &st->data[0].d8[1];
-> > > +	xfer[0].len = 3;
-> > > +	xfer[0].cs_change = 1;
-> > > +	xfer[1].tx_buf = &st->data[1].d8[1];
-> > > +	xfer[1].rx_buf = &st->data[2].d8[1];
-> > > +	xfer[1].len = 3;
-> > > +	xfer[1].cs_change = 0;
-> > > +
-> > > +	spi_message_init_with_transfers(&bus_data->msg, xfer, 2);  
+> > > Add supplies for VDD, VLOGIC and VREF input voltage pins. The vcc-supply
+> > > property is deprecated.  
 > > 
-> > Why not carry on using spi_sync_transfer() here?
-> > We'll end up with an spi message the stack but I suspect that's
-> > not a significant performance cost.  
+> > Please provide some information on why? Was it always just wrong and that
+> > naming was never used for any of the supported parts?  
 > 
-> True, it would be around 200 extra bytes in the stack, and read operations
-> would not happen concurrently with writes, so why not reuse resources
-> (message and transfer structs) that is now available in the bus data?
-> To me, it allows for consistency in this implementation. 
+> yes, vcc does not exist, none of the devices describe any power input with
+> that name. The name is also misleading as it sounds like the input power
+> supply. It is being used as an external voltage reference, which is called
+> vref. Will add some of that to the commit message.
 > 
-Reusing transfers makes sense.  I was a little less clear on reusing the
-message because we can't then use the helper (which is all spi_sync_transfer()
-really is).  Not particularly important either way.
-> > > +
-> > > +	ret = spi_sync(spi, &bus_data->msg);
-> > > +	if (ret)
-> > >  		return ret;
+> vdd should be required, but that would break the dt-binding ABI.
+
+If it's required to correct operation I'm not bothered about breaking that
+backwards compatibility (as long as the driver keeps working with older
+dts).  We just need to state that clearly in the patch description.
+
+> Also, vref
+> should be required for parts that does not have an internal voltage reference
+> (the one with no 'R' in the end of the device name), but that would break
+> the ABI too.
+
+Likewise.
+
+>  
+> > > Certain devices require vref-supply to be
+> > > available once an internal reference voltage is absent. Still, this patch
+> > > does not add those as 'required' so that the ABI is not broken.
+> > > 
+> > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > ---
+> > >  .../devicetree/bindings/iio/dac/adi,ad5696.yaml     | 21 ++++++++++++++++++---
+> > >  1 file changed, 18 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> > > index f286e5072abc..21b80fe597d1 100644
+> > > --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> > > @@ -38,9 +38,22 @@ properties:
+> > >    reg:
+> > >      maxItems: 1
 > > >  
-> > >  	return be32_to_cpu(st->data[2].d32);  
+> > > +  vdd-supply:
+> > > +    description: Input power supply.
+> > > +
+> > > +  vlogic-supply:
+> > > +    description:
+> > > +      Digital power supply. If not supplied, it is assumed to be the same as
+> > > +      vdd-supply. VLOGIC may be hardwired to VDD in some board designs or
+> > > +      internally connected in small packages.
+> > > +
+> > > +  vref-supply:
+> > > +    description:
+> > > +      Reference voltage supply. If not supplied the internal reference is used.
+> > > +
+> > >    vcc-supply:
+> > > -    description: |
+> > > -      The regulator supply for DAC reference voltage.
+> > > +    deprecated: true
+> > > +    description: Use vref-supply instead.
+> > >  
+> > >    reset-gpios:
+> > >      description: Active-low RESET pin to reset the device.
+> > > @@ -88,7 +101,9 @@ examples:
+> > >        ad5696: dac@0 {
+> > >          compatible = "adi,ad5696";
+> > >          reg = <0>;
+> > > -        vcc-supply = <&dac_vref>;
+> > > +        vdd-supply = <&dac_vdd>;
+> > > +        vlogic-supply = <&dac_vlogic>;
+> > > +        vref-supply = <&dac_vref>;
+> > >          ldac-gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
+> > >        };
+> > >      };
+> > >   
+> >   
 > 
 
