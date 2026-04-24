@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BFE733F583
-	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 16:56:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAA3433A6E9;
+	Fri, 24 Apr 2026 16:58:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777049761; cv=none; b=rVt9KcnBCZegTR1uukB+lXXPECEG3NI5Zg3urHMEsxrD2YfUSb7ETSMpDejf8HmYzIk5A7y12OAI3Xg8Ht01MRDm8h7/hmBtRxUgC2G8CAhSqM6Kh23aEw3HkUvmh1uqbqPN5aXZp3nxAOfXPrZ7YXFPawTNH3ZFm460VqHJs8I=
+	t=1777049883; cv=none; b=JDkfx8BKEd499VYCvzr6KRDpgsz7LBo8f6AKnzxl2KxbrjqQ4phIAhp71hkU5KGqayRi+WdnWyS50nAXbVJpcSATW++MoNEW+cpMWjjNIMZSXz5kH0c4XK1ufGXxXE5BuCleBkTd15HGoqmwyu5+dbFrxJislqC2DaVZuXFzDg0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777049761; c=relaxed/simple;
-	bh=4lRy/mI46E2p0zTcVKbha+zNAG7RQSh8FSr4YKjKCtc=;
+	s=arc-20240116; t=1777049883; c=relaxed/simple;
+	bh=VodKwR9jVIU9sdfAyHWYY+LZlI+j2qz89Ku2fyQCjRo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SWQT9NFns67e35P2Qp7qtJexFuA3VDPSBSSrW4ostCPjM/Jzhm/E1IygWBoewXzunXXKivCYBPJA7dNEyzMjkbg+C+GX26SD+y1QEX4yp5Pqk9USyu3n2YIb38hHIJB4zwFMu8KXpIeXJNHMhJNRiink9ACFkNW8mVWmcdlCc+s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MMKwSo0g; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=JloEeoRqsonJ97WP4zTZ8Tc0Sj/Cv2q6as8oJGC/srgynSjs6Q1ZcxWYbd1Zc9MhnNywLD3n+2F9vHEkp7GPhpVudDn7eDcS7vYAy/UX4EkSFnWa+Vu5d0Gf3iQJ58LOWz6K4mbllkQTo7yOgwsj6RWi6q2NXzJJQ/HQN0KUeDE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LUT4RQno; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MMKwSo0g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05173C19425;
-	Fri, 24 Apr 2026 16:55:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LUT4RQno"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D298DC19425;
+	Fri, 24 Apr 2026 16:57:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777049760;
-	bh=4lRy/mI46E2p0zTcVKbha+zNAG7RQSh8FSr4YKjKCtc=;
+	s=k20201202; t=1777049882;
+	bh=VodKwR9jVIU9sdfAyHWYY+LZlI+j2qz89Ku2fyQCjRo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=MMKwSo0g3wy0tZ2qHauG3HptdCrWSlVj3KnsDVUT08+Hngkm+zmeXAcTBoFDEmqLj
-	 9O+fdHsNTsRlRI7wnWHYV+zC9hd24dYQOqkSA69OdxcAtHgt/iA5ZQbf0mDadHCK5j
-	 RjCfZkuQvKDLfxLHTFIquFRMsOH9JFK1ijlDmverLIUzLC5H8FmwEVMBG8zZi/zlqO
-	 jeL0jEASFyw8GI449Oop0JTmjWvA0bFjzf42EA2jvYEkoeBnlJUf+7IAdNEFglFCBX
-	 DLjnK05wLsYlxENdHaiINLReyVJGSwobvKdKRaRQRrdSwJWXuhzPp/boXm4Kz793kT
-	 XXCM5AN2iKbYg==
-Date: Fri, 24 Apr 2026 17:55:51 +0100
+	b=LUT4RQno4oVpnOP6dQ2PFTWD1lPQgS7jF96LrH1rpaX4yrGCoS+tYiDJ6ESXhT8Gd
+	 i49lS9IL2m9P4121xF7Tl/Q9nE4WBOvdikUQnKZYWnVlGwf2ud10uNqN9ek8nxjQ22
+	 NfPNzmrWvRPPuafZJIb0MPwU668e4EpsFGF6lo4LKd5Ca29rcsP3gppebI235AefJf
+	 wivLaPb4tufqKHiS5lfKY8L4Qgz/QWpX9I1RGltYMvmzTJylx0iOpQqPKxKNz6w9q2
+	 N/3hkael8u5CQ2d/6de1RHqEWTcQa4AlEyir8fK4nWOF6wcrCyId1ia/UzUPXn1SPk
+	 aO3QC2ZonCs3Q==
+Date: Fri, 24 Apr 2026 17:57:53 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>, andy@kernel.org,
- dlechner@baylibre.com, lars@metafoo.de, Michael.Hennerich@analog.com,
- nuno.sa@analog.com, Matheus Giarola <matheusgiarola@usp.br>, Felipe Ribeiro
- de Souza <felipers@usp.br>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: adc: ad7280a: use cleanup helpers guard()
- and scoped_guard() for mutex locking
-Message-ID: <20260424175551.071b25ba@jic23-huawei>
-In-Reply-To: <aeuP9Jn0Gd-nhdBZ@ashevche-desk.local>
-References: <20260424125001.17822-1-lucas@ciziks.com>
-	<20260424125001.17822-3-lucas@ciziks.com>
-	<aeuP9Jn0Gd-nhdBZ@ashevche-desk.local>
+Cc: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
+ antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads7138: explicitly include <linux/slab.h>
+Message-ID: <20260424175753.2d0ca494@jic23-huawei>
+In-Reply-To: <aetVGYQcq1NAJb7k@ashevche-desk.local>
+References: <20260424081809.61841-2-giorgitchankvetadze1997@gmail.com>
+	<aesyzOMUl2Iyjgjz@ashevche-desk.local>
+	<20260424113600.4e76fdb7@jic23-huawei>
+	<aetVGYQcq1NAJb7k@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,47 +50,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Apr 2026 18:44:52 +0300
+On Fri, 24 Apr 2026 14:33:45 +0300
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Fri, Apr 24, 2026 at 09:43:40AM -0300, Lucas Ivars Cadima Ciziks wrote:
-> > Replace open-coded mutex_lock/unlock pairs with the cleanup-based
-> > guard() and scoped_guard() helpers in ad7280a_write_thresh(),
-> > ad7280_show_balance_timer(), ad7280_store_balance_sw(),
-> > ad7280_store_balance_timer() and ad7280_read_raw().
-> > 
-> > This removes the need for the err_unlock label and explicit
-> > mutex_unlock() calls, as the lock is now automatically released
-> > when the function returns or the guarded scope exits, regardless
-> > of the exit path.  
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> On Fri, Apr 24, 2026 at 11:36:00AM +0100, Jonathan Cameron wrote:
+> > On Fri, 24 Apr 2026 12:07:24 +0300
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
+> > > On Fri, Apr 24, 2026 at 12:18:10PM +0400, Giorgi Tchankvetadze wrote:  
 > 
 > ...
 > 
-> >  	unsigned int msecs;
-> >  	int ret;
-> >  
-> > -	mutex_lock(&st->lock);
-> > -	ret = ad7280_read_reg(st, devaddr, ch + AD7280A_CB1_TIMER_REG);
-> > -	mutex_unlock(&st->lock);
-> > +	scoped_guard(mutex, &st->lock)
-> > +		ret = ad7280_read_reg(st, devaddr, ch + AD7280A_CB1_TIMER_REG);  
+> > > WRT to the kmalloc() use, wouldn't it be simply better to use
+> > > i2c_master_send_dmasafe() and kill that kmalloc() dance in the driver?  
+> > 
+> > That sounds backwards. IIRC i2c_master_send_dmasafe() needs a heap allocation
+> > to ensure a DMA safe buffer.  See i2c_get_dma_safe_msg_buf() and
+> > the check on I2C_M_DMA_SAFE.  
 > 
-> >    
+> Ah, I thought it's opposite, but looking at the usage it seems like it's host
+> controller driver responsibility to use DMA or not for the transfer.
 > 
-> Now this blank line may be removed.
-Tweaked.
-
-Series applied to the testing branch of iio.git which I'll rebase
-on rc1 once it is available.
-
-Thanks,
-
-Jonathan
+> Why do we need to have kmalloc() here at all? I don't understand that.
+Absolutely.  Locally it looks like length might be large and therefore
+the array not suitable to be on the stack, but that's not the case.
+length == 2 so the array only has 4 elements and can go on the stack.
 
 > 
-> >  	if (ret < 0)
-> >  		return ret;  
+> > This function is just overly flexible.  
 > 
 
