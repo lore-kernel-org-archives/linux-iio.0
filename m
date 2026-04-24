@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BEF4314D05;
-	Fri, 24 Apr 2026 17:33:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E7B13DA7E5;
+	Fri, 24 Apr 2026 17:35:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777051987; cv=none; b=VkkFmtPww9YemaY+pbKI7RNR8pWoZl61JWuo2bEOOj62QG4y7ILKMjSpXs9A47KVKsOMVRK+o7zOC8QRQERKdzm84NKEoL6POnjimiCTqFMmagFMe6c/KSnTFV+ibbCtkHdjW6YWe3Q7iwCGqI7+FZGYyDKSOVYwq+OYOCLqPL0=
+	t=1777052151; cv=none; b=oGXInT8ggFgyG5OO3A6+r7sN6CiN8B32001Jdi474xYuJ4LX+2FLo/lf9P08SL8VVYVuLUbcbt+pIfDVIiY04FOlaOOGPLprDX3NyxoFh60FJd6zRLdWKToHdCZOA6cFf+tzgU6pT+SrXLC901qSdu7x0vyBOc+F55izXOWnU5I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777051987; c=relaxed/simple;
-	bh=VuheHTS/5t7AuoPF1iHAFG7k9A7SmbU3/UjSzdEZKPg=;
+	s=arc-20240116; t=1777052151; c=relaxed/simple;
+	bh=7KiWMM9xOv1PM9y96Q+W0qq4NTP162/NkOiTHi+CnZg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=V/nKytWVmMeGjmjiMF4/12/pCExbKsTmVJzeuUk3BnyRVIJqvkdA/TzUwuNTQi4etpPYHTkk386nXtwinKvlCy098tV48tjUnRCtEW6pD+46IbcokITh4TqKnpTWii92teNKq40BC3SwdEqp+N+RdeLoIFvJBf0jJnvy/6rGwLs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NDf+n0Wx; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=YI5NJ5QkaVv79n8J2zg/27Axh+og+e7xkc0jkAmEFjh2pD94y3Jhv3M81ekLcmDUYifmSuV1bEnJx9Zia42c4e2AcGzMmpvZlQtQmx3NEdm/stax8wXUYga49ifY+iLIIa370X98Vb6bBwsgrWcC/UkAAbCVJqQ4+ojJmuNxXfc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KMtRnAs2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NDf+n0Wx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2639C19425;
-	Fri, 24 Apr 2026 17:33:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KMtRnAs2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41A3BC19425;
+	Fri, 24 Apr 2026 17:35:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777051987;
-	bh=VuheHTS/5t7AuoPF1iHAFG7k9A7SmbU3/UjSzdEZKPg=;
+	s=k20201202; t=1777052150;
+	bh=7KiWMM9xOv1PM9y96Q+W0qq4NTP162/NkOiTHi+CnZg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=NDf+n0WxUFtHUGbwAwsVPvnSQTXhlvusFE60JMw+vg4/OUu67l/OKu5suspxi5Qxr
-	 ZQjEIjTQI6iIDzFd4SETKqBok1FTaiktNzlxq7T31rJfmGSDIm05QmX7Nr5n1rTkKN
-	 QnthEChpmiDWhpBVnOE8i6etvd3EVvqAr5HZXeQTIqUiKhN0vnmk67ZMxP7sSUNlKr
-	 QZ4HJiQ7zMkyZlspqfDxgSe9b0IvRhL9UCdc2hq6zMWtpkHYUwEnXWGN5iZrP2thkH
-	 2op7eteoLJ63UbRfa7qOTcDr9R0x/IKxQPDqjIh9ikECLumoEtBT3DOJBOnEAfK2DS
-	 deS13QDJD9P6g==
-Date: Fri, 24 Apr 2026 18:32:58 +0100
+	b=KMtRnAs2APTD9Lpj3PMc+u6/p+QWpg2juTrZOinYQEQZ/T8wuYH3MnZzWfWwfL8G6
+	 ZSubmVwx1O2HVtRhf1guM4s4FK/B9bZo7YzZ2U5PPnasBt9eNd0ZHrDhTzJdQ8v8+x
+	 GDBwPtm0il3olnJ65DA0EEpxyQ2E9F7njrqTqw0HrpSNn5EAGZyGLOi/Wpb828gRXk
+	 /FORRCfoPrwdzkrO7g0yBi7dWymrDHtY/H5ftPhqMkk6D5mQbdqHhreT+j2n1Xq2eA
+	 BTOfoSdRqL1w8OrWAw1WWcND9zAc3pz8LBHz9VT8R5X+ku9zEnhKY7I3YYSbJaKU+K
+	 zz1zzQxsJswpg==
+Date: Fri, 24 Apr 2026 18:35:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, sakari.ailus@linux.intel.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/6] iio: accel: mma8452: Use dev_err_probe()
-Message-ID: <20260424183258.602d401c@jic23-huawei>
-In-Reply-To: <20260424181919.62e2e6bd@jic23-huawei>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ sakari.ailus@linux.intel.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] iio: accel: mma8452: improve coding style, pm
+ and resource cleanup
+Message-ID: <20260424183546.0cbaf1e1@jic23-huawei>
+In-Reply-To: <20260422165643.2148195-1-sanjayembedded@gmail.com>
 References: <20260422165643.2148195-1-sanjayembedded@gmail.com>
-	<20260422165643.2148195-5-sanjayembedded@gmail.com>
-	<aekjfPR7JksBESxX@ashevche-desk.local>
-	<20260424181919.62e2e6bd@jic23-huawei>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,54 +47,57 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Apr 2026 18:19:19 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 22 Apr 2026 22:26:37 +0530
+Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 
-> On Wed, 22 Apr 2026 22:37:32 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > 
-> > On Wed, Apr 22, 2026 at 10:26:41PM +0530, Sanjay Chitroda wrote:
-> >   
-> > > dev_err_probe() makes error code handling simpler and handle
-> > > deferred probe nicely (avoid spamming logs).    
-> > 
-> > This patch should go earlier than dev temporary variable one.
-> > And dev needs to be introduced here.
-> > 
-> > ...
-> >   
-> > >  	ret = regulator_enable(data->vddio_reg);
-> > >  	if (ret) {
-> > > -		dev_err(dev, "failed to enable VDDIO regulator!\n");
-> > > +		dev_err_probe(dev, ret, "failed to enable VDDIO regulator!\n");
-> > >  		goto disable_regulator_vdd;    
-> > 
-> > Before doing these patches, please fix the mess with the devm/non-devm ordering.
-> > There shouldn't be goto after any devm calls.
-> >   
-> I briefly wondered what you meant here.  Key is you are referring to
-> devm_request_threaded_irq() much further down.
+> Hi all,
 > 
-> Absolutely agree that's wrong.  Rule is devm until you stop doing devm and
-> then no more devm.
+> This series contains a small cleanup and improvements to use modern kernel
+> helper API and coding style for mma8452 accelarator driver.
 > 
-> Here it looks like we can take the whole thing devm but it will need
-> some custom callbacks and we may run into corner cases with runtime_pm()
-> messing with the supplies and devm cleanup doing so (that applies even
-> without devm being involved)
+> The changes modernize mutex with guard(), dev_err_probe usage,
+> resolve checkpatch CHECKS and pm_ptr macro usage.
 
-Just noticed the two regulators are always controlled together.
-Can probably simplify code by using bulk operators.
-e.g. regulator_bulk_enable() / disable() etc.
+Take a look at what the sashiko checker came up with.
+Some other issues in the driver beyond the ones humans reviewers
+have pointed out.
+https://sashiko.dev/#/patchset/20260422165643.2148195-1-sanjayembedded%40gmail.com
 
+Be careful though - there are false positives in the output
+of this tool so check everything carefully. 
+
+Jonathan
 
 > 
-> Jonathan
+> Changes in v2:
+> - 0005: address review comment from Andy and Geert
+>   and use DEFINE_RUNTIME_DEV_PM_OPS macro
+> - Added new cleanup channges in mma8452 driver
+> 
+> No functional behavior changes are intended.
+> 
+> Testing:
+>   - Compiled with W=1
+>   - Build-tested on QEMU x86_64
+> 
+> Feedback and reviews are very welcome.
+> 
+> Thanks,
+> Sanjay Chitroda
+> 
+> Sanjay Chitroda (6):
+>   iio: accel: mma8452: cleanup codestyle warning
+>   iio: accel: mma8452: sort headers alphabetically
+>   iio: accel: mma8452: use local struct device
+>   iio: accel: mma8452: Use dev_err_probe()
+>   iio: accel: mma8452: use pm_ptr() for dev_pm_ops
+>   iio: accel: mma8452: use guard() to release mutexes
+> 
+>  drivers/iio/accel/mma8452.c | 161 +++++++++++++++++-------------------
+>  1 file changed, 76 insertions(+), 85 deletions(-)
 > 
 > 
-> 
-> > >  	}    
-> >   
-> 
-> 
+> base-commit: eade2b843d9b1f668fc1775f15611bb0a1999cd9
 
