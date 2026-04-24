@@ -1,90 +1,219 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57B0717D6;
-	Fri, 24 Apr 2026 10:18:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 409B235AC16;
+	Fri, 24 Apr 2026 10:19:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777025914; cv=none; b=oSGMyVWWGEX5EwHQezZWNdLH1GPHoONVcXQjjj0RlV2V0mK0p4rOh00mhSXbAC1gFGpjmVLB08loq6ps24yoqyXIIqjJhzjwP2k+95sKKgbe1r7dR+yns0AHSSlNwNcHobTEHNBY4s9wjgbhf1KuBlHZ8uROrF9hbO8GU/MmxY8=
+	t=1777025972; cv=none; b=e77yZgWdxo1ybqxfVLc/TujpkRpdByhcsONFz+oSIyg2bwRVaH+atqFI6XcRJ0Ch6TAYEgpP52MGjLd96NJaDwle3DCsXWEcdaPYG3SEda6PWm5LeH1mN8CsqUVkTYOVOTsIhjV3QdxPLC56oBYrNN6153IlpOD0iw+uXJlkY3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777025914; c=relaxed/simple;
-	bh=9JUjUIfqAJbct2VjyC7CxvADQaNf4SQyWeJ05L2yB0w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jjXYxN/w7pDfCyxPNuWVapVwlVdrt7EVm2XG9bjHDYKgEoL5dTcUEldDBWOJmXClkylKJ0feZY+IRI/v8Yx4pfrlJ5aXvjklBa+yYK//DFEvSrZIjptoEzjaj7uJg3/hXQBxKoml3SGiSKwmTMNiiNr6p3iW5MKLmk7Ey1reTiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EyWGQVn+; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777025972; c=relaxed/simple;
+	bh=P2pla1sM51CYkSlZsoqlf8hEG7bXgz8AtvubVSOWwW4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=neFB9STjP8+6jWfXGnUHRQNVL+avHbfK0UMFV1y5OmjLeG1YAv/JeKP9bru3vwXZgN7TMnWwjocpQqyjFifLeBSo+daPLMyqAn12EJFeWUSlxbvn5XDwSkABKjA38GqoHU/YpDBQJvVECtzaRBi4PBHEa6Azfmyl7QX65ex4hzc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VdmwKl/S; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EyWGQVn+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777025913; x=1808561913;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9JUjUIfqAJbct2VjyC7CxvADQaNf4SQyWeJ05L2yB0w=;
-  b=EyWGQVn+XQ+sb92UGBDPQZAYXi8cIseg1p6sAX82ilR7qz4WIXcIWTau
-   AGAHRrvvDU4vj64HyyRQsavCPHSlk0undC2akguqWwRb2pzAe62FqlIK2
-   y7GstJLl7JjiZnTlt2EYMIgS06C2sOsYQ3iuZL4pbf5kt1yY4XEpKI0o2
-   LzuUuLwvqZr/IvDV8MLTljqAIeMUYmE+oyipLRQoNo9UHYmfO4GPNqraf
-   IE/yTO55/XmLVssXU8OazWdHatagKXdHF6VmNv+X8b8sZxGKRRHCMsCuD
-   yZuT8kSDtlaCUlQLOWJfVgNE1T0VvMqUIG/8ufND/3jfvoCYYEMSq0hX3
-   A==;
-X-CSE-ConnectionGUID: uOFHzYlFTTG/g3Gg9hsP5w==
-X-CSE-MsgGUID: FyWUNLbUSEiBwYZEBV6scw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11765"; a="78119923"
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="78119923"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 03:18:32 -0700
-X-CSE-ConnectionGUID: P83RPMXAQke6EFqBCn378A==
-X-CSE-MsgGUID: 53H/aHGjTFWjSX3exFjg8Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="263316491"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.71])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 03:18:30 -0700
-Date: Fri, 24 Apr 2026 13:18:27 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/6] iio: magnetometer: ak8975: modernize and cleanup
- driver
-Message-ID: <aetDc7Cvb-_qkf3s@ashevche-desk.local>
-References: <20260422112207.1313-1-joshua.crofts1@gmail.com>
- <aejKKKD4JdxIzlk0@ashevche-desk.local>
- <CALoEA-w=N7ch67R+DgdqCrSy+5GtbuGkiAbJtnf-9c=Q2Mb6CQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VdmwKl/S"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5812AC2BCC7;
+	Fri, 24 Apr 2026 10:19:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777025970;
+	bh=P2pla1sM51CYkSlZsoqlf8hEG7bXgz8AtvubVSOWwW4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VdmwKl/SmIyMDLoZHUgQrf7uqb9frBgjTrdA+fgJpzUGWC0QMVmn4OPZ8jISLcgAa
+	 ZepPiRjDd7l4YaIIM3LHOtb11QNAGZtmm/fbJ0Kw2gVUnJgfqcBkIdAumd9Wu3tl4w
+	 BmWwBUNMCs5bg+UAayYnw+OQyZjApTb5tbki0azV6kSdo3TlA2hh3uvjA8LUMSb5xg
+	 P4YwGx4zSDPacgpzNVMDZaE2mCnqRe69qDj8gbQIkOouQNsUsMpF8R/cLD4Z0EeW26
+	 5kmQR+100otBP5hXWBFvVH6QpbYUZkz1/t2Imu+KaKzgNQsoYL5r2+XhjUWzx79wgH
+	 38TH8gK4R6Ihw==
+Date: Fri, 24 Apr 2026 11:19:20 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: <Ariana.Lazar@microchip.com>
+Cc: <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <robh@kernel.org>, <linux-kernel@vger.kernel.org>, <andy@kernel.org>,
+ <krzk+dt@kernel.org>, <conor+dt@kernel.org>
+Subject: Re: [PATCH 2/2] iio: dac: add support for Microchip MCP48FEB02
+Message-ID: <20260424111920.61765602@jic23-huawei>
+In-Reply-To: <f7f45b4327c9ce5c806cd878bd9b53e8fcbf7785.camel@microchip.com>
+References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
+	<20260212-mcp48feb02-v1-2-ce5843db65db@microchip.com>
+	<20260215175857.4085bc2c@jic23-huawei>
+	<f7f45b4327c9ce5c806cd878bd9b53e8fcbf7785.camel@microchip.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALoEA-w=N7ch67R+DgdqCrSy+5GtbuGkiAbJtnf-9c=Q2Mb6CQ@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 24, 2026 at 10:23:31AM +0200, Joshua Crofts wrote:
-> On Wed, 22 Apr 2026 at 15:16, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > 5 out of 6 are good, one needs a bit more as it's a new patch in this version.
-> > Also, wait a bit I'll send a couple more that you may incorporate in your
-> > series. Btw, are you familiar with `b4` tool? If not, good time to start
-> > playing with it.
-> 
-> Just checking in on this, since I haven't seen any changes on lore.
+On Fri, 24 Apr 2026 08:01:17 +0000
+<Ariana.Lazar@microchip.com> wrote:
 
-Sorry for the delay (if you want to help, start reviewing others' patches in
-IIO mailing list, you also learn from that). Now when I got my email pipeline
-clean, I am about to start doing what's been promised.
+> Hi Jonathan,
+>=20
+> > > +
+> > > +static int mcp48feb02_init_ctrl_regs(struct mcp48feb02_data *data)
+> > > +{
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int i, vref_ch, gain_ch, pd_ch;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 int ret;
+> > > +
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D regmap_read(data->regmap, MCP48FEB0=
+2_VREF_REG_ADDR,
+> > > &vref_ch);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 return ret;
+> > > +
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D regmap_read(data->regmap,
+> > > MCP48FEB02_GAIN_CTRL_STATUS_REG_ADDR, &gain_ch);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 return ret;
+> > > +
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D regmap_read(data->regmap,
+> > > MCP48FEB02_POWER_DOWN_REG_ADDR, &pd_ch);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 return ret;
+> > > +
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 gain_ch =3D gain_ch & MCP48FEB02_GAIN_BITS_=
+MASK;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0 for_each_set_bit(i, &data->active_channels_=
+mask, data- =20
+> > > >phys_channels) { =20
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 struct device *dev =3D regmap_get_device(data->regmap);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 unsigned int pd_tmp;
+> > > +
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 data->chdata[i].ref_mode =3D (vref_ch >> (2 * i)) &
+> > > MCP48FEB02_DAC_CTRL_MASK;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 data->chdata[i].use_2x_gain =3D (gain_ch >> i)=C2=A0 &
+> > > MCP48FEB02_GAIN_BIT_MASK;
+> > > +
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 /*
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 * Inform the user that the current voltage reference
+> > > read from the volatile
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 * register of the chip is different from the one
+> > > specified in the device tree.
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 * Considering that the user cannot have an external
+> > > voltage reference connected
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 * to the pin and select the internal Band Gap at the
+> > > same time, in order to avoid
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 * miscofiguring the reference voltage, the volatile
+> > > register will not be written. =20
+> >=20
+> > Spell check comments.=C2=A0 misconfiguring
+> >  =20
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 * In order to overwrite the setting from volatile
+> > > register with the one from the
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 * device tree, the user needs to write the chosen
+> > > scale. =20
+> >=20
+> > I'm a little unsure of why we need this extra gate on updating things
+> > to match
+> > the device tree provided config.=C2=A0 Why should the volatile register=
+ at
+> > this point
+> > match what DT says?=C2=A0 If it does seems to me we should be noisier
+> > about it than dev_dbg()
+> >=20
+> >  =20
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 */
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 switch (data->chdata[i].ref_mode) {
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 case MCP48FEB02_INTERNAL_BAND_GAP:
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (data->phys_chann=
+els >=3D 4 && (i % 2) &&
+> > > data->use_vref1) {
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_dbg(dev, "ch[%u]: was configured
+> > > to use internal band gap", i);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_dbg(dev, "ch[%u]: reference
+> > > voltage set to VREF1", i);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 break;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if ((data->phys_chan=
+nels < 4 || (data- =20
+> > > >phys_channels >=3D 4 && !(i % 2))) && =20
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 data->use_vref) {
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_dbg(dev, "ch[%u]: was configured
+> > > to use internal band gap", i);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_dbg(dev, "ch[%u]: reference
+> > > voltage set to VREF", i);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 break;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 } =20
+> >  =20
+>=20
+>=20
+> The device restores its EEPROM configuration (or writes default values
+> for the part numbers without EEPROM) into the volatile registers at
+> startup, so during probe we may have a valid Vref/gain state that does
+> not match current DT. The driver should report any mismatch to the user
+> because the Vref/gain selection is changed only through the scale
+> attribute of each channel. The DT only describes available resources on
+> the board for determining the available scales.
+>=20
+> I can update the messages to describe the behavior better and use
+> dev_info() instead of dev_dbg().
 
-> Btw, b4 really does save *a lot* of time.
+The statement above about it not being possible to use the internal band gap
+if a vref is wired leaves me with more questions about this.
 
--- 
-With Best Regards,
-Andy Shevchenko
+I'm a bit concerned about cases like:
 
+Vref is wired and eeprom is set for internal reference.   Should we
+be very careful to not enable vref until that situation is resolved?
+It might be on anyway but we can at least make sure we are reponsible
+for turning it on.
+
+Maybe the chip has sufficient protective elements to cope with that
+though obviously it won't give sensible output whilst this is true.
+
+If all those are fine, dev_info() makes sense to me.
+I wonder if we should return -EBUSY for attempts to read the voltage
+back whilst in this state as well?  Might provide some additional
+indication something is mismatched and we don't expect the device to work
+correctly.
+
+Jonathan
+
+
+> Best regards,
+> Ariana
+>=20
+>=20
 
