@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 948CB390219;
-	Fri, 24 Apr 2026 12:14:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E0E53AD510;
+	Fri, 24 Apr 2026 12:19:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777032851; cv=none; b=W070sOT8FhkkpdR3PXXA/kavyiVQ4CxEiKHDWeCNoIvNe8Y99QOPgrqlyJ+EwmuBvO1jh5xho3MROvh3SpMLrXslzbap1E8B5tI4ThJF27e2lzugfTD7lu7OSuvN1Ek0QPW7/4H/cq3BcvybmzsK1BhuCB5V9tKQ5UrRCjFszks=
+	t=1777033194; cv=none; b=SjDH3V89Bnk6ZnL7h5ZduGAINlDn7HPRkeoicEjiBl79wH7+3lIXRD9C1WPWLANA5dDlcY6ea2x5gdJA+hdNH2A4bTRCEasyCdAuu97siPYuCyzD9rRaKrs81O0zcMe6BOJanHV1ttg6yHt8AhSUNA1Eubb1pFTydOL9mFVg5hE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777032851; c=relaxed/simple;
-	bh=ZO9aEtxmQmqiOcUh+KVKA2CRIyUJT/YOpr6ZLOkTSx8=;
+	s=arc-20240116; t=1777033194; c=relaxed/simple;
+	bh=CsecgF1/GUFtSh1YUWC9TyARCKfxXXkkoRGFBnQyl5M=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=H0Svy5DCRsydsxoLPYxOls6O1cTVROnODa2ovZ9sVMRH3jBEdZpY7XL/qvhd2SK2KP1KDxRd+7Xy7RZJ/D4UsT+ge2vrOD3dDz67wbfloqodPFePWDj4cdLnM1O+t5BwtSdGcCopNB1m6ib3MPrOHfDhW6PIlZW3Z5+vodi1/aQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=caZp/jxR; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Vpi2p02bm87GkUAv3scGGVbomoDHRqnotj4gU/O1056gGqb/jfwonP3yoTFW7fdo9rbKzfTKrOKGWF6zUYIQxx7TRjL7NAPrC5RWryF2uJYa7rgFFbtwuQpMZpgJeOek5JsC7Bx9LPi0zq5Z47YRiAcSuwiysvNPVBGE4U+z79c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SF+cSHli; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="caZp/jxR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92257C19425;
-	Fri, 24 Apr 2026 12:14:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SF+cSHli"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B26F4C19425;
+	Fri, 24 Apr 2026 12:19:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777032851;
-	bh=ZO9aEtxmQmqiOcUh+KVKA2CRIyUJT/YOpr6ZLOkTSx8=;
+	s=k20201202; t=1777033194;
+	bh=CsecgF1/GUFtSh1YUWC9TyARCKfxXXkkoRGFBnQyl5M=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=caZp/jxRCJ2YGfckxgsVL4azsFonMiBQ9WYTxr+jdtdpvk9HcuiM+1I4Flyp73/y4
-	 YKTIbF0/9ar8/8DDMvtSs9/XYatVezqMeNwbffL1oaRjLEZBJWYmvj2f7AEuBgTjNw
-	 wMgTaN3EcbSt0d2aKscFwEyKvLwtnvNBmNZN6qWTI8n8UXN9mqmLvC6NBxaXTUZOkj
-	 58Q2FjM5dva/eYpUVuEOv0EA0VCIMLG/7N+4KzETmZizDpQ7QWA2VJjEfNe4fqlgaD
-	 YFEiRm07wOilKdLinDJyZkGpD2eaKC+LbDtDbCs96UID7vDMZRNyW3HB3PXjOPda0B
-	 5M6B2bAxMBphQ==
-Date: Fri, 24 Apr 2026 13:14:01 +0100
+	b=SF+cSHliPB4SvfQjguZ43xEG+INGHvBi0zmQ2p7rQDSbZyi0q2++TzoYvU3lLu9xx
+	 0Qc7Et5wUqL8g+7OkzYJOoQzeXXtaWOcc1T2EzrEkQbXferX/MKyl+bps3NYp1PQXn
+	 6/pw/eoqN80x5U/3YTkccdVG0N7EOCrMs2JpOfayfeU1KkMXTQmlYdXIYQUyHiDced
+	 0Q8Z3/fPgfhC8zVwaKfZPunL+skYhafXewmWJdPQGbfiUY/XryfBcoRgBELlqwh9bR
+	 nzZsr80eFH+Oa9THBeYNZpcEPPnRUnClU8FJrLGVL5Lb+gFBTj9ad+1BeUAsZjgqpS
+	 XVc32awPf6f2g==
+Date: Fri, 24 Apr 2026 13:19:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Piyush Patle <piyushpatle228@gmail.com>
 Cc: Andreas Klinger <ak@it-klinger.de>, David Lechner
@@ -36,12 +36,11 @@ Cc: Andreas Klinger <ak@it-klinger.de>, David Lechner
  Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] iio: adc: hx711: refactor to per-chip
- hx711_chip_info structure
-Message-ID: <20260424131401.707ba1cd@jic23-huawei>
-In-Reply-To: <20260422175910.1258579-3-piyushpatle228@gmail.com>
+Subject: Re: [PATCH v3 3/3] iio: adc: hx711: add support for HX710B
+Message-ID: <20260424131948.178323be@jic23-huawei>
+In-Reply-To: <20260422175910.1258579-4-piyushpatle228@gmail.com>
 References: <20260422175910.1258579-1-piyushpatle228@gmail.com>
-	<20260422175910.1258579-3-piyushpatle228@gmail.com>
+	<20260422175910.1258579-4-piyushpatle228@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,61 +51,129 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 22 Apr 2026 23:29:09 +0530
+On Wed, 22 Apr 2026 23:29:10 +0530
 Piyush Patle <piyushpatle228@gmail.com> wrote:
 
-> Introduce hx711_chip_info to hold per-variant static configuration:
-> device name, IIO channel spec, channel count, and iio_info pointer.
-> Store a chip_info pointer in hx711_data and populate indio_dev fields
-> from it at probe instead of hardcoding them.
+> Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
+> interface but has a fixed gain of 128 and uses trailing PD_SCK pulses
+> to select between the differential input and the DVDD-AVDD supply
+> monitor.
 > 
-> Pass trailing pulse count directly to hx711_read() instead of
-> computing it inside the function, and change hx711_reset_read() to
-> take a const struct iio_chan_spec * instead of an integer channel
-> index so callers can pass the full channel descriptor.
+> Model the HX710B with its own channel specification and iio_info.
+> Store the HX710B trailing pulse counts in chan->address and add
+> fixed-gain handling so the HX711 selectable-gain path remains
+> separate from the HX710B fixed-gain path.
 > 
-> Use device_get_match_data() to look up the chip_info from the
-> of_device_id table. No functional change for existing HX711 users.
+> The HX710B datasheet documents a single fixed PGA gain of 128 and
+> does not provide configurable gain selection like the HX711.
+> 
+> Order hx711_chip_info as pointers first, then unsigned int fields, then
+> bool. pahole then reports no internal holes in the structure; the
+> remaining padding is tail padding from 8-byte alignment.
 > 
 > Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-Couple of things sashiko raised on this...
+> ---
+> Changes in v3:
+> - Add HX710B support on top of the separate hx711_chip_info refactor.
+> - Update channel_set only after hx711_read() and hx711_wait_for_ready()
+>   both succeed.
+> - Keep a single HX710B fixed-gain scale based on the datasheet's fixed
+>   PGA gain of 128; do not apply the HX711 channel-B gain of 32 to the
+>   HX710B supply monitor path.
 
-One about hx711_gain_to_scale() is an existing driver bug.
-Need to take a per instance copy of that so as to support
-more than one sensor.  Ideally fix that whilst you are touching the
-driver (as a precursor patch - maybe we'll backport it) but if you
-want to leave it for another day then just say that in the cover letter.
+Just to confirm - you verified this?  It does seem very odd as that
+might well take a large value.
 
-The other one about matching via non DT routes is an interesting corner
-that i suspect applies to other drivers.  The module alias in this
-driver is also rather odd.
 
+> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
+> index a444a2872257..d7050bec53b4 100644
+> --- a/drivers/iio/adc/hx711.c
+> +++ b/drivers/iio/adc/hx711.c
+
+> +static const struct iio_info hx710b_iio_info = {
+> +	.read_raw		= hx711_read_raw,
+> +};
+> +
+>  static const struct iio_chan_spec hx711_chan_spec[] = {
+>  	{
+>  		.type = IIO_VOLTAGE,
+> @@ -474,6 +522,48 @@ static const struct iio_chan_spec hx711_chan_spec[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(2),
+>  };
+>  
+> +/*
+> + * HX710B channels.
+> + * Channel 0: differential input (IN+ vs IN-), 10 SPS, 1 trailing pulse.
+> + * Channel 1: DVDD-AVDD supply monitor,         40 SPS, 2 trailing pulses.
+> + * .address holds the trailing pulse count used by hx710b_set_channel().
+> + */
+> +static const struct iio_chan_spec hx710b_chan_spec[] = {
+> +	{
+> +		.type = IIO_VOLTAGE,
+> +		.differential = 1,
+> +		.channel = 0,
+> +		.channel2 = 1,
+> +		.indexed = 1,
+> +		.address = 1,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 24,
+> +			.storagebits = 32,
+> +			.endianness = IIO_CPU,
+> +		},
+> +	},
+> +	{
+> +		.type = IIO_VOLTAGE,
+> +		.channel = 1,
+Sashiko is winning today.   See it's comment on the indexing wich is
+spot on.
+
+https://sashiko.dev/#/patchset/20260422175910.1258579-1-piyushpatle228%40gmail.com
+
+This should be channel = 2 or given it's actually a differential measurement, maybe
+invent channels 2 and 3 so you can represent it as that. If useful label
+can be used to provide info on this magic channel to userspace.
+
+> +		.indexed = 1,
+> +		.address = 2,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 1,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 24,
+> +			.storagebits = 32,
+> +			.endianness = IIO_CPU,
+> +		},
+> +	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(2),
+> +};
+
+...
+
+> +
+>  static int hx711_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> @@ -540,12 +639,16 @@ static int hx711_probe(struct platform_device *pdev)
+>  	/* we need 10^-9 mV */
+>  	ret *= 100;
+>  
+> -	for (i = 0; i < HX711_GAIN_MAX; i++)
+> -		hx711_gain_to_scale[i].scale =
+> -			ret / hx711_gain_to_scale[i].gain / 1678;
+> +	if (chip_info->fixed_gain) {
+> +		hx711_data->scale = ret / chip_info->fixed_gain_val / 1678;
+> +	} else {
+> +		for (i = 0; i < HX711_GAIN_MAX; i++)
+> +			hx711_gain_to_scale[i].scale =
+> +				ret / hx711_gain_to_scale[i].gain / 1678;
+
+Just to point it out, this is the update of the global variable I mentioned
+Sashiko spotting as broken in my reply to previous patch.
 
 >  
-> @@ -571,7 +602,6 @@ static struct platform_driver hx711_driver = {
->  module_platform_driver(hx711_driver);
->  
->  MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
-> -MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
-> +MODULE_DESCRIPTION("HX711 and compatible bitbanging ADC driver");
->  MODULE_LICENSE("GPL");
->  MODULE_ALIAS("platform:hx711-gpio");
-So Sashiko thinks (and it's plausible) that this module alias is a problem
-as if the driver match is against it might be possible to probe the
-driver without the match data getting set.  I think it's referring to
-the final driver match fallback path
-https://elixir.bootlin.com/linux/v7.0/source/drivers/base/platform.c#L1370
-
-Whilst unlikely anyone would get to this, I guess the fix is to ensure
-we get a match by having a platform_device_id table for legacy matching
-and making sure that covers such a match and provides data.
-
-We don't (I think) currently have an equivalent of the catch all matching
-functions that exist for i2c and spi.
-Bit ugly for platform data as I think you need to get it via
-platform_get_device_id()
-
-Maybe we just check if device_get_match_data() returns NULL and fail instead.
-
-> -
 
