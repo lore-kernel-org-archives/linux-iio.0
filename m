@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A369233D6D5;
-	Fri, 24 Apr 2026 16:50:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BFE733F583
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 16:56:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777049441; cv=none; b=PVCj6GBg74/Mz1ZsF7LMT/UITOBYQp3Z/7yEREhLd4hnz+7PfzVyS0Gn1oq8J3WlzYgW/JjdTC6MWbxU7igfVisZo2OMmMHnCrW9v1cPGrAH5gek9JUO1oJ8jlROWRPy07Nt2DRK8OloG5tI1GWicylPcxKCxd8eloR8kbr33XU=
+	t=1777049761; cv=none; b=rVt9KcnBCZegTR1uukB+lXXPECEG3NI5Zg3urHMEsxrD2YfUSb7ETSMpDejf8HmYzIk5A7y12OAI3Xg8Ht01MRDm8h7/hmBtRxUgC2G8CAhSqM6Kh23aEw3HkUvmh1uqbqPN5aXZp3nxAOfXPrZ7YXFPawTNH3ZFm460VqHJs8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777049441; c=relaxed/simple;
-	bh=y0wDYNpwZm3PC8kTlwPJ5TJrjG3dC0aflc/oD3XFG10=;
+	s=arc-20240116; t=1777049761; c=relaxed/simple;
+	bh=4lRy/mI46E2p0zTcVKbha+zNAG7RQSh8FSr4YKjKCtc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=h4IJTq9tXSxA+arrN4WwyBA0vKB4W6azUunaQLMGBBXw0X1smtNSsgSxa7Lz3CL/g6tZqgGK3CVMoCsgL2Ogtxv+OJqjE+iY07GlMe1sSw1VpRV2/CZAuRzLRAcVo5EV6UD4gVg/9OglwLf/Kjcoizvc+G/AgfQEgyoiwg53YoI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M8bAeCuj; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=SWQT9NFns67e35P2Qp7qtJexFuA3VDPSBSSrW4ostCPjM/Jzhm/E1IygWBoewXzunXXKivCYBPJA7dNEyzMjkbg+C+GX26SD+y1QEX4yp5Pqk9USyu3n2YIb38hHIJB4zwFMu8KXpIeXJNHMhJNRiink9ACFkNW8mVWmcdlCc+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MMKwSo0g; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M8bAeCuj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89549C2BCC9;
-	Fri, 24 Apr 2026 16:50:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MMKwSo0g"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05173C19425;
+	Fri, 24 Apr 2026 16:55:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777049441;
-	bh=y0wDYNpwZm3PC8kTlwPJ5TJrjG3dC0aflc/oD3XFG10=;
+	s=k20201202; t=1777049760;
+	bh=4lRy/mI46E2p0zTcVKbha+zNAG7RQSh8FSr4YKjKCtc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=M8bAeCujknvZOR+NWBUcSss6sADhqc5dXVo1Sv/E6v1km/+WUq7X4QrYnKlyRUYAa
-	 /VEZubhsVebbZgTM0q2QCbyQ9XFWqVbtOa/lm806qHumwjbYgnScy2PLyYDmyVfHL6
-	 nndA3oB2ofmdgqjl1SD10PSPAn8Q8wcSV344udTlkWYVV3MjHRzxGNXARu+z304wor
-	 XxMbCDuu23Ax2ZK/NXX4vUWIxLUBA0pMpXY3j4Ezibfksa97fuSC/3z1gxWTnwewJk
-	 75QnTiagxs/xN+vqQqg01Fw48fDj7Pv20mza+BjkT5BdLSWBYR2KJDWNYrbRj1zEpn
-	 viFBAlvuTSd/w==
-Date: Fri, 24 Apr 2026 17:50:32 +0100
+	b=MMKwSo0g3wy0tZ2qHauG3HptdCrWSlVj3KnsDVUT08+Hngkm+zmeXAcTBoFDEmqLj
+	 9O+fdHsNTsRlRI7wnWHYV+zC9hd24dYQOqkSA69OdxcAtHgt/iA5ZQbf0mDadHCK5j
+	 RjCfZkuQvKDLfxLHTFIquFRMsOH9JFK1ijlDmverLIUzLC5H8FmwEVMBG8zZi/zlqO
+	 jeL0jEASFyw8GI449Oop0JTmjWvA0bFjzf42EA2jvYEkoeBnlJUf+7IAdNEFglFCBX
+	 DLjnK05wLsYlxENdHaiINLReyVJGSwobvKdKRaRQRrdSwJWXuhzPp/boXm4Kz793kT
+	 XXCM5AN2iKbYg==
+Date: Fri, 24 Apr 2026 17:55:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: kunjinkao-os <kunjinkao.jp@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: adc: ad7816: Replace sprintf() with
- sysfs_emit()
-Message-ID: <20260424175032.7335f5c3@jic23-huawei>
-In-Reply-To: <20260424150617.28194-1-kunjinkao.jp@gmail.com>
-References: <20260424150617.28194-1-kunjinkao.jp@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>, andy@kernel.org,
+ dlechner@baylibre.com, lars@metafoo.de, Michael.Hennerich@analog.com,
+ nuno.sa@analog.com, Matheus Giarola <matheusgiarola@usp.br>, Felipe Ribeiro
+ de Souza <felipers@usp.br>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] iio: adc: ad7280a: use cleanup helpers guard()
+ and scoped_guard() for mutex locking
+Message-ID: <20260424175551.071b25ba@jic23-huawei>
+In-Reply-To: <aeuP9Jn0Gd-nhdBZ@ashevche-desk.local>
+References: <20260424125001.17822-1-lucas@ciziks.com>
+	<20260424125001.17822-3-lucas@ciziks.com>
+	<aeuP9Jn0Gd-nhdBZ@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,79 +50,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Apr 2026 23:06:17 +0800
-kunjinkao-os <kunjinkao.jp@gmail.com> wrote:
+On Fri, 24 Apr 2026 18:44:52 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> sysfs_emit() is the preferred function for sysfs show callbacks as it
-> is aware of the PAGE_SIZE buffer and prevents potential buffer overflows.
-> No functional change intended.
+> On Fri, Apr 24, 2026 at 09:43:40AM -0300, Lucas Ivars Cadima Ciziks wrote:
+> > Replace open-coded mutex_lock/unlock pairs with the cleanup-based
+> > guard() and scoped_guard() helpers in ad7280a_write_thresh(),
+> > ad7280_show_balance_timer(), ad7280_store_balance_sw(),
+> > ad7280_store_balance_timer() and ad7280_read_raw().
+> > 
+> > This removes the need for the err_unlock label and explicit
+> > mutex_unlock() calls, as the lock is now automatically released
+> > when the function returns or the guarded scope exits, regardless
+> > of the exit path.  
 > 
-> Signed-off-by: kunjinkao-os <kunjinkao.jp@gmail.com>
-
-Before sending a patch out, check if anyone else is working on the same code.
-Currently this is the 3rd instance of the same thing.  I think
-the first one was in this series:
-https://lore.kernel.org/all/20260331072453.6530-1-mdmahmudulhasan1511@gmail.com/
-
-> ---
->  drivers/staging/iio/adc/ad7816.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index 172acf135f3b..0e32a2295990 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -124,8 +124,8 @@ static ssize_t ad7816_show_mode(struct device *dev,
->  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
->  
->  	if (chip->mode)
-> -		return sprintf(buf, "power-save\n");
-> -	return sprintf(buf, "full\n");
-> +		return sysfs_emit(buf, "power-save\n");
-> +	return sysfs_emit(buf, "full\n");
->  }
->  
->  static ssize_t ad7816_store_mode(struct device *dev,
-> @@ -156,7 +156,7 @@ static ssize_t ad7816_show_available_modes(struct device *dev,
->  					   struct device_attribute *attr,
->  					   char *buf)
->  {
-> -	return sprintf(buf, "full\npower-save\n");
-> +	return sysfs_emit(buf, "full\npower-save\n");
->  }
->  
->  static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
-> @@ -169,7 +169,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
->  
-> -	return sprintf(buf, "%d\n", chip->channel_id);
-> +	return sysfs_emit(buf, "%d\n", chip->channel_id);
->  }
->  
->  static ssize_t ad7816_store_channel(struct device *dev,
-> @@ -231,9 +231,9 @@ static ssize_t ad7816_show_value(struct device *dev,
->  		data &= AD7816_TEMP_FLOAT_MASK;
->  		if (value < 0)
->  			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
-> -		return sprintf(buf, "%d.%.2d\n", value, data * 25);
-> +		return sysfs_emit(buf, "%d.%.2d\n", value, data * 25);
->  	}
-> -	return sprintf(buf, "%u\n", data);
-> +	return sysfs_emit(buf, "%u\n", data);
->  }
->  
->  static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
-> @@ -281,9 +281,9 @@ static ssize_t ad7816_show_oti(struct device *dev,
->  		value = AD7816_BOUND_VALUE_MIN +
->  			(chip->oti_data[chip->channel_id] -
->  			AD7816_BOUND_VALUE_BASE);
-> -		return sprintf(buf, "%d\n", value);
-> +		return sysfs_emit(buf, "%d\n", value);
->  	}
-> -	return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
-> +	return sysfs_emit(buf, "%u\n", chip->oti_data[chip->channel_id]);
->  }
->  
->  static inline ssize_t ad7816_set_oti(struct device *dev,
+> ...
+> 
+> >  	unsigned int msecs;
+> >  	int ret;
+> >  
+> > -	mutex_lock(&st->lock);
+> > -	ret = ad7280_read_reg(st, devaddr, ch + AD7280A_CB1_TIMER_REG);
+> > -	mutex_unlock(&st->lock);
+> > +	scoped_guard(mutex, &st->lock)
+> > +		ret = ad7280_read_reg(st, devaddr, ch + AD7280A_CB1_TIMER_REG);  
+> 
+> >    
+> 
+> Now this blank line may be removed.
+Tweaked.
+
+Series applied to the testing branch of iio.git which I'll rebase
+on rc1 once it is available.
+
+Thanks,
+
+Jonathan
+
+> 
+> >  	if (ret < 0)
+> >  		return ret;  
+> 
 
