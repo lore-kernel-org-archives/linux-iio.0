@@ -1,108 +1,110 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ED08347C7
-	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 08:18:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777018721; cv=none; b=eSh7xgHC1Q/s4q6Iqzp5Ec3m62iQX3RVYK6+dfYkylJD+XPgJisfiSFaZ5gWIehTxEoihB3zw/aYNBEH7rmqslFEfmrKXoWGFxEpiO7nBqZJ4/XorbF/ydDFiH+Gb03nymepfW53eNvIVqRR/d3AE/KBIiBLemMXOFP4CSFBSz0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777018721; c=relaxed/simple;
-	bh=XLw5ixrkoc3lhBgHleHt9M52aQ7Z7F8SMsJ3fnIk4XA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XKLwA8sqxCsszSFLNneF9AHqrfJaHNpgX0R1PvCdLAxpnD8a0nAjbm2RxQHmj8jf0h1yl5m+Xn5FFEJWEp99dqYqaHBqqHSsN5wOcTELc53jqUfoogJdkmoZ6Fzwns6JxxJHntvQ7I4WE1/IB4MwEs84mbVjK9geNMHITwkCcK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cV+Dc+0K; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22DC63290A6
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 08:23:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777019024; cv=pass; b=OM/jcXPP2ujBjg3FNVl8dJKOJ3VWGhX5ILmAoI+m7NlUot4LZp3tKLcvVw/I/eMV39pykuwXouabKcxPajuj9ExgKM11YZe2gRgI+i0d/pFbogrCCuKY+PUK6DMdhTeFsCpCLRvf2vrDUHQD+437bXEyWZye4zUon3RuvUl1e+s=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777019024; c=relaxed/simple;
+	bh=QofEkjd8FMH5RFqe1MHBSi4gM7v44QFHJL+ngo8T/Jw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WxCjUneT+OOk0ptumvHyST8eY46TidRCZ1IdUznhTg65e8H7HYyPO0/rjdMEqyduRa6wEUkEl51yDt+RNAr2UQ4AOaW10F35hzCD9KEDuHlax8qV9W1J6Ue04fiekSkowCVphdzWQRY6kA0H+bya9aFhJFgfttzj7yRuUEP6H4o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cJMhwHeG; arc=pass smtp.client-ip=209.85.221.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cV+Dc+0K"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-48a525dd2b5so4784165e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 01:18:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cJMhwHeG"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-43cfd1f9fd1so4631531f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 01:23:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777019022; cv=none;
+        d=google.com; s=arc-20240605;
+        b=NkT7rFVNHseBqx4plz/gP+0cR9JAWFCqSN27e/b4rYMwqMe8g3N6j00q59oenpAMCk
+         JaPMoDz5hxVh1XH4OicBJaYiSnC8f684kaqzRWy62lUrzv7hWo0lUY+iaJpb04k5Y6Pd
+         rRhLFLHTdKfCCjJpsTCeYVdsiKmG96//YtZmvGp4opMawZ8nJqWS8zBQ63w4DUJkzqg+
+         3JVCSTf16hiaBdg0Ejz610cXSvfBG28JvAfDMw7rKn8oQPL4Zqawu4P160Dceq4X3tVO
+         zyoKvySeGnRQawjswMm5Cb+fZtZ+N2NXtK2HzA+tdWanjwDWrDwnMiUuVRaiGDysBKCp
+         pzQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=NbjBm5UVHCZcVvdf0NjFPirO3zRx0wYmA/bGZ1WxQZ0=;
+        fh=wzoYY/xZ6VvyOgraTZdW4zXAoPn0IFVHgwl6YCQc+/Q=;
+        b=Y8hSlrh6GLd5oee/2hll50wYs561zurA0gDWLmXTiteSGIu7r7fsbmU/GcHbwn00LB
+         yeJZiO6SxIHnDZa3q4FFpj+2Fp1kguSdR5rfaNLva5zlWvlqjWH6JpyEg/ofzwjOpCJJ
+         ACfKz8Db+86T9fN0bOsDadMeXhZ3VH5qUQjCy7SmBU0F3FOIWkAgGsovFHxIvtgOmCqh
+         z/YhqkLlSXj1YjwqNchv2/ZXalIiBbnD8w+bzFILbn/jJK+EXqk31caQsx/0QQQ41SC4
+         i4v1rlP4fLF9daorXtjfoaHE8sXuIXTFjoJhg4tVB3vSkkjZhpzXwivPcJ7A6REe8cTw
+         edQg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777018719; x=1777623519; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Gq2CPbb6w1adjueUqfSxZfct/DtrwXp3hbJcr6yIL+8=;
-        b=cV+Dc+0KIrKgMfgPnen/POQRSknEjvPpD/Dm/oMWtiMuQ3HmYr3NmGSi/IHnk+Ye+5
-         27aNuezVbWDykZqrTFJDL1XrEsDsLrUrYanAg+1OUJ4U60q3sznx9rd6qx1VPFWiqhiG
-         kOOeP3ryJp2A91rOoES2ijKIeN97gvsG5zFmhh8+IE/L0By0rMjaoJqY47nOmL2HPma6
-         3WV/5muSvvY/XAynIlgPcuSQCMML6TmzufUxUOTyA5DZS4A48YWKWl6DKCgVCFBJT5G6
-         9MFKONiuLIhal5a0cwgKRzKRdYMC7qcVlvLGteU0pHk6BNJ3SiuslaGOmGxo464BB2TI
-         0YmQ==
+        d=gmail.com; s=20251104; t=1777019022; x=1777623822; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=NbjBm5UVHCZcVvdf0NjFPirO3zRx0wYmA/bGZ1WxQZ0=;
+        b=cJMhwHeG75umJaAMoo881MvsGToHZUzLXd17RVAylVlVW/WNjV4+1lYZq61K0ydaf8
+         0QcWw3BmG0ZqvUgD5bhqi6e8iEDaHXi8z006Z13+Ja+7nj4T/j3GdZiuT5xztx9K/5ET
+         TK+L66Gr7OXNNDWCxtZHZ2ieeywLtRpQXr3CFz36bcmY7smwk7DM6g/AeWBujIPP/55R
+         1YQVAO2F6ZIMJUI/tcsZKJ+Qw50RypCCNAchS3aV+SUXPhR8RZZci7PrfAeAxX5q8reb
+         M51V4y+To3eEzpwt0mVEixnUsGySVfTFRX3lKjyWe4k+PeY/d+XO+XiPi4ofrQqQv8JH
+         kIrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777018719; x=1777623519;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1777019022; x=1777623822;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Gq2CPbb6w1adjueUqfSxZfct/DtrwXp3hbJcr6yIL+8=;
-        b=RNUHsRSyUQvVswOdmIehgrm3ep5QmzeqJESaiMcOaqb7IxxFN0PFw8Bhk/hQoltutN
-         X4KiO9W9vLfIGVvPxUJRxhdH2J9e0r3qRaKYieHAHjrL9tjMBcZbikUk0WFRcUXca20d
-         VWem/cltLyYc+GVQT+lJi2ExB8s+D0SXwdEVovKEHaLw0KWvPC/ZDUGM5UDgi0IoTdi/
-         XQu53wP+vngI+XHJXdWCawvAxF2ZaqNDKTjzNMdFadYuV3IdjUryBx3oMawkq/XyIM8L
-         tKs7G1g4sB6+rYbyAqnTR84VkEyjOHREcPmAMZPycbvX0b2o04DkY3NFDxhdsb7QP4VH
-         ywDw==
-X-Forwarded-Encrypted: i=1; AFNElJ+rFreoB0SSHmvecpSDtCM3iQj/TckUNZMVTvJK3FWRZKhQq9ukIhjE6IQErfx1rQce2ltkN1+F9zw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzMDCJZJY5J/5m9eV1Bw0RwMP2j6/2pk12/xWBMYmM1czUucr1F
-	2R0EMBPXyWJC/5IPHrkQkEgnkvuv9oF2k6GCb0+7iKrIxbFfbKYKqES7EWwPAwxOAxM=
-X-Gm-Gg: AeBDiestw81sayC67VSHI68mYV1zbVvbm4VMX6Xbek2hiXNR67qOok+SycDj1ji7WIw
-	D93dLxnfhfg9A8otID56vubSbJRnSzAvvVQE0t6DnzE0qK9HyEZlU8ZoaF8pLylrmDFgSSEHsN0
-	yGQORwfnYlm2nddBm7qnrGLal8MVASpcjlsz2vUt74CZfCGOeFqGLLyAIUgKctu2JS0lqNv6IcN
-	74fRVU3K8wkV1mOHs1NsZWpktjkEiU33OftMdR93R7utTQhwotyAvSI5+p1WzRT+LDHy2vxVmQ6
-	mrFrnZTOPFmgR/9LbjbFL0TiVo7ybA/UZtwJtuCtX7aHM+Lw82zAfv0d4aXFNJu445Mo1oYrRO3
-	sTCCyVHdCLEod6w49PRiCKDQ1keQNSkURDQYdJufVCS7qlAGqcLUAg7aljPerEHOGWs6tvYMrLF
-	jAzhQwTqZIVxB50rRVER910w9hEAEKcSm8kANWLPMgLk8VoNOnmVnhIW/y0mEjD5EZ1a796dr2Y
-	O5nqbyChmfqJLzX/wfRWMSPX7JSPOS9dLNEFmmk912cUNmlCtO0wXp7phpmH3U=
-X-Received: by 2002:a05:600c:4753:b0:489:1ca4:c999 with SMTP id 5b1f17b1804b1-4891ca4cecamr159653145e9.8.1777018718584;
-        Fri, 24 Apr 2026 01:18:38 -0700 (PDT)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488ffc5e3f4sm315248565e9.2.2026.04.24.01.18.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Apr 2026 01:18:38 -0700 (PDT)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: antoniu.miclaus@analog.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Subject: [PATCH] iio: adc: ti-ads7138: explicitly include <linux/slab.h>
-Date: Fri, 24 Apr 2026 12:18:10 +0400
-Message-ID: <20260424081809.61841-2-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+        bh=NbjBm5UVHCZcVvdf0NjFPirO3zRx0wYmA/bGZ1WxQZ0=;
+        b=AVL2SznRxe6659g7mNlQUiZrYCGrj+C6VEePUEkC7oX8dbVvfw0mEcvpIeM7asKU7b
+         QQMnOjjPZgmdn8MhuSLFptBys3qX3Keg3hRHrgWQyCQRvzgSgsuukRmrZ+olv8kNdcir
+         2XraO2rvbePVVE2xemwyCJyvVKSQuUNbPX4agw97t5dJL/TdMOXESYWaaANgNbB4bnxD
+         leGcx7951vfiFqcVbsPg10n5kFpQI/cmJd26mufefALV5fJMo/gSYHhwb1x1ZjwhdC1n
+         jU0jMDQNGPipR2UFHVHJ/LbOLsTJeb6tccNpi41NdokANbYDkcnSpWc78G7VBUkacDNl
+         wEiw==
+X-Forwarded-Encrypted: i=1; AFNElJ9dzJC7Kh89IIXhcJ5PL9ErbYbgSxFqCoPH455Zi+1fzZAD7nGrBcMwAMJ0p17JmMkrZqVC9W8P6cE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyOaUIdf7gAh+arYZv5KoZDiSc098wOKu3bcai/iUV6itWALui5
+	KCt4fjUV2dfgY953brv2cebA2pfMy8SFqqyVAtelzKd8tW97Epu/yekGL3p7e+qq11/7zx1kqI5
+	pBZb73fhLH9BTRB4IXgZM9yDH67GVepw=
+X-Gm-Gg: AeBDiev3YwaqZ3DhvY0ReJtBdACkTg/TH2u0yX4Htf7ICX7irYLJHgYPEfbnM7FmSau
+	YfRJU6ecI6xPEa2arc/06IqsZdRk7qmkrt+qFVeICmTiurguQoxAWMiGeZmWoKFCFyrI7JRJL3g
+	HmHwvUrt+GQ4YCts6bvzBrbKGvV2SeGe8jBPtLWt2eFWhdaYU4byqewUpvmXNHsgJ7MMCtjNMbA
+	wLglnKUV6XRX0otOiNc1WInlrN/QDGjSDr1QPlZxrxFAX82gDJpPuLF8x0WdOglWLydA4DtbL68
+	+hu2QbHbOp0fIquuwknp4k+JZ/om0YYvqHewfWBm7qXya/MQYrFLKR+DdJnq87LeMVc9hCKpWod
+	aOIsX0t0/JE8lt7Reusc4DNBlk6FjVXwH1PNdp7d1spJkxV76PA6dnshFVsJdh4P9+p7xWDmJYB
+	BsTzm0XIFWYCkN2imw
+X-Received: by 2002:adf:f34e:0:b0:43f:e42d:ece with SMTP id
+ ffacd0b85a97d-43fe42d0f73mr30050235f8f.1.1777019021449; Fri, 24 Apr 2026
+ 01:23:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260422112207.1313-1-joshua.crofts1@gmail.com> <aejKKKD4JdxIzlk0@ashevche-desk.local>
+In-Reply-To: <aejKKKD4JdxIzlk0@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Fri, 24 Apr 2026 10:23:31 +0200
+X-Gm-Features: AQROBzCjfq5y0fpdv49zdWxO4g4o8sfnb03ky10FgAbYkOAMun0WhJQ7MCGUVP0
+Message-ID: <CALoEA-w=N7ch67R+DgdqCrSy+5GtbuGkiAbJtnf-9c=Q2Mb6CQ@mail.gmail.com>
+Subject: Re: [PATCH v3 0/6] iio: magnetometer: ak8975: modernize and cleanup driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-ti-ads7138.c uses kmalloc() and kfree(), which are provided by
-linux/slab.h, but does not include that header directly.
-The driver currently gets these declarations through linux/i2c.h.
-Include linux/slab.h explicitly instead of relying on the transitive
-include.
+On Wed, 22 Apr 2026 at 15:16, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> 5 out of 6 are good, one needs a bit more as it's a new patch in this version.
+> Also, wait a bit I'll send a couple more that you may incorporate in your
+> series. Btw, are you familiar with `b4` tool? If not, good time to start
+> playing with it.
 
-Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
----
- drivers/iio/adc/ti-ads7138.c | 1 +
- 1 file changed, 1 insertion(+)
+Just checking in on this, since I haven't seen any changes on lore.
+Btw, b4 really does save *a lot* of time.
 
-diff --git a/drivers/iio/adc/ti-ads7138.c b/drivers/iio/adc/ti-ads7138.c
-index ee5c1b8e3a8e..ba1e9af92c6e 100644
---- a/drivers/iio/adc/ti-ads7138.c
-+++ b/drivers/iio/adc/ti-ads7138.c
-@@ -13,6 +13,7 @@
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/slab.h>
- #include <linux/unaligned.h>
- 
- #include <linux/iio/events.h>
 -- 
-2.52.0
+Kind regards
 
+CJD
