@@ -1,55 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B04473C279B;
-	Fri, 24 Apr 2026 12:09:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 948CB390219;
+	Fri, 24 Apr 2026 12:14:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777032585; cv=none; b=eKe9Tm3NRxNye0X5tOXz1M//7mkX0+WuqYYvD4V57INkhFy7C5aY6dnsROc25gsWlpYSEnD7/5sThraavKdUhVm1S0mGJwi3dA7NyZ2Qr1/qcf2oLhbepQtFtGm6shYvvQPdBS4ByiqKeVhhL7glQ2xgioehL1fE4yc4HMNAm4E=
+	t=1777032851; cv=none; b=W070sOT8FhkkpdR3PXXA/kavyiVQ4CxEiKHDWeCNoIvNe8Y99QOPgrqlyJ+EwmuBvO1jh5xho3MROvh3SpMLrXslzbap1E8B5tI4ThJF27e2lzugfTD7lu7OSuvN1Ek0QPW7/4H/cq3BcvybmzsK1BhuCB5V9tKQ5UrRCjFszks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777032585; c=relaxed/simple;
-	bh=rRaSkeKhlvpU4tWi8hdt4ujoWHjih8+/eulMWmIEvI8=;
+	s=arc-20240116; t=1777032851; c=relaxed/simple;
+	bh=ZO9aEtxmQmqiOcUh+KVKA2CRIyUJT/YOpr6ZLOkTSx8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bNsc2jKZC6IURwpMbfm6cbdfdpmudgH0zfBh3g8/4LPTOh5l8H0mgT4+WCdsPWSPc0vZ445ZW0P3VsgUvnP0QmRWsxGpREboLxJztVAByw5S4VZMAFjtpju+QHjBuDiGkeq2TvS3U9C0ODmM3E7XrPs2a3lVWlA3/Eck9c3WIhQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Km+siIRS; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=H0Svy5DCRsydsxoLPYxOls6O1cTVROnODa2ovZ9sVMRH3jBEdZpY7XL/qvhd2SK2KP1KDxRd+7Xy7RZJ/D4UsT+ge2vrOD3dDz67wbfloqodPFePWDj4cdLnM1O+t5BwtSdGcCopNB1m6ib3MPrOHfDhW6PIlZW3Z5+vodi1/aQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=caZp/jxR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Km+siIRS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77D64C19425;
-	Fri, 24 Apr 2026 12:09:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="caZp/jxR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92257C19425;
+	Fri, 24 Apr 2026 12:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777032585;
-	bh=rRaSkeKhlvpU4tWi8hdt4ujoWHjih8+/eulMWmIEvI8=;
+	s=k20201202; t=1777032851;
+	bh=ZO9aEtxmQmqiOcUh+KVKA2CRIyUJT/YOpr6ZLOkTSx8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Km+siIRSuoDTa3nXOPBrNIscTm6Udb4rIj9eJRYWafziUy3gUVXZlj3UmWYvd0tUb
-	 4oO1dWzyHJ9SUCNIov620+KeDrw8mKfNwpqK9sCoIHdlPu5MDd3V5HKgQ5lzaj+y70
-	 oJ0qID4VKZK2Xq9F6l1p/bff0ZxHNSSXgCStxzgvoIq4X3Om3dS4bga6VK24rEXTHC
-	 I/EhE+CDjHynmxgsnMUMGbYMU3TmjLj0Sb+v2nVAlspbLWthFhbI+kAB2cDIK2Crmd
-	 PYbVxjlF+F40zzKQX9DH/H5i854t1XPwlIHlOY7FbAWJAOQtxbyFe82jhT6xZjLdj7
-	 bEOyJVLK+yP/A==
-Date: Fri, 24 Apr 2026 13:09:27 +0100
+	b=caZp/jxRCJ2YGfckxgsVL4azsFonMiBQ9WYTxr+jdtdpvk9HcuiM+1I4Flyp73/y4
+	 YKTIbF0/9ar8/8DDMvtSs9/XYatVezqMeNwbffL1oaRjLEZBJWYmvj2f7AEuBgTjNw
+	 wMgTaN3EcbSt0d2aKscFwEyKvLwtnvNBmNZN6qWTI8n8UXN9mqmLvC6NBxaXTUZOkj
+	 58Q2FjM5dva/eYpUVuEOv0EA0VCIMLG/7N+4KzETmZizDpQ7QWA2VJjEfNe4fqlgaD
+	 YFEiRm07wOilKdLinDJyZkGpD2eaKC+LbDtDbCs96UID7vDMZRNyW3HB3PXjOPda0B
+	 5M6B2bAxMBphQ==
+Date: Fri, 24 Apr 2026 13:14:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Yury Norov <ynorov@nvidia.com>
-Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Andy Lutomirski
- <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>, David Lechner
+To: Piyush Patle <piyushpatle228@gmail.com>
+Cc: Andreas Klinger <ak@it-klinger.de>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Ping-Ke Shih <pkshih@realtek.com>, Richard
- Cochran <richardcochran@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
- <pabeni@redhat.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Yury Norov <yury.norov@gmail.com>, Rasmus Villemoes
- <linux@rasmusvillemoes.dk>, Hans de Goede <hansg@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Sakari Ailus <sakari.ailus@linux.intel.com>, Salah
- Triki <salah.triki@gmail.com>, Achim Gratz <Achim.Gratz@Stromeko.DE>, Ben
- Collins <bcollins@watter.com>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-wireless@vger.kernel.org,
- netdev@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: Re: [PATCH 0/9] bitfield: add FIELD_GET_SIGNED()
-Message-ID: <20260424130927.349ad3ae@jic23-huawei>
-In-Reply-To: <20260417173621.368914-1-ynorov@nvidia.com>
-References: <20260417173621.368914-1-ynorov@nvidia.com>
+ Shevchenko <andy@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] iio: adc: hx711: refactor to per-chip
+ hx711_chip_info structure
+Message-ID: <20260424131401.707ba1cd@jic23-huawei>
+In-Reply-To: <20260422175910.1258579-3-piyushpatle228@gmail.com>
+References: <20260422175910.1258579-1-piyushpatle228@gmail.com>
+	<20260422175910.1258579-3-piyushpatle228@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -60,62 +52,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 17 Apr 2026 13:36:11 -0400
-Yury Norov <ynorov@nvidia.com> wrote:
+On Wed, 22 Apr 2026 23:29:09 +0530
+Piyush Patle <piyushpatle228@gmail.com> wrote:
 
-> The bitfields are designed in assumption that fields contain unsigned
-> integer values, thus extracting the values from the field implies
-> zero-extending.
+> Introduce hx711_chip_info to hold per-variant static configuration:
+> device name, IIO channel spec, channel count, and iio_info pointer.
+> Store a chip_info pointer in hx711_data and populate indio_dev fields
+> from it at probe instead of hardcoding them.
 > 
-> Some drivers need to sign-extend their fields, and currently do it like:
+> Pass trailing pulse count directly to hx711_read() instead of
+> computing it inside the function, and change hx711_reset_read() to
+> take a const struct iio_chan_spec * instead of an integer channel
+> index so callers can pass the full channel descriptor.
 > 
-> 	dc_re += sign_extend32(FIELD_GET(0xfff000, tmp), 11);
-> 	dc_im += sign_extend32(FIELD_GET(0xfff, tmp), 11);
+> Use device_get_match_data() to look up the chip_info from the
+> of_device_id table. No functional change for existing HX711 users.
 > 
-> It's error-prone because it relies on user to provide the correct
-> index of the most significant bit.
-> 
-> This series adds a signed version of FIELD_GET(), which is the more
-> convenient and compiles (on x86_64) to just a couple instructions:
-> shl and sar.
-> 
-> Patch #1 adds FIELD_GET_SIGNED(), and the rest of the series applies it
-> tree-wide.
-> 
+> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
+Couple of things sashiko raised on this...
 
-Just a quick heads up that I'm beginning to assume that this series
-will land in some form.  If it does can we do it as an immutable branch
-as I'm suggesting it gets used in some other patches in that should land
-in the new cycle.
+One about hx711_gain_to_scale() is an existing driver bug.
+Need to take a per instance copy of that so as to support
+more than one sensor.  Ideally fix that whilst you are touching the
+driver (as a precursor patch - maybe we'll backport it) but if you
+want to leave it for another day then just say that in the cover letter.
 
-Thanks,
+The other one about matching via non DT routes is an interesting corner
+that i suspect applies to other drivers.  The module alias in this
+driver is also rather odd.
 
-Jonathan
 
-> Yury Norov (9):
->   bitfield: add FIELD_GET_SIGNED()
->   x86/extable: switch to using FIELD_GET_SIGNED()
->   iio: intel_dc_ti_adc: switch to using
->   iio: magnetometer: yas530: switch to using FIELD_GET_SIGNED()
->   iio: pressure: bmp280: switch to using
->   iio: mcp9600: switch to using FIELD_GET_SIGNED()
->   wifi: rtw89: switch to using FIELD_GET_SIGNED()
->   rtc: rv3032: switch to using FIELD_GET_SIGNED()
->   ptp: switch to using FIELD_GET_SIGNED()
-> 
->  arch/x86/include/asm/extable_fixup_types.h       | 13 ++++---------
->  arch/x86/mm/extable.c                            |  2 +-
->  drivers/iio/adc/intel_dc_ti_adc.c                |  4 ++--
->  drivers/iio/magnetometer/yamaha-yas530.c         | 12 ++++++------
->  drivers/iio/pressure/bmp280-core.c               |  2 +-
->  drivers/iio/temperature/mcp9600.c                |  2 +-
->  .../net/wireless/realtek/rtw89/rtw8852a_rfk.c    |  4 ++--
->  .../net/wireless/realtek/rtw89/rtw8852b_common.c |  4 ++--
->  .../net/wireless/realtek/rtw89/rtw8852b_rfk.c    |  4 ++--
->  drivers/net/wireless/realtek/rtw89/rtw8852c.c    |  4 ++--
->  drivers/ptp/ptp_fc3.c                            |  4 ++--
->  drivers/rtc/rtc-rv3032.c                         |  2 +-
->  include/linux/bitfield.h                         | 16 ++++++++++++++++
->  13 files changed, 42 insertions(+), 31 deletions(-)
-> 
+>  
+> @@ -571,7 +602,6 @@ static struct platform_driver hx711_driver = {
+>  module_platform_driver(hx711_driver);
+>  
+>  MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
+> -MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
+> +MODULE_DESCRIPTION("HX711 and compatible bitbanging ADC driver");
+>  MODULE_LICENSE("GPL");
+>  MODULE_ALIAS("platform:hx711-gpio");
+So Sashiko thinks (and it's plausible) that this module alias is a problem
+as if the driver match is against it might be possible to probe the
+driver without the match data getting set.  I think it's referring to
+the final driver match fallback path
+https://elixir.bootlin.com/linux/v7.0/source/drivers/base/platform.c#L1370
+
+Whilst unlikely anyone would get to this, I guess the fix is to ensure
+we get a match by having a platform_device_id table for legacy matching
+and making sure that covers such a match and provides data.
+
+We don't (I think) currently have an equivalent of the catch all matching
+functions that exist for i2c and spi.
+Bit ugly for platform data as I think you need to get it via
+platform_get_device_id()
+
+Maybe we just check if device_get_match_data() returns NULL and fail instead.
+
+> -
 
