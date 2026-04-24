@@ -1,45 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A1D33BF66C
-	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 11:45:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0E6B2DCF45
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 11:48:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777031119; cv=none; b=DXGRBM5FKboQx+eQOpQTXpQ5aJCkS7hNdCQO7/wkEY/JlQ8JFeZjLhlKRvc59WY0wcZNcb8PQ0zYrotYUlTbil3zuyChMzVhw++U22KFRtgrSu0Nl4INwJkBitH78l5J/AtfVVsuFN58wkGrqfVkr14CEEyyB3kHKOvLhSMaKfk=
+	t=1777031312; cv=none; b=UJbwAc5iqNfiQCaT0lM9XjNq7AsUQjJoVzfqwlojByazJNzpYG7nxPUpujV5OhNfwVQ4lUnEoURo55oq8IR+9lreNxTstTeqa5frKkvXoF1+gJkCjNmrdj/BI3wIQdMoPe4KfrjZxszSIAi/6P1IOFwFswmF69jdRlAxD+o0kes=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777031119; c=relaxed/simple;
-	bh=tTHaPHWqgVisxc2523ejIl2WZCl5K1U/EZsNjq0tOjI=;
+	s=arc-20240116; t=1777031312; c=relaxed/simple;
+	bh=XNDJ1WiFH8g3U0FL0+WTpHEIAqDSKIp5EwNyG6sd0OE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bsAWtQMG+b/QHexngLxSgtCtLLBpgDPYg2vVFITmoaUhdpNq7cVc+dEayCq+JleTrmtaY+KnVbcCshQ5yT0tQHfPimxB6dcEqmpubpGYGUFdNoFxAdXWqrBF0SyzZbV+AqBQou1grRjcHaCEQzdjxsor2nYX2KYpna9I6lEnDf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u/LFEQy8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=sWq4E2pNECfSHDk6LDJhekj5buT8tZvDmn2aswnP28gfnOOk++nkmNPBq26VaY3d02KWGLvDcErNvVbxPG5HoYjRiE6O1RUyvrHptlVpNIh49H83vt5SBx/23SqMQ99iYF0+iyruzXoJyLIml0pqKn7XkA/fRZISIur6t1h7Vw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rdLV5qSB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u/LFEQy8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3348FC19425;
-	Fri, 24 Apr 2026 11:45:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rdLV5qSB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A6DC19425;
+	Fri, 24 Apr 2026 11:48:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777031118;
-	bh=tTHaPHWqgVisxc2523ejIl2WZCl5K1U/EZsNjq0tOjI=;
+	s=k20201202; t=1777031311;
+	bh=XNDJ1WiFH8g3U0FL0+WTpHEIAqDSKIp5EwNyG6sd0OE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=u/LFEQy8LB2rU7IRzZ1enzp5PDBB5UXrgWJioo8AdFoFQ7xmt27Xw+yCf0CsuBG8W
-	 u1HyZNsRg5Sf4UBQJdw92WYcKFtqjnUM4EWHITLAdsc5Ld9cKOTet3N82Yc6Qn8Ayj
-	 YRa55L44lgzDOUTXecMAjZsGoKVJQzuU1R/X/R2RHPRtCa1tpEgVDLRrIk6c+HJo9L
-	 C0qyfq5ywwd+W0z/cQsB0T+cnnnbTGG+RbrEa/Epu4ag4v16hxZM83QxF4DPksUeqt
-	 a2XVBwSKs6LTzG74JIhuz2PWD8NkdUxnsYpZOLh31bxq/H6uLhWwPAYgntRvKJSc1S
-	 ku/mzdLYAq5XQ==
-Date: Fri, 24 Apr 2026 12:45:10 +0100
+	b=rdLV5qSB9dz/taNyetAJZSiDJU8TLWEYvPD7O/dok6Tk6AIWem2MV5HEFfquUxaGS
+	 h+9mSrBLtRREoO6igaJ5cjasWmK2gb/Jm3kBP2nTRnBlHRrGoztn2csGldn0Q29Yg1
+	 D4OpJbBfihZIAh8JYOdayIGPU5HzJkiQe1sAxgAOKTBj5rAjlGvoRqZtZlKpjFIwmb
+	 sMArpPHAmgCuJA1sx2Ja3z31musaK6hJKL+X89Zb2nAXg4jpusRlRvuePNum5FcZI3
+	 1HHCPE+lr5fDaesCHgDYul4UxYL/4uM/MDBWzL0XHAOFV2ntKnR8Sy9z2FAg9SrQGP
+	 zTev33GkG448g==
+Date: Fri, 24 Apr 2026 12:48:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>, andy@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, Eduardo Augusto
- <eduardoaugustoabc@ime.usp.br>, Christian Barry
+To: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, Gustavo
+ Pagnotta Faria <gustavo.pagnotta@ime.usp.br>, Christian Barry
  <christian.barry@ime.usp.br>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: adc: mcp320x: refactor driver to use
- bitfield API
-Message-ID: <20260424124510.5e4f3cee@jic23-huawei>
-In-Reply-To: <aeskXSpBCIvWghPu@ashevche-desk.local>
-References: <20260422222553.67660-1-gustavo.pagnotta@ime.usp.br>
-	<20260422222553.67660-3-gustavo.pagnotta@ime.usp.br>
-	<aeskXSpBCIvWghPu@ashevche-desk.local>
+Subject: Re: [PATCH] iio: adc: mcp320x: Use guard(mutex) for lock handling
+Message-ID: <20260424124823.443b3c23@jic23-huawei>
+In-Reply-To: <20260422211105.48158-1-eduardoaugustoabc@ime.usp.br>
+References: <20260422211105.48158-1-eduardoaugustoabc@ime.usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,67 +46,86 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Apr 2026 11:05:49 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, 22 Apr 2026 18:11:05 -0300
+Eduardo Augusto <eduardoaugustoabc@ime.usp.br> wrote:
 
-> On Wed, Apr 22, 2026 at 07:14:13PM -0300, Gustavo Pagnotta Faria wrote:
-> > Update the mcp320x driver to use the standard Linux
-> > bitfield API (<linux/bitfield.h>) instead of manual
-> > bitwise shifts and masks.  
+> Replace the explicit mutex_lock() and mutex_unlock() calls in
+> mcp320x_read_raw() with guard(mutex)().
 > 
-> > This replaces the hardcoded shift operations in the TX
-> > data preparation (mcp320x_channel_to_tx_data) with FIELD_PREP()
-> > and replaces the manual masking in the RX data extraction
-> > (mcp320x_adc_conversion) with FIELD_GET(). Explicit masks using
-> > GENMASK() and BIT() were also introduced for both transmit
-> > configurations and receive extractions.  
+> This simplifies the error handling paths by removing the need for
+> the explicit unlock label while keeping the locking semantics
+> unchanged.
 > 
-> I believe somebody told to you (or to the similar patch *) that this paragraph
-> is an unneeded detail.
+> Signed-off-by: Eduardo Augusto <eduardoaugustoabc@ime.usp.br>
+> Co-developed-by: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
+> Signed-off-by: Gustavo Pagnotta Faria <gustavo.pagnotta@ime.usp.br>
+> Co-developed-by: Christian Barry <christian.barry@ime.usp.br>
+> Signed-off-by: Christian Barry <christian.barry@ime.usp.br>
+> ---
+>  drivers/iio/adc/mcp320x.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
 > 
-> *) I'm already too much lost in the flood of the patches to IIO this spring...
-> I dunno what's going on, but from last few days when seeing something that does
-> ring a bell, I suggest contributors to start actually reviewing others' patches
-> in the mailing list for this (IIO) subsystem and read other reviews to learn
-> from them. It will save a lot of time for everybody.
+> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+> index 57cff3772..799756f4c 100644
+> --- a/drivers/iio/adc/mcp320x.c
+> +++ b/drivers/iio/adc/mcp320x.c
+> @@ -44,6 +44,7 @@
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/cleanup.h>
+>  
+>  enum {
+>  	mcp3001,
+> @@ -198,8 +199,7 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+>  	struct mcp320x *adc = iio_priv(indio_dev);
+>  	int ret = -EINVAL;
+>  	int device_index = 0;
+> -
+> -	mutex_lock(&adc->lock);
+> +	guard(mutex)(&adc->lock);
+>  
+>  	device_index = spi_get_device_id(adc->spi)->driver_data;
+>  
+> @@ -208,7 +208,7 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+>  		ret = mcp320x_adc_conversion(adc, channel->address,
+>  			channel->differential, device_index, val);
+>  		if (ret < 0)
+> -			goto out;
+> +			return ret;
+>  
+>  		ret = IIO_VAL_INT;
+>  		break;
+> @@ -216,7 +216,7 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_SCALE:
+>  		ret = regulator_get_voltage(adc->reg);
+>  		if (ret < 0)
+> -			goto out;
+> +			return ret;
+>  
+>  		/* convert regulator output voltage to mV */
+>  		*val = ret / 1000;
+> @@ -225,9 +225,6 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+>  		break;
+>  	}
+>  
+> -out:
+> -	mutex_unlock(&adc->lock);
+> -
+>  	return ret;
+Can do early returns now in all branches.  As Andy said, check for
+reviews of similar code that has been posted recently.
 
-Lol. I just replied to patch 1 with the same message. I should have read on.
+If anyone who is doing this sort of work feels like taking the
+combined feedback from those reviewing and writing a doc with examples
+etc that would be great.  Maybe a blog or similar or we could see
+if we could find a home for it in tree.
 
-> 
-> ...
-> 
-> > +	case mcp3301: {
-> > +		u16 rx_val = get_unaligned_be16(adc->rx_buf);  
-> 
-> This is used in all cases (or almost all), can you make this assignment and
-> conversion be done outside switch-case?
-
-I asked for it to be moved in as it is invalid in a couple of cases and
-I don't like having variables taking nonsensical values even if they
-are then not used.
-
-> 
-> > +		u16 raw = FIELD_GET(MCP3301_DATA_MASK, rx_val);
-> > +
-> > +		*val = sign_extend32(raw, 12);
-
-Can make it less painful though by doing the FIELD_GET inline or maybe
-even using the proposed FIELD_GET_SIGNED().
-
-https://lore.kernel.org/all/20260417173621.368914-1-ynorov@nvidia.com/
-
-I guess we can't assume that will land that soon (though please keep
-an eye out for it doing so) hence in meantime.
-
-		*val = sign_extend32(FIELD_GET(MCGP3301_DATA_MASK, rx_val), 12);
-
-Thanks,
+Too many patches to review for Andy or I to have the time, though
+maybe when things calm down a bit...
 
 Jonathan
 
-
-		
-> >  		return 0;
-> > +		}  
-> 
+>  }
+>  
 
