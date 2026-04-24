@@ -1,59 +1,58 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F29838AC88
-	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 09:34:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1167437CD55
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 09:42:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777023275; cv=none; b=oQjtn8baJ2VBAHV6pWxTtGmuOArG61aCXLtLaa47MNURsozO2fvaKkOgsfVErQHX8y/iVtbQ2l7bUA4OfHKaErHe8dfMVqpWsBdApTIqgM+7nh936tE0y86+WVv29AaYrOs4+dT6XHPT53CXMFdBLmFgXx9sHbfDJ+pr+mjZ4qo=
+	t=1777023736; cv=none; b=PD8NBB2Y0/Gwc87AqqOZM/CgYPFQ9jfLLtz22iIEmnXJvtik1GO0TSKS8qTwCfQF9SL0J8WCjg5oeJaXVq2od6eubTJsebk5FU6yWmIdvCpD6wSzo1u8N2kfyKTsWF4koJzVxQLux9hFwid+9dASLoKmEmRORp3BaAANV1M1LyA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777023275; c=relaxed/simple;
-	bh=IhvcKh8UumV/dTIg2Jw5lyMxPJgvKivE1euWI4asnHc=;
+	s=arc-20240116; t=1777023736; c=relaxed/simple;
+	bh=pkjUQaA6VaBs1RsmRIUPX5gDOn/6WzM+mIOP4P179LM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bnLyucCrhNAxwMPczrBpvaQzpfr3u2IqgXz5Q61OMtQK/MxDBlOpLBGMKw+5svzHNZhBzlJpNnTp0AyXRGYCwNLwiFPrChdixzJHL8XyFUOHL1KtYOAP7Sa1fSsC/J6PY8hPoN2A0+A7P2IjZsrP/06S0K2A0JIznUkk/9kbuiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=no7OD3sA; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=PqF/+DgeiH2rLGLxeHx0JHVnemhc+HqMowgf7mUgC6QNLg/JABWPnhnVKpamIcLU5udYkNHZIE1uT2xITWoQtxY9LuUZE7Kr/vESRjGYH9uH0I4p21bJ4l1NbjWAaAWz4Dl5sW2lTEI+/yLO4gXrKgGr5KpA8OjIEu1SvfNHa1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Xvt5IaMu; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="no7OD3sA"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Xvt5IaMu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777023273; x=1808559273;
+  t=1777023735; x=1808559735;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=IhvcKh8UumV/dTIg2Jw5lyMxPJgvKivE1euWI4asnHc=;
-  b=no7OD3sA8itYpm23t7i285mPGzr1bGIqPEjNJcMTZLZ+OG64pxIVOlmr
-   w7r2T7eUNWGh09RrgC8PZaQRWcbvixgdIKd7IvNHk3jM7WJ8UiXvVxZbI
-   2be62vHH3BVUr9blduG0oz5f3uGlSnbP5MZFqhSdE1InfvgZXkFYHPdHM
-   /JDce+zHmg62bptgEAKG20sLwECgLngW/l3zrilysYIJ88UviqpQTn4dS
-   VevZ0mErwGAsDiF9us+FgPXhuc0vSfwcBX+16IEQ2MYy9LLLl8H/imlMR
-   i83fcgLD0GdhIfggUcHSlm33LU4u0E9zCgdMrhk/0LqNYYDcmhqozZQGq
+  bh=pkjUQaA6VaBs1RsmRIUPX5gDOn/6WzM+mIOP4P179LM=;
+  b=Xvt5IaMuZR7WmLd8q5UDP3nS0DsbtPsG3F7QkuwSE/xRTjn6NdFrZGQe
+   SsSDmtJc5TCEGSvNctvnR0ZkT5AGTVagXnEXoXYTMbZkIjGSQtJnk3SGi
+   z/+4tWk3xspSm0Gs9k3l4K4K9qPFVtwVihxlGXSR9o/DuSjmpw06Mc+V8
+   1FBY3A8jvgjpBC4/9Vk0tKJFTJRbEzDjxUSnuyBQlnyIrPSsv/0TIa6dE
+   FYcTJSyUwy4OtfTGqkH83uDqF2QtNEFdqd2lR/qy5DiQP5uCWM+gm5IfS
+   mAhX4LnL02jW/VhtyTmuKlMwMUQXW1I+cVfutEPSwshKNzGQ60dAfT1yu
    g==;
-X-CSE-ConnectionGUID: xhlbmuvfSBmDfM7uRrOdwg==
-X-CSE-MsgGUID: b2FctJNuTDq+4r9sWVZ4Yg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11765"; a="77704788"
+X-CSE-ConnectionGUID: Uz/b9a79Q7CIyAdpCBw46A==
+X-CSE-MsgGUID: ObuhLM6xTe2HUGC90aQMzA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11765"; a="88612282"
 X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="77704788"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 02:34:33 -0700
-X-CSE-ConnectionGUID: 9Ou1v+r3RdeS/WON4UCNeg==
-X-CSE-MsgGUID: ymg9bzw4TSSYtLylQS1eTA==
+   d="scan'208";a="88612282"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 02:42:14 -0700
+X-CSE-ConnectionGUID: LXj+gcS+RA6+PXM0VKZOpg==
+X-CSE-MsgGUID: Yoxjn8kTRE6JuTyY3+2roA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="226372436"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.71])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 02:34:30 -0700
-Date: Fri, 24 Apr 2026 12:34:28 +0300
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 02:42:12 -0700
+Date: Fri, 24 Apr 2026 12:42:08 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rafasales@usp.br
-Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
-	nuno.sa@analog.com, "Gustavo C. Arakaki" <gustavo.arakaki@usp.br>,
+To: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	Matheus Giarola <matheusgiarola@usp.br>,
+	Felipe Ribeiro de Souza <felipers@usp.br>,
 	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] iio: light: ltr501: use `sysfs_emit_at()` for
- showing scales
-Message-ID: <aes5JB9_1GH4fEei@ashevche-desk.local>
-References: <20260422231305.677778-1-rafasales@usp.br>
- <20260422231305.677778-4-rafasales@usp.br>
+Subject: Re: [PATCH v4] iio: adc: ad7280a: use cleanup helpers guard() and
+ scoped_guard() for mutex locking
+Message-ID: <aes68EaF7HkJn24T@ashevche-desk.local>
+References: <20260423133322.13298-1-lucas@ciziks.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,40 +61,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260422231305.677778-4-rafasales@usp.br>
+In-Reply-To: <20260423133322.13298-1-lucas@ciziks.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Apr 22, 2026 at 08:12:57PM -0300, rafasales@usp.br wrote:
-
-> Replace `scnprintf()` with `sysfs_emit_at()`, which is
-> PAGE_SIZE-aware and preferred for use in sysfs.
-
-...
-
->  	for (i = 0; i < info->ps_gain_tbl_size; i++) {
->  		if (info->ps_gain[i].scale == LTR501_RESERVED_GAIN)
->  			continue;
-> -		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
-> +		len += sysfs_emit_at(buf, len, "%d.%06d ",
->  				 info->ps_gain[i].scale,
->  				 info->ps_gain[i].uscale);
-
-It broke indentation now.
+On Thu, Apr 23, 2026 at 10:26:48AM -0300, Lucas Ivars Cadima Ciziks wrote:
+> Replace open-coded mutex_lock/unlock pairs with the cleanup-based
+> guard() and scoped_guard() helpers in ad7280a_write_thresh(),
+> ad7280_show_balance_timer(), ad7280_store_balance_sw(),
+> ad7280_store_balance_timer() and ad7280_read_raw().
+> 
+> This removes the need for the err_unlock label and explicit
+> mutex_unlock() calls, as the lock is now automatically released
+> when the function returns or the guarded scope exits, regardless
+> of the exit path.
 
 ...
 
->  	for (i = 0; i < info->als_gain_tbl_size; i++) {
->  		if (info->als_gain[i].scale == LTR501_RESERVED_GAIN)
->  			continue;
-> -		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
-> +		len += sysfs_emit_at(buf, len, "%d.%06d ",
->  				 info->als_gain[i].scale,
->  				 info->als_gain[i].uscale);
+>  	switch (m) {
+> -	case IIO_CHAN_INFO_RAW:
+> -		mutex_lock(&st->lock);
+> +	case IIO_CHAN_INFO_RAW: {
+> +		guard(mutex)(&st->lock);
+> +
+>  		if (chan->address == AD7280A_ALL_CELLS)
+>  			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
+>  		else
+>  			ret = ad7280_read_channel(st, chan->address >> 8,
+>  						  chan->address & 0xFF);
+> -		mutex_unlock(&st->lock);
 
-Ditto.
+Same idea of splitting devaddr + ch variables can be made for this entire
+switch-case...
 
->  	}
+>  		if (ret < 0)
+>  			return ret;
+
+>  		*val = ret;
+>  
+>  		return IIO_VAL_INT;
+> +	}
+>  	case IIO_CHAN_INFO_SCALE:
+>  		if ((chan->address & 0xFF) <= AD7280A_CELL_VOLTAGE_6_REG)
+
+...as I assume that would benefit this code as well.
+Perhaps it should be done as preparatory patch.
+
+>  			*val = 4000;
 
 -- 
 With Best Regards,
