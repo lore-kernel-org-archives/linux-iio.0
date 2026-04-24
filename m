@@ -1,110 +1,111 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22DC63290A6
-	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 08:23:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777019024; cv=pass; b=OM/jcXPP2ujBjg3FNVl8dJKOJ3VWGhX5ILmAoI+m7NlUot4LZp3tKLcvVw/I/eMV39pykuwXouabKcxPajuj9ExgKM11YZe2gRgI+i0d/pFbogrCCuKY+PUK6DMdhTeFsCpCLRvf2vrDUHQD+437bXEyWZye4zUon3RuvUl1e+s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777019024; c=relaxed/simple;
-	bh=QofEkjd8FMH5RFqe1MHBSi4gM7v44QFHJL+ngo8T/Jw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WxCjUneT+OOk0ptumvHyST8eY46TidRCZ1IdUznhTg65e8H7HYyPO0/rjdMEqyduRa6wEUkEl51yDt+RNAr2UQ4AOaW10F35hzCD9KEDuHlax8qV9W1J6Ue04fiekSkowCVphdzWQRY6kA0H+bya9aFhJFgfttzj7yRuUEP6H4o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cJMhwHeG; arc=pass smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21B5234A783
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 08:52:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777020748; cv=none; b=Cy2c1+tS44/SrnEP3MQGh1joFdJWB2ItpZrHVANY5cPC5JEog767HjA8azy/SPkvGhZt3GUhHKXyfLPJ84yLnVY7izAis8hdZGTTSwsgfuakSoGsQvfWcLU2r4xA//FYGiXwD3XgKO/ijNsd+yDmgJpjwLAxxy7eG4Yy1djgRNc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777020748; c=relaxed/simple;
+	bh=N+KfTswMsykQwblz1SvP+iese6DJD8cgBELkiH+wWnc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Zsrk13G5fwh6J8oeMtB7SQJEEGpAdKGlAVf5MkiKgqZTeZgD9vCkujYOgM6OzVdqKyOwoI9+/h4EHB2GTDSKNyoZnp3SXOUwDJrFOXsOAvn1rr8M3/Iuzx182vH06XY3/xG2eXtDgwic7hyDS90b+KThiTVULG9UoVi6wJ+TTkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SThqkZyP; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cJMhwHeG"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-43cfd1f9fd1so4631531f8f.3
-        for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 01:23:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777019022; cv=none;
-        d=google.com; s=arc-20240605;
-        b=NkT7rFVNHseBqx4plz/gP+0cR9JAWFCqSN27e/b4rYMwqMe8g3N6j00q59oenpAMCk
-         JaPMoDz5hxVh1XH4OicBJaYiSnC8f684kaqzRWy62lUrzv7hWo0lUY+iaJpb04k5Y6Pd
-         rRhLFLHTdKfCCjJpsTCeYVdsiKmG96//YtZmvGp4opMawZ8nJqWS8zBQ63w4DUJkzqg+
-         3JVCSTf16hiaBdg0Ejz610cXSvfBG28JvAfDMw7rKn8oQPL4Zqawu4P160Dceq4X3tVO
-         zyoKvySeGnRQawjswMm5Cb+fZtZ+N2NXtK2HzA+tdWanjwDWrDwnMiUuVRaiGDysBKCp
-         pzQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=NbjBm5UVHCZcVvdf0NjFPirO3zRx0wYmA/bGZ1WxQZ0=;
-        fh=wzoYY/xZ6VvyOgraTZdW4zXAoPn0IFVHgwl6YCQc+/Q=;
-        b=Y8hSlrh6GLd5oee/2hll50wYs561zurA0gDWLmXTiteSGIu7r7fsbmU/GcHbwn00LB
-         yeJZiO6SxIHnDZa3q4FFpj+2Fp1kguSdR5rfaNLva5zlWvlqjWH6JpyEg/ofzwjOpCJJ
-         ACfKz8Db+86T9fN0bOsDadMeXhZ3VH5qUQjCy7SmBU0F3FOIWkAgGsovFHxIvtgOmCqh
-         z/YhqkLlSXj1YjwqNchv2/ZXalIiBbnD8w+bzFILbn/jJK+EXqk31caQsx/0QQQ41SC4
-         i4v1rlP4fLF9daorXtjfoaHE8sXuIXTFjoJhg4tVB3vSkkjZhpzXwivPcJ7A6REe8cTw
-         edQg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777019022; x=1777623822; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=NbjBm5UVHCZcVvdf0NjFPirO3zRx0wYmA/bGZ1WxQZ0=;
-        b=cJMhwHeG75umJaAMoo881MvsGToHZUzLXd17RVAylVlVW/WNjV4+1lYZq61K0ydaf8
-         0QcWw3BmG0ZqvUgD5bhqi6e8iEDaHXi8z006Z13+Ja+7nj4T/j3GdZiuT5xztx9K/5ET
-         TK+L66Gr7OXNNDWCxtZHZ2ieeywLtRpQXr3CFz36bcmY7smwk7DM6g/AeWBujIPP/55R
-         1YQVAO2F6ZIMJUI/tcsZKJ+Qw50RypCCNAchS3aV+SUXPhR8RZZci7PrfAeAxX5q8reb
-         M51V4y+To3eEzpwt0mVEixnUsGySVfTFRX3lKjyWe4k+PeY/d+XO+XiPi4ofrQqQv8JH
-         kIrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777019022; x=1777623822;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NbjBm5UVHCZcVvdf0NjFPirO3zRx0wYmA/bGZ1WxQZ0=;
-        b=AVL2SznRxe6659g7mNlQUiZrYCGrj+C6VEePUEkC7oX8dbVvfw0mEcvpIeM7asKU7b
-         QQMnOjjPZgmdn8MhuSLFptBys3qX3Keg3hRHrgWQyCQRvzgSgsuukRmrZ+olv8kNdcir
-         2XraO2rvbePVVE2xemwyCJyvVKSQuUNbPX4agw97t5dJL/TdMOXESYWaaANgNbB4bnxD
-         leGcx7951vfiFqcVbsPg10n5kFpQI/cmJd26mufefALV5fJMo/gSYHhwb1x1ZjwhdC1n
-         jU0jMDQNGPipR2UFHVHJ/LbOLsTJeb6tccNpi41NdokANbYDkcnSpWc78G7VBUkacDNl
-         wEiw==
-X-Forwarded-Encrypted: i=1; AFNElJ9dzJC7Kh89IIXhcJ5PL9ErbYbgSxFqCoPH455Zi+1fzZAD7nGrBcMwAMJ0p17JmMkrZqVC9W8P6cE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyOaUIdf7gAh+arYZv5KoZDiSc098wOKu3bcai/iUV6itWALui5
-	KCt4fjUV2dfgY953brv2cebA2pfMy8SFqqyVAtelzKd8tW97Epu/yekGL3p7e+qq11/7zx1kqI5
-	pBZb73fhLH9BTRB4IXgZM9yDH67GVepw=
-X-Gm-Gg: AeBDiev3YwaqZ3DhvY0ReJtBdACkTg/TH2u0yX4Htf7ICX7irYLJHgYPEfbnM7FmSau
-	YfRJU6ecI6xPEa2arc/06IqsZdRk7qmkrt+qFVeICmTiurguQoxAWMiGeZmWoKFCFyrI7JRJL3g
-	HmHwvUrt+GQ4YCts6bvzBrbKGvV2SeGe8jBPtLWt2eFWhdaYU4byqewUpvmXNHsgJ7MMCtjNMbA
-	wLglnKUV6XRX0otOiNc1WInlrN/QDGjSDr1QPlZxrxFAX82gDJpPuLF8x0WdOglWLydA4DtbL68
-	+hu2QbHbOp0fIquuwknp4k+JZ/om0YYvqHewfWBm7qXya/MQYrFLKR+DdJnq87LeMVc9hCKpWod
-	aOIsX0t0/JE8lt7Reusc4DNBlk6FjVXwH1PNdp7d1spJkxV76PA6dnshFVsJdh4P9+p7xWDmJYB
-	BsTzm0XIFWYCkN2imw
-X-Received: by 2002:adf:f34e:0:b0:43f:e42d:ece with SMTP id
- ffacd0b85a97d-43fe42d0f73mr30050235f8f.1.1777019021449; Fri, 24 Apr 2026
- 01:23:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SThqkZyP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777020747; x=1808556747;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=N+KfTswMsykQwblz1SvP+iese6DJD8cgBELkiH+wWnc=;
+  b=SThqkZyPoIQqeW+SxWGgEnEVpuDkVAPkUNkKS+gBC+lH3URbIi18taj8
+   AdoaEiqncWDK6nU4ATlp9k4j+vRXKTbVaozqT4mxiaFlIwm7MCx82XDLQ
+   x7x6iupvieB4gIERJhqsIuJLIvh2GvzwL17ksoThsuPquzCsRqy3NoNUr
+   mg2aTPzJqD4YbPUsUV5DT5bxWvSGM0OG5PbCFAzu78Cn5COgfal9VpbAD
+   YdoKQtD0Zs64nbVo8lQ+lP+jN75I3CNvmBD6mS3knzD6VqxEHnHpOS+ci
+   OccQDnV+mroXCTTgRsNIyxJ+k+2l5mR+o1Ga+y4uZL1XWuHF+r+EduZb2
+   A==;
+X-CSE-ConnectionGUID: K/T4Z4waT5G4Bu+HNpbBww==
+X-CSE-MsgGUID: ZzUUad/jT+iP3QmSfskWIg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11765"; a="88696782"
+X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
+   d="scan'208";a="88696782"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 01:52:26 -0700
+X-CSE-ConnectionGUID: 71GR94+BRvm8mU9hB7c9bA==
+X-CSE-MsgGUID: C8TcqQrBTiOaau5f7zlEIw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
+   d="scan'208";a="230242554"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.71])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 01:52:20 -0700
+Date: Fri, 24 Apr 2026 11:52:14 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Marcelo Machado Lage <marcelomlage@usp.br>
+Cc: Jonathan Cameron <jic23@kernel.org>, andy@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com,
+	Vinicius Lira <vinilira@usp.br>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] iio: adc: mcp3422: rewrite mask macros using
+ bits.h macros
+Message-ID: <aesvPuRfJk2tE6Ro@ashevche-desk.local>
+References: <20260420191455.529923-1-marcelomlage@usp.br>
+ <20260420191455.529923-2-marcelomlage@usp.br>
+ <20260421165452.76df9b7c@jic23-huawei>
+ <CAO=vGZrJjwsPtFeo+Nj1k8rKpHehsVUhwFCxzeTAeJinTL_ssw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260422112207.1313-1-joshua.crofts1@gmail.com> <aejKKKD4JdxIzlk0@ashevche-desk.local>
-In-Reply-To: <aejKKKD4JdxIzlk0@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Fri, 24 Apr 2026 10:23:31 +0200
-X-Gm-Features: AQROBzCjfq5y0fpdv49zdWxO4g4o8sfnb03ky10FgAbYkOAMun0WhJQ7MCGUVP0
-Message-ID: <CALoEA-w=N7ch67R+DgdqCrSy+5GtbuGkiAbJtnf-9c=Q2Mb6CQ@mail.gmail.com>
-Subject: Re: [PATCH v3 0/6] iio: magnetometer: ak8975: modernize and cleanup driver
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAO=vGZrJjwsPtFeo+Nj1k8rKpHehsVUhwFCxzeTAeJinTL_ssw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 22 Apr 2026 at 15:16, Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
-> 5 out of 6 are good, one needs a bit more as it's a new patch in this version.
-> Also, wait a bit I'll send a couple more that you may incorporate in your
-> series. Btw, are you familiar with `b4` tool? If not, good time to start
-> playing with it.
+On Thu, Apr 23, 2026 at 04:15:54PM -0300, Marcelo Machado Lage wrote:
 
-Just checking in on this, since I haven't seen any changes on lore.
-Btw, b4 really does save *a lot* of time.
+Please, stop top-posting! It's not how we do in Linux kernel mailing lists.
+
+
+> Thank you for your comments. We will correct the mistake in the commit
+> message in the next version of the patch.
+> Regarding the comments at
+> https://sashiko.dev/#/patchset/20260420191455.529923-1-marcelomlage%40usp.br,
+> we appreciate the opportunity to learn about this resource. However,
+> after going through the content there, we do not feel confident to
+> address other pre-existing issues in the code at the moment.
+
+Also drop the second 'macros' in the Subject or rephrase it.
+Exempli gratia: 'rewrite mask macros with help of bits.h APIs'.
+
+> Em ter., 21 de abr. de 2026 às 12:55, Jonathan Cameron
+> <jic23@kernel.org> escreveu:
+> >
+> > On Mon, 20 Apr 2026 16:14:54 -0300
+> > Marcelo Machado Lage <marcelomlage@usp.br> wrote:
+> >
+> > > Rewrite MCP3422_CHANNEL_MASK, MCP3422_PGA_MASK, MCP3422_PGA_MASK
+> > > and MCP3422_CONT_SAMPLING using GENMASK() and BIT() macros from
+> > > bits.h.
+> > https://sashiko.dev/#/patchset/20260420191455.529923-1-marcelomlage%40usp.br
+> > pointed out repetition of PGA_MASK.
+> >
+> > The other comments are a mixed bag but it's worth taking a look to see
+> > if you think any of them matter.  They are all really about the existin
+> > code.
+
+> > > The other macros MCP3422_SRATE_{240, 60, 15, 3} were not changed
+> > > because they are also used as array indices.
 
 -- 
-Kind regards
+With Best Regards,
+Andy Shevchenko
 
-CJD
+
