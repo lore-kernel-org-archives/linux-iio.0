@@ -1,46 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E0E53AD510;
-	Fri, 24 Apr 2026 12:19:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF68C3C6A2B;
+	Fri, 24 Apr 2026 12:21:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777033194; cv=none; b=SjDH3V89Bnk6ZnL7h5ZduGAINlDn7HPRkeoicEjiBl79wH7+3lIXRD9C1WPWLANA5dDlcY6ea2x5gdJA+hdNH2A4bTRCEasyCdAuu97siPYuCyzD9rRaKrs81O0zcMe6BOJanHV1ttg6yHt8AhSUNA1Eubb1pFTydOL9mFVg5hE=
+	t=1777033318; cv=none; b=lT/9JeX2qMfBMP5+kG9+WaSTNv31gOjZKzlKgZG1vOTJWt7SBVwsk5b2dDFlo1hrRXRaMUo11eWuaFKB9pcl86yYgDPcKxAVknJgKBs2xHPFYKZYRvuXbhBYVuZ5pI5r2/WKtJ3hmZaoX5pZ9AprdoOi99ygdr4WdUUr7F2kWgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777033194; c=relaxed/simple;
-	bh=CsecgF1/GUFtSh1YUWC9TyARCKfxXXkkoRGFBnQyl5M=;
+	s=arc-20240116; t=1777033318; c=relaxed/simple;
+	bh=O0C1+D+c5s76j7er/ncHDcIHnKTNDMbgtllEWQlHPO8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Vpi2p02bm87GkUAv3scGGVbomoDHRqnotj4gU/O1056gGqb/jfwonP3yoTFW7fdo9rbKzfTKrOKGWF6zUYIQxx7TRjL7NAPrC5RWryF2uJYa7rgFFbtwuQpMZpgJeOek5JsC7Bx9LPi0zq5Z47YRiAcSuwiysvNPVBGE4U+z79c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SF+cSHli; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=B2g9NXRqRac9U8P6AznZktX/IMIIXQD2uoQKtU7hfE3EeBlFBHrkGlbWm5BVHAwXTJI3e3fwxrPErKPEUfIOO5kjs/7DxXLO/uSXrX9zp5i0Yivg+gXl36bJep/TaDclh7vVz5luoD0lIdWK67C+fuxjA0Hr15ts49N9CNAB1yY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GsEK0/BW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SF+cSHli"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B26F4C19425;
-	Fri, 24 Apr 2026 12:19:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GsEK0/BW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D378DC2BCB5;
+	Fri, 24 Apr 2026 12:21:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777033194;
-	bh=CsecgF1/GUFtSh1YUWC9TyARCKfxXXkkoRGFBnQyl5M=;
+	s=k20201202; t=1777033318;
+	bh=O0C1+D+c5s76j7er/ncHDcIHnKTNDMbgtllEWQlHPO8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=SF+cSHliPB4SvfQjguZ43xEG+INGHvBi0zmQ2p7rQDSbZyi0q2++TzoYvU3lLu9xx
-	 0Qc7Et5wUqL8g+7OkzYJOoQzeXXtaWOcc1T2EzrEkQbXferX/MKyl+bps3NYp1PQXn
-	 6/pw/eoqN80x5U/3YTkccdVG0N7EOCrMs2JpOfayfeU1KkMXTQmlYdXIYQUyHiDced
-	 0Q8Z3/fPgfhC8zVwaKfZPunL+skYhafXewmWJdPQGbfiUY/XryfBcoRgBELlqwh9bR
-	 nzZsr80eFH+Oa9THBeYNZpcEPPnRUnClU8FJrLGVL5Lb+gFBTj9ad+1BeUAsZjgqpS
-	 XVc32awPf6f2g==
-Date: Fri, 24 Apr 2026 13:19:48 +0100
+	b=GsEK0/BWNo6h8gpUenqiNprqpw8Endo5YZM0iluqXM3vj4mvOYkKhgbcTHOp3P1w1
+	 bRh9NmtVarRr5SZifWpKs3PqRCc/WzotMVtipGD+MJw2bv1n+UReeP7wCVa6FolyvE
+	 OcaNhL7yfZ1RQ4vK+VkzINdhbtwnS2QQBb3nxFleItZZEMuEiNsmNpLuF1Lhh+Dvon
+	 0KHouxdCGtuM+cJ9uNSB3Y7nxWmS47RM2SaWJ4lHf33jq5brri/XrzmTug6Puxxl8t
+	 g1j/zwI2eJbM7G0OglgJzMiVF8u6gY/uJd0eZC9vt0Xa1d/yvdzeB7oKj4zHWwHi0T
+	 gn1Ky0pQzj9Cg==
+Date: Fri, 24 Apr 2026 13:21:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: Andreas Klinger <ak@it-klinger.de>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, ak@it-klinger.de,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] iio: adc: hx711: add support for HX710B
-Message-ID: <20260424131948.178323be@jic23-huawei>
-In-Reply-To: <20260422175910.1258579-4-piyushpatle228@gmail.com>
-References: <20260422175910.1258579-1-piyushpatle228@gmail.com>
-	<20260422175910.1258579-4-piyushpatle228@gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: avia-hx711: add
+ avia,hx710b compatible
+Message-ID: <20260424132148.69e63bbe@jic23-huawei>
+In-Reply-To: <CAMB+xkZ_FypL9_pYiE9nEoyaGxzc7_vdAzb-FgKEeXok0_fi1w@mail.gmail.com>
+References: <20260419174654.683692-1-piyushpatle228@gmail.com>
+	<20260419174654.683692-2-piyushpatle228@gmail.com>
+	<20260421-heavy-amigurumi-badger-c7ef9f@quoll>
+	<CAMB+xkZ_FypL9_pYiE9nEoyaGxzc7_vdAzb-FgKEeXok0_fi1w@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,132 +49,150 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 22 Apr 2026 23:29:10 +0530
+On Wed, 22 Apr 2026 11:32:56 +0530
 Piyush Patle <piyushpatle228@gmail.com> wrote:
 
-> Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
-> interface but has a fixed gain of 128 and uses trailing PD_SCK pulses
-> to select between the differential input and the DVDD-AVDD supply
-> monitor.
-> 
-> Model the HX710B with its own channel specification and iio_info.
-> Store the HX710B trailing pulse counts in chan->address and add
-> fixed-gain handling so the HX711 selectable-gain path remains
-> separate from the HX710B fixed-gain path.
-> 
-> The HX710B datasheet documents a single fixed PGA gain of 128 and
-> does not provide configurable gain selection like the HX711.
-> 
-> Order hx711_chip_info as pointers first, then unsigned int fields, then
-> bool. pahole then reports no internal holes in the structure; the
-> remaining padding is tail padding from 8-byte alignment.
-> 
-> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> ---
-> Changes in v3:
-> - Add HX710B support on top of the separate hx711_chip_info refactor.
-> - Update channel_set only after hx711_read() and hx711_wait_for_ready()
->   both succeed.
-> - Keep a single HX710B fixed-gain scale based on the datasheet's fixed
->   PGA gain of 128; do not apply the HX711 channel-B gain of 32 to the
->   HX710B supply monitor path.
+> On Tue, Apr 21, 2026 at 1:53=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.=
+org> wrote:
+> >
+> > On Sun, Apr 19, 2026 at 11:16:39PM +0530, Piyush Patle wrote: =20
+> > >  description: |
+> > > -  Bit-banging driver using two GPIOs:
+> > > -  - sck-gpio gives a clock to the sensor with 24 cycles for data ret=
+rieval
+> > > -    and up to 3 cycles for selection of the input channel and gain f=
+or the
+> > > -    next measurement
+> > > -  - dout-gpio is the sensor data the sensor responds to the clock
+> > > +  The HX711 is a 24-bit ADC with selectable gain (32/64/128) and two
+> > > +  differential input channels. Channel A supports gain 64 and 128;
+> > > +  channel B supports gain 32.
+> > >
+> > > -  Specifications about the driver can be found at:
+> > > -  http://www.aviaic.com/ENProducts.aspx
+> > > +  The HX710B is a 24-bit ADC with fixed gain of 128. Channel 0 is the
+> > > +  differential input and channel 1 measures the DVDD-AVDD supply
+> > > +  voltage difference.
+> > >
+> > >  properties:
+> > >    compatible:
+> > >      enum:
+> > > +      - avia,hx710b
+> > >        - avia,hx711
+> > >
+> > >    sck-gpios:
+> > > @@ -40,13 +40,45 @@ properties:
+> > >
+> > >    avdd-supply:
+> > >      description:
+> > > -      Definition of the regulator used as analog supply
+> > > +      Analog supply voltage (AVDD). Also serves as the voltage refer=
+ence on
+> > > +      both chips; no separate vref-supply is required. =20
+> >
+> > There is no such thing as vref-supply.
+> > =20
+> > > +
+> > > +  dvdd-supply:
+> > > +    description:
+> > > +      Digital supply voltage (DVDD). HX711 only.
+> > > +
+> > > +  vsup-supply:
+> > > +    description:
+> > > +      Supply voltage for the on-chip regulator (VSUP). HX711 only.
+> > > +
+> > > +  rate-gpios:
+> > > +    description:
+> > > +      GPIO connected to the RATE pin (HX711 only). When driven low t=
+he
+> > > +      output data rate is 10 SPS; when driven high it is 80 SPS. If
+> > > +      omitted the RATE pin state is determined by the board wiring.
+> > > +    maxItems: 1
+> > >
+> > >    clock-frequency:
+> > > +    description:
+> > > +      Controls the SCK bit-bang timing. The value is used to derive =
+the
+> > > +      delay between SCK edges; keep the SCK high time below 60 us to
+> > > +      avoid triggering chip power-down mode. Defaults to 400 kHz if =
+not
+> > > +      specified. =20
+> >
+> > Don't repeat constraints in free form text. Drop last sentence.
+> > =20
+> > >      minimum: 20000
+> > >      maximum: 2500000
+> > >      default: 400000
+> > >
+> > > +allOf:
+> > > +  - if:
+> > > +      properties:
+> > > +        compatible:
+> > > +          const: avia,hx710b
+> > > +    then:
+> > > +      properties:
+> > > +        vsup-supply: false
+> > > +        dvdd-supply: false
+> > > +        rate-gpios: false
+> > > +
+> > >  required:
+> > >    - compatible
+> > >    - sck-gpios
+> > > @@ -58,10 +90,19 @@ additionalProperties: false
+> > >  examples:
+> > >    - |
+> > >      #include <dt-bindings/gpio/gpio.h>
+> > > -    weight {
+> > > +    weight0 { =20
+> >
+> > Don't change the node names.
+> > =20
+> > >          compatible =3D "avia,hx711";
+> > >          sck-gpios =3D <&gpio3 10 GPIO_ACTIVE_HIGH>;
+> > >          dout-gpios =3D <&gpio0 7 GPIO_ACTIVE_HIGH>;
+> > > +        rate-gpios =3D <&gpio0 9 GPIO_ACTIVE_HIGH>;
+> > >          avdd-supply =3D <&avdd>;
+> > >          clock-frequency =3D <100000>;
+> > >      };
+> > > +  - |
+> > > +    #include <dt-bindings/gpio/gpio.h>
+> > > +    weight1 {
+> > > +        compatible =3D "avia,hx710b";
+> > > +        sck-gpios =3D <&gpio3 11 GPIO_ACTIVE_HIGH>;
+> > > +        dout-gpios =3D <&gpio0 8 GPIO_ACTIVE_HIGH>;
+> > > +        avdd-supply =3D <&avdd>; =20
+> >
+> > Why no clock-frequency? So basically difference is one property? Then no
+> > need for new example, less code to maintain.
+> >
+> > But OTOH, where is vsup and dvdd? =20
+>=20
+> dvdd-supply and vsup-supply are optional HX711 properties and
+> arenot present on all boards (e.g. DVDD tied to AVDD or use of the
+> on-chip regulator without a separate supply node).
 
-Just to confirm - you verified this?  It does seem very odd as that
-might well take a large value.
+For DVDD tied to AVDD as a board config (rather than internally)
+both would ideally be set to the same regulator rather than just
+not mentioning that tie.   The other case of it not being connected
+is valid.
 
-
-> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-> index a444a2872257..d7050bec53b4 100644
-> --- a/drivers/iio/adc/hx711.c
-> +++ b/drivers/iio/adc/hx711.c
-
-> +static const struct iio_info hx710b_iio_info = {
-> +	.read_raw		= hx711_read_raw,
-> +};
-> +
->  static const struct iio_chan_spec hx711_chan_spec[] = {
->  	{
->  		.type = IIO_VOLTAGE,
-> @@ -474,6 +522,48 @@ static const struct iio_chan_spec hx711_chan_spec[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(2),
->  };
->  
-> +/*
-> + * HX710B channels.
-> + * Channel 0: differential input (IN+ vs IN-), 10 SPS, 1 trailing pulse.
-> + * Channel 1: DVDD-AVDD supply monitor,         40 SPS, 2 trailing pulses.
-> + * .address holds the trailing pulse count used by hx710b_set_channel().
-> + */
-> +static const struct iio_chan_spec hx710b_chan_spec[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.differential = 1,
-> +		.channel = 0,
-> +		.channel2 = 1,
-> +		.indexed = 1,
-> +		.address = 1,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.channel = 1,
-Sashiko is winning today.   See it's comment on the indexing wich is
-spot on.
-
-https://sashiko.dev/#/patchset/20260422175910.1258579-1-piyushpatle228%40gmail.com
-
-This should be channel = 2 or given it's actually a differential measurement, maybe
-invent channels 2 and 3 so you can represent it as that. If useful label
-can be used to provide info on this magic channel to userspace.
-
-> +		.indexed = 1,
-> +		.address = 2,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 1,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(2),
-> +};
-
-...
-
-> +
->  static int hx711_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
-> @@ -540,12 +639,16 @@ static int hx711_probe(struct platform_device *pdev)
->  	/* we need 10^-9 mV */
->  	ret *= 100;
->  
-> -	for (i = 0; i < HX711_GAIN_MAX; i++)
-> -		hx711_gain_to_scale[i].scale =
-> -			ret / hx711_gain_to_scale[i].gain / 1678;
-> +	if (chip_info->fixed_gain) {
-> +		hx711_data->scale = ret / chip_info->fixed_gain_val / 1678;
-> +	} else {
-> +		for (i = 0; i < HX711_GAIN_MAX; i++)
-> +			hx711_gain_to_scale[i].scale =
-> +				ret / hx711_gain_to_scale[i].gain / 1678;
-
-Just to point it out, this is the update of the global variable I mentioned
-Sashiko spotting as broken in my reply to previous patch.
-
->  
+> The example shows a minimal working configuration.
+>=20
+> I will remove the example for HX710B.
+> > =20
+> > > +    };
+> > > --
+> > > 2.43.0
+> > > =20
+>=20
+> Thanks for the review.
+>=20
+> I'll fix the schema issues you pointed out in v3
+> Will share v3 shortly
+>=20
+> Regards
+> Piyush Patle
 
