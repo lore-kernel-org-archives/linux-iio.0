@@ -1,49 +1,78 @@
-Received: from mail-07.mail-europe.com (mail-07.mail-europe.com [188.165.51.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ABE53B9D84
-	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 12:50:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.165.51.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E89A3D412A
+	for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 12:57:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777035036; cv=none; b=bbEOYLRGDykQlKK9tTFjqcWNi8TfRhfbt1Q2W8QoDet9dQ28lSg/lOFJigF01fUG6IdJd6dv/y+8MRr0QiUrAfiajZurNQ3e5gkNP4Vd5w++T0EDu+m1+l6FUIzPMLZWlBV9MCo1aDzc2VDwu8/TOkFnydmirZ/tvKSic/LDN9g=
+	t=1777035474; cv=none; b=fqUAPLyqoebD0kAz2uCkqI2+HjflrnB0sgYSSyqul5uD+E73xXMsv9Flpharkgvt3dM1yjGbMXgSXbf1yWq1gHoTK7kB0HynbQFgS/gweP8HWC6TgF/ZvI8LtDHhlTJ0IbKtijubnjJb+k8uKE8G0v8Fwz0CAIYahYHzQcA9h1I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777035036; c=relaxed/simple;
-	bh=ZAOHR8CCiI/nVJfVL2j1otgRqQxRwP8M6rkl7ZHgfDo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=EG5lGu7IKLQbKN6CCFcYPYUSCMT3Fo+t1pUJJzEqHHKXwzu8VTz9NzlNOIkmIwvNhcJRlyN3CZErRyZZNkAhO6I5S+pGA0ZKudrC7EE7zvzTCznWPikoQGuYOfcKJ8LR7+VRYYRWCcsN8yp74MZketZA+uK1CBoanHOZOvmvxak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ciziks.com; spf=pass smtp.mailfrom=ciziks.com; dkim=pass (2048-bit key) header.d=ciziks.com header.i=@ciziks.com header.b=t4MVcgDP; arc=none smtp.client-ip=188.165.51.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ciziks.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ciziks.com
+	s=arc-20240116; t=1777035474; c=relaxed/simple;
+	bh=hgVrH6KeQFMnKoFzTbNYFnELRSO69bh9cz8Ztyhi7rg=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Y0CR/JAmAffbjX03GRxjmMj14l8GydhuOBBkdtZUUIA3ypQDh36nPQGd3krtym0jizMGeSAAzxVc+Iz9ALIzcPYtg/ne3r10jVUHct+5XY/NwUGI8Eug2+zhvgJigInlksWbYqRjSJgKTHrDvgkjqqIWe0Q9zmNl1rqzw0J5Xvc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dgkmBgJc; arc=none smtp.client-ip=209.85.215.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ciziks.com header.i=@ciziks.com header.b="t4MVcgDP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ciziks.com;
-	s=protonmail; t=1777035017; x=1777294217;
-	bh=yiJLd6TrtAID9D5JzFxvxqlMBR99IohrddbNCYgQTak=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=t4MVcgDPzNE11omJMJihuRZV81RzD9xx7IwuIqMH8VRICY/BVH0WUxfQEEfiFi7wZ
-	 Y9TlTG/TAhI75bpA4/KmnzOm8ZEmQ29tzhRztOBVeqfcc73HOItRUNSciE3VYzuMXZ
-	 rvUseA9d0tQIvW0kvmMC4URdosCSuPl4RdAxWHSN5etLUB7ucukW4J9vWct6ofUz7o
-	 fnOgAIBlp6ThoZXmFzAl3ZqEz+VWXRPA2u7HmgZkImYBfPDWTPoicCTh1w+TXueEcG
-	 1kNapv8Ybdiuu7mIhrOv7IcK4riM5xcSD9ajHGSWAhmPIUN4tv4bm+SEmsdV/5ZHZB
-	 n0mrXltBjdgZg==
-X-Pm-Submission-Id: 4g2CVG13kDz1DDry
-From: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
-To: andy@kernel.org,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	nuno.sa@analog.com
-Cc: Matheus Giarola <matheusgiarola@usp.br>,
-	Felipe Ribeiro de Souza <felipers@usp.br>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dgkmBgJc"
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-c795eacbeb0so3393343a12.2
+        for <linux-iio@vger.kernel.org>; Fri, 24 Apr 2026 05:57:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777035465; x=1777640265; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hgVrH6KeQFMnKoFzTbNYFnELRSO69bh9cz8Ztyhi7rg=;
+        b=dgkmBgJc4kFsfJnyMFnc7DtlhlyzP8oiIZybmPny7rgWnrVqJtCuCOsAOMiiXPkfXV
+         GX9PgRNGYXrikFajgfSCd89FJhGjJc8QHse8h8voD0QFoqLrhzlWgZM+IlH2pTwWpno3
+         dGOdGqJEYfbVugVgEj6IRDVz+mciBbtaOp4/4V0y6xcooIU8ddu7O705IBpTSY8L6Z8E
+         mTZp/wBxmrxVN49kDdub7nJzWQtPaoijPG5Y52TXlUmcSye9X+v1ECiUptOzKR5cteEP
+         T4bNISR7rsW8GvSLhBGD9bUFE9haHJRRM9uaruil89kHmzJkMpUgtbQ78JQ9TJcFGvp6
+         hMoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777035465; x=1777640265;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=hgVrH6KeQFMnKoFzTbNYFnELRSO69bh9cz8Ztyhi7rg=;
+        b=IACukhoYvEEieF0ZIrXibUECCL3/3NPp7lyPWh6d4Ut1wGK+LK9HSP2qbGiUwt7lts
+         qHLz8mwYcafrJtZ3OCybLD9l9XR7TV8JKJ3cXUl4aS/rESiasZx7E2AVS0A0Kr7h1402
+         3v2rQew0nvfMPDwIP+5N8ewVpLym+wFw4CCUhaFSu8svRYTIcXRnKvirwNVO0/o0qKE8
+         fQG0bb8w6ZNfCmrWI9DV66CuB9KpSXvaOqtXf92L7wE3FhuJkhbD5QaUyWbJsWnBEcnM
+         ukNUCN5bPp5HmiVpjG5VHX+Gzo0LOsxaIDryFottLl29N9nwJ6ECC61wi6xdfYx4Zr82
+         2TPA==
+X-Forwarded-Encrypted: i=1; AFNElJ/upz3xyUQ51QGaEJK3sCWZ5HbIIN7G8sBt8eTT2SfeEhAMcqrZ3Egph09qC0JUkh9+LImWRKGLC5U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzmL/+kzg32eGl/RbZIx3BDFGgp7DRxQ9AbK/yOak/H1UeF5v4/
+	UEFnB4rUwVRTVm9a/yZdtlU9pN4OiLPENElR+aVA/XSp8H14RaW+eRc=
+X-Gm-Gg: AeBDievdye6iI7MjODfL/lfrPKUkqUloYmXGgVAF7fXuose/716YcX6j9JAX6jZyGft
+	FRixe+g4KC/2I8EAUue+KOG6SCTDa9rGMCIbkGZSSnUo6O9dNzCu2Y94eo1FzPIBlJvE/0acnuK
+	WYd7galTJsMnfU5qdhIekeiqUKRTuenFzx9dg4/dN+XAfOnDhemWZKCSE2Nq8FcfVp+AVzNy8PH
+	G7sUnT1qS9bxeqBcIBeCYXfz7W0bMktQKP4w5c1pi+VhJtqTnjpx8nTYJjPgovA5Jyd5HKZx5r+
+	1XU4PACiZcHPJyFhFqYtPgcKy6gcx+WJFSW+BlTtOyfU8dlUz9/Ps+GxrsNIMCq07kfLzUYfUsD
+	rsrniH2QX7Lz0q4tEkBBnsFDo2UuFP6eLnrf6lZ6+Ff2mu7JH8CU64jFfAu9ZVROCs+1vqS1n66
+	J8/mkMqP1IcMlEpvoZs6BIlGY96+e3UlkUb/tn49/QqLBbVYEHhw==
+X-Received: by 2002:a05:6a21:e083:b0:3a2:e563:82e6 with SMTP id adf61e73a8af0-3a2e5638386mr21615958637.1.1777035465307;
+        Fri, 24 Apr 2026 05:57:45 -0700 (PDT)
+Received: from nik.. ([101.0.63.2])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8e9cbb1dsm25618752b3a.14.2026.04.24.05.57.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Apr 2026 05:57:44 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: jic23@kernel.org,
 	linux-iio@vger.kernel.org
-Subject: [PATCH v5 2/2] iio: adc: ad7280a: use cleanup helpers guard() and scoped_guard() for mutex locking
-Date: Fri, 24 Apr 2026 09:43:40 -0300
-Message-ID: <20260424125001.17822-3-lucas@ciziks.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260424125001.17822-1-lucas@ciziks.com>
-References: <20260424125001.17822-1-lucas@ciziks.com>
+Cc: andriy.shevchenko@intel.com,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Subject: Re: [RFC] iio: magnetometer: mlx90393 - regmap vs command-based access
+Date: Fri, 24 Apr 2026 18:27:39 +0530
+Message-Id: <20260424125739.4685-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260424114818.1290b029@jic23-huawei>
+References: <20260424114818.1290b029@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -52,194 +81,24 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace open-coded mutex_lock/unlock pairs with the cleanup-based
-guard() and scoped_guard() helpers in ad7280a_write_thresh(),
-ad7280_show_balance_timer(), ad7280_store_balance_sw(),
-ad7280_store_balance_timer() and ad7280_read_raw().
+Hi Andy, Jonathan,
 
-This removes the need for the err_unlock label and explicit
-mutex_unlock() calls, as the lock is now automatically released
-when the function returns or the guarded scope exits, regardless
-of the exit path.
+Thanks for taking a look and for the guidance.
 
-Signed-off-by: Lucas Ivars Cadima Ciziks <lucas@ciziks.com>
-Co-developed-by: Matheus Giarola <matheusgiarola@usp.br>
-Signed-off-by: Matheus Giarola <matheusgiarola@usp.br>
-Co-developed-by: Felipe Ribeiro de Souza <felipers@usp.br>
-Signed-off-by: Felipe Ribeiro de Souza <felipers@usp.br>
----
-v5:
-  - Add preparatory patch extracting chan->address bit fields into
-    named local variables, as suggested by Andy Shevchenko.
-  - Link to v4: https://lore.kernel.org/linux-iio/20260423133322.13298-1-lucas@ciziks.com/
+The MLX90393 does indeed expose a mix of command-based operations
+(SM, RM, etc.) along with limited register access (RR/WR), so it
+does not map cleanly to a purely register-based model.
 
-v4:
-  - Improve readability in ad7280_show_balance_timer() by extracting
-    chan->address bit fields into named local variables, as suggested by Andy Shevchenko.
-  - Link to v3: https://lore.kernel.org/linux-iio/20260417131029.12568-1-lucas@ciziks.com/
+Based on your feedback, I will proceed with a custom command
+abstraction layer instead of using regmap. The idea is to keep a
+clean separation between command handling, register access, and
+bus transport (I2C/SPI), while keeping the structure somewhat
+regmap-like where it makes sense.
 
-v3:
-  - Restore scoped_guard() in ad7280_show_balance_timer() instead of
-    guard() to avoid holding the mutex during post-processing, as
-    suggested by Andy Shevchenko.
-  - Link to v2: https://lore.kernel.org/linux-iio/20260415160856.22231-1-lucas@ciziks.com/
+I will put together an RFC patch with the initial implementation
+(I2C support first) and share it shortly for review.
 
-v2:
-  - Replace scoped_guard with guard as suggested by Andy Shevchenko (Code Legibility).
-  - Fix indentation issues.
-  - Link to v1: https://lore.kernel.org/linux-iio/20260415112602.3938-1-lucas@ciziks.com/
----
- drivers/iio/adc/ad7280a.c | 55 ++++++++++++++++-----------------------
- 1 file changed, 23 insertions(+), 32 deletions(-)
+Thanks again for the feedback.
 
-diff --git a/drivers/iio/adc/ad7280a.c b/drivers/iio/adc/ad7280a.c
-index 7f43da8e3340..56258b1118a4 100644
---- a/drivers/iio/adc/ad7280a.c
-+++ b/drivers/iio/adc/ad7280a.c
-@@ -496,7 +496,8 @@ static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
- 	devaddr = chan->address >> 8;
- 	ch = chan->address & 0xFF;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	if (readin)
- 		st->cb_mask[devaddr] |= BIT(ch);
- 	else
-@@ -505,7 +506,6 @@ static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
- 	ret = ad7280_write(st, devaddr, AD7280A_CELL_BALANCE_REG, 0,
- 			   FIELD_PREP(AD7280A_CELL_BALANCE_CHAN_BITMAP_MSK,
- 				      st->cb_mask[devaddr]));
--	mutex_unlock(&st->lock);
- 
- 	return ret ? ret : len;
- }
-@@ -521,9 +521,8 @@ static ssize_t ad7280_show_balance_timer(struct iio_dev *indio_dev,
- 	unsigned int msecs;
- 	int ret;
- 
--	mutex_lock(&st->lock);
--	ret = ad7280_read_reg(st, devaddr, ch + AD7280A_CB1_TIMER_REG);
--	mutex_unlock(&st->lock);
-+	scoped_guard(mutex, &st->lock)
-+		ret = ad7280_read_reg(st, devaddr, ch + AD7280A_CB1_TIMER_REG);
- 
- 	if (ret < 0)
- 		return ret;
-@@ -554,10 +553,10 @@ static ssize_t ad7280_store_balance_timer(struct iio_dev *indio_dev,
- 	if (val > 31)
- 		return -EINVAL;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	ret = ad7280_write(st, devaddr, ch + AD7280A_CB1_TIMER_REG, 0,
- 			   FIELD_PREP(AD7280A_CB_TIMER_VAL_MSK, val));
--	mutex_unlock(&st->lock);
- 
- 	return ret ? ret : len;
- }
-@@ -739,7 +738,8 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
- 	if (val2 != 0)
- 		return -EINVAL;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	switch (chan->type) {
- 	case IIO_VOLTAGE:
- 		value = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
-@@ -750,22 +750,20 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
- 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
- 					   1, value);
- 			if (ret)
--				break;
-+				return ret;
- 			st->cell_threshhigh = value;
--			break;
-+			return 0;
- 		case IIO_EV_DIR_FALLING:
- 			addr = AD7280A_CELL_UNDERVOLTAGE_REG;
- 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
- 					   1, value);
- 			if (ret)
--				break;
-+				return ret;
- 			st->cell_threshlow = value;
--			break;
-+			return 0;
- 		default:
--			ret = -EINVAL;
--			goto err_unlock;
-+			return -EINVAL;
- 		}
--		break;
- 	case IIO_TEMP:
- 		value = (val * 10) / 196; /* LSB 19.6mV */
- 		value = clamp(value, 0L, 0xFFL);
-@@ -775,31 +773,23 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
- 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
- 					   1, value);
- 			if (ret)
--				break;
-+				return ret;
- 			st->aux_threshhigh = value;
--			break;
-+			return 0;
- 		case IIO_EV_DIR_FALLING:
- 			addr = AD7280A_AUX_ADC_UNDERVOLTAGE_REG;
- 			ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
- 					   1, value);
- 			if (ret)
--				break;
-+				return ret;
- 			st->aux_threshlow = value;
--			break;
-+			return 0;
- 		default:
--			ret = -EINVAL;
--			goto err_unlock;
-+			return -EINVAL;
- 		}
--		break;
- 	default:
--		ret = -EINVAL;
--		goto err_unlock;
-+		return -EINVAL;
- 	}
--
--err_unlock:
--	mutex_unlock(&st->lock);
--
--	return ret;
- }
- 
- static irqreturn_t ad7280_event_handler(int irq, void *private)
-@@ -888,13 +878,13 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (m) {
--	case IIO_CHAN_INFO_RAW:
--		mutex_lock(&st->lock);
-+	case IIO_CHAN_INFO_RAW: {
-+		guard(mutex)(&st->lock);
-+
- 		if (chan->address == AD7280A_ALL_CELLS)
- 			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
- 		else
- 			ret = ad7280_read_channel(st, devaddr, ch);
--		mutex_unlock(&st->lock);
- 
- 		if (ret < 0)
- 			return ret;
-@@ -902,6 +892,7 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
- 		*val = ret;
- 
- 		return IIO_VAL_INT;
-+	}
- 	case IIO_CHAN_INFO_SCALE:
- 		if (ch <= AD7280A_CELL_VOLTAGE_6_REG)
- 			*val = 4000;
--- 
-2.47.3
-
+Best regards,
+Nikhil Gautam
