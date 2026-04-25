@@ -1,46 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8A7A282F1B;
-	Sat, 25 Apr 2026 15:30:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6BBC40DFDC;
+	Sat, 25 Apr 2026 15:34:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777131035; cv=none; b=YT+wVuwcHMDmy5Q8ssvTAZjv6PdY5cAu+nCy+E0eUYmBIsCLsUa023ZXTUaXS8/5ERKyjj8QlJverOJxnn11BRrT7jv5mcvgtFRqjzr5Q4qmqNJ1yL1PwUCZuJwOohosv048HGFMxr2anwwQ5QKpIx1pMMfv/NFG7Hlyjx9brng=
+	t=1777131298; cv=none; b=inyzxL4/3XwHRfyXbDQaJLg5fB4HJYovCmsgnnxuPLoAfPcw6cO0XuHVTzn94gYjqqH5lvz0kR0PWlZkpjP7Y3j6EoMzJWmIR3qcG5rSltDPFxOUdn5BJjlpi6kouVRzhxZ/4c/yG8UYua04Fab43kkQ5NLydM2jJp8OT7TBlc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777131035; c=relaxed/simple;
-	bh=LP17QttSwLXI3MgSLOda3e65XZuFE88BUegQMkuSjqo=;
+	s=arc-20240116; t=1777131298; c=relaxed/simple;
+	bh=Ri838Yv4Wz7//y5S43QdY3pnUhe+/Yx9CpoGk2g9iz0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KjX2RktCFr+aO8d7gPJkbZYTjXFKq7zbRHGMktMGkFLrJU+C4fpGYk7ITokq4C2Ni8oyqlMRSwfsiI25pJrC99u2HxxN73xY9v56f1/igmLGEtPlpUC3BKJTQpNGIYQGAWUuM3Osl7bUiojLz5npOYynYNDnnSxxUPhGylzIplo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E+7fs2Tl; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=WKa9o3FsYmbNVaWXvAOqXmL/82fgTeII8ip8RaiaB9oixRpeGJM5aetw6lsOkjDamC4jbGTm9ZWTXlUKJZqMTn6Ych1LRgIRMAFFDj9HApsVi1ftH5XKBkyjx+022vGI0EC0A+6wDHQf9Gpu0KKRMrPm34EY1AlX5rjcm1Ycq9g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ltGuX0Iv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E+7fs2Tl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC87BC2BCB0;
-	Sat, 25 Apr 2026 15:30:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ltGuX0Iv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D0BDC2BCB0;
+	Sat, 25 Apr 2026 15:34:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777131034;
-	bh=LP17QttSwLXI3MgSLOda3e65XZuFE88BUegQMkuSjqo=;
+	s=k20201202; t=1777131298;
+	bh=Ri838Yv4Wz7//y5S43QdY3pnUhe+/Yx9CpoGk2g9iz0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=E+7fs2TlqSlzU2wHFlphir7S2ddw1F3AyPryOaH0Lyt3yyONswcmfCfN7RAaMqKcn
-	 iWRlvRHClZWodOHogX11Zw4hgTDBRzSLtsydEQhw6bbVxdI04lFt5SZR1GcK3MgQou
-	 dcKpTrvgb/prK5PQ8LudujcpW5zm48O+FxeIm+SDU9+jz77cRXoP9vqcYeK+xav3oR
-	 aN4hW/8xmBOIPIbdQGz50Og0kgd2zObLtQuN7S/8RdaJccRHVsU6Ro86KU75M+acSG
-	 0TTorOBEgNxaOPfQyTtfc6E01BuqeKsPwHuGhiCiSkUo7AgHXPxMEi85d5Dfmay26X
-	 LDVCEm/N5Eyrg==
-Date: Sat, 25 Apr 2026 16:30:25 +0100
+	b=ltGuX0IvOosps7Qozb+OzSpxpc1SGFLfTaqfkEPvazMhWj7TjndqUIBke7VCYB4l7
+	 NwcasdxSyXJQIzil8bpuDhYrQWN24VZRL3Gu/hnggrjG+1wI05bFB/PvQtfzdlRX7M
+	 yG5XEVIChPN5uxsxK68HA4QswfIQZXDq2iX9m0SWdPkOjdb4h40Uk6nDPoVE4o+pLq
+	 l6HDUfeE4ALsMJvMalAZZIPlfy/havMtR5cNjI9D6CZhCQIqDoih7URjC1HqyJVN/Y
+	 Jd8u9KLllbmDsTjlku2uveziG3fBg/ivmnYlbodxCtKO8gW3Jy5AH1yizwEPAKKTce
+	 f5lm1TvNmhkUg==
+Date: Sat, 25 Apr 2026 16:34:49 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: Dan Carpenter <error27@gmail.com>, Jishnu Prakash
- <jishnu.prakash@oss.qualcomm.com>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-arm-msm@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH next] iio: adc: qcom-spmi-adc5-gen3: Fix off by one in
- adc5_gen3_get_fw_channel_data()
-Message-ID: <20260425163025.59db1d00@jic23-huawei>
-In-Reply-To: <69fbeffe-1a8a-441e-a4c2-a1fcd3d41421@oss.qualcomm.com>
-References: <adjM_ZXs9IoIYjyN@stanley.mountain>
-	<69fbeffe-1a8a-441e-a4c2-a1fcd3d41421@oss.qualcomm.com>
+To: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+Cc: Salih Erim <salih.erim@amd.com>, Conall O'Griofa
+ <conall.ogriofa@amd.com>, Michal Simek <michal.simek@amd.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] iio: adc: xilinx-ams: refactor alarm handling to
+ table-driven design
+Message-ID: <20260425163449.547b7ed9@jic23-huawei>
+In-Reply-To: <20260414224245.8493-1-guilherme.bozi@usp.br>
+References: <20260414224245.8493-1-guilherme.bozi@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,28 +50,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 10 Apr 2026 12:15:41 +0200
-Konrad Dybcio <konrad.dybcio@oss.qualcomm.com> wrote:
+On Tue, 14 Apr 2026 19:40:32 -0300
+Guilherme Ivo Bozi <guilherme.bozi@usp.br> wrote:
 
-> On 4/10/26 12:12 PM, Dan Carpenter wrote:
-> > The > in "if (chan > ADC5_MAX_CHANNEL)" should be >= to prevent an out
-> > of bound read of the adc->data->adc_chans[] array.
-> > 
-> > Fixes: baff45179e90 ("iio: adc: Add support for QCOM PMIC5 Gen3 ADC")
-> > Signed-off-by: Dan Carpenter <error27@gmail.com>
-> > ---  
+> This series addresses significant code duplication in alarm handling
+> logic across the Xilinx AMS IIO driver.
 > 
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+> To address this, the series introduces a centralized table-driven
+> mapping (alarm_map) that replaces multiple switch statements spread
+> across the driver.
 > 
-This was waiting on the char-misc pull requests going upstream so I could
-rebase my fixes branch.  That's now happened, but I will rebase again on
-rc1 once available (as a pull request based mid merge window isn't the best plan!)
+> This improves:
+> - maintainability (single source of truth for mappings)
+> - readability (removes repeated switch logic)
+> - extensibility (new alarms require only table updates)
+> 
+> No functional changes are intended.
+This series looks fine to me.
 
-Anyhow applied to the fixes-togreg branch of iio.git.
+Given the AMD Xilinx folk are fairly active reviewers I'm just
+waiting on them taking a look.
 
-Thanks,
 
-Jonathan
-
-> Konrad
+> 
+> Series overview:
+> - Patch 1: fix out-of-bounds channel lookup 
+> - Patch 2: convert mutex handling to guard(mutex) 
+> - Patch 3: introduce table-driven alarm mapping
+> 
+> v1 -> v2:
+> - Fixed Fixes tag format
+> - Replaced AMS_ALARM_INVALID with AMS_ALARM_NONE
+> - Changed alarm_map base_offset type
+> 
+> v2 -> v3:
+> - Replace 'i >= num_channels' with 'i == num_channels'
+> - Add missing trailing comma in alarm_map array initializer
+> 
+> Guilherme Ivo Bozi (3):
+>   iio: adc: xilinx-ams: fix out-of-bounds channel lookup in event
+>     handling
+>   iio: adc: xilinx-ams: use guard(mutex) for automatic locking
+>   iio: adc: xilinx-ams: refactor alarm mapping to table-driven approach
+> 
+>  drivers/iio/adc/xilinx-ams.c | 190 +++++++++++++----------------------
+>  1 file changed, 71 insertions(+), 119 deletions(-)
+> 
 
