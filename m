@@ -1,291 +1,197 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bird.elm.relay.mailchannels.net (bird.elm.relay.mailchannels.net [23.83.212.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08ED64C97
-	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 19:25:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7432B4A07;
+	Sat, 25 Apr 2026 20:39:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.212.17
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777145141; cv=pass; b=lfs6btlkXoO6dwDWie7OWmH/41eVpV4gkv2UmOclXaTbeR7dw1wHeucifD0Sr/SeymI++dun1Yxey+UtEcVvoLBhJbHnTI7hqBQ4wQaXdVd9fcv/r4prDoeIcLp1qqAuFWvSE2kh302s/0KwJ8cei06xiIKxGC89teOCHUCN6qk=
+	t=1777149572; cv=pass; b=pA1eD1m+FDu6nDYpYYBVNOaAdUJn6dFfQqJxxPsVFUl6NdER0OVaJyzk7WTu5NCVvNF7HrlUSM7quzmHVgE7AnH/uXzmsYQGMiY/gBiMtSng8yj68m7SSxPhuhPa+mhnIqQ+tTjECrchtRodba3TN6muFdXn+ImbohHieNx2b6g=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777145141; c=relaxed/simple;
-	bh=RwbeFSMmGOLna3hWGX0T+aEMLiPduLbCZn+L5jovxr8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bWy8s3VjO+0dEK0CSzrMfTBImPzOH51OcJ6bZjZIweJ+mknOhSqB7ZM1nTtSjAh3OrNqN5lplQIpSxgxuN/gIRO9A+rMeUEa4cNNDx6bQPqSJ6IDKsu2aTqszOXsEWkpxYCf35ZcH/NoUn9YludOJf/f0mXC/kTCX3BFs3Z6MKw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=Gzx15jT8; arc=pass smtp.client-ip=209.85.167.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1777149572; c=relaxed/simple;
+	bh=uUqaV12seEtPtVIXeUjLaxEeEhA5OYLznkygmUrFoug=;
+	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc:Date; b=t3mOZWKexhG0uG1LYetmRggz4BTvHhj9HHWPTU/08d6nirQh9KeWFf4ThJYCdxq5MEaRZIXdIzBTESrmWGKJ0KKAnf0vIVXUHrxl07ikNGGbKeTiv1xbByg7rhh8IhSEK2kAz1SqVnvPh97qPUFHZB6xwPPzrNzPETRE09jJa8s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=TnTR83oy; arc=pass smtp.client-ip=23.83.212.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="Gzx15jT8"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5a4002b1183so1377435e87.3
-        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 12:25:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777145136; cv=none;
-        d=google.com; s=arc-20240605;
-        b=j89m3de/rqDYilxtPeaOpAIK/2KlNS3CofB4vCmKZAeInqucP8hzru6szRM47Azpvu
-         X3+iEGnSbIDZcNJdZah/0CaL5gmkMTqi3H9CxliBnuZpTy3T11w0r56BiyjguHpIJ2mr
-         MeBZLmHjURdTAtc2kciIIQHqoeca6fSANiraSFGRPUQFjd2Qeh1FmIWcBAxVBndwovRI
-         HmlDw51z69EC6JNVrJVdEBc8lhbMtPgs/uYsXgqbF/K2YZe1/vXHycklph6PiUJXMM+V
-         7YBI5AHE0xAkKNJP0c/5tJVdKdNx/YaMsznH53nDbGHbx5GOenyGSUgcYFxyAa+qT7vM
-         vGUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=GafnImljcyhp91+LZSZ+T42awxIUt+AotHBCtLG8kLY=;
-        fh=QhvBkiI8w1ZITUvSqC6Fx3q88tdGGy6pVHwXQPaDHwA=;
-        b=Z9l/bWLjxsARfCV8x+fAT46zW4/laM+1jjwX6IiNOa6y7w0nGETQC/0iktVUL7sGDE
-         RE8N5hb1rPt4FnPZS7SnB4tRo5mylJtl2aEiUYnB5lhI0nHVuS2Xb8R9FzhZIVXSQMZs
-         QTI64ucUXf4AHCocQqjdME4goAeyhwTf5204b6Y13T45Q3zBIQZKcFEUQRXpLlaUi75R
-         E6lXlUa4oXUlit2PZHh7j89VYn5Qg0dpNb0h2ixXJYp4tvk9XRF1LoRtMosLBJ79UfUD
-         klIuPUK2yKBxy+1l9/6JY2HuNtGSeY1vv3JaxSZ0SymWY9Li414Nnqebw81FFKK1xgNI
-         af6A==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1777145136; x=1777749936; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GafnImljcyhp91+LZSZ+T42awxIUt+AotHBCtLG8kLY=;
-        b=Gzx15jT87xWCqN7N7t0B7BBPGMsrGage5pcrbRrHSO01hA/25ww2VqTFGGh43+C3HB
-         eokw2y+f5F6kGZG0zLEg5/fo/g95i2d02KZBNZDZ95DC4fMLnSeZR++SLUt4QTAuzoUC
-         5UWyT+7mxuKqSL+h7LP+N0Dt9qLQXIlfNWpDNaC3gSya4by/rkVJwHv/O/zbZEaAQdPJ
-         IFsw+kwcnJREbnGGIVpfjmGzMcI4uXqW3yP6YYI0QABAnT20zstrl/dj1BCCn5+6yVQB
-         jo4xGu2+gZI9oF6ph6urexyTPA/6w33PK/JGCjQMG5MVmoVAzgRH0f2cNcuR/MXkmsVF
-         +Nag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777145136; x=1777749936;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=GafnImljcyhp91+LZSZ+T42awxIUt+AotHBCtLG8kLY=;
-        b=sK9zQO9sPiG9ZgWczeWpRkqMZIbqGvKepi4xHazStRnvhIj086ZRcr2dlJkMaX2EL0
-         m6FoEobJRfeyDzKZKUuxS6dtNBGkwkeuRjzZCNzqfsPtZEPgAvSUDXnNVbtJYm9zi2I+
-         0LkC6ucXbtlb4LfTPrCrNXEnyZZXbQC7dYFNowGbB+e3IyTDVGTwSbn4VVFtixDQ0JuV
-         kaRfKcPrEKQa1vDbmL9jgqsO4OlvFoljKPX5igAVPtIBCH0QaiWJmeRdT8Is7c7DwmuV
-         /puNaYJbZOnoMwufkMQF7dcYHqUK1V4PMg/jDHcDjLGbhhy8PV3RA94B6pSF2CrgmNGA
-         x57w==
-X-Forwarded-Encrypted: i=1; AFNElJ/ImhotHwlNLBxXN/X0aHMps9w4Ry8IG9pMzoLhfzhwoLX/nnGRsL9GS1gUe/DrtamIbE906F4OvNM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz+uh0Fb/2ADrktoZw3Zfd9Owxvy7MJbpgp0gKRVu+hJgLvhlSP
-	LCfW395ELvIryZ803ADb+HOjF/ErXH7QTIHPbmwzNZmdMoaxvfzdfiaUSBcaH7uGpa36xegTo5P
-	qjHF6ATXpOgsNffxsAHmsRBQfEq4F6tWbtyMfek1Kqg==
-X-Gm-Gg: AeBDieseIs9fgDf0NjH3UwQFB5nsfYKXBqg/g82fkXxiPA/DXkUG0GbixvpmhUjS/Wx
-	9J0EXXoOSOlvN4Pzl3G+QzvZcML8LP9wPrRgosJcI5bdCh3GBaOQjg6u6akQgNRKzlhWsm7KFei
-	pmsJCeabO6xjPAegWgrdrqH55oiHsCCJBDAUaf5Ewt4xx1V4ybE0RCatKcjdQ8r/w8/rBWDreHo
-	q0O0RQerPMifjU4sPiUKki+4SwOd7bpfXk7W+QqRXGbVA4Ep/YNxwsFch8uhoIETl1vXHAiCFMX
-	dQ9IgsUyoQfWwMRJdFBsXxIPJ2ft+UNHXvri5mWRd9jDOcDC
-X-Received: by 2002:a05:6512:8016:10b0:5a4:18cb:8850 with SMTP id
- 2adb3069b0e04-5a418cb88e3mr3625887e87.6.1777145136103; Sat, 25 Apr 2026
- 12:25:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="TnTR83oy"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id BE0D9401CD9;
+	Sat, 25 Apr 2026 20:39:23 +0000 (UTC)
+Received: from de-fra-smtpout8.hostinger.io (trex-green-7.trex.outbound.svc.cluster.local [100.96.10.251])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id 3602A401DA7;
+	Sat, 25 Apr 2026 20:39:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1777149561;
+	b=e2arGKDLyK/WFXEUsRwAFZBiGi1Z0RuGMPFfhoWuwnANJk6/HGDO415Iksrt1bTfzyVb4X
+	mt3+hxPHRIPhLhKehaR2U7Iq0hhP2tMuTDkEMAz1OoSf7cXsMHBzAvG44rurrHYcDv6wn9
+	mSQQHyfGA31h3DD8bxQFdT1aC7KwSOy1Ih9p2O69eyUZYuYqQhwZY+rcV829RGPVPH2JAe
+	V644KawYvYWc038A5cNE3MJJcogOHRXFJ0vLiYa+8Sdsh6x33cw7JGuUCNUOKSk7SDiBAG
+	zVccPlinK3tdGIDkProMspe6iLahvtq2CXxbrPIDzvEKdeazP8u3+xBESaCPSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1777149561;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=pdqPNcyC8p5DZ1G2D9ueEdeo+CXG8qVsYjxRxYoj6so=;
+	b=ZZe/G1ZeV4z6n6u15BA6J9IqP88Wkq7N2XcnYL1kDIJZNyp4Cic9bitmCpxqSlvMKuB0j9
+	Q4mTxHWjZVDcqfeU4+aBEmZdtm3DIeNX/rjKW68Hz44BBmqKu3payzchfM5gY1rq0KV+WU
+	SO+30h/GYEEn8QAY510gWvTfto8HMtLJsZ8Ud48hP+eCK/rYBZF8L8/KdxL4jBMe4/BNcU
+	VqX/T62WQv4fvdyvonkISDLR0X9EObxuOaqOwr1iuQNRvGGRqMZgIIHq02Fn0mY166kl7Q
+	yr4ayoX8QK2ZdxxAWg1/6nhnWkbT1Y8S1udhbGMiharcHM+Hobi2Ab2rYoNHNg==
+ARC-Authentication-Results: i=1;
+	rspamd-b9d4fc544-8wftt;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Shoe-Shoe: 542da13c796eb997_1777149563686_213841609
+X-MC-Loop-Signature: 1777149563686:2640551659
+X-MC-Ingress-Time: 1777149563685
+Received: from de-fra-smtpout8.hostinger.io (de-fra-smtpout8.hostinger.io
+ [148.222.55.13])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.10.251 (trex/7.1.5);
+	Sat, 25 Apr 2026 20:39:23 +0000
+Received: from [172.17.0.2] (unknown [36.79.100.152])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4g31rx0f8Zz3wkN;
+	Sat, 25 Apr 2026 20:39:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1777149556;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pdqPNcyC8p5DZ1G2D9ueEdeo+CXG8qVsYjxRxYoj6so=;
+	b=TnTR83oyHnvowu6nJMPIkXeNaTEW81baa9IOhnCnPfYeYzga3NRqWWxNqVVR/sSZvuVJoE
+	d0Tba723UnMEMjO5hjWu1ZWJqbC26nWPO1Y1J4/0uaOH7ZUuY4B54Qna4bowrVGfNdcUhU
+	byHruyJouEXjfHcDsOjLeRsmyHKWcct/j+KbCkQxkhu2hg6DsdEJzF+nPEwPV1yxPb8wV3
+	6y1RRjL2lyyXqx8offLb2EBOUC2wSq9wskWLmK5LjWwPNElqrRhLvvva04zYNWrWbq9s4u
+	VGQRbEpPfvS+zS2kin5CrpMLJ8N6KF9/B3psVpZQJUlA2r9C0xsYoGUbk4P1BQ==
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+Subject: [PATCH v4 1/4] ARM: dts: qcom: pm8921: add labels for ADC channels
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260419003557.45287-1-lucas.rabaquim@usp.br> <20260419123604.591dc3ec@jic23-huawei>
- <aeXZY2Nj71Em7Z6y@ashevche-desk.local>
-In-Reply-To: <aeXZY2Nj71Em7Z6y@ashevche-desk.local>
-From: LucasRabaquim <lucas.rabaquim@usp.br>
-Date: Sat, 25 Apr 2026 16:24:58 -0300
-X-Gm-Features: AQROBzCUBrQszcMslRHxviNRwO4tm2ugVuabMooT47BxZ_dceMOU1iE6DgfnGtI
-Message-ID: <CAOWnv8HjVGVsg2d8kDt9LyUVp-HbnaWzAxZ_6egw+KtNmEpv7A@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: light: tsl2591: simplify tsl2591_persist
- functions via lookup table
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, Matheus Feitosa <matheus.feitosa@usp.br>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260426-pm8xxx-xoadc-label-v4-1-0ec782362615@smankusors.com>
+References: <20260426-pm8xxx-xoadc-label-v4-0-0ec782362615@smankusors.com>
+In-Reply-To: <20260426-pm8xxx-xoadc-label-v4-0-0ec782362615@smankusors.com>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ phone-devel@vger.kernel.org, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Antony Kurniawan Soemardi <linux@smankusors.com>
+X-Mailer: b4 0.15.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777149546; l=1868;
+ i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
+ bh=uUqaV12seEtPtVIXeUjLaxEeEhA5OYLznkygmUrFoug=;
+ b=qt5Dyoo+Rg3XHPIYLJ/rqje98OwQ8RV8H5yCmsXC+FYwhAz5ifn23OpcxT4imRlxwFRlDFNBe
+ EygE97TCY77CGKXRax0pE8ydb5MyGxWi7E6+P0fBEujI/WF1mlDSrt4
+X-Developer-Key: i=linux@smankusors.com; a=ed25519;
+ pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
+Date: Sat, 25 Apr 2026 20:39:12 +0000 (UTC)
+X-CM-Envelope: MS4xfJgz0AQ+Pl7DPZeQMahIxHt4cGnxUKaRLpK4VqkxY7wbi7LvsVb0IGYgvOrXe7H2OTDLDCkSv5uljcn8364OgB2unG8BqgezA2tt3gdh/a7kJyyd9+v7 peFieGLEnpV5QYoRXxVfgyjxiZxf8llPIJ195JmxHSG3VUs7VVSOz9gWcWf/GbBtTjcuWT9ontb/JmYjXSedxbmjcjKTrJRh4BQnFXNxMyHAy4EPCaiPa+11 /Zq+/7WEe//diLM43TlTw0ayc+cCiL0YNRiAQvnSOQuAeh5Zsi5z0/FJdLOlttNB2TSqFcR0IaFYCx0/yJRIlpb8oHZfkAqx4vS/veJKcXGn2PP2juxqaBMU cEd4ORk7FGBec2JpfmTBDXvIe0MTyr9gYumYjyiTCdkJk07iQlBXVMatpsFvzpmhoYBGgvvRjb5fwKE4mIBZyE3CZmvGGg0MPpaKdEFVbAGQgP49QSCa9XUX RrgB5arNSl2CTGnl22NkfvpBylsclK3Nt4tz+5Vyao7Tm+PXM4YXk49aLLGo3TibOeG0G2IRekPskEbWU4KLxuRWev3IiiCcyaVsUDHh2gxP2pCbyBfGFo1n xhRlR0WnvidCnHbRlVE21rYv92l+KlygudO84rT2r2f7mpsVNuHJiqgZGjZRt+zEOO+dQZahsG/V0hAAKegbi21Oitx3opViB/bmH9xCqT4ZDU9GttXi3/fM EZTNOYZXPg8e7UkAUAMIsukmHtgl4/V+WI2i8xtCIFaUxvuOTLvLgQ==
+X-CM-Analysis: v=2.4 cv=Ceda56rl c=1 sm=1 tr=0 ts=69ed2674 a=ivwHvKELjomHP5eB21RdOw==:117 a=ivwHvKELjomHP5eB21RdOw==:17 a=IkcTkHD0fZMA:10 a=EUspDBNiAAAA:8 a=wxLWbCv9AAAA:8 a=6KmzlaTv6ROrj-tHFqgA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
+X-AuthUser: linux@smankusors.com
 
-Thank you, Jonathan, David, and Andy, for the feedback, and apologies
-for our eagerness to send a new patch right after the first one.
+Add label properties to all XOADC ADC channel nodes in the PM8921 PMIC
+device tree. This allows userspace and drivers to identify channels by
+name rather than relying on datasheet name.
 
-Regarding the use of a u8 array indexed by
-TSL2591_PRST_ALS_INT_CYCLE_*: we see it would work very well in
-tsl2591_persist_cycle_to_lit(). However, we don't think the solution
-applies to tsl2591_persist_lit_to_cycle(), since it would require
-another array that, to use the index initialization, would allocate 61
-memory positions with only 15 relevant values actually stored.
+Acked-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+---
+ arch/arm/boot/dts/qcom/pm8921.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-We thought of the following, albeit possibly fragile, solution to
-follow Andy's suggestion:
+diff --git a/arch/arm/boot/dts/qcom/pm8921.dtsi b/arch/arm/boot/dts/qcom/pm8921.dtsi
+index 535cb6a2543f..15246f4bd267 100644
+--- a/arch/arm/boot/dts/qcom/pm8921.dtsi
++++ b/arch/arm/boot/dts/qcom/pm8921.dtsi
+@@ -75,50 +75,62 @@ pm8921_xoadc: xoadc@197 {
+ 
+ 			vcoin: adc-channel@0 {
+ 				reg = <0x00 0x00>;
++				label = "vcoin";
+ 			};
+ 
+ 			vbat: adc-channel@1 {
+ 				reg = <0x00 0x01>;
++				label = "vbat";
+ 			};
+ 
+ 			dcin: adc-channel@2 {
+ 				reg = <0x00 0x02>;
++				label = "dcin";
+ 			};
+ 
+ 			vph_pwr: adc-channel@4 {
+ 				reg = <0x00 0x04>;
++				label = "vph_pwr";
+ 			};
+ 
+ 			batt_therm: adc-channel@8 {
+ 				reg = <0x00 0x08>;
++				label = "batt_therm";
+ 			};
+ 
+ 			batt_id: adc-channel@9 {
+ 				reg = <0x00 0x09>;
++				label = "batt_id";
+ 			};
+ 
+ 			usb_vbus: adc-channel@a {
+ 				reg = <0x00 0x0a>;
++				label = "usb_vbus";
+ 			};
+ 
+ 			die_temp: adc-channel@b {
+ 				reg = <0x00 0x0b>;
++				label = "die_temp";
+ 			};
+ 
+ 			ref_625mv: adc-channel@c {
+ 				reg = <0x00 0x0c>;
++				label = "ref_625mv";
+ 			};
+ 
+ 			ref_1250mv: adc-channel@d {
+ 				reg = <0x00 0x0d>;
++				label = "ref_1250mv";
+ 			};
+ 
+ 			chg_temp: adc-channel@e {
+ 				reg = <0x00 0x0e>;
++				label = "chg_temp";
+ 			};
+ 
+ 			ref_muxoff: adc-channel@f {
+ 				reg = <0x00 0x0f>;
++				label = "ref_muxoff";
+ 			};
+ 		};
+ 	};
 
-static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
-{
-    if(als_persist > 60 || als_persist < 1)
-        return -EINVAL;
-    if(als_persist % 5 =3D=3D 0) // Valid values between 5 and 60 inclusive
-        return (als_persist/5) + 3;
-    if(als_persist < 4) // Cases for 1, 2 and 3
-        return als_persist;
-    return -EINVAL;
-}
-Otherwise, to keep the array indexed by TSL2591_PRST_ALS_INT_CYCLE_*
-approach we think it would still need a for-loop based solution for
-tsl2591_persist_lit_to_cycle(). We would like to hear your thoughts
-before committing to any direction for a possible new patch.
+-- 
+2.34.1
 
-With Best Regards,
-Lucas Rabaquim
-
-
-Em seg., 20 de abr. de 2026 =C3=A0s 04:44, Andy Shevchenko
-<andriy.shevchenko@intel.com> escreveu:
->
-> On Sun, Apr 19, 2026 at 12:36:04PM +0100, Jonathan Cameron wrote:
-> > On Sat, 18 Apr 2026 21:35:43 -0300
-> > LucasRabaquim <lucas.rabaquim@usp.br> wrote:
->
-> > First a general process thing.  Slow down!  You might well have
-> > gotten more feedback on v1 if it had been on list without being
-> > replaced for more than a day.  I'd advise generally not sending new
-> > versions for at least a week so multiple reviewers have time to look
-> > at the changes.
-> >
-> > In general the change looks good, but I'll leave it on list for
-> > a while before considering picking it up.
->
-> Indeed.
->
-> ...
->
-> > > +static const struct tsl2591_persist_entry tsl2591_persist_table[] =
-=3D {
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_ANY,  1  },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_2,    2  },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_3,    3  },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_5,    5  },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_10,   10 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_15,   15 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_20,   20 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_25,   25 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_30,   30 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_35,   35 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_40,   40 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_45,   45 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_50,   50 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_55,   55 },
-> > > +   { TSL2591_PRST_ALS_INT_CYCLE_60,   60 },
-> > > +};
->
-> Instead, make this to be an index of the just an array of u8:s.
->
->         ...
->         [TSL2591_PRST_ALS_INT_CYCLE_30] =3D 30,
->         [TSL2591_PRST_ALS_INT_CYCLE_35] =3D 35,
->         ...
->
-> ...
->
-> > >  static int tsl2591_persist_cycle_to_lit(const u8 als_persist)
-> > >  {
-> > > -   switch (als_persist) {
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_ANY:
-> > > -           return 1;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_2:
-> > > -           return 2;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_3:
-> > > -           return 3;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_5:
-> > > -           return 5;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_10:
-> > > -           return 10;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_15:
-> > > -           return 15;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_20:
-> > > -           return 20;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_25:
-> > > -           return 25;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_30:
-> > > -           return 30;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_35:
-> > > -           return 35;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_40:
-> > > -           return 40;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_45:
-> > > -           return 45;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_50:
-> > > -           return 50;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_55:
-> > > -           return 55;
-> > > -   case TSL2591_PRST_ALS_INT_CYCLE_60:
-> > > -           return 60;
-> > > -   default:
-> > > -           return -EINVAL;
-> > > +   int i;
-> > > +
-> > > +   for (i =3D 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
->
-> Besides the style of
->
->         for (unsigned int i =3D 0; i < ARRAY_SIZE(tsl2591_persist_table);=
- i++) {
->
-> > > +           if (als_persist =3D=3D tsl2591_persist_table[i].cycle)
-> > > +                   return tsl2591_persist_table[i].lit;
-> > >     }
->
-> ...this loop now not needed at all.
->
->         if (als_persist < 1 || als_persist >=3D ARRAY_SIZE(tsl2591_persis=
-t_table))
->                 return -EINVAL;
->
->         return tsl2591_persist_table[als_persist];
->
-> > > +   return -EINVAL;
-> > >  }
->
-> ...
->
-> > >  static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
-> > >  {
-> > > -   switch (als_persist) {
-> > > -   case 1:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_ANY;
-> > > -   case 2:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_2;
-> > > -   case 3:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_3;
-> > > -   case 5:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_5;
-> > > -   case 10:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_10;
-> > > -   case 15:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_15;
-> > > -   case 20:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_20;
-> > > -   case 25:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_25;
-> > > -   case 30:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_30;
-> > > -   case 35:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_35;
-> > > -   case 40:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_40;
-> > > -   case 45:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_45;
-> > > -   case 50:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_50;
-> > > -   case 55:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_55;
-> > > -   case 60:
-> > > -           return TSL2591_PRST_ALS_INT_CYCLE_60;
-> > > -   default:
-> > > -           return -EINVAL;
-> > > +   int i;
-> > > +
-> > > +   for (i =3D 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
-> > > +           if (als_persist =3D=3D tsl2591_persist_table[i].lit)
-> > > +                   return tsl2591_persist_table[i].cycle;
-> > >     }
-> > > +
-> > > +   return -EINVAL;
-> > >  }
->
-> Ditto.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
