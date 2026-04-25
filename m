@@ -1,52 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F8F1A9F8C;
-	Sat, 25 Apr 2026 18:32:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6F0B17736;
+	Sat, 25 Apr 2026 18:33:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777141927; cv=none; b=rjbhcpQxtzLpOZjOuhlaGURETCfd1A1YUwpT3xEs2e4GyAhIGm2R69fhlsfUT2SgNc1A8gZivP1n+Wa0xNUvb48lj9VAhhJ2m7xyt2BhgMnJrw2k6e1OXEkl4ZwVLPq0rSODm+pR/mAEPDu8HmVZVCh9GJk5NnsUyqbz1hDWLc4=
+	t=1777142023; cv=none; b=KZPT5Sb+BOHoPX3i7yffBMDkOGKXE+D88zl/IwpjGhM4YRCXjAL32opQKzF/qaG9xu2BVLrUN1Q1QrGfsEeI3mbY5/HLgBjSp4Gv455YH14x45NAaW16pq8FcZcGUNEQcGMsQobcd3CdvA+eHC+s3t1v7VtZVn1TCFfWMPeI9pA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777141927; c=relaxed/simple;
-	bh=FLjGSUxfmVrj9s85Y91kN/Rh54l5tbngbBRVZAeMXLw=;
+	s=arc-20240116; t=1777142023; c=relaxed/simple;
+	bh=OzL27Eb2u2qcVPP37jq5mIIwUrOfTATEPRCbYXLrEQc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kuKQVZ5URJgUbf1aafZ/mlqTxidw6Cvn+uOjHHUnCP5xwvJ9MTfrvq+VwV3QN9agU9jEMc2VnavzlxJ8/8uQAQVmOFGR8wiPnrCNX5K3BHaHKezAXE/isaAZL8H+3+TbsV1D4cZt4E+tcDja6cd7kF4W3wv+ShzAD4yU1CNz4yE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZmpgNkeJ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=msGNBJtSp2OBnbyTOQU92hrcIVCpyCOa96WWqRrsnM2PXl/3b80KWtDkUA/poosu4ERLbsK4aXXjjk03l9Ym2UwCab8I0ynxW+T5iabUubNCON+x3Rf3/ZRwTQJWVnmtVUTkLQqGU63tmpwABGggiNWQywgtvfImUHi73A+fNVs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CyOfKfl5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZmpgNkeJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC239C2BCB0;
-	Sat, 25 Apr 2026 18:31:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CyOfKfl5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8228C2BCB0;
+	Sat, 25 Apr 2026 18:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777141926;
-	bh=FLjGSUxfmVrj9s85Y91kN/Rh54l5tbngbBRVZAeMXLw=;
+	s=k20201202; t=1777142023;
+	bh=OzL27Eb2u2qcVPP37jq5mIIwUrOfTATEPRCbYXLrEQc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ZmpgNkeJr2QlntRxed9Wzx9+sM6vLXZ1VOI4M15lJq7Wa+ueFM58tml3IcwNgY54A
-	 j3rhEo3MPaqtBDPRkScLx13JGB2m3dNYRmOan3qXtd3FS/FGUuFYNYABp2EtP2INrZ
-	 af0L5QMjyXsIZ28oiv/TqxFl+Ld4zc+NO9dCMVhJLhX1+9N5XUGXqwYgTvJoVpXMD2
-	 YcvI9THChERbyois++w5mFDqLEALKDSAm/fJw21FW8Jt1XZCLtq+NxVGzX3N3YTJVz
-	 kbSKhpyRP0VpPjZUchF/BS0FlFEtpp+nkhUOX/kG2aAkpAPU8thPaJ7wSmGtFjLtSC
-	 2oGpqTDbCm4Rw==
-Date: Sat, 25 Apr 2026 19:31:52 +0100
+	b=CyOfKfl5RV6fDDFn3DZoc0RiRqUrKm9GYG4rwpblFCQXP3C/qMyt9UTuFl9WZCjHC
+	 jIRafAWn5Wy3Q4WlX7F53QKnyvIZeP+75i1WUbDnTCxX/TRuS/smEYSLHxribt6z8P
+	 mYjqXlZPlMEYaxuwTfCbU9vauALOh6gbMTwpMG2gP9eCVLZiYcWBvhfGwNsCQqrTEE
+	 J6ICuI5Fy+j75yMYQ3eyUaT11cg8za6pmN2QLzaX2HYSyuwDubW/SPhYOUF4Z7IPKC
+	 dlgtMA18xldYRjgfKXrBq3EJuqB5/n8hjOgvuLcjCnKQVQPiWpDpU2CEBbElN00chs
+	 A78twlTYLobQA==
+Date: Sat, 25 Apr 2026 19:33:34 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
- <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v8 0/6] iio: adc: ad4691: add driver for AD4691
- multichannel SAR ADC family
-Message-ID: <20260425193152.38f80bf1@jic23-huawei>
-In-Reply-To: <20260416-ad4692-multichannel-sar-adc-driver-v8-0-c415bd048fa3@analog.com>
-References: <20260416-ad4692-multichannel-sar-adc-driver-v8-0-c415bd048fa3@analog.com>
+To: Vishwas Rajashekar via B4 Relay
+ <devnull+vishwas.dev.vrajashkr.com@kernel.org>
+Cc: vishwas.dev@vrajashkr.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "H. Nikolaus Schaller"
+ <hns@goldelico.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, luca@lucaweiss.eu
+Subject: Re: [PATCH v3] dt-bindings: iio: gyroscope: add mount-matrix for
+ bmg160
+Message-ID: <20260425193334.319fbc44@jic23-huawei>
+In-Reply-To: <20260418-bmg160-mount-matrix-dt-binding-v3-1-ce8020ecbf9a@vrajashkr.com>
+References: <20260418-bmg160-mount-matrix-dt-binding-v3-1-ce8020ecbf9a@vrajashkr.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,83 +48,26 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 16 Apr 2026 12:18:45 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
+On Sat, 18 Apr 2026 00:11:09 +0530
+Vishwas Rajashekar via B4 Relay <devnull+vishwas.dev.vrajashkr.com@kernel.org> wrote:
 
-> This series adds support for the Analog Devices AD4691 family of
-> high-speed, low-power multichannel successive approximation register
-> (SAR) ADCs with an SPI-compatible serial interface.
->=20
-> The family includes:
->   - AD4691: 16-channel, 500 kSPS
->   - AD4692: 16-channel, 1 MSPS
->   - AD4693: 8-channel, 500 kSPS
->   - AD4694: 8-channel, 1 MSPS
->=20
-> The devices support two operating modes, auto-detected from the device
-> tree:
->   - CNV Burst Mode: external PWM drives CNV independently of SPI;
->                     DATA_READY on a GP pin signals end of conversion
->   - Manual Mode: CNV tied to SPI CS; each SPI transfer reads
->                   the previous conversion result and starts the
->                   next (pipelined N+1 scheme)
->=20
-> A new driver is warranted rather than extending ad4695: the AD4691
-> data path uses an accumulator-register model =E2=80=94 results are read f=
-rom
-> AVG_IN registers, with ACC_MASK, ADC_SETUP, DEVICE_SETUP, and
-> GPIO_MODE registers controlling the sequencer =E2=80=94 none of which exi=
-st
-> in AD4695. CNV Burst Mode (PWM drives CNV independently of SPI) and
-> Manual Mode (pipelined N+1 transfers) also have no equivalent in
-> AD4695's command-embedded single-cycle protocol.
->=20
-> The series is structured as follows:
->   1/6 - DT bindings (YAML schema) and MAINTAINERS entry
->   2/6 - Initial driver: register map via custom regmap callbacks,
->         IIO read_raw/write_raw, both operating modes, single-channel
->         reads via internal oscillator (Autonomous Mode)
->   3/6 - Triggered buffer support: IRQ-driven (DATA_READY on a GP pin
->         selected via interrupt-names) for CNV Burst Mode; external IIO
->         trigger for Manual Mode to handle the pipelined N+1 SPI protocol
->   4/6 - SPI Engine offload support: DMA-backed high-throughput
->         capture path using the SPI offload subsystem
->   5/6 - Per-channel oversampling ratio support for CNV Burst Mode
->   6/6 - Driver documentation (Documentation/iio/ad4691.rst)
->=20
-> Datasheets:
->   https://www.analog.com/en/products/ad4691.html
->   https://www.analog.com/en/products/ad4692.html
->   https://www.analog.com/en/products/ad4693.html
->   https://www.analog.com/en/products/ad4694.html
->=20
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-drivers/iio/adc/ad4691.c: note: in included file:                          =
-          =20
-./include/linux/bitmap.h:845:55: warning: shift too big (64) for type unsig=
-ned long  =20
-./include/linux/bitmap.h:845:55: warning: shift too big (64) for type unsig=
-ned long  =20
-./include/linux/bitmap.h:845:55: warning: shift too big (64) for type unsig=
-ned long  =20
-./include/linux/bitmap.h:845:55: warning: shift too big (64) for type unsig=
-ned long
+> From: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
+> 
+> The mount-matrix property supplies a 3x3 matrix that is used
+> to transform the values from the gyroscope to get vector
+> values that are relative to the way the sensor has been mounted
+> on the device. When the property is not specified, the identity
+> matrix is used.
+> 
+> This change adds mount-matrix as an optional property to the
+> dt-bindings for the bmg160 gyroscope.
+> 
+> Signed-off-by: Vishwas Rajashekar <vishwas.dev@vrajashkr.com>
+Applied.
 
-=46rom sparse.  I think it's a false positive.
-It's the bitmap_read() calls - probably the the nbits parameter.
-Using bitmap_read() to copy the whole bitmap is unusual so maybe this is a =
-corner
-case that isn't handled.=20
-
-Any ideas?  I'm going to assume it's a false positive due to the ACCESS_PRI=
-VATE()
-confusing sparse.
-
-So with that in mind, series applied to the testing branch of iio.git.
-
-thanks,
+Thanks,
 
 Jonathan
