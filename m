@@ -1,108 +1,172 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from buffalo.tulip.relay.mailchannels.net (buffalo.tulip.relay.mailchannels.net [23.83.218.24])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EE7D303C83
-	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 21:44:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777153476; cv=none; b=TZzj7euXDC0bHgiXTG4IddTs4aURbxxzP/0pPKAY6rvJAyu1Egcm1MvGwFNhFGFcIybEnMMH/4FAT4LUokBHcr+GkuFvCGiLodIvn6Lnm/ygABUswp83pzUftmZqm6XzSEkiBh96iAQHi16Ol7bjWc0v4b5HqE5XnDWBzhUFmgA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777153476; c=relaxed/simple;
-	bh=vtdsiym4Y2IGQQwewhHUQFHiy2pQQPMwFhKuEcdkJpI=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CshiXHLJCX74740Q0Rh5CnA08olJ6r1G+q2YRHwxXCd6NXbrr+N7PRtHGDRskRaasuWmnArKUTlad0wVomStQfpW1t7gOU6nCAbcanTg1GCN+8iwKchNaPOLA3Fy1Tvy11B2M1x3N0WjcNIbjMntxhO+Ju16X8Xa0IT72T/PRfU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T8y9lmKj; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBDE4314A9E;
+	Sat, 25 Apr 2026 21:56:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.218.24
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777154207; cv=pass; b=bexgckRUjQogcC7DjC7Ka7UMxzAu+wQZp0SPch0dynpC7pjpT0h+SXrjsszCWU8/ZprKoCj2P8gHKreeMjz633fuhL+BHTQiJDYoXxBNnev6WMnyF+7gcBboz7zN0BXrvnBgTx/Cu9LFFZ5TbPBxN7LU3v7vpik9CDY/3PPWWAg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777154207; c=relaxed/simple;
+	bh=mltS0lNffyFe8OV7KjnOk1JbOoIpjoYboNePj7eHJBc=;
+	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc:Date; b=WyoH5WKOhDU/K60j3AOyBKQzsLc8Qcf9ln0AqUviix5fpFQkEugnDkmAOC7ERzg/JSDZvmWHqRa0aHcTwPWo0scAiEdJADER1bbMZ3i/yjhf6r7edmlKYagHKe305+ZaNE1Io3szlV9CPm+rex286J+3yvpUyXQybVmGxMHFA5s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=B415J5bb; arc=pass smtp.client-ip=23.83.218.24
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T8y9lmKj"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-488ff90d6c7so74809955e9.2
-        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 14:44:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777153474; x=1777758274; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=O/ED0Y4PmfOedW8XVTz2ekjmiBfYIa5o8q7WIKYBzL4=;
-        b=T8y9lmKj7LncWlHTqeJXg1T6vERQHQfDn1q2MCzw+L3ukIndOYFCwz8BItQZAJoZfE
-         zqzueV5Ytssqa6LM+UCfJdJRievS+p9s5ZZmHt2I92JjL1HNPehoW/09LXk9RUam0v+w
-         LR7U7cOjIdjGSqxSdpVfFQlyY19Hrgn1zIdiFFBDeTE0vWVm+HY1qPTOCjhDXasFb37d
-         jLdiASJszW7ldqJhc8y4Jm17I5n3E4OUWpnty+K1CZ28XUjj5UkYaZf0tvPFpCzDxZC5
-         0T9Ic9mRgjqe8gQv+AugVBifWGrw+a+UVfQPspY2irIyCDPoAbn7kSNTJjRfpspLJ1fr
-         V1uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777153474; x=1777758274;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=O/ED0Y4PmfOedW8XVTz2ekjmiBfYIa5o8q7WIKYBzL4=;
-        b=NRpRoA3pNnbt6wC1M/mn6zLX6tyMxNx8oE1KEFL+/AiEZEFfm6p27qprUlLWw/0MPo
-         f55Wxgroep1wrHsp8j8y2JbY8A0KFezIMo31R4BgmFdk4N98fimkJxInGDAvrF4si8j7
-         boXQvP9v0dm9XMC7doVmDwu4Ll6bExPpVeu/w+yTKBj9L1KhM0QusOac55w9GA6L1dRQ
-         CkMc3ANt4s/M3CkkpUUkCqFhdLF29m8Jet/mTb78OoqNtNMkpnWdPga8MEyGwbieFtNO
-         hFZ5JgGDr94BwdZTieD3aDErOVvlgXnKxkQkoSgxOaGXHQ2179KPhQcNy8dR4COkZA7C
-         1PIA==
-X-Forwarded-Encrypted: i=1; AFNElJ9X6il18IfvhFxX0buhGsC1qSRv8MSbWX7TzS6ekdXfeEeWvI4CZiUkcR7WBqOCF1eYmJS3+wkgYQk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwOAs6VEwOVUawmhOWGUxNH+O83fkF6M7VeFsJUZ0XpMSmH1sKM
-	ABjMQDTDoj9FN+73xSYOey4anaIWcdXZ4JMjp3Fd8vk6NDL8IozIYYjQ
-X-Gm-Gg: AeBDiesWOFNnTi84ncPM+oAOLD9m+kdpqT/cf8BluKITUnmfzNy05QxlPcZEje1WdOn
-	hYXTNrqL+/CWvaiouhPgUHhrtGUS+Vxk5TfOzxuX2uIWw1O9I9kP2NwfEemXAk7q84vYF8Hz/J8
-	0W+KVCu9XUD/zs6Q5oBBImLeoyAo7w9XDgPHZGePt0n4IMYONDwlOd/j0Y66O8WHEDCb40vBPkw
-	/RmnHysIb1T19oi8IapUh40mO+ItD35z2pv6Zct+gz+y/vlxB02/5fx4SqhtNnsnKZjzDvWgDhy
-	QzBNnmIoL3GUCNRxtiPV+5yYyz2Hf6AZqZ21SJMaUBxhTo1jNx+D4DZYvZIcx9AzVuSBbQnDfBf
-	DN4qJSOZ6t2xjh9GehFqwTddrcfgusrrkNDuIjF0ptBZbJfJPFyd8sV5Tq6TnBWqm573E5QKKKT
-	PrqcEZxooCCTMTv7Snt3NkJ8SD6mhZjc3n3qH4WzTHb8JGJs+3IUOaKLNnbc1iGjqB2/0nj9sf4
-	XfSB61HNQ9JTjsfT99dsgmF1go7r1xNPJn1lSxOPF4w05bTZ/Q6TSEKcfr73w==
-X-Received: by 2002:a05:600c:5295:b0:486:f634:ef1 with SMTP id 5b1f17b1804b1-488fb77d0fdmr526610895e9.17.1777153473832;
-        Sat, 25 Apr 2026 14:44:33 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488fc10777csm770862455e9.8.2026.04.25.14.44.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Apr 2026 14:44:33 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Sat, 25 Apr 2026 22:44:28 +0100
-To: Alexey Dobriyan <adobriyan@gmail.com>, 
-	Rodrigo Alencar <rodrigo.alencar@analog.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v10 02/11] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <7ytjm7q4noyhofptadss6r5f6ibrvntdtafntj6yjuaegnvjzc@j3lrtcj2lje3>
-References: <4b7b42fb-e3db-4218-9deb-ad609e07bfb0@p183>
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="B415J5bb"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 85D7E7E1C92;
+	Sat, 25 Apr 2026 20:39:27 +0000 (UTC)
+Received: from de-fra-smtpout8.hostinger.io (trex-green-1.trex.outbound.svc.cluster.local [100.96.24.226])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id BD0757E1103;
+	Sat, 25 Apr 2026 20:39:21 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1777149564;
+	b=itr2IfZODRBN0biS9HBGzSlnjYSXVT3qWD1sE1lcttVbhPcoGqeGy3NpBTSWVGG5ka2li9
+	+i9UWEIkxy5//lVn+9ltQwCBX0diH7vWSsRfhPafrLP328I4KNzX5H9RCmLaSF1Gq8IpdM
+	+JmA6OiRfVVUkT6WV/yZbkJ2eZhj1j3/q9w7qTFguDc9vfqyBcD5m/GaHP4rpoxjfxrZBZ
+	DqTguzg4PWUF27KqANNpXb/7IwUc0J53qQuZuQT2IeQMLQS5ap97AHLqSVpTXk1T2YZyOx
+	qw6jcO2MlLOtTygAQZrKxLkHhqKR8kj26tsTlHDqsuKVfb3063aV2KzFb/7HpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1777149564;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=7AYZI01aPJnMQhaQvHFyZtCblGlVMaOsDhrTfhnMqfo=;
+	b=pvglmrenGFFaQsEMXZk0xMfjWL3eza+Oow3Y96IlXusNq4g47Uerohn0tIuDLgFvG/VKFo
+	A9H4PJpgdKBWLK7P25ySW9IVnbETKRh7rdBXtkJAQCCOGUP/OJ6hzmH3LH/SJwvtlAmvgu
+	/jTBfrd0bvuk7omNHlnSkugTVN/oeVK1Uq8Vg44NXMH6LlEWiAFFbbIGBZi/0MZnyVXTKD
+	5Z065vBk8QpxRwg80npOBz8gRbTUzS8MJGG2Jwa072rxtS70+Hd3qvFfjdtf0aMfdh710g
+	EEbjV9clyMgSJDtCzCv+bE7Q0I9u8IDPmZMjYBSQyCagOzW7yT3x/vpUyBMjGA==
+ARC-Authentication-Results: i=1;
+	rspamd-b9d4fc544-b49hp;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Grain-Cellar: 7a2b60911f4acb9f_1777149567175_3376126067
+X-MC-Loop-Signature: 1777149567175:712100887
+X-MC-Ingress-Time: 1777149567175
+Received: from de-fra-smtpout8.hostinger.io (de-fra-smtpout8.hostinger.io
+ [148.222.55.13])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.24.226 (trex/7.1.5);
+	Sat, 25 Apr 2026 20:39:27 +0000
+Received: from [172.17.0.2] (unknown [36.79.100.152])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4g31s05xXPz3wm4;
+	Sat, 25 Apr 2026 20:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1777149559;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7AYZI01aPJnMQhaQvHFyZtCblGlVMaOsDhrTfhnMqfo=;
+	b=B415J5bbaNhYhGlpAuNffUsI57yt21vdzVGGbwz00PPbggDowdhaGQ57UUyamVLHCcP83I
+	WsGeiVuo9/XOqW0QZDGzxqE2nZT8v9RqWvOnB2ieqeD8Y3+/0M2rMz2mJYMF2xbdu0Vy6s
+	WOnGJ6iiJNcbrdTzNmqwhO3NNbH6mnDjj1qJs3dlXQsfTg0qlBgIqv4CheVmjqoKab1won
+	1+U9kd4d5Ra3Qt/LFIIb27N0zp6E+4X7kFtLKiH46wTrLnSwzztj5yMTGUG4kXUl+x8HXl
+	jSqu0OCbU/IvnLWy5r+uX5G6dlHEqE6giO4REgSQm2lqRHFvBKLrqTCJKAl98g==
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+Subject: [PATCH v4 2/4] iio: adc: qcom-pm8xxx-xoadc: remove redundant error
+ logs when reading values
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4b7b42fb-e3db-4218-9deb-ad609e07bfb0@p183>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260426-pm8xxx-xoadc-label-v4-2-0ec782362615@smankusors.com>
+References: <20260426-pm8xxx-xoadc-label-v4-0-0ec782362615@smankusors.com>
+In-Reply-To: <20260426-pm8xxx-xoadc-label-v4-0-0ec782362615@smankusors.com>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ phone-devel@vger.kernel.org, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Antony Kurniawan Soemardi <linux@smankusors.com>
+X-Mailer: b4 0.15.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777149546; l=1799;
+ i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
+ bh=mltS0lNffyFe8OV7KjnOk1JbOoIpjoYboNePj7eHJBc=;
+ b=/oTV1Zee/hIN9RAddSIQfqzhBYjuZkuYNdo+eEv4waB8hXn6szN9XMqx5wz6hrV06drdo9zr9
+ 2l9xM1FLzsuCTPZLLf53HJKPONDFb/KvSXDSZ+k+snXKBvtNaSsowO3
+X-Developer-Key: i=linux@smankusors.com; a=ed25519;
+ pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
+Date: Sat, 25 Apr 2026 20:39:16 +0000 (UTC)
+X-CM-Analysis: v=2.4 cv=ALriHGRn c=1 sm=1 tr=0 ts=69ed2677 a=ivwHvKELjomHP5eB21RdOw==:117 a=ivwHvKELjomHP5eB21RdOw==:17 a=IkcTkHD0fZMA:10 a=EUspDBNiAAAA:8 a=wxLWbCv9AAAA:8 a=KgMSzCYp6QPDUwhpC-EA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
+X-CM-Envelope: MS4xfOYBuCpzuA1pNNRnIndxzNeIg6PGqArK8Xp3M+gvetj0jwcnBkiNVEWY9FR3O/0AKqKL9O6vMmd6rW89wTSJg39UKZxNwyYi9BXmYO1aXIlh57uqu67M N7iylDUv7ZQhVM1yLo06bIiNSVM6ZkIKdxKhyzanBf7cupqn+3j9KZRUnRlfGSh2wBN6x0q07h2M7AQbRTTmcFjaH+7Mkwm2tGSXx2Mtlyp4Q4j0rjxJ6Hxb Ya7dwFXBX5BcF/FLIzxFWojDMdH1ZbPrKFYTjsZxTsfbYccYZnTL3oNKGKP1rv+B65i/6rTmwJGzVdjc+2WtHpHXE/kv4WM7CrdDNaYAXlSNNCfSY9YlpN4g ZGjd5d7y6PJ/6BWp2Ofktmtn4ImQAVE+lAjS/XORQKN1QtFjFuySWjghMGMYdYD7FgIar2etG0Baq4Ggr4CRxdn8oAdN/M0sn/j6wRrpElnPlPNsSwbLjYxD 2jG9i/9QOi/dRgTHUd3Mw4U0/oryBI3QBtndLSRObAicCkwAE8xDWV4Vb0YPJe6kMZaTO4sscwcm0frVWLPVSW2FYSZj3D0IXl5KSxBZDYkZKdzsiMpqX543 Zgf2GkDa/XPXklb6EatFiWRRpUc9cd4GhBEbqtKK5pN4lgn53OZ9MWeTIVdHhnZLucRc0wKnm1B/k4alxh82TFywMMKTKALu4OpsJEv7Fez3Lg==
+X-AuthUser: linux@smankusors.com
 
-On 26/04/25 09:57PM, Alexey Dobriyan wrote:
-> Rodrigo Alencar wrote:
-> 
-> > kstrtoudec64
-> > kstrtodec64
-> 
-> The only comment I have is to maybe sneak in "fixed point" into names
-> somehow. Or change to kstrtou64_scaled() because return type is not real
-> fixed point type.
-> 
-> 	A.lexey
+Drop dev_err() logging for -EINVAL and -ETIMEDOUT cases and rely on
+return values to report errors, reducing unnecessary log noise.
 
-I understand that a decimal number is inherently a fixed precision number
-with pre-defined scale. The "64" in "dec64" tells that we are storing it in
-a 64-bit variable.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+---
+ drivers/iio/adc/qcom-pm8xxx-xoadc.c | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
-kstrtou64_scaled() does not tell me anything about a decimal point handling,
-or that the base 10 is taken for granted. Maybe a typedef on u64/s64 to udec64
-or dec64 can make things clearer?
-I suppose the documentation header of the function would be enough for that.
-As it is clear, the function intent is not to return a "fixed point type",
-but its scaled representation in u64/s64.
+diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+index 31f88cf7f7f1..89858e81c859 100644
+--- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
++++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+@@ -535,10 +535,8 @@ static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
+ 		goto unlock;
+ 
+ 	/* Next the interrupt occurs */
+-	ret = wait_for_completion_timeout(&adc->complete,
+-					  VADC_CONV_TIME_MAX_US);
+-	if (!ret) {
+-		dev_err(adc->dev, "conversion timed out\n");
++	if (!wait_for_completion_timeout(&adc->complete,
++					 VADC_CONV_TIME_MAX_US)) {
+ 		ret = -ETIMEDOUT;
+ 		goto unlock;
+ 	}
+@@ -657,11 +655,8 @@ static int pm8xxx_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		ch = pm8xxx_get_channel(adc, chan->address);
+-		if (!ch) {
+-			dev_err(adc->dev, "no such channel %lu\n",
+-				chan->address);
++		if (!ch)
+ 			return -EINVAL;
+-		}
+ 		ret = pm8xxx_read_channel(adc, ch, &adc_code);
+ 		if (ret)
+ 			return ret;
+@@ -677,11 +672,8 @@ static int pm8xxx_read_raw(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_RAW:
+ 		ch = pm8xxx_get_channel(adc, chan->address);
+-		if (!ch) {
+-			dev_err(adc->dev, "no such channel %lu\n",
+-				chan->address);
++		if (!ch)
+ 			return -EINVAL;
+-		}
+ 		ret = pm8xxx_read_channel(adc, ch, &adc_code);
+ 		if (ret)
+ 			return ret;
 
 -- 
-Kind regards,
+2.34.1
 
-Rodrigo Alencar
