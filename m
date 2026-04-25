@@ -1,98 +1,86 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA50137CD35;
-	Sat, 25 Apr 2026 18:44:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA0F031327A
+	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 18:55:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777142663; cv=none; b=ja7jEfb7xNgG7ZI//aFGOKADEnxCktmimNjizBbdX02A8XiviMbCRaShkp2G7ZeaWQeK6agsm/COLrvdNUhDdxPaVAJ93E6Dox8JNgkTpdGSAaKx00G7GrEYccAdNjlBHFfctzFODCvH5rsfqoBOd5f4Fue9kRibsOz5YdOeOLQ=
+	t=1777143321; cv=none; b=hQ6LKn4GGPbrtqcTRPNtBFVUFBf8uswUQEwZlcXfmWKCMBYjHqed/qt7zIDDVfVrwfaGe7isYJr2DqDXRl0DGwfZmCt710e30hry//kBjB9tkSclAFEStpd4/NEFSuNHqZbWJbYIsIIF6ZElYB+NNAfBM167I0kix/vJaOv934M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777142663; c=relaxed/simple;
-	bh=hn1z0b4zV4WFbjbMYJCntmVWjUXd67V4CvRoUKBAu0E=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZRfdorW4kLR9WydgoFLSF6kvmYH2KW5GauyGHOzNr/cDSgmtsR4xu2E6CCEr+0xYrV8ZyCY3dGXhHjVx9mg1lNt1Xtciy8NkAbwV9w7KVNMGLNpLYKZ3acuZqL0NWFG49Fu1NWuReheSUNPtJYkMCbjAANamiEN3IhDTzBAL4aQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tJQo1X9q; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777143321; c=relaxed/simple;
+	bh=6PC5k/wB15iovttGKhDrvKcF72yoyScM3QZMtUPjQSo=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=R/+6Q7BMFcRiAiQ1RrtC5jL/tfZLz7Sd1grVtrA/6ox0sZQiDgfIVBMm9GIAd2K51UqsEaqloAQ6S21nhdTrkhT2St7giPNSILertLMs8m3YT0OTOzGXD6nlaNTjQLktJYgNKLB9R+I3pFdQw87Ws96PwJet2qILZ4nKNUFJxq4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Lh457qgi; arc=none smtp.client-ip=209.85.208.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tJQo1X9q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE0DC2BCB0;
-	Sat, 25 Apr 2026 18:44:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777142663;
-	bh=hn1z0b4zV4WFbjbMYJCntmVWjUXd67V4CvRoUKBAu0E=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=tJQo1X9qgCqTDOi7MqNayuOZ9xsm5pwykysVI8u9GxrhhKgvaoTyKRG4mDnTWynaI
-	 VXAJN4KYYtQxQwxoBTrvmCCQNf7mCreJ4e9IufGej2Ny3P+oLoc2rwxa5LirQvpwHK
-	 htQfPPy6cuqnMygg/gDzEHE5fNzFPO7ZKdgeYPaFCdSIjoD8lughcd0uZNLKbw1vWn
-	 s+9jlG4xocgsoRlEdcnf00kj9MyH+Yy3m/VMHLj3kdGYpM8qJ5rvyqsZja7dIEybW9
-	 J+0RChqDl/GbDqYQF/F7pb4X5kw0Sv8lvBCacWlf+cxo8/IS2YAtZ7OFhO+freqBS1
-	 kZV/4tSoj3F5Q==
-Date: Sat, 25 Apr 2026 19:44:12 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Felix Gu <ustc.gu@gmail.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Neil Armstrong
- <neil.armstrong@linaro.org>, Kevin Hilman <khilman@baylibre.com>, Jerome
- Brunet <jbrunet@baylibre.com>, Martin Blumenstingl
- <martin.blumenstingl@googlemail.com>, Rosen Penev <rosenp@gmail.com>,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: meson-saradc: fix calibration buffer leak on
- error
-Message-ID: <20260425194412.1872eff8@jic23-huawei>
-In-Reply-To: <84cae83c-2d67-4927-aa40-6c416d4f862d@baylibre.com>
-References: <20260426-meson_saradc-v1-1-6e96b2982c43@gmail.com>
-	<84cae83c-2d67-4927-aa40-6c416d4f862d@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lh457qgi"
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-38ea6a5a0b3so87407801fa.3
+        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 11:55:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777143318; x=1777748118; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gJITLO9f82dhzr/WR0Vgm9oDU311eY+/4fzqp2zrKeQ=;
+        b=Lh457qgisV6ZK+UdoVSJciORTc7YuO4PV7tqpteXbXTPAbR8RYLVHGxCMIc0eJ10Os
+         +y+9uGVlHU0a1ISNPlJjDVqLUmvwAIw2mpGU8K2ye4GZqjfyp5mEvbtYOtin1xcfTxT1
+         K+Y94mje9MWJIGC9te8yfXD0VLYeY1kd1e0VHXlQ+kyyFGx02D6YlinWhngGifSFUAkl
+         NBZx/YCoodWr+vAPmi2wnRLe53zfo+7wePxTr9tjWpWtP+cZZAvPZ2pv4CGzB1ZmnS8+
+         2IZ5O/zOWWQWbXYuo8qiXU2ZZP4U7tkl7WQ7BHrvGgohuZ7YKuxZWC0bwUGBaHPT29Hp
+         V0tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777143318; x=1777748118;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gJITLO9f82dhzr/WR0Vgm9oDU311eY+/4fzqp2zrKeQ=;
+        b=kvKOezpLAs+YAhnyExAXLjyoiCIjAxT2h0/q8BmNBuoynfCupGjzVJLGV+Q8ugu9ca
+         0KOVpWL8SjbMcUBaf+NNUC0GNpYShsLoJ2VT9AjQ1a8YST8IJN2ONKdJZ/EigQmuWHki
+         wq/0To0ZV2I4CsocbyR8qyHhru0U60Y4w8Zq4ad6LqcgsbtkR8ir93BHQ+Bj6dqtMN3S
+         PNG+aHBqQozcwYqodLqrYobGBrcrXaRaVVySxceqrey8zZwa7jcBLHh4d6DRQRRXo0xp
+         JHbyVhLWswMS8TYRW8insVloarkGc0tuWFPuYPvliv3UTgyXq57sWw21SphYib7cF7Ft
+         M/PQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/TmFmkCXKwp71p885vH3bFb+J70RdTlP4VlJSLRijGH3iATjOmgp75kngdPCWwqk+pBQ4VqTChZAo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxlYrFTT74RLnhLXa3r6GlQ+VQTevC971BTorJJxmb2uHM/DWRC
+	LrxTHRTUviI61qK5vLky31tUpMEXlkkQ4bU2LcIRoD/fjCTXY0HiDpE=
+X-Gm-Gg: AeBDies7G2L7Oj4Zo9rGuviMcCmbAOk9yVxfbS4j1PAFKMnaVG/pGWArgk9RnfhL/xd
+	eX/PBTzMmZt4fUWsMkAC+LJ4wxu/vcvStbaNJhqdLQRFsVtssFWML0qE+v4SpRnPqnRYMZ1WAfC
+	Br27w4duJFdR1z0hhQY1KQ96AlJsEaURaGnoy6cbB0FdHugK9Qil1smbLLLI69VMXJ0n+Yz/W87
+	RTWAW67OEgsi7HRqgcRwrai+Q6Bwmk3cTbXU/NcDnH7EnyVZQTmUjbab4Ukwu9u1FHKpDNhmQAP
+	+4kmj/XVmq2nJJsLMh+ZgPm/c8OSpQX8emM+s+jBnCpkI+6lT+rGGETRXjwsey1CdrGCPaGyDgC
+	ExHeP7UmgnMhXcv+2Ei+JDidpyxV0ui6wUDJczToAoDhE0dxEOjVgNbxrVTm7sKaNIZRM4612LL
+	Ok9hPuLt6lsnLXPyNQFMnR1I2huXFD8Vty0Q==
+X-Received: by 2002:a2e:be1d:0:b0:38e:49e6:a376 with SMTP id 38308e7fff4ca-38ec7acfa4dmr137809241fa.22.1777143317812;
+        Sat, 25 Apr 2026 11:55:17 -0700 (PDT)
+Received: from p183 ([178.172.147.163])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-38ecb4f54ffsm57552711fa.1.2026.04.25.11.55.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Apr 2026 11:55:17 -0700 (PDT)
+Date: Sat, 25 Apr 2026 21:57:29 +0300
+From: Alexey Dobriyan <adobriyan@gmail.com>
+To: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v10 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <4b7b42fb-e3db-4218-9deb-ad609e07bfb0@p183>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-On Sat, 25 Apr 2026 11:17:18 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+Rodrigo Alencar wrote:
 
-> On 4/25/26 11:07 AM, Felix Gu wrote:
-> > meson_sar_adc_temp_sensor_init() allocates a buffer with
-> > nvmem_cell_read(), but the old code leaked it if
-> > syscon_regmap_lookup_by_phandle() failed.
-> > 
-> > Switch buf to __free(kfree) so all return paths release it.
-> > 
-> > Fixes: d6f2eac64403 ("iio: adc: meson: no devm for nvmem_cell_get")
-> > Signed-off-by: Felix Gu <ustc.gu@gmail.com>
-> > ---
-> >  drivers/iio/adc/meson_saradc.c | 10 +++-------
-> >  1 file changed, 3 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> > index 23991a3612bd..9708ddcc4919 100644
-> > --- a/drivers/iio/adc/meson_saradc.c
-> > +++ b/drivers/iio/adc/meson_saradc.c
-> > @@ -786,7 +786,7 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
-> >  static int meson_sar_adc_temp_sensor_init(struct iio_dev *indio_dev)
-> >  {  
-> 
-> Nice to see one of these cleanup.h patches that is actually fixing a bug.
+> kstrtoudec64
+> kstrtodec64
 
-It's not fixing anything as far as I can see.
-The syscon_regmap_lookup_by_handle() is earlier in the function and
-nvmem_cell_read() isn't called if that fails.
+The only comment I have is to maybe sneak in "fixed point" into names
+somehow. Or change to kstrtou64_scaled() because return type is not real
+fixed point type.
 
-So this is just a code simplification and so small benefit if anything.
-
-Maybe there is an old version that does things in a different order?
-
-
-> 
-> Should `#include <linux/cleanup.h>` though rather that relying on it being
-> included through another header.
-> 
-> With that fixed...
-> 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> 
-
+	A.lexey
