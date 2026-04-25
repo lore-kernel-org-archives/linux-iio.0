@@ -1,414 +1,309 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE82D367F3A
-	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 10:37:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABD41175A7D
+	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 11:05:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777113479; cv=none; b=u3oz+/Q5BFaZNqzxXlzUOEWEVLFsZFVxYly/4XOq8HYcPPJfupnQks6AczJV/iqolJ+cAM4SGT5nGwqIlkqKKul335Yw3zR2i2F1Rs9rsTVBlJ5+Gd3A4RMWPPQIqKXwtsnDmslCr/zofT2/2117Uw+dwY+fauax6YqYNUV4iqc=
+	t=1777115111; cv=none; b=b7Gv3JKOdm1jlB2cf/EfYGxqsqAKJ6teV2XOkbkJVW0HmOkClfzW1RROKFOORhqOU5wR2axyyge2q3nQeFCLlc9+MxZYJxOKgpXZB+lPFqA1MIyULpbXOkyJrjAEjBVkNt67Hv0kyR79n9MnbEQ2B+lfNjqBIUzPucBMhsna9Nw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777113479; c=relaxed/simple;
-	bh=hIWO3xsFueLuE07chwS/HdIA+QZtOhP45cjCo+Trttk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Lgp54CC+37iOCKZXu6ZQ1q68+VxYeczgS0YI5oMuk/V1eq/BEM0WGMYxiBYWmjkBRAQvMrzpH/fGEF+rk01J8RRuXz3omN81vikA/MCGeSbol3HBK5ZhcMHLDUf0goGk2GzznbOLaMHMSNusDOAEEg/atWbFZheiwPMOppAIDHU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=goX/mQHt; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=FaPL66+o; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1777115111; c=relaxed/simple;
+	bh=bNp67NYBB3RnPAWeYvdLOQDWL2qwF6HM4omSBGIjmoA=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=l2+GiwGSxwEOXFQ6pq+i3l43/ixwWT66K06pvKnnJpHUqqmuLvxSRD51+tYd7SbEVjFeVCJfXrCfZGtQ3as2SXY/MDReced9CWMQBUZMfL+9oPdZyUugevnCvvsHozNeiENqaSdpJ7zycfL4G4xc2TSAv/0Y3845l7UTCZd3BuA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MgNSoUFX; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="goX/mQHt";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="FaPL66+o"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63P3PtVw2365954
-	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 10:37:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	wSDt1S1a3dmf5cPvvpVEpChdYIhaznxbJLwuGc74L9E=; b=goX/mQHtUdIMrdW9
-	0tAfW8Iw2Mdn9h8jiJMIomfqVre8YtCc85gw1kkGHf8aNL0d/3CKn8tfEzp1z8/n
-	Df7i8NVvZpKkyaD95mTTP02Frtj2bbm8LBnmHFl6oW4cUvAnFtraIsv9qZC77I2S
-	J3I9Y94EC8GT4OcdCCgN09vlLJ2rV+uyTb9chDS2w0ODUmLNV99Z7O6j+vd5vuie
-	vAe9FQNN0dOOXXuFJNmcqPKza6UFGiHUixsS+9Vl6qFhDAFlrEpsTnr5vfNZjG86
-	J4MPodjN8J5n22unf+trNSV0sV+rqQtrXDD3xwJ0rKJDuA8X5NMXuq68y1EPkX6Z
-	4fYUVg==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4drnpw0qcd-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 10:37:56 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2a90510a6d1so69918575ad.0
-        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 03:37:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MgNSoUFX"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2adbfab4501so42495535ad.2
+        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 04:05:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1777113476; x=1777718276; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wSDt1S1a3dmf5cPvvpVEpChdYIhaznxbJLwuGc74L9E=;
-        b=FaPL66+oLPdfRY/d2XvT8NtnyfMQwFxWsWAgR94uj/6QTDwhHQm/wvlYjL6wMyZBef
-         wh/XZEetErWYGwirR/SXL4YVmVzb38fNPMumPCLp8nLZHwzhhpRNbj/5G4wEoHUo/4V9
-         d2SuEj6WWbESVofk2ijYsy7gi7+ypzzrOm0/+Ug04mgq88qIvyJeW4VEt7MmVSUUuxJg
-         S73OZ8kDzvyoAtyyOGfl65UXjQLP2IeLqyXOSiDGSFWQad3oTSuiSRzn+p1b+DGbW4nN
-         0wCTXWjbXL24Qv9CGd/K23nFM69mTBUhf7Q3GEDVHE/2hmFV42stSQpH5RfZw6i5N2Ho
-         9l+A==
+        d=gmail.com; s=20251104; t=1777115109; x=1777719909; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=GG5ggmwA080pLAGNQ4HPn0pDmF6foX0wyJctIPCnbZc=;
+        b=MgNSoUFXERqh84aj2fERod9nkstKZiwA+bhLIhifnQqWy0ngQnlQZFXTjOsoTtTnbU
+         xL3SskcrgTzQnM1/a/gWuS7SchznYUJyVPBW2RK+jJ7cnmxNSTeYcFddtbfjJONMpl7J
+         rtS1HLgsE24/XKbcYtCX8PCTXjdmb7eTQEfstXlkwqL/shM+aYIrbNC6SQo44y9MNSl9
+         KoVT2CzsqXuFti6At0Jys8M75YwVRY9kAX8GSwhjDZNoNoR0p3NBG4Hrf8fPddQ1Nay4
+         1+Mmx8+BlKmXNdae7n7D62EFiELJwrWBP9r7zvIrq2wm+Kdx35LPGpjHS5Q3fIDJlvNY
+         ue6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777113476; x=1777718276;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wSDt1S1a3dmf5cPvvpVEpChdYIhaznxbJLwuGc74L9E=;
-        b=iY7NyEyN0lrVJiMdGy4VLcd/nj9ftjNoAzijBq7fBqtjSHi8sYmLcy+POCo9NVpAsX
-         ieBeGsHU1Ed5yBlSqCKqYuptZwVQD3tP7cJPm0RY7A53Cdtadb0JnxIhA6MOESbSDAZa
-         +BHngYavOD/ipB9dRWuy4VlZYo0WWbFcWPJgahMLF0lq6GvoqZaGqesMZHKVV7rfQK6Y
-         Id/hdEpzxTkNxXlU2lgc7SwC+dapM7FEJWH4dVUiT8nLskDFjHn/ay+vrpZZrsEfFMME
-         sK5AmSNKJ/E+PPJQIXdEuHDypn9zOYhMlWdFlK6Dj0Mb/W2i6QOuWRfaHWeYuOajUm80
-         ttcA==
-X-Forwarded-Encrypted: i=1; AFNElJ9m0nLsnhfhiflVrR5fxxFNIGXOO0UY4NdIiCT6Yxe5Ky+KIph38nlsOkCJrq17kFbNluXiUHj5plc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwtkDYtIr7hgOv+JFAEiRJDxWEJKFs/W1AVi4tXUb0xJbHp+St+
-	exA2TI+RbKb2gS9VYC+xqLapt4RhbtyX+S0RobrbmGGWt3ITClOW20EOgXi0mn+0vuQ9GopcpwV
-	M+WG+268w6YJEfVWXFC1mV2TJDEgvxTb2TBvMIC4pcWLV1vMDWEVRZsVKjupkp90=
-X-Gm-Gg: AeBDietkf1bEDhVvXYuWGWarjeqh2eobLMrOypEbl+lhoZUBNwkdhHdPjSDtBp/oUKE
-	W+yNdpgkWfKYCF1SOIAlgHsmrRjxQgg0j7rw/76c79dbiQ4OClf1ep8X364IKVdM0hODdA7TDUo
-	ytc4x4X1KE6OxduSKrZR+bYrvhddCryvzhJRvUoTvC+jek+/HwAdze+6H03rFUM8Hf5uUF38MUg
-	j1NJGzrPixweAIWcV79SJ2vIoKVqNgqEXZa1ZiJ6ngpWEm/p8ZvjYBN9/Ri0a8ZtY6HDsnR+qV9
-	A7TyM+YT4/Q9hKjb1vZlRZu0KtKWgMeC2nvFhrF+USISmRVSYLjPQdnTaYX9JpyS8pxugc7cKh9
-	opInrOq0po1Zn6YjfZrRahoh/jadZrN+erpAcHt/qHY4h90iDchKbaQBfRjgYc+Z7
-X-Received: by 2002:a17:902:9002:b0:2b0:91e6:bc18 with SMTP id d9443c01a7336-2b5f9e7bb41mr207335205ad.14.1777113475493;
-        Sat, 25 Apr 2026 03:37:55 -0700 (PDT)
-X-Received: by 2002:a17:902:9002:b0:2b0:91e6:bc18 with SMTP id d9443c01a7336-2b5f9e7bb41mr207335045ad.14.1777113474836;
-        Sat, 25 Apr 2026 03:37:54 -0700 (PDT)
-Received: from [10.216.33.139] ([202.46.23.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5fa9ff390sm246035275ad.9.2026.04.25.03.37.43
+        d=1e100.net; s=20251104; t=1777115109; x=1777719909;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GG5ggmwA080pLAGNQ4HPn0pDmF6foX0wyJctIPCnbZc=;
+        b=rP//HACtbOtzPAymmF/wegz6hPPKcCQfIpiRxF/138trYZRmPe5uaYmFAynyjrC0Nu
+         dRKWJsnuebjWwNLSxDKA232hgCiFZ8VukmyGFA03Hv4Vo7OkEhOuGlvYIBI6XSsSEYsN
+         faCvAAsbJ/QH5X7qe/XoThHtuwd1+eqj4vReQ6DJdANxNm9dB2WI/R+cyq/HF+oid05n
+         hW0YMKckYL+PKxvZOvz4GJmgucflcjBuRwUH7bpb2DZGYfQupvYOCjERD73KU1z6W/CW
+         bMT6VT+0NgzpoTW8jM8kPBqm3kYHY5ofwTW6/ug5v1zzBwzEj9JXGElDZJD5G8M2vEiI
+         xnmg==
+X-Forwarded-Encrypted: i=1; AFNElJ+7oRKR3Wja1p3Ate1tf1H2OkPxLMZd3T1IPO8NhiCYcYNXt1xcXUFZC9WVnCVTiBp2qI2A9+QjrAY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzs/DHQ4Oj8YtHhyFXlIbcU7lUiyI+8eLnw+4qm2bSSP8tsYmQp
+	aCIRQHko/2gCoK0zVhyNAtk0xnOvZXCEjc5rQtIFMl+aedHyXkjCeUPv
+X-Gm-Gg: AeBDieuiJrCLVUxp1Zh7OdV3lXCfQpATwnt2L4Nj7iAM3TLM9HApAHYk1wmr5r0M593
+	h/JOnyeUCcKAD7OUuBimxF9+57AXwieSfl89dKsps8nmrfHC0h8Mrcw1JCnj0NW8xEAYKGSTpZC
+	SGjNRIOrMUMD/ZRU82Lnw+mENHk19rRZUkIaFAXgjYpS3uDt2pkiZzVaHVkSN4K6ZHspwnewL0H
+	5eiyjFPUb2dLWMAbEOKtRVtujs6+9o3rELGyWXsksVmWqWVOw6G5K1mh/GjlSqNtjI5BOGlz8BI
+	4osCMOBEQOB9R16UCCZcH3uOXWaiRHj3QnZdRUp/Ivo7q0Ln32zBQF9zlmESKYKWUs0SwsPP6GK
+	UOMEuCPlSx7U/CTwvZONqvNszk5XyoYGKmZdKWvOWq4NzeJaw31ofVC25bZeXTApfNyPAH0eNPY
+	VicAOxOPDoC0wjCTIuy9EmlumYmQCluxIzQuJBEIV583kyH/xfUBfG3g65
+X-Received: by 2002:a17:903:884:b0:2b2:6cab:313c with SMTP id d9443c01a7336-2b5f9f8328amr230289665ad.20.1777115109025;
+        Sat, 25 Apr 2026 04:05:09 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:c01c:e856:a265:6d1:ea2a:2f9b])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5fab2112csm241506725ad.62.2026.04.25.04.05.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Apr 2026 03:37:54 -0700 (PDT)
-Message-ID: <7e619cef-ed08-4454-905c-05ab0939d60e@oss.qualcomm.com>
-Date: Sat, 25 Apr 2026 16:07:41 +0530
+        Sat, 25 Apr 2026 04:05:08 -0700 (PDT)
+Date: Sat, 25 Apr 2026 16:35:03 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, tglx@kernel.org,
+ christophe.jaillet@wanadoo.fr, mingo@kernel.org,
+ nabijaczleweli@nabijaczleweli.xyz, kees@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v6_5/7=5D_iio=3A_ssp=5Fsensors=3A_convert?=
+ =?US-ASCII?Q?_probe_and_teardown_to_devm-managed_resources?=
+User-Agent: Thunderbird for Android
+In-Reply-To: <20260419183918.23a22e12@jic23-huawei>
+References: <20260415050749.3858046-1-sanjayembedded@gmail.com> <20260415050749.3858046-6-sanjayembedded@gmail.com> <20260419183918.23a22e12@jic23-huawei>
+Message-ID: <300E6831-80EF-46D6-A6A3-33FC9ADC77E5@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V10 4/4] thermal: qcom: add support for PMIC5 Gen3 ADC
- thermal monitoring
-To: Daniel Lezcano <daniel.lezcano@oss.qualcomm.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-        agross@kernel.org, andersson@kernel.org, lumag@kernel.org,
-        dmitry.baryshkov@oss.qualcomm.com, konradybcio@kernel.org,
-        daniel.lezcano@linaro.org, sboyd@kernel.org, amitk@kernel.org,
-        thara.gopinath@gmail.com, lee@kernel.org, rafael@kernel.org,
-        subbaraman.narayanamurthy@oss.qualcomm.com,
-        david.collins@oss.qualcomm.com, anjelique.melendez@oss.qualcomm.com,
-        kamal.wadhwa@oss.qualcomm.com, rui.zhang@intel.com,
-        lukasz.luba@arm.com, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        cros-qcom-dts-watchers@chromium.org, quic_kotarake@quicinc.com,
-        neil.armstrong@linaro.org, stephan.gerhold@linaro.org
-References: <20260130115421.2197892-1-jishnu.prakash@oss.qualcomm.com>
- <20260130115421.2197892-5-jishnu.prakash@oss.qualcomm.com>
- <addDTiI8MB2b_AzJ@mai.linaro.org>
- <12d683aa-44c2-4e2d-8459-78ba9f2ab61e@oss.qualcomm.com>
- <f46ef4af-1c05-4473-9226-901d3393ea89@oss.qualcomm.com>
-Content-Language: en-US
-From: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-In-Reply-To: <f46ef4af-1c05-4473-9226-901d3393ea89@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDI1MDEwNSBTYWx0ZWRfX/Y0H1ipmdVEP
- 8eHsEx0t2St2pEZBIGMxhw7ixzI86JeAK8i598z7Zfhqpr3zSpU/9hupXyEvmXtQaHnp5YCczLL
- A+MDjKDZTfeOetlEoE7ng6bHmftEKNKDZTOpDJTNav12Xm/vlHslE3cDOHblYgjFXIfM5pBqdXm
- jtQ7owH1xzvjs+8iL5djI5+QMkp1ApN7Ng3zcrzcZbMr7KZE8Qg3dnNi1UBRCUDxwPBZudKe+yB
- Hi08d70+W3KJidKOz4EITHVC1NJWjtELf0m0w9qhHCkVor91PY3DgfcxRJAMxEpXqNvbHYGZqwC
- bHPH1wdYXdo0dv0B/wkmV3rBZ5ZWJsDuiMWaL8nckSrgxpDN94NzYkbP3tao5FdGC5fB/yWom+M
- EnMn9DD6bX/UP53YTWDoe1p1jioABu5wNEJTFpJmpbjN4CxMBXs2X0qoVL4zAmauIKQOeso9tOm
- ajZaVyyB56vWqk4duYQ==
-X-Proofpoint-ORIG-GUID: K7l30F3q-wfhDwt64mgTwWte04XZ5sVf
-X-Authority-Analysis: v=2.4 cv=RaGgzVtv c=1 sm=1 tr=0 ts=69ec9984 cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
- a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=EUspDBNiAAAA:8 a=N3BaCdbXddXG3PYp0CMA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=GvdueXVYPmCkWapjIL-Q:22
-X-Proofpoint-GUID: K7l30F3q-wfhDwt64mgTwWte04XZ5sVf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-25_02,2026-04-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 priorityscore=1501 bulkscore=0 malwarescore=0
- lowpriorityscore=0 phishscore=0 spamscore=0 clxscore=1015 suspectscore=0
- adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604200000
- definitions=main-2604250105
-
-Hi Daniel,
-
-On 4/17/2026 2:42 AM, Daniel Lezcano wrote:
-> On 4/16/26 10:05, Jishnu Prakash wrote:
->> Hi Daniel,
->>
->> On 4/9/2026 11:42 AM, Daniel Lezcano wrote:
->>> On Fri, Jan 30, 2026 at 05:24:21PM +0530, Jishnu Prakash wrote:
->>>> Add support for ADC_TM part of PMIC5 Gen3.
->>>>
->>>> This is an auxiliary driver under the Gen3 ADC driver, which implements the
->>>> threshold setting and interrupt generating functionalities of QCOM ADC_TM
->>>> drivers, used to support thermal trip points.
->>>>
->>>> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
->>
->> ...
->>
->>>> +
->>>> +static irqreturn_t adctm5_gen3_isr(int irq, void *dev_id)
->>>> +{
->>>> +    struct adc_tm5_gen3_chip *adc_tm5 = dev_id;
->>>> +    int ret, sdam_num;
->>>> +    u8 tm_status[2];
->>>> +    u8 status, val;
->>>> +
->>>> +    sdam_num = get_sdam_from_irq(adc_tm5, irq);
->>>> +    if (sdam_num < 0) {
->>>> +        dev_err(adc_tm5->dev, "adc irq %d not associated with an sdam\n",
->>>> +            irq);
->>>> +        return IRQ_HANDLED;
->>>> +    }
->>>> +
->>>> +    ret = adc5_gen3_read(adc_tm5->dev_data, sdam_num, ADC5_GEN3_STATUS1,
->>>> +                 &status, sizeof(status));
->>>> +    if (ret) {
->>>> +        dev_err(adc_tm5->dev, "adc read status1 failed with %d\n", ret);
->>>> +        return IRQ_HANDLED;
->>>> +    }
->>>> +
->>>> +    if (status & ADC5_GEN3_STATUS1_CONV_FAULT) {
->>>> +        dev_err_ratelimited(adc_tm5->dev,
->>>> +                    "Unexpected conversion fault, status:%#x\n",
->>>> +                    status);
->>>> +        val = ADC5_GEN3_CONV_ERR_CLR_REQ;
->>>> +        adc5_gen3_status_clear(adc_tm5->dev_data, sdam_num,
->>>> +                       ADC5_GEN3_CONV_ERR_CLR, &val, 1);
->>>> +        return IRQ_HANDLED;
->>>> +    }
->>>> +
->>>> +    ret = adc5_gen3_read(adc_tm5->dev_data, sdam_num, ADC5_GEN3_TM_HIGH_STS,
->>>> +                 tm_status, sizeof(tm_status));
->>>> +    if (ret) {
->>>> +        dev_err(adc_tm5->dev, "adc read TM status failed with %d\n", ret);
->>>> +        return IRQ_HANDLED;
->>>> +    }
->>>> +
->>>> +    if (tm_status[0] || tm_status[1])
->>>> +        schedule_work(&adc_tm5->tm_handler_work);
->>>> +
->>>> +    dev_dbg(adc_tm5->dev, "Interrupt status:%#x, high:%#x, low:%#x\n",
->>>> +        status, tm_status[0], tm_status[1]);
->>>> +
->>>> +    return IRQ_HANDLED;
->>>
->>> This ISR routine should be revisited:
->>>
->>>   - no error message inside
->>
->> I'll drop all the error messages, but does that also include the debug print at the end?
->> In addition, the print for conversion fault is ratelimited and may be useful as it
->> indicates a possible HW issue, can I keep that?
-> 
-> It is not a good practice to put an error message in the ISR. If the conversion fails, then the thread blocked on the read will timeout and then show a message.
-> 
-
-OK, I'll drop all the prints in the ISR.
-
->>>   - use a shared interrupt to split what is handled by the ADC and the
->>>      TM drivers
->>
->> I'll make the required updates in the main ADC driver and this driver to share the first
->> SDAM's interrupt.
->>
->>>
->>>   - do not return IRQ_HANDLED in case of error (cf. irqreturn.h doc)
->>>
->>
->> I'll replace IRQ_HANDLED with IRQ_NONE at places where errors are returned.
->> But in the case of conversion fault, I think returning IRQ_HANDLED may be
->> more appropriate because we do handle it by clearing the status, to
->> allow subsequent conversion requests to be sent.
->>
->> What do you think, is this fine?
-> 
-> It is a good point.
-> 
-> Actually, if get_sdam_from_irq() or adc5_gen3_read() fail, they will return without clearing the interrupt flag, so we should potentially end up in an infinite loop.
-> 
-
-I went over this discussion and the code again and I need to explain a few things.
-
-First, please note that individual PMIC drivers do not handle interrupt clearing by
-themselves - they are under the SPMI PMIC arbiter (drivers/spmi/spmi-pmic-arb.c),
-which is an interrupt controller and the arbiter driver handles IRQ clearing internally
-for all the PMIC drivers under it. So we won't be clearing the interrupt explicitly here.
-
-> So the status should be cleared at the end with IRQ_HANDLED. IRQ_NONE returned if it is for another subsystem.
-> 
-
-Maybe my explanation above wasn't sufficiently detailed - the "status" I mentioned
-above is not related to the interrupt by itself, it is just the ADC's status register
-reading. If it indicates an ADC conversion fault, the fault has to be cleared by
-calling the function adc5_gen3_status_clear() before we can make subsequent conversion
-requests (like for .set_trips) on the ADC.
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
 
-There are 3 main reasons for which the Gen3 ADC interrupt may fire:
 
-1. End of conversion for immediate conversion request (handled in main ADC driver)
-2. Threshold violation for TM conversions (handled in this auxiliary driver)
-3. Conversion fault (handled in both drivers)
+On 19 April 2026 11:09:18=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=
+=2Eorg> wrote:
+>On Wed, 15 Apr 2026 10:37:47 +0530
+>Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom> wrote:
+>
+>> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>>=20
+>> Convert SSP driver resource management to use devm-managed helpers
+>> and devm actions, tying the lifetime of all resources to the device=2E
+>>=20
+>> Mutex initialization, IRQ registration, work items, timers, and MFD
+>> resource are now managed using devm APIs=2E Cleanup logic previously
+>> handled explicitly in probe error paths and the remove callback is
+>> replaced with devm_add_action_or_reset(), ensuring correct teardown
+>> ordering and consistent behaviour on probe failure and device unbind=2E
+>>=20
+>> This simplifies the probe path by removing goto-based error handling,
+>> eliminates the remove callback entirely=2E
+>>=20
+>> No functional change intended=2E
+>>=20
+>> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>Hi Sanjay=2E
+>
+>Devm conversions often get complex and end up raising questions
+>that weren't as obvious when doing an explicit remove() callback=2E
+>
+>One of those inline=2E
+>
+>Thanks
+>
+>Jonathan
+>
 
+Hi Jonathan,
 
-I think it would make the most sense if I make changes so that the ISRs
-(of both main and aux driver) return IRQ_HANDLED only when any of the above
-3 cases are detected and they return IRQ_NONE in case of errors or when the
-interrupt is confirmed to be for the other driver.
+Thanks for the review=2E
+>> ---
+>> Changes in v6:
+>> - Drop remove path completely using devm_action with review comment fro=
+m David
+>> - Convert MFD device to manage resource along with mutex and IRQ
+>> - Link to v5: https://lore=2Ekernel=2Eorg/all/20260406080852=2E2727453-=
+1-sanjayembedded@gmail=2Ecom/
+>> ---
+>>=20
+>>  drivers/iio/common/ssp_sensors/ssp_dev=2Ec | 88 ++++++++++------------=
+--
+>>  1 file changed, 38 insertions(+), 50 deletions(-)
+>>=20
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec b/drivers/iio/c=
+ommon/ssp_sensors/ssp_dev=2Ec
+>> index cb4c26a6b76c=2E=2E94ecc794f926 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
+>> +++ b/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
+>> @@ -194,6 +194,16 @@ static void ssp_disable_wdt_timer(struct ssp_data =
+*data)
+>>  	cancel_work_sync(&data->work_wdt);
+>>  }
+>> =20
+>> +static void ssp_shutdown_action(struct ssp_data *data)
+>> +{
+>> +	if (ssp_command(data, SSP_MSG2SSP_AP_STATUS_SHUTDOWN, 0) < 0)
+>> +		dev_err(&data->spi->dev,
+>> +			"SSP_MSG2SSP_AP_STATUS_SHUTDOWN failed\n");
+>> +
+>> +	ssp_enable_mcu(data, false);
+>> +	ssp_clean_pending_list(data);
+>Where this is called below, it's not obvious to me what particular
+>actions it is undoing=2E  So I think you need comments on that somewhere=
+=2E
+>
+>General alarm bell was that it was undoing multiple things=2E
+>
+>> +}
+>> +
+>>  /**
+>>   * ssp_get_sensor_delay() - gets sensor data acquisition period
+>>   * @data:	sensorhub structure
+>> @@ -491,9 +501,9 @@ static int ssp_probe(struct spi_device *spi)
+>>  		return -ENODEV;
+>>  	}
+>> =20
+>> -	ret =3D mfd_add_devices(&spi->dev, PLATFORM_DEVID_NONE,
+>> -			      sensorhub_sensor_devs,
+>> -			      ARRAY_SIZE(sensorhub_sensor_devs), NULL, 0, NULL);
+>> +	ret =3D devm_mfd_add_devices(&spi->dev, PLATFORM_DEVID_NONE,
+>> +				   sensorhub_sensor_devs,
+>> +				   ARRAY_SIZE(sensorhub_sensor_devs), NULL, 0, NULL);
+>>  	if (ret < 0) {
+>>  		dev_err(&spi->dev, "mfd add devices fail\n");
+>>  		return ret;
+>> @@ -503,14 +513,16 @@ static int ssp_probe(struct spi_device *spi)
+>>  	ret =3D spi_setup(spi);
+>>  	if (ret < 0) {
+>>  		dev_err(&spi->dev, "Failed to setup spi\n");
+>> -		goto err_setup_spi;
+>> +		return ret;
+>>  	}
+>> =20
+>>  	data->fw_dl_state =3D SSP_FW_DL_STATE_NONE;
+>>  	data->spi =3D spi;
+>>  	spi_set_drvdata(spi, data);
+>> =20
+>> -	mutex_init(&data->comm_lock);
+>> +	ret =3D devm_mutex_init(&spi->dev, &data->comm_lock);
+>> +	if (ret < 0)
+>> +		return ret;
+>> =20
+>>  	for (i =3D 0; i < SSP_SENSOR_MAX; ++i) {
+>>  		data->delay_buf[i] =3D SSP_DEFAULT_POLLING_DELAY;
+>> @@ -523,7 +535,9 @@ static int ssp_probe(struct spi_device *spi)
+>> =20
+>>  	data->time_syncing =3D true;
+>> =20
+>> -	mutex_init(&data->pending_lock);
+>> +	ret =3D devm_mutex_init(&spi->dev, &data->pending_lock);
+>> +	if (ret < 0)
+>> +		return ret;
+>>  	INIT_LIST_HEAD(&data->pending_list);
+>> =20
+>>  	atomic_set(&data->enable_refcount, 0);
+>> @@ -533,14 +547,17 @@ static int ssp_probe(struct spi_device *spi)
+>> =20
+>>  	timer_setup(&data->wdt_timer, ssp_wdt_timer_func, 0);
+>> =20
+>> -	ret =3D request_threaded_irq(data->spi->irq, NULL,
+>> -				   ssp_irq_thread_fn,
+>> -				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>> -				   "SSP_Int", data);
+>> -	if (ret < 0) {
+>> -		dev_err(&spi->dev, "Irq request fail\n");
+>> -		goto err_setup_irq;
+>> -	}
+>> +	ret =3D devm_add_action_or_reset(&spi->dev,
+>> +				       ssp_disable_wdt_timer, data);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret =3D devm_request_threaded_irq(&spi->dev, data->spi->irq, NULL,
+>> +					ssp_irq_thread_fn,
+>> +					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>> +					"SSP_Int", data);
+>> +	if (ret < 0)
+>> +		return ret;
+>> =20
+>>  	/* Let's start with enabled one so irq balance could be ok */
+>>  	data->shut_down =3D false;
+>> @@ -548,53 +565,24 @@ static int ssp_probe(struct spi_device *spi)
+>>  	/* just to avoid unbalanced irq set wake up */
+>>  	enable_irq_wake(data->spi->irq);
+>> =20
+>> +	ret =3D devm_add_action_or_reset(&spi->dev,
+>> +				       ssp_shutdown_action, data);
+>
+>See above=2E At minimum this needs some explanatory comments on why
+>the stuff in there needs to be called from this point onwards=2E
+>Before this patch it wasn't called if there was an error in the next
+>few lines=2E
+>
+The intent of the devm action is to define the point at which SSP MCU can =
+become active and start IRQ, watchdog, pending command completion=2E
 
-Does this sound fine?
+As of now, this is handle explicit at remove path, but probe failures afte=
+r MCU enable may leave the device partially active=2E
 
-
-> If you think there can be a significant number of errors in the handler may be you should add statistics but later in an additional series if it makes sense.
-> 
-
-I think conversion and register read errors are rare, so this may not be needed right now.
-
-> [ ... ]
-> 
->>>> +    adc_tm5 = prop->chip;
->>>> +
->>>> +    if (prop->last_temp_set) {
->>>> +        pr_debug("last_temp: %d\n", prop->last_temp);
->>>> +        prop->last_temp_set = false;
->>>> +        *temp = prop->last_temp;
->>>> +        return 0;
->>>> +    }
->>>
->>> Why do you need to do that?
->>>
->>> The temperature should reflect the current situation even if the
->>> reading was triggered by a thermal trip violation.
->>>
->>
->> This logic is needed to handle a corner case issue we have seen earlier.
->> In this case, the ADC_TM threshold violation interrupt gets triggered ,
->> but when get_temp() is subsequently called by the thermal framework, the
->> temperature has fluctuated and the value read now lies within the thresholds,
->> so the thresholds do not get updated by the thermal framework and the violation
->> interrupts get repeated several times, until there is a get_temp() call
->> which returns a temperature outside the threshold range.
-> 
-> Oh, that's clearly an issue with the thermal framework, not the driver.
-> 
->> In order to avoid this issue, when the interrupt handler runs, we find the actual
->> temperature read in ADC_TM that led to threshold violation by reading the ADC_TM
->> data registers and we cache it and return it when get_temp() is called in the flow
->> of thermal_zone_device_update(). Any subsequent calls to get_temp() would
->> return the actual channel temperature at the time.
->>
->> This is only done to avoid delaying thermal mitigation due to temperature
->> fluctuations. Do you think this needs to be changed?
-> 
-> I think it is an interesting problem certainly impacting all thermal sensors. It should be fixed in the thermal framework itself if possible. Just drop this portion of code and let's handle that correctly in the thermal framework.
-> 
-
-Alright, I'll remove the check for last_temp_set and just get the
-actual temperature at this point.
-
-> [ ... ]
-> 
->>>> +    dev_dbg(adc_tm5->dev, "channel:%s, low_temp(mdegC):%d, high_temp(mdegC):%d\n",
->>>> +        prop->common_props.label, low_temp, high_temp);
->>>> +
->>>> +    guard(adc5_gen3)(adc_tm5);
->>>> +    if (high_temp == INT_MAX && low_temp == -INT_MAX)
->>>> +        return adc_tm5_gen3_disable_channel(prop);
->>>
->>> Why disable the channel instead of returning an errno ?
->>>
->>
->> This is the convention we follow in our existing ADC_TM driver at
->> drivers/thermal/qcom/qcom-spmi-adc-tm5.c. If both upper and lower
->> thresholds are meant to be disabled, we disable the channel fully
->> in HW to save some power and it can be enabled later if this API
->> is called for it with valid thresholds.
->>
->> Is it considered invalid in the thermal framework to try to disable
->> both thresholds? Should I both disable the channel and return some
->> error from here?
-> 
-> Well, if the channel is disabled, then the temperature sensor of the thermal zone is disabled, consequently the thermal zone is disabled from a HW POV but enabled from the kernel POV.
-> 
-> Why not add the 'change_mode' ops and then disable the thermal zone (+ pm_runtime) ?
-> 
-
-I have a doubt about this part - if the thermal framework sends threshold values
-of (-INT_MAX, INT_MAX) in the .set_trips callback, doesn't it mean that the
-framework is already trying to disable the thermal sensor? 
-
-Or does it just mean threshold monitoring functionality can be disabled for now,
-but other functionality like temperature reading is still expected to work?
-
-Please note that adc_tm5_gen3_disable_channel() only disables the threshold
-monitoring and interrupt generation functionality - the get_temp() call to read
-temperature will still work. Perhaps I should not have used the wording
-"disable the channel" above, as calling adc_tm5_gen3_disable_channel() is not
-exactly the same as fully disabling the thermal zone.
-
-Please let me know if any change is needed there - should I return any error
-after calling adc_tm5_gen3_disable_channel() ?
-
-
-> [ ... ]
-> 
->>>> +    /*
->>>> +     * Skipping first SDAM IRQ as it is requested in parent driver.
->>>> +     * If there is a TM violation on that IRQ, the parent driver calls
->>>> +     * the notifier (adctm_event_handler) exposed from this driver to handle it.
->>>> +     */
->>>> +    for (i = 1; i < adc_tm5->dev_data->num_sdams; i++) {
->>>> +        ret = devm_request_threaded_irq(dev,
->>>> +                        adc_tm5->dev_data->base[i].irq,
->>>> +                        NULL, adctm5_gen3_isr, IRQF_ONESHOT,
->>>> +                        adc_tm5->dev_data->base[i].irq_name,
->>>> +                        adc_tm5);
->>>
->>> The threaded interrupts set the isr in a thread and from the thread
->>> handling the event, there is a work queue scheduled. Why not use the
->>> top and bottom halves of the threaded interrupt ? Hopefully you should
->>> be able to remove the lock.
->>
->> Yes, I can use the top and bottom halves of the threaded interrupt as you
->> suggested. But what exactly do you mean by removing the lock?
->>
->> If you meant the mutex lock used in this driver, we cannot remove that.
->> This is because the ADC_TM driver needs to write into several registers
->> shared with the main ADC driver for setting new thresholds, so we
->> have to share a mutex between the drivers to prevent concurrency issues.
-> 
-> When using a workqueue tampering with registers while an interrupt handler is doing the same, the lock is needed.
-> 
-> But if the workqueue is replaced by threaded interrupt, the lock *may* not be needed because the design may prevent race conditions.
-> 
-> That may be not true in this case, I did not investigate deeper in the code to figure it out. Let's see the next version
-> 
-
-I think a lock will not be needed with the change I planned, but you
-can judge it in the next version.
-
-Thanks,
-Jishnu
-
-
->> I'll address all your other comments too in the next version of this patch.
-> 
-> Thanks
-> 
->   -- Daniel
-> 
-> 
-
+I will add comments explaining this part in next series=2E
+>
+>> +	if (ret)
+>> +		return ret;
+>> +
+>>  	data->fw_dl_state =3D ssp_check_fwbl(data);
+>>  	if (data->fw_dl_state =3D=3D SSP_FW_DL_STATE_NONE) {
+>>  		ret =3D ssp_initialize_mcu(data);
+>>  		if (ret < 0) {
+>>  			dev_err(&spi->dev, "Initialize_mcu failed\n");
+>> -			goto err_read_reg;
+>> +			return ret;
+>>  		}
+>>  	} else {
+>>  		dev_err(&spi->dev, "Firmware version not supported\n");
+>> -		ret =3D -EPERM;
+>> -		goto err_read_reg;
+>> +		return -EPERM;
+>>  	}
+>> =20
+>>  	return 0;
+>> -
+>> -err_read_reg:
+>> -	free_irq(data->spi->irq, data);
+>> -err_setup_irq:
+>> -	mutex_destroy(&data->pending_lock);
+>> -	mutex_destroy(&data->comm_lock);
+>> -err_setup_spi:
+>> -	mfd_remove_devices(&spi->dev);
+>> -
+>> -	dev_err(&spi->dev, "Probe failed!\n");
+>> -
+>> -	return ret;
+>> -}
+>> -
+>> -static void ssp_remove(struct spi_device *spi)
+>> -{
+>> -	struct ssp_data *data =3D spi_get_drvdata(spi);
+>> -
+>> -	if (ssp_command(data, SSP_MSG2SSP_AP_STATUS_SHUTDOWN, 0) < 0)
+>> -		dev_err(&data->spi->dev,
+>> -			"SSP_MSG2SSP_AP_STATUS_SHUTDOWN failed\n");
+>> -
+>> -	ssp_enable_mcu(data, false);
+>> -	ssp_clean_pending_list(data);
+>> -
+>> -	free_irq(data->spi->irq, data);
+>> -
+>> -	ssp_disable_wdt_timer(data);
+>> -
+>> -	mutex_destroy(&data->comm_lock);
+>> -	mutex_destroy(&data->pending_lock);
+>> -
+>> -	mfd_remove_devices(&spi->dev);
+>>  }
+>> =20
+>>  static int ssp_suspend(struct device *dev)
+>
