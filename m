@@ -1,123 +1,124 @@
-Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58F0521257E
-	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 07:15:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777101309; cv=pass; b=mJAug2RMmq272pyuB/G9tifgAZA737jtPKw6dDiDyfAmoc29Fgv3FH74AS383DVHV6QL7I+wUDCK5FpQZ4RD/Xb2z1I7QM6hF9+z/KMJ/JalzMRfR8D9v6hy6krr12N8x/FVRyVaLv21xvXqdcF4OEk4qN/EDXeW0wMSQakqewA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777101309; c=relaxed/simple;
-	bh=xtfryrVisdBU+hpF0HkaDtRdXeziVZ9Lz0F2JqFXgV0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EteXv+7RuFgUYU+ihlTU0Rnha0UsgAnUFxEPe9qBYbfRQRqxNyf6L7xojwWh9+cupnkagl7fwmyXamD8PRQPnkC9+sOXeHBe07fXV0naP3btIWdFCt7UKJNx7vvoK8vc6s/R9vDGG/uhuQfRUvmJ8TzJ33TTXNVEV3gMAZPuoEM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j0meR2iV; arc=pass smtp.client-ip=74.125.224.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE24716F288
+	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 07:16:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777101422; cv=none; b=gRmhCrUj359jlXCWshqS4hpgt0VZkqe8AvgGjn86o+LKn7KvxV2dz031dItobRrxXJkecvYrxOg/QY+QgCjJj3W2kIFaZuks+QutIiOoUn2LJpM0yS099oLCGfGPXrd/GObharzF43SvRMGCkLDSirz/QIDlApJf0AKsd9tTgfM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777101422; c=relaxed/simple;
+	bh=6E1Jf0oOk5cW7P5rF7bAf1b1uPOSs0RvaPt6g4KYIv0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MGG86NzV0OPjyPraCD7DoKcclPDtF/590Yr4wTLqZRA5wv7Xu2dHfy6aKMyhi+h8j1+al7ZOxou1KKPr/jewgc+DxymLnHXjQZzKDcOvAPsqB/Kv/JEAd63IAKi/TftMCRNCYCrUbLKa4s0PH6FCpR1vtCsN4LvYLsnByvW5Caw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KjqsI+m2; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j0meR2iV"
-Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-650140d4886so997579d50.1
-        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 00:15:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777101303; cv=none;
-        d=google.com; s=arc-20240605;
-        b=DnOjLccNGESVM12EZ7ZfvznhScBCo65zIkVBgKAzrtW/rLmQiy7tnRrJPkjobrGwV4
-         cVF45lzomli/jNalkuuWBxiTFpM9kC7pfVhULTS91vKIVsaWNNV7qAHYApWunEBq4uQI
-         cHWFsu5OizCEE4sJh6DsrS3Gz+fCzaOBt/9DVZqTwJPGYwJY00BTyc+UXaxhdC63+YPf
-         lsANzlzlVzhLx/ZXa1kgE2Sf2QOfLO4kE0IUQqpKRUYmG+TYflFlwqdTIBiYGNgAkvTf
-         weAJitQEI9FLGrCWVmCrNIugVlys6QGgsm9gx6QncYPajFpui51R6v46Uv1rx9Bc/w3H
-         nwCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=MWzqCyqnFoYNJgUt36Ts1VFHGm0O9I+Hv40QbKqewhg=;
-        fh=80uUeoO1VXWbnsbvSN9CuQ7ThLlCxymeicQrMMd8ENo=;
-        b=dLSEA0/E88rPvbSyIpE3VL+7PvrqzCMITzHxs3kezUn6zoFuVfJ/RY0ThxPgnn9R18
-         unPKuPruLD7KMM5fKSBRZa2Cc/1/AhJW7rVrdEO88ai39l8hD5MRZVEu0jFnQ5LvJEUm
-         QjL+LOuHCOX3akN4loSRdWtfBgAZAdZGEEQAmgbhERfRpA3tI5qu1aLMBvik5T8dEJON
-         MGSfaGDu4xTAY2Aeln8Xg739QPQguR/0Ob5EibPsHhyjl1pLVTGeXriFuN1NH/0kHy29
-         pQanYOLrhd+4e3fW/P6jf0/ZI9B2f/KZTqkbCe7oT4HmWzsy+wS/Sci41CbLr9WBVKsT
-         5uow==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KjqsI+m2"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-483708b697cso12012865e9.3
+        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 00:16:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777101303; x=1777706103; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MWzqCyqnFoYNJgUt36Ts1VFHGm0O9I+Hv40QbKqewhg=;
-        b=j0meR2iVOc87up8Ati7uk7JwKAMSBTMLwc7B30/iqe74wNtjyMCoWOMK9c//DUp/4v
-         RzVRucjLl4Fi9bRlCwBs/2Yem6FRSnewgGwK5HI3LCB9PK7++dI6DHowRMHUxkdPU2/F
-         WaJhqqGfmUlzI79wofoO4FDaBN22VG+90Ctc7q+NBe9aRHPqe9oZciSMDaFBBQHFrsdb
-         iYUqVuBqkdKK+1TTb/CmZAZyxQ8n2Ukcxcffoc6U+qPsmuVBsiM7LTYnQwtmpnojGHQY
-         vcpeKl2bKXp3Xv3zVLuI0jAQMhW6LT8Br06WM/9v4htm4xezSn+wqSbx3yxLQuNhOsqU
-         c5qw==
+        d=gmail.com; s=20251104; t=1777101417; x=1777706217; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=t8Kw53BCBxBdhNeoNG4cmt19pVK6A3f+DDtPNjBafBg=;
+        b=KjqsI+m2TClEJn4ZrQSms67QIbakGDvTm9FBPUSD+msb4rdNyS43MGIkCQE0sWsZfT
+         0MwwusRPHaV5QTrINBpz6hsx7WRYmREVeTzRSvBW2JLpzQfL80cY0qmdKTPyV3F3HUIQ
+         NThzgRC3txpbD6Guo7IkkaC8M2EtL/DFIO/R7ZmMJxXKqBA5d7sNvhkSggSyw0gIZlXQ
+         KgYj2bNWNCMPEwBRZ+szjpYgZQnXLEh4nRMlI/FD9bhhVKjsBoTa9j0g+HzDVowso/DI
+         XtTP9+pRB4rkAa8QH6zPfaHOMPrhMnf0tgMO7wkjRjMb1/sP9mGiFl221DWG+YiauQfq
+         cLUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777101303; x=1777706103;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=MWzqCyqnFoYNJgUt36Ts1VFHGm0O9I+Hv40QbKqewhg=;
-        b=YQmTjymOjATg9J+xqqzdPAFvcyxMxaiAqHrBLARjtMW/5D8XtENk+74CcR5bEf/eqy
-         A/11CB4sxx9aaG3rLcRL9EQPZjo6Itf/AbABdxnOynuk3MVV1eGJJ757qf4e/jmQLkqx
-         +q5Z3CtUSOQROAYir+Ts3lLn4ami+STYxK08UnrI3exJDRgm7g8JMa3zf8hMV1mNoqSG
-         IUvQFGjG3mwGPMwtyo4zvBtwuALQXWin/gOR7+UrkRpjv/6Wr3Xyqs4gwzj4Saqadl2r
-         FdpRNrEJvXE2T2jcorrSS2pSlQ8bHMT96lRjFmnWmgTbpNXtSqL1aYQ3lY/BuUbrVEJ1
-         YY0w==
-X-Forwarded-Encrypted: i=1; AFNElJ/KU79rspt0cWkwlirG2SRTrz+GWI4sKx7dxqui5xAuxphq10wy9zljUi/Dq+pjY8Y+7TShnLJe5w8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy6oBOCuv08tSWr8eQ174Nkjb6ImkA2hFXc2nY3z1p9fnCuUcKZ
-	LuMegwMZlEDoLmicg/QNAsqYNc6RqNkbSxoRgteaYtR9aBjEVi1SHdO2+BrxZbIectQuV4szpVX
-	vIHrXg2rZWtGOmCMSI5At0TRAUM2fV3I=
-X-Gm-Gg: AeBDiesgn2O6t4xvcAmUet8U6Zu99Dkzxo3K3OjCOuyEsodyGVcemKllm84FUJpI0hw
-	gTUfzqtCjAaq6nxIrCDz1OS8DVE2Y5tBBJbYe9AEfoZCkMj/AqTKzRGuTttH7cwk9mXEswlv/ss
-	xoRh86eZ6lZQGKN8vhv1ge/yZxTQIGJ6WHOgrbMtOyVP9OFy1GL2u0GgCcnUIaUZ2bYzLObvjeQ
-	rnwhPmu2nlfgt+dzIt4rCq1llBkodspbTQWw/LD2XFikkB28Fk36HgrKr+mFmHMETk911f+bHzv
-	2LZq4OQF5qqbcZwN7HswRfPnn2CaQBlsQQEVNTkfcMmsBT1chbxCLvqr8N3bo3u8pWKOxLOyy+f
-	TP10pTejlQ2bkPAyHuefjzIF7SgGf0gRB
-X-Received: by 2002:a53:ca08:0:b0:650:20d6:7098 with SMTP id
- 956f58d0204a3-653109ab08cmr15134229d50.4.1777101303494; Sat, 25 Apr 2026
- 00:15:03 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777101417; x=1777706217;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=t8Kw53BCBxBdhNeoNG4cmt19pVK6A3f+DDtPNjBafBg=;
+        b=MbT9SebnNgtXM1UZcL/GUvPMjuhcRBtCJ9jWA92P7fUdlgMtLxERtqY4q70/pRtt+0
+         BGK+rXEvf776VUErr16/6+iMOlEs6BhUToVpF8un30x445MI5gQWdFT1ijZVilkJCX/C
+         lCeXUc64fPHgnPZQ1YtfFpIB/fgub6dtiavWQrW+trZ3S1T3hc5qwkVMiW5ZV0GGIaML
+         PnC2BNDQTehfcuErAvB1bn0tIncseRtIOT9QlMYe2/ZWTfZ6km/tIdDFFFoebnkL5/zP
+         iQBgx+lB0v/I+6SvhraoCXz03O/LsYt+Z6XDTzZ3Pp09cGNtfJdU0o9YhYZN6J9krMT5
+         2pTw==
+X-Forwarded-Encrypted: i=1; AFNElJ/INqRjJFMyzr6yqYdrg4fEBiNA2JQwUtDbo7BrBNTLnj77PH5EX2qfOd+FpV7Mh7yCQ/gWtUQrF3E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxK3FmjTKRmnElrD1joCalEABBxuqt0issL6FMFEXaWYk934Lmz
+	TGJfOdn43wUGmbsCRRGghG/EY6RjscONHNutEnRHxOiuFGflN8yrtPv9
+X-Gm-Gg: AeBDievtaAksuZz5KCVkDOO1xCc1QWbN2ppQSuKepmrtFbvkGIRlZzAiwdFx2aQY7r/
+	m8ipKXav49lUNwbcGaG4Kq6t1G6TSycTRhM4RX0I6LlsAyAx16/y6QT5hjQYs4N0vHdotrzH8Sw
+	8bWl9RSsKN8xUr+IZBl/f27N5v5vFznO5KWoSjzc2qhRvTXh8gtzx5UWkDGflVCLzqGONxV+5t0
+	9PSc+0nDCpjvt7GkpDKJCOVdGNZ6IAv4uJpLtji9klqhRfBqcC5kuLYThsov07pnK5xazibA21f
+	bL/MwtjiHtuFv+VxS+OvfTFqs2j7GzdF25YSOiJt8FAVT8oqDn3b/qLceHWXU37NWR5G50KYZnj
+	siueEXY5sRGyF3C2pE9yjHco91g2D9f8qdXBJv3nsHYyFTGPnUzobsPPUHzjaZroZF7ycZQzBLQ
+	SNW298TEqq8IbJied8Yeh/R7KVammzP0aVADxMkIDOxJgJ+rQpuhlOWoq4MKIQ7Jkv6pL+eyGCT
+	9f9jG/gGtYdDwC2dMdkoZC1XEhOf6zdXqvmyrN11WLyhNIqqA/JryiX+g84WysNkoAGG0PQdA==
+X-Received: by 2002:a05:600c:4fd1:b0:485:3bc7:a224 with SMTP id 5b1f17b1804b1-488fb782af5mr254451455e9.6.1777101417154;
+        Sat, 25 Apr 2026 00:16:57 -0700 (PDT)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a6124d7e7sm234129925e9.5.2026.04.25.00.16.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Apr 2026 00:16:56 -0700 (PDT)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2] iio: adc: ad7625: fix type mismatch in clamp() macro
+Date: Sat, 25 Apr 2026 11:16:16 +0400
+Message-ID: <20260425071615.20406-2-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260422142541.160365-2-giorgitchankvetadze1997@gmail.com>
- <aej1MTgpzToqxOXD@ashevche-desk.local> <aej1jTYHP0tgJOcD@ashevche-desk.local>
- <CAE7dp2qq6bGJGqupDDGvG89-i2kbVvpVkY-6SCxWZLxatQ09FA@mail.gmail.com> <aespfdG7c7sae-nO@ashevche-desk.local>
-In-Reply-To: <aespfdG7c7sae-nO@ashevche-desk.local>
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Date: Sat, 25 Apr 2026 11:14:52 +0400
-X-Gm-Features: AQROBzCOi2qoRrb2ImqDgoiyUW9hVl5Qq9KpWq7RBA6_FrxBsAe4E-XC0VmXDjk
-Message-ID: <CAE7dp2onRFBbN-apFGALSvnHjxFwakrjtzqqFfkWe4L7r3xiDg@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: ad7625: fix type mismatch in clamp() macro
-To: antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com, 
-	Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: David Lechner <dlechner@baylibre.com>, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, Apr 24, 2026 at 12:27=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> You can modify types including for 'target' on your wish as it seems loca=
-l
-> variable anyway. Have you tried
->
->         cnv_wf.period_length_ns =3D clamp(target, 100UL, 10UL * NSEC_PER_=
-USEC);
->
-> ?
->
-> (Note, KILO as it's currently used is 'unsigned long'.)
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+clamp() expects compatible operand types. The period calculation uses
+nanosecond constants, while the local target variable was narrower than
+the upper bound expression.
 
-Andy, thanks. I changed target to unsigned long since it is local, and used
-unsigned long bounds with NSEC_PER_USEC. This avoids the cast and keeps the
-clamp operands naturally compatible.
+Make target unsigned long and use unsigned long bounds, including
+NSEC_PER_USEC for the upper limit. This keeps the operands naturally
+aligned without adding casts.
+
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+---
+Changes in v2:
+ - Make target unsigned long and use unsigned long clamp bounds.
+ - Use NSEC_PER_USEC for the upper bound.
+ - Avoid casts, as suggested by Andy.
+
+ drivers/iio/adc/ad7625.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7625.c b/drivers/iio/adc/ad7625.c
+index 0466c0c7eae4..b5a7911c75df 100644
+--- a/drivers/iio/adc/ad7625.c
++++ b/drivers/iio/adc/ad7625.c
+@@ -175,12 +175,12 @@ enum ad7960_mode {
+ 
+ static int ad7625_set_sampling_freq(struct ad7625_state *st, u32 freq)
+ {
+-	u32 target;
++	unsigned long target;
+ 	struct pwm_waveform clk_gate_wf = { }, cnv_wf = { };
+ 	int ret;
+ 
+ 	target = DIV_ROUND_UP(NSEC_PER_SEC, freq);
+-	cnv_wf.period_length_ns = clamp(target, 100, 10 * KILO);
++	cnv_wf.period_length_ns = clamp(target, 100UL, 10UL * NSEC_PER_USEC);
+ 
+ 	/*
+ 	 * Use the maximum conversion time t_CNVH from the datasheet as
+-- 
+2.52.0
+
