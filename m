@@ -1,189 +1,228 @@
-Received: from serval.cherry.relay.mailchannels.net (serval.cherry.relay.mailchannels.net [23.83.223.163])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B2FB36C59E;
-	Sat, 25 Apr 2026 21:57:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.223.163
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777154277; cv=pass; b=XuvX2uXAKAYT9qDClF8ycohnOQ7LrZ1htmBfme67lSkK2N07idgEgbOotrTlM1ttgiT0cKYXOQfoZhtA0WZJumBbEmMIGwX55Plc/BLGL1Sp14de8JsualzyvSrPtHqLrgx8ecWB5n5ioTq6PgJHzSk2xzRt/5NnloVu2xhq11o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777154277; c=relaxed/simple;
-	bh=gVqVN7B1O6IkBPk/jTzDNKpQUQDktMQaRtGAP+CntAc=;
-	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc:Date; b=PLdqNo+KKhFf2Z9CuifofrDs8EIfzH9Qk6G97HvmamIz3gbyrp9l94kJ333IqhaKLqiOncaG+3cmVR94FaTKRNh6iRqmCyW1IMjWqmK1b6gV/yoRZEzLZozpEOR01b67RU9v9VN0RBiyxY/MteYpGLkDrQ6/knu+4JCzh9bw4r4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=hmidBSMY; arc=pass smtp.client-ip=23.83.223.163
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 271453876AC
+	for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 22:33:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777156401; cv=none; b=eU/C+HgtwfmtqhDKN6xCgMGORXux/staMNg5A7TXu2l9CK5lIpfwbds03gZ3cMjThyTkbfOLkiaW1tm9OtrClxRIlIkC+TFIRmrzrq+DWzuk6sUi7sEXFvIf9Y94LtysbgtoJ7MRnDx5IABHAwkDV485rS7sw1hMOVlLMfI98IU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777156401; c=relaxed/simple;
+	bh=xo5Wyr/E6BBbS4gr7hmzYlkdUcxsvL3RQCQ9QqINkVM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=H0dSqB5wE3yUXVWBIisnUn7G1S6MhNDHa1ueoG73a4z9ryXaG9gT/IBnl4tygF8JFGKhUng3P77/fGxI+aQY0YEi8Ak8Mni23UJKR6edgcfFOtLPodyKytwO5A47PWAErQ34raUNcW+wRx+tkL4mns4dstizyvPd29h9gfwCh9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qmpLTdQ6; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="hmidBSMY"
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id 5CE414C0F4F;
-	Sat, 25 Apr 2026 20:39:35 +0000 (UTC)
-Received: from de-fra-smtpout8.hostinger.io (trex-green-9.trex.outbound.svc.cluster.local [100.96.23.217])
-	(Authenticated sender: hostingeremail)
-	by relay.mailchannels.net (Postfix) with ESMTPA id 19CF34C0E41;
-	Sat, 25 Apr 2026 20:39:29 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
-	t=1777149572;
-	b=EOYBsnUSiF3wh9gZKOdaFrNcVQjYx8FCjTl5TBAqZKVxCF62tbFkEIz7htFlksqXdbaHOh
-	g36lTpPyKcvTuTEl/+/X0xLQRY40PD0UfMLM36V5XZD6hHymEVAHXrqZDA2XoYUp1Vz9RS
-	1ocV94RWgSHYi99r3IBNUEJmRLwVavVa8/L054PLf4QGpqtMOeMm/dylBLMIZ69adfrywo
-	d29yIQIkVnGo/dQ7HnH0RZwKV/ibTHQ8G+G4Lu6ITNWptk8ycn9U8PtoiiKLC1Hhrkozm0
-	/He7hgIeT0mmSBccYoPH18EWux0tlybMZQ2iBJwnQt+WuNwKIDEd4ZcTnrcGsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-	s=arc-2022; t=1777149572;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:dkim-signature;
-	bh=B+BujSYgGUrdoEpu4G8/8yAUUC4EjhurGkaq5UsS9Ck=;
-	b=s4T7AH/DI42nLOWYkWVxpd6ZF29Uq8I8BgU6DlajsSN6wjYGxpAfzE4hrBIS7kLR2uV6Bd
-	k0jHfRNwYrSWT5II+apbkEpIja4G+lv04WBmy17ehmwTzLlhteh4tDmzH3YaWgl8C78TEh
-	MKFE63jGcgsdvnqTkEbyliykzCt3uS0JuPd1dw/8RvZ0+f5kfohG+g0vuAwKXZ0rQpp71s
-	WL4hIgtJFItEX5ATvzgC38Fl7qAC+hEdrs8wEN/ISUJE+0aQh1A3UYcGMpZL3rLf34KLNw
-	uJ0sckg7nJ1EGaElSqAfloPmCev5OuZsuAicj/Qmn055xKdR32SU3e8lpG704g==
-ARC-Authentication-Results: i=1;
-	rspamd-b9d4fc544-g2m8c;
-	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
-X-MailChannels-Auth-Id: hostingeremail
-X-Share-Average: 1028ae072d826b0a_1777149575295_276685588
-X-MC-Loop-Signature: 1777149575295:731139416
-X-MC-Ingress-Time: 1777149575295
-Received: from de-fra-smtpout8.hostinger.io ([TEMPUNAVAIL]. [148.222.55.13])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.96.23.217 (trex/7.1.5);
-	Sat, 25 Apr 2026 20:39:35 +0000
-Received: from [172.17.0.2] (unknown [36.79.100.152])
-	(Authenticated sender: linux@smankusors.com)
-	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4g31s43Gtzz3wqY;
-	Sat, 25 Apr 2026 20:39:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
-	s=hostingermail-a; t=1777149563;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=B+BujSYgGUrdoEpu4G8/8yAUUC4EjhurGkaq5UsS9Ck=;
-	b=hmidBSMY1/ytei5QseomdxUTQYulRmAmzgaeKa8sUzFcFbwrfHvPlam7fMkgWUyQDeR28z
-	zb8eLYk4tZbkFTYNghJyhYxNUFysHzYO8GMMdzTaT9D7ftFVswGCG2lvw0NJJNiLrGS48V
-	55yQYBW3GVNlC5ns/4HF29qdPD2OvsltsEKDAekiUQ/zBYm4JMQGcRnR3/VZ3VtpBr35x/
-	Aq9p/fDXAOztAVwXL0rN+/ilb0eoBrEmxM8PkWsrqDeDFuST4ORkCodChIEJw5Wf7p6OAH
-	jMq49KI2iu0LKU4/6JwuRPdcjj0LTLp5EXHm2HaCwWJT8pkp4DA0rrKNQP+QjQ==
-From: Antony Kurniawan Soemardi <linux@smankusors.com>
-Subject: [PATCH v4 3/4] iio: adc: qcom-pm8xxx-xoadc: constify pointers in
- read operations
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qmpLTdQ6"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-488ad135063so81921575e9.0
+        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2026 15:33:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777156399; x=1777761199; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Kxna5mGX/2SY/e7CJ7HPSsWx1DYUCM4yq1ObcxqGl9A=;
+        b=qmpLTdQ6sfS6sJ/7M+tN+ZTPD3YSnmUJYIn0zXjwku+AF5N801h5kCu6cZSDD80V2P
+         Dfe9rsS2L4TX+NPjcMBWHxSizq732dVPA3Sa88ToVpL6pwmHzvSZhUHHoTpT/HkhboxB
+         tJOwe0bC8f6o8VHHWa9Ks0OHDOg3sLbcsktUvx2y7aIthv6Tm8HX/W5TPabjEyzIYARR
+         efFDqrk98vExtzrs+rvGTq6sCPh7VfxP4c5AmCrwCHxWk05lAzamvfjQi7bNeXMpuxZB
+         mQvgcy9kjRSJOIoePK7cTy2Rk1nyfZvtjoEWoKCrk7oZZWDCM++BEGJVtzMqYhj71Dll
+         FkqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777156399; x=1777761199;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Kxna5mGX/2SY/e7CJ7HPSsWx1DYUCM4yq1ObcxqGl9A=;
+        b=CSzOnsHY9vlEcs/NEXskb327Bi4M7MoDnQ7lkpPaGlR/Nmp8zfzHP0rVwOV5LEVf4f
+         ygPvBcBopnlFBDxPbH386R0TbXHi6WsCSnVG5KuQFCWCK+mpyueezJDv7fgMh/PW4oU1
+         FGKgczQFOhASxjlCBzyBo6yGXb7s9g/QK02I4ZVkx3D7nyxR8TGvKDgBdVsD/cDwx1+i
+         MDX2ZRDqwjvk51GWofSetJRQ+BfN3j+R5bQNGCdUvE4ydckA4TROYn1upbqKTcXdCUIx
+         cI9rHMiEI8QNKuzC+DA11TnIQoA7z7N/mtFTIzAOs8ITxLQXcdtz5EkOkWcsXyUgGpIz
+         XXgQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+p7uvwA8hWFcdmNPUgQoqIUZeHiS4CQMMHDl62FeA4pDpMMYbilBwfjIJ+TS04dOzmI6yqVHSzyHI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvuFvRQ6Vy0QM5zzQJbsegVwS0TS3kGDt8NZQNaIJUnw7o7eTk
+	vwkfhysZNhe2/ROuxxsrjvSFBiEP+DT843dozB3c48bD+xO040lwZX0YQu/B7SjI
+X-Gm-Gg: AeBDievS6X+0nfMRuGd6ln+TP7vZ/k2SkD00ATkmp3b9prveY5h4lQjKiX237pl0k1Z
+	5YPwJkr0tkW1TfutFIjw3FrcMN6rvJFu3rV4BwUQUOEHblWjNVCn5k+i2j6QhVIn1P/r7UDowK1
+	Akispj+pyRzsLbzBmuoMsTYaCROkfGuTS4pEu3ZVqegIXjp5YenPZz1Wb/XR2NWcN8NilNpA7nG
+	mYAIp0bi57tyzy5qzWZLNqtPXSO0aC4DJX8i9ADK2+H02Bff9ad7Fh/Wgapc3Ap0KKJGEXZc/21
+	wSRlSqSn98vExeUlhWQPoEEmTt2yB5HgSGkKv0vSDvDlnuxX+V92zniy71vLI0IUI7imJLCBkLa
+	WyteJAzzokIpbBQfNAiNjX7h6wgJ3lc+kUewQZAgwa0t2QotJicegoBtyopVR0IwEa8V/GQtDes
+	aE6qLn+QxJw27x27WZfEwTATK2HW1uKqIpU3+B+LEMBcuS8LESTSx5PfTDU4PxgDAOOpdpjAGYT
+	Fw=
+X-Received: by 2002:a05:600c:48a1:b0:489:a4:e58a with SMTP id 5b1f17b1804b1-48900a4e881mr307679065e9.19.1777156398539;
+        Sat, 25 Apr 2026 15:33:18 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-489fec8f7cbsm393443685e9.11.2026.04.25.15.33.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Apr 2026 15:33:18 -0700 (PDT)
+Date: Sat, 25 Apr 2026 23:33:16 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, Rodrigo Alencar
+ <rodrigo.alencar@analog.com>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Andrew Morton
+ <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
+ <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v10 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <20260425233316.0a2e2abd@pumpkin>
+In-Reply-To: <20260425164006.17b75faf@jic23-huawei>
+References: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
+	<20260415-adf41513-iio-driver-v10-2-df61046d5457@analog.com>
+	<mhfgedq2t5lqtu6535ahdmpbvib2xzp2hmyt7ezflnf52r56jh@ze6tee7vpij3>
+	<20260425164006.17b75faf@jic23-huawei>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260426-pm8xxx-xoadc-label-v4-3-0ec782362615@smankusors.com>
-References: <20260426-pm8xxx-xoadc-label-v4-0-0ec782362615@smankusors.com>
-In-Reply-To: <20260426-pm8xxx-xoadc-label-v4-0-0ec782362615@smankusors.com>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- phone-devel@vger.kernel.org, 
- Antony Kurniawan Soemardi <linux@smankusors.com>
-X-Mailer: b4 0.15.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777149546; l=2605;
- i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
- bh=gVqVN7B1O6IkBPk/jTzDNKpQUQDktMQaRtGAP+CntAc=;
- b=NVIj8qiHexXCTP4iX9RlNi9EQLE/IfKIdG9IDdozAvOz895ZPur65NK5t0uO0V7AXHpJaMtat
- viRgsfde1PXBvBVhG0+FQ35QwVRda30F2sTjH/Fb4sZbQKP5UGADocq
-X-Developer-Key: i=linux@smankusors.com; a=ed25519;
- pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
-Date: Sat, 25 Apr 2026 20:39:20 +0000 (UTC)
-X-CM-Analysis: v=2.4 cv=etGNzZpX c=1 sm=1 tr=0 ts=69ed267b a=ivwHvKELjomHP5eB21RdOw==:117 a=ivwHvKELjomHP5eB21RdOw==:17 a=IkcTkHD0fZMA:10 a=wxLWbCv9AAAA:8 a=28uWT8Qvm3ey_qsjFoQA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
-X-CM-Envelope: MS4xfIY7vQoellI/QEiNdiWSDghaeF2C5w6CMJY6xPUR5cInDA+Qhme3tByRREcMQ4TECpVvLCb5uwgJ0KCntvM/iq9bxv1zzahpqqljDU6M8ZurDzw2uLDa qUdgCdkIWy0eafYaXToeA5PEBQ7wdUOk1slBYfbjLYiVfGQDX3gTvxVBTlzrpfpqkcdU7VsJAP5hsYdj1jMLI6B+j2BmayI7ZDLI9ifLluPwBCZwiTONPdWT 4tMBaifYXeOF7pKaGRz+4pA19uwQN5zhJ5GiTzIbGa1sdAf8oAZoiNjtfBV1/XOdxMR4GqfZFT+qQecXb1AvWDDhC76WojxpQmoYSbpAxssvdnUymEGtueuL /bhFosSVp2wc+DdlUDDuMQgHuvJg/Kiu12PhwvlkqHwbOMX56GqfA1QuniVvvY2ItM1YK2jnxGDmFQxkJS+MQGJ7RxbaJsN6SZXmGnYnsMWsNQpspUaGrEAc zvf2YSAhsM7UqLQ15kVKEgtEbthJe4NgbXwmra9/AI/usiwhX+cpYwSM72FD5DzKyDtB8KIu5ULM9+0EEWtjegCg/5Jo3yNUbxahBjPviSY0rPDC6iEWcGJk 9aWn/AGIWz8PfsjD7OZLMT3LUow+Lq+cb0ST8XDilQPGNGJk091vqRdxxOvbs1kce0k=
-X-AuthUser: linux@smankusors.com
 
-These functions do not modify the indio_dev & adc structure, so they
-should be marked const to allow the compiler to catch any accidental
-modifications and to document the read only nature of these functions.
+On Sat, 25 Apr 2026 16:40:06 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
----
- drivers/iio/adc/qcom-pm8xxx-xoadc.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+> On Fri, 17 Apr 2026 09:36:20 +0100
+> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> 
+> > On 26/04/15 10:51AM, Rodrigo Alencar wrote:  
+> > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+> > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+> > > precision). After the decimal point, digits beyond the specified scale
+> > > are ignored.    
+> > 
+> > ...
+> >   
+> > > +static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+> > > +{
+> > > +	u64 _res = 0, _frac = 0;
+> > > +	unsigned int rv;
+> > > +
+> > > +	if (scale > 19) /* log10(2^64) = 19.26 */
+> > > +		return -EINVAL;
+> > > +
+> > > +	if (*s != '.') {
+> > > +		rv = _parse_integer(s, 10, &_res);
+> > > +		if (rv & KSTRTOX_OVERFLOW)
+> > > +			return -ERANGE;
+> > > +		if (rv == 0)
+> > > +			return -EINVAL;
+> > > +		s += rv;
+> > > +	}
+> > > +
+> > > +	if (*s == '.' && scale) {
+> > > +		s++; /* skip decimal point */
+> > > +		rv = _parse_integer_limit(s, 10, &_frac, scale);
+> > > +		if (rv & KSTRTOX_OVERFLOW)
+> > > +			return -ERANGE;
+> > > +		if (rv == 0)
+> > > +			return -EINVAL;
+> > > +		s += rv;
+> > > +		if (rv < scale)
+> > > +			_frac *= int_pow(10, scale - rv);
+> > > +		while (isdigit(*s)) /* truncate */
+> > > +			s++;
+> > > +	}
+> > > +
+> > > +	if (*s == '\n')
+> > > +		s++;
+> > > +	if (*s)
+> > > +		return -EINVAL;
+> > > +
+> > > +	if (check_mul_overflow(_res, int_pow(10, scale), &_res) ||
+> > > +	    check_add_overflow(_res, _frac, &_res))
+> > > +		return -ERANGE;
+> > > +
+> > > +	*res = _res;
+> > > +	return 0;
+> > > +}    
+> > 
+> > I have an alternative (slightly more complex) implementation of this function
+> > that handles E notation. I find this particularly handy when writting big
+> > values like 25 GHz when the ABI is defined in Hz, so instead of writing
+> > 25000000000, one can just use 25e9, or 2.5e10. I found that my python code
+> > was printing big floating point values or really small ones using E notation
+> > and that was giving me -EINVAL, so I had to adjust formatting when generating
+> > the string input to the file. No big deal, and we would not need this here,
+> > but if maintainers find this useful I could add it into a v11 of this series.
+> >   
+> 
+> I'd rather we didn't slow this one down. However I'm waiting on some tags
+> on this patch from folk who are more familiar with these parsers than
+> I am.  Given discussion, Andy or David Laight perhaps?
+> +CC David - please make sure to include folk who have been active
+> in discussion of earlier versions to decrease chance they miss the new
+> one.
 
-diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-index 89858e81c859..2ee080b27d93 100644
---- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-+++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-@@ -414,8 +414,8 @@ struct pm8xxx_xoadc {
- 
- static irqreturn_t pm8xxx_eoc_irq(int irq, void *d)
- {
--	struct iio_dev *indio_dev = d;
--	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
-+	const struct iio_dev *indio_dev = d;
-+	const struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
- 
- 	complete(&adc->complete);
- 
-@@ -423,7 +423,7 @@ static irqreturn_t pm8xxx_eoc_irq(int irq, void *d)
- }
- 
- static struct pm8xxx_chan_info *
--pm8xxx_get_channel(struct pm8xxx_xoadc *adc, u8 chan)
-+pm8xxx_get_channel(const struct pm8xxx_xoadc *adc, u8 chan)
- {
- 	int i;
- 
-@@ -435,7 +435,7 @@ pm8xxx_get_channel(struct pm8xxx_xoadc *adc, u8 chan)
- 	return NULL;
- }
- 
--static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
-+static int pm8xxx_read_channel_rsv(const struct pm8xxx_xoadc *adc,
- 				   const struct pm8xxx_chan_info *ch,
- 				   u8 rsv, u16 *adc_code,
- 				   bool force_ratiometric)
-@@ -564,7 +564,7 @@ static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
- 	return ret;
- }
- 
--static int pm8xxx_read_channel(struct pm8xxx_xoadc *adc,
-+static int pm8xxx_read_channel(const struct pm8xxx_xoadc *adc,
- 			       const struct pm8xxx_chan_info *ch,
- 			       u16 *adc_code)
- {
-@@ -647,7 +647,7 @@ static int pm8xxx_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
- {
--	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
-+	const struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
- 	const struct pm8xxx_chan_info *ch;
- 	u16 adc_code;
- 	int ret;
-@@ -948,8 +948,8 @@ static int pm8xxx_xoadc_probe(struct platform_device *pdev)
- 
- static void pm8xxx_xoadc_remove(struct platform_device *pdev)
- {
--	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
-+	const struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	const struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
- 
+I can't help feeling this code would be smaller if it didn't try to use
+the existing conversion functions.
+Something like:
+	u64 r = 0;
+	unsigned int n = ~0;
+	while (*s == ' ' || *s == '\n')
+		s++;
+	for (;;) {
+		unsigned int dig = *s++ - '0';
+		if (dig <= 9) {
+			if (!n)
+				continue;
+			n--;
+			r = r * 10 + dig;
+			continue;
+		}
+		switch (s[-1]) {
+		case '.':
+			if (n <= scale)
+				return -EINVAL;
+			n = scale;
+			continue;
+		case '\n':
+			if (*s)
+				return -EINVAL;
+			break;
+		case 0:
+			break;
+		default:
+			return -EIVAL;
+		}
+		break;
+	}
+	if (n > scale)
+		n = scale;
+	while (n--)
+		r *= 10;
+	*res = r;
+	return 0;
+}
 
--- 
-2.34.1
+That is missing the overflow detect for the multiply and add.
+While check_add_overflow() hopefully looks at the carry flag (on non-mips
+style cpu), I don't know how the 'mul' variant works - it might be horrid.
+A bound check against ~0ull/10 might generate better code.
+
+But I really prefer functions that return the terminating character to
+the caller - they are more useful for parsing compound parameters.
+
+	David
+
+> 
+> Maybe start a discussion about whether adding e notation as a separate
+> thread after this has merged?
+> 
+> Jonathan
+> 
+> 
 
