@@ -1,182 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C35C32E11D2;
-	Sun, 26 Apr 2026 10:48:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C78CC314A9E
+	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 10:56:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777200511; cv=none; b=rDHaEc8g3859/3Xs+wYViNOSQ2Cpz/CYjsuuAxhQiG+vEv0qCFsTrRco31fPbgAwT32rzOqBLnpYFKCgiubXv6UuhnmBE/tmxHTi8f3A1pmokPED+0VV+wpJbc3hvq/r2oprt7p0VxUPn1ozBb9vRHr4zGL5o6+OYyrua+kNAlg=
+	t=1777201021; cv=none; b=g8gOQOSjeR7ei0KrU+Z46INvLbEHWGYiCxP24xjmw+3SKyvdJNLMK+D5NFRfEtMywxJJyZCJQ0S96QrGx5eXJOHKNQXw0x7Z7qQ11BX4aVbbw/c+KZxriBp4EsBr8uyNesIroxN3KF/rl2h+c331ysuoP2ew5GxxDEOfTFNgE0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777200511; c=relaxed/simple;
-	bh=/Fu+y3SMKEyVtO6DjohJMWL1vxCvN/MNCumNGm+V/z4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HVse1Ye7vI6i1H+eH23nY7sngmwplRnnFVPDLTEZZjlAqvHz6jD2HtJaFbzRthHGH5rqDKz6bCuGBnTyDJMm6fz93i3fZBJfBGviq0giGu7AWW+77VZO3jbisLmvhV/ZN6WpVlb02so07r7pbbhugH9LH/G/f6grzfWVFkyUWQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qsl3yX1K; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777201021; c=relaxed/simple;
+	bh=R7t8Dxm4N4TH8az3T+2O8jGth1/zfuHUl5nazXlAT40=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=l9EBjIdzhEsOW6jEYsKMcyCG/MZ8qIAMBCqpZ/8r9ukz52WuNL0kZt8O3cqF2g384YzIdps9uMocaLUO2hN6Du5+KY4KXkEXvAP9acauomkd77LFbUF0vc3RUbhOiJ9QGclQGydhO79bH4N05o9bSQtr6kPrM2oxQM4LBCfzVsY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EXf+W4+9; arc=none smtp.client-ip=209.85.214.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qsl3yX1K"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B581CC2BCAF;
-	Sun, 26 Apr 2026 10:48:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777200511;
-	bh=/Fu+y3SMKEyVtO6DjohJMWL1vxCvN/MNCumNGm+V/z4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Qsl3yX1KHT7zKH771RkKCD+vzFDVlqihQM/x2E18ziK58ByI08XhIJj2blGcHYsR6
-	 +sHLBIqvL9A49QqEQyd4MOpUi8PjGnfat/NFScwqAwuL8tAaEpdsC+nwO5FoSaE5/q
-	 AOunKCZ7kgzSl98kNBCAarY6ySnscazlyorJ30YPY6hsy7mNiYUfuRkw3rgzHJ+2of
-	 gSFFFAEyRPC6dPyiZx1kp9Rpo4OL30VBn9S/3BajaYJpaiBAqCZCe0xOVM1SQXxYn1
-	 cKQ8tU/KoZLGWvtI+zPSFqfl27342SFmS8NhjfbA5yPPgO3AI306PHJaA3qBw1Yxxa
-	 L7sn+OINdV8Ng==
-Date: Sun, 26 Apr 2026 11:48:23 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Aldo Conte <aldocontelk@gmail.com>, linux-iio@vger.kernel.org, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-kernel@vger.kernel.org
-Subject: Re: [RFC] iio: light: tcs3472: implementing wait time TODO
-Message-ID: <20260426114823.2badc4ed@jic23-huawei>
-In-Reply-To: <4bff0c2c-f054-4098-a299-8030078f9b2c@baylibre.com>
-References: <73d2183e-dffe-4ae4-9312-c544e0079f3a@gmail.com>
-	<46fd475f-8d54-4419-a195-d66c947fcc1b@baylibre.com>
-	<3d4a4dbd-6618-4b63-ade1-d68155bac3ac@gmail.com>
-	<4bff0c2c-f054-4098-a299-8030078f9b2c@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EXf+W4+9"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2b2d3a9e149so48207445ad.1
+        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 03:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777201019; x=1777805819; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/MmJo/XgpKRA3A7qF0L4xXU1s05fphO/Tr8t4rT8lfQ=;
+        b=EXf+W4+9r4seiShtT9gCERrqKMGgMLRGCmADr7/qxJqJPw0Z3420dBCJUe7KH4iVGi
+         WcQllsCtB586IZNZ+rGiE/USH2MmNpebN4cHG6T7IEYfMVeR9xV4wrJvitk+4rDWKEu0
+         Tx4xTdkEsywtKLEQgjmSRzauOBfA6YSxZvokNSQCIvQNeO9+NGA3qaxN8hDbaoYYRD7U
+         DdKNmeNwF8Z4MVDVSVWomS0D8pAGF7YS0q7fqyx19sRO8Ef11BJ8oUP2V4qMNbdgdmc7
+         9pZg6SJmcXrcI8MnxHTag4exZNoQQSKYyqMzPUvfXjVKq8lYGAOxYJhDrSgird8Gq6TJ
+         gWvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777201019; x=1777805819;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/MmJo/XgpKRA3A7qF0L4xXU1s05fphO/Tr8t4rT8lfQ=;
+        b=fcLCnwZxC0mkYwU+c1ORi4gYhkEqJn67W2y+A3WmuPiyIqWASmkWSylqk6sKO+dZIX
+         hrXeRRAx0/R3l6gnlmczvR59sPAl3fz4l5PlQPeAayQ2upRXI3KdMKqH019jDxLkpW2D
+         7FcG54Et/4Ua7cjrgJGqVqSnJYZiA7HqFTyXTzFyU6744wrJvERtkteHmTEtlaS9ng0M
+         Yk2/F409DboaeA1jvmjsJa4dfZcqwNgW/9J7W8+vsEz2U4O2JWt7OrKI8kWVpn6iVDCX
+         JYURdJ7P0lBLhFEJ3pmehhnX+1BKJ10JiOGMZnA9a0Ua5h365MtqXTMC6gPqrXjkXe13
+         7hbw==
+X-Forwarded-Encrypted: i=1; AFNElJ9Eq3RdLXv5LhgK44iX6j+KIIaMWHaUZphvLcERQTkpA0pRB9hD5hGSC2288Cypy70TH1n+XuGcy4Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwS4aFOdpWH0OqZ1YFNCx781ETVpmreNU4t3CsQHR6a6mblVHEz
+	9a1tQPJ5RDwyevnNLFv4J9VWVMoxFnia7BPnm1TLd0WyaFd//faiq/T+
+X-Gm-Gg: AeBDieuwUfyDS8BOyY4fFCh4ku1WrNmrOtOYjlG/01I64RTsdJLr9k8oPGXnDW7BSoX
+	pnUKGQeEjx4KJdWzAXo6wi94CQw7P93ltgIQUEdutHwiAwE4SFmpN0GtHu9H1dPqDxopYxnTF7T
+	tzi3CGsr+vaASP7swU8/KaCT2yhqcw65TEcohTqSCa/4WLIz8q0RmXRiLonm2a2K7PFFhXKNvOo
+	yBaMNMSawbTn2c0PGEseSUWFEWfI8qhvLT0jFIdaWc1KGOrtoP2s7ezuaOvvQP9Xy8pmSC17DWn
+	zlcZvYnu19pffzs4Iynj8wGyvIOzYGaMeeQx+OSybUgcp1YSfx962xYV7IzykNkdKip7FPDbBbj
+	pMyMVsznos1f9NF5mlivWHvZcFVG1tWshY2V1YPwnRTyBrKvBdoNPPwPG/+b4UNOD5M5+oGAg/I
+	KsZJxIdyyuQskXa/YHTB/97gd8JYoiY1IE6oRGxkY+GQ8+3o2em2zbEQguL/M=
+X-Received: by 2002:a17:902:da8f:b0:2b4:5fdf:f91f with SMTP id d9443c01a7336-2b5f9dc3154mr358935165ad.4.1777201019119;
+        Sun, 26 Apr 2026 03:56:59 -0700 (PDT)
+Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5faa507cbsm284535265ad.37.2026.04.26.03.56.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Apr 2026 03:56:58 -0700 (PDT)
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	sanjayembeddedse@gmail.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: ssp_sensors: cleanup codestyle warning
+Date: Sun, 26 Apr 2026 16:26:53 +0530
+Message-Id: <20260426105653.3764291-1-sanjayembedded@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sat, 25 Apr 2026 18:11:23 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-> On 4/25/26 2:00 PM, Aldo Conte wrote:
-> > On 4/25/26 18:49, David Lechner wrote: =20
-> >> On 4/25/26 11:28 AM, Aldo Conte wrote: =20
-> >>> Hi all,
-> >>>
-> >>> I'd like to resolve the wait time TODO in tcs3472.c. =20
-> >>
-> >> Do you actually have this hardware to test it?
-> >>
-> >> What is the application that needs to make use of this feature?
-> >> =20
-> > I'm currently participating in the 2026 linux kernel mentorship program=
-. I don't really have an application that would use this feature, but in an=
-y case, I have the hardware (Adafruit TCS34725 breakout board to test with =
-a Raspberry Pi 3B) to test everything out. =20
->=20
-> Do you have a logic analyzer or oscilloscope too? Having a tool like that
-> is important to be able to see that the timing of the signals on the hard=
-ware
-> are matching what we have requested.
->=20
-> I guess if not, there is the gpio-sloppy-logic-analyzer in the kernel. :-)
-> Real tools are of course much nicer.
->=20
-> >=20
-> > As part of this experience, I'm focusing on =E2=80=9Clight=E2=80=9D and=
-, while looking through the TODO, i noticed this and wanted to explore it f=
-urther.
-> >=20
-> >  =20
-> >>>
-> >>> The TCS3472 has a WTIME register and WEN bit that insert a low-power =
-=20
-> >>
-> >> What about WLONG?
-> >> =20
-> >>> wait state between RGBC cycles. The register is already defined in th=
-e driver but never used.
-> >>> I noticed that tsl2772.c enables wait with a fixed default and no
-> >>> userspace control. However, I think exposing the wait time to
-> >>> userspace would be more useful to tune the power/responsiveness trade=
-off. =20
-> >>
-> >> I assume this would affect the effective sample rate? =20
-> > yes =20
-> >> =20
-> >>>
-> >>> My plan would be to expose it via an ext_info attribute in
-> >>> microseconds, following the same convention as integration_time.
-> >>> Does that sound acceptable, or would you prefer a simpler approach
-> >>> with just a fixed default like tsl2772? =20
-> >>
-> >> So perhaps we could just use the standard sampling_frequency attribute=
-? =20
-> >=20
-> > Just want to make sure I understand the sampling_frequency approach
-> > correctly before implementing.
-> >=20
-> > The total cycle time of the chip is:
-> >=20
-> > =C2=A0 cycle =3D wait_time + rgbc_init + integration_time
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D (256 - WTIME) * 2.4ms + =
-2.4ms + (256 - ATIME) * 2.4ms
-> >=20
-> > So sampling_frequency =3D 1 / cycle.
-> >=20
-> > On a write, the driver would keep ATIME fixed (since the user
-> > controls it independently via integration_time) and solve for WTIME:
-> >=20
-> > =C2=A0 wait_time =3D (1 / requested_freq) - 2.4ms - atime_duration
-> > =C2=A0 WTIME =3D 256 - (wait_time / 2.4ms)
-> >=20
-> > For very low frequencies where the wait exceeds 614 ms, the driver
-> > would automatically enable WLONG in the CONFIG register to extend
-> > the step from 2.4 ms to 28.8 ms.
-> >=20
-> > But i wanto to clear my self this: changing integration_time would impl=
-icitly change
-> > the effective sampling_frequency since both contribute to the cycle
-> > time. Is that acceptable, or should the driver recalculate WTIME
-> > when ATIME changes to maintain the current sampling_frequency? =20
->=20
-> This sounds like the right way to do it. It is normal for changing one
-> attribute to affect another attribute like this, so that is not a problem.
->=20
-> Either way of handling WTIME is acceptable, but I think that recalculating
-> WTIME to keep as close as possible to requested_freq when ATIME changes is
-> more user-friendly.
+Reported by checkpatch:
+FILE: drivers/iio/common/ssp_sensors/ssp_iio.c
 
-Agreed - given it is fairly easy in this case the user friendly route is
-the way to go even though the approach of one ABI element modifying the
-value of another is allowed we don't need to use that flexibility much
-here except at the boundaries where say increasing integration time
-means we can't meet a previous sampling_frequency target and hence have
-to increase it.
+WARNING: Block comments use a trailing */ on a separate line
++	 * */
 
->=20
-> >  =20
-> >>>
-> >>> I also plan a following patch converting the driver to devm. =20
-> >>
-> >> Would be better to do this first before adding new features.
-> >> =20
-> > ok i could bring it up in the series assuming instead that the WTIME ne=
-w feature is actually wanted, since I don't have a real-world application. =
-=20
->=20
-> If it would require a custom attribute, I would say wait until we really
-> need it. But this sounds fairly straight-forward, so I would say go for i=
-t.
-> You never know who might want to make use of that feature. :-)
+Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+---
+ drivers/iio/common/ssp_sensors/ssp_iio.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-So if I follow this correctly it is only useful if some sort of continuous =
-sampling
-is going on. E.g. events?  If so that's fine as I assume it trades off
-power usage against responsiveness to light level changes and that's a reas=
-onable
-thing to want to control.
-
->=20
-> >>>
-> >>> Thanks,
-> >>> Aldo
-> >>> =20
-> >> =20
-> >  =20
->=20
+diff --git a/drivers/iio/common/ssp_sensors/ssp_iio.c b/drivers/iio/common/ssp_sensors/ssp_iio.c
+index 78ac689de2fe..e83f589fd72c 100644
+--- a/drivers/iio/common/ssp_sensors/ssp_iio.c
++++ b/drivers/iio/common/ssp_sensors/ssp_iio.c
+@@ -24,9 +24,10 @@ int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
+ 	struct ssp_sensor_data *spd = iio_priv(indio_dev);
+ 	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
+ 
+-	/* the allocation is made in post because scan size is known in this
++	/*
++	 * the allocation is made in post because scan size is known in this
+ 	 * moment
+-	 * */
++	 */
+ 	spd->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL | GFP_DMA);
+ 	if (!spd->buffer)
+ 		return -ENOMEM;
+-- 
+2.34.1
 
