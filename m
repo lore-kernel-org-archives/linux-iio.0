@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A42F73431F5;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A41F6231A3B;
 	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777192699; cv=none; b=oLCxJuzKWR8KuYCutDPBdttxmKBjwzmUtlgcOtngrRcF+GJwOmwOX07hGxsAnq7ORlTOr5/rmoFUnGa8ZZjWDMp/ugNu/dN1Z7XZrvRLIJb9O5DEAn8V2EpHYok+ptE+4K7BM5DlixcC0Cd3OXJGPgUqx89Bwt91qGSv6yA1RjU=
+	t=1777192699; cv=none; b=EHqMXlE6i/0+qI7hNNG9izON++OjLLQfyhAZCaY5An4eFgY4sYUIfJMWlwXwHFPPZf6kuM1ACa+zmHe4vBX6AwrDrg9mZCat8XKxcWN8GXGjh7HIVCK+j9kBmuVJAQVCrMd5u/2+aTVaoOE+J9+xSSxbYHsRGBgWjCMdSGfyJ3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777192699; c=relaxed/simple;
-	bh=zkw/jX97Bkte0ssy8r+Xi+ICKzcrw1tjRGX9BTbOXa0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=felpxaSEnLbuq6vJeBXaKSH0sP9lyGGq9TCaDmnQ8sl2MkUmlUyQdLzg/Sbn5zJCpZESj5LMHClbX5MiWLGgiY8pYBH277DkgKlko0tC3QleDlHG/u0O1KeMrTrgB2oLGOwTPl1dxRWj7Z2JL0y1VSgeLLTJJoSGUs0vX5X9DVw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VPkE0l5c; arc=none smtp.client-ip=10.30.226.201
+	bh=LQUP9898wr+TDLdGQyNyptl+LdbtzAP0k0IbiNxlfeg=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=qyrxVg1mu/x9gTpHJRa4O+Mr07W/lckfvJCPbhG03tVa+FtSv3bkw+dvW8iqeLWYqDjLK2snlbd2p+g3G5VdHPE5Hujg7QKyGbDfUQJWr/uYL9lzZ5Olk/VmsGR8AwTzjRAhEZBdO7SKa7xSGpk6JDMkIGvtxVaJ63GHihnvVb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b5y5ju+f; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VPkE0l5c"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 70A0EC2BCB6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b5y5ju+f"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5AABFC2BCAF;
 	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777192699;
-	bh=zkw/jX97Bkte0ssy8r+Xi+ICKzcrw1tjRGX9BTbOXa0=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=VPkE0l5cTIoLqXV4tq9k76yK25962qDgmqKrnC0oxqlt62R0zguFxwMw019FYMSOA
-	 grFqNwlzolfCHoEJest1a93vCVI/uvvBEjvNcaPbOSf5JD4Da+IpIXkCBnjKN/r5v9
-	 pB99GEEshP6y1YKS9RmUy9VvCZudF8Jjc1ctCiJW67Ve1KJWWGaMtYOpqLGv/jgepG
-	 JZnPVfxtA3Y1wQEiJY6JG/5K3Fso+zqpKOPlOBqWm9465uGtDDLhqMyhseVGG7A41d
-	 wjy17bha6/iWAcnhLfSG/eLtX1bGG1WlXPq4A66wLIz6pgxOcpTxAV/xcAYe+fVpwv
-	 LHHYg3PJK9zpA==
+	bh=LQUP9898wr+TDLdGQyNyptl+LdbtzAP0k0IbiNxlfeg=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=b5y5ju+f0KZ4PVz02rMIw3hyG5SYnMkywOVp7PCNYV86BJwdh9qyCKyzswKPJvJoG
+	 e5hqDGREgwvMbtpPoVMEr5fOZWLJK+AaE5T3ZzWKYSEsIfaw1baf1qCuO86llaYZ8Y
+	 9m9OBResnJ/J3SHtdQ4QVtoLgxTiOJUayUikqcukTEs789zpO5dW8v78y9S0tU6o/k
+	 IsNAmgTOafrv4R+MRvcovQAKOf+0jVy3jc+TEN6neQy0zIfaVOHn30VWC/D7mKkdvu
+	 SxoD8X4rVRNvGQL/HXUY9pZVzFFyAL/UQZsvv1dmlGGs72wSLMaO+LlmFe8U2UlTuO
+	 qKelqWWyTZH5g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F15FFF885E;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE63FF885D;
 	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 26 Apr 2026 09:38:02 +0100
-Subject: [PATCH 01/10] iio: dac: ad5686: refactor include headers
+Subject: [PATCH 00/10] Fixes and cleanups for the AD5686 IIO driver
+Date: Sun, 26 Apr 2026 09:38:01 +0100
+Message-Id: <20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,9 +40,10 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260426-ad5686-fixes-v1-1-7c946a77794e@analog.com>
-References: <20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com>
-In-Reply-To: <20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com>
+X-B4-Tracking: v=1; b=H4sIAOnO7WkC/x3LQQqAIBBA0avErBPUapCuEi00p5qNhQMRiHdPW
+ j4+v4BQZhKYuwKZHha+UoPpO9hOnw5SHJvBaot6tKh8nNCh2vklUTiQR+eMCTFAW+5Mf2jHstb
+ 6AfPlyQpeAAAA
+X-Change-ID: 20260426-ad5686-fixes-63ea68811bdb
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
  Greg Kroah-Hartman <gregkh@suse.de>, 
@@ -52,13 +53,14 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
  Andy Shevchenko <andy@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777192698; l=2747;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777192698; l=1759;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=hG+QZ88Yrv665s9LlxVFcq35xRZvWWlXJCiMyN4Qw5g=;
- b=DM1T8ZuD23Muz8Xsehs+Z421temOK40/kC1CjDGq0mZqR3hLh5xak7JxTTc5pvnUHl4KzD1ti
- ceknXzRzxzTDTt8xQpVmc1broR4YaNrQ8Jg851EHnes15EGDgS2qkMR
+ bh=LQUP9898wr+TDLdGQyNyptl+LdbtzAP0k0IbiNxlfeg=;
+ b=A8Tqf5wBfZyecpVBPN9Z4EaFRPXgqNaplIVPb/7TeXSTPEGSl0uwIHBQfgeuybQGKqGkPpJK8
+ 2cYys8EYP2GBDYwidTHcEHZSxVSnZ76pd8N5sV6tChV/LDRbKTIjcGe
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -66,110 +68,46 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+This is the first series of three on updating the AD5686 driver.
 
-Apply IWYU principle, replacing unused/generic headers for
-specific/missing headers. The resulting include directive list is sorted
-accordingly.
+A bigger patch series was sent before ("Extend device support for AD5686 driver"),
+but this is not exactly a v2:
+
+https://lore.kernel.org/r/20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com
+
+This one adds a number of cleanups and fixes, like:
+- Refactor include headers (IWYU);
+- Remove redundant register definition;
+- Drop enum chip id in favor of per-device chip_info structs;
+- Fix internal voltage reference control for single-channel devices;
+- Acquire lock when doing power down control;
+- Fix powerdown control for dual-channel devices;
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686-spi.c |  9 +++++++--
- drivers/iio/dac/ad5686.c     | 13 ++++---------
- drivers/iio/dac/ad5686.h     |  5 ++---
- drivers/iio/dac/ad5696-i2c.c | 10 +++++++---
- 4 files changed, 20 insertions(+), 17 deletions(-)
+Rodrigo Alencar (10):
+      iio: dac: ad5686: refactor include headers
+      iio: dac: ad5686: remove redundant register definition
+      iio: dac: ad5686: drop enum id
+      iio: dac: ad5686: add of_match table to the spi driver
+      iio: dac: ad5686: fix ref bit initialization for single-channel parts
+      iio: dac: ad5686: acquire lock when doing powerdown control
+      iio: dac: ad5686: fix powerdown control on dual-channel devices
+      iio: dac: ad5686: fix input raw value check
+      iio: dac: ad5686: cleanup doc header of local structs
+      iio: dac: ad5686: create bus ops struct
 
-diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-index df8619e0c092..695125238633 100644
---- a/drivers/iio/dac/ad5686-spi.c
-+++ b/drivers/iio/dac/ad5686-spi.c
-@@ -8,11 +8,16 @@
-  * Copyright 2018 Analog Devices Inc.
-  */
- 
--#include "ad5686.h"
--
-+#include <linux/array_size.h>
-+#include <linux/err.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/spi/spi.h>
- 
-+#include <asm/byteorder.h>
-+
-+#include "ad5686.h"
-+
- static int ad5686_spi_write(struct ad5686_state *st,
- 			    u8 cmd, u8 addr, u16 val)
- {
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 9a384c50929b..1a6eb3832f22 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -5,17 +5,12 @@
-  * Copyright 2011 Analog Devices Inc.
-  */
- 
--#include <linux/interrupt.h>
--#include <linux/fs.h>
--#include <linux/device.h>
-+#include <linux/array_size.h>
-+#include <linux/err.h>
-+#include <linux/export.h>
- #include <linux/module.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/regulator/consumer.h>
--
--#include <linux/iio/iio.h>
--#include <linux/iio/sysfs.h>
-+#include <linux/sysfs.h>
- 
- #include "ad5686.h"
- 
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index e7d36bae3e59..3fcc792ea656 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -8,10 +8,9 @@
- #ifndef __DRIVERS_IIO_DAC_AD5686_H__
- #define __DRIVERS_IIO_DAC_AD5686_H__
- 
--#include <linux/types.h>
--#include <linux/cache.h>
-+#include <linux/bits.h>
- #include <linux/mutex.h>
--#include <linux/kernel.h>
-+#include <linux/types.h>
- 
- #include <linux/iio/iio.h>
- 
-diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-index d3327bca0e07..e7e1b8a6fc71 100644
---- a/drivers/iio/dac/ad5696-i2c.c
-+++ b/drivers/iio/dac/ad5696-i2c.c
-@@ -7,10 +7,14 @@
-  * Copyright 2018 Analog Devices Inc.
-  */
- 
--#include "ad5686.h"
--
--#include <linux/module.h>
-+#include <linux/err.h>
- #include <linux/i2c.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+
-+#include <asm/byteorder.h>
-+
-+#include "ad5686.h"
- 
- static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
- {
+ drivers/iio/dac/ad5686-spi.c |  73 ++++--
+ drivers/iio/dac/ad5686.c     | 544 +++++++++++++++++++++----------------------
+ drivers/iio/dac/ad5686.h     | 116 ++++-----
+ drivers/iio/dac/ad5696-i2c.c |  80 ++++---
+ 4 files changed, 418 insertions(+), 395 deletions(-)
+---
+base-commit: d1b86ecd0b377b36aa6581d2bcf73ba43a9e3c8d
+change-id: 20260426-ad5686-fixes-63ea68811bdb
 
+Best regards,
 -- 
-2.43.0
+Rodrigo Alencar <rodrigo.alencar@analog.com>
 
 
