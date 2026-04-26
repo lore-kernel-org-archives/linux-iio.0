@@ -1,133 +1,270 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64A7A1A681E
-	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 16:44:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.171
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777221872; cv=pass; b=ZjEvj4PHe2eYaBeW2XNi1yZbvMDbDHF7NnX9nWMV8wLxvROX/ReYtKoPGFsonm21ikNgAzDsB/4SkqmKJE51A8Os8IXN8mzNFERlpr9XDLIDve7+sJl4yKgINKK24AIOtDlqfO+V8NX5LdlEXhdESrZKe1J+3NclVODQX0iPbAw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777221872; c=relaxed/simple;
-	bh=wmZ8Dpe7vWo4FjUXWm2XsIppLlcGoz8XQcj0Stb2G6c=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rF8uI+WL6XR8l1DTVv9R87qE5/Lg+Y6T+fsMH/eQUsemCYC27SPhZ9vTPCVZJKO2v4/cofE9aiASnnGMFl8NOu5zJtZooAZ5sKBUwl57Lht8B0lo/3TAT2OFuLm8JxApKuCQzbu8A0i8OZwDpkMYC22IVnj5SJuDnl1XtGfGtoY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IJ7sT9pP; arc=pass smtp.client-ip=209.85.208.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A0DE1A073F
+	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 19:29:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777231756; cv=none; b=LHKqtmszxFZmxN1QF2kn/rUpsGuYbJMR5f/luJGIC6DTwCT7jA4/edeffNMpxFVb1dh+lWl9o6bBmBkJ23px9VB3KDOirGQcB822VbBoIJ7CMKcUpGlUhd+19qG9LWTvNmcuwG0Pf12Oqqbs1XRNuJTJj7zAQKsJqKtNkT6UefU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777231756; c=relaxed/simple;
+	bh=POpQMQBlE295LN+3sTMuYYH1WfIvOJPxoW7QTuXQYEA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Seln3ifIeFwqmZR61uTJuoQhSIMaOLuKKyl247wCZsViwOAiMWiqSk3j26/v36gG4bGhz9a5pkrP6835SLigpN/pCfcm6eykzkygQy3T0zfu6+KXlgXsHPLme9/z5ZcqJQUmcK8SrBViSzdcVJUx6oa6sGS0wlW18ZEagA02te4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=RNtFAEl8; arc=none smtp.client-ip=209.85.161.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IJ7sT9pP"
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-3878de20527so71239161fa.3
-        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 09:44:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777221870; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ENj2ndv3oFTpH5KunHQf0Od3hAJhQ8kjzWU29CQjZpsmEeRqyqECbF/x0tIU7LNrou
-         pXKvMP3zVdlI7c+mj24zhdMrMe+5cKtqv6ZDqXYgjsExdPBToUZMVAaKmwrMuh62zoLy
-         CnPM4rIboo8jznXKe5WuOnTRnZ97QORn6DGlInRWEwfI7Ceyvy/XAgRdp2UmpA/T3K3W
-         5KLykO8RyakFEGExXgc+4oBgfnjzVkUjGk/7jvVhulAnaPi/q+bF1SlG86Ejx6jXDght
-         LNPY18HQdvm5KcPURX/Sb0hhe0ZkQ+tXxiv1km/MFuT2NP66dsklEE/2RMSw0JP5+3Rp
-         5+og==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=gF0s3Zdd9y3ounVULddivCvOaPAIz7AmO/Iu2YOKL5U=;
-        fh=WE76UZ+WxCs0ZAy6niMdakReI/Ut0FwwxE7VAb9ITug=;
-        b=MuixeA/eQ4kIrlqT3eAiu7oMtY5bI1NpEeQWhSX7QO2nW4D49qEbQ18UdB1AZQxMIA
-         sZ6jvg0gDDfbhwh5l3rCnb3IaiGIaOVbgS6ukukxiXHZW/sbTZvyy8srE6o2MvF89/Yo
-         60DgwvKEPUFuoB6mSV+jfZt7fQqOk6/2UlO0RS/UPu6mdo50RsFQVz5CzPHwlVxKYhet
-         0KNjk1o/L1A7OzDsyntjHIU8pZBpc94T7jsfzWqjA4pC0bhWWRZzzSqHaUGyZHQXnq2g
-         4r9HGaz1LAxZmxucwtV5oogkNKoWD4gFjUWJdKTFPAEZDS/YTfSHx+Au14k/jj2+oZkm
-         foSg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="RNtFAEl8"
+Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-6949f3eeaf6so2195031eaf.0
+        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 12:29:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777221870; x=1777826670; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gF0s3Zdd9y3ounVULddivCvOaPAIz7AmO/Iu2YOKL5U=;
-        b=IJ7sT9pPKLTF/cuj5jo8WzqD7Z39d84p5lXTsOvGJMqGU7kULgw48akrtTjTgLj73F
-         33tqlxYYESAr1tXmHcu3GuqM6PGEsKBAOjKt37GGk7OTl9yIMh8w5opKJMy5U3vEh8gS
-         Pjc6tVvhK4ueLOIHvMOohqI4CPzwsmRHUYIBtT1MLAHo5gVTaPj5UQHbfwZFI7A8IqJO
-         +QI2u0+9Iq5M5QYVl2ko2YlekqObn6X5ndmINJpwYDtHBgJCJLQGKuILDhOGNhoFEzTc
-         kv1mZXnpVupMkbndC8VCEczPnaRi2UNXyig+Jp8YVZDNNQLpVcqEUZHNkqZn5IZ09M/+
-         mPWQ==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1777231752; x=1777836552; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=xO6idpzKV/hYgG6KlKes6NFUVxMLSVYmIDt1/xiipIc=;
+        b=RNtFAEl8EtiIQUwBNiCz35H1bOOozhNTawm8HhQVdlrt3FF4CkMCG3UdLzy3dj5/WD
+         rs3oQYE2SfjU/axAx4FX2MmLr/KehTJ+F3ClY0bQnxr9e5Kp3Iv98fra9UUtU0PfZ5Nr
+         3zZJpx2cq4QXQH+bnybBh3uqhMrInJrlsOjHSGRpbK+TQCoOsVm0CVEFgivZXdtWT6fb
+         6V2VzppWoPQBrlquFJ/9In/73S7FmczZ1lz2Sj512l1mBeM4MaFjkQuI8w4QVa9SSry/
+         EEewDAGeTE2X159pQpJF/oZAIXQj5S1j0eQnkEwPLpfC1oIDRCCVQiOb+a36gDNl9bf5
+         37JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777221870; x=1777826670;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gF0s3Zdd9y3ounVULddivCvOaPAIz7AmO/Iu2YOKL5U=;
-        b=Rrvr7g7pHlTVajBkHCgQkkGfqs39vUeOl3ECxN7Y5wKEFE1b8nx/4/eT5Ewxj7R3CJ
-         YARmWXJjtP4/gS5SJtnOgpAnPIOmFCJ7XraquTwyGreCWVJlZgyL5AnQs7UrOCLA92P9
-         HPT+btgrLQHriKTMrzpZmccBeyv9uGjgBPp9V4v6QPKGQkRemWmwHa1B+fRifWE5l+gI
-         Jb6OpviI8zzOqjJkTnQG3gEoRSP9yOfeYajg/iZLEcZx4ONbZB2jPKUmOKevA+fJQBSQ
-         +i6KJxxDNTtt0kgHrFUIcUaw0mU/wOQtChSpJshZebU2S6Qqc/wPVYLsKj80V/GXFZAs
-         t1kw==
-X-Forwarded-Encrypted: i=1; AFNElJ/vFJQmsyGPNtcAc3ZM7lCHWiJNTQZqcmrK2L9GePIlEH4e8xluNVh4iftBnnO4ivRLCf1jQ+GskYo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwyT/4H4P8DIqvtLQANRG6XxyB5+ZCoPeLIruurtSvjwFfOw5Es
-	OfA3YqBVObiJHTzZROlHRsgmYcTlBJrN+cI5rbisp52Cw6KEhIeqI4k0mgliowZLs6/TqaL2gIb
-	CXnEDm8ZukGsj+ilh6uprX4YfMNpaKIc=
-X-Gm-Gg: AeBDiev5R+ByunwR6QjHmpnub+uMyhVEdy0L7ftAz6x5DTOu4h5Hv/5HCFFBqRaYe3D
-	76c+v10c5AsZj7AsckbCeHviPQp3y3bT9EvcixNOIWMHgTorR4fh8BKjv/sTp4bhMRqKgQa15L5
-	uWzIKceJXYGT2MCN776DcVBIOp1LGioSrt3ImHNlzT1FuiZZ/Jw8KcpBhRCzKNPHXMbffRzb5ef
-	XspAS2pJg07lVQRqdWyI9rgE2DduHdNIfVVSupqN75XnnuCaQ0ihDTdm+L3ZjB/i0+6IrFEXUzS
-	oXpy2wpFRpYxQYNpfsTZMcErZHwbQWtWWi/PNJXz4YGfTUepWE8SVrVDdrsTy/SNysapT+F+H1O
-	fYk/xgDxmyXTQ4WQ=
-X-Received: by 2002:a2e:8a9c:0:b0:38f:f6a2:a5dc with SMTP id
- 38308e7fff4ca-38ff6a2a783mr88016101fa.32.1777221869275; Sun, 26 Apr 2026
- 09:44:29 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777231752; x=1777836552;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xO6idpzKV/hYgG6KlKes6NFUVxMLSVYmIDt1/xiipIc=;
+        b=H1kHGwd3wpuSMvYBENlIqmVAHDwZVb5Yy0zCchNF3mx8WZt6MFTUMsoM1YsYk1Xx3y
+         BM7jVhUayf7DJ3NXmx71NtfwQsaicHC5OYL/37ASc5jTtu7ieidDs20oKjkr29u7dQGh
+         LieCRkiG4JiM6lAiJ69C/PjW9t/h6KN8knk+wBkhVzY4Pia/NN8aUXGE2vipJMz0Gy7y
+         10azcJesYCgt51JgQ1c2iGrZhHuVc1xnhtlnjJACGR4IDVp9aN13heob4Qc1XKqusogH
+         ugQ0EY+addAKz1TAF80npZVLbMj7MSeTDRMBW0xJ+eOm9NXyyPCnBSfaWwE01foU8x5g
+         xWEg==
+X-Forwarded-Encrypted: i=1; AFNElJ+Q3zdEdMWZipDYfFOblTbohm/mi0YvPYm4N+vRjurd7xhANZ3juah6ugMPNV2QwdToxxEHLk/tc9g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzbPDIjjwGqcxej7npkFg2DvoGIlmwHy+NfmRIfbirO8y//FwGH
+	vOsymj4nlXjCjRIjlTBS2k6PhVFN9qRW9VrfFrdmeiWqiyztlVU/GLXz5teuXiqIkrM=
+X-Gm-Gg: AeBDiev1aZm8O68MFY2qKjdcod83mJONK4CQgflbbrCks9u79m/v/iXd8LjOhmlrAxo
+	ulZB8/OPhKZvMjnNyRnxlz5VnBb9nr397GgWS6H+J2exGF6hB8Y+4bh3PJNT1Ma0bxbJjL98eXC
+	YZ1Sio7KRscifulVyKC1Q9zRVZoUGc2oUDPhCW9moBm6dChXDUrS9ZGy6SdQH9P8h15kmSaMV1i
+	zAy4f2ibWuIrASSJ36FoNwKfyTed54nksCKgGw3pVLZLQOPvuYjPohiv+j/4dqKcjs5ZxYkVpe/
+	toF1iqdCdHwxM9Sh4BlGLrdQzco+NuC9EzgYYsEiGXiyr6ujome+UUKTvzitwTtmyDOmQv/JjN5
+	PIA2sfbv0z4iv//RaBGXW43G9pCoHlzQnaGyBpi1Yv0tV0886Tt3+RMH09OU/F99g/9xdTjNvCs
+	s6teITEEWJ5Km74fpUXIS1/Itti4FNrPKNRKeBXB70VDXQ6kF7gmUNLpYt9tKXawoekIYPum2YN
+	R5RcZ5HOMgT
+X-Received: by 2002:a05:6820:16a1:b0:696:2c6f:b99b with SMTP id 006d021491bc7-6962c6fc187mr4200872eaf.21.1777231752445;
+        Sun, 26 Apr 2026 12:29:12 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:81f8:ef7d:a711:d99a? ([2600:8803:e7e4:500:81f8:ef7d:a711:d99a])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69464e5e58csm18999415eaf.1.2026.04.26.12.29.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Apr 2026 12:29:10 -0700 (PDT)
+Message-ID: <5e974f6d-2e08-4db5-bab4-2ebefc050e1e@baylibre.com>
+Date: Sun, 26 Apr 2026 14:29:09 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260422175910.1258579-1-piyushpatle228@gmail.com>
- <20260422175910.1258579-2-piyushpatle228@gmail.com> <78aa1551-2dc6-432d-9d44-ecef0198e1d3@baylibre.com>
-In-Reply-To: <78aa1551-2dc6-432d-9d44-ecef0198e1d3@baylibre.com>
-From: Piyush Patle <piyushpatle228@gmail.com>
-Date: Sun, 26 Apr 2026 22:13:51 +0530
-X-Gm-Features: AQROBzCaiysL2a2QMEYBOq53qTpzqm7ui1GlIeNHbpCurNM0rkHZyNxj2hgt9PE
-Message-ID: <CAMB+xkaOc=y8t9VHSNKkRRxsxLR-Af_GonwiaY6Tmtapkabo0Q@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] dt-bindings: iio: adc: avia-hx711: add avia,hx710b compatible
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Andreas Klinger <ak@it-klinger.de>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: light: tsl2591: simplify tsl2591_persist
+ functions via lookup table
+To: LucasRabaquim <lucas.rabaquim@usp.br>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, nuno.sa@analog.com, andy@kernel.org,
+ Matheus Feitosa <matheus.feitosa@usp.br>, linux-iio@vger.kernel.org
+References: <20260419003557.45287-1-lucas.rabaquim@usp.br>
+ <20260419123604.591dc3ec@jic23-huawei> <aeXZY2Nj71Em7Z6y@ashevche-desk.local>
+ <CAOWnv8HjVGVsg2d8kDt9LyUVp-HbnaWzAxZ_6egw+KtNmEpv7A@mail.gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <CAOWnv8HjVGVsg2d8kDt9LyUVp-HbnaWzAxZ_6egw+KtNmEpv7A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Apr 26, 2026 at 9:58=E2=80=AFPM David Lechner <dlechner@baylibre.co=
-m> wrote:
->
-> On 4/22/26 12:59 PM, Piyush Patle wrote:
-> > The HX710B shares the same two-wire interface as the HX711 but differs
-> > in its channel and gain model: gain is fixed at 128 and the number of
-> > trailing PD_SCK pulses selects the input channel rather than the gain.
-> >
-> > Add avia,hx710b to the compatible enum. Document the chip differences
-> > in the description and add chip-specific supply properties (dvdd-supply=
-,
-> > vsup-supply) for the HX711, a rate-gpios property for the HX711 RATE
-> > pin, and an allOf constraint that forbids HX711-only properties on
-> > HX710B nodes. Clarify the clock-frequency description to reflect its
-> > actual purpose: controlling the SCK bit-bang timing.
-> >
-> > Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> > ---
-> > Changes in v3:
-> > - Drop the vref-supply mention from avdd-supply; no such binding
-> >   property exists.
->
-> Why is there no vref-supply?
->
-> HX710B has a VREF pin for a reference voltage input.
->
+On 4/25/26 2:24 PM, LucasRabaquim wrote:
+> Thank you, Jonathan, David, and Andy, for the feedback, and apologies
+> for our eagerness to send a new patch right after the first one.
 
-In v4 I will add vref-supply as an HX710B property and update the
-allOf block accordingly.
+Another lesson to learn. :-)
 
-Regards,
-Piyush Patle
+Please don't top-post. Make your reply inline in the context where it
+make sense and trim out everything else. (There wasn't much to trim in
+this one though since it was already trimmed.)
+
+
+>> ...
+>>
+>>>> +static const struct tsl2591_persist_entry tsl2591_persist_table[] = {
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_ANY,  1  },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_2,    2  },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_3,    3  },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_5,    5  },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_10,   10 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_15,   15 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_20,   20 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_25,   25 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_30,   30 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_35,   35 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_40,   40 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_45,   45 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_50,   50 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_55,   55 },
+>>>> +   { TSL2591_PRST_ALS_INT_CYCLE_60,   60 },
+>>>> +};
+>>
+>> Instead, make this to be an index of the just an array of u8:s.
+>>
+>>         ...
+>>         [TSL2591_PRST_ALS_INT_CYCLE_30] = 30,
+>>         [TSL2591_PRST_ALS_INT_CYCLE_35] = 35,
+>>         ...
+>>
+>> ...
+>>
+>>>>  static int tsl2591_persist_cycle_to_lit(const u8 als_persist)
+>>>>  {
+>>>> -   switch (als_persist) {
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_ANY:
+>>>> -           return 1;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_2:
+>>>> -           return 2;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_3:
+>>>> -           return 3;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_5:
+>>>> -           return 5;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_10:
+>>>> -           return 10;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_15:
+>>>> -           return 15;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_20:
+>>>> -           return 20;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_25:
+>>>> -           return 25;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_30:
+>>>> -           return 30;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_35:
+>>>> -           return 35;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_40:
+>>>> -           return 40;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_45:
+>>>> -           return 45;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_50:
+>>>> -           return 50;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_55:
+>>>> -           return 55;
+>>>> -   case TSL2591_PRST_ALS_INT_CYCLE_60:
+>>>> -           return 60;
+>>>> -   default:
+>>>> -           return -EINVAL;
+>>>> +   int i;
+>>>> +
+>>>> +   for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
+>>
+>> Besides the style of
+>>
+>>         for (unsigned int i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
+>>
+>>>> +           if (als_persist == tsl2591_persist_table[i].cycle)
+>>>> +                   return tsl2591_persist_table[i].lit;
+>>>>     }
+>>
+>> ...this loop now not needed at all.
+>>
+>>         if (als_persist < 1 || als_persist >= ARRAY_SIZE(tsl2591_persist_table))
+>>                 return -EINVAL;
+>>
+>>         return tsl2591_persist_table[als_persist];
+>>
+>>>> +   return -EINVAL;
+>>>>  }
+>>
+>> ...
+>>
+>>>>  static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
+>>>>  {
+>>>> -   switch (als_persist) {
+>>>> -   case 1:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_ANY;
+>>>> -   case 2:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_2;
+>>>> -   case 3:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_3;
+>>>> -   case 5:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_5;
+>>>> -   case 10:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_10;
+>>>> -   case 15:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_15;
+>>>> -   case 20:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_20;
+>>>> -   case 25:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_25;
+>>>> -   case 30:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_30;
+>>>> -   case 35:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_35;
+>>>> -   case 40:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_40;
+>>>> -   case 45:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_45;
+>>>> -   case 50:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_50;
+>>>> -   case 55:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_55;
+>>>> -   case 60:
+>>>> -           return TSL2591_PRST_ALS_INT_CYCLE_60;
+>>>> -   default:
+>>>> -           return -EINVAL;
+>>>> +   int i;
+>>>> +
+>>>> +   for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
+>>>> +           if (als_persist == tsl2591_persist_table[i].lit)
+>>>> +                   return tsl2591_persist_table[i].cycle;
+>>>>     }
+>>>> +
+>>>> +   return -EINVAL;
+>>>>  }
+>>
+>> Ditto.
+>>
+
+Here is where putting the reply makes sense where we can see the
+relevant previous discussion above and the new discussion below.
+
+> 
+> Regarding the use of a u8 array indexed by
+> TSL2591_PRST_ALS_INT_CYCLE_*: we see it would work very well in
+> tsl2591_persist_cycle_to_lit(). However, we don't think the solution
+> applies to tsl2591_persist_lit_to_cycle(), since it would require
+> another array that, to use the index initialization, would allocate 61
+> memory positions with only 15 relevant values actually stored.
+> 
+> We thought of the following, albeit possibly fragile, solution to
+> follow Andy's suggestion:
+> 
+> static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
+> {
+>     if(als_persist > 60 || als_persist < 1)
+>         return -EINVAL;
+>     if(als_persist % 5 == 0) // Valid values between 5 and 60 inclusive
+>         return (als_persist/5) + 3;
+>     if(als_persist < 4) // Cases for 1, 2 and 3
+>         return als_persist;
+>     return -EINVAL;
+> }
+> Otherwise, to keep the array indexed by TSL2591_PRST_ALS_INT_CYCLE_*
+> approach we think it would still need a for-loop based solution for
+> tsl2591_persist_lit_to_cycle(). We would like to hear your thoughts
+> before committing to any direction for a possible new patch.
+> 
+> With Best Regards,
+> Lucas Rabaquim
+> 
+
+Personally, I would go with looping over the lookup array since there
+isn't a simple formula that works for all values.
+
+
