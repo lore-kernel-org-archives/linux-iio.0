@@ -1,168 +1,115 @@
-Received: from mail-m49216.qiye.163.com (mail-m49216.qiye.163.com [45.254.49.216])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B503D165F16;
-	Sun, 26 Apr 2026 11:11:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.216
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DFACE555
+	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 11:24:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777201869; cv=none; b=jZqW933EtW8l6AmqRO19BMI3o93TFeC3GKmDFGuzqArIPui8DjoK8GRqgGIr3VAddXrkZWoN2vzlFwn5/iN/tfSMyVGTTkpcPkR81Hub3EbKF4mOM2i/AaFhXsqvQQ9Mh5RIF3HKzkU1HuKjD7b5eX1zMgdlmTugLLw9UE04MzA=
+	t=1777202674; cv=none; b=JQR+1KF4XS60h6zC1BLTr9gTJgdk7Ia4Ux0ZQlswOZTXAsOBRVDuGlovtVShJjRwtKLaXBjS2NzFFmLEXN6xRYaDQI4pnsp8dDvzCwdEPJ7BIat7kFzYeypqqAhqxRXm0ug4VX7Uab/Mf7r0+yP3hdkyVO4cRRiBQXnuXgn8AL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777201869; c=relaxed/simple;
-	bh=3HWdO9G2DFHbWy3pq1NGFJr6mA281UK6sb66l/eo520=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nQB5jIST9EVgi1hh+3vsUZeD16jK3LPYRXXSkCEeOTDv/UBgRkIAoyW//pdUnxwfvdUZmJLPdIBsiYKufkTzVZ3buRPZnYytVuT2nmp6ArOFH/eLIIwQDjJFijQL5YWtq92YXu3DqWxKYe8HujHuVnMjTv/aJK3ksDv6+cQQnW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=k3j+KzqG; arc=none smtp.client-ip=45.254.49.216
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1777202674; c=relaxed/simple;
+	bh=z2wZij3bny+uXmdQQJsHW7j/9rQlXSaWcQkTUzYT6go=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pUUHNJmwcKM6rBVT00kxQ0n/sRzZWeRmVSdOhfev/7atHOt19QK7HzTuZ6Np9g6++LQwk3jjFY0YcQsyPQZQKrRVxKtcqsNRQCCCdf+bFOAqfBbAqXv1PP9AbXqV7VmNz1xq9SXAjvTpHk6+IlrtibbUpET62Oleobf1gy/CNgU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F3bbGJqj; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="k3j+KzqG"
-Received: from [172.16.12.43] (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 3c2bf0f7e;
-	Sun, 26 Apr 2026 18:55:20 +0800 (GMT+08:00)
-Message-ID: <91eed9a4-4dc3-4846-baf3-e9cef53be79b@rock-chips.com>
-Date: Sun, 26 Apr 2026 18:55:20 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F3bbGJqj"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-43d76dd4ee8so8384660f8f.2
+        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 04:24:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777202672; x=1777807472; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+yvA4FwjLsk49yxx4ydlEPgnd8VTUl40wcz3Ovmub84=;
+        b=F3bbGJqjHXfcih4p7BAXi0UuApvIWLkhuHYToVmiGpyVmvCgOPv2sgH0KGy6IoHx9j
+         PyfHt6QLM7eQpjTRnZ582meXvkHVreZYIF11Vv08OMBs7pJlTs3NDAjyy5Er6DlvTMpR
+         xZ2Fme/tm42XXBd+zqcndRoYL/D9Xm+d7+VvJSytn9uVX5+ESSccJPCK2d+odmhRFqM/
+         K4XLkpeY7la396otI05Iuz5A3TFy4WmCLfrUNUBby4C/FonzwKGyymxaFKfmJam4mGcE
+         B617zg5bjjYm0JKENMwKf/S71ekhay8H3krdKxx31/EGuHad8z7MRFA8ksRxUglA2Ha4
+         h6OQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777202672; x=1777807472;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+yvA4FwjLsk49yxx4ydlEPgnd8VTUl40wcz3Ovmub84=;
+        b=HapoQgBEMl0slQ6oQGOSKEEVdDgG5HZ63BJirarKQyxVaXMRvO3fA5Oa4S6pklHb86
+         E9nbJlsAb2IP1IsYkxoH+qrzFRZsHI2lXmwF24qVAkEdyyOlFsvJ0Whu4UxWhPlao4ON
+         fD6BrTvPm0v39+nt4CrKOjHHY/rmrVYiyot91iei/3NZbsnQDHxvdMASK9Yfu42TH16D
+         9ADQoxmN7f5y+/hxgmC0T8VHcdpSs1CB167fTwq2Cd5ZfpQ1q0FAiYnYRkkq8j66vw+Q
+         J1Nt91XLwjkwpJRMnQfZWi7oZ89cUR+17qaVgtnSYuXpxkccoy4f1Qaha1GKnHZNoyMw
+         63cg==
+X-Forwarded-Encrypted: i=1; AFNElJ8u7xHYBPGsE4oNOc+nvyJQBQQ0UXe6OFjB+Gp92AlASGwOP8546Bwc9x3imySfGSFX+QD+Xe1SZ5o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YycR0uJNV9mOeo2bhgS3e0okmeFQ7JjkyXhQ2c0AfHDlqVR3Wae
+	VSz0JbGGmuwOrEZBcA31sL3EdYelmztcCZjEpQCJqM9IhGKOkKVLhdyx
+X-Gm-Gg: AeBDievPAtwG8YpzJ4NgANNZCNKzIy9jOu5Fib7iWtjoi1Sr54WdXC+GV25qdPymt5Y
+	2FplPb7OM4AT60yj/9IUkAFs9QjAhbCdBlAY/w1lt618J0RrmD3IScRswBu1Fver8KiNMJ6u5he
+	SWrXUgR0ZiFiSugre0hEqSVxw45PuwgCT48evDoM/9sgObnqUVnal3dZ5il59ed9yryXxexsZJY
+	e5cbWfdBSrzQutpDkowjrRKvudPN8YrnxigxiA7qC+s/4of04elXb3hFQGMHU2IXVCbImoxTwFJ
+	WU7lzDQZi41HIBIKACINyXxbnhdm0F6x4pDd+vZzsdi4GZDoaKPqB+n+lB4QI9+40l7gt+KQ4w6
+	haTrp28fo430aTxTm1nEaCCZM/8rBZKRHDHOZI57JLGMahWebN/Zi+iSM7b968q9HPgGZzIZ7LE
+	XHr8U7tRBnFgDQlWKBZZrZXAnsfBBTfY4yUzuF
+X-Received: by 2002:a05:6000:2f83:b0:43c:fd7e:72eb with SMTP id ffacd0b85a97d-43fe3e144b5mr62221533f8f.41.1777202671893;
+        Sun, 26 Apr 2026 04:24:31 -0700 (PDT)
+Received: from new-nest ([94.19.228.143])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-44123d23e0bsm33285999f8f.15.2026.04.26.04.24.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Apr 2026 04:24:31 -0700 (PDT)
+From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jonathan Marek <jonathan@marek.ca>,
+	Brian Masney <masneyb@onstation.org>,
+	Rob Herring <robh@kernel.org>
+Cc: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+Subject: [PATCH v3 0/3] iio: imu: inv_mpu6050: runtime pm fixes
+Date: Sun, 26 Apr 2026 14:23:31 +0300
+Message-ID: <20260426112334.3938774-1-andrej.skvortzov@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 4/6] counter: Add rockchip-pwm-capture driver
-To: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>
-Cc: kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
- Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
- <20260420-rk3576-pwm-v5-4-ae7cfbbe5427@collabora.com>
-Content-Language: en-US
-From: Damon Ding <damon.ding@rock-chips.com>
-In-Reply-To: <20260420-rk3576-pwm-v5-4-ae7cfbbe5427@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Tid: 0a9dc96df5f203a3kunm44ef251f147654
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1kYFggdWUFKV1ktWUFJV1kPCRoVCBIfWUFZGRhISVYdHRlPS0MZS0
-	tDSUNWFRQJFhoXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0
-	tIVUpLSU9PT0hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=k3j+KzqGo1yaYNVbzfra2FBJAB62XBtxGRT9nkLjxBKiMb1q/TYYcRi9XcqBDo/RiMjdsaPIkvHa9ZoY23x44LOUxm+CFZK78NVUnV9cMTGU17QFoIC5YUd5A6tD1VJ9wWOAw3i5/SIB/vW3gEGp87tCuoH3P0kJQUAyzPnKtgk=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=msZgS8n7WJEel0UQMVZgdBaQJewEl2x1ppuOvvbY4aQ=;
-	h=date:mime-version:subject:message-id:from;
+Content-Transfer-Encoding: 8bit
 
-Hi Nicolas,
+This patchset fixes problem with inv_mpu6050 driver,
+when it fails after device is suspended by runtime pm during a probe.
+To simplify runtime pm handling in the driver more devm-helpers are used.
 
-On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
-> Among many other things, Rockchip's new PWMv4 IP in the RK3576 supports
-> PWM capture functionality.
-> 
-> Add a basic driver for this that works to expose HPC/LPC counts and
-> state change events to userspace through the counter framework. It's
-> quite basic, but works well enough to demonstrate the device function
-> exclusion stuff that mfpwm does, in order to eventually support all the
-> functions of this device in drivers within their appropriate subsystems,
-> without them interfering with each other.
-> 
-> Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-> ---
->   MAINTAINERS                            |   1 +
->   drivers/counter/Kconfig                |  11 ++
->   drivers/counter/Makefile               |   1 +
->   drivers/counter/rockchip-pwm-capture.c | 307 +++++++++++++++++++++++++++++++++
->   4 files changed, 320 insertions(+)
-> 
+Andrey Skvortsov (3):
+  iio: imu: inv_mpu6050: fix unbalanced regulator_disable calls, when
+    probe fails
+  iio: imu: inv_mpu6050: use devres-enabled version of pm_runtime_enable
+  iio: imu: inv_mpu6050: control vdd supply using devm-helpers
 
-For functional validation, I connected PWM0/PWM1 (continuous output)
-to PWM2 (capture input) pairwise.
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 61 +++++++---------------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  1 -
+ 2 files changed, 20 insertions(+), 42 deletions(-)
 
-I enabled the counter via:
-/sys/bus/counter/devices/counter0/count0/enable
+Changes in v3:
+ - make patch "fix unbalanced regulator_disable calls, when probe fails"
+   with Fixes to be the first patch of the patchset for easier backporting
+ - don't move pm_runtime_set_active, move devm_add_action_or_reset for
+   inv_mpu_core_disable_regulator_action instead
+ - update commit message in "fix unbalanced regulator_disable calls,
+   when probe fails" to fix Andy's comment
+ - remove blank lines in "use devres-enabled version of pm_runtime_enable"
+ - no dead code in inv_mpu_core_disable_regulator_action anymore since
+   st variable is used to get 'struct device' now
 
-Then I verified the functionality by reading the count values from:
-/sys/bus/counter/devices/counter0/count0/count
-/sys/bus/counter/devices/counter0/count1/count
+Changes in v2:
+ - minimize call trace in commit message
+ - use runtime pm framework to track vddio regulator state
+ - include specific driver name in patch subject
+ - add more patches to use device managed functions
 
-Tested-by: Damon Ding <damon.ding@rock-chips.com>
-
-BTW: Is there any user-space test tool similar to libpwm for the
-counter subsystem?
-
-......
-> diff --git a/drivers/counter/rockchip-pwm-capture.c b/drivers/counter/rockchip-pwm-capture.c
-> new file mode 100644
-> index 000000000000..09a92f2bc409
-> --- /dev/null
-> +++ b/drivers/counter/rockchip-pwm-capture.c
-> @@ -0,0 +1,307 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * Copyright (c) 2025 Collabora Ltd.
-> + *
-> + * A counter driver for the Pulse-Width-Modulation (PWM) hardware found on
-> + * Rockchip SoCs such as the RK3576, internally referred to as "PWM v4". It
-> + * allows for measuring the high cycles and low cycles of a PWM signal through
-> + * the generic counter framework, while guaranteeing exclusive use over the
-> + * MFPWM device while the counter is enabled.
-> + *
-> + * Authors:
-> + *     Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-> + */
-> +
-> +#include <linux/cleanup.h>
-> +#include <linux/counter.h>
-> +#include <linux/devm-helpers.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/mfd/rockchip-mfpwm.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/spinlock.h>
-> +
-> +#define RKPWMC_INT_MASK			(PWMV4_INT_LPC | PWMV4_INT_HPC)
-> +
-> +struct rockchip_pwm_capture {
-> +	struct rockchip_mfpwm_func *pwmf;
-> +	struct counter_device *counter;
-> +};
-> +
-> +static struct counter_signal rkpwmc_signals[] = {
-> +	{
-> +		.id = 0,
-> +		.name = "PWM Clock"
-> +	},
-> +};
-> +
-> +static const enum counter_synapse_action rkpwmc_hpc_lpc_actions[] = {
-> +	COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
-> +	COUNTER_SYNAPSE_ACTION_NONE,
-> +};
-
-For the capture function, it uses the PWM's reference clock (dclk) as 
-the time base to measure how many reference cycles the high and low 
-levels of the input waveform last respectively.
-
-I find it a bit strange to set COUNTER_SYNAPSE_ACTION_BOTH_EDGES for 
-counting. If we treat the input waveform as a sequence of square waves 
-sampled by dclk cycles, it feels like we should count on a single edge 
-(rising edge only) rather than both edges.
-
-> +
-> +static struct counter_synapse rkpwmc_pwm_synapses[] = {
-> +	{
-> +		.actions_list = rkpwmc_hpc_lpc_actions,
-> +		.num_actions = ARRAY_SIZE(rkpwmc_hpc_lpc_actions),
-> +		.signal = &rkpwmc_signals[0]
-> +	},
-> +};
-> +
-
-Best regards,
-Damon
-
+--
+2.53.0
