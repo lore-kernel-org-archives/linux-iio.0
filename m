@@ -1,219 +1,188 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2B60364E96
-	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 14:37:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DFFA30C34A;
+	Sun, 26 Apr 2026 14:43:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777214266; cv=none; b=JA38JnuvIY6OHMJ0uUjO4xIoKgc2tTkM6ttUT0Bdwxf5G1EBw146agfKB12bX/5sNJPvRW3OlXIuFLqvqDjhVrWDxwsbXnd/kbtT1bYR2DPM/NZpASaGW1knnesqchUy2W2xCLyyJpW99rKsDd5zhHAkl4x0fNUwcVFpYD+sVZs=
+	t=1777214619; cv=none; b=TCxSOgixmsZMGe/0RHWGp4ugcl2gUsToAVkDXBQAIsJ57LQUiKm5Dida49MNT/zbVztTZtvY42WiqtowTHfFqEmQKGbRMbS1nPBGa9338fY9e3EWwJU8x8GE6vkgzhuIMY4XYgAeSZSuIilPAW1EUYYnj8s57cYrB6XYsLr7t00=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777214266; c=relaxed/simple;
-	bh=4SUHLOtLO3FU/TApyKWgmUzf04ijl1i5YWlnjxuN61g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DrIHuQklG92dTRtLhuSVYegBI7iX/X56zi/45CHzaZMcriIPtVIMvr8fUwRpPhqzUQladH9xSeqwgapXgFU1T2CUIVLq+GABr1mWniMhMMzUiyUltCxDbVvbpLJ0Qd8qJ7QrzBcQ5hxdC/5Vw31OvKTLDQF+xz10HOqXz2Fe5SA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lZVq+HPq; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777214619; c=relaxed/simple;
+	bh=ZyE3twHSqLx2JDo9mwpaXSUcbJQKpK/gGLQPIjMkBb0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=o5J/UgfVxxYtXY6nlzIcS/9sAg8Si7DO5s3jEsJAc3X+h8fAKtXnpC9bg9zPnD17Ena0Ig7VPdK1XOOwksI3NLD1RujdWHBHNXaL93PhVP+25P5p58qxRD1KtwMNOFf2HePASWlu9HNV3QS/vgsdRAWZSZynnC9aiQyalWz0aCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y5BT//1W; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lZVq+HPq"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-43d6fbd0954so7276342f8f.1
-        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 07:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777214263; x=1777819063; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=P9AOkePbvjOV6bnIfPMABieZpHFoIVb5/KQNtDS2ZBo=;
-        b=lZVq+HPqdOn+HmBCI/BpxpiXK7aqwoKD58ssJMeAXnqFSvFUp2Obe6lwXPk3Cl3Kgy
-         vbmr64T60kUvjAOkjhAcFv3c3wzC+rODDYWNsyzkJtPx/B0zRKf9kvw3BAnXwdY6OEwG
-         j1OxsrPWasjU2UmA8x6OFmbZ2ZaovemwxpwdAyIJrEBVPROFUqLTnCWpddG02reSJDpz
-         JnXGB5Xq7Kz8yX0CN6SYJPC61RPZNHB0E5uzb52ztn1UMFGSK7IVcljrinRWtFICbKLo
-         FkW7WxWx7aApzYVO17J6GeA8vDn8+yw163yHEJ700xVCOnBE9umFr9A2CHwmrQsMWdJB
-         NO+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777214263; x=1777819063;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=P9AOkePbvjOV6bnIfPMABieZpHFoIVb5/KQNtDS2ZBo=;
-        b=oF1r4y7ureL1fKQfExf3eXsLJ+6MtdIjA+U3MSUQOBhO7lXKChqLLLeynlcBZDISKB
-         9/45g6hCIDiabNLiOAIKqpILPQDVfTJKXdfZbDQXo5O8iZUwoxB9KhRO/Y/ASpxKfuYu
-         auT1MgTTYBT9a/AbSMHJZ3UV1qqVvCrY7Ej19YgBZvlRp8JtT0rVH9eNt2CEJBsUuolS
-         0WuWh8OHlwHLY+aW8O53X7RJ+fiCJmXeVnHyxVZxM78e2VHJ41x6hD/Iphx66vbnpffr
-         KMQvRDJAP1647eHr7kQjtAoCE0W/etykuaFf6tJPoM8xC/CmTEZTclYEACv6sQybRibA
-         DqRg==
-X-Gm-Message-State: AOJu0YzW0O2hgsN3/A53kBJe06MnJCS9Xwi8Bk8qTgj8pLMGGrwLZfds
-	XnzD+Mch/4K0d9URD0FMrJuvEfV1C0FKxqUVxJVnxxQEvhUWVjCZ9cvs
-X-Gm-Gg: AeBDievq8qcKufMPrudKIDDYBmjpALv3V+sX/WAxLv8nFYRn6C1HpuDzZDiwIsyVcye
-	HmrM8jL+IGcVLIGEAkiz5po0j1BHAYQlw6ThFJQYv+OXPrarS4144zHvVXve06di5X1T7gUPV9U
-	zW7Hz985UyhGxQF9Jw6gGM76J3Y7mjMpWY8qpQ92O/0DG5P1HfMOl6wWO2FyW1OKX2p3oW+sa6d
-	UwvqnDm/l99orbh+dg0v66CpAlzxiygxCDTwtmmgBeXf0dPypuLNY+5d+dRGDX1Kn3R6oAhPpfF
-	GDSAmLmjb48w2s4dhQuyROjWwBLzpBbuGwQRi6ad4j/gv+MMAHTdnzhs5OsFJIPWClUQts91b9t
-	xkj8C3uYm3zO8ciYxa7Nmo4tKDXAjJtWswP7VxDAXh9xDWWk6kEDa0+4szfIrqzpuW9c+ZGuVgq
-	CgQK3TdEj5BHatqEeHHCkcygfuLM91Ec/iZUlBNlrwNyZ9+X/jF5W3g3C8aqI0j/GBO/O3M8HNB
-	lbklENlv7/kwUFcxRA9
-X-Received: by 2002:a05:6000:2dc4:b0:441:37b5:fc04 with SMTP id ffacd0b85a97d-44137b5fc4amr10274895f8f.14.1777214262741;
-        Sun, 26 Apr 2026 07:37:42 -0700 (PDT)
-Received: from ?IPV6:2a01:e11:5402:d840:f1ee:c5d:74e4:6e19? ([2a01:e11:5402:d840:f1ee:c5d:74e4:6e19])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4e4eec9sm69583072f8f.34.2026.04.26.07.37.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Apr 2026 07:37:42 -0700 (PDT)
-Message-ID: <6604fd99-342f-4b3a-bf05-69ae425b4e4b@gmail.com>
-Date: Sun, 26 Apr 2026 16:37:41 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y5BT//1W"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61796C2BCAF;
+	Sun, 26 Apr 2026 14:43:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777214619;
+	bh=ZyE3twHSqLx2JDo9mwpaXSUcbJQKpK/gGLQPIjMkBb0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Y5BT//1WgMHbUDK3KgcLBdHfXOJ7Zj7F4+FLYqwCOYN66OnWZejRlk1uH84kd7xhg
+	 32VMS1zn9fJ/QHzIFeFEaoLstRO0aYu9CuKDFSEvYH8QbGhCbjipyixVlgJPvT7X8o
+	 NYF1DNzCfW1q7icD171Chx20YrhCmxrd05YAy+/WylyjSWwLUXyqcj0eyRI+TVsXpV
+	 EFpLkrODiy3kr+2lRSpV2mmcE0sEmCM1DPukf0HYiMybF808nN5DtxE8QA7InRN2qW
+	 PaSTYFCpTC2leajjH7i2YoL6j6D+lXjoqrTugkpb0j8cGS3ECNF1X/kBDtrsoFgHiN
+	 OgcIZ7sFhZgJg==
+Date: Sun, 26 Apr 2026 15:43:30 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>, Brian
+ Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 1/3] iio: imu: inv_mpu6050: fix unbalanced
+ regulator_disable calls, when probe fails
+Message-ID: <20260426154330.0a29236e@jic23-huawei>
+In-Reply-To: <20260426112334.3938774-2-andrej.skvortzov@gmail.com>
+References: <20260426112334.3938774-1-andrej.skvortzov@gmail.com>
+	<20260426112334.3938774-2-andrej.skvortzov@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC] iio: light: tcs3472: implementing wait time TODO
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>
-Cc: linux-iio@vger.kernel.org, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org
-References: <73d2183e-dffe-4ae4-9312-c544e0079f3a@gmail.com>
- <46fd475f-8d54-4419-a195-d66c947fcc1b@baylibre.com>
- <3d4a4dbd-6618-4b63-ade1-d68155bac3ac@gmail.com>
- <4bff0c2c-f054-4098-a299-8030078f9b2c@baylibre.com>
- <20260426114823.2badc4ed@jic23-huawei>
-Content-Language: en-US
-From: Aldo Conte <aldocontelk@gmail.com>
-In-Reply-To: <20260426114823.2badc4ed@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 4/26/26 12:48, Jonathan Cameron wrote:
-> On Sat, 25 Apr 2026 18:11:23 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
-> 
->> On 4/25/26 2:00 PM, Aldo Conte wrote:
->>> On 4/25/26 18:49, David Lechner wrote:
->>>> On 4/25/26 11:28 AM, Aldo Conte wrote:
->>>>> Hi all,
->>>>>
->>>>> I'd like to resolve the wait time TODO in tcs3472.c.
->>>>
->>>> Do you actually have this hardware to test it?
->>>>
->>>> What is the application that needs to make use of this feature?
->>>>   
->>> I'm currently participating in the 2026 linux kernel mentorship program. I don't really have an application that would use this feature, but in any case, I have the hardware (Adafruit TCS34725 breakout board to test with a Raspberry Pi 3B) to test everything out.
->>
->> Do you have a logic analyzer or oscilloscope too? Having a tool like that
->> is important to be able to see that the timing of the signals on the hardware
->> are matching what we have requested.
-On the logic analyzer: I do have one, so I can monitor the I2C
-bus directly.
->>
->> I guess if not, there is the gpio-sloppy-logic-analyzer in the kernel. :-)
->> Real tools are of course much nicer.
->>
->>>
->>> As part of this experience, I'm focusing on “light” and, while looking through the TODO, i noticed this and wanted to explore it further.
->>>
->>>    
->>>>>
->>>>> The TCS3472 has a WTIME register and WEN bit that insert a low-power
->>>>
->>>> What about WLONG?
->>>>   
->>>>> wait state between RGBC cycles. The register is already defined in the driver but never used.
->>>>> I noticed that tsl2772.c enables wait with a fixed default and no
->>>>> userspace control. However, I think exposing the wait time to
->>>>> userspace would be more useful to tune the power/responsiveness tradeoff.
->>>>
->>>> I assume this would affect the effective sample rate?
->>> yes
->>>>   
->>>>>
->>>>> My plan would be to expose it via an ext_info attribute in
->>>>> microseconds, following the same convention as integration_time.
->>>>> Does that sound acceptable, or would you prefer a simpler approach
->>>>> with just a fixed default like tsl2772?
->>>>
->>>> So perhaps we could just use the standard sampling_frequency attribute?
->>>
->>> Just want to make sure I understand the sampling_frequency approach
->>> correctly before implementing.
->>>
->>> The total cycle time of the chip is:
->>>
->>>    cycle = wait_time + rgbc_init + integration_time
->>>          = (256 - WTIME) * 2.4ms + 2.4ms + (256 - ATIME) * 2.4ms
->>>
->>> So sampling_frequency = 1 / cycle.
->>>
->>> On a write, the driver would keep ATIME fixed (since the user
->>> controls it independently via integration_time) and solve for WTIME:
->>>
->>>    wait_time = (1 / requested_freq) - 2.4ms - atime_duration
->>>    WTIME = 256 - (wait_time / 2.4ms)
->>>
->>> For very low frequencies where the wait exceeds 614 ms, the driver
->>> would automatically enable WLONG in the CONFIG register to extend
->>> the step from 2.4 ms to 28.8 ms.
->>>
->>> But i wanto to clear my self this: changing integration_time would implicitly change
->>> the effective sampling_frequency since both contribute to the cycle
->>> time. Is that acceptable, or should the driver recalculate WTIME
->>> when ATIME changes to maintain the current sampling_frequency?
->>
->> This sounds like the right way to do it. It is normal for changing one
->> attribute to affect another attribute like this, so that is not a problem.
->>
->> Either way of handling WTIME is acceptable, but I think that recalculating
->> WTIME to keep as close as possible to requested_freq when ATIME changes is
->> more user-friendly.
-> 
-> Agreed - given it is fairly easy in this case the user friendly route is
-> the way to go even though the approach of one ABI element modifying the
-> value of another is allowed we don't need to use that flexibility much
-> here except at the boundaries where say increasing integration time
-> means we can't meet a previous sampling_frequency target and hence have
-> to increase it.
-okay, then I'll proceed this way
-> 
->>
->>>    
->>>>>
->>>>> I also plan a following patch converting the driver to devm.
->>>>
->>>> Would be better to do this first before adding new features.
->>>>   
->>> ok i could bring it up in the series assuming instead that the WTIME new feature is actually wanted, since I don't have a real-world application.
->>
->> If it would require a custom attribute, I would say wait until we really
->> need it. But this sounds fairly straight-forward, so I would say go for it.
->> You never know who might want to make use of that feature. :-)
-> 
-> So if I follow this correctly it is only useful if some sort of continuous sampling
-> is going on. E.g. events?  If so that's fine as I assume it trades off
-> power usage against responsiveness to light level changes and that's a reasonable
-> thing to want to control.
-> 
-On continuous sampling: yes, the driver currently operates in
-continuous mode (PON=1, AEN=1) and the chip cycles autonomously
-through RGBC conversions back-to-back. The wait state inserts a
-low-power pause between cycles, trading responsiveness for power
-savings. This is relevant both for polled reads and for threshold
-event monitoring.
+On Sun, 26 Apr 2026 14:23:32 +0300
+Andrey Skvortsov <andrej.skvortzov@gmail.com> wrote:
 
-I can verify the effect with the logic analyzer by capturing the
-I2C traffic during triggered buffer reads
-
-
-I'll start with the devm conversion and follow up with the
-sampling_frequency implementation.
-
-Is it ok to make a patch series?
->>
->>>>>
->>>>> Thanks,
->>>>> Aldo
->>>>>   
->>>>   
->>>    
->>
+> During a probe functions after all regulators are enabled, runtime pm
+> is enabled. Before probe function finishes, runtime pm triggers and
+> disables vddio regulator. When probe function fails after that,
+> inv_mpu_core_disable_regulator_action tries to disable already
+> disabled by runtime pm vddio regulator causing following backtrace:
 > 
+>   inv-mpu6050-i2c 1-0068: trigger probe fail -19
+>   WARNING: drivers/regulator/core.c:3244 at _regulator_disable+0x2ac/0x600
+>   Call trace:
+>    _regulator_disable+0x2ac/0x600 (P)
+>    regulator_disable+0xac/0x148
+>    inv_mpu_core_disable_regulator_vddio_action+0x3c/0xb0 [inv_mpu6050]
+>    devm_action_release+0x4c/0x88
+>    release_nodes+0xd8/0x178
+>    devres_release_group+0x214/0x3c8
+>    i2c_device_probe+0x6fc/0x9b0
+>   ...
+>   inv-mpu6050-i2c 1-0068: Failed to disable vddio regulator: -5
+> 
+> vddio state is handled in two places: pm_runtime and
+> inv_mpu_core_disable_regulator_vddio_action devm action.
+> inv_mpu_core_disable_regulator_vddio_action has to check, whether
+> regulator is disabled by pm_runtime already. But this information is
+> available only after pm_runtime state is initialized by
+> pm_runtime_set_active during a probe. So
+> inv_mpu_core_disable_regulator_vddio_action has to be called only
+> after pm_runtime is properly initialized. To handle cases, when probe
+> fails before pm_runtime is enabled, explicitly disable regulators
+> in error paths.
+Why not drag pm_runtime_set_active() earlier?  Whilst we currently
+check for an error on that call I'm not sure there is any reason
+to do so.  It's a narrow set of conditions than can cause such an
+error. 
+
+If you have that between the regulator enable and registering the
+devm action I think that would mean you don't need to manually clean
+up the regulators.
+
+Maybe I'm missing something.
+
+J
+
+> 
+> Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+> Fixes: 07c12b1c007c ("iio: imu: mpu6050: add support for regulator framework")
+> ---
+> 
+> Changes in v3:
+>  - make patch to be the first patch of the patchset for easier backporting
+>  - update commit message to fix Andy's comment
+>  - don't move pm_runtime_set_active from pm_runtime initialization,
+>    move activation of inv_mpu_core_disable_regulator_action instead
+> 
+> Changes in v2:
+>  - minimize call trace in commit message
+>  - include specific driver name in patch subject
+> 
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 25 ++++++++++++----------
+>  1 file changed, 14 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 5796896d54cd8..49fdf33adec99 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -1862,6 +1862,7 @@ static int inv_mpu_core_disable_regulator_vddio(struct inv_mpu6050_state *st)
+>  static void inv_mpu_core_disable_regulator_action(void *_data)
+>  {
+>  	struct inv_mpu6050_state *st = _data;
+> +	struct device *dev = regmap_get_device(st->map);
+>  	int result;
+>  
+>  	result = regulator_disable(st->vdd_supply);
+
+> @@ -1869,7 +1870,8 @@ static void inv_mpu_core_disable_regulator_action(void *_data)
+>  		dev_err(regmap_get_device(st->map),
+>  			"Failed to disable vdd regulator: %d\n", result);
+>  
+> -	inv_mpu_core_disable_regulator_vddio(st);
+> +	if (!pm_runtime_status_suspended(dev))
+> +		inv_mpu_core_disable_regulator_vddio(st);
+>  }
+>  
+>  static void inv_mpu_pm_disable(void *data)
+> @@ -1976,23 +1978,15 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  		return result;
+>  	}
+>  
+> -	result = devm_add_action_or_reset(dev, inv_mpu_core_disable_regulator_action,
+> -				 st);
+> -	if (result) {
+> -		dev_err(dev, "Failed to setup regulator cleanup action %d\n",
+> -			result);
+> -		return result;
+> -	}
+> -
+>  	/* fill magnetometer orientation */
+>  	result = inv_mpu_magn_set_orient(st);
+>  	if (result)
+> -		return result;
+> +		goto error_vddio_off;
+>  
+>  	/* power is turned on inside check chip type*/
+>  	result = inv_check_and_setup_chip(st);
+>  	if (result)
+> -		return result;
+> +		goto error_vddio_off;
+>  
+>  	result = inv_mpu6050_init_config(indio_dev);
+>  	if (result) {
+> @@ -2018,6 +2012,12 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  	result = pm_runtime_set_active(dev);
+>  	if (result)
+>  		goto error_power_off;
+> +
+> +	result = devm_add_action_or_reset(dev, inv_mpu_core_disable_regulator_action,
+> +					  st);
+> +	if (result)
+> +		return dev_err_probe(dev, result,
+> +				     "Failed to setup regulator cleanup action\n");
+>  	pm_runtime_get_noresume(dev);
+>  	pm_runtime_enable(dev);
+>  	pm_runtime_set_autosuspend_delay(dev, INV_MPU6050_SUSPEND_DELAY_MS);
+> @@ -2114,6 +2114,9 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  
+>  error_power_off:
+>  	inv_mpu6050_set_power_itg(st, false);
+> +error_vddio_off:
+> +	inv_mpu_core_disable_regulator_vddio(st);
+> +	regulator_disable(st->vdd_supply);
+>  	return result;
+>  }
+>  EXPORT_SYMBOL_NS_GPL(inv_mpu_core_probe, "IIO_MPU6050");
 
