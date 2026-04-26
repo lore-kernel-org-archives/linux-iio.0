@@ -1,164 +1,206 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from toucan.tulip.relay.mailchannels.net (toucan.tulip.relay.mailchannels.net [23.83.218.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 032F126D4CA
-	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 20:25:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777235148; cv=none; b=gTdbk7Z++EzuSl/gTAiKtb7GF6b5KehNTTDl+VaPniZhdMkvDU0PA38f0DmFbVqS/KvyhpHJHv5essUgTAewM+b1xoJ4iflc8LkYEiCBiOjiooqI2RGhYUJ96hm9Kd8wdULWAcGzHgKRn2xF21gjE9IBQpLXv0txtW9usBcKTw4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777235148; c=relaxed/simple;
-	bh=yr2DHkpYu2/Xu8RHkP9LXjK2VZnznGUp5EnqqaF+/jE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AHRfPVPmgxi2uAMbyw5noiGCJnVm+6tfiOBVRQ8zkhxt9nTCP8zf8vRN55ubFuzpGpDO0IB98TPlhlWBV7rwZQAVMFH+XJK6q2h7a2gj7IUUfrUSOmfZ9lQJhd5822QHvQsgJ/wLbB8ynehZX/HqshY4i7qDFFKtekE87/qUwdI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VDbxKH8B; arc=none smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9278521D590;
+	Sun, 26 Apr 2026 20:30:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.218.254
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777235428; cv=pass; b=fHdtIR0Ueh3tRc+bTo8rjghOUqXTbJzaAv0fT6q5UsxRowjR8YTeFnGoeenX9oMeLgKd/BOTsNkTGFANe9sj3ETdEmG7RRhlXmyYmhO00uO2fdrnCvBFXixMnW64yva7KhS5wjBfx1AWfV8U56RUhzfVdsaAklfCWijrbWaG26o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777235428; c=relaxed/simple;
+	bh=gTun7CVr+qLQaDkI56HCMehOrrUkXSupzrbhZTNDApw=;
+	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc:Date; b=EIdwn2rDF/NVhIiX1/jTFMKR7LDIAN1mxoucDw1gJbv2vwyvBPfoXZ9eht+2pjrlZ/ttv7GF517KwbEV09hw7qDX2OmFGz3ZDm79img8s3iTvJKe+JDP1b4q2s5XfM7Ot7Nv8CTCPcRxjtT8RDEgwNBDWLHFLyQNMGrsvgs9qfM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=AryitUce; arc=pass smtp.client-ip=23.83.218.254
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VDbxKH8B"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b9358dd7f79so527860666b.1
-        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 13:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777235144; x=1777839944; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8oQhRQaCh7wTVDtW5X/ov7P7WhvzMH+Ofkf86HNNbro=;
-        b=VDbxKH8BVMRRK+PJB3RuS1/UeRUArmCgZPRnPL1Wrdv+ZvCNpLMW3B9JT06iSFxv/B
-         X0LXaLc847Y5CCUBHQbRRkFpndpvNavuVHbAhw8uaijuVC6AYSp0NgIlzCuJK0lSa2X4
-         oO0zp6ctMB60E2rpbAihxavSFAvfAAY/99DtIjgQ3qSvrQ5PgHHW7lTJvnYM6x5we96F
-         RXran58VznsQqlvyjogilJYICZ34LgmNTFDrSPWbkkk9oDrmwFFtYFlYulLBjdqSqoDl
-         +blHJPtOn3Y2xIJMbbwyLET2jokNZE21Lsm785tJaKB0VNJEQxA263OSpm452cgV7GTd
-         CVOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777235144; x=1777839944;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8oQhRQaCh7wTVDtW5X/ov7P7WhvzMH+Ofkf86HNNbro=;
-        b=lHJ+Bu9WMwAIlFShV7IQeLzXnK+orNNjDJ+jWk9DNTSGoGR54Y6I7UvDfsEACGRuJZ
-         dEDWOuMSoBs2ypn5KvhKDgtzfguwCR5qnkxKIZk/cOhyWACFvqMjOZjh1Sn9mas5rIjK
-         dObZwCQbDnR6Un0B4SEETmxRA2zsI5gc7SRL3+vfYvF7tJuMwZZiHPVSnAZxw1wMblZ+
-         MqafZiiwxg3jbp4rCLZD3YKmUfYDb8VvyUnzNYE58jQM+94ZwKqvXmFxp21Gh3vJqJ1e
-         WCfYcPA5O2H6fPSY87gJVnAUJtgj/n/83UDE897hPe0ABwtG4cAlMImtPpgGguQd4clR
-         Y3Jg==
-X-Forwarded-Encrypted: i=1; AFNElJ/N20DqBMfrW09gvsLN176DckpQnSApnoiDmLWlNPeEZFx3ZjvpQcMO0zC/ZitT4Z8bEGwZ9PxKqyM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy37/xlVwceV7TjqvcRHYmQwcT+8GO1u6aiXhzWCbcYnNtdt+2C
-	+VqMSi+st6rdz0ih/oRoi0VByhQftPVyuXvo+tcIvpk3ucP6y9ogmbcjGNuiy24Uclg=
-X-Gm-Gg: AeBDiespcSqxSBlBCVh44C6q4IeHyYISPmnyd7qgNz4gqzIeXOcynoLZXIVA8p83Tgj
-	rJ80tI9UYgjud7XTvnjAQt5UQYcaa9WGUUkSOG7OYLJTKHeRcZdxu+/JNEX/YBhjX+GcbxDAXew
-	JOvKw89i1JZ7+In2pQ7RaHdfQIhYwVQNl18f5CmsFG07reJOB5AW67YGDkTH5QV7SbtBz7ZN4x9
-	k+7tLZ6NDO8bvf/k4hI//fOb3zZmV/qtdZnDacVoB52PNREMkpp8XlfnWMnIjgkSpSzbXFt4kTB
-	venlu4NnwPyzqa/6zJi6n0i5PPhPQ41CmV7kBsy6ytm8jkgFpbbTTBw/EqofxgaWA0e+2jKLv9h
-	MILvAS/I2FisDcXJDGrZGGAWHKQe80mt32OSh38v+6d+0DCIaDMdRgms04Nr/477fBXbPUcFM8w
-	ZpAVDybDnw4u5aJEX7EoDIqLZQ9pxu35blirBP0+KclVtlNC6k/w==
-X-Received: by 2002:a17:907:c302:b0:b96:e593:fd24 with SMTP id a640c23a62f3a-ba419658d6fmr2389436466b.15.1777235144005;
-        Sun, 26 Apr 2026 13:25:44 -0700 (PDT)
-Received: from localhost ([94.19.228.143])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ba455043cdbsm1029590366b.46.2026.04.26.13.25.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Apr 2026 13:25:43 -0700 (PDT)
-Date: Sun, 26 Apr 2026 23:25:42 +0300
-From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 1/3] iio: imu: inv_mpu6050: fix unbalanced
- regulator_disable calls, when probe fails
-Message-ID: <ae50xlJfXiVax6c_@skv.local>
-Mail-Followup-To: Andrey Skvortsov <andrej.skvortzov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
-References: <20260426112334.3938774-1-andrej.skvortzov@gmail.com>
- <20260426112334.3938774-2-andrej.skvortzov@gmail.com>
- <20260426154330.0a29236e@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="AryitUce"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id E1B61401E28;
+	Sun, 26 Apr 2026 20:14:58 +0000 (UTC)
+Received: from fr-int-smtpout13.hostinger.io (100-96-23-217.trex-nlb.outbound.svc.cluster.local [100.96.23.217])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id A2DC54018E8;
+	Sun, 26 Apr 2026 20:14:55 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1777234498;
+	b=I1HD3/SxzyUn2H6ogwSJ+ztbBgGlpik8w7HDmNx0svxY9Ez1oliQ005CKWoMPUXY1RisL1
+	lj1lMsETxXbKndnAKj7+QTw+9mD9jIDp3jdaBQH+pWpIbdFmX2gS3DXtCvjAhs1IWbcRyT
+	X2HnTAOmpEUMUxUcaw2a+f4j37tYFgeTmlaLD9MFbVSCFRedqcX5McGHNnb5bUQcs9F8qP
+	pQFAdFIFMJseG5KyJxhffnJ29inHDEqnDFiIRKLeFsn6iE+4bBGvS26/gcBm2O80jlbumn
+	jJN9rKjfNLRiHWpReOGTMBCIAbpTxsKvXbihWh4NlPH37FWhmZgLATuPW0eLzA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1777234498;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=Xi5eDSBPsSef4onabNWgrL3I0whjEzHOMmx7HSXyUpY=;
+	b=wF1wx2Q/wKRZ43h5V4adgKJIrUKncqkWgKLCXhiW9ODkavMqHvi/4rdJjSN5u9wviVRlwy
+	C5jL5lTrjaBr93J7azRxo2JTJywXdU8hc4wkRnqOgy3oyN/2z/VTC6GCHfd+qm7Tm+YQFJ
+	k5qZlTN4XIrUCNazBNrdHfvWUDsRbdGyinREQ0Fl1IQI3tOtiHCzLSZeo9N8CoiJ5v7T6W
+	MGSQKovHZmj7GHrkXMRG8zWrfLpWwPP5ZZCzQJp8I2K1a+TaWSsWVSWgJS21Cos35dlicG
+	D0SsOtxXwXxgnpcaW3zN305+AuwijUCm3bHHCVir2FOuERZJLpgJJM1wRBzzMQ==
+ARC-Authentication-Results: i=1;
+	rspamd-b9d4fc544-shvgc;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Macabre-Society: 1f74cb0125baee99_1777234498837_2130805966
+X-MC-Loop-Signature: 1777234498837:2693093974
+X-MC-Ingress-Time: 1777234498836
+Received: from fr-int-smtpout13.hostinger.io (fr-int-smtpout13.hostinger.io
+ [148.222.54.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.23.217 (trex/7.1.5);
+	Sun, 26 Apr 2026 20:14:58 +0000
+Received: from [172.17.0.2] (unknown [125.163.204.171])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4g3dGL5MmjzyZq;
+	Sun, 26 Apr 2026 20:14:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1777234493;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Xi5eDSBPsSef4onabNWgrL3I0whjEzHOMmx7HSXyUpY=;
+	b=AryitUceFpxpsManZwH7KOIYKXloDM8Uzp5ZUbrjvFZfIOM2zTqAKxT2c2AtkXNs/Fi9C0
+	sG6bG19XmvmdZbHNTrimDvO88JghuLmO3lMIUmA/2Bvf3v86EZ7mDMMGP1f12++zanedL/
+	1C46uVBap0DLqdZLO2YuYosR28GfobrD9gPbtZ3zDRMjBx1fvS60AxmwNaOPYu1RroIZun
+	3DXYGFjRcVWejldw4Bf+hxS1A0chYf5PeOr/91B9j+eLcRvP3V40M81TtTPPUM4vFvg0UZ
+	Mfm9rV5zfeUcVOyhTIMXI4/PVx9nnAPK9y8tic9RHehsaEJQ6PgG8/bSOswVMQ==
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+Subject: [PATCH v5 3/3] iio: adc: qcom-pm8xxx-xoadc: add support for
+ reading channel labels
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260426154330.0a29236e@jic23-huawei>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260427-pm8xxx-xoadc-label-v5-3-9e7b5a53ef99@smankusors.com>
+References: <20260427-pm8xxx-xoadc-label-v5-0-9e7b5a53ef99@smankusors.com>
+In-Reply-To: <20260427-pm8xxx-xoadc-label-v5-0-9e7b5a53ef99@smankusors.com>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ phone-devel@vger.kernel.org, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Antony Kurniawan Soemardi <linux@smankusors.com>
+X-Mailer: b4 0.15.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777234478; l=3445;
+ i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
+ bh=gTun7CVr+qLQaDkI56HCMehOrrUkXSupzrbhZTNDApw=;
+ b=TACotUrjegBtlAE5yv8Fs5R1B155zyQicSmBMHsXmT+CMM25697dRSm3gdB2qPdQr33h71XcN
+ 2Ly6d+YGwkDDljaMH+l/Ga79/kejc7DagAZ8ou1jO4qR5nPcp7X2P3J
+X-Developer-Key: i=linux@smankusors.com; a=ed25519;
+ pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
+Date: Sun, 26 Apr 2026 20:14:50 +0000 (UTC)
+X-CM-Analysis: v=2.4 cv=ZbRPNdVA c=1 sm=1 tr=0 ts=69ee723d a=x8mjGQfUP7wLEdXozly9Ug==:117 a=x8mjGQfUP7wLEdXozly9Ug==:17 a=IkcTkHD0fZMA:10 a=EUspDBNiAAAA:8 a=wxLWbCv9AAAA:8 a=RWyRNVyMI2VXGFIsuXIA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
+X-CM-Envelope: MS4xfM2cY2zctsupZ18eyFRVLU11AmrKTtnj3iT/rjXO6RLBGErIONFeke61fFXMirqqZj6ptgIrdNl69z1wljZSCTSCgC3ni0iTh7jhS/p7acFkP5swcLRs EG2WCa7oPS1sZe1xZ/1gDblfld5Er+AHtsJ7oUcY7gxPGPmq3EHEB3iinTHQEorpwjXYOcT0opamNy5XHGgXLevtPOhi+PITBi+dPBmvy98sFNN7urQtAw9V eDNW00a3S44GkatguSBXjbl6hmZEQUgzykM3FUHbSkGby+0d3DDDZFiHgBkTB5o08Jkur9FN/7NhktVcqdRvhN/CFsnVVzebPySLlE+hr1Pujql9EpzJSpHD I+YnpwwVJB3gEK8VZbIywqP3ha4Zmj43BYP/qamHeJfKa3ceBuvdo46biLYuTSZSK3SFBCp+AD51PenQJ7/RazNVu+Dz6RJQbLO2mq4eFpX876mB8MRqpT0z 7neEx5XiIG7au/HYvOzC/yPww3JS0FkdOqXRp/HuqoBOrnFFOhqFyAI7zpPsE/VBsEcW2cCigKPEDEjrmWo6H2AfViF+JfUaa3Qkrv9UTdiG5OlKHohOMx55 DSmgNYjrRPYn6Jdirq3BDdGXdM3qvhOfvmUelQsPoLG3X1J8hDjF7VFDCiCekcDAwhoBNYsMpZjC3QwP0KZdadzKEQfPmdno3dGnM0H/dpEw313ou+zUDY0s THZq8zaP62Q=
+X-AuthUser: linux@smankusors.com
 
-On 26-04-26 15:43, Jonathan Cameron wrote:
-> On Sun, 26 Apr 2026 14:23:32 +0300
-> Andrey Skvortsov <andrej.skvortzov@gmail.com> wrote:
-> 
-> > During a probe functions after all regulators are enabled, runtime pm
-> > is enabled. Before probe function finishes, runtime pm triggers and
-> > disables vddio regulator. When probe function fails after that,
-> > inv_mpu_core_disable_regulator_action tries to disable already
-> > disabled by runtime pm vddio regulator causing following backtrace:
-> > 
-> >   inv-mpu6050-i2c 1-0068: trigger probe fail -19
-> >   WARNING: drivers/regulator/core.c:3244 at _regulator_disable+0x2ac/0x600
-> >   Call trace:
-> >    _regulator_disable+0x2ac/0x600 (P)
-> >    regulator_disable+0xac/0x148
-> >    inv_mpu_core_disable_regulator_vddio_action+0x3c/0xb0 [inv_mpu6050]
-> >    devm_action_release+0x4c/0x88
-> >    release_nodes+0xd8/0x178
-> >    devres_release_group+0x214/0x3c8
-> >    i2c_device_probe+0x6fc/0x9b0
-> >   ...
-> >   inv-mpu6050-i2c 1-0068: Failed to disable vddio regulator: -5
-> > 
-> > vddio state is handled in two places: pm_runtime and
-> > inv_mpu_core_disable_regulator_vddio_action devm action.
-> > inv_mpu_core_disable_regulator_vddio_action has to check, whether
-> > regulator is disabled by pm_runtime already. But this information is
-> > available only after pm_runtime state is initialized by
-> > pm_runtime_set_active during a probe. So
-> > inv_mpu_core_disable_regulator_vddio_action has to be called only
-> > after pm_runtime is properly initialized. To handle cases, when probe
-> > fails before pm_runtime is enabled, explicitly disable regulators
-> > in error paths.
-> Why not drag pm_runtime_set_active() earlier?
+Implement the .read_label callback to allow userspace to identify ADC
+channels via the "label" property in the device tree. The name field in
+pm8xxx_chan_info is renamed to label to better reflect its purpose. If
+no label is provided in the device tree, it defaults to the hardware
+datasheet name.
 
-Do you mean something like proposed in v2? [1]
+The change has been tested on Sony Xperia SP (PM8921).
 
-1. https://lore.kernel.org/linux-iio/20260401082737.781018-4-andrej.skvortzov@gmail.com/#t
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+---
+ drivers/iio/adc/qcom-pm8xxx-xoadc.c | 24 +++++++++++++++++++-----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
 
-> Whilst we currently
-> check for an error on that call I'm not sure there is any reason
-> to do so.  It's a narrow set of conditions than can cause such an
-> error. 
-> 
-> If you have that between the regulator enable and registering the
-> devm action I think that would mean you don't need to manually clean
-> up the regulators.
-> 
-> Maybe I'm missing something.
-> 
-> J
-> 
-> > 
-> > Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-> > Fixes: 07c12b1c007c ("iio: imu: mpu6050: add support for regulator framework")
-> > ---
-> > 
-> > Changes in v3:
-> >  - make patch to be the first patch of the patchset for easier backporting
-> >  - update commit message to fix Andy's comment
-> >  - don't move pm_runtime_set_active from pm_runtime initialization,
-> >    move activation of inv_mpu_core_disable_regulator_action instead
-> > 
-> > Changes in v2:
-> >  - minimize call trace in commit message
-> >  - include specific driver name in patch subject
-> > 
+diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+index 89858e81c859..d44eab7b36a8 100644
+--- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
++++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+@@ -369,7 +369,7 @@ static const struct xoadc_channel pm8921_xoadc_channels[] = {
+ 
+ /**
+  * struct pm8xxx_chan_info - ADC channel information
+- * @name: name of this channel
++ * @label: label of this channel from device tree (defaults to datasheet name if not specified)
+  * @hwchan: pointer to hardware channel information (muxing & scaling settings)
+  * @calibration: whether to use absolute or ratiometric calibration
+  * @decimation: 0,1,2,3
+@@ -377,7 +377,7 @@ static const struct xoadc_channel pm8921_xoadc_channels[] = {
+  * calibration: 0, 1, 2, 4, 5.
+  */
+ struct pm8xxx_chan_info {
+-	const char *name;
++	const char *label;
+ 	const struct xoadc_channel *hwchan;
+ 	enum vadc_calibration calibration;
+ 	u8 decimation:2;
+@@ -446,7 +446,7 @@ static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
+ 	u8 lsb, msb;
+ 
+ 	dev_dbg(adc->dev, "read channel \"%s\", amux %d, prescale/mux: %d, rsv %d\n",
+-		ch->name, ch->hwchan->amux_channel, ch->hwchan->pre_scale_mux, rsv);
++		ch->label, ch->hwchan->amux_channel, ch->hwchan->pre_scale_mux, rsv);
+ 
+ 	mutex_lock(&adc->lock);
+ 
+@@ -717,8 +717,21 @@ static int pm8xxx_fwnode_xlate(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int pm8xxx_read_label(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, char *label)
++{
++	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
++	const struct pm8xxx_chan_info *ch;
++
++	ch = pm8xxx_get_channel(adc, chan->address);
++	if (!ch)
++		return -EINVAL;
++	return sysfs_emit(label, "%s\n", ch->label);
++}
++
+ static const struct iio_info pm8xxx_xoadc_info = {
+ 	.fwnode_xlate = pm8xxx_fwnode_xlate,
++	.read_label = pm8xxx_read_label,
+ 	.read_raw = pm8xxx_read_raw,
+ };
+ 
+@@ -762,7 +775,8 @@ static int pm8xxx_xoadc_parse_channel(struct device *dev,
+ 			pre_scale_mux, amux_channel);
+ 		return -EINVAL;
+ 	}
+-	ch->name = name;
++	ch->label = hwchan->datasheet_name;
++	fwnode_property_read_string(fwnode, "label", &ch->label);
+ 	ch->hwchan = hwchan;
+ 	/* Everyone seems to use absolute calibration except in special cases */
+ 	ch->calibration = VADC_CALIB_ABSOLUTE;
+@@ -804,7 +818,7 @@ static int pm8xxx_xoadc_parse_channel(struct device *dev,
+ 
+ 	dev_dbg(dev,
+ 		"channel [PRESCALE/MUX: %02x AMUX: %02x] \"%s\" ref voltage: %d, decimation %d prescale %d/%d, scale function %d\n",
+-		hwchan->pre_scale_mux, hwchan->amux_channel, ch->name,
++		hwchan->pre_scale_mux, hwchan->amux_channel, ch->label,
+ 		ch->amux_ip_rsv, ch->decimation, hwchan->prescale.numerator,
+ 		hwchan->prescale.denominator, hwchan->scale_fn_type);
+ 
 
 -- 
-Best regards,
-Andrey Skvortsov
+2.34.1
+
