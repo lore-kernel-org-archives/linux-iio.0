@@ -1,45 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BBC37261A;
-	Sun, 26 Apr 2026 14:35:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 031EC364021;
+	Sun, 26 Apr 2026 14:36:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777214150; cv=none; b=pv0abthUX/Mh1NP496Tr6RJ4apX2k8VU+mamZDWjurmFcVaM+ggaCJ4xgq1nHLAPmXGyjYIVe0+H85H4puKAnm6x/Q3BXRGBGPtoTL1OKT/SZvU8TEsMTDUr4BxV5VOJZOnH5mLH/pWqDDJKMmH/dRu1TCs0nvXXwzxorufRmmU=
+	t=1777214176; cv=none; b=iq6XZ6nInrPLGYMRG8LuDvIkDgzdh9vsTIBj/GcjcKi5qKvsvhJygX/Untl3oxgorTIxAOOxiXndigCz2Fk+7Tw4bfbOwEvBsmJ8RsEfeizySHikPste86KEEXQETCHRXL8i2nEKV0T6FjEgSFNpJVTOqtqm+G2Puzp4ICgRlSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777214150; c=relaxed/simple;
-	bh=RwC39tm8nIuOnnjTYqgGd5kfCwEV/ng5p2o/8ZmTnro=;
+	s=arc-20240116; t=1777214176; c=relaxed/simple;
+	bh=V2NY4ipNSXzNxirr044TNBKy3pvJoGluA5eR4cJ4lZk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Rmkc3Q2Ia5M5Xm+r1YCDqh8ywXi9p5iDy4Rux5Rm5NtDXzwz30LxMttx98thsE3u72W4wnSCLxB6/u9d0EKOcOqCixDVOW0axCkhs1r1nIc6hG2wHnqlbUELziXM3eYvD09J6RwZg+ehlENIXkKuUXbL2WUv8daOnouPszFIMKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cZAkM+Z9; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=sXCSXHJsKcY3oKx7VPN4p2M8Hjtw3CzMJIfn2JcmxQ0CJzSURQ6ZBfl3BWVy3QNMGJ5w/PN5vYB81my7Tk3njybhLruB0NdrOkcyhazGZQ+JS/BHSM8TLV3bqgryOLYvIwkzg213fI2xG8o1gm86mD0YifAuQvetnrCB6funMgI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K22HcwEX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cZAkM+Z9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FFA2C2BCAF;
-	Sun, 26 Apr 2026 14:35:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K22HcwEX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06D7AC2BCAF;
+	Sun, 26 Apr 2026 14:36:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777214150;
-	bh=RwC39tm8nIuOnnjTYqgGd5kfCwEV/ng5p2o/8ZmTnro=;
+	s=k20201202; t=1777214175;
+	bh=V2NY4ipNSXzNxirr044TNBKy3pvJoGluA5eR4cJ4lZk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=cZAkM+Z9Y6fD7vWHkW47SHa2YRDFmKw0Srczx7KAfUDS+wE9/aw+dbwhds/ALG5hR
-	 uzTVV1xbc3eE85X4xFvGg2RzouL0ZU5G1lEb431dD2B6+kPaA9kSlhC+NGKZcqEHpZ
-	 oPIsAexXIcNgaDcJADR1Yzwx6uS28QDZdkeSJepAtuMreU0YTqMaB+nZWr54DIqGhI
-	 O+Ayxp+3youaqLjhvKwpeYfGV0hX3KdCVmIB289EwCiYhWhO4pWBy+15VkJC4g0mrU
-	 JB3Olcg748uKTV6jLEcmYB7sP14agUexgVeqHt0ILpxDjqkxV/xpSasaBKX6fTRwqg
-	 iT+7SWNke8KYQ==
-Date: Sun, 26 Apr 2026 15:35:40 +0100
+	b=K22HcwEXqPp/Rs6rqiQM68KI4+X5SUa6DPswabcNnRtNp70BT5OStF4UojRqeGcDw
+	 CsLk0F+LylUWcQZqYt/ETXDi+DrJtslUBFQJGK5xchuhreEIOwO79ZTbwundZNnU4B
+	 TIgHipXe9NYnyQXD/d1UvSsP/Q2ueTycLbEkdR6v+FSnKH/DoWvaYYoMfZhh5v43CI
+	 Sa8WkBXx8LTayHZAP5YzXNQZ6vsMPkcnhWJPHK2IyGMNQjJSIKVY2enWME7HZAbp5B
+	 IcmOY8UynPaueiYiCl3JWZWw16s9UIOMZqut7goAv+bL29l8E6amUwbbcvjcFC9PhL
+	 llCniSd0lJzXw==
+Date: Sun, 26 Apr 2026 15:36:08 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- mingo@kernel.org, christophe.jaillet@wanadoo.fr,
- nabijaczleweli@nabijaczleweli.xyz, kees@kernel.org,
- kyungmin.park@samsung.com, k.wrona@samsung.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 9/9] iio: ssp_sensors: reuse embedded RX buffer for
- SPI transfers
-Message-ID: <20260426153540.3d43a085@jic23-huawei>
-In-Reply-To: <20260426091710.3722035-10-sanjayembedded@gmail.com>
-References: <20260426091710.3722035-1-sanjayembedded@gmail.com>
-	<20260426091710.3722035-10-sanjayembedded@gmail.com>
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: ssp_sensors: cleanup codestyle warning
+Message-ID: <20260426153549.43ee3328@jic23-huawei>
+In-Reply-To: <20260426105653.3764291-1-sanjayembedded@gmail.com>
+References: <20260426105653.3764291-1-sanjayembedded@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,62 +45,45 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 26 Apr 2026 14:47:10 +0530
+On Sun, 26 Apr 2026 16:26:53 +0530
 Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 
 > From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > 
-> Avoid allocating a temporary DMA buffer in the interrupt context when
-> handling hub-to-AP and AP-to-hub SPI write messages.
+> Reported by checkpatch:
+> FILE: drivers/iio/common/ssp_sensors/ssp_iio.c
 > 
-> Replace the dynamically allocated RX buffer with a fixed-size,
-> preallocated buffer embedded in the driver structure and reused for all
-> SPI receive operations. This removes memory allocation from the
-> IRQ path, simplifies lifetime management.
+> WARNING: Block comments use a trailing */ on a separate line
+> +	 * */
 > 
 > Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-
-> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-> index 870214551f0b..e41da88bf96d 100644
-> --- a/drivers/iio/common/ssp_sensors/ssp_spi.c
-> +++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-> @@ -339,7 +339,7 @@ static int ssp_parse_dataframe(struct ssp_data *data, char *dataframe, int len)
->  /* threaded irq */
->  int ssp_irq_msg(struct ssp_data *data)
->  {
-> -	char *buffer;
-> +	char *buffer = data->rx_buf;
->  	u8 msg_type;
->  	int ret;
->  	u16 length, msg_options;
-> @@ -383,19 +383,12 @@ int ssp_irq_msg(struct ssp_data *data)
->  			 * but the slave should not send such ones - it is to
->  			 * check but let's handle this
->  			 */
-> -			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
-As bellow.
-
-> -			if (!buffer) {
-> -				ret = -ENOMEM;
-> -				goto _unlock;
-> -			}
+> ---
+>  drivers/iio/common/ssp_sensors/ssp_iio.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/common/ssp_sensors/ssp_iio.c b/drivers/iio/common/ssp_sensors/ssp_iio.c
+> index 78ac689de2fe..e83f589fd72c 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp_iio.c
+> +++ b/drivers/iio/common/ssp_sensors/ssp_iio.c
+> @@ -24,9 +24,10 @@ int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
+>  	struct ssp_sensor_data *spd = iio_priv(indio_dev);
+>  	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
 >  
->  			/* got dead packet so it is always an error */
->  			ret = spi_read(data->spi, buffer, length);
->  			if (ret >= 0)
->  				ret = -EPROTO;
->  
-> -			kfree(buffer);
-> -
->  			dev_err(SSP_DEV, "No match error %x\n",
->  				msg_options);
->  
-> @@ -428,22 +421,13 @@ int ssp_irq_msg(struct ssp_data *data)
->  		mutex_unlock(&data->pending_lock);
->  		break;
->  	case SSP_HUB2AP_WRITE:
-> -		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
-Is there any chance that GFP_DMA marking is needed?
+> -	/* the allocation is made in post because scan size is known in this
+> +	/*
+> +	 * the allocation is made in post because scan size is known in this
+>  	 * moment
+> -	 * */
+> +	 */
+>  	spd->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL | GFP_DMA);
 
-> -		if (!buffer)
-> -			return -ENOMEM;
+Hmm - I missed this in previous but you dropped a GFP_DMA marking
+and it's just possible this platform has restricted DMA addressing and
+needs them.
+
+Otherwise it should be easy to cap how big this buffer can get and hence
+do similar change to make it fixed size in ssp_sensor_data.
+
+>  	if (!spd->buffer)
+>  		return -ENOMEM;
+
