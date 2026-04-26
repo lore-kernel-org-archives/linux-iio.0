@@ -1,183 +1,236 @@
-Received: from mail-m1973184.qiye.163.com (mail-m1973184.qiye.163.com [220.197.31.84])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A0B30DEA6;
-	Sun, 26 Apr 2026 10:26:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13C41313E34
+	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 10:33:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777199191; cv=none; b=d4WamQpt+1J9p7Cf+k3kn1ncO4MDtpiVIiKcQOtOV20LMtSUPPekynGFJ+RaOutV/FLoc2tqeWGab9snOeKPb0FSSwVsuks2em7GxXgbvDwC9zj2CxvE0/pOYOmoVY1JOT7CXG+4XKTITZJwvn/gnpjkRuWVhvcvF/AeQEZeYGY=
+	t=1777199605; cv=none; b=pc3VIDZON+4HRQ9tRLyYM+hR88ofxqqhEcyJNIRn/b3eizJ6UQyRN2XABr+fO30/x4f1Pk3/qPuQm0wHAZYcrs1/7/zOrSIpIuavwjMWySZ+j4d1OTbbzvM0aRjG1AJAPPpngO0BebBRmJQooS8dWGLMj7pd8wgDcxFObffWz2U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777199191; c=relaxed/simple;
-	bh=NU+3pI4S3vTdc99oasSjbBJ8xb5MfMfeWxgKJ05r3B8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CH0CcRw+tncosI+paglJbSA4KrjJSCE6WfiG0ejcYvZWtd5H2C0KXj2n/bpSZ/FhojqmHbjSbZiM1A/PgZLZ39v42zQwMo5sltWQKIewlbJTkUksATe27hP0lOYg07br1gOyhlxyOB9TgFqpB6LCC4c0yVgeYWtXm7C1JS6SnuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=eb4I3kZa; arc=none smtp.client-ip=220.197.31.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1777199605; c=relaxed/simple;
+	bh=xW2ijtlf0VR5muT9UCJIs0GsN3u6g6ZaOyKZUZ6ffEk=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=FtGv4PqZe2O9n46OFSP3p/LjpMtnLf8drUxsmi9XJ2ggj9y6SHMT8ab88psGSOf0SUv/2MtNURgoyyV5I2hk80plb7U9PWg3WbkXwEmVwtX8EjjZug5y6QK7oFH3wdjee9ilKP4r0Aie1pHIwFNu3lSYpGQ3A4zTH3XGUBd3fBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iRqimsYt; arc=none smtp.client-ip=209.85.216.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="eb4I3kZa"
-Received: from [172.16.12.43] (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 3c2b8e6e5;
-	Sun, 26 Apr 2026 18:09:58 +0800 (GMT+08:00)
-Message-ID: <544c8d66-b242-4895-b8de-2f1dfdd0c7b4@rock-chips.com>
-Date: Sun, 26 Apr 2026 18:09:59 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iRqimsYt"
+Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-36146ae9dd4so7635571a91.3
+        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 03:33:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777199602; x=1777804402; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=IGRu5Pk2/TeuZdr6t850LttmKThNTXKspGnPxa81ohY=;
+        b=iRqimsYtJvGc5l0EWlb+P5JqWjsgfpyUfTs27tLqJwAHkff642YDaEs8WWVrrL8ak5
+         c3ESJKMSxJy0powk/gnW8gcE0oggssjLnYSE0ag0jLHolExk7iSamtSvTLOZ6i82WGAk
+         Fx+0T8smJT5VKd4GCJDYn/zOPuLeIKEGb3TqYIoDO10wA+PD0fGY3b99ObkATUdrAFiw
+         7kwvA77/OEft9yVSsG0ysEwBe/sApfqb13WP2/5bNXIxcgTZooGQKf6scO8km/SZGHQ/
+         WhFV1tdrbc0AmrRjwC8Q3ODxg+Xa0IQFCHZH4zlhJM/BkjqEtjLah6QY8qrcd3aWS3xB
+         lHUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777199602; x=1777804402;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IGRu5Pk2/TeuZdr6t850LttmKThNTXKspGnPxa81ohY=;
+        b=RpC04c9RJbMlPxJUnjF012wipekLUbsitLELRVTXQ9Zqnj7VQi2zXAIaRITFUFF20X
+         dufmT5sREyq86kp8uu/0wR6zIQI7Vflt+jcMGa9xd9Ie/axzR1QzNJEvYn2az6A1rGrk
+         CWwMp7oRJqfVGIYMsSGC6mjc7Xs/lJ9zb9k8e8OrVrjBQWT/6+CbguGFXuSmTSIBjT5E
+         kuQuuLjtdgiWhcxSjN9YowD+ly0EM+s+sdjDoSyDYiygkK0oNmzxHn1BqotJMnMrC9eA
+         MvebBbUZnY5eFivioDouZCx6cWHRkI/mXdhZcP/yJR5VmEVg44f6e8UZl2QpcheQ2XoA
+         9HxA==
+X-Forwarded-Encrypted: i=1; AFNElJ8RxQuu2fF7S1+3d4QqdhzK4ZgzAsxUOywNK53kJHEyKdEYmoH84oaQwamVrkndPM00HXsDOppdugY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxm86U4EFuEyAG17EB+wOmtH4J7rUQEj/1f1Kk/FQMEr3buflbt
+	DcbhWMyNlzkuNyJMWSvJe/pImcEmQeZl1ZqDJN6DMjaysIl8vXJ/jZTS
+X-Gm-Gg: AeBDietmD3/DMbP18922XkL/Ajnl9E9LaW9xqV19xK2WHRmpS5rw4gBCjAJ+DmpjEJy
+	JjiD/k6OsInxbiY2a/YyAyaUbdN+906pcUQL+zK2NC6Ffs6SEILGczLEv5c//48otW0RuL35+qB
+	DsJRd35Geljsu+pLmVyV1vHBKiOrbwvKowSworTffDvS+xl//2ek+vb4YJva4VC+GiPMXYyoCYf
+	hWMTAWmcdsdQMfl93pryXgHMHZkMmQqius6/lAe8/Ahqye270iydB9GCM2Elq8Owu4YtfI5s8S/
+	doABoPwcKtUnw6tEFoNRpjvdEjyeJBhk1B011NyZ6xcMjufI2rD4D2BMaiLB+J1zx/YjEna6r9W
+	t81P2oDMj2y2L9s4ls6RHAh08a2q7oNKZNqlgzAgCrCX2NEX16/qKJAk2BpzP1NrRXhu1lCYl0x
+	OsPsr/h8zaYUM6F4AoOdMIbkElk1v2st+pI+56OiRTsa1rhA==
+X-Received: by 2002:a17:90b:2e41:b0:35d:aeb2:25b2 with SMTP id 98e67ed59e1d1-361404aeddcmr43098425a91.27.1777199602507;
+        Sun, 26 Apr 2026 03:33:22 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:aac1:83b3::639a:3255])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3613fa8068csm10854027a91.2.2026.04.26.03.33.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Apr 2026 03:33:22 -0700 (PDT)
+Date: Sun, 26 Apr 2026 15:21:47 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+ =?ISO-8859-1?Q?Nuno_S=E1?= <noname.nuno@gmail.com>
+CC: nuno.sa@analog.com, linux-iio@vger.kernel.org, demonsingur@gmail.com,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] MAINTAINERS: Update maintainer for iio driver(s)
+User-Agent: Thunderbird for Android
+In-Reply-To: <20260424202727.1b880766@jic23-huawei>
+References: <20260421165856.2245598-1-sanjayembedded@gmail.com> <aenU2WZnVJ-esibn@nsa> <8C4ED753-72A9-4A34-920D-A5C5E8DB1840@gmail.com> <aeskNzhWtKPNYb4R@nsa> <20260424202727.1b880766@jic23-huawei>
+Message-ID: <DEE9F0E2-7759-4C58-BF53-2FA8732050B5@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/6] pwm: Add rockchip PWMv4 driver
-To: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>
-Cc: kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
- Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
- <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
-Content-Language: en-US
-From: Damon Ding <damon.ding@rock-chips.com>
-In-Reply-To: <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0a9dc9446f9103a3kunm6b0f68e1145d79
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1kYFggdWUFKV1ktWUFJV1kPCRoVCBIfWUFZQh5KTlZPHh0aGBkaTU
-	MdQhpWFRQJFhoXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0
-	tIVUpLSU9PT0hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=eb4I3kZaySR2+F0gMBqA+RVFFlrWOKdh4b1SAYLJKcnbvJzdFS3sxr68WQO9M8q2IYHeje3rvXLc0fvoKnlmY70h3B0YqxEyL/k1lwEJe3P43wERT4kvuBmCEXLea3V6AmnaLYA6wjfjEaWn+q21PmIEP8kRvTgW6DbdSnvdcoQ=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=sxbl4epg48KUX2MzjpAavq4/tG2sfpxD57DOODEbyl0=;
-	h=date:mime-version:subject:message-id:from;
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi Nicolas，
 
-On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
-> The Rockchip RK3576 brings with it a new PWM IP, in downstream code
-> referred to as "v4". This new IP is different enough from the previous
-> Rockchip IP that I felt it necessary to add a new driver for it, instead
-> of shoehorning it in the old one.
-> 
-> Add this new driver, based on the PWM core's waveform APIs. Its platform
-> device is registered by the parent mfpwm driver, from which it also
-> receives a little platform data struct, so that mfpwm can guarantee that
-> all the platform device drivers spread across different subsystems for
-> this specific hardware IP do not interfere with each other.
-> 
-> Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-> ---
->   MAINTAINERS                   |   1 +
->   drivers/pwm/Kconfig           |  11 ++
->   drivers/pwm/Makefile          |   1 +
->   drivers/pwm/pwm-rockchip-v4.c | 383 ++++++++++++++++++++++++++++++++++++++++++
->   4 files changed, 396 insertions(+)
-> 
-......
-> diff --git a/drivers/pwm/pwm-rockchip-v4.c b/drivers/pwm/pwm-rockchip-v4.c
-> new file mode 100644
-> index 000000000000..b7de72c433c5
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-rockchip-v4.c
-> @@ -0,0 +1,383 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * Copyright (c) 2025 Collabora Ltd.
-> + *
-> + * A Pulse-Width-Modulation (PWM) generator driver for the generators found in
-> + * Rockchip SoCs such as the RK3576, internally referred to as "PWM v4". Uses
-> + * the MFPWM infrastructure to guarantee exclusive use over the device without
-> + * other functions of the device from different drivers interfering with its
-> + * operation while it's active.
-> + *
-> + * Technical Reference Manual: Chapter 31 of the RK3506 TRM Part 1, a SoC which
-> + * uses the same PWM hardware and has a publicly available TRM.
-> + * https://opensource.rock-chips.com/images/3/36/Rockchip_RK3506_TRM_Part_1_V1.2-20250811.pdf
-> + *
-> + * Authors:
-> + *     Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-> + *
-> + * Limitations:
-> + * - The hardware supports both completing the currently running period
-> + *   on disable (by switching to oneshot mode with a single repetition and
-> + *   only disable when the complete irq fires), and abrupt disable (freeze).
-> + *   Only the latter is implemented in the driver.
-> + * - When the output is disabled, the pin will remain driven to whatever state
-> + *   it last had.
 
-This limitation exists because after disabling the PWM output via 
-registers, the actual shutdown only happens after the current period 
-completes.
+On 25 April 2026 12:57:27=E2=80=AFam IST, Jonathan Cameron <jic23@kernel=
+=2Eorg> wrote:
+>On Fri, 24 Apr 2026 09:08:37 +0100
+>Nuno S=C3=A1 <noname=2Enuno@gmail=2Ecom> wrote:
+>
+>> On Fri, Apr 24, 2026 at 07:22:37AM +0530, Sanjay Chitroda wrote:
+>> >=20
+>> >=20
+>> > On 23 April 2026 1:46:32=E2=80=AFpm IST, "Nuno S=C3=A1" <noname=2Enun=
+o@gmail=2Ecom> wrote: =20
+>> > >On Tue, Apr 21, 2026 at 10:28:56PM +0530, Sanjay Chitroda wrote: =20
+>> > >> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> > >>=20
+>> > >> The listed maintainer analog domain email for Cosmin Tanislav is n=
+o
+>> > >> longer valid, and he would no longer maintain this driver(s)=2E
+>> > >>=20
+>> > >> Replacing email maintainer with list, to keep it valid all the tim=
+e=2E
+>> > >>=20
+>> > >> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> > >> ---
+>> > >> Changes in v3:
+>> > >> - Following input from Nuno and confirmation from Jonathan,
+>> > >>   replacing domain specific maintainer with mailing list=2E
+>> > >> - Link to v1: https://lore=2Ekernel=2Eorg/all/20260418211336=2E180=
+0221-1-sanjayembedded@gmail=2Ecom/
+>> > >> --- =20
+>> > >
+>> > >While you're doing this, could you take the opportunity and also upd=
+ate
+>> > >this entry?
+>> > >
+>> > >https://elixir=2Ebootlin=2Ecom/linux/v7=2E0/source/MAINTAINERS#L1837
+>> > >
+>> > >Thanks!
+>> > >- Nuno S=C3=A1
+>> > > =20
+>> > Hi Nuno S=C3=A1,
+>> >=20
+>> > Are you suggesting to have separate change to add mailing list in ana=
+log devices and iio driver which you pointed ?=20
+>> >=20
+>> > This change is specific to email debounce due to Cosmin analog domain=
+ account=2E =20
+>>=20
+>> Yes, it makes more sense for it to be a separate patch=2E I also sugges=
+ted
+>> that one because it's an entry covering a lot of driver's and
+>> includes Lars which has been silent for some time now so maybe it's bet=
+ter no
+>> to "spam" him like that :)
+>
+>If we are adding the entry to the catch all, do these individual entries
+>bring any benefit=2E Maybe we should just drop them?
+>
 
-Therefore, the better approach is to add a delay of one full period
-before disabling &rockchip_mfpwm_func.core.
+Hi Nuno and Jonathan,
 
-> + * - Adjustments to the duty cycle will only take effect during the next period.
-> + * - Adjustments to the period length will only take effect during the next
-> + *   period.
-> + * - The hardware only supports offsets in [0, period - duty_cycle]
-> + */
-> +
-......
-> +
-> +	if (wfhw->rate) {
-> +		if (!was_enabled) {
-> +			dev_dbg(&chip->dev, "Enabling PWM output\n");
-> +			ret = clk_enable(pc->pwmf->core);
-> +			if (ret)
-> +				goto err_mfpwm_release;
-> +			ret = clk_set_rate_exclusive(pc->pwmf->core, wfhw->rate);
-> +			if (ret) {
-> +				clk_disable(pc->pwmf->core);
-> +				goto err_mfpwm_release;
-> +			}
-> +
-> +			/*
-> +			 * Output should be on now, acquire device to guarantee
-> +			 * exclusion with other device functions while it's on.
-> +			 *
-> +			 * It's highly unlikely that this fails, as mfpwm has
-> +			 * already been acquired before, and this is just a
-> +			 * usage counter increase. Not worth the added
-> +			 * complexity of clearing the PWMV4_REG_ENABLE again,
-> +			 * especially considering the CTRL_UPDATE_EN behaviour.
-> +			 */
-> +			ret = mfpwm_acquire(pc->pwmf);
-> +			if (ret) {
-> +				clk_rate_exclusive_put(pc->pwmf->core);
-> +				clk_disable(pc->pwmf->core);
-> +				goto err_mfpwm_release;
-> +			}
-> +		}
-> +	} else if (was_enabled) {
-> +		dev_dbg(&chip->dev, "Disabling PWM output\n");
+Here is my view on this,
 
-Delay for one full PWM period before disabling the dclk.
+Lars-peter is maintainer of drivers falls in different subsystem, so If we=
+ can plan to drop/replace would need ack from Lars-peter and also mutual ag=
+reement from all respective subsystem owner as it won't be advisable just t=
+o update analog devices IIO drivers maintainer=2E
 
-Although this may introduce some latency for disable -> re-enable 
-operations, it ensures that the state after shutdown aligns with the 
-actual polarity configuration.
+Regarding analog mailing list, we can plan to add list across MAINTAINERS =
+where analog devices ownership is there as maintainer or reviewer=2E
 
-> +		clk_rate_exclusive_put(pc->pwmf->core);
-> +		clk_disable(pc->pwmf->core);
-> +		/* Output is off now, extra release to balance extra acquire */
-> +		mfpwm_release(pc->pwmf);
-> +	}
-> +
-> +err_mfpwm_release:
-> +	mfpwm_release(pc->pwmf);
-> +
-> +	return ret;
-> +}
-> +
-> 
+Also, this change would be separate from both above points so we shall tak=
+e it further=2E
 
-Best regards,
-Damon
+Kindly share your thoughts, valuable input and guidance on how should we p=
+roceed further for this change and other two topics=2E
 
+Thanks,
+Sanjay Chitroda=20
+
+>>=20
+>> >=20
+>> > Also, I had take a glance on MAINTAINERS, it looks there are good amo=
+unt of drivers which are maintained by you and Michael Hennerich from analo=
+g=2E If you suggest I can plan to add analog mailing list in all respective=
+ places in separate change=2E
+>> >=20
+>> > This way all analog device maintained drivers will have mailing list =
+of analog=2Ecom =20
+>>=20
+>> Yeah, I'm not sure if it makes sense to go change all of those=2E I wou=
+ld
+>> focus on bouncing emails and we (ADI) need to make sure to also include
+>> that list from now on=2E
+>>=20
+>> - Nuno S=C3=A1
+>>=20
+>> >=20
+>> > Kindly share your thoughts on the same=2E
+>> >=20
+>> > Thanks,
+>> > Sanjay Chitroda=20
+>> >=20
+>> >=20
+>> >  =20
+>> > >>  MAINTAINERS | 8 ++++----
+>> > >>  1 file changed, 4 insertions(+), 4 deletions(-)
+>> > >>=20
+>> > >> diff --git a/MAINTAINERS b/MAINTAINERS
+>> > >> index c981cbdff500=2E=2E6498f0aed1ff 100644
+>> > >> --- a/MAINTAINERS
+>> > >> +++ b/MAINTAINERS
+>> > >> @@ -644,7 +644,7 @@ F:	drivers/iio/accel/adxl355_i2c=2Ec
+>> > >>  F:	drivers/iio/accel/adxl355_spi=2Ec
+>> > >> =20
+>> > >>  ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
+>> > >> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> > >> +L:	linux@analog=2Ecom
+>> > >>  L:	linux-iio@vger=2Ekernel=2Eorg
+>> > >>  S:	Supported
+>> > >>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> > >> @@ -1461,7 +1461,7 @@ F:	Documentation/devicetree/bindings/iio/adc=
+/adi,ad4080=2Eyaml
+>> > >>  F:	drivers/iio/adc/ad4080=2Ec
+>> > >> =20
+>> > >>  ANALOG DEVICES INC AD4130 DRIVER
+>> > >> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> > >> +L:	linux@analog=2Ecom
+>> > >>  L:	linux-iio@vger=2Ekernel=2Eorg
+>> > >>  S:	Supported
+>> > >>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> > >> @@ -1549,7 +1549,7 @@ F:	Documentation/devicetree/bindings/iio/dac=
+/adi,ad7293=2Eyaml
+>> > >>  F:	drivers/iio/dac/ad7293=2Ec
+>> > >> =20
+>> > >>  ANALOG DEVICES INC AD74115 DRIVER
+>> > >> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> > >> +L:	linux@analog=2Ecom
+>> > >>  L:	linux-iio@vger=2Ekernel=2Eorg
+>> > >>  S:	Supported
+>> > >>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> > >> @@ -1557,7 +1557,7 @@ F:	Documentation/devicetree/bindings/iio/add=
+ac/adi,ad74115=2Eyaml
+>> > >>  F:	drivers/iio/addac/ad74115=2Ec
+>> > >> =20
+>> > >>  ANALOG DEVICES INC AD74413R DRIVER
+>> > >> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> > >> +L:	linux@analog=2Ecom
+>> > >>  L:	linux-iio@vger=2Ekernel=2Eorg
+>> > >>  S:	Supported
+>> > >>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> > >> --=20
+>> > >> 2=2E34=2E1
+>> > >>  =20
+>
