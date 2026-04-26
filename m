@@ -1,198 +1,175 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 521E22BEC5F
-	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 08:02:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A42F73431F5;
+	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777190555; cv=none; b=Ya5YeOWKFT6O/RO2X/0SngCYrC/R6G9r0FbzYWzfs7gTJ5u+X9wco+nqOyj5HHapaqqWwA1KK5z84i2c1dwgM4Xn2wFVR4M8UPU/KjhLDh7oSR3YvdIzK26ufjDignRhUPCiVd7oZE9Od/LA03FUn4KP2bD2EMJO4YQvCqunkic=
+	t=1777192699; cv=none; b=oLCxJuzKWR8KuYCutDPBdttxmKBjwzmUtlgcOtngrRcF+GJwOmwOX07hGxsAnq7ORlTOr5/rmoFUnGa8ZZjWDMp/ugNu/dN1Z7XZrvRLIJb9O5DEAn8V2EpHYok+ptE+4K7BM5DlixcC0Cd3OXJGPgUqx89Bwt91qGSv6yA1RjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777190555; c=relaxed/simple;
-	bh=XsaRMfhCO0nZB4jMrQV6CzGmjKsoR/dI8GgJRwqoZ/k=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=u0pcQmZ2JEogVe0s8aNZDzdSMTKaWvfr9R89adIWv0pBk2ll58nVgaJKaJdPaoegWEGOeNKxiuJYhGqcRE4hxp/Oh5nE/FCKjWFX3AgnaaGiiXj45qOZ7OyOB2F8VjW7/QSGPk3qEdxWZhu5B4jgteBWNGyV4rsitWxkzGMVjpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hO0dCqvh; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777192699; c=relaxed/simple;
+	bh=zkw/jX97Bkte0ssy8r+Xi+ICKzcrw1tjRGX9BTbOXa0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=felpxaSEnLbuq6vJeBXaKSH0sP9lyGGq9TCaDmnQ8sl2MkUmlUyQdLzg/Sbn5zJCpZESj5LMHClbX5MiWLGgiY8pYBH277DkgKlko0tC3QleDlHG/u0O1KeMrTrgB2oLGOwTPl1dxRWj7Z2JL0y1VSgeLLTJJoSGUs0vX5X9DVw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VPkE0l5c; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hO0dCqvh"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4852a9c6309so84638905e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 01:02:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777190553; x=1777795353; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=3fGYomxVnuRzyBPEOqDgFLPn+GSFKuRtiOgJCbOKeHI=;
-        b=hO0dCqvhnA+Fv3dLndByFr/KMWYZ9yqxLad0h97HIxAewYku10HU5VxrPdAQAMlbjz
-         MZY/YmEYbb0XlJFE4zNNn6hgPJ13v55c8iEgzcX0pQEpdN3n3NBU9OJ47ZEIkGaMOB/O
-         0Qzbp4NS2KMO5W/HyDIpbm6maShSaYzGT1qvM0EIINLJ7j+z5kfF8O9Jg4GUdW3opN29
-         PgfMtbrSEBsjF5QqLWO0HFD4hblMvf4GhuM4f5oGPcjw20MjajmQQTd1ZTbhnEVSNBMZ
-         01OtezbCJzV1R3cVeYiCy4aQpTBukto7tg2wkJ92PstQn4tYJ9L36YfgpoM4vfBOCpAR
-         kJFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777190553; x=1777795353;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3fGYomxVnuRzyBPEOqDgFLPn+GSFKuRtiOgJCbOKeHI=;
-        b=qRsT48BNG7uXtlSXKR0HuO1A6/8XwbAwz0X8gBpHk9TowgYWl1G6xFCrFXvf/utJJs
-         IqKL9C7YX394DN//xvQT9tDIT5O5HVO3D/neYQI0CsAsUjbeiVx3QyoRB4do5AK3Y3+E
-         mFtAKQihJG2QkvZdrAeMdBPF9S9esKf03F+CfzUbTlyD3hWY0QEoxAQOtEduQrQp5QjS
-         yZOu6K/qWbH7vAsxGKvkOrAdWu6k2ZPNNyacadfFn4fjPKnFvVi2atVHNUJD+rdOkq67
-         bJdMD9cHozxwYYKRfNoulNCU4sjIAaLMp3cdQWL8+AxJvEJevrz5t0kV81vsDCT0BObS
-         f9VQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/FQYsjLOpcyo36m1wsOj6lQur+8dUMIVLcJmHreWoS8xFhMvNBbXwNKMAqrtIr+1hqFXUDnMZoRkc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxTWL8zuiAYGI9tPSUuffCQQ5EnLadTP1mQF8zhV4IZvX9rtHiF
-	TdsIUN9a5NpRBso/sBv6bvCv6Qq24QODP5DHuddbq2q4NttqEZzFJ50D
-X-Gm-Gg: AeBDiesF7UNgKL9w2ip6ssOc6p8PbeBTVpnxiprIJ39YF18IYgZYbZr83W6sJoe8xWB
-	typu4Aqp5cQNnx/Z/4RhSOeJbh8enneqt0m1xxa0irmTPG9MQU4lEAg70UCvU1cWG0J1KRoLRiZ
-	sv9nz2TCb/oMBjR23OuhOPKldZMN7ZnwvAnumtEK0cztYOuRnJQpPpRPn1eDkakciW7J/n14eiU
-	k/Ykb/INVvfvKM+vNK6xbZZC+URPwTsTfhPzQ/KW2TG3tiD7672Kn7dUStLMuKZVdl2hwPziAQJ
-	a1z77IAhFWQBHWDMpMDonVW0PknS4/TDh9gyuTVBkUCJQlNjHJ5DQj8vd3KYtiEpSaXhF92pk/0
-	RDg4fbfFWXzb70qPnTlcWcttH9StkNG4PsO0ZhSwhLfIb41Jr0pFYsnEOEfC0WFWYwKlV9sXKkT
-	8Wr5t/eGIHzOLFk+XYtrUKaL23MwrqBOvgL7JVersvojxowSamD6eVeWXWrOsV8cyVbRwk563xS
-	x9z7/+N2CMv8eluIgd9qyTpOItCbRmPJ94A+PcqKHiTRcFQi1go+5rYBRKa
-X-Received: by 2002:a05:600c:c085:b0:488:c530:48a0 with SMTP id 5b1f17b1804b1-488fb784843mr432614835e9.24.1777190552498;
-        Sun, 26 Apr 2026 01:02:32 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a5549f582sm127037955e9.33.2026.04.26.01.02.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Apr 2026 01:02:31 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Sun, 26 Apr 2026 09:02:26 +0100
-To: David Laight <david.laight.linux@gmail.com>, 
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, 
-	Rodrigo Alencar <rodrigo.alencar@analog.com>, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Andrew Morton <akpm@linux-foundation.org>, 
-	Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
-	Sergey Senozhatsky <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v10 02/11] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <o5m4mp6qrt6pzhns4q5vyxc3fwlat7675a46wpr2phjbveosw3@rwmdqelfnkix>
-References: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
- <20260415-adf41513-iio-driver-v10-2-df61046d5457@analog.com>
- <mhfgedq2t5lqtu6535ahdmpbvib2xzp2hmyt7ezflnf52r56jh@ze6tee7vpij3>
- <20260425164006.17b75faf@jic23-huawei>
- <20260425233316.0a2e2abd@pumpkin>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VPkE0l5c"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 70A0EC2BCB6;
+	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777192699;
+	bh=zkw/jX97Bkte0ssy8r+Xi+ICKzcrw1tjRGX9BTbOXa0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=VPkE0l5cTIoLqXV4tq9k76yK25962qDgmqKrnC0oxqlt62R0zguFxwMw019FYMSOA
+	 grFqNwlzolfCHoEJest1a93vCVI/uvvBEjvNcaPbOSf5JD4Da+IpIXkCBnjKN/r5v9
+	 pB99GEEshP6y1YKS9RmUy9VvCZudF8Jjc1ctCiJW67Ve1KJWWGaMtYOpqLGv/jgepG
+	 JZnPVfxtA3Y1wQEiJY6JG/5K3Fso+zqpKOPlOBqWm9465uGtDDLhqMyhseVGG7A41d
+	 wjy17bha6/iWAcnhLfSG/eLtX1bGG1WlXPq4A66wLIz6pgxOcpTxAV/xcAYe+fVpwv
+	 LHHYg3PJK9zpA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F15FFF885E;
+	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Sun, 26 Apr 2026 09:38:02 +0100
+Subject: [PATCH 01/10] iio: dac: ad5686: refactor include headers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260425233316.0a2e2abd@pumpkin>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260426-ad5686-fixes-v1-1-7c946a77794e@analog.com>
+References: <20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com>
+In-Reply-To: <20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
+ Greg Kroah-Hartman <gregkh@suse.de>, 
+ Michael Auchter <michael.auchter@ni.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777192698; l=2747;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=hG+QZ88Yrv665s9LlxVFcq35xRZvWWlXJCiMyN4Qw5g=;
+ b=DM1T8ZuD23Muz8Xsehs+Z421temOK40/kC1CjDGq0mZqR3hLh5xak7JxTTc5pvnUHl4KzD1ti
+ ceknXzRzxzTDTt8xQpVmc1broR4YaNrQ8Jg851EHnes15EGDgS2qkMR
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On 26/04/25 11:33PM, David Laight wrote:
-> On Sat, 25 Apr 2026 16:40:06 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Fri, 17 Apr 2026 09:36:20 +0100
-> > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> > 
-> > > On 26/04/15 10:51AM, Rodrigo Alencar wrote:  
-> > > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
-> > > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
-> > > > precision). After the decimal point, digits beyond the specified scale
-> > > > are ignored.    
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-...
+Apply IWYU principle, replacing unused/generic headers for
+specific/missing headers. The resulting include directive list is sorted
+accordingly.
 
-> > > I have an alternative (slightly more complex) implementation of this function
-> > > that handles E notation. I find this particularly handy when writting big
-> > > values like 25 GHz when the ABI is defined in Hz, so instead of writing
-> > > 25000000000, one can just use 25e9, or 2.5e10. I found that my python code
-> > > was printing big floating point values or really small ones using E notation
-> > > and that was giving me -EINVAL, so I had to adjust formatting when generating
-> > > the string input to the file. No big deal, and we would not need this here,
-> > > but if maintainers find this useful I could add it into a v11 of this series.
-> > >   
-> > 
-> > I'd rather we didn't slow this one down. However I'm waiting on some tags
-> > on this patch from folk who are more familiar with these parsers than
-> > I am.  Given discussion, Andy or David Laight perhaps?
-> > +CC David - please make sure to include folk who have been active
-> > in discussion of earlier versions to decrease chance they miss the new
-> > one.
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ drivers/iio/dac/ad5686-spi.c |  9 +++++++--
+ drivers/iio/dac/ad5686.c     | 13 ++++---------
+ drivers/iio/dac/ad5686.h     |  5 ++---
+ drivers/iio/dac/ad5696-i2c.c | 10 +++++++---
+ 4 files changed, 20 insertions(+), 17 deletions(-)
 
-From Andy's message "We still have several weeks time", I thought we would have
-time to discuss this e-notation thing, but that's just a nice-to-have indeed.
-It fits well in the decimal context, as it is widely used and works in powers of 10!
-
-> 
-> I can't help feeling this code would be smaller if it didn't try to use
-> the existing conversion functions.
-> Something like:
-> 	u64 r = 0;
-> 	unsigned int n = ~0;
-> 	while (*s == ' ' || *s == '\n')
-> 		s++;
-> 	for (;;) {
-> 		unsigned int dig = *s++ - '0';
-> 		if (dig <= 9) {
-> 			if (!n)
-> 				continue;
-> 			n--;
-> 			r = r * 10 + dig;
-> 			continue;
-> 		}
-> 		switch (s[-1]) {
-> 		case '.':
-> 			if (n <= scale)
-> 				return -EINVAL;
-> 			n = scale;
-> 			continue;
-> 		case '\n':
-> 			if (*s)
-> 				return -EINVAL;
-> 			break;
-> 		case 0:
-> 			break;
-> 		default:
-> 			return -EIVAL;
-> 		}
-> 		break;
-> 	}
-> 	if (n > scale)
-> 		n = scale;
-> 	while (n--)
-> 		r *= 10;
-> 	*res = r;
-> 	return 0;
-> }
-> 
-> That is missing the overflow detect for the multiply and add.
-> While check_add_overflow() hopefully looks at the carry flag (on non-mips
-> style cpu), I don't know how the 'mul' variant works - it might be horrid.
-> A bound check against ~0ull/10 might generate better code.
-
-It may be a compact parsing but aside from bugs or typos, there is a readability
-tradeoff. For the context, yes, it would be better to accumulate interger and
-fractional parts to the same variable, rather than separate ones.
-_parse_integer_limit() would have to allow for a custom init value, so we could
-just skip the decimal point and resume. The proposed implementation reuses tested
-infrastructure and follows kstrto* conventions. I suppose the most important thing
-to review here is the new interface with its function prototypes.
-
-> But I really prefer functions that return the terminating character to
-> the caller - they are more useful for parsing compound parameters.
-
-I agree, I tried something like this with the kstrntoull() approach.
-
-> > Maybe start a discussion about whether adding e notation as a separate
-> > thread after this has merged?
-
-Agreed.
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index df8619e0c092..695125238633 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -8,11 +8,16 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
+ 
+-#include "ad5686.h"
+-
++#include <linux/array_size.h>
++#include <linux/err.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/spi/spi.h>
+ 
++#include <asm/byteorder.h>
++
++#include "ad5686.h"
++
+ static int ad5686_spi_write(struct ad5686_state *st,
+ 			    u8 cmd, u8 addr, u16 val)
+ {
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 9a384c50929b..1a6eb3832f22 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -5,17 +5,12 @@
+  * Copyright 2011 Analog Devices Inc.
+  */
+ 
+-#include <linux/interrupt.h>
+-#include <linux/fs.h>
+-#include <linux/device.h>
++#include <linux/array_size.h>
++#include <linux/err.h>
++#include <linux/export.h>
+ #include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/regulator/consumer.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
++#include <linux/sysfs.h>
+ 
+ #include "ad5686.h"
+ 
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index e7d36bae3e59..3fcc792ea656 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -8,10 +8,9 @@
+ #ifndef __DRIVERS_IIO_DAC_AD5686_H__
+ #define __DRIVERS_IIO_DAC_AD5686_H__
+ 
+-#include <linux/types.h>
+-#include <linux/cache.h>
++#include <linux/bits.h>
+ #include <linux/mutex.h>
+-#include <linux/kernel.h>
++#include <linux/types.h>
+ 
+ #include <linux/iio/iio.h>
+ 
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index d3327bca0e07..e7e1b8a6fc71 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -7,10 +7,14 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
+ 
+-#include "ad5686.h"
+-
+-#include <linux/module.h>
++#include <linux/err.h>
+ #include <linux/i2c.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++
++#include <asm/byteorder.h>
++
++#include "ad5686.h"
+ 
+ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
+ {
 
 -- 
-Kind regards,
+2.43.0
 
-Rodrigo Alencar
+
