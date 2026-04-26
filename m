@@ -1,172 +1,164 @@
-Received: from slategray.cherry.relay.mailchannels.net (slategray.cherry.relay.mailchannels.net [23.83.223.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A65389106;
-	Sun, 26 Apr 2026 20:14:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.223.169
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777234496; cv=pass; b=dAHe07ePYJuYQJbFqE0h2KIrP6sHhAjwkuK85Ck0TjKi81ZykpuerYl32+w1qrjqukNQHoM/Uu0uDIz12RDSWulpi3fbhTYTe+96jWGz11vhLjhCuxLaTal9H91kepDd0RhgQ1Jl3GWlEs8V0foLTrhYMi4+WPyBonLIn8Z8J/M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777234496; c=relaxed/simple;
-	bh=mltS0lNffyFe8OV7KjnOk1JbOoIpjoYboNePj7eHJBc=;
-	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc:Date; b=jon8A7nyge8tcldZdOYIiMoEX05MqAGk3cLa/gRlg2xo7lX/ql5iIh8Me5yGYa9BgGLMCNMmmcKSJSrnLqLIeAG9Ed41Pa97hjqXWtG0F/2G6GOHKXQ5dQYSUjg3MPogudMKwLYWTtEyeiKNJe9SsJv2A1zWFsPGmkjmm1YHsKw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=WATmwduW; arc=pass smtp.client-ip=23.83.223.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 032F126D4CA
+	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 20:25:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777235148; cv=none; b=gTdbk7Z++EzuSl/gTAiKtb7GF6b5KehNTTDl+VaPniZhdMkvDU0PA38f0DmFbVqS/KvyhpHJHv5essUgTAewM+b1xoJ4iflc8LkYEiCBiOjiooqI2RGhYUJ96hm9Kd8wdULWAcGzHgKRn2xF21gjE9IBQpLXv0txtW9usBcKTw4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777235148; c=relaxed/simple;
+	bh=yr2DHkpYu2/Xu8RHkP9LXjK2VZnznGUp5EnqqaF+/jE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AHRfPVPmgxi2uAMbyw5noiGCJnVm+6tfiOBVRQ8zkhxt9nTCP8zf8vRN55ubFuzpGpDO0IB98TPlhlWBV7rwZQAVMFH+XJK6q2h7a2gj7IUUfrUSOmfZ9lQJhd5822QHvQsgJ/wLbB8ynehZX/HqshY4i7qDFFKtekE87/qUwdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VDbxKH8B; arc=none smtp.client-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="WATmwduW"
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id D1D59400B57;
-	Sun, 26 Apr 2026 20:14:54 +0000 (UTC)
-Received: from fr-int-smtpout13.hostinger.io (trex-green-8.trex.outbound.svc.cluster.local [100.96.8.215])
-	(Authenticated sender: hostingeremail)
-	by relay.mailchannels.net (Postfix) with ESMTPA id E1D91400B55;
-	Sun, 26 Apr 2026 20:14:51 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
-	t=1777234494;
-	b=wGXpRdoEIe1AykUFLOkYDS5zrLQdZgQoH+21wYSFs5D5oSdeMZz79QgzTubVyZsRjZbr54
-	VNlwDTIEYlfoaRhsK2SbvfJ+ZB8zGaqqlDD6WZYeB1WuhxvtuXDE1yRZek7VhPDpDWisv2
-	HBzlPzj71wJy/86jcX0JVtXHTWnWkvvkkd2Z0SZgfvMKNKxOSrsPDs9R57NWiLfpQ+QFp7
-	EhyHq3WRPbf6yKmSTLcHoOcMJ3YhHRqhiPFRlBKfHv94i1ml0PWaMHLpEyMx8JmY+5Tjz+
-	a+lzMT2KQ3+7qVl7lqcJ1utgQ+uQt3wy7IJRSZljw25bKydQKVIIIS0HIs0Atw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-	s=arc-2022; t=1777234494;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:dkim-signature;
-	bh=7AYZI01aPJnMQhaQvHFyZtCblGlVMaOsDhrTfhnMqfo=;
-	b=VzIaJeosq9kP+mmdGda+Kvq9eXUR8CCnDP0nMMkkPU9joYiZxSpx/tIbcyaKlAILx8w/Jh
-	rVLW0bvUTYS2geQSPilQhrTLApOdgZj+CgEdnmNO1lc20nDtg8KXJlOkC9+TwVdHkaOgQf
-	t4ohFx/hvEACqRE0Dbwp86Au3lmkEVyDOWwNjqjPnSfafktUch2qBzClzyLH1WUMpH86N+
-	MjACL9if3mvfSf+Af+V6W6s10C+aT+5+39QxqnjY559XbtQgNdg7mfdQyfkxgWSfBVP8dS
-	XUJIiizB2lfR/Ox4v5mwoSfc7Pk0LaVKjWxgVaLg1e+b2DPSMbMHiyoQWwyJxQ==
-ARC-Authentication-Results: i=1;
-	rspamd-b9d4fc544-8wftt;
-	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
-X-MailChannels-Auth-Id: hostingeremail
-X-Snatch-Interest: 4d3bf5f4144d266d_1777234494773_2366053198
-X-MC-Loop-Signature: 1777234494773:3107256095
-X-MC-Ingress-Time: 1777234494773
-Received: from fr-int-smtpout13.hostinger.io (fr-int-smtpout13.hostinger.io
- [148.222.54.40])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.96.8.215 (trex/7.1.5);
-	Sun, 26 Apr 2026 20:14:54 +0000
-Received: from [172.17.0.2] (unknown [125.163.204.171])
-	(Authenticated sender: linux@smankusors.com)
-	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4g3dGH07mQz10pB;
-	Sun, 26 Apr 2026 20:14:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
-	s=hostingermail-a; t=1777234490;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=7AYZI01aPJnMQhaQvHFyZtCblGlVMaOsDhrTfhnMqfo=;
-	b=WATmwduW3uNxdpcIPFVxfoPhEg8xpIfazWPkyd0GTlZTjYWVlBndMSD2GHixCxSMfRHKfB
-	buQ+PPOcZKbk4RMPZ2lxAplP8uOXjE96/ghO1eNmj9mbfb2Fd/au+Zmo9G/VV093NkJgdk
-	4Cw4Lsfj81Vh9ET4EXRbksE0JOI48Wj4fgVxWf6dRQ/wUQV3OVlVZPBg/wXkd9w7v8zCfX
-	6gSSi7cUJccYqOPFQnJjB02eGiKizrLXgDtQeViYKQtzxTAklrNVdCk35xpE/6PqyG5D1F
-	g9l9E8gSyzwZC+paQvghezG0PXo0eVMLCTzvhGHD6EPr47xmim6p/c5+Qc0QWw==
-From: Antony Kurniawan Soemardi <linux@smankusors.com>
-Subject: [PATCH v5 2/3] iio: adc: qcom-pm8xxx-xoadc: remove redundant error
- logs when reading values
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VDbxKH8B"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b9358dd7f79so527860666b.1
+        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 13:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777235144; x=1777839944; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8oQhRQaCh7wTVDtW5X/ov7P7WhvzMH+Ofkf86HNNbro=;
+        b=VDbxKH8BVMRRK+PJB3RuS1/UeRUArmCgZPRnPL1Wrdv+ZvCNpLMW3B9JT06iSFxv/B
+         X0LXaLc847Y5CCUBHQbRRkFpndpvNavuVHbAhw8uaijuVC6AYSp0NgIlzCuJK0lSa2X4
+         oO0zp6ctMB60E2rpbAihxavSFAvfAAY/99DtIjgQ3qSvrQ5PgHHW7lTJvnYM6x5we96F
+         RXran58VznsQqlvyjogilJYICZ34LgmNTFDrSPWbkkk9oDrmwFFtYFlYulLBjdqSqoDl
+         +blHJPtOn3Y2xIJMbbwyLET2jokNZE21Lsm785tJaKB0VNJEQxA263OSpm452cgV7GTd
+         CVOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777235144; x=1777839944;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8oQhRQaCh7wTVDtW5X/ov7P7WhvzMH+Ofkf86HNNbro=;
+        b=lHJ+Bu9WMwAIlFShV7IQeLzXnK+orNNjDJ+jWk9DNTSGoGR54Y6I7UvDfsEACGRuJZ
+         dEDWOuMSoBs2ypn5KvhKDgtzfguwCR5qnkxKIZk/cOhyWACFvqMjOZjh1Sn9mas5rIjK
+         dObZwCQbDnR6Un0B4SEETmxRA2zsI5gc7SRL3+vfYvF7tJuMwZZiHPVSnAZxw1wMblZ+
+         MqafZiiwxg3jbp4rCLZD3YKmUfYDb8VvyUnzNYE58jQM+94ZwKqvXmFxp21Gh3vJqJ1e
+         WCfYcPA5O2H6fPSY87gJVnAUJtgj/n/83UDE897hPe0ABwtG4cAlMImtPpgGguQd4clR
+         Y3Jg==
+X-Forwarded-Encrypted: i=1; AFNElJ/N20DqBMfrW09gvsLN176DckpQnSApnoiDmLWlNPeEZFx3ZjvpQcMO0zC/ZitT4Z8bEGwZ9PxKqyM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy37/xlVwceV7TjqvcRHYmQwcT+8GO1u6aiXhzWCbcYnNtdt+2C
+	+VqMSi+st6rdz0ih/oRoi0VByhQftPVyuXvo+tcIvpk3ucP6y9ogmbcjGNuiy24Uclg=
+X-Gm-Gg: AeBDiespcSqxSBlBCVh44C6q4IeHyYISPmnyd7qgNz4gqzIeXOcynoLZXIVA8p83Tgj
+	rJ80tI9UYgjud7XTvnjAQt5UQYcaa9WGUUkSOG7OYLJTKHeRcZdxu+/JNEX/YBhjX+GcbxDAXew
+	JOvKw89i1JZ7+In2pQ7RaHdfQIhYwVQNl18f5CmsFG07reJOB5AW67YGDkTH5QV7SbtBz7ZN4x9
+	k+7tLZ6NDO8bvf/k4hI//fOb3zZmV/qtdZnDacVoB52PNREMkpp8XlfnWMnIjgkSpSzbXFt4kTB
+	venlu4NnwPyzqa/6zJi6n0i5PPhPQ41CmV7kBsy6ytm8jkgFpbbTTBw/EqofxgaWA0e+2jKLv9h
+	MILvAS/I2FisDcXJDGrZGGAWHKQe80mt32OSh38v+6d+0DCIaDMdRgms04Nr/477fBXbPUcFM8w
+	ZpAVDybDnw4u5aJEX7EoDIqLZQ9pxu35blirBP0+KclVtlNC6k/w==
+X-Received: by 2002:a17:907:c302:b0:b96:e593:fd24 with SMTP id a640c23a62f3a-ba419658d6fmr2389436466b.15.1777235144005;
+        Sun, 26 Apr 2026 13:25:44 -0700 (PDT)
+Received: from localhost ([94.19.228.143])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ba455043cdbsm1029590366b.46.2026.04.26.13.25.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Apr 2026 13:25:43 -0700 (PDT)
+Date: Sun, 26 Apr 2026 23:25:42 +0300
+From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 1/3] iio: imu: inv_mpu6050: fix unbalanced
+ regulator_disable calls, when probe fails
+Message-ID: <ae50xlJfXiVax6c_@skv.local>
+Mail-Followup-To: Andrey Skvortsov <andrej.skvortzov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
+References: <20260426112334.3938774-1-andrej.skvortzov@gmail.com>
+ <20260426112334.3938774-2-andrej.skvortzov@gmail.com>
+ <20260426154330.0a29236e@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-pm8xxx-xoadc-label-v5-2-9e7b5a53ef99@smankusors.com>
-References: <20260427-pm8xxx-xoadc-label-v5-0-9e7b5a53ef99@smankusors.com>
-In-Reply-To: <20260427-pm8xxx-xoadc-label-v5-0-9e7b5a53ef99@smankusors.com>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- phone-devel@vger.kernel.org, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
- Antony Kurniawan Soemardi <linux@smankusors.com>
-X-Mailer: b4 0.15.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777234478; l=1799;
- i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
- bh=mltS0lNffyFe8OV7KjnOk1JbOoIpjoYboNePj7eHJBc=;
- b=NwDtpE+oxejwtv0rZ/bGymamwxOLwrJD+A0EhgPP6Z8r0+sLy4TiD9+DwLIKI2vqx20eeuexU
- rX8gzNvDAqtAe7zZq0pYWnTz044ec1A/ILE6mWzZ6UwV7bz6pHtNVHz
-X-Developer-Key: i=linux@smankusors.com; a=ed25519;
- pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
-Date: Sun, 26 Apr 2026 20:14:46 +0000 (UTC)
-X-CM-Analysis: v=2.4 cv=GMJaEfNK c=1 sm=1 tr=0 ts=69ee723a a=x8mjGQfUP7wLEdXozly9Ug==:117 a=x8mjGQfUP7wLEdXozly9Ug==:17 a=IkcTkHD0fZMA:10 a=EUspDBNiAAAA:8 a=wxLWbCv9AAAA:8 a=KgMSzCYp6QPDUwhpC-EA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
-X-CM-Envelope: MS4xfNBzOTb0FpvGVVpqIbkLowTIGGoBnijnqc/fYbE8G5xz64OjxrUcEA4I33NKBWk23N046GFkfpB5heYr5ehvOcS/gOsuzfTGLeEhD883KFbfWgiwu8G6 aMV3jXEZ5WA6Qo9sVKPJuzq+wrNUkazY1juFbZFqfN3TY+bKCvS01WbFUOX5Wq1BcdDNqpj+v+7d6HDaWoa9dEJBNDuxHzS80kMwkhdh5Bu4OnTpLhIup7cd z58hxsYPonyS1xV1A5M3nYJiN57fNSN2ejKBJDoRVj1e88oJEsynyoE3qLXpyXLo7ozHF2rTUC9SV9icY6U+sb1R3c5/UBXt9drz/idKhQw9ar8X6XeIjtBp xsHUfiHUNyUZZDLS1S8ckerO7XQu7OBqXKFzvIOyGkAlrKPr2U+g5dpprBUohsjnuXqfK0M1GYnyKaZWwNxtfbpozQ/ysPgQZk4fw4kwzs+DPOxRkPmiAcC8 pu5RolayxxRDM2NPiH3Yk/WGqlD2UO6piDbp+r28M86CDWISa6Bj6t+ypWSowjjuL7LuvT4xM0JB4pN21+id0nykXLNrCPHfmdA2szMgTMkHFKq5mQ9YBinA Y31OZslsafzIXpXnrGHFfEZYEHlHAOMCCkiXQoFdP0kawWJSFj730udwnBsVpBk1tJnTyckjAZZfR/DhznYxmZqsKflqihfh71jFS+RoMOnSQAjQEr5nGsp0 0wovBl6g47E=
-X-AuthUser: linux@smankusors.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260426154330.0a29236e@jic23-huawei>
 
-Drop dev_err() logging for -EINVAL and -ETIMEDOUT cases and rely on
-return values to report errors, reducing unnecessary log noise.
+On 26-04-26 15:43, Jonathan Cameron wrote:
+> On Sun, 26 Apr 2026 14:23:32 +0300
+> Andrey Skvortsov <andrej.skvortzov@gmail.com> wrote:
+> 
+> > During a probe functions after all regulators are enabled, runtime pm
+> > is enabled. Before probe function finishes, runtime pm triggers and
+> > disables vddio regulator. When probe function fails after that,
+> > inv_mpu_core_disable_regulator_action tries to disable already
+> > disabled by runtime pm vddio regulator causing following backtrace:
+> > 
+> >   inv-mpu6050-i2c 1-0068: trigger probe fail -19
+> >   WARNING: drivers/regulator/core.c:3244 at _regulator_disable+0x2ac/0x600
+> >   Call trace:
+> >    _regulator_disable+0x2ac/0x600 (P)
+> >    regulator_disable+0xac/0x148
+> >    inv_mpu_core_disable_regulator_vddio_action+0x3c/0xb0 [inv_mpu6050]
+> >    devm_action_release+0x4c/0x88
+> >    release_nodes+0xd8/0x178
+> >    devres_release_group+0x214/0x3c8
+> >    i2c_device_probe+0x6fc/0x9b0
+> >   ...
+> >   inv-mpu6050-i2c 1-0068: Failed to disable vddio regulator: -5
+> > 
+> > vddio state is handled in two places: pm_runtime and
+> > inv_mpu_core_disable_regulator_vddio_action devm action.
+> > inv_mpu_core_disable_regulator_vddio_action has to check, whether
+> > regulator is disabled by pm_runtime already. But this information is
+> > available only after pm_runtime state is initialized by
+> > pm_runtime_set_active during a probe. So
+> > inv_mpu_core_disable_regulator_vddio_action has to be called only
+> > after pm_runtime is properly initialized. To handle cases, when probe
+> > fails before pm_runtime is enabled, explicitly disable regulators
+> > in error paths.
+> Why not drag pm_runtime_set_active() earlier?
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
----
- drivers/iio/adc/qcom-pm8xxx-xoadc.c | 16 ++++------------
- 1 file changed, 4 insertions(+), 12 deletions(-)
+Do you mean something like proposed in v2? [1]
 
-diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-index 31f88cf7f7f1..89858e81c859 100644
---- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-+++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-@@ -535,10 +535,8 @@ static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
- 		goto unlock;
- 
- 	/* Next the interrupt occurs */
--	ret = wait_for_completion_timeout(&adc->complete,
--					  VADC_CONV_TIME_MAX_US);
--	if (!ret) {
--		dev_err(adc->dev, "conversion timed out\n");
-+	if (!wait_for_completion_timeout(&adc->complete,
-+					 VADC_CONV_TIME_MAX_US)) {
- 		ret = -ETIMEDOUT;
- 		goto unlock;
- 	}
-@@ -657,11 +655,8 @@ static int pm8xxx_read_raw(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_PROCESSED:
- 		ch = pm8xxx_get_channel(adc, chan->address);
--		if (!ch) {
--			dev_err(adc->dev, "no such channel %lu\n",
--				chan->address);
-+		if (!ch)
- 			return -EINVAL;
--		}
- 		ret = pm8xxx_read_channel(adc, ch, &adc_code);
- 		if (ret)
- 			return ret;
-@@ -677,11 +672,8 @@ static int pm8xxx_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_RAW:
- 		ch = pm8xxx_get_channel(adc, chan->address);
--		if (!ch) {
--			dev_err(adc->dev, "no such channel %lu\n",
--				chan->address);
-+		if (!ch)
- 			return -EINVAL;
--		}
- 		ret = pm8xxx_read_channel(adc, ch, &adc_code);
- 		if (ret)
- 			return ret;
+1. https://lore.kernel.org/linux-iio/20260401082737.781018-4-andrej.skvortzov@gmail.com/#t
+
+> Whilst we currently
+> check for an error on that call I'm not sure there is any reason
+> to do so.  It's a narrow set of conditions than can cause such an
+> error. 
+> 
+> If you have that between the regulator enable and registering the
+> devm action I think that would mean you don't need to manually clean
+> up the regulators.
+> 
+> Maybe I'm missing something.
+> 
+> J
+> 
+> > 
+> > Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+> > Fixes: 07c12b1c007c ("iio: imu: mpu6050: add support for regulator framework")
+> > ---
+> > 
+> > Changes in v3:
+> >  - make patch to be the first patch of the patchset for easier backporting
+> >  - update commit message to fix Andy's comment
+> >  - don't move pm_runtime_set_active from pm_runtime initialization,
+> >    move activation of inv_mpu_core_disable_regulator_action instead
+> > 
+> > Changes in v2:
+> >  - minimize call trace in commit message
+> >  - include specific driver name in patch subject
+> > 
 
 -- 
-2.34.1
-
+Best regards,
+Andrey Skvortsov
