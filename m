@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3453345CC0;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E60A634575A;
 	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777192700; cv=none; b=CBcHYL+03VN5BJmiUEkgOnHfIRoshz7zlXDkj/LZPqnImzpADBdoLDGCsCE4NQaP+yyYvqC0pAMoTKJHvmvQC+/2vLO3zjBFmFwD0tvZ+io+jwoEPMhPcbs4le0yxmHSX44IFWYAXLFSYIBlDWut7YlK/45BWH9XZe5XJvZfL0o=
+	t=1777192700; cv=none; b=IpXBsh/UeRzm3pTmbzUw2MgpVvhVTdVKGA6yUbd3+Hmknwxm89HhMUsITk/JLDhV/1fqxTx0ASM8gkO2z8lTVWKFO70qk+sZ00JnQFdFa4Q875lMp5ALZvYqyosarqyj1HQadhZ4529BRL1H/XlQ/TbBNRNO+ED5IM7C9YE88Ho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777192700; c=relaxed/simple;
-	bh=n1am3Rm9SzJWF+Azvyj1tHTTsTsQ3pwzcWn8m+vf0Z4=;
+	bh=Jut4q3rZbXMuUUVZSOZS22edwkDgNuXE/S+1GijfoNY=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=LUFXSck7GmkdRtqPgSC7kb6a5lEJRTGYBcYoKktooXD2ATXASptaQWe3w/mX+T9JbFKsJvJwx8A9rAeQbRYgaUseu5JnKwXg5wnABzO3+gHopHnNrnzif6q9LTyCpzCZ4Em1U07lkLlzoeWjuRck1t9t+o67+OhaXdVybscYQzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jqoVZo3R; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=fY6M9EX26VyBezyOEZ2AP1OywF35Vj0BInEOSOy2Un9I+uYIlZwYLxDGIlviWKfy4aAEcBHsO5RB2gnvlL8/0kcgipNyI277FXXRFccCgVvQ48V1ddFzGYp/HsRkX4ThPGkreBnamAZZRVZo4KteWkh7qdFO6rCjbb7/mu+ojzQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fm17ppf3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jqoVZo3R"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D8684C2BCB6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fm17ppf3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C8437C2BCAF;
 	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777192699;
-	bh=n1am3Rm9SzJWF+Azvyj1tHTTsTsQ3pwzcWn8m+vf0Z4=;
+	bh=Jut4q3rZbXMuUUVZSOZS22edwkDgNuXE/S+1GijfoNY=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=jqoVZo3R/pSqIW1VmuJPjy4zAKsDNpHsG1tg/JfYi0bUu3cPmgICfcbRxsGMPKsn/
-	 8SSmwII6gqtre9+H14bJYi/qyejmh++GKK5mzUL68hFlWDcxZMrBGj+owjaIs/6Xoy
-	 eRSdq06GjSv8QmVn3+nOT+HOroIaqVojHSIxbpm/yPA1/JvV8DN7mF4KNB6BjBYUct
-	 pU8/lSfVaNDqnEl8D7VkkcqlcFREOtCixLy8E9Jugb5EzEWgKU7d1BcLvvXHLR6cSi
-	 RKOh+z50S0lNBZWSklhuwkIfLgtf7f8jeqdrWNC/tTAwAGMtG3GQp9/Eq+PWbXi9hl
-	 O8mIq8SAUOkeg==
+	b=Fm17ppf3nPemaJ+1nOBYmdhPnDpyCYta0kyBDKq9lJuZdNyANrAL58TVFjBQQClcM
+	 DUTF3VsYvegbHyEmtVm1H4LKfK9uCYDRsgspKmsyANOr3BPvFaR0iguP/TxIofM3hc
+	 i4rwsY62MAOgcxDzUzPPlkp4m9BX1Rod3zgh1Umiihi1IaZfcm+M8eAfbxo0ZefZve
+	 qovn/83O57pyLfstAZ5NyOjGYDWXaOhDevVOhH+pN+eCUNx1DgI41sZ/dGOi/+nMjE
+	 LOaWCjpPBjL0am/GHs/aDJWKl8/sQE1b1xjhdfzsIsqecPXRteoRy36xoy6u6AePmC
+	 gvUIktAo1Ji7g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D12CBFF885D;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0EC9FF885E;
 	Sun, 26 Apr 2026 08:38:19 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 26 Apr 2026 09:38:09 +0100
-Subject: [PATCH 08/10] iio: dac: ad5686: fix input raw value check
+Date: Sun, 26 Apr 2026 09:38:08 +0100
+Subject: [PATCH 07/10] iio: dac: ad5686: fix powerdown control on
+ dual-channel devices
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260426-ad5686-fixes-v1-8-7c946a77794e@analog.com>
+Message-Id: <20260426-ad5686-fixes-v1-7-7c946a77794e@analog.com>
 References: <20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com>
 In-Reply-To: <20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -54,11 +55,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777192698; l=1053;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777192698; l=4409;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=Jyqj3+FFKyypdm39jK5VmyJy5lEuvWoM3X8faV9LnaQ=;
- b=J5VdC3SHKabbzhvICo8tYevq7BRLLWVqWZ3f9aqHns8S2D7KAC0WikGTH7VKArqdonMt1rbpW
- gyG88+gu0leD+oMUTrOAa0WpB1KnHzVdHwNbmrQFfxSnBjEogV60WvB
+ bh=MWg9tSw53gQgdeZxF8M2GSlQfNQfJl0ORghHPgSvvWw=;
+ b=SgsvL/F+6oFskjs/1WBg1nVGhxlBfv5s6cEyZqTd6vE4MsWMiPYdGv2deM/RwK4Yxu+bqm5Am
+ 4hsFaKjfeZLCgKWyMAZmo9blVk3VJfYyyfIVzsvxV/LJxCP6Gn/38Y8
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,30 +69,120 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Use in_range() to fix range check for input raw value, which is off by
-one, i.e., for a 10-bit DAC the max valid value is 1023, but 1 << 10
-equals 1024, which passes the previous check, allowing an out-of-range
-write. The issue exists since the ad5686 driver was first introduced.
+Fix powerdown control by using a proper bit shift for the powerdown mask
+values. During initialization, powerdown bits are initialized so that
+unused bits are set to 1 and the correct bit shift is used. Dual-channel
+devices use one-hot encoding in the address and that reflects on the
+position of the powerdown bits, which are not channel-index based
+for that case. Quad-channel devices also use one-hot encoding for the
+channel address but the result of log2(address) coincides with the channel
+index value. The issue was introduced when first adding support for
+dual-channel devices, which overlooked powerdown control differences.
 
-Fixes: c2f37c8dcadc ("iio: dac: New driver for AD5686R, AD5685R, AD5684R Digital to analog converters")
+Fixes: 7dc8faeab3e3 ("iio: dac: ad5686: add support for AD5338R")
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dac/ad5686.c | 38 ++++++++++++++++++++++++++++----------
+ 1 file changed, 28 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 040a24c62c9a..ab498ec2ed5c 100644
+index c7d5ee344a6f..040a24c62c9a 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -186,7 +186,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
+@@ -40,25 +40,36 @@ static int ad5683_control_sync(struct ad5686_state *st)
+ 			 FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
+ }
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > (1 << chan->scan_type.realbits) || val < 0)
-+		if (!in_range(val, 0, 1 << chan->scan_type.realbits))
- 			return -EINVAL;
++static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
++{
++	if (chan->channel == chan->address)
++		return chan->channel * 2;
++
++	/* one-hot encoding is used in dual/quad channel devices */
++	return __ffs(chan->address) * 2;
++}
++
+ static int ad5686_get_powerdown_mode(struct iio_dev *indio_dev,
+ 				     const struct iio_chan_spec *chan)
+ {
++	unsigned int shift = ad5686_pd_mask_shift(chan);
+ 	struct ad5686_state *st = iio_priv(indio_dev);
  
- 		return st->write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
+ 	guard(mutex)(&st->lock);
+ 
+-	return ((st->pwr_down_mode >> (chan->channel * 2)) & 0x3) - 1;
++	return ((st->pwr_down_mode >> shift) & 0x3) - 1;
+ }
+ 
+ static int ad5686_set_powerdown_mode(struct iio_dev *indio_dev,
+ 				     const struct iio_chan_spec *chan,
+ 				     unsigned int mode)
+ {
++	unsigned int shift = ad5686_pd_mask_shift(chan);
+ 	struct ad5686_state *st = iio_priv(indio_dev);
+ 
+ 	guard(mutex)(&st->lock);
+-	st->pwr_down_mode &= ~(0x3 << (chan->channel * 2));
+-	st->pwr_down_mode |= ((mode + 1) << (chan->channel * 2));
++	st->pwr_down_mode &= ~(0x3 << shift);
++	st->pwr_down_mode |= ((mode + 1) << shift);
+ 
+ 	return 0;
+ }
+@@ -73,12 +84,12 @@ static const struct iio_enum ad5686_powerdown_mode_enum = {
+ static ssize_t ad5686_read_dac_powerdown(struct iio_dev *indio_dev,
+ 		uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
++	unsigned int shift = ad5686_pd_mask_shift(chan);
+ 	struct ad5686_state *st = iio_priv(indio_dev);
+ 
+ 	guard(mutex)(&st->lock);
+ 
+-	return sysfs_emit(buf, "%d\n", !!(st->pwr_down_mask &
+-				       (0x3 << (chan->channel * 2))));
++	return sysfs_emit(buf, "%d\n", !!(st->pwr_down_mask & (0x3 << shift)));
+ }
+ 
+ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
+@@ -100,9 +111,9 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
+ 	guard(mutex)(&st->lock);
+ 
+ 	if (readin)
+-		st->pwr_down_mask |= (0x3 << (chan->channel * 2));
++		st->pwr_down_mask |= (0x3 << ad5686_pd_mask_shift(chan));
+ 	else
+-		st->pwr_down_mask &= ~(0x3 << (chan->channel * 2));
++		st->pwr_down_mask &= ~(0x3 << ad5686_pd_mask_shift(chan));
+ 
+ 	switch (st->chip_info->regmap_type) {
+ 	case AD5310_REGMAP:
+@@ -441,7 +452,8 @@ int ad5686_probe(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct ad5686_state *st;
+-	int ret, i;
++	unsigned int i, shift;
++	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+@@ -462,8 +474,14 @@ int ad5686_probe(struct device *dev,
+ 	st->vref_mv = st->use_internal_vref ? st->chip_info->int_vref_mv : ret / 1000;
+ 
+ 	/* Set all the power down mode for all channels to 1K pulldown */
+-	for (i = 0; i < st->chip_info->num_channels; i++)
+-		st->pwr_down_mode |= (0x01 << (i * 2));
++	st->pwr_down_mode = ~0U;
++	st->pwr_down_mask = ~0U;
++	for (i = 0; i < st->chip_info->num_channels; i++) {
++		shift = ad5686_pd_mask_shift(&st->chip_info->channels[i]);
++		st->pwr_down_mask &= ~(0x3 << shift); /* powered up state */
++		st->pwr_down_mode &= ~(0x3 << shift);
++		st->pwr_down_mode |= (0x01 << shift);
++	}
+ 
+ 	indio_dev->name = name;
+ 	indio_dev->info = &ad5686_info;
 
 -- 
 2.43.0
