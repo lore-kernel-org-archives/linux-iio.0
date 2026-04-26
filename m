@@ -1,93 +1,67 @@
-Received: from mail-m15597.qiye.163.com (mail-m15597.qiye.163.com [101.71.155.97])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E2B17C211;
-	Sun, 26 Apr 2026 12:07:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.97
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8915017C211;
+	Sun, 26 Apr 2026 12:12:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777205257; cv=none; b=DJfZhzd1uaSM/KQ2k+phYNGm9F5hlJoagktsF+Z23rJrOjXMjRaQ8FCJAx89rLOzuDxMjVQZCS14yQJLxDKFMNVJEJjt1ZUhXvoT/53C9j4jWRznUCOH3bZaCA1qEjnug8U/XpbPP0dKseNPrpnv16HpuP4CeMI/qBt/LZeN0lc=
+	t=1777205574; cv=none; b=DBWlEPShBJ1zePVUcvy/zv520RGLah/gaQA18GPNCRAZowkX43zOiS8zoygUKbZ7An69ebamNdE6M0+8tgXBCjW1cykfa8gaYnH8QQhoYImbBAVjJExwQW3/ZkptduKbLYP4jrOpQ5FfUgwAibE+9rNtJvPGjJ4WGH7Ee709hus=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777205257; c=relaxed/simple;
-	bh=KWBNUAXaq4SARsO6xZHW2yyqx4CeLpiPK/53gmtpHV4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JTMfGm12g0YwTU1MjDTqAflZOgybfudjdUNAibRL3GqRL3JlUOh5nIuTU6RI5RXui8nftOGBvh98R5bk7khv1/PdcFZaog5NJo9Z/Yd4i80T5wPioGHHStllX8sEvjO5/jzgTpG3i6gmufjUavGSQr1CKtHINr0WGljFz6CZKyg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=CJLx/i7y; arc=none smtp.client-ip=101.71.155.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1777205574; c=relaxed/simple;
+	bh=P3bikrqi6kfMr6S9y79ceYVSgRZdxT9Zmg4rc+nCbqc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ckIRSKVlTkF2UPXsRcJm5MetUsacRCszQGyAH9avln4j6YbPXEDCXIml9mbEez+pL+RxU1VKnvb3SNcrgID63/xucwUtam9YW+dVBzCTd8/XiZfxJHw6sTpc4apBpINwbP1zsxLKZQfQrHHJRqaX/vHQVY1C4AmYFJIxLmaAn/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qht5GOBD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="CJLx/i7y"
-Received: from [172.16.12.43] (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 3c2b50084;
-	Sun, 26 Apr 2026 17:44:46 +0800 (GMT+08:00)
-Message-ID: <4592b323-bebd-4242-ae31-892a51b5b3be@rock-chips.com>
-Date: Sun, 26 Apr 2026 17:44:46 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qht5GOBD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16401C2BCAF;
+	Sun, 26 Apr 2026 12:12:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777205573;
+	bh=P3bikrqi6kfMr6S9y79ceYVSgRZdxT9Zmg4rc+nCbqc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Qht5GOBDsJKIkOVbzLeaeij/zPClOv+t07OmuH+t8k08Cm6kIjexA9dUY0e+LAQZm
+	 4sU3ksBL+PP38nokofYDyCprUihsnsAmRPlKbN2hDc/zUE+GZG7YAVq0x4K9SCLqSq
+	 QGll8xGZu81Xs5mk35WhPdyXt3jCR0fTUUOZHyqcViYzvW12SrCH5Q/oB87Z7MVG4m
+	 uCILQVTDGeReL0TYiQjdzGCGb0hDlBS9VD5rENxf3AsXKd929sZOIKgAFz/WEHrmGu
+	 iM5mVRD7aK0tYrHKpXffFnmlFhhkKViKvph0V+fvNO7bQz/UgdEWCOg95ORR44neSd
+	 xuK35XpkzPUlQ==
+Date: Sun, 26 Apr 2026 13:12:41 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
+ Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
+ Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
+ R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH RFC v3 7/9] iio: frequency: ad9910: add channel labels
+Message-ID: <20260426131241.7db970e1@jic23-huawei>
+In-Reply-To: <20260417-ad9910-iio-driver-v3-7-29b93712a228@analog.com>
+References: <20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com>
+	<20260417-ad9910-iio-driver-v3-7-29b93712a228@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/6] pwm: Add rockchip PWMv4 driver
-To: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>
-Cc: kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
- Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
- <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
-Content-Language: en-US
-From: Damon Ding <damon.ding@rock-chips.com>
-In-Reply-To: <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-HM-Tid: 0a9dc92d5ac103a3kunmad79455f144c6e
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1kYFggdWUFKV1ktWUFJV1kPCRoVCBIfWUFZQ0gZSlZMHU8aT0pIGh
-	8dQx9WFRQJFhoXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0
-	tIVUpLSU9PT0hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=CJLx/i7y6XIEhYYkK+bcgbOZWb7NOyQLgyDPGnFicFerhHIaBNhya23FTvMhF0ELqg0hwYPcLAE8ijcflb+VnzUyvdw1e702NyfyYnKk08xcMHFVZIbWrDHosDGHV59BmABw2a+DV9+1R2xtfFph6z2yjW0VDJnk4GjdMRUUAas=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=QT/EFaL4fcCqqsu06HNkALgIVcLkVsgdWHpd2+shATA=;
-	h=date:mime-version:subject:message-id:from;
 
-Hi Nicolas,
+On Fri, 17 Apr 2026 09:17:36 +0100
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
-> The Rockchip RK3576 brings with it a new PWM IP, in downstream code
-> referred to as "v4". This new IP is different enough from the previous
-> Rockchip IP that I felt it necessary to add a new driver for it, instead
-> of shoehorning it in the old one.
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> Add this new driver, based on the PWM core's waveform APIs. Its platform
-> device is registered by the parent mfpwm driver, from which it also
-> receives a little platform data struct, so that mfpwm can guarantee that
-> all the platform device drivers spread across different subsystems for
-> this specific hardware IP do not interfere with each other.
-> 
-> Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-Tested-by: Damon Ding <damon.ding@rock-chips.com>
+> Add human-readable labels for all AD9910 IIO channels via the read_label
+> callback.
+Given how important they are for this driver, I'd add the labels as you
+go along rather than doing it at the end like this.
 
-The continuous mode of all PWM channels has been preliminarily tested
-and verified working on the RK3576 IoT board.
-
-I have tested with several typical period and duty cycle configurations.
-
-Following Uwe's suggestion [0], I also tested with libpwm using commands
-similar to the following:
-
-./pwmset -c 0 -p 0 -P 1000000 -D 500000 -s 5000
-
-I was previously unaware of the existence of libpwm. I will continue to 
-follow its upstream development and updates going forward. :-)
-
-Best regards,
-Damon
-
-[0]https://lore.kernel.org/all/fgu42esufq2x4fcccncqs3hlotih2gqmws5atotlaznuahoslw@34vblr6vboze/
