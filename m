@@ -1,115 +1,168 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-m49216.qiye.163.com (mail-m49216.qiye.163.com [45.254.49.216])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7BCE2882B6;
-	Sun, 26 Apr 2026 11:01:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B503D165F16;
+	Sun, 26 Apr 2026 11:11:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.216
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777201310; cv=none; b=UTpLzoi2OTLk9ZVElbNIjv/O983Riq6Ml9UkJc1W70rW8mRkxIAGANZjbumywwcuFijX7itgxz49ZTZ1ZgrPL5p6VwIMuI6WvTFQJkfYkYLADSMe3IRtUR8C395nAFj7IV2vGDL7xmKC7BQIOceUHQqJY0xZpJHD/pwXhklI0i8=
+	t=1777201869; cv=none; b=jZqW933EtW8l6AmqRO19BMI3o93TFeC3GKmDFGuzqArIPui8DjoK8GRqgGIr3VAddXrkZWoN2vzlFwn5/iN/tfSMyVGTTkpcPkR81Hub3EbKF4mOM2i/AaFhXsqvQQ9Mh5RIF3HKzkU1HuKjD7b5eX1zMgdlmTugLLw9UE04MzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777201310; c=relaxed/simple;
-	bh=5mbT5zxJLttGO9IREsSuDDnHGoOb579Xt7g8NCSKqGo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bpwkakXqQcM6VWwrWWxvzsZdapsDn8jWZuoWojhC0ydXoG/TJB70bp3RLlPBVPaDb8ZT5+CBmGLFa8psztgl9jeJHBjEbLHn1N+wjaSpjtgmrKJTWEK3sPs2ucGmZQWO7EEq22+o3khbx+CGHsy04DZyR6TSaNbtJkyCjabxes0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J8tXNY3f; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777201869; c=relaxed/simple;
+	bh=3HWdO9G2DFHbWy3pq1NGFJr6mA281UK6sb66l/eo520=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nQB5jIST9EVgi1hh+3vsUZeD16jK3LPYRXXSkCEeOTDv/UBgRkIAoyW//pdUnxwfvdUZmJLPdIBsiYKufkTzVZ3buRPZnYytVuT2nmp6ArOFH/eLIIwQDjJFijQL5YWtq92YXu3DqWxKYe8HujHuVnMjTv/aJK3ksDv6+cQQnW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=k3j+KzqG; arc=none smtp.client-ip=45.254.49.216
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J8tXNY3f"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF72C2BCAF;
-	Sun, 26 Apr 2026 11:01:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777201310;
-	bh=5mbT5zxJLttGO9IREsSuDDnHGoOb579Xt7g8NCSKqGo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=J8tXNY3fYHJBBvA/VMVCTzeMAlg7/Q4PdaCuLa6ffOydAiPMmjIjDOCMhBgmkgf3/
-	 8++bCPFlnU+9jUVXXVNnqoNKlmTqQ8tq2VCDZSJLmaMeM/1OHnfqv89h0CmerKAQht
-	 Y6V3Th9yK9j3cymhdrd79fea6t7TidchIGtVTh4VEwpHWewzsBibbyOSoCznVzkpSQ
-	 hp0i/m0GnWu3ccbfc46PsT1riC6PQIgHE663KFulWy7Kzz8y96fgWd+yLGXWS1BlRb
-	 OfmSGXsX+ZjFQJoI6dI1DUwg7v//qEb63h3J1AcjckZl2nyOwTo2kyT9/5Qmt6FqHe
-	 g8PWJIcnUVn/A==
-Date: Sun, 26 Apr 2026 12:01:39 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
- R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v3 1/9] dt-bindings: iio: frequency: add ad9910
-Message-ID: <20260426120139.3fb8f3da@jic23-huawei>
-In-Reply-To: <20260417-ad9910-iio-driver-v3-1-29b93712a228@analog.com>
-References: <20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com>
-	<20260417-ad9910-iio-driver-v3-1-29b93712a228@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="k3j+KzqG"
+Received: from [172.16.12.43] (unknown [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 3c2bf0f7e;
+	Sun, 26 Apr 2026 18:55:20 +0800 (GMT+08:00)
+Message-ID: <91eed9a4-4dc3-4846-baf3-e9cef53be79b@rock-chips.com>
+Date: Sun, 26 Apr 2026 18:55:20 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 4/6] counter: Add rockchip-pwm-capture driver
+To: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+ Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>
+Cc: kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
+ Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
+ linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
+ <20260420-rk3576-pwm-v5-4-ae7cfbbe5427@collabora.com>
+Content-Language: en-US
+From: Damon Ding <damon.ding@rock-chips.com>
+In-Reply-To: <20260420-rk3576-pwm-v5-4-ae7cfbbe5427@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-HM-Tid: 0a9dc96df5f203a3kunm44ef251f147654
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1kYFggdWUFKV1ktWUFJV1kPCRoVCBIfWUFZGRhISVYdHRlPS0MZS0
+	tDSUNWFRQJFhoXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0
+	tIVUpLSU9PT0hVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=k3j+KzqGo1yaYNVbzfra2FBJAB62XBtxGRT9nkLjxBKiMb1q/TYYcRi9XcqBDo/RiMjdsaPIkvHa9ZoY23x44LOUxm+CFZK78NVUnV9cMTGU17QFoIC5YUd5A6tD1VJ9wWOAw3i5/SIB/vW3gEGp87tCuoH3P0kJQUAyzPnKtgk=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=msZgS8n7WJEel0UQMVZgdBaQJewEl2x1ppuOvvbY4aQ=;
+	h=date:mime-version:subject:message-id:from;
 
-On Fri, 17 Apr 2026 09:17:30 +0100
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+Hi Nicolas,
 
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
+> Among many other things, Rockchip's new PWMv4 IP in the RK3576 supports
+> PWM capture functionality.
 > 
-> DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
-> configurations for clocks, DAC current, reset and basic GPIO control.
+> Add a basic driver for this that works to expose HPC/LPC counts and
+> state change events to userspace through the counter framework. It's
+> quite basic, but works well enough to demonstrate the device function
+> exclusion stuff that mfpwm does, in order to eventually support all the
+> functions of this device in drivers within their appropriate subsystems,
+> without them interfering with each other.
 > 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
 > ---
->  .../bindings/iio/frequency/adi,ad9910.yaml         | 189 +++++++++++++++++++++
->  MAINTAINERS                                        |   7 +
->  2 files changed, 196 insertions(+)
+>   MAINTAINERS                            |   1 +
+>   drivers/counter/Kconfig                |  11 ++
+>   drivers/counter/Makefile               |   1 +
+>   drivers/counter/rockchip-pwm-capture.c | 307 +++++++++++++++++++++++++++++++++
+>   4 files changed, 320 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+
+For functional validation, I connected PWM0/PWM1 (continuous output)
+to PWM2 (capture input) pairwise.
+
+I enabled the counter via:
+/sys/bus/counter/devices/counter0/count0/enable
+
+Then I verified the functionality by reading the count values from:
+/sys/bus/counter/devices/counter0/count0/count
+/sys/bus/counter/devices/counter0/count1/count
+
+Tested-by: Damon Ding <damon.ding@rock-chips.com>
+
+BTW: Is there any user-space test tool similar to libpwm for the
+counter subsystem?
+
+......
+> diff --git a/drivers/counter/rockchip-pwm-capture.c b/drivers/counter/rockchip-pwm-capture.c
 > new file mode 100644
-> index 000000000000..61e879bca5c2
+> index 000000000000..09a92f2bc409
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+> +++ b/drivers/counter/rockchip-pwm-capture.c
+> @@ -0,0 +1,307 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Copyright (c) 2025 Collabora Ltd.
+> + *
+> + * A counter driver for the Pulse-Width-Modulation (PWM) hardware found on
+> + * Rockchip SoCs such as the RK3576, internally referred to as "PWM v4". It
+> + * allows for measuring the high cycles and low cycles of a PWM signal through
+> + * the generic counter framework, while guaranteeing exclusive use over the
+> + * MFPWM device while the counter is enabled.
+> + *
+> + * Authors:
+> + *     Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+> + */
+> +
+> +#include <linux/cleanup.h>
+> +#include <linux/counter.h>
+> +#include <linux/devm-helpers.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/mfd/rockchip-mfpwm.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/spinlock.h>
+> +
+> +#define RKPWMC_INT_MASK			(PWMV4_INT_LPC | PWMV4_INT_HPC)
+> +
+> +struct rockchip_pwm_capture {
+> +	struct rockchip_mfpwm_func *pwmf;
+> +	struct counter_device *counter;
+> +};
+> +
+> +static struct counter_signal rkpwmc_signals[] = {
+> +	{
+> +		.id = 0,
+> +		.name = "PWM Clock"
+> +	},
+> +};
+> +
+> +static const enum counter_synapse_action rkpwmc_hpc_lpc_actions[] = {
+> +	COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
+> +	COUNTER_SYNAPSE_ACTION_NONE,
+> +};
 
-...
+For the capture function, it uses the PWM's reference clock (dclk) as 
+the time base to measure how many reference cycles the high and low 
+levels of the input waveform last respectively.
+
+I find it a bit strange to set COUNTER_SYNAPSE_ACTION_BOTH_EDGES for 
+counting. If we treat the input waveform as a sequence of square waves 
+sampled by dclk cycles, it feels like we should count on a single edge 
+(rising edge only) rather than both edges.
 
 > +
-> +  reset-gpios:
-> +    description:
-> +      GPIOs controlling the Main Device reset.
+> +static struct counter_synapse rkpwmc_pwm_synapses[] = {
+> +	{
+> +		.actions_list = rkpwmc_hpc_lpc_actions,
+> +		.num_actions = ARRAY_SIZE(rkpwmc_hpc_lpc_actions),
+> +		.signal = &rkpwmc_signals[0]
+> +	},
+> +};
 > +
-> +  io-reset-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO controlling the I/O_RESET pin.
-> +
-> +  powerdown-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO controlling the EXT_PWR_DWN pin.
-> +
-> +  update-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO controlling the I/O_UPDATE pin.
-> +
-> +  profile-gpios:
-> +    minItems: 3
-> +    maxItems: 3
-> +    description:
-> +      GPIOs controlling the PROFILE[2:0] pins for profile selection.
-> +
-> +  sync-err-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO used to read SYNC_SMP_ERR pin status.
-Looking at the datasheet there are a few other things that might want to be here.
 
-pll-lock for example might be wired to a gpio to allow a check that lock has
-occurred.  Maybe sync-samp-err as well though possibly that one wants to be an
-interrupt?
+Best regards,
+Damon
 
