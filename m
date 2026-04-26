@@ -1,77 +1,76 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2555B1DE8BE
-	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 20:50:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6372226CE05
+	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 21:18:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777236643; cv=none; b=r3ka1YQcT5OsGLh/L0P3lubkWNBtxirkFZf9NAi68vvdvvWB9duA4ZJWUd0Zsx+8XVDGjxH9MMoyF+9E6Gru2G4lf87tGaOGesxmm282zN9DGxwmgrWlwz/9bFm8YAm3F8+NiiFzbJl6qKauHzkzfYbmNRj8cUKuH/Lcsx5mLxI=
+	t=1777238332; cv=none; b=sHQJaFCc1SNWz5IzQxGaXD3JSsautAEw/RfZ6vnv7es9DdG03erEHLNyr4L3e9OYfMoNnjTxvk7lTNcqRpfvOjKegZlc2gqA79wX5S6k+UVrLsllsidGVBhz+LPgKUXgUaoaIyB1GtKnSkU8WMnisVzlBuUbFh+/Ra+UUZ2KxKQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777236643; c=relaxed/simple;
-	bh=S8COp5cvrjo0lKiTIgw3J0o4L4SnaSUb3SMdXelG/z0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=okdvnLDeijUMNHcwWFO5SoC/Z10rN+3VPHIl9XDeypgGqb3213D382NhZqE/lyo+DANF/tQ+D8J7hCeAKrO4/HcLtAh2gqFyiVwa7fa4Y29NJTlIRkHTdoUYsKec51TmWsA5JyqtiEkbZX+f8L3BTpsUpavXhpnoVL10VAETsnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BQnPLFBI; arc=none smtp.client-ip=209.85.210.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777238332; c=relaxed/simple;
+	bh=CPy2Vs8f8zbll4GAc3dH1op3Gpt+Q5/tPNFN2OkDhSE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=W9NJDC6vvc6jhdPCu3K5Cg7zkdaJ93l7g4LXj9c+/VCkOydZItG0av67PY+rK94r6XF8g12ef6iJZ1aaMaN1ErdEUK8jIPEzYegydnTlfQ4hnn1rqvfn8oYO4dqs+wZZN6dSPu+MZNohoEeaVRF33a+dDYZazjzYCWx0a/zSVFw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=V1NJMTyO; arc=none smtp.client-ip=74.125.82.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BQnPLFBI"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7de46b8e432so3740191a34.1
-        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 13:50:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="V1NJMTyO"
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-12713e56abdso6821294c88.1
+        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 14:18:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777236641; x=1777841441; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1777238328; x=1777843128; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DUk8j10LOn+5jK3eG5TZh8pc0y7Efus/q8JN9vQKIsw=;
-        b=BQnPLFBImLtI7Jtw3ZJnZMLTUW/QsgZ98XtWzZnwPAqUNKku7Mw13tJk7AqZV24uDS
-         Zvr2yHjnDLPjlEJu5V6NEDVbtwbAIGQu/tV3zx87EiOTP1+unB7Z6YGGAT3Mv4E0ta/V
-         MGLrd7elmvA17JiBYN8mqcjORNYIuIr2zK7gFtC5qQLD9CpP/5pAsNl6fLNhxrxYhXuy
-         T/h8BWki0xgbYFUQohbr+d3n0RU/alsENPlJXJ3PJzCQ/yIEB1vgxdLbv/FJUaXylkqP
-         B3T6RadHBWLzo0YrYXza2O48fwUpZVBjAFbjGlWU1VDy00j+4dwf8rrBxMo00rkTDnfK
-         G6sw==
+        bh=2f/xxCVhn8u14pobySK1w6AYfG4EprPsl+SY3WJGODc=;
+        b=V1NJMTyOsBpvsnxYy2G02xwBzqrGLGqJ0wTTgtLch+KqCN8VIwF4SZ8ruGaL8p8TVw
+         fAlT64EQr1tIasK6Bo74hemrvp6sbd4h3+H1DPjkoI2pJpRG4PV6UDVc7/6aMJPRSOHn
+         qhJFPTUv9+2qvTsgfQ00O5Tq84PeJWu5eyZ8i4tjMGCQTJcqP9RW27zWaxDiezXtTFl6
+         nkkdE7tJRY4T3VS/W4CtiwYFq81FsN4NwJHueELej6a8FBQfmz7Bh2d9o6hpNTUzP7Su
+         PETEXzZ/SE/9nohXwASIY65XPW0FXuU5MXThXO4UWOSb9Eau6NXqKXgEaGWthAcfBq51
+         iq1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777236641; x=1777841441;
+        d=1e100.net; s=20251104; t=1777238328; x=1777843128;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DUk8j10LOn+5jK3eG5TZh8pc0y7Efus/q8JN9vQKIsw=;
-        b=F0tG3cRU+aeZjXTysKR1xUmgfmsve9mw8XALJw6Zliesa6cctCJD4PGLIMGlHhaDp9
-         Pvpne5bFKwqy8Ty2X/+YOtuKmnreXZ9sSn501UAfbeSe3FSDSmKBm7yhxsAx9ifCTgOa
-         Rb+geq3ugPO6zAfInq01GKakTV5eRw93lLiVQZa2Q7weN96lRbMTvy6k7n/Ay1S+AnF7
-         2NU+YJBgofVhJNiZPARwNjYWuBVHt7UQGFtJC2Y3a8M3yiqrfUfIyFe5CigraBUgTxy2
-         Q9BDjGBYMjN1oBxgZuUvZr9UU5mMszNeyHYTqQ+fo1DAUHi0+hK1CeYfzo61ZpihBlyq
-         xW8w==
-X-Forwarded-Encrypted: i=1; AFNElJ8DtZzAjy9NMhH3ttIuq4ul4n53pyQNsJlT41B8yXmFdR0gjNDC2qD1mL62RkCpEQa5GfIL0PV9iXE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YziXUIvUwcy/dn0Sjf1On0eoKBQng+NZEyXdmqE1yvP6NRUHoD0
-	IdNSB/4tTZZEN/2X/ZfN1Q4LNkEjVsDM0H2Epdg+uus8XEWIV1uXylzo
-X-Gm-Gg: AeBDieskTl85pyYQh3OO+u/oxpSMDMN3+zyBeE63ah9k6b8F4qj4QFXjefUGWnyyr77
-	cdFyh+fGB0sNgOwdYAL91ep9/28HXUpg9ybAFmrmSdhU3ZayHubYh/HZr/C9Eyv3J2JR9MhKFWg
-	b9xwGxXobYHd9uoPHE4UDwZ6BHcrX29iAPhDOfUqG5nYYZ+FDX70AKmdsB2dRvD1xo2PZdkqnDh
-	uLQIpI9auAgyHPxRO2ncZBDV802Zqb/VSLpLaB94Wa7ZhvgfW9cxW/IpUXDkfZbVp8tpeu5j+Aj
-	C0eXESac8JFgpgbxNixRSOPEnu0+arg/embBfwtTnTh+98ISjl05J0esTM0lGH/RUaVH5oBZQGs
-	BVsgjIsdM9+QLvHkLO/NODkRgvSY+MWPVmt0KX2MkxuncKTJjI4pfn2PO7Me9Fb1bjgbtCOdusx
-	rcsMa0v/miW/h4Ym/u+r4hfUOplTF0Q9j+WmdYss3HRwLOtNX7V4oJo5ZwO2PW+uzEOdpdWv9vI
-	Z6WNU4=
-X-Received: by 2002:a05:6830:8288:b0:7d7:f90c:5833 with SMTP id 46e09a7af769-7dc952831c8mr24682765a34.27.1777236641172;
-        Sun, 26 Apr 2026 13:50:41 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7dcc747f1aasm18754101a34.18.2026.04.26.13.50.39
+        bh=2f/xxCVhn8u14pobySK1w6AYfG4EprPsl+SY3WJGODc=;
+        b=hZaxkNu4+NZjnY+AfB1pGkZfYQMiuV+/OxKOdk94ff9FHeX7N6azdEJ7qND8JjFm6a
+         9fXnSlSOpwiKUOrJfI2SXjR4w9NbxPMlIMwS075n6xTfACOgUUDit7T43LaJNKEG7L1x
+         zysLCIaSNUziWdWKR47rhDm6atc4/PFkWR081n5NxGTWX0+cpcGkNkUGuGp0kySnICeG
+         0lWZhyUiuF4uQ2DIc/paWzVY3vPTSeQ4vlQfWuaXFe7xO0QzyzE9bGf6Dpc97yNCtios
+         ldW6CEsTy7HP7u5A2XB6hO/qQTwiJg/AsgJQkgtPTXRm0lsKCtYFWpRqqaXZG/uvm8mY
+         Myyg==
+X-Forwarded-Encrypted: i=1; AFNElJ+ac7P73fa3m22E8vmvBRxvNphyuHA352xpkp24ZcY9pjVExfT92pnKmOmMIV4+KvvElkX85StturM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzRIngCwHWBZhiNNEAzvWTgby9/vPn2nb/q0Bdxkz1qstnD3Gkp
+	+1n/PQk8MmrNtUtvaPujHopnZ0tlws1hd4PW4K4y3CD0IvPXFrn3J48mxnTAXXSV9w0vgVapAxb
+	aeowfIW/dig==
+X-Gm-Gg: AeBDietkMwVzyNhepBc1KyGVNUeW0tfF5F8VxoUkNaXL++51u5LkbcrNYa+YlbSby3y
+	nle8Lmggi6uSPElpNxEVokM7BF1gcd212syRFl17MXD5KSwFtAgTqy74a7dpqmr3EpGV1cBs/2d
+	zR31zyuLT2xQkmtVCUMHmh1d3xwbHMMH/62rqY4eztJRP0NDuSaCZsbgvQnDVWFHoVnOnBkrw7s
+	yBecOFUUjd47HHaDth+3T4ApVZaOI6eurgNZ3N5vRb38DZKz2aCxh2P4NKre0vhhe6vYUsoGT6Q
+	AOzmfk1as4lH32vbyTWCoFTX9cP4XSkFiFxULMrPAU2bjJyk5HpMCPuvObGnolGZ0edmTJzRFMy
+	Dw1w8DFNHiK07T0W30Pkp06dwNzextxXOzNYQoHPbtu2LpGj0sC2K+yBl3OYQohPevHfu3aA+Mk
+	lnaK2cGBuPxyUGrQiGAkpVxiHYut4o5zc=
+X-Received: by 2002:a05:701a:c941:b0:12c:87f2:90af with SMTP id a92af1059eb24-12c87f2925dmr9336512c88.12.1777238328189;
+        Sun, 26 Apr 2026 14:18:48 -0700 (PDT)
+Received: from eileen ([38.10.153.31])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e53ccce0f5sm40799122eec.17.2026.04.26.14.18.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Apr 2026 13:50:40 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
+        Sun, 26 Apr 2026 14:18:47 -0700 (PDT)
+From: Caio Morais <caiomorais@usp.br>
+X-Google-Original-From: Caio Morais
+To: andy@kernel.org,
+	dlechner@baylibre.com,
 	jic23@kernel.org,
-	gregkh@linuxfoundation.org
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: adt7316: Add error handling to adt7316_spi_probe()
-Date: Sun, 26 Apr 2026 15:50:38 -0500
-Message-ID: <20260426205039.125818-1-m32285159@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	michal.simek@amd.com,
+	nuno.sa@analog.com
+Cc: Caio Morais <caiomorais@usp.br>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2 0/3]: fix unnecessary includes and add missing ones across multiple drivers
+Date: Sun, 26 Apr 2026 18:17:59 -0300
+Message-ID: <20260426211834.3318306-1-caiomorais@usp.br>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,47 +79,23 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Currently, the return values of the adt7316_spi_write() calls in
-adt7316_spi_probe() are unchecked. Add error handling to return early
-and pass on the error code if we receive an error from
-adt7316_spi_write().
+From: Caio Morais <caiomorais@usp.br>
 
-While at it, move all three adt7316_spi_write() calls inside a for loop
-to condense the logic.
+This series removes unnecessary includes and adds missing ones as reported
+by the include-what-you-use (IWYU) tool across different IIO drivers.
 
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
----
- drivers/staging/iio/addac/adt7316-spi.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Caio Morais (3):
+  iio: adc: xilinx-xadc: remove unnecessary includes and add missing
+    ones
+  iio: buffer: industrialio-triggered-buffer: fix includes with IWYU
+  iio: common: st_sensors: fix includes with IWYU
 
-diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
-index f91325d11394..ffd1dae8d1b1 100644
---- a/drivers/staging/iio/addac/adt7316-spi.c
-+++ b/drivers/staging/iio/addac/adt7316-spi.c
-@@ -98,6 +98,7 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
- 		.multi_read = adt7316_spi_multi_read,
- 		.multi_write = adt7316_spi_multi_write,
- 	};
-+	int i, ret;
- 
- 	/* don't exceed max specified SPI CLK frequency */
- 	if (spi_dev->max_speed_hz > ADT7316_SPI_MAX_FREQ_HZ) {
-@@ -107,9 +108,12 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
- 	}
- 
- 	/* switch from default I2C protocol to SPI protocol */
--	adt7316_spi_write(spi_dev, 0, 0);
--	adt7316_spi_write(spi_dev, 0, 0);
--	adt7316_spi_write(spi_dev, 0, 0);
-+	for (i = 0; i < 3; i++) {
-+		ret = adt7316_spi_write(spi_dev, 0, 0);
-+		/* Check for errors, if we get an error, return early */
-+		if (ret < 0)
-+			return ret;
-+	}
- 
- 	return adt7316_probe(&spi_dev->dev, &bus, spi_dev->modalias);
- }
+ drivers/iio/adc/xilinx-xadc-events.c               | 6 +++++-
+ drivers/iio/buffer/industrialio-triggered-buffer.c | 6 ++++--
+ drivers/iio/common/st_sensors/st_sensors_i2c.c     | 7 +++++--
+ drivers/iio/common/st_sensors/st_sensors_spi.c     | 9 +++++++--
+ 4 files changed, 21 insertions(+), 7 deletions(-)
+
 -- 
-2.53.0
+2.54.0
 
