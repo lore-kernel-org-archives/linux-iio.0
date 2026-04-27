@@ -1,205 +1,101 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FE52369970;
-	Mon, 27 Apr 2026 17:36:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777311366; cv=pass; b=DD0pler385LyEYW8abMyu6n/p9b1H0Z3uznIC/dKQA5/uBRED4xACmdcd0YM2/uptwFDM9gIkRTLZCbZMHGMbybuKtrJrkLu7JKH6jdLTxxTi+nvEPBx9kU5GpLntCevgtZbDz4Twj6AzU+OL66dfjM+HUnZ12ynyA2Op46jJRs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777311366; c=relaxed/simple;
-	bh=nr5ilqN014BdeoWLjGf8aQJGuYGOGF0K4mmsCEMvF4I=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=REqVpqi8FlD4KvWz97Vzqv/Sfwju7ORsGrgP+gKkumpLns+cJbk1O0CM5Aa2f4/rwCvzh6kedc3iKQ/sUFV+a6U9+n3HhnnHFDGWFJ7Y9UoL2VtxFE85xvsb/+84WPurcP1lhCOBOBG9DJ+VX8n3jNRfm9gR38XdPBuM4Sv+QoQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=Zk7ogawB; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A403364EA4;
+	Mon, 27 Apr 2026 17:53:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777312391; cv=none; b=Ae7+yDfbXYVBq93x2DwKltpTCuTi86oNPSnc3Z2e2ehMzCEkTM95K9/tddF/J+ViYO42M0jiCQ3uKaTUe0CXyPtnxhIaHYoWUG0Cj3CwgzoBDguYjo/DpUcDcTrt0IGC4AG1UH+DhNB+SFSaclIQbz59blQMPMttWxEfwJvSTG0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777312391; c=relaxed/simple;
+	bh=UVQKdWBjUE5GkLKUNtX7rtIo3DhENc4jPq7k7cHCyAo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BsXWghFDhJ8dNiHEqei1NICj7RRYhsM0yzT9Q44EDH0Gcz1AL16QlkrP6ui9BKKRTdFrqxjm+CRAv/u/XLVd5LtFwTTf/CGRmmaawS4NAf8bEUFMV3d20ITzCNOu+r9jmX0gv1UtyugYpvzS/q9NGLEh1tR8JoBUIzZUofNisp4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Fum7paMt; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="Zk7ogawB"
-ARC-Seal: i=1; a=rsa-sha256; t=1777311340; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=AD31+MNPTHWPoTYCQMpX7n3R0Er4g3R9tw0h41WKv3hmOvvgViSemwhfzgvt0V/Xr18hI/13AuZ0oc0jPRO1vaW8c/KDAqRL2r30pWhwGATOtKWmuq12DKZQQTOg1LqmiiHzVlG6YN2u+grPU4bwOqHmSMG/tOYf69jDCalMJLw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1777311340; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=UmdZibbd/+Riw2ttNnhE20ZsNtrexm4/ybN5Xvwgvow=; 
-	b=LXggAq9qe3W+IUdyL2SssQt6RWKdrnslU1yGMFBo6D1XXM6lNMqddmD0wdndgrl7EWNOY6exIK0HAQ6yvlpkbRDJCviTPe9oD481ycqCzL3J9zoN6jg2Deoji6iwl5sUZScIEeeKqVMnoeHYRZ/tLdLuJClButw5EBNT31hnOHE=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
-	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1777311340;
-	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
-	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-	bh=UmdZibbd/+Riw2ttNnhE20ZsNtrexm4/ybN5Xvwgvow=;
-	b=Zk7ogawB1ZqlMX1b33i7nQ48RAsz7BPFAlhFSMtpmi8D4JtbDjXDFb4ZwdMH1rlr
-	lehBH8gAk6rM/QAG7ZaQYWhFns4VQdtZ3tGA53rooZDa9H+oXX7voL4Z8XxCgCBA45i
-	s9i7M6LHzBfPYjGKSjicMwGrYclXUYxOUUbKXPDc=
-Received: by mx.zohomail.com with SMTPS id 1777311337704981.5046370792685;
-	Mon, 27 Apr 2026 10:35:37 -0700 (PDT)
-From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>,
- Damon Ding <damon.ding@rock-chips.com>
-Cc: kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
- Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 4/6] counter: Add rockchip-pwm-capture driver
-Date: Mon, 27 Apr 2026 19:35:32 +0200
-Message-ID: <q0kG3ZZyT92lQlYsvZD_qg@collabora.com>
-In-Reply-To: <91eed9a4-4dc3-4846-baf3-e9cef53be79b@rock-chips.com>
-References:
- <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
- <20260420-rk3576-pwm-v5-4-ae7cfbbe5427@collabora.com>
- <91eed9a4-4dc3-4846-baf3-e9cef53be79b@rock-chips.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Fum7paMt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777312390; x=1808848390;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UVQKdWBjUE5GkLKUNtX7rtIo3DhENc4jPq7k7cHCyAo=;
+  b=Fum7paMt2YJFB7dR9+ed2OrN8o+GalM8wWBrlwqYoDIkpsaNMhxzi1/c
+   G0WiH2XWmdE14/yKSReU6eHNaFFN6nvXQbVC+lwpzRAN4DHJzEf6E1Vuw
+   2SSrBCBCPx0qy1mHcb9m9gD7OMbYNUPaLrCfhJWAOQlNYGI1/MVsaOJ4d
+   DOYjVUI6QaoKulOA4V2NmSH7mRezNZqP/0hudZDcBGXlAjGMsRZDRkZ0T
+   VjDko4ly1Ug+JayebJnEi2p1vFQR8TTwjgbZfry7tUEkr3SAEvwPeyf1O
+   wbae5vDnVIj++A6eiW0Og0fYtXpWsQN+URwkzHEnoVE/FWpUc4MJ6qFY7
+   w==;
+X-CSE-ConnectionGUID: 8aiG/b0QRSOU66yloEag3w==
+X-CSE-MsgGUID: TwDsc7qiQa65pMmwOVeRQA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="80785032"
+X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
+   d="scan'208";a="80785032"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 10:53:10 -0700
+X-CSE-ConnectionGUID: Kz9XC4GYQNCIsNfB921rnQ==
+X-CSE-MsgGUID: /9523K4ZQyebsB2WLyUHdQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
+   d="scan'208";a="231060808"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 10:53:06 -0700
+Date: Mon, 27 Apr 2026 20:53:04 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: rodrigo.alencar@analog.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Stefan Popa <stefan.popa@analog.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@suse.de>,
+	Michael Auchter <michael.auchter@ni.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v2 01/11] iio: dac: ad5686: fix ref bit initialization
+ for single-channel parts
+Message-ID: <ae-igOGbCcdoNMV5@ashevche-desk.local>
+References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
+ <20260427-ad5686-fixes-v2-1-188e05199368@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260427-ad5686-fixes-v2-1-188e05199368@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Damon,
+On Mon, Apr 27, 2026 at 12:30:08PM +0100, Rodrigo Alencar via B4 Relay wrote:
 
-On Sunday, 26 April 2026 12:55:20 Central European Summer Time Damon Ding wrote:
-> Hi Nicolas,
-> 
-> On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
-> > Among many other things, Rockchip's new PWMv4 IP in the RK3576 supports
-> > PWM capture functionality.
-> > 
-> > Add a basic driver for this that works to expose HPC/LPC counts and
-> > state change events to userspace through the counter framework. It's
-> > quite basic, but works well enough to demonstrate the device function
-> > exclusion stuff that mfpwm does, in order to eventually support all the
-> > functions of this device in drivers within their appropriate subsystems,
-> > without them interfering with each other.
-> > 
-> > Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-> > ---
-> >   MAINTAINERS                            |   1 +
-> >   drivers/counter/Kconfig                |  11 ++
-> >   drivers/counter/Makefile               |   1 +
-> >   drivers/counter/rockchip-pwm-capture.c | 307 +++++++++++++++++++++++++++++++++
-> >   4 files changed, 320 insertions(+)
-> > 
-> 
-> For functional validation, I connected PWM0/PWM1 (continuous output)
-> to PWM2 (capture input) pairwise.
-> 
-> I enabled the counter via:
-> /sys/bus/counter/devices/counter0/count0/enable
-> 
-> Then I verified the functionality by reading the count values from:
-> /sys/bus/counter/devices/counter0/count0/count
-> /sys/bus/counter/devices/counter0/count1/count
-> 
-> Tested-by: Damon Ding <damon.ding@rock-chips.com>
+> The reference bit position was ignored when writing the register at the
+> probe() function (!!val was used). When such bit is 1, internal voltage
+> reference is disabled so that an external one can be used. For
+> multi-channel devices, bit 0 of the Internal Reference Setup command
+> behaves the same way, so AD5686_REF_BIT_MSK is created. The issue exists
+> since support for single-channel devices were first introduced.
 
-Thanks for testing! To make sure a bug on the pwm output driver won't
-be cancelled out by an equivalent bug in the counter driver, I did
-my counter driver testing by using an RK3588 as the source of the
-PWM signal, with the two boards sharing a common ground. Maybe I
-should get a proper function generator. :)
+...
 
-> BTW: Is there any user-space test tool similar to libpwm for the
-> counter subsystem?
+> -	val = (has_external_vref | ref_bit_msk);
+> +	val = (has_external_vref) ? ref_bit_msk : 0;
 
-I've tried looking for this as well, and couldn't find anything. If
-it exists then adding a mention of it to generic-counter.rst would
-be in order I think.
+Too many parentheses. If the former had something in mind, the latter really
+doesn't need them.
 
-> 
-> ......
-> > diff --git a/drivers/counter/rockchip-pwm-capture.c b/drivers/counter/rockchip-pwm-capture.c
-> > new file mode 100644
-> > index 000000000000..09a92f2bc409
-> > --- /dev/null
-> > +++ b/drivers/counter/rockchip-pwm-capture.c
-> > @@ -0,0 +1,307 @@
-> > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > +/*
-> > + * Copyright (c) 2025 Collabora Ltd.
-> > + *
-> > + * A counter driver for the Pulse-Width-Modulation (PWM) hardware found on
-> > + * Rockchip SoCs such as the RK3576, internally referred to as "PWM v4". It
-> > + * allows for measuring the high cycles and low cycles of a PWM signal through
-> > + * the generic counter framework, while guaranteeing exclusive use over the
-> > + * MFPWM device while the counter is enabled.
-> > + *
-> > + * Authors:
-> > + *     Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-> > + */
-> > +
-> > +#include <linux/cleanup.h>
-> > +#include <linux/counter.h>
-> > +#include <linux/devm-helpers.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/mfd/rockchip-mfpwm.h>
-> > +#include <linux/mod_devicetable.h>
-> > +#include <linux/of.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/spinlock.h>
-> > +
-> > +#define RKPWMC_INT_MASK			(PWMV4_INT_LPC | PWMV4_INT_HPC)
-> > +
-> > +struct rockchip_pwm_capture {
-> > +	struct rockchip_mfpwm_func *pwmf;
-> > +	struct counter_device *counter;
-> > +};
-> > +
-> > +static struct counter_signal rkpwmc_signals[] = {
-> > +	{
-> > +		.id = 0,
-> > +		.name = "PWM Clock"
-> > +	},
-> > +};
-> > +
-> > +static const enum counter_synapse_action rkpwmc_hpc_lpc_actions[] = {
-> > +	COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
-> > +	COUNTER_SYNAPSE_ACTION_NONE,
-> > +};
-> 
-> For the capture function, it uses the PWM's reference clock (dclk) as 
-> the time base to measure how many reference cycles the high and low 
-> levels of the input waveform last respectively.
-> 
-> I find it a bit strange to set COUNTER_SYNAPSE_ACTION_BOTH_EDGES for 
-> counting. If we treat the input waveform as a sequence of square waves 
-> sampled by dclk cycles, it feels like we should count on a single edge 
-> (rising edge only) rather than both edges.
-> 
+...
 
-Yeah, that's a good point. I think I've been struggling to wrap my head
-around what the signal is and what the synapse should trigger on because
-the signal isn't something exposed in this case.
+Otherwise LGTM!
 
-Your explanation makes sense, and perhaps I should rename
-rkpwmc_hpc_lpc_actions as well. Currently it makes it seem like HPC
-and LPC are the signal, when actually the waveform is the signal, HPC
-and LPC are the counts, and the synapse is a sample every dclk spotting
-a transition if I understand this correctly.
-
-> > +
-> > +static struct counter_synapse rkpwmc_pwm_synapses[] = {
-> > +	{
-> > +		.actions_list = rkpwmc_hpc_lpc_actions,
-> > +		.num_actions = ARRAY_SIZE(rkpwmc_hpc_lpc_actions),
-> > +		.signal = &rkpwmc_signals[0]
-> > +	},
-> > +};
-> > +
-> 
-> Best regards,
-> Damon
-> 
-
-Kind regards,
-Nicolas Frattaroli
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
