@@ -1,157 +1,206 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646333B2FD6
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 09:42:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BAB43B2FF4;
+	Mon, 27 Apr 2026 09:43:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777282977; cv=none; b=SFl+pHKQzfKYz9QjLcLC6MYHS6bw1jiUqujCwTI8yhwoeuASm2rUly61F/FTTLs0nxfAMCmQFssmZIOVtVskwbUX/3Si2PbpCCIhG550zvZ6zyoJlGhgixljRSxh2EqFI5jkGZeU7Eo099yHMQJa3p2OfXGg9D4Qsuiw5cSa4co=
+	t=1777283038; cv=none; b=B8LRqIQzQCP5X2x9th9KP6EBolan44u9UFEe+wsvWrEHTh2Z1go/rry7YGdokBkepAb7wJY5jAheTqUDJr87vyu7fJp0cUTrqTKGqe/02Ut2/j+zT2DohnC0ZqEqkCrdq8j+u1bat+ngLPmKsJcrTyKOnuHEYAeCJRjYlIffJwA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777282977; c=relaxed/simple;
-	bh=1edNpC1S3o1g8pijgXBuglaFSA/F3emKEDJN0MbLjX4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qZZ2B2FjotlE5t/XaiwlmJibqMJv8tWt6hqTs7H1zhC9W3KQ2UOguC5wp2fEGBAwOnRpOd2z8+6CuiwRLKhvIoreXilFxVZTuUp4yJFc0dR+jG0j1O5vhMWKHvXDz16OvrDiAYAOStkgZRFNwBrp2rUxWKINp/5FpIxKqsqooSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=p5kYFP3v; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777283038; c=relaxed/simple;
+	bh=wo2WWGMAaAzAci32tk/krwC8k383jUiQkSiitExvBjg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uSPy2mCRy3w2SyYjPyX50TQFskCdVjpJOQtBJDO3RMA7YiE4R9MNIA7Dx0Q6ujozeiP2gZl3pRiQp1Q8PKp9vS+pviNj1+q4UUwSVRPisdkVUWbVqap3Sb0c+T/dCY5X1qcCg84DPWIrUbpnWq0iDrA22x1NS5YAfa86AFcXBGw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=adeHbaF9; arc=none smtp.client-ip=117.135.210.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p5kYFP3v"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-43d7badbd7dso4893024f8f.2
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 02:42:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777282975; x=1777887775; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SOSv4lT2swKkfFsu6N1e/4a2DMIWqM0T1MQJCs7ue+I=;
-        b=p5kYFP3vdy0eLJt3Atr16/wsoN+QPC1oDEvDBq8lVmTQIibc7A7FKjTVGZoyWU3BdI
-         FgUUz2XxmGtxDPwXkvs+TS4mWllYNGhdMkaGZ9yvimW0WJ0/UnhQHLNQ+ZJdpg3HrAGA
-         4kvBJI6I49f4fjO/RH086B7G5faL/9zf9XbUB8+EfV9lfMD294S41vuEf9zQU0WDtE94
-         cMiQdS2JCJ6U8zN81GxJCR8Hv/VqfAeSFATws9j97QsxD99t2tD9Zm4xIbIjxz51KhnE
-         E4d6ixveIZ+D2sLN8EjGk0a/x0j2OaWGxMt0jYj023Ud53HtiAhkD5PbNxWNJAzMQFUu
-         Ngbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777282975; x=1777887775;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=SOSv4lT2swKkfFsu6N1e/4a2DMIWqM0T1MQJCs7ue+I=;
-        b=BL5YU7OR2Knu0vdUXGBT9j4A84A7a24RmOagho5exfrMoGxLMdn94uN49r0rbvT+iB
-         //zZ+XcHN4vjZ4UdCTNFePzFwrtKaVgEEazb/yT3b78MasSZzgGDr7iK+Ol7WG5yxctI
-         jO5bv7Q8ANOtfKmu5CEWQDbPYH11Ydkd2PapXEsa4kI2z3y+4a3VNn5hapGeU/g/aXCc
-         r+3rPK0/YUTkIW9IKtwEa5OoYp1IiMvjonWstnw3qlHhWcXXZINkM2ZDPPEMhkn5AFh0
-         wBYLVm4AYbkqRU5+fl9HZ453qCUx7TQizCG46xLsMjsFAjhzc+yPZAbdaGBd/0OqVBde
-         BARQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/SsC3wwJyfuQWO4b6pwCEsWkTt5Lza5xn7zwrLMv8ahWuLb4160P4Fv96xcA6+owbZ8S5vSODei8M=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw1LbVus6KNs8hWe4/M07p0fkvBTHYANlcby4jFDeMXQ2qRqyou
-	nePMq/1sQ++jlMVBEZJ2/jbTJ2i7vQRRbg6o8L3gZbRb9G++LI0wT4Ds
-X-Gm-Gg: AeBDietp9pXJ3uUSIphQoio3MWd/umlBs6D1KVtSEhhwE3g64pX+SGZGioCR7MR8uY4
-	i7N557KtcN9rMqnKBkp6+XJxhiJTqQGSf2OllVG0tQw/1B6V5dGyeI15fBEF2fMOLI150gxmFpo
-	5gsU2MNgjl+R9XTB9vwufGH4xg48CksjENJLRfl5H60N0mEU2jJW3pa7Z7dB2WJC0rvKOD7X5Eo
-	4p3KbVrPBxF851X7SHhaBIJikiXNMp5Iw+vvlJbR6tEAYcEA4yg7myFpADweOMcSLzzxOPHX494
-	j9qsb4VU6e4Ue50lJfKdGAFpAh3r/SXRmpjhP44oFOCXkStk+6Zn1ZGnkGZVC4dbslkZ3Jryw0t
-	ya+5LBzeo5GjyVEfogDUyJ62gCN0gVVaKwJ6r+my7VEqFWLE1X124kFrfS044P0aQLn3XAAcMUQ
-	uOJI2Kj+n2HFw84BrFmMI+1w52Jm2B/6CgtstapzZiTZPSqkZkN4MjGHZfBK8NGMGcDKVPxBZ14
-	W0=
-X-Received: by 2002:a05:6000:250f:b0:43d:68ad:3b7f with SMTP id ffacd0b85a97d-43fe3dd397dmr66949426f8f.21.1777282974651;
-        Mon, 27 Apr 2026 02:42:54 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4411c9f4f03sm48891743f8f.1.2026.04.27.02.42.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 02:42:54 -0700 (PDT)
-Date: Mon, 27 Apr 2026 10:42:52 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Johannes Berg <johannes@sipsolutions.net>
-Cc: Yury Norov <ynorov@nvidia.com>, Thomas Gleixner <tglx@kernel.org>, Ingo
- Molnar <mingo@redhat.com>, Borislav Petkov	 <bp@alien8.de>, Dave Hansen
- <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin\"	
- <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>, Peter Zijlstra	
- <peterz@infradead.org>, Jonathan Cameron <jic23@kernel.org>, David Lechner
-  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko	 <andy@kernel.org>, Ping-Ke Shih <pkshih@realtek.com>, Richard
- Cochran	 <richardcochran@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
- <pabeni@redhat.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Yury Norov	 <yury.norov@gmail.com>, Rasmus Villemoes
- <linux@rasmusvillemoes.dk>, Hans de Goede <hansg@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Sakari Ailus	 <sakari.ailus@linux.intel.com>, Salah
- Triki <salah.triki@gmail.com>, Achim Gratz <Achim.Gratz@stromeko.de>, Ben
- Collins <bcollins@watter.com>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-wireless@vger.kernel.org,
- netdev@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: Re: [PATCH 1/9] bitfield: add FIELD_GET_SIGNED()
-Message-ID: <20260427104252.5203a50e@pumpkin>
-In-Reply-To: <dc1b12e74b3f487eb531bf7def806f10d9a18b5e.camel@sipsolutions.net>
-References: <20260417173621.368914-1-ynorov@nvidia.com>
-	<20260417173621.368914-2-ynorov@nvidia.com>
-	<6170788fcab2ec835597e3d7411928d36850c20a.camel@sipsolutions.net>
-	<aeub59FBHbCy-KKP@yury>
-	<dc1b12e74b3f487eb531bf7def806f10d9a18b5e.camel@sipsolutions.net>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="adeHbaF9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=O8
+	UiA3R+GpT52Ku20qeyM6l4zNcb6mflvxF4xKA095c=; b=adeHbaF9RPsOfa2B69
+	ExnhE14StQfRXt+/XsyQ8cLRzIWnseOWDn8HgOVj0e2jlH6uNnXmG7yo38Spnp1a
+	jovE2ewEJO8uOUN0E1BK9KX7j08s2q3gVOpE5vYpuuUpB8WlqoUuuC/e1fqwFJ8F
+	so8d/hFG+8OJUZGiLiCagH9Tw=
+Received: from localhost.localdomain (unknown [])
+	by gzga-smtp-mtada-g1-0 (Coremail) with SMTP id _____wD3j6CzL+9py3eYBw--.26650S2;
+	Mon, 27 Apr 2026 17:43:17 +0800 (CST)
+From: Miao Li <limiao870622@163.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	waqar.hameed@axis.com,
+	dixitparmar19@gmail.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	limiao870622@163.com,
+	Miao Li <limiao@kylinos.cn>
+Subject: [PATCH] iio: light: stk3310: Deal with the ps interrupt issue in PM
+Date: Mon, 27 Apr 2026 17:43:13 +0800
+Message-Id: <20260427094313.81460-1-limiao870622@163.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wD3j6CzL+9py3eYBw--.26650S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxZrWfGr17XF4ftFyktFWxXrb_yoWrWFyxpF
+	WUCF45trW7Grs7GrZxJF1DZF98W3yxt343Aay3Gw1xZw1Ykr98Kr1xJFWxXFnY9ry5ta1U
+	JayvvayYkr4qqaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piJGYdUUUUU=
+X-CM-SenderInfo: 5olpxtbryxiliss6il2tof0z/xtbCzRVPHWnvL7XGkgAA3C
 
-On Mon, 27 Apr 2026 10:29:21 +0200
-Johannes Berg <johannes@sipsolutions.net> wrote:
+From: Miao Li <limiao@kylinos.cn>
 
-> On Fri, 2026-04-24 at 12:35 -0400, Yury Norov wrote:
-> > > I (personally) tend to prefer the "__MAKE_OP" versions (*_get_bits()
-> > > etc.), in particular because WiFi and firmware interfaces deal a lot
-> > > with fixed endian fields.  
-> > 
-> > I don't like that __MAKE_OP magic because whatever it generates is not
-> > greppable. And because we disable strict type checks for kernel, but
-> > this API claims to typecheck the parameters for the user. So, the
-> > following compiles well:
-> > 
-> >         u64 val = 0;
-> >         ret = le16_get_bits(val, GENMASK(15, 10));
-> > 
-> > I don't like autogeneration in general. We generate, for example,
-> > be32_get_bits(), but never use it.  
-> 
-> That's a lot of "I don't like", but whatever.
-> 
-> 
-> > We don't even know the level of the bloat.  
-> 
-> These are static inlines so there's no binary cost, and given that
-> you're complaining about them being generated you can't really *also*
-> complain about too much code...
+On the Huawei hisi platform, if the STK3311-X chip's PS interrupt
+is configured in "Recommended interrupt mode", the interrupt cannot
+be triggered normally after waking from suspend or hibernation.
 
-There is a measurable compile-time cost for processing the definitions
-of static inlines even when they aren't used.
-While processing the definitions of #defines is cheap, processing the
-expansions can be measurable. Particularly when expansions get nested
-as often happens when GENMASK() is used as an argument to FIELD_xxx().
+In this case, neither disabling and re-enabling the interrupt nor
+resetting the PS threshold register can restore the interrupt to
+normal operation.
 
-Even trivial #defines can affect compile times.
-The 'size' check in READ_ONCE() (etc) costs about 1%.
-(1% may not sound much, but find 10 of them and it becomes significant.)
-I suspect a lot of that is adding the extra external function to hold
-the error message.
+if we disable the interrupt in suspend(), then reset the PS threshold
+register and enable the interrupt in resume(), this issue can be fixed.
 
-	David
+Signed-off-by: Miao Li <limiao@kylinos.cn>
+---
+ drivers/iio/light/stk3310.c | 71 ++++++++++++++++++++++++++++++++++---
+ 1 file changed, 67 insertions(+), 4 deletions(-)
 
->  
-> > > Any chance it'd be simple to generate u32_get_bits_signed() etc.? Could
-> > > be especially useful for le32_get_bits_signed() for example, to have the
-> > > endian conversion built-in unlike FIELD_GET_SIGNED().  
-> > 
-> > Maybe this:
-> > 
-> >         FIELD_GET_SIGNED(mask, le32_to_cpu(reg))  
-> 
-> Awful. "I don't like". But we rarely deal with bit-packed signed values
-> anyway.
-> 
-> johannes
-> 
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index a75a83594..367657920 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -117,6 +117,9 @@ struct stk3310_data {
+ 	struct mutex lock;
+ 	bool als_enabled;
+ 	bool ps_enabled;
++	bool ps_int_enabled;
++	uint32_t ps_thdl;
++	uint32_t ps_thdh;
+ 	uint32_t ps_near_level;
+ 	u64 timestamp;
+ 	struct regmap *regmap;
+@@ -296,8 +299,15 @@ static int stk3310_write_event(struct iio_dev *indio_dev,
+ 
+ 	buf = cpu_to_be16(val);
+ 	ret = regmap_bulk_write(data->regmap, reg, &buf, 2);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to set PS threshold!\n");
++		return ret;
++	}
++
++	if (reg == STK3310_REG_THDH_PS)
++		data->ps_thdh = val;
++	else
++		data->ps_thdl = val;
+ 
+ 	return ret;
+ }
+@@ -331,8 +341,17 @@ static int stk3310_write_event_config(struct iio_dev *indio_dev,
+ 	/* Set INT_PS value */
+ 	mutex_lock(&data->lock);
+ 	ret = regmap_field_write(data->reg_int_ps, state);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to set interrupt mode\n");
++		mutex_unlock(&data->lock);
++		return ret;
++	}
++
++	if (state == false)
++		data->ps_int_enabled = false;
++	else
++		data->ps_int_enabled = true;
++
+ 	mutex_unlock(&data->lock);
+ 
+ 	return ret;
+@@ -504,8 +523,13 @@ static int stk3310_init(struct iio_dev *indio_dev)
+ 
+ 	/* Enable PS interrupts */
+ 	ret = regmap_field_write(data->reg_int_ps, STK3310_PSINT_EN);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to enable interrupts!\n");
++		return ret;
++	}
++
++	data->ps_int_enabled = true;
++	data->ps_thdh = STK3310_PS_MAX_VAL;
+ 
+ 	return ret;
+ }
+@@ -671,9 +695,18 @@ static void stk3310_remove(struct i2c_client *client)
+ static int stk3310_suspend(struct device *dev)
+ {
+ 	struct stk3310_data *data;
++	int ret;
+ 
+ 	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+ 
++	if (data->ps_int_enabled) {
++		ret = regmap_field_write(data->reg_int_ps, 0x0);
++		if (ret < 0) {
++			dev_err(dev, "failed to disable ps int at suspend.\n");
++			return ret;
++		}
++	}
++
+ 	return stk3310_set_state(data, STK3310_STATE_STANDBY);
+ }
+ 
+@@ -681,6 +714,8 @@ static int stk3310_resume(struct device *dev)
+ {
+ 	u8 state = 0;
+ 	struct stk3310_data *data;
++	__be16 buf;
++	int ret;
+ 
+ 	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+ 	if (data->ps_enabled)
+@@ -688,7 +723,35 @@ static int stk3310_resume(struct device *dev)
+ 	if (data->als_enabled)
+ 		state |= STK3310_STATE_EN_ALS;
+ 
+-	return stk3310_set_state(data, state);
++	ret = stk3310_set_state(data, state);
++	if (ret < 0)
++		return ret;
++
++	if (data->ps_thdl != 0x0) {
++		buf = cpu_to_be16(data->ps_thdl);
++		ret = regmap_bulk_write(data->regmap, STK3310_REG_THDL_PS, &buf, 2);
++		if (ret < 0) {
++			dev_err(dev, "failed to set reg THDL_PS at resume.\n");
++			return ret;
++		}
++	}
++
++	if (data->ps_thdh != STK3310_PS_MAX_VAL) {
++		buf = cpu_to_be16(data->ps_thdh);
++		ret = regmap_bulk_write(data->regmap, STK3310_REG_THDH_PS, &buf, 2);
++		if (ret < 0) {
++			dev_err(dev, "failed to set reg THDH_PS at resume.\n");
++			return ret;
++		}
++	}
++
++	if (data->ps_int_enabled) {
++		ret = regmap_field_write(data->reg_int_ps, STK3310_PSINT_EN);
++		if (ret < 0)
++			dev_err(dev, "failed to enable ps int at resume.\n");
++	}
++
++	return ret;
+ }
+ 
+ static DEFINE_SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend,
+-- 
+2.25.1
 
