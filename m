@@ -1,99 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F47B307494;
-	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777289411; cv=none; b=M1vuzWNCyr4QAXZz77nuaGj0cYQGwUBUV3mhwsNLYAGf9jo2OYF1St79P3uqTvzGrddyqWNVE32goUanrVn+p90/6EbHsuccZ1RcFyY+A8qxIU14ssgbbUEvaBLAc9GhSDJ1vmHskk3aReyK0BuRdPPVW6UsqVM3eLBHSk80Mbw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A0282765D4
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 11:30:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777289411; cv=pass; b=MhQDOhzkTkz2pqqT79Z5QsLNJD3TEUcEucA+gri/8OXHc32+qvJcfP5goCsMi1JGV5oqilZVn87c0YU9mqZku56nsvvbAhyyhjA4Sor3btgxAeADSdFBgXgZ/E8EYuxlbm9itNBIF3+JKnmvD9LrDvxdgsymWSiNgSNQXgVJLwE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777289411; c=relaxed/simple;
-	bh=+kEuOTi6HFt1h6pe8+FJT8nRA6d52Eomg+JJe+vbkhk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=EqACrjw4Ldls0aVo+ij4Awkra5AmOtDT9LM+HKKqA1OvdANu/wCHKHjZWPOXlE+qZbPKtHKqnAlw6OX6Jxm7rWG1wzW8zuMKS/1YPzMJbzUIKxzJN0CNj98fk71A7hs3JaD/GuL7FH9wHdzYni2p0rGtAdOaaXdd3KB/on0bdLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TIkBTQDW; arc=none smtp.client-ip=10.30.226.201
+	bh=779Q1h8lZokAu2leNrYf5FaZQtvojipngO2ogdm0ejc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=crpp5xhdyEAfXJaNs2Dqu19BmHJDbZhOTZLRpl+/xekUd9Dz0K5tb5YWgiIV+LPiOevFu3rLz2YFP5Ps2wy4sPzaLAJC8jR1hxs37U/u/ijcIoUVA+zz0RC8Z/YuIuwY3C27dnyOq5ngraevKmvtFPmq/yStlVane2pOe05IlYo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jmwf4GvP; arc=pass smtp.client-ip=74.125.224.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TIkBTQDW"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1B07BC2BCB9;
-	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777289411;
-	bh=+kEuOTi6HFt1h6pe8+FJT8nRA6d52Eomg+JJe+vbkhk=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=TIkBTQDWyOPti9CNaPpvV482GmZZoqSaPWyoFXVN2CPF7T9jid6PJwPQsvKMiePv0
-	 MK7oqR8rNzjRCZsHOAeQEDjHyURkkLvWVmWbA1PQUC7YxhVEhwp7NPou27gnUv98fV
-	 EAPv6kG0stdT2BL10aaTKzwlX4EFzL2/mAKVeyBvWpWLD43RbxVbymMO6VtipCQwbz
-	 Q5hq58P5hQfJwZeAdciHVggc6jk2XcxJxLH8/0YRpzdpy9ZUqHdgU7C2/0iVXrShso
-	 RkS3berQdxPOOxtrkKL+E857J9AIX9UYt6ZN24zut0GbZu4Q3NSey16DWcJ/o6DcCB
-	 4LxwypN7+UpOA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09860FF8862;
-	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 27 Apr 2026 12:30:09 +0100
-Subject: [PATCH v2 02/11] iio: dac: ad5686: fix input raw value check
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jmwf4GvP"
+Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-651b71f5cffso1208016d50.2
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 04:30:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777289409; cv=none;
+        d=google.com; s=arc-20240605;
+        b=XQvyr623t7zPj9a/9yEhTh87A4etblLfskzbt393OIj/wb3KecwJJQaJhGWUJTVlDU
+         JgO+9nyPchudchJXm6i6KkqYu2/wP/mNyLlqi89E6IF3OSKVP1tgKov7W8M8fcCnPzYD
+         M//bddSIW/3ltyvU04rw9UXFxN02GW9GQ7cZP8a9NKHQhaceAxmxgz5+iwSxufImE4W+
+         3l5+SbAjJi91Z0tGvt02P2xRbnxm7hBUqLtfcMT4I5dO4/juBmbRZATxASxmZVEzLnTN
+         6iS39p62/egGUYJ7+Rcu+IcrB4rJfdWirUH1HHsmYZK3xxQvUqdJQ/F66igmJrHYi3gr
+         JQXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Fn+eCqQ18h0FcRITaqNoFwNcJcgkc90n/rg6OwMedeA=;
+        fh=EDCreXpUbZ/Pn14jEEgEPC9+/bBzJ+5UaUgvSxfjd1w=;
+        b=VDrRt1V19/n+EBb4hSIN12Z8vJx9DA340bsYf9FpF4rIqN+OsGNETswopnd+YZzqPy
+         MV2PQld5NhyN6jEbj8SeQDjBebNRQ1XQyP9zHiqKqKgpf7kt2AhIOhuesc28W/BTeEFR
+         cWx7QT7cBEytQDE4vkHtw1D9zlaUh7aWtw5S3Zx6N3LjJdWAZx0TJRqgZLpwouDUdX8z
+         pIN+q/R52tzbA90Z7NCXPEDgVvZnzi6L32LiTtkKUjWlUwiXq/L178IJPFYYC9bxC/J4
+         5d5uzsjRSmG7rC6FarIeeN6wlzPPfMiM0T3ouWg5uq3odfLykX8n3X3Q5G89bL5PRx3H
+         lLmg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777289409; x=1777894209; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Fn+eCqQ18h0FcRITaqNoFwNcJcgkc90n/rg6OwMedeA=;
+        b=jmwf4GvPxFd/U/RUngRx+L4hBVh62HNQNz0buW7dCoh0T+kCYQubMaXDCMDFNWCU0W
+         kw0DcgVGlhkw1KrnHY4af8JRAAHmx+qEm6NUGlJgZqKIwjA649DaVZoaOiNW9lG2CVqc
+         18MkqIJGFr9cHrZN62noAIa0lsLzV/woItEjTKbsQahD3XqWMUBAJczJ63gKTtaO1RTW
+         bTJjuAEWhvJD3oGZcw3+ZpDq60Ceeuew5+r8bKQxa2vfXjIX0nlmeD42J/6aFWnkHeGY
+         ZTIfbtd8q9v5gAn1+36D900Wqo/v7wXk3W+U4FcjjRlUQXZxW7JXv7jZzXc6MvZ3n6cg
+         Uehw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777289409; x=1777894209;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Fn+eCqQ18h0FcRITaqNoFwNcJcgkc90n/rg6OwMedeA=;
+        b=UW0acrX8w907tr4zWUACAxzlH/r46ZDT9UxgAOjf0Ug5oVpUWAqUcolqSi9MZ50VFK
+         7fuMJLti7wX7vRNFoUiCnTt0ljejPBdoXTdpGufkIy3tr/d6dPgslm4hDyHPNury8ChD
+         bD6+Iuc4ARxX4lANzdBoOtayYawfiea485KZFw1o24Tn7+3f4g2dms42c21W7lS5EhMF
+         DLzfA2DZtu+1nCuYOElO3xp+bU7H2DVm6K04al6zlWxWB1jm9MEScKEkRdj/RTwiTFfW
+         PuW51a3dYjLvM35HodrYhhqqwvFRq+NiJ5FEI3Gzi97aIYX59v6mK/gkIUaYRXbUJd3K
+         HiTg==
+X-Forwarded-Encrypted: i=1; AFNElJ8/7h6WIOChBjGU+5mIeHImkTt+IjsgmmXg/gMAIysnezkzyCP1f7OpMRKinPp579nV0Zp92Mozeis=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxREmK8wNrIkDRjdRGaD7ZMI3WlNmDB76noAa66YaQM5lQM6LKo
+	1jlgfSZxhUTcMTdD0f/u4uY3FEY10RQMFli+Ojr67NBiYOQMRrcYP6RDNtbcg9T3c9nG6M8pKOQ
+	E+9M403UxeblcimtitbfpyNmg0Q57n8Q=
+X-Gm-Gg: AeBDiesZiCoHbCPBkGNOFDJgbxlgnxLIB8V7el7DXFNWt/WtHw3mJ6EC003kjrR50Zo
+	fJT0oBLW8se//+sGg2x9DT/tg/U15T2l1EJ8kjV0bs8ZAqlfWnb/eBT/g+v0Jzxp6/jx5rnUcyS
+	48rn0JvifW+zsNK+wxDkLIPL3l/HB0XK5azsvAuxM9FybCFCi4mVTa0zdAEAUmQCKLFUmp0p3sw
+	k33b8C2JUw5wuoZY/LlmGwEj5I2KcbLEcLX1xP3kh26pOXZY3WwOI5K/QoNfmwC7wllM5hWulv0
+	dLv2GPOHT7fQgGs7yJGnfyMOQzvWCIteBE7zqHLeYBfbNHKHxQ5Pyj+hPu5wUqtL8SvOF54fd2v
+	5WkKhvliNJS3dIwhcAxDqYIxrXy0A7t+q
+X-Received: by 2002:a05:690e:b81:b0:651:d0a5:ce9 with SMTP id
+ 956f58d0204a3-65310b42e9dmr24160410d50.6.1777289409319; Mon, 27 Apr 2026
+ 04:30:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-ad5686-fixes-v2-2-188e05199368@analog.com>
-References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
-In-Reply-To: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
- Greg Kroah-Hartman <gregkh@suse.de>, 
- Michael Auchter <michael.auchter@ni.com>, 
- Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=1003;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=e/fvywK2NRINysG0ft35kgBAMfBvOW51G7Ogdkjn8kM=;
- b=enBRO36oR0s2lj0Zmbklbhkh4k1yLnafIVWlpe+YoRjC6j6seW/C6zMNGXDIzdKapAPgU3BEV
- 3lAXmU10de7BUErzRCg6ZvGAymaanuuzCA0ZsoaiIk/MqSlaEiAmGVt
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+References: <20260424081809.61841-2-giorgitchankvetadze1997@gmail.com>
+ <aesyzOMUl2Iyjgjz@ashevche-desk.local> <20260424113600.4e76fdb7@jic23-huawei>
+ <aetVGYQcq1NAJb7k@ashevche-desk.local> <20260424175753.2d0ca494@jic23-huawei>
+In-Reply-To: <20260424175753.2d0ca494@jic23-huawei>
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Date: Mon, 27 Apr 2026 15:29:57 +0400
+X-Gm-Features: AVHnY4KxSBBE_IguR9loByXCMGPNb2iKR3t2E0Ai4mLKqym4NCC6RdSBa2lq1v0
+Message-ID: <CAE7dp2pUnDbEHPGvxVE5VkaYeV2rEWnTNfdqGaSy1DjZxge-Dw@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ti-ads7138: explicitly include <linux/slab.h>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, antoniu.miclaus@analog.com, 
+	lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Fri, Apr 24, 2026 at 8:58=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
 
-Fix range check for input raw value, which is off by one, i.e., for a
-10-bit DAC the max valid value is 1023, but 1 << 10 equals 1024, which
-passes the previous check, allowing an out-of-range write. The issue
-exists since the ad5686 driver was first introduced.
+> > Why do we need to have kmalloc() here at all? I don't understand that.
+> Absolutely.  Locally it looks like length might be large and therefore
+> the array not suitable to be on the stack, but that's not the case.
+> length =3D=3D 2 so the array only has 4 elements and can go on the stack.
+>
+> >
+> > > This function is just overly flexible.
+> >
+>
 
-Fixes: c2f37c8dcadc ("iio: dac: New driver for AD5686R, AD5685R, AD5684R Digital to analog converters")
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/ad5686.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 3b48ddf8dd3c..24f928ea2b91 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -154,7 +154,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > (1 << chan->scan_type.realbits) || val < 0)
-+		if (val >= (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
- 		mutex_lock(&st->lock);
-
--- 
-2.43.0
-
-
+Thanks Jonathan and Andy. I have sent v2.
