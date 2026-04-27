@@ -1,91 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B08033542F8;
-	Mon, 27 Apr 2026 09:14:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1624C3B2FDF;
+	Mon, 27 Apr 2026 09:38:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777281286; cv=none; b=SHhN6SM7KWjpbTiZk7EIvkgBfbzvztFNOKZmEHVIRU+r6Yv5Kj1pWeanrG2wm6EsvmLs4pjr66UfRQDuoSFUgcNNTfV7r9SWtGmmc0d3TPD5kXHZziVqTA8Xc5s8gsbkWpslcTIUXeHa9nQITiTNRZPWlcwBZ19agI3YUkWgfsc=
+	t=1777282733; cv=none; b=hnSr3wW/D1uubfs5W8oni49g0ra1O1iZHo+mg1qMe6Psx+KXH5vk64z4x5Y1W2NoRzM3LtDZJHGFOiswm8D1d3isTwBMwHnUnsVWKhiOsvxtIKHcRm7II0gB/npcYrSXaEOLmT/s4GauEkcZMmUJ2QYcbXyTdADHG7oN39vF93E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777281286; c=relaxed/simple;
-	bh=L+VUSESxJWMNTH6/hMlY6WIVcBb885TUUzzoYZQMV9Q=;
+	s=arc-20240116; t=1777282733; c=relaxed/simple;
+	bh=Cp7e6qSrX4wi5ufxgQsRMI1WkYYX2m2ipgsbvjfqjPA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BgeOjFf/krrZIX3i+gnPCG3kMUj8UAnfEAXeh8IHt31MfqHl0ZFLKh7qXlLcMEqDL7wSN5fau+WZkrsRTEBzPxp8atwEMjgr2UcMFzMTebwueGWfTgYc1EB7QOVRD9JwqFOFwGvuWFSpEy1Lzt6yjEYbYjVIoW/ya3GLnUO/9dE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q6XPq6uH; arc=none smtp.client-ip=198.175.65.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=oQL/4gMFSuU0NBl8z/gHofAM/upuGANUFZi49kXA3ywDe7RaLWoz5vpLtFTnOXpdn105/xU02g+Q90Tb8tZzS4FBmhdSjELq0lT4H0ptKfNlWGzD+SY61sYQ92DB0cAn2pFRXzo21RwYCmw4Z5kU1JWXfgW0trGdmvtTpJSznR0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=am+Lq7rx; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q6XPq6uH"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="am+Lq7rx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777281285; x=1808817285;
+  t=1777282732; x=1808818732;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=L+VUSESxJWMNTH6/hMlY6WIVcBb885TUUzzoYZQMV9Q=;
-  b=Q6XPq6uHzpjtctzhpyYjTUKVZUS/ttMP+ub7+MlgOfbQfXZXmwNm3ZaL
-   dpvaCoIdmDMkI/edIIGd6+ACcPI/+xraSr7GLR2N88GB20cqTJTA5uwhm
-   ftT09Wb393KCVtxcy7Scq7zwlbIrni4I4rookROhqvYCFvRpCKgryq9LR
-   UDXwYfZCmVS3Vs9YZgGWxY07QFosjpKG8W/1IYwHmsqK6u/TRjymG3QU4
-   +k2yGd2rRYb+2hWGvwcpMfVU4Cy30Rie9oVHigmN3WNbE6/agm+H3CkRR
-   yo7EZImNSnPrps7HUDVgyAfKpvtMrtqjHoIYuKzCQgJJND3LBLv2XvECX
-   Q==;
-X-CSE-ConnectionGUID: i9yRuOEmS4ql+F5bcnPmkw==
-X-CSE-MsgGUID: Tk7WRbWBSSCcEQrM594hcQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11768"; a="88477582"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Cp7e6qSrX4wi5ufxgQsRMI1WkYYX2m2ipgsbvjfqjPA=;
+  b=am+Lq7rxcGQXgFOyuznXr+gjZ/bgeddKpvzPTnONs/ruuS9Hwpws4pvB
+   NBf7P9OqmDwMwPmlpYVmrTP2td8xx2Io8wsGnnI9Bx62NCYbijIr2J4YG
+   4nptaP74HeH4RhMi+jVaHgfjamw1NF0aETsrw69ONJ2JlJhWhdySCImA9
+   rncF8wvbuqK41Tp/mBRUsNP2HJUiqTZ1opRJ9B/qWQJDPkJxQTb1PicAw
+   FBY459tggGHb/XetfwfmptljgeqiYetWN31kena4Wvs28xDEnvCbGc24g
+   fE0hoLAKGnC3Ztp8e2eJD6vdoIvIikfOKd972POlz0/sWUEF08zfYvjoj
+   A==;
+X-CSE-ConnectionGUID: 8LAWbA5GQ2ahFbvyt+0fdg==
+X-CSE-MsgGUID: yJIzI/FJRxCSy96dUP/zZg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11768"; a="89628811"
 X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="88477582"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 02:14:45 -0700
-X-CSE-ConnectionGUID: uLrFl3k6Tdyd56DCCZyGYQ==
-X-CSE-MsgGUID: Q7wB3U6GRN6hTKKuowFyAw==
+   d="scan'208";a="89628811"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 02:38:52 -0700
+X-CSE-ConnectionGUID: nuot05xTTpin3WYueyBQ6g==
+X-CSE-MsgGUID: J/bYUojDT8+jaWAk6y1PYg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="233852015"
+   d="scan'208";a="256896939"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 02:14:43 -0700
-Date: Mon, 27 Apr 2026 12:14:40 +0300
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 02:38:46 -0700
+Date: Mon, 27 Apr 2026 12:38:44 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Salah Triki <salah.triki@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH] iio: adc: mt6359: fix unchecked return value in
- mt6358_read_imp
-Message-ID: <ae8pAGBGGOvsURka@ashevche-desk.local>
-References: <20260427085458.38546-1-salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?iso-8859-1?Q?Nat=E1lia_Salvino_Andr=E9?= <natalia.andre@ime.usp.br>,
+	andy@kernel.org, bentiss@kernel.org, dlechner@baylibre.com,
+	jikos@kernel.org, nuno.sa@analog.com,
+	srinivas.pandruvada@linux.intel.com,
+	Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH v2 2/7] iio: accel: HID: Replace method
+ accel_3d_adjust_channel_bit_mask()
+Message-ID: <ae8upGN9ILmtCzeA@ashevche-desk.local>
+References: <20260421222210.16016-1-natalia.andre@ime.usp.br>
+ <20260421222210.16016-3-natalia.andre@ime.usp.br>
+ <aeiPuxj2TRLNRbv1@ashevche-desk.local>
+ <20260424200847.78494f27@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20260427085458.38546-1-salah.triki@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260424200847.78494f27@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Apr 27, 2026 at 09:54:57AM +0100, Salah Triki wrote:
-> In mt6358_read_imp(), the return value of regmap_read() is currently
-> ignored. This is problematic because if the bus read fails the variable
-> val_v remains uninitialized.
-> 
-> The function subsequently assigns this uninitialized stack value to
-> *vbat, leading to incorrect measurement results being reported to
-> the IIO subsystem without any error indication.
-> 
-> Update the function to check the return value of regmap_read(). Ensure
-> that mt6358_stop_imp_conv() is still called to clean up the hardware
-> state before returning the error code.
+On Fri, Apr 24, 2026 at 08:08:47PM +0100, Jonathan Cameron wrote:
+> On Wed, 22 Apr 2026 12:07:07 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Tue, Apr 21, 2026 at 07:20:34PM -0300, Natália Salvino André wrote:
 
-Sounds like this deserves a Fixes tag, but the problem is that the whole driver
-is written like this. Why does having this fixed make it special?
+...
+
+> > > -		accel_3d_adjust_channel_bit_mask(channels,
+> > > -				CHANNEL_SCAN_INDEX_X + i,
+> > > -				st->accel[CHANNEL_SCAN_INDEX_X + i].size);
+> > > +		hid_sensor_adjust_channel_bit_mask(channels,
+> > > +			CHANNEL_SCAN_INDEX_X + i,
+> > > +			st->accel[CHANNEL_SCAN_INDEX_X + i].size);  
+> > 
+> > Indentation is broken. Taking into account that the last line is too long when
+> > properly indented, perhaps
+> > 
+> > 		hid_sensor_adjust_channel_bit_mask(channels,
+> > 				CHANNEL_SCAN_INDEX_X + i,
+> > 				st->accel[CHANNEL_SCAN_INDEX_X + i].size);
+> > 
+> > Which makes it most right and under 80 limit.
+
+> Why the double tab? Maybe just go long on this one and align after the (
+
+I never know when you are strict about 80 limit :-)
+
 
 -- 
 With Best Regards,
