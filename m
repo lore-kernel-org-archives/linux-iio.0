@@ -1,179 +1,141 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010001.outbound.protection.outlook.com [52.101.61.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5907E3A75B7;
-	Mon, 27 Apr 2026 21:42:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.1
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777326144; cv=fail; b=b0crcHanRuGcTaS2rk1MrmY4edd57y+w8GcNqJ7VKOdy2MBzqXD4ckyuGzGOhXMiO5WbCyebufLadAOOM33ntzXLYn40vQ0vkS6L/aWv9roJY4DniwsI2hbphTMlB+ZV/6wYdDaICCmZCyNgQBZOJ9I50PP72UsJb5HZ4ptXfU0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777326144; c=relaxed/simple;
-	bh=klhIQzv4remmWRP7GbUeuT79RcUz1K1FRUqDJZsk8LU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=n/ZX4GQeJoUvEBRukHaFdhfWAsPzZuHBmEVMRzHTVhpIj/YJOAl8Sk86NOtYj6NKxOTVYNazKEtAClk/VSArB3w1qI3evGCahYMGxNyrKmd3UUdGAzClS2CiTgQc2Py+WW4TbTpOz2RxppckEdNCGoxULm51ouI5AzXZfMFke7U=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=bKej7/26; arc=fail smtp.client-ip=52.101.61.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 000C23A7F4B
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 21:58:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777327091; cv=none; b=rSLMIMcBxB45ME/8wyDF7gftWZK0yuIIyMaf8Kv+cDpfHTvz4QPNhdPGD+ZGqhekwe+RVHCBXm0ZCiKT+VWXw4HNHeNBfq+N0ab6vwZ//eFrpx5TfiF2Aadvsoar4Bze1fgsrhDj2l+h6iIl4jg0ZYh5rCVlI3N5tMhhNNIN1fo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777327091; c=relaxed/simple;
+	bh=4aY/45S6uu+ueqf0r3Tct1zhYR6DX6LmiB4UWgyy0Q4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EmNam4rV0z8BfhI26SK0JsvY/ONmhW8G6FU3GW51/euqiMD9BschaAsJCtHX2P1OzUk0247mvnWWtYS559TBT+hN/S2wVI1RCbYxOwhrTIAryQwIYumWqL1VcTY5LQN4dRd4UOq/uGTgzBztAPjXuSFYb5II4721/76Qsaofpbg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SfdcndrJ; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="bKej7/26"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AssupH0S+bKH4JtGZCtx0wpe/eLhKFbr7fCT+M5aE6Ysrl3VyXPxQIARtpRYda93ZMyc5/YeRlRJ1HUEvW0n9OpzM7Dod/o0KuvKtY+o00Uxod7+uHVygxhbGTO9GGfOSEmxw2h+kyNBzuDmoaitnHYdLDb/pJFubEtisAD+pCR6eSjpF4HCa94hrCIERJzMogPRknprQu7Ex5WdHjW5QBvNfF5Aw3en4RwHbaGkyyMA5/YoR7axpa56iCu2OpeValJVnN5pJASpXns/xWQHPTq5gQwuJhqsl8NS7Gf8kLLNL8GgfvuviY+ARspOcHE50h0oTzckavfQDrPH4RTZUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YhEMlCS+gk5qzaIUTW6mjfmr6VnP9Ohc19O2DtAx8YA=;
- b=TiK5WGWUhBVICEzETfY5xKJ9YbNO22+q5pM1ROSWlP/SbnxhCzeR1TKUGOOJivkRzE4QFzQNANDzfdSq3imeTQ1MQm6YyeECYzNHfFkMgxyoexa/J0aGehT+aZEmvkkljqLpR467pK+l+dNECvqWOLTkiccwALx9lgZ+rYRB1VS5E/9HkY5WDxWu9+xABqGBhOxcKIarkyv2RDY9u9srVXvtLLV9RoWXXmz3KR/EECHSA/9dnW2QR4EczIqgOzhbD7kuSRdc7L7+cRDB8JLCx/1HUOyW8f1eYI9ySCaU8gpc9MBNemsmI7zZjJlboyKzGNnUu4ppEcX4WLdrx8m0Jg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YhEMlCS+gk5qzaIUTW6mjfmr6VnP9Ohc19O2DtAx8YA=;
- b=bKej7/269vED6UQwMi+TlVF/E/abfRK0y67L9qVFv5gTF2WxCVGthg2x0fn2ZH4vX2mnvB+ex3SRoJ1TnaRUIREPo1Xymq5TOpaff7dB2ZDTcnrL2DTi8mg0WH23F1A8869jOUBpXGt0j0Gj6eEky5/uQB3ALUgpZO2LIQNhSDNID8bl6X2FZjG4JSt5r3fvtZmkCbarVod1waQtm5GgMIMXGh2ziFAwNGkYrEIVCztCYRWmohstQloocBdOwJzEzZfBS39j9Zhsa0c0Om8JhxXkmC3hXT5o4I+ApuqQV7NldKfZk3Y1BAEQdPLwvVV2zGc4akZA9x9T0RhtLLoqbQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY8PR12MB8300.namprd12.prod.outlook.com (2603:10b6:930:7d::16)
- by LV9PR12MB9829.namprd12.prod.outlook.com (2603:10b6:408:2eb::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.16; Mon, 27 Apr
- 2026 21:42:06 +0000
-Received: from CY8PR12MB8300.namprd12.prod.outlook.com
- ([fe80::ce75:8187:3ac3:c5de]) by CY8PR12MB8300.namprd12.prod.outlook.com
- ([fe80::ce75:8187:3ac3:c5de%3]) with mapi id 15.20.9870.013; Mon, 27 Apr 2026
- 21:42:05 +0000
-From: Yury Norov <ynorov@nvidia.com>
-To: Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Andy Lutomirski <luto@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SfdcndrJ"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-488a14c31eeso88778585e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 14:58:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777327086; x=1777931886; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SGFEGVArNncRbb7nlEyVjRWdYLiwwjUBeFv4UPUGaDw=;
+        b=SfdcndrJq1yx+1EvGa2k0PZuLdUU55gUP9bYC/rRCd1IW7+0LwuUw7p6DGy5j54mvt
+         KAQnx+1bjsI47/LTwlhcsbWxWA+HXSEojFG1upbeP8zel3yfD8HDVbM0RrATD20fLSsN
+         /60nOuAYHUSAcn0E9k9TG9or50dtRnvLsshp/Go0eHrsm9irORQJstPvUYhdqBpDjw8b
+         2CwV3eQsLqAmDtpU0O5SPoVl2qiwxEWrhIWRh/KQ3Ffr8KrpKiLDE+NgMhGY7G1ciI+I
+         dzuUpixfgs3tez/NHPfsv9tAMz/aKB6rfbwF0pBwR4PhDySrGCLbd81gc/hxmSxBlcoi
+         IGhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777327086; x=1777931886;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SGFEGVArNncRbb7nlEyVjRWdYLiwwjUBeFv4UPUGaDw=;
+        b=eED0ROaGKVWTGmz8jvUj5XyPoolJpsXe1e3e803y/CdUgFjIT6HCDkkXilk+zt819B
+         o0QDlQJ2f6tlJ3lDtcneixxgDUYXXypa8d0cmZiz/zVOa9AABYCEppWZgbzfiNSxWdBt
+         +BzxrXJk1AqPcNTs5+hzLUNX7UaJ+AdDHyZRp3qXtrZR2umxwN4PI92rC8+yH7VIhKMV
+         f+T7pJuX7fJr/ma3XZilC+XveM+tgPtTSR+PmIcFE/iv12IfNH8Kflsf/70aVY9fXU39
+         UIWBA1LTlQwq3WZKx95gauucpmkb2EJd0/iVRLBG5tp8bi9Ub5tWWDAwDoYJOiam2+Rm
+         RbrQ==
+X-Gm-Message-State: AOJu0YxoPch2kY57lBJfEbhChs/hD1pLY6/a2/cdI7SiJnKFZecd8nMI
+	0UMh2bpBc4eqvk72uU064FNtb3GhX6DC5SaI7BSO1aExo86fmJSopWNT
+X-Gm-Gg: AeBDieuYATqJPYIHY0fNA4V0HqhJA3bot7IVb3FaI6d/pQgZfVO50JXS9KRvFFofV74
+	jZ+4vQ0kv4Ej9qJok6haf2LL2p5QQrx7Uvej2PT4oShROgDurRqMDg8+sOSMOWMSMFVQ8JgSusm
+	shr6N5exs3ZWuFcr5+3Q/pxk1fuNygukcmmINjzhHxKu8zo7+7MjMugEaRnz1JaDmcFhK1XV41y
+	D6xfQiXgONbVdPARoawvwdjePFedoTKookiFrtZ6QHbO1FdXrBX1qDcjUG3dZVgfLcaLKywAmm+
+	K/R9Iq0ey2AQzgmOun96VwNe4bltvD809iGHEVWJmMvb6JY6Pwo2AevnIrH1/80KPb0wVz/tMa/
+	/Vt3C0tVQ48togfiU4zkn8tzmdcG1uxIZ4Pm7uwMEyntleyKyZBaXjgU8wK7FSyAiQKh9kY/TxF
+	7SafXpzif/w0iOgTp/s4jPt9wqDm0wYIK4zgU2PofsTFAVoGKY
+X-Received: by 2002:a05:600c:8b2f:b0:48a:58ae:993b with SMTP id 5b1f17b1804b1-48a77b178b3mr6765775e9.16.1777327086287;
+        Mon, 27 Apr 2026 14:58:06 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.239.18])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a775eb912sm3854655e9.21.2026.04.27.14.58.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2026 14:58:04 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Crt Mori <cmo@melexis.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	David Laight <david.laight.linux@gmail.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Ping-Ke Shih <pkshih@realtek.com>,
-	Richard Cochran <richardcochran@gmail.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Yury Norov <yury.norov@gmail.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Hans de Goede <hansg@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Salah Triki <salah.triki@gmail.com>,
-	Achim Gratz <Achim.Gratz@Stromeko.DE>,
-	Ben Collins <bcollins@watter.com>,
-	x86@kernel.org,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-rtc@vger.kernel.org
-Cc: Yury Norov <ynorov@nvidia.com>
-Subject: [PATCH v2 9/9] ptp: switch to using FIELD_GET_SIGNED()
-Date: Mon, 27 Apr 2026 17:41:26 -0400
-Message-ID: <20260427214127.406067-10-ynorov@nvidia.com>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260427214127.406067-1-ynorov@nvidia.com>
-References: <20260427214127.406067-1-ynorov@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BN9PR03CA0548.namprd03.prod.outlook.com
- (2603:10b6:408:138::13) To CY8PR12MB8300.namprd12.prod.outlook.com
- (2603:10b6:930:7d::16)
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH] iio: mlx90614: fix missing GPIO direction return value checks
+Date: Mon, 27 Apr 2026 22:58:00 +0100
+Message-ID: <20260427215800.28082-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY8PR12MB8300:EE_|LV9PR12MB9829:EE_
-X-MS-Office365-Filtering-Correlation-Id: ced701be-80e4-4701-f10d-08dea4a5d34e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|10070799003|376014|7416014|1800799024|366016|921020|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	UpcHuupd9rTpQWlQonfjFHvVSc8x2JV8fktSK8HuZgZqbZiUGQL79gOHmznAQtaWjkEfe3rCmu6I9+lfYIXIk05fjeXX8bjbt+93fV7PkzTmm6TCc+eSEVwYCywE0WJRULUTv1CeiHhzae6G7w9Y6TJmGikKX0FOPhGdtKEKgdNnUBuLZY7MvWBv1OiXQTdI+SIyWoCfEglXGwTMxZyNCO2fx6eB3K1yu0CGA3/uLnVQjBzvjvEP47C3qVVKp1apyVzyBC/gUh6ivuUfuQ4b/F5lspIKCJFulJEPK/T6KHRz52C7thapCF9zxC7FdyUHFFk3yJW4+qx4veknErYGLQQmpfm424MTSriMUO8n6rBPwW3Q/CyTSNd5zOEksNg6mcetVDTAItEO56nTVkDkGCPJuytvSOz1S3lNo6wwisz73tVON4AgsRaxAuowra938qnT0LFOSrjc95lvJt289vu7NNIzK2f9UKZbhRFqZk8eQnNT0ZOsie/cOl0+8mxiuRbpNUY4TKkfj+QcKv+hAuzZvYz6EUx2hU5iDd+uR+tx+mXmSNp7/PuOMMj0LZUHL6ks4RtR4q/LgOuMOoVkaIuL7XF5O29K2AwtNmunndaPNQy6v53owOn4oJIQl+lZNKXN1529L5Z9ruv5unFTUKoH9Y1xKJvR+TrGQqI5CX/3MbKn2F8agr6mbeg1vS0uWHeQFdHW4pl2NYUtMf1HyB11jTcPUPL42xH9XhlXXDnfErBUSZ2InkZSYEXaX8Yud2R8OU2UbK1CTkXbBHBEeQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY8PR12MB8300.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(376014)(7416014)(1800799024)(366016)(921020)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?O/kokQ8FiCtYOoUSRmVrGAyld+whJ9lNuq1WuG5e0K+QLQYYIVwlRSAequ6z?=
- =?us-ascii?Q?o2j8FBF5OTHACMWAsSs3ZOZlGegK0aKdRF5/vPN53kNeWm2hpgEekLypr/HI?=
- =?us-ascii?Q?K0ypZJnpYy/LsUCYqJilnUV8lVj8V1LwdM3xGKScT//L9dWOCBH2QnSJ3InW?=
- =?us-ascii?Q?ODTMuo0jxRFW2r6h5WlU/3JMj1kx4rhwKJBKIyWW0DpV4JcBTwXeOQfINLKL?=
- =?us-ascii?Q?KBo/lK6+TiBLdzbgCiaH/7jlsPOtSYTvxwVEjna1s9dAuRTgiVDByKnVd1sA?=
- =?us-ascii?Q?nrGwp/JoFNQjzJB67+41r/VF7/Bwv0eaLPOvHko8ERjAjpUJTvWnKYU37r7y?=
- =?us-ascii?Q?ZKfbQCGlqkjTU9D8b8XbPcrp7kkPoqgGPWJIM2I7S12KbXWrZllBmQJqOQiK?=
- =?us-ascii?Q?g23ab/NHL19rm+ETuptuVAYFx7t7sf8bl7HvUXtXC7D1YBrGNHjJsJjkdl9m?=
- =?us-ascii?Q?SGW98Mun78/YLN+w5+D86tTwor4fd88FpyL5K/pTOSj016PsykIl8ujuwT79?=
- =?us-ascii?Q?pboAUwaGisuzydXOqGIVUQGF5oqK9yZ8nqeAcll5DqNKgNZOwdJOxQq3ZFy0?=
- =?us-ascii?Q?IEDvrh5NM1L8nEYH/6GSMehFoWiXAxxD+lKIZ69BGXhiFOdD/1x4bCoOIfC/?=
- =?us-ascii?Q?adWCTF8sbJ4rh8C7BoCMDCtAg3zQOF1dZynqsIcGJyi1n7DHdQe+et8Jz8mF?=
- =?us-ascii?Q?XrSn95fZunYUZPs3o5BDEDo4RKT8NkorMQJlPwLP/9CvW/jH9jo4sMTxrbtH?=
- =?us-ascii?Q?Bcxap3M1tzJ2R3EQMctxrkxdeMOPozA5QRk00F/e7oy67tUAJegsVBfq1rlI?=
- =?us-ascii?Q?+lNvG0P5jnXyWns6mXEuoVT2Hv/YTmoE6j/6VfnLeecYdU17psbvFiPYvNGf?=
- =?us-ascii?Q?5ZMyhGtC3gj4oXrnEDorW60bCENqhuoL1y+eOaqkb+G+yBqZ5E6rF+rDJsDe?=
- =?us-ascii?Q?Sk+18UQJlYqpJ8rUCv8Q8aIvAgLEBnN/COOwrLxfx/788bnRNIx4X6utEBgW?=
- =?us-ascii?Q?PgXR9DEuGhsQ3zYCe99j1IKCEItERHpAQakhPAX1e58X30TrP+WoWP5opM86?=
- =?us-ascii?Q?TzHmg0tY2E1eYxJNfR7uxrsdJpJZvrUqc9pJpHSyTcXBVdAf/mjkXVRyyohy?=
- =?us-ascii?Q?x3bBd7d3FhOIDVZIOGfI5ST7X8FlwSwLOA79LHQK+UyDl2VuR6oJEIAt4q/H?=
- =?us-ascii?Q?UKUdnMt++CMwWVdI1QROytDu0/rPAlw0819ShzFC4NxsXA+h6nI0wnRVUXEM?=
- =?us-ascii?Q?mcvyN67yGR932EowbR/i3OAAnmmspVkp7AKFMRKy8sOG1rMwNse9bMG8T3TE?=
- =?us-ascii?Q?tuFMsHoYmofc68Xnt6pl+l62ERs2cPrE3E5YFMAkSlkfn25PJW9pNEad9vuf?=
- =?us-ascii?Q?wqJ0yYND92Id6qPTQsDZRglXc93yS7Os7dZkVayhBzFCcFfpX+LxosaQ6RAi?=
- =?us-ascii?Q?kOoXRphLOIAhRwrG1TGK+sGJdLLKbpL45VCW5W7TnmngsHeH6Z49/iuCDGU9?=
- =?us-ascii?Q?MqGqasU7g1hZMd77KJyrSZvSxlhJh+1EjMdWRO8npmaqBdEFcPuJDU8Qz4EE?=
- =?us-ascii?Q?0tH/QrUbuXVtjJjswDlYsuxdU3raC+AwsGVzcAgSYkNMDLt++zzb/txqp3H9?=
- =?us-ascii?Q?tX1/jdGNVcXJc/mKUCDykvA8MIm8I5RBYQEEOCXyJ7GXFafZZRMxTt1ZDN/j?=
- =?us-ascii?Q?VmapkC5BtwmmFyMOAkwdRE30jES2AtpSs8U6+V/YaB5uozvL2DNfX1eD7saE?=
- =?us-ascii?Q?xAZLy8bVReuv5oDXeb6WZtMMjRqXgm6OdEcRjo/i7bbqtfchaeOu?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ced701be-80e4-4701-f10d-08dea4a5d34e
-X-MS-Exchange-CrossTenant-AuthSource: CY8PR12MB8300.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2026 21:42:05.6485
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e+kEhbL6Atkk8mN4bWyp0cFWJpzUnGJ5BtVEYInC4Bl65X5/SJ2LqSntEd2mzHG3dbOOi7elMzT1QS9sLrTKDg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV9PR12MB9829
+Content-Transfer-Encoding: 8bit
 
-Switch from sign_extend32(FIELD_GET()) to the dedicated
-FIELD_GET_SIGNED() and don't calculate the fields length explicitly.
+The functions gpiod_direction_output() and gpiod_direction_input() can
+fail, but their return values were previously ignored.
 
-Signed-off-by: Yury Norov <ynorov@nvidia.com>
+If an error occurs during the GPIO configuration, the function should
+abort the wake-up sequence and return the error code. More importantly,
+failing to check these values could lead to the I2C bus remaining
+locked if an error occurs after i2c_lock_bus() is called.
+
+Add return value checks and ensure the I2C bus is properly unlocked
+via a goto label in case of failure.
+
+Fixes: eb4b07dae4d4 ("iio: mlx90614: Add power management")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
 ---
- drivers/ptp/ptp_fc3.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/temperature/mlx90614.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_fc3.c b/drivers/ptp/ptp_fc3.c
-index 70002500170e..f0e000428a3f 100644
---- a/drivers/ptp/ptp_fc3.c
-+++ b/drivers/ptp/ptp_fc3.c
-@@ -55,8 +55,8 @@ static s64 tdc_meas2offset(struct idtfc3 *idtfc3, u64 meas_read)
+diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+index 1ad21b73e1b4..ce12b44c84e0 100644
+--- a/drivers/iio/temperature/mlx90614.c
++++ b/drivers/iio/temperature/mlx90614.c
+@@ -489,6 +489,7 @@ static int mlx90614_sleep(struct mlx90614_data *data)
+ static int mlx90614_wakeup(struct mlx90614_data *data)
  {
- 	s64 coarse, fine;
+ 	const struct mlx_chip_info *chip_info = data->chip_info;
++	int ret;
  
--	fine = sign_extend64(FIELD_GET(FINE_MEAS_MASK, meas_read), 12);
--	coarse = sign_extend64(FIELD_GET(COARSE_MEAS_MASK, meas_read), (39 - 13));
-+	fine = FIELD_GET_SIGNED(FINE_MEAS_MASK, meas_read);
-+	coarse = FIELD_GET_SIGNED(COARSE_MEAS_MASK, meas_read);
+ 	if (!data->wakeup_gpio) {
+ 		dev_dbg(&data->client->dev, "Wake-up disabled");
+@@ -498,9 +499,17 @@ static int mlx90614_wakeup(struct mlx90614_data *data)
+ 	dev_dbg(&data->client->dev, "Requesting wake-up");
  
- 	fine = div64_s64(fine * NSEC_PER_SEC, idtfc3->tdc_apll_freq * 62LL);
- 	coarse = div64_s64(coarse * NSEC_PER_SEC, idtfc3->time_ref_freq);
+ 	i2c_lock_bus(data->client->adapter, I2C_LOCK_ROOT_ADAPTER);
+-	gpiod_direction_output(data->wakeup_gpio, 0);
++
++	ret = gpiod_direction_output(data->wakeup_gpio, 0);
++	if (ret)
++		goto out_unlock;
++
+ 	msleep(chip_info->wakeup_delay_ms);
+-	gpiod_direction_input(data->wakeup_gpio);
++
++	ret = gpiod_direction_input(data->wakeup_gpio);
++	if (ret)
++		goto out_unlock;
++
+ 	i2c_unlock_bus(data->client->adapter, I2C_LOCK_ROOT_ADAPTER);
+ 
+ 	data->ready_timestamp = jiffies +
+@@ -515,6 +524,10 @@ static int mlx90614_wakeup(struct mlx90614_data *data)
+ 	i2c_smbus_read_word_data(data->client, chip_info->op_eeprom_config1);
+ 
+ 	return 0;
++
++out_unlock:
++	i2c_unlock_bus(data->client->adapter, I2C_LOCK_ROOT_ADAPTER);
++	return ret;
+ }
+ 
+ /* Return wake-up GPIO or NULL if sleep functionality should be disabled. */
 -- 
-2.51.0
+2.43.0
 
