@@ -1,116 +1,174 @@
-Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A0282765D4
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 11:30:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777289411; cv=pass; b=MhQDOhzkTkz2pqqT79Z5QsLNJD3TEUcEucA+gri/8OXHc32+qvJcfP5goCsMi1JGV5oqilZVn87c0YU9mqZku56nsvvbAhyyhjA4Sor3btgxAeADSdFBgXgZ/E8EYuxlbm9itNBIF3+JKnmvD9LrDvxdgsymWSiNgSNQXgVJLwE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CD4D30BB8D;
+	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777289411; cv=none; b=bzjYg+fBG9RWo17zjdi3RvJ2YMAs3DTiH2N2yCMQ3JkBR5ruExdXYrQB17/wAnOCjSpqecCPn4LsS5qJ1IkQCJYaBUpYpjBoBW0M9if6j9konMcowwqhqseJpnkFQQ3SBPoINPjcmf80hevqf0z2bCfbZf9DfNARviZfR3A8TYY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777289411; c=relaxed/simple;
-	bh=779Q1h8lZokAu2leNrYf5FaZQtvojipngO2ogdm0ejc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=crpp5xhdyEAfXJaNs2Dqu19BmHJDbZhOTZLRpl+/xekUd9Dz0K5tb5YWgiIV+LPiOevFu3rLz2YFP5Ps2wy4sPzaLAJC8jR1hxs37U/u/ijcIoUVA+zz0RC8Z/YuIuwY3C27dnyOq5ngraevKmvtFPmq/yStlVane2pOe05IlYo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jmwf4GvP; arc=pass smtp.client-ip=74.125.224.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	bh=ljmE1rWpKZCn3pxvkkd3tXDkCzv8bTgE+KAX4BqGjzA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=HtxYRckcdC9o69vmkWZdSzJvvSQ77QldIUR5fPaASCCDxOdd1hfD3EG74HJ4EHuahWBlsrBY2I4Tdm+yZuiNy0f7CisBrVvQ9FRERAMTO/t6q9ul56hb3Y70S9lDnp5tuVae30hHad3uU6ZVPZZuN4zxC3VJymIu3bzqNUD/cvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G7330ZBn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jmwf4GvP"
-Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-651b71f5cffso1208016d50.2
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 04:30:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777289409; cv=none;
-        d=google.com; s=arc-20240605;
-        b=XQvyr623t7zPj9a/9yEhTh87A4etblLfskzbt393OIj/wb3KecwJJQaJhGWUJTVlDU
-         JgO+9nyPchudchJXm6i6KkqYu2/wP/mNyLlqi89E6IF3OSKVP1tgKov7W8M8fcCnPzYD
-         M//bddSIW/3ltyvU04rw9UXFxN02GW9GQ7cZP8a9NKHQhaceAxmxgz5+iwSxufImE4W+
-         3l5+SbAjJi91Z0tGvt02P2xRbnxm7hBUqLtfcMT4I5dO4/juBmbRZATxASxmZVEzLnTN
-         6iS39p62/egGUYJ7+Rcu+IcrB4rJfdWirUH1HHsmYZK3xxQvUqdJQ/F66igmJrHYi3gr
-         JQXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=Fn+eCqQ18h0FcRITaqNoFwNcJcgkc90n/rg6OwMedeA=;
-        fh=EDCreXpUbZ/Pn14jEEgEPC9+/bBzJ+5UaUgvSxfjd1w=;
-        b=VDrRt1V19/n+EBb4hSIN12Z8vJx9DA340bsYf9FpF4rIqN+OsGNETswopnd+YZzqPy
-         MV2PQld5NhyN6jEbj8SeQDjBebNRQ1XQyP9zHiqKqKgpf7kt2AhIOhuesc28W/BTeEFR
-         cWx7QT7cBEytQDE4vkHtw1D9zlaUh7aWtw5S3Zx6N3LjJdWAZx0TJRqgZLpwouDUdX8z
-         pIN+q/R52tzbA90Z7NCXPEDgVvZnzi6L32LiTtkKUjWlUwiXq/L178IJPFYYC9bxC/J4
-         5d5uzsjRSmG7rC6FarIeeN6wlzPPfMiM0T3ouWg5uq3odfLykX8n3X3Q5G89bL5PRx3H
-         lLmg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777289409; x=1777894209; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Fn+eCqQ18h0FcRITaqNoFwNcJcgkc90n/rg6OwMedeA=;
-        b=jmwf4GvPxFd/U/RUngRx+L4hBVh62HNQNz0buW7dCoh0T+kCYQubMaXDCMDFNWCU0W
-         kw0DcgVGlhkw1KrnHY4af8JRAAHmx+qEm6NUGlJgZqKIwjA649DaVZoaOiNW9lG2CVqc
-         18MkqIJGFr9cHrZN62noAIa0lsLzV/woItEjTKbsQahD3XqWMUBAJczJ63gKTtaO1RTW
-         bTJjuAEWhvJD3oGZcw3+ZpDq60Ceeuew5+r8bKQxa2vfXjIX0nlmeD42J/6aFWnkHeGY
-         ZTIfbtd8q9v5gAn1+36D900Wqo/v7wXk3W+U4FcjjRlUQXZxW7JXv7jZzXc6MvZ3n6cg
-         Uehw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777289409; x=1777894209;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Fn+eCqQ18h0FcRITaqNoFwNcJcgkc90n/rg6OwMedeA=;
-        b=UW0acrX8w907tr4zWUACAxzlH/r46ZDT9UxgAOjf0Ug5oVpUWAqUcolqSi9MZ50VFK
-         7fuMJLti7wX7vRNFoUiCnTt0ljejPBdoXTdpGufkIy3tr/d6dPgslm4hDyHPNury8ChD
-         bD6+Iuc4ARxX4lANzdBoOtayYawfiea485KZFw1o24Tn7+3f4g2dms42c21W7lS5EhMF
-         DLzfA2DZtu+1nCuYOElO3xp+bU7H2DVm6K04al6zlWxWB1jm9MEScKEkRdj/RTwiTFfW
-         PuW51a3dYjLvM35HodrYhhqqwvFRq+NiJ5FEI3Gzi97aIYX59v6mK/gkIUaYRXbUJd3K
-         HiTg==
-X-Forwarded-Encrypted: i=1; AFNElJ8/7h6WIOChBjGU+5mIeHImkTt+IjsgmmXg/gMAIysnezkzyCP1f7OpMRKinPp579nV0Zp92Mozeis=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxREmK8wNrIkDRjdRGaD7ZMI3WlNmDB76noAa66YaQM5lQM6LKo
-	1jlgfSZxhUTcMTdD0f/u4uY3FEY10RQMFli+Ojr67NBiYOQMRrcYP6RDNtbcg9T3c9nG6M8pKOQ
-	E+9M403UxeblcimtitbfpyNmg0Q57n8Q=
-X-Gm-Gg: AeBDiesZiCoHbCPBkGNOFDJgbxlgnxLIB8V7el7DXFNWt/WtHw3mJ6EC003kjrR50Zo
-	fJT0oBLW8se//+sGg2x9DT/tg/U15T2l1EJ8kjV0bs8ZAqlfWnb/eBT/g+v0Jzxp6/jx5rnUcyS
-	48rn0JvifW+zsNK+wxDkLIPL3l/HB0XK5azsvAuxM9FybCFCi4mVTa0zdAEAUmQCKLFUmp0p3sw
-	k33b8C2JUw5wuoZY/LlmGwEj5I2KcbLEcLX1xP3kh26pOXZY3WwOI5K/QoNfmwC7wllM5hWulv0
-	dLv2GPOHT7fQgGs7yJGnfyMOQzvWCIteBE7zqHLeYBfbNHKHxQ5Pyj+hPu5wUqtL8SvOF54fd2v
-	5WkKhvliNJS3dIwhcAxDqYIxrXy0A7t+q
-X-Received: by 2002:a05:690e:b81:b0:651:d0a5:ce9 with SMTP id
- 956f58d0204a3-65310b42e9dmr24160410d50.6.1777289409319; Mon, 27 Apr 2026
- 04:30:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G7330ZBn"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4FDC8C2BCF5;
+	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777289411;
+	bh=ljmE1rWpKZCn3pxvkkd3tXDkCzv8bTgE+KAX4BqGjzA=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=G7330ZBnGLRGThB227HGDYPkybgLcIaovi2tcyr3zjvI6jZ0Je3ocaYZZ086F8+sc
+	 RI+SzOoKU/X3hkq8tap0X2zibY1uVN+xJ2RNPJfGPNXtdkEYQqT4BFy0pjDCd4+lJy
+	 QjxUnIr1p4hXFWgfslzVx5KvTWVDEFvlPetQV5xbY8ioFf5XkgSYWAlAE81kIgRnKS
+	 /bx4kerd+IgtknZDtxDMLsbcxIaIEYh5JzOK+rwpU+pGvk6MRytYSNgXcurvTZRcyd
+	 nXJmGNaLqZf/rVugzPWQMRXGvVXBgedK/lu2WldatFBLoLZgfk8V+2+4Ll6WXthokN
+	 UKK7ctOzpdwQQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44AF1FF8861;
+	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Mon, 27 Apr 2026 12:30:13 +0100
+Subject: [PATCH v2 06/11] iio: dac: ad5686: remove redundant register
+ definition
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260424081809.61841-2-giorgitchankvetadze1997@gmail.com>
- <aesyzOMUl2Iyjgjz@ashevche-desk.local> <20260424113600.4e76fdb7@jic23-huawei>
- <aetVGYQcq1NAJb7k@ashevche-desk.local> <20260424175753.2d0ca494@jic23-huawei>
-In-Reply-To: <20260424175753.2d0ca494@jic23-huawei>
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Date: Mon, 27 Apr 2026 15:29:57 +0400
-X-Gm-Features: AVHnY4KxSBBE_IguR9loByXCMGPNb2iKR3t2E0Ai4mLKqym4NCC6RdSBa2lq1v0
-Message-ID: <CAE7dp2pUnDbEHPGvxVE5VkaYeV2rEWnTNfdqGaSy1DjZxge-Dw@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: ti-ads7138: explicitly include <linux/slab.h>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, antoniu.miclaus@analog.com, 
-	lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260427-ad5686-fixes-v2-6-188e05199368@analog.com>
+References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
+In-Reply-To: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
+ Greg Kroah-Hartman <gregkh@suse.de>, 
+ Michael Auchter <michael.auchter@ni.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=2960;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=5pwGj1cw0fpuxn2ieaGg3QNQN8ARYGCB2EEt3sxkuHg=;
+ b=LJH3ER6HfxTaBmUvcbQCgjhk4w4r3VsEN/i858nGAZBlaX/FLSpjUbof5FTR2BltshWmjXaUC
+ weAsagyTrZUAMPdtZSdYB5o4Gw5jusjxg0a/xskHnfs6ZeHQyTbbnXI
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Fri, Apr 24, 2026 at 8:58=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-> > Why do we need to have kmalloc() here at all? I don't understand that.
-> Absolutely.  Locally it looks like length might be large and therefore
-> the array not suitable to be on the stack, but that's not the case.
-> length =3D=3D 2 so the array only has 4 elements and can go on the stack.
->
-> >
-> > > This function is just overly flexible.
-> >
->
+AD5683_REGMAP and AD5693_REGMAP behave the same way in the common code,
+and that is because they target single channel devices from the same
+sub-family. There is no reason to separate them and it will make things
+simpler when refactoring the chip info table.
 
-Thanks Jonathan and Andy. I have sent v2.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ drivers/iio/dac/ad5686.c | 19 +++++--------------
+ drivers/iio/dac/ad5686.h |  2 --
+ 2 files changed, 5 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 2c1692097c0c..53d58f0af16e 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -110,10 +110,6 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
+ 		if (chan->channel > 0x7)
+ 			address = 0x8;
+ 		break;
+-	case AD5693_REGMAP:
+-		shift = 13;
+-		ref_bit_msk = AD5693_REF_BIT_MSK;
+-		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -294,7 +290,7 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+ 		.channels = ad5311r_channels,
+ 		.int_vref_mv = 2500,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5337R] = {
+ 		.channels = ad5337r_channels,
+@@ -416,24 +412,24 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+ 		.channels = ad5691r_channels,
+ 		.int_vref_mv = 2500,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5692R] = {
+ 		.channels = ad5692r_channels,
+ 		.int_vref_mv = 2500,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5693] = {
+ 		.channels = ad5693_channels,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5693R] = {
+ 		.channels = ad5693_channels,
+ 		.int_vref_mv = 2500,
+ 		.num_channels = 1,
+-		.regmap_type = AD5693_REGMAP,
++		.regmap_type = AD5683_REGMAP,
+ 	},
+ 	[ID_AD5694] = {
+ 		.channels = ad5684_channels,
+@@ -531,11 +527,6 @@ int ad5686_probe(struct device *dev,
+ 		cmd = AD5686_CMD_INTERNAL_REFER_SETUP;
+ 		ref_bit_msk = AD5686_REF_BIT_MSK;
+ 		break;
+-	case AD5693_REGMAP:
+-		cmd = AD5686_CMD_CONTROL_REG;
+-		ref_bit_msk = AD5693_REF_BIT_MSK;
+-		st->use_internal_vref = !has_external_vref;
+-		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index d08160e7fad9..af15994c01ad 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -46,7 +46,6 @@
+ #define AD5310_REF_BIT_MSK			BIT(8)
+ #define AD5683_REF_BIT_MSK			BIT(12)
+ #define AD5686_REF_BIT_MSK			BIT(0)
+-#define AD5693_REF_BIT_MSK			BIT(12)
+ 
+ /**
+  * ad5686_supported_device_ids:
+@@ -89,7 +88,6 @@ enum ad5686_regmap_type {
+ 	AD5310_REGMAP,
+ 	AD5683_REGMAP,
+ 	AD5686_REGMAP,
+-	AD5693_REGMAP
+ };
+ 
+ struct ad5686_state;
+
+-- 
+2.43.0
+
+
