@@ -1,306 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C3A83803F8;
-	Mon, 27 Apr 2026 20:14:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8FE031E850;
+	Mon, 27 Apr 2026 20:15:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777320874; cv=none; b=R1h41viDusPuNYyS+2BLheymhrWO+buKpF30XG06vx2RcbOUgqMLb110LBmPigB+ZdX5dC8Xt19vDhKXYy+zOKAqZcw55UA5vJTTGqWXg88qXLfBO9geMxLvuuxheWtuvx+4sME6vkrQX/q+Lrp3YvdO11YFMfmRP19RKuyiwQk=
+	t=1777320951; cv=none; b=g23nW51TP/IJIN8PoKVs4f3m6hJETRZYv0XEwIAJ7r+1oB9m8owG29gJFq/fs+6vAxMsrlT/B3etFeVCnqCy7geBwgUQVxXArLxuubrl+w3cxlWkh8Ie7aUaYy/lnyA++LG7J+7VWpze60DwvNGbXd6pcJX54JHVW7B/BuK/Csw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777320874; c=relaxed/simple;
-	bh=uyXiKPRuTDoLrBixbH1C7zwMYpbcc/R+ReU8VdvI3dw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MXzM+5VdElM6Y0b/9xO4WDIrNiVy7csyE2iSvfn1O3C8vmgH9Q+SQyKLGZwIHroWLozAuMn76AziFI1hfCx8PUPnsT0o4d71Cy5C3goxaF6uMCEq/5ix1WgALGuElbIzPthsEOsjyjzMZc3wjoLNq9DFUaaA1MLj+2Jy0Judr40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iFFQNywo; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1777320951; c=relaxed/simple;
+	bh=yZHOTBiQtUuTRtWyWIyzcYm8UrZNMLERY6mqk6GAp5Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JXw+OMQ5iEjke4oR09r7kOuIDAkEq1fVzvrugYhe2U/1uYXOzYKmki7/G2uNYDWC+hqhdFf8fdc1AmhHujEvzXCqfLX6RiQUCfhGMBTQCEJuxwABhXgDuvn8unfnFtaPS68a1DBNOnIa4cL2CDRY05r++hSKJXgoZfbtLAkLhpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jItj4zWv; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iFFQNywo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jItj4zWv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777320873; x=1808856873;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uyXiKPRuTDoLrBixbH1C7zwMYpbcc/R+ReU8VdvI3dw=;
-  b=iFFQNywoQBEGoBM4s4D2yYzEniKXRxuXz6360kGFL/vz1/LFSvLaPccJ
-   /UiWst0hWbnyPlgcEq8nYPBgv51Bz+ZugTQ3EZqLaY5vOnDDe1RL86IyD
-   T94lSyk0hcvZeC2u48OBKceIfcXb4DgNK2issoNbL3fvYSnfVZP9FL0z0
-   gCv6zZ8iNGSCAhstLf1nW2xzw0/Y7cvHysQuf4NvLfO7iITCIm81QuRbK
-   wpN7QTBMPC298j49+IJMwt9B7Ktp9B1K8L902S1DgpPCfWjwyT6u1QG30
-   9O5em9VttO6ugIzRwTrNiOrowdjqa1POXfwSzedkkPOC2040PQVoJOmr9
-   g==;
-X-CSE-ConnectionGUID: AJqtwZ8ERw2BKnOWIavwiQ==
-X-CSE-MsgGUID: /51rYASWQQe3cEonJoNBEg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="77384128"
+  t=1777320949; x=1808856949;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yZHOTBiQtUuTRtWyWIyzcYm8UrZNMLERY6mqk6GAp5Q=;
+  b=jItj4zWvKm3i4ZXuGPbgfIjgx3bI65InhdDtYTMcPB3SCXI3L5nOajLr
+   XujLoj6XNzGTeMW35lcWgUumlBCmsOLQtNh4yBSvB8RClhoAZy3uVuJS9
+   4/geJZ1nIPk9tvEVZmRGo8/FbHSneyWBSKSZiM1A3zL3JTLrXWNX6NGS2
+   3qar7mWgzfAF+mC+3hOHRZDg+DWhsPMdfAT2HinvIspWvrjiG7UD7Medh
+   vR5oQWQ4LX8YVYRXPPKqhUF7I7k7LxHUBpQs7SOp3hmGtrDbO4V6U+Tz3
+   GNYj5g2aKbj+SENtK7Bj1SjxSTHzhNqmEkiMafF7VvfvbAALycEYYihHZ
+   Q==;
+X-CSE-ConnectionGUID: vU3GRTHZTZ2HZ934f6vBpA==
+X-CSE-MsgGUID: gC4WNtDfTH2Yr/vSQpehlw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="78138719"
 X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
-   d="scan'208";a="77384128"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 13:14:23 -0700
-X-CSE-ConnectionGUID: NzC/bzzNSACFrutxJFt2IA==
-X-CSE-MsgGUID: YnJpjv2GRUaP59muic/oBg==
+   d="scan'208";a="78138719"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 13:15:49 -0700
+X-CSE-ConnectionGUID: vxzXE+ODQj+UlatNIzUdjQ==
+X-CSE-MsgGUID: r3lMQ+6ySwiS7+3Y83diDQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
-   d="scan'208";a="232857731"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa010.jf.intel.com with ESMTP; 27 Apr 2026 13:14:21 -0700
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 7F506A9; Mon, 27 Apr 2026 22:14:17 +0200 (CEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-iio@vger.kernel.org,
+   d="scan'208";a="238074948"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 13:15:47 -0700
+Date: Mon, 27 Apr 2026 23:15:44 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joshua Crofts <joshua.crofts1@gmail.com>
-Subject: [PATCH v0 13/14] iio: magnetometer: ak8975: Use temporary variable for struct device
-Date: Mon, 27 Apr 2026 22:09:58 +0200
-Message-ID: <20260427201412.3067235-14-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
-References: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v3 0/6] iio: magnetometer: ak8975: modernize and cleanup
+ driver
+Message-ID: <ae_D8Fo7o8AiyPFi@ashevche-desk.local>
+References: <20260422112207.1313-1-joshua.crofts1@gmail.com>
+ <aejKKKD4JdxIzlk0@ashevche-desk.local>
+ <CALoEA-w=N7ch67R+DgdqCrSy+5GtbuGkiAbJtnf-9c=Q2Mb6CQ@mail.gmail.com>
+ <aetDc7Cvb-_qkf3s@ashevche-desk.local>
+ <CALoEA-zCU_Em4U0F+Kf64g9yvQupLM5fXtQo_OxnPftcDwSwgw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALoEA-zCU_Em4U0F+Kf64g9yvQupLM5fXtQo_OxnPftcDwSwgw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Use temporary variable for struct device to make code neater.
+On Fri, Apr 24, 2026 at 12:23:09PM +0200, Joshua Crofts wrote:
+> On Fri, 24 Apr 2026 at 12:18, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > Sorry for the delay (if you want to help, start reviewing others' patches in
+> > IIO mailing list, you also learn from that). Now when I got my email pipeline
+> > clean, I am about to start doing what's been promised.
+> 
+> I wasn't sure that I can just start reviewing, so good to know. No worries about
+> the delay.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/magnetometer/ak8975.c | 61 +++++++++++++++----------------
- 1 file changed, 30 insertions(+), 31 deletions(-)
+FWIW, just send what I promised to send, this driver is a rabbit hole...
+See 20260427201412.3067235-1-andriy.shevchenko@linux.intel.com.
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index c2eb7b0d0da8..e6ca30b36965 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -433,18 +433,17 @@ struct ak8975_data {
- /* Enable attached power regulator if any. */
- static int ak8975_power_on(const struct ak8975_data *data)
- {
-+	struct device *dev = &data->client->dev;
- 	int ret;
- 
- 	ret = regulator_enable(data->vdd);
- 	if (ret) {
--		dev_warn(&data->client->dev,
--			 "Failed to enable specified Vdd supply\n");
-+		dev_warn(dev, "Failed to enable specified Vdd supply\n");
- 		return ret;
- 	}
- 	ret = regulator_enable(data->vid);
- 	if (ret) {
--		dev_warn(&data->client->dev,
--			 "Failed to enable specified Vid supply\n");
-+		dev_warn(dev, "Failed to enable specified Vid supply\n");
- 		regulator_disable(data->vdd);
- 		return ret;
- 	}
-@@ -572,6 +571,7 @@ static irqreturn_t ak8975_irq_handler(int irq, void *data)
- static int ak8975_setup_irq(struct ak8975_data *data)
- {
- 	struct i2c_client *client = data->client;
-+	struct device *dev = &client->dev;
- 	int irq;
- 	int ret;
- 
-@@ -582,9 +582,8 @@ static int ak8975_setup_irq(struct ak8975_data *data)
- 	else
- 		irq = gpiod_to_irq(data->eoc_gpiod);
- 
--	ret = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
--			       IRQF_TRIGGER_RISING,
--			       dev_name(&client->dev), data);
-+	ret = devm_request_irq(dev, irq, ak8975_irq_handler, IRQF_TRIGGER_RISING,
-+			       dev_name(dev), data);
- 	if (ret)
- 		return ret;
- 
-@@ -600,12 +599,13 @@ static int ak8975_setup_irq(struct ak8975_data *data)
- static int ak8975_setup(struct ak8975_data *data)
- {
- 	struct i2c_client *client = data->client;
-+	struct device *dev = &client->dev;
- 	int ret;
- 
- 	/* Write the fused rom access mode. */
- 	ret = ak8975_set_mode(data, FUSE_ROM);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting fuse access mode\n");
-+		dev_err(dev, "Error in setting fuse access mode\n");
- 		return ret;
- 	}
- 
-@@ -615,22 +615,21 @@ static int ak8975_setup(struct ak8975_data *data)
- 							sizeof(data->asa),
- 							data->asa);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Not able to read asa data\n");
-+		dev_err(dev, "Not able to read asa data\n");
- 		return ret;
- 	}
- 
- 	/* After reading fuse ROM data set power-down mode */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 
- 	if (data->eoc_gpiod || client->irq > 0) {
- 		ret = ak8975_setup_irq(data);
- 		if (ret < 0) {
--			dev_err(&client->dev,
--				"Error setting data ready interrupt\n");
-+			dev_err(dev, "Error setting data ready interrupt\n");
- 			return ret;
- 		}
- 	}
-@@ -727,10 +726,11 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	struct ak8975_data *data = iio_priv(indio_dev);
- 	const struct i2c_client *client = data->client;
- 	const struct ak_def *def = data->def;
-+	struct device *dev = &data->client->dev;
- 	__le16 rval;
- 	int ret;
- 
--	pm_runtime_get_sync(&data->client->dev);
-+	pm_runtime_get_sync(dev);
- 
- 	mutex_lock(&data->lock);
- 
-@@ -748,20 +748,20 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	/* Read out ST2 for release lock on measurement data. */
- 	ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST2]);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in reading ST2\n");
-+		dev_err(dev, "Error in reading ST2\n");
- 		goto exit;
- 	}
- 
- 	if (ret & (data->def->ctrl_masks[ST2_DERR] |
- 		   data->def->ctrl_masks[ST2_HOFL])) {
--		dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
-+		dev_err(dev, "ST2 status error 0x%x\n", ret);
- 		ret = -EINVAL;
- 		goto exit;
- 	}
- 
- 	mutex_unlock(&data->lock);
- 
--	pm_runtime_put_autosuspend(&data->client->dev);
-+	pm_runtime_put_autosuspend(dev);
- 
- 	/* Swap bytes and convert to valid range. */
- 	*val = clamp_t(s16, le16_to_cpu(rval), -def->range, def->range);
-@@ -770,7 +770,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 
- exit:
- 	mutex_unlock(&data->lock);
--	dev_err(&client->dev, "Error in reading axis\n");
-+	dev_err(dev, "Error in reading axis\n");
- 	return ret;
- }
- 
-@@ -909,7 +909,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * We may not have a GPIO based IRQ to scan, that is fine, we will
- 	 * poll if so.
- 	 */
--	eoc_gpiod = devm_gpiod_get_optional(&client->dev, NULL, GPIOD_IN);
-+	eoc_gpiod = devm_gpiod_get_optional(dev, NULL, GPIOD_IN);
- 	if (IS_ERR(eoc_gpiod))
- 		return PTR_ERR(eoc_gpiod);
- 	gpiod_set_consumer_name(eoc_gpiod, "ak_8975");
-@@ -919,13 +919,12 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * deassert reset on ak8975_power_on() and assert reset on
- 	 * ak8975_power_off().
- 	 */
--	reset_gpiod = devm_gpiod_get_optional(&client->dev,
--					      "reset", GPIOD_OUT_HIGH);
-+	reset_gpiod = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
- 	if (IS_ERR(reset_gpiod))
- 		return PTR_ERR(reset_gpiod);
- 
- 	/* Register with IIO */
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
- 
-@@ -937,7 +936,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	data->reset_gpiod = reset_gpiod;
- 	data->eoc_irq = 0;
- 
--	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
-+	ret = iio_read_mount_matrix(dev, &data->orientation);
- 	if (ret)
- 		return ret;
- 
-@@ -947,16 +946,16 @@ static int ak8975_probe(struct i2c_client *client)
- 		return -ENODEV;
- 
- 	/* If enumerated via firmware node, fix the ABI */
--	if (dev_fwnode(&client->dev))
--		name = dev_name(&client->dev);
-+	if (dev_fwnode(dev))
-+		name = dev_name(dev);
- 	else
- 		name = id->name;
- 
- 	/* Fetch the regulators */
--	data->vdd = devm_regulator_get(&client->dev, "vdd");
-+	data->vdd = devm_regulator_get(dev, "vdd");
- 	if (IS_ERR(data->vdd))
- 		return PTR_ERR(data->vdd);
--	data->vid = devm_regulator_get(&client->dev, "vid");
-+	data->vid = devm_regulator_get(dev, "vid");
- 	if (IS_ERR(data->vid))
- 		return PTR_ERR(data->vid);
- 
-@@ -971,7 +970,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	ret = ak8975_who_i_am(data, data->def->type);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Unexpected device\n");
--	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
-+	dev_dbg(dev, "Asahi compass chip %s\n", name);
- 
- 	/* Perform some basic start-of-day setup of the device. */
- 	ret = ak8975_setup(data);
-@@ -1007,8 +1006,8 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * The device comes online in 500us, so add two orders of magnitude
- 	 * of delay before autosuspending: 50 ms.
- 	 */
--	pm_runtime_set_autosuspend_delay(&client->dev, 50);
--	pm_runtime_use_autosuspend(&client->dev);
-+	pm_runtime_set_autosuspend_delay(dev, 50);
-+	pm_runtime_use_autosuspend(dev);
- 
- 	return 0;
- }
-@@ -1023,7 +1022,7 @@ static int ak8975_runtime_suspend(struct device *dev)
- 	/* Set the device in power down if it wasn't already */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 	/* Next cut the regulators */
-@@ -1047,7 +1046,7 @@ static int ak8975_runtime_resume(struct device *dev)
- 	 */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 
 -- 
-2.50.1
+With Best Regards,
+Andy Shevchenko
+
 
