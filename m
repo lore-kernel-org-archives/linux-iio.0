@@ -1,141 +1,133 @@
-Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m49241.qiye.163.com (mail-m49241.qiye.163.com [45.254.49.241])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B303226CE05
-	for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 21:20:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB916213E89;
+	Mon, 27 Apr 2026 01:25:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.241
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777238437; cv=none; b=E5IVNhw7lHUADWvcI/CnD3KbQiq8DV+mBbwMhAjaxXUhTFtQYVGXJ5JJDBOUy7sMUqvyDm/44jU8b7Z6i3lVa6jlRF4rOe4MEdOVFT9NjYFU4hDCt2ypj/o/mWQKP8qL/u4nCv+kPvbD53HhEEFD/Yokf21ZIALYOQ3KMstyzw4=
+	t=1777253150; cv=none; b=qZIMQl7X19qvT+Byg4QwByCpoWkvx/adVRicDKsCD1Nu/9W0MmnDI99ul+GnawdMHxnoRLi0zkjZvUrrU3KTGjkUto5HGA5HRkOZQsWOLNze4HjQt5oSk8iJG0v48lKYbAwJcCyNB7deSGlHpwvL3Eql9xlxO+wP1EJuVQfAGvA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777238437; c=relaxed/simple;
-	bh=fgbTKLalBkEql65GxS47PppD+hlfkIgSpzoEh3QF/8g=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AVCD6BAdYqgp+6q7SR1MbPpD2k12Levo/bNH7NczPb4szHPs6Htd1h/C31nvII6HPdtcpcMbGDzwjXLHxL29JX/HRyfLBJ/GQmFAlsu1+llNDjI7cjoxD21yYO9p4vDs2LJ10tbJiFinyhE/7HISyoblZ5CTQTfKWCibmk9AmEM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=tqkjmeBM; arc=none smtp.client-ip=74.125.82.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1777253150; c=relaxed/simple;
+	bh=JCYm/azDhaw/7P893qeHwreR94t1+eJ9p6AjS61Ju2o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KMkVTHSH/DHSZwDauc0BtHxHkyL3e/mE273BGj8CfR9h834J+JZnjsutl5v90Vd27RRTdIwls2ySMH0HZGXCK6+PzKCyCqXGqUdArNIyCHklKo9UG9fdPCPQqt4vQemn/abP3ngjQvUvOZrYC3Dc7D1uxQ+bI7T2jjpuJYB7hqI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=bN5zx+rt; arc=none smtp.client-ip=45.254.49.241
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="tqkjmeBM"
-Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-2d8fa0fadfeso5165418eec.1
-        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 14:20:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1777238435; x=1777843235; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=D+z5ks7FycyWyhSB2oeVofN0AVLQLkvT8Z6YFVDa6do=;
-        b=tqkjmeBMnXlvF9wC6Olly7QLfTkbNdFCxKGXqvqOmbKcmxwsGx78LbrczMudHzNCF+
-         qqYNVvlXKAl7Mohs7GhqJOEqbEbY6Puvs7sxBwA8vzszPPMPFhb3ia804+wS0+M6/jDd
-         JwrRsn+gVUe7vkYE5uDPcbu+7j+ycux4I8I06xXs27mHiUE5LdZ+21nLnC4snotBJ/E7
-         K+stiFqjdaKdsM7g1ek5e8tb0YWBrlO1UKZnkAUig3Ax4NiHcobXuguILInqhC4R/LRV
-         /x1S20szfcX5mV3glST7WJSWpxitx99dIAuwota5XnXEBz8RI7CaqIQK6k/7eiNZuGGn
-         atDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777238435; x=1777843235;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=D+z5ks7FycyWyhSB2oeVofN0AVLQLkvT8Z6YFVDa6do=;
-        b=j1OxzNQOFb/DU51kXDDyBHnWacHagQ1zJqe4iO8aWVn6qyTk1DLNpmAmLHI3TVnSnU
-         x8Ro786Pxic+99OYRoDdNpLTG6Eq0Z6VZW4DqN3uCRytVq35ejvoc6DHKhh8imgC/i2t
-         efcuQiQkY0f3gulHsp/vt61q1gS8FBstibd9ZOVZIt3CHy0zYu+IPtAyP1SuKVSmTi3I
-         xAN7qrKZfnQHAyZsxwuT7Vyo+gdW2leSaLuEoboXpMGRR/PS3qj9rM+bfnP/bCPV9HBP
-         fkGN6GQVWRa2QXCN8ZiofqEqJFQN0UMp1SOo0vIbCZrsfHXdhJAivXvGVqk2iE79UBxs
-         EhPw==
-X-Forwarded-Encrypted: i=1; AFNElJ/e7DHli28kDvFBfbnX55yOtuPBCVuA4jQqz2b59jhugKCVaa3PjRwnIDiUPNomtLgty7GdToAGXjY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZScasq9+CtmQsBEm5m8cVHXNv+BbXBHKxb1/wVA/truEWDwpD
-	ROv74/xYj5NbD3q5YA2faq5v6b+jN7YD6MI+rY5wPuDzf9NUl55TsKlNiignb63Z/gk=
-X-Gm-Gg: AeBDiesADbM2FCNTY5kLv57kAVl8RWn9O6Gv0hLa1BXUcA6w0813sdTYz0+FBkvARde
-	3GMBfY/o454iZh1L7Oj7g8tBgdx2VTYTPJiZYLiTK6LCUqcL4szHBg50YjqdCnwSaEhTocsuNwa
-	eYzKIb50kgwn4Ktgi+gP6X32aUNHyO73I0JyKbMyRO+o4UdW+Rs+KTq604sMwLvMhZlQgnPhlo0
-	x1CfoyVuNPow6Kzoj67JV1KpqVZmdL4IQ9Fvj+odRf9kpPI9PzfRz9EIs2Wm6mys5blwZPgDeyS
-	zDSy65nlPgShXp31zxpcpPmNuFNse/3GBriK69oTiu6LYfoCs4+k9WZJLHxp9PAJy6iNIpshIsC
-	ZffJn7FmhP0VmuZEA2ywHJVMxRysnBEUuiFfZ2IkFw1uk/fP6yU+2ZFD4zmabGFiNZKDY4PCxvM
-	NbDRrDGOmjdhqWnbRflJS+ud8LS9UhHiIjK6JEBU8vaw==
-X-Received: by 2002:a05:7300:dc8e:b0:2d9:db50:c6ce with SMTP id 5a478bee46e88-2e42c348309mr15335715eec.3.1777238434861;
-        Sun, 26 Apr 2026 14:20:34 -0700 (PDT)
-Received: from eileen ([38.10.153.31])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e53ccce0f5sm40799122eec.17.2026.04.26.14.20.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Apr 2026 14:20:34 -0700 (PDT)
-From: Caio Morais <caiomorais@usp.br>
-X-Google-Original-From: Caio Morais
-To: andy@kernel.org,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
-	michal.simek@amd.com,
-	nuno.sa@analog.com
-Cc: Caio Morais <caiomorais@usp.br>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH 3/3] iio: common: st_sensors: fix includes with IWYU
-Date: Sun, 26 Apr 2026 18:18:02 -0300
-Message-ID: <20260426211834.3318306-4-caiomorais@usp.br>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260426211834.3318306-1-caiomorais@usp.br>
-References: <20260426211834.3318306-1-caiomorais@usp.br>
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="bN5zx+rt"
+Received: from [172.16.12.43] (unknown [61.154.14.86])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 3c3462145;
+	Mon, 27 Apr 2026 09:20:24 +0800 (GMT+08:00)
+Message-ID: <2af2f6a1-9b3b-4be5-b842-dcf29621e7ec@rock-chips.com>
+Date: Mon, 27 Apr 2026 09:20:24 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 3/6] pwm: Add rockchip PWMv4 driver
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+ Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>,
+ kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
+ Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
+ linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
+ <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
+ <4592b323-bebd-4242-ae31-892a51b5b3be@rock-chips.com>
+ <ae4MCRE_hGJ-VcBQ@monoceros>
+Content-Language: en-US
+From: Damon Ding <damon.ding@rock-chips.com>
+In-Reply-To: <ae4MCRE_hGJ-VcBQ@monoceros>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0a9dcc85f48b03a3kunm09663e0d16a152
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlCS0kdVhodSk4fTBoYGB4aHVYVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSU
+	9PT0hVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=bN5zx+rtmrL/sfaeiN+vg4O5kxMPAdyyupG2fp4MJaav5iTPpC3+Md9GiDIwaAEa20itdarD/TrppKYVToPHo/R9mZIVkQzwHk0zzW7y0APT8DmguCFa2GcaMdME/F662c9RLqfWIX+kk0dx0he8C4S8WCAeOMp5f3/CgfSwlPs=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=LIIi6TlLlORarJbE8L0nD/XYuT5XrhpXxkOCrf081b0=;
+	h=date:mime-version:subject:message-id:from;
 
-From: Caio Morais <caiomorais@usp.br>
+Hi Uwe,
 
-Signed-off-by: Caio Morais <caiomorais@usp.br>
----
- drivers/iio/common/st_sensors/st_sensors_i2c.c | 7 +++++--
- drivers/iio/common/st_sensors/st_sensors_spi.c | 9 +++++++--
- 2 files changed, 12 insertions(+), 4 deletions(-)
+On 4/26/2026 9:06 PM, Uwe Kleine-König wrote:
+> Hello,
+> 
+> first of all thanks for your extensive testing, very appreciated.
+> 
+> On Sun, Apr 26, 2026 at 05:44:46PM +0800, Damon Ding wrote:
+>> On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
+>>> The Rockchip RK3576 brings with it a new PWM IP, in downstream code
+>>> referred to as "v4". This new IP is different enough from the previous
+>>> Rockchip IP that I felt it necessary to add a new driver for it, instead
+>>> of shoehorning it in the old one.
+>>>
+>>> Add this new driver, based on the PWM core's waveform APIs. Its platform
+>>> device is registered by the parent mfpwm driver, from which it also
+>>> receives a little platform data struct, so that mfpwm can guarantee that
+>>> all the platform device drivers spread across different subsystems for
+>>> this specific hardware IP do not interfere with each other.
+>>>
+>>> Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+>> Tested-by: Damon Ding <damon.ding@rock-chips.com>
+>>
+>> The continuous mode of all PWM channels has been preliminarily tested
+>> and verified working on the RK3576 IoT board.
+>>
+>> I have tested with several typical period and duty cycle configurations.
+>>
+>> Following Uwe's suggestion [0], I also tested with libpwm using commands
+>> similar to the following:
+>>
+>> ./pwmset -c 0 -p 0 -P 1000000 -D 500000 -s 5000
+> 
+> This one is good if you have an oscilloscope (or something similar) to
+> verify the output. Without that (or additionally) pwmtestperf creates a
+> series of requests that in combination with PWM_DEBUG should uncover
+> rounding errors in the .tohw and .fromhw callbacks.
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-index 7156302fe..04d106def 100644
---- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-@@ -7,12 +7,15 @@
-  * Denis Ciocca <denis.ciocca@st.com>
-  */
- 
-+#include <linux/device.h>
-+#include <linux/err.h>
- #include <linux/i2c.h>
--#include <linux/kernel.h>
-+#include <linux/linkage.h>
- #include <linux/module.h>
--#include <linux/iio/iio.h>
- #include <linux/regmap.h>
- 
-+#include <linux/iio/iio.h>
-+
- #include <linux/iio/common/st_sensors_i2c.h>
- 
- #define ST_SENSORS_I2C_MULTIREAD	0x80
-diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-index 0da270139..884077d51 100644
---- a/drivers/iio/common/st_sensors/st_sensors_spi.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-@@ -7,12 +7,17 @@
-  * Denis Ciocca <denis.ciocca@st.com>
-  */
- 
--#include <linux/kernel.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/linkage.h>
- #include <linux/module.h>
--#include <linux/iio/iio.h>
- #include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/spi/spi.h>
-+#include <linux/stddef.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/iio.h>
- 
- #include <linux/iio/common/st_sensors_spi.h>
- 
--- 
-2.54.0
+Aha, this is my oversight. I did not elaborate on my verification 
+methods. ;-)
+
+I have adopted three ways to complete the test:
+
+1. Measure the output waveform of each channel with a simple logic 
+analyzer, Kinst LA2016.
+2. Read relevant registers to verify that the configured period and duty 
+values match expectations.
+3. Connect the PWM continuous output pins to capture input pins 
+directly, to confirm the capture measurement results.
+
+> 
+> A good set of calls then is:
+> 
+> 	pwmtestperf -p ... -c ... -P 50000 -S1
+> 	pwmtestperf -p ... -c ... -P 50000 -S1 -I
+> 
+> 	pwmtestperf -p ... -c ... -P 50000 -S-1
+> 	pwmtestperf -p ... -c ... -P 50000 -S-1 -I
+> 
+> (Assuming that 50000 is a sensible period for the device under test.)
+> 
+
+Okay, I will look into this tool and run these commands to conduct more 
+in-depth verification.
+
+> And yes, I know, I need to document that using something more permanent
+> than a mailing list post.
+> 
+
+Best regards,
+Damon
 
