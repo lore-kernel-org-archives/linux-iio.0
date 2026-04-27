@@ -1,65 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7DE12E0412;
-	Mon, 27 Apr 2026 18:38:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 640B9374E5C;
+	Mon, 27 Apr 2026 18:42:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777315091; cv=none; b=OoBvnSw0kcoI98GZe7YJjPDa7L6og0foe7BVBQTvLnnuVuLW7YHbGySAfxXysZ3NumN6VPx1X1+d1k/R9izugshAK57i25lDt8ABFG0AC9RdPpOHAUl6ND3QRDi+eLOhyxD39IJYdLciePznm0NeCW8dD+Q76T0DwO5c0EuNTus=
+	t=1777315365; cv=none; b=hRbulHAZ1Hc8vox/9WjXEcXsivfXCHaZb4S8fiBEiuu3V6hoqiCufKGul3O8xduzsp7ZPJUBJGJLQfsfz8l1/9o6sOu713/f2VRhB3kjVVYX3ms0/PFrsHg/yaOoRQEud5gzXh86uOsNgQqRNsnrSCj7E2V4MFH2eEqNGKGr7fU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777315091; c=relaxed/simple;
-	bh=+OpmoAu13fY5wZP+SeSwWUXkGEYUd9HoSGTid1eDS58=;
+	s=arc-20240116; t=1777315365; c=relaxed/simple;
+	bh=wYJUfXwTRZWzF7sqvdMgSEJ+NZILuc0s+LJtZTxYru8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kkKlTlbnfVHHkoRYAhI6jZuIBAbiicgT2nh4hIT+Udz6ZNAScCLIytz7DZIhhSQRJaevx86A19Z5wXMLMRnKQq4A4FDf2xG83KdulIsBy4a7rNqK1eZPtVn3w8+1JyCz2xnpzNZGSsYNkbdEtfTKVa+3ouOXCH0JUe1rZU8OEVs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OsDfRZ+D; arc=none smtp.client-ip=198.175.65.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=aHf733Q84wjgl6hkhHx2nyjGUw9H9hNyopbybixhRWwnU8GtKDFnt3VLpGet+H7WCzP/cUp+BPa9XhAnwFlTWE/QhNSuzprciHrHejXRukpxxAABCiGVHYRYrRbS5/hjIDbE51AtMQBGPuAyurfP5SLQkgYIJ7pKXSvb7CzVoHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KSIGwZBz; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OsDfRZ+D"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KSIGwZBz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777315090; x=1808851090;
+  t=1777315364; x=1808851364;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=+OpmoAu13fY5wZP+SeSwWUXkGEYUd9HoSGTid1eDS58=;
-  b=OsDfRZ+DXPg0VryMo5D1yP9nUEYWWHtnoqn/SEeQps6icPnWCPO51NRV
-   VyNys1KorsncNp1SGl3gS5QURh34FnnWNSDhu+nLgCV7FIQbL7rLTmtcc
-   ufS2eMr9xzChAe9DHet/Ek8xhEESNZo8UfSA+htmclflrC9xFj/coET+U
-   KvFwHLZ6gtMZzC+wivCaNgK3taZMT2JveL0CW4/V8MKs4mF5IJ2bXHNL4
-   c5jNE3+JJoAlEYJHgzAxNufHKQGCX25X+G1DTkKbtc4etu+GqC1gZ4Pa6
-   7mmyDRmCMNQqYeqM3rf/X6HUVkHHR/OCTHCLx7oGzbrgfXZMmcahp5mUo
-   w==;
-X-CSE-ConnectionGUID: hxeoxBVOQlaJ8/RxVSuwCg==
-X-CSE-MsgGUID: bDuSXqmQRv+i+P/maDi2tA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="78197481"
+  bh=wYJUfXwTRZWzF7sqvdMgSEJ+NZILuc0s+LJtZTxYru8=;
+  b=KSIGwZBzOvl1ZIGI62tI67xmQy5nOtT1x97awYPdpYXDlYfsQwq/T47H
+   eeWf5+bDNlaTYQHVXLk0L7EoxCG7xxuYIuygqnxptKiToIQgKcrPcg76o
+   pneyxM/jd6Jb61r1eiWdsMOzCu0eYGHGx9OLCviyHFy8yat65z60PGFVs
+   y6TimQLdYBHPhmGEDeQYzWo2wKhuDnkDAd1Kk2pKc7sbOgpSyL2N7Ql6B
+   GW/Gxn9Hi21DzBBOPbFWrGXEyONp1vDl+A6ui/ArkJxIhGV2ZqcgO3Mvn
+   NIOJ1pEcSG0HpW/GuoTNxeL2u6n2jiqxFYB5awVL7euUdWlpl5OUUImDj
+   Q==;
+X-CSE-ConnectionGUID: UC7QcW6yTa+2TQgK2zlfQA==
+X-CSE-MsgGUID: 6GZUfidcQdmA/RoVgwe2oA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="78233396"
 X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
-   d="scan'208";a="78197481"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 11:38:09 -0700
-X-CSE-ConnectionGUID: JSUxNLBSS12D3OVNaqYiwg==
-X-CSE-MsgGUID: ZflEqIJTR4m26XQKJD9IRw==
+   d="scan'208";a="78233396"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 11:42:43 -0700
+X-CSE-ConnectionGUID: AR/NygY8QzigFaSDvST2gg==
+X-CSE-MsgGUID: Hkn6LNPHRF+w05T5F9GZRw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
-   d="scan'208";a="238755006"
+   d="scan'208";a="271841254"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 11:38:06 -0700
-Date: Mon, 27 Apr 2026 21:38:04 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 11:42:40 -0700
+Date: Mon, 27 Apr 2026 21:42:38 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Salah Triki <salah.triki@gmail.com>,
+To: joshua.crofts1@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2] iio: adc: mt6359: fix unchecked return value in
- mt6358_read_imp
-Message-ID: <ae-tDFwxxTgTPayu@ashevche-desk.local>
-References: <20260427165759.5756-1-salah.triki@gmail.com>
- <20260427181856.613a22ee@jic23-huawei>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: si1133: prefer complex macros enclosed in
+ parenthesis
+Message-ID: <ae-uHt1c_3-xR_WN@ashevche-desk.local>
+References: <20260427-si1133-checkup-v1-1-20f5f11eba6c@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,62 +63,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260427181856.613a22ee@jic23-huawei>
+In-Reply-To: <20260427-si1133-checkup-v1-1-20f5f11eba6c@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Apr 27, 2026 at 06:18:56PM +0100, Jonathan Cameron wrote:
-> On Mon, 27 Apr 2026 17:57:59 +0100
-> Salah Triki <salah.triki@gmail.com> wrote:
-> 
-> > In mt6358_read_imp(), the return value of regmap_read() is currently
-> > ignored. This is problematic because if the bus read fails the variable
-> > val_v remains uninitialized.
-> > 
-> > The function subsequently assigns this uninitialized stack value to
-> > *vbat, leading to incorrect measurement results being reported to
-> > the IIO subsystem without any error indication.
-> > 
-> > Update the function to check the return value of regmap_read(). Ensure
-> > that mt6358_stop_imp_conv() is still called to clean up the hardware
-> > state before returning the error code.
+On Mon, Apr 27, 2026 at 04:08:37PM +0200, Joshua Crofts via B4 Relay wrote:
 
-> I'd be more concerned about what it might otherwise report.. Will expose
-> something random that was on the stack previously.
-> 
-> Ok on this one having a fixes tag given the uninitialized, though as I mentioned
-> I'd have been tempted to take the approach of just initialising it.
-> 
-> Even with the code as you have it here a static analyzer may not be able
-> to see far enough to tell it is initialized and so throw false positive warnings.
-
-True.
-
-> Still, let's see what Andy thinks before you change anything.
+> Enclose complex macros in parenthesis per checkpatch.pl error to
+> improve code style.
 
 ...
 
-> >  	/* Read the params before stopping */
-> > -	regmap_read(regmap, reg_adc0 + (cinfo->imp_adc_num << 1), &val_v);
-> > +	ret = regmap_read(regmap, reg_adc0 + (cinfo->imp_adc_num << 1), &val_v);
+> -#define SI1133_ADCSENS_NB_MEAS(x)	fls(x) << SI1133_ADCSENS_SCALE_SHIFT
+> +#define SI1133_ADCSENS_NB_MEAS(x)	(fls(x) << SI1133_ADCSENS_SCALE_SHIFT)
 
-> >  	mt6358_stop_imp_conv(adc_dev);
+Wow, this is used with bitwise OR, which probably works fine due to operator precedence.
 
-This still uses unchecked IO.
+...
 
-> > +	if (ret)
-> > +		return ret;
+> -#define SI1133_CMD_TIMEOUT_US		SI1133_CMD_TIMEOUT_MS * 1000
+> +#define SI1133_CMD_TIMEOUT_US		(SI1133_CMD_TIMEOUT_MS * 1000)
 
-So, assume we got it right and error code is 0, but failed to stop conversion.
-What would be the consequences?
+Is it used at all?
 
-As I said, the whole driver needs to be re-think of. If you going to check this
-you need to add checks into _stop_imp_conv() which may lead to adding checks to
-the complementary functions and it will go as a rabbit hole.
-
-I agree with Jonathan that quick fix of initialising it explicitly with
-a comment will be better approach taking into account the state of affairs
-of this driver as a whole.
+I would drop unused macros (that are Linux only, not directly related to HW) in
+a separate patch.
 
 -- 
 With Best Regards,
