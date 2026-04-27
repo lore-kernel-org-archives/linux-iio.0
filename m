@@ -1,60 +1,60 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2808C371881
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 20:40:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D74CE2F83A0
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 21:33:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777322433; cv=none; b=RzoIpWdcanXrHY1bPJ7LXglH2OSGnohtBjgTckgBoa6Z+/OkrPfObQuQlgnUZFB9RSyf5kv5xlmhEmhrFzgQ2UFdleqTxBacD6QAOhCnDdF7AIbFFZlAjTOdCjql2dTmkH5QCorow36cwdAJRYQPVkpf3imkWm+aM19g6/j4jaE=
+	t=1777325609; cv=none; b=SfRBkR9EcPHxX7HNY2q1+rfe0svzBf3kmAQKKJc6Tt9mwakiotvnk+ZzGt2sS83ShBudgWcjU1YBwMDjkZcPm+YT3npDLMF2/mZVK6pGWIuadc1koBJ8xrmkAYFSET5KreO/tqeqH1nygI83SRhB1yrM6bll59YElN2z4vvLHXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777322433; c=relaxed/simple;
-	bh=t4YFRTPbanMTM2uGw+mad+5JU83E835EcMJoSr9+bA8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=B+1f5HwXTLlQHkdwtLilXKYlaJbu+CaQYLeeRG5UALVVAywif43LqNaqQOzN+4kh2RoEKk0m/NvbApd6V3LfTWpsZoaR7IMJBorPC68UC8CBSZMuZhKj0hx77jmH7TL3RVxatC4N1orWvWJSmK+A3hY2+g9wWfEQZBUPPWwyuT0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SrpV1MoM; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1777325609; c=relaxed/simple;
+	bh=bmBhda2SXfNu+pnH6eDyxuTr7J9+ijLQlaJR1l0HlYE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bwIIJqULKQaAYbPIstehgpKo94JhAzJNan8Ddw0tLEDp5T6j5jyyG2Mv7nK7SZ1eEV8YbGMFmRWJkAQ3o/35fEmiCv0zc8vpQT0VBBaOs71I5ZvwpO0lfUXuBBF+5/fiWJNWOcakk4kV5Nt0kl2xA30mO8+/dj6xG2jK/i1sHM4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YICtelMo; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SrpV1MoM"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4891c0620bcso72705225e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 13:40:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YICtelMo"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4896c22fcbaso79287255e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 14:33:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777322430; x=1777927230; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777325606; x=1777930406; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=IopUK0bLn3UHP3mF/fqFymMBy6awXnq6qnTuNhwG7fg=;
-        b=SrpV1MoMM2+iqdmx5uIKXh2SbInpWpXWTqch1reK+rQLQCtfVdNf0cpHLnVowErUPy
-         sCw6Xjwn5fU+Fc51V44H1gr6ZDKtIp8g91qNBwEUKGv/VzVV8yu7tpw6Lh7r8yJoaxPo
-         V41Pi74xnF9ZPKjMxOqr8SrsMFNWLDlpPk6yVWh3FAlMuEKmtSStWBhWJSDqljwQID04
-         8+63A6nIC4Tx5Zcq5BomiFZYFYdMMwCtciQJSgKBggkqWxOtaporKlWVHLqYwGLEqe1T
-         NhaslImjCVPPw+S47ZCwP+S4YGYBWjUMLkZmSnS3Fbq6+IbYSmuzKp3vvYynqYnZ4g3J
-         jMYw==
+        bh=6Tqviw2J4SQxec8cpPz4dVaAo9bKFvw3GTwF8/MdD9U=;
+        b=YICtelMoUCoiIAqvNn19Q+mI5Ro/5np4ITUGNkefe5c7HAiGVHHWNIS6TQjv8Bisly
+         PJqd9NWK0xl86SIFNH7/6qTuGh+IorQpxPNOVhjAwcZGQc4g1uW19AGkPBxryqs6MN60
+         A+NyATtn0bCiGkyZitbsEI1JrrhdkwQ0WLVdtzdo7QRawLpsTeYS8deL9PI2iHItEOLS
+         a3+TOSdR3eNCgNQ9wrMsti2Dljovetr1HcJ6CyXZOCxV74qjBE5rmt6PdUb0kU0eJ5A+
+         mlwQSs3kCaxq3WzGpbcjtHMgOohXBIRDvRs++9oFtPvdM4RZBZJmxYWGstBO+szRi1/d
+         o9WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777322430; x=1777927230;
+        d=1e100.net; s=20251104; t=1777325606; x=1777930406;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=IopUK0bLn3UHP3mF/fqFymMBy6awXnq6qnTuNhwG7fg=;
-        b=tC718G1E2RqyUT8NhYGEhgRKkKZy9+Vimi1B3FHl/42GJ9jf/3gOZSeLiwO0Ya+Phx
-         wdU5Rr3yS0qByGPsahHJYfu1ocqoYsp1nve3y8f24QXuBocizHbhV8dTa8lUIDNbKj8k
-         Iq8Lxc8Wjoqyo6k/W6qGrDptYXeyHK+KkBJh9S4BkZmOUM+hrz9rI5Lm/QuBqBaQGcPp
-         iPDd+wHtl91+eKluYCIRTFfYoZExbyY6zqBuci0vmviSxpvI3MiyP640dM7LtB5xAAYx
-         kKj5lQKmDLLSmHslusgEtfqYP6hGGIp0YXkyE0vUpqUSCSaIv5NZgejF0gS6iFV5zFZZ
-         OB5w==
-X-Gm-Message-State: AOJu0YyJ5sWEQyAQiDqyamKKg8JFBNhXjR0PEm68YEydduPZolN9Elhs
-	ZfM+h4ttVWbE2ZgrRflQ1fZJRgKSKFwyHAlM5yoDFIsREufjkYRg6HNB
-X-Gm-Gg: AeBDiesZ45MAK5OfMXXfoxwIoIyYAfLKIZ9IFWlqPbobd/1d1PAPAfJGE8ZRywPURLV
-	zM/M6CSaPRe6CCFh4vBGyQgaTPwPMd6CJ6TXtwarIWVjWrYF0PnVrwEtsXRgZg6XhGz4xvmTvE0
-	CG8baBDE+qG1O12lLksbHKOReVIO7uUfWph1EwgU9qz8puQd862+pm1cBeKItwO/KxL8WzVLTot
-	Qz8qg0MICvFAPjyZMP3sRGLNNLxQaCBZTo1hwZYijxqycbx8iKMYXDgCTBi0bfI4MrQ9VnGGiQh
-	kv+FQeQES7hoJLRXeer/m/PiZlCHH011VkRN8D4HySewOHjvSDFIJsDCvPILulKgXhv1QNLR2FL
-	XcKcad9ZctMykWPs9xqBFDXI7yvQQMzqs3bEllZUVk23VjcyZWHXgZHaIVVwtKTey6LX6GLC6rE
-	I7mheIbSWd567f53JfadJ7BnCGJ5A1ZU9yOtVhWyEmaEoW8MzbYA2okiHiMzw=
-X-Received: by 2002:a05:600c:47d0:b0:480:3ad0:93bf with SMTP id 5b1f17b1804b1-48a77b1cf9dmr1543215e9.24.1777322430477;
-        Mon, 27 Apr 2026 13:40:30 -0700 (PDT)
+        bh=6Tqviw2J4SQxec8cpPz4dVaAo9bKFvw3GTwF8/MdD9U=;
+        b=YuF/xmeHAM/6/ZKC+Et8USv0Yp+EOSNd/Ih+Qa5aNR2VGGo6+eWBnH2qILWx7TmPFO
+         EGoicnYukrAuJR0FS/ihvBiAvX1tb2nYsdj/QScVX3vxm3g4+YC1aqCXhLPwDbYX3qiB
+         JDWX95ndPJUtFi5Crp5u90D+Ge+TjE2Q8c3aejLBD8coRcVZMY2gVaZCfWvPO8dDLZeq
+         ET63t3hgx2GULv/SCMQqFiqtVhG8JRSwcwo8YuhqeH4W9Ip5KZmZVS+qu5bC2GswRp2w
+         c1xIiNJLkF638yTigCOv74Ng1UdBTDN8TxrCzTwTrJVFfXGAqytr2xy4iq4Ey1nyiyqx
+         Xu3w==
+X-Gm-Message-State: AOJu0YyjOdMsW7wa2Fuaua2uBPfrU9r2HF2Oayv2c6mfa12QcYqebZWD
+	2QDrbCQ0wgHrFgb1/9H8WnJD6uOa5ZcnNXCwQ4R9SoE2QG3S3gcFAvwf
+X-Gm-Gg: AeBDiesEqGBn/11DYUfCui3RcuE6SyXE3cEn4O16kIThfSguy0KR2cBdkV6nqzEd5v2
+	kUKNAv7TaZgGsdxmOy0HYV6eKlqL0gspz18mLiQre31LQFYQc84EmkPmiIiViP6hmE/uxfX+L/D
+	Z/PE+jh3uzy0ftWV43nys5Z5f/G9jSqBMYre+cfqsguRPLp2Eaw4Iw2vVo0hym/46R1t3T7w30Y
+	8nHBT3aelOzUKKr5E74cGf9gq9BUzZuXTZDSMRYW3rTRT5NGJ52XX2qltQItlB33clgpWYAG+nh
+	LCwvXn/tFXMREgvRv3ITzmGHUfHDn8zN82Q4LgdsYpH0O2tljDDyZwVhe6emfIrTZdIO04iYVzt
+	EtFohQ8O59z9PFlMtBSzxSlR6X50i85tXXC8uoZwgIM6CTRYgP8daQdkeolkEAlkT+7waXUPTz0
+	+xGZKdQqgQG8pJ517MRi8237mNhkj+JE/Xl6L6j6Qc30efN1psWCkzSoxf6r4=
+X-Received: by 2002:a05:600c:1f0d:b0:485:4bd1:4c64 with SMTP id 5b1f17b1804b1-48a77b27776mr5133205e9.31.1777325606128;
+        Mon, 27 Apr 2026 14:33:26 -0700 (PDT)
 Received: from localhost.localdomain ([196.235.239.18])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a77afa168sm4999285e9.7.2026.04.27.13.40.28
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a773af544sm13359555e9.6.2026.04.27.14.33.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 13:40:29 -0700 (PDT)
+        Mon, 27 Apr 2026 14:33:25 -0700 (PDT)
 From: Salah Triki <salah.triki@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -63,9 +63,9 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH v2] iio: dac: max5821: fix return value check in powerdown sync
-Date: Mon, 27 Apr 2026 21:40:23 +0100
-Message-ID: <20260427204023.22184-1-salah.triki@gmail.com>
+Subject: [PATCH v3] iio: dac: max5821: fix return value check in powerdown sync
+Date: Mon, 27 Apr 2026 22:33:19 +0100
+Message-ID: <20260427213319.25767-1-salah.triki@gmail.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -88,18 +88,21 @@ sizeof(outbuf).
 Fixes: 472988972737 ("iio: add support of the max5821")
 Signed-off-by: Salah Triki <salah.triki@gmail.com>
 ---
+Changes in v3:
+- Remove blank lines
+
 Changes in v2:
 - Replace magic number '2' with 'sizeof(outbuf)' for better maintainability.
 - Remove redundant blank line between i2c_master_send() and error check.
-- Update commit message to clarify that the 'Fixes' tag is primarily for 
-  handling partial transfers (short writes), as the caller already 
+- Update commit message to clarify that the 'Fixes' tag is primarily for
+  handling partial transfers (short writes), as the caller already
   handled the success case correctly.
 
- drivers/iio/dac/max5821.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/iio/dac/max5821.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/dac/max5821.c b/drivers/iio/dac/max5821.c
-index e7e29359f8fe..f3b45e1429a4 100644
+index e7e29359f8fe..dd4e35460195 100644
 --- a/drivers/iio/dac/max5821.c
 +++ b/drivers/iio/dac/max5821.c
 @@ -90,6 +90,7 @@ static int max5821_sync_powerdown_mode(struct max5821_data *data,
@@ -110,13 +113,12 @@ index e7e29359f8fe..f3b45e1429a4 100644
  
  	outbuf[0] = MAX5821_EXTENDED_COMMAND_MODE;
  
-@@ -103,7 +104,14 @@ static int max5821_sync_powerdown_mode(struct max5821_data *data,
+@@ -103,7 +104,13 @@ static int max5821_sync_powerdown_mode(struct max5821_data *data,
  	else
  		outbuf[1] |= MAX5821_EXTENDED_POWER_UP;
  
 -	return i2c_master_send(data->client, outbuf, 2);
 +	ret = i2c_master_send(data->client, outbuf, sizeof(outbuf));
-+
 +	if (ret < 0)
 +		return ret;
 +	if (ret != sizeof(outbuf))
