@@ -1,98 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B3C9271456;
-	Mon, 27 Apr 2026 15:19:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 863923264DA
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 15:21:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777303162; cv=none; b=P8dtV5plVd8mGt2K0yD0uLxMs4FE6h0nZY330ME/f/1nKKmYu0JKhEF1BwKrJ+304CPvePbhPgAIq0Bo+8ADsdpe49ca/Aq6tjbT4y2+tNilLa6kcwGHxqryM0y7T7NvcLE8qz+eYKDI0iXKQY6N5WKM3AirQQhNei5Ab/M+rvU=
+	t=1777303301; cv=none; b=ReKpLt1Xv/i6N60hNNY5kIjP2j0WSAM3Qf7WYZP7SQpBVsqM1fCEa4AJDRiY0lkr5mL0zKN+OQNfNmPU0hHE0n2S+Ybus9wAHzaIyjVchoOWWHGI3w4+eHb7OB40TrcJxqQOYIRr8KcDmsDyeORakPfKMciRJN8E3FS9JlrCjPA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777303162; c=relaxed/simple;
-	bh=cLE65+QQjwPtWCb7XeUGBdqHXN/IjEZxph6W/ahHkng=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q1+0O0e4fTGPLxsX+d/DrTwjT6JULKpS4N7oM+ttU3QQWIYLptQvc3/aM037MJ1CLBheuXmHy1fwukHW+rNPWFAsspgtm0+UV4rcoYFii5qLG8qzizNec667pHJtcNfvp2zM2wL+6TgVcalzuMSbNOXuTgpnNPl1xkQG3o3zs+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f1XOiBTU; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777303301; c=relaxed/simple;
+	bh=ULJRQV3E0UINpZ1bQ6syPJdZBgATZCzncKAoETZPhlA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BFflQjMHZcxBLoHVbTkcFPTrPoj9ykKOcHYScF9I2zTIPIJBUr6Lo7YPv8CNIPCt7SWa87MhTwoAyezywX+iHac2Iv+ZVdmSxrDicbQY1vLUqr1cOMo/L8XSJ6G7hq1cdMbJpV/I9pUUFY1MFHZQvgsnxSpvgaohEo1coVGmIzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=Hhw+4aUz; arc=none smtp.client-ip=209.85.160.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f1XOiBTU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777303161; x=1808839161;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cLE65+QQjwPtWCb7XeUGBdqHXN/IjEZxph6W/ahHkng=;
-  b=f1XOiBTU74GeWpElbxbNJ8CIgYVMJGi161rNpQK5BRDxDmrWo0aQPfEO
-   FVmpvqzZ3UC0n9Mov8zyHG+A/i0+pEZpLc/yK8JW9WJ1HBby1yb/K8Duo
-   iXnFS++oAsqAQac4UKaXf5rYUm3U9B9sdmGUNPBTrrs1nTn/DWXyYu5Qo
-   jxP1ocyypXSzzRyIupbB09p5c57vMIDPIYfkJmN5jdKsfnketiEC9/LP7
-   3+eoMkzUMSsAKgZIIdpUhkl8CmlW6dsjVixL3Gs1I2pC8xp/UBXcX3oPF
-   sD0tOE9T3YOjTH9irmYQKb7O+mWRIjz4HK9OWQIT5txnqqfzjgJv+aVwH
-   g==;
-X-CSE-ConnectionGUID: A767cguzQU6YGFmICJ/sKg==
-X-CSE-MsgGUID: c5NTZyY0Sv2350orcAAD+w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="89572928"
-X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
-   d="scan'208";a="89572928"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 08:19:21 -0700
-X-CSE-ConnectionGUID: 2kgvHKFZR5iUXTMYtUEZWg==
-X-CSE-MsgGUID: QcIvNGV5Tu+wVc1afIOVVw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
-   d="scan'208";a="233546202"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 08:19:19 -0700
-Date: Mon, 27 Apr 2026 18:19:16 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Felix Gu <ustc.gu@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: buffer: hw-consumer: free scan_mask on buffer
- release
-Message-ID: <ae9-dKwgpamQwSCq@ashevche-desk.local>
-References: <20260427-iio_buf-v1-1-2bbdac844647@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="Hhw+4aUz"
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-40f0e14b9f9so5950411fac.1
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 08:21:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1777303298; x=1777908098; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sNFqGLWNs6epgqAb2w7dNNEwLLcehXWUO7S5uBl+hwk=;
+        b=Hhw+4aUzBcTV1hDgs5N5xFRQ2SALxYr3raY9ClvPMo7VEnSodkyyBstIr59zdhCjBj
+         9sVb1w/GXDkHZZ+TPgxKTcqg0vWdLhNWxj8oYwsFESjZFTqwEEZSabkQGpm9QziGm5lY
+         X7qikf98TcBlIq0KSb3RuyxjBmeDcr56c+F+MeeaA3LS1izPzzpGVAOXsEKp9/eMLLuc
+         yscXj8mTYQaqirGmomNzSPUfK9m5rDvI7u+0JdQsLfuiMfcCnEPtgguM/GhCQBWzP4A8
+         24khAZ5tZNtJTnYedILJywfzNO7M7LzLsK2u7KZu587VszynXaGVx+1Rm0so3xW93uMJ
+         Uhnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777303298; x=1777908098;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sNFqGLWNs6epgqAb2w7dNNEwLLcehXWUO7S5uBl+hwk=;
+        b=nciN1kypl9mW39e0Uk4aYwKjXKtQpi2KUj+Lz9vceEuo91WSRZkGy935UkWJ6ODdws
+         l2KDm72AIl/ugjkUijdLGaPoRpz6LhX7bOFQz/xR/yjOQ5JxVAOhDibCaKOnYblkiXOL
+         BltBwTXhkzG63letKTFCZUDcLNwt3U7jvgs9lviLTEAjMzs5NVzDKgBiBl9xEmAYm/Yt
+         E6YWT01t9uXYS6PS6MaNYEP0GavMBHvkmO8RG88w0BGOvhCWZ0pdk8yhzl3MbIu7eVXz
+         0+wSJp5Wg+a5TKiwCQDZWaypZ0qqDtSnHo5DZYwjsZD4rHaEVgGClRC99wF7F4F6HKog
+         JW1A==
+X-Forwarded-Encrypted: i=1; AFNElJ+mB64WOcGpg3pjyEe0nDzSI33F2TN9dEq5y0RZW+mqzFS0wV8lFW5qYyckNm8UL24Sct0CWUh+QB0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyQAJibmaFop6IhXcOFfmRQZsAlkPdn5jm3TXkBntsnRko181g9
+	QCscIw1O807IDqiac9sV09AP7mXhd7mpUNsd5xYnJgpRIvXsNPdCJ3ylkh5+VULHUxk=
+X-Gm-Gg: AeBDiesbXTWj7JQAM9TqRQ6XGVzP+V8Tn3WVLlPgmQ3w8VX7S5PljTIJd1TdzYoSO9a
+	UGXfXq8xc+TDZYkj8L/YWPDaZTg+E8U+ChmTn5nfUWS50fi17HGOV58T4RbZw9+c/AX8QSKUZQs
+	x5yt3L9FhHEE7e6Um3XhCBMd7il7UgA6A+wQiDLSOyJ2J927mBhlmhU6s3ksePwzahI9I0HVs5t
+	pmuYoVaCNEYC4pE/TxzW1/T7HokhQpsivSyZmZnQ84B5s1VZXmKhFvSx+PSuDy8rDfYCnwaQuxG
+	KIt6Irr4RLjYTU2QVeofXHO1BtI5nnOL0dacONhlFgnzQFOm7JS5bmlpUcvDPqYPhdEDB8HzVnn
+	9Fp/1B/Y51Oe/M4Zp0XV/Kv7p/L69BGERrkccrzHTVrRK8YpRdgJbpVgmD14Uy2Ftf/rDrLkyYQ
+	zV9E+tJA0GM6mTjDkg76s5lza8ZIhExt19CdUruaSB4CJJIj1XpxqjQY/4h6gHe6XgbJqidYsg+
+	MIiU0u95s3b
+X-Received: by 2002:a05:6871:80e:b0:417:4693:ca0 with SMTP id 586e51a60fabf-42abf2e029cmr25519053fac.14.1777303298554;
+        Mon, 27 Apr 2026 08:21:38 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:96f5:eee9:c87c:c599? ([2600:8803:e7e4:500:96f5:eee9:c87c:c599])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-42c16b64a83sm21928789fac.18.2026.04.27.08.21.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Apr 2026 08:21:38 -0700 (PDT)
+Message-ID: <3512cce0-6660-42a9-91bb-07e78a002205@baylibre.com>
+Date: Mon, 27 Apr 2026 10:21:37 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260427-iio_buf-v1-1-2bbdac844647@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: adc: ti-ads7138: replace kmalloc() with stack
+ allocation in i2c_write_block
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
+ Michael.Hennerich@analog.com, jic23@kernel.org, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>,
+ David Laight <david.laight.linux@gmail.com>
+References: <20260427112705.71138-3-giorgitchankvetadze1997@gmail.com>
+ <20260427143137.27bc4552@pumpkin>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260427143137.27bc4552@pumpkin>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Apr 27, 2026 at 07:11:39PM +0800, Felix Gu wrote:
-> The scan_mask lifetime changed in commit 9a2e1233d38c ("iio: buffer:
-> hw-consumer: remove redundant scan_mask flexible array").
+On 4/27/26 8:31 AM, David Laight wrote:
+> On Mon, 27 Apr 2026 15:27:07 +0400
+> Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
 > 
-> Before that change, the scan mask storage was embedded in struct
-> hw_consumer_buffer, so iio_hw_buf_release() could free the whole
-> allocation with a single kfree(hw_buf).
+>> The ads7138_i2c_write_block() function currently utilizes kmalloc()
+>> to allocate a buffer for I2C transfers. However, the length
+>> parameter passed to this function is strictly 2 bytes across all
+>> driver invocations, making the total payload buffer size exactly 4 bytes.
+>> Invoking the heap allocator for a 4-byte buffer introduces
+>> unnecessary SLUB overhead. 
 > 
-> That commit moved the scan mask to a separate bitmap_zalloc() allocation
-> stored in buffer.scan_mask, but left iio_hw_buf_release() unchanged.
+> Have you confirmed that the buffer is never used for DMA?
 > 
-> Free the scan mask in iio_hw_buf_release() before freeing the buffer
-> wrapper.
+> Provided the lock that blocks concurrent access from two threads
+> is actually outside this code, a buffer for short transfers could
+> be allocated within 'struct i2c_client'.
+> 
+> 	David
+> 
+Giorgi,
 
-Good catch!
+This is why it is important to include a changelog and a link to the
+previous discussion [1] in the cover letter or after --- in a single patch
+when you submit a new revision. I think that would have answered David's
+question.
 
-Seems that struct iio_buffer is a foundation class that is used in several
-objects and hence each of them is responsible to allocate/free scan_mask
-(and others, if required). That's why it's easy to forget to clean up that
-properly. I was thinking of a common ground to have that being done in one
-place, but it seems unfeasible.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
+[1]: https://lore.kernel.org/linux-iio/20260424081809.61841-2-giorgitchankvetadze1997@gmail.com/
 
 
