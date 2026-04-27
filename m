@@ -1,372 +1,303 @@
-Received: from mail-dl1-f44.google.com (mail-dl1-f44.google.com [74.125.82.44])
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E458B3B38A9
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 23:07:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777331233; cv=pass; b=KlBEdiV3QJ3I4RvyzAP7V6Tkab8KcovW2/M//Bb5RiCj+ltw02OFLYSyIBAEucicn++y5U6M1JLMWPrlCTTkMpelut4WyZDXtTZO/RDjscfGxbHdkJaW0fLHagveZQhgPVr27SDOModnKKKX+ebH55BWrMNFpCZ43k9/xgZtOuQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777331233; c=relaxed/simple;
-	bh=jMwRezerLVOjcjKD9N+5SgI9ddtVAq1JK9sjY2ne3ck=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iLnYKVBr3ZJ4pzEZ5JJelE0snXXOx/owgITnLmHijP3GHnl5oZ6LP6LMoBimBBmwc/+8x5IPp/G5lQ3esNVZzMM8oY3XEceNLXgzlWO/kr/n0lUQijMT6OCI51Uazzjjjj78ZNbX9/iGZYMNmqi6o+DYEZC7XdSxXc1Rk0tBhIw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gKPOy0rO; arc=pass smtp.client-ip=74.125.82.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 974B41ADC7E
+	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 01:17:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777339030; cv=none; b=PLcP1+3p2xs9DVuuShmpemrlmVMXaTSjTu+wWMDLQe6chgOZ/4NRZU0YNwSNAB3ilOE/R9RRwVswIU+RDT0HTMmEwTyigCxB0kQfMkrYspo3KLMJzyCefBVZgdbPFRg19btfI8TqbyNq8kbeX7KJIyISL+Pd4DXg9PKKsJmc7nA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777339030; c=relaxed/simple;
+	bh=NUIZ6pC/b2bQO5+6bqewnWzScC2X+LnBZB+TCuVRjq8=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=rt5FfokG3a6szuYJSm7xyjVd3/pWV0W9XsCkmxb//R8eIZsKsnBSrKC5zKmIb07PwfsqOYP9cnFrqlc8E/FQlKn4OnIvxzZiR9xoF67NHZh0WWPeljvAKdRA6DHA9shXZoBbzZpVUJPj//xZyMdYLtWQTJymSgRQEY1zG9t1olY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ck+Xo+u4; arc=none smtp.client-ip=209.85.216.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gKPOy0rO"
-Received: by mail-dl1-f44.google.com with SMTP id a92af1059eb24-12c1a170a50so13587508c88.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 16:07:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777331230; cv=none;
-        d=google.com; s=arc-20240605;
-        b=MAY/CIxZWcqFboHg8MprKg7tNIPYcAM9ehTdTDSqtviUBHqfHjFlMJLFe92QpiZ4Ca
-         Sn1f3XStCNH4b5jU23puqfymTpZFPv3hZSHzcr3v8w7ScNXoG+4rVLODjUg+sBJyaPGc
-         G7kjRIxK74ak9RyLKv5VNRyJ6TrNAG4Kc9Bl91RVCTeVob996Da8k0t7v/s2yvlT7ue5
-         VrkTGWUX9BZyOeT7jZ7CfikSx8mgH+KrWWM4PcTCl+Xd44HLH/fCWdgBd5mn7O37av4v
-         ol83wU+2hPdIwoySxi9g6gosYW08LWOreTC+boAdO/73CBBuZ8VQrxgFVoIto9nCStDZ
-         cXPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=R82R2Yyg9rF7lX21cLco26ggU04BsqeoMAHaBF23ZQs=;
-        fh=fwpSPZxQ6WMM3H9oK1VgAzNVLYRZJrq0Sc+7YOBScgk=;
-        b=egaWGD2CCbmuWzNOY5Gq9ZUiTqTlzS57ZVdE0x5dYWZwcGut8tL6M5XwmUgcInPsOL
-         Ri2o5IojOPt6H8BNttxGIKc07ejp378P86E6JQw2IJq74vVDGeVd0M2PjJbygf0J/HM7
-         V0zq4AEi8IHrdjeuijLbn2ZlyFJJyRHAG9tP6YEBXBQ33NsxbCUEqzJHfhU8KqgES0uN
-         lZtGZPuxhxacxp1DfD3cA6XcHJW4YvS5+NvR/KHt2YnfYbau4R9YFfOUEiQdcrLB1gNz
-         yW/njthg2fqnnSMi/0wV2Stsv48u8bJ/vGgfhbzOxx74GeEYo5oIFLXaGRG85QmK4KRM
-         YUoA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ck+Xo+u4"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-362bb3260f1so5133503a91.2
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 18:17:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777331230; x=1777936030; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=R82R2Yyg9rF7lX21cLco26ggU04BsqeoMAHaBF23ZQs=;
-        b=gKPOy0rOvXVA4zw01/6MG6oTdj/f2FhNPpk98/HbikET942a2sS25xdIpb8eigFE/T
-         VOhcDxTtIizhAF/WdjMqBq9cdwi4eqU+0BkchQHi2SUhZpWiM8W+Kusys5vkUvb/Rgr3
-         UCm/UxH1O2lBYARLSR0nqxyYVS2pGwLO8bVlRKrJUnKTc4IWD7D3BO25siylys/W0UWY
-         SBrodM7uQxoW/XVpxpQqeKHAFhPwErfNhdKSh6FMvHKcnP4awpVOvF2FXfxdpLvQ4Y1C
-         1uTOCvBUJxzSTa5oSMuPKKxgLcnDxKD1CGudJvpxL5paG8QFu37sSj871UyIYv3iBTex
-         j7iQ==
+        d=gmail.com; s=20251104; t=1777339028; x=1777943828; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=P4ONYO33K7xIEV9uS/npwPZ26D3bm1ArQ4RfepaV4rg=;
+        b=ck+Xo+u4IcHpvua8SAiTvXwsirw7IeNx2bkL+UwFJXVH1sl+G93RHkIeK6NiyUneff
+         7mv2bnmuHdM9vqtsy/to24AcUqERfhuLy63G242KVlyN/gExQ3J9bUVtXykqO0PTt8P6
+         Wco0kO4wtpbseeG8pKwCGHffiMyfPTVfghtIOGaG9HlWjc8cr36BZs9BXtn262OqQNao
+         gnbI5JVzM6gei3VnroA6I3IKroDYfV+YS24LURAZ7IVRxCXsePku5uIy7s4AtHx4iSE6
+         Ty/n2Iw6tl1SefnjOxyp0KC0l1YSauZeMklSdNi7b7K40+XHxyG+Ynhkyzch7yNc8I96
+         Eo/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777331230; x=1777936030;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=R82R2Yyg9rF7lX21cLco26ggU04BsqeoMAHaBF23ZQs=;
-        b=HFSGbjp/ivrya+UCgVzyaA+6QvzHQ9IaS+y7Kj81uJ0VmLgtNDsJTcMh7BjUCktm5Y
-         tMynY89yiM7Ya9Nki7H2EjL1yKrTRjIyjuOhtJh9r3yBMDrz7NlmlFTeUceb6JLINjKB
-         XUQcqGw2z0lMOtAv3b4fOqacY8f2Hj7B810YLrgCGYG6pvDjjGLHp1CNcR8VuPy3J+nn
-         /F9SDiuR6X9WftJxf0ui2TSNktxvTNcLUUBb/Q2Vqgsyrl1Two2wZGfbKYdbpjd0LFD5
-         1bWuKikRL49doDcM1drs9MZAgC4Qk2Yfwzu+iX4YZRJFwyMXQMa8vq/G1KZBKaJYIfIB
-         K3Zw==
-X-Forwarded-Encrypted: i=1; AFNElJ8NbXIGnNa4RXfvdZ4wLhyZmf8L/efJsQHC8+rB++dfpTohXi8ofnz5uKgofTeuiRPeagOwTQt0WmA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz9LMItoaICyfmfUQN1B2XDfy+2wHx3WYCA79OS1SPQOz7HVQnk
-	UE0bXnxv1yHzivuqmsffvKN4/RjNzB2ThkXLgBe86XifL3d7ROk2dytwquK9wvPcv3H4NqUiW0s
-	Xhd/xJyGYR042GHcFeVFtajWvjmviD1k=
-X-Gm-Gg: AeBDievhjYA8aO3y6HDDSikA2LN3WMtLlc6nN0IOQ+pG7IpgCxhejL9U5yLkxMIqdMx
-	olUeI+8VcLZKOPq5wo6J6uQrIUI75mhSvw6QrAs3PTY0/NzmzvYnUGrFCPr8pWFm33fqyW3Wzj0
-	FSRk3wwpvNQ805v7Wu5ey0NDbTGcKY5KJRhTp2/JcltyU99M7kkNXDLLt/5mQAp4bUIqL8SKFd/
-	8U8suNe0cZXooHnrcsUifNp/l0xj2BNk9tOaYDkxb3HugHH8ewZZKI2kdQNMjWkWRfDUFCb0lPM
-	jM3XitFxbCwRHiRs1QKrU5mGe3+eAGSNMCThbIQeaF+Fn4e1ovLIs8BKqHE6DJQ57wnpJA7Bz/O
-	08P8=
-X-Received: by 2002:a05:7022:522:b0:12a:6a64:81d9 with SMTP id
- a92af1059eb24-12ddd977cc0mr393622c88.13.1777331229410; Mon, 27 Apr 2026
- 16:07:09 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777339028; x=1777943828;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=P4ONYO33K7xIEV9uS/npwPZ26D3bm1ArQ4RfepaV4rg=;
+        b=HU4rZM0f5KiFbArqPTjExgLkPUpQQs2X6lxfWVQyAkuD9gsy5zHxIomJs4hfOvPlJm
+         AfOEC86nOCmfG6e52k4RhAnPNOuAPKxjlhf7pfFPtTRr/GAGFHVewMLzbnmMGwQ+Ludz
+         kandB8bCS2u7pAwP19YisczngT7i6tPHequRTdPiiQuhLhacF/Dh9YW+qP63yI4wTurY
+         44BqH0HWI3NYMMm0+HFSCXWQGxRpHcv9O5iVJtsIzZiSavSXg5M1MT+jQWtpahaH9v1x
+         0G2Q4DzpPlYXAVyyAd4WEGH2gq3a4qOk5Jd7lUD64hb/sx9FTEbyFAcxDjVULy53zrhK
+         DcWw==
+X-Forwarded-Encrypted: i=1; AFNElJ/6Sf7Eft5YXfKJjQqaXZoMt0IRfSQJM6ySii9Om8Y2Umf/ksSMklhifHraz3r0TxbCFwoUSlbcz3I=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwYMcsfpuAwymw5Gc4gcZyoaQEa57ZKA/BK0ckgWWIwn2vowi3H
+	hDp98ETzjPcyCjaLA/Rp4fkByT/wkC/pMYHhOBXp52jY3z0vLbig1lyv
+X-Gm-Gg: AeBDiev03DuUaEC1QiOf2FchpBWvgwMxzML3UYrKH3SMOvI0v6EoNpWegppliaIXDhO
+	1K13iUQ8ZTPqmpDFH8feUaYfru2Ee99Nx5pdhwixIyacSac6Ppi3IVsS9rHdCFUWiG0FMtIXZxd
+	vrQ1r81u3N7/odPhDknF8zoty9TpBtwZkQfUjRxxk93BfaMkZFG1vk3bM0iP/M3bVqIqwQhW4n6
+	1+ng4HptXRtmE7aHDWHdPNn4SsHWViiI1aY82ZixW6UFWdl5xS89HvTtdWzkAUT87i1Syt8b/ce
+	RWS6OZFRjUveh/PtXujNfA9Q+C6Vfbuq0i+r9DFx/Yrc1gEbgM9nBiK1DW6BN7MBLWgJNJwIwrP
+	Ap93TMQu6yYqub6OCJof0MZQyOHcEtMk8kKXg5NdWDWCULxenPjda2C7k2P8bBXn/EQv6US57oW
+	BNYWUg5F9sihJc9LAVVIVXCoY+DEf2IpUqiLEfM0qDM0f6fkfWPA==
+X-Received: by 2002:a17:90b:28cc:b0:35b:e529:2d60 with SMTP id 98e67ed59e1d1-36491fb991dmr919666a91.8.1777339027854;
+        Mon, 27 Apr 2026 18:17:07 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:50a8:e3ee:1:0:e0aa:c237])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3649003650esm931046a91.8.2026.04.27.18.17.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Apr 2026 18:17:07 -0700 (PDT)
+Date: Mon, 27 Apr 2026 17:50:26 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: =?ISO-8859-1?Q?Nuno_S=E1?= <noname.nuno@gmail.com>, nuno.sa@analog.com,
+ linux-iio@vger.kernel.org, demonsingur@gmail.com,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] MAINTAINERS: Update maintainer for iio driver(s)
+User-Agent: Thunderbird for Android
+In-Reply-To: <20260426141645.5fb8406a@jic23-huawei>
+References: <20260421165856.2245598-1-sanjayembedded@gmail.com> <aenU2WZnVJ-esibn@nsa> <8C4ED753-72A9-4A34-920D-A5C5E8DB1840@gmail.com> <aeskNzhWtKPNYb4R@nsa> <20260424202727.1b880766@jic23-huawei> <DEE9F0E2-7759-4C58-BF53-2FA8732050B5@gmail.com> <20260426141645.5fb8406a@jic23-huawei>
+Message-ID: <577DD2DD-76ED-4A7D-AB13-6008FE2AFCF4@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260427100950.33936-1-piyushpatle228@gmail.com>
- <20260427100950.33936-8-piyushpatle228@gmail.com> <ae90BqnY6_dhRn1F@ashevche-desk.local>
-In-Reply-To: <ae90BqnY6_dhRn1F@ashevche-desk.local>
-From: Piyush Patle <piyushpatle228@gmail.com>
-Date: Tue, 28 Apr 2026 04:36:30 +0530
-X-Gm-Features: AVHnY4KTMf2oV28K7iHeZup8qcgMgQ5fhyhgs17989uPODfe3A3iJIhRUYEqFP0
-Message-ID: <CAMB+xkYWR5ny51RgHTWfardKFKhZcAo_zyALAjqt-Me8hL8gxw@mail.gmail.com>
-Subject: Re: [PATCH v4 7/7] iio: adc: hx711: add support for HX710B
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: ak@it-klinger.de, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 27, 2026 at 8:04=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Mon, Apr 27, 2026 at 03:39:38PM +0530, Piyush Patle wrote:
-> > Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
-> > interface but has a fixed gain of 128 and uses trailing PD_SCK pulses
-> > to select the active channel rather than the gain.
-> >
-> > The HX710B has three operating modes controlled by the trailing pulse
-> > count after the 24 data bits (Table 3 in the HX710B datasheet):
-> >   25 pulses (1 trailing): differential input at 10 SPS
-> >   26 pulses (2 trailing): DVDD-AVDD supply monitor at 40 SPS
-> >   27 pulses (3 trailing): differential input at 40 SPS
-> >
-> > Model the HX710B with its own hx710b_chan_spec[] and hx710b_iio_info.
-> > Store the trailing pulse count in chan->address so hx710b_set_channel()
-> > can switch channels without a separate lookup table. The supply monitor
-> > uses .channel =3D 2 to avoid aliasing the channel2 terminal (index 1) o=
-f
-> > the differential pair.
-> >
-> > The HX710B has a dedicated VREF pin for the ADC reference voltage. The
-> > driver tries vref-supply first; if absent it falls back to avdd-supply
-> > (for boards where VREF is tied to AVDD). The HX711 uses AVDD as its
-> > reference and is unaffected.
-> >
-> > Add fixed_gain and fixed_gain_val fields to hx711_chip_info to carry th=
-e
-> > gain into the scale calculation. Store a per-instance scale in
-> > hx711_data for HX710B and use it in hx711_read_raw() when fixed_gain is
-> > set. Update hx711_reset() to reset channel_set on HX710B after a
-> > power-down cycle.
-> >
-> > Enlarge the trigger buffer from 2 to 3 channels plus a pad word to keep
-> > the timestamp naturally aligned; HX711 continues to use only the first
-> > two slots.
->
-> So, missed types.h should be in this patch.
->
-> ...
->
-> >  /**
-> >   * struct hx711_chip_info - per-variant static configuration
-> > - * @name:         IIO device name
-> > - * @channels:     channel specification array
-> > - * @iio_info:     IIO info ops for this variant
-> > - * @num_channels: number of entries in @channels
-> > + * @name:          IIO device name
-> > + * @channels:      channel specification array
-> > + * @iio_info:      IIO info ops for this variant
-> > + * @num_channels:  number of entries in @channels
-> > + * @fixed_gain_val: fixed PGA gain (used when @fixed_gain is true)
-> > + * @fixed_gain:    true if the variant has a fixed ADC gain (e.g. HX71=
-0B)
->
-> No, make sure there will be no '-' lines here.
->
-> >   */
->
-> ...
->
-> >  struct hx711_data {
->
-> >       int                     gain_set;       /* gain set on device */
-> >       int                     gain_chan_a;    /* gain for channel A */
-> >       int                     gain_scale[HX711_GAIN_MAX];
->
-> > +     unsigned int            channel_set;    /* HX710B active channel =
-*/
-> >       const struct hx711_chip_info    *chip_info;
-> > +     unsigned int            scale;          /* HX710B fixed-gain scal=
-e */
->
-> Semantically the scale is closer to the above gain_* ones AFAICS.
->
-> >       struct mutex            lock;
-> >       /*
-> >        * triggered buffer
-> > -      * 2x32-bit channel + 64-bit naturally aligned timestamp
-> > +      * up to 3x32-bit channels + pad + 64-bit naturally aligned times=
-tamp
-> >        */
-> >       struct {
-> > -             u32 channel[2];
-> > +             u32 channel[3];
-> > +             u32 pad;
-> >               aligned_s64 timestamp;
-> >       } buffer;
-> >       /*
->
-> ...
->
-> >  static int hx711_reset(struct hx711_data *hx711_data)
-> >  {
-> > +     const struct hx711_chip_info *info =3D hx711_data->chip_info;
-> >       int val =3D hx711_wait_for_ready(hx711_data);
-> >
-> >       if (val) {
->
-> The rule of thumb is to split definition and assignment for the variables=
- that
-> are going to be validated.
->
-> Here I expect to see
->
->         int val;
->
->         val =3D hx711_wait_for_ready(hx711_data);
->         if (val) {
->
-> But since it's not related directly to this change, make a preparatory pa=
-tch.
-> Because now with two variables this looks worse and adds more potential t=
-o be
-> mistaken in the future.
->
-Will add a preparatory patch before the HX710B patch that splits
-int val =3D hx711_wait_for_ready(hx711_data) into a plain declaration
-followed by a separate assignment.
 
->
-> > +static int hx710b_set_channel(struct hx711_data *hx711_data,
-> > +                           const struct iio_chan_spec *chan)
-> > +{
-> > +     int ret;
-> > +
-> > +     if (hx711_data->channel_set =3D=3D (unsigned int)chan->channel)
-> > +             return 0;
-> > +
-> > +     ret =3D hx711_read(hx711_data, chan->address);
-> > +     if (ret < 0)
-> > +             return ret;
-> > +
-> > +     ret =3D hx711_wait_for_ready(hx711_data);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     hx711_data->channel_set =3D chan->channel;
-> > +
-> > +     return 0;
-> > +}
->
-> ...
->
-> > -     ret =3D hx711_set_gain_for_channel(hx711_data, chan->channel);
-> > -     if (ret < 0)
-> > -             return ret;
->
-> > +             ret =3D hx711_set_gain_for_channel(hx711_data, chan->chan=
-nel);
-> > +             if (ret < 0)
-> > +                     return ret;
-> > +             trailing_pulses =3D hx711_get_gain_to_pulse(hx711_data->g=
-ain_set);
-> > +     }
-> >
-> > -     trailing_pulses =3D hx711_get_gain_to_pulse(hx711_data->gain_set)=
-;
-> >       return hx711_read(hx711_data, trailing_pulses);
->
-> Instead of the above, first split these lines to a helper
->
-> static int hx711_set_hx711_channel(..., *tp)
-> {
->         int ret;
->
->         ret =3D hx711_set_gain_for_channel(hx711_data, chan->channel);
->         if (ret < 0)
->                 return ret;
->
->         *tp =3D hx711_get_gain_to_pulse(hx711_data->gain_set);
->         return 0;
-> }
->
-> And name your new function something like
->
-> hx711_set_hx710b_channel()
->
-Good idea. Will extract the existing gain-switching logic from
-hx711_reset_read()
-into a hx711_set_hx711_channel() helper in the iio_chan_spec refactor
-patch (patch 6), then add hx711_set_hx710b_channel() symmetrically in patch=
- 7.
-The current hx710b_set_channel() name will change to hx711_set_hx710b_chann=
-el()
-to match the naming convention.
-> ...
->
-> > +     /*
-> > +      * The HX710B uses the VREF pin as the ADC reference; try vref-su=
-pply
-> > +      * first and fall back to avdd-supply when VREF is tied to AVDD o=
-n the
-> > +      * board.  The HX711 uses AVDD as its reference.
->
-> I think we use a single space in the comment, but double check that.
-> The rule of thumb is to keep the original driver style and change it
-> separately if required.
-The rest of the driver uses single spaces. Will fix
->
-> > +      */
->
-> ...
->
-> >       /*
-> >        * with
->
-> While at it, with --> With.
-Will fix.
->
-> > -      * full scale differential input range: AVDD / GAIN
-> > +      * full scale differential input range: VREF / GAIN
-> >        * full scale output data: 2^24
-> >        * we can say:
-> > -      *     AVDD / GAIN =3D 2^24
-> > +      *     VREF / GAIN =3D 2^24
-> >        * therefore:
-> > -      *     1 LSB =3D AVDD / GAIN / 2^24
-> > -      * AVDD is in uV, but we need 10^-9 mV
-> > +      *     1 LSB =3D VREF / GAIN / 2^24
-> > +      * VREF is in uV, but we need 10^-9 mV
-> >        * approximately to fit into a 32 bit number:
-> > -      * 1 LSB =3D (AVDD * 100) / GAIN / 1678 [10^-9 mV]
-> > +      * 1 LSB =3D (VREF * 100) / GAIN / 1678 [10^-9 mV]
-> >        */
->
-> ...
->
-> > -     for (i =3D 0; i < HX711_GAIN_MAX; i++)
-> > -             hx711_data->gain_scale[i] =3D
-> > -                     ret / hx711_gain_to_scale[i].gain / 1678;
-> > +     if (chip_info->fixed_gain) {
-> > +             hx711_data->scale =3D ret / chip_info->fixed_gain_val / 1=
-678;
-> > +     } else {
-> > +             for (i =3D 0; i < HX711_GAIN_MAX; i++)
-> > +                     hx711_data->gain_scale[i] =3D
-> > +                             ret / hx711_gain_to_scale[i].gain / 1678;
-> >
-> > -     hx711_data->gain_set =3D 128;
-> > -     hx711_data->gain_chan_a =3D 128;
-> > +             hx711_data->gain_set =3D 128;
-> > +             hx711_data->gain_chan_a =3D 128;
-> > +     }
->
-> Looking at this I'm wondering wouldn't be easier just to have the array, =
-but
-> feel it with the same data.
->
-Yes, agreed.
-In v5 I will drop the separate scale field and the
-fixed_gain special-casing in hx711_read_raw()
-For HX710B, probe will populate gain_scale[] with the same
-scale value for all entries based on the fixed gain, and
-set gain_set to fixed_gain_val. reusing the existing
-hx711_get_gain_to_scale() path without any variant-specific handling.
 
-> ...
+On 26 April 2026 6:46:45=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=2E=
+org> wrote:
+>On Sun, 26 Apr 2026 15:21:47 +0530
+>Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom> wrote:
 >
-> > -     { .compatible =3D "avia,hx711", .data =3D &hx711_chip },
+>> On 25 April 2026 12:57:27=E2=80=AFam IST, Jonathan Cameron <jic23@kerne=
+l=2Eorg> wrote:
+>> >On Fri, 24 Apr 2026 09:08:37 +0100
+>> >Nuno S=C3=A1 <noname=2Enuno@gmail=2Ecom> wrote:
+>> > =20
+>> >> On Fri, Apr 24, 2026 at 07:22:37AM +0530, Sanjay Chitroda wrote: =20
+>> >> >=20
+>> >> >=20
+>> >> > On 23 April 2026 1:46:32=E2=80=AFpm IST, "Nuno S=C3=A1" <noname=2E=
+nuno@gmail=2Ecom> wrote:   =20
+>> >> > >On Tue, Apr 21, 2026 at 10:28:56PM +0530, Sanjay Chitroda wrote: =
+  =20
+>> >> > >> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> >> > >>=20
+>> >> > >> The listed maintainer analog domain email for Cosmin Tanislav i=
+s no
+>> >> > >> longer valid, and he would no longer maintain this driver(s)=2E
+>> >> > >>=20
+>> >> > >> Replacing email maintainer with list, to keep it valid all the =
+time=2E
+>> >> > >>=20
+>> >> > >> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>> >> > >> ---
+>> >> > >> Changes in v3:
+>> >> > >> - Following input from Nuno and confirmation from Jonathan,
+>> >> > >>   replacing domain specific maintainer with mailing list=2E
+>> >> > >> - Link to v1: https://lore=2Ekernel=2Eorg/all/20260418211336=2E=
+1800221-1-sanjayembedded@gmail=2Ecom/
+>> >> > >> ---   =20
+>> >> > >
+>> >> > >While you're doing this, could you take the opportunity and also =
+update
+>> >> > >this entry?
+>> >> > >
+>> >> > >https://elixir=2Ebootlin=2Ecom/linux/v7=2E0/source/MAINTAINERS#L1=
+837
+>> >> > >
+>> >> > >Thanks!
+>> >> > >- Nuno S=C3=A1
+>> >> > >   =20
+>> >> > Hi Nuno S=C3=A1,
+>> >> >=20
+>> >> > Are you suggesting to have separate change to add mailing list in =
+analog devices and iio driver which you pointed ?=20
+>> >> >=20
+>> >> > This change is specific to email debounce due to Cosmin analog dom=
+ain account=2E   =20
+>> >>=20
+>> >> Yes, it makes more sense for it to be a separate patch=2E I also sug=
+gested
+>> >> that one because it's an entry covering a lot of driver's and
+>> >> includes Lars which has been silent for some time now so maybe it's =
+better no
+>> >> to "spam" him like that :) =20
+>> >
+>> >If we are adding the entry to the catch all, do these individual entri=
+es
+>> >bring any benefit=2E Maybe we should just drop them?
+>> > =20
+>>=20
+>> Hi Nuno and Jonathan,
+>>=20
+>> Here is my view on this,
+>>=20
+>> Lars-peter is maintainer of drivers falls in different subsystem, so
+>> If we can plan to drop/replace would need ack from Lars-peter and
+>> also mutual agreement from all respective subsystem owner as it won't
+>> be advisable just to update analog devices IIO drivers maintainer=2E
 >
-> > +     { .compatible =3D "avia,hx711",  .data =3D &hx711_chip  },
+>Definitely good to get Lars' view on this - though that can be on the
+>final patch=2E  He is indeed busy with other thing these days so
+>for IIO at least, if Lars doesn't respond for a while I can take
+>a patch dropping him as the maintainer (and move to Credits) anyway=2E
 >
-> Why?! This is stray change.
+>>=20
+>> Regarding analog mailing list, we can plan to add list across
+>> MAINTAINERS where analog devices ownership is there as maintainer or
+>> reviewer=2E
+>No=2E I'm proposing we add it to
 >
-Will drop stray alignment spaces.
+>ANALOG DEVICES INC IIO DRIVERS
+>M:	Lars-Peter Clausen <lars@metafoo=2Ede>
+>M:	Michael Hennerich <Michael=2EHennerich@analog=2Ecom>
+>S:	Supported
+>W:	http://wiki=2Eanalog=2Ecom/
+>W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+>F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
+>F:	Documentation/devicetree/bindings/iio/*/adi,*
+>F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2496=2Eyaml
+>F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2497=2Eyaml
+>F:	Documentation/iio/ad7606=2Erst
+>F:	drivers/iio/*/ad*
+>F:	drivers/iio/adc/ltc249*
+>F:	drivers/iio/amplifiers/hmc425a=2Ec
+>F:	drivers/staging/iio/*/ad*
+>X:	drivers/iio/*/adjd*
 >
-> --
-> With Best Regards,
-> Andy Shevchenko
+>Only and for entries that match those wildcards and where there is not
+>other info (such as the ones here post modification) just delete the
+>more specific entry=2E
 >
+Hi Jonathan,
+
+I agree with your point=2E
+It make sense to drop redundant entry when we are using catch all=2E
+
+Also, with your suggested approach=2E
+This change won't make any sense as this entries would also get as driver =
+files are included with wildcard=2E
+
+I would prepare and share changes with your suggested approach:
+
+Needs your confirmation/input on two point
+1=2E Drop this change and have new with suggested or keep this change and =
+on top of this apply your suggestion=20
+2=2E Many entries include Documentation and include files, that also requi=
+red to in-corporate in ADI entry with specific path or wildcard based on fi=
+le paths, correct ?
+
+
+>Where we have maintainers for specific drivers then we keep the entries=
+=2E
+>No need to sorry too much about adding this list to all of those ADI
+>drivers as this catch all should also match=2E
+>
+>So end result of the proposed change would be to just remove the entrees
+>you are updating here as the catch all will cover them=2E
+>
+>Thanks,
+>
+>Jonathan
+>
+>>=20
+>> Also, this change would be separate from both above points so we
+>> shall take it further=2E
+>>=20
+>> Kindly share your thoughts, valuable input and guidance on how should
+>> we proceed further for this change and other two topics=2E
+>>=20
+>> Thanks,
+>> Sanjay Chitroda=20
+>>=20
+>> >>  =20
+>> >> >=20
+>> >> > Also, I had take a glance on MAINTAINERS, it looks there are
+>> >> > good amount of drivers which are maintained by you and Michael
+>> >> > Hennerich from analog=2E If you suggest I can plan to add analog
+>> >> > mailing list in all respective places in separate change=2E
+>> >> >=20
+>> >> > This way all analog device maintained drivers will have mailing
+>> >> > list of analog=2Ecom   =20
+>> >>=20
+>> >> Yeah, I'm not sure if it makes sense to go change all of those=2E I
+>> >> would focus on bouncing emails and we (ADI) need to make sure to
+>> >> also include that list from now on=2E
+>> >>=20
+>> >> - Nuno S=C3=A1
+>> >>  =20
+>> >> >=20
+>> >> > Kindly share your thoughts on the same=2E
+>> >> >=20
+>> >> > Thanks,
+>> >> > Sanjay Chitroda=20
+>> >> >=20
+>> >> >=20
+>> >> >    =20
+>> >> > >>  MAINTAINERS | 8 ++++----
+>> >> > >>  1 file changed, 4 insertions(+), 4 deletions(-)
+>> >> > >>=20
+>> >> > >> diff --git a/MAINTAINERS b/MAINTAINERS
+>> >> > >> index c981cbdff500=2E=2E6498f0aed1ff 100644
+>> >> > >> --- a/MAINTAINERS
+>> >> > >> +++ b/MAINTAINERS
+>> >> > >> @@ -644,7 +644,7 @@ F:	drivers/iio/accel/adxl355_i2c=2Ec
+>> >> > >>  F:	drivers/iio/accel/adxl355_spi=2Ec
+>> >> > >> =20
+>> >> > >>  ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
+>> >> > >> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> >> > >> +L:	linux@analog=2Ecom
+>> >> > >>  L:	linux-iio@vger=2Ekernel=2Eorg
+>> >> > >>  S:	Supported
+>> >> > >>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> >> > >> @@ -1461,7 +1461,7 @@ F:
+>> >> > >> Documentation/devicetree/bindings/iio/adc/adi,ad4080=2Eyaml
+>> >> > >> F:	drivers/iio/adc/ad4080=2Ec=20
+>> >> > >>  ANALOG DEVICES INC AD4130 DRIVER
+>> >> > >> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> >> > >> +L:	linux@analog=2Ecom
+>> >> > >>  L:	linux-iio@vger=2Ekernel=2Eorg
+>> >> > >>  S:	Supported
+>> >> > >>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> >> > >> @@ -1549,7 +1549,7 @@ F:
+>> >> > >> Documentation/devicetree/bindings/iio/dac/adi,ad7293=2Eyaml
+>> >> > >> F:	drivers/iio/dac/ad7293=2Ec=20
+>> >> > >>  ANALOG DEVICES INC AD74115 DRIVER
+>> >> > >> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> >> > >> +L:	linux@analog=2Ecom
+>> >> > >>  L:	linux-iio@vger=2Ekernel=2Eorg
+>> >> > >>  S:	Supported
+>> >> > >>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> >> > >> @@ -1557,7 +1557,7 @@ F:
+>> >> > >> Documentation/devicetree/bindings/iio/addac/adi,ad74115=2Eyaml
+>> >> > >> F:	drivers/iio/addac/ad74115=2Ec=20
+>> >> > >>  ANALOG DEVICES INC AD74413R DRIVER
+>> >> > >> -M:	Cosmin Tanislav <cosmin=2Etanislav@analog=2Ecom>
+>> >> > >> +L:	linux@analog=2Ecom
+>> >> > >>  L:	linux-iio@vger=2Ekernel=2Eorg
+>> >> > >>  S:	Supported
+>> >> > >>  W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
+>> >> > >> --=20
+>> >> > >> 2=2E34=2E1
+>> >> > >>    =20
+>> > =20
 >
