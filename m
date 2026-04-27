@@ -1,95 +1,157 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38FAC2D9481;
-	Mon, 27 Apr 2026 09:39:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646333B2FD6
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 09:42:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777282760; cv=none; b=pyM91VGDEIkwjcBXDtw1oMkvcca1fjWfdXwTavsHVXx4CrUpKScGXywiOMtv8msdhScDkBPtf9bo+plWCI8XCCFaAICPgA5DtGUjoJq7XUL8LDjuv0PuI6RI2zBJesZNMUYuMLRcOdfpwxw8hqRGj63BT9V2kWxYruQkYjqZIcg=
+	t=1777282977; cv=none; b=SFl+pHKQzfKYz9QjLcLC6MYHS6bw1jiUqujCwTI8yhwoeuASm2rUly61F/FTTLs0nxfAMCmQFssmZIOVtVskwbUX/3Si2PbpCCIhG550zvZ6zyoJlGhgixljRSxh2EqFI5jkGZeU7Eo099yHMQJa3p2OfXGg9D4Qsuiw5cSa4co=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777282760; c=relaxed/simple;
-	bh=6kpUPLhPxHTplUFHgrnW1C/GxDnS+DF941vvv/DLYKM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qJEEK3LpStQvkec4+GVsX7hIbzmSBwHuuTzMWfUFQEeJbERd+ka/4uWtt+qrAfRWbcHaKdSCMkZTaLpX3QFndaUDdeH+gdyVVxtkYc6h23Feu1IDKnkcWW1r71UHqi6tFJ4464GpMJ2shM+mbzJDKwHNE+i5uTcrtN9SZM0JpHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IJ3cOiUs; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777282977; c=relaxed/simple;
+	bh=1edNpC1S3o1g8pijgXBuglaFSA/F3emKEDJN0MbLjX4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=qZZ2B2FjotlE5t/XaiwlmJibqMJv8tWt6hqTs7H1zhC9W3KQ2UOguC5wp2fEGBAwOnRpOd2z8+6CuiwRLKhvIoreXilFxVZTuUp4yJFc0dR+jG0j1O5vhMWKHvXDz16OvrDiAYAOStkgZRFNwBrp2rUxWKINp/5FpIxKqsqooSo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=p5kYFP3v; arc=none smtp.client-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IJ3cOiUs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777282759; x=1808818759;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=6kpUPLhPxHTplUFHgrnW1C/GxDnS+DF941vvv/DLYKM=;
-  b=IJ3cOiUs5DX8atGmjCfcYmhFpQwRQIZ5vUZ7UcKMYR1qqxilqlpD39p6
-   7jab0z5FdOudvxkyql0DsSrTfNXBOHb+OunSr49u3+LqGls12N8BoMiV1
-   iGJcrjUCumGsmxtEEbu+f9NfoAaCnLAANHoDTd+D6Lp/Q+mNZwPLB7f5r
-   3UlsBpYYsmoyDYX6MHMOAdMRO3AbrlkbGFj7ZXr8e2qQO1NA9vrd2LcYE
-   S4+Lf/xLB9bWW5S3TF8xjLpRCmRjJefnP+tzkcxqX6hWKKgjaZ+ni+tl/
-   Coc3BhVX0YSYaCvKksHGgviZDJx9s+jfM7OhV20uSqREGweehC6tWaQfx
-   A==;
-X-CSE-ConnectionGUID: mvtA0aiFSPm7ZoZ41Pp69Q==
-X-CSE-MsgGUID: F4NlXsfDQ/CiiBbzGwZc8Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11768"; a="89628854"
-X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="89628854"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 02:39:19 -0700
-X-CSE-ConnectionGUID: jEDkR2UZTu6t8JfCzUBmZw==
-X-CSE-MsgGUID: UVzty5TzQnyPiS2xygmirw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="256897002"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 02:39:16 -0700
-Date: Mon, 27 Apr 2026 12:39:14 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?iso-8859-1?Q?Nat=E1lia_Salvino_Andr=E9?= <natalia.andre@ime.usp.br>,
-	andy@kernel.org, bentiss@kernel.org, dlechner@baylibre.com,
-	jikos@kernel.org, nuno.sa@analog.com,
-	srinivas.pandruvada@linux.intel.com,
-	Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v2 1/7] iio: HID: Add helper method
- hid_sensor_adjust_channel_bit_mask()
-Message-ID: <ae8uwmF6nQanmEux@ashevche-desk.local>
-References: <20260421222210.16016-1-natalia.andre@ime.usp.br>
- <20260421222210.16016-2-natalia.andre@ime.usp.br>
- <aeiO0JRGW0oKdcON@ashevche-desk.local>
- <20260424200155.61b6f273@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p5kYFP3v"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-43d7badbd7dso4893024f8f.2
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 02:42:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777282975; x=1777887775; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SOSv4lT2swKkfFsu6N1e/4a2DMIWqM0T1MQJCs7ue+I=;
+        b=p5kYFP3vdy0eLJt3Atr16/wsoN+QPC1oDEvDBq8lVmTQIibc7A7FKjTVGZoyWU3BdI
+         FgUUz2XxmGtxDPwXkvs+TS4mWllYNGhdMkaGZ9yvimW0WJ0/UnhQHLNQ+ZJdpg3HrAGA
+         4kvBJI6I49f4fjO/RH086B7G5faL/9zf9XbUB8+EfV9lfMD294S41vuEf9zQU0WDtE94
+         cMiQdS2JCJ6U8zN81GxJCR8Hv/VqfAeSFATws9j97QsxD99t2tD9Zm4xIbIjxz51KhnE
+         E4d6ixveIZ+D2sLN8EjGk0a/x0j2OaWGxMt0jYj023Ud53HtiAhkD5PbNxWNJAzMQFUu
+         Ngbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777282975; x=1777887775;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=SOSv4lT2swKkfFsu6N1e/4a2DMIWqM0T1MQJCs7ue+I=;
+        b=BL5YU7OR2Knu0vdUXGBT9j4A84A7a24RmOagho5exfrMoGxLMdn94uN49r0rbvT+iB
+         //zZ+XcHN4vjZ4UdCTNFePzFwrtKaVgEEazb/yT3b78MasSZzgGDr7iK+Ol7WG5yxctI
+         jO5bv7Q8ANOtfKmu5CEWQDbPYH11Ydkd2PapXEsa4kI2z3y+4a3VNn5hapGeU/g/aXCc
+         r+3rPK0/YUTkIW9IKtwEa5OoYp1IiMvjonWstnw3qlHhWcXXZINkM2ZDPPEMhkn5AFh0
+         wBYLVm4AYbkqRU5+fl9HZ453qCUx7TQizCG46xLsMjsFAjhzc+yPZAbdaGBd/0OqVBde
+         BARQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/SsC3wwJyfuQWO4b6pwCEsWkTt5Lza5xn7zwrLMv8ahWuLb4160P4Fv96xcA6+owbZ8S5vSODei8M=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw1LbVus6KNs8hWe4/M07p0fkvBTHYANlcby4jFDeMXQ2qRqyou
+	nePMq/1sQ++jlMVBEZJ2/jbTJ2i7vQRRbg6o8L3gZbRb9G++LI0wT4Ds
+X-Gm-Gg: AeBDietp9pXJ3uUSIphQoio3MWd/umlBs6D1KVtSEhhwE3g64pX+SGZGioCR7MR8uY4
+	i7N557KtcN9rMqnKBkp6+XJxhiJTqQGSf2OllVG0tQw/1B6V5dGyeI15fBEF2fMOLI150gxmFpo
+	5gsU2MNgjl+R9XTB9vwufGH4xg48CksjENJLRfl5H60N0mEU2jJW3pa7Z7dB2WJC0rvKOD7X5Eo
+	4p3KbVrPBxF851X7SHhaBIJikiXNMp5Iw+vvlJbR6tEAYcEA4yg7myFpADweOMcSLzzxOPHX494
+	j9qsb4VU6e4Ue50lJfKdGAFpAh3r/SXRmpjhP44oFOCXkStk+6Zn1ZGnkGZVC4dbslkZ3Jryw0t
+	ya+5LBzeo5GjyVEfogDUyJ62gCN0gVVaKwJ6r+my7VEqFWLE1X124kFrfS044P0aQLn3XAAcMUQ
+	uOJI2Kj+n2HFw84BrFmMI+1w52Jm2B/6CgtstapzZiTZPSqkZkN4MjGHZfBK8NGMGcDKVPxBZ14
+	W0=
+X-Received: by 2002:a05:6000:250f:b0:43d:68ad:3b7f with SMTP id ffacd0b85a97d-43fe3dd397dmr66949426f8f.21.1777282974651;
+        Mon, 27 Apr 2026 02:42:54 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4411c9f4f03sm48891743f8f.1.2026.04.27.02.42.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2026 02:42:54 -0700 (PDT)
+Date: Mon, 27 Apr 2026 10:42:52 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Johannes Berg <johannes@sipsolutions.net>
+Cc: Yury Norov <ynorov@nvidia.com>, Thomas Gleixner <tglx@kernel.org>, Ingo
+ Molnar <mingo@redhat.com>, Borislav Petkov	 <bp@alien8.de>, Dave Hansen
+ <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin\"	
+ <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>, Peter Zijlstra	
+ <peterz@infradead.org>, Jonathan Cameron <jic23@kernel.org>, David Lechner
+  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko	 <andy@kernel.org>, Ping-Ke Shih <pkshih@realtek.com>, Richard
+ Cochran	 <richardcochran@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+ <pabeni@redhat.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Yury Norov	 <yury.norov@gmail.com>, Rasmus Villemoes
+ <linux@rasmusvillemoes.dk>, Hans de Goede <hansg@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Sakari Ailus	 <sakari.ailus@linux.intel.com>, Salah
+ Triki <salah.triki@gmail.com>, Achim Gratz <Achim.Gratz@stromeko.de>, Ben
+ Collins <bcollins@watter.com>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-wireless@vger.kernel.org,
+ netdev@vger.kernel.org, linux-rtc@vger.kernel.org
+Subject: Re: [PATCH 1/9] bitfield: add FIELD_GET_SIGNED()
+Message-ID: <20260427104252.5203a50e@pumpkin>
+In-Reply-To: <dc1b12e74b3f487eb531bf7def806f10d9a18b5e.camel@sipsolutions.net>
+References: <20260417173621.368914-1-ynorov@nvidia.com>
+	<20260417173621.368914-2-ynorov@nvidia.com>
+	<6170788fcab2ec835597e3d7411928d36850c20a.camel@sipsolutions.net>
+	<aeub59FBHbCy-KKP@yury>
+	<dc1b12e74b3f487eb531bf7def806f10d9a18b5e.camel@sipsolutions.net>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260424200155.61b6f273@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Apr 24, 2026 at 08:01:55PM +0100, Jonathan Cameron wrote:
-> On Wed, 22 Apr 2026 12:03:12 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > On Tue, Apr 21, 2026 at 07:20:33PM -0300, Natália Salvino André wrote:
-> > > Add helper method to deduplicate code in HID sensors.  
+On Mon, 27 Apr 2026 10:29:21 +0200
+Johannes Berg <johannes@sipsolutions.net> wrote:
 
-...
-
-> > > +	channels[channel].scan_type.realbits = size * BITS_PER_BYTE;  
+> On Fri, 2026-04-24 at 12:35 -0400, Yury Norov wrote:
+> > > I (personally) tend to prefer the "__MAKE_OP" versions (*_get_bits()
+> > > etc.), in particular because WiFi and firmware interfaces deal a lot
+> > > with fixed endian fields.  
 > > 
-> > BITS_TO_BYTES(size)
+> > I don't like that __MAKE_OP magic because whatever it generates is not
+> > greppable. And because we disable strict type checks for kernel, but
+> > this API claims to typecheck the parameters for the user. So, the
+> > following compiles well:
+> > 
+> >         u64 val = 0;
+> >         ret = le16_get_bits(val, GENMASK(15, 10));
+> > 
+> > I don't like autogeneration in general. We generate, for example,
+> > be32_get_bits(), but never use it.  
 > 
-> BYTES_TO_BITS(size)
+> That's a lot of "I don't like", but whatever.
+> 
+> 
+> > We don't even know the level of the bloat.  
+> 
+> These are static inlines so there's no binary cost, and given that
+> you're complaining about them being generated you can't really *also*
+> complain about too much code...
 
-Indeed.
+There is a measurable compile-time cost for processing the definitions
+of static inlines even when they aren't used.
+While processing the definitions of #defines is cheap, processing the
+expansions can be measurable. Particularly when expansions get nested
+as often happens when GENMASK() is used as an argument to FIELD_xxx().
 
--- 
-With Best Regards,
-Andy Shevchenko
+Even trivial #defines can affect compile times.
+The 'size' check in READ_ONCE() (etc) costs about 1%.
+(1% may not sound much, but find 10 of them and it becomes significant.)
+I suspect a lot of that is adding the extra external function to hold
+the error message.
 
+	David
+
+>  
+> > > Any chance it'd be simple to generate u32_get_bits_signed() etc.? Could
+> > > be especially useful for le32_get_bits_signed() for example, to have the
+> > > endian conversion built-in unlike FIELD_GET_SIGNED().  
+> > 
+> > Maybe this:
+> > 
+> >         FIELD_GET_SIGNED(mask, le32_to_cpu(reg))  
+> 
+> Awful. "I don't like". But we rarely deal with bit-packed signed values
+> anyway.
+> 
+> johannes
+> 
 
