@@ -1,152 +1,107 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C1F63CCA1D
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 14:54:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CFCC30C62E;
+	Mon, 27 Apr 2026 14:56:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777301670; cv=none; b=ARpLQN9LmT5j8x0gApy2G4CfxJTp3Epz74XUP4tDczRdvXtypINJvKH2tPfvVneBZ15aelsg/i++0wL0+xug/93kUP+92S38h2yJPMVa9dzarShZ54vbg07VihSATc+44yvebJSNx608tudlJmhfr7Z3rakaGjvbHeP/sbjpQd4=
+	t=1777301779; cv=none; b=J6n0E4bJipRAqpBHLyONUg7RmwTw1J8OerkC5UVh+u3KEoJgL/kBPkaPOTXu5QxdZNLRVHeOE1/KGQqcYilPEUyGzpZz59syAA4LHV7itTVTleLBO979IPX0axy5LkwizvTCG5XDZH8h4lk1DOwpzbm7r6nhgQ07qtGoyoz5+9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777301670; c=relaxed/simple;
-	bh=Ip6nIFEnAAxUuakAAg65nChKDrC5qKd6KGqNiKTpTrQ=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ummr5A8Y9jXNDYRpDWI0VBvUtgzIkIgWAGeiLh1KcGCGY9hEvGzd23L0hJheiFgrEg371yrL2j85I3cPliuHdxwHLBR2bbJ26xvyO2/AgwLdzVRQn1X8gZbkFFXbB6HzLZ9BAJR8jNDXHiVDQz2qA6pCIEaXXBwSrsyxyOZvjyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QUrZFRZr; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777301779; c=relaxed/simple;
+	bh=EyOvnUmSJJ5dhqSnFUg6X1vFQKN5U0dV9mkJvvOyQhY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HQkDHSF6IUy+v1S1ihm9/8WWZrXZimt5YCzvKoXw0DtGraKnM7fE2pDWNUIvEyBwAw1XvwSLY79oHgV5ID/DpyV7QH/3CI5zce4WjO95Jcx4j+xgDRrtjrka68tRi8irOLsFRamGI0hBMddKa+LmRc9vA1l6SsySQC10g1KUXCM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fwVDEsYu; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QUrZFRZr"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4891e86fabeso113783535e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 07:54:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777301662; x=1777906462; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=/JETeUbjFQm9odeqE/VInNt162gHxV6mtash7vYRFPU=;
-        b=QUrZFRZrpzFPuteS49V7dONeCDamj0mPB5f+OMHtWHXy6YV057BmnyPldI3NmaOP9m
-         OwCBqfoiUQS1E21EXYcT1Wp9TI2fZl/8+lb669+kqzI0V39ijtMpR+5h3tdrglnJmFW6
-         yQE4W2UU3qJ3Xy1Pp7+1OyjZDsb//TAmLHbT91V3DpBv8T72pJISK0swkagQ3hTUrBcA
-         0DYKPvUR9AsjOuGstCr0vbPqFp4517lON83na77IyQl+Tefhzs2X2g91HyGroq6rJYKK
-         0WYD0BhAnle5122tPbf3jQ/h8uINVlGzsKRPY4yA6JnwXCpvHz5CHEEgv6LZNfrohJMb
-         ta2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777301662; x=1777906462;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/JETeUbjFQm9odeqE/VInNt162gHxV6mtash7vYRFPU=;
-        b=CHvEzMFqXZesmJSzPFoUd2MvIL1Nqjudd69CE63gcJC3tDNoMdjHLMiOKk7FVV7A7+
-         3em+EZ/yAI3UNLM+39V/w3Eku7ILeb5gtavt4sQH/I38rn8yu5jJO6sU5MhmyePuBB/y
-         v0yA2DvhttxsdUs0KD6wtW7V+EqZ8B6I+vpJ3+1L7vPgpODiQF8a+81YOOYJMuHxxx0P
-         /ProuchP+hbtGLItU9FO5568Pvr0ILUUr/wHDi5qck8+fs0qWI0pa83EVBgYltQgAFIB
-         zmJOHWeNXWwVkyCTVkNueWMgab/Cz3v+uyy4I8nac17r7to51ZHB+E0gMZmzo04MdhZu
-         gFvw==
-X-Forwarded-Encrypted: i=1; AFNElJ/m4FQvJilB0Eh8Aa9NJLWu6sfzalj+87J7VzRcGZsBuONraAccO9r1qBV50XGp+PGEe1LHVT41LVk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwcRHCLKWJhU0KpePjsPNhlGZgLiQYsM0O1dAVv4DGY0FESPf6G
-	xO+AP//QHNf+e2VtS7uMgaJY0gKTrCYgiS+GiS8PnDBlSIDkWWGkeigI
-X-Gm-Gg: AeBDieuz39Mn/lGmilfVUtNoA+DziY4yZydzQEF07Yh2zjyqXaDV67NyHXJtlQkziom
-	v28wXJSH1o9wfvdTItDvhJi6wxJ5zLVtZoPq5toDaEg9blGHgOA9JVWg8AytyAL5RvvnfzIVz4P
-	lP0CEh6Oi6T4RAtkH9NUtjpFJVRdMK/W59Q/qaT8Lg1TSZAlBEcAvxJ7RIe7hqMkwILMmEyYTwj
-	k6pZlAbIJy41/HNQy6S/ja/oycCyEqbZZgB8nz92249bM5mt4SGuL2Z0cAZYNXrvqY/ROLPKDXI
-	EbcAwO02HvcXWqpLi32Zh+k4roWhBjnxTJtp1Cbef7bUXcvEfQ0OlyJmcKmD0NbuyjTGCNkau35
-	HNW8SYa70KcniJXwjsxB+sGDWc3nZAttYZZond7O/4yNOD/xRCZav50phwAZ8zhiwSXpAvuzwgr
-	36kjHHhHdeYvKKDglm1tyKNJJ8JxxuiMl/hZAQDZjx8mfJUyKYgb1GqzKt5o1sOAAOLPKoU0CCM
-	yX5oIzQDtBq2nUfI+mRcgIZoa2siMffNHGWo4PYSeE29xYu1VxlJtN8CWOFGw==
-X-Received: by 2002:a05:600d:8447:b0:489:1ff5:edda with SMTP id 5b1f17b1804b1-4891ff5efe1mr344587045e9.6.1777301661761;
-        Mon, 27 Apr 2026 07:54:21 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a575d531esm144632665e9.13.2026.04.27.07.54.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 07:54:21 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Mon, 27 Apr 2026 15:54:14 +0100
-To: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>, 
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, 
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>, rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v3 9/9] docs: iio: add documentation for ad9910 driver
-Message-ID: <acpq4fyekssspgche7q6g5ns57y25alalooorybqfz2fzdr2yu@wj6seookj4ip>
-References: <20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com>
- <20260417-ad9910-iio-driver-v3-9-29b93712a228@analog.com>
- <20260426141007.345c76e4@jic23-huawei>
- <lkvrmc6y2z45b4qsmaxg3c2iaiar6hjmim3hdbkxqx3536yx3p@o6h7de4ire2d>
- <20260427104608.7819a134@jic23-huawei>
- <ae84112jP9UcsHYG@nsa>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fwVDEsYu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777301778; x=1808837778;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EyOvnUmSJJ5dhqSnFUg6X1vFQKN5U0dV9mkJvvOyQhY=;
+  b=fwVDEsYuJkVSPe8+yjw6w6jM0euTtQPpEPRDfWT7GsL9vaSSbnw/mRYk
+   VBZ28VHkSLNI7aB5xRcexJ8AskgvDyO8hoVPTneBDVOTUBu5IxJpyuOJy
+   bCcvh61c0+0r89BCUwVBKWSugILwrnxP5BkYccCZh/8dvrvCJtRpsAQyI
+   k4d/TtK9DuhYwOYBwUmalEn3ccTggJ33S+W86h7cHTkd77XFGO6T5Nsjo
+   cfFIuLfWESTLdX7fyCTkFFPce4SaS3sZb9/WWCN1+iFUeQh1VIptfqTfg
+   3CXmOdvjPQoPIJKCYWURyWug6iOCVv77AkUc6EXjxbF9by7yl0sCq2rR4
+   Q==;
+X-CSE-ConnectionGUID: jlVjhT9+TCiLyhZe6kqm9A==
+X-CSE-MsgGUID: 2AnjhNRaS6WpTWTH0kDr+w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="89277341"
+X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
+   d="scan'208";a="89277341"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 07:56:17 -0700
+X-CSE-ConnectionGUID: 6nc5XVKpTvK0XZbDm+J4EQ==
+X-CSE-MsgGUID: TgTYjbgcS2CP7n4lFrv9XQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
+   d="scan'208";a="231020404"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 07:56:13 -0700
+Date: Mon, 27 Apr 2026 17:56:11 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2] iio: adc: ti-ads7138: replace kmalloc() with stack
+ allocation in i2c_write_block
+Message-ID: <ae95C67pCgu4Jp1B@ashevche-desk.local>
+References: <20260427112705.71138-3-giorgitchankvetadze1997@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ae84112jP9UcsHYG@nsa>
+In-Reply-To: <20260427112705.71138-3-giorgitchankvetadze1997@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 26/04/27 11:31AM, Nuno Sá wrote:
-> On Mon, Apr 27, 2026 at 10:46:08AM +0100, Jonathan Cameron wrote:
-> > On Sun, 26 Apr 2026 21:42:15 +0100
-> > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> > 
-> > > On 26/04/26 02:10PM, Jonathan Cameron wrote:
-> > > > On Fri, 17 Apr 2026 09:17:38 +0100
-> > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> > > >   
-> > > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > > > 
-> > > > > Add documentation for the AD9910 DDS IIO driver, which describes channels,
-> > > > > DDS modes, attributes and ABI usage examples.
-> > > > > 
-> > > > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>  
-> > > > 
-> > > > Hi Rodrigo,
-> > > > 
-> > > > I think this is getting close to something workable subject to some tweaks
-> > > > to not make the priority thing visible and use rate of change parameters
-> > > > so /Sec rather than steps.  
-> > > 
-> > > I am not sure about this one. Getting the value into units per seconds will
-> > > increase the range of values by a lot, e.g., for the frequency case the step
-> > > size can range from a few Hz up to the entire supported range (hundreds of
-> > > MHz), and if you consider that one would often have the sampling_frequency
-> > > at 250 MHz... an attribute frequency_roc could have an order of 10^17 Hz/s,
-> > > and I am not sure how practical is that, although it can have a physical meaning,
-> > > like a "chirp slope".
-> > 
-> > That scaling is indeed a bit of a pain though it will go in a 64 bit int
-> > however, seems likely we'll get higher frequency devices one day that will
-> > limb even faster.
-> > 
-> > Maybe wait and see if anyone else has input on this.	
-> 
-> If we think things like RF DACs (which internally - typically - make use
-> of things like DDS), we can already go to the GHz "world".
-> 
-> Not saying we already have such a device that would map the new ABI with
-> bigger values (we might have but nothing I'm aware of from the top of my
-> head) but just saying the above is, indeed, very likely to pop up at some
-> time.
-> 
-> Just something to bear in mind :)
-> 
-> - Nuno Sá
+On Mon, Apr 27, 2026 at 03:27:07PM +0400, Giorgi Tchankvetadze wrote:
+> The ads7138_i2c_write_block() function currently utilizes kmalloc()
+> to allocate a buffer for I2C transfers. However, the length
+> parameter passed to this function is strictly 2 bytes across all
+> driver invocations, making the total payload buffer size exactly 4 bytes.
+> Invoking the heap allocator for a 4-byte buffer introduces
 
-under this Documentation/ABI/testing/sysfs-bus-iio-impedance-analyzer-ad5933,
-there is ABI: /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_increment
+> unnecessary SLUB overhead. 
 
-which seems to be a similar concept to the step used here.
+Trailing space.
+
+> Replace the kmalloc() call with a statically sized 4-byte stack array.
+> Add a boundary check returning -EINVAL to ensure future driver
+> modifications do not overflow the stack buffer if a length
+> greater than 2 is requested.
+> Furthermore, dropping the dynamic allocation entirely removes the need to
+> include <linux/slab.h> (which was the original motivation for this patch)
+> and streamlines the PIO transfer path.
+
+...
+
+> -	ret = i2c_master_send(client, buf, len);
+> +	ret = i2c_master_send(client, buf, ARRAY_SIZE(buf));
+
+The 'buf' is of u8 type, hence sizeof() is enough.
+
+...
+
+> -	if (ret != len)
+> +	if (ret != ARRAY_SIZE(buf))
+
+Ditto.
 
 -- 
-Kind regards,
+With Best Regards,
+Andy Shevchenko
 
-Rodrigo Alencar
+
