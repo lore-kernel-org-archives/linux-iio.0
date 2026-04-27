@@ -1,141 +1,157 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 000C23A7F4B
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 21:58:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777327091; cv=none; b=rSLMIMcBxB45ME/8wyDF7gftWZK0yuIIyMaf8Kv+cDpfHTvz4QPNhdPGD+ZGqhekwe+RVHCBXm0ZCiKT+VWXw4HNHeNBfq+N0ab6vwZ//eFrpx5TfiF2Aadvsoar4Bze1fgsrhDj2l+h6iIl4jg0ZYh5rCVlI3N5tMhhNNIN1fo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777327091; c=relaxed/simple;
-	bh=4aY/45S6uu+ueqf0r3Tct1zhYR6DX6LmiB4UWgyy0Q4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EmNam4rV0z8BfhI26SK0JsvY/ONmhW8G6FU3GW51/euqiMD9BschaAsJCtHX2P1OzUk0247mvnWWtYS559TBT+hN/S2wVI1RCbYxOwhrTIAryQwIYumWqL1VcTY5LQN4dRd4UOq/uGTgzBztAPjXuSFYb5II4721/76Qsaofpbg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SfdcndrJ; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE0182F1FEF
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 22:04:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.181
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777327480; cv=pass; b=NeJe8qWqMAdLmr7NHPxdI0B3Y05hNxNntV6L8+f5BJC1sedoQRyG59RyzfpLcvbHfVDL/qj10mbdJYKHr/aW4cTyhhWxCNK7T7USqol5Sdq0PRSSE9y6e2CPVY3YCrWKkG93841CxFY8i27Q7ZgLixJ32kPYgUfLp2mCYClsBcs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777327480; c=relaxed/simple;
+	bh=7DOOjiFf+sYmSm5JWfgliRMe+Pi7ySnZfjM359AsiwI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=W3vVw4BdbLBIKUJjg3xq+K3BiNK0Eq467mDKMVjSTRnxiP6PqI8yZ67u5ZljdkzExHfiAY7lv7BBikp/teF5m9bcdODUyTBfQLJqPEAmHuebYnNzdd+ShKvYCHMKVUm1EgJkQ3uWZUWC4pnU54jwF0Qa0QfouMRYuykZ2MENKd0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=txZ3WGaH; arc=pass smtp.client-ip=74.125.82.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SfdcndrJ"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-488a14c31eeso88778585e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 14:58:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="txZ3WGaH"
+Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-2d891442388so535143eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 15:04:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777327476; cv=none;
+        d=google.com; s=arc-20240605;
+        b=A2IMC5+ZEn9AOEe1oXoVeB5TZzkF90gMeOfkUA3rbbf10VIx6ekk0WjMX3GFbJkJX+
+         sOZTGC9AYxIOrkmh3ShY9cI7PTCI/2tKoj0pKWiRTr8k0RnZ69WGgco1qVjP0pniGhGx
+         2IYDr8cDLJcIetOFXxjD8ZHeFLCUxAaQII2cNj0OM/lGBN3ceSEJonK2E/9gt86GtZci
+         FNuXyt0UvfL/YWhkg9UUIb4ikLxnyA9intP5K1uVUVFAC7Xl620jz6NfJlUOdlCCkpLd
+         PNPlvNpc9gxHtqfwN7uId69jUNX5WnbpWemp0eiIJONXW3Mt3SSG6A8bhVq6u5G0Ok2h
+         1yyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=XzIxXRAIzxAYYMbmQLFNASdoiGDN2I0JtBVDZH0nO+E=;
+        fh=VD6+8Byl3tQdpSyi2PCFWiraqxikM4SGKQmu4doyu5I=;
+        b=ZH974FcUiUZSrt8AFZu7ye28vLPDmxsG0LfnPC+ttFT7PvyqahslQ2yFLBFg61HD2f
+         k2fgYkeNRd2bbWxZbD+IluQsAoL+c9ErvYafczLil31njKJ4NVJjMdPOPLj4wY+6KWKi
+         VYefRtdZ2OxNsgEQnVZ3TtZ/jKS09k2N988VXlJAMgXNqVOl1qN1IXj63Ve7eFMfU7bL
+         GiUMMHpZtSUoN7ru1lUMn/RDNrN3brkfPUClIxM8EczpagSGrWxqODzKH8/ehxbJF6NZ
+         9QItHsAVh/VeCzzHPEHrpRSqo+7PviOuSdIW7K5hgfwTi5Mt24+vr/Rle/xl3CGnZGeJ
+         N+6g==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777327086; x=1777931886; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SGFEGVArNncRbb7nlEyVjRWdYLiwwjUBeFv4UPUGaDw=;
-        b=SfdcndrJq1yx+1EvGa2k0PZuLdUU55gUP9bYC/rRCd1IW7+0LwuUw7p6DGy5j54mvt
-         KAQnx+1bjsI47/LTwlhcsbWxWA+HXSEojFG1upbeP8zel3yfD8HDVbM0RrATD20fLSsN
-         /60nOuAYHUSAcn0E9k9TG9or50dtRnvLsshp/Go0eHrsm9irORQJstPvUYhdqBpDjw8b
-         2CwV3eQsLqAmDtpU0O5SPoVl2qiwxEWrhIWRh/KQ3Ffr8KrpKiLDE+NgMhGY7G1ciI+I
-         dzuUpixfgs3tez/NHPfsv9tAMz/aKB6rfbwF0pBwR4PhDySrGCLbd81gc/hxmSxBlcoi
-         IGhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777327086; x=1777931886;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=usp.br; s=usp-google; t=1777327476; x=1777932276; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SGFEGVArNncRbb7nlEyVjRWdYLiwwjUBeFv4UPUGaDw=;
-        b=eED0ROaGKVWTGmz8jvUj5XyPoolJpsXe1e3e803y/CdUgFjIT6HCDkkXilk+zt819B
-         o0QDlQJ2f6tlJ3lDtcneixxgDUYXXypa8d0cmZiz/zVOa9AABYCEppWZgbzfiNSxWdBt
-         +BzxrXJk1AqPcNTs5+hzLUNX7UaJ+AdDHyZRp3qXtrZR2umxwN4PI92rC8+yH7VIhKMV
-         f+T7pJuX7fJr/ma3XZilC+XveM+tgPtTSR+PmIcFE/iv12IfNH8Kflsf/70aVY9fXU39
-         UIWBA1LTlQwq3WZKx95gauucpmkb2EJd0/iVRLBG5tp8bi9Ub5tWWDAwDoYJOiam2+Rm
-         RbrQ==
-X-Gm-Message-State: AOJu0YxoPch2kY57lBJfEbhChs/hD1pLY6/a2/cdI7SiJnKFZecd8nMI
-	0UMh2bpBc4eqvk72uU064FNtb3GhX6DC5SaI7BSO1aExo86fmJSopWNT
-X-Gm-Gg: AeBDieuYATqJPYIHY0fNA4V0HqhJA3bot7IVb3FaI6d/pQgZfVO50JXS9KRvFFofV74
-	jZ+4vQ0kv4Ej9qJok6haf2LL2p5QQrx7Uvej2PT4oShROgDurRqMDg8+sOSMOWMSMFVQ8JgSusm
-	shr6N5exs3ZWuFcr5+3Q/pxk1fuNygukcmmINjzhHxKu8zo7+7MjMugEaRnz1JaDmcFhK1XV41y
-	D6xfQiXgONbVdPARoawvwdjePFedoTKookiFrtZ6QHbO1FdXrBX1qDcjUG3dZVgfLcaLKywAmm+
-	K/R9Iq0ey2AQzgmOun96VwNe4bltvD809iGHEVWJmMvb6JY6Pwo2AevnIrH1/80KPb0wVz/tMa/
-	/Vt3C0tVQ48togfiU4zkn8tzmdcG1uxIZ4Pm7uwMEyntleyKyZBaXjgU8wK7FSyAiQKh9kY/TxF
-	7SafXpzif/w0iOgTp/s4jPt9wqDm0wYIK4zgU2PofsTFAVoGKY
-X-Received: by 2002:a05:600c:8b2f:b0:48a:58ae:993b with SMTP id 5b1f17b1804b1-48a77b178b3mr6765775e9.16.1777327086287;
-        Mon, 27 Apr 2026 14:58:06 -0700 (PDT)
-Received: from localhost.localdomain ([196.235.239.18])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a775eb912sm3854655e9.21.2026.04.27.14.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 14:58:04 -0700 (PDT)
-From: Salah Triki <salah.triki@gmail.com>
-To: Crt Mori <cmo@melexis.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH] iio: mlx90614: fix missing GPIO direction return value checks
-Date: Mon, 27 Apr 2026 22:58:00 +0100
-Message-ID: <20260427215800.28082-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        bh=XzIxXRAIzxAYYMbmQLFNASdoiGDN2I0JtBVDZH0nO+E=;
+        b=txZ3WGaHcq6q82ssEfrnmz78t7VNIII2z4hITfL/62igpbnIalB5wQPbfeBFIG6oW7
+         UfoihHHk6EOU7dQhMa4Oitvzfg0nmAIJjJ9VQEKlZmIIfbKJIl2YG7fGmuO71I6Qprfk
+         Sp7L1vCOcD0RAwvDb7ZfrrfGaQXeYZ31y/XPYkG3h35VbIvzRuttN7LOba1AYqp0wik8
+         vKAHzpSjO190bbNF2fzsJhclgG66DmZwNyos1G8pKSxKxk0Uz+WGCi16PnAfrYhd4WS0
+         WTzVA6ScbmtBAClmxeDFE9bv54tK2ml3rsJxSjcZ1WeG54nlMdSHiUxYtRTJoIuEXGou
+         YFAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777327476; x=1777932276;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=XzIxXRAIzxAYYMbmQLFNASdoiGDN2I0JtBVDZH0nO+E=;
+        b=j/Ic1oU251rVbA5+Y5tZ60fKdwbuGKtjv8kaVm7sua1bpR53SYdd+5LXXSDUlBrPOZ
+         GLPXJ2Wq2Hjk17lCB2e7Gde5GbcaNUdt+bA83AwU2N1tuHC3bFuRlfCEdmOZEla+TY86
+         ijeZdPppnuo12NiAxJM6k/2M/gwphFxD1Wi3Zs0DzTmri4QIhtHSsGBczIASGQPARbcQ
+         ZX9OEPYAXWBVWh+8OZOpWHD3JzHVNkWGUXu2IrrqL5XmFHANSk1p1kUyGNqWdV8iVNWE
+         UCYw5Vtl5l4G7GmD/VrFzabdxIecjlNGDexUuAexxw/q0u5IbB2IjBwBbtp0O6p19VJT
+         m5JQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+mhv3Q0KneBQjNxgFvlnTPqeKqmoINiF+lE9zOv/mVyVFEqH83/fFep1Jbin+ezPgRLQ3uFmWpF1Q=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyJCvpmlbua7JrZCHuQ6RqeQKCWZgp22He94fhTMsxNrAyTz0Nk
+	hCkCNHGI5JvWu+Sr9jIh/KPZTgVyMIU3z5HW/OG3mJUse5g1K1OOx35GgoS/MSiScJwLvgYOA4Z
+	P/de4+wx7OmjM/3ZS/Eoxj2xpBYoCJGQoy42+clNJZQ==
+X-Gm-Gg: AeBDietTpYMtyKlx2feUWsf6fHtTVo9e+om2kGDJ0y9s3anWl0oOhIG+z9LjuJgX7ML
+	MijC7hMBhT8DlbUOcq5QwuUSR8OiC6rXYuVsoiLll0+L4YqiooHQsd/JVKYTtTt2p7Gi+KIj4ZK
+	Jjyxr80DuBGOsMv84Dk3Y5FzOKGUmZO88BA0O8noVWgOK8RKa8oXnEbENpYV7FJ+j/79jt/aE6L
+	fIthRVjhJyt16RwYjia4SRHYqqOod1FZNA8AvFENK6GQ/PU8S4KGQ7gm/BExgSK4IaEQ/fFcO/S
+	XGWSovROJ2nrnkqH4BbHlgtXh4f19JFxm3UHt4rhF5kYJmnPQQdutggRUxP3
+X-Received: by 2002:a05:7301:578c:b0:2c5:b972:b436 with SMTP id
+ 5a478bee46e88-2ed0a0ce7a8mr376020eec.23.1777327475790; Mon, 27 Apr 2026
+ 15:04:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260423223958.100487-1-guilhermeabreu200105@usp.br>
+ <aes2tzgfXbuD6ccQ@ashevche-desk.local> <20260424113901.0508dbc2@jic23-huawei>
+In-Reply-To: <20260424113901.0508dbc2@jic23-huawei>
+From: Guilherme Dias <guilhermeabreu200105@usp.br>
+Date: Mon, 27 Apr 2026 19:04:23 -0300
+X-Gm-Features: AVHnY4L3rWKdnACK4Wm2aghKSMgx17kA3HSiKn8OHX4ahxs1pdcbB-6h4QXeFCQ
+Message-ID: <CAH1eeHs5M4rDhdtmyWadFFsx3qK9=xST67h1zwb0-CwDV=aLrQ@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: gyro: adxrs290: Use guard(mutex) in lieu of
+ manual lock+unlock
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, nish.malpani25@gmail.com, lars@metafoo.de, 
+	Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, =?UTF-8?Q?Jo=C3=A3o_Paulo_Menezes_Linaris?= <jplinaris@usp.br>, 
+	linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The functions gpiod_direction_output() and gpiod_direction_input() can
-fail, but their return values were previously ignored.
+Em sex., 24 de abr. de 2026 =C3=A0s 07:39, Jonathan Cameron
+<jic23@kernel.org> escreveu:
+>
+> On Fri, 24 Apr 2026 12:24:07 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+>
+> > On Thu, Apr 23, 2026 at 07:37:51PM -0300, Guilherme Dias wrote:
+> > > Use guard(mutex) to automatically release the lock on scope exit,
+> > > simplifying the error handling path and removing the need for
+> > > explicit unlock and goto-based cleanup.
+...
+> > >     /* exercise a bulk data capture starting from reg DATAX0... */
+> > >     ret =3D spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.=
+channels,
+> > >                               sizeof(st->buffer.channels));
+> > > -   if (ret < 0)
+> > > -           goto out_unlock_notify;
+> > > -
+> > > -   iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
+> > > +   if (ret >=3D 0)
+> No to this as well. Keep the error out of line.  Which makes the use
+> of guard() here tricky.  You could do a do { guard(); } while(0) loop so =
+that
+> you can use break with out it being odd looking.
+>
+> (I don't like breaks out of scoped_guard() because it's non obvious scope=
+d
+> guard is actually a loop.
 
-If an error occurs during the GPIO configuration, the function should
-abort the wake-up sequence and return the error code. More importantly,
-failing to check these values could lead to the I2C bus remaining
-locked if an error occurs after i2c_lock_bus() is called.
+Thanks for the suggestion =E2=80=94 just to confirm I understood correctly,=
+ do
+you mean something like this?
 
-Add return value checks and ensure the I2C bus is properly unlocked
-via a goto label in case of failure.
+...
+ do {
 
-Fixes: eb4b07dae4d4 ("iio: mlx90614: Add power management")
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
- drivers/iio/temperature/mlx90614.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ guard(mutex)(&st->lock);
 
-diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
-index 1ad21b73e1b4..ce12b44c84e0 100644
---- a/drivers/iio/temperature/mlx90614.c
-+++ b/drivers/iio/temperature/mlx90614.c
-@@ -489,6 +489,7 @@ static int mlx90614_sleep(struct mlx90614_data *data)
- static int mlx90614_wakeup(struct mlx90614_data *data)
- {
- 	const struct mlx_chip_info *chip_info = data->chip_info;
-+	int ret;
- 
- 	if (!data->wakeup_gpio) {
- 		dev_dbg(&data->client->dev, "Wake-up disabled");
-@@ -498,9 +499,17 @@ static int mlx90614_wakeup(struct mlx90614_data *data)
- 	dev_dbg(&data->client->dev, "Requesting wake-up");
- 
- 	i2c_lock_bus(data->client->adapter, I2C_LOCK_ROOT_ADAPTER);
--	gpiod_direction_output(data->wakeup_gpio, 0);
-+
-+	ret = gpiod_direction_output(data->wakeup_gpio, 0);
-+	if (ret)
-+		goto out_unlock;
-+
- 	msleep(chip_info->wakeup_delay_ms);
--	gpiod_direction_input(data->wakeup_gpio);
-+
-+	ret = gpiod_direction_input(data->wakeup_gpio);
-+	if (ret)
-+		goto out_unlock;
-+
- 	i2c_unlock_bus(data->client->adapter, I2C_LOCK_ROOT_ADAPTER);
- 
- 	data->ready_timestamp = jiffies +
-@@ -515,6 +524,10 @@ static int mlx90614_wakeup(struct mlx90614_data *data)
- 	i2c_smbus_read_word_data(data->client, chip_info->op_eeprom_config1);
- 
- 	return 0;
-+
-+out_unlock:
-+	i2c_unlock_bus(data->client->adapter, I2C_LOCK_ROOT_ADAPTER);
-+	return ret;
- }
- 
- /* Return wake-up GPIO or NULL if sleep functionality should be disabled. */
--- 
-2.43.0
+ /* exercise a bulk data capture starting from reg DATAX0... */
+ ret =3D spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
+                          sizeof(st->buffer.channels));
+ if (ret < 0)
+            break;
 
+ iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
+                         pf->timestamp);
+ } while (0);
+
+ iio_trigger_notify_done(indio_dev->trig);
+ return IRQ_HANDLED;
+}
+
+Keeping the error out of line again.
+
+--
+Kind regards,
+Guilherme Dias
