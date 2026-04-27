@@ -1,68 +1,71 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D91EE1D5170
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 20:20:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2808C371881
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 20:40:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777321226; cv=none; b=DB5k/Y8mmZLz+lV9Vm1EeyOMy2s96D7dV0nDHjgDEj17KBl//Qrnv2w3JgjCs7TizoD7Ek6r/xu+GvB25In3lI7Djt9P1yQvZGHI4792nz8/1Y/RJ7r6xAIEH4lUa9neovrYJ2HBGveClIvkcKWGGfvaZTOJ5yfqpwJ7gc5vGvI=
+	t=1777322433; cv=none; b=RzoIpWdcanXrHY1bPJ7LXglH2OSGnohtBjgTckgBoa6Z+/OkrPfObQuQlgnUZFB9RSyf5kv5xlmhEmhrFzgQ2UFdleqTxBacD6QAOhCnDdF7AIbFFZlAjTOdCjql2dTmkH5QCorow36cwdAJRYQPVkpf3imkWm+aM19g6/j4jaE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777321226; c=relaxed/simple;
-	bh=glSbWnFmBwJx0IQqrzrcxPaAYcWfdeQRRx9TcoERQyo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=KQZQLgq14bzI0OgLsEOUTrbfL88FiXpf6j72kbU62wbg4Y4zEZ/i/KyWOUsT7g2eIhugCGZ9EvhXDJGwntuJ+LgyDNlE+hWmClosbXtoxuLOj7guuMrQzuJiXG/M8BjPNGyiKmvuq+VIjQ/3O5WIx6XUtU2EqUTHnFBJtEJ0Ki4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TRGFeWzs; arc=none smtp.client-ip=209.85.128.49
+	s=arc-20240116; t=1777322433; c=relaxed/simple;
+	bh=t4YFRTPbanMTM2uGw+mad+5JU83E835EcMJoSr9+bA8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=B+1f5HwXTLlQHkdwtLilXKYlaJbu+CaQYLeeRG5UALVVAywif43LqNaqQOzN+4kh2RoEKk0m/NvbApd6V3LfTWpsZoaR7IMJBorPC68UC8CBSZMuZhKj0hx77jmH7TL3RVxatC4N1orWvWJSmK+A3hY2+g9wWfEQZBUPPWwyuT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SrpV1MoM; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TRGFeWzs"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-488a14c31eeso88263465e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 13:20:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SrpV1MoM"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4891c0620bcso72705225e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 13:40:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777321223; x=1777926023; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777322430; x=1777927230; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=gpgZylQ6F9oZ5g4Pqc6xBbXX6HVh4RUIO3Cnteq8M4k=;
-        b=TRGFeWzsUEZvQlHG/hL0kiS7QYPZ0MKNRTS/0Fr3kFif3cAPysbzr4yEcRPJAnjnSY
-         CZNVi/kEfBBtGR1y8qwiv4CMhHSv0AxoGurhnv+3VVilyMeEiCjx8+UjQCpAFz7XYLme
-         tq1Bpvk8uc0v50lkxSopMNViXBuDNInCqRRG4/T+RwgFSCmx04ZmavpOWlMilNPf8Sgs
-         siuWhvMl8RQyHLX5B61s96DWf8fyPFZSnzEwaUusWWtF118Gm7KR4nJp54ovvSn5S9+m
-         /IEIMnJyKQmunwEK9sWhuNTXqo8hRmreEXs7w30ixM5F9cCyItDve4/zrE2KSgPam6AB
-         Xeiw==
+        bh=IopUK0bLn3UHP3mF/fqFymMBy6awXnq6qnTuNhwG7fg=;
+        b=SrpV1MoMM2+iqdmx5uIKXh2SbInpWpXWTqch1reK+rQLQCtfVdNf0cpHLnVowErUPy
+         sCw6Xjwn5fU+Fc51V44H1gr6ZDKtIp8g91qNBwEUKGv/VzVV8yu7tpw6Lh7r8yJoaxPo
+         V41Pi74xnF9ZPKjMxOqr8SrsMFNWLDlpPk6yVWh3FAlMuEKmtSStWBhWJSDqljwQID04
+         8+63A6nIC4Tx5Zcq5BomiFZYFYdMMwCtciQJSgKBggkqWxOtaporKlWVHLqYwGLEqe1T
+         NhaslImjCVPPw+S47ZCwP+S4YGYBWjUMLkZmSnS3Fbq6+IbYSmuzKp3vvYynqYnZ4g3J
+         jMYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777321223; x=1777926023;
+        d=1e100.net; s=20251104; t=1777322430; x=1777927230;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gpgZylQ6F9oZ5g4Pqc6xBbXX6HVh4RUIO3Cnteq8M4k=;
-        b=Wqv0/l5Q89G2GXM+4i/QhC+/WuWtXDSeE3UbgKuEyg2Zn2DpWKPQDX7aE1WIV3cmSz
-         2VBA0aWGvESVa90gllY+qpXuO2SsPZV2B9B6Vz+gw+iSX8PVvGrlG5dSA3imVfqdRkqs
-         eIXPOdmJ295VV6xRISrRl+vioNq2l/OpCs0AgkGk9FAcaRHywLHac+t0qDMEmLY95duN
-         IWLI1NWPSL11oVtQPYdUJXWSarMGkE7C3MNsHkuhILGZ7YeuAfdLdZkXIE6ZUvYR9GgQ
-         /uaz/LJyhGqf8RsBE+IIsE/q76+5Lzdl+GgAtZjR2ySyvVYOhON7HnzG74L6UX20nvem
-         eI6w==
-X-Gm-Message-State: AOJu0Yxq/ebXV0KJA3oJfddEE845R8DNl9ERwIDTlUC145C6NmcbCQk8
-	Fw5oijJjaEpf9YkoUH8qcMIaGDTiNW7Mjw1UJRN0NjKscLTa9Pwp123A
-X-Gm-Gg: AeBDies+Bj64znXE9JpbbYtlsLOpLPs4yNmGlJq1peLoTFU0s4aHLA2ejx9MQMNiR5o
-	ZiRpLv8oOXcRhtQlRBWVwSWarBklnHTnGiLqDviPQJZvOKEr+5fxY+s5RBQvYEw98h86AgEaB5Y
-	+MgVAq6b4gbp90zXd5vlqUA6PxbAuC50Zg7JU2pgMcqgIU5OWokNGzZ0VQSe2o09ky2HRQLFIP+
-	0eK8AJB6dyUnQpV7mI9E/spBfveqUDWr09bgO3twN9KSCxwRCTcYRLO4QJDivsWOsZNWwRyEiau
-	cgNxi1/LOREoaK6uZxnXVEa4+mswd1+FyLzKx1NX2Afcu1ySFCsDwSzSpjYuPetsIoY4+OKKBwf
-	oMvSJx1G9ekfOcKNE2qbMSOei3kMxV1yCbPR0Lv4gih/wzQF9yCg7weNlSTGOk+AZwnXfpi+Iuo
-	xjqwrkW1YHmQ8Hmv8XpXd4LFp2LB5Wi5DaiOvr4+KuLmFU3Acc7Xz6aIT0Uyl9ILNAc77WmjQ=
-X-Received: by 2002:a05:600c:34c7:b0:489:e696:8362 with SMTP id 5b1f17b1804b1-48a77af18ccmr2829015e9.13.1777321223093;
-        Mon, 27 Apr 2026 13:20:23 -0700 (PDT)
-Received: from Lenovo-Ideapad-Slim-5i.localdomain ([92.53.30.157])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a774939dfsm4977045e9.1.2026.04.27.13.20.20
+        bh=IopUK0bLn3UHP3mF/fqFymMBy6awXnq6qnTuNhwG7fg=;
+        b=tC718G1E2RqyUT8NhYGEhgRKkKZy9+Vimi1B3FHl/42GJ9jf/3gOZSeLiwO0Ya+Phx
+         wdU5Rr3yS0qByGPsahHJYfu1ocqoYsp1nve3y8f24QXuBocizHbhV8dTa8lUIDNbKj8k
+         Iq8Lxc8Wjoqyo6k/W6qGrDptYXeyHK+KkBJh9S4BkZmOUM+hrz9rI5Lm/QuBqBaQGcPp
+         iPDd+wHtl91+eKluYCIRTFfYoZExbyY6zqBuci0vmviSxpvI3MiyP640dM7LtB5xAAYx
+         kKj5lQKmDLLSmHslusgEtfqYP6hGGIp0YXkyE0vUpqUSCSaIv5NZgejF0gS6iFV5zFZZ
+         OB5w==
+X-Gm-Message-State: AOJu0YyJ5sWEQyAQiDqyamKKg8JFBNhXjR0PEm68YEydduPZolN9Elhs
+	ZfM+h4ttVWbE2ZgrRflQ1fZJRgKSKFwyHAlM5yoDFIsREufjkYRg6HNB
+X-Gm-Gg: AeBDiesZ45MAK5OfMXXfoxwIoIyYAfLKIZ9IFWlqPbobd/1d1PAPAfJGE8ZRywPURLV
+	zM/M6CSaPRe6CCFh4vBGyQgaTPwPMd6CJ6TXtwarIWVjWrYF0PnVrwEtsXRgZg6XhGz4xvmTvE0
+	CG8baBDE+qG1O12lLksbHKOReVIO7uUfWph1EwgU9qz8puQd862+pm1cBeKItwO/KxL8WzVLTot
+	Qz8qg0MICvFAPjyZMP3sRGLNNLxQaCBZTo1hwZYijxqycbx8iKMYXDgCTBi0bfI4MrQ9VnGGiQh
+	kv+FQeQES7hoJLRXeer/m/PiZlCHH011VkRN8D4HySewOHjvSDFIJsDCvPILulKgXhv1QNLR2FL
+	XcKcad9ZctMykWPs9xqBFDXI7yvQQMzqs3bEllZUVk23VjcyZWHXgZHaIVVwtKTey6LX6GLC6rE
+	I7mheIbSWd567f53JfadJ7BnCGJ5A1ZU9yOtVhWyEmaEoW8MzbYA2okiHiMzw=
+X-Received: by 2002:a05:600c:47d0:b0:480:3ad0:93bf with SMTP id 5b1f17b1804b1-48a77b1cf9dmr1543215e9.24.1777322430477;
+        Mon, 27 Apr 2026 13:40:30 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.239.18])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a77afa168sm4999285e9.7.2026.04.27.13.40.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 13:20:22 -0700 (PDT)
-From: =?UTF-8?q?Rahman=20Mahmutovi=C4=87?= <mahmutovicrahman5@gmail.com>
-To: jic23@kernel.org
+        Mon, 27 Apr 2026 13:40:29 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	=?UTF-8?q?Rahman=20Mahmutovi=C4=87?= <mahmutovicrahman5@gmail.com>
-Subject: [PATCH] iio: temperature: maxim_thermocouple: Fix indentation in of_match table
-Date: Mon, 27 Apr 2026 22:20:16 +0200
-Message-ID: <20260427202016.1635-1-mahmutovicrahman5@gmail.com>
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v2] iio: dac: max5821: fix return value check in powerdown sync
+Date: Mon, 27 Apr 2026 21:40:23 +0100
+Message-ID: <20260427204023.22184-1-salah.triki@gmail.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -70,41 +73,59 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Replace leading spaces with tabs in the of_device_id table
-entries to comply with kernel coding style.
+The function max5821_sync_powerdown_mode() returned the result of
+i2c_master_send() directly. If a partial transfer occurred, it would
+be incorrectly treated as a success by the caller.
 
-Signed-off-by: Rahman Mahmutović <mahmutovicrahman5@gmail.com>
+While the caller currently handles the positive return value of 2 as
+success, this patch refactors the function to return 0 on full success
+and -EIO on short writes. This ensures robust error handling for
+incomplete transfers and improves code maintainability by using
+sizeof(outbuf).
+
+Fixes: 472988972737 ("iio: add support of the max5821")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
 ---
- drivers/iio/temperature/maxim_thermocouple.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Changes in v2:
+- Replace magic number '2' with 'sizeof(outbuf)' for better maintainability.
+- Remove redundant blank line between i2c_master_send() and error check.
+- Update commit message to clarify that the 'Fixes' tag is primarily for 
+  handling partial transfers (short writes), as the caller already 
+  handled the success case correctly.
 
-diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-index cae8e84821d7..7f80fa018ab4 100644
---- a/drivers/iio/temperature/maxim_thermocouple.c
-+++ b/drivers/iio/temperature/maxim_thermocouple.c
-@@ -271,8 +271,8 @@ static const struct spi_device_id maxim_thermocouple_id[] = {
- MODULE_DEVICE_TABLE(spi, maxim_thermocouple_id);
+ drivers/iio/dac/max5821.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/dac/max5821.c b/drivers/iio/dac/max5821.c
+index e7e29359f8fe..f3b45e1429a4 100644
+--- a/drivers/iio/dac/max5821.c
++++ b/drivers/iio/dac/max5821.c
+@@ -90,6 +90,7 @@ static int max5821_sync_powerdown_mode(struct max5821_data *data,
+ 				       const struct iio_chan_spec *chan)
+ {
+ 	u8 outbuf[2];
++	int ret;
  
- static const struct of_device_id maxim_thermocouple_of_match[] = {
--        { .compatible = "maxim,max6675" },
--        { .compatible = "maxim,max31855" },
-+	{ .compatible = "maxim,max6675" },
-+	{ .compatible = "maxim,max31855" },
- 	{ .compatible = "maxim,max31855k" },
- 	{ .compatible = "maxim,max31855j" },
- 	{ .compatible = "maxim,max31855n" },
-@@ -280,7 +280,7 @@ static const struct of_device_id maxim_thermocouple_of_match[] = {
- 	{ .compatible = "maxim,max31855t" },
- 	{ .compatible = "maxim,max31855e" },
- 	{ .compatible = "maxim,max31855r" },
--        { },
-+	{ },
- };
- MODULE_DEVICE_TABLE(of, maxim_thermocouple_of_match);
+ 	outbuf[0] = MAX5821_EXTENDED_COMMAND_MODE;
  
+@@ -103,7 +104,14 @@ static int max5821_sync_powerdown_mode(struct max5821_data *data,
+ 	else
+ 		outbuf[1] |= MAX5821_EXTENDED_POWER_UP;
+ 
+-	return i2c_master_send(data->client, outbuf, 2);
++	ret = i2c_master_send(data->client, outbuf, sizeof(outbuf));
++
++	if (ret < 0)
++		return ret;
++	if (ret != sizeof(outbuf))
++		return -EIO;
++
++	return 0;
+ }
+ 
+ static ssize_t max5821_write_dac_powerdown(struct iio_dev *indio_dev,
 -- 
 2.43.0
 
