@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F37D306B3D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F405306D26;
 	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777289411; cv=none; b=Wwcj4snQ23OW1PM/pnUacXmvKv6PbKbRbds7oxKNgabj8RPfQXD4lIL3uiKPwYyi9oEhks5DMV86IoCw+eLNIPe9a1V1ShJvKUxXOqqymGsLyLU6iQcmvAjvXhOEVSnlEYEd9qxWplNMcStMGUwI8PqydDzbTf5TQRnGVYZyKco=
+	t=1777289411; cv=none; b=MEmeo7W095cD3b93T2fDcgMmXD+T7bz6MeIzDChp0lCuKxhPKbs6a84bcrLoQJR7mn2z2hlwQRgrk8wIwCO8BHRfI5qqyH37L3u7LLnhbr9+jvYD3oubo8LL6zVqhAjQ6ypqTvqo6zw9WuxwI8fgNctU4ZX7shHIrc0uTxfxjko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777289411; c=relaxed/simple;
-	bh=iyMNsK1uMGrss40DTPVzzB/Il46+maCHBWAPBt/65Ns=;
+	bh=w0XGwELR3xciDLIHcBkj4Shl2CS+SlLGPOLI5Qn/iG4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=YPH/cCmw1rXgXlEkION4/IKDrw71nfk0w4i9CPupB7LHJxXg7xsw/F/AK4B7YksnjxuPmT7DhOLPWRUiWg+JGdYiKCR7/lBW3zqlQ0XGU0cW+c9Id9PySAYPSwkfFy55HMX/SAoYWEESQiYsipbo5FY4aDd6pH9GZdFvq7lXYw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=skIgXcZw; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=PuC6Wvvi+CYt5j5AKp/TIagXce2KLf1C+ASjDlaot8lwkjLs5tOkLp/eitlZ9tLszvWsFkwaiBtHiiETisyGvKcM2m3m3hBQsqKfdhrXhutjN9VquQ/rgxpuetNm+Xgoniosqzyo98H/pdHPeIEth5z2U6A9Yskf5QOLVVzr454=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fCPWyBY0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="skIgXcZw"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E3C5C2BCF4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fCPWyBY0"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0B5CAC2BCB6;
 	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777289411;
-	bh=iyMNsK1uMGrss40DTPVzzB/Il46+maCHBWAPBt/65Ns=;
+	bh=w0XGwELR3xciDLIHcBkj4Shl2CS+SlLGPOLI5Qn/iG4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=skIgXcZwUv5x2casEAJDVzxn2YlQYmT9Vq5oJBQba7hVDaz+BP/HDb5wCKqqlrlsN
-	 P4OOACUAyH4ydRexIIb67Sru0B3WlXDEbuvrYIRH1K462bK5YNMWsY5kuf2oBJCDes
-	 H7vLf7w7miDShYNAhqduF5oIRaulf87ixHm9aR08o8JCwF9g0pqePXNNSpex76vkZI
-	 tau+aGVduC8uykZZTPwQZVpdiOTPIUY+/39FNXCc28i3XTKGho5LAfB5qURzGnHdTr
-	 oktC0LYgOnzOWoagcffyIUnzNFbtDUVdYwqc9FCrDzDneVhgfOOt1pWlWsNsowzgYW
-	 OvjOT9tb9Kx4w==
+	b=fCPWyBY0v4WdwqFRA533/SfIz0YIb2U4z6w/xtKiwrlhN+kurbocdZhPKT05wVDFO
+	 3OwBQgiNAzUfJMeTCW0SWcLBNtKq1YkTiCu6Sr9Q1vn5GOgiFjfmigPldnx5mZiyye
+	 LsJlDZbu7Wjq64NdceaMu7hoM7FsqhAFbAqBPXWbIiqGEtvH/qDy9xsFiVBHdLsdr4
+	 6hpH8uhWHKQTXWwsEW/TDM2Zw/zlARy9uNeE+8ILVt8M8ypWN7szuHwltWxMGD/9E2
+	 ReqI28OO1PAyCtb8auZJBZX84VCpDZALf/HLx2z7cINW1Czb2lOJilRjbzDpnqBDFS
+	 tNPYkOtwB6bJg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2634CFF8869;
-	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6F7FF8861;
+	Mon, 27 Apr 2026 11:30:10 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 27 Apr 2026 12:30:11 +0100
-Subject: [PATCH v2 04/11] iio: dac: ad5686: fix powerdown control on
- dual-channel devices
+Date: Mon, 27 Apr 2026 12:30:08 +0100
+Subject: [PATCH v2 01/11] iio: dac: ad5686: fix ref bit initialization for
+ single-channel parts
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-ad5686-fixes-v2-4-188e05199368@analog.com>
+Message-Id: <20260427-ad5686-fixes-v2-1-188e05199368@analog.com>
 References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
 In-Reply-To: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -55,11 +55,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=4280;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=1787;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=acuSxge759Siv46fsodaR2Kel6j0QHpComH6u5zV1qI=;
- b=/ERIT0DbuTnUOcIJOE5d3V8q+BPV52h3q+Qrm4NVkFZKcEwKRkfX/XhURyckBTSfbKJZXQiyr
- 3qSQR4x6ROJAIxT+Cp1e82P6MMfwLvbagk7q16ZC96++mdy+hX9sh2b
+ bh=xzPfTOvqELCSXjM2q6f7n3lj/43Dt23++PuhGryImaI=;
+ b=/VSNs5CjaTaSZrcComveElieZt3qqqjmLcEMRGuWauxKdCNfqeu4zlQjmTuDUrNtn3TmiU1Pw
+ FuQWajvkCCoCMLfD5XvgQmc+gMCEOe6ejh3eUmiR/B6dVR+d2eHM/b2
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,116 +69,57 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Fix powerdown control by using a proper bit shift for the powerdown mask
-values. During initialization, powerdown bits are initialized so that
-unused bits are set to 1 and the correct bit shift is used. Dual-channel
-devices use one-hot encoding in the address and that reflects on the
-position of the powerdown bits, which are not channel-index based
-for that case. Quad-channel devices also use one-hot encoding for the
-channel address but the result of log2(address) coincides with the channel
-index value. The issue was introduced when first adding support for
-dual-channel devices, which overlooked powerdown control differences.
+The reference bit position was ignored when writing the register at the
+probe() function (!!val was used). When such bit is 1, internal voltage
+reference is disabled so that an external one can be used. For
+multi-channel devices, bit 0 of the Internal Reference Setup command
+behaves the same way, so AD5686_REF_BIT_MSK is created. The issue exists
+since support for single-channel devices were first introduced.
 
-Fixes: 7dc8faeab3e3 ("iio: dac: ad5686: add support for AD5338R")
+Fixes: be1b24d24541 ("iio:dac:ad5686: Add AD5691R/AD5692R/AD5693/AD5693R support")
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 37 +++++++++++++++++++++++++++----------
- 1 file changed, 27 insertions(+), 10 deletions(-)
+ drivers/iio/dac/ad5686.c | 6 +++---
+ drivers/iio/dac/ad5686.h | 1 +
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index aa17ed6aee43..04a5568f2cbe 100644
+index 9a384c50929b..3b48ddf8dd3c 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -25,24 +25,35 @@ static const char * const ad5686_powerdown_modes[] = {
- 	"three_state"
- };
+@@ -511,7 +511,7 @@ int ad5686_probe(struct device *dev,
+ 		break;
+ 	case AD5686_REGMAP:
+ 		cmd = AD5686_CMD_INTERNAL_REFER_SETUP;
+-		ref_bit_msk = 0;
++		ref_bit_msk = AD5686_REF_BIT_MSK;
+ 		break;
+ 	case AD5693_REGMAP:
+ 		cmd = AD5686_CMD_CONTROL_REG;
+@@ -522,9 +522,9 @@ int ad5686_probe(struct device *dev,
+ 		return -EINVAL;
+ 	}
  
-+static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
-+{
-+	if (chan->channel == chan->address)
-+		return chan->channel * 2;
-+
-+	/* one-hot encoding is used in dual/quad channel devices */
-+	return __ffs(chan->address) * 2;
-+}
-+
- static int ad5686_get_powerdown_mode(struct iio_dev *indio_dev,
- 				     const struct iio_chan_spec *chan)
- {
-+	unsigned int shift = ad5686_pd_mask_shift(chan);
- 	struct ad5686_state *st = iio_priv(indio_dev);
+-	val = (has_external_vref | ref_bit_msk);
++	val = (has_external_vref) ? ref_bit_msk : 0;
  
--	return ((st->pwr_down_mode >> (chan->channel * 2)) & 0x3) - 1;
-+	return ((st->pwr_down_mode >> shift) & 0x3) - 1;
- }
+-	ret = st->write(st, cmd, 0, !!val);
++	ret = st->write(st, cmd, 0, val);
+ 	if (ret)
+ 		return ret;
  
- static int ad5686_set_powerdown_mode(struct iio_dev *indio_dev,
- 				     const struct iio_chan_spec *chan,
- 				     unsigned int mode)
- {
-+	unsigned int shift = ad5686_pd_mask_shift(chan);
- 	struct ad5686_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index e7d36bae3e59..36e16c5c4581 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -46,6 +46,7 @@
  
- 	guard(mutex)(&st->lock);
+ #define AD5310_REF_BIT_MSK			BIT(8)
+ #define AD5683_REF_BIT_MSK			BIT(12)
++#define AD5686_REF_BIT_MSK			BIT(0)
+ #define AD5693_REF_BIT_MSK			BIT(12)
  
--	st->pwr_down_mode &= ~(0x3 << (chan->channel * 2));
--	st->pwr_down_mode |= ((mode + 1) << (chan->channel * 2));
-+	st->pwr_down_mode &= ~(0x3 << shift);
-+	st->pwr_down_mode |= ((mode + 1) << shift);
- 
- 	return 0;
- }
-@@ -57,10 +68,10 @@ static const struct iio_enum ad5686_powerdown_mode_enum = {
- static ssize_t ad5686_read_dac_powerdown(struct iio_dev *indio_dev,
- 		uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
-+	unsigned int shift = ad5686_pd_mask_shift(chan);
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 
--	return sysfs_emit(buf, "%d\n", !!(st->pwr_down_mask &
--				       (0x3 << (chan->channel * 2))));
-+	return sysfs_emit(buf, "%d\n", !!(st->pwr_down_mask & (0x3 << shift)));
- }
- 
- static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
-@@ -82,9 +93,9 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 	guard(mutex)(&st->lock);
- 
- 	if (readin)
--		st->pwr_down_mask |= (0x3 << (chan->channel * 2));
-+		st->pwr_down_mask |= (0x3 << ad5686_pd_mask_shift(chan));
- 	else
--		st->pwr_down_mask &= ~(0x3 << (chan->channel * 2));
-+		st->pwr_down_mask &= ~(0x3 << ad5686_pd_mask_shift(chan));
- 
- 	switch (st->chip_info->regmap_type) {
- 	case AD5310_REGMAP:
-@@ -464,7 +475,7 @@ int ad5686_probe(struct device *dev,
- {
- 	struct ad5686_state *st;
- 	struct iio_dev *indio_dev;
--	unsigned int val, ref_bit_msk;
-+	unsigned int val, ref_bit_msk, shift;
- 	bool has_external_vref;
- 	u8 cmd;
- 	int ret, i;
-@@ -489,8 +500,14 @@ int ad5686_probe(struct device *dev,
- 	st->vref_mv = has_external_vref ? ret / 1000 : st->chip_info->int_vref_mv;
- 
- 	/* Set all the power down mode for all channels to 1K pulldown */
--	for (i = 0; i < st->chip_info->num_channels; i++)
--		st->pwr_down_mode |= (0x01 << (i * 2));
-+	st->pwr_down_mode = ~0U;
-+	st->pwr_down_mask = ~0U;
-+	for (i = 0; i < st->chip_info->num_channels; i++) {
-+		shift = ad5686_pd_mask_shift(&st->chip_info->channels[i]);
-+		st->pwr_down_mask &= ~(0x3 << shift); /* powered up state */
-+		st->pwr_down_mode &= ~(0x3 << shift);
-+		st->pwr_down_mode |= (0x01 << shift);
-+	}
- 
- 	indio_dev->name = name;
- 	indio_dev->info = &ad5686_info;
+ /**
 
 -- 
 2.43.0
