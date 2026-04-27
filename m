@@ -1,45 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D17130B50F;
-	Mon, 27 Apr 2026 10:02:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D5E23AC00
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 10:03:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777284147; cv=none; b=DsiLXL29oNG2q4VSkrSOyJiJ7uym/H+LUTnGYwaGzXPCL+U85rjMAHjaoMou+OQAI5TDXfkgqi5EFfIKhwU0dxlipBXiRN4dAyMzrNHTpSG8AZDqPMtm6MbYVYOfESQBqgTqLtiU1VnHVNKPmFlBlVOGbsXOipkKrdGAPG8jwzs=
+	t=1777284228; cv=none; b=GlcRA8kV/AkOoI7OMh6YTf2i+TG647o8g290w+NFo5zQ8AKGAE2c9AP27725sSxD8hUKOmuJSruGpW+hS04YBSBSrU0XnNklNy05tHfyNG+iByJbQ4nPgZgo35LL3lVle+aSsmh5CM7YZtWY6CyCMMXIbZgRt0yZEj1Fr7mxSLo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777284147; c=relaxed/simple;
-	bh=4DfioJ/mB1drFxmGI83xMHBZjcdtFiFlpc6xIXaBAco=;
+	s=arc-20240116; t=1777284228; c=relaxed/simple;
+	bh=XYLE9TA0IWpeumy+gSbuXKXmhKHtKngemJgMUFhgkQM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=d+V/wWBOa2jTaBxf1LOrnuN/v6lRXGb/VMRqXVeEm7u06xTnze+6N0ytraN5rvC6cMUzpUm+bogHibDUPWO8+EqnC4qzpvu5rRMEZJX3uoOXP97VT4olZPrCgBHFI295wW6u+K8BhtgzF9SWh8HVQ9yLiTltIkXyxv/yZn3lEjo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OYC1DeQw; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ZGcnA3MKU/7FpHAB34w6J8ItRIc2Vxqu4L3E/gZf7Ul8Zc0ifZ5pL+8AGafKs/1Z+fNgRv4Zm0QZGbBtrZfbnlVbkMC2654xzFb1AVH+DFyEGPSgbVg1WYB7Rd4tOdtdYlYK/BEsnc0gvgwdeVO/eWTvAFOSfCyyfFXZJgdzZw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LlCflqhk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OYC1DeQw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 991D4C19425;
-	Mon, 27 Apr 2026 10:02:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LlCflqhk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F98FC19425;
+	Mon, 27 Apr 2026 10:03:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777284146;
-	bh=4DfioJ/mB1drFxmGI83xMHBZjcdtFiFlpc6xIXaBAco=;
+	s=k20201202; t=1777284227;
+	bh=XYLE9TA0IWpeumy+gSbuXKXmhKHtKngemJgMUFhgkQM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=OYC1DeQwIPgyHw/KkayOQHL15EDe95Gcy55heLgDQ60X/CmZT9VHshr7uGBSC+HQx
-	 Odgdf5qUCFEMYFoAM/az+4DfLbqO9ACcvpHAGDvrO5hTVHosM55JEYCAvZNcoNQ2vP
-	 rUaBgioAGrwn5J0XIVhKc/0jPIvmnPu0FqtUiqcTjpGn8kxhI2fav7jfPDHGsOcBQa
-	 Juj/S9Lb8B/y9TcXL1ufbqFSb0oNU8iUy6bdNKSh3nCO/+mEt54XWp7Qw4xHEamZmW
-	 hXvut4piynMYxi31opVvMlzMsdRaCHwkwEyoafD7zZS0bT4CIYuNJRVEg4pqOagOL8
-	 NO47on161Gwzg==
-Date: Mon, 27 Apr 2026 11:02:15 +0100
+	b=LlCflqhkt+ULH/QWfcyI10bsms/b5DLgemMJvCYeVtxujGr4hly024vkJhZgFakjI
+	 HTLTkC958B1q1NeO2kCzzFTPABDMwi0c5uvU6lHVo3ByZGJ5HjCb5TyZ9jhwjl1IMW
+	 r89vGvgtwd0TwmblGFCSsJf5qr+2NkKDQSnefq4B/cuGeUXKwdULsLzYl7WnvthQWI
+	 KutuIwfcMDJ0lcC5f/2S1N0V0lU6flfgLfQYO2gVZqfxEcfgiB7hGvU3Ed14eXCm/z
+	 BEGCsbVdgQqdOcZ3EAjTPlMeeISj4rTpI8+z4SGm6lq71LzvkXKgieVz7GBG1iXMNg
+	 ilW+2Zfm6n3zA==
+Date: Mon, 27 Apr 2026 11:03:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Dan Carpenter <error27@gmail.com>
-Cc: Maxwell Doose <m32285159@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, gregkh@linuxfoundation.org, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: adt7316: Add error handling to
- adt7316_spi_probe()
-Message-ID: <20260427110215.1d3eb495@jic23-huawei>
-In-Reply-To: <ae8b6wdyNR-G-i1m@stanley.mountain>
-References: <20260426205039.125818-1-m32285159@gmail.com>
-	<ae8b6wdyNR-G-i1m@stanley.mountain>
+To: Caio Morais <caiomorais@usp.br>
+Cc: andy@kernel.org, dlechner@baylibre.com, michal.simek@amd.com,
+ nuno.sa@analog.com, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 0/3]: fix unnecessary includes and add missing ones
+ across multiple drivers
+Message-ID: <20260427110337.32bfc6d3@jic23-huawei>
+In-Reply-To: <20260426211834.3318306-1-caiomorais@usp.br>
+References: <20260426211834.3318306-1-caiomorais@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,45 +47,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 27 Apr 2026 11:18:51 +0300
-Dan Carpenter <error27@gmail.com> wrote:
+On Sun, 26 Apr 2026 18:17:59 -0300
+Caio Morais <caiomorais@usp.br> wrote:
 
-> On Sun, Apr 26, 2026 at 03:50:38PM -0500, Maxwell Doose wrote:
-> > Currently, the return values of the adt7316_spi_write() calls in
-> > adt7316_spi_probe() are unchecked. Add error handling to return early
-> > and pass on the error code if we receive an error from
-> > adt7316_spi_write().
-> > 
-> > While at it, move all three adt7316_spi_write() calls inside a for loop
-> > to condense the logic.
-> > 
-> > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
-> > ---  
+> From: Caio Morais <caiomorais@usp.br>
 > 
-> A lot of the time, functions can't fail or if they do it means
-> you need to buy a new computer and there is nothing the
-> operating system can do to help you.  spi_write() feels like
-> one of those things.
+> This series removes unnecessary includes and adds missing ones as reported
+> by the include-what-you-use (IWYU) tool across different IIO drivers.
 
-We do normally check spi and i2c writes.  Though given spi doesn't
-have known markers like I2C does, it's not always clear we can detect
-an error.  However, these are 'special' as the comment above makes
-clear. Device is in i2c mode and a magic SPI hammering sequence is
-used to make it switch. For this sort of stuff all bets are off.
-If it were the other way around we'd definitely expect errors from
-the i2c transfers - though as mentioned above it is really hard
-to tell if SPI failed.
+One series per driver.  Having a shared one for the core is fine but definitely
+don't mix core and drivers. Tend to have entirely different sets of
+reviewers!
 
-Anyhow as far as I'm concerned adding checks to normal calls is
-fine, but not to things around reset, mode switches or power
-management unless you can test them.
-
-
+J
 > 
-> Plus we wouldn't add new checks like this unless they had been
-> tested.
+> Caio Morais (3):
+>   iio: adc: xilinx-xadc: remove unnecessary includes and add missing
+>     ones
+>   iio: buffer: industrialio-triggered-buffer: fix includes with IWYU
+>   iio: common: st_sensors: fix includes with IWYU
 > 
-> regards,
-> dan carpenter
+>  drivers/iio/adc/xilinx-xadc-events.c               | 6 +++++-
+>  drivers/iio/buffer/industrialio-triggered-buffer.c | 6 ++++--
+>  drivers/iio/common/st_sensors/st_sensors_i2c.c     | 7 +++++--
+>  drivers/iio/common/st_sensors/st_sensors_spi.c     | 9 +++++++--
+>  4 files changed, 21 insertions(+), 7 deletions(-)
 > 
 
