@@ -1,99 +1,110 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4A182FE05B;
-	Mon, 27 Apr 2026 20:19:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D91EE1D5170
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 20:20:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777321156; cv=none; b=A14uMtoq3WqHAhqSIcbmdR05K5ldqqwmthxpvt9+v3xWypbfYALIVcn+8Gefa5HZITOXMPv6x6oO5WJeDFK56gV90yk2B8fzwP7fKXkYA2oHP+wBWV35Ok3kfa3qPBeY04Y3QRoT6/uF/9iw0LXnbRHVz7+1C+Ev7+q+v++Gm/w=
+	t=1777321226; cv=none; b=DB5k/Y8mmZLz+lV9Vm1EeyOMy2s96D7dV0nDHjgDEj17KBl//Qrnv2w3JgjCs7TizoD7Ek6r/xu+GvB25In3lI7Djt9P1yQvZGHI4792nz8/1Y/RJ7r6xAIEH4lUa9neovrYJ2HBGveClIvkcKWGGfvaZTOJ5yfqpwJ7gc5vGvI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777321156; c=relaxed/simple;
-	bh=vuyY32Xz98zEStT0oUhg9f2SPP6xzCpf1TVVMPGuUjE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s6FrQpyzWuZidRxL/7AkQklq7Z2CPTVGxPefmrn7lGrknYu0IWe69+9ZbzgYUJ/1MLToVvOYEes1rm/YWOfUQToCpoRQUWZaBbaGEvbo61p6NIi2beZHTvBJTwOGf+5qAtA+jxHpbRTrfrP7A8XLNVQFBGOGHm9sAKLaYgK8xnI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W0DkA+xf; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1777321226; c=relaxed/simple;
+	bh=glSbWnFmBwJx0IQqrzrcxPaAYcWfdeQRRx9TcoERQyo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=KQZQLgq14bzI0OgLsEOUTrbfL88FiXpf6j72kbU62wbg4Y4zEZ/i/KyWOUsT7g2eIhugCGZ9EvhXDJGwntuJ+LgyDNlE+hWmClosbXtoxuLOj7guuMrQzuJiXG/M8BjPNGyiKmvuq+VIjQ/3O5WIx6XUtU2EqUTHnFBJtEJ0Ki4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TRGFeWzs; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W0DkA+xf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777321156; x=1808857156;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vuyY32Xz98zEStT0oUhg9f2SPP6xzCpf1TVVMPGuUjE=;
-  b=W0DkA+xfTxivhbHltxXsObhWYtK68IGocCknHlccEXhv7txI4oxgUjhq
-   gYZCIH7eg62oZAKtO7x3cObpaJOlvhfDaMGl/ygnm+LsZfZvCRj7JwBxc
-   Gm04c9KwYzYIsrR5U0bhbMdlFQ+OPeuwguusJAlebpHmcF1l4CwIAzlcH
-   GGpTcBTcc8+SlyQmjHPzOq1Qbmx5RfEZtdB0YsbRUVW/Cn5E7r/ishrCr
-   FOhruNYbcHNuwm7PYg2223odu0JY7TjSxlTpZl4LR1kufw4nUv+9yPvnT
-   f9sNvQOo/Qr6pUcOjCgVjgAfVyHaHwluU3WwpxoQLmi4DlCzbgNq8LuUM
-   Q==;
-X-CSE-ConnectionGUID: skqd4dl2RdCYM7/ni2t/gQ==
-X-CSE-MsgGUID: NMuTrIkDRACLjuL+Q6rXrQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="78138960"
-X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
-   d="scan'208";a="78138960"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 13:19:16 -0700
-X-CSE-ConnectionGUID: Ehr1vV1SSLmxVfKNbU8QxA==
-X-CSE-MsgGUID: +jvh5HUfS12Kvbm0slvAkg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,202,1770624000"; 
-   d="scan'208";a="238075423"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 13:19:13 -0700
-Date: Mon, 27 Apr 2026 23:19:11 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joshua Crofts <joshua.crofts1@gmail.com>
-Subject: Re: [PATCH v0 00/14] iio: magnetometer: ak8975: Additional changes
- to the driver
-Message-ID: <ae_Evz18JHprDPi_@ashevche-desk.local>
-References: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TRGFeWzs"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-488a14c31eeso88263465e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 13:20:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777321223; x=1777926023; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gpgZylQ6F9oZ5g4Pqc6xBbXX6HVh4RUIO3Cnteq8M4k=;
+        b=TRGFeWzsUEZvQlHG/hL0kiS7QYPZ0MKNRTS/0Fr3kFif3cAPysbzr4yEcRPJAnjnSY
+         CZNVi/kEfBBtGR1y8qwiv4CMhHSv0AxoGurhnv+3VVilyMeEiCjx8+UjQCpAFz7XYLme
+         tq1Bpvk8uc0v50lkxSopMNViXBuDNInCqRRG4/T+RwgFSCmx04ZmavpOWlMilNPf8Sgs
+         siuWhvMl8RQyHLX5B61s96DWf8fyPFZSnzEwaUusWWtF118Gm7KR4nJp54ovvSn5S9+m
+         /IEIMnJyKQmunwEK9sWhuNTXqo8hRmreEXs7w30ixM5F9cCyItDve4/zrE2KSgPam6AB
+         Xeiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777321223; x=1777926023;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gpgZylQ6F9oZ5g4Pqc6xBbXX6HVh4RUIO3Cnteq8M4k=;
+        b=Wqv0/l5Q89G2GXM+4i/QhC+/WuWtXDSeE3UbgKuEyg2Zn2DpWKPQDX7aE1WIV3cmSz
+         2VBA0aWGvESVa90gllY+qpXuO2SsPZV2B9B6Vz+gw+iSX8PVvGrlG5dSA3imVfqdRkqs
+         eIXPOdmJ295VV6xRISrRl+vioNq2l/OpCs0AgkGk9FAcaRHywLHac+t0qDMEmLY95duN
+         IWLI1NWPSL11oVtQPYdUJXWSarMGkE7C3MNsHkuhILGZ7YeuAfdLdZkXIE6ZUvYR9GgQ
+         /uaz/LJyhGqf8RsBE+IIsE/q76+5Lzdl+GgAtZjR2ySyvVYOhON7HnzG74L6UX20nvem
+         eI6w==
+X-Gm-Message-State: AOJu0Yxq/ebXV0KJA3oJfddEE845R8DNl9ERwIDTlUC145C6NmcbCQk8
+	Fw5oijJjaEpf9YkoUH8qcMIaGDTiNW7Mjw1UJRN0NjKscLTa9Pwp123A
+X-Gm-Gg: AeBDies+Bj64znXE9JpbbYtlsLOpLPs4yNmGlJq1peLoTFU0s4aHLA2ejx9MQMNiR5o
+	ZiRpLv8oOXcRhtQlRBWVwSWarBklnHTnGiLqDviPQJZvOKEr+5fxY+s5RBQvYEw98h86AgEaB5Y
+	+MgVAq6b4gbp90zXd5vlqUA6PxbAuC50Zg7JU2pgMcqgIU5OWokNGzZ0VQSe2o09ky2HRQLFIP+
+	0eK8AJB6dyUnQpV7mI9E/spBfveqUDWr09bgO3twN9KSCxwRCTcYRLO4QJDivsWOsZNWwRyEiau
+	cgNxi1/LOREoaK6uZxnXVEa4+mswd1+FyLzKx1NX2Afcu1ySFCsDwSzSpjYuPetsIoY4+OKKBwf
+	oMvSJx1G9ekfOcKNE2qbMSOei3kMxV1yCbPR0Lv4gih/wzQF9yCg7weNlSTGOk+AZwnXfpi+Iuo
+	xjqwrkW1YHmQ8Hmv8XpXd4LFp2LB5Wi5DaiOvr4+KuLmFU3Acc7Xz6aIT0Uyl9ILNAc77WmjQ=
+X-Received: by 2002:a05:600c:34c7:b0:489:e696:8362 with SMTP id 5b1f17b1804b1-48a77af18ccmr2829015e9.13.1777321223093;
+        Mon, 27 Apr 2026 13:20:23 -0700 (PDT)
+Received: from Lenovo-Ideapad-Slim-5i.localdomain ([92.53.30.157])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a774939dfsm4977045e9.1.2026.04.27.13.20.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2026 13:20:22 -0700 (PDT)
+From: =?UTF-8?q?Rahman=20Mahmutovi=C4=87?= <mahmutovicrahman5@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Rahman=20Mahmutovi=C4=87?= <mahmutovicrahman5@gmail.com>
+Subject: [PATCH] iio: temperature: maxim_thermocouple: Fix indentation in of_match table
+Date: Mon, 27 Apr 2026 22:20:16 +0200
+Message-ID: <20260427202016.1635-1-mahmutovicrahman5@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Apr 27, 2026 at 10:09:45PM +0200, Andy Shevchenko wrote:
-> This series is an attempt to make the driver less a rabbit hole.
+Replace leading spaces with tabs in the of_device_id table
+entries to comply with kernel coding style.
 
-FWIW, the more refactoring and cleaning up may be
-- moving to guard()() - requires preparatory refactoring
-- splitting chip_info array to individual data, getting rid of .type field
+Signed-off-by: Rahman Mahmutović <mahmutovicrahman5@gmail.com>
+---
+ drivers/iio/temperature/maxim_thermocouple.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-When I looked into them, I understood that my time slot for this driver
-is fully consumed (and even more) already, so I leave it to the motivated
-people.
-
-> It's a continuation of what Joshua Crofts started doing. Hence
-> it is based on his work and first three "patches" here are supposed
-> to be folded to his series accordingly.
-> 
-> I have compile-tested them, but I haven't done full double check of
-> the correctness from functional point of view. Joshua, please do that
-> before incorporating into your series. Yes, my patches are assumed to
-> become the part of Joshua's whatever next version of the series, that's
-> why mine is marked as v0.
-> 
-> Should not be taken directly by the maintainers, but any comments, review
-> are highly appreciated.
-
-
+diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
+index cae8e84821d7..7f80fa018ab4 100644
+--- a/drivers/iio/temperature/maxim_thermocouple.c
++++ b/drivers/iio/temperature/maxim_thermocouple.c
+@@ -271,8 +271,8 @@ static const struct spi_device_id maxim_thermocouple_id[] = {
+ MODULE_DEVICE_TABLE(spi, maxim_thermocouple_id);
+ 
+ static const struct of_device_id maxim_thermocouple_of_match[] = {
+-        { .compatible = "maxim,max6675" },
+-        { .compatible = "maxim,max31855" },
++	{ .compatible = "maxim,max6675" },
++	{ .compatible = "maxim,max31855" },
+ 	{ .compatible = "maxim,max31855k" },
+ 	{ .compatible = "maxim,max31855j" },
+ 	{ .compatible = "maxim,max31855n" },
+@@ -280,7 +280,7 @@ static const struct of_device_id maxim_thermocouple_of_match[] = {
+ 	{ .compatible = "maxim,max31855t" },
+ 	{ .compatible = "maxim,max31855e" },
+ 	{ .compatible = "maxim,max31855r" },
+-        { },
++	{ },
+ };
+ MODULE_DEVICE_TABLE(of, maxim_thermocouple_of_match);
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
