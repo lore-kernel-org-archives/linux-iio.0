@@ -1,190 +1,115 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0270B3E51E2;
-	Mon, 27 Apr 2026 17:18:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777310319; cv=pass; b=JWwUMFWJ9qLEcrE3dS5So57XK1fxSMsfJUiJWADvL3pj3AgHjLKY0o0ogFsHy35vttJPfx6iuU2tZw6jAMezurJcj05Wt3FQFOSfxzP9a4HaKDaA5tjW63iHULvjxoQPrxZ30UIp85ZxjU7/RlkieBlxfjAi1IcfJte5eIheSws=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777310319; c=relaxed/simple;
-	bh=PUkidtf7LPsxLUJ+sc//1BBNuOqo8ELruR3uwxGDkA8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tgjp3OWWzAC3Du+t3sV4feq9yENvbk1XS/t0rvX+gDr3wNVWIMuM9EMluyUTT4QEtnMVI1TNpTmS9PxIJNPK25TlLw4AxftXJHJd4fLSePEtfLaeIuC0XcyXTzphGq5FQMkD2FgCZQmQJ3CHSRLWaxsYOKvZ8tCVX4cPNIUmaPU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=S9zXn+IM; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3F983E5580;
+	Mon, 27 Apr 2026 17:19:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777310347; cv=none; b=aOjYc50w0RczixuHlEjudXBcfJZWzkMu11VFj7qab2teFX0S45FEwXOMHsdPZNQWNbJ8BTqqb5foP/7p6PdBBC2HTImcZI/8+NqhC+Ng1DYyxdWVV/hmhngXVBb+avWSnEXU1gLBkr7/FMhShDJuN/764X4uv2TxGGzK9K8SAYM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777310347; c=relaxed/simple;
+	bh=mepkGGhsNTUJswO/3b4246rhiRDTDWXlZZW2YA/w71w=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=IaxX6Zw3G7+3zsikzZG7jIcVDsjFeJ0sXODD9nmdSRpe0s8BwgunWINnnSdToX8SUX30970MiUTZ3Y8VLZvomfkEBCVj25Ru2eBqlvUZKS2EX6UV2w+oYk828VdqGFbEZa8khghHeze9c8n42/zMCb+xZXtr7ftKNVGq9UU1K2s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VK1GySpR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="S9zXn+IM"
-ARC-Seal: i=1; a=rsa-sha256; t=1777310285; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=AONUFnmPJe7rvq6jg1smn1vKZwWTHWd4KK8LCstwo44AakIrSuIl1utQztkCYpM4Pmry9S2obBYcCcEwLRXAhw3zgG7imvAaCi70TGaFCsuKT3cMl9oXk3E/79p0/rWjZlv/wT+H+LuIjS6FZ5c3TEWpp48OfEjvwXXPvGp1j8M=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1777310285; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=bXedwRzoqLX366g/tnoKfZ2zMaP1ns3wcTqOK2AZMgM=; 
-	b=AlgdzFqkJ4Ae/TERfCWF7bUOs0kLATfB16eI2xYjXb4nbbZ4/07F6l9tR9lAucEwMgzZapr+sb8uG+8nbVWgAENnUDue2NeW2KndQf0jecwO11oIAjS+oatzmNzEbTzLsZEVHrS1CZdUgzneHn6ZWUTz1k00jsa1sxjxD8BMMHI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
-	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1777310285;
-	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
-	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-	bh=bXedwRzoqLX366g/tnoKfZ2zMaP1ns3wcTqOK2AZMgM=;
-	b=S9zXn+IMlR2eV1zhjsqpJDfCInyD8z/vR/LnDAPOBLES8RavaNCeVAJspPcZAJR7
-	vmHMRFdcBieZLbP5ie4MH0/RRVgZkxwOslDidpY12/ngVVuR4w0ecEjDcAUuxN3nYpX
-	DxYEKcKIuMZ02nFZxatgtmJuhJG2uPWIxf1oiyXM=
-Received: by mx.zohomail.com with SMTPS id 1777310283788820.0404676270748;
-	Mon, 27 Apr 2026 10:18:03 -0700 (PDT)
-From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>,
- Damon Ding <damon.ding@rock-chips.com>
-Cc: kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
- Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 6/6] arm64: dts: rockchip: Add cooling fan to ROCK 4D
-Date: Mon, 27 Apr 2026 19:17:57 +0200
-Message-ID: <El5M8EbxT4a3ZzcG9vKdNA@collabora.com>
-In-Reply-To: <35afc21f-74c9-4f52-bdf1-18a34fb58578@rock-chips.com>
-References:
- <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
- <20260420-rk3576-pwm-v5-6-ae7cfbbe5427@collabora.com>
- <35afc21f-74c9-4f52-bdf1-18a34fb58578@rock-chips.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VK1GySpR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8CADC2BCB5;
+	Mon, 27 Apr 2026 17:19:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777310346;
+	bh=mepkGGhsNTUJswO/3b4246rhiRDTDWXlZZW2YA/w71w=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VK1GySpR/+ruwGR+XpTEZu6x0iADUCf91xLH8L3bhPIdG+pvpT9ssxCS0989Sew7V
+	 L7hsSv7HFAeLG57GPDHtbc+Az66WYRGam54gYYGs1Y9t4MD1fMZE4Lhtr/NiLBIW1b
+	 PD3YBfH6p5hE+/y2kzPZGf7XbdwB7VsRx2GNTay4hRZnlwZIuRVQhI4DR0X05i/g1N
+	 ZUMuJna6+WQDOyhIs0D20LSta/kt0AaTzbBEb12ICwZ5WVog5bQD7JJHHzVQn359Eo
+	 q1RNCDItCIXw2+r/eUeA/JkM8dtXm/tWjfad4wuQYztW85SAZUCxjkbt4rRec0k7v+
+	 /Abd13yBi3Pog==
+Date: Mon, 27 Apr 2026 18:18:56 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Salah Triki <salah.triki@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2] iio: adc: mt6359: fix unchecked return value in
+ mt6358_read_imp
+Message-ID: <20260427181856.613a22ee@jic23-huawei>
+In-Reply-To: <20260427165759.5756-1-salah.triki@gmail.com>
+References: <20260427165759.5756-1-salah.triki@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hello,
+On Mon, 27 Apr 2026 17:57:59 +0100
+Salah Triki <salah.triki@gmail.com> wrote:
 
-On Sunday, 26 April 2026 09:23:01 Central European Summer Time Damon Ding wrote:
-> Hi Nicolas,
+> In mt6358_read_imp(), the return value of regmap_read() is currently
+> ignored. This is problematic because if the bus read fails the variable
+> val_v remains uninitialized.
 > 
-> On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
-> > The ROCK 4D has a header to connect a small cooling fan. This fan is
-> > driven by one of the SoC's PWM outputs driving a transistor, that in
-> > turn controls the fan's power.
-> > 
-> > With the introduction of PWM support, add a description of this cooling
-> > fan, as well as the additional trips and cooling-maps for it.
-> > 
-> > Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-> > ---
-> >   arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts | 50 +++++++++++++++++++++++++
-> >   1 file changed, 50 insertions(+)
-> > 
-> > diff --git a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-> > index 899a84b1fbf9..2d5ede010ad0 100644
-> > --- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-> > +++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-> > @@ -45,6 +45,14 @@ rfkill {
-> >   		shutdown-gpios = <&gpio2 RK_PD1 GPIO_ACTIVE_HIGH>;
-> >   	};
-> >   
-> > +	fan: pwm-fan {
-> > +		compatible = "pwm-fan";
-> > +		cooling-levels = <0 180 205 230 255>;
-> > +		fan-supply = <&vcc_5v0_sys>;
-> > +		pwms = <&pwm2_8ch_5 0 60000 0>;
-> > +		#cooling-cells = <2>;
-> > +	};
-> > +
-> >   	leds: leds {
-> >   		compatible = "gpio-leds";
-> >   		pinctrl-names = "default";
-> > @@ -711,6 +719,36 @@ rgmii_phy0: ethernet-phy@1 {
-> >   	};
-> >   };
-> >   
-> > +&package_thermal {
-> > +	polling-delay = <100>;
-> > +
-> > +	trips {
-> > +		package_fan0: package-fan0 {
-> > +			temperature = <50000>;
-> > +			hysteresis = <2000>;
-> > +			type = "active";
-> > +		};
-> > +
-> > +		package_fan1: package-fan1 {
-> > +			temperature = <60000>;
-> > +			hysteresis = <2000>;
-> > +			type = "active";
-> > +		};
-> > +	};
-> > +
-> > +	cooling-maps {
-> > +		map1 {
-> > +			trip = <&package_fan0>;
-> > +			cooling-device = <&fan THERMAL_NO_LIMIT 1>;
-> > +		};
-> > +
-> > +		map2 {
-> > +			trip = <&package_fan1>;
-> > +			cooling-device = <&fan 2 THERMAL_NO_LIMIT>;
-> > +		};
-> > +	};
-> > +};
-> > +
-> >   &pcie0 {
-> >   	pinctrl-names = "default";
-> >   	pinctrl-0 = <&pcie_reset>;
-> > @@ -720,6 +758,13 @@ &pcie0 {
-> >   };
-> >   
-> >   &pinctrl {
-> > +	fan {
-> > +		fan_pwm: fan-pwm {
-> > +			rockchip,pins =
-> > +				<4 RK_PC5 14 &pcfg_pull_down_drv_level_5>;
-> > +		};
-> > +	};
-> > +
-> >   	hym8563 {
-> >   		hym8563_int: hym8563-int {
-> >   			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>;
-> > @@ -770,6 +815,11 @@ wifi_en_h: wifi-en-h {
-> >   	};
-> >   };
-> >   
-> > +&pwm2_8ch_5 {
-> > +	pinctrl-0 = <&fan_pwm>;
+> The function subsequently assigns this uninitialized stack value to
+> *vbat, leading to incorrect measurement results being reported to
+> the IIO subsystem without any error indication.
 > 
-> May I ask why the pinctrl does not directly use &pwm2m1_ch5?
+> Update the function to check the return value of regmap_read(). Ensure
+> that mt6358_stop_imp_conv() is still called to clean up the hardware
+> state before returning the error code.
 > 
-> Is it because the default pin configuration cannot meet the requirements 
-> of the fan?
+> Fixes: 3587914bf61 ("iio: adc: Add support for MediaTek MT6357/8/9 Auxiliary ADC")
+> Signed-off-by: Salah Triki <salah.triki@gmail.com>
+> ---
+> Changes in v2:
+> - Added Fixes tag.
+> - Re-examined the entire driver for unchecked regmap operations.
+>   While several regmap_write() and regmap_set_bits() calls also ignore
+>   return values, I focused on this specific regmap_read() in 
+>   mt6358_read_imp() because it leads to an uninitialized variable usage
+>   (val_v). This makes this fix critical for reporting correct data 
+>   to userspace.
 
-Yes, I'm adding a strong pull down. The PWM pin controls a transistor,
-and if it floats when not in use the fan can start spinning when no
-PWM signal is present. If I recall correctly (it's been a while since
-I wrote this DT patch) it could be left spinning when the board was
-shut down with a `poweroff` command.
+I'd be more concerned about what it might otherwise report.. Will expose
+something random that was on the stack previously.
 
-> 
-> > +	status = "okay";
-> > +};
-> > +
-> >   &sai6 {
-> >   	status = "okay";
-> >   };
-> > 
-> 
-> Best regards,
-> Damon
-> 
-> 
+Ok on this one having a fixes tag given the uninitialized, though as I mentioned
+I'd have been tempted to take the approach of just initialising it.
 
-Kind regards,
-Nicolas Frattaroli
+Even with the code as you have it here a static analyzer may not be able
+to see far enough to tell it is initialized and so throw false positive warnings.
 
+Still, let's see what Andy thinks before you change anything.
+
+J
+> 
+>  drivers/iio/adc/mt6359-auxadc.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/mt6359-auxadc.c b/drivers/iio/adc/mt6359-auxadc.c
+> index 6b9ed9b1fde2..f927bff4a26a 100644
+> --- a/drivers/iio/adc/mt6359-auxadc.c
+> +++ b/drivers/iio/adc/mt6359-auxadc.c
+> @@ -497,10 +497,13 @@ static int mt6358_read_imp(struct mt6359_auxadc *adc_dev,
+>  		return ret;
+>  
+>  	/* Read the params before stopping */
+> -	regmap_read(regmap, reg_adc0 + (cinfo->imp_adc_num << 1), &val_v);
+> +	ret = regmap_read(regmap, reg_adc0 + (cinfo->imp_adc_num << 1), &val_v);
+>  
+>  	mt6358_stop_imp_conv(adc_dev);
+>  
+> +	if (ret)
+> +		return ret;
+> +
+>  	if (vbat)
+>  		*vbat = val_v;
+>  	if (ibat)
 
