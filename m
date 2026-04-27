@@ -1,43 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B48543B38BB;
-	Mon, 27 Apr 2026 09:53:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4263A3B0ACA;
+	Mon, 27 Apr 2026 09:54:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777283584; cv=none; b=p/j8GkgpEy8rHVdcIbYrsu8jXZ1UvrEL2yva57v1H3jXeWXcxDadygDBBsi91wK7DVgd+vVo2N245BiOkU9JDzoh9ly9s2iKlOPaPq/0t+7AyryPPTmRuU/Qa/Md1B+gpffv94UMRuX1xMNMWN3Mc6cgE0zVdpMGB+8dHEDRxQo=
+	t=1777283690; cv=none; b=uKUyMTUj+wCyqNEhNSh0yXf4xYAPLyPohSrkq2uaQP5UAIrTEFlVrEKdZsBlwss6LIDqljjuCvSb3NXrTZmVa4RrjrpE7YwnsDtYywUrfYf/1ei5nhtGBK9DyxhaYPLVAblerk1+LahsV7DsKBbm9u4t6YLc6RkQ/4oxjlF9ErE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777283584; c=relaxed/simple;
-	bh=wUZ7Pj1S/JLGGyZMyobr+IyuW1VydLzhPjGR1yuHCpk=;
+	s=arc-20240116; t=1777283690; c=relaxed/simple;
+	bh=3GJbd01BMV46KOqmSsQTOMiZH5IiF+nQeyc2rgr2Oy0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RYvMP9/8KdGZszFA1A0RQ8+OG1zQypv9nWbFPgAdqrDzKma/P/Rv3umJTMaI7UDXDJrAMbVI6FyfOryGWFwkbXbaZJxUIK+51evUfeLT8wVD7vpKCPl4+3pyIij58Xa2iHOF37MwfCWavINpwflaPH5eBNVRkKl81xra0m85ELA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i2uXjeGt; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=S1aAu5CFJKCEKAgPruW3WhEwQf8bgRhmV3jmZz/Lqj2z+npcGBjSZqKqVHxrsZ4IqI2xaAPpfLtumyIp6ING36F3scw1I15knetM6uV5kJN8wvds4SIDGDkwk+5esR/+VnLDmhyKuaMKMYT/VhMuTG60DmL+zLFFKpjPPmh+PAA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N0e1xCma; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i2uXjeGt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAEAAC19425;
-	Mon, 27 Apr 2026 09:53:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N0e1xCma"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAD6DC19425;
+	Mon, 27 Apr 2026 09:54:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777283584;
-	bh=wUZ7Pj1S/JLGGyZMyobr+IyuW1VydLzhPjGR1yuHCpk=;
+	s=k20201202; t=1777283689;
+	bh=3GJbd01BMV46KOqmSsQTOMiZH5IiF+nQeyc2rgr2Oy0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=i2uXjeGtqcMf2476rIP0TGk2IIilX+QeeusIFT+wo7Rc2cfsxqhCgodGb8dVpyDCO
-	 m2HUNBAyL3r26TiN9CL0WjzZ8Yw4rsYQo1AyJAKx7iNfGedO+4B7iKlyJIamVU9IV8
-	 DAfPOFinwF3kbNmBiqk/ViYir/Bxr8WgqgUEpcLklrsaSUHLGDhIsbOKrQFmlBKRj3
-	 zuqnXTBwWGDV2TpEwj56FANMRkELvHJF/+PWTLhX1dR3MbFv+UqLz5A5RzQWwLUXp4
-	 EIvfyhm1jO7nMJY6DOezeBKJKDz89YYOTSuG9nFVvBLn7W5wutwRdam5PxHWjfB9AW
-	 OkfcfBzvd9BTg==
-Date: Mon, 27 Apr 2026 10:52:55 +0100
+	b=N0e1xCma1Yv/JFQEVHz6rAqbo4SzecdgubW5eAeuFBxPfZLFcSpHZifv3smJyUZL4
+	 wLX+78hNXVoT6Us5dXRipin+RcIYZEnW0Nc87BCRW7eJGKnV+3E46tVwFrj672qevA
+	 cBfkymnQOHyjd7cH5I+NxJHloek91K2y156YPIVQ9g07CgGrd/RBlJS5tVYNmVJBwH
+	 0LL49GtkSA7wTOsuTxWqeCgpW6da9FIc3lwpnrt7SSpHsDlUEvdjULzHYeX7safi59
+	 T4hMOD87cDj4NWOjQ0hA6Xxs5AmhqbAaDaxj3AvBdtKD7jE11dz222IpZr0ITdM/6I
+	 XD1R17oZGM81g==
+Date: Mon, 27 Apr 2026 10:54:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
- antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ad7625: fix type mismatch in clamp() macro
-Message-ID: <20260427105255.0dd96e51@jic23-huawei>
-In-Reply-To: <ae8Q0MtuZgMxCOM9@ashevche-desk.local>
-References: <20260425071615.20406-2-giorgitchankvetadze1997@gmail.com>
-	<ae8Q0MtuZgMxCOM9@ashevche-desk.local>
+To: Felix Gu <ustc.gu@gmail.com>
+Cc: Rosen Penev <rosenp@gmail.com>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, Kevin Hilman
+ <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, Martin
+ Blumenstingl <martin.blumenstingl@googlemail.com>,
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: meson-saradc: fix calibration buffer leak on
+ error
+Message-ID: <20260427105438.2a9541f6@jic23-huawei>
+In-Reply-To: <CAN4SLj1_45OG+1AdzCfNiV7T3VX9tpQTcX8krsTDruhtYLzEGw@mail.gmail.com>
+References: <20260426-meson_saradc-v1-1-6e96b2982c43@gmail.com>
+	<CAKxU2N9_Nmk_apUZLSCGssXpwxYOz9k99ggRcUM3EPGUzaVi7w@mail.gmail.com>
+	<20260426114118.7ad8b130@jic23-huawei>
+	<CAN4SLj1_45OG+1AdzCfNiV7T3VX9tpQTcX8krsTDruhtYLzEGw@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,38 +51,34 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 27 Apr 2026 10:31:28 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Sun, 26 Apr 2026 23:26:33 +0800
+Felix Gu <ustc.gu@gmail.com> wrote:
 
-> On Sat, Apr 25, 2026 at 11:16:16AM +0400, Giorgi Tchankvetadze wrote:
-> > clamp() expects compatible operand types. The period calculation uses
-> > nanosecond constants, while the local target variable was narrower than
-> > the upper bound expression.
-> > 
-> > Make target unsigned long and use unsigned long bounds, including
-> > NSEC_PER_USEC for the upper limit. This keeps the operands naturally
-> > aligned without adding casts.  
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> ...
-> 
-> > -	u32 target;
-> > +	unsigned long target;
-> >  	struct pwm_waveform clk_gate_wf = { }, cnv_wf = { };
-> >  	int ret;  
-> 
-> Preferred to keep the reversed xmas tree order (no need to resend, hopefully
-> Jonathan tweaks this whilst applying).
-> 
-> 	struct pwm_waveform clk_gate_wf = { }, cnv_wf = { };
-> 	unsigned long target;
-> 	int ret;
-> 
+> On Sun, Apr 26, 2026 at 6:41=E2=80=AFPM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >
+> > That is the minimal fix, so we should probably do that first
+> > even if we then circle back to consider if __free() magic is worth usin=
+g here.
+> >
+> > J =20
+>=20
+> Hi Jonathan,
+> You prefer a minimal fix here?
+Yes please.  Then if you like we can carry on discussion about whether
+__free() is a good change here as a follow up.
 
-Done and applied. Thanks.
+That can include the fact that it would have avoided this bug ever being
+introduced.
 
-J
+Thanks,
+
+Jonathan
+
+>=20
+> Best regards,
+> Felix
+
