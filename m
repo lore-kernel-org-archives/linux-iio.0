@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F405306D26;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F47B307494;
 	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777289411; cv=none; b=MEmeo7W095cD3b93T2fDcgMmXD+T7bz6MeIzDChp0lCuKxhPKbs6a84bcrLoQJR7mn2z2hlwQRgrk8wIwCO8BHRfI5qqyH37L3u7LLnhbr9+jvYD3oubo8LL6zVqhAjQ6ypqTvqo6zw9WuxwI8fgNctU4ZX7shHIrc0uTxfxjko=
+	t=1777289411; cv=none; b=M1vuzWNCyr4QAXZz77nuaGj0cYQGwUBUV3mhwsNLYAGf9jo2OYF1St79P3uqTvzGrddyqWNVE32goUanrVn+p90/6EbHsuccZ1RcFyY+A8qxIU14ssgbbUEvaBLAc9GhSDJ1vmHskk3aReyK0BuRdPPVW6UsqVM3eLBHSk80Mbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777289411; c=relaxed/simple;
-	bh=w0XGwELR3xciDLIHcBkj4Shl2CS+SlLGPOLI5Qn/iG4=;
+	bh=+kEuOTi6HFt1h6pe8+FJT8nRA6d52Eomg+JJe+vbkhk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=PuC6Wvvi+CYt5j5AKp/TIagXce2KLf1C+ASjDlaot8lwkjLs5tOkLp/eitlZ9tLszvWsFkwaiBtHiiETisyGvKcM2m3m3hBQsqKfdhrXhutjN9VquQ/rgxpuetNm+Xgoniosqzyo98H/pdHPeIEth5z2U6A9Yskf5QOLVVzr454=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fCPWyBY0; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=EqACrjw4Ldls0aVo+ij4Awkra5AmOtDT9LM+HKKqA1OvdANu/wCHKHjZWPOXlE+qZbPKtHKqnAlw6OX6Jxm7rWG1wzW8zuMKS/1YPzMJbzUIKxzJN0CNj98fk71A7hs3JaD/GuL7FH9wHdzYni2p0rGtAdOaaXdd3KB/on0bdLQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TIkBTQDW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fCPWyBY0"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0B5CAC2BCB6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TIkBTQDW"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1B07BC2BCB9;
 	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777289411;
-	bh=w0XGwELR3xciDLIHcBkj4Shl2CS+SlLGPOLI5Qn/iG4=;
+	bh=+kEuOTi6HFt1h6pe8+FJT8nRA6d52Eomg+JJe+vbkhk=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=fCPWyBY0v4WdwqFRA533/SfIz0YIb2U4z6w/xtKiwrlhN+kurbocdZhPKT05wVDFO
-	 3OwBQgiNAzUfJMeTCW0SWcLBNtKq1YkTiCu6Sr9Q1vn5GOgiFjfmigPldnx5mZiyye
-	 LsJlDZbu7Wjq64NdceaMu7hoM7FsqhAFbAqBPXWbIiqGEtvH/qDy9xsFiVBHdLsdr4
-	 6hpH8uhWHKQTXWwsEW/TDM2Zw/zlARy9uNeE+8ILVt8M8ypWN7szuHwltWxMGD/9E2
-	 ReqI28OO1PAyCtb8auZJBZX84VCpDZALf/HLx2z7cINW1Czb2lOJilRjbzDpnqBDFS
-	 tNPYkOtwB6bJg==
+	b=TIkBTQDWyOPti9CNaPpvV482GmZZoqSaPWyoFXVN2CPF7T9jid6PJwPQsvKMiePv0
+	 MK7oqR8rNzjRCZsHOAeQEDjHyURkkLvWVmWbA1PQUC7YxhVEhwp7NPou27gnUv98fV
+	 EAPv6kG0stdT2BL10aaTKzwlX4EFzL2/mAKVeyBvWpWLD43RbxVbymMO6VtipCQwbz
+	 Q5hq58P5hQfJwZeAdciHVggc6jk2XcxJxLH8/0YRpzdpy9ZUqHdgU7C2/0iVXrShso
+	 RkS3berQdxPOOxtrkKL+E857J9AIX9UYt6ZN24zut0GbZu4Q3NSey16DWcJ/o6DcCB
+	 4LxwypN7+UpOA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6F7FF8861;
-	Mon, 27 Apr 2026 11:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09860FF8862;
+	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 27 Apr 2026 12:30:08 +0100
-Subject: [PATCH v2 01/11] iio: dac: ad5686: fix ref bit initialization for
- single-channel parts
+Date: Mon, 27 Apr 2026 12:30:09 +0100
+Subject: [PATCH v2 02/11] iio: dac: ad5686: fix input raw value check
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-ad5686-fixes-v2-1-188e05199368@analog.com>
+Message-Id: <20260427-ad5686-fixes-v2-2-188e05199368@analog.com>
 References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
 In-Reply-To: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -55,11 +54,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=1787;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=1003;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=xzPfTOvqELCSXjM2q6f7n3lj/43Dt23++PuhGryImaI=;
- b=/VSNs5CjaTaSZrcComveElieZt3qqqjmLcEMRGuWauxKdCNfqeu4zlQjmTuDUrNtn3TmiU1Pw
- FuQWajvkCCoCMLfD5XvgQmc+gMCEOe6ejh3eUmiR/B6dVR+d2eHM/b2
+ bh=e/fvywK2NRINysG0ft35kgBAMfBvOW51G7Ogdkjn8kM=;
+ b=enBRO36oR0s2lj0Zmbklbhkh4k1yLnafIVWlpe+YoRjC6j6seW/C6zMNGXDIzdKapAPgU3BEV
+ 3lAXmU10de7BUErzRCg6ZvGAymaanuuzCA0ZsoaiIk/MqSlaEiAmGVt
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,57 +68,30 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-The reference bit position was ignored when writing the register at the
-probe() function (!!val was used). When such bit is 1, internal voltage
-reference is disabled so that an external one can be used. For
-multi-channel devices, bit 0 of the Internal Reference Setup command
-behaves the same way, so AD5686_REF_BIT_MSK is created. The issue exists
-since support for single-channel devices were first introduced.
+Fix range check for input raw value, which is off by one, i.e., for a
+10-bit DAC the max valid value is 1023, but 1 << 10 equals 1024, which
+passes the previous check, allowing an out-of-range write. The issue
+exists since the ad5686 driver was first introduced.
 
-Fixes: be1b24d24541 ("iio:dac:ad5686: Add AD5691R/AD5692R/AD5693/AD5693R support")
+Fixes: c2f37c8dcadc ("iio: dac: New driver for AD5686R, AD5685R, AD5684R Digital to analog converters")
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 6 +++---
- drivers/iio/dac/ad5686.h | 1 +
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/iio/dac/ad5686.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 9a384c50929b..3b48ddf8dd3c 100644
+index 3b48ddf8dd3c..24f928ea2b91 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -511,7 +511,7 @@ int ad5686_probe(struct device *dev,
- 		break;
- 	case AD5686_REGMAP:
- 		cmd = AD5686_CMD_INTERNAL_REFER_SETUP;
--		ref_bit_msk = 0;
-+		ref_bit_msk = AD5686_REF_BIT_MSK;
- 		break;
- 	case AD5693_REGMAP:
- 		cmd = AD5686_CMD_CONTROL_REG;
-@@ -522,9 +522,9 @@ int ad5686_probe(struct device *dev,
- 		return -EINVAL;
- 	}
+@@ -154,7 +154,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
  
--	val = (has_external_vref | ref_bit_msk);
-+	val = (has_external_vref) ? ref_bit_msk : 0;
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		if (val > (1 << chan->scan_type.realbits) || val < 0)
++		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
  
--	ret = st->write(st, cmd, 0, !!val);
-+	ret = st->write(st, cmd, 0, val);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index e7d36bae3e59..36e16c5c4581 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -46,6 +46,7 @@
- 
- #define AD5310_REF_BIT_MSK			BIT(8)
- #define AD5683_REF_BIT_MSK			BIT(12)
-+#define AD5686_REF_BIT_MSK			BIT(0)
- #define AD5693_REF_BIT_MSK			BIT(12)
- 
- /**
+ 		mutex_lock(&st->lock);
 
 -- 
 2.43.0
