@@ -1,157 +1,320 @@
-Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE0182F1FEF
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 22:04:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2618B2D8DDB
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 22:36:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.175
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777327480; cv=pass; b=NeJe8qWqMAdLmr7NHPxdI0B3Y05hNxNntV6L8+f5BJC1sedoQRyG59RyzfpLcvbHfVDL/qj10mbdJYKHr/aW4cTyhhWxCNK7T7USqol5Sdq0PRSSE9y6e2CPVY3YCrWKkG93841CxFY8i27Q7ZgLixJ32kPYgUfLp2mCYClsBcs=
+	t=1777329411; cv=pass; b=c+gmJRtSqzLhwD/mX12eELyvxLOVztCXJRQoovF3BiANtKdLOaStGiouWf4CfrKl6zb9VSPndXOcXgdPvR5yQ2UWHB+B/1e3ePPGcA9atajA18HjDLA+srgRhq2A0l1NODPFCIEBLvc3ekcNbQ66BnQP74l7pbg2wLu3jgEFLUM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777327480; c=relaxed/simple;
-	bh=7DOOjiFf+sYmSm5JWfgliRMe+Pi7ySnZfjM359AsiwI=;
+	s=arc-20240116; t=1777329411; c=relaxed/simple;
+	bh=KU+H8n+k3fh/vRzWZNdtPrnyyVuczsKwihEjQNWxkp4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=W3vVw4BdbLBIKUJjg3xq+K3BiNK0Eq467mDKMVjSTRnxiP6PqI8yZ67u5ZljdkzExHfiAY7lv7BBikp/teF5m9bcdODUyTBfQLJqPEAmHuebYnNzdd+ShKvYCHMKVUm1EgJkQ3uWZUWC4pnU54jwF0Qa0QfouMRYuykZ2MENKd0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=txZ3WGaH; arc=pass smtp.client-ip=74.125.82.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	 To:Cc:Content-Type; b=P3H37HUVAz9DY5HT1xaITe8Z93AKmWXHi/eRraglK6Ge+pbjXM/hpFlvYoe2QAzp9fRhkufOMoW9oyl6dTKmyuvFu96kQarnvHoiRzHGCrbLhGRu2caP18LV5UjOSD/Tv+/LSfp1bXTjMDe4okI4bC3RCLdzjB9sWaAJKQxbTNo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lHajpzPL; arc=pass smtp.client-ip=209.85.208.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="txZ3WGaH"
-Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-2d891442388so535143eec.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 15:04:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777327476; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lHajpzPL"
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-38e7b0903cdso96322911fa.3
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 15:36:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777329407; cv=none;
         d=google.com; s=arc-20240605;
-        b=A2IMC5+ZEn9AOEe1oXoVeB5TZzkF90gMeOfkUA3rbbf10VIx6ekk0WjMX3GFbJkJX+
-         sOZTGC9AYxIOrkmh3ShY9cI7PTCI/2tKoj0pKWiRTr8k0RnZ69WGgco1qVjP0pniGhGx
-         2IYDr8cDLJcIetOFXxjD8ZHeFLCUxAaQII2cNj0OM/lGBN3ceSEJonK2E/9gt86GtZci
-         FNuXyt0UvfL/YWhkg9UUIb4ikLxnyA9intP5K1uVUVFAC7Xl620jz6NfJlUOdlCCkpLd
-         PNPlvNpc9gxHtqfwN7uId69jUNX5WnbpWemp0eiIJONXW3Mt3SSG6A8bhVq6u5G0Ok2h
-         1yyQ==
+        b=SXfR+1X6cC9vTpmNIgcG0hkvgQxZnOSIOt7vE93k7kpDc2ZBejdUxmIo+dnlIzJT4c
+         pcsctaRvzkem5tKy8+dnzxrl4Kcx85W+h57JZXaamvejuUZhaJM5/uUJlsuFTcvPjqYW
+         gxtOKHFdOZjAK8TTnWN7K/zE2Rwa4JBDjPZg0QfsXZNYZbn4qj4gnMMnsMwkydvJRp8F
+         N8sYB0qTlqq8edCX9RqbVQxTFVHuCQxOoQq/N8insYChRj/hhfInuE0h6CBS3e7ZxDlE
+         iSv/e0VqmCn2J4XxcSDs6VJxyc2oZeGBeDP/8ifU0wydmMyp58y3qPy1Jh26hxvzpK3v
+         Rf8g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=XzIxXRAIzxAYYMbmQLFNASdoiGDN2I0JtBVDZH0nO+E=;
-        fh=VD6+8Byl3tQdpSyi2PCFWiraqxikM4SGKQmu4doyu5I=;
-        b=ZH974FcUiUZSrt8AFZu7ye28vLPDmxsG0LfnPC+ttFT7PvyqahslQ2yFLBFg61HD2f
-         k2fgYkeNRd2bbWxZbD+IluQsAoL+c9ErvYafczLil31njKJ4NVJjMdPOPLj4wY+6KWKi
-         VYefRtdZ2OxNsgEQnVZ3TtZ/jKS09k2N988VXlJAMgXNqVOl1qN1IXj63Ve7eFMfU7bL
-         GiUMMHpZtSUoN7ru1lUMn/RDNrN3brkfPUClIxM8EczpagSGrWxqODzKH8/ehxbJF6NZ
-         9QItHsAVh/VeCzzHPEHrpRSqo+7PviOuSdIW7K5hgfwTi5Mt24+vr/Rle/xl3CGnZGeJ
-         N+6g==;
+        bh=WO9kHGE+hekdYqyvMyL0grB4aNKxPDxwjf+xYVdptx8=;
+        fh=b+/ZHWus9ck9cHpB+55iFc3u7IM6YH1L8bhkrhtEB94=;
+        b=T+CHVevLTWbuCu0jTsSVa723wiZQgzoQw7lSxxgtiNONrojUtvmUyGPgEl1p/wH612
+         aS8NeOQ9kN/er7aDXqGx4hUx+vPHySnDXGUIXSFVZKWhOJ/SamzhbJSMpBjL0+0XmM/A
+         ZeXm5xmmb2cF45j38eru5Bkd2ipK924FOiZcI5qVskkafnN3/SSPCATUGcEu/YuMnlFS
+         M8EHc3tb12OF0PpLMZLirjWk0xLyKkZpc6O5XkBiwlk+qILVcfm3i7uq12WtdscFJbSz
+         0SKEwW7LKWFwp9B3W5RVYkj70ULh+HSuJPhdrf3IOQii64Mx9kp5ikmrSt9kCrfFINRD
+         755Q==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1777327476; x=1777932276; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777329407; x=1777934207; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=XzIxXRAIzxAYYMbmQLFNASdoiGDN2I0JtBVDZH0nO+E=;
-        b=txZ3WGaHcq6q82ssEfrnmz78t7VNIII2z4hITfL/62igpbnIalB5wQPbfeBFIG6oW7
-         UfoihHHk6EOU7dQhMa4Oitvzfg0nmAIJjJ9VQEKlZmIIfbKJIl2YG7fGmuO71I6Qprfk
-         Sp7L1vCOcD0RAwvDb7ZfrrfGaQXeYZ31y/XPYkG3h35VbIvzRuttN7LOba1AYqp0wik8
-         vKAHzpSjO190bbNF2fzsJhclgG66DmZwNyos1G8pKSxKxk0Uz+WGCi16PnAfrYhd4WS0
-         WTzVA6ScbmtBAClmxeDFE9bv54tK2ml3rsJxSjcZ1WeG54nlMdSHiUxYtRTJoIuEXGou
-         YFAw==
+        bh=WO9kHGE+hekdYqyvMyL0grB4aNKxPDxwjf+xYVdptx8=;
+        b=lHajpzPLVrDmpD0n8RzykwPiHrz/kTN7bTK7j0FHXzR9g/sCzp1Vy9qyoayW+8aoyM
+         uvINEIThYBog5GcC3ESMrbdiXyd9IVNhnhYMPPoLmEr0CH6zo7xlGilc2kn8zktbjo2s
+         W78MTHw8YhXomqC3V/IKNAp33hOzJXM3/mW7zENuPZdkIQNnvsm2eEoOyTlBQuIFn11W
+         Bb3WSyBiUEbR/P33MhNqCrbNn2PUS4Uz9DXo3eEpKj506XjLDfdOMEYHh09LiECmM5ag
+         wOEehoggCK6ervQU8YlGnp12Qh1E8guZRNWIiK67mdaBNB2tuzmaRd1Z1OWMVgTlDoJl
+         VYGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777327476; x=1777932276;
+        d=1e100.net; s=20251104; t=1777329407; x=1777934207;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=XzIxXRAIzxAYYMbmQLFNASdoiGDN2I0JtBVDZH0nO+E=;
-        b=j/Ic1oU251rVbA5+Y5tZ60fKdwbuGKtjv8kaVm7sua1bpR53SYdd+5LXXSDUlBrPOZ
-         GLPXJ2Wq2Hjk17lCB2e7Gde5GbcaNUdt+bA83AwU2N1tuHC3bFuRlfCEdmOZEla+TY86
-         ijeZdPppnuo12NiAxJM6k/2M/gwphFxD1Wi3Zs0DzTmri4QIhtHSsGBczIASGQPARbcQ
-         ZX9OEPYAXWBVWh+8OZOpWHD3JzHVNkWGUXu2IrrqL5XmFHANSk1p1kUyGNqWdV8iVNWE
-         UCYw5Vtl5l4G7GmD/VrFzabdxIecjlNGDexUuAexxw/q0u5IbB2IjBwBbtp0O6p19VJT
-         m5JQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+mhv3Q0KneBQjNxgFvlnTPqeKqmoINiF+lE9zOv/mVyVFEqH83/fFep1Jbin+ezPgRLQ3uFmWpF1Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyJCvpmlbua7JrZCHuQ6RqeQKCWZgp22He94fhTMsxNrAyTz0Nk
-	hCkCNHGI5JvWu+Sr9jIh/KPZTgVyMIU3z5HW/OG3mJUse5g1K1OOx35GgoS/MSiScJwLvgYOA4Z
-	P/de4+wx7OmjM/3ZS/Eoxj2xpBYoCJGQoy42+clNJZQ==
-X-Gm-Gg: AeBDietTpYMtyKlx2feUWsf6fHtTVo9e+om2kGDJ0y9s3anWl0oOhIG+z9LjuJgX7ML
-	MijC7hMBhT8DlbUOcq5QwuUSR8OiC6rXYuVsoiLll0+L4YqiooHQsd/JVKYTtTt2p7Gi+KIj4ZK
-	Jjyxr80DuBGOsMv84Dk3Y5FzOKGUmZO88BA0O8noVWgOK8RKa8oXnEbENpYV7FJ+j/79jt/aE6L
-	fIthRVjhJyt16RwYjia4SRHYqqOod1FZNA8AvFENK6GQ/PU8S4KGQ7gm/BExgSK4IaEQ/fFcO/S
-	XGWSovROJ2nrnkqH4BbHlgtXh4f19JFxm3UHt4rhF5kYJmnPQQdutggRUxP3
-X-Received: by 2002:a05:7301:578c:b0:2c5:b972:b436 with SMTP id
- 5a478bee46e88-2ed0a0ce7a8mr376020eec.23.1777327475790; Mon, 27 Apr 2026
- 15:04:35 -0700 (PDT)
+        bh=WO9kHGE+hekdYqyvMyL0grB4aNKxPDxwjf+xYVdptx8=;
+        b=C4vBRPloERzJCfNzr5EVnBHgeWUy80C+//Ok6hsV3qKVZXH4DSmSuWsSDTX+uhBOnp
+         1dP2tQfoFNRM913a8LpiA+bPo7MHLVzviely7wGKx7Iht+WKeaAvN4uyStYA4QqLTUE4
+         xNGqG9sHtQPVGkZzIdceBJfLdHRU7QBIOZUT/y6cD2w7OW8cCeD+7/Wy29SlNgk3gx1l
+         ZgWj4H8VQn3jnKjNTX0VroMprI2uJxCCnDcWeSqBv3mSIQF5+Dt73ebakRg9p1VmIMMo
+         vk+hJu61EIps/JvhjVZeKQ5Z3BkMyTPC6o1ZsCUVIo1i0G/Ohi3nCJneov6BqxBtAmha
+         5Uaw==
+X-Forwarded-Encrypted: i=1; AFNElJ9Mh7s856sSAZSE/I/eFsM3yj7CNWRUuFvKX8wRWpyAUTlRimNsWK9LmFAojxv2r/noCuteZvHamn4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwyLTKZg+bJoPI5nV2QNBIooB/SmYyDdKH5IFZDrbbmrUBquM02
+	SsMituNCuobqOx910i+wDpLnBvVzSfvlC10AgD4OyXcjF60BmmHyTtahwzZn63PxZuhTEnt0fVO
+	gf00qHhUNJv2JQmAqCPuZ9mFRoSF0EC4=
+X-Gm-Gg: AeBDieuW2yHfpEwk225Tqemw/Gay4nZq4tbox3x/HG7Gr6iGS3A1eKHWPuZZojh0ftV
+	+BM4YuySCftgou7mENS/M8p29ovh71fiPX2wvsl+YXzZCm02/78LB3zj4Mf+IHJXoPU5JDbxO4e
+	FagUU18bGChpS8q1JD7IJ3CuwxWZGIOL8kpUwUn7SZaDQuYKVZNw8Uwo1kD/zx5f2aKUJMgBswj
+	orLySg1iw4OajA1xT6GVj5km9elMwvlYNnlh9e9ENCaN6fa0FFdIygAfzfg6GDi9Uf+IDw6uwAJ
+	DQnHcAkx3Aj4HuTc8P1aWe4rb661TQoNIvUoLy16wKx+KQqhVH7Gr1PzakUXq6D3Gyjtdn8EVq0
+	z+qw=
+X-Received: by 2002:a2e:a994:0:b0:38e:9277:6990 with SMTP id
+ 38308e7fff4ca-39241005c6dmr1031461fa.30.1777329406920; Mon, 27 Apr 2026
+ 15:36:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260423223958.100487-1-guilhermeabreu200105@usp.br>
- <aes2tzgfXbuD6ccQ@ashevche-desk.local> <20260424113901.0508dbc2@jic23-huawei>
-In-Reply-To: <20260424113901.0508dbc2@jic23-huawei>
-From: Guilherme Dias <guilhermeabreu200105@usp.br>
-Date: Mon, 27 Apr 2026 19:04:23 -0300
-X-Gm-Features: AVHnY4L3rWKdnACK4Wm2aghKSMgx17kA3HSiKn8OHX4ahxs1pdcbB-6h4QXeFCQ
-Message-ID: <CAH1eeHs5M4rDhdtmyWadFFsx3qK9=xST67h1zwb0-CwDV=aLrQ@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: gyro: adxrs290: Use guard(mutex) in lieu of
- manual lock+unlock
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, nish.malpani25@gmail.com, lars@metafoo.de, 
-	Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, =?UTF-8?Q?Jo=C3=A3o_Paulo_Menezes_Linaris?= <jplinaris@usp.br>, 
-	linux-iio@vger.kernel.org
+References: <20260427100950.33936-1-piyushpatle228@gmail.com>
+ <20260427100950.33936-2-piyushpatle228@gmail.com> <93a7ca0d-46a1-4b14-8f49-348018c4158b@baylibre.com>
+In-Reply-To: <93a7ca0d-46a1-4b14-8f49-348018c4158b@baylibre.com>
+From: Piyush Patle <piyushpatle228@gmail.com>
+Date: Tue, 28 Apr 2026 04:06:09 +0530
+X-Gm-Features: AVHnY4IsI2yvvegTbDUOQtSlGuLVE1gCectp15dfz7NDja_TYvYprrvJaurSLjY
+Message-ID: <CAMB+xkbh0V-qnxq94r6aefJscVwqh-8XfnKUR5mFPTsyz023JQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/7] dt-bindings: iio: adc: avia-hx711: add avia,hx710b compatible
+To: David Lechner <dlechner@baylibre.com>
+Cc: ak@it-klinger.de, jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org, 
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Em sex., 24 de abr. de 2026 =C3=A0s 07:39, Jonathan Cameron
-<jic23@kernel.org> escreveu:
+On Mon, Apr 27, 2026 at 8:59=E2=80=AFPM David Lechner <dlechner@baylibre.co=
+m> wrote:
 >
-> On Fri, 24 Apr 2026 12:24:07 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> On 4/27/26 5:09 AM, Piyush Patle wrote:
+> > The HX710B shares the same two-wire interface as the HX711 but differs
+> > in its channel and gain model: gain is fixed at 128 and the number of
+> > trailing PD_SCK pulses selects the input channel rather than the gain.
+> >
+> > Add avia,hx710b to the compatible enum. Document the chip differences
+> > in the description and add chip-specific supply properties (dvdd-supply=
+,
+> > vsup-supply, vref-supply) and a rate-gpios property for the HX711 RATE
+> > pin. Add allOf constraints that forbid HX711-only properties on HX710B
+> > nodes and vice versa. Clarify the clock-frequency description to
+> > reflect its actual purpose: controlling the SCK bit-bang timing.
 >
-> > On Thu, Apr 23, 2026 at 07:37:51PM -0300, Guilherme Dias wrote:
-> > > Use guard(mutex) to automatically release the lock on scope exit,
-> > > simplifying the error handling path and removing the need for
-> > > explicit unlock and goto-based cleanup.
-...
-> > >     /* exercise a bulk data capture starting from reg DATAX0... */
-> > >     ret =3D spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.=
-channels,
-> > >                               sizeof(st->buffer.channels));
-> > > -   if (ret < 0)
-> > > -           goto out_unlock_notify;
-> > > -
-> > > -   iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
-> > > +   if (ret >=3D 0)
-> No to this as well. Keep the error out of line.  Which makes the use
-> of guard() here tricky.  You could do a do { guard(); } while(0) loop so =
-that
-> you can use break with out it being odd looking.
+> Krzysztof gave a Reviewed-by on the last revision [1], so you need to
+> include that here or explain why you didn't pick it up. If you just make
+> a trivial change, you can still pick it up. In this case though, I think
+> that enough changes were made that it is worth having a DT maintainer hav=
+e
+> another look.
 >
-> (I don't like breaks out of scoped_guard() because it's non obvious scope=
-d
-> guard is actually a loop.
+> https://lore.kernel.org/linux-iio/20260423-famous-tody-of-opposition-73c8=
+af@quoll/
+>
 
-Thanks for the suggestion =E2=80=94 just to confirm I understood correctly,=
- do
-you mean something like this?
+I did not carry the Reviewed-by because the binding changed majorly
+in v4 (vref-supply added, dvdd-supply removed from the HX710B forbidden
+list, new allOf block forbidding vref-supply on HX711).
+I should have mentioned that in the cover letter; I=E2=80=99ll do that in v=
+5.
 
-...
- do {
+> >
+> > Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
+> > ---
+> > Changes in v4:
+> > - Add vref-supply for the HX710B VREF reference voltage pin.
+> > - Remove dvdd-supply from the HX710B forbidden properties list; the
+> >   HX710B has a DVDD supply and the DVDD-AVDD channel relies on it.
+> > - Add allOf block forbidding vref-supply on HX711 nodes.
+> > - Add an HX710B example showing vref-supply.
+> > - Update description: avoid specific channel-number references in
+> >   hardware text.
+> >
+> > Changes in v3:
+> > - Drop the vref-supply mention from avdd-supply; no such binding
+> >   property exists.
+> > - Drop the clock-frequency sentence that repeated the schema default.
+> > - Restore the example node name to weight.
+> > - Remove the separate HX710B example.
+> >
+> > Changes in v2:
+> > - Remove driver implementation details from the description and describ=
+e
+> >   hardware behaviour only.
+> > - Drop unrelated punctuation cleanup.
+> > - Add dvdd-supply and vsup-supply optional properties for HX711.
+> > - Add rate-gpios optional property for the HX711 RATE pin and forbid it
+> >   on HX710B.
+> > - Add the allOf if/then block forbidding HX711-only properties on
+> >   HX710B nodes.
+> > - Clarify clock-frequency as SCK bit-bang timing, not a crystal or
+> >   external clock input.
+> > - Sort compatible enum alphabetically.
+> > - Remove redundant example comments.
+> > - Update the HX711 example to exercise rate-gpios.
+> > ---
+> >  .../bindings/iio/adc/avia-hx711.yaml          | 82 +++++++++++++++----
+> >  1 file changed, 67 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml =
+b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+> > index 9c57eb13f892..fddd296bfaca 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+> > @@ -4,49 +4,91 @@
+> >  $id: http://devicetree.org/schemas/iio/adc/avia-hx711.yaml#
+> >  $schema: http://devicetree.org/meta-schemas/core.yaml#
+> >
+> > -title: AVIA HX711 ADC chip for weight cells
+> > +title: AVIA HX711 and HX710B ADCs
+> >
+> >  maintainers:
+> >    - Andreas Klinger <ak@it-klinger.de>
+> >
+> >  description: |
+> > -  Bit-banging driver using two GPIOs:
+> > -  - sck-gpio gives a clock to the sensor with 24 cycles for data retri=
+eval
+> > -    and up to 3 cycles for selection of the input channel and gain for=
+ the
+> > -    next measurement
+> > -  - dout-gpio is the sensor data the sensor responds to the clock
+> > +  The HX711 is a 24-bit ADC with selectable gain (32/64/128) and two
+> > +  differential input channels. Channel A supports gain 64 and 128;
+> > +  channel B supports gain 32.
+> >
+> > -  Specifications about the driver can be found at:
+> > -  http://www.aviaic.com/ENProducts.aspx
+> > +  The HX710B is a 24-bit ADC with fixed gain of 128. One input measure=
+s
+> > +  the differential voltage between the two input pins; a second measur=
+es
+> > +  the DVDD-AVDD supply voltage difference for battery level detection.
+> >
+> >  properties:
+> >    compatible:
+> >      enum:
+> > +      - avia,hx710b
+> >        - avia,hx711
+> >
+> >    sck-gpios:
+> >      description:
+> > -      Definition of the GPIO for the clock (output). In the datasheet =
+it is
+> > -      named PD_SCK
+> > +      GPIO for the clock output (PD_SCK in the datasheet).
+> >      maxItems: 1
+> >
+> >    dout-gpios:
+> >      description:
+> > -      Definition of the GPIO for the data-out sent by the sensor in
+> > -      response to the clock (input).
+> > -      See Documentation/devicetree/bindings/gpio/gpio.txt for informat=
+ion
+> > -      on how to specify a consumer gpio.
+> > +      GPIO for the data output from the sensor (DOUT in the datasheet)=
+.
+> >      maxItems: 1
+> >
+> >    avdd-supply:
+> >      description:
+> > -      Definition of the regulator used as analog supply
+> > +      Analog supply voltage (AVDD). Also serves as the voltage referen=
+ce on
+> > +      both chips.
+> > +
+> > +  dvdd-supply:
+> > +    description:
+> > +      Digital supply voltage (DVDD). For the HX710B, DVDD must be grea=
+ter
+> > +      than or equal to AVDD. When DVDD is a battery rail and AVDD is a
+> > +      regulated supply, one channel monitors the DVDD-AVDD difference =
+for
+> > +      battery level detection.
+> > +
+> > +  vsup-supply:
+> > +    description:
+> > +      Supply voltage for the on-chip regulator (VSUP). HX711 only.
+> > +
+> > +  vref-supply:
+> > +    description:
+> > +      Reference voltage input (VREF). HX710B only. When omitted, the d=
+river
+> > +      assumes VREF is tied to AVDD on the board.
+> > +
+> > +  rate-gpios:
+> > +    description:
+> > +      GPIO connected to the RATE pin (HX711 only). When driven low the
+> > +      output data rate is 10 SPS; when driven high it is 80 SPS. If
+> > +      omitted the RATE pin state is determined by the board wiring.
+> > +    maxItems: 1
+> >
+> >    clock-frequency:
+> > +    description:
+> > +      Controls the SCK bit-bang timing. The value is used to derive th=
+e
+> > +      delay between SCK edges; keep the SCK high time below 60 us to
+> > +      avoid triggering chip power-down mode.
+> >      minimum: 20000
+> >      maximum: 2500000
+> >      default: 400000
+> >
+> > +allOf:
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          const: avia,hx710b
+> > +    then:
+> > +      properties:
+> > +        vsup-supply: false
+> > +        rate-gpios: false
+> > +
+> > +  - if:
+>
+> Could just be else:
+>
+> Probably OK either way though.
+>
+Will switch the second allOf block to `else:` in v5.
 
- guard(mutex)(&st->lock);
-
- /* exercise a bulk data capture starting from reg DATAX0... */
- ret =3D spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
-                          sizeof(st->buffer.channels));
- if (ret < 0)
-            break;
-
- iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
-                         pf->timestamp);
- } while (0);
-
- iio_trigger_notify_done(indio_dev->trig);
- return IRQ_HANDLED;
-}
-
-Keeping the error out of line again.
-
---
-Kind regards,
-Guilherme Dias
+> > +      properties:
+> > +        compatible:
+> > +          const: avia,hx711
+> > +    then:
+> > +      properties:
+> > +        vref-supply: false
+> > +
+> >  required:
+> >    - compatible
+> >    - sck-gpios
+> > @@ -62,6 +104,16 @@ examples:
+> >          compatible =3D "avia,hx711";
+> >          sck-gpios =3D <&gpio3 10 GPIO_ACTIVE_HIGH>;
+> >          dout-gpios =3D <&gpio0 7 GPIO_ACTIVE_HIGH>;
+> > +        rate-gpios =3D <&gpio0 9 GPIO_ACTIVE_HIGH>;
+> >          avdd-supply =3D <&avdd>;
+> >          clock-frequency =3D <100000>;
+> >      };
+> > +  - |
+> > +    #include <dt-bindings/gpio/gpio.h>
+> > +    weight {
+> > +        compatible =3D "avia,hx710b";
+> > +        sck-gpios =3D <&gpio3 10 GPIO_ACTIVE_HIGH>;
+> > +        dout-gpios =3D <&gpio0 7 GPIO_ACTIVE_HIGH>;
+> > +        avdd-supply =3D <&avdd>;
+> > +        vref-supply =3D <&vref>;
+> > +    };
+>
