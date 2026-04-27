@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40BC72F25F4;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6A4306B37;
 	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777289411; cv=none; b=EtOB25/OKvHZWnULrqoa00d5b58/M37CUYXsxzRG0Wroa0aIHZ060/BAWj2HTMKbtxsqufSEUNekgQGC55MmR8NQlKS0C8bUU91/vgfnQ6aaIVkr/zsqXppI+Ev3zCMWg9nicpw9PnJ/0mRo4hf387v4Xqlsq5XHEnQopMNH+0o=
+	t=1777289411; cv=none; b=c/JtCCx4udoFfXP6cpp0Npl5o72tfRvwMmsmbtjzYIsC6FIkVP5SArTdJYEtSYkgQzrJoipR0tNpawfeBpnRlJBkFiEQYLRkHfvfClBSFzYcpm0idAIiC/36Ly/45xlXNpHfrvOoo52TurEUqjs1pRWbfYuGicUsXgHbFFvKcbQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777289411; c=relaxed/simple;
-	bh=ln2xDqNwzgp1IlNe5nNZRvuJhnMixrpbcxGzvS2tsWQ=;
+	bh=to1DlBvvsDfODvKTGcPUX3C16OWZxp1KCwh1nPJ9t1I=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=fCvgNvUr0zIKrWTp+Nr2Fekrc5tyLoP0UGUXDug30eNaSfveLbzqnkrWevabnk21Ya+CdQmqzJFzcsmxDyCw2HXi5s+ziPe21lOfZ8ptwEOmW2kczAyS5wpTWAhYKejHzRAiquZcSCtUWmRRCs4nIXCRbHilVNjkRgnYlfIrvxs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MxfaYK1l; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=FmoXb+z0p/6S1yEwquj3yP/4AtCHLuS/JEcOw9lqnCrBvyC15bD/zfrnPWD2Sim5MwzGmi1vCGTVv+xu6rS1e8cxGZHEVRSJMyT7Q9Ma80AoKdvUP+hbhqwjcM0YUCEZJqQBnxB7D+sWiedym5h67nDXfUgCYqLnwVgsGtDKE0U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fsUgDUPs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MxfaYK1l"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 21AABC2BCC4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fsUgDUPs"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3E6BCC2BCF6;
 	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777289411;
-	bh=ln2xDqNwzgp1IlNe5nNZRvuJhnMixrpbcxGzvS2tsWQ=;
+	bh=to1DlBvvsDfODvKTGcPUX3C16OWZxp1KCwh1nPJ9t1I=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=MxfaYK1lTzn9i2SqANMj2GgtYmmocnEmvr2lGQhobFOQSEvTizvkZ06ThMuza4wc2
-	 xhbIl2Y10sVxgCabTsEZEWFpWFeOo+RA4gvIEszZHYrmjwxwIoArr7tQUmt7SLfO+l
-	 P/ei9FojJZ3KSdjYLzcUm2t0C7RCo14XUmo01A5wrQMvD5devbtEqUQjHJ2Zxo+yXZ
-	 pQXutLxoZmDvXeHF0+tq1bDyJCM1TXfQuN/EBxpJVku1axKzrFnOvrR2O6wBCSPwbF
-	 2BFtJeFdz9NTV+3hm2eaelPJrkWe0WyYIMf1dUuqAQagLIVGvdcHdxNApzIcyrdlIL
-	 fhrF7Ca/WIVTg==
+	b=fsUgDUPsqps4laWhqwcL9g5rPcADhgtivBPDAHh80SbxgVFSW59Jta6adg7ooQ9rB
+	 MJ4n10+4CsMZfHBYjNpNBaXzNR7tMxm7QoZm/7hXWJilRGU0oyClhP9/UTd0Lh2gg6
+	 vjztD7bhPSR6RdLC3kbrw4EwAGlo8rXi0zNaaBflP1t34M6S3tLchJt8HUHqKyoe+X
+	 Mcj5WEesnx+b5sQXaS0Bc26041a1ao05W12YitTORURekH4edjDtvGnakHSF0WkzO2
+	 5FhCzDFzmHLgRqEJ7t55Tf5TKgOdDJ2UJm3Bh0k1FuYzpE4smqXsJcmI+N312GdOaX
+	 igL317ZiLPSoQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18610FF885E;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 359E5FF8860;
 	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 27 Apr 2026 12:30:10 +0100
-Subject: [PATCH v2 03/11] iio: dac: ad5686: acquire lock when doing
- powerdown control
+Date: Mon, 27 Apr 2026 12:30:12 +0100
+Subject: [PATCH v2 05/11] iio: dac: ad5686: refactor include headers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-ad5686-fixes-v2-3-188e05199368@analog.com>
+Message-Id: <20260427-ad5686-fixes-v2-5-188e05199368@analog.com>
 References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
 In-Reply-To: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -55,11 +54,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=1335;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=2747;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=3ewgFdIgEvpo865lUj9Vjv8qanWqzVP1oPspiMSNexs=;
- b=aUnu6PXrDBJdtmqke/3iJAh6vJ7wQb1/WmPh5SwEGqVDFHa+tieebNadQlWURqhRY8axvbBnP
- mlL8KFOxLwlCLMBXIr7dOlYtt+hRBCLst3I4ekyy4cHTJ7GDRtris3f
+ bh=23N6CMy0ZGzlml35g5mJ5f2Y96WQ2ZUtKNwc+4DLMxE=;
+ b=sug1Sc68YYrTulNLjgKeXlu7sVqCuS6Tok+wbtGvrByxSqrYGutuamKFKMPb12Sb0JxUIwO09
+ vGXXNenO1MyA8hUAVgu8IDgv3l/158DRX7GX22GqSUXejdiXiifZndh
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,41 +68,106 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Protect write access of pwr_down_mode and pwr_down_mask fields with
-existing mutex lock. Each channel exposes their own attributes for
-controlling powerdown modes and powerdown state. This fixes potential race
-conditions as those functions perform non-atomic read-modify-write
-operations to those pwr_down_* fields. This issue exists since the ad5686
-driver was first introduced.
+Apply IWYU principle, replacing unused/generic headers for
+specific/missing headers. The resulting include directive lists are sorted
+accordingly.
 
-Fixes: c2f37c8dcadc ("iio: dac: New driver for AD5686R, AD5685R, AD5684R Digital to analog converters")
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/dac/ad5686-spi.c |  9 +++++++--
+ drivers/iio/dac/ad5686.c     | 11 ++++-------
+ drivers/iio/dac/ad5686.h     |  5 ++---
+ drivers/iio/dac/ad5696-i2c.c | 10 +++++++---
+ 4 files changed, 20 insertions(+), 15 deletions(-)
 
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index df8619e0c092..695125238633 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -8,11 +8,16 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
+ 
+-#include "ad5686.h"
+-
++#include <linux/array_size.h>
++#include <linux/err.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/spi/spi.h>
+ 
++#include <asm/byteorder.h>
++
++#include "ad5686.h"
++
+ static int ad5686_spi_write(struct ad5686_state *st,
+ 			    u8 cmd, u8 addr, u16 val)
+ {
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 24f928ea2b91..aa17ed6aee43 100644
+index 04a5568f2cbe..2c1692097c0c 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -39,6 +39,8 @@ static int ad5686_set_powerdown_mode(struct iio_dev *indio_dev,
+@@ -5,17 +5,14 @@
+  * Copyright 2011 Analog Devices Inc.
+  */
+ 
+-#include <linux/interrupt.h>
+-#include <linux/fs.h>
+-#include <linux/device.h>
++#include <linux/array_size.h>
++#include <linux/err.h>
++#include <linux/export.h>
+ #include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/sysfs.h>
+ 
+ #include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+ 
+ #include "ad5686.h"
+ 
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index 36e16c5c4581..d08160e7fad9 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -8,10 +8,9 @@
+ #ifndef __DRIVERS_IIO_DAC_AD5686_H__
+ #define __DRIVERS_IIO_DAC_AD5686_H__
+ 
+-#include <linux/types.h>
+-#include <linux/cache.h>
++#include <linux/bits.h>
+ #include <linux/mutex.h>
+-#include <linux/kernel.h>
++#include <linux/types.h>
+ 
+ #include <linux/iio/iio.h>
+ 
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index d3327bca0e07..e7e1b8a6fc71 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -7,10 +7,14 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
+ 
+-#include "ad5686.h"
+-
+-#include <linux/module.h>
++#include <linux/err.h>
+ #include <linux/i2c.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++
++#include <asm/byteorder.h>
++
++#include "ad5686.h"
+ 
+ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
  {
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 
-+	guard(mutex)(&st->lock);
-+
- 	st->pwr_down_mode &= ~(0x3 << (chan->channel * 2));
- 	st->pwr_down_mode |= ((mode + 1) << (chan->channel * 2));
- 
-@@ -77,6 +79,8 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 	if (ret)
- 		return ret;
- 
-+	guard(mutex)(&st->lock);
-+
- 	if (readin)
- 		st->pwr_down_mask |= (0x3 << (chan->channel * 2));
- 	else
 
 -- 
 2.43.0
