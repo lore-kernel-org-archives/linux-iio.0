@@ -1,125 +1,162 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C702318EE1
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 06:43:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777272188; cv=pass; b=BykHUHHMvimj2rAqU+7zwFEi0bUHsNO392cIMDxfH4EsQQg1szDCG6tm91UertSc+mzKw6J4LCjKoEptZX6uUc8DSauJjIHgREHQyGbLgxWRsqkCi7sqqbCyrUqY+arC5Wf8JGM0tb9s6YyDUyvhxqZkwN5FVkkk3NhAQyFUOZg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777272188; c=relaxed/simple;
-	bh=4fl5qT/RJMXlMb21lfMu541/K7OnZdJbAcIran83fDs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gIynro++wMaoNQJMOOdbY/HcQQzL4ckeoqnFN04eG8SqijlDqFbB4+4I55EriUGH12dtq2v8YIpYIsZwygR2lEOPNggKm7gX99FG1CpGEAbCKlCPj7PulUqsO6NOBd6nEKxVNdeb3+704V118RxPpazeRAYgFTEjNCEQV/D0CY8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kkARNf4/; arc=pass smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 045692F12A5;
+	Mon, 27 Apr 2026 06:56:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777273002; cv=none; b=phyD1PhSNeeWiHYvUAePagk7X1HJgTMuARJyQKNfJoCi2sA+0ZjdL7LCVP2aXHL4+WnM/yYDhKVCBAbm61M3h/SkcU48H7U2CDfoIx17nguIWDSxLhZ5OeDKQw3+T8gXJ0ByB67kocLwUk1suVzg3uxoDmpn4sNtheyCh6Logvs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777273002; c=relaxed/simple;
+	bh=AzwLsyNbWGdhAqTw2RwdQyC52TDKHcmYIZZkhUoAc1Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mVghEG8hZGfRwVSnIjj+C6Qe/GB/nrhiA1B3R190/RKrZAnmK8F9I0enNdq3sE0Iq1UXqqdN6+MrA/5L3soFiBftPrCmdV61qbYhnllOPGALBN8svGRyh1HBW+S4NB2dLiozur2npDT5AKLehUmS5zE0qrGCLDvmstPQivKZ2/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SnGT1ZtM; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kkARNf4/"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-488a14c31eeso79819795e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 26 Apr 2026 23:43:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777272185; cv=none;
-        d=google.com; s=arc-20240605;
-        b=aDfLQ3QOfpLMYZ87C5u/gGbEh6pgUR7xr/qtjxIJq426UTLMf/rPa1CZFeael0k1Aw
-         XrnaSuopIZpRUVC9+Y6d0CX/fuV59RSAb/4aJvDxlCUg5tNBmQAvs+EKT1eyw3Dih/hW
-         bJ80p1jo8f6yChLIKGIiTVo8/XyfPVUkCR07X+eKYX8mlRxHuao/MzeG24Pw4zKMYabj
-         o+SpdGF17Syc8Q9f6hyL8FRkaL/eM/i+oX3b6MfGMfL4rX6Sae42+rJrAjUeo3CTux9H
-         ZQGroqb7hkcznSFFHwIFbFhuxJO5lzx3RL1lMjm9rszIDxZuXb/NZcoHx/qrDKSPzcxh
-         6QSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=WcOsr9RfEk0bJ62aLAVriU179vnNVwV4fppmi9KtUbI=;
-        fh=k+H8HsG+H5Mz36zVzcVv6kVeJqGTgVch0aEJb9wJIeE=;
-        b=S6dtWbQCoAWeLmn74Myg+IveXcWp//TNnvyEoDrDWm8DgEdeZpydf6b3avWC+L9N01
-         VrB8QYE9K8nsfp63ncu4Uzc9xhs9KGBgBoDOrXzx0flYUWToYq9hWmzf5VfEePgNe9++
-         9R0z2gok4OQPxvpiakWfTT2p4KD5y7PUn8x4xxFWcAEl6Kg2ivNBYCwLiyASJ+sYFMj3
-         Zo4aui8tzVCQEwAoDV5TIjZGsagXs3UsOK/M9ACjVoJViYh9SBa+8P6mxtiRoQ+vYxC5
-         NfzNOtdFIJNsd+F6U61aFO26vWxlQAKNbrT3PQzhylNFZ1UKHG0JLUiC5+rWAfi1+/ES
-         DJyg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777272185; x=1777876985; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=WcOsr9RfEk0bJ62aLAVriU179vnNVwV4fppmi9KtUbI=;
-        b=kkARNf4/kZQOwzV9xcdh5kKqn7ZC4YqV8tx3tgFhEicFiwPXHc3POiMPRu6cuH5REk
-         TGnLiRYu8BSlyp6PVplGsMUFpwwCgQjIidPaqZcz0PMiBYWW8ZX4Kfud/X8Md2csatGF
-         Y860nnbK1LmHurPTr6AW4KqkDqMlKCo2sIDL9Ex5MjXB6JX9rStuVYNID5XH8pG3YSSH
-         6GKIO0WZmO3yEj2OhoUWamVWXFcQUltR3Q2vk3139tr44kl9liW+KVYxBzwrRHvC/A0F
-         CXMJTdBIvNYrmzZVwdHuxENEj1U0R1+A+q1FpULOFxotxMhfNX7CVFw8D703lOMNvyIW
-         ETFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777272185; x=1777876985;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WcOsr9RfEk0bJ62aLAVriU179vnNVwV4fppmi9KtUbI=;
-        b=MT7a+5hNHNvxZskwkiRW+aTGKC01hWo29hpqesoGCu0BnE+Z+WXTIuTi8S/4kLqq6t
-         6RSiNoz7/K6Gx6orOms6015JxT8nAdgZN+sJIzkQ2eeYxsg2ztnR1R4AGupeI1mRUdoi
-         EWcBGw/8l2lqDteW5YP0Mvo/8idJFihuJYlET5KrO/b+6E1XFXbZbwgYyrkzUtiIVRpt
-         TXoin6ljYW2lxEYU4CYNj5wS0OwM+DDetA8fwek34unBDgnp+E8XZQMUjVOACve5raaG
-         NLpNNCPxixMU3nascit6CKd5EdkcYEuRa5fb9W97XKBeLSBybDIHpYHHr9o+WpQwZwJX
-         Tkvw==
-X-Forwarded-Encrypted: i=1; AFNElJ+8QvOevwlnNpjGgRJy1u58gfUf282IaXKmaqjH0GUDfhtr2kO5T6U1opdvOgRY3CNKUCvuzkPRN9Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyIKZx+e9npTedhtd1ehoEhAGvG4VXoMFith0H3OK0LdzRgU4MY
-	mS0kdDBqTO1Jo2H3H+8C0m073mp/TeCJud9Yy+ENsG6bjypw/UBVLQERzOYj8WFIlcjVMHLMSKy
-	1uG0KSP8Zb1kX8oPzOBJeEMPwMajTpOE=
-X-Gm-Gg: AeBDieuAAZkrdhPfpYOvE8CSDH+s8iujErFzVaqwRmRLbsW4ooiI+TJhpuYq/uSeGj+
-	f5G4FSOATWxl6MNuEMobhhhXEi4gg8zvj5g5Ll6FWjMGEH8J1/gF8MGOtnhYYoC0F/DjDCk9FtK
-	LIvh6JHTEA10WMRyZFWJHae4EAXrraGbNjEDMNycNVG3xQesw2XrOX2Pe/n91qjchiajV/TaiJf
-	rxXkcJyrkgrtMSz5c227nBVr/M3f/uWanR58BVqRqf0EN4t7xc+PwLoVPWTgoketckVWx5c0ZjU
-	HVTbIVXDd79zQ8L1kBNJvpZeTw0ba1KC95vBpKI0O0PZlcqzdSalcVQUD7fR1Kvv2AOeygvDoYk
-	qaDKuOEGFyAtmga/jJNxypxisnGY53aoqvsN+aUd1T1bOuQSm0mUXcqx+t4iQMxfSeZSw9o5o4q
-	XLZwgAMtKv/KcKKxTU
-X-Received: by 2002:a05:600d:8454:b0:48a:5970:2003 with SMTP id
- 5b1f17b1804b1-48a59702216mr227888515e9.3.1777272184448; Sun, 26 Apr 2026
- 23:43:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SnGT1ZtM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777273000; x=1808809000;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AzwLsyNbWGdhAqTw2RwdQyC52TDKHcmYIZZkhUoAc1Y=;
+  b=SnGT1ZtM8zrj0bhEUJV3obu7E/L2MMyrOHehqMTX5+0QefoNDAyjSEO0
+   Lxvcgmk/yqGDTxTUNq2UW4CMoV/jmPDym8U4XkYbQdYhNC1G77Kmbpeu0
+   iwfy5JD+P26Ki1/5FEXLhC1RNXIzXPEj3vp3msu7nS9suzOQZbkZ8FZKb
+   B+HxfBsP5T4Yg/22Zx5TYRhJm15lM+4ez/fq44fl45n3ffnvtbBaEkePA
+   WM5tRx2IKZC3f9q0zCXEVNzUFAj5jMSrg5x4ybvpoYH/nJJK3ZShf0hvn
+   AB35Lxd40Z2JLMzW25mcAtlawiD0EKR1sE+a+zGQnexevycaN/KYL4z2k
+   w==;
+X-CSE-ConnectionGUID: 3qzesCyNTPq3rABsKqtzZg==
+X-CSE-MsgGUID: JpLrW8rtQxezQKODv5WaLw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11768"; a="78042909"
+X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
+   d="scan'208";a="78042909"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2026 23:56:39 -0700
+X-CSE-ConnectionGUID: 3pXHY9vRQrqefH7qPMrgqQ==
+X-CSE-MsgGUID: Qk/Ld2uLRoqpMjZWVkvCCA==
+X-ExtLoop1: 1
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2026 23:56:34 -0700
+Date: Mon, 27 Apr 2026 09:56:32 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: David Laight <david.laight.linux@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rodrigo Alencar <rodrigo.alencar@analog.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v10 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <ae8IoA92L4jlOBoQ@ashevche-desk.local>
+References: <20260415-adf41513-iio-driver-v10-0-df61046d5457@analog.com>
+ <20260415-adf41513-iio-driver-v10-2-df61046d5457@analog.com>
+ <mhfgedq2t5lqtu6535ahdmpbvib2xzp2hmyt7ezflnf52r56jh@ze6tee7vpij3>
+ <20260425164006.17b75faf@jic23-huawei>
+ <20260425233316.0a2e2abd@pumpkin>
+ <o5m4mp6qrt6pzhns4q5vyxc3fwlat7675a46wpr2phjbveosw3@rwmdqelfnkix>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260426211834.3318306-1-caiomorais@usp.br> <20260426211834.3318306-2-caiomorais@usp.br>
-In-Reply-To: <20260426211834.3318306-2-caiomorais@usp.br>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Mon, 27 Apr 2026 08:42:55 +0200
-X-Gm-Features: AVHnY4Kz9mzYmXtl_F23_Et-h-RH1SZ5HdIzGYse74P0wBY1rMYM11t_BGRAWAo
-Message-ID: <CALoEA-zz-2cG7SJr1iKNQ0H81TVMXLQh3omkxJc9YRW673Kqqw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: adc: xilinx-xadc: remove unnecessary includes
- and add missing ones
-To: Caio Morais <caiomorais@usp.br>
-Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org, 
-	michal.simek@amd.com, nuno.sa@analog.com, 
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <o5m4mp6qrt6pzhns4q5vyxc3fwlat7675a46wpr2phjbveosw3@rwmdqelfnkix>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, 26 Apr 2026 at 23:20, Caio Morais <caiomorais@usp.br> wrote:
->
-> From: Caio Morais <caiomorais@usp.br>
->
-> Signed-off-by: Caio Morais <caiomorais@usp.br>
-> ---
+On Sun, Apr 26, 2026 at 09:02:26AM +0100, Rodrigo Alencar wrote:
+> On 26/04/25 11:33PM, David Laight wrote:
+> > On Sat, 25 Apr 2026 16:40:06 +0100
+> > Jonathan Cameron <jic23@kernel.org> wrote:
+> > > On Fri, 17 Apr 2026 09:36:20 +0100
+> > > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> > > > On 26/04/15 10:51AM, Rodrigo Alencar wrote:  
 
-You're missing the commit message body. While it's understandable
-what changes you've done in this patch, it's good to expand the idea
-further (what you did, how you did it, why you did it). This goes for all
-of the patches in your series.
+...
 
-> +#include <linux/bitmap.h>
-> +#include <linux/errno.h>
-> +#include <linux/mutex.h>
-> +#include <linux/types.h>
-> +
->  #include <linux/iio/events.h>
->  #include <linux/iio/iio.h>
-> -#include <linux/kernel.h>
->
->  #include "xilinx-xadc.h"
->
-> --
-> 2.54.0
->
->
+> > > > I have an alternative (slightly more complex) implementation of this function
+> > > > that handles E notation. I find this particularly handy when writting big
+> > > > values like 25 GHz when the ABI is defined in Hz, so instead of writing
+> > > > 25000000000, one can just use 25e9, or 2.5e10. I found that my python code
+> > > > was printing big floating point values or really small ones using E notation
+> > > > and that was giving me -EINVAL, so I had to adjust formatting when generating
+> > > > the string input to the file. No big deal, and we would not need this here,
+> > > > but if maintainers find this useful I could add it into a v11 of this series.
+> > > 
+> > > I'd rather we didn't slow this one down. However I'm waiting on some tags
+> > > on this patch from folk who are more familiar with these parsers than
+> > > I am.  Given discussion, Andy or David Laight perhaps?
+> > > +CC David - please make sure to include folk who have been active
+> > > in discussion of earlier versions to decrease chance they miss the new
+> > > one.
+> 
+> From Andy's message "We still have several weeks time", I thought we would have
+> time to discuss this e-notation thing, but that's just a nice-to-have indeed.
+> It fits well in the decimal context, as it is widely used and works in powers of 10!
+
+My main concern is to have one source of implementation.
+
+Yes, we can have specific parser for the specific need in the certain subsystem,
+but as I already said (and maybe not once) the problem is that if any bugs or
+features is desired it may diverse for the 2+ implementations of the same, putting
+bug spreading and double effort.
+
+Having e-notation supported is fine, but can we do it separately?
+
+> > I can't help feeling this code would be smaller if it didn't try to use
+> > the existing conversion functions.
+> > Something like:
+
+> > That is missing the overflow detect for the multiply and add.
+> > While check_add_overflow() hopefully looks at the carry flag (on non-mips
+> > style cpu), I don't know how the 'mul' variant works - it might be horrid.
+> > A bound check against ~0ull/10 might generate better code.
+> 
+> It may be a compact parsing but aside from bugs or typos, there is a readability
+> tradeoff. For the context, yes, it would be better to accumulate interger and
+> fractional parts to the same variable, rather than separate ones.
+> _parse_integer_limit() would have to allow for a custom init value, so we could
+> just skip the decimal point and resume. The proposed implementation reuses tested
+> infrastructure and follows kstrto* conventions. I suppose the most important thing
+> to review here is the new interface with its function prototypes.
+> 
+> > But I really prefer functions that return the terminating character to
+> > the caller - they are more useful for parsing compound parameters.
+> 
+> I agree, I tried something like this with the kstrntoull() approach.
+
+With the wrong naming. kstrn* is oxymoron. Semantically the kstrto* are about
+strict input checks, including overflow.
+
+> > > Maybe start a discussion about whether adding e notation as a separate
+> > > thread after this has merged?
+> 
+> Agreed.
+
+Yep, sounds like an additional feature that may be added later on.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
