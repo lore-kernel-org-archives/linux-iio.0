@@ -1,137 +1,140 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 452ED3B6362
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 11:26:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95FBD3B7B9D
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 11:27:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777289198; cv=none; b=n7XuWTeF4E/+9pO95LlKbJfO4GRFPv2eW7fv1vRxKbyIAy7Y75LJFx6CepCBC5rg7xT0Y/mFXClc0BhdHZP2EPy1yl6FtV/t97zRMykkNZ40ZfWLnbt9dWYccA7aCj5C/IUX8rKrqS0nQASzyDw0qkvvr8jaDZuXh5jinEzpgLE=
+	t=1777289276; cv=none; b=qKctWG4HdKHUHI+NYOSCjkiP1UMMtau/BHGgfCd2FrM9oEz7P7g2dcN0A4h7GIjlGhW1zqBsLMVUUuQekeFsK3wE4VMBQ+6xi6xOlIae3QMCk19UDo4bDm5p7GY9Fym3ZRZeSEEefGujKJkk8QwQGhrpDZZ8Zs+hub+Dgzr/EvI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777289198; c=relaxed/simple;
-	bh=kEiZHKJqit4MGPY+b2Ld1n2nTYLDwv8qfRcBrOW6l7Y=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=XDrsSyqRzvBJRTjId29tnd56qIMq9Om5s+ghZ+8Izq+cMwzOFZLy+n5rwjSiMS9/RtSMUvOvi/v+TpsHxP8WYwIfFmmdkw2G6hmXzWVWL64ELo1lrt7/0VJC6ace3k6zyW7GvmjqrahZRZJd9W1BfgLIm7aGNRFhJxczj2Pd6T8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ouJHjCOZ; arc=none smtp.client-ip=209.85.210.173
+	s=arc-20240116; t=1777289276; c=relaxed/simple;
+	bh=RBabLqD+tGh8IYvzJyarXxDfNs7n/EFI2FJh1Goq9zA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=l1nInemefSoiRenGvKmstqG1DkqsiR1ZVFKtlra6oDFmo9qBDO6qBCjrkj++z9kuBF9NFKRStQatnbFWesvOFlBYog6Q4EX9fwEwuRgwtmqusPGzguEYtWFb8f4VN4YVSPyCgdIpJObxwnyATnIr9BF9IkUyO6yNxIZk+TAhNtM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iUNG8VHT; arc=none smtp.client-ip=209.85.221.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ouJHjCOZ"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-82fa8d6425bso3757271b3a.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 04:26:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iUNG8VHT"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43fe7c6f61fso1040044f8f.2
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 04:27:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777289197; x=1777893997; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MRULM3iCCqXJE5g/4xg/Q1GMtMSkkTbAvywHS3WulkU=;
-        b=ouJHjCOZsweVL9lNg2Usp4v33wgjXRnZuvFIyiuofEQdzgQjpsjxl+ogijdpPMIB3d
-         W50c8GbxyjpiczmvXO21r0QMa2lvl1NUs3D4JU/7BP5AkSPZpGBrsytPbPJ3HNxSp9x2
-         Dc1a4rRU6iPHdg4ZHL9UYXONncG/u3Zrlowvhd9Z1jr5wMOCQ8JyDfhf1y9VcQsPxAHj
-         nYC+Y/UsKIsbOCUh0JS9OL9/+j4u8CVUIrWM5hJgPkqrDG9MzE2aUE9t8riOI2oREsPg
-         VapYhFTVVtg7Yj6MsaEQe7aC5wfO/t5/1wXOYBQ89FlCck6wlEhIrxSQG+fj4QJru1vG
-         SUWw==
+        d=gmail.com; s=20251104; t=1777289273; x=1777894073; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=WMwv0fkBxFJwWQsLP7Ii5ugXzxTh1cB00PWr4huj+AQ=;
+        b=iUNG8VHT5Y6XfozrKbnAHMFrRxs9m3lDZ55YyAfpdmZGNmByLL2A1Q+Cil3ir8m2Bg
+         4xlV9je93kxjFCnLQfqdnIyuQthcVmmNsHnAaIxUj3ANhef0MXBC/SctU7+4uEmzG4rt
+         XMKCxYgr0A+odL5iTdkTKbfq1q9pSBd5j0rW7gDIPUBzzVkYuYdl7IgDuggb04mulp5O
+         VAmICfBZIaweuAqxvmah2UEUKc3Aj/Lpg4pUM+o1KcU2ZYjYO+RscogvkrJ8itFm03fi
+         gcmqstfFn1J2Rrvg+hL2i4+/xBBJr5WKsaA9pc1XkGDsx/eSLB1TvO/Ec3i4K52VLAg4
+         6jBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777289197; x=1777893997;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1777289273; x=1777894073;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MRULM3iCCqXJE5g/4xg/Q1GMtMSkkTbAvywHS3WulkU=;
-        b=QWkCgF+eoiOwdnyjL/qBXtNfyrKZ6bOk66EqsybQkNdxCU3LaUgSDzGIX17OlKT/qE
-         4ECzPZFzwPwWyk7jbRzhIcY4aepqmMo5vvpXCZvSMJHmJMwKEx9c6QppfeYNCh/BANv/
-         FVschQgf/R2D5GoYV+IL7wJMRT97+2BUZIwSamc8Vg00U1JfYTc/oulGuNOVKA8V24O8
-         gm84vTsRdIK2QMHOR31mwjs3/bOkGjrQCIrrNbRn0bBovnkxQmRVVDE5zNLUmg9HUkI1
-         mUJ+5V1fRTb68Y3mUvSpfB/63ZGUADh4vPM2qnuE2UjGSkxVBy513aAj69+3f6UZewxR
-         GsNw==
-X-Gm-Message-State: AOJu0YwTa9eq97V5B49UZONeEGAwhSJIpNX5HkeGGYBBfi4+vG3/9sQi
-	Igm4u9tAQABYp9y6wjvpAoZo+qvm939AII5Ll3gjEVGwDd19nvKEHetx
-X-Gm-Gg: AeBDietibIJf2J3LfwDQzaHumirlsV8JKL4IbjKiYFbn+8+0uLzFrvrlFujam97KZ2Y
-	eCtHe9V+A9cjI4VB0E0latxe8ae+hM0P7mhShgnzhQQT9DUD07OGWf9KDgx/i+NDMiB8Hv+3Gug
-	nu4fvgN2weQPl6DDOKO+0D7MT3Tay4fVhGhvl+eLl98P/37ML6K7ZYAyd65WKgAIz+tnVJrtifn
-	BpRFXHcyxT0E2hwfWtHEB9RoYZ5A0jJ8uwBB5snSF2FFEAQ3+YjRyY2A6VHns50wzE/LAletllK
-	fqStolntXfNS75wWhys2r3IxiOvKZoO7XwL7OuvDbe82f+AlzKXKHa3qB5n9Zcz9diPPl3YsiNK
-	OrPA6Hju0x6IH/dvRD/5NVHXcdTgcaBagdYQ8XPm/2tTB10PQviCwAwuKjoEH6IgOVGbynrV3HF
-	aILlozI5a7qIEv8peXOYB5nSGxut93QZu6IQ40E3D6VFQDdB81iNchKxnTQeI1I4cHoystl8/Z1
-	F5XxsTDNDkX8FN+0ZLJrzs5nv09qJo=
-X-Received: by 2002:a05:6a00:3019:b0:82f:8b84:50c0 with SMTP id d2e1a72fcca58-82f8c973bf6mr46567455b3a.45.1777289196476;
-        Mon, 27 Apr 2026 04:26:36 -0700 (PDT)
-Received: from junjungu-PC.localdomain ([223.167.147.125])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ebe40dasm31504074b3a.40.2026.04.27.04.26.32
+        bh=WMwv0fkBxFJwWQsLP7Ii5ugXzxTh1cB00PWr4huj+AQ=;
+        b=Hhd/ejabUxCptlaEH0YcPYXJXi3z+C6wSQY4yWyZIrPpzuptJWwHtfgBjO8LTO+3XD
+         fJ1noBwf3nC8x5OiTy+qsapVZfY6zehKYwrB51mNwvRF7ynlqk37wfzilbfU+S/PY7Cu
+         Zox+LX97P7uzbHMWdJXsa1c3t3tndEmgHzzIQ0GoOZA7fJk6X+XetHYoqXCAqp40KW1i
+         DhIMDXCQdtqNqTGQ4RjmAazqbr9O8PWHjCbhlor36+jbLFLdj/RjXzx3ES8Cg/SQg5GS
+         vGHBsDxnecYHOH080wEWjxGYSEHaM9rRORsMIMKvvbWX72DjFErh+eGKiqf6mVKNwHdc
+         on6w==
+X-Forwarded-Encrypted: i=1; AFNElJ/EiohRuScsJ9NYesDixCphwgzOUGcM66F4HL776MGC7j3eNqgmv4dT38XwUxrQ4B0Hu12EfAlnd4Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwXLVRsvGuLI6kG/eEbOKsonVKRJFFepv7066ay+5WK3hviyj6S
+	+YDL5lrM3+D5PJ/UQht5oKy9Z5WzU7yGZUMNAMqfoI687Bte9IQTV/C9
+X-Gm-Gg: AeBDiesBRX0nufdWtIcEaWlcH/HIIZH6uIs7txE6TAfmI9ucEPwSgYKPEwXccCeneRO
+	w5Z7W5yo9IwIUm3+WaN2AetegCNThDFjTd8P3/9TwXRuHnnOcVTMKv5F05EWKYlfNpspSx+XNCp
+	d04x3n0AjQn8XxcZybAhgtgsrhgn/OVuBmBxbCykA7Gu/jZq02agE7mqkSzfMT+NAOQzAjDHKbN
+	qb+jh5OBNN5Hozd2ZiNQ+ShgX0lXDF9FpLWagPrWwR4fmmvP0Fg9f0VAbrcnAJd/GSgcGKJYI35
+	Z5gsfhEu8rUq50CuL/4/mYvvSaq07jdMfy1AdtC+b31fOqMt2FuiyMPKALIqdh8E7mbtOf9b/DJ
+	oFgMLp5YLC35rn6bN1vt0BPKCRWnFIKMzPVkvCm1S80kpxszuFSYvMgLTfJJ0g2UgfgToFYXUWP
+	yq5EJ2vXUQ2sA2n1QtFIOuHoob1DAKMlLC/Q33l2L8NXquGF6TzkHbEMxEfgtCZfAHkgfKqhF0R
+	xyAVzU04gL0d9V+OdTqsHNdXX4AlrlvxYaI+so5Xcb5fcuW40hEQYBMGmRuvy4=
+X-Received: by 2002:a05:600c:154c:b0:48a:5758:7999 with SMTP id 5b1f17b1804b1-48a57587e4bmr202154105e9.4.1777289272811;
+        Mon, 27 Apr 2026 04:27:52 -0700 (PDT)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488fc0f82bbsm1342961895e9.3.2026.04.27.04.27.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 04:26:36 -0700 (PDT)
-From: Felix Gu <ustc.gu@gmail.com>
-Date: Mon, 27 Apr 2026 19:26:31 +0800
-Subject: [PATCH v2] iio: adc: meson-saradc: fix calibration buffer leak on
- error
+        Mon, 27 Apr 2026 04:27:52 -0700 (PDT)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v2] iio: adc: ti-ads7138: replace kmalloc() with stack allocation in i2c_write_block
+Date: Mon, 27 Apr 2026 15:27:07 +0400
+Message-ID: <20260427112705.71138-3-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-meson_saradc-v2-1-8981c56fd05e@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAOZH72kC/1XMQQrCMBCF4auUWRtppkmwrryHFEmTsR2wTUkkK
- KV3NxZcuPwfvG+FRJEpwblaIVLmxGEugYcK3GjngQT70oA1mlqhFhOlMN+SjdY7oZXtnUbf9o2
- Eclki3fm1c9eu9MjpGeJ717P8rj/I/ENZCikMtabH9oRONZdhsvw4ujBBt23bByPCEXmoAAAA
-X-Change-ID: 20260425-meson_saradc-54abc52d9b31
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Neil Armstrong <neil.armstrong@linaro.org>, 
- Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, 
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
- Rosen Penev <rosenp@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Jonathan Cameron <jic23@kernel.org>, Felix Gu <ustc.gu@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289193; l=1435;
- i=ustc.gu@gmail.com; h=from:subject:message-id;
- bh=kEiZHKJqit4MGPY+b2Ld1n2nTYLDwv8qfRcBrOW6l7Y=;
- b=OgBTJVEKI4XrARc7cMlcqcU7gP8GsABoiiF9yu7IVEyF9y6+My2J18Bx+/02Bvsj4MdK4S/nU
- QSfZVGrBreDD30Ae6PJwlEGnW3XjAo8m8gDqfw2XihWA8ZQPKwIUPfM
-X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
- pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
+Content-Transfer-Encoding: 8bit
 
-meson_sar_adc_temp_sensor_init() allocates a buffer with
-nvmem_cell_read(), but the old code leaked it if
-syscon_regmap_lookup_by_phandle() failed.
+The ads7138_i2c_write_block() function currently utilizes kmalloc()
+to allocate a buffer for I2C transfers. However, the length
+parameter passed to this function is strictly 2 bytes across all
+driver invocations, making the total payload buffer size exactly 4 bytes.
+Invoking the heap allocator for a 4-byte buffer introduces
+unnecessary SLUB overhead. 
 
-Fix this by adding missing kfree(buf).
+Replace the kmalloc() call with a statically sized 4-byte stack array.
+Add a boundary check returning -EINVAL to ensure future driver
+modifications do not overflow the stack buffer if a length
+greater than 2 is requested.
+Furthermore, dropping the dynamic allocation entirely removes the need to
+include <linux/slab.h> (which was the original motivation for this patch)
+and streamlines the PIO transfer path.
 
-Fixes: d6f2eac64403 ("iio: adc: meson: no devm for nvmem_cell_get")
-Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
 ---
-Changes in v2:
-- Switch to a minimal fix according to Jonathan's comment.
-- Link to v1: https://lore.kernel.org/r/20260426-meson_saradc-v1-1-6e96b2982c43@gmail.com
----
- drivers/iio/adc/meson_saradc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ti-ads7138.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 23991a3612bd..000e39ca5c62 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -817,9 +817,11 @@ static int meson_sar_adc_temp_sensor_init(struct iio_dev *indio_dev)
- 	}
+diff --git a/drivers/iio/adc/ti-ads7138.c b/drivers/iio/adc/ti-ads7138.c
+index ee5c1b8e3a8e..172893cbc17d 100644
+--- a/drivers/iio/adc/ti-ads7138.c
++++ b/drivers/iio/adc/ti-ads7138.c
+@@ -102,21 +102,20 @@ static const int ads7138_oversampling_ratios[] = {
+ static int ads7138_i2c_write_block(const struct i2c_client *client, u8 reg,
+ 				   u8 *values, u8 length)
+ {
++	u8 buf[4];
+ 	int ret;
+-	int len = length + 2; /* "+ 2" for OPCODE and reg */
  
- 	priv->tsc_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "amlogic,hhi-sysctrl");
--	if (IS_ERR(priv->tsc_regmap))
-+	if (IS_ERR(priv->tsc_regmap)) {
-+		kfree(buf);
- 		return dev_err_probe(dev, PTR_ERR(priv->tsc_regmap),
- 				     "failed to get amlogic,hhi-sysctrl regmap\n");
-+	}
+-	u8 *buf __free(kfree) = kmalloc(len, GFP_KERNEL);
+-	if (!buf)
+-		return -ENOMEM;
++	if (length != 2)
++		return -EINVAL;
  
- 	trimming_bits = priv->param->temperature_trimming_bits;
- 	trimming_mask = BIT(trimming_bits) - 1;
-
----
-base-commit: 7080e32d3f09d8688c4a87d81bdcc71f7f606b16
-change-id: 20260425-meson_saradc-54abc52d9b31
-
-Best regards,
+ 	buf[0] = ADS7138_OPCODE_BLOCK_WRITE;
+ 	buf[1] = reg;
+ 	memcpy(&buf[2], values, length);
+ 
+-	ret = i2c_master_send(client, buf, len);
++	ret = i2c_master_send(client, buf, ARRAY_SIZE(buf));
+ 	if (ret < 0)
+ 		return ret;
+-	if (ret != len)
++	if (ret != ARRAY_SIZE(buf))
+ 		return -EIO;
+ 
+ 	return 0;
 -- 
-Felix Gu <ustc.gu@gmail.com>
+2.52.0
 
