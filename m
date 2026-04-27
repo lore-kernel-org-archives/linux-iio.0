@@ -1,64 +1,64 @@
-Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C56D3B47D5
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 10:10:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84FA23B4EBC
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 10:10:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777284623; cv=none; b=JjVrBbYilXvKHdOnCDIvGggixrmBfdho1wyIkB4r8mQx+ViTWhcMZgS9sUFW0MQsADPaQunaBBs8QT6RwmSSz1B0MK1DT3+whbJxLvHKNfJ1BKsyriEeURMm15Op6jaWgQ6ZXs7ahOQ5Ho+cIxfWe1wEphBptYK3qliv1LJ+HDQ=
+	t=1777284631; cv=none; b=ofuwKwyLdSlJW2WIuw+QGizACGjGJAkWTAqOVSK++iNiy8GnGWa2zak/OCS5bbZuAaS12ZfE6o2tS8WseXmLAfCi5CQS+AeE5ESyHpYWEvagUgHPoZTqIwQpnwKMohCrIIZVeY7ckEBrjLQoQmYdFV+aYz1UDbPzfbWQbP1Nsv0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777284623; c=relaxed/simple;
-	bh=blwxWP3h9amTde2/60twniELsnmcE0y3nMKAe9J7CRQ=;
+	s=arc-20240116; t=1777284631; c=relaxed/simple;
+	bh=pbq+haMBXJjpodXoD7EdAGSmOaszrbzilDvwBg0HaV8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qX0VjCyWcThEoJ10BjNOWPljEGnNiblW9sqYFPTHshrOl0tlhIc/PaCuE1qSl3EHD4pzcQQKLLIvIdXo7dcNVrxcanUPi4IHjLpsRINf8C+oQXkgv0anO1cilGS93OClWHOby0Xlb7YVEV51o3ckgDUA5B6KmpQDQlE9gcItuwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dHFi/5vs; arc=none smtp.client-ip=209.85.210.171
+	 MIME-Version; b=NeEMixNo7pB+fp5+qKr5d7nJIEMYQHRZ1UWOTgWyRfd7HOMDVtWykpyoIclX67lt49RTuwmNPqVm8LYxMu1ZBuy6KiEjdlp/bypJdpVCIFpuYLsEmpywSvuIj+gteJ7iOj6gmX2CucBNHu5bXnBUS9fVEt/qGMNkD6rKqBoh0KI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i/UeYZcz; arc=none smtp.client-ip=209.85.210.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dHFi/5vs"
-Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-8296d553142so5489858b3a.3
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 03:10:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i/UeYZcz"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-82cebbdbdccso6178240b3a.1
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 03:10:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777284622; x=1777889422; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777284630; x=1777889430; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ErQtAdu2cnmpY8o88AkDpSJug3ccvxHHCZ8c7OJd9d0=;
-        b=dHFi/5vs8j1aCm7U98CaBkzf5T87T+290C7/cQyTrNNwIQke+1qohmAjOeXjJu9KCN
-         uOmj6xXTxj98LjcloaoaXpwTcdFWxPzcZuluu2jA3zbTKzarhCSjoIrL99Kv6ZIcsrRu
-         a9baiqHm46shnl3HSTM3gOKMmU9f6vWL0SJZ6B3YEmbfTKJSZUlLMoCJWBSmIJ7vID5H
-         oKKOUJL0DjwLrGa7QXJQlG12I7uS5P491Zs+463GRdedqPsFpad35dl4XBZ3u4CWqE/+
-         kXznIyv0/TMLBoDxy3pPvhwbenZpqMCL68UFcxMqac78qOHXq97P3eesvNubPz0uGFPj
-         apgg==
+        bh=MPviO7yWOPeiGXaSIG7x52NERDN2fjLGfup6ZZml7C0=;
+        b=i/UeYZczC6CFOHZgeJTctRZholWCQ0f3V5KYAIHlJK/TEwN0UP38QCTGu76ceENp9+
+         XU53pMayqN+C8PtOccz3JrZ4XPjKgTISsjmUgZcx2zdjPp7ujAh0tLz2mWhd64g3oOlp
+         wT68GzcdqpwWPATf5/lmrCwDhJkmNIo3pIIzw5W9aj2JBDYIjBPwvUN6MHdbrjOobGew
+         7fkin2ALcIaGQ5hpKb1Z39RrqUh98P8Wy3EdQwIj96svr1u6ZBAp7cp71HSfBE8xFwRw
+         HatsFSLoLPEJeoLc7w3SkIgvxHg68zLWgYDm/gbttEQ7aHPWQDbDYgco3hl6SgxZliFE
+         PCNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777284622; x=1777889422;
+        d=1e100.net; s=20251104; t=1777284630; x=1777889430;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=ErQtAdu2cnmpY8o88AkDpSJug3ccvxHHCZ8c7OJd9d0=;
-        b=ee2n1fS9UzS6Fk5Y219XLFyi35vzjUiP1Y+R4NDpAUJDpegx3CpFkAvNzCik4sH3JL
-         GP7asGWyCqbLHkjwc0K2j04OzjoOqYWlxpip97V0uZ+U0YCfzCaiqZnUYOZ/3Y9rt7qs
-         iDoHtoprly676tYjTBW46QCm34bj05Mh0e07GHUgRRRHT2BlrHH75UOHH7rkvzo7TKOK
-         tl54YBgHswAhJ5EEhBdt/jpKdhFDGs26n3ksVjVSiPZbpvCTKDPP4k5HRKq/lt+5H45+
-         +9P5OzjxwpqCVngDa16D7Q+sSdXOKuJMwIuHgp7fiCp8BezYa5zAvIRMBdUrzzwdYdKa
-         EO6A==
-X-Forwarded-Encrypted: i=1; AFNElJ9ZSBzCTAsLfj3mT1wm4GnFMqh3Ke0lMV8Ze39rDIfjeWFvcUYEae/gI/gcNOzVKxzlAvktNrCqGVA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxP4P7L49wgJ2SiYG2DYlVRs45a4RhUPs+cyL5Rcf2AjNjpww75
-	GHA7f/6XIKweCTu1yv4heobnfJw7nvWdzoFfPR1WqEauwA7wp6vNieA7
-X-Gm-Gg: AeBDieujDwxRRiaobE7OGCBPsWUUsdrxkVPnihSYMu+ZugseUnNqRvZHAp7LrHB1WSW
-	zf/h+Ix8YejoViT4R+vojkwOlSWH/YxaoQdr2W6D9NO/+h1dEbYZZA16WVRCYg1MT5JtK1CtVvi
-	vX/D2IhpqQQoERzM8insZo3rbwLRwOfROfHb3DHSlKUf+9yrV4/ivrQMjhOsoMO6kdCIPzGOPe+
-	JpHFNNOT3t/HvQpByNd4nFyDG1H0PpMdpC+SFmMVoPsbuVG+1wqw5ZJuqvFfMvzJLXqRSFtenFU
-	C0PGT2YiMjTUqSFJYXTPy7Hk/FM4kq/LhDz8ZJ2ozh5u0+E0CD/vs5aFq5G/kY3WDjj8GDCmmA+
-	9wBn3bMwJJWj3R8bNuPNmMOSG6DTN999mnMWtesuQeRY42KiWi1zZhIRzsoO/5BmTL7+WTVp2AD
-	Z8o4dYh3nn+d0eKHbses4X2OOtuKwKzyXXMHNSAE1bRSXpsLjTCLKAVS+2YrXgeaXgvn/DJ4Qhc
-	0CpvJWCL9V+2VegpTQHoq6LvXa9JUxEJlmuhqFALZXubwJD/FerX4xEXRF4
-X-Received: by 2002:a05:6a00:439b:b0:82f:8696:5a75 with SMTP id d2e1a72fcca58-82f8c8bb700mr44837198b3a.28.1777284621666;
-        Mon, 27 Apr 2026 03:10:21 -0700 (PDT)
+        bh=MPviO7yWOPeiGXaSIG7x52NERDN2fjLGfup6ZZml7C0=;
+        b=O8bQJWWfNAPK9DOvNY8ZQG8laFBTmElZ57pbHm3Ca94NmIff8SAYIP7EEqBgHRv/S2
+         TL/v2vSjc1bB1xGwboXNDb+ev45LYxNXpd79sBwrIARMuIOor7BERGC5fYT9J1l9kBcm
+         QOTOPuLPWlwOFOMb5D8juL69/dq6pXOKWpN3hnejRs5QAJKgUFazAu/FQbYzyTXrTeXU
+         eCL6bPInwcydCcr3zBYNHxbn8/pEquUFusnNJ7nJuoUm7vkILz21NyrhTVYEeYKzy903
+         S5cSKpIUCvz/zVVH4hPj/fIDJKP8B4Qq2np8+y/29kfVkF4/Gy6kRNsh8TfYFxfJ4paB
+         6Ppg==
+X-Forwarded-Encrypted: i=1; AFNElJ/5sqoYNf1qkvu9j105V3vk3v6omZK9eaDYmSqZ78NrHebyso6XRykv+jjRskthIQvcw6yWpvl4+J0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywe5ipG+2zFKNAG2n7V20GZjFyiuNXsEmmR3IO+U9mCqcPDL8O8
+	rcC8zIh7nQ+vIA89NMX2ABECfWStlGuAJrB97008af27MePq8j+SQuc8
+X-Gm-Gg: AeBDies6KL7ZA7k+gGSTa+DXA+3EA9Sgq82K2NHEoTRSrN/xwTcwM+ShWYrNgK/cWAW
+	3CvQ1/wZFh5E5PbfI1E0Htix5soSjjhrTZd9QnPIICYNjPRwbU5I+hnXepB8xV2RaKZmL0ZMd2E
+	cH2T/FK7jkfEtgbABRNKXLZAJKJQmG5AYpqEIX2m6Kq9myJiH0BpAZecLOQr8c2Rump0XTKF0jD
+	iOS0gnYihMyr6H7sDsD125wHS1rvb/2yHebQveN4CymbF3zpT0+6cY04X39BsTtKpnJWZvDKa5J
+	yNSPIbKsf+Vc7CtaOKQrH3aX+JH/FMfIpGggIOWDHwOqUhJrYvbEzFebc0YshLrlNr3zD21zYyW
+	s5DUSZZ+LgIQVHBAddoUFrIJsJmkIhx3f2a/jB305ZzqXOjjTz86meIhw+OzMBRe/ZMrNMyJ4eE
+	3hUwlORq0uOOFS/WWMSiEsgRDeU4Za5PdMMTTP9LyyG87rTQzm6L/IumOFrTVxqXpBb08ICf0e7
+	YuYZtNW7+y1FCTWk7HtduqB90ZW2c0axRBGmY6nvCZmfpKj40qmdzhrX17/
+X-Received: by 2002:a05:6a00:3e1c:b0:82a:146d:36a3 with SMTP id d2e1a72fcca58-82f8b55a221mr35827753b3a.21.1777284629796;
+        Mon, 27 Apr 2026 03:10:29 -0700 (PDT)
 Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.. ([2405:201:31:d016:e577:22da:dc9:7f6c])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ebba485sm39534225b3a.38.2026.04.27.03.10.16
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ebba485sm39534225b3a.38.2026.04.27.03.10.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 03:10:20 -0700 (PDT)
+        Mon, 27 Apr 2026 03:10:28 -0700 (PDT)
 From: Piyush Patle <piyushpatle228@gmail.com>
 To: ak@it-klinger.de,
 	jic23@kernel.org
@@ -71,9 +71,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/7] iio: adc: hx711: move scale computation to per-device storage
-Date: Mon, 27 Apr 2026 15:39:33 +0530
-Message-ID: <20260427100950.33936-3-piyushpatle228@gmail.com>
+Subject: [PATCH v4 3/7] iio: adc: hx711: update Kconfig, module description and file header
+Date: Mon, 27 Apr 2026 15:39:34 +0530
+Message-ID: <20260427100950.33936-4-piyushpatle228@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260427100950.33936-1-piyushpatle228@gmail.com>
 References: <20260427100950.33936-1-piyushpatle228@gmail.com>
@@ -85,142 +85,76 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The gain-to-scale table hx711_gain_to_scale[] is a global array whose
-.scale fields are overwritten in hx711_probe() using the AVDD voltage
-read at probe time. When two HX711 sensors are connected to supplies at
-different voltages, the second probe call overwrites the scale values
-computed for the first sensor, silently corrupting its readings.
+Update the Kconfig entry to "AVIA HX711 and compatible ADCs" and list
+supported chips one per line to make it easy to extend when new variants
+are added. Change the module description and file header to match.
 
-Fix this by removing the .scale field from the global table, making the
-table const, and adding a per-instance gain_scale[] array to hx711_data.
-Populate gain_scale[] in hx711_probe() using the device's own AVDD
-regulator voltage. Update hx711_get_gain_to_scale() and
-hx711_get_scale_to_gain() to take the per-instance array as a parameter,
-and update hx711_scale_available_show() to retrieve it via iio_priv().
-
-No functional change for single-sensor configurations.
+Add direct includes for linux/array_size.h and linux/types.h rather than
+relying on transitive includes pulled in by other headers.
 
 Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
 ---
 Changes in v4:
-- New patch. Fixes a pre-existing bug reported during v3 review: the
-  global hx711_gain_to_scale[].scale is overwritten on each probe call,
-  breaking multiple sensor instances with different AVDD supplies.
+- New patch. Split out from the v3 refactor patch as requested by
+  Andy Shevchenko so that text/description changes are separate from
+  code refactoring.
+- Add direct linux/array_size.h and linux/types.h includes.
 ---
- drivers/iio/adc/hx711.c | 32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ drivers/iio/adc/Kconfig | 7 ++++---
+ drivers/iio/adc/hx711.c | 6 ++++--
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 60038ae8dfc4..f18692aea795 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -784,13 +784,14 @@ config HI8435
+ 	  called hi8435.
+ 
+ config HX711
+-	tristate "AVIA HX711 ADC for weight cells"
++	tristate "AVIA HX711 and compatible ADCs"
+ 	depends on GPIOLIB
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+-	  If you say yes here you get support for AVIA HX711 ADC which is used
+-	  for weigh cells
++	  If you say Y here you get support for the following AVIA ADCs:
++	    - HX711
++	  which are used for bridge sensors such as weigh cells.
+ 
+ 	  This driver uses two GPIOs, one acts as the clock and controls the
+ 	  channel selection and gain, the other one is used for the measurement
 diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-index 1db8b68a8f64..0776a23bf59b 100644
+index 0776a23bf59b..32362771cfc8 100644
 --- a/drivers/iio/adc/hx711.c
 +++ b/drivers/iio/adc/hx711.c
-@@ -28,22 +28,20 @@
- struct hx711_gain_to_scale {
- 	int			gain;
- 	int			gain_pulse;
--	int			scale;
- 	int			channel;
- };
- 
+@@ -1,12 +1,14 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
  /*
-  * .scale depends on AVDD which in turn is known as soon as the regulator
-- * is available
-- * therefore we set .scale in hx711_probe()
-+ * is available; it is stored per device in hx711_data.gain_scale[]
+- * HX711: analog to digital converter for weight sensor module
++ * HX711 and compatible ADCs driver for weight sensor modules
   *
-  * channel A in documentation is channel 0 in source code
-  * channel B in documentation is channel 1 in source code
+  * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
   */
--static struct hx711_gain_to_scale hx711_gain_to_scale[HX711_GAIN_MAX] = {
--	{ 128, 1, 0, 0 },
--	{  32, 2, 0, 1 },
--	{  64, 3, 0, 0 }
-+static const struct hx711_gain_to_scale hx711_gain_to_scale[HX711_GAIN_MAX] = {
-+	{ 128, 1, 0 },
-+	{  32, 2, 1 },
-+	{  64, 3, 0 }
- };
++#include <linux/array_size.h>
+ #include <linux/err.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/types.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+@@ -573,7 +575,7 @@ static struct platform_driver hx711_driver = {
+ module_platform_driver(hx711_driver);
  
- static int hx711_get_gain_to_pulse(int gain)
-@@ -56,22 +54,22 @@ static int hx711_get_gain_to_pulse(int gain)
- 	return 1;
- }
+ MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
+-MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
++MODULE_DESCRIPTION("HX711 and compatible bitbanging ADC driver");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:hx711-gpio");
  
--static int hx711_get_gain_to_scale(int gain)
-+static int hx711_get_gain_to_scale(const int *gain_scale, int gain)
- {
- 	int i;
- 
- 	for (i = 0; i < HX711_GAIN_MAX; i++)
- 		if (hx711_gain_to_scale[i].gain == gain)
--			return hx711_gain_to_scale[i].scale;
-+			return gain_scale[i];
- 	return 0;
- }
- 
--static int hx711_get_scale_to_gain(int scale)
-+static int hx711_get_scale_to_gain(const int *gain_scale, int scale)
- {
- 	int i;
- 
- 	for (i = 0; i < HX711_GAIN_MAX; i++)
--		if (hx711_gain_to_scale[i].scale == scale)
-+		if (gain_scale[i] == scale)
- 			return hx711_gain_to_scale[i].gain;
- 	return -EINVAL;
- }
-@@ -82,6 +80,7 @@ struct hx711_data {
- 	struct gpio_desc	*gpiod_dout;
- 	int			gain_set;	/* gain set on device */
- 	int			gain_chan_a;	/* gain for channel A */
-+	int			gain_scale[HX711_GAIN_MAX];
- 	struct mutex		lock;
- 	/*
- 	 * triggered buffer
-@@ -290,7 +289,8 @@ static int hx711_read_raw(struct iio_dev *indio_dev,
- 		*val = 0;
- 		mutex_lock(&hx711_data->lock);
- 
--		*val2 = hx711_get_gain_to_scale(hx711_data->gain_set);
-+		*val2 = hx711_get_gain_to_scale(hx711_data->gain_scale,
-+						hx711_data->gain_set);
- 
- 		mutex_unlock(&hx711_data->lock);
- 
-@@ -321,7 +321,7 @@ static int hx711_write_raw(struct iio_dev *indio_dev,
- 
- 		mutex_lock(&hx711_data->lock);
- 
--		gain = hx711_get_scale_to_gain(val2);
-+		gain = hx711_get_scale_to_gain(hx711_data->gain_scale, val2);
- 		if (gain < 0) {
- 			mutex_unlock(&hx711_data->lock);
- 			return gain;
-@@ -388,12 +388,14 @@ static ssize_t hx711_scale_available_show(struct device *dev,
- {
- 	struct iio_dev_attr *iio_attr = to_iio_dev_attr(attr);
- 	int channel = iio_attr->address;
-+	struct hx711_data *hx711_data =
-+				iio_priv(dev_to_iio_dev(dev));
- 	int i, len = 0;
- 
- 	for (i = 0; i < HX711_GAIN_MAX; i++)
- 		if (hx711_gain_to_scale[i].channel == channel)
- 			len += sprintf(buf + len, "0.%09d ",
--					hx711_gain_to_scale[i].scale);
-+					hx711_data->gain_scale[i]);
- 
- 	len += sprintf(buf + len, "\n");
- 
-@@ -511,7 +513,7 @@ static int hx711_probe(struct platform_device *pdev)
- 	ret *= 100;
- 
- 	for (i = 0; i < HX711_GAIN_MAX; i++)
--		hx711_gain_to_scale[i].scale =
-+		hx711_data->gain_scale[i] =
- 			ret / hx711_gain_to_scale[i].gain / 1678;
- 
- 	hx711_data->gain_set = 128;
 -- 
 2.43.0
 
