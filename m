@@ -1,44 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2D43B5841
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 10:05:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 069AD3002BD
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 10:08:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777284352; cv=none; b=Wxm4cmV+0Gq8MjbDctoaZQWk7OaczlaSETNjgfPsBfsMexRAA9tMxhWKG9P0rZFU11SxRuMkPEY5XhmzVXDT61J4H+y83MSEG4boVWTBLn3oGYxi0g/JiEwmK/tHE1shoK/59GyM1c4NZupFPQF1slYYPxyXcrkQRbSZ4FmO+wc=
+	t=1777284539; cv=none; b=WkPjV2mQ+jLouktu9xFTI7uKsAHLS5kueWFiN3iRAFEWMtiVB/G6ZcxSSGruf8NAEz3N0kUTxSO/uuvcNB7NzvxGVVu/KkA7Mz6cmTwQZLrrN/cruOH5qSPTNaAoRnHV/Obuvj2vtGIlN1l7ClCmv3MvRHE84jEbwc1GuOJZF04=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777284352; c=relaxed/simple;
-	bh=iN3RRfDRMGCCfBob1PEuXCevWsmAld3vlfxzFx505ZA=;
+	s=arc-20240116; t=1777284539; c=relaxed/simple;
+	bh=/mPQLeHupRSRLsmcAjweHGpm/avj6Qhw5mgYiS669Nw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WVicMItFy6WmY4UTbIXavTXhPxx7KzKJZOTfOOiGUoVv/3kBFX1SYlterHSX20YOFq03xkc+1csMf22pjONCLAejvkxVFxSiRSfjM7W/eica1UMz7NF95SPQvnE2ftXX2Vk43AZ+w5+A3JPYxMDYU+myWSn4t+47bzWMWTpmFQQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pJHgM31x; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=RDSkU6KhZQyTA/9UtAppd1oVqWlTYxuywlJI6DYcRif7qi5zUQirTMThNfbIMhneq6b5dloERrZ8qZnAjqWvcwEDJ/ekuBpfM20qTIAUC7/3jmHD2MPKe0Ya5t4iEES0XplWbniT8whY5TMi8WPVhgeZf50RP5OPJk7AzXI6ZwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dwwLHypF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pJHgM31x"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E57C2BCB4;
-	Mon, 27 Apr 2026 10:05:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dwwLHypF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C4E8C2BCB4;
+	Mon, 27 Apr 2026 10:08:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777284352;
-	bh=iN3RRfDRMGCCfBob1PEuXCevWsmAld3vlfxzFx505ZA=;
+	s=k20201202; t=1777284538;
+	bh=/mPQLeHupRSRLsmcAjweHGpm/avj6Qhw5mgYiS669Nw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=pJHgM31xuoP6R8KfaT8wg7EUB42bfO1I6+x8uTP9GyF6tnua1kODX5VH0s42RUMhC
-	 sVDD7A5M2Y4Pxc6BMrXeC0j3gpac3nGtbSmTk3Ny1Ui1nMCUzLYJs02hF2CJ6OJCl8
-	 HzT+mFm3QZSOVNEZY9Awu3qng4hlZ6/Ahzq5Prq2Ej7R0/VgLOXVDi61VLzJJ1HSX3
-	 dSnVumV16H/+oslJTsDU4lujHKmbhLcWJ/KD0W0aiOWTiAupFMXbuThgJy8++X1sxZ
-	 lV45EEy4Jjhc9MyMTzwczk0shyuERypSahKWq9aAYtRmitp+1OvuxyyXSzTDmSFEQK
-	 8BdT2lPLLPjJQ==
-Date: Mon, 27 Apr 2026 11:05:42 +0100
+	b=dwwLHypFL3Vu7SN74THQy72oh3hKaW60ohna3WTxkcV4aemcVBdKHiQZ9LUsA0H09
+	 W6ZynK29DFaxpTcaJ5Gc7QVz2zW4o9fcHZkiVIdWJTcams8sntT2z9ycbNCl3QY4mY
+	 wv0X9hM/f7YXvFFJql94zMgNIgXw41AyW1fNTG2Tdm6k3qejyqWBgQBiEjMQw/nzhM
+	 KLFGAneJIP7DHwuE0dvtF32r+Xze0wPW1cwX3xEayfxfWM54V1RpTLjS1wX2VEG2w/
+	 TD/Jqbn+ZYxvACqdEDN7YYH6r3XRGPya76okYZjoCWppQ5EGvSjLf2nPV3HzNcSeSR
+	 sD9gjlq2xiodA==
+Date: Mon, 27 Apr 2026 11:08:49 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Caio Morais <caiomorais@usp.br>, andy@kernel.org, dlechner@baylibre.com,
- michal.simek@amd.com, nuno.sa@analog.com,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: adc: xilinx-xadc: remove unnecessary includes
- and add missing ones
-Message-ID: <20260427110542.1dd0b855@jic23-huawei>
-In-Reply-To: <CALoEA-zz-2cG7SJr1iKNQ0H81TVMXLQh3omkxJc9YRW673Kqqw@mail.gmail.com>
+To: Caio Morais <caiomorais@usp.br>
+Cc: andy@kernel.org, dlechner@baylibre.com, michal.simek@amd.com,
+ nuno.sa@analog.com, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/3] iio: buffer: industrialio-triggered-buffer: fix
+ includes with IWYU
+Message-ID: <20260427110849.44bc83b3@jic23-huawei>
+In-Reply-To: <20260426211834.3318306-3-caiomorais@usp.br>
 References: <20260426211834.3318306-1-caiomorais@usp.br>
-	<20260426211834.3318306-2-caiomorais@usp.br>
-	<CALoEA-zz-2cG7SJr1iKNQ0H81TVMXLQh3omkxJc9YRW673Kqqw@mail.gmail.com>
+	<20260426211834.3318306-3-caiomorais@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,41 +48,41 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 27 Apr 2026 08:42:55 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Sun, 26 Apr 2026 18:18:01 -0300
+Caio Morais <caiomorais@usp.br> wrote:
 
-> On Sun, 26 Apr 2026 at 23:20, Caio Morais <caiomorais@usp.br> wrote:
-> >
-> > From: Caio Morais <caiomorais@usp.br>
-> >
-> > Signed-off-by: Caio Morais <caiomorais@usp.br>
-> > ---  
+> From: Caio Morais <caiomorais@usp.br>
 > 
-> You're missing the commit message body. While it's understandable
-> what changes you've done in this patch, it's good to expand the idea
-> further (what you did, how you did it, why you did it). This goes for all
-> of the patches in your series.
-
-Also, why only this file of the several that make up that driver?
-Looks like kernel.h is included in xilinx-xadc-core.c as well.
-
-I'd talk about kernel.h specifically in the patch description and
-why stopping including that is seen as a nice to have.
-
+> Signed-off-by: Caio Morais <caiomorais@usp.br>
+> ---
+>  drivers/iio/buffer/industrialio-triggered-buffer.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> > +#include <linux/bitmap.h>
-> > +#include <linux/errno.h>
-> > +#include <linux/mutex.h>
-> > +#include <linux/types.h>
-> > +
-> >  #include <linux/iio/events.h>
-> >  #include <linux/iio/iio.h>
-> > -#include <linux/kernel.h>
-> >
-> >  #include "xilinx-xadc.h"
-> >
-> > --
-> > 2.54.0
-> >
-> >  
+> diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
+> index 9bf75dee7..a91d439d7 100644
+> --- a/drivers/iio/buffer/industrialio-triggered-buffer.c
+> +++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
+> @@ -4,9 +4,11 @@
+>   *  Author: Lars-Peter Clausen <lars@metafoo.de>
+>   */
+>  
+> -#include <linux/kernel.h>
+> -#include <linux/export.h>
+
+Why?  There are numerous uses of EXPORT_SYMBOL() in this file.
+
+> +#include <linux/errno.h>
+> +#include <linux/linkage.h>
+
+Wow. That one is obscure.  What needed that?  
+
+For these, IWYU patches, I prefer to add that info after the ---
+so it's easy to review them without opening the code up to take a closer look.
+
+>  #include <linux/module.h>
+> +#include <linux/stddef.h>
+> +
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/buffer_impl.h>
 
