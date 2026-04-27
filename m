@@ -1,140 +1,119 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95FBD3B7B9D
-	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 11:27:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 357C740DFD6;
+	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777289276; cv=none; b=qKctWG4HdKHUHI+NYOSCjkiP1UMMtau/BHGgfCd2FrM9oEz7P7g2dcN0A4h7GIjlGhW1zqBsLMVUUuQekeFsK3wE4VMBQ+6xi6xOlIae3QMCk19UDo4bDm5p7GY9Fym3ZRZeSEEefGujKJkk8QwQGhrpDZZ8Zs+hub+Dgzr/EvI=
+	t=1777289411; cv=none; b=bBprOi6a6WCd9u6i3Dzc7QyuVqEinj4z0mYlfiHUdZwg/z7oMjiLDj/xl2qjPdSgCkbQYD4ra+M8/sjDE8hdbEW2aIIUufLvzyjRDI3GC34ZARY2sxjyNetI9zCM+cdJ9ZuEYH3j/UnL1bKwADmSGWOgJJmZZz69TSxUaqeeEOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777289276; c=relaxed/simple;
-	bh=RBabLqD+tGh8IYvzJyarXxDfNs7n/EFI2FJh1Goq9zA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=l1nInemefSoiRenGvKmstqG1DkqsiR1ZVFKtlra6oDFmo9qBDO6qBCjrkj++z9kuBF9NFKRStQatnbFWesvOFlBYog6Q4EX9fwEwuRgwtmqusPGzguEYtWFb8f4VN4YVSPyCgdIpJObxwnyATnIr9BF9IkUyO6yNxIZk+TAhNtM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iUNG8VHT; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777289411; c=relaxed/simple;
+	bh=FU47icc8xWRwMiP7j8yRR3TjrZtfwFeEVK2tkPTLzC0=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=OyRpiXM5fcgcEP+kXI4wxv7w23DxAuvRxcZUM6e3CMJcInVtn87S/nUMFpCMRmTZF2srquBB7hS/Z7278Q5hYhN2Wegn+XZDdHVIFNMc3u7YUaskXL84P0e4inVm0nyiAfsnx8/601rgb6LHTItSnN/a4nuQtHwoZlaAgg0B8OU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W1LQvd2a; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iUNG8VHT"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43fe7c6f61fso1040044f8f.2
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 04:27:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777289273; x=1777894073; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=WMwv0fkBxFJwWQsLP7Ii5ugXzxTh1cB00PWr4huj+AQ=;
-        b=iUNG8VHT5Y6XfozrKbnAHMFrRxs9m3lDZ55YyAfpdmZGNmByLL2A1Q+Cil3ir8m2Bg
-         4xlV9je93kxjFCnLQfqdnIyuQthcVmmNsHnAaIxUj3ANhef0MXBC/SctU7+4uEmzG4rt
-         XMKCxYgr0A+odL5iTdkTKbfq1q9pSBd5j0rW7gDIPUBzzVkYuYdl7IgDuggb04mulp5O
-         VAmICfBZIaweuAqxvmah2UEUKc3Aj/Lpg4pUM+o1KcU2ZYjYO+RscogvkrJ8itFm03fi
-         gcmqstfFn1J2Rrvg+hL2i4+/xBBJr5WKsaA9pc1XkGDsx/eSLB1TvO/Ec3i4K52VLAg4
-         6jBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777289273; x=1777894073;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WMwv0fkBxFJwWQsLP7Ii5ugXzxTh1cB00PWr4huj+AQ=;
-        b=Hhd/ejabUxCptlaEH0YcPYXJXi3z+C6wSQY4yWyZIrPpzuptJWwHtfgBjO8LTO+3XD
-         fJ1noBwf3nC8x5OiTy+qsapVZfY6zehKYwrB51mNwvRF7ynlqk37wfzilbfU+S/PY7Cu
-         Zox+LX97P7uzbHMWdJXsa1c3t3tndEmgHzzIQ0GoOZA7fJk6X+XetHYoqXCAqp40KW1i
-         DhIMDXCQdtqNqTGQ4RjmAazqbr9O8PWHjCbhlor36+jbLFLdj/RjXzx3ES8Cg/SQg5GS
-         vGHBsDxnecYHOH080wEWjxGYSEHaM9rRORsMIMKvvbWX72DjFErh+eGKiqf6mVKNwHdc
-         on6w==
-X-Forwarded-Encrypted: i=1; AFNElJ/EiohRuScsJ9NYesDixCphwgzOUGcM66F4HL776MGC7j3eNqgmv4dT38XwUxrQ4B0Hu12EfAlnd4Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwXLVRsvGuLI6kG/eEbOKsonVKRJFFepv7066ay+5WK3hviyj6S
-	+YDL5lrM3+D5PJ/UQht5oKy9Z5WzU7yGZUMNAMqfoI687Bte9IQTV/C9
-X-Gm-Gg: AeBDiesBRX0nufdWtIcEaWlcH/HIIZH6uIs7txE6TAfmI9ucEPwSgYKPEwXccCeneRO
-	w5Z7W5yo9IwIUm3+WaN2AetegCNThDFjTd8P3/9TwXRuHnnOcVTMKv5F05EWKYlfNpspSx+XNCp
-	d04x3n0AjQn8XxcZybAhgtgsrhgn/OVuBmBxbCykA7Gu/jZq02agE7mqkSzfMT+NAOQzAjDHKbN
-	qb+jh5OBNN5Hozd2ZiNQ+ShgX0lXDF9FpLWagPrWwR4fmmvP0Fg9f0VAbrcnAJd/GSgcGKJYI35
-	Z5gsfhEu8rUq50CuL/4/mYvvSaq07jdMfy1AdtC+b31fOqMt2FuiyMPKALIqdh8E7mbtOf9b/DJ
-	oFgMLp5YLC35rn6bN1vt0BPKCRWnFIKMzPVkvCm1S80kpxszuFSYvMgLTfJJ0g2UgfgToFYXUWP
-	yq5EJ2vXUQ2sA2n1QtFIOuHoob1DAKMlLC/Q33l2L8NXquGF6TzkHbEMxEfgtCZfAHkgfKqhF0R
-	xyAVzU04gL0d9V+OdTqsHNdXX4AlrlvxYaI+so5Xcb5fcuW40hEQYBMGmRuvy4=
-X-Received: by 2002:a05:600c:154c:b0:48a:5758:7999 with SMTP id 5b1f17b1804b1-48a57587e4bmr202154105e9.4.1777289272811;
-        Mon, 27 Apr 2026 04:27:52 -0700 (PDT)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488fc0f82bbsm1342961895e9.3.2026.04.27.04.27.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 04:27:52 -0700 (PDT)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: antoniu.miclaus@analog.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v2] iio: adc: ti-ads7138: replace kmalloc() with stack allocation in i2c_write_block
-Date: Mon, 27 Apr 2026 15:27:07 +0400
-Message-ID: <20260427112705.71138-3-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W1LQvd2a"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EF7F1C2BCB8;
+	Mon, 27 Apr 2026 11:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777289411;
+	bh=FU47icc8xWRwMiP7j8yRR3TjrZtfwFeEVK2tkPTLzC0=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=W1LQvd2aVGghg6jIty7k7WZKt7+m5zV5zwEBxuJ3SIY5ZoAKxZnaeQAl199au7Ng1
+	 DJPd9QjX5KRSXbMtmAUAqEDbwn5ULirczOoP/E+vzdIuKCnWZr6jVIuwmpVEnwuUmQ
+	 sIf2IZURps2XWk2tlVdJkvrCEfQGPTny5/NhihGGfw6L3mjacfvW0RkMae2MquKxsn
+	 AQde9jimy9rhRFW9ykXNX7aoMH2ACapcvvsvkJklpj00qQVEM31XiG6R0vAxPx+645
+	 Wd6jdt06JFe/gq20N/nfmhhY6JLPRxWmqLVqRziD5hKf9o7PIogoEB6YVWoghkxbM0
+	 Id18tC2fwB6qg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2EFFF8860;
+	Mon, 27 Apr 2026 11:30:10 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Subject: [PATCH v2 00/11] Fixes and cleanups for the AD5686 IIO driver
+Date: Mon, 27 Apr 2026 12:30:07 +0100
+Message-Id: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAL9I72kC/3WMwQ7CIBAFf6XZsxhAXKgn/8P0QGFtSbQ0YIim4
+ d/F3j3Oe5nZIFMKlOHSbZCohBzi0kAeOnCzXSZiwTcGySVyJZFZf0aD7B7elBmeyKIxQox+hKa
+ sifajGbeh8RzyK6bPXi/it/4JFcE4065XaLXWvaKrXewjTkcXnzDUWr/ceN4LqQAAAA==
+X-Change-ID: 20260426-ad5686-fixes-63ea68811bdb
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
+ Greg Kroah-Hartman <gregkh@suse.de>, 
+ Michael Auchter <michael.auchter@ni.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=1986;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=FU47icc8xWRwMiP7j8yRR3TjrZtfwFeEVK2tkPTLzC0=;
+ b=APTRVDGVmPNtfHS813U3LydidIykxD8VrF19rPHhrwUwCg/DRoB7mO7FsGSVRtqfJZmLMHYOA
+ 7gs+kZfWgb6D5r+1oVROqyazxezhgC3r7FpQGJi2Q51qsDE+SIFp/3L
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-The ads7138_i2c_write_block() function currently utilizes kmalloc()
-to allocate a buffer for I2C transfers. However, the length
-parameter passed to this function is strictly 2 bytes across all
-driver invocations, making the total payload buffer size exactly 4 bytes.
-Invoking the heap allocator for a 4-byte buffer introduces
-unnecessary SLUB overhead. 
+This is the first series of three on updating the AD5686 driver.
 
-Replace the kmalloc() call with a statically sized 4-byte stack array.
-Add a boundary check returning -EINVAL to ensure future driver
-modifications do not overflow the stack buffer if a length
-greater than 2 is requested.
-Furthermore, dropping the dynamic allocation entirely removes the need to
-include <linux/slab.h> (which was the original motivation for this patch)
-and streamlines the PIO transfer path.
+A bigger patch series was sent before ("Extend device support for AD5686 driver"),
+but this is not exactly a v2:
 
-Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+https://lore.kernel.org/r/20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com
+
+This one adds a number of cleanups and fixes, like:
+- Refactor include headers (IWYU);
+- Remove redundant register definition;
+- Drop enum chip id in favor of per-device chip_info structs;
+- Fix internal voltage reference control for single-channel devices;
+- Acquire lock when doing power down control;
+- Fix powerdown control for dual-channel devices;
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/adc/ti-ads7138.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+Changes in v2:
+- Bring fixes first and cleanups later
+- Link to v1: https://lore.kernel.org/r/20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com
 
-diff --git a/drivers/iio/adc/ti-ads7138.c b/drivers/iio/adc/ti-ads7138.c
-index ee5c1b8e3a8e..172893cbc17d 100644
---- a/drivers/iio/adc/ti-ads7138.c
-+++ b/drivers/iio/adc/ti-ads7138.c
-@@ -102,21 +102,20 @@ static const int ads7138_oversampling_ratios[] = {
- static int ads7138_i2c_write_block(const struct i2c_client *client, u8 reg,
- 				   u8 *values, u8 length)
- {
-+	u8 buf[4];
- 	int ret;
--	int len = length + 2; /* "+ 2" for OPCODE and reg */
- 
--	u8 *buf __free(kfree) = kmalloc(len, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
-+	if (length != 2)
-+		return -EINVAL;
- 
- 	buf[0] = ADS7138_OPCODE_BLOCK_WRITE;
- 	buf[1] = reg;
- 	memcpy(&buf[2], values, length);
- 
--	ret = i2c_master_send(client, buf, len);
-+	ret = i2c_master_send(client, buf, ARRAY_SIZE(buf));
- 	if (ret < 0)
- 		return ret;
--	if (ret != len)
-+	if (ret != ARRAY_SIZE(buf))
- 		return -EIO;
- 
- 	return 0;
+---
+Rodrigo Alencar (11):
+      iio: dac: ad5686: fix ref bit initialization for single-channel parts
+      iio: dac: ad5686: fix input raw value check
+      iio: dac: ad5686: acquire lock when doing powerdown control
+      iio: dac: ad5686: fix powerdown control on dual-channel devices
+      iio: dac: ad5686: refactor include headers
+      iio: dac: ad5686: remove redundant register definition
+      iio: dac: ad5686: drop enum id
+      iio: dac: ad5686: add of_match table to the spi driver
+      iio: dac: ad5686: add control_sync() for single-channel devices
+      iio: dac: ad5686: cleanup doc header of local structs
+      iio: dac: ad5686: create bus ops struct
+
+ drivers/iio/dac/ad5686-spi.c |  73 ++++--
+ drivers/iio/dac/ad5686.c     | 521 +++++++++++++++++++++----------------------
+ drivers/iio/dac/ad5686.h     | 116 +++++-----
+ drivers/iio/dac/ad5696-i2c.c |  80 ++++---
+ 4 files changed, 409 insertions(+), 381 deletions(-)
+---
+base-commit: d86db1905add39f905cf9f04252804b359914ed6
+change-id: 20260426-ad5686-fixes-63ea68811bdb
+
+Best regards,
 -- 
-2.52.0
+Rodrigo Alencar <rodrigo.alencar@analog.com>
+
 
