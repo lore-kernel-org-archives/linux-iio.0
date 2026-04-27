@@ -1,285 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BACE93101B2;
-	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABDAC306B3D
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 11:31:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777289411; cv=none; b=u8i04Q/5Rk4MaXCHB+u+0tCdtNVqbPMBhV2O3AaMyPcGCcit9i53UPqXaqnCBLo3kLzOBCMKAPtnDwFL9fxZ7LX2blHPlbc+Ox9Llp2d9D6onyhcQehzX0P/vQTlzIfmK6eRrXag+wnGLZux4tY/ejslqZAcdxCnySX5fXkqG/w=
+	t=1777289502; cv=none; b=BAoZRyNCaE3skGmkS9jzARb48zOsrdkkMbj52+EcU/xwt7LyuL1u0xe4hbIufT/QJRT4CIZRtXn21s14XMIPFGnvgmt0fEjuMGFE18MNRE7FTpGj25EEve+3rPOCpVNR7nElGyQ11dBx2IbEdgbDI6lIrDlWvRW7f0CxxHiBRkY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777289411; c=relaxed/simple;
-	bh=Ya5b8JUnh3ROyyCKsdXfkxwx/rYeawxvskRC/+waVOo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rHLuWW3me8qH2atK9cHVVwzPc5qPnLrJGOH6C/3QxSztM+BITQntcOeelLCwEFlI4anQYDqfJmmyRSHhDDwCIrFKcCae3/KkrkSPD0by3hkDfmjJAVstupciCFLWzldLnVP1MGGNneGGbT95ciYzJ1EcxvGIJKRgh7SlPFjGUy8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GmPyQgWz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777289502; c=relaxed/simple;
+	bh=BSKeNmldHT4Gnyu3PoZpB2N+yepnrwlBw7UytxqJLDI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mJnOMAwurN7Dxei3tGFphCIYZ3FkrWkwm8jQsENjmgi7uTKYiyWdkekuybHUOR+78AzlFnJOUyriQSiEGmPDCUPnWbW5457lYBPcl9IhYG96Vne34dW61aXev88+dLYCNTdaNHvT8OUIXTA+NGie1TG0YjW3Wf42OtT4CRdsS44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b2PS94mM; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GmPyQgWz"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 99CA4C2BCC7;
-	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777289411;
-	bh=Ya5b8JUnh3ROyyCKsdXfkxwx/rYeawxvskRC/+waVOo=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=GmPyQgWz6XfeovebVJiySiKxZ+V3G2EeaVBx7dKEdL9gPaj0zyc61m6xre1+gResI
-	 1Il5BA/K7Kh7VoiGh2T+1zFqFqOEaMhBMj3qvn+TinKZXzgbTn1Dg0hfWoJc0GygFN
-	 mAOQIq65gMbiSMZ1Env1YepcjhI7S8BwLIfRzLNwDiIJX1+W0rV2Gf54p8M+r4wCFk
-	 TwjI9givrujQ/4t2bxE+RiuVYbfH57ojId+m8FDX7C7Y9RlauyWwg+slcXxR56rINJ
-	 innKUy3Ldqk6LPowBhVDS+ny8S6I4OWcQN7vn9oYHQ1ejhCoM1zKk+Y7brziTrFFCm
-	 xejxAcRlYzV7Q==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 921CEFF8862;
-	Mon, 27 Apr 2026 11:30:11 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 27 Apr 2026 12:30:18 +0100
-Subject: [PATCH v2 11/11] iio: dac: ad5686: create bus ops struct
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b2PS94mM"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4852a9c6309so93294915e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 04:31:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777289499; x=1777894299; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oczoMnPReZaIdQXexoCfPQETvMC08e4WB9/AECl0kH0=;
+        b=b2PS94mMgMzzACiK70mb0ZWH1D0Vs8ne6WWmA9RT8Ev7tOHbNY0RqtHV0sXXsj2D2P
+         kqYb+Xi4OAKLstwB9ol6sTalNCVhdjMN4Aiy96X5RGlhJD4S052mHWpbPGJlnhc3nSG1
+         zhqGi4vWEU0twTDDKM0GzyATuU/L4hp69Gg2ROJzPQiDRTY5T2Kb8Dy+aXnJySNW6YaA
+         Kb/kVX3beKMXq7tZBrWWei28dMxglf2O25o7fEbY8MwLKr/3dg8sl3AQtbRr3qA5b6xK
+         2p0RYoOiScW557p38VFppwzg76pz2V+gh+SR7xg6qjf4+JkoNma5D7htj/dcD01qnaWR
+         K2jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777289499; x=1777894299;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oczoMnPReZaIdQXexoCfPQETvMC08e4WB9/AECl0kH0=;
+        b=MbYfYcaT/9oJSIo42oyvASnHla39PTgcZvkf2AAY1vQkI15SYjndQmDm/Krdolilhq
+         q9NHo3JCu/KvJQR3+hrzPlplTsdKom1LDcHDRtHEydI/a9u3YPavLG661wXDD/f0es9r
+         n6waomvs3jmbtSA4wlLD9BoLbeavEjZvzFX4CPIdqVLoOox1GDWYkzoXzN+aoiQHAxak
+         3hJA9ueDnYgoF9Ve7sFX8XOzx34mPCFkVxEPp+W0UNCnoXW4oIFITwzxz4qwaJ9Z/f16
+         j92nN2rmvAU78resVO2IRGZtXBdQvICrbMKZwrucVnqP5JJ/d8X1Vct/ZMqhbyHyOmBG
+         XMVA==
+X-Forwarded-Encrypted: i=1; AFNElJ+Xpjs57LECKg2jt83Bl6rDrCwRPDjhKqngEswJG8krPP1BK5m3xJrmfXgmRqY4C2mr9I0PQrQS8lY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxyOt/oLSVRfTh9Abl2GuEVypwtsUEkx21dCv4VroTxitoEGJr1
+	hpbOfz8vNZDk3RCxWEsqGQ9G4xsRnNUHL4yTF1iF2saa3H7Kj4MTluqv
+X-Gm-Gg: AeBDiev1f8Siyl7LSKSTgbHgXxf0xlS3yOIivTAA0VCUV4WswERyEvfem/E2dXsMazA
+	zx/YNGrQaN8CPc+nMJfh+fCI1UbMLTfRdC2KNJKJGDIrUJhwyIYB4yAYR+LxEn2yt7jAHv5fEy5
+	KIuqaPhF4mpK7WYckNIhnm1EGi2NKHcrgjAJRFXRay/0PJjJEBvvXPX957C5jm4Xs2G4H0nF0u4
+	Y5jbvNtmy9E7HmuW/4XowmBTIi/hn06v0CeJYsa/lIax/36c/Sw+8DJ2H2aZP+1QYstfwvnFaRB
+	wgPus9aW41oNOX+6PjLT6rkSevOmoBF7HCo0Kt9KqvCdo+Y3uOLiJ8r9MppgiBkfuhORkjr1Qmi
+	6Q5IeUTnIbh2z9kNKKGcvLfUeD1mPgl8hICcl6N+SlOPAekO9i5SqAOJ84Vrqev3ffMpGunXROL
+	GMPaklIEEaDguZSNTsEvAvkwRNlA7VM4+xMw==
+X-Received: by 2002:a05:600c:a31a:b0:488:b241:2c5f with SMTP id 5b1f17b1804b1-488fb785b7emr456261975e9.26.1777289498891;
+        Mon, 27 Apr 2026 04:31:38 -0700 (PDT)
+Received: from pc ([196.235.239.18])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a59816b71sm221145305e9.1.2026.04.27.04.31.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2026 04:31:38 -0700 (PDT)
+Date: Mon, 27 Apr 2026 12:31:34 +0100
+From: Salah Triki <salah.triki@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] iio: adc: mt6359: fix unchecked return value in
+ mt6358_read_imp
+Message-ID: <ae9JFucpXBPwwGzr@pc>
+References: <20260427085458.38546-1-salah.triki@gmail.com>
+ <ae8pAGBGGOvsURka@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-ad5686-fixes-v2-11-188e05199368@analog.com>
-References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
-In-Reply-To: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
- Greg Kroah-Hartman <gregkh@suse.de>, 
- Michael Auchter <michael.auchter@ni.com>, 
- Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777289409; l=7506;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=DYC+4U2A6nqOoRlz+vKu6DEnzb52BHbonqf8rGIDB8c=;
- b=ZmPyYuAwMsxiTBZRAW2+miZMOB+BqaMIBsRlIJZCNcbOmDM5aszWBHDwBYM8IUYUgg+p7ZupP
- C0RiTeR5BYgBnQyRQ0PwGgqz9A/yZr3alB9FVUmMWkqU/JEQk2qQLIF
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae8pAGBGGOvsURka@ashevche-desk.local>
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Mon, Apr 27, 2026 at 12:14:40PM +0300, Andy Shevchenko wrote:
+> On Mon, Apr 27, 2026 at 09:54:57AM +0100, Salah Triki wrote:
+> > In mt6358_read_imp(), the return value of regmap_read() is currently
+> > ignored. This is problematic because if the bus read fails the variable
+> > val_v remains uninitialized.
+> > 
+> > The function subsequently assigns this uninitialized stack value to
+> > *vbat, leading to incorrect measurement results being reported to
+> > the IIO subsystem without any error indication.
+> > 
+> > Update the function to check the return value of regmap_read(). Ensure
+> > that mt6358_stop_imp_conv() is still called to clean up the hardware
+> > state before returning the error code.
+> 
+> Sounds like this deserves a Fixes tag, but the problem is that the whole driver
+> is written like this. Why does having this fixed make it special?
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
 
-Create struct with bus operations, which will be used to extend bus
-implementation features. Auxiliary functions ad5686_write() and
-ad5686_read() are created and ad5686_probe() now receives an ops struct
-pointer rather than individual read and write functions.
+You are right, Andy. I noticed that several other functions in this driver
+share the same issue. I will send a V2 that addresses all unchecked
+regmap_read() calls in this file and I will include the Fixes tag. Thanks
+for the feedback.
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/ad5686-spi.c |  7 ++++++-
- drivers/iio/dac/ad5686.c     | 32 ++++++++++++++------------------
- drivers/iio/dac/ad5686.h     | 29 +++++++++++++++++++++--------
- drivers/iio/dac/ad5696-i2c.c |  7 ++++++-
- 4 files changed, 47 insertions(+), 28 deletions(-)
-
-diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-index 8fef0e6d33ff..857b9e4f54ab 100644
---- a/drivers/iio/dac/ad5686-spi.c
-+++ b/drivers/iio/dac/ad5686-spi.c
-@@ -92,10 +92,15 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
- 	return be32_to_cpu(st->data[2].d32);
- }
- 
-+static const struct ad5686_bus_ops ad5686_spi_ops = {
-+	.write = ad5686_spi_write,
-+	.read = ad5686_spi_read,
-+};
-+
- static int ad5686_spi_probe(struct spi_device *spi)
- {
- 	return ad5686_probe(&spi->dev, spi_get_device_match_data(spi),
--			    spi->modalias, ad5686_spi_write, ad5686_spi_read);
-+			    spi->modalias, &ad5686_spi_ops);
- }
- 
- static const struct spi_device_id ad5686_spi_id[] = {
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index c5795141f483..05b0857364bb 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -28,18 +28,18 @@ static int ad5310_control_sync(struct ad5686_state *st)
- {
- 	unsigned int pd_val = st->pwr_down_mask & st->pwr_down_mode;
- 
--	return st->write(st, AD5686_CMD_CONTROL_REG, 0,
--			 FIELD_PREP(AD5310_PD_MSK, pd_val) |
--			 FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
-+			    FIELD_PREP(AD5310_PD_MSK, pd_val) |
-+			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
- }
- 
- static int ad5683_control_sync(struct ad5686_state *st)
- {
- 	unsigned int pd_val = st->pwr_down_mask & st->pwr_down_mode;
- 
--	return st->write(st, AD5686_CMD_CONTROL_REG, 0,
--			 FIELD_PREP(AD5683_PD_MSK, pd_val) |
--			 FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
-+			    FIELD_PREP(AD5683_PD_MSK, pd_val) |
-+			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
- }
- 
- static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
-@@ -135,7 +135,7 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 			address = 0x0;
- 			val = lower_16_bits(val);
- 		}
--		ret = st->write(st, AD5686_CMD_POWERDOWN_DAC, address, val);
-+		ret = ad5686_write(st, AD5686_CMD_POWERDOWN_DAC, address, val);
- 		if (ret)
- 			return ret;
- 		break;
-@@ -158,7 +158,7 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
- 		mutex_lock(&st->lock);
--		ret = st->read(st, chan->address);
-+		ret = ad5686_read(st, chan->address);
- 		mutex_unlock(&st->lock);
- 		if (ret < 0)
- 			return ret;
-@@ -188,10 +188,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 
- 		mutex_lock(&st->lock);
--		ret = st->write(st,
--				AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
--				chan->address,
--				val << chan->scan_type.shift);
-+		ret = ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
-+				   chan->address, val << chan->scan_type.shift);
- 		mutex_unlock(&st->lock);
- 		break;
- 	default:
-@@ -452,8 +450,7 @@ EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
- 
- int ad5686_probe(struct device *dev,
- 		 const struct ad5686_chip_info *chip_info,
--		 const char *name, ad5686_write_func write,
--		 ad5686_read_func read)
-+		 const char *name, const struct ad5686_bus_ops *ops)
- {
- 	struct ad5686_state *st;
- 	struct iio_dev *indio_dev;
-@@ -467,8 +464,7 @@ int ad5686_probe(struct device *dev,
- 	st = iio_priv(indio_dev);
- 
- 	st->dev = dev;
--	st->write = write;
--	st->read = read;
-+	st->ops = ops;
- 	st->chip_info = chip_info;
- 
- 	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
-@@ -510,8 +506,8 @@ int ad5686_probe(struct device *dev,
- 			return ret;
- 		break;
- 	case AD5686_REGMAP:
--		ret = st->write(st, AD5686_CMD_INTERNAL_REFER_SETUP, 0,
--				st->use_internal_vref ? 0 : AD5686_REF_BIT_MSK);
-+		ret = ad5686_write(st, AD5686_CMD_INTERNAL_REFER_SETUP, 0,
-+				   st->use_internal_vref ? 0 : AD5686_REF_BIT_MSK);
- 		if (ret)
- 			return ret;
- 		break;
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index 135935265c10..a9d9472425a7 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -58,10 +58,15 @@ enum ad5686_regmap_type {
- 
- struct ad5686_state;
- 
--typedef int (*ad5686_write_func)(struct ad5686_state *st,
--				 u8 cmd, u8 addr, u16 val);
--
--typedef int (*ad5686_read_func)(struct ad5686_state *st, u8 addr);
-+/**
-+ * struct ad5686_bus_ops - bus specific read/write operations
-+ * @read: read a register value at the given address
-+ * @write: write a command, address and value to the device
-+ */
-+struct ad5686_bus_ops {
-+	int (*read)(struct ad5686_state *st, u8 addr);
-+	int (*write)(struct ad5686_state *st, u8 cmd, u8 addr, u16 val);
-+};
- 
- /**
-  * struct ad5686_chip_info - chip specific information
-@@ -109,6 +114,7 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
-  * struct ad5686_state - driver instance specific data
-  * @dev:		device instance
-  * @chip_info:		chip model specific constants, available modes etc
-+ * @ops:		bus specific operations
-  * @vref_mv:		actual reference voltage used
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-@@ -120,11 +126,10 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
- struct ad5686_state {
- 	struct device			*dev;
- 	const struct ad5686_chip_info	*chip_info;
-+	const struct ad5686_bus_ops	*ops;
- 	unsigned short			vref_mv;
- 	unsigned int			pwr_down_mask;
- 	unsigned int			pwr_down_mode;
--	ad5686_write_func		write;
--	ad5686_read_func		read;
- 	bool				use_internal_vref;
- 	struct mutex			lock;
- 
-@@ -143,8 +148,16 @@ struct ad5686_state {
- 
- int ad5686_probe(struct device *dev,
- 		 const struct ad5686_chip_info *chip_info,
--		 const char *name, ad5686_write_func write,
--		 ad5686_read_func read);
-+		 const char *name, const struct ad5686_bus_ops *ops);
- 
-+static inline int ad5686_write(struct ad5686_state *st, u8 cmd, u8 addr, u16 val)
-+{
-+	return st->ops->write(st, cmd, addr, val);
-+}
-+
-+static inline int ad5686_read(struct ad5686_state *st, u8 addr)
-+{
-+	return st->ops->read(st, addr);
-+}
- 
- #endif /* __DRIVERS_IIO_DAC_AD5686_H__ */
-diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-index fd047c01f8f6..30c48d937a38 100644
---- a/drivers/iio/dac/ad5696-i2c.c
-+++ b/drivers/iio/dac/ad5696-i2c.c
-@@ -62,10 +62,15 @@ static int ad5686_i2c_write(struct ad5686_state *st,
- 	return (ret != 3) ? -EIO : 0;
- }
- 
-+static const struct ad5686_bus_ops ad5686_i2c_ops = {
-+	.write = ad5686_i2c_write,
-+	.read = ad5686_i2c_read,
-+};
-+
- static int ad5686_i2c_probe(struct i2c_client *i2c)
- {
- 	return ad5686_probe(&i2c->dev, i2c_get_match_data(i2c),
--			    i2c->name, ad5686_i2c_write, ad5686_i2c_read);
-+			    i2c->name, &ad5686_i2c_ops);
- }
- 
- static const struct i2c_device_id ad5686_i2c_id[] = {
-
--- 
-2.43.0
-
-
+Best Regards
+Salah Triki
