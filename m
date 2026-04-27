@@ -1,88 +1,120 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FD2A397E9A;
-	Mon, 27 Apr 2026 08:36:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA96737AA78
+	for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 08:55:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777278988; cv=none; b=W+HIQuja7/XBJ8b3Si/MdJcXLkkfAu9BYc3CDdCThoMmL6T09fusSDHEcB2PZRVXiLa9JxZj1btLjeBCF24dWvhOtaDxA6zWgIpxELptCUtSjv1ZDOU1eleM2x38d1fVtburyUvEwMMYmvumc1kzCHnatt/+UIj06VRi5Qgmhyg=
+	t=1777280116; cv=none; b=FrzYb8esgtLlfL+sPUxpQX13fD7TAs2K16t7/yEggkgYiXzYfPMGYbJJu8dEegRHijhj4rNAhL0wTkOiOsM+nVWdXC2XhDvRDb/+x3HOCdXb6D3eothEry0vw0dkyHlpk7RUtI2WnkQ1cULM/Iy5QytvkJsYsEug8HmIibpiz4Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777278988; c=relaxed/simple;
-	bh=/rFbWm3/9E+LqUC5JKzMV6mlM6dsNa/dATZVYt8mVL4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Dnm4yVJ6SX7eqa9DtNz/QSU6V3Q90bwHN/H7BNgursMNG6HKlZTXCXQf40zD6Apk1zoN2dIruCV+71qkyiqRdNB16+5l4eJZlMItmXzuR6a+RKFFI+DywKgUBkztFHOXcM0Nj8JJ8axqk/XgTSrte+jw42yQZByuUjf0/2lJOoA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WVtuG7lQ; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777280116; c=relaxed/simple;
+	bh=ex/wBQ/ihuU0frMIpPPFc+k2MJG4Ygkspi/FZ5Lqphk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bvvSQWgzGH1JBI/H7hiQ7oN9ARYjGOF9qwd4TKJXUkQDLxhzKKrdbSbuj+cNGmyFM6BwXTVKFf4ShtTkpch17rDNrUvEojEJ930LBFvA/H8nM/oDYlZb98yxC5Mk4dQKis1Q3wewfF5fcFc8344b4PvJOHsf7J+eoCU/YJsWbCA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DdVr9G3A; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WVtuG7lQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777278988; x=1808814988;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/rFbWm3/9E+LqUC5JKzMV6mlM6dsNa/dATZVYt8mVL4=;
-  b=WVtuG7lQKfixxQlJ7GvKZ1OMhShdl9srOTAYirV0JlzkZFbKLezQadkD
-   JcXMCZn8dlKHi7OXMYuxRskMQOijwAUCCiRegJaVAtaEr+1ufA8NRF25J
-   aigJ3CP3p9upBRmBk96j/QgKQoYdI1R/K2shNZ29Yd7BYUbPB9vSOcB+9
-   YRvCulS7+eY5/vn9+pQrHvH9rI0W4TuHEj5G8sskXAcqZR5eBWz2fGtz+
-   X917+nGYRP+Tcg3XGtbPPkNAZXdwAaVRV+JqTkrCtV/7Hj1SI1RKpcGg+
-   5wE2Zd+aoygteFblKKQ9xCnnjtqqOtSm/QiAFuHZ42mDbGjP43gBNOCeI
-   w==;
-X-CSE-ConnectionGUID: +3O4VQPuT+CcBRNMvLjAkg==
-X-CSE-MsgGUID: UvMrdRZTTHaCSF9aILsb+w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11768"; a="78077974"
-X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="78077974"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 01:36:27 -0700
-X-CSE-ConnectionGUID: gD2Q3ncuT/ug3yar+9jwqQ==
-X-CSE-MsgGUID: LPpOT8sdQrqVsTuPya3kKg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="232699082"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 01:36:22 -0700
-Date: Mon, 27 Apr 2026 11:36:20 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Antony Kurniawan Soemardi <linux@smankusors.com>
-Cc: Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DdVr9G3A"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4852b81c73aso83015615e9.3
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2026 01:55:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777280111; x=1777884911; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=g+pkBk61K0bONezvT3hKFR4CsnavUHfQ0OwvNOKj+rk=;
+        b=DdVr9G3AymhXnxKOZlcJH0uW/U9t8wcJcB2Q9gBKLj9agQUq9fJNk9G8r2l2KrIzj/
+         2s0N4+qW/R1D6m38Bk4ED0z1xV400Cb7/HHRHED21Ax8zFNjjC0y1CRZ853EowaFIUXy
+         BFR3gQKDrqwUfAXFZRSEcO+Fvx/bS321ZR0AXSUk0DuQrLjJgS24kxOMaalXrDhlZva4
+         rXvKNkRBgH7MkV9uAU624mgk8l1mr+TUsrSwRKQpk2h/RtL5t8q/pOT7DL3TcFRNypwE
+         MQkCbvWlLByfLRkcoS2KGdlFTqDUGjf7iDhFv9v1Pm2REVToX6EO8Z1oZ9yg5i+4AA6E
+         xFMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777280111; x=1777884911;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=g+pkBk61K0bONezvT3hKFR4CsnavUHfQ0OwvNOKj+rk=;
+        b=dGJh6TGKlnC0zhG0/4aepsJRd/R0enD90nqIZuhfx9niv2pw7VOeqBVC1rzy5BDLig
+         2Un3L7+ld/+MamptMfMVG/IDXhS69vCpSoWh0svbgwC82AEIH45+UIcSY0bwR5MtwguZ
+         3lS32ON0Ojxb8F33J4h2sIjhWundnWX/24yJfZuuKHszq+9UmgeXvNwGtwynoO3LMuLH
+         bjSVm6T8PVlfDbDAQoaWiFCijd3SWevSV1wGS0WHEDDU92J1FLZR0BjzWc0a71xKWs4p
+         yA3AT2zZoOVdHr9IWhzQZMRvXSe2vuPi06GNwf7aTApGwA7cyzChA50YqaQnlPsOnnvK
+         h+Rg==
+X-Gm-Message-State: AOJu0Yxm+PKk5yneiekQR+7OgGfgsIVhyaKSHFipdnE6AIXzyXJn78GF
+	M5v8LkPOHx9VEWXBvqPTKppT2xHu9XBdWXXF7hCiJpz77/COJG/TXceV
+X-Gm-Gg: AeBDievzQxXtQgqqBrf2kSbYq+Ti56ort/GclnShOGE5q8mqKwqQxKJvs4j7w+JZ4Z9
+	hhowfqJlsAx2TATtMuw5gKqrTbztQFDgBrQv9i/33oexSLeMHvVfszSl0ClGexvQ3K8EzuSTTGy
+	dO8inQmpD2PGpIUKGbAUzsdamYHFpxxR81ozV2ZYfeaahcj35vq+gYpyxe52EEl8mE2wWGyhHv/
+	UZHv2jzoNlxUIxswFHOboRkuJ0w/44KvuxToLHgNP+6k5pTgNK6ziys+ReQcvSUfJhZN7/p29F/
+	AX8brMYx40R5LWznSX/XtH7m8ut3fwvNyAxGoYJ2rjORbcVg0/Kiz34pzrixP2ROlBVpOe5nwbw
+	XNE4q+bBJoS6joNCPetTzjTssCmRDtW2+v+pUOjSve4Lo1avEaVjnXGH4L+vkP5Q37UKjRvv3E2
+	2XaPrti6jAFsgKgMxZ5lOmcTfXdUjQ0N70AZUmIWFnAn6HqSSiwmqSXyze2f4=
+X-Received: by 2002:a05:600c:4a15:b0:489:1aed:1658 with SMTP id 5b1f17b1804b1-4891aed16d8mr269026355e9.23.1777280111056;
+        Mon, 27 Apr 2026 01:55:11 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.152.26])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4e4d5b1sm82248879f8f.30.2026.04.27.01.55.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2026 01:55:10 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, phone-devel@vger.kernel.org,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Subject: Re: [PATCH v5 2/3] iio: adc: qcom-pm8xxx-xoadc: remove redundant
- error logs when reading values
-Message-ID: <ae8gBKZIajZ9ts2K@ashevche-desk.local>
-References: <20260427-pm8xxx-xoadc-label-v5-0-9e7b5a53ef99@smankusors.com>
- <20260427-pm8xxx-xoadc-label-v5-2-9e7b5a53ef99@smankusors.com>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH] iio: adc: mt6359: fix unchecked return value in mt6358_read_imp
+Date: Mon, 27 Apr 2026 09:54:57 +0100
+Message-ID: <20260427085458.38546-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260427-pm8xxx-xoadc-label-v5-2-9e7b5a53ef99@smankusors.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Sun, Apr 26, 2026 at 08:14:46PM +0000, Antony Kurniawan Soemardi wrote:
-> Drop dev_err() logging for -EINVAL and -ETIMEDOUT cases and rely on
-> return values to report errors, reducing unnecessary log noise.
+In mt6358_read_imp(), the return value of regmap_read() is currently
+ignored. This is problematic because if the bus read fails the variable
+val_v remains uninitialized.
 
-The comments from v4 are still applicable to this version.
+The function subsequently assigns this uninitialized stack value to
+*vbat, leading to incorrect measurement results being reported to
+the IIO subsystem without any error indication.
 
+Update the function to check the return value of regmap_read(). Ensure
+that mt6358_stop_imp_conv() is still called to clean up the hardware
+state before returning the error code.
+
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+ drivers/iio/adc/mt6359-auxadc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/mt6359-auxadc.c b/drivers/iio/adc/mt6359-auxadc.c
+index 6b9ed9b1fde2..f927bff4a26a 100644
+--- a/drivers/iio/adc/mt6359-auxadc.c
++++ b/drivers/iio/adc/mt6359-auxadc.c
+@@ -497,10 +497,13 @@ static int mt6358_read_imp(struct mt6359_auxadc *adc_dev,
+ 		return ret;
+ 
+ 	/* Read the params before stopping */
+-	regmap_read(regmap, reg_adc0 + (cinfo->imp_adc_num << 1), &val_v);
++	ret = regmap_read(regmap, reg_adc0 + (cinfo->imp_adc_num << 1), &val_v);
+ 
+ 	mt6358_stop_imp_conv(adc_dev);
+ 
++	if (ret)
++		return ret;
++
+ 	if (vbat)
+ 		*vbat = val_v;
+ 	if (ibat)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
