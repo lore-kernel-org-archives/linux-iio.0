@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D6F533F595;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EAC437BE94;
 	Tue, 28 Apr 2026 17:02:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777395739; cv=none; b=ejuSjecgVOGxvKPT6BdkS0NPbwiLLK5TnpsqUqVhJdlWZ9Q8OslWQ46UaAnPHsivVb53ZrGq8W35jCet9QDJO0nbJgm3T3GfCXE++DdpYFcR2JYAG2vUL9ulvdyEgJtKn0neA2LGmXaUN39nPFBJ9xG75fxjaQgdbSIXTFymor4=
+	t=1777395739; cv=none; b=CO9CsSU82psqXtShAWPrivFGQQd+nFHdGMLlpSOuRmEkdYGKIwkKMevK/3vOz3zPGM5dNjMhHXXpc3lG/5jV4vWKFcVXMoF4TuysFfVAgojU3xCHeLl2evWy8njqO/aIOpO2bdjoWtIFyJA1U73UyNI1Knxx8uSZdpD0ZZ9KLGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777395739; c=relaxed/simple;
-	bh=krVf7p9/XSPfP4ZSXyTzfe8GH35a+0rXDoreKCFWalU=;
+	bh=1YHwJW/F/aGnBCrK+QuoJQ5y3VVjuauCA31FONbyLx8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ewnO4iwa3Og9ysUcKQAXLviuM7GpThZMLT1nZ8ULBer3OK6oRgVBfrQ/XF38hPGOfPtJ9CgKZR77/smOuXsDtz8Pdy0aWd4Ki89157DRgfHxtvjfvgdpm9YaEcRL0U+g9JMs1jzaG8yYZU9hr0JtQ6u0MQ6DYB51FopLEVjO7lE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TCEYzCod; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=PNbgyN6EcWSHUomVL/70FCaZV5GCA5U7ULEk06oTAuP8h7RzP9GvsJqiwjGiMgFFXZ6RWBjLOX/BIoT3q8ULeQJAsNG4CecLtWJ2clMLyY8zqBuI6RUGhu+ne1AVLwHoE9LVPEgmn7fRQ4k83zYXYSXgaL/uivUWcCuK2hIWLi4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=frUxCMt2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TCEYzCod"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 505CBC2BCF4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="frUxCMt2"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 71D88C2BCB5;
 	Tue, 28 Apr 2026 17:02:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777395739;
-	bh=krVf7p9/XSPfP4ZSXyTzfe8GH35a+0rXDoreKCFWalU=;
+	bh=1YHwJW/F/aGnBCrK+QuoJQ5y3VVjuauCA31FONbyLx8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=TCEYzCodqnOyok4lr0w++nzAR1pI7/WSJxwlShZpgIoPB6qlaf5krnSAnLay7u0BS
-	 sRW7E2pkJTQR81P4OuY1jYSz/YVw535KP4jJv0h4HgS2Ky9OM693JEyCQ/dvOt6/CS
-	 31JXe1LdjLMJgOGlZGtbGqgyLDA7kcCZIV7wp2hezLYOJYPt6KbCsZrpAulcoM/bb8
-	 NylhTgT4KFsJAKVb2MljtepqEKCgL6JWX+oCWJDRHSrwNrJCWh2NUJ2rJhE8+cEWXD
-	 pyv0+v/+vKd9MMdpMla9hJYCqbVvShpkVVbb5fjqSbpAKY8MAJ7Dx8k0njbDgCfD5m
-	 dA9lJkgA1tBzw==
+	b=frUxCMt2QOMgtLByZ5aZGpayk7uVkJ3ESWrobDa30xydUw99l6oIpCcHKw540AU16
+	 F92C+dgI/Svu3HPxBtl3USkrEaS7J3S14RT7vHXJq6xBAC16YseiKuPS8+Eh8nDWkY
+	 r49aqWRe7VhcSh2ETuP6LBUMwgf9kt2sdhAxrtUDA372uNnpB30/bH/ELizClFtyHM
+	 mhB4opQq9O54VSzl2+Ft5fBcqxPz9wttmUvzLoo93XX461bA0fdsFwOK0y+asL8ot0
+	 qGTjrm4//FMRVwCTIPLbR8rF2+3N+YwAGX1ohzn3WsCuMZj7rOgk8QerU5B7Y3daeF
+	 0L3oMKcx2+vSw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49EF2FF8878;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7E4FF886F;
 	Tue, 28 Apr 2026 17:02:19 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 28 Apr 2026 18:02:24 +0100
-Subject: [PATCH v3 09/11] iio: dac: ad5686: add control_sync() for
- single-channel devices
+Date: Tue, 28 Apr 2026 18:02:26 +0100
+Subject: [PATCH v3 11/11] iio: dac: ad5686: create bus ops struct
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260428-ad5686-fixes-v3-9-9cff7bd67a15@analog.com>
+Message-Id: <20260428-ad5686-fixes-v3-11-9cff7bd67a15@analog.com>
 References: <20260428-ad5686-fixes-v3-0-9cff7bd67a15@analog.com>
 In-Reply-To: <20260428-ad5686-fixes-v3-0-9cff7bd67a15@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -55,11 +54,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777395737; l=6004;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777395737; l=7506;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=mlPsPJGibSn9jC1Ml4iLk03xG0zqfBHDGLMjfkzY0iQ=;
- b=js4HiExFXCHo96955rM5EBJ0tge7QwFCjlAg19mEciZxCDqMs7PVHehnoXdhSCQ9tmcyO1J5c
- iV1pwrMxXuxCW6nxk1FMDEi33m94P+ATkBOKLMWiMl4V2Ie5wxadHuN
+ bh=5iWTiJTqvvtzMa3UXQUfEyAQq2H0OecTkzq4mBOSHMs=;
+ b=V5vtNJuknFPCyirq0ytkSmxQ5gKFq8nIFaBLEJ3JhaL3iBayfy3OzRROGOTGivWrrrn1+L1z1
+ Z5+u3RWeAv3BHU6I/s3Zu9Bj49sn1GDMWatXpnosor+aXD/q3Rlvc70
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,204 +68,216 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Create ad5310_control_sync() and ad5683_control_sync() functions that
-properly consumes the mask definitions with FIELD_PREP(). This allows to
-reuse a function that updates the control register with cached values,
-without relying on confusing logic that depends on st->use_internal_vref,
-which is initialized earlier in ad5686_probe() because it is also
-applicable to the AD5686_REGMAP case, removing the need for the
-has_external_vref. The change cleans up ad5686_write_dac_powerdown() and
-ad5686_probe(), organizing the code for feature extension, e.g. gain
-control support for single-channel devices.
+Create struct with bus operations, which will be used to extend bus
+implementation features. Auxiliary functions ad5686_write() and
+ad5686_read() are created and ad5686_probe() now receives an ops struct
+pointer rather than individual read and write functions.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 88 ++++++++++++++++++++++++++++--------------------
- drivers/iio/dac/ad5686.h |  4 +++
- 2 files changed, 56 insertions(+), 36 deletions(-)
+ drivers/iio/dac/ad5686-spi.c |  7 ++++++-
+ drivers/iio/dac/ad5686.c     | 32 ++++++++++++++------------------
+ drivers/iio/dac/ad5686.h     | 29 +++++++++++++++++++++--------
+ drivers/iio/dac/ad5696-i2c.c |  7 ++++++-
+ 4 files changed, 47 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index ce0fcb4db065..73a3178ac2b8 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -6,11 +6,13 @@
-  */
- 
- #include <linux/array_size.h>
-+#include <linux/bitfield.h>
- #include <linux/err.h>
- #include <linux/export.h>
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
- #include <linux/sysfs.h>
-+#include <linux/wordpart.h>
- 
- #include <linux/iio/iio.h>
- 
-@@ -22,6 +24,24 @@ static const char * const ad5686_powerdown_modes[] = {
- 	"three_state"
- };
- 
-+static int ad5310_control_sync(struct ad5686_state *st)
-+{
-+	unsigned int pd_val = st->pwr_down_mask & st->pwr_down_mode;
-+
-+	return st->write(st, AD5686_CMD_CONTROL_REG, 0,
-+			 FIELD_PREP(AD5310_PD_MSK, pd_val) |
-+			 FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+}
-+
-+static int ad5683_control_sync(struct ad5686_state *st)
-+{
-+	unsigned int pd_val = st->pwr_down_mask & st->pwr_down_mode;
-+
-+	return st->write(st, AD5686_CMD_CONTROL_REG, 0,
-+			 FIELD_PREP(AD5683_PD_MSK, pd_val) |
-+			 FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+}
-+
- static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
- {
- 	if (chan->channel == chan->address)
-@@ -80,8 +100,8 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 	bool readin;
- 	int ret;
- 	struct ad5686_state *st = iio_priv(indio_dev);
--	unsigned int val, ref_bit_msk;
--	u8 shift, address = 0;
-+	unsigned int val;
-+	u8 address;
- 
- 	ret = kstrtobool(buf, &readin);
- 	if (ret)
-@@ -96,32 +116,34 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 
- 	switch (st->chip_info->regmap_type) {
- 	case AD5310_REGMAP:
--		shift = 9;
--		ref_bit_msk = AD5310_REF_BIT_MSK;
-+		ret = ad5310_control_sync(st);
-+		if (ret)
-+			return ret;
- 		break;
- 	case AD5683_REGMAP:
--		shift = 13;
--		ref_bit_msk = AD5683_REF_BIT_MSK;
-+		ret = ad5683_control_sync(st);
-+		if (ret)
-+			return ret;
- 		break;
- 	case AD5686_REGMAP:
--		shift = 0;
--		ref_bit_msk = 0;
- 		/* AD5674R/AD5679R have 16 channels and 2 powerdown registers */
--		if (chan->channel > 0x7)
-+		val = st->pwr_down_mask & st->pwr_down_mode;
-+		if (chan->channel > 0x7) {
- 			address = 0x8;
-+			val = upper_16_bits(val);
-+		} else {
-+			address = 0x0;
-+			val = lower_16_bits(val);
-+		}
-+		ret = st->write(st, AD5686_CMD_POWERDOWN_DAC, address, val);
-+		if (ret)
-+			return ret;
- 		break;
- 	default:
- 		return -EINVAL;
- 	}
- 
--	val = ((st->pwr_down_mask & st->pwr_down_mode) << shift);
--	if (!st->use_internal_vref)
--		val |= ref_bit_msk;
--
--	ret = st->write(st, AD5686_CMD_POWERDOWN_DAC,
--			address, val >> (address * 2));
--
--	return ret ? ret : len;
-+	return len;
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index 8fef0e6d33ff..857b9e4f54ab 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -92,10 +92,15 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
+ 	return be32_to_cpu(st->data[2].d32);
  }
  
- static int ad5686_read_raw(struct iio_dev *indio_dev,
-@@ -435,9 +457,7 @@ int ad5686_probe(struct device *dev,
++static const struct ad5686_bus_ops ad5686_spi_ops = {
++	.write = ad5686_spi_write,
++	.read = ad5686_spi_read,
++};
++
+ static int ad5686_spi_probe(struct spi_device *spi)
+ {
+ 	return ad5686_probe(&spi->dev, spi_get_device_match_data(spi),
+-			    spi->modalias, ad5686_spi_write, ad5686_spi_read);
++			    spi->modalias, &ad5686_spi_ops);
+ }
+ 
+ static const struct spi_device_id ad5686_spi_id[] = {
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 73a3178ac2b8..690f2fe2ffdf 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -28,18 +28,18 @@ static int ad5310_control_sync(struct ad5686_state *st)
+ {
+ 	unsigned int pd_val = st->pwr_down_mask & st->pwr_down_mode;
+ 
+-	return st->write(st, AD5686_CMD_CONTROL_REG, 0,
+-			 FIELD_PREP(AD5310_PD_MSK, pd_val) |
+-			 FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
++	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
++			    FIELD_PREP(AD5310_PD_MSK, pd_val) |
++			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
+ }
+ 
+ static int ad5683_control_sync(struct ad5686_state *st)
+ {
+ 	unsigned int pd_val = st->pwr_down_mask & st->pwr_down_mode;
+ 
+-	return st->write(st, AD5686_CMD_CONTROL_REG, 0,
+-			 FIELD_PREP(AD5683_PD_MSK, pd_val) |
+-			 FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
++	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
++			    FIELD_PREP(AD5683_PD_MSK, pd_val) |
++			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
+ }
+ 
+ static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
+@@ -135,7 +135,7 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
+ 			address = 0x0;
+ 			val = lower_16_bits(val);
+ 		}
+-		ret = st->write(st, AD5686_CMD_POWERDOWN_DAC, address, val);
++		ret = ad5686_write(st, AD5686_CMD_POWERDOWN_DAC, address, val);
+ 		if (ret)
+ 			return ret;
+ 		break;
+@@ -158,7 +158,7 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		mutex_lock(&st->lock);
+-		ret = st->read(st, chan->address);
++		ret = ad5686_read(st, chan->address);
+ 		mutex_unlock(&st->lock);
+ 		if (ret < 0)
+ 			return ret;
+@@ -188,10 +188,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 
+ 		mutex_lock(&st->lock);
+-		ret = st->write(st,
+-				AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
+-				chan->address,
+-				val << chan->scan_type.shift);
++		ret = ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
++				   chan->address, val << chan->scan_type.shift);
+ 		mutex_unlock(&st->lock);
+ 		break;
+ 	default:
+@@ -452,8 +450,7 @@ EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
+ 
+ int ad5686_probe(struct device *dev,
+ 		 const struct ad5686_chip_info *chip_info,
+-		 const char *name, ad5686_write_func write,
+-		 ad5686_read_func read)
++		 const char *name, const struct ad5686_bus_ops *ops)
  {
  	struct ad5686_state *st;
  	struct iio_dev *indio_dev;
--	unsigned int val, ref_bit_msk, shift;
--	bool has_external_vref;
--	u8 cmd;
-+	unsigned int shift;
- 	int ret, i;
+@@ -467,8 +464,7 @@ int ad5686_probe(struct device *dev,
+ 	st = iio_priv(indio_dev);
  
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-@@ -455,8 +475,8 @@ int ad5686_probe(struct device *dev,
- 	if (ret < 0 && ret != -ENODEV)
- 		return ret;
+ 	st->dev = dev;
+-	st->write = write;
+-	st->read = read;
++	st->ops = ops;
+ 	st->chip_info = chip_info;
  
--	has_external_vref = ret != -ENODEV;
--	st->vref_mv = has_external_vref ? ret / 1000 : st->chip_info->int_vref_mv;
-+	st->use_internal_vref = ret == -ENODEV;
-+	st->vref_mv = st->use_internal_vref ? st->chip_info->int_vref_mv : ret / 1000;
- 
- 	/* Set all the power down mode for all channels to 1K pulldown */
- 	st->pwr_down_mode = ~0U;
-@@ -480,29 +500,25 @@ int ad5686_probe(struct device *dev,
- 
- 	switch (st->chip_info->regmap_type) {
- 	case AD5310_REGMAP:
--		cmd = AD5686_CMD_CONTROL_REG;
--		ref_bit_msk = AD5310_REF_BIT_MSK;
--		st->use_internal_vref = !has_external_vref;
-+		ret = ad5310_control_sync(st);
-+		if (ret)
-+			return ret;
- 		break;
- 	case AD5683_REGMAP:
--		cmd = AD5686_CMD_CONTROL_REG;
--		ref_bit_msk = AD5683_REF_BIT_MSK;
--		st->use_internal_vref = !has_external_vref;
-+		ret = ad5683_control_sync(st);
-+		if (ret)
-+			return ret;
+ 	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+@@ -510,8 +506,8 @@ int ad5686_probe(struct device *dev,
+ 			return ret;
  		break;
  	case AD5686_REGMAP:
--		cmd = AD5686_CMD_INTERNAL_REFER_SETUP;
--		ref_bit_msk = AD5686_REF_BIT_MSK;
-+		ret = st->write(st, AD5686_CMD_INTERNAL_REFER_SETUP, 0,
-+				st->use_internal_vref ? 0 : AD5686_REF_BIT_MSK);
-+		if (ret)
-+			return ret;
+-		ret = st->write(st, AD5686_CMD_INTERNAL_REFER_SETUP, 0,
+-				st->use_internal_vref ? 0 : AD5686_REF_BIT_MSK);
++		ret = ad5686_write(st, AD5686_CMD_INTERNAL_REFER_SETUP, 0,
++				   st->use_internal_vref ? 0 : AD5686_REF_BIT_MSK);
+ 		if (ret)
+ 			return ret;
  		break;
- 	default:
- 		return -EINVAL;
- 	}
- 
--	val = has_external_vref ? ref_bit_msk : 0;
--
--	ret = st->write(st, cmd, 0, val);
--	if (ret)
--		return ret;
--
- 	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL_NS_GPL(ad5686_probe, "IIO_AD5686");
 diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index caadc7403da1..09c87e15c37e 100644
+index 48b2b60001b0..ea3ee43015c1 100644
 --- a/drivers/iio/dac/ad5686.h
 +++ b/drivers/iio/dac/ad5686.h
-@@ -44,7 +44,11 @@
- #define AD5686_CMD_READBACK_ENABLE_V2		0x5
+@@ -60,10 +60,15 @@ enum ad5686_regmap_type {
  
- #define AD5310_REF_BIT_MSK			BIT(8)
-+#define AD5310_PD_MSK				GENMASK(10, 9)
+ struct ad5686_state;
+ 
+-typedef int (*ad5686_write_func)(struct ad5686_state *st,
+-				 u8 cmd, u8 addr, u16 val);
+-
+-typedef int (*ad5686_read_func)(struct ad5686_state *st, u8 addr);
++/**
++ * struct ad5686_bus_ops - bus specific read/write operations
++ * @read: read a register value at the given address
++ * @write: write a command, address and value to the device
++ */
++struct ad5686_bus_ops {
++	int (*read)(struct ad5686_state *st, u8 addr);
++	int (*write)(struct ad5686_state *st, u8 cmd, u8 addr, u16 val);
++};
+ 
+ /**
+  * struct ad5686_chip_info - chip specific information
+@@ -111,6 +116,7 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
+  * struct ad5686_state - driver instance specific data
+  * @dev:		device instance
+  * @chip_info:		chip model specific constants, available modes etc
++ * @ops:		bus specific operations
+  * @vref_mv:		actual reference voltage used
+  * @pwr_down_mask:	power down mask
+  * @pwr_down_mode:	current power down mode
+@@ -122,11 +128,10 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
+ struct ad5686_state {
+ 	struct device			*dev;
+ 	const struct ad5686_chip_info	*chip_info;
++	const struct ad5686_bus_ops	*ops;
+ 	unsigned short			vref_mv;
+ 	unsigned int			pwr_down_mask;
+ 	unsigned int			pwr_down_mode;
+-	ad5686_write_func		write;
+-	ad5686_read_func		read;
+ 	bool				use_internal_vref;
+ 	struct mutex			lock;
+ 
+@@ -145,8 +150,16 @@ struct ad5686_state {
+ 
+ int ad5686_probe(struct device *dev,
+ 		 const struct ad5686_chip_info *chip_info,
+-		 const char *name, ad5686_write_func write,
+-		 ad5686_read_func read);
++		 const char *name, const struct ad5686_bus_ops *ops);
+ 
++static inline int ad5686_write(struct ad5686_state *st, u8 cmd, u8 addr, u16 val)
++{
++	return st->ops->write(st, cmd, addr, val);
++}
 +
- #define AD5683_REF_BIT_MSK			BIT(12)
-+#define AD5683_PD_MSK				GENMASK(14, 13)
++static inline int ad5686_read(struct ad5686_state *st, u8 addr)
++{
++	return st->ops->read(st, addr);
++}
+ 
+ #endif /* __DRIVERS_IIO_DAC_AD5686_H__ */
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index fd047c01f8f6..30c48d937a38 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -62,10 +62,15 @@ static int ad5686_i2c_write(struct ad5686_state *st,
+ 	return (ret != 3) ? -EIO : 0;
+ }
+ 
++static const struct ad5686_bus_ops ad5686_i2c_ops = {
++	.write = ad5686_i2c_write,
++	.read = ad5686_i2c_read,
++};
 +
- #define AD5686_REF_BIT_MSK			BIT(0)
+ static int ad5686_i2c_probe(struct i2c_client *i2c)
+ {
+ 	return ad5686_probe(&i2c->dev, i2c_get_match_data(i2c),
+-			    i2c->name, ad5686_i2c_write, ad5686_i2c_read);
++			    i2c->name, &ad5686_i2c_ops);
+ }
  
- 
+ static const struct i2c_device_id ad5686_i2c_id[] = {
 
 -- 
 2.43.0
