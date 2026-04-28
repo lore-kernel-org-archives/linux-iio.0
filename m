@@ -1,121 +1,119 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DABF13264DD
-	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 17:08:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6732D37BE7A
+	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 17:20:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.182
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777396137; cv=pass; b=bQt7wmXXrycAeP/NS3PpMgqcUDx88YrpH5vmYYj0W9HZNYwqOX/Df4Lfp32UUEa6eUatePNfeTKicAIpn+acFMULpgr+OaYFoI8/A/bVnjoF2Tm0YQocsVn4dgS//L6yaX6YZ+7OHcQPd01S3+EBOkHY/1x8YzZfHsrScIHAb+A=
+	t=1777396855; cv=pass; b=ASivSfW991lXG1ZuGJpyKPXte88efutIuB+yPmKxiWJCZ5WYZtJ//pezLCzOOYvHigYpel6hVIjUk1OW96aX0Rjtk82/69E7jvr9Ren8pdpe/A9sAQ8r5XD3pB2hVHs7/S34tlW/bg9Gueyp/if4wtEK+b5x7HDy6DQgiDD1AXY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777396137; c=relaxed/simple;
-	bh=LLR33iW2Y4jV7zxlGqWLjZhlUj2opWQRpZ+mp3cdTIk=;
+	s=arc-20240116; t=1777396855; c=relaxed/simple;
+	bh=0LXJo9JawwRMbS7NHUQj7w858GMV737fCJ+M0fb5Y8U=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SA7dTDeZ3QZQ40yGRX2eSgzh5a3lPqyF41njgNbYCsQoMQiQFhOMe7IeyBQIyA3TweXYPG5ujyDLzNnFpv1QIeRy3/lPH+rdNYF7j4HCDq1Bq1DosNlS5KhzSmVm9re5eGfF9fOe1x75/fUm67yo1Bb31zAAKTAMWdBpa0kCTyg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MrGhORAY; arc=pass smtp.client-ip=209.85.128.176
+	 To:Cc:Content-Type; b=T5nKLQjs9cpS9vRleHQJZvw6BGCx5b1NgxaRF5TFTV218lSU7sL0MjejrxpHF34M7aIBVw+wE8hD0H8xcUiFeiUFWk78cD/a3AwbGLX5Qqn18PcBXnstj1JB1PMGcx5qxXBwLC/abKjWBWIfR8+wkwNIwLbSOvI1paeKFT7cF9Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IWjDY6Ax; arc=pass smtp.client-ip=209.85.128.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MrGhORAY"
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-79ea87af213so1053657b3.0
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 10:08:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777396135; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IWjDY6Ax"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-7b37d84a6b3so122475167b3.2
+        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 10:20:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777396853; cv=none;
         d=google.com; s=arc-20240605;
-        b=fgSUbk4DaV/eYY70qgLVD6uvNobiqYF3VqGQi7fMLFtqHEvZsXxRpElN01J6kGvEqm
-         NK0NvMz4kIl6a5Q8UYP4v8xKcCeIEP6au1CqZhKBr5frh05re+nlfh3ECFz8nriCq8Sb
-         Xrx2SIZbzpwW+oSsLirya4g9ShxMu+0nJeUFkgahtr/g1r+i5f08cpunvEyGurqho+ma
-         OSKqIpq2aIhE/z0Kw8OeM23Fltm1/6lWvN1CHiak0kEPXDmlfnac4FiUI+AonfNCIQuY
-         gRnHgQcPm8+GArOfU7Gr48A60CfTTtYBcJ2efGV2qSLWpVGqbeL1ET23wnxOBYCjO54G
-         m+8Q==
+        b=DhaGUL2sGVaRyjBYzu5cS1YEchA/R+8JuJKleYhaMIR4ya6apVQwxJ4kjdgzDjo3XM
+         LZ9RR7Xqi4kqaxs4GhEPKU7JXmadHy55IOL5Dj5rUNPTwHGE2VW2M7jhLe4w5vbvN2xB
+         KsfR4NQs/AtlHt9a23oABPkCs61sYMkGXA+ZV8q0QItYSWjoRc9hn+Hrr8fsJziomqS+
+         jofcxVok7ztPprca9WLcJXaO3wd/QXHHTvl1HN9FrbhF5hawMkXsPxhlKbsChZ1QuTpU
+         dbZkdNOqkEtWIv6oJyv36ShA+34cXBB4TWmfD9ViNtibC5oGvteg+mAYFqlyDz/KVVaP
+         8l0Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=41Q4TqFhapSt44Vzyw1wJCTcz2iKhDalAAlyWqfPZv0=;
-        fh=e10aCE8XNDc8NWB76ai6s+A1MVbIyFOTw32Dt5mm4Lg=;
-        b=UuP/z3zYmwWSJjo4YnnCMsI9rIbPXCEz9M2z6nnJc9/2VawgUJyUWbBymj/TkoP7ML
-         lJXGzhif/x6cKxw09Z9ssNVuw73QiS05OLiMiGsWNHkJAyRd5F5c0nzS1jr25b7beXkf
-         VEeeq8iWG6CT5iSvx/QNJ/YMuXM/WHl1thrS0J5JO2xbYFO0tbfloUei0CPCWlCDGDaT
-         k/5cbl3ASqXWddSOtPfMz7tH8W4zFsZif5pljujLgi1ZriLThS0ofgdwgjubItUr9wxR
-         3pz9B/1cy3pWD8RdPI6aSrYGf5rPHGJ5S1tL6I9vGuwwlr1hH7BhTxdUM/Quvp5AoEZi
-         9WIQ==;
+        bh=F7eSb+fdA67aZYznwEc2jSJ5+Ko3BagXejArh6fNIlw=;
+        fh=ZiTVpMCCYBkKxuQb49H4gB2PPFkPpTeWCfx8M0KOF+g=;
+        b=X4eCWBpn11n/FNdfYRbjG5yYpKxXovAm5J3c/G5qFYegwjjz+tL9b0T24dVAiqorvY
+         l0XxH0Zp2cfzD+QybvUYKa+AtH1/EYsZwRlIk6AifZuicjJMQxkEcJago/e/2GiFrC32
+         iaZoe3pXY7w6bSDaA7yJvMzUsgltuBmEkcY3gjMbnKw4KpreZzYWhlNU7QMQ96pL+PvN
+         WA940tvhy9yiVup4Cm23Bd6oDNWzWoQrFH70cstq4YrTjXZSPl4K+NEaQ+SKMTmOcr+8
+         dIdIMURLvk3G8GW50v+Mly9NUBGZs+zUG2d19n2TNjX/aRWhDC0TVDm9wsLtDy52ysaO
+         eS2w==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777396135; x=1778000935; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777396853; x=1778001653; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=41Q4TqFhapSt44Vzyw1wJCTcz2iKhDalAAlyWqfPZv0=;
-        b=MrGhORAY7Viv85R95U3rQQpLsK06NNkqJfcZoO8TUwP/yGEhwZK7rA1oa2FQqQNaTS
-         vjTabSFAFXThJ+LCv4heuaBSZzJoinXTeexwjsiCFSP5iEvt+FyiRdwB6oF5MWwRCDhs
-         TrWpi4UBy8DQPKJCn8DCpZFWFJOuI5VKntk1UkHeLMPjoEGj4vqAi48/Qv53n2NIb5IG
-         NeDMhxBAaz6SXwzVbb72Te5A7fEuwm50Kxe0iw2GPGtZ1WzPJt3903gCegLrLiywyT5G
-         s9XEcfr8S7hD6xV5wmhTdLQWrOGVpMhPeOFRVEE1fjc+Ba8Lr6qm/+11Xa6+1s8UNXfM
-         Bn2g==
+        bh=F7eSb+fdA67aZYznwEc2jSJ5+Ko3BagXejArh6fNIlw=;
+        b=IWjDY6Ax0IW1zcbsj9j6KDRK4geXux2CfCjSBCbX6TepsHaSvPMOPDCARqyY3HmjFJ
+         Ld8vUXdo3SOJgjw3vtGCOFisenzILK7V5mhYsMgw8Trx/Ycuxjf+1a8RSpRx/2GoES7L
+         qedsisCwKpNKSbkZSl79mBpOKfcge86vqVmafsgt83M4hlVgxTetuJIrVKLWCqWATak5
+         Ezguf7k7Wg6eKHih723SiOmhJtG/zHiq543tAfHYMkvX8GpfxyCn++DBmgl9wjHwxMSW
+         RlZZWwl3+4OlWpCScdfxAz4jcm+8NeqlhO7k5BLre570U1MKs0zvR2xN+SLFYiT8Tfwe
+         9ZWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777396135; x=1778000935;
+        d=1e100.net; s=20251104; t=1777396853; x=1778001653;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=41Q4TqFhapSt44Vzyw1wJCTcz2iKhDalAAlyWqfPZv0=;
-        b=hhP6OfNEdJ0KFPRBukik5huPqEpy6Ih5Gzr/uXMiT92fGUO0wxZUBFkvl5b3QcR6kX
-         PHTAz8+MFZ+PWdqhbfJVBKzLHkWXedO3RAXYw6A2H7u24+jkLCxGk0o+yU39PnLbzz0s
-         pF61qn9ALbSxbVzJTG9IYBBDGnAkLGTggVfYIU1OMCkP8s5dlxmKVYwM5Umj5zLLOr2X
-         tR3VAL2RzUeWjXcP/YIckkIXRfcUlY3roUQiPnRPvGtjHsNZV9lFEqWDizUD4Act6zBE
-         QXFyVUD7EtbrDJMT0LFGQlzot+07GjDL6o6ft0cGlii5sjKn3nYGN6as1xTnRwUoIPWu
-         icXA==
-X-Forwarded-Encrypted: i=1; AFNElJ/y2ajTalKbyo5iPCXhWmPgIW2hLtlqAgrqJlOErimWFHgSKNlRm5ATNiPXIKj8Cqy3vL2ZlYjU4Rs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyv6cHF0BJouR42v5L8xWhTH2a8BRzUNtQk2V9A1g5ZIoBStD/7
-	x/RqNowe8vkUtIRid9MJbWKnv3Vqk1+EzAR6j6hFm17+SWP05G06YE6uopexalvazeURVdgjt0U
-	YYaEVJTl7dIYo3nVBngETlq6co50f5y0=
-X-Gm-Gg: AeBDieu6HK31rBVG7I8Arx5NPPv4gwh/3NSFbZoSjM2zqxe1PU02cUq1NLv/w7uplrd
-	Vyt7JZ3nxE7jB1qwuS8MNtA9jBU5SYB9htn+wouiSnvp+h3gQ3N83/r59mx8cBauVBsYeZllNg/
-	BCu6Jkea0x/sfc2ZgrVWMtbkJQ4T3CuGPFTgT0xlv0hKr164+lfKjq/kEYIDpyVneuSlkGXPPS9
-	FuKCaGjjCOOBwnktYPUjWs44U8ytcu0mvlYgu3Xs2KFAd6YEouUYejxR9u/cjF6Akpa7CQh7B4J
-	CII6p9IolkFDsARYxBrU
-X-Received: by 2002:a05:690c:690a:b0:796:45d4:9e55 with SMTP id
- 00721157ae682-7bcf415ec02mr33895097b3.15.1777396134876; Tue, 28 Apr 2026
- 10:08:54 -0700 (PDT)
+        bh=F7eSb+fdA67aZYznwEc2jSJ5+Ko3BagXejArh6fNIlw=;
+        b=ZmwMI5VMTwaj/R1l1x1HuqWo6nOS5ePgsJaKAXgpHeijfmMqYTU0vPKv2pkMCDYxwO
+         jc00K1LTMa7izCzjQtL40ZIkUXwhPFtLujP0GK6HzAQTjq7W3dh1q7LsWvu2LBSTbDuR
+         VAcq/SU2NdKWGiTMDCaRFF6pZ9f9VMIT1ChuEiIRXxbxXgv2PLsEu6kDUInTKKQPIAdX
+         ZZ7txXex0eg9M3HgH5YV+nOhicnZ1SzJl+lTX3ldVdImOap1QU8GCouEOxTPH8tJHzat
+         b8D7Kqo0GJ/2qQ/YD0tc2NEvGadwD9aQf6HHJovYT5KYTa79zD6q2A06KAVRpJiKOjaK
+         FOGQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8QVzFBsbASTbersUf8Gsbu02yl1TtSFK5vDdpQ9UDomGZ1U6lv6wDK/Be9IAIteiiqNYwo0XbfS8k=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxfwhV3TvcLnt1AdRCl2APOeSnOWwpKQi5S/FoTWncNygCjw1tQ
+	PWaZtJ/vxNSoSox2RoHS2c/84F+64/msZD4BizN7YNcZ5Zp8KUXuYQ8ZNkS68sYSTBXnMlxRSR6
+	jIAb/SJO3Of9Z84Hz6UvlSo8bA46EcR8=
+X-Gm-Gg: AeBDies1XBYg+6HqtgfzSWiiacHTvydBVfeWSNGXEwhfWQ+dffNNVt8Wqz1rRqTp655
+	dXkKVLo9nwMJfpbKLi8ekUPdnODLvJeqWNVb74I67uKA/zNEkZAcOF9JvISgO89vnOs0ugx2Zhs
+	Vb8DZt/9f37+39RRhJyeR6tVP5tai3StQOKZ8tsFShQV3KIqK84732iBO9dxAgeDM7DWqSDrAzk
+	61mS80Qf+wFwEw5qInnrHemPZf4BUBre2IneSPb9kb4lAfCwDWkujHJJRp0kbDoFtLUs8j4Yw/d
+	BoAfM6xEWoJnyvJpBVzgv9RnX13jaoc=
+X-Received: by 2002:a05:690c:6605:b0:7bc:8ce9:b996 with SMTP id
+ 00721157ae682-7bcf5594daemr36674867b3.40.1777396853433; Tue, 28 Apr 2026
+ 10:20:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260428124644.49707-1-m32285159@gmail.com> <20260428124644.49707-3-m32285159@gmail.com>
- <afC1mdCZGZKHQx5V@ashevche-desk.local> <CAKqfh0HfbUkAFDpf6vmBba+JGRafemoP0HeVy5hzzQB4=Y94Ag@mail.gmail.com>
- <20260428162458.09f28de7@jic23-huawei>
-In-Reply-To: <20260428162458.09f28de7@jic23-huawei>
+References: <20260428124644.49707-1-m32285159@gmail.com> <20260428124644.49707-5-m32285159@gmail.com>
+ <20260428163247.4511aa5b@jic23-huawei>
+In-Reply-To: <20260428163247.4511aa5b@jic23-huawei>
 From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 28 Apr 2026 12:08:44 -0500
-X-Gm-Features: AVHnY4IUz8syjWr77yhUDfsGsSv2lXKtask3xuM-u6ZLeJ-cXn19XoA33vog8lE
-Message-ID: <CAKqfh0Ekf5C6SB2EeQtDDJJmM6FD9YBWYebiKEF_hZ2Uq8KpcA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/4] iio: magnetometer: rm3100: Use scoped_guard() in rm3100_get_samp_freq()
+Date: Tue, 28 Apr 2026 12:20:42 -0500
+X-Gm-Features: AVHnY4KyI5gLwGg-6nlFdFyazhGF9KoHsbgyAx6oyOoY95opVRNLsIGOxZKr5H4
+Message-ID: <CAKqfh0FRYBrYwE0F2zeAgfF2NiJdBN8frfMQno_=ObKsBbmUdQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] iio: magnetometer: rm3100: Use guard(mutex)() in rm3100_trigger_handler()
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, songqiang1304521@gmail.com, 
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: songqiang1304521@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 28, 2026 at 10:25=E2=80=AFAM Jonathan Cameron <jic23@kernel.org=
+On Tue, Apr 28, 2026 at 10:32=E2=80=AFAM Jonathan Cameron <jic23@kernel.org=
 > wrote:
 >
-> I'd just use a guard and not worry about two value lookups from static co=
-nst data
-> being under the guard()
+> Read the guidance in cleanup.h  It's pretty clear that nothing from
+> that file should ever be used in functions that use gotos.
+>
+> Whilst there might not be a bug here, it ends up being fragile
+> as people changing the code may not noticed that can't use an existing
+> label and hence jump the hidden __free() in that guard() call.
+>
 
-We'd probably want to keep the scope as close as possible to the
-original code, but it's your call, I can use guard(mutex)() instead.
+Then I guess if we really want to do this then we should probably get
+rid of the gotos? Because I can certainly do that. Either that or we
+just keep the manual locks and unlocks.
 
-> Why is this series broken up into lots of patches doing same type of chan=
-ge
-> in different places?  This could definitely be combined with the previous=
- patch.
+> Be careful to ensure any expanded scope only contains calls where you can
+> easily see they don't deadlock or do anything time consuming.
 
-I've had some suggestions on other patches to split some changes, and
-thus, I've been erring on the side of atomicity. I can see now how
-this probably should be combined, and I'll merge these for a v3 and
-add the suggested fixes for when I have free time.
+I'll also double-check that.
 
 best regards,
 maxwell
