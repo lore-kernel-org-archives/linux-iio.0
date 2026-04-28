@@ -1,48 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CBB3BA25B;
-	Tue, 28 Apr 2026 17:04:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D76C2B672;
+	Tue, 28 Apr 2026 17:05:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777395849; cv=none; b=iRkryeMD2HMH2Wfy4mOYhD9I5KRQuaze2APk4g+KD8RrjULJiE36Qs5qQi3fc9+L/HG3e1Xzdy3cnIoXcHA4Tc/q1fSRVzJlFRYfb/YZxgQqfxuf9AzN1OiUEKC0ZsnoDnPJlRm3rkLZYR3K9uuZO7g2aBZ5HLnAvrzLmLMqyiw=
+	t=1777395958; cv=none; b=KIDCq727TYCT2arvBssqhJuDpQe6oMjX/AudKOxKia+nWSq3bWku4K3oAbpJ9OtoJWiM7lvzROSSyyNLGJGbgTxfRfXgbHCGtxP83dwx+b7Kym+PwjJZIe15gmC/PkHB7RwsvH9Rbo5i35bisj5Sm7ioxZmV5Ajn6E4zOgV+z1s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777395849; c=relaxed/simple;
-	bh=3mMPg4rozx+x50ubX57DDRfKp0ZrXvZtJZnoMdHRKXQ=;
+	s=arc-20240116; t=1777395958; c=relaxed/simple;
+	bh=03kc1X5djN18NtUt3ZkSRWjk4rDjoE8IX/g6F/yzhNQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=n0YnUQV2/TWorUK2HnEwExqFhnRdioc0JY7f5PY49/Qir8/yuwrnezQ2RWjlLwo4y9nbF7s4jP8WnD+RwpAE94P35KUNt7CKQLtw6AxvBvdSzFTtic74Ax5+rd8vVoLTmDLFlbAjaGuQDrGbVcqAfTPjPbKkPxwjRvzBRchNuc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fB71i+xE; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=qdvI0M3PTQsuYLOeNiC9q2AMeb9zcubdYYRabh/iN/Fu2KwLx36sX1CZQ0uqV+1hgYqzaZhHZXsWpBP2Cduz9lXAEMifPMd5n/1cVP+X9DzfpN6lgG2b/x/Nngl2zj3uLa6HYqQDuafpl5nNvS3hkvDry2v43SMp1WszJjWW7qs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IBm9z0e1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fB71i+xE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E129C2BCAF;
-	Tue, 28 Apr 2026 17:04:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IBm9z0e1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3AA6C2BCAF;
+	Tue, 28 Apr 2026 17:05:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777395849;
-	bh=3mMPg4rozx+x50ubX57DDRfKp0ZrXvZtJZnoMdHRKXQ=;
+	s=k20201202; t=1777395958;
+	bh=03kc1X5djN18NtUt3ZkSRWjk4rDjoE8IX/g6F/yzhNQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=fB71i+xEGFDQivvILLdx1ENTQfK0IvXk6t0r3Yy5RyzInBTivZP4xbY/hNJLTDiV8
-	 F9C7vQh6nezTUFquqZDo+L0pphmuZPZIjlOgJUt38N9lT7TyC4p0eubNyBohCgig7G
-	 U4w6lIf8O5Sm7hc/e9xhhScuL5jrTgBH8MVjwuV0WfS7CId+JTxcOH9cL1NnNEdleu
-	 Jhddw7Zk2UwU+Tl3qV+dS07EngkD4Yd7wd+q+wZqS3Aji9Mx3OT6xySWA5jb4q1xiv
-	 8AxRPkzhD9nkUUgosl43S8Vzafm0o4SMIHZ+dnYh7cCAkiw/r5jf42tuN+uGD6Gezo
-	 uqUG8byDXFaRQ==
-Date: Tue, 28 Apr 2026 18:03:56 +0100
+	b=IBm9z0e1byXGF/I29fTlHe6oH1fe9a0tQ6J9jfc41wrvSvbma+0mu25dt2z/M0ar3
+	 12F7INIbcYf6SPJjSdH+TDDUj7N1UvuIkzo5W0z7yCU21DDiYZU54arKAXeT8yMO1t
+	 spEoQbEs5LAiB51pKte/ZrZGkQwGduQ3Y3s5XD1RPoTtQ1ngY+5fAxOLC+IzHuSUop
+	 jO/tLxCedihbsdUFwYg5kw7RewkZ0JG1Qh1nHBIz7AfHESJqQxkBMShsgD5cOx2WWa
+	 82ZmOmZDUSVJ39BmW6VqKVTBoREOqVexjgaymNffwHnY0yVZHDZzMGldMA2MqXyr/5
+	 kVWfwIFB4E10g==
+Date: Tue, 28 Apr 2026 18:05:47 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Laight <david.laight.linux@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Giorgi Tchankvetadze
- <giorgitchankvetadze1997@gmail.com>, antoniu.miclaus@analog.com,
- lars@metafoo.de, Michael.Hennerich@analog.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, Andy Shevchenko
- <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v2] iio: adc: ti-ads7138: replace kmalloc() with stack
- allocation in i2c_write_block
-Message-ID: <20260428180356.62801c75@jic23-huawei>
-In-Reply-To: <20260428103617.148027c1@pumpkin>
-References: <20260427112705.71138-3-giorgitchankvetadze1997@gmail.com>
-	<20260427143137.27bc4552@pumpkin>
-	<3512cce0-6660-42a9-91bb-07e78a002205@baylibre.com>
-	<20260428103617.148027c1@pumpkin>
+To: Felix Gu <ustc.gu@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Neil Armstrong
+ <neil.armstrong@linaro.org>, Kevin Hilman <khilman@baylibre.com>, Jerome
+ Brunet <jbrunet@baylibre.com>, Martin Blumenstingl
+ <martin.blumenstingl@googlemail.com>, Rosen Penev <rosenp@gmail.com>,
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: meson-saradc: fix calibration buffer leak
+ on error
+Message-ID: <20260428180547.6efaa859@jic23-huawei>
+In-Reply-To: <20260427-meson_saradc-v2-1-8981c56fd05e@gmail.com>
+References: <20260427-meson_saradc-v2-1-8981c56fd05e@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,78 +51,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Apr 2026 10:36:17 +0100
-David Laight <david.laight.linux@gmail.com> wrote:
+On Mon, 27 Apr 2026 19:26:31 +0800
+Felix Gu <ustc.gu@gmail.com> wrote:
 
-> On Mon, 27 Apr 2026 10:21:37 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
+> meson_sar_adc_temp_sensor_init() allocates a buffer with
+> nvmem_cell_read(), but the old code leaked it if
+> syscon_regmap_lookup_by_phandle() failed.
 > 
-> > On 4/27/26 8:31 AM, David Laight wrote:  
-> > > On Mon, 27 Apr 2026 15:27:07 +0400
-> > > Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
-> > >     
-> > >> The ads7138_i2c_write_block() function currently utilizes kmalloc()
-> > >> to allocate a buffer for I2C transfers. However, the length
-> > >> parameter passed to this function is strictly 2 bytes across all
-> > >> driver invocations, making the total payload buffer size exactly 4 bytes.
-> > >> Invoking the heap allocator for a 4-byte buffer introduces
-> > >> unnecessary SLUB overhead.     
-> > > 
-> > > Have you confirmed that the buffer is never used for DMA?
-> > > 
-> > > Provided the lock that blocks concurrent access from two threads
-> > > is actually outside this code, a buffer for short transfers could
-> > > be allocated within 'struct i2c_client'.
-> > > 
-> > > 	David
-> > >     
-> > Giorgi,
-> > 
-> > This is why it is important to include a changelog and a link to the
-> > previous discussion [1] in the cover letter or after --- in a single patch
-> > when you submit a new revision. I think that would have answered David's
-> > question.
-> > 
-> > [1]: https://lore.kernel.org/linux-iio/20260424081809.61841-2-giorgitchankvetadze1997@gmail.com/
-> > 
-> >   
+> Fix this by adding missing kfree(buf).
 > 
-> The thing is I remember issues with on-stack buffers being used for
-> dma - which worked before kernel stacks were allocated using vmalloc().
+> Fixes: d6f2eac64403 ("iio: adc: meson: no devm for nvmem_cell_get")
+> Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+Applied. Thanks
 
-That is a problem for some buses that define their basic bus access functions
-to require DMA (and regmap on top of those).  E.g. SPI where your comment
-would have been absolutely correct.
-
-I2C does the opposite. Everything is bounced through DMA safe buffers unless
-you explicitly opt in to say you are providing a DMA safe buffer.
-That is only worth doing if the buffers are large and the bounce therefore
-expensive.
-
-Whilst we are here - something that has me doubting myself so I'll just
-lay it out.
-
-There is a fun corner where Sashiko is giving a false positive (I think
-anyway!) in that a pair of rx/tx buffers can sit in the same cacheline
-as long as no one modifies either whilst a bus transaction is in flight
-and so the DMA hasn't yet occurred in both directions. This has the fun
-side effect of part of the cacheline in the non coherent DMA management
-code being marked for each direction. However, the mechanism for corruption
-doesn't apply so it should be fine.  A common situation is where rx and
-tx are the same buffer which is an extreme case of this and absolutely fine.
-
-If I have this wrong we have a lot of broken drivers - so hopefully not!
-
-> One of the solutions to that is to use kmalloc() for buffers that
-> could be on stack.
-
-Correct, just not needed here.
-
-Jonathan
-
-> 
-> I think I found exactly 1 call to this function.
-> Indeed, just inlining the logic would make everything clearer.
-> 
-> 	David
-
+J
