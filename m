@@ -1,117 +1,123 @@
-Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BE313AE718
-	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 15:00:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777388408; cv=pass; b=MvfffoojK78m2J2UddrWeZmWFCWXo2boCjwEiAV4I4CXheIkgi1UqptvoZQ1gcaGe6DeMnEq9or/ua+RzzrBeC5nLmH4eXGLQJ/k5fQ7KnlBEKvtHUsMovqOOPBxtDP4Aa8fQQUPeC6LkmRRdJ4Kt6E64lsolstnr56zphSW0ME=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777388408; c=relaxed/simple;
-	bh=O4XtywALEhN3miBoCFbTYw8zeas7r4hFIoNzGoJ6LcI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CQDhkwkCP6tC9ReyEGnPribWMQJkUMiDbEtiIUBA7cDph7lBkPtJCBsZfW7UcBHJGSFgUU2h1oGjwQwel5mIDb9go4pPekg5dqSZndoAj1FQ90r7gF4V6H8S+9Rr6hpz/uJTLxu6a+Lk6xI3Kt6aNEu2a5ndaC4qN86RvoyZ/KA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rET6iWn2; arc=pass smtp.client-ip=74.125.224.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E97B26F2B0
+	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 15:05:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777388742; cv=none; b=JT4d5XQIQfKODGmOzeersfdQUIElaQ2kRiWhd4h3stqX2388NkAGVyzk/vP6sdj6rFfAR986sRI0Vuudy3Dswvi8M87nn7Cn2hdjNuw+St5BYG0bQyHRnRhgeErQZvBS0jEaxJWHOdpgajJzuNRbyr0bTInXQBstr1hA8wqpr30=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777388742; c=relaxed/simple;
+	bh=KBEmWhjBbToX1uFnmo0bt+OcXIRsovCuSf3JUa9I+dA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FUnfqO3xjVgP75DzHsF6qWYdp+RUf9RktL7mwzshfQTWVeylPXMxu4RscC65WRCkh+Mv4i22ZiwuLQpWYeXtxVDVjv7vZX+5Ea3JlcMroqQlzNZ0D7AlzsP77SNmtMqQgD0cKZwdEYTPoSfW1IdLgAy+XIS/diS9KUIz43GQAKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ig6uGCQi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rET6iWn2"
-Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-6501c9903edso11860770d50.1
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 08:00:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777388406; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Ra3uENRKfQmLBqE7isd4QGx18tGsWkzxXj+RMbf615NXbj17C5Dj2LR52tDWxke6aI
-         5IYk9MwD9eu87ovBgFgHLhtMn7+FpE060C2EGiX6+YfqCDnZ3kzuMxaZ//GgG+uvnA2Y
-         NibHPnQztlWvziNjLpt/c6XgqQdFukKsEmJEeqqpdcZYaLeGXvHRqquba4ZcgShxR0on
-         I5LGTbuDVuEetVvy/nZl49WIjoGCc66igkenyVMf5eR2LBRBgMCJcXebyCdw2GwwegcP
-         ylFMTC6nZGToS/fVGd5jC96GxNv7xtxxgWFxk7moLkTrUELlXNneIDSpgzMAmbsuNOL3
-         PF1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=O4XtywALEhN3miBoCFbTYw8zeas7r4hFIoNzGoJ6LcI=;
-        fh=3Iqr+I45ZwAPpBZrh7Pb/eqZbVHPQJ/6vS6D4fuuPRU=;
-        b=U9fLFRAfCRYa4+bX6s/98K/Fh04wqrBEbPekhi6Aw9b1u7pxtC5O6x48ImCcRnzuqu
-         bSt7y2bLArm0q2Qa7FGuIq58574auV1pXb0w/NX8cBlfMuM4hYnSwb4ieXfGHeVS1+C+
-         /aRW3c9UYBohz86kDZZDwYsYOBosK/N+5hN4qBrXBwRoOQ/k7kbf19JWNJYYR/H431kn
-         /Wgr5peIQe3EGjZ14UpNQGTAHSKrBuF77FGuPtz5aiwLIvgQkNkWSHYmLmgTgBdZr64y
-         WfX2K/GvvrhAy9YOM7jNjCQyHEJrAdIW0G6K6dPJnkicwtDRQPICQnEwCytCihhn8yzx
-         zU6g==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777388406; x=1777993206; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=O4XtywALEhN3miBoCFbTYw8zeas7r4hFIoNzGoJ6LcI=;
-        b=rET6iWn2bvYZjMDQYgF5T3Hr8DX+2cp6lBoSjU5EXZC+Q+Ffv+g8kp3RCuyXnkY4q7
-         UAvFjipGYZ4KRK7pmgVS5uFvcbLH5fR3JsAvJTt2sFuH32USqh9juSwt5ApTjyMcQCpi
-         1+1tqpJU5xd6uRTgyKBgnwLyamL37+QT2FL1pGR9KpHrMwCVuzqgAANYQNsyIOsp+goc
-         TovQaXyWYjqqdQ6VH2iKeW7RHMZlAe/7UfFuHvsofWqdjnpLBCluRKX/g1ptzCs68pHW
-         F0RceKvesy0A6TnKx5+pt+qlJ0KvdlImy8nEAR/zYvJ+43RgMx7zQ6hDjAqQoMobRv3k
-         SGYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777388406; x=1777993206;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=O4XtywALEhN3miBoCFbTYw8zeas7r4hFIoNzGoJ6LcI=;
-        b=e3kLFRPngj8FcFnUrqd7PNVSMEt9bkwaFozYtTHy6J3Z7u/VaZAcHHmHj4S3pOa4Sn
-         Q9dyhx7cHFCF+rlaPhgPX5zninORRkSAC/MW8HsFYtpy9EHjtm9+nlIzQwKgO+IsQRyp
-         9Dy+SJbejA6PoCdhye4GZuN9QR/jzStrpz3S9aHWdWD6+/p0vsu9jIPoxv/f3hx5FFm3
-         uME0pLfYg2RrekorMO3OF+ImKGTwQAzJUFxlXQI0Tpas8Y285vWwvQ0DSj+v2eQ9CN+B
-         xaIQvqR5yUOJbFWQizyd6A6VRUb705UjHZyhBtHbbImJ1m5LJ8AjDrUbRHDSStOVGoIL
-         uhnw==
-X-Forwarded-Encrypted: i=1; AFNElJ8IhH9W56d1ZGW0cdP8AiamHmiNxxKeXtDrAgRl2UgPWH/BKv6XQBphmjbeyAIcHwjVJO1X2xnYOgI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyoCx5forbD7T3NJ7lSkYqOrUfzZZ8rwWnebr+IzkcOPAr3Cn8R
-	PNb5D/S/R3fZnTWn4XgHmuq0G8eHEW+8EJ8UQugQGtv2wmhd974D+sWzhgbyXqrsedbODflMF6S
-	PpVMTmHVTXyip1vHj2TQ9FRNHwGDIgBw=
-X-Gm-Gg: AeBDieu9ffHoFQ8vZZFf6jLDTi3CIMJlRFF0MwPrAaeOrrRb5IayRgWZcl6D01zeBz2
-	78O8I7KeJb16gQ4kkiwMbtnqdGqcbYa96tvlHgp4ZTVTGzvdLitcrm2LwAq/6lR+GwSO5IjzZ9k
-	y1u0ipkb08yZVilavHPGswtnMuhKsgVq0SvaB0aagWcgEoiG0V6uwKj6F9xDdlsrexcbN6YXeE2
-	2s9MLbsBFl74CHYU0sddpBsCRVBc7u9EQVAGt+3j40Zcxsu3St8r6pv+CsGVcxhFiHjusfmEFMe
-	um7kyRD7lOACnzIz0ja0iH54F6YfeT2bqrQIndPzyh4Pq0k=
-X-Received: by 2002:a05:690e:1482:b0:650:3064:4cf2 with SMTP id
- 956f58d0204a3-65beed3a8c9mr3111120d50.5.1777388406129; Tue, 28 Apr 2026
- 08:00:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ig6uGCQi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA305C2BCAF;
+	Tue, 28 Apr 2026 15:05:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777388741;
+	bh=KBEmWhjBbToX1uFnmo0bt+OcXIRsovCuSf3JUa9I+dA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Ig6uGCQiqoseJ4h/5pD3OOHEHLltdr+Rus4nSw4w13u6EZfSpMWZDD2nzc5fckzBE
+	 kkfVH1g1mF3qkSZSH8Z0sniVVClIK73DQZ04Hbt2Dt4lWLsNOVgLzWupOA6SBSx+TD
+	 ebNH/+f6TPkavvaDNINvuBbphwuZqv5FMGA812u/Kb/k6SKPKP5vpDbnAO5Sya8YPr
+	 w0V2vA3c/I5P2b5m69oRuewiPboQ92b+Io+SF6ViPCJB02b556Dl3KbiFIobDwkybc
+	 x0rU1JMFgAEXuRtvaCf6GGqwmE8S9DshUtiOYvFjZmCaP2mMXxxgFM/d/NSJqNNKF8
+	 CClgzZNBwqYcA==
+Date: Tue, 28 Apr 2026 16:05:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: "Rafael G. Dias" <rafael.guimaraes.dias@usp.br>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, Felipe Khoury Dayoub
+ <felipedayoub@usp.br>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: light: stk3310: update includes to match IWYU
+Message-ID: <20260428160533.47e4e820@jic23-huawei>
+In-Reply-To: <CALoEA-wd9jo_bPCGF0GqLH9SX7vWsCN7oyvkN3Q86R0F=WTjog@mail.gmail.com>
+References: <20260428134205.1137419-1-rafael.guimaraes.dias@usp.br>
+	<CALoEA-wd9jo_bPCGF0GqLH9SX7vWsCN7oyvkN3Q86R0F=WTjog@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260428124644.49707-1-m32285159@gmail.com> <20260428124644.49707-2-m32285159@gmail.com>
- <afC1atIQYUaFBya3@ashevche-desk.local>
-In-Reply-To: <afC1atIQYUaFBya3@ashevche-desk.local>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 28 Apr 2026 09:59:55 -0500
-X-Gm-Features: AVHnY4JHHVKIDsq6uxzXt9cXjz1iHDU_olJ7Cp2br4AG_C4-a6RANEi57CWCbdA
-Message-ID: <CAKqfh0G+PXj8sDaJATKJmywghesm+NOJoEff1bC_gsncHQxwnw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/4] iio: magnetometer: rm3100: Use guard(mutex)() in rm3100_read_mag()
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: songqiang1304521@gmail.com, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Apr 28, 2026 at 8:26=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> Perhaps we need to also put a summary of the extended critical section, s=
-o that
-> it will be clear that we thought about it and decided to cover that small=
- memory
-> access + some bitops.
->
-> Otherwise LGTM.
->
+On Tue, 28 Apr 2026 16:33:17 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-Sounds good, but I'm going to wait 1 or 2 days to see if a maintainer
-wants to comment on whether or not we *need* the summary about the
-mutex scope. If they don't say anything I'll probably just send a v3
-with the summary added in the commit message.
+> On Tue, 28 Apr 2026 at 16:13, Rafael G. Dias
+> <rafael.guimaraes.dias@usp.br> wrote:
+> >
+Reviewing on top to avoid repeating the stuff Joshua has
+already pointed out (thanks Joshua!)
 
-best regards,
-maxwell
+> > +#include <linux/array_size.h>
+> > +#include <linux/bits.h>
+> > +#include <linux/device.h>
+This is a bit like kernel.h in that it's mostly a catch all header
+that we are trying stop including directly.  However, it does still
+contain some stuff. I'm not immediately seeing why need it here?
+struct device * is used a lot but a forward definition will do for that
+(put any of those needed after the headers0
+
+> > +#include <linux/dev_printk.h>
+> > +#include <linux/err.h>
+> > +#include <linux/errno.h>
+> >  #include <linux/i2c.h>
+> > -#include <linux/interrupt.h>
+> > -#include <linux/kernel.h>
+> > -#include <linux/module.h>
+> > -#include <linux/mod_devicetable.h>
+> > -#include <linux/regmap.h>
+> >  #include <linux/iio/events.h>
+> >  #include <linux/iio/iio.h>
+> >  #include <linux/iio/sysfs.h>
+> > +#include <linux/iio/types.h>  
+> 
+> It's better to group the <linux/iio/*> headers separately from
+> the generic <linux/*> headers, usually below them.
+> 
+> > +#include <linux/interrupt.h>
+> > +#include <linux/irqreturn.h>
+> > +#include <linux/kconfig.h>  
+> 
+> I don't think you need this.
+> 
+> > +#include <linux/mod_devicetable.h>
+> > +#include <linux/module.h>
+> > +#include <linux/mutex.h>
+> > +#include <linux/pm.h>
+> > +#include <linux/property.h>
+> > +#include <linux/regmap.h>
+> > +#include <linux/sprintf.h>
+> > +#include <linux/stddef.h>  
+> 
+> You don't need to include this.
+> 
+> > +#include <linux/sysfs.h>  
+> 
+> Remove this too, the driver already uses the linux/iio/sysfs.h
+> variant.
+> 
+> > +#include <linux/types.h>  
+> 
+> It would be better if you split this change into two patches,
+> first the ordering, then the removal/addition of headers. It
+> improves the reviewing process.
+Agreed!
+> 
+> Although IWYU is a pretty good tool, it generates a lot of
+> noise, some of it not really valid.
+> 
+Absolutely - I've had a few goes at putting together a 'standard'
+config file for it, but never managed to make it do things correctly
+for some corner cases.
+
+Jonathan
+
+
