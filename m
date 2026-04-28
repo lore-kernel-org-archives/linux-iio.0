@@ -1,137 +1,275 @@
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2626943C043
-	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 14:53:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34A122FF65B;
+	Tue, 28 Apr 2026 14:58:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777388014; cv=none; b=N8UeXqKDjJTSJB0jm8RdgUGPQw6tijdf3GievnOouHWYKWhCEtaLc3uBcv/NGvq7KEiPpf+N6SM7iCalYETdoXorjFWg2dE6ZwTuBZMkn7PEy87Y1I7ryF1sU9nTqCyPyg3UfmZLLw4UXKgBR95z6ue31JETGHNgGIqVhSVybhQ=
+	t=1777388311; cv=none; b=fAsmxLJsSuIDmF6JGgd01uhlUTB1lNHwDGKDfLc6iftVDbdpv1gTKx0cdK0VfOImk2r+T+3eRC/hFQx0qgCaqkrUIjM8N68F3ANwd7hRcNci/wsdo2RnI1PVBY4hO4wdwhsMvd+VOVYAevuq4hAnIrj14HL4nbAxKi9jIJZ3TG4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777388014; c=relaxed/simple;
-	bh=FvH2Tq9sg2iWFKvI2rxoy04fXf16C8+o/UVOEHdEM7s=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=rTle5MCChKlM+7Q1QACMvvvAipkBLLKkzzqr9DIZi9rnCPf3lS2ELLooiHLalsBjlsr2S3OskFB94sKEoi9Z8373kWQM+vrEIoXmET42uwKKTwNjC9qpsK52arWJna9DW/hq8R8frxQwHOEzfkcUZQIcxmnCPWnC8vvs2f1BCQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Czh5gzhj; arc=none smtp.client-ip=209.85.216.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777388311; c=relaxed/simple;
+	bh=mHpXaX+bWyOel7GtRb5Zq4KR/mBR987aQReGiZXleg0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=SQsDjZIwV3vuvGUQWSFteFfFGSHMzwSJqukwrHbXuxN2YHAeUt7O8Kwz0PTcFHM/sPyWbfjI4DR42WSjW9hrKYhsVI9izbIdPQzdDbBcfVAXme920kUNnZHwXsIUpMG2+u6TFiOKc8Yc1hZquEmBf5C29pqozNkH8eoYJBjiJik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YZ2f/LTv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Czh5gzhj"
-Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-35dac556bb2so6891473a91.1
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 07:53:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777388012; x=1777992812; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MCksz8OXzQRknN88hplFcT6UVgogcBC8tS3XrnLpgU8=;
-        b=Czh5gzhjTmvVGWmFQYEJf5EFMepmgp6jSkqMqPoXr/waprXmICnL+V9ILzd01av5B9
-         mu7BlCQJ6/AAkcExl63RNPxs73VZvdjlbWhCX6Q/AJBWlInqdDJx7Rf4EB0VIn7tkUj8
-         +ccLmBxTs5MpppEL/eynJ6G18A59IFQ9Da/E1xxQpNEBfVLpg9erfPiU0X6346dhubuu
-         nWFLS/uC5xm0Oee1jjgO2RItDmZfKU4Gx5ydXPqSBsld8urixM+huhusXZMLHX579QZ6
-         fe8psiYo0IEMf4aXEa1LO5WEB2o3IcnWWovrcsACYE7cw4I/bEVL23YxD3X6YpxHaw4Z
-         i5FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777388012; x=1777992812;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MCksz8OXzQRknN88hplFcT6UVgogcBC8tS3XrnLpgU8=;
-        b=acq8PJj5PqWfW23TMUMECdFqeXUBQWvuyU2Tq2BUrSubR1ymgkee+x4u6MdaHozqzW
-         ve5lSKx/pUOQSRV+yiPkpDKp0qTx0tGo+JzsQ/Ke3T8HN2Gx2SkN2s89VlETJi3UNoJt
-         QamGap7MHCE/5vfSrsoPI1QK2VaPR8haTuQcMfBuIxU0wUWHYECLwiOmLmnA1M1X3YPH
-         yi7xxjfgH4PONLr5OxE5vz+sp4ryIqeC+WzkTsHIApXD+q+6yawF8jFuuo+VQeAuS71z
-         +6zNBZWtJWxcoDggyXd3yKDyaNbIWkREy9rTarQOA7Z3VzBmD9tAoLJlLaF+7K6hZMKr
-         Gz3w==
-X-Gm-Message-State: AOJu0YzTpg3YYGVb45L+5iZYJAeXgTMQq41wby0vLoJbkpGKkrb7krEH
-	6wRBTg2UMO9IE7lpPKk5TdVTM4AtkwRugcHMjfzkARIHf5S3hUP6BWpO
-X-Gm-Gg: AeBDieujrl4h5r8LWSlQWrrdVb0zKtHq6JEfNWg+fsLV2aB84p+dVV4JUbKYJgsJsr1
-	vRd6Wvw1YeXaN0NAbDXFI3QUtxRwX37dVErjKtCvXx/qQWK2UVl7aN1N02GxUBpzavpyN6ywp0c
-	Wd0y4yExs0AnTJnN4wtBNC85snb8B+xBVHW2Oj6DTPKq0yTIYv8HLKtRxTpSt/vQbru1oB8g6b9
-	cYTf9+hVRr5eLCNSZirIb8G2v1/ruyuPzMZ3q/lKYqYMnUDB4EuU7p75kuartKxdpxNGgOPdiDg
-	C3EWn1wIvOWk2KRLksRd/YttzYn6qPObQn3Sp6GVWQVIpw/uS4dkglA5Z0RxYAaEDA84nYsN67z
-	7AMseXk8Tr0kw40j74HsJGy+5qMOeK3CChPwvqJ1JN+BScapnWH1ZLSVakUDJcYlV6YXIi5uW2+
-	V8W8SJVZO5zybfphE9qmVSCwaUT12fpN8z2s7xjC1NkNXD8u4iq6VI9rXKXXlVkhjOXQxV0wUw/
-	Vzz1soFdbnt0k83soBHxJrJw/uh7J4=
-X-Received: by 2002:a17:902:f645:b0:2b0:beb4:3bb with SMTP id d9443c01a7336-2b97c3f602dmr34619955ad.10.1777388012083;
-        Tue, 28 Apr 2026 07:53:32 -0700 (PDT)
-Received: from junjungu-PC.localdomain ([223.167.147.125])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b97aa7bbd1sm31950885ad.15.2026.04.28.07.53.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2026 07:53:31 -0700 (PDT)
-From: Felix Gu <ustc.gu@gmail.com>
-Date: Tue, 28 Apr 2026 22:53:25 +0800
-Subject: [PATCH] iio: buffer: hw-consumer: fix use-after-free in error path
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YZ2f/LTv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4633AC2BCAF;
+	Tue, 28 Apr 2026 14:58:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777388310;
+	bh=mHpXaX+bWyOel7GtRb5Zq4KR/mBR987aQReGiZXleg0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=YZ2f/LTvJSR320Jf95EgDq6xYlRSXwCbIKeEcX09c6fA+L76Wk9rEmNrbez3dM7MO
+	 3nYXBF3wN5J/Gj/DcmIN+uhTJlhmlKs6MFssRq33mt1GK4JiAz/yvn9Fe+JrCHRCJj
+	 ASPmlyzRJP7/B1YtM+gvHT6XjudFbBb4g40HTPpqVgXQb2NTG4ihNAXQhoL1xLb5bC
+	 GFLjb9C3GEXZ1pINlSgeJ/cJeg4mESjLveIAMoDlzc20h1Mch97Vm1W3aRzDL0xUAk
+	 FpHYfahnflvlrfJeTKmQBTXS6t7o6iAxvzQTWHGC6urye53RO7n2UqBR9QCMNNqRBV
+	 LhW90xTeLojvw==
+Date: Tue, 28 Apr 2026 15:58:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Liviu Stan <liviu.stan@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: temperature: Add ADT7604 support
+ to adi,ltc2983
+Message-ID: <20260428155819.3b56a3fa@jic23-huawei>
+In-Reply-To: <20260427132526.272716-2-liviu.stan@analog.com>
+References: <20260427132526.272716-1-liviu.stan@analog.com>
+	<20260427132526.272716-2-liviu.stan@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260428-iio-buf-v1-1-dcc63ff7b800@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAOTJ8GkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDEyML3czMfN2k0jRdk2QLU1NLAyODRFMTJaDqgqLUtMwKsEnRsbW1AA4
- VIxpZAAAA
-X-Change-ID: 20260428-iio-buf-4c8559020a54
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
- Arnaud Pouliquen <arnaud.pouliquen@st.com>, Mark Brown <broonie@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jonathan Cameron <jic23@kernel.org>, Felix Gu <ustc.gu@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777388008; l=1749;
- i=ustc.gu@gmail.com; h=from:subject:message-id;
- bh=FvH2Tq9sg2iWFKvI2rxoy04fXf16C8+o/UVOEHdEM7s=;
- b=omBp2ylCwZOKjbt6WVarpP82l/pR5nrpV801kKwbJG4XpUGT3yRkVfdz1EjL59h8k+mL7/Hhe
- NBfisK7dZmmDfwCDLANoEgzQhUHhDmaPCCm7xorLrR8UlzIIReqBX4Q
-X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
- pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-In the err_put_buffers cleanup path of iio_hw_consumer_alloc(), the code
-was using list_for_each_entry() to iterate through buffers while calling
-iio_buffer_put() which can free the current buffer if refcount drops to 0.
-The list_for_each_entry() loop macro then evaluates buf->head.next to
-continue iteration, accessing the freed buffer.
+On Mon, 27 Apr 2026 16:25:07 +0300
+Liviu Stan <liviu.stan@analog.com> wrote:
 
-Fix this by using list_for_each_entry_safe().
+> The ADT7604 shares the same die as the LTC2984. It repurposes the
+> custom RTD sensor type (18) as a copper trace resistance sensor
+> and the custom thermistor type (27) as a leak detector, and
+> removes thermocouple, diode and direct ADC sensor types.
+>=20
+> Add adi,adt7604 to the compatible list and introduce two new
+> sensor node types specific to this device:
+>=20
+> - copper-trace@: maps to the custom RTD sensor type (18). Two
+>   variants: sub-ohm (< 1 ohm, adi,copper-trace-sub-ohm boolean,
+>   no custom table) and standard (> 1 ohm, optional adi,custom-rtd
+>   table). Primary output is resistance in mOhm.
 
-Closes:https://sashiko.dev/#/patchset/20260427-iio_buf-v1-1-2bbdac844647%40gmail.com
+I don't know much about these temp sensors, but how is this different
+in practice from a 2-wire RTD?  Obviously one is copper and the other
+probably much more precise platinum but does that matter to us?
 
-Fixes: 48b66f8f936f ("iio: Add hardware consumer buffer support")
-Signed-off-by: Felix Gu <ustc.gu@gmail.com>
----
- drivers/iio/buffer/industrialio-hw-consumer.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> - leak-detector@: maps to the custom thermistor sensor type (27).
+>   Takes an optional adi,custom-leak-detector lookup table encoding
+>   resistance (uOhm) against coverage data (P + 273.15 in uK).
+>   Primary output is resistance in Ohm; when a table is provided,
+>   IIO_TEMP reports coverage percentage (raw / 1024).
+>=20
+> allOf conditions are added to restrict thermocouple, diode, direct
+> ADC and active temperature nodes to non-ADT7604 devices, and to
+> restrict copper-trace and leak-detector nodes to the ADT7604.
+>=20
+> Signed-off-by: Liviu Stan <liviu.stan@analog.com>
+> ---
+>  .../bindings/iio/temperature/adi,ltc2983.yaml | 170 +++++++++++++++++-
+>  1 file changed, 167 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,ltc298=
+3.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+> index a22725f7619b..e777b37d588d 100644
+> --- a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+> +++ b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+> @@ -4,14 +4,14 @@
+>  $id: http://devicetree.org/schemas/iio/temperature/adi,ltc2983.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+> =20
+> -title: Analog Devices LTC2983, LTC2986, LTM2985 Multi-sensor Temperature=
+ system
+> +title: Analog Devices LTC2983, LTC2986, LTM2985, ADT7604 Multi-sensor Te=
+mperature system
+I'd go with "LTC2983 and similar" for the title now as it's
+to long. Leave the description to list amount more info.
 
-diff --git a/drivers/iio/buffer/industrialio-hw-consumer.c b/drivers/iio/buffer/industrialio-hw-consumer.c
-index 24d7df603760..7406efefc123 100644
---- a/drivers/iio/buffer/industrialio-hw-consumer.c
-+++ b/drivers/iio/buffer/industrialio-hw-consumer.c
-@@ -85,7 +85,7 @@ static struct hw_consumer_buffer *iio_hw_consumer_get_buffer(
-  */
- struct iio_hw_consumer *iio_hw_consumer_alloc(struct device *dev)
- {
--	struct hw_consumer_buffer *buf;
-+	struct hw_consumer_buffer *buf, *n;
- 	struct iio_hw_consumer *hwc;
- 	struct iio_channel *chan;
- 	int ret;
-@@ -116,7 +116,7 @@ struct iio_hw_consumer *iio_hw_consumer_alloc(struct device *dev)
- 	return hwc;
- 
- err_put_buffers:
--	list_for_each_entry(buf, &hwc->buffers, head)
-+	list_for_each_entry_safe(buf, n, &hwc->buffers, head)
- 		iio_buffer_put(&buf->buffer);
- 	iio_channel_release_all(hwc->channels);
- err_free_hwc:
+> =20
+>  maintainers:
+>    - Nuno S=C3=A1 <nuno.sa@analog.com>
+> =20
+>  description: |
+> -  Analog Devices LTC2983, LTC2984, LTC2986, LTM2985 Multi-Sensor Digital
+> -  Temperature Measurement Systems
+> +  Analog Devices LTC2983, LTC2984, LTC2986, LTM2985, ADT7604 Multi-Sensor
+Alphabetical order and it might be worth thinking about switching this
+to a bulleted list with one device per line as it'll make adding new ones
+neater. (obviously they are already not in numeric order, so fix that too ;)
 
----
-base-commit: 7080e32d3f09d8688c4a87d81bdcc71f7f606b16
-change-id: 20260428-iio-buf-4c8559020a54
 
-Best regards,
--- 
-Felix Gu <ustc.gu@gmail.com>
+> +  Digital Temperature Measurement Systems
+> =20
+>    https://www.analog.com/media/en/technical-documentation/data-sheets/29=
+83fc.pdf
+>    https://www.analog.com/media/en/technical-documentation/data-sheets/29=
+84fb.pdf
+> @@ -43,6 +43,7 @@ properties:
+>    compatible:
+>      oneOf:
+>        - enum:
+> +          - adi,adt7604
+>            - adi,ltc2983
+>            - adi,ltc2986
+>            - adi,ltm2985
+> @@ -436,6 +437,96 @@ patternProperties:
+>      required:
+>        - adi,custom-temp
+> =20
+> +  '^copper-trace@':
+> +    $ref: '#/$defs/sensor-node'
+> +    unevaluatedProperties: false
+> +    description: |
+> +      Copper trace resistance sensor (ADT7604 only). Uses the custom RTD
+> +      sensor type (18). Two variants exist: sub-ohm (< 1 ohm, no custom
+> +      table allowed) and standard (> 1 ohm, optional custom table).
+> +
+> +    properties:
+> +      reg:
+> +        minimum: 2
+> +        maximum: 20
+> +
+> +      adi,sensor-type:
+> +        description: Sensor type for copper trace sensors.
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        const: 18
+> +
+> +      adi,rsense-handle:
+> +        description: Associated sense resistor sensor.
+> +        $ref: /schemas/types.yaml#/definitions/phandle
+> +
+> +      adi,copper-trace-sub-ohm:
+> +        description:
+> +          Select the sub-ohm (< 1 ohm) copper trace variant. Custom table
+> +          and excitation current are not allowed in this mode.
+
+Is the absences of them enough to indicate this mode?  I.e. are there other=
+ modes
+with no specified excitation mode or custom rtd table?
+
+I'm trying to work out if we can map this to the existing binding for
+custom rtd just be adding more constraints + making existing ones more spec=
+ific.
+
+I don't mind if we can't and have to add a new child node definition but
+I'm not yet sure that's the case.
+
+> +        type: boolean
+> +
+> +      adi,custom-rtd:
+> +        description:
+> +          Optional resistance-to-temperature table for copper trace sens=
+ors
+> +          with resistance > 1 ohm. See Page 62 of the datasheet.
+> +        $ref: /schemas/types.yaml#/definitions/uint64-matrix
+> +        minItems: 3
+> +        maxItems: 64
+> +        items:
+> +          items:
+> +            - description: Resistance point in uOhms.
+> +            - description: Temperature point in uK.
+> +
+> +    required:
+> +      - adi,rsense-handle
+> +
+> +    allOf:
+> +      - if:
+> +          required:
+> +            - adi,copper-trace-sub-ohm
+> +        then:
+> +          properties:
+> +            adi,custom-rtd: false
+> +
+> +  '^leak-detector@':
+
+This feels more different so I don't so I'm fine with this being a separate=
+ thing.
+
+> +    $ref: '#/$defs/sensor-node'
+> +    unevaluatedProperties: false
+> +    description: |
+> +      Leak detector sensor (ADT7604 only). Uses the custom thermistor se=
+nsor
+
+I'd avoid describing things as xx only as that tends to become wrong fast!
+Better to put that as a conditional only (as you have below)
+Maybe here you can say, (some parts only) or something like that.
+
+> +      type (27). Outputs resistance in ohms and, when a custom table is
+> +      provided, a coverage percentage via IIO_TEMP (raw/1024 =3D coverag=
+e %).
+> +
+> +    properties:
+> +      reg:
+> +        minimum: 2
+> +        maximum: 20
+> +
+> +      adi,sensor-type:
+> +        description: Sensor type for leak detector sensors.
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        const: 27
+> +
+> +      adi,rsense-handle:
+> +        description: Associated sense resistor sensor.
+> +        $ref: /schemas/types.yaml#/definitions/phandle
+> +
+> +      adi,custom-leak-detector:
+> +        description: |
+> +          Lookup table mapping resistance to coverage data. Entries must=
+ be
+> +          in ascending resistance order. The coverage data field encodes=
+ the
+> +          coverage percentage P as (P + 273.15) expressed in uK, i.e.
+> +          (P * 1000000 + 273150000).
+> +        $ref: /schemas/types.yaml#/definitions/uint64-matrix
+> +        minItems: 3
+> +        maxItems: 64
+> +        items:
+> +          items:
+> +            - description: Resistance point in uOhms.
+> +            - description: Coverage data point (P + 273150000) in uK.
+> +
+> +    required:
+> +      - adi,rsense-handle
+> +
+>    '^rsense@':
+>      $ref: '#/$defs/sensor-node'
+>      unevaluatedProperties: false
+> @@ -477,6 +568,22 @@ allOf:
+>        patternProperties:
+>          '^temp@': false
+> =20
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: adi,adt7604
+> +    then:
+> +      patternProperties:
+> +        '^thermocouple@': false
+> +        '^diode@': false
+> +        '^adc@': false
+> +        '^temp@': false
+> +    else:
+> +      patternProperties:
+> +        '^copper-trace@': false
+> +        '^leak-detector@': false
 
