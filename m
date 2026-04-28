@@ -1,42 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 902ED3264FD;
-	Tue, 28 Apr 2026 17:29:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1BAD44D6A4;
+	Tue, 28 Apr 2026 17:39:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777397347; cv=none; b=uzbwHSaC4fXhfAyibpoq5k4PliDbkr+q0ZaSCxKPjWhMLLKbWuQnQmlDs5K5Im+Y7pCC8824IBOe22LGvnIPaZON+r8HJDUidZPr6t44jm2AD8YaQBOAAp4hhETLRqSACYpLlmBSWWq8t55ar88RjJkdE6ObViQecXIVR5+cq20=
+	t=1777397985; cv=none; b=cZ85/qc5Kpr3DeRuWOPuijWIMSvAzLkgECRfWa2Mh3KPonRCPYXIkchkr7+ndARB0uKL5nAaL9EFrGyA2rFgWUV+xppwSwcknyCiG/x5RWHN5e5jwRwP4SZTgXwI55dGYIF+mSkQd79Jeeo8qHTgFGvsVu2z95Z7HOQDfp6OIrE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777397347; c=relaxed/simple;
-	bh=u2SfhU2VXddbbYvgy//Mc//xtrla6iJo/l4JSpMqhhU=;
+	s=arc-20240116; t=1777397985; c=relaxed/simple;
+	bh=CkN/t8W9ONX8NxZJ2UzBMmylTOs5Rz36qjuLu+hxQ/k=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EoNCHXET9TAXeY1QS4JSZsHwkomPLhW2FHpf9/HTGD0jxU93s3Pqb/Bfc+QDgiNk1VL/iFCvj37Hk0/8l/DtMPuwE/rkEf7f7OG3yhXTvN4zw9dIGO3L/qebw6jEgabVviY8Sd33PY8yM5MEnDx+LJUS3wDmkL5Ml+U+j288wxw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IbBnB43c; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=DbMuGEb/dsByuABF3L2J+3AHcYW6oxicIlJAqrDqqxbz4m2Cmg3hwIRY2mL8fJrxDCXITMwYHADqg/GygJc/AyIC3j1EHhaFQR4w93LUu4ZlXNTXJ7kecNCrFr06g25aa0KbSgTqyspPigp7M9EzlByhPJlG4Rh1So5D+/P2dJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Npf8wqhe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IbBnB43c"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF15C2BCAF;
-	Tue, 28 Apr 2026 17:29:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Npf8wqhe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A98DAC2BCB5;
+	Tue, 28 Apr 2026 17:39:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777397347;
-	bh=u2SfhU2VXddbbYvgy//Mc//xtrla6iJo/l4JSpMqhhU=;
+	s=k20201202; t=1777397984;
+	bh=CkN/t8W9ONX8NxZJ2UzBMmylTOs5Rz36qjuLu+hxQ/k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=IbBnB43cQRXSKs9caFUbq4yFgjbkEXfGY/QDQIWnyVVnjreOmAMw/Xuq4PrgOPjSF
-	 Hj+TfZuqLdqjhXSLkLOc52PGjSJxLjpsrvX/wiRo8pdXvZFzIh3hpAjdDqIVI/AnE2
-	 xFD7AUoROB6s+s5sgn+xqiMvhSxW8ZycdytgYrO38aWlm+QzWELiYBNGVHFpPysGxc
-	 9ieyk2+6VSg4E8Z0BKuag8pCH3ZPG/Gi2LmvL+RFn6g5z7KtEVI6B4Pqpn6uKd8KHf
-	 UID+ynSrPFVVr3wuIiZM4tKMCzZMgVb5d4IpAP4MIQ5yufrP0OsMJ3rs8dbeei3NPk
-	 JVet7iWnYvoZQ==
-Date: Tue, 28 Apr 2026 18:28:58 +0100
+	b=Npf8wqhemgIo5c2P1Lr78+HUzQL3VRZZj139je1kn2NLTXsTTu9P8xesp1dgLBpC8
+	 VMdvLlUSM50LEL+5h9I+KAQRHxKi86CksZbTyWTBmR0BF6MaLTyHKqR+IGGkSFlj3n
+	 3XhMkImujKKiLM+Yf0vJovYjkbAPi5iSYEwWI3rPaSDEigj2FCu9uA6FAaTb1Wda3c
+	 AZNaWaoILpN6b/WWyJxYd+0XoYzeBaSrm2ynv3Aid9ioQsqn4CPnJze/Lz9GYZro4+
+	 xHbfiU+VeOLtoimxyDHzF3m8j0+qQ5t/L2ZdT2TjrzvvlLibfAMaDkOudCpRujpYMo
+	 cXuPRINrkFKOQ==
+Date: Tue, 28 Apr 2026 18:39:35 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Felix Gu <ustc.gu@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: buffer: hw-consumer: free scan_mask on buffer
- release
-Message-ID: <20260428182858.7d7e1034@jic23-huawei>
-In-Reply-To: <20260427-iio_buf-v1-1-2bbdac844647@gmail.com>
-References: <20260427-iio_buf-v1-1-2bbdac844647@gmail.com>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: songqiang1304521@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] iio: magnetometer: rm3100: Use guard(mutex)() in
+ rm3100_trigger_handler()
+Message-ID: <20260428183935.29af0f41@jic23-huawei>
+In-Reply-To: <CAKqfh0HbPJN-L9ji9=Oq=g0UnEk0FES8iQE_mfTpyXdcB5j0Jw@mail.gmail.com>
+References: <20260428124644.49707-1-m32285159@gmail.com>
+	<20260428124644.49707-5-m32285159@gmail.com>
+	<20260428163247.4511aa5b@jic23-huawei>
+	<CAKqfh0HbPJN-L9ji9=Oq=g0UnEk0FES8iQE_mfTpyXdcB5j0Jw@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -44,58 +46,38 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 27 Apr 2026 19:11:39 +0800
-Felix Gu <ustc.gu@gmail.com> wrote:
+On Tue, 28 Apr 2026 12:27:18 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
-> The scan_mask lifetime changed in commit 9a2e1233d38c ("iio: buffer:
-> hw-consumer: remove redundant scan_mask flexible array").
-> 
-> Before that change, the scan mask storage was embedded in struct
-> hw_consumer_buffer, so iio_hw_buf_release() could free the whole
-> allocation with a single kfree(hw_buf).
+> On Tue, Apr 28, 2026 at 10:32=E2=80=AFAM Jonathan Cameron <jic23@kernel.o=
+rg> wrote:
+> > =20
+> [snip]
+> >
+> > There is even an outside chance of deadlock if you hold a local lock
+> > when calling iio_trigger_notify_done() as that can call back into the d=
+river.
+> > Here you are ok because no trigger_ops are set so there isn't a reenabl=
+e()
+> > callback.
+> > =20
+>=20
+> Given this, I'll also likely go back to scoped_guard as well once we
+> remove the gotos, that way we'll be able to unlock it before we get to
+> a potential callback.
+>=20
+I'd prefer a helper function with straight forward guard() + returns.
+Then you can have a single exit point from the outer function.
 
-> 
-> That commit moved the scan mask to a separate bitmap_zalloc() allocation
+ret =3D helper()
+if (ret)
+	return ret;
 
-> stored in buffer.scan_mask, but left iio_hw_buf_release() unchanged.
+other stuff.
 
-Hmm. This reuse of a pointer that is otherwise set via very different
-paths sent me down a wild goose chase.
-
-Patch seems fine, but I'd like Nuno to take a quick look before I pick it up.
-
-Jonathan
-
-> 
-> Free the scan mask in iio_hw_buf_release() before freeing the buffer
-> wrapper.
-> 
-> Fixes: 9a2e1233d38c ("iio: buffer: hw-consumer: remove redundant scan_mask flexible array")
-> Signed-off-by: Felix Gu <ustc.gu@gmail.com>
-> ---
->  drivers/iio/buffer/industrialio-hw-consumer.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/buffer/industrialio-hw-consumer.c b/drivers/iio/buffer/industrialio-hw-consumer.c
-> index 24d7df603760..d1ab2cbf8c88 100644
-> --- a/drivers/iio/buffer/industrialio-hw-consumer.c
-> +++ b/drivers/iio/buffer/industrialio-hw-consumer.c
-> @@ -40,6 +40,8 @@ static void iio_hw_buf_release(struct iio_buffer *buffer)
->  {
->  	struct hw_consumer_buffer *hw_buf =
->  		iio_buffer_to_hw_consumer_buffer(buffer);
-> +
-> +	bitmap_free(buffer->scan_mask);
->  	kfree(hw_buf);
->  }
->  
-> 
-> ---
-> base-commit: 7080e32d3f09d8688c4a87d81bdcc71f7f606b16
-> change-id: 20260427-iio_buf-0459b3fa3de8
-> 
-> Best regards,
+> best regards,
+> maxwell
 
