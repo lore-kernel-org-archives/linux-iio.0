@@ -1,138 +1,103 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D0B3F9F32
-	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 10:43:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 907A52EF67A;
+	Tue, 28 Apr 2026 11:00:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777373027; cv=none; b=sFQh9gavMA5hNrb13/+gMWt3hAhW9XhrzhrF5i7pPdy5HLacqz66AMrGIPGXY3GnT2iwDea4fGdTmHmaJPl9qfYmBnoFrttMtcSCu9Aqceed8Gn+V3+pwXwYESqgsA2vRa3imikHsPWPvM99DIest9NTSGq7tAtrtaTeLDUKpEU=
+	t=1777374055; cv=none; b=IyHZxDDk66iHlolKI5y9MEXJnocpn/tw4ZT/5JsQQyLMhZKJl29EDNLDpj5YtRsAgeKD1n2GpqcEBup2oT/931Qy/gS8C/Rc+em5XoWh6TqGHSgPhDMZIOZ/NmS98EmOpqSQprkDzXXlbideKwXg0HxAmJHmWQOoNoBvUJ3xUeU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777373027; c=relaxed/simple;
-	bh=Txo9jXdDRugPyX7qmDybQ2dYpzzLy0YS2OMMBLInikE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RiKCgGR0u29WYd4hx8Byvkee5VhAk5yjgxAmRFYyiBKQt4bX6MSX2kviXWCMRTB8p/CnNdc7qP2ipaexldAoEYx007PakePnzVaxL9o+4qFEjOF3Iyizp9KYXnq8dWFmEfFisYKbAu+j5c4GFFwTRODVyOnV+LdQUSXzX2X4a2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OnXstZmN; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777374055; c=relaxed/simple;
+	bh=cHlEm2LXRFnJdXdIprRFm/4WAGHJvXhkcz0IRwlTHE4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EdXr/IUoO4sPCkaM6zKewH7ZIDS5rCxGjHx8WnE/TbLS7TGhdKpDnNe2gtRmkJOknLRcU9yx9opXZ21JSQ7PdGr3zQW4aKnX53Mh1V61gfCvuKZ0QO2rfKii9PF8sgXsp9LT5gtbEL83LEoS7yn6d7rFdfZtPqxjOppb9Jl6hhY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k9xxxyGv; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OnXstZmN"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-48a3e9862f0so60193065e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 03:43:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777373025; x=1777977825; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hKtRqSF01B3I4gaZJfxuG2QF2TOpMdK++wbIpuZOUFw=;
-        b=OnXstZmN7ww1Q4bhga8AwQWndl6j+ndOBx2NRQaG/ke7OEbOxNum8W/rv6iVgWWpsP
-         q3CqBLQEPXY6iz2D7jDqte1G8jU5tZRYGnO5sYLmLOYq0HhrVh8lUNG2Pa+PTDRUbBj8
-         yXvz1CKuvbjoMO/5hlzvifIjmBs1huNuA2I2nkMOI0UGUJStbkpc26sEi5r1jR65caUI
-         rKz1BFO0+/M/uhxlM+PjQdZhsnYgbUuAwIfTbMeQZ7QefPDTYw6nsVY264kH03ze1LtD
-         lTRdJn7H0otmTRynmseltG+hfSWaQ6x3nMXcRRDxxFzlXhbdE1cKgLGYcmyphB1lBzLY
-         ZXsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777373025; x=1777977825;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=hKtRqSF01B3I4gaZJfxuG2QF2TOpMdK++wbIpuZOUFw=;
-        b=s/q56upO5m49FR6ewCHRqGWKgmcAgeutoRLNF+9JJ0Gxb36IcjRgxOrwjXmvuLAuJ8
-         MVqnHW8AEmhayeIqygApe84F0N+wuKkKaiYOw0TEQ0iFOvA8kgLoeC0IdTeQw/aF9Gey
-         6PgcYmbAvJZaD1/+A6s/JyT6VdsoZcoRDdcCe1gT11veK9fM7eqIugEZRoX2IEuTFVSS
-         /w4jQa4m+qzVrjjgBGnlbHBIVL6JfSaOK8M/eWaktPuO0YfcGwZX2Z4bKUJ7f4jGqyAY
-         vfVPPcCOowjjsYmFH4Flqs4/Dhyj8/kovFQ8S62XkxFJ7Je3Nm8cYAZs17zlOyT4ctem
-         C+eA==
-X-Forwarded-Encrypted: i=1; AFNElJ9bCeLWaH82WIAdKFcsovsDKJzOVbnqnj1j2IE/L3whmVaYgVwsmhWe7p8wroY1KTl1W1fOhxCfSxM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwPyBa7MuPPFVcI50oVyDQf9Zdh9nkPve8OoEkcRX8A9AaS6+Ar
-	Q2SaxxDvLXCsrJhUt+UBwrROT93/u9kNJ/Mhvm79zcGV5QomMehYQWOZ
-X-Gm-Gg: AeBDievAAXodCxo9t3cHX6MfY7wdip5m2k5qyckggoi/lTYdaitrTpvaB0+HVMEwn2Z
-	QVV197sHrdxeL+eLgkaFl7pyo/pNYpIyOKY8y6gszlcTWYesCbQIcdvBxFvpXKDKdhHE2dbUIqj
-	HyAV8LcVVLFuyMgXJk+4S/Z1L27E8/T1/AEwt90tztbLpLN4WYV3OCpUt6GaZGSjnkmXIDe9Uco
-	1C6I5PhbnZBEav6Ro3TXh6O7eB+f7mse/4X73CSau/O3ffJsFgk7nz62JKok+29nvhnba4NysIH
-	Sb/X0n6c29qGfO+9hi4BANPHgACzEsG5BET7i42+E9dYXL37GsASjuFnay16jMGbLH/JQZlYpCG
-	g2NBNxPWzBAcww1K8yGjywtKyBUQ1NRgPPPAUBw/QI1GVylCkudWcT17S0er1ibdi13TVHai2AY
-	GPAxn2xsQ5CT0g35hnil9xtszjzwvMt1mFbim+YLWKsdTfPtjIJK0CU9QWqQsyOCpwBsPHf2IW5
-	mA=
-X-Received: by 2002:a05:600c:a08b:b0:48a:53cb:8604 with SMTP id 5b1f17b1804b1-48a78a536acmr28625155e9.14.1777373024680;
-        Tue, 28 Apr 2026 03:43:44 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a77af28e6sm41696855e9.6.2026.04.28.03.43.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2026 03:43:44 -0700 (PDT)
-Date: Tue, 28 Apr 2026 11:43:42 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Yury Norov <ynorov@nvidia.com>, Thomas Gleixner <tglx@kernel.org>, Ingo
- Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
- <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, Andy
- Lutomirski <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Johannes Berg <johannes@sipsolutions.net>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Ping-Ke Shih
- <pkshih@realtek.com>, Richard Cochran <richardcochran@gmail.com>, Andrew
- Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
- Abeni <pabeni@redhat.com>, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, Yury Norov <yury.norov@gmail.com>, Rasmus
- Villemoes <linux@rasmusvillemoes.dk>, Hans de Goede <hansg@kernel.org>,
- Linus Walleij <linusw@kernel.org>, Sakari Ailus
- <sakari.ailus@linux.intel.com>, Salah Triki <salah.triki@gmail.com>, Achim
- Gratz <Achim.Gratz@stromeko.de>, Ben Collins <bcollins@watter.com>,
- x86@kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- linux-rtc@vger.kernel.org
-Subject: Re: [PATCH v2 7/9] wifi: rtw89: switch to using FIELD_GET_SIGNED()
-Message-ID: <20260428114342.0d674fd8@pumpkin>
-In-Reply-To: <afBdXj_9r25Ssnz6@ashevche-desk.local>
-References: <20260427214127.406067-1-ynorov@nvidia.com>
-	<20260427214127.406067-8-ynorov@nvidia.com>
-	<afBdXj_9r25Ssnz6@ashevche-desk.local>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k9xxxyGv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777374053; x=1808910053;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=cHlEm2LXRFnJdXdIprRFm/4WAGHJvXhkcz0IRwlTHE4=;
+  b=k9xxxyGv9D1cYA/1IUca4nDwo4KBh4Z3fJjAvT3vNQij+0sZkaZGTSeA
+   cgp2857cXZejel2O1/nprxXw8fy/OwQp0S/tcz/D6etJo7fDzMGT4tJXF
+   N5ucBxgkRNf1Bs3u4+APs8LUdpgv4nE7R4H9NFEsShtZKNbeIG6n6iGaO
+   9N9YaAfRfyeeTbsyobPTMlM0owDAnk3YYq3IQb9FX6HdB+w42MNArKDLf
+   VSflPdyQkBANEdIuYukZ0HYT/XF/bb50s0dMPoUTGknTlMEbaA182UOOZ
+   ljx+HvWt30e1B74pAm9iRw6Xyyz5Uenar98N2/6/XI0llHmfakl83e4KG
+   A==;
+X-CSE-ConnectionGUID: BENmDi9TShyrvz+ykJ3cHw==
+X-CSE-MsgGUID: cIOlVDqYSvW1B3MaYTPAyg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="80854186"
+X-IronPort-AV: E=Sophos;i="6.23,204,1770624000"; 
+   d="scan'208";a="80854186"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 04:00:53 -0700
+X-CSE-ConnectionGUID: VAyUh35bTPmUlxafc0IKeQ==
+X-CSE-MsgGUID: 3s0O00x8SE25z1pxkomXkQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,204,1770624000"; 
+   d="scan'208";a="257235122"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.213])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 04:00:51 -0700
+Date: Tue, 28 Apr 2026 14:00:48 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Salah Triki <salah.triki@gmail.com>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: temperature: max30208: fix wrong scale value
+Message-ID: <afCTYDYCRXoxi37r@ashevche-desk.local>
+References: <20260428085415.52858-1-salah.triki@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260428085415.52858-1-salah.triki@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 28 Apr 2026 10:10:22 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, Apr 28, 2026 at 09:54:15AM +0100, Salah Triki wrote:
+> The driver currently returns a scale of 5 for IIO_CHAN_INFO_SCALE, which
+> leads to incorrect temperature readings.
+> 
+> According to the MAX30208 datasheet, the temperature resolution is 0.005°C
+> per LSB. Using IIO_VAL_FRACTIONAL with 5/1000 correctly represents this
+> 16-bit resolution.
+> 
+> Fix the scale value to ensure user space tools report the temperature
+> correctly in Celsius.
 
-> On Mon, Apr 27, 2026 at 05:41:24PM -0400, Yury Norov wrote:
-> > Switch from sign_extend32(FIELD_GET()) to the dedicated
-> > FIELD_GET_SIGNED() and don't calculate the fields length explicitly.  
-> 
-> ...
-> 
-> >  	for (i = 0; i < ADDC_T_AVG; i++) {
-> >  		tmp = rtw89_phy_read32_mask(rtwdev, R_DBG32_D, MASKDWORD);
-> > -		dc_re += sign_extend32(FIELD_GET(0xfff000, tmp), 11);
-> > -		dc_im += sign_extend32(FIELD_GET(0xfff, tmp), 11);
-> > +		dc_re += FIELD_GET_SIGNED(0xfff000, tmp);
-> > +		dc_im += FIELD_GET_SIGNED(0xfff, tmp);  
-> 
-> In the same driver the GENMASK() is being used, why not  doing it here while at it?
+> Fixes: 9ee95ae4cffd ("iio: temperature: Add driver support for Maxim
+> MAX30208")
 
-To me those bit masks look more readable than the GENMASK() calls would be.
+The tags should go with 1 tag per one (single) line. Do not wrap them.
 
-	David
+> Signed-off-by: Salah Triki <salah.triki@gmail.com>
 
-> 
-> >  	}  
-> 
-> ...
-> 
-> >  	for (i = 0; i < ADDC_T_AVG; i++) {
-> >  		tmp = rtw89_phy_read32_mask(rtwdev, R_DBG32_D, MASKDWORD);
-> > -		dc_re += sign_extend32(FIELD_GET(0xfff000, tmp), 11);
-> > -		dc_im += sign_extend32(FIELD_GET(0xfff, tmp), 11);
-> > +		dc_re += FIELD_GET_SIGNED(0xfff000, tmp);
-> > +		dc_im += FIELD_GET_SIGNED(0xfff, tmp);
-> >  	}  
-> 
-> Ditto, and it even looks like the same piece repeating twice in different
-> compilation units of the same driver...
-> 
+...
+
+>  	case IIO_CHAN_INFO_SCALE:
+>  		*val = 5;
+> -		return IIO_VAL_INT;
+> +		*val2 = 1000;
+> +		return IIO_VAL_FRACTIONAL;
+
+Isn't it an ABI change?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
