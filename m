@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AAF2441049;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A77884418E6;
 	Tue, 28 Apr 2026 13:18:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777382316; cv=none; b=F4ZmwK66krkJSV2W2EFxvc71MLSNA3dfLsli97vltWmoy2sfVLqE0pQM+RH1ZZvaRIxc6koGxspYNanKDsPhxdTsnw0KdK00FzEC8UQNJGOE3qgrNc6WYi5Ekm8pO00MqjdJ4lL6M1psLwiYPzvj45zEmguIqREKAQhSRnntLkY=
+	t=1777382316; cv=none; b=uyrrZP/E3MdkeD4EiQalI3cQcBBQdet6MlWlfCdTjlswDYnIVXM78rJfZWu0UH3XBrsMhNX2OB+jovdZGzuSORmj5zuaagTSj+4aZnlZB1LWuBTUv62+QGNFLCE96qALJq7apIZKXM2fk6HL/WWVatNgaD22Hk5CbstcAh2uGZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777382316; c=relaxed/simple;
-	bh=3INDDAAeuGZJjvJpNIHDcypkpPRwot8PZrzZ40usoqI=;
+	bh=H1coTGSLtrZl7CmThJiiya5f1xJf3QLNF2DO1wXAqmw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ZwXPnF0xq+251ymRAIoccJUAXqPE5K0HKn74P69wzWtvPv22FLhZyL2yJhlT3WLUMmHAo8xAyzb0OSWj3IQnNryO63x3JW1ThqZk1C5MYS7vAlkTAEL/LJNyxXLWSL3kv8BtQCshIV6TSNyM68TsMixWA49tPDcMcvnVblgPNXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UJ9KDjkW; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=qtC/8YYV4mLUWiXQnqTN3J4067+VA5hhqQGnu+lsnU82vRlJYNCwXSdnhZdC6tld25wFso0y7BookPrCshUXv1cK6KmMTkPSM9c5gXO/LwvwuZwARye5G/W+1DuEN4ADlKI7LySHwVZrtPuTAdmgEXgU3dJlcYDvLuM7pQlB4RI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lhlHHsoj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UJ9KDjkW"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A2ABC2BCF5;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lhlHHsoj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 86C6CC2BCC4;
 	Tue, 28 Apr 2026 13:18:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777382316;
-	bh=3INDDAAeuGZJjvJpNIHDcypkpPRwot8PZrzZ40usoqI=;
+	bh=H1coTGSLtrZl7CmThJiiya5f1xJf3QLNF2DO1wXAqmw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=UJ9KDjkW/ZqyzuFBUHaHkqMECpXIuYwbzt/ZzTmgb/E+UBzFTbQO4oHCbN3iqVDEX
-	 sGI7Xp1ecX2oRaK/gViHHawpIZXrMv3iVyzVnkllPQ12YTAXXWibcnjTLk7I2dM2fK
-	 qaMM96p0VbO7N8xZQmeWeHLX+i3GaZqU8lHJKB0pvTaFbzmV31IHulj5oZ9L0Y4e6A
-	 KWX4a/lbyJIT+TCVvR9LHX4bLADEwi9175ZctHAh25jxSIYA5yJ0YYgfHNP4cIlQ9B
-	 wRDyt6y7DkI64Bi219mWzewZxs9w1dL8b4SlptLAUJ+kG/oQtmfWMx4Svf0ws2ZY2S
-	 wE3MBCxJStt8Q==
+	b=lhlHHsojD85BUf5pxM9k/qyq/w0b6CU1HSLc/5CIfSVQgCYQa/h1GsSKdv7eI+IUC
+	 IY81ErRVdpJ9eHHfIp3wwytDKVH9jxxFQOTqojkGhBMgg9GCNTbvGcNpUH0WahIZhl
+	 s7fRBdVubUNhTLyfnDYLQ8fG5wmXRXo5KVPf7JFfwcVIkontylS2zF7WLFUb198SEd
+	 eA5Hl8eIEig4ifrG92kt2hwrXt75bT3/dFMn1HSd9WjoPB7oujxYmqg2Y0rPTd3/l9
+	 LlEsKxKHYeGNv4liiDlTg0JQnSrsmUC2aLsWPlKjzzOyZIMzBHM149TJZiMkWObbdK
+	 3YCf6sY4UKAsw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFFEFF8868;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E592FF885A;
 	Tue, 28 Apr 2026 13:18:36 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Tue, 28 Apr 2026 15:18:36 +0200
-Subject: [PATCH v2 4/5] iio: light: si1133: group generic <linux/*> headers
+Date: Tue, 28 Apr 2026 15:18:37 +0200
+Subject: [PATCH v2 5/5] iio: light: si1133: use guard(mutex)() macro
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260428-si1133-checkup-v2-4-70ad14bfefe2@gmail.com>
+Message-Id: <20260428-si1133-checkup-v2-5-70ad14bfefe2@gmail.com>
 References: <20260428-si1133-checkup-v2-0-70ad14bfefe2@gmail.com>
 In-Reply-To: <20260428-si1133-checkup-v2-0-70ad14bfefe2@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -50,11 +50,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777382314; l=901;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777382314; l=2115;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=Hvej5eqSWeD7xV4MQtx/PHfw5MbA/CGHl9BhtamspOQ=;
- b=Jq6Mm6BMuxPeRSM/zgyQQlhBls3VQKeMNzAmuCPCkeqSIrBztw1/V0FZ5zaPc4Un2nzcNBwSP
- S5pD6WHm1qSAwPpXC38Plocga5bLjyIq36kw6o7eBLVti2OJCrAQw1m
+ bh=GjpeLCBEZ33hvOHDtnqIc83HA4qlDRcZtYHurZdxMdI=;
+ b=HCFYRM9n+KCvW2xqz9Qnj51nvSA24dcEEA4pWjEHT3GFVF3EdbP3iNYGKAVauKaBRRHcW7TRt
+ QhsGncuxC4dDiIbkyMyV+uv5a4tevbAtFiUk7Y/DWAjxkw+M1EoA9SF
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -64,36 +64,78 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Group generic <linux/*> include headers to improve code style.
-
-No functional change.
+Remove mutex_lock()/mutex_unlock() and goto instances and add
+guard(mutex)() macro to modernize driver and improve mutex handling.
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/si1133.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iio/light/si1133.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
-index 5c5c5ae0535a9592522c0b21496f47068044c6ff..f2a79675c026c86bb56d85a65cd035d7540d0ef8 100644
+index f2a79675c026c86bb56d85a65cd035d7540d0ef8..3b40defda383bcbe731dc0b413903e0267f03b01 100644
 --- a/drivers/iio/light/si1133.c
 +++ b/drivers/iio/light/si1133.c
-@@ -21,14 +21,12 @@
- #include <linux/mutex.h>
- #include <linux/regmap.h>
- #include <linux/types.h>
-+#include <linux/unaligned.h>
-+#include <linux/util_macros.h>
+@@ -8,6 +8,7 @@
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+ #include <linux/array_size.h>
+ #include <linux/bitops.h>
++#include <linux/cleanup.h>
+ #include <linux/completion.h>
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+@@ -392,7 +393,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 	int err;
+ 	int expected_seq;
  
--#include <linux/util_macros.h>
+-	mutex_lock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 
+ 	expected_seq = (data->rsp_seq + 1) & SI1133_MAX_CMD_CTR;
+ 
+@@ -403,19 +404,17 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 	if (err) {
+ 		dev_warn(dev, "Failed to write command 0x%02x, ret=%d\n", cmd,
+ 			 err);
+-		goto out;
++		return err;
+ 	}
+ 
+ 	if (cmd == SI1133_CMD_FORCE) {
+ 		/* wait for irq */
+ 		if (!wait_for_completion_timeout(&data->completion,
+-			msecs_to_jiffies(SI1133_COMPLETION_TIMEOUT_MS))) {
+-			err = -ETIMEDOUT;
+-			goto out;
+-		}
++			msecs_to_jiffies(SI1133_COMPLETION_TIMEOUT_MS)))
++			return -ETIMEDOUT;
+ 		err = regmap_read(data->regmap, SI1133_REG_RESPONSE0, &resp);
+ 		if (err)
+-			goto out;
++			return err;
+ 	} else {
+ 		err = regmap_read_poll_timeout(data->regmap,
+ 					       SI1133_REG_RESPONSE0, resp,
+@@ -428,7 +427,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 			dev_warn(dev,
+ 				 "Failed to read command 0x%02x, ret=%d\n",
+ 				 cmd, err);
+-			goto out;
++			return err;
+ 		}
+ 	}
+ 
+@@ -439,9 +438,6 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 		data->rsp_seq = expected_seq;
+ 	}
+ 
+-out:
+-	mutex_unlock(&data->mutex);
 -
--#include <linux/unaligned.h>
--
- #define SI1133_REG_PART_ID		0x00
- #define SI1133_REG_REV_ID		0x01
- #define SI1133_REG_MFR_ID		0x02
+ 	return err;
+ }
+ 
 
 -- 
 2.47.3
