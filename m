@@ -1,127 +1,137 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 101DB39A049;
-	Tue, 28 Apr 2026 07:10:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777360236; cv=none; b=av71NH/u8wHneighhMhkmfjrhPh+jWgzw53jUE2lA56ky8QrV/+ALpDdHDhOaggPYi5MwpCBmdiygAUbSYCnpysyJyVK1mEQ3NCkRxPTnQjpUoGcUYiazU5l4dXH6tvTE/Ocwj+A/YMRAtVTlgu2WWfV6n9VOKBmqRWBADGE2ao=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777360236; c=relaxed/simple;
-	bh=X/LMtGLsAI98KpSAX0nwBX/szOSGt8ghowDeNGWHy9w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PJKtP4OST241h86/gE2YVnioYpPTXfTgLt9EpEhdRINlAI9JwD1QY+0SKy+zJmjFQgSzno29aoEQnosOM1bGV5ZfKYdarnV08iKIKq8uvM0xF41z1vI5Zf89o9I1mNJ/8px8kbETxcrEjG1KQaPhAZbW0P0+9b+XCby5hXgG9tc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f4xJxPnq; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12B7C39A049
+	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 07:15:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777360510; cv=pass; b=H/m7HEAg7bL8B6AFBtT4j8GbBYXJInBT3qgqk38ZQ5fD8mRHHcTXu7gKOQQdp1z4gsz0xWlmLQU6SYLv2I6TX4WteayS915Vw9OgvUg5/CxNyGJ2lTUaVisR0CuJ5Nhn295MwPUAzEDhxkMsd0bCo4g3YCJqVBIab1rPS6Hk24w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777360510; c=relaxed/simple;
+	bh=+vNIotOINNZBFREY4qZDuDXFnAS73nidgBRWSj4Uplw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hwV7dUzvbP8kMq3rPPdulL0x2v4TeDSs8PWa8RM/hKysag5dI5/OFhA9ATyyymj1Fe8QYDWLYlnzKY9E9yLM0Sdz/8IaQrSKRSTiwyMZqfMHL8+8tyB3kURDYIezzbhBYrP3Q2/kRr6IitPwSFlrGQSYkfihUzW1gu2/KvTWRNc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ScaJBjzQ; arc=pass smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f4xJxPnq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777360234; x=1808896234;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=X/LMtGLsAI98KpSAX0nwBX/szOSGt8ghowDeNGWHy9w=;
-  b=f4xJxPnqOOjTKIvaiPGB6pHrYvEWO4yXkcteqRVtUluMDxppSp5tOLnw
-   2KgsWY6UoBmYCQ19SSw98sw4t2du3B3KengqB71mRjM3HkdSQzjETJORk
-   rOD6OYHl/elnjkgVwFeIg+9kO829Hx4l7O54aII3DLOWuPueIB4yaO0CW
-   OcyA42McGjN9ma56K43zghu4ROXZ8MTRxnnuOxkbA4vZOxpmokMdkBdNF
-   9WjyeR4KpdorfbVgedEbJK4xE9gUzntvMbJqjodIG25ybtEXMgE5LhP1b
-   H6n4W1wjghtluxi0TMKHZb04bfyk6IqXX9JpTK5EmUE/bN5e2pPaJzAGi
-   g==;
-X-CSE-ConnectionGUID: CSbc6oE4T3KR5bp7jStLDQ==
-X-CSE-MsgGUID: WHDjQXjcTWaFMQZovvK4UA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="95674680"
-X-IronPort-AV: E=Sophos;i="6.23,203,1770624000"; 
-   d="scan'208";a="95674680"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 00:10:33 -0700
-X-CSE-ConnectionGUID: lVSkmhXlQ/mFlOhxzX6tFQ==
-X-CSE-MsgGUID: tuF8HfU7RNWOHPfANBcGjg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,203,1770624000"; 
-   d="scan'208";a="234150595"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.213])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 00:10:25 -0700
-Date: Tue, 28 Apr 2026 10:10:22 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Yury Norov <ynorov@nvidia.com>
-Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	David Laight <david.laight.linux@gmail.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Ping-Ke Shih <pkshih@realtek.com>,
-	Richard Cochran <richardcochran@gmail.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Yury Norov <yury.norov@gmail.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Hans de Goede <hansg@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Salah Triki <salah.triki@gmail.com>,
-	Achim Gratz <Achim.Gratz@stromeko.de>,
-	Ben Collins <bcollins@watter.com>, x86@kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-	linux-rtc@vger.kernel.org
-Subject: Re: [PATCH v2 7/9] wifi: rtw89: switch to using FIELD_GET_SIGNED()
-Message-ID: <afBdXj_9r25Ssnz6@ashevche-desk.local>
-References: <20260427214127.406067-1-ynorov@nvidia.com>
- <20260427214127.406067-8-ynorov@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ScaJBjzQ"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-43d7badbd7dso5403218f8f.2
+        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 00:15:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777360507; cv=none;
+        d=google.com; s=arc-20240605;
+        b=DfifvNLOFttmziNKnAe15EdXi02W+/rFyQAz7JbOYZy87lJStTawS8tblJ27dKt8M4
+         NwjLCkQywgNpVpeLdXBTyBYqyINX8pyp33DzOCCKjTmjadugJ9cYNLi7VIRdol1El2sr
+         QO4Y79dtoquRNVNcw2yk4Pn39GfklWqVvOdoTesQMyQGdKPTDjb9/MoWv608BfhsLpR8
+         NHY9UKtTZMwU1gCvNUjuxydbjRlxcvvDPpGaAEXltyMOII9VlSb2DiMebgfw2JdwfPv7
+         C+3EXakxRej9pJBG0A+JDT0KIEez9mJUOySrSMeZmzrSh0QbigJWt70AP5AhyqU5ej1y
+         z9mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=PY6SGKd21N41BtioFK1r6ALJlLkaL3kUs1cS5UL/IEo=;
+        fh=Dg5zoWqUx76h3UPcxsppTHY72IFDoZZoazTlpye19aI=;
+        b=JbVZtVjgx+kaloUDwhYFjuVXTjm39Se4vBYL50CwSrkMznafc1HycFzg6qqufIcvGE
+         nNhcz4lNEi4BWqRtTAM6Vhs7CPq0YGtaVTjz8r+3otqBOzXh31y4yQWFD9wwtvc4fx50
+         hk5C41JLyJ08DNsGcZZP+KlE/kwQ98rDyd2sjKEGd/+iHEeIzYabXTf8rxne4gIspNVg
+         5jvFiC1FGKzcelyyuW2p3SqUGuk0R/yYlA5JgKid4da409b5REvsaNo+e+K/ez+Xw6mg
+         fT/SLJsW8/veQ/MV/j2ZRE7ceyVnjr2xcZIa1cgRKb/Vsv8phOsJEQrfK+XIJ/LF5jof
+         4Sqg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777360507; x=1777965307; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=PY6SGKd21N41BtioFK1r6ALJlLkaL3kUs1cS5UL/IEo=;
+        b=ScaJBjzQ9TRddsy4DSTdyG+inf02KyyKwucCTti1BXBzteKpwepEL9wTDPdwcjas+y
+         vWZxVbYS32TwT9Wrd6bmSBkDFWF1aLLuJGg2fSGL7t1EUlcamB5YdWXIrnE02q47U5rm
+         Tb7jKnkKD59SfktxMsW3T0/ucEeOwl0hWOkFbUe3o2FhqLKrXogHu4Mf1pITSYMCKQ1L
+         yHXOkASt5cF5EiMu93IVbV2VagPq2FMxke5pnGSOm6fvbrg5+EAB7Ti5lneTdRdqaDcq
+         n0pYaUym/WvHG1qNDyDHaFdWI2W5xyj7qsiWt5n+KpMEXREtea38z8+/EwQs/9ZyNfcz
+         6blw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777360507; x=1777965307;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PY6SGKd21N41BtioFK1r6ALJlLkaL3kUs1cS5UL/IEo=;
+        b=DrFruDW17MJxbmPchBYYy+oCRHxZ5pGEKlyE6d5XBV9MSYk0lMO083ZVz+Or1zwl3D
+         GKs0AiMogaxE9yEeMS6ibBw+0+/QFjUi0zfYX8usOxT64WVyiq7tMkWtvqpRN506zMdF
+         GV0otEHxvMyGNlnH30/axiHuRlEtrufb5wTDR/r8+8dJ+cYQm5jxC4+5sYM38V/lmBD9
+         5lz2oYyYWL7whzMPPvC9yTduT9laI73y31/LQ7lNqJxub1keIdT22XGhJpwTbt7bRG2L
+         DeYD4pjro8BjHd4JWfsfNq73TXAHJ/XR9z5X1fylI6Z4KNpsxUDjB1WW23IY0s/wO2UZ
+         QTrg==
+X-Gm-Message-State: AOJu0Yzo5/okhIj+x+IApH6A2O9SmyE3JR9xUj8MAzYCgiaLB0xfGsjC
+	vDEnvv2B6hmoTG3uUM+1h8CrNWXDsNcToJd7GUOk1xcSVGsaZ5l0VA4OA3t88JSnGJ7tUJZWI14
+	rwnzIQP8BYZLGsbbJMONqM4pgN8fFtyD92mQ1
+X-Gm-Gg: AeBDieucLpv7phXgI5nOnAfO+2cYr3kFkBA6hhligaUBVhh6xKCABu+j8vr9cR8xlfN
+	uyY1sWh8qsgV2kzjsOyAfe0H4lE4DZIqTF1ldeE7PgAwJJnVg4B9jCEnPpDHT7g9XHHTshY8MYK
+	xv5Napbu5t/OCe4DlOHAG9sesRqHNKuKbfrE8PQcxrbjg38BZQLdhaY/roI0Z2fXbk7oLlkCfjq
+	5jQSlFVfbsQrDiFD3i+w+Vd44qRP7sFnlmOXGGAyZknSMJ7VySdqpCnnnIrEgN4kPD76SEWVk3i
+	C2AtN5wUlSldnNFZR2hxNupZM+EBVSsBrJ65NK4PGA6PxYJYnNy2YHWMHlTcLZTKwTu4QVJBhet
+	qIcj7uPdU4f2pF55bHRe/cvywnRiZ0vVWG6KMbn0jQPSgQDvweV73GxwkVQL3k+B1iHYkP81uR9
+	EyjuhbnG2+LuTcsMQeTuKiovIYARE=
+X-Received: by 2002:a05:6000:2481:b0:441:362c:39c1 with SMTP id
+ ffacd0b85a97d-4464a913403mr3247725f8f.33.1777360507164; Tue, 28 Apr 2026
+ 00:15:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260427214127.406067-8-ynorov@nvidia.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
+ <CALoEA-wCTEUA44ST5eg1EyHQTEop=wHn12NGddyqzPMa+EUZ1g@mail.gmail.com> <afBbylL3Ygt9GEYy@ashevche-desk.local>
+In-Reply-To: <afBbylL3Ygt9GEYy@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Tue, 28 Apr 2026 09:14:55 +0200
+X-Gm-Features: AVHnY4L8HBwwUs0Lo8UgD5oiFNNzTeb6EGPiA9RW_il9rZ7Ph-yJpt7qOSVLHcA
+Message-ID: <CALoEA-zLo1Neb=6xqwRyNcgsWBdpXPQox3mvJo9pEXs-Y0h__w@mail.gmail.com>
+Subject: Re: [PATCH v0 00/14] iio: magnetometer: ak8975: Additional changes to
+ the driver
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Apr 27, 2026 at 05:41:24PM -0400, Yury Norov wrote:
-> Switch from sign_extend32(FIELD_GET()) to the dedicated
-> FIELD_GET_SIGNED() and don't calculate the fields length explicitly.
+On Tue, 28 Apr 2026 at 09:03, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Tue, Apr 28, 2026 at 08:37:22AM +0200, Joshua Crofts wrote:
+> > On Mon, 27 Apr 2026 at 22:14, Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
+> > >
+> > > This series is an attempt to make the driver less a rabbit hole.
+> > > It's a continuation of what Joshua Crofts started doing. Hence
+> > > it is based on his work and first three "patches" here are supposed
+> > > to be folded to his series accordingly.
+> > >
+> > > I have compile-tested them, but I haven't done full double check of
+> > > the correctness from functional point of view. Joshua, please do that
+> > > before incorporating into your series. Yes, my patches are assumed to
+> > > become the part of Joshua's whatever next version of the series, that's
+> > > why mine is marked as v0.
+> > >
+> > > Should not be taken directly by the maintainers, but any comments, review
+> > > are highly appreciated.
+> >
+> > When you said a few changes, I didn't expect an 11-part series :). I'll go over
+> > them and am them to my branch. I might check out the guard()() and chip_info
+> > changes.
+>
+> On top of that also one may consider to switching to use reset-gpio instead of
+> poking "reset" GPIO directly. But this sounds like too many for one go, let's
+> make this 17 patch series go (6 yours + 11 mine).
 
-...
+Fair enough, perhaps another time.
 
->  	for (i = 0; i < ADDC_T_AVG; i++) {
->  		tmp = rtw89_phy_read32_mask(rtwdev, R_DBG32_D, MASKDWORD);
-> -		dc_re += sign_extend32(FIELD_GET(0xfff000, tmp), 11);
-> -		dc_im += sign_extend32(FIELD_GET(0xfff, tmp), 11);
-> +		dc_re += FIELD_GET_SIGNED(0xfff000, tmp);
-> +		dc_im += FIELD_GET_SIGNED(0xfff, tmp);
-
-In the same driver the GENMASK() is being used, why not  doing it here while at it?
-
->  	}
-
-...
-
->  	for (i = 0; i < ADDC_T_AVG; i++) {
->  		tmp = rtw89_phy_read32_mask(rtwdev, R_DBG32_D, MASKDWORD);
-> -		dc_re += sign_extend32(FIELD_GET(0xfff000, tmp), 11);
-> -		dc_im += sign_extend32(FIELD_GET(0xfff, tmp), 11);
-> +		dc_re += FIELD_GET_SIGNED(0xfff000, tmp);
-> +		dc_im += FIELD_GET_SIGNED(0xfff, tmp);
->  	}
-
-Ditto, and it even looks like the same piece repeating twice in different
-compilation units of the same driver...
+BTW, if I'm sending your patches to the list, I should also add a Signed-off-by
+tag to the end, right?
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
