@@ -1,154 +1,115 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41B09428473
-	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 12:46:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8105F43DA4F;
+	Tue, 28 Apr 2026 13:18:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777380418; cv=none; b=KiihAVZQYU9YOaG8euBI0p8oOoOnvYuZ2qf0prSwBNMULbl/I0Qk/C1PNpbnAFlEE3N0vgx4/9xPCTRGBIDAGNx3m5a9TfqgfXKFAajMDJiXDaDd1SzFQtp2ng/wgLpHWi5pxtEttIgrBKvQznNuegHD13TtnLBrKheTmWCso9w=
+	t=1777382316; cv=none; b=Ay4dboX7a05ygSjzTy7Vyj0X7SfSpyGolngrjRRA+gIkjMRF+gN5TAOfw6pFlcFd7zaCVHDd9QR9QvCrgUyGJYjzf37rcMi/TBgX7spZnYXM5C0FjLoWSdigllrKTXAbOIXcmUnRWbYr9Wu+90benfoWTLrot+k9w+Ll68E7WDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777380418; c=relaxed/simple;
-	bh=UeT8LyJ6LIXE+IjlooYgXtnFImoXnwlxSoofLNVryqo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=XEfPpVHTBLczn13GWr1Lyr1w19y3XBwkbC8yJ3WUEU4kuAn4hqy+zdVpwK34PxfCt4eVdUkmp/Pad6LjytkRaU4+DQQNWpYdUDmh2h+lSoEQJUZveHSBO0FIoVBCD6NWyFd7NoiIE854mmt0AbwfBiYpVay9T06hNegSJI+/vWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j/U/AE52; arc=none smtp.client-ip=209.85.210.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777382316; c=relaxed/simple;
+	bh=b6fb23sK+0a50rFQTjadTzLojC/l9EDl4In5i+uOzAc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=LaKFxpVjme+MebUe6ZzF0cJQz8AF4m+ymZP+xnuQ1YnGWNby7BoOIVk0Wa91sMCzUA+pxLrn1l2q5PsCBCqLI/RT28ecTUnOQc0+wF0O1YkSAk1gMI/EjrOsXYt98gu0Chiz6HWO4OCd3OjlVMTIjT61lsS1kweb1kNzSvZk6K0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EQ2KtJIp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j/U/AE52"
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7de4e6c5a30so3841768a34.0
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 05:46:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777380411; x=1777985211; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fR850Eqwaqzi0InII1XrHEy0DbB20DDlrrvurFcFr28=;
-        b=j/U/AE52XO98y+cmPRsZ43Gaxt9pVAfb2wHLwhv2XjaWcC++drzi5lb1NVcdcjLQov
-         YYWdRVg/jm7q5l4rw0OOxTFjhfOn2zOq6QOTWHexf2N27mtSJhTt7jkiK8kowVWA7PJj
-         tky9UOtCYyIQBQRapgx4o1v2bg5ieEbytK0Lq/+oDpkrN76u6SaDUPhjbTfuAaPjIyp5
-         hb6gRN0gbrIEQ7wyaRH7dAxDS9rgXbnnVS7qC9eBWT4HcwV1APXdVjOSQlNwR7GSP9iE
-         KcqEGCcqTKTyqcdJgrSnmQiwYJuJvtUdNMVAkySXukzKp1scXQK7HP9WQzMBdtW+O/gD
-         hzEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777380411; x=1777985211;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=fR850Eqwaqzi0InII1XrHEy0DbB20DDlrrvurFcFr28=;
-        b=o2ECmDAs6/uS6sT+z0hBNMSv+DIBJ7LjHFQE0YL2enoVzqrCltObgDHF9KeP4ZyzIE
-         flOT2KL97IzkPNz/rG9bQ2+Lyn9z6hu3S8a2FId+DhUMsde9eOCTfMTUUqPXt3h6cP/Z
-         Q011p61KZBRNikOoy/147gcz5U174REV4len2j+FSwAJ9mVE741uGoejkt6CJtTfazvQ
-         tiRv72ankYH12QBUfhRKRXEZQXwM8j2x+QkTQ8/BBhZv0URXJY4A6WI3qA9UAx3UOxHB
-         k+B8KHuKWRN56hecCtVPGYwk5rbSKsIuELimcKebIJNxX/bLhbqfSyqVF//Ers2yvul5
-         rm+w==
-X-Forwarded-Encrypted: i=1; AFNElJ+/chSDuElW374zzDmJXW4tiRHWMhTqHYRnGn91MaRVGNEXbvmUfxTOPODZXjprl7K1V70WDkH4WIU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw/1dNZF2O4OPwK0EfWL1+EFsyUN2rQ1Tx+gB0tiPMd40ZI6+Jb
-	LSOmTgCAzCKOIIpm0EQ60HwpxneOSAC4iJdUyJ3BOklvhCxgyEwmGwbBCHS9Ug==
-X-Gm-Gg: AeBDieu5JTMFpcc+7HCzZn2ZiTa+HK+IpEBISWfzgfrk/9GvsoNF25v744W/CobcbDL
-	0vA22JU6BqhHRW4GU041kl/4L4Vuzjc5t6OgF+bP+BBmM2STJyU+qMaoTtsYE0C+fz22hVVEgRL
-	hs3k0xwtNUH4ac68qNvUYmqRo2KGqSgizArTYsGNWCaiDsaACwxu+6n20kVBqyeY8efviSRYPH9
-	o0oqA5YEZYUjQ6kNySo01M7VM58VXzi7MOLTw9bByITO9Di2zg+R/M0+qsFox0eJQzd1YCr02el
-	oKFd6lgBRMCJH/ygkkKkg9B/YKPImw+HASITtDpVR9UPmlW6OENLqbF3aFqK7/y/dYpeOtN9kPy
-	ABNdxrouOwMZ5i//EloAdI/omAWxgAI/bjn5M2mzkPjG8WCtqyDkVisvoYDzwIl2ea/qKsvBKuj
-	R0ytYUzy9N2E2iBaMEpgetve9y8bdTjAAX6ErxnpYLxnyb1aOUdDVXt4mli1j1dMR0gDTj
-X-Received: by 2002:a05:6830:82e5:b0:7d9:7209:4378 with SMTP id 46e09a7af769-7de9a0c6b2cmr1909164a34.17.1777380410784;
-        Tue, 28 Apr 2026 05:46:50 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7de986a5601sm1683041a34.19.2026.04.28.05.46.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2026 05:46:49 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: songqiang1304521@gmail.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] iio: magnetometer: rm3100: Use guard(mutex)() in rm3100_trigger_handler()
-Date: Tue, 28 Apr 2026 07:46:44 -0500
-Message-ID: <20260428124644.49707-5-m32285159@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260428124644.49707-1-m32285159@gmail.com>
-References: <20260428124644.49707-1-m32285159@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EQ2KtJIp"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5D33FC2BCB9;
+	Tue, 28 Apr 2026 13:18:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777382316;
+	bh=b6fb23sK+0a50rFQTjadTzLojC/l9EDl4In5i+uOzAc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=EQ2KtJIpw/VCMtWZJ4tlqGFl6RoPEBrS8lbiqdSy0eLPeKoF+R5r3p/HyZDRN9I2i
+	 bMgilThA7sjtY6df2zoYiKezhVofKLXHF6pNBEzaU1VKOJOoPfvBpW5LRhqbb3YoZc
+	 UddkHiGCeU8lvB4oxCcy84eD15f7RtVGYDo4ntEAucRzxFp7+jHxLMZ1r4z0351HVL
+	 fMHahrO92H2JNXJWZJj6bPUSodwiJXvbD0z69FaEhz7Pu53i6oj9lKGSG1ETn4iVsR
+	 yHR2RB8Iu8N9GzCERdhxs6pHEDTfQIZ9ILavKo/wmys/YogKhWig8ZetArlaVxq0B7
+	 PJYgEOCYFhbIA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5222FFF8873;
+	Tue, 28 Apr 2026 13:18:36 +0000 (UTC)
+From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Date: Tue, 28 Apr 2026 15:18:34 +0200
+Subject: [PATCH v2 2/5] iio: light: si1133: remove unused macros
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260428-si1133-checkup-v2-2-70ad14bfefe2@gmail.com>
+References: <20260428-si1133-checkup-v2-0-70ad14bfefe2@gmail.com>
+In-Reply-To: <20260428-si1133-checkup-v2-0-70ad14bfefe2@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Joshua Crofts <joshua.crofts1@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777382314; l=1486;
+ i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
+ bh=sAJi4jzXAC1/xkjwpgVBUUVE/UZJLoyjyYEoIQrqUtw=;
+ b=hPVVeDLOV8wrvYmDq+tIMEfeaEYl3ptAXJXt/LGS8G4hR7bHtDT6SgrepOeucxG+w8S5nHxEV
+ KiaO7yM1vORCirhyPsnG4yM1RPbaSDeHj8v3VzvuhG7O541lVtSoj/t
+X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
+ pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
+X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
+ auth_id=746
+X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
+Reply-To: joshua.crofts1@gmail.com
 
-Replace mutex_lock() and mutex_unlock() calls in
-rm3100_trigger_handler() with the more modern guard(mutex)(). This will
-help modernize the driver and bring it up-to-date with modern available
-macros/functions.
+From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+Remove unused macros to improve readability.
+
+No functional change.
+
+Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
-  v2:
- - Switched out scoped_guard() for guard(mutex)().
- - Because of the replacement of scoped_guard(), fixed an error due to
-   gotos bypassing __attribute__((cleanup)).
+ drivers/iio/light/si1133.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
- drivers/iio/magnetometer/rm3100-core.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iio/magnetometer/rm3100-core.c b/drivers/iio/magnetometer/rm3100-core.c
-index eb59ea8d5bf5..fdee82c1290f 100644
---- a/drivers/iio/magnetometer/rm3100-core.c
-+++ b/drivers/iio/magnetometer/rm3100-core.c
-@@ -459,11 +459,11 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
- 	struct regmap *regmap = data->regmap;
- 	int ret, i, bit;
+diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+index 52e4269dc35014b87b7c46a120e64723be716768..ada8da122b76c9a0a55751baa6522a145f0fc7e8 100644
+--- a/drivers/iio/light/si1133.c
++++ b/drivers/iio/light/si1133.c
+@@ -22,8 +22,6 @@
+ #define SI1133_REG_PART_ID		0x00
+ #define SI1133_REG_REV_ID		0x01
+ #define SI1133_REG_MFR_ID		0x02
+-#define SI1133_REG_INFO0		0x03
+-#define SI1133_REG_INFO1		0x04
  
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
-+
- 	switch (scan_mask) {
- 	case BIT(0) | BIT(1) | BIT(2):
- 		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 9);
--		mutex_unlock(&data->lock);
- 		if (ret < 0)
- 			goto done;
- 		/* Convert XXXYYYZZZxxx to XXXxYYYxZZZx. x for paddings. */
-@@ -472,21 +472,18 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
- 		break;
- 	case BIT(0) | BIT(1):
- 		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 6);
--		mutex_unlock(&data->lock);
- 		if (ret < 0)
- 			goto done;
- 		memmove(data->buffer + 4, data->buffer + 3, 3);
- 		break;
- 	case BIT(1) | BIT(2):
- 		ret = regmap_bulk_read(regmap, RM3100_REG_MY2, data->buffer, 6);
--		mutex_unlock(&data->lock);
- 		if (ret < 0)
- 			goto done;
- 		memmove(data->buffer + 4, data->buffer + 3, 3);
- 		break;
- 	case BIT(0) | BIT(2):
- 		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 9);
--		mutex_unlock(&data->lock);
- 		if (ret < 0)
- 			goto done;
- 		memmove(data->buffer + 4, data->buffer + 6, 3);
-@@ -495,12 +492,9 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
- 		for_each_set_bit(bit, &scan_mask, mask_len) {
- 			ret = regmap_bulk_read(regmap, RM3100_REG_MX2 + 3 * bit,
- 					       data->buffer, 3);
--			if (ret < 0) {
--				mutex_unlock(&data->lock);
-+			if (ret < 0)
- 				goto done;
--			}
- 		}
--		mutex_unlock(&data->lock);
- 	}
- 	/*
- 	 * Always using the same buffer so that we wouldn't need to set the
+ #define SI1133_PART_ID			0x33
+ 
+@@ -40,7 +38,6 @@
+ #define SI1133_CMD_RESET_CTR		0x00
+ #define SI1133_CMD_RESET_SW		0x01
+ #define SI1133_CMD_FORCE		0x11
+-#define SI1133_CMD_START_AUTONOMOUS	0x13
+ #define SI1133_CMD_PARAM_SET		0x80
+ #define SI1133_CMD_PARAM_QUERY		0x40
+ #define SI1133_CMD_PARAM_MASK		0x3F
+@@ -86,13 +83,9 @@
+ #define SI1133_CMD_MINSLEEP_US_LOW	5000
+ #define SI1133_CMD_MINSLEEP_US_HIGH	7500
+ #define SI1133_CMD_TIMEOUT_MS		25
+-#define SI1133_CMD_LUX_TIMEOUT_MS	5000
+-#define SI1133_CMD_TIMEOUT_US		(SI1133_CMD_TIMEOUT_MS * 1000)
+ 
+ #define SI1133_REG_HOSTOUT(x)		((x) + 0x13)
+ 
+-#define SI1133_MEASUREMENT_FREQUENCY 1250
+-
+ #define SI1133_X_ORDER_MASK            0x0070
+ #define SI1133_Y_ORDER_MASK            0x0007
+ #define si1133_get_x_order(m)          (((m) & SI1133_X_ORDER_MASK) >> 4)
+
 -- 
-2.53.0
+2.47.3
+
 
