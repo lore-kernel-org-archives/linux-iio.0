@@ -1,385 +1,138 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 892593F54CE;
-	Tue, 28 Apr 2026 10:43:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D0B3F9F32
+	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 10:43:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777373000; cv=none; b=hHXaP2HLagOjIBdTbOJwEZT4ZvfFlj6IRGKiRbdibWSNdiXtYPkdprpetDrZAfZwni2CZYN0uJZO7D99lHnZI+AHf0rzpsKef20jnRs68HDprkr3uR/16NCG7cTTmBc3aB07gemIkOc3AWigmTdJv6kt0aAmjvexkmwi4uKgQ5U=
+	t=1777373027; cv=none; b=sFQh9gavMA5hNrb13/+gMWt3hAhW9XhrzhrF5i7pPdy5HLacqz66AMrGIPGXY3GnT2iwDea4fGdTmHmaJPl9qfYmBnoFrttMtcSCu9Aqceed8Gn+V3+pwXwYESqgsA2vRa3imikHsPWPvM99DIest9NTSGq7tAtrtaTeLDUKpEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777373000; c=relaxed/simple;
-	bh=B5KiGKV2zbegeBDLastgzsGiTNkTxhJYb8ltt3EiF6A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ghC9LYAn1uBQyIjRW8Pvu4BDT+zW4KrvhwSnXjZxZxrbG/H5G2koG1FgjOtdYS9Yyqv7g5kQIfUsHstM/NmsXFIljhAprdjIIHL2Xja7GnuXjzhQSzGUGjcGrKBK5QDrhh7G3M1UzW2yv69gA18ilASL8ZI3t8l3Zx2wNHpGfNA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aNXXw3cD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777373027; c=relaxed/simple;
+	bh=Txo9jXdDRugPyX7qmDybQ2dYpzzLy0YS2OMMBLInikE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RiKCgGR0u29WYd4hx8Byvkee5VhAk5yjgxAmRFYyiBKQt4bX6MSX2kviXWCMRTB8p/CnNdc7qP2ipaexldAoEYx007PakePnzVaxL9o+4qFEjOF3Iyizp9KYXnq8dWFmEfFisYKbAu+j5c4GFFwTRODVyOnV+LdQUSXzX2X4a2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OnXstZmN; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aNXXw3cD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44CEC2BCAF;
-	Tue, 28 Apr 2026 10:43:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777372999;
-	bh=B5KiGKV2zbegeBDLastgzsGiTNkTxhJYb8ltt3EiF6A=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=aNXXw3cDDjwPjdnxwiRoBejU5unc/nBCJwSm5Esrw+CShCz0Tzh3Ej2hWpsXgXlFF
-	 GyyqekAQKdJnuEzT6aYtmrRppbD9Ks/T2JAfbKR2wpl0arm0mKAHs+AY7ODznXxP4s
-	 7/S1XLb/HZHoHQ5du9ZfxNi/iDzshaehXnpzV6bA+85L9QrU3w8EmWeEAOLgLMf0TL
-	 3hN733QmcAEpBTIh/yN2XVlHkRJphZSgmwnCGYXhHgtEjJ1CabwGBfkcrfU0fYbCrQ
-	 GkwkurJ03kLgOH786snb7nTjywg7FKTUx197b/52uAJblwFPZ1m4qEgjE5hH/+hWaP
-	 9f8kAkJC/ghKQ==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Milan Misic <twoexem@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Sasha Levin <sashal@kernel.org>,
-	lorenzo@kernel.org,
-	jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 7.0-6.18] iio: imu: st_lsm6dsx: Add ACPI ID for SHIFT13mi gyroscope
-Date: Tue, 28 Apr 2026 06:41:25 -0400
-Message-ID: <20260428104133.2858589-74-sashal@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260428104133.2858589-1-sashal@kernel.org>
-References: <20260428104133.2858589-1-sashal@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OnXstZmN"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-48a3e9862f0so60193065e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 03:43:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777373025; x=1777977825; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hKtRqSF01B3I4gaZJfxuG2QF2TOpMdK++wbIpuZOUFw=;
+        b=OnXstZmN7ww1Q4bhga8AwQWndl6j+ndOBx2NRQaG/ke7OEbOxNum8W/rv6iVgWWpsP
+         q3CqBLQEPXY6iz2D7jDqte1G8jU5tZRYGnO5sYLmLOYq0HhrVh8lUNG2Pa+PTDRUbBj8
+         yXvz1CKuvbjoMO/5hlzvifIjmBs1huNuA2I2nkMOI0UGUJStbkpc26sEi5r1jR65caUI
+         rKz1BFO0+/M/uhxlM+PjQdZhsnYgbUuAwIfTbMeQZ7QefPDTYw6nsVY264kH03ze1LtD
+         lTRdJn7H0otmTRynmseltG+hfSWaQ6x3nMXcRRDxxFzlXhbdE1cKgLGYcmyphB1lBzLY
+         ZXsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777373025; x=1777977825;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=hKtRqSF01B3I4gaZJfxuG2QF2TOpMdK++wbIpuZOUFw=;
+        b=s/q56upO5m49FR6ewCHRqGWKgmcAgeutoRLNF+9JJ0Gxb36IcjRgxOrwjXmvuLAuJ8
+         MVqnHW8AEmhayeIqygApe84F0N+wuKkKaiYOw0TEQ0iFOvA8kgLoeC0IdTeQw/aF9Gey
+         6PgcYmbAvJZaD1/+A6s/JyT6VdsoZcoRDdcCe1gT11veK9fM7eqIugEZRoX2IEuTFVSS
+         /w4jQa4m+qzVrjjgBGnlbHBIVL6JfSaOK8M/eWaktPuO0YfcGwZX2Z4bKUJ7f4jGqyAY
+         vfVPPcCOowjjsYmFH4Flqs4/Dhyj8/kovFQ8S62XkxFJ7Je3Nm8cYAZs17zlOyT4ctem
+         C+eA==
+X-Forwarded-Encrypted: i=1; AFNElJ9bCeLWaH82WIAdKFcsovsDKJzOVbnqnj1j2IE/L3whmVaYgVwsmhWe7p8wroY1KTl1W1fOhxCfSxM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwPyBa7MuPPFVcI50oVyDQf9Zdh9nkPve8OoEkcRX8A9AaS6+Ar
+	Q2SaxxDvLXCsrJhUt+UBwrROT93/u9kNJ/Mhvm79zcGV5QomMehYQWOZ
+X-Gm-Gg: AeBDievAAXodCxo9t3cHX6MfY7wdip5m2k5qyckggoi/lTYdaitrTpvaB0+HVMEwn2Z
+	QVV197sHrdxeL+eLgkaFl7pyo/pNYpIyOKY8y6gszlcTWYesCbQIcdvBxFvpXKDKdhHE2dbUIqj
+	HyAV8LcVVLFuyMgXJk+4S/Z1L27E8/T1/AEwt90tztbLpLN4WYV3OCpUt6GaZGSjnkmXIDe9Uco
+	1C6I5PhbnZBEav6Ro3TXh6O7eB+f7mse/4X73CSau/O3ffJsFgk7nz62JKok+29nvhnba4NysIH
+	Sb/X0n6c29qGfO+9hi4BANPHgACzEsG5BET7i42+E9dYXL37GsASjuFnay16jMGbLH/JQZlYpCG
+	g2NBNxPWzBAcww1K8yGjywtKyBUQ1NRgPPPAUBw/QI1GVylCkudWcT17S0er1ibdi13TVHai2AY
+	GPAxn2xsQ5CT0g35hnil9xtszjzwvMt1mFbim+YLWKsdTfPtjIJK0CU9QWqQsyOCpwBsPHf2IW5
+	mA=
+X-Received: by 2002:a05:600c:a08b:b0:48a:53cb:8604 with SMTP id 5b1f17b1804b1-48a78a536acmr28625155e9.14.1777373024680;
+        Tue, 28 Apr 2026 03:43:44 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a77af28e6sm41696855e9.6.2026.04.28.03.43.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2026 03:43:44 -0700 (PDT)
+Date: Tue, 28 Apr 2026 11:43:42 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Yury Norov <ynorov@nvidia.com>, Thomas Gleixner <tglx@kernel.org>, Ingo
+ Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
+ <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, Andy
+ Lutomirski <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Johannes Berg <johannes@sipsolutions.net>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Ping-Ke Shih
+ <pkshih@realtek.com>, Richard Cochran <richardcochran@gmail.com>, Andrew
+ Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
+ Abeni <pabeni@redhat.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Yury Norov <yury.norov@gmail.com>, Rasmus
+ Villemoes <linux@rasmusvillemoes.dk>, Hans de Goede <hansg@kernel.org>,
+ Linus Walleij <linusw@kernel.org>, Sakari Ailus
+ <sakari.ailus@linux.intel.com>, Salah Triki <salah.triki@gmail.com>, Achim
+ Gratz <Achim.Gratz@stromeko.de>, Ben Collins <bcollins@watter.com>,
+ x86@kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ linux-rtc@vger.kernel.org
+Subject: Re: [PATCH v2 7/9] wifi: rtw89: switch to using FIELD_GET_SIGNED()
+Message-ID: <20260428114342.0d674fd8@pumpkin>
+In-Reply-To: <afBdXj_9r25Ssnz6@ashevche-desk.local>
+References: <20260427214127.406067-1-ynorov@nvidia.com>
+	<20260427214127.406067-8-ynorov@nvidia.com>
+	<afBdXj_9r25Ssnz6@ashevche-desk.local>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 7.0.2
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Milan Misic <twoexem@gmail.com>
+On Tue, 28 Apr 2026 10:10:22 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-[ Upstream commit 7913c1de9c3cbe3018fc29ce25a4d462ac2eaa82 ]
+> On Mon, Apr 27, 2026 at 05:41:24PM -0400, Yury Norov wrote:
+> > Switch from sign_extend32(FIELD_GET()) to the dedicated
+> > FIELD_GET_SIGNED() and don't calculate the fields length explicitly.  
+> 
+> ...
+> 
+> >  	for (i = 0; i < ADDC_T_AVG; i++) {
+> >  		tmp = rtw89_phy_read32_mask(rtwdev, R_DBG32_D, MASKDWORD);
+> > -		dc_re += sign_extend32(FIELD_GET(0xfff000, tmp), 11);
+> > -		dc_im += sign_extend32(FIELD_GET(0xfff, tmp), 11);
+> > +		dc_re += FIELD_GET_SIGNED(0xfff000, tmp);
+> > +		dc_im += FIELD_GET_SIGNED(0xfff, tmp);  
+> 
+> In the same driver the GENMASK() is being used, why not  doing it here while at it?
 
-The SHIFT13mi or SHIFTbook tablet device by the German manufacturer
-SHIFT contains an STM LSM6DSO IMU declared in the DSDT with the
-hardware ID SMOCF00. Add this ID to the ACPI match table so that the
-driver binds correctly to this device.
+To me those bit masks look more readable than the GENMASK() calls would be.
 
-WHO_AM_I register returns 0x6c, confirming LSM6DSO.
+	David
 
-Signed-off-by: Milan Misic <twoexem@gmail.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
-
-LLM Generated explanations, may be completely bogus:
-
-Now I have enough information to write my comprehensive analysis.
-
-## Analysis
-
-### Phase 1: Commit Message Forensics
-
-**Step 1.1 - Subject line parse:**
-- Subsystem: `iio: imu: st_lsm6dsx`
-- Action verb: "Add" (ACPI ID addition - fits the device ID exception
-  category)
-- Record: IIO IMU driver, adds ACPI hardware identifier to enable
-  binding for SHIFT13mi tablet's STM LSM6DSO IMU
-
-**Step 1.2 - Tags:**
-- Signed-off-by: Milan Misic (author/reporter)
-- Reviewed-by: Andy Shevchenko (well-known IIO/ACPI reviewer at Intel)
-- Signed-off-by: Jonathan Cameron (IIO subsystem maintainer)
-- Record: No Fixes:, no Cc: stable, no syzbot, no Link:. Reviewed and
-  applied by appropriate reviewer/maintainer
-
-**Step 1.3 - Body analysis:**
-- The author identifies hardware ID `SMOCF00` in DSDT of
-  SHIFT13mi/SHIFTbook tablet
-- Hardware verification: WHO_AM_I register returns 0x6c, the documented
-  LSM6DSO identifier
-- Symptom (implicit): driver does not bind to this device on these
-  tablets, so the IMU is unusable
-- Record: Hardware enablement; specific tablet's IMU is not recognized
-  by the existing driver
-
-**Step 1.4 - Hidden bug fix detection:**
-- Not a hidden fix; this is a straightforward hardware enablement
-  (device ID addition exception category)
-- Record: Plain device ID addition, not a disguised bug fix
-
-### Phase 2: Diff Analysis
-
-**Step 2.1 - Inventory:**
-- Files: 1 (`drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c`)
-- Lines: +1, -0
-- Function: `st_lsm6dsx_i2c_acpi_match[]` (a static const array)
-- Record: Single-file, single-line, surgical change
-
-**Step 2.2 - Code flow:**
-- Before: ACPI match table contains only `SMO8B30` -> `ST_LSM6DS3TRC_ID`
-- After: Adds `SMOCF00` -> `ST_LSM6DSO_ID`
-- Affected path: ACPI device enumeration; only matches when a device
-  with `_HID = "SMOCF00"` is present
-
-**Step 2.3 - Bug mechanism:**
-- Category (h): Hardware workaround / device ID addition
-- Mechanism: ACPI subsystem can now match this device against the
-  driver, triggering driver probe with the right hw_id
-
-**Step 2.4 - Fix quality:**
-- Trivially correct: it's a string -> integer mapping in a const array
-- The mapping is verified by reading the WHO_AM_I register (0x6c ==
-  LSM6DSO)
-- Zero regression risk: cannot affect any device that doesn't have ACPI
-  HID `SMOCF00`
-- Record: Obviously correct, no regression risk for non-affected
-  hardware
-
-### Phase 3: Git History Investigation
-
-**Step 3.1 - Blame:**
-- ACPI match table introduced by commit `bd66b6acd20ba` ("iio: imu:
-  lsm6dsx: Support SMO8B30 ACPI ID for LSM6DS3TR-C", v6.4, April 2023)
-- LSM6DSO_ID itself introduced by `801a6e0af0c6c` ("iio: imu:
-  st_lsm6dsx: add support to LSM6DSO", v4.20, August 2018)
-- Record: Both prerequisites are in stable trees from v6.6 onwards
-
-**Step 3.2 - Fixes: tag:**
-- Not applicable. There is no Fixes: tag because no specific commit
-  "broke" this; the device simply was never enumerated previously.
-
-**Step 3.3 - Related changes:**
-- Direct precedent: `bd66b6acd20ba` (Jonathan Cameron, 2023) added the
-  SMO8B30 ID for the same driver. That commit was not Cc'd to stable but
-  is the same pattern.
-- Record: Standalone, no prerequisites needed beyond the ACPI table
-  existing
-
-**Step 3.4 - Author context:**
-- Milan Misic: gmail.com address, appears to be the affected user
-  reporting their own device. This is the typical "user-supplied device
-  ID" pattern for stable.
-- Reviewed by Andy Shevchenko (Intel, ACPI/IIO maintainer-level
-  reviewer)
-- Applied by Jonathan Cameron (IIO maintainer)
-
-**Step 3.5 - Dependencies:**
-- Requires `ST_LSM6DSO_ID` enum (present since v4.20)
-- Requires the ACPI match table itself (present since v6.4 / commit
-  bd66b6acd20ba)
-- Record: Self-contained; can apply standalone in v6.6+
-
-### Phase 4: Mailing List Research
-
-**Step 4.1 - Discussion thread (b4 dig):**
-- `b4 dig -c 7913c1de9c3cb` resolved to
-  https://lore.kernel.org/all/20260324193626.77231-1-twoexem@gmail.com/
-- Single revision (v1) - no respins required
-- Reviewer Andy Shevchenko initially asked for the DSDT excerpt, which
-  the author provided showing the `_HID "SMOCF00"` device entry (a
-  Gyroscope under I2C0)
-- The author also showed `cat /sys/bus/iio/devices/iio:device*/name`
-  reporting `lsm6dso_gyro` and `lsm6dso_accel` confirming the device
-  works once probed
-- After the DSDT excerpt was supplied, Andy added Reviewed-by
-- Jonathan Cameron applied: "Applied."
-- Record: Patch reviewed, tested, applied; no NAKs; no stable nomination
-  but also no concerns
-
-**Step 4.2 - Reviewers:**
-- Cc list: linux-iio@vger, linux-kernel@vger, lorenzo@kernel.org
-  (LSM6DSx co-author Lorenzo Bianconi), jic23@kernel.org (Jonathan
-  Cameron, IIO maintainer), David Lechner, Nuno Sa, andy@kernel.org
-- Right people involved.
-
-**Step 4.3 - Bug report:**
-- Implicit: the author is reporting their own non-binding hardware. No
-  bugzilla, no syzbot.
-
-**Step 4.4 - Series:**
-- Single standalone patch.
-
-**Step 4.5 - Stable list:**
-- No prior stable discussion found.
-
-### Phase 5: Code Semantic Analysis
-
-**Step 5.1 - Functions:**
-- Modified: `st_lsm6dsx_i2c_acpi_match[]` (data table)
-
-**Step 5.2 - Callers:**
-- The table is used by the I2C/ACPI core via `acpi_match_table =
-  st_lsm6dsx_i2c_acpi_match` in the `i2c_driver` struct (file lines
-  180-189). When ACPI enumeration finds a device with a matching _HID,
-  the I2C/ACPI core calls `st_lsm6dsx_i2c_probe()`, which retrieves the
-  ID via `device_get_match_data()` (line 29).
-- Record: Standard ACPI -> I2C device enumeration path
-
-**Step 5.3 - Callees:**
-- Probe path eventually calls `st_lsm6dsx_probe()` (the existing common
-  probe), which knows how to handle `ST_LSM6DSO_ID`.
-
-**Step 5.4 - Reachability:**
-- Reachable on any system whose firmware contains ACPI device with `_HID
-  "SMOCF00"`. On affected hardware (SHIFT13mi/SHIFTbook), this is the
-  boot path; on all other hardware, the new entry is dormant.
-
-**Step 5.5 - Similar patterns:**
-- Direct sibling: SMO8B30 ACPI entry (line 146) backported by
-  maintainers as routine hardware enablement when the same author's
-  pattern was used in 2023.
-
-### Phase 6: Cross-Referencing Stable Trees
-
-**Step 6.1 - Code presence in stable:**
-- v5.10/v5.15/v6.1: no ACPI match table at all (introduced in v6.4)
-- v6.6.y: ACPI table present with SMO8B30 only - patch applies cleanly
-- v6.12.y: same as v6.6 - patch applies cleanly
-- Record: Clean apply expected on v6.6+; would need rework (skip) on
-  older trees
-
-**Step 6.2 - Backport difficulty:**
-- v6.6+: Clean apply (single line in the same context, around the
-  SMO8B30 entry which exists in all those trees)
-- v6.1 and older: NOT applicable (ACPI table doesn't exist; would
-  require also backporting the bd66b6acd20ba refactor, not appropriate)
-- Record: Clean apply on v6.6+, skip older
-
-**Step 6.3 - Related stable work:**
-- The earlier SMO8B30 patch (bd66b6acd20ba) was not in stable, but the
-  current ACPI table structure exists in v6.6+ stable.
-
-### Phase 7: Subsystem Context
-
-**Step 7.1 - Subsystem criticality:**
-- `drivers/iio/imu/` - IIO IMU drivers. Peripheral category (specific
-  hardware), not core. But device-specific enablement is a recognized
-  stable exception.
-
-**Step 7.2 - Activity:**
-- Active subsystem with regular patches; many sibling driver IDs being
-  added over time.
-
-### Phase 8: Impact and Risk Assessment
-
-**Step 8.1 - Affected users:**
-- Owners of SHIFT13mi and SHIFTbook tablets (German manufacturer SHIFT).
-  Niche, but real users with no other workaround.
-
-**Step 8.2 - Trigger:**
-- Device probe at boot, on affected hardware. 100% triggers on those
-  tablets; never triggers on other hardware.
-
-**Step 8.3 - Failure mode (without fix):**
-- IMU is non-functional on these tablets - no orientation/motion sensing
-- No crash, no security issue. Severity: LOW-MEDIUM (hardware not
-  working)
-
-**Step 8.4 - Risk-Benefit:**
-- BENEFIT: Enables hardware on a specific tablet model. Standard "device
-  ID" exception material.
-- RISK: 1 line. Cannot affect any device whose ACPI HID is not exactly
-  `SMOCF00`. Vanishingly small regression risk.
-- Record: Tiny risk, modest but real benefit; standard backport pattern
-
-### Phase 9: Synthesis
-
-**Evidence FOR backporting:**
-- Falls cleanly into the "Device ID addition to existing driver"
-  exception (explicitly listed as common stable material)
-- Trivially correct: 1-line const array entry with verified WHO_AM_I
-  match
-- No regression possible for users without this specific ACPI HID
-- Reviewed by experienced reviewer; author tested on real hardware
-  (provided DSDT excerpt and `iio:device*/name` listing)
-- Driver and ACPI match table both pre-exist in v6.6+ stable trees
-- Direct precedent: SMO8B30 entry (same author pattern, same file, same
-  maintainer applied)
-
-**Evidence AGAINST:**
-- No Cc: stable nomination from reviewers (but this is the case for
-  every commit being evaluated)
-- Hardware is niche (specific tablet manufacturer)
-- Won't apply to v6.1.y and older (ACPI match table doesn't exist there)
-
-**Stable rules checklist:**
-1. Obviously correct? YES - trivial table entry verified by hardware
-   register
-2. Real bug? YES - device doesn't bind without it
-3. Important issue? Borderline (functional only) but qualifies as the
-   "hardware enablement" exception
-4. Small/contained? YES - 1 line
-5. No new features/APIs? YES - existing driver, existing enum, existing
-   table
-6. Applies cleanly? YES on v6.6+ stable trees
-
-**Exception category:** YES - "Device ID addition to existing driver"
-(PCI/USB/ACPI IDs) is one of the explicitly allowed stable exceptions.
-
-## Verification
-
-- [Phase 1] Read full commit message and diff context as provided
-- [Phase 2] Confirmed +1/-0 line change inserting `{ "SMOCF00",
-  ST_LSM6DSO_ID, },` into `st_lsm6dsx_i2c_acpi_match[]`
-- [Phase 3] `git log` of file showed precedent commit `bd66b6acd20ba`
-  (SMO8B30, v6.4) which created the ACPI match table; `801a6e0af0c6c`
-  (v4.20) introduced LSM6DSO_ID enum
-- [Phase 3] `git tag --contains bd66b6acd20ba` confirmed ACPI table is
-  in v6.4, v6.5, v6.6
-- [Phase 4] `b4 dig -c 7913c1de9c3cb` matched series at
-  https://lore.kernel.org/all/20260324193626.77231-1-twoexem@gmail.com/
-- [Phase 4] `b4 dig -c 7913c1de9c3cb -m /tmp/shift_thread.mbox`
-  retrieved full thread; reviewed: only v1 sent; Andy Shevchenko
-  Reviewed-by; Jonathan Cameron "Applied."; author provided DSDT excerpt
-  and `iio:device*/name` showing `lsm6dso_gyro`/`lsm6dso_accel` work
-  after the patch
-- [Phase 4] No stable nomination request found in thread; no NAKs
-- [Phase 5] Confirmed `acpi_match_table = st_lsm6dsx_i2c_acpi_match`
-  wired into the i2c_driver and probe goes through
-  `device_get_match_data()` -> `st_lsm6dsx_probe()` (read of file
-  `drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c`)
-- [Phase 6] `git show v5.10/v5.15/v6.1/v6.6/v6.12:.../st_lsm6dsx_i2c.c`
-  - ACPI match table is absent in v5.10, v5.15, v6.1; present (with
-  SMO8B30 only) in v6.6 and v6.12
-- [Phase 6] LSM6DSO_ID is present in the file from v5.4 onwards
-- [Phase 8] Confirmed change cannot match any device without the exact
-  ACPI HID `SMOCF00`
-- UNVERIFIED: Whether SHIFT13mi/SHIFTbook tablet users actively use
-  stable kernels (assumed yes since these are commodity laptops/tablets
-  running mainstream distros)
-- UNVERIFIED: Could not confirm v6.6.y / v6.12.y exact current contents
-  of the ACPI table (used release tags, not -y branches), but tag
-  content matches expectations
-
-## Decision
-
-This is a textbook "add ACPI ID to existing driver" patch - one of the
-explicit exception categories that stable accepts. The fix is one line,
-trivially correct (verified by WHO_AM_I), zero regression risk for non-
-affected hardware, and was reviewed and applied by the IIO maintainer
-with the appropriate reviewer's blessing. It directly enables a real
-user's device that is otherwise non-functional. Applies cleanly to v6.6+
-stable trees (the ACPI match table doesn't exist in v6.1 and older, so
-older trees would simply skip).
-
-**YES**
-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-index 7c933218036b8..b2a7c2eaf50dc 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-@@ -144,6 +144,7 @@ MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
- 
- static const struct acpi_device_id st_lsm6dsx_i2c_acpi_match[] = {
- 	{ "SMO8B30", ST_LSM6DS3TRC_ID, },
-+	{ "SMOCF00", ST_LSM6DSO_ID, },
- 	{ }
- };
- MODULE_DEVICE_TABLE(acpi, st_lsm6dsx_i2c_acpi_match);
--- 
-2.53.0
+> 
+> >  	}  
+> 
+> ...
+> 
+> >  	for (i = 0; i < ADDC_T_AVG; i++) {
+> >  		tmp = rtw89_phy_read32_mask(rtwdev, R_DBG32_D, MASKDWORD);
+> > -		dc_re += sign_extend32(FIELD_GET(0xfff000, tmp), 11);
+> > -		dc_im += sign_extend32(FIELD_GET(0xfff, tmp), 11);
+> > +		dc_re += FIELD_GET_SIGNED(0xfff000, tmp);
+> > +		dc_im += FIELD_GET_SIGNED(0xfff, tmp);
+> >  	}  
+> 
+> Ditto, and it even looks like the same piece repeating twice in different
+> compilation units of the same driver...
+> 
 
