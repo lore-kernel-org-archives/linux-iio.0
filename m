@@ -1,49 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5790F47279E;
-	Tue, 28 Apr 2026 18:12:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E90C7472775;
+	Tue, 28 Apr 2026 18:14:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777399978; cv=none; b=om/vzJOxxOtZqSAhDnWJv7iFJBeZeBqrlSNL11TzvJG0xVKx5Rg5oAcVjBEOxSzVW+Ea72c9/YR0ga9hvOdUSxls52qQtM+MePmD36SJV+v4QcFL/zEE5xmJeS2U5GduAy4sDGU1EOITRjEKqLb1lS/EvYhzPGSmzO1BvxgTd+Y=
+	t=1777400075; cv=none; b=NhcwbHKbKepF4ag9Nxr+OusntG95COFB3dcuK2xprhIU/FXq/ITpA/GxXmorHlHu3KxB30BiVvV/aavPeaf+MvLcWJQAOz1gLPIsilq93qxLjKLRYdbgCIOi3XoS42TngBzat5C/ZDHsQBCWgxzbmRZU6GNq4iV4WC0qqEXaieY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777399978; c=relaxed/simple;
-	bh=z/B96qf1K/NvZuga2ktlNvxm+UAaKNFzwLpC03Lk3GA=;
+	s=arc-20240116; t=1777400075; c=relaxed/simple;
+	bh=qULRWw+IldPy9wDV2saJGZ0ZQDCI0L9NM7/4IKcoXZE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KeJDyVDQ5ZZTFnl6+3KTZH3QUd6Z2cKEPT0BTTWtFsCRLZx73A3Zmq2VFX7O0cQJeuEMqiJXFmgpFgV7yB4sTw7mibQmJRb2iWU2i4/A7YbitVmKu2FlsLqeQT8rExrfje9Ibw29/4CRoStw4SykiymH9Es4RIymVOyk6ocKMlQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b82WKQGn; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=W8BDcTWj7HHPuc9ob3IQmAqEdw4nW3BCLvNz+65LXq1V+9LFdof5ksTnqlQFVQWY8pgyuiLjHaoMiIeYdPdmDiTTHgV1deCeGMw/YwA0SBpAPAdWZiaGBEQ18RbsTcr+2tE6+dXogNxw2gcPpijfNLogCO5b5yqVd+03mp4Uudw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LIu8EKnv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b82WKQGn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F39C2BCAF;
-	Tue, 28 Apr 2026 18:12:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LIu8EKnv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A54F3C2BCAF;
+	Tue, 28 Apr 2026 18:14:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777399977;
-	bh=z/B96qf1K/NvZuga2ktlNvxm+UAaKNFzwLpC03Lk3GA=;
+	s=k20201202; t=1777400074;
+	bh=qULRWw+IldPy9wDV2saJGZ0ZQDCI0L9NM7/4IKcoXZE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=b82WKQGnuKCXEIxGEf/9Rxee78c5poBTMy1UAdfzMauUkQwsQDRf/gQ6dg9eZ8SxT
-	 v3shUgMMj28ir9ROfaQkDQODSWxPGuamHGgHbUMWj0VkaVitcQrc1kdAZEZbHcb0Uh
-	 0LZUbq7O9R3cNcUzPavIxoiKwwnVr7Xq+HwzZn0MygeBvFcowTOdoh2ECCtzl879KH
-	 c5RS2+8a9b1+Miq/LPV4ZByilQapekRCfHjRUWHS1pemh5X/8ncIQYNRGQ3cZgLLHY
-	 ABvTVoyhUf8pFPmE5epqAcAXTRBnq9JCMvJ6b/7AD442VDNMUisWbtXB7qvOgfCCXs
-	 k51+VHhjfXRnQ==
-Date: Tue, 28 Apr 2026 19:12:46 +0100
+	b=LIu8EKnvoiC7x8POwgI1tGqnvsrjsZeZKmp6oIo57aobvGWH6GXLms0FvfTniOC1a
+	 i7o/aGKQSZ89R/pDD+KQSniUAFk2GrNb4muVdtrVsn4ZT+A4UMoLlErlsK4FX6UYSC
+	 kxqd3gNNXNR0z5U3MtSslCFl79y8Rin8GPXCrAMRI4kWSbcgSVci0eJ8EPi3UsxYWE
+	 UGN65tmyNo3HUHwk+fRGt9C5DjNPJVx7iovSJZJ/Qy9/SACM6/ud9I42yQxp2Zj/51
+	 JfwiiR2DiKSVj6+6cGZAQ/MxRjcP1t+zVjRVasGHQ9I2kAmBVYsLI/Iv6FO73p4T40
+	 ZiFT9EhiIOs2w==
+Date: Tue, 28 Apr 2026 19:14:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: =?UTF-8?B?TmF0w6FsaWE=?= Salvino =?UTF-8?B?QW5kcsOp?=
- <natalia.andre@ime.usp.br>, andy@kernel.org, bentiss@kernel.org,
- dlechner@baylibre.com, jikos@kernel.org, nuno.sa@analog.com,
- srinivas.pandruvada@linux.intel.com, Pietro Di Consolo Gregorio
- <pietro.gregorio@usp.br>, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org
-Subject: Re: [PATCH v2 2/7] iio: accel: HID: Replace method
- accel_3d_adjust_channel_bit_mask()
-Message-ID: <20260428191246.152c2972@jic23-huawei>
-In-Reply-To: <ae8upGN9ILmtCzeA@ashevche-desk.local>
-References: <20260421222210.16016-1-natalia.andre@ime.usp.br>
-	<20260421222210.16016-3-natalia.andre@ime.usp.br>
-	<aeiPuxj2TRLNRbv1@ashevche-desk.local>
-	<20260424200847.78494f27@jic23-huawei>
-	<ae8upGN9ILmtCzeA@ashevche-desk.local>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads7138: explicitly include <linux/slab.h>
+Message-ID: <20260428191423.28888451@jic23-huawei>
+In-Reply-To: <CAE7dp2pUnDbEHPGvxVE5VkaYeV2rEWnTNfdqGaSy1DjZxge-Dw@mail.gmail.com>
+References: <20260424081809.61841-2-giorgitchankvetadze1997@gmail.com>
+	<aesyzOMUl2Iyjgjz@ashevche-desk.local>
+	<20260424113600.4e76fdb7@jic23-huawei>
+	<aetVGYQcq1NAJb7k@ashevche-desk.local>
+	<20260424175753.2d0ca494@jic23-huawei>
+	<CAE7dp2pUnDbEHPGvxVE5VkaYeV2rEWnTNfdqGaSy1DjZxge-Dw@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,42 +52,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 27 Apr 2026 12:38:44 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 27 Apr 2026 15:29:57 +0400
+Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
 
-> On Fri, Apr 24, 2026 at 08:08:47PM +0100, Jonathan Cameron wrote:
-> > On Wed, 22 Apr 2026 12:07:07 +0300
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote: =20
-> > > On Tue, Apr 21, 2026 at 07:20:34PM -0300, Nat=C3=A1lia Salvino Andr=
-=C3=A9 wrote: =20
+> On Fri, Apr 24, 2026 at 8:58=E2=80=AFPM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> > =20
 >=20
-> ...
+> > > Why do we need to have kmalloc() here at all? I don't understand that=
+. =20
+> > Absolutely.  Locally it looks like length might be large and therefore
+> > the array not suitable to be on the stack, but that's not the case.
+> > length =3D=3D 2 so the array only has 4 elements and can go on the stac=
+k.
+> > =20
+> > > =20
+> > > > This function is just overly flexible. =20
+> > > =20
+> > =20
 >=20
-> > > > -		accel_3d_adjust_channel_bit_mask(channels,
-> > > > -				CHANNEL_SCAN_INDEX_X + i,
-> > > > -				st->accel[CHANNEL_SCAN_INDEX_X + i].size);
-> > > > +		hid_sensor_adjust_channel_bit_mask(channels,
-> > > > +			CHANNEL_SCAN_INDEX_X + i,
-> > > > +			st->accel[CHANNEL_SCAN_INDEX_X + i].size);   =20
-> > >=20
-> > > Indentation is broken. Taking into account that the last line is too =
-long when
-> > > properly indented, perhaps
-> > >=20
-> > > 		hid_sensor_adjust_channel_bit_mask(channels,
-> > > 				CHANNEL_SCAN_INDEX_X + i,
-> > > 				st->accel[CHANNEL_SCAN_INDEX_X + i].size);
-> > >=20
-> > > Which makes it most right and under 80 limit. =20
->=20
-> > Why the double tab? Maybe just go long on this one and align after the =
-( =20
->=20
-> I never know when you are strict about 80 limit :-)
->=20
-I was meaning vs single tab really.
+> Thanks Jonathan and Andy. I have sent v2.
+Whilst you are welcome you've fallen into the process related trap
+of being too polite!  Better to thank us in the change log of v2
+and we all have one less email to check.
 
-You are slowly wearing me down on the 80 limit by pointing out lots of
-cases where going beyond it really helps! ;)
+Note, pretty much everyone does this when they start working on the
+kernel and so get this email once!=20
 
+Jonathan
 
