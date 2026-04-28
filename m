@@ -1,127 +1,132 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CCB93FE350
-	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 12:08:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8390942B73D
+	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 12:36:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777378135; cv=none; b=MNT2eNvriIFkBP9f59Rv9U+garqqdN1wHS+TRGJWuoHkMa31F+q33BiNPRGY1hBItDuJaJdVnNOe1lwyWE/lRmf+pmvhNNuC7ZIrYQh8Q1NUvrkr9BEW8X9Fglv8Z9HMguL1+0raiCEWaCcrwFzgt7SLgejGOTgY7NcducdBwGA=
+	t=1777379814; cv=none; b=ubuHe6bIZhODRt1UFG04iR+6gXSa1zmjUBQo976qrW34pSCOJfP5N3zZ0r3RbmNNADLq4g93UGNiaSa/GT3M0wt57cIBGb7DO9Aps+Of/CZ1P8jfudEHHVQI+w69vBdWS0cOXa2ajI8qTbcvbP3TaAOxaNI9RFpubUIh1CT1BmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777378135; c=relaxed/simple;
-	bh=xOhWPcwO2wN6l/nn57ba9S9CEWCXh7DmXlEixifjiQk=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=Vz5WT2qXChHo0Dh5aPlTxGO4XYLZurEQdRwibhpeTBeZD7FMexIb2jHqwc+vOWUzUjqUK0Zveq739mcQyuIztt9b/ukenaUmazwhCMag2qe3Beuf1NQ5cimets0CLm7wliE92EkA8mX1Nw4Q4E5v361CU4wm5x9O8Ss7N5BWEuA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AbvFR3IU; arc=none smtp.client-ip=209.85.210.174
+	s=arc-20240116; t=1777379814; c=relaxed/simple;
+	bh=G0cEtM/RqwD+i562v7/w0BBBUpZUKp+Zy1tyVG8BYhg=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YIVrlth7ihBMd2A/TG2rEAsqySEhTPJL3WiVlJNW633nvR65Tu0LQWTcTn4mqPOip4TUi/4OZHah2kOrzwpZkk7WlTF1THKak2MB2xzvRcJzezKy4l850j7G/WYCjwFqQaszTDYKOInYnkkEYzL/nnSr6Yn49zsx9XxBBElBW6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eQzaiDxO; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AbvFR3IU"
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-82f1bfc9b8fso5121830b3a.1
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 05:08:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eQzaiDxO"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4891f625344so103048615e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 05:36:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777378130; x=1777982930; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=1ECW+0bs502uiqVG6Y4a6wbsseWKAdQ8DxJiILAPJZI=;
-        b=AbvFR3IUAnzA2YRKFMDcbJp/CKpaWpLkUljltjn7FjYgXatlyqhrw14VoYIpNUQxSv
-         bfjazvX8V3FT9huI7Pz+FxlI8hfDg/uDMHFy8eeKC7gUA4NE4itxmuyZyvpTgMeiZMJE
-         X2AUOI/5zgtUTUmhfzhEG5sKpAxgg95GX9nBze11r8ZLSEJSXWoXQ8wPi8yVn8KCn1Oc
-         foACTs1PGBSgncNrAsN/yKxtoVxo0/nWpEjrjntwN6MnmcOIuzrp+pn61dg+z83X3kmi
-         uo1TCfuDADO6jFIHYI1Rkg3eYrH3MtqMeeJqVGU5ne/DTop0za4tlti+EIt//XQwliqK
-         U7Og==
+        d=gmail.com; s=20251104; t=1777379806; x=1777984606; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=QwBWq0hgunzkZk2TMgQTcmjfyJm2LqzA9SF6YjXsyP8=;
+        b=eQzaiDxOz6OSk52UQmVdLuPuwa7pBv63GssT9h6jR1Uf7PaFTiqm0XJ+CQaYPGKKTR
+         JjxAjC8mOujlm5gMIMC5hF7fEV5ElQmFBCLik/DOq2rmnpVxoLasRTxBlupeuBo8Y8O+
+         r6MrVlThgEgHXtk5UcQzkJphrmeiL3oWBPnHHjZ6x+zpeYWgT2ZZ1N8Fl/tPvZG55vM1
+         ACJxAoXtOC7Pmk+5h3NfsBo3KYgDqXJzdVEkK+asxXbY1Ze6Od96xZSXeZrM3JihnnGK
+         TxmJjOxGKqEaOQLr8PKXWdMpoc3KGJnLQl+dUmWc0tBprIsxESbxRHeQNAT8AonhM+zh
+         lEwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777378130; x=1777982930;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1ECW+0bs502uiqVG6Y4a6wbsseWKAdQ8DxJiILAPJZI=;
-        b=bC6xr/9kKKKKFjXE9XhsjZj6PbXZfbkZYLp+LHa/RIvEP+QQlq6IbMBhBmrjua1Puj
-         n0S7ONL530LQwoWyFvcOKEleOh7SeyRvOSByW79xcwaSIdLwa3K11UE/aEL4axexdV/Q
-         GcfARjsE5Y/9AxVTGSdhuXnPxuF2GeyZ2wsy3ixqYDPrAcNmHlQuRjb4PMVFuUPz7n8F
-         ftZNA2iQx6jV86eOx3wveFTi+Vb/azkX7WGVtxRoeJtjLvIb+qP8t26Pvo9ikb4xpAPL
-         VBcvShdwsi+bg6GRFP9ys7HQsRvxld5inaxMYtWhcIdu/9REthtM9yVBqUKAyB1puWG4
-         mxog==
-X-Forwarded-Encrypted: i=1; AFNElJ/pyzSGgnUlRo/C4tRFNsq7KpjbFLFlae5mjj8vn/SZWBtLr8VX0QQhDYIbOHKBpE13ixbEDA9CW8k=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzttXgnAjuhT7G46BZnt71++MupjR5qxdPewe2Ug+GcCSf0Xrvr
-	BiqDxJkSDHG4zhRbYaNlv33qvHFEBdCzjHig+D+rn7jxrAKO8hbnM3/Mezncxg==
-X-Gm-Gg: AeBDiev4MgQHlkJ+KW0HmpTe5YTCuV5dnsMoJ+I5a0wFzpgEI9SQTAM0LvId1j6CYj3
-	m/GVxrLBEJj/KXthR77rO1jzeulVj9oDkYxOXQUJ07jYNBv/P6XG6H+MGF1o7dY0W+yg8z6s9sn
-	T1rvQ+JvaFtb1BsXwOx1xe3SmYUAWuFO0W0055h3LzXq5A6v2iZCgpbUUYTKG3UHhSDAMqH1LvK
-	Y9pzFQOmykyMNtioIfFKG7ylxPuBoKdnb4+pR1nM9h5V3dbm2lebmMIow664u5H1YlELpg00TER
-	tujkntT/3Kc/wYFp/M8NamRzBh09FFWQDsCtaAdfzfw9jfWjdqJ1eitNXyecBWA1CAQelCpRaQW
-	RlSfebgZLVxp1Reo1xA6XFryPjiu5dCoHBDb0FUlgYFnwa+GT/7AlHQNAYjXF589Goj8s9hLR9B
-	i8hpPTazriPf+vVuY2l2XTYWKVaG41AfdbrT/Z/IARXNg8
-X-Received: by 2002:a05:6a00:4c85:b0:82f:74b2:7fba with SMTP id d2e1a72fcca58-834dda8c794mr3045617b3a.4.1777378130380;
-        Tue, 28 Apr 2026 05:08:50 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:5760:4f51::e34:334f])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-834dae0091asm2749844b3a.10.2026.04.28.05.08.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Apr 2026 05:08:49 -0700 (PDT)
-Date: Tue, 28 Apr 2026 17:36:46 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@linux.intel.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- sakari.ailus@linux.intel.com, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_02/10=5D_iio=3A_orientation=3A_adapt?=
- =?US-ASCII?Q?_to_hid=5Fsensor=5Fremove=5Ftrigger=28=29_API_change?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <afBuWAElmx7t7FcB@ashevche-desk.local>
-References: <20260428071613.1134053-1-sanjayembedded@gmail.com> <20260428071613.1134053-3-sanjayembedded@gmail.com> <afBuWAElmx7t7FcB@ashevche-desk.local>
-Message-ID: <1AD74A89-246F-4ABE-8088-E7A45DC3A4C0@gmail.com>
+        d=1e100.net; s=20251104; t=1777379806; x=1777984606;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QwBWq0hgunzkZk2TMgQTcmjfyJm2LqzA9SF6YjXsyP8=;
+        b=Bvz9gkey8/S2DsYlaItagBOinXJ3j/Xjt65VNjCI3EAF1x/sODhU5D2YBA0zok/OFx
+         tE6lLwAcQo65zSlc+ZTR9uF1XTSps40LBZuW9kUKm6Nh616fNcs1hR/+/9xrGUaIfaT7
+         2Gs/N2s0I0dGaehxCpYb7ZeDe7s+7lkvsyBQXihQWBdl5G/YMSIzrHgOu0pEYB5+2HgT
+         w+tbhzXx6sVEDwVwk1oD858uJ/G9AzNHBINdD7+xeJEggLg5HABSziCf4+dwjE9JjVjd
+         29Kvh788nTEftGFqe+hdNe30hctrkLeh6qrSJamBtnwV/V7qPsE4X/ORYFLo9lu3p5WY
+         MnjA==
+X-Gm-Message-State: AOJu0Yxh53KHkjCxtvuGQXBIGQ/WIzpiyY/RltwrBTwjKMbwHXqaKEmh
+	qhK9DJQmfZXtzaoAGIgtcjP/7YYNYisz9/h7mpXlLGaC+83R4aHasPWhWy8ulAYe
+X-Gm-Gg: AeBDieu2TzxKLniudsYcvwm6i9DgDQdK8QFLo2ADhd8PhizRNeeJfZuT4hdGb8RjTzV
+	1yx46ELIyFJ0xmphTgBZM2Z3BwjEF02iXLmY4sWbUD+iV2qtF8Q5z24Z4QrYUi8fCRKvOCMvtET
+	lYGBUHGSBPYw6PzRdzqzT7vqBtb1rnOjGwAEoTweEs7rvepFsARmzX33Dbm9bDrM0qApmlc7c09
+	IRHuMyTyLjHFPH/Lh+eC5H16og0IrVJ2cwBf4VXXMgFrwANa9h5X2mqVP4AwFpHgbtHSfOEM7sK
+	V69iwwWoLrUqduTMQ+G+7f/3lFR/RjhcxHC2eQf9smXce5ZOvBxXOCVMy/oLtRMdh31wAyG0O/g
+	AbxkWShx1e3ZI6wpLreFGP3i0555o1hsSZvORY4TpPhx3xpPPN1S6FKtLWxIpF+sqtUq7ds0RNv
+	5ykJhbXdweE6zT6T99LdDHLjDb1rORuvHohL2RCGR6Dsk2P0rBB9ClJcF9sqUngZ3TYAR2oRaT1
+	DXZfsDDnFxhhbzeQXVRq7LG1VHOMnPtK/K1q8Cbapgr7IyLbACBJi2Pwev6Rg==
+X-Received: by 2002:a05:600c:a08b:b0:48a:53cb:8604 with SMTP id 5b1f17b1804b1-48a78a536acmr34725835e9.14.1777379805651;
+        Tue, 28 Apr 2026 05:36:45 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a79ab6ec7sm19674585e9.10.2026.04.28.05.36.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2026 05:36:44 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Tue, 28 Apr 2026 13:36:39 +0100
+To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
+	rodrigo.alencar@analog.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
+	Greg Kroah-Hartman <gregkh@suse.de>, Michael Auchter <michael.auchter@ni.com>, 
+	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v2 04/11] iio: dac: ad5686: fix powerdown control on
+ dual-channel devices
+Message-ID: <oertvxexvwsdkducew2hgtrnxh47uiwzwy4vmza7gno32chmf3@725ayfhynu72>
+References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
+ <20260427-ad5686-fixes-v2-4-188e05199368@analog.com>
+ <ae-kx3Igcj5mpEYc@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae-kx3Igcj5mpEYc@ashevche-desk.local>
 
+On 26/04/27 09:02PM, Andy Shevchenko wrote:
+> On Mon, Apr 27, 2026 at 12:30:11PM +0100, Rodrigo Alencar via B4 Relay wrote:
+> 
+> > Fix powerdown control by using a proper bit shift for the powerdown mask
+> > values. During initialization, powerdown bits are initialized so that
+> > unused bits are set to 1 and the correct bit shift is used. Dual-channel
+> > devices use one-hot encoding in the address and that reflects on the
+> > position of the powerdown bits, which are not channel-index based
+> > for that case. Quad-channel devices also use one-hot encoding for the
+> > channel address but the result of log2(address) coincides with the channel
+> > index value. The issue was introduced when first adding support for
+> > dual-channel devices, which overlooked powerdown control differences.
+> 
+> ...
+> 
+> > +static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
+> > +{
+> > +	if (chan->channel == chan->address)
+> > +		return chan->channel * 2;
+> > +
+> > +	/* one-hot encoding is used in dual/quad channel devices */
+> > +	return __ffs(chan->address) * 2;
+> 
+> If channel->address guaranteed never be 0? This is UB otherwise.
 
+All the possible values are managed within this driver, so this would not be 0,
+if so, it would fall into the if statement above.
+ 
+> > +}
+> 
+> ...
+> 
+> > +	st->pwr_down_mode &= ~(0x3 << shift);
+> > +	st->pwr_down_mode |= ((mode + 1) << shift);
+> 
+> Now too many parentheses. Also do you guarantee that mode won't ever saturate
+> the bits outside of the given mask?
 
-On 28 April 2026 1:52:48=E2=80=AFpm IST, Andy Shevchenko <andriy=2Eshevche=
-nko@intel=2Ecom> wrote:
->On Tue, Apr 28, 2026 at 12:46:05PM +0530, Sanjay Chitroda wrote:
->
->> Update the driver to match the updated hid_sensor_remove_trigger()
->> prototype, which no longer requires struct iio_dev=2E
->
->You haven't compiled the previous patch, right?
->This is not the way how all this should be done=2E
->
->Also NAK to the patch 1 as even unused parameter is there for the sake of
->consistency=2E The prototype to allocate and other in the similar group a=
-ll
->have it=2E
-Hi Andy,
+ad5686_powerdown_modes enum has num_items = 3, so max value for mode is 2.
 
-Thank for the review comment=2E
-I agree your point for consistency=2E
+...
 
-However primary object of this pre-series is to prepare the drivers for de=
-vm_ conversation=2E
+-- 
+Kind regards,
 
-I would prepare devm_ wrapper for the hid_sensor_setup_trigger() and respe=
-ctive resource release hid_sensor_remove_trigger()=2E
-
-=2E=2E=2E  devm_hid_sensor_setup_trigger( =2E=2E=2E )=20
-{
-       =2E=2E=2E
-       =2E=2E hid_sensor_setup_trigger();
-       =2E=2E=2E=2E
-       devm_add_action_or_release(dev, hid_sensor_remove_trigger, attrb)
-       =2E=2E=2E=2E=2E=2E
-}
-
-I observed that many HID IIO drivers are not covered fully with managed AP=
-I=2E
-
-This devm_* sensor setup trigger would use across multiple HID IIO sensors=
- and will go step forward for managed API support=2E
-
-
->
+Rodrigo Alencar
