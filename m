@@ -1,132 +1,114 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8390942B73D
-	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 12:36:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 852E641B361
+	for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 12:46:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777379814; cv=none; b=ubuHe6bIZhODRt1UFG04iR+6gXSa1zmjUBQo976qrW34pSCOJfP5N3zZ0r3RbmNNADLq4g93UGNiaSa/GT3M0wt57cIBGb7DO9Aps+Of/CZ1P8jfudEHHVQI+w69vBdWS0cOXa2ajI8qTbcvbP3TaAOxaNI9RFpubUIh1CT1BmQ=
+	t=1777380411; cv=none; b=Tv4t1DSJXPvcF2FNNGXkW5+cnYbP0v6faFhMQWSMiuuBcrcBCGeOoMuh9XaUZ0rAi4xhzob+h+GfSsZpmcblePrPIoKjO5LIcK1YdAiA1w4xxnPyhKz8MjniVgmhfhVgU5NAigh0cJOPf1SEOrKZ0I5xxZz9OP+BimYZdVYWny0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777379814; c=relaxed/simple;
-	bh=G0cEtM/RqwD+i562v7/w0BBBUpZUKp+Zy1tyVG8BYhg=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YIVrlth7ihBMd2A/TG2rEAsqySEhTPJL3WiVlJNW633nvR65Tu0LQWTcTn4mqPOip4TUi/4OZHah2kOrzwpZkk7WlTF1THKak2MB2xzvRcJzezKy4l850j7G/WYCjwFqQaszTDYKOInYnkkEYzL/nnSr6Yn49zsx9XxBBElBW6I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eQzaiDxO; arc=none smtp.client-ip=209.85.128.45
+	s=arc-20240116; t=1777380411; c=relaxed/simple;
+	bh=qXWvLFrVuKWOBW2pcZQhwtDbG9cDzAI52pDnhk2glsE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=K83/BVpIJC6u9KS1FkFbWFFrtZ3VnMwtO2IY/0sap2sIfjMI/+iaXe7qryF/7H0KFt52Mp+kfFoTx2dIVR/NAT9mTHg8rtMmi7yrUG2Y39YAM1+/IWclHNh6czquLO6TvegenLKYnfAQ/2WFwfXYruW/Pc2BHTQ1JXwGdNpa/iw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oFcACVPF; arc=none smtp.client-ip=209.85.167.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eQzaiDxO"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4891f625344so103048615e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 05:36:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oFcACVPF"
+Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-479ef2b7979so5275616b6e.3
+        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 05:46:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777379806; x=1777984606; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=QwBWq0hgunzkZk2TMgQTcmjfyJm2LqzA9SF6YjXsyP8=;
-        b=eQzaiDxOz6OSk52UQmVdLuPuwa7pBv63GssT9h6jR1Uf7PaFTiqm0XJ+CQaYPGKKTR
-         JjxAjC8mOujlm5gMIMC5hF7fEV5ElQmFBCLik/DOq2rmnpVxoLasRTxBlupeuBo8Y8O+
-         r6MrVlThgEgHXtk5UcQzkJphrmeiL3oWBPnHHjZ6x+zpeYWgT2ZZ1N8Fl/tPvZG55vM1
-         ACJxAoXtOC7Pmk+5h3NfsBo3KYgDqXJzdVEkK+asxXbY1Ze6Od96xZSXeZrM3JihnnGK
-         TxmJjOxGKqEaOQLr8PKXWdMpoc3KGJnLQl+dUmWc0tBprIsxESbxRHeQNAT8AonhM+zh
-         lEwQ==
+        d=gmail.com; s=20251104; t=1777380407; x=1777985207; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ToBwHoXJwZlCxVtdIewDU7S2LH8f7E9EYRhrN9/3Z4c=;
+        b=oFcACVPFgIO9hnRAym+C4DBl3TyL1Xt5HJjKpxm9ephqfCq6qRjdPnrHgw++1cm2ZP
+         NwfvRlsOr+yS1+gxZysH/t0MoESGelfqo8z8iGBliI1RiHG9CWTFpeJSqP+0vDlMzY/g
+         XYImc4jiESuZkChCwDm9putF8PHUAqC3C2T8WCwmSHIYvOBlodIECPm2x8X94VXZihKs
+         eRBmvh9qDAUFUE5UsIK3IsdOgst8tPpoE9U3Vs+7QCqGqa4Tq6uWe22XPf2HwmLrYxKw
+         GnQP5sIxxWiv/IhYxz2Kh9SaO676tPMfey4jiC3HKQbz0rmg9HQHicT34uuMQJGsIt0r
+         Tf/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777379806; x=1777984606;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QwBWq0hgunzkZk2TMgQTcmjfyJm2LqzA9SF6YjXsyP8=;
-        b=Bvz9gkey8/S2DsYlaItagBOinXJ3j/Xjt65VNjCI3EAF1x/sODhU5D2YBA0zok/OFx
-         tE6lLwAcQo65zSlc+ZTR9uF1XTSps40LBZuW9kUKm6Nh616fNcs1hR/+/9xrGUaIfaT7
-         2Gs/N2s0I0dGaehxCpYb7ZeDe7s+7lkvsyBQXihQWBdl5G/YMSIzrHgOu0pEYB5+2HgT
-         w+tbhzXx6sVEDwVwk1oD858uJ/G9AzNHBINdD7+xeJEggLg5HABSziCf4+dwjE9JjVjd
-         29Kvh788nTEftGFqe+hdNe30hctrkLeh6qrSJamBtnwV/V7qPsE4X/ORYFLo9lu3p5WY
-         MnjA==
-X-Gm-Message-State: AOJu0Yxh53KHkjCxtvuGQXBIGQ/WIzpiyY/RltwrBTwjKMbwHXqaKEmh
-	qhK9DJQmfZXtzaoAGIgtcjP/7YYNYisz9/h7mpXlLGaC+83R4aHasPWhWy8ulAYe
-X-Gm-Gg: AeBDieu2TzxKLniudsYcvwm6i9DgDQdK8QFLo2ADhd8PhizRNeeJfZuT4hdGb8RjTzV
-	1yx46ELIyFJ0xmphTgBZM2Z3BwjEF02iXLmY4sWbUD+iV2qtF8Q5z24Z4QrYUi8fCRKvOCMvtET
-	lYGBUHGSBPYw6PzRdzqzT7vqBtb1rnOjGwAEoTweEs7rvepFsARmzX33Dbm9bDrM0qApmlc7c09
-	IRHuMyTyLjHFPH/Lh+eC5H16og0IrVJ2cwBf4VXXMgFrwANa9h5X2mqVP4AwFpHgbtHSfOEM7sK
-	V69iwwWoLrUqduTMQ+G+7f/3lFR/RjhcxHC2eQf9smXce5ZOvBxXOCVMy/oLtRMdh31wAyG0O/g
-	AbxkWShx1e3ZI6wpLreFGP3i0555o1hsSZvORY4TpPhx3xpPPN1S6FKtLWxIpF+sqtUq7ds0RNv
-	5ykJhbXdweE6zT6T99LdDHLjDb1rORuvHohL2RCGR6Dsk2P0rBB9ClJcF9sqUngZ3TYAR2oRaT1
-	DXZfsDDnFxhhbzeQXVRq7LG1VHOMnPtK/K1q8Cbapgr7IyLbACBJi2Pwev6Rg==
-X-Received: by 2002:a05:600c:a08b:b0:48a:53cb:8604 with SMTP id 5b1f17b1804b1-48a78a536acmr34725835e9.14.1777379805651;
-        Tue, 28 Apr 2026 05:36:45 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a79ab6ec7sm19674585e9.10.2026.04.28.05.36.43
+        d=1e100.net; s=20251104; t=1777380407; x=1777985207;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ToBwHoXJwZlCxVtdIewDU7S2LH8f7E9EYRhrN9/3Z4c=;
+        b=K4zLD3od6lFOeohqU/B8uJ0Oqlx78MDDxABLREKaK5cOIZ2YVYsqxLuwTdXpLtaI43
+         Rt8JBsmdkrO7mDdiIwMALGSYM6SLao1SDgduLJjWWdsDQ9ROETrBYnMmfYJQKRTXS8A0
+         Ld6C70j4cvjyBRRJmVY9yv2ExE0VcCQB6N5YIygsfy0TZv6uyWcp8JAOAfdqzUxobuis
+         JRo/2leNA1sfjRo/T8uZoATAMIkSN2luwBt/I0fGnL8YjhkwQqJCjtEyIwU9+z6LISGZ
+         o5egVqlcMR2ge/rgW9wsquU9ThMPcWsqDmjPzIdja5u3x7+XwqdP4WXSqgxdaH1A0L0R
+         26Ag==
+X-Forwarded-Encrypted: i=1; AFNElJ+XrUWK9GLJ+AZesWuvMpTOGkSHTvajex+MOTu10Dp8t9BTPVEkwHGNkYzNJHB1OW6LU+6bZlyOGPQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxD5yKW6LtHOXyxBYC7+VuciKuCPNt6etXiBq96iahh5k7lnpk1
+	5wphzmjQ4YIRINv8c0vWxg+GhtcEGhHwZkc9A5iLKwmRx3yk0RKxWfps
+X-Gm-Gg: AeBDiesHY04PdfMX93zC2MdKui2eZfqbeD2VEL2KOZ8rvIY2z1AAs7ITRAPzw6tm7bX
+	yWB2hEM+6XyDA3oUaY+Dfm2dv6Y8R/vbxyMENjGOPV711j7RoMmaxKZ0AItJYpR3XIcmJNVDM7w
+	Ez8dbCmYLMOx2eDTDlkpN+o1HSrlKz5EesEIEJAsk/kbC5RtkwCz36Gr+bRca5DljFn9TUZp45m
+	RVdbtqSPSpdD0levrW6kFBDHc6KZ7/nIPbyMYitGq4gPsPOWBslb0yog3G1f5S/uESWNAhySEly
+	neRL3PRkhY2qnuR9nFBnFWiWN8cj7Gk3PZjal0GzvpLf+Q0cWjIzIG93v+5tm9j/247Wvw2XAe0
+	ISsgCZwJuNPtLEoakXp9dIOGsDxA+XRpt+fFS98eG7YoR3ue0GJpJWOLtnJwiOYeJI980Xx1DuZ
+	P9h1w7wjWyNg/Ij/gAGSQtZ8pYW0Q4mRdgqklBBO8TttsUbus9IpdNeygqmD7KURUdSjTLRtoGp
+	9v30pg=
+X-Received: by 2002:a05:6808:4fe0:b0:475:be6f:aa with SMTP id 5614622812f47-47c28e8701emr1487727b6e.19.1777380406655;
+        Tue, 28 Apr 2026 05:46:46 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7de986a5601sm1683041a34.19.2026.04.28.05.46.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2026 05:36:44 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 28 Apr 2026 13:36:39 +0100
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	rodrigo.alencar@analog.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
-	Greg Kroah-Hartman <gregkh@suse.de>, Michael Auchter <michael.auchter@ni.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v2 04/11] iio: dac: ad5686: fix powerdown control on
- dual-channel devices
-Message-ID: <oertvxexvwsdkducew2hgtrnxh47uiwzwy4vmza7gno32chmf3@725ayfhynu72>
-References: <20260427-ad5686-fixes-v2-0-188e05199368@analog.com>
- <20260427-ad5686-fixes-v2-4-188e05199368@analog.com>
- <ae-kx3Igcj5mpEYc@ashevche-desk.local>
+        Tue, 28 Apr 2026 05:46:46 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: songqiang1304521@gmail.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] iio: magnetometer: rm3100: Modernize locking and control flow
+Date: Tue, 28 Apr 2026 07:46:40 -0500
+Message-ID: <20260428124644.49707-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ae-kx3Igcj5mpEYc@ashevche-desk.local>
+Content-Transfer-Encoding: 8bit
 
-On 26/04/27 09:02PM, Andy Shevchenko wrote:
-> On Mon, Apr 27, 2026 at 12:30:11PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> 
-> > Fix powerdown control by using a proper bit shift for the powerdown mask
-> > values. During initialization, powerdown bits are initialized so that
-> > unused bits are set to 1 and the correct bit shift is used. Dual-channel
-> > devices use one-hot encoding in the address and that reflects on the
-> > position of the powerdown bits, which are not channel-index based
-> > for that case. Quad-channel devices also use one-hot encoding for the
-> > channel address but the result of log2(address) coincides with the channel
-> > index value. The issue was introduced when first adding support for
-> > dual-channel devices, which overlooked powerdown control differences.
-> 
-> ...
-> 
-> > +static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
-> > +{
-> > +	if (chan->channel == chan->address)
-> > +		return chan->channel * 2;
-> > +
-> > +	/* one-hot encoding is used in dual/quad channel devices */
-> > +	return __ffs(chan->address) * 2;
-> 
-> If channel->address guaranteed never be 0? This is UB otherwise.
+The goal of this patch series is to replace the manual mutex_lock() and
+mutex_unlock() calls in rm3100-core.c with their more modern
+counterparts, guard(mutex)() and scoped_guard(). I've also done some
+minor cleanups, removing what are now redundant gotos, and enabling
+direct returns.
 
-All the possible values are managed within this driver, so this would not be 0,
-if so, it would fall into the if statement above.
- 
-> > +}
-> 
-> ...
-> 
-> > +	st->pwr_down_mode &= ~(0x3 << shift);
-> > +	st->pwr_down_mode |= ((mode + 1) << shift);
-> 
-> Now too many parentheses. Also do you guarantee that mode won't ever saturate
-> the bits outside of the given mask?
+Following feedback on recent commits, I've learned that it's a better
+idea to split changes to be more atomic, and I've done that here in
+case any particular change *somehow* causes a build regression. The
+changes have been test-compiled however, and according to make, smatch,
+and sparse, should be sound.
 
-ad5686_powerdown_modes enum has num_items = 3, so max value for mode is 2.
+=== Changelog ===
+v2:
+ - Added small style fixes per Andy's suggestions (Adding blank lines,
+   moving an if statement in a scoped_guard block).
+ - Switched out scoped_guard() for guard(mutex)() in certain commits.
+ - Fixed error in commit 4 where deadlocks could occur, as goto ignores
+   __attribute__((cleanup)). This has been fixed by the above.
 
-...
+Maxwell Doose (4):
+  iio: magnetometer: rm3100: Use guard(mutex)() in rm3100_read_mag()
+  iio: magnetometer: rm3100: Use scoped_guard() in
+    rm3100_get_samp_freq()
+  iio: magnetometer: rm3100: Use guard(mutex)() in
+    rm3100_set_samp_freq()
+  iio: magnetometer: rm3100: Use guard(mutex)() in
+    rm3100_trigger_handler()
+
+ drivers/iio/magnetometer/rm3100-core.c | 63 ++++++++++----------------
+ 1 file changed, 24 insertions(+), 39 deletions(-)
 
 -- 
-Kind regards,
+2.53.0
 
-Rodrigo Alencar
