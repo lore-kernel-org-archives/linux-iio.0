@@ -1,71 +1,62 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F29E12EF653;
-	Tue, 28 Apr 2026 09:39:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D46753D9055;
+	Tue, 28 Apr 2026 09:47:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777369171; cv=none; b=tk2jMhMJMFLzMi83k6fp/ispo4oxQm1JGrHVtTfd86W9gpCeR2DIwPb9DtVN1c0P4SpJO154l3tQqkfo8hoHD7z3vcSPUJlG3WeuITJu8ukgN15QchClWYEFwY33J7rJkL2okSmkSMN+LejqnyQ5XNu0IS97nY8gwzMke7e6rck=
+	t=1777369622; cv=none; b=qKqN5cWFU6rT5vpVKKRg+5+RpYk0pQcq1e+1XoMRMn+Qq7qKweItRKmTIW2fyLUyN6dOIF3Gkz0DfKYV42xRFhDHt2gy/zdX3IN8+zKK8YqhZgBfU/mxOJt1bi3bQuVMCNYzDV8P6EzC1CqdaIFpTMhSEWlFi/DUWYAGeoENjGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777369171; c=relaxed/simple;
-	bh=p7IdvtVE/evm+N22/Y2mzoWyYve0mGB/apLJBPbltXs=;
+	s=arc-20240116; t=1777369622; c=relaxed/simple;
+	bh=zCSF+JQrZiN6b/tF1jGQMjXjbIDJcttItzfpAXQgtg0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hcg319DMARvWXMsSU6quW2AYj7pmOZZ47JDfWy8+1ZFMInM7qaLU/YCXXPtKmyEiL/izP6k26XzNq9vQLBVzL9DHvqJaoFJBm3H24Yh1buAmQQb9ge9zqV1sXxRlhiXKDq9IqnI5d5X3mnzT7e8s2ht1PCusW6VX8sYXYWldCBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=fQZ+sdHr; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=nkENj1WYzu9UUU1AbfVO1Ah1aHvw1JhdddK+aKvkrjlHSgxnTdeumEsJBOnM/Le+anxSuwCBz8lYgUS2HIuLuLSC5Ez1hQVZSknsxuL+pukaonwWOltcApM87UI0YyLBgbbH833wOdU2TrsQExVAgxAhev0VdJsXlIMGOJWuP7w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XWUS26YP; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="fQZ+sdHr"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=PSRhFVtT2RWFdp856Xk+KYQvTFkIYWnEyy7wWGqEW4M=; b=fQZ+sdHr/DxtXPOoTa0/PXsoq7
-	akesGkU6rpfZ8ktRkjQ7tb4j3wfiY2oC0JpAxpcj5J6QSH+4/QdbiyWoNvPOhdc3ymvaX15Tlsf6U
-	+jDrDT9XWlUxaHuLTcM6FRz60Ez8QHwalzwaPVTo1RDVxgD8UnM9wteHViwqyt1dw0Y0Z82bUVQ5G
-	LHZC0upELm//PQd4zJFQwM7yY1xBvPQOp7Z6Qxt3H5FLYzMbwmnUx+DgPPNFKttx2uYW4nflxpdsh
-	ftGz7lpw550Tda7nMjz+4g78gSeB0NfhUtv97VPsSjZsAhQvGEgVhgTCmMoVY8FxA/dRDpdIVYyGQ
-	1O7O0eKQ==;
-Received: from 2001-1c00-8d85-4b00-266e-96ff-fe07-7dcc.cable.dynamic.v6.ziggo.nl ([2001:1c00:8d85:4b00:266e:96ff:fe07:7dcc] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1wHeuJ-00000002bvc-0jGo;
-	Tue, 28 Apr 2026 09:39:07 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id A1C1C30330B; Tue, 28 Apr 2026 11:39:05 +0200 (CEST)
-Date: Tue, 28 Apr 2026 11:39:05 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Yury Norov <ynorov@nvidia.com>
-Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XWUS26YP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777369621; x=1808905621;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zCSF+JQrZiN6b/tF1jGQMjXjbIDJcttItzfpAXQgtg0=;
+  b=XWUS26YP88Aor3jDodTLN1hJs6nEtFuiGlUbYl3gT0s/o3NK8X72mzJs
+   56G/YZoXykdJYKOJuw6eNav6euZ54yGk3atETHY6xL3nfNMrIrBSN1008
+   ab1VTut9Zq0EcMI1a3hESXbYN/sG6pEPAxZ1VxtxwErWTzYT5yKZsq8sv
+   FlOwdeDtA9EIoOJUYchfseBy56h4vYhqOaAL/7r82rQxGDDITSrpZncv1
+   jJrivuJ2bnb0w8foqVN6RE+eu8TvsVdxke2mDCgXAR6gJ1mloeeAp0aex
+   nuBew7mVc+CF8cqVvnFcUSgT02xTVJrz/4Dz5H2Ug08XId9O3EJQ1ByKl
+   A==;
+X-CSE-ConnectionGUID: Dm316Rq6SVaPc/BS4BvMpQ==
+X-CSE-MsgGUID: JG31WzjPThaC4e6MzRu+5Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="78384566"
+X-IronPort-AV: E=Sophos;i="6.23,203,1770624000"; 
+   d="scan'208";a="78384566"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 02:47:00 -0700
+X-CSE-ConnectionGUID: uSKIzJUQSZ+QNyAJ8tOUJw==
+X-CSE-MsgGUID: 8oCAsIdIQnSYq5cUx2EW8Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,203,1770624000"; 
+   d="scan'208";a="230756852"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.213])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 02:46:58 -0700
+Date: Tue, 28 Apr 2026 12:46:56 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	David Laight <david.laight.linux@gmail.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Ping-Ke Shih <pkshih@realtek.com>,
-	Richard Cochran <richardcochran@gmail.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Yury Norov <yury.norov@gmail.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Hans de Goede <hansg@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Salah Triki <salah.triki@gmail.com>,
-	Achim Gratz <Achim.Gratz@stromeko.de>,
-	Ben Collins <bcollins@watter.com>, x86@kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-	linux-rtc@vger.kernel.org
-Subject: Re: [PATCH v2 2/9] x86/extable: switch to using FIELD_GET_SIGNED()
-Message-ID: <20260428093905.GA1026330@noisy.programming.kicks-ass.net>
-References: <20260427214127.406067-1-ynorov@nvidia.com>
- <20260427214127.406067-3-ynorov@nvidia.com>
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v0 12/14] iio: magnetometer: ak8975: Unify messages with
+ help of dev_err_probe()
+Message-ID: <afCCEMmu07oRV-93@ashevche-desk.local>
+References: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
+ <20260427201412.3067235-13-andriy.shevchenko@linux.intel.com>
+ <CALoEA-yjpDhTrP1Z-ZgSohjJBE8W+kBvTeeDHtcguvb4ReiV3A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,67 +65,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260427214127.406067-3-ynorov@nvidia.com>
+In-Reply-To: <CALoEA-yjpDhTrP1Z-ZgSohjJBE8W+kBvTeeDHtcguvb4ReiV3A@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Apr 27, 2026 at 05:41:19PM -0400, Yury Norov wrote:
-> The EX_DATA register is laid out such that EX_DATA_IMM occupied MSB.
-> It's done to make sure that FIELD_GET() will sign-extend the IMM
-> field during extraction.
-> 
-> To enforce that, all EX_DATA masks are made signed integers. This
-> works, but relies on the particular implementation of FIELD_GET(),
-> i.e. masking then shifting, not vice versa; and the particular
-> placement of the fields in the register.
-> 
-> Switch to using the dedicated FIELD_GET_SIGNED(), and relax those
-> limitations.
-> 
-> Signed-off-by: Yury Norov <ynorov@nvidia.com>
+On Tue, Apr 28, 2026 at 11:21:29AM +0200, Joshua Crofts wrote:
+> On Mon, 27 Apr 2026 at 22:14, Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+...
 
-> ---
->  arch/x86/include/asm/extable_fixup_types.h | 13 ++++---------
->  arch/x86/mm/extable.c                      |  2 +-
->  2 files changed, 5 insertions(+), 10 deletions(-)
+> > +       if (ret)
+> > +               return dev_err_probe(dev, ret, "%s initialization fails\n", name);
 > 
-> diff --git a/arch/x86/include/asm/extable_fixup_types.h b/arch/x86/include/asm/extable_fixup_types.h
-> index 906b0d5541e8..fd0cfb472103 100644
-> --- a/arch/x86/include/asm/extable_fixup_types.h
-> +++ b/arch/x86/include/asm/extable_fixup_types.h
-> @@ -2,15 +2,10 @@
->  #ifndef _ASM_X86_EXTABLE_FIXUP_TYPES_H
->  #define _ASM_X86_EXTABLE_FIXUP_TYPES_H
->  
-> -/*
-> - * Our IMM is signed, as such it must live at the top end of the word. Also,
-> - * since C99 hex constants are of ambiguous type, force cast the mask to 'int'
-> - * so that FIELD_GET() will DTRT and sign extend the value when it extracts it.
-> - */
-> -#define EX_DATA_TYPE_MASK		((int)0x000000FF)
-> -#define EX_DATA_REG_MASK		((int)0x00000F00)
-> -#define EX_DATA_FLAG_MASK		((int)0x0000F000)
-> -#define EX_DATA_IMM_MASK		((int)0xFFFF0000)
-> +#define EX_DATA_TYPE_MASK		(0x000000FF)
-> +#define EX_DATA_REG_MASK		(0x00000F00)
-> +#define EX_DATA_FLAG_MASK		(0x0000F000)
-> +#define EX_DATA_IMM_MASK		(0xFFFF0000)
->  
->  #define EX_DATA_REG_SHIFT		8
->  #define EX_DATA_FLAG_SHIFT		12
-> diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-> index 6b9ff1c6cafa..ceb8d03191ab 100644
-> --- a/arch/x86/mm/extable.c
-> +++ b/arch/x86/mm/extable.c
-> @@ -322,7 +322,7 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
->  
->  	type = FIELD_GET(EX_DATA_TYPE_MASK, e->data);
->  	reg  = FIELD_GET(EX_DATA_REG_MASK,  e->data);
-> -	imm  = FIELD_GET(EX_DATA_IMM_MASK,  e->data);
-> +	imm  = FIELD_GET_SIGNED(EX_DATA_IMM_MASK, e->data);
->  
->  	switch (type) {
->  	case EX_TYPE_DEFAULT:
-> -- 
-> 2.51.0
+> Minor typo, better to have "initialization failed", but that was already
+> in the original codebase.
 > 
+> > +       if (ret)
+> > +               return dev_err_probe(dev, ret, "device register failed\n");
+> 
+> Same here, "failed to register device" would probably be better imo.
+
+Hmm... Not sure about these. I would leave as is and do a separate change.
+(In principle I agree that messages may be improved.)
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
