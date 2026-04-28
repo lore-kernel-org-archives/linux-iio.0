@@ -1,84 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A1B35A384;
-	Tue, 28 Apr 2026 15:59:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D4FA42982A;
+	Tue, 28 Apr 2026 15:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777391943; cv=none; b=iT47NP6lvbizbJeHlN5VVy3kE50fDXfAAWkSBgOYj3TcAi0B5dsoA17rCEuhp9FuLwagyW56nqdnofeu4VDeeXNPtOLjWPV3P+LjFZG6dxHC3TFQJlS6tlhajZDBGtmZME7nxLUK4xZBCrywv8g+/zF9RZT3d96s+SNorrcZ8VI=
+	t=1777391977; cv=none; b=RG+s7OdeifZoAOsjNnrCB+DI0xKt42IbcwT9gQy0pnOQi8chqXQKSJ6nBXTQrv/CwH09gwgidHKr91uQB6CdP/SLV7SlRuzAKT+bux39ec24mGQoWBxEpByjml63Rw4Xkx1pJHaEDpMolP689ms4ljKGzh+hI07JEXMWcWGu1dY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777391943; c=relaxed/simple;
-	bh=wTD4+teFflZrLlsL8lJr1AHCBg/WdHRpiNH/MEoSGq4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AfLgqSt//Q/sdkDOKFudcahDGFc5LMk6i9kfE63ajvkldKYrWzZjD+2iPvAGVO5Vrsn399iBxnW8lGxWlfIyyzS19XLtoAtwnS+Qtmxirp21yAngbZwswikU2FN4+uez8xt4DPq3a6xo+Ppuc/vm52kKf7YX5W4odJn0hpnB9Tc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XY6TSboD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777391977; c=relaxed/simple;
+	bh=GQGZE9oSf2JM07Cg5Yr91218pEvfwdCnN6pb1NLp/KY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sLsare2K/MJihTd1nveUUhJvWMUSeZS6TfCP/DQ7x6azbcZf75Q8GDhVHnkYvtHB1LX6vEvDKDv8Ax4zAwGsg9N4IN5VNWWq4GnOkLbZvdp1e0X1196h8avXa7sSgNqLjzZFZxvETtZOqsnrhQXfI8K8bl7TQ6Ik8YUVKzd7NVQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HlJ7BWO+; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XY6TSboD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18FC5C2BCAF;
-	Tue, 28 Apr 2026 15:58:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777391943;
-	bh=wTD4+teFflZrLlsL8lJr1AHCBg/WdHRpiNH/MEoSGq4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XY6TSboDLKwnRiDYFp4hazKBteaU1WvNDmrNZtTH21CJIhZ7jmKLgMH4tvFVuX3YP
-	 Gqro8kU2sRLayVevVACJKgCT/xMb79lGwbh2JNAsj9WJ689xApUP8ciYRpDHy0Il7D
-	 /4W5jPEOTY19ujOxOtM2o1sh+kA+ozZv5Y9SEtD/mheUEw5t/A+tO5/nuuJ+g08z/x
-	 kVSEuPbEieM2JDyRFzK9cIs9LDNmCy925LKGlG21XICBgxRGaw2RXokNyf5TY6Cu+Q
-	 jWtlTdvdDMogdVNonJ5/U/v1t2xRfXjetFwZpXE9/RnpXk4ALerkid8FVUQ5JlIVXc
-	 DTwiNDbkTMW2A==
-Date: Tue, 28 Apr 2026 16:58:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- songqiang1304521@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] iio: magnetometer: rm3100: Use guard(mutex)() in
- rm3100_read_mag()
-Message-ID: <20260428165853.0f7a7b58@jic23-huawei>
-In-Reply-To: <CAKqfh0G+PXj8sDaJATKJmywghesm+NOJoEff1bC_gsncHQxwnw@mail.gmail.com>
-References: <20260428124644.49707-1-m32285159@gmail.com>
-	<20260428124644.49707-2-m32285159@gmail.com>
-	<afC1atIQYUaFBya3@ashevche-desk.local>
-	<CAKqfh0G+PXj8sDaJATKJmywghesm+NOJoEff1bC_gsncHQxwnw@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HlJ7BWO+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777391976; x=1808927976;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GQGZE9oSf2JM07Cg5Yr91218pEvfwdCnN6pb1NLp/KY=;
+  b=HlJ7BWO+BLqskx135qy9KXPdXYpdbD1HEcLVRW4FXcuNoPDn/zN+B0Wh
+   vymWwZqR2aobjmhFCRctddxYbHIt0JXXNJ9HbwrOJ33s2hoNHB0+mgkjl
+   BJOnuIs+4MjPisMmJYTQYUdUCcsbAvkzzyMDDNYH92vfIiWADyjPcomvm
+   9Gb9vg9JzsJT45rXpo9iQ3aOQXTrn6cWjjuva5p3mCXwvNGqdi5xNHC9N
+   2EGShwW0Oet9jBsb/IVi8qUtJo3Yc4n381x76rgVmGPkF7LncCgxZvu1K
+   lXFLXrqdpvrIzyEeFfbcqsR8jdElONY7b+lHUvbWzMItyTdQ9xigX4fkd
+   w==;
+X-CSE-ConnectionGUID: /wMj2J5MQ76AacYHXU6ffA==
+X-CSE-MsgGUID: kv1sXZYJS4KFGDExMdCJjA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11770"; a="78196466"
+X-IronPort-AV: E=Sophos;i="6.23,204,1770624000"; 
+   d="scan'208";a="78196466"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 08:59:34 -0700
+X-CSE-ConnectionGUID: FTkWsHSEQAWOwO8I++qXiQ==
+X-CSE-MsgGUID: dvkXVD/mRpuVS0Z7u+UJ7g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,204,1770624000"; 
+   d="scan'208";a="234288783"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.213])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 08:59:31 -0700
+Date: Tue, 28 Apr 2026 18:59:28 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Felix Gu <ustc.gu@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: buffer: hw-consumer: fix use-after-free in error
+ path
+Message-ID: <afDZYNprYaQzcfpf@ashevche-desk.local>
+References: <20260428-iio-buf-v1-1-dcc63ff7b800@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260428-iio-buf-v1-1-dcc63ff7b800@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 28 Apr 2026 09:59:55 -0500
-Maxwell Doose <m32285159@gmail.com> wrote:
+On Tue, Apr 28, 2026 at 10:53:25PM +0800, Felix Gu wrote:
+> In the err_put_buffers cleanup path of iio_hw_consumer_alloc(), the code
+> was using list_for_each_entry() to iterate through buffers while calling
+> iio_buffer_put() which can free the current buffer if refcount drops to 0.
+> The list_for_each_entry() loop macro then evaluates buf->head.next to
+> continue iteration, accessing the freed buffer.
+> 
+> Fix this by using list_for_each_entry_safe().
+> 
+> Closes:https://sashiko.dev/#/patchset/20260427-iio_buf-v1-1-2bbdac844647%40gmail.com
 
-> On Tue, Apr 28, 2026 at 8:26=E2=80=AFAM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> >
-> > Perhaps we need to also put a summary of the extended critical section,=
- so that
-> > it will be clear that we thought about it and decided to cover that sma=
-ll memory
-> > access + some bitops.
-> >
-> > Otherwise LGTM.
-> > =20
->=20
-> Sounds good, but I'm going to wait 1 or 2 days to see if a maintainer
-> wants to comment on whether or not we *need* the summary about the
-> mutex scope. If they don't say anything I'll probably just send a v3
-> with the summary added in the commit message.
+Format is wrong, missing space.
 
-Where scope changes, it is indeed good to add a brief note on what
-ends up incorporated in the expanded scope and whether that is worth
-thinking about or not when reviewing the patch.
+> 
 
-Here I think it's easy to conclude we don't care.  The last patch not
-so much!
+Tag block should have no blank lines.
 
-J
->=20
-> best regards,
-> maxwell
+> Fixes: 48b66f8f936f ("iio: Add hardware consumer buffer support")
+> Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+
+I am also wondering should we put Reported-by with the reference to AI somehow?
+Jonathan, others, what are your opinions?
+
+...
+
+> -	struct hw_consumer_buffer *buf;
+> +	struct hw_consumer_buffer *buf, *n;
+
+Please, name it rather *tmp.
+
+>  {
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
