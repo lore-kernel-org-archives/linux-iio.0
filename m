@@ -1,103 +1,254 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AB6C194A6C
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 19:51:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12589390993
+	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 19:52:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777492309; cv=none; b=IBuhPOqFmhzcuSOUHDm0mE3zGD0w9VwzfE+ZxzhuMMDCgn028kG/+HZewM0luwGaYavFgvjFUG6GW7cbh2sjmyRYlPjorYwPi1OFBJj+rlfDIunvhNPwQzZ2E1CXctePfU6/bi55wBpY4T8peqzLhwvTXnpd8ieE0xXN4k9qs0M=
+	t=1777492348; cv=none; b=G1SPo3ne3LUCTLd4lu0+pOBrJ9XH08A25mJ/UAMuZCOc/ciZeYljka1GlmvlMjkdu6wc/aEFGfyd9ljDLB4Q/yMwA9rJxD+Nq+Y6kZA2rrJNC2ISCERrNWvAibu99qQioSRU5TVsc+RBiR3XFaykmTh8xE6mduIQT39wmcis3YQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777492309; c=relaxed/simple;
-	bh=3Nttbq/PIIK4KlK+ad00cMJ8K8S3m/EBb1GMHfn+W6U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gVJnBOIPfVlA1HeyTnS0ealHUboZWI0CL9VTzUBOzltooiOrGRwrsK4a/FNyZ2AtMK23sa+m7m+dVLe4SZR8Mv+2d7taTAzJ98C6x2daC1iq0Rbo7WzA7xrAR8a+ta2V7dU0p5Y7G/prvDNcQQfDxbJaA/UaQv7C8ACP1GOa4fI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LHDW2KF7; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777492348; c=relaxed/simple;
+	bh=nFAntSksO/HSbqi/tcMsGYxXwATuCkXkJOicsie3mN8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=bWXjua6hhDgVC1Tip5pLW6934bYJqe5lh5EoaIP1YcQqjIuBOVCUIv5meFymEi+4vn9ze/fcuGZDmC2qRjm4TWlu+jJEoDFTXZPK9vIYhsfpbt41faIO8QOvA8PtOzrK0Mb0MHJLNBlUJHmjnfXFhQQsFLxq3Pd3dVXnZOBU3Oc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=TBiBDl53; arc=none smtp.client-ip=74.125.82.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LHDW2KF7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777492308; x=1809028308;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3Nttbq/PIIK4KlK+ad00cMJ8K8S3m/EBb1GMHfn+W6U=;
-  b=LHDW2KF7J9r06ETbBCzKuNV1ncVBQ7/9o475011xDJmOR+fwgRAK1zAR
-   +s/cA4Rzh3/cuvwXD2ZnSNAG2ex+4H1C+n8NBsLs93vVpv1Dy0M9FEQz+
-   Ui8Y4cWBRq4HWFaO/ikpQ2Zyzi8E3fKoUhC7jOyQcWbrFPL9HAW947Fzo
-   Fe0A2pb1KkFDSONAr9EpU07ZggmO4p25ptqKX+wuKeXXTnfyz0+ePeInK
-   1Jtpga1RTp7gLHMy1mkBQx11HVyUg6k8Xq6JUkz/5wNWnbwZgTNVLisYz
-   mRQrzdGYc8tPcuNCxd6HCkHp56S0SVS7P3CnlTV5vXkrkVTs+I7MhEWAz
-   Q==;
-X-CSE-ConnectionGUID: 6NAjYEtfRM+rDk9E6I9QIA==
-X-CSE-MsgGUID: HY1SroweQYqcCxeCRZ+G5g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="103889027"
-X-IronPort-AV: E=Sophos;i="6.23,206,1770624000"; 
-   d="scan'208";a="103889027"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 12:51:48 -0700
-X-CSE-ConnectionGUID: 8vbcAx/BQzywcsMoTWJfCQ==
-X-CSE-MsgGUID: UOm2hiHBQI2tmzelVyRSkQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,206,1770624000"; 
-   d="scan'208";a="236139143"
-Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.141])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 12:51:45 -0700
-Date: Wed, 29 Apr 2026 22:51:43 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>,
-	"Rafael G. Dias" <rafael.guimaraes.dias@usp.br>,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	Felipe Khoury Dayoub <felipedayoub@usp.br>
-Subject: Re: [PATCH v2 2/2] iio: light: stk3310: Update includes to match IWYU
-Message-ID: <afJhT6z0qwQL-tuQ@ashevche-desk.local>
-References: <20260428161339.1187956-1-rafael.guimaraes.dias@usp.br>
- <20260428161339.1187956-2-rafael.guimaraes.dias@usp.br>
- <CALoEA-zxZgPwgb7o_=F9Q=bQSYiQi=THtCpgu0mW3EEzbXEAcw@mail.gmail.com>
- <20260429112300.696e2722@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="TBiBDl53"
+Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-12de530cbf1so469054c88.0
+        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 12:52:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google; t=1777492344; x=1778097144; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=B/w5aLyh75k6AdfxuD+rV3S2u/OXGHxfHq3eXR+ydnc=;
+        b=TBiBDl53wpe8GZlJGJTmh5cLZg9qT612kNI3s7NVcYzpNbSXPAgGUsFv0JRsdnZeL3
+         Bpxtu8I6x+6dTATFU3wpNmIzqiNnuSAu/EURHGrBkOFU5Hvp+2aW768NSo33IlUNw7yG
+         NBk0j2Ql6yz7bz/2wxIeW53+E+NPHVnW2DBLpoEZu2FZB7dvfsNFGutUnWwMMpgtnGB+
+         PKtvYBlTipijnOiG1CmXgGJS4eHLvAZ84ik3bJwBYR+E8XfZcUZ46z3FO8kX91THI+nY
+         xANR4rcrQzg3M3fXEFZHa9rB4VxvzgsGoY0QTl86jMdqtn5vyx2GyRCSFNOkMkqSht/N
+         oGyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777492344; x=1778097144;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B/w5aLyh75k6AdfxuD+rV3S2u/OXGHxfHq3eXR+ydnc=;
+        b=GbORzZuxoWkQ2X9nx05lj1ugqWWofUF0y6QyLpKgXndwJRnu17TGv6kRIB9963pcvQ
+         VwBU46D/ujUG8ZkC0KDm4EN6sbrSYXjIJ6od9HV0rQ6rAYnKyyDvS9zXT2pLJr9sCAYu
+         ARlmwzxt4Nvz6eSgBQKAwlB7PFs1s1kTmvCJd0SfiNl1R/pGgK4OjwLCiTBljfXi0zv7
+         IS88dGRkTypL1UPje1mSXQzoP9FKTKe0jDONsbwrDi3zLA+4OTTsTZ6XWi8BHXJwl1Oh
+         P2wABl13WdzBdfPhlhqXQx558YD01hSjPMUaintCZenD9zEl5hCHo4p5d5wFHYzlnsl+
+         xnQw==
+X-Forwarded-Encrypted: i=1; AFNElJ+0vQu1ELTtnYZjBCBQUn/Jm93lXnqOseo+NFZqdL6vR6AQMJMQHvkQWYqLqDdxFGGmxtxK/FrwdfY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx0TNljmza8FLbBkbQ3g01CDJJxIHXAeAQH73H0G+uVqW//4VsV
+	Pxoxtf64SAlkPchGic/SkWwPY7xwJA+tK8+H+waAGvJJlbnCcYoP8Zu7/nXSIs0lCtI=
+X-Gm-Gg: AeBDievzNtYmtySJlwyng/psZTT2SF0hhG2YGSuKbFq/kY6k7PKar3G0E7tUo8mXpVz
+	ZtuyBdk2K4vbFLionfAGIHEVEGcXx1zXHR/kJxViDljN5FoEbZC12l6VR4RXZHjs38IdMuJwM3s
+	wgirbSTxtuPvoGp37GwyYYitIHB8MSkkM0PDQrIEFOKILpKMqfAvYw1LujYNInbbOXHeYyackKv
+	lPs70CeAHyTgVKMhs26yL/lNdKrIuWCYCtPaLQ5vqhIcVZb4M7cb3hfdXRP/HogeeFsq3Sj+eXr
+	nZxhKNO8MtpKfWpLHr5oqIMIxiT5xURIP69f0yY4Fszg8nhbYYkN1aM1taR+t8ahB86nqBoRvZh
+	b1WtEwzn97LUu/1RFGUR7BNQyiu+HRKX5lA9j8cCDhGp9HPrkPJiLi1ItxfqkP4oNXJolqmHpq7
+	3u8vyDm4aADTHLE7leis+Jwc4zTrCnwYxG7rNojWDm2Bg36YhZGUTJ
+X-Received: by 2002:a05:7022:661e:b0:12a:7165:7405 with SMTP id a92af1059eb24-12deac55741mr13874c88.8.1777492344052;
+        Wed, 29 Apr 2026 12:52:24 -0700 (PDT)
+Received: from Arkham.. ([2804:7f0:b2c1:572c:be3c:b50f:c336:77c6])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12de3261596sm3829464c88.11.2026.04.29.12.52.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2026 12:52:23 -0700 (PDT)
+From: Guilherme Dias <guilhermeabreu200105@usp.br>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	nish.malpani25@gmail.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: Guilherme Dias <guilhermeabreu200105@usp.br>,
+	=?UTF-8?q?Jo=C3=A3o=20Paulo=20Menezes=20Linaris?= <jplinaris@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v3] iio: gyro: adxrs290: Use guard(mutex) in lieu of manual lock+unlock
+Date: Wed, 29 Apr 2026 16:51:05 -0300
+Message-ID: <20260429195214.22374-1-guilhermeabreu200105@usp.br>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260429112300.696e2722@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 29, 2026 at 11:23:00AM +0100, Jonathan Cameron wrote:
-> On Tue, 28 Apr 2026 18:49:36 +0200
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
-> > On Tue, 28 Apr 2026 at 18:14, Rafael G. Dias
-> > <rafael.guimaraes.dias@usp.br> wrote:
-> > >
-> > > Clean up the included headers in stk3310.c according to the
-> > > Include-What-You-Use (IWYU) tool. Remove the generic <linux/kernel.h>
-> > > header and add explicit dependencies to improve compilation accuracy.
-> > >
-> > > Co-developed-by: Felipe Khoury Dayoub <felipedayoub@usp.br>
-> > > Signed-off-by: Felipe Khoury Dayoub <felipedayoub@usp.br>
-> > > Signed-off-by: Rafael G. Dias <rafael.guimaraes.dias@usp.br>
-> https://sashiko.dev/#/patchset/20260428161339.1187956-1-rafael.guimaraes.dias%40usp.br
-> Had a few comments.  I added asm/byteorder.h and linux/sysfs.h.
-> 
-> Maybe we could argue the sysfs.h one will always be included by
-> iio/sysfs.h but I think it's better to explicitly include it
-> for struct attribute_group and similar.
-> 
-> The asm/byteorder.h is simpler one as that should definitely be here.
-> 
-> Anyhow, tweaked whilst applying and applied to the testing branch of
-> iio.git.
+Use guard(mutex) to automatically release the lock on scope exit,
+simplifying the error handling path and removing the need for
+explicit unlock and goto-based cleanup.
 
-Please, also drop irqreturn.h as implied by interrupt.h.
+Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
+Co-developed-by: João Paulo Menezes Linaris <jplinaris@usp.br>
+Signed-off-by: João Paulo Menezes Linaris <jplinaris@usp.br>
+---
+v2 -> v3:
+ - add blank lines above and below guard()()
+ - direct return error code in adxrs290_set_mode()
+ - use guard()() instead of scoped_guard() in adxrs290_trigger_handler() 
 
+ drivers/iio/gyro/adxrs290.c | 73 +++++++++++++++----------------------
+ 1 file changed, 29 insertions(+), 44 deletions(-)
+
+diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
+index 3efe385ebedc..e0a3a0aed93f 100644
+--- a/drivers/iio/gyro/adxrs290.c
++++ b/drivers/iio/gyro/adxrs290.c
+@@ -115,65 +115,53 @@ static const int adxrs290_hpf_3db_freq_hz_table[][2] = {
+ static int adxrs290_get_rate_data(struct iio_dev *indio_dev, const u8 cmd, int *val)
+ {
+ 	struct adxrs290_state *st = iio_priv(indio_dev);
+-	int ret = 0;
+ 	int temp;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	temp = spi_w8r16(st->spi, cmd);
+-	if (temp < 0) {
+-		ret = temp;
+-		goto err_unlock;
+-	}
++	if (temp < 0)
++		return temp;
+ 
+ 	*val = sign_extend32(temp, 15);
+ 
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-	return ret;
++	return 0;
+ }
+ 
+ static int adxrs290_get_temp_data(struct iio_dev *indio_dev, int *val)
+ {
+ 	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_TEMP0);
+ 	struct adxrs290_state *st = iio_priv(indio_dev);
+-	int ret = 0;
+ 	int temp;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	temp = spi_w8r16(st->spi, cmd);
+-	if (temp < 0) {
+-		ret = temp;
+-		goto err_unlock;
+-	}
++	if (temp < 0)
++		return temp;
+ 
+ 	/* extract lower 12 bits temperature reading */
+ 	*val = sign_extend32(temp, 11);
+ 
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-	return ret;
++	return 0;
+ }
+ 
+ static int adxrs290_get_3db_freq(struct iio_dev *indio_dev, u8 *val, u8 *val2)
+ {
+ 	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_FILTER);
+ 	struct adxrs290_state *st = iio_priv(indio_dev);
+-	int ret = 0;
+ 	short temp;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	temp = spi_w8r8(st->spi, cmd);
+-	if (temp < 0) {
+-		ret = temp;
+-		goto err_unlock;
+-	}
++	if (temp < 0)
++		return temp;
+ 
+ 	*val = FIELD_GET(ADXRS290_LPF_MASK, temp);
+ 	*val2 = FIELD_GET(ADXRS290_HPF_MASK, temp);
+ 
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-	return ret;
++	return 0;
+ }
+ 
+ static int adxrs290_spi_write_reg(struct spi_device *spi, const u8 reg,
+@@ -220,11 +208,11 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
+ 	if (st->mode == mode)
+ 		return 0;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
+ 
+ 	ret = spi_w8r8(st->spi, ADXRS290_READ_REG(ADXRS290_REG_POWER_CTL));
+ 	if (ret < 0)
+-		goto out_unlock;
++		return ret;
+ 
+ 	val = ret;
+ 
+@@ -236,21 +224,18 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
+ 		val |= ADXRS290_MEASUREMENT;
+ 		break;
+ 	default:
+-		ret = -EINVAL;
+-		goto out_unlock;
++		return -EINVAL;
+ 	}
+ 
+ 	ret = adxrs290_spi_write_reg(st->spi, ADXRS290_REG_POWER_CTL, val);
+ 	if (ret < 0) {
+ 		dev_err(&st->spi->dev, "unable to set mode: %d\n", ret);
+-		goto out_unlock;
++		return ret;
+ 	}
+ 
+ 	/* update cached mode */
+ 	st->mode = mode;
+ 
+-out_unlock:
+-	mutex_unlock(&st->lock);
+ 	return ret;
+ }
+ 
+@@ -506,19 +491,19 @@ static irqreturn_t adxrs290_trigger_handler(int irq, void *p)
+ 	u8 tx = ADXRS290_READ_REG(ADXRS290_REG_DATAX0);
+ 	int ret;
+ 
+-	mutex_lock(&st->lock);
++	do {
++		guard(mutex)(&st->lock);
+ 
+-	/* exercise a bulk data capture starting from reg DATAX0... */
+-	ret = spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
+-				  sizeof(st->buffer.channels));
+-	if (ret < 0)
+-		goto out_unlock_notify;
++		/* exercise a bulk data capture starting from reg DATAX0... */
++		ret = spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
++						sizeof(st->buffer.channels));
++		if (ret < 0)
++			break;
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
+-					   pf->timestamp);
++		iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
++						pf->timestamp);
++	} while (0);
+ 
+-out_unlock_notify:
+-	mutex_unlock(&st->lock);
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+ 	return IRQ_HANDLED;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
