@@ -1,44 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5912D3CF02C
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 10:23:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFF223D3D13;
+	Wed, 29 Apr 2026 10:28:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777458189; cv=none; b=qPx1k5plNxa5Hka+/AQ/ArBnEwJtjMDPG63ARjmriaJ6tMF7WzQJJq9p/sWPnP4/hyC31mcrPJRjG80VKr8ueEZtP0hk7ioTqaunYQkgj5JDOKLW44SraUTf48ee8RKMx74k9xCPyxQHs4cFavnzdA4o3oLMteXVxJx4+qfmB7A=
+	t=1777458491; cv=none; b=ptsSekl65cVZEf3fo6IGn5AUfRA3EVtUW60mREIJbtYyxJxC7t5L1uqggTXBAjQ9CM2s7Alhx3PFPglISWqwHFs/6zvt6W0kXVkoyeZBzpTcksqF9nsxjwQI1oDIzBpvss4UE65ixkTglq91btkL2+vh1HytueJ6SUbKMjftFrk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777458189; c=relaxed/simple;
-	bh=aO6ym6S+Gsnx5UiISIxVuNMcMsCWCrSzaJK1hp9Lk1I=;
+	s=arc-20240116; t=1777458491; c=relaxed/simple;
+	bh=fA/6zhudExSUKY97NXtJOo4zw81B/9NwD0j59Ug491Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DUNz6RR9cc9K8JVweW/e88nO64gOjm5YYasVJHhFXsgohDGC3yqq0cx9gignzLmQFZEMesYh0es3DeEEVfIthP+xQhB3mi5oyH2BZ3IvOIWQnRErXwJqv4eUDU4xxy/xvaRICL6QUW0giI6KRgjvzELpQF88jwbst5Qpa/0Ry90=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CHmwbL+l; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=DS4VrWsdCgUUfv15p9j8H0hja2moQ8ezq9hznNHRaqf64QCcfuJCYmc806b53DcrBcofr9NmEc6sydkIvluM/CRPNWY/DPRQcsNfTVwsK4z7p2HzIPJ3txaLccZY6EXyTYxJ6RUxE8xCmT8QifDCSBXRDZlq/NSVv3C54W3O19g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kFfG+xO7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CHmwbL+l"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E85BC19425;
-	Wed, 29 Apr 2026 10:23:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kFfG+xO7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC127C2BCC7;
+	Wed, 29 Apr 2026 10:28:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777458189;
-	bh=aO6ym6S+Gsnx5UiISIxVuNMcMsCWCrSzaJK1hp9Lk1I=;
+	s=k20201202; t=1777458489;
+	bh=fA/6zhudExSUKY97NXtJOo4zw81B/9NwD0j59Ug491Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CHmwbL+lXnmeLoDFuvqOFnTULMMpqRDxZCYdeXoMC6Ng0I3zOnBzDwutdWYXlSfqf
-	 ake3HxIMGB/YKStH68hOy2HlttykTNEu3ZhUtWjiZqqRt8fE/cBoRHwrmct4y33/gu
-	 whVx6tbJa7zDpAa1W/weWSNx0orEWkW16TXL5y7kK/tghbt6P5Ez7gJV+Su7SiePOp
-	 vv1Vt/xdoHn4b1mP0evxuijq//wcoNZLhcXoGkOSxMzq8AYEwB4Jsb5HNrgV0B7ohf
-	 V+YvgojExKq+W+upg2SIIPLSbjiCGaaiv3zXgaL9Ni4RjfAJucoxAzrWNz4vZqdgsK
-	 TqgOYc2wIU5bw==
-Date: Wed, 29 Apr 2026 11:23:00 +0100
+	b=kFfG+xO76eJmQa8+Na19ueSFE4owRzoj8UJA2tieH1lGW79GmWyurzmvMd5IiiRqq
+	 tuh6J1pdGZTj+Gq8WskieRy/JhzM7icMu2rSKY5xZTh/1PPGQXlLgZn/kkscJa0si5
+	 M1/fBqydR4KUYEs2bmA8KwnhNaVrtJxwWRgZRSTzdVysW1iO7G29xRAtVVjZR0Gw9a
+	 oxUcTGDuTbK92yzCmZMWsfMuwro81H99fdVH4AmzjvZnv9MVdfmIFsJtcq7G9HJUcD
+	 51iRRb3C0OnoGuarCqaMfo9If+hWi2QDDK/eSaMrFtXS52fIapmIJNX+CfCGABsXab
+	 ocBOnyNn8LWmw==
+Date: Wed, 29 Apr 2026 11:27:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: "Rafael G. Dias" <rafael.guimaraes.dias@usp.br>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, Felipe
- Khoury Dayoub <felipedayoub@usp.br>
-Subject: Re: [PATCH v2 2/2] iio: light: stk3310: Update includes to match
- IWYU
-Message-ID: <20260429112300.696e2722@jic23-huawei>
-In-Reply-To: <CALoEA-zxZgPwgb7o_=F9Q=bQSYiQi=THtCpgu0mW3EEzbXEAcw@mail.gmail.com>
-References: <20260428161339.1187956-1-rafael.guimaraes.dias@usp.br>
-	<20260428161339.1187956-2-rafael.guimaraes.dias@usp.br>
-	<CALoEA-zxZgPwgb7o_=F9Q=bQSYiQi=THtCpgu0mW3EEzbXEAcw@mail.gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, Piyush Patle
+ <piyushpatle228@gmail.com>, ak@it-klinger.de, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/7] iio: adc: hx711: update Kconfig, module
+ description and file header
+Message-ID: <20260429112759.0e14c0e8@jic23-huawei>
+In-Reply-To: <afHWH8Wq4XNxzQdy@ashevche-desk.local>
+References: <20260427100950.33936-1-piyushpatle228@gmail.com>
+	<20260427100950.33936-4-piyushpatle228@gmail.com>
+	<CALoEA-wAUpZ7_2_3kB33mNB_Y_DAc_p7QwPR9a5pxL1iET_cdw@mail.gmail.com>
+	<ae9otn7HuPKVtzsk@ashevche-desk.local>
+	<CALoEA-w=giUoevbAh+i66ATKfXCr9WUE0R6G6DOMq2xE8cibEA@mail.gmail.com>
+	<20260428185404.26f3da04@jic23-huawei>
+	<afHWH8Wq4XNxzQdy@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,81 +55,34 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Apr 2026 18:49:36 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Wed, 29 Apr 2026 12:57:51 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Tue, 28 Apr 2026 at 18:14, Rafael G. Dias
-> <rafael.guimaraes.dias@usp.br> wrote:
-> >
-> > Clean up the included headers in stk3310.c according to the
-> > Include-What-You-Use (IWYU) tool. Remove the generic <linux/kernel.h>
-> > header and add explicit dependencies to improve compilation accuracy.
-> >
-> > Co-developed-by: Felipe Khoury Dayoub <felipedayoub@usp.br>
-> > Signed-off-by: Felipe Khoury Dayoub <felipedayoub@usp.br>
-> > Signed-off-by: Rafael G. Dias <rafael.guimaraes.dias@usp.br>
-https://sashiko.dev/#/patchset/20260428161339.1187956-1-rafael.guimaraes.dias%40usp.br
-Had a few comments.  I added asm/byteorder.h and linux/sysfs.h.
-
-Maybe we could argue the sysfs.h one will always be included by
-iio/sysfs.h but I think it's better to explicitly include it
-for struct attribute_group and similar.
-
-The asm/byteorder.h is simpler one as that should definitely be here.
-
-Anyhow, tweaked whilst applying and applied to the testing branch of
-iio.git.
-
-However, do slow down a bit as Joshua suggested - I'd generally
-suggest a week between first version and second, but I am a bit
-more relaxed on this for students and new submitters doing fairly
-simple patches.
-
-Thanks,
-
-Jonathan
-
-> > ---
-> >  drivers/iio/light/stk3310.c | 13 ++++++++++++-
-> >  1 file changed, 12 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-> > index 1fad9367c2d4..37b7b9367269 100644
-> > --- a/drivers/iio/light/stk3310.c
-> > +++ b/drivers/iio/light/stk3310.c
-> > @@ -7,16 +7,27 @@
-> >   * IIO driver for STK3310/STK3311. 7-bit I2C address: 0x48.
-> >   */
-> >
-> > +#include <linux/array_size.h>
-> > +#include <linux/bits.h>
-> > +#include <linux/dev_printk.h>
-> > +#include <linux/err.h>
-> > +#include <linux/errno.h>
-> >  #include <linux/i2c.h>
-> >  #include <linux/interrupt.h>
-> > -#include <linux/kernel.h>
-> > +#include <linux/irqreturn.h>
-> >  #include <linux/mod_devicetable.h>
-> >  #include <linux/module.h>
-> > +#include <linux/mutex.h>
-> > +#include <linux/pm.h>
-> > +#include <linux/property.h>
-> >  #include <linux/regmap.h>
-> > +#include <linux/sprintf.h>
-> > +#include <linux/types.h>
-> >
-> >  #include <linux/iio/events.h>
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/sysfs.h>
-> > +#include <linux/iio/types.h>
-> >
-> >  #define STK3310_REG_STATE                      0x00
-> >  #define STK3310_REG_PSCTRL                     0x01
-> > --
-> > 2.43.0
-> >  
+> On Tue, Apr 28, 2026 at 06:54:04PM +0100, Jonathan Cameron wrote:
+> > On Mon, 27 Apr 2026 15:49:06 +0200
+> > Joshua Crofts <joshua.crofts1@gmail.com> wrote:  
+> > > On Mon, 27 Apr 2026 at 15:46, Andy Shevchenko
+> > > <andriy.shevchenko@intel.com> wrote:  
+> > > > On Mon, Apr 27, 2026 at 12:26:53PM +0200, Joshua Crofts wrote:    
+> > > > > On Mon, 27 Apr 2026 at 12:23, Piyush Patle <piyushpatle228@gmail.com> wrote:    
 > 
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> ...
+> 
+> > > > > > +         which are used for bridge sensors such as weigh cells.    
+> > > > >
+> > > > > Typo here.    
+> > > >
+> > > > It's better if you point exactly what the typo is.
+> > > > I think you meant "weigh" that should be "weight"?    
+> > > 
+> > > Yep, that's it, my mistake.  
+> > 
+> > Nope. They are called weigh cells not weight cells.  
+> 
+> MODULE_DESCRIPTION() is not aligned. Somewhere a mistake is lurking :-)
+True enough but that happens to get cleaned up in a rewording in this
+patch as it no longer mentions weight or weigh cells.
+
+
 > 
 
