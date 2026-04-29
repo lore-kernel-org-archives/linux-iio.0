@@ -1,63 +1,63 @@
-Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E1F22CCB9
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 01:38:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E71D21DD9AC
+	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 01:38:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777426707; cv=none; b=Bu4Hf+hqXiV3FDLb9G/VKajkG/HfcYmp4riK6AIasCeDHi2bRFyQMxf6LNoKyJkJFBbk0hCftudHUCrsn817OJ8n1JRaZUnBu8GC7dPxxJzpmt0aY4fS7YgjXPVusnuua64xAhJQiqWgcbs9L3C0u+Wr3jh5fpwOJkiNdYOz92Y=
+	t=1777426737; cv=none; b=iV+Z9SIf6xb5hf/SiIAlNJmbNXbae4qyoZSj3AkJVWKHd0V9Douzof0u/+obMMJXRRHUhOB07ri2ImoH1STRdBhNppUGcE/KVGjATXuYCiQd+grOD5/eh9njjXaWLoriFZeqGb+nsPK2Liqb9OZwTJ2bbQtn5KQkBCCU3f/Loc0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777426707; c=relaxed/simple;
-	bh=0wgBqE+3AhlSd4a7u/7Y1FFMNOaInIuSIVa959ZZHl8=;
+	s=arc-20240116; t=1777426737; c=relaxed/simple;
+	bh=ILy9aqUZ1VI9sn/haLObfzd4n7eIfcI2zRg67Lca9c4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qQara1Fqrjp7tJZNXAmZJ6NkdjWdx8rBO/lvZSD2VkzYIb/y0Cj+4PX07GLvJZ2Fnp/p6jZblf6OR+5OoQGNLTOK9Uy5OvmkfZ3reeVya2UNgLz/EfIcLJc1gexsz0OFGGwZmpPTq/gcVJ97sLSBjCjHzHa8KFiHu9wDP1PCvYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=eneYo3QD; arc=none smtp.client-ip=74.125.224.53
+	 MIME-Version; b=fRmMempgBib2wL7mcFG0KjsM1t9VeG1VRR/sElRMOgHTjXMr5vfBJCd/yHJ5S++iD+WiAYUMAPKFO+F6EbR0rX2CjdNql5rqSJ/F10cW61Q+muUGFluIRFcRakcTheEUBYl9dbzHe2AQXLkrgx7p750aVrUQzdBu4Ea1IxsbEkg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=J069KSmi; arc=none smtp.client-ip=209.85.128.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="eneYo3QD"
-Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-6501d242e2fso11269256d50.3
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 18:38:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="J069KSmi"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-7986e0553bdso118562067b3.2
+        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 18:38:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1777426704; x=1778031504; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1777426735; x=1778031535; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nMiF6QBtp9iskAzzp3uGC3uetkYnil+mLFOkQLB306k=;
-        b=eneYo3QDd7mz/1kvkRgBB/1jPHS+nM2/+WCUQqVj6CiGJL2mWK8xyTmkAtd/YeKcBS
-         qNthmp9HTJoI/xYM188lUSwlhVLFlKBsBLiofYrpbfBuSL4na/L4H2KpL8/YeZZs1BhW
-         4kW8vSXsiGEl3scPDJ/Pv3jB8WC4tBNfybu7hA71I4pNcnqwbitdQ4dQbKpHaYYwJf1o
-         B8USRFof/kvkoTB7UvRoaDGX8wGOnQk2paWFlYpoJbGiAtyMi0ROtUksfiVx87xLwV4P
-         e6bAoxFpHnz6/yN9GI71lfvbJoEH3JbY8LTm8Df8rdZkW68BbtWZ+30pMzG1lTUwCatJ
-         Chtw==
+        bh=26g2OfQ4PIM99m0xytDipXqxgdcfDqIsm5Jvzu8E/CE=;
+        b=J069KSmioUCyJ7O3O4jVNmpWXmktwR/3prGHKuX9KGuv90oIr2vpJlEvuoeXQAtaki
+         HYHR8zUmVUdZTTGsK+gF7k8rxDWWvtowlGQVOqFy77smOsvjyTeEro37YCXhS/55fVvV
+         EDAfRbv0UNMiEOrRh6QZP0EbUzO+lZM4ljuYV5r70vbPLG/F+yLTvLuCVGp1k4kEGMC/
+         ZwniY9fKrNEwVyw+t7ZRcdB887LOzjWkm2OllqF/7JnJni/GOPzHXUHBScFqbThYQE4I
+         CoH4L8/kxyN2bYx1+3yJqV6F3GJAgFEcL+GdTd96MzRlv6UqwRviT9trAoi4UXl6001g
+         05LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777426704; x=1778031504;
+        d=1e100.net; s=20251104; t=1777426735; x=1778031535;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=nMiF6QBtp9iskAzzp3uGC3uetkYnil+mLFOkQLB306k=;
-        b=slH6lIKOkytYmHFCestjsK5jMKKgJOL/jrIr+GlCBwPuvDhkGN8AHeA2Ls/45EcIhe
-         4TQRQgtWvssPi4+UCvlGuIV7fTrlW96EDVd39kkbL0wSAT/3RXXUoY10lthbwa9FBAzr
-         ljmS+vBZqZVma0fFXijdaKRz1L9+VcYWwoQDcRQEY6tac4txMWRLqTZP4B/oalfI6gV2
-         nujOp2f2F87ptmZtPeTYtJ108v7Toa/+DtJlGTSDyQOFcyra93VXbnA841mP8Yk65kG7
-         mElU7wyl0M5Bmc+WEOxvKzRR3xmffdQYgFBYH2RDvnrlbIsKw5uspuyz8y0U7/6ZKa8Q
-         Qibg==
-X-Forwarded-Encrypted: i=1; AFNElJ+UziyFfUoiaGwRtvEa7b1WADDMZgFeU+Aix/vX7e4ZLY0AS2ImE87PmKhUBiseleOwRdCH5/qt7QI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwNExSG6f+aPqzEgpDMEsunUIgDbvLLdiVclH9JJRrlW8cojb3j
-	AjgOYA1i90VT654PRajOHkzJSNuOY6MKWcaclApwx7d/RPYZ/an1/ppL/6YaUNAArCU=
-X-Gm-Gg: AeBDievIcuEpa15/iOpiykoU75b3tHC0ckjaW1V8swEC5RobrMygvEGvIY2OXleBDzT
-	xr5xJYRtSR8Vtmmre+Pak+mbC16AphEdXO38QHb38Ax14JaP0ocZ5upGOVqI6mPTPtkLz7f7lro
-	d1y8MtzmE+TaXt2wZESdXgLOwnSWKLPzX4oqlFIW10fpe3yqhLXYzojkqpumq+lVjg8M7jqI6Ja
-	vqFP6tNFpKZUM+kxl01X0TYNm/2rdmNNgV7mIlr2nnuPsaCY1XmICyjN5L8Ew6txJl2BSM0hHYw
-	q7KuoeD7SHu/ZhuS7uL1RP3rev13TKdz81tHtsQ8cE5NbV3IFoYGcd0MIoojiIVMiwRzH6gLwjn
-	JDOTfhQr953WylzHVAjsOlwWZ4dN4HT/GZJZtu3sGfkLawkTbPnzKvFEBO6BWXNy5hw77rg0TP6
-	iQ92//cvVipQrf6UVNZzlToSeCob3Lj3k7uw/e6v+FSN2MhUscE7hHlrVyMmwqwuj0
-X-Received: by 2002:a53:d78d:0:b0:659:5b8b:a407 with SMTP id 956f58d0204a3-65beee852ecmr3587413d50.47.1777426704045;
-        Tue, 28 Apr 2026 18:38:24 -0700 (PDT)
+        bh=26g2OfQ4PIM99m0xytDipXqxgdcfDqIsm5Jvzu8E/CE=;
+        b=S2S/avBT++Wnn7RbpW22DBxyDk1re8+lc+qM7COmClvovCICGf8clHBW+L9OznE3cH
+         2xBGDci6356cD90zf7BBtndh6OMvI5UKrUjRSA4O2f+u9WaR0ZNpMakGBkJAISYeg5n6
+         jo+nGWpG4YdStxcgiFQOgpfSWKe/sqbChqd20lCo/kRVL1RrpglMaRbEJBCRCkFMUL8P
+         j0rPYXUP3sOL6Ly8a6UknGeNYhpRIvTu7HQ4aTNNIq86FsmCSI7B9wagljjFaUeMc0PY
+         c7jRL8ToPmF3iCPi/ldyTx4mdf+9+fBWxVGKHPCrRWw5ZmKdJlv+URMjzYYdsvBHZIDL
+         JVuw==
+X-Forwarded-Encrypted: i=1; AFNElJ9zVC151pLofuSqz9GRRooJJiDl2Q4omtw6PlA7OTnzzmywccwod9qDdOzSBqDJDU+OSl0pS362k9g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxCsGqr94g0sqy5Jfjk7GJNtuVaaUMS6xmkLQMlMH6GOw1hK5/p
+	Iz318nrCkwTHOooTjlDK/BKqDfsU4I2gsBURn1nenlCxXFMHv8muFLTEtk2/9gN217Q=
+X-Gm-Gg: AeBDies0c/zCRJyJ5hNjnlts8k12gwLV9lOa2EuL0VOpwu1lnvXllWaUA2bnQKPOMN5
+	/QxpdZBbTq3JIUzShqf4xF46hchhORQxMSgOa4cDbremKr/ZaMl7NEmiBohJgOmOZlpi8vEpgvh
+	Emrcsh5RbnFTJAZzlANp6yLVOFjjII5xV37NuEGfcGrwSuIF6lxZTB5sReR703SArj/dhLbsyoP
+	iOBZR4F9l8LZi9KEANeeUCHbfVlaBUWsg4jP+DjQ4Q6hZwsW1bPN7CGCuKCRXah51RmhKfjI7cW
+	pATM+WvY4UK0n0IBOHcvVvTi/h6Y7h/AZVeIvwiN+3Z8iWqjBHvCwA53ntwTgHjtZCpKCGrGxfu
+	cp7hXqYNAfONExwWHbeL9g+knR6n9Eo8crc042JkE3SnrUgVs60G5tVZ3SEv/Fl70jtORiUHVdE
+	kXw48unEQvNOgqWe98HmoHRCOMtC206vPIbhriFK3g9kKqMQRZGPcx2rHJX2rSX+D/
+X-Received: by 2002:a05:690c:7406:b0:7ba:f186:fb2 with SMTP id 00721157ae682-7bd1d483632mr20245167b3.2.1777426734955;
+        Tue, 28 Apr 2026 18:38:54 -0700 (PDT)
 Received: from pedrobgennari-Aspire-A514-53G ([191.19.131.187])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7bd259dc229sm7182457b3.39.2026.04.28.18.38.21
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7bd259dc229sm7182457b3.39.2026.04.28.18.38.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2026 18:38:23 -0700 (PDT)
+        Tue, 28 Apr 2026 18:38:54 -0700 (PDT)
 From: Pedro Barletta Gennari <pedro.pbg@usp.br>
 To: andy@kernel.org,
 	dlechner@baylibre.com,
@@ -65,9 +65,9 @@ To: andy@kernel.org,
 	nuno.sa@analog.com
 Cc: pedro.pbg@usp.br,
 	linux-iio@vger.kernel.org
-Subject: [PATCH v3 1/2] iio: light: iqs621-als: use lock guards
-Date: Tue, 28 Apr 2026 22:29:54 -0300
-Message-ID: <20260429013640.26870-2-pedro.pbg@usp.br>
+Subject: [PATCH v3 2/2] iio: light: iqs621-als: prefer early error handling over if (!ret)
+Date: Tue, 28 Apr 2026 22:29:55 -0300
+Message-ID: <20260429013640.26870-3-pedro.pbg@usp.br>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260429013640.26870-1-pedro.pbg@usp.br>
 References: <20260429013640.26870-1-pedro.pbg@usp.br>
@@ -79,253 +79,62 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use guard(mutex)() for handling mutex lock instead of
-manually locking and unlocking the mutex. This prevents forgotten
-locks due to early exits and removes the need of gotos.
+Handle errors as early as possible by replacing 'if (!ret)' with the
+more common form 'if (ret)'. This makes the code easier to read.
 
 Signed-off-by: Pedro Barletta Gennari <pedro.pbg@usp.br>
 ---
- drivers/iio/light/iqs621-als.c | 93 ++++++++++++----------------------
- 1 file changed, 31 insertions(+), 62 deletions(-)
+ drivers/iio/light/iqs621-als.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iio/light/iqs621-als.c b/drivers/iio/light/iqs621-als.c
-index b9f230210f07..25a655b328fc 100644
+index 25a655b328fc..cd5843e3e2c3 100644
 --- a/drivers/iio/light/iqs621-als.c
 +++ b/drivers/iio/light/iqs621-als.c
-@@ -5,6 +5,7 @@
-  * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
-  */
- 
-+#include <linux/cleanup.h>
- #include <linux/device.h>
- #include <linux/iio/events.h>
- #include <linux/iio/iio.h>
-@@ -107,26 +108,20 @@ static int iqs621_als_notifier(struct notifier_block *notifier,
- 	indio_dev = iqs621_als->indio_dev;
- 	timestamp = iio_get_time_ns(indio_dev);
- 
--	mutex_lock(&iqs621_als->lock);
-+	guard(mutex)(&iqs621_als->lock);
- 
- 	if (event_flags & BIT(IQS62X_EVENT_SYS_RESET)) {
- 		ret = iqs621_als_init(iqs621_als);
- 		if (ret) {
- 			dev_err(indio_dev->dev.parent,
- 				"Failed to re-initialize device: %d\n", ret);
--			ret = NOTIFY_BAD;
--		} else {
--			ret = NOTIFY_OK;
-+			return NOTIFY_BAD;
- 		}
--
--		goto err_mutex;
-+		return NOTIFY_OK;
- 	}
- 
--	if (!iqs621_als->light_en && !iqs621_als->range_en &&
--	    !iqs621_als->prox_en) {
--		ret = NOTIFY_DONE;
--		goto err_mutex;
--	}
-+	if (!iqs621_als->light_en && !iqs621_als->range_en && !iqs621_als->prox_en)
-+		return NOTIFY_DONE;
- 
- 	/* IQS621 only */
- 	light_new = event_data->als_flags & IQS621_ALS_FLAGS_LIGHT;
-@@ -181,12 +176,7 @@ static int iqs621_als_notifier(struct notifier_block *notifier,
- 
- 	iqs621_als->als_flags = event_data->als_flags;
- 	iqs621_als->ir_flags = event_data->ir_flags;
--	ret = NOTIFY_OK;
--
--err_mutex:
--	mutex_unlock(&iqs621_als->lock);
--
--	return ret;
-+	return NOTIFY_OK;
- }
- 
- static void iqs621_als_notifier_unregister(void *context)
-@@ -241,30 +231,22 @@ static int iqs621_als_read_event_config(struct iio_dev *indio_dev,
- 					enum iio_event_direction dir)
- {
- 	struct iqs621_als_private *iqs621_als = iio_priv(indio_dev);
--	int ret;
- 
--	mutex_lock(&iqs621_als->lock);
-+	guard(mutex)(&iqs621_als->lock);
- 
- 	switch (chan->type) {
- 	case IIO_LIGHT:
--		ret = iqs621_als->light_en;
--		break;
-+		return iqs621_als->light_en;
- 
- 	case IIO_INTENSITY:
--		ret = iqs621_als->range_en;
--		break;
-+		return iqs621_als->range_en;
- 
- 	case IIO_PROXIMITY:
--		ret = iqs621_als->prox_en;
--		break;
-+		return iqs621_als->prox_en;
- 
- 	default:
--		ret = -EINVAL;
-+		return -EINVAL;
- 	}
--
--	mutex_unlock(&iqs621_als->lock);
--
--	return ret;
- }
- 
- static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
-@@ -278,11 +260,11 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
- 	unsigned int val;
- 	int ret;
- 
--	mutex_lock(&iqs621_als->lock);
-+	guard(mutex)(&iqs621_als->lock);
- 
- 	ret = regmap_read(iqs62x->regmap, iqs62x->dev_desc->als_flags, &val);
- 	if (ret)
--		goto err_mutex;
-+		return ret;
- 	iqs621_als->als_flags = val;
- 
- 	switch (chan->type) {
-@@ -293,7 +275,7 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+@@ -273,18 +273,22 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+ 					 iqs62x->dev_desc->als_mask,
+ 					 iqs621_als->range_en || state ? 0 :
  									 0xFF);
- 		if (!ret)
- 			iqs621_als->light_en = state;
--		break;
-+		return ret;
+-		if (!ret)
+-			iqs621_als->light_en = state;
+-		return ret;
++		if (ret)
++			return ret;
++		iqs621_als->light_en = state;
++
++		return 0;
  
  	case IIO_INTENSITY:
  		ret = regmap_update_bits(iqs62x->regmap, IQS620_GLBL_EVENT_MASK,
-@@ -302,12 +284,12 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+ 					 iqs62x->dev_desc->als_mask,
+ 					 iqs621_als->light_en || state ? 0 :
  									 0xFF);
- 		if (!ret)
- 			iqs621_als->range_en = state;
--		break;
-+		return ret;
+-		if (!ret)
+-			iqs621_als->range_en = state;
+-		return ret;
++		if (ret)
++			return ret;
++		iqs621_als->range_en = state;
++
++		return 0;
  
  	case IIO_PROXIMITY:
  		ret = regmap_read(iqs62x->regmap, IQS622_IR_FLAGS, &val);
- 		if (ret)
--			goto err_mutex;
-+			return ret;
- 		iqs621_als->ir_flags = val;
- 
+@@ -295,9 +299,11 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
  		ret = regmap_update_bits(iqs62x->regmap, IQS620_GLBL_EVENT_MASK,
-@@ -315,16 +297,11 @@ static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
+ 					 iqs62x->dev_desc->ir_mask,
  					 state ? 0 : 0xFF);
- 		if (!ret)
- 			iqs621_als->prox_en = state;
--		break;
-+		return ret;
+-		if (!ret)
+-			iqs621_als->prox_en = state;
+-		return ret;
++		if (ret)
++			return ret;
++		iqs621_als->prox_en = state;
++
++		return 0;
  
  	default:
--		ret = -EINVAL;
-+		return -EINVAL;
- 	}
--
--err_mutex:
--	mutex_unlock(&iqs621_als->lock);
--
--	return ret;
- }
- 
- static int iqs621_als_read_event_value(struct iio_dev *indio_dev,
-@@ -335,33 +312,28 @@ static int iqs621_als_read_event_value(struct iio_dev *indio_dev,
- 				       int *val, int *val2)
- {
- 	struct iqs621_als_private *iqs621_als = iio_priv(indio_dev);
--	int ret = IIO_VAL_INT;
- 
--	mutex_lock(&iqs621_als->lock);
-+	guard(mutex)(&iqs621_als->lock);
- 
- 	switch (dir) {
- 	case IIO_EV_DIR_RISING:
- 		*val = iqs621_als->thresh_light * 16;
--		break;
-+		return IIO_VAL_INT;
- 
- 	case IIO_EV_DIR_FALLING:
- 		*val = iqs621_als->thresh_dark * 4;
--		break;
-+		return IIO_VAL_INT;
- 
- 	case IIO_EV_DIR_EITHER:
- 		if (iqs621_als->ir_flags_mask == IQS622_IR_FLAGS_TOUCH)
- 			*val = iqs621_als->thresh_prox * 4;
- 		else
- 			*val = iqs621_als->thresh_prox;
--		break;
-+		return IIO_VAL_INT;
- 
- 	default:
--		ret = -EINVAL;
-+		return -EINVAL;
- 	}
--
--	mutex_unlock(&iqs621_als->lock);
--
--	return ret;
- }
- 
- static int iqs621_als_write_event_value(struct iio_dev *indio_dev,
-@@ -375,9 +347,9 @@ static int iqs621_als_write_event_value(struct iio_dev *indio_dev,
- 	struct iqs62x_core *iqs62x = iqs621_als->iqs62x;
- 	unsigned int thresh_reg, thresh_val;
- 	u8 ir_flags_mask, *thresh_cache;
--	int ret = -EINVAL;
-+	int ret;
- 
--	mutex_lock(&iqs621_als->lock);
-+	guard(mutex)(&iqs621_als->lock);
- 
- 	switch (dir) {
- 	case IIO_EV_DIR_RISING:
-@@ -426,30 +398,27 @@ static int iqs621_als_write_event_value(struct iio_dev *indio_dev,
- 			break;
- 
- 		default:
--			goto err_mutex;
-+			return -EINVAL;
- 		}
- 
- 		thresh_cache = &iqs621_als->thresh_prox;
- 		break;
- 
- 	default:
--		goto err_mutex;
-+		return -EINVAL;
- 	}
- 
- 	if (thresh_val > 0xFF)
--		goto err_mutex;
-+		return -EINVAL;
- 
- 	ret = regmap_write(iqs62x->regmap, thresh_reg, thresh_val);
- 	if (ret)
--		goto err_mutex;
-+		return ret;
- 
- 	*thresh_cache = thresh_val;
- 	iqs621_als->ir_flags_mask = ir_flags_mask;
- 
--err_mutex:
--	mutex_unlock(&iqs621_als->lock);
--
--	return ret;
-+	return 0;
- }
- 
- static const struct iio_info iqs621_als_info = {
+ 		return -EINVAL;
 -- 
 2.51.0
 
