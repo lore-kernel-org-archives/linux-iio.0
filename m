@@ -1,100 +1,83 @@
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [80.241.56.152])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADBA9352C52
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 19:27:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.152
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2391D34FF76;
+	Wed, 29 Apr 2026 19:28:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777490883; cv=none; b=hn40uli3KWv7AslSCmDUETUyREeLoy0tA1PQp/DquWNtlqL2P6FIYiweKxnnngM8E51htrlgJmt4QkM+nrdn6k+HOWmy3MxMzSzzjewNXB0Nyl1NEjk6/6tnYVh/W2Yf6oybLmK51Nr2LKscl6Zn9YxPGSnsLyfziGlT+kxukxA=
+	t=1777490922; cv=none; b=tETZlVgBEHckafQqLANMHhd4F+eHVmb/fk7ixcao2kxjk+VsxiJeYm4HbWi9Sp7yPtb5LEOB5MtPjVi7a0YEyJ5tr0rCL6UH0sxFvI1ZQxl4Lr97qUKcDE59/KeKVTJsZCWd9JdOVnvb8aK8Y5+1afTsK5/Wu9O5HX4KsifMh7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777490883; c=relaxed/simple;
-	bh=FeFn6njPzl2/Mdha/Y5PAfNF3Ezbr009VYn5zcyqx0M=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Kq73N1vzlKLTjgR8KPuXw7zr2PJ7tf39iBb/Ix/bZZJvNJ2ll2AEbM/qypIaduC05OdXbQFHvmU3OrfMmWnXuG7BJ2OcyIX9YuKDLDJ0kQxdxoN59jNiScscIouJ3hqft4EMOBhXop7aGFWuNkrKigYAT8D/4uBB5ypypiets5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=a6sh/laJ; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=dkRpCZpd; arc=none smtp.client-ip=80.241.56.152
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1777490922; c=relaxed/simple;
+	bh=0Sb+c5ChEg30SjEk6FX6LfOL5dQTrF4e7u83nRe1Oyw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Kz8w9BglahqWpuRmEug7qjs/omtL7f+n2Y4JGR1VwaNIgOSvblIwoXAkwI8FY7/NIbPBu4v5uH+dFGvLTTl6FSvF+bwR/4mFS0j8H6yfoyFPR48neVdttQ+r9zOBqPhcH4BW2ScvaYHkF52H/+Vty7XSCQdUrf8S9k+yT/OBJt8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S5cZjZPf; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="a6sh/laJ";
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="dkRpCZpd"
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:b231:465::2])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4g5S4r5TJNz9vJk;
-	Wed, 29 Apr 2026 21:27:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1777490876;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=WIuvsREO/IaAitzS6HvRbkjBEIe7pUKyrSQ57/hQ+bw=;
-	b=a6sh/laJYtsbCgKdeAVQU3JX4ESohtP99bz4+aEEoDyXREj1Fj20zaTn/IGf/+7qjFYcl3
-	iwzAzHuAg1NjC/SNZ1bK3SssnNWfoC/jQwjnImLppcwZYG3prlZhH0sx/2iozSmp4KtjAS
-	///45LZ5RSxYrRuaWsxlHIyQi5f+lPGED89rcVZWwkEUZ5mITVVRqjSu/ZlSXmTY5vo1BA
-	TLlhue2sz7pUeUNWcvAM1bo/iLTB3xSA/H7H4P1ab4ZYAl0FBKRiKS/lqoBzdVkOFTKq9T
-	WATSMsBlchyZqyf0JB8/ABxq2YfCDco2NEZ1k83mH0MObhNjWnVOT1NWPQ0zVQ==
-Authentication-Results: outgoing_mbo_mout;
-	dkim=pass header.d=mailbox.org header.s=mail20150812 header.b=dkRpCZpd;
-	spf=pass (outgoing_mbo_mout: domain of marek.vasut+renesas@mailbox.org designates 2001:67c:2050:b231:465::2 as permitted sender) smtp.mailfrom=marek.vasut+renesas@mailbox.org
-From: Marek Vasut <marek.vasut+renesas@mailbox.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1777490874;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=WIuvsREO/IaAitzS6HvRbkjBEIe7pUKyrSQ57/hQ+bw=;
-	b=dkRpCZpdi5ZmvbWVBTEjUC0UzdkBUMYjvwvswykotDFSRS3IMci7OfOOuT6R5V9JetIQzm
-	EdXa4a0e/BnFawt0oQf2dt46Y/5UWZpg2g5feW8tkQXOI2AM4kWCHKYTzJJB63ZLdYAmPS
-	ZR3K8orMxKBG3wa69opbWETwIsFbrfg1GealFTGDrdGCO1kOOPP+GUE9YLqpvm4CYFS+b+
-	9yVt9lZZ2LHOoyoX3qORAUksWTQolChbgSdfCQmlzIWtv3nO22GLrGj/y+2fu+DitRIuV0
-	OuR518Noz+DYzwD9CEBzUtw/zbBqbH+7CorCJx6XbxrviaJ8DLI5QayuVjE9qA==
-To: linux-iio@vger.kernel.org
-Cc: Marek Vasut <marek.vasut+renesas@mailbox.org>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S5cZjZPf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777490921; x=1809026921;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0Sb+c5ChEg30SjEk6FX6LfOL5dQTrF4e7u83nRe1Oyw=;
+  b=S5cZjZPfW9Es1uzcxjYIKyvuVwJZCdspSgAfQaXDlFm+HzUxEdMULdcK
+   yHnYkKbLWqlVqgl2OAMhwUFaxDVpImcdnz+U9gJB+c7wGgtjKymGwtF0g
+   +t/pggrx32/oP0oJVmxrxcabehx7N6u8rrhStjM2C3ecr3A4sVGpfhUMC
+   k0eysT6/g1bIdd5JoBUWgl56HRSU0CIOt/vM9pE867idS6BNX0tGxoXAq
+   3eLg2vH/f2lEsJPSag3rOj3gaPPXWu/gj4MD/opoVZkkFzZvRSbLvVjRL
+   TEl1/9LrV0bnFmGRrDxguECu4XDzmNviJ4HYISn41dUad57U9ApgbgNPC
+   w==;
+X-CSE-ConnectionGUID: vsXLk7hZQQqGD4gmpRMYwA==
+X-CSE-MsgGUID: nM3tXjLFTqKBgP8HJuP9iw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="101094900"
+X-IronPort-AV: E=Sophos;i="6.23,206,1770624000"; 
+   d="scan'208";a="101094900"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 12:28:41 -0700
+X-CSE-ConnectionGUID: BPM4te11RUqcm0yYqKGoXw==
+X-CSE-MsgGUID: U+Z6Ir3KQ1aMCOwSS/3EgQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,206,1770624000"; 
+   d="scan'208";a="236134304"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.141])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 12:28:39 -0700
+Date: Wed, 29 Apr 2026 22:28:36 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: joshua.crofts1@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio: adc: rcar: Fix up Marek Vasut MAINTAINERS entry
-Date: Wed, 29 Apr 2026 21:27:23 +0200
-Message-ID: <20260429192751.543190-1-marek.vasut+renesas@mailbox.org>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/8] iio: light: si1133: driver cleanup
+Message-ID: <afJb5P5njuUkUPwS@ashevche-desk.local>
+References: <20260429-si1133-checkup-v3-0-469f21d960eb@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-MBO-RS-META: 7cpz3dcz1iib7n4juipok85j5fjkfu7y
-X-MBO-RS-ID: b2baaf06a84a43162f0
-X-Rspamd-Queue-Id: 4g5S4r5TJNz9vJk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260429-si1133-checkup-v3-0-469f21d960eb@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Use up to date address. No functional change.
+On Wed, Apr 29, 2026 at 05:04:48PM +0200, Joshua Crofts via B4 Relay wrote:
+> This series deals with the cleanup and modernization of the Silicon
+> Labs SI1133 UV/Ambient light sensor.
+> 
+> What seemed like a simple checkpatch cleanup turned out to be more
+> complex, therefore I've ended up doing a patch series instead.
 
-Signed-off-by: Marek Vasut <marek.vasut+renesas@mailbox.org>
----
-Cc: "Nuno Sá" <nuno.sa@analog.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+In general LGTM, but there are several nit-picks that needs to be addressed,
+I hope the v4 will be final.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6ea8e7212e992..c35e103243b4e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -22600,7 +22600,7 @@ F:	Documentation/devicetree/bindings/mtd/renesas-nandc.yaml
- F:	drivers/mtd/nand/raw/renesas-nand-controller.c
- 
- RENESAS R-CAR GYROADC DRIVER
--M:	Marek Vasut <marek.vasut@gmail.com>
-+M:	Marek Vasut <marek.vasut+renesas@mailbox.org>
- L:	linux-iio@vger.kernel.org
- S:	Supported
- F:	Documentation/devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
