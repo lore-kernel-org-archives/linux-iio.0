@@ -1,114 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D0138A733;
-	Wed, 29 Apr 2026 10:42:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E453D3FB7E8;
+	Wed, 29 Apr 2026 13:07:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777459323; cv=none; b=nZRtjPaHilp3ugEGHytJlqQK9kVTGKF6IZS4z7Tls6HbNDbs3TQDpAEu2NT5mLMgzln+1jgFanWujNWnu3fl2SUZpAXySLqOgDSfdTuQmfSUxhkOV/cWu/86035KlHDdEdlfLhTxRPPvJw6oKdQj1mzt3vmc3Bs58XrG87O0s68=
+	t=1777468058; cv=none; b=Y4tWL7IqgNobk4Rs5jYYIJsZMdiy6I3Y2MOFbEXS/Hd9Jd8e9G2TtPCMBG9qCIivroZihMXauE8/BRKccXY8TMdNtF5okjOp3wMQfYwhVAZ1pU7ck9imP8Iuie4iLFxTaid0/UPodiTXvlqZ3GNyaJWkGDIrdUWnZYE5mvQO20U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777459323; c=relaxed/simple;
-	bh=Tf6+Uzfssxp80uDesm9s+S2d/u0HH6sMNvpDHDrSsjc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CeO4mLHR3DIHJzwvi/ieBRW+btKPiUYZ2WHv/16TroFHeY/9v+hqUBIIr1UNweH+KFztbqYfxXAMhed+ToJQPeeTWoRrEn320lHRvGqG1aKRt0DtGJZHiN0DefMuokhdBRRAYNo0X4NjR2NTBbpXd6HC5Ovngjwb49ROP66EIhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZETgeQMY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777468058; c=relaxed/simple;
+	bh=7Mc0VNRZ1CCHsXaSFdFIyxqQMqScXwRjdBvOyAElbig=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=DJk2M6do4ux0mno7ljFk74vzQrpTCC8cVRqXhKyWNWwEKCEdnn+p1naanQ0hj8V6rBg6+OjRJp4KVrE4BWjF9zF8Tx/2SiZrt8POpzKnxF4BxXvvt55BNTPcFtM6DPsfuArLYVGPWJKuH9kEvOV9Bgj5y3FzxQEQ49Z0NJKBB9g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A2DfcT6Q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZETgeQMY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFCDAC2BCB3;
-	Wed, 29 Apr 2026 10:41:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A2DfcT6Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A26C0C2BCC4;
+	Wed, 29 Apr 2026 13:07:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777459322;
-	bh=Tf6+Uzfssxp80uDesm9s+S2d/u0HH6sMNvpDHDrSsjc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ZETgeQMYqPflL9NXO6haPkUhYv1jhloimGXCFtFT1Mf2f8aTvYzucypiwiyScpNLZ
-	 UxKDUKzirRTw8btgFWSvM2yV0lr3GFc0wvIXhDRSOtQ4BL6u4wTKH99ouCcsJu30a7
-	 LHXhNeD7gDpNTBZ0veMuh4/l8NrGf5cYl3eFWjJqvGsTPRL/eXd67FA/QqYlaguQcs
-	 CDilSgXQMFu2nEuOmNUhHDCQ0Ul8Yfx4mwr5/0W6DySl2fsJl5/00ZJHONJVlzD/Kr
-	 NEMPy2Uc00tNndc2IOSabxwEsfHDpYt8cWKk73ClBIOnGfCCtkF8ZOdF03sqUyl2qT
-	 qO6WBwA+ZrBhA==
-Date: Wed, 29 Apr 2026 11:41:54 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: songqiang1304521@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: magnetometer: rm3100: Modernize locking and
- refactor control flow
-Message-ID: <20260429114154.290e588d@jic23-huawei>
-In-Reply-To: <20260428222600.91322-1-m32285159@gmail.com>
-References: <20260428222600.91322-1-m32285159@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20201202; t=1777468057;
+	bh=7Mc0VNRZ1CCHsXaSFdFIyxqQMqScXwRjdBvOyAElbig=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=A2DfcT6QDnOZxeP4IOOFtTPp9dW6rKyPeNBrIIy98brs5OpLeRN8kkS4NtPHiMF+k
+	 XDBujp0J93Ln4Xkkep9j2glCWSkNcUUleGC7SOuCVfnj5CkqdG8x7VsqdRxY9cTp0p
+	 /g5y2f7GIo94sXboMdstyJRU6rmGLgHo2QrjgBgkqZmJc1nZjyjyhZ57QsWefyxmHs
+	 abSN69zmPs80Ws9AYRIius9XG9Oj045spSc3NX3hUqz5LXSOIVGHXTqwgZkZR1b6bg
+	 tIwJXRuBlsTB832b4afErY76svdrqGi9ShekdroAo/YiRK/r677ngAY047BFO3eyYy
+	 ILSQJloO3gvcg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98114FF8867;
+	Wed, 29 Apr 2026 13:07:37 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Wed, 29 Apr 2026 14:07:32 +0100
+Subject: [PATCH v4 02/13] iio: dac: ad5686: fix input raw value check
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260429-ad5686-fixes-v4-2-bb8f1cbd68e1@analog.com>
+References: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
+In-Reply-To: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
+ Greg Kroah-Hartman <gregkh@suse.de>, 
+ Michael Auchter <michael.auchter@ni.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777468056; l=1063;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=vDIfN7HwJer2abOZhavJmea2PyXmNcae90gQrhX9MT8=;
+ b=HgZk4TEcba2cXSLR98o44JR0MM2hVQBajd6/SvZsOD1dNrrtM1BzsOEdpkEOmh1BS8rYA3i7b
+ CDOffrKxWYCBXVqoDz6N91tVnvUFpkHtyfqJ+xXysdkXE/tpGqkfkvq
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Tue, 28 Apr 2026 17:26:00 -0500
-Maxwell Doose <m32285159@gmail.com> wrote:
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-> Replace mutex_lock() and mutex_unlock() calls in rm3100-core.c with
-> the more modern guard(mutex)() family. This will help modernize the
-> driver and bring it up-to-date with modern available macros/functions.
-> 
-> While replacing mutex_lock() and mutex_unlock(), the critical sections
-> of rm3100_read_mag() and rm3100_get_samp_freq() have been extended to
-> include negligible operations for cleaner logic.
-> 
-> Add new helper-wrapper function rm3100_guarded_regmap_bulk_read() to
-> help keep rm3100_trigger_handler() switch-cases clean while maintaining
-> mutex locking and avoiding re-entrancy risks from potential callbacks.
-> 
-> While at it, remove redundant gotos where applicable, and use direct
-> returns instead.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
-Hi Maxwell.
+Fix range check for input raw value, which is off by one, i.e., for a
+10-bit DAC the max valid value is 1023, but 1 << 10 equals 1024, which
+passes the previous check, allowing an out-of-range write. The issue
+exists since the ad5686 driver was first introduced.
 
-The use of the helper worked out well but it also made me look
-at some existing code and wonder why it is so complex!
+Fixes: c2f37c8dcadc ("iio: dac: New driver for AD5686R, AD5685R, AD5684R Digital to analog converters")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ drivers/iio/dac/ad5686.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  static irqreturn_t rm3100_trigger_handler(int irq, void *p)
->  {
->  	struct iio_poll_func *pf = p;
-> @@ -468,11 +481,10 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
->  	struct regmap *regmap = data->regmap;
->  	int ret, i, bit;
->  
-> -	mutex_lock(&data->lock);
->  	switch (scan_mask) {
-
->  	default:
->  		for_each_set_bit(bit, &scan_mask, mask_len) {
-> -			ret = regmap_bulk_read(regmap, RM3100_REG_MX2 + 3 * bit,
-> -					       data->buffer, 3);
-> -			if (ret < 0) {
-> -				mutex_unlock(&data->lock);
-> +			ret = rm3100_guarded_regmap_bulk_read(&data->lock, regmap,
-> +							      RM3100_REG_MX2 + 3 * bit,
-> +							      data->buffer, 3);
-
-Hmm. Not one for this patch, but the only reason this doesn't
-hammer the lock is the bitmap is one hot.  Which is why the read is always to the same
-location in the buffer. That could have been a lot easier to spot if instead
-of a loop find_first_bit() was used.
-
-I don't think we can ever get here with no bits set but maybe check that as well
-(it's not supposed to be possible as doesn't make any sense to measure nothing ;)
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 1fc54c38b629..076fe8b8bd85 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -154,7 +154,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
  
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		if (val > (1 << chan->scan_type.realbits) || val < 0)
++		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+ 		mutex_lock(&st->lock);
 
+-- 
+2.43.0
 
-
-
-> +			if (ret < 0)
->  				goto done;
-> -			}
->  		}
-> -		mutex_unlock(&data->lock);
->  	}
->  	/*
->  	 * Always using the same buffer so that we wouldn't need to set the
 
