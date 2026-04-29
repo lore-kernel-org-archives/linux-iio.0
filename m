@@ -1,64 +1,64 @@
 Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A16833C18E
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 05:45:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA3C433DEDD
+	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 05:46:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777441558; cv=none; b=W6eSZ3QVBBnKLJObTykdboOlqK5Un7rgtFA9HsPBpfMzD2NDNpTq3yjWXjWp0UyOenUq7K7yXsnBx7ZmHA4ksMralBE3Agqr5OYrkaipl947ojGHgjKVSHj8D9b+N2SdEU2wDziKQ7438udJZ21ZeXct6xFu/A20FR+ESryJc9Y=
+	t=1777441562; cv=none; b=qLxZzEapyyrStvyzHvoE2sgpHcSEy5LfecnUuQCiTENcC6gr1jWf8K/oM8CSFJRWyhqg+Jb2obpYVP06l2Wl5LOFsSDVYRZAuGVCWFTxPOOXLUQw2hzRwaWd5QNdYIL+ug41/R2kdc49SCADefzzbZUFPuZQNAt/APZl2Q9F6L4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777441558; c=relaxed/simple;
-	bh=GGF3jyUqforepyERRKXlYZGTHXws9eodKpfONNX7jDw=;
+	s=arc-20240116; t=1777441562; c=relaxed/simple;
+	bh=OCr2Hcn0qix+hqJ1KxJxOzUQfs1MFEoU3VKInobzy38=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bYy5nkVheMLIetTeKk8rQAdaSCCBbyzqXwhA8AxerbD91eIvT8zvWqocFlXFFIMBTZ3pxBT+b+YAsPxJuW0U/udm4snCqXBPb7Vjt45jE+LLQQhY3QE++6hCycumIV9Ps+U9iS5QIl/WBKz5EunrK3l3ZtNqlp2G2DjVT/tbU9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lpjVsjeO; arc=none smtp.client-ip=209.85.216.50
+	 MIME-Version; b=R3MT37MTStWA5kzYK1N+ZG17LTHRnaXhG2/r76EJl0FHG1+LrFmKTqSVUA0Y+141RTJoHN1n0t8gnOhdbNKitxkZwiWsm95C+cPzvf7UcT1CWLhES8QmS8PqL9W/MhumD+CrnzQoRKwEAWyAeqZjG3I1d8KTe+zep1hFi/JVOqw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GyiSOy/a; arc=none smtp.client-ip=209.85.216.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lpjVsjeO"
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-3585ec417f6so228943a91.1
-        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 22:45:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GyiSOy/a"
+Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-3590042fa8eso9422280a91.1
+        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 22:46:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777441556; x=1778046356; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777441561; x=1778046361; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=o7hco1kjJGC/g/8N1qIFMmlsaaKm/pe8oI1boZvWXSc=;
-        b=lpjVsjeOxzELV4T8c+fcI5WTbkVe25kzs9H7KfetunlqZntW9J0hJB71WnaZT/ettd
-         INbbvSt6riqBQiAheiJ28b9YZneEIKbY9i84DnEdUM/rK5OVjeC6sFjYvl1yEYLzZfha
-         EO74D7T+bbiqbGtA2xwb/kHG0GatBvRfxWM1VnAN9txaR57Xl+3wsMBua9d+Vx6yxViV
-         OS3TjBmbNP8oLSwhZXZs4qGTq7+qBxQp7HUxzIxJ8AROsFNPK15CS4p8nnqRdThvuzuW
-         8m0v+ZNotjRuXVnJRdABbjPkMzJAHvHVUPtKlt83IZYkquD82zVdSMHE6sRMRJD51LaV
-         BUjg==
+        bh=QHweuBk06mfMQKKsSg/CDUzFihaXXhNJibA/Sa+cnuQ=;
+        b=GyiSOy/ab8c2XAf6pqJR2S24XrbGw0RSw5SL9oYsBpxAiqVcwlyLUKkNRyafkHe1T6
+         HWyWO528qjNYxssuwf8YHH0EiaPP703mJuexNdYdjRPuoix3BHijzfGt1M23UJ0CrOEr
+         MfE7u2HH4WO2uNl8NZID4pnVMVuhdBG6qWkeB/06/Wxq0+hLEpfyGPhO8UGVUCi6HSQ6
+         n8CnudrkMvH/K0x9hC7HK/AuCgIvLu3LEs2OdIioyn7jNbid9BsKUoEXO+olWJ7fPz6T
+         4ozF6NW5ZQHXwYIdQa/urzZIbFK79IdgS8c335BZuMKmmG2/Ax1oAWx1wP+vPi05ozKD
+         ht3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777441556; x=1778046356;
+        d=1e100.net; s=20251104; t=1777441561; x=1778046361;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=o7hco1kjJGC/g/8N1qIFMmlsaaKm/pe8oI1boZvWXSc=;
-        b=CkFe8i1SgnmKo+OsBg2S2ljcNEGXvrm+YUp2zduEho9TwdHTSvg2e/h5LnYaLZ+IRm
-         K7RTB2UB5AYwXd94up1xWraDahJp+MzE9W//6uidxfEv0VIl6wAoyjBLwt5XGka8gSg/
-         fsnABo4Kebup6lYPHaz5FioRwV67EvsOmoTsiLXKvpxlf0RckN/QhllVUPKKcZJuqsBz
-         6+waguiEEMl+eM5je2u1tAcV/Gpdmkl3k6SdPpVjrIA1nBsVCWDTrEyrHkRHL0JoaaH5
-         eHSxQypTV6q1VLMTkusqOX+5n2ZNqOuoget8h8o2+pgjk0EpWr3uCLGm1dHoFgx4L1lu
-         YFeA==
-X-Forwarded-Encrypted: i=1; AFNElJ8GxHfehp3rjIU8jg5uy91gMa8qHecdsVaE3FUSOCkuL6EHOy2J4Q9IVXbPajTLrbyAlixJeP+QjAE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YysLSJ/+VH97slylcFd1AXQKk3uo1cY/cJeltmLNioF9FN/i2jV
-	zMlE9BtoYXIhtLqehPM/p+i359HVcf+AwlBriIlVL+dgDNSv3L4Ajomn
-X-Gm-Gg: AeBDievLLj7pz4VbiAe2lhQFp0VWYxk81fFymIvzZQSQ7s69VX6Syj5nFep5qxB4Y3e
-	8Idu38k/b0w6n2BxF9BmFuns8CAj/RJwDIzPHFlbh/XFvASip6PnBhaIjEDQPjPRniX6JkzQ3Dy
-	wtsj2wrOrsEfVcMvQLJqpni1POfYX81UkXvcKcnG9jQBpI9zo0SQZmr7vt/TBux26hvW4sXMmHR
-	4W3jr7XTx4hG5vV2fRO5xn65y81j0UlfH0nepE3mx+tFbwNx+MqrSBCEdtlZoM5ue6FsYuEBXqM
-	uth2pc2b772RW0ESavuOTELvYf2/3odHpMWODOJynJuKXjtGex9Z07bMWYCyu1YEH5Cs3sUTnu5
-	+ebx6FsuYNfw29w8MLFQy4dkiHvpOMUK4S1IzVx2lAgT+TA8/02aZBOPs9C68q0alhR/x1K1BHP
-	N4HORTBl/e6doel+UksODjngTZb7OvjAalM8fFgQf+4Ala7MrGziG+e44BsJH/l3y6q1Mth77iS
-	TcJG1KBG10Ijo078NRtKKL5Wu2aUYvBs/hAWHPbehBa1r+CNw==
-X-Received: by 2002:a17:903:2acc:b0:2b2:4fc1:f653 with SMTP id d9443c01a7336-2b98836a261mr15391085ad.3.1777441556448;
-        Tue, 28 Apr 2026 22:45:56 -0700 (PDT)
+        bh=QHweuBk06mfMQKKsSg/CDUzFihaXXhNJibA/Sa+cnuQ=;
+        b=CbgGR0M7Gl2QcAFIsm07S68STyoXVSM8ZezcsPLrVzLcPQZXAL8z3WPxATU0qZAqMh
+         SwwpTn7GYuaVHqifg45aupJhp2kxEp0ozf4xAwZdaADiFHU3eRHi5S9N2WFT4JETHqN+
+         0z9lRb7Pi3l1YTiQX9GlRdaTvkmkRU6JiPz/o1ZZfbr5uUpbrcPOorZIRGPxEonBat+9
+         s0jadfBGewdhxU80Mlvr5h32hFqnK5dh6O6DipeNMef5SB3f9qJpr6yrRM2Emp4itCYh
+         iGrsBA8zHXVJP1x49mPizsqQhmC+YmAYl5rf9DHO4o1Tzx/CBrz/X6eEFW8G/Jo8J0Nv
+         UD1Q==
+X-Forwarded-Encrypted: i=1; AFNElJ9d6wInqzudw1Et/vX88j1JNYOokHU4RFkYxbPKGuFD4l4pNqR1+nLTzADEkXIIhkDx6q61JV5A5zA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyPCPzfrkByHyRfaXEYAhkanP0OdQJqfxZpsTKGifTuwWZpuFa9
+	eufArRq1jx8+ItPBzYQ0aSP5sYtIc0Fhzc4J+eDxVLIIm7fMMGAWImd3IvGNuw==
+X-Gm-Gg: AeBDiespEDu2puVp6r/H6K9rTKjsHxXj4wUkCSCgjjBP0gnsXmh4hlyKDlTHt8DyMFT
+	7xQZ7CUYGscGO2moA+7IKLdRBruf5J+npW0Cl2HCVR4tnyVKJoPeN6SLmiLUQEZlrE/VK74zYzH
+	VvZJSW98u9GHIJGuFcKpRKZ0XLgt8TbvXkYGSF6JmwbuerqpuSpcnWRW2J9Je07APqxn5IOpeE0
+	JNCb5d6OlYggfP5RN+BU1UYDHTfkRKWkMFU3vLIMvX7ZXRIvKyraEyDCy2DAAP6CczJ8kTbLzzm
+	WCxHhCbkiZwU/HDYMD6oVvkob9DL4yp/ER5ywL3ktQJLwv4ke6X0pQTrR+LKybZqyKRS+gtBWg2
+	IX/LjO2i9+leIc5+ZpUUdDUGB2iopckR22lH6BwzvMHK4QVXvWMt9gUrI4Xu+vOiYqaVKK3OvV3
+	DqgoYYNlcqCx6XXWOO14mYhj9ArKxqO2Lf/1+FSEfUaAvEn1zI96nll3D6HEU9QIDCn9O4zWLRt
+	GUpEGDjfV6ZyDLF9+maeEPWMIE7/sVKyjIOsynabQoKoVvvBg==
+X-Received: by 2002:a17:90b:38c4:b0:35f:bfdd:f5a1 with SMTP id 98e67ed59e1d1-3649204d630mr6255254a91.13.1777441561015;
+        Tue, 28 Apr 2026 22:46:01 -0700 (PDT)
 Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.. ([2405:201:31:d01f:5fb:20b2:c2f6:85bd])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b98879656dsm9346365ad.25.2026.04.28.22.45.52
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b98879656dsm9346365ad.25.2026.04.28.22.45.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2026 22:45:55 -0700 (PDT)
+        Tue, 28 Apr 2026 22:46:00 -0700 (PDT)
 From: Piyush Patle <piyushpatle228@gmail.com>
 To: ak@it-klinger.de,
 	jic23@kernel.org
@@ -71,9 +71,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v5 01/11] dt-bindings: iio: adc: hx711: clean up existing binding text
-Date: Wed, 29 Apr 2026 11:15:34 +0530
-Message-ID: <20260429054544.123862-2-piyushpatle228@gmail.com>
+Subject: [PATCH v5 02/11] dt-bindings: iio: adc: hx711: add VSUP supply property
+Date: Wed, 29 Apr 2026 11:15:35 +0530
+Message-ID: <20260429054544.123862-3-piyushpatle228@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260429054544.123862-1-piyushpatle228@gmail.com>
 References: <20260429054544.123862-1-piyushpatle228@gmail.com>
@@ -85,84 +85,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Rewrite the binding description and property text so it describes the
-existing HX711 hardware behavior directly instead of documenting old
-driver implementation details.
+Document the optional VSUP supply used by the HX711 on-chip regulator.
 
-Also clarify that clock-frequency controls the SCK bit-bang timing.
+Keep this separate from the HX710B support so the existing HX711
+binding extension stands on its own.
 
-No functional change.
+No functional change for existing users.
 
 Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
 ---
 Changes in v5:
 - New patch split out of the old combined binding update during review.
-- Limit this patch to cleanup of the existing HX711 binding text and the
-  clock-frequency description.
+- Document the existing HX711-only VSUP supply separately from the new
+  HX710B support.
 Changes in v4:
-- This cleanup was part of the old combined binding patch.
-Changes in v3:
-- Restore the example node name to weight and drop the repeated
-  clock-frequency default wording in the old combined patch.
+- This property was part of the old combined binding patch.
 Changes in v2:
-- Remove driver implementation details from the binding description and
-  clarify clock-frequency as SCK bit-bang timing.
+- Document the optional VSUP supply for HX711 nodes.
 ---
- .../bindings/iio/adc/avia-hx711.yaml          | 25 ++++++++-----------
- 1 file changed, 10 insertions(+), 15 deletions(-)
+Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
-index 9c57eb13f892..1ea60dff98d5 100644
+index 1ea60dff98d5..a8eaa1f18de5 100644
 --- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
 +++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
-@@ -10,14 +10,9 @@ maintainers:
-   - Andreas Klinger <ak@it-klinger.de>
- 
- description: |
--  Bit-banging driver using two GPIOs:
--  - sck-gpio gives a clock to the sensor with 24 cycles for data retrieval
--    and up to 3 cycles for selection of the input channel and gain for the
--    next measurement
--  - dout-gpio is the sensor data the sensor responds to the clock
--
--  Specifications about the driver can be found at:
--  http://www.aviaic.com/ENProducts.aspx
-+  The HX711 is a 24-bit ADC with selectable gain (32/64/128) and two
-+  differential input channels. Channel A supports gain 64 and 128;
-+  channel B supports gain 32.
- 
- properties:
-   compatible:
-@@ -26,23 +21,23 @@ properties:
- 
-   sck-gpios:
+@@ -33,6 +33,10 @@ properties:
      description:
--      Definition of the GPIO for the clock (output). In the datasheet it is
--      named PD_SCK
-+      GPIO for the clock output (PD_SCK in the datasheet).
-     maxItems: 1
+       Analog supply voltage (AVDD).
  
-   dout-gpios:
-     description:
--      Definition of the GPIO for the data-out sent by the sensor in
--      response to the clock (input).
--      See Documentation/devicetree/bindings/gpio/gpio.txt for information
--      on how to specify a consumer gpio.
-+      GPIO for the data output from the sensor (DOUT in the datasheet).
-     maxItems: 1
- 
-   avdd-supply:
-     description:
--      Definition of the regulator used as analog supply
-+      Analog supply voltage (AVDD).
- 
-   clock-frequency:
++  vsup-supply:
 +    description:
-+      Controls the SCK bit-bang timing. The value is used to derive the
-+      delay between SCK edges; keep the SCK high time below 60 us to
-+      avoid triggering chip power-down mode.
-     minimum: 20000
-     maximum: 2500000
-     default: 400000
++      Supply voltage for the on-chip regulator (VSUP).
++
+   clock-frequency:
+     description:
+       Controls the SCK bit-bang timing. The value is used to derive the
 -- 
 2.43.0
