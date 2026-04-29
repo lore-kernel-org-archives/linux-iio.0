@@ -1,64 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3174194A6C;
-	Wed, 29 Apr 2026 19:47:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23722194A6C
+	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 19:49:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777492031; cv=none; b=AvoZhHS5TRim59tz9bkHMSHH8hczVDgogXic0Oy6ZfiZyFi/kbad0hoAkwJUlztIVO0UL14jAjYOv3nL0x3kaEQkH7uhDU7bv3kwJigCJ4Q2HIV8Cn2u/tkJruLNIdylrUruuB+GMpK6+2OllBDsD/kkEVWyxBLOmim/7Uuw+kk=
+	t=1777492198; cv=none; b=XwUyqAjaIkon3nxMmJuFaklxAQ64CsB+VxgbSmOH09fR85yWz+0OTxrLbZuLCY6Rgs0dF6wg7UOcWesUDwouiHSEAB3XfSy0R43j3SshlASNbMCATBWoEIaqDEK8j4wbhKEvAZga/s/QkE7uHV092u9xMqNllTn6AuiXV3Hz6I4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777492031; c=relaxed/simple;
-	bh=6zMJPlCzBFsIzmH9C7DCUzlFezjuerKEUd/NjhQDdwg=;
+	s=arc-20240116; t=1777492198; c=relaxed/simple;
+	bh=+QGpDVkNjr4HWGcQEc69vi5MRqm3FSLulek/jk+bbr4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dF/bcQXJvgYRsrqIVpV48MRnBnvRIM2ec3knsftdlHXH8kujlvh8JbQDsR1bdn3KVQgnnM7GdzHQprvPB5y1OI2CDIpIzR+5lLlzpvfcwbTTKFxpdIKICHMb7+kKF4RFyJxNYuJugAXhUdFGU0BgCcfa/Dsd/OaH8DkFlNruoCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IDeJOgP7; arc=none smtp.client-ip=192.198.163.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=akWzP1Pn2h5HlDYqGtK7GsUOlj+QKfoXw45OG+Uv2cadD6VhExn2OZGChRflIs4y3jh/WNz25frInW8EBIMfjSEo7llP8zye57y9VXt+H65x3hyiLmRSdnMqUfDKngS8Qkt1m3nqKbTConKdNrfvSTRuONUEIIlFA6unopN9CVc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QxLUVcQU; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IDeJOgP7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QxLUVcQU"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777492030; x=1809028030;
+  t=1777492197; x=1809028197;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=6zMJPlCzBFsIzmH9C7DCUzlFezjuerKEUd/NjhQDdwg=;
-  b=IDeJOgP7TQyK/eJ0hXGUD0yjckqox5pY8IvCfVGYdBJG7TiMvZk2WeI2
-   gV1y5867WVj3ARg815j7ZEKmcLf6WmWo/H9Crg8XAxbdn79JyXrMtGnyO
-   Fzdkorw+5eR7DRoAkQTZgaWQ4cKtXz4WQb8dA8udDe5/Vd9yJ/bllKfcS
-   CzxbNMiy9VuMeqAb8Rs4qxIG6MNnwORNQgHHf6BuVO08hjHcQa+tE8wnM
-   04scjTMFqau12JClPK1xxoD38nE4RYkY4cswY1OlBZwHJYqSVjnz7UgQG
-   tqsj9F1n7Ih1cmjaagI1JnRI0u6ldjWXSZ+bVqbKJtqsyuwZniiekRU6W
-   A==;
-X-CSE-ConnectionGUID: x9wDsoBxRCiWd8FSpq8kLQ==
-X-CSE-MsgGUID: KcdW0avPROWgxG0zm9vzSw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="89031424"
+  bh=+QGpDVkNjr4HWGcQEc69vi5MRqm3FSLulek/jk+bbr4=;
+  b=QxLUVcQUgJT3UqteLU7ClOw5mJT1wgq0vTNm7MGTkYKB3pLd56Xhk3ZU
+   MVC9BEc1lOLEoA1BfAsHeZfxPb5nBe6qwz3mmSAlxTi1DgRduRYsYhPOG
+   AV4Gt9qBxziFqYtYSK6k2Sq+FdeiVyHT5q2iulwRDBnSDETnAWEYXulkX
+   XqdikIph1Msk1pDXp6DnEdAv1caJ0A0WX+ztw0jxOghyeiQTLf/b7W274
+   7FqYb+YXxWekbd1xyT3UDG3Wl61bFV4d8GfuFir/EcL8YeW10pNajKE2u
+   OsDt5isEw5nNdaZB5cGGa08Wm0q46QVaaqEFP9MbIBZwJlfXBLtY6hTf4
+   g==;
+X-CSE-ConnectionGUID: ydlk4jHBSdKpK64wbqo3Lg==
+X-CSE-MsgGUID: DP4+tPaNTQ+ZvPKukN7cTg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="103888846"
 X-IronPort-AV: E=Sophos;i="6.23,206,1770624000"; 
-   d="scan'208";a="89031424"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 12:47:05 -0700
-X-CSE-ConnectionGUID: lM+CHRiGTVqpdkJdp+sBHQ==
-X-CSE-MsgGUID: vweuhPFcRfqvaT4k8qwKTw==
+   d="scan'208";a="103888846"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 12:49:56 -0700
+X-CSE-ConnectionGUID: Uu5lbD+ETPqlboOTEezHKw==
+X-CSE-MsgGUID: japUiqltSbWOi4wniSadzw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,206,1770624000"; 
-   d="scan'208";a="227858748"
+   d="scan'208";a="236138725"
 Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.141])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 12:47:01 -0700
-Date: Wed, 29 Apr 2026 22:46:59 +0300
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 12:49:54 -0700
+Date: Wed, 29 Apr 2026 22:49:52 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Chris Morgan <macromorgan@hotmail.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
-	andy@kernel.org, nuno.sa@analog.com, jic23@kernel.org,
-	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
-	krzk+dt@kernel.org, robh@kernel.org
-Subject: Re: [PATCH V3 6/9] iio: imu: inv_icm42607: Add Accelerometer for
- icm42607
-Message-ID: <afJgM5DhK6Repa1d@ashevche-desk.local>
-References: <20260330195853.392877-1-macroalpha82@gmail.com>
- <20260330195853.392877-7-macroalpha82@gmail.com>
- <f1ae57fe-1ad5-46ee-9f0c-245f4deec7ce@baylibre.com>
- <PH0PR19MB997338EE6A13BD08879C4B9B2BA5372@PH0PR19MB997338.namprd19.prod.outlook.com>
+To: "Rafael G. Dias" <rafael.guimaraes.dias@usp.br>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	joshua.crofts1@gmail.com,
+	Felipe Khoury Dayoub <felipedayoub@usp.br>
+Subject: Re: [PATCH v2 2/2] iio: light: stk3310: Update includes to match IWYU
+Message-ID: <afJg4G3oyfCZ-UiS@ashevche-desk.local>
+References: <20260428161339.1187956-1-rafael.guimaraes.dias@usp.br>
+ <20260428161339.1187956-2-rafael.guimaraes.dias@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,47 +62,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR19MB997338EE6A13BD08879C4B9B2BA5372@PH0PR19MB997338.namprd19.prod.outlook.com>
+In-Reply-To: <20260428161339.1187956-2-rafael.guimaraes.dias@usp.br>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Apr 28, 2026 at 09:01:12AM -0500, Chris Morgan wrote:
-> On Fri, Apr 10, 2026 at 05:59:05PM -0500, David Lechner wrote:
-> > On 3/30/26 2:58 PM, Chris Morgan wrote:
+On Tue, Apr 28, 2026 at 01:13:39PM -0300, Rafael G. Dias wrote:
+> Clean up the included headers in stk3310.c according to the
+> Include-What-You-Use (IWYU) tool. Remove the generic <linux/kernel.h>
+> header and add explicit dependencies to improve compilation accuracy.
 
 ...
 
-> > > +/* IIO format int + nano */
-> > 
-> > Usually we make these 2-D arrays for readability and then cast to int * if needed.
-> > 
-> > > +static const int inv_icm42607_accel_scale[] = {
-> > > +	/* +/- 16G => 0.004788403 m/s-2 */
-> > > +	[2 * INV_ICM42607_ACCEL_FS_16G] = 0,
-> > > +	[2 * INV_ICM42607_ACCEL_FS_16G + 1] = 4788403,
-> > > +	/* +/- 8G => 0.002394202 m/s-2 */
-> > > +	[2 * INV_ICM42607_ACCEL_FS_8G] = 0,
-> > > +	[2 * INV_ICM42607_ACCEL_FS_8G + 1] = 2394202,
-> > > +	/* +/- 4G => 0.001197101 m/s-2 */
-> > > +	[2 * INV_ICM42607_ACCEL_FS_4G] = 0,
-> > > +	[2 * INV_ICM42607_ACCEL_FS_4G + 1] = 1197101,
-> > > +	/* +/- 2G => 0.000598550 m/s-2 */
-> > > +	[2 * INV_ICM42607_ACCEL_FS_2G] = 0,
-> > > +	[2 * INV_ICM42607_ACCEL_FS_2G + 1] = 598550,
-> > > +};
-> 
-> I've gone through and implemented all of the changes everyone suggested, though
-> this is one of the few on which I had a question. Obviously this driver was
-> cobbled together from 2 different sources and checked to the best of my ability
-> and tested/validated against the data sheet, but there are a few bits I'm not
-> fully clear on such as this.
+> +#include <linux/dev_printk.h>
+> +#include <linux/err.h>
+> +#include <linux/errno.h>
 
-> What's the correct way to represent this data? Since it looks like one of the
-> values is always 0, should I just assume it's always 0 and only represent the
-> values that change in this scale?
+In most cases we assume errno (but strictly speaking it's asm/errno) is
+included by err.h. Double check if there are no codes >= 512 are in use in the
+driver. If no, drop errno.h.
 
-Isn't the comment is clear about that? The first one is integer, the second one
-is fraction. So, no, your assumption is wrong strictly speaking.
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+> -#include <linux/kernel.h>
+
+> +#include <linux/irqreturn.h>
+
+Implied by interrupt.h.
+
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm.h>
+> +#include <linux/property.h>
+>  #include <linux/regmap.h>
+> +#include <linux/sprintf.h>
+> +#include <linux/types.h>
 
 -- 
 With Best Regards,
