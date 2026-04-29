@@ -1,142 +1,100 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 228182580CF
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 18:12:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03612F7AB0;
+	Wed, 29 Apr 2026 18:19:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777486328; cv=none; b=do3f/845xgW2woSvbUzytmfbRbRtDuvs90Xu8BRrvH6H13WzUnjuselA4F2x8m6W5pfDf/TVnwqY4QBWPkUao0E9L54WqgZM3SknCzRNuGukZGzb/uYAQMFGs8dPLTYaKatLjJX+6qMsbVQZ0FGozrjsl1xeDPTTt+P1h5DNDmw=
+	t=1777486750; cv=none; b=i88RwGWK1/6fx6w42HowS6hqb97TK0nzxTz6RMwWIUt1Jy29/0a9cG3y96dBqfG5bJU9JGvFKzyycOAazTz3sf2B3hTUH4Oj/c44L+DYwR2XTQ5I19xADQCmIMaS3lExGW4zPG+ZgF+qi4ize80fRPPudkejorftbQGe3FRJbOA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777486328; c=relaxed/simple;
-	bh=bqTPTdiYxNn/aQjb401FLvwAB0bhPCLTO5ZpDMNFyOc=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=cYMHUbt5vfEtjAH7ncmXR+bg9ZZnWa9yYlzDQ1p5f+JJTKsltYXP70SHSEP+9UQ3hZyQ8RNVXUV2xh1YoEViFzU4ntlipd29Qg+QJngh80fAgTVoQ0+SBZYhW+lr2kJnunsUATk5SMtVW8L+jilV+TmE/lrFYk6e1naH97BX428=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bKK36wzP; arc=none smtp.client-ip=209.85.216.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777486750; c=relaxed/simple;
+	bh=XUnfE43s1L96DK/VH0nbzoN8tn+uUaMZ4hL/OTGdZHg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LwxURi0BAIkVxxDHaF9pPfjT9hjrMLdKfbNUEOlxCGoNmprkjk8DiO6nf1BrFZHp78wbR/TRXojpKuFHHALJIsS3NqsWrnTmRbG9Vh7OGxMF3S8XOfwXvf4Y9kg7KLowEBY4q4p69W5YdnQ54Bm6n6UFiSdeJexbcxOhwPH9lk0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BCRymchL; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bKK36wzP"
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-35da1af3e10so21946a91.3
-        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 11:12:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777486326; x=1778091126; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=uf5ovASwF3vjtPCq95wA8sxW4qrT2BU9CLJbWLHRZSE=;
-        b=bKK36wzP40VaG6iZGTvke2C/Rsx8k5Ckj8e6IXJ278EBKa/Eu5sZQGAfrnudJ3iT02
-         Bz3L16Dt3UYyMJo4TLCwwzxm1HrgAq3mEQIWxMy9lvS8aza1oc2xmTF0Qoxm5JuLamfZ
-         p3Gx01yFhVpbSbJWRu1v8+6b+7uJFM7gb07yrbAYoAsaSj5m2bJHI2Yw2O2ssP29HulJ
-         AgFGducKvbZTzszmeGHjGD7ncd3TuUnReRbgMaib/eq1qxNf7wf9l2ZcwRz4e3imkQTY
-         76c95i1Uativ2JWc5BLXDiM1XKd8icuw0MlixROE5nIFYsodFhandtj7r/Z9mIFG5WKv
-         CTVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777486326; x=1778091126;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uf5ovASwF3vjtPCq95wA8sxW4qrT2BU9CLJbWLHRZSE=;
-        b=fgOZGYGyUain7sAGTR8iZJAzzQPg1a1dL7drWcqCvAcl+P6ajzLC93SYY63PrcLls1
-         xcCyvuoXvRuxSKB3lK0k5kkKJeejlunrJsKh4+/lqToYuSSdUrl92JkAyPv3Z79ilDuL
-         /17/JpUIcgbnXs9A0B/KJfBo/nK8IFaCb2bC0ZNRzfjiBw6SuG4YTHRIRMgecCxgFY6+
-         NmvOvHYD1Ixxsw3TgnoWv0IGLQG+VOBeMY1ULoh0Kebo+b3p4MKUAh4K5Eo/xsDP06+0
-         W8n+8hxgJpwDEIGUwjZI2/T+GX5M4ntl4y7lMUGOdKXIoj3rTtUR255DpA0Zm4JBQYlI
-         kQcA==
-X-Forwarded-Encrypted: i=1; AFNElJ8sOSBvSqQlTLBuqryIqEBvHTfOR7U6EUQzF4qJbd1v5XDI9OyCu5iURgJcO7pd7LjuaZ2E65tQLgQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx61/9dLsAv1apOUMPvayFqcDNkginWqW3/YgyxqHOiwl6yETAn
-	r3nGulZDPT20Q6aWo4X+2o5c4nZXxbChJc5jdyM3wP1CzPuJsZOTP3j7
-X-Gm-Gg: AeBDies5RNchOz0g0VFq4lwKE8IcLvifV+mdbUyR/b68iofjQOTWEez+jO6SqTUIFBQ
-	XTe37aZHp6/HghfIvNyRY5/T0JXyLhdrYN63X0auad7/v8sJWXr46N/ZvZlodwvZiSBGAeOtPeZ
-	z/8S9u147C9ELwjtaV4azMBJHatNdcQlbvcQfMRJnhuwFmJWlImEuXguL03rzMB58gvl+w1ahxE
-	gTlmeupIkTB3bgBHuJG2X6D/QgfucY1Yk9aM8rcMDR8zDx0zb20+3BW+YAoBcch8NxRKjMS53Gf
-	BoWZgfRL0yUm1Uu68AZEITd4tYXygljoYOWU8eIZLD0bKw8hczxiq13xsVUl8uR3390MOgwNswU
-	QqAJxhFg9ADHanvprFwoHbAVDYDq5LE7C1YB0eXf45cp1ePUzyBozlnnNfnXR/GUFpNEaQAFB4D
-	yGQklo2SaD/IH/PihaMXzMCrP/Ffmbxy1nafrYOcuzSgrrPQ==
-X-Received: by 2002:a17:90b:35c3:b0:361:423d:203d with SMTP id 98e67ed59e1d1-36491fc0af7mr9353939a91.8.1777486326467;
-        Wed, 29 Apr 2026 11:12:06 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:aaf3:890d::6543:8983])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-364bdf69bc2sm285399a91.10.2026.04.29.11.12.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2026 11:12:06 -0700 (PDT)
-Date: Wed, 29 Apr 2026 23:42:00 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, mingo@kernel.org,
- christophe.jaillet@wanadoo.fr, nabijaczleweli@nabijaczleweli.xyz,
- kees@kernel.org, kyungmin.park@samsung.com, k.wrona@samsung.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 1/9] iio: ssp_sensors: cleanup codestyle warning
-User-Agent: Thunderbird for Android
-In-Reply-To: <20260426145312.06bcd30e@jic23-huawei>
-References: <20260426091710.3722035-1-sanjayembedded@gmail.com> <20260426091710.3722035-2-sanjayembedded@gmail.com> <20260426145312.06bcd30e@jic23-huawei>
-Message-ID: <07A0C2D3-A621-4553-9C0B-C8713F049ACF@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BCRymchL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777486748; x=1809022748;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XUnfE43s1L96DK/VH0nbzoN8tn+uUaMZ4hL/OTGdZHg=;
+  b=BCRymchLsOI+30MgHIGtz+wiGEZcbbKkQdLqZs8pXRZ+RBYd865ZVVJV
+   oVg+E0T7UU6bynSZhxmt7nXpOV4/iSH2xRUkAWAjm+SsNsZEZlP3N5Q+E
+   TZtSVbQmpbY3zfdUkUp63FD7d/Z5JMBel6bZxLAm/sSVellic5WVSHYba
+   lXznIbMleTtVOH3RrAAoFtNjLRz68zjvFavluPCRlP7yM8yCjCTBeN57a
+   mh8JcOTdnFFybduolSoHfFpUDf5MkR/NX2AK47EAzuakznjLjxkPmU4sd
+   DpnoQegEMq1Pws6ksZ9sJ/n5HMeD+mATwcQZF84K7hyHnLhhTcGuMVLDj
+   Q==;
+X-CSE-ConnectionGUID: 5UPXjFc8StmsHnL2iXMgqg==
+X-CSE-MsgGUID: Z/e2hbw2SX2U7AsbpQqvvQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="78533844"
+X-IronPort-AV: E=Sophos;i="6.23,206,1770624000"; 
+   d="scan'208";a="78533844"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 11:19:08 -0700
+X-CSE-ConnectionGUID: BWTbbBnKTLO051jcqc9y3Q==
+X-CSE-MsgGUID: RhPgFI/QRVu+O30u0W6DHA==
+X-ExtLoop1: 1
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.141])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 11:19:05 -0700
+Date: Wed, 29 Apr 2026 21:19:02 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@suse.de>,
+	Michael Auchter <michael.auchter@ni.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v4 06/13] iio: dac: ad5686: refactor include headers
+Message-ID: <afJLlpsU17Pmp0uH@ashevche-desk.local>
+References: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
+ <20260429-ad5686-fixes-v4-6-bb8f1cbd68e1@analog.com>
+ <afIRG2S94JEn3Oqd@ashevche-desk.local>
+ <CALoEA-yBU_pwiOFQx89-Gcgmtz_KtuxJJvph7uKPHKJNihDS8Q@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALoEA-yBU_pwiOFQx89-Gcgmtz_KtuxJJvph7uKPHKJNihDS8Q@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
+
+On Wed, Apr 29, 2026 at 04:38:02PM +0200, Joshua Crofts wrote:
+> On Wed, 29 Apr 2026 at 16:14, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > I haven't checked this deeply, but I hope at some point we will have
+> > more or less usable state of `iwyu` tool that may do this automatically.
+> > At least current result looks better than the original.
+> >
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> I did find a "filter" file of sorts for IWYU that Jonathan had on the
+> mailing list.
+> It does a good job of omitting reports of very low level headers but at the
+> same time IWYU still tells you to include things like <linux/stddef.h> and
+> remove anything <asm/*>  from your includes. Perhaps it needs more
+> tweaking?
+
+You need to check that manually and then decide if we need more amendments
+either in the patch or in the `iwyu` "filter" file or in both. In case of
+filter file changes, please share them to Jonathan and mailing list, so other
+people can adjust their work in case they use the tool.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-On 26 April 2026 7:23:12=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=2E=
-org> wrote:
->On Sun, 26 Apr 2026 14:47:02 +0530
->Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom> wrote:
->
->> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->>=20
->> Reported by checkpatch:
->> FILE: drivers/iio/common/ssp_sensors/ssp_dev=2Ec
->>=20
->> WARNING: Prefer __packed over __attribute__((__packed__))
->> +} __attribute__((__packed__));
->>=20
->> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->Applied to the testing branch of iio=2Egit=2E
->
->I'm trying to pick up some of the patches on list just
->to reduce how many are getting sent in new revisions and
->the time it takes people to look at them each time=2E
->
->Not sure how far I'll get in your series so look out for
->when I stop saying I've applied them=2E
->
->thanks,
->
->Jonathan
->
-
-This was started with single change and later based on valuable input and =
-guidance from you and Andy and during the internal review and development o=
-f driver some new change is getting appended and series is getting long eve=
-n after taking few changes to iio=2E
-
-Hoping to close this soon, so I can divert my focus in other open parts=2E
-
-Thanks,
-Sanjay Chitroda
-
->> ---
->>  drivers/iio/common/ssp_sensors/ssp_dev=2Ec | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>=20
->> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec b/drivers/iio/c=
-ommon/ssp_sensors/ssp_dev=2Ec
->> index da09c9f3ceb6=2E=2E7d07fae295fd 100644
->> --- a/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
->> +++ b/drivers/iio/common/ssp_sensors/ssp_dev=2Ec
->> @@ -28,7 +28,7 @@ struct ssp_instruction {
->>  	__le32 a;
->>  	__le32 b;
->>  	u8 c;
->> -} __attribute__((__packed__));
->> +} __packed__;
->> =20
->>  static const u8 ssp_magnitude_table[] =3D {110, 85, 171, 71, 203, 195,=
- 0, 67,
->>  	208, 56, 175, 244, 206, 213, 0, 92, 250, 0, 55, 48, 189, 252, 171,
->
