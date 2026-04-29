@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F59436E467;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3447C374E76;
 	Wed, 29 Apr 2026 15:05:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777475150; cv=none; b=kzMBfV1xgJGhbfzU0D+tR9dX2weeU95dNJLDRrhcMd4eQp6SyD+ty25iu2CoWymTa8jS8tWtTO3L7yM3XiHDsS6o8AjgAGHRjoMg9Wa5N2bP++lktZL2BNJD6oww26LoAi0f5eBXzaYygpyalgwZuCY67yK5lxyXPBYi9dy5K1U=
+	t=1777475150; cv=none; b=r7Dqcat2yrpc1xLWfzSVUZnx4Q9ZDfg+dI86vbWsPEBUYKbQha6V15B9oTdTuA2r3Hy4+Tmu/njaZZ6AUQLyTGjhzyWekeN6EVQVUWyCAPwMGOJPY6MqonbXvL58biaizBSs4lZQGvTTN3uOpaMVfSd6NawiroUnI0JsWASiPzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777475150; c=relaxed/simple;
-	bh=3i5szcPoHjj8uGVodLvIQA137dR7oTUd3FYQWzKjtv4=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=HHB1yOdIVkf1H3VmhRZYURGusEGcI4Wo/nOrXKKDHjTKqMqiRJ1PanEgIpFhqUtyjb58peIeJrUJcT7MsdKXR8ZPqSbJ7rtjThqrVmw/3N2KbnfyPE7k2tixXuT+NDpinHOMX3RjqCLPbxq2FVYyFMFcm0olyWReaiSVzMFR0hE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U9nze35V; arc=none smtp.client-ip=10.30.226.201
+	bh=sguCKgxNu8HtHe6LCiRY2bkftduteXjABj29u6GhgFw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=AkUQTi7HGAtzf8YMnCO3H9Tg+4CZa2xjJJBJ9H6dTo69cV2PFtly+lRIa2jDhJcpa9F6HacEBuCi6Z2yMjivD714/xnj6ui2aREeoJbldBPJW3hT1VrqDUd/IVuN9iIWYVYi6wRft8WNS3ENPKloifBTFoyVws1nVM+FuYtRNNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IQd3Ozej; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U9nze35V"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C87CAC19425;
-	Wed, 29 Apr 2026 15:05:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IQd3Ozej"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FE9DC2BCC9;
+	Wed, 29 Apr 2026 15:05:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777475149;
-	bh=3i5szcPoHjj8uGVodLvIQA137dR7oTUd3FYQWzKjtv4=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=U9nze35Vn+F0pnhtup49i9LbpF3Q5IcjEjgl3GLp5jGOcBa3iKewUFI2X+soMhwcK
-	 /3kUTw7cCvXW959GzY+LYpTocoBQ9lS2sNNddOarfA9mlpWfL/e6OnYBurVzO4RR39
-	 vNfLyw+BHBtNO7pmgqP+ZMvmN/jGOjO9y4Z+233vUaua+wx4IR3ntsohZcxMYVodPj
-	 5231RUUS6yjjaWYQlpN+xlvQwfCT1Dqo7UJwiYrAMrsjdIkeDR3i5nShm1JxEHyEYB
-	 JV0kXp7JBQuHmt5hxsnwVYJkR3IKUV3usIKzOwccMGn4Kz6RIpHehPCxPrP6mA0hID
-	 Kr7deJrk5pOoQ==
+	s=k20201202; t=1777475150;
+	bh=sguCKgxNu8HtHe6LCiRY2bkftduteXjABj29u6GhgFw=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=IQd3Ozeje+yWTdyKzH7iowUn59u2s/e2pQNixWidueZVePNpwJ6a/rhiokhL7rzc7
+	 rFYl+sxsSakDkrRii/czf3iKq/dZ97CgK5mXbSl7C9QjchLt51aio7fE3pgMy2hY9m
+	 Ys/5cMSiTlrFhMRbuM9ixM4nuSZEGqednDBhxJJXQVyFl/pyXYutVgisE+ESyQwRsl
+	 hBiXHLkz0Md7fXZDloLum79GG/r7nr5hM/NSnCMrkEvOwm4BOS/gLsgyCSWpwJK3g+
+	 yKTXlmYqQ2rKhAPUbhWrYbTbHzBKQNpkpqPlNEuJe6XXfLNfldkj0tWL9nAQBXFbMq
+	 gm9sfjM1B+u7g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B83E8FF8875;
-	Wed, 29 Apr 2026 15:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D84FF887E;
+	Wed, 29 Apr 2026 15:05:50 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Subject: [PATCH v3 0/8] iio: light: si1133: driver cleanup
-Date: Wed, 29 Apr 2026 17:04:48 +0200
-Message-Id: <20260429-si1133-checkup-v3-0-469f21d960eb@gmail.com>
+Date: Wed, 29 Apr 2026 17:04:51 +0200
+Subject: [PATCH v3 3/8] iio: light: si1133: add missing include headers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,11 +40,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIABAe8mkC/3WOywrCMBBFf6Vk7Uhm0heu/A9xkaaTNmhtSTQop
- f9u2lVBXJ4L53BnEdg7DuKUzcJzdMGNjwTqkAnT60fH4NrEgiSVMqcKgkNUCkzP5vaaQDfGFFR
- L3VolkjR5tu69BS/XxL0Lz9F/tn7Edf2biggIJG1hEbnRpTl3g3b3oxkHsaYi7fX6RyeQUKUjm
- DeWLdNeX5blC3S11MXrAAAA
-X-Change-ID: 20260427-si1133-checkup-abcc5280adf3
+Message-Id: <20260429-si1133-checkup-v3-3-469f21d960eb@gmail.com>
+References: <20260429-si1133-checkup-v3-0-469f21d960eb@gmail.com>
+In-Reply-To: <20260429-si1133-checkup-v3-0-469f21d960eb@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -52,11 +50,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777475147; l=1807;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777475147; l=1193;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=3i5szcPoHjj8uGVodLvIQA137dR7oTUd3FYQWzKjtv4=;
- b=hAwCMJl/2Gy9Xo0cb21LEs85I0s8nXyMid4lHADjvlolpkFlHMoTROSuUY/YaHBvBxvTur1Xe
- 2MUr8vzS75NB42lbtb9lTayJS9ByvXZv1nrAuQL8NDM8nvpZTAD2WcN
+ bh=OWle6DMZJq2w2RARzbyed/7OgweWtx5OkO036pgenT0=;
+ b=1nk+G3fThs90hmUvMW0haSI5r1UjL8V18mpb30LWGYtqSMrSBuIQKRzJfKBP2vCidOmOYBnSu
+ H+ZLOm564PGD3dIyMdrQI63Sv+ecomBQyKV5ul0qjg94HJP9M3xIhPf
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -64,53 +62,45 @@ X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
 X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
 Reply-To: joshua.crofts1@gmail.com
 
-This series deals with the cleanup and modernization of the Silicon
-Labs SI1133 UV/Ambient light sensor.
+From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-What seemed like a simple checkpatch cleanup turned out to be more
-complex, therefore I've ended up doing a patch series instead.
-
-Changes include:
- - adding missing headers
- - removing unused macros
- - adding guard(mutex)() support
- - code style fixes
- - race condition fixes reported by Sashiko
+Add missing include headers to prevent compilation relying on transient
+dependencies (array_size.h, bitops.h, completion.h, dev_printk.h, err.h,
+irqreturn.h, jiffies.h, math.h, mutex.h, types.h).
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
-Changes in v3:
-- PATCH 6: add local variable for timeout
-- PATCH 7 & 8: fix potential race conditions as pointed out by Sashiko
-- Link to v2: https://lore.kernel.org/r/20260428-si1133-checkup-v2-0-70ad14bfefe2@gmail.com
+ drivers/iio/light/si1133.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Changes in v2:
-- Change v2 to patch series
-- PATCH 2: remove unused macros
-- PATCH 3: add missing include headers
-- PATCH 4: group generic <linux/*> headers
-- PATCH 5: add guard(mutex)() support
-- Link to v1: https://lore.kernel.org/r/20260427-si1133-checkup-v1-1-20f5f11eba6c@gmail.com
+diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+index 136436c0379aa732a2c93d40b08734ae4fc2a45f..dabb1aae05535313e77441b7d066bce931de79f9 100644
+--- a/drivers/iio/light/si1133.c
++++ b/drivers/iio/light/si1133.c
+@@ -6,11 +6,21 @@
+  * Copyright 2018 Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
+  */
+ 
++#include <linux/array_size.h>
++#include <linux/bitops.h>
++#include <linux/completion.h>
+ #include <linux/delay.h>
++#include <linux/dev_printk.h>
++#include <linux/err.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
++#include <linux/irqreturn.h>
++#include <linux/jiffies.h>
++#include <linux/math.h>
+ #include <linux/module.h>
++#include <linux/mutex.h>
+ #include <linux/regmap.h>
++#include <linux/types.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
 
----
-Joshua Crofts (8):
-      iio: light: si1133: remove unused macros
-      iio: light: si1133: prefer complex macros enclosed in parenthesis
-      iio: light: si1133: add missing include headers
-      iio: light: si1133: group generic <linux/*> headers
-      iio: light: si1133: use guard(mutex)() macro
-      iio: light: si1133: add local variable for timeout
-      iio: light: si1133: reset counter to prevent race condition
-      iio: light: si1133: prevent race condition on timeout
-
- drivers/iio/light/si1133.c | 73 ++++++++++++++++++++++++++++------------------
- 1 file changed, 45 insertions(+), 28 deletions(-)
----
-base-commit: d86db1905add39f905cf9f04252804b359914ed6
-change-id: 20260427-si1133-checkup-abcc5280adf3
-
-Best regards,
 -- 
-Joshua Crofts <joshua.crofts1@gmail.com>
+2.47.3
 
 
