@@ -1,135 +1,164 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DC3B3FCB15
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 13:12:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 724A63F2101
+	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 13:22:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777468357; cv=none; b=YR9NJUjWKEAQw6CY4MZtlDmMhWtpU3YTW+dm7Gqbv9BN6qEfYxtqPCQpRGj5jv3Syd3w2rp+n3dIKzXMcWmWSi8q5EamC+YwftNxKdepDCKA3zU+ThIMjcsg4LeZ8m8uCCGMXNI5+QV+Vjgqq7OwHW+riRzXBx38dAxkGNkgFY0=
+	t=1777468966; cv=none; b=c8TUxs0zs+pSbODZFesGJw1Vt2R8iAulMflq6ZoX3Fw5pfDArm3BIaZSbLzzdVEkb9cnKg0URLEYeuAy0uQ9N40XPPkJcRyrpwNfrSCJlXRNGeQ4k7EKOBOJw0xMyVIOIRUQxf/NBTPzOnnUdDjpvRJfY+RPgp5mR+5WNKB7D7w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777468357; c=relaxed/simple;
-	bh=fWGvMB0529+KqskJr2b96xWa8ILHjZDiqPg+O+3WPto=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TMBtooQ6gbzA17lGUkCxxLILypm9jxj28EcZBkKNHsK+DuFMZxHNWzpRG8aJbABA5CvkdUrvcnJ/NSEkcRVqAOAIqv7g2ZuqXJjrg1c+XQwmYDe0YUlus9zQe/ePTqP+q0HwSI5nZXFx2+RbruxH98tRDn1Mgpp6RhgrdwfRbUU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bUvHF11I; arc=none smtp.client-ip=209.85.128.49
+	s=arc-20240116; t=1777468966; c=relaxed/simple;
+	bh=QntNCRxsqRUOS0ylI7Pz/qxqd7q8WopawYe4imAZ9cM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=s2MWz+1QnyytVq2d9mYHhICmCEoaVoGYIjmp79E0lygJJ3eAT7GhuNXAtUdd9TuWvdqpl7zcF+h5nyy0g4VXNxJtDNtul1lqAAv6O4MaJpSvroaOupO8XjIzowqpOTUM7ItFeqoyGUV1PY6zD3k2sL0FVrouO6VLxN1/6Squfwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a+og0c+k; arc=none smtp.client-ip=209.85.210.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bUvHF11I"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-488af96f6b2so165892775e9.0
-        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 06:12:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a+og0c+k"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-82418b0178cso7594024b3a.1
+        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 06:22:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777468355; x=1778073155; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=RtXpQh4GEacB0L6DkGGm0BSedZOwbSLQPV4PVoX+AQQ=;
-        b=bUvHF11IqIVClLQ4SFIr4bqvRW+45IkN5G8n1Kb0Ddf54m4t251wZggBRykwVK8kBc
-         +B8Diboq3/FpuqrNoOL/dotPITtHy1IEodpMSARY45YsaseI8NjfeZw+hEwVHYdvImde
-         rbY4ozDj6Dk9I7/3ZEURbY5olDDTnFw476ez23WAzsFuS0Vi118NA+MMIC3VXNnwwx8i
-         jsChRn2XeL5GyOzDmF7cIvavASLFaB8lDI/A5+/H3CXk2XWB4GsaVn0b2+t+f0FIAqSD
-         jhFAOLAzzMrErcZ1ctGsIghCFqruf++uFadMP5G3ixLuEfnfTuhND7LLNlGnCKC6iHVD
-         lWDg==
+        d=gmail.com; s=20251104; t=1777468965; x=1778073765; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=GHDw5P/WKuWdQLGr63cox/hFUSLBxTNMcAldluDTWOk=;
+        b=a+og0c+kQ+B8MfH1G9mvqqOKRs14SiqfH9j7JV23DE0DZYMvYXQXwCn32fHimOap6J
+         YHLRsvH7Be3Vzo0FzKAXPyJmjwbuu1wW2etthAkVW9BKciXEIBZ7xT3Wx4CRNFGkNFjg
+         fpc6wlPwL7UX3evvJVJDqXGM6xfv0DrZOGo1P+l+0fSP516/XrM+I89uL+xCZryepvfa
+         9EyZ3FS/HMls2vEjFtX+oqfZnfDw1HDG64RnqGRWxOEriI6+73JiBv9lxe/ClIZMxLaa
+         GBnHKD0DrQp13HttYuRSNBn5WDg4QkXhN4rDVL9m+Bu1zM5CC6iifnbiwRNK3tgK/L7R
+         8QNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777468355; x=1778073155;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RtXpQh4GEacB0L6DkGGm0BSedZOwbSLQPV4PVoX+AQQ=;
-        b=GTA0r7BkbcAmTYl4nbj0qzpWAG+KE9U4WAlyIGrvTSt1aG9DrY4Bwn8fvtRQECgnJJ
-         keSRWaHTmA5nowHNC6tg3rHhEiSOyxr2kPa1J1euNex4oicIgyZfsgWjzuNQCI2zu/Jc
-         xDeEnkHFbN/tSDkOa1t4yLio7gr3NZTZpiccWlkSHmxsKKGOz6xnFyl5cnxPnXDgPyrw
-         sApIPkHKtGMrh62zmOO2YyUi/ZC9TpBolZB7D5sYj9XgdrW4i+6xxDhxoucjtc9UYQG3
-         4812d2lIO1CvTSskxyMsyMiGQYzUp6TT6/JqIUoYM8Lh5cIUQQhu69gQvkNomMDvuyHU
-         D5ZA==
-X-Forwarded-Encrypted: i=1; AFNElJ/EH/zwaB1Y2qDDVonjkKikfdQLsAXe0zdCtIXmOBGtEt18h1rvIYhXo7s2/DrQeg3utYQX8s4f/Gc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwpPXe3seb928mH6M5/oNZIHqL9L4H1txbLcSa2VVBSLSB17YRL
-	X7B4TuvrgqWlzfuXiepcKOHttP3S+bBIMhZ/RVeW9QW/OsoxmvVpw75f
-X-Gm-Gg: AeBDiesTGrWW2GWEtckAS+bTmPowhkpUUSQ+Wf13CZ9DHpFimovsm4Y7s7GsVtfcQ+3
-	Fzcg+1iU4y94JOvL5lqHuFcGmnX07BQhoPgW8+BXVXN/CPwhHOiaxSUgX6Pq5rLS+sd50mS/vW6
-	YyXLnTUPfK2zMKfUFXzhXTEroa19PCISwdB2+XvQ8GOHS+UxTPmqXUaCktGV4KAlKNHECkr7AzZ
-	eMaiJW6rluPiQNlgan/R2CFWV3hh19N87+Ox2SM9z4mSWpQs57OYHvOo01ZJVQBTGPtMoML3geW
-	JvEwSZZTlP8tnFfNQ4pmeMmOOISvd/MTw3ifsBowao29vTWBboPrM1UhFCDtqB9XRoa1JAVVpse
-	g5vXFpj4J0XBkCW90PpoIR2+ux8iITXPYN6xrFNNKzrAdW0Ci/tfBOqfxQYHak23Y3efXMJOpsr
-	oFLsQ/j4zjKexpRqmtgXdDJ5QxLO9UTIEX4GeqKQlNkqKL5D021ErJIB1UdtMESkYochpZNapon
-	A9mmgtiZgwOhWzbVKeV6Xmt3N+74MpGll9VfapmWOee6vlbRuVubXTs13viaA==
-X-Received: by 2002:a05:600c:1382:b0:48a:5574:3a5b with SMTP id 5b1f17b1804b1-48a77b216bamr115984205e9.27.1777468354322;
-        Wed, 29 Apr 2026 06:12:34 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a7c584607sm53060675e9.8.2026.04.29.06.12.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2026 06:12:33 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Wed, 29 Apr 2026 14:12:32 +0100
-To: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>, 
-	Jonathan Cameron <jic23@cam.ac.uk>, Greg Kroah-Hartman <gregkh@suse.de>, 
-	Michael Auchter <michael.auchter@ni.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rodrigo Alencar <rdealencar@gmail.com>
-Subject: Re: [PATCH v4 05/13] iio: dac: ad5686: fix overlapping DMA buffers
- in I2C read
-Message-ID: <ydxol7bwgvhxrw2zafaplzvk4kmnbvj2lzyfioh2lhfrrrxx6o@zsbw4mtx7gly>
-References: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
- <20260429-ad5686-fixes-v4-5-bb8f1cbd68e1@analog.com>
+        d=1e100.net; s=20251104; t=1777468965; x=1778073765;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GHDw5P/WKuWdQLGr63cox/hFUSLBxTNMcAldluDTWOk=;
+        b=QkidYfjxy3EZGb4JXD6VAw+d7KCtqD6E/aMKR3eA9nDLCK2GOrLsHLKTt9uBIGQGqi
+         NwD5XWjhGaD4PMJmYjS/GwyV/CCohFNmcJjY7R0vzWcKEihwOt+URUMUqIFKdeAE17eu
+         WSUGODJgapjxmx6WY/ksfS0wyU/WfTRG+RRHKbp+JrE55N2xNvI7Jq1ictnVboVQ9P41
+         G+UQ6p53bN7VGu4H55tapABTU9A5Zvj1g0m+gYVAMvL5tKvj9k6VndFqNYweRa1gfWqC
+         Tm5LwY5HLjiWuVAWf3OgIMANrU+goftXSfXkvdIEtNX7fDX2Aoe9sS3CKBT4QaZ4kCJi
+         0RSA==
+X-Forwarded-Encrypted: i=1; AFNElJ/EdZq3tVZCkdVaoF9Jhpw+XT9Zg/xiHXhsVUkzF0mLVopeK1hRpywvS/YiJRtTePP2w9A/l/LdYt4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx9ASCmKNmG2pKCw+A7pDT+2WNWGC+mNX/lMdjFhQQ8zCa+chZo
+	d+fEGzGif1S6Ps48HFCYKBASccLrsoGlVhethBf2vtSTos1WR4ZQzNK9
+X-Gm-Gg: AeBDiesZdVMWb6JA+sZ1DnfRnc5eJmQQXs2HWIoRr76iob/OKOh4ScPaxR/HwTfeJBq
+	QXHL9m68GjAypbR0g6UGn5gphKnOk+5/YxQJCejXdFNR5XyyUFPupbBw1NLlV12QZ8AeV+lSY1Y
+	ypFKR9Ons3rPQQlGW7UDRuxI/gP0NWxnDcCqDCdQ82MjBUD0UWTdCGEeecscYB22J2fvdHVyRYc
+	ytQgfu3QeV33zi5efwzvTg3T1msO2AmuLSn/S8ZVTQawhDfUDc5afrf/0NptWZnkZ1xXS1GLXUP
+	4kWj5qyj34w1wY9C5kNROB6ywisUyEBxot7lHJr1XCpuM4h4aMOLt6VPsCGgoOi4W6/t6/peziH
+	qizR1V6mSZSXD8yNeNaytFNLF7xQuPaVN/6uQ1J0bOZWn7/aBPjQOZl3baTvBXuziq7k6po77Q0
+	6YlY47uFWl0y7c/k6VX8Qw3KQLPsAr8auZpIAMUHa7DzFHMTwtKJVYCQN4Yr45q+5ftzmKeyf0U
+	/SwL5gup2Mp9Lw=
+X-Received: by 2002:a05:6a00:950d:b0:82c:212a:a9b5 with SMTP id d2e1a72fcca58-834ea663abdmr3633488b3a.36.1777468964920;
+        Wed, 29 Apr 2026 06:22:44 -0700 (PDT)
+Received: from localhost.localdomain ([2001:448a:2002:4381:3859:fd0d:505e:362c])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-834ed5cd407sm2091372b3a.13.2026.04.29.06.22.39
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Wed, 29 Apr 2026 06:22:44 -0700 (PDT)
+From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	rust-for-linux@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: branstj@gmail.com,
+	lars@metafoo.de,
+	ojeda@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	igor.korotin.linux@gmail.com,
+	linux-kernel@vger.kernel.org,
+	Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Subject: [RFC PATCH v2 0/4] iio: position: add Rust driver for ams AS5600
+Date: Wed, 29 Apr 2026 20:22:26 +0700
+Message-ID: <20260429132234.30514-1-muchamadcoirulanwar@gmail.com>
+X-Mailer: git-send-email 2.50.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260429-ad5686-fixes-v4-5-bb8f1cbd68e1@analog.com>
+Content-Transfer-Encoding: 8bit
 
-On 26/04/29 02:07PM, Rodrigo Alencar via B4 Relay wrote:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> 
-> The TX and RX buffers in ad5686_i2c_read() both reference data[0], causing
-> byte d8[1] to be shared between the TX buffer and the RX buffer. I2C
-> controller drivers that map all message buffers for DMA before initiating
-> the hardware transaction will map overlapping memory ranges with
-> conflicting DMA directions (DMA_TO_DEVICE and DMA_FROM_DEVICE). This issue
-> was reported by sashiko.
+This is v2 of the Rust driver for the ams AS5600 12-bit magnetic rotary
+position sensor. v1 was a probe-only stub; this version adds minimal
+Rust IIO abstractions and exposes in_angl_raw and in_angl_scale via
+sysfs.
 
-Do we need a proper reported-by tag here?
+Link: https://lore.kernel.org/linux-iio/20260419151327.26306-1-muchamadcoirulanwar@gmail.com/
 
-> Fixes: 4177381b4401 ("iio:dac:ad5686: Add AD5671R/75R/94/94R/95R/96/96R support")
-> Signed-off-by: Rodrigo Alencar <rdealencar@gmail.com>
-> ---
->  drivers/iio/dac/ad5696-i2c.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-> index d3327bca0e07..d3b46496d67d 100644
-> --- a/drivers/iio/dac/ad5696-i2c.c
-> +++ b/drivers/iio/dac/ad5696-i2c.c
-> @@ -26,7 +26,7 @@ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
->  			.addr = i2c->addr,
->  			.flags = i2c->flags | I2C_M_RD,
->  			.len = 2,
-> -			.buf = (char *)&st->data[0].d16,
-> +			.buf = (char *)&st->data[1].d16,
->  		},
->  	};
->  	int ret;
-> @@ -39,7 +39,7 @@ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
->  	if (ret < 0)
->  		return ret;
->  
-> -	return be16_to_cpu(st->data[0].d16);
-> +	return be16_to_cpu(st->data[1].d16);
->  }
->  
->  static int ad5686_i2c_write(struct ad5686_state *st,
-> 
-> -- 
-> 2.43.0
-> 
-> 
+Changes since RFC v1:
+  - Moved magnet validation from probe() to read_raw() per Jonathan's
+    feedback. probe() now only verifies I2C communication.
+  - Added minimal Rust IIO abstractions (rust/kernel/iio.rs) wrapping
+    iio_device_alloc, iio_device_register, and the read_raw callback.
+  - Added OF device table for devicetree matching (ams,as5600).
+  - Replaced hex bit masks with kernel::bits::bit_u8() per Miguel's
+    pointer.
+  - Replaced magic numbers with bindings constants
+    (iio_chan_info_enum_*, INDIO_DIRECT_MODE).
+  - Downgraded log messages to dev_dbg!(), removed unbind noise.
+  - Added devicetree binding documentation.
+  - iio_info vtable is now a compile-time const.
+  - Uses iio_device_alloc with PinnedDrop instead of devm_* to avoid
+    lifetime conflicts with Rust's ownership model.
+
+The IIO abstraction design was informed by earlier unpublished work
+from Brandon Saint-John.
+
+The IIO abstraction is intentionally minimal: it supports read_raw
+with IIO_VAL_INT, IIO_VAL_INT_PLUS_NANO, IIO_VAL_INT_PLUS_MICRO,
+and IIO_VAL_FRACTIONAL. write_raw and buffer support are left for
+future work.
+
+Muchamad Coirul Anwar (4):
+  i2c: rust: add smbus_read_byte_data and smbus_read_word_data
+  rust: add minimal IIO subsystem abstractions
+  dt-bindings: iio: position: add ams,as5600
+  iio: position: add Rust driver for ams AS5600
+
+Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+---
+Tested on BeagleBone Black (AM335x), kernel v7.0.0-rc3,
+AS5600 on i2c-2 (0x36) at 3.3V, diametric neodymium magnet.
+
+  $ cat /sys/bus/iio/devices/iio:device0/in_angl_raw
+  3296
+  $ cat /sys/bus/iio/devices/iio:device0/in_angl_raw
+  1675
+  $ cat /sys/bus/iio/devices/iio:device0/in_angl_raw
+  468
+
+  $ cat /sys/bus/iio/devices/iio:device0/in_angl_scale
+  0.001533981
+
+Magnet removed:
+
+  $ cat /sys/bus/iio/devices/iio:device0/in_angl_raw
+  cat: '/sys/bus/iio/devices/iio:device0/in_angl_raw': No data available
+
+Muchamad Coirul Anwar (4):
+  i2c: rust: add smbus_read_byte_data and smbus_read_word_data
+  rust: add minimal IIO subsystem abstractions
+  dt-bindings: iio: position: add ams,as5600
+  iio: position: add Rust driver for ams AS5600
+
+ .../bindings/iio/position/ams,as5600.yaml     |  40 ++++
+ drivers/iio/position/Kconfig                  |  14 ++
+ drivers/iio/position/Makefile                 |   1 +
+ drivers/iio/position/as5600.rs                | 129 +++++
+ rust/bindings/bindings_helper.h               |   2 +
+ rust/kernel/i2c.rs                            |  24 +
+ rust/kernel/iio.rs                            | 224 ++++++++++
+ rust/kernel/lib.rs                            |   2 +
+ 8 files changed, 436 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/position/ams,as5600.yaml
+ create mode 100644 drivers/iio/position/as5600.rs
+ create mode 100644 rust/kernel/iio.rs
 
 -- 
-Kind regards,
+2.50.0
 
-Rodrigo Alencar
