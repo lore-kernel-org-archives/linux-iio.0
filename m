@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3447C374E76;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33176374E74;
 	Wed, 29 Apr 2026 15:05:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777475150; cv=none; b=r7Dqcat2yrpc1xLWfzSVUZnx4Q9ZDfg+dI86vbWsPEBUYKbQha6V15B9oTdTuA2r3Hy4+Tmu/njaZZ6AUQLyTGjhzyWekeN6EVQVUWyCAPwMGOJPY6MqonbXvL58biaizBSs4lZQGvTTN3uOpaMVfSd6NawiroUnI0JsWASiPzw=
+	t=1777475150; cv=none; b=XHc9hs97ApM2v1gC63WA0NkyfpcXC/hFzU5Tp+2FnBISKAl+MO+JlYC+yobC3CjkebKTnAZKGVI/H8ZGYPuMKyOIK3NWckTq5b8jl7PQGummnNXZMR70ywVDLQmrhVBI8rob8fFMVNgkbd6XrQEm8S+t5NGKJhkvKs42AZn9+60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777475150; c=relaxed/simple;
-	bh=sguCKgxNu8HtHe6LCiRY2bkftduteXjABj29u6GhgFw=;
+	bh=AH8AeEQaXLtKRQyFjBldeZydo3TjoBIHFqCuIF4x9eU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=AkUQTi7HGAtzf8YMnCO3H9Tg+4CZa2xjJJBJ9H6dTo69cV2PFtly+lRIa2jDhJcpa9F6HacEBuCi6Z2yMjivD714/xnj6ui2aREeoJbldBPJW3hT1VrqDUd/IVuN9iIWYVYi6wRft8WNS3ENPKloifBTFoyVws1nVM+FuYtRNNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IQd3Ozej; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ovreIywltNqOKZYUZ57UMEiTJAN/ueCt/P/uNUBAWs4zVhfCaU883pFHe9p1tyf2rADDgM9KSqaHwEcBIQ3GOKoVxe40lxFXUSp7RxxWfye3gE62z9gp30IXhu+Pi3zXHdwaQLnorBSlCDXxWhFeRgygAhnZ0JAlbU3pFJrS19w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bo3knrem; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IQd3Ozej"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FE9DC2BCC9;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bo3knrem"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 18118C2BCF5;
 	Wed, 29 Apr 2026 15:05:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777475150;
-	bh=sguCKgxNu8HtHe6LCiRY2bkftduteXjABj29u6GhgFw=;
+	bh=AH8AeEQaXLtKRQyFjBldeZydo3TjoBIHFqCuIF4x9eU=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=IQd3Ozeje+yWTdyKzH7iowUn59u2s/e2pQNixWidueZVePNpwJ6a/rhiokhL7rzc7
-	 rFYl+sxsSakDkrRii/czf3iKq/dZ97CgK5mXbSl7C9QjchLt51aio7fE3pgMy2hY9m
-	 Ys/5cMSiTlrFhMRbuM9ixM4nuSZEGqednDBhxJJXQVyFl/pyXYutVgisE+ESyQwRsl
-	 hBiXHLkz0Md7fXZDloLum79GG/r7nr5hM/NSnCMrkEvOwm4BOS/gLsgyCSWpwJK3g+
-	 yKTXlmYqQ2rKhAPUbhWrYbTbHzBKQNpkpqPlNEuJe6XXfLNfldkj0tWL9nAQBXFbMq
-	 gm9sfjM1B+u7g==
+	b=Bo3knremdkuTpLNTinyloswU1FwK8hFH9HR18h5+2+ffCzkBJFvRdaiS0MwaKXlUs
+	 qQ9TI5o+lmv09dCfTfuqRfMn6HtR6lhPvKbntWRtW9VQ2FN+VR1S+2NfvxhVblG2St
+	 BYYy14JSLMvNPpbAcd3rJ/8xIT2NE2yvsxYQ6iU8SoDqdwNwwDFjP5HGnDCjlzJfBz
+	 MnxBRM3yZU54Cgkw2paSYksOh7pGn0sRe2Qd9frgw3v+8BDYsaukAHQlv/YSSu5FE4
+	 w9g2NL5Ac/SRV3DrQSl5ho+s4IKcC+I6Jz2d4NMl4eZ0x/DkZgDoseySZibKXqcB4Y
+	 EwkQhX4EqlIqg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D84FF887E;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 102AECD13D2;
 	Wed, 29 Apr 2026 15:05:50 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Wed, 29 Apr 2026 17:04:51 +0200
-Subject: [PATCH v3 3/8] iio: light: si1133: add missing include headers
+Date: Wed, 29 Apr 2026 17:04:52 +0200
+Subject: [PATCH v3 4/8] iio: light: si1133: group generic <linux/*> headers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260429-si1133-checkup-v3-3-469f21d960eb@gmail.com>
+Message-Id: <20260429-si1133-checkup-v3-4-469f21d960eb@gmail.com>
 References: <20260429-si1133-checkup-v3-0-469f21d960eb@gmail.com>
 In-Reply-To: <20260429-si1133-checkup-v3-0-469f21d960eb@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -50,11 +50,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777475147; l=1193;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777475147; l=901;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=OWle6DMZJq2w2RARzbyed/7OgweWtx5OkO036pgenT0=;
- b=1nk+G3fThs90hmUvMW0haSI5r1UjL8V18mpb30LWGYtqSMrSBuIQKRzJfKBP2vCidOmOYBnSu
- H+ZLOm564PGD3dIyMdrQI63Sv+ecomBQyKV5ul0qjg94HJP9M3xIhPf
+ bh=GteppT24iSohKJCdd+nKyoBWeY2ILBL0xKsDtQzzxF4=;
+ b=A/pF8NeozoIdLXWf6X20ZMSVQUkjWr8Bc2xiNSeE5W1tkHpcpAif1rIgtHHC/OtNlnsoa+QVx
+ HHGRZQ3jddMCO1ycnlx3rjbfNxY0XOczlDPrpsWMRErJOyaQbMDVcDi
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -64,41 +64,36 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Add missing include headers to prevent compilation relying on transient
-dependencies (array_size.h, bitops.h, completion.h, dev_printk.h, err.h,
-irqreturn.h, jiffies.h, math.h, mutex.h, types.h).
+Group generic <linux/*> include headers to improve code style.
+
+No functional change.
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/si1133.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iio/light/si1133.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
-index 136436c0379aa732a2c93d40b08734ae4fc2a45f..dabb1aae05535313e77441b7d066bce931de79f9 100644
+index dabb1aae05535313e77441b7d066bce931de79f9..f46485304877a89eff3616c62d5d2a4459bd0c5f 100644
 --- a/drivers/iio/light/si1133.c
 +++ b/drivers/iio/light/si1133.c
-@@ -6,11 +6,21 @@
-  * Copyright 2018 Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
-  */
- 
-+#include <linux/array_size.h>
-+#include <linux/bitops.h>
-+#include <linux/completion.h>
- #include <linux/delay.h>
-+#include <linux/dev_printk.h>
-+#include <linux/err.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
-+#include <linux/irqreturn.h>
-+#include <linux/jiffies.h>
-+#include <linux/math.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
+@@ -21,14 +21,12 @@
+ #include <linux/mutex.h>
  #include <linux/regmap.h>
-+#include <linux/types.h>
+ #include <linux/types.h>
++#include <linux/unaligned.h>
++#include <linux/util_macros.h>
  
  #include <linux/iio/iio.h>
  #include <linux/iio/sysfs.h>
+ 
+-#include <linux/util_macros.h>
+-
+-#include <linux/unaligned.h>
+-
+ #define SI1133_REG_PART_ID		0x00
+ #define SI1133_REG_REV_ID		0x01
+ #define SI1133_REG_MFR_ID		0x02
 
 -- 
 2.47.3
