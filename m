@@ -1,81 +1,100 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB41D30B525;
-	Wed, 29 Apr 2026 07:51:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F6223BAD88;
+	Wed, 29 Apr 2026 09:03:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777449083; cv=none; b=OqgHblqJHZ5vAQpjN6/7MXPfmaITTBSOBP1rcBisJe92CWziGeR9p6ye9p47tcUXSe6hRH/bEmrYjltKrA0pC75cfm/ygqPu8uZEEqMf7UrBWF/kt0+EQ0NAmEiLgmidp/MXnplIVb880Jf5Zmv4FuxZ+9BMulud9DbfB975Das=
+	t=1777453389; cv=none; b=PgEB92GoATbAiNqpUdcSxJ32gdGvezwDoyNxck0wlucqDkEN56h4/CN6OT2j9tBrxRIQ+Tj2imeqxXFhGWwDT1SF/2284DjpFG8XUVz2AydKyGv5m57eBHTOYjw57sV1E22j8eGvi3IdF5cnJbqkFDkhyze18eyLJM/Hjj0JM4I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777449083; c=relaxed/simple;
-	bh=cMm6rnnI9EKlH8qoMa/gHGKRo/lwCw5he4laa5DP1sU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Zf6V6mqLFk1e8mDzp+tcEts4/oLzpEOz3h5kFc21f5d+YdftbQ2NqaxmmA/JBwBZRvJtooJ39JDT2YcjKDIywQrILiR38e12v19nP+B75cTVavlPfP04YMy3k/cYeGMY9zd609RhPcovNU+3nyI+71zP0Rj9I2pvTi48qlCps6c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=gJ9RmuuV; arc=none smtp.client-ip=117.135.210.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1777453389; c=relaxed/simple;
+	bh=iwPT3uDvW77dDqxcfpEOuy3+fWQNjeG07Cp1xt5wdN8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oKzUOoQKPkrIkpoRcykFHoXALQokxORrTHVZOPN2D69VNdcy9VsQcbFtkGXCyNk0LIjzJHjFlyUbjcijgP0gAUd9QByQ80G1DQ47CLFeMpdj1uAFf7TlIeo3yn//qQ50zLdqQaYCOcuE+bAe6qTGew9nhcRUKvmHl8bOtZCy8a0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=crEm1TUS; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="gJ9RmuuV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=ua
-	NDXi/yU8TE3Jp7eiuXIdaUX55fk3LUwwuRqcerIE0=; b=gJ9RmuuVk846p5gylI
-	QS2mSSg7H2ZCWdxMVdTkGBHWLG8rjqOftu9drWtdtjPCt1ONGxO3BanQ6zA4LJfH
-	QDI5qEQTDQByXPvLHMIUjXl2milZYiSiUFFMhyl2PTQK9ekaP6oHxgCHdk0NBOFj
-	/MGShb9COc96c6DPRpYJaf5yY=
-Received: from localhost.localdomain (unknown [])
-	by gzga-smtp-mtada-g0-0 (Coremail) with SMTP id _____wC3R6lSuPFpTU6XCQ--.62475S2;
-	Wed, 29 Apr 2026 15:50:44 +0800 (CST)
-From: Miao Li <limiao870622@163.com>
-To: jic23@kernel.org,
-	andy@kernel.org
-Cc: dixitparmar19@gmail.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	waqar.hameed@axis.com,
-	limiao870622@163.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH v2] iio: light: stk3310: Deal with the ps interrupt issue in PM
-Date: Wed, 29 Apr 2026 15:50:42 +0800
-Message-Id: <20260429075042.214768-1-limiao870622@163.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <afGsN5RDDQJZt8ok@ashevche-desk.local>
-References: <afGsN5RDDQJZt8ok@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="crEm1TUS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777453389; x=1808989389;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iwPT3uDvW77dDqxcfpEOuy3+fWQNjeG07Cp1xt5wdN8=;
+  b=crEm1TUSLdjvCvyeVS5K1UhDJpK0W4+q7NV92LRZ0VhcOenZCSTXgoTS
+   2sz/OEuLEXQoOeB6iVTMe/R2rw+BqEDpJeZ5vuB/piUWkJxKzd4kEA0ys
+   Oc2xguMLlLkVxDNBRM7Q7JwQKJ3o1qSSyGPj2Bn4VftTc7BHloOAsAt5x
+   KPUov+Pfr6QbiSXRS8eZamr/iB8KEuXMjjSHug4NBA9aq5coaEMDOK5f0
+   W3aMJ6Wkc9l3zHx9GDsNxNRMkolFzTpogDuUfGQ9rdNDtOgrn9zZ46BMO
+   JkdIe68QHdR+aci1NZ+1h0goVTQH46ynqKlG0ZzZTyqpyehE8e0U6ihL9
+   g==;
+X-CSE-ConnectionGUID: pP6RRkoyRnKMHUJHXiiuuA==
+X-CSE-MsgGUID: 9i/VxkO9QHiC4tvDK1tG7g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11770"; a="78393353"
+X-IronPort-AV: E=Sophos;i="6.23,205,1770624000"; 
+   d="scan'208";a="78393353"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 02:03:08 -0700
+X-CSE-ConnectionGUID: u9IfXBJfQeKvXsL7CToG1Q==
+X-CSE-MsgGUID: maUbhilmSl+z4ki2US8kzw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,205,1770624000"; 
+   d="scan'208";a="233182929"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.141])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 02:03:05 -0700
+Date: Wed, 29 Apr 2026 12:03:02 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Miao Li <limiao870622@163.com>
+Cc: jic23@kernel.org, andy@kernel.org, dixitparmar19@gmail.com,
+	dlechner@baylibre.com, nuno.sa@analog.com, waqar.hameed@axis.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Miao Li <limiao@kylinos.cn>
+Subject: Re: [PATCH v3] iio: light: stk3310: Deal with the ps interrupt issue
+ in PM
+Message-ID: <afHJRjol87hCHOvw@ashevche-desk.local>
+References: <20260428192213.7c5c80e5@jic23-huawei>
+ <20260429071402.209438-1-limiao870622@163.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wC3R6lSuPFpTU6XCQ--.62475S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrWw1fZF4Utr4ruF1fur4kZwb_yoWxXwb_Zw
-	10qFZ3W3Z5XF4vga1fWrZFvrWqgrWUJF18Ww48A39avr13Jw1kJa13uF4fA34rGay8J34q
-	kF4DCr43WFsayjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7VUjVT5DUUUUU==
-X-CM-SenderInfo: 5olpxtbryxiliss6il2tof0z/xtbCzhQa52nxuFQmXgAA3r
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260429071402.209438-1-limiao870622@163.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-> >  	struct mutex lock;
-> >  	bool als_enabled;
-> >  	bool ps_enabled;
-> > +	bool ps_int_enabled;
-> > +	uint32_t ps_thdl;
-> > +	uint32_t ps_thdh;
-> 
-> I still think we shouldn't add more {u}intXX_t into the drivers.
-> Just add a patch on top of this to clean up those types to use
-> kernel regular ones (uXX/sXX) instead.
-> 
-> >  	uint32_t ps_near_level;
-> >  	u64 timestamp;
-> >  	struct regmap *regmap;
-> 
-> I also haven't seen the response on `pahole` run. Is that tool happy with
-> the proposed layout?
+On Wed, Apr 29, 2026 at 03:14:02PM +0800, Miao Li wrote:
 
-Hi, Andy
-Patch v3 only fixes a few syntax errors in the function resume()
-that were introduced by patch v2,
-what you said I will revise at patch v4.
-Best Regards.
+> On the Inspur HS326 laptop(which integrated with HiSilicon M900
+
+'...laptop (which...'
+
+> processor), if the STK3311-X chip's PS interrupt is configured
+> in "Recommended interrupt mode", the interrupt cannot be triggered
+> normally after waking from suspend or hibernation.
+> 
+> In this case, neither disabling and re-enabling the interrupt nor
+> resetting the PS threshold register can restore the interrupt to
+> normal operation.
+> 
+> If the interrupt is disabled in suspend() then reset the PS threshold
+> register and enable the interrupt in resume(). This resolves the issue.
+
+...
+
+> +	if (state == false)
+> +		data->ps_int_enabled = false;
+> +	else
+> +		data->ps_int_enabled = true;
+
+	data->ps_int_enabled = state;
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
