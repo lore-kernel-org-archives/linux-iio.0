@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81B893FCB06;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 412403FBEBD;
 	Wed, 29 Apr 2026 13:07:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777468058; cv=none; b=dBBpb1mWD55N0AvOwSPOOk7z9tSZWYra/mcv1Iljo9Y43IBAo0tVZLC+M6KtePQ/C1RxzSgoY43hA8mfi+/DHpue12ONruC1rQ5abdsHBzG+6DRjuQmExvpvnApHl9xW2O4EDrwmOaH6MU1ElRSMAHgRKaveNh4IBBvZ4E165sU=
+	t=1777468058; cv=none; b=IsIJPRQ6cpNpljsF6p6iYIQ049eTKIdmtIhA9HykUYmBI4jY7a0ciOvIjWohPTDs38/kxyayJHwmQZm314+ciD5Xealjn/SnEnpZx6SgqBrKYQsa9F75J/NoDb2xm1S+LH8EmnGlWyQjXIhrPstdroFillGGLWzwvZrXfKNJcLY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777468058; c=relaxed/simple;
-	bh=kxWf2yrbRlNkPFnXK5Px/ytjzc2qowszjnLUder71N4=;
+	bh=sM1kRdBJCD4TGiRYIknbJztxuL3qEzLsr8B45TCbhY8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MQE42B7p7xYFBHw74NAo34sqrMr+m99c3SNRr5lIdZltTedL0c94RK16eiDH8YcpRaxZk0Iglo2UpUzf4DegWsvVl2mPv8Q3P/704xuH1+rERi8+eo/Sc65XnpksWz9ZZGMmvDsbdliK/+YnbDiPioas+uABAm5wyb+C/CVd4Gs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NFfa8drP; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ao6pUcl5F5cOtEQiOidwT91XgfsjQV9pYr9qVLMg1+5YPpMUSGQRpEqeay1gKZ0WV1ClzGP/zcEaRQmhtbIK6NPcPBrtSQt3/qSUe1mAnLuc4RkurLzXKjMDernZaNibfXxHzJlpjWVrGsE0V9XgxYVHA2KNgt4Yx0+sEhPhGdY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lGRAhzgV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NFfa8drP"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 60F69C2BCC7;
-	Wed, 29 Apr 2026 13:07:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lGRAhzgV"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D3FA1C2BCF5;
+	Wed, 29 Apr 2026 13:07:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777468058;
-	bh=kxWf2yrbRlNkPFnXK5Px/ytjzc2qowszjnLUder71N4=;
+	s=k20201202; t=1777468057;
+	bh=sM1kRdBJCD4TGiRYIknbJztxuL3qEzLsr8B45TCbhY8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=NFfa8drPb27kTtrdtbzc+x45yDcmdPVAB9ShVZ4so0cmEwVoCos9muyBF0LGI+LF5
-	 mhS7TodKBPZzcmnGlSObU+IljLLbrAhMvoI1PTKLnRq/rJYVTbhzElZUwq9oUSE+uM
-	 GO3hDofNpZwEZWW9zODqBuRvUXcGRxrv/v1K3hr6PRRma+ow92G6lmDKaJyeKi9sYu
-	 df7GwG5+rhGyKRqONFhLJvzNPELob9fVfxqNcpStK/1VYmW+cJHmkXSR9YVN9kMb6M
-	 LuWg63DEByj8SxAt5DyUw/OditEIpVhWbHgBtmcaTQsLy0A3z41Nd70lmWkus36fHQ
-	 ie6K6gopOIIwQ==
+	b=lGRAhzgVKzzRPNVpOTMhDpqAxaLrqDNDPyLEFIVdv0iC4+BrcKtMA043Cwwo6jN/9
+	 9XS6CQxqUvVhZB3zS6EZ9mtLJ/BwJQskYi/QZsNKq6aw7X6CkZLkxEcjl2kgWmYveU
+	 DpmUjUTU+LgsO+Cngr3KwzDvMRq4v+jiQ39lTdvkoQkkZInrBLzuYWk75crQmH/JXK
+	 Tkxq9SJqbNypT0jLYD8Do9v5c/hFDjaYEVC4IEXbZW6DRXSzTXDzWnhOtcLE/q1A7I
+	 KamQIRL+ru9LvAgoOSDMeu7wIy9Xej/GUB3gBEBHq9AXxjvIg1Pxw6ETSw2Ch1Cc1Z
+	 NY/lHrK4mtEEw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57500FF8867;
-	Wed, 29 Apr 2026 13:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC538FF8875;
+	Wed, 29 Apr 2026 13:07:37 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 29 Apr 2026 14:07:42 +0100
-Subject: [PATCH v4 12/13] iio: dac: ad5686: cleanup doc header of local
- structs
+Date: Wed, 29 Apr 2026 14:07:35 +0100
+Subject: [PATCH v4 05/13] iio: dac: ad5686: fix overlapping DMA buffers in
+ I2C read
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260429-ad5686-fixes-v4-12-bb8f1cbd68e1@analog.com>
+Message-Id: <20260429-ad5686-fixes-v4-5-bb8f1cbd68e1@analog.com>
 References: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
 In-Reply-To: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -54,13 +54,13 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
+ Rodrigo Alencar <rdealencar@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777468056; l=1894;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777468056; l=1342;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=7fK7LzhRbt6H+qVkvDS3hfVh7J2ix4vmxSrC1uBPzCI=;
- b=VugNGuFE5jd7c2QljSlg4tqBai3LmahN+M53MRFeZmx4FBErYGHnPNqn3JO+X6ZGpuoA/A/jI
- hNxZNIuGxb/AujHpE1ZKv8hIdj5qcI+vXv2q+TXy4a4qHogOTmB9Re5
+ bh=z//9u6PswtgHUejmo4eNzd3La9IQg4Jj8G/hjxUaHc0=;
+ b=Q5kCfVXd2U0uebBfIbMgi/xxxP092I/getGLhO8heWIERHqVUwrL33qNiSNI3sKyyEhZIdFPt
+ 7AB/vH7vdh9BeyGTOPuhdh1CyWfhjveeo7JcuRCMmnt1coUliChCjMq
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -70,55 +70,41 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Review documentation comment header for ad5686_chip_info and ad5686_state.
-Update variable names and description and remove unnecessary blank line
-between comment and struct declaration.
+The TX and RX buffers in ad5686_i2c_read() both reference data[0], causing
+byte d8[1] to be shared between the TX buffer and the RX buffer. I2C
+controller drivers that map all message buffers for DMA before initiating
+the hardware transaction will map overlapping memory ranges with
+conflicting DMA directions (DMA_TO_DEVICE and DMA_FROM_DEVICE). This issue
+was reported by sashiko.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Fixes: 4177381b4401 ("iio:dac:ad5686: Add AD5671R/75R/94/94R/95R/96/96R support")
+Signed-off-by: Rodrigo Alencar <rdealencar@gmail.com>
 ---
- drivers/iio/dac/ad5686.h | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/iio/dac/ad5696-i2c.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index 0ba4168195f5..4397ffd2e236 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -67,12 +67,11 @@ typedef int (*ad5686_read_func)(struct ad5686_state *st, u8 addr);
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index d3327bca0e07..d3b46496d67d 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -26,7 +26,7 @@ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
+ 			.addr = i2c->addr,
+ 			.flags = i2c->flags | I2C_M_RD,
+ 			.len = 2,
+-			.buf = (char *)&st->data[0].d16,
++			.buf = (char *)&st->data[1].d16,
+ 		},
+ 	};
+ 	int ret;
+@@ -39,7 +39,7 @@ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
+ 	if (ret < 0)
+ 		return ret;
  
- /**
-  * struct ad5686_chip_info - chip specific information
-- * @int_vref_mv:	AD5620/40/60: the internal reference voltage
-+ * @int_vref_mv:	the internal reference voltage
-  * @num_channels:	number of channels
-  * @channel:		channel specification
-  * @regmap_type:	register map layout variant
-  */
--
- struct ad5686_chip_info {
- 	u16				int_vref_mv;
- 	unsigned int			num_channels;
-@@ -110,16 +109,16 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
+-	return be16_to_cpu(st->data[0].d16);
++	return be16_to_cpu(st->data[1].d16);
+ }
  
- /**
-  * struct ad5686_state - driver instance specific data
-- * @spi:		spi_device
-+ * @dev:		device instance
-  * @chip_info:		chip model specific constants, available modes etc
-  * @vref_mv:		actual reference voltage used
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-  * @use_internal_vref:	set to true if the internal reference voltage is used
-- * @lock		lock to protect the data buffer during regmap ops
-- * @data:		spi transfer buffers
-+ * @lock:		lock to protect access to state fields, which includes
-+ *			the data buffer during regmap ops
-+ * @data:		transfer buffers
-  */
--
- struct ad5686_state {
- 	struct device			*dev;
- 	const struct ad5686_chip_info	*chip_info;
+ static int ad5686_i2c_write(struct ad5686_state *st,
 
 -- 
 2.43.0
