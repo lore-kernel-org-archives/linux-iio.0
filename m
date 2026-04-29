@@ -1,48 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288F240FDBE;
-	Wed, 29 Apr 2026 17:38:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34ECC41323A;
+	Wed, 29 Apr 2026 17:42:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777484335; cv=none; b=GyBE/UiV8h8ZohaKXz6HU4jrxVvw1yhQHA6dNuYTjuJuC0D0CLf3OhqidxMbPovGURGEo2B2TVk8P7M/98xxN3SFfvCQuk1mbvTjB5bc8HoldcPSQvr9iAJDuNWdztvXdUOhWc/DWnIgm8vQCyk0If/qYLUfXpK2BbdKfEOTT8g=
+	t=1777484527; cv=none; b=SRmSJtpJ8tdqNHDvmpWe1mGM96B+giISPoSuGynzhYMdsZip82HIdzv2ajmMAPT4KjLSxSp4VxBn35YtDww0doyii9a4vnM1JPauyyQ93b7u45sJQbcR3AkIwxBo3zsKRiScdRA5NtSGLOosiKiUZIRjT24S3qJxKPlYuHeX7kc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777484335; c=relaxed/simple;
-	bh=B/mm4JF73BiFQFUkcYH4L91V2TfU1N3CVC2WPUJGKZE=;
+	s=arc-20240116; t=1777484527; c=relaxed/simple;
+	bh=E0vBOIwceecB/pXFZeW5Kk25N5h2+ziBlv8PPx2C4T4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JKnE/WK+6pgdVWZzKE7R3iHD2v8zxr7umYcNjG/Rp0a20tcBJlSPE8LcPKRaK1DuwqpWQqHcVjFe5zjwnmfnMDfLdSKygYpdLTjthcXaZqYGJHxjCVJBUDNE0P/nJ+J+11WMoCWfrTntOSDMUXFBQnhrgbMgPTf/QQ2FpmgB2xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U3SQktN2; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=c2NP55DnhAPxyngcciEAVjNSyGimTGgDR9FZWrhZzEm4yTQNNU8xg56URv5vJyrr9+ND8tFLkxzhgmbAz3j84pahKs4v8xi1Lx8uwSPAOzPKzJqX9iK6r0KbDzjiEKFWb50R7YiJ2Oz4kJ7HtY0YThpB7Y+9jKwaSgXWOqcLYoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KLvXDtBJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U3SQktN2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AC35C19425;
-	Wed, 29 Apr 2026 17:38:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KLvXDtBJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56D6C19425;
+	Wed, 29 Apr 2026 17:42:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777484334;
-	bh=B/mm4JF73BiFQFUkcYH4L91V2TfU1N3CVC2WPUJGKZE=;
+	s=k20201202; t=1777484526;
+	bh=E0vBOIwceecB/pXFZeW5Kk25N5h2+ziBlv8PPx2C4T4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=U3SQktN2x4R+caQkXFC8kFo8O74O09mCNOHsOpdlsGfqy6KNb7dfa+za4JItKQvfH
-	 kJ9bO2qxL77fh9z55EF5ZMn6TjghYjCR1PnGI+TI4yDETfbw88yMZJLdp688seRSWK
-	 ESIxI4iZ7jwttOPuzhO7FdmHZtnrkae3/To9stAgu+aaf0pbZDXaTRi7kteitrq4Kj
-	 tr6yryiDp0FoX610oC5Bz5fnX9Xmlyeh0neoZXbNCEdgkgzypRw8TUCtzcp+ymdTVS
-	 KbkRn9xDETd1fPxv8nxJyxHxU2hTEksLjJggQjWMkxSo1gv80/da0bLJAhVww6AZYt
-	 PV5O5z46FMvQg==
-Date: Wed, 29 Apr 2026 18:38:44 +0100
+	b=KLvXDtBJGp22eTdmB8xGttypE9dP+aVBV1sH/2yxX18GFLtXRK+hiQp1YyGV6Qyrz
+	 7vD9s2tZWP/KMeOXazM187k5wS92X+gpDYU0mqJDwaMepHFe7dayw7TXgr8UclVcRm
+	 R29XAa1LByD/fuW0ftWULv7olLz16EetinRl7WCZ57u/1SU7NpUIQ42V6UgeQWaggV
+	 eKSRc6GYMhGtkQVFeqfua3hjCFdq5SFOf8fMNbgtSUAm8oLsW2mdg3tRPDZn2/UzF+
+	 NQMy7yCbOGUFj9vM7aWEhHygveaMf8iWuquSLPWAM0aQb/nxg0mjHr2kxmMjK7ZTy3
+	 YLGX2MR5iU9KA==
+Date: Wed, 29 Apr 2026 18:41:56 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>,
  Jonathan Cameron <jic23@cam.ac.uk>, Greg Kroah-Hartman <gregkh@suse.de>,
  Michael Auchter <michael.auchter@ni.com>, Lars-Peter Clausen
  <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rodrigo
- Alencar <rdealencar@gmail.com>, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v4 05/13] iio: dac: ad5686: fix overlapping DMA buffers
- in I2C read
-Message-ID: <20260429183844.1744098a@jic23-huawei>
-In-Reply-To: <afIQjU2TGrZ6P-3w@ashevche-desk.local>
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v4 06/13] iio: dac: ad5686: refactor include headers
+Message-ID: <20260429184156.6be961fa@jic23-huawei>
+In-Reply-To: <CALoEA-yBU_pwiOFQx89-Gcgmtz_KtuxJJvph7uKPHKJNihDS8Q@mail.gmail.com>
 References: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
-	<20260429-ad5686-fixes-v4-5-bb8f1cbd68e1@analog.com>
-	<afIQjU2TGrZ6P-3w@ashevche-desk.local>
+	<20260429-ad5686-fixes-v4-6-bb8f1cbd68e1@analog.com>
+	<afIRG2S94JEn3Oqd@ashevche-desk.local>
+	<CALoEA-yBU_pwiOFQx89-Gcgmtz_KtuxJJvph7uKPHKJNihDS8Q@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,57 +53,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 29 Apr 2026 17:07:09 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, 29 Apr 2026 16:38:02 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> On Wed, Apr 29, 2026 at 02:07:35PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> > 
-> > The TX and RX buffers in ad5686_i2c_read() both reference data[0], causing
-> > byte d8[1] to be shared between the TX buffer and the RX buffer. I2C
-> > controller drivers that map all message buffers for DMA before initiating
-> > the hardware transaction will map overlapping memory ranges with
-> > conflicting DMA directions (DMA_TO_DEVICE and DMA_FROM_DEVICE). This issue
-> > was reported by sashiko.  
+> On Wed, 29 Apr 2026 at 16:14, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > I haven't checked this deeply, but I hope at some point we will have
+> > more or less usable state of `iwyu` tool that may do this automatically.
+> > At least current result looks better than the original.
+> >
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>  
 > 
-> Not sure how this patch helps with that. The minimum granularity for DMA is
-> a cache line size. Do we have data[0] and data[1] be cache line separated?
+> I did find a "filter" file of sorts for IWYU that Jonathan had on the
+> mailing list.
+> It does a good job of omitting reports of very low level headers but at the
+> same time IWYU still tells you to include things like <linux/stddef.h> and
+> remove anything <asm/*>  from your includes. Perhaps it needs more
+> tweaking?
 > 
-> It might be I miss something obvious, but this topic is always confusing
-> to me (DMA alignment).
-> 
 
-I thought I understood :( From a real hardware point of view the cache flushes
-that occur for non coherent DMA should be safe with tx and rx overlap but
-'maybe' there is a framework problem if they buffer is simultaneously marked
-in both directions or indeed there might be spi controller drivers that
-can't cope with this.
+I ran into a few corners that I couldn't get to work right
++ probably didn't cover enough of the asm files with specific rules.
 
-Flush wise need to flush the tx and rx at start to ensure the tx data
-is written back and any copies of rx in the CPU caches are clean.
-Then after DMA need to flush rx again to ensure an prefetched cachelines
-(which will be clean because of earlier flush) are dropped and new
-reads come from the device. These will all happen on a cacheline but
-shouldn't matter if it's the same one as the post DMA flushes are just
-to drop clean lines and it's clean either way.
-+CC Mark for whether this corner has come up in SPI before.
+I'd love a canonical config file (at least for IIO).
 
-Short question is can we pass same buffer for rx and tx on an spi transfer?
-
-https://lore.kernel.org/all/20260429-ad5686-fixes-v4-5-bb8f1cbd68e1@analog.com/
-Is the patch, based on a bug report from an LLM.
-
-hmm. In the docs for struct spi_transfer we have a not entirely confident
-sounding comment on this.
-
-	/*
-	 * It's okay if tx_buf == rx_buf (right?).
-	 * For MicroWire, one buffer must be NULL.
-	 * Buffers must work with dma_*map_single() calls.
-	 */
-
-We don't care about MicroWire here, but the other two lines matter.
-
-This particular case is even weirder as I think they are offset and overlapping
-but if it works for them equal I'd assume that's fine too.
+Also turns out the LLMs are quite good at reviewing these patches
 
 Jonathan
