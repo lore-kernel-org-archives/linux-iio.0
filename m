@@ -1,271 +1,103 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF24F3FE646
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 13:23:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FE0027E07E;
+	Wed, 29 Apr 2026 13:46:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777468998; cv=none; b=uNujmo50Yj3huDjrrMRCEimtCDEASWeuvo3PwN5S8gTCGMOdqSN+nJNhqNvSp+iqF1BUP9LnG1/LKAM+w23IMkjSq42SVMbIlQXMgZzm7IbnTOpyqTfgu8Uo0l1lgQASxHG4Zcvq6bDT5s3Aw0hvViOujrT+VlvkOEt3/GXpnf0=
+	t=1777470419; cv=none; b=XwakdiMZgYcRfQUavMJxI6WhDNGsADzklMH1KCqjEhWOMo6MKceJq9r5fawO3KMfZEzxLXwYbUWCAPW/Jv3tnIwqglvrvkVSE5Shmh2DT5fJYoVB5y0M4x695yt++3ip+B9j0d5wNb9opUR2QnMa8t1esFLZyPhSdcVZIaFzT6E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777468998; c=relaxed/simple;
-	bh=4onuEvPaP2yvZAtOC+F4BCT1UwRW5DkR/lNZprGqXK0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gZsZvJFe3Nm0B/l9KgXxOlvzgyEM/0+DTlmWXRXLacqUBlLsQ1TMn92Nl/p9juc76kIJQsOchijBqRjq4aqTQPNFdlNNmM8YS0jI/8vHq2hfQo6rgslyZrT6mXs6IUBVxznbZiwmlJNOlKnNXzQiomqxs7utSy6GIS4PMift3X0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V90m/fjb; arc=none smtp.client-ip=209.85.210.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777470419; c=relaxed/simple;
+	bh=FKN+lymEXtoQ/dhBQJ5xrPV2kaku2TEa/C0+RYtWr4U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WawRpm91XXO9+H6YotCI0SEZv5oi/WuDY/LvvpGakjhfDnNaYbbG3wqwpwg0n4dQS+KGaOb1WA+Z2Dr/uL4Vn0cDl7j7a+2YCs76U+VlaXNO1n0iJvG+oatQBf9RcZuuTPhFptPBM4gn7akDiqeuHRHAlc8Jd0Q0vfCNzl8Zt+E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g3qZwu2z; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V90m/fjb"
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-82f8b60e54dso8431614b3a.2
-        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 06:23:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777468995; x=1778073795; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WCpqWEaMYg3UZ5FWd6Kx+fvUYh//nkS7obYuvELKMmY=;
-        b=V90m/fjbKTuPjqlw5QgrqvYOosLYhl2YBonDELiwUVpWnSvCmJrazCko7GjU+Skcmc
-         v8TKoX73DHAKUs2xi4DMdg4rObLVvQGCE3xwnpHXLQPaOPur+NwL4ha07hh/5MYdq6Le
-         +BQaDUOBeubCtOvsbx4YbVpohIUAsQmE+7ssTscHgaPwKrHLj3N7MnBXQDYfVKywgh2T
-         lbs0nI0nULv+maQ7lKCI4yW5G2dcI1oi79SsZYe0iG3NCYhBn/oIghngqgn/s56aqy1/
-         HmxnKgiu7MOYqp63nnyX0khOtwfdCXAvH67HqRmusEzPx3oLRSMqbgYwVWzioK47o9y2
-         EkKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777468995; x=1778073795;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=WCpqWEaMYg3UZ5FWd6Kx+fvUYh//nkS7obYuvELKMmY=;
-        b=Hscw0FqAK+1eAUVbT0vUGXgPdQ0qEy3tizQrF4K93qhgKNFSOIKgWhvoZBQHyujpv/
-         NwbRfWRI7Yk0dtBTWblgZ0PVWOwc2v2Huf1XcuPPVOmWRi4tFkiU+Ymq8E6FkgyBBKZn
-         E2S94AT63SQcYvbx0i931X5N4f2swAFbvg6sWGgw6s9j4yV10pIYHNZ5l7q6Qo7X8jux
-         G9Ps7IYhBbfhOD3Ibr/+c59L1wxg0HQsrysEh2m7rouz09kmFncysb5lhrTYlugqNEF5
-         3gNTXPY07vhnC2MqvdyrCFD4/9wJXwvJYYYQR6wfF8w/hyxeE+x9Y4kxSoI7cjHHy79n
-         xmFg==
-X-Forwarded-Encrypted: i=1; AFNElJ8VBO+LctcwnsylP2U6wu4bQSKG+E/txypm84zWzMB+LHHRmgZzit4Ld49jNXST6uVlC40/liSiRMI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzUw/2Us+gGIPGMHpjw9+wpFc3EPJhOSSvxmWISVQuFePYi+VBE
-	ShV8dl1LOFD7a+1vOyBAHoMLTZD6FkFx8+xZ359YtjTjyihwHxUrHpAU
-X-Gm-Gg: AeBDieuk3JJrqg/CXiVlACAMIDozoq4SdsKNR5Lfaf2lTqaVM3JZPx1PJzA3cPtOeVQ
-	4kk4bhB+Aks+Tcw3kP8zS70QImhg5GGgTQJGWFhefa/SpV/aUdxLAdZZ0TCDfoZeRMCcaI15Elu
-	kgUbp+eEN5u6yLfWRuvYpFnsrWxndWYtGQwFot8lIQlaqNRfPso1+ClwTzqIjBGn7dpkj9l+Kqw
-	/tB2tmvwlFkbmM6GZUn/ehJmBiEf0GYrp38cWXBGd3bx8WHs/X1y9H1RWj+ptpRahOoK6mglrJS
-	ZflaO8BgcYKmAPoNAm7hlh1P5gOspgcfO2KXZH1u0zzWqrxwZW+4RbxUFlP+cKGt76gMMo5j2W/
-	VmtjTaKawYR2+b+pqM8plkPJkPYEwmp19tttFDY0USxp9wg5671WW8uyXMKfR4vYA1ZygUT2fym
-	X7yn+y3GTwukOm++z5vCLNblid1oBWRbVfzuLIgsFznjPiP5xpueIufD7LVvHNgqRcY/Xur83zS
-	Y3FQntChF52PsE=
-X-Received: by 2002:a05:6a00:69a3:b0:834:df57:9d6b with SMTP id d2e1a72fcca58-834df57af63mr5180255b3a.24.1777468994395;
-        Wed, 29 Apr 2026 06:23:14 -0700 (PDT)
-Received: from localhost.localdomain ([2001:448a:2002:4381:3859:fd0d:505e:362c])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-834ed5cd407sm2091372b3a.13.2026.04.29.06.23.10
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 29 Apr 2026 06:23:13 -0700 (PDT)
-From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	rust-for-linux@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: branstj@gmail.com,
-	lars@metafoo.de,
-	ojeda@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	igor.korotin.linux@gmail.com,
-	linux-kernel@vger.kernel.org,
-	Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Subject: [RFC PATCH v2 4/4] iio: position: add Rust driver for ams AS5600
-Date: Wed, 29 Apr 2026 20:22:30 +0700
-Message-ID: <20260429132234.30514-5-muchamadcoirulanwar@gmail.com>
-X-Mailer: git-send-email 2.50.0
-In-Reply-To: <20260429132234.30514-1-muchamadcoirulanwar@gmail.com>
-References: <20260429132234.30514-1-muchamadcoirulanwar@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g3qZwu2z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E03D6C19425;
+	Wed, 29 Apr 2026 13:46:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777470418;
+	bh=FKN+lymEXtoQ/dhBQJ5xrPV2kaku2TEa/C0+RYtWr4U=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=g3qZwu2zx4m22Bb/D2Lk1kaVw5RTSsXyESeoEW5FHktadQTDU4A87LXQbO3H6rsaX
+	 7pIdZst1WN0EVOsYydL0YVhGprnfnxucpz5xMyWxN1kFBxgElvIAshTOKqq01N/DW1
+	 ax71xP9AMD1pf6lVYIanI0KV0Yp5ggBZMjNlM5H6T+OA2XjtsKzJMFeJlML5v1yVX7
+	 pvODFjrDm3dUDGhIX7E1sn9Y8pKfbLEtUm7DAPbDZ6SwvDE+nxmBnB+7t2ZGAIWnCs
+	 hyRA3ob0+wG2pV9+JIFcLc0AniXCMEAyZbYmLiQLHQY1AC15yFHGV6rGJzie4JFr4y
+	 FdVKTwl9B2RdA==
+Message-ID: <0caf83fd-06bd-4d71-8fd4-0e4fbeb00589@kernel.org>
+Date: Wed, 29 Apr 2026 15:46:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v2 3/4] dt-bindings: iio: position: add ams,as5600
+To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>, jic23@kernel.org,
+ linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org,
+ devicetree@vger.kernel.org
+Cc: branstj@gmail.com, lars@metafoo.de, ojeda@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, igor.korotin.linux@gmail.com,
+ linux-kernel@vger.kernel.org
+References: <20260429132234.30514-1-muchamadcoirulanwar@gmail.com>
+ <20260429132234.30514-4-muchamadcoirulanwar@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260429132234.30514-4-muchamadcoirulanwar@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
----
- drivers/iio/position/Kconfig   |  14 ++++
- drivers/iio/position/Makefile  |   1 +
- drivers/iio/position/as5600.rs | 129 +++++++++++++++++++++++++++++++++
- 3 files changed, 144 insertions(+)
- create mode 100644 drivers/iio/position/as5600.rs
+On 29/04/2026 15:22, Muchamad Coirul Anwar wrote:
+> Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
 
-diff --git a/drivers/iio/position/Kconfig b/drivers/iio/position/Kconfig
-index 1576a6380b53..dab9310e8079 100644
---- a/drivers/iio/position/Kconfig
-+++ b/drivers/iio/position/Kconfig
-@@ -6,6 +6,20 @@
- 
- menu "Linear and angular position sensors"
- 
-+config AS5600
-+	tristate "ams AS5600 magnetic rotary position sensor"
-+	depends on I2C && RUST
-+	help
-+	  Say Y here to build support for the ams AS5600 12-bit
-+	  magnetic rotary position sensor with IIO channel support
-+	  (in_angl_raw and in_angl_scale).
-+
-+	  This is a Rust driver that exposes the 12-bit raw angle
-+	  and radian scale via the IIO subsystem.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called as5600.
-+
- config IQS624_POS
- 	tristate "Azoteq IQS624/625 angular position sensors"
- 	depends on MFD_IQS62X || COMPILE_TEST
-diff --git a/drivers/iio/position/Makefile b/drivers/iio/position/Makefile
-index d70902f2979d..2d26f6d6ace3 100644
---- a/drivers/iio/position/Makefile
-+++ b/drivers/iio/position/Makefile
-@@ -4,5 +4,6 @@
- 
- # When adding new entries keep the list in alphabetical order
- 
-+obj-$(CONFIG_AS5600) += as5600.o
- obj-$(CONFIG_HID_SENSOR_CUSTOM_INTEL_HINGE) += hid-sensor-custom-intel-hinge.o
- obj-$(CONFIG_IQS624_POS)	+= iqs624-pos.o
-diff --git a/drivers/iio/position/as5600.rs b/drivers/iio/position/as5600.rs
-new file mode 100644
-index 000000000000..0cbf8be58b64
---- /dev/null
-+++ b/drivers/iio/position/as5600.rs
-@@ -0,0 +1,129 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// Copyright (C) 2026 Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-+//! Driver for ams AS5600 12-bit magnetic rotary position sensor.
-+//!
-+//! Datasheet: https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
-+
-+use kernel::{
-+    bindings::{
-+        iio_chan_info_enum_IIO_CHAN_INFO_RAW, iio_chan_info_enum_IIO_CHAN_INFO_SCALE,
-+        iio_chan_spec, iio_chan_type_IIO_ANGL, ENODATA,
-+    },
-+    bits::bit_u8,
-+    device::Core,
-+    i2c::{DeviceId, Driver, I2cClient, IdTable},
-+    i2c_device_table,
-+    iio::{Device, IioDriver, IioVal},
-+    module_i2c_driver, of, of_device_table,
-+    prelude::*,
-+};
-+
-+const AS5600_REG_STATUS: u8 = 0x0B;
-+const AS5600_REG_RAW_ANGLE_H: u8 = 0x0C;
-+const AS5600_REG_RAW_ANGLE_L: u8 = 0x0D;
-+
-+const AS5600_STATUS_MD: u8 = bit_u8(5);
-+
-+module_i2c_driver! {
-+    type: As5600,
-+    name: "as5600",
-+    authors: ["Muchamad Coirul Anwar"],
-+    description: "I2C Driver for ams OSRAM AS5600 Magnetic Rotary Position Sensor",
-+    license: "GPL",
-+}
-+
-+i2c_device_table!(
-+    I2C_TABLE,
-+    MODULE_I2C_TABLE,
-+    <As5600 as Driver>::IdInfo,
-+    [(DeviceId::new(c"as5600"), ())]
-+);
-+
-+of_device_table!(
-+    OF_TABLE,
-+    MODULE_OF_TABLE,
-+    <As5600 as Driver>::IdInfo,
-+    [(of::DeviceId::new(c"ams,as5600"), ())]
-+);
-+
-+struct As5600Priv {
-+    client_ptr: *const I2cClient<Core>,
-+    channels: [iio_chan_spec; 1],
-+}
-+
-+// SAFETY: `client_ptr` points to an `I2cClient` that is owned by the I2C
-+// subsystem and outlives the driver binding. `iio_device_unregister` in
-+// `Device<T>::PinnedDrop` drains pending callbacks before this struct is
-+// dropped, so `client_ptr` is valid for every `read_raw` invocation.
-+// Concurrent access is safe because the I2C adapter lock serializes all
-+// SMBus transactions.
-+unsafe impl Send for As5600Priv {}
-+unsafe impl Sync for As5600Priv {}
-+
-+impl IioDriver for As5600Priv {
-+    fn read_raw(&self, _chan: *const iio_chan_spec, mask: isize) -> Result<IioVal> {
-+        // SAFETY: `client_ptr` was set from a valid `&I2cClient` in `probe()`.
-+        // The I2C client outlives the driver binding, and `read_raw` is only
-+        // called while the driver is bound.
-+        let client = unsafe { &*self.client_ptr };
-+
-+        #[allow(non_upper_case_globals)]
-+        match mask as u32 {
-+            // IIO_CHAN_INFO_RAW
-+            iio_chan_info_enum_IIO_CHAN_INFO_RAW => {
-+                let status = client.smbus_read_byte_data(AS5600_REG_STATUS)?;
-+                if (status & AS5600_STATUS_MD) == 0 {
-+                    return Err(Error::from_errno(-(ENODATA as i32)));
-+                }
-+
-+                let angle_h = client.smbus_read_byte_data(AS5600_REG_RAW_ANGLE_H)? as u16;
-+                let angle_l = client.smbus_read_byte_data(AS5600_REG_RAW_ANGLE_L)? as u16;
-+
-+                let angle = (angle_h << 8 | angle_l) & 0x0FFF;
-+                Ok(IioVal::Int(angle as i32))
-+            }
-+            // IIO_CHAN_INFO_SCALE
-+            iio_chan_info_enum_IIO_CHAN_INFO_SCALE => Ok(IioVal::IntPlusNano(0, 1533981)),
-+            _ => Err(EINVAL),
-+        }
-+    }
-+
-+    fn channels(&self) -> &[iio_chan_spec] {
-+        &self.channels
-+    }
-+}
-+
-+struct As5600 {
-+    _iio_dev: Device<As5600Priv>,
-+}
-+
-+impl Driver for As5600 {
-+    type IdInfo = ();
-+    const I2C_ID_TABLE: Option<IdTable<Self::IdInfo>> = Some(&I2C_TABLE);
-+    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
-+
-+    fn probe(dev: &I2cClient<Core>, _id_info: Option<&Self::IdInfo>) -> impl PinInit<Self, Error> {
-+        let _status = dev.smbus_read_byte_data(AS5600_REG_STATUS)?;
-+
-+        // SAFETY: `iio_chan_spec` is a C struct whose fields are all integers
-+        // and pointers. Zero is a valid initialization for all of them.
-+        let mut channels: [iio_chan_spec; 1] = unsafe { core::mem::zeroed() };
-+        channels[0].info_mask_separate = (1 << iio_chan_info_enum_IIO_CHAN_INFO_RAW)
-+            | (1 << iio_chan_info_enum_IIO_CHAN_INFO_SCALE);
-+        channels[0].type_ = iio_chan_type_IIO_ANGL;
-+
-+        let priv_data = As5600Priv {
-+            client_ptr: dev as *const _,
-+            channels,
-+        };
-+
-+        let mut iio_dev = Device::new(dev.as_ref(), priv_data, c"as5600")?;
-+
-+        iio_dev.register(dev.as_ref(), &crate::THIS_MODULE)?;
-+
-+        dev_dbg!(dev.as_ref(), "AS5600: Sensor probed, driver ready\n");
-+        Ok::<_, Error>(As5600 { _iio_dev: iio_dev })
-+    }
-+
-+    fn unbind(_dev: &I2cClient<Core>, _this: Pin<&Self>) {}
-+}
--- 
-2.50.0
+I guess this is still not ready and correctly marked as RFC, so I will
+drop it from DT patchwork.
 
+Best regards,
+Krzysztof
