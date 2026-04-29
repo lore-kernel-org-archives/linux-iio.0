@@ -1,82 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34ECC41323A;
-	Wed, 29 Apr 2026 17:42:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDFF7330328
+	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 17:59:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777484527; cv=none; b=SRmSJtpJ8tdqNHDvmpWe1mGM96B+giISPoSuGynzhYMdsZip82HIdzv2ajmMAPT4KjLSxSp4VxBn35YtDww0doyii9a4vnM1JPauyyQ93b7u45sJQbcR3AkIwxBo3zsKRiScdRA5NtSGLOosiKiUZIRjT24S3qJxKPlYuHeX7kc=
+	t=1777485568; cv=none; b=UoNilzlhgzHT5vzIXOsQwZWNfF/w+tipLU0e512T2I9eyVxvbtBOuTTZkx6XBs7u8nt4Lwx7gHxM+dS4DE4jx7Q8jDl0ZUsrQtkWPgJIFFcNuRX1dp5UQh6xaGlKZrMrI3Y2pO37wNGTw5iL89IzuLkbOvK5eg34j6kFUZeQga8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777484527; c=relaxed/simple;
-	bh=E0vBOIwceecB/pXFZeW5Kk25N5h2+ziBlv8PPx2C4T4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=c2NP55DnhAPxyngcciEAVjNSyGimTGgDR9FZWrhZzEm4yTQNNU8xg56URv5vJyrr9+ND8tFLkxzhgmbAz3j84pahKs4v8xi1Lx8uwSPAOzPKzJqX9iK6r0KbDzjiEKFWb50R7YiJ2Oz4kJ7HtY0YThpB7Y+9jKwaSgXWOqcLYoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KLvXDtBJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777485568; c=relaxed/simple;
+	bh=tEsDhzgQpD6z1xtr2AY7zNaS0N4D+izezf7gcFPaDyU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Z9LyL3sZp0gLvAuBSJ2kuhYYmfk4pozM9EIy4Nxq8yq072QcNC2JMk64IrsHbLmIMnuQcSfyEJ4p2WxC4zcbp9vetOc5tKi/kfBCdSLDtBnZGKI1wjpeOs5YSuRIKmuCckcrfj66KHSqcwsTcL9o0enbG2G6YjRRud1IyHfTWU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RQlFvjxk; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KLvXDtBJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56D6C19425;
-	Wed, 29 Apr 2026 17:42:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777484526;
-	bh=E0vBOIwceecB/pXFZeW5Kk25N5h2+ziBlv8PPx2C4T4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=KLvXDtBJGp22eTdmB8xGttypE9dP+aVBV1sH/2yxX18GFLtXRK+hiQp1YyGV6Qyrz
-	 7vD9s2tZWP/KMeOXazM187k5wS92X+gpDYU0mqJDwaMepHFe7dayw7TXgr8UclVcRm
-	 R29XAa1LByD/fuW0ftWULv7olLz16EetinRl7WCZ57u/1SU7NpUIQ42V6UgeQWaggV
-	 eKSRc6GYMhGtkQVFeqfua3hjCFdq5SFOf8fMNbgtSUAm8oLsW2mdg3tRPDZn2/UzF+
-	 NQMy7yCbOGUFj9vM7aWEhHygveaMf8iWuquSLPWAM0aQb/nxg0mjHr2kxmMjK7ZTy3
-	 YLGX2MR5iU9KA==
-Date: Wed, 29 Apr 2026 18:41:56 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>,
- Jonathan Cameron <jic23@cam.ac.uk>, Greg Kroah-Hartman <gregkh@suse.de>,
- Michael Auchter <michael.auchter@ni.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v4 06/13] iio: dac: ad5686: refactor include headers
-Message-ID: <20260429184156.6be961fa@jic23-huawei>
-In-Reply-To: <CALoEA-yBU_pwiOFQx89-Gcgmtz_KtuxJJvph7uKPHKJNihDS8Q@mail.gmail.com>
-References: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
-	<20260429-ad5686-fixes-v4-6-bb8f1cbd68e1@analog.com>
-	<afIRG2S94JEn3Oqd@ashevche-desk.local>
-	<CALoEA-yBU_pwiOFQx89-Gcgmtz_KtuxJJvph7uKPHKJNihDS8Q@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RQlFvjxk"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2a8fba3f769so307945ad.2
+        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 10:59:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777485565; x=1778090365; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yeu65uq8O/7w/mHdI25xEp1QrFf/nqZGrBbIfp7wJWk=;
+        b=RQlFvjxknSXaGWN4WM3ru+ciqdi8lsdJpP/aIvwFlHTQ+DT4W/qHnPD0xWH27VTaq+
+         i85NtLz7L5Pz/bNhyZsSqyR1Ub88WUoa5ektGF0dhP398YKk/452NbPlotDZrEur8qeb
+         HqxArWVdrahDErmpvlAKBDJUYJP5tZXaxNP9h9No7yHWNqErbeq1+s0mKVtLAy3lC6i1
+         J0nto7XIHnn7GxB5qeml4+nu3trwpMpmE/kU13qDK/Xs0tULo+j9iB3VL8NE9brMYrNh
+         XycvaWK5O8jJyrdKRJap39SSPlyWEUeRQYFfXW96vFn3wkGo0u+m72T65ff2QlAuAwXj
+         46mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777485565; x=1778090365;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yeu65uq8O/7w/mHdI25xEp1QrFf/nqZGrBbIfp7wJWk=;
+        b=aRp2dD1iAeZvImE7IBz80tr2vHokdGgGgvnAablWKIcXZetyxYd1m0giI61S8dkM11
+         c5TOO1akpmVsB2h2Z3NhHfCZ8S1ct4jWL4GS1VOiIL40CSKx9FGFEAsAaGrgxyU51ke1
+         5+jg/o9g/WCxwkNSrbYk4XA/aSz8VzMRG91eE3DmkPXZTH18ftUHW18H80mP03Yrdaxo
+         X4MaimOqEbB5oSsJHVX9L7zeAO8ux4mvsrZlvNZOKixbtTnYarORIOh67rJP+m5iPZs1
+         enyG6dx+Rwe9L//LngcUefECbXYXXsaifu0clf6WCaMVVJ0M/LnQuzgysq6/P4hFrrF0
+         2cow==
+X-Forwarded-Encrypted: i=1; AFNElJ8Uk8xaeoqIzgeOO9EB421WXx+phrucOwX0m8RSd8Av+rNqceqniiFe/gzseWNCI6jfL/NQD7tX6EY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyTxxjy5a+pYkZb5AQy9Uz6V3U2Vv1NFGl8ELwHAjAp5e5IeOnu
+	uXjnrshzXANmf38ZY41FTuEg/5QvZBdmLIOTb5CzmSXbE7da2+DMic0H
+X-Gm-Gg: AeBDieudXLNQXY1jaJKV76Sc5inoC+taeWbhKCBk47pX+dw9rT6D1K1iqg88Lp/KXWh
+	9tt6fesIMkcIM5pX7OCNo3CT9Q9UbS5pmkEVZJRqyfghBs4Glb0sMMZdINNLNEDSD4uahNdeUTy
+	FX5Gp4C2E/DH3gNJPXrN/fCXuRsh9G0HsHRZORXi28ecZYVxl3A5TbJPGA8LYz+bDx3SJPhkm41
+	V3fiAM3N0YXXVygTwGjXaJXx7JEey4PP3dQGXxAGCFTOGpCiiiP/HgaHnesyI4EzJcSXnxz4Zqm
+	XMxi1ZabiJTHU31XsMWHKhPJ24yOjfJ/lIlW0clIyoxQtm8melSJLMW4lQLE5ZEdD1k1G0MMc6q
+	mMj8j576WwiJBIzPMc+YNBh6jhoCvMed9yt1DxCQak0s4YZyiv41BS0UfAnGTvA+XGeNSM4JTFj
+	5o78ZBNNk69RIbDhXnJWJP4SWSDAt/VUZwmxr6YiQRUN0CMmk1TF0wc5p1RNQ=
+X-Received: by 2002:a17:903:1a8d:b0:2b2:4e5c:69a9 with SMTP id d9443c01a7336-2b97c3e38damr78911685ad.5.1777485564935;
+        Wed, 29 Apr 2026 10:59:24 -0700 (PDT)
+Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b98897edefsm27726805ad.74.2026.04.29.10.59.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2026 10:59:24 -0700 (PDT)
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
+To: jikos@kernel.org,
+	jic23@kernel.org,
+	srinivas.pandruvada@linux.intel.com
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	sanjayembeddedse@gmail.com,
+	sakari.ailus@linux.intel.com,
+	linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] iio: introduce devm_ API for hid sensro setup and cleanup
+Date: Wed, 29 Apr 2026 23:29:14 +0530
+Message-Id: <20260429175918.2541914-1-sanjayembedded@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Wed, 29 Apr 2026 16:38:02 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-> On Wed, 29 Apr 2026 at 16:14, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > I haven't checked this deeply, but I hope at some point we will have
-> > more or less usable state of `iwyu` tool that may do this automatically.
-> > At least current result looks better than the original.
-> >
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>  
-> 
-> I did find a "filter" file of sorts for IWYU that Jonathan had on the
-> mailing list.
-> It does a good job of omitting reports of very low level headers but at the
-> same time IWYU still tells you to include things like <linux/stddef.h> and
-> remove anything <asm/*>  from your includes. Perhaps it needs more
-> tweaking?
-> 
+Key highlights:
+- Prepare change as pre-requisite for devm conversion for HID IIO
+  drivers by removing redundant argument
+- Add devm API to setup trigger and clenaup resource using
+  devm_add_action_or_reset()
+- few sample driver update using devm conversion to auto release resource
 
-I ran into a few corners that I couldn't get to work right
-+ probably didn't cover enough of the asm files with specific rules.
+changes in v2:
+- Following input from Jonathan and Andy, squash initial patch v1
+  series in single change as individual change should not break anything
+- Add devm API support and two driver using the same
+- v1 series -> https://lore.kernel.org/all/20260428071613.1134053-1-sanjayembedded@gmail.com/
 
-I'd love a canonical config file (at least for IIO).
+Testing:
+  - Compiled with W=1
+  - Build-tested on QEMU x86_64
 
-Also turns out the LLMs are quite good at reviewing these patches
+Based on further feedback and reviews, I would extend this series to convert all HID IIO driver to use devm_* API.
 
-Jonathan
+Thanks,
+Sanjay Chitroda
+
+Sanjay Chitroda (4):
+  iio: hid-sensors: drop redundant iio_dev argument
+  iio: hid-sensors: introduce device managed API
+  iio: gyro: drop hid_sensor_remove_trigger() using devm API
+  iio: humidity: drop hid_sensor_remove_trigger() using devm API
+
+ drivers/iio/accel/hid-sensor-accel-3d.c       |  4 +--
+ .../common/hid-sensors/hid-sensor-trigger.c   | 27 +++++++++++++++++--
+ .../common/hid-sensors/hid-sensor-trigger.h   |  5 ++--
+ drivers/iio/gyro/hid-sensor-gyro-3d.c         | 10 +++----
+ drivers/iio/humidity/hid-sensor-humidity.c    | 10 +++----
+ drivers/iio/light/hid-sensor-als.c            |  4 +--
+ drivers/iio/light/hid-sensor-prox.c           |  4 +--
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c |  4 +--
+ drivers/iio/orientation/hid-sensor-incl-3d.c  |  4 +--
+ drivers/iio/orientation/hid-sensor-rotation.c |  4 +--
+ .../position/hid-sensor-custom-intel-hinge.c  |  4 +--
+ drivers/iio/pressure/hid-sensor-press.c       |  4 +--
+ .../iio/temperature/hid-sensor-temperature.c  |  4 +--
+ 13 files changed, 52 insertions(+), 36 deletions(-)
+
+
+base-commit: eade2b843d9b1f668fc1775f15611bb0a1999cd9
+-- 
+2.34.1
+
