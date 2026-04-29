@@ -1,44 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF6982AD0C;
-	Wed, 29 Apr 2026 09:33:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7705C3A6B6B;
+	Wed, 29 Apr 2026 09:36:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777455192; cv=none; b=QuIdIFE+sf2I8WqCTDTY13GquSO0dsfwopIRd9CNOYtRPjyhhxf3ePlwmhpkcnKG3n/+ltqchJgKyqb3CHQTCjZ7d4Sv9NhjwhH6/V90dHYXpkqewSsMDxuT1UbQUku9sPjU9bHj9TCjL480PCRAGOxh6eGGdlqdjdnIelVhSL4=
+	t=1777455374; cv=none; b=KjYC8K9lqVMGe/NmuExUF8LfqvI+t9Q4PulKIyYzKS31voq+PYC3ev/U4hq8dtXfqEUKz7hJ2KFDs+w3XeibH8enuelLsxZ0zcwwVvb0bJpeTxzpOD5X+ofWC3BtBndaGMqPWwU4Y91vH1sR/Awd9GlvCefFAFqscpJPd6fxPRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777455192; c=relaxed/simple;
-	bh=tI7rkJ1ujiMJxEfqKFxugw8sHRx+TnngLor6nLOfras=;
+	s=arc-20240116; t=1777455374; c=relaxed/simple;
+	bh=d6gxp3HIf2QhShbND0PuD91/gATv3xLI5OTznUOaV0E=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JRDFzfl1PgnaLLwZd77QaMCqY93jStWwMFlJRfTVhyPXqSg6AhcV1odrX93eycC33P3ulXLM1X4cRIFRSrR+/ZGGlwhcrf0KFE3OhospU7xT4WI7+3WVNiVEbjsDZcPIRBXpA89m6ByzSMAesoTCTGGP01x9enW4OS+keA0NhqM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aedMjvvn; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=hPs3Kk35a9SRby0t+O1qk/fhtXKlYoEPar08cBxhpwCT5Kl58J1K/VX0ve1ZsYxfYCw0ckO8v8kjhxUHjTp330NB5pKe9sArgRDokQeeAeKfrBXmidA50yz/fS6H+NmdQo/I+FRNVmPFD4HN7ZQAvvMeT6cCsmndHlsz4Wg1REw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FV3STRId; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aedMjvvn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8662EC19425;
-	Wed, 29 Apr 2026 09:33:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FV3STRId"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 454F9C19425;
+	Wed, 29 Apr 2026 09:36:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777455192;
-	bh=tI7rkJ1ujiMJxEfqKFxugw8sHRx+TnngLor6nLOfras=;
+	s=k20201202; t=1777455374;
+	bh=d6gxp3HIf2QhShbND0PuD91/gATv3xLI5OTznUOaV0E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=aedMjvvnTgvTT4WMojD8CBhpYOMD22ZkbTGvBU/HdQZTpbLKmeWsgoEyHbDvtTTDH
-	 2hgboTOn2tW3L30SIOijFPA2BOdxiya6XqAeCA7AU/1ZqtvjxKGjLCFxVgONS/kK9h
-	 TYr4d+ioPae6UEe60/MID2IDC/xYwCeOeYdbMkNKOURmWIIt8Ot36FsN8BQoL7Lz6k
-	 wTN/xZJEyXBCzshpV02+EwF3XwAhSow1LRa/+CvSCuLl2N6mR1T6SbpCjOGCJID/02
-	 7Xs/FHHold2DgocDhc+2eUvWxUw+7ZFFIZW0F6OCNvCLlZIi9dHqNagkVwGGO7Us0n
-	 yVBix8/BApmDQ==
-Date: Wed, 29 Apr 2026 10:33:04 +0100
+	b=FV3STRIdvmDiEfjecDdpwTq4N9f/nXJyOifhYt9dJWoJkdm9Mf/0vE5koBbH8Ikjw
+	 x4TXykH3/x04s+H1gLMLWlWNSoke1Q+tccjkw4mvI/P8m8ms4cYEo3jmfr2QT738DV
+	 0EpVgRrD968SokFCFt9cVjJTjpe3c5wJN4cd787WIX6eHD7d8+759cnQcuZoUbITQD
+	 Z+fydWwH1JgsYe61R5TI6U1o4eeCgG1gAjaOeXpxcNpL6ANM8ywI2p+qNqk9byYN02
+	 gWi22/X1G7RLTAxrGAu4JbOCNF0x1dnc0qjkWuoZIQIEBMWPKHCJJFNiiiYQ/zOCMI
+	 zDNqPJt6QJuVw==
+Date: Wed, 29 Apr 2026 10:36:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Salah Triki <salah.triki@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: temperature: tsys01: fix broken PROM checksum
- validation
-Message-ID: <20260429103304.654ed9a0@jic23-huawei>
-In-Reply-To: <afDXJLGYzF8uwaj5@ashevche-desk.local>
-References: <20260428152239.66213-1-salah.triki@gmail.com>
-	<afDXJLGYzF8uwaj5@ashevche-desk.local>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>, Greg Kroah-Hartman <gregkh@suse.de>,
+ Michael Auchter <michael.auchter@ni.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Andy
+ Shevchenko <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v3 00/11] Fixes and cleanups for the AD5686 IIO driver
+Message-ID: <20260429103604.6ef17302@jic23-huawei>
+In-Reply-To: <20260428-ad5686-fixes-v3-0-9cff7bd67a15@analog.com>
+References: <20260428-ad5686-fixes-v3-0-9cff7bd67a15@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,40 +51,64 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Apr 2026 18:49:56 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 28 Apr 2026 18:02:15 +0100
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-> On Tue, Apr 28, 2026 at 04:22:39PM +0100, Salah Triki wrote:
-> > The CRC check function was incorrectly using only the first word of the
-> > PROM (n_prom[0]) instead of iterating through all words. This caused
-> > the driver to fail probing on most devices due to incorrect checksum
-> > calculation.
-> > 
-> > - Fix loop to use the correct index n_prom[cnt].
-> > - Ensure all bytes are summed as per the datasheet specification.  
+> This is the first series of three on updating the AD5686 driver.
 > 
-> ...
+> A bigger patch series was sent before ("Extend device support for AD5686 driver"),
+> but this is not exactly a v2:
 > 
-> >  	u8 sum = 0;
-> >  
-> >  	for (cnt = 0; cnt < TSYS01_PROM_WORDS_NB; cnt++)
-> > -		sum += ((n_prom[0] >> 8) + (n_prom[0] & 0xFF));
-> > +		sum += ((n_prom[cnt] >> 8) + (n_prom[cnt] & 0xFF));
-> >  
-> >  	return (sum == 0);  
+> https://lore.kernel.org/r/20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com
 > 
-> This change makes more questions than answers. How had it been tested,
-> if tested at all? (This question is to before and to after, the commit
-> message is also unclear about what datasheet says or the real field
-> testing gives.)
+> This one adds a number of cleanups and fixes, like:
+> - Refactor include headers (IWYU);
+> - Remove redundant register definition;
+> - Drop enum chip id in favor of per-device chip_info structs;
+> - Fix internal voltage reference control for single-channel devices;
+> - Acquire lock when doing power down control;
+> - Fix powerdown control for dual-channel devices;
 > 
-I'll guess first word of the PROM is typically 0?
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-The datasheet indicates that it exists but then says absolutely nothing
-about what is in that word - unlike all the others that are documented.
+Applied the fixes - so patches 1-4 to the fixes-togreg branch of iio.git and
+marked them for stable. The rest will have to wait for now.
 
-To me the fix looks right (based on the datasheet) but absolutely this
-patch description should make that clear if this isn't tested on hardware.
+Thanks,
 
+Jonathan
 
+> ---
+> Changes in v3:
+> - Misc changes like parenthesis removal and line breaks
+> - Link to v2: https://lore.kernel.org/r/20260427-ad5686-fixes-v2-0-188e05199368@analog.com
+> 
+> Changes in v2:
+> - Bring fixes first and cleanups later
+> - Link to v1: https://lore.kernel.org/r/20260426-ad5686-fixes-v1-0-7c946a77794e@analog.com
+> 
+> ---
+> Rodrigo Alencar (11):
+>       iio: dac: ad5686: fix ref bit initialization for single-channel parts
+>       iio: dac: ad5686: fix input raw value check
+>       iio: dac: ad5686: acquire lock when doing powerdown control
+>       iio: dac: ad5686: fix powerdown control on dual-channel devices
+>       iio: dac: ad5686: refactor include headers
+>       iio: dac: ad5686: remove redundant register definition
+>       iio: dac: ad5686: drop enum id
+>       iio: dac: ad5686: add of_match table to the spi driver
+>       iio: dac: ad5686: add control_sync() for single-channel devices
+>       iio: dac: ad5686: cleanup doc header of local structs
+>       iio: dac: ad5686: create bus ops struct
+> 
+>  drivers/iio/dac/ad5686-spi.c |  73 ++++--
+>  drivers/iio/dac/ad5686.c     | 521 +++++++++++++++++++++----------------------
+>  drivers/iio/dac/ad5686.h     | 120 +++++-----
+>  drivers/iio/dac/ad5696-i2c.c |  80 ++++---
+>  4 files changed, 412 insertions(+), 382 deletions(-)
+> ---
+> base-commit: d86db1905add39f905cf9f04252804b359914ed6
+> change-id: 20260426-ad5686-fixes-63ea68811bdb
+> 
+> Best regards,
 
