@@ -1,143 +1,105 @@
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80FB11BC08F;
-	Wed, 29 Apr 2026 00:41:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B83C10F2
+	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 01:37:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777423308; cv=none; b=rFGoZAF/bVbVW0Tm1LrflOpCuvCs5VrUqN8Wk7yY4S+y0ly3KGRApsg8KfXM125rOMcOJ0YWQ2YqA24JGhsvr0OAktJ6H4AFeASR40e8kcdHelOljwYlGsOqC4GChIoKaV9/ds+LWf9VZNuo7kQmOPMbr001sTPtJvps/LYaRsA=
+	t=1777426675; cv=none; b=G2e7l5km2nB3mJnJx8tcLgI4L0LiXWM+CzALTgtHKN+eyBIgu9dlegYEOChei+FXSrAbn0X8/5jnBgUmJoFYy26FBZCmSihRzeTwJk4r5UQ1SioonDcgQBQQY+3/cD1KW1HrlWo2ri9TlTYY+s7E8xGtmrwunQtfQJSJPl7WHjE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777423308; c=relaxed/simple;
-	bh=SRVu0gvzT/ehuCyMCHuLngBCW6c+UO5WR3it6v24epA=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=DsZKDqYe2SrykJGu9jqxDl5z/iAoM6zeS9kPbt4kDrijpAtH7iWTaUJ/Yf5Wzy9g93ZvE5G/WnlwVSp1PVJ9Vy4ZQeTXd8SH6JLbKbwWVMT8k/Yhq55ANehvUzCzcptRQymkBlez84kyVHc6V9ZtdOrg7NgntUY7cCRiPsflBCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=FC44CfdH; arc=none smtp.client-ip=211.75.126.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
+	s=arc-20240116; t=1777426675; c=relaxed/simple;
+	bh=cyPiDJjoKP7MVrCsdguzwkmZ1AXGToSRzYUEJQ89j0A=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=t3h1MaVltOHJG1sL6GR4fTOTLCDCUJFT6rn2tDtClqoRVU7CXiMRT6CCWF69aAEIrr7fywYM7NzRRAmBXqXnJ2cXgWVYPDzl3XCt/EQlRkOWvwr1zjzySn7qrs+bbAhHlmHNxM+kDRpRkvJ+kWJdO0GIj5qpZ3voRBvB0O/cAxg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=fnwOKF5M; arc=none smtp.client-ip=209.85.128.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="FC44CfdH"
-X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 63T0dsv87849936, This message is accepted by code: ctloc85258
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
-	t=1777423195; bh=M40E/Xv0XWgIE9iHSFt6HVwr8JYRwYTzfsgJDkisjQ0=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:MIME-Version;
-	b=FC44CfdHXDeaHc+XB4lJf0su/ilf1md9v9++5QMFKO5Vj/V+0skE9usVY1Mqhufa5
-	 +s6Er2dw3P7GMzYWh1VQJzg+ZaFuQbKiKMiql+mELkuWTZXrBGWRfTEUrJt7BEhigG
-	 HV7huvqUE2n0DTJsL4OSWUmgPyjwYxeuBhK/1nqCzRcH8/ySk5qgULccISSJkb+e8J
-	 QuGlUWObMctHsgxQhg+KgKtLB81cMBeWrqiJ2wrCbpeB6vsehFXrbnqG42bwFrEXnC
-	 S+Kq6+5LrXH1XXwFOUhTqb3LZbXqs9RdrOFApRw64P9fVTo76Ti04EhfWvVXnVcwhx
-	 JTaBD/R9SzuoA==
-Received: from mail.realtek.com (rtkexhmbs04.realtek.com.tw[10.21.1.54])
-	by rtits2.realtek.com.tw (8.15.2/3.27/5.94) with ESMTPS id 63T0dsv87849936
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 29 Apr 2026 08:39:54 +0800
-Received: from RTKEXHMBS01.realtek.com.tw (172.21.6.40) by
- RTKEXHMBS04.realtek.com.tw (10.21.1.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Wed, 29 Apr 2026 08:39:55 +0800
-Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS01.realtek.com.tw (172.21.6.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Wed, 29 Apr 2026 08:39:55 +0800
-Received: from RTKEXHMBS06.realtek.com.tw ([fe80::ed72:3015:2840:4458]) by
- RTKEXHMBS06.realtek.com.tw ([fe80::ed72:3015:2840:4458%10]) with mapi id
- 15.02.1748.010; Wed, 29 Apr 2026 08:39:55 +0800
-From: Ping-Ke Shih <pkshih@realtek.com>
-To: David Laight <david.laight.linux@gmail.com>,
-        Andy Shevchenko
-	<andriy.shevchenko@intel.com>
-CC: Yury Norov <ynorov@nvidia.com>, Thomas Gleixner <tglx@kernel.org>,
-        "Ingo
- Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen
-	<dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, "Andy
- Lutomirski" <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        =?iso-8859-1?Q?Nuno_S=E1?=
-	<nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Richard Cochran
-	<richardcochran@gmail.com>,
-        Andrew Lunn <andrew+netdev@lunn.ch>,
-        "David S.
- Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub
- Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        "Alexandre
- Belloni" <alexandre.belloni@bootlin.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Hans de Goede
-	<hansg@kernel.org>, Linus Walleij <linusw@kernel.org>,
-        Sakari Ailus
-	<sakari.ailus@linux.intel.com>,
-        Salah Triki <salah.triki@gmail.com>,
-        "Achim
- Gratz" <Achim.Gratz@stromeko.de>,
-        Ben Collins <bcollins@watter.com>, "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org"
-	<linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>,
-        "linux-rtc@vger.kernel.org"
-	<linux-rtc@vger.kernel.org>
-Subject: RE: [PATCH v2 7/9] wifi: rtw89: switch to using FIELD_GET_SIGNED()
-Thread-Topic: [PATCH v2 7/9] wifi: rtw89: switch to using FIELD_GET_SIGNED()
-Thread-Index: AQHc1o6xWsc4T9bdAkGO0jI3Cj/ORbXziO4AgAA7mwCAAW5CsA==
-Date: Wed, 29 Apr 2026 00:39:55 +0000
-Message-ID: <5747f43ed3b44cbd839716e07e1186fd@realtek.com>
-References: <20260427214127.406067-1-ynorov@nvidia.com>
-	<20260427214127.406067-8-ynorov@nvidia.com>
-	<afBdXj_9r25Ssnz6@ashevche-desk.local> <20260428114342.0d674fd8@pumpkin>
-In-Reply-To: <20260428114342.0d674fd8@pumpkin>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="fnwOKF5M"
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-7947cf097c1so114258237b3.2
+        for <linux-iio@vger.kernel.org>; Tue, 28 Apr 2026 18:37:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google; t=1777426671; x=1778031471; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xYvcj3PZ0VKhlN+5p8f4HoZeNyLA48Vi/zoIdpEXU38=;
+        b=fnwOKF5MjyZ4ORYHTFYpuvjFuww+jFVKiTXYRZUgVL1b6BLu15FiPgOrYrFIGQN0pU
+         EZlFPUgP2m5IWHIqeEyuqsqoRjBdbFcECx8hBJjE22L08cJ987Uenbs5EdvAjF0TJ2s8
+         iTs6CNRh5/HkNvjDVJN7z8G5Z5tD3IR/xnM9MCsDSCPkeIn5Uu/wis582U3Zb3frGMCj
+         1EM9wqLMVvVodjaFaTeo2SlRjMGTns5jkfBWfZvX5PtLK003/JslluZTJJLXn11igFcG
+         5WrCfQPDmBE9tM7x/2A5dgdMSsI9j1QhDFjP/mhqDTkWE3MU9Yb6a3rQHivbyLQRyWz6
+         UeWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777426671; x=1778031471;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xYvcj3PZ0VKhlN+5p8f4HoZeNyLA48Vi/zoIdpEXU38=;
+        b=aQC8DFSpScxYOmJ9QpHwgIpMiTjlyEnvaLBvIW8CszPczg0MA2Bohsf8CI6ivFb4/+
+         ox2lb7NCUHdNA0jfMyyuwdJ9S7/WRUO4wBDDEX+dawe6rNRrGu0eTw7+vNjkp1AppSGD
+         dKPE5Gic+a87iCW3NnsQ3S+CorX6GHGh8jDmqDasZFXIolLwegdgDXdm8+jIaKNU8UvI
+         KrlTnNzxbjDfA+Wy8eOhzyUXBvNJScFUFiyp/93w2yuVUEix7WU+eZ83w7nYGkqkfJtQ
+         UmvcoNNJpxSWCr4GVtdvnWFdc+Kpp67Ari2isCOs3qo4HxG4CaE0ccs1a0+1L7SCAlJ5
+         Uzgw==
+X-Forwarded-Encrypted: i=1; AFNElJ8s5v2GRoSw4DaPWL0Mb2UH5aw9coiWTeNw8alen6ELOZ9kzWIpkCT6rPfeOBbGfcpRbvwuiIiqxCw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy1aSTuYNJtZrLVZokMUjlox3v/Gsu1alqM0B3TNb/BsZpshLW9
+	FEA/7Zg3bOlUXY7mPvYi+svg/HSInaG+NcoCm/9rD1UvBBasYtq68POSdAaysv2rlj0=
+X-Gm-Gg: AeBDietjI2tTDRn7jsYPL4kGP96PgWIHwAJGZ+Itq/TfCP9AHukRcR0jj8ZRuq/MxL5
+	4MXRKBBq1Zoct6RKOeEqJ0/8TzgWChj2TK7klAJNkSmg5k/11WxLEGNPT0bzzbUxZdEQH6mEB08
+	tXgWeXJ/xKEh+zfaPn4PWPAJZtVcYS/IE89FevsLHXBKy4B2sf2nCJtP65BeYCSdfts8gWvbikl
+	Q06qhJcM1qv8cTqRH0U3nuMuvjb/7QYMmV8VcxddSEVQxR8t76cX2HBOhSb9qeSmaaVpeDSbaaG
+	MIVblYQBf2E5cdpZq621zSHHqlIBA20WANFBvpvVlLet5UiHUa972xnxY7vgDNLkkib3xCWGTIG
+	eDRCEHKAmE0hDxeXUmvajdBPvBKCRG8xtjJ5OGCKyBJviA7GmVQSJDKtblV/iV0NY2tuiTMtWbr
+	MnZMm2S6pY09/j5TTUlIu2pa6DJUvTmfTuQPVNk3YULfxgIiXtVJoqbQ==
+X-Received: by 2002:a05:690c:111:b0:7b3:852d:eed8 with SMTP id 00721157ae682-7bcf520251amr59331717b3.20.1777426671354;
+        Tue, 28 Apr 2026 18:37:51 -0700 (PDT)
+Received: from pedrobgennari-Aspire-A514-53G ([191.19.131.187])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7bd259dc229sm7182457b3.39.2026.04.28.18.37.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2026 18:37:50 -0700 (PDT)
+From: Pedro Barletta Gennari <pedro.pbg@usp.br>
+To: andy@kernel.org,
+	dlechner@baylibre.com,
+	jic23@kernel.org,
+	nuno.sa@analog.com
+Cc: pedro.pbg@usp.br,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v3 0/2] iio: light: iqs621-als: use lock guards and prefer early error handling
+Date: Tue, 28 Apr 2026 22:29:53 -0300
+Message-ID: <20260429013640.26870-1-pedro.pbg@usp.br>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-David Laight <david.laight.linux@gmail.com> wrote:
->=20
-> On Tue, 28 Apr 2026 10:10:22 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
->=20
-> > On Mon, Apr 27, 2026 at 05:41:24PM -0400, Yury Norov wrote:
-> > > Switch from sign_extend32(FIELD_GET()) to the dedicated
-> > > FIELD_GET_SIGNED() and don't calculate the fields length explicitly.
-> >
-> > ...
-> >
-> > >     for (i =3D 0; i < ADDC_T_AVG; i++) {
-> > >             tmp =3D rtw89_phy_read32_mask(rtwdev, R_DBG32_D, MASKDWOR=
-D);
-> > > -           dc_re +=3D sign_extend32(FIELD_GET(0xfff000, tmp), 11);
-> > > -           dc_im +=3D sign_extend32(FIELD_GET(0xfff, tmp), 11);
-> > > +           dc_re +=3D FIELD_GET_SIGNED(0xfff000, tmp);
-> > > +           dc_im +=3D FIELD_GET_SIGNED(0xfff, tmp);
-> >
-> > In the same driver the GENMASK() is being used, why not  doing it here =
-while at it?
->=20
-> To me those bit masks look more readable than the GENMASK() calls would b=
-e.
+Use guard(mutex)() for handling mutex lock instead of manually
+locking and unlocking the mutex and flip 'if (!ret)' to 'if (ret)'
+to handle errors early in drivers/iio/light/iqs621-als.c
 
-Either way is fine to me. As we rewrite these into rtw89, using GENMASK()
-can be easier to check if vendor driver defines the masks correctly, no
-overlap.=20
+Patch 2 depends on patch 1
 
-Ping-Ke
+Signed-off-by: Pedro Barletta Gennari <pedro.pbg@usp.br>
+---
+v3:
+  - Remove unnecessary { }
+  - Remove unnecessary ret initialization
+  - Flip 'if (!ret)' to 'if (ret)'
+v2:
+  - Keep include list ordered
+  - Remove redundant 'else'
+  - Remove unnecessary variable 'ret'
+---
+
+Pedro Barletta Gennari (2):
+  iio: light: iqs621-als: use lock guards
+  iio: light: iqs621-als: prefer early error handling over if (!ret)
+
+ drivers/iio/light/iqs621-als.c | 111 +++++++++++++--------------------
+ 1 file changed, 43 insertions(+), 68 deletions(-)
+
+-- 
+2.51.0
 
