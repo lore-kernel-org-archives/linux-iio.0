@@ -1,160 +1,118 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F41C33689A
-	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 14:27:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F81A33263B
+	for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 14:27:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777472827; cv=pass; b=ZHRgloiqSNVN4TtFenuLjjndBLp1d9HAX8DErBpL+v/+gzG7wB5w3+zHGb9n6Z4RAs6o2DcoPKZa1/KK7Jsl7gVsiVSaj51yqPIovKeanz0pu3FV3Ym/ngLDcJuzmm652bd94SWmj9syG9OFcGClxNEyrNKyECrbmjiHUdjcp+8=
+	t=1777472862; cv=pass; b=MWhhLd/ZeX6NfDh0bxyVklR9Ikma2EUK+7dFjD+LZJvdEJqeQl7l7iJSG7xpfmthaCv90ykzGF0GmhjiOcNlri6ZHptBxV9uyK6RVnlyTxj2LdWEJZ6vYHVdSp/s6p+z+RJTFmOuYQkAjdpg2lYcibtm8u9I6zXyKui0M4P6wEg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777472827; c=relaxed/simple;
-	bh=VEW/a8skn+6zpzLRQ03Fyafwelx2BMyNkGoiqeA5YbA=;
+	s=arc-20240116; t=1777472862; c=relaxed/simple;
+	bh=h1yJCwb0CSTyAqpBkyc5N0PKila1y/t3uXLCsiu7b4I=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kjXwaoapbk69g9BtAChlXqUj/0WkUNsBJnD6IA1P52jDQNHKxebpiE8BcmD3opQBuT4IICcRcHdrcgMoOU39aC3LZerSl4eSgyekgR6naRaHoM2D46HjTzHhnxoxPcAzaX/qV7l99uanmj0K5FDP8dviysr597sdxsKrRO6sRbs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JxX0BxYI; arc=pass smtp.client-ip=209.85.128.169
+	 To:Cc:Content-Type; b=i3SUsGk42uZR48DhrFAJnfGoLm8P1waAxWMFgRrtyl5TyYG7WH4LGCtYhPsARTbKALXmU+aRUlhkbuKFSlKfjEeUQtkoNCctIIgl4VAonB4vhdsXmVXVG5eAAf/bUHXbn+99R4s2aBrLdcOOVPdAsUkmeaayDYk01610+0y2AfA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cLRBaimF; arc=pass smtp.client-ip=209.85.167.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JxX0BxYI"
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-7982c3b7dfcso123848107b3.0
-        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 07:27:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777472825; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cLRBaimF"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5a40d02b58bso10930359e87.3
+        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 07:27:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777472859; cv=none;
         d=google.com; s=arc-20240605;
-        b=PuBxUMi603OBq4YDWf/0W+KaWYvYLe/jG0sX1HNLIuMFfRCzsk5SZUSKwLSQlSd9Us
-         lsuo12RssMemdfA87B4racSVlvbZdgEXxnEd+LYusEkPDRsOJE5Nty+GlRPvYx3sxgwX
-         8sENHwq/mzP3/Knk7iyfPDNUjpnFjQA3JKH4Z6N8qmnWO2GE1nrRZdF1POuN0/lD1tYh
-         Pqc2c5sycHCpvqWCPzuRDFxHN9uR189Ng2Q9JQ+vavJUxiWl3MYpiJdHlZRqBbjwVRuc
-         kPfYPL7un49DtSnwVVRMueI67olbLpXIpIZbfe5YnRWlXE+hhsSDJGN72hLKEAVjxcKR
-         sZIA==
+        b=E6OOwnyi174rI8v2yHuWwIk1RJPWvyq98hkKVtv4bWItkRwbDnjj6obphwjIt1xdxy
+         sHHz2hZ+O3WHz1UYe7HetXmv0t6JK52X/szVxOiVwJa9E9gFN2XhFeDHSFY8jQoebm4j
+         jW/IdwvCjPkbH0ZcqVRpxd9Gnwr03jUoH5ogdUzQNrG9+K/cnOogQeiLrE9BaT8KR1od
+         BpINA9wP73zFIQus3gm4Z+XNZuo/HwQXThs0pW3VQlGhan2OYD78wl0juR8JDYh2seLb
+         XKCXVIqQjm9/47yo+AwB2zxNYfbgQD8AiiyrKhHruJk42Ealy5jBmnLGDqA7K6kAQg1C
+         i9FQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=mUOJv2rcg63awdE+sl/k5KnSLLLRdiGM+pY0j1pbnrE=;
-        fh=BXIvbxt5F4cYLwfPymsyuqXj6CFezxP4IRWGR/9Aihw=;
-        b=hjdzhy2hKG281GfbB7tC/hlbG0NNEpaAz8XTanTd/drzFCJ2e9UV82J24hwK6wLahT
-         mIpFozUomWpWGTDwk+tMpzetdfyo9uScG3PqrrfLVBOYmm0GbXiQV/gTrahzCfNRZce5
-         24zKngVdUaum9du5V5bx1mCvTVD/1mOk2SG3CdA0EmzPIJ1O4vhTOY+OHSDsMF7GCngI
-         Afs8si6EnTSavyyjVgh+wK6fom+8955DLFlDMedR/vopmkafuw0/ZUKPt2eOMiO76LuE
-         I2BE+aqHjkzlw3oFXVJcuNS25x7I1zCr9uMpQjWBXJXeLB4zGr1Hy8GeYd65jZmAQ57M
-         ocvg==;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=+b1hS1pCczyUgQxSQt046A354+T/e4vJQk0o+zywVpE=;
+        fh=mnV6XRTFqWo7S0JottaaavaYhbXteHqXDHVUMe4vEOY=;
+        b=gwzbBo3ZXURB7xiDUeHi2gv9VOMnTPpeLR4Z+SEsmT9rbCX/otdrKTR4qROUD9YVT2
+         grANFMqvX3gaDj4XoYIDoAUWcZBAbUoyX24VYUoQrXjRqNeip5JdWeUWBdfpm9YiGuqq
+         1wjF6LYTjj6a4PSZZEOW/9oe57XJhmIGorZnFcjlP9MfJl6PlhBg0BHjZzrMWw1Zffn0
+         2uWvqpFNXT4590fWMq0EP7t9610MmDhF5mOGLzDVfTA3UARpcBJ5+xLvwJg3Eflz+hAA
+         RspiGkYeyQrCdrLd6pxlSmq9sjnWiHmk2CT2TkZ6lAuZ1M/1q5vdcUngaX9NdpqYADUV
+         4oyg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777472825; x=1778077625; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mUOJv2rcg63awdE+sl/k5KnSLLLRdiGM+pY0j1pbnrE=;
-        b=JxX0BxYIXMyj+2eDNQpyGGEonP634GzJ9znWGdoG4rztMkkx592nKYVgyIBOCOazXf
-         z2dSR5/WnIVzX/+aix3o/o8qWIgb3/+Zg4dufrBjU0C1EK1CfmMkzI4fhEaYXNluVyUW
-         dBF+ZcrJv8ihu5iq/6GK+dbogHVxT1JkY5Fz+Uda8tNoae6hTlWNmEBIGRmk7E0arSHB
-         cyUwDOf906BnKHkH5WQUlnV4l20ImXY0F8B6IcjMAjsdTvo8JYwB6mwUuaFXMSH4EjnY
-         Vhkpxtdl2iW0x2bWclcd603cHQv4KfqAz5wRjoWG2H/u0lVS6/y1uvSv1+s2ehce4BvA
-         1k5g==
+        d=gmail.com; s=20251104; t=1777472859; x=1778077659; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+b1hS1pCczyUgQxSQt046A354+T/e4vJQk0o+zywVpE=;
+        b=cLRBaimFyxxXc/rn9vEnRB6NPefBLWfu26um7+gkahpykV4asiV5EJt3ozgVIAhvkD
+         3YalbKmxuqbV2EvDPvxEM1D1lkrd9tF0F5ih6koiyrVBbQhsQKk6ia56APSFUzlCQHgD
+         4pH28UFDyipGIHOnl+EYOT0nXw+zo+9aX0HPaRv9agDCCwUjYb26vlS+Fd/dby1xdmA5
+         v6q589ayiIRKjHS7kZ+8PXTsiKs9sNsxOwH8g1fx9G9OmzQ5Fdeev9AvTfTNTiDlLGIs
+         EihphVgc4yAr0j6c/48CGm20Ii+Hiw2vrBYYqzCDdYmSixLT82fZnntmEYO2ikWQEsRL
+         DIjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777472825; x=1778077625;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=mUOJv2rcg63awdE+sl/k5KnSLLLRdiGM+pY0j1pbnrE=;
-        b=eWdfUcgRflPVPNV09uYVH8Zc8jFXsH7iIU6oFSb4t+nxWl8XFivxy8iSbzPnYxJH4/
-         2QZasLvT9rJhbGW2KWELKL50Hx7S1ybprwGvBIxjMzml4nH3gNSSQ/C549dGaIyqUFIr
-         BHyjXlhHd2N1MtEx/PcD2OPd7wlakcJqHHFoql53C0v8ZzfE6IOwWWxgJ+JzM/G1IuMq
-         MvCLEPmRuYK6PVdMGGlaXfYtY7OsEaLxHxwm8eIaPgGpw5Ca9Ryk2eMEBQHRn4WFoZn7
-         ad2BoyK8rqF/kStquk4zxLMxcA+JFoXM2jRcFGDjThub6pXvi/3mMfBEHFvV8YON18c9
-         8Ifg==
-X-Forwarded-Encrypted: i=1; AFNElJ8wak1vOd1qsLPfbMoJvA/HFMgkR0oSGurZ66Uf3URQHfYoBzKudZa9LpJHKeU62zXmXjUkGYiX6JE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxVOsjj7sq1oTJZXk4o1d3++JgWxaKr3UsD36i+saD224t2izuR
-	IJADyO1EExFisk0ZgCof6cERmP0urZV3eT6bWaSDvb6UTC2JFyD616YyaRiCLjvgxWeG02B7+X2
-	H7mM0duGEnPWKitQ7jrJ4wq0mLDN2WtQ=
-X-Gm-Gg: AeBDiesP+plS1xDEIyKnB7atyW75kOixWEQ+aVP2E/58tAbnFMr8EJw8Ssxu3SxhJlL
-	djOWqsIns02o4DfuuiQ9CmAzCe3JXjmts4n9Rg7/KpUvcuPi1QLPWCt2AvatHLXDFn821nwV20W
-	LgY43UnVzJm+uBiKAoc8yq44oLno/paTrrQnGTNPd0zHCR93ktVYDB9fFDkfIFxNtlku9j7ET5V
-	PQ6yD6zrFt565dF/60TT47LhEjJ62rr5BVU9fB3rovnNd0PfDgK/BqFzh9R8rPU9jwygvstHH5W
-	1zncHLP51r4Jlb3OVwpp
-X-Received: by 2002:a05:690c:7301:b0:79a:8f2f:cb3 with SMTP id
- 00721157ae682-7bcf57a4bfdmr79675727b3.44.1777472824895; Wed, 29 Apr 2026
- 07:27:04 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777472859; x=1778077659;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+b1hS1pCczyUgQxSQt046A354+T/e4vJQk0o+zywVpE=;
+        b=ZeflUz+DHwPWToQL94/1Qn+kST14sdTaszFRUmYLdCMLhzgh4tmM6ALyLCI8kk1cy5
+         6Qe0a0DS2VBGfL6Lwzs77qU2v6gAQdqU9GaN+hJnXdvfLJ+mI1x0Kdq7Z/cFpRCVfqrL
+         88vh8CmV48GWPqaedPeDru+pS4Pg/6+Dtxb3DOWEx9vf6j+tTPl9eba5caShbJDdwfZd
+         v6bS//NVg/ehxjL8jcXK26YqmZmyDF8ui5K3O3naRGRZ/LOWIQhqvaphjilWQtzYioBl
+         jF2Iqefx6W9T4CaV0pZ7MIJLH0Ynrv6vjeLMKJruZ5/rdzB0Jhw2TiFDbBg7m5ICqAWD
+         yvaA==
+X-Forwarded-Encrypted: i=1; AFNElJ/8spMbdosbtwkS3sQZEytyY+JPQyzXikSKpWJkwNLYQZA1f12nHSFrtOXqCH/5qvt3HJYeeTFBRkU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwpsTrA9i4aALnaVU4YJm8e5NxoStYs3FuAOWw6AFEuk6eNXclx
+	9P2G91obE/PBcgbnPv84005n3A5TeQAQjnu2bSCtybCdGtscJSDDvnof6UNE7MUs8BA2JmP/vgQ
+	m8EczjqUKsMYq6RfoL+71RKnqSZqfsy4=
+X-Gm-Gg: AeBDiesbP/nSuAmlHzA6Gu+a+k1TBFfSRSIQ5dlKg/lVVetFKK3YbUyUsTzQDTVFgsB
+	hUk6DQfYHeyYDYIzD4ds/wYGlqkEGGRoTWpwHSMoYJ4Y8d7EAyDvXcqUDiNPR//8+zc4/zTo2la
+	VhYFEfHrFNrUa1kWXwzCRfHjmNBIu3W/25OkP6YLaCblZTHkwBAKw9Evy6WTXRAEvw6DdZvEwn5
+	KcCze/mh16Cr2WGt1tIL2riDyXWJC/MtAjj2ZzwAsys79jW8nEt5tgvd4gOMND5KNP6cJRnd9Qd
+	FwS04nu433GztQa21t7EF40eMytL+qQmh6zQoLn+JR//KXw9ZLJinpQujC1DCbhgYR53yXpb/+m
+	7ifH/Z7G+437P5AYPR/EM6El2P4YBTPX8EpKoGSbium3JWYljjkhR3GenbKf6ovwWy6BdJpBSJW
+	fjcywACKdz1z9wou5OyHqOyg7w62I=
+X-Received: by 2002:a05:6512:131a:b0:5a4:79e:9669 with SMTP id
+ 2adb3069b0e04-5a74660ef92mr3089025e87.21.1777472859105; Wed, 29 Apr 2026
+ 07:27:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260428222600.91322-1-m32285159@gmail.com> <afHLYbjUjE-kQGer@ashevche-desk.local>
-In-Reply-To: <afHLYbjUjE-kQGer@ashevche-desk.local>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Wed, 29 Apr 2026 09:26:53 -0500
-X-Gm-Features: AVHnY4J02lT8KEqnr4eEil8LtnQ9rmUxCgv8eKIouP_56oCz9tEM4Cpqt7Z7PPs
-Message-ID: <CAKqfh0EXYOjzyLcXfRB7RdBVfcNOkjpoL8H+7t124H0n17UKXg@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: magnetometer: rm3100: Modernize locking and
- refactor control flow
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: songqiang1304521@gmail.com, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
+References: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
+ <20260427201412.3067235-5-andriy.shevchenko@linux.intel.com>
+ <20260428172212.1e1bacd9@jic23-huawei> <afDpBGa3N8Dd1L6y@ashevche-desk.local>
+ <CALoEA-woV6r=gOfHHXgBG82+FCG6XMBcSy0=6SUiryCS9woh+w@mail.gmail.com> <afIT3Uk3NdMIKlH1@ashevche-desk.local>
+In-Reply-To: <afIT3Uk3NdMIKlH1@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 29 Apr 2026 16:27:27 +0200
+X-Gm-Features: AVHnY4KNUlc2JpJ_5NBm3Q74SGwPk1d8YZFhnzkd8wKhA9hTgpPShY8nvphAkpw
+Message-ID: <CALoEA-zSHLo_KiHVUrg4ZUcwX5dq0J-vDmBoaG0NQSMVsJM6qA@mail.gmail.com>
+Subject: Re: [PATCH v0 04/14] iio: magnetometer: ak8975: Inline timeout constants
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Hi Andy,
+On Wed, 29 Apr 2026 at 16:21, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+> > Simple enough, however should I do this as a separate patch or
+> > just a fixup into this one?
+>
+> I am not sure, but since Jonathan doesn't like the numbers be copied and split
+> far from each other, I think the fixup sounds better. The commit message needs
+> to be amended accordingly.
 
-On Wed, Apr 29, 2026 at 4:12=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> ...
->
-> > +/**
-> > + * rm3100_guarded_regmap_bulk_read() - Wrapper around regmap_bulk_read=
-() with a mutex
-> > + *
-> > + * @lock: Mutex to lock while performing operations
-> > + * @map: Register map to read from, passed to regmap_bulk_read()
-> > + * @reg: First register to be read from, passed to regmap_bulk_read()
-> > + * @val: Pointer to store read value, in native register size for devi=
-ce,
-> > + * passed to regmap_bulk_read()
-> > + * @val_count: Number of registers to read, passed to regmap_bulk_read=
-()
-> > + *
-> > + * Intended for use only in rm3100_trigger_handler().
-> > + *
->
-> I don't mind having kernel-doc for a static function, but if you do that,
-> validate. Here is "Return section is missing".
->
+Okay then, fixup it is. Otherwise I'm thinking of sending the series
+Friday to let it
+sit long enough.
 
-I'll make sure to add that in the v4, I probably should've been
-explicit in that description.
->
-> > + */
-> > +static int rm3100_guarded_regmap_bulk_read(struct mutex *lock, struct =
-regmap *map,
->
-> No, supply *data and not a *lock.
->
+-- 
+Kind regards
 
-Understood, I'll also change the function signature for that in the v4.
-
-best regards,
-maxwell
-
-> > +                                        unsigned int reg, void *val, s=
-ize_t val_count)
->
-> static int rm3100_guarded_regmap_bulk_read(struct rm3100_data *data, unsi=
-gned int reg,
->                                            void *val, size_t val_count)
-> > +{
-> > +     guard(mutex)(lock);
-> > +     return regmap_bulk_read(map, reg, val, val_count);
->
->         guard(mutex)(&data->lock);
->         return regmap_bulk_read(data->regmap, reg, val, val_count);
->
-> > +}
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+CJD
