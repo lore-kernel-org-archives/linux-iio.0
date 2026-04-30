@@ -1,63 +1,63 @@
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0441747D95A
-	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 19:06:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CB8647DD49
+	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 19:06:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777576013; cv=none; b=c2rDjjYTc9YcQm3M0Y2vAuFNm844RGqLliTOzVaRhmkI2as6HgKUNzqLqi/UJW8l32Wl67jUpGKYJL/3rPhl6aYgZBTjByPJDNHVMP7kZz+YbhGY8yH94q6mSkiIiMNxpeqi8WKbJHyCTZlZaHP/vgFMLcQq/pvxo2zQX3D10KI=
+	t=1777576016; cv=none; b=qEFG9RclnsbgPy+2tIdZaCPjE8BS6f9qKLFxL7cIkBRVVK5k3gy1gUzZtnbFLCezwW2Vm+SwbP7eemi4Ho6hpr2P/u+JT3O+4udV/P9bxDHzrtI4x9zfbH7kTJlR3r7GjKT7M3oURdXLOjFYniXFUmQC+502y5HbLgS7u1YmFHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777576013; c=relaxed/simple;
-	bh=fEsnZrRsvrKBNzg7H0bCEZoR5y9jdaPRjz5QDndHJVQ=;
+	s=arc-20240116; t=1777576016; c=relaxed/simple;
+	bh=fONQONiVeE2exppkI2A7FEJa0I0FFpzW0GY6mBzxbTs=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VrpYa6tc1k/wU4UAzEV89VoX1X19YUMBErT33AO0XecxjVHsz8l6ml0tNzOMWZPggYf3Ys0818Vgi6W0tHkYCkfaRcnNKiob6uZwpFXThYe/4NCjcmO4D3SO45LgIfdL38RnosDFg8ow88FXu6nj9AXSw+mJV/OwZ/EEheSMWvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bN7HctOr; arc=none smtp.client-ip=209.85.216.46
+	 MIME-Version:Content-Type; b=kyKZMUWLpoJCSzK98as8WgVNxKKuQdMRZ1BxSZeSeu1vcjjlVm8TAt8T9S9QMroIAwFLuNk8vdq74lIfIh8yLvIcsrp2l5YO2rVIsnGLOgChXuXh6Uj7gDF/jSMHlaVQSuCm/AUyf050OiO7GD1rUlpc+PZy7SvDvQoQl8KI+1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sjSD8A5K; arc=none smtp.client-ip=209.85.216.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bN7HctOr"
-Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-3567e2b4159so1021597a91.0
-        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 12:06:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sjSD8A5K"
+Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-364e5d895e3so306212a91.2
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 12:06:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777576011; x=1778180811; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777576014; x=1778180814; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HzRtJkU00CuLLmFgM3t02EkjasKtqNUWug+c4hQSGm8=;
-        b=bN7HctOr7NFwV50L1YTwCozB0Qso7J8LGt1BizGKqfSfUdRSo0SrTDnCfbBe1W0e7e
-         BypJS+bTD7ps1Mq8AtVU9mMT+cistwxumpU7cww3CYM4x9ievRCXArQhubiCGudAiRMr
-         oSgPGnNrLRN/XbTT2vtMsGVuLURq5Zvx7JPW7ZGzA9we6YO+rA4ky35GLSjDuAeMuUIu
-         lqA9Fg+EOx1m/lRxAVJMSg7s8rIsVgvSUUE7TdtiGMrVxcUgMRhGWK/Bd8hXGyzg+Hul
-         urkPFoEw1C24CGlMI3WTh+tEEIIj9+AAe7md6eHsdGD3LHCRJAQm0GiaFKuuey2J0pun
-         tPuA==
+        bh=blZ1b523xuqnbOdOod/xHAgiCiGwmPfopg5jytU9ERo=;
+        b=sjSD8A5KnQt4q62Hct4IiZy7Bddp+zNVtzcPC6j0I6OKXQcGvRp8zCPNFHkR1LATr6
+         vV9mpYYxPsYFvXMCBVRxDTMOJ6EY5KutKoh21nBsA9Pz7tDi3tn6EMKfAJZfjdFdRWiY
+         IanNfgsooQSGO0czaWPqMLpMMisc4C8beNT4VphllLJol0YvSNh/ivEeGugdb0n1kCsL
+         ob5yNFHPyos2WYeoOvOScB/fQmhkV3ZP4aDywgy3T1Ee7/hxp9MpyPnT55qMghswPNrd
+         qee19w2rCe76W5T99jiRn6fMiMjT90LOgSLciOt+7pmLGd9BnjBUpGQnSp+/dQpXLpfh
+         3/Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777576011; x=1778180811;
+        d=1e100.net; s=20251104; t=1777576014; x=1778180814;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=HzRtJkU00CuLLmFgM3t02EkjasKtqNUWug+c4hQSGm8=;
-        b=hMCDLquo3TxaosNsmSXEXzRpJVbCZWYm/bpWn5640i+KFHvyr9tO2oMpYK5+4q5B08
-         sxlqQ5Y6yEyOX55HZN0rg6KQCyxzoyXzE5SLXzexO9gwFqIJgpQCZX4UQizye8mcP3tc
-         zS0fU9dielx4OfVDtPFtGOAhRBZIrVwIDKztKcLEi9y+hh079GNC/0A3bprbvbBtWu0f
-         W4diZoUa3Rz7gH5l3TMFZHUPDDKfWpvtyasTKkUQMW0uKiHcrD5mUw0D5IMZn9JbjtPe
-         ukd2kI9n7fy4vBa7wbrBJXQ3npDlTj5yv8/ZohjChX5Ni41fT4AQAU8WTky3YOMbN5xg
-         eOFQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+wxINqRkoIDUAutaJNfTbN6eA/sSWF29MLaLLYxR0s8Gep1RlQMCvk+3gB+SM3HciNfZtUb7KVrYw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxRTxaC5GcWKsahuC2Rw0vX/UdnIDE2XdQGryvbx5HWj0WCwZD+
-	qMKWbBD+G2yMYZATIl4M0z910IFbG28vS4pQyng2b2JFQzeV8nNFIIt2
-X-Gm-Gg: AeBDiesk2dh+lZeXIWYRmSz9iL8U7WsoSKlYYNU8gkGgDley8vIiQtqv47BUMK5+XkZ
-	OzkRZHFa/+6Y97/vY5aB8Sl/iC6jOt2kJlnuQpVGOba/ZOaUqD0qV4DNMp/MLDmk/ZP/AKVXPfy
-	qFxGxvwEAf3H1fAXUlTaGRbWFHwjoCn7ODbMAuZwnzJshTu0yPnrMWkfNhzC9jFSr6gDz3cu7aM
-	Gvz5TrIlczVt6GVuMP18hVXBwSIgiK/Q//H6B7iNmnHRGGy5INJ2MFbq0p24XMDZQrqFKUOkKL+
-	Q+yN4z0JYVTk4WjO/Zb0dNosCVwfC1ND85UQniwjBSvOoc5LnAd6O3GMtx6079E/yxRbrCHTF7J
-	gbbnJAPatRkpRjnI71/1a/uGWG+gYZRExRpglc1t9iuQU67guPb7t2YBeic1LBzItcbsO2YJhWQ
-	8Vi08x2NFH6pZI0SZL84XbKtuKl7mp22COTlFraSro8AmRmFnUmIwY+D49ljs=
-X-Received: by 2002:a17:90b:3d81:b0:35e:577c:c9f with SMTP id 98e67ed59e1d1-364c2f8a3d4mr4494100a91.9.1777576011177;
-        Thu, 30 Apr 2026 12:06:51 -0700 (PDT)
+        bh=blZ1b523xuqnbOdOod/xHAgiCiGwmPfopg5jytU9ERo=;
+        b=lgXJ322I5ioKyD2p5rpNR7lSRl0rK70LZrRcgRo+ZzTeUaI8F23yP5GdMHIcoH5DoR
+         kVxv3PK31qsnOCh3TqSengcdCPgr1nm1BwrafAvVUs7jabTe6AhTQNZH4SogfcthHMrQ
+         A8XKQmarcyKztjnCGhqSRWdsqvt+l7000LemzsGSI0u4vWtqZ7OBnfRhyWLrLP8/AoGW
+         lfPB091CIEJotWHF5OD3WCVai1OFcQdhVLBDC/RD8P9ksW7ybYeXW6TijYvHkcYypjr3
+         7QsfnjqXMLi5Iuyl5mI30OH0Deg/qCT9IuvKnJXja7cJIMNyW6Nnkmc7oBLgNct0kMI+
+         Yqow==
+X-Forwarded-Encrypted: i=1; AFNElJ8vt3JOkR9fSrYXBjPIi5HT6fZiXyiezJSe3lgn8KujEF5UFhgynJvSHEzxG/R0ufXSAPt83Qqo5pI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwvhPAFLPxMOC/gqxhS2oPT7TQ7laZ7H7a+ZHXlNne5qMxmD37U
+	Ie/DCGkF6WDBwYt7Fm7uAQoV20CA1UE7ZxPQbaoUJIttl4NFE98aBnJX
+X-Gm-Gg: AeBDieuNzn71jqLKjqA0ARddxxmu0Jzc0KrfPDSeDAsEdHhty49MYglaFoyCBj14tZO
+	VNuk/2qQCbx3jhA6N7Xn3AaLDk6T1vPmlu1+ZdXW+qmemQnwbmdT+O6JTFdU6CkyEwK0bgnTQcS
+	3T/rpXlmP9hRnTwhqR/toyfwZ/hD9QLgPJkMfdcJ1ixdab8e/FgEDKBk/CDmFuZvIg/Wh5IZjzS
+	CUL6hp0mG/gwtfJJ0pawPGrEjPJNXXIVSD5tejuND4m4lTh2l3Gy/hI1hZ2hwwmZ+0XTfNq5CZb
+	M3U6wJcDvIVuyO+0fiwQFDJqqDMiWqCqP1fU9GG5ggBHJPnncyD2rNamhtRC5EN9+/LmM24vGvG
+	BXK2dlRPBqd9lLjH4lOhwqODvGbt0TAXuDGHfRbp3+jJwGFQ7OjWwjf+0vupscjxmP1QO4433ZN
+	nuhnNkt7ozbTn7Fe5PmLiCXr6sZ2UjZ9NJV85kfOvj5Rl0SiD9P6G8+ewH+80=
+X-Received: by 2002:a17:90b:4b86:b0:359:fd9a:c50c with SMTP id 98e67ed59e1d1-364c31715abmr4672406a91.22.1777576014249;
+        Thu, 30 Apr 2026 12:06:54 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9cae16067sm3332185ad.40.2026.04.30.12.06.48
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9cae16067sm3332185ad.40.2026.04.30.12.06.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2026 12:06:50 -0700 (PDT)
+        Thu, 30 Apr 2026 12:06:53 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org
@@ -67,9 +67,9 @@ Cc: dlechner@baylibre.com,
 	andy@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/5] MAINTAINERS: Update Analog Devices IIO drivers entry
-Date: Fri,  1 May 2026 00:36:38 +0530
-Message-Id: <20260430190642.3434650-2-sanjayembedded@gmail.com>
+Subject: [PATCH v4 2/5] MAINTAINERS: iio: adi: consolidate entries
+Date: Fri,  1 May 2026 00:36:39 +0530
+Message-Id: <20260430190642.3434650-3-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260430190642.3434650-1-sanjayembedded@gmail.com>
 References: <20260430190642.3434650-1-sanjayembedded@gmail.com>
@@ -84,33 +84,248 @@ Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Lars-Peter Clausen is currently busy and is therefore removed from the
-ANALOG DEVICES INC IIO DRIVERS entry, with input from Jonathan.
+Remove redundant per-driver entries already covered by wildcard paths
+under ANALOG DEVICES INC IIO DRIVERS for drivers/iio/adc/ad* drivers.
 
-Add Analog Devices mailing list as contact for the ANALOG DEVICES INC
-IIO DRIVERS entry for coverage support.
+Keep entries where specific maintainers exist.
 
 Suggested-by: Jonathan Cameron <jonathan.cameron@huawei.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ MAINTAINERS | 158 +---------------------------------------------------
+ 1 file changed, 3 insertions(+), 155 deletions(-)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index bc42e1cacd6b..34b67d010e87 100644
+index 34b67d010e87..bd14e15f04c9 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -1861,8 +1861,8 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	drivers/dma/dma-axi-dmac.c
+@@ -451,17 +451,6 @@ W:	http://wiki.analog.com/AD7142
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	drivers/input/misc/ad714x.c
  
- ANALOG DEVICES INC IIO DRIVERS
--M:	Lars-Peter Clausen <lars@metafoo.de>
+-AD738X ADC DRIVER (AD7380/1/2/4)
+-M:	Michael Hennerich <michael.hennerich@analog.com>
+-M:	Nuno Sá <nuno.sa@analog.com>
+-R:	David Lechner <dlechner@baylibre.com>
+-S:	Supported
+-W:	https://wiki.analog.com/resources/tools-software/linux-drivers/iio-adc/ad738x
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
+-F:	Documentation/iio/ad7380.rst
+-F:	drivers/iio/adc/ad7380.c
+-
+ AD7476 ADC DRIVER FOR VARIOUS SIMPLE 1-CHANNEL SPI ADCs
+ M:	Matti Vaittinen <mazziesaccount@gmail.com>
+ S:	Maintained
+@@ -481,16 +470,6 @@ W:	http://wiki.analog.com/AD7879
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	drivers/input/touchscreen/ad7879.c
+ 
+-AD7944 ADC DRIVER (AD7944/AD7985/AD7986)
+-M:	Michael Hennerich <michael.hennerich@analog.com>
+-M:	Nuno Sá <nuno.sa@analog.com>
+-R:	David Lechner <dlechner@baylibre.com>
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7944.yaml
+-F:	Documentation/iio/ad7944.rst
+-F:	drivers/iio/adc/ad7944.c
+-
+ ADAFRUIT MINI I2C GAMEPAD
+ M:	Anshul Dalal <anshulusr@gmail.com>
+ L:	linux-input@vger.kernel.org
+@@ -1415,15 +1394,6 @@ F:	Documentation/devicetree/bindings/iio/dac/adi,ad3552r.yaml
+ F:	Documentation/iio/ad3552r.rst
+ F:	drivers/iio/dac/ad3552r.c
+ 
+-ANALOG DEVICES INC AD4000 DRIVER
+-M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4000.yaml
+-F:	Documentation/iio/ad4000.rst
+-F:	drivers/iio/adc/ad4000.c
+-
+ AD4030 ADC DRIVER (AD4030-24/AD4630-16/AD4630-24/AD4632-16/AD4632-24)
+ M:	Michael Hennerich <michael.hennerich@analog.com>
+ M:	Nuno Sá <nuno.sa@analog.com>
+@@ -1435,78 +1405,6 @@ F:	Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml
+ F:	Documentation/iio/ad4030.rst
+ F:	drivers/iio/adc/ad4030.c
+ 
+-ANALOG DEVICES INC AD4062 DRIVER
+-M:	Jorge Marques <jorge.marques@analog.com>
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4062.yaml
+-F:	Documentation/iio/ad4062.rst
+-F:	drivers/iio/adc/ad4062.c
+-
+-ANALOG DEVICES INC AD4080 DRIVER
+-M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
+-F:	drivers/iio/adc/ad4080.c
+-
+-ANALOG DEVICES INC AD4130 DRIVER
+-M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/ABI/testing/sysfs-bus-iio-adc-ad4130
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
+-F:	drivers/iio/adc/ad4130.c
+-
+-ANALOG DEVICES INC AD4134 DRIVER
+-M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+-F:	drivers/iio/adc/ad4134.c
+-
+-ANALOG DEVICES INC AD4170-4 DRIVER
+-M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4170-4.yaml
+-F:	drivers/iio/adc/ad4170-4.c
+-
+-ANALOG DEVICES INC AD4691 DRIVER
+-M:	Radu Sabau <radu.sabau@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
+-F:	drivers/iio/adc/ad4691.c
+-F:	drivers/iio/adc/ad4691.rst
+-
+-ANALOG DEVICES INC AD4695 DRIVER
+-M:	Michael Hennerich <michael.hennerich@analog.com>
+-M:	Nuno Sá <nuno.sa@analog.com>
+-R:	David Lechner <dlechner@baylibre.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4695.yaml
+-F:	Documentation/iio/ad4695.rst
+-F:	drivers/iio/adc/ad4695.c
+-F:	include/dt-bindings/iio/adc/adi,ad4695.h
+-
+-ANALOG DEVICES INC AD4851 DRIVER
+-M:	Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+-M:	Dragos Bogdan <dragos.bogdan@analog.com>
+-R:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml
+-F:	drivers/iio/adc/ad4851.c
+-
+ ANALOG DEVICES INC AD5706R DRIVER
+ M:	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+ L:	linux-iio@vger.kernel.org
+@@ -1515,31 +1413,6 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
+ F:	drivers/iio/dac/ad5706r.c
+ 
+-ANALOG DEVICES INC AD7091R DRIVER
+-M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	http://ez.analog.com/community/linux-device-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r*
+-F:	drivers/iio/adc/ad7091r*
+-
+-ANALOG DEVICES INC AD7191 DRIVER
+-M:	Alisa-Dariana Roman <alisa.roman@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7191.yaml
+-F:	Documentation/iio/ad7191.rst
+-F:	drivers/iio/adc/ad7191.c
+-
+-ANALOG DEVICES INC AD7192 DRIVER
+-M:	Alisa-Dariana Roman <alisa.roman@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
+-F:	drivers/iio/adc/ad7192.c
+-
+ ANALOG DEVICES INC AD7292 DRIVER
+ M:	Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+ L:	linux-iio@vger.kernel.org
+@@ -1584,15 +1457,6 @@ F:	Documentation/devicetree/bindings/iio/adc/adi,ad7625.yaml
+ F:	Documentation/iio/ad7625.rst
+ F:	drivers/iio/adc/ad7625.c
+ 
+-ANALOG DEVICES INC AD7768-1 DRIVER
+-M:	Michael Hennerich <Michael.Hennerich@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+-F:	drivers/iio/adc/ad7768-1.c
+-F:	include/dt-bindings/iio/adc/adi,ad7768-1.h
+-
+ ANALOG DEVICES INC AD7780 DRIVER
  M:	Michael Hennerich <Michael.Hennerich@analog.com>
-+L:	linux@analog.com
+ M:	Renato Lui Geh <renatogeh@gmail.com>
+@@ -1611,16 +1475,6 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
+ F:	drivers/iio/amplifiers/ad8366.c
+ 
+-ANALOG DEVICES INC AD9467 DRIVER
+-M:	Michael Hennerich <Michael.Hennerich@analog.com>
+-M:	Nuno Sa <nuno.sa@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/ABI/testing/debugfs-iio-ad9467
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
+-F:	drivers/iio/adc/ad9467.c
+-
+ ANALOG DEVICES INC AD8460 DRIVER
+ M:	Mariel Tinaco <Mariel.Tinaco@analog.com>
+ L:	linux-iio@vger.kernel.org
+@@ -1654,14 +1508,6 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+ F:	drivers/iio/amplifiers/ada4250.c
+ 
+-ANALOG DEVICES INC ADE9000 DRIVER
+-M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	https://ez.analog.com/linux-software-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+-F:	drivers/iio/adc/ade9000.c
+-
+ ANALOG DEVICES INC ADF4377 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+ L:	linux-iio@vger.kernel.org
+@@ -1866,12 +1712,14 @@ L:	linux@analog.com
  S:	Supported
  W:	http://wiki.analog.com/
  W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/ABI/testing/debugfs-iio-ad9467
++F:	Documentation/ABI/testing/sysfs-bus-iio-adc-ad4130
+ F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+ F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
+ F:	Documentation/devicetree/bindings/iio/*/adi,*
+ F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml
+ F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+-F:	Documentation/iio/ad7606.rst
++F:	Documentation/iio/ad*.rst
+ F:	drivers/iio/*/ad*
+ F:	drivers/iio/adc/ltc249*
+ F:	drivers/iio/amplifiers/hmc425a.c
 -- 
 2.34.1
 
