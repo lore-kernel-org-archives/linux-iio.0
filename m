@@ -1,115 +1,340 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BADDD3FCB14;
-	Thu, 30 Apr 2026 11:47:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ED543FE661
+	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 12:41:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777549676; cv=none; b=Y1Kmiwpej/+3yVagJ7WzBskx58lu1/63Hw9sIpHrZc35DxVJClswcyZGkwP9K22aqrejbHaBDCwLpyV9ZVEZEphSJkJFKyeGSVuaIyLX2EOY6+8JStUKIldZ4Sk5ilG93gT6GdBHsB8C2y3Cp+nO6FMDUBR+xZ2Fewm+B1YlKNs=
+	t=1777552913; cv=none; b=YojmZBJN/UHKpCSSpx49aXNfhoQjhY7wh0K4BscPjZw9NyX2GqgdS4HekIYEvgEdWWflD2lXqx6hN1jwvMdDZdRUYGeIL66QRkDCD0g58fHZP3Z/X0rYnOal4XJExBBfzLqALmPixab3Jd1VoeiMlBUd9jMV+7E7gEFgkw+28TM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777549676; c=relaxed/simple;
-	bh=GMirh7+8LPJL+fmMJcmBROeIbnBWk28VA9ZXhgfBIxw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l4vI6Ft39XyrROMsm7VuIor44ZE2yf4/gFf5tWU0ot5wsOGoGhDJerYlBEBaqPTl6I/SRm6mhbXxf7lUx5QYLdDudrd/Pay9KlYCLvUCrmqfblCeQ0sA+7hkJwBM9cauDVBz3/bfC1STa/owOODGJ8eq2rArE3oBeyMK+mu3OcI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KtJcHdaH; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777552913; c=relaxed/simple;
+	bh=yE+dxtyo/mnBAWQmcnqGs/kf46ZHUImb5KeuSv5L+XI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qdgl623qJF8smGJsNCfvZic/ww7j54Iq0ufWAZrIw4OAnV3/35tvzkl1ems/6An7QDcgJJoSKp4i0oy7V6u5T4OtTbO8V78gGVQaSZ+Jo/UAVlQElQi1qxAJat3DfdFvoJ6y9MTkJLC4K7BDTorlKDwsDswSISupJDg+rG2KP1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=euL4OoIj; arc=none smtp.client-ip=209.85.160.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KtJcHdaH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777549674; x=1809085674;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GMirh7+8LPJL+fmMJcmBROeIbnBWk28VA9ZXhgfBIxw=;
-  b=KtJcHdaHg3cPJJG2w3k8K+WWU6QjeVo/fsiRBAky3neiv9ikjqdaILmn
-   HLuFgn0VudqQe5TzTFvKB1Br/57317dIaN9k8YcGOUo0wvQ/0KpBponbP
-   fkRIUJ/pByLmzf+uzRMDDR8MlIsY1/xCeTzwVWV1EEZwbxkXZEXaWyuHm
-   x3yjxR8ffi63n3lZlWlrvQzMzod2v7YSgz+PzzBmph8rLTWZER4NyJWMv
-   rkObvD1wqKuo5UVtHUDi8gkaIHsyzB0/EbnbGk95Uvrx0P7rlCrAld/Mn
-   uSZCArN6PgRAUXJWkj7k8TbtDmZAjrIe/pOA7SqOm22I9ufRPjAWi+QNt
-   g==;
-X-CSE-ConnectionGUID: 0MKZG1kjSXSNiXc6fQfWeg==
-X-CSE-MsgGUID: y7lKWHtcSJaAyDq0Obmt9Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="78419041"
-X-IronPort-AV: E=Sophos;i="6.23,208,1770624000"; 
-   d="scan'208";a="78419041"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2026 04:47:52 -0700
-X-CSE-ConnectionGUID: 9QFzmfoMSNmd3kC5dKh+jA==
-X-CSE-MsgGUID: 4+P1tc6CSyuOCG01IBWmWQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,208,1770624000"; 
-   d="scan'208";a="236341886"
-Received: from zzombora-mobl1 (HELO localhost) ([10.245.244.42])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2026 04:47:50 -0700
-Date: Thu, 30 Apr 2026 14:47:47 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Greg Kroah-Hartman <gregkh@suse.de>,
-	Michael Auchter <michael.auchter@ni.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="euL4OoIj"
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-41576c5c01cso498846fac.3
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 05:41:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777552910; x=1778157710; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=P4HerAL4XgZ0CkXjzGik+1L67/vMPz2ImR9zq/nJdQY=;
+        b=euL4OoIjuOT8QKorYuJGWyT3T9/4utHOlOpGSx7pZyAFNuF1TDrb6VFDtPWlp2SUfL
+         6C7Th+1At5fIcyqfQcV2wgOY4yp4TCoZdBSu7PQwojCgwvQLVrivREcse6hrgZQcNOjg
+         7WEnDMuunda2pjGTkaa4L94beZlAXbmqPdBkPoBbZj0NdTX7hYjcZ8STz5bLWEwjBaOC
+         YeoBDLf8Ys3SL1wpoktRseLjszQrFlkuqMYQMsVIGupb+LWgAPbyBKKJ6lBrZ+sZIjF0
+         EzYL/jdToR9iosOMWUAfadaJunJNDeCGeVJhvFaFZ3A7Rl7zp/X0zH5F2x+K/Qaxm7t4
+         JdTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777552910; x=1778157710;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P4HerAL4XgZ0CkXjzGik+1L67/vMPz2ImR9zq/nJdQY=;
+        b=jmb7R/q+0bZ2cAhULemlNQzqv27BIDMC6qPRA9FuUkAhbEAPvVpsKtoOzzoWfiBNNu
+         XLpCTallCSKB5Wtd3LBGQx5gDCKmQYhN8q39jlZ4v/eURboTdys16vuJrjRbOkOmL85m
+         T/rrGJDrEkAZrVGH/EqpfztTFWlAr9Khm5eFAcjwI324ONNj5c6CZetygTWY1T/r937B
+         E/nwOIXRg3poZm926JH+91yXnVkvEm+f+3A+gJIcOpwuh0uITW0i51BLJtxzQgDlTkr1
+         wS5gAGlJ4MClpzrpgVw5pU2bv4qprH7Jn6gMv7MxHsu5Mfz511EhZA5yYniKLss+TUhs
+         LBvg==
+X-Forwarded-Encrypted: i=1; AFNElJ921J5eHFvLPaLNZWCdnmXAmS7jPSUeO9Wa63jmiN9DoIZVjuAXVZoSbLsDnm3Iqw/tSMH9QxH2AWA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxHcXjUUY0wcsYgBQ7TLSnTvwHtkWw6n1gUNmuH5E2Sej/lxAcf
+	zEB+xiKq+KZgyVzm4S3+1BJt/R9OyYWE6H3UwR0HcKaHGjHVxEDLnI6N
+X-Gm-Gg: AeBDietiNtz9SKz5YBYsWtKUgu/TnP4ipZsHMmO9IGFeBowY+0Pn0eGZzN6JvT7xrkb
+	KYs8ZeI75xEWeIf7NezRdOVcMuqlt5PT+bSePa49DNnwYHOiMVieF31SJ2a7iAajnExVT6dj/U8
+	qOYvGcWw+PiUPhO7b9UcRp0hVdZaoGw9Bb7BGHPibZ32jdDoj+e2tlwpanGtQ9BW2pB+2e8R60T
+	pLYs9NyBuJ8pRiHQMdLC/XEiY4yYWH8/HB5vEAaiQmK+88XWjJy3ckA4GN8XdSfE4+mUXlzPQKW
+	IqLSSIrwLOR7VcbvCzYFOZgNEygFRRYCJ1RvLQuP75T1eN4ye1bjGZRDtF/dE9pG5Ek2CxNOoP3
+	T33TzYZm1BbOPTl0OWcv8iFaAtsvKmVL3+M9z6qVRHayOl0Tim4H6RvGanA5n2Pudwu67oXbWu+
+	7reQ0y/UGbuXqdqHCOZxH9lcoCB4YYiEBjg3A/luFzh6vMEtCldClbAI0J7ZjBURj6rkIY
+X-Received: by 2002:a05:6871:332a:b0:42f:d9dc:2cc with SMTP id 586e51a60fabf-4343372314emr1477828fac.1.1777552910162;
+        Thu, 30 Apr 2026 05:41:50 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-434372a58c8sm1520905fac.14.2026.04.30.05.41.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Apr 2026 05:41:49 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: songqiang1304521@gmail.com,
+	jic23@kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v4 06/13] iio: dac: ad5686: refactor include headers
-Message-ID: <afNBY6dQ5Nw-EZcH@ashevche-desk.local>
-References: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
- <20260429-ad5686-fixes-v4-6-bb8f1cbd68e1@analog.com>
- <afIRG2S94JEn3Oqd@ashevche-desk.local>
- <CALoEA-yBU_pwiOFQx89-Gcgmtz_KtuxJJvph7uKPHKJNihDS8Q@mail.gmail.com>
- <afJLlpsU17Pmp0uH@ashevche-desk.local>
- <CALoEA-wvYvZr7ixC4UOh98mZAas1vbOe5CXT89DOy3e7xTmJ_g@mail.gmail.com>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org (open list:PNI RM3100 IIO DRIVER),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v5] iio: magnetometer: rm3100: Modernize locking and refactor control flow
+Date: Thu, 30 Apr 2026 07:41:47 -0500
+Message-ID: <20260430124148.11572-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALoEA-wvYvZr7ixC4UOh98mZAas1vbOe5CXT89DOy3e7xTmJ_g@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 30, 2026 at 11:18:42AM +0200, Joshua Crofts wrote:
-> On Wed, 29 Apr 2026 at 20:19, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Wed, Apr 29, 2026 at 04:38:02PM +0200, Joshua Crofts wrote:
-> > > On Wed, 29 Apr 2026 at 16:14, Andy Shevchenko
-> > > <andriy.shevchenko@intel.com> wrote:
-> > > > I haven't checked this deeply, but I hope at some point we will have
-> > > > more or less usable state of `iwyu` tool that may do this automatically.
-> > > > At least current result looks better than the original.
-> > > >
-> > > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > >
-> > > I did find a "filter" file of sorts for IWYU that Jonathan had on the
-> > > mailing list.
-> > > It does a good job of omitting reports of very low level headers but at the
-> > > same time IWYU still tells you to include things like <linux/stddef.h> and
-> > > remove anything <asm/*>  from your includes. Perhaps it needs more
-> > > tweaking?
-> >
-> > You need to check that manually and then decide if we need more amendments
-> > either in the patch or in the `iwyu` "filter" file or in both. In case of
-> > filter file changes, please share them to Jonathan and mailing list, so other
-> > people can adjust their work in case they use the tool.
-> 
-> I have made some changes, so I'll send an update where people can get the file.
-> Also I've noticed that there is a /tools/iio/ directory in the repo,
-> perhaps we could
-> add it there so people don't have to search lore?
+Replace mutex_lock() and mutex_unlock() calls in rm3100-core.c with
+the more modern guard(mutex)() family. This will help modernize the
+driver and bring it up-to-date with modern available macros/functions.
 
-Perhaps, but it should be approved by Jonathan. Sounds good to me,
-nevertheless.
+While replacing mutex_lock() and mutex_unlock(), the critical sections
+of rm3100_read_mag() and rm3100_get_samp_freq() have been extended to
+include negligible operations for cleaner logic.
 
+Add new helper-wrapper function rm3100_guarded_regmap_bulk_read() to
+help keep rm3100_trigger_handler() switch-cases clean while maintaining
+mutex locking and avoiding re-entrancy risks from potential callbacks.
+
+While at it, remove redundant gotos where applicable, and use direct
+returns instead. In addition, remove regmap variable in
+rm3100_trigger_handler() as its references have been replaced with
+variable data.
+
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+---
+ v2:
+ - The following excerpts are from the original cover letter:
+ - Added small style fixes per Andy's suggestions (Adding blank lines,
+    moving an if statement in a scoped_guard block).
+ - Switched out scoped_guard() for guard(mutex)() in certain commits.
+ - Fixed error in commit 4 where deadlocks could occur, as goto
+    ignores __attribute__((cleanup)). This has been fixed by the above.
+
+ v3:
+ - Added new helper-wrapper function rm3100_guarded_regmap_bulk_read(),
+   see commit message.
+ - Squashed commit into one commit rather than four.
+
+ v4:
+ - Changed function signature of rm3100_guarded_regmap_bulk_read() to
+   supply struct rm3100_data *data instead of struct mutex *lock per
+   Andy.
+ - Renamed rm3100_guarded_regmap_bulk_read() to
+   rm3100_regmap_bulk_read_locked() per Andy.
+
+ v5:
+ - Fix kernel doc of rm3100_regmap_bulk_read_locked() per Andy.
+ - Added Andy Shevchenko's reviewed-by tag.
+
+ drivers/iio/magnetometer/rm3100-core.c | 93 ++++++++++++++------------
+ 1 file changed, 50 insertions(+), 43 deletions(-)
+
+diff --git a/drivers/iio/magnetometer/rm3100-core.c b/drivers/iio/magnetometer/rm3100-core.c
+index 2b2884425746..c0ce2784e97e 100644
+--- a/drivers/iio/magnetometer/rm3100-core.c
++++ b/drivers/iio/magnetometer/rm3100-core.c
+@@ -204,27 +204,23 @@ static int rm3100_read_mag(struct rm3100_data *data, int idx, int *val)
+ 	u8 buffer[3];
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
++
+ 	ret = regmap_write(regmap, RM3100_REG_POLL, BIT(4 + idx));
+ 	if (ret < 0)
+-		goto unlock_return;
++		return ret;
+ 
+ 	ret = rm3100_wait_measurement(data);
+ 	if (ret < 0)
+-		goto unlock_return;
++		return ret;
+ 
+ 	ret = regmap_bulk_read(regmap, RM3100_REG_MX2 + 3 * idx, buffer, 3);
+ 	if (ret < 0)
+-		goto unlock_return;
+-	mutex_unlock(&data->lock);
++		return ret;
+ 
+ 	*val = sign_extend32(get_unaligned_be24(&buffer[0]), 23);
+ 
+ 	return IIO_VAL_INT;
+-
+-unlock_return:
+-	mutex_unlock(&data->lock);
+-	return ret;
+ }
+ 
+ #define RM3100_CHANNEL(axis, idx)					\
+@@ -284,11 +280,12 @@ static int rm3100_get_samp_freq(struct rm3100_data *data, int *val, int *val2)
+ 	unsigned int tmp;
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
++
+ 	ret = regmap_read(data->regmap, RM3100_REG_TMRC, &tmp);
+-	mutex_unlock(&data->lock);
+ 	if (ret < 0)
+ 		return ret;
++
+ 	*val = rm3100_samp_rates[tmp - RM3100_TMRC_OFFSET][0];
+ 	*val2 = rm3100_samp_rates[tmp - RM3100_TMRC_OFFSET][1];
+ 
+@@ -338,56 +335,50 @@ static int rm3100_set_samp_freq(struct iio_dev *indio_dev, int val, int val2)
+ 	int ret;
+ 	int i;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
++
+ 	/* All cycle count registers use the same value. */
+ 	ret = regmap_read(regmap, RM3100_REG_CC_X, &cycle_count);
+ 	if (ret < 0)
+-		goto unlock_return;
++		return ret;
+ 
+ 	for (i = 0; i < RM3100_SAMP_NUM; i++) {
+ 		if (val == rm3100_samp_rates[i][0] &&
+ 		    val2 == rm3100_samp_rates[i][1])
+ 			break;
+ 	}
+-	if (i == RM3100_SAMP_NUM) {
+-		ret = -EINVAL;
+-		goto unlock_return;
+-	}
++	if (i == RM3100_SAMP_NUM)
++		return -EINVAL;
+ 
+ 	ret = regmap_write(regmap, RM3100_REG_TMRC, i + RM3100_TMRC_OFFSET);
+ 	if (ret < 0)
+-		goto unlock_return;
++		return ret;
+ 
+ 	/* Checking if cycle count registers need changing. */
+ 	if (val == 600 && cycle_count == 200) {
+ 		ret = rm3100_set_cycle_count(data, 100);
+ 		if (ret < 0)
+-			goto unlock_return;
++			return ret;
+ 	} else if (val != 600 && cycle_count == 100) {
+ 		ret = rm3100_set_cycle_count(data, 200);
+ 		if (ret < 0)
+-			goto unlock_return;
++			return ret;
+ 	}
+ 
+ 	if (iio_buffer_enabled(indio_dev)) {
+ 		/* Writing TMRC registers requires CMM reset. */
+ 		ret = regmap_write(regmap, RM3100_REG_CMM, 0);
+ 		if (ret < 0)
+-			goto unlock_return;
++			return ret;
+ 		ret = regmap_write(data->regmap, RM3100_REG_CMM,
+ 			(*indio_dev->active_scan_mask & 0x7) <<
+ 			RM3100_CMM_AXIS_SHIFT | RM3100_CMM_START);
+ 		if (ret < 0)
+-			goto unlock_return;
++			return ret;
+ 	}
+-	mutex_unlock(&data->lock);
+ 
+ 	data->conversion_time = rm3100_samp_rates[i][2] * 2;
+ 	return 0;
+-
+-unlock_return:
+-	mutex_unlock(&data->lock);
+-	return ret;
+ }
+ 
+ static int rm3100_read_raw(struct iio_dev *indio_dev,
+@@ -458,6 +449,27 @@ static const struct iio_buffer_setup_ops rm3100_buffer_ops = {
+ 	.postdisable = rm3100_buffer_postdisable,
+ };
+ 
++/**
++ * rm3100_regmap_bulk_read_locked() - Wrapper around regmap_bulk_read() with a mutex
++ *
++ * @data: Data structure containing regmap and mutex
++ * @reg: First register to be read from, passed to regmap_bulk_read()
++ * @val: Pointer to store read value, in native register size for device,
++ * passed to regmap_bulk_read()
++ * @val_count: Number of registers to read, passed to regmap_bulk_read()
++ *
++ * Intended for use only in rm3100_trigger_handler().
++ *
++ * Return:
++ * A value of zero on success, a negative errno in error cases.
++ */
++static int rm3100_regmap_bulk_read_locked(struct rm3100_data *data, unsigned int reg,
++					  void *val, size_t val_count)
++{
++	guard(mutex)(&data->lock);
++	return regmap_bulk_read(data->regmap, reg, val, val_count);
++}
++
+ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+@@ -465,14 +477,12 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
+ 	unsigned long scan_mask = *indio_dev->active_scan_mask;
+ 	unsigned int mask_len = iio_get_masklength(indio_dev);
+ 	struct rm3100_data *data = iio_priv(indio_dev);
+-	struct regmap *regmap = data->regmap;
+ 	int ret, i, bit;
+ 
+-	mutex_lock(&data->lock);
+ 	switch (scan_mask) {
+ 	case BIT(0) | BIT(1) | BIT(2):
+-		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 9);
+-		mutex_unlock(&data->lock);
++		ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MX2,
++						     data->buffer, 9);
+ 		if (ret < 0)
+ 			goto done;
+ 		/* Convert XXXYYYZZZxxx to XXXxYYYxZZZx. x for paddings. */
+@@ -480,36 +490,33 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
+ 			memmove(data->buffer + i * 4, data->buffer + i * 3, 3);
+ 		break;
+ 	case BIT(0) | BIT(1):
+-		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 6);
+-		mutex_unlock(&data->lock);
++		ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MX2,
++						     data->buffer, 6);
+ 		if (ret < 0)
+ 			goto done;
+ 		memmove(data->buffer + 4, data->buffer + 3, 3);
+ 		break;
+ 	case BIT(1) | BIT(2):
+-		ret = regmap_bulk_read(regmap, RM3100_REG_MY2, data->buffer, 6);
+-		mutex_unlock(&data->lock);
++		ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MY2,
++						     data->buffer, 6);
+ 		if (ret < 0)
+ 			goto done;
+ 		memmove(data->buffer + 4, data->buffer + 3, 3);
+ 		break;
+ 	case BIT(0) | BIT(2):
+-		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 9);
+-		mutex_unlock(&data->lock);
++		ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MX2,
++						     data->buffer, 9);
+ 		if (ret < 0)
+ 			goto done;
+ 		memmove(data->buffer + 4, data->buffer + 6, 3);
+ 		break;
+ 	default:
+ 		for_each_set_bit(bit, &scan_mask, mask_len) {
+-			ret = regmap_bulk_read(regmap, RM3100_REG_MX2 + 3 * bit,
+-					       data->buffer, 3);
+-			if (ret < 0) {
+-				mutex_unlock(&data->lock);
++			ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MX2 + 3 * bit,
++							     data->buffer, 3);
++			if (ret < 0)
+ 				goto done;
+-			}
+ 		}
+-		mutex_unlock(&data->lock);
+ 	}
+ 	/*
+ 	 * Always using the same buffer so that we wouldn't need to set the
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.53.0
 
