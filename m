@@ -1,225 +1,126 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37E1E44CAD7
-	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 19:07:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC2429B200
+	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 19:21:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777576025; cv=none; b=sLRKw5gsoPhz+7Y75UApVXcsPH69oIfnhuk3A9BnT3yBrb6ic6GCbiR/jAFqiJFSEWHSusP02Wf1zmaDyY64fDeu2gRC+9hxUZ+fnFGvRZ3iaazAqU06zUHlkSqcfPbEziElWNMwOlGd+sXdRWvSUCr53gFhQcI302z8tViggns=
+	t=1777576901; cv=none; b=ciK2s3akQ2egFyn1XiINBPxgJjkJsZCjNPCLZDOtIHUzhzlrHgMIoq8A8CNLATgKTqWJlCHKWec5Z63nww/oyBU38hN4m/kiJI3NPWiROAJf7wiNGwjJ8D/w6Q086okVRC4eUFsWF1tvUvBiI9pWq5h4Ytr6HFu0LZbjspcS7cY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777576025; c=relaxed/simple;
-	bh=zrdk3y9A2kBGtL2LBRRjcdAHHcYP/XttZu6iPbXQisQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WRppzCSNEu5wYyONmHGWvjU3nuhafi35RFZuf2ffvQHtNZJmBMn8WH4Ql54eHhhHKQwXgcmi4j/ococzo6V/LXbt2AD9SEXxKWEXcVPzTa3Emfh6rJYHuYdigpbtabsM/7ddXGH8NXy+fM9mOCEMVrI7IHYGZzJbPeLbhOfsG4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iPCHB7YC; arc=none smtp.client-ip=209.85.214.171
+	s=arc-20240116; t=1777576901; c=relaxed/simple;
+	bh=Id/9QrNMu8Ly9mOLs/23rfazEvvQ4Gj7sfkpsrP5n4E=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=Ij5FVjTxW/hCxBWry/wx3RKz1S+Kl60nM04Rd/5sngIJpQ4LcYX0KwekqW/CQWJQqWC7YNG8Suui77qNOjAFoxCQN86lhblrxO/Vgb/HoGezDT7+Wpfxu5qXnKACS8qRJmxjbNSXx5VYuPodpWH3fUgZArQXdklrh2F1cfl1Vq4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iwzLRFyv; arc=none smtp.client-ip=209.85.216.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iPCHB7YC"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2b24fdac394so10189645ad.3
-        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 12:07:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iwzLRFyv"
+Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-35e576110adso993762a91.0
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 12:21:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777576023; x=1778180823; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=t7XMezwxNPOIY9bQmuCEQBx6z6J3b/pGHkI91dtLXsI=;
-        b=iPCHB7YC/wiSNV47pKbPwv8F1LVs3IT6iBslY/DU/wMb/U9CnLQdI4w4/8CuwSnrXv
-         /I+2lJvJxx84HkOA6ZT7fDGtglQyHkKW/H/a/zTKrDKAuslbqYWmdUj3dK/mZgiJy87I
-         0BiFc2nVpLAdsREHnacqi/1f7m8UguqwsL+xVFAafmq2nvIVgoUD5xCsqtVgYXS73wa8
-         Ip4LD3mkqnT+YSUi8iTwAM8CgqjfCxUW78fS5C3HBN/aTtbjg3eIZF63SHbcfd5oiXvC
-         rW73AfO/6oDw8e+fOoFHGp9pj2UeDM3n5pM/la5Vc850W9rCGdoa5zJmJhAOXb4CnY86
-         lVHg==
+        d=gmail.com; s=20251104; t=1777576900; x=1778181700; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kTutwlsLC+vJ/RVb3tmIFV1fWy4ibAZn5i0AUmzY/Yo=;
+        b=iwzLRFyvwlWJOhg4Utuz/vVuLDxcpLVAkiAu0a+hu7WmAD3QRWGERW/Jb8RRo+zqMu
+         QhXuPSGxwj36igGz8zKbiKF598BVMhsyuhDCE1z+OB34136bDNcG+gw+ruchpDfhE+eb
+         7K4MSjX4kH5hDc7pKF2at3PA5xLNglQFSuQD9ifmDqZmEmwZ40OVZuZ5QXpCvSTWPjAu
+         vL0cutrFLXvOzCIPc77q6jOvxnnATgbi/zPHKFNezVO6wgeYdZExFBue9lIV5EOuf3cN
+         AOyoono+pkOVDR+AZgvwmII6MaiyTmOcuna9Gz8ara4VUdP22JGn6ZhSEa2rp1X/HWjD
+         dC4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777576024; x=1778180824;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=t7XMezwxNPOIY9bQmuCEQBx6z6J3b/pGHkI91dtLXsI=;
-        b=ZGP4K1SRRuz/F5+vzaBpBBxW4ItGlYWEsqpAb1l+QOgODrfsaAKIQlIo1SL+hLlsML
-         bFxSKnW5ufEbNFr/KmUBC7KyuNyhwtiYqAK1AW8uNT2Skrcp8wITfOuymwZGMQ/llqLn
-         1P2guzCCxwXwOgNP7Gaa/vcLL3ZVSoTtO6R9arLRVzWj9j2cSgKy6FtcOfGCntoonC9z
-         VsIyxnARpf+3iT9rVLJ3TYK+9E1xMGV/rqCPUnDzaTGE1kmwoyrzh+aV/LZpiRspIGwz
-         bWGA3nNjIP/7PW6XcGnNnvkFbVrsgjI3avx7t16OZHDggYKShkmvFx/Tu4mWTmkC+yGT
-         JhPw==
-X-Forwarded-Encrypted: i=1; AFNElJ/y1EOVL8n3T8qlu4EKugn/x10Nxsd5GtqeJcuN+vPhiIN7renEfyn/ZzbrmkbRTaJVoVfSrZUuboU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwF+oPPazo9BRnmr7ji9WOmfJQ+57Ns1yvRcVxaA+KzkLIARQq9
-	pDkAG3pPMajeGCNmCUCeRFEhOW6+lN0mfydp/RS2zUNiMXbah1ckgQRc
-X-Gm-Gg: AeBDieuhpsufS1UVes0ME8vAg1ZE3cQnODVdnoMTegH2hz2A3zPJg52uXng1sNncbBQ
-	EiylF5g/xy8mkmGoPajaQjpwZHy1xv58feAQIuMf1uxV/O5IDe0S0JuOQ2/+YpmVzTl6gW5/hRr
-	BDHhEPQFDUv1c0cGNYoGSw4f5cl1iolcwrGcnKX2SyHBJjfsv2CrXVFIZt2R4J3i+d7YB2nrKVp
-	que/FNwnWUUAt8SqdPetImytk+VJUxXAEkkSLEjPmKY2UL+tbWpmbhiB/v20B33kQULT5DBLkEl
-	l8Oj2Yc8m13quceJbYtC0ZBd/f8KcTHRED4Qls3+840o7wHZWNjqzEFcYrc/i2VJn2yVRrEqguG
-	PdrYjntBrA9kzI6zaLWHWqjRDKG0u/Tk3Wn3Xw1Hp1DEvRuK9oXJRgdek86P+bYv49QIprDrc6d
-	QU5tK8qE1XfRMyAi1S5Gp16XAezHxUIF8IFpUuME5WlWpE6MJYcQzej1AefUo=
-X-Received: by 2002:a17:903:1b2b:b0:2b2:eaec:c810 with SMTP id d9443c01a7336-2b9a230548emr48716355ad.8.1777576023463;
-        Thu, 30 Apr 2026 12:07:03 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9cae16067sm3332185ad.40.2026.04.30.12.07.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2026 12:07:03 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777576900; x=1778181700;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kTutwlsLC+vJ/RVb3tmIFV1fWy4ibAZn5i0AUmzY/Yo=;
+        b=rjF50ZFiTx/JbfXmHHOLjS04VTZp69j4VcA3A1U7iWzrE6yRkIgmHZlHUmDoTN4/iz
+         Ru3Hi3phoOBsgl3YhT9X92Dxl99DZCch9/nf0/3/TcAaEdsXDDmhfekCKutCIO7oHXoP
+         Sxf+mDC1OSuVfe8Wd/IVffO0RjQ0Sba6zT/e/V3LchUv9ihdiiLpRRJmAryAaQx/IiQ/
+         ygej86aUIvXrU0j9jdUdGfoUShkgpfKvGUNlfP5iqCUGsfAInBuPc1Qtm4O2koVdblzP
+         Rqd81vCAypQqKc2zhgLGs3sLklePkGR1l7YfWnWv56L67Rw07O3JlrZPy/SNOfmxd6pu
+         x/PQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+PQUuQVKQ1VGzUwgEkoF5HBHKgI6BWEqZ2WfsUFk4VSE8T8R9ffqi+dVqNZFsJBWPfiYHwo2yePjY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwdT37sgjQnu+YyrIMDh55oDUtbMr37LAIp7E0q6QLCFYFjPPui
+	yrOX33uGtNaBN+T+H+qpzzdX1fIeKuRE0bpxvoEWJsaKMGwB0sMZ0vxE
+X-Gm-Gg: AeBDiesAQGwc4Glj2MbmNxPspEx7nmXuDjpmVzWcockSS25Q+NI86hemKLVTm6YU6Ol
+	nUxDH16bk6BeT75zsQzhIIIxUryxScNtEAYalvKrN4ttHSGW9y218HqRgKGzlXwSaEmXOuJXhn8
+	4JZybZbeEp1/eqP9CyKYtGDqfSLfVo6U43PB41pbcRNrjpzXhPkkcOfijTaC5/gDQAqDw89Dyrm
+	mo9w9+3PQ6p7JAVujeL3QhXZcqUl4djp3CBXUcg0V+QMeekNpw6CqjrMfryg0KowECyO1ToMQAQ
+	4IdaF8SsVeyQ7n2cED9uJKSpHHfhWc0cGNQ9Xrp6X67t3HHh0dq3NlD3zsBRFKrUCJt+Zfxyxwv
+	ajjE0ZuNWQXaD43JRoqCaezH8Vj4bhzMpIzYBQlXSqYv/Z6nT1pd+N/MgCDV+P9GvVwhCwrEIy3
+	WcD9+zNmJ2iRE3y4T9UI4wpaP4/CsrQUUaXIs/JSL1QyXr
+X-Received: by 2002:a17:90b:4c04:b0:35b:d795:cf5d with SMTP id 98e67ed59e1d1-364c461d8ffmr3191808a91.5.1777576899778;
+        Thu, 30 Apr 2026 12:21:39 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:53d0:4e4d::e3d:bc05])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-364d9e9c03dsm1643018a91.0.2026.04.30.12.21.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Apr 2026 12:21:39 -0700 (PDT)
+Date: Fri, 01 May 2026 00:51:24 +0530
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	lars@metafoo.de,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 5/5] MAINTAINERS: iio: adi: consolidate entries
-Date: Fri,  1 May 2026 00:36:42 +0530
-Message-Id: <20260430190642.3434650-6-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260430190642.3434650-1-sanjayembedded@gmail.com>
-References: <20260430190642.3434650-1-sanjayembedded@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@linux.intel.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ sakari.ailus@linux.intel.com, linux-input@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_4/4=5D_iio=3A_humidity=3A_drop_h?=
+ =?US-ASCII?Q?id=5Fsensor=5Fremove=5Ftrigger=28=29_using_devm_API?=
+User-Agent: Thunderbird for Android
+In-Reply-To: <afJdJIQS1vwOcaGT@ashevche-desk.local>
+References: <20260429175918.2541914-1-sanjayembedded@gmail.com> <20260429175918.2541914-5-sanjayembedded@gmail.com> <afJdJIQS1vwOcaGT@ashevche-desk.local>
+Message-ID: <12C22ED3-20F9-401C-ACC9-D666393B292A@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Remove redundant per-driver entries already covered by wildcard paths
-under ANALOG DEVICES INC IIO DRIVERS.
 
-Keep entries where specific maintainers exist.
+On 30 April 2026 1:03:56=E2=80=AFam IST, Andy Shevchenko <andriy=2Eshevche=
+nko@intel=2Ecom> wrote:
+>On Wed, Apr 29, 2026 at 11:29:18PM +0530, Sanjay Chitroda wrote:
+>
+>> Use devm_hid_sensor_setup_trigger() to automatically release resource
+>> during fail, unbind or removal of driver using devres framework=2E
+>>=20
+>> This simplify the setup, remove goto, avoid manual resource cleanup in
+>> teardown path=2E
+>
+>=2E=2E=2E
+>
+>> -	ret =3D hid_sensor_setup_trigger(indio_dev, name,
+>> -				&humid_st->common_attributes);
+>> +	ret =3D devm_hid_sensor_setup_trigger(&indio_dev->dev, indio_dev, nam=
+e,
+>> +					    &humid_st->common_attributes);
+>
+>I believe the first parameter is utterly wrong here=2E
+>Or other way around, same issue but in the previous patch=2E
+>
+Thank you Andy for the review comment=2E
 
-Suggested-by: Jonathan Cameron <jonathan.cameron@huawei.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- MAINTAINERS | 85 -----------------------------------------------------
- 1 file changed, 85 deletions(-)
+It looks in same humidity probe of hid sensor with devm API two device poi=
+nter are used &pdev->dev and &indio_dev->dev; ideally all devm should have =
+same parent device for devres resource framework and over here preferable a=
+nd consistent device should be &pdev->dev;
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fe50ca0c24d3..27325ec8603e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1353,23 +1353,6 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad7292.yaml
- F:	drivers/iio/adc/ad7292.c
- 
--ANALOG DEVICES INC AD74115 DRIVER
--M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/addac/adi,ad74115.yaml
--F:	drivers/iio/addac/ad74115.c
--
--ANALOG DEVICES INC AD74413R DRIVER
--M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
--F:	drivers/iio/addac/ad74413r.c
--F:	include/dt-bindings/iio/addac/adi,ad74413r.h
--
- ANALOG DEVICES INC AD7625 DRIVER
- M:	Michael Hennerich <Michael.Hennerich@analog.com>
- M:	Nuno Sá <nuno.sa@analog.com>
-@@ -1390,15 +1373,6 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
- F:	drivers/iio/adc/ad7780.c
- 
--ANALOG DEVICES INC AD8366 DRIVER
--M:	Michael Hennerich <Michael.Hennerich@analog.com>
--M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
--F:	drivers/iio/amplifiers/ad8366.c
--
- ANALOG DEVICES INC MAX22007 DRIVER
- M:	Janani Sunil <janani.sunil@analog.com>
- L:	linux-iio@vger.kernel.org
-@@ -1407,14 +1381,6 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/dac/adi,max22007.yaml
- F:	drivers/iio/dac/max22007.c
- 
--ANALOG DEVICES INC ADA4250 DRIVER
--M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
--F:	drivers/iio/amplifiers/ada4250.c
--
- ANALOG DEVICES INC ADGS1408 DRIVER
- M:	Mircea Caprioru <mircea.caprioru@analog.com>
- S:	Supported
-@@ -1429,49 +1395,6 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/net/adi,adin.yaml
- F:	drivers/net/phy/adin.c
- 
--ANALOG DEVICES INC ADIS DRIVER LIBRARY
--M:	Nuno Sa <nuno.sa@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--F:	drivers/iio/imu/adis.c
--F:	drivers/iio/imu/adis_buffer.c
--F:	drivers/iio/imu/adis_trigger.c
--F:	include/linux/iio/imu/adis.h
--
--ANALOG DEVICES INC ADIS16460 DRIVER
--M:	Dragos Bogdan <dragos.bogdan@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/imu/adi,adis16460.yaml
--F:	drivers/iio/imu/adis16460.c
--
--ANALOG DEVICES INC ADIS16475 DRIVER
--M:	Nuno Sa <nuno.sa@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/imu/adi,adis16475.yaml
--F:	drivers/iio/imu/adis16475.c
--
--ANALOG DEVICES INC ADIS16550 DRIVER
--M:	Nuno Sa <nuno.sa@analog.com>
--M:	Ramona Gradinariu <ramona.gradinariu@analog.com>
--M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
--M:	Robert Budai <robert.budai@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
--
--ANALOG DEVICES INC ADL8113 DRIVER
--M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/amplifiers/adi,adl8113.yaml
--F:	drivers/iio/amplifiers/adl8113.c
--
- ANALOG DEVICES INC ADM1177 DRIVER
- M:	Michael Hennerich <Michael.Hennerich@analog.com>
- L:	linux-hwmon@vger.kernel.org
-@@ -1480,14 +1403,6 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/hwmon/adi,adm1177.yaml
- F:	drivers/hwmon/adm1177.c
- 
--ANALOG DEVICES INC ADMV8818 DRIVER
--M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
--L:	linux-iio@vger.kernel.org
--S:	Supported
--W:	https://ez.analog.com/linux-software-drivers
--F:	Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
--F:	drivers/iio/filter/admv8818.c
--
- ANALOG DEVICES INC ADP5055 DRIVER
- M:	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
- S:	Supported
--- 
-2.34.1
+I would first update existing devm_* API to have consistent device and on =
+top of that will use same device in devm conversation=2E
 
+While for gyro change device is consistent as &pdev->dev across all devm A=
+PI=2E
+
+Thanks,
+Sanjay Chitroda=20
+
+
+>>  	if (ret)
+>>  		return ret;
+>
