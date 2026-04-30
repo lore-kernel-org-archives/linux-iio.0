@@ -1,113 +1,254 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADEF6352F95
-	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 19:43:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777578194; cv=pass; b=nNgb2vhfsv1A6YjDebqMNSEtdZL+zThk++LCwitonZhQCLK2D9RPH4QAUgNncNFuXvIa3c6uwRWghqmnOs/5ZnqJq3+yh/cBPP9Ird8f26lHpW8sVgtn/KlZ4+1KctVEpElqRWPWxLnmAdRhrah8iRbMmVIlu8bQrgeiyJFP6cA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777578194; c=relaxed/simple;
-	bh=ORRizA41sT7cUE9szskQe0XuyKPYDyP1q1s4j3nEEBE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jQDCCpAGejJNiLxsy/qL3qB49qmckXvg/YEHYECa58dr+JoiEfVu55jPGRwEE/j4pz31Adwm/6KwuC73pIaLpxvUL9TJjwkhSf2w90kQjeTc1cDyMe4YXyGwG//aM/CyRzfxNBbru2CPSxQdl2AlVism45kZFzTk9IA1abbLiNk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fFz+MIec; arc=pass smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B6F23890E8
+	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 20:05:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.52
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777579534; cv=none; b=d8rhccqpSJtKw0rUpPyt6HhEJYtYG2ibLr160mV3v+rkmhkcympknQ8TC0hPf3bjnGzKDYXa6k5MplqQp348AVlL0/sES+ZBbB15jLTGTFH39+KvzT9iNCNI17knS36bf0mPIBeOE6xBn2K14gyovGLhIfIvHz3vn4ari67BgkU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777579534; c=relaxed/simple;
+	bh=MUStzhD6Xtgw+nKApVKfkNWBpuvdFpQ/izpaMVDaUg8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=IGZPdxcPBxFresBX6xLjKyQbtF9oxwuYZBiTEaImkQ6/I2Vt0C2sujzo8AJgV7ZXknKin10zoGCrLwNEmEcXGd6kOS1F7snac1WBVJTj6649jKAqiMjBv7dUKkEIKRW2YfdSbVx10UtHnrvVE77vGTd2vmF8BIo76dMSb1BrkOM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=WBEoXqKp; arc=none smtp.client-ip=209.85.217.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fFz+MIec"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-44a74032ff8so59029f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 12:43:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777578191; cv=none;
-        d=google.com; s=arc-20240605;
-        b=SDNviRNJtUFyd7ZcRyrGpLswJQM5MtHa2/Ev3VkIzT2jUf0ym6+WwOWzERskWkFYRa
-         B7jccWMYMB1IkgDtcWYDhUPIyQgZSyTcZWCGuqaxEBFuCEDC1nMKz5eI3qn7QsJZJHNJ
-         R0lduokQ49zcf3s9pGvY5HUSyhR+0d1TrdzpuHqK8Qh6AqTN4VlPfsbGmKwLdSiRB8UX
-         wtDd477jWdjCDsexhYiG9IFVjBXhoSjJKJc58ZTkeSs6EqbdgN9jUmAqXd3ncLJ/n8Ys
-         3wtaZKaFufM60mOD+yjQ36ASZlnRIH+GUVz/ZSezeIo9VQ2Xytj9a0fMB09zhHnNCTsE
-         D3PA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=1Slg+P9GqnxtmMX9YMDB+rlGhqwPbPZNVbFeg0TcV3k=;
-        fh=wCdRTziyCfHoshJeNQDPLOoihO33q2zECk1dfu7XYTA=;
-        b=TzshcGJ4KZsSDxVONbdIZNXAz7s1cveaEopgtAGzPnbLjX4un3HHOuWHG19hPRfapz
-         aqDvuqqt40CFGRMAO7jUDQAATkJqpiBpxQka5uiEJTrlXQsoOw3235Dji6IJ8jXQJT2g
-         l1N+aeAijxkTVURuckVKJttZe5Xst96YKtsF7ONEHrpCAiKSfDkInJHy1/B7Ab82P6EM
-         BlDZw7h4h2zNBhrhO5gW5cyTRlQVRRlH7vXz+aDzOguMBz39kIqnFDjLKYbCGg51FPQJ
-         KUGC2wL66Md2lHZL/NgLD68vK9Xr4k0ojtqRbt87vDRd5GQDe1wRKTSqreTAsh8cLNkN
-         GUbg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="WBEoXqKp"
+Received: by mail-vs1-f52.google.com with SMTP id ada2fe7eead31-610f4cf6ddcso1695526137.1
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 13:05:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777578191; x=1778182991; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1Slg+P9GqnxtmMX9YMDB+rlGhqwPbPZNVbFeg0TcV3k=;
-        b=fFz+MIecunmu7cxSCr/gTXroexvt6w+apl7llMT/iHDx4Mprn+R3OmyzeI3uY44VhR
-         EZbCrQLoRORRd4Kqla1mKyxCO19tsA8XCpKwmGS2C9SSp/sPXZy+t0TCeMbdzRGS04Tb
-         MX+SApScqV86IALmpm4W2l5vT5w2kp8aZPl2nciqdiOxTjOy/18nlK5qrGWI+8OWlNlA
-         Stmkay8YINfMjqeBhcgG89GRVEuaqiHRZWeW5VIn+EmK27NK+43N9QT5jHxB5FEf7bTZ
-         GArEpNZ/5q9Cjm794YQI/WndJfLflZXdZ97sJpj7dZqW0CIIoJKO/NGDw9KtqR8cdN4a
-         0MBA==
+        d=usp.br; s=usp-google; t=1777579529; x=1778184329; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3SjuU09dURy7vkkZkgmhbNdvT+2q5fqcVhzJNFLqKgw=;
+        b=WBEoXqKp/pDOx1NSD88vT+EpQ8NqcOqIFg3qovkfj7e+cg879ytCFgF60PpnFy0vDK
+         bjLUrY++EnnVC/ayVhHOEt45NZQQDFyi61gFio6Edky60RNWVR4ZRNPAOvzrTS+iYmr4
+         //9jp5At1SVg+ae4KvrelGenaVjUmVMOJfAiqvGaGSO2uRorZcVEAnojSKTBtlhLbzJ/
+         NLogcBHeNWZez9mVCmJXBWE9Zudvpjd1mJxgKtzvIcLS/ldcSnAGpZagv+XAi+fjyYlJ
+         KcXHG72H5bwQgg9LFIGJq3OQ0slOTjSC440fg0Z2JygsEbjXJaNrTGN81X2ASa8/Kup6
+         93Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777578191; x=1778182991;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1777579529; x=1778184329;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1Slg+P9GqnxtmMX9YMDB+rlGhqwPbPZNVbFeg0TcV3k=;
-        b=pgRYGt9lXEEmpgze2zdkqifkSNtQW7Fr/TPF7JEvIADs1QEfZpkz6YhdBT9X/w7/FK
-         X1JBtxfp/B7c90Aol5vCkkdZvfjFuIN6GXj8oMv/5t9wcpQ4xFvsv69KKGpgghq68Za9
-         w8sC+XoScK7BpZc/Ajw7EQ9WNM7pnoZEUWskOG8FJCPfX17ggvBlg4USrWJdRS1d8woY
-         IRNG9Dj5MG/2EhroHZsKkWpFlQ9ZZINLHB+wN0PQT5Cza9f/n1PTHxGcwe+j5/oHpZHe
-         12ge/Ml//gVdzY+cBVfRFZjA4wVCLp4bpILZTcPeNP02nidCguMnsjEpwWXRWR1ar00H
-         JUIg==
-X-Forwarded-Encrypted: i=1; AFNElJ8FtPid7yJwkzUf5KtX8r7AOWC0Zchg7RJwBlvT/RKzMyhxirFyAKWtGXJPSkddCrhvrk7ACYIEnw8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YychVbu2RUiwsiARQI4HFHugNWXkIQvqErDWYvP1VLptPiNLLyV
-	mqSOviVlqNXc1vkIS4aYbsvwakInfdtI68tHmfZzdN97uPMEAF1J2THO6yqjWC9UZQpswrnZIwX
-	YedsTi2juKw+mZM25308cB6KgfCQoOCk=
-X-Gm-Gg: AeBDieuUMP0C7XPqM6QPNotkOLtgxMMofDSRy+Oy9osszIo48r5qbE7k4WQHpadugI/
-	L/YgRAQ+X8SxEZtLLH9eJfWfwWym8qzjaSXHcdfe6ieC5laJ0Zie/61nlHFvohPFr1CNH0CUNW2
-	Y6yKQsUP19+pe7Ol0cMFPQABAqQ4/LLKdCrgBrslGNnxKU/WY9keHDAEVpjozHba6MAwEjbBvRn
-	D2k0nyI7ZJghomyOUeClXEwDPnn/igITMZCTK0ytaXOHcQo+iuuUNd1xhXVHy4x46ROAduG/0+f
-	NzVEEFag9uEsiRD/mVjrm2Kt9G/GE9WB3LvGv4DDiVjLwrc0hozm5GG9WrMLmeJp0wTdqtsFcuu
-	llcGKG3UpWFuP+v8YbleYNAtScl3jWGbsEfWTSwmwhzTQim21MkHoNS/27fwq9plYQUb+qnpFH7
-	a+JCwQb8WmPcS03UkKxtsmQiZft9Y+Y0pHg9IdwBYeCj+CUO5PGA==
-X-Received: by 2002:a05:6000:2c11:b0:43d:6787:992f with SMTP id
- ffacd0b85a97d-4493d02a39bmr7378191f8f.10.1777578190956; Thu, 30 Apr 2026
- 12:43:10 -0700 (PDT)
+        bh=3SjuU09dURy7vkkZkgmhbNdvT+2q5fqcVhzJNFLqKgw=;
+        b=E10pJ0cnxugUP2qRzvrcZ/1yEIA3eq3g2oCbeD2pd33jd31D57Fh9yk2Jah9pmMCJh
+         K9bRc7KtWF8PX76yhp95O6ZhWqDWgGPhzZuQMwiVPCgLVjUoSMNlR+W2UIkPdm8nM564
+         9Te8IswHZF721MH+wQDYczwhGAYZDPRNCTo+xc9MKNFRF8e6UjjyDtPruSJCA9a6wNqx
+         fxBt+fdZ2HEDTT1oe89Ni6nJrBkNz+fZIQqPE3NpwwwKjt0yebS0PwrDYE41A5NfFzZF
+         SyEhxDxUsv6wWAl12P/JfAeoB5hYedmVe8MAU+GadcaSzCtUGNUfOyepdwGYc4JPbmkY
+         7n2Q==
+X-Forwarded-Encrypted: i=1; AFNElJ/5xZWCKjwhuhD7XuCHLngshc3ImMEm9oCex0RbMMpFIodbuGufhaptWsuSn8AkZWh+HPXZVg8iOEs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzRRl4oN82gLh5lGIkXSnM5Ssu8VthZe4QEnV3ePwce2cyEZpQp
+	FvGzAvzg4FUwAE/aJQTStoB+hQoRELSgf4PCRHjHScYMSaYRkqf2kX1JLIqujHT7X3lfoQ+VLwh
+	hpj/e7Hn8sA==
+X-Gm-Gg: AeBDiesSS6M3whF6zrI3DiCHxrQ2it5coVqtB7fgcegONCIRY/x8TLFD60O4NjVoxZE
+	R9FaJW6ZYTG5dNbIxTn++7p9bEj1jhvX9cB/H4r6c0PP6xQB4C4dvM981tPB2xqlR9k0cPVfStS
+	OTksmfkB+L0vdNGfXhOQLpfYRVDoz1cMs8MmGBm+FkFo0chgmB3Rqmeo7hMLWq5tNqf0BSWdMNX
+	0zl321zHKvqEl13w041EB7tMfU770GcjNu9L1DJ3FAHES+o+SKnIwcvvRundKbkkjfUzlljrHPa
+	AIvRAh7lNYGDSYsEFjda11Dtzjkef+/ce+s7Cy1ZirbzsDLZCchMCW2JiypBT8SbF9sxos01WaH
+	/gXiiJMcVcyEhQe+mgxnAs6oYXkxYM0OQMIraVll9q6RJP5BREYR19TUxqiNESoL+qWGsDrjSb7
+	ZrAZjiz+I+Vu1az1FXUieDnIrfJJaVOCLuZveUJEiZnw==
+X-Received: by 2002:a05:6102:4b82:b0:607:f4e7:d2e8 with SMTP id ada2fe7eead31-62afc506609mr2075995137.4.1777579529264;
+        Thu, 30 Apr 2026 13:05:29 -0700 (PDT)
+Received: from Arkham.. ([2804:7f0:b2c1:572c:7637:145f:a3f0:6c60])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-95ce08f4a7asm425901241.5.2026.04.30.13.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Apr 2026 13:05:28 -0700 (PDT)
+From: Guilherme Dias <guilhermeabreu200105@usp.br>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	nish.malpani25@gmail.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: Guilherme Dias <guilhermeabreu200105@usp.br>,
+	=?UTF-8?q?Jo=C3=A3o=20Paulo=20Menezes=20Linaris?= <jplinaris@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v4] iio: gyro: adxrs290: Use guard(mutex) in lieu of manual lock+unlock
+Date: Thu, 30 Apr 2026 17:04:56 -0300
+Message-ID: <20260430200515.7915-1-guilhermeabreu200105@usp.br>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260430-si1133-checkup-v4-0-fb3e9dce41bf@gmail.com> <20260430-si1133-checkup-v4-5-fb3e9dce41bf@gmail.com>
-In-Reply-To: <20260430-si1133-checkup-v4-5-fb3e9dce41bf@gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Thu, 30 Apr 2026 21:42:59 +0200
-X-Gm-Features: AVHnY4Ky9U5bL6S59bN5xxobzTWQ5NSAJWqQ-eBe-5lPAzv1wo_Q0dejAsWSe0A
-Message-ID: <CALoEA-xMOYq4MKhQKycets-W4DJxKmvZWrr-dUa0KVct_6DBDw@mail.gmail.com>
-Subject: Re: [PATCH v4 5/8] iio: light: si1133: add missing include headers
-To: joshua.crofts1@gmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, 30 Apr 2026 at 17:05, Joshua Crofts via B4 Relay
-<devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
->
-> From: Joshua Crofts <joshua.crofts1@gmail.com>
->
-> Add missing include headers to prevent compilation relying on transient
-> dependencies (array_size.h, bitops.h, completion.h, dev_printk.h, err.h,
-> irqreturn.h, jiffies.h, math.h, mutex.h, types.h).
->
-Minor issue - I forgot to remove irqreturn.h from the commit message and
-add mod_devicetable.h.
+Use guard(mutex) to automatically release the lock on scope exit,
+simplifying the error handling path and removing the need for
+explicit unlock and goto-based cleanup.
 
+Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
+Co-developed-by: João Paulo Menezes Linaris <jplinaris@usp.br>
+Signed-off-by: João Paulo Menezes Linaris <jplinaris@usp.br>
+---
+v3 -> v4:
+ - fix indentation
+
+ drivers/iio/gyro/adxrs290.c | 74 +++++++++++++++----------------------
+ 1 file changed, 30 insertions(+), 44 deletions(-)
+
+diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
+index 3efe385ebedc..f7344ab4e6bc 100644
+--- a/drivers/iio/gyro/adxrs290.c
++++ b/drivers/iio/gyro/adxrs290.c
+@@ -115,65 +115,53 @@ static const int adxrs290_hpf_3db_freq_hz_table[][2] = {
+ static int adxrs290_get_rate_data(struct iio_dev *indio_dev, const u8 cmd, int *val)
+ {
+ 	struct adxrs290_state *st = iio_priv(indio_dev);
+-	int ret = 0;
+ 	int temp;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	temp = spi_w8r16(st->spi, cmd);
+-	if (temp < 0) {
+-		ret = temp;
+-		goto err_unlock;
+-	}
++	if (temp < 0)
++		return temp;
+ 
+ 	*val = sign_extend32(temp, 15);
+ 
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-	return ret;
++	return 0;
+ }
+ 
+ static int adxrs290_get_temp_data(struct iio_dev *indio_dev, int *val)
+ {
+ 	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_TEMP0);
+ 	struct adxrs290_state *st = iio_priv(indio_dev);
+-	int ret = 0;
+ 	int temp;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	temp = spi_w8r16(st->spi, cmd);
+-	if (temp < 0) {
+-		ret = temp;
+-		goto err_unlock;
+-	}
++	if (temp < 0)
++		return temp;
+ 
+ 	/* extract lower 12 bits temperature reading */
+ 	*val = sign_extend32(temp, 11);
+ 
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-	return ret;
++	return 0;
+ }
+ 
+ static int adxrs290_get_3db_freq(struct iio_dev *indio_dev, u8 *val, u8 *val2)
+ {
+ 	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_FILTER);
+ 	struct adxrs290_state *st = iio_priv(indio_dev);
+-	int ret = 0;
+ 	short temp;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	temp = spi_w8r8(st->spi, cmd);
+-	if (temp < 0) {
+-		ret = temp;
+-		goto err_unlock;
+-	}
++	if (temp < 0)
++		return temp;
+ 
+ 	*val = FIELD_GET(ADXRS290_LPF_MASK, temp);
+ 	*val2 = FIELD_GET(ADXRS290_HPF_MASK, temp);
+ 
+-err_unlock:
+-	mutex_unlock(&st->lock);
+-	return ret;
++	return 0;
+ }
+ 
+ static int adxrs290_spi_write_reg(struct spi_device *spi, const u8 reg,
+@@ -220,11 +208,11 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
+ 	if (st->mode == mode)
+ 		return 0;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
+ 
+ 	ret = spi_w8r8(st->spi, ADXRS290_READ_REG(ADXRS290_REG_POWER_CTL));
+ 	if (ret < 0)
+-		goto out_unlock;
++		return ret;
+ 
+ 	val = ret;
+ 
+@@ -236,21 +224,18 @@ static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
+ 		val |= ADXRS290_MEASUREMENT;
+ 		break;
+ 	default:
+-		ret = -EINVAL;
+-		goto out_unlock;
++		return -EINVAL;
+ 	}
+ 
+ 	ret = adxrs290_spi_write_reg(st->spi, ADXRS290_REG_POWER_CTL, val);
+ 	if (ret < 0) {
+ 		dev_err(&st->spi->dev, "unable to set mode: %d\n", ret);
+-		goto out_unlock;
++		return ret;
+ 	}
+ 
+ 	/* update cached mode */
+ 	st->mode = mode;
+ 
+-out_unlock:
+-	mutex_unlock(&st->lock);
+ 	return ret;
+ }
+ 
+@@ -506,19 +491,20 @@ static irqreturn_t adxrs290_trigger_handler(int irq, void *p)
+ 	u8 tx = ADXRS290_READ_REG(ADXRS290_REG_DATAX0);
+ 	int ret;
+ 
+-	mutex_lock(&st->lock);
++	do {
++		guard(mutex)(&st->lock);
+ 
+-	/* exercise a bulk data capture starting from reg DATAX0... */
+-	ret = spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
+-				  sizeof(st->buffer.channels));
+-	if (ret < 0)
+-		goto out_unlock_notify;
++		/* exercise a bulk data capture starting from reg DATAX0... */
++		ret = spi_write_then_read(st->spi, &tx, sizeof(tx),
++					  st->buffer.channels,
++					  sizeof(st->buffer.channels));
++		if (ret < 0)
++			break;
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
+-					   pf->timestamp);
++		iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
++						   pf->timestamp);
++	} while (0);
+ 
+-out_unlock_notify:
+-	mutex_unlock(&st->lock);
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+ 	return IRQ_HANDLED;
 -- 
-Kind regards
+2.43.0
 
-CJD
