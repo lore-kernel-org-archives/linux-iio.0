@@ -1,76 +1,75 @@
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC2429B200
-	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 19:21:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 171221E47CC
+	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 19:30:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777576901; cv=none; b=ciK2s3akQ2egFyn1XiINBPxgJjkJsZCjNPCLZDOtIHUzhzlrHgMIoq8A8CNLATgKTqWJlCHKWec5Z63nww/oyBU38hN4m/kiJI3NPWiROAJf7wiNGwjJ8D/w6Q086okVRC4eUFsWF1tvUvBiI9pWq5h4Ytr6HFu0LZbjspcS7cY=
+	t=1777577441; cv=none; b=Vd+QUllHxThCriKnhIibALNN1bs66vyQc2DIcnh+joKz/iG54WMcnLEa3KAKxmv0ynmfq38MrwJd9tcvgnXPcm4FKfQ4Z5KdGzl3+tiJIbjFFn8bxCw/dkDrYIiB8pE5e8oUoQ9TrupeztJlVnTrZRmrRD5Ab8CXq41GP6Ll+mo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777576901; c=relaxed/simple;
-	bh=Id/9QrNMu8Ly9mOLs/23rfazEvvQ4Gj7sfkpsrP5n4E=;
+	s=arc-20240116; t=1777577441; c=relaxed/simple;
+	bh=KJesWsbuDzQpkNp8k17t23YomF1fs6T42RqnGIbmT+M=;
 	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=Ij5FVjTxW/hCxBWry/wx3RKz1S+Kl60nM04Rd/5sngIJpQ4LcYX0KwekqW/CQWJQqWC7YNG8Suui77qNOjAFoxCQN86lhblrxO/Vgb/HoGezDT7+Wpfxu5qXnKACS8qRJmxjbNSXx5VYuPodpWH3fUgZArQXdklrh2F1cfl1Vq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iwzLRFyv; arc=none smtp.client-ip=209.85.216.51
+	 MIME-Version:Content-Type; b=ODqpCaN3g/KzChavr0496fkgczqJ8asNhELhfqbfDMdPbabUHXufpu6pblbWn9JG1BpmRtFmtsDDpkCCtoYwQpeCJRQWMZDZaB7vMzA+VMm3tQ7yQSRJ4EdkICqHkK66F0TICCsCep68YT078lejrcmptsTPcpRBMCDUlidiBwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JGbttGbc; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iwzLRFyv"
-Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-35e576110adso993762a91.0
-        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 12:21:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JGbttGbc"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2b461310af5so5499625ad.1
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 12:30:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777576900; x=1778181700; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777577439; x=1778182239; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:references
          :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=kTutwlsLC+vJ/RVb3tmIFV1fWy4ibAZn5i0AUmzY/Yo=;
-        b=iwzLRFyvwlWJOhg4Utuz/vVuLDxcpLVAkiAu0a+hu7WmAD3QRWGERW/Jb8RRo+zqMu
-         QhXuPSGxwj36igGz8zKbiKF598BVMhsyuhDCE1z+OB34136bDNcG+gw+ruchpDfhE+eb
-         7K4MSjX4kH5hDc7pKF2at3PA5xLNglQFSuQD9ifmDqZmEmwZ40OVZuZ5QXpCvSTWPjAu
-         vL0cutrFLXvOzCIPc77q6jOvxnnATgbi/zPHKFNezVO6wgeYdZExFBue9lIV5EOuf3cN
-         AOyoono+pkOVDR+AZgvwmII6MaiyTmOcuna9Gz8ara4VUdP22JGn6ZhSEa2rp1X/HWjD
-         dC4w==
+        bh=GxuNSv+nlSzXKcfeo3FfuQD7X7e1NhixT6Zs+fqDCx0=;
+        b=JGbttGbc+tG+gUSPvjEJ0qXv+SCE9UzH/cRWyBAWzAoDWWQ33JNC8IkdrLwQfqxJRC
+         p83OVs2oBraSpsEuOlb7JLakBEXcH/pQ5USAFV3nmbM9776vNyU7CUgNM3aWTeYjIFRI
+         DFyvzq+bpI7vaXxweouctvSwHNh0BiSdA24GR8dQdZijB3csvA5qffGFj4WknMk9nGfx
+         zZiyxS85z6ybeDu7HcCB3q3WSyQpHFTxfL9ucSffQT8CHL4j/Ot5ureduJjjPPVrDZ2j
+         Z5VniMYVqDuIUzTBBkPHoOrnrF6wLM5OfhfhOAWGMnKisu5YjMYM2rj0hFB1c31duSTL
+         7o9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777576900; x=1778181700;
+        d=1e100.net; s=20251104; t=1777577439; x=1778182239;
         h=content-transfer-encoding:mime-version:message-id:references
          :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kTutwlsLC+vJ/RVb3tmIFV1fWy4ibAZn5i0AUmzY/Yo=;
-        b=rjF50ZFiTx/JbfXmHHOLjS04VTZp69j4VcA3A1U7iWzrE6yRkIgmHZlHUmDoTN4/iz
-         Ru3Hi3phoOBsgl3YhT9X92Dxl99DZCch9/nf0/3/TcAaEdsXDDmhfekCKutCIO7oHXoP
-         Sxf+mDC1OSuVfe8Wd/IVffO0RjQ0Sba6zT/e/V3LchUv9ihdiiLpRRJmAryAaQx/IiQ/
-         ygej86aUIvXrU0j9jdUdGfoUShkgpfKvGUNlfP5iqCUGsfAInBuPc1Qtm4O2koVdblzP
-         Rqd81vCAypQqKc2zhgLGs3sLklePkGR1l7YfWnWv56L67Rw07O3JlrZPy/SNOfmxd6pu
-         x/PQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+PQUuQVKQ1VGzUwgEkoF5HBHKgI6BWEqZ2WfsUFk4VSE8T8R9ffqi+dVqNZFsJBWPfiYHwo2yePjY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwdT37sgjQnu+YyrIMDh55oDUtbMr37LAIp7E0q6QLCFYFjPPui
-	yrOX33uGtNaBN+T+H+qpzzdX1fIeKuRE0bpxvoEWJsaKMGwB0sMZ0vxE
-X-Gm-Gg: AeBDiesAQGwc4Glj2MbmNxPspEx7nmXuDjpmVzWcockSS25Q+NI86hemKLVTm6YU6Ol
-	nUxDH16bk6BeT75zsQzhIIIxUryxScNtEAYalvKrN4ttHSGW9y218HqRgKGzlXwSaEmXOuJXhn8
-	4JZybZbeEp1/eqP9CyKYtGDqfSLfVo6U43PB41pbcRNrjpzXhPkkcOfijTaC5/gDQAqDw89Dyrm
-	mo9w9+3PQ6p7JAVujeL3QhXZcqUl4djp3CBXUcg0V+QMeekNpw6CqjrMfryg0KowECyO1ToMQAQ
-	4IdaF8SsVeyQ7n2cED9uJKSpHHfhWc0cGNQ9Xrp6X67t3HHh0dq3NlD3zsBRFKrUCJt+Zfxyxwv
-	ajjE0ZuNWQXaD43JRoqCaezH8Vj4bhzMpIzYBQlXSqYv/Z6nT1pd+N/MgCDV+P9GvVwhCwrEIy3
-	WcD9+zNmJ2iRE3y4T9UI4wpaP4/CsrQUUaXIs/JSL1QyXr
-X-Received: by 2002:a17:90b:4c04:b0:35b:d795:cf5d with SMTP id 98e67ed59e1d1-364c461d8ffmr3191808a91.5.1777576899778;
-        Thu, 30 Apr 2026 12:21:39 -0700 (PDT)
+        bh=GxuNSv+nlSzXKcfeo3FfuQD7X7e1NhixT6Zs+fqDCx0=;
+        b=PdLk/bG71uYlZBFVDe+VJzWYcfyj6TF3ZERK4eaxPqjN1nB50EyT+IHVTzdKctlvfS
+         oszuOatIiuzjAK9FEExEbbboUiS1/y1HXuEkevNb+ni1g3xOnKaTdxz8INNQruDpO915
+         E/6XoIQxukfwmPnrkBhVEWQfwU1DOpFqxbADkknjkb4VFpbIV2l56DzP2TyUUNeYehhr
+         KfByqEhSyXNZNHgzK4j8Pj3vKU6exXPs+vVugEHxaMoJI30f2ZZ3/m4f70hckRwXIety
+         Y/1V+K4SySQPlpT77Fj9GuJGem4lATUo1QxIuXZwWUGnjJQ8Af8YMObuA/X+U5PnPcGd
+         NhSA==
+X-Forwarded-Encrypted: i=1; AFNElJ+LY6bJcvV1Dst5uCRhiF3BPo1sXi5tsZ/UoJT2cOj2LjZQxyVd0ZTh2YwF90I8ITCygwKdLabO6lM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzcvuMnLvEC2IsXviWfiQn2NanXL3d4Gy3+8oB9PsELr7+DZyYs
+	rN22bFwX8AoYpHrBm3s6BPXTKHNPys6vwMH+9BJhXaAXZ2sdzt3me03B
+X-Gm-Gg: AeBDievJB6q5XEqaWJ+MdhiuR8GNhGlEZNeM+I9MrO49/iu+12xFMySvR/772qxisiX
+	5TbUuK2uPgzSHFj2w/CI2H44lpzL3rd7P4/9AUmBkatE7B7kl4X7EFl8jQg4jW0HnpWHwnanmjz
+	w7IntRVpbeXPBBZfFe1LRyaqYwDCPOVzvoiGgbuevgEbyAj0752zWniVE4kM/1eAN9jP/6xWJBs
+	C3WC559E4M3D9OJPrF+0fxhfcA5qIVNzqC/JJUU+XH7ZY0gbuj5S8hhxjDV4DRju/uOLpHGXqu4
+	8oLy+7sJx5H1mKJe3cdsLsZkwNDu1hNke/97pDW4xnhsIrOYKpiobGI4SC1KjoVah1SeEAM3cSp
+	cHcfJGzOgGWDLsHtboya+Z+teVJ5IrLkQAhxv9NUyEb49NtFJkVOXkU2jq3AH73xpZfn5p4+qzq
+	sR2YS72lRpKq9mx+ReSjNdq2HdquSDm4MDoB+xMK8oHI1z
+X-Received: by 2002:a17:902:ef11:b0:2b2:5070:8b with SMTP id d9443c01a7336-2b9a428297cmr33927525ad.1.1777577439347;
+        Thu, 30 Apr 2026 12:30:39 -0700 (PDT)
 Received: from ehlo.thunderbird.net ([2401:4900:53d0:4e4d::e3d:bc05])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-364d9e9c03dsm1643018a91.0.2026.04.30.12.21.37
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9caaaec82sm3750855ad.24.2026.04.30.12.30.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Apr 2026 12:21:39 -0700 (PDT)
-Date: Fri, 01 May 2026 00:51:24 +0530
+        Thu, 30 Apr 2026 12:30:38 -0700 (PDT)
+Date: Fri, 01 May 2026 01:00:31 +0530
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 CC: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@linux.intel.com,
  dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
  sakari.ailus@linux.intel.com, linux-input@vger.kernel.org,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_4/4=5D_iio=3A_humidity=3A_drop_h?=
- =?US-ASCII?Q?id=5Fsensor=5Fremove=5Ftrigger=28=29_using_devm_API?=
+Subject: Re: [PATCH v2 2/4] iio: hid-sensors: introduce device managed API
 User-Agent: Thunderbird for Android
-In-Reply-To: <afJdJIQS1vwOcaGT@ashevche-desk.local>
-References: <20260429175918.2541914-1-sanjayembedded@gmail.com> <20260429175918.2541914-5-sanjayembedded@gmail.com> <afJdJIQS1vwOcaGT@ashevche-desk.local>
-Message-ID: <12C22ED3-20F9-401C-ACC9-D666393B292A@gmail.com>
+In-Reply-To: <afJcj34Fc_aUMVhe@ashevche-desk.local>
+References: <20260429175918.2541914-1-sanjayembedded@gmail.com> <20260429175918.2541914-3-sanjayembedded@gmail.com> <afJcj34Fc_aUMVhe@ashevche-desk.local>
+Message-ID: <D8E78026-517D-4CE8-927E-6F4AC7E21454@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,44 +82,68 @@ Content-Transfer-Encoding: quoted-printable
 
 
 
-On 30 April 2026 1:03:56=E2=80=AFam IST, Andy Shevchenko <andriy=2Eshevche=
+On 30 April 2026 1:01:27=E2=80=AFam IST, Andy Shevchenko <andriy=2Eshevche=
 nko@intel=2Ecom> wrote:
->On Wed, Apr 29, 2026 at 11:29:18PM +0530, Sanjay Chitroda wrote:
+>On Wed, Apr 29, 2026 at 11:29:16PM +0530, Sanjay Chitroda wrote:
 >
->> Use devm_hid_sensor_setup_trigger() to automatically release resource
->> during fail, unbind or removal of driver using devres framework=2E
+>> hid_sensor_setup_trigger() is common API used for the HID IIO drivers,
+>> prepare devm API devm_hid_sensor_setup_trigger() to acquire resource
+>> during setup and release using device managed framework during drivers
+>> fail, unbind or remove path=2E
 >>=20
->> This simplify the setup, remove goto, avoid manual resource cleanup in
->> teardown path=2E
+>> Register action with devm_add_action_or_reset() to release resource wit=
+h
+>> devres framework=2E
 >
 >=2E=2E=2E
 >
->> -	ret =3D hid_sensor_setup_trigger(indio_dev, name,
->> -				&humid_st->common_attributes);
->> +	ret =3D devm_hid_sensor_setup_trigger(&indio_dev->dev, indio_dev, nam=
-e,
->> +					    &humid_st->common_attributes);
+>> +static void hid_sensor_remove_trigger_action(void *ptr)
+>> +{
+>> +	struct hid_sensor_common *attrb =3D ptr;
+>> +
+>> +	hid_sensor_remove_trigger(attrb);
+>> +}
 >
->I believe the first parameter is utterly wrong here=2E
->Or other way around, same issue but in the previous patch=2E
+>Casting is not needed here=2E
 >
-Thank you Andy for the review comment=2E
+>static void hid_sensor_remove_trigger_action(void *attrb)
+>{
+>	hid_sensor_remove_trigger(attrb);
+>}
+>
 
-It looks in same humidity probe of hid sensor with devm API two device poi=
-nter are used &pdev->dev and &indio_dev->dev; ideally all devm should have =
-same parent device for devres resource framework and over here preferable a=
-nd consistent device should be &pdev->dev;
+True, the cast isn=E2=80=99t required=2E I kept the typed variable for cla=
+rity and type checking on devm_add=2E=2E API which pass void * callback and=
+ remove trigger API which has struct hid_sensor_common=2E
 
-I would first update existing devm_* API to have consistent device and on =
-top of that will use same device in devm conversation=2E
+Happy to simplify if preferred=2E
 
-While for gyro change device is consistent as &pdev->dev across all devm A=
-PI=2E
+>=2E=2E=2E
+>
+>> +int devm_hid_sensor_setup_trigger(struct device *dev, struct iio_dev *=
+indio_dev,
+>> +				  const char *name, struct hid_sensor_common *attrb)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret =3D hid_sensor_setup_trigger(indio_dev, name, attrb);
+>> +	if (ret)
+>> +		return ret;
+>
+>> +	ret =3D devm_add_action_or_reset(dev, hid_sensor_remove_trigger_actio=
+n, attrb);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return 0;
+>
+>	return devm_add_action_or_reset(dev, hid_sensor_remove_trigger_action, a=
+ttrb);
+>
 
+Agree, will update in next series=2E
 Thanks,
-Sanjay Chitroda=20
+Sanjay Chitroda
 
-
->>  	if (ret)
->>  		return ret;
+>> +}
 >
