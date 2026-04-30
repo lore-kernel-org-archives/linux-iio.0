@@ -1,328 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2777E3FFADA;
-	Thu, 30 Apr 2026 10:16:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BADDD3FCB14;
+	Thu, 30 Apr 2026 11:47:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777544208; cv=none; b=lql8A0YHnADzXaOP+IfYKp8AmDqOTBKgkw9qwaIhjCqsDoJVWZZ/NLByRO1rgaFMqaUJVgrh/Y6eYhhWUWpuWQa5Q/paNcoe5Z5/Iv/6rBeOiIIFl2LCVd7Z2xBm66yybXmZSfx/e5+BIqbBkiG0AMDgT78uu3xCwr21iBMpVAY=
+	t=1777549676; cv=none; b=Y1Kmiwpej/+3yVagJ7WzBskx58lu1/63Hw9sIpHrZc35DxVJClswcyZGkwP9K22aqrejbHaBDCwLpyV9ZVEZEphSJkJFKyeGSVuaIyLX2EOY6+8JStUKIldZ4Sk5ilG93gT6GdBHsB8C2y3Cp+nO6FMDUBR+xZ2Fewm+B1YlKNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777544208; c=relaxed/simple;
-	bh=TjLO42re0i6kcbnPAhDuPMCXPMVV1s735AYXgr5LxYw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=RyJmXPu2TpiIharIGN7z0MxBTJuF8e8ooUXqXJfhrX/tyAuM0qxGCpVm9VSqm9WyEH1l6elHhB8AkMICETc7N51Vnu5UrFvASPWPqBxM6s5XmNQ5t+Om4g9D5pEfWa1WZZNdZlCSiM9yRr7o7K+P6+f4M14J6ixV0kqK2H3e4Fs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GNDVP0hB; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777549676; c=relaxed/simple;
+	bh=GMirh7+8LPJL+fmMJcmBROeIbnBWk28VA9ZXhgfBIxw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=l4vI6Ft39XyrROMsm7VuIor44ZE2yf4/gFf5tWU0ot5wsOGoGhDJerYlBEBaqPTl6I/SRm6mhbXxf7lUx5QYLdDudrd/Pay9KlYCLvUCrmqfblCeQ0sA+7hkJwBM9cauDVBz3/bfC1STa/owOODGJ8eq2rArE3oBeyMK+mu3OcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KtJcHdaH; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GNDVP0hB"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DAAC4C2BCFD;
-	Thu, 30 Apr 2026 10:16:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777544208;
-	bh=TjLO42re0i6kcbnPAhDuPMCXPMVV1s735AYXgr5LxYw=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=GNDVP0hBCU0gwpxAfHtoXw77BKyLcV5KWCHU4K2jUWY94dsmT8oHyymvkrZOWopG4
-	 r8Mu5Q6Ir+qrr+5Dl9kDhtQLH4OddvVVicmMlz8OWEaMZSD+XeAAbS7vQ9lg8IuKDi
-	 rBamu6gV5qh/sOk7csCBN6P0yOPmBhP48Zjnhoyo+sFDrkiAXKlwabH1IX13Axw3vU
-	 haHwIsjDvIiwbvUHt3EIrbANunWxqZB7TzWQgg6BNTEgiU5KVczDAbj2rzoC9zJX4W
-	 p59bgYhJckNUZM38DRNEsRudODqEQ7oybLlzevA5SJxGctHaTH0NVs3lxkaZFfImfx
-	 l04NL4V8uff3Q==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF47CCFA13;
-	Thu, 30 Apr 2026 10:16:47 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Thu, 30 Apr 2026 13:16:48 +0300
-Subject: [PATCH v9 6/6] docs: iio: adc: ad4691: add driver documentation
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KtJcHdaH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777549674; x=1809085674;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GMirh7+8LPJL+fmMJcmBROeIbnBWk28VA9ZXhgfBIxw=;
+  b=KtJcHdaHg3cPJJG2w3k8K+WWU6QjeVo/fsiRBAky3neiv9ikjqdaILmn
+   HLuFgn0VudqQe5TzTFvKB1Br/57317dIaN9k8YcGOUo0wvQ/0KpBponbP
+   fkRIUJ/pByLmzf+uzRMDDR8MlIsY1/xCeTzwVWV1EEZwbxkXZEXaWyuHm
+   x3yjxR8ffi63n3lZlWlrvQzMzod2v7YSgz+PzzBmph8rLTWZER4NyJWMv
+   rkObvD1wqKuo5UVtHUDi8gkaIHsyzB0/EbnbGk95Uvrx0P7rlCrAld/Mn
+   uSZCArN6PgRAUXJWkj7k8TbtDmZAjrIe/pOA7SqOm22I9ufRPjAWi+QNt
+   g==;
+X-CSE-ConnectionGUID: 0MKZG1kjSXSNiXc6fQfWeg==
+X-CSE-MsgGUID: y7lKWHtcSJaAyDq0Obmt9Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="78419041"
+X-IronPort-AV: E=Sophos;i="6.23,208,1770624000"; 
+   d="scan'208";a="78419041"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2026 04:47:52 -0700
+X-CSE-ConnectionGUID: 9QFzmfoMSNmd3kC5dKh+jA==
+X-CSE-MsgGUID: 4+P1tc6CSyuOCG01IBWmWQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,208,1770624000"; 
+   d="scan'208";a="236341886"
+Received: from zzombora-mobl1 (HELO localhost) ([10.245.244.42])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2026 04:47:50 -0700
+Date: Thu, 30 Apr 2026 14:47:47 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@suse.de>,
+	Michael Auchter <michael.auchter@ni.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v4 06/13] iio: dac: ad5686: refactor include headers
+Message-ID: <afNBY6dQ5Nw-EZcH@ashevche-desk.local>
+References: <20260429-ad5686-fixes-v4-0-bb8f1cbd68e1@analog.com>
+ <20260429-ad5686-fixes-v4-6-bb8f1cbd68e1@analog.com>
+ <afIRG2S94JEn3Oqd@ashevche-desk.local>
+ <CALoEA-yBU_pwiOFQx89-Gcgmtz_KtuxJJvph7uKPHKJNihDS8Q@mail.gmail.com>
+ <afJLlpsU17Pmp0uH@ashevche-desk.local>
+ <CALoEA-wvYvZr7ixC4UOh98mZAas1vbOe5CXT89DOy3e7xTmJ_g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260430-ad4692-multichannel-sar-adc-driver-v9-6-33e439e4fb87@analog.com>
-References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
-In-Reply-To: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
- Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
- Shuah Khan <skhan@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org, 
- Radu Sabau <radu.sabau@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777544205; l=9306;
- i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=8iXZp0x1X1defWWuJJgYTk6WrDF1PVndw2AvlFcwSLA=;
- b=GOldAqQrUypbvpafnuuJZA3+S5WQFTGZAJ1cfroK0ltdhZnnr9tSSIUHcIp9qJghTUpWu8obu
- Qra/scBEpIBDIjKRKjYVF4hEOf5dr9UyjL19XkDxgwzuCqrrq9Pqtdg
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
- auth_id=642
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALoEA-wvYvZr7ixC4UOh98mZAas1vbOe5CXT89DOy3e7xTmJ_g@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Radu Sabau <radu.sabau@analog.com>
+On Thu, Apr 30, 2026 at 11:18:42AM +0200, Joshua Crofts wrote:
+> On Wed, 29 Apr 2026 at 20:19, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > On Wed, Apr 29, 2026 at 04:38:02PM +0200, Joshua Crofts wrote:
+> > > On Wed, 29 Apr 2026 at 16:14, Andy Shevchenko
+> > > <andriy.shevchenko@intel.com> wrote:
+> > > > I haven't checked this deeply, but I hope at some point we will have
+> > > > more or less usable state of `iwyu` tool that may do this automatically.
+> > > > At least current result looks better than the original.
+> > > >
+> > > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > >
+> > > I did find a "filter" file of sorts for IWYU that Jonathan had on the
+> > > mailing list.
+> > > It does a good job of omitting reports of very low level headers but at the
+> > > same time IWYU still tells you to include things like <linux/stddef.h> and
+> > > remove anything <asm/*>  from your includes. Perhaps it needs more
+> > > tweaking?
+> >
+> > You need to check that manually and then decide if we need more amendments
+> > either in the patch or in the `iwyu` "filter" file or in both. In case of
+> > filter file changes, please share them to Jonathan and mailing list, so other
+> > people can adjust their work in case they use the tool.
+> 
+> I have made some changes, so I'll send an update where people can get the file.
+> Also I've noticed that there is a /tools/iio/ directory in the repo,
+> perhaps we could
+> add it there so people don't have to search lore?
 
-Add RST documentation for the AD4691 family ADC driver covering
-supported devices, IIO channels, operating modes, oversampling,
-reference voltage, LDO supply, reset, GP pins, SPI offload support,
-and buffer data format.
-
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
- Documentation/iio/ad4691.rst | 205 +++++++++++++++++++++++++++++++++++++++++++
- Documentation/iio/index.rst  |   1 +
- MAINTAINERS                  |   1 +
- 3 files changed, 207 insertions(+)
-
-diff --git a/Documentation/iio/ad4691.rst b/Documentation/iio/ad4691.rst
-new file mode 100644
-index 000000000000..38e2ad28a713
---- /dev/null
-+++ b/Documentation/iio/ad4691.rst
-@@ -0,0 +1,205 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+=============
-+AD4691 driver
-+=============
-+
-+ADC driver for Analog Devices Inc. AD4691 family of multichannel SAR ADCs.
-+The module name is ``ad4691``.
-+
-+
-+Supported devices
-+=================
-+
-+The following chips are supported by this driver:
-+
-+* `AD4691 <https://www.analog.com/en/products/ad4691.html>`_ — 16-channel, 500 kSPS
-+* `AD4692 <https://www.analog.com/en/products/ad4692.html>`_ — 16-channel, 1 MSPS
-+* `AD4693 <https://www.analog.com/en/products/ad4693.html>`_ — 8-channel, 500 kSPS
-+* `AD4694 <https://www.analog.com/en/products/ad4694.html>`_ — 8-channel, 1 MSPS
-+
-+
-+IIO channels
-+============
-+
-+Each physical ADC input maps to one IIO voltage channel. The AD4691 and AD4692
-+expose 16 channels (``voltage0`` through ``voltage15``); the AD4693 and AD4694
-+expose 8 channels (``voltage0`` through ``voltage7``).
-+
-+All channels share a common scale (``in_voltage_scale``), derived from the
-+reference voltage. Each channel independently exposes:
-+
-+* ``in_voltageN_raw`` — single-shot ADC result
-+* ``in_voltageN_sampling_frequency`` — per-channel effective output rate,
-+  defined as the internal oscillator frequency divided by the channel's
-+  oversampling ratio. Writing this attribute selects the nearest achievable
-+  rate for the current OSR; the value read back reflects the actual rate after
-+  snapping to the closest valid oscillator entry.
-+* ``in_voltageN_sampling_frequency_available`` — list of achievable effective
-+  rates for the channel's current oversampling ratio. The list updates
-+  dynamically when the oversampling ratio changes.
-+
-+The following attributes are only available in CNV Burst Mode:
-+
-+* ``in_voltageN_oversampling_ratio`` — per-channel hardware oversampling depth;
-+  see `Oversampling`_ below.
-+* ``in_voltageN_oversampling_ratio_available`` — valid ratios: 1, 2, 4, 8, 16,
-+  32.
-+
-+
-+Operating modes
-+===============
-+
-+The driver supports two operating modes, selected automatically from the
-+device tree at probe time.
-+
-+Manual Mode
-+-----------
-+
-+Selected when no ``pwms`` property is present in the device tree. The CNV pin
-+is tied to the SPI chip-select: every CS assertion triggers a conversion and
-+returns the previous result. A user-defined IIO trigger (e.g. hrtimer trigger)
-+drives the buffer.
-+
-+Oversampling is not supported in Manual Mode.
-+
-+CNV Burst Mode
-+--------------
-+
-+Selected when a ``pwms`` property is present in the device tree. A PWM drives
-+the CNV pin at the configured conversion rate. A GP pin wired to the SoC and
-+declared in the device tree signals DATA_READY at the end of each burst,
-+triggering a readout of all active channel results into the IIO buffer.
-+
-+The buffer output rate is controlled by the ``sampling_frequency`` attribute
-+on the IIO buffer. In practice the PWM rate should be set low enough to allow
-+the SPI readout to complete before the next conversion burst begins.
-+
-+Autonomous Mode (idle / single-shot)
-+-------------------------------------
-+
-+When the IIO buffer is disabled, ``in_voltageN_raw`` reads perform a single
-+conversion on the requested channel using the internal oscillator. The
-+oscillator is started and stopped around each read to save power.
-+
-+
-+Oversampling
-+============
-+
-+In CNV Burst Mode each channel has an independent hardware accumulator that
-+averages a configurable number of successive conversions. The result is always
-+returned as a 16-bit mean, so ``realbits`` and ``storagebits`` are unaffected
-+by the oversampling ratio. Valid ratios are 1, 2, 4, 8, 16 and 32; the default
-+is 1 (no averaging). Oversampling is not supported in Manual Mode.
-+
-+.. code-block:: bash
-+
-+    # Set oversampling ratio to 16 on channel 0
-+    echo 16 > /sys/bus/iio/devices/iio:device0/in_voltage0_oversampling_ratio
-+
-+    # Read the resulting effective sampling frequency
-+    cat /sys/bus/iio/devices/iio:device0/in_voltage0_sampling_frequency
-+
-+Writing ``oversampling_ratio`` stores the new depth for that channel;
-+the internal oscillator is unaffected. The effective rate read back via
-+``in_voltageN_sampling_frequency`` becomes ``osc_freq / new_osr``
-+automatically. ``oversampling_ratio`` and ``sampling_frequency`` are
-+orthogonal: one controls averaging depth, the other controls the oscillator.
-+
-+All channels share one internal oscillator. Writing ``sampling_frequency`` for
-+any channel updates the oscillator and therefore affects the effective rate
-+read back from all other channels.
-+
-+
-+Reference voltage
-+=================
-+
-+The driver supports two reference configurations, mutually exclusive:
-+
-+* **External reference** (``ref-supply``): a voltage between 2.4 V and 5.25 V
-+  supplied externally.
-+* **Buffered internal reference** (``refin-supply``): an internal reference
-+  buffer is enabled by the driver.
-+
-+Exactly one of ``ref-supply`` or ``refin-supply`` must be present in the
-+device tree. The reference voltage determines the full-scale range reported
-+via ``in_voltage_scale``.
-+
-+
-+LDO supply
-+==========
-+
-+The chip contains an internal LDO that powers part of the analog front-end.
-+The supply configuration is mutually exclusive:
-+
-+* **External VDD** (``vdd-supply``): an external 1.8 V supply is used directly;
-+  the internal LDO is disabled.
-+* **Internal LDO** (``ldo-in-supply``): the internal LDO is enabled and fed
-+  from the ``ldo-in`` regulator. Use this when no external 1.8 V VDD is present.
-+
-+Exactly one of ``vdd-supply`` or ``ldo-in-supply`` must be provided.
-+
-+
-+Reset
-+=====
-+
-+The driver supports two reset mechanisms:
-+
-+* **Hardware reset** (``reset-gpios`` in device tree): asserted at probe by
-+  the reset controller framework.
-+* **Software reset** (fallback when ``reset-gpios`` is absent): written
-+  automatically at probe.
-+
-+
-+GP pins and interrupts
-+======================
-+
-+The chip exposes up to four general-purpose (GP) pins. In CNV Burst Mode
-+(non-offload), one GP pin must be wired to an interrupt-capable SoC input and
-+declared in the device tree using the ``interrupts`` and ``interrupt-names``
-+properties. The ``interrupt-names`` value identifies which GP pin is used
-+(``"gp0"`` through ``"gp3"``).
-+
-+Example device tree fragment::
-+
-+    adc@0 {
-+        compatible = "adi,ad4692";
-+        ...
-+        interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
-+        interrupt-parent = <&gpio0>;
-+        interrupt-names = "gp0";
-+    };
-+
-+
-+SPI offload support
-+===================
-+
-+When a SPI offload engine (e.g. the AXI SPI Engine) is present, the driver
-+uses DMA-backed transfers for CPU-independent, high-throughput data capture.
-+SPI offload is detected automatically at probe; if no offload hardware is
-+available the driver falls back to the software triggered-buffer path.
-+
-+Two SPI offload sub-modes exist:
-+
-+CNV Burst offload
-+-----------------
-+
-+Used when a ``pwms`` property is present and SPI offload is available. The PWM
-+drives CNV at the configured rate; on DATA_READY the offload engine reads all
-+active channel results and streams them directly to the IIO DMA buffer with no
-+CPU involvement. The GP pin used as DATA_READY trigger is supplied by the
-+trigger-source consumer at buffer enable time; no ``interrupt-names`` entry is
-+required.
-+
-+Manual offload
-+--------------
-+
-+Used when no ``pwms`` property is present and SPI offload is available. A
-+periodic SPI offload trigger controls the conversion rate and the offload engine
-+streams results directly to the IIO DMA buffer.
-+
-+The ``sampling_frequency`` attribute on the IIO buffer controls the trigger
-+rate (in Hz). The initial rate is 100 kHz.
-+
-+Oversampling is not supported in Manual Mode.
-+
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-index ba3e609c6a13..007e0a1fcc5a 100644
---- a/Documentation/iio/index.rst
-+++ b/Documentation/iio/index.rst
-@@ -23,6 +23,7 @@ Industrial I/O Kernel Drivers
-    ad4000
-    ad4030
-    ad4062
-+   ad4691
-    ad4695
-    ad7191
-    ad7380
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 24e4502b8292..819d8b6eb6bb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1491,6 +1491,7 @@ S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
- F:	drivers/iio/adc/ad4691.c
-+F:	drivers/iio/adc/ad4691.rst
- 
- ANALOG DEVICES INC AD4695 DRIVER
- M:	Michael Hennerich <michael.hennerich@analog.com>
+Perhaps, but it should be approved by Jonathan. Sounds good to me,
+nevertheless.
 
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
 
 
