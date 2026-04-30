@@ -1,314 +1,261 @@
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11023080.outbound.protection.outlook.com [40.107.159.80])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40DA727BF93
-	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 02:14:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777515283; cv=none; b=gw0zTamtZ7fNLTOe93TfhqDJq6wlLBaf4TCQPTW0IMV9/5zlOWyccsX/Cock6kBB1iLS/M3lIZ4++sNuD8mvI3gfrntDbdbxdC+OI93GGG6J0awac2FJl8HiSX1QJzBFFEHAqSYfgyDr/EG9254E0AcxcC9hoaI2Ux/LPVqh9z0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777515283; c=relaxed/simple;
-	bh=JsHltVg/9p51USf9RqOqUZIyIFziEemLfG3McpKScvU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kARR8HOLqWKmwMmeTZgq8fnJ+dSugmjOlqPvE6tmmTt7IscYZAQUmBj+wC4qdLY5Ie0gEfDt7ZfZPReDz1bGBsyuSWhWgcgGGT6xxnBdSE2izzdc2V3AoDbmhCaMahEinIxwS+VllC2RVAvoV5D41E9X+qPThSMzb7DUfsjP1yU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s2omtQUe; arc=none smtp.client-ip=209.85.167.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A1CF34EF05;
+	Thu, 30 Apr 2026 04:10:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.80
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777522211; cv=fail; b=cT9qldYiHfnlhpQmtZLAQW4BWCbBV52mSEkHhOj7+hckBUtKFxBWQG/RFC6tcYVng8JIqlVz8PxdH69A/vGyjZVZzEQ/Tf8lEVK0MPf7PdTlW0n/1gyM9MH6KVK+KMQKQGYMu0tMiU4FOfRTd/NJTvUuN5GZjwW7lnC4fd8Uco0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777522211; c=relaxed/simple;
+	bh=DsTFaquaP7+x3aJEvXSvBlbu4dcNzxtka19TDzQLj0M=;
+	h=Message-ID:Date:To:Cc:From:Subject:Content-Type:MIME-Version; b=Av54QrykRb8Y6ARRKw2H2UZyq5jSQRBmDzb56Bk5INCBsJDEYV4B278L7s/rcW7Lpm9HqU48Lr6+xXT1qxUWEYO1cTHytjrtBBOhykMhxK5KkmEuRNVZt6W51KEPcpP9Xn8vGJuWMF3YcGAcdp5Q4MOXx5nLuisnc9NcZqCt7FM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axentia.se; spf=pass smtp.mailfrom=axentia.se; dkim=pass (1024-bit key) header.d=axentia.se header.i=@axentia.se header.b=EpEmHwGi; arc=fail smtp.client-ip=40.107.159.80
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axentia.se
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axentia.se
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s2omtQUe"
-Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-4645dde00a7so1086813b6e.1
-        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2026 19:14:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777515281; x=1778120081; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=pTdtKUVaNDrgJLOyHFxqOi1YzUMuCevDfpxXF7PGypo=;
-        b=s2omtQUeIjFoiY7cm3hSvhPP+/J6bYxZ2RjXO6BBPwF3ZF8cfFtOzXdgOrOioe2wGY
-         hGNk5jC3YV0GcSzfLmV9veY/PEQqnZRQ5MVFk4FXs5yzG29l6OT0eXUDZj1+QBp4gcJ7
-         vxlFtXhEiSYZ0d488s3YwTA96Q/pTf5/yMBMLGpkYf8SKEsubGnXG3848zx8Hw0zw7M+
-         rqTK5GTJPKudZs+QAGRS2Wsur01XcrBL+Ge9Hykks+4eKjFqArVLJeQz9t6ZtQi61zGc
-         hochv1F93h8FDTJ/4PsY3Rju8r03Recqd8+rwJHdpn6XUJPZcW1/1m7gdNUlG4AIEfZs
-         8neg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777515281; x=1778120081;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pTdtKUVaNDrgJLOyHFxqOi1YzUMuCevDfpxXF7PGypo=;
-        b=HGODoO7VvlsJSWIA+N/g2sRp+Em42aiu70ZSbqCY4TAg2pZ6cwo0nV2DGsN5qBo/lr
-         S5Q8i9+GrU/ZwQ5t4uHay9DT8su86D1pfoY5CO5scktNoc1s5W5IEAWqhpQJ8eHMYePj
-         MCb5ycw66FkqZ0lKfSutfz/qTRWcUnv8mHYyuLBQL66LdKEMh9HQ3I/rK4XCPspxTC+g
-         2TGUoKKfS+X/WLwX2J7xSUQQy0bx6OpXw31vOiO7ZsN1bc6fMIYxyj9r/Xcw0tHtNqTI
-         sn/3QP/INcm/oeOrYfOp5OSNFGfLXJhJm4HoEzyqu47yRVqUicWCJ+/UVD1VR5ZGJDuk
-         wUYA==
-X-Forwarded-Encrypted: i=1; AFNElJ/wZQJzr7+klIQ3T2AzaSYm4SNZ/qr0YuU9X2Md/kD8z1ss79Q3GRQq4ltbQAgJg3e9qk5Wvi1jELI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwTjJbojWy0z7eTNq6Q4XK1m+ONS72CGOef4BBOgOGilohE2Nej
-	shEBrVX/ZAWPWmkDOtrrIuk62oLCpg31ho7dELuNyiJEtQZporTqms0s
-X-Gm-Gg: AeBDiev4I96dVubNVQsC6Vx/mtG0b1ry7aJNpTP5GYslQ6t61X2vo8hfR7y+wv+/+fl
-	rOnrebRxXl9h/ukM5cLNbOGshYQAe7wqynKjwgZQsoCEk8uEHYtqDPxOF/YVZEwsupbLzAuF3l3
-	+G7SCyt2Wei6NXC5/HQgnhXwWDuBkYkEJdoPjyLHI/7nn0fIH459PAlhR2m05+/j+mAFRaXnpOy
-	JOUpw2kwzx9Yr2Cbeg6Uwlzb8SZEPIx6xSzsiNfspdupyMimijDxu05yBUc20vjafMa2XwOrhdv
-	aVPecrBAYZkEnMECxSDtbTmbC2k/DNP2CHJ1kqibgso7bb/Yr/f+s5dIlEZcD/3Mj3vAPwJB6Gi
-	GJramprmHFxlfyDBRUxUsTY3pHgeLG0o0sXEcKlu19/ehFzJJDoqeqxeUdFx4p8sgRl2wB+vjJ9
-	Roii76p7Bk8BQv7y04bVC5NiBfRTbUe/nfpP7tfq8DM7rVgP5psKuV7Q4ezJ1lxytOhhIS
-X-Received: by 2002:a05:6808:4f5e:b0:463:a42c:503a with SMTP id 5614622812f47-47c6207d74bmr260564b6e.14.1777515281101;
-        Wed, 29 Apr 2026 19:14:41 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-47c43edfbf2sm2109498b6e.6.2026.04.29.19.14.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2026 19:14:40 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: songqiang1304521@gmail.com,
-	jic23@kernel.org
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org (open list:PNI RM3100 IIO DRIVER),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v4] iio: magnetometer: rm3100: Modernize locking and refactor control flow
-Date: Wed, 29 Apr 2026 21:14:39 -0500
-Message-ID: <20260430021439.67591-1-m32285159@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (1024-bit key) header.d=axentia.se header.i=@axentia.se header.b="EpEmHwGi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=WzForAEZGbIYgmR7RSzIzzWk1wtQLgQVE8ft3FEZYoEqmVkVaXBh2UEqzwf+Vu9gQd1vKL0BHyUQ0IjUNLic9Fvi8qRstMGHtCB9kLuw17YYroOwNFAYpZQKnqPZ6sQ7LuUNT6Qiw9Yqy72tGdXDtpp5UQlp5lxTwIvvIGielTYMbhsUje/HUM/V2gB20kyV65ukLTUXmeBOcQUe5ebE7Bt32EOHBc67GhWUgzh4JQx0S+4itKfdXj5BePuSNm+GudEdAB2osnxH9npe610e4Si0H1oCo6TfweRgGQAK6ZGDlsUjJD8DREtfA7+54TTlbY8ASiXUzsY+WORrV+Nriw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=krMphM2NAxVYMF/9OniqCuGV4f5a7Pz6HMQ37ozz1aw=;
+ b=aZFCae0Tn6VyKapietUoenoNrLWNNPm5kwUT9UhjWT1aPzPRlfJ1K9IoWrgJH3nuLE30I0GuAGQspg0osWMRF0IJ5Sb/jEV/BlZlPGx4RqUd8XDDGncAYDfQHOa3zwVxs4Yr+FAia27C2zGN1VVvmq/X5l01axNPvxu0akww05zPiUB72d95PlMwF2IWp9xc1Kx9qGfbGAhYJ1UDM6hoTwNbXIJk6IL9UqGN2Kt9Kua3rVk4X9h4kQuWUFMZzQ5PU3ruL3irHLsoxY9RetlNMSk1Y/jR1NaWSMtqHg90+U7qLtDpGSMaoLPZWKhgQzCK1qfAWPXo69JgfFkSTTmP8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
+ dkim=pass header.d=axentia.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=krMphM2NAxVYMF/9OniqCuGV4f5a7Pz6HMQ37ozz1aw=;
+ b=EpEmHwGi0O3bVCJCGmHsLThdJZs4iFiXTsHEqWN8vbYZZDgUadUH2VwZYgD0uht4Fo8rRCK5tLbhA0/Ns70StBDV//y0TbuOdOh3g/Bp72Xy9yb5OpLo0AnPPrS36iJqNsZ37UiplxRY2gfXaJCYbCbswU0Rz1rP1/zKJNOKChM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axentia.se;
+Received: from AS8PR02MB9235.eurprd02.prod.outlook.com (2603:10a6:20b:5c1::5)
+ by GVXPR02MB10967.eurprd02.prod.outlook.com (2603:10a6:150:226::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.20; Thu, 30 Apr
+ 2026 04:10:02 +0000
+Received: from AS8PR02MB9235.eurprd02.prod.outlook.com
+ ([fe80::32a9:a9e6:ded:5714]) by AS8PR02MB9235.eurprd02.prod.outlook.com
+ ([fe80::32a9:a9e6:ded:5714%6]) with mapi id 15.20.9870.020; Thu, 30 Apr 2026
+ 04:10:02 +0000
+Message-ID: <7ddc5b09-b6c9-99f9-d951-6b3ef96f8c1f@axentia.se>
+Date: Thu, 30 Apr 2026 06:09:58 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Content-Language: sv-SE
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, Wolfram Sang <wsa@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>, Linux I2C <linux-i2c@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ Peter Rosin <peda@lysator.liu.se>
+From: Peter Rosin <peda@axentia.se>
+Subject: [PATCH] MAINTAINERS: Update mail for Peter Rosin
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: GVZP280CA0097.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:150:275::11) To AS8PR02MB9235.eurprd02.prod.outlook.com
+ (2603:10a6:20b:5c1::5)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR02MB9235:EE_|GVXPR02MB10967:EE_
+X-MS-Office365-Filtering-Correlation-Id: cbf83293-c382-461b-7096-08dea66e5a1f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|366016|18002099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	O0ty+WFvNRKX0aq95752uhQ8Zwyhvd7Z28cNxsfkNv7Vc9+HaD+mkzXK6Sl9U+EINiLfongxJ2pHIUKJbWLQ1fy4xlqlsQTOiiQDMbPiz6bQDQBLiUAjlGc/AEaD11D5H8bsWEgrly80DGuuFLISjJKdJipj3DbBhUD8Iw3E/aXvdtI0/u9ESqxiA465/8e+W46fdMWJfwNdueTd/MxlGUQ7bqPYlA3fsIHiBLKV3/zldCSWEqIKfgT1lFo43GXC144iFzIKNWaEnCtWZPaDf5pgbV7kRVLk0qdafVpHMVHKZfotxq8TnQjum4fCtPGtd9nwJybL+dwJ239DMuFMIy5oj8IkRovAa0902AadX5Kl3hyr6SIjkCuU5OPN3PFwKrv3zW5LDjEeleg8c9WGec4QUxO88vIFLpMc8vSLpjTauiFhyYNI0ADdQlWQrxPo40SJmUHMAHaN9A1RjR82IctEkDnzhiUnjyc+FDUFTw2ElG9baAJq//UphxDkJHIDXWpmQdbPcX9o0+5aWAA5uIrlwKedNtGxR0+ydztfmJ8DFQIe83M3ED0x9KtS+NuTQwmmfuqS0uvdhO7T4dpm9DcJz6l3f7aSGGR5OeK3aNTmt64z25iTlDp6gdgdpSWHvyvjXCcI0825GgBz87MxzYF5Oz36iskAz6FiOq0WU4Z1ZLOHTABYqyJtDVQc+Wc0Oiu3F96hz0TrPmW5BvIB8RVMHY08qcn0h2B9XqnIUTY=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR02MB9235.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(18002099003)(56012099003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?NEtWME55VUcrNjhFUUFYQU5DRUxOMjBxYWlwdnE4elFmaFhCclVsWk9LaU5u?=
+ =?utf-8?B?bEN0dElKdCtJcS80cTNIOHhYd0lCYmg3enI4VXJxa2p0bk55bTcvOUN0Z1g2?=
+ =?utf-8?B?MjBjaUNVaHlTYWVNMEc3My9PMlJrTkp3WHpuNGwwT2EwZ1hDcWNJUHhGV1NV?=
+ =?utf-8?B?cHNSMkR5QUJZM0llRkdzN1lOTHVVTE1qVS9LWFlkbG5EQllHUjFkTVJHTmF0?=
+ =?utf-8?B?QVg0SmFXUE0vc2s3aFB1TlhRRTUwYlM0VWJ0NHlXc2YrdS9La01RdDF2R3JE?=
+ =?utf-8?B?R0JmVnpaSVFJdnlSeVRiczV3SzFCa2ZUYkhJL0dMMDl0ZzkwbkNjT1BLL3JF?=
+ =?utf-8?B?R09BYnhNRXRldHJ5cHpSTzA2aFlIWWQ2Z0FCcUFheERHK28wRlJMOE8rOWxW?=
+ =?utf-8?B?LzNJcWlISUUzenZGWGRnM3ZzMGpWcVJVY0dBZHlON0g1VEFhUHpRd3ZhMDNE?=
+ =?utf-8?B?dDI0UHNKRlZmQ2puVjR3Y21zaU11NnBEazhyUm5aeFUxZzJtL0drR1drZ1hN?=
+ =?utf-8?B?U0ZNTytRZFVMUlVvcTJrQXFueC9hbVVUbUxVK3dTMlFqdGI5MFNnRTNLY0Y1?=
+ =?utf-8?B?RFBUSG1zRFZ3bUQvcGIxWXVIZDdnV0V2UlpoSlFDYnJBWXJXN1J0RldDTGs0?=
+ =?utf-8?B?SXkzY2ZPMHhGeGhkQklsVUR5VSsvZXBRbnBVaXpzUzltYlg2Q3RNQmx6WUpq?=
+ =?utf-8?B?LzBNZnAyY1p1VHc0K01qUjZtcTJreTNlbmdmcXJ2VVpEL2pRSkxYVGZZUHpB?=
+ =?utf-8?B?eTlpaDVxcFYzTWFObGlYdWN4alA1eXQ5TThsQkh6RnNFYjF6bmtqbTg1Nk9u?=
+ =?utf-8?B?NlpRUll1MUpWaXVBdWJlUGJMK2wrTFVSTkMycXJENFNPc2o1dzdqVEE1cmR6?=
+ =?utf-8?B?ZGp3QUtpR09wZ2lPMzhnUFZjRmtuVDduNGsxQ1hhNktMSUNJSnVBNU41YWkr?=
+ =?utf-8?B?WUpCUXN5dWZ3OXdpQWdiay9tWVJ4M243UVIxTTdpVDdWK1hjTVd5dENGcS9O?=
+ =?utf-8?B?M2xSUHg2TFgzWE5CUlFtQStCcmZISzlYeHhXL2dyRjlmaGl5cDVWelpiZnNE?=
+ =?utf-8?B?eGFKSEVwSVE0aFNhU1p4NGVZMnk2M2pEUEYyZ2pXYmJLUXdiUHNMUjUvUEJN?=
+ =?utf-8?B?cUFUWjRjaXJLS0dML21STzhmOXFlbElMVkIwcktEZEpnVmxuV09aL1Bndk8z?=
+ =?utf-8?B?NlJUVjFLOGRkLzVadkoxcjAzdjJJMHdtT0l6SWhjcm5PMDlXcVU2eXdZZzll?=
+ =?utf-8?B?cTNBTjZTNFErbm9zL3ZPT1d2akkvNnlETzZqRzVDYnViLzFyYlVXQ29saUxx?=
+ =?utf-8?B?Zm5lNUZueEFhRWtSdGVhOWV0SVgwcTZXU0p5V0VoREJEV3pnZXBEZXE5WFFZ?=
+ =?utf-8?B?UXlQazZHbWhYZEJORGZudHFTMlVTWm83NEZhRTdJQUw4bG1tZlB5UFZPV2s5?=
+ =?utf-8?B?R09pZTIraGUxcVQxRlZpSzVPbUFMVWVHSEJTOWJqZjFkNG9IeDNIVmNMd0Ju?=
+ =?utf-8?B?N29UOTBZVW9yaFJZVk1mdWRWK1dHVlhUNWxVQmQyWHNkRzRkRWNnKzA5ZXhP?=
+ =?utf-8?B?L2N2TTVadEZ3cC83a0l5OGN3dlI0SGQ5YWFLdlpWM3A0ZEQ5bDhHK0h2VXFq?=
+ =?utf-8?B?NURxMnF3Rlc5dHJVNEwyNGNxeTNGWGYybzF5Q3A0bDJlc3l6bDBSYm9aUGhz?=
+ =?utf-8?B?eEdMZmtwOUlVN05YWkhOazZKRUJnTGgrRDJFd21FRnhIMlpMQ2pPQWpDL2sz?=
+ =?utf-8?B?T2dnNFJZMUFvUERINVpOZktmQmtJRUpMQjNmeDhuUytqcmJweS9RTGFRamtF?=
+ =?utf-8?B?a0NhWTh4QUhqYytmMFZTbzFsSVQvSzBlMmdJdlAybzJWa1h3NHppWDZmd2VM?=
+ =?utf-8?B?dSs1UEk0QzRaWWpJd2Nxdy9zMXE4U3pxa2crUFFJSk9PRW1aclFESC9QMFcv?=
+ =?utf-8?B?OEl4N0dXYjZSUG02UXlyVmdtN3lhaUx5Z1BGV1pwd2VNOFZ3Tm9Va0kxdHZi?=
+ =?utf-8?B?ZzByaFhBenNkVE45cC9lRW1lb2R6bGFrSGdLczJJUDNzL3dSNTZYVXVaT2I5?=
+ =?utf-8?B?ekR6dnZwWWVERXlWOUhkb0ZIZk9CZm1ENHpETkVKVGRYSlJyVVdzM2R6Qy9t?=
+ =?utf-8?B?b3p6ZWhETllvdXU1Mko2MzZYT2gyeHFPQ2xSRVhDbDBwWk92c21wN2JzSWs5?=
+ =?utf-8?B?d2F4ZzNaRkM3UVJjbmlFTDdLSHVyWDZnSkNyanU5ME5vL1dHcE5YM3B5OExG?=
+ =?utf-8?B?dHJvRy82UDBWTUl4UWphREF0YmU3bWtHUjF5V2g5NWowRjFxZktlanVpY09Y?=
+ =?utf-8?Q?6u+PYwy+MODwrY7mD0?=
+X-OriginatorOrg: axentia.se
+X-MS-Exchange-CrossTenant-Network-Message-Id: cbf83293-c382-461b-7096-08dea66e5a1f
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR02MB9235.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2026 04:10:02.2843
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fcVczs1b3P4aJLAXVH4tGB8mb3YnWHyrs5291hCo/VmX3R/LfKHWHiJInifUrFzO
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR02MB10967
 
-Replace mutex_lock() and mutex_unlock() calls in rm3100-core.c with
-the more modern guard(mutex)() family. This will help modernize the
-driver and bring it up-to-date with modern available macros/functions.
+I'm resigning from my position at Axentia.
 
-While replacing mutex_lock() and mutex_unlock(), the critical sections
-of rm3100_read_mag() and rm3100_get_samp_freq() have been extended to
-include negligible operations for cleaner logic.
-
-Add new helper-wrapper function rm3100_guarded_regmap_bulk_read() to
-help keep rm3100_trigger_handler() switch-cases clean while maintaining
-mutex locking and avoiding re-entrancy risks from potential callbacks.
-
-While at it, remove redundant gotos where applicable, and use direct
-returns instead. In addition, remove regmap variable in
-rm3100_trigger_handler() as its references have been replaced with
-variable data.
-
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/magnetometer/rm3100-core.c | 93 ++++++++++++++------------
- 1 file changed, 50 insertions(+), 43 deletions(-)
+ .mailmap    |  1 +
+ MAINTAINERS | 24 +++++++++++-------------
+ 2 files changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/rm3100-core.c b/drivers/iio/magnetometer/rm3100-core.c
-index 2b2884425746..ffa9b46278ed 100644
---- a/drivers/iio/magnetometer/rm3100-core.c
-+++ b/drivers/iio/magnetometer/rm3100-core.c
-@@ -204,27 +204,23 @@ static int rm3100_read_mag(struct rm3100_data *data, int idx, int *val)
- 	u8 buffer[3];
- 	int ret;
+diff --git a/.mailmap b/.mailmap
+index 34acd34bbf9b..7cc01b61aa0a 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -677,6 +677,7 @@ Peter A Jonsson <pj@ludd.ltu.se>
+ Peter Hilber <peter.hilber@oss.qualcomm.com> <quic_philber@quicinc.com>
+ Peter Oruba <peter.oruba@amd.com>
+ Peter Oruba <peter@oruba.de>
++Peter Rosin <peda@lysator.liu.se> <peda@axentia.se>
+ Pierre-Louis Bossart <pierre-louis.bossart@linux.dev> <pierre-louis.bossart@linux.intel.com>
+ Pratyush Anand <pratyush.anand@gmail.com> <pratyush.anand@st.com>
+ Pratyush Yadav <pratyush@kernel.org> <ptyadav@amazon.de>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2fb1c75afd16..75ea85732e15 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4299,18 +4299,16 @@ F:	Documentation/devicetree/bindings/leds/backlight/awinic,aw99706.yaml
+ F:	drivers/video/backlight/aw99706.c
  
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
-+
- 	ret = regmap_write(regmap, RM3100_REG_POLL, BIT(4 + idx));
- 	if (ret < 0)
--		goto unlock_return;
-+		return ret;
+ AXENTIA ARM DEVICES
+-M:	Peter Rosin <peda@axentia.se>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+-S:	Maintained
++S:	Orphan
+ F:	arch/arm/boot/dts/microchip/at91-linea.dtsi
+ F:	arch/arm/boot/dts/microchip/at91-natte.dtsi
+ F:	arch/arm/boot/dts/microchip/at91-nattis-2-natte-2.dts
+ F:	arch/arm/boot/dts/microchip/at91-tse850-3.dts
  
- 	ret = rm3100_wait_measurement(data);
- 	if (ret < 0)
--		goto unlock_return;
-+		return ret;
+ AXENTIA ASOC DRIVERS
+-M:	Peter Rosin <peda@axentia.se>
+ L:	linux-sound@vger.kernel.org
+-S:	Maintained
++S:	Orphan
+ F:	Documentation/devicetree/bindings/sound/axentia,*
+ F:	sound/soc/atmel/tse850-pcm5142.c
  
- 	ret = regmap_bulk_read(regmap, RM3100_REG_MX2 + 3 * idx, buffer, 3);
- 	if (ret < 0)
--		goto unlock_return;
--	mutex_unlock(&data->lock);
-+		return ret;
+@@ -12046,7 +12044,7 @@ F:	Documentation/i2c/busses/i2c-nvidia-gpu.rst
+ F:	drivers/i2c/busses/i2c-nvidia-gpu.c
  
- 	*val = sign_extend32(get_unaligned_be24(&buffer[0]), 23);
+ I2C MUXES
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ L:	linux-i2c@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/i2c/i2c-arb*
+@@ -12447,7 +12445,7 @@ F:	drivers/iio/industrialio-backend.c
+ F:	include/linux/iio/backend.h
  
- 	return IIO_VAL_INT;
--
--unlock_return:
--	mutex_unlock(&data->lock);
--	return ret;
- }
+ IIO DIGITAL POTENTIOMETER DAC
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/ABI/testing/sysfs-bus-iio-dac-dpot-dac
+@@ -12455,7 +12453,7 @@ F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.yaml
+ F:	drivers/iio/dac/dpot-dac.c
  
- #define RM3100_CHANNEL(axis, idx)					\
-@@ -284,11 +280,12 @@ static int rm3100_get_samp_freq(struct rm3100_data *data, int *val, int *val2)
- 	unsigned int tmp;
- 	int ret;
+ IIO ENVELOPE DETECTOR
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+@@ -12471,7 +12469,7 @@ F:	include/linux/iio/iio-gts-helper.h
+ F:	drivers/iio/test/iio-test-gts.c
  
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
-+
- 	ret = regmap_read(data->regmap, RM3100_REG_TMRC, &tmp);
--	mutex_unlock(&data->lock);
- 	if (ret < 0)
- 		return ret;
-+
- 	*val = rm3100_samp_rates[tmp - RM3100_TMRC_OFFSET][0];
- 	*val2 = rm3100_samp_rates[tmp - RM3100_TMRC_OFFSET][1];
+ IIO MULTIPLEXER
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/multiplexer/io-channel-mux.yaml
+@@ -12502,7 +12500,7 @@ F:	include/linux/iio/
+ F:	tools/iio/
  
-@@ -338,56 +335,50 @@ static int rm3100_set_samp_freq(struct iio_dev *indio_dev, int val, int val2)
- 	int ret;
- 	int i;
+ IIO UNIT CONVERTER
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.yaml
+@@ -15719,7 +15717,7 @@ F:	Documentation/devicetree/bindings/media/i2c/maxim,max96717.yaml
+ F:	drivers/media/i2c/max96717.c
  
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
-+
- 	/* All cycle count registers use the same value. */
- 	ret = regmap_read(regmap, RM3100_REG_CC_X, &cycle_count);
- 	if (ret < 0)
--		goto unlock_return;
-+		return ret;
+ MAX9860 MONO AUDIO VOICE CODEC DRIVER
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ L:	linux-sound@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/sound/max9860.txt
+@@ -15934,7 +15932,7 @@ F:	Documentation/devicetree/bindings/net/can/microchip,mcp251xfd.yaml
+ F:	drivers/net/can/spi/mcp251xfd/
  
- 	for (i = 0; i < RM3100_SAMP_NUM; i++) {
- 		if (val == rm3100_samp_rates[i][0] &&
- 		    val2 == rm3100_samp_rates[i][1])
- 			break;
- 	}
--	if (i == RM3100_SAMP_NUM) {
--		ret = -EINVAL;
--		goto unlock_return;
--	}
-+	if (i == RM3100_SAMP_NUM)
-+		return -EINVAL;
+ MCP4018 AND MCP4531 MICROCHIP DIGITAL POTENTIOMETER DRIVERS
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+@@ -18238,7 +18236,7 @@ F:	include/linux/mmc/
+ F:	include/uapi/linux/mmc/
  
- 	ret = regmap_write(regmap, RM3100_REG_TMRC, i + RM3100_TMRC_OFFSET);
- 	if (ret < 0)
--		goto unlock_return;
-+		return ret;
+ MULTIPLEXER SUBSYSTEM
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ S:	Odd Fixes
+ F:	Documentation/ABI/testing/sysfs-class-mux*
+ F:	Documentation/devicetree/bindings/mux/
+@@ -19314,7 +19312,7 @@ F:	include/dt-bindings/display/tda998x.h
+ K:	"nxp,tda998x"
  
- 	/* Checking if cycle count registers need changing. */
- 	if (val == 600 && cycle_count == 200) {
- 		ret = rm3100_set_cycle_count(data, 100);
- 		if (ret < 0)
--			goto unlock_return;
-+			return ret;
- 	} else if (val != 600 && cycle_count == 100) {
- 		ret = rm3100_set_cycle_count(data, 200);
- 		if (ret < 0)
--			goto unlock_return;
-+			return ret;
- 	}
- 
- 	if (iio_buffer_enabled(indio_dev)) {
- 		/* Writing TMRC registers requires CMM reset. */
- 		ret = regmap_write(regmap, RM3100_REG_CMM, 0);
- 		if (ret < 0)
--			goto unlock_return;
-+			return ret;
- 		ret = regmap_write(data->regmap, RM3100_REG_CMM,
- 			(*indio_dev->active_scan_mask & 0x7) <<
- 			RM3100_CMM_AXIS_SHIFT | RM3100_CMM_START);
- 		if (ret < 0)
--			goto unlock_return;
-+			return ret;
- 	}
--	mutex_unlock(&data->lock);
- 
- 	data->conversion_time = rm3100_samp_rates[i][2] * 2;
- 	return 0;
--
--unlock_return:
--	mutex_unlock(&data->lock);
--	return ret;
- }
- 
- static int rm3100_read_raw(struct iio_dev *indio_dev,
-@@ -458,6 +449,27 @@ static const struct iio_buffer_setup_ops rm3100_buffer_ops = {
- 	.postdisable = rm3100_buffer_postdisable,
- };
- 
-+/**
-+ * rm3100_guarded_regmap_bulk_read() - Wrapper around regmap_bulk_read() with a mutex
-+ *
-+ * @data: Data structure containing regmap and mutex
-+ * @reg: First register to be read from, passed to regmap_bulk_read()
-+ * @val: Pointer to store read value, in native register size for device,
-+ * passed to regmap_bulk_read()
-+ * @val_count: Number of registers to read, passed to regmap_bulk_read()
-+ *
-+ * Intended for use only in rm3100_trigger_handler().
-+ *
-+ * Return:
-+ * A value of zero on success, a negative errno in error cases.
-+ */
-+static int rm3100_regmap_bulk_read_locked(struct rm3100_data *data, unsigned int reg,
-+					  void *val, size_t val_count)
-+{
-+	guard(mutex)(&data->lock);
-+	return regmap_bulk_read(data->regmap, reg, val, val_count);
-+}
-+
- static irqreturn_t rm3100_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-@@ -465,14 +477,12 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
- 	unsigned long scan_mask = *indio_dev->active_scan_mask;
- 	unsigned int mask_len = iio_get_masklength(indio_dev);
- 	struct rm3100_data *data = iio_priv(indio_dev);
--	struct regmap *regmap = data->regmap;
- 	int ret, i, bit;
- 
--	mutex_lock(&data->lock);
- 	switch (scan_mask) {
- 	case BIT(0) | BIT(1) | BIT(2):
--		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 9);
--		mutex_unlock(&data->lock);
-+		ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MX2,
-+						     data->buffer, 9);
- 		if (ret < 0)
- 			goto done;
- 		/* Convert XXXYYYZZZxxx to XXXxYYYxZZZx. x for paddings. */
-@@ -480,36 +490,33 @@ static irqreturn_t rm3100_trigger_handler(int irq, void *p)
- 			memmove(data->buffer + i * 4, data->buffer + i * 3, 3);
- 		break;
- 	case BIT(0) | BIT(1):
--		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 6);
--		mutex_unlock(&data->lock);
-+		ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MX2,
-+						     data->buffer, 6);
- 		if (ret < 0)
- 			goto done;
- 		memmove(data->buffer + 4, data->buffer + 3, 3);
- 		break;
- 	case BIT(1) | BIT(2):
--		ret = regmap_bulk_read(regmap, RM3100_REG_MY2, data->buffer, 6);
--		mutex_unlock(&data->lock);
-+		ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MY2,
-+						     data->buffer, 6);
- 		if (ret < 0)
- 			goto done;
- 		memmove(data->buffer + 4, data->buffer + 3, 3);
- 		break;
- 	case BIT(0) | BIT(2):
--		ret = regmap_bulk_read(regmap, RM3100_REG_MX2, data->buffer, 9);
--		mutex_unlock(&data->lock);
-+		ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MX2,
-+						     data->buffer, 9);
- 		if (ret < 0)
- 			goto done;
- 		memmove(data->buffer + 4, data->buffer + 6, 3);
- 		break;
- 	default:
- 		for_each_set_bit(bit, &scan_mask, mask_len) {
--			ret = regmap_bulk_read(regmap, RM3100_REG_MX2 + 3 * bit,
--					       data->buffer, 3);
--			if (ret < 0) {
--				mutex_unlock(&data->lock);
-+			ret = rm3100_regmap_bulk_read_locked(data, RM3100_REG_MX2 + 3 * bit,
-+							     data->buffer, 3);
-+			if (ret < 0)
- 				goto done;
--			}
- 		}
--		mutex_unlock(&data->lock);
- 	}
- 	/*
- 	 * Always using the same buffer so that we wouldn't need to set the
+ NXP TFA9879 DRIVER
+-M:	Peter Rosin <peda@axentia.se>
++M:	Peter Rosin <peda@lysator.liu.se>
+ L:	linux-sound@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/sound/trivial-codec.yaml
 -- 
-2.53.0
+2.20.1
 
