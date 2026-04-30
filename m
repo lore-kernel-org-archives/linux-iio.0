@@ -1,173 +1,344 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11B9836E467
-	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 21:23:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F9BA2264B0
+	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 22:03:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777584202; cv=pass; b=Oif0TIJHbAHW60qARKqmRn4QZTVjYJMq75gokfl+FKax6+Y3BItfHt2KDf34ADGj0pLHeZ0yYjXP4TGl9rpBaDu6dUxKHHo+mnIJlECOaWSu15PrfkEI5Nwmn/2n10IrkVb+YFxOLNiRA4IszNgujEVdlTuXUkxmntTo+iICHoQ=
+	t=1777586642; cv=pass; b=L7vjj1CtMrn1Edk2w3MjvPIUErGnYR+RgnJRI6aZX8hHQ5g4YJz4f/axbibMSvSeM+920c8Tja30ClwYF/VsvLiOEYxqYUkw5+4AeigN5Gm79at8xy4leqcXA6kwKx/vunWjstsN6dpwehPKxhBE2UznB3Uh+eFoBx0PxQ4nMck=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777584202; c=relaxed/simple;
-	bh=pydgNNLVu5pCBPKbFktkcMtKZFX2eRYpJg79Q56rV18=;
+	s=arc-20240116; t=1777586642; c=relaxed/simple;
+	bh=0gcp2Kh2vkB+bn8vLSfGrDjnK1YOMNrlzs2nZ54UV8o=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LpzY/ISkbhUdjbai3EYsgkXRQagZNgA7Mq6fgOwxSjMuPQlpbRru47sWnTICLaD4VcijVop3Qos7ksEgMWpwoDMBQqqNSBlOY8KIDcSbsGktbeRqvV5EOJ2OC43RcJKf3ni43N37fxXmaErq7fLqu7IIEZyu0OFaoAw+JKOAVVI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b7cdFsnv; arc=pass smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=sx5OhkUiFTRY8ZkJW+o7avDRRPXyqrPfDLjSJSJd5dFmO0ZrQAU8Sbzb0LsyNXRXC6ZOZ9wukBJIDaWnPb7tpkZQ1dbo/rNEIN7bt8D7/4+Wc0JhVzvJf5U68CY1viJNa8HjxmIjcxakdS6qKiTKarwpkv4H5J79eMRwirZ+y/M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=Gu1Ihor4; arc=pass smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b7cdFsnv"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-44a786a9a35so83228f8f.3
-        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 14:23:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777584199; cv=none;
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="Gu1Ihor4"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-67179ed133dso1610396a12.2
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 15:03:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777586637; cv=none;
         d=google.com; s=arc-20240605;
-        b=Lm0ZdqAfx2+90BEITNRO2Omq9ebjNj0T/yGgyoZInBnK4uLdWsS7t3Zb4OSXGMiH2V
-         OK7CCv8sGXawM+8/hBuGhec5AotI4ArDZN5iLnxPgDPl0cNvGLfsAly3gAUD8doB7f5m
-         KA600yE2rRkuKeVSWfrrFYLAsohe2+aAcffm1H6gah3NmZxkKDoK23grFbfyrqDRDc/m
-         t50zpj/uTWCbyubS6E21BADeD6MwNgro2/Bjm0UmyuUhVQKz+p6ffm0bS8ftMf7Idd4F
-         AUDfEbD9Cgl2HFuZ69G3Ka3EHfoF6ba0WyOHmSCD/9TpJY3we50oaXO6eHyU7mEVAh1C
-         MC3A==
+        b=bSb1HE4iJbZRjPejsw26325TY4+wJhTq0/TfubhpuPxDPuP5b02Sl3Qi9PTha7LVMi
+         fJL6pE7KpmxyUUD/xwJ56YKeJo0JSoSMDL9Z1ywNH/+4caZtlkAIgOlPAdsuWVnXOkAX
+         2FYzHVR/SsVJ/RJtkE98ySOqGmdXn6Z0FVzxtDg7QMztRQyldP7AR+sNwu+tZolZ6/C1
+         gJXMdcX201llFfORdP/mxgDtbB5WKDzO044AG2x34F45Gjzxpo9iq6p1HovW9X2jInlR
+         8IdG903poEu2Z06SyBbFVfUheUhtYcM3Pl3cak5+pA1tkqitPhAgyAzx3R0qBhWyMpUs
+         T+6A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=0VvhraUVzbnplcVR1wuKsGi4nmZ3CX5o3SA9r88mmRI=;
-        fh=semxW6P0jlPQn7YkXURYMwwz1tN/bKE/nD380KNEMNk=;
-        b=gvnvw1i19lLV3SUMpXF/+EjC3D9IxJqtnhl8t/3DqgK1TEa8K6AoOgwCeF4x6iLuQk
-         PYRKIvQFOC9h9lLf0GKE/Mtb5Vkv8XPZdf/82NUuy0b9Xe3Fl+NPC+a7CCTsdoX8LbuM
-         FUJQtPOs7KCwPapjc+h8KawWB4yBGviOy9+2Nu6QU/8SOK112eYN7TaIqZixPkkkVeks
-         sSF0nVeJ591ShfGJqMe/z/bRmsiask6HJk90lumYLwB65xcxEbixt0FEn1tLAMU5fLah
-         FZAmktlldyCXVE4GQQn5JfEZYdz8OLtuVEbAtHFip1eqsAR6sqSERhjoFay78/vZMCJ9
-         wdTw==;
+        bh=edxZ7rYbwQ1tkUb55t84u1KAvF5OwpsV+pYcpIo4yEY=;
+        fh=/TUKgVvuTpHprPPKrSs0q1IfGrPw0eQuytM25Xm+G+4=;
+        b=T9cgTHQgq/MKe3uyAySCq58iTxxmTLw2oSJ4gpKp0ge/Bgdwr+fr4xWXMh/CUiB/iD
+         OgIW5Y4SZoXqVCa13dYAQznKwGEenYTEbJuOgNcHChVCQIiIsKSmA2pderpQqZ55uOvr
+         ExXJPCVvt8D399+9zLjjNbvITuDDAH1QT0AqQBIc9bDxID+RZuKkZcTb7hv/k2I0bth1
+         XQKBRx2MaclM4msYycu/p9SDdjdZdaINFSKezjXTPEZYv9mwrkyjPoWQn9NPfYkgpUrP
+         8U4Twxfd4NSFaP2uokhgPcMp4DD1tPpZczFHhiyby103Zeo1sLz5CDDvPC938zbt80Eq
+         qiAQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777584199; x=1778188999; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1777586637; x=1778191437; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0VvhraUVzbnplcVR1wuKsGi4nmZ3CX5o3SA9r88mmRI=;
-        b=b7cdFsnve2f2iFtr1LQJ66lEUw0jWcxw7qrzpSI7qGbYEPfSAb4l97aH2EUycxwKDf
-         iJiWO2jpmqneVcV5B57i2DhUgaJCqbv9Ygpoz+aNEjl68BZuc9I/m5EFV3kf9Jvi5KeN
-         4CUO1JqDhS4tGbdi/p/VJQtZY5iulBtQv7n3t4It2P0c6wUGSoGPTaYBO3Gya67mvmFP
-         dugkv0Lr0rrPdc17axhOZRmeBmpnZ+bvmMGxHRJii5JqafEvjn2nQc1fruSwixYDw9NI
-         DidCn0j96f+Lme1jYe0o1lCZAoMq0zTUvKlSfID317OKDU38PDroGwq8xLMwKj3AhoHP
-         xXkw==
+        bh=edxZ7rYbwQ1tkUb55t84u1KAvF5OwpsV+pYcpIo4yEY=;
+        b=Gu1Ihor4TR4d4FiJhsRQuvy1XbQsZsoWrQSBKeDkkrgh28+Z8WbX7Fs0nW81TiyiNs
+         I0BB6y4gpK7RWjC5dLcVqR6c94uMPi8yoxlPdgpSSpMXX8OQ54IG2xCMnLNQwaqK/gPC
+         lXxC5ERUY03B3njNxPN0Js26wup4D/eCxrNAWDJqTKUJVbnn4aeFcveVUCEZZM1WW0Rn
+         +UJ6F39lg5ybHZKQRstUstSXBIKlmUcBMrYTYcrPiXRGKMj26eq52BeTGXSbpAwdYoI/
+         sEBI8IoYn8vEOEtktLYw/DmemlsSLxD+ofSLy65CN/jZ0OOHryLqnYCiYZavpokrY+fy
+         9ekA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777584199; x=1778188999;
+        d=1e100.net; s=20251104; t=1777586637; x=1778191437;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=0VvhraUVzbnplcVR1wuKsGi4nmZ3CX5o3SA9r88mmRI=;
-        b=DGw8f3h9hUesaG9t88sfJSw6BBOtCRMqJY+mQ7WgiJoH/9kVIfBBtRcK+Ps4Cq7clw
-         Qw76kLBq7kuYLwHLzsvKjxPe8OQ/BM2RQU3RPNUsE0etcmaL/0w4Ed444iFgVcCGzMr6
-         Y+33wzncQ+XVYK0FMHANcLAU0DEpLEbe+kl+mSYWoRm4L0MvdoP9GyPel26yzFoHLvxM
-         6fmHv3zkChLxTL9w78enq9vQDfgVXilMbShoApjPfa2bZkpWqDnMLNSESn6jxlv3Qu9B
-         MMPm2u9VfZMAKMhBLKawbvByekev2jNJpQYuZ0cuZgczyneoGMDE/UHt4JPhEVyay7to
-         B9mw==
-X-Forwarded-Encrypted: i=1; AFNElJ9ei8/EnGgmHrXer/up3dKVx2aAxNM0G3dIyGZAvrE7WYm8jNNN3e9aLuCVIwQjzekeT7pl2zR9Nl4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxS+84ky/QYLJuHjGuAIhF7v1y3KX0qngCf6LNxf6zxMNQzvFVX
-	mRVAbd283b91i1VpaM47i4rwAAO64IiyFeDNrZ71Y0qcXknGJ9jLF0zWmxsYHj1H8UVDPs+VhgM
-	Me5QkY1vB3CfJwFSF5QQ9vhRi0QZMp74=
-X-Gm-Gg: AeBDietUPg/65ejxRrtnUaePnguBfu9Bs8chjOJmdTutyH0cePu1WMZendqKEyqRe5/
-	zDsXoewr+SPMs6UvksI6j1Pf0NrYUFl6F0f3U30I0yWxqoeIL2F02/E+RH9TPNTv7GK97fzhycL
-	9lmRqzZnAi1EL/Ba5lePRA3J99gdqYLaeTYqCYXCNze1JhdMqqlV6faf/3BmJ6AGql4WB3r7erz
-	pKakNyqhPjiKUSusJp1qDM0giQ+jE2v7rjXOZ5d/hVWabPPInSQnAZEJg1Wp+Q8yZ4rHEawmdLC
-	grYcyqWZlrnKFEMPT9CRF45rdjrrTU3N4H4CT4UtmlVA71aIl398NDX2DVdwlgHnGTN2faxz0Xr
-	YRCD9jsOlNQF/SE4404OSCrer1VS5FmiWN98GW42zm+RU+nM40RCjMA8u6efaQGt0yedD4DvpH/
-	lrswVQ1FCks86WqHXNhqaJZoisLbp9QHGX/vdhPYMmAmckJ9tD6Q==
-X-Received: by 2002:a05:6000:2088:b0:43c:fde6:212d with SMTP id
- ffacd0b85a97d-44a87c7a761mr522981f8f.33.1777584199254; Thu, 30 Apr 2026
- 14:23:19 -0700 (PDT)
+        bh=edxZ7rYbwQ1tkUb55t84u1KAvF5OwpsV+pYcpIo4yEY=;
+        b=RVT5LM2H8edo8q9zvF2ZNKYfPIGvlOPlWWdSCx7f6JAbX7jCGiIXBK3JE8XUZtoFMs
+         WlXGTw1KOUOh2W8qCpAkkfIdcOZpdEAB8nYoR/XTglwHmIg7c+9piV9lirxxsqjj8Uyq
+         yVPutU7wJLG1Ikcq5FdoolpePz9+Y8jU0zQ8knR1/7u/r0mFh/l1gwi56np/0Cmva8WS
+         IuypbqC5aKOIy5F6gFgt1tGn21FS0WoQMePXrOny1z/WxvRYdu30K6M4j9VJhQV9QmBc
+         29wb+yFXr+uZRmwR11i2XtcWb+w6y2+xGaCspd4LXCgZ8j5XlGvAmq+fmXOU+cFFT3hD
+         p09w==
+X-Forwarded-Encrypted: i=1; AFNElJ+SbvDyr1Y75PCrpsvoLjjBCAjiRrEZs4CxVJo8RRnuixFeXN050yjIrQY336T0u1yHJZ+QB8hO+GI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzpCZYUdOECkiasYJIF8+YIqUxvToDTK3mm5Tt503rsACPTfkic
+	tzPuFOKKAo39JUuu5fg6Gv/EH0B6zY0dTgLrkOuuiPJWenBlS1y0HbGo+U8LMbWb3SJ/Rj1UgIq
+	tJgWfJHAOzrZxN3J+t5GIFK2Ugxvhp/5ahbHpTsfm5w==
+X-Gm-Gg: AeBDietUgK0KTdyQ+G1eZpMkqionJTgoXDjNQVrZ2aLfh/mJB/PqgbnoAwSt5j/02eL
+	QYuL1/lWJPo6sL0GwaMmV/uD4lk624oPGcfJVVzBa45nuqM5Az79Z89iSNgKQytgqy1iAgW0x3t
+	SUhv7X1olw0IwevoLxjh6vf69vQxCkXrZA+km757HCI2B74wOOTuZuh6QmSBbE73RObNALU02HB
+	64v5Lmr+b5Hc91VPf9rF+wijd61lkgZmePI3XDZn3R7/WpsOM/XiLGPvbggGR953OF2XvYUF9zw
+	mYt+jnyRScEmrSlz1omrkzpxbeK9KHSdDolklFJMjNSV/T+OKyukZJQPVstcRSrekqsgxOHETD7
+	GxUdG
+X-Received: by 2002:a17:907:8e0e:b0:bb7:dbd6:b401 with SMTP id
+ a640c23a62f3a-bbac7298ef3mr318754566b.31.1777586636657; Thu, 30 Apr 2026
+ 15:03:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260430200515.7915-1-guilhermeabreu200105@usp.br>
-In-Reply-To: <20260430200515.7915-1-guilhermeabreu200105@usp.br>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Thu, 30 Apr 2026 23:23:07 +0200
-X-Gm-Features: AVHnY4IsiOy30VRyLZieFzj7f0cL8IkJi0AXNppG7uPIMW0ZrbX9Hkjmh4Vgi8I
-Message-ID: <CALoEA-woSsD3+oEo-4xWLY+pQt5B=SaaUX4xPFoB46WPnFbwrA@mail.gmail.com>
-Subject: Re: [PATCH v4] iio: gyro: adxrs290: Use guard(mutex) in lieu of
- manual lock+unlock
-To: Guilherme Dias <guilhermeabreu200105@usp.br>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, nish.malpani25@gmail.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	=?UTF-8?Q?Jo=C3=A3o_Paulo_Menezes_Linaris?= <jplinaris@usp.br>, 
-	linux-iio@vger.kernel.org
+References: <20260422210537.12127-1-jplinaris@usp.br> <3ab73ef5-0a3a-66b4-a763-398f0921c289@linux.intel.com>
+In-Reply-To: <3ab73ef5-0a3a-66b4-a763-398f0921c289@linux.intel.com>
+From: Joao Paulo Menezes Linaris <jplinaris@usp.br>
+Date: Thu, 30 Apr 2026 19:03:45 -0300
+X-Gm-Features: AVHnY4I-MQN0kxoHWbkLdEvKaX6VzbdgYb4NFFTzc3TZTZw3otQ3zO_jrz8RwP8
+Message-ID: <CABAASXN_FzGLqojm-Bq8qLC8fnbbKnjzPvtRi6Q_-_Wk3HmJUw@mail.gmail.com>
+Subject: Re: [PATCH] counter: intel-qep: Replace manual mutex logic with lock guards
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: wbg@kernel.org, Guilherme Dias <guilhermeabreu200105@usp.br>, linux-iio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 30 Apr 2026 at 22:05, Guilherme Dias
-<guilhermeabreu200105@usp.br> wrote:
->
-> Use guard(mutex) to automatically release the lock on scope exit,
-> simplifying the error handling path and removing the need for
-> explicit unlock and goto-based cleanup.
->
-> Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
-> Co-developed-by: Jo=C3=A3o Paulo Menezes Linaris <jplinaris@usp.br>
-> Signed-off-by: Jo=C3=A3o Paulo Menezes Linaris <jplinaris@usp.br>
-> ---
-> v3 -> v4:
->  - fix indentation
->
->  drivers/iio/gyro/adxrs290.c | 74 +++++++++++++++----------------------
->  1 file changed, 30 insertions(+), 44 deletions(-)
->
-> diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
-> index 3efe385ebedc..f7344ab4e6bc 100644
-> --- a/drivers/iio/gyro/adxrs290.c
-> +++ b/drivers/iio/gyro/adxrs290.c
+Hello. Thanks for the suggestions!
 
-You're missing a <linux/cleanup.h> include at the top. I'm not sure if
-you tried compiling the module, but if it passed then it's because of a
-transient dependency, which is what you should avoid by explicitly
-including the header.
+Em qui., 23 de abr. de 2026 =C3=A0s 08:42, Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> escreveu:
+>
+> On Wed, 22 Apr 2026, Joao Paulo Menezes Linaris wrote:
+>
+> > Use scoped_guard() for handling mutex lock instead of locking and unloc=
+king mutex explicitly. This improves readability by eliminating the need fo=
+r gotos and by clearly indicating mutex will be locked only when execution =
+is in scoped_guard() scope.
+>
+> Please fold the changelog text properly.
+>
+> >
+> > Signed-off-by: Joao Paulo Menezes Linaris <jplinaris@usp.br>
+> > Co-developed-by: Guilherme Dias <guilhermeabreu200105@usp.br>
+> > Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
+> > ---
+> >  drivers/counter/intel-qep.c | 126 +++++++++++++++++-------------------
+> >  1 file changed, 58 insertions(+), 68 deletions(-)
+> >
+> > diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
+> > index c49c17805..199a8d562 100644
+> > --- a/drivers/counter/intel-qep.c
+> > +++ b/drivers/counter/intel-qep.c
+> > @@ -188,25 +188,22 @@ static int intel_qep_ceiling_write(struct counter=
+_device *counter,
+> >                                  struct counter_count *count, u64 max)
+> >  {
+> >       struct intel_qep *qep =3D counter_priv(counter);
+> > -     int ret =3D 0;
+> >
+> >       /* Intel QEP ceiling configuration only supports 32-bit values */
+> >       if (max !=3D (u32)max)
+> >               return -ERANGE;
+> >
+> > -     mutex_lock(&qep->lock);
+> > -     if (qep->enabled) {
+> > -             ret =3D -EBUSY;
+> > -             goto out;
+> > -     }
+> > +     /* Lock mutex while execution in scoped_guard() scope */
+>
+> Why add dead obvious comments like this. Please don't do it.
+>
+> > +     scoped_guard(mutex, &qep->lock){
+> > +             if (qep->enabled)
+> > +                     return -EBUSY;
+> >
+> > -     pm_runtime_get_sync(qep->dev);
+> > -     intel_qep_writel(qep, INTEL_QEPMAX, max);
+> > -     pm_runtime_put(qep->dev);
+> > +             pm_runtime_get_sync(qep->dev);
+> > +             intel_qep_writel(qep, INTEL_QEPMAX, max);
+> > +             pm_runtime_put(qep->dev);
+> > +     }
+> >
+> > -out:
+> > -     mutex_unlock(&qep->lock);
+> > -     return ret;
+> > +     return 0;
+>
+> Why is using scoped variable of guard necessary in these cases??? Are
+> you just making these changes using some tool without inspecting if the
+> end result makes sense or not??
+>
+> Also, runtime PM also has guards support added (admittedly changing them
+> doesn't remove gotos). But one of the cases seems non-pairing so that
+> seems not convertable to guard.
+>
+Just to be sure I'm on the right page regarding this suggestion,
+according to pm_runtime documentation, pm_runtim_get_sync and
+pm_runtime_put, in the functions I changed, would be the pairs we are
+talking about. And, therefore, if we have something like:
 
->         /* extract lower 12 bits temperature reading */
+ret =3D pm_runtime_get_sync(dev);
+if (ret < 0)
+    // returns before the decrement of device's usage counter
+    return ret;
 
-Make sure that comments follow English grammar and punctuation.
-(Capital letters at beginning, dots at end etc.)
+pm_runtime_put(dev);
 
->
-> @@ -506,19 +491,20 @@ static irqreturn_t adxrs290_trigger_handler(int irq=
-, void *p)
->         u8 tx =3D ADXRS290_READ_REG(ADXRS290_REG_DATAX0);
->         int ret;
->
-> -       mutex_lock(&st->lock);
-> +       do {
-> +               guard(mutex)(&st->lock);
->
-> -       /* exercise a bulk data capture starting from reg DATAX0... */
-> -       ret =3D spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.=
-channels,
-> -                                 sizeof(st->buffer.channels));
-> -       if (ret < 0)
-> -               goto out_unlock_notify;
-> +               /* exercise a bulk data capture starting from reg DATAX0.=
-.. */
-> +               ret =3D spi_write_then_read(st->spi, &tx, sizeof(tx),
-> +                                         st->buffer.channels,
-> +                                         sizeof(st->buffer.channels));
-> +               if (ret < 0)
-> +                       break;
->
-> -       iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
-> -                                          pf->timestamp);
-> +               iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer=
+This would be considered a non-pairing case, which seems not
+convertible to guard. Is that right? In the functions I implemented
+the lock guards, I couldn't find any case in which the function could
+return in between get/put calls. In this case, would it be correct to
+keep all the added guards?
+
+> >  }
+> >
+> >  static int intel_qep_enable_read(struct counter_device *counter,
+> > @@ -226,28 +223,28 @@ static int intel_qep_enable_write(struct counter_=
+device *counter,
+> >       u32 reg;
+> >       bool changed;
+> >
+> > -     mutex_lock(&qep->lock);
+> > -     changed =3D val ^ qep->enabled;
+> > -     if (!changed)
+> > -             goto out;
+> > -
+> > -     pm_runtime_get_sync(qep->dev);
+> > -     reg =3D intel_qep_readl(qep, INTEL_QEPCON);
+> > -     if (val) {
+> > -             /* Enable peripheral and keep runtime PM always on */
+> > -             reg |=3D INTEL_QEPCON_EN;
+> > -             pm_runtime_get_noresume(qep->dev);
+> > -     } else {
+> > -             /* Let runtime PM be idle and disable peripheral */
+> > -             pm_runtime_put_noidle(qep->dev);
+> > -             reg &=3D ~INTEL_QEPCON_EN;
+> > +     /* Lock mutex while execution in scoped_guard() scope */
+> > +     scoped_guard(mutex, &qep->lock){
+> > +             changed =3D val ^ qep->enabled;
+> > +             if (!changed)
+> > +                     return 0;
+> > +
+> > +             pm_runtime_get_sync(qep->dev);
+> > +             reg =3D intel_qep_readl(qep, INTEL_QEPCON);
+> > +             if (val) {
+> > +                     /* Enable peripheral and keep runtime PM always o=
+n */
+> > +                     reg |=3D INTEL_QEPCON_EN;
+> > +                     pm_runtime_get_noresume(qep->dev);
+> > +             } else {
+> > +                     /* Let runtime PM be idle and disable peripheral =
+*/
+> > +                     pm_runtime_put_noidle(qep->dev);
+> > +                     reg &=3D ~INTEL_QEPCON_EN;
+> > +             }
+> > +             intel_qep_writel(qep, INTEL_QEPCON, reg);
+> > +             pm_runtime_put(qep->dev);
+> > +             qep->enabled =3D val;
+> >       }
+> > -     intel_qep_writel(qep, INTEL_QEPCON, reg);
+> > -     pm_runtime_put(qep->dev);
+> > -     qep->enabled =3D val;
+> >
+> > -out:
+> > -     mutex_unlock(&qep->lock);
+> >       return 0;
+> >  }
+> >
+> > @@ -279,7 +276,6 @@ static int intel_qep_spike_filter_ns_write(struct c=
+ounter_device *counter,
+> >       struct intel_qep *qep =3D counter_priv(counter);
+> >       u32 reg;
+> >       bool enable;
+> > -     int ret =3D 0;
+> >
+> >       /*
+> >        * Spike filter length is (MAX_COUNT + 2) clock periods.
+> > @@ -300,25 +296,23 @@ static int intel_qep_spike_filter_ns_write(struct=
+ counter_device *counter,
+> >       if (length > INTEL_QEPFLT_MAX_COUNT(length))
+> >               return -ERANGE;
+> >
+> > -     mutex_lock(&qep->lock);
+> > -     if (qep->enabled) {
+> > -             ret =3D -EBUSY;
+> > -             goto out;
+> > +     /* Lock mutex while execution in scoped_guard() scope */
+> > +     scoped_guard(mutex, &qep->lock){
+> > +             if (qep->enabled)
+> > +                     return -EBUSY;
+> > +
+> > +             pm_runtime_get_sync(qep->dev);
+> > +             reg =3D intel_qep_readl(qep, INTEL_QEPCON);
+> > +             if (enable)
+> > +                     reg |=3D INTEL_QEPCON_FLT_EN;
+> > +             else
+> > +                     reg &=3D ~INTEL_QEPCON_FLT_EN;
+> > +             intel_qep_writel(qep, INTEL_QEPFLT, length);
+> > +             intel_qep_writel(qep, INTEL_QEPCON, reg);
+> > +             pm_runtime_put(qep->dev);
+> >       }
+> >
+> > -     pm_runtime_get_sync(qep->dev);
+> > -     reg =3D intel_qep_readl(qep, INTEL_QEPCON);
+> > -     if (enable)
+> > -             reg |=3D INTEL_QEPCON_FLT_EN;
+> > -     else
+> > -             reg &=3D ~INTEL_QEPCON_FLT_EN;
+> > -     intel_qep_writel(qep, INTEL_QEPFLT, length);
+> > -     intel_qep_writel(qep, INTEL_QEPCON, reg);
+> > -     pm_runtime_put(qep->dev);
+> > -
+> > -out:
+> > -     mutex_unlock(&qep->lock);
+> > -     return ret;
+> > +     return 0;
+> >  }
+> >
+> >  static int intel_qep_preset_enable_read(struct counter_device *counter=
 ,
-> +                                                  pf->timestamp);
-> +       } while (0);
-
-Why is there a do-while loop with (0) as its condition? Are you
-trying to use the break statement as a pseudo-goto? You could
-still keep the goto even when using a guard(mutex)(). This can
-be implemented with a standard if statement, no?
-
---=20
-Kind regards
-
-CJD
+> > @@ -342,28 +336,24 @@ static int intel_qep_preset_enable_write(struct c=
+ounter_device *counter,
+> >  {
+> >       struct intel_qep *qep =3D counter_priv(counter);
+> >       u32 reg;
+> > -     int ret =3D 0;
+> > -
+> > -     mutex_lock(&qep->lock);
+> > -     if (qep->enabled) {
+> > -             ret =3D -EBUSY;
+> > -             goto out;
+> > -     }
+> >
+> > -     pm_runtime_get_sync(qep->dev);
+> > -     reg =3D intel_qep_readl(qep, INTEL_QEPCON);
+> > -     if (val)
+> > -             reg &=3D ~INTEL_QEPCON_COUNT_RST_MODE;
+> > -     else
+> > -             reg |=3D INTEL_QEPCON_COUNT_RST_MODE;
+> > +     /* Lock mutex while execution in scoped_guard() scope */
+> > +     scoped_guard(mutex, &qep->lock){
+> > +             if (qep->enabled)
+> > +                     return -EBUSY;
+> >
+> > -     intel_qep_writel(qep, INTEL_QEPCON, reg);
+> > -     pm_runtime_put(qep->dev);
+> > +             pm_runtime_get_sync(qep->dev);
+> > +             reg =3D intel_qep_readl(qep, INTEL_QEPCON);
+> > +             if (val)
+> > +                     reg &=3D ~INTEL_QEPCON_COUNT_RST_MODE;
+> > +             else
+> > +                     reg |=3D INTEL_QEPCON_COUNT_RST_MODE;
+> >
+> > -out:
+> > -     mutex_unlock(&qep->lock);
+> > +             intel_qep_writel(qep, INTEL_QEPCON, reg);
+> > +             pm_runtime_put(qep->dev);
+> > +     }
+> >
+> > -     return ret;
+> > +     return 0;
+> >  }
+> >
+> >  static struct counter_comp intel_qep_count_ext[] =3D {
+> >
+>
+> --
+>  i.
+>
+--
+Best regards,
+Joao Paulo Menezes Linaris
