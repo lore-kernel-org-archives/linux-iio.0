@@ -1,142 +1,110 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F119D38CFF1;
-	Fri,  1 May 2026 11:53:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777636431; cv=none; b=VG1/YCNWmaP8alcUg40opdKcSUbIrmYETCn1Qblcz2oclBFOkcAqPG60/Qd1Xilweq5n3BsBh+YX6Xto/3TmpmrEBGB3uWwLdWh2aufhFtpb+AQ+hioMq2wDpuXjCMZChEn8QA/ziu5YhqE683kHcKeVhN2SMqR97lqX4M0ANA0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777636431; c=relaxed/simple;
-	bh=3pxpCNf+ef0ocrUA+f82Nd4u4cD+I9MZYEJbEcUssN8=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=NsIQRVoBJFOrtpf2jOnjD9JWfwmbtBwfDaeotTHjEppJRwYXIHYWdiRoki12Qu/PjrlcvNRuYJU9y5kT0F0Lfrn8oLCqrYVaAli4cVIowbjqABl87yCHZSm8N66zyx0d6UYgLBOgVgrDbWCYVPHXVFKbv2oF3W33r+NW8Fpg9oU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gc/S8lOQ; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A300E1FC7
+	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 12:30:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777638656; cv=pass; b=uK75IrhfJ4t6JJGnGmJN3GpRV1NL8vPQRi18wmbLXL8ijtAJ0IQiSSdJPYTEwOF+eg7RyveQzvihJ1g+hEDdXPNBJkA08jjL76plvelmM5hEJKsnTOCU0Cf2AHokNLTnb/7Puzur09caEKEF/YmpuNwv1/0VtDPxqnhJXsVOD1U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777638656; c=relaxed/simple;
+	bh=crSZxVAjZCI8d5t+W8McMnolb64GngRB7n/jcyHBCFE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uebZZwAebCrgoWrOiR5llISNNXzn3k7wY5Sv7bBNnwfno1imXoSy0PAK6YlsJSX8QVa65QdBM2lUz0fjjSoI/mvyv2XXDMu51j2YBTTNT9aQ56YxZfNVpu3BdG3inXvhnhywmtbeufR+rpqGku58PsuNyOWAVHRLUBxfg7R7Y3A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iuz4PKYJ; arc=pass smtp.client-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gc/S8lOQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777636430; x=1809172430;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=3pxpCNf+ef0ocrUA+f82Nd4u4cD+I9MZYEJbEcUssN8=;
-  b=gc/S8lOQuSk68QOcUyLGVtBK4GuMNWdrkLfYqz6u2dxyijXxjBcYLzcU
-   4NO4bl7xK59z55kh2MsX9Ow4/57idrrdss+F2ttRFJ12155LpdZQOv8Ar
-   86sqWMze33Mxko1fX3Phn14eGMBI7AOV5HJy9o/832yDor0eeGgQ4PYpE
-   ycsU953GvagFUUuwQWBM5IFK2Sy/Z9g9u/33+WVkl9JhbNozqUxi1Om7D
-   jyV/H8lBiQWRUs/7DHwfa1TczVb++BgYAn7XdWhGtCODzGEgtOnfFPF7p
-   vudu3q//eNVE3V2X4g0eeb4PCG3J/LSPg61Nls1iweIgpuvdOhDvaIYcH
-   Q==;
-X-CSE-ConnectionGUID: ccMTBsZcRM6zjryDpYOZQQ==
-X-CSE-MsgGUID: +zq/Z3JIT7a69xryAeENjg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11772"; a="101261474"
-X-IronPort-AV: E=Sophos;i="6.23,210,1770624000"; 
-   d="scan'208";a="101261474"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2026 04:53:50 -0700
-X-CSE-ConnectionGUID: gum3g4pZSPyNqTubLjEy8g==
-X-CSE-MsgGUID: qWfDuUcWTOC8MJMkwPriZQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,210,1770624000"; 
-   d="scan'208";a="258197893"
-Received: from dnelso2-mobl.amr.corp.intel.com (HELO [10.125.109.137]) ([10.125.109.137])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2026 04:53:47 -0700
-Message-ID: <15509f5e5a6642d2a4b0ccc13bc7d40d3b79f72a.camel@linux.intel.com>
-Subject: Re: [PATCH v2 0/4] iio: introduce devm_ API for hid sensro setup
- and cleanup
-From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>, jikos@kernel.org, 
-	jic23@kernel.org
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	sakari.ailus@linux.intel.com, linux-input@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Zhang Lixu
-	 <lixu.zhang@intel.com>
-Date: Fri, 01 May 2026 04:53:38 -0700
-In-Reply-To: <20260429175918.2541914-1-sanjayembedded@gmail.com>
-References: <20260429175918.2541914-1-sanjayembedded@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iuz4PKYJ"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-671dad7cac8so2326380a12.0
+        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 05:30:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777638653; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Z23JKapADxee+LHymwU7aC0chVslyNu5QKqwjAZiqOKW3HA/86loVexsDjJBEw7pdX
+         6SKrgy7kgYDwjgW/5cE1A2Dfc5fqcASezXeboCXy3onKCOuxFdARxth2ZsOCVNXyDLW4
+         HEas0YCT9XaBOrQxE7hbkQ4TLVoWAhrFigfDV5LPu2FG2Qy8A2gSiPSFmJQKcU6Fx4BU
+         kZGz2vdNbhz40ZvzT1hHva+eAIIFWFBvVrwrjSfbJeWOmqhata3jyovJOomvYuAAAHpF
+         N0ilPue0cSTUgq4/i7pFELqFHO2sBTCkv6c7oggDnyvWNDBKoD1pn435PLGjSkp7qDZV
+         7iXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=crSZxVAjZCI8d5t+W8McMnolb64GngRB7n/jcyHBCFE=;
+        fh=6nn1vD07VIBAUZiWjKrqjN2XfmdXUou5gIF45p0whXQ=;
+        b=SOLlbHIexLALZ0rnV9bM8uVTKkYEEafURWPufWIuesdmgvUdyNtmvR+5da/20yUapt
+         LmdQYFdH52YfvOgbT+hOGiUoE8+JLvvh+ICSTbtNzhRgp69m2MGUEusv6xGRaOBdlVPt
+         6eT80TghjUFl1giAhSwxhEiI8rF1mIXIpn/wAlnmrTMopmV11h4GPEI10dm4dwGP7sSg
+         7w2ceCT+chdJ9ac30OLSjqUaFo9ZjUPKlRwxz7g1shJlRnmtyYpomY6Rd6YQJM/TvCdG
+         qnjNlsIkdi6LJH9aZGePjbh8KVKyL92zFNq3BudTAjyQX0RwBcFelgkz2bvDsnGIe2Gl
+         WYGg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777638653; x=1778243453; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=crSZxVAjZCI8d5t+W8McMnolb64GngRB7n/jcyHBCFE=;
+        b=iuz4PKYJLKU1XXGaSQKPYCA9752ujpojuIY3tBAj+gzwi/mxc2Ubo/lvFZ9QpqBYQo
+         1IWvpj1sQc0TRInn1Dx3bCulPlD42wDpBONfaQvy5mdsD70IVtiYnB+9EojF9QfeeYBj
+         HTPO5SaHpgESWj0iMrw6J5JF1jHQvpK/f24Xdth5koTNJUfs0+9xjal5Xy2RggRaWtWz
+         XE8O+A8yBcK5j/hIH8stSHGohW7icDeQWJnqQY1ilF10pioPtl2IplT2hFYLLzP3SyY2
+         JD5GB4fGNq3dXge/CsGizEckKccgusIn1+x+6jqUwZ9Ll5aA9Zq5BhEoh8kRYKTSe5uG
+         QXZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777638653; x=1778243453;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=crSZxVAjZCI8d5t+W8McMnolb64GngRB7n/jcyHBCFE=;
+        b=fsMWS9AJqx2R/iQJ+GdQNB0lB/ZMPnFBiPO0UT/ugVfcTMPMrD9mGIawLwBt5jFntQ
+         1xI2eLrf66qiaQ27xZMLbR2HBfKnoH5lYKuxMSeO97Qew0IilGpRWnZky8bSj8OCRSKH
+         CJZmfoAB4WskhUVC8M2qtgItoW9BNIctnCkQduiZ5Spu+qJmaA5i80F++SGo7ID5t2we
+         1k2VAD3LMggvJcRkjsApl4SAwFYNQORwjEc2lp1cWWHVYcu5eQDw9RUDamBnITEg3Mtw
+         T9U6uAEyS3BzbHSn0OgwRVYeEE+Uo1xKhwAOKVBT7LDgjRz5MZzeFEBRb8ST+ISBFmDj
+         TZBg==
+X-Forwarded-Encrypted: i=1; AFNElJ+jUdX4am2wsQ9mYpJp/5/KjFBVKXHOtih6J3uNC5M+7KumuX7jnuxSSrp5vAT99FJ5uZpb/VMTr9c=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywuwu5iyLECjDyoR2PSTe+VKIPOQu76dY183sK9h/r2c7Szc4gz
+	oshV3tORvncLAo7/STBGLnu8wdB3BYzS2x5sPYcF6E+zy6ivrnsJdzvSCMmGiWIZBnn5OGHvnp2
+	3ScVx9eLd6U2U8sXNO1SR17LdWNhr4n5J11ug
+X-Gm-Gg: AeBDievMNgYk/qYQXBYXpS+dWfdkqnKwLsOQjS/8znbFe9ojEEPW/bTQoo8XoVfO3zI
+	jOCdokUfBdj+M+o6VkAdSPwPXXyHilYSVYoZu+PPDM2wpAg4I3kHfR+Fcl4TwGPlj5ToIKWy+xQ
+	boB/z9AaATMemEtcgH7WZJfBKA90XBPkDTAMdtns4m5NSDIO8I2Y4NqFq6vKrb9uZeGO0PJNR9O
+	JHS5STqHwY7GDR38ok3FaCkTlEWxVhrbZqqY1WTWGZClpBfMGuyibfA7RWyE7xNKJ49pJ7SzeZ8
+	1jtIzI2vldLZQYFXuFYRL4ci26NDFf83bsaEZIQvLUZkiLZAufgWMZTDkmrZ18kFCr6aeLR4I43
+	Kv7gGiVjUfgUVI7VzoA==
+X-Received: by 2002:a17:906:730a:b0:bbe:7709:5a8c with SMTP id
+ a640c23a62f3a-bbebe614b31mr140884466b.1.1777638652672; Fri, 01 May 2026
+ 05:30:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <20260501011548.15369-1-santanarl@usp.br>
+In-Reply-To: <20260501011548.15369-1-santanarl@usp.br>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 1 May 2026 15:30:15 +0300
+X-Gm-Features: AVHnY4Lv2mGSqBg9IruDH-1kvJOUpAVmr6CJfChK477thGlo9fqPuBj1C30HPVc
+Message-ID: <CAHp75VeZ40W6Q2Q-4P29nDjq8s1ziH9NFKR2qH-RoNK_V8O3aA@mail.gmail.com>
+Subject: Re: [PATCH] Replace manual bitfield manipulations with field_get
+To: Rafael Lopes Santana <santanarl@usp.br>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-+ Lixu
+On Fri, May 1, 2026 at 4:16=E2=80=AFAM Rafael Lopes Santana <santanarl@usp.=
+br> wrote:
+> From: Rafael Lopes Santana <santanarl@usp.br>
+>
+> Signed-off-by: Rafael Lopes Santana <santanarl@usp.br>
 
-On Wed, 2026-04-29 at 23:29 +0530, Sanjay Chitroda wrote:
-> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
->=20
-> Key highlights:
-> - Prepare change as pre-requisite for devm conversion for HID IIO
-> =C2=A0 drivers by removing redundant argument
-> - Add devm API to setup trigger and clenaup resource using
-> =C2=A0 devm_add_action_or_reset()
-> - few sample driver update using devm conversion to auto release
-> resource
->=20
+NAK.
+I'm tired of replying to each and every 101 issues with your patches.
+Talk to your group / mentors / read previous reviews to learn first.
 
-devm_* calls are fine but needs tests particularly when forces ISH PCI
-drivers unbind, while iio-sensor-proxy has open sessions.
-
-Lixu, Please check.
-
-Thanks,
-Srinivas
-
-
-
-> changes in v2:
-> - Following input from Jonathan and Andy, squash initial patch v1
-> =C2=A0 series in single change as individual change should not break
-> anything
-> - Add devm API support and two driver using the same
-> - v1 series ->
-> https://lore.kernel.org/all/20260428071613.1134053-1-sanjayembedded@gmail=
-.com/
->=20
-> Testing:
-> =C2=A0 - Compiled with W=3D1
-> =C2=A0 - Build-tested on QEMU x86_64
->=20
-> Based on further feedback and reviews, I would extend this series to
-> convert all HID IIO driver to use devm_* API.
->=20
-> Thanks,
-> Sanjay Chitroda
->=20
-> Sanjay Chitroda (4):
-> =C2=A0 iio: hid-sensors: drop redundant iio_dev argument
-> =C2=A0 iio: hid-sensors: introduce device managed API
-> =C2=A0 iio: gyro: drop hid_sensor_remove_trigger() using devm API
-> =C2=A0 iio: humidity: drop hid_sensor_remove_trigger() using devm API
->=20
-> =C2=A0drivers/iio/accel/hid-sensor-accel-3d.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 |=C2=A0 4 +--
-> =C2=A0.../common/hid-sensors/hid-sensor-trigger.c=C2=A0=C2=A0 | 27
-> +++++++++++++++++--
-> =C2=A0.../common/hid-sensors/hid-sensor-trigger.h=C2=A0=C2=A0 |=C2=A0 5 +=
-+--
-> =C2=A0drivers/iio/gyro/hid-sensor-gyro-3d.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 | 10 +++----
-> =C2=A0drivers/iio/humidity/hid-sensor-humidity.c=C2=A0=C2=A0=C2=A0 | 10 +=
-++----
-> =C2=A0drivers/iio/light/hid-sensor-als.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 4 +--
-> =C2=A0drivers/iio/light/hid-sensor-prox.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 4 +--
-> =C2=A0drivers/iio/magnetometer/hid-sensor-magn-3d.c |=C2=A0 4 +--
-> =C2=A0drivers/iio/orientation/hid-sensor-incl-3d.c=C2=A0 |=C2=A0 4 +--
-> =C2=A0drivers/iio/orientation/hid-sensor-rotation.c |=C2=A0 4 +--
-> =C2=A0.../position/hid-sensor-custom-intel-hinge.c=C2=A0 |=C2=A0 4 +--
-> =C2=A0drivers/iio/pressure/hid-sensor-press.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 |=C2=A0 4 +--
-> =C2=A0.../iio/temperature/hid-sensor-temperature.c=C2=A0 |=C2=A0 4 +--
-> =C2=A013 files changed, 52 insertions(+), 36 deletions(-)
->=20
->=20
-> base-commit: eade2b843d9b1f668fc1775f15611bb0a1999cd9
+--=20
+With Best Regards,
+Andy Shevchenko
