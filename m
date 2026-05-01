@@ -1,133 +1,150 @@
-Received: from mail-yx1-f41.google.com (mail-yx1-f41.google.com [74.125.224.41])
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 575743CB2D5
-	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 15:47:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777650458; cv=none; b=siEReOgXVaf/Z2nnDrlecClnrwj/s8ffcz02U+6WkRPbdZUP0WSQgY+QHEij0PlSXJVJRFwlZZfOTZ+xDeaaWqsCeOQo9sFUfc/5Ix6umKW1csaofJm55BcM9ZxEB6DRE+WpdspqDH+7ltzDiyf7V8TUJTA52lvpPI5pxzd3QPI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777650458; c=relaxed/simple;
-	bh=dBGR5oPl4LoWOunaVjYZCakcMx8qQA1CoWvrOZzKoSs=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=t06f8s3I2u55WCwZrqGIHnWtW886gH0qZOHwp3L4bciHUZuuoLUQdR5Nv4x9Zbjs/MjMuHVRep/d3VysCxsiBS5quyDIcWRIaGXogRDkbxgaA7Ocq7TmZnuGcSxCEu7QnhtKVTwvLR2fZUDrIxt6jLcFRivc8BOulwNd85kbHHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ELMcQCy6; arc=none smtp.client-ip=74.125.224.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A81803D092F
+	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 18:14:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777659250; cv=pass; b=KU71+VgPmAukjMff8fH++Upi1fi7Hq1pjYLyAxPoPVdGEK1xxaYpCgOKbgxDCxUaC5lD/oNZdFL8DNsjeC19C09qeeOmk/T7e5w1fvwitPqariW+qVSE1zxAiju6l+qhX7VSp/xpQlZmy3N1B6Ibutc67+IYMbCErrEVZJ/E2Q4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777659250; c=relaxed/simple;
+	bh=rLTq75fWRsedv3RJs/A34xFSHQmc3UDBg+e/kJhzhmI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=D6wEkn2EcwWn6PqN1p6NnbNeZaAhEH7C56SU7GPjN9Ded6iIjiIP86aqnPmNmrHqdDDq+8yJUJ51fWjCoSD6D8playpo/qd3TLn8QGm5VaLII0iCKoiavvpNt0gLzwWNzA+xAKH4hu2dZWkQp9u5pjH3uPn5g1/KHyXxowsbVvI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WG3v0knb; arc=pass smtp.client-ip=209.85.218.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ELMcQCy6"
-Received: by mail-yx1-f41.google.com with SMTP id 956f58d0204a3-65c305f381eso839814d50.3
-        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 08:47:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WG3v0knb"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-ba67b332bbaso318000866b.0
+        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 11:14:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777659246; cv=none;
+        d=google.com; s=arc-20240605;
+        b=J+Sxp49hZU7YILdXHzKSjoaaN6ki36gyHtghT8w1GjGAmSqyTZCo1iYctsGXpEkAsu
+         tglSYNViu6zO4KLk84jTUZ06IHN6W5pk7DtbNv8wqnjeYnhm9ozRW5B2Lnnm//viu8GR
+         gr7NkPG3H2wZPsMTMolMrQKMvXZ8K2dWJamAP4OGbUTSOuaG0K/OU0bZjAsauh5LBHXM
+         KfXRRln2zl0lZe9t1tuz859bMNG1Us8usCxNwfk6VboGLu6WAsDlfBUMh9UweIez18dr
+         q6tLlo0Jn77ECn0N79ADSRb7LGFErd+D9d9UjMl3o6XEn65HSC6XzgKR/fPdgX9ycuiw
+         ubjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=6VuAuLUF9yqkB7SWz/PXl7WQfx1LhLuNvHCokNWzNl4=;
+        fh=oTf/X13cuNRevZz2nkzCWDqn3S1pqT2EIeQIJ5edpHE=;
+        b=Vlk2nvS6hxxssuN2KEjr1C3iBm6WIfti/c76UgCDubkc3WaFsijR/OeIEH0gbjXz0J
+         2OYcyZ4kGMZ95ytq9lQKKeTI/ntl3QnO0Iu9WHeVo1sC3cCS3phZ5gQABCbVLhuzDuTv
+         iEyNfCwqEk+f9VGqVIRMMiJAK19WhHjhJPnxzEmmEn4hPJRkxTPW4S3rT8u1vpLUALvs
+         fW2Ye9fY5in/e6I0dZpBGXexnFM63spcq7Axop4T7vpYix0+imMFtog8IT9t5/kRHdZZ
+         aUXIcaVSBQ/BrO+Ca0KB/Qc0LyL+2IaPj+0K8sVIdJuEcLWAG6lxLlrYp8JB11CONgEA
+         xqJw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777650455; x=1778255255; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1777659246; x=1778264046; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dBGR5oPl4LoWOunaVjYZCakcMx8qQA1CoWvrOZzKoSs=;
-        b=ELMcQCy6f7L/zKidIkIoxSDUNbqgxOSHA2O41VS9Z/ETcozHdtY4C6Dui6TGnot7mq
-         KipSjJfOtbd4KK3ZZ0yc5lzdZh8iOA0VFdq9VJUSv5b7vDo1Muv2FOsdRcYa5BQo3+c3
-         kqmN86Tajg/yljkpNaZoTpssqvQxDggtz61mU47gJ2HT8oR++7xhzNJ0ggUEk9xLCVbw
-         EHXarEgat9Zf4CMtkJRV8mqymWE0sLeJCNiKCYKO5QIWWhVbiC1JWfG/kw+WoIJypZre
-         Y71f0iQX9A82C/W52oDSH54fvyHmUTCvtV6FcSkai9uzPDtM5uQbnoUHQGXf2TsxgQDj
-         Ys3Q==
+        bh=6VuAuLUF9yqkB7SWz/PXl7WQfx1LhLuNvHCokNWzNl4=;
+        b=WG3v0knbjR4Uz3jtWmxLCUKfJ7J6vs+RBcrPC29KzKG1b6S93XplTW2oZdU0PmkyV5
+         57uuPJMqE445rPQnqqdRbz5WNT9ywbwLH187j2XDkd8Vk7Lb57r2QvrdLfsHM3QgdpwX
+         WyJ0LkqnoS0truIm0Iy5X9H/Vby5CIRhDxB0va53TrwPStPcIamo5JmM0Eq0TxyIW03m
+         eFEDxvxGOGzdNGLD71tPAyZ9m2djpConnWp/XZ5Is0BBAEjaM1R1YG5hpa6Mzm6+VoUl
+         BCX5LAAepMSyZl2DWGLfi9HSN9Q6R6ndzSUP5kIXDa2Wk2uJk/pzhBTBJP/ze6QFf/5u
+         dnZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777650455; x=1778255255;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=dBGR5oPl4LoWOunaVjYZCakcMx8qQA1CoWvrOZzKoSs=;
-        b=TjulM4SLO6KnQt3H1EIYmTjjwifW+7rNsl5NLm4637eCrjO+C0yZ/KcYOL4iHzTmUe
-         L1RtE1i02lBsj6Ouefa00xxAStsgYJjjzPWEhqRLvBRrbhHja319vsJ+NCBlnSsJJIX1
-         /woj4RpH2yvXfkpQRtl9+zUaRaVO7VTAZmsbR3if35vFczdZFtzxpmLl/myPE9cM9kaM
-         2lvnO5HNKwA+7cin2/FR7bpmlgftSY1xBb5YHf1XPnxYmd9umLCN22iq8D4Uf/CH06Rm
-         y9VbNkaCI+NVLisBSteqC/XFmwUDq8eDatisXL5di8obIt0Y6NqhWYLRSTIGrwdeNDBh
-         AEuA==
-X-Forwarded-Encrypted: i=1; AFNElJ+2DiTpNn47wttXA051EB6tos3jLfFteYBO4/V7tEIlA20rHKhW8aHSYEg7c8u+T2VXNhZyAw76Zx0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzQgPifbmrYBjEK7OxDMCFLS7rLy4GSUkiozEW90CeRPBvuPiP9
-	rOR8OYEjt3cKinAg5p6wvtNRO18CGJUEDie0Tbf2uR9uofYaK5l70Dqu
-X-Gm-Gg: AeBDievvSRYn9HXe1tsJRrT6zE7ktabgASNoPWt3veWjmtlJiXib1+PAXoEiux8NZaJ
-	KqqejUkazVYOZPmh+5VhZzcnSfIU7mMAVnOwMTVtDVPmmFT+Xk1tZ2EfpZcpxmsUc2odAEwefMc
-	rKeq6q74r394OwBe9kcpg2PTzqXbPXFvjnEqYEf20HM9L2niwx0R8EAaTsu/9PDsMP4x+/BHyEK
-	45PIQSHIt8RH9ByeGIbjncnaeMUM9rddVIt2lP9dIhAtbFYGyXwFSRvb8jVdA9okhiIdayEpHbE
-	eKIb/AeOud9UJFfkIO3OwEfLZ8r1euSkVsFJ3lL4pxRKQMrR3h2C7sDN6IK6vSqFoYcUVzkgoUE
-	oEogPzS21BkfNGL50QQ8EIEeIegrl9B4YVjpc9ducd6r2QGGNvtXZJ7YdkUADPtTc5zLYYmKRv+
-	X5/8103ivb3Cvb/AasTEEs+bR0CKHUzSCL0JoLxqL5vmRSAWc=
-X-Received: by 2002:a05:690e:c46:b0:656:fc53:12df with SMTP id 956f58d0204a3-65c18fc1132mr7545311d50.56.1777650454958;
-        Fri, 01 May 2026 08:47:34 -0700 (PDT)
-Received: from localhost ([208.185.137.148])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-65c2e1a1700sm1333297d50.6.2026.05.01.08.47.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 May 2026 08:47:34 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777659246; x=1778264046;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=6VuAuLUF9yqkB7SWz/PXl7WQfx1LhLuNvHCokNWzNl4=;
+        b=XJ9/U1UNECCb9JcqNRT3JbS5as8e61r0AX6v+az897f9qoFSmsvHOruALWk/El30bw
+         P78NROa1BD/Z2MpH0jGpUkIgbzsHg1s8oGCZzt8fUZOyB6MenzHlq7Z9WZo8aUTFv1Je
+         IiVoDM7GMXu1xlueCAIGN1qAXPNxklmGCAkf6YCnLvnQN28eIW22mM9S2kDubKqhVFz5
+         Qk3VXhcnH61LAGOPXlpn9iMyDIkliQM3KJxybg0Y+KHsBt2rv3kKTqLIUpsGXjQzxI/G
+         1/IYRy+EY7Qt3USCf8DQuTD8JNhOSPoSf95u9Fx2VNyTFVmZTl/DL2SGT7nFqv5r0hc6
+         Q3Dg==
+X-Forwarded-Encrypted: i=1; AFNElJ+5xxsUVMtHdruWUIOn5pVOpqsncBvYZmuAUjWS519brlryUBSktY54z0f2vt0pvl224XLDN2hSopA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzv5Ll57yj1aVoLpL42S61r2HclDiT1iG1mWm6YGHJochE37ugJ
+	JUZPh+LO6qbI2dEA0gLvDNDExnfEuncCren4jcpViXNjlSc7ALe8AEG8uS8jUBQpcypqfg5CvAZ
+	D96CZjxqo/svURNwCQfuy9fUYlC1kEQA=
+X-Gm-Gg: AeBDietGHbcf6C+wOODsKCiHIyzVnyt0TeLSXVK/vvH2aoHgAQgyZ94nNBg5SagpAnH
+	c5C/vrLKfk4lDkONJJSK82ziMx1CcviLyJIxA53nHpBAeTLrD/F6FzOXBdCr4FCMBcmg8AR2pIU
+	uCAdb8ynLc7EPXiZtnvDCGy/qg0I1S1d/lYpMj66BUbWj3xNHsBqg8THyE+PiIZI0Zj/xMEk4j9
+	2Vvet2Tp/34b1AUaPJdBuR3+dk1KnSvJj2gguNd2wxWHlcV1mcKoQaEchRqaPa7ri/t8XhzavIu
+	fgthxmVcRHd0V1+Q5ocLEF4kW2HnK8NPyIlazx5wkUjVegCiiBKR+VE77aCBKTXT9VlMa8BJ9QW
+	S5Pm+tb5My42tiRFcQw==
+X-Received: by 2002:a17:907:e8f:b0:ba5:a3a0:4a5f with SMTP id
+ a640c23a62f3a-bbff8dc79c9mr8967166b.8.1777659245203; Fri, 01 May 2026
+ 11:14:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+References: <20260430200515.7915-1-guilhermeabreu200105@usp.br> <CALoEA-woSsD3+oEo-4xWLY+pQt5B=SaaUX4xPFoB46WPnFbwrA@mail.gmail.com>
+In-Reply-To: <CALoEA-woSsD3+oEo-4xWLY+pQt5B=SaaUX4xPFoB46WPnFbwrA@mail.gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 1 May 2026 21:13:28 +0300
+X-Gm-Features: AVHnY4Knwys7JDoZUcVL_6lZMbWyZ0jMg8Mc92051GJb-joCZ7LkUpJyrmCP12E
+Message-ID: <CAHp75Vc9nUsduW2Fzq6EqgmT7gjeFgrOrw9a-aUgy4fXddR7bg@mail.gmail.com>
+Subject: Re: [PATCH v4] iio: gyro: adxrs290: Use guard(mutex) in lieu of
+ manual lock+unlock
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Guilherme Dias <guilhermeabreu200105@usp.br>, lars@metafoo.de, 
+	Michael.Hennerich@analog.com, nish.malpani25@gmail.com, jic23@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	=?UTF-8?Q?Jo=C3=A3o_Paulo_Menezes_Linaris?= <jplinaris@usp.br>, 
+	linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 01 May 2026 10:47:33 -0500
-Message-Id: <DI7GHSFZGAL4.1EFUSTVRKWUBU@gmail.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
- <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, "Lars-Peter Clausen"
- <lars@metafoo.de>, "Arnaud Pouliquen" <arnaud.pouliquen@st.com>, "Mark
- Brown" <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, "sashiko" <sashiko-bot@kernel.org>
-Subject: Re: [PATCH v2] iio: buffer: hw-consumer: fix use-after-free in
- error path
-From: "Maxwell Doose" <m32285159@gmail.com>
-To: "Joshua Crofts" <joshua.crofts1@gmail.com>, "Felix Gu"
- <ustc.gu@gmail.com>
-X-Mailer: aerc 0.21.0
-References: <20260430-iio-buf-v2-1-84c2231dea5e@gmail.com>
- <CALoEA-zC9je3xsq0+dqG5b-EiVM1DiKbgAT8JvtALsNwLpp=ZQ@mail.gmail.com>
-In-Reply-To: <CALoEA-zC9je3xsq0+dqG5b-EiVM1DiKbgAT8JvtALsNwLpp=ZQ@mail.gmail.com>
 
-On Fri May 1, 2026 at 9:19 AM CDT, Joshua Crofts wrote:
-> On Thu, 30 Apr 2026 at 15:29, Felix Gu <ustc.gu@gmail.com> wrote:
->>
->> In the err_put_buffers cleanup path of iio_hw_consumer_alloc(), the code
->> was using list_for_each_entry() to iterate through buffers while calling
->> iio_buffer_put() which can free the current buffer if refcount drops to =
-0.
->> The list_for_each_entry() loop macro then evaluates buf->head.next to
->> continue iteration, accessing the freed buffer.
->>
->> Fix this by using list_for_each_entry_safe().
->>
->> Fixes: 48b66f8f936f ("iio: Add hardware consumer buffer support")
->> Reported-by: sashiko <sashiko-bot@kernel.org>
->> Closes: https://sashiko.dev/#/patchset/20260427-iio_buf-v1-1-2bbdac84464=
-7%40gmail.com
+On Fri, May 1, 2026 at 12:23=E2=80=AFAM Joshua Crofts <joshua.crofts1@gmail=
+.com> wrote:
+> On Thu, 30 Apr 2026 at 22:05, Guilherme Dias
+> <guilhermeabreu200105@usp.br> wrote:
+> >
+> > Use guard(mutex) to automatically release the lock on scope exit,
+> > simplifying the error handling path and removing the need for
+> > explicit unlock and goto-based cleanup.
+
+
+> >         /* extract lower 12 bits temperature reading */
 >
-> FYI, Sashiko reported 2 additional regressions (neither introduced by
-> your patches), one of them critical. Maybe another patch would be good?
->
-> https://sashiko.dev/#/patchset/20260430-iio-buf-v2-1-84c2231dea5e%40gmail=
-.com?part=3D1
->
+> Make sure that comments follow English grammar and punctuation.
+> (Capital letters at beginning, dots at end etc.)
 
-I think one of the issues raised by sashiko has an active patch:
+Actually there are two cases:
+- multi-line comment (the style is unified in the whole kernel except
+net subsystem)
+- one-line comments
 
-https://lore.kernel.org/linux-iio/20260427-iio_buf-v1-1-2bbdac844647@gmail.=
-com/
+For the latter whatever style of the following is chosen it's fine,
+the only requirement is that it has to be consistent:
+- all small letters, no period
+- Capital letter with a period.
+- Capital letter without a period
 
-and I think they were waiting for Nuno to review it, since they noted
-they were on a "wild goose chase". Thus the only issue raised by sashiko
-that would still need a patch would be the OOB issue, but I haven't
-looked at its explaination thoroughly to see if it's hallucinating.
+(The "small letter with a period." seems wrong from the English perspective=
+.)
 
-Anyways this one should still be good to merge.
+Also note this was in the original code, the requested change is out
+of the scope of this patch.
 
-best regards,
-maxwell
+...
 
+> Why is there a do-while loop with (0) as its condition? Are you
+> trying to use the break statement as a pseudo-goto? You could
+> still keep the goto even when using a guard(mutex)(). This can
+> be implemented with a standard if statement, no?
 
+Jonathan required this due to the nature of guard()() / scoped_guard()
+cases. While implementation of the scoped_guard() is a loop, it should
+not affect the callers (layering violation), so yes, the break inside
+scoped_guard() while technically being correct looks and feels weird.
+The  do {} while (0) is just a compromise. Note, this is idiomatic
+scope for many macros (before the GCC expressions become a standard).
 
-
-> --
-> Kind regards
->
-> CJD
-
+--=20
+With Best Regards,
+Andy Shevchenko
