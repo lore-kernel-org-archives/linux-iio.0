@@ -1,344 +1,116 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+Received: from mail-dy1-f177.google.com (mail-dy1-f177.google.com [74.125.82.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F9BA2264B0
-	for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 22:03:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777586642; cv=pass; b=L7vjj1CtMrn1Edk2w3MjvPIUErGnYR+RgnJRI6aZX8hHQ5g4YJz4f/axbibMSvSeM+920c8Tja30ClwYF/VsvLiOEYxqYUkw5+4AeigN5Gm79at8xy4leqcXA6kwKx/vunWjstsN6dpwehPKxhBE2UznB3Uh+eFoBx0PxQ4nMck=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777586642; c=relaxed/simple;
-	bh=0gcp2Kh2vkB+bn8vLSfGrDjnK1YOMNrlzs2nZ54UV8o=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sx5OhkUiFTRY8ZkJW+o7avDRRPXyqrPfDLjSJSJd5dFmO0ZrQAU8Sbzb0LsyNXRXC6ZOZ9wukBJIDaWnPb7tpkZQ1dbo/rNEIN7bt8D7/4+Wc0JhVzvJf5U68CY1viJNa8HjxmIjcxakdS6qKiTKarwpkv4H5J79eMRwirZ+y/M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=Gu1Ihor4; arc=pass smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2462296BAF
+	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 01:16:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.177
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777598173; cv=none; b=ApXesWve2TTdXFPT4xKHu7PqYPNv6pY82bQB4JnRfbSlRk9JMlNcJh1xKTTbqQ8D3EYejh64+HMJcQEvXws9lOzFDasTuc6Hv69HZN2pF5NmqXyByDeW92slM3ieHYL9xRAd/oOY7kDHjTw3eOJS++ge/cvl4jbfucFXk4HHsm4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777598173; c=relaxed/simple;
+	bh=bofUNRpYQ9VhIsmdvCBbGbsJYM8dyffBHxWEp9KQLms=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=eXMb6eukXlQ0ArSXu/mXW5CnpZ1o+UIOwnJ/2CPYMYp6nDVrL65qUWjRdm9Ly41cTvAoKuagIX/UQVNwP7dmWG7O0tR4gdxMS0FrABqSgHq0IVu2//9WXgo7mvtSn9nLyYStlJarAmWCbopR4iC4uXmBXkdM++jHbgKb49o2Cm4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=eKOqgNtO; arc=none smtp.client-ip=74.125.82.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="Gu1Ihor4"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-67179ed133dso1610396a12.2
-        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 15:03:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777586637; cv=none;
-        d=google.com; s=arc-20240605;
-        b=bSb1HE4iJbZRjPejsw26325TY4+wJhTq0/TfubhpuPxDPuP5b02Sl3Qi9PTha7LVMi
-         fJL6pE7KpmxyUUD/xwJ56YKeJo0JSoSMDL9Z1ywNH/+4caZtlkAIgOlPAdsuWVnXOkAX
-         2FYzHVR/SsVJ/RJtkE98ySOqGmdXn6Z0FVzxtDg7QMztRQyldP7AR+sNwu+tZolZ6/C1
-         gJXMdcX201llFfORdP/mxgDtbB5WKDzO044AG2x34F45Gjzxpo9iq6p1HovW9X2jInlR
-         8IdG903poEu2Z06SyBbFVfUheUhtYcM3Pl3cak5+pA1tkqitPhAgyAzx3R0qBhWyMpUs
-         T+6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=edxZ7rYbwQ1tkUb55t84u1KAvF5OwpsV+pYcpIo4yEY=;
-        fh=/TUKgVvuTpHprPPKrSs0q1IfGrPw0eQuytM25Xm+G+4=;
-        b=T9cgTHQgq/MKe3uyAySCq58iTxxmTLw2oSJ4gpKp0ge/Bgdwr+fr4xWXMh/CUiB/iD
-         OgIW5Y4SZoXqVCa13dYAQznKwGEenYTEbJuOgNcHChVCQIiIsKSmA2pderpQqZ55uOvr
-         ExXJPCVvt8D399+9zLjjNbvITuDDAH1QT0AqQBIc9bDxID+RZuKkZcTb7hv/k2I0bth1
-         XQKBRx2MaclM4msYycu/p9SDdjdZdaINFSKezjXTPEZYv9mwrkyjPoWQn9NPfYkgpUrP
-         8U4Twxfd4NSFaP2uokhgPcMp4DD1tPpZczFHhiyby103Zeo1sLz5CDDvPC938zbt80Eq
-         qiAQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="eKOqgNtO"
+Received: by mail-dy1-f177.google.com with SMTP id 5a478bee46e88-2ed0a45e970so1886373eec.1
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2026 18:16:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1777586637; x=1778191437; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=edxZ7rYbwQ1tkUb55t84u1KAvF5OwpsV+pYcpIo4yEY=;
-        b=Gu1Ihor4TR4d4FiJhsRQuvy1XbQsZsoWrQSBKeDkkrgh28+Z8WbX7Fs0nW81TiyiNs
-         I0BB6y4gpK7RWjC5dLcVqR6c94uMPi8yoxlPdgpSSpMXX8OQ54IG2xCMnLNQwaqK/gPC
-         lXxC5ERUY03B3njNxPN0Js26wup4D/eCxrNAWDJqTKUJVbnn4aeFcveVUCEZZM1WW0Rn
-         +UJ6F39lg5ybHZKQRstUstSXBIKlmUcBMrYTYcrPiXRGKMj26eq52BeTGXSbpAwdYoI/
-         sEBI8IoYn8vEOEtktLYw/DmemlsSLxD+ofSLy65CN/jZ0OOHryLqnYCiYZavpokrY+fy
-         9ekA==
+        d=usp.br; s=usp-google; t=1777598168; x=1778202968; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=9R3GKV+brGr8DBBiDlaEBUMrmzDGWJnBmRi9Q8SRHGU=;
+        b=eKOqgNtOwqiRy1/f1QMc/AdJIK3ClZfoGYkXV4qolfotzYuldQuagfOO3kU3DhR5dN
+         T9te+o3cZmBtNx2U+gjHn9SjKAzxE+vjP28Mb3qr8kM1SMBFIdFESY/9GOXjF6WFOyug
+         qEgkwruBGaBNuYHe3SibEKGXTTxH7yyMrsSf5uikrIkymBoTyLMCAvt2EH/lOvT8AwoA
+         sQwD/Cr3YcSpgsqIwjhL3kn+n6+vZa+vsKvxu42T9/xbODkh9aAC9IXiKvN5q5M2yGFf
+         yOMS71CjRSJVkdhAk6bDYfP4dNFL/DKuSvW8Ra+JmxENiMLQN5gZCSVKekHdVoOssBLv
+         5PIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777586637; x=1778191437;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=edxZ7rYbwQ1tkUb55t84u1KAvF5OwpsV+pYcpIo4yEY=;
-        b=RVT5LM2H8edo8q9zvF2ZNKYfPIGvlOPlWWdSCx7f6JAbX7jCGiIXBK3JE8XUZtoFMs
-         WlXGTw1KOUOh2W8qCpAkkfIdcOZpdEAB8nYoR/XTglwHmIg7c+9piV9lirxxsqjj8Uyq
-         yVPutU7wJLG1Ikcq5FdoolpePz9+Y8jU0zQ8knR1/7u/r0mFh/l1gwi56np/0Cmva8WS
-         IuypbqC5aKOIy5F6gFgt1tGn21FS0WoQMePXrOny1z/WxvRYdu30K6M4j9VJhQV9QmBc
-         29wb+yFXr+uZRmwR11i2XtcWb+w6y2+xGaCspd4LXCgZ8j5XlGvAmq+fmXOU+cFFT3hD
-         p09w==
-X-Forwarded-Encrypted: i=1; AFNElJ+SbvDyr1Y75PCrpsvoLjjBCAjiRrEZs4CxVJo8RRnuixFeXN050yjIrQY336T0u1yHJZ+QB8hO+GI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzpCZYUdOECkiasYJIF8+YIqUxvToDTK3mm5Tt503rsACPTfkic
-	tzPuFOKKAo39JUuu5fg6Gv/EH0B6zY0dTgLrkOuuiPJWenBlS1y0HbGo+U8LMbWb3SJ/Rj1UgIq
-	tJgWfJHAOzrZxN3J+t5GIFK2Ugxvhp/5ahbHpTsfm5w==
-X-Gm-Gg: AeBDietUgK0KTdyQ+G1eZpMkqionJTgoXDjNQVrZ2aLfh/mJB/PqgbnoAwSt5j/02eL
-	QYuL1/lWJPo6sL0GwaMmV/uD4lk624oPGcfJVVzBa45nuqM5Az79Z89iSNgKQytgqy1iAgW0x3t
-	SUhv7X1olw0IwevoLxjh6vf69vQxCkXrZA+km757HCI2B74wOOTuZuh6QmSBbE73RObNALU02HB
-	64v5Lmr+b5Hc91VPf9rF+wijd61lkgZmePI3XDZn3R7/WpsOM/XiLGPvbggGR953OF2XvYUF9zw
-	mYt+jnyRScEmrSlz1omrkzpxbeK9KHSdDolklFJMjNSV/T+OKyukZJQPVstcRSrekqsgxOHETD7
-	GxUdG
-X-Received: by 2002:a17:907:8e0e:b0:bb7:dbd6:b401 with SMTP id
- a640c23a62f3a-bbac7298ef3mr318754566b.31.1777586636657; Thu, 30 Apr 2026
- 15:03:56 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777598168; x=1778202968;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9R3GKV+brGr8DBBiDlaEBUMrmzDGWJnBmRi9Q8SRHGU=;
+        b=GB1WAtofpsg0FAbd7GrrTgP0USkFtJ636/KAs59nTSapt+jZ638aYogaWwcchnaaCp
+         lzvhtISbZZW1jpL+Vu11DfbJIRwbtcFHSu+/477baSTF4v8BtZk5ZiOd6leYTTJ8uFr8
+         c8cWJmU/AlIQNhOT8eq0OL7UonxhM/BEVG3C5ULqUyvYikZGfifTwx9QjPFvKHgLFVwC
+         HoehMUxilMn6oEkbnB+ijli6OJBlQNvVp7FJYPURBpkC0d3nRv0uUrev23jresMUF6Zo
+         nrglt4F9YbJqzromiM00EMeokmr9xGcSr3VCQN15mswkpIRsqdffETvz/0A4zp4EEiIQ
+         6odg==
+X-Forwarded-Encrypted: i=1; AFNElJ8mCOdes2nYHN7fPuXQJW5Zzumnn0y8BJOvq0PfG+/8v5AueSCmmECKJMnBW0QUxEVfx2NR9G3fPFg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxgaOCmY34tiPFxPDmp5WAC4DrLSorrXDFTVINyicWrMwXKuF5X
+	XMHebntiXrgYJbpnnocgCuUzt/MzZLTRYgx+hAuNBFwlgMOBXxAa2G0w5ZsTbvshWJ8=
+X-Gm-Gg: AeBDievf5dnIWiallGIWwU6+L+pYaX/5dTRSk5WKxPnQP7Nnkp9qtU/gEy4W40uI0Wu
+	z0L9xWPvMxqU0wZ3XvWWreOW6lu1/UVo9/GftyGTekw/Qkdykqv9fJcWwDkxQZ58U3M2S0ZtShF
+	aOMt7Qhs2byzBXGw+hhJ6k9au/ujLUij0XeIf9IQedG7qpWiQT6hlnGY0JmvwksufmZoxz8OCjO
+	uousQhWlaUvQd+7fo9/5hKfnsyDqdT56FPkDb6wc9NevJnzeHGf3EleXtfEi12FzhP6UjrQFSQr
+	d7uK6owfogQMux1Tx6xMK9dCGWWvd1ewWen/7wcw9DxJodvvRpKvsN9kJ2C8higoqPxxZVRuwZu
+	1qvq3PKd4zJsUQwz0aDSd+3e3xNX4RA2IY7SqVhMeLF/P9rGMYJmyEGarbbyH28NurPF+PPRR9O
+	I7cDWW
+X-Received: by 2002:a05:7300:a98b:b0:2d9:6373:ad0a with SMTP id 5a478bee46e88-2ee87680932mr390066eec.11.1777598168318;
+        Thu, 30 Apr 2026 18:16:08 -0700 (PDT)
+Received: from fedora ([2804:14c:bf40:2363:5316:5d16:72ff:a622])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2ee3b29b2casm2472686eec.14.2026.04.30.18.16.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Apr 2026 18:16:07 -0700 (PDT)
+From: Rafael Lopes Santana <santanarl@usp.br>
+X-Google-Original-From: Rafael Lopes Santana
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: Rafael Lopes Santana <santanarl@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] Replace manual bitfield manipulations with field_get
+Date: Thu, 30 Apr 2026 22:15:46 -0300
+Message-ID: <20260501011548.15369-1-santanarl@usp.br>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260422210537.12127-1-jplinaris@usp.br> <3ab73ef5-0a3a-66b4-a763-398f0921c289@linux.intel.com>
-In-Reply-To: <3ab73ef5-0a3a-66b4-a763-398f0921c289@linux.intel.com>
-From: Joao Paulo Menezes Linaris <jplinaris@usp.br>
-Date: Thu, 30 Apr 2026 19:03:45 -0300
-X-Gm-Features: AVHnY4I-MQN0kxoHWbkLdEvKaX6VzbdgYb4NFFTzc3TZTZw3otQ3zO_jrz8RwP8
-Message-ID: <CABAASXN_FzGLqojm-Bq8qLC8fnbbKnjzPvtRi6Q_-_Wk3HmJUw@mail.gmail.com>
-Subject: Re: [PATCH] counter: intel-qep: Replace manual mutex logic with lock guards
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: wbg@kernel.org, Guilherme Dias <guilhermeabreu200105@usp.br>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hello. Thanks for the suggestions!
+From: Rafael Lopes Santana <santanarl@usp.br>
 
-Em qui., 23 de abr. de 2026 =C3=A0s 08:42, Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> escreveu:
->
-> On Wed, 22 Apr 2026, Joao Paulo Menezes Linaris wrote:
->
-> > Use scoped_guard() for handling mutex lock instead of locking and unloc=
-king mutex explicitly. This improves readability by eliminating the need fo=
-r gotos and by clearly indicating mutex will be locked only when execution =
-is in scoped_guard() scope.
->
-> Please fold the changelog text properly.
->
-> >
-> > Signed-off-by: Joao Paulo Menezes Linaris <jplinaris@usp.br>
-> > Co-developed-by: Guilherme Dias <guilhermeabreu200105@usp.br>
-> > Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
-> > ---
-> >  drivers/counter/intel-qep.c | 126 +++++++++++++++++-------------------
-> >  1 file changed, 58 insertions(+), 68 deletions(-)
-> >
-> > diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
-> > index c49c17805..199a8d562 100644
-> > --- a/drivers/counter/intel-qep.c
-> > +++ b/drivers/counter/intel-qep.c
-> > @@ -188,25 +188,22 @@ static int intel_qep_ceiling_write(struct counter=
-_device *counter,
-> >                                  struct counter_count *count, u64 max)
-> >  {
-> >       struct intel_qep *qep =3D counter_priv(counter);
-> > -     int ret =3D 0;
-> >
-> >       /* Intel QEP ceiling configuration only supports 32-bit values */
-> >       if (max !=3D (u32)max)
-> >               return -ERANGE;
-> >
-> > -     mutex_lock(&qep->lock);
-> > -     if (qep->enabled) {
-> > -             ret =3D -EBUSY;
-> > -             goto out;
-> > -     }
-> > +     /* Lock mutex while execution in scoped_guard() scope */
->
-> Why add dead obvious comments like this. Please don't do it.
->
-> > +     scoped_guard(mutex, &qep->lock){
-> > +             if (qep->enabled)
-> > +                     return -EBUSY;
-> >
-> > -     pm_runtime_get_sync(qep->dev);
-> > -     intel_qep_writel(qep, INTEL_QEPMAX, max);
-> > -     pm_runtime_put(qep->dev);
-> > +             pm_runtime_get_sync(qep->dev);
-> > +             intel_qep_writel(qep, INTEL_QEPMAX, max);
-> > +             pm_runtime_put(qep->dev);
-> > +     }
-> >
-> > -out:
-> > -     mutex_unlock(&qep->lock);
-> > -     return ret;
-> > +     return 0;
->
-> Why is using scoped variable of guard necessary in these cases??? Are
-> you just making these changes using some tool without inspecting if the
-> end result makes sense or not??
->
-> Also, runtime PM also has guards support added (admittedly changing them
-> doesn't remove gotos). But one of the cases seems non-pairing so that
-> seems not convertable to guard.
->
-Just to be sure I'm on the right page regarding this suggestion,
-according to pm_runtime documentation, pm_runtim_get_sync and
-pm_runtime_put, in the functions I changed, would be the pairs we are
-talking about. And, therefore, if we have something like:
+Signed-off-by: Rafael Lopes Santana <santanarl@usp.br>
+---
+ drivers/iio/proximity/aw96103.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-ret =3D pm_runtime_get_sync(dev);
-if (ret < 0)
-    // returns before the decrement of device's usage counter
-    return ret;
+diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
+index 3472a2c36e44..a8a6ae02438a 100644
+--- a/drivers/iio/proximity/aw96103.c
++++ b/drivers/iio/proximity/aw96103.c
+@@ -591,7 +591,7 @@ static void aw96103_cfg_update(const struct firmware *fw, void *data)
+ 	}
+ 
+ 	for (i = 0; i < aw96103->max_channels; i++) {
+-		if ((aw96103->chan_en >> i) & 0x01)
++		if ((field_get(BIT(i), aw96103->chan_en)))
+ 			aw96103->channels_arr[i].used = true;
+ 		else
+ 			aw96103->channels_arr[i].used = false;
+@@ -643,10 +643,10 @@ static irqreturn_t aw96103_irq(int irq, void *data)
+ 		if (!aw96103->channels_arr[i].used)
+ 			continue;
+ 
+-		curr_status = (((curr_status_val >> (24 + i)) & 0x1)) |
+-			      (((curr_status_val >> (16 + i)) & 0x1) << 1) |
+-			      (((curr_status_val >> (8 + i)) & 0x1) << 2) |
+-			      (((curr_status_val >> i) & 0x1) << 3);
++		curr_status = (field_get(BIT(24+i), curr_status_val)) |
++			      ((field_get(BIT(16+i), curr_status_val)) << 1) |
++			      ((field_get(BIT(8+i), curr_status_val)) << 2) |
++			      ((field_get(BIT(i), curr_status_val)) << 3);
+ 		if (aw96103->channels_arr[i].old_irq_status == curr_status)
+ 			continue;
+ 
+-- 
+2.53.0
 
-pm_runtime_put(dev);
-
-This would be considered a non-pairing case, which seems not
-convertible to guard. Is that right? In the functions I implemented
-the lock guards, I couldn't find any case in which the function could
-return in between get/put calls. In this case, would it be correct to
-keep all the added guards?
-
-> >  }
-> >
-> >  static int intel_qep_enable_read(struct counter_device *counter,
-> > @@ -226,28 +223,28 @@ static int intel_qep_enable_write(struct counter_=
-device *counter,
-> >       u32 reg;
-> >       bool changed;
-> >
-> > -     mutex_lock(&qep->lock);
-> > -     changed =3D val ^ qep->enabled;
-> > -     if (!changed)
-> > -             goto out;
-> > -
-> > -     pm_runtime_get_sync(qep->dev);
-> > -     reg =3D intel_qep_readl(qep, INTEL_QEPCON);
-> > -     if (val) {
-> > -             /* Enable peripheral and keep runtime PM always on */
-> > -             reg |=3D INTEL_QEPCON_EN;
-> > -             pm_runtime_get_noresume(qep->dev);
-> > -     } else {
-> > -             /* Let runtime PM be idle and disable peripheral */
-> > -             pm_runtime_put_noidle(qep->dev);
-> > -             reg &=3D ~INTEL_QEPCON_EN;
-> > +     /* Lock mutex while execution in scoped_guard() scope */
-> > +     scoped_guard(mutex, &qep->lock){
-> > +             changed =3D val ^ qep->enabled;
-> > +             if (!changed)
-> > +                     return 0;
-> > +
-> > +             pm_runtime_get_sync(qep->dev);
-> > +             reg =3D intel_qep_readl(qep, INTEL_QEPCON);
-> > +             if (val) {
-> > +                     /* Enable peripheral and keep runtime PM always o=
-n */
-> > +                     reg |=3D INTEL_QEPCON_EN;
-> > +                     pm_runtime_get_noresume(qep->dev);
-> > +             } else {
-> > +                     /* Let runtime PM be idle and disable peripheral =
-*/
-> > +                     pm_runtime_put_noidle(qep->dev);
-> > +                     reg &=3D ~INTEL_QEPCON_EN;
-> > +             }
-> > +             intel_qep_writel(qep, INTEL_QEPCON, reg);
-> > +             pm_runtime_put(qep->dev);
-> > +             qep->enabled =3D val;
-> >       }
-> > -     intel_qep_writel(qep, INTEL_QEPCON, reg);
-> > -     pm_runtime_put(qep->dev);
-> > -     qep->enabled =3D val;
-> >
-> > -out:
-> > -     mutex_unlock(&qep->lock);
-> >       return 0;
-> >  }
-> >
-> > @@ -279,7 +276,6 @@ static int intel_qep_spike_filter_ns_write(struct c=
-ounter_device *counter,
-> >       struct intel_qep *qep =3D counter_priv(counter);
-> >       u32 reg;
-> >       bool enable;
-> > -     int ret =3D 0;
-> >
-> >       /*
-> >        * Spike filter length is (MAX_COUNT + 2) clock periods.
-> > @@ -300,25 +296,23 @@ static int intel_qep_spike_filter_ns_write(struct=
- counter_device *counter,
-> >       if (length > INTEL_QEPFLT_MAX_COUNT(length))
-> >               return -ERANGE;
-> >
-> > -     mutex_lock(&qep->lock);
-> > -     if (qep->enabled) {
-> > -             ret =3D -EBUSY;
-> > -             goto out;
-> > +     /* Lock mutex while execution in scoped_guard() scope */
-> > +     scoped_guard(mutex, &qep->lock){
-> > +             if (qep->enabled)
-> > +                     return -EBUSY;
-> > +
-> > +             pm_runtime_get_sync(qep->dev);
-> > +             reg =3D intel_qep_readl(qep, INTEL_QEPCON);
-> > +             if (enable)
-> > +                     reg |=3D INTEL_QEPCON_FLT_EN;
-> > +             else
-> > +                     reg &=3D ~INTEL_QEPCON_FLT_EN;
-> > +             intel_qep_writel(qep, INTEL_QEPFLT, length);
-> > +             intel_qep_writel(qep, INTEL_QEPCON, reg);
-> > +             pm_runtime_put(qep->dev);
-> >       }
-> >
-> > -     pm_runtime_get_sync(qep->dev);
-> > -     reg =3D intel_qep_readl(qep, INTEL_QEPCON);
-> > -     if (enable)
-> > -             reg |=3D INTEL_QEPCON_FLT_EN;
-> > -     else
-> > -             reg &=3D ~INTEL_QEPCON_FLT_EN;
-> > -     intel_qep_writel(qep, INTEL_QEPFLT, length);
-> > -     intel_qep_writel(qep, INTEL_QEPCON, reg);
-> > -     pm_runtime_put(qep->dev);
-> > -
-> > -out:
-> > -     mutex_unlock(&qep->lock);
-> > -     return ret;
-> > +     return 0;
-> >  }
-> >
-> >  static int intel_qep_preset_enable_read(struct counter_device *counter=
-,
-> > @@ -342,28 +336,24 @@ static int intel_qep_preset_enable_write(struct c=
-ounter_device *counter,
-> >  {
-> >       struct intel_qep *qep =3D counter_priv(counter);
-> >       u32 reg;
-> > -     int ret =3D 0;
-> > -
-> > -     mutex_lock(&qep->lock);
-> > -     if (qep->enabled) {
-> > -             ret =3D -EBUSY;
-> > -             goto out;
-> > -     }
-> >
-> > -     pm_runtime_get_sync(qep->dev);
-> > -     reg =3D intel_qep_readl(qep, INTEL_QEPCON);
-> > -     if (val)
-> > -             reg &=3D ~INTEL_QEPCON_COUNT_RST_MODE;
-> > -     else
-> > -             reg |=3D INTEL_QEPCON_COUNT_RST_MODE;
-> > +     /* Lock mutex while execution in scoped_guard() scope */
-> > +     scoped_guard(mutex, &qep->lock){
-> > +             if (qep->enabled)
-> > +                     return -EBUSY;
-> >
-> > -     intel_qep_writel(qep, INTEL_QEPCON, reg);
-> > -     pm_runtime_put(qep->dev);
-> > +             pm_runtime_get_sync(qep->dev);
-> > +             reg =3D intel_qep_readl(qep, INTEL_QEPCON);
-> > +             if (val)
-> > +                     reg &=3D ~INTEL_QEPCON_COUNT_RST_MODE;
-> > +             else
-> > +                     reg |=3D INTEL_QEPCON_COUNT_RST_MODE;
-> >
-> > -out:
-> > -     mutex_unlock(&qep->lock);
-> > +             intel_qep_writel(qep, INTEL_QEPCON, reg);
-> > +             pm_runtime_put(qep->dev);
-> > +     }
-> >
-> > -     return ret;
-> > +     return 0;
-> >  }
-> >
-> >  static struct counter_comp intel_qep_count_ext[] =3D {
-> >
->
-> --
->  i.
->
---
-Best regards,
-Joao Paulo Menezes Linaris
