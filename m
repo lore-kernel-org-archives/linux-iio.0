@@ -1,131 +1,162 @@
 Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33DAA40B6DF
-	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 18:18:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B6E413244
+	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 18:26:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777659535; cv=pass; b=VLxgE+R+vHDnkuD7sX77snnZowOBlrQSMfNPT868v15aOZcwKJ1dNXmLOLxKzU2WQuocfD9WmqDC3pOpRi+HMijCCim/CmGaulhsPiFSHVuVdRh0BK5aUyR5f8craKz8H6HzkUs3AcF52Y4GONlqJBkua/HpGcGOwYzhtiGYyRQ=
+	t=1777659976; cv=pass; b=UEANfIcCznSV4zRbIYheiWzO5qrFFwCRn3LdCtwLSv0HALbetRQ1OvTzyHYPuQ6opZkIRz574xAKHuE491gUUvRGRdQDENs4pnhspUI/4QqXoauaGwkzdUXN4LiM/CvmHxxwxY1U0SEltWOCF8Qd2LuvuBj7pJ9y8Cgd8BdvxAQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777659535; c=relaxed/simple;
-	bh=hUsOB/td5KUt60+B697yCbfSH3LnN4JGaeq1zWoDQS0=;
+	s=arc-20240116; t=1777659976; c=relaxed/simple;
+	bh=pV+suN9W1A6yZfc4Ibsbi1Vqls27R+qZ5YNULCTDH3U=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LrKf6iamrKlF7y/euhIQHsOO7D9jxUh/fgl/xZlMRUJnui4NJCeQuv3wr198m4Vm7MC9CXImk4+UL9nUWCxacbZdM8eaINl51PK5uylrdgLuit+Jkq7D94qiFgBQHIRLnVxqT1pVJrrN98SX+1WORXJ9iCLdBKpBTr4ysRq9sQg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZmyE4CM7; arc=pass smtp.client-ip=209.85.218.44
+	 To:Cc:Content-Type; b=bcESXtCcpPMg9IQIuB4NJObBba5zb/jid2p9c3k7VqZ7fDlbh2Bzt/JzErJ/Nvw0p2W+tL0lG5wgEF7miK81N57F+oFTyAlvQfXIZI5w5eH4B+sY487ro49UaR4TCJ40HAnovrPeDte5N3mrAGQoo6EQzcNFX3OgdzP5QiuzUqw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pef8mdG/; arc=pass smtp.client-ip=209.85.218.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZmyE4CM7"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b9358dd7f79so358058566b.1
-        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 11:18:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777659533; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pef8mdG/"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-ba92146cc86so380376766b.1
+        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 11:26:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777659972; cv=none;
         d=google.com; s=arc-20240605;
-        b=gfHTN+BAvOnw74gKTDoQ3dnbrnLtwlcmUa7t3pZ8KjyQwKy6QXwfLMnDQoOw9OeU/p
-         8HyOSJKQ3ii5i9gYmkln7+xYjM7qsOz4nH3hGIwOQCSRkTjDaHIsPyJL22KnsSwZSwl1
-         3J23ah0sB0Z7irx7JZLp8mQUtGPf4qMKaH+jl06UZVwncQvIt1T2ci7B9g3morCXzExx
-         B+VM0ccOpNII4kCzMPf6jUyqKuQ4PnqwR5rMXmVpPGjzouQ9CosLDfqejBNbC9Sy9q5u
-         QUYioLh6DN+/cw8ryRfZ8b68AzkiFryRiAK7vdFz5/txR1AKozKBR6mQllsELzRLA3JR
-         wlNA==
+        b=Jk+NF1TWbSzblyw9JGAhWTyEHWrcx//cdB+yn9ZdOHc6nD9uLr2QwCCcG0jAovBLND
+         CoZ4e2MyrW6iyo9WNFZqFEFQnme21re3sDDVawtX/XmD8zBB7movAIBnxZD5yNluA1x1
+         lCg/mt0Kg/bZPiKznFJy5gw1qePOPodU11F9UHhAWW4qi/Z+synqZee2iUCvEv+5IIl1
+         X4KVW5JJaO2cnvcUNEqM1ecmtyPPRPsX+jeSuBhW60cmCHpf3s1l62RLIqyrW54EHGwO
+         xn+Pbsf526A5Mcr/s+WtGUbvHDSqv9oNCpPs2QgNCLKsdRxSelaCq65H56WaBC6K5XdR
+         6O7g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=hUsOB/td5KUt60+B697yCbfSH3LnN4JGaeq1zWoDQS0=;
-        fh=gUIFybcs4vEqooi0V3F0dwQQAtzhOWZTruSE1dwtrls=;
-        b=BaDmuXHoI8thAeY5aP79N/ZHONyQMV4x91rhf0JQnj4fEYoUkWF5BosU8zjcoHQr+y
-         GeNMkJs1tzQoZJYib+D4j7HjmJl0hqWex9TgcL6KwLT4WLz65R7GJKQbzXBMo9nCdY2H
-         JMCdYDA8vy7KVvTqZ0FGjGJq5Mk//DMyQ7q/GxLEMsk0ALDPcUEGnabHRbF2OUetO729
-         34DNn/Yxl+c2eGsn7j71H1HQImYhFRbNhzQFYJzycK05xezUbSiRWg+wup8z0+DFm4tz
-         kV5trCrecyRQP7sJ6l3BnfjBaofZvFCWvD/vWXa1EgmIEMhV4uqnEBmdYcEYaI/qQdX0
-         3qxg==;
+        bh=mjEo9TVAU6E8H22fl8jtqKDStep6BqgLc7IS8Y+Q4Uc=;
+        fh=Hm4jHSNEeC5EayGHyan0ooF4Kvn7lp1iwTjny8W8ZEM=;
+        b=et7JCUSkI7M+Z/SgJPGMSW5Z7Dvq2sDDav5xp0AdAd1dOr++3/l3s6G73fQKEk0C5/
+         3C1h7iXamt8CUFjvuwTKS98xK88N+7m4YGkkpYeL9IiWxhAxs+mKD5ir7HWyIpP5pNbG
+         l38dShJxM0tlesmb3xl8leBOv5o5pOS4t4BccvtXpZF0j/mVBzg2OZqFxuDGGRdvz8I5
+         6gfhuLJCztVXBJxdgWBvgL72uW6ljgF+S8mZXJbfpKTW7lL/OQ5xcW81t+ZD6UM5pSTc
+         LdB4R1HQk5VjK/6rDYImv9i93z3izDD3wvi3jDmKuL75HwMCR882si45JH39W2NedZz5
+         0nkw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777659533; x=1778264333; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777659972; x=1778264772; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hUsOB/td5KUt60+B697yCbfSH3LnN4JGaeq1zWoDQS0=;
-        b=ZmyE4CM7msbqaJ3UdzQsSqf89pxdLjLZfrOvmoWTbiZdzhMgCdyHLRek6Da6Q3BThu
-         SuSJyyfBpYFL0avy6oLELMC6rPhnruihG9/sfGnVMb37wPZi77TX4zxjcs2AK+kzcOhZ
-         6+wdWFJaNHBnTOhbn4Ui6i6vIZPqwswEl4dgWlWrA6GlFIf+xTG58De/f+u5cIuKm2CP
-         4u/NovqiI/8zn6n25Gl0NSLEGlLx8X5BOeN13IQOnixs4VUWrCWnCbMv6oE9rYXTObmP
-         OZj4plHOerUW9wRFowftrBVy1+QijJRD0tOMbQvasiG4orEiWFDIikq6WxUUqOtKHRcg
-         WCag==
+        bh=mjEo9TVAU6E8H22fl8jtqKDStep6BqgLc7IS8Y+Q4Uc=;
+        b=pef8mdG/fSsLQeWZJ1ZqD7HSUqFOkNFzMfntyjPWlz0C+0uJtLAoxlLvZ4pwDPOL10
+         WHN03FNGpDUR7oDFcrcqdYTnEu/IAvO1nn9iXSwjAwrTl43gm+81xC4RfOMRmeuM2Fke
+         QT8NzAfQbuAQ6GEBitxCEU4abFD7C9bqH6rJMI22IBnwR/4c6qD7BD0S2Hs8W0+VRlgR
+         cUkKqIw4ODhFNdn5g5FBsWUwm3qVbiwmsn+D1QPAjlwnhoxGYoMS6iYH3NOUaAlp4Hg0
+         rH0xOYC9iNeLV0Kty8mvx/8i+cUjbRXveB/3b6BCEkaMRloVUGXPHQVTlE6fIyjGZk/C
+         4cxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777659533; x=1778264333;
+        d=1e100.net; s=20251104; t=1777659972; x=1778264772;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=hUsOB/td5KUt60+B697yCbfSH3LnN4JGaeq1zWoDQS0=;
-        b=r9vuD9y5OANoYwTaBzAY10eMrkDv/edxkLL7ic7BT4b0HxmXxcdXwpiHpfKH1hSGTl
-         rjs0nSX0Y4a1CQ7ZG+2x8E7sm3fF3RNTeF7ZqA8WY7H0PXJ20QU+wwl3ir4V+yOsoj//
-         E8Mtk9RX323XwKyPWa8fnsveuAY71jZ56jP3huY0y4eyt/TTC7M9q0JDYvgmA6VdyOOU
-         4x1oWaXQV9FVEUlzzXPbOzBd1iB284V7GoKozdWUCrZrx0LSPNREIkVCLR1qE/oQQdli
-         Yn3oqWHXxqPFQhXDOaXskwggYlBnZZ38bYviE+o0AbAq7JyN1hXjdpuBcTLLgI0ZQppk
-         yrhQ==
-X-Forwarded-Encrypted: i=1; AFNElJ81HsY0VqftaKkZYsDXlPP5GmS70XDcX1RudqtKgitEyFNkDIswDQITlpW8Xy9Pvc/NqJ6khNqB9JE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyOHwzq5jI9N2RuB8fkf4esEGWtTWHRFmzGq8fwIPahiOALP3tt
-	fCAYMy+JUpwHcNNTxWCFMbjeNW+5dqwN+6qsiotc6lsivv4djk9h1BcC1tiDr7mVf/XarBG+M0R
-	O7qBdmWBijJV/8qPsf7KnHE5RbZ7p/QU=
-X-Gm-Gg: AeBDiespGu1kRVDcgerNiIECw53xY9y7KAv8CnrHcdlJ+VG6n/Cbilx3v/zsA1ExteI
-	rHoh9o5IF9ekRVWtdHBde2xRGdpyabWdNbjBZaZcfDbnaQwYVOM1lxXioUO4P+SppWOjoIgam3a
-	BwnWYCFJRd4p0j01ku7ePu6JG4Nm42zJhrhG7zRAUJebJ+I4RCc4beabeLh0tJlNFg1FPbpzkGy
-	lCiusFq3ENh4V5Bdbe9wjGNyA5y74SkaH9qJlZGGeb9Vu4Kg6dJxoMrd4qhXeSVFl6+QreHJ6Eo
-	2+yvAxt0+J6Cu0hi4UV6d2naJPMZQ2j0weA1QxCIs+V7IG2AApIsBuXCt6rtpqr6ooXxuW9X22N
-	aCUGx1utu+6kNrF7yXQ==
-X-Received: by 2002:a17:906:9fcb:b0:ba3:8a04:7688 with SMTP id
- a640c23a62f3a-bbffe0cc792mr8266166b.36.1777659532153; Fri, 01 May 2026
- 11:18:52 -0700 (PDT)
+        bh=mjEo9TVAU6E8H22fl8jtqKDStep6BqgLc7IS8Y+Q4Uc=;
+        b=N7ngV9eCLzlRkuYmYtEOpyQTnUdwX2FKWnfhzXVB9ZbZ/jYjJE8dt2ovvIQCi/v88F
+         u7CKfvTwNnDBRcaizk7UNRgYXdtJAT2AXZz4jNqna2aC+PYjF4cn+jTAoHn4b9eeV8FP
+         tyRZPiWQCMdNyRaGq2eOBiEv3K/YYNtxQtVGQUVOXMRViJGxn1cfLduuC3xbKoAif8y2
+         odtZoQbIFINq3ImkR+Ln4/z6+qyZzeAxpnyW3IyJefYKGN8ZD4h9k/NVTr6Xbu2Mhh1r
+         liqJ+wnOiEi4bWRbLCBSj7nDslDryiRNVuOf/qpLB2VkfFnAAkiMeHr4cw8YL/se3UEe
+         bPFg==
+X-Forwarded-Encrypted: i=1; AFNElJ9vq7TveKZNWRktsHPe8IEN92I1xqpgJBwiIswCo9wPbZlTnNo7iEMwvxygj9aNNcIfomQ5L1pIm2A=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw/mvQ5g/JKznWQJmNQ3A717ThvxMVJeNae6QvhBNlquoqR15Sf
+	EdGpxVZj4gB1gvWweIzSjXdObgXNdtd9TcCfcemOBI8ed0GuIF77rDq8SRrtOVNfH/Whgpntu24
+	Tld9Ialz0D6+hm1HCSzJj0yjqa26z55k=
+X-Gm-Gg: AeBDievvyChWgZMLKMPmqZnGAU8hDVAaoVvm8x5c0JG9aJ+c30suAzWGLo5JA9Cb9ff
+	FxCOlKmPltagrRjZatqhehq3ckxczWfZEx1TWfIIPP7rqq3m/RnaXI+YXvE1JrZqrfQLEfIZ8pA
+	GvWBfAaj7+rptak/l5/EsLiJHfK9nW3BUdIVnyfXFLE+yotRpFA8ugjWWKPhq+k3oEPfXA9vQa+
+	lmoGJp007pDhuofWcfEuRZow+X+UkZTUtczOr+f5fTZORkNgAbpiTeg566HPwjU9cNZ0xYkT4GY
+	3trNtdUwWS+Al0PQzhJz3IE3o9sCZu2jsTdW1L54ZPmq3E8tZJvAyy/uEmKMsYxuoL25IgGBEBU
+	RLU0wDK2qN+OkwuWdbg==
+X-Received: by 2002:a17:907:934b:b0:ba9:aeaa:fd18 with SMTP id
+ a640c23a62f3a-bbffb951c50mr8523766b.28.1777659971938; Fri, 01 May 2026
+ 11:26:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260501011548.15369-1-santanarl@usp.br> <CALoEA-wzsykL5V675HFYNn-xZpuCa+XEOa-LbJ0KqrVSR=ZUnA@mail.gmail.com>
- <CALoEA-ycuys-pNg_HWZVrkoiAXVToWouS5LV0GX1UsWz5G_Mvw@mail.gmail.com>
-In-Reply-To: <CALoEA-ycuys-pNg_HWZVrkoiAXVToWouS5LV0GX1UsWz5G_Mvw@mail.gmail.com>
+References: <20260429175918.2541914-1-sanjayembedded@gmail.com>
+ <20260429175918.2541914-5-sanjayembedded@gmail.com> <afJdJIQS1vwOcaGT@ashevche-desk.local>
+ <12C22ED3-20F9-401C-ACC9-D666393B292A@gmail.com>
+In-Reply-To: <12C22ED3-20F9-401C-ACC9-D666393B292A@gmail.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 1 May 2026 21:18:15 +0300
-X-Gm-Features: AVHnY4KEDFcmlmQMBIWaakUU6l3rmd8BAnlGHDUSbJIuGS8lKVndj2gyMuZRFpM
-Message-ID: <CAHp75VdQuy1P=jiK9vsCVP444hUB-1aNDCtmoZK1YU9gH0yTDw@mail.gmail.com>
-Subject: Re: [PATCH] Replace manual bitfield manipulations with field_get
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Rafael Lopes Santana <santanarl@usp.br>, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org
+Date: Fri, 1 May 2026 21:25:35 +0300
+X-Gm-Features: AVHnY4JiQImi-kzKeeq0M395Ntrx9wDGlULAMAnx041KdEXGJGgDR69IdiMeRVo
+Message-ID: <CAHp75VdzPr+SLCPT85zw6aK8pSueBHr-OFpJ1Vmsow61e8=p4w@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] iio: humidity: drop hid_sensor_remove_trigger()
+ using devm API
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, jikos@kernel.org, jic23@kernel.org, 
+	srinivas.pandruvada@linux.intel.com, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, sakari.ailus@linux.intel.com, 
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 1, 2026 at 5:38=E2=80=AFPM Joshua Crofts <joshua.crofts1@gmail.=
-com> wrote:
-> On Fri, 1 May 2026 at 16:34, Joshua Crofts <joshua.crofts1@gmail.com> wro=
-te:
-> > On Fri, 1 May 2026 at 03:17, Rafael Lopes Santana <santanarl@usp.br> wr=
-ote:
+On Thu, Apr 30, 2026 at 10:21=E2=80=AFPM Sanjay Chitroda
+<sanjayembeddedse@gmail.com> wrote:
+> On 30 April 2026 1:03:56=E2=80=AFam IST, Andy Shevchenko <andriy.shevchen=
+ko@intel.com> wrote:
+> >On Wed, Apr 29, 2026 at 11:29:18PM +0530, Sanjay Chitroda wrote:
+> >
+> >> Use devm_hid_sensor_setup_trigger() to automatically release resource
+
+resources
+
+> >> during fail, unbind or removal of driver using devres framework.
+
+failure
+
+> >>
+> >> This simplify the setup, remove goto, avoid manual resource cleanup in
+
+simplifies
+removes
+and avoids
+
+OR
+
+"This is done in a way to simplify..."
+
+> >> teardown path.
 
 ...
 
-> > 2. you're missing the body of the patch message - do not send
-> > patches without a description of the changes you're trying to make.
-> > You should describe what you're doing, how you're doing it and what
-> > difference will the patch make in the future.
-
-The main point is to describe "why?" the patch is done, what is the
-benefit of applying it vs. not applying.
-
-> > 3. the macro used is FIELD_GET(), therefore all mentions of it in the
-> > title or message body should be the same (no field_get in the title).
-> > It's also preferred to add parentheses to the macro name to imply
-> > that it takes a parameter (in this case, FIELD_GET() does take a
-> > parameter).
+> >> +    ret =3D devm_hid_sensor_setup_trigger(&indio_dev->dev, indio_dev,=
+ name,
+> >> +                                        &humid_st->common_attributes)=
+;
+> >
+> >I believe the first parameter is utterly wrong here.
+> >Or other way around, same issue but in the previous patch.
+> >
+> Thank you Andy for the review comment.
 >
-> I made a mistake - you're using field_get() (since you're not passing
-> compile-time constants), so lower case is fine. However, adding
-> parentheses is still the norm.
+> It looks in same humidity probe of hid sensor with devm API two device po=
+inter are used &pdev->dev and &indio_dev->dev; ideally all devm should have=
+ same parent device for devres resource framework and over here preferable =
+and consistent device should be &pdev->dev;
+>
+> I would first update existing devm_* API to have consistent device and on=
+ top of that will use same device in devm conversation.
+>
+> While for gyro change device is consistent as &pdev->dev across all devm =
+API.
 
-I am not sure I follow this. Too many parentheses is not a C language
-style. It's not LISP, and we only do unneeded parentheses for the
-cases where it's not immediately obvious by operator precedence.
+The idea is that you have to go deeply understanding the object
+lifetimes for the cases of different device instances along with
+userspace communication channels (all possible ABIs the driver uses).
+With only that the proper parameter may be chosen or even confirmed
+that device managed resources must not be used. Yeah, this is one of
+the downsides of devm_*() APIs.
 
 --=20
 With Best Regards,
