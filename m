@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 291713806C3;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F6733803F0;
 	Fri,  1 May 2026 09:15:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777626922; cv=none; b=g+EBAFnnxEoeDi8ZVXYAollTez94XheFKVSxXWaZj5hH0mU1F8Gk9Nqh7ULldv75Tgl6bhp7d4njCCG7UbFC4J9G4Zon+8MOchZZxLRlaoZIT4hvwQ+Tfgw5OPd6R2WRjiDvYs1nMcic4OQTJLyyuz1R1YSLrZL69sQYAgPQMGw=
+	t=1777626922; cv=none; b=L/CvLWfwRdmfGw+kvl07BODl2SS6H3lmdMqfRIW22orMxt4CR1J8wS2kJ09KJcUlS3JE3zgKzC5oaWss48H0a3IWe/+5mKvu4PXTZlxOf2IiGDezSKrOvoi6V6P6I4l0gNXvFqLIsRLYahYlZtyVDXXO3weqokoCIbhN8eqoJCc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777626922; c=relaxed/simple;
-	bh=fsH1jPF6Bh/zdH62+5u0lhafUJIHMmkjNiDxO+DqKUw=;
+	bh=qwor6eqL+Nf7UrW6yM1+y0e/H4Z5XJhyYOftaA7ZZmw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BT1oIZnCWS5GR0Tef+KkoBe2x3LpMKDKLnst1u7vM1SFAqJ4jxKV00yebCY6B6BE/fq8pR+gZMPzA/RZPgBdjr/FrFTdlAVAsvog+ckVREqySQ8jeg04OsSVlATIwMgtx8ITVdaBgZH/ZtLwNFCP1QVqiLeNNkSj9V2bhg+gdFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KzZhja0Q; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=n9+1ZHyRBd/rJDLu8qTKnFjYfCNFDr7tXex+783xpPzWOiTeicO7MR+isJ9VuZTTslw1jA2LTNOVoXrhcpelMMilk+uC+IrhwOhy+227HcqLoZyp68nAgYxpwEZ6ve9Pxp9mAVw+0WaP7N1ehK5JS5VlVVbI/gHgPqDcpatvosQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dIw9j1ml; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KzZhja0Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F029C2BCC6;
-	Fri,  1 May 2026 09:15:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dIw9j1ml"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E6B9CC2BD00;
+	Fri,  1 May 2026 09:15:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777626922;
-	bh=fsH1jPF6Bh/zdH62+5u0lhafUJIHMmkjNiDxO+DqKUw=;
+	s=k20201202; t=1777626921;
+	bh=qwor6eqL+Nf7UrW6yM1+y0e/H4Z5XJhyYOftaA7ZZmw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=KzZhja0QJ74GVZPix2avt7C/RkEdsMMAp8Nhc9jLqF3TxsiI9JOWRkraLEKQHKboy
-	 3Af7Q9i+Pjby0kW/asy91khWUdMn7Aw95FgR3T8ut0AFL/u6LEeUGt1LBpcLf16/A5
-	 9YUJT7p6W+VHoPAEc8NlxE/lmwiBKQoOVWLMB3IJXECabgZJhfA/eM3cAnMUV7dxC2
-	 fdNdptDnpvyjO0npOodKP3X4tEZ5tPVf96Ex+VaatL833Gs9FJoUJkt6EYc0pqeL4f
-	 ewTYRcGKao2EoOyU2Mg3xROeVgLxDVzsKS3p8ZLTdCQTR2RPJ7wRPKtw3NtJ1buG6C
-	 M3ZISoaV75u1g==
+	b=dIw9j1mlaJgE1cK7PcE2Ujhwdi7a2SHXQZykf2P6+Wh3ikCVsOg+L8o8938xB1VIL
+	 /qwHaAIwDmOh3oYy6IlPx2KFEFkzDAhXUVAAQieuZt3J25F/EIwjcfP5ZkC8HO89V4
+	 Jp5GpzcN2JmGRWVpnbRLNUd3KEidADzwZ7OfYneFQ+bWWXSrd0P+5m8YAgu1mufXOV
+	 BylCDXtCdkWOCsFCEtu79eEwv0MmxQ+1CCaLsYfHOIHr/ch+JOGkQJL+D4flfQXMOF
+	 QF4lUDj53gVRxHxzNCHC0JYMcsG9Qsk9Kxc/Hjn9JjCet8jNBWudQt4eWqtW+Iyfet
+	 ms5EcBjjwN+tQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 086E0CD3425;
-	Fri,  1 May 2026 09:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF789CD13DF;
+	Fri,  1 May 2026 09:15:21 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 01 May 2026 10:15:02 +0100
-Subject: [PATCH v5 09/12] iio: dac: ad5686: add helpers to handle powerdown
- masks
+Date: Fri, 01 May 2026 10:15:00 +0100
+Subject: [PATCH v5 07/12] iio: dac: ad5686: drop enum id
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260501-ad5686-fixes-v5-9-0b2f45488418@analog.com>
+Message-Id: <20260501-ad5686-fixes-v5-7-0b2f45488418@analog.com>
 References: <20260501-ad5686-fixes-v5-0-0b2f45488418@analog.com>
 In-Reply-To: <20260501-ad5686-fixes-v5-0-0b2f45488418@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -53,13 +52,14 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
  Andy Shevchenko <andy@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777626920; l=4174;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777626920; l=20169;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=LfdwOv6cXWsUcCzXJnTuYHrsc0qYNTRQXLs9jOjn8go=;
- b=gNPrM9AripfmxspgYnrMtaO/ZssbPQtrXIE9LUZxPJY+ntbITju2c/wMvHkfu9d1ijs79PZzi
- qWjZCCg5syLCDTcDpsVllaGLBY3YJUCtwhfcdasQmmct7FpL8zSi3GF
+ bh=1QYKftpV2+S7o7DEsZ7rYCT7DL6ul4T0W/aHgGajg74=;
+ b=kwoYQftha6OSura+xyBv6DUiWg1+5iJ9dp2R8yhKb2eePKKNuzFeHw7TkG4Sk4l0sr6b+mma5
+ pUNq4uxrEv1CNuwdb1gnUThtStgKPpRSN9aUD1hfStO9u14V3jrWJap
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,123 +69,642 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add ad5686_pd_field_set() and ad5686_pd_field_get() helpers to cleanup
-powerdown mask control. Define AD5686_PD_* constants, like AD5686_PD_MSK
-to hold powerdown mask value for a single channel.
+Split chip info table into separate structs and expose them to the spi
+i2c drivers. That is the preferrable approach and allows for the drivers
+to have knowledge of the device info before the common probe function gets
+called. Those chip info structs may be shared by SPI and I2C driver
+variants.
+Channel declaration definitions are grouped according to channel count and
+DECLARE_AD5693_CHANNELS() macro is renamed to DECLARE_AD5683_CHANNELS() to
+match the regmap_type enum.
+Use spi_get_device_match_data() and i2c_get_match_data() to get chip info
+struct reference, passing it as parameter to the core probe function.
 
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 43 +++++++++++++++++++++++++++----------------
- drivers/iio/dac/ad5686.h |  5 +++++
- 2 files changed, 32 insertions(+), 16 deletions(-)
+ drivers/iio/dac/ad5686-spi.c |  38 +++--
+ drivers/iio/dac/ad5686.c     | 358 ++++++++++++++++++++-----------------------
+ drivers/iio/dac/ad5686.h     |  66 ++++----
+ drivers/iio/dac/ad5696-i2c.c |  65 ++++----
+ 4 files changed, 241 insertions(+), 286 deletions(-)
 
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index cec784b617e6..5cf60a6e19d1 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -94,29 +94,27 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
+ 
+ static int ad5686_spi_probe(struct spi_device *spi)
+ {
+-	const struct spi_device_id *id = spi_get_device_id(spi);
+-
+-	return ad5686_probe(&spi->dev, id->driver_data, id->name,
+-			    ad5686_spi_write, ad5686_spi_read);
++	return ad5686_probe(&spi->dev, spi_get_device_match_data(spi),
++			    spi->modalias, ad5686_spi_write, ad5686_spi_read);
+ }
+ 
+ static const struct spi_device_id ad5686_spi_id[] = {
+-	{"ad5310r", ID_AD5310R},
+-	{"ad5672r", ID_AD5672R},
+-	{"ad5674r", ID_AD5674R},
+-	{"ad5676", ID_AD5676},
+-	{"ad5676r", ID_AD5676R},
+-	{"ad5679r", ID_AD5679R},
+-	{"ad5681r", ID_AD5681R},
+-	{"ad5682r", ID_AD5682R},
+-	{"ad5683", ID_AD5683},
+-	{"ad5683r", ID_AD5683R},
+-	{"ad5684", ID_AD5684},
+-	{"ad5684r", ID_AD5684R},
+-	{"ad5685", ID_AD5685R}, /* Does not exist */
+-	{"ad5685r", ID_AD5685R},
+-	{"ad5686", ID_AD5686},
+-	{"ad5686r", ID_AD5686R},
++	{ "ad5310r",  (kernel_ulong_t)&ad5310r_chip_info },
++	{ "ad5672r",  (kernel_ulong_t)&ad5672r_chip_info },
++	{ "ad5674r",  (kernel_ulong_t)&ad5674r_chip_info },
++	{ "ad5676",   (kernel_ulong_t)&ad5676_chip_info },
++	{ "ad5676r",  (kernel_ulong_t)&ad5676r_chip_info },
++	{ "ad5679r",  (kernel_ulong_t)&ad5679r_chip_info },
++	{ "ad5681r",  (kernel_ulong_t)&ad5681r_chip_info },
++	{ "ad5682r",  (kernel_ulong_t)&ad5682r_chip_info },
++	{ "ad5683",   (kernel_ulong_t)&ad5683_chip_info },
++	{ "ad5683r",  (kernel_ulong_t)&ad5683r_chip_info },
++	{ "ad5684",   (kernel_ulong_t)&ad5684_chip_info },
++	{ "ad5684r",  (kernel_ulong_t)&ad5684r_chip_info },
++	{ "ad5685",   (kernel_ulong_t)&ad5685r_chip_info }, /* Does not exist */
++	{ "ad5685r",  (kernel_ulong_t)&ad5685r_chip_info },
++	{ "ad5686",   (kernel_ulong_t)&ad5686_chip_info },
++	{ "ad5686r",  (kernel_ulong_t)&ad5686r_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(spi, ad5686_spi_id);
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 4bcabdbaf1d8..4b279d46948d 100644
+index d9bab8d7bcb0..4bcabdbaf1d8 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -33,26 +33,39 @@ static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan
- 	return __ffs(chan->address) * 2;
+@@ -215,7 +215,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+ 		.ext_info = ad5686_ext_info,			\
  }
  
-+static inline void ad5686_pd_field_set(const struct iio_chan_spec *chan,
-+				       unsigned int *pd, unsigned int val)
-+{
-+	unsigned int shift = ad5686_pd_mask_shift(chan);
-+
-+	*pd &= ~(AD5686_PD_MSK << shift);
-+	*pd |= (val & AD5686_PD_MSK) << shift;
-+}
-+
-+static inline unsigned int ad5686_pd_field_get(const struct iio_chan_spec *chan,
-+					       unsigned int pd)
-+{
-+	unsigned int shift = ad5686_pd_mask_shift(chan);
-+
-+	return (pd >> shift) & AD5686_PD_MSK;
-+}
-+
- static int ad5686_get_powerdown_mode(struct iio_dev *indio_dev,
- 				     const struct iio_chan_spec *chan)
- {
--	unsigned int shift = ad5686_pd_mask_shift(chan);
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 
--	return ((st->pwr_down_mode >> shift) & 0x3) - 1;
-+	return ad5686_pd_field_get(chan, st->pwr_down_mode) - 1;
+-#define DECLARE_AD5693_CHANNELS(name, bits, _shift)		\
++#define DECLARE_AD5683_CHANNELS(name, bits, _shift)		\
+ static const struct iio_chan_spec name[] = {			\
+ 		AD5868_CHANNEL(0, 0, bits, _shift),		\
+ }
+@@ -266,205 +266,172 @@ static const struct iio_chan_spec name[] = {			\
+ 		AD5868_CHANNEL(15, 15, bits, _shift),		\
  }
  
- static int ad5686_set_powerdown_mode(struct iio_dev *indio_dev,
- 				     const struct iio_chan_spec *chan,
- 				     unsigned int mode)
- {
--	unsigned int shift = ad5686_pd_mask_shift(chan);
- 	struct ad5686_state *st = iio_priv(indio_dev);
+-DECLARE_AD5693_CHANNELS(ad5310r_channels, 10, 2);
+-DECLARE_AD5693_CHANNELS(ad5311r_channels, 10, 6);
++/* single-channel */
++DECLARE_AD5683_CHANNELS(ad5310r_channels, 10, 2);
++DECLARE_AD5683_CHANNELS(ad5311r_channels, 10, 6);
++DECLARE_AD5683_CHANNELS(ad5681r_channels, 12, 4);
++DECLARE_AD5683_CHANNELS(ad5682r_channels, 14, 2);
++DECLARE_AD5683_CHANNELS(ad5683r_channels, 16, 0);
++
++/* dual-channel */
+ DECLARE_AD5338_CHANNELS(ad5337r_channels, 8, 8);
+ DECLARE_AD5338_CHANNELS(ad5338r_channels, 10, 6);
+-DECLARE_AD5676_CHANNELS(ad5672_channels, 12, 4);
+-DECLARE_AD5679_CHANNELS(ad5674r_channels, 12, 4);
+-DECLARE_AD5676_CHANNELS(ad5676_channels, 16, 0);
+-DECLARE_AD5679_CHANNELS(ad5679r_channels, 16, 0);
+-DECLARE_AD5686_CHANNELS(ad5684_channels, 12, 4);
+-DECLARE_AD5686_CHANNELS(ad5685r_channels, 14, 2);
+-DECLARE_AD5686_CHANNELS(ad5686_channels, 16, 0);
+-DECLARE_AD5693_CHANNELS(ad5693_channels, 16, 0);
+-DECLARE_AD5693_CHANNELS(ad5692r_channels, 14, 2);
+-DECLARE_AD5693_CHANNELS(ad5691r_channels, 12, 4);
  
- 	guard(mutex)(&st->lock);
+-static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+-	[ID_AD5310R] = {
+-		.channels = ad5310r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 1,
+-		.regmap_type = AD5310_REGMAP,
+-	},
+-	[ID_AD5311R] = {
+-		.channels = ad5311r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5337R] = {
+-		.channels = ad5337r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 2,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5338R] = {
+-		.channels = ad5338r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 2,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5671R] = {
+-		.channels = ad5672_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 8,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5672R] = {
+-		.channels = ad5672_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 8,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5673R] = {
+-		.channels = ad5674r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 16,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5674R] = {
+-		.channels = ad5674r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 16,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5675R] = {
+-		.channels = ad5676_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 8,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5676] = {
+-		.channels = ad5676_channels,
+-		.num_channels = 8,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5676R] = {
+-		.channels = ad5676_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 8,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5677R] = {
+-		.channels = ad5679r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 16,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5679R] = {
+-		.channels = ad5679r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 16,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5681R] = {
+-		.channels = ad5691r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5682R] = {
+-		.channels = ad5692r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5683] = {
+-		.channels = ad5693_channels,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5683R] = {
+-		.channels = ad5693_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5684] = {
+-		.channels = ad5684_channels,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5684R] = {
+-		.channels = ad5684_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5685R] = {
+-		.channels = ad5685r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5686] = {
+-		.channels = ad5686_channels,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5686R] = {
+-		.channels = ad5686_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5691R] = {
+-		.channels = ad5691r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5692R] = {
+-		.channels = ad5692r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5693] = {
+-		.channels = ad5693_channels,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5693R] = {
+-		.channels = ad5693_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 1,
+-		.regmap_type = AD5683_REGMAP,
+-	},
+-	[ID_AD5694] = {
+-		.channels = ad5684_channels,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5694R] = {
+-		.channels = ad5684_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5695R] = {
+-		.channels = ad5685r_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5696] = {
+-		.channels = ad5686_channels,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
+-	[ID_AD5696R] = {
+-		.channels = ad5686_channels,
+-		.int_vref_mv = 2500,
+-		.num_channels = 4,
+-		.regmap_type = AD5686_REGMAP,
+-	},
++/* quad-channel */
++DECLARE_AD5686_CHANNELS(ad5684r_channels, 12, 4);
++DECLARE_AD5686_CHANNELS(ad5685r_channels, 14, 2);
++DECLARE_AD5686_CHANNELS(ad5686r_channels, 16, 0);
++
++/* 8-channel */
++DECLARE_AD5676_CHANNELS(ad5672r_channels, 12, 4);
++DECLARE_AD5676_CHANNELS(ad5676r_channels, 16, 0);
++
++/* 16-channel */
++DECLARE_AD5679_CHANNELS(ad5674r_channels, 12, 4);
++DECLARE_AD5679_CHANNELS(ad5679r_channels, 16, 0);
++
++const struct ad5686_chip_info ad5310r_chip_info = {
++	.channels = ad5310r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 1,
++	.regmap_type = AD5310_REGMAP,
+ };
++EXPORT_SYMBOL_NS_GPL(ad5310r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5311r_chip_info = {
++	.channels = ad5311r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 1,
++	.regmap_type = AD5683_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5311r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5681r_chip_info = {
++	.channels = ad5681r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 1,
++	.regmap_type = AD5683_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5681r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5682r_chip_info = {
++	.channels = ad5682r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 1,
++	.regmap_type = AD5683_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5682r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5683_chip_info = {
++	.channels = ad5683r_channels,
++	.num_channels = 1,
++	.regmap_type = AD5683_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5683_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5683r_chip_info = {
++	.channels = ad5683r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 1,
++	.regmap_type = AD5683_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5683r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5337r_chip_info = {
++	.channels = ad5337r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 2,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5337r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5338r_chip_info = {
++	.channels = ad5338r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 2,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5338r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5684_chip_info = {
++	.channels = ad5684r_channels,
++	.num_channels = 4,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5684_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5684r_chip_info = {
++	.channels = ad5684r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 4,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5684r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5685r_chip_info = {
++	.channels = ad5685r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 4,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5685r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5686_chip_info = {
++	.channels = ad5686r_channels,
++	.num_channels = 4,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5686_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5686r_chip_info = {
++	.channels = ad5686r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 4,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5686r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5672r_chip_info = {
++	.channels = ad5672r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 8,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5672r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5676_chip_info = {
++	.channels = ad5676r_channels,
++	.num_channels = 8,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5676_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5676r_chip_info = {
++	.channels = ad5676r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 8,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5676r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5674r_chip_info = {
++	.channels = ad5674r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 16,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5674r_chip_info, "IIO_AD5686");
++
++const struct ad5686_chip_info ad5679r_chip_info = {
++	.channels = ad5679r_channels,
++	.int_vref_mv = 2500,
++	.num_channels = 16,
++	.regmap_type = AD5686_REGMAP,
++};
++EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
+ 
+ int ad5686_probe(struct device *dev,
+-		 enum ad5686_supported_device_ids chip_type,
++		 const struct ad5686_chip_info *chip_info,
+ 		 const char *name, ad5686_write_func write,
+ 		 ad5686_read_func read)
+ {
+@@ -484,8 +451,7 @@ int ad5686_probe(struct device *dev,
+ 	st->dev = dev;
+ 	st->write = write;
+ 	st->read = read;
 -
--	st->pwr_down_mode &= ~(0x3 << shift);
--	st->pwr_down_mode |= (mode + 1) << shift;
-+	ad5686_pd_field_set(chan, &st->pwr_down_mode, mode + 1);
+-	st->chip_info = &ad5686_chip_info_tbl[chip_type];
++	st->chip_info = chip_info;
  
- 	return 0;
- }
-@@ -67,10 +80,10 @@ static const struct iio_enum ad5686_powerdown_mode_enum = {
- static ssize_t ad5686_read_dac_powerdown(struct iio_dev *indio_dev,
- 		uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
--	unsigned int shift = ad5686_pd_mask_shift(chan);
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 
--	return sysfs_emit(buf, "%d\n", !!(st->pwr_down_mask & (0x3 << shift)));
-+	return sysfs_emit(buf, "%d\n",
-+			  !!ad5686_pd_field_get(chan, st->pwr_down_mask));
- }
- 
- static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
-@@ -91,10 +104,8 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 
- 	guard(mutex)(&st->lock);
- 
--	if (readin)
--		st->pwr_down_mask |= 0x3 << ad5686_pd_mask_shift(chan);
--	else
--		st->pwr_down_mask &= ~(0x3 << ad5686_pd_mask_shift(chan));
-+	ad5686_pd_field_set(chan, &st->pwr_down_mask,
-+			    readin ? AD5686_PD_PWR_DOWN : AD5686_PD_PWR_UP);
- 
- 	switch (st->chip_info->regmap_type) {
- 	case AD5310_REGMAP:
-@@ -467,10 +478,10 @@ int ad5686_probe(struct device *dev,
- 
- 	/* Set all the power down mode for all channels to 1K pulldown */
- 	for (i = 0; i < st->chip_info->num_channels; i++) {
--		shift = ad5686_pd_mask_shift(&st->chip_info->channels[i]);
--		st->pwr_down_mask &= ~(0x3 << shift); /* powered up state */
--		st->pwr_down_mode &= ~(0x3 << shift);
--		st->pwr_down_mode |= 0x01 << shift;
-+		ad5686_pd_field_set(&st->chip_info->channels[i],
-+				    &st->pwr_down_mask, AD5686_PD_PWR_UP);
-+		ad5686_pd_field_set(&st->chip_info->channels[i],
-+				    &st->pwr_down_mode, AD5686_PD_1K_TO_GND);
- 	}
- 
- 	indio_dev->name = name;
+ 	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+ 	if (ret < 0 && ret != -ENODEV)
 diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index caadc7403da1..6b7142fbade2 100644
+index af15994c01ad..caadc7403da1 100644
 --- a/drivers/iio/dac/ad5686.h
 +++ b/drivers/iio/dac/ad5686.h
-@@ -47,6 +47,11 @@
+@@ -47,42 +47,6 @@
  #define AD5683_REF_BIT_MSK			BIT(12)
  #define AD5686_REF_BIT_MSK			BIT(0)
  
-+#define AD5686_PD_MSK				GENMASK(1, 0)
-+
-+#define AD5686_PD_1K_TO_GND			0x1
-+#define AD5686_PD_PWR_UP			0x0
-+#define AD5686_PD_PWR_DOWN			AD5686_PD_MSK
+-/**
+- * ad5686_supported_device_ids:
+- */
+-enum ad5686_supported_device_ids {
+-	ID_AD5310R,
+-	ID_AD5311R,
+-	ID_AD5337R,
+-	ID_AD5338R,
+-	ID_AD5671R,
+-	ID_AD5672R,
+-	ID_AD5673R,
+-	ID_AD5674R,
+-	ID_AD5675R,
+-	ID_AD5676,
+-	ID_AD5676R,
+-	ID_AD5677R,
+-	ID_AD5679R,
+-	ID_AD5681R,
+-	ID_AD5682R,
+-	ID_AD5683,
+-	ID_AD5683R,
+-	ID_AD5684,
+-	ID_AD5684R,
+-	ID_AD5685R,
+-	ID_AD5686,
+-	ID_AD5686R,
+-	ID_AD5691R,
+-	ID_AD5692R,
+-	ID_AD5693,
+-	ID_AD5693R,
+-	ID_AD5694,
+-	ID_AD5694R,
+-	ID_AD5695R,
+-	ID_AD5696,
+-	ID_AD5696R,
+-};
  
  enum ad5686_regmap_type {
  	AD5310_REGMAP,
+@@ -112,6 +76,34 @@ struct ad5686_chip_info {
+ 	enum ad5686_regmap_type		regmap_type;
+ };
+ 
++/* single-channel instances */
++extern const struct ad5686_chip_info ad5310r_chip_info;
++extern const struct ad5686_chip_info ad5311r_chip_info;
++extern const struct ad5686_chip_info ad5681r_chip_info;
++extern const struct ad5686_chip_info ad5682r_chip_info;
++extern const struct ad5686_chip_info ad5683_chip_info;
++extern const struct ad5686_chip_info ad5683r_chip_info;
++
++/* dual-channel instances */
++extern const struct ad5686_chip_info ad5337r_chip_info;
++extern const struct ad5686_chip_info ad5338r_chip_info;
++
++/* quad-channel instances */
++extern const struct ad5686_chip_info ad5684_chip_info;
++extern const struct ad5686_chip_info ad5684r_chip_info;
++extern const struct ad5686_chip_info ad5685r_chip_info;
++extern const struct ad5686_chip_info ad5686_chip_info;
++extern const struct ad5686_chip_info ad5686r_chip_info;
++
++/* 8-channel instances */
++extern const struct ad5686_chip_info ad5672r_chip_info;
++extern const struct ad5686_chip_info ad5676_chip_info;
++extern const struct ad5686_chip_info ad5676r_chip_info;
++
++/* 16-channel instances */
++extern const struct ad5686_chip_info ad5674r_chip_info;
++extern const struct ad5686_chip_info ad5679r_chip_info;
++
+ /**
+  * struct ad5686_state - driver instance specific data
+  * @spi:		spi_device
+@@ -149,7 +141,7 @@ struct ad5686_state {
+ 
+ 
+ int ad5686_probe(struct device *dev,
+-		 enum ad5686_supported_device_ids chip_type,
++		 const struct ad5686_chip_info *chip_info,
+ 		 const char *name, ad5686_write_func write,
+ 		 ad5686_read_func read);
+ 
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index 20f04b74d831..e15b01d0b768 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -64,47 +64,46 @@ static int ad5686_i2c_write(struct ad5686_state *st,
+ 
+ static int ad5686_i2c_probe(struct i2c_client *i2c)
+ {
+-	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
+-	return ad5686_probe(&i2c->dev, id->driver_data, id->name,
+-			    ad5686_i2c_write, ad5686_i2c_read);
++	return ad5686_probe(&i2c->dev, i2c_get_match_data(i2c),
++			    i2c->name, ad5686_i2c_write, ad5686_i2c_read);
+ }
+ 
+ static const struct i2c_device_id ad5686_i2c_id[] = {
+-	{"ad5311r", ID_AD5311R},
+-	{"ad5337r", ID_AD5337R},
+-	{"ad5338r", ID_AD5338R},
+-	{"ad5671r", ID_AD5671R},
+-	{"ad5673r", ID_AD5673R},
+-	{"ad5675r", ID_AD5675R},
+-	{"ad5677r", ID_AD5677R},
+-	{"ad5691r", ID_AD5691R},
+-	{"ad5692r", ID_AD5692R},
+-	{"ad5693", ID_AD5693},
+-	{"ad5693r", ID_AD5693R},
+-	{"ad5694", ID_AD5694},
+-	{"ad5694r", ID_AD5694R},
+-	{"ad5695r", ID_AD5695R},
+-	{"ad5696", ID_AD5696},
+-	{"ad5696r", ID_AD5696R},
++	{ "ad5311r",  (kernel_ulong_t)&ad5311r_chip_info },
++	{ "ad5337r",  (kernel_ulong_t)&ad5337r_chip_info },
++	{ "ad5338r",  (kernel_ulong_t)&ad5338r_chip_info },
++	{ "ad5671r",  (kernel_ulong_t)&ad5672r_chip_info },
++	{ "ad5673r",  (kernel_ulong_t)&ad5674r_chip_info },
++	{ "ad5675r",  (kernel_ulong_t)&ad5676r_chip_info },
++	{ "ad5677r",  (kernel_ulong_t)&ad5679r_chip_info },
++	{ "ad5691r",  (kernel_ulong_t)&ad5681r_chip_info },
++	{ "ad5692r",  (kernel_ulong_t)&ad5682r_chip_info },
++	{ "ad5693",   (kernel_ulong_t)&ad5683_chip_info },
++	{ "ad5693r",  (kernel_ulong_t)&ad5683r_chip_info },
++	{ "ad5694",   (kernel_ulong_t)&ad5684_chip_info },
++	{ "ad5694r",  (kernel_ulong_t)&ad5684r_chip_info },
++	{ "ad5695r",  (kernel_ulong_t)&ad5685r_chip_info },
++	{ "ad5696",   (kernel_ulong_t)&ad5686_chip_info },
++	{ "ad5696r",  (kernel_ulong_t)&ad5686r_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, ad5686_i2c_id);
+ 
+ static const struct of_device_id ad5686_of_match[] = {
+-	{ .compatible = "adi,ad5311r" },
+-	{ .compatible = "adi,ad5337r" },
+-	{ .compatible = "adi,ad5338r" },
+-	{ .compatible = "adi,ad5671r" },
+-	{ .compatible = "adi,ad5675r" },
+-	{ .compatible = "adi,ad5691r" },
+-	{ .compatible = "adi,ad5692r" },
+-	{ .compatible = "adi,ad5693" },
+-	{ .compatible = "adi,ad5693r" },
+-	{ .compatible = "adi,ad5694" },
+-	{ .compatible = "adi,ad5694r" },
+-	{ .compatible = "adi,ad5695r" },
+-	{ .compatible = "adi,ad5696" },
+-	{ .compatible = "adi,ad5696r" },
++	{ .compatible = "adi,ad5311r", .data = &ad5311r_chip_info },
++	{ .compatible = "adi,ad5337r", .data = &ad5337r_chip_info },
++	{ .compatible = "adi,ad5338r", .data = &ad5338r_chip_info },
++	{ .compatible = "adi,ad5671r", .data = &ad5672r_chip_info },
++	{ .compatible = "adi,ad5675r", .data = &ad5676r_chip_info },
++	{ .compatible = "adi,ad5691r", .data = &ad5681r_chip_info },
++	{ .compatible = "adi,ad5692r", .data = &ad5682r_chip_info },
++	{ .compatible = "adi,ad5693",  .data = &ad5683_chip_info },
++	{ .compatible = "adi,ad5693r", .data = &ad5683r_chip_info },
++	{ .compatible = "adi,ad5694",  .data = &ad5684_chip_info },
++	{ .compatible = "adi,ad5694r", .data = &ad5684r_chip_info },
++	{ .compatible = "adi,ad5695r", .data = &ad5685r_chip_info },
++	{ .compatible = "adi,ad5696",  .data = &ad5686_chip_info },
++	{ .compatible = "adi,ad5696r", .data = &ad5686r_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ad5686_of_match);
 
 -- 
 2.43.0
