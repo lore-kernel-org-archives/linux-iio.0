@@ -1,126 +1,133 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-yx1-f41.google.com (mail-yx1-f41.google.com [74.125.224.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 114292F3C3E
-	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 14:38:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777646327; cv=pass; b=H/NXPyzUZ7j7jFAx8xFs1M2EYTRLSvBkDHJXpPvP4QTS1a9NHW7ey6RxCFjdecEFI9wZBfrcEOJ+ReevDNbB3XKQYwxqICizcJAPSiUIDjCBO/9/Kb6PLcWyN6LSNkEOpBSS4dOuXB2qEBIq2QyLeT1Rji3j48Gvxw+fXCWauyg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777646327; c=relaxed/simple;
-	bh=53PrtfoOQidvG09KqHiGVUgsw2/kfdjmDCQtxgDwqfA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YPHyi7iuqfpbfxjsQx8N/JXMMYOla/t00We0sME5sbAItYB5+GcNYFDrxlDdc9m2ABAYRT0TcUg82KCei3OZT0ps8oQboYUPVvjqqRuv30WuRKI1D8G/jWmDzsGnFotzCBm158rfHfi5yQG0oBClufN3Y7q6eiIrTkPQPu6G4jw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pvWmVu9p; arc=pass smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 575743CB2D5
+	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 15:47:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777650458; cv=none; b=siEReOgXVaf/Z2nnDrlecClnrwj/s8ffcz02U+6WkRPbdZUP0WSQgY+QHEij0PlSXJVJRFwlZZfOTZ+xDeaaWqsCeOQo9sFUfc/5Ix6umKW1csaofJm55BcM9ZxEB6DRE+WpdspqDH+7ltzDiyf7V8TUJTA52lvpPI5pxzd3QPI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777650458; c=relaxed/simple;
+	bh=dBGR5oPl4LoWOunaVjYZCakcMx8qQA1CoWvrOZzKoSs=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=t06f8s3I2u55WCwZrqGIHnWtW886gH0qZOHwp3L4bciHUZuuoLUQdR5Nv4x9Zbjs/MjMuHVRep/d3VysCxsiBS5quyDIcWRIaGXogRDkbxgaA7Ocq7TmZnuGcSxCEu7QnhtKVTwvLR2fZUDrIxt6jLcFRivc8BOulwNd85kbHHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ELMcQCy6; arc=none smtp.client-ip=74.125.224.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pvWmVu9p"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-44b052142e1so257000f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 07:38:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777646324; cv=none;
-        d=google.com; s=arc-20240605;
-        b=fHA+8fbUvfRuqsnVOVG/BuV6bQMa4yFsPr6tDN+bcUCjIJ8+j6JsLTngKss2nEgb8I
-         nOXZB+0hZWtcEPyblzhTa+QTzl4l+scTh/HiqQnU04O/OSqYbmEnvcNuDxdHZB6qihR/
-         pfI4XSNLwjvDJHEkFY5omeC/drb/itgAZSjIq321BzNl/SmnxSpBfLsc2kfw/MZhaszS
-         5nbNY8+4p/UuzQS2i6vBeA1+7rXqzdULMwvWAiUaw55ZyMGK3aPbRfHA3RsN31Hx0PNw
-         7fbOMDkMqtjmn67fandux4TOdifh0jiNMaMXy4Zuc90DZnuIRyOsJyHrMtJSb/kkMPB/
-         8CvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=EoAye/WZ7pkac+ZFcr9ApmVsBKGzKOHkAnJF7hOFJOE=;
-        fh=CPti4s/SfqTHh5XGARxsX8fEUhGnIY2rIMVM5Dr10Pw=;
-        b=TPuRmJSIZualflguWBRUaQrS7MyarHs7pPBYY5UcScHKYpdJT+0iJsgV8gd9ZxZO7b
-         LK/fNPf9jKax+aRSSFoPKF7d5+O4SEb1BvT/FKf73kbe+PqhzVqXD4O/RKwGo+3hpRCa
-         fXGJkYIYoabznZEgGBR3JaFa2G3tjwNZnom0XoOj1emkNBkD9Jj0egjgnJT1bVxL93fK
-         LQm11lqCoH20ZNmPuCuCpaP7sPXkozODgq7pdD3QO9ScxSRnBLd/v/U1FP0hweANX84F
-         iYTZz6IWXLKXsH8tDeirn84GpG1V91um8XiQhBBrFKNqUJMSRbQ2hML2xtMoDOOOjrA3
-         eYeA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ELMcQCy6"
+Received: by mail-yx1-f41.google.com with SMTP id 956f58d0204a3-65c305f381eso839814d50.3
+        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 08:47:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777646324; x=1778251124; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=EoAye/WZ7pkac+ZFcr9ApmVsBKGzKOHkAnJF7hOFJOE=;
-        b=pvWmVu9pLw4/TeU1+azs68acy9QZI06meLrzBoXnmimYHnZ42hMV1If9Z5Tw7FMJ/y
-         dYDUcucDfTHGeX5k87lTvNILEXmMZ4zkQXCOLsPj1cCGq9NasdMU91aZ1rx/wP+Wh6fP
-         KFb9KdbPfTMQbBWBO4Xk2OXanObdfBPU87bLEY5AKqJGOJ6ki6O2wD/YYtilqveRDwgf
-         lN3Au+84+3ZU35WQ26dYM2WlS2HrgEOZTfolrfSDEit1GQzkKab7J/3ufMu6mYQcMfKU
-         lCDVHm8dO/XR3yuk7QukV9wtL9l55HeKjcl7gx9f+1DaLD2M/Jbh6t6K4IN68aZQM8ti
-         GSmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777646324; x=1778251124;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1777650455; x=1778255255; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EoAye/WZ7pkac+ZFcr9ApmVsBKGzKOHkAnJF7hOFJOE=;
-        b=VEZfxdS39c0syyfS1Kt3VdGcodMnLtViITdgDCn1sKSTZgvZMoMJfdrzh2wW/uRPSX
-         Ou2eNdntBK+eNAvZP7aJZSCqpM5dMxzIFBcSMbZbmiSBz49sQEG5/dKUPpz7dPAYO6iZ
-         gmeLYQbRF6Fl5FrUlOxT7n2pKhjKWdX8s/nHgh18kblyIWg3b6tKxDtT1o//gVq5Wkhn
-         yzowavkI6142MBTWOl801xPCDKskIhHB7iEf2YZ7wGvsmXY6aN3Cf2ycGLCwqJtZdDNP
-         FPAXKaoKDul8JOXzTffyTSte2yxNV8RyBHNwYOt4lMk3opWr2M5XtzWXQERO1sCpov8S
-         N9sw==
-X-Forwarded-Encrypted: i=1; AFNElJ+iqzd9OV8p1oAkaBiuXIrPnSJWpk2YkD+Bq4F6E4CcKfvTQ+RbP8B2lNVHTDWFjflTs5ilseX//kk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw75X3BZh/7DkhmSr31HcRD6zvyOTRjAAs5U7xZj99gAZlBnksC
-	15dpLc6BfjztNs4iMxn2CRNEgBiMGTNzAQKP8IZhbi76FQOACvntnkl47JxCDTP4bIuwCfwLHtu
-	PTdElirORjM13Rrgdi+X636x1AJbFM7E=
-X-Gm-Gg: AeBDieuACUcxv+/bQno+yKA8tkGfdoFCrU1wv0/a5BXXUWcHri+4eXUkvdgaAuMCtq4
-	FOLX976mYcqHxfRNVkJZS+OBGgyjPEhZ+YGtE0XS5FRrDY+cK4f+08rgzK1F5cf2GAfcTimMh48
-	0xvfSItPb/7nsEgpalowG1wRTHrFWGzCajIkDisewaWBr9rG1Nv+baM88OMj+5w0aSJZdRpfqmo
-	9iGTZ3R9DfwJ3Z1y77+ms4k2gXUSSA9lavNw13/xV8VduzeQU035KfxSPLKPJIlQibgvV95TXpV
-	Ygs9cIPBhm0kTnvFCvk8QPeW9PgosGU1IJQAD/3ttlJCJEo5WmNtl+Z0Q6z+vYW++S0zkA34W63
-	LRKY8GutyKWiLWjIDkqrvRyFqB+YoVq20mShPwZJeM/RonouBQD55lGIBiXbFmA8iB8SfLBp9Vu
-	4oUF2p2T50NvS8C60S7XrOx1vMugwTXqqHtZGUwzBYXup4ybsvEA==
-X-Received: by 2002:a05:6000:22c4:b0:441:1c18:f779 with SMTP id
- ffacd0b85a97d-44a88be96f3mr5479293f8f.37.1777646324349; Fri, 01 May 2026
- 07:38:44 -0700 (PDT)
+        bh=dBGR5oPl4LoWOunaVjYZCakcMx8qQA1CoWvrOZzKoSs=;
+        b=ELMcQCy6f7L/zKidIkIoxSDUNbqgxOSHA2O41VS9Z/ETcozHdtY4C6Dui6TGnot7mq
+         KipSjJfOtbd4KK3ZZ0yc5lzdZh8iOA0VFdq9VJUSv5b7vDo1Muv2FOsdRcYa5BQo3+c3
+         kqmN86Tajg/yljkpNaZoTpssqvQxDggtz61mU47gJ2HT8oR++7xhzNJ0ggUEk9xLCVbw
+         EHXarEgat9Zf4CMtkJRV8mqymWE0sLeJCNiKCYKO5QIWWhVbiC1JWfG/kw+WoIJypZre
+         Y71f0iQX9A82C/W52oDSH54fvyHmUTCvtV6FcSkai9uzPDtM5uQbnoUHQGXf2TsxgQDj
+         Ys3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777650455; x=1778255255;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dBGR5oPl4LoWOunaVjYZCakcMx8qQA1CoWvrOZzKoSs=;
+        b=TjulM4SLO6KnQt3H1EIYmTjjwifW+7rNsl5NLm4637eCrjO+C0yZ/KcYOL4iHzTmUe
+         L1RtE1i02lBsj6Ouefa00xxAStsgYJjjzPWEhqRLvBRrbhHja319vsJ+NCBlnSsJJIX1
+         /woj4RpH2yvXfkpQRtl9+zUaRaVO7VTAZmsbR3if35vFczdZFtzxpmLl/myPE9cM9kaM
+         2lvnO5HNKwA+7cin2/FR7bpmlgftSY1xBb5YHf1XPnxYmd9umLCN22iq8D4Uf/CH06Rm
+         y9VbNkaCI+NVLisBSteqC/XFmwUDq8eDatisXL5di8obIt0Y6NqhWYLRSTIGrwdeNDBh
+         AEuA==
+X-Forwarded-Encrypted: i=1; AFNElJ+2DiTpNn47wttXA051EB6tos3jLfFteYBO4/V7tEIlA20rHKhW8aHSYEg7c8u+T2VXNhZyAw76Zx0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzQgPifbmrYBjEK7OxDMCFLS7rLy4GSUkiozEW90CeRPBvuPiP9
+	rOR8OYEjt3cKinAg5p6wvtNRO18CGJUEDie0Tbf2uR9uofYaK5l70Dqu
+X-Gm-Gg: AeBDievvSRYn9HXe1tsJRrT6zE7ktabgASNoPWt3veWjmtlJiXib1+PAXoEiux8NZaJ
+	KqqejUkazVYOZPmh+5VhZzcnSfIU7mMAVnOwMTVtDVPmmFT+Xk1tZ2EfpZcpxmsUc2odAEwefMc
+	rKeq6q74r394OwBe9kcpg2PTzqXbPXFvjnEqYEf20HM9L2niwx0R8EAaTsu/9PDsMP4x+/BHyEK
+	45PIQSHIt8RH9ByeGIbjncnaeMUM9rddVIt2lP9dIhAtbFYGyXwFSRvb8jVdA9okhiIdayEpHbE
+	eKIb/AeOud9UJFfkIO3OwEfLZ8r1euSkVsFJ3lL4pxRKQMrR3h2C7sDN6IK6vSqFoYcUVzkgoUE
+	oEogPzS21BkfNGL50QQ8EIEeIegrl9B4YVjpc9ducd6r2QGGNvtXZJ7YdkUADPtTc5zLYYmKRv+
+	X5/8103ivb3Cvb/AasTEEs+bR0CKHUzSCL0JoLxqL5vmRSAWc=
+X-Received: by 2002:a05:690e:c46:b0:656:fc53:12df with SMTP id 956f58d0204a3-65c18fc1132mr7545311d50.56.1777650454958;
+        Fri, 01 May 2026 08:47:34 -0700 (PDT)
+Received: from localhost ([208.185.137.148])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-65c2e1a1700sm1333297d50.6.2026.05.01.08.47.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 May 2026 08:47:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260501011548.15369-1-santanarl@usp.br> <CALoEA-wzsykL5V675HFYNn-xZpuCa+XEOa-LbJ0KqrVSR=ZUnA@mail.gmail.com>
-In-Reply-To: <CALoEA-wzsykL5V675HFYNn-xZpuCa+XEOa-LbJ0KqrVSR=ZUnA@mail.gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Fri, 1 May 2026 16:38:33 +0200
-X-Gm-Features: AVHnY4Jap6NdILF5CqHyzlWQjWo3KIXxElvTjlfjCQ6iIsyZtrIGCfC0XNIP9RI
-Message-ID: <CALoEA-ycuys-pNg_HWZVrkoiAXVToWouS5LV0GX1UsWz5G_Mvw@mail.gmail.com>
-Subject: Re: [PATCH] Replace manual bitfield manipulations with field_get
-To: Rafael Lopes Santana <santanarl@usp.br>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 01 May 2026 10:47:33 -0500
+Message-Id: <DI7GHSFZGAL4.1EFUSTVRKWUBU@gmail.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
+ <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>, "Lars-Peter Clausen"
+ <lars@metafoo.de>, "Arnaud Pouliquen" <arnaud.pouliquen@st.com>, "Mark
+ Brown" <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, "sashiko" <sashiko-bot@kernel.org>
+Subject: Re: [PATCH v2] iio: buffer: hw-consumer: fix use-after-free in
+ error path
+From: "Maxwell Doose" <m32285159@gmail.com>
+To: "Joshua Crofts" <joshua.crofts1@gmail.com>, "Felix Gu"
+ <ustc.gu@gmail.com>
+X-Mailer: aerc 0.21.0
+References: <20260430-iio-buf-v2-1-84c2231dea5e@gmail.com>
+ <CALoEA-zC9je3xsq0+dqG5b-EiVM1DiKbgAT8JvtALsNwLpp=ZQ@mail.gmail.com>
+In-Reply-To: <CALoEA-zC9je3xsq0+dqG5b-EiVM1DiKbgAT8JvtALsNwLpp=ZQ@mail.gmail.com>
 
-On Fri, 1 May 2026 at 16:34, Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Fri May 1, 2026 at 9:19 AM CDT, Joshua Crofts wrote:
+> On Thu, 30 Apr 2026 at 15:29, Felix Gu <ustc.gu@gmail.com> wrote:
+>>
+>> In the err_put_buffers cleanup path of iio_hw_consumer_alloc(), the code
+>> was using list_for_each_entry() to iterate through buffers while calling
+>> iio_buffer_put() which can free the current buffer if refcount drops to =
+0.
+>> The list_for_each_entry() loop macro then evaluates buf->head.next to
+>> continue iteration, accessing the freed buffer.
+>>
+>> Fix this by using list_for_each_entry_safe().
+>>
+>> Fixes: 48b66f8f936f ("iio: Add hardware consumer buffer support")
+>> Reported-by: sashiko <sashiko-bot@kernel.org>
+>> Closes: https://sashiko.dev/#/patchset/20260427-iio_buf-v1-1-2bbdac84464=
+7%40gmail.com
 >
-> On Fri, 1 May 2026 at 03:17, Rafael Lopes Santana <santanarl@usp.br> wrote:
-> >
-> > From: Rafael Lopes Santana <santanarl@usp.br>
-> >
-> > Signed-off-by: Rafael Lopes Santana <santanarl@usp.br>
+> FYI, Sashiko reported 2 additional regressions (neither introduced by
+> your patches), one of them critical. Maybe another patch would be good?
 >
-> To expand on Andy's review:
-> 1. fix the title of the patch - you must add the subsystem + driver
-> that you're contributing to (in your case "iio: proximity: aw96103:
-> replace manual bitfield manipulations with field_get").
-> 2. you're missing the body of the patch message - do not send
-> patches without a description of the changes you're trying to make.
-> You should describe what you're doing, how you're doing it and what
-> difference will the patch make in the future.
-> 3. the macro used is FIELD_GET(), therefore all mentions of it in the
-> title or message body should be the same (no field_get in the title).
-> It's also preferred to add parentheses to the macro name to imply
-> that it takes a parameter (in this case, FIELD_GET() does take a
-> parameter).
+> https://sashiko.dev/#/patchset/20260430-iio-buf-v2-1-84c2231dea5e%40gmail=
+.com?part=3D1
+>
 
-I made a mistake - you're using field_get() (since you're not passing
-compile-time constants), so lower case is fine. However, adding
-parentheses is still the norm.
+I think one of the issues raised by sashiko has an active patch:
 
--- 
-Kind regards
+https://lore.kernel.org/linux-iio/20260427-iio_buf-v1-1-2bbdac844647@gmail.=
+com/
 
-CJD
+and I think they were waiting for Nuno to review it, since they noted
+they were on a "wild goose chase". Thus the only issue raised by sashiko
+that would still need a patch would be the OOB issue, but I haven't
+looked at its explaination thoroughly to see if it's hallucinating.
+
+Anyways this one should still be good to merge.
+
+best regards,
+maxwell
+
+
+
+
+> --
+> Kind regards
+>
+> CJD
+
