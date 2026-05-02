@@ -1,55 +1,57 @@
-Received: from out162-62-58-216.mail.qq.com (out162-62-58-216.mail.qq.com [162.62.58.216])
+Received: from out162-62-58-211.mail.qq.com (out162-62-58-211.mail.qq.com [162.62.58.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 074DE221721;
-	Sat,  2 May 2026 05:59:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.58.216
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AFF52F12B3;
+	Sat,  2 May 2026 06:07:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.58.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777701557; cv=none; b=D3Mp96TMfL6Q4gU8vbR0snz1QDnttx01zbRyNVrPGDt9+/gimN5k4bly5Fek+ftWTDnxDsC2bM+Ve6UusxWOG/F28Cj3bprQua82zMWeGGuUohcOXxLw4jEA4yydc3qyKZciCg5vzt1ubSVXuu2aXxNq7u1w53ppXW9pE1kh+SQ=
+	t=1777702039; cv=none; b=PsR3++ppunOwwXWsauwAkZG6SmDybF4jNXczI5JjmNQb6B/ek3ickvNZFVg6Y7LOmEySMpR9U3bw2A2mLkLKcRcooOKRYo+EqpinxMxLfvRdYxDY5LLZDz3jygqBl1nwGBlOKtY5fMr9nLNRBk5e3MkLNhEhV8ROPwCxjAyteb0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777701557; c=relaxed/simple;
+	s=arc-20240116; t=1777702039; c=relaxed/simple;
 	bh=Vid1JBj8nCuW5dNpbsPqf85nkSqP3+GErdBE5ojAtwI=;
-	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version:Content-Type; b=o1XkLasrZ4+0IAIXoFpbbojxXhqZakzmyH5a4qFpaaE0km8thaLkt4pR1/nf8RnFSa/21i0iClUDMEnraqub2K+Y5tfVpTjLW0dlcyLiz0X22QWrcTCAGxP+OmWDQU1/OZK6IG8fVjSWR2nyIflknkOJ9+JzGpPtIruHzKTnLoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=vLBc3V7j; arc=none smtp.client-ip=162.62.58.216
+	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version:Content-Type; b=kt+/HSN1cgTjWOgoYxYxJ52yizAh7nfIzMKi2ts+wXqXuswE+JkaMhHqFGduIldqeifOzma8yZ9zDUEqszIFulvU1+mgsrXrhEi+Kl3yqGnJ+jjcmXq83EQRWb77dj/v28i2GOc6C/Wo8H3T1vufkXK/d2pTV+Xvvq7DgH/sQJM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=Q/KZXedz; arc=none smtp.client-ip=162.62.58.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="vLBc3V7j"
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="Q/KZXedz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1777701542; bh=Jky+evJLIqJaEQMGtWnaMU3ymJWVi3lFosEz4lTsbq0=;
+	t=1777702026; bh=Jky+evJLIqJaEQMGtWnaMU3ymJWVi3lFosEz4lTsbq0=;
 	h=From:To:Cc:Subject:Date;
-	b=vLBc3V7jqzrcgSCfvYoY1bqFgAtwp0mXvhohzcwK+EFqIqXVIBsammbIY/SVGuRJG
-	 ZGNNG7Gz1CSN3nLbIcDpUGjM4Lic1EpqviXz8zrxsaVwW+I6sty579jDmGHY2g4z2B
-	 cKuiAao4lCSGuZMVgzYUBmUG3NlDbZEZu4XBak7k=
+	b=Q/KZXedzZuap9kWTy87UwXSlXrW+WGtejySJY7nwm9RXnvyH0gC7Pb637BoZ9sWaV
+	 kurjmrAGpTLKV8WNw8jKb5+icYqsUJR6vhzN8NuztJE6qwzCMID+CVDR+JH/Ug5lFs
+	 G5wBItiw7noFPrOsJ1E/trNglhyHI6B3V0Xsve1Q=
 Received: from Lang.smartont.net ([223.88.152.211])
-	by newxmesmtplogicsvrszb51-0.qq.com (NewEsmtp) with SMTP
-	id EBB2F2C5; Sat, 02 May 2026 13:58:59 +0800
-X-QQ-mid: xmsmtpt1777701539t9lvf3yer
-Message-ID: <tencent_EC2F0940B397D1EDA5D60A1B371BE8251706@qq.com>
-X-QQ-XMAILINFO: MTEqvtFah3ZeKgHPvQV7Q6CT/8jmwzwApgIIEnpgsII2XP03o2mjGpymKQxEV+
-	 a/bGfM0IFMO3XrHrp4mYV7fzfzpQenhKB2UJ6bMyUMo3WzLccIdNa03d+kjbx8quU9T6lIKAGTN8
-	 46x1xZmXfZqvRiaiXmoipvOdh2+fZUmgQmC0O/Yf5EO6vEvJHyaffSMf8feOPlcwvYDSibkKuKuQ
-	 uc2CE7blH/rEI9CiE9QvawpPeglnVSxct7rgMwWF2zIDHsbw+JgQfvMdXiALOaIHBqNGKEevv8Bp
-	 s41NT+Fyf225LICiUHr+lCqcRA8k0xorwPu3q0OdIGH4KW13/kXaUxgOR7zxxuDdco19UVLSvTQm
-	 qJrrcEGKUO9BccKflFKWVN2lWqBszS6Nw5fyrfDbFpdxiXhcPzWU8A1wkGCCCo3+XcZ5mxllhI17
-	 zipbM/j/kfkq1Z1sY3o/QphSXWOMpQQDbYoJDIDObX4bhLZ/FZK19XxK0goxsj/s7eBOaceQsM9s
-	 Nk3Wgpe2TnTRADGDdumKckL6pJEJjFVC+Vsst6l1L3OyJgyACftmBuqtSsMiIZVq4Sz47510j8dZ
-	 teySuIQiMFqYgAo/ejG4RxnOp/wF9WvurM7/QLFrbaqFJ4RG/HcL1lkS6otQYV51d2DNabBG3gyf
-	 Vi2693WsKUfO07Rq1ylJP7t9wmdks7EyY/7z1Dc3T9J09HRF0wx4cZJBPLdTXtG4NvNRTJrX+YxP
-	 o1qgTnfrD4v7rOQj9qscafXhQTTW8X48P1pZAFhSAAiL8wBxIffQe0OvhNZrASh4J3ohWWXa9js9
-	 YIPeIbgIBAi73rQFELtxMY3pjYLkNu6632wqXgDXgGfkuE2cUB/OZ16oqXVWP/nts40KwULt+qKD
-	 Z2e+UWa3Kyxp4vDZZumpSeDkqQkZW6oBUZTMAupY364Myuwcphe5ksPCAaNTQqx1KLVn+rFMIMHv
-	 474A2bigjDNEKBytXipbegrpd/xDxxv91Jg2qy/3KcSDi8WqWzK0Q09O20YjDTdfRA37NBtF74fM
-	 kZuYuZZkGyB2ErvGJ2y4qTujLYNWDh1uupbSamoDNadPciQKW9v+kpaL+9Vqg=
-X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+	by newxmesmtplogicsvrsza63-0.qq.com (NewEsmtp) with SMTP
+	id 1C3A4067; Sat, 02 May 2026 14:07:03 +0800
+X-QQ-mid: xmsmtpt1777702023tkggfwn67
+Message-ID: <tencent_EC262467CD5E46CA97CF2B2FDCBCA0565C08@qq.com>
+X-QQ-XMAILINFO: MS2Hp1XcKKWFlcLec/+xkFzHQUgT/cC/dcMpPdlUwtkunomGjUj/pQLc30IsWL
+	 4CrtK1YjvIXeUEMZi3KiZdqG6XlCkCNf+0LzDNLdBKRknHgU/QP43/868ug4E31HA8ShITcZur81
+	 nb9TDBxGv8Bsu4VGWgFTLRPVFy5OXWqW324caa8VXKcPkX5fxIjhKfePDWk2TM72KirHpav4FKTn
+	 zydhjdVIi9EMdmhYJUa6j1bG7XUjPIwuzHb2WNGa37/jmwxU6Xevjpo/htaRoJ/CGegVUbkOTqc7
+	 elBj+efcasfco+RhG4J9bZdeUZtJ3gNlloj+DLH20/8BAJYZtoj53+W6T29JwH1csxTVQZsb8ugJ
+	 X4YhzkxdQ4IfcCsK+YCfEUs9DiGG2a31JpueTYd3IiIgZ+g8HmNLHTdEFR0WY8T6RThbIZFrenOn
+	 JAbOQgFanFMaWt7ltfeb8ay0TWhrduMOV1bIxTWIaLfzGiELOJC4gdqe1DyD8UPAo4a8JJ72CC5l
+	 eXsCGtdQ2Ftfd4b2+CGWOxE7AG2jRFxmH2yyA0oEE0PnVwL7Dkxj+NbpE77c6pM5RV4x3MnAnDro
+	 esv0sVpW3wlFfUQXVdt7e+pvs8c9wMRjwCBLPqysIKFecPVRdhDHLHXYfkPk3VmVvm8whuqGWPqY
+	 4WJXSA0uUwbCTCC5VjtENbg4miiy27woAOEH+wzm+j9dGVd7+JfN/npDZzyTtIh8GC2+zHuXugHz
+	 WNeYMvTJ26fr40RybZ+SYu5k0xSBoODA06KNO/i3EstjHGM1h1FoPaN5bG4275SXJJfUuz62CVrM
+	 HKcusrXFkSsGeHwul56p6QM1VXpWcpk0Xay0tLYoNGZ8rm0YHjnDIPmhngYYs1NWtydWBscn/+6Q
+	 AUScIpzMJKz5g4SBT2sgyGknsSw4i1U9G6A6ViNquQYFeRVCj2bumc7YRzpdEYkI/Z5zEMZEi3y4
+	 9upD2JAsGdgrMu2ZMx8RZ4aKTiWgdtwLYJpb3T0IrzSK/QPpo5cN1TYfsbJYXH2kspzXZfXgBcs6
+	 5GeoYatmXhbCzzrlx/gZIvvuh/wc9TL1cUiDR9/shczffRMrjcC9BWxVGF28/WE59vgv5c5AgwDx
+	 8VlBCssGn9Ina+Us3GSKkrrrpjP8ILvBx7U2lYg+rpKu9J9UOi6sv/shQbT1kiiAOYSxMSuH0TyP
+	 54cPOX84I841uGnA==
+X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
 From: Wang Zihan <jiyu03@qq.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	linux-doc@vger.kernel.org,
 	Wang Zihan <jiyu03@qq.com>
-Subject: [PATCH 1/4] iio: adxl313: fix typos in documentation
-Date: Sat,  2 May 2026 13:58:56 +0800
-X-OQ-MSGID: <20260502055857.115293-1-jiyu03@qq.com>
+Subject: [PATCH v2] iio: adxl313: fix typos in documentation
+Date: Sat,  2 May 2026 14:07:00 +0800
+X-OQ-MSGID: <20260502060702.141661-1-jiyu03@qq.com>
 X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
