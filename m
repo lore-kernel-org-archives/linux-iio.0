@@ -1,139 +1,123 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5923418A6CF
-	for <linux-iio@vger.kernel.org>; Sat,  2 May 2026 02:18:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF88A1A680D
+	for <linux-iio@vger.kernel.org>; Sat,  2 May 2026 02:38:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777688304; cv=none; b=MKk50egSShorwIyR0fp114H6BAuAwuDox0YquLJSgMgoMH4ticwfS5tCp3Po+Bn5yl4EU8Fc46hqANIWFU87fznHMrsIfK4con1LFPP0f7NpUA8oh3mvMhJgeZh1gtu/9FdJpi5HgOr5a74V9HQ5H0ag/jJ4MsxbL6oCLK7HMmg=
+	t=1777689531; cv=none; b=lxAdcNvXBLXFMjUIY9zyIHHeRmV7boOnXghE2DVp5cdULVVN7rCB7TiZPvUDaO1XrxkXeRQAgEPTFml0SmNb+iOVkYh7KytVpfdnq5hNfR515dMkNTNbpRgu5FIrux9Us/A8rh07hYWZLZ9nI0xp+TTW/96l7tdkZWHZyJ62LyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777688304; c=relaxed/simple;
-	bh=3/+Pr4j5iSVX/Vmbx8yW6ovs9S4TRVc2mRVxpfIkpCk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JNzRBWb5B8/nSn+JMGjQcFELPldCN6D66HqMXz9/KYzHCsdDqJmaABKt+hXleebpOY25gGzc+Ns02LI0NEifx4p92ILuK4S2Fy3edbZxi92KdJXCQqyT44P8BK7yr+E8YExK9Vs2xxfvrHy5VxR4sCuzEJ6nobcYY02DBCJQMoc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h4V3mjXC; arc=none smtp.client-ip=209.85.216.53
+	s=arc-20240116; t=1777689531; c=relaxed/simple;
+	bh=fP2IrNZRFDG5V49iaYh/E8kr6Irg3C/V52/GNN5J7XQ=;
+	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:Subject:From:
+	 References:In-Reply-To; b=TGNFMArIVHenHjti7QIaVYv2oghfpRb8AguZGRqk26YBVCZ2ikNR8KNBx7wYKQ3o+/FGVOZRQtutzdVNeKjloDarb+R9GzpnxAooZBasSlgMlaQwRX+v6tJgYcjGspfwGZAlfcarwu2SoMpKqgcLtGVhT5ICvGg3ABt5PYUtBS8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VICwgN7q; arc=none smtp.client-ip=209.85.210.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h4V3mjXC"
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-362bb3260f1so1745799a91.2
-        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 19:18:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VICwgN7q"
+Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7dcdd1b492eso2544531a34.1
+        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 19:38:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777688302; x=1778293102; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=8bus8UEoB8rKoM7Ii6ZhV3wSXwGSHXrSXqNMvxh7aHw=;
-        b=h4V3mjXCBK0UxixoiSa9bjB8LMhLaqnqzcgYnLkwY8reP1SGS+J+H6lxNnTY8P4W5D
-         o53DfBCiafBoRjulxUy1kPTCG2ex0Pz2n8IfHLC4LPSP3D4cIEFqbE2SKiPANRGTzhKk
-         PJyX5VqYJXFZautO+rl/Sc/6JOz3gyfcYj29P8sWMHwlJk+3X9x1wZ2j30CMtly3+Tcx
-         qposqG7B50qQf7dijluUVdVNJJ+RkXJuWNkcPwlgryb5jMYMD6pmOEY7ZF8gTjFrviG9
-         y0m/CpyFibHsd/onLwSUzo1idNiOITPBlECPcV5FKBe8JY1qSVu4h0yqfTBoMW+fsM9/
-         tEtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777688302; x=1778293102;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1777689529; x=1778294329; darn=vger.kernel.org;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8bus8UEoB8rKoM7Ii6ZhV3wSXwGSHXrSXqNMvxh7aHw=;
-        b=rb91+RTYCP5DoHXHPZZDRQ/BSt74sW8bQYU8OPUm4iR7mJMLw1gXyl0RwvrdttEukV
-         onQJbRvihAI8g1Wk2NBNwSOTj55TElH1Z3cXQyCA3ONH2i5TMMOarZaWQxcIfARpwQ9o
-         hnUqWAt3S4bZdzNEJ0htgIBCdAocjQN51yAFGp91+K+odkvR6wa8XASKqTzjgQDtE4AR
-         xePGCa+WLC8Bx6yaoFzIuQuRsYu1Op/a6ECHV6Z7VucMWzrwQrLCK3IaVGHKVQMVZhbE
-         kZn5VUWv2YQWHAXQnMxr7u25yzRzvZ1gPpPKD4aRjoBsxPk0eS2yOPnC/IdaPPtdI0Ld
-         Evwg==
-X-Gm-Message-State: AOJu0Yw4aTX+x8twH99KjQQT+wrvtwWauEST7/KE7Ixyj09k40a+H7Dy
-	CopxLR7W8byq6B4EffsObQhJPXqKWJu7D92whgXyTdfZtBjkJE+8gnaKJSgQSj3Y0xMXxw==
-X-Gm-Gg: AeBDietT00fDBOca0OsOyCfO4dgA19SEKZhKaV3/ZxmqnvSuCCNluaWxt8/wV+Q3S06
-	csG+7ztf+NkgkQYLimc3ImTVYYu2yu1JLGXg79baa+CaBebem1mHaTXJ5n6ty57e90RmYUQTBZ4
-	YtQvprpDwSfQCW1HeNuftIm/8LuEsjCYaiex+C5cyf/wxMVQSal3V7/e2w6O4ld5Kyj50PZUdvN
-	MoFdf+/xVj6UDmBGQyGnT6pGKGULkSjSA+HliLGcYTZ7H73UsfxUuZYsQ+O03lVo3KNhBAymh0b
-	jqeaZTn1lwfrkMpgcqiBZx2Lj6W+RwG7NQitmLM2KLoxGRRpnJK86wxyUa0vKZ9Ndf8Ug/zvyd8
-	hsnY3j/UftUJPTqXXzXfRNecjtAV1ucb1tKXhQYtYL3BHDN6xAbDPFizfKfCkbmhyfXZ4GcFtfS
-	H9MOuoFvRSpYWwV6g86c1+eLnd4QRijIPppyE14no=
-X-Received: by 2002:a17:903:4b47:b0:2b7:895f:407b with SMTP id d9443c01a7336-2b9f25e3063mr14076565ad.21.1777688302096;
-        Fri, 01 May 2026 19:18:22 -0700 (PDT)
-Received: from scootaloo.modem ([101.179.112.69])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9cae110acsm31770245ad.42.2026.05.01.19.18.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 May 2026 19:18:21 -0700 (PDT)
-From: Angus Gardner <angusg778@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: linux-staging@lists.linux.dev,
-	gregkh@linuxfoundation.org,
-	jic23@kernel.org,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com
-Subject: [PATCH] staging: iio: ad9834: fix probe error handling and comment typo
-Date: Sat,  2 May 2026 12:18:15 +1000
-Message-ID: <20260502021815.3953423-1-angusg778@gmail.com>
-X-Mailer: git-send-email 2.51.0
+        bh=2lvWB/srBaK64EFjXhd2HhnzAD5E/LnopMmKAbRz5mE=;
+        b=VICwgN7qQo6qR2B4i+qY/0rMaVdA+tD9t9/XzQnu0KBNRYYo6Go334I6MEaZt2Rvox
+         pK9zNVPtQNZEeZORI1emXzo9GKLEnWmHtIWEADyuIzs+vIydsyzxj2q7XHr7YG5PyoYF
+         w5k58MH6udQinFG9G2maX1OwzgXpjVcloao/2BtGpw3FlpX51jaK+Y+HLAJ9iY+1Oky9
+         RI+AWFJYWArzoxqvS02MadRu5BgPZDtoInMb95IyoY7mTwPulOFy3XvPoXNjs7VUY7db
+         zkZ1kNZ+y99zGeyJVq/JvV76hgTL/0J+LAIB+Aj4jEgsRys8Ty2JEPQoFlyydqaL9gRe
+         DlVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777689529; x=1778294329;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2lvWB/srBaK64EFjXhd2HhnzAD5E/LnopMmKAbRz5mE=;
+        b=EOOQKhe2q46Ai9uLv1dg1wata5g7XRzFMsn/1UQV2F1N8QYudr95HzVYznRwvW2udO
+         WczCQ8ALfQzPxvWFRMD39ySbSIn6JgJxJ8TSGO1HA2RykDs8AEtOsRQ5HcZHKHZxZuYI
+         zznNJwSAamVFoC1EMDqRPkMCa79G30UDAmms89jV+EWv+ELxRVFKDxqf9oOEX/6zCoIi
+         rUUs8hx/rxbSXQvjr/Hk9t2+JjKY6dFNVV82xJwczyz6CZSzo8AKsPDJA2Xd8vAV3XXh
+         OXkUgjj1lPZdqMR9jBWpAQWjK/eHRXd4F26VEXYDMmDAShuRy6BFXIJtVZlMvJHH8Eeb
+         miOw==
+X-Forwarded-Encrypted: i=1; AFNElJ8Qm/1ZKS27SEUqUaP2k91f/OwE8puIj9D/J+JcC84YOUOJfG80Kadzn3VzNFZ5Vl2rYqfFtbsFFxQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwhiUSKVh3aRHBn4hn1Wl2mc9g3Lhd8aVaUXwKWXit+zn011sUB
+	jKY9pzuF948CWRewAPY5M9JJkNv3E1KTeQTh0vHK7GlPVD6bCqOj2u7U
+X-Gm-Gg: AeBDiet1BrKj3figWz1rjPNNuU66DhrFR3jI3PpbIiJduM2rLe5ZIglrd4ldUyFBdzz
+	60rQW1Gwz50UBO2EBpOO/aKr4TnTJKfBN8UBLa/pmthII5Z5Lb90vlLEtgbjSyJjDO0KbkwUsHt
+	9ZLravKN11GE3yT1GPTnklkhKEz7QEu1eD29Sw0qQs/sOivI5muEyrfL5HSz8aYwT3ISZltX8Un
+	rKs0oXj58/QgJYAWw2kxNOT/ATCsCLluwoEecFKKEaJ1UDNzf2sl7sXeRtzildjCPV4yx7y6AO2
+	cHWz9tGQPXgOTFkHbvvXNMQ0qkwK4Hql4rQUg4ye442FFnoQijFdhs9g8eDdOQjHbAVbaxkTyaY
+	lEA3VgA3PQXyPV8XuPt43eEt9qZwQUbz2Lz4Qc1x+b0HpNnTe9cY9nPmP67f84Dvz//44OKGM4K
+	I9Ou1i3SdNbDF/NoKv1UwkhJ7OvsX+88Zi2Ho3LByJq548bIx2rYRnlw/fu5kZ
+X-Received: by 2002:a05:6830:6dd0:b0:7db:d6c8:a21a with SMTP id 46e09a7af769-7debe2c92c5mr3625148a34.3.1777689528891;
+        Fri, 01 May 2026 19:38:48 -0700 (PDT)
+Received: from localhost (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7deca80d5b7sm3179928a34.9.2026.05.01.19.38.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 May 2026 19:38:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 01 May 2026 21:38:47 -0500
+Message-Id: <DI7UCEXCZ8I9.1TAZ7QADQCTR5@gmail.com>
+To: "Joshua Crofts" <joshua.crofts1@gmail.com>, "Maxwell Doose"
+ <m32285159@gmail.com>
+Cc: "Felix Gu" <ustc.gu@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>,
+ "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, "Lars-Peter
+ Clausen" <lars@metafoo.de>, "Arnaud Pouliquen" <arnaud.pouliquen@st.com>,
+ "Mark Brown" <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, "sashiko" <sashiko-bot@kernel.org>
+Subject: Re: [PATCH v2] iio: buffer: hw-consumer: fix use-after-free in
+ error path
+From: "Maxwell Doose" <m32285159@gmail.com>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260430-iio-buf-v2-1-84c2231dea5e@gmail.com>
+ <CALoEA-zC9je3xsq0+dqG5b-EiVM1DiKbgAT8JvtALsNwLpp=ZQ@mail.gmail.com>
+ <DI7GHSFZGAL4.1EFUSTVRKWUBU@gmail.com>
+ <CALoEA-zDzhLwgDp6-815xorrXoF=qrfBN=WSdLhar2Cgpaqv9g@mail.gmail.com>
+In-Reply-To: <CALoEA-zDzhLwgDp6-815xorrXoF=qrfBN=WSdLhar2Cgpaqv9g@mail.gmail.com>
 
-Use dev_err_probe() for the master clock error path instead of open-coding
-dev_err() + PTR_ERR(), consistent with the avdd regulator error path above
-it and with the equivalent driver ad9832.c.
+On Fri May 1, 2026 at 2:40 PM CDT, Joshua Crofts wrote:
+> =E2=81=B7
+>
+> On Fri, 1 May 2026 at 17:47, Maxwell Doose <m32285159@gmail.com> wrote:
+>
+>> I think one of the issues raised by sashiko has an active patch:
+>>
+>> https://lore.kernel.org/linux-iio/20260427-iio_buf-v1-1-2bbdac844647@gma=
+il.com/
+>>
+>> and I think they were waiting for Nuno to review it, since they noted
+>> they were on a "wild goose chase". Thus the only issue raised by sashiko
+>> that would still need a patch would be the OOB issue, but I haven't
+>> looked at its explaination thoroughly to see if it's hallucinating.
+>>
+>> Anyways this one should still be good to merge.
+>>
+> Yeah this is good to merge, I was only pointing out that
+> Sashiko reported additional errors (unrelated to this patch,
+> it seems to keep finding more issues with the driver).
 
-Simplify the -ENOMEM return after devm_iio_device_alloc() to a direct
-return rather than bouncing through a local variable.
+Also, if anybody feels strongly about the OOB issue that sashiko raised
+in iio_hw_consumer_alloc(), you can probably add something like:
 
-Fix a copy-paste typo in two comments that referred to 'AD9843' instead
-of the correct chip name 'AD9834'.
+	if (chan->channel->scan_index < 0)
+		continue;
 
-Signed-off-by: Angus Gardner <angusg778@gmail.com>
----
- drivers/staging/iio/frequency/ad9834.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+but I feel at that point if that even happens there's something else
+seriously wrong. But it might be a good idea to add that check anyways,
+better safe than sorry. Not to mention, since this is a public function,
+we need to code far more defensively.
 
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index bdb2580e29bf..5968aca74ecf 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -164,7 +164,7 @@ static ssize_t ad9834_write(struct device *dev,
- 		break;
- 	case AD9834_OPBITEN:
- 		if (st->control & AD9834_MODE) {
--			ret = -EINVAL;  /* AD9843 reserved mode */
-+			ret = -EINVAL;  /* AD9834 reserved mode */
- 			break;
- 		}
- 
-@@ -239,7 +239,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
- 				st->control &= ~AD9834_OPBITEN;
- 				st->control |= AD9834_MODE;
- 			} else if (st->control & AD9834_OPBITEN) {
--				ret = -EINVAL;	/* AD9843 reserved mode */
-+				ret = -EINVAL;	/* AD9834 reserved mode */
- 			} else {
- 				st->control |= AD9834_MODE;
- 			}
-@@ -389,17 +389,14 @@ static int ad9834_probe(struct spi_device *spi)
- 		return dev_err_probe(&spi->dev, ret, "Failed to enable specified AVDD supply\n");
- 
- 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
--	if (!indio_dev) {
--		ret = -ENOMEM;
--		return ret;
--	}
-+	if (!indio_dev)
-+		return -ENOMEM;
- 	st = iio_priv(indio_dev);
- 	mutex_init(&st->lock);
- 	st->mclk = devm_clk_get_enabled(&spi->dev, NULL);
--	if (IS_ERR(st->mclk)) {
--		dev_err(&spi->dev, "Failed to enable master clock\n");
--		return PTR_ERR(st->mclk);
--	}
-+	if (IS_ERR(st->mclk))
-+		return dev_err_probe(&spi->dev, PTR_ERR(st->mclk),
-+				     "Failed to enable master clock\n");
- 
- 	st->spi = spi;
- 	st->devid = spi_get_device_id(spi)->driver_data;
--- 
-2.51.0
+best regards,
+maxwell
 
