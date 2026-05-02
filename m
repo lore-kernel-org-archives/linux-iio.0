@@ -1,112 +1,108 @@
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com [209.85.221.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F59440DFB7
-	for <linux-iio@vger.kernel.org>; Sat,  2 May 2026 19:54:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7427A2798F8
+	for <linux-iio@vger.kernel.org>; Sat,  2 May 2026 23:44:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777751661; cv=none; b=GQVJ6+V7wjIyjWU1O1I1rvAvGCn7G/QnjV8WEaqIuZQ6hXV0TX30xdHxStcWW3tgOoWBlU5x9kASqXJbDduYqmGD5kxxksXHyvdwxDVjtKvYGKChCijaJRjqIYY5iqjN+5W5TNatVmGHWBYwJMlYsISmIMBEogAfgfmRnVuPQYA=
+	t=1777765459; cv=none; b=iAuIkZVs5NQFworEoT6NAGAxxCD0ewoXYWYBaqRm5mEo+usAqeo/DrffN0nYjOdD1G2WnLnBFqJwOUP6YhDsG8qMsqMG1I4G/tFpAYprD2njZBD8e9pi3Uk0AYhBTV6PKBPxKzngaxQSXNY5sfJfCqYJGqDseOuK8H64DKP8Jss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777751661; c=relaxed/simple;
-	bh=wEOU4KBtabc99iFh0K3FMdyCelSMRV402iy0H+qB4w8=;
-	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:Subject:From:
-	 References:In-Reply-To; b=mKKcucZacyBIAa5vYugznNN3QKG1+5urleZlzSGsrcA9/FA8IwmzwC2EC4V9E0zkg3mrdB0zgqgaedkWXI+bZzdCSuLigYHahI2xSTArvPkcAX+UfkU3fMACxmaTBBB8a35a3X5qPYzviSrNFpAa+ZUoHUknqf3LbaRvFkyempg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=n0KUPh7+; arc=none smtp.client-ip=209.85.160.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777765459; c=relaxed/simple;
+	bh=QO/vYKppxX4gUu/4OjlaCFyDHBCAindOTNJlmvfKXos=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YkTmqv07TjRFgatPvdV0mSnqCw07PMu+kRFQgw0De2xCanukp0jh91U0IZJfZzB7pH+QSLUfvofXR07b+kxdlRO89HFyS/gzMmjGteT6mD+Zn/Gq5xokSVuClbHNOZ2jheGVBpKxQeH2DMUbcTwoXcmMiSNXt6sclOHiD9MtUWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=fQ6Bdqeo; arc=none smtp.client-ip=209.85.221.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="n0KUPh7+"
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-42fc6923f38so2466608fac.1
-        for <linux-iio@vger.kernel.org>; Sat, 02 May 2026 12:54:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="fQ6Bdqeo"
+Received: by mail-vk1-f174.google.com with SMTP id 71dfb90a1353d-56d933b555cso912233e0c.0
+        for <linux-iio@vger.kernel.org>; Sat, 02 May 2026 16:44:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777751659; x=1778356459; darn=vger.kernel.org;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XKrz1i8Pf4nacd6BnyObAlueq1k8W1nzGMqs6R8yKzk=;
-        b=n0KUPh7+eQeJDdouGiMV3NvytO+QFGNHdna0abGNWfPx9vjfq8taiU7P8SQLjNlepS
-         3NR73fenEwgjCSzWEaUEIwyjN9xBFA6BuqDZS8vxN+u5p3bIUrunsAUazfTTnYU0mW3X
-         hTTS/0ZGALLeoQiD54GiueakGyG/eCts8gPoXruJB2rubMkLYyOgtXkCTbEr0h6JBrtb
-         SJEqNmi4mdzPH92vb3AUBccmcpZE2E4wK1lxzRW8zEm2edTarUgDhD7nOX6nt9+Htwih
-         BsK6adRpoUkORZulikPhdMAwZA28eI5TofPC0q1DNP2O5t1gHk8lqWWYOtq/rp4d95Yg
-         FhPQ==
+        d=usp.br; s=usp-google; t=1777765454; x=1778370254; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ulID+9Mq+ZtW/p9DWKJDHeAzc1xbWPH8oFisrdrmDrQ=;
+        b=fQ6BdqeozC2w/rGAjt4TzrRFqMvb2Ogmi1BwAQjr51aWhmLNRMfoS1D0Xomu3kBs6X
+         KCQhwkR90qq8y/btGzIf8e3AD1imL4mOXeVDAVE+Nn7oSe2hnCPOSSN01WfBPXUn5fg9
+         PsbfzjttGzZsPEx9TaJepbCEmgTOv8cqygkPNu7M6VzlMagP7wt0Jalbs67XadoODitr
+         fN1Y42aHbJIJ0s5rqZavNmHrm3vif+7YrcAex6aLSzja8+SJ3uPDI28B+6iXjxGh9JE4
+         Vee4tFpHFHardQij6iVia/rAEVrWlETmM6Q9/BKItJcGm4qzoQ+OedhtCv6uQwUaQmbP
+         W18w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777751659; x=1778356459;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XKrz1i8Pf4nacd6BnyObAlueq1k8W1nzGMqs6R8yKzk=;
-        b=qjkM3/8njBgU+0/KO8+mxOB5dyGybIgHlFSg7B4mQ05S+j4J9lfzBoxRkMWCS5a28O
-         Y9bObo0JSXF4ELU4BT4GyMLrIwLVBOz6nUTT5OmGx10KL4OldU5l5DPcQ61don+FqtCn
-         pUmApvvRuhp+HiV78w/Fiiu98fsgxKw7p/nPubbtGc5v74HUz30K+1iEjc+EYT7+lm0p
-         P4L2Yck9yS5CxDj+mABYpQ/BdCX8xCET55DOwktPWtHgxMkx12YskvDwhhZ/QuEhnHpM
-         UrG3lT9556o/BkkBsPvFyOAo6sNgygbqbM4LzykdZnFz+SMfONfISVp/pxl/2FTrpXen
-         wcAw==
-X-Forwarded-Encrypted: i=1; AFNElJ8hfph6oDvH/QRnRc0hbHl5hY0dOuIoy3qhMSrYqtF+k5uyE5zsYcDAidKvKBwS+Qvj+VN2qSxjiQQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxt46odBOI3bIwfTmdDPrsbZAdS19yTav/nKpGqjMOgGZP5yxJ8
-	kAk2eJFLaH/YqZaZciPkMXZc5kiELmcFY4qiEQjNSgjXBnpTs/jQ96FdxydCmGuT
-X-Gm-Gg: AeBDieuHz1yyNoT2+b3fP+9+eW/GqNh3AWu/Fo55yyCgB9m+6M+iCdgNGBGQt450LZV
-	xU6T1Fn+K2EHZiHS1E+RlbiKcmC0BjY61jrU7UWgNWEVRK68mrP9WVQ5urwyrWv3DczN3PXeBOn
-	hEeCx6fjRMse25O7DvPdsQCGIsN4NVAh+HzvgKpQUHDgIRDIISjZ0Matas0j723kAcSeOyXLrDj
-	XJpX/Ou7QyMhO/CBRX89imddWLLBJXM+vs/+KpfmVbHqlSGd7Y/L+P21BvgRzasOLyN8JIETNyd
-	RY01f2xVmYPsTuXmGtsIkUrFq0pX0TgCKuzdnRolkexsbicLcqgnx+HysOY5beyKP85DixJGMVF
-	N8C726JbWdY9hkKJrwRRzO8sFgV8am2lUaJzT6AMxw0Wc9FVFO4nHjFkTNxRmtB/KMC0CEgo6Vg
-	k8mVKSut0FhH/mzyNKhOzU+D3r6cjsVMZZ6hpLqoQvyxpnN5BaTCJjMtFeWSRD
-X-Received: by 2002:a05:6871:29a:b0:42f:f3b2:e2c9 with SMTP id 586e51a60fabf-43475c751b5mr1793252fac.0.1777751659323;
-        Sat, 02 May 2026 12:54:19 -0700 (PDT)
-Received: from localhost (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-43454dd93fcsm6233970fac.18.2026.05.02.12.54.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 May 2026 12:54:18 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777765454; x=1778370254;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ulID+9Mq+ZtW/p9DWKJDHeAzc1xbWPH8oFisrdrmDrQ=;
+        b=KSzEZntuSc+0AGY0I5IV/3Vn48rmI8PzC+ADi0RZDrXzE4fN1PTwWUtCdFtkDdRoAN
+         UjR/ZzrvVh1+arVf1jSPt/d0IPMjWRl1XLfkGdfFdHMQ82UOhDk9FigUcyrMETbLEQqr
+         crHjFuucvRT1atISUaFwf6Vf+hlWwrsTpd1xzkzv3mHFKvqb8TCQQnzh/WXg/tXw61qB
+         OsPwmaAdC5JjL/P05/Hd5bkdA5N8V4QFrKZLqQpa6DEVl4wzFRTa7/diSzK/kD3jKN3B
+         crIC04CBTs8NViOdYrSzHl0Np4yRfF/XTIVkfCNTEexsgBS3rFKTg/tIRC05hMfU2+w6
+         VbeA==
+X-Forwarded-Encrypted: i=1; AFNElJ+g5qTIXaXJvZ1LLAnD0uh+KvlpG2kzzUro4EtFAJGaLDLvtUKqmLHo/lvxiceAlV2k1V0U7YV7MuY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzbuI5virNCGJZVwwG6OvC2YZW3Ifup0fRarFib2ByX5CSUtlZp
+	PdgMQ82XC4Lp3gmGhM/abH2n34AVRld7/VHjsXhndcEXe1wc+jbPjavm/DuXrKF40H8X8gaCULM
+	53doUGxjHKg==
+X-Gm-Gg: AeBDietMo7IgfGsEwxRJRcbOPlAGnfuq6+o3AcHBoLST0Q0BIrdJod9/LLBZ/vVqJaH
+	OSodE9n8moyakUWCn+G4QIYfj9MlE8p+bfqX0Flckj3SI0FNIT8y/OPPGZdYxCI+uvesylJGNWa
+	kR+JKuqzHVxKmNGEGig7NfpsAjR1J1BW11TZ9gm+XWDc2kEd/+2zY8TOlui56DkRrzS2kuCTVc3
+	JnF99ftk0ZISUACOf4K17PVQCiwHhdCeUDvhHF6wlFaMe/x9nP0gMtByHbn21Vzuo49W1x6+/I2
+	2XXDt/bmiUpOkwBeesTWYyorzB3Cz0BLLs/NpFA2y9X4AdbI6CczEg1RmdaqRhYI7X+WY/U+Ofz
+	OhbfRpgAXS1d9lTtoBpZ1HPui/d1A6yC9j/o3K3LnkBeiR9XC8dGj3x+GFnC2TyBzT1SVlXh7De
+	wqk+ncA7pvgx0FPfCVUGSxBo4fVDwrr6fSNBmi
+X-Received: by 2002:a05:6122:4204:b0:56c:db8b:504e with SMTP id 71dfb90a1353d-5750c6ae9a0mr1938795e0c.13.1777765453748;
+        Sat, 02 May 2026 16:44:13 -0700 (PDT)
+Received: from gigagabriel-PC ([177.33.85.52])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5749f7e9f72sm3752167e0c.3.2026.05.02.16.44.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 May 2026 16:44:13 -0700 (PDT)
+From: Gabriel Braga Lagrotaria <gabrielblo@ime.usp.br>
+To: andy@kernel.org,
+	dlechner@baylibre.com,
+	javier.carrasco.cruz@gmail.com,
+	jic23@kernel.org,
+	nuno.sa@analog.com
+Cc: ricardo.kojo@ime.usp.br,
+	elliancarlos@gmail.com,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2 0/2] iio: light: veml6030: Generalize hw_init and cleanup naming
+Date: Sat,  2 May 2026 20:41:02 -0300
+Message-ID: <20260502234348.131563-1-gabrielblo@ime.usp.br>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sat, 02 May 2026 14:54:17 -0500
-Message-Id: <DI8GD8RZU94B.Q3VZJO6EIP3N@gmail.com>
-To: "Angus Gardner" <angusg778@gmail.com>, <linux-iio@vger.kernel.org>
-Cc: <linux-staging@lists.linux.dev>, <gregkh@linuxfoundation.org>,
- <jic23@kernel.org>, <lars@metafoo.de>, <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH] staging: iio: ad9834: fix probe error handling and
- comment typo
-From: "Maxwell Doose" <m32285159@gmail.com>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260502021815.3953423-1-angusg778@gmail.com>
-In-Reply-To: <20260502021815.3953423-1-angusg778@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Angus,
+Hello,
 
-On Fri May 1, 2026 at 9:18 PM CDT, Angus Gardner <angusg778@gmail.com> wrot=
-e:
-> Use dev_err_probe() for the master clock error path instead of open-codin=
-g
-> dev_err() + PTR_ERR(), consistent with the avdd regulator error path abov=
-e
-> it and with the equivalent driver ad9832.c.
->
-> Simplify the -ENOMEM return after devm_iio_device_alloc() to a direct
-> return rather than bouncing through a local variable.
->
-> Fix a copy-paste typo in two comments that referred to 'AD9843' instead
-> of the correct chip name 'AD9834'.
->
-> Signed-off-by: Angus Gardner <angusg778@gmail.com>
-> ---
->  drivers/staging/iio/frequency/ad9834.c | 17 +++++++----------
->  1 file changed, 7 insertions(+), 10 deletions(-)
->
+This patchset refactors the veml6030 driver to improve support for device
+variations and future-proof the codebase. The primary focus is to
+deduplicate the hardware initialization logic and move away from wildcard
+naming conventions.
 
-Patch itself looks good but maybe rephrase subject to say "Use probe
-error handling and fix comment typo" instead? "Fix" seems a bit generic
-for my tastes, and we're not really fixing anything anyways.
+The first patch removes the 'x' wildcard from the main chip structure,
+renaming it to 'veml6030_chip_desc'. The second patch introduces a
+configuration structure to handle device-specific values, allowing
+veml6030 and veml6035 to share a single initialization path.
 
-I'm not the final authority on naming so its at the discretion of
-either Andy or Jonathan, and maybe Greg. So either way,
-Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+Changes in v2:
+- Renamed 'struct veml603x_chip' to 'struct veml6030_chip_desc' to
+avoid wildcard naming as requested.
+- Refactored initialization logic to use a configuration descriptor,
+removing the redundant veml6035_hw_init().
 
-best regards,
-maxwell
+Gabriel Braga Lagrotaria (2):
+  iio: light: veml6030: Remove 'x' wildcard usages in file
+  iio: light: veml6030: Generalize hw_init for veml6030 and veml6035
+
+ drivers/iio/light/veml6030.c | 102 +++++++++++++++--------------------
+ 1 file changed, 42 insertions(+), 60 deletions(-)
+
+-- 
+2.54.0
+
