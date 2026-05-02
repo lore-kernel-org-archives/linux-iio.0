@@ -1,83 +1,71 @@
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF9D37474B
-	for <linux-iio@vger.kernel.org>; Fri,  1 May 2026 22:14:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5923418A6CF
+	for <linux-iio@vger.kernel.org>; Sat,  2 May 2026 02:18:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777673673; cv=none; b=uHVSkeg7ydh8IM7FfiRI1+aFyeO1w/MnZnxG/J7fTluoOrztJdhHcVWmzEJtl+uW8sl3ARi5N6RbpjgMT3Cwx52UYGoms6Rb1DcdMQhamVt7hGl2o/gp/7IDxWuUbUmAzLNFo0cXRRmqEy+K3P+3nz5gHkkcBeill/aLW6WiJIM=
+	t=1777688304; cv=none; b=MKk50egSShorwIyR0fp114H6BAuAwuDox0YquLJSgMgoMH4ticwfS5tCp3Po+Bn5yl4EU8Fc46hqANIWFU87fznHMrsIfK4con1LFPP0f7NpUA8oh3mvMhJgeZh1gtu/9FdJpi5HgOr5a74V9HQ5H0ag/jJ4MsxbL6oCLK7HMmg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777673673; c=relaxed/simple;
-	bh=7P166A8vdKpbCTvjwJ0c7DTCaR8r6ukvy1kUs71vwQ0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jWY5UH/TdlFcfuBnQS44O5o2kpWL8bGdPsmvgvOHzetIE2Um5qhYNNlU/TPrUiJkFf/qIqi8MV5JF1q9pmJcfeMaGZ3OKGzN4w7sRW91ATMDqgzoc0zoiLcSotLDG8Y+eF+IzadbCiQjWHESRKU/+Qn0Ziefy+VRJ/Kmynq55Gc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nUq7eB3F; arc=none smtp.client-ip=209.85.210.53
+	s=arc-20240116; t=1777688304; c=relaxed/simple;
+	bh=3/+Pr4j5iSVX/Vmbx8yW6ovs9S4TRVc2mRVxpfIkpCk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JNzRBWb5B8/nSn+JMGjQcFELPldCN6D66HqMXz9/KYzHCsdDqJmaABKt+hXleebpOY25gGzc+Ns02LI0NEifx4p92ILuK4S2Fy3edbZxi92KdJXCQqyT44P8BK7yr+E8YExK9Vs2xxfvrHy5VxR4sCuzEJ6nobcYY02DBCJQMoc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h4V3mjXC; arc=none smtp.client-ip=209.85.216.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nUq7eB3F"
-Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7de44ed7a11so2003886a34.1
-        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 15:14:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h4V3mjXC"
+Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-362bb3260f1so1745799a91.2
+        for <linux-iio@vger.kernel.org>; Fri, 01 May 2026 19:18:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777673670; x=1778278470; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wNoA18UrHfHWWifSIaqhsuJYv6mLpyyKyk6HN99Blw8=;
-        b=nUq7eB3Fdq3tn3y/xIB0/XXeIoRO8UL/xCcJY99gxmHee7wE1PdYodi5xpsi9ye5ps
-         Fcg0JbxKmevmCHmOMriEkAQ9KB60v7x7AQHjoOPyex7FjtNK2KIp1b132/1KN7Kfunha
-         yVQcI5lXi16NnLFJcxtFPYS1pk+Rf/3Fk8Aa23XHvMzk9PDpi1C1pyjxS/BBweFYvO7z
-         WdpSN/POv9wwxEMPZAXxmvxLTGO2m7iU0eEpDhmZTmc7nGCvlkPy/Lr23oR6smj4gL4v
-         DXWDw/OaUTqUrfNTMJGqwSjMQFHVoKIDJRNtbp/e/OlYeT2WdmgR/MJP2rEUJQRdD4RC
-         P8WQ==
+        d=gmail.com; s=20251104; t=1777688302; x=1778293102; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8bus8UEoB8rKoM7Ii6ZhV3wSXwGSHXrSXqNMvxh7aHw=;
+        b=h4V3mjXCBK0UxixoiSa9bjB8LMhLaqnqzcgYnLkwY8reP1SGS+J+H6lxNnTY8P4W5D
+         o53DfBCiafBoRjulxUy1kPTCG2ex0Pz2n8IfHLC4LPSP3D4cIEFqbE2SKiPANRGTzhKk
+         PJyX5VqYJXFZautO+rl/Sc/6JOz3gyfcYj29P8sWMHwlJk+3X9x1wZ2j30CMtly3+Tcx
+         qposqG7B50qQf7dijluUVdVNJJ+RkXJuWNkcPwlgryb5jMYMD6pmOEY7ZF8gTjFrviG9
+         y0m/CpyFibHsd/onLwSUzo1idNiOITPBlECPcV5FKBe8JY1qSVu4h0yqfTBoMW+fsM9/
+         tEtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777673670; x=1778278470;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=wNoA18UrHfHWWifSIaqhsuJYv6mLpyyKyk6HN99Blw8=;
-        b=CUylkDe3ClJWYpl9SJ+ojFF1BxatLU8B/ecOcqjo72f2+iG23pPxjlElrr/QfTFh4f
-         GyZ13byPjQny+7+/zjTwRbGML9nDbB+RqOoqyA0/abl8rqPTDPjsLESPop3gVR3IP0EQ
-         XhPA1irySbtmI7IQPqbGjScw4Rzynnv2+VzBtwQOeBskaZQtGCgPsMXDmTB9bRDwc+sn
-         WaefcOQjTn/adCRqsv7O7HRjhI8taVngHT4K6zZ1UwW4filkYMAUmbsXzhrwtBYPv73h
-         BbOrwIOr78mRCXVsqVnxTnCIJf6u0NoM5+AEgM2VFXYTmY3zFz/wSdFQoH97yKef4ATn
-         Y+9g==
-X-Gm-Message-State: AOJu0YzQmmmgQtGbarNu9tVHSSQsWcpwlrUAIyzBOBGaJJPcntffuMJR
-	XHn9oGsHCqxBoyBn/uw422DijZdS4f2EX2Bp6OortQrGCZdIa/zHYu48eu/JHw==
-X-Gm-Gg: AeBDieu3oS2OlqzLEfVY6uztb21odZfEuZ/Tu26EZuhFwy4YNkfaj00et4MFgsxBoX0
-	GI1ntktBlaAWxGLLL83PxJDrYyzwK43quncwJCrLpkXLheBzVv3ghly48aw8fECQZFbWAQkOLUw
-	AsArPTbU0Plxo+ZEqzdgRSujUALI5f5geiSRL7ZGmV5xScChHPp9yxXNpBqDOMOiMBM3LklDVhG
-	QDU3NcqVivWiI1SfUcLiH8TqWaxIlDt0IHJkQ1MitxLx7po39uCo0Wd6mI6F5/r7/S80ryO6aqw
-	Z+1g98PO6RRo3BOJxEV42IQCogt8ggA6xG/bS78obYpS5jMmc6Nfn3p5eyEXxv8HoLh/gdL206J
-	uivvGTsoQCBWH2Sx3PcaQXEgKImi3CTZpSXtrioLn7IfgbX2HwEfmNuNU6grJjXzOedkx35g5g6
-	WW+hH0HbRKqreN6zyG8u1HycWDKeAC7Tc=
-X-Received: by 2002:a05:6830:3983:b0:7d7:c985:3a30 with SMTP id 46e09a7af769-7dee1290d54mr922365a34.11.1777673670535;
-        Fri, 01 May 2026 15:14:30 -0700 (PDT)
-Received: from localhost.localdomain ([2600:1700:fb0:1bc0::54])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ded51a9612sm1827337a34.26.2026.05.01.15.14.29
+        d=1e100.net; s=20251104; t=1777688302; x=1778293102;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8bus8UEoB8rKoM7Ii6ZhV3wSXwGSHXrSXqNMvxh7aHw=;
+        b=rb91+RTYCP5DoHXHPZZDRQ/BSt74sW8bQYU8OPUm4iR7mJMLw1gXyl0RwvrdttEukV
+         onQJbRvihAI8g1Wk2NBNwSOTj55TElH1Z3cXQyCA3ONH2i5TMMOarZaWQxcIfARpwQ9o
+         hnUqWAt3S4bZdzNEJ0htgIBCdAocjQN51yAFGp91+K+odkvR6wa8XASKqTzjgQDtE4AR
+         xePGCa+WLC8Bx6yaoFzIuQuRsYu1Op/a6ECHV6Z7VucMWzrwQrLCK3IaVGHKVQMVZhbE
+         kZn5VUWv2YQWHAXQnMxr7u25yzRzvZ1gPpPKD4aRjoBsxPk0eS2yOPnC/IdaPPtdI0Ld
+         Evwg==
+X-Gm-Message-State: AOJu0Yw4aTX+x8twH99KjQQT+wrvtwWauEST7/KE7Ixyj09k40a+H7Dy
+	CopxLR7W8byq6B4EffsObQhJPXqKWJu7D92whgXyTdfZtBjkJE+8gnaKJSgQSj3Y0xMXxw==
+X-Gm-Gg: AeBDietT00fDBOca0OsOyCfO4dgA19SEKZhKaV3/ZxmqnvSuCCNluaWxt8/wV+Q3S06
+	csG+7ztf+NkgkQYLimc3ImTVYYu2yu1JLGXg79baa+CaBebem1mHaTXJ5n6ty57e90RmYUQTBZ4
+	YtQvprpDwSfQCW1HeNuftIm/8LuEsjCYaiex+C5cyf/wxMVQSal3V7/e2w6O4ld5Kyj50PZUdvN
+	MoFdf+/xVj6UDmBGQyGnT6pGKGULkSjSA+HliLGcYTZ7H73UsfxUuZYsQ+O03lVo3KNhBAymh0b
+	jqeaZTn1lwfrkMpgcqiBZx2Lj6W+RwG7NQitmLM2KLoxGRRpnJK86wxyUa0vKZ9Ndf8Ug/zvyd8
+	hsnY3j/UftUJPTqXXzXfRNecjtAV1ucb1tKXhQYtYL3BHDN6xAbDPFizfKfCkbmhyfXZ4GcFtfS
+	H9MOuoFvRSpYWwV6g86c1+eLnd4QRijIPppyE14no=
+X-Received: by 2002:a17:903:4b47:b0:2b7:895f:407b with SMTP id d9443c01a7336-2b9f25e3063mr14076565ad.21.1777688302096;
+        Fri, 01 May 2026 19:18:22 -0700 (PDT)
+Received: from scootaloo.modem ([101.179.112.69])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9cae110acsm31770245ad.42.2026.05.01.19.18.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 May 2026 15:14:30 -0700 (PDT)
-From: Chris Morgan <macroalpha82@gmail.com>
+        Fri, 01 May 2026 19:18:21 -0700 (PDT)
+From: Angus Gardner <angusg778@gmail.com>
 To: linux-iio@vger.kernel.org
-Cc: andy@kernel.org,
-	nuno.sa@analog.com,
-	dlechner@baylibre.com,
+Cc: linux-staging@lists.linux.dev,
+	gregkh@linuxfoundation.org,
 	jic23@kernel.org,
-	jean-baptiste.maneyrol@tdk.com,
-	linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	heiko@sntech.de,
-	conor+dt@kernel.org,
-	krzk+dt@kernel.org,
-	robh@kernel.org,
-	andriy.shevchenko@intel.com,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: [PATCH V4 10/10] arm64: dts: rockchip: Add icm42607p IMU for RG-DS
-Date: Fri,  1 May 2026 17:11:49 -0500
-Message-ID: <20260501221152.194251-11-macroalpha82@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260501221152.194251-1-macroalpha82@gmail.com>
-References: <20260501221152.194251-1-macroalpha82@gmail.com>
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com
+Subject: [PATCH] staging: iio: ad9834: fix probe error handling and comment typo
+Date: Sat,  2 May 2026 12:18:15 +1000
+Message-ID: <20260502021815.3953423-1-angusg778@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -86,54 +74,66 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Chris Morgan <macromorgan@hotmail.com>
+Use dev_err_probe() for the master clock error path instead of open-coding
+dev_err() + PTR_ERR(), consistent with the avdd regulator error path above
+it and with the equivalent driver ad9832.c.
 
-Add the Invensense ICM42607P IMU for the Anbernic RG-DS. Mount-matrix
-was tested with iio-sensor-proxy and reports correct orientation.
+Simplify the -ENOMEM return after devm_iio_device_alloc() to a direct
+return rather than bouncing through a local variable.
 
-Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Fix a copy-paste typo in two comments that referred to 'AD9843' instead
+of the correct chip name 'AD9834'.
+
+Signed-off-by: Angus Gardner <angusg778@gmail.com>
 ---
- .../dts/rockchip/rk3568-anbernic-rg-ds.dts    | 20 ++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ drivers/staging/iio/frequency/ad9834.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts b/arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts
-index 8d906ab02c5f..875ca884deca 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts
-@@ -871,7 +871,18 @@ aw87391_pa_r: audio-codec@5b {
- 		sound-name-prefix = "Right Amp";
- 	};
+diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+index bdb2580e29bf..5968aca74ecf 100644
+--- a/drivers/staging/iio/frequency/ad9834.c
++++ b/drivers/staging/iio/frequency/ad9834.c
+@@ -164,7 +164,7 @@ static ssize_t ad9834_write(struct device *dev,
+ 		break;
+ 	case AD9834_OPBITEN:
+ 		if (st->control & AD9834_MODE) {
+-			ret = -EINVAL;  /* AD9843 reserved mode */
++			ret = -EINVAL;  /* AD9834 reserved mode */
+ 			break;
+ 		}
  
--	/* invensense,icm42607p at 0x68 */
-+	icm42607p: imu@68 {
-+		compatible = "invensense,icm42607p";
-+		reg = <0x68>;
-+		interrupt-names = "INT1";
-+		interrupt-parent = <&gpio0>;
-+		interrupts = <RK_PD6 IRQ_TYPE_EDGE_FALLING>;
-+		mount-matrix = "-1", "0", "0",
-+			       "0", "1", "0",
-+			       "0", "0", "-1";
-+		pinctrl-0 = <&accel_irq>;
-+		pinctrl-names = "default";
-+	};
- };
+@@ -239,7 +239,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
+ 				st->control &= ~AD9834_OPBITEN;
+ 				st->control |= AD9834_MODE;
+ 			} else if (st->control & AD9834_OPBITEN) {
+-				ret = -EINVAL;	/* AD9843 reserved mode */
++				ret = -EINVAL;	/* AD9834 reserved mode */
+ 			} else {
+ 				st->control |= AD9834_MODE;
+ 			}
+@@ -389,17 +389,14 @@ static int ad9834_probe(struct spi_device *spi)
+ 		return dev_err_probe(&spi->dev, ret, "Failed to enable specified AVDD supply\n");
  
- &i2c3 {
-@@ -932,6 +943,13 @@ &i2s1_8ch {
- };
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+-	if (!indio_dev) {
+-		ret = -ENOMEM;
+-		return ret;
+-	}
++	if (!indio_dev)
++		return -ENOMEM;
+ 	st = iio_priv(indio_dev);
+ 	mutex_init(&st->lock);
+ 	st->mclk = devm_clk_get_enabled(&spi->dev, NULL);
+-	if (IS_ERR(st->mclk)) {
+-		dev_err(&spi->dev, "Failed to enable master clock\n");
+-		return PTR_ERR(st->mclk);
+-	}
++	if (IS_ERR(st->mclk))
++		return dev_err_probe(&spi->dev, PTR_ERR(st->mclk),
++				     "Failed to enable master clock\n");
  
- &pinctrl {
-+	accel {
-+		accel_irq: accel-irq {
-+			rockchip,pins =
-+				<0 RK_PD6 RK_FUNC_GPIO &pcfg_pull_up>;
-+		};
-+	};
-+
- 	gpio-keys {
- 		vol_keys_l: vol-keys_l {
- 			rockchip,pins =
+ 	st->spi = spi;
+ 	st->devid = spi_get_device_id(spi)->driver_data;
 -- 
-2.43.0
+2.51.0
 
