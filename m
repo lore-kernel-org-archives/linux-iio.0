@@ -1,64 +1,64 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2156C3AEF3B
-	for <linux-iio@vger.kernel.org>; Sun,  3 May 2026 12:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EAC93AE715
+	for <linux-iio@vger.kernel.org>; Sun,  3 May 2026 12:10:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777810252; cv=none; b=d7PC5o4KtoaYbvbMUv+qIbbpm4uWmNfyVIg/CmcEi5Bx2ntgR+bZgJxDLYRQYuz3ox9rtgv713bLkkfMaWOix62D0uIIUbP7ACWMnu9qVd0dCs2qT1oZRFdb9uGm1s5mYzo4agkA/BVLg4aT5X4iBU8v1zQI+o/aGM3vUUrlFUk=
+	t=1777810258; cv=none; b=eWn4lSu3g0YQoId4ylsDFA8ajjj+yFbV+3fjzTdlA/E+04uK/LyOASAqMjlrIg50KAoF43n4NQAdgEIGXI2fAnmwgcnGAKd9pyJcs2fM3PqHQb651C6O765VZjP5e7jtk8E80FSzsqUXNn2pk1Dd1XV22ZV0Gb8fle0Rn9o2aqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777810252; c=relaxed/simple;
-	bh=OvByowY5AkD+6XxbWpU7e3CK9GMCI7JhmFpONYFhBxM=;
+	s=arc-20240116; t=1777810258; c=relaxed/simple;
+	bh=fUCNzLF6hh2hm98jxnInINrsJoaAkfZjloF5s1Y/pQA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=uAOe1bgho9JKCZmh8h+H36ofVGRk6HDyDpmk+Hz2/u2Lv3YePQcC6/nbmxWkhg+uO+IfUxxXc/UgYwR8cjbfMzcrbzNCEspoOHRQ8LhuTvVrGoi1ujh9+8FTzfTFyqueZTUNNgrKMbdsObnBruSMlwTnQZdWqVWWoNZQ7UkZ5z0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=tNprjW3K; arc=none smtp.client-ip=209.85.210.179
+	 MIME-Version; b=FNNehEJwI+YtjU3LwPYyi5br22bdcw7u6KFq1SDgytPVUcbKN+zSAI6fDzCgRXbYuMC+oQUVnjT67BNAW+oGGS/n7rdspOvWeiLE2bNNuMf0lBPccAfn312YIrudjGOsIFEdVnyboO/dDFsLnUs8T062WW7/kgGi3F+chkpVcqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YmjGObDy; arc=none smtp.client-ip=209.85.210.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tNprjW3K"
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-835b78c3797so97149b3a.2
-        for <linux-iio@vger.kernel.org>; Sun, 03 May 2026 05:10:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YmjGObDy"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-835399c11e0so252699b3a.0
+        for <linux-iio@vger.kernel.org>; Sun, 03 May 2026 05:10:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777810250; x=1778415050; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777810257; x=1778415057; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=uZXP+KkBGD3rO/JBi4lfVCJXw9tpw0NHQd9gpIHkSxI=;
-        b=tNprjW3KZ21ZYjAEKBrmlAtYf1NUcn85zyCIuc9s1T/SHBaG1+aZnkXTg/jPSk8aa1
-         BFTrOWFG8UvNDq2Pfg6Nbkrclgdv5ktonsDnkelpjmdviKflnFbzIGdyuIrsFXbcfb3D
-         5FisoKMsvm146Q9xyqQXoxNMODpLNKH1a/Wq9Cz6Mns0tB9iiKAx0AOR4CDg+Lh21u7g
-         K9DD4+ZMcNZHVwQlkEOzPs01lKW+ddhBgTnADsDAC2kEbVExfCtFTAnDwfDcfk6UcRT/
-         W07H1xRTA823L7UNlJFlmX7U0ZZkzAe8pXOACzt8NUNAst45oI5sGADJa0/V4Vk1w+lC
-         cwOA==
+        bh=waD4kNs+jxUcqAUe2S1xeZGYlwFNHw9AH2tNe0Qph1s=;
+        b=YmjGObDygcaFEDSpIYEkvtsny8r+1trqmgsUGqo6czWsfaHM0oiduZH/OvDXNt7tXd
+         +AFvAoye8ckGtXy2JGtl1hIZ/m+gUIwMUtFswLAqHQTMaZjSBkUqfyv41NQ6wMM4ACJ4
+         7dY3EYrXcZ8mIszpHfjBs0MMtryQ0Gd7BVrT8dzMLGxvFvqsEHamwAh5yofjtJIdkOrz
+         QDG57iQvYUKcIedFBFhj7j8UNdMZzdp1mOLC5z+XtobeEEG0WfvHGU+TYuNv+dwUgvHV
+         wIilC6a4IpflQY2zgdMIuqdhLYlPcPbZKHrdBntZ5IICTHkH4lg8Dba7T+DC8aOiLv8C
+         RvXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777810250; x=1778415050;
+        d=1e100.net; s=20251104; t=1777810257; x=1778415057;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=uZXP+KkBGD3rO/JBi4lfVCJXw9tpw0NHQd9gpIHkSxI=;
-        b=F0r+pksRLkrJjdtICCwSSKNE/WdfLmDr2kiIwg0V/c5XZJk9aJEMhyPagN3h+NEQ9Q
-         M6t7WmcgQrCZwMg7gG9PfC8injribPCHyIf+6afpqs4xggGgJ0XZPk8scNSudJzMlOiF
-         umTUOvHtzRvB+mTbzo4Y3ej8zmu4qSAbZ0IxHeenp1Qjf3j9P0S6qVrIvB7ottLEtTvl
-         Zpihq+MFODshrCKwryYULjz4yllOetVu6CFmqi5PJh/z0S9Ntnvct4KrDmYDBaEY47V9
-         MIiVEvtgIqh3bDJkCaftD5gpXwQFETitvnY+284dYbD9kVqH0FSiys+tQ9cfz8gLJ2Bq
-         OZZQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9db7VnIsDZsnjajLs8wq7l3S/Kynsw60XfqTmj2Ln4c+KDaVuzwnAOR94Wkpjvb3KXGpt1p9pQ/Pw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxT46OzHytQIXjMg2aR/HnkzQSumBrxzU1miiLfcCGVlKrO6XU/
-	On5eUYA3bG26PXX5H/RWWBI55uJVVTf7RRWUW3RjJ+81n6WnA7jIPw8V
-X-Gm-Gg: AeBDiesHq1kUvUKbWvRA+gTDv/rVAXFfmJDcjK2vS6pyXjAndau2qkxeWp8/WkRkGdz
-	86h9gLVPuz/wUD0H3ZGfIU52EI5ptcky8Kkt4lYVnqVx3kKxS0N1K4h9IXWa+FhMo2k77rpfrHA
-	3P18JvnetPU2250S3VcizPQ3+nx7uxFizk2yjOpVYj5obf5oLqr0AcvQ9bEApIvAopml+D0T/B2
-	rqAbycZyAuPlxcqlyqwAQ2DljfoTMI+Idgw+0GbKUyKAvMLKb1SpSs500p1rkcIHolx7EMVkBf2
-	rNRTJN3OV1SXUpNSyFdK1SKTmzDqJDrdsAwldeS+WuH4tbLcsMk2lnpK0DsJmlHjuZf241i7tFz
-	ayaoJaKagDb2LrlDyZZpn/hTL+5JZAkYQNANxzmwrzxxMF6bSYNUEmR88fEOEMPjG+awbLe6v61
-	FbxyhnltLCgzXy9VXsC2ZubdJ3RBWlp4JNdQjjkeZ3H91PMHpaEkg4ro2auAPXKS4aH4WQ2HL1S
-	PAhbD5QSPkY52Fm1g7HVvOG67PRSbB9MAi8iea+++yt2rUu/V2j/q+6YsJU5ZZ4JOngz+0=
-X-Received: by 2002:a05:6a00:4b4f:b0:833:2398:cde2 with SMTP id d2e1a72fcca58-8352d29aa43mr5125855b3a.43.1777810250423;
-        Sun, 03 May 2026 05:10:50 -0700 (PDT)
+        bh=waD4kNs+jxUcqAUe2S1xeZGYlwFNHw9AH2tNe0Qph1s=;
+        b=ob1JiXSJeeug5N1sxTgbAB0tiaYed+qlyGQyFGAenDaWh3UhDJ1O24tC2CKOunizl/
+         3TwUvzRFEAVYfLSm7r5iGIzdwhCQBOSzrhAJ7AWLLnQyi41FqNpeZ66h/8STNZbd2OHW
+         B9QCeU21WjvQymFzFSTqi20DAkm47yflDNLPAGRtMMkVQX6wekRPpB5VUjXvNvlKmunw
+         pGfwsrjuHh6FTCzpMaEswVo7jKJ5seFOHlXCB07NnQioQVzFcu6O6eB64KhYq6wz8EYh
+         d185n35th2aQoY74s7FXojJ2sIh9u2+7RmJVCZi45IJZJxRCumq0XP3jdpOw4hR5MAT2
+         aQpg==
+X-Forwarded-Encrypted: i=1; AFNElJ8kL3JJyQdaUVo4X1wZbejMs9slnqgeqQ8KE8xmM6FD5XVoGrNSR97+uBm43foPTuY++msfm96RCR4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz/sUFM4Zm8q+pEVvARvZFFmqGuSB3OTY/Yu0ihg/0k11aeiXga
+	pUff0JT75I2OFL2eJbt8LSbOGrFkC2NifuHUOYuiM8QZQ6jjq+/k8ijd
+X-Gm-Gg: AeBDies4qnDqkas9AfTXxPHIrgw/io5K+TrWpa6ZpTPWOeDIy/0h+yUiwejTnBds4Ph
+	Qhh5BEhLTJHvUOU0cJ2IQuJ8UBJPtftwuvqsVgyvSD0UvkPUhgLi3y6Q7Tt4FFiQm+BD9j9pReH
+	D85CQU031kaeVzYR0//z0JiR7N/QIPWKTuEhRyLuI3Qwjh0HsZ+fCtPYVbUefjKgAYIn5CJ87me
+	RQL3ASvZGi5Ju2VzhG9tZPx/R6rOT9yT/INEbjMVmmrRhUYw2/Wy8ZR7QuOAE3olGn+cS8MZekf
+	njfEDHgDHQL2KBKVKOjJEuAYpMNUAh0v8xAPuwuf8LfOjUKAhXL41FmoPoSfTeBg7OOzXR7tSYy
+	AFDtcBhYUjL2z6yWty2LOApw7fZy+C0ZvJ90dGDrCEWfFNsyGTgZYULU+O54X+Rt+rHmIqQ8UKe
+	AHIQMD70l8lSPqTIWIXrXRjriyRVJtpqRVpF+Ity0rXxf6ICB/IdDrfwJNkn4IqmowCwWdHpUzW
+	Cgw/qOxI/d0lo2+1zgBaoucLESZWmBmTEqefXW1sumOK6vtrbegn/+LezV+74p431WdS+w=
+X-Received: by 2002:a05:6a00:1c8f:b0:81f:ac81:d597 with SMTP id d2e1a72fcca58-8352ce0d953mr5364067b3a.0.1777810256823;
+        Sun, 03 May 2026 05:10:56 -0700 (PDT)
 Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.www.tendawifi.com ([14.139.108.62])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8357c4f4530sm1474364b3a.9.2026.05.03.05.10.45
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8357c4f4530sm1474364b3a.9.2026.05.03.05.10.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 May 2026 05:10:49 -0700 (PDT)
+        Sun, 03 May 2026 05:10:56 -0700 (PDT)
 From: Piyush Patle <piyushpatle228@gmail.com>
 To: Andreas Klinger <ak@it-klinger.de>,
 	Jonathan Cameron <jic23@kernel.org>
@@ -71,9 +71,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v6 08/11] iio: adc: hx711: split variable assignments in hx711_read and hx711_reset
-Date: Sun,  3 May 2026 17:39:37 +0530
-Message-ID: <20260503120949.80292-9-piyushpatle228@gmail.com>
+Subject: [PATCH v6 09/11] iio: adc: hx711: localize loop iterators in hx711_read
+Date: Sun,  3 May 2026 17:39:38 +0530
+Message-ID: <20260503120949.80292-10-piyushpatle228@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260503120949.80292-1-piyushpatle228@gmail.com>
 References: <20260503120949.80292-1-piyushpatle228@gmail.com>
@@ -85,46 +85,59 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Separate the initial value assignments from the declarations in
-hx711_read() and hx711_reset().
+Tighten the scope of the loop variables in hx711_read() now that
+trailing-pulse selection is already handled by the callers.
 
-This is a small preparatory cleanup before the later loop-iterator and
-variant-specific changes adjust the local variable layout in these
-functions.
+Also replace the 24-bit loop bound with a named constant while touching
+the same code.
 
-No functional change.
-
+Suggested-by: Andy Shevchenko <andy@kernel.org>
 Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
 ---
- drivers/iio/adc/hx711.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/iio/adc/hx711.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-index 637114635867..b2de8db285b2 100644
+index b2de8db285b2..98fb617ea32b 100644
 --- a/drivers/iio/adc/hx711.c
 +++ b/drivers/iio/adc/hx711.c
-@@ -159,7 +159,9 @@ static int hx711_read(struct hx711_data *hx711_data, int trailing_pulses)
+@@ -24,6 +24,7 @@
+ #include <linux/regulator/consumer.h>
+ 
+ /* gain to pulse and scale conversion */
++#define HX711_DATA_BITS		24
+ #define HX711_GAIN_MAX		3
+ #define HX711_RESET_GAIN	128
+ 
+@@ -157,9 +158,9 @@ static int hx711_cycle(struct hx711_data *hx711_data)
+ 
+ static int hx711_read(struct hx711_data *hx711_data, int trailing_pulses)
  {
- 	int i, ret;
+-	int i, ret;
  	int value = 0;
--	int val = gpiod_get_value(hx711_data->gpiod_dout);
-+	int val;
-+
-+	val = gpiod_get_value(hx711_data->gpiod_dout);
+ 	int val;
++	int ret;
  
- 	/* we double check if it's really down */
+ 	val = gpiod_get_value(hx711_data->gpiod_dout);
+ 
+@@ -167,7 +168,7 @@ static int hx711_read(struct hx711_data *hx711_data, int trailing_pulses)
  	if (val)
-@@ -204,7 +206,9 @@ static int hx711_wait_for_ready(struct hx711_data *hx711_data)
+ 		return -EIO;
  
- static int hx711_reset(struct hx711_data *hx711_data)
- {
--	int val = hx711_wait_for_ready(hx711_data);
-+	int val;
-+
-+	val = hx711_wait_for_ready(hx711_data);
+-	for (i = 0; i < 24; i++) {
++	for (int i = 0; i < HX711_DATA_BITS; i++) {
+ 		value <<= 1;
+ 		ret = hx711_cycle(hx711_data);
+ 		if (ret)
+@@ -176,7 +177,7 @@ static int hx711_read(struct hx711_data *hx711_data, int trailing_pulses)
  
- 	if (val) {
- 		/*
+ 	value ^= 0x800000;
+ 
+-	for (i = 0; i < trailing_pulses; i++)
++	for (int i = 0; i < trailing_pulses; i++)
+ 		hx711_cycle(hx711_data);
+ 
+ 	return value;
 -- 
 2.43.0
 
