@@ -1,152 +1,252 @@
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ED702DB79E
-	for <linux-iio@vger.kernel.org>; Sun,  3 May 2026 14:17:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27F22262BD;
+	Sun,  3 May 2026 14:20:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777817837; cv=none; b=uxHSlokY3iJkaSnUGxepXEGvDzLCambw3uUC0lKrISqIZX3I2twtrtnuz52fC+lSAPUhENTyq/9iyB4yk0dZ6vXizGiYbMbN5cDjOKdoqHVRuIl7kwUNUUxTc9jTDFK1gkgne0h0I0vnKUr12CfC2wa4gV96yt9dX9K40rG3wIs=
+	t=1777818052; cv=none; b=ni5QWbtE+E2s4nrq3V33xTpE5duS7fkkjYwgMW3ChxrypujTxE5o/l5rL6AVak1/UDTPVbvoIPFxUL5bSGpBGU7y8BVzRoNxRAcgZWEvz2YEftY6V/8s1xWhA+VhB+q1ZxHeqqVZ6fW8jFeZJkvg95sJZUkoOy0gcnL0EyIeJg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777817837; c=relaxed/simple;
-	bh=yRozUyojZfZK0RqFIQxSQtMQHsJ16Kwd9wCnDsCZXRs=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=TxrIZyakxc7GFVG1WujtbFSj/RczkSs8f31ET6aUUgbnpBqXB4+g3umoZzQQOr96QV18y3wV9sww91f2Jbn4SzkT9lqA9K3J6yabRI9jL6ppWRiVWJYmQHzyN+U2pZ0BqpRiWVdrpWnmDJo3mpA55I0pRgwbRoMFYtIpbiHBwDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZA24N1Da; arc=none smtp.client-ip=209.85.216.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777818052; c=relaxed/simple;
+	bh=+mXebF8l6fKv1MGAwtZ8JdrzhXYlLttE8YFT+3jZtoI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hhpuHTkvp5NS2uKobR829Y/dSnPP/93D5IjH0NZCqaTRnafsXwFzitfcTPvCK4KKDqC3nQEuoEpQ6gqOTURHzWX+X/Jaesb32/6UgiNGm9ksOeZZJHKd4BN5O7bjkES0uGnoDROR4aLAgaA89vAc589bZ26Xkt/rwwMTZOlM1B8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dado4+/j; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZA24N1Da"
-Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-364eef1891dso1287936a91.1
-        for <linux-iio@vger.kernel.org>; Sun, 03 May 2026 07:17:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777817836; x=1778422636; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=2IgW7hnthbt48/vAXh96SJ1gPwAAHh0EsYwYa2W+GNA=;
-        b=ZA24N1DaWkb60XFX6f59HHVenfqWlK5tr/NrRR0wyaP9bdV3Y5st6sw1/hu42sncGw
-         RrYBYx74CzKaqkGqGBnigwsicixo/66LV34GapXSby0Doe3lFyqixh6+CuEFk01qvIsM
-         hedI25dNLMbfyXE9v4sGEMdYxe6Wt8mxBZE2ulWYCcxwHvX0SIu0d3xRhDM9juphzd9a
-         IzWbZvnsdSgVvjHaNnngK6nzbE2AF4Q2jNmEOTJEdQTniWly7B7iqWti4P36ZzyDv7t/
-         DRgzYopTNyROhXywplh8VQK3Ta2uRFOhBgmPbxGgZouBdhuzrVlH7VRFp7LSIUiQPBWJ
-         iSRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777817836; x=1778422636;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2IgW7hnthbt48/vAXh96SJ1gPwAAHh0EsYwYa2W+GNA=;
-        b=pFkzMxkFOlLjakYueiF+zKsVTr8iwFtT8vkN6EoDOVQzK6j1itJWZGzCbAQCGSfW/p
-         x96OpfLNhy2m7+DbY7UdHdwRWo1nYPkE4Al5nqvGu0g0nF+PIsfpPkv1z5EbBbj2tSK2
-         UdGVQbdTfQlNHzbwqvW0zVXOpqymFWtHPzXkzk/xMb+OiVkh3WerWSxfwo16Qo/HVk0h
-         U1FWiogpqY2b2w41dJZFHABfXtg8HJRMOO16UXflPtFkKI7RLBQ6WATA1L8tEntGf2qg
-         KHyOrsX8mRaWtNjmb+Q605KnkL7B+wlgzvRqW4spBCH38712rv/f2v/dwuHFwDeXPDcC
-         oxWg==
-X-Forwarded-Encrypted: i=1; AFNElJ+PJWeZQjwrQ0nreWSnrCs+tiq3bOu8M5P5ps2871cSkteeDUSEsXDFDUWjBO2fDWBf6cH19hsrhJY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfaAPxI3lTiKgMnGiYEeXfs5wGZsQZ8nURTsd7cs/FrdpXailt
-	iLvYs9DdplwsHoyRu+iWpGuikDm+A3KAoTuKttKlcB2h0SpSluo1mA79
-X-Gm-Gg: AeBDieuUukezRKVyyvTePq0OuaHXYq75iSL8AvfXyDylTiulqiBj8aKDWhxYZzacOyF
-	4IMjxn/XW3KZ3jOhm3E3cGX5+uvJHLjgrG30nH/hyzc/OlF2afNJVTVSyfZbia40mbghlVuPSX1
-	n/xQ1DhV5nHL/OtEZcnCA0CCQw7oz+Rap7Kb7iI3UZH+je4X3vML24kcqM4YU7fRvdbqdXHuy2k
-	puLwmkYlKs3lI6DCJb/HpKwQwtZIPKZf81Re6duktAzKZHJJaX2mQ6dXxQI6+yq7Pqr46t2s8zk
-	gdW4eZRBP4cg4vBodqVhkyIGeLkOKIiN0ZLT+1/eFHrk/Kd5FWD+sLbegTaTgQmLP//UFpdelmC
-	YihgFCxxnQgSrcVokTYTtoGCuoh7GYeo/6UWgBJWJIAD7UT9cA8JMRx/TrPCbZFvNqfpC4zq79q
-	3zxx27nWLctfoR+2xUOhifcffcOrKoTPFNMROiEdS3OTduzOwvKAwZh1M=
-X-Received: by 2002:a17:90b:48cb:b0:364:b4e7:729b with SMTP id 98e67ed59e1d1-3650ce47351mr7394878a91.21.1777817835587;
-        Sun, 03 May 2026 07:17:15 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:c032:ba9d:4953:28:24e7:1e48])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-364ebec736dsm8335235a91.3.2026.05.03.07.17.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 May 2026 07:17:15 -0700 (PDT)
-Date: Sun, 03 May 2026 19:47:03 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, mingo@kernel.org,
- christophe.jaillet@wanadoo.fr, nabijaczleweli@nabijaczleweli.xyz,
- kees@kernel.org, kyungmin.park@samsung.com, k.wrona@samsung.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v7_9/9=5D_iio=3A_ssp=5Fsensors=3A_re?=
- =?US-ASCII?Q?use_embedded_RX_buffer_for_SPI_transfers?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <20260426153540.3d43a085@jic23-huawei>
-References: <20260426091710.3722035-1-sanjayembedded@gmail.com> <20260426091710.3722035-10-sanjayembedded@gmail.com> <20260426153540.3d43a085@jic23-huawei>
-Message-ID: <B6831FB9-2E1A-4A55-B29A-A44371201849@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dado4+/j"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15DDDC2BCB4;
+	Sun,  3 May 2026 14:20:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777818051;
+	bh=+mXebF8l6fKv1MGAwtZ8JdrzhXYlLttE8YFT+3jZtoI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=dado4+/jcatP/JdZDaWbSUggpSfgZtbLuOallLiYxavQ4vV6JeesR7kFirJ8XogPv
+	 bQKqOCTzGsr4+mLJBQXJVMsza71t12zEaUrVh2/b07Gh4245BhVPx1cXrSynludnI9
+	 1mAXwmxbe31283qmQjOStXbyro/hD1+ItYewZPcG50Ao1J0Jzq4XWwLjgh+ln2vVG5
+	 BvNwiwul/sYaWD5X/fZ+SMD8fCC3Lft3EwX7q7G+LB9wu2zzZJtybXevNoSQBL/cRI
+	 e/yJOmxB+UZpO9ZpAJCAhu+CUn0yt99vQAaOqu/oWbZ2IoRQqElbEVVJ9Gkn+A0Xmc
+	 sVNaCltCiv5fA==
+Date: Sun, 3 May 2026 16:20:49 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Salih Erim <salih.erim@amd.com>
+Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, git@amd.com, nuno.sa@analog.com, andy@kernel.org, 
+	dlechner@baylibre.com, michal.simek@amd.com, conall.ogriofa@amd.com, 
+	erimsalih@gmail.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] dt-bindings: iio: adc: add xlnx,versal-sysmon
+ binding
+Message-ID: <20260503-rebel-sassy-weasel-ed26ee@quoll>
+References: <20260502111951.538488-1-salih.erim@amd.com>
+ <20260502111951.538488-2-salih.erim@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260502111951.538488-2-salih.erim@amd.com>
 
+On Sat, May 02, 2026 at 12:19:47PM +0100, Salih Erim wrote:
+> Add devicetree binding for the AMD/Xilinx Versal System Monitor (SysMon).
+> 
+> The Versal SysMon is the successor to the Zynq UltraScale+ AMS block,
+> providing on-chip voltage and temperature monitoring. The hardware
+> supports up to 160 supply voltage measurement points and up to 64
+> temperature satellites distributed across the SoC, with configurable
+> threshold alarms and oversampling. The device can be accessed via
+> memory-mapped I/O or via an I2C interface.
+> 
+> Supply and temperature channels are described as child nodes under
+> container nodes, referencing the standard adc.yaml binding for
+> channel properties.
+> 
+> Co-developed-by: Michal Simek <michal.simek@amd.com>
+> Signed-off-by: Michal Simek <michal.simek@amd.com>
+> Signed-off-by: Salih Erim <salih.erim@amd.com>
+> ---
+> Changes in v2:
+>   - Restructured to container nodes (supply-channels, temperature-channels)
+>     with channel@N children referencing adc.yaml
+>   - Added xlnx,versal-sysmon-i2c compatible
+>   - Descriptions rewritten to describe hardware only
+>   - Example simplified to #address-cells = <1>
+>   - Interrupt example uses GIC_SPI/IRQ_TYPE_LEVEL_HIGH constants
+>   - Commit description explains hardware context instead of schema layout
+>   - reg required for both MMIO and I2C, interrupts optional
+>   - Hex unit-addresses (channel@a not channel@10) per DTSpec
+>   - patternProperties regex updated to accept hex digits [0-9a-f]
+>   - Example trimmed to minimal variants (one basic + one bipolar supply,
+>     one AIE temperature channel)
+>  .../bindings/iio/adc/xlnx,versal-sysmon.yaml  | 172 ++++++++++++++++++
+>  1 file changed, 172 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
+> new file mode 100644
+> index 00000000000..cdd8706fc02
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
+> @@ -0,0 +1,172 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/xlnx,versal-sysmon.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: AMD/Xilinx Versal System Monitor
+> +
+> +maintainers:
+> +  - Salih Erim <salih.erim@amd.com>
+> +
+> +description:
+> +  The AMD/Xilinx Versal System Monitor (SysMon) is the successor to the
+> +  Zynq UltraScale+ AMS block. It provides on-chip voltage and temperature
+> +  monitoring with up to 160 supply voltage measurement points and up to
+> +  64 temperature satellites distributed across the SoC. The hardware
+> +  supports configurable threshold alarms and oversampling. The device
+> +  can be accessed via memory-mapped I/O or via an I2C interface.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - xlnx,versal-sysmon
+> +      - xlnx,versal-sysmon-i2c
 
+This is explicitly mentioned in writing bindings. One device, one
+compatible (not two, not three, not four compatibles).
 
-On 26 April 2026 8:05:40=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=2E=
-org> wrote:
->On Sun, 26 Apr 2026 14:47:10 +0530
->Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom> wrote:
->
->> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->>=20
->> Avoid allocating a temporary DMA buffer in the interrupt context when
->> handling hub-to-AP and AP-to-hub SPI write messages=2E
->>=20
->> Replace the dynamically allocated RX buffer with a fixed-size,
->> preallocated buffer embedded in the driver structure and reused for all
->> SPI receive operations=2E This removes memory allocation from the
->> IRQ path, simplifies lifetime management=2E
->>=20
->> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->
->> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec b/drivers/iio/c=
-ommon/ssp_sensors/ssp_spi=2Ec
->> index 870214551f0b=2E=2Ee41da88bf96d 100644
->> --- a/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
->> +++ b/drivers/iio/common/ssp_sensors/ssp_spi=2Ec
->> @@ -339,7 +339,7 @@ static int ssp_parse_dataframe(struct ssp_data *dat=
-a, char *dataframe, int len)
->>  /* threaded irq */
->>  int ssp_irq_msg(struct ssp_data *data)
->>  {
->> -	char *buffer;
->> +	char *buffer =3D data->rx_buf;
->>  	u8 msg_type;
->>  	int ret;
->>  	u16 length, msg_options;
->> @@ -383,19 +383,12 @@ int ssp_irq_msg(struct ssp_data *data)
->>  			 * but the slave should not send such ones - it is to
->>  			 * check but let's handle this
->>  			 */
->> -			buffer =3D kmalloc(length, GFP_KERNEL | GFP_DMA);
->As bellow=2E
->
->> -			if (!buffer) {
->> -				ret =3D -ENOMEM;
->> -				goto _unlock;
->> -			}
->> =20
->>  			/* got dead packet so it is always an error */
->>  			ret =3D spi_read(data->spi, buffer, length);
->>  			if (ret >=3D 0)
->>  				ret =3D -EPROTO;
->> =20
->> -			kfree(buffer);
->> -
->>  			dev_err(SSP_DEV, "No match error %x\n",
->>  				msg_options);
->> =20
->> @@ -428,22 +421,13 @@ int ssp_irq_msg(struct ssp_data *data)
->>  		mutex_unlock(&data->pending_lock);
->>  		break;
->>  	case SSP_HUB2AP_WRITE:
->> -		buffer =3D kzalloc(length, GFP_KERNEL | GFP_DMA);
->Is there any chance that GFP_DMA marking is needed?
->
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  '#io-channel-cells':
+> +    const: 1
+> +
+> +  supply-channels:
+> +    type: object
+> +    description:
+> +      Container for supply voltage measurement channels.
 
-As per my understanding, this must be legacy flag as there is no direct us=
-e of any dma_* API=2E marking should be redundant and safe to drop=2E
+voltage, not supply. Supply is the source of energy coming to this
+device. But are you measuring that source?
 
->> -		if (!buffer)
->> -			return -ENOMEM;
+> +
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^channel@([0-9a-f]|[1-9][0-9a-f])$":
+
+Keep consistent quotes, either ' or "
+
+> +        $ref: adc.yaml
+> +
+> +        description:
+> +          Measures a supply rail voltage. The register index and rail
+> +          name are assigned by the hardware design tool (Vivado).
+> +
+> +        properties:
+> +          reg:
+> +            minimum: 0
+> +            maximum: 159
+> +            description:
+> +              Supply measurement register index assigned by the hardware
+> +              design tool.
+> +
+> +          label:
+> +            description:
+> +              Name of the supply rail being monitored.
+
+Drop property, it's already in adc.yaml.
+
+> +
+> +          bipolar: true
+
+Drop
+
+> +
+> +        required:
+> +          - reg
+> +          - label
+> +
+> +        unevaluatedProperties: false
+> +
+> +    required:
+> +      - '#address-cells'
+> +      - '#size-cells'
+> +
+> +    additionalProperties: false
+> +
+> +  temperature-channels:
+> +    type: object
+> +    description:
+> +      Container for temperature satellite measurement channels.
+> +
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^channel@([1-9a-f]|[1-3][0-9a-f]|40)$":
+> +        $ref: adc.yaml
+> +
+> +        description:
+> +          Reads a temperature satellite sensor. Each satellite monitors
+> +          a specific region of the SoC die.
+> +
+> +        properties:
+> +          reg:
+> +            minimum: 1
+> +            maximum: 64
+> +            description:
+> +              Temperature satellite number (1-based hardware index).
+> +
+> +          label:
+> +            description:
+> +              Name identifying this temperature satellite.
+
+Drop property
+
+> +
+> +          xlnx,aie-temp:
+> +            type: boolean
+> +            description:
+> +              Indicates this satellite monitors an AI Engine tile.
+
+What for? What is on the other side of the channel is not really
+relevant to this device, but rather to that other side (consumer).
+
+> +
+> +        required:
+> +          - reg
+> +          - label
+> +
+> +        unevaluatedProperties: false
+> +
+> +    required:
+> +      - '#address-cells'
+> +      - '#size-cells'
+> +
+> +    additionalProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+
+Best regards,
+Krzysztof
+
