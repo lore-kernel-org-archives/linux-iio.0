@@ -1,62 +1,64 @@
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF3A3AD526
-	for <linux-iio@vger.kernel.org>; Sun,  3 May 2026 12:10:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191A83AEF26
+	for <linux-iio@vger.kernel.org>; Sun,  3 May 2026 12:10:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777810203; cv=none; b=Gwf9JrFVV3beKXsZ1TRmfroV/NRri/vwCW4ZuoMWu/RmeTEihPWppWiQQd5pPHbx8S4w3Tgi+IlD6KY/jR9UmboCD2zVFMpg6G7jG5mloCmaw1QMwhr+R8u11AZiNk1Rizk5I0YSJrpfliPXXimjpOBWnumEq+rCMLYyZeMNzsU=
+	t=1777810211; cv=none; b=PnhvA+wS8MBMl26PvE73NeG1GA1pn4bDFV1/QTSMD/osfm2mKXMlpWB/CQIUuNAy+KeQLhsel8cOUXpTgU6ywQSt0vc+SU/ygIUT3Zj/Ot6Akuwx44yiw4jViwTev3zF39QHWubDGIXanAws0rIn41ECeYECWoB8ikByJNu1aAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777810203; c=relaxed/simple;
-	bh=SV3B/g37WUP64p+W/862f7gX61rxiGRnF3JOrS/DGIE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AO83d5fZkxU6LwxCxKOoK2WFU7q69+okbp5AOe2LuMUqCvtDbk0E0Pd9Vx8KLydUh7z3mnE7CLBucCQqNkibWg2cswxj+/SKiGe0hb0VwSAAX3bd9UIDz29MJN7nfr3O6ejGdeTkSOj1kyQR9qEa82880rP6QvlEcv7gYXiA+t0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fEC457Xa; arc=none smtp.client-ip=209.85.215.182
+	s=arc-20240116; t=1777810211; c=relaxed/simple;
+	bh=YzJ8RosHX05iVdAZ2STTIxyp1FpJncO7Lahr+HQeVvA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=AMx/56cG82whwTkdHAASkwulz9ERp/l30bEEKTW+5i9RuhmvgvYqswEmq49q2X41xabtWw/n2XlEbhVbMOhFk04KXdJ5X+gf0oABg6mOK3HoQQk32fo7Ur69FhIfoApvAePtxJWklSj57E1SEo9lDBsRyoeSZ3rECU1kBOTWt7I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MvDW7+kv; arc=none smtp.client-ip=209.85.210.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fEC457Xa"
-Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-c8173b2af32so108191a12.0
-        for <linux-iio@vger.kernel.org>; Sun, 03 May 2026 05:10:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MvDW7+kv"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-836ebdeb969so57422b3a.3
+        for <linux-iio@vger.kernel.org>; Sun, 03 May 2026 05:10:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777810202; x=1778415002; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4mATdg5TAnsv6yqujjYHQNli4F9uj6Nj2HPuDvR1YhI=;
-        b=fEC457XaFCM1Xba3ntKWUYC9AqVpG4z+VStiZzWAAzDDILlCI1XhUC2qiPqy3mvb10
-         bIgkeCohVZAqdwejeqn6ueVbXqqpTD9IQ7yPXASdm8EVfmqJG1Qix1q+ehVsVZotKRh0
-         q6s+pmc4bUldg+ZUVpwgdy4I7mndjroRuZ/6ZwZXwQk8Cq88B6l+efugkNVERctFVM6s
-         LgN339V5P14QnErw/3CSCVJOsn3y/PXzO2f3r2XOVEOIix+MpQfwhLZ370lVhFm8HbZu
-         Ousqm3DOFA1UnVCv8OMcdib38RGA4RGSP0Tf5XwB9tL0W2bLelv4O4760x3xDuXdkV8p
-         Hikw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777810202; x=1778415002;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1777810209; x=1778415009; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4mATdg5TAnsv6yqujjYHQNli4F9uj6Nj2HPuDvR1YhI=;
-        b=FL1B+M/oSNGJe2tWmh5wN+GudpnLo75it6YhhhIS/85BW4QcnY2r3UC9/5Es65Uy3m
-         KwA6SjaFACyNWyUhJMNL56BXx7BiNHIVNb73fQ+JGp0skQPtGbhiugbHiTlend50/ACc
-         YPl0ho82a3taBpZSf6m6d1nWDq/+wSytSqNqYZpxlVlLSilA9fAMoxz5XGuriIj7jt8+
-         xm1x0FeNeWECGD1COr45h8U6ziVwWiZYmrMclxY7OkarZOS6qQpf0Y1XJsG9f5sF5M/5
-         VwlINPlOawiCB9vGMG9zilvNIR48B0aP4gT3ph7fdX6Bwj3ujwRjk1VT231mg8FTdWVA
-         raTQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+RDSstIheKltehZfr4LR+hsy50EKa5KOOglDUsvLBEKfawzVgA5AFih10FLB1etm5tLVc+imzUyN0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzxX39Yson+ngzQ7eAUB/z8ZHZxzkiC9y6rYM7lfQ3Mmii19+tL
-	7I8zqUAkLNQO+cgTXI7/SHbwG78oMuObfoYf9mOY0K9CUWi5J6Zipje/
-X-Gm-Gg: AeBDies5YLg8bwDXnuITEiyfgtphVjEIrHNo/NXtzVv6ohZshPxleyEOO3kPs1Jg7u6
-	XTjhE4QvJsCWYfN+bI4fl5m6JCgjanGzWTafJjzyE+JdjUc14UTSPou15y4RbwKiDdXebekGFDF
-	CfiicHOOUuNg9Vfio7bsqH7YVEtK7SG+n3xT7BiaptlNLshPCRxhty2260cnPINId4hgzIZlHxL
-	YrURr4yc2IjvzLRFIIWdjne1fJJJWq0f/XBgaZI0ozLZd4I52aiVuIUCmTgHzlhRDDit3Svhorn
-	Qj4CdLfU+RAYkBoV9OOZr6TPUwFTHDuloTjQT8yjVxOo2A11BNeXzSBqRuieMcuUaZZ04XpKMPO
-	u2rEkGJ85bfmDNkJQ1LaEXwiTemM7w/szOL0OOfaNf3emiG/yT5Zl4TcGgdyWt4kiTqaEJsRYYc
-	4BwSxCah1TLHmz+11bnw8wuNdh8htHmP8tAkYIy6QKQwJuqH/cS0FSxHJzS9zsf6GrD0B4tZFXt
-	TNG6CWUQvpAWPQsGLpr0iv36BwZ1KQENSh/cQEjDlWDAN9goJFnYl7t7EyV+SXbQnYXOE0=
-X-Received: by 2002:a05:6a00:bc8f:b0:82c:9e00:f958 with SMTP id d2e1a72fcca58-8352ce6e3cfmr5583554b3a.0.1777810201788;
-        Sun, 03 May 2026 05:10:01 -0700 (PDT)
+        bh=0sJO8jnVqdesIsdCxc3bQ/uGr2AUdTF8/iD//ahP/KE=;
+        b=MvDW7+kv/+2iWgcBQCZYvyM0ys2Q1/2G4/elB7Tfspjnw3xvmt1rn6/TasaaloDBia
+         nwavCzR9mx5u4XqMXSH+ThUfFYrzc7XwkTAq+cm8+MK6ozuvN1P/DzZrxpQ6vLplAAeQ
+         NJ+MNnms1rLRk5GfzNvUuRucDYM30J5l3paonr9CZD9NsBDyxM/akWK+q4trlIydfxGF
+         +cz1lPXatZfb/vkFjDvrC+P/GG5OGnDK16f+H61GEvn/Zv3iIrfE93huG8HvDQ/dPThX
+         qpZWyVM6eyWcY57ZF6EDDeQHQ4hnhIyy2+cdKcbuVXLQHTUHg5MRnk8Er/ONVSRtAhjz
+         +lqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777810209; x=1778415009;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=0sJO8jnVqdesIsdCxc3bQ/uGr2AUdTF8/iD//ahP/KE=;
+        b=hl/df60w3FvsyTYBDqFSdIIdE5doda+rbhmwcDQY094eFsTKSVs/MaCjrySRx/uX9g
+         9aYjeubS+mhBaSp5NYoQuTB2iJ+xj5HMMiyw0RZiBGnM4j7SUqWFYr5bhD2apMTA2xbn
+         McQ65G2m07+FQzJe49P9GAqzSgpdf3ms6LmNf48ylPqJ7xx+jDBL23oZe1rCSDrdvY7d
+         +MQKl/jGYlndRD05v7aFkkiBjXttnzsFxqQ1MLQEGYOTs+st7mvuxCHXLfs5rRtlN4o5
+         so8pOKptqiuteUqUnmaUoHR8h1qVsqlYK9uWU2CgzK9Qm+1PbdQln0t1emZSaq9LLdwZ
+         VxMA==
+X-Forwarded-Encrypted: i=1; AFNElJ/VtKpsCjc1hKrYQqlpaTfEXoTr3WSYDYVsiyX5vB+7Y8d+ydheNyLeJ/9XOcNIBKcOk0vEX2/M4HM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwPcENxbQ6rb9NXKKQgzLbZEnZ9pQQBJ6D5XfiJh7RF6ZH1ts9r
+	uv5ihxDUd25iHtR9D5dbQrqVtQ6ktRHJX3oqyMTOGpSCtP14LMYW74v0
+X-Gm-Gg: AeBDieueXcri004Gj+CIwYf82iScnif2b+02Yld72VF/hmCxpsNkS24bzONC2JcZteU
+	meldGFubwXAiCTFeKcXZIWIkuMM8H7QMTbuKuCfyeyzzqY0ipp+DT1om4Ljxgk3z945fOgyZ1Gm
+	G/lZug2uHmEEGSISp5USflrB+uYIBNSHeyWJXy45WAVnEllJqXv8/qTlpFvkmhcvts2faGifKFW
+	fYY+qXozyJndXYjOwdOPRzokvQRKAPnHDcs9mDTZG6XlZ8N/oFR5eTRPEAISHsTC9bUa7+l/Skp
+	WPcJmndsWMUib9/+ZCOtPqexuURI/AVSxyToOYT7lkQr/LwcmH4IrG0AJuisnyqYGTw1Hgs61N1
+	B4yGgrZ1xZ7GY6nHW9tJ09iu6VnlYMw80kWYg4Sp8cMIqRKWUEBg5Iu6jbqdR4m1N+gQj3buCcK
+	BCUaC7Q4Idc7vc1FsRLiQ36MVYZjqL3XOoNCOvUYCT/s+cQRhIYT2RAIYiqNrwbjMtoT1P46nul
+	Kd7fiVc3O9nzoapDRiep7RCXQQ2BgGgyEFrYLexpe9jP3n0WMJx82cFftYgM1x1QwfkwdM=
+X-Received: by 2002:a05:6a00:302a:b0:82f:316:31f6 with SMTP id d2e1a72fcca58-8352d202921mr5662327b3a.26.1777810209269;
+        Sun, 03 May 2026 05:10:09 -0700 (PDT)
 Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.www.tendawifi.com ([14.139.108.62])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8357c4f4530sm1474364b3a.9.2026.05.03.05.09.56
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8357c4f4530sm1474364b3a.9.2026.05.03.05.10.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 May 2026 05:10:00 -0700 (PDT)
+        Sun, 03 May 2026 05:10:08 -0700 (PDT)
 From: Piyush Patle <piyushpatle228@gmail.com>
 To: Andreas Klinger <ak@it-klinger.de>,
 	Jonathan Cameron <jic23@kernel.org>
@@ -69,10 +71,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v6 00/11] iio: adc: hx711: add HX710B support
-Date: Sun,  3 May 2026 17:39:29 +0530
-Message-ID: <20260503120949.80292-1-piyushpatle228@gmail.com>
+Subject: [PATCH v6 01/11] dt-bindings: iio: adc: hx711: clean up existing binding text
+Date: Sun,  3 May 2026 17:39:30 +0530
+Message-ID: <20260503120949.80292-2-piyushpatle228@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260503120949.80292-1-piyushpatle228@gmail.com>
+References: <20260503120949.80292-1-piyushpatle228@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,74 +85,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add support for the AVIA HX710B ADC, a HX711-compatible converter with
-the same GPIO interface but a different channel-selection model and a
-fixed gain of 128.
+Rewrite the binding description and property text so it describes the
+existing HX711 hardware behavior directly instead of documenting old
+driver implementation details.
 
-Compared to v5, this series is unchanged functionally and only folds in
-the remaining review nits:
+Also clarify that clock-frequency controls the SCK bit-bang timing.
 
-- keep the per-variant probe local declarations in reversed xmas tree
-  order
-- add a preparatory split-assignment patch before the loop-iterator
-  cleanup, then keep the loop indices signed to match trailing_pulses
-- replace the 24-bit read loop bound with a named constant while
-  touching the same code
-- keep the driver wording aligned on "weigh sensor modules"
-- rename fixed_gain to has_fixed_gain and drop the channel_set cast
+No functional change.
 
-The DT binding split from v5 is kept as-is:
+Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
+---
+ .../bindings/iio/adc/avia-hx711.yaml          | 25 ++++++++-----------
+ 1 file changed, 10 insertions(+), 15 deletions(-)
 
-- cleanup of the existing HX711 binding text
-- HX711-only VSUP documentation
-- HX711-only RATE GPIO documentation
-- HX710B binding addition
-
-Tested on PocketBeagle2 with an HX710B breakout module. The device
-probed successfully, all three channels returned stable raw readings,
-and alternating reads confirmed channel switching between the
-differential input and the DVDD-AVDD supply monitor path.
-
-Build-tested with:
-- make -s W=1 drivers/iio/adc/hx711.o
-- make -s dt_binding_check \
-  DT_SCHEMA_FILES=Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
-- pahole -C hx711_chip_info drivers/iio/adc/hx711.o
-
-pahole reports hx711_chip_info as 40 bytes with no internal holes. The
-remaining 7 bytes are tail padding from 8-byte pointer alignment.
-
-Changes in v6:
-- Fold the remaining review nits into the original 11-patch series
-  rather than adding follow-up fixes.
-- Keep hx711_probe() local declarations in reversed xmas tree order in
-  the hx711_chip_info patch.
-- Add a preparatory split-assignment patch before the loop-iterator
-  cleanup and keep the iterator types signed to match trailing_pulses.
-- Replace the 24-bit hx711_read() loop bound with HX711_DATA_BITS in
-  the loop-iterator patch.
-- Keep the driver header wording as "weigh sensor modules".
-- Rename fixed_gain to has_fixed_gain and make channel_set signed so
-  the HX710B channel comparison no longer needs a cast.
-
-Piyush Patle (11):
-  dt-bindings: iio: adc: hx711: clean up existing binding text
-  dt-bindings: iio: adc: hx711: add VSUP supply property
-  dt-bindings: iio: adc: hx711: add RATE GPIO property
-  dt-bindings: iio: adc: hx711: add HX710B support
-  iio: adc: hx711: move scale computation to per-device storage
-  iio: adc: hx711: introduce hx711_chip_info structure
-  iio: adc: hx711: pass trailing pulse count into hx711_read
-  iio: adc: hx711: split variable assignments in hx711_read and
-    hx711_reset
-  iio: adc: hx711: localize loop iterators in hx711_read
-  iio: adc: hx711: pass iio_chan_spec to hx711_reset_read
-  iio: adc: hx711: add support for HX710B
-
- .../bindings/iio/adc/avia-hx711.yaml          |  77 ++++-
- drivers/iio/adc/Kconfig                       |   8 +-
- drivers/iio/adc/hx711.c                       | 299 ++++++++++++++----
- 3 files changed, 308 insertions(+), 76 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+index 9c57eb13f892..1ea60dff98d5 100644
+--- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+@@ -10,14 +10,9 @@ maintainers:
+   - Andreas Klinger <ak@it-klinger.de>
+ 
+ description: |
+-  Bit-banging driver using two GPIOs:
+-  - sck-gpio gives a clock to the sensor with 24 cycles for data retrieval
+-    and up to 3 cycles for selection of the input channel and gain for the
+-    next measurement
+-  - dout-gpio is the sensor data the sensor responds to the clock
+-
+-  Specifications about the driver can be found at:
+-  http://www.aviaic.com/ENProducts.aspx
++  The HX711 is a 24-bit ADC with selectable gain (32/64/128) and two
++  differential input channels. Channel A supports gain 64 and 128;
++  channel B supports gain 32.
+ 
+ properties:
+   compatible:
+@@ -26,23 +21,23 @@ properties:
+ 
+   sck-gpios:
+     description:
+-      Definition of the GPIO for the clock (output). In the datasheet it is
+-      named PD_SCK
++      GPIO for the clock output (PD_SCK in the datasheet).
+     maxItems: 1
+ 
+   dout-gpios:
+     description:
+-      Definition of the GPIO for the data-out sent by the sensor in
+-      response to the clock (input).
+-      See Documentation/devicetree/bindings/gpio/gpio.txt for information
+-      on how to specify a consumer gpio.
++      GPIO for the data output from the sensor (DOUT in the datasheet).
+     maxItems: 1
+ 
+   avdd-supply:
+     description:
+-      Definition of the regulator used as analog supply
++      Analog supply voltage (AVDD).
+ 
+   clock-frequency:
++    description:
++      Controls the SCK bit-bang timing. The value is used to derive the
++      delay between SCK edges; keep the SCK high time below 60 us to
++      avoid triggering chip power-down mode.
+     minimum: 20000
+     maximum: 2500000
+     default: 400000
 -- 
 2.43.0
+
