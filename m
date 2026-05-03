@@ -1,102 +1,266 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com [209.85.217.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8CCC40DFD0;
-	Sun,  3 May 2026 00:08:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A75241E5B9A
+	for <linux-iio@vger.kernel.org>; Sun,  3 May 2026 03:17:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777766932; cv=none; b=Anr6rsWt1uD7wlMeNIY5SHnQulSvrzxdVceM8ZcjYZN7bxr8t5A9jWJ2XwckHYf1ZkExsUKyw8KN5voyU8CO6K2deXcQwTrCsWo/1VtJUVXyZTKaSsMKBwDsIiBx3WjfSshNAZX+AN6vWvSth0me23LRWPnLU6am700ZRuYveP8=
+	t=1777778244; cv=none; b=gGZgbKG771L0NS76U87v9/1O6nCbWHuafAVyMx5X5dh9iijE8rkBGcSLxsFc1cxeteVJCUUikOeJJpJAwvVpj+GOC1BlaID/in6MigCE0+VZ0elFs+hXKei8mYFbgZVkaXCgHg6cXZuiQyddtk3wEe65vej4mGTdqd91u8nF5fQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777766932; c=relaxed/simple;
-	bh=IjDrJBgIvtgpDKQWsJc3zLIPS1UJqwhJeMrBGW5lkfs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aQ5Vs3nyLez+yABJJ3n5skEkX28/t+st0eNb7b2QaxOYyuzS8RtjUusBNu+sZprGTen+4M3aBEdnmWcxChvhATh5LOpom4M2WGFRG3WwH2nRzWPrnUdatEQ6/Q8Ml1JwUgcFIjFuGtqvsSx3ev6dict9oZveQEw440puhCLtyZw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nhyzxj7F; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777778244; c=relaxed/simple;
+	bh=xE/SJcucXlbRhRTif4rXuad66M8UPkAoaRKfTZ7UsQs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=L6fWmVR7WwsOlrv7pHGUE/j6sODRglua+IETVq5hv/FhNVH7ovmDZHq2Tamj+h36jpRlKHIIrqoy5qGo7HNb1YshvArhpSlkJJ3plB59pOV3jG7W2xKB7M7nmBAouGs5QoW29E2M9y2E59ZaxVFn/HS2KWR01pBCt1gOVxNpLj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=G3TX8W8Y; arc=none smtp.client-ip=209.85.217.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nhyzxj7F"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777766931; x=1809302931;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IjDrJBgIvtgpDKQWsJc3zLIPS1UJqwhJeMrBGW5lkfs=;
-  b=nhyzxj7FYjlb0pLLDoLquCJCt/uAVXfegiC22Jzd2C9WCIeHLUfCXQAa
-   gcfsmuSnY+h78ye3v6UQIQOQhMY0f3daYC5XXkpkNn5NsJFPfkxvMI2H2
-   2BEkDqrkS2xjzU7uFhuwyTs1REvLiinSVvPEPkEqwmgruvcH5jWlFkdoA
-   grGAHjJwK77FDL6K3zhrZ51F3yHxFDlB37Sqv2Xvg7JvhG47j3HgYlayh
-   YjK2bON8O6yspvonzU4STPy7CTCmmHoO89On7q5sfHkg4uVbNCIV9z26L
-   2/zgTB2Uh34WuTg0r7NoOrdxNoS7zhofhk58NZGr9Rj5DGaZsQ2VMYHxw
-   A==;
-X-CSE-ConnectionGUID: o1ElDlAdQqebn/FwCEYueg==
-X-CSE-MsgGUID: tlTMLdFBSLC4ATxsphESew==
-X-IronPort-AV: E=McAfee;i="6800,10657,11774"; a="77842293"
-X-IronPort-AV: E=Sophos;i="6.23,212,1770624000"; 
-   d="scan'208";a="77842293"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2026 17:08:49 -0700
-X-CSE-ConnectionGUID: 1Y/MXHnnSO+9VTsFIAbk3g==
-X-CSE-MsgGUID: rBQDWArdTvm0K5YBluUQsg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,212,1770624000"; 
-   d="scan'208";a="273281121"
-Received: from lkp-server01.sh.intel.com (HELO 781826d00641) ([10.239.97.150])
-  by orviesa001.jf.intel.com with ESMTP; 02 May 2026 17:08:47 -0700
-Received: from kbuild by 781826d00641 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1wJKO4-000000001vb-1Pxw;
-	Sun, 03 May 2026 00:08:44 +0000
-Date: Sun, 3 May 2026 08:08:11 +0800
-From: kernel test robot <lkp@intel.com>
-To: Maxwell Doose <m32285159@gmail.com>, songqiang1304521@gmail.com,
-	jic23@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] iio: magnetometer: rm3100: Modernize locking and
- refactor control flow
-Message-ID: <202605030817.kUz9B6MC-lkp@intel.com>
-References: <20260430021439.67591-1-m32285159@gmail.com>
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="G3TX8W8Y"
+Received: by mail-vs1-f44.google.com with SMTP id ada2fe7eead31-610aadb2d9fso978430137.0
+        for <linux-iio@vger.kernel.org>; Sat, 02 May 2026 20:17:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google; t=1777778239; x=1778383039; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0DwtaxtSHhfjAI2k3a1Ffh9EszGTcoyMxIqUrnN+hP8=;
+        b=G3TX8W8YGCUgiYu0UPMZo5GV4OeN7uBwr1HEtMESDNa+mhHPd+jr0WAJVQpz3QkQ8C
+         ZCQ+oCi0XHIqSiCn/u7GDTYs/+ln+aZI8CebNyhs50CZ66er8wfpz8jTyZ+lhm74lz6E
+         tHkPmN1aeOHcOpKtaqzqRJpK3LTaRUVU0sYuQeJp4XXFLMxqZ7xfmepAY6aaYdj0+80n
+         i070ny6kS0jBudLBMrLMNWzs+KPG92o7iLT98PFtcmAeeiz16Kaky66+V7gH3a6ZaSFr
+         fWgWm6cA9FlSDey6XTfask3wysItyeec70cDFQb1UOJMkdnfKHC90qFyUuVPHW9cG53K
+         B3Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777778239; x=1778383039;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0DwtaxtSHhfjAI2k3a1Ffh9EszGTcoyMxIqUrnN+hP8=;
+        b=JupYlLpVdJGST0pZKMyMG9GZQmhfF5HhKqdb8f1i/CR+5fhqR12hVJFwXSPugEE44Y
+         cveoGW7A540tGw2y75FpJVfmzZqYSy6SxCCm/W557RX0z5rcVLiRy05+NdWtYlBzjPkt
+         p9x9Gv1ihHifYht7PQCfoP5h8o9FMF1rvRmSUe1nu0Sv168rEMZ0K5IClJmWIjS6oVGv
+         NmB4KIGBeOp3HdmlU+eeV2AkmK1lzC1M41nW0Gl31E76LErVZ9KP8WRORphFs9RjBcEX
+         wm83cUGE+5GN3LCXzDqNszyvSaLAPxpe3PXYKhmru6+rlffmO5rsUYy2wjpTf/f2T9El
+         fJAw==
+X-Forwarded-Encrypted: i=1; AFNElJ9eXGFP27J0pnWCPxfWmlrVQnJPMMDKOrag/6vTS1KiZ/6s+SUsxaOE7/EUCGCjFpbSBIT8WxDpp0c=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxXKOBBaY+hoGVbW682cWCc1R4Ryfm/TqY9PCqt7sboBk1xF7LD
+	8ilaje54doehwql03liTyiDRmCAuQwVdOmBj56bTbvbNlQZLO+41A6ZY16zpo3Ous8I=
+X-Gm-Gg: AeBDietIAHpQRja3IIUVGcz3mc+QMw3UTwdXyHtsHD19RwoU2PUdhLMuL8jj612/TnW
+	kVqZGu0jw2HfarUqx3qLMyU6n9nNMSamDHnRVOdPMTCv70XMR+/41OtlaTN9dHB+TDajgH87aQZ
+	qdIVtLN7faFaKgrvWR9hjcNzbrTB03dsBvwPBtto49mtQ4Uc1fc+LaTG6afkFFRzwSNPwMuB7qh
+	tLQDWwrzPQfIlC8ZUnq4aX4tTadTnRH6I0WEiLTbDcDeXllND1INSIcSCWF4B0BK2twPLbz36JJ
+	ihKP0MmxA3RrzdSFsR6TLknEAYthPwvYpIN7PB3yit+vQuk0T6hFX14wvTZHnccsS3S2SPDWgu4
+	GXnHMvF4PsoVPj90P62ldg9EhXw85sh1SgbpwxhFYdNAUqRn+iUJMxEdClMADznmPoCONmRg7UO
+	7TMe7YykWSmsta+x71N8SBEZbTguJcUAkCiPXwzfI1yZpmOw==
+X-Received: by 2002:a05:6102:3a0a:b0:608:759a:53bc with SMTP id ada2fe7eead31-62d81e93cc1mr1707271137.0.1777778239248;
+        Sat, 02 May 2026 20:17:19 -0700 (PDT)
+Received: from notebookdoJV.. ([45.164.49.175])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-62bfd8b5aeesm3565008137.7.2026.05.02.20.17.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 May 2026 20:17:18 -0700 (PDT)
+From: =?UTF-8?q?Jo=C3=A3o=20Fernandes?= <joaovictor.fernandes@usp.br>
+To: jean-baptiste.maneyrol@tdk.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: gcotavio@usp.br,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: imu: inv_icm42600: refactor accel/gyro configuration paths
+Date: Sun,  3 May 2026 00:12:36 -0300
+Message-ID: <20260503031703.33330-1-joaovictor.fernandes@usp.br>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260430021439.67591-1-m32285159@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi Maxwell,
+Refactor accel and gyro configuration paths to remove duplicated
+logic and improve code structure.
+Introduce a generic helper, inv_icm42600_set_sensor_conf(), to handle
+common register programming and state updates.
 
-kernel test robot noticed the following build warnings:
+Keep sensor-specific handling in inv_icm42600_set_accel_conf() and
+inv_icm42600_set_gyro_conf() wrappers. Also extract configuration
+sanitization into a dedicated helper inv_icm42600_sanitize_conf()
+to further reduce repetition.
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v7.1-rc1 next-20260430]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Signed-off-by: João Fernandes <joaovictor.fernandes@usp.br>
+Co-developed-by: Otavio Capobianco <gcotavio@usp.br>
+Signed-off-by: Otavio Capobianco <gcotavio@usp.br>
+---
+ .../iio/imu/inv_icm42600/inv_icm42600_core.c  | 125 +++++++++---------
+ 1 file changed, 63 insertions(+), 62 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Maxwell-Doose/iio-magnetometer-rm3100-Modernize-locking-and-refactor-control-flow/20260502-014808
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20260430021439.67591-1-m32285159%40gmail.com
-patch subject: [PATCH v4] iio: magnetometer: rm3100: Modernize locking and refactor control flow
-config: s390-randconfig-r071-20260503 (https://download.01.org/0day-ci/archive/20260503/202605030817.kUz9B6MC-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 15.2.0
-smatch: v0.5.0-9065-ge9cc34fd
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260503/202605030817.kUz9B6MC-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202605030817.kUz9B6MC-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> Warning: drivers/iio/magnetometer/rm3100-core.c:467 expecting prototype for rm3100_guarded_regmap_bulk_read(). Prototype was for rm3100_regmap_bulk_read_locked() instead
-
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+index 76eb22488..e326e0aae 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+@@ -289,15 +289,51 @@ static int inv_icm42600_set_pwr_mgmt0(struct inv_icm42600_state *st,
+ 	return 0;
+ }
+ 
+-int inv_icm42600_set_accel_conf(struct inv_icm42600_state *st,
+-				struct inv_icm42600_sensor_conf *conf,
+-				unsigned int *sleep_ms)
++static int inv_icm42600_set_sensor_conf(struct inv_icm42600_state *st,
++			      struct inv_icm42600_sensor_conf *target_conf,
++			      struct inv_icm42600_sensor_conf *accel_conf,
++			      struct inv_icm42600_sensor_conf *gyro_conf,
++			      struct inv_icm42600_sensor_conf *oldconf,
++			      unsigned int reg_config0,
++			      unsigned int target_config0_val,
++			      unsigned int *sleep_ms)
+ {
+-	struct inv_icm42600_sensor_conf *oldconf = &st->conf.accel;
+ 	unsigned int val;
+ 	int ret;
+ 
+-	/* Sanitize missing values with current values */
++	/* set target sensor's CONFIG0 register */
++	if (target_conf->fs != oldconf->fs || target_conf->odr != oldconf->odr) {
++		ret = regmap_write(st->map, reg_config0, target_config0_val);
++		if (ret)
++			return ret;
++
++		oldconf->fs = target_conf->fs;
++		oldconf->odr = target_conf->odr;
++	}
++
++	/* set GYRO_ACCEL_CONFIG0 register */
++	if (target_conf->filter != oldconf->filter) {
++		val = INV_ICM42600_GYRO_ACCEL_CONFIG0_ACCEL_FILT(accel_conf->filter) |
++		      INV_ICM42600_GYRO_ACCEL_CONFIG0_GYRO_FILT(gyro_conf->filter);
++
++		ret = regmap_write(st->map,
++				   INV_ICM42600_REG_GYRO_ACCEL_CONFIG0,
++				   val);
++		if (ret)
++			return ret;
++
++		oldconf->filter = target_conf->filter;
++	}
++
++	/* set PWR_MGMT0 register */
++	return inv_icm42600_set_pwr_mgmt0(st, gyro_conf->mode, accel_conf->mode,
++					  st->conf.temp_en, sleep_ms);
++}
++
++static void inv_icm42600_sanitize_conf(
++	struct inv_icm42600_sensor_conf *conf,
++	const struct inv_icm42600_sensor_conf *oldconf)
++{
+ 	if (conf->mode < 0)
+ 		conf->mode = oldconf->mode;
+ 	if (conf->fs < 0)
+@@ -306,6 +342,17 @@ int inv_icm42600_set_accel_conf(struct inv_icm42600_state *st,
+ 		conf->odr = oldconf->odr;
+ 	if (conf->filter < 0)
+ 		conf->filter = oldconf->filter;
++}
++
++int inv_icm42600_set_accel_conf(struct inv_icm42600_state *st,
++				struct inv_icm42600_sensor_conf *conf,
++				unsigned int *sleep_ms)
++{
++	struct inv_icm42600_sensor_conf *oldconf = &st->conf.accel;
++	unsigned int config0_val;
++
++	/* Sanitize missing values with current values */
++	inv_icm42600_sanitize_conf(conf, oldconf);
+ 
+ 	/* force power mode against ODR when sensor is on */
+ 	switch (conf->mode) {
+@@ -324,30 +371,12 @@ int inv_icm42600_set_accel_conf(struct inv_icm42600_state *st,
+ 		break;
+ 	}
+ 
+-	/* set ACCEL_CONFIG0 register (accel fullscale & odr) */
+-	if (conf->fs != oldconf->fs || conf->odr != oldconf->odr) {
+-		val = INV_ICM42600_ACCEL_CONFIG0_FS(conf->fs) |
++	config0_val = INV_ICM42600_ACCEL_CONFIG0_FS(conf->fs) |
+ 		      INV_ICM42600_ACCEL_CONFIG0_ODR(conf->odr);
+-		ret = regmap_write(st->map, INV_ICM42600_REG_ACCEL_CONFIG0, val);
+-		if (ret)
+-			return ret;
+-		oldconf->fs = conf->fs;
+-		oldconf->odr = conf->odr;
+-	}
+-
+-	/* set GYRO_ACCEL_CONFIG0 register (accel filter) */
+-	if (conf->filter != oldconf->filter) {
+-		val = INV_ICM42600_GYRO_ACCEL_CONFIG0_ACCEL_FILT(conf->filter) |
+-		      INV_ICM42600_GYRO_ACCEL_CONFIG0_GYRO_FILT(st->conf.gyro.filter);
+-		ret = regmap_write(st->map, INV_ICM42600_REG_GYRO_ACCEL_CONFIG0, val);
+-		if (ret)
+-			return ret;
+-		oldconf->filter = conf->filter;
+-	}
+ 
+-	/* set PWR_MGMT0 register (accel sensor mode) */
+-	return inv_icm42600_set_pwr_mgmt0(st, st->conf.gyro.mode, conf->mode,
+-					  st->conf.temp_en, sleep_ms);
++	return inv_icm42600_set_sensor_conf(st, conf, conf, &st->conf.gyro, oldconf,
++					    INV_ICM42600_REG_ACCEL_CONFIG0,
++					    config0_val, sleep_ms);
+ }
+ 
+ int inv_icm42600_set_gyro_conf(struct inv_icm42600_state *st,
+@@ -355,45 +384,17 @@ int inv_icm42600_set_gyro_conf(struct inv_icm42600_state *st,
+ 			       unsigned int *sleep_ms)
+ {
+ 	struct inv_icm42600_sensor_conf *oldconf = &st->conf.gyro;
+-	unsigned int val;
+-	int ret;
++	unsigned int config0_val;
+ 
+-	/* sanitize missing values with current values */
+-	if (conf->mode < 0)
+-		conf->mode = oldconf->mode;
+-	if (conf->fs < 0)
+-		conf->fs = oldconf->fs;
+-	if (conf->odr < 0)
+-		conf->odr = oldconf->odr;
+-	if (conf->filter < 0)
+-		conf->filter = oldconf->filter;
++	/* Sanitize missing values with current values */
++	inv_icm42600_sanitize_conf(conf, oldconf);
+ 
+-	/* set GYRO_CONFIG0 register (gyro fullscale & odr) */
+-	if (conf->fs != oldconf->fs || conf->odr != oldconf->odr) {
+-		val = INV_ICM42600_GYRO_CONFIG0_FS(conf->fs) |
++	config0_val = INV_ICM42600_GYRO_CONFIG0_FS(conf->fs) |
+ 		      INV_ICM42600_GYRO_CONFIG0_ODR(conf->odr);
+-		ret = regmap_write(st->map, INV_ICM42600_REG_GYRO_CONFIG0, val);
+-		if (ret)
+-			return ret;
+-		oldconf->fs = conf->fs;
+-		oldconf->odr = conf->odr;
+-	}
+ 
+-	/* set GYRO_ACCEL_CONFIG0 register (gyro filter) */
+-	if (conf->filter != oldconf->filter) {
+-		val = INV_ICM42600_GYRO_ACCEL_CONFIG0_ACCEL_FILT(st->conf.accel.filter) |
+-		      INV_ICM42600_GYRO_ACCEL_CONFIG0_GYRO_FILT(conf->filter);
+-		ret = regmap_write(st->map, INV_ICM42600_REG_GYRO_ACCEL_CONFIG0, val);
+-		if (ret)
+-			return ret;
+-		oldconf->filter = conf->filter;
+-	}
+-
+-	/* set PWR_MGMT0 register (gyro sensor mode) */
+-	return inv_icm42600_set_pwr_mgmt0(st, conf->mode, st->conf.accel.mode,
+-					  st->conf.temp_en, sleep_ms);
+-
+-	return 0;
++	return inv_icm42600_set_sensor_conf(st, conf, &st->conf.accel, conf, oldconf,
++					    INV_ICM42600_REG_GYRO_CONFIG0,
++					    config0_val, sleep_ms);
+ }
+ 
+ int inv_icm42600_set_temp_conf(struct inv_icm42600_state *st, bool enable,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.43.0
+
