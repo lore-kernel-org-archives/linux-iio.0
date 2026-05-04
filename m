@@ -1,48 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0331F2253EC;
-	Mon,  4 May 2026 16:51:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754C23783C7;
+	Mon,  4 May 2026 16:54:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777913498; cv=none; b=bdxNhEzdSn7hubN5R2T1jqZwqEHrIIvMDz71J17ei+VStQU6K53dVu6wD7m9W1j7fgYCXaTx9L39jXBegK1Uug/qKAKNbHxEbI2YPkuMj/yZLbK+BhYpRAvMesCyfhqJGt9Jp//pLpaBzsO124QAKD18F/Kw8xOmeN/Ep1G2B+o=
+	t=1777913670; cv=none; b=SVccjNF5KnjCj5kG6K78qH5tGtyIUGS/iVAid7BrwNM4DpgjgTH23tFY+JQgo0r8XstQNFz5xBdDwN8oSMMIPu0Ls18shaRRihP2VZbpYGP7fphgn4UDdhfn3rEBZXm6CaE87dxifzo0EYpB5xy5iNFYF94uVkcydYZt5UEKKgo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777913498; c=relaxed/simple;
-	bh=582ffjRQ2Uc7xO+mybW8CfmzvW/0hm+vSpZmgcG8WHA=;
+	s=arc-20240116; t=1777913670; c=relaxed/simple;
+	bh=EGOU/KH5Dp5DWRRE/3eHoNDZbWewaXlFQMfD6NcvqXc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pQeegZAWJEmTOYCMSHw6uCAvTLrnWEtgbwIbg7nSozTlwm3e/H/Hr7Ua7G7z7g/wknYXpl70A1DJ74noCO9b2MuC2xZjamhyQJncRL5o39b99YgJDBxwn8a1NAlkhm4IeD+GVUZFqacyGVJxU5DKNO1xSIkk6liexJSihA8asmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V+wV8L06; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ut/AcSKjG3pZor2HN2nmO4U8FBVc53HGNLCZV2+wqVoy+OBw1etyNnp+Y5OVb4IZHgvd+IL2o2C2Ariy/eTUbmwTMMSZDtMUKblypEOlgVyK2ilhYWQGY9KFPkhe+dXV85yCsWSusnUO0N+Brh6giW4UbakOX4JnqaU9RApQ4EE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gELJBGCg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V+wV8L06"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92EF5C2BCB8;
-	Mon,  4 May 2026 16:51:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gELJBGCg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6621C2BCB8;
+	Mon,  4 May 2026 16:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777913497;
-	bh=582ffjRQ2Uc7xO+mybW8CfmzvW/0hm+vSpZmgcG8WHA=;
+	s=k20201202; t=1777913670;
+	bh=EGOU/KH5Dp5DWRRE/3eHoNDZbWewaXlFQMfD6NcvqXc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=V+wV8L06C5RT90jT8FE5GFQPRbYwdI48y0F1bgt/y2s73vyfWFs/e2UXriCOkrFoh
-	 N5zvp48M83E25cIU3BzGp5nQ8gDTxzOZDADIDc7KS/C15oeNUlRpOmdIL4jJqyO8VK
-	 gyFMCnBBHAX6MnV/WHrLRBdFPNulgd3xMbk50XZNZxzo9uwRYlPj7A8NglxWz/z1VD
-	 ACq0TVNhL/WCS2TgTEk7/76hyVrerjca9lFzwLe51SSQTJaCtopMX0Dd8Kls2yJvx7
-	 u56QC7gzzF6VlZuf+oAGZ4rdSLG7PPLs36RPkC5Q+FgBiiTb6V0fxrHMq6VTVEZOGy
-	 ARMwvldtUCvnA==
-Date: Mon, 4 May 2026 17:51:28 +0100
+	b=gELJBGCg0R8U8o6zpZnnff0m+u6DMaNPjZ5zV0g70pzbw5Bq/q5753tWocJd7ZKvU
+	 lPOnKBnH6T3eYwRIj7rP5jrCZXMNAdJ5KZ3HZY6RTWthSy4kRc5Hb2nVPF3aqP7ZwC
+	 kheWdkpUIoqDXfEYwqeBnusJ+oIDHOQf0X1neg1zASpfG8MhmAcLmr84EjlEMjDYx/
+	 mEepI742ic21R7u0GrbJSsAVSf19yXKO+QfWvS676GViMjOW41enBW0jEKAaca7RKb
+	 SmlH/uYf/9nUR5SSXxKagUav8yY7+3qiJb2oI1j9pqNWAlt/tb2ZrvwYzALXUMx/Qh
+	 MJ6qpHP+BbfmA==
+Date: Mon, 4 May 2026 17:54:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Morgan <macromorgan@hotmail.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Chris Morgan
- <macroalpha82@gmail.com>, linux-iio@vger.kernel.org, andy@kernel.org,
- nuno.sa@analog.com, dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
- linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
- heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
- andriy.shevchenko@intel.com
-Subject: Re: [PATCH V4 01/10] dt-bindings: iio: imu: icm42600: Add icm42607
- binding
-Message-ID: <20260504175128.0bfdefe0@jic23-huawei>
-In-Reply-To: <PH0PR19MB997338AB2F626D5898BAB27E53A5302@PH0PR19MB997338.namprd19.prod.outlook.com>
-References: <20260501221152.194251-1-macroalpha82@gmail.com>
-	<20260501221152.194251-2-macroalpha82@gmail.com>
-	<20260503-convivial-aquatic-yak-d2dbeb@quoll>
-	<PH0PR19MB997338AB2F626D5898BAB27E53A5302@PH0PR19MB997338.namprd19.prod.outlook.com>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Angus Gardner <angusg778@gmail.com>, linux-iio@vger.kernel.org,
+ linux-staging@lists.linux.dev, gregkh@linuxfoundation.org, lars@metafoo.de,
+ Michael.Hennerich@analog.com
+Subject: Re: [PATCH v2 0/3] staging: iio: ad9834: driver cleanup
+Message-ID: <20260504175423.2b0a9523@jic23-huawei>
+In-Reply-To: <CAKqfh0FiqN3ztMxYRWasj8+2+z0wvYanrdfvze4z3U8YVcgS9A@mail.gmail.com>
+References: <20260504092059.1536094-1-angusg778@gmail.com>
+	<20260504162346.53668925@jic23-huawei>
+	<CAKqfh0FiqN3ztMxYRWasj8+2+z0wvYanrdfvze4z3U8YVcgS9A@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,60 +45,48 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 3 May 2026 15:51:30 -0500
-Chris Morgan <macromorgan@hotmail.com> wrote:
+On Mon, 4 May 2026 11:10:27 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
-> On Sun, May 03, 2026 at 02:18:18PM +0200, Krzysztof Kozlowski wrote:
-> > On Fri, May 01, 2026 at 05:11:40PM -0500, Chris Morgan wrote:  
-> > > From: Chris Morgan <macromorgan@hotmail.com>
-> > > 
-> > > Add devicetree binding for the Invensense ICM42607 and Invensense
-> > > ICM42607P inertial measurement unit. This unit is a combined
-> > > accelerometer, gyroscope, and thermometer available via I2C or SPI.
-> > > 
-> > > This device is functionally very similar to the icm42600 series with a
-> > > very different register layout. Additionally, add mount-matrix
-> > > attribute to schema.  
-> > 
-> > Why adding it? Is it something new? Is it applicable to other variants?
-> > If not, why it is allowed for them?  
-> 
-> It's not new, technically this is a bug/oversight from the very first
-> iteration of the invensense icm42600 driver. The driver requests a
-> mount matrix using iio_read_mount_matrix and then returns an error from
+> On Mon, May 4, 2026 at 10:23=E2=80=AFAM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >
+> > On Mon,  4 May 2026 19:20:56 +1000
+> > Angus Gardner <angusg778@gmail.com> wrote:
+> > =20
+> > > v2: Split into a series of three patches as suggested by reviewer fee=
+dback.
+> > >     Also add a missing dev_err_probe() conversion for the SPI init er=
+ror
+> > >     path pointed out by Joshua.
+> > >
+> > > v1: https://lore.kernel.org/linux-staging/20260502021815.3953423-1-an=
+gusg778@gmail.com/ =20
+> > Hi Angus
+> >
+> > Series looks good to me (Thanks Maxwell and Joshua for reviewing!)
+> >
+> > Applied to the testing branch of iio.git.
+> > =20
+>=20
+> I realized I forgot to add my explicit reviewed-by to the v2 of the
+> "use dev_err_probe() in probe function" patch. If it's not too much
+> trouble, could I get my reviewed-by tag added to that patch? If not
+> then no worries.
 
-Unless it's broken (always possible) iio_read_mount_matrix() is supposed
-to return an identity matrix if there isn't any info in the binding.
+Added.
 
-	/* Matrix was not declared at all: fallback to identity. */
-	return iio_setup_mount_idmatrix(dev, matrix);
+Thanks again Max!
 
-So not required by the linux driver at least.  Probably not something
-we should require in general.
+Jonathan
 
-Separate patch to introduce it to the binding as optional and say something
-about what it is for to justify it's inclusion.  That patch goes before
-this one.
-
-> the probe function if it can't read one [1]. So it's very much required
-> (and for the next version I'll upgrade it to a required element). I'm
-> adding it because a cursory grep suggests that my use case (for the
-> Anbernic RG-DS and in the near future the Anbernic RG Vita Pro) are the
-> first devices to use this driver in mainline in a device tree based
-> system.
-> 
-> Thank you,
-> Chris
-> 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c?h=v7.1-rc1#n746
-> 
-> > 
-> > Do not say WHAT you did, say why you did it.
-> > 
-> > Best regards,
-> > Krzysztof
-> >   
+>=20
+> best regards,
+> maxwell
+>=20
+> (p.s., feel free to call me Max, cheers)
+>=20
 
