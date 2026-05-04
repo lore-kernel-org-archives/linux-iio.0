@@ -1,223 +1,114 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from out-177.mta1.migadu.com (out-177.mta1.migadu.com [95.215.58.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AFB81519B4;
-	Mon,  4 May 2026 10:25:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4CFC3644BE
+	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 10:29:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777890337; cv=none; b=eFiFquIWyQPA8aL96oxVP9fEmwI+2pNAuwfp6j5Qsca1RR0ztCU9Ahkhj+ruaeQnPfwkejmO4E99GdweLrVhNDonvBFv7eFuejo8o64ALWeUNGTVDN3vXxf1fiV9ONj20IMfdatQXQqFkNZ2MDe8r0QmqCehA6XW92a6zPGAE18=
+	t=1777890565; cv=none; b=lg9ohUPW0+zwrZszxC0sv+kVCC/GhxmJo8rveXXL9P/SMD82Hqe4lp9dx10gBqCMHhIkNgUt6DSOQOxwURO4aKkLZygdnFGebmntOEXtqRm/JRIjybY9YFA1/SBzPuKtFGiyEcszp8q84fuqCDA85F9515J5dPh8KwGuEO0gVng=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777890337; c=relaxed/simple;
-	bh=nluvpIlNryhcGDtvNGYTLW0ZG88gXOfoCaYP2s86tRE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L2pt4Xlkd2ChXUoTIRPxmCDBZSay6qPd23sJfnT1z+K/tdi+ei03DYZXdKa3zfidB2LCqPdQqs5yH57ztsGhjaeHquhe6z+K589Kj69tvSvaOtPcS8ujLo4m3oJew53qfqQJt7mX8xnSmEuajq3HF135qaJK+v3rdfinGknDvmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DrsKIhRE; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777890565; c=relaxed/simple;
+	bh=Tl3VqM3hywY1r3QXa3Yprs6iZB9aAkfeNQRo5hC43UA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=euPhgJySg4i4LK8Z3WsJk6BWp1FUhEbRUBAD1dicL7cf49HTH2oRYYXQUoF42HDSS7DtI+TgVf/wZLcfWAe9X+uhyJB3kyCEHM/vXwaQg0E5Go5JJeMoeIuCx7EKOqlTCW6s/TmcxmCOFE20y/jcOUbyVsedVNi7NJt9OtGICbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=cmY2y3Wg; arc=none smtp.client-ip=95.215.58.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DrsKIhRE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777890335; x=1809426335;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nluvpIlNryhcGDtvNGYTLW0ZG88gXOfoCaYP2s86tRE=;
-  b=DrsKIhRE1ZHK67cW9cSFnEoPyOlDX9PYag5TbPPABZ68eogHgbaVoB3+
-   erCYaG8iPpoDQjgPJMfjR5F1zkbdFeDg9xB3W36feaoIXI3k52dMStsik
-   tmJDci8r6o9u/7hJtGJtMpZA767UTNDFa2vajqQdt+WKao35mG7wRvP4k
-   9DBc6mJAhQYfBsSexwANoFa8anbUOD2g2BosqMn631G4mshV0aiftot0y
-   IZHkvm9aZlCc+rYsCreHRDTGyGGxIcM+wDmaUyF2UI3maMEXGJaSFaRD/
-   Ak3DZUhfYiqwtMH2/JRtZk/b++qv4wpmla3pEic/f317LH/ieain8vVNd
-   A==;
-X-CSE-ConnectionGUID: mVB+jOmaRuWCSBRHv8T/Ow==
-X-CSE-MsgGUID: r33sDnpVS/KR4Fjrfft96Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="81311365"
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="81311365"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 03:25:35 -0700
-X-CSE-ConnectionGUID: Npkc06voSSmxkmSJ60YSug==
-X-CSE-MsgGUID: BjbfiXUfRIq+PdsmQSg8HQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="232826942"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 03:25:32 -0700
-Date: Mon, 4 May 2026 13:25:29 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Salih Erim <salih.erim@amd.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, git@amd.com, nuno.sa@analog.com,
-	andy@kernel.org, dlechner@baylibre.com, michal.simek@amd.com,
-	conall.ogriofa@amd.com, erimsalih@gmail.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] iio: adc: versal-sysmon: add I2C driver
-Message-ID: <afh0GW_SXuq72KwJ@ashevche-desk.local>
-References: <20260502111951.538488-1-salih.erim@amd.com>
- <20260502111951.538488-4-salih.erim@amd.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="cmY2y3Wg"
+Message-ID: <5f126a59-9f03-44e3-b4cd-27f70bd9840b@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1777890552;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/JdBfm5/FeCpkOwuefe6HGDXxCL2lAQQbrnIFT01dTg=;
+	b=cmY2y3WgXily0aTB6Cx05zGLsCDiTGEhAASXVI7NvaM/fULjpb0XiNUtlSSHcH6NdgTp+s
+	KRMMwxbtva2BSSlajV6/tzQ95QoxjrlW3dGcaljp5/gstLMRKLow84ZI7rQstpHLpOdGtU
+	6GWeNlzwzxWuhwUyh0kl5CZ3ZE87cog=
+Date: Mon, 4 May 2026 11:29:05 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260502111951.538488-4-salih.erim@amd.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Subject: Re: [RFC PATCH v2 1/4] i2c: rust: add smbus_read_byte_data and
+ smbus_read_word_data
+To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>, jic23@kernel.org,
+ linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org,
+ devicetree@vger.kernel.org
+Cc: branstj@gmail.com, lars@metafoo.de, ojeda@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, igor.korotin.linux@gmail.com,
+ linux-kernel@vger.kernel.org
+References: <20260429132234.30514-1-muchamadcoirulanwar@gmail.com>
+ <20260429132234.30514-2-muchamadcoirulanwar@gmail.com>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Igor Korotin <igor.korotin@linux.dev>
+In-Reply-To: <20260429132234.30514-2-muchamadcoirulanwar@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-On Sat, May 02, 2026 at 12:19:49PM +0100, Salih Erim wrote:
-> Add I2C bus driver for Versal SysMon to enable voltage and temperature
-> monitoring when the Versal chip has SysMon configured with an I2C
-> interface.
+Hello Muchamad
+
+On 4/29/2026 2:22 PM, Muchamad Coirul Anwar wrote:
+> Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+> ---
+>   rust/kernel/i2c.rs | 24 ++++++++++++++++++++++++
+>   1 file changed, 24 insertions(+)
 > 
-> The I2C protocol uses a custom 8-byte write format:
->   - Bytes 0-3: Data (little-endian, 32-bit)
->   - Bytes 4-5: Register offset (split into low/high parts)
->   - Byte 6: Instruction (read=0x4, write=0x8)
->   - Byte 7: Reserved
-> 
-> For reads, the driver sends the 8-byte command then receives 4 bytes
-> of data. For writes, it sends the 8-byte command with embedded data.
-> 
-> The driver uses the regmap API with custom read/write callbacks to
-> share the bus-agnostic core driver (versal-sysmon-core).
-> 
-> Event support is not available on I2C since the SysMon interrupt
-> lines are not routed over the I2C bus.
-
-...
-
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-
-Follow IWYU.
-
-...
-
-> +enum sysmon_i2c_payload_idx {
-> +	SYSMON_I2C_DATA0_IDX = 0,
-
-Is it mapped to HW bits or is it pure Linux enum? If the former, assign *all*
-items as per datasheet, otherwise drop explicit assignment (it's rare that we
-need it in the software).
-
-> +	SYSMON_I2C_DATA1_IDX,
-> +	SYSMON_I2C_DATA2_IDX,
-> +	SYSMON_I2C_DATA3_IDX,
-> +	SYSMON_I2C_OFS_LOW_IDX,
-> +	SYSMON_I2C_OFS_HIGH_IDX,
-> +	SYSMON_I2C_INSTR_IDX,
-> +};
-
-...
-
-> +struct sysmon_i2c {
-> +	struct i2c_client *client;
-> +};
-
-Can't be the struct i2c_client used directly? (Haven't checked if this is going
-to be extended or have special uses.
-
-...
-
-> +static int sysmon_i2c_reg_read(void *context, unsigned int reg,
-> +			       unsigned int *val)
-> +{
-> +	u8 write_buf[SYSMON_I2C_WRITE_SIZE] = { 0 };
-> +	u8 read_buf[SYSMON_I2C_READ_SIZE];
-> +	struct sysmon_i2c *priv = context;
-> +	int ret;
+> diff --git a/rust/kernel/i2c.rs b/rust/kernel/i2c.rs
+> index 7b908f0c5a58..6eaea1158fda 100644
+> --- a/rust/kernel/i2c.rs
+> +++ b/rust/kernel/i2c.rs
+> @@ -477,6 +477,30 @@ impl<Ctx: device::DeviceContext> I2cClient<Ctx> {
+>       fn as_raw(&self) -> *mut bindings::i2c_client {
+>           self.0.get()
+>       }
 > +
-> +	write_buf[SYSMON_I2C_OFS_LOW_IDX] =
-> +		FIELD_GET(SYSMON_I2C_OFS_LOW_MASK, reg);
-> +	write_buf[SYSMON_I2C_OFS_HIGH_IDX] =
-> +		FIELD_GET(SYSMON_I2C_OFS_HIGH_MASK, reg);
-> +	write_buf[SYSMON_I2C_INSTR_IDX] = SYSMON_I2C_INSTR_READ;
+> +    /// Reads a single byte from a register via SMBus.
+> +    pub fn smbus_read_byte_data(&self, reg: u8) -> Result<u8> {
+> +        // SAFETY: `self.as_raw()` is a valid pointer to a `struct i2c_client`
+> +        // by the type invariant of `I2cClient`.
+> +        let ret = unsafe { bindings::i2c_smbus_read_byte_data(self.as_raw(), reg) };
+> +        if ret < 0 {
+> +            Err(Error::from_errno(ret))
+> +        } else {
+> +            Ok(ret as u8)
+> +        }
+> +    }
 > +
-> +	ret = i2c_master_send(priv->client, write_buf, SYSMON_I2C_WRITE_SIZE);
+> +    /// Reads a 16-bit word from a register via SMBus.
+> +    pub fn smbus_read_word_data(&self, reg: u8) -> Result<u16> {
+> +        // SAFETY: `self.as_raw()` is a valid pointer to a `struct i2c_client`
+> +        // by the type invariant of `I2cClient`.
+> +        let ret = unsafe { bindings::i2c_smbus_read_word_data(self.as_raw(), reg) };
+> +        if ret < 0 {
+> +            Err(Error::from_errno(ret))
+> +        } else {
+> +            Ok(ret as u16)
+> +        }
+> +    }
+>   }
+>   
+>   // SAFETY: `I2cClient` is a transparent wrapper of `struct i2c_client`.
 
-sizeof()
+Thanks for the patch. However, we've previously agreed [1] that 
+I2cClient should implement the IO trait [2] rather than adding 
+standalone methods like these. This patch would need to be reworked in 
+that direction.
 
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != SYSMON_I2C_WRITE_SIZE)
+If you'd like to take that on, feel free to submit a patch series 
+implementing the IO trait instead.
 
-sizeof()
+Cheers
+Igor
 
-> +		return -EIO;
-> +
-> +	ret = i2c_master_recv(priv->client, read_buf, SYSMON_I2C_READ_SIZE);
+[1] 
+https://lore.kernel.org/rust-for-linux/20260131-i2c-adapter-v1-4-5a436e34cd1a@gmail.com/
 
-sizeof()
-
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != SYSMON_I2C_READ_SIZE)
-
-sizeof()
-
-With them the code will have one source of length an be robust to the changes
-of the buffer sizes.
-
-> +		return -EIO;
-> +
-> +	*val = FIELD_PREP(SYSMON_I2C_DATA0_MASK,
-> +			  read_buf[SYSMON_I2C_DATA0_IDX]) |
-> +	       FIELD_PREP(SYSMON_I2C_DATA1_MASK,
-> +			  read_buf[SYSMON_I2C_DATA1_IDX]) |
-> +	       FIELD_PREP(SYSMON_I2C_DATA2_MASK,
-> +			  read_buf[SYSMON_I2C_DATA2_IDX]) |
-> +	       FIELD_PREP(SYSMON_I2C_DATA3_MASK,
-> +			  read_buf[SYSMON_I2C_DATA3_IDX]);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int sysmon_i2c_reg_write(void *context, unsigned int reg,
-> +				unsigned int val)
-> +{
-> +	u8 write_buf[SYSMON_I2C_WRITE_SIZE] = { 0 };
-
-'0' is redundant.
-
-> +	struct sysmon_i2c *priv = context;
-> +	int ret;
-> +
-> +	write_buf[SYSMON_I2C_DATA0_IDX] =
-> +		FIELD_GET(SYSMON_I2C_DATA0_MASK, val);
-> +	write_buf[SYSMON_I2C_DATA1_IDX] =
-> +		FIELD_GET(SYSMON_I2C_DATA1_MASK, val);
-> +	write_buf[SYSMON_I2C_DATA2_IDX] =
-> +		FIELD_GET(SYSMON_I2C_DATA2_MASK, val);
-> +	write_buf[SYSMON_I2C_DATA3_IDX] =
-> +		FIELD_GET(SYSMON_I2C_DATA3_MASK, val);
-> +	write_buf[SYSMON_I2C_OFS_LOW_IDX] =
-> +		FIELD_GET(SYSMON_I2C_OFS_LOW_MASK, reg);
-> +	write_buf[SYSMON_I2C_OFS_HIGH_IDX] =
-> +		FIELD_GET(SYSMON_I2C_OFS_HIGH_MASK, reg);
-> +	write_buf[SYSMON_I2C_INSTR_IDX] = SYSMON_I2C_INSTR_WRITE;
-
-> +	ret = i2c_master_send(priv->client, write_buf, SYSMON_I2C_WRITE_SIZE);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != SYSMON_I2C_WRITE_SIZE)
-> +		return -EIO;
-
-sizeof() in both cases.
-
-> +	return 0;
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+[2] 
+https://git.kernel.org/pub/scm/linux/kernel/git/driver-core/driver-core.git/commit/?h=driver-core-testing&id=121d87b28e1d9061d3aaa156c43a627d3cb5e620
