@@ -1,301 +1,86 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02FBE3DFC9F
-	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 15:24:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68EE03DFC9F
+	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 15:26:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777908298; cv=none; b=DnZQybPOdB49V/5SgBCnZg06RJqdZY3VN39sJI0NrnVzGRJbYwGG/5L9KmhYV7k8ScA3eL2Rtm6y9J+a/dbhJWj4RfQQSUoXL38hJyK1oRxJZ8vNaf1x3VvOisO2PsldkC4UL/f6yxoE5cijIcePGpJ76jHJTePYSXz43OwFcpw=
+	t=1777908399; cv=none; b=XgUmtdiMv34ZgG5nbA327uYOr269N0j5fTqR+49+pq4KapX8cGBhLZgVW8DYkvbqio0JfhpLWIPwvsiKoY8HXrh7ir1Cu70fr0gn5qy8fkrZQHdhB5egVPMZwfBlfEvfJCTZA/59scFkyxbx3DOa+32LtSdC/gtrOM4Z6CrNjE0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777908298; c=relaxed/simple;
-	bh=24HMZQ9Ms/gngLZDovaC0SQfcgVkxbPvUEiAJQvC/nw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Eva8YoSRZVIyQX0VTIxC+4507vRrDGchgR3ZT0PHCEXWuVP0zNdlXwkW5JDVglj5nTNSbORcsvYC5vv4z1bb3+fAxw33V9to9+ML+FIKCMcslrcMnxWu1WVdUIqh3Z1Cz1uEvTIanm8jQOYd792GuYyYoJWIbfq3St+e2P9G54Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=lcb9BiGo; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=g++7TpOb; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1777908399; c=relaxed/simple;
+	bh=nZqDNsTW5YI3WO5FCIMPK9tAHdYtK2t1spypNegMioU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=s2LbIlKz7KXt6aG5rc+HC92MCdCqjsxOzEtK0BI8tfemF+MobkEtHtoHVqMPhv5Lzql8PhI0gkzEPLZW2S8IbE2EqVHLbntScHED5811IW3e7hh5K+8owzMgr/1csYA6c5EHf3QkOnRIlWm9mWglzciw04GpIz1/aZ71KGpYl1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bp9mbldt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="lcb9BiGo";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="g++7TpOb"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 644B41nd748896
-	for <linux-iio@vger.kernel.org>; Mon, 4 May 2026 15:24:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Hf6N3xo6cjBW+8Z3N+x8sxSpWyuJxm0UgHE+MChhex4=; b=lcb9BiGo++zVI34r
-	d6uFn6mGXX62p9s8ZK77g7KT+CVdcqmgMtM1IyiTqkSo+uZdY+Nlkuj7DA6D+ZSZ
-	pbVPgJmZPKK2DefzmLaSkWxwlYpvcTN3PpF/321pUZ7NqnqoD1NcnviUMqTsxiZt
-	spoE/9Yyp/QmyZMwM5aec/+FR5X7WYJ9kdfugRR7x8tgGEdw6SC/3rS6+LRbcrCl
-	xDu7zEfTFZERb6feWZ4dzEfgHCiIR1QRsqjVm5uCNzogWOTkltctr5QCNI5JxYpj
-	Uyw1lqexFxlfECTeNmwJpo7G6hgUggXyV6NeUdu6Z0uWXYODBSiOX0tHXVGO7zyK
-	1XWwuA==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dxscf11d6-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 15:24:55 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2a90510a6d1so30379305ad.0
-        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 08:24:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1777908295; x=1778513095; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Hf6N3xo6cjBW+8Z3N+x8sxSpWyuJxm0UgHE+MChhex4=;
-        b=g++7TpObeSjaMXOJT+7mA4/LFlwkJHAKmZdlTrrZQRTR98YJQ99CEHm/1NJm8/5U8g
-         hVzK7tRo0SFjpmAF24S78sB74KCP4Y8QLSfg1gv6B6wW89yVpPj/eJEAo/njpjWJyp+I
-         EdX/q6lmvJW3I6MH5WWK412/RRvwdeBT3I/QI7hF+NsDJLPssGFan8QRk6gpmlbtkFU7
-         QA2kz1QUvvSXHDxtXtwbuuuOhIIWgnm4KxTeJEnwbDfoUZmcW6zubVta1inF34iGgbJ9
-         kdQaEDd6QvlC81nBvE7ghbKzvDFmab5BRIVkWmVmSn5slEkUOMKG/TuEWPdBg1E6twAj
-         +BAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777908295; x=1778513095;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Hf6N3xo6cjBW+8Z3N+x8sxSpWyuJxm0UgHE+MChhex4=;
-        b=WyNw3KCUh7eHR+w07onKni23+qxaQMev1MqklJnEFB+2aUzpi/tphgcAmSyluXuqrv
-         Zs0nZvc3S2xijjlj18noI+2m5YELCAnk/J1V3f9a2mOTN3wHwd+wPHiXxzKzz9EWybGB
-         6f5tEBE1bNf7qbKC679M810Tq3SRQauukp2I0xGYCSE18grDd37rrM7gyQ5iF23tbXFO
-         RLy8UA5jJx84IKthNMHlBinL7et9x2LXAV0HK/NGnkWHPvddwT8gHh1+PgBEteG9nBmf
-         M8o6npxLOaUPCE6KEATn0GHnejbL8JbBd0aLnxka5Pg3H0HMqlqLevzr4C2UhkwYrzuX
-         4Rzw==
-X-Forwarded-Encrypted: i=1; AFNElJ9B8lsyp2Eq07UT+cgZp4+G3u8vpGQd3b0E4JQXpQYBiUsie5k4kbUHpfnPapiAtSCJ3CnHXirNSYc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxnp4ynu1oJSjB681dI464ufLmtFM16lYxB6I8GfEM+smhdFG4+
-	YlQxJyU/K3Q90SMwdbYkJdT9kF4aAqqR0e3IRwSAODrBWb5Z/B/AsCJfasPn3ojtgIlrLAVVZqE
-	vIYQxuhvy34koNMLLki+/4QOAhUaBJzd9xwcwkgvIWywyTiPg3G/bq/qQC6urmAY=
-X-Gm-Gg: AeBDietDQC2HRyyNm4+N0iOTheEOeXX8QmtyI7kIn8aT/JgTHoF1nam65lQpJw8C6K2
-	ojXhqhd/eo+/ye64VmHCT5tPutCcp9b8k5PB23TrfBx/gT7EmqyZVEsHaXibT2MGZtHGjQ7yiD+
-	ZR2hC6im5kPq9hU1LUm+Ch2iQ4cCA5FMvbpd1cKMsIqmhn8AdaXqip+/ivP9j7BqNlkzotuefCJ
-	dZPIsv2sgn+9g61mX1+c4U/eLJ7glKT+tODIdQDzNU+VD3tI3kUVU+0posaQeM/mQavA9BD48cK
-	qZRD/eqCg9nMDsSry+B1o0ZHqvyR1GsV4LI5g+J76hHD+TXmgk1vPnyb9C1k6bCHwYMjSUC/nO7
-	7JrjBfxDw78ucznd+kvKUXYZke09b5MODJZaC9mw1fv8PkYoR/iqZ31AzYiI1krBqfAYhSVxdri
-	ZGWnAvhYZ6BVwRw/vvECtIOypnzNc=
-X-Received: by 2002:a17:902:f788:b0:2ba:21c2:d6cb with SMTP id d9443c01a7336-2ba21c2d8e1mr36393805ad.16.1777908294676;
-        Mon, 04 May 2026 08:24:54 -0700 (PDT)
-X-Received: by 2002:a17:902:f788:b0:2ba:21c2:d6cb with SMTP id d9443c01a7336-2ba21c2d8e1mr36393345ad.16.1777908294018;
-        Mon, 04 May 2026 08:24:54 -0700 (PDT)
-Received: from ?IPV6:2409:4070:2111:4f3e:25a4:b9da:3138:5b7c? ([2409:4070:2111:4f3e:25a4:b9da:3138:5b7c])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9caa7ee38sm104462535ad.16.2026.05.04.08.24.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2026 08:24:53 -0700 (PDT)
-Message-ID: <a0b4db09-2656-429f-8ebf-b8cc10c054a3@oss.qualcomm.com>
-Date: Mon, 4 May 2026 20:54:41 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bp9mbldt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4D24C2BCF6;
+	Mon,  4 May 2026 15:26:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777908399;
+	bh=nZqDNsTW5YI3WO5FCIMPK9tAHdYtK2t1spypNegMioU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Bp9mbldtjiov6A0W2EvIb5ON4+1lfLIh/5u2hUTbcAqTSt5tbemD4dvNtZTnUARPO
+	 EcF63A3cRaYyK6+IQoO4dQ9t5NeV1TylCTrlOIT8yirU/DbNLgaMoD48T3mTnbGOgq
+	 JGjWIVc2z9q79r0wP1ioFGzpMeNqObVFwHecQddeuDFa9Jw53H4itcUBNpErWnBsNh
+	 ESWVgzx56q17jDzbIFWyYhg+Qk3MDJLDQMZxhoHoGKysp6R8TjgV0caqxaa4/PU8gO
+	 JlBwBzrRRNcDwWVRipyefexCfw+AVdiLDytdG6MoY+Jz0hdymUOjX1pmupQXSqpS3k
+	 vycLsf+QCAx1A==
+Date: Mon, 4 May 2026 16:26:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, "Rafael G. Dias"
+ <rafael.guimaraes.dias@usp.br>, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, Felipe Khoury Dayoub
+ <felipedayoub@usp.br>
+Subject: Re: [PATCH v2 2/2] iio: light: stk3310: Update includes to match
+ IWYU
+Message-ID: <20260504162632.24f46f74@jic23-huawei>
+In-Reply-To: <afJhT6z0qwQL-tuQ@ashevche-desk.local>
+References: <20260428161339.1187956-1-rafael.guimaraes.dias@usp.br>
+	<20260428161339.1187956-2-rafael.guimaraes.dias@usp.br>
+	<CALoEA-zxZgPwgb7o_=F9Q=bQSYiQi=THtCpgu0mW3EEzbXEAcw@mail.gmail.com>
+	<20260429112300.696e2722@jic23-huawei>
+	<afJhT6z0qwQL-tuQ@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V10 4/4] thermal: qcom: add support for PMIC5 Gen3 ADC
- thermal monitoring
-To: Daniel Lezcano <daniel.lezcano@oss.qualcomm.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-        agross@kernel.org, andersson@kernel.org, lumag@kernel.org,
-        dmitry.baryshkov@oss.qualcomm.com, konradybcio@kernel.org,
-        daniel.lezcano@linaro.org, sboyd@kernel.org, amitk@kernel.org,
-        thara.gopinath@gmail.com, lee@kernel.org, rafael@kernel.org,
-        subbaraman.narayanamurthy@oss.qualcomm.com,
-        david.collins@oss.qualcomm.com, anjelique.melendez@oss.qualcomm.com,
-        kamal.wadhwa@oss.qualcomm.com, rui.zhang@intel.com,
-        lukasz.luba@arm.com, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        cros-qcom-dts-watchers@chromium.org, quic_kotarake@quicinc.com,
-        neil.armstrong@linaro.org, stephan.gerhold@linaro.org
-References: <20260130115421.2197892-1-jishnu.prakash@oss.qualcomm.com>
- <20260130115421.2197892-5-jishnu.prakash@oss.qualcomm.com>
- <addDTiI8MB2b_AzJ@mai.linaro.org>
- <12d683aa-44c2-4e2d-8459-78ba9f2ab61e@oss.qualcomm.com>
- <f46ef4af-1c05-4473-9226-901d3393ea89@oss.qualcomm.com>
- <7e619cef-ed08-4454-905c-05ab0939d60e@oss.qualcomm.com>
- <e1845fc5-254e-4481-b783-5e631d4e506b@oss.qualcomm.com>
-Content-Language: en-US
-From: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-In-Reply-To: <e1845fc5-254e-4481-b783-5e631d4e506b@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authority-Analysis: v=2.4 cv=BcvoFLt2 c=1 sm=1 tr=0 ts=69f8ba47 cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22 a=uLTcNiWXy3B0Tm635-QA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=GvdueXVYPmCkWapjIL-Q:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA0MDE1MSBTYWx0ZWRfX5x3MMu8Lnj8q
- Yet7xWq3UaqpLPB2B9keAx2wkqTEta8psuEaliiNGn6qX09SaC7My2aJBN9uK8187YpIdq2fWOH
- zj97fE/V4ZmRiMuLbDlxAxstnnPnJRJMSQGvNovmlPXAWQSjp3mNGh/ek5WFmGiNLTgmV/W3tDs
- 84Iw7Fh0JxuCZ7oKE2fc3f0drfiSWijWdp1IQ3qCAnoXs4iF8Si3ic+SI3QDD1ZInfv5OlxxlEt
- X8iWPm60n4RhXQwIodNqX4Zahnh9Voaz3Ctc9eKIVkUVpVSPJKaIUASn800qImXSTHCvIx5ChDP
- 5MsL/DUUmLSOhZ/IyQpZ/5aqJTyLAgt4SYi8yRMmwSAUMUDZBmO+cfKhCk/BGTngSKP4LiKxCU7
- qgq7tZ4SX9+HCY7bvt9AaK8hAQMAR7yLYuECGCEqb8nHYkXa6BeDpOAa3YFcqxOp/OFaSKqGnto
- 87o7kLmEzW9iRbKXqew==
-X-Proofpoint-ORIG-GUID: osZsX1Z3qAnn4Yd76YzIXsHJh1-V__Xk
-X-Proofpoint-GUID: osZsX1Z3qAnn4Yd76YzIXsHJh1-V__Xk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-04_05,2026-04-30_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 suspectscore=0 spamscore=0 clxscore=1011 phishscore=0
- lowpriorityscore=0 bulkscore=0 adultscore=0 priorityscore=1501
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604200000
- definitions=main-2605040151
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Daniel,
+On Wed, 29 Apr 2026 22:51:43 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-On 4/27/2026 1:48 PM, Daniel Lezcano wrote:
+> On Wed, Apr 29, 2026 at 11:23:00AM +0100, Jonathan Cameron wrote:
+> > On Tue, 28 Apr 2026 18:49:36 +0200
+> > Joshua Crofts <joshua.crofts1@gmail.com> wrote:  
+> > > On Tue, 28 Apr 2026 at 18:14, Rafael G. Dias
+> > > <rafael.guimaraes.dias@usp.br> wrote:  
+> > > >
+> > > > Clean up the included headers in stk3310.c according to the
+> > > > Include-What-You-Use (IWYU) tool. Remove the generic <linux/kernel.h>
+> > > > header and add explicit dependencies to improve compilation accuracy.
+> > > >
+> > > > Co-developed-by: Felipe Khoury Dayoub <felipedayoub@usp.br>
+> > > > Signed-off-by: Felipe Khoury Dayoub <felipedayoub@usp.br>
+> > > > Signed-off-by: Rafael G. Dias <rafael.guimaraes.dias@usp.br>  
+> > https://sashiko.dev/#/patchset/20260428161339.1187956-1-rafael.guimaraes.dias%40usp.br
+> > Had a few comments.  I added asm/byteorder.h and linux/sysfs.h.
+> > 
+> > Maybe we could argue the sysfs.h one will always be included by
+> > iio/sysfs.h but I think it's better to explicitly include it
+> > for struct attribute_group and similar.
+> > 
+> > The asm/byteorder.h is simpler one as that should definitely be here.
+> > 
+> > Anyhow, tweaked whilst applying and applied to the testing branch of
+> > iio.git.  
 > 
-> Hi Jishnu,
+> Please, also drop irqreturn.h as implied by interrupt.h.
 > 
-> On 4/25/26 12:37, Jishnu Prakash wrote:
->> Hi Daniel,
-> 
-> [ ... ]
-> 
-> 
-
-...
-
-> 
-> [ ... ]
-> 
->>> [ ... ]
->>>
->>>>>> +    dev_dbg(adc_tm5->dev, "channel:%s, low_temp(mdegC):%d, high_temp(mdegC):%d\n",
->>>>>> +        prop->common_props.label, low_temp, high_temp);
->>>>>> +
->>>>>> +    guard(adc5_gen3)(adc_tm5);
->>>>>> +    if (high_temp == INT_MAX && low_temp == -INT_MAX)
->>>>>> +        return adc_tm5_gen3_disable_channel(prop);
->>>>>
->>>>> Why disable the channel instead of returning an errno ?
->>>>>
->>>>
->>>> This is the convention we follow in our existing ADC_TM driver at
->>>> drivers/thermal/qcom/qcom-spmi-adc-tm5.c. If both upper and lower
->>>> thresholds are meant to be disabled, we disable the channel fully
->>>> in HW to save some power and it can be enabled later if this API
->>>> is called for it with valid thresholds.
->>>>
->>>> Is it considered invalid in the thermal framework to try to disable
->>>> both thresholds? Should I both disable the channel and return some
->>>> error from here?
->>>
->>> Well, if the channel is disabled, then the temperature sensor of the thermal zone is disabled, consequently the thermal zone is disabled from a HW POV but enabled from the kernel POV.
->>>
->>> Why not add the 'change_mode' ops and then disable the thermal zone (+ pm_runtime) ?
->>>
->>
->> I have a doubt about this part - if the thermal framework sends threshold values
->> of (-INT_MAX, INT_MAX) in the .set_trips callback, doesn't it mean that the
->> framework is already trying to disable the thermal sensor?
-> 
-> No, let me clarify this:
-> 
->  * the thermal thresholds are set by the userspace to get notification when a temperature is crossing the way up or/and down a specified limit. Thresholds can be deleted, added, flushed, etc ...
-> 
->  * the thermal trips are specified by the firmware and should not be changed even if I agree there are the writable trip points which IMO we can consider for debug purpose
-> 
-> If you specify a trip/threshold point with min=-INT_MAX and max=INT_MAX, semantically speaking it is correct but in practice these temperatures won't be reached so it is like the trip point is disabled but it is a side effect.
-> 
-> A trip point is a property of a thermal zone.
-> 
-> A thermal sensor is represented by a thermal zone.
-> 
-> A thermal zone can be enabled without trip points or thresholds. The userspace is still able to read a temperature through netlink or sysfs.
-> 
-
-Thanks for your explanation, I understand the convention now.
-
->> Or does it just mean threshold monitoring functionality can be disabled for now,
->> but other functionality like temperature reading is still expected to work?
->>
->> Please note that adc_tm5_gen3_disable_channel() only disables the threshold
->> monitoring and interrupt generation functionality - the get_temp() call to read
->> temperature will still work.
-> 
-> Above you stated we receive a notification when the conversion is finished. So how do you read the temperature if there is no interrupt telling to read the converted value ?
-> 
-
-I think you are talking about the immediate conversion here, which is called in get_temp() -
-let me try explaining with an example, to avoid missing anything again.
-
-On an ADC SDAM, we have 8 channels which can be used for either immediate read or
-ADC_TM functionality. So by convention, we reserve the first channel of the first
-SDAM for *all* immediate reads and use all the remaining channels for ADC_TM.
-
-So if we have SDAM 0 and SDAM 1 used for ADC, channel 0 of SDAM 0 is used for all
-immediate conversions and channels 1-7 of SDAM 0 and channels 0-7 of SDAM 1 can
-all be used for ADC_TM functionality.
-
-Now if channel 5 of SDAM 0 is used to monitor the xo-therm ADC thermistor and we call
-adc_tm5_gen3_disable_channel() on it, threshold monitoring and interrupt generation
-from channel 5 alone would be stopped, but it would not change for other channels.
-
-So if we wanted to read the xo-therm thermistor's temperature through the get_temp()
-callback, it would still work, as calling get_temp() results in an immediate
-conversion request done through channel 0 of SDAM 0 to read this thermistor's temperature.
-
-
->> Perhaps I should not have used the wording
->> "disable the channel" above, as calling adc_tm5_gen3_disable_channel() is not
->> exactly the same as fully disabling the thermal zone.
->>
->> Please let me know if any change is needed there - should I return any error
->> after calling adc_tm5_gen3_disable_channel() ?
-> 
-> I understand, your point. Perhaps just put it apart and address it later as an optimization when the driver is merged and everything is clarified.
-> 
-
-OK, I'll do as you suggest. For now, I'll just drop this special case check:
-
-        if (high_temp == INT_MAX && low_temp == -INT_MAX)
-
-and try adding it in a separate change later.
-
-Thanks,
-Jishnu
-
-
->>> [ ... ]
->>>
->>>>>> +    /*
->>>>>> +     * Skipping first SDAM IRQ as it is requested in parent driver.
->>>>>> +     * If there is a TM violation on that IRQ, the parent driver calls
->>>>>> +     * the notifier (adctm_event_handler) exposed from this driver to handle it.
->>>>>> +     */
->>>>>> +    for (i = 1; i < adc_tm5->dev_data->num_sdams; i++) {
->>>>>> +        ret = devm_request_threaded_irq(dev,
->>>>>> +                        adc_tm5->dev_data->base[i].irq,
->>>>>> +                        NULL, adctm5_gen3_isr, IRQF_ONESHOT,
->>>>>> +                        adc_tm5->dev_data->base[i].irq_name,
->>>>>> +                        adc_tm5);
->>>>>
->>>>> The threaded interrupts set the isr in a thread and from the thread
->>>>> handling the event, there is a work queue scheduled. Why not use the
->>>>> top and bottom halves of the threaded interrupt ? Hopefully you should
->>>>> be able to remove the lock.
->>>>
->>>> Yes, I can use the top and bottom halves of the threaded interrupt as you
->>>> suggested. But what exactly do you mean by removing the lock?
->>>>
->>>> If you meant the mutex lock used in this driver, we cannot remove that.
->>>> This is because the ADC_TM driver needs to write into several registers
->>>> shared with the main ADC driver for setting new thresholds, so we
->>>> have to share a mutex between the drivers to prevent concurrency issues.
->>>
->>> When using a workqueue tampering with registers while an interrupt handler is doing the same, the lock is needed.
->>>
->>> But if the workqueue is replaced by threaded interrupt, the lock *may* not be needed because the design may prevent race conditions.
->>>
->>> That may be not true in this case, I did not investigate deeper in the code to figure it out. Let's see the next version
->>>
->>
->> I think a lock will not be needed with the change I planned, but you
->> can judge it in the next version.
-> 
-> Sure, thanks
-> 
->   -- Daniel
+Done.
 
