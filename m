@@ -1,37 +1,37 @@
 Received: from mail.kernel-space.org (v2202511311555398556.powersrv.de [46.38.245.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ED943E3C6F;
-	Mon,  4 May 2026 17:17:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FDCE3E3DAB;
+	Mon,  4 May 2026 17:17:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.38.245.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777915037; cv=none; b=mDoxEogYkAvNdPFL8p8A4YsXWhSegiEWxrIWRxb7Ga/vAX/heHHAEMR1C6isfVB9TMF9nsZnVQwqKIzDnWUAHKzPq2dUcz5jcJWnFlAPzExS2l65xmOiWmpHNaiKvC1tHJ4LfelmuOAaFn/oNYFOLr7cjro5zBuA2qLY0Km9M+E=
+	t=1777915042; cv=none; b=cvdULllDp7d6t0p7Y9Xb0STsxHjqZniy/MCtwLxzCq66RG4E+KWvarhGxXKutfggsrUn2ErrhFNWN7KskEBCQWfHXdbK3Gq4rrV2l/Kgvs4zWIIu9f8Hf6cqyJUMS+ZzL+eYDSD/vLrA7pgzp/OMJbl0nxsDJUT0nAclDMn9zbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777915037; c=relaxed/simple;
-	bh=n0b364dDBrWM4RGQrGIAbMsbTV+2t0ZGtLdE7nGAO9Q=;
+	s=arc-20240116; t=1777915042; c=relaxed/simple;
+	bh=nMlnkc4zykaVGWF7hNBUVTTmwan+JJt9iwyVMoVyz6U=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Odn6Y7gnXIN70r/63Z+m7KQ/rdbI/o4nob7ZWNO49g21op5CXmA1bDk+yqZLJ4kDzcQopCEZOGHqmZUqTpG9vb2klRTh5GzMriC3LI6a+8giA4nj4+e61tdbiG9Bkr9i4sf53TMSD2cRuJDEpLzq36LcZdvxseY2RVFT0KoO7Kg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org; spf=pass smtp.mailfrom=kernel-space.org; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=MldD+GhP; arc=none smtp.client-ip=46.38.245.6
+	 In-Reply-To:To:Cc; b=a0kLNf4gwlVynb7XvpmmS/SZMRiA8k+wtgpbZE4ZbwmvESrepL/fXy1wv9iMhPTqoRRLMeWhEVp4q6LKv7mcoD1NxG3jsq2ZWeS+oItRUdDYMolRF/WVb+NliyuXTNVPSWvn1EwskRDfsej88La/nCMl23MCHbDmB7ttThjqqEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org; spf=pass smtp.mailfrom=kernel-space.org; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=BvBon1b0; arc=none smtp.client-ip=46.38.245.6
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel-space.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="MldD+GhP"
+	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="BvBon1b0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
 	s=s1; t=1777915005;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=mqVoCiMOeXwzd334lL+Kbbn+xeppyD+CHd7jRk3nty8=;
-	b=MldD+GhPDuS3G03v762xI38Yl1c0ElHUytTd6dJ/Qw2i98k1hfKxzTaRliQ/L4c/fLMelm
-	AF4w86WrbY52ZHA6+j71C340r4AmmG8OHOlKO9yAvredhdcBu7V1/s+6ZslXic7IMDvJ3d
-	dCFfMWi4WYoQ1FRt7sZg9j7cMF97kvE=
+	bh=e5qBFQ0vyH0w70M/WIM2MXWzXlakBBcfbEZV0cspLfw=;
+	b=BvBon1b0Ac2uWcOxxKX1jbZA7VLFP2snmM+/uiv3OIolIZ7o3/Lg2OkmV6QnNWMNYUJH+T
+	9NJoUh532sVKOovqQWMXGqOs3xryuBR2De039F/zvcwpgGXwefLrn3RqZ88iNsqOrkrnLs
+	I8ixcFxDhKbc/ABDdgHFqVUCOqfUl8I=
 Received: from [192.168.0.2] (<unknown> [2a07:7e81:7daa:0:62cf:84ff:feee:627])
-	by oreshnik (OpenSMTPD) with ESMTPSA id ffaf193d (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+	by oreshnik (OpenSMTPD) with ESMTPSA id f28eb5b7 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
 	Mon, 4 May 2026 17:16:45 +0000 (UTC)
 From: Angelo Dureghello <angelo@kernel-space.org>
-Date: Mon, 04 May 2026 19:16:44 +0200
-Subject: [PATCH 06/10] m68k: mcf5441x: add CCM registers
+Date: Mon, 04 May 2026 19:16:45 +0200
+Subject: [PATCH 07/10] m68k: mcf5441x: add CCR MISCCR2 bitfields
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260504-wip-stmark2-dac-v1-6-874c36a4910d@baylibre.com>
+Message-Id: <20260504-wip-stmark2-dac-v1-7-874c36a4910d@baylibre.com>
 References: <20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com>
 In-Reply-To: <20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com>
 To: Greg Ungerer <gerg@linux-m68k.org>, 
@@ -58,40 +58,35 @@ X-Mailer: b4 0.15.2
 
 From: Angelo Dureghello <adureghello@baylibre.com>
 
-Add CCM module register offsets.
+Add CCR MISCCR2 register bitfields.
 
 Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
- arch/m68k/include/asm/m5441xsim.h | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ arch/m68k/include/asm/m5441xsim.h | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/arch/m68k/include/asm/m5441xsim.h b/arch/m68k/include/asm/m5441xsim.h
-index f5acc962bb95..9ce2cbb05316 100644
+index 9ce2cbb05316..93f7943d5550 100644
 --- a/arch/m68k/include/asm/m5441xsim.h
 +++ b/arch/m68k/include/asm/m5441xsim.h
-@@ -125,6 +125,26 @@
- #define MCFPM_PPMHR1		0xfc040038
- #define MCFPM_PPMLR1		0xfc04003c
- #define MCFPM_LPCR		0xec090007
-+
-+/*
-+ * Chip Configuration Module (CCM).
-+ */
-+#define MCF_CCM_CCR		0xec090004
-+#define MCF_CCM_RCON		0xec090008
-+#define MCF_CCM_CIR		0xec09000a
-+#define MCF_CCM_MISCCR		0xec09000e
-+#define MCF_CCM_CDRH		0xec090010
-+#define MCF_CCM_CDRL		0xec090012
-+#define MCF_CCM_UOCSR		0xec090014
-+#define MCF_CCM_UHCSR		0xec090016
-+#define MCF_CCM_MISCCR3		0xec090018
-+#define MCF_CCM_MISCCR2		0xec09001a
-+#define MCF_CCM_ADCTSR		0xec09001c
-+#define MCF_CCM_DACTSR		0xec09001e
-+#define MCF_CCM_SBFSR		0xec090020
-+#define MCF_CCM_SBFCR		0xec090022
-+#define MCF_CCM_FNACR		0xec090024
+@@ -145,6 +145,21 @@
+ #define MCF_CCM_SBFCR		0xec090022
+ #define MCF_CCM_FNACR		0xec090024
+ 
++/* Bit definitions and macros for MCF_CCM_MISCCR2 */
++#define MCF_CCM_MISCCR2_ULPI		BIT(0)
++#define MCF_CCM_MISCCR2_FB_HALF		BIT(1)
++#define MCF_CCM_MISCCR2_ADC3_EN		BIT(2)
++#define MCF_CCM_MISCCR2_ADC7_EN		BIT(3)
++#define MCF_CCM_MISCCR2_ADC_EN		BIT(4)
++#define MCF_CCM_MISCCR2_DAC0_SEL	BIT(5)
++#define MCF_CCM_MISCCR2_DAC1_SEL	BIT(6)
++#define MCF_CCM_MISCCR2_DCC_BYP		BIT(7)
++#define MCF_CCM_MISCCR2_PLL_MODE	GENMASK(9, 7)
++#define MCF_CCM_MISCCR2_SWT_SCR		BIT(12)
++#define MCF_CCM_MISCCR2_RGPIO_HALF	BIT(13)
++#define MCF_CCM_MISCCR2_DDR2_CLK	BIT(14)
++#define MCF_CCM_MISCCR2_EXTCLK_BYP	BIT(15)
 +
  /*
   *  UART module.
