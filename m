@@ -1,210 +1,154 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A42D31C567;
-	Mon,  4 May 2026 08:15:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777882504; cv=none; b=tvPfFDW3r3SJUzcrTFxRxQ800pnCltVwP6dNJpQM2I6fbj6YgtOCqUC8yxgQQm7dKst3knxwoO5QFcakhFgsDdUjzZbl3/inyM18sryOehGei6bNuFtNysu0rmtSZ9Uxm7WWeJQkh4MUiN0cgcu6IrLYbYli/ooRsLvwK/aQ0DA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777882504; c=relaxed/simple;
-	bh=MQv4zk7h1yV1kcpyjPkg8okaCn/5xqQSH3mz8Kx5s5g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WZNMwI+Eu2d84wP9N66JN4OogxJHrfcIZbpeREZpooUfqwWG43HxIeWCLDkb5QD8sqt6koUP1j2Gu97QR2cv2hRZvK5LUXUc8xmhFDgoI3uWhwXT0klGGmqqq+wLR41ab8xG9aGMAkEYQjA1DQcmZVvswgmNOD6LCwdcMQm9yC8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OIdyDq1H; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9176432A3C9
+	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 08:19:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777882779; cv=pass; b=NRMME8OmrjG2E/VUA0+KGKVkNx3zXjFc6xri5DTdRyxlbD+UEYtHakP3AzIS/kpXkOxIsRBvR95rWwm9aCn74HykoMNhTaxe6/QI1KHqshWzIbeUTtWg2+R5FAv+CZgbmYBk99Y5U4RpkBwZswqfzGZ7R3KkNZd7HbCOaTnDdaU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777882779; c=relaxed/simple;
+	bh=l8ZpdzgxNTWWmScT07aFRo/bLAkMwCRgPYeEZ/E4nt0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JIu2at908zlJNAIk9D62yYcUxIyq984+BQQtAmSEAF+dQUVEUnQH0VR4KgwpzQW9a1rcLnoRz3zoGPnvK+OQATVmwTGNuFOx8Vhw/GAUXMKOihcu1kOeoZ3w6mDJRAGBkMd79zKchRAkvsGlH4z/eS/V043lUaK0YsuDomSe3yk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FerO2FDZ; arc=pass smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OIdyDq1H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777882503; x=1809418503;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MQv4zk7h1yV1kcpyjPkg8okaCn/5xqQSH3mz8Kx5s5g=;
-  b=OIdyDq1HhppHwsIUGZPc5KegxiAwMq1oS+irH4w86k6jNx7h2ABVdrCF
-   W5JeU+oXcEbVElAr1cSRJNNgwFQ3Q5eGhCxTPLgcB2JiKetZX+YZquzAu
-   paVsQUoF9xFcIN2+rfGms5qkvXolSscFULlcatPQzv9MBVf9o66kJ2yyb
-   yLGRltJrxDw30ZIUJ35/gItiSChdtDJrKm0QuOjWWgO6xrTNslGoQAJwA
-   U9awOrMLTd3LDOTM4va9o0fp6Zw5OtvNHrq1NAPTXgsFraU/STfH70hKJ
-   +gHs/unoQXQOuJ0BAqKSlfKa/hxPqxpAtCV4jkOlhqmUH4AFOHFamGiyT
-   g==;
-X-CSE-ConnectionGUID: fmXnvuKvRXK2OJV/nZ7h+g==
-X-CSE-MsgGUID: 9m1isV8JQqKoVU/zP2XSrw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="77897936"
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="77897936"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 01:15:02 -0700
-X-CSE-ConnectionGUID: KoN5SnOOSy6kFmdtPkX1sg==
-X-CSE-MsgGUID: aH03MOmPTL+0b5walA6uVQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="239424698"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 01:14:56 -0700
-Date: Mon, 4 May 2026 11:14:54 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: radu.sabau@analog.com
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v9 5/6] iio: adc: ad4691: add oversampling support
-Message-ID: <afhVfj6zo3pmLdC6@ashevche-desk.local>
-References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
- <20260430-ad4692-multichannel-sar-adc-driver-v9-5-33e439e4fb87@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FerO2FDZ"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6763cc8775cso7985027a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 01:19:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777882772; cv=none;
+        d=google.com; s=arc-20240605;
+        b=dXxmykPSmA0dkfA0vw+muEb4y7bLwg1ZJTE9czcCvlZsc0/LNgQE1WY4WOV4dq0awz
+         k5o9JAWFa3523Rn1lY6tQceWH6dDvpDnVZTGwhrokIF5WtXxut1jShVycJacxBbttOUg
+         H7lp9CYRys3oAg81HdpFpX1EgzRKquU5M7Z1THlOWfl99sSVN7dXEe1hRF6MH6rueZVu
+         qMVPz6O1YiOk7Y+TFGAL4KmbOkDlBwe6028FYbvrjbZISMdkgtx8/e0O6MjU0aZ76GXn
+         R/Zmg6zKmYq+AXG2R1McBC60wLetAcPlvtcua9+hbkr6W7vFuE7+AKM5rwPk4YU3Q1fc
+         wS8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=c5uzeGe7MO2cASOiiw8a/Glk5CEUpsfLNKgiAwc1nL4=;
+        fh=b9AwDXNEG/wd2F3KS7QABczAUpIslUtXei8ujT8rz1g=;
+        b=XzOjQt/XmEHx7AJ3+MM2D+bT2Yt7GZwuBtBQLY+E/7Q/6x0+N3Kqta2RvlFwhO7SeB
+         WVkobeYUKx0hOthjcV+aLrb2huZKAJJlsT5z4jsbW/EW9VqkCvbnjuywemFDDCzIskDI
+         S7d4giEcTqOxUuXVsJKYewqVxtBwljVaOCmSxDBDr0JLP5K1SoSDz4QyjGPhEjIj9ij2
+         LEIG5yTQbA+Fmixq8DdD25VdZZ1kGVyvC9XGCrvZXu/wHOxaZmZ9rpVhARx/lpHRmlad
+         8nq2BV+rK4+d3c9qpWz+hjW+csA390+J209EdJ2fDZpAVFTCsQ3D/O9brsJLAC84Dm60
+         NonQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777882772; x=1778487572; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=c5uzeGe7MO2cASOiiw8a/Glk5CEUpsfLNKgiAwc1nL4=;
+        b=FerO2FDZnkBExdgzx0PNCC+wW1yyi4iwMFm0zfBmUw89nxeSjw5j7tG0S+smclNeZP
+         9AZANXywib9tuMEHI3aJGfHbjoni8jjVqJtgieb4Kq5YOBQIXqASpa9iJ58hqohXi+BR
+         3eWp1G0rhjuEaAe537D3xvtJ1i14wEamb4qSuN3lOnxD9kqBCfYol0yiEKK3l61pEpXA
+         7RbTqljyzSGfYOg/jgpIwB4LgVX7AAWMtKqg6jagUmZs4r7/3HzU6pBRNJGzaNhCIePI
+         0uYtdL5v9XcVxjUfBo6Pbc2EIddsq7bERog4KMfeKEAydLoWcMw5vITqKY4vYGYyieZG
+         jysQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777882772; x=1778487572;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c5uzeGe7MO2cASOiiw8a/Glk5CEUpsfLNKgiAwc1nL4=;
+        b=gLsmJbIDBpJ6+HIY1sT/99QCATl8dAeY39ipupK+lCW15QruySHzrTbTepcor76EDs
+         e7zwrs1YwhYb6MiyoVtQUiSitci6l8gJY3ixQ2mUcUC8t9T30Wpb1DfriNxP/zOdU62r
+         CTmT2wk4+ML6cv/5KtdgrUz5XH0f3otQf8Dpmt2mndomKGhSWnismfpd7l9z8aiX9iJ+
+         gKDfN8Jnda4FE6eHgeaFtybvIKqS/duPlB41JsX7Tbi+Lmd+j/5KFVdHDb5kCPfm0UNf
+         VMd0L8P/14nk1qe2PtskuLUsbukK+lZZ/WSlTL1yBksoYg4kLmV0Spd/4JxronWs4Z5L
+         1eIQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/GKrBO0vLhZLCJUxPkkgR4GMrNIhw92j716qS61JXKH6PQUdjeL5GYZeOy7vNVFOLiRHQKQq8tqDA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzE8TKGdTZj8gkZ0Rvi7zKc4p7VN0xp1/NoOMISSBrsTxoez+Su
+	mKFj7Hd1eRQavjpWtaOW22G9YHBO7DkzSj2TV9GbGLqdHoiEyvCuEyyW2YKfevXjYtMYZGyyA9F
+	aOJi/95AABl2rMUQUE8WJdSinrGvVv6mafykH
+X-Gm-Gg: AeBDiesROMT1brq1StSWC15GmOWkmtKi6q0XkNJfQyQOwqUDkG8w9NXAcoFiiv17d1K
+	43ZFoqINpYQ74FwWCKvhPa/A02f9uZlaf5mhmt2B8Nj7g++CgB10kG09A8F22UrAMv8iH31es3U
+	hulzAf98q1KaCyY7T8Q53vh+g+u44s/5IY93LhCp0+MJphuJ1ouGFdhSu2Xw5k/SnnC4MvMQB46
+	2w+LNkD4jB8KIxsfVI9aWyn2lNslyj9ym7CBjTKVO5oUIL5x82F71k5SvymAiaXaT3G+OgTCzpG
+	9PKIN2F2qlPcITU/OKz6/LBEJaOpF1RpyLkCg8/KeGrQE2OUuL2dkFbm84Rr8N5572KpgTK9f5T
+	P7HkddDO3CHWOKduaSfZrWLmYZ9+M88NLf65Fr3zC3MARjCoh/J7x4GDLPBmr8ejmQTpVgBivvE
+	r9QdYO/lLyr8R+knsxcuriZKz4d14=
+X-Received: by 2002:a17:907:86ac:b0:ba6:74bc:5604 with SMTP id
+ a640c23a62f3a-bbb98a74d59mr709405866b.26.1777882772104; Mon, 04 May 2026
+ 01:19:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260430-ad4692-multichannel-sar-adc-driver-v9-5-33e439e4fb87@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260504030408.105762-1-limiao870622@163.com> <20260504030408.105762-3-limiao870622@163.com>
+In-Reply-To: <20260504030408.105762-3-limiao870622@163.com>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Mon, 4 May 2026 10:19:20 +0200
+X-Gm-Features: AVHnY4Jrmb4Z6kDtKTA6VlZCJo_VUCkJjL6_q77TFmyyMbN9cKd77Zy3i-HX5BA
+Message-ID: <CALoEA-z6mR-Qb4CwYPoBjCjMZURF48zs4Y14TXfsTf2=skyOHQ@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] iio: light: stk3310: Replace uint32_t with u32 and
+ reorder members to eliminate padding
+To: Miao Li <limiao870622@163.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, waqar.hameed@axis.com, dixitparmar19@gmail.com, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Miao Li <limiao@kylinos.cn>, Andy Shevchenko <andriy.shevchenko@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Apr 30, 2026 at 01:16:47PM +0300, Radu Sabau via B4 Relay wrote:
+On Mon, 4 May 2026 at 05:05, Miao Li <limiao870622@163.com> wrote:
+>
+> From: Miao Li <limiao@kylinos.cn>
+>
+> Replace the uint32_t type members in the stk3310_data structure with u32
+> to adhere to the unified kernel coding style, and reorder the member
+> variables to eliminate memory padding holes.
+>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Miao Li <limiao@kylinos.cn>
+> ---
+>  drivers/iio/light/stk3310.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+> index 86cc6e8ec..0447fbf1b 100644
+> --- a/drivers/iio/light/stk3310.c
+> +++ b/drivers/iio/light/stk3310.c
+> @@ -115,12 +115,6 @@ static const int stk3310_it_table[][2] = {
+>  struct stk3310_data {
+>         struct i2c_client *client;
+>         struct mutex lock;
+> -       bool als_enabled;
+> -       bool ps_enabled;
+> -       bool ps_int_enabled;
+> -       uint32_t ps_thdl;
+> -       uint32_t ps_thdh;
+> -       uint32_t ps_near_level;
+>         u64 timestamp;
+>         struct regmap *regmap;
+>         struct regmap_field *reg_state;
+> @@ -131,6 +125,12 @@ struct stk3310_data {
+>         struct regmap_field *reg_int_ps;
+>         struct regmap_field *reg_flag_psint;
+>         struct regmap_field *reg_flag_nf;
+> +       u32 ps_thdl;
+> +       u32 ps_thdh;
+> +       u32 ps_near_level;
+> +       bool als_enabled;
+> +       bool ps_enabled;
+> +       bool ps_int_enabled;
+>  };
+>
+>  static const struct iio_event_spec stk3310_events[] = {
+> --
+> 2.25.1
+>
+>
 
-> Add per-channel oversampling ratio (OSR) support for CNV burst mode.
-> The accumulator depth register (ACC_DEPTH_IN) is programmed with the
-> selected OSR at buffer enable time and before each single-shot read.
-> 
-> Supported OSR values: 1, 2, 4, 8, 16, 32.
-> 
-> Introduce AD4691_MANUAL_CHANNEL() for manual mode channels, which do
-> not expose the oversampling ratio attribute since OSR is not applicable
-> in that mode. A separate manual_channels array is added to
-> struct ad4691_channel_info and selected at probe time; offload paths
-> reuse the same arrays with num_channels capping access before the soft
-> timestamp entry.
-> 
-> in_voltageN_sampling_frequency represents the effective output rate for
-> channel N, defined as osc_freq / osr[N]. The chip has one internal
-> oscillator shared by all channels; each channel independently
-> accumulates osr[N] oscillator cycles before producing a result.
-> 
-> Writing sampling_frequency computes needed_osc = freq * osr[N] and
-> snaps down to the largest oscillator table entry that satisfies both
-> osc <= needed_osc and osc % osr[N] == 0, guaranteeing an exact integer
-> read-back. The result is stored in target_osc_freq_Hz and written to
-> OSC_FREQ_REG at buffer enable and single-shot time, so sampling_frequency
-> and oversampling_ratio can be set in any order.
-> 
-> in_voltageN_sampling_frequency_available is computed dynamically from
-> the channel's current OSR, listing only oscillator table entries that
-> divide evenly by osr[N], expressed as effective rates. The list becomes
-> sparser as OSR increases, capping at max_rate / osr[N].
-> 
-> Writing oversampling_ratio stores the new OSR for that channel;
-> target_osc_freq_Hz is left unchanged. The effective rate read back via
-> in_voltageN_sampling_frequency becomes target_osc_freq_Hz / new_osr
-> automatically. The two attributes are orthogonal: sampling_frequency
-> controls the oscillator, oversampling_ratio controls the averaging depth.
-> 
-> OSR defaults to 1 (no accumulation) for all channels.
-
-...
-
-> +/* Write target_osc_freq_Hz to OSC_FREQ_REG. Called at use time. */
-> +static int ad4691_write_osc_freq(struct ad4691_state *st)
-> +{
-> +	unsigned int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(ad4691_osc_freqs_Hz); i++) {
-
-It can be
-
-	for (unsigned int i = 0; i < ARRAY_SIZE(ad4691_osc_freqs_Hz); i++) {
-
-> +		if (ad4691_osc_freqs_Hz[i] == st->target_osc_freq_Hz)
-> +			return regmap_write(st->regmap, AD4691_OSC_FREQ_REG, i);
-> +	}
-> +	return -EINVAL;
-> +}
-
-...
-
-> +/*
-> + * Find the largest oscillator table entry that is both <= needed_osc and
-> + * evenly divisible by osr (guaranteeing an integer effective rate on
-> + * read-back). Returns 0 if no such entry exists in the chip's valid range.
-> + */
-> +static unsigned int ad4691_find_osc_freq(struct ad4691_state *st,
-> +					 unsigned int needed_osc,
-> +					 unsigned int osr)
->  {
-> +	unsigned int start = ad4691_samp_freq_start(st->info);
->  
-> +	for (unsigned int i = start; i < ARRAY_SIZE(ad4691_osc_freqs_Hz); i++) {
-> +		if ((unsigned int)ad4691_osc_freqs_Hz[i] > needed_osc)
-> +			continue;
-> +		if (ad4691_osc_freqs_Hz[i] % osr != 0)
-
-' != 0' is redundant.
-
-> +			continue;
-> +		return ad4691_osc_freqs_Hz[i];
-> +	}
-> +	return 0;
-> +}
-
-> +static int ad4691_get_sampling_freq(struct ad4691_state *st, u8 osr, int *val)
-> +{
-> +	*val = st->target_osc_freq_Hz / osr;
->  	return IIO_VAL_INT;
->  }
-
-...
-
-> -static int ad4691_set_sampling_freq(struct iio_dev *indio_dev, int freq)
-> +static int ad4691_set_sampling_freq(struct iio_dev *indio_dev,
-> +				    struct iio_chan_spec const *chan, int freq)
-
-Can you use --histogram algo when preparing patches? This might make them look
-better.
-
-...
-
-> +	if (freq <= 0 || (unsigned int)freq > st->info->max_rate / osr)
-
-Why casting?
-
-> +		return -EINVAL;
-
-...
-
-> -	/* Wait 2 oscillator periods for the conversion to complete. */
-> -	period_us = DIV_ROUND_UP(2UL * USEC_PER_SEC, ad4691_osc_freqs_Hz[osc_idx]);
-> +	/*
-> +	 * Wait osr + 1 oscillator periods: osr for accumulation, +1 for the
-> +	 * pipeline margin (one extra period ensures the final result is ready).
-> +	 */
-> +	period_us = DIV_ROUND_UP((unsigned long)(st->osr[chan->channel] + 1) * USEC_PER_SEC,
-
-Why casting?
-
-> +				 st->target_osc_freq_Hz);
->  	fsleep(period_us);
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
