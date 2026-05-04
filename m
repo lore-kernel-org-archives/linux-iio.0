@@ -1,533 +1,114 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B455218EB1;
-	Mon,  4 May 2026 10:52:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7CCC39B4A9;
+	Mon,  4 May 2026 11:01:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777891974; cv=none; b=IXHVqt9U3749uEkAjaB3kuufs3v2NwGqMK0laE5Y4dS2KyVjqw0DoVVXY7QaTEnxGR4IBuRVva4Ng3A9u2wnW9WTEHO+6z5umEflqJVIZnzym76pzwvqcvlgAK6sIW40HPt8OTyaPmYXmoZBWmBkXQo6LS2n8ucn7r9Qpd/hJOk=
+	t=1777892515; cv=none; b=DwQGEqqpd31iBvOWvAFl0nlkXb+QVi0AXt+9ugJ5Yxd/fDv6WxIDH197Gf6dq0GHkygUmfkTcP2OWe2FU2+s5aVhLiXO3gWecsspKoTA9eMpb3mau8CIC6fFgCWMzHAvkVzdKP5YRsAQ/Nj8R51jKPwnhnhyGoxhnGbTGg69bh4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777891974; c=relaxed/simple;
-	bh=H83wWvb8r1OwPeK+HkT6KMMQu1YqDmM4kTsU7K/rqds=;
+	s=arc-20240116; t=1777892515; c=relaxed/simple;
+	bh=DkzG33rodDPhwK5LNeMG8LBrJ7OibLqTfYYobbvWxYc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qS24wZYfbUB/s3W6iDc53PRW/XquqcO1LDCNo4eeZNWFdElEzhRPfLcd7Cc/11P2auJ4JvtSLSWBwKMNVNGmIj/P3RR7gGO1vvgmVVrVNhy+PBJwrL6u3Bp59GrTa3YLJwT14NgArx0R9vHm/VbG2n26pMUeYHse42wHnJXvbog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=boT3sbgv; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=dlYPGmbobxzLw6YCfNhEegQn6X5Mnpow5bXcLoRgHoab3tqk0E0kJuP0zc8mvP/bb6D1AxyE921FvM1GSoCdGjUo46G35FkIFwHbE1ZH6ZbLh7hWsX7LA1AoS6r1rhBeFXQNY45ousWouWyt7LMrlonQLxeGBCXJNnVyjn3bW3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kIcfIYvy; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="boT3sbgv"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kIcfIYvy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777891973; x=1809427973;
+  t=1777892515; x=1809428515;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=H83wWvb8r1OwPeK+HkT6KMMQu1YqDmM4kTsU7K/rqds=;
-  b=boT3sbgvuZL7y4YuYw3K0hBUx2ObNjdFeFBR40gxs8rLm3PYQ5T2avmT
-   jnDvKJFA8rD6ML8EzZNH5Xg3NKfGOIZ2VI3P4Mq5vewNKf4yaj9x6Tw3f
-   E05NX/w/P8I1fZa/gvs8F0Od0qSedSZp2Mmc0Hlb/cDVdj+Zm0js3ojKO
-   oilWPc+OeQiAPHZ68M9tVoZehbKxfYEzYlKWYdRaY4jnoZJ+egATr5FOD
-   t7SyhiWekUJIXb7UYCxaLh2Rhkv8i8QFDKn7P76G6wNlKnJbReoaoXmfU
-   gvMUe/KDf754eVA+w53jZpXhxI5zCO9Z7UxjkH3ZNV2xpFSM+qIPy2rFU
-   g==;
-X-CSE-ConnectionGUID: KN5eAlc7QBCpvN9gTjxaJQ==
-X-CSE-MsgGUID: rA0lYldaRGuQQ5xmm53emw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="77905728"
+   mime-version:in-reply-to;
+  bh=DkzG33rodDPhwK5LNeMG8LBrJ7OibLqTfYYobbvWxYc=;
+  b=kIcfIYvyL/Ou8r/2SnY/jhCQzErbjw9t1HI+encinFlKDfixdGumkteM
+   weC5tjBAZ344ny2V5UKkCkByorEbk3zNr2gJvGgS06HZB6KSmG0hC0AKa
+   yvCLeixGD/JD9LVse44e75QbeSPYURXTkaN7SE1ruDY3rwwlBxN3SWmsj
+   rH6dU28B4OEm6kHulGqK19qgwRgpDCu7WpPtiR2UlHRPzoKUdxMnAvLaq
+   Zsn1Nss+7B3cHPfbSVuUmcwkYXcwcGVxNapInXW3j804DAR3AUFu2Pvch
+   hYHwfTBJwK4K6QlZ95AVJxxHloL5mNw4vE1ainkrQ4HTqWUJEe9zYVl3R
+   w==;
+X-CSE-ConnectionGUID: nqXnMj7DT9OHPxCKDeBp5w==
+X-CSE-MsgGUID: VkBDVFJNRQmqWLPLOfarOw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="89054115"
 X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="77905728"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 03:52:52 -0700
-X-CSE-ConnectionGUID: iYZJiUY5RZC30VOZn1fvDw==
-X-CSE-MsgGUID: 65uP3/auRi6XCW9CrcdDrQ==
+   d="scan'208";a="89054115"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 04:01:54 -0700
+X-CSE-ConnectionGUID: exL47zitSbOO+kSttH68Gw==
+X-CSE-MsgGUID: 1trCrEQ3RbGqCn0J0bb36w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="239790932"
+   d="scan'208";a="240471881"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 03:52:48 -0700
-Date: Mon, 4 May 2026 13:52:46 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Salih Erim <salih.erim@amd.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, git@amd.com, nuno.sa@analog.com,
-	andy@kernel.org, dlechner@baylibre.com, michal.simek@amd.com,
-	conall.ogriofa@amd.com, erimsalih@gmail.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 04:01:51 -0700
+Date: Mon, 4 May 2026 14:01:49 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: joshua.crofts1@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] iio: adc: versal-sysmon: add threshold event
- support
-Message-ID: <afh6fgnRy1KQRkTl@ashevche-desk.local>
-References: <20260502111951.538488-1-salih.erim@amd.com>
- <20260502111951.538488-5-salih.erim@amd.com>
+Subject: Re: [PATCH v4 00/17] iio: magnetometer: ak8975: modernize and
+ cleanup driver
+Message-ID: <afh8nZ8fsyeXYbtz@ashevche-desk.local>
+References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260502111951.538488-5-salih.erim@amd.com>
+In-Reply-To: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, May 02, 2026 at 12:19:50PM +0100, Salih Erim wrote:
-> Add threshold event support for temperature and supply voltage
-> channels.
+On Mon, May 04, 2026 at 11:48:12AM +0200, Joshua Crofts via B4 Relay wrote:
+> This series modernizes and cleans up the ak8975 driver, migrating to
+> more modern kernel APIs and cleaning up legacy code. Patches 7 through
+> 17 were provided by Andy Shevchenko.
 > 
-> Temperature events:
->   - Rising/falling threshold with configurable values
->   - Over-temperature (OT) alarm with separate thresholds
->   - Per-channel hysteresis configuration
+> The series was compile-tested and ran in QEMU with i2c-stub and
+> no issues were found.
 > 
-> Supply voltage events:
->   - Rising/falling threshold per supply channel
->   - Per-channel alarm enable via alarm configuration registers
+> The patch regarding switching to devm_* functions might have to
+> go through an additional revision, otherwise everything else seems
+> good to go.
 > 
-> The interrupt handler masks active threshold interrupts (which are
-> level-sensitive) and schedules a delayed worker to poll for condition
-> clear before unmasking. When no hardware IRQ is available (irq <= 0),
-> event channels are not created and interrupt init is skipped, since
-> the I2C regmap backend cannot be called from atomic context.
+> Changes include:
+>  - replacing usleep_range() with fsleep() for optimization
+>  - migrating to iopoll macros for better device polling
+>  - removing unused headers and adding new ones
+>  - checkpatch.pl fixes
+>  - switching driver to use devm_* functions
 > 
-> When disabling a supply channel alarm, the group interrupt remains
-> active if any other channel in the same alarm group still has an
-> alarm enabled.
-> 
-> Named constants replace magic numbers for hysteresis bit positions
-> (SYSMON_OT_HYST_BIT, SYSMON_TEMP_HYST_BIT) and alarm register width
-> (SYSMON_ALARM_BITS_PER_REG).
-> 
-> Hysteresis values are validated to single-bit range (0 or 1) before
-> writing to the hardware register.
-
-...
-
->  #include <linux/bitfield.h>
->  #include <linux/bits.h>
->  #include <linux/cleanup.h>
-
-> +#include <linux/iio/events.h>
->  #include <linux/iio/iio.h>
-
-It's better from the start make it as a separate group of headers...
-
-> +#include <linux/interrupt.h>
-> +#include <linux/limits.h>
->  #include <linux/module.h>
->  #include <linux/property.h>
->  #include <linux/regmap.h>
->  
-
-...like here (after blank line!)
-
-...those linux/iio/*...
-+blank line.
-
->  #include "versal-sysmon.h"
-
-Also follow IWYU.
-
-...
-
->  static void sysmon_q8p7_to_millicelsius(int raw_data, int *val)
->  {
->  	*val = ((s16)raw_data * SYSMON_MILLI) >> SYSMON_FRACTIONAL_SHIFT;
->  }
->  
-> +static void sysmon_millicelsius_to_q8p7(u32 *raw_data, int val)
-> +{
-> +	*raw_data = (u16)((val * (int)BIT(SYSMON_FRACTIONAL_SHIFT)) / SYSMON_MILLI);
-> +}
-
-Too many explicit castings... Think how to reduce amount of them. Also this
-SYSMON_MILLI shouldn't be defined.
-
-Besides that it's inconsistent to use right-shift in one case and BIT() in
-the other.
-
-...
-
-> +static void sysmon_supply_processedtoraw(int val, u32 reg_val, u32 *raw_data)
-> +{
-> +	int exponent = FIELD_GET(SYSMON_MODE_MASK, reg_val);
-> +	int format = FIELD_GET(SYSMON_FMT_MASK, reg_val);
-> +	int scale, tmp;
-> +
-> +	scale = BIT(SYSMON_SUPPLY_MANTISSA_BITS - exponent);
-> +	tmp = (val * scale) / SYSMON_MILLI;
-> +
-> +	if (format)
-> +		tmp = clamp(tmp, (int)S16_MIN, (int)S16_MAX);
-> +	else
-> +		tmp = clamp(tmp, 0, (int)U16_MAX);
-
-No, the use of clamp() assumes it should not have explicit casts.
-
-> +	*raw_data = tmp & U16_MAX;
-
-Why?! The previous clamp() guarantees that, no?
-
-> +}
-
-...
-
-> +static int sysmon_read_alarm_config(struct sysmon *sysmon,
-> +				    unsigned long address)
-> +{
-> +	u32 shift = address % SYSMON_ALARM_BITS_PER_REG;
-> +	u32 offset = SYSMON_ALARM_OFFSET(address);
-> +	unsigned int reg_val;
-> +	int ret;
-> +
-> +	ret = regmap_read(sysmon->regmap, offset, &reg_val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return reg_val & BIT(shift);
-
-This won't work in case shift becomes 31. Because the returned value will be
-considered by the callers as negative error code.
-
-> +}
-
-...
-
-> +static int sysmon_write_alarm_config(struct sysmon *sysmon,
-> +				     unsigned long address, u32 val)
-> +{
-> +	u32 shift = address % SYSMON_ALARM_BITS_PER_REG;
-> +	u32 offset = SYSMON_ALARM_OFFSET(address);
-> +
-> +	return regmap_update_bits(sysmon->regmap, offset,
-> +				  BIT(shift), val << shift);
-
-Looks like regmap_set_bits().
-
-> +}
-
-...
-
-> +static int sysmon_read_event_config(struct iio_dev *indio_dev,
-> +				    const struct iio_chan_spec *chan,
-> +				    enum iio_event_type type,
-> +				    enum iio_event_direction dir)
-> +{
-> +	u32 alarm_event_mask = sysmon_get_event_mask(chan->address);
-> +	struct sysmon *sysmon = iio_priv(indio_dev);
-> +	unsigned int imr;
-> +	int config_value;
-> +	int ret;
-> +
-> +	ret = regmap_read(sysmon->regmap, SYSMON_IMR, &imr);
-> +	if (ret)
-> +		return ret;
-
-+ blank line and a comment why imr is negated.
-
-> +	imr = ~imr;
-> +
-> +	if (chan->type == IIO_VOLTAGE) {
-> +		config_value = sysmon_read_alarm_config(sysmon, chan->address);
-> +		if (config_value < 0)
-> +			return config_value;
-> +		return config_value && (imr & alarm_event_mask);
-> +	}
-> +
-> +	return !!(imr & alarm_event_mask);
-> +}
-
-...
-
-> +static int sysmon_write_event_config(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan,
-> +				     enum iio_event_type type,
-> +				     enum iio_event_direction dir, bool state)
-> +{
-> +	u32 offset = SYSMON_ALARM_OFFSET(chan->address);
-> +	u32 ier = sysmon_get_event_mask(chan->address);
-> +	struct sysmon *sysmon = iio_priv(indio_dev);
-> +	unsigned int alarm_config;
-> +	int ret;
-> +
-> +	guard(mutex)(&sysmon->lock);
-
-> +	guard(spinlock_irqsave)(&sysmon->irq_lock);
-
-This is wrong (imagine I²C driver calling this...).
-
-> +
-> +	if (chan->type == IIO_VOLTAGE) {
-> +		ret = sysmon_write_alarm_config(sysmon, chan->address, state);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_read(sysmon->regmap, offset, &alarm_config);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (alarm_config)
-> +			return regmap_write(sysmon->regmap, SYSMON_IER, ier);
-> +		else
-> +			return regmap_write(sysmon->regmap, SYSMON_IDR, ier);
-> +	} else if (chan->type == IIO_TEMP) {
-> +		if (state) {
-> +			ret = regmap_write(sysmon->regmap, SYSMON_IER, ier);
-> +			if (ret)
-> +				return ret;
-> +			sysmon->temp_mask &= ~ier;
-> +		} else {
-> +			ret = regmap_write(sysmon->regmap, SYSMON_IDR, ier);
-> +			if (ret)
-> +				return ret;
-> +			sysmon->temp_mask |= ier;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int sysmon_read_event_value(struct iio_dev *indio_dev,
-> +				   const struct iio_chan_spec *chan,
-> +				   enum iio_event_type type,
-> +				   enum iio_event_direction dir,
-> +				   enum iio_event_info info, int *val,
-> +				   int *val2)
-
-Logical split, please (move int val to the next line, or int val2 to the
-previous).
-
-> +{
-> +	struct sysmon *sysmon = iio_priv(indio_dev);
-> +	unsigned int reg_val;
-> +	u32 mask, shift;
-> +	int offset;
-> +	int ret;
-> +
-> +	guard(mutex)(&sysmon->lock);
-> +
-> +	if (chan->type == IIO_TEMP) {
-> +		if (info == IIO_EV_INFO_VALUE) {
-> +			offset = sysmon_temp_thresh_offset(chan->address, dir);
-> +			if (offset < 0)
-> +				return offset;
-> +			ret = regmap_read(sysmon->regmap, offset, &reg_val);
-> +			if (ret)
-> +				return ret;
-> +			sysmon_q8p7_to_millicelsius(reg_val, val);
-> +			return IIO_VAL_INT;
-> +		}
-> +		if (info == IIO_EV_INFO_HYSTERESIS) {
-> +			mask = (chan->address == SYSMON_ADDR_OT_EVENT) ?
-> +				SYSMON_OT_HYST_BIT : SYSMON_TEMP_HYST_BIT;
-
-No need to calculate mask if regmap_read() fails.
-
-> +			shift = (chan->address == SYSMON_ADDR_OT_EVENT) ? 0 : 1;
-
-Ditto.
-
-> +			ret = regmap_read(sysmon->regmap, SYSMON_TEMP_EV_CFG,
-> +					  &reg_val);
-> +			if (ret)
-> +				return ret;
-> +			*val = (reg_val & mask) >> shift;
-> +			return IIO_VAL_INT;
-> +		}
-
-> +	} else if (chan->type == IIO_VOLTAGE) {
-
-Redundant 'else'.
-
-> +		offset = sysmon_supply_thresh_offset(chan->address, dir);
-> +		if (offset < 0)
-> +			return offset;
-> +		ret = regmap_read(sysmon->regmap, offset, &reg_val);
-> +		if (ret)
-> +			return ret;
-> +		sysmon_supply_rawtoprocessed(reg_val, val);
-> +		return IIO_VAL_INT;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int sysmon_write_event_value(struct iio_dev *indio_dev,
-> +				    const struct iio_chan_spec *chan,
-> +				    enum iio_event_type type,
-> +				    enum iio_event_direction dir,
-> +				    enum iio_event_info info, int val, int val2)
-> +{
-> +	struct sysmon *sysmon = iio_priv(indio_dev);
-> +	unsigned int reg_val;
-> +	u32 mask, shift;
-> +	u32 raw_val;
-> +	int offset;
-> +	int ret;
-> +
-> +	guard(mutex)(&sysmon->lock);
-> +
-> +	if (chan->type == IIO_TEMP) {
-> +		if (info == IIO_EV_INFO_VALUE) {
-> +			offset = sysmon_temp_thresh_offset(chan->address, dir);
-> +			if (offset < 0)
-> +				return offset;
-> +			sysmon_millicelsius_to_q8p7(&raw_val, val);
-> +			return regmap_write(sysmon->regmap, offset, raw_val);
-> +		}
-> +		if (info == IIO_EV_INFO_HYSTERESIS) {
-> +			mask = (chan->address == SYSMON_ADDR_OT_EVENT) ?
-> +				SYSMON_OT_HYST_BIT : SYSMON_TEMP_HYST_BIT;
-> +			shift = (chan->address == SYSMON_ADDR_OT_EVENT) ? 0 : 1;
-
-Similar comments as per above.
-
-> +			if (val & ~1)
-
-BIT(0), but still magic.
-
-> +				return -EINVAL;
-> +			return regmap_update_bits(sysmon->regmap,
-> +						  SYSMON_TEMP_EV_CFG,
-> +						  mask, val << shift);
-
-Also seems like a regmap_set_bits(). and instead of that ugly ternary just make
-it if-else or similar.
-
-> +		}
-> +	} else if (chan->type == IIO_VOLTAGE) {
-
-Redundant 'else'.
-
-> +		offset = sysmon_supply_thresh_offset(chan->address, dir);
-> +		if (offset < 0)
-> +			return offset;
-> +		ret = regmap_read(sysmon->regmap, offset, &reg_val);
-> +		if (ret)
-> +			return ret;
-> +		sysmon_supply_processedtoraw(val, reg_val, &raw_val);
-> +		return regmap_write(sysmon->regmap, offset, raw_val);
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-
-...
-
-> +static void sysmon_push_event(struct iio_dev *indio_dev, u32 address)
-> +{
-> +	const struct iio_chan_spec *chan;
-
-> +	unsigned int i;
-
-Seems not used outside of the loop, hence...
-
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-
-	for (unsigned int i = 0; i < indio_dev->num_channels; i++) {
-
-> +		if (indio_dev->channels[i].address != address)
-> +			continue;
-> +
-> +		chan = &indio_dev->channels[i];
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(chan->type,
-> +						    chan->channel,
-> +						    IIO_EV_TYPE_THRESH,
-> +						    IIO_EV_DIR_EITHER),
-> +			       iio_get_time_ns(indio_dev));
-> +	}
-> +}
-
-...
-
-> +static void sysmon_handle_event(struct iio_dev *indio_dev, u32 event)
-> +{
-
-Why no checks for error from IO accessors in this function?
-
-> +	u32 alarm_flag_offset = SYSMON_ALARM_FLAG + (event * SYSMON_REG_STRIDE);
-> +	u32 alarm_reg_offset = SYSMON_ALARM_REG + (event * SYSMON_REG_STRIDE);
-> +	struct sysmon *sysmon = iio_priv(indio_dev);
-> +	unsigned long alarm_flag_reg;
-> +	unsigned int reg_val;
-> +	u32 address, bit;
-> +
-> +	switch (event) {
-> +	case SYSMON_BIT_TEMP:
-> +		sysmon_push_event(indio_dev, SYSMON_ADDR_TEMP_EVENT);
-> +		regmap_write(sysmon->regmap, SYSMON_IDR, BIT(SYSMON_BIT_TEMP));
-> +		sysmon->masked_temp |= BIT(SYSMON_BIT_TEMP);
-> +		break;
-> +
-> +	case SYSMON_BIT_OT:
-> +		sysmon_push_event(indio_dev, SYSMON_ADDR_OT_EVENT);
-> +		regmap_write(sysmon->regmap, SYSMON_IDR, BIT(SYSMON_BIT_OT));
-> +		sysmon->masked_temp |= BIT(SYSMON_BIT_OT);
-> +		break;
-> +
-> +	case SYSMON_BIT_ALARM0:
-> +	case SYSMON_BIT_ALARM1:
-> +	case SYSMON_BIT_ALARM2:
-> +	case SYSMON_BIT_ALARM3:
-> +	case SYSMON_BIT_ALARM4:
-> +		regmap_read(sysmon->regmap, alarm_flag_offset, &reg_val);
-> +		alarm_flag_reg = (unsigned long)reg_val;
-> +
-> +		for_each_set_bit(bit, &alarm_flag_reg,
-> +				 SYSMON_ALARM_BITS_PER_REG) {
-> +			address = bit + (SYSMON_ALARM_BITS_PER_REG * event);
-> +			sysmon_push_event(indio_dev, address);
-> +			regmap_update_bits(sysmon->regmap, alarm_reg_offset,
-> +					   BIT(bit), 0);
-> +		}
-> +		regmap_write(sysmon->regmap, alarm_flag_offset, alarm_flag_reg);
-> +		break;
-> +
-> +	default:
-> +		break;
-> +	}
-> +}
-
-...
-
-> +	return isr ? IRQ_HANDLED : IRQ_NONE;
-
-There is a macro for this. IIRC IRQ_RETVAL().
-
-...
-
-> +static int sysmon_init_interrupt(struct sysmon *sysmon)
-> +{
-> +	unsigned int imr;
-> +	int ret;
-> +
-> +	/* Events not supported without IRQ (e.g. I2C path) */
-> +	if (sysmon->irq <= 0)
-
-When can '=' happen?
-
-> +		return 0;
-> +
-> +	INIT_DELAYED_WORK(&sysmon->sysmon_unmask_work, sysmon_unmask_worker);
-> +
-> +	ret = regmap_read(sysmon->regmap, SYSMON_IMR, &imr);
-> +	if (ret)
-> +		return ret;
-> +	sysmon->temp_mask = imr & SYSMON_TEMP_INTR_MASK;
-> +
-> +	ret = devm_add_action_or_reset(sysmon->dev, sysmon_cancel_work,
-> +				       sysmon);
-> +	if (ret)
-> +		return ret;
-
-Don't we have include/linux/devm-helpers.h?
-
-> +	return devm_request_irq(sysmon->dev, sysmon->irq,
-> +				sysmon_iio_irq, 0, "sysmon-irq",
-> +				sysmon->indio_dev);
-> +}
+> v2:
+>  - PATCH 1: reverted alphabetical header ordering per logical change
+>    separation
+>  - PATCH 2: added newline between fsleep() and return
+>  - PATCH 3: fixed open parenthesis formatting
+>  - PATCH 4: fixed whitespace issues, added <linux/time.h> for
+>    USEC_PER_MSEC macro
+> v3:
+>  - PATCH 1 & 2: split alphabetical ordering and header removal into two
+>    separate patches
+>  - PATCH 4: commit message fix
+>  - PATCH 5 & 6: split error handling and polling loop replacement into
+>    two separate patches
+> v4:
+>  - PATCH 7-17: am Andy's changes into this series
+>  - PATCH 2, 5, 6: fixup Andy's changes to existing patches
+
+Co-developed for those is too strong. Just use your SoB only.
+You may use my Reviewed-by though.
+
+Taking this into account, you can wait a day and send a new version with that
+and --base fixed. Also it gives me and others a chance to briefly look into
+the contents and see if everything looks okay.
 
 -- 
 With Best Regards,
