@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C34B38837D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C47038838E;
 	Mon,  4 May 2026 09:48:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777888115; cv=none; b=aTsHranJa6YlPZczlKOEgYbnB7wbvaZE3gAXC3iSmILqzpoYaYBRIOKYh2JCoCWP1vYjbEDLPnmd77Xngnxl/BC3FXl751LsKdyG93fTjF58S+LExK3pCEUPDDBZ4vCLRIusg5+Vr14rLKUMbIuioXeaJSYe+yiEj77TWEwkZpA=
+	t=1777888115; cv=none; b=K550qWnJh2VdJniWlOgUAFmka1rKZo5yo5zpHsGvD/4ER6Vd3lZHa5Uy7DX88i67ZeWRXDyaFNvsV0YyqqbAde+UpShreqGGkZPuXYI6Kq4QQUEY7r2lwrMM/KbeWOtJNRU10xarnLUjbjd4yXT76loM/90daCvVkpZ8fbvPIYE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777888115; c=relaxed/simple;
-	bh=XoUSz6+rVgZOj9EzZCIx9qvAwS9jQ+z9/pQSL9KW+tY=;
+	bh=IQqw8dqzN87N3kyvLEEH/hIdLkUDhN+PIO0XcgQOetQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sS9KeGsT/MJ8VdfUzq0Za+Kc1y3dQMuRBBUj15BRK1flua9T3d5dAZ6HFCEpmQBqIj8+ETbljUH7d8oG7FUKs3pyTnNUJASGxFURNmoZIHNiiZZ9OcQcDlm3IjO8ok+wXv8Ace/pRM+qLnHjCUTopR9n4UBkOGtKyUWRIo1uqwM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F98sn9F/; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=qRiU1qTgSCFAw0rpx4eUhvndnoBNOxg6itrZh/HWhaC7QMTo5E7MsU1QLt+6XEj9V1CpTLVhHLUFC8kwxgt9GSW1X0Lz/dC0Iu9PjYAJ4+le3p0n1JEjz/4JuplRp2cLhL+gWXaXUaqQdufr9JeZzzpm7n3TNQiTPJ6fiWuloGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VlOqoF2x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F98sn9F/"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A7998C2BCF4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VlOqoF2x"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BC52DC2BCF5;
 	Mon,  4 May 2026 09:48:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777888114;
-	bh=XoUSz6+rVgZOj9EzZCIx9qvAwS9jQ+z9/pQSL9KW+tY=;
+	bh=IQqw8dqzN87N3kyvLEEH/hIdLkUDhN+PIO0XcgQOetQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=F98sn9F/e40jd7PLIQotzh1xCFA/URQtWldtrnwuJqlH5TH6s3mizZoocz9U9araK
-	 S7kjOOMgLNQCAosyjgZQYSSLe//UF/qzY+iBD5FvSrKVXyNCRDF6YLKAlSlvVoc331
-	 kP787VP1hZ1Xg9NZZZLMLmdegM7wQoorslBELPnUXZGZpPzzgb3g+KIOrUJbwbRNI6
-	 +eFycd9CQoi7SOGd9k2MoC2ybr/PxMn9eu8dui/9qQxKST7rL6uEw331GZa1kJjYN4
-	 4eFDZSrMudBGvyzPVSalm95qouKXgK5r7Votpbt6aEN9Z9Q9XPtoJB96sQUih2XPtu
-	 Au8SidyBnxuVA==
+	b=VlOqoF2xHEzghd99DccqGyCKJVlh4eJL0sZxC56EPs5WtXCOKrd4swaJZkL3wmiTN
+	 f33MP6kQr62tPA/UBjR0D/DgjF7AOSMfDvU+I7sKDVCEqX4UUaAFw9+TDJGXFmx0+T
+	 BxEM9kWpu44Psyns6vrICVXNil2htRfp9sb7cey4KfQJWGzUinqZfvQF/U680Ffh2Y
+	 VJYjXePCUYP7e49QxVeOBStpI1a6dKFriGVZB2BsZgikl4ptQqJMG3xdzFCXGuItOq
+	 kJ8yK7b5K/SYjSb9JgvGVgIj/q+EWKBf5rooAcW22GlvFM5s/5HEkskdQUQw6D5aYD
+	 M8OQw0pZDno6A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94634CD3426;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B16CD3430;
 	Mon,  4 May 2026 09:48:34 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Mon, 04 May 2026 11:48:13 +0200
-Subject: [PATCH v4 01/17] iio: magnetometer: ak8975: sort headers
- alphabetically
+Date: Mon, 04 May 2026 11:48:15 +0200
+Subject: [PATCH v4 03/17] iio: magnetometer: ak8975: replace usleep_range()
+ with fsleep()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260504-magnetometer-fixes-v4-1-a291c2a7c71a@gmail.com>
+Message-Id: <20260504-magnetometer-fixes-v4-3-a291c2a7c71a@gmail.com>
 References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
 In-Reply-To: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -51,11 +51,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777888111; l=1542;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777888111; l=1188;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=ifC04FwraxdTSdGAo9jIXh6jMIMFxT5mVabPgLPFhPM=;
- b=xhlO6XkIxZ/bzflz1hACjL7XpQ2K8fERgG8KpqGqiHDTpXsU0FiKbfOP1bklHbgiwRj5ZZDBx
- Ry3VMKRsy2uCogCY/lP1VCHaEtpHPze2IGyRd291m1gRQPhk4W4b10E
+ bh=pYNXSLcsScB1UFEjU4yV7Zvmf3IflZ84nydrNj+FmrM=;
+ b=kdSsSuCWY1z/qJqtyJXW2Q6dxOy7BKEipYDgYV/AEIYkLhgB/KS9PsBNQ0WHoG3Wdusn3ra4Z
+ o8vIWwb6VZ1Afn3qXEoiDz7PRAiTaKcLgaEKXWnirZljidtmii020NI
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -65,54 +65,40 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Sort include headers alphabetically to improve coding style and
-readability.
+Replace usleep_range() calls with fsleep(), passing the minimum value
+required by the sensor for hardware delays.
 
-No functional change.
+fsleep() automatically selects the optimal sleep mechanism, simplifying
+driver code and time management.
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 44782c26698bcac5ebfc62ce3740f361078fd0ce..569cd6fa839aec6ee8758a261d0e659fc20131c6 100644
+index dac0a90c33eebd43f8aeed846c9cbf5fd1a6ab91..a84a05a1b64280e26c428e9752a39380e386c234 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -7,23 +7,23 @@
-  * Copyright (c) 2010, NVIDIA Corporation.
-  */
+@@ -461,7 +461,8 @@ static int ak8975_power_on(const struct ak8975_data *data)
+ 	 * and the minimum wait time before mode setting is 100us, in
+ 	 * total 300us. Add some margin and say minimum 500us here.
+ 	 */
+-	usleep_range(500, 1000);
++	fsleep(500);
++
+ 	return 0;
+ }
  
--#include <linux/module.h>
--#include <linux/mod_devicetable.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
-+#include <linux/bitops.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
--#include <linux/err.h>
-+#include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
- #include <linux/mutex.h>
--#include <linux/delay.h>
--#include <linux/bitops.h>
--#include <linux/gpio/consumer.h>
--#include <linux/regulator/consumer.h>
- #include <linux/pm_runtime.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/slab.h>
+@@ -551,7 +552,7 @@ static int ak8975_set_mode(struct ak8975_data *data, enum ak_ctrl_mode mode)
  
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include <linux/iio/buffer.h>
- #include <linux/iio/trigger.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
+ 	data->cntl_cache = regval;
+ 	/* After mode change wait at least 100us */
+-	usleep_range(100, 500);
++	fsleep(100);
+ 
+ 	return 0;
+ }
 
 -- 
 2.47.3
