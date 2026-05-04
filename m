@@ -1,113 +1,110 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 224C33A7852
-	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 11:13:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777893213; cv=pass; b=jyYjBAJD0eg40dzM9it7Ra2sP86folCYaq2T1touIRhMU/3oehxws7/GJJIh/wmgEMxCc8xUpcZFWLC4vZaJ2XkVySe/j3vmijaOqNTlnnAVjF0RMoGpVjiqx/59vscAHxjlIQr9VzfiKM2TWgz75yyGj5iKaRePxF9pZ4jywBI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777893213; c=relaxed/simple;
-	bh=oYKnonfmaZBau7cDmaEON2TF0MUHXDNVr4S16qH3M0Y=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RIdNFvqccrHAI/LukgxSiBcgyq4IZGPiYmoSgizTvRCGl9939+7h687vbUvbY4EBc0553zgqrB/aIMJYBTJ6n5SYn8HPCaZ1AokEJITj2AmF22YyOmzEFSz3fDSiwijsuJITrg4B9LeO7n0q0rCeVeYUt6CjI0Gnrd081k7z1S8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QocniH2x; arc=pass smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DDFE3A7852;
+	Mon,  4 May 2026 11:13:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777893228; cv=none; b=WyZ3OAvSyI9LW0mOggUBDhY9tnceG5ditYR42IyfeICNdsPs807V4/BdkobE/uLHlaywSlnZ6UjEsGO0H6lqAEyVfswtZeUSHCnd7rKImHxdl3pn683DOL94CvGcyALCBq1d+ynMDhhZZFx1BCYKs5R/D/+U42DQOmEU2usGlr4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777893228; c=relaxed/simple;
+	bh=hc54X3smZuXCVG2YlZFhfj+XA4dIFyiz5YdzhUpWp7Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sKiySpIG/g8Z9AvnZ4LhqkB3Pkawllh4cEAKDyPbONLRGmGJ3ApmVAe1MRAZsTGKG2JFZG2rAY0oIv81liVW7yfWrjJ3o2J0NtUH1AlaeHp+KsDGvMQ0YgPchfkQ54SSk6RZag4kVH4aYwo2SRIY40fM22h0+MLM94N3x8TAznw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KEX3YOaZ; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QocniH2x"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4891e5b9c1fso36878185e9.2
-        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 04:13:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777893209; cv=none;
-        d=google.com; s=arc-20240605;
-        b=XCSxGgTzSxgbNjrCSY84+aGiXUA5gyYcT42LotoD+bUBWtZoyexKkKIuBFvuJUKwBA
-         fkFznsojBVPUafSSAsNmX8u0PeRm/7qSC9PlXj9ykdFn3yLxkGluS0o3JL3I0jj8YEBJ
-         tJU9SeGsgMYbAxf7fWmAhok0xtC4FDBQBkaJ+tbiBEUC2/wI5siwVDwGIzygQIA/DJUq
-         jFsgwdzI8/oZheM4WtKBfxpt5bvwXwAWARNqt6JgFuCV2JYdbRS8Pfp9JNiO0GhPP/gB
-         AHZr3mGWY6ZAFt3j4BD3A8up+NvuuL9l482klXh927Opzl+jkwWVdU3tMimy8D1HWHeH
-         +LAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=f1RftPTz6Sb2A7zglddSxIo9ZDnyhKag5sMgvNF/OQQ=;
-        fh=CXZ9Hfb6UXLyDXvgxtZ4Kdq0XdqyE0XIGaro57a5ZU4=;
-        b=GGGO9Ptj2pkvudq83ummjCdYYVyWBb+UW49ykLrUcsHrhPivFSuGnxBhFp4YbB+R7p
-         IFUDHFVm6WTlEYqzJE1YD245OcfyE6/j2O4KRjp5wIpKXQ7Zpo6ePv5Z2Yx4fBYGQTfH
-         huZee6a3IuiKHpc8Hx6QDtolJAZcoWk1o6xJAv62fyupAB1774fU07dPMmnkxyi7Df47
-         6X/H6JNR8QHILhx43WQ+iOaO357XyIAKxmGErJr4dUEmuIz9oWWkpw7lJ8iAFLSIul0K
-         mmMyiTTAZb6FICGgd1XQU5HtWUj/N7hGI+3NmEN66Oqud+XBDNEsuiw0DwjudUMEPj3Z
-         Z5ug==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777893209; x=1778498009; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=f1RftPTz6Sb2A7zglddSxIo9ZDnyhKag5sMgvNF/OQQ=;
-        b=QocniH2x+WQgEuswH9KuFE/12Rbwkufjp4lmhP2pC+Bc8w2yJFXOHeVB1ZmeYEW+80
-         sPbggt02QykGYhUBlKl41Zxajib7BxfDUq3szXX1JXoiwmkfGARLg/Oh1vMGxbCwXFw9
-         7uoxJqKVZhLs1Vq6cg8e+a1A69zYiJxUUkJ496UL+jd4AwwYwv65BlGQsUqCMmXWqfPP
-         efvcj5cye0nwQQgk90+jq57sbV2aoDk7+uprnPI7bLwRs/Xs6z/FF4D606a3XjikIP2T
-         n8AbIiN55h8LvX9+JGvt5ihYkQQ4aGdsGa7pFBE1WFEP50pMd1myeoJL6uJLcm6atf6E
-         p6xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777893209; x=1778498009;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f1RftPTz6Sb2A7zglddSxIo9ZDnyhKag5sMgvNF/OQQ=;
-        b=G4+bK+uzaVVda/zGDZQnl3ZVuALolZ05kUbe5xJyErPxjP5sfEKeFcoG4UWP+QQ5KO
-         Hi0JN56jfEUfj5Vl/PsoXIfp/yDtfvktLHf+svZTVREvb5eQGzsBbiRqD+YGLqBd3DVM
-         GWkGfSSdAlLwMNRbeUc0vGrkEA52n0GjPeTLpxAWz1MthZHrqXXFsYfeJR69fBv5issR
-         rb/rehZPzj9mJWnNLuYQCfUiIyJFKSGyE5rMs9podTDGE7W74YEdouFZowDz5FLfuHqA
-         ybQJxb9f/hJPYP/WLI3Y87JFJukF/lRsw71DT9QtSqOaO1qbgxCMYruK/qhYHIi7zN4z
-         dr7Q==
-X-Forwarded-Encrypted: i=1; AFNElJ9FwIa0GRSe1I8XxOjhJ1K1wEgA6XQWHeqYsufEKZlQZql1opdJojNP8pzovDUnmxJOEJVcUJEBDus=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzmzQg2eGkHvlx8XRoeqpDOYb1oqrCpsULoeO45HNcnpsyUWqfD
-	mvJMJC7Iqga4TvVWhbtCDpf/I68fFxhEFdLCYq6QNOpbqwYSEYuCCnm1Gc6jvf5PnXWVdV6llz6
-	tfXzewmR675MA5T1wgyYh5kml1lPyInY=
-X-Gm-Gg: AeBDieuJ/G8zkx9jxrjYqAzRPME96ZwoObpvl+4OmrIM65mUmWTLov4aQP2A60ebFhs
-	rbHuzUgbJa3fAlr/2JBSsFYrzX0qJXSoHwWlFEjevrO8SrZH8vdbHT6yAmmB4UuhTYZ8f87r8pd
-	i9JpzYZKEiGVJKg4uUoV3FNdGUj+f3xj8+IrOdLUPqhoM7dQ10SXrOwRVe+uZVzprR8SBVOnBUN
-	oT2yLoHlNUqit7sDbdD8LWzBMLor25O/Euvi3OrKysVUZXs9KGgDWzFUA595H8UlmOSZO0rqM23
-	fCt8a1ElFZSmuIEbkw/laYIOn/7Lmy1iTWV96kPMoAfPvSO14U7+t/Ike5LUs10TtjXUO7tHD1M
-	MlYVJ42guFSfo7FU44TgclnMm5Z872C5kIIRR4ovXbTok1m/DXbrnK//RLxzdxfquuSCsmKbmT3
-	k6sS2ECWSR7xYsyh32
-X-Received: by 2002:a05:600c:800f:b0:488:ffb1:494c with SMTP id
- 5b1f17b1804b1-48a9863a372mr144106885e9.12.1777893209033; Mon, 04 May 2026
- 04:13:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KEX3YOaZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777893226; x=1809429226;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hc54X3smZuXCVG2YlZFhfj+XA4dIFyiz5YdzhUpWp7Q=;
+  b=KEX3YOaZqd/IMCCKp9RDK61D1wkwWEvWRpPxq/Mx7g6RtwADTVWDO2zC
+   OSwh4jgCoqWhYPkilHihTA6VqnNUMP+xpVUVz0hzV7rjYoEG7haPxmgam
+   Or2gTJQZ3J5y0JKTDtx9TGXl6yF9/zA2AD0w/A12fbwAAro9c2BmE8FIN
+   P4KygOZRHlQEd9oaBelKYd6JNE6MTRfhVeCaykz49M3SO1+Rc9KhZaflr
+   pOR/KULk7bciru3WHGWCYxZKr65VQLMkTCr3ksNX7nKlS2bnD6ti058FE
+   xohb0XqKVAwgaXICo8nB7ULBay+j3azrOTnLZ5bHHhliVmluPrsfGk5PG
+   g==;
+X-CSE-ConnectionGUID: lQcx6n5rREy2fziowZcM0A==
+X-CSE-MsgGUID: PKxLIvxITrS+Wl0ZwScCzQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="90124436"
+X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
+   d="scan'208";a="90124436"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 04:13:45 -0700
+X-CSE-ConnectionGUID: sbnAaSoLT4WwtJiWS6cFpw==
+X-CSE-MsgGUID: oVal1XmVQT65k3kIpoMXVg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
+   d="scan'208";a="265836347"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 04:13:44 -0700
+Date: Mon, 4 May 2026 14:13:41 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: joshua.crofts1@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 13/17] iio: magnetometer: ak8975: switch to using
+ managed resources
+Message-ID: <afh_ZUFWc4bRT4zs@ashevche-desk.local>
+References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
+ <20260504-magnetometer-fixes-v4-13-a291c2a7c71a@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com> <afh8nZ8fsyeXYbtz@ashevche-desk.local>
-In-Reply-To: <afh8nZ8fsyeXYbtz@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Mon, 4 May 2026 13:13:17 +0200
-X-Gm-Features: AVHnY4L37X_YG24SXC9O6_MUrnE7LEaWVx7tyL9mkAvzg0ToRRkYve43XK4p4hk
-Message-ID: <CALoEA-y4SeS8xtauxOc_w4epJ1JrNnO8KKfxBhdXMAtxQ+6onQ@mail.gmail.com>
-Subject: Re: [PATCH v4 00/17] iio: magnetometer: ak8975: modernize and cleanup driver
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260504-magnetometer-fixes-v4-13-a291c2a7c71a@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 4 May 2026 at 13:01, Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> Co-developed for those is too strong. Just use your SoB only.
-> You may use my Reviewed-by though.
->
-> Taking this into account, you can wait a day and send a new version with that
-> and --base fixed. Also it gives me and others a chance to briefly look into
-> the contents and see if everything looks okay.
+On Mon, May 04, 2026 at 11:48:25AM +0200, Joshua Crofts via B4 Relay wrote:
 
-Sounds good, the devm_* migration patch should be looked over especially,
-since I have made some additional changes.
+> Switch the driver to use managed resources (devm_*) which simplifier
+> error handling and allows removing ak8975_remove() method from
+> the driver.
+> 
+> Note, on error path we now also set mode to POWER_DOWN state which is
+> fine. Even if the device is in that mode, there is no problem to set
+> that mode again, it should be no-op.
+
+...
+
+> +static void devm_ak8975_power_off(void *data)
+> +{
+> +	struct ak8975_data *ak = data;
+> +	struct device *dev = &ak->client->dev;
+> +
+> +	/* Only power down if currently active */
+> +	if (!pm_runtime_status_suspended(dev)) {
+
+	if (pm_runtime_status_suspended(dev))
+		return;
+
+?
+
+> +		/*
+> +		 * The device may not be runtime suspended when the driver is
+> +		 * removed, so we soft-stop the chip before hard-stopping the
+> +		 * regulators.
+> +		 */
+> +		ak8975_set_mode(data, POWER_DOWN);
+> +		ak8975_power_off(data);
+> +	}
+> +}
 
 -- 
-Kind regards
+With Best Regards,
+Andy Shevchenko
 
-CJD
+
