@@ -1,48 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 728C43D75D7;
-	Mon,  4 May 2026 15:08:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7BD23DA7EC;
+	Mon,  4 May 2026 15:09:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777907282; cv=none; b=M3TBvQ/LqcH6Z1UoJl1pmDNGh50mdgAJALowU2l9YZHqe+A0M/fMEY5IFkRAgEDEyWbjg/McbvbRZdP0TDIrTFrMutxOT/+75nh+IHhxn+YP9bZrnlYbfWUpRYWhb23OrrBmdDCz4qeJbGufrvPLMBpf8EmNn8CXb/jlmptmjLg=
+	t=1777907395; cv=none; b=CT/52Lxo5olSvOYZuDrYhUuAftvKa2V/CRGkbxmPJHYZmoLCsoxxEpmHx/Ff2az/8ifqAexvwrcMJip1RGgl2B+1n7KaqgRCzfGSMO3Tu+w/rKms3T1IF2nE0bCnFLNOHpmjtcmjU1vBh0M5m7ARtvzFijnA1bR42xCkT5eM3/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777907282; c=relaxed/simple;
-	bh=Ei3avuqfXFwfmDpw3p3UBmpXu13t/gUTVM59K5vz5Jo=;
+	s=arc-20240116; t=1777907395; c=relaxed/simple;
+	bh=ya1Yr7yEHE7Kdr6k/vEbaqLTRmV6HIv9eTa9EXyoJik=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=puYroGSmXF6c59E2F5DNFwJabpZS92ZPvQ2O1658o6ImFugS3aQV6s1REImOEPs1iFKQGDl0yZRq1KsFyRmTn3DtDSM1g7hMxQ5GTz0nKanO6379O/rRPXpw14xgcCCxVD6985l9684D4LcJlGERQbY1+8GcU2GTNdjepjOLPSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FItXUNFr; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=A9PX974RyOOVg00mQfC9Baf0eesMh3UqGlTgMNCVwB+KFTKcc+aohnkQ8QpEmaHBZkur8iRCRYGfAPYngTbgApLGLySI+Gj5OKfHduZWjEPj4mwah6/hIAAUIpOAq5LZlw9ymyl2lLozlLGdUQUXqnR7ynZVprTAvWoG7DCVQc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uS4tdP84; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FItXUNFr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79CCCC2BCB8;
-	Mon,  4 May 2026 15:07:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uS4tdP84"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF94DC2BCB8;
+	Mon,  4 May 2026 15:09:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777907282;
-	bh=Ei3avuqfXFwfmDpw3p3UBmpXu13t/gUTVM59K5vz5Jo=;
+	s=k20201202; t=1777907395;
+	bh=ya1Yr7yEHE7Kdr6k/vEbaqLTRmV6HIv9eTa9EXyoJik=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=FItXUNFrriLSpZAtmuQ3kGDxkCArm/iGxQ/XyZ5P+rQLL+5cLnU56QGMY+zNh8d0D
-	 M+ThPMFSMrI3d2StnHVpvN2frEIkc8qUzb6i0GhUkFVcemS+OtyCom6qgbQRKehVpK
-	 Dzv3ltgf47zDRK2XaUxS37KXm1gqE1u89lV+NfBqSFK8sXZ/gnylYQB6/3g6DKVe28
-	 gAn9hOQ9j2R8wMXMOgpop8BqzSZ7jUWb7OH+7Q/3QnaC5ohcs//7hfT5YoRS9xIdMR
-	 TeAo/yHxed9rLBob8K6scyqiCyjdPt0Hwzd3sncsndefCQ6WPdZChIMxeRoapx+swU
-	 /LCSQd+WKFJqA==
-Date: Mon, 4 May 2026 16:07:53 +0100
+	b=uS4tdP84PZWfg7XoWZmdS30sFwjBnhJ8mtakUgFAcvWgf+mtLhYJpV7Rq3S1rAiQ9
+	 LgCV9opsn6QPXgWRWd1Rot6n/+Vw/3fP+jTInLKscr2zjkr7oPcDSXnjpmlgWr+GI2
+	 /baRx1ugdJBLqQl1k1A/3SnMJKHLnSt0vKF00anIPDdkK9ZaORaRDXOyOPKzTz2h5W
+	 5EkkJIAxLZUBcndzTCcI0azfG3aVHbid5mUNcpYYuxCvUQz0xuJDLcJ7RbFwim83Zq
+	 QnLuqU06KjtTAHOkU2TiYssYbxmaeqVShGDRO4Vd5+/JyfDnwI49eCPVjKVVQZ5WnE
+	 YmAoNYxj4oFKA==
+Date: Mon, 4 May 2026 16:09:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>
 Subject: Re: [PATCH v4 07/17] iio: magnetometer: ak8975: pass conversion
  timeouts as arguments
-Message-ID: <20260504160753.42a4c2d7@jic23-huawei>
-In-Reply-To: <CALoEA-yeMbbbS+h2YmJ7sr8CXMkQpDKT2=s0pU7+oh=yt045Cg@mail.gmail.com>
+Message-ID: <20260504160948.114762db@jic23-huawei>
+In-Reply-To: <CALoEA-wpqpT7iscVZScXduj1S02hVtz8AQCiKj-Aiz-5A0N7TA@mail.gmail.com>
 References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
 	<20260504-magnetometer-fixes-v4-7-a291c2a7c71a@gmail.com>
-	<afh-smyJoL7xRiqZ@ashevche-desk.local>
-	<CALoEA-yr9B+74KdSY1iEYssvPQoSXdYjXpNFBzrdZm4RHvJ1jw@mail.gmail.com>
-	<afin2x3jBmBRKsuY@ashevche-desk.local>
-	<CALoEA-yeMbbbS+h2YmJ7sr8CXMkQpDKT2=s0pU7+oh=yt045Cg@mail.gmail.com>
+	<CALoEA-wpqpT7iscVZScXduj1S02hVtz8AQCiKj-Aiz-5A0N7TA@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,26 +50,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 4 May 2026 16:11:47 +0200
+On Mon, 4 May 2026 13:33:10 +0200
 Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> On Mon, 4 May 2026 at 16:06, Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > > Okay, this was suggested by Jonathan on your v0 version, but I guess there
-> > > is no need now that there are poll and timeout parameters added in the function
-> > > (or maybe the suggestions were for the parameters only and I
-> > > misinterpreted them).  
-> >
-> > The idea is to see them on an average one page in the text editor, all of them
-> > at once. As long as they are quite close to each other, the temporary variables
-> > are not needed. Moreover, I found them a nit harmful in terms of readability as
-> > one will need to jump over the code to see the values, while with explicit
-> > numbers it's all being concentrated in a small code stanza.  
+> On Mon, 4 May 2026 at 11:48, Joshua Crofts via B4 Relay
+> <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+> > @@ -708,6 +705,11 @@ static int wait_conversion_complete_interrupt(struct ak8975_data *data)
+> >  static int ak8975_start_read_axis(struct ak8975_data *data,
+> >                                   const struct i2c_client *client)
+> >  {
+> > +       int irq_timeout_ms = 100;
+> > +       int timeout_ms = 500;
+> > +       int poll_ms = 10;
+> > +       int ret;
+> > +
+> >         /* Set up the device for taking a sample. */
+> >         int ret = ak8975_set_mode(data, MODE_ONCE);  
 > 
-> You've convinced me :)
-> 
-Also agree given they are so close together and we have that different
-timeout nearby.
+> BTW, also noticed a redefinition error here.
+Given that's one that should have resulted in a build fail
+please make sure you build after applying each patch in the
+series.  Need that for bisection to work and because I might
+pick up a partial set.
+
+Thanks,
 
 J
+> 
 
