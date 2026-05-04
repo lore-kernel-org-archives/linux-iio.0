@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01020388371;
-	Mon,  4 May 2026 09:48:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE6EF3876BB;
+	Mon,  4 May 2026 09:48:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777888115; cv=none; b=Zjh9Vlv8TzWSqrlfg93gTSZjGrTSLlpNF7wVxDI86j57NOban5tpmmxRQkBRpfsHFhWrVgIYZmgPUBJPkhvSII9B5qCg329QmjRbSUu+jNQI/wHCStSEVQn/YI/dWLNLiR6TqpFi9HxIbw7Aj6quEkX5JDIGwUNzRDdVRk/x97c=
+	t=1777888115; cv=none; b=Uk5bPaoJbWRGpuecMVEvfs6jj4Vvizb+DihDoFz3647hpwoAMZBZ+kMIJUcJuuaCy9kf9BO34ceoMWVeuRLDcB2DjJefLui3FzLjtW5imbPEAFDT3tEQwsivhWSJXAXji5gAzizmWwX5PQo30HHGbYiFEBhD2B8rDuPegMdZAhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777888115; c=relaxed/simple;
-	bh=BUDkYNMkYEk61zOz0NxunnO9uxC4YjPK5Byrp01dd7E=;
+	bh=LzFzwM1vVt7yzGjBEJMTkXfLayEfGMNdWc3OJe6lpjQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=RzjsWBbPdZuEKtWDD6Y91smInOTnJBBv8oSvQeN8z1OLaOzB/xFJyYG7uNrWbCgGDNqnk0gX0tgS7oR8b/sNfYMF+qsV8/Bnk4lNpBogMHTStMbRBHKcFV1gs02DyV+fUtoiUO9jmDloqTteA3HfvGhM9joKXX2BX3QMQcBQvno=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sqKMXpA2; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=C42L1bt9BsJBmLBF7MQK/2DgTe5L31UNFuvW7aOYcUHRuPEthlVNVUJCjswj3dIH9tMx8sbW8uWURsOe+9GBVCJvG+trlUyMC2R63kkZyoDCiTJNN2d1K/w5hByJBEPFqblYh3ovxceB3gXJ2yhglMH+f2jTC4KqqQtxNBZ72ms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aBYiNrqB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sqKMXpA2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D8259C2BCB8;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aBYiNrqB"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C93D4C2BCF7;
 	Mon,  4 May 2026 09:48:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777888114;
-	bh=BUDkYNMkYEk61zOz0NxunnO9uxC4YjPK5Byrp01dd7E=;
+	bh=LzFzwM1vVt7yzGjBEJMTkXfLayEfGMNdWc3OJe6lpjQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=sqKMXpA2QaiAT5SawApfidJBmdkQSLfcXq9p8m7ttezgN/1pJyOGVxU8PmfYLpzQh
-	 QeAdoY4NFpR7W9oir5v4PtCvGQ2+cm5OELp0M2RgEKI7w2VNnwmynqhEdvC1wMEir4
-	 abwKHdYNIub5ugEsvtBOCQaBhOkfjv1ZhOc2T/cqtY8ZxZ5ziDrN8wpkUQXQFHj5mA
-	 SK4ANw0m5Cqg4XWbLYpISxoEuKAUuO0GNaBrCxv8mWY1ZJbhMekJSZPiqh+rjydzia
-	 6xb422C1w/1r1/+ZIUyvOPXbP++CFtsNa7jeRQcLOz2HQY+WqIfNRj4A2FiM5F6yKC
-	 0j8qVb/1twT5Q==
+	b=aBYiNrqBF8I1l17ChSV9xehyHFdwreBA3V/NmWOGdYSvh3gD43UyV9bhD2RwFW5ma
+	 UFWshKCOcsC8vnQ95R7VwwtFkTDAluKAWe+3/ncQn+GEw3XFUMsbGoSFq/g7ZtA+se
+	 qWQ4yFDevcR/TLvat/ejfexR4qDAebKwLVvOFjsFcb5Y6wJnxNHkP6mlJIjq1sQhdQ
+	 0V7YkG2FEqGjQvzDA19XWxxRwADRoblDwrxn6OWaSzwuFaTG3IVTQ1J3a6g9XzmPhJ
+	 mEUW223ZZUDYGbLjaojPYuhJNMPn4zYfMoOEtmNhdDUAKcu41q9UQ6oKA1cfRWdUgQ
+	 o3Wr2R7ECMOug==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D158FCD3436;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C21C2CD342C;
 	Mon,  4 May 2026 09:48:34 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Mon, 04 May 2026 11:48:17 +0200
-Subject: [PATCH v4 05/17] iio: magnetometer: ak8975: fix wrong errno on
- return
+Date: Mon, 04 May 2026 11:48:16 +0200
+Subject: [PATCH v4 04/17] iio: magnetometer: ak8975: change 'u8*' to 'u8 *'
+ in cast
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260504-magnetometer-fixes-v4-5-a291c2a7c71a@gmail.com>
+Message-Id: <20260504-magnetometer-fixes-v4-4-a291c2a7c71a@gmail.com>
 References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
 In-Reply-To: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -49,14 +49,13 @@ To: Jonathan Cameron <jic23@kernel.org>,
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777888111; l=2202;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777888111; l=1056;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=9ktKUq7LUuC30Nz9Y4JUVYutq/hQ0HQt0x6idr2JCxo=;
- b=MsXORgSWCSqZKGyJVv3GS3nKQXvavEmrU1hMGojhecTzGE/QwyuoYgmDE8/Bhs2PyAbl8sq27
- 2aMk+sJm+9GDIYpC+1jWDFmNEBNBpUeULIXjlOFahDmEHy6d3WfPAQF
+ bh=Wdt8KANnDoSFXBcgrJIrMksQrP9sjlwOf4hExOFf40Y=;
+ b=EPobh4fhjT8hpclgEUMCzw2uJj/0oL2VSQEc3oJ+TKckLd5kWE3Lp6PyPUz+p+fcSEqqaknwF
+ Gw6DhgQBfCcBUlVTyOlB0QIZvnZmh02ZQ0G+bzW4cR4BMQWxsRjES6C
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -66,66 +65,35 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-The driver currently returns -EINVAL on polling timeout instead of
--ETIMEDOUT.
+Change 'u8*' cast to 'u8 *' as the former triggers a checkpatch error.
+Also fix the indentation of parameters in
+i2c_smbus_read_i2c_block_data_or_emulated() function.
 
-Replace return code for -ETIMEDOUT and remove unnecessary error
-message as -ETIMEDOUT is a standard POSIX error. Also replace
-instances of -EINVAL in comments.
+No functional change.
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Co-developed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 6ca8c24b9fba452b6fed8155957a8e5fcbc6511c..57f50c09cca539c3733f516a1617375e9134c349 100644
+index a84a05a1b64280e26c428e9752a39380e386c234..6ca8c24b9fba452b6fed8155957a8e5fcbc6511c 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -662,10 +662,8 @@ static int wait_conversion_complete_gpio(struct ak8975_data *data)
- 			break;
- 		timeout_ms -= AK8975_CONVERSION_DONE_POLL_TIME;
- 	}
--	if (!timeout_ms) {
--		dev_err(&client->dev, "Conversion timeout happened\n");
--		return -EINVAL;
--	}
-+	if (!timeout_ms)
-+		return -ETIMEDOUT;
+@@ -759,9 +759,10 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ 	if (ret)
+ 		goto exit;
  
- 	ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST1]);
+-	ret = i2c_smbus_read_i2c_block_data_or_emulated(
+-			client, def->data_regs[index],
+-			sizeof(rval), (u8*)&rval);
++	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
++							def->data_regs[index],
++							sizeof(rval),
++							(u8 *)&rval);
  	if (ret < 0)
-@@ -695,15 +693,13 @@ static int wait_conversion_complete_polled(struct ak8975_data *data)
- 			break;
- 		timeout_ms -= AK8975_CONVERSION_DONE_POLL_TIME;
- 	}
--	if (!timeout_ms) {
--		dev_err(&client->dev, "Conversion timeout happened\n");
--		return -EINVAL;
--	}
-+	if (!timeout_ms)
-+		return -ETIMEDOUT;
+ 		goto exit;
  
- 	return read_status;
- }
- 
--/* Returns 0 if the end of conversion interrupt occurred or -ETIME otherwise */
-+/* Returns 0 if the end of conversion interrupt occurred or -ETIMEDOUT otherwise */
- static int wait_conversion_complete_interrupt(struct ak8975_data *data)
- {
- 	int ret;
-@@ -713,7 +709,7 @@ static int wait_conversion_complete_interrupt(struct ak8975_data *data)
- 				 AK8975_DATA_READY_TIMEOUT);
- 	clear_bit(0, &data->flags);
- 
--	return ret > 0 ? 0 : -ETIME;
-+	return ret > 0 ? 0 : -ETIMEDOUT;
- }
- 
- static int ak8975_start_read_axis(struct ak8975_data *data,
 
 -- 
 2.47.3
