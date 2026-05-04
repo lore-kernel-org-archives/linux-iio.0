@@ -1,130 +1,223 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 464F5329373
-	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 10:25:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777890330; cv=pass; b=k37pM6K01eirnMyTBaNRcLY3Hu8Ee+bAsZl0DEp4u4EP1KLJ+jnCpzR9D0Z4ZjB3YAk0szxie16jQVSAUD1tQM9tcIAkTmij19RRqT63AUPLjqFr8SfuDGPmVapZJZNohBQ7kC5myFaFPineZJ2gmHgK+M5kAky7KLtEiLm5OzY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777890330; c=relaxed/simple;
-	bh=8RRm4UcFqM71UrAz6QvoFJxAuoNEoH+cnVHnJz4FhRk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=R6d206M20BDR9gt2PLtvZt71HbynVtXKbGNkeXHNfqJsIPB+/n3IdXtpax3toO1g8ufX+8qvWjA50Y5QnvH+QBe0RV0BlGrvKu/2FGFn4lP0Fl+V0JeOiX8AQTu7sreUuXcd3/rxiHbTkZxTuTCBDl2XH5hTK04pQ6SSCU1dNXE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j0h2Iw+R; arc=pass smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AFB81519B4;
+	Mon,  4 May 2026 10:25:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777890337; cv=none; b=eFiFquIWyQPA8aL96oxVP9fEmwI+2pNAuwfp6j5Qsca1RR0ztCU9Ahkhj+ruaeQnPfwkejmO4E99GdweLrVhNDonvBFv7eFuejo8o64ALWeUNGTVDN3vXxf1fiV9ONj20IMfdatQXQqFkNZ2MDe8r0QmqCehA6XW92a6zPGAE18=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777890337; c=relaxed/simple;
+	bh=nluvpIlNryhcGDtvNGYTLW0ZG88gXOfoCaYP2s86tRE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L2pt4Xlkd2ChXUoTIRPxmCDBZSay6qPd23sJfnT1z+K/tdi+ei03DYZXdKa3zfidB2LCqPdQqs5yH57ztsGhjaeHquhe6z+K589Kj69tvSvaOtPcS8ujLo4m3oJew53qfqQJt7mX8xnSmEuajq3HF135qaJK+v3rdfinGknDvmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DrsKIhRE; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j0h2Iw+R"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-449de065cb3so1472369f8f.2
-        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 03:25:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777890328; cv=none;
-        d=google.com; s=arc-20240605;
-        b=KmoG0QvHnYRkfZQ7NN0DFIY/XJXLUutjLpTasZMbwP2rFd5lsvnpSe1GqIfrCYoSG4
-         lnH0eV6jO5sSpBTO6HyCRg2g0f7ktTNGrY4gvE9d2QpTmy0SoSnh0+RhCSuuTpOGbRTC
-         B5QmbGAf4f6cWwY9ztlrUgh8vkVJtpVnslXirIcjYUQml1oT1izYMoQ5Bu75BmWsKWzA
-         T7v3tGzyflpDDM/qexbUguUCAQ4uyu+TyafcvcKYsXH35Olj/Y8HN787NF2P5mvtinCi
-         UobX9kI2tv6VVt3S2QthLKpr2/wbvrVoKD6v0SJs7NTb2bCiyezXQ0HLWnnwEAH89974
-         V4UQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=0CX04gA1SJaO9my9kIbUxyIEbbDyMfY60ApnNou6zpI=;
-        fh=tGkoa8jYZINOrOF9/mCNYT5Os6o+/KuMPixQq/4qd2g=;
-        b=Z+WnC7O4LKCy3hEud2nuKcl9ONvaUTHRadwWkMqTcNHAMZD884PaAfh3Opo6POQLfK
-         68TMMTahajFepA+TtnhsKA9Zgo1iABO1ZzKztUppzgH0nVVdA4qA76GtDci5I6OV+fZW
-         l17IBX1HUCDfLkVIxymEKFaxsPpOzPiqX5w+qJ8zfz+62PwfLMR2J2++Rk44hXdsIp+8
-         6Bz7XgoVNz2nROTeYiitGBmLG3HBAV/oATX7F1E2sxxg3Pk+V/gJC4jWJWw+6+m66TP6
-         84uCjd6nvzAWtpWmf7eHVcGEjUPgMJqTcB8tZfyi4ZPrvjvG4nU/fTgXIxHrewhsHb/b
-         3kiQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777890328; x=1778495128; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0CX04gA1SJaO9my9kIbUxyIEbbDyMfY60ApnNou6zpI=;
-        b=j0h2Iw+R9b8KvyiiybdHAWWrCBhi//8wEiwvtcwCkdHunYtTc6bL33S7aFCQQSZ6ol
-         +AzezFZ2K+xYSddl7ro7JoVdSRuc4ldsxBsc68wniNkSjszWk6IrQHxu7LrNTxmOKZwQ
-         Mf2DW0P8R7EjX9EbijbmTU75MwDxvMx0xSCaqSa6jwfHxtK2fn1Ll39gErk2WGeTu36l
-         jQRTS4C7C2Y+ok8JRE6vlP/OXo+9m9i5i4/61c2cXKy9q0lm1k1UnkDDkBwuJGIEdt38
-         rfG3jz5YTYXtaIschzN4kEUVyJZTA+ZdXLVPrn2JptLUQRH+RyKmDfgg4DMzcqMn47jD
-         CIVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777890328; x=1778495128;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0CX04gA1SJaO9my9kIbUxyIEbbDyMfY60ApnNou6zpI=;
-        b=UTmL0rNYF6GhY2A0bS9uJNLw14gNJ2HDXcIsCarzHJinaLVzkJWB6RIKpUyx9h1cYm
-         8j8rI511kHg5T67WlnTASfdL/+cNu/5kXHSEOEwhag3xp/1LFpobvRqduJkdlo+BhENm
-         hdyME/PuBCRgbi3eWbloBU3h+wJpZ4tJ6+l+ATDd1ggq7MMRdmWOS48c6QmRf7qn0AbO
-         MYdXGFU+Dt4x3h5XOkXtjKOxxD0tjCfgX2M4XYGqFhjIjubfxu3zpUthMYSwfXXClxCv
-         kYmJ1CZBhYhTmvpYA5+GFplLnb/IJk/jvWOQM9ThtWNxhqrfoWb858lBRjrDOaiu3OpA
-         ZLYg==
-X-Forwarded-Encrypted: i=1; AFNElJ/MMXRity9w/r6u2RrOugnHOh4zUZnPiaf67Uy9XV7UZnCxpq1fZ4NQAXNtBVHhIaeVo7w5wK+pptw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxPrael3QepuVtNObHN+8WcfQx0mvaRoEFa2iQENv5Cd57tYo52
-	AvCW1OoHCtmWUAHpbsM5aXL0fKDiKqy1EufX5tJH8qlNxoPDmaWwOEFpdJwaSJNvFoo2xyWl445
-	gTLIRswDGlr+oQsKl9KTYu2UzQf/Zty8=
-X-Gm-Gg: AeBDieuQ/viugUOOUtaHka0y2lTYv/vYkW7uToQ8wbAMzSuGImcHWizy7gt6X8vpCQd
-	lx+SE7q/x17jYxef21fKCAT7bLTUUwvYPn8NxzJI1qJIFkZsL5VZx+VC0TdfjWSp1ZhwMmf3enI
-	c1UMCE9vgK1+flPOfbYKy8uluu9gPWrJDp2xxLgR5viKtF+9icJy7sEOplwOeq8zeD3lB1Mx9Df
-	j4DkbzZuf5TdSfgGW9vPlkH00L2R33yAWOGSnE2YAmJNLoYJ9UEMsdbrsd3sRGQ4giXVbT67Rhj
-	eBd8cpQwPx99T1cRGql/nFMHeFBe6nIn2dqmwMFXY+xNI/DCyrK8DpgKgTraLFUem5edGGKUWI/
-	vglqcqZHvajgKCfGnfZPhOeh9gLJj+ESzXm/rmwNoPTLwBukYJ5gdZRCjMPFUHMYpQ+C4OOptij
-	6AlscFnzAFYJIGoW6V
-X-Received: by 2002:a05:6000:2c04:b0:44a:8c10:40dc with SMTP id
- ffacd0b85a97d-44bb4dd9f34mr15697188f8f.18.1777890327531; Mon, 04 May 2026
- 03:25:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DrsKIhRE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777890335; x=1809426335;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=nluvpIlNryhcGDtvNGYTLW0ZG88gXOfoCaYP2s86tRE=;
+  b=DrsKIhRE1ZHK67cW9cSFnEoPyOlDX9PYag5TbPPABZ68eogHgbaVoB3+
+   erCYaG8iPpoDQjgPJMfjR5F1zkbdFeDg9xB3W36feaoIXI3k52dMStsik
+   tmJDci8r6o9u/7hJtGJtMpZA767UTNDFa2vajqQdt+WKao35mG7wRvP4k
+   9DBc6mJAhQYfBsSexwANoFa8anbUOD2g2BosqMn631G4mshV0aiftot0y
+   IZHkvm9aZlCc+rYsCreHRDTGyGGxIcM+wDmaUyF2UI3maMEXGJaSFaRD/
+   Ak3DZUhfYiqwtMH2/JRtZk/b++qv4wpmla3pEic/f317LH/ieain8vVNd
+   A==;
+X-CSE-ConnectionGUID: mVB+jOmaRuWCSBRHv8T/Ow==
+X-CSE-MsgGUID: r33sDnpVS/KR4Fjrfft96Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="81311365"
+X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
+   d="scan'208";a="81311365"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 03:25:35 -0700
+X-CSE-ConnectionGUID: Npkc06voSSmxkmSJ60YSug==
+X-CSE-MsgGUID: BjbfiXUfRIq+PdsmQSg8HQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
+   d="scan'208";a="232826942"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 03:25:32 -0700
+Date: Mon, 4 May 2026 13:25:29 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Salih Erim <salih.erim@amd.com>
+Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, git@amd.com, nuno.sa@analog.com,
+	andy@kernel.org, dlechner@baylibre.com, michal.simek@amd.com,
+	conall.ogriofa@amd.com, erimsalih@gmail.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/5] iio: adc: versal-sysmon: add I2C driver
+Message-ID: <afh0GW_SXuq72KwJ@ashevche-desk.local>
+References: <20260502111951.538488-1-salih.erim@amd.com>
+ <20260502111951.538488-4-salih.erim@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
- <20260428173540.28b7913e@jic23-huawei> <CALoEA-xm0FGRk1rUWOO1YvzczC86Bgvu-t4Fe4iy3S_LCTygRg@mail.gmail.com>
- <afhkdxsxDbUDqG9g@ashevche-desk.local> <CALoEA-ybX_RPQaxCviS03mHvneWzH-WxNvbgBMxXXEmrfc3fGw@mail.gmail.com>
- <afhy1bo6R48QJs8X@ashevche-desk.local>
-In-Reply-To: <afhy1bo6R48QJs8X@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Mon, 4 May 2026 12:25:16 +0200
-X-Gm-Features: AVHnY4LJEdYM9F_DBHXId8nHHlkLQV-9ZnDYg82E3HGbqo4538oEg837jpB4z7U
-Message-ID: <CALoEA-xo_yPqHF+DtVep8yZOjX=irVerygS8FsBARRVTZpxH6A@mail.gmail.com>
-Subject: Re: [PATCH v0 00/14] iio: magnetometer: ak8975: Additional changes to
- the driver
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260502111951.538488-4-salih.erim@amd.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 4 May 2026 at 12:20, Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Mon, May 04, 2026 at 12:13:45PM +0200, Joshua Crofts wrote:
-> > On Mon, 4 May 2026 at 11:18, Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> wrote:
-> > > On Mon, May 04, 2026 at 11:13:36AM +0200, Joshua Crofts wrote:
-> > > > On Tue, 28 Apr 2026 at 18:35, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> ...
->
-> > > > Given the relatively big backlog of email in the list, should I wait a
-> > > > bit longer sending the combined series?
-> > >
-> > > I'm fine if you send it today or this week.
-> >
-> > Is it fine if I do a RESEND PATCH after rebasing or should I wait? Sashiko
-> > reported "failed to apply".
->
-> Better to wait, have you missed the --base argument? Or is it incorrect?
+On Sat, May 02, 2026 at 12:19:49PM +0100, Salih Erim wrote:
+> Add I2C bus driver for Versal SysMon to enable voltage and temperature
+> monitoring when the Versal chip has SysMon configured with an I2C
+> interface.
+> 
+> The I2C protocol uses a custom 8-byte write format:
+>   - Bytes 0-3: Data (little-endian, 32-bit)
+>   - Bytes 4-5: Register offset (split into low/high parts)
+>   - Byte 6: Instruction (read=0x4, write=0x8)
+>   - Byte 7: Reserved
+> 
+> For reads, the driver sends the 8-byte command then receives 4 bytes
+> of data. For writes, it sends the 8-byte command with embedded data.
+> 
+> The driver uses the regmap API with custom read/write callbacks to
+> share the bus-agnostic core driver (versal-sysmon-core).
+> 
+> Event support is not available on I2C since the SysMon interrupt
+> lines are not routed over the I2C bus.
 
-I use b4, so the base-commit was included in the cover letter, but looking at
-it - it's a commit from a month ago, so not good.
+...
+
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +#include <linux/regmap.h>
+
+Follow IWYU.
+
+...
+
+> +enum sysmon_i2c_payload_idx {
+> +	SYSMON_I2C_DATA0_IDX = 0,
+
+Is it mapped to HW bits or is it pure Linux enum? If the former, assign *all*
+items as per datasheet, otherwise drop explicit assignment (it's rare that we
+need it in the software).
+
+> +	SYSMON_I2C_DATA1_IDX,
+> +	SYSMON_I2C_DATA2_IDX,
+> +	SYSMON_I2C_DATA3_IDX,
+> +	SYSMON_I2C_OFS_LOW_IDX,
+> +	SYSMON_I2C_OFS_HIGH_IDX,
+> +	SYSMON_I2C_INSTR_IDX,
+> +};
+
+...
+
+> +struct sysmon_i2c {
+> +	struct i2c_client *client;
+> +};
+
+Can't be the struct i2c_client used directly? (Haven't checked if this is going
+to be extended or have special uses.
+
+...
+
+> +static int sysmon_i2c_reg_read(void *context, unsigned int reg,
+> +			       unsigned int *val)
+> +{
+> +	u8 write_buf[SYSMON_I2C_WRITE_SIZE] = { 0 };
+> +	u8 read_buf[SYSMON_I2C_READ_SIZE];
+> +	struct sysmon_i2c *priv = context;
+> +	int ret;
+> +
+> +	write_buf[SYSMON_I2C_OFS_LOW_IDX] =
+> +		FIELD_GET(SYSMON_I2C_OFS_LOW_MASK, reg);
+> +	write_buf[SYSMON_I2C_OFS_HIGH_IDX] =
+> +		FIELD_GET(SYSMON_I2C_OFS_HIGH_MASK, reg);
+> +	write_buf[SYSMON_I2C_INSTR_IDX] = SYSMON_I2C_INSTR_READ;
+> +
+> +	ret = i2c_master_send(priv->client, write_buf, SYSMON_I2C_WRITE_SIZE);
+
+sizeof()
+
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != SYSMON_I2C_WRITE_SIZE)
+
+sizeof()
+
+> +		return -EIO;
+> +
+> +	ret = i2c_master_recv(priv->client, read_buf, SYSMON_I2C_READ_SIZE);
+
+sizeof()
+
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != SYSMON_I2C_READ_SIZE)
+
+sizeof()
+
+With them the code will have one source of length an be robust to the changes
+of the buffer sizes.
+
+> +		return -EIO;
+> +
+> +	*val = FIELD_PREP(SYSMON_I2C_DATA0_MASK,
+> +			  read_buf[SYSMON_I2C_DATA0_IDX]) |
+> +	       FIELD_PREP(SYSMON_I2C_DATA1_MASK,
+> +			  read_buf[SYSMON_I2C_DATA1_IDX]) |
+> +	       FIELD_PREP(SYSMON_I2C_DATA2_MASK,
+> +			  read_buf[SYSMON_I2C_DATA2_IDX]) |
+> +	       FIELD_PREP(SYSMON_I2C_DATA3_MASK,
+> +			  read_buf[SYSMON_I2C_DATA3_IDX]);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int sysmon_i2c_reg_write(void *context, unsigned int reg,
+> +				unsigned int val)
+> +{
+> +	u8 write_buf[SYSMON_I2C_WRITE_SIZE] = { 0 };
+
+'0' is redundant.
+
+> +	struct sysmon_i2c *priv = context;
+> +	int ret;
+> +
+> +	write_buf[SYSMON_I2C_DATA0_IDX] =
+> +		FIELD_GET(SYSMON_I2C_DATA0_MASK, val);
+> +	write_buf[SYSMON_I2C_DATA1_IDX] =
+> +		FIELD_GET(SYSMON_I2C_DATA1_MASK, val);
+> +	write_buf[SYSMON_I2C_DATA2_IDX] =
+> +		FIELD_GET(SYSMON_I2C_DATA2_MASK, val);
+> +	write_buf[SYSMON_I2C_DATA3_IDX] =
+> +		FIELD_GET(SYSMON_I2C_DATA3_MASK, val);
+> +	write_buf[SYSMON_I2C_OFS_LOW_IDX] =
+> +		FIELD_GET(SYSMON_I2C_OFS_LOW_MASK, reg);
+> +	write_buf[SYSMON_I2C_OFS_HIGH_IDX] =
+> +		FIELD_GET(SYSMON_I2C_OFS_HIGH_MASK, reg);
+> +	write_buf[SYSMON_I2C_INSTR_IDX] = SYSMON_I2C_INSTR_WRITE;
+
+> +	ret = i2c_master_send(priv->client, write_buf, SYSMON_I2C_WRITE_SIZE);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != SYSMON_I2C_WRITE_SIZE)
+> +		return -EIO;
+
+sizeof() in both cases.
+
+> +	return 0;
+> +}
 
 -- 
-Kind regards
+With Best Regards,
+Andy Shevchenko
 
-CJD
+
