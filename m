@@ -1,343 +1,203 @@
-Received: from mail.kernel-space.org (v2202511311555398556.powersrv.de [46.38.245.6])
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazolkn19011035.outbound.protection.outlook.com [52.103.13.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A913E3D94;
-	Mon,  4 May 2026 17:17:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.38.245.6
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777915045; cv=none; b=TFtHX4Gh+r3+vBPBIfZnzDyN/Dgl0rtwcPKfPnESWuEWGrmUXja4z3OMOIDDd055Vo4peMDTSsifsFHUo4LbYiXO3YfFBsW93EXKG3f3ncLdmEdiybeXP9+55dJ01WXFht+ZLjpcfQftbYdI71xF0IwncM2f02a11H+kmmraaHs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777915045; c=relaxed/simple;
-	bh=cuHant5v1i0R8QScEMhqBEqLyPQGj9LB7hQLGCNzG2Q=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=SJc/0gnDJysk2K3JVunka4qFddoWYhjijnA1Wlyl4ta+Ohu5woZwNWSLxL/1uCDKSaHVmqG/QEIo3O9t/WCrBjEzx/ouJsdokQz0G4IaSR8g37JgdwnyIZRwXpyN/4HEtYsPTt6YBLpwYurXrwgMuM2cfPmheipv2jXn+0t6YDA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org; spf=pass smtp.mailfrom=kernel-space.org; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=eDT1bIqi; arc=none smtp.client-ip=46.38.245.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel-space.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EA1335959;
+	Mon,  4 May 2026 17:17:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.13.35
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777915075; cv=fail; b=gvD7PtfcY75TWg/dKYb9lpsZlbc/cz0qZ+9joSrUZ/wrnhXtDvZ3LTYgaGkSIalh55i03dGHDsG7N6JOpwHOADNaJNU+zNw1Kg9xZihEp5OhXU1neWhs+74vbOwLkuHdwRc7Dc0c+a8xcCzHcDBh5E7p8SBM0uSUzSaH0LEqowA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777915075; c=relaxed/simple;
+	bh=dTKVbfnhDHmQiPg6RCzR4Y097RuzxF8sEnZwIRr80Nw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=aXpBojM//uDhD5hNbhwUlt1o1h+w8v7X4FS5c6DXs3FdILm/rkyxNiPqaZp7WqBBCjLj8EY3r0Xf5qbPoXhgIjGAe7va9TOXfXNIqH2RlacUx1ZZWybLydtiHsh9JsjQeyzMc6KjHx8sVkm61X/qHlnh8E8kEv0iM7S+xbadt68=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=o0n8Evbq; arc=fail smtp.client-ip=52.103.13.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="eDT1bIqi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
-	s=s1; t=1777915007;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SF9ujtZqkg8d6XrkmCnPPxOB0sj3C+v6KmHyURSyaJQ=;
-	b=eDT1bIqixS8pNGPoQK/ss2hnGH1OH0SjZe5QFAo6c9FMidY5MsieyhPUIKzeva+kRSBOeA
-	5XuTrTUtMwhfJ8uO74jX13XA/eFrWpF4JyRQ2aTDMTo0ID16V5szTJV3HiM5UuXAii/5aN
-	a1yJAk6VktBHWRHb9+yZE3Vy8fOx23U=
-Received: from [192.168.0.2] (<unknown> [2a07:7e81:7daa:0:62cf:84ff:feee:627])
-	by oreshnik (OpenSMTPD) with ESMTPSA id a01d32f2 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-	Mon, 4 May 2026 17:16:47 +0000 (UTC)
-From: Angelo Dureghello <angelo@kernel-space.org>
-Date: Mon, 04 May 2026 19:16:48 +0200
-Subject: [PATCH 10/10] iio: dac: add mcf54415 DAC
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="o0n8Evbq"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=EMJFWpKuLrJWbIQCpF0jSfBR22+sae4bzrYHTsVnPxZuU+Imt3VA9dR+Mw1/Vk1e3+/x76BluVnnjPn57Uum9BNhHpy+7Brmo62/h88QXli+Rpks3O3XmZ2NFeoQoAZP5cDSTjnANWGNPtfYDeGlo4wxENK1Gl8NMeqtPMJGu+wQiVO834m4i7UYfkjqajX1XokF+B2aaOkUyB8NSVQTR0YaDrF52yiHxoBKGK/fsom5GFzwwOqWMGUh8XWwiR5F15mAgxKLFZj6sli00meM1rtn50bSADZxhWpgVz0/nTYPofz7Q4jMsForJZ9bPILGaAp+BNRx7hCpnyRj/8fh4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lwqiesBtRme/M3oPcD+6K4A1tmCeeNMQW7+WK5Sshc8=;
+ b=SBMIaFI6DFUPRl/8R9tD+WrgdAEL3faxE+nyqM7lG51wEuCa9/CVrFnJPzvbQ4ZtvdZmSGPmEc5f940+fXH1ABFnPFnIpmyueM+UvMbxAeeK/2GDDfeq5dEsuFLAnVOP4DDTzsy22RHxV/NY1TY01btJsF8CMUQ/QvFQ83p3RIdf6hBSLGNsDDeGdf0U4AEVHCSU0ID4uGX+b3YDIftVX8Sao3CRem+bSbM3If97aLenrbnaO/Fk98CAqLPJh9rAeGJqdADZuEaNmb7Fdt9wiFvlPdW5wiXBhBp8c4K7UYv1UiGPCPohiVsWTHhpFemME17zavpzN3TFq6LatmExMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lwqiesBtRme/M3oPcD+6K4A1tmCeeNMQW7+WK5Sshc8=;
+ b=o0n8EvbqF2sxCR7xWwklJ9L77aGCZWh+qJajGqHZYZNqCdMPsoUdyT5UT2P7/imQUsP1U6vhtvYySPeNhZWhWBpnhCpbHBeU0x8QoDYklouZZG4l/s/VT3uXLeSQ4Kzl6Vcv/7biKMDFl0PTrtHn9NrlZxU1h7qeP+TrNhzj/Uqenl4Pkq5CvcExfq4ljAmJmaNrfrYmfY/tDVGksYfSjLA8qwQyYZZiWnY4jvZBMY4eDT+k4Qy/iyIoVZ1bBhWY9spxmyKIug6FAapct7+tAceVuEW+vwxgujLbnP9vYvw+sFqO+Z4fTkIcmKedoCZMFhf+shr+suE73ietgkhicA==
+Received: from PH0PR19MB997338.namprd19.prod.outlook.com
+ (2603:10b6:510:3b1::18) by DS4PR19MB997348.namprd19.prod.outlook.com
+ (2603:10b6:8:34a::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.25; Mon, 4 May
+ 2026 17:17:52 +0000
+Received: from PH0PR19MB997338.namprd19.prod.outlook.com
+ ([fe80::fd22:ee23:3e25:3172]) by PH0PR19MB997338.namprd19.prod.outlook.com
+ ([fe80::fd22:ee23:3e25:3172%6]) with mapi id 15.20.9870.023; Mon, 4 May 2026
+ 17:17:52 +0000
+Date: Mon, 4 May 2026 12:17:50 -0500
+From: Chris Morgan <macromorgan@hotmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>,
+	Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
+	andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
+	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
+	krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com
+Subject: Re: [PATCH V4 01/10] dt-bindings: iio: imu: icm42600: Add icm42607
+ binding
+Message-ID:
+ <PH0PR19MB9973384E92E70FE9DDCC568D68A5312@PH0PR19MB997338.namprd19.prod.outlook.com>
+References: <20260501221152.194251-1-macroalpha82@gmail.com>
+ <20260501221152.194251-2-macroalpha82@gmail.com>
+ <20260503-convivial-aquatic-yak-d2dbeb@quoll>
+ <PH0PR19MB997338AB2F626D5898BAB27E53A5302@PH0PR19MB997338.namprd19.prod.outlook.com>
+ <20260504175128.0bfdefe0@jic23-huawei>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260504175128.0bfdefe0@jic23-huawei>
+X-ClientProxiedBy: DS7PR03CA0059.namprd03.prod.outlook.com
+ (2603:10b6:5:3b5::34) To PH0PR19MB997338.namprd19.prod.outlook.com
+ (2603:10b6:510:3b1::18)
+X-Microsoft-Original-Message-ID: <afjUvnKC1J95TjGr@wintermute.localhost.fail>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260504-wip-stmark2-dac-v1-10-874c36a4910d@baylibre.com>
-References: <20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com>
-In-Reply-To: <20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com>
-To: Greg Ungerer <gerg@linux-m68k.org>, 
- Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, 
- Arnd Bergmann <arnd@arndb.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
- Alexandre Torgue <alexandre.torgue@foss.st.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, 
- linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, 
- Angelo Dureghello <adureghello@baylibre.com>
-X-Mailer: b4 0.15.2
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR19MB997338:EE_|DS4PR19MB997348:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1fea1582-3930-4d09-51bf-08deaa011315
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|23021999003|41001999006|8060799015|461199028|51005399006|24021099003|19110799012|37011999003|25031999004|5072599009|6090799003|15080799012|1602099012|40105399003|440099028|4302099013|3412199025|10035399007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?TqJZjO6jzGy86231yx2hqjjZkywJnoWR608lGX7BTUzNT1b5fEqEZYRvY1ep?=
+ =?us-ascii?Q?2mJAY/PmzFsvADRrYWs8nzSnk0nLTnqyg/ZikAZ1NJaZec06Q52UIL7Qh8PU?=
+ =?us-ascii?Q?yq7vCN5BhoLRt4Zl9nK55D9JLizG2soVHbZUbQ6098h8qlZmFUgDPj8+oVNU?=
+ =?us-ascii?Q?j/IfMT6KcoP5RStpuLKZOz8y5Xoum5uU1eHr6Khi+XGe6ZLK4/URcufRj3cD?=
+ =?us-ascii?Q?8Mxt2F1PVZZ0jhMk2/ksHLU+UuDV2+KE7LB/O3Lfnp/rcF5yiedW7onUqS95?=
+ =?us-ascii?Q?70NAeccxXn/6fD2HMBKjTsElIYea5UXPtYACqSMR/kPvh9RpFf6Vu27UH5wS?=
+ =?us-ascii?Q?zSaLPFkpQ1mnGwT+zxov9kBGqo4W7loHZztDgjX70OC934KAD6d/nZA9ZrxZ?=
+ =?us-ascii?Q?tm7I86C/xSXAsuZqH1x+EbDJT8PuHu2WDHOk4UxokKlXaC3If+3KCAV505cU?=
+ =?us-ascii?Q?IdJ3FvQS2DwTh+SVqRFchusqLl8GIYxQHyqTzTAAyqU9bhrLTbZLyqowssSw?=
+ =?us-ascii?Q?BPG8ctVALOIB6SwW6cQw+KdtFSoQ3vqM/t/oiwVtv7vkjSBmLSPKkxBhZMYv?=
+ =?us-ascii?Q?GEbg18B2MuGRS965SIaMwIlkEWZMEMww1hsr4R7/Oj1cNqiCqFfQ+uO5gop/?=
+ =?us-ascii?Q?y3Ywb7vb79+8Zl7lzzrynrMkc38c4V6fyRmg0QAurgs+x09Jb3M7VgY1sBL7?=
+ =?us-ascii?Q?lgwBdTrvxDPOwYUrAcYrORELDIwsxOjdO/gM87McCmWsW+9OxOaAZnYQuZuH?=
+ =?us-ascii?Q?f4dc3iNrtjLFoGGL4awt7wFHuhQ81p4lVgonJ7/EzD2qk24WWSoG7geC7Phg?=
+ =?us-ascii?Q?n7aSIX4qOukMkpM+PVgAYNubL6b47gPFaLls06VCQAves5/hJt6YV7k8BiAH?=
+ =?us-ascii?Q?21qTeQmFm6Nj73Zo+f7Wugs2ZIupPDmy8543pvZbNTmfGTUkSXZynD0qdx18?=
+ =?us-ascii?Q?OBUQCqI0ngeLdAdqSt9hataa4gPFwHrxvSjZVCJK8Ts1bvgf8fp6jtYCOBV8?=
+ =?us-ascii?Q?ONiN2LA+8zZrtn40Dv9YRg1iuI0YIWpe4wJJTwn8xO8L0/erObjHAQpajpGY?=
+ =?us-ascii?Q?l80wyonPDYpxnuGUyaRTJrl7XL4H3+tXQ84D4/jjKLWQVId486M=3D?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?GHAcSMg8LGJ2qnFHc1H/wO5nTmhZJqK9Q9CsphrX043HqPtAIqNoyvUnb0qg?=
+ =?us-ascii?Q?i7Xsjv5N7flnDiDMZx2ECuCnSIvQ4lEjlKQVbTL7qnsx1soon0DWUNxfkE1P?=
+ =?us-ascii?Q?8qXZvt+E9NudtcUoTFQUZLSDmnQOAOSYoJBYUpozPVzkqmjVzaRL5BR3TS2H?=
+ =?us-ascii?Q?4yjeb03+0xQZ3GqtYu1Rdp+c1Eu8FyLOfXcrzsobJclxYLFqjnvsdMWE2zJ5?=
+ =?us-ascii?Q?6kBuy8VuKVtcRfvFT8ipNzjArIbUhTmnQfhGaABRuiwJeAOPzfERWZ54s3hq?=
+ =?us-ascii?Q?+z8ERj++SE48ubY8GmjcbrMb/kUSgr1JrzRwIZQO0SaJ30NNVW/fxVlPMGw6?=
+ =?us-ascii?Q?RShiOFmGXUMCML4Ndp4JzhQ+8jFv1qhurB//SaIsPp41GgWTgcU5LQGxgePP?=
+ =?us-ascii?Q?dt6eITz6Y6ULi5ZPchQbdGjLpLTA9qmQYNlDMgAB5Hu6cvl6C9kUmr9hSAV7?=
+ =?us-ascii?Q?DMocsB7VP16SAwibj4gzknyH7Loraqi2zpetBE8yIfZRPWIrbtcHepKQBykq?=
+ =?us-ascii?Q?pzCZxPy+EYN0dHUXHlFi8sRktkGCuyRgAvnqhGS0P7dRjL7O4MmQOBnpjK83?=
+ =?us-ascii?Q?Uo5+Xf7o6VQPn0NvYrA1PW5CNB1fc4dCu/uPxMFFVUp7SsG/tm8QZMljzB3h?=
+ =?us-ascii?Q?1oDMR8d2KMbtfzsNmNL+9rq6vmz5OpGip3mpcLlB67uUmKrjZOzhnx11Wj0b?=
+ =?us-ascii?Q?N7t4BD0YC7hUN+OehjSNw/Yth3RZNuaplhaefgtRqmdEv5dkbGPpnwh884/D?=
+ =?us-ascii?Q?cFjOjzEJzXQG9DptX0S0mlw4f+t2rPAyGkhkphvnbGdKJiWD6DQPxmV/rU1d?=
+ =?us-ascii?Q?F8EJ80nIN+9ndzjA7VDxx8XMVxHZw+9Yv0m/Um3GJHuhi/Ld+qSPYMyZ6XZN?=
+ =?us-ascii?Q?a+4Sde207vDeziudMQiKaFTdWJKLYjYtZKB71dauAwhUHJUQ4VPXsGNba2ka?=
+ =?us-ascii?Q?elkLiG/K0Gg7gBSxTxPVI1Rwe5yQqzjLcZA6YbxnyPBrekzstONbjPQ5wtJb?=
+ =?us-ascii?Q?C1NGtSjvWwtEaWzTba1yxPM4i4uM6mAcW05z24YBOGC9kt24aD+eZLHyZEDR?=
+ =?us-ascii?Q?zv7gwW66TmO8iOwHgDPt45vqxhtJ+A8LaxhZTT2sL9SNhzcWaZBMvkRk99oj?=
+ =?us-ascii?Q?DAcOdrubIFWs4zwWkjGMdJ2YWRetX5H1sNaXfs37kHYNo9+cvJyTPYapFAKg?=
+ =?us-ascii?Q?9uS1uucF5sA6RomkPWRt7ahq1ALGQz/BydrFk5rNrQhGFe02WXI/5+TaQET0?=
+ =?us-ascii?Q?u3aI961UKcZr2RtXrYI8WRlv9svWdUEcRgjseWEItyL5eHfr4cxNcP4sp2vK?=
+ =?us-ascii?Q?l3sRLmFHrZrHq9/TA+Z6C0QrLgshjQaJVaGJYh4osvvcq3aLhL7lmCKzc2rY?=
+ =?us-ascii?Q?ZRVwp9UQ8T2Mcb9khGxJ1cXlZafNkuo6ow+vEcwxvqEyG8kRDQPdjc0kyD5E?=
+ =?us-ascii?Q?DtMV8OpcAlvpsfTMR7fr8Es21aiNXrPf?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-990eb.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fea1582-3930-4d09-51bf-08deaa011315
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB997338.namprd19.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2026 17:17:52.8319
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PR19MB997348
 
-From: Angelo Dureghello <adureghello@baylibre.com>
+On Mon, May 04, 2026 at 05:51:28PM +0100, Jonathan Cameron wrote:
+> On Sun, 3 May 2026 15:51:30 -0500
+> Chris Morgan <macromorgan@hotmail.com> wrote:
+> 
+> > On Sun, May 03, 2026 at 02:18:18PM +0200, Krzysztof Kozlowski wrote:
+> > > On Fri, May 01, 2026 at 05:11:40PM -0500, Chris Morgan wrote:  
+> > > > From: Chris Morgan <macromorgan@hotmail.com>
+> > > > 
+> > > > Add devicetree binding for the Invensense ICM42607 and Invensense
+> > > > ICM42607P inertial measurement unit. This unit is a combined
+> > > > accelerometer, gyroscope, and thermometer available via I2C or SPI.
+> > > > 
+> > > > This device is functionally very similar to the icm42600 series with a
+> > > > very different register layout. Additionally, add mount-matrix
+> > > > attribute to schema.  
+> > > 
+> > > Why adding it? Is it something new? Is it applicable to other variants?
+> > > If not, why it is allowed for them?  
+> > 
+> > It's not new, technically this is a bug/oversight from the very first
+> > iteration of the invensense icm42600 driver. The driver requests a
+> > mount matrix using iio_read_mount_matrix and then returns an error from
+> 
+> Unless it's broken (always possible) iio_read_mount_matrix() is supposed
+> to return an identity matrix if there isn't any info in the binding.
+> 
+> 	/* Matrix was not declared at all: fallback to identity. */
+> 	return iio_setup_mount_idmatrix(dev, matrix);
+> 
+> So not required by the linux driver at least.  Probably not something
+> we should require in general.
+> 
+> Separate patch to introduce it to the binding as optional and say something
+> about what it is for to justify it's inclusion.  That patch goes before
+> this one.
 
-Add basic version of mcf54415 DAC driver. DAC is embedded in the cpu and
-DAC configuration registers are mapped in the internal IO address space.
+Okay, that makes more sense. I saw the return condition but didn't realize
+that an empty matrix didn't result in an error.
 
-The DAC accepts a 12-bit digital signal and creates a monotonic 12-bit
-analog output varying from ~DAC_VREFL to ~DAC_VREFH. The DAC module
-consists of a conversion unit, an output amplifier, and the associated
-digital control blocks. DAC_VREFL and DAC_VREFH defaults respectivley to
-0 and 0xfff.
+So for the next version I'll add an additionall commit with this as a new
+attribute, noting that it has always been supported with this driver but
+never specified in the binding documentation.
 
-This initial version of the driver is minimalistic, "output raw" only, to
-be extended in the future. DMA and external sync are disabled, default mode
-is high speed, default format is right-justified 12bit on 16bit word.
+Thank you,
+Chris
 
-Basic tests done on stmark2 mcf54415-based board, voltage check on DAC0:
-
-/sys/bus/iio/devices/iio:device0 # ls
-name                 out_voltage_raw      subsystem
-out_conversion_mode  out_voltage_scale    uevent
-
-/sys/bus/iio/devices/iio:device0 # cat name
-mcf54415_dac.0
-
-/sys/bus/iio/devices/iio:device0 #
-
-echo 4095 > out_voltage_raw     => voltage abt 3.3V by oscilloscope
-echo 4096 > out_voltage_raw     => roll over to 0V
-echo 0 > out_voltage_raw        => voltage is 0V
-echo 2048 > out_voltage_raw     => voltage is abt 1.7V, mid scale
-
-Same behavior for /sys/bus/iio/devices/iio:device1.
-
-Generated a sine wave by shell script, sine shape is good.
-
-Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
----
- drivers/iio/dac/Kconfig        |  10 +++
- drivers/iio/dac/Makefile       |   1 +
- drivers/iio/dac/mcf54415_dac.c | 200 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 211 insertions(+)
-
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index cd4870b65415..17550e99cfdd 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -516,6 +516,16 @@ config MAX5821
- 	  Say yes here to build support for Maxim MAX5821
- 	  10 bits DAC.
- 
-+config MCF54415_DAC
-+	tristate "NXP MCF54415 DAC driver"
-+	depends on M5441x
-+	help
-+	  Say yes here to build support for NXP MCF54415
-+	  12bit DAC.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called mcf54415_dac.
-+
- config MCP4725
- 	tristate "MCP4725/6 DAC driver"
- 	depends on I2C
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 2a80bbf4e80a..1cb93e83d0eb 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -51,6 +51,7 @@ obj-$(CONFIG_MAX517) += max517.o
- obj-$(CONFIG_MAX22007) += max22007.o
- obj-$(CONFIG_MAX5522) += max5522.o
- obj-$(CONFIG_MAX5821) += max5821.o
-+obj-$(CONFIG_MCF54415_DAC) += mcf54415_dac.o
- obj-$(CONFIG_MCP4725) += mcp4725.o
- obj-$(CONFIG_MCP4728) += mcp4728.o
- obj-$(CONFIG_MCP47FEB02) += mcp47feb02.o
-diff --git a/drivers/iio/dac/mcf54415_dac.c b/drivers/iio/dac/mcf54415_dac.c
-new file mode 100644
-index 000000000000..4031a5dc1f9d
---- /dev/null
-+++ b/drivers/iio/dac/mcf54415_dac.c
-@@ -0,0 +1,200 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * NXP mcf54415 DAC driver
-+ *
-+ * Copyright 2026 BayLibre - adureghello@baylibre.com
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
-+
-+#include <linux/iio/iio.h>
-+
-+#define MCF54415_DAC_CR			0x00
-+#define MCF54415_DAC_CR_PDN		BIT(0)
-+#define MCF54415_DAC_CR_HSLS		BIT(6)
-+#define MCF54415_DAC_CR_WMLVL		GENMASK(9, 8)
-+#define MCF54415_DAC_CR_FILT		BIT(12)
-+
-+#define MCF54415_DAC_DATA		0x02
-+
-+#define MCF54415_DAC_READY_US		12
-+
-+struct mcf54415_dac {
-+	struct clk *clk;
-+	struct device *dev;
-+	void __iomem *regs;
-+};
-+
-+static void mcf54415_dac_init(struct mcf54415_dac *info)
-+{
-+	int val;
-+
-+	/* Keeping defaults and enable DAC (bit 0 set to 0) */
-+	val = MCF54415_DAC_CR_FILT;
-+	val |= FIELD_PREP(MCF54415_DAC_CR_WMLVL, 1);
-+
-+	writew(val, info->regs + MCF54415_DAC_CR);
-+
-+	/* DAC is ready after 12us, from RM table 40-3  */
-+	fsleep(MCF54415_DAC_READY_US);
-+}
-+
-+static void mcf54415_dac_exit(void *data)
-+{
-+	struct mcf54415_dac *info = data;
-+	int val;
-+
-+	val = readw(info->regs + MCF54415_DAC_CR);
-+	val |= MCF54415_DAC_CR_PDN;
-+	writew(val, info->regs + MCF54415_DAC_CR);
-+}
-+
-+#define MCF54415_DAC_CHAN { \
-+	.type = IIO_VOLTAGE, \
-+	.output = 1, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-+}
-+
-+static const struct iio_chan_spec mcf54415_dac_iio_channels[] = {
-+	MCF54415_DAC_CHAN
-+};
-+
-+static int mcf54415_read_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan,
-+			int *val, int *val2,
-+			long mask)
-+{
-+	struct mcf54415_dac *info = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		*val = readw(info->regs + MCF54415_DAC_DATA);
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		/* Reference voltage as per ColdFire datasheet is 3.3V */
-+		*val = 3300 /* mV */;
-+		*val2 = 12;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mcf54415_write_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan,
-+			int val, int val2,
-+			long mask)
-+{
-+	struct mcf54415_dac *info = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		writew(val, info->regs + MCF54415_DAC_DATA);
-+		return 0;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info mcf54415_dac_iio_info = {
-+	.read_raw = &mcf54415_read_raw,
-+	.write_raw = &mcf54415_write_raw,
-+};
-+
-+static int mcf54415_dac_probe(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev;
-+	struct mcf54415_dac *info;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev,
-+					  sizeof(struct mcf54415_dac));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	info = iio_priv(indio_dev);
-+	info->dev = &pdev->dev;
-+
-+	info->regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(info->regs))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(info->regs),
-+				     "failed to get io regs\n");
-+
-+	info->clk = devm_clk_get_enabled(&pdev->dev, "dac");
-+	if (IS_ERR(info->clk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(info->clk),
-+				     "failed getting clock\n");
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	indio_dev->name = dev_name(&pdev->dev);
-+	indio_dev->info = &mcf54415_dac_iio_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = mcf54415_dac_iio_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(mcf54415_dac_iio_channels);
-+
-+	mcf54415_dac_init(info);
-+
-+	ret = devm_add_action_or_reset(&pdev->dev, mcf54415_dac_exit, info);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_iio_device_register(&pdev->dev, indio_dev);
-+	if (ret)
-+		dev_err(&pdev->dev, "couldn't register the device\n");
-+
-+	return ret;
-+}
-+
-+static int mcf54415_dac_suspend(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct mcf54415_dac *info = iio_priv(indio_dev);
-+
-+	mcf54415_dac_exit(info);
-+	clk_disable_unprepare(info->clk);
-+
-+	return 0;
-+}
-+
-+static int mcf54415_dac_resume(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct mcf54415_dac *info = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = clk_prepare_enable(info->clk);
-+	if (ret)
-+		return ret;
-+
-+	mcf54415_dac_init(info);
-+
-+	return 0;
-+}
-+
-+static DEFINE_SIMPLE_DEV_PM_OPS(mcf54415_dac_pm_ops, mcf54415_dac_suspend,
-+				mcf54415_dac_resume);
-+
-+static struct platform_driver mcf54415_dac_driver = {
-+	.probe          = mcf54415_dac_probe,
-+	.driver         = {
-+		.name   = "mcf54415_dac",
-+		.pm     = pm_sleep_ptr(&mcf54415_dac_pm_ops),
-+	},
-+};
-+module_platform_driver(mcf54415_dac_driver);
-+
-+MODULE_AUTHOR("Angelo Dureghello <angelo@kernel-space.org>");
-+MODULE_DESCRIPTION("NXP MCF54415 DAC driver");
-+MODULE_LICENSE("GPL");
-
--- 
-2.54.0
-
+> 
+> > the probe function if it can't read one [1]. So it's very much required
+> > (and for the next version I'll upgrade it to a required element). I'm
+> > adding it because a cursory grep suggests that my use case (for the
+> > Anbernic RG-DS and in the near future the Anbernic RG Vita Pro) are the
+> > first devices to use this driver in mainline in a device tree based
+> > system.
+> > 
+> > Thank you,
+> > Chris
+> > 
+> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c?h=v7.1-rc1#n746
+> > 
+> > > 
+> > > Do not say WHAT you did, say why you did it.
+> > > 
+> > > Best regards,
+> > > Krzysztof
+> > >   
+> 
