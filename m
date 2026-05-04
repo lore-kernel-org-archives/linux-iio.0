@@ -1,42 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB22E364923
-	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 16:17:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 661D23E317A;
+	Mon,  4 May 2026 16:22:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777911466; cv=none; b=Xw+1492a94LXDgnnadmJZDOhBrkB+qRz8OYGyh8rYkOA6UVuR6qC3en/zU5TqOb0O2q2+j0qQrQowg/OxbhxcXQhKPgRu4F2I0YuZ++SqwumwK6bAfjNHNVyqlFxMC/pCdwB/UCsgnKsJ7OBgkBO9/wvSfg4W8jxe77ttcTSBy4=
+	t=1777911776; cv=none; b=uIMS70XhW8KKrMB42fKJeeMX0LSzsgyRiseZWdRLiEq//6dpQkQm3t5w/jXutG/eEZsMDlX76NP8YI/jrjaoY+ESjWZeTDw2Pks7QKg+TfAzeWRFrtvUjG++fLfefJ2of7UQJEnXCUue1ZN7zOSWEmYXLx3QHpGMHrHbS6+rB1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777911466; c=relaxed/simple;
-	bh=KnCLwZuu3QPPBvbFjEeQdeoWzUFp4sjkfRxzljZKI44=;
+	s=arc-20240116; t=1777911776; c=relaxed/simple;
+	bh=YaXrA8oKmv+2ypzFhIVGW0cgOsis46fnD7EeWxBbzJU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VMlNZC33nLnxvmkeE4Kk5eE8+QwvoUNPldnCqbuuIYK5VrTYV8zyDFDtT9ZYL/iWlJO6fpSr+rsSQhyJ1nGM1AmZhkWKQRU3Z2Vc+mKD5f1F563JonQod7fe5hpYFBt8sPQPMyv0/3H0dbbjC8DaUtOAZVVxfP7I3VOZm37WE58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XF18FyTD; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=BBD91ySuPbGd8Y5Dy5ua3ImoBk/0ZIC4r/T8veiIVC2gbgFB3erAK/rQwmjeZKmjpf8mi2PcBFppOJMtWFN68g7SxxMfHMGiEP22mhejiHPQlOEaFqZDL92hWgJ64OaOnxXezArPs5HxuhJT/J2Hb2yakzNMuCa/VwdUXX37O1o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TrmYeOhQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XF18FyTD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA609C2BCB8;
-	Mon,  4 May 2026 16:17:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TrmYeOhQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2409C2BCC4;
+	Mon,  4 May 2026 16:22:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777911466;
-	bh=KnCLwZuu3QPPBvbFjEeQdeoWzUFp4sjkfRxzljZKI44=;
+	s=k20201202; t=1777911776;
+	bh=YaXrA8oKmv+2ypzFhIVGW0cgOsis46fnD7EeWxBbzJU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XF18FyTDNhMX6/UbgIFcHOEj5hZAwWP8fkU1tdHznzPQ9qWCvicsfMuEDbP4mQQgu
-	 aRTH3pbty4+MXaNkFy+3mhNbl1Vn9SlI9QxbFM5QKAZiNlCYwTVjLn/NCKGiNxr71v
-	 dgbCdbemy5jr+mSiBtLX8IRd1iXvExjs2XAZW9a+h0vSssnUtdQRjhym5PDKQB+d3j
-	 tnSRlV/w8B33rLuAyseDjJk1Za64+B7int5k0qolbyp9luEXWQU6dQ+Mu2fo+g+hOM
-	 Yl62snqeoc2KCadUeD6gP3wyN3XcIf53yK7UK3BiSMrhM4xeG+j18WFpx03moNDg85
-	 IEj2I4OnEPH3g==
-Date: Mon, 4 May 2026 17:17:38 +0100
+	b=TrmYeOhQo0Fz1CFPV6Sz+1vOJQBiWoXxqW715/kL4BLhdWwKtiowyj8VOOaZD3inG
+	 7CiXyo+L8+RQJk+Q68GVgn0P2XaRuY2lz+pOEjQlAmo5mm9MMOio18vzLw59YD3d5i
+	 QeDHIWVKiLo86uZ+MXJ/kMJknSVpmadw2cEVITdZETQ5DXmN5u6ZYE5lsEeN/3TgHn
+	 nSXyEdX2XDleuHTLd8M/vzKxTuedyBHR8l7htiHFv7tU46KU0xW3RaS0BIwfs/2Ha0
+	 E7CTYDjz/SeBQU6p5l6DafCRZxXgVXlaeoEclT+6h8yzoj44MBzdkvHpo7o+HEzLXb
+	 fjLtDtBszyZIw==
+Date: Mon, 4 May 2026 17:22:47 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: =?UTF-8?B?Sm/Do28=?= Fernandes <joaovictor.fernandes@usp.br>
-Cc: jean-baptiste.maneyrol@tdk.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, gcotavio@usp.br,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: inv_icm42600: refactor accel/gyro
- configuration paths
-Message-ID: <20260504171738.1075442a@jic23-huawei>
-In-Reply-To: <20260503031703.33330-1-joaovictor.fernandes@usp.br>
-References: <20260503031703.33330-1-joaovictor.fernandes@usp.br>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, Sanjay Chitroda
+ <sanjayembeddedse@gmail.com>, dlechner@baylibre.com, nuno.sa@analog.com,
+ lars@metafoo.de, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/5] MAINTAINERS: Update Analog Devices IIO drivers
+ entry
+Message-ID: <20260504172247.58e833d8@jic23-huawei>
+In-Reply-To: <afhMWfXd6yVUsDDo@ashevche-desk.local>
+References: <20260430190642.3434650-1-sanjayembedded@gmail.com>
+	<20260430190642.3434650-2-sanjayembedded@gmail.com>
+	<d859d9d22fea4af4dd23221d407aff055ad52524.camel@gmail.com>
+	<afhMWfXd6yVUsDDo@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,239 +51,60 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Sun,  3 May 2026 00:12:36 -0300
-Jo=C3=A3o Fernandes <joaovictor.fernandes@usp.br> wrote:
+On Mon, 4 May 2026 10:35:53 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Refactor accel and gyro configuration paths to remove duplicated
-> logic and improve code structure.
-> Introduce a generic helper, inv_icm42600_set_sensor_conf(), to handle
-> common register programming and state updates.
+> On Fri, May 01, 2026 at 10:05:11AM +0100, Nuno S=C3=A1 wrote:
+> > On Fri, 2026-05-01 at 00:36 +0530, Sanjay Chitroda wrote: =20
 >=20
-> Keep sensor-specific handling in inv_icm42600_set_accel_conf() and
-> inv_icm42600_set_gyro_conf() wrappers. Also extract configuration
-> sanitization into a dedicated helper inv_icm42600_sanitize_conf()
-> to further reduce repetition.
+> > > Lars-Peter Clausen is currently busy and is therefore removed from the
+> > > ANALOG DEVICES INC IIO DRIVERS entry, with input from Jonathan.
+> > >=20
+> > > Add Analog Devices mailing list as contact for the ANALOG DEVICES INC
+> > > IIO DRIVERS entry for coverage support. =20
 >=20
-> Signed-off-by: Jo=C3=A3o Fernandes <joaovictor.fernandes@usp.br>
-> Co-developed-by: Otavio Capobianco <gcotavio@usp.br>
-> Signed-off-by: Otavio Capobianco <gcotavio@usp.br>
-> ---
->  .../iio/imu/inv_icm42600/inv_icm42600_core.c  | 125 +++++++++---------
+> ...
+>=20
+> > > =C2=A0ANALOG DEVICES INC IIO DRIVERS
+> > > -M:	Lars-Peter Clausen <lars@metafoo.de> =20
+> >=20
+> > I honestly got the impression that for the entries that had individual =
+maintainers,
+> > we would not touch them but maybe I lost track of the discussion. Anw=
+=C3=BDways, if we are
+> > just relying on this, then I need to put in here given that these day I=
+'m the one
+> > taking more care of the mainline stuff. =20
+>=20
+> > > =C2=A0M:	Michael Hennerich <Michael.Hennerich@analog.com>
+> > > +L:	linux@analog.com =20
+>=20
+> My reading of this patch that you, guys (ADI), have a public ML / distrib=
+ution
+> list that you manage now inside the corp. Whoever is in that list is
+> automatically will be a potential reviewer. However, it doesn't prevent
+> (and I actually fully support that) that ADI nominates more Designated
+> Reviewers and/or Maintainers.
 
-When you get a patch to 'remove duplicated' code and it adds 1 line,
-then start questioning if it is a good idea.  I think on balance, not
-quite worth it here. Some feedback inline.
+My intent was:
+1) This entry one got fleshed out to add the list - given it's a catch all
+   that 'should' get added to all ADI related patches (similar to the catch
+   all IIO list adding the linux-iio@vger.kernel.org list and myself +
+   the 3 reviewers listed there).
+2) Any ADI entries that due to stale emails would have no one listed,
+   were removed so that this catch all was the source of truth.
 
-I haven't broken it out but maybe the sanitize section is a sensible
-small deduplication patch?
+I'm very happy if Nuno is willing to be added to the top level ADI IIO
+entry now Lars-Peter is off doing other fun things.
 
-Comments mostly about too much complexity.
-
-Thanks,
+I'm also very happy to see any additional individual driver entrees that get
+more people on the hook for reviewing :)
 
 Jonathan
 
-
-
->  1 file changed, 63 insertions(+), 62 deletions(-)
 >=20
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/i=
-io/imu/inv_icm42600/inv_icm42600_core.c
-> index 76eb22488..e326e0aae 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-> @@ -289,15 +289,51 @@ static int inv_icm42600_set_pwr_mgmt0(struct inv_ic=
-m42600_state *st,
->  	return 0;
->  }
-> =20
-> -int inv_icm42600_set_accel_conf(struct inv_icm42600_state *st,
-> -				struct inv_icm42600_sensor_conf *conf,
-> -				unsigned int *sleep_ms)
-> +static int inv_icm42600_set_sensor_conf(struct inv_icm42600_state *st,
-> +			      struct inv_icm42600_sensor_conf *target_conf,
-> +			      struct inv_icm42600_sensor_conf *accel_conf,
-> +			      struct inv_icm42600_sensor_conf *gyro_conf,
-> +			      struct inv_icm42600_sensor_conf *oldconf,
-
-It's a bit odd to have 3 with _conf and one with no _
-Maybe old_config?  Given you are updating it, is it really old?
-Maybe just call it conf?
-
-
-> +			      unsigned int reg_config0,
-
-The number of parameters is what got me first wondering if this was
-worth doing.  To me it feels of marginal benefit.
-
-> +			      unsigned int target_config0_val,
-> +			      unsigned int *sleep_ms)
->  {
-> -	struct inv_icm42600_sensor_conf *oldconf =3D &st->conf.accel;
->  	unsigned int val;
->  	int ret;
-> =20
-> -	/* Sanitize missing values with current values */
-> +	/* set target sensor's CONFIG0 register */
-> +	if (target_conf->fs !=3D oldconf->fs || target_conf->odr !=3D oldconf->=
-odr) {
-> +		ret =3D regmap_write(st->map, reg_config0, target_config0_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		oldconf->fs =3D target_conf->fs;
-> +		oldconf->odr =3D target_conf->odr;
-> +	}
-> +
-> +	/* set GYRO_ACCEL_CONFIG0 register */
-
-Code makes that obvious. So I'd drop the comment.
-
-> +	if (target_conf->filter !=3D oldconf->filter) {
-> +		val =3D INV_ICM42600_GYRO_ACCEL_CONFIG0_ACCEL_FILT(accel_conf->filter)=
- |
-> +		      INV_ICM42600_GYRO_ACCEL_CONFIG0_GYRO_FILT(gyro_conf->filter);
-> +
-> +		ret =3D regmap_write(st->map,
-> +				   INV_ICM42600_REG_GYRO_ACCEL_CONFIG0,
-> +				   val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		oldconf->filter =3D target_conf->filter;
-> +	}
-> +
-> +	/* set PWR_MGMT0 register */
-> +	return inv_icm42600_set_pwr_mgmt0(st, gyro_conf->mode, accel_conf->mode,
-> +					  st->conf.temp_en, sleep_ms);
-> +}
-> +
-> +static void inv_icm42600_sanitize_conf(
-> +	struct inv_icm42600_sensor_conf *conf,
-> +	const struct inv_icm42600_sensor_conf *oldconf)
-
-Maybe go a bit long on this one and use this style:
-static void inv_icm42600_sanitize_conf(struct inv_icm42600_sensor_conf *con=
-f,
-				       const struct inv_icm42600_sensor_conf *oldconf)
-
-> +{
->  	if (conf->mode < 0)
->  		conf->mode =3D oldconf->mode;
->  	if (conf->fs < 0)
-> @@ -306,6 +342,17 @@ int inv_icm42600_set_accel_conf(struct inv_icm42600_=
-state *st,
->  		conf->odr =3D oldconf->odr;
->  	if (conf->filter < 0)
->  		conf->filter =3D oldconf->filter;
-> +}
-> +
-> +int inv_icm42600_set_accel_conf(struct inv_icm42600_state *st,
-> +				struct inv_icm42600_sensor_conf *conf,
-> +				unsigned int *sleep_ms)
-> +{
-> +	struct inv_icm42600_sensor_conf *oldconf =3D &st->conf.accel;
-> +	unsigned int config0_val;
-> +
-> +	/* Sanitize missing values with current values */
-> +	inv_icm42600_sanitize_conf(conf, oldconf);
-> =20
->  	/* force power mode against ODR when sensor is on */
->  	switch (conf->mode) {
-> @@ -324,30 +371,12 @@ int inv_icm42600_set_accel_conf(struct inv_icm42600=
-_state *st,
->  		break;
->  	}
-> =20
-> -	/* set ACCEL_CONFIG0 register (accel fullscale & odr) */
-> -	if (conf->fs !=3D oldconf->fs || conf->odr !=3D oldconf->odr) {
-> -		val =3D INV_ICM42600_ACCEL_CONFIG0_FS(conf->fs) |
-> +	config0_val =3D INV_ICM42600_ACCEL_CONFIG0_FS(conf->fs) |
->  		      INV_ICM42600_ACCEL_CONFIG0_ODR(conf->odr);
-> -		ret =3D regmap_write(st->map, INV_ICM42600_REG_ACCEL_CONFIG0, val);
-> -		if (ret)
-> -			return ret;
-> -		oldconf->fs =3D conf->fs;
-> -		oldconf->odr =3D conf->odr;
-> -	}
-> -
-> -	/* set GYRO_ACCEL_CONFIG0 register (accel filter) */
-> -	if (conf->filter !=3D oldconf->filter) {
-> -		val =3D INV_ICM42600_GYRO_ACCEL_CONFIG0_ACCEL_FILT(conf->filter) |
-> -		      INV_ICM42600_GYRO_ACCEL_CONFIG0_GYRO_FILT(st->conf.gyro.filter);
-> -		ret =3D regmap_write(st->map, INV_ICM42600_REG_GYRO_ACCEL_CONFIG0, val=
-);
-> -		if (ret)
-> -			return ret;
-> -		oldconf->filter =3D conf->filter;
-> -	}
-> =20
-> -	/* set PWR_MGMT0 register (accel sensor mode) */
-> -	return inv_icm42600_set_pwr_mgmt0(st, st->conf.gyro.mode, conf->mode,
-> -					  st->conf.temp_en, sleep_ms);
-> +	return inv_icm42600_set_sensor_conf(st, conf, conf, &st->conf.gyro, old=
-conf,
-> +					    INV_ICM42600_REG_ACCEL_CONFIG0,
-> +					    config0_val, sleep_ms);
->  }
-> =20
->  int inv_icm42600_set_gyro_conf(struct inv_icm42600_state *st,
-> @@ -355,45 +384,17 @@ int inv_icm42600_set_gyro_conf(struct inv_icm42600_=
-state *st,
->  			       unsigned int *sleep_ms)
->  {
->  	struct inv_icm42600_sensor_conf *oldconf =3D &st->conf.gyro;
-> -	unsigned int val;
-> -	int ret;
-> +	unsigned int config0_val;
-> =20
-> -	/* sanitize missing values with current values */
-> -	if (conf->mode < 0)
-> -		conf->mode =3D oldconf->mode;
-> -	if (conf->fs < 0)
-> -		conf->fs =3D oldconf->fs;
-> -	if (conf->odr < 0)
-> -		conf->odr =3D oldconf->odr;
-> -	if (conf->filter < 0)
-> -		conf->filter =3D oldconf->filter;
-> +	/* Sanitize missing values with current values */
-> +	inv_icm42600_sanitize_conf(conf, oldconf);
-> =20
-> -	/* set GYRO_CONFIG0 register (gyro fullscale & odr) */
-> -	if (conf->fs !=3D oldconf->fs || conf->odr !=3D oldconf->odr) {
-> -		val =3D INV_ICM42600_GYRO_CONFIG0_FS(conf->fs) |
-> +	config0_val =3D INV_ICM42600_GYRO_CONFIG0_FS(conf->fs) |
->  		      INV_ICM42600_GYRO_CONFIG0_ODR(conf->odr);
-> -		ret =3D regmap_write(st->map, INV_ICM42600_REG_GYRO_CONFIG0, val);
-> -		if (ret)
-> -			return ret;
-> -		oldconf->fs =3D conf->fs;
-> -		oldconf->odr =3D conf->odr;
-> -	}
-> =20
-> -	/* set GYRO_ACCEL_CONFIG0 register (gyro filter) */
-> -	if (conf->filter !=3D oldconf->filter) {
-> -		val =3D INV_ICM42600_GYRO_ACCEL_CONFIG0_ACCEL_FILT(st->conf.accel.filt=
-er) |
-> -		      INV_ICM42600_GYRO_ACCEL_CONFIG0_GYRO_FILT(conf->filter);
-> -		ret =3D regmap_write(st->map, INV_ICM42600_REG_GYRO_ACCEL_CONFIG0, val=
-);
-> -		if (ret)
-> -			return ret;
-> -		oldconf->filter =3D conf->filter;
-> -	}
-> -
-> -	/* set PWR_MGMT0 register (gyro sensor mode) */
-> -	return inv_icm42600_set_pwr_mgmt0(st, conf->mode, st->conf.accel.mode,
-> -					  st->conf.temp_en, sleep_ms);
-> -
-> -	return 0;
-> +	return inv_icm42600_set_sensor_conf(st, conf, &st->conf.accel, conf, ol=
-dconf,
-> +					    INV_ICM42600_REG_GYRO_CONFIG0,
-> +					    config0_val, sleep_ms);
->  }
-> =20
->  int inv_icm42600_set_temp_conf(struct inv_icm42600_state *st, bool enabl=
-e,
+> > > =C2=A0S:	Supported
+> > > =C2=A0W:	http://wiki.analog.com/
+> > > =C2=A0W:	https://ez.analog.com/linux-software-drivers =20
+>=20
 
