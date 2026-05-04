@@ -1,85 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 491FB35C1A9;
-	Mon,  4 May 2026 09:18:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C08E1347FC4
+	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 09:21:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777886334; cv=none; b=LweDnDWt1PrRTf+ogfC4mqrfcluY1MHO+G7tavzIjQTzcTIbIcjRA4zRHy3op5ScICKnrrc5d4+XsdGwepypp/4W48+NcGDEWF2+lFdpaI0EsWENjWx/LuksZpobwednJhefOXbQTa6rqw3UI4VVxRJO/+Hy+z6kqPVbpkR21QU=
+	t=1777886468; cv=none; b=nNw5LwDmpozB8/d46nwDsLWV3dqXNvRvRz4Ra+1/JT2AHgWbuQ1uTI3WrWhaevGKPfQbOku3HcS5NeXcKnM7/vIE4U9fxGuMBtSFHlykc/Y7ngfY6efnL+mA7AvoWG0P/cOneXHNecptuwqaKtNnP96l1QHbVKHCKNrhkSHW/No=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777886334; c=relaxed/simple;
-	bh=KIl0w0Vvx1JbzRougE0WGiIEkV/vwYsaxSzNnNhwQnw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IXuvZqX9Ivl9pkUUU0v0rZ8VABm3L19+3UfzqmHDg7tflB+/OOztj4sriKPfSSNQCK1jLzHHPv8JY0yG+ym7/Dh2KAjmgyLa0uYZmxPBPZmGhJPFzzyyl19+dlsg9pEynrUJozEmWpOFEbb8kmGDpTV/Apu3CcC1ZI5ksZp5o7g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Krg2SUnS; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1777886468; c=relaxed/simple;
+	bh=BnX504wY/5jbOBLNNdjC1wdvPax3nTDRleB/fm83Flk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KYrZ9MBqzC1HEdRPHW8YcfWFq2O+nmw/PMAivicae4KH+UvOaQKYYIH3r3R7YrXBd+36F6DP14WGEKJxY5WUUKXsjDA3GtTugJHQ3KxdB1FTKhh1Ku3pgbrcWHgKKd1MBfrtV1lXT+xKe3xh4TgHpz5b9x2k/IgzbuahAljllHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kld+DlFg; arc=none smtp.client-ip=209.85.215.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Krg2SUnS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777886332; x=1809422332;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KIl0w0Vvx1JbzRougE0WGiIEkV/vwYsaxSzNnNhwQnw=;
-  b=Krg2SUnSERE3cwg8Oy7Il0FUF1qtSfq4AkejW+ydalgvJKHxGmbLv5Vg
-   zu1pODr42Mxx6sTh52zYbWDcksH6tpCbTLYcDIYJaQDzWcWHMn/36lEz7
-   ix8s4jDt6bynYv8KjDUiIJBQBOGu+hGX/fFoCuSJYKlLDRBbEyNvLj9iz
-   z6WJw1+U44uh6AK5w1H9u6uBluVQGjNKQ6L9SPWUWHUIE0UeybRflCa4L
-   AyqhOUZfIHzi3aT1eCYn6pDDKUJn7OLIeJ/q9WhU5xVWGkNSu091s+N5y
-   Q2e+Y09xML/XF/3fTYFpIb1/JZmBWZ/k3DtzviLPkOExlD8z/q4YxOLjc
-   Q==;
-X-CSE-ConnectionGUID: SeE9R1gKSbmDNZh9I9620A==
-X-CSE-MsgGUID: Xa0+fnj5Rc2eIeHYJe9E1Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="78732017"
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="78732017"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 02:18:51 -0700
-X-CSE-ConnectionGUID: TuRO6cPUR2iwZaJgR0AIrQ==
-X-CSE-MsgGUID: nbTfzC5dShmYYE+dLUGCAg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="259111145"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 02:18:50 -0700
-Date: Mon, 4 May 2026 12:18:47 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v0 00/14] iio: magnetometer: ak8975: Additional changes
- to the driver
-Message-ID: <afhkdxsxDbUDqG9g@ashevche-desk.local>
-References: <20260427201412.3067235-1-andriy.shevchenko@linux.intel.com>
- <20260428173540.28b7913e@jic23-huawei>
- <CALoEA-xm0FGRk1rUWOO1YvzczC86Bgvu-t4Fe4iy3S_LCTygRg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kld+DlFg"
+Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-c70e27e2b74so1161008a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 02:21:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777886467; x=1778491267; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Fuuo/z2LhU5LQUkwEEphmvYVaLYefqtEf3mo5jJ8+1A=;
+        b=kld+DlFgxcGF3V7n2Whk8bzyR8oljzOv61o64gq2KjXCbqhC5+RoauKkNgq6rTmRua
+         jPl8A+GdZ7AGo8whkxYnscrgVWj3ARmaUFZu3Y0WnNKQWZhDjHs0C/OLXRs+6U2sBogt
+         iRMaFk6jzkwKX715yXt/2zcrrghL66dymd1ceSolqo13XB9Tbp74ZF+pSlUoyYnN+yXu
+         a4oOb+fOBoioyavrVgHBhIR1bHebG5hqrW1dh1FkzvLe6iFNnWXGv8p1OtXVfaht/3Ld
+         vlu9cxtT1D0/o3IsCcMzPqDFNOCcCe6y+gOMoDs0CjVPSvknjjSx5oOb/89/CBznelgu
+         UwqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777886467; x=1778491267;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Fuuo/z2LhU5LQUkwEEphmvYVaLYefqtEf3mo5jJ8+1A=;
+        b=DkhfV84bFTVU87iT3cZ7l/P7zJ2DUSI7pZ9ZzLs+BErqGLCFHX5/1mTNF69Kdr+HN6
+         OGNpFn/I//jOizLPlfICjlW0Ievn3FP100u/frcvJ58d73ohHxa93Q09t58Gyk0ShUf6
+         5By4pfXylFaRigi3IDVs6raP6xWDKhx2/BXvuFWruJ+NxR+2l8DPmeRrX7OdZ3OY4vnT
+         Eu0O/1CDS2OhxuNhMwNzioSDqMRjTl5dD4/q6GrcbtRELT/8tsqE7pqspCUabdhjxkRW
+         vf7/HvWJbzxFK4DDPxATBjnLGpNv4Si2D5u6BXZxnC02g9nEAw+HdJFb4ZqvHNIDs5G+
+         QKMg==
+X-Gm-Message-State: AOJu0YyzXdbnd26NDv1CmcXguj0RE4/5Jp+g0O5Ynd5SzRw5PlbymrfJ
+	w7ATAC6bzLIZSFKIrWOTOYnJttxZG6a65PmswkeAUS9JgQZCxeMBdW+YsEUdhw01itLQNA==
+X-Gm-Gg: AeBDieuok04+yvJ84sLjjFT4P+ymL7iYhZiObdxow42cOkXt639sna7/y4w4b9Vvqv2
+	sMUs5TSYM44PVTc0ptSrM47b0zBdZgw3pLCsu+3raNtnpKiXQ0yij6nN6LZunTYDGvoVRyho3rL
+	mgDgBJAPQmdm2CVHcedUnCDewC1jzUyY+AVaVdQmO7vNqDtqGFVLBH7vO9+dkX/OAnZduQS8HfV
+	QDZGnPPCownfyEg7AJUaPk46sqkXUEt4HXj0I/72jGm9yUh3dyHHjAjfzX8HkgKXk+cRe/nRn0R
+	DY4JQ+NVqHqwOHflDEeInF11kchH8eHrLlcvQaIIw71XiJXQAxKFO1bdLTrQhyNGRdfIhGP9Dds
+	UZthD91CHyqa2kW+pJcUKJGeN4IKjD4fQeT53eswvuaUv2dTzPKl6+Wb7Ter80opoFbdNKYj8kd
+	gVuSv9jhmCnUIuZS+b6vDqcF8GfRN8qw==
+X-Received: by 2002:a05:6a20:1e62:b0:3a8:9dd:75bb with SMTP id adf61e73a8af0-3a809dde19fmr4369375637.56.1777886466767;
+        Mon, 04 May 2026 02:21:06 -0700 (PDT)
+Received: from scootaloo ([101.179.98.31])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c802545908esm4163923a12.27.2026.05.04.02.21.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2026 02:21:06 -0700 (PDT)
+From: Angus Gardner <angusg778@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-staging@lists.linux.dev,
+	gregkh@linuxfoundation.org,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com
+Subject: [PATCH v2 0/3] staging: iio: ad9834: driver cleanup
+Date: Mon,  4 May 2026 19:20:56 +1000
+Message-ID: <20260504092059.1536094-1-angusg778@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALoEA-xm0FGRk1rUWOO1YvzczC86Bgvu-t4Fe4iy3S_LCTygRg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Mon, May 04, 2026 at 11:13:36AM +0200, Joshua Crofts wrote:
-> On Tue, 28 Apr 2026 at 18:35, Jonathan Cameron <jic23@kernel.org> wrote:
+v2: Split into a series of three patches as suggested by reviewer feedback.
+    Also add a missing dev_err_probe() conversion for the SPI init error
+    path pointed out by Joshua.
 
-...
+v1: https://lore.kernel.org/linux-staging/20260502021815.3953423-1-angusg778@gmail.com/
 
-> Given the relatively big backlog of email in the list, should I wait a
-> bit longer sending the combined series?
+Angus Gardner (3):
+  staging: iio: ad9834: simplify -ENOMEM return in probe
+  staging: iio: ad9834: use dev_err_probe() in probe function
+  staging: iio: ad9834: fix chip name typo in comments
 
-I'm fine if you send it today or this week.
+ drivers/staging/iio/frequency/ad9834.c | 24 ++++++++++--------------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.51.0
 
