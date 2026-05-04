@@ -1,43 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8E5C19D07E
-	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 16:35:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A433E3C5A;
+	Mon,  4 May 2026 16:39:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777912547; cv=none; b=ji3y4IRgVc1LDXkkPrBquJZtO06JmRjBDyipjXTEke5pBA4S1mkK9GYY+h4dlM/RvuUMrWHvFkez0HFE8JWtgXO+Zk8ijyA/AzlmWXrmg5AkXdKWf302kCTDIXUpgwtD+C0UpzCevaevbUVIC7yI8q6tJPAC7Wx/cr0Bnz7Ra/g=
+	t=1777912743; cv=none; b=MNSitB1EpItZp1kA523mI/LOrBdHEXMsyJGt1qKgK688tskiHLtssgBGS8XLKhghvDk1HkAkoT7o18lFJ/S8NHhoOvD0OTnEdnAGgknrtrBH/jcpubwaYPpDpCET3SVzYkEzmNVIwhUCOVbnO32u+sxhMWFZg+xo+oiPY5wCx6Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777912547; c=relaxed/simple;
-	bh=slbNA8SLFuX9vvt5+UszgbNW4OFsHcC7uVyD03h36eo=;
+	s=arc-20240116; t=1777912743; c=relaxed/simple;
+	bh=njr0GWE4Oza+aeDGFeb0WZSg+lk1gG64Ezr4eSCWKZc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=T0bZJhcsXvgxJNiluEpFmPFDQW+ybRWsI0QwIp+3RwhaCarMtbhOxO1PeT+dDRzsJ2hKHeP5BfmJQU5I03vcmFZ94p6xEEiYpQEuF7/T/95zDs41tQ0RrqETjEMq+6cPvpyvj4eGCIa1qgr/A/BmEJURDTls0Ihh4kgV1073Abo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uaimn2sS; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=eHhk8rrSW/sMEa69tT8A3iHv1JKtPH4HE/Qw4kdALjSQgjfKA0bDrItSvxIAR2MLSa/cM7Sm/uZ9WVezUHC6p0BJ5Z82AD8Q0NT6W/vfmD2KC9KDr2qhm6RwnsCRl1l+8+H4ayDu/SQd/FfyeKWQ3lP1D/wtYAb8cFdT5jmqjBQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rYxGvOeU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uaimn2sS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 254A7C2BCB8;
-	Mon,  4 May 2026 16:35:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rYxGvOeU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44597C2BCB8;
+	Mon,  4 May 2026 16:39:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777912547;
-	bh=slbNA8SLFuX9vvt5+UszgbNW4OFsHcC7uVyD03h36eo=;
+	s=k20201202; t=1777912743;
+	bh=njr0GWE4Oza+aeDGFeb0WZSg+lk1gG64Ezr4eSCWKZc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=uaimn2sSi8yUCaKJUBsOUOeS8apdnUF3cLWyecetES5NXukTDqEyU5mRgrVB7WvSG
-	 73lFW2Znc14MD701WgVHPUWITTzC02x0nJESxmaDPpPCNp5SjxYpUFoy0UjHc7AW9p
-	 J7VKVRhX42PofizSA/qif9THtWQDck76kEnR9b/l6n7AyHsrHTvvg1V3EYIDfFmAdx
-	 GaMSwZMyqDPFkdq2ot4B/vQ083TXCNp2g+midAlylM+JKyFXxLcp29qfK19KNV7SKg
-	 mBaV6GLNGOBGuaDHrQwZqgyQiHobEyaBmCgLiArgN3LxbuWZwlp0ihtppSQdQD0Jta
-	 Kd7ZVp3uMH8Ew==
-Date: Mon, 4 May 2026 17:35:39 +0100
+	b=rYxGvOeU9CG6ZQ0Nw50knmT9mQvraeVTMTvePSZrWytNkaflIfJ4agF/2CgGrcb5a
+	 TP1scsnN6yDryv15UEkXjX4Ebq1LQcMvhgzf5gaad29OUiG0oUUc4czois8EXbS00D
+	 tz1nIN+cTg2zSwJXmbdteu0hjeEBTFktvLqXlRALQAfcLX/xch+E0weRngTlxnpIoA
+	 Gibvi8BasyHBTHZmFVQL7JPQq0M4IuG2xpRzShnlauoB3mMr7p4gSsRxiNlFFIXpp6
+	 jPO6KNxu5EoxP2QTG9hrGYcRimAbLAPHRdpDIQQmz8HlKcvli5Yj/RSN6Cc13H0PMq
+	 aZKLx7kP4sK6A==
+Date: Mon, 4 May 2026 17:38:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Gabriel Braga Lagrotaria <gabrielblo@ime.usp.br>
-Cc: andy@kernel.org, dlechner@baylibre.com, javier.carrasco.cruz@gmail.com,
- nuno.sa@analog.com, ricardo.kojo@ime.usp.br, elliancarlos@gmail.com,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: light: veml6030: Generalize hw_init for
- veml6030 and veml6035
-Message-ID: <20260504173539.6f13785f@jic23-huawei>
-In-Reply-To: <20260502234348.131563-3-gabrielblo@ime.usp.br>
-References: <20260502234348.131563-1-gabrielblo@ime.usp.br>
-	<20260502234348.131563-3-gabrielblo@ime.usp.br>
+To: Wang Zihan <jiyu03@qq.com>
+Cc: joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adxl313: fix typos in documentation
+Message-ID: <20260504173855.1407e7d3@jic23-huawei>
+In-Reply-To: <tencent_5E6677A3FFCB969503EE5250592E75128807@qq.com>
+References: <tencent_5E6677A3FFCB969503EE5250592E75128807@qq.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,42 +45,29 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat,  2 May 2026 20:41:04 -0300
-Gabriel Braga Lagrotaria <gabrielblo@ime.usp.br> wrote:
+On Sat,  2 May 2026 20:53:43 +0800
+Wang Zihan <jiyu03@qq.com> wrote:
 
-> Modify veml6030_hw_init() function to deduplicate the setup logic
-> for veml6030_hw_init() and veml6035_hw_init(), and remove
-> veml6035_hw_init().
+> Hi Joshua,
 > 
-> Additionally, introduce struct veml6030_hw_init_config_desc to store and
-> pass the custom configuration values specific to each device variation.
+> Thank you for the review!
 > 
-> Signed-off-by: Gabriel Braga Lagrotaria <gabrielblo@ime.usp.br>
-> Co-developed-by: Ricardo H H Kojo <ricardo.kojo@ime.usp.br>
-> Signed-off-by: Ricardo H H Kojo <ricardo.kojo@ime.usp.br>
-> Co-developed-by: Ellian Carlos <elliancarlos@gmail.com>
-> Signed-off-by: Ellian Carlos <elliancarlos@gmail.com>
-Hi All,
+> I apologize for the quick v2. The v1 had an incorrect subject format
+> ([PATCH 1/4] instead of [PATCH]) which could cause confusion. I sent
+> v2 to correct this formatting issue.
 
-A few additional comments from me.
+Make sure you include a change log below the ---
+That would have let Joshua and the rest of us know why you resent.
+Particularly important when doing a quick resend.
 
-> @@ -1074,9 +1051,11 @@ static int veml6035_hw_init(struct iio_dev *indio_dev, struct device *dev)
->  		return dev_err_probe(dev, ret,
->  				     "can't clear als interrupt status\n");
->  
-> -	return 0;
-> +	return ret;
-
-Why?  If we can get here with anything that isn't 0 then fair enough, but I can't
-see any change to make that now the case.  If we know it is zero then explicitly
-returning that is good for readability.
-
->  }
->  
-> +
-> +
-Please proofread your own patches for stuff like this.  It's very
-easy to introduce stray changes as you develop your code so only
-way to catch them is too look at the end result before sending it out.
+Thanks,
 
 Jonathan
+
+> 
+> I will keep the 24-hour rule in mind for future submissions.
+> 
+> Best regards,
+> Wang Zihan
+> 
+
