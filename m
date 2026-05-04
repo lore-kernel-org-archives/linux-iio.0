@@ -1,89 +1,164 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE36C1F5821;
-	Mon,  4 May 2026 14:48:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 953693DFC75;
+	Mon,  4 May 2026 15:06:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777906094; cv=none; b=kD5/uprsAGBA0xr2B+sIIpTKcgPwUQ8GXeRxhdmNWMWbzTX3j6/4Sd1e3DZoUyR+N5g/q7EzlEmw1hlX5u6zmBYiKHSyeSMwUFgbrSnVhAyeSmDDtY3IPUak8Xen5xnDiivN7l5mov3y8On3mrWOrOxrl/ZiPKwyzXgan272MZE=
+	t=1777907174; cv=none; b=BVK4oTJ+FnqRhW+fdmddhZExCM87dXGf8BQyizjpMdiNEvi9G5ui1yLIFSIAIqRp7WoCzD1Azkappbo/ce8QaW49fUdJPejMr7jxTnxsZsOfXue+b2yhLAzd+nYVWZXknhOxKdvZ2lG5HlRFRAVZRGpS05ioDBLzRpgvfeHLHYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777906094; c=relaxed/simple;
-	bh=7hsSk15Y2U3a/cX1TKeGG4qGJqRpLuKOjb/Uwip3l80=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LgblY+jvlnY2v0JebSfsmjAXwm/mqPSqOzImdsCp1CW7k0aJrKURhW5u+j56ZFA6o5a33Q1TnIgy70/tjXsO9KqAFKyX33Ft8NSvESV+v5zvulBvul1ZH26NmGzudA18FoUToC+85c7vTyhkdsuliqOUhTpVc9IUx0nkTGXpx28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JSQGFfWn; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777907174; c=relaxed/simple;
+	bh=VGRg8Q/l5/7IklFbItHWa4BLQnJOOeYP7gWeXv6zdCU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=TzIX9JHqr4I/Ch++YD08d5xdNX68kg2FD4iG/0iMhUcYwOkMgmL6RtfvHbkzyrmu9qcrYAJisyVe8gIEvsAdaG7QLesi4X25zm7QkM9eKnKyT4WAUF+YILLPIslp3zMWIRg7agiUyX60mLxgjzAduuDHcqBVR4O8x6jpOe/ZYS4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=guFRaS0k; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JSQGFfWn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777906093; x=1809442093;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7hsSk15Y2U3a/cX1TKeGG4qGJqRpLuKOjb/Uwip3l80=;
-  b=JSQGFfWnzCkiC2KmFXvgVdNrosJIKODzLXwTdrUqD4bsR54hDljnUzxp
-   6sBq7EgWw1rtMZBMR6WJs7p5klHU6hiAPYNLdWcjo9uURvh3zbaYHem8W
-   KriIWQqCpVrHhHm9L1jZ2nmx27OJlEQdWl6iVc3lLLginEJbltwXuLyNA
-   FK4hIAMRyECa9iRcn/fsfyQubXSH220d71JAsPUVnzoGUD6fh8TbqTsSw
-   7va78oF72zcFaKxsF3lbBIYCuXCXnyCIdv3GM02JHEJqczkU7czBlTfM4
-   NV5DFrkioMhvwYTbbxsw4w5i5u7yuInvOaw4+pdc/sVFPD9ew24xxqn9A
-   w==;
-X-CSE-ConnectionGUID: sR7uzCNeTqCrROMrH0Uh3w==
-X-CSE-MsgGUID: G2eUYtuVT2SBukL3hzXcng==
-X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="104212275"
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="104212275"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 07:48:12 -0700
-X-CSE-ConnectionGUID: 0NI7P55ZQgy2XiHzRNPhgg==
-X-CSE-MsgGUID: 47mRiMeQT3mNEKdVgtNIXQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="239501632"
-Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.198])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 07:48:09 -0700
-Date: Mon, 4 May 2026 17:48:06 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 06/11] iio: adc: hx711: introduce hx711_chip_info
- structure
-Message-ID: <afixpkdeWwmlps4A@ashevche-desk.local>
-References: <20260503120949.80292-1-piyushpatle228@gmail.com>
- <20260503120949.80292-7-piyushpatle228@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="guFRaS0k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57D19C2BCB8;
+	Mon,  4 May 2026 15:06:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777907174;
+	bh=VGRg8Q/l5/7IklFbItHWa4BLQnJOOeYP7gWeXv6zdCU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=guFRaS0kWaxDzS967TMQGvmzi0HbNvF/m+d5zuUg7j/fgibhCHU4ZMYhTA9X2NwPS
+	 WiuCoMsJgPUeGdqH6fZ/QdGN/UsNlRGYuWWoHMvk5f2AppbTPRp/v0dAv56XwjfqLk
+	 ZKjliczseYZhR7jTND36PMsJDAgq+T/S7yPccGu7NGW+YOeUvEsnnDwTOJde0pkZgB
+	 GWxCwqS+oXK6NCgyGaRVM5zcVLT6m+sAug30i3rR9tAc7Id+vfPJDKxM9A57F/m1Z6
+	 88yQOYJPuGNu4MTL5WBz1uzRyziH33zx4w0sjKeQgeG1gL6VMOKwRD/+h/2SPJuv+p
+	 mTZ8623537tXg==
+Date: Mon, 4 May 2026 16:06:06 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v4 06/17] iio: magnetometer: ak8975: modernize polling
+ loops with iopoll() macros
+Message-ID: <20260504160606.07f87f10@jic23-huawei>
+In-Reply-To: <20260504-magnetometer-fixes-v4-6-a291c2a7c71a@gmail.com>
+References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
+	<20260504-magnetometer-fixes-v4-6-a291c2a7c71a@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260503120949.80292-7-piyushpatle228@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, May 03, 2026 at 05:39:35PM +0530, Piyush Patle wrote:
-> Add a per-variant static configuration structure and populate the IIO
-> device fields from it at probe time.
+On Mon, 04 May 2026 11:48:18 +0200
+Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+
+> From: Joshua Crofts <joshua.crofts1@gmail.com>
 > 
-> This is a preparatory change for adding support for more HX711-compatible
-> hardware variants without duplicating the probe-time setup.
+> The driver currently uses while loops and msleep() for polling during
+> conversion waits.
 > 
-> No functional change for existing HX711 users.
+> Replace the custom polling loops with readx_poll_timeout() and
+> read_poll_timeout() macros from <linux/iopoll.h>. This reduces
+> boilerplate, standardizes timeout handling and improves overall code
+> readability, keeping the original timing and error behaviour. Add
+> <linux/time.h> for USEC_PER_MSEC macro instead of using magic numbers.
+> 
+> Assisted-by: Gemini:3.1-Pro
+> Co-developed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
-LGTM,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+One question inline on whether it is a good idea to be paranoid about
+gpiod_get_value() potentially returning < 0 to indicate an error.
+Right now that is treated as success.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 45 +++++++++++++++++----------------------
+>  1 file changed, 19 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index 57f50c09cca539c3733f516a1617375e9134c349..2e750c151435da57926969a63ba9fe996d774e7a 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/property.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/time.h>
+>  #include <linux/types.h>
+>  #include <linux/wait.h>
+>  
+> @@ -652,18 +653,15 @@ static int ak8975_setup(struct i2c_client *client)
+>  static int wait_conversion_complete_gpio(struct ak8975_data *data)
+>  {
+>  	struct i2c_client *client = data->client;
+> -	u32 timeout_ms = AK8975_MAX_CONVERSION_TIMEOUT;
+>  	int ret;
+> +	int val;
+>  
+>  	/* Wait for the conversion to complete. */
+> -	while (timeout_ms) {
+> -		msleep(AK8975_CONVERSION_DONE_POLL_TIME);
+> -		if (gpiod_get_value(data->eoc_gpiod))
+> -			break;
+> -		timeout_ms -= AK8975_CONVERSION_DONE_POLL_TIME;
+> -	}
+> -	if (!timeout_ms)
+> -		return -ETIMEDOUT;
+> +	ret = readx_poll_timeout(gpiod_get_value, data->eoc_gpiod, val, val != 0,
+> +				 AK8975_CONVERSION_DONE_POLL_TIME * USEC_PER_MSEC,
+> +				 AK8975_MAX_CONVERSION_TIMEOUT * USEC_PER_MSEC);
+> +	if (ret)
+> +		return ret;
 
+Should we check val as well?   It might be negative if gpiod_get_value()
+returned an error..  Obviously the original code didn't so this would be an
+improvement rather than maintaining what that was doing.
+
+
+>  
+>  	ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST1]);
+>  	if (ret < 0)
+> @@ -675,28 +673,23 @@ static int wait_conversion_complete_gpio(struct ak8975_data *data)
+>  static int wait_conversion_complete_polled(struct ak8975_data *data)
+>  {
+>  	struct i2c_client *client = data->client;
+> -	u8 read_status;
+> -	u32 timeout_ms = AK8975_MAX_CONVERSION_TIMEOUT;
+>  	int ret;
+> +	int val;
+>  
+>  	/* Wait for the conversion to complete. */
+> -	while (timeout_ms) {
+> -		msleep(AK8975_CONVERSION_DONE_POLL_TIME);
+> -		ret = i2c_smbus_read_byte_data(client,
+> -					       data->def->ctrl_regs[ST1]);
+> -		if (ret < 0) {
+> -			dev_err(&client->dev, "Error in reading ST1\n");
+> -			return ret;
+> -		}
+> -		read_status = ret;
+> -		if (read_status)
+> -			break;
+> -		timeout_ms -= AK8975_CONVERSION_DONE_POLL_TIME;
+> +	ret = read_poll_timeout(i2c_smbus_read_byte_data, val, val != 0,
+> +				AK8975_CONVERSION_DONE_POLL_TIME * USEC_PER_MSEC,
+> +				AK8975_MAX_CONVERSION_TIMEOUT * USEC_PER_MSEC,
+> +				true,
+> +				client, data->def->ctrl_regs[ST1]);
+> +	if (ret)
+> +		return ret;
+> +	if (val < 0) {
+> +		dev_err(&client->dev, "Error in reading ST1\n");
+> +		return val;
+>  	}
+> -	if (!timeout_ms)
+> -		return -ETIMEDOUT;
+>  
+> -	return read_status;
+> +	return val;
+>  }
+>  
+>  /* Returns 0 if the end of conversion interrupt occurred or -ETIMEDOUT otherwise */
+> 
 
