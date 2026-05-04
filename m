@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7CCC39B4A9;
-	Mon,  4 May 2026 11:01:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BCE939D6E7;
+	Mon,  4 May 2026 11:10:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777892515; cv=none; b=DwQGEqqpd31iBvOWvAFl0nlkXb+QVi0AXt+9ugJ5Yxd/fDv6WxIDH197Gf6dq0GHkygUmfkTcP2OWe2FU2+s5aVhLiXO3gWecsspKoTA9eMpb3mau8CIC6fFgCWMzHAvkVzdKP5YRsAQ/Nj8R51jKPwnhnhyGoxhnGbTGg69bh4=
+	t=1777893047; cv=none; b=CUPR6FDnsCT2V4pzZj62/MVGRTvWnOONvkkdXCK2Ip0pVpXlFJiHHAfmpCqao85QiD1f98kWNZRMY7e/Cd7VEqPl8nNokFdbax8n/Un0ayMo39EbNghgXhBE3acYvmyVdkUHkO2nCWiRvNZJ0aAEC3vmsF8pobkyqqiVbsNH/qo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777892515; c=relaxed/simple;
-	bh=DkzG33rodDPhwK5LNeMG8LBrJ7OibLqTfYYobbvWxYc=;
+	s=arc-20240116; t=1777893047; c=relaxed/simple;
+	bh=BtfPN4oy+FFGUBYnOzCFcHvM6cXEC9ZSvs9DGSXE8yg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dlYPGmbobxzLw6YCfNhEegQn6X5Mnpow5bXcLoRgHoab3tqk0E0kJuP0zc8mvP/bb6D1AxyE921FvM1GSoCdGjUo46G35FkIFwHbE1ZH6ZbLh7hWsX7LA1AoS6r1rhBeFXQNY45ousWouWyt7LMrlonQLxeGBCXJNnVyjn3bW3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kIcfIYvy; arc=none smtp.client-ip=198.175.65.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=QUTCnqT7RspzeZsZyjc8FIHrEq4vN/s0wCCpR4jOckGzuVNIf7hpbNmVvJdeqZLLj0JDm5t/MTX59iyTgYcGh16659o8HAIjHpmNuiZt4gGwEqy8nNDJ2A7ms0c5YM2U91U1w4pEgVa7QlKmPd1NRPPKq9Z5dT7741q+xG2fA2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YU488up5; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kIcfIYvy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YU488up5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777892515; x=1809428515;
+  t=1777893046; x=1809429046;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=DkzG33rodDPhwK5LNeMG8LBrJ7OibLqTfYYobbvWxYc=;
-  b=kIcfIYvyL/Ou8r/2SnY/jhCQzErbjw9t1HI+encinFlKDfixdGumkteM
-   weC5tjBAZ344ny2V5UKkCkByorEbk3zNr2gJvGgS06HZB6KSmG0hC0AKa
-   yvCLeixGD/JD9LVse44e75QbeSPYURXTkaN7SE1ruDY3rwwlBxN3SWmsj
-   rH6dU28B4OEm6kHulGqK19qgwRgpDCu7WpPtiR2UlHRPzoKUdxMnAvLaq
-   Zsn1Nss+7B3cHPfbSVuUmcwkYXcwcGVxNapInXW3j804DAR3AUFu2Pvch
-   hYHwfTBJwK4K6QlZ95AVJxxHloL5mNw4vE1ainkrQ4HTqWUJEe9zYVl3R
-   w==;
-X-CSE-ConnectionGUID: nqXnMj7DT9OHPxCKDeBp5w==
-X-CSE-MsgGUID: VkBDVFJNRQmqWLPLOfarOw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="89054115"
+  bh=BtfPN4oy+FFGUBYnOzCFcHvM6cXEC9ZSvs9DGSXE8yg=;
+  b=YU488up5zfIFXp705yIfMCkQ5QGdTIrRd6o7ySrJSwkaV5KCXObOf6g4
+   56jVlcwqObwFnV5AwI36CHe51MSE+NyeKxQLZh46YTtBrL3ozRV7ek/4/
+   zy1hmRKok8OQ0p6eiBWvJggvCJg1ofoWVbIb5XRcd/7lUYRpMiRW/I9Qa
+   gzTSOBxoHqXmF4pFwHDnQJ1DMn8bWTAsGc78odIZ9fNnbQj9EL3sSkI5q
+   RbOsWnUKTjxXEP6z0blPwrlJ/S7Vo+3jQ0uMf/1TCuxGSzVoaIHjzsxrn
+   SUQSbFf7VL+CvYjv4Jor1Qid/nvtwhklNx2nVWMmpjCpvbnDXZE4g3Zgh
+   g==;
+X-CSE-ConnectionGUID: HCC3PYk4QcSxSC6RCJ2Qwg==
+X-CSE-MsgGUID: HdVQbIgFTOyO1QrtWFCJoA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11775"; a="89332282"
 X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="89054115"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 04:01:54 -0700
-X-CSE-ConnectionGUID: exL47zitSbOO+kSttH68Gw==
-X-CSE-MsgGUID: 1trCrEQ3RbGqCn0J0bb36w==
+   d="scan'208";a="89332282"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 04:10:46 -0700
+X-CSE-ConnectionGUID: sD+x6jiURTqFXBzDNiyU+w==
+X-CSE-MsgGUID: eByOlG5MSwSxbL7CNh1QBQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="240471881"
+   d="scan'208";a="230896469"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 04:01:51 -0700
-Date: Mon, 4 May 2026 14:01:49 +0300
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 04:10:44 -0700
+Date: Mon, 4 May 2026 14:10:42 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: joshua.crofts1@gmail.com
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -51,10 +51,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 00/17] iio: magnetometer: ak8975: modernize and
- cleanup driver
-Message-ID: <afh8nZ8fsyeXYbtz@ashevche-desk.local>
+Subject: Re: [PATCH v4 07/17] iio: magnetometer: ak8975: pass conversion
+ timeouts as arguments
+Message-ID: <afh-smyJoL7xRiqZ@ashevche-desk.local>
 References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
+ <20260504-magnetometer-fixes-v4-7-a291c2a7c71a@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,52 +64,74 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
+In-Reply-To: <20260504-magnetometer-fixes-v4-7-a291c2a7c71a@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, May 04, 2026 at 11:48:12AM +0200, Joshua Crofts via B4 Relay wrote:
-> This series modernizes and cleans up the ak8975 driver, migrating to
-> more modern kernel APIs and cleaning up legacy code. Patches 7 through
-> 17 were provided by Andy Shevchenko.
-> 
-> The series was compile-tested and ran in QEMU with i2c-stub and
-> no issues were found.
-> 
-> The patch regarding switching to devm_* functions might have to
-> go through an additional revision, otherwise everything else seems
-> good to go.
-> 
-> Changes include:
->  - replacing usleep_range() with fsleep() for optimization
->  - migrating to iopoll macros for better device polling
->  - removing unused headers and adding new ones
->  - checkpatch.pl fixes
->  - switching driver to use devm_* functions
-> 
-> v2:
->  - PATCH 1: reverted alphabetical header ordering per logical change
->    separation
->  - PATCH 2: added newline between fsleep() and return
->  - PATCH 3: fixed open parenthesis formatting
->  - PATCH 4: fixed whitespace issues, added <linux/time.h> for
->    USEC_PER_MSEC macro
-> v3:
->  - PATCH 1 & 2: split alphabetical ordering and header removal into two
->    separate patches
->  - PATCH 4: commit message fix
->  - PATCH 5 & 6: split error handling and polling loop replacement into
->    two separate patches
-> v4:
->  - PATCH 7-17: am Andy's changes into this series
->  - PATCH 2, 5, 6: fixup Andy's changes to existing patches
+On Mon, May 04, 2026 at 11:48:19AM +0200, Joshua Crofts via B4 Relay wrote:
 
-Co-developed for those is too strong. Just use your SoB only.
-You may use my Reviewed-by though.
+> Since we have switched to using macros from iopoll.h it's better to
+> use poll and timeout values supplied as parameters to the helper
+> functions. Also added local variables for poll and timeout values
+> to prevent magic number use.
+> 
+> Besides that, fix the home grown and obviously wrong in some cases the
+> jiffy-based timeout.
 
-Taking this into account, you can wait a day and send a new version with that
-and --base fixed. Also it gives me and others a chance to briefly look into
-the contents and see if everything looks okay.
+...
+
+> -static int wait_conversion_complete_gpio(struct ak8975_data *data)
+> +static int wait_conversion_complete_gpio(struct ak8975_data *data, int poll_ms,
+> +					 int timeout_ms)
+
+Logical split is preferred:
+
+static int wait_conversion_complete_gpio(struct ak8975_data *data,
+					 int poll_ms, int timeout_ms)
+
+OTOH, why are they signed? Maybe
+
+static int wait_conversion_complete_gpio(struct ak8975_data *data,
+					 unsigned int poll_ms,
+					 unsigned int timeout_ms)
+
+(but please, double check that there is no possibility to have a negative
+ values there)?
+
+> +				 poll_ms * USEC_PER_MSEC,
+> +				 timeout_ms * USEC_PER_MSEC);
+>  	if (ret)
+>  		return ret;
+
+...
+
+> +	int irq_timeout_ms = 100;
+> +	int timeout_ms = 500;
+> +	int poll_ms = 10;
+
+Hmm... I don't think we need those, esp. taking into account the difference in
+the timeout_ms for different cases.
+
+...
+
+>  	/* Wait for the conversion to complete. */
+>  	if (data->eoc_irq)
+> -		ret = wait_conversion_complete_interrupt(data);
+> +		ret = wait_conversion_complete_interrupt(data, irq_timeout_ms);
+
+		ret = wait_conversion_complete_interrupt(data, 100);
+
+>  	else if (data->eoc_gpiod)
+> -		ret = wait_conversion_complete_gpio(data);
+> +		ret = wait_conversion_complete_gpio(data, poll_ms, timeout_ms);
+
+		ret = wait_conversion_complete_gpio(data, 10, 500);
+
+>  	else
+> -		ret = wait_conversion_complete_polled(data);
+> +		ret = wait_conversion_complete_polled(data, poll_ms, timeout_ms);
+
+		ret = wait_conversion_complete_polled(data, 10, 500);
 
 -- 
 With Best Regards,
