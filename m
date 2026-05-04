@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0238E37C0F8;
-	Mon,  4 May 2026 16:02:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C55F53DD53E;
+	Mon,  4 May 2026 16:03:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777910535; cv=none; b=bfYK/BLhtWz+OlQPZ64u9eNb0f5ANCessg2ktSS2ryfneua4PHcGZQL6rwHa7/bYcgs3cv3L4gDG2ZkK/tNQ2Y3j7AIjLBUA2vgfo1QZxJ1G2bAQ4i90kCw7skDm7d9nh+JfdCHNrI6rdeBRrQf7YZAE8pJqPp94pc/5RB73LN0=
+	t=1777910617; cv=none; b=uSFN1pU2ddh+WjUi0ifCoyxktrBgYAm2Z+BlKdEvW0mGSE/RYzkVOC8n8seThepgkZkBfJ/qxoKhjJj8fMDxsReIUwDLO9PpVUtJSXTt6/ZmJkQdloiq/Ry/Yo15w+FjMybIfydEdbPSla6drDZYgq+Z2rMUHfvuSnO26L56r/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777910535; c=relaxed/simple;
-	bh=mTEeXh711WtBdL0ctv+LrfudDU57QklEIWOvmYihlas=;
+	s=arc-20240116; t=1777910617; c=relaxed/simple;
+	bh=jtVBnt9qDne+Ngjy5Mz0NdZ7Zcbdj3YhqhPzN2nbZSk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=caIc/105g15PAuCZk1P1exOhrzCw6wQV4BTSC9b3yA27aWsz15UKtHiLZPTLTFjK7nJ8ynnkxfkICJ2j5om+mxKEWKkqHJn8n4ajRF6/Tbu2TInGBm3BWfDcxtz8zHLcmWZkpioXEywZptJj5BHlfopStvE24iATEQHcoSrDTuQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YVr3lpMQ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=KRYVA7pXsl29b5OMfqoWs+qi4UnNQDYzsKXrlMZjVTwvp+U0DXoK5H80xlLCeICzLLCx4LPP51hm7lBRSK/03Qx+yrk712cFXa2aGJaI2j8M1Bzc8+GwQxV2FV/kpVVgorTogl3lAfpQHKvIjp36T5L8c/EoRwLAF4kbSQlTDaA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cdXW34f4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YVr3lpMQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37D08C2BCB8;
-	Mon,  4 May 2026 16:02:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cdXW34f4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE53C2BCB8;
+	Mon,  4 May 2026 16:03:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777910534;
-	bh=mTEeXh711WtBdL0ctv+LrfudDU57QklEIWOvmYihlas=;
+	s=k20201202; t=1777910617;
+	bh=jtVBnt9qDne+Ngjy5Mz0NdZ7Zcbdj3YhqhPzN2nbZSk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=YVr3lpMQhG5A6l7utl7kIJsMk1/5KyrdNJusqdZHk2fiPQdjG3n9HEIYorqYdACBW
-	 7iIlTKpSSBp0a29ial76nahJOiMPkWDcyCXigfwHZlJYvYddtUCt8YMkFeRybl4Zfz
-	 NPSabACktAqDaDyAT9gdjF6obdg3oJUPLSbiQ6wpwulxu2gjO8q5IydLZmUaFwznPj
-	 t/CspYMet3+BZENeERxsQ6T+H4Gbmv/bkuec1MhP0JSAJJYsShLtGyIggqR7jk63pJ
-	 opGnvW8J7URX/IePdBKsFNOCVMTP6HiEdzsPNDO2XTE/Woa8Ktg1MNbwr7OCQIFCNF
-	 SBljvklplWZPA==
-Date: Mon, 4 May 2026 17:02:05 +0100
+	b=cdXW34f4nRqDlg1eRqhTCQoHYKxUPOMc5SUzvyaeYgAUUwIzDP+a+irErw7SGd6QT
+	 dvgnuGDjqMfTOMyG/kLBcOiAYk4D1qbYou7iitFbTxZSk48a2qkbwxC/iw6oQLk5li
+	 JW2w/gJMsJhvoOLeYfLqoEX1PuZmebRuOeWM7Tm8Y96fPXQ1/wBxcK9sF1yRgBjNsm
+	 Oftfk+IHplW7VZFcCwn7LB/Njxl3wL32Pk5kBXHO76TVoRkcHf8AFNnoGypaD2Sr0Z
+	 JXd5afc/KPMbpeDsfoPnxyzmp9XQbivcee2d0/KhGs93uoXbYm9JirKW77Sjb93zyY
+	 p1LZ2XueHTkZg==
+Date: Mon, 4 May 2026 17:03:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Piyush Patle <piyushpatle228@gmail.com>
 Cc: Andreas Klinger <ak@it-klinger.de>, David Lechner
@@ -35,11 +35,12 @@ Cc: Andreas Klinger <ak@it-klinger.de>, David Lechner
  Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 11/11] iio: adc: hx711: add support for HX710B
-Message-ID: <20260504170152.4a96043b@jic23-huawei>
-In-Reply-To: <20260503120949.80292-12-piyushpatle228@gmail.com>
+Subject: Re: [PATCH v6 08/11] iio: adc: hx711: split variable assignments in
+ hx711_read and hx711_reset
+Message-ID: <20260504170328.5d05a6b9@jic23-huawei>
+In-Reply-To: <20260503120949.80292-9-piyushpatle228@gmail.com>
 References: <20260503120949.80292-1-piyushpatle228@gmail.com>
-	<20260503120949.80292-12-piyushpatle228@gmail.com>
+	<20260503120949.80292-9-piyushpatle228@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,25 +51,55 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  3 May 2026 17:39:40 +0530
+On Sun,  3 May 2026 17:39:37 +0530
 Piyush Patle <piyushpatle228@gmail.com> wrote:
 
-> Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
-> interface but uses trailing PD_SCK pulses to select the active mode.
+> Separate the initial value assignments from the declarations in
+> hx711_read() and hx711_reset().
 > 
-> Model the HX710B with variant-specific channel tables and IIO info,
-> track the active channel across conversions, and use the fixed gain
-> value when computing scale.
+> This is a small preparatory cleanup before the later loop-iterator and
+> variant-specific changes adjust the local variable layout in these
+> functions.
 > 
-> Also update the adjacent Kconfig text, file header, and module
-> description so the driver text matches the newly supported variant.
+> No functional change.
 > 
 > Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-Andy did suggest waiting for open questions he'd raised to be
-resolved in the v5 discussions.  That would have save a little
-time on this patch at least.  See what I wrote there.
+> ---
+>  drivers/iio/adc/hx711.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
+> index 637114635867..b2de8db285b2 100644
+> --- a/drivers/iio/adc/hx711.c
+> +++ b/drivers/iio/adc/hx711.c
+> @@ -159,7 +159,9 @@ static int hx711_read(struct hx711_data *hx711_data, int trailing_pulses)
+>  {
+>  	int i, ret;
+>  	int value = 0;
+> -	int val = gpiod_get_value(hx711_data->gpiod_dout);
+> +	int val;
+> +
+> +	val = gpiod_get_value(hx711_data->gpiod_dout);
 
-Thanks,
+Not sure. Maybe Andy's feedback crossed with new version as I'm fairly sure
+he commented on this in v5. Anyhow...
+Remove this blank line.
 
-Jonathan
+>  
+>  	/* we double check if it's really down */
+>  	if (val)
+> @@ -204,7 +206,9 @@ static int hx711_wait_for_ready(struct hx711_data *hx711_data)
+>  
+>  static int hx711_reset(struct hx711_data *hx711_data)
+>  {
+> -	int val = hx711_wait_for_ready(hx711_data);
+> +	int val;
+> +
+> +	val = hx711_wait_for_ready(hx711_data);
+
+And this blank line.
+
+>  
+>  	if (val) {
+>  		/*
 
