@@ -1,37 +1,37 @@
 Received: from mail.kernel-space.org (v2202511311555398556.powersrv.de [46.38.245.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8E5F3E4C79;
-	Mon,  4 May 2026 17:17:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ED943E3C6F;
+	Mon,  4 May 2026 17:17:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.38.245.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777915037; cv=none; b=FbHY/1/oRWj8aL/oR9ydOoa/hfQnwh3XREsnpnJ5k1PfQ/v0Kx9JzTIp3GCDIVGawLQmd1DITAspUVrrKEmcCM5F00mdZZch5St8+5fZ8fk/7O3ZUu/uyljxcvJuCcUWNQrA61+ZQKpfvZ967EuoAJ+4/YJfeVqpxokcvZQXV2Y=
+	t=1777915037; cv=none; b=mDoxEogYkAvNdPFL8p8A4YsXWhSegiEWxrIWRxb7Ga/vAX/heHHAEMR1C6isfVB9TMF9nsZnVQwqKIzDnWUAHKzPq2dUcz5jcJWnFlAPzExS2l65xmOiWmpHNaiKvC1tHJ4LfelmuOAaFn/oNYFOLr7cjro5zBuA2qLY0Km9M+E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777915037; c=relaxed/simple;
-	bh=BTzMq5e9Ct1iS05RorpLyh1aN78tCIlpP86CvhH3+is=;
+	bh=n0b364dDBrWM4RGQrGIAbMsbTV+2t0ZGtLdE7nGAO9Q=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=RnZGf6LHqhyzRqWzeE9I6p+PoynoDnR6L6HGLOpov19oNW27MIQ6iIAOS8iSp8qOIQICPTxNZG0VHmdc1nusL8lFpulLfJtBsLZ9PkO+n1RlJvA6TuHDZX2wut1WcxOSHJcuN7Q8zsIdkFWbxfRWRFMAtwiUujfTJ31kr8K/qpk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org; spf=pass smtp.mailfrom=kernel-space.org; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=BF4e+y+F; arc=none smtp.client-ip=46.38.245.6
+	 In-Reply-To:To:Cc; b=Odn6Y7gnXIN70r/63Z+m7KQ/rdbI/o4nob7ZWNO49g21op5CXmA1bDk+yqZLJ4kDzcQopCEZOGHqmZUqTpG9vb2klRTh5GzMriC3LI6a+8giA4nj4+e61tdbiG9Bkr9i4sf53TMSD2cRuJDEpLzq36LcZdvxseY2RVFT0KoO7Kg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org; spf=pass smtp.mailfrom=kernel-space.org; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=MldD+GhP; arc=none smtp.client-ip=46.38.245.6
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel-space.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="BF4e+y+F"
+	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="MldD+GhP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
-	s=s1; t=1777915004;
+	s=s1; t=1777915005;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=66sbIWl/UECZcngzqfN9gySpU5b7WSWy5FgqX8acPdE=;
-	b=BF4e+y+FI93bmhmBDVYOS9Ywi3UsNwZ9B+nk/SFmHSkqT4n/jl++VpZSEEgYjk786kgiWq
-	3+YgTbehRHNoNXXR+coeZLVsbMqaPAQgho3Tk1wlwOhIqHTt98tJRn/bWv9jMwYhFqs6/B
-	dYJJVVEHO2P347vzmmkLM4ucda/T3u0=
+	bh=mqVoCiMOeXwzd334lL+Kbbn+xeppyD+CHd7jRk3nty8=;
+	b=MldD+GhPDuS3G03v762xI38Yl1c0ElHUytTd6dJ/Qw2i98k1hfKxzTaRliQ/L4c/fLMelm
+	AF4w86WrbY52ZHA6+j71C340r4AmmG8OHOlKO9yAvredhdcBu7V1/s+6ZslXic7IMDvJ3d
+	dCFfMWi4WYoQ1FRt7sZg9j7cMF97kvE=
 Received: from [192.168.0.2] (<unknown> [2a07:7e81:7daa:0:62cf:84ff:feee:627])
-	by oreshnik (OpenSMTPD) with ESMTPSA id 31d53e53 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-	Mon, 4 May 2026 17:16:44 +0000 (UTC)
+	by oreshnik (OpenSMTPD) with ESMTPSA id ffaf193d (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+	Mon, 4 May 2026 17:16:45 +0000 (UTC)
 From: Angelo Dureghello <angelo@kernel-space.org>
-Date: Mon, 04 May 2026 19:16:43 +0200
-Subject: [PATCH 05/10] m68k: add DAC modules base addresses
+Date: Mon, 04 May 2026 19:16:44 +0200
+Subject: [PATCH 06/10] m68k: mcf5441x: add CCM registers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260504-wip-stmark2-dac-v1-5-874c36a4910d@baylibre.com>
+Message-Id: <20260504-wip-stmark2-dac-v1-6-874c36a4910d@baylibre.com>
 References: <20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com>
 In-Reply-To: <20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com>
 To: Greg Ungerer <gerg@linux-m68k.org>, 
@@ -58,28 +58,43 @@ X-Mailer: b4 0.15.2
 
 From: Angelo Dureghello <adureghello@baylibre.com>
 
-Add DAC controller 0 and 1 base addresses.
+Add CCM module register offsets.
 
 Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
- arch/m68k/include/asm/m5441xsim.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/m68k/include/asm/m5441xsim.h | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/arch/m68k/include/asm/m5441xsim.h b/arch/m68k/include/asm/m5441xsim.h
-index f48cf63bd782..f5acc962bb95 100644
+index f5acc962bb95..9ce2cbb05316 100644
 --- a/arch/m68k/include/asm/m5441xsim.h
 +++ b/arch/m68k/include/asm/m5441xsim.h
-@@ -191,6 +191,11 @@
- #define MCFEPORT_EPPAR		0xfc090000
- #define MCFEPORT_EPIER		0xfc090003
- #define MCFEPORT_EPFR		0xfc090006
+@@ -125,6 +125,26 @@
+ #define MCFPM_PPMHR1		0xfc040038
+ #define MCFPM_PPMLR1		0xfc04003c
+ #define MCFPM_LPCR		0xec090007
++
 +/*
-+ * DAC Modules.
++ * Chip Configuration Module (CCM).
 + */
-+#define MCFDAC_BASE0		0xfc098000
-+#define MCFDAC_BASE1		0xfc09c000
++#define MCF_CCM_CCR		0xec090004
++#define MCF_CCM_RCON		0xec090008
++#define MCF_CCM_CIR		0xec09000a
++#define MCF_CCM_MISCCR		0xec09000e
++#define MCF_CCM_CDRH		0xec090010
++#define MCF_CCM_CDRL		0xec090012
++#define MCF_CCM_UOCSR		0xec090014
++#define MCF_CCM_UHCSR		0xec090016
++#define MCF_CCM_MISCCR3		0xec090018
++#define MCF_CCM_MISCCR2		0xec09001a
++#define MCF_CCM_ADCTSR		0xec09001c
++#define MCF_CCM_DACTSR		0xec09001e
++#define MCF_CCM_SBFSR		0xec090020
++#define MCF_CCM_SBFCR		0xec090022
++#define MCF_CCM_FNACR		0xec090024
++
  /*
-  *  RTC Module.
+  *  UART module.
   */
 
 -- 
