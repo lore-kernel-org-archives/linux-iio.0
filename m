@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 967373DB626;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2D463DBD7E;
 	Tue,  5 May 2026 07:31:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777966308; cv=none; b=oHFdPXhFZnMSumPgWhEQLN3exTAKxHia6GTHimLNql+eg/gn7ZyCq60YsTW02SrPizFvK8bnvAUCAHnnRy8O3ZJt8BrFiej5WlaeH7kqQFFbu085ilz1yOSjsR4W7g26nSJ+RFJtIkm6zlh20Bo6RG1esq8FAANpboYI5S/t+Rg=
+	t=1777966308; cv=none; b=LDmfBUbMov9h1f/gT82hFfi+W3brp0KmPsKfbXe6RKQWMknJALVgvgxDJ111ddk7WDd8PpeiX6FFnAwZn3jD8anUrEGeK8juV2h9w/4RcZopqHeSGyGIKRAni2QUvc4Xt2hvliGBqNO6uBg/CmGnBaTpyEPPYzupZjtFs443H6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777966308; c=relaxed/simple;
-	bh=lsNO2+RzQtpW8/cPFiBt8mezwI0CiJdsZYNT3rjRokM=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=QN5tBeis/DCnGjnnkjpomTRMzhAMNVsb584ob1afVSO7lVVynzw4UISxeFYGRhQD2ZTVTE4vtkD2nW/K+xqqO9LAFJcvRzcFBPD7GHQ6PlJAORHQsHXn6txWR57jkY8afKZplfsfAT0kGJwHCEswtcU+HCiB1/NjGggInNQk458=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qG4EzuRD; arc=none smtp.client-ip=10.30.226.201
+	bh=wqz0bKGlNUuLDdzAuyBaUgHWch1GriKqzUUO2K+OxAk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=sFt7A6yBFaVsLaYOziaDMvrY1FhiTZl0PFXxTF5Us4nprNZXL04BClEqPhcsjT+mF3GljyWWqFH/gCrEdtO1yyEjcq7MB9SqOf1H2xTkcQm8tRvA8H6PkBqFWd/HEEYut3UqSnMOYFEmnS70LKNGN4dCvvrifAdhnHFmmnBs05w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q41P0PKZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qG4EzuRD"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4F346C2BCB4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q41P0PKZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6D533C2BCF4;
 	Tue,  5 May 2026 07:31:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777966308;
-	bh=lsNO2+RzQtpW8/cPFiBt8mezwI0CiJdsZYNT3rjRokM=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=qG4EzuRDlj/KOJIdvlFgB9jCVA48uizplMEV/LwzngwocJnFJO2QAYgremITBYRkp
-	 3yPqAssko20EZw10KiicC6ImHkrbL9N9yc4IXqqdDtxMWAUvtmAwjn6kylkpi5jay+
-	 z4eqfj6gdY+ONHRcaMGLQB0ItIXe2/pptpyRSEuVsedQYN0HwLFehoUk2rlgwzfLXu
-	 nc833SCW0ZsfpXwxQgKOKx+kIQkAh1K7DHBZF0q9OqW4BkWbu1fq7v4cKj+dtVT/Ys
-	 54AUAEGld1P9CnIgBAidU/pBRrSKMM+jQwPhGhW0EV9PutWseJEkBs5oO1UtyWwEm8
-	 B9SREPmuLKosg==
+	bh=wqz0bKGlNUuLDdzAuyBaUgHWch1GriKqzUUO2K+OxAk=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=q41P0PKZe541hRyG1Uy5hUVArCjrITCsXSqOMLclIV/ms0FkoO+TO7K+Q2RfjNpeb
+	 kLgkoUi56h8CHvFk6lAi2pvHUqeqTPD3D24knQ2ZxKZjC2dLHhUscJ0OGqWMayw9Ne
+	 BBObiuX5XVDWXlIE+NwbDmvPljhz4ZQdITkaOaNOPTnfLWWJOU31GcuYmrYMMb+bkZ
+	 V487j6pHzxZThurZM3rmdZwOo/41q0789CF/xGcQ9EZdRSW6oY121F0XOHstOtpVvR
+	 MAB/kkbmVWsHzA321Xapwwxdt7cdRvGRcKSgklFqf1IUONtp5RmhnsPY0Hxa4AlfaE
+	 v0mA807RibiyA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D974CD342F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B2CFF885A;
 	Tue,  5 May 2026 07:31:48 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Subject: [PATCH v5 0/8] iio: light: si1133: driver cleanup
-Date: Tue, 05 May 2026 09:31:25 +0200
-Message-Id: <20260505-si1133-checkup-v5-0-5df86a9024ed@gmail.com>
+Date: Tue, 05 May 2026 09:31:27 +0200
+Subject: [PATCH v5 2/8] iio: light: si1133: prevent race condition on
+ timeout
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,11 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAM2c+WkC/3XOTQ6CMBCG4auQrq3pTAuKK+9hXLRlRhrlJ1SJh
- nB3qysicflN8ryZSUQaAkVxyCYx0Bhi6No08k0mfG3bC8lQpS1QYaEM7mQMAFpLX5O/Pnppnfc
- 57pWtWIuE+oE4PL/B0zntOsR7N7y+/RE+17+pESRIVJwzADlb+OOlseG29V0jPqkRl3y/4iiV3
- KVHwDgmJvzlesnLFdeJm6JkhKosFLlfbhZcqxU3ibPTVFaeDDhe8nme38TlfmFpAQAA
-X-Change-ID: 20260427-si1133-checkup-abcc5280adf3
+Message-Id: <20260505-si1133-checkup-v5-2-5df86a9024ed@gmail.com>
+References: <20260505-si1133-checkup-v5-0-5df86a9024ed@gmail.com>
+In-Reply-To: <20260505-si1133-checkup-v5-0-5df86a9024ed@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -53,14 +52,13 @@ To: Jonathan Cameron <jic23@kernel.org>,
  =?utf-8?q?Maxime_Roussin-B=C3=A9langer?= <maxime.roussinbelanger@gmail.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>, 
- Jonathan Cameron <jic23@kernel.org>, sashiko-bot <sashiko-bot@kernel.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ Jonathan Cameron <jic23@kernel.org>, sashiko-bot <sashiko-bot@kernel.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777966306; l=2308;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777966306; l=2070;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=lsNO2+RzQtpW8/cPFiBt8mezwI0CiJdsZYNT3rjRokM=;
- b=1lMiAumW5TWDeh5R5kVKcog4ojYe/+5F4RmeF3UOMUYcd2r1t3/OwAuCmjQ+2B7znKXTHwwO9
- tE5dN24xiMMB4SUUW+n1h5AYzEn0GA9RXbGbRgfCG/8LOfyktchoQSL
+ bh=oL3iK2flDthV/Ohs5rDoVs2xKZo+kx/muq+vmqyUtqM=;
+ b=yHWDw1Q0Rl0UeV0q07guyZThgbvIeEqn7zPX2iJNzNUoXq2304o7wqde7xNZP9wyI5ZlOa4TQ
+ 81EgZephMKUDOXoS8RgDWcs0LiXmn8qht7451R3pk7eSONNNFDiGF0C
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -68,66 +66,58 @@ X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
 X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
 Reply-To: joshua.crofts1@gmail.com
 
-This series deals with the cleanup and modernization of the Silicon
-Labs SI1133 UV/Ambient light sensor.
+From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-What seemed like a simple checkpatch cleanup turned out to be more
-complex, therefore I've ended up doing a patch series instead.
+Sashiko reported a bug where the si1133_command exits on timeout
+without halting the sensor or masking the interrupt. If the sensor
+completes the command later, any subsequent command to the sensor
+will cause the IRQ handler to complete immediately, returning stale
+data to the driver all while the command hasn't finished yet, shifting
+all potential reads in the future.
 
-Changes include:
- - adding missing headers
- - removing unused macros
- - adding guard(mutex)() support
- - code style fixes
- - race condition fixes reported by Sashiko
+Fix this by masking the IRQ if wait_for_completion_timeout() fails.
+When initiating a new command, do a dummy read of the IRQ_STATUS
+register and turn the IRQ back on.
 
+Fixes: e01e7eaf37d8 ("iio: light: introduce si1133")
+Reported-by: sashiko-bot <sashiko-bot@kernel.org>
+Closes: https://sashiko.dev/#/message/20260428-si1133-checkup-v2-5-70ad14bfefe2%40gmail.com
+Assisted-by: gemini:gemini-3.1-pro-preview
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
-Changes in v5:
-- PATCH 5: fix commit message
-- Pick up Andy's Reviewed-by tag
-- Link to v4: https://lore.kernel.org/r/20260430-si1133-checkup-v4-0-fb3e9dce41bf@gmail.com
+ drivers/iio/light/si1133.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Changes in v4:
-- Changed logical ordering of patchset
-- PATCH 1: fix typo in comment, edit commit message
-- PATCH 2: edit commit message
-- PATCH 3: edit commit message
-- PATCH 5: remove irqreturn.h and add mod_devicetable.h
-- Link to v3: https://lore.kernel.org/r/20260429-si1133-checkup-v3-0-469f21d960eb@gmail.com
+diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+index c88c79202be2e21abb72067426e31b6bf97c61cf..bf7bf0f1631d49a1d04b89f172646e4afaf46438 100644
+--- a/drivers/iio/light/si1133.c
++++ b/drivers/iio/light/si1133.c
+@@ -395,8 +395,14 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 
+ 	expected_seq = (data->rsp_seq + 1) & SI1133_MAX_CMD_CTR;
+ 
+-	if (cmd == SI1133_CMD_FORCE)
++	if (cmd == SI1133_CMD_FORCE) {
++		/* Flush pending IRQs from a previous timeout. */
++		regmap_read(data->regmap, SI1133_REG_IRQ_STATUS, &resp);
++		regmap_write(data->regmap, SI1133_REG_IRQ_ENABLE,
++			     SI1133_IRQ_CHANNEL_ENABLE);
++
+ 		reinit_completion(&data->completion);
++	}
+ 
+ 	err = regmap_write(data->regmap, SI1133_REG_COMMAND, cmd);
+ 	if (err) {
+@@ -409,6 +415,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 		/* wait for irq */
+ 		if (!wait_for_completion_timeout(&data->completion,
+ 			msecs_to_jiffies(SI1133_COMPLETION_TIMEOUT_MS))) {
++			regmap_write(data->regmap, SI1133_REG_IRQ_ENABLE, 0);
+ 			err = -ETIMEDOUT;
+ 			goto out;
+ 		}
 
-Changes in v3:
-- PATCH 6: add local variable for timeout
-- PATCH 7 & 8: fix potential race conditions as pointed out by Sashiko
-- Link to v2: https://lore.kernel.org/r/20260428-si1133-checkup-v2-0-70ad14bfefe2@gmail.com
-
-Changes in v2:
-- Change v2 to patch series
-- PATCH 2: remove unused macros
-- PATCH 3: add missing include headers
-- PATCH 4: group generic <linux/*> headers
-- PATCH 5: add guard(mutex)() support
-- Link to v1: https://lore.kernel.org/r/20260427-si1133-checkup-v1-1-20f5f11eba6c@gmail.com
-
----
-Joshua Crofts (8):
-      iio: light: si1133: reset counter to prevent race condition
-      iio: light: si1133: prevent race condition on timeout
-      iio: light: si1133: remove unused macros
-      iio: light: si1133: prefer complex macros enclosed in parenthesis
-      iio: light: si1133: add missing include headers
-      iio: light: si1133: group generic <linux/*> headers
-      iio: light: si1133: add local variable for timeout
-      iio: light: si1133: use guard(mutex)() macro
-
- drivers/iio/light/si1133.c | 69 +++++++++++++++++++++++++++-------------------
- 1 file changed, 41 insertions(+), 28 deletions(-)
----
-base-commit: d86db1905add39f905cf9f04252804b359914ed6
-change-id: 20260427-si1133-checkup-abcc5280adf3
-
-Best regards,
 -- 
-Joshua Crofts <joshua.crofts1@gmail.com>
+2.47.3
 
 
