@@ -1,103 +1,108 @@
-Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 109FA27B34E
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 00:26:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F066270540
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 00:29:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777940764; cv=none; b=o+J7+nhEVxgrwzbkyeAD6y3VaTIMmIj1mQ0bM0Xyv4aW+YbSby0Rz5wwKlGbhPoZqWfGNm58WDBb9A+9qeAxChC+k9hKKq+IMy36C0+U7ezvOzyAioPBIKLsrHe6Yi/iWafXxo5HwWImW5AUbwvOLvdaE0boDSH9PIBdYobZAR8=
+	t=1777940978; cv=none; b=ZIhmFM8cc4oWGFn+6XlP1yucvvr99fScYapU474xz8MENAEz5J27PEcKuMU5QkE8cNGJBkh1fpBBtUaHS1Y96L55d5lEbVDS8x1dBEMQArg+pCmxK4fsrbkK8TVTMbVmzq9Hx9RccVn7BfK/WpC2lET8m8cpZinBQkzjpCy/zS4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777940764; c=relaxed/simple;
-	bh=X115XF/LafrmdkHmbl4MoI4m0/kJFbRUnh/JSEI0EkI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dbIhPejZgw0r1IwjLZvae1Ob7rA2ojUO6YTNkP3iOMz05zhWRLs79ZJmY8ybkcAXCOJbrneENSVL/9XR6Rrj5Xtggwt3ntr4Wf1oWxXW1OziRNfsUHDKZTX+OvRF0ORiCDtFT6DPeqWLPiR2B9RZHsVYliVawKftKQ0wXgTXJqM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=km7aIOwv; arc=none smtp.client-ip=74.125.82.180
+	s=arc-20240116; t=1777940978; c=relaxed/simple;
+	bh=Hzq2DNRB4ml5m9Ae7Jk8kN+qLOUQO0dRQge3c19FbPc=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=i8E10m8FYUj2VQmGCyHeZWQ4O5kdEDjbLTIe9KvC7oetS58VGJIbqPZgDSkoI2bnWRLuKVYI4kCYnfM9vi4CyZwoWl8SB6bNGz9/C80cPceAfPpWAmopm4aXDFF8xtS3pTyROLS/WxwnXv9Kkyont+f0Vpve7T7MLuF8llIka7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jMmlmazz; arc=none smtp.client-ip=209.85.210.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="km7aIOwv"
-Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-2ef84d016d9so6845147eec.0
-        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 17:26:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jMmlmazz"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7dcdd1b492eso4827988a34.1
+        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 17:29:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777940762; x=1778545562; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=eykFpQgFUZeLAatgtqrYUzE0cfRpZQld9KUP5h9cwA8=;
-        b=km7aIOwvRJimuODyh8v8ZmY8xSZxrYE41COs/OoPIOi45iHzd0PLl9zAsmynqGob0b
-         JB4L6vX13g2ZtEeaKw8G5OIexWorBWgpniOEW25i3rEbj2+zkV13Dx2M66XNaX0fephf
-         I95P2pFjXZe74pIkzz1HJZX3EPtqJ2bPWrTIX7ev1XocqyYWAP/1LrLXZL2i8CDymDZn
-         hfr9EOx3iGfthaxcNRcBYgtOXXsbSPZl0dMnOlAGjmTGLRcXe4uVu8XbcUYT7up4aE3I
-         WHe3y9zYhG0ZwiR3ZVu4jVuWpokAwUAvZNRc3/8XDYCrtADPFb9AtSAeqe8VH+MJUuOC
-         YJeQ==
+        d=gmail.com; s=20251104; t=1777940976; x=1778545776; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+D4QqZvI0vo0qDGFIR/m77XA/GGRHzPVsN4iVFF9UDM=;
+        b=jMmlmazzXwXVK6M3PPACvI3AHdVfhfDbGQtIRoil/N+F90pYqgk0kk/7ITcqCSVhIX
+         HgPIopI8kBjkRrNEQQh/HXLX7f0ZP/Roazv2fQThg5NR4t/GpNFP3hwGFF8M03o4jDq/
+         huolagXqV0i17SS76PUCDLhSIqnoh5xGUOMUTq91Tq+9LeZ9XnvwYCovB0JtItCzLpD1
+         ZGUuCPwCkrx3I6UjVl6swrJdGAQrmWY+H9PGS+4f31FPgXIPU9sgTxb3360lLak+HsGB
+         K9a8diXcL8IrgiJNqEwY7o1x3Zowu6W3jafTv2UK2erWvrdDNaX458d5AniFuqEz7y7N
+         BWhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777940762; x=1778545562;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eykFpQgFUZeLAatgtqrYUzE0cfRpZQld9KUP5h9cwA8=;
-        b=WbVVhQts6BimGJKOblRyvrv+DB6uPxNDyZvblUVHqIL5iWoclCHoZ01ypkO1pYYtK0
-         050axPYhI8zUM9j1Cb6IcgpNxBMIT8zDWyKZYqCz05JrCkNmPzdY7jde69AFWZcUarHG
-         yhoyumy2kLM9pIAtZ7IE8HwrX3Pmu0eAaKrRvWWpOiE0Chw2ZQ7mTNj8/BsJVH45cTFI
-         4kqeDnNp+aY0z8/LVdmyfFHzs10BEUAQbmRzzMXEHz92S3uCdYgnBtWNrDKiIY8pbgjg
-         9qRz2KzdGynN3YXyr4jf6MMZsijKgJenGCoLwgr1SLBh/2H7pvZOwJ5Uj324UW8VrAoL
-         0uKw==
-X-Forwarded-Encrypted: i=1; AFNElJ+2lBMH1RTgf3A0u5kT0uABvfW9kBfdZkDesA3DFuEXB65Yusv3PfLvuGec7f6VnTDo59zF5tH+3Q8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyefrG32RE6uyHII2y5IdUFXlBuLTzkCJIA9YPnmECxik4hGIIu
-	niHEu9cRmtBGVoRV0WBcQ9FdtYrtoCPqR9DrEsGT30H1DkequLnDFNIZ
-X-Gm-Gg: AeBDiet/5kHhTpc84U3eItLlQcwitYgg7sKyI32eptpJehHIUyYJ0EC43hn+iSwM9Ae
-	rvxcLx8wjLAgGA7AEhROSehPQPCGaXYNgIqGHZ/2gBmjvdZgdoJpT4bTwhMEQGzjK00B/sD/UIF
-	+ebHPIu/+ey6biCgd2es6C1TapyqWGClkWF/vENX6qs3DHNhV9FIB43eQv8NNlqVSwreLUBKZkq
-	jyjZd8kQlAKJrRjPVfL2XdPkb5zqc8xZ70GK5wvolIitSyfD1jtij7PM5YNYNQCB/zGNt/wX9Ei
-	VzzEHoPXDlRDyfHktIih9TnuPdMQi94rkZkC7LPLNMyrUigStODMoF96Kcq0y9Z56PuO1W/nlxB
-	0lJ2RSGhAPGIswasELerANgjXvZmr8cZYoj8nqAry9MbQ522k/8YWDOoLSzXb8qT364VUkPFN5l
-	/xNFx8VHesXf3lzddlB1cXRsMn6Fmfe0Ys0YGKOaFs/oFdf/Sv8hU841vhGAzFb0aERGLIQ+raK
-	YU+FlT/llAnlA==
-X-Received: by 2002:a05:7300:a18a:b0:2c5:60d0:701e with SMTP id 5a478bee46e88-2efb79cc45amr5796129eec.3.1777940761972;
-        Mon, 04 May 2026 17:26:01 -0700 (PDT)
-Received: from google.com ([2a00:79e0:2ebe:8:5b87:9b19:32e2:2981])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2ee3c05dc28sm17470773eec.30.2026.05.04.17.26.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2026 17:26:01 -0700 (PDT)
-Date: Mon, 4 May 2026 17:25:58 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>, Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-Subject: Re: [PATCH v5 0/4] ti-ads7950: fix gpio handling and facelift
-Message-ID: <afk48YT55Y89Gq0J@google.com>
-References: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
- <20260412193856.1300770b@jic23-huawei>
+        d=1e100.net; s=20251104; t=1777940976; x=1778545776;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+D4QqZvI0vo0qDGFIR/m77XA/GGRHzPVsN4iVFF9UDM=;
+        b=FyRgrhjuNAaQoDAfdrTfsq2Z8cr0BBmto+lWIt3W0zAkWnbwNoxwZzsc2v88cfi6wD
+         njJjFPuCBIM3jwVMdsTM/qAJQpVx6Szf6XLDYzPRfmeC/cHybiI5ydZj3xsZS6Hk9GgG
+         ndBP7TWoehPXvjFpgRQ2MXUD1qfNV61c4tw9B+iMfVPPUY+7qo8qAqaRfZuaXR5s8kWM
+         wGqNNVB4IIJLhKRmWHK2C6ow1GTsSLGyVkFMlbOigsKoczj9NozewTKnZZrIvJ1wkoc/
+         LdONHtHtOJKkXnqgNs7ojCKEqU9NxKAdBeeiEsHHBaCCsC4bDpS+J2Ggdn4pviBG22YO
+         9zmg==
+X-Forwarded-Encrypted: i=1; AFNElJ8/kve2P1I/IblU2Y8uF7Wyv7ho269Fh+W7Z5cnHnTMW8+5QshOAuZ+QIeps3SLrsv8Isplj2gxx0M=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxU7FSKcmSJA1wP6m3JyZft1BeTZieQb6AUNv79ZZjem26kfwkt
+	gjeGuc04j1F84D4KJfYv7+ZUISR9SmJrlAgJSfZO/vjb6qvt4s2YJ4DJ
+X-Gm-Gg: AeBDieutubj4UHEvo4ZVteZJRN9bSZa5lZpt/qV7C/8T9RZULiNI/xJliYcZSfblmkT
+	qr/BZVPWVnVY0TWhjol3peDxhQBfWAj2w/Lq/qhYEX33xQMnnaWlqn44fv4Fo4/nczyvBbXcl1m
+	CmlVM1k/6+U/UxDgmb6BRtcbjSUBxutWscjQQwq3Opq6B2mSXO4aQ6wUmD6s1kLfcmk3u0/DQLP
+	rRuAYXprWGWicBwRfaWbtktkgtwDeR11lAU2cBrZfiwN8gOnFZSIzspcIuXTHgrkH5P2JSVuKoF
+	nr8w6zsoF90xosRyg04l/HNkcYufTsiWC7LsgvKraqOjhRCOfALb1nnLA+6WgyBCvTAbCw4tCts
+	mIOiLk1/HKBdcWuLmr+aJrmh81oQ3Lvo5Tmz8+yZBzj4A336XYuHw6zrQ6WRjEEWph5/HjZm0Y9
+	64DCWDsumj0VC76NJJ6jA6OVS3ZU2b1mMcQIvbjzT1lJvyqSCYiBL2MzkO6RVKtIRFtw+icxM=
+X-Received: by 2002:a05:6830:821b:b0:7de:cf3f:1b3d with SMTP id 46e09a7af769-7e0b06b1027mr658888a34.7.1777940976157;
+        Mon, 04 May 2026 17:29:36 -0700 (PDT)
+Received: from localhost (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7decac248d1sm9299609a34.15.2026.05.04.17.29.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 May 2026 17:29:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260412193856.1300770b@jic23-huawei>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 04 May 2026 19:29:34 -0500
+Message-Id: <DIABH47DS3A6.J29LEHJY7CIW@gmail.com>
+Cc: =?utf-8?q?Jo=C3=A3o_Paulo_Menezes_Linaris?= <jplinaris@usp.br>,
+ <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v5] iio: gyro: adxrs290: Use guard(mutex) in lieu of
+ manual lock+unlock
+From: "Maxwell Doose" <m32285159@gmail.com>
+To: "Guilherme Dias" <guilhermeabreu200105@usp.br>,
+ <nish.malpani25@gmail.com>, <lars@metafoo.de>,
+ <Michael.Hennerich@analog.com>, <jic23@kernel.org>,
+ <dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260504190455.9841-1-guilhermeabreu200105@usp.br>
+In-Reply-To: <20260504190455.9841-1-guilhermeabreu200105@usp.br>
 
-On Sun, Apr 12, 2026 at 07:38:56PM +0100, Jonathan Cameron wrote:
-> On Sun, 05 Apr 2026 21:39:22 -0700
-> Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
-> 
-> > The original reason for this series is to make sure ti_ads7950_get()
-> > returns result in range [0, 1] or a negative error code to comply with
-> > gpiolib requirement.
-> > 
-> > During review David noticed the fact that the function also clobbers
-> > gpio state. Fixing that lead to adding cleanups using guard() and devm.
-> > 
-> Applied to the testing branch of iio.git. I'll rebase that on rc1 once available.
-> 
-> Thanks for persisting with this. Indeed a nice facelift ;)
+On Mon May 4, 2026 at 2:04 PM CDT, Guilherme Dias wrote:
+> Use guard(mutex) to automatically release the lock on scope exit,
+> simplifying the error handling path and removing the need for
+> explicit unlock and goto-based cleanup.
+>
+> Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
+> Co-developed-by: Jo=C3=A3o Paulo Menezes Linaris <jplinaris@usp.br>
+> Signed-off-by: Jo=C3=A3o Paulo Menezes Linaris <jplinaris@usp.br>
+> ---
+> v5:
+>  - add cleanup.h
+>
+> v4:
+>  - fix indentation
+>
+>  drivers/iio/gyro/adxrs290.c | 75 +++++++++++++++----------------------
+>  1 file changed, 31 insertions(+), 44 deletions(-)
+>
 
-Jonathan, is there anything else you need me to do?
+LGTM.
 
-Thanks.
+Reviewed-by: Maxwell Doose <m32285159@gmail.com>
 
--- 
-Dmitry
+best regards,
+max
