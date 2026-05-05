@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5BF13DDDA3;
-	Tue,  5 May 2026 07:31:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0194E3E5ECB;
+	Tue,  5 May 2026 07:31:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777966308; cv=none; b=Xrz5wKacy33qQgK+9DH6v6/LLvpkw/bEkAugFijImNM8IUqMd8LQ1RJ1duHg48KL1U9DyzKSRJze3n2J/UGejN9rlRXn9iH/8NHNAtDcZkrBItnbL8DdlvT2RmlWPlep9JjX7ZJezekeYpeu+oJF6UUQ8AaBnAgNV8GLwcw37/Q=
+	t=1777966309; cv=none; b=h1w9r8dfMWNUhBcLqxSujQ22xoiw7RSkiyH3DKYPD78XMAcp+kYPWDzexHZv5FUJxMvs7pqF90CXxk66pDE/XzNh1lvL3HKQh7HjfJsvF/vbYJJTtYCdqbTQQiOtcVKY9ZQo22wSEDzG4CZf9b01jYdGi2r7QAAZq1rQJcaXPo4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777966308; c=relaxed/simple;
-	bh=a1HtXrmHWmwg6iqEF4PwgsHX2yIgthT2lPb8Qd9AHjI=;
+	s=arc-20240116; t=1777966309; c=relaxed/simple;
+	bh=XB5hQM+QnSdZ7tu7UzZwj6js1QbIpCzsw/liFug3EA8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=oECba+4qqV1t4QbDMKQ24EdMiolgxax+gyMYL2YcTWIcZc0akBhMF1vS7NIcsjKyufP0aBr/ivfbQ+WnlxOks8GVhEH/ernyNYwG9vl8BD8hxkVOx/dYzVAd/sfj/iVmr2ikmUF3HWwCFp2Wx7zGV0vOlsMLuCE50bwuI+vADes=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HtlZeZAv; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=I+d4RjK4upEUm/7xt3y6C85gYMa9O2/kcfiGj/5Uy6G2B2qU+xVEj047XwZX2BM0KGrNFg+PKHMRhuAJDHeiEQC4sHiqD834OwCUoFpzymG20k1Ape5ZAhuUqW0FOV8vCR6VZvyJ2FfikSNvY/ZHMkoTWaSp7ynSUjVMfkmT8sc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZeJwF0mM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HtlZeZAv"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 847E3C2BCFB;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZeJwF0mM"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D976FC2BCB4;
 	Tue,  5 May 2026 07:31:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777966308;
-	bh=a1HtXrmHWmwg6iqEF4PwgsHX2yIgthT2lPb8Qd9AHjI=;
+	bh=XB5hQM+QnSdZ7tu7UzZwj6js1QbIpCzsw/liFug3EA8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=HtlZeZAv4dmBrRm0DoUaZL0aapxPoiy8ZPyEEotHn+/n+ob71l8SHieqpC8J8OLvT
-	 rWpEdJZvgCSSao9NMNW1KvnNMuKYsj6VD6fknPO+bbiL53EPUMcbq3hdTTW0+BwkCd
-	 x8BzM1VkXSnZz7x6f0qG1G+KDMfQe7LuiVMGv8NF1dWkp5aV9m0oqTjMeFbwDQR6Y8
-	 UAkWHFHCjzxc9ebYYoZ9+dNID677nHmjpguofVQhtV5Zfy45TexVkfNKw72DMD+G6c
-	 v7OGOb9iKR+cZSL1d6lSRnPUVxIVjLYnjXC1SEC3WxpG5cEwXRbfm60kfuzb813Naq
-	 0WJxC2kR5zEzw==
+	b=ZeJwF0mMrq7Ijg3HGk/o9y/6iS3NOM6t+ZNj0zewm/QzIJ+owB4fQ2NkM+a9eFupF
+	 ovC8loZ2Lg23zzBcOBwhki5wlogAJhgn3QI2l7M+JQlbnLIGz3cwvQSoczlzEEy+vz
+	 3jh2bInIjV58ia68w3TpEuRm2Jv2y9KHQ3O/4BEzOfWNTSB/2X+o2CnxRO00nagczC
+	 u7kCDrmIvalr5ckgdLKOUWzFBiqh4Sp9mWXiBK0W+zLtlf0Oqde+zTOxMvPj48gd4R
+	 Fh72KCrslaCK0iZcphQKV56oogx22pjd3IFXL5Iy1O5t6hqZ8s8bbO98HpLQFny3/P
+	 tE2sQdKayf8gg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF45CD3430;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4565FF885A;
 	Tue,  5 May 2026 07:31:48 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Tue, 05 May 2026 09:31:29 +0200
-Subject: [PATCH v5 4/8] iio: light: si1133: prefer complex macros enclosed
- in parenthesis
+Date: Tue, 05 May 2026 09:31:33 +0200
+Subject: [PATCH v5 8/8] iio: light: si1133: use guard(mutex)() macro
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260505-si1133-checkup-v5-4-5df86a9024ed@gmail.com>
+Message-Id: <20260505-si1133-checkup-v5-8-5df86a9024ed@gmail.com>
 References: <20260505-si1133-checkup-v5-0-5df86a9024ed@gmail.com>
 In-Reply-To: <20260505-si1133-checkup-v5-0-5df86a9024ed@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -55,11 +54,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Jonathan Cameron <jic23@kernel.org>, 
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777966306; l=2311;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777966306; l=2133;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=6QJNBw8jW5Iua3EfpJQ1pjs23dcqQGKaFu93Wls4YTs=;
- b=Kq9L9prMT4yVXUV8dzD4/AJzkoLYjUdCslkzUaJ2NjUae5NB5ZOCg7RQOUKU907+d0h2LHiyj
- IPt7rSTxzmAA4mEtWusTxkgNfMr2j4noKDRhtAVjdyz7RdOGhieYDUC
+ bh=q9fHJV5P2E/vSw5lDP/3o1uwN8xdWKVmo0vsI+GT2Fw=;
+ b=mW+2K4J6BbmiguHUsxU1fmqeB8QYVI+8lOg0/pKnvKDKOQS8vuc93Sd7LBiedqgWw/Q+IdPA+
+ 2jVQldFpe1CDTFxcrO0y1WEnydoq38XMRZ+et2oUeq8nf7B1cLATtDK
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -69,63 +68,78 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Enclose complex macros in parenthesis per checkpatch.pl error to
-improve code style.
+Remove mutex_lock()/mutex_unlock() and goto instances and add
+guard(mutex)() macro to modernize driver and improve mutex handling.
 
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/si1133.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/iio/light/si1133.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
-index ed9b3e0a12d66d749f09f570de1ccdda2174b6ba..9abc0a7e2ecf0d2fb1bd3af88eb675e9f1be4665 100644
+index a3e4ab25acdc105d3800994f4391a7e4291e1c74..55660dccfc7956e77b1d8105b7261221176c1736 100644
 --- a/drivers/iio/light/si1133.c
 +++ b/drivers/iio/light/si1133.c
-@@ -50,23 +50,23 @@
- #define SI1133_MAX_CMD_CTR		0xF
+@@ -8,6 +8,7 @@
  
- #define SI1133_PARAM_REG_CHAN_LIST	0x01
--#define SI1133_PARAM_REG_ADCCONFIG(x)	((x) * 4) + 2
--#define SI1133_PARAM_REG_ADCSENS(x)	((x) * 4) + 3
--#define SI1133_PARAM_REG_ADCPOST(x)	((x) * 4) + 4
-+#define SI1133_PARAM_REG_ADCCONFIG(x)	(((x) * 4) + 2)
-+#define SI1133_PARAM_REG_ADCSENS(x)	(((x) * 4) + 3)
-+#define SI1133_PARAM_REG_ADCPOST(x)	(((x) * 4) + 4)
+ #include <linux/array_size.h>
+ #include <linux/bitops.h>
++#include <linux/cleanup.h>
+ #include <linux/completion.h>
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+@@ -396,7 +397,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 	int err;
+ 	int expected_seq;
  
- #define SI1133_ADCMUX_MASK 0x1F
+-	mutex_lock(&data->mutex);
++	guard(mutex)(&data->mutex);
  
--#define SI1133_ADCCONFIG_DECIM_RATE(x)	(x) << 5
-+#define SI1133_ADCCONFIG_DECIM_RATE(x)	((x) << 5)
+ 	expected_seq = (data->rsp_seq + 1) & SI1133_MAX_CMD_CTR;
  
- #define SI1133_ADCSENS_SCALE_MASK 0x70
- #define SI1133_ADCSENS_SCALE_SHIFT 4
- #define SI1133_ADCSENS_HSIG_MASK BIT(7)
- #define SI1133_ADCSENS_HSIG_SHIFT 7
- #define SI1133_ADCSENS_HW_GAIN_MASK 0xF
--#define SI1133_ADCSENS_NB_MEAS(x)	fls(x) << SI1133_ADCSENS_SCALE_SHIFT
-+#define SI1133_ADCSENS_NB_MEAS(x)	(fls(x) << SI1133_ADCSENS_SCALE_SHIFT)
+@@ -413,19 +414,18 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 	if (err) {
+ 		dev_warn(dev, "Failed to write command 0x%02x, ret=%d\n", cmd,
+ 			 err);
+-		goto out;
++		return err;
+ 	}
  
- #define SI1133_ADCPOST_24BIT_EN BIT(6)
--#define SI1133_ADCPOST_POSTSHIFT_BITQTY(x) (x & GENMASK(2, 0)) << 3
-+#define SI1133_ADCPOST_POSTSHIFT_BITQTY(x) (((x) & GENMASK(2, 0)) << 3)
+ 	if (cmd == SI1133_CMD_FORCE) {
+ 		/* wait for irq */
+ 		if (!wait_for_completion_timeout(&data->completion, timeout)) {
+ 			regmap_write(data->regmap, SI1133_REG_IRQ_ENABLE, 0);
+-			err = -ETIMEDOUT;
+-			goto out;
++			return -ETIMEDOUT;
+ 		}
+ 		err = regmap_read(data->regmap, SI1133_REG_RESPONSE0, &resp);
+ 		if (err)
+-			goto out;
++			return err;
+ 	} else {
+ 		err = regmap_read_poll_timeout(data->regmap,
+ 					       SI1133_REG_RESPONSE0, resp,
+@@ -443,7 +443,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 			 * counters being out of sync.
+ 			 */
+ 			si1133_cmd_reset_counter(data);
+-			goto out;
++			return err;
+ 		}
+ 	}
  
- #define SI1133_PARAM_ADCMUX_SMALL_IR	0x0
- #define SI1133_PARAM_ADCMUX_MED_IR	0x1
-@@ -87,11 +87,11 @@
- #define SI1133_CMD_MINSLEEP_US_HIGH	7500
- #define SI1133_CMD_TIMEOUT_MS		25
+@@ -454,9 +454,6 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 		data->rsp_seq = expected_seq;
+ 	}
  
--#define SI1133_REG_HOSTOUT(x)		(x) + 0x13
-+#define SI1133_REG_HOSTOUT(x)		((x) + 0x13)
+-out:
+-	mutex_unlock(&data->mutex);
+-
+ 	return err;
+ }
  
- #define SI1133_X_ORDER_MASK            0x0070
- #define SI1133_Y_ORDER_MASK            0x0007
--#define si1133_get_x_order(m)          ((m) & SI1133_X_ORDER_MASK) >> 4
-+#define si1133_get_x_order(m)          (((m) & SI1133_X_ORDER_MASK) >> 4)
- #define si1133_get_y_order(m)          ((m) & SI1133_Y_ORDER_MASK)
- 
- #define SI1133_LUX_ADC_MASK		0xE
 
 -- 
 2.47.3
