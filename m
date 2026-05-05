@@ -1,63 +1,63 @@
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E472B361DD0
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 17:47:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96A753AEF36
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 17:47:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778003241; cv=none; b=EGHdnzvk6dTQbq0LI3cOAzLVK8gwrhcTyGiEg3FGZKUMnyJ2GTWvPDUX25yXLpjUSAzg78ynxpX1DWVDkeNicdQFp9Co7b78tl6XZie0ftPmDHmYCtLlkTE3H8FwRMADtwgG3RKX+Zja5LNSOQYvt4gq2GWgeXfidfvuMaNJScU=
+	t=1778003247; cv=none; b=C8/XWcCMloegybaOWqrRd+KTcgd1/XhQhS72LLEwKypnQ0kRNPL4eN82WnxVmWM6A6mNroGjlsPTaCelgL7nt6jT/gG1Df0k3jv12SAKmYf4sdVK/HYufVQsKzTiOQ1bysYoDJ7JiMGtInOKcfHHi4XDDBaThrC4RoiCbO/gq2c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778003241; c=relaxed/simple;
-	bh=WcK2GcDqNaaiTtJknltb2zliZF2AboIM0EtKhNSkLLQ=;
+	s=arc-20240116; t=1778003247; c=relaxed/simple;
+	bh=gbBWcCKF5SIdyOmHNAYksgzC+iEKG/dPVheYUVfk04M=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=jiaB+g1asoYCogwe5u+esi6yM+vvREYJWmwcpyJfC/d1Y2trFd8FMfoCpSS2zkmTuU9DrAZo104EtydpKcA0TSzTwpoUW5+ydU33lJmmUuxTt/4WiZwcmrD8jJHaPhsHH26KLaECa15YCeLZjVCB9jN+rUWN/4MW8eRRlqYLi7g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LaFX//4O; arc=none smtp.client-ip=209.85.216.52
+	 MIME-Version; b=l1dSk1fN6gkpxvI5W/b7E/IW0hqRMZybJ7bozjk+/DYWP+Jhh5DUjPqBgDbeS6Sgt4WvF75802Os/BZe3es66GMbb2z3e+Vib8nMtsKixoADbI66YFXA4MLeMRIQoKzQyMUddYMJZ6eNNipIsmdcm18ay5wlC0HEuRNLxtbe8BM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uk+CIIT1; arc=none smtp.client-ip=209.85.216.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LaFX//4O"
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-364e5d895e3so3591724a91.2
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 10:47:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uk+CIIT1"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-364c5317d67so5696231a91.2
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 10:47:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778003239; x=1778608039; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778003243; x=1778608043; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hQvY2zanoXQzF8G6K+yMU4QmWySA5sByDgB3bL6cpQg=;
-        b=LaFX//4OpplNy3NyVc9zH6xd9UHWAk7+ngXdAWetSjv+j/nJVXNUGW1Do+38T0Jzss
-         UT0Ov3SzWAfw8VQbI2OK4Vyt0lRzAvSGlu7/IWMi6fT+xoUIOf4sGCLZmV63rHsvoELw
-         kVksgUfNcxpEpM15sJ5+V77Uq75u/g44JwmSwZhZaBwJ3xsfKxnhYgPB6aL3XgiNAxwK
-         ZWckLWIVaCRlIG45fhMrm1MDCYvmv3t+yDYmxqIaFSW+8A/6MRpPQaS1sPvwKax4IWwM
-         RgsVAjiItOh8Z6JcwXR3fPif/PNgWGKlEQWBgmeFR7IKncVHi/F9H7IWmAEu+ti7dbo6
-         SGAw==
+        bh=aM2ixPGoCvqmSBsLluGYBaizIvX/KE6p9fFw6df2t+k=;
+        b=Uk+CIIT1B0ThtUapkbEyraDEgipm6uelvxUX49bOw5FLcuTQeAPUFtOOwx9iyx+Cna
+         1u1gf5NfwVyANvjbIcZr53FsEfc+fHI/pvm9RlTeOBGV5XMzfF9ydtDWwddzZWDp1+OG
+         tbkV3KUNabgXjfFUuPYgkw+IqTJtErQDu2TxRLe4j3VaANw10aFDBq+rb18IA2sh148V
+         WnW0qp/Ay9UnYRu/FzoDyGUWgn8Yqq+OPYbx9QNbhKAOd+hZRZ1IXdZgMERWXoIuaTf4
+         ebVolIxNUFgD1qtfEfp4xHKZZDaVMaZ34UMGwAoedg42ELr3HRZ+hsqfQA8IY/q9stPj
+         E1XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778003239; x=1778608039;
+        d=1e100.net; s=20251104; t=1778003243; x=1778608043;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=hQvY2zanoXQzF8G6K+yMU4QmWySA5sByDgB3bL6cpQg=;
-        b=hFTkDz3WkLqwakG9srfBYd+NBIR+MyhgfYH6sdavGO+HhzZ9mbnST10+EWoDCTy+5p
-         p3dB8V3IgwQQxvkS4cPu3MOJJJso7d71+UEDd711A0tlYhFYIdHZzhGzPHlEzV60yDzd
-         T8tOXkPbSW3+pgI5JFlrLpuzuVn2C+G4SnkRvYcckaMo3ShkAMbiVSPwYVUTPSfMpwtX
-         BA0rqVK4bZtq4e0VP4aKz+Bjsb0Ubr97OGdnsQ/kG45vg3lZN64a+IjnGKG7TGWNkygp
-         /WSwc+UfojoGdpPwLTfRN+VTvlTkdXol4GVEMCsC/Oopx1qEW4uV5DBHQbuiLA+tr4UO
-         RslA==
-X-Forwarded-Encrypted: i=1; AFNElJ/5wgkJil95mEQW+sB/d0f03vZmysSq/uLmgmp1h4vQJmLgwKH6DlCX+2O/cRkraBwYRHYWuzssmGI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwfhOqFEbWz9z94v2BHPZZKaDCuD2GtBsbJqvfxmUQQZYFLwyDI
-	tbsWkvU01mcbe/0/Our/iUPvC8U2rHzOZQdPGUHWWVZr0Djeq4ihljsA
-X-Gm-Gg: AeBDietoUwZzaHj1xunv9M9/nPsd2C7REsQe365dkEHYstQKQQQNE19YXSeUP4bDYZc
-	Jfp23R+4vfxob5qrP1np9MogZE1uGtuFXMI/9dEfAoEI+BBcI4/DAnWzcZjqSmlTwYIVapra104
-	EtH/zmndCBeFcrxIdVVK+6M4kT04pJ3X4VZcdbDROPL9LzNTMM9+yhXSrosZsnZG3hdmDjlsvMK
-	n+rZBngyYyR8910f4O5nQKmdfrNFnwpFyJmCmmgxTzE+Fkokb5siCWOIqonLHue+Tnc/8UFfLG+
-	JMJp9ROgtWF8eoxQyekbDED/5ZQYSZ9l3yMRn6Fhtymk3YSVIo38acTrOEDajHn3kHvMNZ15ZSe
-	CcNDpiG/5Lcqq9HYetmsJLNlUDiIy2CeFudW//d13ftDREIDawzoEuD4H0eyVLHEBjDFbmkodxY
-	ioBhIkh5OSf2KJkC/Te51USA63q1/6Z9nVxI6lRTmlxCI8+capj0VpRX6Jqp0=
-X-Received: by 2002:a17:90b:580f:b0:35b:e5ce:73bb with SMTP id 98e67ed59e1d1-3650ccefba1mr13939427a91.1.1778003239236;
-        Tue, 05 May 2026 10:47:19 -0700 (PDT)
+        bh=aM2ixPGoCvqmSBsLluGYBaizIvX/KE6p9fFw6df2t+k=;
+        b=feSIh8NLBGP/TJyHDOmRdcJwWbM+pEHcw4uCnh+ft9bcZ94BTnMe3VT/MGHt6yFs8D
+         Cf/mMaGXY/b6HjImsRMa+dXl1ppJlxtccr7eL1p5ukaziM9TQpJPYkTiSdUuph38xCMm
+         ZJY3xFRh8qmpVdIyi/2MH0Gi0yE53QkuHv851rLM86nmg/MOKEl9hw0PPDNToSVwE7IR
+         4VMw2Ab9BzfE+XHNFmtTTnTw8BMhNZ+u0YeFPAYoi5uZAdGMZkzGp5PATZAZAh8ctt0l
+         u6DhwJzpIoBV4eiKOlL3nVNFDZQr0zUbr2zLWcOV/PuV7n4De+k4W6yHDydlRSV29KKJ
+         cfDg==
+X-Forwarded-Encrypted: i=1; AFNElJ/WainYGgpmVHi6czl5rg0AZ8knYf8krL485OlCIl8ecFp0s4oL7pNcbjLxUXB4iEqmN4KRIhjRb/M=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxDSHD2VMPxj6anu7ASl1bxoHODfop4m/E8tsr/vNheol7CKIuc
+	BbOVPdhKs6/rdDgietc0a+VrI/TkiIlWiV0wTxz2aRca0CkZZ/Jy6WVkBlPAWg==
+X-Gm-Gg: AeBDietDyc20viSt7durK8gUU0wHCMUclVzgQ7BThATtg4y87k2gexZKAXcUq4G/4RA
+	VGN7Kzriyb3ouFqjAG2lMQzOElcTqyOI6NGrRvZrc3yBYGOUUABhylYEQcRS8ztcfQtKYemnCdx
+	SgZcm4o5rSCk/Nz1LMvpe/K/BAIJRHyHtEY0Q+TZ14O7q86W3O8CYIasfM1solQgJsCGDYdy++c
+	ruBcFR8GCuldxReRytst1zhjf5UMRNvhqXwaao7sGrFmzFnSByg9tL9LWFVTBMyLE0LeET+lBZ2
+	Y/uwixy+wcejb/h5FbGNRXpzc/5+z2SOP+trVE4LSJBOthNOHfRvN3qLfIY0Vv6qy5dv+yg4EHn
+	KvTiZmGIsgChF92aEMRZxFzKY1UUq7ZAj7fPSymU93pKToW6P8wPxwPTsg0wrkTwMQxEl6fT9eh
+	fL5stVOkIn+z38NUAquoo1Id161kpx7rU1OJHtvb6TKySarFjEGS1lbssbDBPJ2fJhz6vphg==
+X-Received: by 2002:a17:90b:4b90:b0:35e:3b08:8fc4 with SMTP id 98e67ed59e1d1-3657737bff0mr4022027a91.5.1778003243244;
+        Tue, 05 May 2026 10:47:23 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9cae3b169sm148663355ad.63.2026.05.05.10.47.15
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9cae3b169sm148663355ad.63.2026.05.05.10.47.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 10:47:18 -0700 (PDT)
+        Tue, 05 May 2026 10:47:22 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org
@@ -71,9 +71,9 @@ Cc: dlechner@baylibre.com,
 	mfuzzey@parkeon.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 08/10] iio: accel: mma8452: use pm_ptr() and direct runtime PM calls
-Date: Tue,  5 May 2026 23:16:38 +0530
-Message-Id: <20260505174640.3998281-9-sanjayembedded@gmail.com>
+Subject: [PATCH v3 09/10] iio: accel: mma8452: Use IIO cleanup helpers
+Date: Tue,  5 May 2026 23:16:39 +0530
+Message-Id: <20260505174640.3998281-10-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260505174640.3998281-1-sanjayembedded@gmail.com>
 References: <20260505174640.3998281-1-sanjayembedded@gmail.com>
@@ -87,150 +87,63 @@ Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Use pm_ptr() together with DEFINE_RUNTIME_DEV_PM_OPS() so the PM ops
-pointer is automatically handled when CONFIG_PM is enabled or disabled.
+Use IIO_DEV_ACQUIRE_DIRECT_MODE() helper to automatically release
+direct mode.
 
-Switch to direct PM runtime calls and drop
-mma8452_set_runtime_pm_state() wrapper, which is no longer needed.
-This follows modern kernel power-management conventions.
-
+Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
-Changes in v3:
-- Use direct PM runtime calls and drop redundant wrapper along with CONFIG_PM
-- Link to v2: https://lore.kernel.org/all/20260422165643.2148195-6-sanjayembedded@gmail.com/
-Changes in v2:
-- Use DEFINE_RUNTIME_DEV_PM_OPS to address review comment and resolve 0-day bot warning
-- Link to v1: https://lore.kernel.org/all/20260414192045.3598010-1-sanjayembedded@gmail.com/
----
- drivers/iio/accel/mma8452.c | 55 +++++++++++++------------------------
- 1 file changed, 19 insertions(+), 36 deletions(-)
+ drivers/iio/accel/mma8452.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 2cd24b1543af..5ab981481599 100644
+index 5ab981481599..3bc53cfdac24 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -219,34 +219,15 @@ static int mma8452_drdy(struct mma8452_data *data)
- 	return -EIO;
- }
+@@ -474,14 +474,14 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 	int i, ret;
  
--static int mma8452_set_runtime_pm_state(struct i2c_client *client, bool on)
--{
--#ifdef CONFIG_PM
--	struct device *dev = &client->dev;
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_RAW:
+-		if (!iio_device_claim_direct(indio_dev))
++	case IIO_CHAN_INFO_RAW: {
++		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
++		if (IIO_DEV_ACQUIRE_FAILED(claim))
+ 			return -EBUSY;
+ 
+ 		mutex_lock(&data->lock);
+ 		ret = mma8452_read(data, buffer);
+ 		mutex_unlock(&data->lock);
+-		iio_device_release_direct(indio_dev);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -490,6 +490,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 			chan->scan_type.realbits - 1);
+ 
+ 		return IIO_VAL_INT;
++	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		i = data->data_cfg & MMA8452_DATA_CFG_FS_MASK;
+ 		*val = data->chip_info->mma_scales[i][0];
+@@ -756,14 +757,11 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int val, int val2, long mask)
+ {
 -	int ret;
 -
--	if (on)
--		ret = pm_runtime_resume_and_get(dev);
--	else
--		ret = pm_runtime_put_autosuspend(dev);
--	if (ret < 0) {
--		dev_err(dev, "failed to change power state to %d\n", on);
--
--		return ret;
--	}
--#endif
--
--	return 0;
--}
--
- static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
- {
-+	struct device *dev = &data->client->dev;
- 	int ret = mma8452_drdy(data);
+-	if (!iio_device_claim_direct(indio_dev))
++	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
++	if (IIO_DEV_ACQUIRE_FAILED(claim))
+ 		return -EBUSY;
  
- 	if (ret < 0)
- 		return ret;
- 
--	ret = mma8452_set_runtime_pm_state(data->client, true);
-+	ret = pm_runtime_resume_and_get(dev);
- 	if (ret)
- 		return ret;
- 
-@@ -255,9 +236,7 @@ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
- 	if (ret < 0)
- 		return ret;
- 
--	ret = mma8452_set_runtime_pm_state(data->client, false);
--
+-	ret = __mma8452_write_raw(indio_dev, chan, val, val2, mask);
+-	iio_device_release_direct(indio_dev);
 -	return ret;
-+	return pm_runtime_put_autosuspend(dev);
++	return __mma8452_write_raw(indio_dev, chan, val, val2, mask);
  }
  
- static ssize_t mma8452_show_int_plus_micros(char *buf, const int (*vals)[2],
-@@ -974,6 +953,7 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 				      bool state)
- {
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	struct device *dev = &data->client->dev;
- 	int val, ret;
- 	const struct mma8452_event_regs *ev_regs;
- 
-@@ -981,8 +961,11 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 	if (ret)
- 		return ret;
- 
--	ret = mma8452_set_runtime_pm_state(data->client, state);
--	if (ret)
-+	if (state)
-+		ret = pm_runtime_resume_and_get(dev);
-+	else
-+		ret = pm_runtime_put_autosuspend(dev);
-+	if (ret < 0)
- 		return ret;
- 
- 	switch (dir) {
-@@ -1452,10 +1435,15 @@ static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
- {
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	struct device *dev = &data->client->dev;
-+
- 	int reg, ret;
- 
--	ret = mma8452_set_runtime_pm_state(data->client, state);
--	if (ret)
-+	if (state)
-+		ret = pm_runtime_resume_and_get(dev);
-+	else
-+		ret = pm_runtime_put_autosuspend(dev);
-+	if (ret < 0)
- 		return ret;
- 
- 	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
-@@ -1738,7 +1726,6 @@ static void mma8452_remove(struct i2c_client *client)
- 	regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
- }
- 
--#ifdef CONFIG_PM
- static int mma8452_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-@@ -1792,13 +1779,9 @@ static int mma8452_runtime_resume(struct device *dev)
- 
- 	return ret;
- }
--#endif
- 
--static const struct dev_pm_ops mma8452_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
--	SET_RUNTIME_PM_OPS(mma8452_runtime_suspend,
--			   mma8452_runtime_resume, NULL)
--};
-+static DEFINE_RUNTIME_DEV_PM_OPS(mma8452_pm_ops, mma8452_runtime_suspend,
-+				 mma8452_runtime_resume, NULL);
- 
- static const struct i2c_device_id mma8452_id[] = {
- 	{ "fxls8471", (kernel_ulong_t)&mma_chip_info_table[fxls8471] },
-@@ -1815,7 +1798,7 @@ static struct i2c_driver mma8452_driver = {
- 	.driver = {
- 		.name	= "mma8452",
- 		.of_match_table = mma8452_dt_ids,
--		.pm	= &mma8452_pm_ops,
-+		.pm	= pm_ptr(&mma8452_pm_ops),
- 	},
- 	.probe = mma8452_probe,
- 	.remove = mma8452_remove,
+ static int mma8452_get_event_regs(struct mma8452_data *data,
 -- 
 2.34.1
 
