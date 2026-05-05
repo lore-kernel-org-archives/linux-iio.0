@@ -1,100 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mail.kernel-space.org (v2202511311555398556.powersrv.de [46.38.245.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A0121638D;
-	Tue,  5 May 2026 04:58:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18E59363099;
+	Tue,  5 May 2026 05:54:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.38.245.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777957085; cv=none; b=j5k0+BHymYrL9xBsu2UPuE5tj01SlEr4jFemRgyZ+imvNOWOOLcW9F9+S6eSkpTqqbr7dS5iFaY+CN5aW5IQ97r/uS95TSFPbPF/g7YHqJ0VDRNWiC+ImUZBWGkZ9tX+CeKefTxpAt4clTmtq75phZeWvMUJEM7EpZ6908UT4Hs=
+	t=1777960495; cv=none; b=aZz1LMUrPvyBosC8YJWj5VPOlLnxYzGywFidNjTF2y4ZvDz2B7Gt7FQcQH9pv75BjTB99WVl/DXZZkOGDtG7t6VKFC2NvlykS3n+fnFLer/TTlQaLCpyWAxY5MuXqNUvXLh3D8pZ6RQdLHIRzTD2Pgm9TIG0wfkbVujQ0u1Q/u4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777957085; c=relaxed/simple;
-	bh=ReCHqwJgVEBflobdQ5is1WY8ucZy5iEe3bC8qL1ofj4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TRMPBCQaV4BesM0WEqgCNkzqrMfcaD2qW7CtwAwFICnlP7sQJFGoshM9i0YWXSLjT2UGudGUbPHCOleG74ss1wQEJippMCtoVf8h9BCx3kzGQyGPsLgM2fqJz4zcyDqwXYjAgjoe5cziCZ6Ay3DCJMAj57BrZ8Fo7AEpJsss2gA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TcON1dxu; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1777960495; c=relaxed/simple;
+	bh=RLY645KOSH0N06zPXBMbc5TxsXmS3lPUbHgVnhI4aN4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PN9IlqKPMbATHBH2lSlS+3YcZ3rkdRi7UJGLW7uLsg/QdPZH+MUbh+O3bunDls/sWgH7l/XL2dywvqhtWkUzt5Iu/00OK5psVskdlwzmtSj9DBt5bxRtu6A3S9cHR+3gLWmpGwb64UBRZ6ngZKgGIiZLR5O8pUqHEnDYzfIusew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org; spf=pass smtp.mailfrom=kernel-space.org; dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b=iGyIV0po; arc=none smtp.client-ip=46.38.245.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kernel-space.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel-space.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TcON1dxu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777957084; x=1809493084;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ReCHqwJgVEBflobdQ5is1WY8ucZy5iEe3bC8qL1ofj4=;
-  b=TcON1dxuVXkj+qvzMwvwti0ieBhHO6JS4rdFoRgxg1aKMbz9Yr//Vyga
-   SVQQ3nRzKdkLLw2NHuvg9MoWY0IOz3ZlTP8wxda7rg3zjGPJ8BSYLZ1jN
-   GMzaihtTIHY73/HrXJOBHQKsGFoKCkT6mOW9sfmWUgPOregzUzCMYmlcV
-   DQDJ3tY7+WFXZ7b5ac26v/gtHPUfGH8cikudn1lMcFwURTS0tmHUQGSPe
-   2/s+2rpHCY0ScdIScLXPF3PcZES1c6b0MIj+i0QMMftLYjUsvfqyuZeLH
-   dFDP6bGik5GzV7R5HpWk5j4qzIzwmL4juqhzdkGrlFE3wy0D9vGysOGfC
-   A==;
-X-CSE-ConnectionGUID: kqanBWAZRXK09wOpiJIdxA==
-X-CSE-MsgGUID: O45cMQRLStK7INVHAYTm4Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="89515637"
-X-IronPort-AV: E=Sophos;i="6.23,216,1770624000"; 
-   d="scan'208";a="89515637"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 21:58:03 -0700
-X-CSE-ConnectionGUID: n/I86xN/RGqqMVZAZT3/FA==
-X-CSE-MsgGUID: GRiSEtdiTEWQYT3tYvP5MQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,216,1770624000"; 
-   d="scan'208";a="229224286"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 21:58:01 -0700
-Date: Tue, 5 May 2026 07:57:55 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>,
-	joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 06/17] iio: magnetometer: ak8975: modernize polling
- loops with iopoll() macros
-Message-ID: <afl404iaPbSsK5XF@ashevche-desk.local>
-References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
- <20260504-magnetometer-fixes-v4-6-a291c2a7c71a@gmail.com>
- <20260504160606.07f87f10@jic23-huawei>
+	dkim=pass (1024-bit key) header.d=kernel-space.org header.i=@kernel-space.org header.b="iGyIV0po"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
+	s=s1; t=1777960490;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JpWMGrla8ujc+yJ0xsFuIV5CslqX+fFHzMu968BtRqs=;
+	b=iGyIV0pokGRqOSR6yVS5OD8OgQUH1DfaNQTvqfIAtARXgTj/lyciwqZ7txwOhzCs36wjBW
+	CzOy3NZSCXrGBnvWRZPQxNZsamZotkReSv4X+BNBw2wjhYq6GEVyq7f7/A2fZprO2PU6ER
+	SUG2FJhrzSqiKnk42VeFQeSg3agl4qw=
+Received: from [IPV6:2a07:7e81:7daa:0:62cf:84ff:feee:627] (<unknown> [2a07:7e81:7daa:0:62cf:84ff:feee:627])
+	by oreshnik (OpenSMTPD) with ESMTPSA id e45b9491 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+	Tue, 5 May 2026 05:54:50 +0000 (UTC)
+Message-ID: <dcef09cb-3e99-4755-b423-5de1a4404fa1@kernel-space.org>
+Date: Tue, 5 May 2026 07:54:49 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260504160606.07f87f10@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 10/10] iio: dac: add mcf54415 DAC
+To: Greg Ungerer <gerg@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>,
+ Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>
+Cc: Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org,
+ linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ Angelo Dureghello <adureghello@baylibre.com>
+References: <20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com>
+ <20260504-wip-stmark2-dac-v1-10-874c36a4910d@baylibre.com>
+ <965cb599-37ac-4d69-a8c0-015152037139@app.fastmail.com>
+ <31297e73-52a5-42a0-9676-ecf057f7c21e@linux-m68k.org>
+Content-Language: en-US, it
+From: Angelo Dureghello <angelo@kernel-space.org>
+In-Reply-To: <31297e73-52a5-42a0-9676-ecf057f7c21e@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, May 04, 2026 at 04:06:06PM +0100, Jonathan Cameron wrote:
-> On Mon, 04 May 2026 11:48:18 +0200
-> Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+Hi Greg, Arnd,
 
-...
 
-> One question inline on whether it is a good idea to be paranoid about
-> gpiod_get_value() potentially returning < 0 to indicate an error.
-> Right now that is treated as success.
-
-> > +	ret = readx_poll_timeout(gpiod_get_value, data->eoc_gpiod, val, val != 0,
-> > +				 AK8975_CONVERSION_DONE_POLL_TIME * USEC_PER_MSEC,
-> > +				 AK8975_MAX_CONVERSION_TIMEOUT * USEC_PER_MSEC);
-> > +	if (ret)
-> > +		return ret;
+On 5/5/26 04:06, Greg Ungerer wrote:
 > 
-> Should we check val as well?   It might be negative if gpiod_get_value()
-> returned an error..  Obviously the original code didn't so this would be an
-> improvement rather than maintaining what that was doing.
+> On 5/5/26 03:27, Arnd Bergmann wrote:
+>> On Mon, May 4, 2026, at 19:16, Angelo Dureghello wrote:
+>>
+>>> +static void mcf54415_dac_exit(void *data)
+>>> +{
+>>> +    struct mcf54415_dac *info = data;
+>>> +    int val;
+>>> +
+>>> +    val = readw(info->regs + MCF54415_DAC_CR);
+>>> +    val |= MCF54415_DAC_CR_PDN;
+>>> +    writew(val, info->regs + MCF54415_DAC_CR);
+>>> +}
+>>
+>> We've recently discussed changing the MMIO accessors on coldfire
+>> to behave like all the other ones, which makes readw() and writew()
+>> have an implicit byteswap. An additional driver means one more
+>> place to change during the conversion. Maybe you can use the
+>> new mcf_readw()/mcf_writew() helpers that Greg has started
+>> introducing? Those will keep using native big-endian register
+>> definitions.
+> 
+> Yes, please :-)
+> Those newly introduced mcf_readX/mcf_writeX are in the for-next branch
+> of the m68knommu git tree now, they have not hit mainline yet, hopefully
+> in the next merge cycle.
+> 
+> Somewhat related, I will have patches out for the other affected drivers
+> over the next few days.
 
-I agree that this would be a good addition, but since it's a behavioural change
-I think the separate patch should be made (perhaps after readx_*() conversion
-as it makes it easier to do).
+ack,
 
--- 
-With Best Regards,
-Andy Shevchenko
+sure, will do, also understanding properly the thing, since was out from m68k
+for some time.> 
+> Regards
+> Greg
+> 
+thanks,
+regards,
+angelo> 
+
 
 
