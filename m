@@ -1,45 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A49EF48C8A7;
-	Tue,  5 May 2026 16:33:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 274AF78C9C
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 16:35:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777998791; cv=none; b=m3mMX0ci/zCNLwQBEPQxd46CWzl4A6QIFARDxZXZCkkupQVbcZfiRr+wxledJcLNnYbFnZc0i8aAW3AOdc5t8Zfj7E1sz87akr8kMMAy75i3caBtGaABkyhSebQwm1wEc+RxXJ8z0p9wWSUATfbtSGSPHVDWwkolIoSy+4IDqeo=
+	t=1777998926; cv=none; b=WP5v4fIa0sw25KtRYYhT4VDXa9TB41wEJ4QhFjLGVc4vFGSLkv6GrO2J5iR55h7K1qvGG176UdxYzmYjzd2yuQp/yg7sSBv1D6tcQgVRJTLo/4gM8rCiuKSxn4oafbtxMpy8RdXFkY1Lzg8qmJAjrJkKEc17vmiRdIA3UitDidE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777998791; c=relaxed/simple;
-	bh=U17EG3HOWP36m/HDxfx21lLXOvjQsut6iMc07XDh1hY=;
+	s=arc-20240116; t=1777998926; c=relaxed/simple;
+	bh=eg4gP7+p+7M0rQktNbakH3+HwTCAhBoEtQjmeNGaV6U=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mI+eYe+HjM3pW1E1oc6NiZCwKZuAJ7oay4Zga/QHWEx1G5xUgl65myfwYsOklzSsYFU5uIrnbkNKXRz6m40GZ/FQ4UhcO8U2TEfGz42jFvxo2N6zSm2C1pI377SVeYpO5NpGnv4nbrGzlZ2L5gocK+7aIL2AgbSpHZBBksHudgg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fw7HYll8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=pmrMZgeazzF5RFJwj2LjRSnaNBCl2M1s3qkoUnlsFX4GGmhEX7JY327BIopLQ20dKU25I6HoMBFm27b9HhGlJoZfIryDQvMMolpesCA5pj/LJ4oOz7sPCahOvthhCItQ/DoWUjzcMtaZmmHYG+uQO0sI9O54O4qM8agC1IPiJ2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XFioOefG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fw7HYll8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38116C2BCB4;
-	Tue,  5 May 2026 16:33:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XFioOefG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B947C2BCB4;
+	Tue,  5 May 2026 16:35:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777998791;
-	bh=U17EG3HOWP36m/HDxfx21lLXOvjQsut6iMc07XDh1hY=;
+	s=k20201202; t=1777998925;
+	bh=eg4gP7+p+7M0rQktNbakH3+HwTCAhBoEtQjmeNGaV6U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Fw7HYll8E52jr+7TP5sKizwj2pnOqqvpaX0/uz9rdA2NSelwsuZ8z8VvCDc9CfJbF
-	 kQQv8eqtDlpJp2AV1rfNFnkBZ9ZsF0kILJZKUCHOMt5QxKlJV+ctJX31/2Nwfb57Sx
-	 Ah1syEVKOVAG8D+y88BtixxZSmUHsJOOdQSSOcKUUXKDh9Q3FvNnRkDZulLlGhHDJ0
-	 t+VuFcvsdmynDdgPQFSQkaxkRIl9mnf4DuVe4bHFuvG7xMoZm+B5TxNgSGdPFrRDGV
-	 MCkqi2TQ/+4yLIewUxd+PAurVx9zxLhxmDl01rtG94UcHdFGceLTDMr0FBAkInjSii
-	 IqMi3bhZzfnPA==
-Date: Tue, 5 May 2026 17:33:02 +0100
+	b=XFioOefGvZXDMHST0D+hFl/SaYAW019Y34hEoRAW5WnYyfvd42EMtdUpFFUtROkMS
+	 bqMVRKN8LpDihMWLmogq0JTRuDgohE6e6f8UwNdTA58bYIyNjEMQ4qnID1T0pJZYEB
+	 bpvJKIR4kUxMnKxXGkQPQOdfivPKKkkhKNJIyhdXLbvp+RZNrcIPxEPX63ejWgx1B0
+	 RQrlOZFE9glM3pJKLJx/Wr1IPtfcJ24/9RF/t9cnS478Pabw2tUAIjLDs42/rTsaGn
+	 noWVU7tRnYLWxxrtlz6u6RSBIRftlR/SaQ7p9ufK8akMs6nWRi+kHzHBY0YIXEFpLa
+	 2E0IRCgLld1Pg==
+Date: Tue, 5 May 2026 17:35:18 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, jikos@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- sakari.ailus@linux.intel.com, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Zhang Lixu 
- <lixu.zhang@intel.com>
-Subject: Re: [PATCH v2 0/4] iio: introduce devm_ API for hid sensro setup
- and cleanup
-Message-ID: <20260505173302.4284a077@jic23-huawei>
-In-Reply-To: <15509f5e5a6642d2a4b0ccc13bc7d40d3b79f72a.camel@linux.intel.com>
-References: <20260429175918.2541914-1-sanjayembedded@gmail.com>
-	<15509f5e5a6642d2a4b0ccc13bc7d40d3b79f72a.camel@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Pedro Barletta Gennari <pedro.pbg@usp.br>, andy@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] iio: light: iqs621-als: use lock guards and
+ prefer early error handling
+Message-ID: <20260505173518.249f9b0b@jic23-huawei>
+In-Reply-To: <afJjnq4z76XFaEBF@ashevche-desk.local>
+References: <20260429013640.26870-1-pedro.pbg@usp.br>
+	<afJjnq4z76XFaEBF@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,91 +44,29 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 01 May 2026 04:53:38 -0700
-srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+On Wed, 29 Apr 2026 23:01:34 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> + Lixu
->=20
-> On Wed, 2026-04-29 at 23:29 +0530, Sanjay Chitroda wrote:
-> > From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> >=20
-> > Key highlights:
-> > - Prepare change as pre-requisite for devm conversion for HID IIO
-> > =C2=A0 drivers by removing redundant argument
-> > - Add devm API to setup trigger and clenaup resource using
-> > =C2=A0 devm_add_action_or_reset()
-> > - few sample driver update using devm conversion to auto release
-> > resource
-> >  =20
->=20
-> devm_* calls are fine but needs tests particularly when forces ISH PCI
-> drivers unbind, while iio-sensor-proxy has open sessions.
->=20
-> Lixu, Please check.
-Hold off perhaps until we have a v3 with fixes for the existing devm
-calls against wrong struct device.
+> On Tue, Apr 28, 2026 at 10:29:53PM -0300, Pedro Barletta Gennari wrote:
+> > Use guard(mutex)() for handling mutex lock instead of manually
+> > locking and unlocking the mutex and flip 'if (!ret)' to 'if (ret)'
+> > to handle errors early in drivers/iio/light/iqs621-als.c
+> > 
+> > Patch 2 depends on patch 1  
+> 
+> Both LGTM,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+Applied to the testing branch of iio.git.
+
+I'll push that out as togreg once I've caught up with the
+backlog and the bots have finished poking at it.
 
 Thanks,
 
 Jonathan
 
->=20
-> Thanks,
-> Srinivas
->=20
->=20
->=20
-> > changes in v2:
-> > - Following input from Jonathan and Andy, squash initial patch v1
-> > =C2=A0 series in single change as individual change should not break
-> > anything
-> > - Add devm API support and two driver using the same
-> > - v1 series ->
-> > https://lore.kernel.org/all/20260428071613.1134053-1-sanjayembedded@gma=
-il.com/
-> >=20
-> > Testing:
-> > =C2=A0 - Compiled with W=3D1
-> > =C2=A0 - Build-tested on QEMU x86_64
-> >=20
-> > Based on further feedback and reviews, I would extend this series to
-> > convert all HID IIO driver to use devm_* API.
-> >=20
-> > Thanks,
-> > Sanjay Chitroda
-> >=20
-> > Sanjay Chitroda (4):
-> > =C2=A0 iio: hid-sensors: drop redundant iio_dev argument
-> > =C2=A0 iio: hid-sensors: introduce device managed API
-> > =C2=A0 iio: gyro: drop hid_sensor_remove_trigger() using devm API
-> > =C2=A0 iio: humidity: drop hid_sensor_remove_trigger() using devm API
-> >=20
-> > =C2=A0drivers/iio/accel/hid-sensor-accel-3d.c=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 |=C2=A0 4 +--
-> > =C2=A0.../common/hid-sensors/hid-sensor-trigger.c=C2=A0=C2=A0 | 27
-> > +++++++++++++++++--
-> > =C2=A0.../common/hid-sensors/hid-sensor-trigger.h=C2=A0=C2=A0 |=C2=A0 5=
- ++--
-> > =C2=A0drivers/iio/gyro/hid-sensor-gyro-3d.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 | 10 +++----
-> > =C2=A0drivers/iio/humidity/hid-sensor-humidity.c=C2=A0=C2=A0=C2=A0 | 10=
- +++----
-> > =C2=A0drivers/iio/light/hid-sensor-als.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 4 +--
-> > =C2=A0drivers/iio/light/hid-sensor-prox.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 4 +--
-> > =C2=A0drivers/iio/magnetometer/hid-sensor-magn-3d.c |=C2=A0 4 +--
-> > =C2=A0drivers/iio/orientation/hid-sensor-incl-3d.c=C2=A0 |=C2=A0 4 +--
-> > =C2=A0drivers/iio/orientation/hid-sensor-rotation.c |=C2=A0 4 +--
-> > =C2=A0.../position/hid-sensor-custom-intel-hinge.c=C2=A0 |=C2=A0 4 +--
-> > =C2=A0drivers/iio/pressure/hid-sensor-press.c=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 |=C2=A0 4 +--
-> > =C2=A0.../iio/temperature/hid-sensor-temperature.c=C2=A0 |=C2=A0 4 +--
-> > =C2=A013 files changed, 52 insertions(+), 36 deletions(-)
-> >=20
-> >=20
-> > base-commit: eade2b843d9b1f668fc1775f15611bb0a1999cd9 =20
 
