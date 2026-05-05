@@ -1,111 +1,78 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E37931E83E
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 09:28:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4493C2C0323;
+	Tue,  5 May 2026 09:29:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777973337; cv=none; b=IB54EGbt0/PWdsT/F/qAQjM8Hlu13MoK0rD/XX+AJFIZARkY8M3FQ3UU9ODKuqq/dFlEDs87lcbUuGKnCuu8COJTr7x8trWI0f1aKEhKwtDzSZbjikpJNXM7t2Fr9Lfuwz5CjxjxnZ1n48gQ3Nda0or5sjVCFMroKIPgfRKHLtg=
+	t=1777973367; cv=none; b=oELBnYk54j/ZgqspUYfB5akQSb73LiV+qDwvj2ceiB5oPn+DcF+RE9Z4nXuuZrleaYI+jKZGFRYTX5qybajYKUTAFM+IFDX/87VONavrCK3x3CMOAwabFYgUtOblfKQMJAvePb42bAsTBkiubphDO7N5Liy1/RL9T3NVcE4683A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777973337; c=relaxed/simple;
-	bh=IJWwEB3+34NsbiEAKwrGRCgD+marV4XSEhQguafryis=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DW5oC8LCgxwTRDEKIqup39VdXZLcpgZRDGT+0wxh5d67rmeHgDTiYbUL6Z9zgtGlnpZIJqY3ZiMuwpZpowFtmOwZtgq5/AwJCATClqpa5LFmw+iTJLlhSyNC1sKUjhAJFJbSWNdJpx5KNnWlcL6/NYUV7unzlM/US/YhvqsW3Is=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lHGaWEC8; arc=none smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777973367; c=relaxed/simple;
+	bh=+3d9JMushZLLuLWVNW8laZOKoByzze/3a6H5ByqFO4M=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=cdtWnRavfhO7i6hE+7HAnBhB3zwHK252MIkYqUtJoBRY3HO4CUcw9KOI6m8IfgGBfGyXCU3jmIRpvUY3td5fA6a9AH9QYywXuaO6Kz34ri+u+PEgf9yMi754ob8UJ0yM08+vrtMSuNSTm7iddHgzPLBDqrWm46ZQGwpg01luEbQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V8oi3+tL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lHGaWEC8"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-67c2d57a5ceso4200328a12.3
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 02:28:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777973335; x=1778578135; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=afa3+8lQ/dFRvaJ7aUrtsIA844bD/GltVTCqRXI/BJQ=;
-        b=lHGaWEC8iNYuOPncmZ7bqA1MQXWHT+E7mOW3mZ79eshk5ixjaSEO2Vw1BMLtl7x34q
-         h8Z1wwhxIyX7RWHVwWMvPbxnqrD7e5pGUowwB8ioi34ZKBxqq+wbRn3+r3k6LT7+Zrrf
-         zCxilDMlPGpYsf0w1aDP4cqnGdMydLUizGoTDRyRWf/P+vUrspk10l+2gP2/OVpNxBwE
-         tyhZbeT5a1Kh3JTSe5BNU1MDipknVlbS9pxLSCpOJu0jwoWEMF4gTqBVIcTooGHOnYQC
-         3YTk5GYuqyTGBTniZd5v/D/xlI4FDYzSktbXJFOdxWAFpeVuMgnE4Rp9OElvusEF578D
-         Km2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777973335; x=1778578135;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=afa3+8lQ/dFRvaJ7aUrtsIA844bD/GltVTCqRXI/BJQ=;
-        b=TNiqUPv8mjaK8UZyHOCgqb3953IDH/3DkVFDYIItodi8WN9bcug2psSnno8BuYo/aG
-         y6pPeUE1+fUj2L96zUJF78ok4qHX0HT1rZUpVRJ/IQMfc29oAQzUOSgW/m7lMZKvOa2U
-         4mbXkxGlcPYFekoo/hgX3xec4fIxs9uDxBGR018WA0P6dwbJhdff+frbXmJACElBSOZn
-         9FyCxmy2m35Rg5DOtbsprqXE8fILWWyBSFVvhIBVTnuEB0iQrgM1hhFYCXufkgdnvNKh
-         FkaCUjEVFY2p1gRavezs3i8FT+V+siYWlDhU1Jrw1A681fuY/LGSOUPpTVOICZPPtzxQ
-         ToOg==
-X-Forwarded-Encrypted: i=1; AFNElJ8qbHS3tdLYuqFcXdc5ZbvDGDaIrWtrqM2mG1ocrf2WgIrI4UMQo9mzA05bgncv4XxLEStZtFnmW5c=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz0yZ1a2AVkV4Eicrv/mDzkafccm8lo6wl8ZKPaNirqchzB4YPw
-	66XkS7gsi1zQLFwsqsBtUiRsk1sdLNmusRxxwwvywFgGdR7VSSzo7Mb4
-X-Gm-Gg: AeBDieudnb0WpLXLlEmKW5ePKIUc9D8PjyeMh/ZVMU234UY1gpCzOhAegmMvEmqBiKy
-	r/L8iu35rlFx/sJkQtBWZRo1C3G/W6uwV0wikMq5oanEmFIICILL7033cVFQIcAqX2gS45Ctf/r
-	ow0Ndh/bqz2WB4A6pnJVPcPg+9OMbpAq+wvSJsRuy+eRoqY0HvssnMjvPM6e7BEpVobdstlXR91
-	yU7ZmDOwN3iZX7HHbAfyjONXlCeuEb6KAjjj8BpE6FESfsN9EBV6RiJNrALB9Ydux/RCjwvUtYa
-	JJl6rEpmhnnA68ZJk5nNw38xJtxWufcZtznV8xzrUtMR4me3qG/V+b5dOF16wPCaG427JADGFPj
-	fkCU+5IYHxRzUdDjZOtn65tgvq7b80xStoVwgWoOIw1xXX5vBw1eknI8kMqj74Te36fcWDw+YUx
-	F5i3/vu8NWX9d6mq6roMKqDT4=
-X-Received: by 2002:a05:6402:7c1:b0:676:9c6d:7448 with SMTP id 4fb4d7f45d1cf-67c1b0aa7demr4298401a12.22.1777973334601;
-        Tue, 05 May 2026 02:28:54 -0700 (PDT)
-Received: from pc ([196.235.252.38])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-67cd90e1aaesm241812a12.3.2026.05.05.02.28.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 02:28:54 -0700 (PDT)
-Date: Tue, 5 May 2026 10:28:51 +0100
-From: Salah Triki <salah.triki@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V8oi3+tL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA66BC2BCC7;
+	Tue,  5 May 2026 09:29:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777973366;
+	bh=+3d9JMushZLLuLWVNW8laZOKoByzze/3a6H5ByqFO4M=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=V8oi3+tLAntmeans7eZy6kGq0FifDdl+c/l+UrOzSfr6jZ64GgiWFE9mTakdY41iV
+	 dh2CURfJ/JbYsQAX3Sl2bPcQDz8XneEPvp2l1ufRz5JOPE73U2LHrN2P4HojulNMhK
+	 +gQ4nXJpkLe15LpDLM0QPqwgOO5Ah4u02HbD+sZAq+03w7EzWRuPPF4WRc7NQbH/k5
+	 Lvd5ZN15z1ZIXZKL9uDy4hjEvrGmlZZoFJXMD/2YqEB8PHDSdeuGulS1ErB1xnONpL
+	 vZBmpGRasiYCzbeRWhWtILxNntY11M/8WlBV7sr3RPCJ2k+4J47j1IyXAZH9Zbyf7H
+	 CvD79+iH09yKw==
+Date: Tue, 5 May 2026 10:29:17 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: humidity: ens210: Fix missing I2C functionality
- checks
-Message-ID: <afm4U2nsfdyihSEG@pc>
-References: <20260505090247.74555-1-salah.triki@gmail.com>
- <afmzOM3s_TCYxXyt@ashevche-desk.local>
+Cc: Miao Li <limiao870622@163.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, waqar.hameed@axis.com,
+ dixitparmar19@gmail.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Miao Li <limiao@kylinos.cn>
+Subject: Re: [PATCH v4 3/3] iio: light: stk3310: Use sizeof() for
+ regmap_bulk_read/write count parameter
+Message-ID: <20260505102917.2b49fb53@jic23-huawei>
+In-Reply-To: <afmTBZSUpVrS5AP0@ashevche-desk.local>
+References: <20260504030408.105762-1-limiao870622@163.com>
+	<20260504030408.105762-4-limiao870622@163.com>
+	<afmTBZSUpVrS5AP0@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afmzOM3s_TCYxXyt@ashevche-desk.local>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 05, 2026 at 12:07:04PM +0300, Andy Shevchenko wrote:
-> On Tue, May 05, 2026 at 10:02:47AM +0100, Salah Triki wrote:
-> > The ENS210 driver uses both `i2c_smbus_read_byte_data()` and
-> > `i2c_smbus_read_word_data()` during the read and probe phases.
-> > However, `i2c_check_functionality()` was only checking for block reads
-> > and simple byte writes, which could lead to hardware interface
-> > incompatibilities or errors on certain adapters that do not natively
-> > support SMBus word or byte data transactions.
-> > 
-> > Add `I2C_FUNC_SMBUS_READ_BYTE_DATA` and `I2C_FUNC_SMBUS_READ_WORD_DATA`
-> > to the functionality check mask to ensure the adapter supports the
-> > required operations before communication begins.
+On Tue, 5 May 2026 09:49:41 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+
+> On Mon, May 04, 2026 at 11:04:08AM +0800, Miao Li wrote:
 > 
-> Can we rather modify the driver to use SW emulation for these cases?
+> > Convert the hardcoded count parameter to sizeof(buf) for all
+> > regmap_bulk_write() and regmap_bulk_read() calls in this driver
+> > to improve code maintainability. For details, see [1].  
 > 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+> > [1] https://lore.kernel.org/all/20260428192213.7c5c80e5@jic23-huawei/
+> >   
 > 
+> Make these two lines a formal Link tag,
+> 
+> Link: $URL [1]
+> 
+> Perhaps even Suggested-by tag is also good to add.
+Tweaked this and the previous as suggested + added tag to previous.
+
+Thanks,
+
+J
+> 
+> > Signed-off-by: Miao Li <limiao@kylinos.cn>  
 > 
 
-I'll update the probe function to check for I2C_FUNC_SMBUS_EMUL instead of
-the individual functions.
-
-Thanks for the suggestion.
-
-Best regards
---
-Salah Triki
