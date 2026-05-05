@@ -1,46 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07DBC43637D;
-	Tue,  5 May 2026 12:37:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18817339863;
+	Tue,  5 May 2026 12:39:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777984634; cv=none; b=heppkHyLZwJJHSZjYQtCzkfEX25khU/6JCLLXkL/TnUoZaI1UZ47LlmqSPZOww/qy770dEYHenU2RZ7pd57ZA2uRLr1SvjrgJ5AxHzN+uhQb9166yV9Y8G57bGYZM0dRq9cFIxf7tvFLfAfugryeapNbMQUS+bHXnvQ+DN1qan0=
+	t=1777984767; cv=none; b=IG3kn6WGftoU2oyo55Om/GKixJSIREGm7Q9Hfgzi8lmH8qXRwsbXwPdcQbccQ8ZI/nL1ikZIgCwyUDGVaCwNkanzOwZJH7G4uZBnbcoJjdF6i/oZ6vXR/2+5npVubul6UvkT6lFoiChaLPJFCJJr+9w73AR4S5zvoHfMoKiLwb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777984634; c=relaxed/simple;
-	bh=1m9avQlsM62D+/5M6xA4b4HibYUZEtJGW857V6lXFhs=;
+	s=arc-20240116; t=1777984767; c=relaxed/simple;
+	bh=+Zsz0dFBU266SJ4Zp4XhgBL/ynv/fDn/9u9HJhGm7lA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lu4asHa7cmX+vuY9F1gsEiuhv0tww81L+wr6JM0dmRYmIWr3U1+SuigUyGGrKMRN4ZG6v/b8MhinyRTxfI/ipUhyahZHVO/5yghqw2mR/xLwJEnhmjA0aCzbrtmLuKFVwKT/hxam08HfEKepT485YRIJefEwYPHZrFyvNsRySCM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OyV5Mz9J; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Pp528C1wDnVvmHugZY6lukSV+fewmdLfkMOMn89YISmlxTb0BPrZaeKVylcYgqsqrdi45BYSHSizau/1Gao7e97FM0kkGbfkZbCPIfdu+gmIdVusTVF5GW/TUA/E98qM17U8VlqvYW2NFemSRn0TShIr7ikmk/tZO5YG9gTQocU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rJf9FdWT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OyV5Mz9J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1E02C2BCC7;
-	Tue,  5 May 2026 12:37:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rJf9FdWT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE88DC2BCB9;
+	Tue,  5 May 2026 12:39:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777984633;
-	bh=1m9avQlsM62D+/5M6xA4b4HibYUZEtJGW857V6lXFhs=;
+	s=k20201202; t=1777984766;
+	bh=+Zsz0dFBU266SJ4Zp4XhgBL/ynv/fDn/9u9HJhGm7lA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=OyV5Mz9JuFVK7WklEviBgb+BTYFxuIWdzcLkQoO04YD3wsb33m7lP2y48jPvgingY
-	 sLj4Bel8u7a0YvYOhLEksuwuC9l3z6xrGjf0tLLQf+67MJT+/8+ViPCBy0gNwm4vKB
-	 TkVXWm/zTO6asGJes5c8FkPm3UKS0/WnxWK0Ot+J/87T5bgMLfJ2N2UGJEDs7NG5ME
-	 3G7LN/l2M/FlqPvEnYN5zKVZ/Mo0fkHLHC7Gr3zI0GW0yHSoxBOrfYVxS4fpl6Acly
-	 S54BcLYIA4T9pmcz8CD3VASpVhxyG4tlrzYRcOxpN/94zj841m8MS7Y3x7aCE07EAn
-	 Z37lndPr9dwKw==
-Date: Tue, 5 May 2026 13:37:04 +0100
+	b=rJf9FdWTimy82KJY+Sxprs4Ta97S7139TSvqZneh8uvWkb2Rg4l7FBOXErNTEWh+o
+	 /U2ScB/gneBN+MdVvnJK9FKP3hcVqR49IR76D4HnYimZwVK8CFh8TxQw+Vy4wW0GM7
+	 oNOSBrn1ctPvhuYtNJBZpJlhymFtG0vXU+IgB0/krjAvkiWQrCGaDwOLQtsJFHAjuQ
+	 njX47DYAb/M0cbmONMOtLzRLcw7bSpT0bztQeYWFBGExmzKFhDpwOxnpyl/VuMeFg5
+	 cyJ3IKbaIb228hPiGF1PaLEUb/zchaWWwGLEHnh83udkK8XDV/vQFlqrZnwt1mSSKB
+	 +9bWbLe9s2zjQ==
+Date: Tue, 5 May 2026 13:39:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: Peter Rosin <peda@lysator.liu.se>, Peter Rosin <peda@axentia.se>, Linus
- Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, LKML <linux-kernel@vger.kernel.org>, Wolfram
- Sang <wsa@kernel.org>, Linux I2C <linux-i2c@vger.kernel.org>,
- devicetree@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Update mail for Peter Rosin
-Message-ID: <20260505133704.45a34756@jic23-huawei>
-In-Reply-To: <afjuXkgkhnRX6DDu@ninjato>
-References: <7ddc5b09-b6c9-99f9-d951-6b3ef96f8c1f@axentia.se>
-	<afhUW7anAEURM0Gz@ninjato>
-	<e8f64a4f745ebfac9395906f19d1b586@lysator.liu.se>
-	<afjuXkgkhnRX6DDu@ninjato>
+To: "Maxwell Doose" <m32285159@gmail.com>
+Cc: "Felix Gu" <ustc.gu@gmail.com>, "David Lechner" <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, "Lars-Peter Clausen" <lars@metafoo.de>, "Arnaud
+ Pouliquen" <arnaud.pouliquen@st.com>, "Mark Brown" <broonie@kernel.org>,
+ <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "sashiko"
+ <sashiko-bot@kernel.org>
+Subject: Re: [PATCH v2] iio: buffer: hw-consumer: fix use-after-free in
+ error path
+Message-ID: <20260505133917.78e01a54@jic23-huawei>
+In-Reply-To: <DI6Y78RY6DRL.HBDGRFK0BCFO@gmail.com>
+References: <20260430-iio-buf-v2-1-84c2231dea5e@gmail.com>
+	<DI6Y78RY6DRL.HBDGRFK0BCFO@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,29 +51,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 4 May 2026 21:07:10 +0200
-Wolfram Sang <wsa+renesas@sang-engineering.com> wrote:
+On Thu, 30 Apr 2026 20:27:27 -0500
+"Maxwell Doose" <m32285159@gmail.com> wrote:
 
-> Hi Peter,
+> On Thu Apr 30, 2026 at 8:29 AM CDT, Felix Gu wrote:
+> > In the err_put_buffers cleanup path of iio_hw_consumer_alloc(), the code
+> > was using list_for_each_entry() to iterate through buffers while calling
+> > iio_buffer_put() which can free the current buffer if refcount drops to 0=  
+> .
+> > The list_for_each_entry() loop macro then evaluates buf->head.next to
+> > continue iteration, accessing the freed buffer.
+> >
+> > Fix this by using list_for_each_entry_safe().
+> >
+> > Fixes: 48b66f8f936f ("iio: Add hardware consumer buffer support")
+> > Reported-by: sashiko <sashiko-bot@kernel.org>
+> > Closes: https://sashiko.dev/#/patchset/20260427-iio_buf-v1-1-2bbdac844647@gmail.com
+> > Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+> > ---
+> > Changes in v2:
+> > - Fix Andy's comment.
+> > - Add Reported-by tag.
+> > - Link to v1: https://lore.kernel.org/r/20260428-iio-buf-v1-1-dcc63ff7b80@gmail.com
+> > ---
+> >  drivers/iio/buffer/industrialio-hw-consumer.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >  
 > 
-> > Thanks! If anything, I should have more time to spend on the kernel going
-> > forward.  
+> Looks fine to me.
 > 
-> That would be awesome! Your in-depth knowledge about I2C muxes is much
-> appreciated!
+> Reviewed-by: Maxwell Doose <m32285159@gmail.com>
 > 
-> > However, right now it feels like everything is in a state of
-> > flux...  
-> 
-> Good luck!
-> 
-> > It would be convenient for me if you could take it, thanks!  
-> 
-> Sure thing. Applied to for-current!
-> 
-> Happy hacking,
-> 
->    Wolfram
+> best regards,
+> maxwell
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-I'm late to the game, but want to add my best wishes and
-Acked-by: Jonathan Cameron <jic23@kernel.org> # for IIO
+Thanks
+
+J
+> 
+> 
+> 
+> > Best regards,
+> > --=
+> > Felix Gu <ustc.gu@gmail.com>  
+> 
+
