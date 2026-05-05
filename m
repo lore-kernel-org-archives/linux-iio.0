@@ -1,110 +1,133 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73AC321018A
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 09:02:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE3BF2D238F;
+	Tue,  5 May 2026 09:04:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777971776; cv=none; b=N6tS8UNhUQz+3A6n2ytnqBijjfHXmPtLfVWUZpJRhMTXS8aEYanHYQahT5zOWe864uc4jbqhH/8zR17Ex7hpo7slQf4V5WagO6j8FvTz5YAvvmLw4l2Doo/jSIsZ3yBiltLepcS2Zr7PZiThyhbeofp0vtffzc9esSlkmMcjAyM=
+	t=1777971887; cv=none; b=jJj0l7u0trj6BOkUM/v5p5SdWVONZg8gZUGa1pMEhhgoNWBJTPuRQ9ic4D4HuOMmQy8KIiBAPo9OAmvFDmOPFKAasw2qVZJ4Vz5dS46Mxg/+C924BP4ZT94I4UPRN3yvVwkJZ5GMpIGtByxYXVMb/cUK1OAza+x7suRrWSKXzJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777971776; c=relaxed/simple;
-	bh=lsMotbbmjRTSAnTSuiqgbvDO+1BFLTUtvyaJVAE3KZM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=LPXuddZcUUMTvAyrKf8HKDRY3Wjq74xrNJG3k7Dm4X8w+VXbaIi19NHE2d1NcRAk+SKcMtoOsP3bNu23QXrkCoeiX48bciZd8SbFk570U+VqywYkpPG4t6oa33/igPp42MdpfUnaFnBh4qZ54aArDaW5aCrrTt8MdAGxzoM3BaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nijqaXE8; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777971887; c=relaxed/simple;
+	bh=56rvixhTVyl8krE6GTyyapnpK+0U6X4NJn5d+LifSPA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i1RmgmWYtj5HviNZ/AtVs3aCpQEY8uPTu81w8yJs/PQhkakRrDuA6Uwpd7TFwGu4MNfnG6gt1SqR334i7khRaXL8BYjDKEUfhiafshcZo1YvrmJuOx1NR/DibVvcNXYR2X7/85iyT0b+CI2n+dBAR24AeIYXXfbquJ58rE2aguw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lC7iB9qx; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nijqaXE8"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-bc2301be8ecso304273566b.3
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 02:02:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777971774; x=1778576574; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ccyLV26D7zYbN2fFdWu3DrAeub8S6U6KL3Fci4tQRyM=;
-        b=nijqaXE8f7ezdGzhmHsnxFcgQcc8UybgzEaLcHzoeOOSk+2CiBAKja46vXq0ManSVR
-         EEHrNc7oUXJlFEviUq8wNX8815AkvFpHtiHkm82VAXZHQEo4itGu38XiPvfh5sqvbiyW
-         ZaQk0c/ALNgM+AmWwZYkmacFSimb/KP3BVtBJS8fZTlEw/5zzrXzhkWCyNHg64dDllJE
-         09kPCgTXnUqjfP/rD3/lSpjm9ZnIqT6GCaluZU0i08y4/Y2XedS6vQCxixnvOkaZEHNc
-         NqAoxboyexI4GRlSeRSC+IlBWrBl7qrbc37btMyieEAWef3MAleV5lAzAwAwh2+o/5WH
-         6LTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777971774; x=1778576574;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ccyLV26D7zYbN2fFdWu3DrAeub8S6U6KL3Fci4tQRyM=;
-        b=gGCyKWbSgOTD8hbyo3wRHsSnwmOr5xy+fQ8qmUDBtNLIKR9DrKrWehaokDLnmcz2eG
-         M7L0EhaJ47pf+AKYtAuVr5qTWYRo/ggz9/TdMZ8xDDdAQE+nwYaPrbDpsleayGLipmXg
-         FRIvqqTIEzfq9Sh72Orl24mC7So60Kz/pzVV3vVeoWuoyFVygRgw2da0EZkVsE68rOre
-         8kFfiJDteGeT38NwP14Zxxoh53S3ga24j0Yi5Qd3s22h47Na4ecXmWvYIZkEnZoTuvO7
-         Hl5RWogJ/lL4nqAbSlyFDHvzhE/Xr9ISPyWTtne1r/9ZBw5Q4OZktHwmQXqBXhbWc9dL
-         jh6A==
-X-Gm-Message-State: AOJu0YxFYCskXmlAawMJaDtWtg98MEY+rL3C0i695NjQFxNuiCexytoN
-	Gszi9d2ugFJyqPE1kZIhBMxizGOfVDzmTr9bIThtT3ooWvFH4nsh6tJY
-X-Gm-Gg: AeBDieuDFialui4pD6FkgOOnCL3SFgBZ12N9BJ03APt0Yl13ksYn1Qd1TiGQjG8Xs+O
-	Mfsfa8ZIbiZDnCJE5lDt5KajrQnodWHMAmuvzbpzNJt1ope0HpNTHpzN/x77e1n6cPWunxrOaOS
-	ekuPkion15nMH/D2mHQgO4SVqstPUb8/KddEt4pQfwS+gktNzvbYjULwLnm/Vbf1juv9ve5db7Y
-	zncBoao/uoTmjYjLRk4SHRvJ7ZEaV1GVwvmHv1odPOaDkB1BBQkz/csCK2VLldRQoA80cnuyU2H
-	RWpU6arIaCnj9rSBOUjbdXbKVV2c/ZC++7Via25J9FwXYTgJWoQWhqpYzslVDnAnr9J+bPYRIDg
-	lmfL2XkYLAwUbUdwe0m8eWN3P/aMXrrndOFDwmnACoqzks24Cp35C93DRqZbLg5AiwA29BHjFGN
-	haD7gfV7jaUfGgWWCEsE1BYuJQl1tvWS+YavT1PY+PQ3DGacJK
-X-Received: by 2002:a17:907:74c:b0:bc2:d65b:5a9c with SMTP id a640c23a62f3a-bc40f43878emr102409066b.1.1777971773370;
-        Tue, 05 May 2026 02:02:53 -0700 (PDT)
-Received: from localhost.localdomain ([196.235.252.38])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bc1dd343108sm216136366b.63.2026.05.05.02.02.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 02:02:52 -0700 (PDT)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH] iio: humidity: ens210: Fix missing I2C functionality checks
-Date: Tue,  5 May 2026 10:02:47 +0100
-Message-ID: <20260505090247.74555-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lC7iB9qx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777971886; x=1809507886;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=56rvixhTVyl8krE6GTyyapnpK+0U6X4NJn5d+LifSPA=;
+  b=lC7iB9qxnH4yo/lk0L2y4taHP4E2N4svnV7m8xSID/UlNRyXrmY1XNq1
+   LNTTadG/JxGOtUw+w3tJQt0y24h3F8O3TioKfCdGy9lpr4dyNExq0HUP7
+   PuWRPYp/xRUlH37aKfIfhuy1u6XelH4v5XL4Jl+g8thCVIWfTpwLaNUFh
+   NQGf+aKS4oGFiPBfdD708rnNuB8mkqy1CDmbkmSkKZ6mjk9NTnE8paVaN
+   yLDpYNGrRnk3gd6f1s8SeWQMpPeQJBZejWasaft18d6iisF+YnxlMt9C1
+   NRUWsE41mH1/+7f5zczFPW7pRdKGNIUzIlHuAHnmVrSUCjz6q3mVYhda7
+   w==;
+X-CSE-ConnectionGUID: 2imdmwsfTmOHfcmLxlGNVQ==
+X-CSE-MsgGUID: Y/eBVXKrRZmqJfiAL0uNjA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="89429474"
+X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
+   d="scan'208";a="89429474"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 02:04:45 -0700
+X-CSE-ConnectionGUID: DrTPJP0ZT5anxW41/COagQ==
+X-CSE-MsgGUID: J9oUMFEcTUGCvZhYpsHXXg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
+   d="scan'208";a="273910171"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 02:04:43 -0700
+Date: Tue, 5 May 2026 12:04:40 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, dlechner@baylibre.com,
+	nuno.sa@analog.com, lars@metafoo.de, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/5] MAINTAINERS: iio: adi: consolidate entries
+Message-ID: <afmyqE6-XcT-SRt3@ashevche-desk.local>
+References: <20260430190642.3434650-1-sanjayembedded@gmail.com>
+ <20260430190642.3434650-3-sanjayembedded@gmail.com>
+ <20260504172457.4d7c7390@jic23-huawei>
+ <AB6B7E29-83E2-4BE8-AF74-1DE8358527E6@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <AB6B7E29-83E2-4BE8-AF74-1DE8358527E6@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The ENS210 driver uses both `i2c_smbus_read_byte_data()` and
-`i2c_smbus_read_word_data()` during the read and probe phases.
-However, `i2c_check_functionality()` was only checking for block reads
-and simple byte writes, which could lead to hardware interface
-incompatibilities or errors on certain adapters that do not natively
-support SMBus word or byte data transactions.
+On Tue, May 05, 2026 at 08:00:23AM +0530, Sanjay Chitroda wrote:
+> On 4 May 2026 9:54:57 pm IST, Jonathan Cameron <jic23@kernel.org> wrote:
+> >On Fri,  1 May 2026 00:36:39 +0530
+> >Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 
-Add `I2C_FUNC_SMBUS_READ_BYTE_DATA` and `I2C_FUNC_SMBUS_READ_WORD_DATA`
-to the functionality check mask to ensure the adapter supports the
-required operations before communication begins.
+...
 
-Fixes: c524fbca672e ("iio: humidity: Add support for ENS210")
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
- drivers/iio/humidity/ens210.c | 2 ++
- 1 file changed, 2 insertions(+)
+> >> -AD738X ADC DRIVER (AD7380/1/2/4)
+> >> -M:	Michael Hennerich <michael.hennerich@analog.com>
+> >> -M:	Nuno Sá <nuno.sa@analog.com>
+> >Specific maintainer. Why is it going?
+> 
+> I'm assuming that to avoid de-bounce issues from *@analog.com domain, we are
+> adding linux@analog.com mailing list as primary contact. with that in mind,
+> this series drops all entries which match the wildcard and have analog domain
+> maintainer or reviewer while keeping the rest as unchanged.
 
-diff --git a/drivers/iio/humidity/ens210.c b/drivers/iio/humidity/ens210.c
-index 77418d97f30d..e8633f247b10 100644
---- a/drivers/iio/humidity/ens210.c
-+++ b/drivers/iio/humidity/ens210.c
-@@ -204,6 +204,8 @@ static int ens210_probe(struct i2c_client *client)
- 	if (!i2c_check_functionality(client->adapter,
- 				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
- 				     I2C_FUNC_SMBUS_WRITE_BYTE |
-+				     I2C_FUNC_SMBUS_READ_BYTE_DATA |
-+				     I2C_FUNC_SMBUS_READ_WORD_DATA |
- 				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
- 		return dev_err_probe(&client->dev, -EOPNOTSUPP,
- 			"adapter does not support some i2c transactions\n");
+But it's removing people behind their will! You really should do this
+case-by-case. Some of the people who left the company might still want to
+follow the driver or even maintain it. What you should do is also pay attention
+on the Supported vs. Maintained which makes a huge difference on the
+responsibility and financial side of the Subject.
+
+Btw, Have you consulted with your Legal department on all this?
+
+> >> -R:	David Lechner <dlechner@baylibre.com>
+> 
+> Additionally, When David is list as reviewer in individual driver entries, I
+> consider as redundant part; All IIO subsystem drivers/iio* already covered by
+> top level entry, which includes Andy and David as reviewer.
+> 
+> Summary of changes in series:
+> - analog domain specific entries are dropped and catch with linux@analog.com
+> under ADI IIO section.
+
+No, you should give a good explanation why in each case. Yes, you may combine
+the cases when people left the company, but you also need to
+- consult with your Legal
+- consult with those who left on what they wish
+
+None of them seems done so far. So, again BIG NAK from me on this series!
+Rework them and even part that drops the entries that already have the same
+maintainers as current ADI level ones (assuming adding Nuno in a separate
+prerequisite patch) is good to go.
+
+> - Non analog devices reviewers and maintainer is unchanged for each driver entry.
+> 
+> Further, I also agree with adding Nuno Sá as a maintainer in the top-level
+> ADI IIO entry, so that all drivers are maintained via the mailing list with
+> his oversight.
+> 
+> >> -S:	Supported
+> >> -W:	https://wiki.analog.com/resources/tools-software/linux-drivers/iio-adc/ad738x
+> >> -W:	https://ez.analog.com/linux-software-drivers
+> >> -F:	Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
+> >> -F:	Documentation/iio/ad7380.rst
+> >> -F:	drivers/iio/adc/ad7380.c
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
