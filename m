@@ -1,144 +1,109 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E27B23DBD5D
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 07:26:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777965999; cv=pass; b=f8zy+IUk7fSVFt/D/OwEG2arE2btC34Exk50be+/mOxoqKunCJDIw90IcaqVRy4TKbQ16ocObXdY/WMpSM46aUUbkVPm3LeiNNh1phJGTxj9unt1u8uOdQmjjFkdfn+30C4BBbRyg9+zjd7t64DtAG5FP15BNt+vPrZXe+VGmLw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777965999; c=relaxed/simple;
-	bh=sFs5szvJf/zunhQ0EkHB/qKvjCp6EFgmVX6OVVanpVg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=krDMmwGwd6VbqSu6FSOjxZTOzL6evmWU2PKr/Czm/sbaP7mBGGOpN95ubCFOYnFyiF9/KVUplQl8zeBYMzELhDgmynE7oOB7NywwLUl2ns8bC+QSf5ykTKnfkeBy+IjINGokHa5PIXgU0+PEHHYuNX7+BkMROOC/Q79S+iNhB1k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HZY+pi+C; arc=pass smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94F0E3C277F;
+	Tue,  5 May 2026 07:31:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777966308; cv=none; b=SbzD6K0MO8YIPXFOiNHhMLzeUk3VZAQrfYGq18fxJ1089Yevjz2+t/K61Z9mXN9ed7nwks9WDntK+BsJanoN1gUPNm0D6Q9AsNvTvohnytzHCnTzTy3pkEh1wGPuLf0oW525uoASoZVVV9jEwcZs0fmBRAjg+z0mG8AvOd0Bl/w=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777966308; c=relaxed/simple;
+	bh=w+gBC9LzLfUEZ39E2NnGtPODhMvwLIgz7oHW/1UC2ec=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=BqYEJUMVJVh7KpkClw1rJkslzBfSXcxhwcl63ixfFN6fOGrL3Ghg05tyV5SI56+22VFwmBVsvTv1EvfvTOzMnQDYxYza2o47vMtPoJmyjDKmQsULfHe1xgfi550/Atj00yDOAjhjbps78lY9TbdejaUjioY5Zb4n/2jeWDOTa7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C5Sp5j0F; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HZY+pi+C"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-441209fb77eso2829081f8f.1
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 00:26:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777965996; cv=none;
-        d=google.com; s=arc-20240605;
-        b=GqmNibfny8gnjYED4cVD0uxCobWUSahLFAzbssNgrLg2OmUbOOAFgWUILO2vYN5dXy
-         AjVvmpbuWM16wOSatyXnB6KkTjPHx+jcGZBFNYQFWDBBwTlAmlJ7eNNSKg8TCXlldYC3
-         x1ZtFkRfoYgQhLsKrb4Nw1kimC9exkRzkYXDIEOX8/USnoLobeQQdcLjGkWuGPdxx3v5
-         nDJfKRjYB5sPzZmAd109ueS6lIP+B8hvE6gNTxsZh6PMDaat8KQ3klb8aS4w9c4XavGY
-         qV+LQWqmyONQKyscYIgvRjqNpmSDslRScNKmr9Ru2Ue0O9y1JtWK/58UYGLr9nGBpQOd
-         h/NA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=4iXsy0Ph9WfvnMeunGjXcCmD6uL8ClhF/MUxaHRVoOE=;
-        fh=1xZywrw3q0wFjS6Pky/krg85sgxIyQz+SgDk0FkmSr8=;
-        b=LM9V6jevxtUGe7gnZ4FdAQChw3ECxZogktD3RX/GdV1uZEDoopFm3y1dB/huLchohv
-         EIL3TFv3Pir12h27tr2E3b3VfK+QXCvjcdVjoJwMdYjmIM70+C+zh9IRpx770nppMaPT
-         uhOgESO5PLKd8rPxG3/Ta3u/46grW5B2UAqZiN2R1x5uvjD3brpbN1I6R9OKEQoU+7bV
-         UAOxV1Y0iwvcRSZlQ6TSOOTx3wHnPtCFFY02wJv++xbV2IivlCXBmty9DbwKIox7sp7Y
-         CO4v0YOMBNgXKatodejvx3PBLHa+OKe3BkUNh+jqfcGtRC26y6XwkyTNRy5JNar97KpP
-         vJzw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777965996; x=1778570796; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=4iXsy0Ph9WfvnMeunGjXcCmD6uL8ClhF/MUxaHRVoOE=;
-        b=HZY+pi+CiEmYOacPSaBjnm77djGtb3Vmm8pkNQw97sYJa55lCjMeGMThPtE36FD/Q8
-         i6kUecVLyE3On99W0EJUN6LTcd079XZK05Q1QKXydnjEIO7sNR4RT47Al40UDIpVntis
-         6mjJBU6ENMvKfrg/ZffQYA4PtXD0CvAVzP2RowQqetQ9epZO9Nu8+geAxVygk/KrHyHI
-         viT6YhBwx5qOy+JdhlY2BIBjSfvtX1aCNPli7OR3tYaajXHov3KlypKImuKlKoor9p9w
-         xLK1e9jHOJAXj1azOccJZ12yMSntYXv76gg6CrCmS2tryeWFjTpxPryw0N+6jO9r41Qo
-         AsiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777965996; x=1778570796;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4iXsy0Ph9WfvnMeunGjXcCmD6uL8ClhF/MUxaHRVoOE=;
-        b=F1WPDzDkra17og782xFXUqQjOk9gC/ffn62NHTQ//M2L2SE3izdD906d0dgaiH+4bc
-         j9KbsCzNcRRtqJFk23COZKPkck2ELDA/5BF1umyb7lGdpcOsPak/cDvFCfSG2Vs7mNPM
-         7a8Zp0W/qmMOUOgyKkVOSyhi8C8S++Tie/iAf2bIPOilg0nv1J5kTaIxhOyDcHXLb7Qo
-         yV/bgGsYfzG4LvhyLQoR8MDN8FydYcj9x8YanzKE13YRUjpB35Fxy4sQm7rSGP5QjbBc
-         ac38C/32HeqOWbVKUoodfrrGrPIYXQqmdB3RH2mIL2grBOkdQC9SNW+RsgaOMy67S9So
-         aaxg==
-X-Forwarded-Encrypted: i=1; AFNElJ9xTD/nQ2NzYg0fJO35jQQOvoQ8vRb4L01Y01y5mRcU5m/ga5dMXL+CzqwYNzhxScT3Y7AjTQaXWcQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy4FIg8leGaY7wfTuwDWSNm4FkpIWw9livgICFu/pz7j+meyP+t
-	kdcfqHC7y9sro3o699xx+OGvRqgabUOIVTJ+2OcGAm8G/NWm36K2z4Y+wF1BQq990kirFhH+th5
-	w/mDeQj6Pg7p/FaR9U3P4iJ1HouJDWtc=
-X-Gm-Gg: AeBDieutbXutz6+1rV1cm8qVcCyQY+la8YwGN/pfzj2QBanV/ni3MKrUf9yVnyZ1eWt
-	rRgXxBw+VgsGLi8DZL5m8W0ES5k/TQ2WL93UJnO5Qa4kM7J53JtzOnMgEpyY7o6VAPV4Vu0BLlD
-	Iw5qWTPV/L+3g37QXPi4Ivc+Rf/FpGb60i9T4ITB8IOo4HSAiPArQYW5k26rXksgyMRt3JU4/0Q
-	ypM7z+I90NZbBP57HdlPJ6k6xSVPEBkp/FbMxNa957BuNWpSh5rCxnz3DLFE7N7CEPABV/jGacH
-	04ZbmFT0ldFWSamKfInIP3jnhuL+jCgHLlPkgFpB1B27t0QmoydKRoH6pbGqxejrolCfUX/TNMp
-	E6mfkR7Y3pA8GvVpe/s1VnASo2Yn+gPTJA5uZLP3C1p7aYPEXoB2qto5vbVk77VUGTWpP0twrOd
-	xfFi8qrHoZnSOWkBMJ
-X-Received: by 2002:a05:6000:4403:b0:441:268a:f271 with SMTP id
- ffacd0b85a97d-44fdc4fd546mr2867837f8f.10.1777965996164; Tue, 05 May 2026
- 00:26:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C5Sp5j0F"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5E0B5C2BCC7;
+	Tue,  5 May 2026 07:31:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777966308;
+	bh=w+gBC9LzLfUEZ39E2NnGtPODhMvwLIgz7oHW/1UC2ec=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=C5Sp5j0F11PZU0U9ufLorYuBOUuyxOG0KpiG72pihJj65zbuN/6WEH5Li1TjaC4e0
+	 0LcN18P6LX3H8ZSXbgH2vMUzXthjDZEGYySfRagnYnYQT7ftRZdt45hyI9izMBuz2D
+	 KG9W9ie1ub6WB0wdET47qsMmi7gB2yMeLUzqa6MsWN7Fk+PuEyu0/JluBNlvS+ehtX
+	 XYTQGTwSt9nfEjl/hn26i4YAF20SQlEhtrNaOe/4OSfsi2NKF+eHYjunwnFCEtR2nk
+	 E04jNEjam4iD1DfySWdHeKxmUohpTNnp+8iU1UhxrJyPtVr+Oc786TgdjX8XTmtOXg
+	 gcMdTlnZt3gTg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5123CCD13DA;
+	Tue,  5 May 2026 07:31:48 +0000 (UTC)
+From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Date: Tue, 05 May 2026 09:31:26 +0200
+Subject: [PATCH v5 1/8] iio: light: si1133: reset counter to prevent race
+ condition
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
- <20260504-magnetometer-fixes-v4-6-a291c2a7c71a@gmail.com> <20260504160606.07f87f10@jic23-huawei>
- <afl404iaPbSsK5XF@ashevche-desk.local> <CALoEA-xkOVvGqwWdHMS3HbJSCrSbyBd4GQ2CkczkT9Tn-xO_bw@mail.gmail.com>
- <afmag-hFCs8u6jN7@ashevche-desk.local>
-In-Reply-To: <afmag-hFCs8u6jN7@ashevche-desk.local>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260505-si1133-checkup-v5-1-5df86a9024ed@gmail.com>
+References: <20260505-si1133-checkup-v5-0-5df86a9024ed@gmail.com>
+In-Reply-To: <20260505-si1133-checkup-v5-0-5df86a9024ed@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Jean-Francois Dagenais <jeff.dagenais@gmail.com>, 
+ =?utf-8?q?Maxime_Roussin-B=C3=A9langer?= <maxime.roussinbelanger@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Joshua Crofts <joshua.crofts1@gmail.com>, 
+ Jonathan Cameron <jic23@kernel.org>, sashiko-bot <sashiko-bot@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777966306; l=1385;
+ i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
+ bh=rNb20PuoCqb49JFiqKumgMP6bKNErm8C2bsZ39xzPjA=;
+ b=fPBuOnIc113xkJSOTRBQsMc/4rSYmEbRXoPXrycmyJnPwejfbc0izKvkkwvLOA+o3TDqx/QOe
+ NOu8sbaXdhRC/48XfCgBRofxZ0fdFnqzgGP9RyMFGz9c/4zj3U0g63T
+X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
+ pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
+X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
+ auth_id=746
+X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
+Reply-To: joshua.crofts1@gmail.com
+
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 5 May 2026 09:26:23 +0200
-X-Gm-Features: AVHnY4Ktg-l_VuHu7LIEmzCiXlALlcztoiAIeKQVTw2fRHazPnz8kC5FbF-FcoA
-Message-ID: <CALoEA-zs+Qf8QOD6zE32Es3iGOo12KsvtAKYcd3LTQmoBwLw0g@mail.gmail.com>
-Subject: Re: [PATCH v4 06/17] iio: magnetometer: ak8975: modernize polling
- loops with iopoll() macros
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 5 May 2026 at 09:21, Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Tue, May 05, 2026 at 09:07:30AM +0200, Joshua Crofts wrote:
-> > On Tue, 5 May 2026 at 06:58, Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> wrote:
-> > > On Mon, May 04, 2026 at 04:06:06PM +0100, Jonathan Cameron wrote:
-> > > > On Mon, 04 May 2026 11:48:18 +0200
-> > > > Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
->
-> ...
->
-> > > > One question inline on whether it is a good idea to be paranoid about
-> > > > gpiod_get_value() potentially returning < 0 to indicate an error.
-> > > > Right now that is treated as success.
-> > >
-> > > > > +   ret = readx_poll_timeout(gpiod_get_value, data->eoc_gpiod, val, val != 0,
-> > > > > +                            AK8975_CONVERSION_DONE_POLL_TIME * USEC_PER_MSEC,
-> > > > > +                            AK8975_MAX_CONVERSION_TIMEOUT * USEC_PER_MSEC);
-> > > > > +   if (ret)
-> > > > > +           return ret;
-> > > >
-> > > > Should we check val as well?   It might be negative if gpiod_get_value()
-> > > > returned an error..  Obviously the original code didn't so this would be an
-> > > > improvement rather than maintaining what that was doing.
-> > >
-> > > I agree that this would be a good addition, but since it's a behavioural change
-> > > I think the separate patch should be made (perhaps after readx_*() conversion
-> > > as it makes it easier to do).
-> >
-> > Good point, val should definitely be checked. Will send a fix this afternoon.
->
-> It's better to integrate it into the series either as a fix (should be first in
-> the series) or as just an improvement after readx_*() conversion patch.
+Sashiko reported a potential race condition happening when the driver
+returns an errno after a timeout in the si1133_command() function. The
+premature exit causes the hardware and software counters to become out
+of sync by not updating data->rsp_seq, therefore the internal hardware
+counter keeps incrementing.
 
-Better to do it as an improvement after readx_(), rebasing would be easier. I do
-agree with it being added as a separate patch though.
+Fix this by adding a call to si1133_cmd_reset_counter() before returning
+from timeout.
+
+Fixes: e01e7eaf37d8 ("iio: light: introduce si1133")
+Reported-by: sashiko-bot <sashiko-bot@kernel.org>
+Closes: https://sashiko.dev/#/message/20260428-si1133-checkup-v2-5-70ad14bfefe2%40gmail.com
+Assisted-by: gemini:gemini-3.1-pro-preview
+Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+---
+ drivers/iio/light/si1133.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+index 44fa152dbd24c26c97cc778cbe641d92ecd56afa..c88c79202be2e21abb72067426e31b6bf97c61cf 100644
+--- a/drivers/iio/light/si1133.c
++++ b/drivers/iio/light/si1133.c
+@@ -427,6 +427,11 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 			dev_warn(dev,
+ 				 "Failed to read command 0x%02x, ret=%d\n",
+ 				 cmd, err);
++			/*
++			 * Reset counter on err to prevent software and hardware
++			 * counters being out of sync.
++			 */
++			si1133_cmd_reset_counter(data);
+ 			goto out;
+ 		}
+ 	}
 
 -- 
-Kind regards
+2.47.3
 
-CJD
+
