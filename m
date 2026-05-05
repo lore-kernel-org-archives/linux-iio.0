@@ -1,42 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A6FE316197
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 16:14:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDCD748BD30;
+	Tue,  5 May 2026 16:15:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777997696; cv=none; b=slT6mHzEObhlcl8kKtSYC362VxMB6ZvS7W6B4FZwvpWYIVSKnT8r7xKFrBqHt+zxtQFSeyjM8T8nX7dBqOP2utLa6MT31z+z4J/zX3sVIRxUIcxV7vF+AlHeLksHQv4pt+UXkQBfQOciU7LAJwBcqRWlOJixFmJmnZ7O3Zu6De4=
+	t=1777997738; cv=none; b=TWFOVZzwAibmE8L2RosGh/X0DvF1tR5Wtx90Ijcp8Gz6rdtt6803rp6cArkB2aJW2+t6EKhI/GhoUvVEBnoaWERSlDdpIO5EnNaU9rAIpUXwsI/fSjOnKZ17QseUBen7eiEFeZPQP9wY40OtLY8yGjYR+gBMz/6rvdHd/ASIBKE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777997696; c=relaxed/simple;
-	bh=P/tGebxhrzexD0gq+Owzt5kDG6NpwUHokwnA3noH0vk=;
+	s=arc-20240116; t=1777997738; c=relaxed/simple;
+	bh=U9r0lM9QL319w7ggAfBoVETiqwCxEdHZUsK4+OoLP+k=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=c4iuZ0983ZYZGIbFHgargkBXnQJUs+33+RyZxm7aTPOzRvUIrwyz/VaRILc9ZQufwCwjdic6SPQqG0/qZwhQJIa8lqOcqhbG/bzlcxz/hAn7aKB7oRO4tIH4tDpt/ieA29NteEPDxZzgXQJ2fJ7DzI6qG5C0VITbEWl7cevpyaE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ni2PpW8a; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=u7FHXl/0HD57ZILr9IM+A4wL4rAykYbgaVEVGDGdbcn5rHnrtnf+RrnE0FIFozyVk/Rrs71a26dnyOpp04aLTZb0qB5EUqCJ6ad5fpFfI8oY0enzsuMjrCTGM8ObYPRIXUAogiYJFPjRlhMwqwsQfswLTBEahRPaq6b6E9pHNU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=erRYiSis; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ni2PpW8a"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C6DBC2BCB4;
-	Tue,  5 May 2026 16:14:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="erRYiSis"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27006C2BCB4;
+	Tue,  5 May 2026 16:15:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777997695;
-	bh=P/tGebxhrzexD0gq+Owzt5kDG6NpwUHokwnA3noH0vk=;
+	s=k20201202; t=1777997737;
+	bh=U9r0lM9QL319w7ggAfBoVETiqwCxEdHZUsK4+OoLP+k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ni2PpW8a1EfsR6SCHl+ehVAiiehHSermrRXtAXyMbqaNHtZEEl3FAnYshUK+T+2UT
-	 YUm0AGsiC9CvuEojp/p9Wcaq98mdOIsvpUw9qfzy9PqZlI4cqwDmwx2GFhtUMtoV8g
-	 J9MTEJLqdjs7FB+gXYM8e/XDehlUhaPAtIf6Y81rypvHZoZGuTg+yK9Tnb+QsLz4yu
-	 fiuJ8Gm1mOD75CR7+tqIIR8kDWnBcfxGyYawnbLeo9ZJQA3HORl8gChn7ei10oOkf7
-	 F6qWulYlyBiReAmie/nl7MGoypPTy2mskYW6BZ7QqOoQGmeKAy8HWVbrFhkKFZqif7
-	 EdYpxLO0MIyww==
-Date: Tue, 5 May 2026 17:14:48 +0100
+	b=erRYiSis+yvWdejzrlmhbEQ/gb+3M0ziCjtyyG8bEUarcDsGqHUvtxahvsLaXouLk
+	 dHBZsIiOAfDL0BYmgXke3xO1PJ7CZJJ2QB7195j4nOfSzg+KkfaosXahWd9+/QTqPV
+	 30Aqd3W244kEwe1fTRo2Lf8TC2B9uI+m+xRRrB+lyy7uggSudE0a7enOIWanHjlxxa
+	 Ug9JODnftzvxKfxh+CjEsAst7Sqi4UNDw4Ycceyb5dyvxOfNn69QM1hIkUZsCIvtlw
+	 cMS9bh2RCWHZE6RPN3a+b1VL7zRohi0MzXB0QCeZiiu0cfeF8H6NwaWWurZSgTj3Ot
+	 wkEYKFhIEpHNA==
+Date: Tue, 5 May 2026 17:15:29 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Rafael Lopes Santana <santanarl@usp.br>, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] Replace manual bitfield manipulations with field_get
-Message-ID: <20260505171448.5a5e4c11@jic23-huawei>
-In-Reply-To: <946edc28-dbf4-490a-98df-615e1a4f6b21@baylibre.com>
-References: <20260501011548.15369-1-santanarl@usp.br>
-	<20260505131642.75f3c72a@jic23-huawei>
-	<946edc28-dbf4-490a-98df-615e1a4f6b21@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, lars@metafoo.de, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/5] MAINTAINERS: iio: adi: consolidate entries
+Message-ID: <20260505171529.50eae32a@jic23-huawei>
+In-Reply-To: <afnliKBrxlkx1Vmq@ashevche-desk.local>
+References: <20260430190642.3434650-1-sanjayembedded@gmail.com>
+	<20260430190642.3434650-3-sanjayembedded@gmail.com>
+	<20260504172457.4d7c7390@jic23-huawei>
+	<AB6B7E29-83E2-4BE8-AF74-1DE8358527E6@gmail.com>
+	<afmyqE6-XcT-SRt3@ashevche-desk.local>
+	<20260505115409.44245db6@jic23-huawei>
+	<afnliKBrxlkx1Vmq@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -44,83 +49,115 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 5 May 2026 08:52:44 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Tue, 5 May 2026 15:41:44 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On 5/5/26 7:16 AM, Jonathan Cameron wrote:
-> > On Thu, 30 Apr 2026 22:15:46 -0300
-> > Rafael Lopes Santana <santanarl@usp.br> wrote:
-> >   
-> >> From: Rafael Lopes Santana <santanarl@usp.br>
-> >>
-> >> Signed-off-by: Rafael Lopes Santana <santanarl@usp.br>  
-> > Hi Rafael,
-> > 
-> > Additional comments inline.
-> > 
-> > Given this is packing code that is using shifts in one direction even
-> > in your new version I'm not seeing a clear advantage to this change.
-> >   
-> >> ---
-> >>  drivers/iio/proximity/aw96103.c | 10 +++++-----
-> >>  1 file changed, 5 insertions(+), 5 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
-> >> index 3472a2c36e44..a8a6ae02438a 100644
-> >> --- a/drivers/iio/proximity/aw96103.c
-> >> +++ b/drivers/iio/proximity/aw96103.c
-> >> @@ -591,7 +591,7 @@ static void aw96103_cfg_update(const struct firmware *fw, void *data)
-> >>  	}
-> >>  
-> >>  	for (i = 0; i < aw96103->max_channels; i++) {
-> >> -		if ((aw96103->chan_en >> i) & 0x01)
-> >> +		if ((field_get(BIT(i), aw96103->chan_en)))
-> >>  			aw96103->channels_arr[i].used = true;
-> >>  		else
-> >>  			aw96103->channels_arr[i].used = false;
-> >> @@ -643,10 +643,10 @@ static irqreturn_t aw96103_irq(int irq, void *data)
-> >>  		if (!aw96103->channels_arr[i].used)
-> >>  			continue;
-> >>  
-> >> -		curr_status = (((curr_status_val >> (24 + i)) & 0x1)) |
-> >> -			      (((curr_status_val >> (16 + i)) & 0x1) << 1) |
-> >> -			      (((curr_status_val >> (8 + i)) & 0x1) << 2) |
-> >> -			      (((curr_status_val >> i) & 0x1) << 3);
-> >> +		curr_status = (field_get(BIT(24+i), curr_status_val)) |  
-> > 
-> > Look at coding style for the kernel. You are missing some white space here.
-> > 
-> > I don't like this but if you were to do it for consistency it would be
-> > 
-> > 		curr_status = FIELD_PREP(BIT(0), field_get(BIT(24 + i), cur_status_val) |
-> > 			      FIELD_PREP(BIT(1), field_get(BIT(16 + i), cur_status_val) |
-> > 			      FIELD_PREP(BIT(2), field_get(BIT(8 + i), cur_status_val) |
-> > 			      FIELD_PREP(BIT(3), field_get(BIT(i), cur_status_val);  
-> 
-> I actually find this much quicker to understand the intention of the code.
-> 
-Ok. That's a clear vote in favour, please respin it like this for v2, remembering
-to deal with all the process stuff others have highlighted.
+> On Tue, May 05, 2026 at 11:54:09AM +0100, Jonathan Cameron wrote:
+> > On Tue, 5 May 2026 12:04:40 +0300
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote: =20
+> > > On Tue, May 05, 2026 at 08:00:23AM +0530, Sanjay Chitroda wrote: =20
+> > > > On 4 May 2026 9:54:57=E2=80=AFpm IST, Jonathan Cameron <jic23@kerne=
+l.org> wrote:   =20
+> > > > >On Fri,  1 May 2026 00:36:39 +0530
+> > > > >Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:   =20
+>=20
+> ...
+>=20
+> > > > >> -AD738X ADC DRIVER (AD7380/1/2/4)
+> > > > >> -M:	Michael Hennerich <michael.hennerich@analog.com>
+> > > > >> -M:	Nuno S=C3=A1 <nuno.sa@analog.com>   =20
+> > > > >Specific maintainer. Why is it going?   =20
+> > > >=20
+> > > > I'm assuming that to avoid de-bounce issues from *@analog.com domai=
+n, we are
+> > > > adding linux@analog.com mailing list as primary contact. with that =
+in mind,
+> > > > this series drops all entries which match the wildcard and have ana=
+log domain
+> > > > maintainer or reviewer while keeping the rest as unchanged.   =20
+> > >=20
+> > > But it's removing people behind their will! You really should do this
+> > > case-by-case. Some of the people who left the company might still wan=
+t to
+> > > follow the driver or even maintain it. What you should do is also pay=
+ attention
+> > > on the Supported vs. Maintained which makes a huge difference on the
+> > > responsibility and financial side of the Subject. =20
+> >=20
+> > Some of this was in response to discussion with on specific person.
+> > That one is fine but be very careful beyond that.
+> > Probably best to add a link tag back to that discussion as well. =20
+>=20
+> Or at least mentioning this in the commit message / cover letter.
+>=20
+> > > Btw, Have you consulted with your Legal department on all this?
+> > >  =20
+> > > > >> -R:	David Lechner <dlechner@baylibre.com>   =20
+> > > >=20
+> > > > Additionally, When David is list as reviewer in individual driver e=
+ntries, I
+> > > > consider as redundant part; All IIO subsystem drivers/iio* already =
+covered by
+> > > > top level entry, which includes Andy and David as reviewer.
+> > > >=20
+> > > > Summary of changes in series:
+> > > > - analog domain specific entries are dropped and catch with linux@a=
+nalog.com
+> > > > under ADI IIO section.   =20
+> > >=20
+> > > No, you should give a good explanation why in each case. Yes, you may=
+ combine
+> > > the cases when people left the company, but you also need to
+> > > - consult with your Legal
+> > > - consult with those who left on what they wish
+> > >=20
+> > > None of them seems done so far. So, again BIG NAK from me on this ser=
+ies!
+> > > Rework them and even part that drops the entries that already have th=
+e same
+> > > maintainers as current ADI level ones (assuming adding Nuno in a sepa=
+rate
+> > > prerequisite patch) is good to go. =20
+> >=20
+> > I'm not keen on using the top level reviewers as enough to drop an entr=
+y.
+> > Where Nuno and David have specific driver entries the lifetime of those
+> > may well be different to the top level one.  So leave those alone. =20
+>=20
+> True, but if the people who maintain the certain driver(s) are okay with =
+the
+> collapse, why not allow that?
+Agreed.  Not something to do preemptively though!  I wouldn't propose it
+for instance but if they suggested it different question :)
 
-> > 
-> > The benefit of that is slightly more than what you have but it's still ugly enough
-> > I'm not sure it's worth doing.  Note FIELD_PREP() in this direction as the mask is constant
-> > 
-> > Given the bit smashing going on here is always going to be ugly I'm not sure
-> > any of these are better than the original though I'm open to hearing what others
-> > think of this more complete version.
-> > 
-> >   
-> >> +			      ((field_get(BIT(16+i), curr_status_val)) << 1) |
-> >> +			      ((field_get(BIT(8+i), curr_status_val)) << 2) |
-> >> +			      ((field_get(BIT(i), curr_status_val)) << 3);
-> >>  		if (aw96103->channels_arr[i].old_irq_status == curr_status)
-> >>  			continue;
-> >>    
-> >   
-> 
-> 
+J
+>=20
+> > The only ones I don't mind falling back to the top level catch alls are
+> > those where we are dropping a reviewer / maintainer (and they were aske=
+d)
+> > + there is nothing else listed - hence the higher level entry is the
+> > only source of information.
+> >=20
+> > A wider scrub is not appropriate.
+> >  =20
+> > > > - Non analog devices reviewers and maintainer is unchanged for each=
+ driver entry.
+> > > >=20
+> > > > Further, I also agree with adding Nuno S=C3=A1 as a maintainer in t=
+he top-level
+> > > > ADI IIO entry, so that all drivers are maintained via the mailing l=
+ist with
+> > > > his oversight.
+> > > >    =20
+> > > > >> -S:	Supported
+> > > > >> -W:	https://wiki.analog.com/resources/tools-software/linux-drive=
+rs/iio-adc/ad738x
+> > > > >> -W:	https://ez.analog.com/linux-software-drivers
+> > > > >> -F:	Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
+> > > > >> -F:	Documentation/iio/ad7380.rst
+> > > > >> -F:	drivers/iio/adc/ad7380.c   =20
+>=20
 
