@@ -1,60 +1,76 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3425434EF1C;
-	Tue,  5 May 2026 06:53:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F4CC40B6C9
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 07:02:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777964026; cv=none; b=mlCsdPY2ua7yxDG8gFfRzbyMVRiApMpTg9ZhnDYF458Tlfeqr6sxAbkoWk2gUjv40LAcFrleVtz91pIQN06vjQ/7we+mZgHNOC1fsJHKXa05uaE7O9Pu1jfNqOXmPULjPwaEuR787+Sh6im3N/C/qEYuMbz8e55Kd54rIAput5g=
+	t=1777964523; cv=none; b=ipcXMWNFw1i3PqV2OISFava13UNrHOcOqjYeHn9VMChucsUZ4uI1MdB74yDJCrXjqgvn0zLJ7I7z4mWT4pnJOyph1+7AezWnmT2nOA6wRCZfghYsVSBSB9orArJSWDN9e8T801C9sOCIwnnESwjERrUNrpLDLlySCOsdZtmNn1U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777964026; c=relaxed/simple;
-	bh=HOYFPzHxAAbUeSZOJd+G/IsNKs/66WOvn6PF7xLsYTg=;
+	s=arc-20240116; t=1777964523; c=relaxed/simple;
+	bh=atpocCViVZpUvDy5Jq4P7at3QeU4Hvp6bppgvQ2BWM8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=u2MJzIvC0z8cKQ39yLQaasZvmo14pAsAJc/qeq/deiMOWaxKzc1DoPYOckohJziExGeJJuVKsSDX/EGCts+WIJSHff0JGi4fcaAtul7VFfY4l2xxnwhy/ra/BFenKJcwmkt6jLh1sGw52g52fGi5A07YG5D6qXhV7uFAE6m9YaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MOLlO3A+; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=sIBmTle1Znaraek93fB1Q2K3DgmJgFZdQpAblWyJ2bXIVrJfwYZWOqrIEMobKGmFpp1K4GuH7nUU6D2G6loencrhYU2n1O0+gUoaE+QvgOt6+A7hDopi0OR0EDoStwDcTCtNEKU1KtccUp6n7u9Pa5uFCrI4fWAKkUnaI7PEq5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GWJ7kkWZ; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MOLlO3A+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777964026; x=1809500026;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HOYFPzHxAAbUeSZOJd+G/IsNKs/66WOvn6PF7xLsYTg=;
-  b=MOLlO3A+KOn8FCSK4iHnYNte5IogWBnzZ8BrqtSBdpJPOFMQIEwVAy/j
-   xTEHwNYX/f+ACcf6v4aRidat9Fq00uf+Ak+fLFjV1tSBtBEEp2rzzdiov
-   B6LMjiZWvoMRnbYHEaEpAZr/p11WcrVdCE7YRMiiftzNON1RiHlS2HWbR
-   DpWhzl78GgXmmZv4NM3Yc66+mUuYj6GNJPEkS+rEVyWy3VWm3O9SEPLm0
-   Zvy7nP/7xCqJyrSclVyLKqGyAWr20yo68q0xq/l9FE479cwqqpYnb1aV4
-   fP1lnEeIbJtMzHZtu/HqIiVCGTPyZU5tik4+exB1g2mxfrJI0XiPBveAM
-   Q==;
-X-CSE-ConnectionGUID: g+AvaGPTS4KtAuUfLsRVMw==
-X-CSE-MsgGUID: 2cIHfwJjSv6aY6fEnGMKJw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="89133314"
-X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
-   d="scan'208";a="89133314"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 23:53:45 -0700
-X-CSE-ConnectionGUID: oIWZ8DRtQVmVG3Og36aGMA==
-X-CSE-MsgGUID: JeDO1S64RcaQ1CBDwV+D7A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
-   d="scan'208";a="234717287"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 23:53:42 -0700
-Date: Tue, 5 May 2026 09:53:39 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Miao Li <limiao870622@163.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, waqar.hameed@axis.com, dixitparmar19@gmail.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Miao Li <limiao@kylinos.cn>
-Subject: Re: [PATCH v4 1/3] iio: light: stk3310: Deal with the ps interrupt
- issue in PM
-Message-ID: <afmT81DAhJWDHrSu@ashevche-desk.local>
-References: <20260504030408.105762-1-limiao870622@163.com>
- <20260504030408.105762-2-limiao870622@163.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GWJ7kkWZ"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-bc23bebd345so291683866b.1
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 00:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777964519; x=1778569319; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sJoGeOymzDzt4BduT12fzk90tICGYXHSXGced9NaYww=;
+        b=GWJ7kkWZA2Zjn11QZC9RrrRKqySJfrW5pQJQO9uMwhMzyc2vUNZ7L2LMmbUvIML1B7
+         X9SQnNZe2oopfQEdhU3bai0KD4VYqmo2JKarc7Cdyfjgbb/nls0pvtoK7EYD3BeFz/Gt
+         jQrBxaCJAzkjLcn8EowRgOAN8PzbZ6ITLVwKZcTFc0dMXf6kKcsgeAulhWnis7rhIO0n
+         7DBeiYros1ifzz7nVvaZTtkoCyO8AjTdHxUEZWYVcAjF0swoZADL6O8J5t0XDo3eMGnv
+         c/+jP81XqgFCq2LbqQJMFWTMz2hUiy2LULSTP4vnOu+DNViJHHlOMif6/kyq8mp7MDyj
+         79vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777964519; x=1778569319;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sJoGeOymzDzt4BduT12fzk90tICGYXHSXGced9NaYww=;
+        b=K+onRNzo8EdNEv56gHCm+i2SCJtfCM/Y/z2ztllzqpmBkW+aMGkU8PiaDdAtV0Vv8d
+         iDcD8zQb3gH588FF8R10JyQpdhpID/BOenbUhbPOuPbO5GhiybE6GP2Mfi/dgCOJfeMb
+         Q7lRVe5CEuCeGnolkDRFrJO4k1oSfm55hxsEX8TaXElKaf+KXKf/3rKkLY3ZQbhht/Vz
+         OGp0uzaGwq7hYLbMPwQXL9DL0wavXPvuDcT0CMGvEeazdgO/UdMto8N/0/T97rhGlTsu
+         GvOD0B8ks/2FVonX24/fzza6KHx2eS6/sOJO2i4DfMclQ8ifF4tw159xe8Y0d7kdiptQ
+         wImQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/vKAao83Vwom2pU8YzXjj0YdIyhyVyCylcQyLX5PaE1tI0lN99up0QfC9ReC7G2hi1gnvlTRtFP2M=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyX+UkDJdp7aoWNRZMAZ1okeWmqFeLMOCaDJJ3lhvUtmlyhZgsq
+	jVpKerp/kKy+k6aqjTKiQm+ZZvCfagXX5p30oaJkzWSeYnU/stzQq7Td
+X-Gm-Gg: AeBDiesZyppesd6aYjWesjA79FUShTF/xzl3KXI4nJRp7cDwl082Cj0HW/ZHyCQXBFI
+	dB4JpCObGqQqXZHYv/m7P9+XULC0j8xJjM0vpCRGP/eqhFeH8S9rl57yw073yjWBfNpKplcEb7R
+	GdhfjY70cRU876euipbbMwTRwktP8kb49KOljR/6HSFYagaCSsSU3ZcN7h2pY+f+Bm8nedHylxT
+	/Ufp6qm2GiouaFosyveuI7W4612wMVKiu7CMFSdtdnsmq0vlbxOlVaBRvwNv+t8yXvGHzlcNhRf
+	uZY0ErU9uThQ2wfiOT7yAxszzlkmuRdytRWtPhMmsOoAW65AFoCcn1Ap7AlI+r7IfGP3tSWxk7B
+	m4IGd7xb5qxeYvs8RQmGku2rYBdEm+gCm7lKFQtQIE3s3uRUhLbdLdKNGggzS6b5rubAd0yf/j1
+	w0MpEfVtEOsGaXSLk2t9OkqNc=
+X-Received: by 2002:a17:907:e849:b0:ba3:961e:d5e4 with SMTP id a640c23a62f3a-bc3d0652a8bmr153046066b.1.1777964518946;
+        Tue, 05 May 2026 00:01:58 -0700 (PDT)
+Received: from pc ([196.235.252.38])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bc20825b337sm188510066b.23.2026.05.05.00.01.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2026 00:01:58 -0700 (PDT)
+Date: Tue, 5 May 2026 08:01:55 +0100
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: temperature: tsys01: fix broken PROM checksum
+ validation
+Message-ID: <afmV4-FD1rjtGrRG@pc>
+References: <20260428152239.66213-1-salah.triki@gmail.com>
+ <afDXJLGYzF8uwaj5@ashevche-desk.local>
+ <20260429103304.654ed9a0@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,30 +79,55 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260504030408.105762-2-limiao870622@163.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260429103304.654ed9a0@jic23-huawei>
 
-On Mon, May 04, 2026 at 11:04:06AM +0800, Miao Li wrote:
-
-> On the Inspur HS326 laptop(which integrated with HiSilicon M900
-> processor), if the STK3311-X chip's PS interrupt is configured
-> in "Recommended interrupt mode", the interrupt cannot be triggered
-> normally after waking from suspend or hibernation.
+On Wed, Apr 29, 2026 at 10:33:04AM +0100, Jonathan Cameron wrote:
+> On Tue, 28 Apr 2026 18:49:56 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 > 
-> In this case, neither disabling and re-enabling the interrupt nor
-> resetting the PS threshold register can restore the interrupt to
-> normal operation.
+> > On Tue, Apr 28, 2026 at 04:22:39PM +0100, Salah Triki wrote:
+> > > The CRC check function was incorrectly using only the first word of the
+> > > PROM (n_prom[0]) instead of iterating through all words. This caused
+> > > the driver to fail probing on most devices due to incorrect checksum
+> > > calculation.
+> > > 
+> > > - Fix loop to use the correct index n_prom[cnt].
+> > > - Ensure all bytes are summed as per the datasheet specification.  
+> > 
+> > ...
+> > 
+> > >  	u8 sum = 0;
+> > >  
+> > >  	for (cnt = 0; cnt < TSYS01_PROM_WORDS_NB; cnt++)
+> > > -		sum += ((n_prom[0] >> 8) + (n_prom[0] & 0xFF));
+> > > +		sum += ((n_prom[cnt] >> 8) + (n_prom[cnt] & 0xFF));
+> > >  
+> > >  	return (sum == 0);  
+> > 
+> > This change makes more questions than answers. How had it been tested,
+> > if tested at all? (This question is to before and to after, the commit
+> > message is also unclear about what datasheet says or the real field
+> > testing gives.)
+> > 
+> I'll guess first word of the PROM is typically 0?
 > 
-> If the interrupt is disabled in suspend() then reset the PS threshold
-> register and enable the interrupt in resume(). This resolves the issue.
+> The datasheet indicates that it exists but then says absolutely nothing
+> about what is in that word - unlike all the others that are documented.
+> 
+> To me the fix looks right (based on the datasheet) but absolutely this
+> patch description should make that clear if this isn't tested on hardware.
+> 
+> 
+> 
 
-Like Jonathan said, this should be a fix, otherwise the ordering
-of the patches in the series is wrong (and this should be actually
-the last one in the series).
+Thank you for looking into this and for your clarification.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Indeed, the code audit reveals that the loop index is ignored, causing the
+driver to process only the first word repeatedly.
 
+I will send a v2 with a more detailed commit message explaining that this
+fix relies on the datasheet analysis rather than physical hardware testing.
 
+Best regards,
+--
+Salah Triki
