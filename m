@@ -1,171 +1,103 @@
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DE901E1024
-	for <linux-iio@vger.kernel.org>; Mon,  4 May 2026 21:46:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 109FA27B34E
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 00:26:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777931176; cv=none; b=utE9HCsBK6X7y35d12+5HdC/kvBCfXg3GUKQs/AJkBDQnXd3Iug7kJUf7kYFXZQr7WvfIlpsVqLo8Ix3WI260DyA2x3sRNBUOBtma4IJpGDSm96pvBWK++iNAbfc2mwfndB6JFiUQ+yY3UIjL7EJUGoWCdTgkGOmO7gdz71uUq8=
+	t=1777940764; cv=none; b=o+J7+nhEVxgrwzbkyeAD6y3VaTIMmIj1mQ0bM0Xyv4aW+YbSby0Rz5wwKlGbhPoZqWfGNm58WDBb9A+9qeAxChC+k9hKKq+IMy36C0+U7ezvOzyAioPBIKLsrHe6Yi/iWafXxo5HwWImW5AUbwvOLvdaE0boDSH9PIBdYobZAR8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777931176; c=relaxed/simple;
-	bh=7eXjb+FFIC2RsLP+zS+W30CRETMB2hU2C0+NvqiesAU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=jlTHalq+fav51zu3UaAb+mzxI8ZnELrRFTUcqSKBZIkQwBeLaseMjdEFPtkiwmkw5VU9aGwusz4x+XYH7wgOhW3DX9g7A5R1BqEsJHcmd8QYGnYedLkkj/tB6oHRrPZpVx1vjHXRUMfptWBrT77VmixyyEabOKYmd/k5ic3CXR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nXZS5wGN; arc=none smtp.client-ip=209.85.167.181
+	s=arc-20240116; t=1777940764; c=relaxed/simple;
+	bh=X115XF/LafrmdkHmbl4MoI4m0/kJFbRUnh/JSEI0EkI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dbIhPejZgw0r1IwjLZvae1Ob7rA2ojUO6YTNkP3iOMz05zhWRLs79ZJmY8ybkcAXCOJbrneENSVL/9XR6Rrj5Xtggwt3ntr4Wf1oWxXW1OziRNfsUHDKZTX+OvRF0ORiCDtFT6DPeqWLPiR2B9RZHsVYliVawKftKQ0wXgTXJqM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=km7aIOwv; arc=none smtp.client-ip=74.125.82.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nXZS5wGN"
-Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-47c6f914617so1837596b6e.1
-        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 14:46:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="km7aIOwv"
+Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-2ef84d016d9so6845147eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 04 May 2026 17:26:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777931174; x=1778535974; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=eUD9DeuD9wPNQm64sgjZ1QoOElmrAVGf/IwiBojeS0s=;
-        b=nXZS5wGN7MYdC6U+pMakmF1sjmFw4TZ/jprSut2vj+nTZeVSB3LyA2dZxv/QnHnX1B
-         4SxYXNmKxCcRAK2S1WAqYYk8DT9lpF+ytXSQV+4bIP2gL8HzTcGhJ5cQEvVB3HryxQBd
-         /EmmySBNUTn1fJAGmUwvTr0v/ZLHVixO2aQ63It0dT7w6mkWyPHNZ5b9ZRKvRQMHTOrh
-         nQcKrGFGmsnqC9s29BkmtZPrIapsWNez0WqSdaAUrSfvzhrB8bY6iAWmpc0aUm5nMpn9
-         ROzmyy2V8SMQrzliTsDUPPPSJ+HKvB96QjSTRLaiXj6WXGXeCsKLzuia8kzh8GQiOpzA
-         1A2w==
+        d=gmail.com; s=20251104; t=1777940762; x=1778545562; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=eykFpQgFUZeLAatgtqrYUzE0cfRpZQld9KUP5h9cwA8=;
+        b=km7aIOwvRJimuODyh8v8ZmY8xSZxrYE41COs/OoPIOi45iHzd0PLl9zAsmynqGob0b
+         JB4L6vX13g2ZtEeaKw8G5OIexWorBWgpniOEW25i3rEbj2+zkV13Dx2M66XNaX0fephf
+         I95P2pFjXZe74pIkzz1HJZX3EPtqJ2bPWrTIX7ev1XocqyYWAP/1LrLXZL2i8CDymDZn
+         hfr9EOx3iGfthaxcNRcBYgtOXXsbSPZl0dMnOlAGjmTGLRcXe4uVu8XbcUYT7up4aE3I
+         WHe3y9zYhG0ZwiR3ZVu4jVuWpokAwUAvZNRc3/8XDYCrtADPFb9AtSAeqe8VH+MJUuOC
+         YJeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777931174; x=1778535974;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eUD9DeuD9wPNQm64sgjZ1QoOElmrAVGf/IwiBojeS0s=;
-        b=d851ORj5nip4pXw31ugvjLRuiyVmPbCXN62/rWnmuaE21k4z44TkRkenfDxk4qTz7m
-         Z4jJWrzoM3vNu5U9v5OrtC4ERcRoBwudhVoTwQqo1ZjH+eAe6Nnr/kPkuGoMJ97RsgXB
-         xMak+vOF61INz9fEMTSMTztM5kGO3sKFvgJS0OH7tPNiAR/WiO9+Lxx80Ko25OxcJZoU
-         GA0Guw8YcgmBbHuBxIwNoW6ARS6okItq0/VNt9h9/fVu53i9pFYSHkon0+ifXRrOJEZL
-         1QkeISmC1X6HVMVScL108Z3qxEAUMsyaOsG8/bkHzBOOnDVzL19SwPXblaNuWLjZKDpB
-         DkYw==
-X-Forwarded-Encrypted: i=1; AFNElJ8Ddocoq54EmcrroPAaQpzw7QdKnJCevRwXuWu4rAs1r1BDLMJxafaQjp6skV9jsRhMuwoJy1danQw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwkcwmY8VJGnIvglX2r7TCrFoOirheJa24NH2M4EcCd/ZLhscgU
-	lUjAPwxX2kxRhZi5xUqwvMUrAZ+5A0LMpOJRw8PIXTy6UDXl4o6M2cTP
-X-Gm-Gg: AeBDiet++RaOC9YDY2ka70WjzuFiOrZblYlARdIbcOoPgreJWIsYjFYeC2PEQYdE8Fn
-	AV/Ogx+14ozItp4XD8NLNgUIdGruu4au2R6BQfio/Dbl/CBzYMyGk82lApkMpP2UmIM77qMsYCE
-	bNvLXigFudTjPDmeoGrcyS4upToJQoJbkc8K1ONkkVYrqgUDeMZmC2uDBOyIj6A1A9TXV08PFFB
-	k/xdeTirSUfyb5bLlx4M/7//qJ5/XUjUBk2EBf0nAk0Rz26FdkQbunNMgh4XYNBuXV28tVf5QMJ
-	fYqzi/93yw5dmG/hLneqJ2ID+u9HNuWwsQFdBRWpq0OLFKkikp64p9wspQjntw8UYc296VM2cJs
-	+ChzUGiy6K5pchZ8lQYWXhWhi0N6v1VMtMAwAmXg9tbjtbbL1SE5xOMgF/0lOd4PQusn3A/EflJ
-	hArM72/or5BKkMIpZ2rbNUW0Bs+MopBQx3IlQ46wzZPqZUGob1U4uSMpPtR9mlTJigavqJe5JBF
-	T89kDM=
-X-Received: by 2002:a05:6808:199f:b0:479:ac7d:6d91 with SMTP id 5614622812f47-47c892a6a6amr5268710b6e.39.1777931174448;
-        Mon, 04 May 2026 14:46:14 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-47c763b33c1sm7439845b6e.1.2026.05.04.14.46.13
+        d=1e100.net; s=20251104; t=1777940762; x=1778545562;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eykFpQgFUZeLAatgtqrYUzE0cfRpZQld9KUP5h9cwA8=;
+        b=WbVVhQts6BimGJKOblRyvrv+DB6uPxNDyZvblUVHqIL5iWoclCHoZ01ypkO1pYYtK0
+         050axPYhI8zUM9j1Cb6IcgpNxBMIT8zDWyKZYqCz05JrCkNmPzdY7jde69AFWZcUarHG
+         yhoyumy2kLM9pIAtZ7IE8HwrX3Pmu0eAaKrRvWWpOiE0Chw2ZQ7mTNj8/BsJVH45cTFI
+         4kqeDnNp+aY0z8/LVdmyfFHzs10BEUAQbmRzzMXEHz92S3uCdYgnBtWNrDKiIY8pbgjg
+         9qRz2KzdGynN3YXyr4jf6MMZsijKgJenGCoLwgr1SLBh/2H7pvZOwJ5Uj324UW8VrAoL
+         0uKw==
+X-Forwarded-Encrypted: i=1; AFNElJ+2lBMH1RTgf3A0u5kT0uABvfW9kBfdZkDesA3DFuEXB65Yusv3PfLvuGec7f6VnTDo59zF5tH+3Q8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyefrG32RE6uyHII2y5IdUFXlBuLTzkCJIA9YPnmECxik4hGIIu
+	niHEu9cRmtBGVoRV0WBcQ9FdtYrtoCPqR9DrEsGT30H1DkequLnDFNIZ
+X-Gm-Gg: AeBDiet/5kHhTpc84U3eItLlQcwitYgg7sKyI32eptpJehHIUyYJ0EC43hn+iSwM9Ae
+	rvxcLx8wjLAgGA7AEhROSehPQPCGaXYNgIqGHZ/2gBmjvdZgdoJpT4bTwhMEQGzjK00B/sD/UIF
+	+ebHPIu/+ey6biCgd2es6C1TapyqWGClkWF/vENX6qs3DHNhV9FIB43eQv8NNlqVSwreLUBKZkq
+	jyjZd8kQlAKJrRjPVfL2XdPkb5zqc8xZ70GK5wvolIitSyfD1jtij7PM5YNYNQCB/zGNt/wX9Ei
+	VzzEHoPXDlRDyfHktIih9TnuPdMQi94rkZkC7LPLNMyrUigStODMoF96Kcq0y9Z56PuO1W/nlxB
+	0lJ2RSGhAPGIswasELerANgjXvZmr8cZYoj8nqAry9MbQ522k/8YWDOoLSzXb8qT364VUkPFN5l
+	/xNFx8VHesXf3lzddlB1cXRsMn6Fmfe0Ys0YGKOaFs/oFdf/Sv8hU841vhGAzFb0aERGLIQ+raK
+	YU+FlT/llAnlA==
+X-Received: by 2002:a05:7300:a18a:b0:2c5:60d0:701e with SMTP id 5a478bee46e88-2efb79cc45amr5796129eec.3.1777940761972;
+        Mon, 04 May 2026 17:26:01 -0700 (PDT)
+Received: from google.com ([2a00:79e0:2ebe:8:5b87:9b19:32e2:2981])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2ee3c05dc28sm17470773eec.30.2026.05.04.17.26.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2026 14:46:14 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: salih.erim@amd.com,
-	conall.ogriofa@amd.com,
-	jic23@kernel.org,
-	michal.simek@amd.com
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org (open list:XILINX AMS DRIVER),
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM/ZYNQ ARCHITECTURE),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] iio: adc: xilinx-ams: Replace spin_lock() and unlock() calls with guard(spinlock*)()
-Date: Mon,  4 May 2026 16:46:12 -0500
-Message-ID: <20260504214613.121283-1-m32285159@gmail.com>
-X-Mailer: git-send-email 2.54.0
+        Mon, 04 May 2026 17:26:01 -0700 (PDT)
+Date: Mon, 4 May 2026 17:25:58 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>, Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Subject: Re: [PATCH v5 0/4] ti-ads7950: fix gpio handling and facelift
+Message-ID: <afk48YT55Y89Gq0J@google.com>
+References: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
+ <20260412193856.1300770b@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260412193856.1300770b@jic23-huawei>
 
-Include linux/cleanup.h to take advantage of RAII macros.
+On Sun, Apr 12, 2026 at 07:38:56PM +0100, Jonathan Cameron wrote:
+> On Sun, 05 Apr 2026 21:39:22 -0700
+> Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
+> 
+> > The original reason for this series is to make sure ti_ads7950_get()
+> > returns result in range [0, 1] or a negative error code to comply with
+> > gpiolib requirement.
+> > 
+> > During review David noticed the fact that the function also clobbers
+> > gpio state. Fixing that lead to adding cleanups using guard() and devm.
+> > 
+> Applied to the testing branch of iio.git. I'll rebase that on rc1 once available.
+> 
+> Thanks for persisting with this. Indeed a nice facelift ;)
 
-Replace spin_lock() and unlock() calls with their RAII macro
-counterparts. This will help modernize the code and increase readability.
+Jonathan, is there anything else you need me to do?
 
-Remove "flags" variables where spin_lock_irqsave() has been replaced
-with guard(spinlock_irqsave)()
+Thanks.
 
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
----
- drivers/iio/adc/xilinx-ams.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-index 124470c92529..2b98f94d90bc 100644
---- a/drivers/iio/adc/xilinx-ams.c
-+++ b/drivers/iio/adc/xilinx-ams.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/bits.h>
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/devm-helpers.h>
-@@ -414,18 +415,15 @@ static void ams_unmask(struct ams *ams)
- 
- static void ams_update_alarm(struct ams *ams, unsigned long alarm_mask)
- {
--	unsigned long flags;
--
- 	if (ams->ps_base)
- 		ams_update_ps_alarm(ams, alarm_mask);
- 
- 	if (ams->pl_base)
- 		ams_update_pl_alarm(ams, alarm_mask);
- 
--	spin_lock_irqsave(&ams->intr_lock, flags);
-+	guard(spinlock_irqsave)(&ams->intr_lock);
- 	ams_update_intrmask(ams, AMS_ISR0_ALARM_MASK, ~alarm_mask);
- 	ams_unmask(ams);
--	spin_unlock_irqrestore(&ams->intr_lock, flags);
- }
- 
- static void ams_enable_channel_sequence(struct iio_dev *indio_dev)
-@@ -1060,9 +1058,8 @@ static void ams_unmask_worker(struct work_struct *work)
- {
- 	struct ams *ams = container_of(work, struct ams, ams_unmask_work.work);
- 
--	spin_lock_irq(&ams->intr_lock);
-+	guard(spinlock_irq)(&ams->intr_lock);
- 	ams_unmask(ams);
--	spin_unlock_irq(&ams->intr_lock);
- 
- 	/* If still pending some alarm re-trigger the timer */
- 	if (ams->current_masked_alarm)
-@@ -1076,16 +1073,14 @@ static irqreturn_t ams_irq(int irq, void *data)
- 	struct ams *ams = iio_priv(indio_dev);
- 	u32 isr0;
- 
--	spin_lock(&ams->intr_lock);
-+	guard(spinlock)(&ams->intr_lock);
- 
- 	isr0 = readl(ams->base + AMS_ISR_0);
- 
- 	/* Only process alarms that are not masked */
- 	isr0 &= ~((ams->intr_mask & AMS_ISR0_ALARM_MASK) | ams->current_masked_alarm);
--	if (!isr0) {
--		spin_unlock(&ams->intr_lock);
-+	if (!isr0)
- 		return IRQ_NONE;
--	}
- 
- 	/* Clear interrupt */
- 	writel(isr0, ams->base + AMS_ISR_0);
-@@ -1099,8 +1094,6 @@ static irqreturn_t ams_irq(int irq, void *data)
- 	schedule_delayed_work(&ams->ams_unmask_work,
- 			      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
- 
--	spin_unlock(&ams->intr_lock);
--
- 	return IRQ_HANDLED;
- }
- 
-
-base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
 -- 
-2.54.0
-
+Dmitry
