@@ -1,160 +1,259 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8668417A31E
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 14:13:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0164F48034A;
+	Tue,  5 May 2026 14:28:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777990431; cv=none; b=NVGk4fPErTbJXWCTYNtrIitOV82QxV4t+RmMMeK4xt/k2ehuam7E/xIgRztQBkXrnuWP0r891Pq4Ae3pxapATy+1z0vcNrJw7KRUabGLdTaOU31kLOpMTlXYhbYyrpLZVVgKc7b+27+hqIzZhv9t4yw58CNuNH4ALluxub0ZCEg=
+	t=1777991322; cv=none; b=MnCLDb5q+AHVBVNUWB94yiu++6MJF8qAH159OOx9+WMQyBn9KHw2V9qc2GP46FcSNH2Adio2lqLv3dS3C8TuXuMi2Gq3YIru58HpbPw1zlpWVp0SU38feAIhZZLAt63wuoKrQRj4VwYXoLaqyEKusH0dgkmrmVmZ8VJo2/be/Jw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777990431; c=relaxed/simple;
-	bh=pDXZxZP+Wtx3FCl39AqFXXHLJLhZp/XrLD/0Yq+JryI=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fbjTMzOP9akrH8esdZ7fRgJM4DgM5W7RYxfCFacrjvDCrmAOcv38CPwYg0sWb/hGe9SBRbw5be/hU4+z+azo/DXMB5kEOl4dmPj9Q7X2L/tquGCvWZNBlkzqdwbBxJEkvpqp57oKBgIqFH0g111ovBGCfIx+JoXS0/gKIX0oRbI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=svUjQGE5; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777991322; c=relaxed/simple;
+	bh=4J9jdu5Gyf0w3Bh8XkBSArTQNkrTtxNjqTRAPGsApHw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZTV/F8i3Dvlm827IYh1lilJpgz0FBiGESZi/vhdgTXWzLP+RzWaDiwau8lyGI3POQDH7T5rLg46qk4+OBcPi2wUDhQMWdijouC73zOv+ValLq0JiTX6YKln5jHAK6t6NU19lKR8lGafzH7zntH8Q8AlEfPLtzCSpNOJGQ82WHAs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eWyp4N51; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="svUjQGE5"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-43fe608cb92so3159884f8f.2
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 07:13:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777990426; x=1778595226; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=CJUTUc037pTNpw0w6Rr8BMk5S/5WPCD7ofTDRT03+Ac=;
-        b=svUjQGE5YsZKXPuf5Geo/BGfmVtLwEGumOPxahici/uMc+X9o9u1W8cr5mdZpw73M7
-         msDOkbErsUnawAU8smcke58mZNbZyCYbEYCO3e5yT1x4g2NszO99WIfKk7k0wTcoTQ5u
-         jaYUt+N/mqhVW4c/Uaui3IwFGu30f+VGCRBYSStybDCKyvOvrmxTOto6G1MfoC3mfhKX
-         b4mB4eJKHu7jj1eHLXzz09XNX5UGI+WpYWFhx+ECXsU9t1S+Is6ES7JSyYEa2fbYEs/v
-         tJ3pDYuczl3mG58S6H21rWUhYQ9oxIQCSMAYKiN5SX2O9k06YvDKZo5bpsZBLXskjesV
-         CFcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777990426; x=1778595226;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CJUTUc037pTNpw0w6Rr8BMk5S/5WPCD7ofTDRT03+Ac=;
-        b=dG3xHLcdy6jnidNaLnA4K5piQ5/pl0IAWHTapzaTAyE9cSplZI/IIcOCp7x7qXfBgm
-         zHO08vmqfJzbS8F9Ot3bVuLNvUhpghRJ9tM1RrvhnjhHKsifJi6HjGAqkNT/n5WdHj2O
-         a32xDKnG8iGyMpw3GavhTCkx9hF5DrS63osVX8jaUXFCd5K94zXQ9p3+j0F5WXy+fiMD
-         7TOl9NbLWd3gqVJQ6aVTcwifubQeNHRQWbnyz+47iJebUDGIrtY72IBPjileKSQvWlhW
-         3XuEff2hCtuoTNeQyXKUGv+op1zXZ5v/GlqQ37uBueb4t2cUP5/TmOVOW3rT8Znk9pRR
-         PVGw==
-X-Gm-Message-State: AOJu0Ywuqeu4OeNJBVC4tJZzIXE9fb76kuefA1gAdILspf90akBjcljV
-	ALBa0XOEKahJvIlpdHPLJRZsQBR9MgJaSLe70cy+UdFx4PwbWUAjNBhB
-X-Gm-Gg: AeBDiesllbARm32LGfX633cmQM9w4CkieUoF5oRc1LhNHSyvWbx1hJF8jYLVGuuHdLF
-	+0Cd4b7aeoPLahL1Zf5Kz99rV72qmCU8LmB9DwdCfsixU54o207wc+uDG9nuUp+h5UXug/9QWfF
-	KAOD6iDqdBuS1cAH0LiUCXpR5o1zWNAqMziMnTdX2jAb/RgJtKjBDeFyft/iqtsZCu+MjIAdi0H
-	1ZrnVXkbJ2PBxdgS10Y0Wu12MSfTDINKoPK/CXHpEM9SvO1KfLR7YZ+yqTAM3IMURWyS3hvriga
-	LHMAtekIVQzUNo8Q+a5QoUmYGpaeblO8CHT+E1lCcZVrJVU0X1CtSwThQzJP3z6Ni1fwDS3PbJo
-	QKWFQGmB4dctd0Xx0FTW330ytTdSs1zGVJzdJH0QBhmjsyK4Jcvg7M+KZ1Y77gfOrUrPwB10H5K
-	RshzKizq/0M0Q2GDfKKQUg49T5k30uYh0UVsvqeST8L78LWmX/tGUz0vJrpEhFeKy3+g9akC5o6
-	IjmECQlY196G6rFLbAwHPUsN1CpU211qZCAi2FRK8kYRIFy9+g2zd2iJIOUKvOALRtTbOI=
-X-Received: by 2002:a05:6000:24c9:b0:43e:b0b0:629a with SMTP id ffacd0b85a97d-44bb6205f79mr27216431f8f.34.1777990425565;
-        Tue, 05 May 2026 07:13:45 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45052a488d8sm4745495f8f.12.2026.05.05.07.13.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 07:13:44 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 5 May 2026 15:13:43 +0100
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	rodrigo.alencar@analog.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
-	Greg Kroah-Hartman <gregkh@suse.de>, Michael Auchter <michael.auchter@ni.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v6 09/12] iio: dac: ad5686: add helpers to handle
- powerdown masks
-Message-ID: <lnoaqgoxwvnskoklp2ucjivgkbbxezm2gps62553kouhmmgkji@dozbs2qlcckn>
-References: <20260505-ad5686-fixes-v6-0-c2d5f7be32be@analog.com>
- <20260505-ad5686-fixes-v6-9-c2d5f7be32be@analog.com>
- <afnt7awu2vRI8JTh@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eWyp4N51"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7A1C2BCB4;
+	Tue,  5 May 2026 14:28:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777991321;
+	bh=4J9jdu5Gyf0w3Bh8XkBSArTQNkrTtxNjqTRAPGsApHw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=eWyp4N51KWEvmGcmIiD+wdkIo/2a7hxfaiKYvuvbNgdFRMSimUG5Xx4AvXjkfMjrM
+	 1kHDktWqPm+NkGg82m2OUC/bXQtKO1AONXZmYrT9wko+4ut1hKxj84/GCEGBeXO2M3
+	 lTvYlSsSrZUKMXKnrBdtusereUFK1FyhLc/iDfIEy9CoJLy9awLt78WnOj4lT6Dwei
+	 pLCKNysuFI2QJUhSNtiYoiDanZIMyUJHDCkqw2MRPEW1hjH0VoQNK1SP9d5H5fqNx8
+	 sXV9Z4a3TUWq/z31DKKYAvECkFqPPtXAtsX260ErX8QajZ3a36FIk9zU0kfdfTwA/M
+	 /OOfj193MVWdA==
+Date: Tue, 5 May 2026 15:28:28 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v9 4/6] iio: adc: ad4691: add SPI offload support
+Message-ID: <20260505152828.61f40411@jic23-huawei>
+In-Reply-To: <20260430-ad4692-multichannel-sar-adc-driver-v9-4-33e439e4fb87@analog.com>
+References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
+	<20260430-ad4692-multichannel-sar-adc-driver-v9-4-33e439e4fb87@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afnt7awu2vRI8JTh@ashevche-desk.local>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 26/05/05 04:17PM, Andy Shevchenko wrote:
-> On Tue, May 05, 2026 at 01:35:10PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> 
-> > Add ad5686_pd_field_set() and ad5686_pd_field_get() helpers to cleanup
-> > powerdown mask control. Define AD5686_PD_* constants, e.g. AD5686_PD_MSK
-> > to hold powerdown mask value for a single channel. AD5686_LDAC_PWRDN_*
-> > macros are replaced by AD5686_PD_MODE_*, because they are unused and the
-> > LDAC feature for async load of DAC channel values is not related to power
-> > down control.
-> 
-> ...
-> 
-> > +static inline void ad5686_pd_field_set(const struct iio_chan_spec *chan,
-> > +				       unsigned int *pd, unsigned int val)
-> > +{
-> > +	unsigned int shift = ad5686_pd_mask_shift(chan);
-> > +
-> > +	*pd = (*pd & ~(AD5686_PD_MSK << shift)) | ((val & AD5686_PD_MSK) << shift);
-> 
-> Just noticed that semantically this is more like _field_modify().
-> Besides that I would consider adding a shifted mask variable or definition
-> 
-> 
-> 	*pd = (*pd & ~AD5686_PD_MSK) | ((val << shift) & AD5686_PD_MSK);
+On Thu, 30 Apr 2026 13:16:46 +0300
+Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
-We cannot do this as the mask would depend on the shift too. AD5686_PD_MSK is
-being defined with no shift, so that any shift needs to be applied at runtime.
- 
-> > +}
-> > +
-> > +static inline unsigned int ad5686_pd_field_get(const struct iio_chan_spec *chan,
-> > +					       unsigned int pd)
-> > +{
-> > +	unsigned int shift = ad5686_pd_mask_shift(chan);
-> > +
-> > +	return (pd >> shift) & AD5686_PD_MSK;
+> From: Radu Sabau <radu.sabau@analog.com>
 > 
-> 	return (pd & AD5686_PD_MSK) >> shift;
+> Add SPI offload support to enable DMA-based, CPU-independent data
+> acquisition using the SPI Engine offload framework.
 > 
-> accordingly.
+> When an SPI offload is available (devm_spi_offload_get() succeeds),
+> the driver registers a DMA engine IIO buffer and uses dedicated buffer
+> setup operations. If no offload is available the existing software
+> triggered buffer path is used unchanged.
+> 
+> Both CNV Burst Mode and Manual Mode support offload, but use different
+> trigger mechanisms:
+> 
+> CNV Burst Mode: the SPI Engine is triggered by the ADC's DATA_READY
+> signal on the GP pin specified by the trigger-source consumer reference
+> in the device tree (one cell = GP pin number 0-3). For this mode the
+> driver acts as both an SPI offload consumer (DMA RX stream, message
+> optimization) and a trigger source provider: it registers the
+> GP/DATA_READY output via devm_spi_offload_trigger_register() so the
+> offload framework can match the '#trigger-source-cells' phandle and
+> automatically fire the SPI Engine DMA transfer at end-of-conversion.
+> 
+> Manual Mode: the SPI Engine is triggered by a periodic trigger at
+> the configured sampling frequency. The pre-built SPI message uses
+> the pipelined CNV-on-CS protocol: N+1 16-bit transfers are issued
+> for N active channels (the first result is discarded as garbage from
+> the pipeline flush) and the remaining N results are captured by DMA.
+> 
+> All offload transfers use 16-bit frames (bits_per_word=16, len=2).
+> The channel scan_type (storagebits=16, shift=0, IIO_BE) is shared
+> between the software triggered-buffer and offload paths; no separate
+> scan_type or channel array is needed for the offload case. The
+> ad4691_manual_channels[] array introduced in the triggered-buffer
+> commit is reused here: it hides the IIO_CHAN_INFO_OVERSAMPLING_RATIO
+> attribute, which is not applicable in Manual Mode.
+> 
+> Kconfig gains a dependency on IIO_BUFFER_DMAENGINE.
+> 
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+In general have a read through Sashiko reviews once they come in and
+if you agree with them reply to your own patches to say what you are
+changing.
+https://sashiko.dev/#/patchset/20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87%40analog.com
+No perfect but another one in here is something I missed completely.
 
-Same here...
-
-> > +}
-> 
-> ...
-> 
-> > -	if (readin)
-> > -		st->pwr_down_mask |= 0x3U << ad5686_pd_mask_shift(chan);
-> > -	else
-> > -		st->pwr_down_mask &= ~(0x3U << ad5686_pd_mask_shift(chan));
-> > +	ad5686_pd_field_set(chan, &st->pwr_down_mask,
-> > +			    readin ? AD5686_PD_MSK_PWR_DOWN : AD5686_PD_MSK_PWR_UP);
-> 
-> TBH, I would leave the if-else untouched, only branches to change.
-
-What would be the difference compared to this:
-
-	if (readin)
-		ad5686_pd_field_set(chan, &st->pwr_down_mask, AD5686_PD_MSK_PWR_DOWN);
-	else
-		ad5686_pd_field_set(chan, &st->pwr_down_mask, AD5686_PD_MSK_PWR_UP);
+A few of them called out here but please make sure you've addressed them
+all or established them to be false (which happens!)
 
 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+> +
+> +struct ad4691_offload_state {
+> +	struct spi_offload *offload;
+> +	struct spi_offload_trigger *trigger;
+> +	u64 trigger_hz;
+> +	u8 tx_cmd[17][2];
+> +	u8 tx_reset[4];
+These two buffers share cachelines with trigger_hz. That can
+be written via sysfs in the middle of a non coherent DMA transfer.
+If it is you may loose the written value when a post transfer
+flush copies back a stale cacheline (with the new data in tx_cmd
+/ tx_reset).  These need marking to force them to have their own cache lines.
 
--- 
-Kind regards,
 
-Rodrigo Alencar
+>  };
+>  
+
+> +
+> +static int ad4691_manual_offload_buffer_predisable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +	struct ad4691_offload_state *offload = st->offload;
+> +
+> +	spi_offload_trigger_disable(offload->offload, offload->trigger);
+> +	spi_unoptimize_message(&st->scan_msg);
+> +
+> +	return ad4691_exit_conversion_mode(st);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops ad4691_manual_offload_buffer_setup_ops = {
+> +	.postenable = &ad4691_manual_offload_buffer_postenable,
+> +	.predisable = &ad4691_manual_offload_buffer_predisable,
+> +};
+> +
+> +static int ad4691_cnv_burst_offload_buffer_postenable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +	struct ad4691_offload_state *offload = st->offload;
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	struct spi_device *spi = to_spi_device(dev);
+> +	struct spi_offload_trigger_config config = {
+> +		.type = SPI_OFFLOAD_TRIGGER_DATA_READY,
+> +	};
+> +	unsigned int bpw = indio_dev->channels[0].scan_type.realbits;
+> +	unsigned int acc_mask;
+> +	unsigned int bit, k;
+> +	int ret;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
+> +			   bitmap_read(indio_dev->active_scan_mask, 0,
+> +				       iio_get_masklength(indio_dev)));
+> +	if (ret)
+> +		return ret;
+> +
+> +	acc_mask = ~bitmap_read(indio_dev->active_scan_mask, 0,
+> +				iio_get_masklength(indio_dev)) & GENMASK(15, 0);
+> +	ret = regmap_write(st->regmap, AD4691_ACC_MASK_REG, acc_mask);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad4691_enter_conversion_mode(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
+> +
+> +	/*
+> +	 * Each AVG_IN register read uses two 16-bit transfers:
+> +	 *   TX: [reg_hi | 0x80, reg_lo]  (address, CS stays asserted)
+> +	 *   RX: [data_hi, data_lo]       (data, storagebits=16, shift=0)
+> +	 * The state reset is also split into two 16-bit transfers
+> +	 * (address then value) to keep bits_per_word uniform throughout.
+> +	 */
+> +	k = 0;
+> +	iio_for_each_active_channel(indio_dev, bit) {
+> +		put_unaligned_be16(0x8000 | AD4691_AVG_IN(bit), offload->tx_cmd[k]);
+
+Sashiko makes the interesting point that you are setting bpw to 16 at least sometimes
+and that means the SPI bus will be dealing in u16s. As such the endian swap seems
+odd.  Which also makes a mess if the word length isn't 16 bits. I'm assuming it
+always is. If that's the case hard code it rather than giving impression this
+will work otherwise.  The endian swap probably wants to be unconditional rather
+than only if little endian host.
+
+There is a related question whether the larger words interact with the channel
+endianness marking. I think that should be fine but please check.
+
+
+> +
+> +		/* TX: address phase, CS stays asserted into data phase */
+> +		st->scan_xfers[2 * k].tx_buf = offload->tx_cmd[k];
+> +		st->scan_xfers[2 * k].len = sizeof(offload->tx_cmd[k]);
+> +		st->scan_xfers[2 * k].bits_per_word = bpw;
+> +
+> +		/* RX: data phase, CS toggles after to delimit the next register op */
+> +		st->scan_xfers[2 * k + 1].len = sizeof(offload->tx_cmd[k]);
+> +		st->scan_xfers[2 * k + 1].bits_per_word = bpw;
+> +		st->scan_xfers[2 * k + 1].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
+> +		st->scan_xfers[2 * k + 1].cs_change = 1;
+> +		k++;
+> +	}
+> +
+> +	/* State reset to re-arm DATA_READY for the next scan. */
+> +	put_unaligned_be16(AD4691_STATE_RESET_REG, offload->tx_reset);
+> +	offload->tx_reset[2] = AD4691_STATE_RESET_ALL;
+> +
+> +	st->scan_xfers[2 * k].tx_buf = offload->tx_reset;
+> +	st->scan_xfers[2 * k].len = sizeof(offload->tx_cmd[k]);
+> +	st->scan_xfers[2 * k].bits_per_word = bpw;
+> +
+> +	st->scan_xfers[2 * k + 1].tx_buf = &offload->tx_reset[2];
+> +	st->scan_xfers[2 * k + 1].len = sizeof(offload->tx_cmd[k]);
+> +	st->scan_xfers[2 * k + 1].bits_per_word = bpw;
+> +	st->scan_xfers[2 * k + 1].cs_change = 1;
+This is odd. Add a comment on why if you do want to leave CS active
+after this sequence.
+
+> +
+> +	spi_message_init_with_transfers(&st->scan_msg, st->scan_xfers, 2 * k + 2);
+> +	st->scan_msg.offload = offload->offload;
+> +
+> +	ret = spi_optimize_message(spi, &st->scan_msg);
+> +	if (ret)
+> +		goto err_exit_conversion;
+> +
+> +	ret = ad4691_sampling_enable(st, true);
+There are some questions from Sashiko around whether the offload trigger should be enabled
+first to avoid getting the device into an odd state. I haven't read the datasheet
+in enough depth to check - so over to you to argue one way or the other!
+
+> +	if (ret)
+> +		goto err_unoptimize;
+> +
+> +	ret = spi_offload_trigger_enable(offload->offload, offload->trigger, &config);
+> +	if (ret)
+> +		goto err_sampling_disable;
+> +
+> +	return 0;
+> +
+> +err_sampling_disable:
+> +	ad4691_sampling_enable(st, false);
+> +err_unoptimize:
+> +	spi_unoptimize_message(&st->scan_msg);
+> +err_exit_conversion:
+> +	ad4691_exit_conversion_mode(st);
+> +	return ret;
+> +}
+
