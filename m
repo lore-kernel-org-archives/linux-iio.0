@@ -1,363 +1,127 @@
-Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D3F736215A
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 22:07:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778018843; cv=none; b=p63SUmTfZcVm+H4gf8ADFgdgLUdiC0wIReVWDJKLfDQpHnw6csVVlle74W5e1kHgiBWt6nVFi++Yz+GRfuoPmO4/AGMZbwqQH+zo/48zPZpOPUsBhsoGUfkgSZ//uLQvZuDTsMGAERt9T1U5m6yB9DE+rJUZ3Z2YsROmqXYUbHo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778018843; c=relaxed/simple;
-	bh=lZD7D11CckBI/PKQ7VizyDdDmJE29dmL8JUuxEkEhow=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TJmfZVMo3meeecKm1adZyM6w0otWnD9DOzUqKgaLbPhyui+vajvfWt9pOlxZDbEnArSJz8SPnrxUBosNfWuMdaGs9tr1jBPOU1UDRgRU5+w5iz1ZbvN3TceP+nfA5nARs8BTsndFdRN1WAN/vwn3b8HlrZnKM6qYAlH6B0dN2mE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N8XFJda7; arc=none smtp.client-ip=209.85.161.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDC443E92BD
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 22:12:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.176
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778019152; cv=pass; b=jp7o50r+qyWYnOkPxtGe/LxYWqq4JY6V8jAlFzjoW+LwBdshDn9Mm9+SXIUe6XDGwrcWjnkbnRrhp+qtMrj1bTomyhI14smt2pEzSF0Fh3xoMI91EANT4TXXAbx0lZly8nxHr6k+sfd87g7wn89/uRd4TlJ88zk2Oopo3n1a0ns=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778019152; c=relaxed/simple;
+	bh=kY4md+tk5Sz4Z5tkoWBmzbHTeToa7H+ou9prFoI9CBs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XyEfQf4pL4kTnIYetzBlGKi4AxI7JeFj2zlRTGt/SiyG3lCUUrM5WsGQmYS5JSBIMvXxOxuwNDAjrjdfz5oh/YcE5uvkpbiUYb6rBcf3SfgaCSqRTxpiVw9grgXShgh/TOJGaCJOGGImV2wDa8f7tv/cj5+F/k5F17MEh7MZ4ro=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QbnpXoXd; arc=pass smtp.client-ip=209.85.128.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N8XFJda7"
-Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-682fce74c06so4949077eaf.3
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 15:07:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QbnpXoXd"
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-799001d73bdso52828427b3.0
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 15:12:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778019150; cv=none;
+        d=google.com; s=arc-20240605;
+        b=etZhefH8Av/ZqBtNIwErMqnPlOxQ/mmXBbyBFHxjD4VaE7EIXZ2WBbug/smj63evkt
+         qbmZ4oVcNjwetpg4Daelt7ogFuSG1c+XA5wYK1VRTbSqWItbJwqP2feWZBS4O/tefmWn
+         ncNNqr62rl8OtNJcLJ1L+doAqNX/bDNb9M0d2+WsK5Uyo0tIQhk2I46tu2MFCk8Eb/WB
+         OGOglafCnXePTwVUXxxoEK038UvirnyhCWZ+tI+6wXfhLwGk68A6Nj1BvEM2KhRmp4it
+         Raly2wGQVoZpci6I9XKfFqFtuPfcG1M0uj5/U0x1vUUSdbUkBbB2c1XrbIDSBKra87Zm
+         21kw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=kY4md+tk5Sz4Z5tkoWBmzbHTeToa7H+ou9prFoI9CBs=;
+        fh=9NgpEZoYoc5Ho85JV96zCuyO1yxVqznSYTJsKz/Iajo=;
+        b=JU5VPZc3Us/PGAVruzkQckDAfpE26zhhFaFgYGDJXLN/uJ65a5Tg95H9zTaP53NZ9j
+         28CVVINp2NeYLc/u+8Vh2Im7CUQvkKZNhn/KuKJjvdIUHEadxOcWvURGmWLbarYlh7Z2
+         d0Yuw7IlmiwxUcEUQqr/cZhEWEwpD8OqoBQYWOyPeLBqmBatp0Zpb94C9wvVpu/+uLE9
+         FG+TK4I2eV4niggUun3RbZqch8dlSckGwMaoJvfu6Aa/GZuMVMWH8Af1o69hP26SxF5i
+         uGaSrMFyc9+hBbk0rrL2qUbx++EQvRrC3zIrvisQ+qDaIMjON6vVMDbU8OPkdnWxS3tK
+         dkAw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778018841; x=1778623641; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=n3kzjFemdAtx6Fwcj2vfs9gjIG5kFgwI9kSRgO10wIQ=;
-        b=N8XFJda7aX7r6pOEdi1SYhAbuesNsBODpVD3gN244e5BgN1HbWPwhosqAdU2Kf1DEG
-         agWwpG0WAts1PKYHC9ore1hX9IJmbwhqzLAIsjLT1EFVEoQqLwgeuE2Py24IEY7Pz9P9
-         EPckcQE5He0Bnu4p4gl/FbSZzV9tRuZlIDkll3EOo8QCw2U9MjXDxKyiAnnM9jD2DZij
-         tbYTRqfMG5WuRGYCaV27QKEYUI/wehU6Ow3Z4eifhy5Yl2XZGDUklxgoHcH909Uq7Lzt
-         Y95iPQzKnx9agSEKoVxvGIvDUP1jGpAm/+DjLm/PDGyLKzUDCU/51LFDc9ZcCcdM/TSV
-         wBSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778018841; x=1778623641;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1778019150; x=1778623950; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=n3kzjFemdAtx6Fwcj2vfs9gjIG5kFgwI9kSRgO10wIQ=;
-        b=cksKNifbGfhIqMB5TiklhgDfIcqyt8fLs9VKBhNrCo3Cs6BiGSEZjn4LSa0PREwUuH
-         Gu1RtFQ60NLqBi1n9D8Lk7hxwNZwH8zxljLib2OyTDbChehxYDM9WKP/gBh00rZ4zX4b
-         z+CXBojU+ejQVYpqnBR9FcBCGKoSjP1agqu9L7XCHiU0QOxAMBmuv8EwI3StLL5BRr47
-         aHO3ONrDCzsl/0mrdelm+M8NAFVsBXfUZTQSNwzREY1tctbiZkZxXZXZCJWvXBOdupkV
-         2cbf9/iLy3yS4d7NZ0EqJEFv5U8ji42nXuhiJnrp7zGTJZoGbq5hyBFWgMdnooB8ZgaE
-         oySg==
-X-Forwarded-Encrypted: i=1; AFNElJ/kAf+cfb5DMkYsSwkFZOkOfZ9rWKZWu7rSSjw3FXzhB32+jF5c5ZVe7gcad0uzDFRpsCSkgz+ZyeE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzQ+V5ekIppIsQT4s1CWQtHZvq4vIvMnpS1geYdEuJUI/c7ne2h
-	ArrlNc5PNW6DvVKWPPs4hKiuemZd6D6mwSSp29hOTPR102MwecaiXSkS
-X-Gm-Gg: AeBDieu4XrY7Q8iv7A/7n8u3r4BD2z0mKXm8fIR3DD2Yy+uJrYw+OgPCL88CEldcfZh
-	aK/Ru3YMsBQwVnqUobPmGSLVs5lrxSrbzAfAa5Cg8aByz/hHhaVY2nIqp3jBMX0QflOO+y+GCUh
-	fotVQ137Zbl4LT+Sf6n7BgRnn8+GmI0bFZfreNl3dmpm+NlUitfXudiSXIAmyGeUWSL15FhsL8R
-	1mPRk4Fkkq3/TzWO78cRvM/6BqBQw5gduzb4+1+k6sNppCrBSTd2NS0pDuDk5pbN/NGXEcYUGZy
-	2sZTXM/IBC12+ETDOpD+uhEGUo9ddVb1QdQpht9esohyfMEiIMd/cFgotUONZL/cIuavSeheLvO
-	AeeFDZQr2O6+Y3FmiCl5lJbdLQq93wKXCSNu0zAKNECyOPGpvVvrDYqZNWM/KvoQ6Nn77LfwEre
-	xkWSQADb2Hvv0u8WTIf8tGXAgYQvOhlwUWxLlMVw5ejeWOE8d2WoAvbjG2pA6ji/GA7Ut7ha8nR
-	U59ATs=
-X-Received: by 2002:a4a:e905:0:b0:694:21fa:4ef5 with SMTP id 006d021491bc7-69998cbb3b1mr395797eaf.5.1778018841039;
-        Tue, 05 May 2026 15:07:21 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-43454cbbbd7sm13881595fac.10.2026.05.05.15.07.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 15:07:20 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: jic23@kernel.org
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v4] iio: imu: kmx61: Use guard(mutex)() over manual locking
-Date: Tue,  5 May 2026 17:07:19 -0500
-Message-ID: <20260505220719.44646-1-m32285159@gmail.com>
-X-Mailer: git-send-email 2.54.0
+        bh=kY4md+tk5Sz4Z5tkoWBmzbHTeToa7H+ou9prFoI9CBs=;
+        b=QbnpXoXdhVd/DyAglllBpO0utVSN3UolzWnPa0wTjUU6+Ivkra35ThBJ9+hKBHso8N
+         8SmHCNL9WoWtefJWDoQf6auCRXUm0+uHpTACC8p/vrKNOkCaEAwLgrI6i0M4AS+iT2ds
+         XbpmDQ/q2nqABoBo6q24I9LlDTY8up3Hke3cDEpjlyGMpxTgTKNlc4py29pAUeO7fAz3
+         9IuOR1A5V5yu9y9Y/3whDXrq3KGLWoV7IDvw7652OOlEgU4M73cHwxQnIJaXBodvGfMf
+         Ysly2xWLQpQNNF6Bal6BcTdpUN2nOx+5jfIU0TB1Ud1mlFwwM/f7JAu1djnEe+T49XSi
+         dFEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778019150; x=1778623950;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=kY4md+tk5Sz4Z5tkoWBmzbHTeToa7H+ou9prFoI9CBs=;
+        b=e70ZOsAMVfSxXNh05xlKfcUwRcXTA8JS9fjNFkZyhUxWFWa0fIDL5wZ3G+frPtxSLb
+         wjbI66LYgzEFF1+D2jW98vyVa5VcvZSMER6RM8797RjK9CL/cJmy1ZcK/grk4icY/lEe
+         7L6nlUUFZ4X5M6DbtoIZ5/GSbsNsXYjbzldDaNuiqVxjUT0d7CDsLv7EdOlHTI3DC1je
+         fAvOp2+bnXe7HM8Ev30cyBs1jMjg2HehEuJ8inL68wIaV7wlR7tsV7yEcf06UU+3+2tF
+         RNAJUYgspGrbh0L5sJ+ciwWu6naAwMsNb1PWrurY7pINhBtL0clDDvMEt3u0hxGdj0Hx
+         H63w==
+X-Forwarded-Encrypted: i=1; AFNElJ8eyESKaF5a7mjNCYzSgTBeG0Nl9XCP/lxoSOIBevtkE22hVljEITr8NP+V8mZNl2uNMw6sBA2I0o4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzjjEDf6vGyKi5/SlxIkGfucBFyfWlxBj/1TPQKWRGthBQd9qBz
+	XVX7lqu5kNbqlnba1W7QUoHiF0V/aENXDiSWJlqtn589nh5/RxorBvgF/Ws44uewh4IE9L/vpyX
+	POcN9aR79bgofV+LWX9h673HPiZxpRrw=
+X-Gm-Gg: AeBDievH5xDEEP1UzdIqDVRyFycZJngmPv6dR3J9XUzRcgf4jjgR0A6HRQjrNN4Z+3/
+	xbRQFoiblgs3Y6JluzKomsOa5bU7YxBDDyCuGTQwOLquaMRTUUVt0wtpTwTcc1/V8WAwdDArY03
+	Xf5oXBO9h+txDj7Kl64zWiK7jkqiAf9qUWxOj56MPDFuMHgUEGP4jYftFSEvMO1z4qyb1HFFCDW
+	7A/Pka3sNJawcVUNnN4Uxua7msouw93Jw/zR3fV+vVLDT9lIpkI/N5iErRIj1fHC8MCdPtbZv1p
+	0+RVF4LMZzu6eQs=
+X-Received: by 2002:a05:690c:9a86:b0:799:198d:8c5a with SMTP id
+ 00721157ae682-7bdf5ecebcdmr14542787b3.34.1778019149952; Tue, 05 May 2026
+ 15:12:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
+ <20260505-magnetometer-fixes-v5-3-831b9b5550fc@gmail.com> <CAKqfh0Hz_zc6+7m2ca8uY-kPNs=ttOh=qni7MdrwFwThEx69TA@mail.gmail.com>
+ <CALoEA-xNCjBZ5xdEzEC1zoXL36=Zq5Bfwb0zwP0cU5W0Fs6Spg@mail.gmail.com>
+ <CAKqfh0Hx2Mfb3me2JOQs6hpEKsCexZ9hAuE2fOX1qRdoqg659w@mail.gmail.com> <CALoEA-xyt3S8B1Fb4Qr2GZO1JhoA-bmCEt61ikP-UEf4gnJacw@mail.gmail.com>
+In-Reply-To: <CALoEA-xyt3S8B1Fb4Qr2GZO1JhoA-bmCEt61ikP-UEf4gnJacw@mail.gmail.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Tue, 5 May 2026 17:12:18 -0500
+X-Gm-Features: AVHnY4JTSuSIASuHmoVvhF9DHburZKENfK_nMQcDAPsXUnfI_jYMhIDq6oA-rMs
+Message-ID: <CAKqfh0EEbkOGYQ0-6K7xTTacGGzJK4ksfXf4RAig9TE8A92mOQ@mail.gmail.com>
+Subject: Re: [PATCH v5 03/18] iio: magnetometer: ak8975: replace
+ usleep_range() with fsleep()
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Include linux/cleanup.h to take advantage of new macros.
+On Tue, May 5, 2026 at 4:59=E2=80=AFPM Joshua Crofts <joshua.crofts1@gmail.=
+com> wrote:
+>
+> Okay, now I understand. From a scheduling perspective you're right,
+> it would be less strain. At the same time I don't think that was the orig=
+inal
+> intention - the author probably just slipped a random value relatively in
+> range to satisfy the max parameter.
+>
+> Either way, we should perhaps take this up with the reviewers, as Jonatha=
+n
+> and Andy (and Sashiko) didn't have any issue with this.
+>
 
-Replace manual mutex_lock() and mutex_unlock() calls across the file
-with guard(mutex)() and scoped_guard() where appropriate. This will help
-modernize the driver with up-to-date functions/macros.
+Sounds like a good idea, they'll likely have a better idea of this
+driver than I do.
 
-Remove now redundant gotos and ret variables, as the new RAII macros
-make them unneeded.
+best regards,
+max
 
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
----
- v2:
- - Remove redundant blank line per Andy.
- - Put kmx61_set_mode() function call in kmx61_runtime_suspend() on one
-   line per Andy.
 
- v3:
- - Add dedicated scope for guards.
 
- v4:
- - Fix certain scoping in switch-case blocks.
- - Remove stray ret variable.
- - Used scoped_guard() in kmx61_trigger_handler() instead of guard()().
-
- drivers/iio/imu/kmx61.c | 98 ++++++++++++++++-------------------------
- 1 file changed, 38 insertions(+), 60 deletions(-)
-
-diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-index 3cd91d8a89ee..1f1a695ab161 100644
---- a/drivers/iio/imu/kmx61.c
-+++ b/drivers/iio/imu/kmx61.c
-@@ -7,6 +7,7 @@
-  * IIO driver for KMX61 (7-bit I2C slave address 0x0E or 0x0F).
-  */
- 
-+#include <linux/cleanup.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/mod_devicetable.h>
-@@ -783,7 +784,7 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 
- 	switch (mask) {
--	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_RAW: {
- 		switch (chan->type) {
- 		case IIO_ACCEL:
- 			base_reg = KMX61_ACC_XOUT_L;
-@@ -794,28 +795,24 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
--		mutex_lock(&data->lock);
-+		guard(mutex)(&data->lock);
- 
- 		ret = kmx61_set_power_state(data, true, chan->address);
--		if (ret) {
--			mutex_unlock(&data->lock);
-+		if (ret)
- 			return ret;
--		}
- 
- 		ret = kmx61_read_measurement(data, base_reg, chan->scan_index);
- 		if (ret < 0) {
- 			kmx61_set_power_state(data, false, chan->address);
--			mutex_unlock(&data->lock);
- 			return ret;
- 		}
- 		*val = sign_extend32(ret >> chan->scan_type.shift,
- 				     chan->scan_type.realbits - 1);
- 		ret = kmx61_set_power_state(data, false, chan->address);
--
--		mutex_unlock(&data->lock);
- 		if (ret)
- 			return ret;
- 		return IIO_VAL_INT;
-+	}
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_ACCEL:
-@@ -830,17 +827,17 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
--	case IIO_CHAN_INFO_SAMP_FREQ:
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
- 		if (chan->type != IIO_ACCEL && chan->type != IIO_MAGN)
- 			return -EINVAL;
- 
--		mutex_lock(&data->lock);
--		ret = kmx61_get_odr(data, val, val2, chan->address);
--		mutex_unlock(&data->lock);
-+		scoped_guard(mutex, &data->lock)
-+			ret = kmx61_get_odr(data, val, val2, chan->address);
- 		if (ret)
- 			return -EINVAL;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	}
-+	}
- 	return -EINVAL;
- }
- 
-@@ -848,27 +845,24 @@ static int kmx61_write_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan, int val,
- 			   int val2, long mask)
- {
--	int ret;
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 
- 	switch (mask) {
--	case IIO_CHAN_INFO_SAMP_FREQ:
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
- 		if (chan->type != IIO_ACCEL && chan->type != IIO_MAGN)
- 			return -EINVAL;
- 
--		mutex_lock(&data->lock);
--		ret = kmx61_set_odr(data, val, val2, chan->address);
--		mutex_unlock(&data->lock);
--		return ret;
-+		guard(mutex)(&data->lock);
-+		return kmx61_set_odr(data, val, val2, chan->address);
-+	}
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
--		case IIO_ACCEL:
-+		case IIO_ACCEL: {
- 			if (val != 0)
- 				return -EINVAL;
--			mutex_lock(&data->lock);
--			ret = kmx61_set_scale(data, val2);
--			mutex_unlock(&data->lock);
--			return ret;
-+			guard(mutex)(&data->lock);
-+			return kmx61_set_scale(data, val2);
-+		}
- 		default:
- 			return -EINVAL;
- 		}
-@@ -945,28 +939,25 @@ static int kmx61_write_event_config(struct iio_dev *indio_dev,
- 	if (state && data->ev_enable_state)
- 		return 0;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	if (!state && data->motion_trig_on) {
- 		data->ev_enable_state = false;
--		goto err_unlock;
-+		return ret;
- 	}
- 
- 	ret = kmx61_set_power_state(data, state, KMX61_ACC);
- 	if (ret < 0)
--		goto err_unlock;
-+		return ret;
- 
- 	ret = kmx61_setup_any_motion_interrupt(data, state);
- 	if (ret < 0) {
- 		kmx61_set_power_state(data, false, KMX61_ACC);
--		goto err_unlock;
-+		return ret;
- 	}
- 
- 	data->ev_enable_state = state;
- 
--err_unlock:
--	mutex_unlock(&data->lock);
--
- 	return ret;
- }
- 
-@@ -1020,11 +1011,11 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	if (!state && data->ev_enable_state && data->motion_trig_on) {
- 		data->motion_trig_on = false;
--		goto err_unlock;
-+		return ret;
- 	}
- 
- 	if (data->acc_dready_trig == trig || data->motion_trig == trig)
-@@ -1034,7 +1025,7 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 
- 	ret = kmx61_set_power_state(data, state, device);
- 	if (ret < 0)
--		goto err_unlock;
-+		return ret;
- 
- 	if (data->acc_dready_trig == trig || data->mag_dready_trig == trig)
- 		ret = kmx61_setup_new_data_interrupt(data, state, device);
-@@ -1042,7 +1033,7 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 		ret = kmx61_setup_any_motion_interrupt(data, state);
- 	if (ret < 0) {
- 		kmx61_set_power_state(data, false, device);
--		goto err_unlock;
-+		return ret;
- 	}
- 
- 	if (data->acc_dready_trig == trig)
-@@ -1051,8 +1042,6 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 		data->mag_dready_trig_on = state;
- 	else
- 		data->motion_trig_on = state;
--err_unlock:
--	mutex_unlock(&data->lock);
- 
- 	return ret;
- }
-@@ -1195,19 +1184,18 @@ static irqreturn_t kmx61_trigger_handler(int irq, void *p)
- 	else
- 		base = KMX61_MAG_XOUT_L;
- 
--	mutex_lock(&data->lock);
--	iio_for_each_active_channel(indio_dev, bit) {
--		ret = kmx61_read_measurement(data, base, bit);
--		if (ret < 0) {
--			mutex_unlock(&data->lock);
--			goto err;
-+	scoped_guard(mutex, &data->lock) {
-+		iio_for_each_active_channel(indio_dev, bit) {
-+			ret = kmx61_read_measurement(data, base, bit);
-+			if (ret < 0) {
-+				iio_trigger_notify_done(indio_dev->trig);
-+				return IRQ_HANDLED;
-+			}
-+			buffer[i++] = ret;
- 		}
--		buffer[i++] = ret;
- 	}
--	mutex_unlock(&data->lock);
- 
- 	iio_push_to_buffers(indio_dev, buffer);
--err:
- 	iio_trigger_notify_done(indio_dev->trig);
- 
- 	return IRQ_HANDLED;
-@@ -1419,22 +1407,16 @@ static void kmx61_remove(struct i2c_client *client)
- 		iio_trigger_unregister(data->motion_trig);
- 	}
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 	kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
--	mutex_unlock(&data->lock);
- }
- 
- static int kmx61_suspend(struct device *dev)
- {
--	int ret;
- 	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
- 
--	mutex_lock(&data->lock);
--	ret = kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG,
--			     false);
--	mutex_unlock(&data->lock);
--
--	return ret;
-+	guard(mutex)(&data->lock);
-+	return kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, false);
- }
- 
- static int kmx61_resume(struct device *dev)
-@@ -1453,13 +1435,9 @@ static int kmx61_resume(struct device *dev)
- static int kmx61_runtime_suspend(struct device *dev)
- {
- 	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
--	int ret;
- 
--	mutex_lock(&data->lock);
--	ret = kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
--	mutex_unlock(&data->lock);
--
--	return ret;
-+	guard(mutex)(&data->lock);
-+	return kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
- }
- 
- static int kmx61_runtime_resume(struct device *dev)
--- 
-2.54.0
-
+> --
+> Kind regards
+>
+> CJD
