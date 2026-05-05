@@ -1,47 +1,59 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDCD748BD30;
-	Tue,  5 May 2026 16:15:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A5273E95A3;
+	Tue,  5 May 2026 16:17:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777997738; cv=none; b=TWFOVZzwAibmE8L2RosGh/X0DvF1tR5Wtx90Ijcp8Gz6rdtt6803rp6cArkB2aJW2+t6EKhI/GhoUvVEBnoaWERSlDdpIO5EnNaU9rAIpUXwsI/fSjOnKZ17QseUBen7eiEFeZPQP9wY40OtLY8yGjYR+gBMz/6rvdHd/ASIBKE=
+	t=1777997858; cv=none; b=ClhulN+uJ2ADp8qzuJrT0EtyPZNKv8Dl/5QhtUj+2JIsKh80DD48ELI3xsW5+XBR31rKR/Yg5tM/4EWqhm6bLJQ2PtVTwmh9rQMELiEveV+dkznkeAI/as3H+x9f84gi+Ptpd/oxYo9Hbfvi8behLHG2mMnh2De8sr9pG0BLsnA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777997738; c=relaxed/simple;
-	bh=U9r0lM9QL319w7ggAfBoVETiqwCxEdHZUsK4+OoLP+k=;
+	s=arc-20240116; t=1777997858; c=relaxed/simple;
+	bh=7M3AF7q+dZnICNvL/G6NPLScjPNthj9sH2v2XN2lfbM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=u7FHXl/0HD57ZILr9IM+A4wL4rAykYbgaVEVGDGdbcn5rHnrtnf+RrnE0FIFozyVk/Rrs71a26dnyOpp04aLTZb0qB5EUqCJ6ad5fpFfI8oY0enzsuMjrCTGM8ObYPRIXUAogiYJFPjRlhMwqwsQfswLTBEahRPaq6b6E9pHNU0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=erRYiSis; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=H+CFBoOwCojfsWdpwp7rRUn3PD0ji94k6thcnkQN9vqzbg7Ew1qxa/Bs+bz6KZVikKb3/qUXJ7i3jUggS/GFIxolFvYU+CihC3SNQpnCqh3h+LQSlJ7nvIlejoJvbuQsZenS25hJGLM7chiFbES1lneodPrIso2nWlsEJf7MTzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b0eAoqAG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="erRYiSis"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27006C2BCB4;
-	Tue,  5 May 2026 16:15:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b0eAoqAG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBDB0C2BCB4;
+	Tue,  5 May 2026 16:17:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777997737;
-	bh=U9r0lM9QL319w7ggAfBoVETiqwCxEdHZUsK4+OoLP+k=;
+	s=k20201202; t=1777997857;
+	bh=7M3AF7q+dZnICNvL/G6NPLScjPNthj9sH2v2XN2lfbM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=erRYiSis+yvWdejzrlmhbEQ/gb+3M0ziCjtyyG8bEUarcDsGqHUvtxahvsLaXouLk
-	 dHBZsIiOAfDL0BYmgXke3xO1PJ7CZJJ2QB7195j4nOfSzg+KkfaosXahWd9+/QTqPV
-	 30Aqd3W244kEwe1fTRo2Lf8TC2B9uI+m+xRRrB+lyy7uggSudE0a7enOIWanHjlxxa
-	 Ug9JODnftzvxKfxh+CjEsAst7Sqi4UNDw4Ycceyb5dyvxOfNn69QM1hIkUZsCIvtlw
-	 cMS9bh2RCWHZE6RPN3a+b1VL7zRohi0MzXB0QCeZiiu0cfeF8H6NwaWWurZSgTj3Ot
-	 wkEYKFhIEpHNA==
-Date: Tue, 5 May 2026 17:15:29 +0100
+	b=b0eAoqAG4aFxn51HZEQ2sKQOfZGxQAk+IaGrUL6jDsOf/I6HU52o0IlfrhmLHW8fu
+	 IQbyqNRG7D1HQVBqvgi7eo9EKRXogixw1YNLNmmd6ufrD0xsVQ1zuw5P+TOzY2p7Ep
+	 j706/5ZxTByy2r+79h/Hwii9H0Wbpjj8Gi6dXGsOCBFvSdctNQ5a1BrNkE7JuhegmZ
+	 BrAKOj5oaW6Z2kQurwnnCOiwIGx0oYITLCQAGbmy7ZkMPzXYsOGsg0eXblJrKL5vDc
+	 JnY9splxPxjFlRcITMSDL8cRP7jJGINo2ORpzD9TqPoO3oEYWHCjxG+2HLE81yZWyR
+	 uPZCrkk8bmLfA==
+Date: Tue, 5 May 2026 17:17:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, dlechner@baylibre.com,
- nuno.sa@analog.com, lars@metafoo.de, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/5] MAINTAINERS: iio: adi: consolidate entries
-Message-ID: <20260505171529.50eae32a@jic23-huawei>
-In-Reply-To: <afnliKBrxlkx1Vmq@ashevche-desk.local>
-References: <20260430190642.3434650-1-sanjayembedded@gmail.com>
-	<20260430190642.3434650-3-sanjayembedded@gmail.com>
-	<20260504172457.4d7c7390@jic23-huawei>
-	<AB6B7E29-83E2-4BE8-AF74-1DE8358527E6@gmail.com>
-	<afmyqE6-XcT-SRt3@ashevche-desk.local>
-	<20260505115409.44245db6@jic23-huawei>
-	<afnliKBrxlkx1Vmq@ashevche-desk.local>
+Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, "Sa, Nuno" <Nuno.Sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
+ <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org"
+ <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org"
+ <linux-gpio@vger.kernel.org>, "linux-doc@vger.kernel.org"
+ <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v9 3/6] iio: adc: ad4691: add triggered buffer support
+Message-ID: <20260505171723.390feb20@jic23-huawei>
+In-Reply-To: <afoFjaUBcGXeuEzH@ashevche-desk.local>
+References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
+	<20260430-ad4692-multichannel-sar-adc-driver-v9-3-33e439e4fb87@analog.com>
+	<afhReLCsEdaEOT_H@ashevche-desk.local>
+	<LV9PR03MB841441B282275F8F36FD12C1F7312@LV9PR03MB8414.namprd03.prod.outlook.com>
+	<20260505142640.49cde0ca@jic23-huawei>
+	<afoFjaUBcGXeuEzH@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,115 +61,37 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 5 May 2026 15:41:44 +0300
+On Tue, 5 May 2026 17:58:21 +0300
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Tue, May 05, 2026 at 11:54:09AM +0100, Jonathan Cameron wrote:
-> > On Tue, 5 May 2026 12:04:40 +0300
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote: =20
-> > > On Tue, May 05, 2026 at 08:00:23AM +0530, Sanjay Chitroda wrote: =20
-> > > > On 4 May 2026 9:54:57=E2=80=AFpm IST, Jonathan Cameron <jic23@kerne=
-l.org> wrote:   =20
-> > > > >On Fri,  1 May 2026 00:36:39 +0530
-> > > > >Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:   =20
->=20
+> On Tue, May 05, 2026 at 02:26:40PM +0100, Jonathan Cameron wrote:
+> 
 > ...
->=20
-> > > > >> -AD738X ADC DRIVER (AD7380/1/2/4)
-> > > > >> -M:	Michael Hennerich <michael.hennerich@analog.com>
-> > > > >> -M:	Nuno S=C3=A1 <nuno.sa@analog.com>   =20
-> > > > >Specific maintainer. Why is it going?   =20
-> > > >=20
-> > > > I'm assuming that to avoid de-bounce issues from *@analog.com domai=
-n, we are
-> > > > adding linux@analog.com mailing list as primary contact. with that =
-in mind,
-> > > > this series drops all entries which match the wildcard and have ana=
-log domain
-> > > > maintainer or reviewer while keeping the rest as unchanged.   =20
-> > >=20
-> > > But it's removing people behind their will! You really should do this
-> > > case-by-case. Some of the people who left the company might still wan=
-t to
-> > > follow the driver or even maintain it. What you should do is also pay=
- attention
-> > > on the Supported vs. Maintained which makes a huge difference on the
-> > > responsibility and financial side of the Subject. =20
-> >=20
-> > Some of this was in response to discussion with on specific person.
-> > That one is fine but be very careful beyond that.
-> > Probably best to add a link tag back to that discussion as well. =20
->=20
-> Or at least mentioning this in the commit message / cover letter.
->=20
-> > > Btw, Have you consulted with your Legal department on all this?
-> > >  =20
-> > > > >> -R:	David Lechner <dlechner@baylibre.com>   =20
-> > > >=20
-> > > > Additionally, When David is list as reviewer in individual driver e=
-ntries, I
-> > > > consider as redundant part; All IIO subsystem drivers/iio* already =
-covered by
-> > > > top level entry, which includes Andy and David as reviewer.
-> > > >=20
-> > > > Summary of changes in series:
-> > > > - analog domain specific entries are dropped and catch with linux@a=
-nalog.com
-> > > > under ADI IIO section.   =20
-> > >=20
-> > > No, you should give a good explanation why in each case. Yes, you may=
- combine
-> > > the cases when people left the company, but you also need to
-> > > - consult with your Legal
-> > > - consult with those who left on what they wish
-> > >=20
-> > > None of them seems done so far. So, again BIG NAK from me on this ser=
-ies!
-> > > Rework them and even part that drops the entries that already have th=
-e same
-> > > maintainers as current ADI level ones (assuming adding Nuno in a sepa=
-rate
-> > > prerequisite patch) is good to go. =20
-> >=20
-> > I'm not keen on using the top level reviewers as enough to drop an entr=
-y.
-> > Where Nuno and David have specific driver entries the lifetime of those
-> > may well be different to the top level one.  So leave those alone. =20
->=20
-> True, but if the people who maintain the certain driver(s) are okay with =
-the
-> collapse, why not allow that?
-Agreed.  Not something to do preemptively though!  I wouldn't propose it
-for instance but if they suggested it different question :)
-
+> 
+> > > > > +	for (i = 0; i < ARRAY_SIZE(ad4691_gp_names); i++) {
+> > > > > +		irq = fwnode_irq_get_byname(dev_fwnode(dev),
+> > > > > +					    ad4691_gp_names[i]);
+> > > > > +		if (irq > 0)
+> > > > > +			break;    
+> > > > 
+> > > > This is problematic in case the above returns EPROBE_DEFER. Can you confirm
+> > > > it
+> > > > may not ever happen? (Note, I don't know the answer.)  
+> > > 
+> > > You are right, thanks for this!  
+> > I'm missing something. Why is that a problem?  Driver will return
+> > the error and a dev_err_probe() is used so it won't print anything.
+> > So probe will fail which is exactly what we want.  
+> 
+> If there are two IRQs and the first one is probe deferred and second returns
+> an error, we return that error instead of the deferral probe.
+> 
+> May be I missed something, but I have no idea how in this case it may return
+> the first error code in such a case.
+Ah. Indeed. I completely misread the code.  if (irq) would do the job to fix this.
 J
->=20
-> > The only ones I don't mind falling back to the top level catch alls are
-> > those where we are dropping a reviewer / maintainer (and they were aske=
-d)
-> > + there is nothing else listed - hence the higher level entry is the
-> > only source of information.
-> >=20
-> > A wider scrub is not appropriate.
-> >  =20
-> > > > - Non analog devices reviewers and maintainer is unchanged for each=
- driver entry.
-> > > >=20
-> > > > Further, I also agree with adding Nuno S=C3=A1 as a maintainer in t=
-he top-level
-> > > > ADI IIO entry, so that all drivers are maintained via the mailing l=
-ist with
-> > > > his oversight.
-> > > >    =20
-> > > > >> -S:	Supported
-> > > > >> -W:	https://wiki.analog.com/resources/tools-software/linux-drive=
-rs/iio-adc/ad738x
-> > > > >> -W:	https://ez.analog.com/linux-software-drivers
-> > > > >> -F:	Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml
-> > > > >> -F:	Documentation/iio/ad7380.rst
-> > > > >> -F:	drivers/iio/adc/ad7380.c   =20
->=20
+> 
 
