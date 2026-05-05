@@ -1,137 +1,157 @@
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4396223DEA
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 22:20:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F2BE277007
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 22:34:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778019610; cv=pass; b=f+MGHsCn2ODck/3r/rLyQptbllQPHh2RF7ZIwGqmBEJ+o1Z7zahQoEj+IX8dZ0k2Uj92wmx/r0ZbJF/eRIwpKikBKB5UGfUwBirKhAvy6+aSla1YQfn/RQLFztONfxnZbuF/gZrWb0omlXfOGTYrtN9Etl8HGyRQwdJljIkqC7U=
+	t=1778020477; cv=pass; b=UIMhjqyLZmVP1599Y24mT03foazP34lyU8zlJaZChAh8JVCWzep06Jjsn/zvKfZMbdKldECyCRaSXyw3iYVuIsxQYNQP3xAkjf0NB9/hmmEniAJBCAJ7lMJaCG/ZNjWz5bh87JMcicDUhLQjMolpUcnC4sCCgI/zYdpLfW8DcuQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778019610; c=relaxed/simple;
-	bh=xgNynJPTQvLDnKaFZRr6xsTlWM4rfoKY1aVdZB52t20=;
+	s=arc-20240116; t=1778020477; c=relaxed/simple;
+	bh=Zcb4HykklT11uvAtEPLmINYM0C8pLXM9eKdj+x51BeY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=C6gR4D/7AJVTMDsS4iEpfNVpAcdXGvu4oP3XILJLsZCo8ZmIHwmMriE4GsQzt/IuuFkSjFjYE7ZeiOVbcTTZzJECntANAw06r8MgnN5rXReetXX7r9dfwpE3AWtK6eRha31VE5Swu20nQu5p5W4ENBkJnICQv4zR7UU51CkH7t4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hpQoOy7M; arc=pass smtp.client-ip=209.85.128.173
+	 To:Cc:Content-Type; b=Wa7ANcTfcX7IVZswuC2HWrynhNQWAmNNUNObSF9/OqXmvPSFH8ZPpnn9qq4EW+/yv22PCp1hWtYy+srHXboaXIb2iOOew5IxMMDdhB4qd0Od+JltVai7mWc/CjdvBxHbYVmnU3EYpHqbNFHy6L6gnJKVoV/07dhJKpU7AqVxx9Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VP1HKJVt; arc=pass smtp.client-ip=209.85.221.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hpQoOy7M"
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-79a2ee65171so61134247b3.2
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 15:20:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778019608; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VP1HKJVt"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-44e5624c053so1579396f8f.2
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 15:34:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778020475; cv=none;
         d=google.com; s=arc-20240605;
-        b=Jf673T94IKNVzfZmz6paeeF0NAenNW9/4t/nxjivEMffz1UKBHe3kADhIXQ1cUH6fx
-         XNWSR+pP0qvFpuf/INjDEF1AgYxJsZALidCnyY+piwsq3gEfvI0buXzrqjnz1pXaaDWP
-         tF7X4YF2rEyVBMnEqmbCbfqZQOUPGvLdH6++dk68FHIcLUzzshSxBgYYZ1ZYcnUtXE8T
-         RqeNLiDmGvy62YPjHItSzOGX230z5VbF4eI8jayvry0oxB3hT2LvQ5IIvMMo7rN1ewsJ
-         SkeGZyO4Ub62xiXQsnse7TQrvdAnBLNB98UOokiXC35ohSgj9oVRHJU1nVIaxDUAFWnz
-         CCyg==
+        b=Y3OketAsG719LDsJSBKJLU3Q78AQa3nsYI0FwY4unyHgQxmWZXOzoEPwgDRCenW6qE
+         IR/0ian+ziVOE+GE9Wk5KCDGFj7IYCTZmZg/FP2FXcLOJJzQGDfhmOoAGgZq3Jfc3v8d
+         Y6FMEM/mt+/hYDaHm7HFI22j7WkvsIh9ViVatg47mBNj/WqYIhbuWQaQYexfwbpSrGy5
+         Kmv7VgSDSUR7XYLUrHkGjM33m4jT6nlGbE2CpZpxM4fdsqtvpMhanKuS63e1Yy3dXxYy
+         QifNv/pkOWyhqPfljxXC9p3zuBuTeF+ro1MRplcTNGn45LRU6HXYBQappS/6rJd1AfMr
+         0nJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=xgNynJPTQvLDnKaFZRr6xsTlWM4rfoKY1aVdZB52t20=;
-        fh=09kUMs1WXocUREWt6VD6Lbq5UOSBmvTXajXUMXfqEtc=;
-        b=cj4iF/AI6PO3MHWh9F2WHuomG8CzwbSYYOTx06RdraHe/1kn8j0Tp6PwZC3rh4fbwO
-         3B8gUnlJRxGyr08mhF/Q/+WTU412hphXHsGmr7/IrolL/RQCVz3y60K0CEgONxoAurGu
-         l5H3JBeRo8dQgsSNE4wLi7Bnl0ruj25MvWkVpVDAQdzZNsDAwm1vtZ9LFhRzp5ZfpVbu
-         Oh3GjCxVDytWcFzFIRfrWq3JFCHzTP9kCsmPIWE+Ud8641xnYtYf3IIJ6eyAemGNme7s
-         3C74eCvjkCwID15QxdOmn8tdj5Gm0Bbxx1dXBRf9cybQkfSIndPNjEl9V9XhHwqJPZ8L
-         kcTA==;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=LrgyrX5quowO2cwio7vtOn3iYMHHTKApxOi6IxIeCCw=;
+        fh=8gCMYvCzPZZcOw0fT0Aq8/jq/PWXI0D29woUs1qPJEk=;
+        b=YUMLFuS25QhpTg1W13RL2mBcQcoNgLnRSc3BoQovMqeNZJCBBXt+gIYU2RCHyOuWab
+         1pVcl5RZS1mg0dGAOLSuUWdI86ydYvhJOZ6eAFQGayMq1AravYsHBseb0f3mkkZwfBJO
+         JpmDlR2LlGiP6cIhlWj6jJ9jlpwQYvnvNHoclqX3oVw3865/k0WQO2QDmqImBQfu5G2Y
+         ODkYoFOE41Xig83im2g+v3+SJ1AxsNv3D5/Bfdwlc1r8c3v5KzcCUfpmk4Tj/0nBBcOC
+         6t3BVeaFzG7hQLnP1vfXjnYiNkNvULgBz13S7qZDOSERl4mn/OatOMQF04JRnQpEXhsg
+         w4pw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778019608; x=1778624408; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xgNynJPTQvLDnKaFZRr6xsTlWM4rfoKY1aVdZB52t20=;
-        b=hpQoOy7MURrxdWC1wWJ9OaDo2dTlaxDIYOSxGDDn93mOsX2e5nDj1GIOrHCdD4mZJC
-         YiB3idRTSHAJHwQOGEuqG4CSLlYG8Q8yEdxMLaltNZSvcYmTFS6WAb/Mxsu/V4wfbT2S
-         1vkORZONLji78LIdKnN+ULaXIlk/GiX/plugPF0yQIDT4pUEwxI0KMY9XjreeSj34xc4
-         HSQ4eHrGY0GtHAsS7isfCwphgGE4aXEfvVLHIbuvDzaBiU97rlXr3inuOYkS1s0T7jMv
-         EyxeBLnGwSZNHcCTam1CDPhbzIyhxp+7/qhyeAmuzqyUfZWmMYuB3scvTJ7nKemlK1k6
-         NTUw==
+        d=gmail.com; s=20251104; t=1778020475; x=1778625275; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=LrgyrX5quowO2cwio7vtOn3iYMHHTKApxOi6IxIeCCw=;
+        b=VP1HKJVt6Jxr5OoHn7iZpsaqYhrrP/DauKgTozvFgAAYjB0iLOfpMfXNd+YdEZCq2y
+         FHgf2KvMspMh/JIRYqMeHDVkNURxriJsEJIpYzI22t7efh5MKqKWxb+GmRNAdP6a2vB1
+         zsUaIjmFOpZokCYbVWnGXVobpTJzBU2wWuV466TBwVqhVkZXgSzdtjKukHoCBSp80ebj
+         +oxFx3hCmf2A4QitWWRVgCaQwCAXC3gdXiCfaLtJCqxh0obuo2iYRFdxXyvLDju3M7Nm
+         HraxVm2JtImLdipC2hOEKtl5bm2vT+ei256Sarg5QM0kaP+NXi3H1bhMPJfYqgqbApp9
+         l/eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778019608; x=1778624408;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=xgNynJPTQvLDnKaFZRr6xsTlWM4rfoKY1aVdZB52t20=;
-        b=R0tiOaVyupTWxnwUU9iQ1d23z45wcXw+yI0Y+lOWqQOAWhCBLbKPp0h2LOyB2a/DNG
-         lgqp7qfwqbQZaVugXmA3oWi73FeGDjRiE9lgcKyupNHSAAjmGoZFXJlczjU98nfFi0pl
-         kdhYcwRURPntasfxoNE2RGuff5Yc2Y01Iv8eQ0ZtGB5x3pfGz3GJChKel8F8DcE0cOIm
-         8pIsRypHB/Hwxv8TC6akbKKax6QK3EDb6N2IHVoUdwBwZKr9qGvh1Z+6kIhpI+HYuH1v
-         4nE8mlBfhhltCtjd+IucfmdWwNB5CQs2mVuN1w56JO112D959IOcX376FwnVtyeMEL+i
-         S70A==
-X-Forwarded-Encrypted: i=1; AFNElJ9jMjEkbswUb/DtR4OVAC5lAWDHR+BBq+vaUMfhB+32XWGjbimVYcGLYAmq9HsVZHYvQ0KNHgYsaAo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwVynD/s4R0MuV5T76BM6BmRXGD29CXKqFf36vmjScccB76oJ4e
-	J7yqqz5GDVutbcSh1EsfQDVMJG3fi08hyeoLdfclpjM2QnT8qXyZcMV855QxchnpA5wBmgDdbq8
-	NiwtxNbEkTuD1jWhbWWYmWVAONe8iJIw=
-X-Gm-Gg: AeBDieti/7BMSiiuZ5tCa6RHlk8jWjemGo7LDcKYHFR7ZclS/pLKiN+ImzfzIbkA4JV
-	rNAlkACqe36sfJLQhjTKh+W73fqeosC7ej91lbg3ueW8dS11QMxsI0zpMbbSvcF0LAoyhnppxbu
-	TZpCCswC8GTfrelSiARp14+qfZP06RNxTuvlbegJYlw79yKunDUtpZcsgqUD4bXr5vit8AZ3wB5
-	578LCtrbBuVgStd2vxoBY4Fu97d3PIiyLkEpzDTu5OkLrAJsixl0WNtZ+4timtE4sYoPurEY9iz
-	qGnw9Q46DXhQ1ZI14SCBNMyTAg==
-X-Received: by 2002:a05:690c:e04b:b0:7b8:926e:3ef4 with SMTP id
- 00721157ae682-7bdf5dc6f08mr12520457b3.17.1778019607741; Tue, 05 May 2026
- 15:20:07 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778020475; x=1778625275;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LrgyrX5quowO2cwio7vtOn3iYMHHTKApxOi6IxIeCCw=;
+        b=gqj4i44aQyUj4pstW9btNCEC8nFIjztKISJbqBGmoj9LUh1stLAcvkJYqXO/PwERju
+         cOP+arnkkmG6q+J19csW4kL05xv33AfRIgdd6hRNfT6aeQ3U5E9kwyvRxwrSF0PypPYd
+         PoG0XgaEV/PBTh7p0kJnTaEVi0mAOCFzIzKuQ5/T0lgXNmubtazdbJ8zA+n1GAXFTXp5
+         Rq3S1+oGK8yAqvNl8bbc/clKeo9kq9FRBZHS2fGfzYhR77viQyAgFpJRWiq5bf8BVSBg
+         dEURwNfY52G1OKKs2pe7lJexr0zLV32sYRFCOkThMcx5CeFIftgES/d9sGCKdme7mW3d
+         nYZg==
+X-Forwarded-Encrypted: i=1; AFNElJ8zeDr71LtduZIlOpSB724D4yO0AxtSS2zpVvP8E418odHvKOGzUBTe6cDcy//47aVq7q5/4101n+8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwWSNs6xJ9z60YHD0uTxwCJdXg66aqOiQ06en63TF1ISPCTmDRh
+	agsVsGygVTU+zLKgzOm62MET5TixTotaym1SoGwPOq0nAn1+FZJZfmJX9cDAZMhHFTt0WwcWn7j
+	gXee1CT/oLYA/BwzsMdTqkusNK2Yu8oc=
+X-Gm-Gg: AeBDietbTAJT6VZHJhVlNVoZ+ErEL++VM1x+uTImvqdOFf57CxmWl+NAJqSLo85ht/M
+	2hbgM2afJMs0ffIWPFy197x6Kg7ElP9vId5n9S2o1+YhEvPhJv9VjYB9OtUJjmpbk98DRwskr1I
+	XhWrgv4mCcNGnqiC2Iuz6QRvc8yNxZUK10TiHE/OA3Y7gqyo9Ff4SAmcTkaJlxmeMxfLXFEIKBS
+	G1Qcnfdc+82SyoABzQNdsQx4TUrQ3jlv1Gah9OxfC4fJIxB3+6YI0V1sI1f64k75MTV3dIqYO0c
+	SsUZruqVG8gfbHc0adYhRscHUwJX+NJQWKT2gV5W6FUOAJ9VTYSMykm5Zfjc+N2Pt1+zveCcCNb
+	PWSc5SLjkRUV3/+phEwV8dTpp4iDAqWkwTl4k/jxVCYFNolGCJnnWWDFq4Uc2N7jHh0SyIRKhdC
+	20jy4XJRnlt6hkJ3RKrUGiPaTIgCiKA1nx4JOU8XfzEULtxzFSBQ==
+X-Received: by 2002:a05:6000:2582:b0:43d:7946:badc with SMTP id
+ ffacd0b85a97d-4515ce1c8famr1632819f8f.26.1778020474510; Tue, 05 May 2026
+ 15:34:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260505211751.102563-1-salah.triki@gmail.com> <CALoEA-xNNxDRCYxL0hWB3rEsNVPA=8U8Vk73B1vA70FzZqW=yA@mail.gmail.com>
-In-Reply-To: <CALoEA-xNNxDRCYxL0hWB3rEsNVPA=8U8Vk73B1vA70FzZqW=yA@mail.gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 5 May 2026 17:19:56 -0500
-X-Gm-Features: AVHnY4IUUedELRvhNyf4n0TRBPVTGuezLoXO9Waf65cftkV_xh4BS-A0bxYcgno
-Message-ID: <CAKqfh0Fb84j55ZNr3XFBxqQvnLGeFPr7e78hH6_rSs2Rv1sm5Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: viperboard: Fix error handling in vprbrd_iio_read_raw
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Salah Triki <salah.triki@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260505174640.3998281-1-sanjayembedded@gmail.com> <20260505174640.3998281-7-sanjayembedded@gmail.com>
+In-Reply-To: <20260505174640.3998281-7-sanjayembedded@gmail.com>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 6 May 2026 00:34:22 +0200
+X-Gm-Features: AVHnY4Id18Lyv1pInQXivVF17PIh3Ln1d23lMufJ9pyTRXkq69Z7wRsNfXb9ino
+Message-ID: <CALoEA-xvobdVgDcUdB7PwYA=k8sUutNikG3Pw9fb9VOXyraSaQ@mail.gmail.com>
+Subject: Re: [PATCH v3 06/10] iio: accel: mma8452: convert to bulk regulator usage
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, sakari.ailus@linux.intel.com, 
+	christoph.muellner@theobroma-systems.com, martink@posteo.de, 
+	mfuzzey@parkeon.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 5, 2026 at 5:06=E2=80=AFPM Joshua Crofts <joshua.crofts1@gmail.=
-com> wrote:
+On Tue, 5 May 2026 at 19:49, Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 >
-> On Tue, 5 May 2026 at 23:18, Salah Triki <salah.triki@gmail.com> wrote:
-> >
-> > The driver proceeds to the reception phase even if the preceding
-> > transmission fails.
-> >
-> > This uses a goto error label for an early bail out and ensures the mute=
-x is
-> > properly unlocked in case of failure.
-> >
-> > Fixes: ffd8a6e7a778 ("iio: adc: Add viperboard adc driver")
-> > Signed-off-by: Salah Triki <salah.triki@gmail.com>
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 >
-> Nitpick, but I would add adc into the patch title ("iio: adc: viperboard:=
- ...").
+> The "vdd" and "vddio" regulators are always controlled together. Switch
+> to the regulator bulk API to handle setup, enable, and disable paths in
+> a single call.
 >
-[snip]
+> No functional change intended.
 >
-> Code-wise LGTM.
+> Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> ---
+>  drivers/iio/accel/mma8452.c | 59 ++++++++++---------------------------
+>  1 file changed, 15 insertions(+), 44 deletions(-)
 >
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index b49949792190..1c984c708ec3 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -111,8 +111,7 @@ struct mma8452_data {
+>         u8 data_cfg;
+>         const struct mma_chip_info *chip_info;
+>         int sleep_val;
+> -       struct regulator *vdd_reg;
+> -       struct regulator *vddio_reg;
+> +       struct regulator_bulk_data regs[2];
 >
+>         /* Ensure correct alignment of time stamp when present */
+>         struct {
+> @@ -1570,25 +1569,15 @@ static int mma8452_probe(struct i2c_client *client)
+>         if (ret)
+>                 return ret;
+>
+> -       data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
+> -       if (IS_ERR(data->vdd_reg))
+> -               return dev_err_probe(&client->dev, PTR_ERR(data->vdd_reg),
+> -                                    "failed to get VDD regulator!\n");
+> -
+> -       data->vddio_reg = devm_regulator_get(&client->dev, "vddio");
+> -       if (IS_ERR(data->vddio_reg))
+> -               return dev_err_probe(&client->dev, PTR_ERR(data->vddio_reg),
+> -                                    "failed to get VDDIO regulator!\n");
+> -
+> -       ret = regulator_enable(data->vdd_reg);
+> +       data->regs[0].supply = "vdd";
+> +       data->regs[1].supply = "vddio";
+> +       ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(data->regs), data->regs);
 
-Agree with Joshua here. Should add adc to subject but lgtm.
+Since you're using ARRAY_SIZE(), it would be good to add a <linux/array_size.h>
+include, as it's currently pulling the macro from elsewhere. Perhaps
+run the IWYU
+tool to check (any header additions/removals stemming from IWYU would go in a
+separate patch however).
 
-Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+-- 
+Kind regards
 
-best regards,
-max
-
-(p.s., might be a good idea to send a patch for this file replacing
-all of the mutex_lock()s and unlock()s with guard()())
-
-> --
-> Kind regards
->
-> CJD
->
+CJD
