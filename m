@@ -1,84 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C24D426C385;
-	Tue,  5 May 2026 09:26:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E37931E83E
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 09:28:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777973179; cv=none; b=BsTzYDp1pYRgC2jQL+gQpCd1TiUTVZZ5gtKlS9yEE5PiFju7jxwPEfSlG0d3Y9SkwAhOxVoERlCFSnJ/DcnafALJptmEDOEfpE+q24amR39KXbe4M7SBP/MabkcEHo0KLa5NKR0NGGHG80pfH7cJ5jt1vdJttKtU/GQ2049Cju4=
+	t=1777973337; cv=none; b=IB54EGbt0/PWdsT/F/qAQjM8Hlu13MoK0rD/XX+AJFIZARkY8M3FQ3UU9ODKuqq/dFlEDs87lcbUuGKnCuu8COJTr7x8trWI0f1aKEhKwtDzSZbjikpJNXM7t2Fr9Lfuwz5CjxjxnZ1n48gQ3Nda0or5sjVCFMroKIPgfRKHLtg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777973179; c=relaxed/simple;
-	bh=r0EVyhB+ym9Cio/m+tbNiV5f+nRJz1MZ392ksgnWqqE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FAh1b7aHie8GlpgbVkzvKfKURrSY78xLuHziV/G66jnuHuUyAowk93HCOj/FA5HoEZbKWZNHQmZ+hxOVbedt9/txK7nKPPTHCXY96yK7MkYL36nUFEODBh9ki/7SGIJxJUhJHRkBVOhaJIopQZign8dN/asBsvkeWTYXCTXHONs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nCq/onDP; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777973337; c=relaxed/simple;
+	bh=IJWwEB3+34NsbiEAKwrGRCgD+marV4XSEhQguafryis=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DW5oC8LCgxwTRDEKIqup39VdXZLcpgZRDGT+0wxh5d67rmeHgDTiYbUL6Z9zgtGlnpZIJqY3ZiMuwpZpowFtmOwZtgq5/AwJCATClqpa5LFmw+iTJLlhSyNC1sKUjhAJFJbSWNdJpx5KNnWlcL6/NYUV7unzlM/US/YhvqsW3Is=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lHGaWEC8; arc=none smtp.client-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nCq/onDP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7521BC2BCB9;
-	Tue,  5 May 2026 09:26:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777973179;
-	bh=r0EVyhB+ym9Cio/m+tbNiV5f+nRJz1MZ392ksgnWqqE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=nCq/onDPWaMxtOkPlu1Ft9odCo/suw9YkLYsfxrKRS1vGSygkQ3RtGCbt/OvtdQdV
-	 8O9NuPwTp/DjhzMtCKtEZZ8n4XKvmGM+RYSgtJHeQR7hyjSO8oc4d0E/CUvgB/5K57
-	 U2PSM3utCb3DbmE42Q82twnJIA7aqVlgQL6J7t99IRghoJM+KVgS7yT2ERaabPPYl4
-	 yk1ybaEg4jSR23q1TgujDZice8iVB5wwJNTonh9etznMajK/yGGjNwwJHch4ru+rKR
-	 aHVgXDId9/959eGRpDqFf1qGGvKFSg7Ykp56TDMNPO/SKafcQKUm2eaaK4CMMUzgQb
-	 wVER3tVR09iBw==
-Date: Tue, 5 May 2026 10:26:09 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-Subject: Re: [PATCH v5 0/4] ti-ads7950: fix gpio handling and facelift
-Message-ID: <20260505102609.4001b20f@jic23-huawei>
-In-Reply-To: <afk48YT55Y89Gq0J@google.com>
-References: <20260405-ti-ads7950-facelift-v5-0-1f980ed3cf9e@gmail.com>
-	<20260412193856.1300770b@jic23-huawei>
-	<afk48YT55Y89Gq0J@google.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lHGaWEC8"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-67c2d57a5ceso4200328a12.3
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 02:28:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777973335; x=1778578135; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=afa3+8lQ/dFRvaJ7aUrtsIA844bD/GltVTCqRXI/BJQ=;
+        b=lHGaWEC8iNYuOPncmZ7bqA1MQXWHT+E7mOW3mZ79eshk5ixjaSEO2Vw1BMLtl7x34q
+         h8Z1wwhxIyX7RWHVwWMvPbxnqrD7e5pGUowwB8ioi34ZKBxqq+wbRn3+r3k6LT7+Zrrf
+         zCxilDMlPGpYsf0w1aDP4cqnGdMydLUizGoTDRyRWf/P+vUrspk10l+2gP2/OVpNxBwE
+         tyhZbeT5a1Kh3JTSe5BNU1MDipknVlbS9pxLSCpOJu0jwoWEMF4gTqBVIcTooGHOnYQC
+         3YTk5GYuqyTGBTniZd5v/D/xlI4FDYzSktbXJFOdxWAFpeVuMgnE4Rp9OElvusEF578D
+         Km2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777973335; x=1778578135;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=afa3+8lQ/dFRvaJ7aUrtsIA844bD/GltVTCqRXI/BJQ=;
+        b=TNiqUPv8mjaK8UZyHOCgqb3953IDH/3DkVFDYIItodi8WN9bcug2psSnno8BuYo/aG
+         y6pPeUE1+fUj2L96zUJF78ok4qHX0HT1rZUpVRJ/IQMfc29oAQzUOSgW/m7lMZKvOa2U
+         4mbXkxGlcPYFekoo/hgX3xec4fIxs9uDxBGR018WA0P6dwbJhdff+frbXmJACElBSOZn
+         9FyCxmy2m35Rg5DOtbsprqXE8fILWWyBSFVvhIBVTnuEB0iQrgM1hhFYCXufkgdnvNKh
+         FkaCUjEVFY2p1gRavezs3i8FT+V+siYWlDhU1Jrw1A681fuY/LGSOUPpTVOICZPPtzxQ
+         ToOg==
+X-Forwarded-Encrypted: i=1; AFNElJ8qbHS3tdLYuqFcXdc5ZbvDGDaIrWtrqM2mG1ocrf2WgIrI4UMQo9mzA05bgncv4XxLEStZtFnmW5c=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz0yZ1a2AVkV4Eicrv/mDzkafccm8lo6wl8ZKPaNirqchzB4YPw
+	66XkS7gsi1zQLFwsqsBtUiRsk1sdLNmusRxxwwvywFgGdR7VSSzo7Mb4
+X-Gm-Gg: AeBDieudnb0WpLXLlEmKW5ePKIUc9D8PjyeMh/ZVMU234UY1gpCzOhAegmMvEmqBiKy
+	r/L8iu35rlFx/sJkQtBWZRo1C3G/W6uwV0wikMq5oanEmFIICILL7033cVFQIcAqX2gS45Ctf/r
+	ow0Ndh/bqz2WB4A6pnJVPcPg+9OMbpAq+wvSJsRuy+eRoqY0HvssnMjvPM6e7BEpVobdstlXR91
+	yU7ZmDOwN3iZX7HHbAfyjONXlCeuEb6KAjjj8BpE6FESfsN9EBV6RiJNrALB9Ydux/RCjwvUtYa
+	JJl6rEpmhnnA68ZJk5nNw38xJtxWufcZtznV8xzrUtMR4me3qG/V+b5dOF16wPCaG427JADGFPj
+	fkCU+5IYHxRzUdDjZOtn65tgvq7b80xStoVwgWoOIw1xXX5vBw1eknI8kMqj74Te36fcWDw+YUx
+	F5i3/vu8NWX9d6mq6roMKqDT4=
+X-Received: by 2002:a05:6402:7c1:b0:676:9c6d:7448 with SMTP id 4fb4d7f45d1cf-67c1b0aa7demr4298401a12.22.1777973334601;
+        Tue, 05 May 2026 02:28:54 -0700 (PDT)
+Received: from pc ([196.235.252.38])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-67cd90e1aaesm241812a12.3.2026.05.05.02.28.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2026 02:28:54 -0700 (PDT)
+Date: Tue, 5 May 2026 10:28:51 +0100
+From: Salah Triki <salah.triki@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: humidity: ens210: Fix missing I2C functionality
+ checks
+Message-ID: <afm4U2nsfdyihSEG@pc>
+References: <20260505090247.74555-1-salah.triki@gmail.com>
+ <afmzOM3s_TCYxXyt@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <afmzOM3s_TCYxXyt@ashevche-desk.local>
 
-On Mon, 4 May 2026 17:25:58 -0700
-Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
-
-> On Sun, Apr 12, 2026 at 07:38:56PM +0100, Jonathan Cameron wrote:
-> > On Sun, 05 Apr 2026 21:39:22 -0700
-> > Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
-> >   
-> > > The original reason for this series is to make sure ti_ads7950_get()
-> > > returns result in range [0, 1] or a negative error code to comply with
-> > > gpiolib requirement.
-> > > 
-> > > During review David noticed the fact that the function also clobbers
-> > > gpio state. Fixing that lead to adding cleanups using guard() and devm.
-> > >   
-> > Applied to the testing branch of iio.git. I'll rebase that on rc1 once available.
+On Tue, May 05, 2026 at 12:07:04PM +0300, Andy Shevchenko wrote:
+> On Tue, May 05, 2026 at 10:02:47AM +0100, Salah Triki wrote:
+> > The ENS210 driver uses both `i2c_smbus_read_byte_data()` and
+> > `i2c_smbus_read_word_data()` during the read and probe phases.
+> > However, `i2c_check_functionality()` was only checking for block reads
+> > and simple byte writes, which could lead to hardware interface
+> > incompatibilities or errors on certain adapters that do not natively
+> > support SMBus word or byte data transactions.
 > > 
-> > Thanks for persisting with this. Indeed a nice facelift ;)  
+> > Add `I2C_FUNC_SMBUS_READ_BYTE_DATA` and `I2C_FUNC_SMBUS_READ_WORD_DATA`
+> > to the functionality check mask to ensure the adapter supports the
+> > required operations before communication begins.
 > 
-> Jonathan, is there anything else you need me to do?
-
-Don't think so.  All queued up now and I don't think we have anything
-else outstanding for this one.
-
-Thanks,
-
-Jonathan
-
+> Can we rather modify the driver to use SW emulation for these cases?
 > 
-> Thanks.
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
 > 
 
+I'll update the probe function to check for I2C_FUNC_SMBUS_EMUL instead of
+the individual functions.
+
+Thanks for the suggestion.
+
+Best regards
+--
+Salah Triki
