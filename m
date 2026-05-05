@@ -1,115 +1,371 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 221B73D646D
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 08:08:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777968493; cv=pass; b=mGsSssVU59P6TopT9tuNy4yxN604jZyOoJbvccpflFU27mzgVC2NGpF7I1KnSuuVU1XB5pSqaQSKa0SFyXMmStTWJbKgl+d1GJYCvZfJN1mKfm8/cRXJcyxUM3lqMsN2eB0afcDduyaULND5GSkZTx+fJpRCpBsB1ozIPeHL26w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777968493; c=relaxed/simple;
-	bh=IPE09n40ZfdKS5FW9vB6iZDfw7XolyW1hD4ribwyvMU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UbaZmBLQQs33iuqAOMJ/Gc1c/xjrGhFYmjrnI8MiIE76ITXC4r8sRcr4NljAUBc5NqUQ+wOrik4iB0QDvrYNuKJakACYmGMdOyge0mnmXuKTTVgsC/VmIHjZaT1lFs6pDsLDeHAdQlvXSmQVHQstuiwB+nyI4G146Y2hw3Rr5n0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i9yKFV0J; arc=pass smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3C753D565E;
+	Tue,  5 May 2026 08:16:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777968986; cv=none; b=pBkNEz8PgeBHn/20xvPkt/wD+K9QUwmnZX0q85weZlucE8PZS8Rq1xOzXtIG2p2ViGSw1jCUuAFRrj86rjA1TPF+1CKdD/aWjT/cddBx7iMU+szxSozRbF7nZpOQwxkIroHSqTh7dgrG4Msixm7VMADfu5jLJ22LSQFSp5Ql5As=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777968986; c=relaxed/simple;
+	bh=g+zxFimWOaIqhOyLpJlxgYGzOopzI118ke5hAnL5GcU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=azBDZLSW6yYvp9lqYTQEmWCHMyzf5EV51ZRi5Om7jxKyAyqLWWJ7b3zQ4F2/94eFJdYTxzLTNzsHSbCDAdVN4qgtLRl+0VoBRwH709wCDD9QwEqBFR9BqryZKW2/2YYnBCTonjVugbFUbccszPCkgCXk1geJYPjxdHn9ezGjuZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UTxNnaHi; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i9yKFV0J"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4838c15e3cbso39586625e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 01:08:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777968490; cv=none;
-        d=google.com; s=arc-20240605;
-        b=e5yMQjQ7IOAIpspwKqSOD1NljiDUGACjhN1XF8OFFXI0LbtzuAWT4hwzHKUFx+wCnJ
-         d8HVd0MQEGkuSHGL1eHyjpC9AOBj/UY+ogvZ0p5pbEl0RcnNbHQnqs3TrQWnCz5UK40G
-         ZWQlt+z+GI7Cqfa6dru2E/x3NS4KQfa4RLixd7BbtRM9aUhQsbgWqeyiRDkeRbN+nRdG
-         ZQeapV4rF7fMueCTxaLB1HiXaxhYrtgtLDjuaukzrp9zO5kI1Uc91BPtAtRN22hYIARz
-         8G5aRe1hCP3reSMRx9sPg6oGsww7eslIJiQOkm/SfwSFk8/WzjMGe0+9YXkmdDi48Seh
-         yBYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=qn4zDIpSqWLOFkRgqCDysZizxCQEqDJw7U8Agwn35gQ=;
-        fh=+AWxVALe2yy1v01dPl0uG7XU5C2m9nbsYoks03BdTic=;
-        b=QQO8M7hRCc7cQCPDjB6neLug+s503cTuJpj5KSeSC/gp9I9RqdDdhvl4Sx6p789wZY
-         3ZqnBL1924smhFb7OxHXpHYZLp4SwMs7oWWj9L5olVy7lwX++KM3HrVwOXfcmEA81rMn
-         gCk5TYdF3AnM/JmO1NHtOqV3WHVlctneD1HdS1rTsRXJXX24prlx9UP2wZJbuuiqCkUn
-         aNJmxUKTqhpCtP0woYuk26QlnaMRgBUI7c1hmBHw2zKcns/U73tzX5yYK+45uwkB4x7c
-         oeONxUVb6QOvvV0AWz1nHO6TUvwIy17DGqTnk3H2yeKYZxRaVIXJoL7pnn5l51rI1II6
-         xh4Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777968490; x=1778573290; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=qn4zDIpSqWLOFkRgqCDysZizxCQEqDJw7U8Agwn35gQ=;
-        b=i9yKFV0J6m1qvzSbyXJyRq7+yUcof79AfI/Z8sjC/fGuBdYWpg+2ErN9H3tHSbxbe1
-         k2EsELy9G4iU11fBjA/1DUkx7W2beDwm8YyY3xS0T/1XWzPH41twmV+XiEugcy7MV9h9
-         RpZp04p0VhGnMerWQ/osuhsTUnnIEN16slGL8rWv2PDVR1/BXEaJ+MlXcyOOijBpYWlE
-         fGmvu+OuxO4Z6+cQM+gH0T7hgXlrVKmiVj/5EeZRXKKD7oKw6iZadbwgcNamjvsTJ6GF
-         7Hw5AWfc2Oq12RgEdRFFX+yFr3zuSwqt3l3Fg+XOWrtU1ub2D0t155QUrcZddveNaBTB
-         fLWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777968490; x=1778573290;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qn4zDIpSqWLOFkRgqCDysZizxCQEqDJw7U8Agwn35gQ=;
-        b=OIF8bd14FOUYBB9TgdRzJlE9DLywhdDgcHcBqh1p1h+j1hseSrXruiCOLVEHmUFJx7
-         r7VtXkOefQC4xu6RxCMG0n7fa/krMJaCprLOYCg5DwqGhQJgRckozFiAo1vf/F7EiQOJ
-         usty4ItjsSQirhGLVowsFySBCSUHcONYKd/vWNKPtL6WTWpV3uOUc6HhqFqrUiagPTAJ
-         ekjmQ2feC8RWvtibKBozPsBudkoM1ZUOTq8xMgPDfWOhWpbpaBnyBDfxKUTyMxd39xyV
-         lbI5eLmLTwhRAGllUIkw+LgsYAUkRDqNwkf1cydMyLaWkFyWvD00vAuVUI4zxBNrEI+H
-         sPyw==
-X-Forwarded-Encrypted: i=1; AFNElJ8nega9swirTNvi8rAyu4Twqkj+/g33l+lmx54wqLlGDA6fHDM/tH//fde0ReMCsnSyNmxWVzKmmDc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxZwonpS1p2A3hiu7+67yS9N4e/i0sKGPPlihxbo9IxlhLiLUln
-	m4yQ85qrgmSC3qnHiWgQ3dEmG8VJU8HvDcs4xITYfPupPU2N1uTS0M6wVs/wS2olH9KRtH5msDm
-	k1Xfy+SvWFPIW97bExX9/PB0u/GOAef7oL+1q
-X-Gm-Gg: AeBDiesa9v6Z9fYB3KDdPKX6NSOwsgzbUKGn6EBiQLk25nlQDVggD0wof3U1MC66jiQ
-	9nb1rK7L/qVja6D2nOIwAfkWHQT7XLx1E5KoOxCqVvdmdeFONbc12EPYjrS70AcZdLLBpKcyWJR
-	PON2DatOtZDQAmAO8CzVGMTnUcJkKvYkTcOugKWKSXs0f27XVT8Pyk6xj4pMSNeqK9f3IeM0Vnm
-	RDbXAjg+LQ+z5lHcSi0qhATl7mkYUDSY1vAncvLrmNvwfJk96I0V/l5kXX6i8HWj3ZCzfhJpisP
-	swdYQGD8OprjvFVPAFXcoPwJUc/Ms/K4TovloyJFKU0bFCHPQ/z6NmSpQNt3eEifLnc3Lj50rOg
-	V5dJgZOCCOOBavyTpfZCbVf8W0mpgCLP2xDkzyqy7QpqMvzw13S4JTxBMLy+UyvI2R1VbPBfFb8
-	0g+8hMFYYD1l9DxN5v
-X-Received: by 2002:a05:600c:3e05:b0:489:1ff1:74df with SMTP id
- 5b1f17b1804b1-48a9852fbcfmr218842955e9.1.1777968490459; Tue, 05 May 2026
- 01:08:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UTxNnaHi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777968984; x=1809504984;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=g+zxFimWOaIqhOyLpJlxgYGzOopzI118ke5hAnL5GcU=;
+  b=UTxNnaHiwgb2rhUflZ8+ScVBiUN87M6CQEtyS6tKFNATq5mTuEOD9HYB
+   ZXOxpyfIkapkBG/At4S7l4VNBoknyyP6zW4MF1aCIAsIrE9Yk2Nnv9cHL
+   TW1FRDWfXmmSrj9z6ZgFUW4HImYLatm2eYkPQgbeceiZsR/UuFu785GfX
+   fukZ7wPXX/JZox+y3Cx4nEmC2l1REJObXRK/AA5BzS66dIv/EjuovNoxy
+   CJkLvEe75mrmeuEu7QFdg1hvJN1/R2fEJYx9/wsvRbHvhKYMnZccm7hn4
+   TSugKeQXT8Yn/0E+dWJXA+cz2pLWzNE8IoN5EgC7EYx5CcKgCjtznecDg
+   Q==;
+X-CSE-ConnectionGUID: nsnAEIfvQk+WTLyWC7sbKQ==
+X-CSE-MsgGUID: LlgKYobcQ+OhAVOHNRUHZQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="96260436"
+X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
+   d="scan'208";a="96260436"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 01:16:24 -0700
+X-CSE-ConnectionGUID: 8IcJ58BYROusM7pCtr2zYg==
+X-CSE-MsgGUID: 1HuvudfwSVqCuBtHxLSekg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
+   d="scan'208";a="259425562"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 01:16:19 -0700
+Date: Tue, 5 May 2026 11:16:16 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: rva333@protonmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+	Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH 06/13] thermal: mediatek: add pmic thermal support
+Message-ID: <afmnUG8dG0N0HpV6@ashevche-desk.local>
+References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
+ <20260504-mt6323-v1-6-799b58b355ff@protonmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260504-magnetometer-fixes-v4-0-a291c2a7c71a@gmail.com>
- <20260504-magnetometer-fixes-v4-6-a291c2a7c71a@gmail.com> <20260504160606.07f87f10@jic23-huawei>
- <afl404iaPbSsK5XF@ashevche-desk.local> <CALoEA-xkOVvGqwWdHMS3HbJSCrSbyBd4GQ2CkczkT9Tn-xO_bw@mail.gmail.com>
- <afmag-hFCs8u6jN7@ashevche-desk.local> <CALoEA-zs+Qf8QOD6zE32Es3iGOo12KsvtAKYcd3LTQmoBwLw0g@mail.gmail.com>
-In-Reply-To: <CALoEA-zs+Qf8QOD6zE32Es3iGOo12KsvtAKYcd3LTQmoBwLw0g@mail.gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 5 May 2026 10:07:57 +0200
-X-Gm-Features: AVHnY4KKCsdhrc1fz5WE7i9QaHhvIe0iAe6CAu4Z0dZq5pd3WfCvgyUAtuC6QJs
-Message-ID: <CALoEA-z6omi2JzqWrtrXKwGTx372pjcFZikutPVeVc2x5QthTA@mail.gmail.com>
-Subject: Re: [PATCH v4 06/17] iio: magnetometer: ak8975: modernize polling
- loops with iopoll() macros
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260504-mt6323-v1-6-799b58b355ff@protonmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 5 May 2026 at 09:26, Joshua Crofts <joshua.crofts1@gmail.com> wrote:
-> > It's better to integrate it into the series either as a fix (should be first in
-> > the series) or as just an improvement after readx_*() conversion patch.
->
-> Better to do it as an improvement after readx_(), rebasing would be easier. I do
-> agree with it being added as a separate patch though.
+On Mon, May 04, 2026 at 09:24:58PM +0300, Roman Vivchar via B4 Relay wrote:
 
-Before I forget, is it better to return the negative 'val' or -EINVAL?
+> Add a new driver to support thermal monitoring on MediaTek PMICs.
+> 
+> The driver retrieves calibration data from EFUSE, calculates the
+> temperature using a linear interpolation, and registers the device with
+> the thermal framework.
+> 
+> Initial support is added for the mt6323 PMIC.
+
+First of all, please take into account the comments given against previous
+patches.
+
+...
+
+> +config MTK_PMIC_THERMAL
+> +	tristate "AUXADC temperature sensor driver for MediaTek PMICs"
+> +	depends on MFD_MT6397
+> +	help
+> +	  Enable this option if you want to get PMIC temperature
+> +	  information for MediaTek platforms.
+> +	  This driver configures thermal controllers to collect
+> +	  temperature via AUXADC interface.
+
+Don't we want to tell user how the module will be called in case of M choice?
+
+...
+
+> +#include <linux/err.h>
+> +#include <linux/iio/consumer.h>
+
+> +#include <linux/kernel.h>
+
+No way your driver uses this header.
+
+> +#include <linux/module.h>
+> +#include <linux/nvmem-consumer.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/slab.h>
+> +#include <linux/thermal.h>
+
+Please, follow IWYU.
+
+> +#include <linux/mfd/mt6323/registers.h>
+
+...
+
+> +#define MT6323_TEMP_MIN			-20000
+> +#define MT6323_TEMP_MAX			150000
+
+Don't you want to use units.h multipliers?
+
+...
+
+> +/* Layout of the fuses providing the calibration data */
+> +#define CALIB_BUF0_VTS(x)		(((x) >> 8) & 0xff)
+> +#define CALIB_BUF0_DEGC_CALI(x)		(((x) >> 2) & 0x3f)
+> +#define CALIB_BUF0_ADC_CALI_EN(x)	(((x) >> 1) & 0x1)
+> +
+> +#define CALIB_BUF1_ID_20(x)		(((x) >> 14) & 0x1)
+> +#define CALIB_BUF1_ID_10(x)		(((x) >> 12) & 0x1)
+> +#define CALIB_BUF1_O_SLOPE_20(x)	(((((x) >> 11) & 0x7) << 3) + (((x) >> 6) & 0x7))
+> +#define CALIB_BUF1_O_SLOPE_10(x)	(((x) >> 6) & 0x3f)
+> +#define CALIB_BUF1_O_SLOPE_SIGN(x)	(((x) >> 5) & 0x1)
+> +#define CALIB_BUF1_VTS(x)		((((x) >> 0) & 0x1f) << 8)
+
+Why not use BIT() and GENMASK() as appropriate? But better, why not use
+bitfield.h APIs?
+
+...
+
+> +struct mtk_thermal_data {
+> +	const char *const *sensors;
+> +	s32 num_sensors;
+
+> +	const int cali_val;
+
+What exactly does 'const' benefit here with?
+
+> +	int (*extract_efuse)(struct mtk_pmic_thermal *mt, u16 *buf);
+> +	void (*precalc)(struct mtk_pmic_thermal *mt, s32 vts, s32 degc_cali,
+> +			s32 o_slope, s32 o_slope_sign);
+> +};
+
+...
+
+> +struct mtk_pmic_sensor {
+> +	struct mtk_pmic_thermal *mt;
+> +	int id;
+> +	struct iio_channel *adc_channel;
+> +	struct thermal_zone_device *tzdev;
+> +};
+
+Can you confirm with `pahole` that this is the best layout (taking into account
+the use in the below data structure)?
+
+> +struct mtk_pmic_thermal {
+> +	struct device *dev;
+> +	struct regmap *regmap;
+> +	struct mtk_pmic_sensor sensors[MAX_SENSORS];
+> +
+> +	s32 t_slope1;
+> +	s32 t_slope2;
+> +	s32 t_intercept;
+> +
+> +	const struct mtk_thermal_data *data;
+> +};
+
+...
+
+> +static int mtk_pmic_read_temp(struct thermal_zone_device *tz, int *temperature)
+> +{
+> +	struct mtk_pmic_sensor *sensor = thermal_zone_device_priv(tz);
+> +	int ret, raw, temp;
+> +
+> +	ret = iio_read_channel_processed(sensor->adc_channel, &raw);
+> +	if (ret < 0) {
+> +		dev_err(sensor->mt->dev, "failed to read iio channel: %d\n",
+> +			ret);
+> +		return ret;
+> +	}
+> +
+> +	temp = sensor->mt->t_intercept +
+> +	       ((sensor->mt->t_slope1 * raw) / sensor->mt->t_slope2);
+
+Too many parentheses.
+
+> +	if (!mtk_pmic_thermal_temp_is_valid(temp))
+> +		return -EINVAL;
+> +
+> +	*temperature = temp;
+> +	return 0;
+> +}
+
+...
+
+> +static void mtk_pmic_thermal_precalc_mt6323(struct mtk_pmic_thermal *mt,
+> +					    s32 vts, s32 degc_cali, s32 o_slope,
+> +					    s32 o_slope_sign)
+> +{
+> +	s32 vbe_t;
+> +
+> +	mt->t_slope1 = 100 * 1000;
+
+magic1 * magic2...
+
+> +	if (o_slope_sign == 0)
+> +		mt->t_slope2 = -(mt->data->cali_val + o_slope);
+> +	else
+> +		mt->t_slope2 = -(mt->data->cali_val - o_slope);
+> +
+> +	vbe_t = -1 * (((vts + 9102) * 1800) / 32768) * 1000;
+
+More magics...
+
+> +	if (o_slope_sign == 0)
+> +		mt->t_intercept =
+> +			(vbe_t * 100) / -(mt->data->cali_val + o_slope);
+> +	else
+> +		mt->t_intercept =
+> +			(vbe_t * 100) / -(mt->data->cali_val - o_slope);
+> +
+> +	mt->t_intercept += (degc_cali * (1000 / 2));
+
+Too many parentheses.
+
+> +}
+
+This entire function misses a lot of comments and formulas with the references
+to the datasheet.
+
+...
+
+> +{
+> +	struct nvmem_cell *cell;
+> +	void *buf;
+> +	size_t len;
+> +	int ret;
+> +
+> +	cell = nvmem_cell_get(dev, "calibration-data");
+> +	if (IS_ERR(cell))
+> +		return PTR_ERR(cell);
+> +
+> +	buf = nvmem_cell_read(cell, &len);
+> +	nvmem_cell_put(cell);
+> +
+> +	if (IS_ERR(buf))
+> +		return PTR_ERR(buf);
+> +
+> +	if (len < 2 * sizeof(u16)) {
+> +		dev_warn(dev, "invalid calibration data length\n");
+
+And? Is it fatal error or not?
+
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	ret = mt->data->extract_efuse(mt, buf);
+> +	if (ret) {
+> +		dev_info(dev, "device not calibrated, using default values\n");
+> +		mt->data->precalc(mt, 3698, 50, 0, 0);
+> +		ret = 0;
+> +	}
+
+> +out:
+> +	kfree(buf);
+> +	return ret;
+
+Why not use __free() from cleanup.h?
+
+> +}
+
+...
+
+> +static int mtk_pmic_thermal_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct mtk_pmic_thermal *mt;
+> +	int i, ret;
+> +
+> +	mt = devm_kzalloc(dev, sizeof(*mt), GFP_KERNEL);
+> +	if (!mt)
+> +		return -ENOMEM;
+> +
+> +	mt->regmap = dev_get_regmap(dev->parent->parent, NULL);
+> +	if (!mt->regmap)
+> +		return dev_err_probe(dev, -ENODEV, "failed to get regmap");
+> +
+> +	mt->dev = dev;
+> +	mt->data = of_device_get_match_data(dev);
+
+property.h instead of of.h and use just device_get_match_data().
+
+> +	ret = mtk_pmic_thermal_get_calib_data(dev, mt);
+> +	if (ret)
+> +		return ret;
+
+> +	for (i = 0; i < mt->data->num_sensors; i++) {
+
+'i' is not used outside the loop:
+
+	for (unsigned int i = 0; i < mt->data->num_sensors; i++) {
+
+> +		struct mtk_pmic_sensor *sensor = &mt->sensors[i];
+> +
+> +		sensor->id = i;
+> +		sensor->mt = mt;
+> +
+> +		sensor->adc_channel =
+> +			devm_iio_channel_get(dev, mt->data->sensors[i]);
+> +		if (IS_ERR(sensor->adc_channel))
+> +			return dev_err_probe(dev, PTR_ERR(sensor->adc_channel),
+> +					     "failed to get channel %s\n",
+> +					     mt->data->sensors[i]);
+
+> +		sensor->tzdev = devm_thermal_of_zone_register(
+> +			dev, i, sensor, &mtk_pmic_thermal_ops);
+> +		if (IS_ERR(sensor->tzdev))
+
+> +			return dev_err_probe(
+> +				dev, PTR_ERR(sensor->tzdev),
+
+What a broken indentation in the whole stanza...
+
+> +				"failed to register thermal zone %d\n", i);
+> +	}
+
+> +	return 0;
+> +}
+
+...
+
+> +static const struct of_device_id mtk_pmic_thermal_of_match[] = {
+> +	{ .compatible = "mediatek,mt6323-thermal",
+> +	  .data = &mt6323_thermal_data },
+
+> +	{ /* sentinel */ },
+
+Nonsense trailing comma.
+
+> +};
 
 -- 
-Kind regards
+With Best Regards,
+Andy Shevchenko
 
-CJD
+
