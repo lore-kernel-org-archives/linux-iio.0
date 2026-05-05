@@ -1,425 +1,150 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mout.web.de (mout.web.de [217.72.192.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FA0718A6CF;
-	Tue,  5 May 2026 07:53:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82370311942;
+	Tue,  5 May 2026 07:57:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.72.192.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777967609; cv=none; b=MlLkaZz3BpfP+XKmzjcEFt3V/B90AMnLnbcfunqbMb0w7EpTBbrJyfbqrkITf4PNkAvovUjp1K6E/zpg2xQ/AVFs1ScQcnkfVKlstIDVp9oVDATCS3CfN4COahoJLl1VZJv9i/Ujw2Mka7ZfrVuTvyvuxe6Swm78Gtte5qIcen4=
+	t=1777967823; cv=none; b=JAwCbUou4MxcJVDRPB6hdjSYgFmQMpZ9/zYoRU2WjRpt+eCnhBN5mxA5e3cJJ0vi3ULmlDmb74b4gHq1CmiuxL3DLpnxcDmd2R/U4tZLJEKErdW9yIL+DYMpmm2hM/fMbfAmYb9EqNL1f9AxQG03zd45aj64hMxeIFW/NGQbCNE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777967609; c=relaxed/simple;
-	bh=BrhuC8t53vfsZNJjtxaRQN0b4ACZgyma1EephQqZQUw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MHkSKyLdEU6xTS/+C/6Fst0YrAGnbtlGOkpfGKlvMpZFwBTgz1ZQpoR7Ix7+7YHD2jEPkxVjg72TSw5LBlmtXSFP1cl2eCk/TJfxrWgc7gGniGBVPyfJ2t4Z8mckogaK9IM828kX8AiQC42jPnn0z45LtxdDHLqrylO+1+Ec1hw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fzpvzG52; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777967823; c=relaxed/simple;
+	bh=dm+0PvYyqnY4UuK1hNp7jgdgw0oGOZobXuT17g/XNEk=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
+	 In-Reply-To:Content-Type; b=MKbr2wTgvP/6AnBNAFc93sV0YT9cjZ1/YcZ2DMssu0xemi5TBjwr7JvDKP1xiL3qZ3Y0Fd40qg4eXQXcr0r/C9228oV1mN6egRBMpVOBYJFx5UGrFizmp21aUruIpHDlLwhFGwDv4ThqDDEWjJFU13xfE5cRr21B9TDtfbLCOaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=YMCkGIIE; arc=none smtp.client-ip=217.72.192.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fzpvzG52"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777967608; x=1809503608;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BrhuC8t53vfsZNJjtxaRQN0b4ACZgyma1EephQqZQUw=;
-  b=fzpvzG52hRnE/F+t3YARJHiZ+A1zJwEKdZSI5OmR3hWYUFOy0cLQ9Dex
-   fElvjWatSuFbGJlmQHcoDfvW4cUieD1yJzT/ZhGokWuCuki3JGCExLd46
-   fzNNyjQwuYrOlBkgJkkzm8wRlSIBG0C8T0DpHubXZT4TOWwlJdb1Zr/eB
-   wcOD9qKCyrTAS9/MHYD8djU0ekl7U4ZB4NIsyJ/Usld4pC1bCY/TrgrYR
-   jb0DUPcCjYHhCti24vzas4xos1ki+MetXhgEyLSTE5iFt6YWENXJbYETD
-   DIaD8Hb8u/RF/mkFpy20IYQZwYgpGXx/tmYQ2wD9XYHrgxo1f2SshwIjv
-   Q==;
-X-CSE-ConnectionGUID: xiAruK+YSPS6tqLtEmo5cA==
-X-CSE-MsgGUID: nmas3IpdT8m4+tgze3xV/Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="82683925"
-X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
-   d="scan'208";a="82683925"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 00:53:27 -0700
-X-CSE-ConnectionGUID: /9NJwlwzR4Kea1pYqYJg7A==
-X-CSE-MsgGUID: NwoG24f0TemA++QJBz92ZQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
-   d="scan'208";a="235614542"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 00:53:21 -0700
-Date: Tue, 5 May 2026 10:53:19 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rva333@protonmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
-	Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH 04/13] iio: adc: mediatek: add mt6323 PMIC AUXADC driver
-Message-ID: <afmh70niEmjl53g9@ashevche-desk.local>
-References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
- <20260504-mt6323-v1-4-799b58b355ff@protonmail.com>
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="YMCkGIIE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1777967813; x=1778572613; i=markus.elfring@web.de;
+	bh=dm+0PvYyqnY4UuK1hNp7jgdgw0oGOZobXuT17g/XNEk=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
+	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=YMCkGIIEx4kTORdOO11UhUZqEKIg0090445o/ICDk32T6w2BNAV1T0e9pK4T9xgZ
+	 cGRjDrW+0oIDeRPSh7AQivxPsboJO8OUDmRrUSTHuTxe/f0vuTs6/DTKsxNxc0VuE
+	 iMJhWs4lte6ZKq+y7o8wUigDINCp1EVMaihMwN03CPxQo3spvfjpW9D08dYw8x/7i
+	 21q17jFCmU7hz2O8ubmOR9vpVALw6inmAfkUMtGmqnXIA73Yokl9d3rkINnQ3OSZ+
+	 1yxisS0dU/vcoKqnd8KiQK7ZTRjMHvOtd44dx/y9XeVBiQQr1AWr6z0SbnEvN/a6e
+	 g/VxuCXQlhUcnYkTRQ==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from client.hidden.invalid by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MKdHC-1w1YMr1jZc-00VCvv; Tue, 05
+ May 2026 09:56:53 +0200
+Message-ID: <0c1d14f1-3d48-413b-bad0-4e2dda60a412@web.de>
+Date: Tue, 5 May 2026 09:56:43 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260504-mt6323-v1-4-799b58b355ff@protonmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+To: Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org,
+ Jonathan Cameron <jic23@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>
+References: <20260505005506.160891-1-m32285159@gmail.com>
+Subject: Re: [PATCH v2] iio: imu: kmx61: Use guard(mutex)() family over manual
+ locking
+Content-Language: en-GB, de-DE
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20260505005506.160891-1-m32285159@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:S7rSjN6QULHF8CN5hix5cxIah6xOCHjtRm66DHudtFH6HoYMUPf
+ C1hD06A/JpJGh4LPsutWDgFwcXn6KI0shilTfLMLiU50RqQ9Y0iJH3ZWLNrhxihN/LlIYFD
+ ep4p3az4836CH8Fzu0eqzQWCP2O2FG7hECFfDxD7/x21MFpaEReOxPhMMM8/5mN+7+wGgsA
+ hcixPeGMOV41yYZJiiJ/Q==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:afa+VC8O6AY=;n6nXftODhxxT2vsPHlYHWp+hWKe
+ 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
+ dgDzJ3UlAodURrQ==
+
+=E2=80=A6
+> Replace manual mutex_lock() and mutex_unlock() calls across the file
+=E2=80=A6
 
-On Mon, May 04, 2026 at 09:24:56PM +0300, Roman Vivchar via B4 Relay wrote:
+I find the word =E2=80=9Cfamily=E2=80=9D inappropriate in the summary phra=
+se.
 
-> The mt6323 AUXADC is a 15-bit ADC used for system monitoring. This driver
-> provides support for reading various channels including battery and
-> charger voltages, battery and chip temperature, current sensing and
-> accessory detection.
-> 
-> Add a driver for the AUXADC found in the MediaTek mt6323 PMIC.
-
-...
-
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/delay.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/property.h>
-> +#include <linux/regmap.h>
-> +#include <linux/types.h>
-
-Follow IWYU. At least stringify.h is missing.
-
-...
-
-> +#define MTK_PMIC_IIO_CHAN(_name, _idx, _ch_type) \
-> +	{ .type = _ch_type,                              \
-> +	  .indexed = 1,                                  \
-> +	  .channel = _idx,                               \
-> +	  .address = _idx,                               \
-> +	  .datasheet_name = __stringify(_name),          \
-> +	  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-> +				BIT(IIO_CHAN_INFO_SCALE) }
-
-Make {} each to occupy a single line.
-
-...
-
-> +/**
-> + * struct mt6323_auxadc - Main driver structure
-> + * @dev:           Device pointer
-> + * @regmap:        Regmap from PWRAP
-> + * @lock:          Mutex to serialize AUXADC reading vs configuration
-
- *
- * ...put struct decription here... See below why.
- *
-
-> + */
-> +struct mt6323_auxadc {
-> +	struct device *dev;
-> +	struct regmap *regmap;
-
-Do you need both? Are they different? (I mean that regmap may be derived from
-device and vice versa depending on the case.)
-
-Ok, it seems the dev is the current platform device, while regmap comes from
-parent->parent to it (2 levels up!). This needs a good comment in the struct
-description explaining the hierarchy.
-
-> +	struct mutex lock;
-> +};
-
-...
-
-> +static int mt6323_auxadc_check_if_stuck(struct mt6323_auxadc *auxadc)
-> +{
-> +	int i, ret;
-
-Why is 'i' signed?
-
-> +	u32 val;
-> +
-> +	for (i = 0; i < 50; i++) {
-
-Magic 50 and the whole thing is reinvention of something from iopoll.h.
-
-> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON19, &val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (FIELD_GET(AUXADC_DECI_GDLY_MASK, val)) {
-> +			ret = regmap_read(auxadc->regmap, MT6323_AUXADC_ADC19,
-> +					  &val);
-> +			if (ret)
-> +				return ret;
-> +
-> +			if (!FIELD_GET(AUXADC_ADC19_BUSY_MASK, val)) {
-> +				ret = regmap_update_bits(
-
-Bad indentation, there is a room for parameter on the previous line.
-
-> +					auxadc->regmap, MT6323_AUXADC_CON19,
-> +					FIELD_PREP(AUXADC_DECI_GDLY_MASK, 3),
-> +					0x0);
-> +				if (ret)
-> +					return ret;
-> +			}
-> +		} else {
-> +			return 0;
-> +		}
-> +
-> +		fsleep(10);
-> +	}
-> +
-> +	return -ETIMEDOUT;
-> +}
-
-TL;DR: Find a suitable macro in iopoll.h and use it.
-
-...
-
-> +static int mt6323_auxadc_request(struct mt6323_auxadc *auxadc,
-> +				 unsigned long channel)
-> +{
-> +	int ret;
-> +	u32 pmic_val, adc_val;
-> +
-> +	if (channel < 9) {
-> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON11,
-> +					 AUXADC_VBUF_EN, AUXADC_VBUF_EN);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON22,
-> +				  &pmic_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		adc_val = FIELD_GET(AUXADC_LOW_CHANNEL_MASK, pmic_val);
-> +		adc_val &= ~BIT(channel);
-
-We also have FIELD_MODIFY(). Use it in all cases where appropriate.
-
-> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON22,
-> +					 AUXADC_LOW_CHANNEL_MASK, adc_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON22,
-> +				  &pmic_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		adc_val = FIELD_GET(AUXADC_LOW_CHANNEL_MASK, pmic_val);
-> +		adc_val |= BIT(channel);
-> +
-> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON22,
-> +					 AUXADC_LOW_CHANNEL_MASK, adc_val);
-
-> +
-
-Stray blank line.
-
-> +	} else {
-
-Redundant 'else' as this may be returned directly. So, refactor each branch to
-a helper and use this as a small wrapper.
-
-	if (channel < 9)
-		return ...helper_for_chan_<_9...;
-
-	return ...otherwise...;
-
-> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON23,
-> +				  &pmic_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		adc_val = FIELD_GET(AUXADC_AUDIO_CHANNEL_MASK, pmic_val);
-> +		adc_val &= ~BIT(channel - 9);
-> +
-> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON23,
-> +					 AUXADC_AUDIO_CHANNEL_MASK, adc_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON23,
-> +				  &pmic_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		adc_val = FIELD_GET(AUXADC_AUDIO_CHANNEL_MASK, pmic_val);
-> +		adc_val |= BIT(channel - 9);
-> +
-> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON23,
-> +					 AUXADC_AUDIO_CHANNEL_MASK, adc_val);
-> +	}
-> +
-> +	return ret;
-> +}
-
-...
-
-> +static int mt6323_auxadc_read(struct mt6323_auxadc *auxadc,
-> +			      const struct iio_chan_spec *chan, int *out)
-> +{
-> +	int ret;
-> +	u32 reg = mt6323_auxadc_channel_to_reg(chan->address);
-> +	u32 val;
-> +
-> +	ret = regmap_read_poll_timeout(auxadc->regmap, reg, val,
-> +				       (val & AUXADC_RDY_MASK), 1000, 100000);
-
-Redundant parentheses, also use multipliers from time.h
-
-	struct regmap *map = ... // use this trick elsewhere as well
-
-	ret = regmap_read_poll_timeout(map, reg, val, val & AUXADC_RDY_MASK,
-				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	*out = FIELD_GET(AUXADC_DATA_MASK, val);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int mt6323_auxadc_read_raw(struct iio_dev *indio_dev,
-> +				  const struct iio_chan_spec *chan, int *val,
-> +				  int *val2, long mask)
-> +{
-> +	struct mt6323_auxadc *auxadc = iio_priv(indio_dev);
-> +	int ret, mult = 1;
-> +
-> +	if (mask == IIO_CHAN_INFO_RAW) {
-> +		scoped_guard(mutex, &auxadc->lock)
-> +		{
-
-Why? It's not a switch-case, the guard()() should be fine.
-
-> +			ret = mt6323_auxadc_check_if_stuck(auxadc);
-> +			if (ret)
-> +				return ret;
-> +
-> +			ret = mt6323_auxadc_request(auxadc, chan->address);
-> +			if (ret)
-> +				return ret;
-> +
-> +			usleep_range(300, 500);
-
-We have fsleep().
-
-> +			ret = mt6323_auxadc_read(auxadc, chan, val);
-> +			if (ret)
-> +				return ret;
-> +			return IIO_VAL_INT;
-> +		}
-> +	} else if (mask == IIO_CHAN_INFO_SCALE) {
-> +		if (chan->channel == MT6323_AUXADC_ISENSE ||
-> +		    chan->address == MT6323_AUXADC_BATSNS)
-> +			mult = 4;
-> +
-> +		*val = mult * 1800;
-> +		*val2 = 32768;
-> +
-> +		return IIO_VAL_FRACTIONAL;
-> +	} else
-> +		return -EINVAL;
-> +}
-
-...
-
-> +	ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON10,
-> +				 AUXADC_TRIM_CH2 | AUXADC_TRIM_CH4 |
-> +					 AUXADC_TRIM_CH5 | AUXADC_TRIM_CH6,
-> +				 AUXADC_TRIM_CH2 | AUXADC_TRIM_CH4 |
-> +					 AUXADC_TRIM_CH5 | AUXADC_TRIM_CH6);
-> +	if (ret)
-> +		return ret;
-
-We have _set_bits()/_clear_bits()/_assign_bits() of regmap API. Use them here
-and in many other cases in this driver (and probably in the entire series.
-I'm not going to comment each of the cases.
-
-...
-
-> +static int mt6323_auxadc_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct mt6323_auxadc *auxadc;
-> +	struct iio_dev *iio;
-> +	struct regmap *regmap;
-> +	int ret;
-> +
-> +	/* mfd->pwrap regmap */
-> +	regmap = dev_get_regmap(dev->parent->parent, NULL);
-> +	if (!regmap)
-> +		return dev_err_probe(dev, -ENODEV, "failed to get regmap\n");
-> +
-> +	iio = devm_iio_device_alloc(dev, sizeof(*auxadc));
-> +	if (!iio)
-> +		return -ENOMEM;
-> +
-> +	auxadc = iio_priv(iio);
-> +	auxadc->regmap = regmap;
-> +	auxadc->dev = dev;
-
-> +	mutex_init(&auxadc->lock);
-
-devm.
-
-> +	ret = mt6323_auxadc_init(auxadc);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to initialize auxadc\n");
-> +
-> +	iio->name = "mt6323-auxadc";
-> +	iio->info = &mt6323_auxadc_iio_info;
-> +	iio->modes = INDIO_DIRECT_MODE;
-> +	iio->channels = mt6323_auxadc_channels;
-> +	iio->num_channels = ARRAY_SIZE(mt6323_auxadc_channels);
-> +
-> +	ret = devm_iio_device_register(dev, iio);
-> +	if (ret)
-
-> +		return dev_err_probe(dev, ret,
-> +				     "failed to register iio device\n");
-
-One line
-
-> +	return 0;
-> +}
-
-...
-
-> +static const struct of_device_id mt6323_auxadc_of_match[] = {
-> +	{ .compatible = "mediatek,mt6323-auxadc" },
-> +	{}
-
-
-IIRC we use { } (with space) in IIO for the terminator entry in ID tables.
-
-> +};
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Regards,
+Markus
