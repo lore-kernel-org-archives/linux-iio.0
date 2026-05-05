@@ -1,162 +1,126 @@
-Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C3FE3FA5E8
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 13:27:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777987638; cv=pass; b=LLRWxmUP0rrwOblmH6Pw2MfxWbaH1DjYKYPUluGCeSnKKzJlRRhSuYIaSBDhZ8N2DO/juX2ewBEJK/5l5xrXR8btq+HQSmXVu+5sVXwePHpDGpjtATTn2ckYMUV7LIgIHlYaPSy643lNaYGHeezSJvxjjp46eRNwaAiPUvitWeo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777987638; c=relaxed/simple;
-	bh=1eD2Ehb41892j8NRvdWdejmSftUIAKIN/3VBdf/mA3E=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GFwuuGOHiywcf9hpVskZagy9Y6/eyJ3/tfVH4KE5rd1Fm+Rpz+HEthwwEr5AXjcGbJRFeuJKttBJ389ZCQyj6Y/n184uBnmDT1B7hfVAVg5TtfxsIi/wBeTW6MWevOpQ7KDQ8ncszKgkZSEiQBUxoDvWlni7uRPACEJoBnTAkuE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IU7Ddxxz; arc=pass smtp.client-ip=74.125.224.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9B6247CC63
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 13:37:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777988275; cv=none; b=GuwCkxmdwfWEAKQ5dfWzTjjaKXRzuMs72/zPEFY3soZzg0f4MyhErlYMllAbY4R/HzMh3O6bS2Tv+sf8MwsQZ48IBAog4PSFanpMELfRzpogSfQYSXCtNO7rcJiDa3nNIJ0Vrvnd2jFAkt2yzKl35COsEN2WuqpdHpnY6SexAuQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777988275; c=relaxed/simple;
+	bh=nI482rHAbt5nXbKBqEJDa7o2nSrbcSlgM1ZPd6rpVsQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rvC4pHjkIZULf8e7NyVpFCjm/wWqb6aUJyae12Ea1TizTEmtY/UX5cZF5UVKX6uW0p55JHr6pml0KAH867H3AWz/HQwWiIgmT7GNko9LZuQFqFgGLqeaCebSzRaySw3qdU/o7yUwWEmP949YHmX2NRQN3XYUbGPMMbw+RSqbG4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nAh4ZExN; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IU7Ddxxz"
-Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-65c5361142fso2037481d50.0
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 06:27:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777987636; cv=none;
-        d=google.com; s=arc-20240605;
-        b=RZPpWzklQFE8jrxz1eP6l367n+dHJRy6ZXNWYv5oCPMSI6ZEBk2r1Pf4Ka6BQLnkwk
-         B84NoE0UWQuuH5A7FG9qKJsm2S+M56sNapG4/dAPsoaUDFLkrmDU5z0QKBT89ZRn44zj
-         DyP4kbvWKqDC8xI7xV12VvdgQJUf3lyPfFiFnnC6RxiT4t4AB7xIiA//WozOiIAxi4qz
-         jPGbh/+rEbENZi1q+Fn+Ybl+QV0WE68DbTWk2VOCwllSvUlhtLfaWPcCTJG1+pnhq+P6
-         5bFMwlfRd0xgr0lZUK7nHzKQKN6plnp60YIGAFzpTPDQ/ppVYOcE27UU34PWbmyrclWs
-         zcJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=NqQ8ANCGYllv/nG6jPR1ctYA97nShrGTtlRgZa+laOc=;
-        fh=zBo6pFlG8M66UskTKlINfzKTMNn57zqGPzOk8Rjv3Ek=;
-        b=C2YT5TZHNlVaG5Zt2OcKEai1si+k5noWtAIZosm6Aul5fOBtEE+nRtJC3SkLg1Hfi6
-         yd5gBizHNMqs5+0zXIjvutJ6eXZGMhha1SCZE9WE1mJlN1ikiC3CbSNaV+7Ig4v6OqKR
-         CfO5XB7w6NF02Fm5wC8G0RwqWs8fMQUndqRvdjolUeJ9/vIyMKqoKwCs+fFye9OAJFCb
-         RelU2muuyDptSV1CHZJ7xX9/C3CJoT5icZNKokJk9gFtsJ2YaT0c3WY44BvYtEASAHLQ
-         ihprGwoJibH00uUpl7V91KHj+vTdxU/aeDDR71rsSPkFX7iO/4P/G1yueEUyHwWzQSS8
-         T4vw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nAh4ZExN"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4891d7164ddso28003445e9.3
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 06:37:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777987636; x=1778592436; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NqQ8ANCGYllv/nG6jPR1ctYA97nShrGTtlRgZa+laOc=;
-        b=IU7Ddxxzu740xQbPAI61JCaxVkjnSz0YvG7bxhuYylZ5xN7sYLU/gkRUWjcEUq/7yE
-         4zGuSOfHoNELlULHQM+XFCiTCfiK2E0mn947MgOMcteINnrZt83uNhu6Xm6TbWNMzvjR
-         6WeVxCkADBltp3i0jEV8blZ2Y2W04jmuGSr7fd2MiBM1ZMhSG2LuRWZKiTu85R8O1FTH
-         lmKZoHs36QGk25KHswEu2PE7aeVUXlhbsYu4YT9yPo8V4sbn4DsmZu6vjhs1irs/kDus
-         NJQRrMFuEvjuKnFBtKf6fABoRlHdYiQbPyRKmerNWGZgbqGX2017I4YsYgTW/CB1u+WI
-         Y79Q==
+        d=gmail.com; s=20251104; t=1777988272; x=1778593072; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8zqGy9FCxsyto+kn1sLwjo8QRhEdeQTEmwhLR5OXod0=;
+        b=nAh4ZExNWY5zSJTf1wuqWZzlvDsn3P98+RtvyT+v2D64+8/f5KhYTaTT1Uxt/Ur+4d
+         ZTvfBzCpHUkNlREgCkfs7EjiFHzY0lqaX+ZZmC7YyyYSGRzDqE/0mGf8QpO4Z1V4Q65o
+         qPtsLlX76ZNUIN5Ww1jwotx3bh0BtkVh3zl2B8N/dLJF+iHL2gyE24O2us7CJ53rXOkk
+         U+GdOwIH8/yyScGd2fz862t0iJTbNqT0SRSqX/MskMpAIFaJTgxp2j0EFOz8QMb9bna4
+         GktlV6l/l2kzKiVCJppPij2QsdEOHoLNNO7TD5rSu8Gyu00NOX8KQKVbyBkYjJt/2J8F
+         xfRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777987636; x=1778592436;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=NqQ8ANCGYllv/nG6jPR1ctYA97nShrGTtlRgZa+laOc=;
-        b=FPlBsy7CJgubUqP2M9QWIExvLdKLkTb5eWG7HYYbsLL2JSJzQoneOLP9lGGD2/vBSA
-         fjFpj6vIvOFzqZuzY9nzaHJ5telarNFu3A/EqklSl9WEi5Omi7GjYecuhak9YoQkooYc
-         uW5tTgMDG5wD85r5GQ/G0Z8XxylR5trwog1QV4PlJrC99Ijx4rQO/XBKvYaCGdvqMruN
-         rxHOACVJToTOcqGznVw5VHxf0Q5v16annlRChwng+ZHxNt1spIpNJopxuk4TuRjlJGzK
-         XsVsvB+AxLF7p1iBJJjG/PQ6PYB0AHhV0Ri3sYhXFv7tAz4nqRcOlBvz4ElUxy4W6J/k
-         FOpA==
-X-Forwarded-Encrypted: i=1; AFNElJ+0ltNc5cuhyomhsOhmFjY4McNdUh9vobVW8KE8k0jaZ7NxAb6iuwaUyRbkNIiHsgBJJyQX/NARHKk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx9R63hirI49mykbpQbQoaYs8g9gpVtCnhZqRzom5kXz93tYX2A
-	Hwf5Qu1LyxxMX1+2dbv6YtH8Va8UHXjU9A2qDhyCnH5QUMTbczg1m1ET49Y6tp+yeZx8H96yQgL
-	GI5ODMuhBDXhEpFxQZ3wLRDqzH20UEH28sfKU
-X-Gm-Gg: AeBDievVyajf0VNYu5mGPhb6Ba/yeS0gBMa25+qOQgHJfRJs/d1FlKbk7cglQRbp8zV
-	W7trqlYNLmXWsbF6rOAyUdarYKpr8YuI1Mbj0/bzsHCCH9U2GwjSPehugEb5zQ2DXX0YRO+kNG9
-	bDFOBPRBr/Mwg7xXGkZsFVkc0hSqk1MTrzkyzaZVX5S2387ZDpHiA4oAHhTHAngpKpjzUdnUlti
-	4czLXgw0W9aNsfQ+VxLC+ORu2q8LOAaGWRFSpn9zZCT1kaj32hNf+oyE9DBFAq1zkYwlTv/HCC7
-	QoEwO5l5J06Z0V0jmNxTs+7oIt+fx6k=
-X-Received: by 2002:a05:690e:4396:b0:65c:27b5:415b with SMTP id
- 956f58d0204a3-65c3da0cdb2mr10298124d50.4.1777987636080; Tue, 05 May 2026
- 06:27:16 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777988272; x=1778593072;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8zqGy9FCxsyto+kn1sLwjo8QRhEdeQTEmwhLR5OXod0=;
+        b=K/pCRIqm45FfTGvqebcUAtpfbqYnArMMd9amY4+1JuBzOzB8ILfaiycdu/hVSSX8K7
+         ooGdSVU8GYCfDoigAfMqWmzNDV9zleCG8WlpQbQqBKtiEQUIwWm2NkNzL5RrFksnknBg
+         41ptmEwWQVrfjXcPHx7kdJUbE6lRNZSztqyW12mnbI9hq8H8HqNYR6KIeKTLMRnWX5u3
+         CGKiSXcHoIj9KVwYQ6viPscWCMAxnhofdfbtS0Usyak9W603Dbs8Q8gZiNLaFLlWchyK
+         ZHq9KKVcEFeP0Jx31OxRyLp6rl0fkKQLHyzPA3pShPTj9HDV/czpNFKLQmQiBJGROxkV
+         0B9Q==
+X-Forwarded-Encrypted: i=1; AFNElJ867om8ZlFm7rNaGe7JddQNY/DkSnp8HV+WPdfe2WgcIhCxf2p/9FezUuU/S/PbWGtS0mqmsnxgnV8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzUPcLUpgckrxQQKU9n2TtqzbiKUGZMXED1CcE908aFVdzegQni
+	HpOCacurGfw4Mkcyz2V0QHykKsrFc9Xk1TMUhviGSNANm9lUDkjDlTN8
+X-Gm-Gg: AeBDievhNdxSHyP/WKQ2wY9NgLVvyaPjGiAC6Nj+avASVbsTLD7vzbbz4SEtbUuhReH
+	fsWfcYvN7rHrZwa7SJ/cpSVJNoKHSvMdYdfmw6aLz2iHiMaqrBvsOGmh7v8BkVUUUmgKKfPjVn8
+	6O3SQ5DSsYMSctVECQUX78hdO/CB4hrQEArtCVsvv0ST+Wj7gsE6Mysnehxry4r4QvMmVRgPVsA
+	45t16p8hzakJB/5Z8Pvx55nvxsOjvtqFG46WURWipj/vHqCvguirsA+gTXBd/A5vDYw/KFRBNMh
+	WcoZXKHZjbmN74LTNrEDQpIKAjOU53GcQu0Zmmj/pR0qemjaSE+gky8XHFn408j179Vm0Ef1PnW
+	lYQX+qZ6nfUP8r9trTjYD0a6iAJ5eEQ1OkiXRs16tjp3HR6iyHaIR1bldT6dA4OlKNnM6NpO0vv
+	WuJcRzTC8819Zs7E/CP83dISGLXeufr/N8ojI6fgLi/LvKSCVnEVcz3n7v5yUYongLnwDLTq+9X
+	xrN1FeyLw0KrLk9mnwsfVWZW4iPaC5n
+X-Received: by 2002:a05:600c:3596:b0:488:fd7e:1063 with SMTP id 5b1f17b1804b1-48a988cee29mr269575315e9.29.1777988271858;
+        Tue, 05 May 2026 06:37:51 -0700 (PDT)
+Received: from dohko.chello.ie (188-141-5-72.dynamic.upc.ie. [188.141.5.72])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a81b99127sm391200295e9.0.2026.05.05.06.37.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2026 06:37:51 -0700 (PDT)
+From: David Carlier <devnexen@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	David Carlier <devnexen@gmail.com>
+Subject: [PATCH] iio: gyro: itg3200: fix i2c read into the wrong stack location
+Date: Tue,  5 May 2026 14:37:48 +0100
+Message-ID: <20260505133748.51355-1-devnexen@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260505124706.9862-1-m32285159@gmail.com> <afnr4TjC3DVxkVJt@ashevche-desk.local>
-In-Reply-To: <afnr4TjC3DVxkVJt@ashevche-desk.local>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 5 May 2026 08:27:04 -0500
-X-Gm-Features: AVHnY4L4ELeT4J-me2ldW23zCXHatxK-NYpe4k54AsGXhVGzAy3rA--p4v_I-vE
-Message-ID: <CAKqfh0E8rSUGx1d3WEKhTLCteoQ9Bdctc+R8yVaw6_t_156zhA@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: imu: kmx61: Use guard(mutex)() family over manual locking
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 5, 2026 at 8:08=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Tue, May 05, 2026 at 07:47:06AM -0500, Maxwell Doose wrote:
-> > Include linux/cleanup.h to take advantage of new macros.
-> >
-> > Replace manual mutex_lock() and mutex_unlock() calls across the file
-> > with guard(mutex)() and scoped_guard() where appropriate. This will hel=
-p
-> > modernize the driver with up-to-date functions/macros.
-> >
-> > Remove now redundant gotos and ret variables, as the new RAII macros
-> > make them unneeded.
->
-> Did you compile this version?
->
-> ...
->
-> > -     case IIO_CHAN_INFO_SAMP_FREQ:
-> > +     case IIO_CHAN_INFO_SAMP_FREQ: {
-> >               if (chan->type !=3D IIO_ACCEL && chan->type !=3D IIO_MAGN=
-)
-> >                       return -EINVAL;
-> >
-> > -             mutex_lock(&data->lock);
-> > -             ret =3D kmx61_get_odr(data, val, val2, chan->address);
-> > -             mutex_unlock(&data->lock);
-> > +             scoped_guard(mutex, &data->lock)
-> > +                     ret =3D kmx61_get_odr(data, val, val2, chan->addr=
-ess);
-> >               if (ret)
-> >                       return -EINVAL;
-> >               return IIO_VAL_INT_PLUS_MICRO;
-> >       }
-> > +     }
->
-> This looks suspicious.
->
-> ...
->
-> Please, slow down and check the patches you sent.
->
-> Also, use, if not yet, --histogram when preparing patches, it might make =
-them
-> more readable.
->
+itg3200_read_all_channels() takes `__be16 *buf' as a parameter and
+fills the i2c_msg destination as `(char *)&buf'. Since `buf' is the
+parameter (a pointer), `&buf' is the address of the local pointer
+slot on the stack of itg3200_read_all_channels(), not the address
+of the caller's scan buffer. The (char *) cast hides the type
+mismatch.
 
-Thanks for the tip.
+i2c_transfer() therefore writes ITG3200_SCAN_ELEMENTS * sizeof(s16)
+= 8 bytes into the parameter's stack slot, which is discarded when
+the function returns. The caller's scan buffer in
+itg3200_trigger_handler() is never written to, so
+iio_push_to_buffers_with_timestamp() pushes uninitialised stack
+contents to userspace via /dev/iio:deviceX every scan -- both a
+functional bug (no actual gyroscope or temperature data is
+delivered through the triggered buffer) and an information leak.
 
->
-[snip]
->
-> Since guard()() is not like lock/unlock, the blank line is better for
-> readability. lock/unlock scenarios look&feel as special scope, that's why
-> the blank lines there are optional.
->
+The non-buffered read_raw() path is unaffected: it goes through
+itg3200_read_reg_s16() which uses `&out' on a local s16 value,
+where that is correct.
 
+Drop the spurious `&' so the i2c read writes into the caller's
+buffer.
 
-Sorry, I was in a rush this morning and I wanted to keep to my promise
-of getting it out this morning. I can make a v4 but I currently don't
-have time unfortunately, so it'll have to wait.
+Fixes: 9dbf091da080 ("iio: gyro: Add itg3200")
+Cc: stable@vger.kernel.org
+Signed-off-by: David Carlier <devnexen@gmail.com>
+---
+ drivers/iio/gyro/itg3200_buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-best regards,
-max
+diff --git a/drivers/iio/gyro/itg3200_buffer.c b/drivers/iio/gyro/itg3200_buffer.c
+index a624400a239c..0d3a50031d76 100644
+--- a/drivers/iio/gyro/itg3200_buffer.c
++++ b/drivers/iio/gyro/itg3200_buffer.c
+@@ -34,7 +34,7 @@ static int itg3200_read_all_channels(struct i2c_client *i2c, __be16 *buf)
+ 			.addr = i2c->addr,
+ 			.flags = i2c->flags | I2C_M_RD,
+ 			.len = ITG3200_SCAN_ELEMENTS * sizeof(s16),
+-			.buf = (char *)&buf,
++			.buf = (char *)buf,
+ 		},
+ 	};
+ 
+-- 
+2.53.0
+
