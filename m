@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94FA6407588;
-	Tue,  5 May 2026 11:07:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33ECA31F987;
+	Tue,  5 May 2026 11:08:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777979220; cv=none; b=i6uIfntm9k76DuQpwUoZJEnNWCv/+CTX5SFLIYQlDDHsZ02BtTVrHq+UxibukE4asqUUjOt5GKdzX4HHBahghtCj9lvaOj+rvStej9wLvNou6zey87FDDtW8/flXVZWpNgMcyvCSb+UecCMLh6FMNyislp4cvxid7foaONWHblU=
+	t=1777979311; cv=none; b=Oe54MuEPInfZftJ8qIdnlO/I7XCkFJBLv8xVUG2lAMNt6T8zjDdEw1ppgXGhTUAIFpOBHNH3/+RWkfR2dZDNPfJkqj5zjS1SrRxeJzWT7w9HqSsEJiWHFhw/6n/U+BNW2fXcO2bF/ltd/IBD5rIia+GUOv79As1aINtkWt7qtI4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777979220; c=relaxed/simple;
-	bh=wC0QXhJtDMGYsPSRvDUrTtiLAciUB/vluz45+Tr1fNY=;
+	s=arc-20240116; t=1777979311; c=relaxed/simple;
+	bh=o0s0M585ngWapwzuF4EwGYZM5CO4qnlGb1y7qHJlrZo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CSrAnp9CgvMheDNMmR+uDX+EHc7o1d9sxNsoGf1J7gC/PtqxKV+cBuEZOPu5kq+umlKQBSaZDHdpvQ94Wt9VhoJUgnxAfA4sKSkWuXuxSNbCdNKvisNAUXIuWvCY+tfQnBqi9zzv7PXt/tEIoJemNUOguOsJothx1W60gLJCZl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iFydhz8U; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=AOMh8FqN5D6j2nMx6XbuY8ZT3WA/z4SH5ikHXiN46QO3nGMGu3jdu/8g5EhG3eQxAQbPuxKKSvqJoRM/V7QBzFSQ1qLATP5k6m99Ohy0WyngPtChuJbBDLMy7w3CzKRauHEdx9sqNUZ6Ifpa5wLFLYiurFiDAtnS/5tdTM5CA3I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jIur0VWW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iFydhz8U"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC31C2BCB4;
-	Tue,  5 May 2026 11:06:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jIur0VWW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7221EC2BCB4;
+	Tue,  5 May 2026 11:08:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777979220;
-	bh=wC0QXhJtDMGYsPSRvDUrTtiLAciUB/vluz45+Tr1fNY=;
+	s=k20201202; t=1777979310;
+	bh=o0s0M585ngWapwzuF4EwGYZM5CO4qnlGb1y7qHJlrZo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=iFydhz8UdGzolHxbJNvuwQhuFsfKkgc1SmnAXbHVZcct0QMZvx3vkBx23+KdmYvt8
-	 VMJc4LGNxA8IWug69NedxeYcAWhwMQ1nzDuf+Uu1/iH3CyKjHPLqZauxDYJCGjaP35
-	 w+Dnoph13THFkTSkKMQ08iCfqncjWXeWyjHjktg1W41v2YRno0TOFZYJuXMud3RwcL
-	 u28kVKmwHyZzoZ7F4FEx+v/2IGtWK7r1R0RABHan//HXrtetdSwhGhQReXCbOjW+UG
-	 QsJ6NaUqc5mJBM+jABse0TrgCL+9+4m0I8kP/sY0g1wKp9PLdymDK76XoJc8nVbPXx
-	 5Ruz4FicgIACQ==
-Date: Tue, 5 May 2026 12:06:49 +0100
+	b=jIur0VWWQpU9TmWZ5kKjGemgI6JOKP9457wb5j4arjt1u2U4odd+IBc0wWcV3D74o
+	 hMrPgWUK3MJx0WhWSXqzp7ymkhbQ9jb4FSfMkdCIZWrvqWSAWnW0gDbG0KIPf5jS21
+	 EAercRSSuxeb0gN6GCZcDwl0zQNqmo51qcbZi8RXNP4lIqsmghZ0l4WW8wCf144bnI
+	 j4amm3WkAihBqq+J2NGbObe3R3xk1XCw7r3BMOjuvdcm7C6N9of+HmVPTUZ84iqQCh
+	 41YWUqVB0RcnasmKUiErhLh/bNx76/tYf/wierRUbPANt1B3+GdXAkbi1ApeXvd9nB
+	 TNFqvugZe/+dA==
+Date: Tue, 5 May 2026 12:08:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rodrigo Alencar via B4 Relay
  <devnull+rodrigo.alencar.analog.com@kernel.org>
@@ -37,12 +37,11 @@ Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
  Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Andy
  Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v5 01/12] iio: dac: ad5686: fix ref bit initialization
- for single-channel parts
-Message-ID: <20260505120644.10bb6139@jic23-huawei>
-In-Reply-To: <20260501-ad5686-fixes-v5-1-0b2f45488418@analog.com>
+Subject: Re: [PATCH v5 02/12] iio: dac: ad5686: fix input raw value check
+Message-ID: <20260505120821.28b6ee3f@jic23-huawei>
+In-Reply-To: <20260501-ad5686-fixes-v5-2-0b2f45488418@analog.com>
 References: <20260501-ad5686-fixes-v5-0-0b2f45488418@analog.com>
-	<20260501-ad5686-fixes-v5-1-0b2f45488418@analog.com>
+	<20260501-ad5686-fixes-v5-2-0b2f45488418@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,69 +52,42 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 01 May 2026 10:14:54 +0100
+On Fri, 01 May 2026 10:14:55 +0100
 Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
 > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> The reference bit position was ignored when writing the register at the
-> probe() function (!!val was used). When such bit is 1, internal voltage
-> reference is disabled so that an external one can be used. For
-> multi-channel devices, bit 0 of the Internal Reference Setup command
-> behaves the same way, so AD5686_REF_BIT_MSK is created. The issue exists
-> since support for single-channel devices were first introduced.
+> Fix range check for input raw value, which is off by one, i.e., for a
+> 10-bit DAC the max valid value is 1023, but 1 << 10 equals 1024, which
+> passes the previous check, allowing an out-of-range write. The issue
+> exists since the ad5686 driver was first introduced.
 > 
-> Fixes: be1b24d24541 ("iio:dac:ad5686: Add AD5691R/AD5692R/AD5693/AD5693R support")
+> Fixes: c2f37c8dcadc ("iio: dac: New driver for AD5686R, AD5685R, AD5684R Digital to analog converters")
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Applied this patch to the fixes-togreg branch of iio.git and marked
-it for stable.
+Applied this patch to the fixes-togreg branch of iio.git and marked for
+stable.
 
-Thanks
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/dac/ad5686.c | 6 +++---
->  drivers/iio/dac/ad5686.h | 1 +
->  2 files changed, 4 insertions(+), 3 deletions(-)
+>  drivers/iio/dac/ad5686.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 > diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-> index 9a384c50929b..1fc54c38b629 100644
+> index 1fc54c38b629..076fe8b8bd85 100644
 > --- a/drivers/iio/dac/ad5686.c
 > +++ b/drivers/iio/dac/ad5686.c
-> @@ -511,7 +511,7 @@ int ad5686_probe(struct device *dev,
->  		break;
->  	case AD5686_REGMAP:
->  		cmd = AD5686_CMD_INTERNAL_REFER_SETUP;
-> -		ref_bit_msk = 0;
-> +		ref_bit_msk = AD5686_REF_BIT_MSK;
->  		break;
->  	case AD5693_REGMAP:
->  		cmd = AD5686_CMD_CONTROL_REG;
-> @@ -522,9 +522,9 @@ int ad5686_probe(struct device *dev,
->  		return -EINVAL;
->  	}
+> @@ -154,7 +154,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
 >  
-> -	val = (has_external_vref | ref_bit_msk);
-> +	val = has_external_vref ? ref_bit_msk : 0;
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		if (val > (1 << chan->scan_type.realbits) || val < 0)
+> +		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+>  			return -EINVAL;
 >  
-> -	ret = st->write(st, cmd, 0, !!val);
-> +	ret = st->write(st, cmd, 0, val);
->  	if (ret)
->  		return ret;
->  
-> diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-> index e7d36bae3e59..36e16c5c4581 100644
-> --- a/drivers/iio/dac/ad5686.h
-> +++ b/drivers/iio/dac/ad5686.h
-> @@ -46,6 +46,7 @@
->  
->  #define AD5310_REF_BIT_MSK			BIT(8)
->  #define AD5683_REF_BIT_MSK			BIT(12)
-> +#define AD5686_REF_BIT_MSK			BIT(0)
->  #define AD5693_REF_BIT_MSK			BIT(12)
->  
->  /**
+>  		mutex_lock(&st->lock);
 > 
 
