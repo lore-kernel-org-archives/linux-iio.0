@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 929853A3E87;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3DF33A4505;
 	Tue,  5 May 2026 11:46:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777981562; cv=none; b=eO2hn6SP5+9DNOcJdg60rPBL+8Vxp11ghgjK7tqyUIedkFBIxBxlICU/5og50UVjZevaksmutHAg7TNShH+txBRYg/WqnGvJWCwEEBHHLQWA5Jb0X2VCUV1XgrJEYOips9SgT/xHD8a6U7wAaOMktf9Q0HLIryr4+T3EHrGK02o=
+	t=1777981562; cv=none; b=oXSYYUVsaCoycQmAfjqY4s/niokHTcXDmGb3XYYbEac1fUL3O6XEPwm6GFPj0eij6RuJNjS48jdKMOzlPNdmAlxmk/2MIGJAcIvzrBb3bdcTwHoJZJLyqISOJ6GUaN7CkASx2B7AL4MgIWVW/N+lTLo6TfCdFco+fWuuBNYNO4M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777981562; c=relaxed/simple;
-	bh=MPXjkBJADgIt/wERiH+9oxvomnnB/9cU+fY4E1zlxkU=;
+	bh=6BYp57FnTqY7dgYDlLvbafCG2WJR3R2gjLjC2EAy1+w=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=iidYMgN0P1zzs3Y070mUbg+RiMmXOfHxBth8bW0nyur2aHFLjG7qVuYBFHxiO8ib1Gopz3UtzMfh+dhz6d47ghTXNvJqImUk8lcqDXa8f1VpH4ts/ifvo+/Cht6KTOTQU3FoNOZiUxNiZlcBSpiUSGA4FJfXT3RjGZYVVneslHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FwIMK9A0; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=jsVV4t2BLafwV/ljC+/yfYsITooYX0Hh7a+gsFKA56VqVS40NyAma6f+0m0j4LpztOIaapkHWgeZB8q04rXKn1n9FDon73q6uERpbDNgVlbo6PO5LnIsEGNp63I140mQouX+EEUkcqjZuIddq+qKN06Kbu5JJA8o1FdKimbRE44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hcBl102s; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FwIMK9A0"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 42729C2BCB4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hcBl102s"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6165BC2BCFA;
 	Tue,  5 May 2026 11:46:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777981562;
-	bh=MPXjkBJADgIt/wERiH+9oxvomnnB/9cU+fY4E1zlxkU=;
+	bh=6BYp57FnTqY7dgYDlLvbafCG2WJR3R2gjLjC2EAy1+w=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=FwIMK9A0IZX4h3jKvx2QjDBoDCbJvQGBimI/aTPikClpie06qappMz35fkFf+3nJ6
-	 6p8b3aZlii4F+Gn63px2zpp1+nvSv+Wp3Um4dl87arT2E/JqAp7FvqoY5CQv2eMiJI
-	 dk5RPqfN4Vc0W+zAqM7JsZBmv+EgNpMNe3/KsJzH3eY9tEn3P7Ujo8kOzhoF56ZneH
-	 8UbZKstm6olnfThzPkI08LW5GafXpZ8uTLcuMh5Wk9Xi5Ecn65SESjsJUPGbDn+gml
-	 xPBvejAZ+OZ9ufCnr+a1yG/Y/BRFKZnwLlXe9LHhii87VYXDA26qix59WrqatktnZu
-	 IxR0PE0D00rVQ==
+	b=hcBl102s8LeEPFN5V7tEDB90hZDGtEZcYIiScxxKrxGNTXfHZVpEzDxr0AKhJWO8g
+	 zmRE7jEbipjAfDGnEAgQ71iau/Vxdv903quWAFuJWHMfzuMi1wkZnoegQtdEgO+Alb
+	 /qT4ZP2c9+Lk/tFxU5gM1fKkWbHPExViIbTxZelQYTt/lMsbjOuhAipNU02dTwmofj
+	 5JrsL8JyD9lqJkTJAyRItRoLtWcztqigf5vJvn24v2MADqOJ0Mzg0Y3e4UWkRrT9WO
+	 5xbWfa8zA6P8acu8T2XyhasJnRTUut/HKp2o9FGK7F4+VQwQxmuhQUhNzg1d6XaamG
+	 86SpkNwS9057A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A22FFF885A;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB34CD3430;
 	Tue,  5 May 2026 11:46:02 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Tue, 05 May 2026 13:46:06 +0200
-Subject: [PATCH v5 10/18] iio: magnetometer: ak8975: drop duplicate NULL
- check
+Date: Tue, 05 May 2026 13:46:08 +0200
+Subject: [PATCH v5 12/18] iio: magnetometer: ak8975: reduce usage of magic
+ lengths of the buffer
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260505-magnetometer-fixes-v5-10-831b9b5550fc@gmail.com>
+Message-Id: <20260505-magnetometer-fixes-v5-12-831b9b5550fc@gmail.com>
 References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
 In-Reply-To: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -52,11 +52,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Joshua Crofts <joshua.crofts1@gmail.com>, 
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777981558; l=997;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777981558; l=1861;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=XCs0GN+NbiGoXI2dfBbrODJcBvdjPZeVOf17jMKlR/o=;
- b=dHnX2TM5lF4yuVOe+fssLPd8Vy7wN2ARVf04Zv71ct3NnRWHaMx6oTNgTU5h10ownvM7cYjFV
- +xqmgtS7nGaAECPiU5bEmyk2CZzCIMAcuchUpRTMHzVQAKnbZry4SQL
+ bh=P6PO1KE4H4WDkhTj6+xQlfOfvlMXOvBEi4lRcvei5IU=;
+ b=EPi0Cf7mrBm0kIxFMtxtyS+LX6hMb7+g6zg9/5dV/86rvw4lpkM1CEP3RFyPFuZuibB+cSm82
+ 0i2jUH4muV8CZCgbF2S0QrvHRi8WrYd7PkxFtMepTBwYxQlZy7Ogloc
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -66,29 +66,55 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-The gpiod_set_consumer_name() is NULL-aware, no need to perform the same
-check in the caller.
+Reduce usage of magic lengths of the supplied buffer by replacing them
+with the corresponding sizeof():s.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index c36d068081066ef6b42cc2f9c3c2e8978ec51623..7a971de2eebf127fc8ab68300fb82f38d9476c0c 100644
+index f58cbafb491a5e039b22fc928a6c58dd6ec0f297..fd42e20cd145860bdd1b143409de24b7145f8252 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -918,8 +918,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	eoc_gpiod = devm_gpiod_get_optional(&client->dev, NULL, GPIOD_IN);
- 	if (IS_ERR(eoc_gpiod))
- 		return PTR_ERR(eoc_gpiod);
--	if (eoc_gpiod)
--		gpiod_set_consumer_name(eoc_gpiod, "ak_8975");
-+	gpiod_set_consumer_name(eoc_gpiod, "ak_8975");
+@@ -490,8 +490,10 @@ static int ak8975_who_i_am(struct i2c_client *client,
+ 	 * AK8975   |  DEVICE_ID |  NA
+ 	 * AK8963   |  DEVICE_ID |  NA
+ 	 */
+-	ret = i2c_smbus_read_i2c_block_data_or_emulated(
+-			client, AK09912_REG_WIA1, 2, wia_val);
++	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
++							AK09912_REG_WIA1,
++							sizeof(wia_val),
++							wia_val);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Error reading WIA\n");
+ 		return ret;
+@@ -610,9 +612,10 @@ static int ak8975_setup(struct i2c_client *client)
+ 	}
  
- 	/*
- 	 * According to AK09911 datasheet, if reset GPIO is provided then
+ 	/* Get asa data and store in the device data. */
+-	ret = i2c_smbus_read_i2c_block_data_or_emulated(
+-			client, data->def->ctrl_regs[ASA_BASE],
+-			3, data->asa);
++	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
++							data->def->ctrl_regs[ASA_BASE],
++							sizeof(data->asa),
++							data->asa);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Not able to read asa data\n");
+ 		return ret;
+@@ -865,7 +868,7 @@ static void ak8975_fill_buffer(struct iio_dev *indio_dev)
+ 	 */
+ 	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
+ 							def->data_regs[0],
+-							3 * sizeof(fval[0]),
++							sizeof(fval),
+ 							(u8 *)fval);
+ 	if (ret < 0)
+ 		goto unlock;
 
 -- 
 2.47.3
