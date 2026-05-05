@@ -1,116 +1,118 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4744C3C277C
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 07:10:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D0DF33F36D;
+	Tue,  5 May 2026 07:12:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777965037; cv=none; b=JV50qUPiSXHCsPbct0Lv8peqf9xzmuk+IQRFmi+zgK3VynB8JrP/847PLBJ3RdEtdrQEs3fO8jOrxlzbxik8UOwiWNxVehJtL5+zic/7tHuPraHEHAx6eLV0qEXtuscQFW5QPNulE2ZIDVUqFs1lUwTZAFGaOmBLcimgZ7eMoRM=
+	t=1777965173; cv=none; b=gYWo5Q8uGlL+4YE7fjTW/A2FI20j/YvTEwpiQhTvDD4dR4oZHAY5KvQl0ShTXu0goVNrGhNDRGlJI3KUS+v6QoTOQYDuhzIKTJheJO6N/mS/gKGPDO0xZf3lsXpUl+iZfGn3XnyIrGlrwaA+8GH8Eqmxprkqy8611GZNGqHAC1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777965037; c=relaxed/simple;
-	bh=IT40sORbf0ZQQhp9CFs1timHqHBAoiaj31IxLF3hF5Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rll0lCMqr2QZybJftWVlak+qLa4Col5PYfaNeICgnjx+8J11D/FdiEw8tWAX/cK38Qjtoax41MWxHyTjQ6sR4rkqbFBUucvdMIN3C/4yMabSB83wbX1LyN9K5Z/UWscl3USl7zxpzE25jLMEAGk0UH9b8SlnTTefwbfyUMzhRGo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ElmXZTX1; arc=none smtp.client-ip=209.85.208.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777965173; c=relaxed/simple;
+	bh=oDdLpjr4iBkoyYEer4B60RKRDLgQjw83eiwOtfcSPMk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C3C+iS6RL/U8ksnNrDVzkEBc7x17Ae9kJASS6jVHwnhq0JnoqaK0Rj0pFO0V1yuXgu355v3PMQY2J5ahQFsBTfUfeKd1mNizT+T1kb8no2vi1Fp2RcG62Dyr8EJ42IO2p2ydvdsaLxWGWAZ75lmnWOcrGWwbNQf5zNBTPw0MG4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fMnRMlkh; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ElmXZTX1"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-67389cf78b0so9706129a12.2
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 00:10:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777965035; x=1778569835; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=b+pn5g5M036sGAJchvhAuWuNpnA6lbM70mHBhN/MonA=;
-        b=ElmXZTX12A9emKddd4W7qM4/1HpGaS65aSIt1QVjZH7vRS073lZTCKs7y7UsUfEQjt
-         ifX8YDqzdt8jbWQLUUObNPWCozJwqlNalR/DqBW12kxXuoy3PIt9f3Cw4Cuw8IXz3EeY
-         rI4BSeqR9QlvH9nRafrHffhHSjcHfZFG0vSAr0Hrfi/juFwgNCrxzUFK0af+STtOYAX0
-         yGICN+X66Y3PdG70oBa7yfzBzIAHyXj/+WOQsp84RPvpkHWbmzGWCGfnyr6Y31dlXj9y
-         Mvk0R2Hq8xpWUg3cxnoQVN0JvIenstvP5Dz41Uafz17LXLnEDU5XvPBXyu0qXZPb/dPc
-         nxpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777965035; x=1778569835;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=b+pn5g5M036sGAJchvhAuWuNpnA6lbM70mHBhN/MonA=;
-        b=ifhZbLu5468MwVdeYDhljh6s5bkDxOMVAyynIr0L0h2bNT87makZjFX/NCxR5JZKIv
-         QTIZtqgKrS6HIK/bRWVkze6InHcnROgo/ww6SMr7OayDnVABMSLEEZsowD57Yo4KwpNV
-         db9OMdxhYf3c3j17KSX4DwSFCgQd/mbfS4jAWvIKCfoi34+HWew22wRAe/eje00sXBnu
-         2y3u3RoZLECC41yNH/52QnIZVevIgrsyMNVwNwtnAdwMoUP42PdSX/bo3S4/g9EnB7Vf
-         oS4BPV1zrydZFr4sojOA64kQj10XS6QiljUQN6qLYoMw+DHkhb2GP/VMK+qjdg7G4uYJ
-         wCIg==
-X-Gm-Message-State: AOJu0YzxLcyXRFQk4WF1XtWDk7oBsxOTFxTfPFsrG3P+sfb39TEYLEHg
-	LsqPiud8Gmo1Bg7tCnAPIn1P4uTy8DXUWcr7vEA4eTMWYX+bNNL6GIkO
-X-Gm-Gg: AeBDietvN1r9bcoUurREplMCKaS6mXuthemb6gkuLlfMGiyFvh1Gx2gsw21NtNmABR/
-	a9sohmKvCUWSUGjmA4OMn4DH6QPwEWVlgK7IJEm1/kg1Dv8NvjfYLcqAoJ7xKxu1vJbOXQkByGx
-	qICCjdhHdWV504sP/g1svr8CoLeeXSck51zIIxoNuQezWB+E2hrhOPH4IpYA779lOEncFeDMvys
-	knKhggoM/tldQaDKW8MM2CYKd5QrsaXVivh8hRElsJjEZjVf+SK6exElR6ip6pLW99z29ivrbfb
-	Ao7R7n6xwnyAEYYVXh1K79zfqObrCfF878FXNcidzFEdTdbXN1v6aW2CetaLWxAbc+GNPRmsriu
-	OrwAB7wMEdzEzH+krS54Y0dxFIw6rh7TqnwS1VP9hdrAAO5T7/NRaa+CABNbpGn5gm2+6rT3lUp
-	qx0l9NdHJBEYrEDU03ycldNrUQj3Sw7wEPyqHkoZiolDMOmGHh
-X-Received: by 2002:a17:906:9f87:b0:ba7:cc67:488b with SMTP id a640c23a62f3a-bbffab33111mr713406566b.5.1777965034265;
-        Tue, 05 May 2026 00:10:34 -0700 (PDT)
-Received: from localhost.localdomain ([196.235.252.38])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bc13421bfe3sm254129966b.56.2026.05.05.00.10.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 00:10:33 -0700 (PDT)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH v2] iio: temperature: tsys01: fix broken PROM checksum validation
-Date: Tue,  5 May 2026 08:10:24 +0100
-Message-ID: <20260505071025.69221-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fMnRMlkh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777965171; x=1809501171;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oDdLpjr4iBkoyYEer4B60RKRDLgQjw83eiwOtfcSPMk=;
+  b=fMnRMlkhbQbKc2Cyk1rMzHNImZTI0iJaWb7qFkfcDtln0WRzY0lG558Y
+   fT1OQ/Iw0FrLQdzSX+tra9AH+eQGiy9yQGQQ46gp8c0puL/fLRX6q4cKC
+   vvv7OLc1YVkrzH01UgnEjkCGqFj2SEx8p2E8FbQ0v4DGeIVtO48HgCOit
+   LmjF4uKBakHDy29P1DdbhQiunOnLh7c9aX9DAOCaNJO7oM/cN4MHj78Pg
+   p6vw+B3M5SpgnSpwdUQ4hRBPUOd9pLJ7GFcwVSdYqR3X6+GWLtBoLoClK
+   kdyfIpVMsn8gG22RBpro7S/RmG83advyKHQkwn055D85TB/A0A9236Zir
+   A==;
+X-CSE-ConnectionGUID: eCdAczteQya1oTQmYlQPXA==
+X-CSE-MsgGUID: LVT0XJpGQcypiubZXf8XhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="78733123"
+X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
+   d="scan'208";a="78733123"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 00:12:51 -0700
+X-CSE-ConnectionGUID: JOCNizUCTLi+47X600JzWQ==
+X-CSE-MsgGUID: oMN9uDfyTtSRCMh0m2uIoQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
+   d="scan'208";a="240031139"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 00:12:47 -0700
+Date: Tue, 5 May 2026 10:12:44 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Salih Erim <salih.erim@amd.com>
+Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, git@amd.com, nuno.sa@analog.com,
+	andy@kernel.org, dlechner@baylibre.com, michal.simek@amd.com,
+	conall.ogriofa@amd.com, erimsalih@gmail.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] iio: adc: add Versal SysMon driver
+Message-ID: <afmYbF8sLXugL-EE@ashevche-desk.local>
+References: <20260502111951.538488-1-salih.erim@amd.com>
+ <20260502111951.538488-3-salih.erim@amd.com>
+ <afhyiW_5embow_hx@ashevche-desk.local>
+ <8d0ed33d-deab-4aa3-a7bf-3aaf84f4583f@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8d0ed33d-deab-4aa3-a7bf-3aaf84f4583f@amd.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The current implementation of tsys01_crc_valid() incorrectly sums the
-first word (n_prom[0]) repeatedly instead of iterating over the 8 words
-retrieved from the PROM. This leads to a checksum mismatch and probe
-failure on hardware.
+On Mon, May 04, 2026 at 04:50:05PM +0100, Salih Erim wrote:
 
-According to the TSYS01 datasheet, the PROM consists of 8 words. A valid
-check must iterate through all 8 words to verify the integrity of the
-calibration data. The current driver only checks the first word 8 times.
+> On 5/4/2026 11:18 AM, Andy Shevchenko wrote:
+> > On Sat, May 02, 2026 at 12:19:48PM +0100, Salih Erim wrote:
 
-Note: This fix was identified during a code audit and is based on
-datasheet specifications. It has not been tested on real hardware.
+...
 
-Fixes: 43e53407f680 ("Add tsys01 meas-spec driver support")
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
-Changes in v2:
-   - Update commit message to clarify that the fix is based on the
-     datasheet analysis.
-   - Add a note mentioning that it has not been tested on real hardware.
+> > > +     if (format)
+> > > +             mantissa = (int)(s16)mantissa;
+> > 
+> > Potential user of FIELD_GET_SIGNED(), but for now just use explicit call to
+> > sign_extend32().
+> 
+> Accepted. Will use sign_extend32(mantissa, 15).
+> 
+> > > +     *val = (mantissa * SYSMON_MILLI) >> exponent;
 
- drivers/iio/temperature/tsys01.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The idea is to think about this (and other) user and try to come up with the
+solution that will not decrease readability and at the same time give more
+context. Perhaps you need an additional patch that introduces the multiplier
+for millivolts (as it's done for degrees).
 
-diff --git a/drivers/iio/temperature/tsys01.c b/drivers/iio/temperature/tsys01.c
-index 334bba6fdae6..104dd45598b0 100644
---- a/drivers/iio/temperature/tsys01.c
-+++ b/drivers/iio/temperature/tsys01.c
-@@ -119,7 +119,7 @@ static bool tsys01_crc_valid(u16 *n_prom)
- 	u8 sum = 0;
- 
- 	for (cnt = 0; cnt < TSYS01_PROM_WORDS_NB; cnt++)
--		sum += ((n_prom[0] >> 8) + (n_prom[0] & 0xFF));
-+		sum += ((n_prom[cnt] >> 8) + (n_prom[cnt] & 0xFF));
- 
- 	return (sum == 0);
- }
+...
+
+> > > +/* Signed milli scale (MILLI from linux/units.h is unsigned long) */
+> > > +#define SYSMON_MILLI                 1000
+> > 
+> > I think you want a different approach. I already forgot how it's being used,
+> > but there shouldn't be a new (re-)definition just because of this.
+> 
+> The issue is that MILLI from units.h is 1000UL, which causes unsigned
+> promotion when multiplied with signed int values (e.g. negative
+> temperatures or two's complement mantissa). There is
+> MILLIDEGREE_PER_DEGREE (signed 1000) but using it for voltage
+> channel conversions would be semantically wrong. Will either use
+> (int)MILLI at the call sites or just use literal 1000 -- happy to
+> go with whichever you prefer.
+
+Let's wait for resolution WRT hwmon vs. IIO.
+
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
