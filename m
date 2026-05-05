@@ -1,162 +1,161 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 225C835F189;
-	Tue,  5 May 2026 14:04:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5633B23C516;
+	Tue,  5 May 2026 14:05:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777989854; cv=none; b=n+VQTEUNmt5jcZD7mzdKja19UW8y8UpG+vkACgUDnKZarAUUN/bjeepWJHI/6mBBR/PH1K9gcZFa9+jihOZpolS8euFEr3GVzs9Fg6/ZKDoCadZUeA1y4lQmQtXj2Bmv4jAz+YI/crFG7xHAUhrbXKtsKo3qSSyUbaKLJV0B4sk=
+	t=1777989924; cv=none; b=q/rgJFPgD+89DytMHq8uhANVk2JYe8/8kRDic2A2fVTf93ErvtsEgLjPbVz0BsyCTjg+nqXvz1cTiKHcqys7rfcVx1BymQ9Uug9/OS8WDhieBuuhDhdgZrf4bH5FaRKIU1ryvl1S+I0RqbjLoG+HqQG0FUhUb7MeA992E2nBlyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777989854; c=relaxed/simple;
-	bh=Ux3dNW05X+8WWEHwiwqSOeOpXAo3OQsJiO2o1/H20jg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=q0e6QgVIhGgeFC5s/I1ZzMercyc/2RnE1v6UY230LFzW9D8fbaXahHoQAW+hNX1WDkWIe3BQS++34w53XGgNHQNPC9JwHoVLizvP0p/ED6soawamtlEIykLmptOJ2lRBNALz6L6uHVYe2m6hrM8IhnF6K+i6Z+YaCKI6JxidU3A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LBoi3Cmj; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777989924; c=relaxed/simple;
+	bh=LtbcojIUM+o0f4bAbDoLjPUTjXd3D3xyp8t7jWxs0rw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DOnVfOBP91oDvJsg3/4V9rgGsk9ANsflc0/cptsD/dY7SND4znKiGVHAvgeb26u5TB5374REs4OToIvDVeL+mV989Go9BFrm/VLLEXbwFCBPMl1AkdRLLapRByyub1RlriG3Y66CcvCrMK/bcqZToMNthOoHLriR91hO2wHPrb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gAPTNzsa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LBoi3Cmj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48269C2BCB4;
-	Tue,  5 May 2026 14:04:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gAPTNzsa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FCECC2BCF5;
+	Tue,  5 May 2026 14:05:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777989853;
-	bh=Ux3dNW05X+8WWEHwiwqSOeOpXAo3OQsJiO2o1/H20jg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=LBoi3CmjpdEPfhcnaxBDANrmzPX3Zhl92s+kYLCpISfdI4iDF0MR7jpB4p+KbIBCZ
-	 5GRhokW7f0cxRmdXab6uYxlAvvnP1P4GMaEBU9/vIHc0OnVua6eQYjV/en6ax2C/XF
-	 sel2VvwXLO8WyR5JqoiG1t3s9m71FBssTRXOuYaFEhA5A8uJNexk1KL9rbkJlvwwYJ
-	 NwODokMZwRer8Y2nD4YF3V6P+42LJauPHCYwrBJ4d/+XvdR2Yc71Z401lQcA2XeGr3
-	 L702rFlNNcOer74qeC+9TyTrUg0RbTWzzoYjwM4GNFwmTCx+1zhKXx4tzJqhs85ZBd
-	 2+bL1KcGtOMKw==
-Date: Tue, 5 May 2026 15:04:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
- <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org
-Subject: Re: [PATCH v9 3/6] iio: adc: ad4691: add triggered buffer support
-Message-ID: <20260505150400.59e18fad@jic23-huawei>
-In-Reply-To: <20260430-ad4692-multichannel-sar-adc-driver-v9-3-33e439e4fb87@analog.com>
-References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
-	<20260430-ad4692-multichannel-sar-adc-driver-v9-3-33e439e4fb87@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20201202; t=1777989923;
+	bh=LtbcojIUM+o0f4bAbDoLjPUTjXd3D3xyp8t7jWxs0rw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gAPTNzsaNflEqXufrYulPtvNPFBTTlt9QvloeM6BzK2VfliIpd6vjz9XttRK2pclW
+	 2XF7R6hOXPQ5VKmvGUPUF9FrB+Z2tPCJ/JlxUyDlIwlGMOH26CYWwLALfkuY5uSdxR
+	 wMFFsP925o/uGZEWQ2fum87MCcvVJBDgKClfW2JyoUZzkNljWudgJ1pzVgcYNkT9qW
+	 9kzkwyuwmz3XvO4doiNMQCCQxee4qLj60JNKP0usrNmn3/KGBvMGw+Ja7gFLcTy3eg
+	 KyTAe93pxrdjIVd0cMm5ticTnv3fFME7PO/GyFH7DGctUC5cIwzdiqk8Ft2Qelh+4e
+	 KCfnrEF0LI+QQ==
+Date: Tue, 5 May 2026 09:05:21 -0500
+From: Rob Herring <robh@kernel.org>
+To: Roman Vivchar <rva333@protonmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+	Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH 03/13] dt-bindings: thermal: add mt6323 PMIC thermal
+Message-ID: <20260505140521.GA2515943-robh@kernel.org>
+References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
+ <20260504-mt6323-v1-3-799b58b355ff@protonmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260504-mt6323-v1-3-799b58b355ff@protonmail.com>
 
-On Thu, 30 Apr 2026 13:16:45 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
+On Mon, May 04, 2026 at 09:24:55PM +0300, Roman Vivchar wrote:
+> The MediaTek mt6323 PMIC temperature can be read using AUXADC channel.
+> 
+> Add the devicetree binding documentation for the MediaTek mt6323 thermal.
+> Due similarities with newer PMICs like mt6358, which include more than
+> one thermal sensor, the #thermal-sensor-cells should be set to 1, to
+> avoid breaking devicetree ABI in future.
+> 
+> Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
+> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> ---
+>  .../bindings/thermal/mediatek,mt6323-thermal.yaml  | 63 ++++++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/thermal/mediatek,mt6323-thermal.yaml b/Documentation/devicetree/bindings/thermal/mediatek,mt6323-thermal.yaml
+> new file mode 100644
+> index 000000000000..1882816ba274
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/thermal/mediatek,mt6323-thermal.yaml
+> @@ -0,0 +1,63 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/thermal/mediatek,mt6323-thermal.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek PMIC thermal
+> +
+> +maintainers:
+> +  - Roman Vivchar <rva333@protonmail.com>
+> +
+> +description:
+> +  The MediaTek PMIC thermal sensor uses an AUXADC channel to read raw
+> +  temperature data and applies calibration data from NVMEM.
+> +
+> +allOf:
+> +  - $ref: thermal-sensor.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt6323-thermal
+> +
+> +  io-channels:
+> +    description: >
 
-> From: Radu Sabau <radu.sabau@analog.com>
->=20
-> Add buffered capture support using the IIO triggered buffer framework.
->=20
-> CNV Burst Mode: the GP pin identified by interrupt-names in the device
-> tree is configured as DATA_READY output. The IRQ handler stops
-> conversions and fires the IIO trigger; the trigger handler executes a
-> pre-built SPI message that reads all active channels from the AVG_IN
-> accumulator registers and then resets accumulator state and restarts
-> conversions for the next cycle.
->=20
-> Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
-> reads the previous result and starts the next conversion (pipelined
-> N+1 scheme). At preenable time a pre-built, optimised SPI message of
-> N+1 transfers is constructed (N channel reads plus one NOOP to drain
-> the pipeline). The trigger handler executes the message in a single
-> spi_sync() call and collects the results. An external trigger (e.g.
-> iio-trig-hrtimer) is required to drive the trigger at the desired
-> sample rate.
->=20
-> Both modes share the same trigger handler and push a complete scan =E2=80=
-=94
-> one u16 slot per channel at its scan_index position, followed by a
-> timestamp =E2=80=94 to the IIO buffer via iio_push_to_buffers_with_ts().
->=20
-> The CNV Burst Mode sampling frequency (PWM period) is exposed as a
-> buffer-level attribute via IIO_DEVICE_ATTR.
->=20
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-Hi Radu
+Don't need '>'.
 
-I haven't chased it through but Sashiko is raising concerns around the
-irq enabling / disable tricks this pulling and they may well be correct.
-Please take a close look at what happens in the remove path. We may
-need some local driver logic to avoid a double disable.
+> +      IIO channel for the AUXADC to read raw data from.
+> +    maxItems: 1
+> +
+> +  io-channel-names:
+> +    const: vts
 
-https://sashiko.dev/#/patchset/20260430-ad4692-multichannel-sar-adc-driver-=
-v9-0-33e439e4fb87%40analog.com
-
-> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
-> index 05826b762c7f..c1e3406fef18 100644
-> --- a/drivers/iio/adc/ad4691.c
-> +++ b/drivers/iio/adc/ad4691.c
-
+-names properties are pointless for a single entry.
 
 > +
-> +static irqreturn_t ad4691_irq(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev =3D private;
-> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +  nvmem-cells:
+> +    description: >
+> +      NVMEM cell with phandle to the calibration data provided by the
+> +      NVMEM device. If unspecified default values will be used.
+
+Drop. Don't need generic descriptions.
+
+> +    maxItems: 1
 > +
-> +	iio_trigger_poll(indio_dev->trig);
-> +	/*
-> +	 * Keep the DATA_READY IRQ disabled until the trigger handler has
-> +	 * finished reading the scan, to prevent a new assertion mid-transfer.
-> +	 * The PWM continues running uninterrupted; the IRQ is re-enabled in
-> +	 * ad4691_trigger_handler once spi_sync completes.
-> +	 *
-> +	 * IRQF_ONESHOT already masks the hardware line during this threaded
-> +	 * handler, so disable_irq_nosync here ensures the IRQ stays disabled
-> +	 * even after IRQF_ONESHOT unmasks on return.
-> +	 */
-> +	disable_irq_nosync(st->irq);
+> +  nvmem-cell-names:
+> +    const: calibration-data
 > +
-> +	return IRQ_HANDLED;
-> +}
-
+> +  "#thermal-sensor-cells":
+> +    const: 1
 > +
-> +static irqreturn_t ad4691_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf =3D p;
-> +	struct iio_dev *indio_dev =3D pf->indio_dev;
-> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +required:
+> +  - compatible
+> +  - io-channels
+> +  - io-channel-names
+> +  - "#thermal-sensor-cells"
 > +
-> +	ad4691_read_scan(indio_dev, pf->timestamp);
-> +	if (!st->manual_mode)
-> +		enable_irq(st->irq);
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/iio/adc/mediatek,mt6323-auxadc.h>
+> +
+> +    mt6323_thermal: thermal {
 
-I think this should be in the reenable_trigger callback rather than here.
-That's ultimately fired by iio_trigger_notify_done.
+Drop unused labels.
 
-Sashiko had quite a bit to say about the problem paths around the buffer
-being disabled between the interrupt and the trigger handler. I don't think
-using the reenable trigger solves that though :(  We might be able
-to fix that centrally by always reenabling the trigger before
-disconnecting it but that's rather ugly. There is a note for the async
-trigger reenabling about a driver possibly needing to be careful
-to not reenable if the whole trigger was disabled in the meantime but
-this particular race isn't covered.
-
-
-Terrible though it is we may need to have some extra infrastructure
-to avoid the double disable (assuming it is real).
-
-
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
-> +}
-
-
+> +      compatible = "mediatek,mt6323-thermal";
+> +      nvmem-cells = <&mt6323_thermal_calibration_data>;
+> +      nvmem-cell-names = "calibration-data";
+> +
+> +      io-channels = <&mt6323_adc MT6323_AUXADC_CHIP_TEMP>;
+> +      io-channel-names = "vts";
+> +      #thermal-sensor-cells = <1>;
+> +    };
+> 
+> -- 
+> 2.53.0
+> 
