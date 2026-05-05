@@ -1,165 +1,66 @@
-Received: from mail-24424.protonmail.ch (mail-24424.protonmail.ch [109.224.244.24])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E0C648B38E;
-	Tue,  5 May 2026 16:24:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.24
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 381E7480958
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 16:25:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777998298; cv=none; b=Gy0FZ5QHkj69wvRYV+Yg7j6EUEs60djiGpC3HzWedN0SEZd8Fs5OZDq0XZlfQ/0Tz/XHf+iesVYRaAiSrN4LHHxV8jNLhftZws7Yw14SfUB+VWpmPiIx9GSO4FU8tHpTdNtbHTdBgRFWMrEuq4yKVqzjsJ7tgtNyb/qA/loxjNs=
+	t=1777998317; cv=none; b=OD8THjFiu9HO0ngW2IH8CFiYDxrW2JMgf3u6DNasjiVEE6iSctMOWW4JDK6oeeyrQOCYHTC/B5ZmWo1YqCaLlbu4s/DamaNDmWceuGCzK6//uAnZh2isycZR27CbCnPeMyr4ixr0MX6Kwxknn9n0MwE356UZYieQj+DHlPxlyks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777998298; c=relaxed/simple;
-	bh=zNiWv6rRMr8VglHjj6vRucPyNjtedqguSDscHAx+XdI=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=luEpCdg32rCvNyqLhfSDPbugRL4PjyeZVSW9XKrz3/5G9ufj+RmaOefdTpwOnH5i+4MUYMOO/UFZRvA37sAjcGahWCLJuRPkJwotFqCwsFTHmCgJZDty+VA+Jb4A/gfyFKiou/IgjZsXtLPuw/7U7W56pgmghLPMEH7jgOodn9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=M+F3yhx7; arc=none smtp.client-ip=109.224.244.24
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	s=arc-20240116; t=1777998317; c=relaxed/simple;
+	bh=v0CL0zB65znq8Rpx7MBpAcaKTWdKY8Bpqk+i9QYvYWI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=F/zWST4An7e+5D763pSFXjtuwUNKJtFy8CtblVLzuLazN9pg/HhuS0Cgoi4mqLfjmKCA7jRlKiTAZWLGtpY1Gez2ggi2kd6qiptXtyo2+O7mlOLg9qHeD08DnKHXTCqRUE0La75OapSd5ZNUzFWIJu03m3GcB7EBO4Ok8K6Waik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dW+mRDXh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="M+F3yhx7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1777998287; x=1778257487;
-	bh=ASWqzKjXrD7GPPPq7eqcATqg6A70mPRmdB4ZyDBwEK0=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=M+F3yhx7dJ2rhFSJAZcFeXyevkNolOGRHAyGx9L5V9zEwV48mNW0/j1DxaK2EZV3A
-	 sOI77K5RJdv6vOQ4iT0XOz7d7KLFmOkC+jHajqCLIfMwCKTNmoZk26ZlwEiaoyoM9j
-	 b0Jm6p/Ff5EtNIHmXiEyFH/VfiVWcUCBVrOwkIFsGzbQoFISKrRmmTf1YBwE6BKG50
-	 jEC/Wpla8r4KX6aKV8Ln+iyPz5DRcWZf6WmD+D+yqDdYEw+FuY37PxcYMtVcMYDeHg
-	 ZFaIG7dN5yXP2FY+Ojke22qfg31drHoBz2zpt6/kca1w+FzeqPMI0bs85GKPo37cug
-	 sJC/bk/aU+nQA==
-Date: Tue, 05 May 2026 16:24:41 +0000
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-From: Roman Vivchar <rva333@protonmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Srinivas Kandagatla <srini@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH 05/13] nvmem: add mt6323 PMIC EFUSE driver
-Message-ID: <Bn1O24yJ2aBvKUTpiFUzxnqbuuybRirR73G7R38ghYtwhFvQqWJb3HPgcikEa1otDw6n07nX_g8khZUHXJ_QRA--LrV5yj5Mcg1QzrWt6vA=@protonmail.com>
-In-Reply-To: <afmjfWtt7Vii6xfH@ashevche-desk.local>
-References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com> <20260504-mt6323-v1-5-799b58b355ff@protonmail.com> <afmjfWtt7Vii6xfH@ashevche-desk.local>
-Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: 70e68a78b3333f71307d661d5a8c93410d5d2dc7
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dW+mRDXh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD7EC2BCB4;
+	Tue,  5 May 2026 16:25:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777998316;
+	bh=v0CL0zB65znq8Rpx7MBpAcaKTWdKY8Bpqk+i9QYvYWI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=dW+mRDXhMtyZrvakdLFX7LPG1sC5M5LPEtFYK8XvAkDm463dcj5LGgRFiQhciYfG0
+	 HXeYCkxix8asWKrMB8r3pM5ON2QsF8OzzfEeVqyC0CZtJqYUJFPMcIMjBQP0of/H6J
+	 O79g/VXR1iqwv9XWNGQS5FYoAqMzad3e3lhbrMZ6RTOxZHmERlP1wskyxwqo/y81EN
+	 SQZPebXW+amcHatbkwQt5EN+nilloDat4fJRhGLxtMeRX5YFtRxLQ6kna1fv96VPoq
+	 4j6kx10F/JgdDdXsZ7mL6SdPTR5+MzjEF/irk1qk1R1mX9r1Mk1P0Bz0C1+XXtVC06
+	 skxso85huBVdw==
+Date: Tue, 5 May 2026 17:25:07 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Educg550 <educg550@usp.br>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
+ antoniu.miclaus@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, Lucca Ciriac <luccaciriac@usp.br>,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: frequency: adf4377: replace mutex_lock/unlock with
+ guard and scoped_guard
+Message-ID: <20260505172507.71dbf4f7@jic23-huawei>
+In-Reply-To: <20260429202304.25308-1-educg550@usp.br>
+References: <20260429202304.25308-1-educg550@usp.br>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tuesday, May 5th, 2026 at 11:00 AM, Andy Shevchenko <andriy.shevchenko@i=
-ntel.com> wrote:
+On Wed, 29 Apr 2026 17:23:04 -0300
+Educg550 <educg550@usp.br> wrote:
 
-> On Mon, May 04, 2026 at 09:24:57PM +0300, Roman Vivchar via B4 Relay wrot=
-e:
->=20
-> > Add support for the EFUSE controller found in the Mediatek MT6323 PMIC.
-> > The MT6323 EFUSE stores 24 bytes of hardware-related data, such as
-> > thermal sensor calibration values.
->=20
-> Besides below comments, check for the similar issues that previous patche=
-s in
-> the series have.
->=20
-> ...
->=20
-> > +#include <linux/device.h>
->=20
-> Not needed as platform_device.h implies this ("is this good or bad?" is a
-> different story).
->=20
-> > +#include <linux/io.h>
-> > +#include <linux/mfd/mt6323/registers.h>
-> > +#include <linux/mod_devicetable.h>
-> > +#include <linux/module.h>
-> > +#include <linux/nvmem-provider.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/property.h>
-> > +#include <linux/regmap.h>
->=20
-> Follow IWYU. At least missing types.h.
->=20
-> ...
->=20
-> > +struct mt6323_efuse {
-> > +=09struct regmap *regmap;
-> > +};
->=20
-> Do you really need a custom wrapper data structure? Can't regmap be used
-> directly?
->=20
-> ...
->=20
-> > +static int mt6323_efuse_read(void *context, unsigned int offset, void =
-*val,
-> > +=09=09=09     size_t bytes)
-> > +{
-> > +=09struct mt6323_efuse *efuse =3D context;
-> > +=09u32 tmp;
->=20
-> > +=09u16 *buf =3D val;
->=20
-> Really? CPU order all the time?
->=20
-> > +=09int i, ret;
->=20
-> Why is 'i' signed?
->=20
-> > +=09for (i =3D 0; i < bytes; i +=3D 2) {
->=20
-> sizeof()?
->=20
-> And since 'i' is used only inside the loop
->=20
-> =09for (size_t i =3D 0; i < bytes; i +=3D sizeof(*buf)) {
->=20
-> > +=09=09ret =3D regmap_read(efuse->regmap,
-> > +=09=09=09=09  MT6323_EFUSE_DOUT_BASE + offset + i, &tmp);
-> > +=09=09if (ret)
-> > +=09=09=09return ret;
-> > +=09=09buf[i / 2] =3D tmp;
-> > +=09}
->=20
-> + blank line.
->=20
-> Isn't this reimplementation of bulk read? Why the latter may not be used?
+> From: Eduardo Guedes <educg550@usp.br>
+> 
+> Replace manual mutex_lock()/mutex_unlock() calls with guard(mutex) and
+> scoped_guard(mutex) from cleanup.h.
 
-Yes, but the PWRAP (the regmap which the driver uses) doesn't support read
-callback, only reg_read is implemented in the driver.
-It hits the map->cache_type =3D=3D REGCACHE_NONE in the regmap_read_raw, an=
-d falls
-for the !map->read check, so regmap_bulk_read neither the regmap_read_raw
-can be used.
+Why?  The patch description must provide an explanation on why the
+change justifies the burden of churn to the driver + reviewer time.
 
-Technically the PMIC is not continuous address space, but rather non-MMIO F=
-SM,
-so it makes sense to not implement the read callback. I guess the custom
-implementation is fine then?
 
-All other suggestions will be applied for v2.
-
->=20
-> > +=09return 0;
-> > +}
->=20
-> ...
->=20
-> > +static const struct of_device_id mt6323_efuse_of_match[] =3D {
-> > +=09{ .compatible =3D "mediatek,mt6323-efuse" },
-> > +=09{ /* sentinel */ },
->=20
-> Having trailing comma in the terminator is nonsense. Do we expect anythin=
-g
-> behind it?
->=20
-> > +};
->=20
-> --
-> With Best Regards,
-> Andy Shevchenko
->=20
->=20
->
-
-Best regards,
-Roman
+> 
+> Signed-off-by: Eduardo Guedes <educg550@usp.br>
+> Co-developed-by: Lucca Ciriac <luccaciriac@usp.br>
+> Signed-off-by: Lucca Ciriac <luccaciriac@usp.br>
