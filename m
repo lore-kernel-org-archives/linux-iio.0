@@ -1,256 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93B033016F5;
-	Tue,  5 May 2026 09:32:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777973546; cv=none; b=iGszH14xkG5nI/0kxKY9SoDZsw56CC3VpozXoJOsRI9noqgxVCeteR81hKe+4fw3BSe7ntF4dJOlAGGHJ6AgVGNLbmCxHz8qhQ+NitS0zAUiyEEXSBrTcukKy3efHo29KfMRGInzfzxSvOjX+jGHqRIFdWPXTVHNgC9CXe5g3oI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777973546; c=relaxed/simple;
-	bh=KJfkabisjlmxoJXa1+rOskqa5Ln7N09JmhbM/+u47IA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QBx+Lnr+g5bgVVbXcW2WdFQutZ4D172tZER4najXWMsxRkK2uc12cKwvqAraFAGD2ULBxR1nvWGCMpuam1w8BDHvNF/VGYmcNhvcdLxtAqBIyNVLwRZDQPRLV4vED6aEhPBOWxjI58/n/QgBSo4CtsDH8P0ztIrkRr8H280h32w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YmWXCsYy; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B28830BB91
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 09:36:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.169
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777973811; cv=pass; b=JBlM1WenhKFHqdLJi83D9YjCuCwuDFbOL6qlSCg8E/LFxnt0E+qJIlBe4JIAQYI2GQ3JjQWxjm8cbgqqcaQRbrfiB+0YjbSz/fkxoKi4XqqC9Iqiw6WdjnoCY6eeVVWwFJpV7iH9nRg0M12IFxVgiGyhuSMqtKDWvcSJW0lL0KY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777973811; c=relaxed/simple;
+	bh=wnp8gE+6ZOu9sg+YVamKOgsRE5iv4d5c0sNUD/nfkWc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=f9vZvss4h6k7IDidplVrinaf/tfprtg55dbgq4h+V0sT0WaaJz8LXX2W2sFpPybPx9uIX0DZmOU2+V/7xhnMbqur7qlsz8PV5ZMYR7c+W3MbaBOrBBtkYprPWBIsiufuxpY+zxidRZpEfgA+4ffO1xPdv98XSPBv1y6TvxunMms=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PEuRPxvX; arc=pass smtp.client-ip=209.85.208.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YmWXCsYy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B0D0C2BCB4;
-	Tue,  5 May 2026 09:32:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777973546;
-	bh=KJfkabisjlmxoJXa1+rOskqa5Ln7N09JmhbM/+u47IA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=YmWXCsYyfss7cRcygfMmYk3VuKCiZ7WLi+9ZdJ3czOlwzR0GFCrvQXsJLQiWcCJfK
-	 2mMS8anIkfW8UIgN6UptwoQrHU3SQGcflCpSudJBN/0KS97NISophkaACJ2jnYOyjp
-	 wkuNULpF6kGe4wEyoIy+TZb8RneOp59unqmlcnL8SoGvH/JNnZ+/3K7GNtHOYOXyWj
-	 Wq1chBCbrxJc4pI+WBL8RMJkPwX0V3Inisllmw02sgOpFUfefKDPX0o4azD4DUPOWR
-	 LtjtSa62Yx9WykZ0HFkthjGNssribyEOjFFmIaTnF+RhUymUyebpYNcOgChBOUi8dI
-	 BxA4SfmGw+KoA==
-Date: Tue, 5 May 2026 10:32:16 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: kernel test robot <lkp@intel.com>
-Cc: Maxwell Doose <m32285159@gmail.com>, llvm@lists.linux.dev,
- oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: kmx61: Use guard(mutex)() family over manual
- locking
-Message-ID: <20260505103216.0fd9670e@jic23-huawei>
-In-Reply-To: <202605051218.kuLCMDTO-lkp@intel.com>
-References: <20260502032455.76107-1-m32285159@gmail.com>
-	<202605051218.kuLCMDTO-lkp@intel.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PEuRPxvX"
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-38e7d984096so56652861fa.2
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 02:36:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777973808; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Qdl0QeREU/vZQxst6phcHHqnljYRQglMtnztRH/pXSyhs74vp7b4aCJb/sgOlgp0eA
+         8pLNFaNbG5tYvz530YvM1UaSn4Mmny0r+TpQVcswxKfJIDIpKTho+TsDhVrppECvcd/H
+         /sML0BWEAdck7S/BIPyJLWFBJdzhk+Q1JPPC533sj8ilpvBpOLiMrCcv1X+FFy5zmj9J
+         oxrkHm2mEWKrPTrVT0HOJ+HLcHTtk/JcY89qZ6HVjs0oqG1bYGDG15Oe+vEHCbCAVgNv
+         hC+U7Er3hD5LaY2hTEvMvsmvCQyYH/ANKsFKjVfFr6AkHuaF1xe19LMf/eUmAcBGWKMe
+         sa5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=wnp8gE+6ZOu9sg+YVamKOgsRE5iv4d5c0sNUD/nfkWc=;
+        fh=3nPzJ9+h/aTU26wDtzreteIiPBfKi6Cn0U3FP8rYfTs=;
+        b=M4UTZ/Mejsf4kU1ojm8f0EPPFiWSC6w/T6U1QzdFBT9LsDFwYT/LtLl9ejvklrFhqT
+         FtRx/s1vEWrLmghmDa38y+ci+VdXE/G2Nn/KoyynXokFJNRG3NWxt+qsx/wwYjlzeyfW
+         O/9cM0rtfH99qqoWgVpD66eNHKy/wULZRRXFNp5CY/sv24Umw/R+0HzE9hioAi4n5HT/
+         XplLH4hqr9VzKk4pYTxCWOHYoU3Hpjt0rYF4ic2+Yx4tA7HM6dOmuQnVbs4PVhWqdvw4
+         XFTNtGsCTtR3ArsqXXs2mnYNW/MgcrVfkYu1QlbOz5nTOxSjHD82837fN+zacAfMrwe+
+         PFBQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777973808; x=1778578608; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wnp8gE+6ZOu9sg+YVamKOgsRE5iv4d5c0sNUD/nfkWc=;
+        b=PEuRPxvXVHLxjQpEnh4CeeJJe9cmyizbCljtRmn3EbVtRHSnPsYurfqAicgsGP11mi
+         Ru3yuuILUfzQAxAvoHeFoXpbbBkXy+9kCRzp0OGHjrwZ+DoY9kT3qw9sT9UVLgmIl9lC
+         F5DNHhILuzLYgNYsC6gCK3A2Vs+sEQMhBAO2l6LAnWXRuiHQupVI1+nVkiqsdSiLpZRr
+         7/gBBpiWEsR/5bf4HpDad1Z8nWYaQw5uPYfZHpDYiiJRhk8QJ/HuF3+OCW+HbGH8hktV
+         EOTOSY4D/jZh7Od9CT9n+cGiFo+nKcviwaOjd12huhav1a7dmJCZDvYWuyrqKhCZgo/d
+         TIqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777973808; x=1778578608;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=wnp8gE+6ZOu9sg+YVamKOgsRE5iv4d5c0sNUD/nfkWc=;
+        b=V8JapMjPwQLJXyPhrW2irARrQm6hD4Gt7lVwchNXnmmkscD0yWWSxy0ACn1+vaBii5
+         4qtXnghJf5d5QCzgeSOyw2FloMqOgvH8kHeXGnTJDqAaQJPiN0DQTmXBBLi7V+ehpG0n
+         cQvR11/t6sYZRedCaIYUZAZsL//l5saNM3tLDAOcMSy1GcPo4BvUcq0Co54zYUGXHbVz
+         X8qQPz2Uv6ti3eKl54wtTZVzoHXumLEo4oUaHavM5P4TpgWPmmEfXq9YZ1Vf//gbAj4v
+         taKiEJXwjWJZiq+UzOGJH6maKuEyBaAKYNOO/NQRNPMFZ99J+SKDazhmfsdwKM1Z9bVc
+         mPQQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/Gfe8jc6cE5yD95pwA7sdpyH12yiZuY1Nzy2lCuNe7wMLqz6LTeLcNBtTleYyS9jVKAw9lSbRe+4o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YysLuXPpJpEQu3uCgeG/LwLZ3+rc2YogCCJSFODNste8+tAoGqU
+	mrtZ7JY17S9Ta3uZwMdRLEaFl28JHn7PF0RS72Xih22Gsx/q48f1U5QzK66qILike3+5PfIWVYi
+	JEHvAStoAF3igDArl8b9y7c4v177R9uQ=
+X-Gm-Gg: AeBDiesgnKPnE8m10VUed5UENy3yqmheE/s+H6rXBO0aTe+r6e8FsK0RsfyPyaz7dMr
+	jy+jLAejKrDIgcO795jvjH5xC35yNDJ+DRmIedJLybolAhZtFfDHtZd98PfT3Z+51iJPVpzKjo1
+	mqdYE5IsOpQQB6072nb+AQMeGkxHWbozQYowH+aHSLdL3yGTjkdn1WZPbPRszmR4nn7V/NC8NVy
+	mvzD4LR20AOWoKQ8JuUzHsWLiI9Wb0s8AA/rtaZrtNk1Wj73bbuNUWX6R+GVNK0KSXOcJgPu2Kh
+	O6l+PglV09X4RE/6xIIxTJx3i7tRyeoBlfmEAoKVMSFA1cIha1AYoDxNxMbF/B/C7ZGAmqU51S2
+	MbRnQ9+jXXVgwRKZ0cD07f/s2updv
+X-Received: by 2002:a05:651c:4196:b0:38f:20cc:2bb9 with SMTP id
+ 38308e7fff4ca-393783bc7dcmr44604211fa.5.1777973807410; Tue, 05 May 2026
+ 02:36:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260505090247.74555-1-salah.triki@gmail.com> <afmzOM3s_TCYxXyt@ashevche-desk.local>
+ <afm4U2nsfdyihSEG@pc>
+In-Reply-To: <afm4U2nsfdyihSEG@pc>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 5 May 2026 12:36:08 +0300
+X-Gm-Features: AVHnY4KVfmP4ns7ReHTrnpwgEb5W_Vjcwkka8IRBLAhWu2q-3VarKmK0Wdn87ZA
+Message-ID: <CAHp75VcGr9w3z7rP_nkf0BpfKBK5CZUsyNEwFuDAQcJWw0gtTg@mail.gmail.com>
+Subject: Re: [PATCH] iio: humidity: ens210: Fix missing I2C functionality checks
+To: Salah Triki <salah.triki@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 5 May 2026 12:38:07 +0800
-kernel test robot <lkp@intel.com> wrote:
+On Tue, May 5, 2026 at 12:28=E2=80=AFPM Salah Triki <salah.triki@gmail.com>=
+ wrote:
+> On Tue, May 05, 2026 at 12:07:04PM +0300, Andy Shevchenko wrote:
+> > On Tue, May 05, 2026 at 10:02:47AM +0100, Salah Triki wrote:
+> > > The ENS210 driver uses both `i2c_smbus_read_byte_data()` and
+> > > `i2c_smbus_read_word_data()` during the read and probe phases.
+> > > However, `i2c_check_functionality()` was only checking for block read=
+s
+> > > and simple byte writes, which could lead to hardware interface
+> > > incompatibilities or errors on certain adapters that do not natively
+> > > support SMBus word or byte data transactions.
+> > >
+> > > Add `I2C_FUNC_SMBUS_READ_BYTE_DATA` and `I2C_FUNC_SMBUS_READ_WORD_DAT=
+A`
+> > > to the functionality check mask to ensure the adapter supports the
+> > > required operations before communication begins.
+> >
+> > Can we rather modify the driver to use SW emulation for these cases?
+>
+> I'll update the probe function to check for I2C_FUNC_SMBUS_EMUL instead o=
+f
+> the individual functions.
 
-> Hi Maxwell,
-> 
-> kernel test robot noticed the following build errors:
-> 
-> [auto build test ERROR on jic23-iio/togreg]
-> [also build test ERROR on linus/master v7.1-rc2 next-20260430]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Maxwell-Doose/iio-imu-kmx61-Use-guard-mutex-family-over-manual-locking/20260504-212159
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-> patch link:    https://lore.kernel.org/r/20260502032455.76107-1-m32285159%40gmail.com
-> patch subject: [PATCH] iio: imu: kmx61: Use guard(mutex)() family over manual locking
-> config: hexagon-allmodconfig (https://download.01.org/0day-ci/archive/20260505/202605051218.kuLCMDTO-lkp@intel.com/config)
-> compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
-> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260505/202605051218.kuLCMDTO-lkp@intel.com/reproduce)
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202605051218.kuLCMDTO-lkp@intel.com/
+Hmm... But will it work with the drivers that do not provide EMUL, but
+the native functions?
+Please, carefully check all this and come up with a solution that
+works for most of the cases if not all.
 
-This complicated error is really just pointing out you haven't defined
-scope for the case statement with guard() in it.  Need {}
-
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> drivers/iio/imu/kmx61.c:830:2: error: cannot jump from switch statement to this case label  
->      830 |         case IIO_CHAN_INFO_SAMP_FREQ:
->          |         ^
->    drivers/iio/imu/kmx61.c:798:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
->      798 |                 guard(mutex)(&data->lock);
->          |                 ^
->    include/linux/cleanup.h:419:2: note: expanded from macro 'guard'
->      419 |         CLASS(_name, __UNIQUE_ID(guard))
->          |         ^
->    include/linux/cleanup.h:300:3: note: expanded from macro 'CLASS'
->      300 |                 class_##_name##_constructor
->          |                 ^
->    <scratch space>:9:1: note: expanded from here
->        9 | class_mutex_constructor
->          | ^
->    note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
->    include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
->       16 | #define __PASTE(a, b) ___PASTE(a, b)
->          |                       ^
->    include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
->       15 | #define ___PASTE(a, b) a##b
->          |                        ^
->    <scratch space>:15:1: note: expanded from here
->       15 | __UNIQUE_ID_unlock_468
->          | ^
->    drivers/iio/imu/kmx61.c:798:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
->    include/linux/cleanup.h:419:15: note: expanded from macro 'guard'
->      419 |         CLASS(_name, __UNIQUE_ID(guard))
->          |                      ^
->    include/linux/compiler.h:168:2: note: expanded from macro '__UNIQUE_ID'
->      168 |         __PASTE(__UNIQUE_ID_,                                   \
->          |         ^
->    include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
->       16 | #define __PASTE(a, b) ___PASTE(a, b)
->          |                       ^
->    include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
->       15 | #define ___PASTE(a, b) a##b
->          |                        ^
->    <scratch space>:3:1: note: expanded from here
->        3 | __UNIQUE_ID_guard_467
->          | ^
->    drivers/iio/imu/kmx61.c:816:2: error: cannot jump from switch statement to this case label
->      816 |         case IIO_CHAN_INFO_SCALE:
->          |         ^
->    drivers/iio/imu/kmx61.c:798:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
->      798 |                 guard(mutex)(&data->lock);
->          |                 ^
->    include/linux/cleanup.h:419:2: note: expanded from macro 'guard'
->      419 |         CLASS(_name, __UNIQUE_ID(guard))
->          |         ^
->    include/linux/cleanup.h:300:3: note: expanded from macro 'CLASS'
->      300 |                 class_##_name##_constructor
->          |                 ^
->    <scratch space>:9:1: note: expanded from here
->        9 | class_mutex_constructor
->          | ^
->    note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
->    include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
->       16 | #define __PASTE(a, b) ___PASTE(a, b)
->          |                       ^
->    include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
->       15 | #define ___PASTE(a, b) a##b
->          |                        ^
->    <scratch space>:15:1: note: expanded from here
->       15 | __UNIQUE_ID_unlock_468
->          | ^
->    drivers/iio/imu/kmx61.c:798:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
->    include/linux/cleanup.h:419:15: note: expanded from macro 'guard'
->      419 |         CLASS(_name, __UNIQUE_ID(guard))
->          |                      ^
->    include/linux/compiler.h:168:2: note: expanded from macro '__UNIQUE_ID'
->      168 |         __PASTE(__UNIQUE_ID_,                                   \
->          |         ^
->    include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
->       16 | #define __PASTE(a, b) ___PASTE(a, b)
->          |                       ^
->    include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
->       15 | #define ___PASTE(a, b) a##b
->          |                        ^
->    <scratch space>:3:1: note: expanded from here
->        3 | __UNIQUE_ID_guard_467
->          | ^
->    drivers/iio/imu/kmx61.c:847:6: warning: unused variable 'ret' [-Wunused-variable]
->      847 |         int ret;
->          |             ^~~
->    drivers/iio/imu/kmx61.c:864:3: error: cannot jump from switch statement to this case label
->      864 |                 default:
->          |                 ^
->    drivers/iio/imu/kmx61.c:862:4: note: jump bypasses initialization of variable with __attribute__((cleanup))
->      862 |                         guard(mutex)(&data->lock);
->          |                         ^
->    include/linux/cleanup.h:419:2: note: expanded from macro 'guard'
->      419 |         CLASS(_name, __UNIQUE_ID(guard))
->          |         ^
->    include/linux/cleanup.h:300:3: note: expanded from macro 'CLASS'
->      300 |                 class_##_name##_constructor
->          |                 ^
->    <scratch space>:67:1: note: expanded from here
->       67 | class_mutex_constructor
->          | ^
->    note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
-> 
-> 
-> vim +830 drivers/iio/imu/kmx61.c
-> 
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  777  
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  778  static int kmx61_read_raw(struct iio_dev *indio_dev,
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  779  			  struct iio_chan_spec const *chan, int *val,
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  780  			  int *val2, long mask)
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  781  {
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  782  	int ret;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  783  	u8 base_reg;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  784  	struct kmx61_data *data = kmx61_get_data(indio_dev);
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  785  
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  786  	switch (mask) {
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  787  	case IIO_CHAN_INFO_RAW:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  788  		switch (chan->type) {
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  789  		case IIO_ACCEL:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  790  			base_reg = KMX61_ACC_XOUT_L;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  791  			break;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  792  		case IIO_MAGN:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  793  			base_reg = KMX61_MAG_XOUT_L;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  794  			break;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  795  		default:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  796  			return -EINVAL;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  797  		}
-> 84cb5906c7fb44 Maxwell Doose 2026-05-01  798  		guard(mutex)(&data->lock);
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  799  
-> a3da4fa301ae60 Daniel Baluta 2014-12-23  800  		ret = kmx61_set_power_state(data, true, chan->address);
-> 84cb5906c7fb44 Maxwell Doose 2026-05-01  801  		if (ret)
-> a3da4fa301ae60 Daniel Baluta 2014-12-23  802  			return ret;
-> a3da4fa301ae60 Daniel Baluta 2014-12-23  803  
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  804  		ret = kmx61_read_measurement(data, base_reg, chan->scan_index);
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  805  		if (ret < 0) {
-> aff8609addd00e Daniel Baluta 2014-12-03  806  			kmx61_set_power_state(data, false, chan->address);
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  807  			return ret;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  808  		}
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  809  		*val = sign_extend32(ret >> chan->scan_type.shift,
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  810  				     chan->scan_type.realbits - 1);
-> a3da4fa301ae60 Daniel Baluta 2014-12-23  811  		ret = kmx61_set_power_state(data, false, chan->address);
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  812  
-> a3da4fa301ae60 Daniel Baluta 2014-12-23  813  		if (ret)
-> a3da4fa301ae60 Daniel Baluta 2014-12-23  814  			return ret;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  815  		return IIO_VAL_INT;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  816  	case IIO_CHAN_INFO_SCALE:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  817  		switch (chan->type) {
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  818  		case IIO_ACCEL:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  819  			*val = 0;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  820  			*val2 = kmx61_uscale_table[data->range];
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  821  			return IIO_VAL_INT_PLUS_MICRO;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  822  		case IIO_MAGN:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  823  			/* 14 bits res, 1465 microGauss per magn count */
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  824  			*val = 0;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  825  			*val2 = 1465;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  826  			return IIO_VAL_INT_PLUS_MICRO;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  827  		default:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  828  			return -EINVAL;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  829  		}
-> 20ffac278ebd64 Daniel Baluta 2014-12-03 @830  	case IIO_CHAN_INFO_SAMP_FREQ:
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  831  		if (chan->type != IIO_ACCEL && chan->type != IIO_MAGN)
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  832  			return -EINVAL;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  833  
-> 84cb5906c7fb44 Maxwell Doose 2026-05-01  834  		scoped_guard(mutex, &data->lock)
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  835  			ret = kmx61_get_odr(data, val, val2, chan->address);
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  836  		if (ret)
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  837  			return -EINVAL;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  838  		return IIO_VAL_INT_PLUS_MICRO;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  839  	}
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  840  	return -EINVAL;
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  841  }
-> 20ffac278ebd64 Daniel Baluta 2014-12-03  842  
-> 
-
+--=20
+With Best Regards,
+Andy Shevchenko
