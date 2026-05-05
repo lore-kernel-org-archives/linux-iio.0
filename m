@@ -1,140 +1,140 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14C1E31F999
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 14:06:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7425D3EDAB0;
+	Tue,  5 May 2026 14:08:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777989997; cv=none; b=ErOfVHcNsPQmv2yh6I5seWbLqCDzGOsN4jKona4O1A9RvD7eI8sHYBbX379skaazwG6hKCKQktENplb29XkmLePKrAoMsCfHnWgwnFgVPMTIY3yldrNC3H2gZ8tQD+zi5XJidlEbnRf//Yy+vAHQIyZfUSAO3wzTm+ofHfioLVk=
+	t=1777990093; cv=none; b=HfqjBRGT5gEnw6+MS88E3yL9CL6o26bpDa44NfLw8jG+0XvVrN6Xn+/UqMawM25iE5JhNQOFVEJ8xQYok/TvIz0z+s1gyvZugSRLsVKFCzKCgN/e8jkSqprpyXZpqC8amtx94oaHfhHBZN0CJ41mrqT0u2JYn2LJNUszaGt3gjo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777989997; c=relaxed/simple;
-	bh=6sc7BdcESio/3bS6KTdoaUbmUT1O6gMVQgIhsJm+f18=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qlZYq/TT+LAAq6pwvyJD2NnQa2h+m4ftXmC9XJ/ZBx9AtQdJjqUez3hV3LOKjApGWNXff6lj/jhWOWs+3AMVTCOD3IueSgm+H8C8qdNtnMAc2xI1G6FjufU7qK/2BJa3HxK1yjE32uqoSz2WJBZB0t9QNq70MnDx4pQj57n4pFY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ogAUaVHP; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777990093; c=relaxed/simple;
+	bh=W3QQ0Qld1r5T+DvalykwLo7CUYoKVtBgQYkk+ya1W+8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=KP4Sw4Xiiz4xnOkBWJGNUeEkUVhxgtbH+SaGpPrpfVbHIW8G9qXetkX/9A7wAUv99gf+JwU0LVSZK6V03wPbRWeW2ER3ehebCnBlDsu9lLvwaz3SXF7FU5ctJiP1F0Brg/e9leq5SJrBkdoa6nvFlvsAEnhSJf9au9htABTgIbE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IW1nFvhY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ogAUaVHP"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-488ba840146so46630705e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 07:06:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777989994; x=1778594794; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1JPsjrMLWhTKi87oaq93cX579khTL/mpaobqofSJB08=;
-        b=ogAUaVHP3q4wZ0WcxSn7Da5qUWGv6IIIvdL7DVL34b105HDfYq/iMa3/BDtgL0Jxa4
-         Ff6IgrVZF9A4sVbBrONMuKNs18+GQjgE0tX2bqv8SO5r9RtTiI8RS46ycRwPZ45anL7J
-         M0hUvIYwNb5hB33E+X1GLr3RfgY8W0+8+rnYsLHFPVSJ92SFscuzDAN92R14DGv9eaJe
-         +Wewx90m7hMiCVtaDJiajYMi2EwyNHeuwPmsiUJaUWjnCJuH8WYtKeeI7L9stqJCSc7e
-         vhyX0wXOprHUpDrPW78ToFtg5q51pgB8gGar/hbCQ4K+9zoO5jWauraDz5A6SAaySxkz
-         T06Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777989994; x=1778594794;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1JPsjrMLWhTKi87oaq93cX579khTL/mpaobqofSJB08=;
-        b=P1x0sUj4lfnwqyaKtJ2hSlrkh6EjOlgQTeRDA9iNdY9WYx/Rw89vXwAO0dyo4lHErL
-         Lx/qXE6qqIQ5NywRfYVk3CpnpVZ3r0MH9BLgdbvo8gLqX7ZQ41gszO9yIzgGE/LOUxJG
-         pnYdVT1+7Gbk/ub5zHV/mGKN9ENXeO0b6MuZ35NlgfqaHqVSA1e89mH8NKjUNRp+hkjO
-         IHubnhf+Ua8o8fdBhsT6N30N5/YdpviCvGtNTJzZkF6554KOUEtDEnDsfAtZZkafOWMg
-         MuqKYcxP43z6iCKmTH6k09uHHWz1pMdvgjBjf5ZAJGwXHpi5m+GcqHvXrbJuxMVHBLbk
-         RJAA==
-X-Gm-Message-State: AOJu0YyODt4tvAcNktcAkm5llzcs+iy8YlLlZ6rURZAUK+YktXgCrP23
-	ThwDNymQ6UjJIzef6Itg4UNUQsTvB61b0CvbSQ1Vk6V3kktCg1Iv7zdS
-X-Gm-Gg: AeBDieucKKSh89Q1EkKlcXQAKKtm+GdbBXO1iC2HNQjQr4xUBB+aPQlDjpeMRLm8VIi
-	Tg820stK7xTllLK+2pa+znBFQGcSOpUCuLCg/bU4gtuDzCQ/E9RjEgyru1gjYp3CwQDkbu8BC3T
-	P06rsQLrFFWdORGGsDw1hFxVpoflYFy4CNYSCv4BpfuO+Ok8tkyrarMbBbEJE3I+G5yYN+Ch/1Z
-	/2aeU9A4c/cRnyFb9js291tc2JxPbN/BxIc9jBZN1yb1ewTNhBQk45pZ2WEYXZwIxe8ygr0uAJO
-	u134sss55+TP9oSB5qppefLuzqunMtBq/4xen0lMpmuC2AWDcEoW2O1ozZVLDWpOh4cxeyuEQHO
-	caZDsF2czxYYcbfUVTosJMENYJwjB+uGfTpJ8+CZYYZ6rz8VqSX0DXhIBRHCd23yBUj1yhnFJwr
-	xxb8atibnanvoArAMSGJ8XTnM5nQrWrhyAGGlN+jb2vFtkUbBKmUuZeogm5qXcYDNvUyJp6n/6A
-	IRx8XLDnNbeoeR4zrwd1wPs5sH/a9mPhnIUrAnrqU9eurS44Xq/ofZ040t3
-X-Received: by 2002:a05:600c:4e15:b0:485:ae14:8191 with SMTP id 5b1f17b1804b1-48d186dc89emr54856845e9.5.1777989994096;
-        Tue, 05 May 2026 07:06:34 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a8ebb2f32sm358033015e9.13.2026.05.05.07.06.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 07:06:33 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 5 May 2026 15:06:31 +0100
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	rodrigo.alencar@analog.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
-	Greg Kroah-Hartman <gregkh@suse.de>, Michael Auchter <michael.auchter@ni.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v6 03/12] iio: dac: ad5686: acquire lock when doing
- powerdown control
-Message-ID: <a2tm4z5urvnurh3z2ntbm7rddv6eg236gbkvtz5cididtc2rv5@skk5x6kykaij>
-References: <20260505-ad5686-fixes-v6-0-c2d5f7be32be@analog.com>
- <20260505-ad5686-fixes-v6-3-c2d5f7be32be@analog.com>
- <afnpkRLOn7ZDzSj-@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IW1nFvhY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7788C2BCB4;
+	Tue,  5 May 2026 14:08:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777990093;
+	bh=W3QQ0Qld1r5T+DvalykwLo7CUYoKVtBgQYkk+ya1W+8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=IW1nFvhY/22oIN2dXEJHGKy3dP/BhBB5PAO0K9SDKOL6AmGZyoR4EqEZ8mHYAl0H9
+	 T1cxlrFS83sYUgKPs1UMILbOHfS9LSHL+BbL4YXfQ+lsEo1Y4BnITBY6MWZe1+aATq
+	 JifUAef9Zyq3MjXseC0W+l2zimGV6fR0oJoqwcBsu6hrJ5LYBtaCWpCIx6VpTdcJg4
+	 gyQCz7lQkz2Ph9fkPg7A3Fq6tWhOSzhMgilKykH799uUV6EI4LLDMUJY/pptZ8JtWe
+	 7pi8Cz82q1Mp2EGg3QzplQA3U52bmndOOtiyGFbPzHgbXSsgkNqtYpm2NTRKUomg4F
+	 KSoT2wlbjGe+w==
+Date: Tue, 5 May 2026 15:07:59 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v9 3/6] iio: adc: ad4691: add triggered buffer support
+Message-ID: <20260505150759.3f2700a0@jic23-huawei>
+In-Reply-To: <20260430-ad4692-multichannel-sar-adc-driver-v9-3-33e439e4fb87@analog.com>
+References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
+	<20260430-ad4692-multichannel-sar-adc-driver-v9-3-33e439e4fb87@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afnpkRLOn7ZDzSj-@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 26/05/05 03:58PM, Andy Shevchenko wrote:
-> On Tue, May 05, 2026 at 01:35:04PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> 
-> > Protect access of pwr_down_mode and pwr_down_mask fields with existing
-> > mutex lock. Each channel exposes their own attributes for controlling
-> > powerdown modes and powerdown state. This fixes potential race conditions
-> > as those the write functions perform non-atomic read-modify-write
-> > operations to those pwr_down_* fields. This issue exists since the ad5686
-> > driver was first introduced.
-> 
-> ...
-> 
-> > static ssize_t ad5686_read_dac_powerdown(struct iio_dev *indio_dev,
-> >  {
-> >  	struct ad5686_state *st = iio_priv(indio_dev);
-> >  
-> > +	guard(mutex)(&st->lock);
-> > +
-> >  	return sysfs_emit(buf, "%d\n", !!(st->pwr_down_mask &
-> >  				       (0x3 << (chan->channel * 2))));
-> 
-> Why not use ad5686_get_powerdown_mode() instead?
+On Thu, 30 Apr 2026 13:16:45 +0300
+Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
-powerdown mode != powerdown mask. The powerdown mask controls the on-off
-behavior, while the mode controls the possible values for when it is off. 
- 
-> >  }
-> 
-> ...
-> 
-> > static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > +	guard(mutex)(&st->lock);
-> > +
-> >  	if (readin)
-> >  		st->pwr_down_mask |= (0x3 << (chan->channel * 2));
-> >  	else
-> 
-> Similar question here...
+> From: Radu Sabau <radu.sabau@analog.com>
+>=20
+> Add buffered capture support using the IIO triggered buffer framework.
+>=20
+> CNV Burst Mode: the GP pin identified by interrupt-names in the device
+> tree is configured as DATA_READY output. The IRQ handler stops
+> conversions and fires the IIO trigger; the trigger handler executes a
+> pre-built SPI message that reads all active channels from the AVG_IN
+> accumulator registers and then resets accumulator state and restarts
+> conversions for the next cycle.
+>=20
+> Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
+> reads the previous result and starts the next conversion (pipelined
+> N+1 scheme). At preenable time a pre-built, optimised SPI message of
+> N+1 transfers is constructed (N channel reads plus one NOOP to drain
+> the pipeline). The trigger handler executes the message in a single
+> spi_sync() call and collects the results. An external trigger (e.g.
+> iio-trig-hrtimer) is required to drive the trigger at the desired
+> sample rate.
+>=20
+> Both modes share the same trigger handler and push a complete scan =E2=80=
+=94
+> one u16 slot per channel at its scan_index position, followed by a
+> timestamp =E2=80=94 to the IIO buffer via iio_push_to_buffers_with_ts().
+>=20
+> The CNV Burst Mode sampling frequency (PWM period) is exposed as a
+> buffer-level attribute via IIO_DEVICE_ATTR.
+>=20
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+Another Sashiko found issue inline.
 
-I suppose the above applies here as well.
+Also it calls out that you have no validate_trigger which might mean
+another trigger is used.  Moving the irq enable to the trigger_reenable
+should solve that.
 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+> +static ssize_t sampling_frequency_show(struct device *dev,
+> +				       struct device_attribute *attr,
+> +				       char *buf)
+> +{
+> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +
+> +	return sysfs_emit(buf, "%lu\n", NSEC_PER_SEC / st->cnv_period_ns);
+> +}
+> +
+> +static ssize_t sampling_frequency_store(struct device *dev,
+> +					struct device_attribute *attr,
+> +					const char *buf, size_t len)
+> +{
+> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +	int freq, ret;
+> +
+> +	ret =3D kstrtoint(buf, 10, &freq);
+I missed this but as Sashiko points out this could read in a negative
+frequency. Given that's clearly silly kstrtouint()
 
--- 
-Kind regards,
-
-Rodrigo Alencar
+> +	if (ret)
+> +		return ret;
+> +
+> +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +		return -EBUSY;
+> +
+> +
+> +	ret =3D ad4691_set_pwm_freq(st, freq);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEVICE_ATTR_RW(sampling_frequency, 0);
+> +
+> +static const struct iio_dev_attr *ad4691_buffer_attrs[] =3D {
+> +	&iio_dev_attr_sampling_frequency,
+> +	NULL
+> +};
