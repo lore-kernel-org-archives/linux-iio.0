@@ -1,128 +1,120 @@
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3D024921BF
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 17:33:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04D1248BD5C
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 17:35:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778002420; cv=none; b=Alp7P9YPP/P8YA95V/R1G99AiKID1wl9xhjvkqt/N1i0vzlmnWwCHtm+riAEOiPr5QX2ni779Y4SnuV5dPDWdnaarZpJkF2bJOXnneeAaNfwXb88xQRpwVVTUawwC8lD8qCUhZALnQewz0Kq8Ji06fBYMpj1QBfXg1ubw4c4iI8=
+	t=1778002502; cv=none; b=aNuCrjm0Fl4MtPnYaRIEqV3z4sUzK+hBv1atbiUOjgXNiB61vRGFoyMCzF98EieSfrc1BalMN3Dc3LgwBDDnNSWboxIff0CkLjgxqLI77IFZaK0LHWA4t9/NyXEy1fcLIxwiIYguJ4PafFPQpsVKeUQQiiivmKChUs6snA840hM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778002420; c=relaxed/simple;
-	bh=uoR2gEbxq22hMAQZCudxu9N6ovIXDpq4hy3MyYXNJbk=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=STNNoeCXWqC9cUen2ZsbRZ185+N/69SHGW/rPNx5SN7RsQaINenRIOzXnuMq+8mT0tUchWHJ7OwBWXZLNwAaY3JxvjZhhkRj6yk7AFdjtR/Cmzyj96BQpkW9JE8UG36DtiiY1kL2yaKf8+WFQZiSutcIZj07U7P9voPktEBj7yc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ItT00jjT; arc=none smtp.client-ip=209.85.128.179
+	s=arc-20240116; t=1778002502; c=relaxed/simple;
+	bh=edBtExnt/8Z64dbOcPerVqZrRBJ+N7vMF3UZXd8IC2o=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VlFAXsnyUQEQ/azBxN/niogY0U3PoZm5VutNzrcrBoquhFeOW3BmesPnIskW5QzY2JlJjT14U3o3WbITyaoGbdOl3BAKltO9IgowCHOgaFc1qoEBNHp3TgWetZAYq0b2OYvijXyRLlHVB+zyAgcYjvmBB0qjVphSbWH7B/6kDFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BGqabq67; arc=none smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ItT00jjT"
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-7bd9f61458eso16508097b3.0
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 10:33:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BGqabq67"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-43d73352cf2so5054627f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 10:35:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778002418; x=1778607218; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rnRe7KjU8veD5ZITTDKx3xTk0GWaGR/EUMVANxzWmCg=;
-        b=ItT00jjTqrnjZjm1tvXJD0SR5CA7ryf4Tyw7Lm9JathECfj49+KEsCYup+0VvXiZ+a
-         j3awoNSmHlcKe65fW82z0aWlcZXIVkOs0HhYtfE810rOIEPqzCCbm7NvxlbC2uZY8/2Y
-         kiibfPUxHmfEvdseV4wXD0pgV0mPXC4OhmK3XA4iMc4/UTcTXs44T3MaOS6nHrWLT89u
-         0kZnffb4ymUlhQVv+Qhg7xnVWj0RNEesSyIUB9Fv4ut3gRz+oOVwnR+AZ+zu8f/IWSrz
-         Lqz1rtA4/xeAgl9gs5js90s9H/ICN6A0PClehM1xGF9yokV3PRSv2fErZhRlOekeH45P
-         5grA==
+        d=gmail.com; s=20251104; t=1778002499; x=1778607299; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pL+cn2XdiJz7sJ1VmFg0Jy0AOXBj9195E1nbspZlGtU=;
+        b=BGqabq67SmRMnVfGcnQ0ibH6ceUY4riiUHkGzgMG5/Jqc9HZHDaqLMqhuNxayxYq0r
+         9H1GzfBcTZlqOg0NQjM6vdfnDbCaEs16UExFlJQyFrj4IIgdeUFSY6IdugNIDMe1gRc1
+         /+Fo//g3glp/xJ65gKVOmusun6yGxICQgQIAawD5GcS4dVXOQS8a2cLzkDKZ9KUQEx0R
+         WRTtbbjWmUTZ982yH4kkSLRblcVKnDYYBkUZ8nzPyPwJUAW56FHbqlFwC+YDFWa0aAZX
+         EIxFICKRdT2iMNiBmTmha8Ec2HEq+i0SpXsiMdb+1tBxeGW9uKXP8DBGls/4W1BnGxvT
+         Z7xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778002418; x=1778607218;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rnRe7KjU8veD5ZITTDKx3xTk0GWaGR/EUMVANxzWmCg=;
-        b=RxhY8TlditSxMZXPm/A4djPMR2fvXBTYfTiWfOCMi2oFVlOZXNs7aQny43ZItzEQKz
-         4fHf7QeVL2t2qQyto1nMuNxgrDuD1cKMtfVnAXhcBqqR3DZXFmTG7WLq67gD6ALsd+dP
-         Hn+k4fgODzGjnULMIq2trmTEH0DDLDAQCCH7pMpTSiquXF+3dGCOa1N6oPtuTLpwqkNp
-         L78iJAojTx+Av5bEpgoLvHxW4RxUSgCVmWapJ1iRtbs5v0ylRtGCCMhtulOzxWvGmivm
-         wk88elC+g7ckuqKv0XjqQZlkuMAD47JbMpO0WUUOHLm6+YSu+iJ+MfhmmRmx4viXOBZZ
-         wFkQ==
-X-Gm-Message-State: AOJu0YzvJEMlYGJ55Sws3cE+cvC4eIE2bAeQNIcuIzF5KxPW4TysU60y
-	TJvFhbWp/nc6X6DhbLVX53AdgIIoHualihA2J1wGV0ByMCjbe8VsKcEJ
-X-Gm-Gg: AeBDies4HxZiuZqb2SrStsqKasYVTNeF7N5mI2vjmanHu6uk9PuuRkqLDiR+7l/2DLs
-	2jjUgTXUNOWWv+CsDZPhHmY9r0CbbEhUrh1VM/3RsDrDUPSgo5yjLJp99/eJqLz9orSWiVxnP/W
-	JxkIkZMvGyDZVQC0VQAJnY4KITMBMbBDtxpkuyVMdGcVRSRCDfbEz5CPjVRN7Hl3B+gIqg4oB2q
-	dNUhcVpqvSmnumrWJl9A2a2gVcbUE7hTy5wa/q2fY9Q87mADoWtszX9Iqr6uyGjp/IimK7vJxBq
-	zv20PUijniaG5PuYC5dlN5ibSxikqjBZ6EARqGtZwtAvBL0/CYJ5rfJjHE+mVA7DANRi7xNVBvF
-	PdzQV1dYz+AmStzDcWTLtOg09vyThbk9n54yhW20P2QTgmWPBqgz3AqErZqMy9oXCMJDWUWpX0Z
-	WkB9srqPEYvw34fpiZgrV+gBPCll7fciID8lJMLZtdcIKHmGzS
-X-Received: by 2002:a05:690c:dd4:b0:7b8:f152:7545 with SMTP id 00721157ae682-7bdf5d8014fmr1543767b3.9.1778002417748;
-        Tue, 05 May 2026 10:33:37 -0700 (PDT)
-Received: from localhost ([208.185.137.148])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7bd6685d0cbsm66174187b3.35.2026.05.05.10.33.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 May 2026 10:33:37 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778002499; x=1778607299;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pL+cn2XdiJz7sJ1VmFg0Jy0AOXBj9195E1nbspZlGtU=;
+        b=WMUMgoE3UxsDlf40qVOBfX51TZZcpT2ZSzmgonT+Obtp7eiqHSjUDryJxsJxDChe0f
+         S+67WkpxJy2uLSpx+sHEOz8uJBjB1eN3Kexy+Qi/LIiMAnBWbO1tN9w9WG1iMdr5p9nL
+         E1nc3ZSTRXeD+pEJQspTojCMwAjn5vIB55uDmvoV6pZEyBH6cMQFFpkL+480+AgfdMrZ
+         ZC/BXhJTjJfSgyTORoU1BbfZK7tWt1Pe2qECnPLvUjHBzu7DE2IiHlmXW0YhZnXstCLe
+         lVvoJ12eeYYkWMiNvctmf3hV52aOdL7HJ0qy6prp4Il7/yu8KPKxY2TA9fVihP7CjRZi
+         eJdQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9fFR65t0Xvv3hBT/d2IeIaEp+33mFLFzCzqHCwMJF7mDkcEYdkjnQ1cWCMBDMHPj0KxTnomL2guh4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwMOEyaG5+rs9UGaNJDr24mmsYMf+o11CPihqU8s7F6MBayqMEG
+	01qruZ7WzQRfRPmO3m/hgZwYdi5id/phEijBdig9cIeMhqctxtF7T2sR
+X-Gm-Gg: AeBDiettZWcwRaY7KepDeNc9Rdbd3/d1q6vi3jNcjUZgY1NSVyGrgAoRNWP1KfuaVIF
+	9t3jacg5SEA/Gy2AQbHQ38G1k0lfdcTIPr8MDIWETNHMoEyOJqcmAf3onOzlOuwpgqXG7LbtUis
+	C0NwrCfdHef9oO/5KxyIwMuMK/zZ95hXp0B7WtQ4RhWoujfY53c+vWGHu6UREnj35ZWVaVDZzjy
+	ip03cZwIHTi/+3vaLHIXHhil9EQtRH32Cx2YUaT5SQ0AdmxaH1DtlW3alfbZojLOLCh/Y9u6Gzs
+	ra3HnZ3ArGHKU/zUgMIC8orjnXMQvAtdVtEA/ZaMwiyvhwcSFGFHpUoo2zNTvX3D6pTOFlmFBxd
+	4Iq2I3A0NrAIgETM/M/6iN2fXnN/dDM79oHXwFHjbUhsg574RNFkkm9Wi9ipecaRR48WPxrLBDT
+	QrLdpcX3vqwDzBrnBcBKfUU7aq1QZXbGI64818z2EEk7JagQ+6zfb6HUf0BsVNe1QKgQdNvHimT
+	ha0P3hOMQWv2r1+5QPcTa6+d0AJbySs
+X-Received: by 2002:a05:6000:3110:b0:44a:8880:ffd2 with SMTP id ffacd0b85a97d-4515b056b8fmr119815f8f.4.1778002499107;
+        Tue, 05 May 2026 10:34:59 -0700 (PDT)
+Received: from dohko.chello.ie (188-141-5-72.dynamic.upc.ie. [188.141.5.72])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45052a4878fsm5856560f8f.9.2026.05.05.10.34.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2026 10:34:58 -0700 (PDT)
+From: David Carlier <devnexen@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	David Carlier <devnexen@gmail.com>
+Subject: [PATCH] iio: pressure: bmp280: zero-init bmp580 trigger handler buffer
+Date: Tue,  5 May 2026 18:34:55 +0100
+Message-ID: <20260505173455.181358-1-devnexen@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 05 May 2026 12:33:36 -0500
-Message-Id: <DIAX965B07NK.16AH0B7XEZSUN@gmail.com>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: humidity: ens210: Fix missing I2C functionality
- checks
-From: "Maxwell Doose" <m32285159@gmail.com>
-To: "Salah Triki" <salah.triki@gmail.com>, "Jonathan Cameron"
- <jic23@kernel.org>, "David Lechner" <dlechner@baylibre.com>,
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
- <andy@kernel.org>
-X-Mailer: aerc 0.21.0
-References: <20260505172246.90892-1-salah.triki@gmail.com>
-In-Reply-To: <20260505172246.90892-1-salah.triki@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Tue May 5, 2026 at 12:22 PM CDT, Salah Triki wrote:
-> The ENS210 driver uses SMBus transactions (such as byte, word, and block
-> data reads/writes) during the probe and measurement phases. However, the
-> initial functionality check only validated a subset of these capabilities=
-,
-> which could lead to loading failures on adapters requiring SMBus
-> emulation or native-only controllers.
->
-> To ensure compatibility across a wide range of I2C adapters, modify the
-> functionality check to verify if the adapter supports the required native
-> operations or, failing that, supports the SMBus emulation layer.
->
-> Fixes: c524fbca672e ("iio: humidity: Add support for ENS210")
-> Signed-off-by: Salah Triki <salah.triki@gmail.com>
-> ---
->  drivers/iio/humidity/ens210.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-[snip]
->  	if (!i2c_check_functionality(client->adapter,
-> -				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
-> -				     I2C_FUNC_SMBUS_WRITE_BYTE |
-> -				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
-> +				I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
-> +				I2C_FUNC_SMBUS_WRITE_BYTE |
-> +				I2C_FUNC_SMBUS_READ_BYTE_DATA |
-> +				I2C_FUNC_SMBUS_READ_WORD_DATA |
-> +				I2C_FUNC_SMBUS_READ_I2C_BLOCK) &&
-> +			!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_EMUL)) {
->  		return dev_err_probe(&client->dev, -EOPNOTSUPP,
->  			"adapter does not support some i2c transactions\n");
->  	}
+bmp580_trigger_handler() builds an on-stack scan buffer containing
+two __le32 fields and an aligned_s64 timestamp, and pushes it to
+userspace via iio_push_to_buffers_with_ts(). However, only the low
+3 bytes of each __le32 field are populated by the device data:
 
-This alignment doesn't look right. Probably should be something like:
+	memcpy(&buffer.comp_press, &data->buf[3], 3);
+	memcpy(&buffer.comp_temp,  &data->buf[0], 3);
 
-  	if (!i2c_check_functionality(client->adapter,
-				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
-				     I2C_FUNC_SMBUS_WRITE_BYTE |
-				     I2C_FUNC_SMBUS_READ_BYTE_DATA |
-				     I2C_FUNC_SMBUS_READ_WORD_DATA |
-				     I2C_FUNC_SMBUS_READ_I2C_BLOCK) &&
- 			             !i2c_check_functionality(client->adapter,=20
-							      I2C_FUNC_SMBUS_EMUL)) {
+The high byte of each field is left uninitialised on the stack.
+The bmp580 channels declare storagebits = 32, so the IIO core
+transports all four bytes per sample to userspace as part of the
+scan element, leaking two bytes of kernel stack per scan.
 
-best regards,
-max
+Zero-initialise the buffer before populating it, mirroring the fix
+applied to bme280_trigger_handler() in commit 018f50909e66 ("iio:
+bmp280: zero-init buffer").
+
+Fixes: 872c8014e05e ("iio: pressure: bmp280: drop sensor_data array")
+Cc: stable@vger.kernel.org
+Signed-off-by: David Carlier <devnexen@gmail.com>
+---
+ drivers/iio/pressure/bmp280-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index f37f20776c89..431476cff883 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -2623,6 +2623,8 @@ static irqreturn_t bmp580_trigger_handler(int irq, void *p)
+ 	} buffer;
+ 	int ret;
+ 
++	memset(&buffer, 0, sizeof(buffer));
++
+ 	guard(mutex)(&data->lock);
+ 
+ 	/* Burst read data registers */
+-- 
+2.53.0
 
