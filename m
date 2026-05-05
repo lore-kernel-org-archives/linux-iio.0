@@ -1,73 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-24424.protonmail.ch (mail-24424.protonmail.ch [109.224.244.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 729533E1CE4
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 16:22:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E0C648B38E;
+	Tue,  5 May 2026 16:24:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.24
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777998143; cv=none; b=pPHYAu0kNUg1ZbY1n0CKdxb8SkyxvhOIx9hIWgt0pTISgqjAhct1FnDDgjIwS3/PLbyAMd+3CKDqykZwfzVoOS2k1v/iEOEAkIFVJ9CDo9suloJWoLgw4o7lbLS9WWTiw6Lynz/Ud8EqyQMQ0HphWj3quuCGgwOKGnfDVlZHslA=
+	t=1777998298; cv=none; b=Gy0FZ5QHkj69wvRYV+Yg7j6EUEs60djiGpC3HzWedN0SEZd8Fs5OZDq0XZlfQ/0Tz/XHf+iesVYRaAiSrN4LHHxV8jNLhftZws7Yw14SfUB+VWpmPiIx9GSO4FU8tHpTdNtbHTdBgRFWMrEuq4yKVqzjsJ7tgtNyb/qA/loxjNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777998143; c=relaxed/simple;
-	bh=ZtES+jPtylVCHzmgLomzHkmz5Y60KHexu8mfY/Hnxms=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UGq9sjU39XluQ9ZaXcQvDVcOv7Zv6atBIbqkQaD4J71marDhR290ovvP8u8OidqD/gKE+wO3zYBlAYuEn6/L0MebtCpw9MlsvEfY/rx6sraS6vAQOJQMzQXGQ8b88KyGfTGEMaAOCZ/N4bg5EY5/SIQsm8O1u52LEbarbm/AieM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XwVgjXx6; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777998298; c=relaxed/simple;
+	bh=zNiWv6rRMr8VglHjj6vRucPyNjtedqguSDscHAx+XdI=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=luEpCdg32rCvNyqLhfSDPbugRL4PjyeZVSW9XKrz3/5G9ufj+RmaOefdTpwOnH5i+4MUYMOO/UFZRvA37sAjcGahWCLJuRPkJwotFqCwsFTHmCgJZDty+VA+Jb4A/gfyFKiou/IgjZsXtLPuw/7U7W56pgmghLPMEH7jgOodn9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=M+F3yhx7; arc=none smtp.client-ip=109.224.244.24
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XwVgjXx6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5ECCC2BCB4;
-	Tue,  5 May 2026 16:22:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777998143;
-	bh=ZtES+jPtylVCHzmgLomzHkmz5Y60KHexu8mfY/Hnxms=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XwVgjXx6PBZtje+j22jMqUCqgWo1YHd/duJWf6UAqd8N8tD6Nt9hjsNQrS0FDFvve
-	 zrZnsj0nmUsWC59TIKaDlNiJTGzKZ/9BRu2lAnJNc5jM7n4rIMDqVOS2xSS3UbNLFf
-	 ADyufWjHt2M5Cy2AxPBOy0RW90O83nZEMqU9dLS9BWi6D5lZhczE7E8k0A5HqFTk5F
-	 Th2WKL1X7ynVJRVhkezp1hrLWpmpF8WETGss9jQnJ2nOyRe/OMxVKngsKObwuUdaQK
-	 Qx8JZI6lrPG2yUoN5LTm0H06NdRQbjk2MrrHAGMIKJBlOE6hFOV9nhsuPTk0vltuLH
-	 e648/GQ94CClA==
-Date: Tue, 5 May 2026 17:22:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="M+F3yhx7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1777998287; x=1778257487;
+	bh=ASWqzKjXrD7GPPPq7eqcATqg6A70mPRmdB4ZyDBwEK0=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=M+F3yhx7dJ2rhFSJAZcFeXyevkNolOGRHAyGx9L5V9zEwV48mNW0/j1DxaK2EZV3A
+	 sOI77K5RJdv6vOQ4iT0XOz7d7KLFmOkC+jHajqCLIfMwCKTNmoZk26ZlwEiaoyoM9j
+	 b0Jm6p/Ff5EtNIHmXiEyFH/VfiVWcUCBVrOwkIFsGzbQoFISKrRmmTf1YBwE6BKG50
+	 jEC/Wpla8r4KX6aKV8Ln+iyPz5DRcWZf6WmD+D+yqDdYEw+FuY37PxcYMtVcMYDeHg
+	 ZFaIG7dN5yXP2FY+Ojke22qfg31drHoBz2zpt6/kca1w+FzeqPMI0bs85GKPo37cug
+	 sJC/bk/aU+nQA==
+Date: Tue, 05 May 2026 16:24:41 +0000
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Marcelo Machado Lage <marcelomlage@usp.br>, andy@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] iio: adc: mcp3422: apply bit manipulation macros
-Message-ID: <20260505172214.6f0025d3@jic23-huawei>
-In-Reply-To: <afLyk-kNyZkr_drR@ashevche-desk.local>
-References: <20260429224401.11818-1-marcelomlage@usp.br>
-	<afLyk-kNyZkr_drR@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+From: Roman Vivchar <rva333@protonmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Srinivas Kandagatla <srini@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH 05/13] nvmem: add mt6323 PMIC EFUSE driver
+Message-ID: <Bn1O24yJ2aBvKUTpiFUzxnqbuuybRirR73G7R38ghYtwhFvQqWJb3HPgcikEa1otDw6n07nX_g8khZUHXJ_QRA--LrV5yj5Mcg1QzrWt6vA=@protonmail.com>
+In-Reply-To: <afmjfWtt7Vii6xfH@ashevche-desk.local>
+References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com> <20260504-mt6323-v1-5-799b58b355ff@protonmail.com> <afmjfWtt7Vii6xfH@ashevche-desk.local>
+Feedback-ID: 173184497:user:proton
+X-Pm-Message-ID: 70e68a78b3333f71307d661d5a8c93410d5d2dc7
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 30 Apr 2026 09:11:31 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tuesday, May 5th, 2026 at 11:00 AM, Andy Shevchenko <andriy.shevchenko@i=
+ntel.com> wrote:
 
-> On Wed, Apr 29, 2026 at 07:43:59PM -0300, Marcelo Machado Lage wrote:
-> > This patch set rewrites several open-coded bit manipulation parts of
-> > the MCP3421/2/3/4/5/6/7/8 driver code using bits.h and bitfield.h
-> > macros.  
-> 
-> Both LGTM now
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
-Nice.  Applied to the testing branch of iio.git.
+> On Mon, May 04, 2026 at 09:24:57PM +0300, Roman Vivchar via B4 Relay wrot=
+e:
+>=20
+> > Add support for the EFUSE controller found in the Mediatek MT6323 PMIC.
+> > The MT6323 EFUSE stores 24 bytes of hardware-related data, such as
+> > thermal sensor calibration values.
+>=20
+> Besides below comments, check for the similar issues that previous patche=
+s in
+> the series have.
+>=20
+> ...
+>=20
+> > +#include <linux/device.h>
+>=20
+> Not needed as platform_device.h implies this ("is this good or bad?" is a
+> different story).
+>=20
+> > +#include <linux/io.h>
+> > +#include <linux/mfd/mt6323/registers.h>
+> > +#include <linux/mod_devicetable.h>
+> > +#include <linux/module.h>
+> > +#include <linux/nvmem-provider.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/property.h>
+> > +#include <linux/regmap.h>
+>=20
+> Follow IWYU. At least missing types.h.
+>=20
+> ...
+>=20
+> > +struct mt6323_efuse {
+> > +=09struct regmap *regmap;
+> > +};
+>=20
+> Do you really need a custom wrapper data structure? Can't regmap be used
+> directly?
+>=20
+> ...
+>=20
+> > +static int mt6323_efuse_read(void *context, unsigned int offset, void =
+*val,
+> > +=09=09=09     size_t bytes)
+> > +{
+> > +=09struct mt6323_efuse *efuse =3D context;
+> > +=09u32 tmp;
+>=20
+> > +=09u16 *buf =3D val;
+>=20
+> Really? CPU order all the time?
+>=20
+> > +=09int i, ret;
+>=20
+> Why is 'i' signed?
+>=20
+> > +=09for (i =3D 0; i < bytes; i +=3D 2) {
+>=20
+> sizeof()?
+>=20
+> And since 'i' is used only inside the loop
+>=20
+> =09for (size_t i =3D 0; i < bytes; i +=3D sizeof(*buf)) {
+>=20
+> > +=09=09ret =3D regmap_read(efuse->regmap,
+> > +=09=09=09=09  MT6323_EFUSE_DOUT_BASE + offset + i, &tmp);
+> > +=09=09if (ret)
+> > +=09=09=09return ret;
+> > +=09=09buf[i / 2] =3D tmp;
+> > +=09}
+>=20
+> + blank line.
+>=20
+> Isn't this reimplementation of bulk read? Why the latter may not be used?
 
-FWIW Sashiko had a field day on 'whilst I was here' things in this driver:
-https://sashiko.dev/#/patchset/20260429224401.11818-1-marcelomlage%40usp.br
+Yes, but the PWRAP (the regmap which the driver uses) doesn't support read
+callback, only reg_read is implemented in the driver.
+It hits the map->cache_type =3D=3D REGCACHE_NONE in the regmap_read_raw, an=
+d falls
+for the !map->read check, so regmap_bulk_read neither the regmap_read_raw
+can be used.
 
-Note that the DMA one is wrong. Some of the others might or might not be correct.
-Maybe some stuff to look at if you want to do more work on this driver, though
-you'll probably need to work out some way of testing fixes for the more complex
-ones.
+Technically the PMIC is not continuous address space, but rather non-MMIO F=
+SM,
+so it makes sense to not implement the read callback. I guess the custom
+implementation is fine then?
 
-Thanks,
+All other suggestions will be applied for v2.
 
-Jonathan
+>=20
+> > +=09return 0;
+> > +}
+>=20
+> ...
+>=20
+> > +static const struct of_device_id mt6323_efuse_of_match[] =3D {
+> > +=09{ .compatible =3D "mediatek,mt6323-efuse" },
+> > +=09{ /* sentinel */ },
+>=20
+> Having trailing comma in the terminator is nonsense. Do we expect anythin=
+g
+> behind it?
+>=20
+> > +};
+>=20
+> --
+> With Best Regards,
+> Andy Shevchenko
+>=20
+>=20
+>
 
+Best regards,
+Roman
