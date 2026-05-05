@@ -1,140 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B982C49251B;
-	Tue,  5 May 2026 17:10:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E61D948B384
+	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 17:22:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778001000; cv=none; b=i0hbeRmy0v9l+TQOgg5fbOYleIdLP5hOjMg3RqPWP3hZRFBckCC1LtSxiEuJV8An9F+wIkD/ICPUwaAy6OsRYsbENKLx2SN9g9Y9sPKrt+QgoDmrVidMs9wK4Q2IaLU9vyj5x76YaLvskxc0olWokJb8RXzYiXXxcvcHXjLcVa4=
+	t=1778001779; cv=none; b=L2NTYATEL/pUajoVEprALkeWNEiUEgXQ4jpdJbpIyjv/0f7kUuf4NfNMFeVc4CFD+LoorXYNqW1ZmRXufhfnDHVwCuDOQUrpFv9i+F8vNy+MuyKWSTg9Qeh7mV/qnQrqtCrZFj/41LXWuSpPHUds4A+Aw/X9dvsvIJUNCIj5JW8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778001000; c=relaxed/simple;
-	bh=mKF9MtJdN12/ezpzx+6Gx5YWYtCRGx7bFBhDIXAgUeM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Dzroud2Q+m0PBowkYMDqakNhS3VqGxdi5HykgaCbxmlRSphPe2x6jQNCw4WmkS4be5GYd8trh4Uk6H9W3QDJdRw8bc+e3QAJbpqUw6wNzzrFRX9C80Zkr1xO0nuAMStG8hsvLSst7ySXgCCaFlGvMXbAYDcsw+1KggjcgF7nGu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZvMEyuJx; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778001779; c=relaxed/simple;
+	bh=dmt9Gkk2uhujIs4G4b5U8EFHGxaY+XAsrfyXWKYDACA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=aCSYX+cRpHYcbThfaLGroyAEsEXgyLjYJv4vvR0ofLl4vbR/A+aUksOn/+rMJBJNM7W81CpHe27UzfXEpoQJz9PHsnOIcucmhpCqLzcj1/Er/E3g/DtpEXQeSzn6cGjxTw7GY2WWgN+MeToWidl/W4GHyIY3TBzkO5OzcmMRzWU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MHVWbwW1; arc=none smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZvMEyuJx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCB76C2BCB4;
-	Tue,  5 May 2026 17:09:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778001000;
-	bh=mKF9MtJdN12/ezpzx+6Gx5YWYtCRGx7bFBhDIXAgUeM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ZvMEyuJxqN+rnB59LG4kVV4VCnbnBl4VHFjoMk3Dy6XT89qT0WsgMpc/qQ7wTEexd
-	 tlX6lFjwXM/CiIE5oOl/O6LyWd0QcFClGvihxofpyhVztY/mpa8mMte71rmFpYbV0o
-	 GF5F+QXLWNqNQvEwdv6JlrbKSZ57jpCECc9qsrMRiOwVfkZmVLAFNY+TTAuqDFE3bz
-	 hYCXC5Of3jdZxhYdxf4VyOSeqt+RpWsWp5aZ+H3D1ShBMz4SFjG+DpE1fPxFnM2FQA
-	 eiTLA4d4rvnyybyck/+LaC6qkqOetG6jk/G9lWIuWHUWRKSydKMpf9VoaYdIJKbZHB
-	 9dNozsSodBrvQ==
-Date: Tue, 5 May 2026 18:09:47 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, Rodrigo Alencar via B4
- Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
- rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
- R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v3 9/9] docs: iio: add documentation for ad9910
- driver
-Message-ID: <20260505180947.4792eb25@jic23-huawei>
-In-Reply-To: <acpq4fyekssspgche7q6g5ns57y25alalooorybqfz2fzdr2yu@wj6seookj4ip>
-References: <20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com>
-	<20260417-ad9910-iio-driver-v3-9-29b93712a228@analog.com>
-	<20260426141007.345c76e4@jic23-huawei>
-	<lkvrmc6y2z45b4qsmaxg3c2iaiar6hjmim3hdbkxqx3536yx3p@o6h7de4ire2d>
-	<20260427104608.7819a134@jic23-huawei>
-	<ae84112jP9UcsHYG@nsa>
-	<acpq4fyekssspgche7q6g5ns57y25alalooorybqfz2fzdr2yu@wj6seookj4ip>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MHVWbwW1"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-bc47a96d3bbso120386866b.3
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 10:22:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778001776; x=1778606576; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0FOqjUCkmT7At/F8JOz9gBL9DtdzAA5KnxpWzyPRye8=;
+        b=MHVWbwW1i0S50okI3x6QVt9384+bd+fGCFpL/FMg52q5cW/71kE1MzLD1Eh1GEpzNu
+         XurwD4ew0ybD+eYMKI2M9pvr52Y7r1dj6V4G16KaDJyJCTpOhGmLads5kuHI1HjTKRGT
+         +HRFlcZtXmetSU/HSl4UHCyK7omaE9LXt9op3MSpeV27PMK9cR2ZsbfZFE9IC8d1+3vd
+         fnUfeWpv06y/FpwflPNhaR9vgUz5qtBPW1ltZeFXEGJ7iQwVjANlHdqs4wIPKjAzz36W
+         XuziUuQblyHIf81iNB9LCru7UdEj9P6iWmb9Rk84zw6H/lhI86hIFv34jOgd3/d4wj4q
+         /byQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778001776; x=1778606576;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0FOqjUCkmT7At/F8JOz9gBL9DtdzAA5KnxpWzyPRye8=;
+        b=KeF7+4xvs44r/H7COrjJ+BNztPw9Om4ITq7xG+kOrkWDwDs94J53D/BhEHCtQYGeKR
+         wc1LIPyPCkj+Q81IBqzs94Gf0YTbd6jtujMG57q/TaWH/9Kcctz7KvXp6VgIDC4s0uBb
+         X2TNuSw+ay1JBD+by8i0dHOmYUtPFEVE/Q2rpg4LfH0TafsRZSj9yT0DjFevPSpqiHM5
+         3jL17LWuMLgl8Mjr64peMCeuEbfkB7+8O2oSV8Dgh0j0EuFIuYb2wWgXJL+ikStHdOsM
+         wpbN9LTN+Z9Uuexn9A5X6kLS8bOPz3GHCjuD7CThksK0bD2Q0mj2SyIdBHdeXxCCwMld
+         j1Wg==
+X-Gm-Message-State: AOJu0YxHGF/wRC+cQeW13m5A5BAgFh4yOl1phhWhg/AHJGm335ggFiTE
+	YnoK3qrxlAFZjf6TpG19TGZIZIulJtxuZKPBF+CLMXNr2MDdCq8eR3Rz
+X-Gm-Gg: AeBDieu2+sJuCO/JQvUWB6W6D7JrIg5oV7WwxTkjVosU/4wYyTPgEw2uzJ7TT8uq41P
+	LSkeMSaYF0o2nzcYFsT21oKHnnzKJBJoxCyf9Oo/Rlqj7i4d9jHxHqUeKHjedw65QBbwQ4crHZC
+	gHJEW/telZpH1JwZlOBYikMNMUZvMdb6oA4Kg/aWc8ZxtcoYx18bvAHypi+dMtiVYGVdehpapO8
+	4ilZC0rpR866ggBX1+ih9NFS52gV83y6gjWX2FNjdgZNprHUFq47Df9ej0oKU1TniVoIzUbAHm6
+	zwiKZ4oZrUixqTCBx2QdUcQro9aGQFvF5eIymgHzOjpfx1lQ2KF8v61iUTjQzhdMwpcIl/MkNmT
+	VlWxyXbcoqzlFSvQ0FoE+D/sfgzaysWTCptE+vM6vYnJ8GxqkNiteX7hmoqqKmrItblKzqi2fxX
+	VXrTLWmx3mAe+JYpMIZfXnJ4x41ZKj+5CcNByZAviDjEDfsuRF
+X-Received: by 2002:a17:906:4fd4:b0:baa:6847:af9 with SMTP id a640c23a62f3a-bbffcf81c95mr843789766b.28.1778001775889;
+        Tue, 05 May 2026 10:22:55 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.252.38])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bc21f2ed5eesm236003966b.14.2026.05.05.10.22.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2026 10:22:55 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v2] iio: humidity: ens210: Fix missing I2C functionality checks
+Date: Tue,  5 May 2026 18:22:45 +0100
+Message-ID: <20260505172246.90892-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, 27 Apr 2026 15:54:14 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+The ENS210 driver uses SMBus transactions (such as byte, word, and block
+data reads/writes) during the probe and measurement phases. However, the
+initial functionality check only validated a subset of these capabilities,
+which could lead to loading failures on adapters requiring SMBus
+emulation or native-only controllers.
 
-> On 26/04/27 11:31AM, Nuno S=C3=A1 wrote:
-> > On Mon, Apr 27, 2026 at 10:46:08AM +0100, Jonathan Cameron wrote: =20
-> > > On Sun, 26 Apr 2026 21:42:15 +0100
-> > > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> > >  =20
-> > > > On 26/04/26 02:10PM, Jonathan Cameron wrote: =20
-> > > > > On Fri, 17 Apr 2026 09:17:38 +0100
-> > > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@=
-kernel.org> wrote:
-> > > > >    =20
-> > > > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > > > >=20
-> > > > > > Add documentation for the AD9910 DDS IIO driver, which describe=
-s channels,
-> > > > > > DDS modes, attributes and ABI usage examples.
-> > > > > >=20
-> > > > > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>   =
-=20
-> > > > >=20
-> > > > > Hi Rodrigo,
-> > > > >=20
-> > > > > I think this is getting close to something workable subject to so=
-me tweaks
-> > > > > to not make the priority thing visible and use rate of change par=
-ameters
-> > > > > so /Sec rather than steps.   =20
-> > > >=20
-> > > > I am not sure about this one. Getting the value into units per seco=
-nds will
-> > > > increase the range of values by a lot, e.g., for the frequency case=
- the step
-> > > > size can range from a few Hz up to the entire supported range (hund=
-reds of
-> > > > MHz), and if you consider that one would often have the sampling_fr=
-equency
-> > > > at 250 MHz... an attribute frequency_roc could have an order of 10^=
-17 Hz/s,
-> > > > and I am not sure how practical is that, although it can have a phy=
-sical meaning,
-> > > > like a "chirp slope". =20
-> > >=20
-> > > That scaling is indeed a bit of a pain though it will go in a 64 bit =
-int
-> > > however, seems likely we'll get higher frequency devices one day that=
- will
-> > > limb even faster.
-> > >=20
-> > > Maybe wait and see if anyone else has input on this.	 =20
-> >=20
-> > If we think things like RF DACs (which internally - typically - make use
-> > of things like DDS), we can already go to the GHz "world".
-> >=20
-> > Not saying we already have such a device that would map the new ABI with
-> > bigger values (we might have but nothing I'm aware of from the top of my
-> > head) but just saying the above is, indeed, very likely to pop up at so=
-me
-> > time.
-> >=20
-> > Just something to bear in mind :)
-> >=20
-> > - Nuno S=C3=A1 =20
->=20
-> under this Documentation/ABI/testing/sysfs-bus-iio-impedance-analyzer-ad5=
-933,
-> there is ABI: /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_=
-increment
->=20
-> which seems to be a similar concept to the step used here.
+To ensure compatibility across a wide range of I2C adapters, modify the
+functionality check to verify if the adapter supports the required native
+operations or, failing that, supports the SMBus emulation layer.
 
-Yeah but staging driver so let's not focus on that too much.
+Fixes: c524fbca672e ("iio: humidity: Add support for ENS210")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+ drivers/iio/humidity/ens210.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
->=20
+diff --git a/drivers/iio/humidity/ens210.c b/drivers/iio/humidity/ens210.c
+index 77418d97f30d..c722087bc188 100644
+--- a/drivers/iio/humidity/ens210.c
++++ b/drivers/iio/humidity/ens210.c
+@@ -202,9 +202,12 @@ static int ens210_probe(struct i2c_client *client)
+ 	int ret;
+ 
+ 	if (!i2c_check_functionality(client->adapter,
+-				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
+-				     I2C_FUNC_SMBUS_WRITE_BYTE |
+-				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
++				I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
++				I2C_FUNC_SMBUS_WRITE_BYTE |
++				I2C_FUNC_SMBUS_READ_BYTE_DATA |
++				I2C_FUNC_SMBUS_READ_WORD_DATA |
++				I2C_FUNC_SMBUS_READ_I2C_BLOCK) &&
++			!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_EMUL)) {
+ 		return dev_err_probe(&client->dev, -EOPNOTSUPP,
+ 			"adapter does not support some i2c transactions\n");
+ 	}
+-- 
+2.43.0
 
