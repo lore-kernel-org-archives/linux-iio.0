@@ -1,190 +1,425 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B43234EF1C
-	for <linux-iio@vger.kernel.org>; Tue,  5 May 2026 07:48:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.170
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777967321; cv=pass; b=IBcyg7NboSxy6Jo2v8XcPpjKWvfERV5bKDSGkK/K1QZRnpQZarM0pGTVUmrNcmY5lq7TFs903EHE3qgI3tiKyVLrWZfaVAd3N4fMJ1Nj1/XLw8fToy9yGhf37wSr7KuqP9B/BAWjBfeIsUiTbVEB2qzmR2pTZlw64gR/Bzo7kUw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777967321; c=relaxed/simple;
-	bh=rRHwFA5RYQLuKw+lmSPwbNmSV3JVD+xVtBbzqeiKKBs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=p20t7ox+DLEH92Wla9YBwWMrptS7gfmR7BFaCGK+g9d+u2K4cbLbLoUNNL4ch2URTp7T+nI7jiV7PZj/gRk7rqP3BMaj7MFU+PaY0jdifcY0X7dAM0H922Zuh5GBBnKeWx4sMkkWXATSYR2XC1zTwMm4bU8aXJ1fzITiw8W4+X8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=melexis.com; spf=pass smtp.mailfrom=melexis.com; dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b=rEaWtQmY; arc=pass smtp.client-ip=209.85.222.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=melexis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=melexis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FA0718A6CF;
+	Tue,  5 May 2026 07:53:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777967609; cv=none; b=MlLkaZz3BpfP+XKmzjcEFt3V/B90AMnLnbcfunqbMb0w7EpTBbrJyfbqrkITf4PNkAvovUjp1K6E/zpg2xQ/AVFs1ScQcnkfVKlstIDVp9oVDATCS3CfN4COahoJLl1VZJv9i/Ujw2Mka7ZfrVuTvyvuxe6Swm78Gtte5qIcen4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777967609; c=relaxed/simple;
+	bh=BrhuC8t53vfsZNJjtxaRQN0b4ACZgyma1EephQqZQUw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MHkSKyLdEU6xTS/+C/6Fst0YrAGnbtlGOkpfGKlvMpZFwBTgz1ZQpoR7Ix7+7YHD2jEPkxVjg72TSw5LBlmtXSFP1cl2eCk/TJfxrWgc7gGniGBVPyfJ2t4Z8mckogaK9IM828kX8AiQC42jPnn0z45LtxdDHLqrylO+1+Ec1hw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fzpvzG52; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="rEaWtQmY"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-8d4f78fc9f6so541654585a.3
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 00:48:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777967318; cv=none;
-        d=google.com; s=arc-20240605;
-        b=DNd3h2dAQgKj6vRUkM5YpgPLLIVo8R6oepfVQqPUtVHuBpnTSXVnyvVfRRzOufa6zh
-         q+x3DAiQvuks0/jyUWXgFWCl9pL7xv2Yq7k4U+YFGFC7C2NdxOkeR5sOVRoTP5ODoZp6
-         8IcAEFIy9iA1FVrx9AwV52AcEhzG5gAsU/WTIu9q5ICUJkGDyQyca8s0vnVzHtwgU7/8
-         saNKlBYw6UNV1MJEKTFs/FD0J5iu4uyTmvuDxF9SXuWXRJ1DmSYeezTb7kR2JDzBxgkb
-         HgW3Qkxy4vVCp4pbcB945jPqc3jii2HW4k+XA4GiRjhXcaK0HJVvTbXc4bseHgGtXlq1
-         gfYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=Q2C0vijfzvV5Lp8tCfHLSU5dQmFv/k33+BTXi5ftR9U=;
-        fh=TPXU3aF1EL53xS3q0lY1/lNRC3uGX/sh5S4LpK+lRBM=;
-        b=Vq8yNevyLzYWkQmTo7fBDm4P3nDsdnkCDYyuxbK/0VEXzLKyGkWeWkCYGEEjV89H3x
-         2N/NRcTkR/808QXsYn9ciFUvlhzdMZC5UU6z46GDFbqYvGk8VLTD08jlbGAM38ZncRVU
-         4UWwK4G7mkJ3PkNHMe/8YIZkb3r/jX8Z9axq52iVJWQkPPoI0m2VNu9NQJa8EkEYTso8
-         rVIinvUEQqWK3MXnnvbIQ6iZ1AYVvRA701UnsYQF+82EmiNt4UZfAx5j7fX2//qUe2O1
-         N3GGh2ndWIfWgW1GVS8NdSo4WrzdEmv7gG2Fnkxr6cbD5J0K91qmFhKefr9bOGscmd4i
-         ksqQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=melexis.com; s=google; t=1777967318; x=1778572118; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q2C0vijfzvV5Lp8tCfHLSU5dQmFv/k33+BTXi5ftR9U=;
-        b=rEaWtQmYiK6LBAUlcb3JShr8cNszB+ZheNVlwuDdubBrgZaPmeF4Oj/lSE3Niu9uzt
-         XwdUMfVFIeHWZop1o6PqrtZC2lV1ypPv1+Vk/oqRZydwZjliB6WDwjPZrWLGuX9ZKPh5
-         wRTMkaoFXFmkAYfVyh1sCXTboW9uqGn1MP6O6VzFFw9lteOrZsrDZ6QRgdy7MiITobOX
-         AMjtfdf0ki++L6Ip4ybap2Im3nxnWekhYBpxgUSS3lHWdmaurKOgtTjurR2ecV4EP8se
-         mECpay2oROo1euVhx6qhbOIW9kB2B1O1EnLt1eQzbFKUa0DSOlL3FZ4xGxTBuIlQDZGv
-         KyKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777967318; x=1778572118;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Q2C0vijfzvV5Lp8tCfHLSU5dQmFv/k33+BTXi5ftR9U=;
-        b=ZympVsnEENi+OKpWQoGA1k9RV5V2kHUFi3oXGHNo3Gc7Kobrmq85q6KtfvswgTd4oT
-         ArlkGD/T//vI+ROLzYQ357CcOTyCQoAtkCq6Ed5sBgiDVfAnRUjgeaJvgT9U3L/j5HY8
-         PLZtZoczdke+elN0+FVp7KZCvc4tmHi7xOdTfADEKdgar3hXnLOVBj5VQiuURDLRZGVF
-         AHgK55aIgivOsTi0pOYUCK9ppyHFIc0qYfmC+KaPjW5GeAiXPqNx7K369CZT6ccjFWR3
-         0lGGbh3XSduhtAXcMqRJsckfNJPOlcbWqXvHrx1G1/9YUma77DB4DZ2qSpIc/lpS+VYT
-         le0Q==
-X-Forwarded-Encrypted: i=1; AFNElJ9/I8O7LxDcR33atf/BDhh9tHDxaV5cq5mNYQ57UqM5dZRRolPF2a9wozXizc76LQUog4nqubsnUxw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzL+Z5V3BIkWdX36cSWHKbK88sRE1FFVtv3I34ZYz5SCHNYUdAG
-	Dy8Lwt7fCt4rB9eaSLcTcB3DkqHf0iIQtIwTmDvsHwemOEEt+IWhJ+ncJI4DpPoFL6WOR5TFid9
-	kjEKxNhZOoG7b4EnDxqw7vJa3bdlcqBFS36CPAtUlc+cdws+9hFzC1tt1
-X-Gm-Gg: AeBDies116ylSL5ornHmurusO12khAF3LiHWR4qCNGpe7HBWDPCbJqkygS5Buuwg3Q4
-	QDYA4qvHvtm4YwWwnzR6JGfceiKsNR+A++Lx9H7piRiKmiW9UGbrmoEoxVipYa+H9SC+UP7YhQS
-	f7/PYrXMxlX/uIcRkX+CksFucA8jOb4M6yTx+42Qs6AfQ/KuPyrHrZP7blOd1n08dC2syuXw+0a
-	Uakrv3Kn8VGnOOBW0CK156S1jloZ2LOmiAgPd0RZ6UNRMJ3syGXsqmV/z+4WGmMN6+aJCpDJf2j
-	hJMMvXYbU3Oq6sm0A+7rd3lVGFhc9MX4/vtOUXha1YZFANMcmzA=
-X-Received: by 2002:a05:620a:2681:b0:8ef:dcb7:59a5 with SMTP id
- af79cd13be357-902e4c7e2c8mr309455285a.30.1777967318406; Tue, 05 May 2026
- 00:48:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fzpvzG52"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777967608; x=1809503608;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BrhuC8t53vfsZNJjtxaRQN0b4ACZgyma1EephQqZQUw=;
+  b=fzpvzG52hRnE/F+t3YARJHiZ+A1zJwEKdZSI5OmR3hWYUFOy0cLQ9Dex
+   fElvjWatSuFbGJlmQHcoDfvW4cUieD1yJzT/ZhGokWuCuki3JGCExLd46
+   fzNNyjQwuYrOlBkgJkkzm8wRlSIBG0C8T0DpHubXZT4TOWwlJdb1Zr/eB
+   wcOD9qKCyrTAS9/MHYD8djU0ekl7U4ZB4NIsyJ/Usld4pC1bCY/TrgrYR
+   jb0DUPcCjYHhCti24vzas4xos1ki+MetXhgEyLSTE5iFt6YWENXJbYETD
+   DIaD8Hb8u/RF/mkFpy20IYQZwYgpGXx/tmYQ2wD9XYHrgxo1f2SshwIjv
+   Q==;
+X-CSE-ConnectionGUID: xiAruK+YSPS6tqLtEmo5cA==
+X-CSE-MsgGUID: nmas3IpdT8m4+tgze3xV/Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="82683925"
+X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
+   d="scan'208";a="82683925"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 00:53:27 -0700
+X-CSE-ConnectionGUID: /9NJwlwzR4Kea1pYqYJg7A==
+X-CSE-MsgGUID: NwoG24f0TemA++QJBz92ZQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,217,1770624000"; 
+   d="scan'208";a="235614542"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 00:53:21 -0700
+Date: Tue, 5 May 2026 10:53:19 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: rva333@protonmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+	Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH 04/13] iio: adc: mediatek: add mt6323 PMIC AUXADC driver
+Message-ID: <afmh70niEmjl53g9@ashevche-desk.local>
+References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
+ <20260504-mt6323-v1-4-799b58b355ff@protonmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260427215800.28082-1-salah.triki@gmail.com> <afBpBNLucHg25So0@ashevche-desk.local>
- <afByF-0BV1szTbzE@pc> <20260428170412.41791bdb@jic23-huawei>
- <CAKv63ute7h3vdZMjK5FbQLGH66O=VBk-+04e2p0FNWZBL-Co=g@mail.gmail.com> <afmc3xTW4H2oPMuQ@pc>
-In-Reply-To: <afmc3xTW4H2oPMuQ@pc>
-From: Crt Mori <cmo@melexis.com>
-Date: Tue, 5 May 2026 09:48:00 +0200
-X-Gm-Features: AVHnY4JvFXyTWZ797tnkx5LqWXrqpj0Aae-wstSc2VFFTIOv8hBg3YPKEMuhvbI
-Message-ID: <CAKv63us2nZdHoCoB+GsWmz6UMZhZs3c=v51jTCxwiwKVqVe6eQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: mlx90614: fix missing GPIO direction return value checks
-To: Salah Triki <salah.triki@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260504-mt6323-v1-4-799b58b355ff@protonmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 5 May 2026 at 09:31, Salah Triki <salah.triki@gmail.com> wrote:
->
-> On Tue, Apr 28, 2026 at 06:33:05PM +0200, Crt Mori wrote:
-> > On Tue, 28 Apr 2026 at 18:04, Jonathan Cameron <jic23@kernel.org> wrote:
-> > >
-> > > On Tue, 28 Apr 2026 09:38:47 +0100
-> > > Salah Triki <salah.triki@gmail.com> wrote:
-> > >
-> > > > On Tue, Apr 28, 2026 at 11:00:04AM +0300, Andy Shevchenko wrote:
-> > > > > On Mon, Apr 27, 2026 at 10:58:00PM +0100, Salah Triki wrote:
-> > > > > > The functions gpiod_direction_output() and gpiod_direction_input() can
-> > > > > > fail, but their return values were previously ignored.
-> > > > > >
-> > > > > > If an error occurs during the GPIO configuration, the function should
-> > > > > > abort the wake-up sequence and return the error code. More importantly,
-> > > > > > failing to check these values could lead to the I2C bus remaining
-> > > > > > locked if an error occurs after i2c_lock_bus() is called.
-> > > > > >
-> > > > > > Add return value checks and ensure the I2C bus is properly unlocked
-> > > > > > via a goto label in case of failure.
-> > > > >
-> > > > > ...
-> > > > >
-> > > > > > - gpiod_direction_output(data->wakeup_gpio, 0);
-> > > > > > +
-> > > > > > + ret = gpiod_direction_output(data->wakeup_gpio, 0);
-> > > > > > + if (ret)
-> > > > > > +         goto out_unlock;
-> > > > > > +
-> > > > > >   msleep(chip_info->wakeup_delay_ms);
-> > > > > > - gpiod_direction_input(data->wakeup_gpio);
-> > > > > > +
-> > > > > > + ret = gpiod_direction_input(data->wakeup_gpio);
-> > > > > > + if (ret)
-> > > > > > +         goto out_unlock;
-> > > > >
-> > > > > While technically it sounds correct, the potential problem here is that you may
-> > > > > fail this in case CONFIG_GPIOLIB=n. Is this GPIO optional?
-> > > > > What may happen if GPIO is not optional, but for some reason setting it fails?
-> > > > >
-> > > > > TL;DR:
-> > > > > I am not sure about this patch. At least I'm not comfortable to take it without
-> > > > > testing on real HW.
-> > > > >
-> > > > > --
-> > > > > With Best Regards,
-> > > > > Andy Shevchenko
-> > > > >
-> > > > >
-> > > >
-> > > > Thank you for your feedback. Since I don't have the physical hardware to
-> > > > perform the necessary tests and ensure there are no regressions, I agree
-> > > > that it is safer to drop this patch. I don't want to risk breaking the
-> > > > driver for a minor cleanup.
-> > > >
-> > > Maybe Crt has the hardware to test. For now I'll assume this is not
-> > > going anywhere wrt to tracking in patchwork.
-> > >
-> > I will dig the hardware to test as it was off my desk for some time
-> > now. It seems like backwards compatible, but I am wondering why would
-> > we want to be informed of this failing? The problem is that sensor
-> > uses wakeup line (same as for i2c) to receive wakeup pulse, so in
-> > theory this is already a workaround. @Salah did you see any issues in
-> > the wild?
-> >
->
-> Thanks for digging out the hardware to test this!
->
-> To answer your question: I haven't observed this failing in the wild on
-> this specific sensor. The patch was initially motivated by a static
-> analysis and general robustness cleanup, ensuring that we don't ignore
-> errors from gpiod_* functions (especially in the context of keeping the
-> I2C bus locked).
->
-> However, as Andy pointed out, turning this into a fatal error might not
-> be desirable if the GPIO is optional or if the failure is transient on some
-> platforms. The goal was simply to improve visibility if the GPIO
-> configuration fails.
+On Mon, May 04, 2026 at 09:24:56PM +0300, Roman Vivchar via B4 Relay wrote:
 
-This GPIO in this case is basically used for generating wakeup pulse
-(so when sensor is sleeping) and I doubt there is usefulness of the
-GPIO error failure for this case from user perspective - there is a
-use case when debugging.
+> The mt6323 AUXADC is a 15-bit ADC used for system monitoring. This driver
+> provides support for reading various channels including battery and
+> charger voltages, battery and chip temperature, current sensing and
+> accessory detection.
+> 
+> Add a driver for the AUXADC found in the MediaTek mt6323 PMIC.
 
-At the moment I am fairly busy. I have found the sensor, but I need to
-dig out the some board to port the latest kernel to.  I hope I get a
-reminder from Jonathan as the window gets closed, but I also have
-trouble
+...
 
->
-> Best Regards,
-> --
-> Salah Triki
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/delay.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +#include <linux/types.h>
+
+Follow IWYU. At least stringify.h is missing.
+
+...
+
+> +#define MTK_PMIC_IIO_CHAN(_name, _idx, _ch_type) \
+> +	{ .type = _ch_type,                              \
+> +	  .indexed = 1,                                  \
+> +	  .channel = _idx,                               \
+> +	  .address = _idx,                               \
+> +	  .datasheet_name = __stringify(_name),          \
+> +	  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> +				BIT(IIO_CHAN_INFO_SCALE) }
+
+Make {} each to occupy a single line.
+
+...
+
+> +/**
+> + * struct mt6323_auxadc - Main driver structure
+> + * @dev:           Device pointer
+> + * @regmap:        Regmap from PWRAP
+> + * @lock:          Mutex to serialize AUXADC reading vs configuration
+
+ *
+ * ...put struct decription here... See below why.
+ *
+
+> + */
+> +struct mt6323_auxadc {
+> +	struct device *dev;
+> +	struct regmap *regmap;
+
+Do you need both? Are they different? (I mean that regmap may be derived from
+device and vice versa depending on the case.)
+
+Ok, it seems the dev is the current platform device, while regmap comes from
+parent->parent to it (2 levels up!). This needs a good comment in the struct
+description explaining the hierarchy.
+
+> +	struct mutex lock;
+> +};
+
+...
+
+> +static int mt6323_auxadc_check_if_stuck(struct mt6323_auxadc *auxadc)
+> +{
+> +	int i, ret;
+
+Why is 'i' signed?
+
+> +	u32 val;
+> +
+> +	for (i = 0; i < 50; i++) {
+
+Magic 50 and the whole thing is reinvention of something from iopoll.h.
+
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON19, &val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (FIELD_GET(AUXADC_DECI_GDLY_MASK, val)) {
+> +			ret = regmap_read(auxadc->regmap, MT6323_AUXADC_ADC19,
+> +					  &val);
+> +			if (ret)
+> +				return ret;
+> +
+> +			if (!FIELD_GET(AUXADC_ADC19_BUSY_MASK, val)) {
+> +				ret = regmap_update_bits(
+
+Bad indentation, there is a room for parameter on the previous line.
+
+> +					auxadc->regmap, MT6323_AUXADC_CON19,
+> +					FIELD_PREP(AUXADC_DECI_GDLY_MASK, 3),
+> +					0x0);
+> +				if (ret)
+> +					return ret;
+> +			}
+> +		} else {
+> +			return 0;
+> +		}
+> +
+> +		fsleep(10);
+> +	}
+> +
+> +	return -ETIMEDOUT;
+> +}
+
+TL;DR: Find a suitable macro in iopoll.h and use it.
+
+...
+
+> +static int mt6323_auxadc_request(struct mt6323_auxadc *auxadc,
+> +				 unsigned long channel)
+> +{
+> +	int ret;
+> +	u32 pmic_val, adc_val;
+> +
+> +	if (channel < 9) {
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON11,
+> +					 AUXADC_VBUF_EN, AUXADC_VBUF_EN);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON22,
+> +				  &pmic_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		adc_val = FIELD_GET(AUXADC_LOW_CHANNEL_MASK, pmic_val);
+> +		adc_val &= ~BIT(channel);
+
+We also have FIELD_MODIFY(). Use it in all cases where appropriate.
+
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON22,
+> +					 AUXADC_LOW_CHANNEL_MASK, adc_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON22,
+> +				  &pmic_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		adc_val = FIELD_GET(AUXADC_LOW_CHANNEL_MASK, pmic_val);
+> +		adc_val |= BIT(channel);
+> +
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON22,
+> +					 AUXADC_LOW_CHANNEL_MASK, adc_val);
+
+> +
+
+Stray blank line.
+
+> +	} else {
+
+Redundant 'else' as this may be returned directly. So, refactor each branch to
+a helper and use this as a small wrapper.
+
+	if (channel < 9)
+		return ...helper_for_chan_<_9...;
+
+	return ...otherwise...;
+
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON23,
+> +				  &pmic_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		adc_val = FIELD_GET(AUXADC_AUDIO_CHANNEL_MASK, pmic_val);
+> +		adc_val &= ~BIT(channel - 9);
+> +
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON23,
+> +					 AUXADC_AUDIO_CHANNEL_MASK, adc_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON23,
+> +				  &pmic_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		adc_val = FIELD_GET(AUXADC_AUDIO_CHANNEL_MASK, pmic_val);
+> +		adc_val |= BIT(channel - 9);
+> +
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON23,
+> +					 AUXADC_AUDIO_CHANNEL_MASK, adc_val);
+> +	}
+> +
+> +	return ret;
+> +}
+
+...
+
+> +static int mt6323_auxadc_read(struct mt6323_auxadc *auxadc,
+> +			      const struct iio_chan_spec *chan, int *out)
+> +{
+> +	int ret;
+> +	u32 reg = mt6323_auxadc_channel_to_reg(chan->address);
+> +	u32 val;
+> +
+> +	ret = regmap_read_poll_timeout(auxadc->regmap, reg, val,
+> +				       (val & AUXADC_RDY_MASK), 1000, 100000);
+
+Redundant parentheses, also use multipliers from time.h
+
+	struct regmap *map = ... // use this trick elsewhere as well
+
+	ret = regmap_read_poll_timeout(map, reg, val, val & AUXADC_RDY_MASK,
+				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	*out = FIELD_GET(AUXADC_DATA_MASK, val);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int mt6323_auxadc_read_raw(struct iio_dev *indio_dev,
+> +				  const struct iio_chan_spec *chan, int *val,
+> +				  int *val2, long mask)
+> +{
+> +	struct mt6323_auxadc *auxadc = iio_priv(indio_dev);
+> +	int ret, mult = 1;
+> +
+> +	if (mask == IIO_CHAN_INFO_RAW) {
+> +		scoped_guard(mutex, &auxadc->lock)
+> +		{
+
+Why? It's not a switch-case, the guard()() should be fine.
+
+> +			ret = mt6323_auxadc_check_if_stuck(auxadc);
+> +			if (ret)
+> +				return ret;
+> +
+> +			ret = mt6323_auxadc_request(auxadc, chan->address);
+> +			if (ret)
+> +				return ret;
+> +
+> +			usleep_range(300, 500);
+
+We have fsleep().
+
+> +			ret = mt6323_auxadc_read(auxadc, chan, val);
+> +			if (ret)
+> +				return ret;
+> +			return IIO_VAL_INT;
+> +		}
+> +	} else if (mask == IIO_CHAN_INFO_SCALE) {
+> +		if (chan->channel == MT6323_AUXADC_ISENSE ||
+> +		    chan->address == MT6323_AUXADC_BATSNS)
+> +			mult = 4;
+> +
+> +		*val = mult * 1800;
+> +		*val2 = 32768;
+> +
+> +		return IIO_VAL_FRACTIONAL;
+> +	} else
+> +		return -EINVAL;
+> +}
+
+...
+
+> +	ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON10,
+> +				 AUXADC_TRIM_CH2 | AUXADC_TRIM_CH4 |
+> +					 AUXADC_TRIM_CH5 | AUXADC_TRIM_CH6,
+> +				 AUXADC_TRIM_CH2 | AUXADC_TRIM_CH4 |
+> +					 AUXADC_TRIM_CH5 | AUXADC_TRIM_CH6);
+> +	if (ret)
+> +		return ret;
+
+We have _set_bits()/_clear_bits()/_assign_bits() of regmap API. Use them here
+and in many other cases in this driver (and probably in the entire series.
+I'm not going to comment each of the cases.
+
+...
+
+> +static int mt6323_auxadc_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct mt6323_auxadc *auxadc;
+> +	struct iio_dev *iio;
+> +	struct regmap *regmap;
+> +	int ret;
+> +
+> +	/* mfd->pwrap regmap */
+> +	regmap = dev_get_regmap(dev->parent->parent, NULL);
+> +	if (!regmap)
+> +		return dev_err_probe(dev, -ENODEV, "failed to get regmap\n");
+> +
+> +	iio = devm_iio_device_alloc(dev, sizeof(*auxadc));
+> +	if (!iio)
+> +		return -ENOMEM;
+> +
+> +	auxadc = iio_priv(iio);
+> +	auxadc->regmap = regmap;
+> +	auxadc->dev = dev;
+
+> +	mutex_init(&auxadc->lock);
+
+devm.
+
+> +	ret = mt6323_auxadc_init(auxadc);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to initialize auxadc\n");
+> +
+> +	iio->name = "mt6323-auxadc";
+> +	iio->info = &mt6323_auxadc_iio_info;
+> +	iio->modes = INDIO_DIRECT_MODE;
+> +	iio->channels = mt6323_auxadc_channels;
+> +	iio->num_channels = ARRAY_SIZE(mt6323_auxadc_channels);
+> +
+> +	ret = devm_iio_device_register(dev, iio);
+> +	if (ret)
+
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to register iio device\n");
+
+One line
+
+> +	return 0;
+> +}
+
+...
+
+> +static const struct of_device_id mt6323_auxadc_of_match[] = {
+> +	{ .compatible = "mediatek,mt6323-auxadc" },
+> +	{}
+
+
+IIRC we use { } (with space) in IIO for the terminator entry in ID tables.
+
+> +};
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
