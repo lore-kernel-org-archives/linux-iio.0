@@ -1,129 +1,160 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC56B3F7AB2
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 09:59:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E1EC401A26;
+	Wed,  6 May 2026 10:00:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778061567; cv=none; b=Ht2KiaxHVBUoTNGO4w203vNSmMZCmcAv123g3iX9HBLlLslxWvy0gvfjvPrtYi3rJ7PrbDNPLmnWI39oNjXRKfbh/kK3lbrNSZQebZPubb2amgUAl8useUtKNhf0bKtcuKez1NkmwMP+lw0hCoUTzmIDtjtT3709vq9BQvrkUTQ=
+	t=1778061653; cv=none; b=fwdf+J29LxAYsEpOSmGnq/uv28LzpPQ1GZzDBkNokwiI+ivIwgpOl/DERMEMlv/NHP1OUIud44G1lWDc4f20noLzSV9JaVQm1yHu1DhI22icM+UOEg6sBhIRjRV8G3KV2zFwRz/J6njD8WmGNQDiyNcRLcoPYcjrj5VOmUsTNy4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778061567; c=relaxed/simple;
-	bh=ODYbs/4qFS8mGunySbbl9t5b3pslPtDBAWJ2j3ndbtw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ek9OCyiiuIBUOGkhlR8phl2H2AYWE7x+nOE8wE9DxzNGAP07HYwIgQ4OmxAeOePOgF3royIDlffaoHTH4fa/gd4BhInU4thCkzNm+8BfYpBsk9GeijkLG2L4ufVQOCsX1kk5Qljq2BBRuFgBFxR/3czVuIyQIEAvHUxQ2JKLXeA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=agvVv6fR; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778061653; c=relaxed/simple;
+	bh=1W/BA8E7Tc+s3/QPYj/D/YebMJWl5cmUW5+ER9qqBd4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=USIHsFJo6isfeLN5xvgaWGXfgfBDY10SL7dObW0VaB3dnKaYLcs9JCBjS4/8dP7vQFsoZOAw/D5C38vpZc92kA9I38UOSZ6Vv1Auuuzb+yFblulv9v2VHeCVIIhtREuPPxvGFQg3c7crF7XZ8yeAoL0Noq1hSrjt4N8kds5LFwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kv90xUSs; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="agvVv6fR"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-488b8bc6bc9so39402535e9.3
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 02:59:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778061548; x=1778666348; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=iS5WTyUEworChY9dzMjKKDtiYrkTGtQXOk8l279bHxU=;
-        b=agvVv6fRQkNStPRIYXYpTkQJnHF9uiYRF0XOhmsFZmhqEAKYM7nB/r30qcn/4Q58A7
-         r/LZks7IfBZfsRfrGadBvG/RWbWiVDECbumNC0+eFe9OG/uIlbJuxe1KRydvv9kmjoqH
-         Q6K66gnVasn6jCwDF2DEUYfNV2VMsyeTReRsl5zEhgxZduR1p6V/ga3ucU/XjpaDnhFJ
-         qCgQTOAL/mIWdWNOC8gg4mlDmTBNDIhm7BaPjFDtIsKEadTnMTcvfC1f8gwY05b5+RZk
-         0tGLLiorhnoZijULDXdRBlpCNn+l0LP8kqZM2d4YYZL8pahEC482K36r/iDaBEYPFyIh
-         hWMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778061548; x=1778666348;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iS5WTyUEworChY9dzMjKKDtiYrkTGtQXOk8l279bHxU=;
-        b=Xskruv8VcJdIh1ZIXPE6BGAPkFNbdlYpua0tgKjTVwjNPBmS1p121T6ab0aKAPowKO
-         I+O7rKJMHp5MBOEkX6Ek79gipfh121dlOl9DhQdziA66GL6nAERGza1ZE5vP30Xfl78I
-         QGuod04lGaHpGo3J/QIi916dRyImwai4Y2tPT8G16sOnUbDw18fet73J5Jd1GVp2J7+6
-         NWD8aYZpgYVmW7fyfWWnRYF6pjN1oAxozZovwbOEn1my/mcHyBv1yVyCMOVs72gQEt1A
-         UpPNZjkq2wgqxuBgoX5EE9hroE13/EPCPN9OiAdx7byUaEycVacvRBwqqaJG+89eRpvA
-         i1Zw==
-X-Gm-Message-State: AOJu0YxPm43XWtDpjMq8bHl29zNvREbJ8NSh/2haz/1c4EFej3CE+d91
-	uX2ii9BtANSyFfcoo4Xi6Cuv+9NWK66m/MFmMx2WPiEd9kot2y3Laa5M
-X-Gm-Gg: AeBDiesmfSNDXW/QetsnDxsvIkp7pSGLNEOS7viUC2e8j0PoQl/Tx5KHMSPJ7Q4Xb+l
-	ACRzRp3YvhUoETG1YAQGuUS2HYBhbIgZoT8hgGzKxc1XJ6tu9D0vA5Z34QkQhHUZEy/N33YODu8
-	JSzgn2LS+nmUX5SyqJovmjkB0eNknmob+ZfcoWYO1X/fs6feWFS4P4EppEj7wSpo3mtrnqJ+NRU
-	WJ1ESVcr97Qxn5gj99BkpbU4d1JOIdJ9ufSLBoFxz8aZ+IY2Zv/KSmBLgcPmLQXWGircLvl1Ckf
-	aUVdMRpdvGVAZNgsBCxU9EvtyxKlR3s9Z4W+bU+YkaiDGGgKlweTm8mc2FrPMu5pS6a8zJby2l4
-	RV02u+5BoDGj+ILExhoebM8laGGEI11rnlPdF0JOdiDWJAaiQzZhVcJB2YFwl6zPWg77rL7xUgs
-	oTKbPbioFGnCa3Zot1TZHLAW74nt5Rj71y//sDnNqN3HaLkN+H
-X-Received: by 2002:a05:600c:8485:b0:48d:364:e236 with SMTP id 5b1f17b1804b1-48e51f30493mr50016315e9.18.1778061547531;
-        Wed, 06 May 2026 02:59:07 -0700 (PDT)
-Received: from localhost.localdomain ([196.235.155.85])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e538c4ae1sm33933415e9.12.2026.05.06.02.59.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2026 02:59:07 -0700 (PDT)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH v5] iio: humidity: ens210: Fix missing I2C functionality checks
-Date: Wed,  6 May 2026 10:58:35 +0100
-Message-ID: <20260506095835.10112-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kv90xUSs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778061646; x=1809597646;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1W/BA8E7Tc+s3/QPYj/D/YebMJWl5cmUW5+ER9qqBd4=;
+  b=kv90xUSsBa6yio5cQBwQjQ3tUo/pjKPR0MVMJo5hO14ij0TpV0cpfdWj
+   bkK4vgHhUqjVx/GFEEDT6K8JsLu1r2VZTwJBzM/NTNk9eSRcyLjjX5u3v
+   wWsZ9JIclb1jRA+MvWuC5RCdKtK7PY/xpqzIG3JqIdG5/5Kyzr0d1L3ww
+   YsknkriOS/oBLsCtnsypLksVKdWzX4+PO5e/OTnpRZqPpHmr1kMcfMi+S
+   SX3HM5DCrfPWfOIKUsMhOT+LVKSolFUm10v1voha1+PyvjLoYy++QkeXV
+   cK+dDusIFoJrHIo7JH4ndVtkC7R+EV6lrLThEGIrDo6Ez2/8VQ9zZf8Us
+   Q==;
+X-CSE-ConnectionGUID: eGytmWmySUa1DARLRJha9A==
+X-CSE-MsgGUID: gBAWl/W0QgaccsBEUtPV7w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="82593700"
+X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
+   d="scan'208";a="82593700"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 03:00:43 -0700
+X-CSE-ConnectionGUID: RJp/NdmDQ4WZ4I+tOpjWiA==
+X-CSE-MsgGUID: Hf0YuDApRbSad0nSyYcATQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
+   d="scan'208";a="233440569"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 03:00:40 -0700
+Date: Wed, 6 May 2026 13:00:37 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Aldo Conte <aldocontelk@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH 1/3] iio: light: tcs3472: use devm for resource management
+Message-ID: <afsRRf7-IA3X4YOo@ashevche-desk.local>
+References: <20260506094311.222500-1-aldocontelk@gmail.com>
+ <20260506094311.222500-2-aldocontelk@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260506094311.222500-2-aldocontelk@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The ENS210 driver uses SMBus transactions (such as byte, word, and block
-data reads/writes) during the probe and measurement phases. However, the
-initial functionality check only validated a subset of these capabilities,
-which could lead to loading failures on adapters requiring SMBus
-emulation or native-only controllers.
+On Wed, May 06, 2026 at 11:43:09AM +0200, Aldo Conte wrote:
 
-To ensure compatibility across a wide range of I2C adapters, modify the
-functionality check to verify if the adapter supports the required native
-operations or, failing that, supports the SMBus emulation layer.
+> Found by code inspection.
 
-Fixes: c524fbca672e ("iio: humidity: Add support for ENS210")
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
-Changes since v4:
-- Fixed the alignment and indentation of the I2C functionality check
-  per Andy's review.
+It's unusual to start a commit message with this...
+Move it to the end of the commit message (before tag block).
 
-Changes since v3:
-- Fixed the alignment and indentation of the I2C functionality check
-  per Andy's review.
+> Convert the driver to use device-managed resource allocation:
+> - Add tcs3472_powerdown_action() and register it with
+>   devm_add_action_or_reset() to ensure the device is powered down on
+>   cleanup. Before this patch, the chip remained powered if probe
+>   failed after enabling it.
+> - Replace iio_triggered_buffer_setup() with
+>   devm_iio_triggered_buffer_setup().
+> - Replace request_threaded_irq() with devm_request_threaded_irq().
+> - Replace iio_device_register() with devm_iio_device_register().
+> - Remove tcs3472_remove() as all cleanup is now handled by devm.
 
-Changes since v2:
-- Fixed the alignment and indentation of the I2C functionality check
-  per Maxime's review.
+> Compiled with `make drivers/iio/light/tcs3472.o W=1`.
 
-Changes since v1:
-- Updated the I2C functionality test to check for both required native
-  operations and SMBus emulation (`I2C_FUNC_SMBUS_EMUL`) to prevent
-  loading issues on controllers lacking the emulation flag.
+Unneeded detail, move to the comments / cover letter.
 
- drivers/iio/humidity/ens210.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> Tested on Raspberry Pi 3B with TCS3472 (Adafruit breakout):
+> Verified that RGBC channel reads return valid data and that ENABLE
+> register is cleared to 0x00 on device removal.
 
-diff --git a/drivers/iio/humidity/ens210.c b/drivers/iio/humidity/ens210.c
-index 77418d97f30d..159a3c158c9f 100644
---- a/drivers/iio/humidity/ens210.c
-+++ b/drivers/iio/humidity/ens210.c
-@@ -204,7 +204,10 @@ static int ens210_probe(struct i2c_client *client)
- 	if (!i2c_check_functionality(client->adapter,
- 				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
- 				     I2C_FUNC_SMBUS_WRITE_BYTE |
--				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
-+				     I2C_FUNC_SMBUS_READ_BYTE_DATA |
-+				     I2C_FUNC_SMBUS_READ_WORD_DATA |
-+				     I2C_FUNC_SMBUS_READ_I2C_BLOCK) &&
-+	    !i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_EMUL)) {
- 		return dev_err_probe(&client->dev, -EOPNOTSUPP,
- 			"adapter does not support some i2c transactions\n");
- 	}
+Ditto.
+
+> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+> ---
+
+FYI: Here is the location for the comments / changelog / et cetera.
+
+>  drivers/iio/light/tcs3472.c | 85 ++++++++++++++++---------------------
+
+...
+
+> +static int tcs3472_powerdown(struct tcs3472_data *data)
+> +{
+> +	int ret;
+> +	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
+> +					data->enable & ~enable_mask);
+> +	if (!ret)
+> +		data->enable &= ~enable_mask;
+
+This patter is discouraged.
+
+> +	mutex_unlock(&data->lock);
+> +
+> +	return ret;
+> +}
+
+Make the guard()() patch to be first in the series. With that being done and
+taking the above this becomes as simple as
+
+static int tcs3472_powerdown(struct tcs3472_data *data)
+{
+	u8 value = data->enable & ~(TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON);
+	int ret;
+
+	guard(mutex)(&data->lock);
+
+	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE, value);
+	if (ret)
+		return ret;
+
+	data->enable = value;
+	return 0;
+}
+
+...
+
+> +	ret = devm_add_action_or_reset(&client->dev,
+
+With temporary
+
+	struct device *dev = &cliend->dev;
+
+at the top of the function this and others become easier to read.
+
+> +				       tcs3472_powerdown_action, data);
+> +	if (ret)
+> +		return ret;
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
