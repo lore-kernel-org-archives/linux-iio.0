@@ -1,102 +1,129 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2CCF3ED11D;
-	Wed,  6 May 2026 09:46:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D5053ED5A8
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 09:46:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778060782; cv=none; b=qAZEzQtWpZ+sTbISMD3YpUj7ysxYqISMw4JC/Feajc0JoNCPfBuS5yY++dyV4oZ645nEhainPUK7uNBGfAmCLfqSPXzPUhPLYzk1GhrMTY8m0ff5Xh+ax0T0GjavY+tqVZkBd9k4D4eXedPHBLnEINy+2JPkWRG/mVlnb3yGnW4=
+	t=1778060799; cv=none; b=Du8f5a1iaVDTYYJDR+1eKlk+5sZcYOglETMy5bH5sLhEbgeKEIdpGTx3ojTbcO6gxZFHRjqOHmwGeKJI46UsVhIblNYbSqzh4NHCfCLCOEjx2hfsdEI65gfs6nyT4vKbzg0OjkyndZiYUGAiFNPcJoMUiGGy5aZ3scE8QJB9Wyo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778060782; c=relaxed/simple;
-	bh=QqC8LEVpTz3pg3OMGwsxsauMkDSynDr1adzKGcqXssc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Cdcz6jaJbT5HrqF0bKoVPcX2flc/60JWfwdmmXRhAHHdHUYaby0wcvuCezVMW0JynFHmSzw7b/Nc+ci61zOZsqWKjdjJGyBLm8ucsjSBs2KRT/lre5vWsT9mJirpEHpJ49ovspwr4L3dSPFBXneqxQ5xqjhXlbQvhE7YXvPSrr8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kxZa091X; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778060799; c=relaxed/simple;
+	bh=O7H1bjWhe7G+p25CEte5AQNZVR4jOK7mE1NxJHripdI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DLuQ75aH79wzhF9KZS2Bg9jzuSRLhTsrzDOP/RPXCac4B1zwbGBYzYnjl/OJRmxnl1OJthCtLCA5hboC9PVO8NwVGXRgCTUd9GMo93Uu+fBeuntdCzlJROAwM72umDHVm+CdWugIjR3ZENGzMhV3uUVXbgtHTSmciMJWB1spJBk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WZXc8uor; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kxZa091X"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778060780; x=1809596780;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QqC8LEVpTz3pg3OMGwsxsauMkDSynDr1adzKGcqXssc=;
-  b=kxZa091XJpAxumDb/X6m8+q2bYTXwJeJSAcjSq9h67BWj0XTqddTD6q+
-   QiJddKa3vQ7xooFY6FeUJOkUj1rv/wJSwZnxaO49fU6HRDR0qwcQENS8Z
-   yMyuZz9fqdh++9sbrPTFMUd2EODwlHg+4pxKwQ33Ru/+wdamnQRkNoli4
-   LLGcJU4bP+KLHQs6l47zBK9m+5xiZU87WH7eDXh4gy3N1ve0LM/BRwb4v
-   GmvZfJIUCfiaZi0zwykvQdDZX+viRNYVzD/ihfDwFlhNmonGBECaOPUVn
-   34f2yI68jGHDQMuOMpThvA4LWyXAg6IghZOjBE/D7CQqQhK7tvHDqXSt2
-   Q==;
-X-CSE-ConnectionGUID: gnGnT+X3TXmBVR0/MYyknA==
-X-CSE-MsgGUID: SK4UcReURiWaRU3215DkGw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="78876718"
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="78876718"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 02:46:19 -0700
-X-CSE-ConnectionGUID: GBn2OqRIQ06I7QihOKbmzA==
-X-CSE-MsgGUID: UI/SSZDBT1WsLmscqDrjQQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="235984982"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 02:46:16 -0700
-Date: Wed, 6 May 2026 12:46:14 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, sakari.ailus@linux.intel.com,
-	christoph.muellner@theobroma-systems.com, martink@posteo.de,
-	mfuzzey@parkeon.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 10/10] iio: accel: mma8452: use guard() to release
- mutexes
-Message-ID: <afsN5vIeYqteoZIs@ashevche-desk.local>
-References: <20260505174640.3998281-1-sanjayembedded@gmail.com>
- <20260505174640.3998281-11-sanjayembedded@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WZXc8uor"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488b3f8fa2bso6850445e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 02:46:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778060797; x=1778665597; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=JE7uJopuB1K2d8z6OYIS2HK/E7UeqDAO31A/wEEkRu4=;
+        b=WZXc8uor7ntEbCJM5j4vRFCuznDc68XteuqXl1byn8/pedplsxVL9W/Qy4eXPZJFvM
+         IGiRN74ZEd5ud4J1B5+AESPLCMkeovMuuPgi2AOlNpGNlQO8c2d4NYP+YUxP18l2v2ho
+         kv89kg2ay3hd97MDTecTeDQ5NiBuCSPtFPn11d4NxJFsy86EbhBdcCAIgk93CKMW1aQ8
+         VvGM8I0xTbWla1iP2sjkdXvdfj3Dp7PBCmRuhaZt5BI0zCVFWT5OSta4KcDM+HubPjGa
+         SKyQ4HBUINfuX7rQ+DjLPWMTMIxulIYfuZ9p7h7sxEWkddDGkmTiDByKfIQcfEFwKrgX
+         kwEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778060797; x=1778665597;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JE7uJopuB1K2d8z6OYIS2HK/E7UeqDAO31A/wEEkRu4=;
+        b=F+SHsYfhIgOcrfmvHkxNmF7eVKmPrbPmOv4wB+xVL1kIumCzLej1MBxzLkKpDRq543
+         nCz+Vvr680VeGDmW8dY2IaW9aoVSzzq38PpsAlclsZytgDH7vofJnYxjwmEs3a05J4+/
+         vzys5eMSD/Vc3loSRrOwG9DYheKvn2TD4sCQhrp9dbmzRCNHtiGbxWiROTrUGo1Mp6QV
+         NC4z4fopdZQ0GfDa/KpWSDDXeH3yCZzVmp4Ua1GqXMs2pLD6HWvw8fBSNBWzF4rR9NFA
+         IKvJX3lUDvSzrPcYwMiqdY2PtyedHWbrtFAaze5zjVFWrBcT8Z4gF3XCLDFSmqfsA/Yu
+         tuvw==
+X-Gm-Message-State: AOJu0YzVifApjy2BDDaFtKY7pK6noErLcvbdt0sIz7NMmoDaokca2Yzn
+	LXlKtMDeNU/c3KyN1hJ2HZx7nhMIp6BmlWAue/gIG6wTkYGG9tBdL9tWWudVKG9d
+X-Gm-Gg: AeBDietNxfxZhWSWQMxpwwiu7LDiSAo3i5szqpyK48at3caVxtwdw0nv5p/CGVcxn/D
+	+yS/BURFzkFDggK9C1CwvfuFgE3vFBVFWvh70anz/rdWGvA2MzqQE+MY/wMSd1JFCSKodiDs0HZ
+	U2Fd9RLTQygedv2UuCcWuOmuqE/j5xvUub4TDk6ffue1DoxN+vdH591NgcoRNp+NT1IqHVH9bww
+	Vt+Lsy4iWK2R1RvYvSW825UU2DEOwbMocnoP0h+siW8VhB3aykUOH08QxOapNbur39RfRey1J3f
+	YJqae3TQujwx30hFZ6DjEcMJ0olzcCmH4QeK4ZRhY7dJNpBSb9hzpWX6ZoWWaIAeweLA1uoGNYk
+	h8KCjApCxeVRSOC3El1NrUl5NwS629XQ5RbWsmTVrAUz3qgWB0GSOBspBPOo2HNgJha6w2lrCy+
+	nV5iMyihburpt2p/vv6iw9MN2MkKgacZi4/AwVfnDyG86bb0QO
+X-Received: by 2002:a05:600c:5291:b0:489:32b:ac0b with SMTP id 5b1f17b1804b1-48e52285af1mr34914935e9.6.1778060796440;
+        Wed, 06 May 2026 02:46:36 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.155.85])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e538a517bsm37354135e9.4.2026.05.06.02.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2026 02:46:35 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v4] iio: humidity: ens210: Fix missing I2C functionality checks
+Date: Wed,  6 May 2026 10:46:29 +0100
+Message-ID: <20260506094629.8999-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260505174640.3998281-11-sanjayembedded@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 05, 2026 at 11:16:40PM +0530, Sanjay Chitroda wrote:
+The ENS210 driver uses SMBus transactions (such as byte, word, and block
+data reads/writes) during the probe and measurement phases. However, the
+initial functionality check only validated a subset of these capabilities,
+which could lead to loading failures on adapters requiring SMBus
+emulation or native-only controllers.
 
-> Replace explicit mutex_lock() and mutex_unlock() with the guard() and
-> scoped_guard() macro for cleaner and safer mutex handling.
+To ensure compatibility across a wide range of I2C adapters, modify the
+functionality check to verify if the adapter supports the required native
+operations or, failing that, supports the SMBus emulation layer.
 
-...
+Fixes: c524fbca672e ("iio: humidity: Add support for ENS210")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+Changes since v3:
+- Fixed the alignment and indentation of the I2C functionality check
+  per Andy's review.
 
-> static int mma8452_read_raw(struct iio_dev *indio_dev,
+Changes since v2:
+- Fixed the alignment and indentation of the I2C functionality check
+  per Maxime's review.
 
->  		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
->  		if (IIO_DEV_ACQUIRE_FAILED(claim))
->  			return -EBUSY;
+Changes since v1:
+- Updated the I2C functionality test to check for both required native
+  operations and SMBus emulation (`I2C_FUNC_SMBUS_EMUL`) to prevent
+  loading issues on controllers lacking the emulation flag.
 
-+ Blank line here.
+ drivers/iio/humidity/ens210.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-> +		guard(mutex)(&data->lock);
->  
-> -		mutex_lock(&data->lock);
->  		ret = mma8452_read(data, buffer);
-> -		mutex_unlock(&data->lock);
-
-Perhaps okay, also scoped_guard() can be used, but I have no strong opinion.
-
->  		if (ret < 0)
->  			return ret;
-
-
+diff --git a/drivers/iio/humidity/ens210.c b/drivers/iio/humidity/ens210.c
+index 77418d97f30d..96076b0391a7 100644
+--- a/drivers/iio/humidity/ens210.c
++++ b/drivers/iio/humidity/ens210.c
+@@ -202,9 +202,12 @@ static int ens210_probe(struct i2c_client *client)
+ 	int ret;
+ 
+ 	if (!i2c_check_functionality(client->adapter,
+-				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
+-				     I2C_FUNC_SMBUS_WRITE_BYTE |
+-				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
++				I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
++				I2C_FUNC_SMBUS_WRITE_BYTE |
++				I2C_FUNC_SMBUS_READ_BYTE_DATA |
++				I2C_FUNC_SMBUS_READ_WORD_DATA |
++				I2C_FUNC_SMBUS_READ_I2C_BLOCK) &&
++	    !i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_EMUL)) {
+ 		return dev_err_probe(&client->dev, -EOPNOTSUPP,
+ 			"adapter does not support some i2c transactions\n");
+ 	}
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
