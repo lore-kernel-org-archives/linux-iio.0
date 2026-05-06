@@ -1,47 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 804353ED5C3;
-	Wed,  6 May 2026 17:29:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D17F2EC0B0;
+	Wed,  6 May 2026 17:37:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778088563; cv=none; b=no45ubSCZ2wuxUVCRre87RVxRg0XBZ7Ecn+wgorg7/cxEp+7FTMXQNUiqweRhIQrbFYg6WgT/x4mSxHgV714me8EECJuNONkBduJl5cO9IOMLpPrrK4NcY/VVjOR2JU9vvqpuOiV36k+aik/3+ocRvTb5HeQzF60wDg/PBBUH8Y=
+	t=1778089051; cv=none; b=mehsjgu4eng82xAmxmRhVjmu1LbVIUGzJOTBRy3LOANEgc8UlDwnlGkntgQb3eBYcilDSWumplATdI5BWBrgPXtDn/Pd8+kARJgffeCJKn1eDaw6aXUn4cO1jvLZ3pmDlHuaeZXLJpolk8wkrzdmHjGXrCwslwJ3r46K8Hd4K68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778088563; c=relaxed/simple;
-	bh=LxNzlY10vl7a+Z9daFTqu/SY1x0YAK7FLYT5CVni4jw=;
+	s=arc-20240116; t=1778089051; c=relaxed/simple;
+	bh=wUv3lEGFOS+GyZObViG6EwLvvQMGqe3rbjxJQpJ6WSY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=duazaW6tf8yqLcFWhFHx+G4nSUaksoN3eGWuXPmlYjw0wmtS41JRgvUCX/oI7YhzyFOzYD9cVMHGuzfQ5E1C7S7egnmf/6gtvFk03MCzrNKX/aPeMAG4/Bpo0pQ0NzFjsIGYTarHHeRUoUO896hqChDcniVWCpiILg/I2HvzNgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PRJsZJTp; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=AoGkQqtUOWk8LWV2ns0mgzpT0CZz3Wuf9tY9SQsDaV+XbGB63oiJkewyxaD0aX/bbhWn2J1hmISUTnNiesI289ZAdN/0LIO8GKrAfJftsdLwGNp+EkYzez9L/F7wqjlCjO3eo6pYZWObBTV1cgQ1GgaFxQL98hVQxqpXRdF/9wQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ld5Moh8m; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PRJsZJTp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AA6C2BCB0;
-	Wed,  6 May 2026 17:29:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ld5Moh8m"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E37A6C2BCB0;
+	Wed,  6 May 2026 17:37:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778088563;
-	bh=LxNzlY10vl7a+Z9daFTqu/SY1x0YAK7FLYT5CVni4jw=;
+	s=k20201202; t=1778089051;
+	bh=wUv3lEGFOS+GyZObViG6EwLvvQMGqe3rbjxJQpJ6WSY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=PRJsZJTpQAP5jG7TTzP3APtANMpxkCq2gLAScVygMIOZHDuarU6y6I7SWXjLJZwa8
-	 6LoiTwKwM/3jcD6oooJw6PQ5mkSWa23hIIYHBNazsuI7oQj2lXqzJWxj1xRPftKrlk
-	 5UqoHAyrWAPjc4+xijIwVGEz3VVseE30yhGVQfpcXuWR7bMygGJ1NKfizCwPDIRLIn
-	 3ORlx3HBXbAWU6vwQl3RPIch/g6SGhrlNo3JFbtNI9q5LDZP203POxPhJ6+BYnBLev
-	 DKzZmxRdc4n2TjiyNh5BSnMWKJLGgokRSJ7BbVFBM+nMujpeSr2zDgM7BxTkQ9fU90
-	 Djh4WEzYd6zlQ==
-Date: Wed, 6 May 2026 18:29:12 +0100
+	b=Ld5Moh8m6+k/b5J8bNoYZnCdT9w2ToE36j59k5GWO2uhylGBsPK9qglxHZ5F64IsX
+	 y+Q2xCHpc/Fx4fh/1bCXquk2tK6rM3NsE53n4teL8qLesKCc/fOzwCoKPSMknEpPhf
+	 DHBVzKh9ERSqeDKSnR3Kado211Ejq1WfqSDSNBi6M3JRl54iwrpISVTgUUPoCKnS6+
+	 UPAsz7oeOPAg6vQN1pJhngiyQkpoGNmTDWh+drK3eK4R/oI2FzHIKE4tSHz1izGW++
+	 oZUyJLWgC+K62hjpuwunSljnFRNnO5KttHHVtffIji2lHPGndaCauI+srSW/dBBuD2
+	 ZZa8m2k+cmsnw==
+Date: Wed, 6 May 2026 18:37:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Stefan Popa <stefan.popa@analog.com>,
- Jonathan Cameron <jic23@cam.ac.uk>, Greg Kroah-Hartman <gregkh@suse.de>,
- Michael Auchter <michael.auchter@ni.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v6 00/12] Fixes and cleanups for the AD5686 IIO driver
-Message-ID: <20260506182912.12eafac4@jic23-huawei>
-In-Reply-To: <egslrxgxzuj2rqsrjwo6xyjygnuwqqaqz7twkyetxtrhve2gfd@unmzoontm6kr>
-References: <20260505-ad5686-fixes-v6-0-c2d5f7be32be@analog.com>
-	<afnpvJ5dwkZBcTHL@ashevche-desk.local>
-	<egslrxgxzuj2rqsrjwo6xyjygnuwqqaqz7twkyetxtrhve2gfd@unmzoontm6kr>
+To: David CARLIER <devnexen@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: gyro: itg3200: fix i2c read into the wrong stack
+ location
+Message-ID: <20260506183722.681a80e0@jic23-huawei>
+In-Reply-To: <CA+XhMqy=_dwpTz9c+kZ9tNJz-dHDRuPyc6TsoXWKODKgxqBJ0A@mail.gmail.com>
+References: <20260505133748.51355-1-devnexen@gmail.com>
+	<afriNDbCrUsXwV2a@ashevche-desk.local>
+	<CA+XhMqy=_dwpTz9c+kZ9tNJz-dHDRuPyc6TsoXWKODKgxqBJ0A@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,40 +49,76 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 5 May 2026 15:29:55 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+On Wed, 6 May 2026 08:08:24 +0100
+David CARLIER <devnexen@gmail.com> wrote:
 
-> On 26/05/05 03:59PM, Andy Shevchenko wrote:
-> > On Tue, May 05, 2026 at 01:35:01PM +0100, Rodrigo Alencar via B4 Relay wrote:  
-> > > This is the first series of three on updating the AD5686 driver.
-> > > 
-> > > A bigger patch series was sent before ("Extend device support for AD5686 driver"):
-> > > 
-> > > https://lore.kernel.org/r/20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com
-> > > 
-> > > This one adds a number of cleanups and fixes, like:
-> > > - Refactor include headers (IWYU);
-> > > - Remove redundant register definition;
-> > > - Drop enum chip id in favor of per-device chip_info structs;
-> > > - Fix internal voltage reference control for single-channel devices;
-> > > - Acquire lock when doing power down control;
-> > > - Fix powerdown control for dual-channel devices;  
-> >   
-> > > ---
-> > > Changes in v6:
-> > > - Protect powerdown masks on read access too.
-> > > - Minor changes to power down handling and constants.  
-> > 
-> > You were too fast, Jonathan applied some patches already.  
+> On Wed, 6 May 2026 at 07:40, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> >
+> > On Tue, May 05, 2026 at 02:37:48PM +0100, David Carlier wrote:  
+> > > itg3200_read_all_channels() takes `__be16 *buf' as a parameter and
+> > > fills the i2c_msg destination as `(char *)&buf'. Since `buf' is the
+> > > parameter (a pointer), `&buf' is the address of the local pointer
+> > > slot on the stack of itg3200_read_all_channels(), not the address
+> > > of the caller's scan buffer. The (char *) cast hides the type
+> > > mismatch.
+> > >
+> > > i2c_transfer() therefore writes ITG3200_SCAN_ELEMENTS * sizeof(s16)
+> > > = 8 bytes into the parameter's stack slot, which is discarded when
+> > > the function returns. The caller's scan buffer in
+> > > itg3200_trigger_handler() is never written to, so
+> > > iio_push_to_buffers_with_timestamp() pushes uninitialised stack
+> > > contents to userspace via /dev/iio:deviceX every scan -- both a
+> > > functional bug (no actual gyroscope or temperature data is
+> > > delivered through the triggered buffer) and an information leak.
+> > >
+> > > The non-buffered read_raw() path is unaffected: it goes through
+> > > itg3200_read_reg_s16() which uses `&out' on a local s16 value,
+> > > where that is correct.
+> > >
+> > > Drop the spurious `&' so the i2c read writes into the caller's
+> > > buffer.  
+> >
+> > Very good catch! I'm puzzled if that code was ever tested. Do you have an HW
+> > and that's how you enter to this bug?
+> >
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> >
+> > --
+> > With Best Regards,
+> > Andy Shevchenko
+> >
+> >  
 > 
-> I understood He had applied the some of the fixes and was to wait on the fix
-> for the lockless read access issue to proceed. Also, most of the series have
-> been reviewed already. Indeed, I suppose I've been hurrying up things... will
-> slow down!
->  
+> Thanks! No HW on my side -- found by inspection. I had recently looked
+>   at a similar `(char *)&buf' / `(char *)buf' mix-up in another
+> driver,
+>   so I went grepping for the same shape and itg3200 stood out. For
+>   contrast, drivers/iio/humidity/hdc3020.c::hdc3020_read_bytes() has
+> the
+>   same signature (u8 *buf parameter) and assigns `.buf = buf'
+> correctly.
+> 
+>   Compile-tested only; the analysis in the changelog is what I'm
+> relying
+>   on.
+> 
+> Cheers !
 
-If you do a new version (I didn't have any other comments to add
-on the remaining patches) then please just drop the fixes I've applied
-off the start and note that the series is dependent on the tag in the
-fixes-togreg branch.  No idea if sashiko will cope with that but humans will ;)
+I was assuming the fixes tag was wrong and this was a result of
+rework, but you are correct it goes all they way back!
+Huh.  I guess last minute driver changes that didn't quite get
+tested and clearly not a heavily used device!  13 years of
+not working.
+
+We could drop the driver, but it's possible it is in use
+just not with buffered support (which is a separate CONFIG option)
+Also drops don't get backported so we'd be leaving it broken and
+stale.  So let's fix it now and consider a drop later.
+
+Applied to the fixes-togreg branch of iio.git
+
+Thanks,
+Jonathan
+
 
