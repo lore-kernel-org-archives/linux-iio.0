@@ -1,92 +1,151 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EF6B2E2286;
-	Wed,  6 May 2026 15:51:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778082682; cv=none; b=tHm1zjTzufjCR/3ZgCO/VU86npQSe3rXL8CiKwmEwZ2FH4pgCatFFon92inKRu+SAYUETDTa/m5GMF6HIA1t3Wwf2PJcoREuZGA/PkbU7uaCfE+/m0zUJHEU0VFdfhjOZcSMe7mpZIzKWSQD5QES6JFWCPCGiuBBWeQZdCuWzL8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778082682; c=relaxed/simple;
-	bh=75aSId5PszDYrjNHLi2AdXxsU5A0sZq9jWBMLBfqK6g=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TsEo3AFznoUpZTjZa/yemP0RXRHs1ozPLOn3EvCaDwC0t6I4JCK82PQvab3Nk/c8rg0mxeCcbtAtGZZltFaYHGxMS1OZI5rfrOp1QMphMLNOwa4zF2siYDT/0xiBxfJPRU8afTip4frsWQgHh0Uxa3bUxgsnV9lLdfuv5FzAJ3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ia5DiQDn; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CACB83EFD13
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 16:03:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.181
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778083406; cv=pass; b=F5LjNEbHaZdIBU0WZOadqC9owfInr6lod+3rR1u2vSsvUTWjudtngrPKYA2mOhcw9a8SxkvhXxrNp7Ac2vXhedxdXYeMYbTKSqL6DmbSjqc1IBq1tdip+IoogHalGBOhTxEEKbCPvDz+CK3zZZX2x6HmuCbjuI7SM7l36aEVmKQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778083406; c=relaxed/simple;
+	bh=3L86WjSxvkhu7GMqg2J1BwXojQthzVXALU8GYUadx70=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MyCWLTVUo6phU09OQtn8E5QyJ8eYTO44ynM2T2tKy/IIo1Vs/fnuB8KaGNIvdup8eUYFY/zxXuozYlbbFYefxVq0VkqLJFth9QAXsuluqVGssL8JSxsNhdAHnXWmyrxCBU9PVQgL7XmlRDmsTx22VK0dhnPtFzggvoPiw3mKoZ0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=htz5MEq7; arc=pass smtp.client-ip=209.85.128.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ia5DiQDn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8644CC2BCB0;
-	Wed,  6 May 2026 15:51:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778082681;
-	bh=75aSId5PszDYrjNHLi2AdXxsU5A0sZq9jWBMLBfqK6g=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Ia5DiQDn0TWi9nXzq+V4BFoPt0g7X7307mPicIlIj4+iXuKOASbU1iiywRt8Qs89C
-	 td5GTUtO/NvELJQE+X8dx2MMyxSblkunNRkgltEYl6LkcrB4eYOO2ByE88imaF2v4P
-	 2UxiKcrDUevOEej+221AlAqz/kCHlWlqjtYuHGzGSWbZ8IhevlowM4CfdfELC3BANC
-	 IWXYwtUXABMoP/ef7VY6KG4221T6jb2WpxXY1MG/wkefHdPgvHStJeczCvFh2UtwT6
-	 PdrfmEj4nAbhBahJi8hTTVuzcuQ8tXOggbkqpO665Fm4WHdCdxdoLihBjemSGpD3Wa
-	 lL1FgyB1YdvQA==
-Date: Wed, 6 May 2026 16:51:12 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: salih.erim@amd.com, conall.ogriofa@amd.com, michal.simek@amd.com, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org (open list:XILINX AMS DRIVER),
- linux-arm-kernel@lists.infradead.org (moderated list:ARM/ZYNQ
- ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH] iio: adc: xilinx-ams: Replace spin_lock() and unlock()
- calls with guard(spinlock*)()
-Message-ID: <20260506165112.4425c378@jic23-huawei>
-In-Reply-To: <20260504214613.121283-1-m32285159@gmail.com>
-References: <20260504214613.121283-1-m32285159@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="htz5MEq7"
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-7b37d84a6b3so69485227b3.2
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 09:03:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778083395; cv=none;
+        d=google.com; s=arc-20240605;
+        b=T+7Hnz+tpKouUnzECi+z5kEbA5EJ5T2ikIwCRB8p/8aRfjfngh4vkW1pJHJ2zef5v0
+         itZm5qHKHblhU6QIqBIYwVFIweiFimtSz7bAw8N70LFhXkVyfmFzEklL8JXSQWKwm1oE
+         b6m4utTnc1opKERjYCF8ci1pAjShzbwEVWheoXrJOpirvg8qVDxXVMlViQFy8EjXcOb5
+         jcaegSokgEbGfUSp2tHErQFBNu9Dt9S9IjKSe9MZfLgpS4Nu1rTmh5n0hy3zHh3oIod1
+         8P5XWG2FwgR8mYKLj+X9z3CQDz6SV5qOVN1p7VQ3dIpk3o1ywu6/au8wKhIdEkjll+sL
+         +i3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=KsqJLj+tWwOdMRnwoeAumOhRN0s414FtN1yTOOAKDqY=;
+        fh=yfRMuXbYybALpZk9a7W4cicEHoURb2hh4sh1WdC3Nro=;
+        b=lVyIn1G3akz+dAhokKpnir6pVZlD37D8pJJh6cF5kVj87Vf/nmREQyOesAdgGpJZzz
+         onmi3MD47F+US6ZgcN1jfENL9/04Tng5ZggyjBE7M1Ud81VZG6BFVkVHH/UHcw9FeNNm
+         EsNqF/cidNRung/0l2+TzrIR3lBDe/VotneGjluWo77f5N1d9bHMOo/eejSkl2nhy16y
+         HvNApGbMV5sO5BMYJ7R3aKcIz83KhGXHtmYb6WOL1c7E8P6C00XSvx0HkWaRBlUkcv3p
+         pA/Izbd0wfRX4qgG9BQ31HL9Im0OZTYFaNOQL29zJeTYPP9ZO+FBNxtaMzrYfOpEfOW8
+         mMTA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778083395; x=1778688195; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KsqJLj+tWwOdMRnwoeAumOhRN0s414FtN1yTOOAKDqY=;
+        b=htz5MEq7Xmdk+oDbej4KxMJFJqZ/uM74i0CHfcU59FqMBOPPuv56ywDYApTss1GMxF
+         hFIMxi3HQEfLAyF8ZcFyWZvq72wWUrIkoYnJt5/DFkCHDVOEvNo0MUmkfdGTrxAr/ie2
+         lVUzAcjcXKtf0ee9fjbPRHRSGn/LTPana3cunovKzHhUinAa+f9wcHOReJ2t0QvIooxW
+         2cKKi/fJqNBXrf1fVZGj0lFGTR0Ay9oF0sbsD7HQHL3QztCadLA87KSvVK8Gy+B4E+Yl
+         9gyslo1eYVJW5iwicC/qRwuZr2HJWzTo76DjWsTtYcvcQfJSdCP/LhutpcXYp2/s4BqH
+         y5Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778083395; x=1778688195;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=KsqJLj+tWwOdMRnwoeAumOhRN0s414FtN1yTOOAKDqY=;
+        b=m76IyyfJYGpRmGzsNBZcAiY24NFNUMykdD6SK17Izpn0DMztHlUTVVi/DyVa2sLHit
+         d7Gn7nVTQLG5j8gi13fJVEVTrRO2fe8FcpHkzMV49xtoV/UYXCj2Ki8gWHMUkMi98NU/
+         fG9qllUXbF3zB9QZ1B16xFd7IvJ0keLq5thO59Oa7CHTiTxGPYkVFRMlWoVqeEomB3HD
+         GNsD45l/BMKePAl9CvQlqAfTYRhRN5WzcmlDuaT9WvCALf/8j0zLR2jQ8dUfgWUAVOEG
+         iiIHVSthGYwts8bjRO+/eD6sibauBCpl+OeL4mhCPCagbrx2zsc65MonJIlL2Ipt/nmf
+         4U4Q==
+X-Forwarded-Encrypted: i=1; AFNElJ/8Mkzbb44oQOPopjLgzKbmSdDra+zueqbT0ypY9/bpiWP10sh8l6xSKNJowjl7krVX7pPfRMAhh70=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxsQ1/m8ID8vrF4cQAjjlGLirXbjGHqmekcOQtk9ATDQxIuvWQK
+	kHhRHoH//mlErSVQqUzeYdgcUIU6L5Ze92o2W9qDoinM4CbqcxvYpErxWbOWe1pZ480kZDKRNf1
+	JPaVTUacmWL0rYLK3dmmx3uknujghLSmSvQ/p
+X-Gm-Gg: AeBDievzZu39bCF9OCFCECxLDx3fiemGrLSM3B5bEMy9la8jISNQdKhfKY7UnxLdPKH
+	Igps23LntBIpU5wq5KNd1pFMtkzzsNYe+BzR126LNDZLiKqwxoqeBLrtd+cAGNyxalu8IEU24Sk
+	6oc+vkOLup7fIRzsK29VfSRhgI2iie9BAeOhbKZ66cQOBnNqjFFWJR3c042JrasMoLUIJqNUMBg
+	z3q1L9eihBPxi0AaTJWdvwEIPTMfnZ3agZukyZr6X4w6Pmi0nXAlz5FZHYoRKvzcOmZdcBMy+12
+	o02B/mL8KCseg+kqSCV1UE6iQznLmxg=
+X-Received: by 2002:a05:690c:c50d:b0:7bd:a6ea:c508 with SMTP id
+ 00721157ae682-7bdf5e65db1mr47967267b3.24.1778083394819; Wed, 06 May 2026
+ 09:03:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260505174943.94093-1-salah.triki@gmail.com> <afr-KvM756ZAn2hh@ashevche-desk.local>
+ <afr-UujhzuwZWzhT@ashevche-desk.local> <CAKqfh0E+4WUBsMHH0Rj1UH0MFdGo7E1crmHzJ+E6c0XXz3qvCw@mail.gmail.com>
+ <afthm7L0j8VZdkUk@ashevche-desk.local>
+In-Reply-To: <afthm7L0j8VZdkUk@ashevche-desk.local>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Wed, 6 May 2026 11:03:03 -0500
+X-Gm-Features: AVHnY4IXfQ734B2QnVfGt-zfXx2zhsa1wMT0dJJ8hx13NmD-39hkAv-O5-xx-BA
+Message-ID: <CAKqfh0GZVdvduXEOusaARs2w6Oj4A4Q-hd-nyF9OJiXroEoxAw@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: humidity: ens210: Fix missing I2C functionality checks
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Salah Triki <salah.triki@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon,  4 May 2026 16:46:12 -0500
-Maxwell Doose <m32285159@gmail.com> wrote:
+On Wed, May 6, 2026 at 10:43=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Wed, May 06, 2026 at 10:02:29AM -0500, Maxwell Doose wrote:
+> > On Wed, May 6, 2026 at 3:40=E2=80=AFAM Andy Shevchenko
+> > <andriy.shevchenko@intel.com> wrote:
+> > > On Wed, May 06, 2026 at 11:39:11AM +0300, Andy Shevchenko wrote:
+> > > > On Tue, May 05, 2026 at 06:49:43PM +0100, Salah Triki wrote:
+>
+> ...
+>
+> > > > > +                           !i2c_check_functionality(client->adap=
+ter,
+> > > > > +                                   I2C_FUNC_SMBUS_EMUL)) {
+> > > >
+> > > > This one is now wrong.
+> > >
+> > > I meant this *indentation* is now wrong.
+> >
+> > Did something happen to that when I sent the email? Or maybe I'm just
+> > going insane...
+>
+> Sounds like latter one? :-)
+>
 
-> Include linux/cleanup.h to take advantage of RAII macros.
-> 
-> Replace spin_lock() and unlock() calls with their RAII macro
-> counterparts. This will help modernize the code and increase readability.
-> 
-> Remove "flags" variables where spin_lock_irqsave() has been replaced
-> with guard(spinlock_irqsave)()
-> 
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+Probably true :)
+In all seriousness though I need to slow down...
 
-Hi Maxwell
+>
+> > slightly confused,
+>
+> In short this is `if (foo(A) && foo(B))`, and foo should be indented on t=
+he
+> same column while their parameters on different but still same. In your e=
+xample
+> the foo(B) is indented as A parameter on previous call instead of indenti=
+ng as
+> foo(...).
+>
 
-One thing inline.
+Mk, thanks for pointing that out to me.
 
-Thanks,
-
-Jonathan
-
->  static void ams_enable_channel_sequence(struct iio_dev *indio_dev)
-> @@ -1060,9 +1058,8 @@ static void ams_unmask_worker(struct work_struct *work)
->  {
->  	struct ams *ams = container_of(work, struct ams, ams_unmask_work.work);
->  
-> -	spin_lock_irq(&ams->intr_lock);
-> +	guard(spinlock_irq)(&ams->intr_lock);
-
-This increases the scope to include scheduling delayed work. Seems unwise
-in general and should definitely be mentioned in the commit message.
-Use a scoped_guard() here probably or leave it alone. 
-
->  	ams_unmask(ams);
-> -	spin_unlock_irq(&ams->intr_lock);
->  
->  	/* If still pending some alarm re-trigger the timer */
->  	if (ams->current_masked_alarm)
+best regards,
+max
 
 
+
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
