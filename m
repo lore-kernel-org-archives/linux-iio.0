@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C961647DD72;
-	Wed,  6 May 2026 16:40:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0BE244D039;
+	Wed,  6 May 2026 16:41:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778085634; cv=none; b=AjSXXQjqk7EP7VJUMhbibLszPI0scqv90Av8H/FybaGt/iBM55pmswmrulizYHz8ezlSiv2Ij9as/smFzAZ7Mcxd/cjOnJThpmALn1a2Ap2jXJu7JocR+QaZKsFoJ7bTayCpIpE2XfxlWp0YB+Ci/jqAQ76iW3WigHyH7b+HaaE=
+	t=1778085684; cv=none; b=YAzq0TKUx+r8eCKVvdt1a92Q0iusUqszy33p4Xr3ByZ5a+TZ+xrgL2U7flPzedFLH+6p5Z/M6cg0Rkx3d6osOxXwxkOyRBCnZZdWGSIWeO2WzAvSGgXBvGgcY+XYRyzHZzCM+nC1hJfCGxJS1VbYQN2LO9Y6LZ2yHrnuy5YQIdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778085634; c=relaxed/simple;
-	bh=kuTlo/sqlL3+ArcBsIOU1q77znpZbKHKmV2IWwpMQIM=;
+	s=arc-20240116; t=1778085684; c=relaxed/simple;
+	bh=CwQYG395E5hxLcLxjLq12wsc6+XUwFOo2gC3ua/E8pY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=redNvLnQEliUNhLfe8I1iKM2IgnJeVpaIW+6q1AB2qimzB1O+dI2b97z+QSODwCl6x/IqxbqO8iTJov8qXmzUHyClBlwVEbIP/DHsAN5EnqXwfA47GR8etDUrB1GkH/TuPYeEeOYhUMKN/TzVEiKLEGR6Br7mQ64FISEhDFzcRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UsGZvXz7; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=fiVNgKLlRoP/WkcMJp28O+Eo4YUOaxenW76phlQoaq7onHNigk9pZlQxmUfFgOY70fzo9P+72KmT0dOqUanUQ1SMfBwdjncS08HSkl+9HDbxpZDtp5Q68ALA46Q/au3OIbtKShnin6hxphEEwWnCYwHxbmfpaxq/ExEvTJHWi2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CBf2ahDX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UsGZvXz7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB1BDC2BCB0;
-	Wed,  6 May 2026 16:40:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CBf2ahDX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16C1FC2BCB0;
+	Wed,  6 May 2026 16:41:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778085634;
-	bh=kuTlo/sqlL3+ArcBsIOU1q77znpZbKHKmV2IWwpMQIM=;
+	s=k20201202; t=1778085684;
+	bh=CwQYG395E5hxLcLxjLq12wsc6+XUwFOo2gC3ua/E8pY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=UsGZvXz7bYVKVz3ZfZedewt7KP7ObDGUJOqq5pPazLA1SkSPQK1FsEFKK5a+mvjE1
-	 3OlH0zoui8EvhwJl25g5Dbu4emBm68N5b0WPv2ynaGcAqIaPFJq3ZpXiLMWfDf7Lf6
-	 IgvEWeXhp+0yy5kbsq+614kAog1Xwa0L8xm3lWc5gSreezC9ABo9I07miSiz/plXYE
-	 1LTJmXddUtjXgfEfARjQb4aDph3OwIqyyidAFawuRl+pFXNMPvvmBuRNXk12RKbQ4C
-	 7lMsr4sR6xsXKKqYkEaZkHg3BV6EueqWBeraG9KNbYhVlgK7Sx1MkS3N1s9TgPh+3F
-	 LQL+HtTq2qgJw==
-Date: Wed, 6 May 2026 17:40:27 +0100
+	b=CBf2ahDXBLDic2RS0YhZPbhyXJ5S7gI1/3sd99klKD/bdRtDKlO9esw1Z2PiXroWi
+	 0MPkk3EJIj0pEwWmpA2QHCIDgoA+mGYIymAdyabLCo6KVl/GdWtcygKuPEBT2q3k4x
+	 NqhL4IVD7yPWCXnSWHX40SL18VBP9VXyJ8wQMoEyugOe7AqVu8CuhGW4ltm/uZsQbm
+	 LRkkh+jyYd7qHs02tRHJ3PG1SrPpzgeZ3R4Fs7sk8SWytRdtesvOGpvSFMoHXPrEwG
+	 y0LrLLb0kbJy1w6t0qIg9FqbhsAnwgReK57LN2gXRNhIeqUl5BYqU9jCdKsUJQ538k
+	 CVVc2u9UjB9WQ==
+Date: Wed, 6 May 2026 17:41:15 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
 Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
  =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 04/18] iio: magnetometer: ak8975: change 'u8*' to 'u8
- *' in cast
-Message-ID: <20260506174027.493f451d@jic23-huawei>
-In-Reply-To: <afrgHtgLZMEDT1j1@ashevche-desk.local>
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v5 05/18] iio: magnetometer: ak8975: fix wrong errno on
+ return
+Message-ID: <20260506174115.42bc56d9@jic23-huawei>
+In-Reply-To: <20260505-magnetometer-fixes-v5-5-831b9b5550fc@gmail.com>
 References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
-	<20260505-magnetometer-fixes-v5-4-831b9b5550fc@gmail.com>
-	<afrgHtgLZMEDT1j1@ashevche-desk.local>
+	<20260505-magnetometer-fixes-v5-5-831b9b5550fc@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,18 +49,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 6 May 2026 09:30:54 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 05 May 2026 13:46:01 +0200
+Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
 
-> On Tue, May 05, 2026 at 01:46:00PM +0200, Joshua Crofts via B4 Relay wrote:
+> From: Joshua Crofts <joshua.crofts1@gmail.com>
 > 
-> > Change 'u8*' cast to 'u8 *' as the former triggers a checkpatch error.
-> > Also fix the indentation of parameters in
-> > i2c_smbus_read_i2c_block_data_or_emulated() function.
-> > 
-> > No functional change.  
+> The driver currently returns -EINVAL on polling timeout instead of
+> -ETIMEDOUT.
 > 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Replace return code for -ETIMEDOUT and remove unnecessary error
+> message as -ETIMEDOUT is a standard POSIX error. Also replace
+> instances of -EINVAL in comments.
 > 
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Applied.
 
+Tah
