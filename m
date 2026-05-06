@@ -1,135 +1,167 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B29B23DE425
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 07:46:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778053586; cv=pass; b=nmdpw5HUGwuxa4w6m7OwQxXh1rEb82iRwbr5hMpiBuNT/DTmlx67Az95r2cpaYUKeHYTTdE/h2DslSa0xNkrDCgaJUjuKHpzIL7h+OhchMjSai5RlUHwKPj2Q5THD7xIJ/G5NeWp7hQLnIe5CEWm6F+fiWbaSvTjYU81ncNlQqk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778053586; c=relaxed/simple;
-	bh=Tx3WeZUNhuBZDbCRie8ddYNOeSRcG90ujTtX2LnV7Iw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iCKugubtjN5oQ3jE5B5PpKsgUlx/WQfGY5WCMAYJooSScvznkGZ9/CxA+j06+LaZtTGAB7t9oGxKnhQt89fiQg95iexSk0aRQzdfUPJ+7w7eF6BB0YLwQQdXUgR7cl0gchlO28d7OoNiJTft8mhSBkJt0TKefpFScrPepFDGeKA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WQ9V5fzl; arc=pass smtp.client-ip=209.85.167.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F4094369203;
+	Wed,  6 May 2026 07:56:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778054171; cv=none; b=SARHt/oEOvHehaXGCBaXOp4qI1F2YFSfDwFhRHOs58XLTMFUUr+Ugg13fqqki9ruEV+PWU+i8fVV+upnk3zS1xqPXo/yZPoWFT0UHj5XTTLPkF+okGgoBBFkzZGSB7SH688UXtsrSsQdTWeSh0DuPUEmDx6qcHioJ1ldx4CbI7Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778054171; c=relaxed/simple;
+	bh=juwrtWczzTPvQJJwIG07H9kX0vRNlp9abje+dq/wKWQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BH1nLEikmYFtbw6MD2XHCaaLE6YgTbKpSH4QhFb+6NJg3PFLB2WXQepQcaa+4zuOCcxeUWuknsfR/6O1WswzFVcBtOtNCulyoonI87aoHnwoDCl0lrHp659fIvZD6o9t09Cd4nJcNXmlBYlHSpjjxw9M79ahWEBW4KF1/h4RAAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mlid59Fm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WQ9V5fzl"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5a8891f0c88so171589e87.1
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 00:46:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778053583; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Fzj5l9bwm3pBj9tvLx2TXgiLlPQMU8xJ1SCIt13642BVLN6S4I2ZvWTUxe1YTBz6h0
-         MLtZzwuDjzDoY07By3EMDZ0ivKL2OrtbXOyXUEwc8zP0pe7wEvdQ/LdF/RSKOXEqbZ8M
-         XSAoV8664ECFNIG6szIPxu5Y4fSOePtgLdwwfQJVVzp4SzJg5vdOPCLbhLuH8fniy3X6
-         /z/FqMLdvp4Rk/TTQvn47Wby8TBeaNBUoQbWf3geiZgobZumdFBpn2hnEFfVg1Qjd4qG
-         u0Cysxjy+WvI4yOLcLpPgnWeyRNfV5ryFs19PJa5+HshzDgTqi2fXwO89dChwzGUsGdT
-         29nw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=LtNgMFYOhpx95LShPDCJrC6wGLnY6fi+ZP/Q4wbmgYM=;
-        fh=5G9sgjnZ8qXwAcDpXWbVK9zvM9uO9E56D4MoL2Op6XE=;
-        b=RzADGrD6sgkrIjSm/6VH8e0DWp9FUrN/XxY3/Z88nJyAKlElzxedDXOxeQA5MCWLcv
-         H9OaMqq1S9WW9PWjR0BEXy2KoWDAtyVlvYH0c7Rc6Kh6tt7IKV6BXXlSK7ga/4THxkwv
-         t4KEhzS6YXek9vJsKB8Pg0/A3i6R7ORVziHCAFpiPdynH6bCdCXySWh2DXn1ix2thXzi
-         IRMiAETEh/ACNeHNWjx3W0SQcrRXNp3WacC9GzERgCmEJzCbBJqjqwUQxjKfEys6zE1x
-         ftyMbL4MuB1XoZEs36HMJZ5cwEDR5tatLofBg4oxwfy+EmsAcTXizdkY6jpLPlUqEA2W
-         kvJw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778053583; x=1778658383; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=LtNgMFYOhpx95LShPDCJrC6wGLnY6fi+ZP/Q4wbmgYM=;
-        b=WQ9V5fzlXWBOB9K1IarwqJe2iIi8ESzapFRZFFZkIvOE8GCzyy7Wb1DzWMA6+v51bO
-         f7/vTPLtTGzLWH5P3zR9crsdOkD8NMRG69exxiYXhndmfXx9k3xgRPAMYzjqX8sPiIpj
-         QgENld7W18Dyude30cjuhTrgplzsATL/vQ9t2h8YUUVOvk93tHY4+bC/okb/tkqkLntz
-         XbCMY4/IHKHID4Kh4294PME7M154rOv4qNIk/j5RUwraOaCSqaxpX9azx5c3Nlfv8caG
-         bpRtrXMnu2GVsJvt4STL5/gBcXd8B40Euym8BCrsE+0VloLj0KRcSEEqsoMUzNUCAVgY
-         cVlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778053583; x=1778658383;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LtNgMFYOhpx95LShPDCJrC6wGLnY6fi+ZP/Q4wbmgYM=;
-        b=pXb2ogWEwzlhDDN1vIKA6rP+MzXRyCxScRY/n7DKb7cBfGYpM1R8Zfy722HCf7SfG/
-         W+qSMnFez8+R2Haig0KzP8fue22yMIfGbrVp2/GWu5PmXljI0rLPk97ZGbhmM1IrmCBE
-         B1DGD2q/g6eXHr4m9Xhk3wVfCudROUHTq7AVn1jrRli6gmMa/sVqtCJoX0WP8WpgC9dp
-         4pU99OZwFHTs3AJH0wOpvZR3UWY+g+6oUGVmq6yYrEoOeVsYCDJ6ABi1Ql6FyTQY05Xe
-         MT5yc7qyZqKfyaket7oHqY6KSh8aEnsxvAi87ZYjuleZ6izzt/MQyHldFgHFoKd/s6GN
-         TIBg==
-X-Forwarded-Encrypted: i=1; AFNElJ+1f+7WKeiRBzRxwuF5473na/hBIRwcqXiNypSTzr6Bi2uDNeLGm2toXOb2z7S3uj9J7poz9oBQocQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw83HG7A9yvNL/tOb8gTiUUQXtW3gvM3nyRq3Wab56ZQ+TJDZ2X
-	31GByhfEB/8ddjrXuFVtGVjQpvxu1QEyMOt4C7Znsv8gGCOdkoPtyF8f3FiV5AIYDLsty6bTlnh
-	3Aabh0wjHq+NbLWkf5ccgMBX8VwG5aTY=
-X-Gm-Gg: AeBDietRffYFnalGBokaWW4f2z8iTp/8+m9DNk+99A5hzNRPy6OdrfHaJV8jB2wRW14
-	zs8tdfefkVP9o+SmAC6nmcVmQk0Kk64W0teazQ0RHByxBKU8SIWUAB6bRVkHjU4KvHACLmWQ54T
-	tF0Y/coKfh9LozfQwsFozt0/UvPb3nl6nhDh/+JlFtlZWCyP9lx6tLG2GbaIKdm+Kx4449tEIQ9
-	xKtiCj7nOw/IiaYnZ7FYVasm5mfrIOHpIKstxy6U6RvPtOVJaTvhV4Hdp18XFrG5J01ZjNBWlj/
-	22vaR7JWZFgfOuEIlUTv
-X-Received: by 2002:a05:6512:3986:b0:5a8:5288:5bf with SMTP id
- 2adb3069b0e04-5a887ce5fdemr740855e87.28.1778053582536; Wed, 06 May 2026
- 00:46:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mlid59Fm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B97CDC2BCB8;
+	Wed,  6 May 2026 07:56:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778054170;
+	bh=juwrtWczzTPvQJJwIG07H9kX0vRNlp9abje+dq/wKWQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Mlid59Fm7N4bpcaqRnWYuJsBdUgzafUkj2zf45JTU3c49ZMis9RT2P+qU+RNz7Rmy
+	 SH8EbtgsZ5iwwf0D+RQKI9CyaTfLRg6j7ZhnSm4GbV4RmE2Fg/xVMYUZo1n553OplQ
+	 T/G1vYwseBIUFXVqzgB3q5/u3PGKMnshzoizZyQOuSkluLzKXsGsqEZv/jDwxm3k/J
+	 AWs12P+xDUHTkow75J50MAtkUXJDVHUMaX5r/+peAEUN8Sxk32kqQzAbPRxQhSqESk
+	 m4ISfabBNeVZTHbEN8hBB+IMGcsVUSiH6zrKm+1Z7MHx6YvVXvpwiQ4hUhSZLbGRMQ
+	 X4yn8oRjy2LQA==
+Message-ID: <389917bb-c64c-4ac2-ab8f-b28ab0a89ecb@kernel.org>
+Date: Wed, 6 May 2026 09:56:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260429132234.30514-1-muchamadcoirulanwar@gmail.com>
- <20260429132234.30514-2-muchamadcoirulanwar@gmail.com> <5f126a59-9f03-44e3-b4cd-27f70bd9840b@linux.dev>
-In-Reply-To: <5f126a59-9f03-44e3-b4cd-27f70bd9840b@linux.dev>
-From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Date: Wed, 6 May 2026 14:46:10 +0700
-X-Gm-Features: AVHnY4L_5pgV8GXOjPv-2E2wKzMdg04ytr_7aXwttrNdCJshMRLa8vrmmICm4kw
-Message-ID: <CAO26r3R_TxwMwLoJMqjAG0pd2P__V-WmGkTcrZFt6CQwa2y1cA@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 1/4] i2c: rust: add smbus_read_byte_data and smbus_read_word_data
-To: Igor Korotin <igor.korotin@linux.dev>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, devicetree@vger.kernel.org, branstj@gmail.com, 
-	lars@metafoo.de, ojeda@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, igor.korotin.linux@gmail.com, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 01/13] dt-bindings: iio: adc: add mt6323 PMIC AUXADC
+To: rva333@protonmail.com, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Srinivas Kandagatla <srini@kernel.org>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>,
+ Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+ Lee Jones <lee@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+ Ben Grisdale <bengris32@protonmail.ch>
+References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
+ <20260504-mt6323-v1-1-799b58b355ff@protonmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260504-mt6323-v1-1-799b58b355ff@protonmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, 4 May 2026 at 17:29, Igor Korotin <igor.korotin@linux.dev> wrote:
->
-> Hello Muchamad
->
-> On 4/29/2026 2:22 PM, Muchamad Coirul Anwar wrote:
-> > Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-> > ---
-> >   rust/kernel/i2c.rs | 24 ++++++++++++++++++++++++
-> >   1 file changed, 24 insertions(+)
-[snip]
->
-> Thanks for the patch. However, we've previously agreed [1] that
-> I2cClient should implement the IO trait [2] rather than adding
-> standalone methods like these. This patch would need to be reworked in
-> that direction.
->
-> If you'd like to take that on, feel free to submit a patch series
-> implementing the IO trait instead.
->
-> Cheers
-> Igor
->
-> [1] https://lore.kernel.org/rust-for-linux/20260131-i2c-adapter-v1-4-5a436e34cd1a@gmail.com/
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/driver-core/driver-core.git/commit/?h=driver-core-testing&id=121d87b28e1d9061d3aaa156c43a627d3cb5e620
+On 04/05/2026 20:24, Roman Vivchar via B4 Relay wrote:
+> From: Roman Vivchar <rva333@protonmail.com>
+> 
+> The MediaTek mt6323 PMIC includes an AUXADC used for battery voltage,
+> temperature, and other internal measurements.
+> 
+> Add the devicetree binding documentation and the associated header file
+> defining the ADC channel constants.
+> 
+> Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
 
-Hi Igor,
+Sorry, but that's not possible or explain please how YAML file can be
+tested on a device.
 
-Thanks for the review. It makes sense that having the AS5600 as the
-first consumer of the Io trait would be cleaner than using standalone
-methods. I'll rework this accordingly.
 
-Quick question on logistics: would you prefer the Io trait patches as
-a separate series, or bundled as prerequisites in my v3 for the AS5600
-driver?
+> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> ---
+>  .../bindings/iio/adc/mediatek,mt6323-auxadc.yaml   | 39 ++++++++++++++++++++++
+>  .../dt-bindings/iio/adc/mediatek,mt6323-auxadc.h   | 16 +++++++++
+>  2 files changed, 55 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt6323-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt6323-auxadc.yaml
+> new file mode 100644
+> index 000000000000..7dc1ac8bf253
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt6323-auxadc.yaml
+> @@ -0,0 +1,39 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/mediatek,mt6323-auxadc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek MT6323 PMIC AUXADC
+> +
+> +maintainers:
+> +  - Roman Vivchar <rva333@protonmail.com>
+> +
+> +description: >
+> +  The Auxiliary Analog/Digital Converter (AUXADC) is an ADC found
+> +  in the MediaTek MT6323 PMIC, performing various PMIC related measurements
+> +  such as battery and PMIC internal voltage regulators temperatures,
+> +  accessory detection resistance (usually, for a 3.5mm audio jack)
+> +  other than voltages for various PMIC internal components.
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt6323-auxadc
+> +
+> +  "#io-channel-cells":
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - "#io-channel-cells"
 
-Regards,
-M. Coirul A.
+
+This is heavily incomplete node... or unnecessarily split. Why it cannot
+be part of parent binding? Or even parent node?
+
+
+Best regards,
+Krzysztof
