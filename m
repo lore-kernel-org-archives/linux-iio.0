@@ -1,181 +1,125 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E97D428474;
-	Wed,  6 May 2026 13:26:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778073986; cv=none; b=WQVwBnMWyVw/DZJYu21tlhRd1BBRJh81gWeyuRikPqkFf+TjKwsHG1gUjIQmbssoXiGqQyNYyLnPHSHO1V/63ReflsidRNCWe8WDzv6++Di4WeKZzoUYiHHNxzBsXt0AxhucdoFxP0RyQC4wp4aL7oM2czo4HM5DJQJHMvbWqAQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778073986; c=relaxed/simple;
-	bh=xaKcmCC+I9v/E09bRdoBMaTkVzosR8rUiWNrEUV6lAg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J5sH5Dg06AAqC0YrR6dD4UQIBP7m/OJ7W0WFoi1/EXzzaT7KmbGwRadrRsa+kWyypFPB3Pbho/OqyPSgMqZ6C9qYcbtGFZRbnAUMUVrBQPIT03BAmaZaYcErfcpNoyKJs6yxwZ6y8YXDXKigp2BpdLEeklUpJ1vxM/K3Pogm3Ag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Kn+Nojck; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DEB9428474
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 13:27:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.170
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778074034; cv=pass; b=sagikLV1GZbP9a2kZNymIatOHLLLhi3651OQWu2HSx5eK2rcL9LKWn81sy03lZIvvL/VW88+/zh3ODauwFUCJU9UljgD59wHbZZhPQt6GEDncwfcZez6bVrRBdn4M4hm00KbKQgVJlfekIasNiJRU9KQaNPLODxCCogU15QgVVo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778074034; c=relaxed/simple;
+	bh=ZttEGwRG6BvXaKhO5hZe1t1mv41D0nIlKx8j6dwTSWg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=J3dwUexkf1Z3OsyaNyAcZeMRsQ/Oi823QIPCRUT8WmuDBsPVw5AYkQ8pLF2PHipxeO3LJXsNjafFcLoD2mtnhAxDw1kwvgkCUQO3VC1yKKFb6RYNoPqh59NiJIWyXjK2HreztTVpme/O7cUKUfTXcrQuMFm1hkem4fxIrsq8hac=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OoK4qc0H; arc=pass smtp.client-ip=209.85.128.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Kn+Nojck"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778073984; x=1809609984;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xaKcmCC+I9v/E09bRdoBMaTkVzosR8rUiWNrEUV6lAg=;
-  b=Kn+Nojck1aQDpvDs6sZpBe+keJhErcrZLKGJxT+oyOMP0h0IOBHqxV1p
-   1Tk05lqs4qKHuQxX09uG1Pejy/q53jcEQWdeRE1qBRsvkBcqHv01hZVwj
-   B//qJvxTZqZH+7omXrQbztU+Zel4Qd79zqEvbPWwloVTfHNGX8fMXdZox
-   UGCQ4PNCXDWZJp7zuekqY8BwTUmdB6vaXmcrXl8oIzqNq1ZfWoAtpg19f
-   J7uTQkp/+NdPB47QXfw8T+LRwY/p4NfcKF8fli2KB41Dz7zGumCkfukx+
-   xMZg4kBq2DlVqkoJDXbFU5DK6V3exKq0yrkjxSUjwEDTfEinlEd0qaqlE
-   g==;
-X-CSE-ConnectionGUID: G6eMnH1hTYuQP1PlIslZHA==
-X-CSE-MsgGUID: 62NSLGv9QwikO+m2V57evA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="89312838"
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="89312838"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 06:26:23 -0700
-X-CSE-ConnectionGUID: 1H3000o9TMadDzDQXXLY9Q==
-X-CSE-MsgGUID: tL+QbN0HRuqstpiz/lB/YA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="235306952"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 06:26:19 -0700
-Date: Wed, 6 May 2026 16:26:16 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Roman Vivchar <rva333@protonmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
-	Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH 06/13] thermal: mediatek: add pmic thermal support
-Message-ID: <aftBeFbVIap59FFS@ashevche-desk.local>
-References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
- <20260504-mt6323-v1-6-799b58b355ff@protonmail.com>
- <afmnUG8dG0N0HpV6@ashevche-desk.local>
- <cgsML96DsJh_Ow9XsSnyrZ3NhlCnNj1rKegzYNR3eQzkWoF5xQB5-aU6Zi7pKcT8GfUnO3B-D71je60APUtorB7p_A3GtUCp2oer3KYLn6k=@protonmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OoK4qc0H"
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-7bdec52f48dso10901957b3.0
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 06:27:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778074032; cv=none;
+        d=google.com; s=arc-20240605;
+        b=HTiVRENf48RFyiNUQ74EmAdbCp2LbguGD2FXlpogwI5nn97yDsoNrwaNHEiU80pC/e
+         eFrqbxL7zlG8gil8FqOmVecGwIKY7j6aP7hYMnUd5q7/RkPp/aE27DRTR5wseYHTacH1
+         EU6Y7eE+WCNs6ldpT3bvqeqNWNhvUtQ/VdLv29YG9qD++CQuDFXZvaNynKSdXxlkJFk/
+         rBQutfZgmUoAbdIfX1+sjTSTWOBtmDxS0U6LysHp1jv+nIzIxBnVxdbGv35a40wdUX1e
+         YatfCJgH1IeUsREbJxbL9osvq6ggxnQN703GnkFTEvHlMZu4KtbG1rLxRpslOdiXykqz
+         ScmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ITRX6h8VK5TWeXB90cJ0dP/H7zt7FheayI3E4fFA2tU=;
+        fh=KTWq+B9oL2mcBHbVQ3qVRbPwQ007ZwD9rGwSq6fgdqw=;
+        b=cjD6DPKx+rsnBlbakJa+suMqjw1p+SS86x4FCXppRHoE1DYLICvY4zAtZ4VktYxh/p
+         sYXCk0CsOb4zxcLCc/D+jVXXag+B2UBNcEigRfI8InY5xl6qisiutlVz6+x43i9Ixdnh
+         qTTrK7ITcE50U5ZAxCH9rxGr4zIJrrFPkUkKJvVOkSj+yge+WryhY5FY60oK6Vrp4+Xc
+         a71n4fBie/ZgIsobQzoNwUDoQDVz/7yCuSVdCe/Mn2yrNtibKrPOVHSty0nu+devdcFy
+         Etiu9cvyvoxAgesqYBzOuVdUsNikb1e9KS1hcS/+R4GASgaj90GrN2rzM6aBBLjJyvQl
+         j4ug==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778074032; x=1778678832; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ITRX6h8VK5TWeXB90cJ0dP/H7zt7FheayI3E4fFA2tU=;
+        b=OoK4qc0Htnfn4Te9kj7HOW8J1LwC927dtC5YMYIdf3VR0m8rHlGf1dLYlWaxEQUmF3
+         YHXqgNqOS/Veq9NHw2QMZd+5f1Yg+qxZk6/brsoiB5zhzRUlGXffRlrFC2hO4o4NouOb
+         0otxzsExbGct5mWj21m85K2aTJnBhRBZj8SgDay2tjVOGXHwJeZwCi7hYiPgPa2TK2QF
+         cGaLNNu4mYqzopWxMeqQdQLBIO5gQ5ZxJ4AQYbRip1dUNhacLkdWuM/xPjL/BYJHy/WY
+         6arpJFhnJyGrPiJpH8kcL7yIq909KE8gZ9EbqSrqXNtMnZzosk7QxsIWlRAwszKtwG0y
+         0W8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778074032; x=1778678832;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ITRX6h8VK5TWeXB90cJ0dP/H7zt7FheayI3E4fFA2tU=;
+        b=qTrLAyTTA/N6kLQm3Fr4Hjqv/denJXqw2o+Fs5S2G29jspsW3emkvcnh7U4V97zXxa
+         /nmlZlqbNGw3u3QkedTlzxOKgVfDKU1I7hD1e7SkcLxWonV7zynlYCTsCqrZr6DVoylt
+         n/9Kvrkvjjlkt8kvJxfOJMmCD30PfCVpF5/FAY0J0KI3L03c+Zl1ODlf/t6rmvwS/fsB
+         gNhO/jiHCFpuAuipw5+1LueUftVllqxnG2OGrZ7IgHvO2yoiaNBo+yg4KEOGnz+EH4QO
+         ficZZ2tvUJE85nIgS14dROwIAeB1mu25gpx5IKGdODTJlRh4gtCsM+LpK4WxbqBzZdDj
+         lx2w==
+X-Forwarded-Encrypted: i=1; AFNElJ/Olvan/dZN4Ux2kgR4QokzECqXQ9Vacm4Aoy9nqXkWbhcUrGJbp1iGhit8nW5uV6JDxyFHGrq1uCU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy94YjiaXR3satBr8WoF1RD3kOFn/FfIjVocbuP5BA2GOz+sSBB
+	iS2S8OsNvH5NR2oVz6abiS4bE/iwtgjjSDMSfdhso5opHudxJdQ/Vpm2MP3Yffxo1aWo0oXRoja
+	OEdo703X0knjgIOG1tpbm2KVka+zPrPI=
+X-Gm-Gg: AeBDieufOwzFyx4m6qw2rWuuBAkuoUBPIWuu6fdOkO7ZJ/f6n6MzmeKHNQbnTcrERcR
+	S1gAoao2fmKdJAZjava23EMB5PLhz4n7r6x7nbHCElBYSjqNxpewtlKkBzL9IU76K/rZJZTbx4f
+	0IEzFNSq+H2HM1gkhxWOoyMNZk2lKzeSogiRsEn1sRsXZ4O6FWeP95/Texc2FCAuEc4Q45s2VNm
+	l8YF9HQNIEpgMMK4Q4nZ/EJ8iQikORVHegQBIMLUyK8rJE45DQYNmOO8g+itfn8imWkXPeT1bu3
+	6ym9cUO+F+Y8wnGoypzw
+X-Received: by 2002:a05:690c:39d:b0:7b2:9347:7ba7 with SMTP id
+ 00721157ae682-7bdf66810eamr25983617b3.22.1778074032485; Wed, 06 May 2026
+ 06:27:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cgsML96DsJh_Ow9XsSnyrZ3NhlCnNj1rKegzYNR3eQzkWoF5xQB5-aU6Zi7pKcT8GfUnO3B-D71je60APUtorB7p_A3GtUCp2oer3KYLn6k=@protonmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260506082755.860523-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20260506082755.860523-1-andriy.shevchenko@linux.intel.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Wed, 6 May 2026 08:27:00 -0500
+X-Gm-Features: AVHnY4LEZo1CbHuZFVP6BHuZa_qYHzNgRNZ1txIVd8ZaDp8wif24AUyLl7Gs_bk
+Message-ID: <CAKqfh0H=EQO8DQ-2fUKjj76yX0Csgj+FvWFq+WiKC8Fa5D_tgg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: magnetometer: ak8975: Add missed
+ pm_runtime_put_autosuspend() call
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, joshua.crofts1@gmail.com, 
+	Sashiko <sashiko-bot@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 06, 2026 at 11:22:15AM +0000, Roman Vivchar wrote:
-> On Tuesday, May 5th, 2026 at 11:16 AM, Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > On Mon, May 04, 2026 at 09:24:58PM +0300, Roman Vivchar via B4 Relay wrote:
+On Wed, May 6, 2026 at 3:28=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On the failure in the ak8975_read_axis() the PM runtime gets unbalanced.
+> Balance it by calling pm_runtime_put_autosuspend() on error path as well.
+>
+> Fixes: cde4cb5dd422 ("iio: magn: ak8975: deploy runtime and system PM")
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Closes: https://sashiko.dev/#/patchset/20260505-magnetometer-fixes-v5-0-8=
+31b9b5550fc%40gmail.com
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+[snip]
+>
 
-...
+Looks fine to me but I'm not in a position to give a formal rb, as I
+can't compile-test it right now. If Jonathan gives it the green light
+then if he wants he can add my tag but that's at his discretion and
+not totally necessary since Joshua already gave his rb.
 
-> > > +struct mtk_pmic_sensor {
-> > > +	struct mtk_pmic_thermal *mt;
-> > > +	int id;
-> > > +	struct iio_channel *adc_channel;
-> > > +	struct thermal_zone_device *tzdev;
-> > > +};
-> > 
-> > Can you confirm with `pahole` that this is the best layout (taking into account
-> > the use in the below data structure)?
-> > 
-> > > +struct mtk_pmic_thermal {
-> > > +	struct device *dev;
-> > > +	struct regmap *regmap;
-> > > +	struct mtk_pmic_sensor sensors[MAX_SENSORS];
-> > > +
-> > > +	s32 t_slope1;
-> > > +	s32 t_slope2;
-> > > +	s32 t_intercept;
-> > > +
-> > > +	const struct mtk_thermal_data *data;
-> > > +};
-> 
-> On the ARMv7 it shouldn't be an issue, because pointer size equals to
-> the s32 or int. However, I've reordered the fields to group pointers
-> and integers together.
-> 
-> struct mtk_pmic_sensor {
-> 	struct mtk_pmic_thermal *  mt;                   /*     0     4 */
-> 	struct iio_channel *       adc_channel;          /*     4     4 */
-> 	struct thermal_zone_device * tzdev;              /*     8     4 */
-> 	int                        id;                   /*    12     4 */
-> 
-> 	/* size: 16, cachelines: 1, members: 4 */
-> 	/* last cacheline: 16 bytes */
-> };
-> 
-> struct mtk_pmic_thermal {
-> 	struct device *            dev;                  /*     0     4 */
-> 	struct regmap *            regmap;               /*     4     4 */
-> 	const struct mtk_thermal_data  * data;           /*     8     4 */
-> 	s32                        t_slope1;             /*    12     4 */
-> 	s32                        t_slope2;             /*    16     4 */
-> 	s32                        t_intercept;          /*    20     4 */
-> 	struct mtk_pmic_sensor     sensors[1];           /*    24    16 */
-> 
-> 	/* size: 40, cachelines: 1, members: 7 */
-> 	/* last cacheline: 40 bytes */
-> };
-> 
-> The compiler will still add some padding on the AArch64 though.
-> 
-> struct mtk_pmic_sensor {
-> 	struct mtk_pmic_thermal *  mt;                   /*     0     8 */
-> 	struct iio_channel *       adc_channel;          /*     8     8 */
-> 	struct thermal_zone_device * tzdev;              /*    16     8 */
-> 	int                        id;                   /*    24     4 */
-> 
-> 	/* size: 32, cachelines: 1, members: 4 */
-> 	/* padding: 4 */
-> 	/* last cacheline: 32 bytes */
-> };
-> 
-> struct mtk_pmic_thermal {
-> 	struct device *            dev;                  /*     0     8 */
-> 	struct regmap *            regmap;               /*     8     8 */
-> 	const struct mtk_thermal_data  * data;           /*    16     8 */
-> 	s32                        t_slope1;             /*    24     4 */
-> 	s32                        t_slope2;             /*    28     4 */
-> 	s32                        t_intercept;          /*    32     4 */
-> 
-> 	/* XXX 4 bytes hole, try to pack */
-
-^^^^
-
-> 	struct mtk_pmic_sensor     sensors[1];           /*    40    32 */
-> 
-> 	/* size: 72, cachelines: 2, members: 7 */
-> 	/* sum members: 68, holes: 1, sum holes: 4 */
-> 	/* last cacheline: 8 bytes */
-> };
-> 
-> Is this good enough?
-
-In the last it seems moving the s32 members to be the last will removes
-the 4-byte hole.
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+best regards,
+max
