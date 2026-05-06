@@ -1,47 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39CF04611D7;
-	Wed,  6 May 2026 16:48:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0B2749550E;
+	Wed,  6 May 2026 16:51:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778086097; cv=none; b=GQO0qSbfHZrL4wpZhXL7ta3bCV99UgtaV/0Qk1FW2dC0fwHMIiG/2lqZFiba6YsO18Hx98jNqYH9EfQOIQuWsWly/VFqECZP7i3lHDfGCDIIKdrUL6694fTV+v8FCegmesTmFfJ4fOmCV1iLpuqwA1WSM6D8lQgipuXjlDw/Q1g=
+	t=1778086273; cv=none; b=aIXSl9bWVNO4CgZgZn2F5lO4kWU3784P4vYjaE2ii6eJx7niLmC1oJfb/IiWkg85IGThELtNHUYODWWNoW36KanCwVMHKekZkkZFDIBKXQrY/694s34BswyOXWAUfbuo0zM7IZoCsqGm7kAKrNqoG8SaV6UgriuGd6V1YTcIj48=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778086097; c=relaxed/simple;
-	bh=Bes257Bo2NinPFfbB/IF1971qX4GftiwOxGVrsnVxDA=;
+	s=arc-20240116; t=1778086273; c=relaxed/simple;
+	bh=+kFP0pu/j1nFYGDiqFO/RAAxZAlTARxWr509Oo98FY8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HvZor+sZyBFEAXStivYJ0qf2xc8963K5zEaG6H3xla1n1GFIbGPlZQDXb0R11DfP7zaO+yJ+fuoTqSp++BRQlWeuqIAjI4siJ87xxzIxYq5UUJ+UhVXznBnHM1KvUjkrA8eQ92SQIVsQwvnUgH3GIJZcTkERJL+yHHXhRHxjrdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CU7Qfc08; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=UR5PKLg38qBZySN0n7fZfYxe3hXCoIrg+eIOpLyghtjuJGZD9Va7DDROsI+/HpWIbU75TpYRgTWUdOinCtliD8OPYoLcrSB3+pZTO2I20462f42me2NpMe21JOPKABfyk6bD+ZF7xfg2SslRRK/LSfk1Yc0XpOZPsrCmKdS8JmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A85fowRy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CU7Qfc08"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 823C8C2BCB0;
-	Wed,  6 May 2026 16:48:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A85fowRy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8452C2BCB0;
+	Wed,  6 May 2026 16:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778086096;
-	bh=Bes257Bo2NinPFfbB/IF1971qX4GftiwOxGVrsnVxDA=;
+	s=k20201202; t=1778086273;
+	bh=+kFP0pu/j1nFYGDiqFO/RAAxZAlTARxWr509Oo98FY8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CU7Qfc08pwieH0mC4m+iw1NpkM4xZ1HciJ4uuo37YHWfpQjG5C7cnszKkTLkfu+g6
-	 +q7H8lgf26Y5xQw2bISmnOsa1MhEHGKel6jwOlpZmgOK5Y4CvdwQtwkUjHUStxmV4G
-	 UMkEuUPQVX+NwUGNafabpqx9oHYbNGECsmGnPjcrVulbQezOZuieimpwVXovecA8rK
-	 oqUvsG1jYzDt1lTOmKw6GhDLenxVsieCGIwv/Hqh89sozvh3p1u7Sl1xtyuXGDObdv
-	 DFErC6iU5Ng2TfRGexN0wL+oi9vnPxY8n0zIHbMVKtAGfXnOKBBdmHCHXoP0LYjDWY
-	 usV2kRv6LVE7A==
-Date: Wed, 6 May 2026 17:48:08 +0100
+	b=A85fowRyq1Wh/tPYOz/myGV9oFM9l+0vmU4y4Vu3h3ZnxdpNVzhD+rfjmvVemwEU7
+	 y4tRPvE37rnifXdsD8Nb12fnSt7zp/eBVh2L0njJJWB29Q7elxA2kk8iYINLNTcCzi
+	 B+N3NtgIrFnqplqtKyYmHGaZh2JxtA+4s5DG7Ry/OMwrknU5hCIHPVNpp2yVHa+3VJ
+	 NT/jjBX11Fwo6DrBWjGwGKvZUHGYirhgPinK/MCLMzbQPidkess63So37G+qEv1zqK
+	 g5O/pNHK0v3CaaRQMmzmcjfAH1yOT9Y33nqEPgTVWv63x4ea+fvdAqIL1qJZ+5tY7P
+	 r4hREjmot5IsQ==
+Date: Wed, 6 May 2026 17:51:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Maxwell Doose <m32285159@gmail.com>, Joshua Crofts via B4 Relay
- <devnull+joshua.crofts1.gmail.com@kernel.org>, David Lechner
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 08/18] iio: magnetometer: ak8975: check if gpiod read
- was successful
-Message-ID: <20260506174808.06c3c1c0@jic23-huawei>
-In-Reply-To: <CALoEA-xjRYTHT51_nh=jL4AOEu7Y9w+6hx=fFq_ZaMdcLfG7eg@mail.gmail.com>
+Subject: Re: [PATCH v5 06/18] iio: magnetometer: ak8975: pass conversion
+ timeouts as arguments
+Message-ID: <20260506175105.3ca3209c@jic23-huawei>
+In-Reply-To: <afruoZ4Oq0Sz7QEA@ashevche-desk.local>
 References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
-	<20260505-magnetometer-fixes-v5-8-831b9b5550fc@gmail.com>
-	<DIB6Y4HLH5R6.XIP49B2XPVNC@gmail.com>
-	<CALoEA-xjRYTHT51_nh=jL4AOEu7Y9w+6hx=fFq_ZaMdcLfG7eg@mail.gmail.com>
+	<20260505-magnetometer-fixes-v5-6-831b9b5550fc@gmail.com>
+	<afrg7uXqyKs9il1Z@ashevche-desk.local>
+	<CALoEA-z+K8FzgwbYfi_aJ3oL6qi2TyXFDYKpmn1Mmjw8XApvNA@mail.gmail.com>
+	<afrrzM67n7NQWdE3@ashevche-desk.local>
+	<CALoEA-w88c3565-U49ic+FDG1mfpohWzMjZmTus+Nj037W0Sow@mail.gmail.com>
+	<afruoZ4Oq0Sz7QEA@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,62 +54,55 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 6 May 2026 09:05:39 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Wed, 6 May 2026 10:32:49 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> On Wed, 6 May 2026 at 03:09, Maxwell Doose <m32285159@gmail.com> wrote:
-> >
-> > On Tue May 5, 2026 at 6:46 AM CDT, Joshua Crofts via B4 Relay wrote:  
-> > > From: Joshua Crofts <joshua.crofts1@gmail.com>
-> > >
-> > > Add a check that ensures that valid data has been read from GPIOD. If
-> > > not, log an error and return the negative read value.
-> > >
-> > > Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> > > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> > > ---
-> > >  drivers/iio/magnetometer/ak8975.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > >
-> > > diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> > > index 129c98c97071b4cf8efa3abf2364a3abbde129ba..b3caf5f3ebf29bf701bb214aa480fa7afb2651c6 100644
-> > > --- a/drivers/iio/magnetometer/ak8975.c
-> > > +++ b/drivers/iio/magnetometer/ak8975.c
-> > > @@ -658,6 +658,10 @@ static int wait_conversion_complete_gpio(struct ak8975_data *data,
-> > >                                timeout_ms * USEC_PER_MSEC);
-> > >       if (ret)
-> > >               return ret;
-> > > +     if (val < 0) {
-> > > +             dev_err(&client->dev, "Error in reading GPIOD\n");
-> > > +             return val;
-> > > +     }
-> > >
-> > >       ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST1]);
-> > >       if (ret < 0)  
-> >
-> > Small nit but I wonder if we can change:
-> >
-> >         if (val < 0) {
-> >                 dev_err(&client->dev, "Error in reading GPIOD\n");
-> >                 return val;
-> >         }
-> >
-> > to something like:
-> >
-> >         if (val < 0)
-> >                 return dev_err_probe(&client->dev, val, "Error in reading GPIOD\n");  
+> On Wed, May 06, 2026 at 09:28:06AM +0200, Joshua Crofts wrote:
+> > On Wed, 6 May 2026 at 09:20, Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:  
+> > > On Wed, May 06, 2026 at 09:02:15AM +0200, Joshua Crofts wrote:  
+> > > > On Wed, 6 May 2026 at 08:34, Andy Shevchenko
+> > > > <andriy.shevchenko@linux.intel.com> wrote:  
+> > > > > On Tue, May 05, 2026 at 01:46:02PM +0200, Joshua Crofts via B4 Relay wrote:  
 > 
-> Sure, but it would go as a separate patch. Given this series is
-> 18 parts long, I'd rather get the existing patches merged and
-> work on this in another series. This driver still has a few shortcomings
-> that should be ironed out.
+> ...
+> 
+> > > > Fair, probably a badly resolved merge conflict.  
+> > >
+> > > Hmm... Usually what we use is interactive rebase. Very powerful tool!
+> > >
+> > >         `git rebase --rebase-merges --interactive $SHA`  
+> > 
+> > I see, well I use `git rebase -i HEAD~no_of_commits_in_series`  
+> 
+> Good that you are already onboard!
+> 
+> > and sometimes I move a different thing by accident.  
+> 
+> Yeah, this is usually unrelated to the tools, human factor, you know :-)
+> 
+> > It does get a bit
+> > crowded with 18 patches (yours were fine but I also had to do some
+> > resolution after moving the order)
+> >   
+> > > where $SHA is the same one that you used as --base for the series.
+> > >
+> > > In conjunction with
+> > >
+> > >         `git reset HEAD~1; git commit -s --interactive -c ORIG_HEAD`
+> > >
+> > > technique, you can easily move parts between patches.
+> > >
+> > > (There are even more advanced techniques, but I'm an old-school guy.)  
+> > 
+> > Good to know, thanks!  
+> 
+> You're welcome!
 > 
 
-This doesn't look to only be called from probe.
-dev_err_probe() is only meant for stuff that is.  Arguably
-you could use it elsewhere but then it should have a different name.
+Given the issue was minor I applied and dropped that change that should
+have been elsewhere. 
 
 Thanks,
 
 Jonathan
-
