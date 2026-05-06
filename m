@@ -1,119 +1,116 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76793286AC
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 00:39:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCE462153D8
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 00:47:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.179
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778027949; cv=pass; b=Z2WhpcaR2l9xvQU3uGlsDrrQnZIcXgZL/11BpeQqT74qcPaJsOienlKBZNKDqf+Q5ebqeBQFu6hnlFc6Nzo1MFUhc9co/Ord2l93iH4fqtfJxw87XFH4PWjX+yNfU79HCJZz5/mInytfUutWMUVijPxZucCCYZcekBywkJh0rcM=
+	t=1778028471; cv=pass; b=XleF8PWWi/5+0NLYc4YNaN34PvLCzb7DQtwl8n2xOTdtAIi+1bTXUFSM16uStqVyVsI1RIzJafquLYH4CiY77rnllLEu4b2HMQFpRYONNYHCV9jiFAwoWnHI0p18IqK7Cx0TTSmdrYbg9jow7pfk6ijj1zkxdS8xr/4DrTjQeSs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778027949; c=relaxed/simple;
-	bh=E6wk6x3feqMGqNvWZ6HGjh2i0gau5iLbDqN7UduJEUY=;
+	s=arc-20240116; t=1778028471; c=relaxed/simple;
+	bh=7KsmXiuYU3lva6rjMybAth9S1VxLDxbTYiqhqCb4bJM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QPzXFlznstHS+6BFZTrC720tqCM3Yf5ur3kO9z5Qv9IPVSrmNhRkDXap3wFHw8ZVPtQGwXGD9xzboKt7OGcIA8mZ2w65F85BGSkJuKrQSM03sOhCZgRp1JZxOK7VVUPpvP9MLaCW5FXgJI0FVrCLsw1FL4caVg9wBHFoaWZd8rM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hyQrHlB8; arc=pass smtp.client-ip=209.85.128.178
+	 To:Cc:Content-Type; b=VxY3jDXzU2qE9qu0FxP1t7ri55LsUf6j2UJnuPOOweBULFRJvdrpIEoux6YcL6wopqJtdcpKH/GiQqkRkQQOpjAmz5Avh9OrbtmEg8Uy0Mbb14yjEqMAQvIlD0TA6KKBpJDm5DeoMKLERKbBOLkPCg9Gz89nRDwdP6XBx1vEz9E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XSB2b+Z3; arc=pass smtp.client-ip=209.85.128.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hyQrHlB8"
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-7bd5c582c47so52584077b3.2
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 17:39:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778027947; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XSB2b+Z3"
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-7bde9d73678so5421527b3.0
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 17:47:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778028468; cv=none;
         d=google.com; s=arc-20240605;
-        b=RhF9UVWSPbs2ClANxDD2uOlqfGqzZ7Im4COTFbDqQKL5cUOy1Z/eerS6TBjaD6m0BQ
-         Q3dICcVvuMDNrnk4HToq0262gkFbK/b76L4VUJHAswVCQ3OvPMZ8ucjGpNda8sRB9X1N
-         IF7YUR+9GkoP+DfenZ8dKHBNZQSOnQu7sfwOVvSMVEVes8+klJVwIsNIP1CBOKdDCRGD
-         f8HzI2Iiclamq3cfi6wtB+GZ1jKnKmlNQg06bM2ClS5z+Z10lye68WHVsglbB5KVxpGD
-         Apj4sMUZBJi+9s/3wLAsCQqRehnmaQ1insTZw5WwnoD4wtnpEvriJnlXkNBZon9YG/wh
-         WAAA==
+        b=XD1a1Re8vo5o71TYR0Gon7XGWC1avwJurdbPhx/bT7W/5gTUDALtLR3FDaWQ4JBCJK
+         tTvPDE8dKfms/RWsu/KKA5NMWmttquSpKxctvciT5L6INPsLP5f5CmyXlTu1MfJnL7cj
+         i67wSKPBNj153VEs8DhJpL7Uic9jmFrfM/RYh0PhZ5yXhn4hVT9IRn+W52Wvm3MEu9NK
+         HR7bBy3iMu6ki4zZNsxN3KUb97APrAmDpCzO+SDN0KljBI9lUGF+MbQ8UksjfiEYCBgR
+         ngoHtWHu5iZDJexIhQTbKYWXlng6Gma9YuDrabe0OAjMafuVQBpNW4t8E19dVzPi+gc3
+         IvgQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=FjFnpsiLmhJzvlbu0qu69qyy9E1gza23/Vj/JX+sAeQ=;
-        fh=jjtUJsZz0HvEPDfO18pOqPnZe6PSo6kEZZFxD/Vql24=;
-        b=RYZwB0+Nk2r2eQ++5rOMOFUVc3uDToh5Qjgl+OSy5c4XxAKpzrhrtKY6j66XE4REAi
-         AeRaMI+PQyeJuOGFW+dCiEuKTwHjU0wuggVHA1uNXLkoz3TGXCZKSVvk+hQuI7f2/q5I
-         MKKpDPcKDi+fso3iKUqXRv4seFnye6Ns/u9nrnM6tprI4+azUOL6+PIaR95aouVj5oA6
-         xTVM1vYi/zetNfMHeYayg+83fe9pQEe2y3ysoSradYmSIhn/EYI1dV52ggrQOMsnmBPD
-         w8ucFvoZICUSGcCOZ1lNdCA+ZGVEZdtPSpQNEuFJzjdZNbIgoUYLLbWuitDpftVd3VaV
-         24dQ==;
+        bh=1Ku/S3D875g4S11QgE5jeWv7ySbgeXAlFjiNL1sVyM0=;
+        fh=HXMStO4leeq84q73n9YvO8OBTIiis7UU3Oe7lYUfqi8=;
+        b=KfQmJdkcyngzos2ZUQBCZoCC1x6zYWVVlPRLEnNIq2kqsTfcHwaNNigxHsdpKYeuA+
+         QOgFvQkPWeYZWl+zTHTDFYB02XiYDBBoCvOuGrzJkISHbnlkQ9rACrnJaHeGiNW33Nox
+         VEPIBsQddxKsE6gX7Nclri4ZoEEOpn40k+mD/DEdDejbIxVFYYgHYL/tV4RRRBzcaKoi
+         TjtGgqaALli98OqPC6q4myU3YKGco7WMxk+Sg7uPoPKRNdImKM6e7Tq7zd6pVn3WrRQW
+         tZwCb8wS27HHSsbiFlKdpo15STEP1buObCQlpCsKnhuVYNFqkZQoyQQbILoSm5y7fWui
+         cW8g==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778027947; x=1778632747; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778028468; x=1778633268; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FjFnpsiLmhJzvlbu0qu69qyy9E1gza23/Vj/JX+sAeQ=;
-        b=hyQrHlB8MYqpp/6XMW/smoamoSiLgnRERxmLNYWOpvBNYN/gLrcJmbJkkryiRPPOhy
-         Jz7OqWqxPeygEnJ3Be6wi9UoiQbNa3OBf+CN2ah52frfrJ7f0E+BK6dq/dhclWn2PNm8
-         yc7o7STpI7ePzjdSAr4oOqS5UGYufkO8l2VLK/YXPFwYAaxyidtG7l/MSttbV1MIHi2e
-         Gk7DtoEjLbS7yibuW55kHVWbUeEgyh6Ba6K8HmYlby0NQraZ/6wXFgSaVVEQ9g6KQ54v
-         Sv4B33gAGgixBNPN9PXR5TGDyi5d9zvHE5/kMz6VRgdzQ5TkdAy7D4enb38XSjiwtI8b
-         M4og==
+        bh=1Ku/S3D875g4S11QgE5jeWv7ySbgeXAlFjiNL1sVyM0=;
+        b=XSB2b+Z31z4x89WRiaY0F2HXLpIp2qaTtpfZAYgW8LeyjAYglhbiDfJhXtg8NBUGjU
+         lDSMN2qiy/98L+zpw0RSzuogCTIxvSZnuz63PHjeog0ZHZgj81BYTlYz6zrVl9Hb0qGc
+         KuMsWosCLkpo5+4uliBTHJfCvE3n9mPv2q/89NdCv6QKKKomd9Tw3SNUijzou0CHVhkP
+         QeNkR3/+8NFZw3UTZnkAERgUHYzN/J5IUGhkBQ1ixNVfqco/iXScKxtdCUSUsJX4uQJI
+         YbzJc1U6lFCNuX/on+Wk7aj0VGsRsPh8V0WENDQ+fPvPXj+6Tc4w8vNOhdAIqeB0PmQ7
+         8aag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778027947; x=1778632747;
+        d=1e100.net; s=20251104; t=1778028468; x=1778633268;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=FjFnpsiLmhJzvlbu0qu69qyy9E1gza23/Vj/JX+sAeQ=;
-        b=ondq+OGNJbvcIwmtfesdNdemPmoUmRU2B2XiV4vWmJbc9flYB/Hk1W8I2byiMZflfU
-         6lQff02a63UM2PBpJpW+go3qowpYY6Lm4HXjbRlrSBRHnNvwbqAX68dfKR1xeVT/jaDl
-         g3nftJdRFn4/Q5caLi9EWSoUUqKFa0m+So/VJQWws5v54PPP8izKOpMGZmmMpnYMLnh2
-         cpx2k3i8XXXzYZltMZn2lre/uQiD9gKFEZRTeqxkx/uO2WmQGmZV7yIPUGu6lEw2PVzw
-         tHjGevuSCbJsK0q+CqmLL9WAXitheh4dDsWROVdHZXFaHhffdP0uj+efBPuXfqxmDBIz
-         yebQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+slaj5+fqcDeMoSZZbSA7Qpcz2YM500RIJXEuALyTXnPtRX2Y76qyDfcDdkaUe7dzDabyOejlfa6I=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw84mpYAItTB4sOUVtrmkpEhfBgspfzHKOEeSjRE00vkq7F13Nk
-	S28/xyfEn0dlHYYP9oW7LZ0fQc3XL1qDjvUVBnOeP3RZbBGKsDd89He3pt8XOhxXY9DmbBiGifg
-	0EV6xNY83m6iFwiOvUBWqRpEQUu9Ty9c=
-X-Gm-Gg: AeBDietTjcghzG5NR+OibFxzMfGBdqDJ9W2HCmqiiQhioeKb3kQkIoluztIaKhRPT2G
-	vewG4jW1lvg7UeMMMFnfOetcAHHnwZD9fvMd+P3kBwIPmaWKQPaOdrB8JROaQbPzJog823JZQGw
-	D7VNtKLkhqxX1UDMlY2LVpnOgGDAKacfQBL9/VAuNHTSmoU15eF3awWkQfrrFGpetr06Lb7/09l
-	AoAZBF5ENqhXhxIyMoSEgzBoj2WoG1VYQIdW5qrrBXat6nbOZ4Tvvp+zCnbBy+o7iDT2qJcQEwk
-	o+PRgoQL9BZwQn4=
-X-Received: by 2002:a05:690c:12:b0:7b1:2c46:9480 with SMTP id
- 00721157ae682-7bdf5ed84c2mr17362477b3.34.1778027947393; Tue, 05 May 2026
- 17:39:07 -0700 (PDT)
+        bh=1Ku/S3D875g4S11QgE5jeWv7ySbgeXAlFjiNL1sVyM0=;
+        b=S147oM/azwV4cpm3CCrMWDnu90FLJwtGXWox1nTBpKCT7qPs+837lbOJEKdVALikxV
+         lqHIC9W13gi+qtUGqWQh/yx3NYvthwFqwZnUY+ukLa62au2OYUuVsP1c4+RkiZrKEOsN
+         SxNCbgr5GLvpJxOph95PCAbnbexCUR0olvPTZ0sWc+uqnYPW78aw0aA3Oklz58eAWegZ
+         pAiXKrn3pNHUA3HA2DVhSqQdZm0LEbt0QkR8YA0bFds8NvvezO3Yv8xiR1K8eN+5hccm
+         cHw5ZAH4NRf+ofooyMyZ+wK6BUoaQdiEpmbdI1MtpqXvTztsX2oh9DtlrJ0H404wNgUQ
+         bgcA==
+X-Forwarded-Encrypted: i=1; AFNElJ+O8OGphG12v85ChJSahTILid9tAh4ygP8HhfMM/ycxsnb+xXXyh74gDkhjiV2R47prZIOjCerFVjQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwIO0yaCngGY/BtPhqU3t29mXWa2WYgOEfIt3i+iba/4By9vUv6
+	B2yiyTTi8VYnvxxpm+0xOb62f1LxVTfbzNjxCudebt37zHFNPP0OVSLKK6m74B8G+fYXSMRfr02
+	2gfJGC7C4VXEICV3hfND89Rpv5Hjf9IzU8IqX
+X-Gm-Gg: AeBDievqkfwZNwCDktLxVPOMK+1Q6gZRb88d8YdaZaoJX0Oxh56eTXA5AGzy9D4liqJ
+	yCYiaOM5hfpNxRKBinYIbzkavhqT+gVCTWHjoXUIF9YtanVVPGTIayn78XhtdrIzb8cJW+ynYeJ
+	taXoGArm5xq2oZFkCa+37pW2CqwP+JPed2GdO6ykfeUkyZPEEKyi/pL+AOxxMRpyxZIGvXQZfFY
+	QB9FdzbjITxtYomQWraja9CatxzZNX+x0NtbKBB7E2DnnhdZyEHi98K0cGTfCxKMX4WlYcxCjnj
+	xGfxFxzFkKlKChE=
+X-Received: by 2002:a05:690c:dc3:b0:7ba:ded4:df69 with SMTP id
+ 00721157ae682-7bdf64539aamr13080647b3.1.1778028467739; Tue, 05 May 2026
+ 17:47:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com> <20260505-magnetometer-fixes-v5-2-831b9b5550fc@gmail.com>
-In-Reply-To: <20260505-magnetometer-fixes-v5-2-831b9b5550fc@gmail.com>
+References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com> <20260505-magnetometer-fixes-v5-4-831b9b5550fc@gmail.com>
+In-Reply-To: <20260505-magnetometer-fixes-v5-4-831b9b5550fc@gmail.com>
 From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 5 May 2026 19:38:55 -0500
-X-Gm-Features: AVHnY4JhVgfpLlQH9KFRYbTj8a5mIY46vDmC3CftLfPmhERTwrq9JkXiM5o0JOk
-Message-ID: <CAKqfh0En+CuUFPttGpb0x26sMtnTS=u1c6UvqUUYiL4bN+yyyQ@mail.gmail.com>
-Subject: Re: [PATCH v5 02/18] iio: magnetometer: ak8975: update headers per
- IWYU principle
+Date: Tue, 5 May 2026 19:47:36 -0500
+X-Gm-Features: AVHnY4Jdx8IX78M02oK-M-nK0rVlXcKE5qMD-vvRNqU_2TXmYTJ1TBbGTfyu6_E
+Message-ID: <CAKqfh0EcrDee64ioX=BnKdb2RWSH_K=UDZ-0pRs5ajzW-1G2aQ@mail.gmail.com>
+Subject: Re: [PATCH v5 04/18] iio: magnetometer: ak8975: change 'u8*' to 'u8
+ *' in cast
 To: joshua.crofts1@gmail.com
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 5, 2026 at 6:58=E2=80=AFAM Joshua Crofts via B4 Relay
+On Tue, May 5, 2026 at 6:46=E2=80=AFAM Joshua Crofts via B4 Relay
 <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
 >
 > From: Joshua Crofts <joshua.crofts1@gmail.com>
 >
-> Remove kernel.h proxy header and unused headers (slab.h, iio/sysfs.h,
-> iio/trigger.h). Add missing headers to ensure atomicity (array_size.h,
-> dev_printk.h, asm/byteorder.h, irqreturn.h, minmax.h, property.h,
-> types.h, wait.h).
+> Change 'u8*' cast to 'u8 *' as the former triggers a checkpatch error.
+> Also fix the indentation of parameters in
+> i2c_smbus_read_i2c_block_data_or_emulated() function.
 >
-> Audited using the include-what-you-use tool.
+> No functional change.
 >
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 > ---
->  drivers/iio/magnetometer/ak8975.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
+>  drivers/iio/magnetometer/ak8975.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
 >
 [snip]
 >
