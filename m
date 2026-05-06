@@ -1,61 +1,63 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E1A83E3D91
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 09:43:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DF6025F98B
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 09:43:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778060596; cv=none; b=SKWmO+eDAOGInAKpqqmiLSLy+GehydfwZWAee6Q8AEbU7kOygtAuTNAdo9bBWql1EatoKROt2eTt2sqh/8HfzEZT/tm4NlujASfUQtTppWE6UP6PBYQ1V2Nw2qHbgGnep9XldsHyp1gI0chPPbIylUMomc5BrIfae6tadw+VCd4=
+	t=1778060597; cv=none; b=tOFwvyFUNLYBBD2RLGAWmnpFbH8wm14GNMlwxsMEYnBFGfduEKGon0RFftKNxWxbLAzOjHWzBt4AEPU0SdegqD3yPnyo6GTk6XE1DARMAj97p0PzCB/r7xrWGqbsaJLcQCGwn/ym5an83wYsqOMhWREFTVV1KedF74o/fRnt1Lw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778060596; c=relaxed/simple;
-	bh=Nv1xwcnvyqjs7pqTcxQ4zpMubfy5AOP7O2MfpHqK5jw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qxfG1OPh9TEhizWe1fLUG6b+O3NMaS08g4oBTa0bCHM/ia3HFwP7VI6GRZfsp809EAl5Srpy8GQZSfrllMC/Dic4sGKerBy1j9C/AQ63BJrB8s6HMU64J1K0Cj1WdtL+YQVhXU8dqQbXh2J84k1UJyO88zzWHXQ3kYs63BAAwOE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oXh1VEKP; arc=none smtp.client-ip=209.85.221.47
+	s=arc-20240116; t=1778060597; c=relaxed/simple;
+	bh=ysOM9Kct8nbEr9b0Y1azVTfz0Lluey37G1xkKUL+RfQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Jjg3JyX5Ws4L6UsYqGoI0UyIcn0NYxs5MGu09aSB7WYf2lDcfFMkV4e633aitx2sj6fZGSk8XDQu1wvg9FSVFPBzpyIJ7pUg2XK6qG28PTyosgSk7ly/AZ16IZA6/ve95x758c9G+BEx/l6PZv0KMJ0fF6ntfIUvwMB1SQozUc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QQvcl61k; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oXh1VEKP"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-44ce78ab5feso3212457f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 02:43:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QQvcl61k"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48984d29fe3so88656785e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 02:43:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778060594; x=1778665394; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GAOl0kR6W7sAznR0JiC5Bm1rQ3NPZN/T/tRfS2z1WJo=;
-        b=oXh1VEKPEMf/S0c+WlHTYYQOw5wHAl4UoSDwFt+k7JPAFm53G2lC8pkRf+CFI7Svph
-         nZ4kR9OrkOeJNQ1eYt1NuT71tRhSLR5l18WMYzBN3PzmTBkoOP12jhZazlQDN1untb/q
-         yd5yavzWRrkmQgBeIGVP1e5pNFfV5igp2wEojbzokDM42GKf4e+JMfWYMv7+5VaLMwqO
-         6v/GL+ELEzyKNLL2XIBsaML1fW/OQOs0B+9DXEaLqfvfnQumngJVYVUTFkg22vjQLz/p
-         /QgEG3HoCnFI56QvlYmNUiA7pdHjyAPLLBbVw0bhHz3OK16+XUFwUavhQOGUNccc4/FE
-         CHMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778060594; x=1778665394;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1778060595; x=1778665395; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GAOl0kR6W7sAznR0JiC5Bm1rQ3NPZN/T/tRfS2z1WJo=;
-        b=pe8WCTGz/aeNXuVBL/YSH9W6Cg6PSUDKy+gaxVq5WsRiSyuwuITUc5IYtgz8RCW8kY
-         ES//xCj7xkQj7pH0y1zlsYL1ofNjBiv4S3XCv9NaH/begpWuZCCH5L/dos7TRQBPSQ4H
-         mR5caD81hN1+qVYKuDXcvyIz4XVpgce0jI+HOOpOFk/Zqi8Cl8EBGJUni3HLEdU50P6M
-         Rbp943Z8PISXWo8ioOZUCpMa4FqOzfKYe64Klq2oJh57AnP8ypY7D0HaNwbed3lp29ka
-         8dtYjyMGH9MkOFnYkTnfv4/VyCtSuNRn39J1locW2VejdNwkCXVPohKRgwAcp5MAmODo
-         Pu+Q==
-X-Forwarded-Encrypted: i=1; AFNElJ97USVN8EHePc1lbpkhH+M2tMvnP8zV/4gwYdUNlUvZQyhxcjwYyIO+qfiJzVPTFu3MiCbfAK9G4i0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxO/AHbDg8OD/kdiqeiAlbl0rH1HOcJOLGihHU7N8tKjknKMlZg
-	zam+p2Tfkua5TGxow4BUsdCQzw7W071jCoqnmL4FGTXkG3u4HtSotKzrhDRU5g==
-X-Gm-Gg: AeBDieuJdeSjLB+c8zROBOKzPQM/iSN/Xs9Pj/w8dpd8CC5lMQKzkDce1kK2AiC7dId
-	pjsEVlvF813XrRpc6NFd6CdC0xK0RpsncNZ2BZbRqt8uZuZC1rGZgGjUpcaVBgMm5St0p0cf7Hv
-	MIowlclQ7kFKBwgHLgjLXmN0GZWk5j1lGMJcjQHcUDpyl9poUU7ZB0UaEqjtAQaBTQWYXIhPlN8
-	nzl6SXUZ+k1ViIupc/BIhZtH2r0qEmNcs32R5f5mxdnsS4prOSek4wG3udhpVYTQlhp5onsN2X0
-	Drz8NWak9MCVo+AbqTqeva+44Gs8kCGg+vrhuKZkCJ8kfUA6QNnQaQ6PN9NfZa0TJv+O6aqNKRC
-	mupJeqKrWuCLpQSC0k+fOo5o3jWjD+1bg3JMI8EZbDIyMiP6ZMosLwb/JnldGdvrOmri/EO4Ggi
-	xY+Y4Ku4ZJg86T52uuHIlx2+UFexgsvcJzrNcP0k6DuITuPivpM5LJrwwTskzOaUg=
-X-Received: by 2002:a05:6000:2211:b0:43d:76d8:5794 with SMTP id ffacd0b85a97d-4515da95cbdmr4328563f8f.36.1778060593646;
-        Wed, 06 May 2026 02:43:13 -0700 (PDT)
+        bh=AVJiSaUDY5cXEIWM3/OB6LtH3p4O/jWuhpWa5OWqcmE=;
+        b=QQvcl61kDUbagQeronsGIKd5ueiPebTnFB17Ig2WWeBqQKrIVJDZL50vzhcJCjA15l
+         M5x6cVjZFlV5ycaVGntvgN545uay3SZ9RpD5lz8605m3QiWBBJ95YHBB8hYYmUWqd89W
+         Kp2EuQztYSpuX2nIW3bjhu3LhwgBG2jwmxUxyDFu2A3JzyXBr7TvxSMsEjAV470EJoWw
+         J76tVfo2jVVRog+z5ceKndGmB0U/z/2JMyS9qeJV56xYNfrxBHjkA+/3MNyNa7CaiqID
+         7F+WBguqyOZwID0p/paw6/qr177ukJLXTZThxfkbqPnvvsJ+NtdZvBMJBwfvcqwgRYgL
+         XdzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778060595; x=1778665395;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=AVJiSaUDY5cXEIWM3/OB6LtH3p4O/jWuhpWa5OWqcmE=;
+        b=c/2/ZiD4p7Y1Yv1pdNz+ovZm2mwKjDJU4Co8/7lqcYJ2AxqIw/Lcy4as/NdBWDJG7j
+         uWGCx5BEtemD3LHPTicaTTc1UQQRn+m8IbFahjXcDsFBCMm+xKXsksF9kHcNow0e5Xaz
+         tvcULmWvQxMCh4Qltsh3f5870Wu72d8H0n0+OqZH6CpXdtIOxMvpf3OgyRQGgtkC9yTk
+         b5QLCr9Lv6ud74txA5zvUw16ACE1GOG80ew4mvcf95LETHbN0ChoJt/VXI0NyA8GRVNV
+         Ug4+VB2aUxZUN58kQPyRUICkN+tnPbI4VyBiwggESvQZJIjnieHQrvDl8tMIisN0Nq1U
+         D5sg==
+X-Forwarded-Encrypted: i=1; AFNElJ/eFyf8x4RKcXyqegSUjhCWNeZel4AVBiCBIWQjITTCsqntTL6xqO7h23FA0TOnmPZn52WaWJQWAz0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwpQbibLKOxOv4sSEhjtFXwafdFqTyRDLnTmf2UW3e/YkkEEW98
+	/DjLqbOMZgtXH4BCgRrTYliizws7xfMqpPtU+OrmbTSo8JhiXXsW4HOn
+X-Gm-Gg: AeBDieuGV+Thpz1G9hUovPelKpfVlse2/21gtcww6tvLliYQo8TbIfo5M1tECh5Yv5w
+	vJjcyk2rs9jvoOrVJ5VGr89hJjO3qznrjTIm+GmV/Zje4ek+oHPf9BTUtLtaUL0VCxASKfDr77k
+	c2px6GHWTmCvteNb1EGrr60aL94sYSnIi4Pk+lx6XR/+ss6GwyDJbEWmBTUWM/PcHSLShqmwEH8
+	9u+KcdSqVVAC8On8dIWnH/WaMAJ5f58QVMrFQWsPPIujtrwPXceaFHBo2inZWuOE2xP+xNBeynV
+	IaJFOdTHoVmBXTy518HO5r/GMXW4G854MhYDDhkG+mlgWmlYEe/T/tZ/rtUivKAmtCpeQwjL47C
+	Bs0e/iTcsIiT9h/ODz3ig5nbOaBZc6NvQyc+UxXwgBmc+5InpK9u4cWk4k1f5Jm+tXslp2ZjsRZ
+	hF5l1/ViFI7+1kZoWdSaLuz6Qsk8G4iL3Dxb/RMie9jrDz1+OXtxRzlgbCysPSblQ=
+X-Received: by 2002:a05:600c:3b96:b0:48a:66a8:9981 with SMTP id 5b1f17b1804b1-48e51f55272mr49914355e9.27.1778060594746;
+        Wed, 06 May 2026 02:43:14 -0700 (PDT)
 Received: from aldo-conte-t14.tailf68ad9.ts.net ([217.61.173.50])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-450524831cdsm12362230f8f.5.2026.05.06.02.43.12
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-450524831cdsm12362230f8f.5.2026.05.06.02.43.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2026 02:43:13 -0700 (PDT)
+        Wed, 06 May 2026 02:43:14 -0700 (PDT)
 From: Aldo Conte <aldocontelk@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -65,10 +67,12 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH 0/3] iio: light: tcs3472: devm conversion, wait time, locking cleanup
-Date: Wed,  6 May 2026 11:43:08 +0200
-Message-ID: <20260506094311.222500-1-aldocontelk@gmail.com>
+Subject: [PATCH 1/3] iio: light: tcs3472: use devm for resource management
+Date: Wed,  6 May 2026 11:43:09 +0200
+Message-ID: <20260506094311.222500-2-aldocontelk@gmail.com>
 X-Mailer: git-send-email 2.54.0
+In-Reply-To: <20260506094311.222500-1-aldocontelk@gmail.com>
+References: <20260506094311.222500-1-aldocontelk@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,46 +81,147 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series of changes modernizes the tcs3472 driver by completing the
-devm conversion and updating the locking style to use an automatic
-guard (mutex). Furthermore, it implement control of the WAIT state,
-resolving a TODO.
+Found by code inspection.
 
-Patch1: Converts the driver to use device-managed resource allocation.
-This removes the need for an explicit remove() callback, since cleanup
-is now handled automatically. It also adds a new function called
-tcs3472_powerdown_action() that powers down the chip when the driver is 
-unloaded, removed or when probe fails after the chip has been enabled.
+Convert the driver to use device-managed resource allocation:
+- Add tcs3472_powerdown_action() and register it with
+  devm_add_action_or_reset() to ensure the device is powered down on
+  cleanup. Before this patch, the chip remained powered if probe
+  failed after enabling it.
+- Replace iio_triggered_buffer_setup() with
+  devm_iio_triggered_buffer_setup().
+- Replace request_threaded_irq() with devm_request_threaded_irq().
+- Replace iio_device_register() with devm_iio_device_register().
+- Remove tcs3472_remove() as all cleanup is now handled by devm.
 
-Patch2: adds support for the wait time resolving the old TODO comment.
-The user can control the WTIME indirectly by writing to the
-sampling_frequency attribute. Changing the sampling
-frequency attribute results in a change to the wtime while preserving
-the current integration time.
-Similarly, if the user has previously set a sampling frequency and
-then changes the integration time, the driver re-computes WTIME so the 
-previous frequency is preserved. The patch also handles the deactivation
-of wtime when the requested frequency is very high, as well as the
-extension of wtime to its maximum values (by enabling the use of WLONG)
-when the requested frequency is very low.
+Compiled with `make drivers/iio/light/tcs3472.o W=1`.
 
-Patch3: converts the remaining mutex_lock()/mutex_unlock() pairs to
-guard(mutex).
+Tested on Raspberry Pi 3B with TCS3472 (Adafruit breakout):
+Verified that RGBC channel reads return valid data and that ENABLE
+register is cleared to 0x00 on device removal.
 
-All patches have been tested on a Raspberry Pi 3B with a TCS3472
-connected to I2C-1 at address 0x29. Sampling frequency and integration
-time changes have been exercised checking the value of WTIME and
-consequently WEN and WLONG. Raw RGBC reads, calibscale, integration_time
-and threshold events continue to work as before.
+Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+---
+ drivers/iio/light/tcs3472.c | 85 ++++++++++++++++---------------------
+ 1 file changed, 36 insertions(+), 49 deletions(-)
 
-Aldo Conte (3):
-  iio: light: tcs3472: use devm for resource management
-  iio: light: tcs3472: implement wait time and sampling frequency
-  iio: light: tcs3472: Use guard(mutex)() family over manual locking
-
- drivers/iio/light/tcs3472.c | 287 ++++++++++++++++++++++++++----------
- 1 file changed, 206 insertions(+), 81 deletions(-)
-
+diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
+index 12429a3261b3..6d37a473c420 100644
+--- a/drivers/iio/light/tcs3472.c
++++ b/drivers/iio/light/tcs3472.c
+@@ -440,6 +440,28 @@ static const struct iio_info tcs3472_info = {
+ 	.attrs = &tcs3472_attribute_group,
+ };
+ 
++static int tcs3472_powerdown(struct tcs3472_data *data)
++{
++	int ret;
++	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
++
++	mutex_lock(&data->lock);
++
++	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
++					data->enable & ~enable_mask);
++	if (!ret)
++		data->enable &= ~enable_mask;
++
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static void tcs3472_powerdown_action(void *data)
++{
++	tcs3472_powerdown(data);
++}
++
+ static int tcs3472_probe(struct i2c_client *client)
+ {
+ 	struct tcs3472_data *data;
+@@ -510,61 +532,27 @@ static int tcs3472_probe(struct i2c_client *client)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+-		tcs3472_trigger_handler, NULL);
++	ret = devm_add_action_or_reset(&client->dev,
++				       tcs3472_powerdown_action, data);
++	if (ret)
++		return ret;
++
++	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
++					      tcs3472_trigger_handler, NULL);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	if (client->irq) {
+-		ret = request_threaded_irq(client->irq, NULL,
+-					   tcs3472_event_handler,
+-					   IRQF_TRIGGER_FALLING | IRQF_SHARED |
+-					   IRQF_ONESHOT,
+-					   client->name, indio_dev);
++		ret = devm_request_threaded_irq(&client->dev, client->irq,
++						NULL, tcs3472_event_handler,
++						IRQF_TRIGGER_FALLING | IRQF_SHARED |
++						IRQF_ONESHOT,
++						client->name, indio_dev);
+ 		if (ret)
+-			goto buffer_cleanup;
++			return ret;
+ 	}
+ 
+-	ret = iio_device_register(indio_dev);
+-	if (ret < 0)
+-		goto free_irq;
+-
+-	return 0;
+-
+-free_irq:
+-	if (client->irq)
+-		free_irq(client->irq, indio_dev);
+-buffer_cleanup:
+-	iio_triggered_buffer_cleanup(indio_dev);
+-	return ret;
+-}
+-
+-static int tcs3472_powerdown(struct tcs3472_data *data)
+-{
+-	int ret;
+-	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
+-
+-	mutex_lock(&data->lock);
+-
+-	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
+-		data->enable & ~enable_mask);
+-	if (!ret)
+-		data->enable &= ~enable_mask;
+-
+-	mutex_unlock(&data->lock);
+-
+-	return ret;
+-}
+-
+-static void tcs3472_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-
+-	iio_device_unregister(indio_dev);
+-	if (client->irq)
+-		free_irq(client->irq, indio_dev);
+-	iio_triggered_buffer_cleanup(indio_dev);
+-	tcs3472_powerdown(iio_priv(indio_dev));
++	return devm_iio_device_register(&client->dev, indio_dev);
+ }
+ 
+ static int tcs3472_suspend(struct device *dev)
+@@ -608,7 +596,6 @@ static struct i2c_driver tcs3472_driver = {
+ 		.pm	= pm_sleep_ptr(&tcs3472_pm_ops),
+ 	},
+ 	.probe		= tcs3472_probe,
+-	.remove		= tcs3472_remove,
+ 	.id_table	= tcs3472_id,
+ };
+ module_i2c_driver(tcs3472_driver);
 -- 
 2.54.0
 
