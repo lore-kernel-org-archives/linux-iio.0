@@ -1,81 +1,81 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62C830B50C
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 07:05:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDA0D2EA749
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 07:07:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778051154; cv=pass; b=EKLEY6ptZepMRrScF2/YhIxrKUrphNvkKWf6eE4qQ8JFTI2KK5PdMVWDn5uvYurN6fwt/KqwT3skwfZXMhCgEHfYOZJ0trBk3Sc43OfJU34XlLF5IBGYKXnOB8SHtVMBrmvAMDC8A4UCXjdAxj82TW8eQWJJ4vxgsxz51ewAabg=
+	t=1778051244; cv=pass; b=A/aAoeQMv8b4+R500I/faepMstC1OsqcKc9pZYSL9e32gOCd23mqqqVSl3rwStGyYXn3DVzppBpXAUL2i1O67st5jeamXvA/gdR9ZPm7ajFHN+8aM+366EBgmoKyEXrYll1zws/8zRs93pF1wIrFKR3oOZ8teEC8VWduDO9np+0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778051154; c=relaxed/simple;
-	bh=OjsHFd3aO015LrwOVCOQvGhW/rg63n4acZpZt3pFnMs=;
+	s=arc-20240116; t=1778051244; c=relaxed/simple;
+	bh=hPm+0mA8hVc68H8DYpxIBcWTtuKbfwzoevixyHB8Fvw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WST2Gctb3hu7aKMyh56nQO2LE4Dp6KaJmKkLWz6W62+NSRZn4VJol0u3ovdU6MeAK4uH8NXAHMJbOIfruiivRd+9luy81JxVr7vONVQjbj14+Ny4LVljuxJhSzuQQAwMTdyHqsYfJ65LOnFXAKTO1kTKUQ2qNhdJvgXBqtnir00=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lNdvoX37; arc=pass smtp.client-ip=209.85.128.51
+	 To:Cc:Content-Type; b=WbabQhV+IUzoER/idusmDppHNpz8O2ppR3Qtu9uMEG0GDm1MB2/DjyAFm6bkluc4bmwlrq4cbwk7EvuqA2yh6lw60BWTsKvLj/NCBcPjaao7j+rzTllbPtLbATBkXMSDDbokgNClJ0ct625BpG8KOA1I8IcivAmMQpeIs6QMVnc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rl1qZCWq; arc=pass smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lNdvoX37"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48984d29fe3so86440375e9.0
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 00:05:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778051151; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rl1qZCWq"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-488ab2db91aso71260565e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 00:07:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778051241; cv=none;
         d=google.com; s=arc-20240605;
-        b=kKwQV5B3Dg8eQm7p8m3iXMI5BwlI4U1sNaGaAPTioZ8UMuuNuQSn4sJeWJe6LoWjn4
-         MNEk9w1TuHGQjANWONo4Z4nyqmqaPvN0PgZ87Vd7cDDYFUD3H8JzjyiLjTMs4TYkNauK
-         L0yktxv20lgF3YkUvFSwBGnVP/5E0HvZNcz8zJPTjOEfTmluXQ84yBOv+K9VvxoB7pyF
-         pq7fRa65Oual8p4PwENDU++qTDrK1XImIMAXt1Nml3bP8nZv6RG0cOqjrzBlOWATqKK3
-         C6b/E9Mn6ww7puQna7oXqSKN57GN+GvqVF7jReWon5dARVUszxL1+ewTT6Rekid3lZWn
-         FPOA==
+        b=e+WnHcFRcaNQUzh3eXYck9LcXYjUOoQb5hTrVxOmwK0FgliCZiRh6tXfxBkvatxJ9k
+         AqE0drvsWHPXFDKVYRl/mN5jYUeqy5lqa3rx1buCucz4f8+XibBQnIMt3zdIcYP6cq5h
+         4+EEpAFAj71ms3PFSiNtZmWTaVkvF1Fs+TH6bscSg/QDRWtE5a62scYjJmGfWnI4fMO3
+         bgJhXnH588XsJaQsFkPgsVVU05nugHk1Jxj8iLQ+KVCvxE551qil0JeLpRV9rUmZS+Wg
+         978wn+kkk6Ftp/WKw6jGM+fk1wiyARev73Q4Bk/GrrR6/ubmy49wn8Cd0XSCjpgQ3CxW
+         ATNg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=OO0gwvgIsuomeSKjunFh8e8J6h5oVj5wtNRg56K7XQY=;
-        fh=ndIc+Mdd18Xta0qgcLYwIl0MYq3pUx26RF/S0HPx52I=;
-        b=fvgvOvO9sKFIPYBqsFTMFxRAGaHiiH26V+PVasAtQ9v3X2tYpsATi+EA15FsdHlG8g
-         DToKLoDbJoWkCDJZuYqp/BYwei2D08IdCxpt5XnhQe8jgA7x/o3UJXiRWO0g5unfEPHK
-         kIeAKeTrYMeT0G6Zqnd2tu8oyx2CkGVKww/PKS3CsjfRjbhjhz0Atq+aBFa2EfPtHGUN
-         jRUiklwL8wqvy+7xuU3SGtW6CJhnbP0qo4KFGoiZCWYXDrFGyBxhdgDEek1CdgTMcd0e
-         QVeJOe1rFXIEDp3fPxFiyKKfA0nFnuxOEpv4Kp/D8TDBrVNHrXJO60UOn7BLxOKl2rda
-         NzEQ==;
+        bh=n3vlAlljb/IwfykFQ6Z5DATCtg+qRry4cWpqGAbGZ8M=;
+        fh=SAm1ZqBVw5Ek7g7JhGqaU9fFUoWYHS3eLHHI94m6Sow=;
+        b=EDIosKOkPFnTTP2lXJ0Y/1B5df2/EVM73nz3mnCesYUbBpw+Er5bNZKiQr/jl5JivI
+         2UqflsnRKMF5scqNvh0cZm+M5FUY5in/M3v6oD++kGABUW8yKSTwVDgtO2MD54KkDhLj
+         /uDE8t4oixTOZYiU0TUuZONvsxtYC8m7Y2TDK7UvKihINgkLYCThe+XipWhezmmL1PNI
+         Mb+YABXi67Y2f+QmNHrwBNxL3qYWH/mKCwAdW4w/q7mWo+y08Bt2N+uqe6JsMn99V8ik
+         W60z1qxBFXXBln5K/ZETaRAEaVa0IOtgrbse2aOTsIeOcX0vnHG6buFctn4wKELTo+ez
+         /PZQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778051151; x=1778655951; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778051241; x=1778656041; darn=vger.kernel.org;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=OO0gwvgIsuomeSKjunFh8e8J6h5oVj5wtNRg56K7XQY=;
-        b=lNdvoX37r0Q8vs4lYrPxdy4D6t0esd+9P+w0i3x1PQDdm42ixDdz2z3zxmnAS2xsl7
-         qS3eZXvMGB1LneN3pZWKiVB9V9KigPnwrYWn1Am8gqQUT23VzMDGebZR3kkju5NRKCw6
-         bYld8zBTkrHuCFH1iEF4RwY5Q17JmYOKFhjLPdgnzM4XF5SrKZILdrLwjxa+bMKdNlLj
-         s4PG/3a9LUs95VO8l1dgmHeq1Gd9A5YKfhbYKABvBL1d0ZUQ3id05IPzmL2spMpdJy8e
-         hGgGrilSWxieECSXxP6crAs+AMpfM3olNx5831fpkACZ70Qp/YwVEYVAq/ZG8IqMA4dR
-         r9dA==
+        bh=n3vlAlljb/IwfykFQ6Z5DATCtg+qRry4cWpqGAbGZ8M=;
+        b=rl1qZCWqZNGqJ7B5U7l/RerZXV1vEq26qpJvJHQAt+Cnw/8NGpSQaE2isVYzMbfjBC
+         CAY10SxZ0pssYJFnR+zHrAnvdobKnBy2PsLeSgJSJwFoqgiBDgPLBDS/bv2GdCI7EzpU
+         /hyCYuvc0v+hv4UceXYmv7AVevLo4CeAKRdr7XGOzbuZ1B7BdiXlWiAjpT7kdskuYxQj
+         rKTjjoSqvLQaHDW7cajeV1jmruMd+HGnNLv3zGDwI4UH+PK+Pz8/iNz3GngyobBrYMPq
+         wXQ8o8hgtMHEzjBG0K3Z6TXseFQPvCxuXVJ4RAbtQpe4uQ9QsFNvE4NX1V2rAfCDJcUa
+         S6pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778051151; x=1778655951;
+        d=1e100.net; s=20251104; t=1778051241; x=1778656041;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=OO0gwvgIsuomeSKjunFh8e8J6h5oVj5wtNRg56K7XQY=;
-        b=etfDfpQwqo015xJFEu5oyh/B+XqvcFjQfcRlaWw7bdkQzO8M45g6C5IegytL5Bm/F0
-         FfrwjSdJFsjQcwug0Um65wD5aHglt4kmui09B9H9Z5wxTO5n3Xp596zUFxgTNMuH3ufB
-         ZQiMPOgo7lX1ELUwOH8JqkE+XZqKnADm0AYferg2ORHctpIrRKwqxwVqPxoHCAEK2KlN
-         NyAFPhmKF+oas7ZlqQ8Gvx/p8Vl03AVs7kjkvimsGRWYx8zYdnxKuR5E3FxPqokBsIZb
-         8sVC6ZEfieWm3lsLkWNIA5ANvn0LOf3Xk4h3xxk/cNdQMhWtMcwRBd5727Dwc+jnzKDO
-         9brA==
-X-Forwarded-Encrypted: i=1; AFNElJ/01lF0K4IsulxqY9shpyoaQRq4VJBDL+SYpS1yfySztjGTh3TsOColks+ThUt9/zZvxgAl5tfoLfw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzDIqsqWrSVi1PagXoRGoBEqRb88D0bK0U7fy30cPSS4t5zX5dN
-	vZYGVZqrOqPOb5pQMxqiz+iWEG8PA9dxSpUfB0w5IxGy4ApeLbF6JGsonIMxscPEY1bu9nNVkK5
-	FEQUB9tNX2sezDYgd5LFGO+GYNLiB6LM=
-X-Gm-Gg: AeBDiesSD2doy/p//JOgzs35ze3chpTkSek1Nqxl324jOj9EwQIn6f43kf19pWhA7NZ
-	QTFuLxjSU9vjioYrxXezGimDVZmz6AgynsqUVJQT9aWhOkjyfEW55am2rtKLwsBTVN5beJ6caOe
-	3VM4MSqjnKEX6iSvkqGEGC1gCq+j6ZCHT8GmjQleyP63JB/qhJfAT85EsX4gg+0/81Iia2BhA7B
-	zMjgcYuWcE5njjHMryZPnBrpXZjQws3A245JMMXlCvOQgmtvNBYOGSG1QEOfiUugm9j60BVDLsC
-	M5qU5WeTD+MX7doyojykr0ob/5yNomdOcxicY/zAGdsRjE+fTF8FiUO7UuwG5CSEsWArfrCjwI+
-	TPGMLephVg6OCUGLiSwnFyX1E0bLoFUMjiOMHqrm9dWTUUAoi7awcWNPQcbbG+ZSfBwlwnUaRiq
-	arr8qzn2Y4r9R2jl2X
-X-Received: by 2002:a05:6000:2d05:b0:451:68e0:c978 with SMTP id
- ffacd0b85a97d-45168e0c9c6mr2197966f8f.0.1778051150694; Wed, 06 May 2026
- 00:05:50 -0700 (PDT)
+        bh=n3vlAlljb/IwfykFQ6Z5DATCtg+qRry4cWpqGAbGZ8M=;
+        b=Ts4QpwPoNmsSReWK1Lis0POYEttYqpneYVDAXQlQoV0qTpZtUFoY2tagLgP3KFbp2q
+         7ynthN9hebIog+TWbc5xcf4yuIAi1vfsYWGziqf0CPuXycr49uUY4VujSJ/CTUu9O2gK
+         +UfVyOU/7y9zWRe8FiSkZSBsi3txgw6SldjZsBykdE99Em/+e/yXupqkenoCANZ6+2vF
+         6w/MCm/ax1DH+YrN3rgNhQklvBA/prbNOITHtQSpIEYAfmMjHB3WikWwMHU0UIjnfF+u
+         G6r40PAKyPnZ+AWlMO+7PVXOz4dxPMC2oieyVHL3S+AEw+PSSxwOBi2TXqipd8Wtw+lT
+         5RFQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9goRYWJdqhwbGZmoIH5bFfEAhhi1tNAt1YnqH4JN66i6DJdNPyJr06Z2aLFRfMa/eEno+OEmAF/SE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwCTB0QXQCygd0E3W7uUUBS+vE9UWMe6z8+wU/dVw+H/r4jrHaQ
+	yBMwU6w8FcV/MNFT6Cj/JDTFpnFTGR0movnE2YGxPcTK8l9EIxJO0Ojd9JLf+NJyMhYCKqk9WXq
+	DmvNbSMGVeLoS0X1LcrS9uK3Bol9P4vE=
+X-Gm-Gg: AeBDievI+WoTGNNKwhCqnEC72gy0F6SCEtel+eHDZ6LHSHIqZv3fctBAMVfHlCcKy1J
+	cFnQl8hjt1yPaCu6l+ku81wy6EGmOUdOuXeHZwv2zktyvHlFspDzZn6j6HQp9DgKJPHm8P7UmTa
+	Z1K3dva/26+spkdFopbGSMgbmNi7mGwCvBZIz2R8uQvrAFg9F8Sn+aldIb7td4DhpkqNrQ2T9fD
+	LWwWhXLBCZqF+pLxVgQNvluhAJE8EKCfPNONRafCdaJx6KClmeMZ3Fy8f0DtM8gkLpAtQjOeff5
+	y+DJgxg1EhJTwUuEZ+2LsmMt2eTJd6jUy9dsv6pjZp614bxwPQnyFqGz6GENgqZcaAXWTILbpmQ
+	f90eLZ49/gwbDut8IMBdqiMI2THHJJm3yP304WQ+LAuM7VKvHECI6jzCObm+nItOWPP620krJHC
+	OsdU8TVmm8UUG78XpF
+X-Received: by 2002:a5d:5846:0:b0:44a:75e2:558d with SMTP id
+ ffacd0b85a97d-4515d9a07damr3359012f8f.41.1778051241145; Wed, 06 May 2026
+ 00:07:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,67 +83,34 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
- <20260505-magnetometer-fixes-v5-8-831b9b5550fc@gmail.com> <DIB6Y4HLH5R6.XIP49B2XPVNC@gmail.com>
-In-Reply-To: <DIB6Y4HLH5R6.XIP49B2XPVNC@gmail.com>
+ <20260505-magnetometer-fixes-v5-8-831b9b5550fc@gmail.com> <afrlfIZFHVQeOZWr@ashevche-desk.local>
+In-Reply-To: <afrlfIZFHVQeOZWr@ashevche-desk.local>
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 6 May 2026 09:05:39 +0200
-X-Gm-Features: AVHnY4K48-o0k324MqvPHLfFYL9gMvVE7_PFWKkRlXJtHXzQce-b98Zt0es5BnY
-Message-ID: <CALoEA-xjRYTHT51_nh=jL4AOEu7Y9w+6hx=fFq_ZaMdcLfG7eg@mail.gmail.com>
+Date: Wed, 6 May 2026 09:07:08 +0200
+X-Gm-Features: AVHnY4IvdfCniNzVL42XyRLWqv_3etLY8oiLzUoJ7VQKAlh1vL_OJw4Bk8H7DQA
+Message-ID: <CALoEA-zuQ3LC=N--7P0JX83GM0mjqHaKeewmKdW3vre20Chf8Q@mail.gmail.com>
 Subject: Re: [PATCH v5 08/18] iio: magnetometer: ak8975: check if gpiod read
  was successful
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 6 May 2026 at 03:09, Maxwell Doose <m32285159@gmail.com> wrote:
+On Wed, 6 May 2026 at 08:54, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
 >
-> On Tue May 5, 2026 at 6:46 AM CDT, Joshua Crofts via B4 Relay wrote:
-> > From: Joshua Crofts <joshua.crofts1@gmail.com>
-> >
+> On Tue, May 05, 2026 at 01:46:04PM +0200, Joshua Crofts via B4 Relay wrote:
+>
 > > Add a check that ensures that valid data has been read from GPIOD. If
 > > not, log an error and return the negative read value.
-> >
-> > Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> > ---
-> >  drivers/iio/magnetometer/ak8975.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> > index 129c98c97071b4cf8efa3abf2364a3abbde129ba..b3caf5f3ebf29bf701bb214aa480fa7afb2651c6 100644
-> > --- a/drivers/iio/magnetometer/ak8975.c
-> > +++ b/drivers/iio/magnetometer/ak8975.c
-> > @@ -658,6 +658,10 @@ static int wait_conversion_complete_gpio(struct ak8975_data *data,
-> >                                timeout_ms * USEC_PER_MSEC);
-> >       if (ret)
-> >               return ret;
-> > +     if (val < 0) {
-> > +             dev_err(&client->dev, "Error in reading GPIOD\n");
-> > +             return val;
-> > +     }
-> >
-> >       ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST1]);
-> >       if (ret < 0)
 >
-> Small nit but I wonder if we can change:
+> ...
 >
->         if (val < 0) {
->                 dev_err(&client->dev, "Error in reading GPIOD\n");
->                 return val;
->         }
->
-> to something like:
->
->         if (val < 0)
->                 return dev_err_probe(&client->dev, val, "Error in reading GPIOD\n");
+> See the comment on the previous patch, applies to here as well
+> (to some extent).
 
-Sure, but it would go as a separate patch. Given this series is
-18 parts long, I'd rather get the existing patches merged and
-work on this in another series. This driver still has a few shortcomings
-that should be ironed out.
+Will do.
 
 -- 
 Kind regards
