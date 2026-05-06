@@ -1,112 +1,141 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B688370D68;
-	Wed,  6 May 2026 07:20:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778052051; cv=none; b=nwh5gNuM/YQHszvTkAKXPnh50K3xx27WNHKLqFofiMgU5qkj744Xai6CanEmHMR51QlMIDtg8K0KWDJ5P5LFaB3JvTvSwPGZ0g+h7miAT+SgvNM+XGFA2ZAzolDkNROQ+XTmlqKCaHeI94+jIrO0bBWyLFrEQS8DzdCubrCB6eE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778052051; c=relaxed/simple;
-	bh=nkJBies3ceHSeof56lXHBaqx6Z8JWXVWMI5eIIe/FPI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ktZySqUrHSxqYpYlkIkwDVI/xHsVDQypniFkvvuGddonhj51+QLN4xZM5QGe5HCjKmnhZl54lWfo2xzb82rc51QxOYixI4xnjGhMqP0l+f7HZWrixXnRcSFluUgDHFtLca6UqeZ5ih1+WwaOAFzfku9WNd6jqzVTb7v6YPBjQTM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eLHeaNNt; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 328EB373BFE
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 07:21:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.174
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778052077; cv=pass; b=ucirChWYeZF1dVXw6F/gI335NUWyQhpfpPS72vHt88sz8p96gC9908uhiv4+B5Dwf0VjEKsFWdob8A6+l9RPdgR4bXjhYE1EY+7qByy0Q2XypS9rnqSMZOJnhCMzHTUNoiB9yGyDf8oL7K1idYIIdQy3fvTWdN24Gy0gd7mawcw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778052077; c=relaxed/simple;
+	bh=evbKKt9fyTw5pbbYtwWcyodPmzw/1lsVIlyoeuBDn6w=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VX80VqKKIDjhd9eJ1i+1vO4OXCPqugN6jBxB9OBqZkuHe2kFkZsqr0zs+0ZFABK+u0l6JalBBUgB57Uxid9D3dFMc0YbopvG5dUh1SGkIETgGebc5tOJwdet9924wREFILQ2T3SsLOUo53fp20gC7yTHmeh4rUD8fU5uMHDmrCQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E88kSrai; arc=pass smtp.client-ip=209.85.128.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eLHeaNNt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778052049; x=1809588049;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nkJBies3ceHSeof56lXHBaqx6Z8JWXVWMI5eIIe/FPI=;
-  b=eLHeaNNtv/vpH6FMKu5CsJHyS41JlcjqOuvDyzBz0ZK2224/NZ37+FwL
-   XDaIb5+9f0DBJ8R7yfBpc8W6ANx4TkAeAQxk3aXdm4S/R1FXp3BdkjrkJ
-   KCWk7pb+zn369uVjiUI0PFs6lvTrMtkIJpIhkcKNEns71aa/iXdHlHdaa
-   pQpIuAUl3qMkNc28QNvPL/A67d/WcGFQu8dbYJJ7V+RXJ4aoxlF7TjYSO
-   jhZKqqsY5FRFs82x6dTbJ+wz4i0gwafk/mRjEQdeOoTkxRAbaI1/0uMC3
-   z126od4VXsHvuIowAMzXpcGM2AHp2htjQGvtMyWJ3DtuqPW0Gi5fUhkJD
-   A==;
-X-CSE-ConnectionGUID: YpXNJI0HRAyX8XpbelCjJw==
-X-CSE-MsgGUID: H/oQ/m0FQpGJFnUL0LJskg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="78687932"
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="78687932"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 00:20:48 -0700
-X-CSE-ConnectionGUID: DQ8fQPf9RveRHf0H+ZnS7A==
-X-CSE-MsgGUID: wg8eOvhaQ/WMWV1LSlfGtA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="236152641"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 00:20:47 -0700
-Date: Wed, 6 May 2026 10:20:44 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 06/18] iio: magnetometer: ak8975: pass conversion
- timeouts as arguments
-Message-ID: <afrrzM67n7NQWdE3@ashevche-desk.local>
-References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
- <20260505-magnetometer-fixes-v5-6-831b9b5550fc@gmail.com>
- <afrg7uXqyKs9il1Z@ashevche-desk.local>
- <CALoEA-z+K8FzgwbYfi_aJ3oL6qi2TyXFDYKpmn1Mmjw8XApvNA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E88kSrai"
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-799001d73bdso54744217b3.0
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 00:21:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778052075; cv=none;
+        d=google.com; s=arc-20240605;
+        b=f8I0phTctq0S5dofPszswd0+tX3gE3nFMM2rDPEx68jTtXhglz0WDCGW84B75BGps7
+         RvE6Xbo86CLZy3CMzz/PTOANsEjfF+bhxRICf45isTWXOp/DSI/KLn9XmR1dYRsO19mX
+         RzVi5lcL3fNVfB5IoEKiBK/HMOC4NJBO37jaJfMy9TP/sjbhEgKPFPJDy8Ez24os08Iu
+         mhYlvoBOm0LOjTHPAZxAW8QDIjlHGU9+G4JPZmbMcB9BtdRYP/0BXw5jk7bcsi5Bv/KL
+         B/JEQIhHIfI4daNfIY2VTx2+EBH34kZpUJnZNfgJnKmPHwDr01wkqfoYyYo9WuO0XmcC
+         ZKAA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=evbKKt9fyTw5pbbYtwWcyodPmzw/1lsVIlyoeuBDn6w=;
+        fh=zBBtXQG2dA6zTP9lGV9GYlN/Nl613Nw9FaW1663ZwGM=;
+        b=QON8dlzmdKb4cAjo6BqrhJRldXgOdERquaOJnnZIcGbK8dnLHNYl1eG/Mq4yUW9Ule
+         K4hNUmohUqaJ+5XP9LoMizvbmQwYfJii1CBOv61gGI1Y6dKHWcq1qh/F75XluaO980Nn
+         l3lCOXCQveQB6/3r+vGvnJKHNFpnd552DQlSgw239lI4XMG7smGrTMlUtmkAIpO4s5vp
+         X+BK+qIqCppOwid/T818DkYq5wuYAMCLEXC9GoO54X2KXToEFtbka7ZhAdPSGSNi2BzD
+         rtj3jz2MOo4J+Er9FSVTI3c541Pk0w96koa3iX0/DJUrbgInsYmLJgUKOcRTkmn+QBul
+         vVBA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778052075; x=1778656875; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=evbKKt9fyTw5pbbYtwWcyodPmzw/1lsVIlyoeuBDn6w=;
+        b=E88kSraiNjd7uss/cCKTIZD7/jOTbuMNm/AKgbDiCP5OZkF3Q9Zxw8/IXv9fW/VV7K
+         p7O9KsjQTo5+zTTIjIhNCF+h2bjWsN/RQNF6Q7j3KPYRF53mHSxqMbrZ33tnqowOLbEC
+         HWOMdcWBCjcr1g1/TKMy9fQ4TAnCwti8lI1LGnsv6DcdUOsf2o6WEAAIyE5z8pjHLGtE
+         /eZMggdvrLKNS0F1CimDGmkTW4tRBUoQ0+m1ogcJfYENxDmU4GsiciYJAR9l+E1hieHh
+         YG/OBa7qsWXtdbTLZrKle9L//sx5Q7+lzI/BgoZEj7xchQK1hUEEBtXtznxU1SA+7z5I
+         aVtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778052075; x=1778656875;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=evbKKt9fyTw5pbbYtwWcyodPmzw/1lsVIlyoeuBDn6w=;
+        b=jScTaDAPdLm8djR+AwB/NzMIh0m/3uudKsRCbZqWoxLlxg0WmJmkmFT/RRtfjLsWEB
+         fUTYEo6kRzv4LGgx9Ewgq57xQmdnPBX5J84J8WAelKbOcBkiOQgq3nh6jYGLFaO3ijQ+
+         ljMk6g8UTwwaqAUyoTgCFXJgfwFFv4+2dTu7v0b8nY5WA9SQ82ESA/OjujB9GiABnJ2i
+         PZ62RsKmZLuPX57jaE862QGRcwRdmNvTIFWkwBaTMsm4DqYGlHYWsUBsLzackKHwSCqz
+         Jd1u9lj9+ZjZCLz5Vb6YJ+bskfUXFUtSjjQN+UFbsneQai6BBIPYCp2EmzlhZ+4SoL+P
+         ju5w==
+X-Forwarded-Encrypted: i=1; AFNElJ9bW6p7tN3k17NwxtFiGyh6np4u6yEW+62UPksI9mqxwOAgTGiHLk8NpkWMneTfmvLJefb5ekzOasM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxotvzS0e1sCY6davoo8iPgsceKZWG0FPnkjaofXTRFSg7qnRly
+	JbYDGt7wqpWyTjQvcrzpPPFMdhaiKbduW4x08dByfzS4DSCOYHFFUGstc2w+JS0SaiFD6MOCGFO
+	sxYoXqDx8u0yesQGxauqZK8F8rYp7nW8=
+X-Gm-Gg: AeBDietNKOl4Jbl5ZVLebpKA7Z1ETEw6SutxmOVW2aDTKqkC4fdng2pyFSbv+cgNwv/
+	+265JKwnz+a9K29jpIk2I2VjbEZB8lKexzmnQ0YftJ4EUaHphidyfjU6fUMAQfKPMelprj1gl/s
+	PzBn1FDGU3Tc8YnnGZzw6Gms/eV3HrAOnxmHgPL3NkAOuxm0tizBdKR2N7jyyjHAHYwSBXyvKKM
+	JFTq2XojAyqbtDtBVzdiU3YNab+oa8aGo0L1iZqcPp90lnkjDGPnMXWPolgZwjMIdLK7b50W6hF
+	LbT2QX+eQRFfo9cwK0NAnpcTng==
+X-Received: by 2002:a05:690c:6e83:b0:7bd:7b2e:f09a with SMTP id
+ 00721157ae682-7bdf5edb503mr25827877b3.35.1778052075233; Wed, 06 May 2026
+ 00:21:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALoEA-z+K8FzgwbYfi_aJ3oL6qi2TyXFDYKpmn1Mmjw8XApvNA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
+ <20260505-magnetometer-fixes-v5-8-831b9b5550fc@gmail.com> <DIB6Y4HLH5R6.XIP49B2XPVNC@gmail.com>
+ <CAKqfh0FhpVMtoRyBPjmv5JHn9ad4fPgn5wiyYpEnSYf73Wd-rw@mail.gmail.com>
+ <afrplquQwS2hmjEM@ashevche-desk.local> <CAKqfh0H1Cc1tizgYKFatEAVvyVMTsCAu1mb1XdSTqB4ecMvqPQ@mail.gmail.com>
+ <afrqvtBMhlUR5WmJ@ashevche-desk.local>
+In-Reply-To: <afrqvtBMhlUR5WmJ@ashevche-desk.local>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Wed, 6 May 2026 02:21:04 -0500
+X-Gm-Features: AVHnY4I_76nsBjm_CNum-G9rvqXgeK5N7f8Zt9UUg0yOGmXO-Ajtm87W6PoZ41E
+Message-ID: <CAKqfh0HrvFxu=KXVYVGC=JWLJyjR2XFyJ_TObFOHusw1n5QHBg@mail.gmail.com>
+Subject: Re: [PATCH v5 08/18] iio: magnetometer: ak8975: check if gpiod read
+ was successful
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: joshua.crofts1@gmail.com, 
+	Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 06, 2026 at 09:02:15AM +0200, Joshua Crofts wrote:
-> On Wed, 6 May 2026 at 08:34, Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Tue, May 05, 2026 at 01:46:02PM +0200, Joshua Crofts via B4 Relay wrote:
-
-...
-
-> > >  static int ak8975_start_read_axis(struct ak8975_data *data,
-> > >                                 const struct i2c_client *client)
-> > >  {
-> > > -     /* Set up the device for taking a sample. */
-> > > -     int ret = ak8975_set_mode(data, MODE_ONCE);
-> > > +     int ret;
+On Wed, May 6, 2026 at 2:16=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Wed, May 06, 2026 at 02:13:37AM -0500, Maxwell Doose wrote:
+> > On Wed, May 6, 2026 at 2:11=E2=80=AFAM Andy Shevchenko
+> > <andriy.shevchenko@intel.com> wrote:
+> > > On Tue, May 05, 2026 at 08:42:12PM -0500, Maxwell Doose wrote:
+> > > > On Tue, May 5, 2026 at 8:09=E2=80=AFPM Maxwell Doose <m32285159@gma=
+il.com> wrote:
+> > > > > On Tue May 5, 2026 at 6:46 AM CDT, Joshua Crofts via B4 Relay wro=
+te:
+[snip]
+> > > > I'm going to withdraw my reviewed-by until I can confirm that this
+> > > > isn't a problem, sorry about that.
 > > >
-> > > +     /* Set up the device for taking a sample. */
-> > > +     ret = ak8975_set_mode(data, MODE_ONCE);
+> > > Why?
 > >
-> > But this piece does not belong to the main scope of the patch.
-> 
-> Fair, probably a badly resolved merge conflict.
+> > I just wanted to make sure this wouldn't cause some crazy regression,
+> > I think it's valid to be somewhat concerned.
+>
+> Yes, but this was the concern even before this patch, no?
+>
 
-Hmm... Usually what we use is interactive rebase. Very powerful tool!
+Going to give that a solid maybe. I must've been tired when I looked
+over this again. Very sorry about that.
 
-	`git rebase --rebase-merges --interactive $SHA`
-
-where $SHA is the same one that you used as --base for the series.
-
-In conjunction with
-
-	`git reset HEAD~1; git commit -s --interactive -c ORIG_HEAD`
-
-technique, you can easily move parts between patches.
-
-(There are even more advanced techniques, but I'm an old-school guy.)
-
--- 
-With Best Regards,
-Andy Shevchenko
+best regards,
+max
 
 
+>
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
