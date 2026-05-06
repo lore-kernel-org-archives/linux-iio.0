@@ -1,116 +1,118 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C08F36C0CF;
-	Wed,  6 May 2026 07:32:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D085E3BFE2B;
+	Wed,  6 May 2026 07:37:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778052775; cv=none; b=BcmUsFWJ7MeqyhFUlr52UYAnybJ6h8u+QdumiBrIUPlgLxeDcIZ7rftLg0Fns+BztS7/s4FSfKTH9NuWCn9cJN/6ORhHZkVrfPvPVoVDWBBdHxRpt9yhCXLqQc2l+YBG8Gi5yiKwU4nLd9gZS6EZr5ybqgol+DJwJpM6FqGrNKY=
+	t=1778053052; cv=none; b=Kpkj4yJiEm0sxmx1mBM5XQDL5XWGcvTMSIuFnJNkndv5p2GC85P9YNLuTI8OhGIDGsB3sG9JMisrJWIFGUFpNh464nNOJRfUaqebnfWnnHDkwmltI71F/FyyV4qTXKiGcDId8p3IrGwRcxLhbprn6wpKrWNq8F6NmvJ+hzn1DEA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778052775; c=relaxed/simple;
-	bh=OYuIHyZuFCm01aD+H29CBGD3pbcgWqAfgY5ezI86Fdg=;
+	s=arc-20240116; t=1778053052; c=relaxed/simple;
+	bh=tukaqwJYVujpvieSif8lcxDtZnIJvlW9fGnMUI+N/ao=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HUfwXkour5JsKWzWXDQKFcvejtPW2J7GqM79Ncfmv+T6Bx+LNV76leVfjd1hI8PUFa6F+sGbfnyunKN+Dx2zugHraEwenj9E6hlLB2skviYyjLnVFvD/3LgC39s22+J8UPtj0YzO2axWwrWgImkhCKxv8p8kc0fBzgNx/Yzyy9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QBOrQSXL; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=pWHFcQHjpvIrhNVIPSt0m7YCqAdtOnQ5lFgv6kJnQFSPT9KUHOZh0MZnWv9bRb1jFcj3tRx0LuhbMRSbw3eP4VV531HsbsQJNd/qEI3tgC2HathBVO1weB6RRvWFQ5byZag0IB4FeGNH9byscX6Cqfyu2MdozOzJEXEPlSPpL10=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SbL05X/z; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QBOrQSXL"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SbL05X/z"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778052774; x=1809588774;
+  t=1778053051; x=1809589051;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OYuIHyZuFCm01aD+H29CBGD3pbcgWqAfgY5ezI86Fdg=;
-  b=QBOrQSXLltVSDRyZuV0hFV8QQxOR6LWXwWKMuNL7unMrKjcGycFxpjJA
-   tIsnmMkVGBh70fdqDCNflzl7l0+YHQIydX8GDcncXZCfEt2k6+tgqclAG
-   581wDUSmspmVmzTCpcPlU/gwRwLmE2SO7R6T0uPdkPwZrXR18eQ9GLFti
-   KrWVV+YnytanE59AnoZAHmhX9X0QUXoguoS1wZzv4l2ngOpW83XhpmNxh
-   nQbH+0Ux87fugtJx2kh4MOgbugUgRyiB4TmD20GMMNk6G/FVjIYnvW2+V
-   Qh0yt0RzKG/tNOrpdwEJo7oQkS1Xj3D0K5D3h/+LyrpvEpPFPuJjYMJNf
-   g==;
-X-CSE-ConnectionGUID: VycC3ZFNRwK/AmwIFuiXnQ==
-X-CSE-MsgGUID: iMyBTnGRQNS3Ppp7HpX9ag==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="89284008"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=tukaqwJYVujpvieSif8lcxDtZnIJvlW9fGnMUI+N/ao=;
+  b=SbL05X/zY82FYyhv+fmBZYCoEAt3v28F3K4b5TVUffOVRxjjnV+Blx40
+   caQfSgV+lPkhv0Umh/1ue5Htmvp4T8GtEEO6+UXXb7g7t0PODl3jSyXex
+   rs8XjrfWqRtIYnJte2jOORd76pji2pbuMwTjpVSlErpd0S0bWdo+cBKzI
+   pECXzils0ze3hdUl4FwI1Bwc9izh/4rfdhuiaMr8ZYKy/wkXg3XZq5atT
+   SC8CnmfCCqxnANQlIJx3gMCbJ0DINQZR8sdXubYuSZbz1l8RlsPN7bqgU
+   1+4Rz+/bPv7TPm4vs+UIQaNGo5TIMvz+j9bcAes5tmk5ah+KIJvlgg+lc
+   Q==;
+X-CSE-ConnectionGUID: 9tDHax/dT6unKoovlekaog==
+X-CSE-MsgGUID: b8w/2SxvT425jH/7F6NoQA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="78956378"
 X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="89284008"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 00:32:54 -0700
-X-CSE-ConnectionGUID: oTG9904AQ4GJluGAZA1e3w==
-X-CSE-MsgGUID: QzxmcHvlTJKLOyapBNbmBA==
+   d="scan'208";a="78956378"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 00:37:29 -0700
+X-CSE-ConnectionGUID: L+IqCuxIQIS3IRi3jXjR/g==
+X-CSE-MsgGUID: HAlDCHQESZKLg2ABoB4Sag==
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
+   d="scan'208";a="240049863"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 00:32:51 -0700
-Date: Wed, 6 May 2026 10:32:49 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 06/18] iio: magnetometer: ak8975: pass conversion
- timeouts as arguments
-Message-ID: <afruoZ4Oq0Sz7QEA@ashevche-desk.local>
-References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
- <20260505-magnetometer-fixes-v5-6-831b9b5550fc@gmail.com>
- <afrg7uXqyKs9il1Z@ashevche-desk.local>
- <CALoEA-z+K8FzgwbYfi_aJ3oL6qi2TyXFDYKpmn1Mmjw8XApvNA@mail.gmail.com>
- <afrrzM67n7NQWdE3@ashevche-desk.local>
- <CALoEA-w88c3565-U49ic+FDG1mfpohWzMjZmTus+Nj037W0Sow@mail.gmail.com>
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 00:37:26 -0700
+Date: Wed, 6 May 2026 10:37:23 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, mingo@kernel.org,
+	christophe.jaillet@wanadoo.fr, nabijaczleweli@nabijaczleweli.xyz,
+	kees@kernel.org, kyungmin.park@samsung.com, k.wrona@samsung.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/9] iio: ssp_sensors: factor out pending list
+ add/remove helper(s)
+Message-ID: <afrvsw4cTU05oV2Q@ashevche-desk.local>
+References: <20260426091710.3722035-1-sanjayembedded@gmail.com>
+ <20260426091710.3722035-3-sanjayembedded@gmail.com>
+ <20260426150830.7ab41ad3@jic23-huawei>
+ <F6B75893-D8A8-4072-BB26-83F630805700@gmail.com>
+ <20260505173859.19b79034@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CALoEA-w88c3565-U49ic+FDG1mfpohWzMjZmTus+Nj037W0Sow@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260505173859.19b79034@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, May 06, 2026 at 09:28:06AM +0200, Joshua Crofts wrote:
-> On Wed, 6 May 2026 at 09:20, Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Wed, May 06, 2026 at 09:02:15AM +0200, Joshua Crofts wrote:
-> > > On Wed, 6 May 2026 at 08:34, Andy Shevchenko
-> > > <andriy.shevchenko@linux.intel.com> wrote:
-> > > > On Tue, May 05, 2026 at 01:46:02PM +0200, Joshua Crofts via B4 Relay wrote:
+On Tue, May 05, 2026 at 05:38:59PM +0100, Jonathan Cameron wrote:
+> On Sun, 03 May 2026 16:53:27 +0530
+> Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
+> > On 26 April 2026 7:38:30 pm IST, Jonathan Cameron <jic23@kernel.org> wrote:
+> > >On Sun, 26 Apr 2026 14:47:03 +0530
+> > >Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 
 ...
 
-> > > Fair, probably a badly resolved merge conflict.
-> >
-> > Hmm... Usually what we use is interactive rebase. Very powerful tool!
-> >
-> >         `git rebase --rebase-merges --interactive $SHA`
-> 
-> I see, well I use `git rebase -i HEAD~no_of_commits_in_series`
+> > >> +	if (msg->length == 0)
+> > >> +		return;  
+> > >
+> > >I know Andy suggested your bring these into the helpers, but to me
+> > >it's obscuring flow as it looks at the caller like it was added
+> > >to the pending list when it wasn't..  And we end up with multiple
+> > >checks on msg_length where we had one before.
+> > >
+> > >One option would be to have it return a bool to indicate whether
+> > >it was added to the pending list or not.
+> > >
+> > >Andy, would that work for you?
 
-Good that you are already onboard!
+I don't remember if I answered anything to this, but returning bool is fine...
 
-> and sometimes I move a different thing by accident.
+...
 
-Yeah, this is usually unrelated to the tools, human factor, you know :-)
+> > If we convert this change to sub-function then suggested use_irq would be
+> > shifted to sub-function; then how would you suggest to handle that bool ?
+> > - keep msg->length as it is
+> > - in sub function __ssp_do_transfer(data, msg), should we pass additional
+> > parameter to bool for further execution?
+> Pass in any additional parameters you need. If it becomes too long then 
+> this was a bad idea and you should ignore me ;)
 
-> It does get a bit
-> crowded with 18 patches (yours were fine but I also had to do some
-> resolution after moving the order)
-> 
-> > where $SHA is the same one that you used as --base for the series.
-> >
-> > In conjunction with
-> >
-> >         `git reset HEAD~1; git commit -s --interactive -c ORIG_HEAD`
-> >
-> > technique, you can easily move parts between patches.
-> >
-> > (There are even more advanced techniques, but I'm an old-school guy.)
-> 
-> Good to know, thanks!
+...however, the coding style (or some documentation) suggests against bool
+parameters to the functions.
 
-You're welcome!
+> > Or any better alternative to handle both ?
+> > 
+> > >Then we only have a simple check on return value from that to decide
+> > >to increment the counter and exit on error.
 
 -- 
 With Best Regards,
