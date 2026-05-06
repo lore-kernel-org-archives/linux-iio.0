@@ -1,64 +1,74 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A01B023D7FF;
-	Wed,  6 May 2026 13:08:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E97D428474;
+	Wed,  6 May 2026 13:26:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778072908; cv=none; b=KUbdND9EoxIdG2oQY/ISJ06GjAWvOgl/rYMWl2upuwYOZ9Vlv0HhxtgmfFaUjQVUYzVzImKy90GlS9uF+1NAErLRjU1ok47ETZttfKkaeiSA681iHd0Gi/jY+EhjVD1qJ83pPjowpKRAAGzgukYFOvVIOZZ7TRR7IUaRgGNPoqw=
+	t=1778073986; cv=none; b=WQVwBnMWyVw/DZJYu21tlhRd1BBRJh81gWeyuRikPqkFf+TjKwsHG1gUjIQmbssoXiGqQyNYyLnPHSHO1V/63ReflsidRNCWe8WDzv6++Di4WeKZzoUYiHHNxzBsXt0AxhucdoFxP0RyQC4wp4aL7oM2czo4HM5DJQJHMvbWqAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778072908; c=relaxed/simple;
-	bh=ovFdm4PUGmprJ4eBv2Y/WIgQx6h6RYVqqakJYONUPv8=;
+	s=arc-20240116; t=1778073986; c=relaxed/simple;
+	bh=xaKcmCC+I9v/E09bRdoBMaTkVzosR8rUiWNrEUV6lAg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fdHksKZKPGKC9nLRGtJLvqx+Cgu0ewkCCa3nOACwb8ZWSlPVrS44v3bJBRsf6SjgGHa8OF2lIlVNxikIebkOpwbkrAtkVIJ/Xqj4OoYss8hQGuih8wRkUUuktVgTOEfFicM6PdJXZzlql5oL4hpcQ08OtyKBxXLq9HCdBu3U4l4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U/DjeH7j; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=J5sH5Dg06AAqC0YrR6dD4UQIBP7m/OJ7W0WFoi1/EXzzaT7KmbGwRadrRsa+kWyypFPB3Pbho/OqyPSgMqZ6C9qYcbtGFZRbnAUMUVrBQPIT03BAmaZaYcErfcpNoyKJs6yxwZ6y8YXDXKigp2BpdLEeklUpJ1vxM/K3Pogm3Ag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Kn+Nojck; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U/DjeH7j"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Kn+Nojck"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778072907; x=1809608907;
+  t=1778073984; x=1809609984;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ovFdm4PUGmprJ4eBv2Y/WIgQx6h6RYVqqakJYONUPv8=;
-  b=U/DjeH7jO88YoIsFIg0vs6OR8JHWGwDGuGlhhcYdklCly8F+ArMiGgeY
-   TFFZenf5J8p2rLI/MavTxtNhyRw1+QTKZutXfAhPqz780JMTWwn9S7Stt
-   tGSYbnX//dIL0+egpC49dqeUyYKrrvIChxCxyQFHgSLw5F7Wy0p6g2I15
-   weDB+rucmVxWRRsMoeK6btmD3LqwK6C7qC6yUun1JVo7f7vqyArJrwSMN
-   s2E6Qq4Pwt00JlfpMkNBeDMkwOhlzxND2Qc98+TQ7DdMmD5yxt2EiQM75
-   GLDxD12S8bN8N9y8s/xg9qnutQTEfoe/Ps6hYgIra+xgunGH8EJO7Prus
-   Q==;
-X-CSE-ConnectionGUID: hddR8pH9S4yZDCfLI7mykg==
-X-CSE-MsgGUID: jfWej7LNSbGbVopJ9UCCuQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="78893451"
+  bh=xaKcmCC+I9v/E09bRdoBMaTkVzosR8rUiWNrEUV6lAg=;
+  b=Kn+Nojck1aQDpvDs6sZpBe+keJhErcrZLKGJxT+oyOMP0h0IOBHqxV1p
+   1Tk05lqs4qKHuQxX09uG1Pejy/q53jcEQWdeRE1qBRsvkBcqHv01hZVwj
+   B//qJvxTZqZH+7omXrQbztU+Zel4Qd79zqEvbPWwloVTfHNGX8fMXdZox
+   UGCQ4PNCXDWZJp7zuekqY8BwTUmdB6vaXmcrXl8oIzqNq1ZfWoAtpg19f
+   J7uTQkp/+NdPB47QXfw8T+LRwY/p4NfcKF8fli2KB41Dz7zGumCkfukx+
+   xMZg4kBq2DlVqkoJDXbFU5DK6V3exKq0yrkjxSUjwEDTfEinlEd0qaqlE
+   g==;
+X-CSE-ConnectionGUID: G6eMnH1hTYuQP1PlIslZHA==
+X-CSE-MsgGUID: 62NSLGv9QwikO+m2V57evA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="89312838"
 X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="78893451"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 06:08:26 -0700
-X-CSE-ConnectionGUID: aLJNDU3iRtuL2O7n1VrmHw==
-X-CSE-MsgGUID: sX620JRgQ5+fvuOWM4GtSw==
+   d="scan'208";a="89312838"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 06:26:23 -0700
+X-CSE-ConnectionGUID: 1H3000o9TMadDzDQXXLY9Q==
+X-CSE-MsgGUID: tL+QbN0HRuqstpiz/lB/YA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="240475892"
+   d="scan'208";a="235306952"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 06:08:24 -0700
-Date: Wed, 6 May 2026 16:08:21 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 06:26:19 -0700
+Date: Wed, 6 May 2026 16:26:16 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Roman Vivchar <rva333@protonmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 07/18] iio: magnetometer: ak8975: modernize polling
- loops with iopoll() macros
-Message-ID: <afs9RRAldVXWqVaZ@ashevche-desk.local>
-References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
- <20260505-magnetometer-fixes-v5-7-831b9b5550fc@gmail.com>
- <afrlT71SjyQLh2xz@ashevche-desk.local>
- <CALoEA-xjvxYOQ8Kt+OXR=6E_TrjUmC4J6ZXftE6hri6z+Wzhrg@mail.gmail.com>
- <CALoEA-xBcPzoy4T3+0edrnQLV++k2VN5ozWan8L+gnV5P3CLFw@mail.gmail.com>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+	Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH 06/13] thermal: mediatek: add pmic thermal support
+Message-ID: <aftBeFbVIap59FFS@ashevche-desk.local>
+References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
+ <20260504-mt6323-v1-6-799b58b355ff@protonmail.com>
+ <afmnUG8dG0N0HpV6@ashevche-desk.local>
+ <cgsML96DsJh_Ow9XsSnyrZ3NhlCnNj1rKegzYNR3eQzkWoF5xQB5-aU6Zi7pKcT8GfUnO3B-D71je60APUtorB7p_A3GtUCp2oer3KYLn6k=@protonmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,64 +77,102 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALoEA-xBcPzoy4T3+0edrnQLV++k2VN5ozWan8L+gnV5P3CLFw@mail.gmail.com>
+In-Reply-To: <cgsML96DsJh_Ow9XsSnyrZ3NhlCnNj1rKegzYNR3eQzkWoF5xQB5-aU6Zi7pKcT8GfUnO3B-D71je60APUtorB7p_A3GtUCp2oer3KYLn6k=@protonmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, May 06, 2026 at 12:50:09PM +0200, Joshua Crofts wrote:
-> On Wed, 6 May 2026 at 09:01, Joshua Crofts <joshua.crofts1@gmail.com> wrote:
-> > On Wed, 6 May 2026 at 08:53, Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> wrote:
-> > > On Tue, May 05, 2026 at 01:46:03PM +0200, Joshua Crofts via B4 Relay wrote:
+On Wed, May 06, 2026 at 11:22:15AM +0000, Roman Vivchar wrote:
+> On Tuesday, May 5th, 2026 at 11:16 AM, Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Mon, May 04, 2026 at 09:24:58PM +0300, Roman Vivchar via B4 Relay wrote:
 
 ...
 
-> > > > +     ret = read_poll_timeout(i2c_smbus_read_byte_data, val, val != 0,
-> > > > +                             poll_ms * USEC_PER_MSEC,
-> > > > +                             timeout_ms * USEC_PER_MSEC,
-> > > > +                             true,
-> > > > +                             client, data->def->ctrl_regs[ST1]);
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +     if (val < 0) {
-> > > > +             dev_err(&client->dev, "Error in reading ST1\n");
-> > > > +             return val;
-> > > >       }
-> > > > -     if (!timeout_ms)
-> > > > -             return -ETIMEDOUT;
-> > > >
-> > > > -     return read_status;
-> > > > +     return val;
-> > >
-> > > Besides the unneeded return val duplication, I think this is the wrong location
-> > > for this check and it changes behaviour (really subtle change!).
+> > > +struct mtk_pmic_sensor {
+> > > +	struct mtk_pmic_thermal *mt;
+> > > +	int id;
+> > > +	struct iio_channel *adc_channel;
+> > > +	struct thermal_zone_device *tzdev;
+> > > +};
+> > 
+> > Can you confirm with `pahole` that this is the best layout (taking into account
+> > the use in the below data structure)?
+> > 
+> > > +struct mtk_pmic_thermal {
+> > > +	struct device *dev;
+> > > +	struct regmap *regmap;
+> > > +	struct mtk_pmic_sensor sensors[MAX_SENSORS];
+> > > +
+> > > +	s32 t_slope1;
+> > > +	s32 t_slope2;
+> > > +	s32 t_intercept;
+> > > +
+> > > +	const struct mtk_thermal_data *data;
+> > > +};
 > 
-> Hmm, rechecking this, I agree with the unnecessary return, but I don't think it
-> changes the behaviour of the function.
+> On the ARMv7 it shouldn't be an issue, because pointer size equals to
+> the s32 or int. However, I've reordered the fields to group pointers
+> and integers together.
 > 
-> > > Before if the last iteration gives an error from the device, we return
-> > > -ETIMEDOUT instead of the whatever the i2c_smbus_read_byte_data() returns.
+> struct mtk_pmic_sensor {
+> 	struct mtk_pmic_thermal *  mt;                   /*     0     4 */
+> 	struct iio_channel *       adc_channel;          /*     4     4 */
+> 	struct thermal_zone_device * tzdev;              /*     8     4 */
+> 	int                        id;                   /*    12     4 */
 > 
-> Looking at the original function, it always prioritized returning the
-> i2c_smbus_read_byte_data() error code before returning -ETIMEDOUT (even
-> on the final iteration). In the new version, if the i2c read is bad,
-> the read_poll_timeout()
-> code will still be zero, therefore allowing the code to jump to the
-> i2c value check
-> and then return if bad (this is still the same behaviour IMO).
+> 	/* size: 16, cachelines: 1, members: 4 */
+> 	/* last cacheline: 16 bytes */
+> };
+> 
+> struct mtk_pmic_thermal {
+> 	struct device *            dev;                  /*     0     4 */
+> 	struct regmap *            regmap;               /*     4     4 */
+> 	const struct mtk_thermal_data  * data;           /*     8     4 */
+> 	s32                        t_slope1;             /*    12     4 */
+> 	s32                        t_slope2;             /*    16     4 */
+> 	s32                        t_intercept;          /*    20     4 */
+> 	struct mtk_pmic_sensor     sensors[1];           /*    24    16 */
+> 
+> 	/* size: 40, cachelines: 1, members: 7 */
+> 	/* last cacheline: 40 bytes */
+> };
+> 
+> The compiler will still add some padding on the AArch64 though.
+> 
+> struct mtk_pmic_sensor {
+> 	struct mtk_pmic_thermal *  mt;                   /*     0     8 */
+> 	struct iio_channel *       adc_channel;          /*     8     8 */
+> 	struct thermal_zone_device * tzdev;              /*    16     8 */
+> 	int                        id;                   /*    24     4 */
+> 
+> 	/* size: 32, cachelines: 1, members: 4 */
+> 	/* padding: 4 */
+> 	/* last cacheline: 32 bytes */
+> };
+> 
+> struct mtk_pmic_thermal {
+> 	struct device *            dev;                  /*     0     8 */
+> 	struct regmap *            regmap;               /*     8     8 */
+> 	const struct mtk_thermal_data  * data;           /*    16     8 */
+> 	s32                        t_slope1;             /*    24     4 */
+> 	s32                        t_slope2;             /*    28     4 */
+> 	s32                        t_intercept;          /*    32     4 */
+> 
+> 	/* XXX 4 bytes hole, try to pack */
 
-It looks like I stand corrected! Indeed, we have two conditions to follow, one
-is provided in a macro parameter, and the other is for timeout. Here the Q is
-which one logically should be checked first? More thinking on it tends to your
-direction as it follows usual pattern as we check the return values (errors)
-from the callee first *then* validate the results.
+^^^^
 
-> Maybe I'm looking at it from the wrong angle though. AFAIC Sashiko nitpicked
-> everything except this (but yes, it's still an AI so we have to tread lightly).
+> 	struct mtk_pmic_sensor     sensors[1];           /*    40    32 */
+> 
+> 	/* size: 72, cachelines: 2, members: 7 */
+> 	/* sum members: 68, holes: 1, sum holes: 4 */
+> 	/* last cacheline: 8 bytes */
+> };
+> 
+> Is this good enough?
 
-> Same goes for the other patch where you raised this issue.
+In the last it seems moving the s32 members to be the last will removes
+the 4-byte hole.
 
-Yep.
 
 -- 
 With Best Regards,
