@@ -1,96 +1,322 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1D7B48A2B1;
-	Wed,  6 May 2026 15:45:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12EF140B6C2;
+	Wed,  6 May 2026 15:46:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778082359; cv=none; b=YZ8eTC2Oh5ucWTMW5dY/cnyn2kYXtbazq2aFfxRb1zglXYnVHAzB3ShOd4YZ1pLmyhCMHCLYidJpQPkAwlGXEBRCVsMjusClzEcXF8L6xZb/kI12BelHWErqng+4xMi7oQHD0OHEO2k2Mt/wKv6NnNLauNtw5gJZ/uzPPEMFhbk=
+	t=1778082393; cv=none; b=fFiK3EjvnCTvlLJda53skQtMmd4qH76SEU7CptPaTmdMXX+OCQlr7nbUDJsPGrmA/ZeJc+UcyRc1N3RgL1cmR3di+8f+JTtBAM1eTfwiChhktjKBWI8kKx5P1sE/9leMMvxBZR8be/Urbf0K+/pANmpzCn/7MDWjrxqOiFG+Uvc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778082359; c=relaxed/simple;
-	bh=QqlCtMiLAL4XeX46Zata65qWqC9bXCCftFoa0e9dJ60=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ti30Bnyn5X7+YVCBF0ctC2GzGHdLyIHHYnyVxBqpwJ5zbtvLQ9ToE94mSiXN8vIpnt8e2qf/CGTQS0T2pfnC3dMkaVXQKm7Si7f8W5uEVbXPY4I1fdwyYzU/pPo7ZfxlPCJW4y4NXMTQWq6M2ZI5dytHxWAyBCO7KggHF41jMLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gGl1U2uO; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778082393; c=relaxed/simple;
+	bh=OaJWjamc6kWNh1B4kT6JEeX0RWTw5B2ryP/Qeb2SLqI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mVLLTDgdO9yDnEpDRSN6/3l8HG7dtNdy/ze1E1Tz+5+RPp2+5nbncxeDKpa5J5KaKCXjrtZKR/vrOZOp2zsgZ/BT7DtuWERNhed7+5UbjpHWTA+fv3gzz7uMyrt7VssUZeob8zZ3G/D/AJotLzXgm2EsMdTWqztwYN8VuX9lHUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bw+h6YwP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gGl1U2uO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778082357; x=1809618357;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QqlCtMiLAL4XeX46Zata65qWqC9bXCCftFoa0e9dJ60=;
-  b=gGl1U2uObBhD8Lcy69t5aSxhxX16c4f7ExHqSXdMVcBfILPC8JVebomu
-   vGFwxFfsI7jgK8hS1L0yiVhpmxXYBM5dj6hYV93QmgWP6+GF0+uAisien
-   /hB7aQK80eOnCFlXAiw9yLMrafA1frHlThiFSoxF4aEGUa0tw7T4JNBs/
-   DJU1qxWWD9Zb6qk8UiCAOm9z5DeGZM/f95Oi3SPHlCKISYvuSAX9T8WGk
-   A271hSNps+NUYVRgWyjYLpkaggTPG9Hk0yAhxRFzw6WxDcQAcqyNuJCzb
-   iZnwvekZ6qkj4XvCg0prYS9p747Cuf/qsxktjjtSDXIgHFhVi6Nuw2SPj
-   Q==;
-X-CSE-ConnectionGUID: o0NVtI76Sx6cOAuAPtH0ow==
-X-CSE-MsgGUID: TexVyt9FSiWj42+xUEumPA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11778"; a="78868514"
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="78868514"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 08:45:55 -0700
-X-CSE-ConnectionGUID: EB6Awzv6Q2uxLwImnseoaA==
-X-CSE-MsgGUID: 72n2t8MaTtizOWhOgSCeKA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="235174633"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 08:45:53 -0700
-Date: Wed, 6 May 2026 18:45:50 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Aldo Conte <aldocontelk@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH 0/3] iio: light: tcs3472: devm conversion, wait time,
- locking cleanup
-Message-ID: <aftiLlKIdT89cpi2@ashevche-desk.local>
-References: <20260506094311.222500-1-aldocontelk@gmail.com>
- <afsWI3MKoWZS4mL3@ashevche-desk.local>
- <16c08754-840f-440e-a252-b14172393394@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bw+h6YwP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 482C2C2BCB8;
+	Wed,  6 May 2026 15:46:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778082392;
+	bh=OaJWjamc6kWNh1B4kT6JEeX0RWTw5B2ryP/Qeb2SLqI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=bw+h6YwP+WQqhFBn5HlBoswhd3ysx6X4monJg25zfK0XT4NRi0HBcANF9k/umJUPP
+	 hK/SVCcVmO9CCQBA0ZeOINqcMOHI/Ilb7iOOUPWoT4zUMtWN7utj07QJdhc/za6pEI
+	 6mbNTO8t9UBLSrV2CSYQWaAaObkiu7QTv0eMTbuhem+GoT4U92+RuL7lOstqJ41lh3
+	 ZAnpBljjOZP6j8QcL4Iwp8Vj3rWIe/r2Erm3gqDRroDhMC3ufuvMXpv1b4Casu/uKM
+	 O7pqIG8UMj/kHRegSGMN50Z6W8EFNuiglMUMxeWOaoi6dYjG0ZuZcj3FOBiOn/cHt8
+	 0YBfH4CiIbNMg==
+Date: Wed, 6 May 2026 16:46:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
+Cc: rva333@protonmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Srinivas Kandagatla
+ <srini@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano
+ <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba
+ <lukasz.luba@arm.com>, Lee Jones <lee@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org, Ben Grisdale
+ <bengris32@protonmail.ch>
+Subject: Re: [PATCH 04/13] iio: adc: mediatek: add mt6323 PMIC AUXADC driver
+Message-ID: <20260506164619.63ebc626@jic23-huawei>
+In-Reply-To: <20260504-mt6323-v1-4-799b58b355ff@protonmail.com>
+References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
+	<20260504-mt6323-v1-4-799b58b355ff@protonmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <16c08754-840f-440e-a252-b14172393394@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 06, 2026 at 05:35:42PM +0200, Aldo Conte wrote:
-> On 5/6/26 12:21, Andy Shevchenko wrote:
-> > On Wed, May 06, 2026 at 11:43:08AM +0200, Aldo Conte wrote:
+On Mon, 04 May 2026 21:24:56 +0300
+Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
 
-...
-
-> Thanks a lot for the detailed review. I'll address all the points in v2.
+> From: Roman Vivchar <rva333@protonmail.com>
 > 
-> Regarding the series structure, I need to clarify the correct order:
-> 1) Guard (mutex) conversion
+> The mt6323 AUXADC is a 15-bit ADC used for system monitoring. This driver
+> provides support for reading various channels including battery and
+> charger voltages, battery and chip temperature, current sensing and
+> accessory detection.
+> 
+> Add a driver for the AUXADC found in the MediaTek mt6323 PMIC.
+> 
+> Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
+> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
 
-Since this most likely wants a new cleanup.h to be added, the 2) Header sorting
-should go before even this one.
+A few things inline that might not entirely overlap with other reviews
 
-> 2) Header sorting
-> 3) Devm conversion (with the new TCS3472_Powerdown using Guard (mutex)
-> directly)
-> 4) Wait time implementation
-> Would this be OK?
-
-Otherwise sounds good, but I can't be 100% sure until I see a v2.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Also make sure to check:
+https://sashiko.dev/#/patchset/20260504-mt6323-v1-0-799b58b355ff%40protonmail.com
+It may well have made some stuff up, but in general it does find stuff
+humans have missed. I've called out a few more interesting ones inline
+(I looked after doing my initial review)
 
 
+Thanks,
+
+Jonathan
+
+> diff --git a/drivers/iio/adc/mt6323-auxadc.c b/drivers/iio/adc/mt6323-auxadc.c
+> new file mode 100644
+> index 000000000000..97b4ad4e7b47
+> --- /dev/null
+> +++ b/drivers/iio/adc/mt6323-auxadc.c
+
+> +/**
+> + * struct mt6323_auxadc - Main driver structure
+> + * @dev:           Device pointer
+> + * @regmap:        Regmap from PWRAP
+> + * @lock:          Mutex to serialize AUXADC reading vs configuration
+> + */
+> +struct mt6323_auxadc {
+> +	struct device *dev;
+> +	struct regmap *regmap;
+> +	struct mutex lock;
+> +};
+
+> +static int mt6323_auxadc_check_if_stuck(struct mt6323_auxadc *auxadc)
+> +{
+> +	int i, ret;
+> +	u32 val;
+> +
+> +	for (i = 0; i < 50; i++) {
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON19, &val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (FIELD_GET(AUXADC_DECI_GDLY_MASK, val)) {
+Flip to reduce indent.
+		if (!FIELD_GET(AUXADC_DECI_GDLY_MASK, val))
+			return 0;
+
+		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_ADC19, &val);
+		if (ret)
+			return ret;
+
+		if (!FIELD_GET(AUXADC_ADC19_BUSY_MASK, val)) {
+			ret = regmap_update_bits(auxadc->regmap,
+						 MT6323_AUXADC_CON19,
+						 FIELD_PREP(AUXADC_DECI_GDLY_MASK, 3),
+// no idea what the magic 3 is. Might need a define to make that clear.
+// fine to go a bit long on code like this for readability.  Also rather
+// odd for a regmap mask to be made up of some bits of a larger mask.
+// rather implies that a field needs breaking up into two.
+
+						 0x0);
+			if (ret)
+				return ret;
+		}
+		fsleep(10);
+	}
+
+> +			ret = regmap_read(auxadc->regmap, MT6323_AUXADC_ADC19,
+> +					  &val);
+> +			if (ret)
+> +				return ret;
+> +
+> +			if (!FIELD_GET(AUXADC_ADC19_BUSY_MASK, val)) {
+> +				ret = regmap_update_bits(
+> +					auxadc->regmap, MT6323_AUXADC_CON19,
+> +					FIELD_PREP(AUXADC_DECI_GDLY_MASK, 3),
+> +					0x0);
+> +				if (ret)
+> +					return ret;
+> +			}
+> +		} else {
+> +			return 0;
+> +		}
+> +
+> +		fsleep(10);
+> +	}
+> +
+> +	return -ETIMEDOUT;
+> +}
+> +
+> +static int mt6323_auxadc_request(struct mt6323_auxadc *auxadc,
+> +				 unsigned long channel)
+> +{
+> +	int ret;
+> +	u32 pmic_val, adc_val;
+> +
+> +	if (channel < 9) {
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON11,
+> +					 AUXADC_VBUF_EN, AUXADC_VBUF_EN);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON22,
+> +				  &pmic_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		adc_val = FIELD_GET(AUXADC_LOW_CHANNEL_MASK, pmic_val);
+> +		adc_val &= ~BIT(channel);
+> +
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON22,
+> +					 AUXADC_LOW_CHANNEL_MASK, adc_val);
+
+Given you have the full register value I'd do regmap_write() rather than
+update_bits() that may trigger another read. Matters less if you having
+caching enabled.
+
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON22,
+> +				  &pmic_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		adc_val = FIELD_GET(AUXADC_LOW_CHANNEL_MASK, pmic_val);
+> +		adc_val |= BIT(channel);
+> +
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON22,
+> +					 AUXADC_LOW_CHANNEL_MASK, adc_val);
+
+as above for a full write.
+
+		return regmap_update_bits() so we don't have to read on
+to see what else happens.  You could drop the else but I think it
+does have some value in showing they are of 'equal' likelihood.
+
+> +
+> +	} else {
+Sashiko points out that we only have channels 0-9 defined, so how do
+we get here?
+
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON23,
+> +				  &pmic_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		adc_val = FIELD_GET(AUXADC_AUDIO_CHANNEL_MASK, pmic_val);
+> +		adc_val &= ~BIT(channel - 9);
+> +
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON23,
+> +					 AUXADC_AUDIO_CHANNEL_MASK, adc_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_read(auxadc->regmap, MT6323_AUXADC_CON23,
+> +				  &pmic_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		adc_val = FIELD_GET(AUXADC_AUDIO_CHANNEL_MASK, pmic_val);
+> +		adc_val |= BIT(channel - 9);
+> +
+> +		ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON23,
+> +					 AUXADC_AUDIO_CHANNEL_MASK, adc_val);
+return regmap_update_bits() here as well because we might as well.
+
+> +	}
+> +
+> +	return ret;
+> +}
+
+> +static int mt6323_auxadc_read_raw(struct iio_dev *indio_dev,
+> +				  const struct iio_chan_spec *chan, int *val,
+> +				  int *val2, long mask)
+> +{
+> +	struct mt6323_auxadc *auxadc = iio_priv(indio_dev);
+> +	int ret, mult = 1;
+
+Move declaration of mult into the scope where it's used.
+That will mean this default is near the point of use. Mind you
+I'd probably but the assignment in and else to make it even
+more obvious.
+
+> +
+> +	if (mask == IIO_CHAN_INFO_RAW) {
+> +		scoped_guard(mutex, &auxadc->lock)
+> +		{
+		guard(mutex)(&auxadc->lock);
+preferred where not necessary to use scoped_guard() as it
+means we don't end up with large code indents.
+
+Though if you did { on the line above.
+
+As sashiko notes, this will trip up compilers anyway due
+to an oddity of how scoped_guard() is implemented. You have
+to have a return after it.
+
+> +			ret = mt6323_auxadc_check_if_stuck(auxadc);
+> +			if (ret)
+> +				return ret;
+> +
+> +			ret = mt6323_auxadc_request(auxadc, chan->address);
+> +			if (ret)
+> +				return ret;
+> +
+> +			usleep_range(300, 500);
+
+Smells like fsleep() is appropriate.
+
+> +
+> +			ret = mt6323_auxadc_read(auxadc, chan, val);
+> +			if (ret)
+> +				return ret;
+> +			return IIO_VAL_INT;
+> +		}
+> +	} else if (mask == IIO_CHAN_INFO_SCALE) {
+> +		if (chan->channel == MT6323_AUXADC_ISENSE ||
+> +		    chan->address == MT6323_AUXADC_BATSNS)
+Probably pick channel or address.  Mind you not much point in
+setting them both to the same thing (another one sashiko got
+that I missed)
+
+> +			mult = 4;
+> +
+> +		*val = mult * 1800;
+> +		*val2 = 32768;
+> +
+> +		return IIO_VAL_FRACTIONAL;
+> +	} else 
+
+{} for all legs if any need it.
+
+> +		return -EINVAL;
+> +}
+> +
+> +static int mt6323_auxadc_init(struct mt6323_auxadc *auxadc)
+> +{
+
+> +
+> +	ret = regmap_update_bits(auxadc->regmap, MT6323_AUXADC_CON9,
+> +				 AUXADC_OSR_MASK,
+> +				 FIELD_PREP(AUXADC_OSR_MASK, 3));
+
+I'm going to guess something to do with sampling rate?  That 3 is non
+obvious so I'd suggest defines for the values AUXADC_OSR can take.
+
+> +	return ret;
+> +}
