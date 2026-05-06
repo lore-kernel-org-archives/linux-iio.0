@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D318B23A9BD;
-	Wed,  6 May 2026 08:39:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 283633E3D8B;
+	Wed,  6 May 2026 08:39:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778056753; cv=none; b=aiVeAALq/IraTQXTBvnF9uCpkLuBXkeicLn8tPjVF44jOJdfLfvu2oHS6f7tEsdiRAqi2GpvXBnaW0V2qvnTaBq1dB7Hvi8myjeAn8l/slRLgrNrd2tZMkE3Wt6tZecpS8N1M/vaIVuapjoWI2aFcKtL9jZAkK7APiAxzPdekrU=
+	t=1778056793; cv=none; b=Gri39DYW/fCJu4dnKELYgxgZglCqVoQ5WVoz1v9zYkL4iWNKh3Jai5rHholygQ3SC6LfBA3LF+cWy47NYjDAwYsrIjVSWrQc2dhqzPM6ENYZiyJZC+0JbzP0p3qcgs2euvMEZ4M7i4nsv4ObLK8Vw2HQ+sYWB0nbdcfXJ3P5oJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778056753; c=relaxed/simple;
-	bh=p1iObnHvds7CfqMcXEugA3tWbqV3BbZrA9Epcv5ZCtM=;
+	s=arc-20240116; t=1778056793; c=relaxed/simple;
+	bh=Fz5iq7aGWo2VvwVsnwbB4SYoUS5Je9iCbW9rqu6w9T8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pRf9DP2+d6pSwKqvxXpmmiCdOZFQi4Onf/qvpz0jvd7Dhj6kDJMt6QQcsE3MBBKlddpmiPyzwzAI1B0iaTuohgN/i3tDOWgfjywsM2vV071TAhvmPv3rbegTospvurlGcXwwUi7bIanNPc2mn17BIAj4I24GSTixuF7+ySZMYO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aZ9je++e; arc=none smtp.client-ip=192.198.163.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=WZOHGpdBR1Tt8czcCu5MF/7CAGcYTrhsYlnfseghR5/c26MzE5GFk+zLnikDqgAsD6E2Dp6dXE/X+hKbiwZ+RY3MLGk6xIzkCq7C8QPEl4w0eECRh2urYOGE/FuksiF4fQ+4RI3l6E/gr5TNhsU0vya03mdj5Lbx0AfsSaMvU4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HxPrAhUE; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aZ9je++e"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HxPrAhUE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778056752; x=1809592752;
+  t=1778056791; x=1809592791;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=p1iObnHvds7CfqMcXEugA3tWbqV3BbZrA9Epcv5ZCtM=;
-  b=aZ9je++eQIJnw8Pgv0XwwtxPiUdCENznONZC5MpenwSVhWGOU7k8tbkU
-   MAbYWmUrOm0UxVkWN0BllIolOYnTAXJ1Es4IN2QtbwUl2RIPH8g6TZKSH
-   zElz1BUkyHbwNLLfPqhb8mF6UPFkNDblAOlcKGbEvP8ifdMLyvanllULv
-   cAfIkYeJ1/lhN3q1puecXlAWoSdwrmOodF3poHyxvBtxxBPkLXvE0r2D2
-   uVH73AydLxcoUfuVG8rZwjHlhzaocNuWEXqnvU9gzJwKMA1PaHPNFIaVb
-   QX9G11TrmyFAUcNPPynrsuXhqJlpOj7eGykRSiJ1eL4SsO59P8+CrPzqo
-   w==;
-X-CSE-ConnectionGUID: MkuxMj1VQW2JXL8RPaX6fQ==
-X-CSE-MsgGUID: 6fP51bIiSomUTHt2dnu5Ng==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="89680424"
+  bh=Fz5iq7aGWo2VvwVsnwbB4SYoUS5Je9iCbW9rqu6w9T8=;
+  b=HxPrAhUEMyTaOoAP5NFz1kSNH4nR/kGl4KuBLHTD25MN9fDjcKWakQjH
+   28FJUCWQDlQyvr4JYCDAxKBxoNPsj9uB4zc3dJFbz/rVClizTTGLlsCea
+   NGWyhEgS/Vaj6XpANlM20ItPK7YhOgAtnDkzYR2XaI/XmUlkPDJiUuA13
+   1/Pj2sQC7VqfdRkyoBjIoMGZZ2d5TA+jnQLhmCu9E7ZvyVvplOctsPY0q
+   V/H8/XbQMTjCahcpjCgwURN5Cm76MRmOGeskjD8JYMtUX9p7uJrMm2eVy
+   A9HI1TaZivDvshd7oEXttb6VPqhSPLoUBw2l+wuQGBkACUfEfW/fUCM93
+   Q==;
+X-CSE-ConnectionGUID: rqr0MHLpT2CBPirl1uzp8Q==
+X-CSE-MsgGUID: 6rQF/JHUTnS7J/SUP0kWrQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="79028176"
 X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="89680424"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 01:39:11 -0700
-X-CSE-ConnectionGUID: jHBss+WtTImJPHedRZop5w==
-X-CSE-MsgGUID: zCMBSyADRI2s6NEcgmXgGQ==
+   d="scan'208";a="79028176"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 01:39:50 -0700
+X-CSE-ConnectionGUID: 7YVRzWasQzus9rd7ozlz9w==
+X-CSE-MsgGUID: muWblokiSz+ImtWX7xFRug==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="240411201"
+   d="scan'208";a="231702139"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 01:39:09 -0700
-Date: Wed, 6 May 2026 11:39:06 +0300
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 01:39:49 -0700
+Date: Wed, 6 May 2026 11:39:46 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Salah Triki <salah.triki@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -53,8 +53,9 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v3] iio: humidity: ens210: Fix missing I2C functionality
  checks
-Message-ID: <afr-KvM756ZAn2hh@ashevche-desk.local>
+Message-ID: <afr-UujhzuwZWzhT@ashevche-desk.local>
 References: <20260505174943.94093-1-salah.triki@gmail.com>
+ <afr-KvM756ZAn2hh@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,49 +64,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260505174943.94093-1-salah.triki@gmail.com>
+In-Reply-To: <afr-KvM756ZAn2hh@ashevche-desk.local>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, May 05, 2026 at 06:49:43PM +0100, Salah Triki wrote:
-> The ENS210 driver uses SMBus transactions (such as byte, word, and block
-> data reads/writes) during the probe and measurement phases. However, the
-> initial functionality check only validated a subset of these capabilities,
-> which could lead to loading failures on adapters requiring SMBus
-> emulation or native-only controllers.
+On Wed, May 06, 2026 at 11:39:11AM +0300, Andy Shevchenko wrote:
+> On Tue, May 05, 2026 at 06:49:43PM +0100, Salah Triki wrote:
+
+...
+
+> > +				!i2c_check_functionality(client->adapter,
+> > +					I2C_FUNC_SMBUS_EMUL)) {
 > 
-> To ensure compatibility across a wide range of I2C adapters, modify the
-> functionality check to verify if the adapter supports the required native
-> operations or, failing that, supports the SMBus emulation layer.
+> This one is now wrong.
 
-...
-
-> ---
-> Changes since v2:
-> - Fixed the alignment and indentation of the I2C functionality check
->   per Maxime's review.
-
-???
-
-...
-
->  	if (!i2c_check_functionality(client->adapter,
-> -				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
-> -				     I2C_FUNC_SMBUS_WRITE_BYTE |
-> -				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
-> +				I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
-> +				I2C_FUNC_SMBUS_WRITE_BYTE |
-> +				I2C_FUNC_SMBUS_READ_BYTE_DATA |
-> +				I2C_FUNC_SMBUS_READ_WORD_DATA |
-> +				I2C_FUNC_SMBUS_READ_I2C_BLOCK) &&
-
-The above was the correct one.
-
-> +				!i2c_check_functionality(client->adapter,
-> +					I2C_FUNC_SMBUS_EMUL)) {
-
-This one is now wrong.
-
+I meant this *indentation* is now wrong.
 
 -- 
 With Best Regards,
