@@ -1,144 +1,129 @@
-Received: from mail-24424.protonmail.ch (mail-24424.protonmail.ch [109.224.244.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 507823E1D01
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 11:22:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.24
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB92E4218B3
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 12:19:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778066548; cv=none; b=SBQR3RpS9WZCKBFAPrixCG6HSWim2ntEHnbxtXu2gp/vm+JM5ka7/4Yyrwqdw2RKqE7q6P1/6TMLSMvZdwW48PJw8YGjY/c5iL04kuzjvVXhbt7GE9Og2EBfbEegq717mscEKBQhzc2Qy2SJSrwXs0nUWiQVX604+VfwmDYwb+U=
+	t=1778069970; cv=none; b=Zftfi0pe9pPIYOGVndDLGLlmdBZmcKr7EHj2PJjZRsUsvSqAoYvIypVQPWf3tI7VzMFrWudxEYar6Q9JAtnO5BWPdMZ3CKSb4/BevsEbka5UvSx1RgtHQD5wavj+S8FU7GrobwekJ329lTVGovbO6Boh0aHvor6ADz33GcT8jeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778066548; c=relaxed/simple;
-	bh=QorpeboRxewf1UhnTNiYDcjq+TKrFB5HabAak7g3gQg=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=g/glQdQeXjhtEgE4WBpfKkV6+vFiMcBIXsKBsXeWFFUtqNFb/dQyeQOAr8mv+f4OIhV6Rhmt+ORTjNWrKBytAdRIbt1ffniA7kyoEPPwPNVKdHlY7gy4ONG0wJsBnbve3cgurdVWqXvkAxiqqxFQRBSxw2TLuS6DxMi+6riHU+8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=IzHhikTW; arc=none smtp.client-ip=109.224.244.24
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	s=arc-20240116; t=1778069970; c=relaxed/simple;
+	bh=WEYp9Pc0nIkcN+xiiA1sakOUxmN97k9d9UtFeOmdugw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BY786Q6sHz1/NbTdLYdSpe3V3kl+hdDJ+zS0VzObENzjfs9kvhA5/QS8vtPlgRCkGAOap+b8S/8+C+Oe07KE2H+IIYhqcOEHDaoH1XP4gN5d6Mh7Q0ZG3cLAXAkCCorZMcAK/uOpLNnRhObRuUs42vXLVe7vYtCjOvA52VoX0mg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=o0LYvXeq; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="IzHhikTW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1778066543; x=1778325743;
-	bh=kZtsny8NCeAj/GASj1HlxIQBODAnth4j1tzCDBSh6zU=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=IzHhikTWfQDBTr23vgWJSTLdr5y+9NN/h3i887KjjWpZeA8mc76VXZO9vWyMfmZ7l
-	 2FOHhTPlaj2aO7kjZzeawb9JjNYBxFDZuRcUBRs6K3QBAa3KxglgXHuebKrk6kUD8M
-	 +b6wNyHjiKSymVqdw7bvKrYvhVBPL+LgY/dV70GM5V9iudGYIT4ZNZRiBl3xmPC8Na
-	 hwRZFyTleFHpHYy/Dpe6r6LW6lUfuZOrOL9FWH2MmAbcw5rLOjiK7iku80jqGB2uI/
-	 72Fg+8g97SEdOW7U8vN00SxmJsnrxc1IGhgH4xErpL7I/CR/2A+akispojEbDHR4I2
-	 ZP9QdjW0dQo1w==
-Date: Wed, 06 May 2026 11:22:15 +0000
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-From: Roman Vivchar <rva333@protonmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Srinivas Kandagatla <srini@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH 06/13] thermal: mediatek: add pmic thermal support
-Message-ID: <cgsML96DsJh_Ow9XsSnyrZ3NhlCnNj1rKegzYNR3eQzkWoF5xQB5-aU6Zi7pKcT8GfUnO3B-D71je60APUtorB7p_A3GtUCp2oer3KYLn6k=@protonmail.com>
-In-Reply-To: <afmnUG8dG0N0HpV6@ashevche-desk.local>
-References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com> <20260504-mt6323-v1-6-799b58b355ff@protonmail.com> <afmnUG8dG0N0HpV6@ashevche-desk.local>
-Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: b57442d521fe1c3d5c9f5812d1b7a6c448998847
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o0LYvXeq"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-449de065cb3so4021912f8f.2
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 05:19:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778069967; x=1778674767; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ky0aM7E+PpEfVJyxjQiWZoXt7cbpeu7WIfgg1hOUvWE=;
+        b=o0LYvXeqnxoCGEX67GwRVKjo3GblJyccEPOt+tAslGVlejoFPhL+u4tgXdoUNHmE2H
+         /qV9IJXutBJwrJqrXR8qSRKNqId8sXftB6HDjVhRp1eMnDAd/epQejCWMoNtLm2sbVOR
+         +AwqPCQHJPCIdF6UC/nI4SdTGA2KT6f6FMleA7ycEOpv0OUE8FihTMP2MtSQGeLx3FfY
+         LtB1DZ82qsAeaUZAZHERyX5GUAlNp15DL90vP0CYVUox9TwA7xhIF2vv36eUlMJgyCni
+         aPwN1m4UNyoeU69eWN8jwDhWCblmykCUbSqthf1vyy+fh8aIq3TCwM63k7xoQjpiHOvT
+         F7tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778069967; x=1778674767;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Ky0aM7E+PpEfVJyxjQiWZoXt7cbpeu7WIfgg1hOUvWE=;
+        b=jTLVu71dL/PMVOjHCrMKkDDlkUlZlHbbO3AdVcXGBVkusImc50OTgjo6vGL/JRDjyN
+         vHrt6tLn06FVXpjBcX0ZGlej6XUdUVOhUgVCzrdiHqJneoXv/h+t0XGh9ykvfczIiZb0
+         eD9X3xaybo+mQrBg6RUpU3ozVISELAVqKSaS6CbrQizsB4Gu0opTV4XT4FNjRAz5KCNB
+         3AylXIZy7MU1M4uVh73ygURhSd/YfPmJRGxNVjXlzJBgD6of7jdGN0Gw2Kgl/B0tILRF
+         FYNwlOjm974OcFv7OHz/XzpOT+B8igsDyt4jjk84L4Q6ZxT4J/wZG6wzvAMH2LlxGp/L
+         IodA==
+X-Forwarded-Encrypted: i=1; AFNElJ8qphaEFBdP7vwZEO0EtKU6gpVExEeCki+ebfcXtoSlXzrvzMtDY1DLYV3qCGFpk0PAptR/bq5qI20=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywg1wX+Y9tXsN0J1Ux/9S3/jbI/0Ux9rZVoCTaN/9Bp1KXMmY0k
+	1L7XDr7bbK06fP7FkMc68NTSoKEkMHrUoFNnoljWGNZEtqIsimwBu1Lg
+X-Gm-Gg: AeBDievjGRxWG9IrMv0hWXt6iEIDL0XDMIlLOLQDd9+CiuWWSAdo/mlGmuh1cpr2tU9
+	S5tibLK08gYnKJHRp+UDhBveLcs5rxIz3wksKVobOKeMeZLF38FSwiXC/4irozX9v3E84OqUhK8
+	e8dzyG9gkn+KkRUbeZnQeGyBxzNBA1cEjAlrUP9H4s2rZB2BlQXK8XZXBNG9I4Id9sjwNpLML1j
+	mxROR6Xg9A90MUWYXxdujiO9aYB9p5RGHibx5I6rTamAVqyh/bJOJXCkdQ0Lovos1OLOncaN5Y4
+	SSxoQKgppuC6O1AWQBdgUPi6HHnrtnNQ2x1rIQFkk84nFdnsYSwTGm6OzGRBBAHWowq9WxLxPwz
+	5DM9oUCk6STEpOKfx+Lk9eBWg7KcHLQJcECJw6+IUsJHL0qi2hPH+JmNXdtJoSXfDMlsWluJg4D
+	gBdzYd65SzOSR9AGCS790GNJIl+NH5xubTlP7CfsyL
+X-Received: by 2002:a5d:5f90:0:b0:44a:8c10:40dc with SMTP id ffacd0b85a97d-4515b9f3c74mr5875556f8f.18.1778069966515;
+        Wed, 06 May 2026 05:19:26 -0700 (PDT)
+Received: from [192.168.37.44] ([217.61.173.50])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45052483166sm12046902f8f.7.2026.05.06.05.19.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 May 2026 05:19:26 -0700 (PDT)
+Message-ID: <1c02501f-c9f5-4b94-bc9e-a6f1f07209f7@gmail.com>
+Date: Wed, 6 May 2026 14:19:24 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/3] iio: light: tcs3472: devm conversion, wait time,
+ locking cleanup
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+References: <20260506094311.222500-1-aldocontelk@gmail.com>
+ <afsWI3MKoWZS4mL3@ashevche-desk.local>
+Content-Language: en-US
+From: Aldo Conte <aldocontelk@gmail.com>
+In-Reply-To: <afsWI3MKoWZS4mL3@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tuesday, May 5th, 2026 at 11:16 AM, Andy Shevchenko <andriy.shevchenko@i=
-ntel.com> wrote:
+On 5/6/26 12:21, Andy Shevchenko wrote:
+> On Wed, May 06, 2026 at 11:43:08AM +0200, Aldo Conte wrote:
+>> This series of changes modernizes the tcs3472 driver by completing the
+>> devm conversion and updating the locking style to use an automatic
+>> guard (mutex). Furthermore, it implement control of the WAIT state,
+>> resolving a TODO.
+>>
+>> Patch1: Converts the driver to use device-managed resource allocation.
+>> This removes the need for an explicit remove() callback, since cleanup
+>> is now handled automatically. It also adds a new function called
+>> tcs3472_powerdown_action() that powers down the chip when the driver is
+>> unloaded, removed or when probe fails after the chip has been enabled.
+>>
+>> Patch2: adds support for the wait time resolving the old TODO comment.
+>> The user can control the WTIME indirectly by writing to the
+>> sampling_frequency attribute. Changing the sampling
+>> frequency attribute results in a change to the wtime while preserving
+>> the current integration time.
+>> Similarly, if the user has previously set a sampling frequency and
+>> then changes the integration time, the driver re-computes WTIME so the
+>> previous frequency is preserved. The patch also handles the deactivation
+>> of wtime when the requested frequency is very high, as well as the
+>> extension of wtime to its maximum values (by enabling the use of WLONG)
+>> when the requested frequency is very low.
+>>
+>> Patch3: converts the remaining mutex_lock()/mutex_unlock() pairs to
+>> guard(mutex).
+>>
+>> All patches have been tested on a Raspberry Pi 3B with a TCS3472
+>> connected to I2C-1 at address 0x29. Sampling frequency and integration
+>> time changes have been exercised checking the value of WTIME and
+>> consequently WEN and WLONG. Raw RGBC reads, calibscale, integration_time
+>> and threshold events continue to work as before.
+> 
+> Thanks for contribution, unfortunately this series needs much more work
+> and more preparatory patches as well. I have reviewed the current series.
+> Please, follow and address (or comment why it can't be done as suggested).
+> 
 
-> On Mon, May 04, 2026 at 09:24:58PM +0300, Roman Vivchar via B4 Relay wrot=
-e:
-
-...
-
-> > +struct mtk_pmic_sensor {
-> > +=09struct mtk_pmic_thermal *mt;
-> > +=09int id;
-> > +=09struct iio_channel *adc_channel;
-> > +=09struct thermal_zone_device *tzdev;
-> > +};
->=20
-> Can you confirm with `pahole` that this is the best layout (taking into a=
-ccount
-> the use in the below data structure)?
->=20
-> > +struct mtk_pmic_thermal {
-> > +=09struct device *dev;
-> > +=09struct regmap *regmap;
-> > +=09struct mtk_pmic_sensor sensors[MAX_SENSORS];
-> > +
-> > +=09s32 t_slope1;
-> > +=09s32 t_slope2;
-> > +=09s32 t_intercept;
-> > +
-> > +=09const struct mtk_thermal_data *data;
-> > +};
->=20
-
-On the ARMv7 it shouldn't be an issue, because pointer size equals to
-the s32 or int. However, I've reordered the fields to group pointers
-and integers together.
-
-struct mtk_pmic_sensor {
-=09struct mtk_pmic_thermal *  mt;                   /*     0     4 */
-=09struct iio_channel *       adc_channel;          /*     4     4 */
-=09struct thermal_zone_device * tzdev;              /*     8     4 */
-=09int                        id;                   /*    12     4 */
-
-=09/* size: 16, cachelines: 1, members: 4 */
-=09/* last cacheline: 16 bytes */
-};
-
-struct mtk_pmic_thermal {
-=09struct device *            dev;                  /*     0     4 */
-=09struct regmap *            regmap;               /*     4     4 */
-=09const struct mtk_thermal_data  * data;           /*     8     4 */
-=09s32                        t_slope1;             /*    12     4 */
-=09s32                        t_slope2;             /*    16     4 */
-=09s32                        t_intercept;          /*    20     4 */
-=09struct mtk_pmic_sensor     sensors[1];           /*    24    16 */
-
-=09/* size: 40, cachelines: 1, members: 7 */
-=09/* last cacheline: 40 bytes */
-};
-
-The compiler will still add some padding on the AArch64 though.
-
-struct mtk_pmic_sensor {
-=09struct mtk_pmic_thermal *  mt;                   /*     0     8 */
-=09struct iio_channel *       adc_channel;          /*     8     8 */
-=09struct thermal_zone_device * tzdev;              /*    16     8 */
-=09int                        id;                   /*    24     4 */
-
-=09/* size: 32, cachelines: 1, members: 4 */
-=09/* padding: 4 */
-=09/* last cacheline: 32 bytes */
-};
-
-struct mtk_pmic_thermal {
-=09struct device *            dev;                  /*     0     8 */
-=09struct regmap *            regmap;               /*     8     8 */
-=09const struct mtk_thermal_data  * data;           /*    16     8 */
-=09s32                        t_slope1;             /*    24     4 */
-=09s32                        t_slope2;             /*    28     4 */
-=09s32                        t_intercept;          /*    32     4 */
-
-=09/* XXX 4 bytes hole, try to pack */
-
-=09struct mtk_pmic_sensor     sensors[1];           /*    40    32 */
-
-=09/* size: 72, cachelines: 2, members: 7 */
-=09/* sum members: 68, holes: 1, sum holes: 4 */
-=09/* last cacheline: 8 bytes */
-};
-
-Is this good enough?
-
-Other comments will be fixed in the v2.
+Thank you for your review.
+These mistakes are undoubtedly due to my still limited experience. I 
+will start working on them right away.
 
 Best regards,
-Roman
+Aldo Conte
