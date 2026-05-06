@@ -1,126 +1,82 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49ECF7262E;
-	Wed,  6 May 2026 06:19:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0286930B50A;
+	Wed,  6 May 2026 06:34:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778048371; cv=none; b=CewpB4kptUd7IN/pMbaMUVSIf38pCGLTgINhcLxNra2GYzy8NR207gmqJo0KlA2CakdfSIGX2KWKM3dMScSCvzmchBbodkpBqZT8mNOSo3QQWBiVrdY5PTjQxClx0JvwInNFU92zLwhhdRu1iZMRc/m1O0s6me2Lz8Is0xDB2vA=
+	t=1778049246; cv=none; b=E0Mf+U7xjwxG9UHJrxQWS80zF96Q6ElVt4dMRcgbIYG5/wwViGOTIsDvsSEe/k6ZstWk+WctVFJxQMGK3MN8diMMcvK2mwPnHui9jlju7lyZ2TsaIVz/Gsio8NN3+9sfqBPD54nUWlnUK8bFeZz+EjTBHXLhOTAGGkZCfrUGY+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778048371; c=relaxed/simple;
-	bh=DR9fZ3oGj6GeeB5Do1nfWee/Qi0geXdjcx6Al2z2im8=;
+	s=arc-20240116; t=1778049246; c=relaxed/simple;
+	bh=q8nWgKtXBvx/mfIZ9bFG+C2AmxuxICqBZOOjbgMbssk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MYoEBcObvSlc+AXGYCYbeH96sPRKDOH2Dli5z0klA9bvkaVA4vCafzhdJCIl/Nebayy0NVkledjlnyIPO5K6lTjPWZifTkynCkQMYKbWfQrVefnHL3g4X8BCXkPItVU89MxKY46CfRC+JcPoO8epgmsLIU9CtoW1LnrRcDn/Iis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Bc6l7uud; arc=none smtp.client-ip=192.198.163.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=jCMc9jg96ZR8trmfw1SlmoS7YSW4pr7mHUOFbbJp8VKQ1K8aH/5unExnIp5BeUxGQkfnvTs+hwPa1pn5OJ29p/CYDNNK7X0hR0JtJJMeNwuhPs+nVcbPe5p54JtbHtHnQXbkmPQv1c3zhWJvV41LPx0ulSIz1lsKR/ujtN7ktfM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aPJpzAii; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bc6l7uud"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aPJpzAii"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778048370; x=1809584370;
+  t=1778049244; x=1809585244;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=DR9fZ3oGj6GeeB5Do1nfWee/Qi0geXdjcx6Al2z2im8=;
-  b=Bc6l7uudqgyY5yORaCNzsT6T9PcZxlCv7vDaq6XEaSGCbIjZdnitQWry
-   hOMbShBnMGxIwBKjR0xJTvDY4+FxPHJ6TRboY8NmCvN2TdoNTVn2OnsZ3
-   s50co02lJmjLxk5swk8yDIlBDOiKYy2xYCL+GE6wWkpzq7zRshXTZWJkO
-   yfP2WCzaN8o+tKUbM8SwYTmvNgStK09aIrGJD6xx2QHt4xuCmXTp03InF
-   lXOZjSb+Ox90gXiwkANtI8dzpg8jAX1RGcu+dYu7ILDAE3ChQOZMrzqWA
-   9Wuu0kAu1CTpssi7DWGTesZszBqpvHc/jFpk+JzXaYNeV7qGD6tyWSWjg
-   A==;
-X-CSE-ConnectionGUID: 7/6ruuM2TZq9VsA4gR/Isg==
-X-CSE-MsgGUID: xoVVDr6+R66yW6i5D6YjEg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="89533275"
+   mime-version:in-reply-to;
+  bh=q8nWgKtXBvx/mfIZ9bFG+C2AmxuxICqBZOOjbgMbssk=;
+  b=aPJpzAii+jrNG3aampSaZZ8tmJiNnB5+OswPyrXSUlmmUjEpD4nMMJuU
+   wPoIbuSr6f+ygdV6EQ1oYd4Z6iAPpuJJeIrAf89rJKzrQKAxrqIyynttf
+   WX7ZvvULnIY+LO4KAG/wudOgvBATwIzJ2Lph4J08thzo8q7U4N17TkffO
+   jBrqQ0Si1z7VAyWlQwUK7MjFP+uLIZuIY8CYXyhon/T0Mf1eBrzgkqsHc
+   fnKfQ9ilXvMsP7Bm126O4uLR8bZAAA8MprtpLEgrmE6S8Pi0zXbCkWUC9
+   TbqWDPspIV8aM3oNoksQv7ekkNYYhWBFGBYWNJvcfOdxH9QGD7LJTIb2q
+   w==;
+X-CSE-ConnectionGUID: Hzj5ioBEROiYoreg9c36PQ==
+X-CSE-MsgGUID: WqofcrUkSEiBdZL43o+9rQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="66476269"
 X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="89533275"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 23:19:29 -0700
-X-CSE-ConnectionGUID: aUL5I1YTRH23vYlakaXYAw==
-X-CSE-MsgGUID: ZPdnQYTZQy2yXjw2bdsNhQ==
+   d="scan'208";a="66476269"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 23:31:01 -0700
+X-CSE-ConnectionGUID: AO0yb5IuRkCWvQvLUW+7bQ==
+X-CSE-MsgGUID: KjN5eBzZRBONM2tXEn3xog==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="236108381"
+   d="scan'208";a="237832152"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 23:19:27 -0700
-Date: Wed, 6 May 2026 09:19:22 +0300
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2026 23:30:59 -0700
+Date: Wed, 6 May 2026 09:30:54 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Maxwell Doose <m32285159@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: joshua.crofts1@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 03/18] iio: magnetometer: ak8975: replace
- usleep_range() with fsleep()
-Message-ID: <afrdalgL3rEvYCEV@ashevche-desk.local>
+Subject: Re: [PATCH v5 04/18] iio: magnetometer: ak8975: change 'u8*' to 'u8
+ *' in cast
+Message-ID: <afrgHtgLZMEDT1j1@ashevche-desk.local>
 References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
- <20260505-magnetometer-fixes-v5-3-831b9b5550fc@gmail.com>
- <CAKqfh0Hz_zc6+7m2ca8uY-kPNs=ttOh=qni7MdrwFwThEx69TA@mail.gmail.com>
- <CALoEA-xNCjBZ5xdEzEC1zoXL36=Zq5Bfwb0zwP0cU5W0Fs6Spg@mail.gmail.com>
+ <20260505-magnetometer-fixes-v5-4-831b9b5550fc@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALoEA-xNCjBZ5xdEzEC1zoXL36=Zq5Bfwb0zwP0cU5W0Fs6Spg@mail.gmail.com>
+In-Reply-To: <20260505-magnetometer-fixes-v5-4-831b9b5550fc@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, May 05, 2026 at 11:26:08PM +0200, Joshua Crofts wrote:
-> On Tue, 5 May 2026 at 22:30, Maxwell Doose <m32285159@gmail.com> wrote:
-> > On Tue, May 5, 2026 at 6:53 AM Joshua Crofts via B4 Relay
-> > <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
-> > >
-> > > Replace usleep_range() calls with fsleep(), passing the minimum value
-> > > required by the sensor for hardware delays.
-> > >
-> > > fsleep() automatically selects the optimal sleep mechanism, simplifying
-> > > driver code and time management.
+On Tue, May 05, 2026 at 01:46:00PM +0200, Joshua Crofts via B4 Relay wrote:
 
-[snip]
-
-> > Looks fine overall but has this been tested on actual hardware? Just
-> > want to double check since this touches the set_mode and power_on
-> > logic.
+> Change 'u8*' cast to 'u8 *' as the former triggers a checkpatch error.
+> Also fix the indentation of parameters in
+> i2c_smbus_read_i2c_block_data_or_emulated() function.
 > 
-> Fair enough, this series mostly concerned code cleanup and moving
-> away from older driver programming practices, so it shouldn't mess
-> with the functioning logic as much - however it would be more than
-> welcome if someone had the hardware to test it.
+> No functional change.
 
-This simple patch doesn't change the minimum time to sleep, assuming the driver
-was tested previously (and it had to be), the given change is very unlikely to
-introduce regressions. Also note that the similar changes have been done all
-around the kernel in the past few month and I haven't heard it brought a
-regression to the users (but if you, Maxwell, have some pointers to otherwise,
-please share, I would really like to see such a report!).
-
-> > Also I will say it may be better to keep usleep_range() since
-> > it's more explicit, which will likely be better for the future to make
-> > it obvious. Also, I was taking a look at the docs for fsleep() and it
-> > provides "maximum 25% slack", which means we're stripping away almost
-> > 375us on one of these calls. And besides, it would eventually just
-> > call usleep_range() anyways.
-> 
-> I disagree here. If you look at the documentation for msleep(), you can see
-> that "slack" is actually an addition to the delay time, not a
-> subtraction. fsleep()
-> will always guarantee a delay of at least what's supplied as the parameter.
-> 
-> About fsleep() translating to usleep_range() - yes, you're correct about that,
-> however not only it's more modern practice, it also doesn't require the
-> programmer to add an additional arbitrary max value, fsleep() just
-> adds it itself.
-> As for explicitness, I think fsleep(500) is explicit enough, as described above.
-
-Yes, fsleep() is recommended way of non-atomic sleeps with a microsecond
-granularity.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
