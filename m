@@ -1,49 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 784E3478E5B;
-	Wed,  6 May 2026 14:37:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6437481AB6;
+	Wed,  6 May 2026 14:43:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778078232; cv=none; b=gY55xKoP8dzJsJbspZsdhNP6cztIrdhp4PKRJgz8cRbUF6Ub/5I1ZhCXv+XZ7yIRsFT7xkgy4wNd/E6ikY/fiWOby/CJjAFvfEsuVcfSQeZ6Thj8BGzwp+LAcdtw1hhjGkPEj8xjsPuPj1we2699YjYHEZBZ/uHxcmArSXP7scg=
+	t=1778078635; cv=none; b=cm7I293nppo1190qrGgB0WWQC8dqHBYC1FZ92kUeSx0oorjL4WQvmOKIU6oXP5e9TzEBcYL+JL5Gtb3zO/TU440DsQhtoZbdHDlbOxm5C+7l8uSkoQivR+cMAYR0UWLhcoBzT/LLi/XHDXjpyOkB2N3rO8Nsxc/hrdw2sMwBHCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778078232; c=relaxed/simple;
-	bh=62CxnL5h3UKSUFzY7aJctB3qlSrYU79QU65ujNjK1io=;
+	s=arc-20240116; t=1778078635; c=relaxed/simple;
+	bh=EI80t/9t+CfPSVZ84bEGxWR/tM+sFJJ204rI2WjItpk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=E9u3udK1QCBnABBrjbP+JfZDZm7QjpF4E3qZmdeO4XoVpUyYUm34skn3dQrIPXpywI63m8n67VSneurZt7ODVmm+HOLaPZwrJu1CCFO8yLwg2qYcjjxqef5NWgqIe3D0fMQywCDfq/AsiClGTvheZvIkSt2hIUVDfxUvfn28Gzo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jdzQU3TX; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=GwS/ODy34pzjTKxEevKJYrL+1AQDEgWjM0p/4KziI4Tm4v1fMoJUKa6sxPj6hvPVl6/s3Njr2LtpFr2cJLSl8kc/CDgil6FwjQHK+7lHInDV1LyRts9cYM4VgRRBKzOakKdHZGJ/yFD+7SitnYnf4i8xKUpqEbKJ7/7x1LQ7yZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WCrHOiif; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jdzQU3TX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4257DC2BCB0;
-	Wed,  6 May 2026 14:37:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WCrHOiif"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 468B8C2BCC9;
+	Wed,  6 May 2026 14:43:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778078231;
-	bh=62CxnL5h3UKSUFzY7aJctB3qlSrYU79QU65ujNjK1io=;
+	s=k20201202; t=1778078635;
+	bh=EI80t/9t+CfPSVZ84bEGxWR/tM+sFJJ204rI2WjItpk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=jdzQU3TXHoAVoojfLcaZWJqEhGZwtxELOer0dZCcJf8EuC7q7pC0acfV0n5pdJi6S
-	 84NFHlbv34gUm6S3+m/zRXl3WquABoeXaaT+XmqN2rv6m52XfJcJkeSaaLNNUMndC/
-	 1o2tOmRzWhxbGkc0CpaRlmCV1sZFc8STgOaBIjkJrnnkLfIX32CJ+58zct9Wwt6dkz
-	 GSOqzgfcP3ck1fPUcr+sQJOWL36IWfHu0EFyKrTkApQSh4m/x9UtlyNPtREXWiVHgt
-	 klTFRyS1X3gnstYVJbMj10npBXpRrYqKPRetcs7g81FckAbVoe5pI0X6iQnb9JLpd3
-	 ZOnpmM1azEA1Q==
-Date: Wed, 6 May 2026 15:37:00 +0100
+	b=WCrHOiifur/DsnD1aL0ggVsR1HyrDo2895n6RPq6rYiRiS88uX9uCMtNOt6aD69p5
+	 IKUUSHhMCT2l1rT9g76Wu0IVyGSSlQA4zZ1gKv7N5i+ndKP7VDsnlpT34uj4l//60B
+	 gMM6JBpCjLjflcInCPGGLeqqWpsCZq3fJLweFvFVCdzYc5/QpjI+KEdpFWOrNjQRLN
+	 fyw4mOSSsbx5Sxnf7+MUrnr/zxPEYwIWgbtCFIR0Oz0eDUTtTVl3pfPhAHoAt10Lqp
+	 l+QeeYRtvrJY6zBhC4VHtfud+NHj8IVAngEWdGO+vk3IQz4eUFMrCcr5Su3BDn2aEs
+	 +BHYVePeea8Uw==
+Date: Wed, 6 May 2026 15:43:47 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, mingo@kernel.org,
- christophe.jaillet@wanadoo.fr, nabijaczleweli@nabijaczleweli.xyz,
- kees@kernel.org, kyungmin.park@samsung.com, k.wrona@samsung.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 2/9] iio: ssp_sensors: factor out pending list
- add/remove helper(s)
-Message-ID: <20260506153700.351fec68@jic23-huawei>
-In-Reply-To: <afrvsw4cTU05oV2Q@ashevche-desk.local>
-References: <20260426091710.3722035-1-sanjayembedded@gmail.com>
-	<20260426091710.3722035-3-sanjayembedded@gmail.com>
-	<20260426150830.7ab41ad3@jic23-huawei>
-	<F6B75893-D8A8-4072-BB26-83F630805700@gmail.com>
-	<20260505173859.19b79034@jic23-huawei>
-	<afrvsw4cTU05oV2Q@ashevche-desk.local>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ songqiang1304521@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ "open list:PNI RM3100 IIO DRIVER" <linux-iio@vger.kernel.org>, open list
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5] iio: magnetometer: rm3100: Modernize locking and
+ refactor control flow
+Message-ID: <20260506154347.19e7d68f@jic23-huawei>
+In-Reply-To: <CAKqfh0FNGsudG4B_VOv0nVa8qjZe03tzBEFkeebr-VY84syh6g@mail.gmail.com>
+References: <20260430124148.11572-1-m32285159@gmail.com>
+	<afNR1Apx86FeAcKd@ashevche-desk.local>
+	<CAKqfh0FrKeAL7+guUMmsvm3EkjFZjEUXQUMHk=x9adU+ZWv1eQ@mail.gmail.com>
+	<20260505134538.73b5fec5@jic23-huawei>
+	<CAKqfh0FNGsudG4B_VOv0nVa8qjZe03tzBEFkeebr-VY84syh6g@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,64 +53,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 6 May 2026 10:37:23 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 5 May 2026 12:05:11 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
-> On Tue, May 05, 2026 at 05:38:59PM +0100, Jonathan Cameron wrote:
-> > On Sun, 03 May 2026 16:53:27 +0530
-> > Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote: =20
-> > > On 26 April 2026 7:38:30=E2=80=AFpm IST, Jonathan Cameron <jic23@kern=
-el.org> wrote: =20
-> > > >On Sun, 26 Apr 2026 14:47:03 +0530
-> > > >Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote: =20
+> On Tue, May 5, 2026 at 7:45=E2=80=AFAM Jonathan Cameron <jic23@kernel.org=
+> wrote:
+> >
+> > Applied to the testing branch of iio.git with that tweak.
+> >
+> > Thanks,
+> >
+> > Jonathan
+> > =20
 >=20
-> ...
+> Hey Jonathan, I just noticed that I made a mistake in the commit
+> message, it says "Add new helper-wrapper function
+> rm3100_guarded_regmap_bulk_read()..." when it really should be "Add
+> new helper-wrapper function rm3100_regmap_bulk_read_locked()..." I'm
+> unfortunately not in a position to fix it myself since I'm away, but I
+> just wanted to point it out so it could be fixed.
+fixed up.
 >=20
-> > > >> +	if (msg->length =3D=3D 0)
-> > > >> +		return;   =20
-> > > >
-> > > >I know Andy suggested your bring these into the helpers, but to me
-> > > >it's obscuring flow as it looks at the caller like it was added
-> > > >to the pending list when it wasn't..  And we end up with multiple
-> > > >checks on msg_length where we had one before.
-> > > >
-> > > >One option would be to have it return a bool to indicate whether
-> > > >it was added to the pending list or not.
-> > > >
-> > > >Andy, would that work for you? =20
->=20
-> I don't remember if I answered anything to this, but returning bool is fi=
-ne...
->=20
-> ...
->=20
-> > > If we convert this change to sub-function then suggested use_irq woul=
-d be
-> > > shifted to sub-function; then how would you suggest to handle that bo=
-ol ?
-> > > - keep msg->length as it is
-> > > - in sub function __ssp_do_transfer(data, msg), should we pass additi=
-onal
-> > > parameter to bool for further execution? =20
-> > Pass in any additional parameters you need. If it becomes too long then=
-=20
-> > this was a bad idea and you should ignore me ;) =20
->=20
-> ...however, the coding style (or some documentation) suggests against bool
-> parameters to the functions.
->=20
-How much duplication do we actually get if we split it?  So have totally
-seperate functions for what would otherwise have been true / false values
-of that parameter and pick at the caller?
-
-Maybe that ends up cleaner.  To be honest this needs someone to play around
-and see what works out as least hideous.
-
-Jonathan
-
-> > > Or any better alternative to handle both ?
-> > >  =20
-> > > >Then we only have a simple check on return value from that to decide
-> > > >to increment the counter and exit on error. =20
->=20
+> best regards,
+> max
 
