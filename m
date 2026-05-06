@@ -1,129 +1,96 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.andi.de1.cc (mail.andi.de1.cc [178.238.236.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB92E4218B3
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 12:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01CBD31716F;
+	Wed,  6 May 2026 12:21:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.238.236.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778069970; cv=none; b=Zftfi0pe9pPIYOGVndDLGLlmdBZmcKr7EHj2PJjZRsUsvSqAoYvIypVQPWf3tI7VzMFrWudxEYar6Q9JAtnO5BWPdMZ3CKSb4/BevsEbka5UvSx1RgtHQD5wavj+S8FU7GrobwekJ329lTVGovbO6Boh0aHvor6ADz33GcT8jeY=
+	t=1778070070; cv=none; b=bfwY2eQUbb2YsxgWJIdMgdDGjOF3aZ0eYhK/o7PVhvo+Mg3qxZXd90onykmW9jhr/VtylixsMVhXetlfOnzFpN3VeSvshFxwJvwm9Lwvqdg74lWbA1kXqawXK1GphracQz/mLCXms0Bp5RFru6HtK2/za6pRtyDtv5pW10LhfM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778069970; c=relaxed/simple;
-	bh=WEYp9Pc0nIkcN+xiiA1sakOUxmN97k9d9UtFeOmdugw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BY786Q6sHz1/NbTdLYdSpe3V3kl+hdDJ+zS0VzObENzjfs9kvhA5/QS8vtPlgRCkGAOap+b8S/8+C+Oe07KE2H+IIYhqcOEHDaoH1XP4gN5d6Mh7Q0ZG3cLAXAkCCorZMcAK/uOpLNnRhObRuUs42vXLVe7vYtCjOvA52VoX0mg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=o0LYvXeq; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778070070; c=relaxed/simple;
+	bh=MEcilob3lIa0Djuvxe+8G/SiF3Ck8f9Fw74juQCNS4k=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=q2ds2loLmGh4aD8hk2GP0t5u0kY1/vDPkyqojj7ucPPHfeEaLJs8bk7T8ixEOC/p9F/gdTEI715B/7QhwyFnNzKWHdF35H0lIqBUYux7Rn2jdd2d0AzxGsqoh8XrHne1u5KsYF3muRtgB0zE+y4LRWSjOXjnrq4FIrIRcYXydAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info; spf=pass smtp.mailfrom=kemnade.info; dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.b=DBA9+0qw; arc=none smtp.client-ip=178.238.236.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kemnade.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o0LYvXeq"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-449de065cb3so4021912f8f.2
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 05:19:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778069967; x=1778674767; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ky0aM7E+PpEfVJyxjQiWZoXt7cbpeu7WIfgg1hOUvWE=;
-        b=o0LYvXeqnxoCGEX67GwRVKjo3GblJyccEPOt+tAslGVlejoFPhL+u4tgXdoUNHmE2H
-         /qV9IJXutBJwrJqrXR8qSRKNqId8sXftB6HDjVhRp1eMnDAd/epQejCWMoNtLm2sbVOR
-         +AwqPCQHJPCIdF6UC/nI4SdTGA2KT6f6FMleA7ycEOpv0OUE8FihTMP2MtSQGeLx3FfY
-         LtB1DZ82qsAeaUZAZHERyX5GUAlNp15DL90vP0CYVUox9TwA7xhIF2vv36eUlMJgyCni
-         aPwN1m4UNyoeU69eWN8jwDhWCblmykCUbSqthf1vyy+fh8aIq3TCwM63k7xoQjpiHOvT
-         F7tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778069967; x=1778674767;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Ky0aM7E+PpEfVJyxjQiWZoXt7cbpeu7WIfgg1hOUvWE=;
-        b=jTLVu71dL/PMVOjHCrMKkDDlkUlZlHbbO3AdVcXGBVkusImc50OTgjo6vGL/JRDjyN
-         vHrt6tLn06FVXpjBcX0ZGlej6XUdUVOhUgVCzrdiHqJneoXv/h+t0XGh9ykvfczIiZb0
-         eD9X3xaybo+mQrBg6RUpU3ozVISELAVqKSaS6CbrQizsB4Gu0opTV4XT4FNjRAz5KCNB
-         3AylXIZy7MU1M4uVh73ygURhSd/YfPmJRGxNVjXlzJBgD6of7jdGN0Gw2Kgl/B0tILRF
-         FYNwlOjm974OcFv7OHz/XzpOT+B8igsDyt4jjk84L4Q6ZxT4J/wZG6wzvAMH2LlxGp/L
-         IodA==
-X-Forwarded-Encrypted: i=1; AFNElJ8qphaEFBdP7vwZEO0EtKU6gpVExEeCki+ebfcXtoSlXzrvzMtDY1DLYV3qCGFpk0PAptR/bq5qI20=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywg1wX+Y9tXsN0J1Ux/9S3/jbI/0Ux9rZVoCTaN/9Bp1KXMmY0k
-	1L7XDr7bbK06fP7FkMc68NTSoKEkMHrUoFNnoljWGNZEtqIsimwBu1Lg
-X-Gm-Gg: AeBDievjGRxWG9IrMv0hWXt6iEIDL0XDMIlLOLQDd9+CiuWWSAdo/mlGmuh1cpr2tU9
-	S5tibLK08gYnKJHRp+UDhBveLcs5rxIz3wksKVobOKeMeZLF38FSwiXC/4irozX9v3E84OqUhK8
-	e8dzyG9gkn+KkRUbeZnQeGyBxzNBA1cEjAlrUP9H4s2rZB2BlQXK8XZXBNG9I4Id9sjwNpLML1j
-	mxROR6Xg9A90MUWYXxdujiO9aYB9p5RGHibx5I6rTamAVqyh/bJOJXCkdQ0Lovos1OLOncaN5Y4
-	SSxoQKgppuC6O1AWQBdgUPi6HHnrtnNQ2x1rIQFkk84nFdnsYSwTGm6OzGRBBAHWowq9WxLxPwz
-	5DM9oUCk6STEpOKfx+Lk9eBWg7KcHLQJcECJw6+IUsJHL0qi2hPH+JmNXdtJoSXfDMlsWluJg4D
-	gBdzYd65SzOSR9AGCS790GNJIl+NH5xubTlP7CfsyL
-X-Received: by 2002:a5d:5f90:0:b0:44a:8c10:40dc with SMTP id ffacd0b85a97d-4515b9f3c74mr5875556f8f.18.1778069966515;
-        Wed, 06 May 2026 05:19:26 -0700 (PDT)
-Received: from [192.168.37.44] ([217.61.173.50])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45052483166sm12046902f8f.7.2026.05.06.05.19.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 May 2026 05:19:26 -0700 (PDT)
-Message-ID: <1c02501f-c9f5-4b94-bc9e-a6f1f07209f7@gmail.com>
-Date: Wed, 6 May 2026 14:19:24 +0200
+	dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="DBA9+0qw"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=kemnade.info; s=20220719; h=References:In-Reply-To:Cc:From:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=/4qEkQwBeZBXmPpSGuA2DsdKBoBKWN8Kcgu73ejEo9o=; b=DBA9+0qwOxXnnHKSp6m1ufmG9f
+	jSLEwl4qIf/wO9UPBs0kfkPAQT7aST7lkuMm+zcH3o7z16qh9qGniBd2PclrsbXNND5PbBq1Ma+VG
+	P8ePmEj7ZxSqCV7YIbvy9YELBnEPSqw20XhoLAKz2J6hHBcLN5rgczJ4v0xeXIii+iumTpwJ2BDus
+	2kTncE0pufzoBqvWcJB71feVe82q31aNGjyNoNhJtPHooklX28+mcwrL2uYZeUPDhHwiPc5QWB826
+	MC5QLwo3a1jwzulpO7zVPl2qJx7SxE7EnZwqNiEM0uAhNbMFUIO1z2AhV0dQkLIH7vyHfjxKi1kG1
+	0HK1gThA==;
+Date: Wed, 6 May 2026 14:20:44 +0200
+From: Andreas Kemnade <andreas@kemnade.info>
+To: Kevin Hilman <khilman@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, akemnade@kernel.org, Jean-Baptiste
+ Maneyrol <jean-baptiste.maneyrol@tdk.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Aaro Koskinen <aaro.koskinen@iki.fi>, Roger
+ Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-omap@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 2/2] ARM: dts: ti/omap: omap4-epson-embt2ws: fix typo in
+ iio device property
+Message-ID: <20260506142044.6456b2d5@kemnade.info>
+In-Reply-To: <7ha4yfzv2t.fsf@baylibre.com>
+References: <20251231-mpu9150-v1-0-08ecf085c4ae@kernel.org>
+	<20251231-mpu9150-v1-2-08ecf085c4ae@kernel.org>
+	<20260111123200.6871a41b@jic23-huawei>
+	<20260112094259.4648cfaa@kemnade.info>
+	<7ha4yfzv2t.fsf@baylibre.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; aarch64-unknown-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/3] iio: light: tcs3472: devm conversion, wait time,
- locking cleanup
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-References: <20260506094311.222500-1-aldocontelk@gmail.com>
- <afsWI3MKoWZS4mL3@ashevche-desk.local>
-Content-Language: en-US
-From: Aldo Conte <aldocontelk@gmail.com>
-In-Reply-To: <afsWI3MKoWZS4mL3@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 5/6/26 12:21, Andy Shevchenko wrote:
-> On Wed, May 06, 2026 at 11:43:08AM +0200, Aldo Conte wrote:
->> This series of changes modernizes the tcs3472 driver by completing the
->> devm conversion and updating the locking style to use an automatic
->> guard (mutex). Furthermore, it implement control of the WAIT state,
->> resolving a TODO.
->>
->> Patch1: Converts the driver to use device-managed resource allocation.
->> This removes the need for an explicit remove() callback, since cleanup
->> is now handled automatically. It also adds a new function called
->> tcs3472_powerdown_action() that powers down the chip when the driver is
->> unloaded, removed or when probe fails after the chip has been enabled.
->>
->> Patch2: adds support for the wait time resolving the old TODO comment.
->> The user can control the WTIME indirectly by writing to the
->> sampling_frequency attribute. Changing the sampling
->> frequency attribute results in a change to the wtime while preserving
->> the current integration time.
->> Similarly, if the user has previously set a sampling frequency and
->> then changes the integration time, the driver re-computes WTIME so the
->> previous frequency is preserved. The patch also handles the deactivation
->> of wtime when the requested frequency is very high, as well as the
->> extension of wtime to its maximum values (by enabling the use of WLONG)
->> when the requested frequency is very low.
->>
->> Patch3: converts the remaining mutex_lock()/mutex_unlock() pairs to
->> guard(mutex).
->>
->> All patches have been tested on a Raspberry Pi 3B with a TCS3472
->> connected to I2C-1 at address 0x29. Sampling frequency and integration
->> time changes have been exercised checking the value of WTIME and
->> consequently WEN and WLONG. Raw RGBC reads, calibscale, integration_time
->> and threshold events continue to work as before.
-> 
-> Thanks for contribution, unfortunately this series needs much more work
-> and more preparatory patches as well. I have reviewed the current series.
-> Please, follow and address (or comment why it can't be done as suggested).
-> 
+On Wed, 14 Jan 2026 14:30:02 -0800
+Kevin Hilman <khilman@baylibre.com> wrote:
 
-Thank you for your review.
-These mistakes are undoubtedly due to my still limited experience. I 
-will start working on them right away.
+> Andreas Kemnade <andreas@kemnade.info> writes:
+> 
+> > On Sun, 11 Jan 2026 12:32:00 +0000
+> > Jonathan Cameron <jic23@kernel.org> wrote:
+> >  
+> >> On Wed, 31 Dec 2025 22:14:17 +0100
+> >> akemnade@kernel.org wrote:
+> >>   
+> >> > From: Andreas Kemnade <andreas@kemnade.info>
+> >> > 
+> >> > Define interrupts properly. Unfortunately, this hides a bug in the linux
+> >> > driver, so it needs to be used with the driver fixed only.
+> >> > 
+> >> > Signed-off-by: Andreas Kemnade <andreas@kemnade.info>    
+> >> 
+> >> Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+> >> Not related to patch 1 so if TI soc folk can pick this up that would be
+> >> great.
+> >>   
+> > well, it needs things fixed via patch 1 to avoid creating havoc...
+> > But from a strictly dogmatic point of view the devicetree describes the
+> > hardware, so it is unrelated.
+> > ... but from a more pragmatic point of view, I do not want to have interrupts
+> > enabled for drivers which do not handle them correctly.
+> >
+> > Of course this should be picked up by omap folks.  
+> 
+> Based on the changelog comments, I will pick up the DT patch when the
+> driver fix gets applied.
+> 
+the needed patch is in. So it can be applied.
 
-Best regards,
-Aldo Conte
+Regards,
+Andreas
