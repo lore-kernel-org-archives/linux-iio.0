@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B90C48123F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0085B480DDE;
 	Wed,  6 May 2026 14:08:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778076530; cv=none; b=NhxyTcBGid1lUN0Hew/SCwPPrnRX+eIYvLM873VQRgR4dzgxQ4phZgiTwhugwUj8gH2niuGojDxbUJg2C6YCJw8X3O4NIDSCVmerQJTPn+aYPhzu7vMjFKsz4o66hyAz9EZ4OsiBgFVLlM0vYRVcrFy+rIZjVvPSxSxGOvH04S8=
+	t=1778076530; cv=none; b=IBQXrqEGp8nQaQS3YNem7qBSLtNycHYeOvWbL4WuZ/Knzxrp46OL9PqmiIq1iGNvDhhKO3MzsaWRnm2cNbsYxgM09mZa+9h9UjvLFKOX+liHv0UbVIwMCP6dcauyGmXQWHtn4KLUa+djR+WtT9i3KOgAo28XdrbqxeyVXRI7um4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778076530; c=relaxed/simple;
-	bh=oZYW6wdRC4ATSAthvNKnz/qvii6oFdxmKMrKp5IMOvw=;
+	bh=ZSgaOdUQupu8XrSCIqi0SgGUr/OnCwKgYZzyveNu1K4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FbCNwZXKRINoZjh55kFIAcwYvw3el37xYcW8vrQEjV3c0b6iReS3Wn3JjXKisSGmvwY6g2vxRk0WtVaHTmgNNhAJrFEfsgGMOZsO6GjVFUA71brut6C/eWyxSkVwHun6xLVO3ql6ujsVWbv8sMqINi378uh2jbLCPfvuvNp2mUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UobII831; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=tzEQnZaY0T/865lYNc+cwSuuFr4LjJ6NsCJ//LBc0rr4CX8fT5g0Kw5He276h/o+4HePM5jxW/rC1lUuUd89OAjqN4L0ZlW7u8310qfN6JEh2+0qqwX0HiTEpucAIl5+sxq5ACifcHG52Kzv76AStvAw4wKAGAvVxlOPWSo8SNo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mpR95CxZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UobII831"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2AB9BC2BCF4;
-	Wed,  6 May 2026 14:08:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mpR95CxZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CF55FC2BCF5;
+	Wed,  6 May 2026 14:08:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778076530;
-	bh=oZYW6wdRC4ATSAthvNKnz/qvii6oFdxmKMrKp5IMOvw=;
+	s=k20201202; t=1778076529;
+	bh=ZSgaOdUQupu8XrSCIqi0SgGUr/OnCwKgYZzyveNu1K4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=UobII831HXKrEwcg6nb+0jIVzrxBFaXoaoMWgPZkxV1UhMWRe85zVNFT/tia5qBSM
-	 9oS+FVOu3kozzFRuG+kYEvEnquFL4fxoR5Oq2F0STLG6wfmfJc2kLk39eHobEPASjq
-	 VWWUBS7MGCC+2Xx02TzGc+NmZv2rRUcbCbFZxuwM+sLWuDq+FWkTGJH9wGdYasRkPQ
-	 99PtcqFBhRhB1FRG7zJB7XqxCE+0GCXm868jdZvFqxdQO8uj0hGLhy4rCIRmq+QiM4
-	 w+1VbOODAlPsGtjnU8EILt5oQoRBTOeHyhliKEFjRdeojOMPUuITvRlPB7WNjFlRsI
-	 OeiKUQPIrNFXg==
+	b=mpR95CxZmWzugw510uhbYOig/cso2TEzsfX0nP6fx2lS9P9Lvd7KAEwnZ4PCziEMq
+	 jlAeDbJx3/EFJUMhKrb2OJbhxP7B/RJ+sybnTR0H0XbgBYRWqkEywCOudHsrF3DaOK
+	 YEcjFVY9i1fNEoGPn7HU3fPXUNdw+vZmtz9DxBvgWHDdpnvnJ+F4XLf8MT5OEDXndE
+	 dKVSar4P+0InvhAuBTpYP9tHapHK7TK794npuVkVj5hQhCIicqBiwAeRikbR9iNWXc
+	 LVgGRgUTA3Viql4gnAEu0YXKh0bGMWWGDHntXIS5QdY5AV3OB9p6/TkniIp9dvFKhJ
+	 brGespppsBjyA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AFECD3440;
-	Wed,  6 May 2026 14:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C656ECD343B;
+	Wed,  6 May 2026 14:08:49 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 06 May 2026 15:08:53 +0100
-Subject: [PATCH v11 09/11] iio: frequency: adf41513: features on frequency
- change
+Date: Wed, 06 May 2026 15:08:49 +0100
+Subject: [PATCH v11 05/11] iio: core: add decimal value formatting into
+ 64-bit value
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,8 +40,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260506-adf41513-iio-driver-v11-9-2b7e99cfe8f2@analog.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260506-adf41513-iio-driver-v11-5-2b7e99cfe8f2@analog.com>
 References: <20260506-adf41513-iio-driver-v11-0-2b7e99cfe8f2@analog.com>
 In-Reply-To: <20260506-adf41513-iio-driver-v11-0-2b7e99cfe8f2@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -60,11 +60,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778076527; l=5624;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778076527; l=5768;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=DiZIG3KloW12G+mYdG6abXhD29OzXjbv9aJKBeCBk80=;
- b=RkLdzH2N7yRAPM/dhnPrPyP82j/SxGG/N6tM5N/VJB+AIDdFLq3qjyJBaEFUXl2TbIYbxSz/k
- K4DUmYP5OtCBODyFmq62Bbb9DPKLy6HCsbmlLVylRXWfP8K3mW+leJa
+ bh=1r7wBeRsvAbKs6Q8cqgV1ynf3N20gmEGvnU090e1IMY=;
+ b=+ryDbDjBcVO3B5f/uu+ahML1IvTYJ9ebhkz0o/7ugd8PVIf/XfXRxuAvwBwLCiF99FX+3fZ13
+ BZYB6bCJIEcDZlw2T95QeLT7Q857dSj1Frq9B2lvOx6qWRfWZbOklP+
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -74,172 +74,178 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Set Bleed current when PFD frequency changes (bleed enabled when in
-fractional mode). Set lock detector window size, handling bias and
-precision. Add phase resync support, setting clock dividers when
-PFD frequency changes.
+Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
+defines the representation of fixed decimal point values into a single
+64-bit number. This new format increases the range of represented values,
+allowing for integer parts greater than 2^32, as bits are not "wasted"
+in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
+IIO_VAL_INT_PLUS_NANO. Helpers are created to compose and decompose 64-bit
+decimals into integer values used in IIO formatting interfaces, which
+creates consistency and avoid error-prone manual assignments when using
+wordpart macros. When doing the parsing, kstrtodec64() is used with the
+scale defined by the specific decimal format type.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/frequency/adf41513.c | 100 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 100 insertions(+)
+ drivers/iio/industrialio-core.c | 46 +++++++++++++++++++++++++++++++++--------
+ include/linux/iio/types.h       | 28 +++++++++++++++++++++++++
+ 2 files changed, 65 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/frequency/adf41513.c b/drivers/iio/frequency/adf41513.c
-index 6072ceae9bfb..238bf6e2e55a 100644
---- a/drivers/iio/frequency/adf41513.c
-+++ b/drivers/iio/frequency/adf41513.c
-@@ -20,6 +20,7 @@
- #include <linux/property.h>
- #include <linux/regulator/consumer.h>
- #include <linux/spi/spi.h>
-+#include <linux/time64.h>
- #include <linux/types.h>
- #include <linux/units.h>
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index bd6f4f9f4533..24bc1577fdac 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -19,6 +19,7 @@
+ #include <linux/idr.h>
+ #include <linux/kdev_t.h>
+ #include <linux/kernel.h>
++#include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/poll.h>
+@@ -26,7 +27,6 @@
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/wait.h>
+-#include <linux/wordpart.h>
  
-@@ -206,6 +207,7 @@ struct adf41513_chip_info {
- struct adf41513_data {
- 	u64 power_up_frequency_hz;
- 	u64 freq_resolution_uhz;
-+	u32 phase_resync_period_ns;
- 	u32 charge_pump_voltage_mv;
- 	u32 lock_detect_count;
- 
-@@ -264,6 +266,16 @@ struct adf41513_state {
- 	struct adf41513_pll_settings settings;
- };
- 
-+static const u16 adf41513_ld_window_x10_ns[] = {
-+	9, 12, 16, 17, 21, 28, 29, 35,			/* 0 - 7 */
-+	43, 47, 49, 52, 70, 79, 115,			/* 8 - 14 */
-+};
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/buffer_impl.h>
+@@ -707,8 +707,25 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 	case IIO_VAL_CHAR:
+ 		return sysfs_emit_at(buf, offset, "%c", (char)vals[0]);
+ 	case IIO_VAL_INT_64:
+-		tmp2 = (s64)((((u64)vals[1]) << 32) | (u32)vals[0]);
++		tmp2 = iio_val_s64_from_array(vals);
+ 		return sysfs_emit_at(buf, offset, "%lld", tmp2);
++	case IIO_VAL_DECIMAL64_MILLI:
++	case IIO_VAL_DECIMAL64_MICRO:
++	case IIO_VAL_DECIMAL64_NANO:
++	case IIO_VAL_DECIMAL64_PICO:
++	{
++		s64 frac;
++		unsigned int scale = type - IIO_VAL_DECIMAL64_BASE;
 +
-+static const u8 adf41513_ldp_bias[] = {
-+	0xC, 0xD, 0xE, 0x8, 0x9, 0x4, 0xA, 0x5,		/* 0 - 7 */
-+	0x0, 0x6, 0xB, 0x1, 0x2, 0x7, 0x3,		/* 8 - 14 */
-+};
-+
- static const char * const adf41513_power_supplies[] = {
- 	"avdd1", "avdd2", "avdd3", "avdd4", "avdd5", "vp",
- };
-@@ -571,9 +583,82 @@ static int adf41513_calc_pll_settings(struct adf41513_state *st,
- 	return 0;
- }
- 
-+static void adf41513_set_bleed_val(struct adf41513_state *st)
-+{
-+	u32 bleed_value, cp_index;
-+
-+	if (st->data.phase_detector_polarity)
-+		bleed_value = 90;
-+	else
-+		bleed_value = 144;
-+
-+	cp_index = 1 + FIELD_GET(ADF41513_REG5_CP_CURRENT_MSK,
-+				 st->regs[ADF41513_REG5]);
-+	bleed_value = div64_u64(st->settings.pfd_frequency_uhz * cp_index * bleed_value,
-+				1600ULL * MEGA * MICROHZ_PER_HZ);
-+
-+	FIELD_MODIFY(ADF41513_REG6_BLEED_CURRENT_MSK, &st->regs[ADF41513_REG6],
-+		     bleed_value);
-+}
-+
-+static void adf41513_set_ld_window(struct adf41513_state *st)
-+{
-+	/*
-+	 * The ideal lock detector window size is halfway between the max
-+	 * window, set by the phase comparison period t_PFD = (1 / f_PFD),
-+	 * and the minimum is set by (I_BLEED/I_CP) × t_PFD
-+	 */
-+	u16 ld_window_10x_ns = div64_u64(10ULL * NSEC_PER_SEC * MICROHZ_PER_HZ,
-+					 st->settings.pfd_frequency_uhz << 1);
-+	u8 ld_idx, ldp, ld_bias;
-+
-+	if (st->settings.mode != ADF41513_MODE_INTEGER_N) {
-+		/* account for bleed current (deduced from eq.6 and eq.7) */
-+		if (st->data.phase_detector_polarity)
-+			ld_window_10x_ns += 4;
++		tmp2 = div64_s64_rem(iio_val_s64_from_array(vals),
++				     int_pow(10, scale), &frac);
++		if (tmp2 == 0 && frac < 0)
++			return sysfs_emit_at(buf, offset, "-0.%0*lld", scale,
++					     abs(frac));
 +		else
-+			ld_window_10x_ns += 6;
++			return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2,
++					     scale, abs(frac));
 +	}
-+
-+	ld_idx = find_closest(ld_window_10x_ns, adf41513_ld_window_x10_ns,
-+			      ARRAY_SIZE(adf41513_ld_window_x10_ns));
-+	ldp = (adf41513_ldp_bias[ld_idx] >> 2) & 0x3;
-+	ld_bias = adf41513_ldp_bias[ld_idx] & 0x3;
-+
-+	FIELD_MODIFY(ADF41513_REG6_LDP_MSK, &st->regs[ADF41513_REG6], ldp);
-+	FIELD_MODIFY(ADF41513_REG9_LD_BIAS_MSK, &st->regs[ADF41513_REG9], ld_bias);
-+}
-+
-+static void adf41513_set_phase_resync(struct adf41513_state *st)
-+{
-+	u32 total_div, clk1_div, clk2_div;
-+
-+	if (!st->data.phase_resync_period_ns)
-+		return;
-+
-+	/* assuming both clock dividers hold similar values */
-+	total_div = mul_u64_u64_div_u64(st->settings.pfd_frequency_uhz,
-+					st->data.phase_resync_period_ns,
-+					1ULL * MICROHZ_PER_HZ * NSEC_PER_SEC);
-+	clk1_div = clamp(int_sqrt(total_div), 1,
-+			 ADF41513_MAX_CLK_DIVIDER);
-+	clk2_div = clamp(DIV_ROUND_CLOSEST(total_div, clk1_div), 1,
-+			 ADF41513_MAX_CLK_DIVIDER);
-+
-+	FIELD_MODIFY(ADF41513_REG5_CLK1_DIV_MSK, &st->regs[ADF41513_REG5],
-+		     clk1_div);
-+	FIELD_MODIFY(ADF41513_REG7_CLK2_DIV_MSK, &st->regs[ADF41513_REG7],
-+		     clk2_div);
-+
-+	/* enable phase resync */
-+	st->regs[ADF41513_REG7] |= ADF41513_REG7_CLK_DIV_MODE_MSK;
-+}
-+
- static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 sync_mask)
- {
- 	struct adf41513_pll_settings result;
-+	bool pfd_change = false;
-+	bool mode_change = false;
- 	int ret;
- 
- 	ret = adf41513_calc_pll_settings(st, &result, freq_uhz);
-@@ -581,6 +666,8 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
- 		return ret;
- 
- 	/* apply computed results to pll settings */
-+	pfd_change = st->settings.pfd_frequency_uhz != result.pfd_frequency_uhz;
-+	mode_change = st->settings.mode != result.mode;
- 	st->settings = result;
- 
- 	dev_dbg(&st->spi->dev,
-@@ -622,6 +709,14 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
- 		st->regs[ADF41513_REG6] |= ADF41513_REG6_BLEED_ENABLE_MSK;
+ 	default:
+ 		return 0;
  	}
+@@ -977,7 +994,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int ret, fract_mult = 100000;
++	int type, ret, fract_mult = 100000, dec_scale = 0;
+ 	int integer, fract = 0;
+ 	long long integer64;
+ 	bool is_char = false;
+@@ -988,9 +1005,11 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 	if (!indio_dev->info->write_raw)
+ 		return -EINVAL;
  
-+	if (pfd_change) {
-+		adf41513_set_bleed_val(st);
-+		adf41513_set_phase_resync(st);
+-	if (indio_dev->info->write_raw_get_fmt)
+-		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
+-			this_attr->c, this_attr->address)) {
++	if (indio_dev->info->write_raw_get_fmt) {
++		type = indio_dev->info->write_raw_get_fmt(indio_dev,
++							  this_attr->c,
++							  this_attr->address);
++		switch (type) {
+ 		case IIO_VAL_INT:
+ 			fract_mult = 0;
+ 			break;
+@@ -1006,12 +1025,19 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 		case IIO_VAL_CHAR:
+ 			is_char = true;
+ 			break;
++		case IIO_VAL_DECIMAL64_MILLI:
++		case IIO_VAL_DECIMAL64_MICRO:
++		case IIO_VAL_DECIMAL64_NANO:
++		case IIO_VAL_DECIMAL64_PICO:
++			dec_scale = type - IIO_VAL_DECIMAL64_BASE;
++			fallthrough;
+ 		case IIO_VAL_INT_64:
+ 			is_64bit = true;
+ 			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
 +	}
-+
-+	if (pfd_change || mode_change)
-+		adf41513_set_ld_window(st);
-+
- 	return adf41513_sync_config(st, sync_mask | ADF41513_SYNC_REG0);
- }
  
-@@ -895,6 +990,11 @@ static int adf41513_parse_fw(struct adf41513_state *st)
- 	st->data.phase_detector_polarity =
- 		device_property_read_bool(dev, "adi,phase-detector-polarity-positive-enable");
+ 	if (is_char) {
+ 		char ch;
+@@ -1020,12 +1046,14 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 			return -EINVAL;
+ 		integer = ch;
+ 	} else if (is_64bit) {
+-		ret = kstrtoll(buf, 0, &integer64);
++		if (dec_scale)
++			ret = kstrtodec64(buf, dec_scale, &integer64);
++		else
++			ret = kstrtoll(buf, 0, &integer64);
+ 		if (ret)
+ 			return ret;
  
-+	st->data.phase_resync_period_ns = 0;
-+	ret = device_property_read_u32(dev, "adi,phase-resync-period-ns", &tmp);
-+	if (!ret)
-+		st->data.phase_resync_period_ns = tmp;
+-		fract = upper_32_bits(integer64);
+-		integer = lower_32_bits(integer64);
++		iio_val_s64_decompose(integer64, &integer, &fract);
+ 	} else {
+ 		ret = __iio_str_to_fixpoint(buf, fract_mult, &integer, &fract,
+ 					    scale_db);
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 4e3099defc1d..bc0e6f66bd9c 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -7,6 +7,7 @@
+ #ifndef _IIO_TYPES_H_
+ #define _IIO_TYPES_H_
+ 
++#include <linux/wordpart.h>
+ #include <uapi/linux/iio/types.h>
+ 
+ enum iio_event_info {
+@@ -34,6 +35,33 @@ enum iio_event_info {
+ #define IIO_VAL_FRACTIONAL_LOG2 11
+ #define IIO_VAL_CHAR 12
+ 
++#define IIO_VAL_DECIMAL64_BASE		100
++#define IIO_VAL_DECIMAL64_MILLI		(IIO_VAL_DECIMAL64_BASE + 3)
++#define IIO_VAL_DECIMAL64_MICRO		(IIO_VAL_DECIMAL64_BASE + 6)
++#define IIO_VAL_DECIMAL64_NANO		(IIO_VAL_DECIMAL64_BASE + 9)
++#define IIO_VAL_DECIMAL64_PICO		(IIO_VAL_DECIMAL64_BASE + 12)
 +
- 	st->data.logic_lvl_1v8_en = device_property_read_bool(dev, "adi,logic-level-1v8-enable");
- 
- 	tmp = ADF41513_LD_COUNT_MIN;
++static inline s64 iio_val_s64_compose(int val0, int val1)
++{
++	return (s64)(((u64)val1 << 32) | (u32)val0);
++}
++
++static inline s64 iio_val_s64_from_array(const int *vals)
++{
++	return iio_val_s64_compose(vals[0], vals[1]);
++}
++
++static inline void iio_val_s64_decompose(s64 dec64, int *val0, int *val1)
++{
++	*val0 = lower_32_bits(dec64);
++	*val1 = upper_32_bits(dec64);
++}
++
++static inline void iio_val_s64_array_populate(s64 dec64, int *vals)
++{
++	iio_val_s64_decompose(dec64, &vals[0], &vals[1]);
++}
++
+ enum iio_available_type {
+ 	IIO_AVAIL_LIST,
+ 	IIO_AVAIL_RANGE,
 
 -- 
 2.43.0
