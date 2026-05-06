@@ -1,97 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9767830BF6B;
-	Wed,  6 May 2026 08:21:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4588E14B08A;
+	Wed,  6 May 2026 08:26:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778055692; cv=none; b=axsdk2NvjzP5cuOR0gDuDDbAElNQM1N1DKGf12WUlKm/+DA3eHNZzJ+mvZrEbYaaGSCC1dni0QN/F7VybzNtFTLtYVFbmaLOcz13sJ45QA5numkYYW3kmhmtl7b7mZFjsckQjiYDWIjMvSrPQyWGw5S0vesMf0U0yiJaOsKq+wM=
+	t=1778055991; cv=none; b=gU8/RO6RCwDlGRpaQ2lFaAB68dFEGC4Bak2F5gneVxquUXbH1XHUPheJvB77THSpRo0DlXr/m+z6ogOBiujDu8uuIefeXJtSnOFApyX+8Nit4wv0QoUsZl/qnSN+CguLpJnHdGBtaAzIySvpRHgQKEKtdKqDCcLdfqHTS2JYytU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778055692; c=relaxed/simple;
-	bh=2B22UBrSzYuHgs8Xe0BP0mH/NgtY7kHtbZrhpV+i9g4=;
+	s=arc-20240116; t=1778055991; c=relaxed/simple;
+	bh=DwhWJ+pjboLiRZQ//nb4qIvtmoRjATdD0FdPcN1x66U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=naNQlQtPXw4phTk5Lk3kYYaQoKmFInv7PTLqaj7Z0ITMJ6QEWmEQHpLipTRmUjKrjn6HecMdpcpUWyseJQkQjhM6Hku/BqPkE30oTOjrMXF+O0egkgwFoeyfpWNmAkaiBwaWpHC1AUKSB8sXlbVXf13UUjcRNLEcPQBMxGrUKxk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MtXX85Gd; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=sFD6gTQeecJaeA4nE1v8fFShlnGFq8XgZ3KqYvv2H7YTkdj2H34EXMhwKFUTUB+fwTzp4Zh+VyqUOB5xv2nEz06SR9zT2FQaJKFcCo4y+LFibZJlW1QTY8AUgGsvbR9y93EvR4P83sPp7z8IRbD8bUv+nV2ybbwLmeN+v9uDaMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PyEHbRzA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MtXX85Gd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778055690; x=1809591690;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2B22UBrSzYuHgs8Xe0BP0mH/NgtY7kHtbZrhpV+i9g4=;
-  b=MtXX85Gdmpx1+dUAKLDhZGq5hO6Pn0rqeVLxPo3iimbj1JyfoqiFtDZz
-   u5gcvuhjKgD0LGu83cMVqXbmUNlxi+3pz3/AdebUQ2QQdqrM+6bOnkRUF
-   HP87zZG5irsQeax33a4EX229qGBwCKc5iHEwO8r4bIbukdqkYdmHfd5Yu
-   febc6IygzoZOcDcKUGzj/ICLFG1vMTJGFroMPDj5tpA3Dnlon3r1Y69SJ
-   CJQifVTDtd8WPVEfNrfl62qGGXJgMjhs4v/qrYKa7+UbMhIqxpRdtfqdt
-   nWz3FiQQTWLe5rhlSZOI/nwgoBmO8e8naKqZ60TuTiMuL+jckN173ping
-   w==;
-X-CSE-ConnectionGUID: ykGCAHX7RDGtMi7VWtoSvg==
-X-CSE-MsgGUID: rLy5yQNeSa6uGa6vlElPGw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="79086199"
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="79086199"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 01:21:30 -0700
-X-CSE-ConnectionGUID: ZlOg5uRxTsOiweJHynY5DQ==
-X-CSE-MsgGUID: jKoze99NRTKolopvR7ZPqg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="241074864"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 01:21:28 -0700
-Date: Wed, 6 May 2026 11:21:25 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 14/18] iio: magnetometer: ak8975: switch to using
- managed resources
-Message-ID: <afr6BdhnQZMV_kDn@ashevche-desk.local>
-References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
- <20260505-magnetometer-fixes-v5-14-831b9b5550fc@gmail.com>
- <CALoEA-x4GGfSeurgMAcOguXRB62ygEj-5suMVhd0x4DjXmTfcg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PyEHbRzA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52B52C2BCB8;
+	Wed,  6 May 2026 08:26:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778055990;
+	bh=DwhWJ+pjboLiRZQ//nb4qIvtmoRjATdD0FdPcN1x66U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=PyEHbRzA0y5lw0cj+yZr4bB+/4LvtgCP5SZAWG6zAEiNWvUdwLqXrq/BTzFn8uidp
+	 zCye+WOEYVheWeB4oZEWhI1hhXht+PaEFaau5JS9P8QZGSnOVnTGBZfDpkPxGOz5CR
+	 ZeecwFgVF5XoK+N1H8szpwHjF9fTzPHmTTiNOag/ywoMra5CekYiXgh8dPO+Yyco8q
+	 sta4sZx/DJ6bnGbyHxTLcGV95YQbaWusIs7JM3CVHuvk9uw5OmfEDqO57MrClW5qDY
+	 B+yCW/OkgDnoEd11cuzqGfdUwNnmMQViqkPERV8RKWigR0c8lKA4qYVg58OaO9bSIS
+	 YjqVfCLxnte1g==
+Date: Wed, 6 May 2026 10:26:28 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Roman Vivchar <rva333@protonmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Srinivas Kandagatla <srini@kernel.org>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, Lee Jones <lee@kernel.org>, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org, 
+	Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH 13/13] MAINTAINERS: add mt6323 drivers maintainer
+Message-ID: <20260506-honest-cyan-cow-d6c5b0@quoll>
+References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
+ <20260504-mt6323-v1-13-799b58b355ff@protonmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CALoEA-x4GGfSeurgMAcOguXRB62ygEj-5suMVhd0x4DjXmTfcg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260504-mt6323-v1-13-799b58b355ff@protonmail.com>
 
-On Tue, May 05, 2026 at 04:34:29PM +0200, Joshua Crofts wrote:
-> On Tue, 5 May 2026 at 13:46, Joshua Crofts via B4 Relay
-> <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
-> >
-> > Switch the driver to use managed resources (devm_*) which simplifier
-> > error handling and allows removing ak8975_remove() method from
-> > the driver.
-> >
-> > Note, on error path we now also set mode to POWER_DOWN state which is
-> > fine. Even if the device is in that mode, there is no problem to set
-> > that mode again, it should be no-op.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Co-developed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+On Mon, May 04, 2026 at 09:25:05PM +0300, Roman Vivchar wrote:
+> Add myself as MediaTek mt6323 AUXADC, EFUSE and thermal driver maintainer.
 > 
-> BTW, Sashiko timed out while reviewing this patch, didn't even know that's
-> possible.
+> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> ---
+>  MAINTAINERS | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d1cc0e12fe1f..53493a24d00a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -16337,6 +16337,18 @@ S:	Orphan
+>  F:	Documentation/devicetree/bindings/mtd/mediatek,mtk-nfc.yaml
+>  F:	drivers/mtd/nand/raw/mtk_*
+>  
+> +MEDIATEK PMIC AUXADC DRIVER
+> +M:	Roman Vivchar <rva333@protonmail.com>
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/adc/mediatek,mt6323-auxadc.yaml
+> +F:	drivers/iio/adc/mt6323-auxadc.c
 
-You can ask Roman what to do in such a case.
+This should be squashed with individual patches. Otherwise how do you
+imagine this being applied? By which maintainer?
 
--- 
-With Best Regards,
-Andy Shevchenko
+You also should not merge independent patchsets into one patchset. I see
+no dependencies here at all, although if you fix your MFD binding then
+there would be a dependency...
 
+Best regards,
+Krzysztof
 
