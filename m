@@ -1,192 +1,95 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2F6F20CCDC
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 02:09:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76D29283C9D
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 02:25:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778033367; cv=none; b=vGVpVG7DkUH39UTx0eR8tuRjTYhSUbycEpVyMC50DIODQVECowOR7OHIj+SBdLjBO7KCXY+G02+FrScoQfs53+U94pl4zeFur539rKppRGcNEOjYq2S0AkIggn2g8NaC406o7Z1/1Gy3OnubUQ7swA7/jy0vWwj4XYL/fjKpkR4=
+	t=1778034312; cv=none; b=QZUa3tZd/ioNQeLzHCUx+GD1/CbWZgyEwrtuIEbzE9DvvYdP//pFaVhhXpX9reExughjUDFJ2YqwHoF58wZjTeQ6maGyeJulIdAear8QHP7cMZyojf8he9h9Fe1TjYXqeLekdoZiaw1OQGsU8hamHBfoZj28FxaERKw2EsuUZLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778033367; c=relaxed/simple;
-	bh=OQKxrKEjYBsb1I5LBASed7sDXpUrcPxvN9Wpj4lZdJM=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=ecs/s6qmXi+ox0OBhLqq2wR/mO4Xa88B8XN+4l6fVnX4jBH9EHrQBePyWHcZYHN2q8tHo0j/yBynAUCM51IBzJgkGLoFEQ+H4Sc+8jbIm7R8nA8def2i12fOgiECvziholmy0AWsBEsP7tUxrF6e1cmY7O0ekb5/QL/pI0zl8aw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F8GrvJcQ; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778034312; c=relaxed/simple;
+	bh=I1lPHAVhik2/qZiEG/gjONNJ/Zs0mWlMF7PpuRBph8s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PBaMpGSiY1NVoKeGR0yLDquhbzEub3YqaQQfmFcHGGEnn28bkJ3wVwmKED3zwKZs44mh8IrV4WM+KxaK/bQ2eMZGsomtN0eBA1oeZY0YAfFLz7bhBQwEhiCsvjzMTJ7G+78+cgheAdn1EMCuwE3De3vqnDZ981CSO+4Uit4OrkM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br; spf=pass smtp.mailfrom=ime.usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=XdOy04Ri; arc=none smtp.client-ip=74.125.82.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ime.usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ime.usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F8GrvJcQ"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2ba0714574fso17119465ad.2
-        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 19:09:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="XdOy04Ri"
+Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-2ef38cf04f0so6222045eec.1
+        for <linux-iio@vger.kernel.org>; Tue, 05 May 2026 19:25:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778033365; x=1778638165; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=iXEOtXroN0yFcsSwaWOo1dKqzjOlwBVp+xN9WpOWZHc=;
-        b=F8GrvJcQ9+7TBYN8/pYx0jpm4tCD/X2tF9X5e3Ra6JEPizfbfzcAxIv7PAXOZ4LszX
-         TdLJbnOfWC34RUhphAdnbOS8Et3h0UjN+jRO2aOaNMvIj9Nk1SMa7lJsmZNgpyd3bTYR
-         6VzosE89AASgpKPvY4mn41pkc7wcZgA2afMYnoEK5HDH/7tnt+9oa2+TDch+Ye+krUEM
-         B/VEROrqkQ5bHEMnOfcovtAC6GFFK2DF/o8ZkWP7Y4JxwE6lSY4gdnkjss445CoCJMXK
-         +W6LQl2aRczxcT6v44x1AmvMPo0J/kawMrPugZkiWcAj7iRv7yJDX3v4tpwGE8VCsM3d
-         MRIg==
+        d=usp.br; s=usp-google; t=1778034308; x=1778639108; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TK318sW2EU9DAUWZ70nTfCW0Y3oKpFjEiSuIXY+LKMM=;
+        b=XdOy04RivZLAKZC/bzmRxLM1/P1wQgnlka1J7K6bbp4q0RnOWpBZbuPMBBC9nuoXEA
+         OFrxdk8j/XrGn0WDok5hNImvF3Ay/Tle8M27VKgn2b2E43BE3dcrIq4ITqDxvUvaWx0c
+         HdUEtC2nlwWwS6A2WPY+NNkJiFLCuwJSBZfPzyiCs+fyAQKy23R+BlycVV6va1cVntpd
+         92Jq7fGpAUd+WU9Al2ovUDI862pe6Cb7Ui2ys+/CnIn0/fmJVMASee3UDuusZIO9PWm2
+         kLLi4dvA94tu3jN0FSi2nkfd1IGb0lJoRboWjgkq5r1DKjpkkV7rv3CxOdi3PYLtAB5h
+         QoAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778033365; x=1778638165;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iXEOtXroN0yFcsSwaWOo1dKqzjOlwBVp+xN9WpOWZHc=;
-        b=DqfQnC/tjdS3YRRSyOnb42rZiOl6oi64FBXy/nKYP3y5pMNQq6vlKSzVZgs6F/zuXD
-         41javRFmEZnhpawk/hw7kwMc+jWBtOz/WhoEnM0gh6spocjVCurc8ktXszHF2tSaktHQ
-         Vpgktxj+DFDu2UGL1bc3JButthxcUe8Gll5oIEDyi9MXkAvsAbAXoVkBMvP+nrqC2fnG
-         HK0nx4UkkjLfD9NVLGd4vOL8R7RQD0AWGdogOc60keT7qidGG09YtHOLWs7IvrRImYsZ
-         tTSSN/hI7YzOM2/Jn1RM5mDD+9QUpj721tPR7sZbogkIM0RmqKvfCGC52UjQ/VmWXmgp
-         ksYQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9gxo8IYDmcHz+4BaM+FQtPOAb5wpGhIef8k5avvZ3gPdNYCTu/++SpzyhJj97huRXdqSWgGa3Maik=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxxP0bs4qzktAwYDQnap1+Kn2iGSsZlzWYxrQpdTRaa1BNVkP2f
-	+IrME/p9+KLZebWnnynIfe51CUEHVUFuTNXEG5bqpOc5lCSPm8FlraTIkSpQpg==
-X-Gm-Gg: AeBDieuU70qe95hEGgKGmL1lzaPkFf0Su/fBvXjhCykN2dIF/+3ERSCduJNhRU1kjvz
-	eIKIRhjLWcqETr0irPef7akvZ3rPHJ0jXeYV3HM8KZ/AsTfK4Fnro0/MYySHvjH+6tuZpRGV9k1
-	eUMwYJPhlXKHfpmkidop/F/jXv17/DCE2gGnUQ55gMjllo4OPlVLi95oHMGIj8XLGJGR+VUiSwh
-	ZKYVvjR1p1TnYYYO5H+vGsSDC2cdtySoBbF44IKfSStKO5t4+3XakFv/YPnJiZSDqnxnhidgvGY
-	8EzJkjIyIkspHhJM264a3/q/kaaGJw3oMoS5I7BkPVg4Doltt3Fa8VjMfplMebSntfM4lUWLZQD
-	tRBBIp44o7USzX9jHct0DCBrsQPOMaKzQBCpLWgDOliMAwzXzW9I7n4doAgVuwuNLzQWMQcMcJw
-	G0asyuJg/PHCGR2HkXpGDZvCadaN1fIzERmcpKS4perrG73xtlZ7yC1bsQ3Q==
-X-Received: by 2002:a17:903:3b41:b0:2b4:5e7e:34ce with SMTP id d9443c01a7336-2ba7a1fdca6mr8551375ad.39.1778033365084;
-        Tue, 05 May 2026 19:09:25 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:ae42:4c5c:fe35:ac0b:2573:1e81])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ba7c9e1adfsm6235875ad.51.2026.05.05.19.09.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 May 2026 19:09:24 -0700 (PDT)
-Date: Tue, 05 May 2026 17:25:32 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: dlechner@baylibre.com, nuno.sa@analog.com, lars@metafoo.de, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/5] MAINTAINERS: iio: adi: consolidate entries
-User-Agent: Thunderbird for Android
-In-Reply-To: <20260505115409.44245db6@jic23-huawei>
-References: <20260430190642.3434650-1-sanjayembedded@gmail.com> <20260430190642.3434650-3-sanjayembedded@gmail.com> <20260504172457.4d7c7390@jic23-huawei> <AB6B7E29-83E2-4BE8-AF74-1DE8358527E6@gmail.com> <afmyqE6-XcT-SRt3@ashevche-desk.local> <20260505115409.44245db6@jic23-huawei>
-Message-ID: <5A7BC21E-03BD-40DD-8AB5-0ED6106B51EC@gmail.com>
+        d=1e100.net; s=20251104; t=1778034308; x=1778639108;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TK318sW2EU9DAUWZ70nTfCW0Y3oKpFjEiSuIXY+LKMM=;
+        b=Hx2lr8SnSRAANDJ+leGIiwyhlJfIoXBBFKh6qnOvTRvtrAQK6FCDS0ZxULIJ56Rd/7
+         wPjuOoRfnsqdaJ7X6Yl+BP7shjV9xiTUJmAdnGCk4xq+Fit3KWOcRD6aSaCEuShHWybx
+         ug+ZXfrtWIfKnSruLam7rMzSH0IAY25zA+GQLy9KEjWzSvm3zuke97ygVtoMsVD2KreJ
+         QjVZhew+byrmrBeuYHQ3wWceNtuBzS/APSDOcoepD2gInEKR45n77KxCgbjzgUMHFuC1
+         axuSaK7DOU+ZFB/jiHpCJRqy/mPfyQrwRzvAbOgQrZyUTPr1kCsfDU1Q3jmVHW34AGmw
+         XAcQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8QNSYR1Pe8tF4IXDOWfqj0mD3HPKgLahkJ3397qr0Qm6uth9CXPS6pjNsY3+IYqFHFF7NmBJNAx90=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzkH4ofBuoxsqjb2YYDVXx602YqrbZuDA/sHJ8DYmATQkcUL8Mw
+	zyEZUtVVoI+ZZNVTw/3o1ncyd9BHTbSzS+iicV4W1aI0ISafXsNodk08aQnSvXMiJUo=
+X-Gm-Gg: AeBDievyVGnIsa4eJGEC41ErN3HRACIymVsFiq8ciFr5TYvXCBZ/VfZsz1ohKkfFNOl
+	0T9vDDpehjkXcsP9HWQikQAEnyc8uyEEnZebpIvKKGPg9HJjLnlmzoPURPh3p4wA1P+x9h83tDl
+	VHGzMX4VpZyQTkTcUh+7dWGZqJ1RNVPnqluGMBPosZNZn6/QTPxYe+icqt86m/DB4D4I6RkItrN
+	G/DuFldiOHbuf2+2TB1VZBQS5TQmVG08FAQwD3nEKmwWoElnJB8/canua3W8uxMSBfvtAxzFJ5G
+	6s0kSwJtXlv9qZ9GyKcuj8GcA/Z48EdNur1LIZpkukspfBtGu8n7hgaMenIIRJ7j1epHLkslhwx
+	Y2G45OwfrgbzDq49IpwXgTNz9dH5rZ0GdI/Br46I77MKlmh1InRy12qPGUWJfi2KTs42CRuLmT2
+	6pIrl1wv9GhI5k2mqLGvlhzdRLjogLgr7E/w7j9xs3CqdfGg==
+X-Received: by 2002:a05:7301:5781:b0:2f5:3641:f126 with SMTP id 5a478bee46e88-2f54a383b37mr876178eec.24.1778034308481;
+        Tue, 05 May 2026 19:25:08 -0700 (PDT)
+Received: from localhost.localdomain ([177.81.10.105])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2f56d5c3783sm1669552eec.11.2026.05.05.19.25.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2026 19:25:07 -0700 (PDT)
+From: Felipe Ribeiro de Souza <felipers@ime.usp.br>
+To: andy@kernel.org,
+	dlechner@baylibre.com,
+	jic23@kernel.org,
+	nuno.sa@analog.com,
+	paul@crapouillou.net
+Cc: Felipe Ribeiro de Souza <felipers@ime.usp.br>,
+	linux-iio@vger.kernel.org,
+	linux-mips@vger.kernel.org
+Subject: [PATCH v5 0/3] iio: adc: ingenic-adc: use guard()() to handle synchronisation and refactor lock-held helpers
+Date: Tue,  5 May 2026 23:24:27 -0300
+Message-ID: <20260506022454.128169-1-felipers@ime.usp.br>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
+In drivers/iio/adc/ingenic-adc.c:
+- Refactor ingenic_adc_read_chan_info_raw() and ingenic_adc_enable_unlocked()
+- Replace mutex_lock() and mutex_unlock() calls with guard()()
 
+Felipe Ribeiro de Souza (3):
+  iio: adc: ingenic-adc: rename ingenic_adc_enable_unlocked() function
+  iio: adc: ingenic-adc: refactor ingenic_adc_read_chan_info_raw()
+  iio: adc: ingenic-adc: use guard()() and scoped_guard() to handle
+    synchronisation
 
-On 5 May 2026 4:24:09=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=2Eorg=
-> wrote:
->On Tue, 5 May 2026 12:04:40 +0300
->Andy Shevchenko <andriy=2Eshevchenko@intel=2Ecom> wrote:
->
->> On Tue, May 05, 2026 at 08:00:23AM +0530, Sanjay Chitroda wrote:
->> > On 4 May 2026 9:54:57=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=
-=2Eorg> wrote: =20
->> > >On Fri,  1 May 2026 00:36:39 +0530
->> > >Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom> wrote: =20
->>=20
->> =2E=2E=2E
->>=20
->> > >> -AD738X ADC DRIVER (AD7380/1/2/4)
->> > >> -M:	Michael Hennerich <michael=2Ehennerich@analog=2Ecom>
->> > >> -M:	Nuno S=C3=A1 <nuno=2Esa@analog=2Ecom> =20
->> > >Specific maintainer=2E Why is it going? =20
->> >=20
->> > I'm assuming that to avoid de-bounce issues from *@analog=2Ecom domai=
-n, we are
->> > adding linux@analog=2Ecom mailing list as primary contact=2E with tha=
-t in mind,
->> > this series drops all entries which match the wildcard and have analo=
-g domain
->> > maintainer or reviewer while keeping the rest as unchanged=2E =20
->>=20
->> But it's removing people behind their will! You really should do this
->> case-by-case=2E Some of the people who left the company might still wan=
-t to
->> follow the driver or even maintain it=2E What you should do is also pay=
- attention
->> on the Supported vs=2E Maintained which makes a huge difference on the
->> responsibility and financial side of the Subject=2E
->
->Some of this was in response to discussion with on specific person=2E
->That one is fine but be very careful beyond that=2E
->Probably best to add a link tag back to that discussion as well=2E
->
->
->>=20
->> Btw, Have you consulted with your Legal department on all this?
->>=20
->> > >> -R:	David Lechner <dlechner@baylibre=2Ecom> =20
->> >=20
->> > Additionally, When David is list as reviewer in individual driver ent=
-ries, I
->> > consider as redundant part; All IIO subsystem drivers/iio* already co=
-vered by
->> > top level entry, which includes Andy and David as reviewer=2E
->> >=20
->> > Summary of changes in series:
->> > - analog domain specific entries are dropped and catch with linux@ana=
-log=2Ecom
->> > under ADI IIO section=2E =20
->>=20
->> No, you should give a good explanation why in each case=2E Yes, you may=
- combine
->> the cases when people left the company, but you also need to
->> - consult with your Legal
->> - consult with those who left on what they wish
->>=20
->> None of them seems done so far=2E So, again BIG NAK from me on this ser=
-ies!
->> Rework them and even part that drops the entries that already have the =
-same
->> maintainers as current ADI level ones (assuming adding Nuno in a separa=
-te
->> prerequisite patch) is good to go=2E
->
->I'm not keen on using the top level reviewers as enough to drop an entry=
-=2E
->Where Nuno and David have specific driver entries the lifetime of those
->may well be different to the top level one=2E  So leave those alone=2E
->
->The only ones I don't mind falling back to the top level catch alls are
->those where we are dropping a reviewer / maintainer (and they were asked)
->+ there is nothing else listed - hence the higher level entry is the
->only source of information=2E
->
->A wider scrub is not appropriate=2E
+ drivers/iio/adc/ingenic-adc.c | 68 ++++++++++++++++++-----------------
+ 1 file changed, 35 insertions(+), 33 deletions(-)
 
-Thank you Andy and Jonathan for review comment=2E
+-- 
+2.43.0
 
-Following current discussion, I will send next series with 2 changes:
-- ADI IIO entry to update maintainer and mailing list
-- To update or drop entry where we received confirmation from specific mai=
-ntainer=20
-
-There should not be any update on specific entry to drop without the conse=
-nt of respective reviewer/maintainer=2E
->>=20
->> > - Non analog devices reviewers and maintainer is unchanged for each d=
-river entry=2E
->> >=20
->> > Further, I also agree with adding Nuno S=C3=A1 as a maintainer in the=
- top-level
->> > ADI IIO entry, so that all drivers are maintained via the mailing lis=
-t with
->> > his oversight=2E
->> >  =20
->> > >> -S:	Supported
->> > >> -W:	https://wiki=2Eanalog=2Ecom/resources/tools-software/linux-dri=
-vers/iio-adc/ad738x
->> > >> -W:	https://ez=2Eanalog=2Ecom/linux-software-drivers
->> > >> -F:	Documentation/devicetree/bindings/iio/adc/adi,ad7380=2Eyaml
->> > >> -F:	Documentation/iio/ad7380=2Erst
->> > >> -F:	drivers/iio/adc/ad7380=2Ec =20
->>=20
->
