@@ -1,87 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 283633E3D8B;
-	Wed,  6 May 2026 08:39:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778056793; cv=none; b=Gri39DYW/fCJu4dnKELYgxgZglCqVoQ5WVoz1v9zYkL4iWNKh3Jai5rHholygQ3SC6LfBA3LF+cWy47NYjDAwYsrIjVSWrQc2dhqzPM6ENYZiyJZC+0JbzP0p3qcgs2euvMEZ4M7i4nsv4ObLK8Vw2HQ+sYWB0nbdcfXJ3P5oJQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778056793; c=relaxed/simple;
-	bh=Fz5iq7aGWo2VvwVsnwbB4SYoUS5Je9iCbW9rqu6w9T8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WZOHGpdBR1Tt8czcCu5MF/7CAGcYTrhsYlnfseghR5/c26MzE5GFk+zLnikDqgAsD6E2Dp6dXE/X+hKbiwZ+RY3MLGk6xIzkCq7C8QPEl4w0eECRh2urYOGE/FuksiF4fQ+4RI3l6E/gr5TNhsU0vya03mdj5Lbx0AfsSaMvU4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HxPrAhUE; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ADFF3C871B
+	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 08:46:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778057171; cv=pass; b=mp/ND17JixSHhmc8jRwMB+4j8yhA0KHHerqEjFqytvdS/YF+qCz26jY/ClKBN8TUnt25MATwGKsurM6DlaeS/6n3nnoD73IVIfOUlQoYOt/y0NXgAz90dLFlVkJZnUqEYJoC65biCVHONFC3DP+2WZFsIdd11Y2Ip39eyEnZppc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778057171; c=relaxed/simple;
+	bh=wZQzRuCzVGn7zkjqEEs4ggBaDQmcGz5kKz+cb6fUhNw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=G0LmEfbnzPLBrCKTuz793I0EpzNAfqQneXnoQrnN7B0sWdNr7cAOV9bOdETPndsWuwp6RQcEed+nj5Bwgx0S+tgzO//y8fMUngpDilHkBzaqTAJwms3SAZrOwhZPlytEwlx0omzBbepsXJV2NjmcUnMqWRwHgEsbi1Pe6dRioUA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oFJ4+ZID; arc=pass smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HxPrAhUE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778056791; x=1809592791;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Fz5iq7aGWo2VvwVsnwbB4SYoUS5Je9iCbW9rqu6w9T8=;
-  b=HxPrAhUEMyTaOoAP5NFz1kSNH4nR/kGl4KuBLHTD25MN9fDjcKWakQjH
-   28FJUCWQDlQyvr4JYCDAxKBxoNPsj9uB4zc3dJFbz/rVClizTTGLlsCea
-   NGWyhEgS/Vaj6XpANlM20ItPK7YhOgAtnDkzYR2XaI/XmUlkPDJiUuA13
-   1/Pj2sQC7VqfdRkyoBjIoMGZZ2d5TA+jnQLhmCu9E7ZvyVvplOctsPY0q
-   V/H8/XbQMTjCahcpjCgwURN5Cm76MRmOGeskjD8JYMtUX9p7uJrMm2eVy
-   A9HI1TaZivDvshd7oEXttb6VPqhSPLoUBw2l+wuQGBkACUfEfW/fUCM93
-   Q==;
-X-CSE-ConnectionGUID: rqr0MHLpT2CBPirl1uzp8Q==
-X-CSE-MsgGUID: 6rQF/JHUTnS7J/SUP0kWrQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="79028176"
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="79028176"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 01:39:50 -0700
-X-CSE-ConnectionGUID: 7YVRzWasQzus9rd7ozlz9w==
-X-CSE-MsgGUID: muWblokiSz+ImtWX7xFRug==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
-   d="scan'208";a="231702139"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 01:39:49 -0700
-Date: Wed, 6 May 2026 11:39:46 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Salah Triki <salah.triki@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: humidity: ens210: Fix missing I2C functionality
- checks
-Message-ID: <afr-UujhzuwZWzhT@ashevche-desk.local>
-References: <20260505174943.94093-1-salah.triki@gmail.com>
- <afr-KvM756ZAn2hh@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oFJ4+ZID"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-48984d29fe3so87823225e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 01:46:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778057168; cv=none;
+        d=google.com; s=arc-20240605;
+        b=RVY/ay2jVpKrvDCQDUVZfiMkGCPIJ6eQmUvYRw9x19JPWhAvzrzmr2mHdc7QvBg8qM
+         8U3e0ZjgS1NkMAfYLTp9fprpbEOR0DdB8rzuycyghi8qgyyush2Vh9z8QXBYmIuITh+I
+         hwQzghEj2U3j+0M/dIU291RQjUsjtitkMf/Om5KJuMjfG7yEDEZmMFtlTOxoHHzzqpIn
+         kiifWaDyl8S1Mwqkh2naw1HfuGiRqOewf0gvb1EjbJnkoYYc7Y6jLL3oJznfzQlIPln+
+         k2eaHMNLvNo9aKWXeCpQbTbqu9ill52pERsoQdAdUHrSRu9zekoVHcKjAqxUntee4NZD
+         gjYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=Yl+utyi6zIKqjrRilcYIHnZO2RHPkpNpGfFBZRzGQ18=;
+        fh=OL8cx/SR0l2Uk2296sZhAvrM3M8+VYAyQdPC3/twan0=;
+        b=VVFDOKYy1ceDSeKoT+pzRxM21+5Ndxmvq08FW4wjI7VqaEBI1jqpw546DewlmVJxOc
+         ZK1diAwaJE94LQSnLoI8DW0yJ5UzdjwyI/Lm8w4//O1l3Gl/ylOjAFcNmdKeOl2IZrXf
+         RYjLSKpY4EAJrJnG3PuYRnwizCAbghAopcckzweyV5Su7upcFD+bgoqk7qMN0hYvGk5k
+         dlPQOtfbl8oZFSsCkVWEHiMCk7LF5g6T/6AnPgFd2wQ3fRdavLqtsgedCBC55f+iY98k
+         hwq91T5RtSFJk8jmXA2RLFdxIVCCP+pcjgqXhZYRdgcZ6uY82+doDXE25XaBqU2lPc0y
+         726g==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778057168; x=1778661968; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Yl+utyi6zIKqjrRilcYIHnZO2RHPkpNpGfFBZRzGQ18=;
+        b=oFJ4+ZIDvyRDjMDbGfxIf5HrH85fa69ZgiRYbkwtMhnXYH2BMc1snGtMq65/0o4Mla
+         ngVncFVGPhnLmM6BEi/fj9mwzSJw77NJPjIjo4tjsh1zs5pOGY3b7DaC/qMRbEq6sPSu
+         K7VwD45dIWSxCLhaKU+ja8lCaK4iM2+EGFA+ml6WJFt+g2cUo28XL7K165YRnXemrA9R
+         YN4vrbNSKXyZumHW1jfGizLRD1DR7wxNz9HnazjJdXi1qV7kZpgoMInCj6O6U1SidWfQ
+         PnKVeinyvIfF/6nL16xvyDwQUntqhHXjX7y96rFE6i8v58kDCITWUijex1WZBod63CCq
+         UNxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778057168; x=1778661968;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Yl+utyi6zIKqjrRilcYIHnZO2RHPkpNpGfFBZRzGQ18=;
+        b=BCrp5xuM7/gV8tnVODaDxi2x7itAt4oL7XD1ypNCgUE+2uxwHvANjBSx171AhOu+mI
+         g5jDjHK+lpAWiB/qazEh0hKJv8Q5BD5YImtq1ogYxa/6Rtovo7sssXXCoKA0bJQxrRd9
+         WsUHplRfCvc7R6kw26Xk6GGr9kI9MUpyuFOtvEdw+GOaI59YSYJCwo5Tj7AMU4gWlltI
+         pD9GSXY7+SrmPb2mMF0OLAy3CVv3hhUA2zfhMIWt01mkhaW8LLxwvqqq77akOuL4FhMb
+         V6Ob2Y17o+F4nMPqzRJ+hPNJ16zmk3r/+DVJXQ2GSPKpKvOygulgK7bpSN8c8+cUQ2i4
+         y1DA==
+X-Forwarded-Encrypted: i=1; AFNElJ/X+Xyq4DgY8xMKmtxGOCgIakQ0QFPjupERQUSPtm38LHjdpEpPU1zzK8HyBv2IpcWVQiJ4XIrq7UA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzXX4BETzNMJx5a5g0I6TkeGgUDcJA6x4KDqo+5G1Jsz0QRyWEP
+	exyxW036cdwC9GB4PC+p0XBp5RQD4M4+dL1TRLQ+cxFa4wwG+RgVZpg14U9U5rRRoYqvX+F7xiv
+	AH5F5q+Xrhg5iFxsXNlk2bV8kuRKmyKk=
+X-Gm-Gg: AeBDiet/wtZZjpvycr1cAskzOTQCyinPdfGM5oINbMp9I+A0HGcpNfPSQr5QgY177XJ
+	lb9GDbCCldET3mPNO2zYzntMwxD7tsBvqH6SC9s+jpg03f9+td572TKGqOzX7EjU6t6M2IKXqNG
+	BVGLIHytxx64cV9dh761A8wdsEr4g4XR07RyvnpmPPLupBmeq4BXhfotErNdlW/F+tzoCkB6dPy
+	vS1ANUxfusStfrJtOfdlYjkKavBiqUtmsotgriAvZHxrJNt/1lGokfsRDYgCUZUvW+mHi5NqJoM
+	5CYkCc1L4BuNLNiAFDi6ImUaUGlJrMqGkm+X3NloDP5Grx72ANfPIvCidMSlOUpwLYZ7dVpHC63
+	vjaXI/DM6H8iR86X1845kwazNAn5z1kgVVLCh3hn/GyTMesPCECuA7hEs7aj7HG4jp5y6OpXbwU
+	55Qtkfd1+5uCQqEO5D
+X-Received: by 2002:a05:600c:c11c:b0:48a:52f2:a0f1 with SMTP id
+ 5b1f17b1804b1-48e51f46d48mr28969325e9.18.1778057168171; Wed, 06 May 2026
+ 01:46:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afr-KvM756ZAn2hh@ashevche-desk.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260506082755.860523-1-andriy.shevchenko@linux.intel.com> <afr8ibUy8lNywq-5@ashevche-desk.local>
+In-Reply-To: <afr8ibUy8lNywq-5@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 6 May 2026 10:45:56 +0200
+X-Gm-Features: AVHnY4IwKUOyZV1YnUJkrkFu2ENt6jwhIZ92q6mD6kWJfpJB-G8kz-tNviZ8-ps
+Message-ID: <CALoEA-zyp4fjF03hn-sH-jOeSmLCZoJorVts7JDNp9rqv6p-4A@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: magnetometer: ak8975: Add missed
+ pm_runtime_put_autosuspend() call
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Maxwell Doose <m32285159@gmail.com>, Sashiko <sashiko-bot@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, May 06, 2026 at 11:39:11AM +0300, Andy Shevchenko wrote:
-> On Tue, May 05, 2026 at 06:49:43PM +0100, Salah Triki wrote:
+On Wed, 6 May 2026 at 10:32, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Wed, May 06, 2026 at 10:27:55AM +0200, Andy Shevchenko wrote:
+> > On the failure in the ak8975_read_axis() the PM runtime gets unbalanced.
+> > Balance it by calling pm_runtime_put_autosuspend() on error path as well.
+>
+> I hope Jonathan will take this soon, so you, Joshua, can base a new version on
+> this one (otherwise it will be a conflict with one change).
 
-...
+Considering this is a fix, I'd say it will be merged fairly soon. I'll
+fix the addressed
+changes, and then do a rebase once it's available.
 
-> > +				!i2c_check_functionality(client->adapter,
-> > +					I2C_FUNC_SMBUS_EMUL)) {
-> 
-> This one is now wrong.
-
-I meant this *indentation* is now wrong.
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
