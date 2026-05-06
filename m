@@ -1,124 +1,72 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12F464BCABD
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 18:15:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ECEC175A99;
+	Wed,  6 May 2026 18:17:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778091322; cv=none; b=ZZuC/4xsSvXIv1qTcoMrUEmyfCdnmeyIoaZGkkfYx/N52u7WT7krWUdwed+gArLNU4tWlVotAkq4RrzQgIy4MYUGb/rfL09SO1oCpYB2ZXDYwRNaEx43wycEIdRULNwsWTJcbP9InaO3sIJjH/MVRJvdgC5jI+ENDVzlPfgazCM=
+	t=1778091444; cv=none; b=CmrZchu09a6gtmZi1AfNBLxpt5LRpcNiW6pND5V8PYfgDoMctQ/Hs+H+iVXhovbo3smr+nawkNGNEsFDBIQm5/MN30B9ppQ424OKI6YHKPiPeVAqSTvc37UmIVdEBx3tWIW1OWdRDSmloHH/MIV7bj02XyDu7q8lCElthfFc9Ec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778091322; c=relaxed/simple;
-	bh=KYHbEs1hFhbzdxRs3kjAitKOLVWL54iGr3ovFRvC3yk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nAYcZajH8I1DdnSxiKjOMgzA854OIF26xzpBjbchMnJ8oosNIZZCyxZyPjHmLsp4guYIspa70pQqDFX0g4KxAuzqcT4FpUG5qux9st2lsi08zJXvo2G/wT2TepiHJr8nvjkdqw4slMXyL/Y+y+5b/r+pXLSD8K9HoqkAr5DY0sg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=daIx9g0o; arc=none smtp.client-ip=209.85.167.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778091444; c=relaxed/simple;
+	bh=wZcS3zPDTogbCCquvTJ9KNSoNvqqTQ3UtT6v+t8RYWE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mfeAv5cCjT+V40SU9A1iIK6hySWQ5iRSUeR4T62ZAzdKuohJQqf46B58YvLRrLwISeduORhwyBjbUMbHzqgwe6LNU34RFInTMStqrPfarWoXPq85K/xd79xjQVvefQ2e08IGzlFktjgRVFuqLEfozXSayBzVauEXK9zjOMi9iLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NWffUwtG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="daIx9g0o"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5a0ff30b240so10011476e87.0
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 11:15:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778091319; x=1778696119; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=urPJFirmQxK1PfI+Y4FpSbIT/Bsr9NE+HAChfqtMiKg=;
-        b=daIx9g0on/PQSEE9MhzP8Nv9cyaaJuK8fgMwlUMPj8I1A+Vc6fOGB/hhbZq21D2wBy
-         mXOrUzKqTu7gBpVCO3cNkxcZ5rLAYVpzP949GQqdNZMdZSz9ND6Tp+ATNa+RSZ5XvUCe
-         Tqvd4vOtYYiw1rLq6lsQXJbRulJqxCfZwtJ1k3rflxRoEaq43gjbZlcM9pYOLOBFgPGt
-         ivxwHkK/sorDqrbvl+pM4zd9JC6RlG/gel00HCDtTfvSG8IVlBjQRsYveSFHMmS6eVOT
-         I/7bq5BsY8IKKE9J8uJVURXoHkZquzco7NPwKqptL7jIoRsAlHhQWHSR9rjD0feM3nr9
-         TZ6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778091319; x=1778696119;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=urPJFirmQxK1PfI+Y4FpSbIT/Bsr9NE+HAChfqtMiKg=;
-        b=YNJs/DySem/PMeQarPnc7u+Jp/NSXxpWe/S+qTQzreSfdIP5pD8O5SB8CAqED7VkLW
-         Wu8vT1QnKIgPEj7N5U4XtZuFAANEAAgHZIVrTsj4GB57dH3W9A/ifjF6+Jb38Uohp3Vm
-         gzajba5Mbr4mzPjunX6EfqN3yhtlegAJ/VdSFZfVZzId5rsVqAvl/MSNcOH7u5euKVxb
-         vC93wgsJZjk5mbZ2Y8IxUqvJS/jCXreJKbtUbslNkgYM1wqIAR5Fx+5+ego90ApibRsF
-         CpAdjzXgY5I9VGdqVsrcq8tBE+QTkXbkUoR6sBhjjqFSBxFEe/wKy16FEVYJ4jH251Tg
-         Q7CA==
-X-Gm-Message-State: AOJu0YyWwVkq2Ot+YUQ9vUovh4xS7fhf0ClmwVz2xXWemU2aHE0Twbsr
-	+Nry8tMjNOuxoocUUOYKccGHCD5NC5ARBMZnIeOE44zZR3XwUHYPhzuewbULzfz4
-X-Gm-Gg: AeBDiev2L+WotvymglBN/NIjRdVaDH8gXSB7iwZakxLQlsruRZZw3ka1h4Dnrmt/Vhb
-	CxMLQJZBGX3ejqG9IKQtsq2y18K5QUTPdh+9YhwTkf4aj8tgBNMRpudggzlh8XzGjqlonphWRb7
-	Q9LdUtN3PDwDwEKd1wBpIomQhRTeLl6OHkeQ6bTrHqC08YpqMKWG7P3CZoeP1PmdMcg2tMF17+i
-	uInJbzUxWnrkmg2soX00VpNrrrEK600H1OkQKvQA2HzJVdl4ehGcAoNHBjfZkMswFetMbTOy5HO
-	/L3dy2WmzKNRoGBYGdpe6Ih7zspBrRq9seF2uhVb6qjm6B3IzIymjS+L4YJ3E7UJuwoaBO/PJvh
-	st8LrmCBrY/QudU9AU9vzm+ApGuseSt6B0vUDOjCrj2+f3GQg0behcEuauQurQOrwngpxS7qZOo
-	QZ+3CpudYJaT9YXbG6vGlG+xbW02frzzbd+weaSoRL8x7KWCg1vltDAKEs4s9QSmS1+/ppkMjnA
-	xs=
-X-Received: by 2002:ac2:4e45:0:b0:5a8:6b96:9d10 with SMTP id 2adb3069b0e04-5a887cef69fmr972792e87.40.1778091318831;
-        Wed, 06 May 2026 11:15:18 -0700 (PDT)
-Received: from Shofiq (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a85c341848sm5037123e87.65.2026.05.06.11.15.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2026 11:15:18 -0700 (PDT)
-From: Md Shofiqul Islam <shofiqtest@gmail.com>
-To: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Md Shofiqul Islam <shofiqtest@gmail.com>,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	mike.looijmans@topic.nl
-Subject: [PATCH 3/3] iio: adc: ti-ads1298: Don't enable internal test signal during init
-Date: Wed,  6 May 2026 21:15:06 +0300
-Message-ID: <20260506181508.6813-4-shofiqtest@gmail.com>
-X-Mailer: git-send-email 2.54.0.windows.1
-In-Reply-To: <20260506181508.6813-1-shofiqtest@gmail.com>
-References: <20260506181508.6813-1-shofiqtest@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NWffUwtG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A53FC2BCB0;
+	Wed,  6 May 2026 18:17:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778091444;
+	bh=wZcS3zPDTogbCCquvTJ9KNSoNvqqTQ3UtT6v+t8RYWE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=NWffUwtGBDqVB30Rh/y78YDGyywGqCY00++tlXRVJYuLLUvfU79K6k4ODPVbDVGaf
+	 tlb+klh6ixf+8kG0vin2lV+HZlTNtrfVFaydkKv9oyuH1rGekGGgKNwEx+36JLl2BN
+	 PvYMh6c8TRt/diEXl9ThfOxTvgtjh747b9cMTJnMBMH6wGTk/VXqEDvet6VZ0pE5OP
+	 OJbCqe6k7VoSmhjihZKfHAP/0Mq2Vwbvx2ce1o8tXEvDO+tgU8CgSvQExZ5t3BaTOM
+	 0af7wlLtLyQd7sPnU5MptKJLOARy+Ujtkno0JhXs0ykDR0kpkttugMgK5MTYCTIyJv
+	 5MVwhKR7jbb6g==
+Date: Wed, 6 May 2026 19:17:15 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Aldo Conte <aldocontelk@gmail.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, shuah@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH 2/3] iio: light: tcs3472: implement wait time and
+ sampling frequency
+Message-ID: <20260506191715.4a943d60@jic23-huawei>
+In-Reply-To: <afsVzTytyLsNcAi0@ashevche-desk.local>
+References: <20260506094311.222500-1-aldocontelk@gmail.com>
+	<20260506094311.222500-3-aldocontelk@gmail.com>
+	<afsVzTytyLsNcAi0@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The driver was enabling the internal test signal (INT_TEST), double
-amplitude (TEST_AMP), and fast frequency (TEST_FREQ_FAST) bits in
-CONFIG2 during initialization. These bits activate an internal square
-wave generator intended for device testing and calibration, not normal
-ECG operation.
+> 
+> > +static unsigned int tcs3472_cycle_time_us(struct tcs3472_data *data)
+> > +{
+> > +	unsigned int atime_us = (256 - data->atime) * 2400;
+> > +	unsigned int init_us = 2400;
+> > +	unsigned int wtime_us;
+> > +
+> > +	if (!(data->enable & TCS3472_ENABLE_WEN))
+> > +		wtime_us = 0;
+> > +	else if (data->wlong)
+> > +		wtime_us = (256 - data->wtime) * 28800;
+> > +	else
+> > +		wtime_us = (256 - data->wtime) * 2400;  
+> 
+> This is the same as atime_us.
+Similar form but not the same unless data->wtime == data->atime
+Probably not worth defining anything common for that.
 
-While the test signal does not affect channel measurements unless the
-channel MUX is explicitly set to route it (MUX = 101), enabling the
-test signal generator unnecessarily increases power consumption and is
-inappropriate for a medical ADC driver in normal operation.
-
-Keep only the RESERVED bit which the datasheet requires to always be
-written as 1.
-
-Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
----
- drivers/iio/adc/ti-ads1298.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
-index 186bda3087..360dfd2fc8 100644
---- a/drivers/iio/adc/ti-ads1298.c
-+++ b/drivers/iio/adc/ti-ads1298.c
-@@ -615,12 +615,9 @@ static int ads1298_init(struct iio_dev *indio_dev)
- 	if (!indio_dev->name)
- 		return -ENOMEM;
- 
--	/* Enable internal test signal, double amplitude, double frequency */
-+	/* CONFIG2: reserved bit must always be written as 1 per datasheet */
- 	ret = regmap_write(priv->regmap, ADS1298_REG_CONFIG2,
--			   ADS1298_MASK_CONFIG2_RESERVED |
--			   ADS1298_MASK_CONFIG2_INT_TEST |
--			   ADS1298_MASK_CONFIG2_TEST_AMP |
--			   ADS1298_MASK_CONFIG2_TEST_FREQ_FAST);
-+			   ADS1298_MASK_CONFIG2_RESERVED);
- 	if (ret)
- 		return ret;
- 
--- 
-2.54.0.windows.1
-
+> 
+> > +	return wtime_us + init_us + atime_us;
