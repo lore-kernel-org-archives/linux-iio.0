@@ -1,128 +1,398 @@
-Received: from mail-yx1-f54.google.com (mail-yx1-f54.google.com [74.125.224.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8FDD480326
-	for <linux-iio@vger.kernel.org>; Wed,  6 May 2026 15:02:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778079764; cv=pass; b=rmx6TyfFeAMWSrj8DjWP69s5zx3Sz5nn1ZDCs9C2hlSryEDmjrigco71ecTRbLy7jD8P6bLOTJ5lePehK8B265n0B0LVou42xOBX9hwXCboUuEPOgCjiyQ1tgduKceEtMQLH+phCt67yFgO5g4x3Rk1TDac3JndQSen9wPnGOLY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778079764; c=relaxed/simple;
-	bh=uWL+cciMOLIwRqjgGz+1Rpz/YpRM2uhGvg7KxbZ/Qzg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MnlJzVblZOjT3peOBEo6IJjCdZbHdS1nikst7/p81dJk+jWV7Z0Bpkj4/ltVzK4hqLlzuPzT8t5ZJoFIJ3v1I5WL7AdiZbiaA6nZmsNhUNAX98RMVMw6D5qn4EiA4o+aFVPpG5Gg8kfVTmZgQ6gaTd0cbq5jxLPMwFDBUH34dn4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S+83dIcQ; arc=pass smtp.client-ip=74.125.224.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14DBA258EFF;
+	Wed,  6 May 2026 15:20:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778080817; cv=none; b=d9Gm38al7abBiDyBlPj1sLkbzhJxK5Acp/sU9c43k4Y0ROxtf0pBmLKHCnhewxXXvlTXtsXEL7cq2n7fJY0IKAOkjWOx/XawOGxrb+DZH/KbJChYaCBxQgr+9d2x0aS/zzGJIH/PWQHSjbfo6T1u9pifr4nghBdBBCvu9JAI3QE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778080817; c=relaxed/simple;
+	bh=Z6fQ0YAqtLbGIy9ba3h1aZ5bW6uBRB8+wtS8/48DFo4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=IY3SN6UYkX2Nh/5T8VgrSPqrdGGlwPnymaZZnww60LyM6znf6v3V2/DJB7Fke7cD860TI3l9aQsqFYVHd9iqjnFwzw7/5XdrtZil9uf2U0NJ5VCwiyDetjHAN9J850NZsKpYGSX3tDD2XVc7iAktuLRVjhvLMbsEreq2lx9ZyOU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CFnwSGKN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S+83dIcQ"
-Received: by mail-yx1-f54.google.com with SMTP id 956f58d0204a3-651d6347a69so975331d50.0
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2026 08:02:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778079762; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ZP4V4p2uGeok3FyeUG720GYBUd1yxWIdlIbLSS/olXqA92c7jqLHmpLpUECJcdHesA
-         N1sZz6sA//8b43zngVWrB3VxTIpquJM59R+HIfCEQybJhmAJvlgOJ9R5MYc+zhsfOFrU
-         PtkGcl7tbcIYkFZW1A2vl/yQulVrFy3uAWuPkSLivE8o7O95l/K/YOyqSWIFTr5AMJfa
-         Zw1W8G3IQq+L59uToYyhikDuTQwoAynTVY1v56nEarIIPWJ9e+hRD+VpdoE1T6670xYW
-         WFLd3tH3aagCVdgHiRBQqTNbXitFc6MvxT0JmZemsqCmWfvPWSJP4bsTNFYGtWyLh4l0
-         2+fg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=pCVWUq9vMu9LZiZ7LfA5RJOFwIrMBguh0jVvIxdfV5w=;
-        fh=b5MC+6Dyv0QzqQMdYEKLiuvFJjs2qlcvXCMBoTFChrU=;
-        b=DgW80TY+ZSpl4nXPxPDrNvAjg+nKxAsT5jYca394gu78WtF4WKOAME94Z7EXVX4ghz
-         oO8WAjdBMQ7PhmZMpCnXvz67MM/m0XzgYRwmtUL/P/wFRzsbsa9U//3FDA72uF6OlAsr
-         IUQP51/vXb3NekdrHMnyTla5VrWSDQNozWBDi6R/xZb0+EX4s+ADmXJElvjQbyXrduM8
-         NaOKmM6XKbvX0WZQzq+jTPRZIm964CUp8NCYglSLPkOWLyJtlEu4P6LemQH6SBF3EGUM
-         xuhhx0yeQcD5izQ6uATIt4kh46jGL6t3wH5YSfqZxCiZWiBjB7zfhI0DRSZbjgiRLu+H
-         Lavg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778079762; x=1778684562; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pCVWUq9vMu9LZiZ7LfA5RJOFwIrMBguh0jVvIxdfV5w=;
-        b=S+83dIcQ3f1G4+Fm/o/Nv0QV288/IxdDpxIh0Qd24PqssDn8joqkmjbL4+SY5u9g75
-         CMQwcpVDEbMNmIzNnL12jOs5LSRpu1MkTI2YsnXr4pZ1MqAhGGyOBJQ6BzbJDmxFmr9e
-         3c5gxAzuZRp53ELYR1ZmCEKxk8xbWVbkJPYitIFudTALKzSAvPvV2anQqcdv2fHfOvuT
-         HmBMLx2Lgezr3ZRty9AQXcz8J82KjCPVZ6kCmPQWmNVqLwGBcE2gE3f2GK7gc2DdkaQO
-         muR2EeVlSwgYOyHCJqCHOpTT7uOAf0ylBDUy6BOEyt3GxDWqPipjGynwJWx2Sam7yiaQ
-         bLGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778079762; x=1778684562;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=pCVWUq9vMu9LZiZ7LfA5RJOFwIrMBguh0jVvIxdfV5w=;
-        b=fuTN8ERsz5pcjjSWjQ1U9iPP/W5Y3DBxOu5CkWp6ev1shHNNy9d8ttt9mbpMigHI+K
-         6n9+W2FUP6zzfQ+5aPmc+XzTvXidePQtuuvIrVkBPIgpi7n2ek8UPJuaz9fHLjSF3Xt+
-         lG05YLjsQxjbIBGGea4ldxCn2AP5cyiDmClQkhjgJo/J0pLWWQ21AsXoaMmoEkqDSUUi
-         P4Ny+kfkD3hIIWrD0nQvNrFnVPqUiOY6N7o7JtzBkqWp+4UQVfn/6NxhsX4+AQxu+vpu
-         w707/oRN1DaLO6olTK/7MEv5gLCtKWLrAzI9+8Ysnw8WF4wo8wz6WhS7jglrW2pZ9/vG
-         FouA==
-X-Forwarded-Encrypted: i=1; AFNElJ+R6yf9fhWSOmaFhYLpBP4bINo1Mw9S9PhzsOqWuNG1OI4NFPTZ+LBEdOgolsryGIj1D1Kh1Zs1m7A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxM3WBOAUSb6J/MUBas36kj/fauBWVc/tQ/9JU0OffaVCgsQWFB
-	/h6tsiIlxlmigrN9atajYSQ7NLFIIyXnIutyFD5ioqxH6pjv56qvmy32dYOoz3b75aiElHiWarE
-	8vRJbUts7EKmBzYObLW9vYvRTTywU8x4=
-X-Gm-Gg: AeBDieu5ye8EcVpknhC/s8gpw0zzBfa0RTJIyxcsq245LKuyqyJnfsuNFh0Tlh7Jx72
-	6r9dvOh/H3xXth89N4GlnEmBfiTenrnayQudqTSwqhO8hTp3aAipwlncwwWD+k3vgl7VkIWHFPO
-	wcxcO3niybJIBEP5MIOpDGf1j0Llm4sD5J3lv2V3h1t6Xy/Gh5G9hpY7RkJShO2CnsyOAz34Ung
-	kEaYOZxfIJyUIlyqRranLujcAMRQWabRl9LI1ZDmN+LYYeQWXKHSzFVePhjGwtvFKQO4fuVgBie
-	3DMyUwdEHukx0INev85Y
-X-Received: by 2002:a05:690e:1402:b0:654:6450:19f7 with SMTP id
- 956f58d0204a3-65c7a125b95mr3294992d50.0.1778079760314; Wed, 06 May 2026
- 08:02:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CFnwSGKN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1932C2BCB0;
+	Wed,  6 May 2026 15:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778080816;
+	bh=Z6fQ0YAqtLbGIy9ba3h1aZ5bW6uBRB8+wtS8/48DFo4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=CFnwSGKNuFLNRZcK4eZ7wIM2U4JnaLUW7a54+wwIkyrq7/rkSteWfKxwdeLo1IWk/
+	 YrFL/E0KCegfcG5p1cWT76ctk8sjGTIq+gVOA20/AYDThn/izCNEMWgUpVowQui7Pp
+	 kE3ve223x6bqkb4queH1HSIkK9nc/7+lyKvAEYX1XnyU5WFMs12VL1ps+0zSWhhf/0
+	 m8BuPR5ynvoRua8puN5oMnELw/v18vm6E8JWLL58zCqvF+RvKuYcTXPpFv+Lo5w5wz
+	 t3Iz1RJQ/eMs2N6KRIhiEKwgsjjxhJI6LKA3de4DqGbj2WaAvn/gVCHM6VQ/vlecEv
+	 DWVG5FA8YC0/A==
+Date: Wed, 6 May 2026 16:20:05 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Angelo Dureghello <angelo@kernel-space.org>
+Cc: Greg Ungerer <gerg@linux-m68k.org>, Geert Uytterhoeven
+ <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann
+ <arnd@arndb.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre
+ Torgue <alexandre.torgue@foss.st.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>,
+ linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, Angelo
+ Dureghello <adureghello@baylibre.com>
+Subject: Re: [PATCH 10/10] iio: dac: add mcf54415 DAC
+Message-ID: <20260506162005.50408fde@jic23-huawei>
+In-Reply-To: <20260504-wip-stmark2-dac-v1-10-874c36a4910d@baylibre.com>
+References: <20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com>
+	<20260504-wip-stmark2-dac-v1-10-874c36a4910d@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260505174943.94093-1-salah.triki@gmail.com> <afr-KvM756ZAn2hh@ashevche-desk.local>
- <afr-UujhzuwZWzhT@ashevche-desk.local>
-In-Reply-To: <afr-UujhzuwZWzhT@ashevche-desk.local>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Wed, 6 May 2026 10:02:29 -0500
-X-Gm-Features: AVHnY4JfGzf7qkMLgun_QJ53hHMchZBKZk8HUR6tngFXXsndUjRuOO3JBBSs8HA
-Message-ID: <CAKqfh0E+4WUBsMHH0Rj1UH0MFdGo7E1crmHzJ+E6c0XXz3qvCw@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: humidity: ens210: Fix missing I2C functionality checks
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Salah Triki <salah.triki@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 6, 2026 at 3:40=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Wed, May 06, 2026 at 11:39:11AM +0300, Andy Shevchenko wrote:
-> > On Tue, May 05, 2026 at 06:49:43PM +0100, Salah Triki wrote:
->
-> ...
->
-> > > +                           !i2c_check_functionality(client->adapter,
-> > > +                                   I2C_FUNC_SMBUS_EMUL)) {
-> >
-> > This one is now wrong.
->
-> I meant this *indentation* is now wrong.
->
+On Mon, 04 May 2026 19:16:48 +0200
+Angelo Dureghello <angelo@kernel-space.org> wrote:
 
-Did something happen to that when I sent the email? Or maybe I'm just
-going insane...
+> From: Angelo Dureghello <adureghello@baylibre.com>
+> 
+> Add basic version of mcf54415 DAC driver. DAC is embedded in the cpu and
+> DAC configuration registers are mapped in the internal IO address space.
+> 
+> The DAC accepts a 12-bit digital signal and creates a monotonic 12-bit
+> analog output varying from ~DAC_VREFL to ~DAC_VREFH. The DAC module
+> consists of a conversion unit, an output amplifier, and the associated
+> digital control blocks. DAC_VREFL and DAC_VREFH defaults respectivley to
+Spell check.
 
-slightly confused,
-max
+> 0 and 0xfff.
+
+is DAC_VFEFL == 0? If not should have an _offset based on what it is. If
+it's common floating line then we can think about whether we need to describe
+it or it's just implicit as should be tied to whatever passes for 0V locally.
+
+> 
+> This initial version of the driver is minimalistic, "output raw" only, to
+> be extended in the future. DMA and external sync are disabled, default mode
+> is high speed, default format is right-justified 12bit on 16bit word.
+> 
+> Basic tests done on stmark2 mcf54415-based board, voltage check on DAC0:
+> 
+> /sys/bus/iio/devices/iio:device0 # ls
+> name                 out_voltage_raw      subsystem
+> out_conversion_mode  out_voltage_scale    uevent
+https://sashiko.dev/#/patchset/20260504-wip-stmark2-dac-v1-0-874c36a4910d%40baylibre.com
+
+Sashiko noted this.  Doesn't seem to be such a thing as out_conversion_mode
+which is good given I'd have moaned about custom ABI without docs.
+On the other hand it did hallucinate IIO_CHAN_INFO_CONVERSION_MODE when
+there is no such thing.
+
+As noted though too much for a patch description given most of this is entirely standard.
+
+> 
+> /sys/bus/iio/devices/iio:device0 # cat name
+> mcf54415_dac.0
+> 
+> /sys/bus/iio/devices/iio:device0 #
+> 
+> echo 4095 > out_voltage_raw     => voltage abt 3.3V by oscilloscope
+> echo 4096 > out_voltage_raw     => roll over to 0V
+Why?  Should be bounds checked and return -EINVAL or -ERANGE
+(we aren't particularly fixed on which)
+
+> echo 0 > out_voltage_raw        => voltage is 0V
+> echo 2048 > out_voltage_raw     => voltage is abt 1.7V, mid scale
+> 
+> Same behavior for /sys/bus/iio/devices/iio:device1.
+> 
+> Generated a sine wave by shell script, sine shape is good.
+> 
+> Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+> ---
+>  drivers/iio/dac/Kconfig        |  10 +++
+>  drivers/iio/dac/Makefile       |   1 +
+>  drivers/iio/dac/mcf54415_dac.c | 200 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 211 insertions(+)
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index cd4870b65415..17550e99cfdd 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -516,6 +516,16 @@ config MAX5821
+>  	  Say yes here to build support for Maxim MAX5821
+>  	  10 bits DAC.
+>  
+> +config MCF54415_DAC
+> +	tristate "NXP MCF54415 DAC driver"
+> +	depends on M5441x
+
+If we can add a || COMPIlE_TEST that would be much appreciated as
+then we'll get some better build coverage.
+
+May need some stubs if there is anything not already stubbed out.
+
+> +	help
+> +	  Say yes here to build support for NXP MCF54415
+> +	  12bit DAC.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called mcf54415_dac.
+> +
+>  config MCP4725
+>  	tristate "MCP4725/6 DAC driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 2a80bbf4e80a..1cb93e83d0eb 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -51,6 +51,7 @@ obj-$(CONFIG_MAX517) += max517.o
+>  obj-$(CONFIG_MAX22007) += max22007.o
+>  obj-$(CONFIG_MAX5522) += max5522.o
+>  obj-$(CONFIG_MAX5821) += max5821.o
+> +obj-$(CONFIG_MCF54415_DAC) += mcf54415_dac.o
+>  obj-$(CONFIG_MCP4725) += mcp4725.o
+>  obj-$(CONFIG_MCP4728) += mcp4728.o
+>  obj-$(CONFIG_MCP47FEB02) += mcp47feb02.o
+> diff --git a/drivers/iio/dac/mcf54415_dac.c b/drivers/iio/dac/mcf54415_dac.c
+> new file mode 100644
+> index 000000000000..4031a5dc1f9d
+> --- /dev/null
+> +++ b/drivers/iio/dac/mcf54415_dac.c
+> @@ -0,0 +1,200 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * NXP mcf54415 DAC driver
+> + *
+> + * Copyright 2026 BayLibre - adureghello@baylibre.com
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include <linux/iio/iio.h>
+> +
+> +#define MCF54415_DAC_CR			0x00
+> +#define MCF54415_DAC_CR_PDN		BIT(0)
+> +#define MCF54415_DAC_CR_HSLS		BIT(6)
+> +#define MCF54415_DAC_CR_WMLVL		GENMASK(9, 8)
+> +#define MCF54415_DAC_CR_FILT		BIT(12)
+> +
+> +#define MCF54415_DAC_DATA		0x02
+> +
+> +#define MCF54415_DAC_READY_US		12
+
+I'd put this inline instead of having a define given it's only used in one
+place and  the documentation on why it is 12 is there.
+
+> +
+> +struct mcf54415_dac {
+> +	struct clk *clk;
+> +	struct device *dev;
+
+Sashiko noted dev isn't used after assignment so drop it.
+
+> +	void __iomem *regs;
+> +};
+> +
+> +static void mcf54415_dac_init(struct mcf54415_dac *info)
+> +{
+> +	int val;
+> +
+> +	/* Keeping defaults and enable DAC (bit 0 set to 0) */
+> +	val = MCF54415_DAC_CR_FILT;
+> +	val |= FIELD_PREP(MCF54415_DAC_CR_WMLVL, 1);
+> +
+> +	writew(val, info->regs + MCF54415_DAC_CR);
+> +
+> +	/* DAC is ready after 12us, from RM table 40-3  */
+> +	fsleep(MCF54415_DAC_READY_US);
+> +}
+> +
+> +static void mcf54415_dac_exit(void *data)
+> +{
+> +	struct mcf54415_dac *info = data;
+> +	int val;
+> +
+> +	val = readw(info->regs + MCF54415_DAC_CR);
+> +	val |= MCF54415_DAC_CR_PDN;
+
+Even though simple, might be worth using regmap and
+taking advantage of regmaps rich set of RMW operations.
+
+> +	writew(val, info->regs + MCF54415_DAC_CR);
+> +}
+> +
+> +#define MCF54415_DAC_CHAN { \
+> +	.type = IIO_VOLTAGE, \
+> +	.output = 1, \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+> +}
+> +
+> +static const struct iio_chan_spec mcf54415_dac_iio_channels[] = {
+> +	MCF54415_DAC_CHAN
+> +};
+> +
+> +static int mcf54415_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int *val, int *val2,
+> +			long mask)
+> +{
+> +	struct mcf54415_dac *info = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		*val = readw(info->regs + MCF54415_DAC_DATA);
+Any chance there is anything in higher bits?  Maybe mask to be sure
+(sashiko moaned about this)
+
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Reference voltage as per ColdFire datasheet is 3.3V */
+> +		*val = 3300 /* mV */;
+> +		*val2 = 12;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int mcf54415_write_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int val, int val2,
+> +			long mask)
+> +{
+> +	struct mcf54415_dac *info = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		writew(val, info->regs + MCF54415_DAC_DATA);
+
+Should return an error if val is too large. Same thing as the overflow
+thing in the commit message that I commented on above. 
+
+> +		return 0;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info mcf54415_dac_iio_info = {
+> +	.read_raw = &mcf54415_read_raw,
+> +	.write_raw = &mcf54415_write_raw,
+> +};
+> +
+> +static int mcf54415_dac_probe(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct mcf54415_dac *info;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
+
+Quite a lot of use of pdev->dev. I'd introduce a local
+struct device *dev = &pdev->dev;
+and use that.
+
+> +					  sizeof(struct mcf54415_dac));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	info = iio_priv(indio_dev);
+> +	info->dev = &pdev->dev;
+As noted above, this doesn't seem to be used.
+> +
+> +	info->regs = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(info->regs))
+> +		return dev_err_probe(&pdev->dev, PTR_ERR(info->regs),
+> +				     "failed to get io regs\n");
+> +
+> +	info->clk = devm_clk_get_enabled(&pdev->dev, "dac");
+> +	if (IS_ERR(info->clk))
+> +		return dev_err_probe(&pdev->dev, PTR_ERR(info->clk),
+> +				     "failed getting clock\n");
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	indio_dev->name = dev_name(&pdev->dev);
+
+This should be the part number.  dev_name has an irritating habit
+of being something more complex. What is it here? Just hard coding
+it probably simpler even if it happens to be something that works in
+this case.
+
+If you need to differentiate between multiple instances, use a label
+instead of name.
+
+> +	indio_dev->info = &mcf54415_dac_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = mcf54415_dac_iio_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(mcf54415_dac_iio_channels);
+> +
+> +	mcf54415_dac_init(info);
+> +
+> +	ret = devm_add_action_or_reset(&pdev->dev, mcf54415_dac_exit, info);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+> +	if (ret)
+> +		dev_err(&pdev->dev, "couldn't register the device\n");
+
+I think this was already pointed out.  It's really easy to see if this
+failed (the device isn't there) so we tend not to bother printing
+an error on it happening.  Thus
+	return devm_iio_device_register()
+
+> +
+> +	return ret;
+> +}
+
+> +
+> +static DEFINE_SIMPLE_DEV_PM_OPS(mcf54415_dac_pm_ops, mcf54415_dac_suspend,
+> +				mcf54415_dac_resume);
+> +
+> +static struct platform_driver mcf54415_dac_driver = {
+> +	.probe          = mcf54415_dac_probe,
+> +	.driver         = {
+> +		.name   = "mcf54415_dac",
+> +		.pm     = pm_sleep_ptr(&mcf54415_dac_pm_ops),
+> +	},
+> +};
+To me the alignment of this structure is misleading to the eye as stuff
+in the substructure aligns with the main one.  I'd prefer
+
+static struct platform_driver mcf54415_dac_driver = {
+	.probe = mcf54415_dac_probe,
+	.driver = {
+		.name = "mcf54415_dac",
+		.pm = pm_sleep_ptr(&mcf54415_dac_pm_ops),
+	},
+};
+
+Because this sort of alignment forcing is a common source of annoying
+churn in follow up patches for very little in readability gains.
+When it's arrays of numeric data it is worth doing but not for fields
+of a structure.
 
 
+> +module_platform_driver(mcf54415_dac_driver);
+> +
+> +MODULE_AUTHOR("Angelo Dureghello <angelo@kernel-space.org>");
+> +MODULE_DESCRIPTION("NXP MCF54415 DAC driver");
+> +MODULE_LICENSE("GPL");
+> 
 
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
->
