@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F100543E4A1;
-	Wed,  6 May 2026 16:25:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96B654921A6;
+	Wed,  6 May 2026 16:32:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778084733; cv=none; b=sfqoLkrJ446uHiaQB53WTO7vxZTlz7XQ9wfTLEyHCZU1gqFEjzfbxaN8pV2gQ9R5g1Ca7Lt7remcr1zau8XV6+6PUl1rksvr/mILM1TZPy38i9j4ugDQF3n0p4zQxDV2hDIv6vF6HGRFGAAAkFB6xjAY3+q1a9Mnj4/kUiZ2Mg8=
+	t=1778085147; cv=none; b=N1Vxduc3KnZpoWgXBQuChKj3eB2HdpqRTH6Kt/MNxtk5Z6DU0PsW4BtQ6bHqZ86cl+apsPRD/fjJTR9omqZ485Ri4ATDwZP/dxbF/CVXzpTXSrR9DyAqOc1o8TLrRrqu41uxxz3g7buw7rNYYxkckSSmam0OCB487affVM+74iA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778084733; c=relaxed/simple;
-	bh=8lckDYVCHgZcVrPd5vN9cH2Phto/u6iiLpNyQmuwoHE=;
+	s=arc-20240116; t=1778085147; c=relaxed/simple;
+	bh=kj9v+XJI+TIb5FLhChn+YEftA75XrLFvIr6DBey1ly8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ki9MhtlqNeVY5pRWmm29d2FmJdawA9zOa4R7ArKTSzig5a4FVl26j29Fr/yvuhsHoiSevmyqnWA2qHL/QpvgNtwvXcwiT0Nx+UuGPRgTZ31jfLmWNIqUlsqHO/tdbWpYR7OGVN51mdvZwERAXj32N04G804+hrzRNWJBiRgZ538=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L0hKi6pM; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=tLIGYMbvDt9de65tMH7lA/+HcW+7L9ERl7De6y3Y/uT9swOQuzhS4RLqIgCEWpwVq0ahXw9ctnCg/f809W7l7SRINJUIprBfe6m/yrdQhK4IOl4J90lUSEkvztZJBTtet6RdzeKObx98rIy1yhBY39d4Bbt2M/58+Su0caDRZRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gswsmjv7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L0hKi6pM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23863C2BCB0;
-	Wed,  6 May 2026 16:25:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gswsmjv7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB87C2BCB8;
+	Wed,  6 May 2026 16:32:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778084732;
-	bh=8lckDYVCHgZcVrPd5vN9cH2Phto/u6iiLpNyQmuwoHE=;
+	s=k20201202; t=1778085147;
+	bh=kj9v+XJI+TIb5FLhChn+YEftA75XrLFvIr6DBey1ly8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=L0hKi6pMbJDcECW3aO23XQ5KkVhFVYN8KexpIquc6ml1v4ikNf0AKC01hKgFoQZ+G
-	 ctxBk59ZF+s1YkMkBKe6ViQgGduOUsDJwXoPJGthThFKOoWWybApcEcXyvwCXw2Mpu
-	 73T1F1n36IzdrHKP1Zmepehe7ICnmjeAyvTzWMZ1e6Xdrqenig2yKPDcyMFp2EZ4jb
-	 vpwTmqWQkfO77ZGj5SblVwdTr7vZaSPLu6umn3NwsGISxIV+RPzkreBU0sfy3EYprp
-	 54qYo4cU8n/aO+/rgPOt0vUCtJxq1n7VegOOU3y6bGiGNGqguC6k+E9GZ5s66tpquk
-	 wOXEpwPCqw5Iw==
-Date: Wed, 6 May 2026 17:25:23 +0100
+	b=Gswsmjv7x0qjMOrgan8ohyFVQ5z48Czq4Sa2oH721OM+41S8PBKlinJHsg4LKhba0
+	 lbrwDr+XRgDpQLNlGNEQsSbzZ5G66neI5C56bPbvcn5VBkUpOtbA30qyO1I4wyKkiS
+	 u99LyvFdaVINx5tVMKj6lDiF+xUQrzt4mbWWOvwQLSXUxdbdmzjsHjTabVE0b3pTE4
+	 3rREsY4GoTF1JraXjwszCvhuNTfWKm6hmht8bBmzCLbaTewJrQvtxuwpTlgDR1mtwS
+	 b7P4kbY2j8azc+wIP1yvZbb1kLtiYcgJyHdMh4aK5EUn9otDkxn7OEJuPHc8lz1JCG
+	 e9LNmOGBWCAlg==
+Date: Wed, 6 May 2026 17:32:19 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Kim Seer Paller <kimseer.paller@analog.com>
+To: Salah Triki <salah.triki@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: dac: ad3530r: Fix AD3531/AD3531R powerdown
- mode strings
-Message-ID: <20260506172523.77e095c6@jic23-huawei>
-In-Reply-To: <20260505-dev-ad3531r-v1-2-2b4cc55f69e7@analog.com>
-References: <20260505-dev-ad3531r-v1-0-2b4cc55f69e7@analog.com>
-	<20260505-dev-ad3531r-v1-2-2b4cc55f69e7@analog.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: temperature: tsys01: fix broken PROM checksum
+ validation
+Message-ID: <20260506173219.18e7d1d1@jic23-huawei>
+In-Reply-To: <20260505071025.69221-1-salah.triki@gmail.com>
+References: <20260505071025.69221-1-salah.triki@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,26 +47,48 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 5 May 2026 12:34:32 +0800
-Kim Seer Paller <kimseer.paller@analog.com> wrote:
+On Tue,  5 May 2026 08:10:24 +0100
+Salah Triki <salah.triki@gmail.com> wrote:
 
-> The AD3531/AD3531R has different output operating modes from the
-> AD3530/AD3530R. According to the AD3531/AD3531R datasheet, the
-> powerdown modes are:
->   01: 500 Ohm output impedance
->   10: 3.85 kOhm output impedance
->   11: 16 kOhm output impedance
+> The current implementation of tsys01_crc_valid() incorrectly sums the
+> first word (n_prom[0]) repeatedly instead of iterating over the 8 words
+> retrieved from the PROM. This leads to a checksum mismatch and probe
+> failure on hardware.
 > 
-> The driver currently uses the AD3530R modes (1k, 7.7k, 32k) for all
-> variants, which is incorrect for AD3531/AD3531R.
+> According to the TSYS01 datasheet, the PROM consists of 8 words. A valid
+> check must iterate through all 8 words to verify the integrity of the
+> calibration data. The current driver only checks the first word 8 times.
 > 
-> Add AD3531R-specific powerdown mode strings and assign them to the
-> AD3531/AD3531R chip variants.
+> Note: This fix was identified during a code audit and is based on
+> datasheet specifications. It has not been tested on real hardware.
 > 
-> Fixes: 93583174a3df ("iio: dac: ad3530r: Add driver for AD3530R and AD3531R")
-> Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable
+> Fixes: 43e53407f680 ("Add tsys01 meas-spec driver support")
+> Signed-off-by: Salah Triki <salah.triki@gmail.com>
+Bit of a gamble without testing but seems correct to me so small
+gamble. Even taken it slow path doesn't really guarantee anyone will
+happen to test it - so...
 
-Thanks,
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+> ---
+> Changes in v2:
+>    - Update commit message to clarify that the fix is based on the
+>      datasheet analysis.
+>    - Add a note mentioning that it has not been tested on real hardware.
+> 
+>  drivers/iio/temperature/tsys01.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/temperature/tsys01.c b/drivers/iio/temperature/tsys01.c
+> index 334bba6fdae6..104dd45598b0 100644
+> --- a/drivers/iio/temperature/tsys01.c
+> +++ b/drivers/iio/temperature/tsys01.c
+> @@ -119,7 +119,7 @@ static bool tsys01_crc_valid(u16 *n_prom)
+>  	u8 sum = 0;
+>  
+>  	for (cnt = 0; cnt < TSYS01_PROM_WORDS_NB; cnt++)
+> -		sum += ((n_prom[0] >> 8) + (n_prom[0] & 0xFF));
+> +		sum += ((n_prom[cnt] >> 8) + (n_prom[cnt] & 0xFF));
+>  
+>  	return (sum == 0);
+>  }
 
-Jonathan
