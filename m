@@ -1,144 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C332E346E6D;
-	Wed,  6 May 2026 13:08:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A01B023D7FF;
+	Wed,  6 May 2026 13:08:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778072896; cv=none; b=be7v8XghqX6PeEHEn0QuyjyRX7eHLqL3fy+BaMYH0AS8uY1yo4+HtiVvpVfPV2aa8M7/yXdP8z2CFrlbgHAK85BoKDl79VN3OWnFtJg44BfiLiRiohuI8z9FlAjAerxI+AuBVtkg8ksFRxwlEnCKwR0qFNwNVlv80GvprRGfLWs=
+	t=1778072908; cv=none; b=KUbdND9EoxIdG2oQY/ISJ06GjAWvOgl/rYMWl2upuwYOZ9Vlv0HhxtgmfFaUjQVUYzVzImKy90GlS9uF+1NAErLRjU1ok47ETZttfKkaeiSA681iHd0Gi/jY+EhjVD1qJ83pPjowpKRAAGzgukYFOvVIOZZ7TRR7IUaRgGNPoqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778072896; c=relaxed/simple;
-	bh=9OVWyBMTIv1qHfDj+4mWQFWJ5hA9S8PB01gNeTpSYIk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HBeuIEbVpFK9ug4rKgCT8vvGh0jUVkOFUOZTyDwIU9iTAw28Txt0rgAO7FOy0I7b5gNhD+7E2St9zNjf4Wqkc+2xeeqHIbWlDnKwjzLHcGixYMlngPME8ZtErVWhB2aCprcmnLiwTh1c5jaWkyPLGpx9hwshyZcF7RLPSPCjs/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X3MQEhj8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778072908; c=relaxed/simple;
+	bh=ovFdm4PUGmprJ4eBv2Y/WIgQx6h6RYVqqakJYONUPv8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fdHksKZKPGKC9nLRGtJLvqx+Cgu0ewkCCa3nOACwb8ZWSlPVrS44v3bJBRsf6SjgGHa8OF2lIlVNxikIebkOpwbkrAtkVIJ/Xqj4OoYss8hQGuih8wRkUUuktVgTOEfFicM6PdJXZzlql5oL4hpcQ08OtyKBxXLq9HCdBu3U4l4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U/DjeH7j; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X3MQEhj8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66834C2BCB8;
-	Wed,  6 May 2026 13:08:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778072896;
-	bh=9OVWyBMTIv1qHfDj+4mWQFWJ5hA9S8PB01gNeTpSYIk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=X3MQEhj8vCdODlxuWRmr5O8HzDG49l2HcZ68ZY0ECM3hGwG5dkTB2mfgWfrmGfXAN
-	 e6d94OtkGskFTKry7c0STFF/YimcRvEWzABRm+qVXsdaelGxB0iXiBNRsiTbgTDeie
-	 fJxAMLPP7mcvpnyO8czmABY9qhI6PmQwyC7gixNbnTkhVSb7ISywri3TP0YBSdQ5rZ
-	 6/loiLf9WvC1F2GeANrqz0w5vPlMSxj6HYnYWnXUNw+7zg0+Oolv33UvqkfFlcP+6m
-	 1Nlq8FflD1efVzEGikYLg2L2xMaowkwPLmQ//piaUvGQODaxDWGZ/a7bMxcSaGd3+/
-	 nMnzESkFuOIaw==
-Message-ID: <b66ec605-d120-46b8-89b4-89bc40c1575e@kernel.org>
-Date: Wed, 6 May 2026 15:08:07 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U/DjeH7j"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778072907; x=1809608907;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ovFdm4PUGmprJ4eBv2Y/WIgQx6h6RYVqqakJYONUPv8=;
+  b=U/DjeH7jO88YoIsFIg0vs6OR8JHWGwDGuGlhhcYdklCly8F+ArMiGgeY
+   TFFZenf5J8p2rLI/MavTxtNhyRw1+QTKZutXfAhPqz780JMTWwn9S7Stt
+   tGSYbnX//dIL0+egpC49dqeUyYKrrvIChxCxyQFHgSLw5F7Wy0p6g2I15
+   weDB+rucmVxWRRsMoeK6btmD3LqwK6C7qC6yUun1JVo7f7vqyArJrwSMN
+   s2E6Qq4Pwt00JlfpMkNBeDMkwOhlzxND2Qc98+TQ7DdMmD5yxt2EiQM75
+   GLDxD12S8bN8N9y8s/xg9qnutQTEfoe/Ps6hYgIra+xgunGH8EJO7Prus
+   Q==;
+X-CSE-ConnectionGUID: hddR8pH9S4yZDCfLI7mykg==
+X-CSE-MsgGUID: jfWej7LNSbGbVopJ9UCCuQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11777"; a="78893451"
+X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
+   d="scan'208";a="78893451"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 06:08:26 -0700
+X-CSE-ConnectionGUID: aLJNDU3iRtuL2O7n1VrmHw==
+X-CSE-MsgGUID: sX620JRgQ5+fvuOWM4GtSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,219,1770624000"; 
+   d="scan'208";a="240475892"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 06:08:24 -0700
+Date: Wed, 6 May 2026 16:08:21 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 07/18] iio: magnetometer: ak8975: modernize polling
+ loops with iopoll() macros
+Message-ID: <afs9RRAldVXWqVaZ@ashevche-desk.local>
+References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
+ <20260505-magnetometer-fixes-v5-7-831b9b5550fc@gmail.com>
+ <afrlT71SjyQLh2xz@ashevche-desk.local>
+ <CALoEA-xjvxYOQ8Kt+OXR=6E_TrjUmC4J6ZXftE6hri6z+Wzhrg@mail.gmail.com>
+ <CALoEA-xBcPzoy4T3+0edrnQLV++k2VN5ozWan8L+gnV5P3CLFw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 01/13] dt-bindings: iio: adc: add mt6323 PMIC AUXADC
-To: Roman Vivchar <rva333@protonmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Srinivas Kandagatla <srini@kernel.org>, "Rafael J. Wysocki"
- <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>,
- Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
- Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-pm@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
-References: <20260504-mt6323-v1-0-799b58b355ff@protonmail.com>
- <20260504-mt6323-v1-1-799b58b355ff@protonmail.com>
- <389917bb-c64c-4ac2-ab8f-b28ab0a89ecb@kernel.org>
- <evJBbJD1B9GjUyj5xyiJVUw-Ufib330tbUxxamM8-e4kJeNlwcENufbYZHdDWb0ZItz1fsEAbDaSFk0ObL4y0zenRr4vA4KOn6IHxuBP4VQ=@protonmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
- QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
- +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
- ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
- 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
- hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
- tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
- 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
- naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
- hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
- whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
- qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
- RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
- Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
- H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
- dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
- AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
- jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
- zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
- XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <evJBbJD1B9GjUyj5xyiJVUw-Ufib330tbUxxamM8-e4kJeNlwcENufbYZHdDWb0ZItz1fsEAbDaSFk0ObL4y0zenRr4vA4KOn6IHxuBP4VQ=@protonmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALoEA-xBcPzoy4T3+0edrnQLV++k2VN5ozWan8L+gnV5P3CLFw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 06/05/2026 12:59, Roman Vivchar wrote:
-> On Wednesday, May 6th, 2026 at 10:56 AM, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On Wed, May 06, 2026 at 12:50:09PM +0200, Joshua Crofts wrote:
+> On Wed, 6 May 2026 at 09:01, Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+> > On Wed, 6 May 2026 at 08:53, Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
+> > > On Tue, May 05, 2026 at 01:46:03PM +0200, Joshua Crofts via B4 Relay wrote:
+
+...
+
+> > > > +     ret = read_poll_timeout(i2c_smbus_read_byte_data, val, val != 0,
+> > > > +                             poll_ms * USEC_PER_MSEC,
+> > > > +                             timeout_ms * USEC_PER_MSEC,
+> > > > +                             true,
+> > > > +                             client, data->def->ctrl_regs[ST1]);
+> > > > +     if (ret)
+> > > > +             return ret;
+> > > > +     if (val < 0) {
+> > > > +             dev_err(&client->dev, "Error in reading ST1\n");
+> > > > +             return val;
+> > > >       }
+> > > > -     if (!timeout_ms)
+> > > > -             return -ETIMEDOUT;
+> > > >
+> > > > -     return read_status;
+> > > > +     return val;
+> > >
+> > > Besides the unneeded return val duplication, I think this is the wrong location
+> > > for this check and it changes behaviour (really subtle change!).
 > 
->> On 04/05/2026 20:24, Roman Vivchar via B4 Relay wrote:
->>> From: Roman Vivchar <rva333@protonmail.com>
->>>
->>> The MediaTek mt6323 PMIC includes an AUXADC used for battery voltage,
->>> temperature, and other internal measurements.
->>>
+> Hmm, rechecking this, I agree with the unnecessary return, but I don't think it
+> changes the behaviour of the function.
 > 
-> ...
+> > > Before if the last iteration gives an error from the device, we return
+> > > -ETIMEDOUT instead of the whatever the i2c_smbus_read_byte_data() returns.
 > 
->>> +
->>> +properties:
->>> +  compatible:
->>> +    const: mediatek,mt6323-auxadc
->>> +
->>> +  "#io-channel-cells":
->>> +    const: 1
->>> +
->>> +required:
->>> +  - compatible
->>> +  - "#io-channel-cells"
->>
->>
->> This is heavily incomplete node... or unnecessarily split. Why it cannot
->> be part of parent binding? Or even parent node?
->>
-> 
-> The MediaTek mt6359 AUXADC also has a very similar binding. The mt6323
-> cannot be merged there because it has a different hardware.
+> Looking at the original function, it always prioritized returning the
+> i2c_smbus_read_byte_data() error code before returning -ETIMEDOUT (even
+> on the final iteration). In the new version, if the i2c read is bad,
+> the read_poll_timeout()
+> code will still be zero, therefore allowing the code to jump to the
+> i2c value check
+> and then return if bad (this is still the same behaviour IMO).
+
+It looks like I stand corrected! Indeed, we have two conditions to follow, one
+is provided in a macro parameter, and the other is for timeout. Here the Q is
+which one logically should be checked first? More thinking on it tends to your
+direction as it follows usual pattern as we check the return values (errors)
+from the callee first *then* validate the results.
+
+> Maybe I'm looking at it from the wrong angle though. AFAIC Sashiko nitpicked
+> everything except this (but yes, it's still an AI so we have to tread lightly).
+
+> Same goes for the other patch where you raised this issue.
+
+Yep.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-I did not propose that, but since you are mentioning it: it is 100% the
-same, so I do not understand why it cannot be merged. That would save
-you a few questions :/
-
-Best regards,
-Krzysztof
