@@ -1,47 +1,56 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD8523F9F41;
-	Thu,  7 May 2026 14:09:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41C5A3FCB30;
+	Thu,  7 May 2026 14:16:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778162979; cv=none; b=hkQxX3JW2H0Q2CiGQYX/SBaD/ebGCt62+0U8ibsnMSRrlwuDl92QiGGBdXVXNEaxoLDl3+rhhvaav7Hxxx6JslC7co7KGdPzgkcWyDtifLQ8qf0X3UCAaxv7vG86POySY8SaCTpjYvVrDjBdF1yoRfyKoRWnEStgzQWnhwtxk/Q=
+	t=1778163364; cv=none; b=DmYRTeldiHl+/tjKy6F/P/h8hXlqqjwtodGUA6ayjOnNNwUc70qUdZh8Cs3FFSUaQvIWwT3pfzTU4A7mARnvlm43tQEuIKYJlY1YcRrmn76YFOM4IhW7mfwyZVwYRLtP4nB6DUVWQVybJyaZYtNFdLNPFlCi58I9VHbMHuG72RM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778162979; c=relaxed/simple;
-	bh=ePTub+l+dmEw8eLwvn4wyKLaBUBGl7v4gpWQPJ2imJw=;
+	s=arc-20240116; t=1778163364; c=relaxed/simple;
+	bh=bbrbEtkbVlAVQ/692G80E3CKsqbcxeQRCAsWArl4QmA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pD+gtR3gaieZ9jiiYt5WS4YLbLXDFKAd+xK4M99W4Y6HZ6a6NJBUscBqpzVMoqSC7Egjo7HUoUekocTOhnH60RsFVng7B85a3sTld0rlbnBx2yC8XFMplCWqlPIeorJelsUO5VCRw72SSXS7Gi9cWtS0gnQcDpNSUhbvDyIXpNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AvLR6X90; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=l4ElsZs8X4ORUJ6Pi62srIctbdOI3VAjqpPWQC3HLraW4lV1d5o0we40NMdBsTJNgG7sJhrVDtDOlYNXo3+oBCJLEjIGVYdYBZ6qHQ48LuYPu7uRnnfJArY5ZvRC4DkQHZVS7RJRgM0If1Vt0WW4pCsHHZqTdtEjXyvoVAQQVIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XT6JeDT0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AvLR6X90"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE7BC2BCB2;
-	Thu,  7 May 2026 14:09:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XT6JeDT0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BD29C2BCB2;
+	Thu,  7 May 2026 14:15:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778162979;
-	bh=ePTub+l+dmEw8eLwvn4wyKLaBUBGl7v4gpWQPJ2imJw=;
+	s=k20201202; t=1778163362;
+	bh=bbrbEtkbVlAVQ/692G80E3CKsqbcxeQRCAsWArl4QmA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=AvLR6X90qQX1kGs4+n3LBtIGKSfRKsTrzZbBEYAJ1j1OJ7jAc8ON5FTWxCDYrLnfy
-	 U0bPuBFJBaHEfZ8Jbsk3y0PY0n4lIkTQiH8ZlFHaHUpGcnf4DhYFeCqaD8j00LpyPi
-	 mUbWqwCt3KgDzBAt8ATEHGdA4clkK9v+ZcoWh1uF6oeF3eJtNY/JXr14srEOfaxNnO
-	 J2FoAD4J2UbS3QcpGGLY5OIyhmF9uPODi+uhvY2knEaqpIt/WH+Xq8d6bbS6ppyd/K
-	 xQ3THEqieITQcYOUq5ihI0VwwYdh0qVQfNNi2Bo3wmkSdES14lonuUFV6CgA087lie
-	 DDCjuAOkJ0aiw==
-Date: Thu, 7 May 2026 15:09:30 +0100
+	b=XT6JeDT0CcdgJNhOX+Z3Ocj7OeJKn7+o1VZRuNFWOwvyE1lrQW/eIxFqod2yyyXKe
+	 Cw1DPm5Hjdiodz/9grKfl9OB8p8NYK8my1IefT5GD9flNaD538X2Z5Sii7JNzXiXBc
+	 FHKGpFm9wnYkZX0jOrtrm1ObC8II8SQqFk/oBXMF9nXcrKvDFnVCafyrStH7nBug6X
+	 HhT9TcYnLOEHho/RNNwZxQw2+ueza2kXKCMStzj9rn5P9awQg3fpDGq1Sci1C7ojgn
+	 aggw2gJ8dlt3QpThaGiQ8v1v1/SvGjLzuw/rGVFnTT/PlaXCd5ywykJP+QhRwWPrel
+	 gzV8tQnrOFBDg==
+Date: Thu, 7 May 2026 15:15:49 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
  <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, "Sa,
- Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Uwe Kleine
- =?UTF-8?B?S8O2bmln?= <u.kleine-koenig@baylibre.com>,
+ Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
+ <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
  "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: ad_sigma_delta: fix CS held asserted after
- single conversion
-Message-ID: <20260507150930.0f13a8a5@jic23-huawei>
-In-Reply-To: <LV9PR03MB84140625A4D0D32174303304F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
-References: <20260428-ad_sigma_delta-fix-v1-1-8e3f925ee8d2@analog.com>
-	<LV9PR03MB84144C0FF2FC2197AAFED941F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
-	<LV9PR03MB84140625A4D0D32174303304F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+ "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+ "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v9 2/6] iio: adc: ad4691: add initial driver for AD4691
+ family
+Message-ID: <20260507151549.61e4e8fb@jic23-huawei>
+In-Reply-To: <LV9PR03MB841460307B0CF4C6F267A631F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
+References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
+	<20260430-ad4692-multichannel-sar-adc-driver-v9-2-33e439e4fb87@analog.com>
+	<LV9PR03MB841460307B0CF4C6F267A631F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,95 +61,161 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 7 May 2026 13:52:20 +0000
+On Thu, 7 May 2026 09:26:00 +0000
 "Sabau, Radu bogdan" <Radu.Sabau@analog.com> wrote:
 
+> Addressing Sashiko's review for initial driver's patch.
+>=20
 > > -----Original Message-----
-> > From: Sabau, Radu bogdan <Radu.Sabau@analog.com>
-> > Sent: Thursday, May 7, 2026 3:17 PM =20
+> > From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+> > Sent: Thursday, April 30, 2026 1:17 PM =20
 >=20
 > ...
 >=20
-> > > =20
+> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > index 60038ae8dfc4..3685a03aa8dc 100644
+> > --- a/drivers/iio/adc/Kconfig
+> > +++ b/drivers/iio/adc/Kconfig
+> > @@ -139,6 +139,17 @@ config AD4170_4
+> >  	  To compile this driver as a module, choose M here: the module will =
+be
+> >  	  called ad4170-4.
 > >=20
-> > Hi everyone,
-> >=20
-> > Uhmm..., why was this fix marked as Changes Requested? Is it something =
-I am
-> > missing?
-> >=20
-> > Best Regards,
-> > Radu =20
+> > +config AD4691
+> > +	tristate "Analog Devices AD4691 Family ADC Driver"
+> > +	depends on SPI =20
 >=20
-> I have also had a look here :
-> https://sashiko.dev/#/patchset/20260428-ad_sigma_delta-fix-v1-1-8e3f925ee=
-8d2%40analog.com
+> "Should this driver also depend on REGULATOR? In ad4691_regulator_setup(),
+> it relies on devm_regulator_get_enable_read_voltage() to obtain its refer=
+ence
+> voltage. If the kernel is compiled without CONFIG_REGULATOR, this function
+> is stubbed to return -ENODEV, causing probe to fail unconditionally."
 >=20
-> Therefore here is the reply to Sashiko's review:
+> Will add "depends on REGULATOR". Without it,
+> devm_regulator_get_enable_read_voltage() can be stubbed and
+> return -ENODEV, making the driver unusable regardless of hardware.
+
+If you really want to also add || COMPILE_TEST because
+I want maximum build coverage and for that I don't mind if the driver
+can actually probe or not.
+
 >=20
-> > For devices that lack the optional disable_one callback,
-> > ad_sigma_delta_disable_one() is a no-op. In that scenario,
-> > ad_sigma_delta_set_mode() executes the final SPI transfer for the
-> > conversion.
-> >
-> > Because sigma_delta->keep_cs_asserted is still true when set_mode is
-> > called, its transfer will carry cs_change =3D 1. Since disable_one
-> > does not issue a subsequent transfer with cs_change =3D 0, will the SPI
-> > framework skip teardown and leave CS permanently stuck low?
-> >
-> > Could sigma_delta->keep_cs_asserted be cleared before calling
-> > ad_sigma_delta_set_mode() to ensure proper teardown, or should an
-> > explicit dummy transfer be added? =20
->=20
-> Good catch, thank you. The previous version only moved disable_one()
-> after clearing keep_cs_asserted, but left set_mode(AD_SD_MODE_IDLE) in
-> the out: block where keep_cs_asserted is still true. For devices that
-> do not implement disable_one, set_mode() issues the last SPI transfer,
-> so it carries cs_change=3D1 and CS stays stuck =E2=80=94 the same bug rep=
-roduced
-> on a different code path.
->=20
-> Fixed by moving set_mode(IDLE) into the out_unlock: block as well, so
-> both calls execute after keep_cs_asserted is cleared. This matches the
-> pattern already used correctly in ad_sd_calibrate(), which clears
-> keep_cs_asserted before calling set_mode(IDLE) and disable_one() in its
-> single cleanup block.
+> > +	select REGMAP
+> > +	help
+> > +	  Say yes here to build support for Analog Devices AD4691 Family =20
 >=20
 > ...
 >=20
-> > I noticed an additional state tracking issue in the error path of
-> > ad_sd_buffer_postenable() that wasn't introduced by this patch.
-> > When operations like ad_sigma_delta_clear_pending_event() fail, the err=
-or
-> > path calls spi_bus_unlock() but leaves sigma_delta->bus_locked =3D true=
- and
-> > sigma_delta->keep_cs_asserted =3D true. Since the IIO core does not inv=
-oke
-> > predisable on a postenable failure, this state persists.
-> >
-> > Subsequent SPI operations like direct mode reads will observe
-> > bus_locked =3D=3D true and incorrectly invoke spi_sync_locked(). As the=
- bus
-> > is not actually locked at the controller level, this bypasses the
-> > SPI framework's bus_lock_mutex.
-> >
-> > Does this allow concurrent access to the SPI controller from multiple
-> > threads, potentially corrupting SPI bus data? =20
+> > +};
+> > +
+> > +#define AD4691_CHANNEL(ch)
+> > 	\
+> > +	{								\
+> > +		.type =3D IIO_VOLTAGE,					\
+> > +		.indexed =3D 1,						\
+> > +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW)
+> > 	\
+> > +				    | BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> > +		.info_mask_separate_available =3D
+> > 	\
+> > +				      BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> > +		.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SCALE),
+> > 	\ =20
 >=20
-> Yes, the concern is valid. With bus_locked =3D=3D true but the controller=
-'s
-> bus_lock_mutex not held, any concurrent spi_sync() from another driver
-> can proceed unobstructed while our driver issues spi_sync_locked() =E2=80=
-=94
-> exactly the race bus_lock_mutex is meant to prevent.
+> "Since ad4691_set_sampling_freq() modifies the AD4691_OSC_FREQ_REG regist=
+er
+> which controls the global internal oscillator frequency for the entire AD=
+C,
+> should IIO_CHAN_INFO_SAMP_FREQ be exposed as info_mask_shared_by_all
+> instead of info_mask_separate? Changing the frequency for one channel
+> currently seems to silently alter it for all channels."
 >=20
-> Fixed in the same patch by resetting both keep_cs_asserted and
-> bus_locked to false in err_unlock: before calling spi_bus_unlock(),
-> consistent with the teardown sequence in predisable().
-With that lot in mind I'll drop this version.
+> Agreed for this commit. With no per-channel OSR in the base driver
+> all channels share a single oscillator register, so info_mask_shared_by_a=
+ll
+> is the correct annotation. Changing accordingly. The OSR commit switches =
+it
+> back to info_mask_separate because at that point the effective rate is
+> genuinely per-channel (osc_freq / osr[N]).
 
-thanks,
+Don't.  That would mean an ABI change mid way through the series which we
+don't want. Just add a note to the patch description.
 
-Jonathan
+...
 
+
+>=20
+> > +
+> > +static int ad4691_reset(struct ad4691_state *st)
+> > +{
+> > +	struct device *dev =3D regmap_get_device(st->regmap);
+> > +	struct reset_control *rst;
+> > +
+> > +	rst =3D devm_reset_control_get_optional_exclusive(dev, NULL);
+> > +	if (IS_ERR(rst))
+> > +		return dev_err_probe(dev, PTR_ERR(rst), "Failed to get
+> > reset\n");
+> > +
+> > +	if (rst) {
+> > +		/*
+> > +		 * reset_gpio_probe() already drives the pin asserted, so the
+> > +		 * device is held in reset before we get here.
+> > +		 * devm_reset_control_get_optional_exclusive_deasserted()
+> > cannot
+> > +		 * be used because it deasserts immediately without delay; the
+> > +		 * datasheet (Table 5) requires a =E2=89=A5300 =C2=B5s reset pulse w=
+idth
+> > +		 * before deassertion.
+> > +		 */
+> > +		fsleep(300);
+> > +		return reset_control_deassert(rst); =20
+>=20
+> "Could this sequence break on driver reload?
+> When the driver is unloaded, the reset line remains in its deasserted sta=
+te
+> because there is no cleanup action to re-assert it. Upon reloading, the 3=
+00
+> microsecond sleep will occur while the pin is already deasserted, meaning
+> the hardware might not receive the required reset pulse.
+> Should reset_control_assert() be called explicitly prior to the delay?"
+>=20
+> Valid. reset_control_put() does not re-assert the line at unload, so
+> on reload the pin is already deasserted when we enter the 300 =C2=B5s sle=
+ep.
+> Adding reset_control_assert(rst) before fsleep(300) to guarantee a proper
+> reset pulse on every probe including reloads.
+
+I'm not that fussed about driver reload bugs like this one but why
+not fix it I guess.  Lots of cases of this in upstream code though.
+
+>=20
+> > +	}
+> > + =20
+>=20
+> ...
+>=20
+> > +
+> > +	st =3D iio_priv(indio_dev);
+> > +	st->info =3D spi_get_device_match_data(spi); =20
+>=20
+> "Is it possible for st->info to be NULL here?
+> If the driver is manually bound to a device with a non-matching name using
+> the sysfs bind interface in combination with driver_override,
+> spi_get_device_match_data() could return NULL, which would cause a NULL
+> pointer dereference later in the probe sequence."
+>=20
+> Agreed, will add the NULL check with -ENODEV immediately after
+> spi_get_device_match_data().
+
+Andy, you seeing this one?  Looks like we are putting these checks back in =
+again.
+Whilst anyone forcing a bind like this is onto a looser anyway we shouldn't
+crash due to a null dereference.
+
+>=20
+> > +
+> > +	ret =3D devm_mutex_init(dev, &st->lock);
+> > +	if (ret)
+> > +		return ret; =20
+>=20
 
