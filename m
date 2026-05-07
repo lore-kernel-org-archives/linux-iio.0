@@ -1,209 +1,416 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B25F344DB9
-	for <linux-iio@vger.kernel.org>; Thu,  7 May 2026 21:29:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDBD2346A0A
+	for <linux-iio@vger.kernel.org>; Thu,  7 May 2026 22:33:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778189348; cv=none; b=hZTOhu0AZBZdKwBqKlito3Lh1ocly7MsUnW2OK0NZA5k1pgb8Sjd+PFq9z27zjovshkylz+TCoLyzwf3E9iNBbmP2RgooDMbOWWVEAy133TklSs8hZTpY3HF81KXd4c/zMYLhgEUdYGjTqM4JTcNHHJpT8AN+wqUD+oUzKS8ji4=
+	t=1778193221; cv=none; b=U1zK8EfmdLzjVKPvNzkm5AdWJLq1eDbgmi4iNAPm3poV+0l8dOlm4TYDb6VB+3YkJcwpFy0bbKC9erAnlObPUi2+bCpN54V3CribwInIn17MFfGWnDQONP4eP4J8yN0DZzl7XRO0i1z2tahkrAnO8VIMCApUMIXjkUQqjc4d7to=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778189348; c=relaxed/simple;
-	bh=OKalQ8OEtgyp77igo+KRzfCsoIovhS1lXQCXuo5f1Z0=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=XemWGsmrWieUbb594tjvRvR25mfgQC+0TKBNGJiX7sSRuowiUYVoS8LJmOed+fF7c8opagXibF1dMuiiWNP7D1YbMWkCdPyPN3xXlnz7jzwQZZKsOavP6MiQXE0yaRO/UWpsMu00kNMq5f5ycf91rc8TBV8k4tDmjWO5m4Yx2sg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PS/iyfoH; arc=none smtp.client-ip=209.85.221.52
+	s=arc-20240116; t=1778193221; c=relaxed/simple;
+	bh=vAQnHWxWMSNVh2a676rEuUjl0h7Nrh6Wlb21vb1bD/Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HCtK0XE2ITHxoYla0Jh4mZUanl6FRxPpwqUPMtT3whMmgGTdEhmKznIM1EYsbhHrfpvdqXRhS7tyIgS+sYRU17kFbTYokLu0j169/LDCod8lW66+TLrsZW/2yAJ3WlZie+zIfZlMdZxepBorP+Qgc1SECgg99AYFqT2NdtdkBd8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mP95xn/5; arc=none smtp.client-ip=209.85.160.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PS/iyfoH"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-43fe5574cb9so111030f8f.3
-        for <linux-iio@vger.kernel.org>; Thu, 07 May 2026 14:29:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mP95xn/5"
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-4233e152457so974831fac.1
+        for <linux-iio@vger.kernel.org>; Thu, 07 May 2026 15:33:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778189345; x=1778794145; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=f9uH+ELvCqxW8hGQl0ShIS4MVdmXm1hEW6CsUuEGmV8=;
-        b=PS/iyfoH389AqWsUqr0uLaFijutvScLSTOKBX7J7yUQFuEHhhnJobjQpJZbX9C8mLM
-         4qH0oq1kJSxA9VZ1wawaWMMZ+RJcW2z6YXJkNAU/Ms06Jt1FxuU0ji/wwrNNTu86q89Z
-         xIa3GWgtF0J00vwvDeuFfZW1RGejQmn0Ta/lti1AOB8l39MXMiMDYF+Xe9nUsJRW8gsj
-         vuFuJ8LID9/Ue1mnNuKDdKGDEnsqOm1ACUkwdmvjNHsmACU53U/aRCkvvY0tj43U8B2c
-         w48NI2oLKPiXs1K/92AJIXG3EqwvXG9CuJ6/SLVPkcXGHkq9ytsVBH7g6M68SatFTcbC
-         XATw==
+        d=gmail.com; s=20251104; t=1778193219; x=1778798019; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=iQQUFa2MU4ye3M1dexG0k5SD3Kqn89ob1cFtn0xTS50=;
+        b=mP95xn/5yOj+HQMB1ZTDaveHBfgPbgIN9NwRP3cJ4DlruE0/3095XGWZ01+7XuT0fd
+         5bvgSwA+Grh8Yq0NAfk4S/QQEXAzFJLiO7FRpsh9JQXHsFSkxXhjOTA5xcX30JAVtMR3
+         uPsUvgNe7JkiNlfIkRdpNIISs8IC+V0bdwgzHKF7HOIRXuGSBmNfJDS5E6PfMClvAgyT
+         vWcJZLmyGDKv0dYbb1xNyOoBNMyfqahtP8KCquZv9wYUNw/340++RI63c5+nNJi/bFoK
+         eYz8FaNXAZ6msTWfI6ItJBCfVswio1Kg7pzjpXkuAYSfpBBpQTmakuNMqu5h/g47gs5d
+         3vVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778189345; x=1778794145;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=f9uH+ELvCqxW8hGQl0ShIS4MVdmXm1hEW6CsUuEGmV8=;
-        b=MbMkEbseQ6VNCKDst4foBLbHBgQhMAVrGb1dL+rutxphGyUk3wfC8ij9o2XBGCtXnY
-         6HOEZqMYbTAcUL0paJxOepPka3W/RNMCWLwmuyXuI/3qAF+l/vPJUd27LRLYVfYG419u
-         5ahDCHBhMSTQh5VyrNardc4WGWXi2ssAOY4HSmZxwJ5cdeOAO5ihfwo6MFqRZKbine0W
-         jcXhN8V1IQ89hPFKbifS4hXwP6dnjXPeWIZpOeUqYoveLxlvB5JhVoVkqZRVp3z1v3M0
-         sjlSMj5P5SSW4zsipZM+hN4rwJpd9/E04tDOgPy+DzXdO1VIk2j1106X7eQkDbabwRTm
-         vE+w==
-X-Gm-Message-State: AOJu0YyfwKJsl3r5DdBj+1bynJWCI0zuPyYUTGFTBbPG7IHUh0pvRGSx
-	medyl1snyS7PF/2DBPsy4XPRgpJluK/IYnaoYW96CSvnY+UwSZmYYvGexH9DzoM5
-X-Gm-Gg: Acq92OGzf55jWXXh1KZIKUhu1qDzJqwqFVlgLmfMKXswNwgYCpSG6yIXrJElc8TM39v
-	g5xucyE8BH+iMITFWtKPwtd4cXaceGq8cWByPlQMNE1vOFFRlqiOf6GRpQ6z9ATReb5v3eT20Ij
-	6S22wJ7MbmKoOIJfsa0xzPIMwxUJWyAQO4+oWo8AD71zC4LcUIWaRbd5/1/xYgdWkqsqa7lt72D
-	D9rqciIins3J8CgpoOjeJ+Wtkervgo0pPUB/VMQaIYIM+cTHvoaDKFvV9Ixnt892+cJDp7Xsqb/
-	d79wI0tgyjwj8Vb1RloaNpQASdWSI0L9ChL2KXMUbbfx2L0gaYw9mLscSZ+chSKMm2hJApIQk+5
-	TegetinzT4e3/orCPfLMeJAhxshI3O0Q5vrb4fUBRdlxzqkWk5yvo/ejhHTWTCqNGzvMv5rmcYV
-	QD4OezbGmJAA7Wa1Jw7r9dH9QPE6SMqIqFnlx5VlcmWn2yCFbhdyEV+g==
-X-Received: by 2002:a05:6000:25c5:b0:44f:62a1:35d2 with SMTP id ffacd0b85a97d-4515dc80ad4mr8179726f8f.3.1778189345268;
-        Thu, 07 May 2026 14:29:05 -0700 (PDT)
-Received: from JSANTO12-L01.ad.analog.com ([191.255.131.70])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45417219d58sm1609056f8f.25.2026.05.07.14.29.02
+        d=1e100.net; s=20251104; t=1778193219; x=1778798019;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iQQUFa2MU4ye3M1dexG0k5SD3Kqn89ob1cFtn0xTS50=;
+        b=RLDF2ffngLLQnMlR9L8hyFW5iptvASh52N3UgjF96Re2gm8j87dMEI36fO/bCaIbDU
+         TloyRw9abv7fF55W6tGVWpNm1ni+GGChfhVqjjbooCU8Xl+SF9QadoGkE61hhzPgJWIX
+         k3aINJ812240Xm4e86hamknPO78xSLIDwbu9ITMN5c3fBNblZowyH01PRXzNd49/CP+7
+         KrRdwZVwbQN76vN+rQrWpp1V3NMxkfvAza0Y0QmFKTpTnMKBxUZDHDimcG78InGNPmH7
+         4nY1+60vgbi5ZfYQEogqptv8JWeWsMiArCpJ4M29KH3f2RAwl2tY08E3GRRFQJ6FL5R0
+         +dwg==
+X-Forwarded-Encrypted: i=1; AFNElJ8zxrDNPONkY4LgiZOX9dvfUR8DRkWCsgQZeKfdrIiK130jlk0aJGgvvOG8YLQU/ugfoeEJVy8MWdI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyco/Myf6I/ktUjLQfYq0BWENfF8tt2Velaq+Y4WfGk5JjZzAeh
+	v2HV+QCrzwDzejSWU7Jagy3aV1FGWXuG4qEmiIZ5WCQNzKoikOw7owHI
+X-Gm-Gg: Acq92OEv2EwrqEz7oQVkwcP1066Q+3Hoxfe+3Pe7Ywlf8ypKhsk/L+ZE7TkbDwGFaFn
+	9LIkFaugRNGuB18DzZRL2Zy9m2xFBRl7/zhORilnozhXvadltbm/Jo+Au5fTI30QaCND7+R+o+9
+	pX03dxoTdKdLnKrSknu38IapdPH+mrREZLatxinoIHlUmneGLirwMbKn6yZQ/d+g53QHOri3FbU
+	RSZZHGtiIAIB+rBB9zwJP7KTP4BVK4yqMWxMw6ShPn0a0JunzLtuM/Tl0r81W3Y/NONUtLwDqCh
+	+taFtbHbC5I9rM/fENwmqS7y/PPPoljhNM2YBOVOxr7Zg6xJUY34Mbdrh+vkuRGK7lGPDBxtqDl
+	eML8w4z8qt8cp9GxYhXaEn+oTRpzOxXa73i2KTJFzSHoe/ELmE7jchTPHRpkAW7lkRLPJqt/gZ4
+	izSK5a0o11WwZThNMORbgUqxDtP2uil3+RUqgROZ5LCwDuxDdkc9Acq3p9ew==
+X-Received: by 2002:a05:6870:21d2:b0:41b:edc8:7b93 with SMTP id 586e51a60fabf-434f4e27a97mr6142209fac.0.1778193218617;
+        Thu, 07 May 2026 15:33:38 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-435571099a4sm97145fac.7.2026.05.07.15.33.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2026 14:29:04 -0700 (PDT)
-Date: Thu, 7 May 2026 18:28:58 -0300
-From: Jonathan Santos <jonath4nns@gmail.com>
-To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	marcelo.schmitt1@gmail.com, jonath4nns@gmail.com
-Subject: [RFC] iio: adc: support for multi-device aggregation
-Message-ID: <af0EGv172ZMl/6N5@JSANTO12-L01.ad.analog.com>
+        Thu, 07 May 2026 15:33:38 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: jic23@kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v5] iio: imu: kmx61: Use guard(mutex)() over manual locking
+Date: Thu,  7 May 2026 17:33:36 -0500
+Message-ID: <20260507223337.48437-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-Hi all,
+Include linux/cleanup.h to take advantage of new macros.
 
-We have a request to support multiple devices tied together in a single evaluation
-board. The goal is to be able to read them simultaneously via the IIO framework,
-while also controlling them individually. Currently we have two ADC devices that
-would benefit from this, but there might be more in the future.
+Replace manual mutex_lock() and mutex_unlock() calls across the file
+with guard(mutex)() and scoped_guard() where appropriate to simplify
+error paths and eliminate manual locking calls.
 
-This is the scenario:
+Add new helper function kmx61_read_for_each_active_channel() to mitigate
+certain style issues and to prevent notifying that the IRQ is finished
+whilst holding the lock.
 
-+---------------+                                                 
-|     ADC 0     |                                                 
-|               |                                                 
-|        SYNC_IN|---+---------------------------+                 
-|          DRDY0|---|------------------------+  |                 
-|               |   |                        |  |   +------------+
-|          SCLK0|---|------+                 |  |   |    HOST    |
-|           SDI0|---|------|--+              |  |   |            |
-|            CS0|---|------|--|-----------+  |  +-->|ADC_SYNC    |
-|          DOUT0|---|------|--|--------+  |  |      |            |
-|               |   |      |  |        |  |  |      |            |
-+---------------+   |      +--|--------|--|--|----->|SCLK        |
-                    |      |  +--------|--|--|----->|MOSI        |
-+---------------+   |      |  |        |  |  |      |            |
-|     ADC 1     |   |      |  |        |  |  |      |            |
-|               |   |      |  |        |  |  +----->|DRDY0       |
-|        SYNC_IN|---+      |  |        |  +-------->|CS0         |
-|          DRDY1|---|------|--|----+   +----------->|MISO0       |
-|               |   |      |  |    |                |            |
-|          SCLK1|---|------+  |    |                |            |
-|           SDI1|---|------|--+    +--------------->|DRDY1       |
-|            CS1|---|------|--|-------------------->|CS1         |
-|          DOUT1|---|------|--|-------------------->|MISO1       |
-|               |   |      |  |                     |            |
-+---------------+   |      |  |                     | .          |
-                    |      |  |                     | .          |
-       ...          |      |  |                     | .          |
-                    |      |  |                     |            |
-+---------------+   |      |  |            +------->|DRDYN       |
-|     ADC N     |   |      |  |            | +----->|CSN         |
-|               |   |      |  |            | | +--->|MISON       |
-|        SYNC_IN|---+      |  |            | | |    |            |
-|          DRDYN|----------|--|------------+ | |    +------------+
-|               |          |  |              | |                  
-|          SCLKN|----------+  |              | |                  
-|           SDIN|-------------+              | |                  
-|            CSN|----------------------------+ |                  
-|          DOUTN|------------------------------+                  
-|               |                                                 
-+---------------+                                                                                                    
+Update certain returns, and add default case to return -EINVAL in
+kmx61_read_raw().
 
-To summarize, the devices share SPI pins such as SCLK and MOSI, but have individual
-chip-selects and MOSIs (we can consider individual SPI interfaces). The ideia
-is to allow users to aggregate these devices so they can be read simultaneously
-from the user space.
+Remove now-redundant gotos and ret variables, as the new RAII macros
+make them unneeded.
 
-I found a similar case here involving the AD4880 (ad4080 driver), which consists
-of two independent ADC channels, each with its own SPI interface for configuration.
-In that instance, the ancillary device feature was used because it was considered
-the approach of a single device with independent channels rather than independent
-devices connected together. Additionally, the backend handled the buffered data
-aggregation.
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+---
+ v2:
+ - Remove redundant blank line per Andy.
+ - Put kmx61_set_mode() function call in kmx61_runtime_suspend() on one
+   line per Andy.
 
-However, I would like to discuss a more generic approach to support device aggregation
-across different drivers. Marcelo suggested a while ago to consider the components
-framework. This would allow us to create a virtual device responsible for 
-aggregating and controlling the sub-devices in a standard yet flexible manner.
+ v3:
+ - Add dedicated scope for guards.
 
-The aggregate driver could either be an extension to the main driver (e.g. ad7768-1.c),
-or a separate file (e.g. ad7768-1-agreegator.c). 
+ v4:
+ - Fix certain scoping in switch-case blocks.
+ - Remove stray ret variable.
+ - Used scoped_guard() in kmx61_trigger_handler() instead of guard()().
 
-Here's an example of how the devicetree would look like: 
-(includes the multiple data lanes feature)
+ v5:
+ - Added new helper function kmx61_read_for_each_active_channel() per
+   Jonathan's suggestion.
+ - Add default case to return -EINVAL in kmx61_read_raw() per Andy's
+   suggestion.
+ - Add blank lines between guard(mutex)() calls and regular code per
+   Andy's suggestion.
+ - Change last return statement of kmx61_write_event_config() to be 0
+   per Jonathan's suggestion.
 
-spi {
-    #address-cells = <1>;
-    #size-cells = <0>;
 
-    /* AD7768-1 physical devices */
-    adaq7768_1_0: adaq7768-1@0 {
-	compatible = "adi,adaq7768-1";
-	reg = <0>;  /* CS0 - First physical device */
-        spi-tx-lane-map = <0>;
-        spi-rx-lane-map = <0>;
-	/* other properties */
-    };
+ drivers/iio/imu/kmx61.c | 125 +++++++++++++++++++++-------------------
+ 1 file changed, 66 insertions(+), 59 deletions(-)
 
-    adaq7768_1_1: adaq7768-1@1 {
-        compatible = "adi,adaq7768-1";
-        reg = <1>;  /* CS1 - Second physical device */
-        spi-tx-lane-map = <0>;
-        spi-rx-lane-map = <1>;
-        /* other properties */
-    };
-
-    adaq7768_1_2: adaq7768-1@2 {
-        compatible = "adi,adaq7768-1";
-        reg = <2>;  /* CS2 - Third physical device */
-        spi-tx-lane-map = <0>;
-        spi-rx-lane-map = <2>;
-        /* other properties */
-    };
-
-    adaq7768_1_3: adaq7768-1@3 {
-        compatible = "adi,adaq7768-1";
-        reg = <3>;  /* CS3 */
-        spi-tx-lane-map = <0>;
-        spi-rx-lane-map = <3>;
-        /* other properties */
-    };
-
-    /* AD7768-1 aggregator/virtual device */
-    quad_adaq7768: ad7768-1-aggregator@4 {
-        compatible = "adi,ad7768-1-aggregator";
-        reg = <4>; /* ? */
-
-        adaq7768-components = <&adaq7768_1_0>, <&adaq7768_1_1>, <&adaq7768_1_2>, <&adaq7768_1_3>;
-        
-    };
-        
-};
-
-Is it ok to proceed with component helper for this purpose or do we have something
-better? If yes, I have some following questions:
-
--> How to read all devices simultaneously in buffer mode given we can't assert 
-all CS from the virtual device?
-
--> Should the physical devices be registered in IIO during probe, or should only
-the aggregator be exposed to control attributes and general configuration?
-
-Regards,
-Jonathan S.
+diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+index 3cd91d8a89ee..fe3f357c8889 100644
+--- a/drivers/iio/imu/kmx61.c
++++ b/drivers/iio/imu/kmx61.c
+@@ -7,6 +7,7 @@
+  * IIO driver for KMX61 (7-bit I2C slave address 0x0E or 0x0F).
+  */
+ 
++#include <linux/cleanup.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+ #include <linux/mod_devicetable.h>
+@@ -783,7 +784,7 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
+ 	struct kmx61_data *data = kmx61_get_data(indio_dev);
+ 
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_RAW: {
+ 		switch (chan->type) {
+ 		case IIO_ACCEL:
+ 			base_reg = KMX61_ACC_XOUT_L;
+@@ -794,28 +795,24 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
+ 		default:
+ 			return -EINVAL;
+ 		}
+-		mutex_lock(&data->lock);
++		guard(mutex)(&data->lock);
+ 
+ 		ret = kmx61_set_power_state(data, true, chan->address);
+-		if (ret) {
+-			mutex_unlock(&data->lock);
++		if (ret)
+ 			return ret;
+-		}
+ 
+ 		ret = kmx61_read_measurement(data, base_reg, chan->scan_index);
+ 		if (ret < 0) {
+ 			kmx61_set_power_state(data, false, chan->address);
+-			mutex_unlock(&data->lock);
+ 			return ret;
+ 		}
+ 		*val = sign_extend32(ret >> chan->scan_type.shift,
+ 				     chan->scan_type.realbits - 1);
+ 		ret = kmx61_set_power_state(data, false, chan->address);
+-
+-		mutex_unlock(&data->lock);
+ 		if (ret)
+ 			return ret;
+ 		return IIO_VAL_INT;
++	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+ 		case IIO_ACCEL:
+@@ -834,41 +831,41 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
+ 		if (chan->type != IIO_ACCEL && chan->type != IIO_MAGN)
+ 			return -EINVAL;
+ 
+-		mutex_lock(&data->lock);
+-		ret = kmx61_get_odr(data, val, val2, chan->address);
+-		mutex_unlock(&data->lock);
++		scoped_guard(mutex, &data->lock)
++			ret = kmx61_get_odr(data, val, val2, chan->address);
+ 		if (ret)
+ 			return -EINVAL;
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
+ 	}
+-	return -EINVAL;
++
+ }
+ 
+ static int kmx61_write_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan, int val,
+ 			   int val2, long mask)
+ {
+-	int ret;
+ 	struct kmx61_data *data = kmx61_get_data(indio_dev);
+ 
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_SAMP_FREQ:
++	case IIO_CHAN_INFO_SAMP_FREQ: {
+ 		if (chan->type != IIO_ACCEL && chan->type != IIO_MAGN)
+ 			return -EINVAL;
+ 
+-		mutex_lock(&data->lock);
+-		ret = kmx61_set_odr(data, val, val2, chan->address);
+-		mutex_unlock(&data->lock);
+-		return ret;
++		guard(mutex)(&data->lock);
++
++		return kmx61_set_odr(data, val, val2, chan->address);
++	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+-		case IIO_ACCEL:
++		case IIO_ACCEL: {
+ 			if (val != 0)
+ 				return -EINVAL;
+-			mutex_lock(&data->lock);
+-			ret = kmx61_set_scale(data, val2);
+-			mutex_unlock(&data->lock);
+-			return ret;
++			guard(mutex)(&data->lock);
++
++			return kmx61_set_scale(data, val2);
++		}
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -945,29 +942,26 @@ static int kmx61_write_event_config(struct iio_dev *indio_dev,
+ 	if (state && data->ev_enable_state)
+ 		return 0;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	if (!state && data->motion_trig_on) {
+ 		data->ev_enable_state = false;
+-		goto err_unlock;
++		return ret;
+ 	}
+ 
+ 	ret = kmx61_set_power_state(data, state, KMX61_ACC);
+ 	if (ret < 0)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = kmx61_setup_any_motion_interrupt(data, state);
+ 	if (ret < 0) {
+ 		kmx61_set_power_state(data, false, KMX61_ACC);
+-		goto err_unlock;
++		return ret;
+ 	}
+ 
+ 	data->ev_enable_state = state;
+ 
+-err_unlock:
+-	mutex_unlock(&data->lock);
+-
+-	return ret;
++	return 0;
+ }
+ 
+ static int kmx61_acc_validate_trigger(struct iio_dev *indio_dev,
+@@ -1020,11 +1014,11 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+ 	struct kmx61_data *data = kmx61_get_data(indio_dev);
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	if (!state && data->ev_enable_state && data->motion_trig_on) {
+ 		data->motion_trig_on = false;
+-		goto err_unlock;
++		return ret;
+ 	}
+ 
+ 	if (data->acc_dready_trig == trig || data->motion_trig == trig)
+@@ -1034,7 +1028,7 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 
+ 	ret = kmx61_set_power_state(data, state, device);
+ 	if (ret < 0)
+-		goto err_unlock;
++		return ret;
+ 
+ 	if (data->acc_dready_trig == trig || data->mag_dready_trig == trig)
+ 		ret = kmx61_setup_new_data_interrupt(data, state, device);
+@@ -1042,7 +1036,7 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 		ret = kmx61_setup_any_motion_interrupt(data, state);
+ 	if (ret < 0) {
+ 		kmx61_set_power_state(data, false, device);
+-		goto err_unlock;
++		return ret;
+ 	}
+ 
+ 	if (data->acc_dready_trig == trig)
+@@ -1051,8 +1045,6 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 		data->mag_dready_trig_on = state;
+ 	else
+ 		data->motion_trig_on = state;
+-err_unlock:
+-	mutex_unlock(&data->lock);
+ 
+ 	return ret;
+ }
+@@ -1181,30 +1173,52 @@ static irqreturn_t kmx61_data_rdy_trig_poll(int irq, void *private)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static irqreturn_t kmx61_trigger_handler(int irq, void *p)
++/**
++ * kmx61_read_for_each_active_channel() - Read each active channel into a buffer
++ *
++ * @indio_dev: IIO Device struct to read from
++ * @buffer: Destination buffer to write to, the array must be of at least size 8
++ *
++ * Intended only for use in kmx61_trigger_handler().
++ *
++ * Return:
++ * 0 on success, negative errno on failure.
++ */
++static int kmx61_read_for_each_active_channel(struct iio_dev *indio_dev, s16 *buffer)
+ {
+-	struct iio_poll_func *pf = p;
+-	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct kmx61_data *data = kmx61_get_data(indio_dev);
+-	int bit, ret, i = 0;
+ 	u8 base;
+-	s16 buffer[8] = { };
++	int ret, bit;
++	int i = 0;
+ 
+ 	if (indio_dev == data->acc_indio_dev)
+ 		base = KMX61_ACC_XOUT_L;
+ 	else
+ 		base = KMX61_MAG_XOUT_L;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
++
+ 	iio_for_each_active_channel(indio_dev, bit) {
+ 		ret = kmx61_read_measurement(data, base, bit);
+ 		if (ret < 0) {
+-			mutex_unlock(&data->lock);
+-			goto err;
++			return ret;
+ 		}
+ 		buffer[i++] = ret;
+ 	}
+-	mutex_unlock(&data->lock);
++
++	return 0;
++}
++
++static irqreturn_t kmx61_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	int ret;
++	s16 buffer[8] = { };
++
++	ret = kmx61_read_for_each_active_channel(indio_dev, buffer);
++	if (ret < 0)
++		goto err;
+ 
+ 	iio_push_to_buffers(indio_dev, buffer);
+ err:
+@@ -1419,22 +1433,18 @@ static void kmx61_remove(struct i2c_client *client)
+ 		iio_trigger_unregister(data->motion_trig);
+ 	}
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
++
+ 	kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
+-	mutex_unlock(&data->lock);
+ }
+ 
+ static int kmx61_suspend(struct device *dev)
+ {
+-	int ret;
+ 	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
+ 
+-	mutex_lock(&data->lock);
+-	ret = kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG,
+-			     false);
+-	mutex_unlock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+-	return ret;
++	return kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, false);
+ }
+ 
+ static int kmx61_resume(struct device *dev)
+@@ -1453,13 +1463,10 @@ static int kmx61_resume(struct device *dev)
+ static int kmx61_runtime_suspend(struct device *dev)
+ {
+ 	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
+-	int ret;
+ 
+-	mutex_lock(&data->lock);
+-	ret = kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
+-	mutex_unlock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+-	return ret;
++	return kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
+ }
+ 
+ static int kmx61_runtime_resume(struct device *dev)
+-- 
+2.54.0
 
