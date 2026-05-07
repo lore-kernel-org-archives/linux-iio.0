@@ -1,41 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 128A01A316E;
-	Thu,  7 May 2026 16:19:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EACC3E9295
+	for <linux-iio@vger.kernel.org>; Thu,  7 May 2026 16:24:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778170747; cv=none; b=NaFkjsB+5XSP6sfH5gKDCRKLNHq0k03Tpovfh9VbPqK2Zmenpq0rLRL0aryGVC3U+eT+TVrBMc+erfimI+4fms0xKnZCz42F0WmyNwCAPvsmeoqOydwwpWnNw+br2SuYFVrmq4FpXqryxzqS8pcm51VtLbvh510ww9OC5wMGk+c=
+	t=1778171067; cv=none; b=TRebk/PccblrVcrHnPWogIW+352IaoXxTAKzAvMzyEOkfuB1E27lmKnZ738yR5RVmDNzoxGVhPokwp6XKnwA29iF9FyxhspLD81pP3MGu6dr3mDibSWNYgoggWl8aFfcPqv7aEqIAk4aX7my356NJ84siNe7OLPyxOn5QqVDrNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778170747; c=relaxed/simple;
-	bh=oYhTygtEH2rwLPCNzNn1MTNOQz4oc/UF7GDdi0gFwvg=;
+	s=arc-20240116; t=1778171067; c=relaxed/simple;
+	bh=X9yYqlWI5SeImxElCHURSfPHWQvcYKbZB3+sq+23AeU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=f8miSh7e01PKNG+fkkot4gAJoI96PW+T1qsNosRIZJZo6kHGiiKT98ghJhgr92EBLblXqtfzaFLUSekc/q7eDQVMydW1XCMPoW4C+Tffd1l9ntiRP2uNiCGQ7KMfaufWTKU1Qdi1qaLT4A8B2arim/lg3HAorgmK7M+BFHQu8d0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=INZW4N97; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ksl7cpOP8dUwzZEU9thAMzrHhv0MObUqNlTDH5Ggy7aXQ9T5xpRr8KxLYZMoYmkp+m1E9b5siwclUQv88wjnEc/vXS7Vn65SsJWKUv2eZWUHdS6CR0OEenGfMY+/T31VJ8o/UZ/VNJkEZDSbsYbGw/WuGeu/49RL7qlyor7DPUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hJiWizZA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="INZW4N97"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BDFCC2BCB2;
-	Thu,  7 May 2026 16:19:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hJiWizZA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A4F0C2BCB2;
+	Thu,  7 May 2026 16:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778170746;
-	bh=oYhTygtEH2rwLPCNzNn1MTNOQz4oc/UF7GDdi0gFwvg=;
+	s=k20201202; t=1778171067;
+	bh=X9yYqlWI5SeImxElCHURSfPHWQvcYKbZB3+sq+23AeU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=INZW4N97O83uZJ63llk5EHXWeSr/CtxuLFBbSBRjNnBXnq0LKbSzhFZoN0GDFHeIQ
-	 XIHE/Xa6QNl7/XZpnjsRTya/B+37MEO7yfv+UlFQRNpcAOq/xiv6A6q1DNQocNm/h/
-	 RNEsokomRSu5PY+bQ1jkMvIgI/Dw2GfxkyqPkZOSKBYNWNuLtZrrTipNY+M7MlzAOp
-	 itRODcnWLELTk8kMyhaUzBrBFBOVlv+ZtlKjDHrmzccZHQK9U+9UmtDvFBWIudnrrT
-	 vSG5DMNgYNSfu0orH99aCTOtOghNlke8j9n6T2qzmSdwRd6xKlAUu/dmNnP214ZZg0
-	 9VZuy8P+NkBpw==
-Date: Thu, 7 May 2026 17:18:58 +0100
+	b=hJiWizZAXpvAlJVg0fi7Hq8D8ix5/PjG13q7X7hBwfIGXr1JZL7sYdbyKVWsR79L5
+	 aHaylsTA+NOUKbxKn7rU4oOi45zEwzxjfADRhUsAJz1odh6N16ChBRvT2Q4lvSCQlH
+	 CGU83vZM13V70OpxWLPaeBNwZaVkd9X/gv6JHWZHNz16bwQZ9MyViE22b+MIquFEkF
+	 dii4Hhq2e+RPw2NpgXbq0pesc5LKxzg7wHxaYuQCE71+MQTCW14TycIv6rqt8ac04e
+	 u3rJNKQ7kOEhqaj5v8irjEQ/NmxRGZDtXpZoED/DCz+lzmIVvRo8p+Hs1wUgFybQlg
+	 vbN5u9D/pHzdg==
+Date: Thu, 7 May 2026 17:24:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: tomasz.duszynski@octakon.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: scd30: avoid potential NULL deref in
- scd30_i2c_command()
-Message-ID: <20260507171858.7a835306@jic23-huawei>
-In-Reply-To: <20260506181533.409-1-sozdayvek@gmail.com>
-References: <20260506181533.409-1-sozdayvek@gmail.com>
+To: Educg550 <educg550@usp.br>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
+ antoniu.miclaus@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, Lucca Ciriac <luccaciriac@usp.br>,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: frequency: adf4377: replace mutex_lock/unlock with
+ guard and scoped_guard
+Message-ID: <20260507172420.527469b8@jic23-huawei>
+In-Reply-To: <20260506144359.16744-1-educg550@usp.br>
+References: <20260506144359.16744-1-educg550@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,60 +48,64 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed,  6 May 2026 23:15:33 +0500
-Stepan Ionichev <sozdayvek@gmail.com> wrote:
+On Wed,  6 May 2026 11:43:59 -0300
+Educg550 <educg550@usp.br> wrote:
 
-> scd30_i2c_command() takes an opaque "response" buffer plus its size.
-> At the start of the function the code already checks if response is
-> NULL (via the rsp local), but the response-decoding loop after the
-> i2c transfer always dereferences rsp without re-checking.
-> 
-> With the current callers in scd30_core.c this is harmless, since
-> write commands pass response=NULL together with size=0 (so the loop
-> body is never entered). However, the inconsistency is an accident
-> waiting to happen if a future caller passes response=NULL together
-> with size > 0 -- the loop would then write through a NULL pointer.
-> 
-> smatch flags this:
-> 
->   drivers/iio/chemical/scd30_i2c.c:104 scd30_i2c_command() error: we
->     previously assumed rsp could be null (see line 77)
-> 
-> Bail out early when rsp is NULL so the function is robust regardless
-> of the (cmd, size) combination chosen by the caller.
-> 
-> No functional change for the existing callers.
-> 
-> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-Hi Stephan
+> From: Eduardo Guedes <educg550@usp.br>
 
-Thanks for the analysis - as you say no actual bug here but good
-to make that more obvious to static analzers.
+Read submitting patches, particularly about how to send a v2.
+Should be [PATCH V2]
+> 
+> Replace manual mutex_lock()/mutex_unlock() calls with guard(mutex) and
+> scoped_guard(mutex) from cleanup.h.
+> 
+> Using guard(mutex) and scoped_guard(mutex) from cleanup.h allows the
+Andy pointed out in another review earlier that it would be clearer to
+refer to guard(mutex)()
 
-If we ever did hit this I think it would be better to return an
-error code.  I'd also do it at the top given such a combination doesn't
-make sense so we should exclude it early.
+For scoped_guard() if it were used I'd use scoped_guard(mutex, ...)
+to refer to it.
 
-if (!response && size != 0)
-	return -EINVAL;
-
-
+> compiler to enforce lock release on every exit path, eliminating the
+> error-prone manual lock/unlock pattern and the goto-based exit labels
+> that existed in adf4377_get_freq() and adf4377_set_freq(). This reduces
+> the chance of lock imbalance bugs.
+> 
+> Signed-off-by: Eduardo Guedes <educg550@usp.br>
+> Co-developed-by: Lucca Ciriac <luccaciriac@usp.br>
+> Signed-off-by: Lucca Ciriac <luccaciriac@usp.br>
 > ---
->  drivers/iio/chemical/scd30_i2c.c | 3 +++
->  1 file changed, 3 insertions(+)
+
+There should be a change log here.  Otherwise just one trivial
+request inline for v3.
+
+>  drivers/iio/frequency/adf4377.c | 80 +++++++++++++++------------------
+>  1 file changed, 35 insertions(+), 45 deletions(-)
 > 
-> diff --git a/drivers/iio/chemical/scd30_i2c.c b/drivers/iio/chemical/scd30_i2c.c
-> index 436df9c61..fb06bec75 100644
-> --- a/drivers/iio/chemical/scd30_i2c.c
-> +++ b/drivers/iio/chemical/scd30_i2c.c
-> @@ -93,6 +93,9 @@ static int scd30_i2c_command(struct scd30_state *state, enum scd30_cmd cmd, u16
->  	if (ret)
->  		return ret;
+> diff --git a/drivers/iio/frequency/adf4377.c b/drivers/iio/frequency/adf4377.c
+> index ff6077e29..f91b9c6e2 100644
+> --- a/drivers/iio/frequency/adf4377.c
+> +++ b/drivers/iio/frequency/adf4377.c
+
+>  static void adf4377_gpio_init(struct adf4377_state *st)
+> @@ -919,13 +912,10 @@ static int adf4377_properties_parse(struct adf4377_state *st)
+>  static int adf4377_freq_change(struct notifier_block *nb, unsigned long action, void *data)
+>  {
+>  	struct adf4377_state *st = container_of(nb, struct adf4377_state, nb);
+> -	int ret;
 >  
-> +	if (!rsp)
-> +		return 0;
-> +
->  	/* validate received data and strip off crc bytes */
->  	for (i = 0; i < size; i += 3) {
->  		crc = crc8(scd30_i2c_crc8_tbl, buf + i, 2, CRC8_INIT_VALUE);
+>  	if (action == POST_RATE_CHANGE) {
+> -		mutex_lock(&st->lock);
+> -		ret = notifier_from_errno(adf4377_init(st));
+> -		mutex_unlock(&st->lock);
+> -		return ret;
+> +		guard(mutex)(&st->lock);
+
+Slight preference for a blank line here as the we don't have the same need
+for closely associating lock and action as we did with the original code.
+
+> +		return notifier_from_errno(adf4377_init(st));
+>  	}
+>  
+>  	return NOTIFY_OK;
 
