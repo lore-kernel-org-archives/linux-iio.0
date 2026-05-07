@@ -1,309 +1,136 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 183DB402BA4;
-	Thu,  7 May 2026 14:36:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 021C037475D;
+	Thu,  7 May 2026 15:11:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778164570; cv=none; b=YT6LfZRlznCyGVAvgDn7TRE2F6aEwQlMjNbUk7Nnzp93hP5gidm/rClQXxdI8gbt3KaoL6Tgn/Qn6qR/pRuBiXqGX/O3pR0Seah3YqxpDOOFY4OizQNmZc2pua4vXlB0F/+lrtF9qxFcYe+Rn6tUC2vZ//tSPcAMrkEwBK1jV40=
+	t=1778166686; cv=none; b=MRt1gD/nRTbF7Lgj+Ws8eW0thW/LT0fT21s9+4tMECccOy241S7gvEbPANmyDI3L/WuYF39jgJ18PmY38N6hrYam7r5QG5dhiW7qvZ3BvUpX8ukTR4TLiiUJTfVrsLWjjC1ulETyPjTIuHDpXJn7vKsX7hwIGtbty4o0boexAEg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778164570; c=relaxed/simple;
-	bh=5sywxvSW6c7wmNm9dtBEKxaHHa0nW9q/ohzcmqXmxZk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Uu7UZpNwDi+nM94l+r9Bsojyenv6qFa0ONG2yTKtgRBoD6+F2zLh22Y2woz014cQFOtZxz8PpLiP5RWAD6s4zwrPxiV/wlAY3x7zJp1i6evG4kjoIR6aQtHOBCCOTy0X83MxfsvBjFV9LdicJPypDugyIA7rn1UDFPLI3FW514M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KlO2qdL2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778166686; c=relaxed/simple;
+	bh=hw6BsxqfUNxcdCQgU/QqcINBhjEnfbEwWEzmUoVMRII=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=f8tITryaKd9ayz52G2078ILoiu3Cundl+YTb4lUS6NM5X/zBZe5MuxQ86jGm1RLZSlPXQ8qJak78FTp9WCS1nQQkXLb6+u79MK0N3ZQZKlru4iadFnHfc45h0hBRYvhI0EmTEhO2O6K37DE17a1SBACDu3miuW+Jfk1kdRuKY2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cjTO0g55; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KlO2qdL2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EBEB5C2BCFC;
-	Thu,  7 May 2026 14:36:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cjTO0g55"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A931C2BCB2;
+	Thu,  7 May 2026 15:11:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778164570;
-	bh=5sywxvSW6c7wmNm9dtBEKxaHHa0nW9q/ohzcmqXmxZk=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=KlO2qdL2xfsQjmqxRZipLDacikTIfQEj90Il5iHxo6XBZvXX9iWEaaNBnhgoO3IqL
-	 d6wM0Ch9gbMAHbMdmHxGldKY+UFo0ztFPOmyiDSjGQGd/oiDsaAxry38wE9/vGjelE
-	 1fp5p40T6DN2/EZjixFd4LhwqPlG9JQyXkJHwIzsngmhHuOlXX0TqsT8BX9VhvfbQo
-	 WNnFWPAn3U3WD02y+3/6ozWx57RrP7VQo+fwNu+07L8Z4g8Af4mk8MwUZglWnDUBlR
-	 tt5C2aUJm23lLVG1MM1vPiGqrLaCls8FOSyU90wqQFzbJEmcBPqX8H1FnEYOwkntTZ
-	 PjRZERUckk6Ig==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1003CD3439;
-	Thu,  7 May 2026 14:36:09 +0000 (UTC)
-From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Thu, 07 May 2026 16:35:55 +0200
-Subject: [PATCH 6/8] iio: magnetometer: ak8975: use temporary variable for
- struct device
+	s=k20201202; t=1778166685;
+	bh=hw6BsxqfUNxcdCQgU/QqcINBhjEnfbEwWEzmUoVMRII=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=cjTO0g55IsmvmDjMosOULgZ/KnM/MQ07Q+g5SxBVj7ilISoI0+PNZGxE3o5qVbp7N
+	 2lJs/Ny6J9uH7O594yn+e4mb2+8W0RsFkXfC8FVuae3cL0D/YREZms7hMMD4KIlLzZ
+	 m7n4tefDiQvxkrUILSO5nSkC4UxRgqlGjzl82eg7rolRiGp7WoB6TcvNpuO3TPVlxU
+	 2eCl/6eBXo5z63kdnipuDKS8lxi1ZBfwaQ/eJBtmlSkbY1pnMa8e+oG55FXs0Cc+AT
+	 axsfKKB/vDqTlG0Lz5hEfoZDUIR8TkYcjdg9hnY9zcWDbKw51ecuUF8bRrewvpsqa+
+	 gOJ0njzUuT/aQ==
+Date: Thu, 7 May 2026 16:11:11 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, "Sa,
+ Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
+ <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+ "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+ "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v9 4/6] iio: adc: ad4691: add SPI offload support
+Message-ID: <20260507161111.555bba75@jic23-huawei>
+In-Reply-To: <LV9PR03MB8414E7E034F79900A6595750F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
+References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
+	<20260430-ad4692-multichannel-sar-adc-driver-v9-4-33e439e4fb87@analog.com>
+	<LV9PR03MB8414E7E034F79900A6595750F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260507-magnetometer-fixes-post-pickup-v1-6-37827ca68fb3@gmail.com>
-References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
-In-Reply-To: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778164567; l=8247;
- i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=ko3JPxFTdhLs//ra9EADR2+ynHyGp5idcwI3tsudOYk=;
- b=zUbfpYlZsvhUpoN+k2Ieab1Qyvn1U0UV0S3bJXANc3f8dsztTMjkHovKFh8mPY3xEslPWciSv
- DjW4+IkKJB/Csx7eO74s0/TWUIXCRknurCvh3L+5ZbEVATGyC+xvNzM
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
-X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
- auth_id=746
-X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Reply-To: joshua.crofts1@gmail.com
-
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Use temporary variable for struct device to make code neater.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- drivers/iio/magnetometer/ak8975.c | 63 +++++++++++++++++++--------------------
- 1 file changed, 31 insertions(+), 32 deletions(-)
-
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 394f930b862e82fd41c02d81bc6fdb3cfc8b729f..fde37cdcdd053bde1630c2f73ab717f9d008e2fa 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -433,18 +433,17 @@ struct ak8975_data {
- /* Enable attached power regulator if any. */
- static int ak8975_power_on(const struct ak8975_data *data)
- {
-+	struct device *dev = &data->client->dev;
- 	int ret;
- 
- 	ret = regulator_enable(data->vdd);
- 	if (ret) {
--		dev_warn(&data->client->dev,
--			 "Failed to enable specified Vdd supply\n");
-+		dev_warn(dev, "Failed to enable specified Vdd supply\n");
- 		return ret;
- 	}
- 	ret = regulator_enable(data->vid);
- 	if (ret) {
--		dev_warn(&data->client->dev,
--			 "Failed to enable specified Vid supply\n");
-+		dev_warn(dev, "Failed to enable specified Vid supply\n");
- 		regulator_disable(data->vdd);
- 		return ret;
- 	}
-@@ -572,6 +571,7 @@ static irqreturn_t ak8975_irq_handler(int irq, void *data)
- static int ak8975_setup_irq(struct ak8975_data *data)
- {
- 	struct i2c_client *client = data->client;
-+	struct device *dev = &client->dev;
- 	int irq;
- 	int ret;
- 
-@@ -582,9 +582,8 @@ static int ak8975_setup_irq(struct ak8975_data *data)
- 	else
- 		irq = gpiod_to_irq(data->eoc_gpiod);
- 
--	ret = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
--			       IRQF_TRIGGER_RISING,
--			       dev_name(&client->dev), data);
-+	ret = devm_request_irq(dev, irq, ak8975_irq_handler, IRQF_TRIGGER_RISING,
-+			       dev_name(dev), data);
- 	if (ret)
- 		return ret;
- 
-@@ -600,12 +599,13 @@ static int ak8975_setup_irq(struct ak8975_data *data)
- static int ak8975_setup(struct ak8975_data *data)
- {
- 	struct i2c_client *client = data->client;
-+	struct device *dev = &client->dev;
- 	int ret;
- 
- 	/* Write the fused rom access mode. */
- 	ret = ak8975_set_mode(data, FUSE_ROM);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting fuse access mode\n");
-+		dev_err(dev, "Error in setting fuse access mode\n");
- 		return ret;
- 	}
- 
-@@ -615,22 +615,21 @@ static int ak8975_setup(struct ak8975_data *data)
- 							sizeof(data->asa),
- 							data->asa);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Not able to read asa data\n");
-+		dev_err(dev, "Not able to read asa data\n");
- 		return ret;
- 	}
- 
- 	/* After reading fuse ROM data set power-down mode */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 
- 	if (data->eoc_gpiod || client->irq > 0) {
- 		ret = ak8975_setup_irq(data);
- 		if (ret < 0) {
--			dev_err(&client->dev,
--				"Error setting data ready interrupt\n");
-+			dev_err(dev, "Error setting data ready interrupt\n");
- 			return ret;
- 		}
- 	}
-@@ -736,10 +735,11 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	struct ak8975_data *data = iio_priv(indio_dev);
- 	const struct i2c_client *client = data->client;
- 	const struct ak_def *def = data->def;
-+	struct device *dev = &data->client->dev;
- 	__le16 rval;
- 	int ret;
- 
--	pm_runtime_get_sync(&data->client->dev);
-+	pm_runtime_get_sync(dev);
- 
- 	mutex_lock(&data->lock);
- 
-@@ -757,20 +757,20 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	/* Read out ST2 for release lock on measurement data. */
- 	ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST2]);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in reading ST2\n");
-+		dev_err(dev, "Error in reading ST2\n");
- 		goto exit;
- 	}
- 
- 	if (ret & (data->def->ctrl_masks[ST2_DERR] |
- 		   data->def->ctrl_masks[ST2_HOFL])) {
--		dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
-+		dev_err(dev, "ST2 status error 0x%x\n", ret);
- 		ret = -EINVAL;
- 		goto exit;
- 	}
- 
- 	mutex_unlock(&data->lock);
- 
--	pm_runtime_put_autosuspend(&data->client->dev);
-+	pm_runtime_put_autosuspend(dev);
- 
- 	/* Swap bytes and convert to valid range. */
- 	*val = clamp_t(s16, le16_to_cpu(rval), -def->range, def->range);
-@@ -779,8 +779,8 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 
- exit:
- 	mutex_unlock(&data->lock);
--	pm_runtime_put_autosuspend(&data->client->dev);
--	dev_err(&client->dev, "Error in reading axis\n");
-+	pm_runtime_put_autosuspend(dev);
-+	dev_err(dev, "Error in reading axis\n");
- 	return ret;
- }
- 
-@@ -927,7 +927,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * We may not have a GPIO based IRQ to scan, that is fine, we will
- 	 * poll if so.
- 	 */
--	eoc_gpiod = devm_gpiod_get_optional(&client->dev, NULL, GPIOD_IN);
-+	eoc_gpiod = devm_gpiod_get_optional(dev, NULL, GPIOD_IN);
- 	if (IS_ERR(eoc_gpiod))
- 		return PTR_ERR(eoc_gpiod);
- 	gpiod_set_consumer_name(eoc_gpiod, "ak_8975");
-@@ -937,13 +937,12 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * deassert reset on ak8975_power_on() and assert reset on
- 	 * ak8975_power_off().
- 	 */
--	reset_gpiod = devm_gpiod_get_optional(&client->dev,
--					      "reset", GPIOD_OUT_HIGH);
-+	reset_gpiod = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
- 	if (IS_ERR(reset_gpiod))
- 		return PTR_ERR(reset_gpiod);
- 
- 	/* Register with IIO */
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
- 
-@@ -955,7 +954,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	data->reset_gpiod = reset_gpiod;
- 	data->eoc_irq = 0;
- 
--	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
-+	ret = iio_read_mount_matrix(dev, &data->orientation);
- 	if (ret)
- 		return ret;
- 
-@@ -965,16 +964,16 @@ static int ak8975_probe(struct i2c_client *client)
- 		return -ENODEV;
- 
- 	/* If enumerated via firmware node, fix the ABI */
--	if (dev_fwnode(&client->dev))
--		name = dev_name(&client->dev);
-+	if (dev_fwnode(dev))
-+		name = dev_name(dev);
- 	else
- 		name = id->name;
- 
- 	/* Fetch the regulators */
--	data->vdd = devm_regulator_get(&client->dev, "vdd");
-+	data->vdd = devm_regulator_get(dev, "vdd");
- 	if (IS_ERR(data->vdd))
- 		return PTR_ERR(data->vdd);
--	data->vid = devm_regulator_get(&client->dev, "vid");
-+	data->vid = devm_regulator_get(dev, "vid");
- 	if (IS_ERR(data->vid))
- 		return PTR_ERR(data->vid);
- 
-@@ -996,7 +995,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	ret = ak8975_who_i_am(data, data->def->type);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Unexpected device\n");
--	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
-+	dev_dbg(dev, "Asahi compass chip %s\n", name);
- 
- 	/* Perform some basic start-of-day setup of the device. */
- 	ret = ak8975_setup(data);
-@@ -1032,8 +1031,8 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * The device comes online in 500us, so add two orders of magnitude
- 	 * of delay before autosuspending: 50 ms.
- 	 */
--	pm_runtime_set_autosuspend_delay(&client->dev, 50);
--	pm_runtime_use_autosuspend(&client->dev);
-+	pm_runtime_set_autosuspend_delay(dev, 50);
-+	pm_runtime_use_autosuspend(dev);
- 
- 	return 0;
- }
-@@ -1048,7 +1047,7 @@ static int ak8975_runtime_suspend(struct device *dev)
- 	/* Set the device in power down if it wasn't already */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 	/* Next cut the regulators */
-@@ -1072,7 +1071,7 @@ static int ak8975_runtime_resume(struct device *dev)
- 	 */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 
-
--- 
-2.47.3
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
 
+> > +		/* TX: address phase, CS stays asserted into data phase */
+> > +		st->scan_xfers[2 * k].tx_buf =3D offload->tx_cmd[k];
+> > +		st->scan_xfers[2 * k].len =3D sizeof(offload->tx_cmd[k]);
+> > +		st->scan_xfers[2 * k].bits_per_word =3D bpw; =20
+>=20
+> "When bits_per_word is greater than 8 (like bpw =3D 16 here), the SPI fra=
+mework
+> treats tx_buf as an array of native 16-bit words.
+> On little-endian architectures, the controller will byte-swap the data be=
+fore
+> transmitting it. Will using a u8 array and put_unaligned_be16() result in=
+ the
+> command bytes being reversed on the wire?"
+>=20
+> Switched to cpu_to_be16() assigned directly into __be16 scan_tx[],
+> matching the non-offload path. This makes the intended wire format
+> self-evident and sidesteps the byte-ordering question entirely.
+
+This confuses me a bit because the SPI controller should work with
+native endian and from that generate the expected big endian on the wire.
+
+So on a little endian host byte order in address space is LH but it will
+write top bit of H first thus the ADC channel address needs to be in the
+second byte.
+On a big endian host despite the ordering in memory being HL, the top
+bit of H is still written first thus in needs to be in the first byte.
+
+
+If you using cpu_to_be16() to assign a 16 bit value swapping only on little=
+ endian
+and start with the cmd in L on little endian you'll end up with LH swapped =
+to
+HL and on big endian HL but the little endian SPI controller should then sw=
+ap
+it again sending what it thinks is the high byte first (L) whereas the big =
+endian
+system will send H.
+
+Upshot. I think the field should be native endian. If a byte swap is needed
+it should be unconditional and not rely on endianness of the host.
+
+>=20
+> > +
+> > +		/* RX: data phase, CS toggles after to delimit the next register
+> > op */
+> > +		st->scan_xfers[2 * k + 1].len =3D sizeof(offload->tx_cmd[k]);
+> > +		st->scan_xfers[2 * k + 1].bits_per_word =3D bpw;
+> > +		st->scan_xfers[2 * k + 1].offload_flags =3D
+> > SPI_OFFLOAD_XFER_RX_STREAM;
+> > +		st->scan_xfers[2 * k + 1].cs_change =3D 1;
+> > +		k++;
+> > +	}
+> > +
+> > +	/* State reset to re-arm DATA_READY for the next scan. */
+> > +	put_unaligned_be16(AD4691_STATE_RESET_REG, offload->tx_reset);
+> > +	offload->tx_reset[2] =3D AD4691_STATE_RESET_ALL;
+> > +
+> > +	st->scan_xfers[2 * k].tx_buf =3D offload->tx_reset;
+> > +	st->scan_xfers[2 * k].len =3D sizeof(offload->tx_cmd[k]);
+> > +	st->scan_xfers[2 * k].bits_per_word =3D bpw;
+> > +
+> > +	st->scan_xfers[2 * k + 1].tx_buf =3D &offload->tx_reset[2];
+> > +	st->scan_xfers[2 * k + 1].len =3D sizeof(offload->tx_cmd[k]); =20
+>=20
+> "Will passing &offload->tx_reset[2] directly as tx_buf cause DMA mapping
+> issues, since it is only 2-byte aligned?"
+>=20
+> Addressed by the second concern's fix: no sub-aligned pointer into the mi=
+ddle
+> of a DMA buffer =E2=80=94 the full 4-byte scan_tx_reset[] is passed as tx=
+_buf
+> from its own cache-line-aligned start address.
+>=20
