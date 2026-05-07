@@ -1,77 +1,77 @@
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B336466B7C
-	for <linux-iio@vger.kernel.org>; Thu,  7 May 2026 19:11:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61D9A283FDC
+	for <linux-iio@vger.kernel.org>; Thu,  7 May 2026 20:50:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778181098; cv=none; b=kuZLBQyD6kWob0SGEJRexjZhi4ef0IiirRA2jBW3AIpFVNKu/tGWAdCp6ljP0UqBpJjJ/D4P7/RQhA8W6J9mefHk3HuNUJSWg/c7ywYpwAVecnJXnU2piOI3gVdkonzPCN83R++yU/NuQGfqiANgFC5OlVH5B1L8lCuNQrhljD0=
+	t=1778187047; cv=none; b=BdgxMOrbay4kbk09ibwzeHmsQoeevXtC/MjSyR7cINe4BvC0LUH1b3DrdZfBdgF8gDgT+5FabzNf7MlAhR5uKyDDXNXWdjyFVPCN1Hsj9mf7ICztUln2hcQRiw3yM/Ped+4yC6uqYtr8HdK+ZpY/dxZOnKZyWish4yl/CwanUMQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778181098; c=relaxed/simple;
-	bh=Vm7MxuGve6glr3G+kFIdqTFBlilbOLRC5V7j4nzahac=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CbDP0kL0TOFmrxUJlyQFa3KXkfj+3lThueOvsULvFXcR6v81pnYBR6kFRQu6wJQ6EpiBIUT/c33Ht+VfEoCRKPS7sqJ9vS5Zw+SmLN08RPs4lhjAt8j4OSMOvX2S2GA/PeRUNyf9kvW1Mdo6oyU5Le2u2gOUUbpXSzuysHFQoOA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fEL8K4o8; arc=none smtp.client-ip=209.85.208.170
+	s=arc-20240116; t=1778187047; c=relaxed/simple;
+	bh=laYspjwNdik0wTpw0SMM5VASlnIv1utg5JkDc2Xvo4c=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YAItWDmO9aomTDrZw4P6+4svjwCmlzxLRZdu3hm63VPY9l6scYiGoQ3SSabfIFHYXvYIAWJAWMZqLEgVx2qmg2SGlVtpE/vC7ZjhNN8lMprYdqTwBfyUSluhb2sJxGolC7fdROXxrQ6uUduiTX8NF/j2t5Qj57FAwkpp4lo3238=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pw7tvB3l; arc=none smtp.client-ip=209.85.221.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fEL8K4o8"
-Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-393800586aeso24096851fa.1
-        for <linux-iio@vger.kernel.org>; Thu, 07 May 2026 12:11:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pw7tvB3l"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-444826c16ffso1190744f8f.1
+        for <linux-iio@vger.kernel.org>; Thu, 07 May 2026 13:50:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778181095; x=1778785895; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Iev/RaR7ebPD8/QuDYCOu2PRxG+LdvAV0DZxv0cI94U=;
-        b=fEL8K4o8G/P5sHNu+tkBmlFhPZqRqEsG5OqVBzrz6oV4XMfoh8H0qFVi98ESoniPx2
-         I91nptS4ludgi6p/LwNQTvd1bkAtH0VUO7m1/rqPmq70OwN8pFr2x77hhS1h56rsBmgZ
-         6Dkjjcti+IwHKOaaKDsE1/ZziNvN7gZu/ZVaCHt3TlNHWiHXZA9wRJt89/V+j6ph5rBB
-         tmi02edUO584AAx4XqG/eVCoA9IufKWoq9a0AZVWy4JsVlQAlcinL8+2/Ld5z8DtmKEH
-         xctBls3SGNdw7aiHaaMGD+C3sSKICkeqBBEiTT4AaOQdqmjq2fmgMvPFx3WXJ3/dCg1w
-         rWzw==
+        d=gmail.com; s=20251104; t=1778187044; x=1778791844; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OnuO/zosxDfRrEJIngyG6XeRQW3GT6C0GQiewkPFchM=;
+        b=Pw7tvB3l/xg1b6lA/T+RK3OIpwuYLoabXxuw7eTzPIJ4wTSmKEzz2cCaBNRDOcGESn
+         gJl4NdwmbxicSQRKLbZzrmaRPVXW7CxswU15uB8wjtFMTmZnzBewPO0UCvwaLjc46UwQ
+         4Zfj5kUOF9+0fZ+WI+dXSIWC0v57vke/ugUzEggG8QoUw3oOyl/y7gAVN0aCenTQu/ws
+         Stz31u4owSXw7Fx0EE+f2B6gdFn90HOmu6Rqb2dNU9g1Wh3Pb9HCvzm6qfh/gcN3xtIX
+         /nuW3GtUCayJ/8OCAZRi1LH8AuS8YeIrImo2jLSENL78WS0mm9wkXS5vvff2kvLjKdkx
+         zlmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778181095; x=1778785895;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Iev/RaR7ebPD8/QuDYCOu2PRxG+LdvAV0DZxv0cI94U=;
-        b=h79/Cv/Or5ZTiS6W0FIIDdksUOR3fGhLDWPOhDQQD/CRVVKXG0HnHKhgkMC6wcGgTA
-         QtH+wszFguBs/7DIArKSO2s2dzvw0pV8QpLiCNOFDTC79gHguh54oXEHec41lL2PFXcp
-         xmp8++YIBjq+IGEXWRtYds9esfX3xCzjvF+Vs3qjBLL3s5KiLOZnEpRM3wDjRmlhflFJ
-         PkIUFTBqpyfR+WD640Qxgh9MG1QOi1qSi3nWIqH3rqI8y0Tbf//jjtMBP5zunnVjNzWW
-         8oPLcT1cKB4ZALKmuVO7dhT7OV7Qu0MuB1K57tksLXkqGnuQ497xPSFPj2iKNN2wZdCm
-         md+Q==
-X-Gm-Message-State: AOJu0YwFc/oIchjrHvryFaoAm1yzGPgvXqznBIsPUoWn6/VudHa/ABDQ
-	HnPay577ppHtIXfnJB8ZUSZqMtiEI5lE2kqsd0InjWQgptvwb/d9jO3w
-X-Gm-Gg: AeBDies4rGO2rXhg1J2s46k3nE5OJrHFIS91QfuU26E2Zk5vvlUpojkLbdoFC7ESQcc
-	CB7Duw35sdAirTZXZ3Lmcvv43yy3EvYUzah3xYvqN0GssUu4M8twmbctVac675eOgsj9FglzYJg
-	lXW+8RQ/YD57hzcVTGeNU7oOYm3+nPKev09LkcsNbO9mN6G/oqA5KRbHC5kPhQWIvfbuvt95fn2
-	MZw0cNI/eMxaCZAJKeJiyk24zMT1udjBzyRVYpp6sWsCW5B+hjOHGyg2OLBy94cx/SWMkxI0GS/
-	5WbXMNcXSltka1lOJOpykz3Lt0kSKAoATAE+FuO6f64CKwWigj/uOM0eM2uTaPeEp/UVVGintBC
-	s0HmYaob0vah9OIHTAvGcrggsprqVk2dlEL5M3cNqBvifgnlNffl+unDNETGt2cJsVFSPT+BQOB
-	vkDQdNBGOU1euyiSgAvKVL+i9fyOSGJqmPkNW/yPaD0KdLXhy9L8POm6uUZSnja23b
-X-Received: by 2002:a2e:a804:0:b0:393:b138:34ac with SMTP id 38308e7fff4ca-393db0526d6mr12247041fa.10.1778181094473;
-        Thu, 07 May 2026 12:11:34 -0700 (PDT)
-Received: from Shofiq (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-393ef1b2b91sm1612271fa.1.2026.05.07.12.11.33
+        d=1e100.net; s=20251104; t=1778187044; x=1778791844;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OnuO/zosxDfRrEJIngyG6XeRQW3GT6C0GQiewkPFchM=;
+        b=E3G4D79RsEwgcyBsHIqW7UjbFQA4b0kkk0w+QOJCChmcSoC6rnUstTWtOmOvLixwWo
+         R1QR9u4oYUbvHTq+7AiESZepjLQ8FxI8tBqcRHXvkpC5UmYtW9d+xtaSRPJA5nHjpmB1
+         Snu/VIDKHItri4TtBtL5mNut91dQA3rmkFpU56DhxwGpV+tKjbf5t9Yfc0BWli8FJm69
+         9N0RJ+yTuobsLlMO3DaWd1T8pSAQMcQKcrg8iU/ii3TaugOD+w4EkbJYJGAjnzJkzcZr
+         bXMVxOHmeCU+oloANwQ41QRsVA2hcA2D7tYfxk480IpiXyPGdVioyUuwFVWvNzMT23vj
+         NQQg==
+X-Gm-Message-State: AOJu0YyDvXHBRXPPxKaA+sDuZdM9itZq+EQ1jjMeUNRguW51n4TkPKj8
+	iBwX6taqblxtUVTf9vfewy77tB0FGTk57SP3xVrOn9oUt/kZQQGPPedB
+X-Gm-Gg: Acq92OHTQWJluowcEU72YXE9IkmW28uMI6JdJNiu/Uj8NQEnH+slffxjK/XEi7pj1Dx
+	jE63fSBiaSmT5pFCRkpbR36S3mOP8kAbFnDHzcQh5i9PYb3BWoXQkayTttLLEnW6WLcYVDwG+zm
+	QP3HDBFkUXCyxurNSWg41vn1h5u7gwuE1D1t/H+aiHaakQb9u3qnengs6OUmNjJCaS+gwSRtNqz
+	tTv0f1Gxu19j20SxJ/iohGFBpA1qf1K6hRbhD5/mn5ilKa9BEbT6fBeeU5LgkAOmABU5zI5kqhQ
+	20SIrc+hBz7xxt7Tzc7ji3hiDfp52CD8zbCygqNV7nOFwh1NK+ZdEJhVNTVpCVm5XwnDnPE6ZNP
+	cfL1dqF6HrPR1nkWR4M1kUGTJhutEe/PDhkmhyR7kcWqFqVI85Ajm6uJ03nxhIsJB1dKodiDP86
+	aMqjJgiRZjl6AdUsnlMT9eyV8/ukrrfVaBs2dGA+jgv9LvhrqWxb+Z8HBp89NYA0eGEYVIfkVND
+	AKT5n2LWFYi5S1e00k=
+X-Received: by 2002:a5d:64c5:0:b0:43d:70de:1c70 with SMTP id ffacd0b85a97d-4515d5c54cbmr14522135f8f.32.1778187043449;
+        Thu, 07 May 2026 13:50:43 -0700 (PDT)
+Received: from ai-node.taila4f726.ts.net (89-139-15-25.bb.netvision.net.il. [89.139.15.25])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-454175f59a5sm1401635f8f.32.2026.05.07.13.50.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2026 12:11:34 -0700 (PDT)
-From: Md Shofiqul Islam <shofiqtest@gmail.com>
+        Thu, 07 May 2026 13:50:42 -0700 (PDT)
+From: Vladislav Kulikov <vlad.kulikov.c@gmail.com>
 To: jic23@kernel.org,
-	mike.looijmans@topic.nl
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
 	dlechner@baylibre.com,
 	nuno.sa@analog.com,
 	andy@kernel.org,
-	Md Shofiqul Islam <shofiqtest@gmail.com>
-Subject: [PATCH v3 3/3] iio: adc: ti-ads1298: Remove unnecessary CONFIG2 write during init
-Date: Thu,  7 May 2026 22:11:28 +0300
-Message-ID: <20260507191129.25924-3-shofiqtest@gmail.com>
-X-Mailer: git-send-email 2.54.0.windows.1
-In-Reply-To: <20260507191129.25924-1-shofiqtest@gmail.com>
-References: <20260507191129.25924-1-shofiqtest@gmail.com>
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Vladislav Kulikov <vlad.kulikov.c@gmail.com>
+Subject: [PATCH v2 0/2] iio: magnetometer: add MEMSIC MMC5983MA driver
+Date: Thu,  7 May 2026 20:50:30 +0000
+Message-ID: <20260507205033.951990-1-vlad.kulikov.c@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,42 +80,64 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The driver was enabling the internal test signal (INT_TEST), double
-amplitude (TEST_AMP), and fast frequency (TEST_FREQ_FAST) bits in
-CONFIG2 during initialization. These bits activate an internal square
-wave generator intended for device testing and calibration, not normal
-ECG operation.
+Add an IIO driver for the MEMSIC MMC5983MA 3-axis magnetometer over
+I2C. The driver provides raw magnetic field readings with
+per-measurement SET/RESET offset cancellation, giving 18-bit output
+with a full-scale range of +/-8 Gauss.
 
-CONFIG2 defaults to having only the RESERVED bit set after reset, which
-is the correct value for normal operation. Remove the write entirely
-since it would just be writing the reset default value.
+Tested on a Raspberry Pi 2B with the sensor on I2C-1 at 0x30.
 
-Suggested-by: Mike Looijmans <mike.looijmans@topic.nl>
-Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
----
- drivers/iio/adc/ti-ads1298.c | 9 ---------
- 1 file changed, 9 deletions(-)
+The initial driver implements the validated I2C single-measurement path.
+Other chip features are left for future work:
 
-diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
-index 186bda3087..8957e873e1 100644
---- a/drivers/iio/adc/ti-ads1298.c
-+++ b/drivers/iio/adc/ti-ads1298.c
-@@ -615,15 +615,6 @@ static int ads1298_init(struct iio_dev *indio_dev)
- 	if (!indio_dev->name)
- 		return -ENOMEM;
+- SPI transport: the binding describes SPI wiring, but driver support is
+  left for follow-up validation of the SPI command and SET/RESET
+  sequencing.
+- Temperature channel: left until the temperature output behavior is
+  better validated.
+- Continuous measurement mode and Auto SET/RESET: left until the
+  interaction between CMM, TM_M, Meas_M_Done, and SET/RESET sequencing
+  is better understood.
+- Saturation/self-test bits and BW/decimation tuning: not exposed until
+  their behavior can be described reliably through stable IIO ABI.
 
--	/* Enable internal test signal, double amplitude, double frequency */
--	ret = regmap_write(priv->regmap, ADS1298_REG_CONFIG2,
--			   ADS1298_MASK_CONFIG2_RESERVED |
--			   ADS1298_MASK_CONFIG2_INT_TEST |
--			   ADS1298_MASK_CONFIG2_TEST_AMP |
--			   ADS1298_MASK_CONFIG2_TEST_FREQ_FAST);
--	if (ret)
--		return ret;
--
- 	val = ADS1298_MASK_CONFIG3_RESERVED; /* Must write 1 always */
- 	if (!priv->reg_vref) {
- 		/* Enable internal reference */
---
-2.54.0.windows.1
+The driver uses a conservative 500 us post-SET/RESET delay before
+starting the following measurement. The datasheet describes a 500 ns
+SET/RESET coil pulse, but testing showed that a longer software delay is
+needed before taking the next measurement.
+
+Changes since v1:
+- DT binding:
+  - added SPI bus support, interrupts, and vddio-supply
+  - made vdd-supply required
+  - switched to unevaluatedProperties with spi-peripheral-props ref
+- Driver:
+  - replaced scoped_guard() with guard(mutex) in a case block
+  - added datasheet page references for timing values
+  - changed product ID mismatch from probe failure to dev_info()
+  - hardcoded the IIO device name
+  - added trailing commas
+  - added local struct device and regmap pointers in mmc5983_init()
+- MAINTAINERS:
+  - split binding and driver F: entries across the relevant patches
+
+Thank you Jonathan for the review and quick response.
+
+Vladislav Kulikov (2):
+  dt-bindings: iio: magnetometer: add MEMSIC MMC5983MA
+  iio: magnetometer: add driver for MEMSIC MMC5983MA
+
+ .../iio/magnetometer/memsic,mmc5983.yaml      |  65 ++++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/magnetometer/Kconfig              |  11 +
+ drivers/iio/magnetometer/Makefile             |   1 +
+ drivers/iio/magnetometer/mmc5983.c            | 351 ++++++++++++++++++
+ 5 files changed, 435 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5983.yaml
+ create mode 100644 drivers/iio/magnetometer/mmc5983.c
+
+
+base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+-- 
+2.43.0
 
