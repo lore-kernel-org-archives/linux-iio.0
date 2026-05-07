@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DADB40627F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 183DB402BA4;
 	Thu,  7 May 2026 14:36:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778164570; cv=none; b=OPS2jJ9PiXEYakLpPghJZADGAyX9y85J0XtyUFMaezUCD4XHLbJAa0C7HLMCZZZuHEwOwKHsu2Iegu7bMDMMbTo56lqXE1WP17siP6VoXxWXRNOV3u7in3RsIrlK+aXA85MqYXnr64CdoZHRTVNHxeGSMFUoieZHd0pv1l2t3VQ=
+	t=1778164570; cv=none; b=YT6LfZRlznCyGVAvgDn7TRE2F6aEwQlMjNbUk7Nnzp93hP5gidm/rClQXxdI8gbt3KaoL6Tgn/Qn6qR/pRuBiXqGX/O3pR0Seah3YqxpDOOFY4OizQNmZc2pua4vXlB0F/+lrtF9qxFcYe+Rn6tUC2vZ//tSPcAMrkEwBK1jV40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778164570; c=relaxed/simple;
-	bh=Unp1dH41/zoQZrljdPrJE9WyZVlWutvMQmiybWJnPfE=;
+	bh=5sywxvSW6c7wmNm9dtBEKxaHHa0nW9q/ohzcmqXmxZk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Tre1VKJgLu7r0dJ3Cw2CdzGALtlO8kKCpQdHSR0lIei0yKKZhJ/C6ZAJu9oJie+ld96ujhUK2so/cgsXsD2STGsj4lFvJxLB0JBNuz5EVcmw12ILU6u+a93Va2oAsyJJt9/m6J6Uk7IbmaBgkgxoD1RQ5Dzk0K4dsV8TJ5ENJNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X5c25uBr; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Uu7UZpNwDi+nM94l+r9Bsojyenv6qFa0ONG2yTKtgRBoD6+F2zLh22Y2woz014cQFOtZxz8PpLiP5RWAD6s4zwrPxiV/wlAY3x7zJp1i6evG4kjoIR6aQtHOBCCOTy0X83MxfsvBjFV9LdicJPypDugyIA7rn1UDFPLI3FW514M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KlO2qdL2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X5c25uBr"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0AD58C2BCB2;
-	Thu,  7 May 2026 14:36:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KlO2qdL2"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EBEB5C2BCFC;
+	Thu,  7 May 2026 14:36:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1778164570;
-	bh=Unp1dH41/zoQZrljdPrJE9WyZVlWutvMQmiybWJnPfE=;
+	bh=5sywxvSW6c7wmNm9dtBEKxaHHa0nW9q/ohzcmqXmxZk=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=X5c25uBrMw453ICHHIBA6X87JQ5mCOhbZA+m3eVxhZs3ZSVyDHUTe5AlnCZmxnMyy
-	 3757pl7bv4+maKaFLyzNdpFDOG1z9soqlAog4Vei3ZBFD43y8iSkB1Z8Wqt/YJHoQY
-	 KwjYVmETSthpr1+MsRUO3680WRR4XCo7aGdAfCX5YD7+n+mNdqXOdytrBXsiHXf9BM
-	 FkOxhczCI1Gt+41RqZuJ1w7zZua170KTbW3v/m3LijT9S8nloD2QGTJcDs8VRsCYoO
-	 HrU0LVQKQyAuBWCGk/uYz+lbrRuDg0FyCNZr2wm0ZHaG2A9OimByXAkuaY4SDrxGNk
-	 YOTycK7Nd+b0w==
+	b=KlO2qdL2xfsQjmqxRZipLDacikTIfQEj90Il5iHxo6XBZvXX9iWEaaNBnhgoO3IqL
+	 d6wM0Ch9gbMAHbMdmHxGldKY+UFo0ztFPOmyiDSjGQGd/oiDsaAxry38wE9/vGjelE
+	 1fp5p40T6DN2/EZjixFd4LhwqPlG9JQyXkJHwIzsngmhHuOlXX0TqsT8BX9VhvfbQo
+	 WNnFWPAn3U3WD02y+3/6ozWx57RrP7VQo+fwNu+07L8Z4g8Af4mk8MwUZglWnDUBlR
+	 tt5C2aUJm23lLVG1MM1vPiGqrLaCls8FOSyU90wqQFzbJEmcBPqX8H1FnEYOwkntTZ
+	 PjRZERUckk6Ig==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02427CD343F;
-	Thu,  7 May 2026 14:36:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1003CD3439;
+	Thu,  7 May 2026 14:36:09 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Thu, 07 May 2026 16:35:57 +0200
-Subject: [PATCH 8/8] iio: magnetometer: ak8975: make use of the macros from
- bits.h
+Date: Thu, 07 May 2026 16:35:55 +0200
+Subject: [PATCH 6/8] iio: magnetometer: ak8975: use temporary variable for
+ struct device
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260507-magnetometer-fixes-post-pickup-v1-8-37827ca68fb3@gmail.com>
+Message-Id: <20260507-magnetometer-fixes-post-pickup-v1-6-37827ca68fb3@gmail.com>
 References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
 In-Reply-To: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -52,11 +52,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Joshua Crofts <joshua.crofts1@gmail.com>, 
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778164567; l=3026;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778164567; l=8247;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=uSqUkNKA96dxORbdKRT87CB6VtK79Lmf39ap3WDBEeU=;
- b=qD/2bhyCsROnAtQrqwOMwyy58y58ehGB9jrvSyCqxQJFaUn9qL/7hCq16zSM7x/keSTvk6ozU
- YGMgB2t93TEDn41b7elkUpHH9QHFMv/g1Zl4pOT8xlMJhQTkX+GWFyF
+ bh=ko3JPxFTdhLs//ra9EADR2+ynHyGp5idcwI3tsudOYk=;
+ b=zUbfpYlZsvhUpoN+k2Ieab1Qyvn1U0UV0S3bJXANc3f8dsztTMjkHovKFh8mPY3xEslPWciSv
+ DjW4+IkKJB/Csx7eO74s0/TWUIXCRknurCvh3L+5ZbEVATGyC+xvNzM
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -66,90 +66,242 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Make use of BIT() and GENMASK() where it makes sense.
+Use temporary variable for struct device to make code neater.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Co-developed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 63 +++++++++++++++++++--------------------
+ 1 file changed, 31 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index d11f025e146d098508f35ef31c1ccad544612535..d8d9f706f96bae3be19e8db17b9473e6e0eef4fc 100644
+index 394f930b862e82fd41c02d81bc6fdb3cfc8b729f..fde37cdcdd053bde1630c2f73ab717f9d008e2fa 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -45,8 +45,7 @@
- #define AK8975_REG_INFO			0x01
+@@ -433,18 +433,17 @@ struct ak8975_data {
+ /* Enable attached power regulator if any. */
+ static int ak8975_power_on(const struct ak8975_data *data)
+ {
++	struct device *dev = &data->client->dev;
+ 	int ret;
  
- #define AK8975_REG_ST1			0x02
--#define AK8975_REG_ST1_DRDY_SHIFT	0
--#define AK8975_REG_ST1_DRDY_MASK	(1 << AK8975_REG_ST1_DRDY_SHIFT)
-+#define AK8975_REG_ST1_DRDY_MASK	BIT(0)
+ 	ret = regulator_enable(data->vdd);
+ 	if (ret) {
+-		dev_warn(&data->client->dev,
+-			 "Failed to enable specified Vdd supply\n");
++		dev_warn(dev, "Failed to enable specified Vdd supply\n");
+ 		return ret;
+ 	}
+ 	ret = regulator_enable(data->vid);
+ 	if (ret) {
+-		dev_warn(&data->client->dev,
+-			 "Failed to enable specified Vid supply\n");
++		dev_warn(dev, "Failed to enable specified Vid supply\n");
+ 		regulator_disable(data->vdd);
+ 		return ret;
+ 	}
+@@ -572,6 +571,7 @@ static irqreturn_t ak8975_irq_handler(int irq, void *data)
+ static int ak8975_setup_irq(struct ak8975_data *data)
+ {
+ 	struct i2c_client *client = data->client;
++	struct device *dev = &client->dev;
+ 	int irq;
+ 	int ret;
  
- #define AK8975_REG_HXL			0x03
- #define AK8975_REG_HXH			0x04
-@@ -55,15 +54,12 @@
- #define AK8975_REG_HZL			0x07
- #define AK8975_REG_HZH			0x08
- #define AK8975_REG_ST2			0x09
--#define AK8975_REG_ST2_DERR_SHIFT	2
--#define AK8975_REG_ST2_DERR_MASK	(1 << AK8975_REG_ST2_DERR_SHIFT)
-+#define AK8975_REG_ST2_DERR_MASK	BIT(2)
+@@ -582,9 +582,8 @@ static int ak8975_setup_irq(struct ak8975_data *data)
+ 	else
+ 		irq = gpiod_to_irq(data->eoc_gpiod);
  
--#define AK8975_REG_ST2_HOFL_SHIFT	3
--#define AK8975_REG_ST2_HOFL_MASK	(1 << AK8975_REG_ST2_HOFL_SHIFT)
-+#define AK8975_REG_ST2_HOFL_MASK	BIT(3)
+-	ret = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
+-			       IRQF_TRIGGER_RISING,
+-			       dev_name(&client->dev), data);
++	ret = devm_request_irq(dev, irq, ak8975_irq_handler, IRQF_TRIGGER_RISING,
++			       dev_name(dev), data);
+ 	if (ret)
+ 		return ret;
  
- #define AK8975_REG_CNTL			0x0A
--#define AK8975_REG_CNTL_MODE_SHIFT	0
--#define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
-+#define AK8975_REG_CNTL_MODE_MASK	GENMASK(3, 0)
- #define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
- #define AK8975_REG_CNTL_MODE_ONCE	0x01
- #define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
-@@ -95,8 +91,7 @@
+@@ -600,12 +599,13 @@ static int ak8975_setup_irq(struct ak8975_data *data)
+ static int ak8975_setup(struct ak8975_data *data)
+ {
+ 	struct i2c_client *client = data->client;
++	struct device *dev = &client->dev;
+ 	int ret;
  
- #define AK09912_REG_ST1			0x10
+ 	/* Write the fused rom access mode. */
+ 	ret = ak8975_set_mode(data, FUSE_ROM);
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "Error in setting fuse access mode\n");
++		dev_err(dev, "Error in setting fuse access mode\n");
+ 		return ret;
+ 	}
  
--#define AK09912_REG_ST1_DRDY_SHIFT	0
--#define AK09912_REG_ST1_DRDY_MASK	(1 << AK09912_REG_ST1_DRDY_SHIFT)
-+#define AK09912_REG_ST1_DRDY_MASK	BIT(0)
+@@ -615,22 +615,21 @@ static int ak8975_setup(struct ak8975_data *data)
+ 							sizeof(data->asa),
+ 							data->asa);
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "Not able to read asa data\n");
++		dev_err(dev, "Not able to read asa data\n");
+ 		return ret;
+ 	}
  
- #define AK09912_REG_HXL			0x11
- #define AK09912_REG_HXH			0x12
-@@ -107,8 +102,7 @@
- #define AK09912_REG_TMPS		0x17
+ 	/* After reading fuse ROM data set power-down mode */
+ 	ret = ak8975_set_mode(data, POWER_DOWN);
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "Error in setting power-down mode\n");
++		dev_err(dev, "Error in setting power-down mode\n");
+ 		return ret;
+ 	}
  
- #define AK09912_REG_ST2			0x18
--#define AK09912_REG_ST2_HOFL_SHIFT	3
--#define AK09912_REG_ST2_HOFL_MASK	(1 << AK09912_REG_ST2_HOFL_SHIFT)
-+#define AK09912_REG_ST2_HOFL_MASK	BIT(3)
+ 	if (data->eoc_gpiod || client->irq > 0) {
+ 		ret = ak8975_setup_irq(data);
+ 		if (ret < 0) {
+-			dev_err(&client->dev,
+-				"Error setting data ready interrupt\n");
++			dev_err(dev, "Error setting data ready interrupt\n");
+ 			return ret;
+ 		}
+ 	}
+@@ -736,10 +735,11 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ 	struct ak8975_data *data = iio_priv(indio_dev);
+ 	const struct i2c_client *client = data->client;
+ 	const struct ak_def *def = data->def;
++	struct device *dev = &data->client->dev;
+ 	__le16 rval;
+ 	int ret;
  
- #define AK09912_REG_CNTL1		0x30
+-	pm_runtime_get_sync(&data->client->dev);
++	pm_runtime_get_sync(dev);
  
-@@ -117,8 +111,7 @@
- #define AK09912_REG_CNTL_MODE_ONCE	0x01
- #define AK09912_REG_CNTL_MODE_SELF_TEST	0x10
- #define AK09912_REG_CNTL_MODE_FUSE_ROM	0x1F
--#define AK09912_REG_CNTL2_MODE_SHIFT	0
--#define AK09912_REG_CNTL2_MODE_MASK	(0x1F << AK09912_REG_CNTL2_MODE_SHIFT)
-+#define AK09912_REG_CNTL2_MODE_MASK	GENMASK(4, 0)
+ 	mutex_lock(&data->lock);
  
- #define AK09912_REG_CNTL3		0x32
+@@ -757,20 +757,20 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ 	/* Read out ST2 for release lock on measurement data. */
+ 	ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST2]);
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "Error in reading ST2\n");
++		dev_err(dev, "Error in reading ST2\n");
+ 		goto exit;
+ 	}
  
-@@ -848,7 +841,10 @@ static const struct iio_chan_spec ak8975_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(AK8975_SCAN_TS),
- };
+ 	if (ret & (data->def->ctrl_masks[ST2_DERR] |
+ 		   data->def->ctrl_masks[ST2_HOFL])) {
+-		dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
++		dev_err(dev, "ST2 status error 0x%x\n", ret);
+ 		ret = -EINVAL;
+ 		goto exit;
+ 	}
  
--static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
-+static const unsigned long ak8975_scan_masks[] = {
-+	BIT(AK8975_SCAN_X) | BIT(AK8975_SCAN_Y) | BIT(AK8975_SCAN_Z),
-+	0
-+};
+ 	mutex_unlock(&data->lock);
  
- static const struct iio_info ak8975_info = {
- 	.read_raw = &ak8975_read_raw,
+-	pm_runtime_put_autosuspend(&data->client->dev);
++	pm_runtime_put_autosuspend(dev);
+ 
+ 	/* Swap bytes and convert to valid range. */
+ 	*val = clamp_t(s16, le16_to_cpu(rval), -def->range, def->range);
+@@ -779,8 +779,8 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ 
+ exit:
+ 	mutex_unlock(&data->lock);
+-	pm_runtime_put_autosuspend(&data->client->dev);
+-	dev_err(&client->dev, "Error in reading axis\n");
++	pm_runtime_put_autosuspend(dev);
++	dev_err(dev, "Error in reading axis\n");
+ 	return ret;
+ }
+ 
+@@ -927,7 +927,7 @@ static int ak8975_probe(struct i2c_client *client)
+ 	 * We may not have a GPIO based IRQ to scan, that is fine, we will
+ 	 * poll if so.
+ 	 */
+-	eoc_gpiod = devm_gpiod_get_optional(&client->dev, NULL, GPIOD_IN);
++	eoc_gpiod = devm_gpiod_get_optional(dev, NULL, GPIOD_IN);
+ 	if (IS_ERR(eoc_gpiod))
+ 		return PTR_ERR(eoc_gpiod);
+ 	gpiod_set_consumer_name(eoc_gpiod, "ak_8975");
+@@ -937,13 +937,12 @@ static int ak8975_probe(struct i2c_client *client)
+ 	 * deassert reset on ak8975_power_on() and assert reset on
+ 	 * ak8975_power_off().
+ 	 */
+-	reset_gpiod = devm_gpiod_get_optional(&client->dev,
+-					      "reset", GPIOD_OUT_HIGH);
++	reset_gpiod = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+ 	if (IS_ERR(reset_gpiod))
+ 		return PTR_ERR(reset_gpiod);
+ 
+ 	/* Register with IIO */
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+ 
+@@ -955,7 +954,7 @@ static int ak8975_probe(struct i2c_client *client)
+ 	data->reset_gpiod = reset_gpiod;
+ 	data->eoc_irq = 0;
+ 
+-	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
++	ret = iio_read_mount_matrix(dev, &data->orientation);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -965,16 +964,16 @@ static int ak8975_probe(struct i2c_client *client)
+ 		return -ENODEV;
+ 
+ 	/* If enumerated via firmware node, fix the ABI */
+-	if (dev_fwnode(&client->dev))
+-		name = dev_name(&client->dev);
++	if (dev_fwnode(dev))
++		name = dev_name(dev);
+ 	else
+ 		name = id->name;
+ 
+ 	/* Fetch the regulators */
+-	data->vdd = devm_regulator_get(&client->dev, "vdd");
++	data->vdd = devm_regulator_get(dev, "vdd");
+ 	if (IS_ERR(data->vdd))
+ 		return PTR_ERR(data->vdd);
+-	data->vid = devm_regulator_get(&client->dev, "vid");
++	data->vid = devm_regulator_get(dev, "vid");
+ 	if (IS_ERR(data->vid))
+ 		return PTR_ERR(data->vid);
+ 
+@@ -996,7 +995,7 @@ static int ak8975_probe(struct i2c_client *client)
+ 	ret = ak8975_who_i_am(data, data->def->type);
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "Unexpected device\n");
+-	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
++	dev_dbg(dev, "Asahi compass chip %s\n", name);
+ 
+ 	/* Perform some basic start-of-day setup of the device. */
+ 	ret = ak8975_setup(data);
+@@ -1032,8 +1031,8 @@ static int ak8975_probe(struct i2c_client *client)
+ 	 * The device comes online in 500us, so add two orders of magnitude
+ 	 * of delay before autosuspending: 50 ms.
+ 	 */
+-	pm_runtime_set_autosuspend_delay(&client->dev, 50);
+-	pm_runtime_use_autosuspend(&client->dev);
++	pm_runtime_set_autosuspend_delay(dev, 50);
++	pm_runtime_use_autosuspend(dev);
+ 
+ 	return 0;
+ }
+@@ -1048,7 +1047,7 @@ static int ak8975_runtime_suspend(struct device *dev)
+ 	/* Set the device in power down if it wasn't already */
+ 	ret = ak8975_set_mode(data, POWER_DOWN);
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "Error in setting power-down mode\n");
++		dev_err(dev, "Error in setting power-down mode\n");
+ 		return ret;
+ 	}
+ 	/* Next cut the regulators */
+@@ -1072,7 +1071,7 @@ static int ak8975_runtime_resume(struct device *dev)
+ 	 */
+ 	ret = ak8975_set_mode(data, POWER_DOWN);
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "Error in setting power-down mode\n");
++		dev_err(dev, "Error in setting power-down mode\n");
+ 		return ret;
+ 	}
+ 
 
 -- 
 2.47.3
