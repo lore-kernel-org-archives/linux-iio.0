@@ -1,102 +1,128 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97190309DAF;
-	Thu,  7 May 2026 10:09:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778148601; cv=none; b=B8STOq0Cr0IOEU4XWFf90SxrOJkK77NQ9FqBWchOc1MDi+2q1jD+aSKIkKp76ehu0ix1MZbhRsM3sLfCFCFx9efyobu+jRES59CVKD4s8fuzbUIPDYGctXHdzSjfWqANisH3mm7DGGq7VBtmDKs1Y7UbFAblbHAR9HzWE6odh9c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778148601; c=relaxed/simple;
-	bh=0HV2+1ZdYgv5XEGOVe+MqzPe0Q5Qjfd72BXoLDZ5rq8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GQ9GHEEFj2wulK96OieYxgGcL/3zvBTx4lHob2sH9m9Km3GYotJ9IRnIdVb34ENGSf/quqojkuzfCAwrBrGVE4WeVqxphOtKJ9OWbqY1YkYnxypasUdate/td7nAVUGSIrWns9qFx3FMPKpBBln/dyfxiHXyzh9VwAQwjA4xrSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SZZ7zXzu; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF8083D8901
+	for <linux-iio@vger.kernel.org>; Thu,  7 May 2026 10:14:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778148888; cv=pass; b=g6/T5JhknfnkjAsu9PMAljXzmgvlmguYSHKR2yFTSZ2Wgm5jIeNmEuV5Zv1wPSHR25+Po852NNZn/LzrT/QnAa/6VdeByjHC/PjOLKHXVtSgQEXZspvcTv4yADFS0K+e9dNa3WegbrxJs+pAm+4SmJMhTKWXCavNTycX1yXe2yY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778148888; c=relaxed/simple;
+	bh=RfMXIYrU54DsFz7mTkL95eZWn2cpdHi22i3Y24nuDhI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fvjRyr+pzwk/sSExxDysLqVaQ5qv+JxCHyvHwT1uGuZ15yBjfhIOa1OeCpUfZDcnlQg+xwOzdPoeHlRZOJx8l2nA+/EjwcUwfmqzbTSR5VIR/JoTFAqVAc9XQQPoAwiGsOEKBJDqShSv6uDVlkWg7lsiM1jUn9m3aQ2f0sAG38A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EgfIOyqF; arc=pass smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SZZ7zXzu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778148597; x=1809684597;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0HV2+1ZdYgv5XEGOVe+MqzPe0Q5Qjfd72BXoLDZ5rq8=;
-  b=SZZ7zXzuOHJny/D4rkLIhTkn2mFwCaszpGYBf2LvlQfOTqp45fvkFl9O
-   wc3ZHtCx1OoJk2McY0DejlqC4HHeZl5wu4lttzpDo1lDJTPaxYPoK5WH5
-   E5udFDQRl2Fo+SkfpCDonbYbj1y9X8rW3tQ7k1ewKNkt920choaYXl7m5
-   7LBo5sapt60FrHkfcfQ+ys2gfvt5+mcS2crSJuf+VwDziTjBCB9UormmW
-   06DnjqgY4WWXIhEltyaNBXo8iFGhbOR79g9bi0N/VP5HPk9APBYgHUPVr
-   BRiqMh0dAIoWUTDfwkNNAd0FTy4jWiXz+aBbTkzSyB0eUZrXzoyt7l/C7
-   w==;
-X-CSE-ConnectionGUID: AkdoFzstQea5KLn5/OUgCQ==
-X-CSE-MsgGUID: 6GX3oqwcTrG25nZHKsuZwQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11778"; a="89403223"
-X-IronPort-AV: E=Sophos;i="6.23,221,1770624000"; 
-   d="scan'208";a="89403223"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 03:09:54 -0700
-X-CSE-ConnectionGUID: hjmYlepuSPiSH2+T4mmdbQ==
-X-CSE-MsgGUID: uHyexHEKSe68TgjLsn7SRQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,221,1770624000"; 
-   d="scan'208";a="238218939"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.149])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 03:09:52 -0700
-Date: Thu, 7 May 2026 13:09:50 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 14/18] iio: magnetometer: ak8975: switch to using
- managed resources
-Message-ID: <afxk7mDvc_-IHVDy@ashevche-desk.local>
-References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
- <20260505-magnetometer-fixes-v5-14-831b9b5550fc@gmail.com>
- <20260506180925.3fb80edf@jic23-huawei>
- <CALoEA-x0baxV+9-rsN9omJ9GnLw3zp2qmU08RjzWniPOU+uxKw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EgfIOyqF"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-44a044cb827so537647f8f.0
+        for <linux-iio@vger.kernel.org>; Thu, 07 May 2026 03:14:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778148882; cv=none;
+        d=google.com; s=arc-20240605;
+        b=UXuUJ3EHvMi1IBav5yr9p2t6moe+6FnuseyjnPOKVJKyRbasGd2104tTz6fKTJ/Men
+         zNmwF+vNXmV5TTMhKfIC00gfkMJ5XEcSNrTN+J7gywP7/h4ysW7FKel+0mBB98uf1+DS
+         Et9vFdq/gQQhEZYcz06yoxOHzWjfud/+qEWbeqRjJBsZpd+lxFz2eRN/hbbAiuTUbDdK
+         CeYL2OIqq7bx/zaGVsGibg2nDR/4dzq+u9Kt2If8uoE1nbXy2YBodArJY5aiG2bQ+U4I
+         w9c7l4BLS9cQ+Y78Wd43gPC92OkLzhd5niU0A9PPD5Lq5OXVpANbEJHKmCuU+7iEFB5m
+         QxKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=gbKf8cX1YHmhO2c2DfVdrD6RA3iZbuTl/8vlGGgihME=;
+        fh=1TBflLN5mzx7ug83JDLmxJloRwrSkGKFtL5MOH/Kl+8=;
+        b=ZDlP8efiCUoocbdj1HwYprnVKoZcm53jVThHBALU1iR9+mw7owBDE1wgiyJFYUdQ27
+         IqQoS+UOp16Lyr9bnvh9auYEXyPjfZR3ch1xZSrisKqoeYPYisNOxiOkOOlvylO9ox+n
+         2jdQRtYvztVWTdcrDlufOErIalnAb6jJWtNVLj8SFWvmO1EHjBQPFm7t7D/uRnKS+YjL
+         lAL9fJ/QCM6a2UZkABl14k41hE6TiLyDLF5X0xPIBBiRlNHkcAwgfTZYO3LVrmsVlu6T
+         CAeaBPeiFSvoNgj13blGE2QHxgAivW9osBeCyMV4ALEBR6fWWfZh5uq6k1t8cLB/Iuqq
+         sugQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778148882; x=1778753682; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gbKf8cX1YHmhO2c2DfVdrD6RA3iZbuTl/8vlGGgihME=;
+        b=EgfIOyqFNBTkKdn/GU4prHmIx+usO4X3/oV9WCbArW/sT7zKB+IJ9T5jXkM14dO3/k
+         tUUkFlF5I3ntF2TFhmc755EMKFRp0GlnxfwuHT2BL0ys5aWKeW7sO/mwOrhqldEwJERO
+         tRztBlH8ns0SoHRNVfK3TIEHWlIXqEnS063nRhera3i1QHnWYqBfI+7X5CcFQA1/9iXt
+         lG+b3+2G1FXBnthiI0gOuZoD9VpWagv3Dm2bVJo7pPvAAM+BKv3ykX7I3zPX9K22AkG+
+         +g5iSks7EEK9QRTPJB/bl4snMFpN5HKV8jCNO4uRV0FamwrX6ePogl+yc8+Wthm9Yr6x
+         MK5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778148882; x=1778753682;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gbKf8cX1YHmhO2c2DfVdrD6RA3iZbuTl/8vlGGgihME=;
+        b=Mh7Hs9celUBOCslQFnUyx1Bc+KMC5DBmPgvQJrdQqqaMWHSUsofJEKpnEvc93gWGRo
+         uYIApCo6gZlreUIjgIeO/9fNgLcntxBFqhBw4XtuxjtRDdwDctV6Bm8rtf3gq+lpMoAo
+         JF8J9UNC+yTUJ/5WJEiSlx64PkbKWo76lGvIF6DAfez7CSU9wLUMvn7VvvBXF6K6KQg6
+         d3OS2z1pg2cxKBPSxLhbdA/4oFDLH9sNUiK7noSOr5fnFSIUUs4GIA4Xp+9aTpGtDiB0
+         A8LHDUUR1GOsqowSz50E8ON6KrPoSN/649WTe0qGTcCm8g29Rjidnm8/vKHiIFchMe1X
+         /N4A==
+X-Forwarded-Encrypted: i=1; AFNElJ9uWqfHiz8qLkJlkGLV8557z8ZXqlvUhOfgYxZ0AOkSXmWAw+6eWXDIhYGLLrvS3iHUFUjV2JvldDU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw1uOaFm1o9toGCFvJoWortu0oeBkR1VhEWD6NuqDh0f3LaWEVc
+	M0kY+aue08R4lyBc3f3CKSuI0vZ6Uof/yPRlkJszPqr93euXJq8YNY6jQnI28WijottGrRaYM8y
+	OLxICYl8vYO7KHO44P8gNd0CBKJH3tfKzot+7
+X-Gm-Gg: AeBDiettqt9tdsdL5Zwg3QqfXm/qZ0pyPYtROqC0NRScuYXnoBTcnzgvhjO/4fQ+Ly4
+	u9gnaSDq8c7h+/hApfVB7dPgNgqGxfoqy8k8PZSczsNuFeO4pd5ZksUG834Mdf7lOUGOMR0AR86
+	fI0F11p1Ytdcw8MpUhbL0vHGgxtjwrM88hilA3wmz9RyX25IlFFI7zY/oxrv/0k4Gfi2a9PYyAR
+	2AkHDPgIhMZQ3Xp3CphduBcuM3PwYQbwDydUUyT+IlcQjoUhBVuSiGvqn71sdAzJQKiorUmJDhm
+	WRiFTGIa9164ZfkKYME+siehO3myKa+XQ2n76T3BL55eBwDDxO/nHXP7jxRHYIJ1YQkjQCQTGcQ
+	ZbEMKHN0NHTcUkUrsps+Uqx8uhKWM97t0MranGDx3xnMuxenycLXgYW67jlsezJkesKDcyS9jN/
+	05daxTvnYR2hIthVxn
+X-Received: by 2002:a05:6000:144a:b0:439:beb9:5a96 with SMTP id
+ ffacd0b85a97d-4515d3dc683mr13374269f8f.31.1778148881573; Thu, 07 May 2026
+ 03:14:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALoEA-x0baxV+9-rsN9omJ9GnLw3zp2qmU08RjzWniPOU+uxKw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260505-magnetometer-fixes-v5-0-831b9b5550fc@gmail.com>
+ <20260505-magnetometer-fixes-v5-14-831b9b5550fc@gmail.com>
+ <20260506180925.3fb80edf@jic23-huawei> <CALoEA-x0baxV+9-rsN9omJ9GnLw3zp2qmU08RjzWniPOU+uxKw@mail.gmail.com>
+ <afxk7mDvc_-IHVDy@ashevche-desk.local>
+In-Reply-To: <afxk7mDvc_-IHVDy@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Thu, 7 May 2026 12:14:30 +0200
+X-Gm-Features: AVHnY4I8llWvDOCuy7ra-SdaHRPLpbj-GXlDgamAyITEUzOp79uGBjcnGrmPqUw
+Message-ID: <CALoEA-za64VHBpw1Zh5LzvhJtgViwq30xpPb3NGMkuh=0_=HXw@mail.gmail.com>
+Subject: Re: [PATCH v5 14/18] iio: magnetometer: ak8975: switch to using
+ managed resources
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, May 07, 2026 at 11:19:32AM +0200, Joshua Crofts wrote:
-> On Wed, 6 May 2026 at 19:09, Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Tue, 05 May 2026 13:46:10 +0200
-> > Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+On Thu, 7 May 2026 at 12:09, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Thu, May 07, 2026 at 11:19:32AM +0200, Joshua Crofts wrote:
+> > On Wed, 6 May 2026 at 19:09, Jonathan Cameron <jic23@kernel.org> wrote:
+> > > On Tue, 05 May 2026 13:46:10 +0200
+> > > Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+>
+> ...
+>
+> > I'd just add pm_runtime_mark_last_busy() and pm_request_autosuspend() here
+> > to make the device suspend.
+>
+> pm_runtime_put_autosuspend() is exactly doing that in one call. That's what
+> documentation says about, and that's correct, however it might be not so clear.
 
-...
+Maybe I didn't look enough, but I couldn't find a definition of
+pm_runtime_put_autosuspend()
+that actually calls mark_last_busy().
 
-> I'd just add pm_runtime_mark_last_busy() and pm_request_autosuspend() here
-> to make the device suspend.
-
-pm_runtime_put_autosuspend() is exactly doing that in one call. That's what
-documentation says about, and that's correct, however it might be not so clear.
-
-> Perhaps unrelated, however I found an issue with the pm_runtime documentation,
-> as it incorrectly says that pm_runtime_mark_last_busy() is always called with an
-> autosuspend function (which is not the case, looking at the definition).
-> 
-> "Drivers may also continue to use the non-autosuspend helper
-> functions; they will
-> behave normally, which means sometimes taking the autosuspend delay into
-> account (see pm_runtime_idle). The autosuspend variants of the
-> functions also call
-> pm_runtime_mark_last_busy()."
+Either way, it wouldn't hurt to add it manually, just to be sure?
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
