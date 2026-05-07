@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10D9A402B8B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DADB40627F;
 	Thu,  7 May 2026 14:36:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778164570; cv=none; b=t1Eptjab0lrRj05shqnWy3xYlUD0YvYQUjY68JLbSPI4UTX/C2MyTOQi95bEITg0FDr3P7SwNkfwHLVMivqvGEfwbs0lzvgkCvyYJt15sA9w/9ZUL5u6Xn0qqQ+BtX0RI8S6icNBJINannI/QeSfeNfLsQOr1dXHJ9gSlT6x4uc=
+	t=1778164570; cv=none; b=OPS2jJ9PiXEYakLpPghJZADGAyX9y85J0XtyUFMaezUCD4XHLbJAa0C7HLMCZZZuHEwOwKHsu2Iegu7bMDMMbTo56lqXE1WP17siP6VoXxWXRNOV3u7in3RsIrlK+aXA85MqYXnr64CdoZHRTVNHxeGSMFUoieZHd0pv1l2t3VQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778164570; c=relaxed/simple;
-	bh=BAgldrNgFqY/UdPfT4z464ow+eRyyMd2E/es+wb04tU=;
+	bh=Unp1dH41/zoQZrljdPrJE9WyZVlWutvMQmiybWJnPfE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=V+Xd5OzI1L/r3RG2gz9CpdR31ZCX6NHq3wjCOVfu57mC7XdlA+323U9naEDSQ10ueonUtfI4YfozKUDyX+vArZeQfb/h5evAwIk2rjHiMn6lT3oGH6RVAcdyvEoF0fMsIAYHGlmOOjbGDo69YPmGll3/pgH2L3US5YGALM2VwTg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nkYWBmfM; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Tre1VKJgLu7r0dJ3Cw2CdzGALtlO8kKCpQdHSR0lIei0yKKZhJ/C6ZAJu9oJie+ld96ujhUK2so/cgsXsD2STGsj4lFvJxLB0JBNuz5EVcmw12ILU6u+a93Va2oAsyJJt9/m6J6Uk7IbmaBgkgxoD1RQ5Dzk0K4dsV8TJ5ENJNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X5c25uBr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nkYWBmfM"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C3EF3C2BCFF;
-	Thu,  7 May 2026 14:36:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X5c25uBr"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0AD58C2BCB2;
+	Thu,  7 May 2026 14:36:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778164569;
-	bh=BAgldrNgFqY/UdPfT4z464ow+eRyyMd2E/es+wb04tU=;
+	s=k20201202; t=1778164570;
+	bh=Unp1dH41/zoQZrljdPrJE9WyZVlWutvMQmiybWJnPfE=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=nkYWBmfM0P/7RuNeiqFrE+YbKpUNfwHQJT0VtsQdBw2568hT5e1JGjx2otfE08hpb
-	 vgI9VMNk1B87dn5KHX5suiOvHBKl4xF0JcxHMVZjmZHMbE8azxFq8z18s+E/uccOST
-	 /B/fzCPw6Bcenvuy/mu9fbRH/kPPxn53j3Q55czQ27MdMiqi6Gwh261Kr8k/ROCesK
-	 AC/X818CR5p4H0Dkrx9JjmcIru0nyLh9KzJFN++fRzD0XcVD9QyXQmPioy/7azYu3E
-	 tpR0C/iTXh659R75qhMx1VJzPqW7W5/M6PzO2kw7XA1xaZroucw0bMmu5ZO27YBR1y
-	 WhVNhaaX6aFEA==
+	b=X5c25uBrMw453ICHHIBA6X87JQ5mCOhbZA+m3eVxhZs3ZSVyDHUTe5AlnCZmxnMyy
+	 3757pl7bv4+maKaFLyzNdpFDOG1z9soqlAog4Vei3ZBFD43y8iSkB1Z8Wqt/YJHoQY
+	 KwjYVmETSthpr1+MsRUO3680WRR4XCo7aGdAfCX5YD7+n+mNdqXOdytrBXsiHXf9BM
+	 FkOxhczCI1Gt+41RqZuJ1w7zZua170KTbW3v/m3LijT9S8nloD2QGTJcDs8VRsCYoO
+	 HrU0LVQKQyAuBWCGk/uYz+lbrRuDg0FyCNZr2wm0ZHaG2A9OimByXAkuaY4SDrxGNk
+	 YOTycK7Nd+b0w==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD5AFCD343B;
-	Thu,  7 May 2026 14:36:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02427CD343F;
+	Thu,  7 May 2026 14:36:10 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Thu, 07 May 2026 16:35:54 +0200
-Subject: [PATCH 5/8] iio: magnetometer: ak8975: unify messages with help of
- dev_err_probe()
+Date: Thu, 07 May 2026 16:35:57 +0200
+Subject: [PATCH 8/8] iio: magnetometer: ak8975: make use of the macros from
+ bits.h
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260507-magnetometer-fixes-post-pickup-v1-5-37827ca68fb3@gmail.com>
+Message-Id: <20260507-magnetometer-fixes-post-pickup-v1-8-37827ca68fb3@gmail.com>
 References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
 In-Reply-To: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -52,11 +52,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Joshua Crofts <joshua.crofts1@gmail.com>, 
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778164567; l=2364;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778164567; l=3026;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=DwBNoYdjw+pyVB4LkpMEXnJ7TcOCwJnLd6lf/i0u+OA=;
- b=nAmRauS1RnRKE50OlR+YmyWxpM3nnI/LzHGTVVvMOUcJma4zqPNEWddZGdrVPDxLj09ES8yGn
- PtUdwzHSm1mAe1/K5b31LeFnKA1Kc3npKZu6nNTqJbvdXxxhKTovF3/
+ bh=uSqUkNKA96dxORbdKRT87CB6VtK79Lmf39ap3WDBEeU=;
+ b=qD/2bhyCsROnAtQrqwOMwyy58y58ehGB9jrvSyCqxQJFaUn9qL/7hCq16zSM7x/keSTvk6ozU
+ YGMgB2t93TEDn41b7elkUpHH9QHFMv/g1Zl4pOT8xlMJhQTkX+GWFyF
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -66,76 +66,90 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Unify error messages that might appear during probe phase by
-switching to use dev_err_probe().
+Make use of BIT() and GENMASK() where it makes sense.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Co-developed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 30 ++++++++++--------------------
- 1 file changed, 10 insertions(+), 20 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index e575d252076acc3639cfbb718a76811636fe56d2..394f930b862e82fd41c02d81bc6fdb3cfc8b729f 100644
+index d11f025e146d098508f35ef31c1ccad544612535..d8d9f706f96bae3be19e8db17b9473e6e0eef4fc 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -495,10 +495,8 @@ static int ak8975_who_i_am(const struct ak8975_data *data,
- 							AK09912_REG_WIA1,
- 							sizeof(wia_val),
- 							wia_val);
--	if (ret < 0) {
--		dev_err(&client->dev, "Error reading WIA\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(&client->dev, ret, "Error reading WIA\n");
+@@ -45,8 +45,7 @@
+ #define AK8975_REG_INFO			0x01
  
- 	if (wia_val[0] != AK8975_DEVICE_ID)
- 		return -ENODEV;
-@@ -996,18 +994,14 @@ static int ak8975_probe(struct i2c_client *client)
- 		return ret;
+ #define AK8975_REG_ST1			0x02
+-#define AK8975_REG_ST1_DRDY_SHIFT	0
+-#define AK8975_REG_ST1_DRDY_MASK	(1 << AK8975_REG_ST1_DRDY_SHIFT)
++#define AK8975_REG_ST1_DRDY_MASK	BIT(0)
  
- 	ret = ak8975_who_i_am(data, data->def->type);
--	if (ret) {
--		dev_err(&client->dev, "Unexpected device\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Unexpected device\n");
- 	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
+ #define AK8975_REG_HXL			0x03
+ #define AK8975_REG_HXH			0x04
+@@ -55,15 +54,12 @@
+ #define AK8975_REG_HZL			0x07
+ #define AK8975_REG_HZH			0x08
+ #define AK8975_REG_ST2			0x09
+-#define AK8975_REG_ST2_DERR_SHIFT	2
+-#define AK8975_REG_ST2_DERR_MASK	(1 << AK8975_REG_ST2_DERR_SHIFT)
++#define AK8975_REG_ST2_DERR_MASK	BIT(2)
  
- 	/* Perform some basic start-of-day setup of the device. */
- 	ret = ak8975_setup(data);
--	if (ret) {
--		dev_err(&client->dev, "%s initialization fails\n", name);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "%s initialization fails\n", name);
+-#define AK8975_REG_ST2_HOFL_SHIFT	3
+-#define AK8975_REG_ST2_HOFL_MASK	(1 << AK8975_REG_ST2_HOFL_SHIFT)
++#define AK8975_REG_ST2_HOFL_MASK	BIT(3)
  
- 	ret = devm_mutex_init(dev, &data->lock);
- 	if (ret)
-@@ -1022,16 +1016,12 @@ static int ak8975_probe(struct i2c_client *client)
+ #define AK8975_REG_CNTL			0x0A
+-#define AK8975_REG_CNTL_MODE_SHIFT	0
+-#define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
++#define AK8975_REG_CNTL_MODE_MASK	GENMASK(3, 0)
+ #define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
+ #define AK8975_REG_CNTL_MODE_ONCE	0x01
+ #define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
+@@ -95,8 +91,7 @@
  
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
- 					      ak8975_handle_trigger, NULL);
--	if (ret) {
--		dev_err(&client->dev, "triggered buffer setup failed\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "triggered buffer setup failed\n");
+ #define AK09912_REG_ST1			0x10
  
- 	ret = devm_iio_device_register(dev, indio_dev);
--	if (ret) {
--		dev_err(&client->dev, "device register failed\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "device register failed\n");
+-#define AK09912_REG_ST1_DRDY_SHIFT	0
+-#define AK09912_REG_ST1_DRDY_MASK	(1 << AK09912_REG_ST1_DRDY_SHIFT)
++#define AK09912_REG_ST1_DRDY_MASK	BIT(0)
  
- 	/* Enable runtime PM */
- 	ret = devm_pm_runtime_enable(dev);
+ #define AK09912_REG_HXL			0x11
+ #define AK09912_REG_HXH			0x12
+@@ -107,8 +102,7 @@
+ #define AK09912_REG_TMPS		0x17
+ 
+ #define AK09912_REG_ST2			0x18
+-#define AK09912_REG_ST2_HOFL_SHIFT	3
+-#define AK09912_REG_ST2_HOFL_MASK	(1 << AK09912_REG_ST2_HOFL_SHIFT)
++#define AK09912_REG_ST2_HOFL_MASK	BIT(3)
+ 
+ #define AK09912_REG_CNTL1		0x30
+ 
+@@ -117,8 +111,7 @@
+ #define AK09912_REG_CNTL_MODE_ONCE	0x01
+ #define AK09912_REG_CNTL_MODE_SELF_TEST	0x10
+ #define AK09912_REG_CNTL_MODE_FUSE_ROM	0x1F
+-#define AK09912_REG_CNTL2_MODE_SHIFT	0
+-#define AK09912_REG_CNTL2_MODE_MASK	(0x1F << AK09912_REG_CNTL2_MODE_SHIFT)
++#define AK09912_REG_CNTL2_MODE_MASK	GENMASK(4, 0)
+ 
+ #define AK09912_REG_CNTL3		0x32
+ 
+@@ -848,7 +841,10 @@ static const struct iio_chan_spec ak8975_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(AK8975_SCAN_TS),
+ };
+ 
+-static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
++static const unsigned long ak8975_scan_masks[] = {
++	BIT(AK8975_SCAN_X) | BIT(AK8975_SCAN_Y) | BIT(AK8975_SCAN_Z),
++	0
++};
+ 
+ static const struct iio_info ak8975_info = {
+ 	.read_raw = &ak8975_read_raw,
 
 -- 
 2.47.3
