@@ -1,219 +1,200 @@
-Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011055.outbound.protection.outlook.com [40.107.74.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF9643FBED0;
-	Thu,  7 May 2026 14:20:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778163632; cv=fail; b=C9eBSDca8l3y563IcIgNx2mvNziqgbO4aB139tyB9wLU5n8vEJAeZQbVP5nBel/pyN4nIdSD5nSyFtjn6FIZkHbl+7w+mOnqhDTukjwH4piBiC7ScCMpNm2GmPjeJwsbJW+u7c3dzF9K9eCiuq86BRobnnmCIxZr1u21Dp9RjwY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778163632; c=relaxed/simple;
-	bh=RDpfLwqud8Q0KMfTU2cBSBlqoLNkPsFxdnWjHRWEsqY=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=CMSP0gJjHCDvKrUZ9DMQAjewSVB50Q99xQnwLryH76qakLAW01jG9ejqFLuF63s1z1NDgRMxjW2YQalw2QR2fzB7iKT8wa9dp53rMzXxoxFHPl1FbElcl2ugbBkigLYTsGCyehiz2SElpCXiPtlaQng2NayWB/ooA4ZizsKt2jg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=SHc8myrN; arc=fail smtp.client-ip=40.107.74.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 988A831714A;
+	Thu,  7 May 2026 14:25:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778163946; cv=none; b=cX0gcNLNH/5IrPauV3YRNpkIC4Cj7SuuoIPf73aq4kJjQTwDyQu+aY5EhfQnlNBxIeaGXIyOBwFH+G8uDMONl6X+pRBBJHX6heCpCqP+z0VsySqMGxbfCnyLQ5lGPGdh3/sgN2TwViwFOyMmjZmRW19aTTZqo6R3fIfliF0Kguw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778163946; c=relaxed/simple;
+	bh=vlPB5SDuOt75n5oB0tM9u/D39/Xgib3IJQ8fXj5/sdg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Tw6nBNgaV1aru/0uy/aPTnzOEdGmkWVxm4+LWrpbS5wiuLr0G+2L4SsMtgDaj0m9fhxgHlmODm/7c/otl/t0xd949PvXyzE1fz7hHGLXlA9Y23/WHyOhdzO9a+IKZPvjXN2M4vxJYk3+IgZw+CKkKLWB2OfjSZv5eLt8m4JGEgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kqvm6WrF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="SHc8myrN"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lGtvACir618+jVrxyUp7aasm9nVCf3QQ1JEfgnhFk365zDKnmYVFZjHP317foMpvMtD5oSMRv/BKeEOJB/X4EWMm8hJ6kDtfM09ACAtKXvqcChRzy4bjoVQ7Sh8qq0K/mLCYiEkfAfGcdwQz+GkBgc38HvdpUO3MG5GNvCc1eOSEYi0RKrF4Oe4odeqEvtnuuscy8vD8rUFHBgQGWnTFRuE29zeZGbKD6XONo6oLRTS77slnJFZUusIlr7M9JWu9CwiXvtJX2o4B3xxYBKpNFfMKmb5qIMmb1W3nLkIirCZDMZejisskbdrur2g46WDbOt8n3md0jMOkgtNwFeoaIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n9MTxLTnDFi6SxuC2EYdkB952lhYjnuSMZfJGIjw3+c=;
- b=we58hIw9zIfRQ/UFCqk9W3lUIwZrfOwaorTvjXTQmsp2CFtNhZfb7YbWcLylNCsB0QZwnToWf1YkdIPKTnmQXHG7wcw0BWpvvJFJNiTAvXCw0sLYztMyvDI26+4h0JN1DW7HF0OZtbrFXFp0FzkABP3sI87hCr7gYKSEALILqvscJwPuril7kBcYiDArvgeEHdbRfp12PLiEvEsKdDaY7tQIRpnVvAhd9cKIZ3LTWc08eSbU4hvHNzPBYL7sqLekEax+mM09LYwehwDt99fuUl9FNT1xta6isLQ9M16C2ZT5OwZZBHAeOQRjI54WM/2m0FdBlR7tN0Om1sM9/aTotg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n9MTxLTnDFi6SxuC2EYdkB952lhYjnuSMZfJGIjw3+c=;
- b=SHc8myrN7YCT1fkM1AKJ2lAedz1J7gsbJ6g74Ab0azzLFTXlovF9SS0nXj8Qc5drKBOcGfVVAM7RlZD9V+m72erU5I0u0zcvEEEowc4ZQNTCxAY9kWcnTNzaSW28eOUU6k32tr8pa+Hid3sLwx2GD1fdKWNdR7F8eWI6vclSFyw=
-Received: from TYYPR01MB15615.jpnprd01.prod.outlook.com
- (2603:1096:405:291::13) by TYWPR01MB9758.jpnprd01.prod.outlook.com
- (2603:1096:400:234::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.18; Thu, 7 May
- 2026 14:20:28 +0000
-Received: from TYYPR01MB15615.jpnprd01.prod.outlook.com
- ([fe80::d8aa:d4b:55a1:2948]) by TYYPR01MB15615.jpnprd01.prod.outlook.com
- ([fe80::d8aa:d4b:55a1:2948%7]) with mapi id 15.20.9891.008; Thu, 7 May 2026
- 14:20:27 +0000
-From: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-To: Lee Jones <lee@kernel.org>
-CC: Biju Das <biju.das.jz@bp.renesas.com>, Daniel Lezcano
-	<daniel.lezcano@kernel.org>, Thomas Gleixner <tglx@kernel.org>, Rob Herring
-	<robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
-	<conor+dt@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>,
-	magnus.damm <magnus.damm@gmail.com>, Michael Turquette
-	<mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Philipp Zabel
-	<p.zabel@pengutronix.de>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
-	<linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>, "linux-clk@vger.kernel.org"
-	<linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v2 03/10] mfd: rz-mtu3: use device-managed
- mfd_add_devices()
-Thread-Topic: [PATCH v2 03/10] mfd: rz-mtu3: use device-managed
- mfd_add_devices()
-Thread-Index: AQHcyQg4hc1e26SvjEWxKMTUO2pclLYCrPEAgAAX50A=
-Date: Thu, 7 May 2026 14:20:27 +0000
-Message-ID:
- <TYYPR01MB156155337B60155F08D6346EB853C2@TYYPR01MB15615.jpnprd01.prod.outlook.com>
-References: <20260410163530.383818-1-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260410163530.383818-4-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260507124620.GJ305027@google.com>
-In-Reply-To: <20260507124620.GJ305027@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYYPR01MB15615:EE_|TYWPR01MB9758:EE_
-x-ms-office365-filtering-correlation-id: 28045e18-70a0-4a7b-95b3-08deac43c99e
-x-ld-processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|7416014|376014|1800799024|366016|18002099003|22082099003|56012099003|38070700021;
-x-microsoft-antispam-message-info:
- /R8MTOQ36z08Rsz0kopD9tse5SjVWOvjBjz9EpX7Vxe3AxasYV5TIQ3esuJFEimEu65XIa99IcSz2MOPDv8c0d6bv5GD9EM7R14wbW8qA+NAlPDmrl3nteHawLD3PLysAcS7VAMeZ7bYEyq+/XDrZb9lIwexUL7CEZ+an3O1aHOESzPmEDMqPz9AB3XwR1S3/pGaaiJ99fHMh29rrMMDPyky5LtjU9jpGXR4mdKLz87it21Ite0R+Pq5quf/amukz6bHXE9lOSdIvDuOOjiyl9H35VcatV62TpbSS7mGK8B3jLsZncd5UrehbxUotkXCU2A4PYel1izme1KER9+0gh32dgTZcGioBTBKJz0DY/q8XQEqumkZfKrj3YMd/mOWbgT9vf8jhNQiMzS9EvRSPA+f7LWIdZzhdPiVSBO/kFPrS/Xyf6PimYhMvu7OErxRQHozSxOIWoESrxxpJhP/DQdxSRBBL6XC3/uHvA3la8eCoiNEOI+eDXS3Wc41g6DcqFmtHrfSS6gtw70paanKXsyYmv9cDbOI/aJTxCgp9o8XWmwnhQ2XNB/OV5G2Lme/y1WDZ6cIdgiTeZBmrepHfc3m14c1fmNzTXDu9bpZPFK5DjDxHw1iE2ya9v38p8YcciWWhu72bh3+rw7ajO5dn78/bdVICn+AFRYZYDDhD7vG4nLaL6YJ7UMLjFvFcDqPbOimSikyCoNrIhT0mmXDKXirQ/b9S4ZXVAn3NT6NnSHfTWL4Dw6c5CxtHGtupp0x
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYYPR01MB15615.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(18002099003)(22082099003)(56012099003)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?nOjYhj40WoXvhHKTtuXk/hdGlTZCPIm+GiSB+E+GpjqrtpLn0piRIexWpVjo?=
- =?us-ascii?Q?KaYULFKSMpNWXMf1wnXdk2gQgybY7U5EtnVx85Vk2E9xA+0SJKcbIVinKUYE?=
- =?us-ascii?Q?UE0VCOIIV59pijImMiPszemZ4FPFs4czKjrpOg/6jQGoQSGutdlr/XCLXXQY?=
- =?us-ascii?Q?PIqvDOxiG076W6d5T5JQC0lM7h6Ihs1m6CiknuE+NyMWn31TQoiyxgUdk72K?=
- =?us-ascii?Q?MjpSiWlmH3cLmHNt3HsxVo4c3SjMHSthGzbYJq81WElm3zPbe+QOqxq596hv?=
- =?us-ascii?Q?QsKUCEIRj8du+7OCXHKcPKz7s/HpIDapcJQgmx9JBzVBM6ZB4+WgIqVZobW8?=
- =?us-ascii?Q?fV2GaIMfpKewqxvaoMTgnwKQ2c4w1Zp3DbVLcwBZo3/cSTPyES6xe9FcNmdL?=
- =?us-ascii?Q?Xjl/aYDeoaGBCF0oHW7x2PL972EUu44tF1kwRPs+RfVQ+a3AmZQGTJk5FNtO?=
- =?us-ascii?Q?OUFAHIaSp75rdO246gwPV/3S6NdOMc1TQAgGXu4wpwTX+ZFcPwx6/UsQbMZF?=
- =?us-ascii?Q?Cn1b2kgmXmUfophppxgx5GB2REBwvKUJRRM3b2egrKwBsK1hTAWSAssPJQb9?=
- =?us-ascii?Q?NkRPKaBq17UmN99EcCapbCYTECobgmVzxUMzr7HGsS2BFWbHJ+n38uRipflr?=
- =?us-ascii?Q?rYdmcOfktJxd8iP9rz7buw6CbSoOPllN4MLR5Xg2HEXAeRcxJze5SwJNJ/2K?=
- =?us-ascii?Q?ZbcCac44Z0USX7ZHpLMNn7s0Bfla8lW7fdnDikaHW+5DChJQeEmpbZpJfiwS?=
- =?us-ascii?Q?DY+0wxME8mOHpnSd/Cq2zPecq9FJBRXQx6lHdgQkPgTBaIXCEgrC6reVAK2o?=
- =?us-ascii?Q?EG3S5pgvefMx9Eh+8M8ach7xbiLAMmw2BOz7gG867IdFLrvV0e28V2Mt2FTd?=
- =?us-ascii?Q?3U8KyLh/B2KNTWaRNdGt70i9Ny5ASIQxuwb+lS7moPUzfZgV73EYVzA1JqE5?=
- =?us-ascii?Q?eck36IEHoBzSs/XQc9uipiSsV1NtY93Pv3hHIlZ6hZAskg91he8pEWhPnqM3?=
- =?us-ascii?Q?26mFbj2OSql1z9mPKS4O2N2y1HoBps9wN0GVVZAKuwloQvpm81cDDIyDsrqO?=
- =?us-ascii?Q?akbC5pRVBG9kuxe8VDJ0KvhTsUfEHpm2f6LC6lDf3ZPAg5kkZFQ1pwS7pdlU?=
- =?us-ascii?Q?CPKQF+8xFqgduggJHXtlsZJv43SyVH1LcowlDdWZA/t+ltgHO8pVy9f3rY5L?=
- =?us-ascii?Q?e3uqA1fmgOdQhGVBeYHDlXhbmasUpQqLdx7K/qC3E0KC44X3g8E7u7SRlGXM?=
- =?us-ascii?Q?F1/Vw7YTHy4l6RhhbaagpmEVvcfAwlSy/LzQPiwzxTLxMmSORERPTwqHj2Z+?=
- =?us-ascii?Q?mGl1mk6D2q4XrVijsnOvgIkNfnSRdibq8eAEGgYIohlqIW/rgkYIpjVG5POq?=
- =?us-ascii?Q?w34MrbIOdhNfZz26DL5ibOXEk8/iK2GktF9u3ezUWdKorwKnynFdIhb6wpG/?=
- =?us-ascii?Q?OwWMi8erXhyIZLSMk+NH/CnnlD45mpN3yr3JZZS+RV/tbrJ53LmIatyHJXtI?=
- =?us-ascii?Q?s9xDGi6MhNziWDAw6DaRC0zQUKfRZRL1+RWrenr+LregXVkvpr3R7+GlQ8vl?=
- =?us-ascii?Q?V9lgSVy9Ccb3Xi0DSfrFAhOz5spBsl3QczfkBPBEkwli1kcge9VicNrasHFg?=
- =?us-ascii?Q?F7M7Y3Z5RKaUhrtHZXynt1dIn6oJ2oPM7q+ah+GElGDQjNYzXKz52PLOQBf6?=
- =?us-ascii?Q?SDECXOsuQq0sYisqcEYsmIVcFoLjBs2UgbBNbRgs6U0TvvdXg2NW40uXyTBo?=
- =?us-ascii?Q?SKKb/yWoA1KP9Nksi9p4LeLF/upgpPh59B8WLPN5VPJDPMlSZwix?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kqvm6WrF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC92FC2BCC9;
+	Thu,  7 May 2026 14:25:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778163946;
+	bh=vlPB5SDuOt75n5oB0tM9u/D39/Xgib3IJQ8fXj5/sdg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Kqvm6WrFdsSdlOu0qxKmLBuGM3nxTavGCrP+bpd9SNsH/MKkT+TZHdBUPnl2kAqkF
+	 v51j7R3UFIHs+c3I+sXkYCJCY1FldZquy4PhrOiqXsg2ce81bbG9HtXAYTi8MThkSF
+	 wqXHOkRa1SbnPp+Mz8ZFNmJfqeA0UGopZMnqSMOx8WVsX5le0XF1K6+FytOc1jzlnp
+	 7tZmPKxePPzKCKtKXWfGtGpERz76+TJazibrUPLLnQ/PKvCG2GdO9t6nHyiLlYx2dp
+	 VMzkKhZOXH2DHQ6B807kULwijk+ROT2WQCmx8BCuBO5f5Cuu3uPOZpijH9ZKlOYkZ4
+	 dyl+aDOe2wM0w==
+Date: Thu, 7 May 2026 15:25:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, "Sa,
+ Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
+ <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+ "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+ "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v9 3/6] iio: adc: ad4691: add triggered buffer support
+Message-ID: <20260507152532.09b385eb@jic23-huawei>
+In-Reply-To: <LV9PR03MB8414E0FFAD9C9423189117B2F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
+References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
+	<20260430-ad4692-multichannel-sar-adc-driver-v9-3-33e439e4fb87@analog.com>
+	<LV9PR03MB8414E0FFAD9C9423189117B2F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYYPR01MB15615.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28045e18-70a0-4a7b-95b3-08deac43c99e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 May 2026 14:20:27.8468
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3vNg38+sjesEBXuOBfRrtDTEl1BPYIVgci91QBW/Gyiw/PlpyNA805IF744n23kjfEX+akTHTx3BZOFpGYFffISlm/00v+aKMUOMlWCXoxDR3+HLACdZ5fq+Eegqs8DF
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB9758
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-> From: Lee Jones <lee@kernel.org>
-> Sent: Thursday, May 7, 2026 3:46 PM
->=20
-> On Fri, 10 Apr 2026, Cosmin Tanislav wrote:
->=20
-> > Replace mfd_add_devices() and the custom cleanup action with
-> > devm_mfd_add_devices().
-> >
-> > Remove the ret variable as it is now unused.
->=20
-> Do this first, then the changes in the first patch make more sense.
->=20
+On Thu, 7 May 2026 11:37:25 +0000
+"Sabau, Radu bogdan" <Radu.Sabau@analog.com> wrote:
 
-Doing the devm_mfd_add_devices() conversion first would not be a simple
-replacement, as devm_add_action_or_reset() would also need to be moved
-before it to keep the intermediate patch correct.
+> Addressing Sashiko's review for triggered buffer patch.
+> 
+> > -----Original Message-----
+> > From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+> > Sent: Thursday, April 30, 2026 1:17 PM  
+> 
+> ...
+> 
+> > +static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct ad4691_state *st = iio_priv(indio_dev);
+> > +	unsigned int prev_i, k, i;
+> > +	bool first;
+> > +	int ret;
+> > +
+> > +	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
+> > +	memset(st->scan_tx, 0, sizeof(st->scan_tx));
+> > +
+> > +	spi_message_init(&st->scan_msg);
+> > +
+> > +	first = true;
+> > +	prev_i = 0;
+> > +	k = 0;
+> > +	iio_for_each_active_channel(indio_dev, i) {
+> > +		st->scan_tx[k] = cpu_to_be16(AD4691_ADC_CHAN(i));
+> > +		st->scan_xfers[k].tx_buf = &st->scan_tx[k];
+> > +		/*
+> > +		 * The pipeline means xfer[0] receives the residual from the
+> > +		 * previous sequence, not a valid sample for channel i. Point
+> > +		 * it at vals[i] anyway; xfer[1] (or the NOOP when only one
+> > +		 * channel is active) will overwrite that slot with the real
+> > +		 * result, so no separate dummy buffer is needed.
+> > +		 */
+> > +		if (first) {
+> > +			st->scan_xfers[k].rx_buf = &st->vals[i];
+> > +			first = false;
+> > +		} else {
+> > +			st->scan_xfers[k].rx_buf = &st->vals[prev_i];
+> > +		}  
+> 
+> 
+> "The IIO subsystem expects data pushed to the buffer to be densely packed
+> according to the active channels in the scan mask.
+> If only a subset of channels are enabled, does assigning the rx_buf pointer
+> directly to absolute array indices at &st->vals[i] leave holes in the buffer?
+> When iio_push_to_buffers_with_ts() is called, this might cause it to read
+> uninitialized memory instead of the expected samples."
+> 
+> I would say there is no change needed. Writing to &st->vals[scan_index] and
+> passing the full array to iio_push_to_buffers_with_ts() is the standard IIO kfifo
+> pattern: the core demultiplexes by reading data[scan_index * storagebits/8]
+> for each active channel; holes at inactive indices are silently ignored.
+> The same pattern is used in ad4695, ad_sigma_delta, and others. The
+> pipeline residual in the first manual-mode transfer is overwritten by the
+> subsequent transfer before the scan is pushed, as the comment explains.
 
-Otherwise, on release, the reset will be asserted before the MFD devices
-are removed. Doing the reset conversion first fixes that without extra
-logic changes.
+This looks wrong to me.
 
-Alternatively, we can squash the two conversions to avoid the
-intermediate states entirely, and remove struct rz_mtu3_priv::rstc in a
-new separate patch. What do you think about this variant?
+What holes?  If available_scan_masks is set we will do a bunch of
+demux work - but then this code would see the mask picked from that
+list. If it's not then typically we won't (subject to multiple consumers
+forcing it - but that still won't close up holes here).
 
-> > Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-> > ---
-> >
-> > V2:
-> >  * no changes
-> >
-> >  drivers/mfd/rz-mtu3.c | 15 ++-------------
-> >  1 file changed, 2 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/drivers/mfd/rz-mtu3.c b/drivers/mfd/rz-mtu3.c
-> > index 6b9c6831dffa9..3be6f6c900b82 100644
-> > --- a/drivers/mfd/rz-mtu3.c
-> > +++ b/drivers/mfd/rz-mtu3.c
-> > @@ -300,11 +300,6 @@ void rz_mtu3_disable(struct rz_mtu3_channel *ch)
-> >  }
-> >  EXPORT_SYMBOL_GPL(rz_mtu3_disable);
-> >
-> > -static void rz_mtu3_mfd_remove(void *data)
-> > -{
-> > -	mfd_remove_devices(data);
-> > -}
-> > -
-> >  static const struct mfd_cell rz_mtu3_devs[] =3D {
-> >  	{
-> >  		.name =3D "rz-mtu3-counter",
-> > @@ -320,7 +315,6 @@ static int rz_mtu3_probe(struct platform_device *pd=
-ev)
-> >  	struct rz_mtu3_priv *priv;
-> >  	struct rz_mtu3 *ddata;
-> >  	unsigned int i;
-> > -	int ret;
-> >
-> >  	ddata =3D devm_kzalloc(&pdev->dev, sizeof(*ddata), GFP_KERNEL);
-> >  	if (!ddata)
-> > @@ -353,13 +347,8 @@ static int rz_mtu3_probe(struct platform_device *p=
-dev)
-> >  		mutex_init(&ddata->channels[i].lock);
-> >  	}
-> >
-> > -	ret =3D mfd_add_devices(&pdev->dev, 0, rz_mtu3_devs,
-> > -			      ARRAY_SIZE(rz_mtu3_devs), NULL, 0, NULL);
-> > -	if (ret < 0)
-> > -		return ret;
-> > -
-> > -	return devm_add_action_or_reset(&pdev->dev, rz_mtu3_mfd_remove,
-> > -					&pdev->dev);
-> > +	return devm_mfd_add_devices(&pdev->dev, 0, rz_mtu3_devs,
-> > +				    ARRAY_SIZE(rz_mtu3_devs), NULL, 0, NULL);
-> >  }
-> >
-> >  static const struct of_device_id rz_mtu3_of_match[] =3D {
-> > --
-> > 2.53.0
->=20
-> --
-> Lee Jones
+If the active_scan_mask == the one requested, there is no demux at all
+and I think that's the case here - the code pushes the data passed in
+directly to the kfifo.
+
+Perhaps given an illustration of what the layout of resulting data
+is if only even numbered channels are enabled.
+
+
+
+> 
+> > +		st->scan_xfers[k].len = sizeof(__be16);
+> > +		st->scan_xfers[k].cs_change = 1;
+> > +		spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
+> > +		prev_i = i;
+> > +		k++;
+> > +	}
+> > +  
+> 
+>
+> > +	st->scan_xfers[2 * k + 1].len = sizeof(__be16);
+> > +	st->scan_xfers[2 * k + 1].cs_change = 1;
+> > +	spi_message_add_tail(&st->scan_xfers[2 * k + 1], &st->scan_msg);
+> > +
+> > +	ret = spi_optimize_message(st->spi, &st->scan_msg);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
+> > +			   bitmap_read(indio_dev->active_scan_mask, 0,
+> > +				       iio_get_masklength(indio_dev)));
+> > +	if (ret)
+> > +		goto err_unoptimize;
+> > +
+> > +	ret = regmap_write(st->regmap, AD4691_ACC_MASK_REG,
+> > +			   ~bitmap_read(indio_dev->active_scan_mask, 0,
+> > +				iio_get_masklength(indio_dev)) &
+> > GENMASK(15, 0));
+> > +	if (ret)
+> > +		goto err_unoptimize;
+> > +
+> > +	ret = ad4691_enter_conversion_mode(st);
+> > +	if (ret)
+> > +		goto err_unoptimize;
+> > +
+> > +	ret = ad4691_sampling_enable(st, true);
+> > +	if (ret)
+> > +		goto err_exit_conv;
+> > +
+> > +	enable_irq(st->irq);
+> > +	return 0;  
+> 
+> "Is there a race condition introduced by enabling the PWM and unmasking the
+> IRQ here?
+> If a hardware interrupt fires before the IIO core attaches the trigger's poll
+> function, iio_trigger_poll() drops the event. Will the IRQ handler then call
+> disable_irq_nosync() without ever running the consumer thread to re-enable it?"
+> 
+> Valid. preenable is called before the IIO core attaches the trigger
+> poll function; if a DATA_READY IRQ fires in that window, iio_trigger_poll()
+> is dropped, disable_irq_nosync() disables the IRQ, and enable_irq() is
+> never called, leaving the IRQ stuck. Although the delay would need to be 
+> very great for this to happen, I moved sampling_enable(true) and
+> enable_irq() to a new postenable callback which the IIO core calls only
+> after the trigger poll function is attached.
+
+Make sure to add a comment on why that is there.
+Otherwise makes sense.
+
+> 
+
+Rest look fine to me.
+
