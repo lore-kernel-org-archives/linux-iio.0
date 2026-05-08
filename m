@@ -1,112 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 504A438423A;
-	Fri,  8 May 2026 09:52:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5903D090C;
+	Fri,  8 May 2026 09:53:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778233961; cv=none; b=Vf4+ROKMjBi2rIJ0/dLvdsxJblUw124Qo6if/DEsEVUB6Hj8JcoowmTM/jkszU4WqTh3HBFSOnbK2GHqPict82HGlbvSuNO9sTciVIIi6eNH5lzGZx0oLZn+3dfEe7/eJx3xjyRMxGuMBc+r6WYvNeeYHGP6FbQWkafipHpB/uk=
+	t=1778233993; cv=none; b=KJ6tp54y8/k6fRW3soKTItoHPfmxtyQvEC9VBKWgW0bL46RcfEBW908jthG7VqvSfCrWqZmh+sdn3fC+doU+U4DvyDvHlnBR7IZDipGOR5IHW50gVwGTIZCOlxIBqy8awbztX5tuDRSA3EQNaHj4EtH5FQnp7ZVisfZ5XdxgETU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778233961; c=relaxed/simple;
-	bh=zi2Eq5Nx9ILrXnLAdjuej3Tr3Z7lDXPzlUP/KHyHTOU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gdGcau5oDW6TrSidK8fmCIG0OQl0d5OV/QByLCpS/wYoLnBCqf5ThHXyU/5Zi8CFb+I40JXQMo9cum18pw1TSCeTBRwBw0FJhZagGwLdVeQCltn+/MpQY6XJEdp8MR4K6dRCGd2pKWIAHbUo6bkgJsqyBM1Tz5HGDBe99Hu0p4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gfxXGNfC; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778233993; c=relaxed/simple;
+	bh=+tVHEo+/Nt03Cy9uyxf775msOIXb0KrcIitMV3PtYbM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=plgR6YovXSX0LCaQnploslSMziJP7G6mD+4ug89cbZz4LU3jy6lGkQX6PztczaZPWmf6ed7CXj+Nk1O8Evk+toDY8ECsyziNVManGzNDHIcGOIp5TUqSqJws3nf0mZ7Bv5+E4eDbX0OndqRseI8MUvVPvTSGjPqA8+rf8lwnUpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L8o0cLcR; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gfxXGNfC"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L8o0cLcR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778233958; x=1809769958;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zi2Eq5Nx9ILrXnLAdjuej3Tr3Z7lDXPzlUP/KHyHTOU=;
-  b=gfxXGNfC2ePMRUDeKMI5pzDv03dkZyy/IUosNOcj2j37E4+lOdktUlGm
-   rt8jJdUypcN9q3x1f9m96r/7USML5K8ZKpbiwwLLZl5/9NGuuRXSrUC3M
-   PNg4D6+QRyzFmKXShHvFeqjxtwFMfOlDxK32bmc0K7yUigWsN4DIm+FOc
-   gdiJF+VEL/HLiveu/hj7mVBC2DlsbnSXZ5MXlfLffvz9qsfU7xe6EUZks
-   90tpsYxkyDxnChgKJmqt/JKHy8mYXBEWWxUGlSdA3Pq/ADpLMCzMofexH
-   0Ozu1qLTKJAAYe+Q3EytScKMuzJSYk6d1z65r8LhWaDhRoH9idGCZKrvc
-   g==;
-X-CSE-ConnectionGUID: Op959p38QaqgPpJd7ufsQg==
-X-CSE-MsgGUID: wKYFKm5AQpSqIZIBkV4m7g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="96623827"
+  t=1778233991; x=1809769991;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+tVHEo+/Nt03Cy9uyxf775msOIXb0KrcIitMV3PtYbM=;
+  b=L8o0cLcR8/+Ji9dEyyusWw8JE9VO9IYnOvie8VBCre69VtYcY+XaNNri
+   9+sYjWieNgacBfY0uwkOug5RFdaUY47aL0SUpLNDX/pdpkEp7Tdiq8y1U
+   03qwo1GZUyQGbLRN07qJbARteozW4GlqClAxIKVNp467xZNxa2gDDjnqv
+   wMQ4BwP8B+QiPUcLTHOr5F0sF3nRhYM4AtkhUz4Gic+YYsiKWmgj0mydk
+   K3FJO4kTOO8ilEtNK4EEdDp082Zb9UjWwAbqsAHidJU4lvJTrCEW4TycD
+   f041Kfug6ZvmeuJ5wsjo6VKHWk92taOOboxDP/Ckp3q0FWNkP5uZzaTtR
+   A==;
+X-CSE-ConnectionGUID: cW21zshzSJ6CEe4k/Y8IHw==
+X-CSE-MsgGUID: B1y05kuOQ2+qI+SNmd3lcw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="79219248"
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="96623827"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:52:33 -0700
-X-CSE-ConnectionGUID: HpMymi5ESJOEvOzUxWozMA==
-X-CSE-MsgGUID: QCGJySUfQVWeYOq0/TZofw==
+   d="scan'208";a="79219248"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:53:10 -0700
+X-CSE-ConnectionGUID: XvaFWmBrSKWiKFgv0ISKSg==
+X-CSE-MsgGUID: yzycu+dbS7avcCqVAVipGA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="241728648"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa005.jf.intel.com with ESMTP; 08 May 2026 02:52:30 -0700
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 573E49D; Fri, 08 May 2026 11:52:28 +0200 (CEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Danilo Krummrich <dakr@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Mark Brown <broonie@kernel.org>,
-	driver-core@lists.linux.dev,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
+   d="scan'208";a="267101041"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.237])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:53:04 -0700
+Date: Fri, 8 May 2026 12:53:02 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
 	Jonathan Corbet <corbet@lwn.net>,
 	Shuah Khan <skhan@linuxfoundation.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 3/4] iio: imu: inv_mpu6050: Suppress driver_override sysfs attribute
-Date: Fri,  8 May 2026 11:42:41 +0200
-Message-ID: <20260508095224.1275645-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260508095224.1275645-1-andriy.shevchenko@linux.intel.com>
-References: <20260508095224.1275645-1-andriy.shevchenko@linux.intel.com>
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v9 2/6] iio: adc: ad4691: add initial driver for AD4691
+ family
+Message-ID: <af2yfhe3vYOAOOKZ@ashevche-desk.local>
+References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
+ <20260430-ad4692-multichannel-sar-adc-driver-v9-2-33e439e4fb87@analog.com>
+ <LV9PR03MB841460307B0CF4C6F267A631F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
+ <20260507151549.61e4e8fb@jic23-huawei>
+ <af1qN1Bvio1v6TKG@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <af1qN1Bvio1v6TKG@ashevche-desk.local>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The driver makes no sense for the devices without associated driver data.
-Instead of checking for absence of it, disable driver_override feature
-and drop the no more required check.
+On Fri, May 08, 2026 at 07:44:39AM +0300, Andy Shevchenko wrote:
+> On Thu, May 07, 2026 at 03:15:49PM +0100, Jonathan Cameron wrote:
+> > On Thu, 7 May 2026 09:26:00 +0000
+> > "Sabau, Radu bogdan" <Radu.Sabau@analog.com> wrote:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+...
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-index 1f4c62142b60..bdd4ba4e117e 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-@@ -46,8 +46,6 @@ static int inv_mpu_probe(struct spi_device *spi)
- 	} else if ((match = device_get_match_data(&spi->dev))) {
- 		chip_type = (uintptr_t)match;
- 		name = dev_name(&spi->dev);
--	} else {
--		return -ENODEV;
- 	}
- 
- 	regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
-@@ -175,6 +173,7 @@ static struct spi_driver inv_mpu_driver = {
- 		.acpi_match_table = inv_acpi_match,
- 		.name	=	"inv-mpu6000-spi",
- 		.pm     =       pm_ptr(&inv_mpu_pmops),
-+		.suppress_override_attrs = true,
- 	},
- };
- 
+> > > > +	st->info = spi_get_device_match_data(spi);  
+> > > 
+> > > "Is it possible for st->info to be NULL here?
+> > > If the driver is manually bound to a device with a non-matching name using
+> > > the sysfs bind interface in combination with driver_override,
+> > > spi_get_device_match_data() could return NULL, which would cause a NULL
+> > > pointer dereference later in the probe sequence."
+> > > 
+> > > Agreed, will add the NULL check with -ENODEV immediately after
+> > > spi_get_device_match_data().
+> > 
+> > Andy, you seeing this one?  Looks like we are putting these checks back in again.
+> > Whilst anyone forcing a bind like this is onto a looser anyway we shouldn't
+> > crash due to a null dereference.
+> 
+> We should find a way how to disable that combination from the start. The driver
+> makes no sense to be instantiated from user space. Actually most of the drivers
+> nowadays should not be bound to the devices without driver data.
+
+The 20260508095224.1275645-1-andriy.shevchenko@linux.intel.com has been just sent.
+
 -- 
-2.50.1
+With Best Regards,
+Andy Shevchenko
+
 
