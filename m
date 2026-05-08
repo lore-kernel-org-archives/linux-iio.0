@@ -1,215 +1,119 @@
-Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D9642F363F
-	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 03:41:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6FA624503B;
+	Fri,  8 May 2026 04:44:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778211680; cv=none; b=h412KJfAl03ivpiq/Rpu0zrW7C3jWKiCmMr1821aeFvgcvb/YzCy2VVu9uZOzPfouTgkBkRf8bjHT4wzHP0sidvdmQ4fe8LgzOmDYimvVuWCZ8E8n8hYg87uga6hmxdm9BlKYkSlLRftDNm3fp2UCYdX0LMZ+S3vQ2H1fa2YFxk=
+	t=1778215489; cv=none; b=cFR49XOkYvx0QieiKn28i2vnxd+nLz3f/lQIHmq9r/opIaXuQ7GZzZ+jefXQtA9bKLxdOWOfd6oPHHA+uRyiktbfyfeChkBM9v38QNftYyQgayLhgK5ukQwoScx65KOq8ofUZYdA6KPlOeYT3RwvU4pJ7ikn1tc18FkK3c+fy/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778211680; c=relaxed/simple;
-	bh=y1zKzWQSHZtzLLfgNwQpgMzN7dFjX+rSjLZ9qTmynxA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ptj7kzwXYpq1e4GcVubnM77D7+/dPLOyp8IqmeVggN1O712sRaRD/IQ364UkbDv61SWlxVADz0PqNzl0zHW011AsoN7hyjdgXbDTCUYJS+OE2hZQW3sYV6LmcebLMebFoGcAL2u/MJGFsKqxvxJxL6D1AA79Cc+zBsyi9iyiBmc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=kHJP+MP6; arc=none smtp.client-ip=74.125.82.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1778215489; c=relaxed/simple;
+	bh=WVcZmcrMUcQSLgmbj20gn3L9v+Hk/LfU1kizlZqcX4s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dLbMP5Yv5B5mDTT8+7NMHc1LsR5wynhjKP6+q7flc8dLn/7LCzdwY9od9+lGpD6RFxlBxkhoK0zvv1r7GFg1RZu4hFB950GoMen8ECocB8P3J8Sxg1CDi6IU6MLa8Z5i3q/G3I/3rMOP69qCkuX9UrZqTrJt+HwAPe8gElDpFKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K02TKGZt; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="kHJP+MP6"
-Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-2f68f3b075fso2831937eec.0
-        for <linux-iio@vger.kernel.org>; Thu, 07 May 2026 20:41:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1778211676; x=1778816476; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=8Ze8oLF2pGTrWHsOe1t0bRJErfjX97nYdIV0dO8S7cY=;
-        b=kHJP+MP6TrrlvdTPOqHQBXjXmypQzVOcYF3W9TvLcunlTAPPLmyD179WCe/0vC5YfZ
-         Cy56eboytQ/0uyiNPko2lNmKFH/ImX4S/9qZ1E0ZNikG32qkj+0l+3Lph175oRYuAY/V
-         +Pmie6b/+v5zHjwox29I0dNByvaXKJcL9MAI6eDyTOYNZrXuRNAn+09ZWtxj3JcmqXPZ
-         VYmzeVP3II36f0CckZ+ITnKLr8KZpoxNH/TsJXc5O/amXx4XSiiL8lwA6baXcXJXFdUD
-         9O5x6dKBB3Z++3hYQZDRnnIjFniPutf7S7uyu6HZTuB9ICl3Ny1hR3oc864EqXlkUfzQ
-         Z0pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778211676; x=1778816476;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8Ze8oLF2pGTrWHsOe1t0bRJErfjX97nYdIV0dO8S7cY=;
-        b=CulNx0Gz/hhTuUUXqwExHHzXF2afJPaPldKPPhf5aBF6E71VOlpsFQ0bcmtoBT1w74
-         Qymc+v8qZVVWKVhLwb7zavD7wlkeS0o3poUA/K+6/OIF9Ekm+JNNlYFNO4mlDpBblUYn
-         dwBQ9uSrzQiD55jiWLvzg1L/Yj1YrQppUD35Y3qb3ZENnsJA5lPJdmas3Fiwg545pvnZ
-         TpNO3VlupIKPtH6Pgwa/Jvg7jFLVYuq/Qx75p3LqDRRdCj2h88+vlMF7IF9sEqjFTaz9
-         9y3byG11qFVHCQKJi5FFFRwWk9Ez5sTvxxbucUlFEX10nuLYH3U1dTmOmFAZ7lENOC+d
-         okyw==
-X-Forwarded-Encrypted: i=1; AFNElJ8WI4LMareyTDaM3TP+xS8Ojbbooh9s+vLOLF5ogMH/h5LR6sxLM9tzQsgJLTua2unZ6x5RS8hW1B0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxJ8XKWHQcr+F4+4V7thsdOk2VcGRS5na+tDOiOI9UMps/o5YDu
-	eMN8+YVCA06I98CHtehPqGeBBaOg+7YPlxwHm+sdpE9wfgGVxKBjv6H098NwXbN1y7s=
-X-Gm-Gg: Acq92OE/+ZLEJzVouTfL2q29q/ob4L7cQhT8TddYl1gdoqXCoXqTQVx3S/MqF1qhaNi
-	KeV5wLhWtc0VKebMUnYB5OM5vsLj6xii+spMX/0cggqDoyZOadeiaBnukzWe17zvkuxgoIyWO0e
-	iK/ghpCxrO/xgtKwGQUNyQrpgHOSdNXYejIoC1YH5pUbSvVJB3n3K2af+8CMnxEmhpoWU5yM6TJ
-	O+EwQM9XnPqcPOEAXWUpbgopcBJA8jrI4fTwgRkuD6VixM8qIxztYADmP9Fp39SB3UY0qlELkIV
-	GTaRDcPjOYigTlJo2JZN2pKlRwZX3hD3/qtjhkv2cLc0eHbFbvhaQrmIVsZ6F5BK6lsnko9tePt
-	Hlg3T9Xp2Vdp0FC7BwwzMW0VHEeL94ulpWPCVm2t2UGQmZSrHaG/qDpgLPI/0C7PBjr/IJyTtlM
-	JGWJAKnd2QwRB8kSu293ildqL3Rgc4ELO/QMOmqq0Wilw2JPGk4qrd4NWHtJgdDV8=
-X-Received: by 2002:a05:693c:2c8c:b0:2f5:5907:3a49 with SMTP id 5a478bee46e88-2f85e62da93mr535715eec.30.1778211675586;
-        Thu, 07 May 2026 20:41:15 -0700 (PDT)
-Received: from monstruoso.. ([179.119.119.156])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2f8859eafacsm594959eec.1.2026.05.07.20.41.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2026 20:41:15 -0700 (PDT)
-From: Joao Paulo Menezes Linaris <jplinaris@usp.br>
-To: ilpo.jarvinen@linux.intel.com,
-	wbg@kernel.org
-Cc: jplinaris@usp.br,
-	Guilherme Dias <guilhermeabreu200105@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] counter: intel-qep: Replace manual mutex logic with lock guards
-Date: Fri,  8 May 2026 00:40:57 -0300
-Message-Id: <20260508034057.23595-1-jplinaris@usp.br>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K02TKGZt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778215488; x=1809751488;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WVcZmcrMUcQSLgmbj20gn3L9v+Hk/LfU1kizlZqcX4s=;
+  b=K02TKGZth7UhOWWBc3o0arQ6/ncnd4HYIHMM5AZ2nVhs2jUATXJ+M2zw
+   znDcM0o3Nq+iE7JJMjyUrfs07frt8BlD4lqB4qHq4VOF7Th+Kevs7Rqux
+   yhQZVoZDkXPxeeUu9zsudMknMq+7+oXPRkxeRaqPGxPVrasRQlciu6ztZ
+   6IiM2PI8MSXzdrOZ10C9zokdjDnPbxGeB8ZRwpEIVUECt6gdegR/VFVac
+   Ryk+UM+qsg40jGudXvklcOdWlTjkC5SokjoMyFvETKFifOuTx1XPACT3z
+   wSrBaO3azuNUZh9BUnNNd80gtBw2xjSDBKYUQ3/FWbuOuAeUh6LSun5nm
+   Q==;
+X-CSE-ConnectionGUID: VPTQXlkGT9yIvieho3H3gg==
+X-CSE-MsgGUID: eJG3IhviQt6y5UoV8Dmjvw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="90558477"
+X-IronPort-AV: E=Sophos;i="6.23,222,1770624000"; 
+   d="scan'208";a="90558477"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 21:44:47 -0700
+X-CSE-ConnectionGUID: qEVbJLo2RyKB63FiqhsKMw==
+X-CSE-MsgGUID: ua4RiqMJQ1O91HqbJZ0jlw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,222,1770624000"; 
+   d="scan'208";a="232309852"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.237])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 21:44:42 -0700
+Date: Fri, 8 May 2026 07:44:39 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v9 2/6] iio: adc: ad4691: add initial driver for AD4691
+ family
+Message-ID: <af1qN1Bvio1v6TKG@ashevche-desk.local>
+References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
+ <20260430-ad4692-multichannel-sar-adc-driver-v9-2-33e439e4fb87@analog.com>
+ <LV9PR03MB841460307B0CF4C6F267A631F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
+ <20260507151549.61e4e8fb@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260507151549.61e4e8fb@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Use scoped_guard() for handling mutex lock instead of locking and
-unlocking mutex explicitly. This improves readability by eliminating
-the need for gotos and by clearly indicating mutex will be locked only
-when execution is in guard scope.
+On Thu, May 07, 2026 at 03:15:49PM +0100, Jonathan Cameron wrote:
+> On Thu, 7 May 2026 09:26:00 +0000
+> "Sabau, Radu bogdan" <Radu.Sabau@analog.com> wrote:
 
-Signed-off-by: Joao Paulo Menezes Linaris <jplinaris@usp.br>
-Co-developed-by: Guilherme Dias <guilhermeabreu200105@usp.br>
-Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
----
-v1 -> v2:
- - fold the commit message properly
- - replace scoped_guard() with guard()
- - remove unnecessary comments
+...
 
- drivers/counter/intel-qep.c | 47 +++++++++++--------------------------
- 1 file changed, 14 insertions(+), 33 deletions(-)
+> > > +	st->info = spi_get_device_match_data(spi);  
+> > 
+> > "Is it possible for st->info to be NULL here?
+> > If the driver is manually bound to a device with a non-matching name using
+> > the sysfs bind interface in combination with driver_override,
+> > spi_get_device_match_data() could return NULL, which would cause a NULL
+> > pointer dereference later in the probe sequence."
+> > 
+> > Agreed, will add the NULL check with -ENODEV immediately after
+> > spi_get_device_match_data().
+> 
+> Andy, you seeing this one?  Looks like we are putting these checks back in again.
+> Whilst anyone forcing a bind like this is onto a looser anyway we shouldn't
+> crash due to a null dereference.
 
-diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
-index c49c17805..ef6eb3249 100644
---- a/drivers/counter/intel-qep.c
-+++ b/drivers/counter/intel-qep.c
-@@ -188,25 +188,20 @@ static int intel_qep_ceiling_write(struct counter_device *counter,
- 				   struct counter_count *count, u64 max)
- {
- 	struct intel_qep *qep = counter_priv(counter);
--	int ret = 0;
- 
- 	/* Intel QEP ceiling configuration only supports 32-bit values */
- 	if (max != (u32)max)
- 		return -ERANGE;
- 
--	mutex_lock(&qep->lock);
--	if (qep->enabled) {
--		ret = -EBUSY;
--		goto out;
--	}
-+	guard(mutex)(&qep->lock);
-+	if (qep->enabled)
-+		return -EBUSY;
- 
- 	pm_runtime_get_sync(qep->dev);
- 	intel_qep_writel(qep, INTEL_QEPMAX, max);
- 	pm_runtime_put(qep->dev);
- 
--out:
--	mutex_unlock(&qep->lock);
--	return ret;
-+	return 0;
- }
- 
- static int intel_qep_enable_read(struct counter_device *counter,
-@@ -226,10 +221,10 @@ static int intel_qep_enable_write(struct counter_device *counter,
- 	u32 reg;
- 	bool changed;
- 
--	mutex_lock(&qep->lock);
-+	guard(mutex)(&qep->lock);
- 	changed = val ^ qep->enabled;
- 	if (!changed)
--		goto out;
-+		return 0;
- 
- 	pm_runtime_get_sync(qep->dev);
- 	reg = intel_qep_readl(qep, INTEL_QEPCON);
-@@ -246,8 +241,6 @@ static int intel_qep_enable_write(struct counter_device *counter,
- 	pm_runtime_put(qep->dev);
- 	qep->enabled = val;
- 
--out:
--	mutex_unlock(&qep->lock);
- 	return 0;
- }
- 
-@@ -279,7 +272,6 @@ static int intel_qep_spike_filter_ns_write(struct counter_device *counter,
- 	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
- 	bool enable;
--	int ret = 0;
- 
- 	/*
- 	 * Spike filter length is (MAX_COUNT + 2) clock periods.
-@@ -300,11 +292,9 @@ static int intel_qep_spike_filter_ns_write(struct counter_device *counter,
- 	if (length > INTEL_QEPFLT_MAX_COUNT(length))
- 		return -ERANGE;
- 
--	mutex_lock(&qep->lock);
--	if (qep->enabled) {
--		ret = -EBUSY;
--		goto out;
--	}
-+	guard(mutex)(&qep->lock);
-+	if (qep->enabled)
-+		return -EBUSY;
- 
- 	pm_runtime_get_sync(qep->dev);
- 	reg = intel_qep_readl(qep, INTEL_QEPCON);
-@@ -316,9 +306,7 @@ static int intel_qep_spike_filter_ns_write(struct counter_device *counter,
- 	intel_qep_writel(qep, INTEL_QEPCON, reg);
- 	pm_runtime_put(qep->dev);
- 
--out:
--	mutex_unlock(&qep->lock);
--	return ret;
-+	return 0;
- }
- 
- static int intel_qep_preset_enable_read(struct counter_device *counter,
-@@ -342,13 +330,9 @@ static int intel_qep_preset_enable_write(struct counter_device *counter,
- {
- 	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
--	int ret = 0;
--
--	mutex_lock(&qep->lock);
--	if (qep->enabled) {
--		ret = -EBUSY;
--		goto out;
--	}
-+	guard(mutex)(&qep->lock);
-+	if (qep->enabled)
-+		return -EBUSY;
- 
- 	pm_runtime_get_sync(qep->dev);
- 	reg = intel_qep_readl(qep, INTEL_QEPCON);
-@@ -360,10 +344,7 @@ static int intel_qep_preset_enable_write(struct counter_device *counter,
- 	intel_qep_writel(qep, INTEL_QEPCON, reg);
- 	pm_runtime_put(qep->dev);
- 
--out:
--	mutex_unlock(&qep->lock);
--
--	return ret;
-+	return 0;
- }
- 
- static struct counter_comp intel_qep_count_ext[] = {
+We should find a way how to disable that combination from the start. The driver
+makes no sense to be instantiated from user space. Actually most of the drivers
+nowadays should not be bound to the devices without driver data.
+
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
