@@ -1,163 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1E172F2607;
-	Fri,  8 May 2026 12:37:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CB5D3DCDB0
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 12:45:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778243826; cv=none; b=mZEHzOjF+ZFrnLlQK5qSGxntrqu/0WIecamkQY1x6mukHssb9XeRLndpCUQVfluokFy3o/pmKcF3Vthm4gJSRFNpgpp1aRN9h8UsjJDMtEvcB0Wwb11j1gGn/L9klLvt1eE3wwYkOK14NPnk8STmXIYiA3Z2JvPZnKZSFsdCgZs=
+	t=1778244318; cv=none; b=HuVSpamT2YECVZn4G1SRJXIjcgZKqOQN+iAUf8kxpNUb6F6zUPkh6LeqB6vQx7+nr/atEtjV2Y8SCZplG585NjCcniunqe86jDqH94sD/lWZuv8SU5FtwEpmf4aHBbH+pUuzofu6la8N+WNJJRbn+qf92WDl9pI2Dm22fjyPHZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778243826; c=relaxed/simple;
-	bh=dMIWcg84Ps/y5Wn5AybPuEpvHMUPCnAm2q1DlReTSKI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XjUYtunUHz+2FG4JfaWOOZUoZQJYvxhbv97hPOaBxHP/QVJyOIQFcrrsTEXvm8QLiSHfn4TsImka92jqfX9U2UgXZanqDPJIsxEmOJnB2VGYAAEsFcPEJOxCmuBFn7j1BU56XCNe5KSYOBrw27AAFix2WK5DqY8IA3Btaz3ogrc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kGWNopU/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778244318; c=relaxed/simple;
+	bh=jYK6el2X48+S4w88qDbDd6Y/tDrlmJ83S6sFrdAv+8E=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Cp0+2v7YrZxVXcsLgkpF7aCCZJNs7Y73+ysh4YQODSghTJupGEAGF24U5nx/cyncWLeLIUXUN21GlNUZa+pdx6+DO1eDwFLXhNIjOp6nDQylQ6BK70e5HcAhhN/BExHMIxp4uiIO+ejPCtsxEXLUGQUrVJMWT9Bn9NXubpXjqeU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VfrhyKK2; arc=none smtp.client-ip=209.85.160.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kGWNopU/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D62C2BCB0;
-	Fri,  8 May 2026 12:36:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778243825;
-	bh=dMIWcg84Ps/y5Wn5AybPuEpvHMUPCnAm2q1DlReTSKI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=kGWNopU/RfNy45NoVsTsLXvt6SIa6ZobxwgykyjK7gIU/wZkrqeZXMc7GTLorEMgP
-	 2z4us38m2o2sBaVpe/xS0RbHVKYIWfrSOVCo+eDY5IfLHFvtASiLV3u3TGOPo3Pt2G
-	 8XEbzvyxNxENyI8s+Ie4J4QWhjJXxWrp1Bog550IdN+NyKX1n01aYSo6s6PIQojhVF
-	 YkFlVjWg49wcyziEZhyBJsaV7I9kbnow0T89Ug5Z2PD8l4cHCh/4hLVaNkZAemTUgp
-	 PPaHo/HVRizx5cjbCLM77OibFtWyU6O0vQeTIStZnPISU4o20V8WO/v3wJxFZPeiKk
-	 s1r8OLqCP7qxw==
-Date: Fri, 8 May 2026 13:36:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, "David Lechner" <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, "Jonathan Corbet" <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-doc@vger.kernel.org>, Janani Sunil <jan.sun97@gmail.com>
-Subject: Re: [PATCH v2 0/3] iio: dac: Add support for AD5529R DAC
-Message-ID: <20260508133653.5c4f9169@jic23-huawei>
-In-Reply-To: <20260508-ad5529r-driver-v2-0-e315441685d7@analog.com>
-References: <20260508-ad5529r-driver-v2-0-e315441685d7@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VfrhyKK2"
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-42fdab683b7so1044940fac.3
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 05:45:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778244316; x=1778849116; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=7NaUZ8NzgConcLQlWK2tCRyH0zU4s9BkLK3EWuec7V0=;
+        b=VfrhyKK2qfhRjQEA7Hu6lcR3+gdoFnq1qg6gH+2NKWPe6zFe0NGTnwRf7oMWWXJCoz
+         xDGknZN42a/jVSn2yTkvbCEuZcfbcJWgyIuAKfBkfHeoJbPwAIoORIiSqZTpExvkslZo
+         RKwYeqlh+13XkCT87/3mvaC5vzU/YLUGVIax05V7eslnY5qCK4Qyfz/1C4KsP82B381f
+         6hdGwh/3SXGrN5Evul9ynEceo2TWxfNIh9e1ZPXOMK4slJh33n6uV24kcZhS9/V5gC9W
+         voRf8lukIRFYageDkW29hbyxyrKgsGtcHjjHt+yU8jmra1X0SlPJy4mMNB9ZCONKYquc
+         y4ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778244316; x=1778849116;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7NaUZ8NzgConcLQlWK2tCRyH0zU4s9BkLK3EWuec7V0=;
+        b=pTkG7AbNdaQBe2WECGdfQxBTTe3hUPVCGqq9kaCZVJtgj9Vv1W6Z5QZqsQctcUmd6o
+         A1qR2XnkHl1khqNq2Yi/IRwE1JEklWWu6FDPou8wEotUbwT+MXS7dHpHHHez2ccnWzRp
+         sX5GceTQB/4eSJBRJNQgBZNetXlGCnh85Bwfu+2gwk8kZ/+zOIziYpAIxGusvcgk7J84
+         EiKeDemDU/wXOh3tNt2H/02faE7jj2Xsjcf1h7XLuTbVTrXJdqJsIDWlvHHToS8ZVvob
+         qeVyamhrXWJD9s/Hz9uc2HjDqpruKnPOC2oPAGyQxwdw/8qu6njEDLQBhw1tJXEaek0T
+         H1xw==
+X-Forwarded-Encrypted: i=1; AFNElJ8xlrybxM+/X+xiEehPKkoaloRtZ9cVvkreM8nAmkQ9tT71WsXH+3R5/7MpgONQkie2Hc/lruhiB4c=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw5QY4vuei7wgwEjyc6AMxKyB9KlqGKC58WEThI7zroWGq34PBb
+	sxJYwpZ4vqs0dQosi6b4zuSWNs1EW/gHtBaun9KyEWg53PGYcgTXkVZq
+X-Gm-Gg: Acq92OEaWeZnapu2lHyJVERoumR3KIuY9bFFVXNdLuglPGl9BIEE7/VEaENAhVkqh5+
+	2HuQAF33QHaiEfGAKT+UvC529aP02q+P23N3bfuWU0NNSv9zTTfu79q0JnP1d9tgAsoCnrhQlRD
+	wpEAP9w+bK8WP+Ngwy2tKagWDFXXsP/2dC5kFJVvpZOKNq9Y9+O08ILj/Lik4c7/uSCvegMr63A
+	Y4yqi7OdY+pjwaO2fed6ERyvWXasC+m6jCmr7wFCyPATqveZGsLnJ+c8CTM9GbcyC9Hf4gXly0C
+	Ngmc+ht/UFandlv7eddchmDndbIpMXGR1li02JxDx3nqokIWjXJ0JSr0652gLhvlHN65PKPBSS+
+	Fi4/EhY5lsUY8hOTXEcGBl9OIa9K0gnpEEtHWCJx1KGFEz0ukQefvrAnZAkyP2bPzN3jBAaKTvi
+	tBFtriXCvjIiOf9Hf/kVeM3XeqmjUnbw23Zgobu/p4hrsP5yM6FufpKeFsRw==
+X-Received: by 2002:a05:6870:312a:b0:42c:ebc:7f53 with SMTP id 586e51a60fabf-434f657b535mr7417665fac.37.1778244316057;
+        Fri, 08 May 2026 05:45:16 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-435573e7254sm1630055fac.14.2026.05.08.05.45.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2026 05:45:14 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: salih.erim@amd.com,
+	conall.ogriofa@amd.com,
+	jic23@kernel.org,
+	michal.simek@amd.com
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org (open list:XILINX AMS DRIVER),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM/ZYNQ ARCHITECTURE),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] iio: adc: xilinx-ams: Replace spin_lock() and unlock() calls with guard(spinlock*)()
+Date: Fri,  8 May 2026 07:45:13 -0500
+Message-ID: <20260508124513.17752-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, 8 May 2026 13:55:46 +0200
-Janani Sunil <janani.sunil@analog.com> wrote:
+Include linux/cleanup.h to take advantage of RAII macros.
 
-> This patch series adds support for Analog Devices AD5529R, a 16 channel
-> 16 and 12 bit voltage Digital-to-Analog Converter (DAC) with integrated
-> precision reference. The AD5529R operates from both unipolar and
-> bipolar supplies. The device communicates via SPI interface.
+Replace spin_lock() and unlock() calls with their RAII macro
+counterparts, which modernizes the code and increases readability.
 
-Hi Janani
+Remove "flags" variables where spin_lock_irqsave() has been replaced
+with guard(spinlock_irqsave)().
 
-Welcome to IIO.  Please slow down.  For a new driver convention is to
-wait at least a week between versions so there is time for more reviews
-to come in and hopefully reduce the total number of versions needed!
-If you got feedback from Sashiko or other AI tools after posting then
-feel free to address them in replies to your own series - they aren't
-a reason to move faster with a new version.
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+---
+ v2:
+ - Replace guard(spinlock_irq)() in ams_unmask_worker() with
+   scoped_guard() per Jonathan's suggestion.
 
-Key for why we don't want too many versions is that those few of us
-who review a lot of code very rarely manage to hold in our memories
-what we checked on previous versions so tend to end up doing each version
-from more or less scratch.  That means each version takes a non trivial
-amount of review time.
+ drivers/iio/adc/xilinx-ams.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
 
-Anyhow, you've sent this now so I'll review it but for v3 if needed
-slower please!  If you have time and want to increase the chances
-reviewers get to your patch, use it to review those of others. That is
-is typically where our bottlenecks lie.=20
-
-I've not been griping about this too much for the many cleanups on the
-list at the moment because the overhead of those is smaller and also
-I know some are students trying to get patches upstream in a finite
-window.
-
-Thanks
-
-Jonathan
-
->=20
-> **Device Overview:**
-> The AD5529R features 16 independent DAC channels, with 16 or 12 bit
-> resolution, allowing independently programmable output ranges. The
-> internal 4.096V precision reference sets the accuracy of the output
-> voltage.
->=20
-> **Features Implemented:**
-> - Automatic detection of 12/16 bit variant with product ID read.
-> - Reset support via GPIO.
-> - Dual regmap configuration to handle 8 and 16 bit registers.
->=20
-> **Patch Summary:**
-> 1. **dt-bindings**: Binding documentation with channel configuration.
-> 2. **driver**: Implement IIO DAC Driver with regmap support.
-> 3. **documentation**: Add driver documentation with usage examples.
->=20
-> **Testing:**
-> The driver was compiled and tested on the EVAL-AD5529R-ARDZ using a
-> coraZ7 with a mainline v7.0 kernel.
->=20
-> **Driver Rationale:**
-> AD5529R introduces:
-> 1. A unique register layout
-> 2. Mixed 8-bit and 16-bit register accesses
-> 3. Product ID based generic identification
-> 4. Hardware specific features like function generators, multi-die
-> hotpath registers etc.
->=20
-> The device warrants its own drivers due to these fundamental
-> architectural differences, that would require substantial changes to
-> existing drivers without providing reusable benefits. The standalone
-> driver also allows future extensions for related devices in the same
-> family.
->=20
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
-> Changes in v2:
-> - Fix IIO scale to use millivolts per ABI requirement
-> - Fix documentation voltage calculations (2.5V not 2.048V)
-> - Fix bipolar ranges in documentation (=C2=B15V, =C2=B110V, =C2=B115V, =
-=C2=B120V)
-> - Fix alphabetical ordering in documentation index
-> - Add missing newline to documentation file
-> - Fix scale units description (millivolts not microvolts)
-> - Include a section for driver rationale in the cover letter
-> - Reword contents in cover letter 12/16 bit generic->variant
-> - Add dependency array for spi-cpha and spi-cpol properties
-> - Link to v1: https://lore.kernel.org/r/20260507-ad5529r-driver-v1-0-b446=
-0f3cb44f@analog.com
->=20
-> ---
-> Janani Sunil (3):
->       dt-bindings: iio: dac: Add AD5529R
->       iio: dac: Add AD5529R DAC driver support
->       Documentation: iio: Add AD5529R Documentation
->=20
->  .../devicetree/bindings/iio/dac/adi,ad5529r.yaml   |  96 ++++
->  Documentation/iio/ad5529r.rst                      | 216 ++++++++
->  Documentation/iio/index.rst                        |   1 +
->  MAINTAINERS                                        |   9 +
->  drivers/iio/dac/Kconfig                            |  17 +
->  drivers/iio/dac/Makefile                           |   1 +
->  drivers/iio/dac/ad5529r.c                          | 564 +++++++++++++++=
-++++++
->  7 files changed, 904 insertions(+)
-> ---
-> base-commit: 93df88612859e8e19dec93c69d563b4b73e9bd4b
-> change-id: 20260507-ad5529r-driver-866bbdd864de
->=20
-> Best regards,
+diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+index 124470c92529..05bf1444ca7d 100644
+--- a/drivers/iio/adc/xilinx-ams.c
++++ b/drivers/iio/adc/xilinx-ams.c
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/bits.h>
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/devm-helpers.h>
+@@ -414,18 +415,16 @@ static void ams_unmask(struct ams *ams)
+ 
+ static void ams_update_alarm(struct ams *ams, unsigned long alarm_mask)
+ {
+-	unsigned long flags;
+-
+ 	if (ams->ps_base)
+ 		ams_update_ps_alarm(ams, alarm_mask);
+ 
+ 	if (ams->pl_base)
+ 		ams_update_pl_alarm(ams, alarm_mask);
+ 
+-	spin_lock_irqsave(&ams->intr_lock, flags);
++	guard(spinlock_irqsave)(&ams->intr_lock);
++
+ 	ams_update_intrmask(ams, AMS_ISR0_ALARM_MASK, ~alarm_mask);
+ 	ams_unmask(ams);
+-	spin_unlock_irqrestore(&ams->intr_lock, flags);
+ }
+ 
+ static void ams_enable_channel_sequence(struct iio_dev *indio_dev)
+@@ -1060,9 +1059,8 @@ static void ams_unmask_worker(struct work_struct *work)
+ {
+ 	struct ams *ams = container_of(work, struct ams, ams_unmask_work.work);
+ 
+-	spin_lock_irq(&ams->intr_lock);
+-	ams_unmask(ams);
+-	spin_unlock_irq(&ams->intr_lock);
++	scoped_guard(spinlock_irq, &ams->intr_lock)
++		ams_unmask(ams);
+ 
+ 	/* If still pending some alarm re-trigger the timer */
+ 	if (ams->current_masked_alarm)
+@@ -1076,16 +1074,14 @@ static irqreturn_t ams_irq(int irq, void *data)
+ 	struct ams *ams = iio_priv(indio_dev);
+ 	u32 isr0;
+ 
+-	spin_lock(&ams->intr_lock);
++	guard(spinlock)(&ams->intr_lock);
+ 
+ 	isr0 = readl(ams->base + AMS_ISR_0);
+ 
+ 	/* Only process alarms that are not masked */
+ 	isr0 &= ~((ams->intr_mask & AMS_ISR0_ALARM_MASK) | ams->current_masked_alarm);
+-	if (!isr0) {
+-		spin_unlock(&ams->intr_lock);
++	if (!isr0)
+ 		return IRQ_NONE;
+-	}
+ 
+ 	/* Clear interrupt */
+ 	writel(isr0, ams->base + AMS_ISR_0);
+@@ -1099,8 +1095,6 @@ static irqreturn_t ams_irq(int irq, void *data)
+ 	schedule_delayed_work(&ams->ams_unmask_work,
+ 			      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
+ 
+-	spin_unlock(&ams->intr_lock);
+-
+ 	return IRQ_HANDLED;
+ }
+ 
+-- 
+2.54.0
 
