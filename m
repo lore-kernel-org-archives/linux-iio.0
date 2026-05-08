@@ -1,31 +1,63 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 926E73FCB03;
-	Fri,  8 May 2026 15:28:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4257F376BD9
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 16:02:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778254132; cv=none; b=JnyDLmkko1SdgiV892u1nQDtosLczUbrPiGTKckpihsUX0rvz2G/rG0CEd2jyE+XZjBVUL0d76O/GCiIGs3JcNd8GoCgp0EcPmUyuoWO9yfW1DujwPuPoKFpv7hac7vlEz43CGuXTiMcv8XhkbZf7jKzW48TP3vFVPyVaffaEUw=
+	t=1778256177; cv=none; b=WWxxy2k9Bf7PdqK1IFzp+O5nSJP2VnnwXbEO+25q1v1Qy6vqlEsACW0MtNENDjxQYl+0mRm9+lJUVkB4Lkb99p1ilPLzqCA1SBi7C+OL/NCNLJg4eKaVDsg5UN8J0NWV7EJpgViwaDZ4dYuidUnE7jzeqhhav9yF1o4sCUGKF/o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778254132; c=relaxed/simple;
-	bh=njndWHZI6Z0nobl0cD5FnartDWO+IzZ2vDq4K91Sc9M=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=d4RHkCV0foQQSh4I5jl0A2EhquLWA0eq/MolgSq48HluaUeo95KA7oHvYZ553Ob0wKYKH0A50m1WGiPXB/Xqds92cvBAy0mze4d/nmfouJb9BSgzFNSouH03DdjzsLZIFncKJSBRpVGxTCtSaFGY/Jg4AkI4tdN4MOL1cCxHkbI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GLm6Zett; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778256177; c=relaxed/simple;
+	bh=39soWo0N4Yj6sXK2uSFvuyS6lYjiGWAqMOxp0m10AE8=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=XqIb7iFoq8qyOKqCskleG2XCbo+BWSADeocxx11ERRqqMkTrWGjlIeYWUv94+OL0i3ZBoT9bXQnNz+dxYFC9zSNMlOWK1Sye2dugM/bE8hqRLx+FafiCP8eynwGv49UO793YN2v7ZIKdk+fcg9AtiyEx8ev0JIErxlRGWDadAWA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zs8krQgU; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GLm6Zett"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E13DC2BCB0;
-	Fri,  8 May 2026 15:28:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778254132;
-	bh=njndWHZI6Z0nobl0cD5FnartDWO+IzZ2vDq4K91Sc9M=;
-	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
-	b=GLm6ZettPeItRMeJ/O5URGxPjWgyuY2vvOJQ5o5vohXtdk06xplD9wyIG/OrNIxiy
-	 1u8awMOINig2cys4oiqAcyi0SqCu0kHQ8mBBQJB2L7DxPFjCyw1M1EwF7f+8zMeevt
-	 bQWHLkncdFgtQsNjAXhZUtKfmlrYl8yv4EWXnFIQER6nALUOUI6O4oB6SgB2FErqsg
-	 ifoXZjjkL/L4Da79ka9k7qMJXvJR6Of2x3d/SBIDe57RxrPTQJQPdxg5PRdrWcL9zv
-	 /0NaTpoFPV+REIS6b/iVtFYAnydr9ZteAZcshPXCzqkceTCluK0Gxu2ZAHJdIYpgAv
-	 ug+nncTgC+75w==
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zs8krQgU"
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-7982c3b7dfcso22498807b3.0
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 09:02:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778256175; x=1778860975; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1o3nVBrC6L9H/RVYpMEYGhUOr4iFE+C6Tvg94gHGLP0=;
+        b=Zs8krQgUgHscF3o/4OyKTku3xKJyJHXr5Qv1ow1VbDjpOAJIpzIWX9Z7P/pRIX5HyG
+         3sShfXeCOLmX4Ufhgc5wdWiy/E/DmK5MmgTW6oysjh5lu6Ga/7rB/X5O0iOvxRaMgwp7
+         364znSpl9VxGFlK9tuNsZKCsVewSbrDRkzvUYQpLP7pTvYHJSlpObv2e7XrNvnurEf99
+         AyUyslqPAWeh2960l0TTBeAvBV2K5lV2rLEXsRzzLP5mnhIiH6jHZyG02MfvZKrZnTsU
+         kdC1xjT/S8DNcILLJsAR5zPIm+k2VGX3cE3Ffjt6VA25NDEWLUuU+4WWglAYYF2w6qM0
+         749g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778256175; x=1778860975;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1o3nVBrC6L9H/RVYpMEYGhUOr4iFE+C6Tvg94gHGLP0=;
+        b=XPgP7oBQeqGQ9gAXqlLEGtZ1BM8prpUiKIJq/coL7Cxp7VSOa2XBy+Cp4Iq5VUHhvA
+         5ofkA1U/bY7z40u0skB8u2HJIne91g5faI4WyMlFSI0jW5airDvwITA3Dmbg5e5KH+cz
+         ZDH5cd58LKJ98YPzC/JAKZS3QWlNiX0nFu0QKJaBS6vXbtMNEUcTNdZzrE4aCBpBDfD4
+         SeczFbYA3k6nFh5m8SJH9RXMBGTVqO0IG8G/vOMt7cekJMvCFaZ5wh4W/yMwnFg1DT+a
+         hXt+tiOCxcceXUeMyViaAksspqMD0sq4lXKTX2oYGNiLl16eYESj0xmH4RsrUp9VKcmO
+         56og==
+X-Forwarded-Encrypted: i=1; AFNElJ+Kw50EDZfvxOj0Ybm8RKHPFVVVf9Q03RkVv+C195zfVTZfqGbF1S2TwoEE6bsD7aH17DfmZVDrVhU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy+O1vFfSl2VFXzHVeP8QX+m7q1OFwicjPNQFII6AOJXxT/fZmd
+	ecm0xOk9kbRxLa9ywfHnPg4f7fY5Gyvm29+hmnyHw7n/2KTL6wouHE+H
+X-Gm-Gg: Acq92OGdJe+PlwsMDbP1ooCl8CQlhzXZbFlYSKdnEGixKpe9H7cg25icdmG2jArnm2u
+	xXxQRgHovHAjBGPfulKPZ6iEu1nA0W93WkXhT0/0yO4GdgP0IS5z8MZnCPgdO0vP1VM1ZklWuKD
+	olmWVc3E/u2iAfOO5qRySfaWX+oxRDyiKFRsFXuMEUApH9xxuHhvnYV9UZpldAjC+/m6lZRYzKc
+	HAEaLPVYnin2cy0Q8+R2GN541YF+UAUtwNFnWZZoHiJB+t9hdlpOKK8VVeVFnxBKZaJ1RT9C+uf
+	VcysGI5adbY3h3weXMKpgNBze92im13DA4sQnBQ0x3oEnxS6ODTXdO5wdUQcXVZMBS6lr7QK+2g
+	UXc7M9ASTVenYWTMzrbsHFC6oZG2uH7rO7OXAWVVI0qlRi1APqBEDxUj0jWRiOIlaJ0sD3loqGW
+	dQZg4dtJEt77LHIm/WYnf/Q9FjBanGhmTKhvrzeBmplc9M4yiG
+X-Received: by 2002:a05:690c:c504:b0:7b4:6f40:635 with SMTP id 00721157ae682-7bdf5da8d8amr143542617b3.16.1778256175066;
+        Fri, 08 May 2026 09:02:55 -0700 (PDT)
+Received: from localhost ([208.185.137.148])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7bd66838851sm107944737b3.23.2026.05.08.09.02.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 May 2026 09:02:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -34,60 +66,64 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Date: Fri, 08 May 2026 17:28:47 +0200
-Message-Id: <DIDEH8M45VNJ.2983JIAEX3DRM@kernel.org>
-Subject: Re: [PATCH v1 2/4] spi: Support suppress_override_attrs flag
-Cc: "Mark Brown" <broonie@kernel.org>, <driver-core@lists.linux.dev>,
- <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-spi@vger.kernel.org>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, "Rafael J. Wysocki"
- <rafael@kernel.org>, "Jonathan Corbet" <corbet@lwn.net>, "Shuah Khan"
- <skhan@linuxfoundation.org>, "Jean-Baptiste Maneyrol"
- <jean-baptiste.maneyrol@tdk.com>, "Jonathan Cameron" <jic23@kernel.org>,
- "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>
-To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
-From: "Danilo Krummrich" <dakr@kernel.org>
-References: <20260508095224.1275645-1-andriy.shevchenko@linux.intel.com>
- <20260508095224.1275645-3-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20260508095224.1275645-3-andriy.shevchenko@linux.intel.com>
+Date: Fri, 08 May 2026 11:02:53 -0500
+Message-Id: <DIDF7CF01QK0.38MS3JFMU6RPL@gmail.com>
+Cc: <m32285159@gmail.com>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+ <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: chemical: scd30: reject (response=NULL, size>0)
+ in scd30_i2c_command()
+From: "Maxwell Doose" <m32285159@gmail.com>
+To: "Stepan Ionichev" <sozdayvek@gmail.com>, <jic23@kernel.org>
+X-Mailer: aerc 0.21.0
+References: <20260506181533.409-1-sozdayvek@gmail.com>
+ <20260507152800.9062-1-sozdayvek@gmail.com>
+In-Reply-To: <20260507152800.9062-1-sozdayvek@gmail.com>
 
-On Fri May 8, 2026 at 11:42 AM CEST, Andy Shevchenko wrote:
-> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> index 5f57de24b9f7..40e738f8cbb7 100644
-> --- a/drivers/spi/spi.c
-> +++ b/drivers/spi/spi.c
-> @@ -214,8 +214,19 @@ static struct attribute *spi_dev_attrs[] =3D {
->  	NULL,
->  };
-> =20
-> +static umode_t spi_dev_attr_is_visible(struct kobject *kobj, struct attr=
-ibute *attr, int i)
-> +{
-> +	struct device *dev =3D kobj_to_dev(kobj);
+On Thu May 7, 2026 at 10:28 AM CDT, Stepan Ionichev wrote:
+> scd30_i2c_command() takes an opaque "response" buffer plus its size.
+> At the start of the function the code already checks if response is
+> NULL (via the rsp local), but the response-decoding loop after the
+> i2c transfer always dereferences rsp without re-checking. With the
+> current callers in scd30_core.c this is harmless, since write
+> commands pass response=3DNULL together with size=3D0 (so the loop body
+> is never entered).
+>
+[snip]
+> @@ -71,6 +71,9 @@ static int scd30_i2c_command(struct scd30_state *state,=
+ enum scd30_cmd cmd, u16
+>  	int i, ret;
+>  	char crc;
+>
+> +	if (!response && size !=3D 0)
+> +		return -EINVAL;
 > +
-> +	if (attr =3D=3D &dev_attr_driver_override.attr)
-> +		return dev->driver->suppress_override_attrs ? 0 : attr->mode;
+>  	put_unaligned_be16(scd30_i2c_cmd_lookup_tbl[cmd], buf);
+>  	i =3D 2;
+>
 
-This should have the same design problem as described in [1].
+I guess we're still handling the cases where both response/rsp and
+size are zero here below?
 
-Also, wouldn't this oops the kernel right away as dev->driver should be NUL=
-L?
-How did you test this?
+	if (rsp) {
+		/* each two bytes are followed by a crc8 */
+		size +=3D size / 2;
+	} else {
+		put_unaligned_be16(arg, buf + i);
+		crc =3D crc8(scd30_i2c_crc8_tbl, buf + i, 2, CRC8_INIT_VALUE);
+		i +=3D 2;
+		buf[i] =3D crc;
+		i +=3D 1;
 
-[1] https://lore.kernel.org/driver-core/DIDE94YBOOP3.KM9I6J4JIJIY@kernel.or=
-g/
+		/* commands below don't take an argument */
+		if ((cmd =3D=3D CMD_STOP_MEAS) || (cmd =3D=3D CMD_RESET))
+			i -=3D 3;
+	}
 
-> +
-> +	return attr->mode;
-> +}
-> +
->  static const struct attribute_group spi_dev_group =3D {
->  	.attrs  =3D spi_dev_attrs,
-> +	.is_visible	=3D spi_dev_attr_is_visible,
->  };
-> =20
->  static struct attribute *spi_device_statistics_attrs[] =3D {
-> --=20
-> 2.50.1
+Should add a comment showing that this handles this case but that's
+just my personal nit. Not worth forcing a v3 so
 
+Acked-by: Maxwell Doose <m32285159@gmail.com>
+
+best regards,
+max
