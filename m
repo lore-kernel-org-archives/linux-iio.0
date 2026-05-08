@@ -1,112 +1,90 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4FE1377579;
-	Fri,  8 May 2026 06:10:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39F4829C33F;
+	Fri,  8 May 2026 07:27:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778220627; cv=none; b=blipKMtaS0wpDB2jsyxn4MWM4G24xUOE7TjuBYLdYbMcrUuS/21l+j3UXmnk4P0sZD0qRPZQRTmr0sAC1sZvLi63jRP1u7HPWUd8YqwRQOrCCaqEkszs8URJFhVstd9dhEr4ACwShQnWuJ7SnTblpxfKCdnHPJM9leVuXU0+ytw=
+	t=1778225279; cv=none; b=OphvmeeIFGIa8l1SC4Sa6VWy6zHCL68KQYv3Y2cyI+ZWcHkO6cdK392jVFXAFeUDfKp1c0J7hJJtmTGSaV1/gETC4m+w4yxI7WyyP65tcRCdCwyDQgJrnRTugDZ5A8tgivr7bAJbKiM/FTG7WbPLKIJ4qHLVmrUosPQnLWDSViU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778220627; c=relaxed/simple;
-	bh=5pqj1WIghnR1R3C025rh4ZztFhyLfaFUTqE2ln9wWHA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hk2yfPrtl0JWX2Sq5w+qfmORmO05+peI2MRdBbv07ifArcYEDNlU4/wBoLTQp3OwNpDS6Zwn2/2tc9m7dPitNpdPBdgTnUJ9Qmll+lNEw4LzCYITaVBFXYTSEfi/vdfG67aGKghyQZIdf7nP4NVVzg0sGi7BUuV3NA4tXZQqpR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iE6bBXjd; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778225279; c=relaxed/simple;
+	bh=NMZ2A0xOyVGOBW9zZwRL482D2NxfIdoZH5kzV5L+V78=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=epjqQlOb7PoX//wgci2GJyMhH7woN6XxP2Amoqm079fh8o1AltkyUuhaJ0SolHGJx58x6aydoopnIxTQXLyamkdeyff/r6Y9ldmug1bgDgvIzDZhY3arwqtXrRic3xOrVuizy83uZRQ52Zf9pONW4j/aii4ryJhcdj9XUCJetF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eE7GPVPx; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iE6bBXjd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eE7GPVPx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778220623; x=1809756623;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5pqj1WIghnR1R3C025rh4ZztFhyLfaFUTqE2ln9wWHA=;
-  b=iE6bBXjd/+c75+7v/90h7Ve6geJGHtQSVGcFLPimC1DrsUDpRsKw7Gky
-   A/+mEHfCumJpjPw8QiH4x4t9W76w3Y1Y+xfZ9hskqRQ0b2HNa5s3YLqgq
-   BwV9egcAC42wifnE/gbwe+GFZwiScvuAWhyyJHJumkF0MtF6J+KXEhI9m
-   vXatRJkK/Nb6TBcNV9INWLf0rP3hv1PdfNirBlf/HmFGJeaBa8LIkT6+5
-   fFmFygtbaa8vLgSHhQTdo6maivQIumS5iUf8wkAqkFXLA3ZA3nlbQ0w3M
-   pFmQqrPVrMUZfynte2CJAiekeiO+e3gP8cGDiVPB69yFE6no8hI0WVGDJ
-   w==;
-X-CSE-ConnectionGUID: kUPkjqXdRDSnKLGlcT9o2g==
-X-CSE-MsgGUID: vbPb7viXQqOtsdcMWnrhvQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="83031378"
+  t=1778225277; x=1809761277;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NMZ2A0xOyVGOBW9zZwRL482D2NxfIdoZH5kzV5L+V78=;
+  b=eE7GPVPxgUe+ivJThlxpRmLb2YenZHBUfAyFRlG6FBcmzkVUk0vQPhba
+   EHNBRPUCAhGYPAnO87cZvEy7gOf6+o/N95cuXsUWYKIKMh+Sw5qcqcWNP
+   1SsUSO0Axu5Rfjq/tvcVTA00JH4jxTe9wy/raHm8K5a4Hl5+gCT+yiXfw
+   aFISVKK6BDdbA7j1Wmdrnsv5222a6bc9ctfxlZZ2nOtcqmFDVgdMvh9Vx
+   N7fu3JENO67ImOFfNZlHAl5uQaAE6LcF79xrMkF0tHabwMRiguu6h1ZHe
+   MOxhMu/Zfjh99i67h6XxPbtGDFFbIxP793F8gPgVTUamtMOXN36uqGpEy
+   Q==;
+X-CSE-ConnectionGUID: CHBssxnxQOmWzQfcpj/HDg==
+X-CSE-MsgGUID: ZxwGkrviQcKN5VGZopMyvg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="81751842"
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="83031378"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 23:10:05 -0700
-X-CSE-ConnectionGUID: ys8JQPBoQOCbt/QTuccuZA==
-X-CSE-MsgGUID: HS4NQ0K8S/SY+YBjWgt6yA==
+   d="scan'208";a="81751842"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 00:27:54 -0700
+X-CSE-ConnectionGUID: gF9FA4tYSluk2mk47zi+jg==
+X-CSE-MsgGUID: apVU48TGTO+jm3ItyuOokA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="240669070"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa003.jf.intel.com with ESMTP; 07 May 2026 23:10:03 -0700
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 916BE9D; Fri, 08 May 2026 08:10:02 +0200 (CEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 3/3] iio: magnetometer: yamaha-yas530: replace usleep_range() with fsleep()
-Date: Fri,  8 May 2026 08:08:35 +0200
-Message-ID: <20260508060958.1086818-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260508060958.1086818-1-andriy.shevchenko@linux.intel.com>
-References: <20260508060958.1086818-1-andriy.shevchenko@linux.intel.com>
+   d="scan'208";a="241702556"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.237])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 00:27:51 -0700
+Date: Fri, 8 May 2026 10:27:49 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Santos <jonath4nns@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	marcelo.schmitt1@gmail.com
+Subject: Re: [RFC] iio: adc: support for multi-device aggregation
+Message-ID: <af2QdVmncMtTS-Yf@ashevche-desk.local>
+References: <af0EGv172ZMl/6N5@JSANTO12-L01.ad.analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <af0EGv172ZMl/6N5@JSANTO12-L01.ad.analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Replace usleep_range() with fsleep() to allow the kernel
-to select the most appropriate delay mechanism based on duration.
-Using USEC_PER_MSEC makes the unit conversion explicit.
+On Thu, May 07, 2026 at 06:28:58PM -0300, Jonathan Santos wrote:
+> Hi all,
+> 
+> We have a request to support multiple devices tied together in a single evaluation
+> board. The goal is to be able to read them simultaneously via the IIO framework,
+> while also controlling them individually. Currently we have two ADC devices that
+> would benefit from this, but there might be more in the future.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/magnetometer/yamaha-yas530.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> To summarize, the devices share SPI pins such as SCLK and MOSI, but have individual
+> chip-selects and MOSIs (we can consider individual SPI interfaces). The ideia
+> is to allow users to aggregate these devices so they can be read simultaneously
+> from the user space.
 
-diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index d6efa8a595b0..75ff2ba0c23f 100644
---- a/drivers/iio/magnetometer/yamaha-yas530.c
-+++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -1317,7 +1317,7 @@ static int yas537_power_on(struct yas5xx *yas5xx)
- 		return ret;
- 
- 	/* Wait until the coil has ramped up */
--	usleep_range(YAS537_MAG_RCOIL_TIME_US, YAS537_MAG_RCOIL_TIME_US + 100);
-+	fsleep(YAS537_MAG_RCOIL_TIME_US);
- 
- 	return 0;
- }
-@@ -1426,7 +1426,7 @@ static int yas5xx_probe(struct i2c_client *i2c)
- 		return dev_err_probe(dev, ret, "cannot enable regulators\n");
- 
- 	/* See comment in runtime resume callback */
--	usleep_range(31000, 40000);
-+	fsleep(31 * USEC_PER_MSEC);
- 
- 	/* This will take the device out of reset if need be */
- 	yas5xx->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
-@@ -1565,7 +1565,7 @@ static int yas5xx_runtime_resume(struct device *dev)
- 	 * for all voltages to settle. The YAS532 is 10ms then 4ms for the
- 	 * I2C to come online. Let's keep it safe and put this at 31ms.
- 	 */
--	usleep_range(31000, 40000);
-+	fsleep(31 * USEC_PER_MSEC);
- 	gpiod_set_value_cansleep(yas5xx->reset, 0);
- 
- 	ret = ci->power_on(yas5xx);
+This paragraph contradicts itself. The they share the bus. The bus is serial
+and can't do at all what you are describing. Try to rephrase, or forget about
+this, it's simply impossible.
+
 -- 
-2.50.1
+With Best Regards,
+Andy Shevchenko
+
 
