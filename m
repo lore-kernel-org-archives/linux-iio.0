@@ -1,119 +1,139 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6FA624503B;
-	Fri,  8 May 2026 04:44:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 813F31B6527
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 05:18:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778215489; cv=none; b=cFR49XOkYvx0QieiKn28i2vnxd+nLz3f/lQIHmq9r/opIaXuQ7GZzZ+jefXQtA9bKLxdOWOfd6oPHHA+uRyiktbfyfeChkBM9v38QNftYyQgayLhgK5ukQwoScx65KOq8ofUZYdA6KPlOeYT3RwvU4pJ7ikn1tc18FkK3c+fy/Y=
+	t=1778217484; cv=none; b=uWdv0r6V+kRwrwxR9Kvn1bSMnPVG7DlTKu2wKp+f2VBEDUkGIE56XQepkkeyeeaKsNKT2B+Xtsl4O8wLES8CSuEqc+lK5BlxbalVuEFMC73/yq6M0phZVYPFrWVZoFmDQQoPUkf5dIznb97OUSHDHWrhpoPdbIo9rh+K9r9kUbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778215489; c=relaxed/simple;
-	bh=WVcZmcrMUcQSLgmbj20gn3L9v+Hk/LfU1kizlZqcX4s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dLbMP5Yv5B5mDTT8+7NMHc1LsR5wynhjKP6+q7flc8dLn/7LCzdwY9od9+lGpD6RFxlBxkhoK0zvv1r7GFg1RZu4hFB950GoMen8ECocB8P3J8Sxg1CDi6IU6MLa8Z5i3q/G3I/3rMOP69qCkuX9UrZqTrJt+HwAPe8gElDpFKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K02TKGZt; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778217484; c=relaxed/simple;
+	bh=W6rZL+pdGHSkW1VUQLDy/28JOv4SjWY8ND02XLZ/b54=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=gKjoxNGIl7nunNgGF2FAZEje8QDlwtXgoe7w/urgiDVpmAjg8BemawWh4OUtHQ4uaUM0U9gNPrqso047MhIZUZdu9FbXID0zmwRjdWiWkGC7rKkC3/7V5CcHnuM+cwtg4Yqrpo2QKtq9HLhmHsvfTRznwxdBE/4sk3aSJ+VL8JA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=symu1R5t; arc=none smtp.client-ip=209.85.167.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K02TKGZt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778215488; x=1809751488;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WVcZmcrMUcQSLgmbj20gn3L9v+Hk/LfU1kizlZqcX4s=;
-  b=K02TKGZth7UhOWWBc3o0arQ6/ncnd4HYIHMM5AZ2nVhs2jUATXJ+M2zw
-   znDcM0o3Nq+iE7JJMjyUrfs07frt8BlD4lqB4qHq4VOF7Th+Kevs7Rqux
-   yhQZVoZDkXPxeeUu9zsudMknMq+7+oXPRkxeRaqPGxPVrasRQlciu6ztZ
-   6IiM2PI8MSXzdrOZ10C9zokdjDnPbxGeB8ZRwpEIVUECt6gdegR/VFVac
-   Ryk+UM+qsg40jGudXvklcOdWlTjkC5SokjoMyFvETKFifOuTx1XPACT3z
-   wSrBaO3azuNUZh9BUnNNd80gtBw2xjSDBKYUQ3/FWbuOuAeUh6LSun5nm
-   Q==;
-X-CSE-ConnectionGUID: VPTQXlkGT9yIvieho3H3gg==
-X-CSE-MsgGUID: eJG3IhviQt6y5UoV8Dmjvw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="90558477"
-X-IronPort-AV: E=Sophos;i="6.23,222,1770624000"; 
-   d="scan'208";a="90558477"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 21:44:47 -0700
-X-CSE-ConnectionGUID: qEVbJLo2RyKB63FiqhsKMw==
-X-CSE-MsgGUID: ua4RiqMJQ1O91HqbJZ0jlw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,222,1770624000"; 
-   d="scan'208";a="232309852"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.237])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 21:44:42 -0700
-Date: Fri, 8 May 2026 07:44:39 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH v9 2/6] iio: adc: ad4691: add initial driver for AD4691
- family
-Message-ID: <af1qN1Bvio1v6TKG@ashevche-desk.local>
-References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
- <20260430-ad4692-multichannel-sar-adc-driver-v9-2-33e439e4fb87@analog.com>
- <LV9PR03MB841460307B0CF4C6F267A631F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
- <20260507151549.61e4e8fb@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="symu1R5t"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-479dd56d016so1099062b6e.3
+        for <linux-iio@vger.kernel.org>; Thu, 07 May 2026 22:18:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778217482; x=1778822282; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=APrwum3xfFopkj2EbXKDUBAUTbsa7J6W3fdDH1HbIxM=;
+        b=symu1R5tsIqqcBZr6NbmaxDupM3K6axO75mQf3bgaV8cN9JLEbsjMcF3yWjOihgE6W
+         Q4cbWm1OWwSMEnJRlGoi4WYljEigxT/x5sNX1/+2dFFzcWRARK/EoukTb9FScNEpQm91
+         UCm9+3KtUPYj7p9LWrPDSrmSx/5qsae0Nqz1IEypPcqoEHzyCsi5roMvsnMo3/YAAYk9
+         RgVoQeTRXJ9plaOmzW6xIGItZFjUoaUGrkZt2/medbCtuxcpKKqQNJvAaeKwt/c/INY7
+         /SDmhiJylrxenkbloqDXsfxWzexnNthp6VpJJQCAu2iKj+3aELKwJTxDjoG+al2pznHn
+         aYeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778217482; x=1778822282;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=APrwum3xfFopkj2EbXKDUBAUTbsa7J6W3fdDH1HbIxM=;
+        b=CDFoMYwuEjwM/oJaMIxx1pS6g/jNZbnxetCuCcdgsomLgLZ+boNFO0BhEORviCo2X0
+         LrwpYbGpruNRfR3Bw+jMuhtvjARPrZfoL5DRzuK9yZvUX3cRkXMeHofqTyqjxTyBbvbN
+         AVYLnqbV3RTcu8ln2Flx7gJQW+h5d6eicLJvTCfm2A5ySA29lbZQnoUwcMWUXBgmLg/l
+         zjpp+1NdsSxT92VXWBAOEf/v/cJkPH1mD9OMCRjbmWWhAXBCWBKyi8nYCMX2fX/WZtph
+         mx35bqGvAzwwMMhN+3/LncT5RZ9nf+7LiTOvh+g5iOpRxblWxb2kWVCTCYtWvyPM0Moa
+         ZUxg==
+X-Forwarded-Encrypted: i=1; AFNElJ+HxbMLIzyr4qjZ2DYYnSQLJ9hKSc73GuFAKngqpfX1x9Rg2j2mv6jKYYZQakbTjMReqvwbBTNyNns=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwLeiCvlNWPb8UaGYmsszeULRiE411h0oE9MYYYTt/XvLDPOPrU
+	FFiaG31HjTpAChZgyqJVZM7rTUtbVHRuCVi1VIabdxs7paF6O8gu6SJK
+X-Gm-Gg: AeBDies6tfW0wVBfN8NGgDgtVyavqZ1PlfLf4kNtYciDWBA41BM5a7fD5lXSqrvb78R
+	9AtpxmlTS/MjxOXkOKDCw8h/CAhIPR/7WBjUizIespDhkov5vd2x2g0b03SRbHAdtKCYH0E4KjA
+	1PfsyfOHcxDwOuVu7tXyQrHHm2vYi9Y18z4YpmTqucxyp4mcy/7AV8q3iQ8462WQcT/adEFusvA
+	lE+gph7IZ0WXYbX6j8mlCIyj9PPyz07NKg2yvXQ6MPomIIdSltNT4jgzWB9iUy6E6i/PZIU70o0
+	9kMfgE5wiEzAGOJMiQjJqCllmyVM3Zw7ZfPc84MOf51/Lvc/xSUXDcxR5ZTVwk6c+LhcaUO5SfC
+	Yab73eUTQEjajx5L5AAxWWrZwSvAObp2XCNDAzbRUI1AMkVDACbEhrST+ZPXHovixUvqvbN1i86
+	sr/u00ZTpzsm2rMh7O+O6vRYOQnwXs9gt2NUmzs9L7Re2s5pQeLDyjMs69Xyv8E9ZiBw==
+X-Received: by 2002:a05:6808:bc7:b0:479:de32:b310 with SMTP id 5614622812f47-48041e56648mr6576848b6e.0.1778217482378;
+        Thu, 07 May 2026 22:18:02 -0700 (PDT)
+Received: from localhost (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e367dfb66csm522566a34.27.2026.05.07.22.18.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 May 2026 22:18:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260507151549.61e4e8fb@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 08 May 2026 00:18:00 -0500
+Message-Id: <DID1HLASZ0VS.359G8NOYVYG0W@gmail.com>
+Cc: "Guilherme Dias" <guilhermeabreu200105@usp.br>,
+ <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] counter: intel-qep: Replace manual mutex logic with
+ lock guards
+From: "Maxwell Doose" <m32285159@gmail.com>
+To: "Joao Paulo Menezes Linaris" <jplinaris@usp.br>,
+ <ilpo.jarvinen@linux.intel.com>, <wbg@kernel.org>
+X-Mailer: aerc 0.21.0
+References: <20260508034057.23595-1-jplinaris@usp.br>
+In-Reply-To: <20260508034057.23595-1-jplinaris@usp.br>
 
-On Thu, May 07, 2026 at 03:15:49PM +0100, Jonathan Cameron wrote:
-> On Thu, 7 May 2026 09:26:00 +0000
-> "Sabau, Radu bogdan" <Radu.Sabau@analog.com> wrote:
+Hi Joao, comments inline.
 
-...
+On Thu May 7, 2026 at 10:40 PM CDT, Joao Paulo Menezes Linaris wrote:
+> Use scoped_guard() for handling mutex lock instead of locking and
+> unlocking mutex explicitly. This improves readability by eliminating
+> the need for gotos and by clearly indicating mutex will be locked only
+> when execution is in guard scope.
+>
+> Signed-off-by: Joao Paulo Menezes Linaris <jplinaris@usp.br>
+> Co-developed-by: Guilherme Dias <guilhermeabreu200105@usp.br>
+> Signed-off-by: Guilherme Dias <guilhermeabreu200105@usp.br>
+> ---
+> v1 -> v2:
+>  - fold the commit message properly
+>  - replace scoped_guard() with guard()
+>  - remove unnecessary comments
+>
 
-> > > +	st->info = spi_get_device_match_data(spi);  
-> > 
-> > "Is it possible for st->info to be NULL here?
-> > If the driver is manually bound to a device with a non-matching name using
-> > the sysfs bind interface in combination with driver_override,
-> > spi_get_device_match_data() could return NULL, which would cause a NULL
-> > pointer dereference later in the probe sequence."
-> > 
-> > Agreed, will add the NULL check with -ENODEV immediately after
-> > spi_get_device_match_data().
-> 
-> Andy, you seeing this one?  Looks like we are putting these checks back in again.
-> Whilst anyone forcing a bind like this is onto a looser anyway we shouldn't
-> crash due to a null dereference.
+If this is the v2 then the subject should be:
 
-We should find a way how to disable that combination from the start. The driver
-makes no sense to be instantiated from user space. Actually most of the drivers
-nowadays should not be bound to the devices without driver data.
+[PATCH v2] counter: ...rest of subject here...
 
+You can do this by running git format-patch -1 -v2.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> +	guard(mutex)(&qep->lock);
+> +	if (qep->enabled)
+> +		return -EBUSY;
+> =20
 
+Would recommend putting blank lines between guard(mutex)() and other
+code, Andy usually treats the guard()()s as separate things.
+
+>
+>  	pm_runtime_get_sync(qep->dev);
+>  	intel_qep_writel(qep, INTEL_QEPMAX, max);
+>  	pm_runtime_put(qep->dev);
+> =20
+> -out:
+> -	mutex_unlock(&qep->lock);
+> -	return ret;
+> +	return 0;
+>  }
+> =20
+>  static int intel_qep_enable_read(struct counter_device *counter,
+> @@ -226,10 +221,10 @@ static int intel_qep_enable_write(struct counter_de=
+vice *counter,
+>  	u32 reg;
+>  	bool changed;
+> =20
+> -	mutex_lock(&qep->lock);
+> +	guard(mutex)(&qep->lock);
+>
+
+Again (and so on and so forth).
+
+best regards,
+max
 
