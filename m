@@ -1,80 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5903D090C;
-	Fri,  8 May 2026 09:53:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 454AE37C0E1;
+	Fri,  8 May 2026 09:58:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778233993; cv=none; b=KJ6tp54y8/k6fRW3soKTItoHPfmxtyQvEC9VBKWgW0bL46RcfEBW908jthG7VqvSfCrWqZmh+sdn3fC+doU+U4DvyDvHlnBR7IZDipGOR5IHW50gVwGTIZCOlxIBqy8awbztX5tuDRSA3EQNaHj4EtH5FQnp7ZVisfZ5XdxgETU=
+	t=1778234304; cv=none; b=gFSw6xqcoQHbLOYJGQSPSwPgxNQ/wZvi6BXZfjBSImRwdMu3tVZYKvSfWFjVhII5QLGX5yNNFzPg7U3o69vlKpRBImE1p0WwuYkRTyTWMClXKovH7BIgt9+Vgs1I3yNtQ755qD8ITMor8Z/COUFIx6FUvhbSFxW7QBxFtvXLnmI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778233993; c=relaxed/simple;
-	bh=+tVHEo+/Nt03Cy9uyxf775msOIXb0KrcIitMV3PtYbM=;
+	s=arc-20240116; t=1778234304; c=relaxed/simple;
+	bh=1HAGahbBOcrkVACYKbjOCX60vAQb2Da1hcbOoqaetn8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=plgR6YovXSX0LCaQnploslSMziJP7G6mD+4ug89cbZz4LU3jy6lGkQX6PztczaZPWmf6ed7CXj+Nk1O8Evk+toDY8ECsyziNVManGzNDHIcGOIp5TUqSqJws3nf0mZ7Bv5+E4eDbX0OndqRseI8MUvVPvTSGjPqA8+rf8lwnUpQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L8o0cLcR; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yril7UMRsnh9WQghCViFFbO20K0iMSd1aTDtsLeXOG/a7richc4QFgA8NSM7e3H+aEynlkttJonJqpqPzBDYc6lX9ku3wVQx112G2mcgV53dsbbVECl4AH8C3DBpwTYRSYUOf/TqT+M3B6+8yL1sgRKs2ob2RRsRalNxKoMR70s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RL3p05Pn; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L8o0cLcR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RL3p05Pn"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778233991; x=1809769991;
+  t=1778234304; x=1809770304;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=+tVHEo+/Nt03Cy9uyxf775msOIXb0KrcIitMV3PtYbM=;
-  b=L8o0cLcR8/+Ji9dEyyusWw8JE9VO9IYnOvie8VBCre69VtYcY+XaNNri
-   9+sYjWieNgacBfY0uwkOug5RFdaUY47aL0SUpLNDX/pdpkEp7Tdiq8y1U
-   03qwo1GZUyQGbLRN07qJbARteozW4GlqClAxIKVNp467xZNxa2gDDjnqv
-   wMQ4BwP8B+QiPUcLTHOr5F0sF3nRhYM4AtkhUz4Gic+YYsiKWmgj0mydk
-   K3FJO4kTOO8ilEtNK4EEdDp082Zb9UjWwAbqsAHidJU4lvJTrCEW4TycD
-   f041Kfug6ZvmeuJ5wsjo6VKHWk92taOOboxDP/Ckp3q0FWNkP5uZzaTtR
-   A==;
-X-CSE-ConnectionGUID: cW21zshzSJ6CEe4k/Y8IHw==
-X-CSE-MsgGUID: B1y05kuOQ2+qI+SNmd3lcw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="79219248"
+  bh=1HAGahbBOcrkVACYKbjOCX60vAQb2Da1hcbOoqaetn8=;
+  b=RL3p05PnEVzPhZuCGhAnkihKPCHK4FThy2XH3SUqp3S5L/2seSpAf6mw
+   3tO+WSKj30OwXU5eXSQPVdzH02qL7hzeZ87tsArWW2Eb4fh4fcfeKrZT1
+   uwK9iBkTPaAAiXs0BxuoMF1/6wUZQBIItPM1UT2Y+Jr9WfYlVA2IqnLn0
+   ynzzyvONKvvxDAN9eYoaksPCxMbr1IysAo6OvN1YAlqMm9g1Ob/8RBVWv
+   LBlk4KXZEXAHabvQicUsC2AB++OR2cWyNFlEEDwsNkDbFApZ3F3QT7wor
+   6h3XwKXKX72/Oc8FysGD9TVntnRF1sVBPaPY0hYz0XzAEm2voxxEdB2WV
+   w==;
+X-CSE-ConnectionGUID: GY+NKC30TUOZez0grauCgQ==
+X-CSE-MsgGUID: vGJWaw13Q1KXEdMe/Z/wUQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="90301530"
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="79219248"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:53:10 -0700
-X-CSE-ConnectionGUID: XvaFWmBrSKWiKFgv0ISKSg==
-X-CSE-MsgGUID: yzycu+dbS7avcCqVAVipGA==
+   d="scan'208";a="90301530"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:58:23 -0700
+X-CSE-ConnectionGUID: tqxAwIURRducGySlwU4Waw==
+X-CSE-MsgGUID: mMoe8XlgT1eDxSkH9qIJYQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="267101041"
+   d="scan'208";a="232192415"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.237])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:53:04 -0700
-Date: Fri, 8 May 2026 12:53:02 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:58:20 -0700
+Date: Fri, 8 May 2026 12:58:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: joshua.crofts1@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH v9 2/6] iio: adc: ad4691: add initial driver for AD4691
- family
-Message-ID: <af2yfhe3vYOAOOKZ@ashevche-desk.local>
-References: <20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com>
- <20260430-ad4692-multichannel-sar-adc-driver-v9-2-33e439e4fb87@analog.com>
- <LV9PR03MB841460307B0CF4C6F267A631F73C2@LV9PR03MB8414.namprd03.prod.outlook.com>
- <20260507151549.61e4e8fb@jic23-huawei>
- <af1qN1Bvio1v6TKG@ashevche-desk.local>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/8] iio: magnetometer: ak8975: switch to using managed
+ resources
+Message-ID: <af2zup3PFlgs2DtE@ashevche-desk.local>
+References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
+ <20260507-magnetometer-fixes-post-pickup-v1-3-37827ca68fb3@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,37 +64,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <af1qN1Bvio1v6TKG@ashevche-desk.local>
+In-Reply-To: <20260507-magnetometer-fixes-post-pickup-v1-3-37827ca68fb3@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, May 08, 2026 at 07:44:39AM +0300, Andy Shevchenko wrote:
-> On Thu, May 07, 2026 at 03:15:49PM +0100, Jonathan Cameron wrote:
-> > On Thu, 7 May 2026 09:26:00 +0000
-> > "Sabau, Radu bogdan" <Radu.Sabau@analog.com> wrote:
+On Thu, May 07, 2026 at 04:35:52PM +0200, Joshua Crofts via B4 Relay wrote:
+
+> Switch the driver to use managed resources (devm_*) which simplifier
+> error handling and allows removing ak8975_remove() method from
+> the driver.
+> 
+> Note, on error path we now also set mode to POWER_DOWN state which is
+> fine. Even if the device is in that mode, there is no problem to set
+> that mode again, it should be no-op.
+> 
+> Additionally, remove any pm_runtime_get/put*() function calls that
+> dummy cycled the counter to autosuspend the device.
 
 ...
 
-> > > > +	st->info = spi_get_device_match_data(spi);  
-> > > 
-> > > "Is it possible for st->info to be NULL here?
-> > > If the driver is manually bound to a device with a non-matching name using
-> > > the sysfs bind interface in combination with driver_override,
-> > > spi_get_device_match_data() could return NULL, which would cause a NULL
-> > > pointer dereference later in the probe sequence."
-> > > 
-> > > Agreed, will add the NULL check with -ENODEV immediately after
-> > > spi_get_device_match_data().
-> > 
-> > Andy, you seeing this one?  Looks like we are putting these checks back in again.
-> > Whilst anyone forcing a bind like this is onto a looser anyway we shouldn't
-> > crash due to a null dereference.
-> 
-> We should find a way how to disable that combination from the start. The driver
-> makes no sense to be instantiated from user space. Actually most of the drivers
-> nowadays should not be bound to the devices without driver data.
+> +static void devm_ak8975_power_off(void *data)
+> +{
+> +	struct ak8975_data *ak = data;
+> +	struct device *dev = &ak->client->dev;
+> +
+> +	/* Only power down if currently active */
+> +	if (pm_runtime_status_suspended(dev))
 
-The 20260508095224.1275645-1-andriy.shevchenko@linux.intel.com has been just sent.
+Is this one a correct one?
+We also have pm_runtime_suspended(), which is different.
+
+> +		return;
+> +
+> +	/* Soft-stop the chip before hard-stopping the regulators */
+> +	ak8975_set_mode(data, POWER_DOWN);
+> +	ak8975_power_off(data);
+> +}
 
 -- 
 With Best Regards,
