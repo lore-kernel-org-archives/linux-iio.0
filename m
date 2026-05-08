@@ -1,113 +1,259 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BAD6358D00
-	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 08:59:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778230767; cv=pass; b=alpKewudxkmAc1OQmHjYBDs8M+ipht/iJCFOysW5NkYO5SGoCFaUUafBZgNfbR7XNKq0jLxwkb5hPEiAjrB+aLKB2Hd4DKV7dUYl6tDSb8gLNOj3MwAl7FObe7nBEadUdKu5yZzbQ9k5bCeJ109y1H68Ft++QhyiolRCsa7fFUE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778230767; c=relaxed/simple;
-	bh=S27xcr+AKwTOb6B3f7YowcI+Jq6zDXhjtTI3ucdlaVQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JWgbmuxn87HMowSeSIfmPvBKfqrD3als5Qm8U5/wZ544km5QC1yWMJ8knyIrmcBo47/ueYzQ9/stztZiUs2M34u258wHEVnYbGknvrYQkiM7eEXy/GopX0ZVZwjcwI6Cx8vXVLmeZHLGgR6EnrECSEkCxAVXO8oK/+yNTpqwx+4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bqgbk40D; arc=pass smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1686E320CD1
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 09:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778231068; cv=none; b=TBmCtLIBErzVbWt/5DqMpn8BgAiGMua+NjjD4wlFD38IaeIlAzHLUker+6XeDhJXUATrKXvJ57x5AJ+mw4iL1Gh39V4c/hoj8FJVll0EP86TRTPKplCRttp9+7/TuYK/zzCitwyF5peI+TMAZgzuTtSthir4yCqkh7EzIMz7qrs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778231068; c=relaxed/simple;
+	bh=RqoZ2lOUwXipev1wOwfjPIj281TjpHRgFncmUuFnWwA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=o7ddmqO2iLXbAMRR9xsILBX0h5G8gPRL4OvenmltfJJErKmb2ddp973FPDScISUfusLUwdHbJ7xDGpstZyLEV8Zo6j4z343za9M0jE1HWbR50+tGNraw4x5IaJ9YZTSoKY1N1qsSa0mZmd+l/hvV9yx0i9Y24d7BRyvrWj/LJ+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V/YkDuvD; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bqgbk40D"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-4526a8170ceso982095f8f.2
-        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 01:59:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778230765; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Jftb7tDCdoRlUqtJb09w8NcQB1ciQOs+xFCegNam0jxuyahtcW6qWKhgI/P5h937OX
-         KB/2qjs7DSEmmRgZLIizbFnqMgXK8qr6StZZVGmW1NysJyjxFswrNZjJPnLzj22emNY0
-         4Uri6LE+CZUAr1K3BVthZ/th1lkB6cSICobZi9xq6v4bzm8u/kwaQUN1N+K/jQN9s+kh
-         78PbZZT136KI8xXFtJQYjnI9weRZBZO8dftNAl2wVp63U3tKTagls1lZdjiCWQYuUBZU
-         nafvNLurGGdJAlXG+xSU9DzEwntXDKO60tLkHQEG/EB5MPv21UWkO1e6oHKgvoQzVDFB
-         0dNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=f9Blrfbs57Bq7f60RjI+2NCiXLCZ4KpSESmXYbDP0zM=;
-        fh=L861fFHxiwkhx+eLxmAZ56GbN1WpnwSQRyJ8D6PynS4=;
-        b=E4jA7scTSH5NrX+LA+P4jJFfCUvc9oqk4byaKUlLPrzu9bg0WycLMIg0auFqmlObuk
-         g37nFJQE2vXuKN9b1s+Hcc7Elth/vOz09qtPvQd2eYoWTTzg60+B/KnIrPp1pF1ESNES
-         uuez3fOhinDy+QinUpxlYcoSAT+uXwAXuw2ksJK+bBAtbaI/ijcTB/wjd2nJSkdLKOHk
-         JUCtKL9H1CwCY51nPZfCTM3y6byR79fAXxlbUsyyhpu2ZiGgEpcbrDcN5PdoRurSirjD
-         4nNh5DvFnS0VE1nyr4ASLaKxCXYQvaOqpcF0W0RuNxIULAWh9GE8smZ9r68i/x0w3bYz
-         LfOQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V/YkDuvD"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-488b0046078so14605815e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 02:04:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778230765; x=1778835565; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=f9Blrfbs57Bq7f60RjI+2NCiXLCZ4KpSESmXYbDP0zM=;
-        b=bqgbk40D+NBVhSkSykIY4ZCMKznaUktaYslE+Ukhu6AhEJJVzAz2mzkQbeGO8xQG3w
-         /21SBDMjo3q8pBQP/G/pxVE5nqQ6HTXRGPcpeDPhyDsEEU1QT+KDTaqilzXZijNGWh1w
-         7zmHWJWMNz9i4FpmNxYHT1PfIw9w8Hkv35QOuYGffO5JZYSiR2SaML9vUn1hOGzHpLut
-         2pDS94llWYwi1Mx2VP8o+3E/9Jr0JSkUgKPPAEJHpSrokEZos/dpzP0q+ZOdlnReKB3a
-         W5PSiwT6inqRStnygK/eS1u+hM/eXjnnPAv1uFxohKNCylyNnra0WiHk1pcw9ZhpnAcB
-         N12Q==
+        d=gmail.com; s=20251104; t=1778231065; x=1778835865; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=RxKVhgDyrbibIlulRjrEdhEm0lLtD2F0pBS/KgkRV2U=;
+        b=V/YkDuvDkl/VCE8my7JmHIyGsauA4wiWmf0AsMTI/QwZiNjTAOWiMq9kDLaWPFf3fo
+         vrYq4h4h8BZ58SlQJl7JmERaLRFoh7Gf9gn1q43oouSbheANPkCNvDUjHcgLTLfuqyR8
+         Ar1P6QZUpSpxHEfSekorb6zAcn6K+zgvJPzYEBv4w7ngtWewQhyWGg+IcOXHm18k0aYB
+         tvS23jfl1LGFi0EoqERWlo+DRBwV9b9hCbRH4gH8BHlESAShUoZnz1+tkLJGyn3AtITM
+         fEHK5hj70gFcxSkxifcZuCuKGGSMygTAzqiNpPrH93d7hLgA82iiIcy154lt4LJsf5pF
+         MjoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778230765; x=1778835565;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f9Blrfbs57Bq7f60RjI+2NCiXLCZ4KpSESmXYbDP0zM=;
-        b=XFJDWVv9Rfabg3MRTE5jOUzex9N4tx7fv0rcg3s4YY7LqcbCjvmPspDNxwCYrCP8ny
-         vxEUGEcdNUkIJ74Eg0/CHShj3FfidBfQsZNzXNG/l5GCsu3pCseZqu2AW7S0u3HsKgO5
-         yyEGniHVoiEB4ObA+mXGYo1rMEWflE3vLbXbkJMTnYADMrkAqXwJPZuTOiOfHrTC4FI1
-         BFkVzCOXxhRcfTSeRlrKtal8a6SSTJqPdoiuPGQ0NZz15OWdmA5brgCeMsloJAMaJjv4
-         zhgMlTVrWd+H7KdWHOm1s6/wT1OfGWATVc1leEgh98Kyg4x1Rp24meJjrdt2ossY3pYG
-         c/Xg==
-X-Forwarded-Encrypted: i=1; AFNElJ/0MAm6sPpoQmVYsWkKo40XFoXSXNxnAbIG3APkidtgIc3bojilT1AeZq0IxSrusnBy6bszmwTiwXs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyQQmGVKIjAzcQ9chy6O8ujCBD5kbAagXrLtxJyhiRbTmk9Nc/O
-	Tpmi8jPSJHVQz1YQdUfdTOVNwjySQ7soC7/eNWG9L6Qz9Zjy/znylkqW5chFUlDpOyGpxD6BMsC
-	lRHDdi+PKAfel5WHSnuUUH6mQnHU6FI8=
-X-Gm-Gg: Acq92OE4kV0wg6kyz1q37P6Uf3oQSFelnUyDKeRrFpzzzsG7qMHST9cREySFauzzO02
-	wG/3XlgMCsc3yxKH08EG6LRhxllFHGxlPUn55t+0l2XHi5Zqie7PJTerPu06Ieuf37i81mQEm8g
-	aSJTD6HokZOsEAcd6V3UIHODwV5ftChmGGkB4RoCfCMrb4Hl4WLBVmHM7th7AOZMyjiY6t5fRwC
-	uujU66bU69DKCW6MvHk7KTmXfXAT3b3LfYPt991EggZldkMxat0oToqw9IadhwiElMInss2e1GY
-	PpmsfBs0x64FKVlFnJaAXxKoMbrftoFssMPBOcJq/OKku1g+K6FOsdaI0VM1hhH3S8KM++MLXyw
-	oSNdaKTBxuOjadSyH57pSPCs74lzBBzaImS3aWh4NJFC3KbHqaWWeWhMVTMfkwbPGSHsRBGlfiQ
-	vnOq7Lx3Mp5MOq33PR5V9gkQUGVoH2jbpqjcKu3Sd2ff11dvWDEg==
-X-Received: by 2002:a05:6000:228a:b0:44f:d9f8:bb9f with SMTP id
- ffacd0b85a97d-4515da9781fmr18143607f8f.43.1778230764462; Fri, 08 May 2026
- 01:59:24 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778231065; x=1778835865;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RxKVhgDyrbibIlulRjrEdhEm0lLtD2F0pBS/KgkRV2U=;
+        b=lI4Azc1Bb/pWHkAA2ABZbZHAtVe1QV4ptmuT8VixoMSh1mFggDOM60fKzCxUxltlw3
+         IPc5yaBWkritiD1712VCDCQHpZ2Q+oEBmTvz+ziJkaQL/OAMzCHFSdUAcfciiA1R/HET
+         g99fvxh4tKDHwh3fy4sfAmhYWoKP3h8M7A18cw6OJzqt2OPRpYt/Dk5sXoR9vWKMcwNW
+         ZXhUnZ+7XVzdrpM8xI5XKUGcE//6FqMDU0mNoyuR+tzD38kUKcFAKmZbjLq2MledGIw3
+         k7gvA1obHJg62cQdMOrctaUVc3aahtuWY3GRqstpd4Xb02QZS5rC6APWhd0pj5pN+oIF
+         53kA==
+X-Gm-Message-State: AOJu0Yzmkd87fQ+q6YOJwslwpS1abSh+WmBnCBMyKcyoHaJfccijnAhI
+	dMnTV5JiuacBeTUTz5qlJtMedN+1+kwkI6nRXCjEJRicENI2sf71f/cE
+X-Gm-Gg: AeBDietE/rsY/ysBDrjSWif7sMeUtKJi8u9qUA6IyXmbYLrx8V7unNu8PC0D6zJup3H
+	dkrwPMi0Uq63Mfx/7Vax01Q7iA+2U3YMb4aqtqUA1u6GDPOk8fyKZO7s8gMTTvqWcpOb1N/i/Oq
+	RTWbGSslHlByC6BvUH/s/jpbXRyjTIGJiSgeFUvbjYKG//6xYNVtmHWkGEg0z4ZBrZs1VuhhTtM
+	haLVn7FXseq8QiQX+JMQaKPGY/awO8o4TteirGk7mKJquHcUoS7vf4yR6HqtbikpgfweOgEMXCP
+	mYfrE8AFXnfcaCo7F7MtihvnMQnr5lYcJeql59ugrmbE5SSXSvAiYgDc7C/sd8Jx4XSoi7L5DGa
+	8AFgc6W5fOCwgnsaOESxkkH2l0y8rcRHAz/58sgGiRN5VA9AFKyv/TLI66Dz13FNsFXkMF//m42
+	17icxcKodCF8MVge7k98sCR94OjQ==
+X-Received: by 2002:a05:600c:a404:b0:488:a824:fdff with SMTP id 5b1f17b1804b1-48e51f3e0f8mr166677795e9.22.1778231065034;
+        Fri, 08 May 2026 02:04:25 -0700 (PDT)
+Received: from nsa ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548e6a6a64sm3080543f8f.6.2026.05.08.02.04.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2026 02:04:24 -0700 (PDT)
+Date: Fri, 8 May 2026 10:05:18 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Jonathan Santos <jonath4nns@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, marcelo.schmitt1@gmail.com
+Subject: Re: [RFC] iio: adc: support for multi-device aggregation
+Message-ID: <af2gJyG3rDjsjFmo@nsa>
+References: <af0EGv172ZMl/6N5@JSANTO12-L01.ad.analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
- <af2TFa3qd_7tcxeR@ashevche-desk.local>
-In-Reply-To: <af2TFa3qd_7tcxeR@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Fri, 8 May 2026 10:59:12 +0200
-X-Gm-Features: AVHnY4JmQLAWvCElxGlNg8RbJITLZxWIolOrJ_InIepq97xqlHS6kq6C_33lk60
-Message-ID: <CALoEA-wUdMm5gu=OhhgYV1C3o3MHEzfC0i9gjjUz6CE4B+xw1Q@mail.gmail.com>
-Subject: Re: [PATCH 0/8] iio: magnetometer: ak8975: driver cleanup
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <af0EGv172ZMl/6N5@JSANTO12-L01.ad.analog.com>
 
-On Fri, 8 May 2026 at 09:39, Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Thu, May 07, 2026 at 04:35:49PM +0200, Joshua Crofts via B4 Relay wrote:
-> > This series is a continuation of the previous ak8975 driver cleanup
-> > effort, as most of the patches were picked.
->
-> It should be v6.
+On Thu, May 07, 2026 at 06:28:58PM -0300, Jonathan Santos wrote:
+> Hi all,
+> 
+> We have a request to support multiple devices tied together in a single evaluation
+> board. The goal is to be able to read them simultaneously via the IIO framework,
+> while also controlling them individually. Currently we have two ADC devices that
+> would benefit from this, but there might be more in the future.
+> 
+> This is the scenario:
+> 
+> +---------------+                                                 
+> |     ADC 0     |                                                 
+> |               |                                                 
+> |        SYNC_IN|---+---------------------------+                 
+> |          DRDY0|---|------------------------+  |                 
+> |               |   |                        |  |   +------------+
+> |          SCLK0|---|------+                 |  |   |    HOST    |
+> |           SDI0|---|------|--+              |  |   |            |
+> |            CS0|---|------|--|-----------+  |  +-->|ADC_SYNC    |
+> |          DOUT0|---|------|--|--------+  |  |      |            |
+> |               |   |      |  |        |  |  |      |            |
+> +---------------+   |      +--|--------|--|--|----->|SCLK        |
+>                     |      |  +--------|--|--|----->|MOSI        |
+> +---------------+   |      |  |        |  |  |      |            |
+> |     ADC 1     |   |      |  |        |  |  |      |            |
+> |               |   |      |  |        |  |  +----->|DRDY0       |
+> |        SYNC_IN|---+      |  |        |  +-------->|CS0         |
+> |          DRDY1|---|------|--|----+   +----------->|MISO0       |
+> |               |   |      |  |    |                |            |
+> |          SCLK1|---|------+  |    |                |            |
+> |           SDI1|---|------|--+    +--------------->|DRDY1       |
+> |            CS1|---|------|--|-------------------->|CS1         |
+> |          DOUT1|---|------|--|-------------------->|MISO1       |
+> |               |   |      |  |                     |            |
+> +---------------+   |      |  |                     | .          |
+>                     |      |  |                     | .          |
+>        ...          |      |  |                     | .          |
+>                     |      |  |                     |            |
+> +---------------+   |      |  |            +------->|DRDYN       |
+> |     ADC N     |   |      |  |            | +----->|CSN         |
+> |               |   |      |  |            | | +--->|MISON       |
+> |        SYNC_IN|---+      |  |            | | |    |            |
+> |          DRDYN|----------|--|------------+ | |    +------------+
+> |               |          |  |              | |                  
+> |          SCLKN|----------+  |              | |                  
+> |           SDIN|-------------+              | |                  
+> |            CSN|----------------------------+ |                  
+> |          DOUTN|------------------------------+                  
+> |               |                                                 
+> +---------------+                                                                                                    
+> 
 
-Jonathan said to either do a v6 or a new series, up to me.
+Do we have any FPGA IP for high speed transfers? If so, it would be nice
+to have it in the above diagram.
 
--- 
-Kind regards
+> To summarize, the devices share SPI pins such as SCLK and MOSI, but have individual
+> chip-selects and MOSIs (we can consider individual SPI interfaces). The ideia
+> is to allow users to aggregate these devices so they can be read simultaneously
+> from the user space.
+> 
+> I found a similar case here involving the AD4880 (ad4080 driver), which consists
+> of two independent ADC channels, each with its own SPI interface for configuration.
+> In that instance, the ancillary device feature was used because it was considered
+> the approach of a single device with independent channels rather than independent
+> devices connected together. Additionally, the backend handled the buffered data
+> aggregation.
+> 
+> However, I would like to discuss a more generic approach to support device aggregation
+> across different drivers. Marcelo suggested a while ago to consider the components
+> framework. This would allow us to create a virtual device responsible for 
+> aggregating and controlling the sub-devices in a standard yet flexible manner.
 
-CJD
+component might fit here but it has it's limitations and I fear (one of
+the reasons I did not used for the backend stuff) is that it looks too geared for DRM. But yeah,
+in theory is more or less what we have here with the distinction (I
+think) that the type of devices are actually different :).
+
+> 
+> The aggregate driver could either be an extension to the main driver (e.g. ad7768-1.c),
+> or a separate file (e.g. ad7768-1-agreegator.c). 
+
+I guess we could support this in the main driver (more on this below).
+
+> 
+> Here's an example of how the devicetree would look like: 
+> (includes the multiple data lanes feature)
+> 
+> spi {
+>     #address-cells = <1>;
+>     #size-cells = <0>;
+> 
+>     /* AD7768-1 physical devices */
+>     adaq7768_1_0: adaq7768-1@0 {
+> 	compatible = "adi,adaq7768-1";
+> 	reg = <0>;  /* CS0 - First physical device */
+>         spi-tx-lane-map = <0>;
+>         spi-rx-lane-map = <0>;
+> 	/* other properties */
+>     };
+> 
+>     adaq7768_1_1: adaq7768-1@1 {
+>         compatible = "adi,adaq7768-1";
+>         reg = <1>;  /* CS1 - Second physical device */
+>         spi-tx-lane-map = <0>;
+>         spi-rx-lane-map = <1>;
+>         /* other properties */
+>     };
+> 
+>     adaq7768_1_2: adaq7768-1@2 {
+>         compatible = "adi,adaq7768-1";
+>         reg = <2>;  /* CS2 - Third physical device */
+>         spi-tx-lane-map = <0>;
+>         spi-rx-lane-map = <2>;
+>         /* other properties */
+>     };
+> 
+>     adaq7768_1_3: adaq7768-1@3 {
+>         compatible = "adi,adaq7768-1";
+>         reg = <3>;  /* CS3 */
+>         spi-tx-lane-map = <0>;
+>         spi-rx-lane-map = <3>;
+>         /* other properties */
+>     };
+> 
+>     /* AD7768-1 aggregator/virtual device */
+>     quad_adaq7768: ad7768-1-aggregator@4 {
+>         compatible = "adi,ad7768-1-aggregator";
+>         reg = <4>; /* ? */
+> 
+>         adaq7768-components = <&adaq7768_1_0>, <&adaq7768_1_1>, <&adaq7768_1_2>, <&adaq7768_1_3>;
+>         
+
+I guess we can avoid the dummy device! The one having the components
+with be the main/controller device but I guess we would still need a custom
+property for the other nodes in case they need to do something specific
+for this arrangement.
+
+
+>     };
+>         
+> };
+> 
+> Is it ok to proceed with component helper for this purpose or do we have something
+> better? If yes, I have some following questions:
+> 
+> -> How to read all devices simultaneously in buffer mode given we can't assert 
+> all CS from the virtual device?
+
+Isn't this also an HW question? Not sure how that can be done
+simultaneously without some kind of HW synchronization. In SW, I'm not
+seeing other way other than  N SPI transfers and put them together in the buffer. 
+
+thou> 
+> -> Should the physical devices be registered in IIO during probe, or should only
+> the aggregator be exposed to control attributes and general configuration?
+
+Good question but it would likely make for a better/simpler interface if only
+one device was registered (with multiple channels - depending on the
+number of devices). Similar to backends. I guess the idea is also to
+only have one IIO buffer for all the channels?
+
+Or, IIUC, at the very least, only the aggregator could expose a buffer.
+But again, linking the other device channels to the buffer is not really
+doable without major changes in the core.
+
+Something that also just come to my mind! What about the IIO inkernel
+interface and things like 
+
+industrialio-buffer-cb.c
+industrialio-hw-consumer.c
+
+Maybe they have some limitations but something that we can work on? Not
+sure though...
+
+- Nuno Sá
+
+> 
+> Regards,
+> Jonathan S.
+> 
