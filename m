@@ -1,185 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3700C2F8EA7;
-	Fri,  8 May 2026 15:06:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778252801; cv=none; b=ekCDmRFDE3KFOzEmVJNRAbbVaTKdZxIsTsUBPoEb4qN0d6C9Lf4rut+0DkgkhNsTvCOQMud89WXra9JXGiNjLo1vDlxsgGDehsVNGl2aG9+gAkpjftL1JCvJIXwWr0bjhXElGtvS9baoGma4wKHNzOYeMGMIXQXWIWyocvtt6No=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778252801; c=relaxed/simple;
-	bh=wQDajVEQ6wfWEfjC1ABAbqLCIKdBeZ74w76HpmmH/yo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Fdn6O0SEZx01LLfPYaYSVVMy7snjWC2BKSeGtqahMvPXkmIr54cyW3RtKkaVUYfHx0gAum+uWR2e5skkx68pwIRo94S3cC/IgerUEqLj0iFrDNP+rVtE5B+xgNwWSB6YiXkRL9SqVq4dXKmYCzItXgs57AiTIQp84C1+I7DQB2I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZTwSBoW9; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003443F787F
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 15:08:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.169
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778252882; cv=pass; b=jkLBbjO9m/uXsnhln6mkWfRkYz4VJkyN8S3DxXlhqnkCH/MRNoSKdPRO2Ak5VwHGHzAu1j9CIm+9SmtoGqIL0sTN4pbuuLtk7DNrj3fIfRt2ZqSaMGHpkyLO8XsFa7IVpwJX9v0BNd9jUPXoF051sWridhEl7IMl4ihxGth6ojY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778252882; c=relaxed/simple;
+	bh=5IxGXyltzYauLjWwPl8nK/tqMAXlPBjsU5S4lRpDLTg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=eipEgVXpLs/iv32isR2B4ehXMWnXoqDwnZexQbC+zr3A6TfmoPfnWJb4k15WLT8JsehQ5vqjucqjOHVDqwtPwv7V5rakaBqXDlJGxDmKOMZcb6CuououksJezJ7h+I25tHfr/JuG3exP1vjhH7ztx1EaLT5Gwi5+0cRtGUHP3ZY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fn/WJBLl; arc=pass smtp.client-ip=209.85.128.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZTwSBoW9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD618C2BCB0;
-	Fri,  8 May 2026 15:06:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778252800;
-	bh=wQDajVEQ6wfWEfjC1ABAbqLCIKdBeZ74w76HpmmH/yo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZTwSBoW9XG+ukfQfLvfzoaLaoaSG2mEv3AN5IPm3EPPWX/JxLvIYWaWzQl9sC78wM
-	 rZBJRSS95UJPkIF42IDxIrfeedOw94e67caML5dnS1zr7dhK3VN7PfTufaNpG5v7zY
-	 jfv0c0two9toGPFKJiN2uR42wgQ4aAhIetZhJoWqTHS240V3C3z7A8eCCficKubIv7
-	 cdOwYWPqQaqylut1bq27csYBZWBogXgW7bEshCZyX9iIUR55QFcFtUPhdY+fRlzbfg
-	 zYtTq/b4RxfRS6YiK1q3SBtn82jtmyJdGQtnGF3g4dg5emuu7GD7w+ZHeIUbBjEZPu
-	 /OQ8C0fcOKVdA==
-Date: Fri, 8 May 2026 16:06:36 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Vladislav Kulikov <vlad.kulikov.c@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: magnetometer: add MEMSIC
- MMC5983MA
-Message-ID: <20260508-kitchen-decimal-654cc0b98c26@spud>
-References: <20260507205033.951990-1-vlad.kulikov.c@gmail.com>
- <20260507205033.951990-2-vlad.kulikov.c@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fn/WJBLl"
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-7bd87e5d8ffso37175607b3.1
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 08:08:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778252880; cv=none;
+        d=google.com; s=arc-20240605;
+        b=QOF2GMmCcNH7qiViSbGskIff3gOQuYSk3sWi12sa4W4xOqUuh6++HnvcG5N65IacSN
+         8FlUY+1JdwFr9R5nqP6py1vQNwlwhe8weGFnWS+9Kw0jOFHjFunPc1MXJgYAKvK+26dr
+         y7MAhatb1hgxzc9p2aUa9VPDphApqPN95jeew3/0MTincjEZ1Hd9fcZArv6ikMttIix0
+         eL0545LUhi3JIUHl9mS8E0/3zr92XToeacMFhCdH9nMrMWqjSo7E8Mws9GQjpHXsGZsn
+         LM981wYRIiSgpEJALS79OaS7/QcU1iA/Omx1t8X2dMWSzyGZ9h8s25Gg5WFs8gmNgcQb
+         hmAA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=91iaZXpk804ML2FZfaLUUS/RB1+MMBa57i99Tu765gs=;
+        fh=szsit64EOo8vQ9+a9GFppXtQW5uDSC4UkjpmWjZ9W+E=;
+        b=ZXCJifG9AVNnu8IbKB5To3moXT2LeoCSsxkIKyJMxUdwYIthdkFTSyQCi3BXLTPk3h
+         s0PXt+XumiqqrpiLfeDX4qlt25sKiawtML5YQ3/QZDQ3Xtj8SQJZu6X/iulUyY4qeFF8
+         cAA8HGOC42q2WPe1uJL9brhdqJVhFJZ185L9lCGKp4HQqGC2CSgYONMrXiQ8/udWb60U
+         CMdVgg+CoxVsZTZwaN1wxnJM/EWMmHXYaKOrt805O62XjxCyj5nn8P0pRvROMdr0Puym
+         TIlVcljqyTLafxGNBCIxtGWbnZiRmsCwQcXw1S2RRHery+20JEXiZhvSv549+WdT8nuE
+         MVzw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778252880; x=1778857680; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=91iaZXpk804ML2FZfaLUUS/RB1+MMBa57i99Tu765gs=;
+        b=Fn/WJBLlIP6rulWeCKwgMXQ+nqx7u8GuTVEB583RjQw2NUi6R1zs/7liqOzwH/laqf
+         V6QHz/igfn9ZwRr3OPsku0S4xR7V3ijPdpkREnTrT2hjRbPp92Olzfj6BXrlWtzq/oL7
+         u9gJ0q51J+vY37HmuHUmAaWaPWItRh3uISZEBpzNMhedi6Oh/Vsi6y5wmi/so21E0FF5
+         xCvKY2ChyDYa+1hwCDfYiD6Ouu55i7X8ogkhJGnNXnax3/Iscmu8DNtin4/dVlNGm9QY
+         a2z+a2pTP84egHMtSHNW0dQQG9+5zju0KAWHOPdwmlunZmYz3+L1wGr3GH5YeU+dsqY0
+         Q1Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778252880; x=1778857680;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=91iaZXpk804ML2FZfaLUUS/RB1+MMBa57i99Tu765gs=;
+        b=BmX7OtAcDQxqY+xMKGQe2dYQijMpzovDBkJaMdh22fv0V5+0ChLBz927z5MHOXfnU2
+         q/iBhPl2Ky+LxmpYa0SGgl6iK83qoS/ZWbzMOUJybS/My5IEYWcd3AgroYacdA0wPXhP
+         q7bbnihVRDzyrkPFzfUY5dcdG/WvAnEBAcTmpC9RcEAS4k7Q0xX72dAIW3s8MyO99jze
+         jMyZBnIVyZbmcqkg11LQ66xTkagzUXtFL6uFQwSQ6dKlcFbwYAeTd43mSdukCiqpxiCR
+         O9h8gq3bX9jeY72r75nWkTyrhtJwXkOVA5AeudTlO1hsnGlnmYGlnHXYoM0yZzwBSlZM
+         OFSQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9Dm115I13i3FYNjfm77F3C7ndl2ZBfaXeN5h6QtJeHXLFtVOnCfdtUgz+0E/AEg8ETia1DxlFmuQc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynKNowbo7Z2tjNMhl35uzFaXew7Mj5zFnXcvOVkPxQYp8wJBSQ
+	jp3ZyHGmHzXjWkFw/+Z3h8TQHeX/mynosqM6KPuZuvRSURO5DjV0G6BZuoPZm8QhC8cw6MRCyZj
+	ec4kKzaRduwuugL9sQONDEH0/JNncoNs=
+X-Gm-Gg: Acq92OF+muDvSZpYM1f/gvfhP2a7LwDkgp2GXqlV2X6Aqa2x+JBr65VnDdOIQ67d3P/
+	fFyCv/RBqdkNSQKEaJTI9JG7mcDeib41LE43BUW9ds+0eIAzKv5vdUrEqTQi09HSe/Ig+I/LBMW
+	HyTYP7tW0wkEShGUDKtUXLKlopv6bkPGFtxt1FSv3PdRMtpIOrdnowz7Aguy8J8N4kjjxnGnTv6
+	tizYnDd+OAwM7YCVd8DjggEwwvHTscC0he4BPkS89rtOgsLzIzlrZ1Nrt5PeH3qGFj1y4alm067
+	C6SLC52EEw==
+X-Received: by 2002:a05:690c:600e:b0:7b1:9036:a23a with SMTP id
+ 00721157ae682-7bf04b72944mr63815577b3.14.1778252879949; Fri, 08 May 2026
+ 08:07:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="KWve6slpxHppLGEe"
-Content-Disposition: inline
-In-Reply-To: <20260507205033.951990-2-vlad.kulikov.c@gmail.com>
-
-
---KWve6slpxHppLGEe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20260508133915.22042-3-giorgitchankvetadze1997@gmail.com>
+In-Reply-To: <20260508133915.22042-3-giorgitchankvetadze1997@gmail.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Fri, 8 May 2026 10:07:48 -0500
+X-Gm-Features: AVHnY4L83YSfFJ1ojZ5sHn3D34bEDdBuapoWoQlZJKL1HBFUsg_Yw_zLXarAm0s
+Message-ID: <CAKqfh0HhAZjgT5RXe8tKpAt9FgNAM5+xixDsaWpuyN3FyiN2KQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: chemical: scd30: make command lookup table const
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com, 
+	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 07, 2026 at 08:50:31PM +0000, Vladislav Kulikov wrote:
-> Add a Devicetree binding for the MEMSIC MMC5983MA 3-axis
-> magnetometer.
->=20
-> MMC5983MA is not register-compatible with the existing MEMSIC
-> magnetometer drivers. It has a different register map, 18-bit output
-> data format, and I2C/SPI transport support.
->=20
-> Signed-off-by: Vladislav Kulikov <vlad.kulikov.c@gmail.com>
+On Fri, May 8, 2026 at 8:53=E2=80=AFAM Giorgi Tchankvetadze
+<giorgitchankvetadze1997@gmail.com> wrote:
+>
+> scd30_i2c_cmd_lookup_tbl contains fixed opcodes and is
+> only read by scd30_i2c_command(). Make it const to document that it's imm=
+utable
+> and allow it to be placed in read-only memory.
+>
+> Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
 > ---
+>  drivers/iio/chemical/scd30_i2c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+[snip]
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+Looks fine to me.
 
->  .../iio/magnetometer/memsic,mmc5983.yaml      | 65 +++++++++++++++++++
->  MAINTAINERS                                   |  6 ++
->  2 files changed, 71 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/me=
-msic,mmc5983.yaml
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/memsic,mm=
-c5983.yaml b/Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5=
-983.yaml
-> new file mode 100644
-> index 000000000000..e144b4d9b0ca
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5983.y=
-aml
-> @@ -0,0 +1,65 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/magnetometer/memsic,mmc5983.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MEMSIC MMC5983MA 3-axis magnetic sensor
-> +
-> +maintainers:
-> +  - Vladislav Kulikov <vlad.kulikov.c@gmail.com>
-> +
-> +properties:
-> +  compatible:
-> +    const: memsic,mmc5983
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  vdd-supply:
-> +    description: Regulator that provides power to the sensor
-> +
-> +  vddio-supply:
-> +    description: Regulator that provides power to the digital interface =
-and INT pin
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    // Example for I2C
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        magnetometer@30 {
-> +            compatible =3D "memsic,mmc5983";
-> +            reg =3D <0x30>;
-> +            vdd-supply =3D <&vdd_3v3_reg>;
-> +            vddio-supply =3D <&vdd_3v3_reg>;
-> +        };
-> +    };
-> +  - |
-> +    // Example for SPI
-> +    spi {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        magnetometer@0 {
-> +            compatible =3D "memsic,mmc5983";
-> +            reg =3D <0>;
-> +            spi-max-frequency =3D <10000000>;
-> +            vdd-supply =3D <&vdd_3v3_reg>;
-> +            vddio-supply =3D <&vdd_3v3_reg>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 882214b0e7db..952fbf3020a4 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17170,6 +17170,12 @@ F:	drivers/mtd/
->  F:	include/linux/mtd/
->  F:	include/uapi/mtd/
-> =20
-> +MEMSIC MMC5983 MAGNETOMETER DRIVER
-> +M:	Vladislav Kulikov <vlad.kulikov.c@gmail.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5983.yaml
-> +
->  MEN A21 WATCHDOG DRIVER
->  M:	Johannes Thumshirn <morbidrsa@gmail.com>
->  L:	linux-watchdog@vger.kernel.org
-> --=20
-> 2.43.0
->=20
+Acked-by: Maxwell Doose <m32285159@gmail.com>
 
---KWve6slpxHppLGEe
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaf37/AAKCRB4tDGHoIJi
-0spqAP4lF2HiLvMhxLm6BeOHoc3pfanCK7ACpyFEvBR1gLKIYwEAxjH4UzMa1Lgr
-0Ym9eddO5aosB+FxGj2RRYEY+JgmZgA=
-=r1ie
------END PGP SIGNATURE-----
-
---KWve6slpxHppLGEe--
+best regards,
+max
