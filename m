@@ -1,181 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f54.google.com (mail-yx1-f54.google.com [74.125.224.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8028137417B;
-	Fri,  8 May 2026 12:48:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778244535; cv=none; b=V5lBcLh1UcHOh2i5On3FLM8z8DJbYrGOIIwRQUHN+aRYvOuO7iXxHbKpYwuxKWJ1OctoHa9GU8Q5ojI4UyA9pr5/mS2YWRM03gzrPMbpTWno53Kv9N3ftjMIjnVbh6yO9KuS8AcZHfVk6dF953gOInB8CfbmDQEzusaBJ5oIyyI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778244535; c=relaxed/simple;
-	bh=8Y96R3p8sUNREaenReFTo2/oKclTZ1VW7vYZvOu63XE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=srg8R9it4+O49lqS+pWTsMUVgjtkZnfPxduOy+WfOMiRLtA46ztyEFLDWM7hW/RnwZiVsCTK7sU1v7Zt6fzKlnq4rBzqO7JFQICdHNVITpGRKzyPzL6LzI2YPPQmHkzaxTd4Z79PSEKWz7frHovGcaVzqqDWqB7CDPzmXbT/jN4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c1M7DEnR; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AD5B33D511
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 12:55:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778244908; cv=pass; b=VIVL/d7e2N0pQMTUSEgtGckBqORhNkFTlC9PUSbS7SmDwnrG1TxQIQbS9zJa7HYOxV7G8Dwjnk4swmwSCoh/sziRPoujKDrClPJtkZx+DwNoFHOO4QY6tMdd0Lo48GQk8fokTWwWp+hK5GgUl9dYBOCJlhPcPtT4JF9E5DkLSPk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778244908; c=relaxed/simple;
+	bh=QhZ/gW/S1ObDaJ5tzdx/zGCVhSS0mQmVVZ1zbehNnms=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=amvwn9Kjn5ZKntoqjMmVpSDdSKlZ8EV150ec88UdSv06d6Uq5vRbXtg875rQ5zp3QZzEf5LL0eubEZDI1tl0bEVkzk5qYh94e+K/Rl251sKyVEqZagX/wYKglEIuTGZXEVLnVC2WLY4qEsKWuxCJ8RsCS+tCeZCi1RC/Tw9uOT0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bm2UZnn/; arc=pass smtp.client-ip=74.125.224.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c1M7DEnR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C78F8C2BCB0;
-	Fri,  8 May 2026 12:48:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778244535;
-	bh=8Y96R3p8sUNREaenReFTo2/oKclTZ1VW7vYZvOu63XE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=c1M7DEnRcdd+92ZqSAiqlSHHPEKAQWghayvTa7+5HtKFUC64Cv8X/o5bUFo9/dTrF
-	 Uj7MLRYD9YsdWpz+F8Ry9cf6vC4WN1PlFGVc03wBsXh/MQLQ22IVpJg7MFLDNUxDHG
-	 nbSq6UNrBU8e35zXvT//FCRfXOaWH6J/3VxXVavuXzhMTegqjor+CrErWT82CIcWqc
-	 dJm13h0Slv3ZPyJHyjlHZAQsAd6Hhs19ypPBavr6gTtWgBCxzM/x+xEdTZZ60pNI6x
-	 MfDB/9Xe9W99bdY89Aso5Up+trOiuIwQBZtiKwbVvYZVq1G/FNSGXTtYaOgIDPvrx/
-	 IvdPMvLsaPgwA==
-Date: Fri, 8 May 2026 13:48:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, "David Lechner" <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, "Jonathan Corbet" <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-doc@vger.kernel.org>, Janani Sunil <jan.sun97@gmail.com>,
- rodrigo.alencar@analog.com
-Subject: Re: [PATCH v2 1/3] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <20260508134843.7646c4f5@jic23-huawei>
-In-Reply-To: <20260508-ad5529r-driver-v2-1-e315441685d7@analog.com>
-References: <20260508-ad5529r-driver-v2-0-e315441685d7@analog.com>
-	<20260508-ad5529r-driver-v2-1-e315441685d7@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bm2UZnn/"
+Received: by mail-yx1-f54.google.com with SMTP id 956f58d0204a3-65c5361142fso2116397d50.0
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 05:55:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778244906; cv=none;
+        d=google.com; s=arc-20240605;
+        b=BZLEmWNqP9D2Vj4CFczL5tdXd3r4Lrpp+SwWWGyqG6nQfBwaAEWRc7sGMZkofqI0YF
+         pWbXwbw6EK+hnI/S4vaDPtHP7BWB83gkqalnBg35HKMt8IUXRdZ1+p0/zv2oOYOE84xm
+         bm1042SZPfI9llcm7+0LouDs1m1vNaIA2uOmGkduE8v9llkyhZdvPWc5uvkRwxU82I1p
+         UZIJbm4+xGBy7FysGVmGL+hkROCvcMg1aGiEDTE+bL9aPg1n877W6b3l+oeidrqjT82y
+         a6vvvEN2PN41g1joKZ3nRBjJb0fwYcdJnfHI8fhhOpZ62o9DAX4L8U4MW+WpuV8Kkdm1
+         1LrQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=NNh5KxwhxZCJsoxnacWw4RjbmOVm0B/OxArYPR1gwUA=;
+        fh=KwmgzhyjJY7lKcVSsNjxGCUjcZF1elvkt7yoTW5kZns=;
+        b=EjvPdPmb++uYvum7caw94OJaeUGWjttkGqn9Y8bfW8tNrH3imzKtFV/v+vHP3Jtvvr
+         QIWG2CTL1oBOQ5t/ruId2dAU02rSnZZo90TxhOJBDVxSqxX8H3ns8MllwdRw/JyrS7yD
+         E0xpXl2oE4yq83iVQ2iFLNuVLulnG1nmpABKmo7Abpw58pyCvRT3aMNwktymlanIcJY+
+         6iGqP2+qeK0ygKBHr6XMNla9XJRVEY0WbmWMmcjbvGg998zeqwMCwNC9mtPjIk2H8bVb
+         XVBBS/f8oHUpkAKi+CT+esM56SBYpA72oW2foV/K7ftoERjLcez9OqQmrt7IjapIhjgH
+         f81Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778244906; x=1778849706; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NNh5KxwhxZCJsoxnacWw4RjbmOVm0B/OxArYPR1gwUA=;
+        b=bm2UZnn/vMnH1D04CAovSR7855SsPqYE/lq2MrbK5323rK35pThME8NwCzCa8oH2oC
+         VSjXKCkq8/yDE3NlBBlP0pZ5CK5P258XwWfx3L6bO6/WBD/Etu84jBfFkyfwneFtGiNj
+         jjgrEf72KTlRXvhlHXLn0UXI1QkB9aqbFJfdZy9hxH3EzkJJOJBMI9geIt2JSiQbnaVH
+         YiU1+6um5IsLW2Lxtkql4681NGKKdAjBJ6O3OByy9803DHjpwbjz6rfuQTADEqeF2GUn
+         5QCF5Y/jZb9DOP36aFpbuYgQZtJV+1qQ+tuPEdkX2W+KfbyXZEhnbt1RLfJl1Oxs3a/Y
+         4c8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778244906; x=1778849706;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=NNh5KxwhxZCJsoxnacWw4RjbmOVm0B/OxArYPR1gwUA=;
+        b=E/oDrqD8RUwEv4smuVDNRxA3WAoq+6x4cwWw8xCEYf0IA5A4ebkila6cIsHOH6LlBg
+         QPJRoEP4kG1NWoDTCST9T8fCAlQ06HrrCZ2jFEcbzGZcZt+UFYJtARy9LPTZ02MFxbt8
+         r4pc4k1yCmvcxVOtzmAJFlvEP+dCu4eyYv9WfvlF8GLXBs5cULXUz7bgZQP1/261+CZV
+         loW2bZIlEZwNkdWe45mtrbqpsfKw/8aal7FuwDIRWPTYFRSiW1ve1B2DSb/60Jt9A3TL
+         Fy6bsSOu8gVHdKy0OWsV5NySd9XFTN/8k5fA0z+5DfCtF9VeYklwWq5qI9mz323iSMEn
+         d73g==
+X-Forwarded-Encrypted: i=1; AFNElJ8vMquY9gZeBoO3/ADe33tOagVlOmEFKLmpe3mJ2/0AH0ACdTVZYh5FsBepfwd8sO5PMcQOlVq4hng=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxQjoICbrypGkT2fyVj76WAXMwf+34vJ36+JipIeZ1fpkQG/LJ/
+	GIbvXM84Z8cX2/28s0xk9BPjP+pT+qqtFGAB+cGdWW+znFcr8km44p5c8lVhw19Zblf3M6wLB0B
+	SPPy7P2YfqhsX2saSHDAoEiZRda75ww0=
+X-Gm-Gg: Acq92OEKBdDWBfHHlJLhUtz/RFYq2khw8YRHckGVc794sBbS/yZmoHdCwn5nzwbelvd
+	ykMtY40xnxQa6aABOnt1yee3YdywHxUJd6/VdYEd5cNYuIUvXOYTtmXio0qkf8ZE6FDtwgx5b+h
+	RGTQWil3eYgI6pDXTgFmhNFQuCEx7ZDpGkS5X5OZ1axmwMbUOC2Tz70/DbJwFWR/asRiRrqztTc
+	J7R+gLlQEcl4ONddvGFhDkiJA8taBLM07xYMt6jc3hbi78XLRrHO67rtXBIXrU9fKyqcqTwCXko
+	IpDayb/ybACFARHq3d0SbJjrz+VpHnaAsHnNG7w8jQ==
+X-Received: by 2002:a05:690e:d8c:b0:65c:ca50:d7 with SMTP id
+ 956f58d0204a3-65cca5015eemr10707905d50.49.1778244906218; Fri, 08 May 2026
+ 05:55:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20260507172404.80435-1-m32285159@gmail.com> <20260507170054.9349-1-sozdayvek@gmail.com>
+ <20260508132501.04e6b92a@jic23-huawei>
+In-Reply-To: <20260508132501.04e6b92a@jic23-huawei>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Fri, 8 May 2026 07:54:50 -0500
+X-Gm-Features: AVHnY4ItcANNti1jVf2vTec3WC1ESOPo2v6XqfnoQaAa177Qpo0dsvBQT7nAPKw
+Message-ID: <CAKqfh0Gn3HAaYO+_1AxcWk2SOJ65gTv7Us3gehUqc_PAQVv5Zg@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: Add myself as SCD30 maintainer
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stepan Ionichev <sozdayvek@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 8 May 2026 13:55:47 +0200
-Janani Sunil <janani.sunil@analog.com> wrote:
+On Fri, May 8, 2026 at 7:25=E2=80=AFAM Jonathan Cameron <jic23@kernel.org> =
+wrote:
+>
+> On Thu,  7 May 2026 22:00:54 +0500
+> Stepan Ionichev <sozdayvek@gmail.com> wrote:
+>
+> > On Thu, 07 May 2026, Maxwell Doose wrote:
+> > > The current maintainer's email is no longer valid and the driver is
+> > > being orphaned. Replace his entry with mine, as I am volunteering to
+> > > take over, and Jonathan Cameron has approved such.
+> I dropped last bit as I'm approving it clearly via the SoB so it adds
+> nothing to the patch that lands upstream.
+>
 
-> Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
-> buffered voltage output digital-to-analog converter (DAC) with an
-> integrated precision reference.
->=20
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
->  .../devicetree/bindings/iio/dac/adi,ad5529r.yaml   | 96 ++++++++++++++++=
-++++++
->  MAINTAINERS                                        |  7 ++
->  2 files changed, 103 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml b=
-/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
-> new file mode 100644
-> index 000000000000..f531b4865b01
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
-> @@ -0,0 +1,96 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/dac/adi,ad5529r.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD5529R 16-Channel 12/16-bit High Voltage DAC
+Thanks for letting me do this Jonathan! Glad to be on board, can't
+wait to bring some needed change to the driver (it seems a bit messy)!
 
-How is one device bother 12 and 16-bit? That sometimes happens for
-ADCs where it is really reflecting oversampling or for device with hardware
-FIFOs where storage space is saved by using lower bit rate. I'm not sure ei=
-ther
-applies here.
-
-> +
-> +maintainers:
-> +  - Janani Sunil <janani.sunil@analog.com>
-> +
-> +description: |
-> +  The AD5529R is a 16-channel, 12-bit or 16-bit, high voltage, buffered =
-voltage output
-> +  digital-to-analog converter (DAC) with an integrated precision referen=
-ce.
-> +  The device operates from unipolar and bipolar supplies. It is guarante=
-ed
-> +  monotonic and has built-in rail-to-rail output buffers that can source=
- or
-> +  sink up to 25mA.
-> +
-> +  Specifications:
-> +  * 16 independent 12-bit or 16-bit DAC channels
-> +  * Independently programmable output ranges: 0V to 5V, 0V to 10V, 0V to=
- 20V,
-> +    0V to 40V, =C2=B15V, =C2=B110V, =C2=B115V, and =C2=B120V
-> +  * The device supports SPI communication with Mode 0 and Mode 3.
-> +  * 4.096V precision reference, 12ppm/=C2=B0C maximum
-> +  * Built-in function generation: Toggle, Sinusoidal Dither, and Ramp wa=
-veforms
-
-Interesting - so this is a DDS, be it a simple one. +CC Rodrigo who has been
-wrestling with one of those recently.  Rodrigo, can you take a look at this
-driver and see if it fits in the ABI etc you've been hammering out? Thanks!
-
-
-> +  * Multiplexer for output voltage, load current sense and die temperatu=
-re
-> +
-> +  Datasheet: https://www.analog.com/media/en/technical-documentation/dat=
-a-sheets/ad5529r.pdf
-> +
-> +properties:
-> +  compatible:
-> +    const: adi,ad5529r
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 50000000
-> +
-> +  reset-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO connected to the RESET pin. Active low. When asserted low,
-> +      performs a power-on reset and initializes the device to its defaul=
-t state.
-> +
-> +  vdd-supply:
-> +    description: Digital power supply (typically 3.3V)
-> +
-> +  avdd-supply:
-> +    description: Analog power supply (typically 5V)
-> +
-> +  hvdd-supply:
-> +    description: High voltage positive supply (up to 40V for output rang=
-e)
-> +
-> +  hvss-supply:
-> +    description: High voltage negative supply (ground or negative voltag=
-e)
-
-I don't mind doing it this way but in some similar cases where 0 is somethi=
-ng that
-can be considered the 'default' we've made the supply optional.  What was
-your reasoning for requiring it in this case?
-
-dt-bindings should be as complete as we can make them - with that in mind...
-
-There are some more interesting corners on this device the binding doesn't
-currently cover such as mux_out pin.  We'd normally do that by making the
-driver potentially a client of an ADC
-
-Easier though is !alarm which smells like an interrupt.
-!clear probably a gpio. TG0-3 also GPIOs.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +  - avdd-supply
-> +  - hvdd-supply
-> +  - hvss-supply
-
+Best regards,
+Maxwell Doose
