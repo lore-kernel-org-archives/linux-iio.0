@@ -1,195 +1,127 @@
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+Received: from mail-yx1-f47.google.com (mail-yx1-f47.google.com [74.125.224.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4EAA3242D8
-	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 18:49:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778266201; cv=none; b=OjRIe4QXGwWgDPRuS2ReD45sydZno7eVLIVYIx/V77JL+Xjb/GNWRORcc3PaUZCpDrwd2JFfbMRecHjCwgBnuydxjDV5OcDsZ/VN+gGhH28cuZA7JvF/fCvHhuhpjT3LA83yBYglAbQ3P/BV357D509+gosWpMoLngZ2Hi+Alco=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778266201; c=relaxed/simple;
-	bh=NWQfL+RWvFHhgn/3dR/94QfbqAXPNlxqchNqVZMynT8=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=c5dg9WGrhuFSvYMM5j1FvlwTJ3NYaRlh248DQwesFPd2490t6ezBY80Sjqbfcc62MQqliWbzV07MrnGHV46q/UTCK71THxkcyxiMBmavLQrzplz8zHqdmZaRht7hj+ZGBMVTWtqIi6d1p3LTZcHL85Z2vzS3XNZ0+X3hlB6ntGo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nUMtiuqQ; arc=none smtp.client-ip=209.85.215.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40B253DA7D4
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 18:53:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778266405; cv=pass; b=Jie3M011UPJ8qnbzpgrH3CNOJZPEYKlM5ikPoEsbcOefigd5CFdH0GeotLUiT4XkoWUdyoV42DfAhtJC7qsh1hTEXqy8FbtCKD4dSpNXprVeG2kcvh1PLyDI+4Nom4U6minKyRJ0LrdpcJ3HTEciMyaYq9BjeZgke4Nu13eERDo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778266405; c=relaxed/simple;
+	bh=vwKbiyHlwGwbovjlmx3b/YRsCDUYzrm+ibkGPEQXGFE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BaBr402HI9CAA3zuRd4iWOgetqBA7s6CN7cqyPNozH3K+KVcITTwYQebaoh1O460lviT+r4yUoK16cRSDNGGWD31RIin68u5p5VYpbgU3DiU5bUs2D2EwRam9/CxN0YJQshhd+0wjYa3h2mrS63dSl0KbEkvH1klFcZOP4oIpFo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AGj6OhR8; arc=pass smtp.client-ip=74.125.224.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nUMtiuqQ"
-Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-c8026aa4d53so1561001a12.3
-        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 11:49:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AGj6OhR8"
+Received: by mail-yx1-f47.google.com with SMTP id 956f58d0204a3-65c52bb5dd7so2366260d50.2
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 11:53:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778266403; cv=none;
+        d=google.com; s=arc-20240605;
+        b=EkXc7gdMVTN4dK59gwSerNLj9Zvst0r0USRm5SKGklOmGSOAaiWXfbFEOPnNrnoDZm
+         UwVkF4Yrpp/fFnhfs3qWVUuLxNqFWzfzQ2R9JbsfiMPkA5r//5TvI9dhhxI9FjX90tpS
+         GccEmqhJ+icah8SjGaTDEhQ8Iz2K6Ig9axveA5PSysfR+72Jn96xd8knYy5VXTWfDazz
+         /JFPlB7KBHgrfsXAB4zDLLxH/ermG+trTffAatRS1tCMsm3QcGxXFxtTJUv2fGrWHk9Z
+         7501O/5bjfMIv0H5zo53lSEW9fC20atO3RRNUJQ43i34OMg5HKvQlpQpSvzkpcDkU0ji
+         lcrQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=vwKbiyHlwGwbovjlmx3b/YRsCDUYzrm+ibkGPEQXGFE=;
+        fh=wotmHINMN9/WyeV3oFXWmvesIBFtyya8mfgOMX+Ehrs=;
+        b=fdC5MVgpS3wI1TSeo/LNHHd1jFNLzDUKxed58mW711ALs2l/i5UqBACXGSIIEobqeE
+         lTVU4yODHQcx63Gq0CaU6Kc1qvKWyNTxOpfNhI/aQjmzYbF+ETAv1Xm+uFNZAGnAPD8X
+         ecX4AD9ZL39yQAtMsP+hO4KKnJkbcCO1oMmw1MKYmLJy6IJ1mCxLv16EGgTgk2zXR+iz
+         kg8KSqBREUSB4vHBPvThs5ZYF7+/rjftkFdoxpfPj1vJC6jimO1X7PcftDcpqh3sZDWJ
+         K1kZF9RO0xEat3GXNLRD8V4Wjz59acOphFEF0mfioGlVn+gJQwUf9yJlE04b6S688eA9
+         2wpQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778266199; x=1778870999; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=DH7GgBsf5gFTyU9xaGUtTh5y4Nb+5ISn4myl/WQLiQI=;
-        b=nUMtiuqQoEmQ0mVXVyOhaM2f1W0xfX9QQqgmrXa4cmXZgilIH2Yp1UH2t6RuVOWaT/
-         dofSDTj8wj6R/oiuzi90bTuRpRKfUg2vPU9jW8TymU4NCzwRxToIT1wQlMO5SHAJ2yLj
-         6LZt8wCqy3mxXFj53w0USzODDh63zN6+31JkeWNmhkDXRD6/PWzM6M9ltC6+8bqH6hGe
-         f8IP322hiPnZi6ocRe+ZnRA+Zkbwy+uI0Rb71tPwQX8qThgcH4yaJ9z8VbH1VCFJxH6j
-         b8pMiBr2GEmZt4tWTcL6hXGhxdc0pMPiXjJyJNtpWzBD/w7rbUM7diZgl7oyvjnZiwYs
-         T4EQ==
+        d=gmail.com; s=20251104; t=1778266403; x=1778871203; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vwKbiyHlwGwbovjlmx3b/YRsCDUYzrm+ibkGPEQXGFE=;
+        b=AGj6OhR8UXw9q3ftfyKWc9yAPDhEukJxlzAsTxuxk54pvKmpS71l3wKtJjXEvJY4KI
+         Tbxb3uCnlPpfgDylP0n+QG9VZZavrWKhfWbK0Uo3dT1+4xlgqUxYI41YPTSfTmxjGPF2
+         RIu4NOAK/i1weI1d/96XwS2+9ZfP66zHvl3mY5l1qNmKxAhvOH1Vh0M9EeRF2WKbLNwc
+         84vCQYiBEczaZ0sw1X29vE99rBEHahZMtzIp2z/T/0nhQQUQh6Zws4oznDTgDDgh7gqk
+         oMQ1OyULxAc6pQXD4vYFodqJrTJAlgV9WL6tcJpMbTzA5hlL9uNP+FDUDSbNMxc+SRre
+         V0sA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778266199; x=1778870999;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DH7GgBsf5gFTyU9xaGUtTh5y4Nb+5ISn4myl/WQLiQI=;
-        b=U0kmqS+mTB3Hxd6KJfbIIUDDPiG6oB+bZh2Z4fPUYbklRfl6eAZkRBpDj2k31SOlLB
-         oBE1EIhW+4zmbfmtBBTFrYDnv2YVZd6OTOfUzyl/TOU7auA6If/BF7adjuUWmtTwAze5
-         YjO+0JbW+YUMP93hWbGU1mGbQsLgI7ngLzFR7OMAhQQnT9P4wSytjld6p6mG8gZ3/VnF
-         aOCHLV9yviwENpKXTyF6q8aUT7U0Df8N5ehtj44LeoCBZvbiY/Di4IlaTyWeaMf0wje/
-         OsEvrzAjwiISxRq1EVjOFAP35mND4qvUSl+q0cqL2Du8bVH8crYvZ9Gkrbpff3V1r/Ms
-         KQ5w==
-X-Forwarded-Encrypted: i=1; AFNElJ+X0j+EhbzHjx1M24OUQFfYnLLzMkbucA+wqQnIlUCpmh0lIiXpqWlIL16Dp0MlWY9tg+1pG4Q6uC0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyXWvSVkF9+OcIVnTTcskVySNi41uNhe9bn9q81uF1B25DK/5I+
-	z9vidYr7smrmySLGwbYj8d3iM90kurpP1Z60LRi2MqGOFm2v2l7znbNI
-X-Gm-Gg: Acq92OGe1qBD+CXjc/DDwnTJHv2bzcHGqNwIrB/l5UJUINcHQDpiAPt7H6gt2y/vQzw
-	fUuugsc9VK4vGKOnrz0J8uurspkBUkolC8t0TTVYX1blCSzBsoK2Ke9WY9RxOppKXrTdoF2ynua
-	dFsfTh6ly8FFh47VuZpNdw4BDk5O8d22GvYIV95CglO8Qy3rgcRuy7pzapAIaulKopDk5FU4jPr
-	4rmFrnubKe8qMzzOnDYzjWOv4ULRQmtOruYT8c9BL7m+fH1IZJygtwPhygUL3+wFPfHZZs7BBrJ
-	FDJhQNUanaPD09pUwlBGekOKYKEDES7tAZTpUto3npeacbWQdsRWESNN/C4k4yqaiUw7kRmX0xA
-	MaZiLKpt1DWpJQSiJHtHurm3MUu0T0dFqRusaRt5kB4jJ86nSKi/6fpiN4y76iIi/KuXR9L+BsF
-	7IxYjd6NBANR/Qp2VtHhIkKQyQS+tdRz5Pmc3QhzoKNkRDqw==
-X-Received: by 2002:a17:903:bd4:b0:2b2:53f5:4627 with SMTP id d9443c01a7336-2ba78f63cadmr106621905ad.4.1778266199122;
-        Fri, 08 May 2026 11:49:59 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:7928:da7:2db6:dccd:ce49:67cf])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1e35ebesm29892475ad.43.2026.05.08.11.49.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 May 2026 11:49:58 -0700 (PDT)
-Date: Sat, 09 May 2026 00:19:46 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Maxwell Doose <m32285159@gmail.com>, salih.erim@amd.com,
- conall.ogriofa@amd.com, jic23@kernel.org, michal.simek@amd.com
-CC: David Lechner <dlechner@baylibre.com>,
- =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2=5D_iio=3A_adc=3A?=
- =?US-ASCII?Q?_xilinx-ams=3A_Replace_spin?=
- =?US-ASCII?Q?=5Flock=28=29_and_unlock=28=29_call?=
- =?US-ASCII?Q?s_with_guard=28spinlock*=29=28=29?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <20260508124513.17752-1-m32285159@gmail.com>
-References: <20260508124513.17752-1-m32285159@gmail.com>
-Message-ID: <F98D1BE6-7B28-4A36-A372-2431EA151E1E@gmail.com>
+        d=1e100.net; s=20251104; t=1778266403; x=1778871203;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=vwKbiyHlwGwbovjlmx3b/YRsCDUYzrm+ibkGPEQXGFE=;
+        b=Z4mIdtyewuLOKDJ7jySo2GM9uGR57Qid9opcrm62B+M/bkJ5kY+6xi6ikEEN9hX7Ib
+         7hOtzpQEa1uULcRNAz2+JvSTV3nu+CEFhqtsYcP6g/KL80hIYmhmAxJ3vkeLX3ifkvLP
+         3XLqCpjF3GL4zumbxglSd1U+81IUAUWvIuv48CpSJU/a/1gpv8E9D33Z2Xbt4gVzDZUT
+         0AjehontzI/L1Puyq1G7KJfVrnlBwos+2uJ44Eh7TkbW4iiF8aHRnLW+1m2PcEhCUM8e
+         9bEzWt5GvsgTfo/0oR7wwf+hQgwih2XMGU9wYWUFlLL8vZvaJVLU6Z8ryVPqe0sZBtba
+         oDDg==
+X-Forwarded-Encrypted: i=1; AFNElJ9KZoAFc7e7IW0y7a/UGB/xrsNm9YaO/UBWHZug1gWZGTnrjjzHsnNrDm8MLFrE7wJ5zeT62gVbBWg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyUXQKClk2U9e+pFpEepVFp6ei7RwHRz98HSMSCDFIdCrEoDnVj
+	t7sf6Nl9KUxoQIWBD4LYCiexB6rw0kIRiLoqzNPu+qfJ5+ItcYxaMCYAncrXRhicbWmwNnJsYf+
+	56zdZTUR18DpFar2LD5rkeWQRRSicsUV/ymTuupo=
+X-Gm-Gg: Acq92OGORVROBQUV1NYiH/OhuTsvUdog6YCL6xDE3BbW+P14NN2a2GMq9VnppmfZ5wX
+	xvrBcvgfH27gSrs0nsWKdAkcBlxkeCkW8ozR9tyfqbu+mned+ttRNCikpZIuMdn4AVTYDwmeY+D
+	QlTRlhILIqiy9rv8ucIaHaXfnCVXxbrI+KFdLc2J5U9CMQwlIPuJNw4DwNXeocS+k5YFRFjUvYo
+	rr/Wx0Rgo6PZcuRFsAksF/7K3XhfYWCRCyLvACV2y5hjsg7hDl4ams7vGzgxpjd1Ntnzgna+Kcf
+	dgGLq/nm/g==
+X-Received: by 2002:a53:c7cc:0:b0:65c:6897:26e4 with SMTP id
+ 956f58d0204a3-65c799defd8mr10248971d50.56.1778266403159; Fri, 08 May 2026
+ 11:53:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+References: <20260508124513.17752-1-m32285159@gmail.com> <F98D1BE6-7B28-4A36-A372-2431EA151E1E@gmail.com>
+In-Reply-To: <F98D1BE6-7B28-4A36-A372-2431EA151E1E@gmail.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Fri, 8 May 2026 13:53:11 -0500
+X-Gm-Features: AVHnY4I1DIa3PLbL-302Uohv4QH5c75pDs0f5bfSZhMVGMyA6hyHYjDxMjEv8J0
+Message-ID: <CAKqfh0Hmchpq5zvK6Fd=VCqWXN+1FKyWxNyF1O=3zsVEM7HJUw@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: adc: xilinx-ams: Replace spin_lock() and unlock()
+ calls with guard(spinlock*)()
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: salih.erim@amd.com, conall.ogriofa@amd.com, jic23@kernel.org, 
+	michal.simek@amd.com, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-
-
-On 8 May 2026 6:15:13=E2=80=AFpm IST, Maxwell Doose <m32285159@gmail=2Ecom=
-> wrote:
->Include linux/cleanup=2Eh to take advantage of RAII macros=2E
+On Fri, May 8, 2026 at 1:50=E2=80=AFPM Sanjay Chitroda
+<sanjayembeddedse@gmail.com> wrote:
 >
->Replace spin_lock() and unlock() calls with their RAII macro
->counterparts, which modernizes the code and increases readability=2E
+> Hi Maxwell,
 >
->Remove "flags" variables where spin_lock_irqsave() has been replaced
->with guard(spinlock_irqsave)()=2E
+> Thanks for the resource cleanup change.
 >
->Signed-off-by: Maxwell Doose <m32285159@gmail=2Ecom>
->---
-> v2:
-> - Replace guard(spinlock_irq)() in ams_unmask_worker() with
->   scoped_guard() per Jonathan's suggestion=2E
+> Overall looks good.
 >
-> drivers/iio/adc/xilinx-ams=2Ec | 20 +++++++-------------
-> 1 file changed, 7 insertions(+), 13 deletions(-)
+> Also, there is opportunity for guard(mutex)().
 >
->diff --git a/drivers/iio/adc/xilinx-ams=2Ec b/drivers/iio/adc/xilinx-ams=
-=2Ec
->index 124470c92529=2E=2E05bf1444ca7d 100644
->--- a/drivers/iio/adc/xilinx-ams=2Ec
->+++ b/drivers/iio/adc/xilinx-ams=2Ec
->@@ -10,6 +10,7 @@
->=20
-> #include <linux/bits=2Eh>
-> #include <linux/bitfield=2Eh>
->+#include <linux/cleanup=2Eh>
-> #include <linux/clk=2Eh>
-> #include <linux/delay=2Eh>
-> #include <linux/devm-helpers=2Eh>
->@@ -414,18 +415,16 @@ static void ams_unmask(struct ams *ams)
->=20
-> static void ams_update_alarm(struct ams *ams, unsigned long alarm_mask)
-> {
->-	unsigned long flags;
->-
-> 	if (ams->ps_base)
-> 		ams_update_ps_alarm(ams, alarm_mask);
->=20
-> 	if (ams->pl_base)
-> 		ams_update_pl_alarm(ams, alarm_mask);
->=20
->-	spin_lock_irqsave(&ams->intr_lock, flags);
->+	guard(spinlock_irqsave)(&ams->intr_lock);
->+
-> 	ams_update_intrmask(ams, AMS_ISR0_ALARM_MASK, ~alarm_mask);
-> 	ams_unmask(ams);
->-	spin_unlock_irqrestore(&ams->intr_lock, flags);
-> }
->=20
-> static void ams_enable_channel_sequence(struct iio_dev *indio_dev)
->@@ -1060,9 +1059,8 @@ static void ams_unmask_worker(struct work_struct *w=
-ork)
-> {
-> 	struct ams *ams =3D container_of(work, struct ams, ams_unmask_work=2Ewo=
-rk);
->=20
->-	spin_lock_irq(&ams->intr_lock);
->-	ams_unmask(ams);
->-	spin_unlock_irq(&ams->intr_lock);
->+	scoped_guard(spinlock_irq, &ams->intr_lock)
->+		ams_unmask(ams);
->=20
-> 	/* If still pending some alarm re-trigger the timer */
-> 	if (ams->current_masked_alarm)
->@@ -1076,16 +1074,14 @@ static irqreturn_t ams_irq(int irq, void *data)
-> 	struct ams *ams =3D iio_priv(indio_dev);
-> 	u32 isr0;
->=20
->-	spin_lock(&ams->intr_lock);
->+	guard(spinlock)(&ams->intr_lock);
->=20
-> 	isr0 =3D readl(ams->base + AMS_ISR_0);
->=20
-> 	/* Only process alarms that are not masked */
-> 	isr0 &=3D ~((ams->intr_mask & AMS_ISR0_ALARM_MASK) | ams->current_maske=
-d_alarm);
->-	if (!isr0) {
->-		spin_unlock(&ams->intr_lock);
->+	if (!isr0)
-> 		return IRQ_NONE;
->-	}
->=20
-> 	/* Clear interrupt */
-> 	writel(isr0, ams->base + AMS_ISR_0);
->@@ -1099,8 +1095,6 @@ static irqreturn_t ams_irq(int irq, void *data)
-> 	schedule_delayed_work(&ams->ams_unmask_work,
-> 			      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
->=20
->-	spin_unlock(&ams->intr_lock);
->-
-> 	return IRQ_HANDLED;
->=20
-Hi Maxwell,
 
-Thanks for the resource cleanup change=2E
+Thanks, of course I'd also be happy to do the transition to
+guard(mutex)() but it seems like something for tomorrow evening since
+I've already submitted a lot to the mailing list.
 
-Overall looks good=2E
+best regards,
+max
 
-Also, there is opportunity for guard(mutex)()=2E
 
-Thanks,
-Sanjay Chitroda
 
->=20
+
+>
+> Thanks,
+> Sanjay Chitroda
+>
+>
