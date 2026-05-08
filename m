@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0AFB175A99;
-	Fri,  8 May 2026 06:10:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4FE1377579;
+	Fri,  8 May 2026 06:10:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778220625; cv=none; b=IsJtbNGMdfJu0MOiVlvqRPdjDTgxjOI1iUp6SdYN2SLliHI8NR8EHlqB+uNcjVKAt0UpQlcUtOaygbzmubyhqax19uDUGa/r9RfaG2tngzk+6C9ER05n9IdlP24LZfSC/0i66l718pWKfZ6Cea25k/GOZw6m6zvzDjRWCMbsRTY=
+	t=1778220627; cv=none; b=blipKMtaS0wpDB2jsyxn4MWM4G24xUOE7TjuBYLdYbMcrUuS/21l+j3UXmnk4P0sZD0qRPZQRTmr0sAC1sZvLi63jRP1u7HPWUd8YqwRQOrCCaqEkszs8URJFhVstd9dhEr4ACwShQnWuJ7SnTblpxfKCdnHPJM9leVuXU0+ytw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778220625; c=relaxed/simple;
-	bh=YtpwilWHn+Jai8nr2ZcRnl9AbkjZQD5H+Kq823ld2jE=;
+	s=arc-20240116; t=1778220627; c=relaxed/simple;
+	bh=5pqj1WIghnR1R3C025rh4ZztFhyLfaFUTqE2ln9wWHA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=M8QbbGJ8AhydHIqsf3ADvftfOznFCqS5PWAeBL6RBAL1+nh9UwQuEBUheYbrHdg7gqGy4EPtXbaU5nPfydEQ5bwm17T1d/uqoHfjpL4/WBhVjicWbgG87Y2MilvWQUi8bYsAH3Jm6tQtRTGwVvtSqkzYHMFH7PkFPiyuzS6A33A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m/IRvhik; arc=none smtp.client-ip=192.198.163.12
+	 MIME-Version; b=hk2yfPrtl0JWX2Sq5w+qfmORmO05+peI2MRdBbv07ifArcYEDNlU4/wBoLTQp3OwNpDS6Zwn2/2tc9m7dPitNpdPBdgTnUJ9Qmll+lNEw4LzCYITaVBFXYTSEfi/vdfG67aGKghyQZIdf7nP4NVVzg0sGi7BUuV3NA4tXZQqpR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iE6bBXjd; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m/IRvhik"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iE6bBXjd"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778220620; x=1809756620;
+  t=1778220623; x=1809756623;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=YtpwilWHn+Jai8nr2ZcRnl9AbkjZQD5H+Kq823ld2jE=;
-  b=m/IRvhikUavpxrheTg4/UoCOjhZN7mg/OlDcy0jLm8TBKPyoB2rwM4i1
-   loMyy9fDx1ddurRLaUGf0Qr8MpbaBA+vul6x/ZV+87A3ewE99T87hJKq8
-   ibJ+Ar7aQG0z87aeH/9BZKFRJEyM5vf/2c7DALcmvKasLafeGg2SoMReX
-   kgKcTPNlTPzUJ9ynvj2wWpbS1gCq9MJma9LrTfgASDPrNfdVzhi5FY4pl
-   jJf96hUFPncBmJmxosZT1s2NEvyJdDpyJ0d4MQR+yQqC7rwWewBn51awY
-   /o8JQmEz1BVePX8bKohqYMy3F8DuZyQZwwRgZSFYfqITHGmUglCu4x4Yf
+  bh=5pqj1WIghnR1R3C025rh4ZztFhyLfaFUTqE2ln9wWHA=;
+  b=iE6bBXjd/+c75+7v/90h7Ve6geJGHtQSVGcFLPimC1DrsUDpRsKw7Gky
+   A/+mEHfCumJpjPw8QiH4x4t9W76w3Y1Y+xfZ9hskqRQ0b2HNa5s3YLqgq
+   BwV9egcAC42wifnE/gbwe+GFZwiScvuAWhyyJHJumkF0MtF6J+KXEhI9m
+   vXatRJkK/Nb6TBcNV9INWLf0rP3hv1PdfNirBlf/HmFGJeaBa8LIkT6+5
+   fFmFygtbaa8vLgSHhQTdo6maivQIumS5iUf8wkAqkFXLA3ZA3nlbQ0w3M
+   pFmQqrPVrMUZfynte2CJAiekeiO+e3gP8cGDiVPB69yFE6no8hI0WVGDJ
    w==;
-X-CSE-ConnectionGUID: 92Ea8NhpTSCG/0TBdUkL2A==
-X-CSE-MsgGUID: m/R3ePRKTiyfK6X43JLiaw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="83031372"
+X-CSE-ConnectionGUID: kUPkjqXdRDSnKLGlcT9o2g==
+X-CSE-MsgGUID: vbPb7viXQqOtsdcMWnrhvQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="83031378"
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="83031372"
+   d="scan'208";a="83031378"
 Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 23:10:04 -0700
-X-CSE-ConnectionGUID: jKIPV+YWQZ6ro8TuQJwIiw==
-X-CSE-MsgGUID: 7O4N+oaERgGnN1b3sVlsPA==
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 23:10:05 -0700
+X-CSE-ConnectionGUID: ys8JQPBoQOCbt/QTuccuZA==
+X-CSE-MsgGUID: HS4NQ0K8S/SY+YBjWgt6yA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="240669063"
+   d="scan'208";a="240669070"
 Received: from black.igk.intel.com ([10.91.253.5])
   by orviesa003.jf.intel.com with ESMTP; 07 May 2026 23:10:03 -0700
 Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 15B8B9B; Fri, 08 May 2026 08:10:02 +0200 (CEST)
+	id 916BE9D; Fri, 08 May 2026 08:10:02 +0200 (CEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
@@ -53,9 +53,9 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 2/3] iio: magnetometer: yamaha-yas530: Use devm_mutex_init() for mutex initialization
-Date: Fri,  8 May 2026 08:08:34 +0200
-Message-ID: <20260508060958.1086818-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/3] iio: magnetometer: yamaha-yas530: replace usleep_range() with fsleep()
+Date: Fri,  8 May 2026 08:08:35 +0200
+Message-ID: <20260508060958.1086818-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260508060958.1086818-1-andriy.shevchenko@linux.intel.com>
 References: <20260508060958.1086818-1-andriy.shevchenko@linux.intel.com>
@@ -67,30 +67,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use devm_mutex_init() since it brings some benefits when
-CONFIG_DEBUG_MUTEXES is enabled.
+Replace usleep_range() with fsleep() to allow the kernel
+to select the most appropriate delay mechanism based on duration.
+Using USEC_PER_MSEC makes the unit conversion explicit.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/magnetometer/yamaha-yas530.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iio/magnetometer/yamaha-yas530.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index 2ed0d1b93985..d6efa8a595b0 100644
+index d6efa8a595b0..75ff2ba0c23f 100644
 --- a/drivers/iio/magnetometer/yamaha-yas530.c
 +++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -1405,7 +1405,10 @@ static int yas5xx_probe(struct i2c_client *i2c)
- 	yas5xx = iio_priv(indio_dev);
- 	i2c_set_clientdata(i2c, indio_dev);
- 	yas5xx->dev = dev;
--	mutex_init(&yas5xx->lock);
-+
-+	ret = devm_mutex_init(dev, &yas5xx->lock);
-+	if (ret)
-+		return ret;
+@@ -1317,7 +1317,7 @@ static int yas537_power_on(struct yas5xx *yas5xx)
+ 		return ret;
  
- 	ret = iio_read_mount_matrix(dev, &yas5xx->orientation);
- 	if (ret)
+ 	/* Wait until the coil has ramped up */
+-	usleep_range(YAS537_MAG_RCOIL_TIME_US, YAS537_MAG_RCOIL_TIME_US + 100);
++	fsleep(YAS537_MAG_RCOIL_TIME_US);
+ 
+ 	return 0;
+ }
+@@ -1426,7 +1426,7 @@ static int yas5xx_probe(struct i2c_client *i2c)
+ 		return dev_err_probe(dev, ret, "cannot enable regulators\n");
+ 
+ 	/* See comment in runtime resume callback */
+-	usleep_range(31000, 40000);
++	fsleep(31 * USEC_PER_MSEC);
+ 
+ 	/* This will take the device out of reset if need be */
+ 	yas5xx->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+@@ -1565,7 +1565,7 @@ static int yas5xx_runtime_resume(struct device *dev)
+ 	 * for all voltages to settle. The YAS532 is 10ms then 4ms for the
+ 	 * I2C to come online. Let's keep it safe and put this at 31ms.
+ 	 */
+-	usleep_range(31000, 40000);
++	fsleep(31 * USEC_PER_MSEC);
+ 	gpiod_set_value_cansleep(yas5xx->reset, 0);
+ 
+ 	ret = ci->power_on(yas5xx);
 -- 
 2.50.1
 
