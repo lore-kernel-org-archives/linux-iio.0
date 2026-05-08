@@ -1,118 +1,140 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003443F787F
-	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 15:08:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.169
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778252882; cv=pass; b=jkLBbjO9m/uXsnhln6mkWfRkYz4VJkyN8S3DxXlhqnkCH/MRNoSKdPRO2Ak5VwHGHzAu1j9CIm+9SmtoGqIL0sTN4pbuuLtk7DNrj3fIfRt2ZqSaMGHpkyLO8XsFa7IVpwJX9v0BNd9jUPXoF051sWridhEl7IMl4ihxGth6ojY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778252882; c=relaxed/simple;
-	bh=5IxGXyltzYauLjWwPl8nK/tqMAXlPBjsU5S4lRpDLTg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eipEgVXpLs/iv32isR2B4ehXMWnXoqDwnZexQbC+zr3A6TfmoPfnWJb4k15WLT8JsehQ5vqjucqjOHVDqwtPwv7V5rakaBqXDlJGxDmKOMZcb6CuououksJezJ7h+I25tHfr/JuG3exP1vjhH7ztx1EaLT5Gwi5+0cRtGUHP3ZY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fn/WJBLl; arc=pass smtp.client-ip=209.85.128.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0336737996C;
+	Fri,  8 May 2026 15:18:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778253498; cv=none; b=HyDQ1gtJfUzd1Or5ht5hrLbw+71BXXRqUtVE6T0O8CkTzP7u28VP8DUd79EWQBoUG+DLf3tkvvUky0Jx1FpCKBuP/Ovl4hv8cOd3dj/NrZpOpukzH/OrdlAidijRE/FLfBtA6gNC2EA/Rek3FACVk5nATeA5jSNOjRXYdD4oHTk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778253498; c=relaxed/simple;
+	bh=g+PO1ZPQfetzfEdgW0kuymwlhk3d4gVtRR530/mTBOY=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=LM6mc5WLK9ZdV6p8RfXFxtzcQdljjWUyvedqZDmp0CfAeaYb8GTRavLcDW8DUjqIseTtoBfSxncDvNFa8PHzj8e2Y7/66Qa++iF6W2ZpFkS8LdsHiN2E5ybGKAwHM+8lZqHD5oiV7BaqjFerH1Y/l2dkvoElZ1Biqy5QvQGWGQo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bAg6Wgdv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fn/WJBLl"
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-7bd87e5d8ffso37175607b3.1
-        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 08:08:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778252880; cv=none;
-        d=google.com; s=arc-20240605;
-        b=QOF2GMmCcNH7qiViSbGskIff3gOQuYSk3sWi12sa4W4xOqUuh6++HnvcG5N65IacSN
-         8FlUY+1JdwFr9R5nqP6py1vQNwlwhe8weGFnWS+9Kw0jOFHjFunPc1MXJgYAKvK+26dr
-         y7MAhatb1hgxzc9p2aUa9VPDphApqPN95jeew3/0MTincjEZ1Hd9fcZArv6ikMttIix0
-         eL0545LUhi3JIUHl9mS8E0/3zr92XToeacMFhCdH9nMrMWqjSo7E8Mws9GQjpHXsGZsn
-         LM981wYRIiSgpEJALS79OaS7/QcU1iA/Omx1t8X2dMWSzyGZ9h8s25Gg5WFs8gmNgcQb
-         hmAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=91iaZXpk804ML2FZfaLUUS/RB1+MMBa57i99Tu765gs=;
-        fh=szsit64EOo8vQ9+a9GFppXtQW5uDSC4UkjpmWjZ9W+E=;
-        b=ZXCJifG9AVNnu8IbKB5To3moXT2LeoCSsxkIKyJMxUdwYIthdkFTSyQCi3BXLTPk3h
-         s0PXt+XumiqqrpiLfeDX4qlt25sKiawtML5YQ3/QZDQ3Xtj8SQJZu6X/iulUyY4qeFF8
-         cAA8HGOC42q2WPe1uJL9brhdqJVhFJZ185L9lCGKp4HQqGC2CSgYONMrXiQ8/udWb60U
-         CMdVgg+CoxVsZTZwaN1wxnJM/EWMmHXYaKOrt805O62XjxCyj5nn8P0pRvROMdr0Puym
-         TIlVcljqyTLafxGNBCIxtGWbnZiRmsCwQcXw1S2RRHery+20JEXiZhvSv549+WdT8nuE
-         MVzw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778252880; x=1778857680; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=91iaZXpk804ML2FZfaLUUS/RB1+MMBa57i99Tu765gs=;
-        b=Fn/WJBLlIP6rulWeCKwgMXQ+nqx7u8GuTVEB583RjQw2NUi6R1zs/7liqOzwH/laqf
-         V6QHz/igfn9ZwRr3OPsku0S4xR7V3ijPdpkREnTrT2hjRbPp92Olzfj6BXrlWtzq/oL7
-         u9gJ0q51J+vY37HmuHUmAaWaPWItRh3uISZEBpzNMhedi6Oh/Vsi6y5wmi/so21E0FF5
-         xCvKY2ChyDYa+1hwCDfYiD6Ouu55i7X8ogkhJGnNXnax3/Iscmu8DNtin4/dVlNGm9QY
-         a2z+a2pTP84egHMtSHNW0dQQG9+5zju0KAWHOPdwmlunZmYz3+L1wGr3GH5YeU+dsqY0
-         Q1Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778252880; x=1778857680;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=91iaZXpk804ML2FZfaLUUS/RB1+MMBa57i99Tu765gs=;
-        b=BmX7OtAcDQxqY+xMKGQe2dYQijMpzovDBkJaMdh22fv0V5+0ChLBz927z5MHOXfnU2
-         q/iBhPl2Ky+LxmpYa0SGgl6iK83qoS/ZWbzMOUJybS/My5IEYWcd3AgroYacdA0wPXhP
-         q7bbnihVRDzyrkPFzfUY5dcdG/WvAnEBAcTmpC9RcEAS4k7Q0xX72dAIW3s8MyO99jze
-         jMyZBnIVyZbmcqkg11LQ66xTkagzUXtFL6uFQwSQ6dKlcFbwYAeTd43mSdukCiqpxiCR
-         O9h8gq3bX9jeY72r75nWkTyrhtJwXkOVA5AeudTlO1hsnGlnmYGlnHXYoM0yZzwBSlZM
-         OFSQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9Dm115I13i3FYNjfm77F3C7ndl2ZBfaXeN5h6QtJeHXLFtVOnCfdtUgz+0E/AEg8ETia1DxlFmuQc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YynKNowbo7Z2tjNMhl35uzFaXew7Mj5zFnXcvOVkPxQYp8wJBSQ
-	jp3ZyHGmHzXjWkFw/+Z3h8TQHeX/mynosqM6KPuZuvRSURO5DjV0G6BZuoPZm8QhC8cw6MRCyZj
-	ec4kKzaRduwuugL9sQONDEH0/JNncoNs=
-X-Gm-Gg: Acq92OF+muDvSZpYM1f/gvfhP2a7LwDkgp2GXqlV2X6Aqa2x+JBr65VnDdOIQ67d3P/
-	fFyCv/RBqdkNSQKEaJTI9JG7mcDeib41LE43BUW9ds+0eIAzKv5vdUrEqTQi09HSe/Ig+I/LBMW
-	HyTYP7tW0wkEShGUDKtUXLKlopv6bkPGFtxt1FSv3PdRMtpIOrdnowz7Aguy8J8N4kjjxnGnTv6
-	tizYnDd+OAwM7YCVd8DjggEwwvHTscC0he4BPkS89rtOgsLzIzlrZ1Nrt5PeH3qGFj1y4alm067
-	C6SLC52EEw==
-X-Received: by 2002:a05:690c:600e:b0:7b1:9036:a23a with SMTP id
- 00721157ae682-7bf04b72944mr63815577b3.14.1778252879949; Fri, 08 May 2026
- 08:07:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bAg6Wgdv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B489C2BCB0;
+	Fri,  8 May 2026 15:18:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778253497;
+	bh=g+PO1ZPQfetzfEdgW0kuymwlhk3d4gVtRR530/mTBOY=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
+	b=bAg6Wgdv78UdFPk81HDSrncWn9b/sF3sgH+9fU3yBX7JS+uKUWq+jIBqHb6SkuN+h
+	 YUMAjMGtB85qsvlqm6BdEeg4f0jbD+QlxOlXkQy+h/V2Tns2w0FSiPzH5kU5EEBkt+
+	 noNMxdpzXxFnZSu3An5OGiU9YZYu9C0Uu+AGDK8iJq8JAK16H1YWXeamdZbkMak24f
+	 mCPMmN2/2FvN+SuLGVyvzoj4/kzXZyv3Nxdq0OU23/alB5MAXIj8rUys7w1OXJcsJw
+	 Tu9mvei1EjKAywXqNv8vEm+RH9kkkvI/8AyCTRQjVpgxNA8+JFhM+iXZaTRzNr0yys
+	 8unj87PvDBHrw==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260508133915.22042-3-giorgitchankvetadze1997@gmail.com>
-In-Reply-To: <20260508133915.22042-3-giorgitchankvetadze1997@gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Fri, 8 May 2026 10:07:48 -0500
-X-Gm-Features: AVHnY4L83YSfFJ1ojZ5sHn3D34bEDdBuapoWoQlZJKL1HBFUsg_Yw_zLXarAm0s
-Message-ID: <CAKqfh0HhAZjgT5RXe8tKpAt9FgNAM5+xixDsaWpuyN3FyiN2KQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: chemical: scd30: make command lookup table const
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 08 May 2026 17:18:12 +0200
+Message-Id: <DIDE94YBOOP3.KM9I6J4JIJIY@kernel.org>
+Subject: Re: [PATCH v1 1/4] driver core: allow certain drivers prohibit
+ override via sysfs
+Cc: "Mark Brown" <broonie@kernel.org>, <driver-core@lists.linux.dev>,
+ <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-iio@vger.kernel.org>, <linux-spi@vger.kernel.org>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, "Jonathan Corbet" <corbet@lwn.net>, "Shuah Khan"
+ <skhan@linuxfoundation.org>, "Jean-Baptiste Maneyrol"
+ <jean-baptiste.maneyrol@tdk.com>, "Jonathan Cameron" <jic23@kernel.org>,
+ "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>
+To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <20260508095224.1275645-1-andriy.shevchenko@linux.intel.com>
+ <20260508095224.1275645-2-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20260508095224.1275645-2-andriy.shevchenko@linux.intel.com>
 
-On Fri, May 8, 2026 at 8:53=E2=80=AFAM Giorgi Tchankvetadze
-<giorgitchankvetadze1997@gmail.com> wrote:
->
-> scd30_i2c_cmd_lookup_tbl contains fixed opcodes and is
-> only read by scd30_i2c_command(). Make it const to document that it's imm=
-utable
-> and allow it to be placed in read-only memory.
->
-> Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-> ---
->  drivers/iio/chemical/scd30_i2c.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-[snip]
+On Fri May 8, 2026 at 11:42 AM CEST, Andy Shevchenko wrote:
+> diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+> index d17bd91490ee..16a530b91a00 100644
+> --- a/drivers/base/bus.c
+> +++ b/drivers/base/bus.c
+> @@ -594,7 +594,7 @@ int bus_add_device(struct device *dev)
+>  out_subsys:
+>  	sysfs_remove_link(&sp->devices_kset->kobj, dev_name(dev));
+>  out_override:
+> -	if (dev->bus->driver_override)
+> +	if (dev->bus->driver_override && !dev->driver->suppress_override_attrs)
 
-Looks fine to me.
+I think that doesn't work, when bus_add_device() is called no driver is bou=
+nd to
+the device yet, so dev->driver should be NULL.
 
-Acked-by: Maxwell Doose <m32285159@gmail.com>
+But more in general, I think this isn't an implementation issue, but a
+conceptual issue.
 
-best regards,
-max
+The driver_override attribute is on the device, and indicates whether this
+device should be forcefully matched against some specific driver.
+
+Now, if we want to suppress this attribute, we can't really let some driver
+define whether is should be suppressed for this device.
+
+Which driver would that be? The one that's already bound?
+
+That said, I think the problem you actually want to resolve is not "suppres=
+s the
+driver_override attribute", but rather "don't bind this driver through
+driver_override".
+
+IOW, this is a match() problem not a sysfs attribute problem.
+
+So, I think the change that we actually want, is this one:
+
+diff --git a/include/linux/device.h b/include/linux/device.h
+index d54c86d77764..64bcb46edb97 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -839,9 +839,11 @@ static inline int device_match_driver_override(struct =
+device *dev,
+                                               const struct device_driver *=
+drv)
+ {
+        guard(spinlock)(&dev->driver_override.lock);
+-       if (dev->driver_override.name)
+-               return !strcmp(dev->driver_override.name, drv->name);
+-       return -1;
++       if (!dev->driver_override.name)
++               return -1;
++       if (drv->no_driver_override)
++               return 0;
++       return !strcmp(dev->driver_override.name, drv->name);
+ }
+
+ /**
+diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
+index bbc67ec513ed..d48cd9822634 100644
+--- a/include/linux/device/driver.h
++++ b/include/linux/device/driver.h
+@@ -55,6 +55,7 @@ enum probe_type {
+  * @owner:     The module owner.
+  * @mod_name:  Used for built-in modules.
+  * @suppress_bind_attrs: Disables bind/unbind via sysfs.
++ * @no_driver_override: The driver will not be matched via driver_override=
+.
+  * @probe_type:        Type of the probe (synchronous or asynchronous) to =
+use.
+  * @of_match_table: The open firmware table.
+  * @acpi_match_table: The ACPI match table.
+@@ -103,6 +104,7 @@ struct device_driver {
+        const char              *mod_name;      /* used for built-in module=
+s */
+
+        bool suppress_bind_attrs;       /* disables bind/unbind via sysfs *=
+/
++       bool no_driver_override;        /* not matchable via driver_overrid=
+e */
+        enum probe_type probe_type;
+
+        const struct of_device_id       *of_match_table;
+
+This should also get us rid of the SPI patch, since SPI already uses
+device_match_driver_override() in spi_match_device().
