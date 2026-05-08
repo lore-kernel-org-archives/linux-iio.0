@@ -1,127 +1,196 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99CE52D0C63
-	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 16:12:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2AA02EBDDE;
+	Fri,  8 May 2026 17:00:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778256745; cv=none; b=tGZpp7PvjEEsVggOy2mNLwwy0EhYXHU5GRIipNGiIOWzB+46ym1Qdn8v7xKVJhJQtxAw5fR3zO9LqzWBDSAhfY/K70/BwXf/zWt06VplmfbwcVMXBfgVSlzIaVmELse43699/YN/ynKG4XrtIFW6SYtvmXO5StGJE99q841RX4Q=
+	t=1778259634; cv=none; b=jFmHn2alv8GrahVglj30TDyiAxQ7IHu2mgOlVmSTPeSy9bsUNPXOTWdTGlWSy71th4YpumLtYY0QRtewPb3dnVBViRHq4Ipfz9ttoddJ57huW7TVVW9ACZxDe0zgjlKWIb/PZXf1z20MvpX2ogHtJTkmVDkOpnqvkXxw7MgUnZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778256745; c=relaxed/simple;
-	bh=AxH0H7SjWvdfFs9A7JYy9sQog4FFRFEh0PEtdkWQG9Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e8NQ7vofsTX5XebnhhmvBjVxotHmTciAFepsEOtDZLXvMuOW04Mdg1CRL+m37JaiStlVn+1VuI05A4g+RwMgonLkjP+BJQdCygqZPAt4gIjzh8AHSqVqaWzT9hhLy84dh3j3e1dimUxO0TT4ErWTUfVkcAEGlnPm+OIkDRHI848=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TVkl0B+W; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778259634; c=relaxed/simple;
+	bh=hwFcZ1rYADG5Vl5cAE7VhwuunL029cCrXItus5CFbJE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=GlbgXnq3+kEUJoYKLo39UDXRLFfsuPoQYA4zCcTpYbU7AMZdE6MD7b77pk84xYJ9aUr7OGhOI6zN4aPPQXp2/fYZplDd78ApuCTlcU/8ttYneVDBZHmTXoUqPg7f8xZvH7XFMviTfHcMfKx7D1s7phYk0sZhCtVWigw1FN13H2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IwaIEUxK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TVkl0B+W"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-488e1a8ac40so21302595e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 09:12:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778256742; x=1778861542; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=pkIoCWWdm7EHeG5o00/peFWmYkp/yOXcS/WrUgUk1dU=;
-        b=TVkl0B+WXAWPcqCZD6J15/QOEmLrZBRRZoJMBwk1mLRdDuYcXdJ6IAzBGye794Tbla
-         yHUnEHcTD4FrMztZ/MDOpRl9g8dTgCFeJj+wDC9Opgo4avakr6xaMuaIimmX63uy/wfM
-         7yETR3J8lk+0M8K5fj/70XogmgyVcN3hivjfvbWQGitaFcDLtCemfm3W83CxaXu2hL8m
-         555/IbylnI5AJOw1Aj3VHHoOKXhASB5539xyRW4Gmv/OjdSACzUKPcLWciwtA6PfHmnb
-         g7uY7rp8dl7RJCw8KuTNtQSw0C6ZLpBepTfF96AIRRCtG4/Mw+icTT5EcscIj1B+tvdY
-         ACSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778256742; x=1778861542;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pkIoCWWdm7EHeG5o00/peFWmYkp/yOXcS/WrUgUk1dU=;
-        b=A1Ij+HhK7bdICG2g+H+xB9qSobKGjZxEqlH5yAkJgpBZTILVwGcR5oc7zIaKRw5HR4
-         W4ONUUGNsfhZi8pj5Ixhp6T6auC1zhzu3454zX8819qxdmhW/Y7h/Y4IAzgpTOuK1PTa
-         3idxp8+fC10yL1FutDXTa8xGxzeJoRgXJ5Hg2QeVgmS3UI5Muuci2Os2hKU8Voznl6fi
-         dQGg0WKTjXe6m3p0ZAEydc9Zlp/X7+00dTkcYG/rUy/+9p1V50PPj095oy+vmPUBgJhH
-         422ofxj6ku2jJOgWEyYYZvxhgJRDrgJIpThntfKbdQEdv7Fw6JkFqfFU8UA0OVKbnyy/
-         CQbA==
-X-Forwarded-Encrypted: i=1; AFNElJ/QLZniB6RhWmuZ4oCKQXHSvr+s33z0p7uoxYxztsgkGAQnL3+PnsmK0TFbV7m09xsBwXP5FWyjRAs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy6/eCzZuUqJZvIGZmJ93f4NeG5kjEtiZQ5StTojGTEuxjq593O
-	wE05WYB9dC51OB1vpCJuv4YB5fcCX4dgTAfjJP94h8qvSO27CZvUsizz
-X-Gm-Gg: AeBDiet5RYQY7yVb4Y6m604oWJhE9bobaXtXfm0bhd5DpwB50F3Wb18khvzr2RDyHaJ
-	U9dwsqfmeqvlCBmu1++Cy2HHMQ9/Kr80qLAhBNyOro9jNk9QpgdO5jlmJgLWgbkWlYxhQczl/xW
-	GqL+J/W9b2R9kmCQKM6Rx7GDaGMXYAoOiVatPLLfmpOrCugy34Oe5fpILtfmLja0FYwKFYqW5sw
-	KoydvGI8X86MULBk+p9qDM26Ap/hLwN7A4G7OsBAtlHQWPVLlcTnv2v/DMbLnmgQ0wo6nZ/Epth
-	c1AqeH7eewKFae+BjfSPbfQ3m+PJj1af0YfkcR2kBmHhpLfhd9xUfWEVFLdRP6taNtk1aOXG7EC
-	mNDATNErcrc3m6NlL6dOmtyqlSbrcv9IxH3AzECT1y7blUffs1V8yAu1iNYKP7rRUBSU8bOPvmt
-	TSEfeD92JxC7M04TMlnwhnce13lg==
-X-Received: by 2002:a05:600c:c096:b0:48a:f18:ece4 with SMTP id 5b1f17b1804b1-48e51f50982mr159339065e9.24.1778256741678;
-        Fri, 08 May 2026 09:12:21 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548e4bbebdsm5771250f8f.5.2026.05.08.09.12.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 09:12:20 -0700 (PDT)
-Date: Fri, 8 May 2026 17:13:14 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: "Stan, Liviu" <Liviu.Stan@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael" <Michael.Hennerich@analog.com>, 
-	"Sa, Nuno" <Nuno.Sa@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: temperature: ltc2983: Add support for ADT7604
-Message-ID: <af4LCQiqNaiMzFkX@nsa>
-References: <20260427132526.272716-1-liviu.stan@analog.com>
- <20260427132526.272716-3-liviu.stan@analog.com>
- <afCVtXBHIIoLlsRo@nsa>
- <SA5PR03MB83772D8F6A3CC39094DE5241F63C2@SA5PR03MB8377.namprd03.prod.outlook.com>
- <af2no3bJA9MSjXvV@nsa>
- <20260508121441.39ad9f65@jic23-huawei>
- <SA5PR03MB83778AB3C41E0AF56EC754F8F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
- <af3oezNmmBhI4Yu4@nsa>
- <SA5PR03MB837710AE7FD8B8FFF138B7C5F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IwaIEUxK"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 80C0AC2BCC7;
+	Fri,  8 May 2026 17:00:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778259634;
+	bh=hwFcZ1rYADG5Vl5cAE7VhwuunL029cCrXItus5CFbJE=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=IwaIEUxKuwfFkuYpuWO4zk8yEqUpAhDSeEPvyKN1vhIv5NFUnJ1qVcz8LzbRYNxwT
+	 IoeVOHn2ciwGAz/v/4CmxiNEQUrLqveb6B3hOcmCLo/cbE0Ei47AV/NDzrvVcLBq0A
+	 e2wFSAkUVe8yIulD3uhQFxhUYYaFlJdljvlh9W47ey5wMIT10w0kTFJiYGA9BptR83
+	 ze/LyuTYoaD6SygERz7RMrK+lC5Gu1JRLgFeXpFjpkQGrK5wY+HLq3Tc1fZC/qNiUN
+	 6u1JPOz4y2rnuyWrCRjiyZxYKk5Jw2kAl//0UeBsT741Qo6zJY8V2WXVjczRLDqRn2
+	 N4/RwrcSeY3PA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E08CD37AD;
+	Fri,  8 May 2026 17:00:34 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Fri, 08 May 2026 18:00:18 +0100
+Subject: [PATCH RFC v4 02/10] iio: core: support 64-bit register through
+ debugfs
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <SA5PR03MB837710AE7FD8B8FFF138B7C5F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260508-ad9910-iio-driver-v4-2-d26bfd20ee3d@analog.com>
+References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
+In-Reply-To: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+ linux-hardening@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+ Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778259632; l=4625;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=YRlk/iiq4eVXfrqmyO+o0NNkYu0tyVA5S+8lWtEXHes=;
+ b=0VV39g/Wnx+Ah8y4F3SqtMhm46W0xUme5DPPPwUnSzegUyZaFwwhGljivE9L2qlhtG3+Ojke2
+ J4FIBcPJvcjAEnLuYOBFDDpnYHjN/U/D69WiNtIOHXBWTRbLToDRpMi
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Fri, May 08, 2026 at 02:48:39PM +0000, Stan, Liviu wrote:
-> On Fri, May 08, 2026 Nuno Sá wrote:
-> > > On Fri, 8 May 2026 Jonathan Cameron wrote:
-> > > > > Will defer this to Jonathan but if we can have a real of the coverage
-> > > > > given the temperature, I guess this is ok. Given that I think we don't have
-> > > > > a better channel (unless we add one?) for this. Or just extended_info...
-> > > > >
-> > > >
-> > > > I have no idea what coverage percentage means in this case.
-> > > > Can you provide some more details or a reference?  Google isn't giving me
-> > > > anything useful.
-> > >
-> > > A leak detector is a sensor like the raindrop detection modules, whose
-> > > resistance decreases as more of its surface is contacted by liquid. In this case,
-> > > for example, if half of the sensor's surface is in contact with a liquid, the
-> > > ADT7604 should, with an appropiate user-provided resistance-vs-coverage
-> > > table, report 50% coverage in the IIO channel.
-> > 
-> > And, AFAIU, depending on the coverage the resistance changes and that's
-> > how we get into the indirect temperature variations?
-> 
-> If I understand your comment correctly, you're implying that there are indirect
-> temperature variations caused by resistance changes, and that's what the chip is
-> measuring? The chip does not measure any actual temperature for this sensor
-> type, the value in the temperature result register bank is solely a result of the 
-> chip's interpolation of the user-defined custom table.
-> 
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-I meant that's what the table is trying to accomplish? That's why I kind
-of put it as "indirect". My understanding was the chip does not measure
-any temperature as well.
+Add debugfs_reg64_access function pointer field into iio_info and modify
+file operation callbacks to favor 64-bit variant when it is available.
 
-- Nuno Sá
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ drivers/iio/industrialio-core.c | 33 ++++++++++++++++++++++++---------
+ include/linux/iio/iio.h         |  4 ++++
+ 2 files changed, 28 insertions(+), 9 deletions(-)
 
-> Liviu
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index bd6f4f9f4533..cb4e2ade25c0 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -386,6 +386,7 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
+ 	struct iio_dev *indio_dev = file->private_data;
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 	unsigned int val = 0;
++	u64 val64 = 0;
+ 	int ret;
+ 
+ 	if (*ppos > 0)
+@@ -393,9 +394,17 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
+ 					       iio_dev_opaque->read_buf,
+ 					       iio_dev_opaque->read_buf_len);
+ 
+-	ret = indio_dev->info->debugfs_reg_access(indio_dev,
+-						  iio_dev_opaque->cached_reg_addr,
+-						  0, &val);
++	if (indio_dev->info->debugfs_reg64_access) {
++		ret = indio_dev->info->debugfs_reg64_access(indio_dev,
++							    iio_dev_opaque->cached_reg_addr,
++							    0, &val64);
++	} else {
++		ret = indio_dev->info->debugfs_reg_access(indio_dev,
++							  iio_dev_opaque->cached_reg_addr,
++							  0, &val);
++		val64 = val;
++	}
++
+ 	if (ret) {
+ 		dev_err(indio_dev->dev.parent, "%s: read failed\n", __func__);
+ 		return ret;
+@@ -403,7 +412,7 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
+ 
+ 	iio_dev_opaque->read_buf_len = snprintf(iio_dev_opaque->read_buf,
+ 						sizeof(iio_dev_opaque->read_buf),
+-						"0x%X\n", val);
++						"0x%llX", val64);
+ 
+ 	return simple_read_from_buffer(userbuf, count, ppos,
+ 				       iio_dev_opaque->read_buf,
+@@ -415,8 +424,9 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
+ {
+ 	struct iio_dev *indio_dev = file->private_data;
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	unsigned int reg, val;
++	unsigned int reg;
+ 	char buf[80];
++	u64 val64;
+ 	int ret;
+ 
+ 	if (count >= sizeof(buf))
+@@ -429,7 +439,7 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
+ 
+ 	buf[ret] = '\0';
+ 
+-	ret = sscanf(buf, "%i %i", &reg, &val);
++	ret = sscanf(buf, "%i %lli", &reg, &val64);
+ 
+ 	switch (ret) {
+ 	case 1:
+@@ -437,8 +447,12 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
+ 		break;
+ 	case 2:
+ 		iio_dev_opaque->cached_reg_addr = reg;
+-		ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
+-							  val, NULL);
++		if (indio_dev->info->debugfs_reg64_access)
++			ret = indio_dev->info->debugfs_reg64_access(indio_dev, reg,
++								    val64, NULL);
++		else
++			ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
++								  val64, NULL);
+ 		if (ret) {
+ 			dev_err(indio_dev->dev.parent, "%s: write failed\n",
+ 				__func__);
+@@ -469,7 +483,8 @@ static void iio_device_register_debugfs(struct iio_dev *indio_dev)
+ {
+ 	struct iio_dev_opaque *iio_dev_opaque;
+ 
+-	if (indio_dev->info->debugfs_reg_access == NULL)
++	if (!indio_dev->info->debugfs_reg_access &&
++	    !indio_dev->info->debugfs_reg64_access)
+ 		return;
+ 
+ 	if (!iio_debugfs_dentry)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 96b05c86c325..86d17ee69e05 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -484,6 +484,7 @@ struct iio_trigger; /* forward declaration */
+  * @update_scan_mode:	function to configure device and scan buffer when
+  *			channels have changed
+  * @debugfs_reg_access:	function to read or write register value of device
++ * @debugfs_reg64_access: function to read or write 64-bit register value of device
+  * @fwnode_xlate:	fwnode based function pointer to obtain channel specifier index.
+  * @hwfifo_set_watermark: function pointer to set the current hardware
+  *			fifo watermark level; see hwfifo_* entries in
+@@ -572,6 +573,9 @@ struct iio_info {
+ 	int (*debugfs_reg_access)(struct iio_dev *indio_dev,
+ 				  unsigned int reg, unsigned int writeval,
+ 				  unsigned int *readval);
++	int (*debugfs_reg64_access)(struct iio_dev *indio_dev,
++				    unsigned int reg, u64 writeval,
++				    u64 *readval);
+ 	int (*fwnode_xlate)(struct iio_dev *indio_dev,
+ 			    const struct fwnode_reference_args *iiospec);
+ 	int (*hwfifo_set_watermark)(struct iio_dev *indio_dev, unsigned int val);
+
+-- 
+2.43.0
+
+
