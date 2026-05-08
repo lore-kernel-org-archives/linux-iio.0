@@ -1,409 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f43.google.com (mail-yx1-f43.google.com [74.125.224.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F98712CDBE;
-	Fri,  8 May 2026 13:00:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778245241; cv=none; b=c7qn2Y0IV+GkB+aUC8ai5uUkLurmfra/NQLMGgkCMVc9ZAO0BjNsCxK7utJ/Zhi1zsIkjUiUqIx5EN/47IuzCYXSYG08GacUqEREA9IRwLKANhX7Ya072PNAAHOskPuGAjpv2Wob3vAITqMoLzdc0HDxprEtt9Asyuwq86HIJnE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778245241; c=relaxed/simple;
-	bh=re/YCULUu6tGnA/O7SIf/Dx9dxmK01n3tOp6OgsvpnI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cUVRI3kuX06y216sXBvhSAj6Rg51pmsgu18FkzNmuAHesCTTfFMb/Fk+TXEHaFY/8c5NyoLlFQf5TRpN6fOr1lctRtcec0kji/+0yE61J0QWWTGHCpPjoqVecL56F/b1QFWNV2MJa+CtGIAIngYAt0xmEGZ3rU2keo7sDBmdW0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l50hbpG4; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57BA332C923
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 13:03:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778245438; cv=pass; b=Kaqkfw7Zot/ojILUxYD+0f706OI9aK9TXXRJUkpxgHQtBcV20kQgWQAK5zPAxL0cu+Qgu8/irmQLz9fylyjVvE+SgzxJJV/rJBaeoYsxtR/Ba5u4w/UzVlYZt5mQfOwVpQ7yHj1vVDtTvgj+6JhXGt8wg7zxF0lwvzm+aelbFE0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778245438; c=relaxed/simple;
+	bh=DcziYu8sSHNVUrdT6VaAASn9AeNJDxXWdJ8eSpZxTyo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=AruQcQroWYS6iPNDfq+DgEiaSrVhrNLVPqwCMnb+HQlynFV0osdlcpAHABcAHbfOP//4fj9/mHY3Pk/3YWrTCxcn8b+wZBs7AdvbFkiJCo0R5DjEYqicnY4HncTSNahC2N9GScAVpNXsK/cmI/n84qEyhhCilm0RIGTYv5kZ7wg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=knFx8rJV; arc=pass smtp.client-ip=74.125.224.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l50hbpG4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED5DBC2BCB0;
-	Fri,  8 May 2026 13:00:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778245240;
-	bh=re/YCULUu6tGnA/O7SIf/Dx9dxmK01n3tOp6OgsvpnI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=l50hbpG42jMEAHGl3U512HWNxAykjY20vAjOrb5w82bEirqfdyW7UOFR986NmHaHP
-	 Ab5MH15k5LOQoIW80Ih0LAKG7s2kkgU9E99hlxIyS1J9FKAa//1RUAxZwTceT4M85M
-	 U33BE7DjiNQqGDh6ANWTjvFN1gFA5kmZogCVOQUQqSjnIr5CKiSwLvbj3GpbUuZ9hE
-	 T+ZeeiccZMOM+pSgaMkdRecV/n7GpiJnNcpAbSHE2SIa3bzfmeJ/v+yAJfv5txMdJs
-	 wILMhP109ZwRjueZ/BN9slaZo9BGkis0uA6eRtE7G57KPRvTaej7dlZEVJXofEEaJK
-	 mVQyKTNUwnm7Q==
-Date: Fri, 8 May 2026 14:00:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>, Janani Sunil
- <jan.sun97@gmail.com>
-Subject: Re: [PATCH v2 3/3] Documentation: iio: Add AD5529R Documentation
-Message-ID: <20260508140029.35ff63b0@jic23-huawei>
-In-Reply-To: <20260508-ad5529r-driver-v2-3-e315441685d7@analog.com>
-References: <20260508-ad5529r-driver-v2-0-e315441685d7@analog.com>
-	<20260508-ad5529r-driver-v2-3-e315441685d7@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="knFx8rJV"
+Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-65c2cd216c9so1944910d50.3
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 06:03:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778245436; cv=none;
+        d=google.com; s=arc-20240605;
+        b=j1yhG6uTL++0SQEWCtVlvsIrLcDav5IsiRQPWkUT36K5q19RZapD4Dq0OuhxsrKyxt
+         T9Z1wbqBfpesmyHuFLcGM6e74iR+tr5esJmv4pBc8Tt8kWPiNl8THdwb231dLHyUfHRr
+         E5d11H4lOk1jVRo6GUkAx6JAkxouTxt5GoSUNamu+wKI9fNWeJZ6hR4hCdY6oENBwuuc
+         0Dx6PbCJrlNq4ceaGpy81AfZLTd4kr5Eok8oYp9SFMJ7xs5ymF9T03uNIAuiiKYkcgqI
+         bTsAvKkPWaelMmqrNE4L7TFlSRycC2W+/2Ndw6RWKryusfaNt06rTWiNp20rRl2h+6Pp
+         s0Vw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=cLox9PCUrBH1Cc7Ey5UPJTwMhmLRQJXm/SnY+3HC/fc=;
+        fh=kBKDxTT1hv/srHPd839M7UxQfSejUE8F3SzATuDvOe8=;
+        b=ShhVxwnnYTlaczsKilUXskET1U7PaPl/G/K3G8Fshwo+EFYfjW/H8mFa9+Kr87ckgk
+         /ZqjnRGdhdkXyOAIYX24ELY/wE4hVP4ShGeuocYKAgc6gT4pFaZCRiSc6wPQniEMp6o9
+         imdVjeESEDShNSQd2VVibgWYETXmomkdV/UNhveJQECJoS/eZzZQaGw5prZNENaIzS7O
+         aAa7iX8YREYtCi7Oi/tx9nShVC0axCI7RnqhAsoL/bNweIfn12kGFXUaF9wEmiICmGhU
+         UesWefUQmlb5tPrrmUmIXdWQvTrALxbr/0StjNeuHnoM1D6w65KZa8ZTvYlUOnTuQlPU
+         Er5w==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778245436; x=1778850236; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cLox9PCUrBH1Cc7Ey5UPJTwMhmLRQJXm/SnY+3HC/fc=;
+        b=knFx8rJVIbG7I+rsMI8qFUkgQsuzZ0X6U7GuuTubGFsGoCU4Lwpr3R2RHKE7Iz+zNR
+         6QdROGT+WJpAG6ZGHOVUJeve+xggTNbWzi0yC1/j1oyr0tsx+14QsjMwDLpsSBlDy+RF
+         vblcebonPiEbIk4U64gOpG+FxPl8T+f16ci7Mvjva9ZxS1WNHeUqPyLF3dZGjnSupwoU
+         MuSniwMg5IZy4PvTJiG01l4vtNjAH7x7/MlspCJ+I5/ZnEf8Z5H9gnsrzT5+alGpZJr2
+         fuRJXT4bvqJb6rpKDtYmM0zVOdL4zR246vZfO1QMTADhkOj4J8LtotecvZUY6FM2099P
+         qH2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778245436; x=1778850236;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=cLox9PCUrBH1Cc7Ey5UPJTwMhmLRQJXm/SnY+3HC/fc=;
+        b=gLk2rDpHy/npjEGnqJVNaWlKYwKjv/HYuzXpm9xrtx3YW2gqaKtnjbiFc22aP1X4/L
+         U9EE4poLSreWXHrmhLL5ZUTkpDFXIzaJ/M729bmdSBDU3kQnZDDwH7wDc29wCxmt9XOq
+         1kW+BeIigt26Z0LaAgt6wX7ub7Yz5a0I0URmcbx8cxN9YyTk5vl4gGsSh86EOsAviLNt
+         7gTQ/LFmExO7SboArUPRaGqPE8Fn/RDv5rAe21I3+LbPAYoA9VE5cpvNVrlNuYzt5tj/
+         TyRJMEdGemY3EoEGc7lwteLgMwzhe0ubKxEilb9K+AOB60Dz0Y+eXLFf6qNhfz2IwVLf
+         olYg==
+X-Forwarded-Encrypted: i=1; AFNElJ8htT24jb3QmPcgmfVNAvnWvPmndRCxFZtrc28YWa4G6+sLMuOUhJ5VFzE55LuPljsqcIo+PrqR3uI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyNzSiGYtc/MN+BuODDTBSUYjGKl6kDssDNWDmGbLCDko5zUj9H
+	/Gjw86O5f+2HP2DKPPMnN+5J/+FkjrmxqiTV9UHc6ARfnggrEyXf1zfXmdwW5SDDHFLwYI/pSY9
+	QtC8Ive+ESPAjqIjIT7bjLFm/8KYEcFQ=
+X-Gm-Gg: Acq92OGA0ML6pWz9/4i/LumsICXpPh8A+wHwxYBm5Ud21auT0oqGgu1CuMj9qPTqmNI
+	f1w3jA9CohUpOXETNUUPWTlAUzcUohTezavfFgaVNK3B4GsYnWEwInlLXuCCOe5shdWqkmbklVL
+	wncYUkF3TZkTvptV3pywtAfOTSyk9+WE8tqjfgp0g6N6Fd/OlD2QgbQ52TIBdGk0RvBi2Aqouju
+	PoCXQqpbKG7wl7eVSZqfA9IvEsNbJGUkoXibT4uGurFIKRFuZOuET5sTALtsW/KA5RKrBnn3Iq8
+	W81H/ErOtMl02y/0e0eC1KssYGmUw+wyl+E2mBNCEg==
+X-Received: by 2002:a05:690e:204b:b0:65c:25e7:bffa with SMTP id
+ 956f58d0204a3-65c7989b694mr9872520d50.7.1778245436174; Fri, 08 May 2026
+ 06:03:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20260507223337.48437-1-m32285159@gmail.com>
+In-Reply-To: <20260507223337.48437-1-m32285159@gmail.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Fri, 8 May 2026 08:03:45 -0500
+X-Gm-Features: AVHnY4I35THMS-H5T08A7rB41xfKQUA7OnOgMvabAQcfCxRe_EOb2g4C2KnTdnk
+Message-ID: <CAKqfh0ELaB7ifXNT3EkuC-K9s=V-mNgQ9WZt0ufVgmSD3xGQeQ@mail.gmail.com>
+Subject: Re: [PATCH v5] iio: imu: kmx61: Use guard(mutex)() over manual locking
+To: jic23@kernel.org
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 8 May 2026 13:55:49 +0200
-Janani Sunil <janani.sunil@analog.com> wrote:
+Hi Jonathan,
 
-> Add documentation for AD5529R high voltage, 16-channel 12/16 bit DAC
-Whilst it is good to have documentation for devices - I've made some
-comments below on not providing documentation of standard things (too much
-duplication) and being careful to work out who the document is for.
-These tend to be for users and board integrators etc so we don't tend
-to have much about the internals of the driver.  For that see driver!
+On Thu, May 7, 2026 at 5:33=E2=80=AFPM Maxwell Doose <m32285159@gmail.com> =
+wrote:
+>
+[snip]
+> @@ -945,29 +942,26 @@ static int kmx61_write_event_config(struct iio_dev =
+*indio_dev,
+>         if (state && data->ev_enable_state)
+>                 return 0;
+>
+> -       mutex_lock(&data->lock);
+> +       guard(mutex)(&data->lock);
+>
 
-Jonathan
+Correct me if I'm wrong but this looks like a TOCTOU race, was
+reported by sashiko at
+https://sashiko.dev/#/patchset/20260507223337.48437-1-m32285159%40gmail.com=
+.
+If this is a confirmed race I'll get a fix out this evening.
 
->=20
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
->  Documentation/iio/ad5529r.rst | 216 ++++++++++++++++++++++++++++++++++++=
-++++++
->  Documentation/iio/index.rst   |   1 +
->  MAINTAINERS                   |   1 +
->  3 files changed, 218 insertions(+)
->=20
-> diff --git a/Documentation/iio/ad5529r.rst b/Documentation/iio/ad5529r.rst
-> new file mode 100644
-> index 000000000000..41fea1521790
-> --- /dev/null
-> +++ b/Documentation/iio/ad5529r.rst
-> @@ -0,0 +1,216 @@
-> +.. SPDX-License-Identifier: GPL-2.0-only
-> +
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +AD5529R driver
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Device driver for Analog Devices Inc. AD5529R 16-Channel 12/16-bit High =
-Voltage DAC.
-> +The module name is ``ad5529r``.
-> +
-> +Supported devices
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +* `AD5529R <https://www.analog.com/en/products/ad5529r.html>`_
-> +
-> +Description
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +The AD5529R is a 16-channel, 12-bit or 16-bit, high voltage, buffered vo=
-ltage output
-
-Long line.  Wrap to 80 chars consistently
-
-> +digital-to-analog converter (DAC) with an integrated precision reference.
-> +The device operates from unipolar and bipolar supplies and is guaranteed
-> +monotonic. It has built-in rail-to-rail output buffers that can source or
-> +sink up to 25mA.
-> +
-> +Hardware Features
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +* 16 independent 12-bit or 16-bit DAC channels
-> +* Independently programmable output ranges:
-> +
-> +  - 0V to 5V (current driver default)
-
-With such wide ranges we have in some previous drivers made it a device
-tree constraint.  It rarely makes sense to switch between them at runtime
-as these are really about what circuit is downstream of the DAC.
-That needs to be there from initial driver otherwise we have a
-backwards compatibility problem.  A 'default' of smallest range should
-be safe though (gets messier for some device where 'smallest' could be
-unipolar or bipolar)
-
-> +  - 0V to 10V
-> +  - 0V to 20V
-> +  - 0V to 40V
-> +  - =C2=B15V
-> +  - =C2=B110V
-> +  - =C2=B115V
-> +  - =C2=B120V
-> +
-> +* 4.096V precision reference (12ppm/=C2=B0C maximum)
-> +* Built-in function generation capabilities (hardware support)
-
-I'd drop the "(hardware support)"  Given you are talking about functions
-of the hardware, bit odd if the hardware didn't support them!
-=20
-> +* Output voltage and current monitoring (hardware support)
-> +* Temperature monitoring with 8 on-chip sensors (hardware support)
-> +* Over-temperature protection
-> +* SPI interface with CRC error detection support
-> +
-> +Current Driver Implementation
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> +
-> +The current driver provides basic DAC functionality with the following f=
-eatures:
-> +
-> +* Basic DAC output control for all 16 channels
-> +* Scale attributes for voltage conversion (0-5V default range)
-> +* SPI communication with regmap support
-> +* Reset control framework support
-> +* Automatic hardware variant detection (16-bit vs 12-bit) based on produ=
-ct ID
-> +* Debugfs register access for development
-> +
-> +SPI Configuration:
-> +
-> +* **Mode**: Supports SPI mode 0 and mode 3 (default: mode 0)
-
-In what sense is it the default? I'd drop that as just depends on the DT.
-
-> +* **Frequency**: Up to 50 MHz (typically tested at lower frequencies)
-> +* **Word Size**: 16-bit transactions
-> +
-> +.. note::
-> +   The device default configuration uses address decrement mode (ADDR_AS=
-CENSION=3D0)
-> +   for multi-byte SPI transactions. Therefore, all 16-bit register addre=
-sses are
-> +   incremented by 1 in the driver to access the last byte first, allowin=
-g the
-> +   hardware to decrement and access the complete multi-byte register cor=
-rectly.
-
-This doc is a slightly odd mix of stuff for users (most of it) and
-driver details like this. I'd move this to a comment in the code and
-keep the doc for users.
-
-> +
-> +IIO Attributes (Currently Implemented)
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Basic DAC Control
-> +-----------------
-> +
-> +For each of the 16 channels (0-15):
-> +
-> +**out_voltageY_raw**
-> +  Raw DAC code (12-bit: 0-4095, 16-bit: 0-65535)
-> +
-> +  * Read: Returns the current DAC register value
-> +  * Write: Sets the DAC output code
-> +
-> +**out_voltageY_scale**
-> +  Scale factor for voltage conversion (millivolts per LSB)
-> +
-> +  Based on the formula: VOUTn =3D A =C3=97 D/2^N + B, where A=3D5V, B=3D=
-0V, N=3Dresolution
-> +
-> +  * 16-bit: 0.076294 mV/LSB (5V =C3=B7 2^16 =3D 5V =C3=B7 65536 =3D 0.07=
-6294mV)
-> +  * 12-bit: 1.220703 mV/LSB (5V =C3=B7 2^12 =3D 5V =C3=B7 4096 =3D 1.220=
-703mV)
-> +  * Read-only attribute
-> +
-> +Debug Interface
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +**Register Access**
-> +
-> +The driver provides debugfs register access for debugging and developmen=
-t:
-> +
-> +``/sys/kernel/debug/iio/iio:deviceX/direct_reg_access``
-> +  Direct register read/write access. Format:
-> +
-> +  * Read: ``echo <register_address> > direct_reg_access; cat direct_reg_=
-access``
-> +  * Write: ``echo <register_address> <value> > direct_reg_access``
-> +
-> +Usage examples
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Basic DAC Output Control
-> +------------------------
-> +
-> +.. code-block:: bash
-> +
-> +    # Set channel 0 to mid-scale (approximately 2.5V with 0V to 5V range)
-> +    echo "32768" > /sys/bus/iio/devices/iio:device0/out_voltage0_raw
-> +
-> +    # Set channel 15 to full scale
-> +    echo "65535" > /sys/bus/iio/devices/iio:device0/out_voltage15_raw
-> +
-> +    # Read current value from channel 5
-> +    cat /sys/bus/iio/devices/iio:device0/out_voltage5_raw
-> +
-> +Scale Attributes
-> +----------------
-> +
-> +.. code-block:: bash
-> +
-> +    # Read scale factor (millivolts per LSB)
-> +    cat /sys/bus/iio/devices/iio:device0/out_voltage0_scale
-> +    # Output: 0.076294 (for 16-bit) or 1.220703 (for 12-bit)
-> +
-> +    # Convert raw to voltage: voltage_mv =3D raw * scale
-> +    # Formula: VOUTn =3D A =C3=97 D/2^N + B where A=3D5V, B=3D0V
-
-This stuff is very standard.  Consider if it is worth documenting
-for this specific part.  To me it isn't..
-
-> +
-> +Register Access for Development
-> +-------------------------------
-
-Likewise this section is very standard so I'd not expect per device
-docs for it.
-
-> +
-> +.. code-block:: bash
-> +
-> +    # Navigate to debugfs directory
-> +    cd /sys/kernel/debug/iio/iio:device0/
-> +
-> +    # Read device product ID (register 0x04)
-> +    echo 4 > direct_reg_access
-> +    cat direct_reg_access
-> +
-> +    # Write to a 16-bit configuration register (example: LDAC_HW_SW regi=
-ster 0x19)
-> +    echo "0x019 0xAA11" > direct_reg_access
-> +    cat direct_reg_access
-> +    # Output: 0xAA11
-> +
-> +    # Write to DAC channel registers (16-bit values)
-> +    echo "0x149 32768" > direct_reg_access   # DAC channel 0 mid-scale
-> +    echo "0x14B 65535" > direct_reg_access   # DAC channel 1 full-scale
-> +
-> +    # Read back DAC register values
-> +    echo 0x149 > direct_reg_access && cat direct_reg_access  # Read chan=
-nel 0
-> +    echo 0x14B > direct_reg_access && cat direct_reg_access  # Read chan=
-nel 1
-> +
-> +.. note::
-> +   For 16-bit registers, use hexadecimal format for addresses (0x019, 0x=
-149, etc.).
-
-Are there non 16-bit registers where we shouldn't use hexadecimal?  Otherwi=
-se this
-note seems odd.
-
-> +   Values can be decimal (32768) or hexadecimal (0xAA11). Register addre=
-sses shown
-> +   include the +1 offset required for decrement mode operation.
-Ah. This is worth noting as users need to be aware of it so keep this bit.
-> +
-> +Device Tree Configuration
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-> +
-> +Basic configuration example:
-> +
-> +.. code-block:: devicetree
-> +
-> +    &spi0 {
-> +        status =3D "okay";
-> +
-> +        ad5529r@0 {
-> +            compatible =3D "adi,ad5529r";
-> +            reg =3D <0>;
-> +            spi-max-frequency =3D <25000000>;
-> +
-> +            vdd-supply =3D <&vdd_regulator>;
-> +            avdd-supply =3D <&avdd_regulator>;
-> +            hvdd-supply =3D <&hvdd_regulator>;
-> +            hvss-supply =3D <&hvss_regulator>;
-> +
-> +            reset-gpios =3D <&gpio0 87 GPIO_ACTIVE_LOW>;
-> +        };
-> +    };
-> +
-> +For complete device tree binding documentation, see:
-> +``Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml``
-
-Hard no to replicating the device tree example - that is just
-noise. The cross reference is enough.
-
-> +
-> +Driver Architecture
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +The driver is structured as follows:
-> +
-> +* **Core**: Basic SPI communication and device initialization
-> +* **IIO Interface**: Standard IIO DAC channel interface with scale attri=
-butes
-> +* **Dual Regmap**: Uses standard regmap-spi for both 8-bit and 16-bit re=
-gister access
-> +* **Reset Framework**: Reset control support
-
-Not seeing value in anything except the dual regmap and again this
-is mixing user stuff with driver internal details.  That stuff probably
-belongs in the driver.
-
-> +
-> +Development Notes
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +* The driver uses standard regmap-spi for both 8-bit and 16-bit register=
- access
-> +* SPI mode 0 (CPOL=3D0, CPHA=3D0) is typically used
-
-Drop that.  We don't care as long as both the options the dt-binding allows=
- work fine.
-
-> +* Reset control framework support for device initialization
-> +* Register addresses are incremented by 1 for 16-bit registers due to de=
-crement mode addressing
-> +* Scale attributes provide voltage conversion for 0-5V range
-> +* Automatic regmap selection based on register address (=E2=89=A40x13: 8=
--bit, >0x13: 16-bit)
-
-All this is driver internal stuff so I'd drop it.
-
-> +
-> +References
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +* AD5529R Datasheet: https://www.analog.com/media/en/technical-documenta=
-tion/data-sheets/ad5529r.pdf
-> +* Linux IIO Subsystem: https://www.kernel.org/doc/html/latest/driver-api=
-/iio/index.html
-I'd skip that IIO generic docs reference. Not seeing it as adding much in t=
-his file.
-
-> diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-> index 007e0a1fcc5a..27f2ab41f05e 100644
-> --- a/Documentation/iio/index.rst
-> +++ b/Documentation/iio/index.rst
-> @@ -25,6 +25,7 @@ Industrial I/O Kernel Drivers
->     ad4062
->     ad4691
->     ad4695
-> +   ad5529r
->     ad7191
->     ad7380
->     ad7606
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 143714e27d51..41f42eb1adf2 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1513,6 +1513,7 @@ L:	linux-iio@vger.kernel.org
->  S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
-> +F:	Documentation/iio/ad5529r.rst
->  F:	drivers/iio/dac/ad5529r.c
-> =20
->  ANALOG DEVICES INC AD5706R DRIVER
->=20
-
+best regards,
+max
