@@ -1,121 +1,134 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AD711607A4
-	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 13:50:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778248245; cv=none; b=UJjda0SrX9wWmYD5ZC2zurecaaAOrExpee1lC5wNnwlRAMoyMch5f+SsJgiy3ZcuxPQjV+xA03fHCrmn0zalgiWtYg//5CrUvpWcy32YDPbxVvLCYtREXxWB+GmEgeONELEO4OVR5eeTUQAvuZOi+ZxpDaM8Yxoim3ciN8Rl5lA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778248245; c=relaxed/simple;
-	bh=/DW9ChJ+Z4lvrI/8m+Gj6NNDh8t2JT26OuVxVi091XM=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=stSBx3hL8AAnkiILh61bURQv8lnZGjePd95x5RHLi9fpN4j4bVOzbVz6H8jFfEIFHssuJLlcydTk8coeUV6g7vRp96qq3MoXgrL9iTg3U0j1LAEbyjj8lbUQ0gJf2jg4AbNfJEnCkSk4EwEQk7TGt+MNbH/5w7Mlbm/90Y+Du4M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BHPxm/4p; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B09D33DEAD0
+	for <linux-iio@vger.kernel.org>; Fri,  8 May 2026 13:51:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778248284; cv=pass; b=dynvp0k1qr7rFz/o8nQOtrRFLt+aNR0v6Qmwj/ZZdREGkjf+AYQ7AwhakA02wbvnziLlkqWuCMX5EeICH0Umj+6kz9wCCuIjj7M/xzc/C+N9/hTqq4VEgLnps8WmviPcxhOlHotSrj0FUPdf28BQuWW4ayReZO7IIBQ71+d3FeQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778248284; c=relaxed/simple;
+	bh=vMGRu5UP+HxQLHcHEu3EgY0sT7rkPnkOA1sZlQRI51M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=YR9Ne3woBCgKCdPn9pWYYt8ODoCyXU1EI5ng+Sb76bmzvyQQanXkeiZKDtgEt/qVCcm14tr1HAIAUHTav86K1ToGoJ8mrmiCnPkF287KisdrSTa3lCxmaxEkQoJoDwmxFl1tIBMnEUJRqeJp9z/YM6FgMyPBEJ0fyjSGLjFNeZo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tj9rGNue; arc=pass smtp.client-ip=209.85.167.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BHPxm/4p"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-43d7e23defbso1222672f8f.0
-        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 06:50:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tj9rGNue"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5a40d02b58bso1428113e87.3
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 06:51:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778248281; cv=none;
+        d=google.com; s=arc-20240605;
+        b=PHdbDOMfufGvXdem2ToSXojF12nSH28ZgxRwyP3vpIT2rm9rP79IGUdmB8MqRKw7O4
+         1wHXn9dD44nxkMeJ4mNXKiv5l/rb3kG+W/Tw6ZKoa/4ATETJJLmDUUMblES/Ijwd44tI
+         OkNFohPLrIRjwX8TepmOSiHSlx087syzYEEBrLl8QknvMTQoV2UhuFKaU/CphMvkpiQS
+         KR/CHNzWnFKqmjXy5R0DFghtsurCQTS1Zs98rTob/atIXBh7Qlwaa3hpnqCs0N/I2bpV
+         PLBJd827Oi8HmB/9Mfox0jYgLjGR5KtFSAzJEsIBLvW423I0yON8xuwC8lAeFijZ2yb6
+         tLaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=5Ch+ggjtADKUH+qT1O+DxyUhpjnpiaoh2/HLDng+OhQ=;
+        fh=lj7lOMOW6Vc239qavxjs1kkML+BHnDCDtR43tH911iY=;
+        b=OGH3IwoZb2KMU51h8pA8Z/xmz02A+ACkk8Z+Ic8A5D5u66AehOXjyd1qVRtCwOnUIj
+         2ZZSjjvXHIL5UMejAKgWhPDezTtXbv95G0SS2idPUqCcMgQY8frjP6LHPbQDaorRP/Th
+         /LWKAl+VOgjJomggjBZKYdZD7eXh16vDD+iX5ITPMePvydhT786/lCNxEbnCFNIcrGVd
+         Mt2T1TTH4Qis/PTVjoAuQ//FmdeiPLPXAms8m37xL/nRwlkQWsvG4FkQ7RmNlhJyPl5P
+         NiUngQsbHDu7wEm4D4/StJ8aGUBXNrmXoxEgX45ePbiyN8V5SBPHUl6R6ST1NRESnj/o
+         7egg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778248243; x=1778853043; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=NHRSS+oWN6kCe7LyNpMRwfm45OI0qk2PQL4/WD6qye0=;
-        b=BHPxm/4pS4YovEdzHEHLVKHBImFvDhZ1oyMnUatu+PEv0Spif1inby1u27Smy5CCUn
-         stxKS0zYBstWwwjDaFXgCtVydU/hXRblaVgmiAjKNOGtPgsOW1wjL+El/YfcBVcLA7pv
-         AqiWDSIB4ZCos26/RFL1gYdCbgnQTi3VGcgxQabPavrFND1nzAUtC+KVB2/Ph+qyl4rQ
-         AEJC2UAwG9gCHX9E+aRTafcNN6ky2+ZxW3s5Jk5log9VR59v/62b7Fnvx2kyiUAeG+Kn
-         CZaANAo67HUXD6aAxA1eIdVR9wLqGMR1Dh9dBqmNj1ZtV3uCtcWjhJpWAn4z0nz2d9jC
-         0EqA==
+        d=gmail.com; s=20251104; t=1778248281; x=1778853081; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=5Ch+ggjtADKUH+qT1O+DxyUhpjnpiaoh2/HLDng+OhQ=;
+        b=Tj9rGNueFMwQ7qfqZ57PB9iNWc0vCoYCgDsNWOvQ/q2rFpAIwiy7n5hdoNwgrZPbhh
+         u2maHKj3vxLkt8fg+nRqEnpu5QIZpumypCY8xkf7SyekZa+gvnVi0sKTHR/cuijZoUAO
+         BrZJJtO6sRansbXT6Z1+z1BlJzj3aKSFGEeyCSCXLPShTCoTDW5pnc4KshO4T9C1s6mY
+         YIzBkEtlYpWJ/qpWbuqE3dU8IufHnnbg3stA23YEKlgtjdGkzVyZ+SKJzGIjHIFX8Qy8
+         HfJ1R21GekFMFEq8JGvMe0wJ/Fxuzv2pAof4jQTHax8ANnaBE4/yZZJ6SXuBf1l0+MKG
+         S+UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778248243; x=1778853043;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NHRSS+oWN6kCe7LyNpMRwfm45OI0qk2PQL4/WD6qye0=;
-        b=Qdgh6zSBwnsw9Olvwsm71/4rJPDf/N6vKZC4YF1DG70z2jIAxFAWZjHjJr2h5tE9le
-         LDuTtWr86cqqaXoh7Y5N2nOnKoDeifuaE2VMH8NZX5NC8Q7gtmjFB2tUXW4N5h1UHnLN
-         sZSuybe/Ua1yAvnkR4zYajei105iUpgv0Po4YPi5lft+8paoPsS97F1BoFqi3b1Onr3o
-         F7nkdxK9yXBr4bWBRdhBbxMV/UZL0XLujhZQnLRrnPQb5gxpmZL0eLonG5JQm2ll86W+
-         w9107tnbmLkZm8GOovx2Dq64xNv0vH2rDFZhAXOqxQGLARDjJW4WiTFwYeb4xomIu3xS
-         UjIg==
-X-Forwarded-Encrypted: i=1; AFNElJ+l437B4Ge8Gc1nvbB6jYiDibb9JPW4ItNYvVwMPrnX7lderXe6PT4gwP+ZvfS5XTrNdEnL/K/v9YM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywy9HrVD3r9ek81eXvWDuBdkV5T5EcK8bLRUBeA81aQxuJZN7z4
-	H5h/pAAyXMsZoBXx34ssWLzDdjyUyPnGuLQMEFVBOcD1/c4mehk+zYeD
-X-Gm-Gg: Acq92OEe2avqtcSnRb0kxqp1sxCwzm8dtBNIp6p7cWQnT1A8/pbhz02tWvFBT2hImqW
-	GDinAty5TDgxhSHwc8ch/JKg3P2YSYPFVCnST2XOkfP4npMCUbJ0sAPRNiDDZ44a0FnZ+krH3IT
-	vjggFrsd8aafj3Eb9fzX7UQt284cHdyOqmYVWAO7itI2eFwfi7CBNgvNCFcZzjynE8WvCGm8GvL
-	iucnyF81oHom8KbuozbT3YTb+dAbI9iQwNG8NI+u15agh8HKdfbI4FFLDFKMwVDzWEpuWF8ipl5
-	Mg5SNZsadDVawxYjO1tbP8d04DNRCsw/ih2rL+2+S+WhnR+21bO0ExIKjiVeH6FGO+UehqkeOT8
-	C5EfFT11aSu10ltIMp0w1+wfvKMT8WmeCgn1Dz99kT3aLd4hc6edejMmmpaBlBNJ+D/GhsR1x/n
-	0bNFW3IbQ/JL19EWdzI5gq9My7+sQdxc3GcNxHS2ihnqzr1QfSp+SX5S/AN7uW9UeErUZnTwWZU
-	TtQ31KNFz9E/RPNAMtuyf4GvwYlKVxz/lu2U15jJ+6vHhhltFashPc51k6W
-X-Received: by 2002:a05:6000:2882:b0:452:c246:ab7a with SMTP id ffacd0b85a97d-452c246ac5cmr13022901f8f.14.1778248242599;
-        Fri, 08 May 2026 06:50:42 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45491bae13csm4657716f8f.29.2026.05.08.06.50.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 06:50:41 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Fri, 8 May 2026 14:50:37 +0100
-To: Jonathan Cameron <jic23@kernel.org>, 
-	Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>, 
-	rodrigo.alencar@analog.com
-Subject: Re: [PATCH v2 1/3] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <zh7iqytpkrfonxv4mup5fcyo7z2ymnizobdu5smxevax2isge6@zug2y6e7rdj5>
-References: <20260508-ad5529r-driver-v2-0-e315441685d7@analog.com>
- <20260508-ad5529r-driver-v2-1-e315441685d7@analog.com>
- <20260508134843.7646c4f5@jic23-huawei>
+        d=1e100.net; s=20251104; t=1778248281; x=1778853081;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5Ch+ggjtADKUH+qT1O+DxyUhpjnpiaoh2/HLDng+OhQ=;
+        b=p271v68oeQ02P37TRKtTOiv252QAO3LiHph6XK3Lus27LYnpg6ibkMGW20/wKxKobC
+         DnpBiwsjTOvcMqTOdwpZOXYOmMv2WHml8meKBJNLMyFIq6I/gGQVm/7wOoYLli/8dquc
+         e8tzI4s432lgCWreGglXuQhOdryUiMLXhuotXvvqSUUz5CnoFbRhr6KOhHcc1Pc/4oe0
+         /ml6ZI9Smdfi0z/UA3OpdWVcHEkprp/5rSl+E/76V4m/oCIcc+4MKg37hXUreFJmA7au
+         Czs+uhSovMxMrGQGf8gcFmBIKGlUQ4LYkMndSRDIdmAu5SQLnV1XdsyTdRQ5O46Ay8E4
+         r7qQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/8S5et0JfBGKx/aVaj7SQpb8vdl216iXx8P00qoDUbLWYV9Jfz/xFeUXGhZt/RLNdpDbAnjUUUTHI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxraFrCtJqmXE1cLzJJsMKpg8FYyMaSTEW7K42yuLNccQEPCB8x
+	0XXikwXNVtfyDIdlcll/9IGLZ2fKryTJ72KboUktHedfilCPMH+ugzX0lHCDT6aefwWO1W1iMXu
+	nWBXoepFf4kw/hOVI0ABB+jHt14JiNp8=
+X-Gm-Gg: Acq92OGYwX1nX3yMABwcjNbS526ediJL9819oX8Gs7hpriAnwHtyeOM5+BLtFyW7uOy
+	wvMavChs7ksEM1F9MBQCisJJGHlepW4S4sM5hBZYxWkm1BfaZgyG7lbsFpjzPBKPERGhWjmQiO6
+	qQ7PKgm+EXR+E7WuIyrXFNRkirXr8zFoBungJX0wMW9x4Pgvm60X28wL9OO1WX8kNazpQntVlLD
+	akRAxETlgUxAQwAanN2Qgfi2Bo7vI8d0IHl9y2G+u6k0VegwLOVm3xx4IIOBpWVI6Dr2l/BZ7PS
+	9ezLnfv5KgqlRVveu1XUlk2zFb/LiSRtefCS3n60r2SkvoGxgZOQ8eJTryHVMsmvZcmNJdvTQV7
+	qfTYuUGHGZu9QEFbynpGIrHHdMPYvdAwHCNlWL1pABZ5yx4aokiibLOJGXoFAWOW9Id2xVpk3UC
+	9re1bpD3WBr9cDXdwt00U1w2kTyTL81vXwNIQld8g=
+X-Received: by 2002:a05:6512:ba7:b0:5a8:691e:abe with SMTP id
+ 2adb3069b0e04-5a887cea566mr5489054e87.30.1778248280543; Fri, 08 May 2026
+ 06:51:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260508134843.7646c4f5@jic23-huawei>
+References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
+ <20260507-magnetometer-fixes-post-pickup-v1-3-37827ca68fb3@gmail.com> <af2zup3PFlgs2DtE@ashevche-desk.local>
+In-Reply-To: <af2zup3PFlgs2DtE@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Fri, 8 May 2026 15:51:06 +0200
+X-Gm-Features: AVHnY4LdMequRrG6nfHcEh1aJebR5-BMcW8E5HZcw1MvTbmhmTZqNyUKtxVoP0w
+Message-ID: <CALoEA-y-Qg22NSfVBLtqx4VFp0q=xqLOuL5Wf8TxW1AswW1+hQ@mail.gmail.com>
+Subject: Re: [PATCH 3/8] iio: magnetometer: ak8975: switch to using managed resources
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 26/05/08 01:48PM, Jonathan Cameron wrote:
-> On Fri, 8 May 2026 13:55:47 +0200
-> Janani Sunil <janani.sunil@analog.com> wrote:
+On Fri, 8 May 2026 at 11:58, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Thu, May 07, 2026 at 04:35:52PM +0200, Joshua Crofts via B4 Relay wrote:
+>
+> > Switch the driver to use managed resources (devm_*) which simplifier
+> > error handling and allows removing ak8975_remove() method from
+> > the driver.
+> >
+> > Note, on error path we now also set mode to POWER_DOWN state which is
+> > fine. Even if the device is in that mode, there is no problem to set
+> > that mode again, it should be no-op.
+> >
+> > Additionally, remove any pm_runtime_get/put*() function calls that
+> > dummy cycled the counter to autosuspend the device.
+>
+> ...
+>
+> > +static void devm_ak8975_power_off(void *data)
+> > +{
+> > +     struct ak8975_data *ak = data;
+> > +     struct device *dev = &ak->client->dev;
+> > +
+> > +     /* Only power down if currently active */
+> > +     if (pm_runtime_status_suspended(dev))
+>
+> Is this one a correct one?
+> We also have pm_runtime_suspended(), which is different.
 
-...
-
-> > +  Specifications:
-> > +  * 16 independent 12-bit or 16-bit DAC channels
-> > +  * Independently programmable output ranges: 0V to 5V, 0V to 10V, 0V to 20V,
-> > +    0V to 40V, ±5V, ±10V, ±15V, and ±20V
-> > +  * The device supports SPI communication with Mode 0 and Mode 3.
-> > +  * 4.096V precision reference, 12ppm/°C maximum
-> > +  * Built-in function generation: Toggle, Sinusoidal Dither, and Ramp waveforms
-> 
-> Interesting - so this is a DDS, be it a simple one. +CC Rodrigo who has been
-> wrestling with one of those recently.  Rodrigo, can you take a look at this
-> driver and see if it fits in the ABI etc you've been hammering out? Thanks!
-
-I am not sure how this is a DDS as it does really generate frequencies, so it does
-not seem to act as an oscillator. I'd say the minimum for a DDS is an NCO + DAC.
-The function generation seem to act only on the voltage levels. There is the step
-size and ramp limits configuration that are similar to a DDS with a digital ramp
-generator. I suppose that users have some use cases that are often integrated into
-the products so they can do less (and the overall system becomes more efficient).
-However, those products end up solving too many problems at once and they get too
-complex!
+As we only require the status of the device and not the power.disable_depth,
+pm_runtime_status_suspended() seems adequate.
 
 -- 
-Kind regards,
+Kind regards
 
-Rodrigo Alencar
+CJD
