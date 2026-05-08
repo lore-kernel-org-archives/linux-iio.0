@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4A2C36166F;
-	Fri,  8 May 2026 09:52:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE55A383C95;
+	Fri,  8 May 2026 09:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778233956; cv=none; b=LmWNkBAe9tEvbUG5PYgFuw8WamL66wY0+QnzJXW2VlZ0M1k59pbZt+06STKS3/7ZJ9781cODr3X/EtJ0n9pQeKloIHtCW48E33BJjtTTRFxuUvNfdrsEY174Qd6OnT2JFebsJV7m5aa+ogXScW5XgLYOjMHZeHDUuMEu4Urs37g=
+	t=1778233960; cv=none; b=qNd3rNLQhR5OL434iJvYBTacHllh6VffkH4kQ9ppEF0Tc8zL66zgcOqLv2EZe/+JeUy2dJuCRI9w9ik4BFhl426jrYheWEdwPOxKOc0/DURxXulQAAmbnc+aRzmi6bEINWoRvQjFfPrSTpuxTe5Q7qSAexXhVDsKaBCpkKrb4VQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778233956; c=relaxed/simple;
-	bh=D6Oq7DLPu56l3hmfaRGCGWQ99InkPvPxeB2LIoMUtws=;
+	s=arc-20240116; t=1778233960; c=relaxed/simple;
+	bh=kB4pwQk1VP9vEdqFC6FddTbPYUz90fjdey691RjMcVo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=EaWtaK98Gz/Pu0TiUsjzQTmsjtusqy2JoYXfZiyQ3n2dqGRBOyjRA42VgYDyOambfWS6vbug4nU5GNNyg+MwipAeUJCZr5pPGojelg6VmFGNGe8xNaLensyiJTuKyzEtJnqVeqQ1e7nmbd+fKLlyn5jG/lSuVwDLBwHSC2ywgOU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d/E3ZjCt; arc=none smtp.client-ip=192.198.163.7
+	 MIME-Version; b=U4t65I1if6Ju+TaOyqPnZ+kXVewdDq9DwIJ96NXF2uYbeXCuXeYFZyizkLMUDP1BvcTt/ynb2cuWkDQAPB6awRbW/7WMgPrpNOR4jM7dm8vP0HpEaAgX8Y5N8XkfOqQDI4iq4B7JA8sORzUMJsX0XStt8YyME/ZwzJduB7g+NjE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FmXT55Be; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d/E3ZjCt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FmXT55Be"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778233954; x=1809769954;
+  t=1778233958; x=1809769958;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=D6Oq7DLPu56l3hmfaRGCGWQ99InkPvPxeB2LIoMUtws=;
-  b=d/E3ZjCt3Z5SVTqTTD6TtjFRj6/d717Py8lZ8zdBulyWGOQTFRida9m0
-   az9k2MmNSQ0eqXfJSZ3IdkXtJf3DX3SB5/YvzTsMaOOOTpMZ2qFrUw9tg
-   AmWFsvOdJK2ehaE91B5HobJP+gO3pDCE20f+EdF4niZLPGmwfGzTfnSyb
-   k27KkxIUJ2Z6ldeej5RdqFcVlBFHqpC6n231kTofH4eVqQcFfmtV1GYMq
-   655uiHmXjGXM/gIxe6Gt75icBa4+eFkaWRRuujbItF/RDrk6+yRjkwmhd
-   /P1CtYfWIRIgdwQaSYBgt/uLeuAHA3AalUesVSYO/hVbW8eUlWSLDBBYP
+  bh=kB4pwQk1VP9vEdqFC6FddTbPYUz90fjdey691RjMcVo=;
+  b=FmXT55Be+bUeFPCeBkF5zJdnoIfhnhPimtnaqKgy924Jei+1QIWOK3sp
+   hxjQDYu+J2gFm+lgppyG/nCqMFY4bLB6vJlsMl22I1eX7Aecf3HXLv4Wt
+   YSHHT/9QHXSS64yzdHdeMBeO0wOphFUyT8Hi8Upv2O12LzWXUGVGVcy3O
+   sVqlkXKoayQD4U2E/1i7VSaEqbkczYIDeM1KTL9OoCE29EsiEs7P+xNHs
+   i33LVTJeQQufhAzqkSBXcdLtEsDWbkss0Ex0KHqgwF6e4zlrKJAmVk4iE
+   AzJa5HUPZti57a9PrQElmVY8qziUDXCLpvIXTwj5AmbBCZz+WyBvcqEwd
    Q==;
-X-CSE-ConnectionGUID: vcNupSpURTakuspV36Hzvw==
-X-CSE-MsgGUID: PfINW0B2SYOqYZnG0BjOmQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="104659518"
+X-CSE-ConnectionGUID: sqWY8dyhRM+i3vnfaE8N/A==
+X-CSE-MsgGUID: plrhK/r3RFO7YvK6zKMPeQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="96623807"
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="104659518"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:52:32 -0700
-X-CSE-ConnectionGUID: bvjmTYeQTLWB045fgO31Pw==
-X-CSE-MsgGUID: EdfbYp0QTNiTpqK7VIAK5g==
+   d="scan'208";a="96623807"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 02:52:33 -0700
+X-CSE-ConnectionGUID: HKvUq+K/QgSqr9Zoff1M5w==
+X-CSE-MsgGUID: m9UNxfknRIWDF2zWdf0djQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
-   d="scan'208";a="235740001"
+   d="scan'208";a="241728647"
 Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa006.jf.intel.com with ESMTP; 08 May 2026 02:52:30 -0700
+  by orviesa005.jf.intel.com with ESMTP; 08 May 2026 02:52:30 -0700
 Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 5326B9B; Fri, 08 May 2026 11:52:28 +0200 (CEST)
+	id 4F25199; Fri, 08 May 2026 11:52:28 +0200 (CEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Danilo Krummrich <dakr@kernel.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -63,9 +63,9 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 2/4] spi: Support suppress_override_attrs flag
-Date: Fri,  8 May 2026 11:42:40 +0200
-Message-ID: <20260508095224.1275645-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/4] driver core: allow certain drivers prohibit override via sysfs
+Date: Fri,  8 May 2026 11:42:39 +0200
+Message-ID: <20260508095224.1275645-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260508095224.1275645-1-andriy.shevchenko@linux.intel.com>
 References: <20260508095224.1275645-1-andriy.shevchenko@linux.intel.com>
@@ -77,39 +77,77 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Some device driver may want to suppress the driver_override sysfs attribute
-by specifying a certain flag in their struct device_driver. Since SPI uses
-explicit attribute instantiation, add that support here.
+Many drivers, that may be instantiate via ACPI, OF, or, in some cases,
+user space won't work without necessary driver data. These are, e.g.,
+most of the drivers in IIO subsystem. Trying to override the driver
+for the device that has no matching entry makes no sense in such cases
+and might lead to a crash, when the driver is not prepared for that.
+Instead of adding a NULL check for driver data pointer in each of that
+drivers, effectively meaning a dead code for normal functionality,
+introduce a special attribute in the struct device_driver to allow
+drivers just to hide the attribute for good.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/spi/spi.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ Documentation/driver-api/driver-model/binding.rst | 4 ++++
+ drivers/base/bus.c                                | 4 ++--
+ include/linux/device/driver.h                     | 2 ++
+ 3 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 5f57de24b9f7..40e738f8cbb7 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -214,8 +214,19 @@ static struct attribute *spi_dev_attrs[] = {
- 	NULL,
- };
+diff --git a/Documentation/driver-api/driver-model/binding.rst b/Documentation/driver-api/driver-model/binding.rst
+index fa0888c2b3b9..19b565a2de86 100644
+--- a/Documentation/driver-api/driver-model/binding.rst
++++ b/Documentation/driver-api/driver-model/binding.rst
+@@ -147,3 +147,7 @@ Additional helpers are available:
  
-+static umode_t spi_dev_attr_is_visible(struct kobject *kobj, struct attribute *attr, int i)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
+ - ``device_set_driver_override()`` - set or clear the override from kernel code.
+ - ``device_has_driver_override()`` - check whether an override is set.
 +
-+	if (attr == &dev_attr_driver_override.attr)
-+		return dev->driver->suppress_override_attrs ? 0 : attr->mode;
-+
-+	return attr->mode;
-+}
-+
- static const struct attribute_group spi_dev_group = {
- 	.attrs  = spi_dev_attrs,
-+	.is_visible	= spi_dev_attr_is_visible,
- };
++Any driver, which bus has ``driver_override`` flag set, can suppress that
++behaviour by setting the ``suppress_override_attrs`` flag in their ``struct
++device_driver``. In this case the sysfs attribute will not show.
+diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+index d17bd91490ee..16a530b91a00 100644
+--- a/drivers/base/bus.c
++++ b/drivers/base/bus.c
+@@ -594,7 +594,7 @@ int bus_add_device(struct device *dev)
+ out_subsys:
+ 	sysfs_remove_link(&sp->devices_kset->kobj, dev_name(dev));
+ out_override:
+-	if (dev->bus->driver_override)
++	if (dev->bus->driver_override && !dev->driver->suppress_override_attrs)
+ 		device_remove_group(dev, &driver_override_dev_group);
+ out_groups:
+ 	device_remove_groups(dev, sp->bus->dev_groups);
+@@ -653,7 +653,7 @@ void bus_remove_device(struct device *dev)
  
- static struct attribute *spi_device_statistics_attrs[] = {
+ 	sysfs_remove_link(&dev->kobj, "subsystem");
+ 	sysfs_remove_link(&sp->devices_kset->kobj, dev_name(dev));
+-	if (dev->bus->driver_override)
++	if (dev->bus->driver_override && !dev->driver->suppress_override_attrs)
+ 		device_remove_group(dev, &driver_override_dev_group);
+ 	device_remove_groups(dev, dev->bus->dev_groups);
+ 	if (klist_node_attached(&dev->p->knode_bus))
+diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
+index bbc67ec513ed..4b1c1774fd43 100644
+--- a/include/linux/device/driver.h
++++ b/include/linux/device/driver.h
+@@ -55,6 +55,7 @@ enum probe_type {
+  * @owner:	The module owner.
+  * @mod_name:	Used for built-in modules.
+  * @suppress_bind_attrs: Disables bind/unbind via sysfs.
++ * @suppress_override_attrs: Disables driver_override via sysfs.
+  * @probe_type:	Type of the probe (synchronous or asynchronous) to use.
+  * @of_match_table: The open firmware table.
+  * @acpi_match_table: The ACPI match table.
+@@ -103,6 +104,7 @@ struct device_driver {
+ 	const char		*mod_name;	/* used for built-in modules */
+ 
+ 	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
++	bool suppress_override_attrs;	/* disables driver_override via sysfs */
+ 	enum probe_type probe_type;
+ 
+ 	const struct of_device_id	*of_match_table;
 -- 
 2.50.1
 
