@@ -1,162 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26BB422541C;
-	Sat,  9 May 2026 14:58:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECC29259CB9
+	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 15:20:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778338688; cv=none; b=QUkvK9NZXPkllUkGyW4CXOMPqkW3irZWVhffvdbZ5uNTtQoN6/Uq4ueWtzXkV8Ry0wLlQgYtIe5N7x0Sj5iGl0kpXResqsOmbNuTr9L1k/SkjsH0pwPhUXG0EIGdTHbeP8IU5ciRcFTaY+7B4Dq2dgRzUt8e21cJDLuzTJY0I5o=
+	t=1778340006; cv=none; b=J+PhmGMh0fFZUIXAAaWn+1mwwEzyDjDFIu3bT+TZ0YOk8Zxax/Hg+c5GETAS7EuOlFj0UtBY+8O49J8v1bj0dtO6LjTewom3BuWE3RVWElyUbTMVvmjC0gvLoPO5VW/NE9NcNdd2HgRpEvqxIi2CfqYj+BDUMBtOOujqUV/ejFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778338688; c=relaxed/simple;
-	bh=s0fbS1u+U/mSjyoe2ABwluVmPf3ZrNrdtWsRs2EvDI4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IIiPbrNXfs7PmyD1MozuLpmSZihw0vgky1d4zjdTYfUnZYFQagoZr1pUo45U0B0Khcdz1v3Ab8+roabYEWDPJc7gqnTm5lmUBCbRfhdx/zVuoTv75+10V5NMhc5gGowWzT/N77wLA4uwz5uUA8Bi/z38qLt+/mg9r4n2oKbpoXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a477C3iU; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778340006; c=relaxed/simple;
+	bh=947yr2LJU7MWNEeNnDGreq6fKI0j9FlCtMVXZZSC8LA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ojPcngbpHhU4weYAdJz5wIZ1XDd6sjmbbo8N5x039MVVNAHABVSv7ABjibL3rA4KwHkM/NNgzvgCQUM5TBrxhR3eI4cmL1z1vC5CoRm/nSTk7dhwUrRQy92TZQQKGiGBF7oeFPZv0Pw5cQE7crPDQt8YOIQzSd0msZX9ORe+4pU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dir9eUbJ; arc=none smtp.client-ip=209.85.167.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a477C3iU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BCD3C2BCC9;
-	Sat,  9 May 2026 14:58:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778338687;
-	bh=s0fbS1u+U/mSjyoe2ABwluVmPf3ZrNrdtWsRs2EvDI4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=a477C3iU7VMb9Q+PxxVctZpyfsT9ZYva2FILxvdGtNZg5z2cUMOPe1WzPt7sq3kHL
-	 isjODyBj0Ob4MuLXaYJM7sgqXWdnBpvbZGJw6drwpfCZLX8qLGYiNa0kZEA2v2OwQ9
-	 Sp/LkZW71KChOFef6X1XTTwlgZ225bZ2MFgHPvLg8nmf8g4+a9y6slEQyYakdKzjT6
-	 xfUvqam7jePRbW/E2VFhUt6uL6P8n4FS/YIn7LFGhSIwAikZmao8lTHwfCkgY09hp+
-	 MYzTwcOYXcjfGt3jZStzN8wbFF5Y3Ox2DX9guJD1iMfrHCv4WxfMj73v0yBSDtubPt
-	 7A3Pzsyhd/FIw==
-Date: Sat, 9 May 2026 15:57:57 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Taha Ed-Dafili <0rayn.dev@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, skhan@linuxfoundation.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/5] iio: dac: ad5504: fix scale via
- output-range-microvolt
-Message-ID: <20260509155757.79548c96@jic23-huawei>
-In-Reply-To: <20260509142047.30302-6-0rayn.dev@gmail.com>
-References: <20260509142047.30302-1-0rayn.dev@gmail.com>
-	<20260509142047.30302-6-0rayn.dev@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dir9eUbJ"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5a88de2b52eso3947614e87.2
+        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 08:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778340003; x=1778944803; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=uTK1Uag8074qP5KWqBVm9Jj0miTO4zcn1XWQKMsTbrQ=;
+        b=dir9eUbJwOame8Fdo0+7o+ni+o1IBvvtnyGarfh3cpZGC3DPa67pNkXtaqiADELttv
+         ikPvBhTTSm+u83C9CyZ6s6VHs/ERxiz7SMS78ffbB9uPHaf+L4BblJvlPE8FJRbRXt6s
+         wNScBr7oTFPOAljI62OHJxn3gbqFNKwAd9HMwzC4SNp8vx/eL14uI7RftY07ELlqo06P
+         LYHeVzEB4YrkD3T2hVR7pU6CzEQ9ifY5fLd4uUyTRo6z3eeyK2Rsit5+jk4rT9bs6XwT
+         4rxnLblc4F/B6tHmVJJvVKVVfG5lgYahiIm35/otdlwt79Vd2vYwM0a8/SADbnbdn8qZ
+         ytag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778340003; x=1778944803;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uTK1Uag8074qP5KWqBVm9Jj0miTO4zcn1XWQKMsTbrQ=;
+        b=cyP98CD8t3j5FFmmc9q8kljrOptXKMop+JuGAa4RFte3QLlZk0T0b2epi29CU1R6vz
+         dymMr3LpNw+U3/HgL/ZCVQ73bV1cC6T5kx9yAvQDbb4ggIevhIXILW6ga8sHXIF6Ehi0
+         WVYvl/8Dt3N6iA9ubMrRmDscKHc3H1HW+XSfg5VD6PT5HBzaWoP+bH2llBmHDwQk2haq
+         6XWDdyWsbG+BzipffNoVS/Mg3H2VLdOTsYnSPkVD5222VQ1jovdGHlp+KmiRBL0kVd9t
+         TwjGuLGEKH7Pfm0NgmKli0sTyuFGmtzGzprQ22ivAcjuJqcCRfB+iS2PZpceo7wl59ak
+         nNHQ==
+X-Gm-Message-State: AOJu0Yz25HCZIY8kfsbVu0K7xYRWU5DDhNbfQ10N0mkS+36akbT7QGYa
+	BXGKf74ot1Zyg6fF4ywIUmizgCBI8m4Cj2izA/5zxeY3FZ/bWmjqAQlTzizGW/xy
+X-Gm-Gg: Acq92OHZfaSfrpELj3mUiNHwnwgBEP5VUE3Q7g8//TdJL/dzrWfR5zQbPYgUwBLptJ2
+	/Jon5h9vh/YTMYYAnW6THcEolr6J40njzQ5hP/bW5BrWrk57PqThnPgMz5NheQ8QQSBii+tvvCL
+	+OFkDy2jqPx+ag87On/Aj6a6rUqHTv/UyETkvSP/YKt0COZXeDK8IzimTGCYLocMLi80yfurFnl
+	7Lnp2bsUh1K5+1sHXz6C6GvEPiskxINQhMguWxl7ygLwwubKbb6NyRCvgjcIjkalmsZEmWQbt+8
+	hFOOxOvhEB0Cx624V7pbI2xqrzm6OfktmFJ1IVH9cfmjkXIpCUj8HB6FuhaM6f6s83yWvX3bIBO
+	plw0IM2g7HZPuNwJW36LkUSImMHulxX7R3MNQKZV0N4O0ruduPtDvWqwC91wGGg15Wy5a0rwbm4
+	lqy9FzMzjpFwdrVhHE1owfHVZ+JIyEMmhrkogRYTvKWxdxSpejS3oSkjXVn+Si9x6we9Im9365Q
+	NU=
+X-Received: by 2002:a05:6512:692:b0:5a8:7f30:609b with SMTP id 2adb3069b0e04-5a887aa0dfamr6358623e87.0.1778340002687;
+        Sat, 09 May 2026 08:20:02 -0700 (PDT)
+Received: from Shofiq (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a8a95664easm1301975e87.70.2026.05.09.08.20.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 May 2026 08:20:02 -0700 (PDT)
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
+To: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: jic23@kernel.org,
+	mike.looijmans@topic.nl,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	andriy.shevchenko@intel.com,
+	Md Shofiqul Islam <shofiqtest@gmail.com>
+Subject: [PATCH v4 0/3] iio: adc: ti-ads1298: Minor driver cleanups
+Date: Sat,  9 May 2026 18:19:56 +0300
+Message-ID: <20260509151959.3475-1-shofiqtest@gmail.com>
+X-Mailer: git-send-email 2.54.0.windows.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sat,  9 May 2026 15:20:43 +0100
-Taha Ed-Dafili <0rayn.dev@gmail.com> wrote:
+This series fixes three minor issues in the TI ADS1298 8-channel
+medical ECG ADC driver.
 
-> The AD5504 full-scale range is hardware-determined by the R_SEL pin,
-> not the VCC supply voltage.
-> 
-> Fix the scaling logic by reading the standard 'output-range-microvolt'
-> property from the device tree instead of querying the VCC regulator or
-> relying on legacy platform data (pdata).
-> 
-> As a result of this transition:
-> - The 'vcc' regulator is now only enabled, not read.
-> - Legacy pdata support is removed, as it is no longer required for
->   fallback voltage calculations.
-> - Strict array bounds checking is added for the DT property.
-Hi Taha
+Patch 1 adds missing parentheses around the macro parameter in
+ADS1298_REG_CHnSET() to follow kernel macro coding style and prevent
+potential operator-precedence issues when the argument is an expression.
 
-These could have been broken up more.  Given this patch isn't suitable
-for backporting anyway, you could have done a precursor ripping out
-the pdata.
+Patch 2 corrects an incorrect comment: at the lowest supported data
+rate of 250 Hz, one conversion takes 4 ms, not 40 ms. The 50 ms
+timeout value itself is correct and is not changed.
 
-> 
-> Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
+Patch 3 removes an unnecessary CONFIG2 write from the init path.
+The driver was enabling the internal test signal generator (INT_TEST,
+TEST_AMP, TEST_FREQ_FAST), which is inappropriate for normal ECG
+operation. CONFIG2 defaults to the correct value after reset (RESERVED
+bit only), so the write is removed entirely.
 
-The datasheet is less clear than it might be but I'm far from
-sure that the range is as simple as 0-30 vs 0-60.
+Changes in v4:
+  - Add this cover letter (pointed out by Andy Shevchenko)
 
-See for example the output characteristics in table 2.
-That lists Output Voltage Range as AGND + 0.5 to VDD - 0.5V
-which is not surprising as VDD can be too low to support the fully
-0-60V without any nasty things like step up convertors which
-aren't present here. 
+Changes in v3:
+  - No code changes; resent to correct the recipient list
 
-Now there is a footnote:
-"The DAC architecture gives a fixed linear voltage output range
-of 0 V to 30 V if R_SEL is held high and 0 V to 60 V if R_SEL is
-held low. As the output voltage range is limited by output
-amplifier compliance, VDD should be set to at least 0.5 V higher
-than the maximum output voltage to ensure compliance."
+Changes in v2:
+  - Patch 3: Rework following Mike Looijmans' feedback: remove the
+    CONFIG2 write entirely instead of just stripping the test signal
+    bits, since CONFIG2 defaults to the correct reset value
+  - Patch 3: Add Suggested-by: Mike Looijmans <mike.looijmans@topic.nl>
+  - Patch 3: Rename subject to "Remove unnecessary CONFIG2 write during init"
 
-So I guess we can 'assume' that footnote is obeyed and indeed
-do things as you have here.
+Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
 
-One other thing inline.
+Md Shofiqul Islam (3):
+  iio: adc: ti-ads1298: Add parentheses around macro parameter
+  iio: adc: ti-ads1298: Fix incorrect timeout comment
+  iio: adc: ti-ads1298: Remove unnecessary CONFIG2 write during init
 
-> ---
->  drivers/iio/dac/ad5504.c | 25 +++++++++++++++----------
->  1 file changed, 15 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-> index 9e95da6e49d6..040f580b8282 100644
-> --- a/drivers/iio/dac/ad5504.c
-> +++ b/drivers/iio/dac/ad5504.c
-> @@ -14,10 +14,12 @@
->  #include <linux/kstrtox.h>
->  #include <linux/mod_devicetable.h>
->  #include <linux/module.h>
-> +#include <linux/property.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/spi/spi.h>
->  #include <linux/sysfs.h>
->  #include <linux/types.h>
-> +#include <linux/units.h>
->  
->  #include <linux/iio/dac/ad5504.h>
->  #include <linux/iio/events.h>
-> @@ -274,9 +276,9 @@ static const struct iio_chan_spec ad5504_channels[] = {
->  static int ad5504_probe(struct spi_device *spi)
->  {
->  	struct device *dev = &spi->dev;
-> -	const struct ad5504_platform_data *pdata = dev_get_platdata(dev);
+ drivers/iio/adc/ti-ads1298.c | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
 
-Last use of this - remove the header as well.
-
->  	struct iio_dev *indio_dev;
->  	struct ad5504_state *st;
-> +	u32 range[2];
->  	int ret;
->  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-> @@ -285,16 +287,19 @@ static int ad5504_probe(struct spi_device *spi)
->  
->  	st = iio_priv(indio_dev);
->  
-> -	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
-> -	if (ret < 0 && ret != -ENODEV)
-> +	ret = devm_regulator_get_enable(dev, "vcc");
-> +	if (ret && ret != -ENODEV)
->  		return ret;
-> -	if (ret == -ENODEV) {
-> -		if (pdata->vref_mv)
-> -			st->vref_mv = pdata->vref_mv;
-> -		else
-> -			dev_warn(dev, "reference voltage unspecified\n");
-> -	} else {
-> -		st->vref_mv = ret / 1000;
-> +
-> +	st->vref_mv = 60 * MILLI;
-> +	ret = device_property_read_u32_array(dev, "output-range-microvolt",
-> +					     range, ARRAY_SIZE(range));
-> +	if (!ret) {
-> +		if (range[0] != 0 || (range[1] != 30 * MICRO && range[1] != 60 * MICRO))
-> +			return -EINVAL;
-> +
-> +		if (range[1] == 30 * MICRO)
-> +			st->vref_mv = 30 * MILLI;
->  	}
->  
->  	st->spi = spi;
+-- 
+2.54.0.windows.1
 
