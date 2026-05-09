@@ -1,202 +1,122 @@
-Received: from mail-dy1-f193.google.com (mail-dy1-f193.google.com [74.125.82.193])
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3693E279DB1
-	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 01:38:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 014C729BDAA
+	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 02:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778290684; cv=none; b=J6H2fYBsb43HD0/y2U10FxgrKDc15arBjvwKprj381DmYLE0SGnaQa7L/yzDCGZd1gkArGDKWVDAxox8n/h+zhXrG6R+u032qCYY9sJd6gnalkB4sIWC3cJV1+PYUcaZJ1KJ2GZSJMURpO8S5v/NCRqY8KtC2MIRtEQMzxMxtmo=
+	t=1778292269; cv=none; b=YchIHvIDcPth77J1dQD5saSW64WiWgv2QNJRlNRqPBbsGhqral4bSxBu5wu7dMJnjtp9OXsRo+Z80iGw1yjTa72CwsStkrDmrW6cCRIKWA8//X3YxjA+Kn/Pg6gDUglPCcWv7M1uo0mcNyiTPLCydnyKbW2T007+tgWeHldIqDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778290684; c=relaxed/simple;
-	bh=8AprB/cMUBt+pEMNoNB01bka+Ef2XKR3JwTcZPiklMc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=s8z/QvbqAHQGwG/DpeqqOATN03Jswco7bFj1IySDwZZ8HKo9stRcBljUTnDeTCsqCp1FufpecgAIpgomFFkilATjoU1rdy7qWXoWT1aXxtOAR44XXhgd4gabPhtbADOBsVj6PXht9PBuEjGJhZdZ6nwOLUPLX8Uitkahe+2UZnI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pQMVqhMZ; arc=none smtp.client-ip=74.125.82.193
+	s=arc-20240116; t=1778292269; c=relaxed/simple;
+	bh=67cQx5h5EfVqCG/fdK6oUL+AYJQaEpxH3q2e02Z+Ytw=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=pWyJm0m0BvrdhApmhnHygqn2sCmTa2Voe0k9dTS7zlN6vyDOj1HAa4t+IKDsloPQvMMht587kQ/kJozHThJr/hq6hCdB0joFbo3r+GX/i9c6IpL64SPwgbfN4FetQoLR6cUQ9N5deHZO/AN8GXZGHvmJ0H1TVzcijm6DSJxOgcA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XW/+A+SF; arc=none smtp.client-ip=209.85.210.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pQMVqhMZ"
-Received: by mail-dy1-f193.google.com with SMTP id 5a478bee46e88-2f03d6cf77bso2900245eec.0
-        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 18:38:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XW/+A+SF"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-837cd669be0so2030423b3a.0
+        for <linux-iio@vger.kernel.org>; Fri, 08 May 2026 19:04:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778290681; x=1778895481; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6kJjPazFhKl4AEbgyP7l4SZncr5vrrdtv6/1UCgkvoI=;
-        b=pQMVqhMZT4nl67BUBrD8fSxCnpPE9nINctw6jlx5xlwWyESCpAlrNmU4gehWBGJOHE
-         7KPck7tOuV2w0a32NljrBrLFtYF4BSD3/iiLdLddIldiOx1u7ShlDJzr8YJnw4urPMSq
-         lXZqIuVPn6PQmP9VQfqh6tTtCFuUHOfuPgoPFG8aG+Tc+Ziybz3P6PTZUu/lvQjsyyM0
-         /+hq8ZrRjqlcLGypzsL31NPvXILQZX6KFZJtbG1tH1fgHJxQRUU1Fcul+S/v6MSgtAVr
-         UxH7YJigv7/sYZb87L3U74GrG22OVWLb7g1RBZZoQE6tAvUusHn24hBMbO0VNyyEQgmY
-         l5gQ==
+        d=gmail.com; s=20251104; t=1778292266; x=1778897066; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=90WqjeRA8ThNFX5d+11lotpk8MoHTD4XnnqbeBD8jm0=;
+        b=XW/+A+SF2yz4v20/VK++5SBeu1GirwM6QB/R5K81x+NzC/YewyFFueMcWrl3N10OGl
+         WP1kpx/HcMHo357+fTqHiUpxHA0qmmLrRBmCqKtcIVYmTJaT0/8tOfaV0LBO6CwU+eiU
+         aP3jKRiWTv4xcfzV7xhuuPi52ujyLW9kM/5GBtu331qYbuycWwv7BpiZQGFBDOwC+77D
+         uRvV6lzJB9R1xQSSbDHrIYKY/IPMgcJfNMZC0k/QACLAQoD7PgirRtupwE7tziTUuFBg
+         iVOnwPYoJpX+SG5AbcXsXGEe8E+86iX6oKihdk0pMGK4sJvnqLbypOq2/VxlPna3w0Vc
+         e6zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778290681; x=1778895481;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=6kJjPazFhKl4AEbgyP7l4SZncr5vrrdtv6/1UCgkvoI=;
-        b=WefxM1nCBOGf4DOAO+Hr3iyyQJzO9qaS2XVcW3FkhPOOuGNuUeYVgqIk6+9P8qKA7g
-         /VSd9Hjx0H6kYN4E6utXPXqBZ83lCCbKnwZtErriyCRNlxf6bhqXjsOv9N+mxeKO2udg
-         tDjravYqhR2S6Ou8w9jpK70cplawK1ooF8deOzTTmNRSB8onIVxmM8bvah44+b5FipkD
-         BIgpK+1S1RDzAvLYbILiQDmvowQhIlhs1Vq8XduG22xhgGpsxkYgazyaLpcP+/Zj2roG
-         eNWoL6TK/zeK/i2sv++qbLELztmlRBRgHo7u3o7FvfKvtGyMJbfqPzqRv2s2Hvj4WgMi
-         oimA==
-X-Forwarded-Encrypted: i=1; AFNElJ9XsasKDdinBIkiNi3B4fNe6FpdKKIEZOIDI6y9DuTrWPFoubaqEZe289f2HVD5HzzpEP7NHwBs4vI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyZsWQUn+OMyQXU3oT8LRRFKgZYlO9hKYKi/46haba3zuhjKkzA
-	LgB4fQRMYRpaTDNMc//POXjV6qMKNwNd2GBFciGJbZB80nsEzKeG9pIv
-X-Gm-Gg: Acq92OGi514tGQqIvTBSsexQSy0+JIJOFSJ8rJKZltqH1/FJ1YkuesWtDG0DhfgRcm5
-	vsQvnCfKzY0rOzeU91fI9TB+vCXqzkVdxJqDJZmscmWcJhN+27al5Psl6hCqSEa5SFkNRdejYUz
-	0tua7COVQyXvgkNdypkja8lNwiZDBWsGed/WkX1aTFYAGXxrZkEI9Y5cqy2pWYI1TzbuEw2k+u1
-	WxKULSWlNj8n57e3Kb+Y9DKRao1rw3UeU9mjoEOpoZYi9mRe00lw6CGauMfz4/qa7s+M9SstI+h
-	Uyqph97I4kopZNLtBIHGQvnxBE/WM9EQLzNYf10XzNeg1N8qGrPGBkA1WMzE6yWoxAsz1ki4Lyu
-	Wwfq69p41hdZYyJWmy4cmPCaEOFtPZwNX6wgnTv1mHhbF39APCt+UqshzRYjDyflXBmwO/y5urB
-	REC8dMZT1kKKbaqyEBnxAmyFxUdQoN3JO5KgOGN9lI0PqXA39s1l8A/1k=
-X-Received: by 2002:a05:7300:ac82:b0:2ed:e14:7f5f with SMTP id 5a478bee46e88-2f54b89a1a3mr7346685eec.35.1778290681258;
-        Fri, 08 May 2026 18:38:01 -0700 (PDT)
-Received: from localhost.localdomain ([76.32.119.210])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2f8862d43b4sm4503230eec.11.2026.05.08.18.38.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 18:38:00 -0700 (PDT)
-From: Hungyu Lin <dennylin0707@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Hungyu Lin <dennylin0707@gmail.com>
-Subject: [PATCH v3 1/1] dt-bindings: iio: dds: Add AD9832/AD9835 binding
-Date: Sat,  9 May 2026 01:37:45 +0000
-Message-Id: <20260509013745.80478-2-dennylin0707@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260509013745.80478-1-dennylin0707@gmail.com>
-References: <20260509013745.80478-1-dennylin0707@gmail.com>
+        d=1e100.net; s=20251104; t=1778292266; x=1778897066;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=90WqjeRA8ThNFX5d+11lotpk8MoHTD4XnnqbeBD8jm0=;
+        b=Rz8Et0y3bHMmrQqGNA7QyiVh1QVNJg0cIOBZVRgcVSpqAv8VRiWIv/onkgTO9yYb/m
+         e+HVEPLTsd6JbFE5mkaKipK9+ZP+MDocVYuIvjlSLpeq16rB+ODXv3s5Xvvcpj+5eyeQ
+         YoBLhON7wqispQhuT97oLRVVADIuy4PiK+NnHf0ecG33Kxo5ZJlzE2zcDtYiDPSl6dlF
+         XNHD2kACq6rZUNcfU3f35/DHXYEgt1iDlbNn5Tt5db0mSwfLmu+/7GzWzZqtHqVRv3wv
+         NQ6n0DU0XxR8z9xOCzhTwKQ3RHgqv/jcGT6/CXrtERNJtVGw24jDeiVg+q8S9UvSfZRV
+         8X3A==
+X-Forwarded-Encrypted: i=1; AFNElJ/H4T7JV/qfEjnrhtOFsNCRYMtSpxCY2J1hvN2wxhcqp+TJRYz8ehhxrk/QIRtgtU4lpsNeDqv2ERA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxUBOPS+FWrtgqxJbwhK9+g91w9SpZBnZJz98QlUCdpxH2GII4O
+	TpQg+Wz9xP3kvG6B2bVJqgyrviQXRmH3jTpS1DFWBMvvsc7ACft69nh7
+X-Gm-Gg: AeBDievwB1Igfpwsbz3BM199DzQGwJ/Sy4jQo2Hg+kk48OPeMryahL9njBqX1DbyXeo
+	aAIgZcaoB7mO9XM/GiN9tX4z284U88+3Qrm2dQSciLA2cQTaihd+sy4kRGdrxalhyQbmrnzDSWp
+	2dBFinMd6pSkoFRI82Kmszq8u+BvlhBUfTswFDlc088ZcLwFfK53mg9ad0UmEHnxZ4Fv3RufmOe
+	SqYfSLjwTS7d9t70VbR6laPaZ3wwhtpdge3ov4P+WRyJlC1SeBayUQ3vx1nRXMypyMXD/wWTSuj
+	8zwdwD79DxMXDrkrG137hez7ezMN2lmNRc8zo92tTzoKtz7TiqpTFur7bKX0kLVtWJ+A9ObTXlt
+	t8q0uu1lS1jlQkcR1fF5fAephjTn5lrWS1ErhmxpmeCvzzE2Bh/FT3AI9Bs7iXKfcwH/ZVqsaLd
+	TBtqJU1qG+vsEqEf/cP28Bu3jCezncimR3PeXhHi+4/UXifbg=
+X-Received: by 2002:a05:6a00:8014:b0:82c:2555:b9b2 with SMTP id d2e1a72fcca58-83a5b6d0a28mr15321522b3a.10.1778292266253;
+        Fri, 08 May 2026 19:04:26 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:791b:cfa1:9b60:879e:786b:b8d8])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-839683a088fsm13566241b3a.58.2026.05.08.19.04.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 May 2026 19:04:25 -0700 (PDT)
+Date: Sat, 09 May 2026 07:34:17 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: Hungyu Lin <dennylin0707@gmail.com>, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org
+CC: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_0/1=5D_dt-bindings=3A_iio=3A_?=
+ =?US-ASCII?Q?adc=3A_add_AD7816/AD7817/AD7818_binding?=
+User-Agent: Thunderbird for Android
+In-Reply-To: <20260508231147.77044-1-dennylin0707@gmail.com>
+References: <20260508231147.77044-1-dennylin0707@gmail.com>
+Message-ID: <0D2B5076-A5D7-4D14-B58B-E500585DD465@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Add devicetree binding documentation for AD9832 and AD9835 DDS devices.
 
-These devices are SPI-controlled direct digital synthesizers
-requiring AVDD, DVDD supplies and an external master clock.
 
-Require spi-cpol since AD9832/AD9835 use SPI mode 2.
-Update the example to include spi-cpol and use a generic node name.
+On 9 May 2026 4:41:46=E2=80=AFam IST, Hungyu Lin <dennylin0707@gmail=2Ecom=
+> wrote:
+>v2:
+>- Fix commit message to match binding requirements
+>
+Hi,
 
-Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
+Thank you for the change=2E
+
+Ideally, multiple logical changes should be split into series=2E For a sin=
+gle patch you can include changelog like this:
+
+Signed-off-by: =2E=2E=2E=2E
 ---
- .../bindings/iio/dds/adi,ad9832.yaml          | 91 +++++++++++++++++++
- 1 file changed, 91 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/dds/adi,ad9832.yaml
+Changes in v2:
+- Fix commit message to match binding requirements
+---
+ =2E=2E=2E/bindings=2E=2E
+         | 94 +++++++++++++++++++
 
-diff --git a/Documentation/devicetree/bindings/iio/dds/adi,ad9832.yaml b/Documentation/devicetree/bindings/iio/dds/adi,ad9832.yaml
-new file mode 100644
-index 000000000000..9f3e41cb0a0d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dds/adi,ad9832.yaml
-@@ -0,0 +1,91 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/dds/adi,ad9832.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD9832 / AD9835 DDS
-+
-+maintainers:
-+  - Hungyu Lin <dennylin0707@gmail.com>
-+
-+description: |
-+  Binding for Analog Devices AD9832 and AD9835 SPI-controlled direct
-+  digital synthesizers (DDS). The devices use an external master clock
-+  and are controlled over a serial SPI-compatible interface.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad9832
-+      - adi,ad9835
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 20000000
-+
-+  spi-cpol: true
-+
-+  clocks:
-+    maxItems: 1
-+    description:
-+      External master clock input.
-+
-+  clock-names:
-+    const: mclk
-+
-+  avdd-supply:
-+    description:
-+      Analog power supply.
-+
-+  dvdd-supply:
-+    description:
-+      Digital power supply.
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - avdd-supply
-+  - dvdd-supply
-+  - spi-cpol
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    mclk: clock {
-+      compatible = "fixed-clock";
-+      #clock-cells = <0>;
-+      clock-frequency = <25000000>;
-+    };
-+
-+    vdd_3v3: regulator {
-+      compatible = "regulator-fixed";
-+      regulator-name = "vdd_3v3";
-+      regulator-min-microvolt = <3300000>;
-+      regulator-max-microvolt = <3300000>;
-+      regulator-always-on;
-+    };
-+
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      dds@0 {
-+        compatible = "adi,ad9832";
-+        reg = <0>;
-+        spi-max-frequency = <20000000>;
-+        spi-cpol;
-+        clocks = <&mclk>;
-+        clock-names = "mclk";
-+        avdd-supply = <&vdd_3v3>;
-+        dvdd-supply = <&vdd_3v3>;
-+      };
-+    };
--- 
-2.34.1
+If reviewer specifically asked to update commit message, you can mention i=
+n the changelog as well=2E for examle:
 
+- Fix commit message based on input from <Reviewer Name>
+
+Replace <Reviewer Name> with the actual reviewer=2E
+
+>Hungyu Lin (1):
+>  dt-bindings: iio: adc: add AD7816/AD7817/AD7818 binding
+>
+> =2E=2E=2E/bindings/iio/adc/adi,ad7816=2Eyaml          | 94 +++++++++++++=
+++++++
+> 1 file changed, 94 insertions(+)
+> create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7816=
+=2Eyaml
+>
