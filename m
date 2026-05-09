@@ -1,78 +1,76 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 564A138E5DF
-	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 08:41:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71F4C39099B
+	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 08:45:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778316076; cv=none; b=Us0sOb6uuasokqPn9CvrrUTYMHA6ilHCnqm99rhcGD7tNtzKqYfBHEMVdBILooxGfaK3jFMZ44kuZmYPfaQzr2Y9kdaqyZVgBlnRYniQkK3Djc7B8ueIfZ4HIWYDCkpBapN9nA4jmpZixQzDblLB8AXC6GRGOhAN0+7lFAY7ek4=
+	t=1778316320; cv=none; b=LBRAUzgPwRIGiOZ5yMNUTzXchBG1iEl7ZhbHChVxsHoDtmJD0dYDfx+cf/9oVgq+kLNRGCxjE7SojHl/QVSzQo2vWwXjBWKI0V+hHa4yl4Yx/q2JF/2/CA2UYcm4bkRvQx3oUWxdbdjMSFauz2iTLIfeoL2ADf0qHIIxKFRGp8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778316076; c=relaxed/simple;
-	bh=7NVYnCMvS/7X3T3G89maX0Gdoroi3w8DAJG4EMNUKLk=;
+	s=arc-20240116; t=1778316320; c=relaxed/simple;
+	bh=TFa+xEui4mi+TZmuskFzKaQ5HYjVAER89kwrNi7tb1o=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=iF5xrapUN6uR1wZBQgW2b4zihWCurAy6hp56v3nITrf56QC36R+BWw9wq7+uJNoe/7msv7LZGhvlC21lC6Dsagg2tTIgHcHuDECMK/36sUXwQfnYtwzkPhbl7NHZ3na46uw06KSG35yNSahBmk+H2R/UebPjeoKgKzWU/eo272I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MYv6RUfb; arc=none smtp.client-ip=209.85.128.52
+	 Content-Type:MIME-Version; b=NjSQiqkNrsR6uVzqNh4sOK1nBI8pb+bU8xMQqgQ8zPjKnWR/rVu/y/qeY70+LkxVO7ch3IpeM5vsnWBTlUVu3u9vafnQyT8IIoJ7oH2RPeHj+f+nD4XLRbqxu0yifict+pqMZJQN1rQHBYDMnLKo3RRgO32Y5QSwl8FuvHqTGDY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DX1YhGFs; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MYv6RUfb"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-488a9033b2cso25734675e9.2
-        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 01:41:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DX1YhGFs"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-488a9033b2cso25755245e9.2
+        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 01:45:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778316073; x=1778920873; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778316317; x=1778921117; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=CgQX5/FDdpguyCea7DnUd7QUmiY5RWdQxW1ZkTMJo1E=;
-        b=MYv6RUfb3OWzv1bChKsymL8cVLtd/31NU+x7+YVr9nGWa40Ey7TWIyY2MVmlPmVgj+
-         gv4nmsy5ioo/OeLMduDkMel1SMwsfe6pt4RlzSvOD4JAes/u2PpNix3dcnjq5kw2kt5+
-         v3cQcZOxRTA2PPhmZIJPBJi4WI0Z6iR7kJAaL177imD+lF04ayhzXjjcddSAmlA80w+h
-         eD8FJWw6TMtvmov5uKE3rhSM61lzMKmnVuR2ZC5h5i65hf0kmav6ogD6xQqbopVxl07e
-         iifwI30X7rGFWCgYK+KP8mkLN536vqF1g6Igv7OOqyW7/gnoizWUecE7PXg3WcVntuS9
-         qWhw==
+        bh=9M25LVxkvy4DTqh7u0Q+7wnu8lKX2GhtudATPtKQPlk=;
+        b=DX1YhGFsP4zuLXMtQ13bu4Fz9R6tHhOCXpH23rbPB/bdmzmKOkfDEK/VqkfWIY2foq
+         XyUGDuvoB07TlCaKaC+D3aq0Ir2BVOGeCdqGoRwmcMQklZragCTZnnJIW7bslG+UByLo
+         73+nzOVhvNY97OVz6QwLlYIO3MBdKLy5vCT1j+buc6ONCCSp818fLL1xR7lrIvv61C9M
+         i7ipmfVTPaXWuIm+MomINVal0XoLeVMGMfw9K+HjLZIbmy8SLppU7xaf8+UI9ZQzl3FK
+         D0irR3TL45SFKAm73B3SZcf3yp11PsxEJMQs0pkIpXpx7AzGkHdjOL0fMuCsciiBETLs
+         /r2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778316073; x=1778920873;
+        d=1e100.net; s=20251104; t=1778316317; x=1778921117;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CgQX5/FDdpguyCea7DnUd7QUmiY5RWdQxW1ZkTMJo1E=;
-        b=ebI1NBZEZ+rfTG0xidRvd4U/KRWtbLS7iuwSMqOTUS9IhA4ZwX+qBmPJGgXxFdOY6s
-         XLWa3BaA1q0wh9w5E/D0+XhTuH0JnpXaoegEBfj6wiRrkYaAIPCrYnfHz3OZDbHfXH45
-         iA76dNZrNgpIyiViIlhCzvSoselPCc51xNzE9yg+eAPKOX8KXfwZ9/Dab20bz/hLwhpC
-         gtWbOd5txU1ht0/prSCNq/yVqPevYBbLOgCh6+I+5d8R/oPbtXWaAQ3ZI53P/X5Boj2h
-         tIKLY+OPj3xhfMC8f3Xw/vj8juFc3DcnADBghXzYQqlMmLw4fH/P+Jhxtb7Qgnp29mP3
-         qOAA==
-X-Forwarded-Encrypted: i=1; AFNElJ/Gg2eugTU53ooG42gQ+puUAmQXQ4goIINnj3jpDbyAc973Mty+pFZ7wVKq07zqW/k5IFFKI4zSWUQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwMfqW92rL7IErhox9JU7QMI5Ihj4CcmLw67Ce0SM5XD42qaHAp
-	dcKLytxuCuQ/fJiRAsLqGnTfihYOc/Yryf5dKNxLCJIGkLEIEGm6MOig
-X-Gm-Gg: AeBDieuBkHRwJu798u+5sjGA7VYWRSJfXlHT3gVVncsgYbm2Po41oWlQmYCUzQPh1fo
-	xVLYmlsOSQwSGrSZJ3Usl5SXgask0D2Dmy76JvOo8YAE7lXSDBIu79dr5vWAWZUUC9uGVhML13m
-	HL2AGhVtxy6aiJQuQM6UGqklMG2IqHqpIDHwU+TahSapOAGP5QEWTdlkxBSywwUqfalNorY0yTI
-	R8fyHWMI/RLDV/e6eNbGkwoEBCyUOcLFmoHSjhuqjSTA3s+ya8vTl/Cy9z/k8t3jb6D+qvVxGO/
-	XnTvtD0uRCoe643J+EW8rT6p/eVr2NHxwx+K0MPW+AdI5JcmXmSZPiUYuMV6jhFGySQn61f52Hh
-	qm5ud3ebZMD9xfHm9qgTveYXabu/mgxU2w6ijEGgqDu7DFYhTUcdvPKfvrCuL/9KbHGkDynKbPx
-	lOADqZEUKa79jY0dayRRSkavfCTfaNil+6FsqvyDgcRWIEmU61B6AG4RVQ24E/S/ukHB8FiAY6b
-	w==
-X-Received: by 2002:a05:600c:17c3:b0:489:1ff1:74df with SMTP id 5b1f17b1804b1-48e70687ec7mr13078515e9.1.1778316072356;
-        Sat, 09 May 2026 01:41:12 -0700 (PDT)
+        bh=9M25LVxkvy4DTqh7u0Q+7wnu8lKX2GhtudATPtKQPlk=;
+        b=EyvkWzqtLFEmvF4N6d/imohe87pJOpctDL0Sn0p1Yf+Zlhobme4Sj9u30aFchWFy7g
+         gbOWY/qXnzcRCBQs06KZbH1Ey/U4ANSb7MMrNgNnree3LXpd4QRhJI9TRhDY/yaYLJcm
+         yrQsfVHEDOjxxvVXQabl161Rd0qQXzpKg7HmcjzC5BaEiX+wgUfGGHqAJGLocTXZ8Eh1
+         nd7DwVsJZ6WlkKQMup6n0iEKgY12l+U1wKbeZ01ORc9H4NyqyaZLnTduioF5var7aOai
+         Gg+aFbVdjWz7ONkgOatZSS9whHtOFLj7K6A0DPEZ9jWL8wLpyYeZ+lvb7WPxfu0hIdpF
+         9b/Q==
+X-Gm-Message-State: AOJu0Yx96PWfykxJEFUqsv7fFfSmpR3A9cfpv61ik7p1s/o4L6a+upW+
+	J5eNyOiO9px/mWlNYzlCiHUXVtyLRsMysKrhsMQZwns8m6A9ZNqJbzen
+X-Gm-Gg: Acq92OHSgzH0EmuDaCbtsAprTfUixhUFcL6uLZel/e+20pHa0fGjn2hiApqmReFGXeu
+	n+c0ueBp8aZlTcpVR2bYpEXvV7RXSKDqfTNBrN2l1m+dmRZ7IooWFIRdYhPl4iiPzUyJpdCktge
+	0yYguqNgqud2lZZOBQu8LVNLjWCkTVWEsvg5QXt9KeoYkCWQDWa1DMxfP/aVmSv6QONMbG/RnPb
+	gHOW+rZL54D9se/ScVhebeLOxueo/dlGzLhBUXJVMbiiMgAcgoSw+Ni6LdN1d5dodyLeSrYNqmo
+	+XJ6b/3a2H79F4+g5cbiO/zgjvPBVRFl5nLi+2bvQh0it+tpgAhqGRxu3J+D1RvxQKkRjsFBV0k
+	fUsOhCENakYIxlYjL+02IPEqNVoeed9z2aSlf8xg9zYx+U9Eg4kOxBpKF0T5FtcroMai2jqnWoN
+	HWrBE9ynv8gLKwBQxGJBqM5Vmv50d82XQ3FWG8wsnGETAvvgJPj773kmntg+Q2NXXuJuO8tB5uU
+	g==
+X-Received: by 2002:a05:600c:4ec7:b0:48e:51f8:eb37 with SMTP id 5b1f17b1804b1-48e706d8ad9mr26118485e9.25.1778316316665;
+        Sat, 09 May 2026 01:45:16 -0700 (PDT)
 Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e6db0b08asm24056555e9.8.2026.05.09.01.41.11
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548ec6b00fsm11698603f8f.11.2026.05.09.01.45.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 May 2026 01:41:11 -0700 (PDT)
-Message-ID: <a0d363994bc55ef2b4c3c5c70b0cd91e94acaeef.camel@gmail.com>
-Subject: Re: [PATCH] staging: iio: addac: adt7316: check SPI write errors in
- probe
+        Sat, 09 May 2026 01:45:16 -0700 (PDT)
+Message-ID: <6afc2b680efa5a64c59e9f6a65b3b42919cd8688.camel@gmail.com>
+Subject: Re: [PATCH v2] iio: adc: viperboard: Fix error handling in
+ vprbrd_iio_read_raw
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Hungyu Lin <dennylin0707@gmail.com>, linux-iio@vger.kernel.org, Jonathan
- Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich	
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Greg Kroah-Hartman	 <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, 	linux-staging@lists.linux.dev
-Date: Sat, 09 May 2026 09:42:12 +0100
-In-Reply-To: <20260509082636.85114-1-dennylin0707@gmail.com>
-References: <20260509082636.85114-1-dennylin0707@gmail.com>
+To: Salah Triki <salah.triki@gmail.com>, Jonathan Cameron
+ <jic23@kernel.org>,  David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko	
+ <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Joshua Crofts
+	 <joshua.crofts1@gmail.com>, Maxwell Doose <m32285159@gmail.com>
+Date: Sat, 09 May 2026 09:46:17 +0100
+In-Reply-To: <20260507190751.28352-1-salah.triki@gmail.com>
+References: <20260507190751.28352-1-salah.triki@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
@@ -83,60 +81,47 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
-On Sat, 2026-05-09 at 08:26 +0000, Hungyu Lin wrote:
-> The probe function issues three SPI writes to switch the device
-> from the default I2C protocol to SPI protocol, but ignores their
-> return values.
+On Thu, 2026-05-07 at 20:07 +0100, Salah Triki wrote:
+> The driver proceeds to the reception phase even if the preceding
+> transmission fails.
 >=20
-> Add error checking and emit a warning if any of these writes fail,
-> to improve error visibility without changing existing behavior.
+> This uses a goto error label for an early bail out and ensures the mutex =
+is
+> properly unlocked in case of failure.
 >=20
-> Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
+> Fixes: ffd8a6e7a778 ("iio: adc: Add viperboard adc driver")
+> Signed-off-by: Salah Triki <salah.triki@gmail.com>
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Reviewed-by: Maxwell Doose <m32285159@gmail.com>
 > ---
 
-Hi Hungyu,
-
-Small comment from me. With that addressed:
+LGTM (though Andy's comment makes sense):
 
 Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
-> =C2=A0drivers/staging/iio/addac/adt7316-spi.c | 9 ++++++---
-> =C2=A01 file changed, 6 insertions(+), 3 deletions(-)
+> Changes in v2:
+> =C2=A0 - Add "adc" to the patch title.
+> =C2=A0 - Move dev_err() out of the mutex critical section.
+> =C2=A0 - Include Reviewed-by tags from Joshua and Maxwell.
 >=20
-> diff --git a/drivers/staging/iio/addac/adt7316-spi.c
-> b/drivers/staging/iio/addac/adt7316-spi.c
-> index f91325d11394..25b7772bd05f 100644
-> --- a/drivers/staging/iio/addac/adt7316-spi.c
-> +++ b/drivers/staging/iio/addac/adt7316-spi.c
-> @@ -98,6 +98,7 @@ static int adt7316_spi_probe(struct spi_device *spi_dev=
-)
-> =C2=A0		.multi_read =3D adt7316_spi_multi_read,
-> =C2=A0		.multi_write =3D adt7316_spi_multi_write,
-> =C2=A0	};
-> +	int i, ret;
+> =C2=A0drivers/iio/adc/viperboard_adc.c | 4 +++-
+> =C2=A01 file changed, 3 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iio/adc/viperboard_adc.c b/drivers/iio/adc/viperboar=
+d_adc.c
+> index 9bb0b83c8f67..f7ce3effd730 100644
+> --- a/drivers/iio/adc/viperboard_adc.c
+> +++ b/drivers/iio/adc/viperboard_adc.c
+> @@ -70,8 +70,10 @@ static int vprbrd_iio_read_raw(struct iio_dev *iio_dev=
+,
+> =C2=A0			VPRBRD_USB_TYPE_OUT, 0x0000, 0x0000, admsg,
+> =C2=A0			sizeof(struct vprbrd_adc_msg), VPRBRD_USB_TIMEOUT_MS);
+> =C2=A0		if (ret !=3D sizeof(struct vprbrd_adc_msg)) {
+> -			dev_err(&iio_dev->dev, "usb send error on adc read\n");
+> =C2=A0			error =3D -EREMOTEIO;
+> +			mutex_unlock(&vb->lock);
+> +			dev_err(&iio_dev->dev, "usb send error on adc read\n");
+> +			goto error;
+> =C2=A0		}
 > =C2=A0
-> =C2=A0	/* don't exceed max specified SPI CLK frequency */
-> =C2=A0	if (spi_dev->max_speed_hz > ADT7316_SPI_MAX_FREQ_HZ) {
-> @@ -107,9 +108,11 @@ static int adt7316_spi_probe(struct spi_device *spi_=
-dev)
-> =C2=A0	}
-> =C2=A0
-> =C2=A0	/* switch from default I2C protocol to SPI protocol */
-> -	adt7316_spi_write(spi_dev, 0, 0);
-> -	adt7316_spi_write(spi_dev, 0, 0);
-> -	adt7316_spi_write(spi_dev, 0, 0);
-> +	for (i =3D 0; i < 3; i++) {
-> +		ret =3D adt7316_spi_write(spi_dev, 0, 0);
-> +		if (ret)
-> +			dev_warn(&spi_dev->dev, "SPI init write %d failed: %d\n",
-> i, ret);
-> +	}
-
-Hmm this is a bit useless no :)? Agree we should check for error codes but =
-we should
-bail in case of errors. You can also mention the loop() introduction. =20
-
-- Nuno S=C3=A1
-> =C2=A0
-> =C2=A0	return adt7316_probe(&spi_dev->dev, &bus, spi_dev->modalias);
-> =C2=A0}
+> =C2=A0		ret =3D usb_control_msg(vb->usb_dev,
