@@ -1,168 +1,109 @@
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D27E38238A
-	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 20:59:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3EBF2BEC45
+	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 21:19:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778360394; cv=none; b=jhfMwQYFqb6fa6NP8lTh5CXoLlzPEw4DvbQkzaM6bGhvvqgmvY5uO+aZkSMV2yyAm6hSMF2D8tlu4ZFmjKKwt0CzabyjPrAAUc7awtwX0Ze84iZ0kV7d6WlXQ3991gjzwCllve3sL/Q70J8vpShtno4WvUW0SSGBTPofd2l/DZc=
+	t=1778361565; cv=none; b=SQzEFowCnx4B9PxZouT3TKE1D+ozSENgum2FE/MhRHJIDJVW7RKGyofX1OEYo6FgdTpnopqu975LRslfgzwuQGatt3GaKC9qbm1U3Kgf9UJluwh05tNa3/Cve9IqdWUH3Kh1WVdSIQ9bVpuODpKFSamSrD1OmF74dY3dmBtm58s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778360394; c=relaxed/simple;
-	bh=ZzBP1B2qSk4hq42ZDl+LFeX6Ht/pq4pigntGLC9gO+g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=juR3HPBgRpiv+ic+iLPITpei6fku+b4AhM7VBiY3klhyIzFiX6P7L8Q2N6CKYY/qM7uWsR7FJDj+93NsbwVJOqde7m+niUwozeHcbQL0Nmtb0bdY6OelIeMyVf5vscgETxqL1caPjTT/iPBNLqBpeJgnxWBnzNp44rXVLJxOOCY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=CQGAAnAL; arc=none smtp.client-ip=209.85.160.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1778361565; c=relaxed/simple;
+	bh=kyO0Kztq/EWSl7hefaMz35kuy2WDsxmgAX/RqqB/wqY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qAIFuCU0F2749YzHQzyC8I2KWxI+/XIZyVYlBiyLksuKhQVgHwhk28jZVmHdPpdvMKOvhJkYzc+j0sbx5Q5wpWOqU+9aq6BtM3L//6gd1OFgQV49dSlf301qiertjZ1jUYDxF8jj4uHL4B6m1AA2c/H8nOjR60Ss3Ndk+92SRbQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P0PdAxks; arc=none smtp.client-ip=209.85.160.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="CQGAAnAL"
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-409de4132b5so1937405fac.1
-        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 13:59:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P0PdAxks"
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-404254ffe8aso2685627fac.0
+        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 14:19:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778360390; x=1778965190; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=d2B2IWzmjvVV7Fc5wPOLwL5bkbEhy/N0MPl9N12WAp0=;
-        b=CQGAAnAL7ywC+Xw8r1P1j2yPEbYhIyBQiqgyjfjyueqjzxIv1s2tfb4Xkx3eukVGwy
-         fcxzbJHNE9txfWhuIfK/z12rwuU5asKJX8TTzc48dZxIR7lme9jzrbW9j68qamK1+/VR
-         FWoSbHeihbAUe8s3uGEJHYmBG5wxTTLHrYcVAs4W6INavfEJIn5oVhOqRJSiQacgqaQ5
-         8q/23MiiO5+FWWMKMbm7mwI2NdL2MojiiZ8296ALK2oUxJoIsu0ehNV8J30V9S1TOcwf
-         aGCGY16FlBBdMHHNY+hofTGOo3tYnUeTTvUXwedoVKeaeYParwfMTiTN90I8HSFDwVxl
-         gUqQ==
+        d=gmail.com; s=20251104; t=1778361563; x=1778966363; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TClOWT8aHdrbSRekQXx5ViituCwMT6kPSJNtcS0Sujk=;
+        b=P0PdAxksXodBhJbF9bfSUdlG0JOYykyyPqNAEOjV8pEJdl8am+TPfTHYa1hX0tg51m
+         ME2HCauhL8sAWvUpj0uc8ubTMTCyV/eY85pea+5nWYDdV3u4eYSnyI4pKwug6Y15mPM6
+         0wJAP18F51Dho0tZVhk2z6U1wzE02QXrBLauN39LQJI5iRdg/uVt/Xafp03vrJvunjoP
+         3ihYCFmNf+znaL0dzLx8UONhODq2fr44RZhpO1D0RPexHaINJF5jB+b6kEUCShNWkmns
+         UTTO440K8pONMR//k9YTsmNXw+noAj+G7BEeBzZ++9i5zZqZOYTnLPKnC589+WQ1z54P
+         CZ7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778360390; x=1778965190;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=d2B2IWzmjvVV7Fc5wPOLwL5bkbEhy/N0MPl9N12WAp0=;
-        b=DNlmQRSswGbWfxr3XEYrA3YvfN6UPxxn4JQnaf8qzEWBaqRrb9up9BF3b7jM+ESpGd
-         rU7y1mYTtHBarXxpWFMxBtYI6kcrdAlYx39lSNbCOqf5UW1/DEm7vbT+ytLza/wMuvzZ
-         XE/k+ygKn0ZhFxMNZnfHsmTTt5B4+V4Xxf9OL0H1bzeGcJZ1P6pIeaIRgBFO86J6do8b
-         /yQWyVxSAUKVhXVM2UnZ6PkCOcJ3vvpwTPPqrGoY3cUut557rDhW1nwDeKMc0hRIjhyu
-         J1qfS3/huI6CKzSHBgYPxVHHgSGiEcfX0yXWj8iNyLjtQwz4RcsL/vxsp2+bmVSN3Zai
-         9x/Q==
-X-Forwarded-Encrypted: i=1; AFNElJ+51kjm0OCiqLnFTRYeqDGjlAP9EgPjocsS71+C4p5i+lUzanwbEgCCDq33yhcd9deWmEOv/J+DM6Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzzCKsp+jEoHZt089l0CeJlGdXDaYt205z2tahgX3ONU+gKsj7M
-	tzUs9ojAqT3LIfoWefBxN363O4jOdu6BYkqd/HSd/syRDejjUwP/ddBXsEvgQDVjNp0=
-X-Gm-Gg: Acq92OFuw02eGWJjm/ioSBpKwVnHfJrasz/zY6omLeHrkZXxSL9tQ8QvliP4CgKfZt/
-	CaVkvh3qX+M1PsZR/y9mrpoPLtuPa9QPIiJnqrTezboacouWCp1NLn8qsh3Exp/AO8dP2hEGKjS
-	tzYZIrw7ZevFU5FSMPqqS+KX7HdmGroFJ4j9Dh01IlTZ0iasj0mkPhC62SCAFvJmWsfMgxyCqo4
-	Pu1UtI1PiX84m7wWGydDKS+J5BVd6t1gWCH/F3xdum9twIUFoNe3QJF8NitdAXcBG5Rs3CNCvQb
-	GXHxZF3K1C8qKKBHuTtzIlAbjdRwgUilkvDH/IDnYuGQ1M5tMlbEWv1SyaXwP8LwgataVbMj3pC
-	uETTiQVODIYQ+x8PIo9G0QDAuEQCkToRijqXMs9RZ77EFPeR3g3qMjZfGoxk2512TaofdlCHjnW
-	WtM9JCQkZwH/EwsvsI0rmUoYx5tDEupGHDPhRBfzjDcuFFURGBF9DVvYgCftt0L+gpGudX62weu
-	A==
-X-Received: by 2002:a05:6870:c693:b0:42f:c146:da68 with SMTP id 586e51a60fabf-434f58b4a06mr10972755fac.16.1778360390185;
-        Sat, 09 May 2026 13:59:50 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:3548:c22e:ea52:dbc7? ([2600:8803:e7e4:500:3548:c22e:ea52:dbc7])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4355736dbc0sm5428751fac.11.2026.05.09.13.59.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 May 2026 13:59:49 -0700 (PDT)
-Message-ID: <bb23a9dc-4b95-4e36-9619-0c34d46a39ae@baylibre.com>
-Date: Sat, 9 May 2026 15:59:48 -0500
+        d=1e100.net; s=20251104; t=1778361563; x=1778966363;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TClOWT8aHdrbSRekQXx5ViituCwMT6kPSJNtcS0Sujk=;
+        b=iSFIVrI7jclYbf6Dbc9yexj2jBxLUEF8oyMwd6yyVOnvYRiuzmRlN1Qwe3qKDwosKg
+         ru6RghgWB8hGOzcgfPlaDNmKia+QTib1z5c0iPGL2hjbdgDuD4f3lVpwBM66ZT4V7gWG
+         3dMiXB8eL1RORiRkOGOgYFElVTKV6lzPC8C2qX74FssFaeL5XzYtxhpQd6nzqF8S4prF
+         0lbifeS9EE1v4URhCqcdvyLCD2KkluO5shnD/mjdhSnU6UXWOpyZqLBR1C4Gu9jRKUGa
+         nD0xugTbuTSKIzUEWMyMzjcXSKfQMw9s0y5IWoRWH6NLdG6MnF7rxFfaZVqmgBcF/U5r
+         nubQ==
+X-Forwarded-Encrypted: i=1; AFNElJ99xW3HQXdy5xlYwNjLWOLcOL3O6KcmeE77SjxrzQbVmAtFgvATldHI5qjVTz5cvSN1darYu4YQS+g=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz71CXdKldEPsFtaFHKSw1cbhcV81iqjYpyPzgPpHrNISLpHqE/
+	sI8+dq+z+802vSuxyci0k+yGKUtx3gSZS9zMN6cR39lUdLHmOxybbBS2
+X-Gm-Gg: Acq92OFrz+h5ioI2JtrDs3GYgM8WJ8ohshmcDHKtDIUQChYzVUVQd4QEgb28Wllw6Cq
+	elaxveIbga6Sa/nS2rCWLruwFImuyG3bz2PA59oZrEwhZoPnpHpJUUJ8/YQTlldQ7KiqCNl7La4
+	2OQeYRCgoth/gqE0mGk/BZh2NzqPSD7Zc+Ucy1Fq8zfxA8qZsHx9iVal69hG3rpOTXd7iuX+4DS
+	6cs/cpbn7p2koXRDLe3kjxzcENPx3BqhlpBlc8Za6yG/wH2sJwQEt9zDYeG2l0nBwGCpMOxAUpL
+	n8KthRWfEHHuQKGieaH/+JeiVMzljd+a2qs877Dtdyf4khtzyEjRebmpWJ0LNVGaCoH1UulqGz0
+	CvqEkKMRfcrVZL/GKwhaVXUdiVkH1DdQYV0nMyErqXuzGxZuU08RPLncU1Ks7rIkJz0Ez5si5y4
+	uiYQdeqxHZ3fB/kfHVO0/3S/2d1/F77T/+9UbN2JoWTJKlJvd7ndCe64HAEg==
+X-Received: by 2002:a05:6871:c64f:20b0:435:ba1d:af1 with SMTP id 586e51a60fabf-435ba1d151emr233527fac.12.1778361562918;
+        Sat, 09 May 2026 14:19:22 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-435573e6ec9sm5476581fac.15.2026.05.09.14.19.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 May 2026 14:19:22 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: jic23@kernel.org
+Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] iio: chemical: scd30: Prevent potential divide-by-zero error
+Date: Sat,  9 May 2026 16:19:20 -0500
+Message-ID: <20260509211921.84969-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 5/5] iio: dac: ad5504: fix scale via
- output-range-microvolt
-To: Taha Ed-Dafili <0rayn.dev@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, jic23@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org
-Cc: nuno.sa@analog.com, andy@kernel.org, skhan@linuxfoundation.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260509142047.30302-1-0rayn.dev@gmail.com>
- <20260509142047.30302-6-0rayn.dev@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260509142047.30302-6-0rayn.dev@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 5/9/26 9:20 AM, Taha Ed-Dafili wrote:
-> The AD5504 full-scale range is hardware-determined by the R_SEL pin,
-> not the VCC supply voltage.
-> 
-> Fix the scaling logic by reading the standard 'output-range-microvolt'
-> property from the device tree instead of querying the VCC regulator or
-> relying on legacy platform data (pdata).
-> 
-> As a result of this transition:
-> - The 'vcc' regulator is now only enabled, not read.
-> - Legacy pdata support is removed, as it is no longer required for
->   fallback voltage calculations.
-> - Strict array bounds checking is added for the DT property.
-> 
-> Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
-> ---
->  drivers/iio/dac/ad5504.c | 25 +++++++++++++++----------
->  1 file changed, 15 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-> index 9e95da6e49d6..040f580b8282 100644
-> --- a/drivers/iio/dac/ad5504.c
-> +++ b/drivers/iio/dac/ad5504.c
-> @@ -14,10 +14,12 @@
->  #include <linux/kstrtox.h>
->  #include <linux/mod_devicetable.h>
->  #include <linux/module.h>
-> +#include <linux/property.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/spi/spi.h>
->  #include <linux/sysfs.h>
->  #include <linux/types.h>
-> +#include <linux/units.h>
->  
->  #include <linux/iio/dac/ad5504.h>
->  #include <linux/iio/events.h>
-> @@ -274,9 +276,9 @@ static const struct iio_chan_spec ad5504_channels[] = {
->  static int ad5504_probe(struct spi_device *spi)
->  {
->  	struct device *dev = &spi->dev;
-> -	const struct ad5504_platform_data *pdata = dev_get_platdata(dev);
->  	struct iio_dev *indio_dev;
->  	struct ad5504_state *st;
-> +	u32 range[2];
->  	int ret;
->  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-> @@ -285,16 +287,19 @@ static int ad5504_probe(struct spi_device *spi)
->  
->  	st = iio_priv(indio_dev);
->  
-> -	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
-> -	if (ret < 0 && ret != -ENODEV)
+In scd30_read_raw, the current value of tmp in the
+IIO_CHAN_INFO_SAMP_FREQ case is unchecked. Add checking to see if the
+value we got was 0 to prevent a divide-by-zero error.
 
-I don't think this would ever return -ENODEV, even on ACPI. It will
-just get a dummy regulator now.
+Fixes: 64b3d8b1b0f5 ("iio: chemical: scd30: add core driver")
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+---
+ drivers/iio/chemical/scd30_core.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-> +	ret = devm_regulator_get_enable(dev, "vcc");
-> +	if (ret && ret != -ENODEV)
->  		return ret;
-> -	if (ret == -ENODEV) {
-> -		if (pdata->vref_mv)
-> -			st->vref_mv = pdata->vref_mv;
-> -		else
-> -			dev_warn(dev, "reference voltage unspecified\n");
-> -	} else {
-> -		st->vref_mv = ret / 1000;
-> +
-> +	st->vref_mv = 60 * MILLI;
-> +	ret = device_property_read_u32_array(dev, "output-range-microvolt",
-> +					     range, ARRAY_SIZE(range));
-> +	if (!ret) {
-> +		if (range[0] != 0 || (range[1] != 30 * MICRO && range[1] != 60 * MICRO))
-> +			return -EINVAL;
-> +
-> +		if (range[1] == 30 * MICRO)
-> +			st->vref_mv = 30 * MILLI;
->  	}
->  
->  	st->spi = spi;
+diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
+index be8c055be184..3e2bb6f4e42c 100644
+--- a/drivers/iio/chemical/scd30_core.c
++++ b/drivers/iio/chemical/scd30_core.c
+@@ -237,6 +237,13 @@ static int scd30_read_raw(struct iio_dev *indio_dev, struct iio_chan_spec const
+ 		if (ret)
+ 			return ret;
+ 
++		/* Likely only taken if something really strange happens */
++		if (!tmp) {
++			dev_err(&indio_dev->dev,
++				"Invalid measurement interval 0 received\n");
++			return -EIO;
++		}
++
+ 		*val = 0;
+ 		*val2 = 1000000000 / tmp;
+ 		return IIO_VAL_INT_PLUS_NANO;
+-- 
+2.54.0
 
