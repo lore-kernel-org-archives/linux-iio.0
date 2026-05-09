@@ -1,62 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 801793803C6;
-	Sat,  9 May 2026 07:56:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 816BF2E7F0A;
+	Sat,  9 May 2026 07:58:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778313409; cv=none; b=HEWY0ievspF3KvQVJ9lP2H3CVqbwBkAAao7iT2rniNLY6p9KEBml+7IidtSYcOO8dR4JPPk12u+Oz6uvKx05DgptyEJ9iKMmbrY7HNvjtIyE2Dw+qeNXOqSBwYco6+iZT9cU1/iUNCD9TwMqLp5ojmXBJAgLRrfPSkEcaKAxQhs=
+	t=1778313490; cv=none; b=TfpGhP6ufGpJ3kAQbNuTXd8b4NbVmVMSmZmWTlFZ8laIJqzze4Sj6kcE7T7W6ED3fpNvfnOL8NU6c+iKOsLtllgPShj33yxcHiuHTvSUnyziXoeDeADlTPXxAOErqTOAehvo96Pdh8esWmQYv10pwirKvd3Ngj8Xmdoh5ZB0frg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778313409; c=relaxed/simple;
-	bh=HXwaMbnselTHrPdCBRbV99HFwRliqfgrtdyjUpj1g48=;
+	s=arc-20240116; t=1778313490; c=relaxed/simple;
+	bh=MdCI2/PrT8C7efYvGDIg7YuQIc2xsx6L5N5jVNcdWZE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AgKCgs5e2G2K0yIlBq+cOD09WKNEGqPVfMxibGcu4/swb5aqTppBGEmjY9ibuFUBHmZkZG/hoNAT1UNQngZip87z4yKwzKTta5oLf1Rgje9ZiyU2cEmTjSQ8z/0tRh34m+PL2BSchuA7vrTJ26bmF5paEpM1jBGjPT/heIcdDSY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lb6vUtCC; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=GYBw6FfkTZn8sngEk5IWmT/pYowMHa/GtKlRybElJowOITlSZ8r6I2x+YwS4Sg6P0trS8+fAxAdpnUkjVyuxrO7NvvrJp0fGI0Po/eUE3Wxo2fjzK0SEt6KNu2YqXv6FHU7Rl4KBTxsaoOAkVmrTS+qFDeZW1URJGnD6jgFxVVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mdenArNN; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lb6vUtCC"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mdenArNN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778313406; x=1809849406;
+  t=1778313489; x=1809849489;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=HXwaMbnselTHrPdCBRbV99HFwRliqfgrtdyjUpj1g48=;
-  b=lb6vUtCCKcDJOWAuh3Tt5pgxtrcbgkXhXcH2Xk4oltm+txrw3lyL5WDg
-   op7ipTrFwDs4hFXWd/kY1lpnjp7U77J7Aym3ZoImsROVNzF6L4Nka56cM
-   L8YZJ+SRHo9kTDbw2NkG6XWXor++TsusPRzCzxSWkY0PADbXbkTm/Ljet
-   bICqzksBHP7S0vkJM9+A+VcGJsbNfFcJavVnOxQolI/pGLk9CWJkSVs8l
-   aGWOIWmKawuVVdawhox2bgfWqh9t9EC65Iv+AAiYsokjMEAyxYTIxHkBw
-   zckEREp9ZuOD1XnKMmEAI/bMmCRxONW3jy6KHLTMgNhkjBiwyyRGxXYq2
-   Q==;
-X-CSE-ConnectionGUID: bLpL8kIzRaWCnAsFVXSpXQ==
-X-CSE-MsgGUID: eB4Lg28TR0OApuOOVzAo2g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11780"; a="79304876"
+  bh=MdCI2/PrT8C7efYvGDIg7YuQIc2xsx6L5N5jVNcdWZE=;
+  b=mdenArNNd/EY9TGVDf5XKjkScvmJyc8Psc6+BXO84EV+zYkXnuDy8uiP
+   F7FYuoqS8bOgL/QcBtDNG86HWTpywtB8z7C6O+rsjUXTqD/ZizckEg72p
+   U5hbPds1USqdhfY+A5xWv08+Pansv85OPPvSxRV8hdYqkt6/d7ESE5m0B
+   mAjrHl9JvSGNR8f/qyMy9cDB9yGyF9V4rTuR8iGUGZPCfdkXa0+itcINX
+   4CLs7MgSDsQe5nwrwPxJgaGXNzOu4poAdI10SNjtujTohQG3MpBVJpKl9
+   6OzKG8k+A3MUI8j8PR6ulyNGF2kCTAHArp9ffZlTzzbhC4aYBcXgYj4DU
+   A==;
+X-CSE-ConnectionGUID: 0mhWhU+JQ9qkYKexsqpQMg==
+X-CSE-MsgGUID: DMwVVjLnR5+pix0+PwBIXw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11780"; a="78419515"
 X-IronPort-AV: E=Sophos;i="6.23,225,1770624000"; 
-   d="scan'208";a="79304876"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 00:56:32 -0700
-X-CSE-ConnectionGUID: JKQJB5xaQHiKlLtaM2h1jQ==
-X-CSE-MsgGUID: yk8tGCEDTCuldKILjcYgUQ==
+   d="scan'208";a="78419515"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 00:58:08 -0700
+X-CSE-ConnectionGUID: mnKnG3ZlTuaWvv//70uMoQ==
+X-CSE-MsgGUID: t4CFqf7eQDmO+2HPZHHOwA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,225,1770624000"; 
-   d="scan'208";a="232466740"
+   d="scan'208";a="260701818"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.146])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 00:56:29 -0700
-Date: Sat, 9 May 2026 10:56:26 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 00:58:05 -0700
+Date: Sat, 9 May 2026 10:58:03 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Salah Triki <salah.triki@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Maxwell Doose <m32285159@gmail.com>
-Subject: Re: [PATCH v2] iio: adc: viperboard: Fix error handling in
- vprbrd_iio_read_raw
-Message-ID: <af7oqt-TDLympDIj@ashevche-desk.local>
-References: <20260507190751.28352-1-salah.triki@gmail.com>
+To: Vlad <vlad.kulikov.c@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] iio: magnetometer: add MEMSIC MMC5983MA driver
+Message-ID: <af7pC38Ku0WveFZs@ashevche-desk.local>
+References: <20260507205033.951990-1-vlad.kulikov.c@gmail.com>
+ <af206U20Fvky1g30@ashevche-desk.local>
+ <CAMY8kpTR3Mt1Onim0etLaoGLkRd1UyXrHJaW=Z-2CQ=7CSJwbA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,30 +63,27 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260507190751.28352-1-salah.triki@gmail.com>
+In-Reply-To: <CAMY8kpTR3Mt1Onim0etLaoGLkRd1UyXrHJaW=Z-2CQ=7CSJwbA@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, May 07, 2026 at 08:07:51PM +0100, Salah Triki wrote:
-> The driver proceeds to the reception phase even if the preceding
-> transmission fails.
+On Fri, May 08, 2026 at 01:40:17PM +0300, Vlad wrote:
+> On Fri, May 8, 2026 at 1:03 PM Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > My comment from v1 still applies. Note, when sending a new version of a driver
+> > like this, give approximately as many days as hundreds of LoC in it.
+> > The bare minimum 24h anyway.
 > 
-> This uses a goto error label for an early bail out and ensures the mutex is
-> properly unlocked in case of failure.
+> Thanks, understood about the revision cadence. I will wait longer before
+> sending the next version.
+> 
+> I did include a short explanation in patch 1/2, but I see that it should
+> also be visible in the cover letter for a new driver series. Unless you
+> think the existing note in patch 1/2 is sufficient, I will add a
+> dedicated "why a new driver" section to the cover letter in v3.
 
-...
-
->  		if (ret != sizeof(struct vprbrd_adc_msg)) {
-> -			dev_err(&iio_dev->dev, "usb send error on adc read\n");
->  			error = -EREMOTEIO;
-
-This also a local variable that doesn't need to be in the critical section,
-right?
-
-> +			mutex_unlock(&vb->lock);
-> +			dev_err(&iio_dev->dev, "usb send error on adc read\n");
-> +			goto error;
->  		}
+I'm waiting for this before reviewing. I.o.w. it's crucial to me to even
+start the review round. It's up to you what to do on this.
 
 -- 
 With Best Regards,
