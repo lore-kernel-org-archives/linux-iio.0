@@ -1,154 +1,151 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30A03A0E81
-	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 10:11:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778321486; cv=none; b=mmKIceeHF/Qb775RRp9ehhvjWZ1LU9MjYGuwVnDFVfeXlJLrSnUlDzh85GL6+bO/2wcvEJRFLFrK1m93/LpekF3aTF9LsCq5ZQ7uzKDU6jIFD572voN+dznYARXhgeT40PqdTvKwh2s9HJAH2mVoo4uBjPK6R1AJisdYMMIeudw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778321486; c=relaxed/simple;
-	bh=/ypM8gwlCiAeCIMJp+GRH1JKDXxEaGiFEs725h5oIl8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Qe7CYZGKg1TrpPenwoAJaru1OWT4Kex3DWRdorSt5jMrYQcd61jST0QUXKjkT/4vZuOSb+wBGQxkD2Yoha7spDBBSY06SFll/rY0yUS4lCUrsGuBAP25J+3/4kjpiYnnbF8AC5EHlIDcgsy3ODGXGd4wcMpkY2613rJhE4svyro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ku0O9Kab; arc=none smtp.client-ip=209.85.215.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85FBC2F8EBB
+	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 12:27:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.172
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778329671; cv=pass; b=H+jokN+sZI4fmbswOgZukZtgJfMw7Cc9hyoR+uyu8dwrwM37LhQNYoMMYcOuRkO78g1IMhKqAli+oPWukunQWKBhSl+7UHJA20vNGzkBoW3hEYjGiEwMd7biIG91/VauhaMwiB41CkFFhFNrjpIHgglEbY64ARzxyPk+sfXbx2Y=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778329671; c=relaxed/simple;
+	bh=2qfIE+Uj+kCo8x5ekxvSZlCY0fOo6OniwoeiUF4wN+Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fN2VG0sKnAvDhofYTa0NESa4Rkga5gOB4SS7ifK1srbRtQZPA+p1Rx5tjShWmTwul0EAnSRJbr7WLrM+4MNVQ/VZRfTUGHQEhxL9iCvtzXh7WdtUvDo3+BbGGUrQTKi+I79TxRe3yM1To4/T1EXt+7lvlB47l1tzbtN2hDf/h0A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FUsdVRwn; arc=pass smtp.client-ip=209.85.128.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ku0O9Kab"
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-c801912c903so1214817a12.0
-        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 03:11:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FUsdVRwn"
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-79a535e7c00so34119737b3.3
+        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 05:27:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778329669; cv=none;
+        d=google.com; s=arc-20240605;
+        b=llVSNblWx/vSw1IH1gX3JSD4ZQ/2LCwDkWbV2hxFKJLn1S7m2c10ukD6n4LJ/oXZjf
+         gEUIrGrrMDUQ8oINsw0/jWUyrSBskeLLcCSSpKlXns8RHYpS1nrsitdOQmkO4nPiA1Ec
+         8VC7agnx5RGDSQ9+68++aRQgZzZBzY5GRipkqDXlEXbHsQWi2Ybt7DzJcU1/xl1fWJmt
+         vRvhS2rV51u45XAPFoR94xw4n+QBr9U6NHsFf9UpSRoS5Ge3xVcTR6apaoDbrr9OUTD/
+         ORbaKKHEWp1hOGGqSnG3jfe1Sdcl4TMBXC9SVtamPUrlFq66vrTJh2gmdxU5Mb9bv9kj
+         G7gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=3/CUTeoP6j2y78MqiqLoSIyp8c6EmIMmXSLEhxKoV30=;
+        fh=XTBKpK9nNwIl19KIotcW7iLbA0DogX82zBrY71LQ7ng=;
+        b=Om6AaDbhFou7NRy19Pdgl+TN1xjmw9XPRWVbHVsk0KVZCjlmqsPpIqUYTFY2KteIfQ
+         QF1Dc8Kyf++Ev+/fMqOk3t9/pnQU9O1PTM8RQor4TRdGtdyS17PhjJbLfYaeipP4Wjiz
+         amzpVnpSZQVdx7S2JMzgxLGBwQzezbgHT1CoHNX8pFHdBOzTDKqMOS94zkQU7YlqetjU
+         4J07J14dXuWEBB2dBkq2BAC4X309+y71G0Z3Dv6LhktB28TBmZL5b0S9a1IbGxKC41jr
+         PdI2NqRAocXsGekxpf09OlSLdEy3dc1Ki4zMSpNel+F1KebCSVlA7966Z6+4kxo4RgcD
+         gVsg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778321484; x=1778926284; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1778329669; x=1778934469; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YxEj5NvBAWz6r+Pm4CowXogfvDTiNULt7IFl/LWJs1M=;
-        b=ku0O9KabwFNfEXhEDmk4E5umbV+EVBGQybz+RG5IRB961Bt/uhVCgb1iFurwzxqXwi
-         6rB8nxIzfp48jn7JCo0biv5sCJBHWHnbuCpKjzBn/0EPtEvlhXvdJQxlLLNC4s1oFx+q
-         CvAbf8Ptv0yNSd8EggetIKklX4cZEuyh1dzc+iNvsDyOSqVe6/mtawIBCAD9PA1VBq7y
-         MOxkPGntyzlCZB8YkHYl9Y1TC+K3WcKzxi/3OmvFGl7Wg338RbCkIQR5wbqNdGoTqBCr
-         05UpS/oh+ZzELhToE88oFwGuEbViqznxYZnXG0rKVznimYGljigIXNQ2wKFk9YysCEKG
-         2HSQ==
+        bh=3/CUTeoP6j2y78MqiqLoSIyp8c6EmIMmXSLEhxKoV30=;
+        b=FUsdVRwn3MMVKhoclhPuCPYc0T6YA0GUQjm5O5q9Q7FtuDGvvJ3n9GS5XdM0LBvbSU
+         MDkZqvd33HMp5/6fmmtXtCli3whUW7aZNI6QhYum9+bt1hnUp7qiI57cu7VKgurxAF/w
+         7CXRGOZ6yvGXqKDXmlx22sWOYoyrdrSV9t7y79T+qJwaGIiF+pzMI3WvzQFUhTKtOw1D
+         KtQIc77n9sx/TXURjuCaTZsTqZJTQEYewaHT2jLPMrtiHjciiySMmaitnee4GxyCBCtI
+         dD7If1urgz7sR2pfVr0oRt+RA0aYs1aM5PN5wmuRTwALJJhNMfB5QsHOoJOo0K749sdD
+         9jAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778321484; x=1778926284;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20251104; t=1778329669; x=1778934469;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=YxEj5NvBAWz6r+Pm4CowXogfvDTiNULt7IFl/LWJs1M=;
-        b=lJx+7c8ZpVvASz1e1X5Z6w47ql0vailDxi2fXXzZW1gKq2uBOWOZvETZDHunf3yPVl
-         FQxJgUdoLKZmOi8oQGTBZzEWsSfVfHh7VoiI7qbtcN8ZoGwB7hch7lwpPZzldWF8UK1W
-         zRL8zYutbnaHBepiJXK7PniPlmloJn4ECwIBYeHW/0a9BdB5RF/gZWARl1yBaxZpG1dz
-         ydncBgA1QqA+cKd8AdZpak9YhGD9FHX4laocQnjIsFDZeEf4URIr+JzYWIbTb+DuR99z
-         DekAgpE8hPSuG5+f/vCC9e5Xav8OQVdzmgsnfRUjELERRuz69VvZYpHzXSJp9Al52phC
-         HuDQ==
-X-Forwarded-Encrypted: i=1; AFNElJ82aMK/9xhxsLgpHcodgoDuAjy5rWe/bhiCVSzs1C35eB7UkxWmRALJIdWe227VVxlD2bVZRsllgm4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyqrcdeep5xtbsALyAmveWhVeM6p59kDbO7aqIn+NPpxA04GdKM
-	tXqZ4ghjZ/8/pJeCSAwu3qVyh5Uf9Iu5Jl2Fo227ZCNm3CLA1hLRnDLOoziRAw==
-X-Gm-Gg: Acq92OF/Jr0hdqNmzZ1jHARtGxmYLygHPOd/NhH6l+oOvy7GVH0oWw5hVu2/psfQYlK
-	osAawzkAibfjlBcBnlSzhorU9KS6JoOLtNBfvvXleyjrkKIcXoY71NtW2fNXurgSWiQLt5JD9xp
-	ADUGtiy+fKfjpDzHFMdD+1bIBebrPuhwm5V+Vh6eeLdPE5qGm/wqwRrKVpBhpMVVM8KLaIlymYY
-	1FZAuHN7pdkS6NYaEM9ZfYGH11eJ/kU7JazmdbwqsS/3SPfYLuXHVdjhSPJAUIb48s2N6pD729J
-	2pciU2+q91Y81AWWDK1xVPGI6TsvkpyXGGZbdEY6LlzSvGpkXB0RXXZBUMNUpYjPTBjWZjIo6qg
-	XRyy1jiIL5wa6yV1bof2UvBFvVLoZH4acBbC5Ma4HHIM1h869kRPsw8M5TlHXVXGmb/08I1o/bN
-	Qf1Kpy+pSXEYXHcSzfmwbHpEeJOCstFv4F1TyY6mZzoGONWhMD
-X-Received: by 2002:a17:902:d588:b0:2b9:cd2d:6f13 with SMTP id d9443c01a7336-2bc7a9a62ccmr21182805ad.10.1778321484030;
-        Sat, 09 May 2026 03:11:24 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1e83084sm47335365ad.61.2026.05.09.03.11.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 May 2026 03:11:23 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jikos@kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	sanjayembeddedse@gmail.com,
-	sakari.ailus@linux.intel.com,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 9/9] iio: humidity: hid-sensor-humidity: drop hid_sensor_remove_trigger() using devm API
-Date: Sat,  9 May 2026 15:40:40 +0530
-Message-Id: <20260509101040.791404-10-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260509101040.791404-1-sanjayembedded@gmail.com>
-References: <20260509101040.791404-1-sanjayembedded@gmail.com>
+        bh=3/CUTeoP6j2y78MqiqLoSIyp8c6EmIMmXSLEhxKoV30=;
+        b=KEd2VPWZ+kKtnSHXSwLLTI9vA58YzXRzrGYAbSAxq6havM7L2Pz7acwxf6tL5gjG6Q
+         D+SiParmhfcRhXbHdunjsDXxaxI+IswGMw8VsJoNsKUqrnsRATmRmoxcQz3821ZeXm95
+         2D9h36w3G+jKXnbBGrzEp2FhwGvCkSIja8tRks3DNGFofwZL/XRjhYIrxip3OjdOz7x1
+         LDTV2YOjChapQHYf/FffjnyPoYUWdh0HWdgX7XAAtqMcbnvgh3sFAaBz5RoYy6QTH1hg
+         kradTzCMi3t+INiSqIZiOeTULCJ4W7s0IyDsnAl1LsMmmMvCkN2VowX/i3SXXRFcffdY
+         rAyA==
+X-Forwarded-Encrypted: i=1; AFNElJ8AyvauRz93pQdRzq9kKOWTXiWCExn7wMiMEO8UFJ2j07vL+GXCSyhLlrsQaaaDpn5TwbSjhOY3ALE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzbP5AgK1AaH26CJqRvLIjLDvxGxyvkMALuQgYudxVqTJBUM+n8
+	kg+1tFwgn3dMvsIuKvWxmzwOBw5r/vpeV9DYgx3WmQBZ13rGlB1U8DyfcF1GUUfuTPgN/DEEUm8
+	TaQpSfElVxIEGVVN9cx8QV1oV8Ho0af8=
+X-Gm-Gg: Acq92OF+q9GH3ShNT4dxJ2gMCKwes8zpml5/E/1VtzojJ0GyFXLoFilV+yY3MuAcd3k
+	4VU3ciD7dO/7KtxWrNPgZly3GLUobMeen0RIKmRYO6zScNL+Foq1pmMPBuAPIgR8Rqsui4kvtZQ
+	F/GHZZZxqIhJlatyHJ/kTs/LnSWSOEpZV5Z5/ZYfiH9Bib++4Cqze+umpJKAWCoOJ0c/pOzYn6V
+	PPab31JV76eIKQ6olYTWb2Wo08dEkbDrEEdQyup9ChjXeu4ZEkxJY5azuQ+8du9VIGpT0sMo+Qs
+	gBzG
+X-Received: by 2002:a05:690c:c4d3:b0:79b:d56a:a7c2 with SMTP id
+ 00721157ae682-7bdf5efc98cmr187980197b3.48.1778329669534; Sat, 09 May 2026
+ 05:27:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260508225501.86448-1-m32285159@gmail.com> <8F49F478-AAA8-4AE8-B6BC-BF3C3923AAD7@gmail.com>
+In-Reply-To: <8F49F478-AAA8-4AE8-B6BC-BF3C3923AAD7@gmail.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Sat, 9 May 2026 07:27:38 -0500
+X-Gm-Features: AVHnY4Jw62tf-F2x-w42QXyjRBIJ6HML3x-rTUwbtwhL9XVv-AoZLA8aRg_tqDE
+Message-ID: <CAKqfh0FOJ+k3E8Kc5+acsvhK7ATapbhPsas4YZOzjXBkSRFKuA@mail.gmail.com>
+Subject: Re: [PATCH] iio: chemical: scd30: Cleanup initializations in scd30_float_to_fp()
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jic23@kernel.org, Tomasz Duszynski <tomasz.duszynski@octakon.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Fri, May 8, 2026 at 9:56=E2=80=AFPM Sanjay Chitroda
+<sanjayembeddedse@gmail.com> wrote:
+>
+> Thank you for the refactor change.
+>
+> The previous version was more compact and readable. Splitting the variabl=
+e declarations and expanding the sign assignment into an if/else block does=
+ not improve clarity significantly.
+>
 
-Use devm_hid_sensor_setup_trigger() to automatically release resources
-during failure, unbind or removal of driver using devres framework.
+Are you sure? I find it to be far more readable than the comma mess
+that there was before, plus not a huge fan of the ternary operator in
+such expressions. One of the goals I have as the new maintainer [1] of
+the scd30 driver is to get rid of "clever" code and replace it with
+more explicit and readable code. It's going to get optimized by the
+compiler anyways. As a wise man once said,
 
-This is done in a way to simplify the setup, remove goto and avoid manual
-resource cleanup in teardown path.
+=E2=80=9CPrograms must be written for people to read, and only incidentally
+for machines to execute.=E2=80=9D
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
-changes in v3:
-- Update commit message based on review comment from Andy
-- Based on discussion using parent device of HID platform driver used
-  with devres framework for this driver
-- v2 link -> https://lore.kernel.org/all/20260429175918.2541914-5-sanjayembedded@gmail.com/
----
- drivers/iio/humidity/hid-sensor-humidity.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+Plus if we need to drop a printk() or whatever in there to see the
+variable assignment we can just add {} and add the printk(), no
+messing with the ternary required.
 
-diff --git a/drivers/iio/humidity/hid-sensor-humidity.c b/drivers/iio/humidity/hid-sensor-humidity.c
-index d310ec43a118..4d4282e4b6e4 100644
---- a/drivers/iio/humidity/hid-sensor-humidity.c
-+++ b/drivers/iio/humidity/hid-sensor-humidity.c
-@@ -234,8 +234,8 @@ static int hid_humidity_probe(struct platform_device *pdev)
- 
- 	atomic_set(&humid_st->common_attributes.data_ready, 0);
- 
--	ret = hid_sensor_setup_trigger(indio_dev, name,
--				       &humid_st->common_attributes);
-+	ret = devm_hid_sensor_setup_trigger(dev, indio_dev, name,
-+					    &humid_st->common_attributes);
- 	if (ret)
- 		return ret;
- 
-@@ -245,7 +245,7 @@ static int hid_humidity_probe(struct platform_device *pdev)
- 	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_HUMIDITY,
- 					   &humidity_callbacks);
- 	if (ret)
--		goto error_remove_trigger;
-+		return ret;
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
-@@ -255,8 +255,6 @@ static int hid_humidity_probe(struct platform_device *pdev)
- 
- error_remove_callback:
- 	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_HUMIDITY);
--error_remove_trigger:
--	hid_sensor_remove_trigger(&humid_st->common_attributes);
- 	return ret;
- }
- 
-@@ -265,11 +263,9 @@ static void hid_humidity_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct hid_humidity_state *humid_st = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
- 	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_HUMIDITY);
--	hid_sensor_remove_trigger(&humid_st->common_attributes);
- }
- 
- static const struct platform_device_id hid_humidity_ids[] = {
--- 
-2.34.1
+>
+> You can keep it simpler like:
+>
+> sign =3D (float32 & BIT(31)) ? -1 : 1;
+>
 
+See above.
+
+>
+> The IEEE 754 representation is already implicit from the bit manipulation=
+, so additional comment is probably unnecessary.
+>
+
+I'll see if Jonathan will want to remove that during merge or if I
+need to send a v2 (likely not).
+
+best regards,
+max
+
+[1] ("MAINTAINERS: Add myself as SCD30 maintainer"):
+https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=3Dt=
+ogreg
+
+> Thanks, Sanjay
+> >
+> >       /* special case 0 */
+> >       if (!exp && !mantissa)
+> >--
+> >2.54.0
+> >
