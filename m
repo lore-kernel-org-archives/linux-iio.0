@@ -1,126 +1,170 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6C513624B8
-	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 14:09:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778335763; cv=pass; b=E1HqHeJOX5N5AbFUsPaMtjyPfNKjGaCUyIY0w9Xjz0qgfFNWN86dnGYtyWZl9VCiPrDljLHxM0oCzBxvQyG0Y4eH5PKqQjI7wwKjJozfKhsyGuGAi9APLkODkRwVpQhus/NtKQgUxmQVh8PO+Axe9bI3s9jZLPsEI8TL2bbT59Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778335763; c=relaxed/simple;
-	bh=CSX3MGFSC+bFTsmH360wzlSq99mNh1uFyupaTqE/WUY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dckbRRQvvSHHP1DWZvDZo9Eq/qpchn448C63XV5/D3vg2RgcyaoF+tGhQFF6D4iWSHrxevGUPJEOvhE7uFL6yWiPNR//Q0o/+K2VNfA4T45JP2NJMDkL4DYwVx4Qp403cipN1CwOhyCzTvZws4vs+ivZ4zgdWHGYCrwSLG1OS8E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=qqV78xNu; arc=pass smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4267E2BD033
+	for <linux-iio@vger.kernel.org>; Sat,  9 May 2026 14:22:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778336557; cv=none; b=tw1XuxACBs5h6C/3m2Dt7Alscj3LBCiOTOqcwF7nXIaEVRMZuA63eJVynBPbGHtbROSAMpUI8SPsKy22j9DebvsU/+nrI1N2Shp+PFGDewMNQYgjOLtHxe3nloApvFYkLrva8yqeWGX0Os8/JT2hKHmmj23eaDYc7AKCVn2R3xQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778336557; c=relaxed/simple;
+	bh=PDCyqrDp2cpLbVPkx9BU3X2g2fgR0bLaGYNic8cU7jk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qbdG7Fr+C7LAeLZxYG+99BTEd4ThgEZPixdT5uKl09t/DT91sInSq2CbIh5bKnY8dLCuXr7vrfXzuYdQuB9daHQxhP9qEw2t88Bur5I9KCDfvwUuzlfjnLQj//H/6852phK91/O6+hgEifvgOhiRNMRMAq3cURqZDx08NF21+6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=spAxBN7m; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="qqV78xNu"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-bc1f0830f44so726778866b.0
-        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 07:09:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778335758; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Kb+6BPokDYakklVTdZf7avg7rXJ3gOi97mBs3yTHwJZ4k9MaikMruyr5zojOD/4o5Z
-         yyvCsjcIafhyXGYHfHRxuAgqm46vhhE4OrkVOtEiU2nGoXdbkNbka6esgseAfOwPrnUZ
-         bozRH8paDqzWAw7QBTJ6OaY0sU5OIB44LgtNhE8s9tKH9bEetIzIUbDiiaym2gsWLyAY
-         nuLxikTfKav5QiSiUF68U7I5TbRg4wTLlqRUtrixb72W5YlHxP23Birj/G83NJW5Gkk0
-         bFTGkbHoTcOlEq94Cn11wRnVkLP+0PLmYF2m0+Ttl5UVuATymN9HVmkKU0BF7S3uzS0Y
-         7ywA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=W/49pzHhpm5otGs5tOxr4XckSFxbaWtW2tPnseYELmc=;
-        fh=RDHUH0DrmlwK6h4cxBv+JcvOG0hxld1qM4QohkSRBCc=;
-        b=LHnnQUcqOC13Fpk70FoBpXtQFeNaDezfoQVgScJPZmUcqhi+X4J6FwBKQOlvnMJuUh
-         p1GTtwrmOftIRiAFYjn1eWamYJhu5hXIJ4BJ8Rz48LUYNNhRJv9qSwYYpxf+ZgXOoICU
-         xBYxtibWL60XCy/Mk5i/TedH91Vffp94bO6OL1nwyKKOUcDjiJCtyF07Xr7EojnWIkdf
-         YTcBIzjwZKZR9ipE6vH07lJhRNt4JXaGeNa3yefvXozlMh66XwnxYaiD+ceaNcM1oUyf
-         AV9atSJ0LugIU8J5XnNO8Lvd/xlewxgUNzUMN61nA+B/y67tuJOpOuCXA5gHC16wLnip
-         NQ+A==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="spAxBN7m"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-43d77f6092eso1792200f8f.2
+        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 07:22:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1778335758; x=1778940558; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=W/49pzHhpm5otGs5tOxr4XckSFxbaWtW2tPnseYELmc=;
-        b=qqV78xNuq30eYJY77Wc9+f4p6fLwuvYgbj9Z/XYcI6LMII+3D4VJE/ln4KgMMGBF8i
-         io3ANw539ugiN9TQnz+5CUuShziTXyyFS5sEIXrH4SfciN6dbSJQtdj4WSXnyX9DQnVy
-         5/+4ehFjUeu4PrdYXRxk2+A7BBq2IkMDqLYQlXpjgCtJ/2ZZ6h5X5TwIaFqVmYtAiZdz
-         e3FCasWZDNC5/pWIFd9NRuBXWA97Jdrv+vrHuzx4lJuraHTebbfUD3u0hfU6RzqmY/Ck
-         4HNGKcxFjCEH+qfVQn08nxqBQQlFOciIm86uczYMaxVJiSAv01xDy9BkdJG39MXaJ8Ng
-         4Vkw==
+        d=gmail.com; s=20251104; t=1778336555; x=1778941355; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Jmvg0x6dnke6aX/zgSP8+qEtU0AMd7QFkbsuhFZV/2w=;
+        b=spAxBN7mv0K3wkMBiAMhHIWrux5lHfD+4i037NDzDIR13zqnafvlh+YR3y+TJctIOF
+         UtJht7surudSP5b+3/cwVEblZnft/l+DcULrXUg8O1ZCKeJ9R2YZ+QowBrr1Nb/AqOX8
+         bLMnd71mFYCxEYuMa73m/iYvuYU7QG9HQBg3xIgdYi3vt0E8RKwnAwCWdr80ZuQMntRy
+         87aFn0bTania+yxkrixgifACVIc+mnmJ4jKaQPWP11CVx8Eur4C6xTmqVUxOsaJMwayl
+         2iktRsy3wfXAVPply5mEuIsqWUObQKKgSsZ+FwcZFqkWBKu/e/lmJqjefhbRG3rckjal
+         uxcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778335758; x=1778940558;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1778336555; x=1778941355;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=W/49pzHhpm5otGs5tOxr4XckSFxbaWtW2tPnseYELmc=;
-        b=mo4c9AsZ1ewx53o26lj3nvW7/yU4mjb2t7tIQ94nMY2FhuXfqNlA7K5O8396XziQEv
-         NyowqE8IRsB1K19uGa22fUunlMUkckUtz4w9YHP15L7R4/3y3UM8/xZqZIMMEXuEpvhc
-         jvyFYfU5XjN3R+cBdBcfNVV20aWjS12LJJ36EcLcs0IQT9zkCYZ0vu4U/NvkC4mMSaHK
-         wueQDRKHEgzELk4egtshTNeqO7SqpvxgCVuJkyNG0KZo2q3EzAxNzoEr0AN5+j70sLqE
-         xpbyhnUG25ZMrvju1jugyUGkFlh9iu0degPDdhp+HyuxYLBkuiuAsnb9IpPCCB7y6tDS
-         rZtQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9dLvR5bWhdMHNWv29MxMPFD9fYq3wRX1chuuEndmwHmWqDl1XEtv5SiAOSmn3CpM5Yr8DEZgGvpk4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwFi1Z7WlRnDaDTzZO+6qKtLBi4RG3CYdd2AT4XxYvCcFFoA2+o
-	uFnwSgDN1GjlClqH5+7njZ9SZYHEJmddtgnwTFWkxR0wOgWn4xL6nOmytuc6eg4AkH+wRPlecLN
-	YdByBtyuuFjiPgDWuUrjPiESHDUAf36T2ckpDSVHKag==
-X-Gm-Gg: Acq92OGj1IUo101XEagnDSNcuzyjKRuo0QLsKFTyM2wnIMZ/klKy1Tin9SkldbuXPI9
-	d9v7go5Q53I5QISreyGxvHTWe7MlPqlMCBZudeZjNVOqcUWSFDBodncalMAjMJ0oGHnt6qjZadR
-	zlzj78HSOF9Tgi+vf+ReU6e0zIC15kfrQtMmBgkrxFs93z+pVWEUBzguOjMcIW9CSd2EqJbGyiT
-	zWWFWhFJ2GMCZ8YijSXr5LEUsHZJpMNvsJQr4YBiNJngMMCs+w4nTUe2LvEjGiLVxNqYhHbCQ72
-	+KC3Udw=
-X-Received: by 2002:a17:906:4792:b0:bc6:bb4b:1726 with SMTP id
- a640c23a62f3a-bc85d6b8d73mr644135266b.22.1778335757995; Sat, 09 May 2026
- 07:09:17 -0700 (PDT)
+        bh=Jmvg0x6dnke6aX/zgSP8+qEtU0AMd7QFkbsuhFZV/2w=;
+        b=b9Kf/jBYFM3f57xIG8t09rI514k3+92yBob9SxTtO792oFaoNQmrvGmR+CxlhrJDoh
+         qHl0yy9LnDH8rKWhA8bTYuRNDzzFNujcl5QsU155YZWdsiPhe3dIbGGs2Wo5bKOhQZ17
+         Ure0zlNWtqZRuyDobkwkpIEhTK98VdDFlRRhAldQFy5ZrEVFerPv7OS8CjP7mwCZI4YL
+         PG2t/VlNWGOnbU/wdgMzW1ZoevK+Lp6fnuFw5+AIN3rCsgUOvI9142HzG8NUslSE1I47
+         MnrZtpnaQNB7DU/m4QotNWLMZsO1wOxUz+IOLg0j4uey09aEraZ+xw4SAdw1cgjjAicw
+         h9tw==
+X-Forwarded-Encrypted: i=1; AFNElJ+mANKJ81Kbditwap3PUghOhV2WzE0HwEec8OUzYsDw5H1rTfETkixNEVT57OPtkPim8e0KOXITG60=@vger.kernel.org
+X-Gm-Message-State: AOJu0YztB2mcF/dAHVAsnyssdRhn92h5k2oHgeTJEOzMu3d0pEmC3/A3
+	DdgzfSGemO9ypT6KuuEG/f4ilarA/yNNcLIwxgMDw6Vbl3IfFaVt5DU6
+X-Gm-Gg: Acq92OELQfjBTh+1+BwccVjluekxY2qn+4NhePFPxqRM4OxSWBQfFur3fqxy+0BilBb
+	qSPlaiGqrVbtBajqMdV+iagjTyYbkCEYUfj9phH+Fm+yRuPFkCpkOSpBoBaPHwAbAe1qkCYIDRY
+	22sXMD2HAHI81dt6PwgwFKb8inQKxSrLlngqN6rCu5vtPd3C8Hz4QqL3aO107i57P3sQwoLIW/n
+	Hv9OcxkuwaDuLu5h2iSqTc71XTyjRzpk/3/Ac0Yq7mqtjZvlwKnX4pNceL7UQ7LZKCBU/++L/KO
+	OUp7qqMF8l4bueVc0k7iZZbtVyc+Y7yNfl1vH1xiimxDx92/Qvh7+qUVtNRoqOc2C3qC9TetmXf
+	HupxdT6rtWfyG5hNpZgZhS7RwFerbinogy6572P/FA8z+qMsn/KZ4NIlFyNSi5nijBbfsGwYr9N
+	5vElsFdoB16r5QRPqA6oT3OXqqqYSj+ZbWzdupVPLf5KbJl9SF7Mej1+g13w==
+X-Received: by 2002:a05:6000:2403:b0:441:2381:b630 with SMTP id ffacd0b85a97d-4515c575330mr26533311f8f.24.1778336554291;
+        Sat, 09 May 2026 07:22:34 -0700 (PDT)
+Received: from DB-07.1337.ma ([197.230.240.146])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45492271510sm15127763f8f.37.2026.05.09.07.22.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 May 2026 07:22:33 -0700 (PDT)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	skhan@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Taha Ed-Dafili <0rayn.dev@gmail.com>
+Subject: [PATCH v3 0/5] iio: dac: ad5504: bindings, cleanups, and scale fixes
+Date: Sat,  9 May 2026 15:20:38 +0100
+Message-ID: <20260509142047.30302-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260429224401.11818-1-marcelomlage@usp.br> <afLyk-kNyZkr_drR@ashevche-desk.local>
- <20260505172214.6f0025d3@jic23-huawei>
-In-Reply-To: <20260505172214.6f0025d3@jic23-huawei>
-From: Marcelo Machado Lage <marcelomlage@usp.br>
-Date: Sat, 9 May 2026 11:09:06 -0300
-X-Gm-Features: AVHnY4IrAP4HSXUoLwQWtf-C32p2BxrsMI3OLjmRANLwyfjgBFOab41TXgre33Q
-Message-ID: <CAO=vGZoizk4wLU7oRET-HxDOe52_82OXyyL1G1r4dzLhJYKv6A@mail.gmail.com>
-Subject: Re: [PATCH v4 0/2] iio: adc: mcp3422: apply bit manipulation macros
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, andy@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tue, 5 May 2026 at 13:22, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Thu, 30 Apr 2026 09:11:31 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
->
-> > On Wed, Apr 29, 2026 at 07:43:59PM -0300, Marcelo Machado Lage wrote:
-> > > This patch set rewrites several open-coded bit manipulation parts of
-> > > the MCP3421/2/3/4/5/6/7/8 driver code using bits.h and bitfield.h
-> > > macros.
-> >
-> > Both LGTM now
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> >
-> Nice.  Applied to the testing branch of iio.git.
+Hi everyone,
 
-Thanks for the reviews! We're happy to see our patch applied!
+First, I want to sincerely apologize for the long delay between v2 and v3.
+I had to step away to focus on finishing my last year studies, but I am
+back now to get this series over the finish line!
 
-> FWIW Sashiko had a field day on 'whilst I was here' things in this driver:
-> https://sashiko.dev/#/patchset/20260429224401.11818-1-marcelomlage%40usp.br
->
-> Note that the DMA one is wrong. Some of the others might or might not be correct.
-> Maybe some stuff to look at if you want to do more work on this driver, though
-> you'll probably need to work out some way of testing fixes for the more complex
-> ones.
+This v3 series addresses the feedbacks from the v2 review,
+specifically focusing on strict DT validation, dropping unnecessary
+driver code, and making sure the driver works perfectly at every
+individual commit.
 
-Thanks for pointing out Sashiko's thoughts on this patch.
-Unfortunately, we do not have access to the device for testing complex fixes,
-but we'll definitely study its suggestions for next contributions.
+Testing & Hardware Proof:
+The series has been physically verified on an ARM64 Raspberry Pi 5 using
+a custom Device Tree overlay.
 
-Best regards,
-Marcelo
+The AD5504 is a 12-bit DAC. The hardware scale outputs
+now perfectly match the DT inputs:
+
+Testing the 60V path (output-range-microvolt = <0 60000000>):
+$ cat /sys/bus/iio/devices/iio:device0/out_voltage_scale
+14.648437500  (60000mV / 4096)
+
+Testing the 30V path (output-range-microvolt = <0 30000000>):
+$ cat /sys/bus/iio/devices/iio:device0/out_voltage_scale
+7.324218750   (30000mV / 4096)
+
+Additionally, providing invalid DT configurations (e.g., 70V) successfully
+triggers the strict bounds checking and cleanly aborts the probe with
+-EINVAL.
+
+Changes in v3:
+
+* Dropped the patch adding GPIO control for /CLR and /LDAC. As pointed out
+  by Nuno Sá, since the driver does not actively handle or toggle these
+  pins, requesting them in the driver is dead code. They remain documented
+  in the bindings.
+* Combined the pdata removal, regulator _enable swap, and DT parsing into
+  a single atomic commit (Patch 5) so the driver compiles and runs cleanly
+  at every step of the git history.
+* Restored the -ENODEV check for the regulator to maintain ACPI
+  compatibility.
+* Implemented strict min/max array bounds validation for the
+  'output-range-microvolt' property.
+* Included missing <linux/array_size.h>, <asm/byteorder.h>, and
+  <linux/kstrtox.h> headers for full IWYU compliance.
+* Reordered commits to group cleanups before functional changes.
+* Dropped Suggested-by tags for standard review feedback.
+
+Changes in v2:
+
+* Replaced vendor-specific adi,output-range-volts with the standard
+  output-range-microvolt property array.
+* Replaced adi,output-range-gpios with standard range-sel-gpios.
+* Split header updates into two patches: alphabetical sorting and IWYU
+  compliance.
+* Used MILLI and MICRO macros to replace hardcoded values.
+* Introduced a local dev pointer to respect the 80-character limit and
+  realigned function arguments.
+
+Previous versions:
+v2: https://lore.kernel.org/linux-iio/20260310174835.24209-1-0rayn.dev@gmail.com/
+v1: https://lore.kernel.org/linux-iio/20260212181955.42724-1-0rayn.dev@gmail.com/
+RFC: https://lore.kernel.org/linux-iio/20260210121032.4630-1-0rayn.dev@gmail.com/
+
+Thank you to Jonathan Cameron, Krzysztof Kozlowski, Andy Shevchenko,
+Nuno Sá, and David Lechner for the extensive reviews, schema guidance,
+and C optimizations throughout this series.
+
+Taha Ed-Dafili
+
+Taha Ed-Dafili (5):
+  dt-bindings: iio: dac: ad5504: add output-range and missing gpios
+  iio: dac: ad5504: sort headers alphabetically
+  iio: dac: ad5504: Align headers with IWYU principle
+  iio: dac: ad5504: introduce local dev pointer
+  iio: dac: ad5504: fix scale via output-range-microvolt
+
+ .../bindings/iio/dac/adi,ad5504.yaml          | 39 +++++++++++-
+ drivers/iio/dac/ad5504.c                      | 63 +++++++++++--------
+ 2 files changed, 74 insertions(+), 28 deletions(-)
+
+-- 
+2.47.3
+
