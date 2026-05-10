@@ -1,127 +1,190 @@
-Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from slategray.cherry.relay.mailchannels.net (slategray.cherry.relay.mailchannels.net [23.83.223.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 878CA145B27
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 08:04:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE0372F8EB7;
+	Sun, 10 May 2026 08:08:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.223.169
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778400281; cv=pass; b=os7HyQ9S4KHj0KsvhLaCvLCZnWqxj6CmkayrAoIVPoo0/J75Ou+cxYg+cnfTFy0Rrq+GZvRXJ9TohDx60FAIezVesNjOIvkaJM3Aal8Rq21CSxOpjjn0uDwUXmQ4QCHYg20lNVXdfb8Sn/UuAEL0xRNhyjJpayIMxRhjPo+KN4M=
+	t=1778400539; cv=pass; b=BTaOjmikDWN4zHshflFhpMAoeddY7GYMsu7Ct9ZU7HoNLpeHi/SpVU15TaSrU6Sxs+w2STcemyYoZmhQelDRMF+ufYOsQswW8OwbANzT7iwGAQBY0N1ita7mUYHOC6qSZx2CTvcU7JT8r+hlyWBQdcwymlQNpqTENuVeTjaybtA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778400281; c=relaxed/simple;
-	bh=mPk4WEgoALeYIImoTOb1eW7uqiVyblc60biwns3T//k=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ht2QuCq41Rdlxf+Aqws9iW8OfrI6bFlMoylJ+ZdWc+3dxRF7xUFsq2Jt0ooeM6joIbdTfcdIv4x4bWW8gr8FmC5XTX5TcokzTioCyFdq++c9f1F8duXGnyIO0tg6Tk3xkRLu/MHj4XPrOuDO1jFzzpibJOQjgpOMiUp8KVwxlc0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LTE3MlT9; arc=pass smtp.client-ip=74.125.224.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778400539; c=relaxed/simple;
+	bh=P/22JueRT2YcfwST+Ai7cWP0aGRqFirus+R0SB45WMI=;
+	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc:Date; b=QUr/0NasPAPnoVxs7ggQuDFOqFnRU5LrEyZNWUeZxbgxA94x0Ut8WFHCSqAFC91zrQDXNoCxEeCo6TfFXiEU2GabxseiURiMNhFwcrtrF56wW58cDcBXyUONqDFhyy5ZcZfLqicJSzjj04zKP1I1deBrFwXhR5YJG9vczgNwf80=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=ct9WOJPT; arc=pass smtp.client-ip=23.83.223.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LTE3MlT9"
-Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-6530287803cso3262162d50.1
-        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 01:04:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778400279; cv=none;
-        d=google.com; s=arc-20240605;
-        b=iKmVIDAI/aIq5vFIqXQucTt4KsJkYbDusDUBZm/D065Ue8ciohJSWZY4srZwAwi2LW
-         dJdeFp5XuAopuakmLj6jlhQrDMjJNsB+hOUF3ec5c8ltTsqeVRkYs4+7u63M/ArEQnUI
-         fTQKomx3qD0mSHxOLvNVaq2xqmqAgime6Nwgp7vwelQkdEs/SnrrmBS3lmxwXC9iSasv
-         XEuVaPQdqM6Osg5DS8TqNLHplTZD46NCZlqd0rJq3Hy9JTe0OTQXNrCE/Ehonz1CtFW3
-         Jte0FXZKo94Y2fZmT/mBqZXAwmw0ZmTCxyOFAsoUPoTqzH7ixOSQFJfXQFVpEpIsbpDn
-         07iw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=mPk4WEgoALeYIImoTOb1eW7uqiVyblc60biwns3T//k=;
-        fh=xmoJxuoZTTXpxTmAuSXiHPTd3G4vJnZ9SrPxpVV61Rk=;
-        b=Vo1KUvYzB+fr6UQ0hrtjuTkTySNcy7Q2i6xgEAupfD5uKn7UPGEwMPXZH0BvvI6h7z
-         y0PG0/0ZYCCVF/6LjgNdGrXvpZ0BPctBjy7bdYjG6gtvXJVUa3rM10VvmN9KOrUb5kB1
-         WuaSSA8tTYBNn7pHzwhpNAd9tEIyXfs34toHtvtAZMp26Gy8hmj60lDY8JXJ43wOPta3
-         rlAqZ9O+sZmI9RPvn4E3uJwICT1kub1NmVZc9CRGWus13cw06HtVgTqTSMStF37fKke8
-         Lo7EJaR9LISEwSWddLq03At7Ozk7H992Yzbs0otCzNwbA3ECguBStRaY9akXJX9JCUe5
-         WXlQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778400279; x=1779005079; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mPk4WEgoALeYIImoTOb1eW7uqiVyblc60biwns3T//k=;
-        b=LTE3MlT9buCsjf6VMw+tUoauXrm/lZCJvva6e3QH/3cV/ShPS9BVl9ZW6SWXEG1nF7
-         DF0+Xyz1zih/HRV4LuucFabDdjqc6l6SnxggR6PkKx5ynWBZ0cwnm/IMNNH9f/Q/Cyz3
-         ec/sA7BSxkJVnfneAFkWX1sgWPCcavyS1jNvajsjnVG7qjH8Y4I8VtST7Y1R27RaZZZA
-         AUgoQkpTCSWJ48KYkjNPiUfYfJEDZmN7xeiQAk9rcxwyISwMfJVuPO9cKVno0zP1SB20
-         40TEmdsi0QysfR70D6wyHzchD6osENK43ffGSezciqTgdIR2vPqLN80XY11pCMPE6h42
-         M7DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778400279; x=1779005079;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=mPk4WEgoALeYIImoTOb1eW7uqiVyblc60biwns3T//k=;
-        b=FfCdGN8EmfXYjR/SgyHXH712eNwKWJyXhoCBbc5GtFpkTefc8dSBHrLxmHaoy1rsWc
-         MDp0zBOV2GmNNOHQfFy0eMeeOnRFK+n7tQdgERt4Qvz/bv8VtjY2bLpOe1cUkoZzffG9
-         OnutVvVzakVk5wVpvz8ms8Wt1layiw+MkddiPlYyt9cQPqvPzYFMMu++TqMWIbsbfbTr
-         b3iBxwDIfJgBvfjoqozPoTbt6tF6N7Ey7litQU5ZLzuOKO4+vjKqCy2ph08sZduklSx6
-         +gDiNfD2xgBaHHom/HAN5RzFpA1mXVgHu6i6HV6guqtrlkgN8jW6EPjvGo08/Fqrtllg
-         LnzQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8dmeTlOohp6IkBTLQmh8jiyCjUM4p0oOiWrURsIrYLd5VM8vrkJisLgdjG2rn9S37sCs5VL2Z7a+4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw95jTBJYTmO0xcN4O38Dqwif3R+FeWZBkdMFkgxQ+KLU/n7Kjw
-	TAvTKyl4mY1WRI+CBJPgfzr0hy9OVV2I3iTAC8HE2EspDOpVfoej91myk6v5wQlptqVQ3Aw2h2w
-	ZVQEXhllsT0sGqJ/Z/q3YOqUrzldglFo=
-X-Gm-Gg: Acq92OGRAR3qZEqUM5E4NYzY74jp/f0G2xMGRGwEul+9OZcmynFZ8EAy4wYCLEqNQph
-	OLZEtwXSNbKvJ0RSoZD/EUksXHV3kGWWvh5mz+QcDBUvzfu7jq9Ctq52NVLLRueHxA/CJLm0LWz
-	PKcrxhT/Mf9goDYyK/y5L8E+iK4CTemt9rtFZBXcWLpT7RBxmsSVNYuj404mbO0Ux2rCGxEeDEL
-	yKvvs0Ayd5Q1aeBnhodXP9MF8C0y3GW3FrNqX7LxDMypzKMQX9D9tSKLCYGu/Lhja8NdLMElnsg
-	ael4
-X-Received: by 2002:a05:690e:1181:b0:650:1c44:cce1 with SMTP id
- 956f58d0204a3-65da8403cc8mr4798496d50.25.1778400279478; Sun, 10 May 2026
- 01:04:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="ct9WOJPT"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id B727E413B0;
+	Sun, 10 May 2026 07:01:46 +0000 (UTC)
+Received: from de-fra-smtpout6.hostinger.io (trex-green-3.trex.outbound.svc.cluster.local [100.103.33.89])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id D873F41226;
+	Sun, 10 May 2026 07:01:38 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1778396501;
+	b=41XfNHc0jg1FqK9ypanM7oJEOAkRASZzvjzeJ3YQoT5j42i9mWI5/lCudTkPeKTjCKsDI5
+	aoCuUnW5HfF8CZYCWp8FeU6N9lnr1YcYb38p92EoK26D0mCPACr3sPf1JVZoQb1S/tGrOB
+	xEJtz+/+Jx9ySRiMCqJcEmkN2MMCNr+CBve79bSRt1zADxf3GuoV9ENor3FwoaO0WVt2Ox
+	8MeKD/mrzahowNQ8RB4HSid2FZ1CN1yu4WJYXVAOdsFwwKe32TgT/NDEM9FJQ+o3IKP7Wm
+	tc9/qj8czDHnAQTifTuLRARFy+Hk/K1oU75BW1TEziA/tkIlZABhYYTVFN6kHw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1778396501;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=nHTwWN16ekffh0PsCuHvfyu0Z3TUsh+Kl9hX0JiCNZg=;
+	b=7KHtAeHbwR3U7e1fN+Sb1qIcX+67BJoEQFzRtdy5ZT1P/REx/i9LNuqC6j2ykBezQetRPF
+	nHYUIRKpgy1Cnz0AI0iVxqWiYIAJQOLv7bWZQbtDMVIAEQFApNj3qE6podEq5KhCesXJlS
+	TOVVOnQ93NvFNpXMNsXqtugZLkERXeqjvPCXyGvU1yXhPqVygr/9fB+43jpPmkDnI8zhmX
+	6yzo+yNOUO4PIfDkaPphfWzHZCZV564SN1wJIuhuuPQ+T5uJxEdSQu6nOBpaEqfZW4WHNp
+	oPV0zrCzbcU2KVMavkRZrJyYBHV4ZptJ8ITsiN7bvQ/BeOMki7x5zNpY5r+MKg==
+ARC-Authentication-Results: i=1;
+	rspamd-79cfc4d687-w9599;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Trade-Bubble: 2a619c8d5bad1f09_1778396506631_2140836899
+X-MC-Loop-Signature: 1778396506631:710262432
+X-MC-Ingress-Time: 1778396506630
+Received: from de-fra-smtpout6.hostinger.io (de-fra-smtpout6.hostinger.io
+ [148.222.55.17])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.103.33.89 (trex/7.1.5);
+	Sun, 10 May 2026 07:01:46 +0000
+Received: from [172.17.0.2] (unknown [125.163.203.7])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4gCv0Z02fnz3x62;
+	Sun, 10 May 2026 07:01:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1778396497;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nHTwWN16ekffh0PsCuHvfyu0Z3TUsh+Kl9hX0JiCNZg=;
+	b=ct9WOJPTJmUc7OfF+riApYu0t5jC/5zI/lOYW97HgO9fnFrf/7JyoJ0+uCUJHflOxRgvjU
+	1iMbBPKZJNwcnpvCW4ItOQZgCUEMy7l3Xbym3ED3HABmlCVzz2zha4nSfoNLINzJB0EjPS
+	Fw4CUEBUnqJ1FW4LcGGVSHzubfyrjnovVt3GzKbjWO5hChfNDoaA3cR6GRFdlehljZh7FJ
+	gtOfy326YM5A/QpfMr1pFBiomytAxTd2o+UXrSkTTbsbgUBJ6yxaAWjHaW4Q4vrCPWdtDU
+	Y7HeTaGmLlcOoQflxuAYYT3QYaXBa+zDsfuQ+n9FnkYzDoHu83zmyY3LEmVqJw==
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+Subject: [PATCH v6 1/4] dt-bindings: iio: adc: qcom,pm8018-adc: add label
+ property for ADC channels
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260510003136.35026-1-sozdayvek@gmail.com> <20260510004244.37342-1-sozdayvek@gmail.com>
-In-Reply-To: <20260510004244.37342-1-sozdayvek@gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Sun, 10 May 2026 03:04:28 -0500
-X-Gm-Features: AVHnY4Jd4bKlkZcsI2Y1pMqkZEDAOeu_h8OeQugEZ_DJs-y14X6K0Q6i6Wzr0wQ
-Message-ID: <CAKqfh0GWMu5WGfSigJOAredavrezZgmPVN9+qmMZ2aMoVX_jYw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: chemical: scd30: make command lookup table const
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: andy@kernel.org, giorgitchankvetadze1997@gmail.com, jic23@kernel.org, 
-	dlechner@baylibre.com, nuno.sa@analog.com, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260510-pm8xxx-xoadc-label-v6-1-49700fd03005@smankusors.com>
+References: <20260510-pm8xxx-xoadc-label-v6-0-49700fd03005@smankusors.com>
+In-Reply-To: <20260510-pm8xxx-xoadc-label-v6-0-49700fd03005@smankusors.com>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ phone-devel@vger.kernel.org, 
+ Antony Kurniawan Soemardi <linux@smankusors.com>
+X-Mailer: b4 0.15.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778396489; l=2438;
+ i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
+ bh=P/22JueRT2YcfwST+Ai7cWP0aGRqFirus+R0SB45WMI=;
+ b=6WkbgOkF+FKRgU1dnN25pJchwAv5UfY9nQ/kQupVKFQkDQLfKzk3tsCKQi52LMV5NEQQ7O2t3
+ altWw3MiywlDPFmg+RjU32rl+ozgayr4o4L40IEfU+Ue//RcpcyM4eN
+X-Developer-Key: i=linux@smankusors.com; a=ed25519;
+ pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
+Date: Sun, 10 May 2026 07:01:33 +0000 (UTC)
+X-CM-Envelope: MS4xfCPlUJzwSlZL7XgGFiWhQ00b15zlAW70QSrJYjidBWCEeE4w0EdBEqOlU5KTLdbzBLdr/xK4Cd+h++R42fAqCmtakXdYdd3St7Whkdf4IWlBwTuIgAxk 51LgG97bmh9ft9irkKcqcJa2Kgpp8m/4VkSU+0R0ts34mi9UaE1PLylg21kM73nwI1O7umTy0JeapOypYRH4SO7guPw+84Bv6yGWl1JSxwNTaUKzVz0Iy2SA wImJ6RqGPTZffup2FZR433ibL4Hz3JmHFAdcCM2ez+0rTBOOydHD0OurKdKy2UMdz8FjoeM9rdO2Ynh3eNVZMs9APOV6RW6qEBBIiQ+0+sZtwBVzT+RykWOy DDMIuview3DhwSMEEt0Bqm22nLzikYOIFClYHUKRvfW6KbUXz3WuL35QS8cnWbBtY7hkGBZ1J6RFZ/BpYxIJVTR2JUJBQ8NQfrhVEufnVBSJVJSETp3rMUUH uxrANpZ+Q8uP/+v/4vSVTDuUyQBk6WoODVv/TEU1JEVf3h7Ij1cwa18O+dQ0zfFpWhIKjkPCbKHpCpAuFrt7UOwdWswD5+sNSGLOnlUQ1jwf/Tl/EqnQ+80p tPgpsOYNWjCxKMrGy8X0luQgZ58djrEkQ1ElweoQbDTqhKINFr4gijBOC4OMpOUU+1Aesn11HVZ1CGo1lSSn2KAf
+X-CM-Analysis: v=2.4 cv=etGNzZpX c=1 sm=1 tr=0 ts=6a002d51 a=aYg++IQuMqL9NhcFIsEovw==:117 a=aYg++IQuMqL9NhcFIsEovw==:17 a=IkcTkHD0fZMA:10 a=wxLWbCv9AAAA:8 a=Y5Iuzig1aeAEnQA3VkkA:9 a=QEXdDO2ut3YA:10 a=vyqAJ5GITisAxiZ2Wwa1:22 a=QJY96suAAestDpCc5Gi9:22
+X-AuthUser: linux@smankusors.com
 
-On Sun, May 10, 2026 at 2:59=E2=80=AFAM Stepan Ionichev <sozdayvek@gmail.co=
-m> wrote:
->
-> On Sun, 10 May 2026, Maxwell Doose wrote:
-> > I'm curious, are you having AI do your reviews?
->
-> English is not my native language, so I use AI to help with phrasing
-> and to learn kernel review style. The technical analysis I do myself
-> -- for this patch I checked via grep that scd30_i2c_cmd_lookup_tbl[]
-> is only read (one read site in scd30_i2c_command() via
-> put_unaligned_be16, no writes), which is what supports the const
-> change being correct.
->
+Add a new optional label property for ADC channels to help users
+identify each channel when reading values from the sysfs interface.
 
-Thanks for confirming, just wanted to check since some of the phrasing
-in your review did seem very AI-like.
+Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+---
+ .../devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml      | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
->
-> Happy to follow whatever disclosure norm the iio community prefers.
->
+diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
+index c978c3a3e31a..63aac8de22ad 100644
+--- a/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
+@@ -78,6 +78,10 @@ patternProperties:
+       reg:
+         maxItems: 1
+ 
++      label:
++        description: |
++          Unique name to identify which channel this is.
++
+       qcom,decimation:
+         $ref: /schemas/types.yaml#/definitions/uint32
+         description: |
+@@ -130,36 +134,47 @@ examples:
+ 
+             vcoin: adc-channel@0 {
+                 reg = <0x00 0x00>;
++                label = "vcoin";
+             };
+             vbat: adc-channel@1 {
+                 reg = <0x00 0x01>;
++                label = "vbat";
+             };
+             dcin: adc-channel@2 {
+                 reg = <0x00 0x02>;
++                label = "dcin";
+             };
+             ichg: adc-channel@3 {
+                 reg = <0x00 0x03>;
++                label = "ichg";
+             };
+             vph_pwr: adc-channel@4 {
+                 reg = <0x00 0x04>;
++                label = "vph_pwr";
+             };
+             usb_vbus: adc-channel@a {
+                 reg = <0x00 0x0a>;
++                label = "usb_vbus";
+             };
+             die_temp: adc-channel@b {
+                 reg = <0x00 0x0b>;
++                label = "die_temp";
+             };
+             ref_625mv: adc-channel@c {
+                 reg = <0x00 0x0c>;
++                label = "ref_625mv";
+             };
+             ref_1250mv: adc-channel@d {
+                 reg = <0x00 0x0d>;
++                label = "ref_1250mv";
+             };
+             ref_325mv: adc-channel@e {
+                 reg = <0x00 0x0e>;
++                label = "ref_325mv";
+             };
+             ref_muxoff: adc-channel@f {
+                 reg = <0x00 0x0f>;
++                label = "ref_muxoff";
+             };
+         };
+     };
 
-Typically reviews end up being one-liners (e.g., Reviewed-by: name
-<email>) and that ends up being the whole message, sometimes reviewers
-and maintainers will have inline comments. Obviously you don't have to
-follow those norms but that's just what usually ends up happening.
+-- 
+2.34.1
 
-best regards,
-max
-
-> Stepan
