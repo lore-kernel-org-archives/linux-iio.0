@@ -1,82 +1,74 @@
-Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AB8728504D
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 20:27:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BCB8318EDC
+	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 21:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778444831; cv=none; b=aGWYJpacDk48Cts6A7tdgB26p+so9E6YNBrLYd2UupcIuqUgDISWneRIm32D46tpdHwUU154IerW9uMyZ239EhibsOiN6zKj3YqmUCs8orjO4SxRLnrnZthHFkheMYZYEypBYnEexNb2UPXPs2zKnj25yDyz4ydc/fZCW/8ebDc=
+	t=1778448308; cv=none; b=uO1U6RwrDbmrCzT8C8A9mBxtUpzyH7hjKbLKElWdvt1uWicw11WKzqH429NEpJhzwI8cQxzLPRkjqHB4tR9sV9KscMAbU0Kkff0vWGmlZLL8Pc9IpF6YnipGfbd5r8l4wfLn9Gt/08td0cUCsjqcqf0qwlPcF05/sQgeb/rFVSw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778444831; c=relaxed/simple;
-	bh=yI719AbpDItm5QLKSF7cXjqJwwvZK5DfBOkIkRgOrVw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=q0woZ4rq+ADIuAGNt+aoJnyrN+1k4l3rzxnr/sydx3uUFkZ6Lv2/gMDv8xQuQa02dq4aH+Rbe2rGA8V/ooH9rVWzDrxMLP8AMrAxIMm5RbnE2fiNmTWK8o5UUlrHVQoBm10WkKWO1GYLo7NKNTY2QLFLfIB4rNZTfxX8CJVSgb4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=p+/HRigZ; arc=none smtp.client-ip=209.85.215.172
+	s=arc-20240116; t=1778448308; c=relaxed/simple;
+	bh=JRY1F65O7IYM1S6iPNZKOcOvrVEw4sF1YmF/8ic/MtM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=T5/lOaVhPus2e2DkXIpVwGuhinEhhHT0aHRQUOnfHZ+bfEjvSNPPRp/KMhd2q3LvCfF9FaTGTSKD7WIajEEvWYZGmkDhCaOqkBdl14CDUvPuz78DU8K72elfZfUZ/HK5zzs93psm8O6Lg7GJ/pQFGmb4zJHQBMUfasAPcqYhgWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cwJs15sE; arc=none smtp.client-ip=209.85.167.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p+/HRigZ"
-Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-c8021c8c42fso1340946a12.3
-        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 13:27:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cwJs15sE"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-47cbd444fd0so2404645b6e.2
+        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 14:25:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778444829; x=1779049629; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=op2elmZ9t9E3doPcSF3XGeDi060lHA3vYpa7Xkj8Lag=;
-        b=p+/HRigZdIt+ZC08X1h5x+SfJi7EIEMW2KrqEhyMTE+m7D8Pnm/2AVS1nRo7qN2xM4
-         xd7Hlu0uUO2tw5norzxYjGTRY285tXVckRRVsMRGwAZ79u1U0Mv81BlJmxSq4dDM9HrI
-         ZA+m+tcPWoGWQoaY5Kb9Q7gfK5bfpIsFLUAUaX7xvICo7ScKka5aKalyvf8ldlj04Q0B
-         AMEhGC57Xov8sPIwFM1WnBsRh/9CBa2EflzKXgcukbOCzqmGXa3pTZn80mN8p1fKCs+x
-         bF7Od2j1uGzN4M9aRwEAr73W87S4o2XPkR/p1oE32D3Vi1GclHB9D9vYvCbXP2rBpntU
-         o9qw==
+        d=gmail.com; s=20251104; t=1778448306; x=1779053106; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8kP/NXnV1x8+CLUpqNrBV3guCuP9Ar3LabTgNAmSG54=;
+        b=cwJs15sE8lTm0MDZT2JaRIyrjCyeKT3mky6DbydEr4/YGKhi876sM4yuidvgiwIGA9
+         3CdY/9Mh+kMhn2agQeIR7Bei0CLluOgsAPeTPNfkgg2VZZ5uX3vlVOwKCqIobogPaynm
+         43j7kKh0QUOvtczGt9xBmjPkySFJRChOVTZAZrzTRIEfpGGn5P+PBNjCXHriPcNwClA0
+         r++C4XPMeSQ0PV+C/Z56VvVOwWdfkJ1v2pm+4N3PjZ8rv7F/gS2Ux/T2maCeETQxLfSL
+         IEYmtKthLk2v6vwVPdZeihhAzclwqg40QUR5plW364Hic/sIYhT8wZsKVTSxrI9Wg+Q3
+         eQsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778444829; x=1779049629;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=op2elmZ9t9E3doPcSF3XGeDi060lHA3vYpa7Xkj8Lag=;
-        b=iSANinOS/+MI63iYwf2j+nvjtqPV9e5Ul1VfNxXVMpQkBVKVwOm58IvyNzXKqyh9WX
-         Z/eKc2Vs0s8ZFvXCOzkowXhM3lsUuRMM8CWSDgTYtxEYLZpkLha+WeVi1SGhbKACBXZe
-         UXPib38ZP+uvK6edWckLGHEz/wNbUMmOc8hfDPYfb0VC6J3MkDamDFYgXj8Kqwshay3V
-         ZAc15Vdq4XIGKxX9HF1OJTMnCpIKoOkRXNNuKRyWkM/6eH+C/NsiWQYmYshx77bzwTC4
-         REUPeFxl4CbyU2XpPZJEEp3JlJ78aQ4lerya1nnGi9LI+0o/G23mQuThgK83L2Dr2qJU
-         kcEQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/Z003ju4yzJB80vizIZ0n0+Wcz1sdxEffjJn+TxtyjEaG88UYUGBWGPM7SZ2X8mkKkC7Du9PpMHOk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx03vGiXU6ivn9/CeXZlxWGe9xRDmJkyP5a9Av0g1G4GxzlFDVS
-	zRPT/T51vUoIbKqNM1SFWEXNV0VyUj7HzGwEesIJIzmtgaAMkd5UyGFc
-X-Gm-Gg: Acq92OEL2PzN5QB/vG0iwj3dnqPXNG9fF+HrIen4jk7W/3BWBleIoAFhqqw6308QUR8
-	iSXHn+LoFhG0qB7j50TjkFgiQgAYeM3hvUiVP2V9lTtNamAmU6qi4tIgMY8iejJFVAsdOqXKNrQ
-	hQm5EUIgSjD2Tzz8tQh7l2iJXEYWnhiq7rblJwiHikwJU9BCvTrS7jQWQeo2XFvEe/g73r2T5Vf
-	JQGQBuaksGwJU4ytL6v7fDlAJRpebSW73uafj4F/+QkJkKSB2vRarJquT4gcvEmvLJC3UH048Ro
-	/8z5x3m1e5clP6NZRR05YvYVsKAz1KQeeVOWbiaRCjNQPnPeeeKN6V32S5UYw3xsrme/NPdOq5G
-	UA+blADaju26wZ+WnAy6QndRlonWOsjtkyATloeQNQOCNKd3BMM6BlZLjBxvutJ807lUw17Z2/5
-	9ixiayViombduw/L1wsH4ySx3E6iT4BdqD4vilosovX1XLxjklrlSTwFH2eQzREzzjwBH9pRGUl
-	P6fvvoCw7rQQjObA8cIbzSFjE9hLeYilTKpd5VrPWSJNn+TDS2omdExiH+4We+woCQRaD8=
-X-Received: by 2002:a05:6a20:734b:b0:3a2:ecb8:56db with SMTP id adf61e73a8af0-3aab17b53dbmr12950078637.40.1778444828682;
-        Sun, 10 May 2026 13:27:08 -0700 (PDT)
-Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.www.tendawifi.com ([14.139.108.62])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c826767bf53sm7060073a12.6.2026.05.10.13.27.04
+        d=1e100.net; s=20251104; t=1778448306; x=1779053106;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8kP/NXnV1x8+CLUpqNrBV3guCuP9Ar3LabTgNAmSG54=;
+        b=T6arQbPdQ/eGtzQP73diqOuTcVaBbINBXrT2l3i0zcvqjvAz5lel/kYdijerDQKJsZ
+         7GCDZgRFrGbmmMUZ97MMQxKL+sEZ54i+pqm3F29eSY1E4vUZft9zoQY8SZBtzCnCs2B5
+         uBS0bjaRBc7HxK3ysMRPCcOK90P63/OntaZBf1nUoyhqZD6O6AR2qBLqxZW+F0JERglw
+         HROJ1OC8bKa3KrR+Rqizmmc/ZrBfhWaW0HY5xwDgf4axL+SpD2FFTmntad+U1PnAAaO4
+         x66xwE1OJedZleozL2lqYuuca35ahzJbETywohPla7+OxpfZoxNl7PH4xSDlGiR0izKM
+         0aEA==
+X-Forwarded-Encrypted: i=1; AFNElJ+fgkDKnwQIUFPUGoW2G4HmAbyx8iZgPU5Ma22MTdsXp93SKi77VcDcYroBruHSz6KKMOicekKbFbs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzUn60Mm/Smauv+2Omo5W0fZNeNz2y+1ph/kbUuG0W+CumzIoz+
+	VvelqFEa3x6XbPFcw7ojaay3aauOa4lcer8pmeLs1AWMqiOHWdJMmFiP
+X-Gm-Gg: Acq92OEwc5WlAIVwRuphU7libkvjgEPWQVNgYAjKhBAXKUMrVKSCwGbxrESMusuqCsO
+	HXvkZQo5QaNOanywzA+83wyR9V62hwBSZoPpSQXCXSxozwjW+BIFY9CdhXdhxk4CuMWYyVFOPm5
+	He/VmnoLnuzQuW1WYz9LZQUNGqEaAK6XHsB5423TqmxXTnjmSWK6m/xsLnxTq1g3hZN+OhaDZxf
+	IlJIhSlltz7RGl5LDk/Nn6fJTWHSurSf6S+3RmlHykNDM7vcem8vf2qmpwxOCkTK4CTzM69LqcV
+	3YMhSB6GCpxH8CXSwduKRuaoZPmiqr6htjPr+a/653PfBW5QCFYrOYxzB4gzHhgI6x1LwFdQhOQ
+	Grv99EMZpsFxJYll5yVfpM5LTlGHUxyaJZu9+olCj2Nt/W9+Or+CFEuXohBo3/6s8fatemqWSH9
+	XmVs4H1Ktu+mAkSVS1yX2Rk44Pr1Ng5Xe5bLjLi5GzmAYPeAqqkfOVt87Y+A==
+X-Received: by 2002:a05:6808:1644:b0:479:fbe5:3a4a with SMTP id 5614622812f47-4804258ba5emr12406956b6e.46.1778448306268;
+        Sun, 10 May 2026 14:25:06 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-47c76986f9dsm19269848b6e.16.2026.05.10.14.25.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2026 13:27:08 -0700 (PDT)
-From: Piyush Patle <piyushpatle228@gmail.com>
-To: ak@it-klinger.de,
-	jic23@kernel.org
-Cc: andriy.shevchenko@intel.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v7 11/11] iio: adc: hx711: add support for HX710B
-Date: Mon, 11 May 2026 01:56:55 +0530
-Message-ID: <20260510202657.38326-1-piyushpatle228@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260510194947.31997-1-piyushpatle228@gmail.com>
-References: <20260510194947.31997-1-piyushpatle228@gmail.com>
+        Sun, 10 May 2026 14:25:05 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: jic23@kernel.org,
+	tduszyns@gmail.com
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] iio: chemical: sps30: Replace manual locking with RAII locking
+Date: Sun, 10 May 2026 16:24:28 -0500
+Message-ID: <20260510212427.358756-2-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -85,355 +77,137 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
-interface but uses trailing PD_SCK pulses to select the active mode.
+Replace manual mutex_lock() and mutex_unlock() calls with the much newer
+guard(mutex)() and scoped_guard() macros to enable RAII patterns,
+modernize the driver, and to increase readability.
 
-Model the HX710B with variant-specific channel tables and IIO info,
-track the active channel across conversions, and use the fixed gain
-value when computing scale.
+Add new wrapper sps30_do_meas() for cleaner locking, and rename existing
+sps30_do_meas() to __sps30_do_meas() to denote locking requirements.
 
-Also update the adjacent Kconfig text, file header, and module
-description so the driver text matches the newly supported variant.
-
-Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
 ---
- drivers/iio/adc/Kconfig |   8 +-
- drivers/iio/adc/hx711.c | 179 +++++++++++++++++++++++++++++++++++-----
- 2 files changed, 163 insertions(+), 24 deletions(-)
+ v2:
+ - Switch over some scoped_guard()s to guard(mutex)() per David's
+   suggestion.
+ - Remove redundant whitespace per Andy's suggestion.
+ - Add new wrapper sps30_do_meas() per Andy's suggestion (see commit
+   message).
+ - Add Joshua's RB
+   (link: https://lore.kernel.org/linux-iio/CAKqfh0FWig8mRR-xhvnfcFeSinR6RySyPaf9Gbpb6WU+diiiUQ@mail.gmail.com/T/#t)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a9dedbb8eb46..38ba8cae13f1 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -791,13 +791,15 @@ config HI8435
- 	  called hi8435.
- 
- config HX711
--	tristate "AVIA HX711 ADC for weight cells"
-+	tristate "AVIA HX711 and compatible ADCs"
- 	depends on GPIOLIB
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	  If you say yes here you get support for AVIA HX711 ADC which is used
--	  for weigh cells
-+	  If you say Y here you get support for the following AVIA ADCs:
-+	    - HX710B
-+	    - HX711
-+	  which are used for bridge sensors such as weigh cells.
- 
- 	  This driver uses two GPIOs, one acts as the clock and controls the
- 	  channel selection and gain, the other one is used for the measurement
-diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-index 860f8ef5a7cf..d96915902108 100644
---- a/drivers/iio/adc/hx711.c
-+++ b/drivers/iio/adc/hx711.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- /*
-- * HX711: analog to digital converter for weight sensor module
-+ * HX711 and compatible ADCs driver for weigh sensor modules
-  *
-  * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
+ drivers/iio/chemical/sps30.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+index a934bf0298dd..1c44524be1cf 100644
+--- a/drivers/iio/chemical/sps30.c
++++ b/drivers/iio/chemical/sps30.c
+@@ -5,6 +5,7 @@
+  * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
   */
-@@ -15,6 +15,7 @@
- #include <linux/slab.h>
- #include <linux/sched.h>
+ 
++#include <linux/cleanup.h>
+ #include <linux/crc8.h>
  #include <linux/delay.h>
-+#include <linux/types.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/buffer.h>
-@@ -84,12 +85,16 @@ static int hx711_get_scale_to_gain(const int *gain_scale, int scale)
-  * @channels: channel specification array
-  * @iio_info: IIO info ops for this variant
-  * @num_channels: number of entries in @channels
-+ * @fixed_gain_val: fixed PGA gain (used when @has_fixed_gain is true)
-+ * @has_fixed_gain: true if the variant has a fixed ADC gain
-  */
- struct hx711_chip_info {
- 	const char			*name;
- 	const struct iio_chan_spec	*channels;
- 	const struct iio_info		*iio_info;
- 	unsigned int			num_channels;
-+	unsigned int			fixed_gain_val;
-+	bool				has_fixed_gain;
- };
+ #include <linux/i2c.h>
+@@ -65,7 +66,7 @@ static s32 sps30_float_to_int_clamped(__be32 *fp)
+ 	return val * 100 + ((fraction * 100) >> shift);
+ }
  
- struct hx711_data {
-@@ -99,14 +104,22 @@ struct hx711_data {
- 	int			gain_set;	/* gain set on device */
- 	int			gain_chan_a;	/* gain for channel A */
- 	int			gain_scale[HX711_GAIN_MAX];
-+	int			channel_set;	/* HX710B active channel */
- 	const struct hx711_chip_info	*chip_info;
- 	struct mutex		lock;
- 	/*
- 	 * triggered buffer
--	 * 2x32-bit channel + 64-bit naturally aligned timestamp
-+	 * up to 3x32-bit channels + 64-bit naturally aligned timestamp
-+	 *
-+	 * aligned_s64 satisfies the 8-byte alignment requirement for the
-+	 * timestamp. For HX711 (at most 2 active channels), iio_push_to_
-+	 * buffers_with_timestamp() places the timestamp at offset 8
-+	 * (scan_bytes=8, already 8-byte aligned), identical to the original
-+	 * 2-channel layout. The extra channel slot for HX710B does not affect
-+	 * the HX711 ABI.
- 	 */
- 	struct {
--		u32 channel[2];
-+		u32 channel[3];
- 		aligned_s64 timestamp;
- 	} buffer;
- 	/*
-@@ -207,6 +220,7 @@ static int hx711_wait_for_ready(struct hx711_data *hx711_data)
- 
- static int hx711_reset(struct hx711_data *hx711_data)
+-static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
++static int __sps30_do_meas(struct sps30_state *state, s32 *data, int size)
  {
-+	const struct hx711_chip_info *info = hx711_data->chip_info;
- 	int val;
- 	val = hx711_wait_for_ready(hx711_data);
+ 	int i, ret;
  
-@@ -226,8 +240,11 @@ static int hx711_reset(struct hx711_data *hx711_data)
- 
- 		val = hx711_wait_for_ready(hx711_data);
- 
--		/* after a reset the gain is 128 */
--		hx711_data->gain_set = HX711_RESET_GAIN;
-+		if (info->has_fixed_gain)
-+			hx711_data->channel_set = 0;
-+		else
-+			/* after a reset the gain is 128 */
-+			hx711_data->gain_set = HX711_RESET_GAIN;
- 	}
- 
- 	return val;
-@@ -283,9 +300,36 @@ static int hx711_set_hx711_channel(struct hx711_data *hx711_data,
+@@ -87,6 +88,12 @@ static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
  	return 0;
  }
  
-+/*
-+ * Switch the HX710B to the requested channel for the next conversion.
-+ * chan->address holds the trailing pulse count (Table 3 in datasheet).
-+ * channel_set is updated only after both reads succeed.
-+ */
-+static int hx711_set_hx710b_channel(struct hx711_data *hx711_data,
-+				    const struct iio_chan_spec *chan)
++static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
 +{
-+	int ret;
-+
-+	if (hx711_data->channel_set == chan->channel)
-+		return 0;
-+
-+	ret = hx711_read(hx711_data, chan->address);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = hx711_wait_for_ready(hx711_data);
-+	if (ret)
-+		return ret;
-+
-+	hx711_data->channel_set = chan->channel;
-+
-+	return 0;
++	guard(mutex)(&state->lock);
++	return __sps30_do_meas(state, data, size);
 +}
 +
- static int hx711_reset_read(struct hx711_data *hx711_data,
- 			    const struct iio_chan_spec *chan)
+ static int sps30_do_reset(struct sps30_state *state)
  {
-+	const struct hx711_chip_info *info = hx711_data->chip_info;
- 	int trailing_pulses;
  	int ret;
+@@ -111,9 +118,7 @@ static irqreturn_t sps30_trigger_handler(int irq, void *p)
+ 		aligned_s64 ts;
+ 	} scan;
  
-@@ -298,9 +342,16 @@ static int hx711_reset_read(struct hx711_data *hx711_data,
- 		return -EIO;
- 	}
+-	mutex_lock(&state->lock);
+ 	ret = sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
+-	mutex_unlock(&state->lock);
+ 	if (ret)
+ 		goto err;
  
--	ret = hx711_set_hx711_channel(hx711_data, chan, &trailing_pulses);
--	if (ret < 0)
--		return ret;
-+	if (info->has_fixed_gain) {
-+		ret = hx711_set_hx710b_channel(hx711_data, chan);
-+		if (ret < 0)
-+			return ret;
-+		trailing_pulses = chan->address;
-+	} else {
-+		ret = hx711_set_hx711_channel(hx711_data, chan, &trailing_pulses);
-+		if (ret < 0)
-+			return ret;
-+	}
+@@ -136,7 +141,6 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
+ 		case IIO_MASSCONCENTRATION:
+-			mutex_lock(&state->lock);
+ 			/* read up to the number of bytes actually needed */
+ 			switch (chan->channel2) {
+ 			case IIO_MOD_PM1:
+@@ -152,7 +156,6 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+ 				ret = sps30_do_meas(state, data, 4);
+ 				break;
+ 			}
+-			mutex_unlock(&state->lock);
+ 			if (ret)
+ 				return ret;
  
- 	return hx711_read(hx711_data, trailing_pulses);
- }
-@@ -462,6 +513,10 @@ static const struct iio_info hx711_iio_info = {
- 	.attrs			= &hx711_attribute_group,
- };
+@@ -197,9 +200,9 @@ static ssize_t start_cleaning_store(struct device *dev,
+ 	if (kstrtoint(buf, 0, &val) || val != 1)
+ 		return -EINVAL;
  
-+static const struct iio_info hx710b_iio_info = {
-+	.read_raw		= hx711_read_raw,
-+};
+-	mutex_lock(&state->lock);
++	guard(mutex)(&state->lock);
 +
- static const struct iio_chan_spec hx711_chan_spec[] = {
- 	{
- 		.type = IIO_VOLTAGE,
-@@ -494,6 +549,68 @@ static const struct iio_chan_spec hx711_chan_spec[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(2),
- };
- 
-+/*
-+ * HX710B channels (Table 3 in datasheet).
-+ * 25 pulses (1 trailing): differential input, 10 SPS -> channel 0
-+ * 26 pulses (2 trailing): DVDD-AVDD supply monitor, 40 SPS -> channel 2
-+ * 27 pulses (3 trailing): differential input, 40 SPS -> channel 3
-+ * .address stores the trailing pulse count for hx711_set_hx710b_channel().
-+ * Channel 2 is used for the supply monitor to avoid aliasing the
-+ * channel2 terminal of the first differential pair.
-+ */
-+static const struct iio_chan_spec hx710b_chan_spec[] = {
-+	{
-+		.type = IIO_VOLTAGE,
-+		.differential = 1,
-+		.channel = 0,
-+		.channel2 = 1,
-+		.indexed = 1,
-+		.address = 1,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 24,
-+			.storagebits = 32,
-+			.endianness = IIO_CPU,
-+		},
-+	},
-+	{
-+		.type = IIO_VOLTAGE,
-+		.channel = 2,
-+		.indexed = 1,
-+		.address = 2,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 24,
-+			.storagebits = 32,
-+			.endianness = IIO_CPU,
-+		},
-+	},
-+	{
-+		.type = IIO_VOLTAGE,
-+		.differential = 1,
-+		.channel = 3,
-+		.channel2 = 4,
-+		.indexed = 1,
-+		.address = 3,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 2,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 24,
-+			.storagebits = 32,
-+			.endianness = IIO_CPU,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
-+};
-+
- static const struct hx711_chip_info hx711_chip = {
- 	.name		= "hx711",
- 	.channels	= hx711_chan_spec,
-@@ -501,6 +618,15 @@ static const struct hx711_chip_info hx711_chip = {
- 	.num_channels	= ARRAY_SIZE(hx711_chan_spec),
- };
- 
-+static const struct hx711_chip_info hx710b_chip = {
-+	.name		= "hx710b",
-+	.channels	= hx710b_chan_spec,
-+	.iio_info	= &hx710b_iio_info,
-+	.num_channels	= ARRAY_SIZE(hx710b_chan_spec),
-+	.fixed_gain_val	= 128,
-+	.has_fixed_gain	= true,
-+};
-+
- static int hx711_probe(struct platform_device *pdev)
- {
- 	const struct hx711_chip_info *chip_info;
-@@ -543,32 +669,42 @@ static int hx711_probe(struct platform_device *pdev)
- 		return dev_err_probe(dev, PTR_ERR(hx711_data->gpiod_dout),
- 				     "failed to get dout-gpiod\n");
- 
--	ret = devm_regulator_get_enable_read_voltage(dev, "avdd");
-+	if (chip_info->has_fixed_gain)
-+		ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-+	else
-+		ret = devm_regulator_get_enable_read_voltage(dev, "avdd");
- 	if (ret < 0)
+ 	ret = state->ops->clean_fan(state);
+-	mutex_unlock(&state->lock);
+ 	if (ret)
  		return ret;
  
- 	/*
--	 * with
--	 * full scale differential input range: AVDD / GAIN
-+	 * With
-+	 * full scale differential input range: reference / GAIN
- 	 * full scale output data: 2^24
- 	 * we can say:
--	 *     AVDD / GAIN = 2^24
-+	 *     reference / GAIN = 2^24
- 	 * therefore:
--	 *     1 LSB = AVDD / GAIN / 2^24
--	 * AVDD is in uV, but we need 10^-9 mV
-+	 *     1 LSB = reference / GAIN / 2^24
-+	 * reference is in uV, but we need 10^-9 mV
- 	 * approximately to fit into a 32 bit number:
--	 * 1 LSB = (AVDD * 100) / GAIN / 1678 [10^-9 mV]
-+	 * 1 LSB = (reference * 100) / GAIN / 1678 [10^-9 mV]
- 	 */
+@@ -215,9 +218,9 @@ static ssize_t cleaning_period_show(struct device *dev,
+ 	__be32 val;
+ 	int ret;
  
- 	/* we need 10^-9 mV */
- 	ret *= 100;
+-	mutex_lock(&state->lock);
++	guard(mutex)(&state->lock);
++
+ 	ret = state->ops->read_cleaning_period(state, &val);
+-	mutex_unlock(&state->lock);
+ 	if (ret)
+ 		return ret;
  
--	for (i = 0; i < HX711_GAIN_MAX; i++)
--		hx711_data->gain_scale[i] =
--			ret / hx711_gain_to_scale[i].gain / 1678;
-+	if (chip_info->has_fixed_gain) {
-+		for (i = 0; i < HX711_GAIN_MAX; i++)
-+			hx711_data->gain_scale[i] =
-+				ret / chip_info->fixed_gain_val / 1678;
-+		hx711_data->gain_set = chip_info->fixed_gain_val;
-+	} else {
-+		for (i = 0; i < HX711_GAIN_MAX; i++)
-+			hx711_data->gain_scale[i] =
-+				ret / hx711_gain_to_scale[i].gain / 1678;
+@@ -238,12 +241,11 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
+ 	    (val > SPS30_AUTO_CLEANING_PERIOD_MAX))
+ 		return -EINVAL;
  
--	hx711_data->gain_set = 128;
--	hx711_data->gain_chan_a = 128;
-+		hx711_data->gain_set = 128;
-+		hx711_data->gain_chan_a = 128;
-+	}
+-	mutex_lock(&state->lock);
++	guard(mutex)(&state->lock);
++
+ 	ret = state->ops->write_cleaning_period(state, cpu_to_be32(val));
+-	if (ret) {
+-		mutex_unlock(&state->lock);
++	if (ret)
+ 		return ret;
+-	}
  
- 	hx711_data->clock_frequency = 400000;
- 	ret = device_property_read_u32(&pdev->dev, "clock-frequency",
-@@ -607,6 +743,7 @@ static int hx711_probe(struct platform_device *pdev)
+ 	msleep(20);
+ 
+@@ -256,8 +258,6 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
+ 		dev_warn(dev,
+ 			 "period changed but reads will return the old value\n");
+ 
+-	mutex_unlock(&state->lock);
+-
+ 	return len;
  }
  
- static const struct of_device_id of_hx711_match[] = {
-+	{ .compatible = "avia,hx710b", .data = &hx710b_chip },
- 	{ .compatible = "avia,hx711", .data = &hx711_chip },
- 	{ }
- };
-@@ -624,7 +761,7 @@ static struct platform_driver hx711_driver = {
- module_platform_driver(hx711_driver);
- 
- MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
--MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
-+MODULE_DESCRIPTION("HX711 and compatible bitbanging ADC driver");
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("platform:hx711-gpio");
- 
 -- 
-2.43.0
+2.54.0
 
