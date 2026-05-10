@@ -1,86 +1,187 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F06F18B0F;
-	Sun, 10 May 2026 18:09:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BC032D5925;
+	Sun, 10 May 2026 18:09:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778436571; cv=none; b=Un7NkELQYDY7dRi0XXwGM3OeLle+oCjMBVe2uSLdmIT0SYM3p4DCsw92IlKjKalcqX2VsUepVOtfeUm8RExkVyx+oP+f+4RwwzGSAM4Ez92EWVqMDDfWglx5tYPeYoH0ABaS5DpjJ3n6uDNAHABiWuRApWaEibCgfjTkEpjgJM4=
+	t=1778436592; cv=none; b=rphKMjuZWttKoiUU9IHSwbH7XtF7QHhzZi/C1IoCQ/swzXnq9fy66jMlwos4O7YFdZR6j04O+Xlxk/W+LbPYrMblJ3bqkbZuIootUeK6klpcAnBoB5Sy0KvJm3qnZX03yvnO7bHyiUPJVwqNWdjj6/AGNGJsPtrXt8qimHMM3tw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778436571; c=relaxed/simple;
-	bh=XyMZSDpfWKuOveIviT2U+sf8J5uKR7RDZMDAEWQMlI0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aBrwHQBjAH8iR7OrkayNWWrAxC3ANVSpOFeSC4ZCwy+BGcsku6u0M4RTjYE4RO0ltszyZt/DKRP3M28VPpWEOYjKYgNgFCIVbeeFE+nohGJujp/VA2NQ/6QdXljSmnfsFzW+tk3VOmjnNPZd9efiV/2QRq6xzC1t4aqHH4eFRbI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CUz3p4iX; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778436592; c=relaxed/simple;
+	bh=p918NNAfKESHUaESEupz7gVBnaccniWtXudL4dFa/Bk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=sWmLZWpTrE4FxwSeWoV9TyrvlVPUMICFjWlaDAe4OWbsrg4y30hVc/qxtKsVEIWObthbBoRWsVTbaNtavCjgHu3CA5Fiuz4SccJRqJkZoh42T7ax62aNeuxEX4EZoG0z7Wr1zRvmB6Pr8sloNuXNiELRscoSnS3PYHXRTgdYao0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uWB0QG/r; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CUz3p4iX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778436568; x=1809972568;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XyMZSDpfWKuOveIviT2U+sf8J5uKR7RDZMDAEWQMlI0=;
-  b=CUz3p4iXkBZZNrdKjeiYTlKIp+70IdlOa8hbnvuMIFJYB9s1SJfxJAx+
-   LdkAEUSDu8CvRBaL2+KZTl5xxSCXJk+guTEkoJSN2BR0kUkDtCM+t9t3r
-   8Jg9mzC2F3xm1GmmA3VXCIFVg2PtZX8w57Hw5LV2d3LpEyRAdGpz4eQtD
-   +q8yjD6LCZgpoIk8rZU3LOphFYo4RkbhSY64IoK0Ecgdtf70i9+5VfX/Y
-   C+Zw/w6SWp/0CWzTEDg58JfKcPq3Dd0gUFKoP+87nat1RgTEAYhS/QlM/
-   TYETbEv7txmNqB4f8sVf53M/ceuBFgJJSMtCKEZ41mODvyU1MEBFw29fC
-   g==;
-X-CSE-ConnectionGUID: CgvI9dRcToOBs8FVY7UeoQ==
-X-CSE-MsgGUID: Jy1WJN9ISAi5lgxhzgP1Qg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11782"; a="79060461"
-X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
-   d="scan'208";a="79060461"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 11:09:28 -0700
-X-CSE-ConnectionGUID: X2d+ZZi2TXmhirp1kgGq8g==
-X-CSE-MsgGUID: qUzlI1xTTWq5N9PpRiQFWA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
-   d="scan'208";a="260726486"
-Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 11:09:25 -0700
-Date: Sun, 10 May 2026 21:09:23 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	puranjay@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: accel: adxl355: replace usleep_range() with
- fsleep()
-Message-ID: <agDJ0yn31C3RenHp@ashevche-desk.local>
-References: <20260510050820.27748-1-sozdayvek@gmail.com>
- <20260510055303.37221-1-sozdayvek@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uWB0QG/r"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B0FF5C2BCF7;
+	Sun, 10 May 2026 18:09:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778436591;
+	bh=p918NNAfKESHUaESEupz7gVBnaccniWtXudL4dFa/Bk=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=uWB0QG/rOz9wOPr9DIP/Jm3hs0ZzgvpNcAlOGm3rStwBdIYQKWndScS66XW1HP/Mj
+	 38IzKjxx2SRd0uhTcdMFVrdSx3aiymhgwAJm6TKs1jREbKOtpixvQtTLhG8m4AX5Kg
+	 fptGoKkNzD+R1Zn2GIe+fEnj+INRSFp5xN6niixobWBPABjAHhjY3ZTyu75a9SbAYG
+	 m2m75t6+whiHfqjQLU2o6ViaJz+mGtVhxMbQJU0Sn7L74APzhr/zsCJG19JtJezGjK
+	 P8U2dvCqMsTY4NyUH2Rlso4C3/6/15yX3Sx8xspOnEqUwVl0ZnlpeGFGsfLmblJOjE
+	 Xg09UHYPqP+4Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E05CD3427;
+	Sun, 10 May 2026 18:09:51 +0000 (UTC)
+From: Alexandre Hamamdjian via B4 Relay <devnull+azkali.limited.gmail.com@kernel.org>
+Date: Mon, 11 May 2026 01:09:49 +0700
+Subject: [PATCH 1/2] dt-bindings: iio: light: Add ROHM BH1730FVC binding
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260510055303.37221-1-sozdayvek@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260511-bh1730-v1-1-e0df1f499135@gmail.com>
+References: <20260511-bh1730-v1-0-e0df1f499135@gmail.com>
+In-Reply-To: <20260511-bh1730-v1-0-e0df1f499135@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, CTCaer <ctcaer@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Alexandre Hamamdjian <azkali.limited@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778436589; l=3793;
+ i=azkali.limited@gmail.com; s=20260510; h=from:subject:message-id;
+ bh=jQHKR47Y8URKhOfFc/PxeUwRtzxZuqi9u6qUMfwgT9g=;
+ b=ObpFPEaz1gMJZrJKNnAZL+40c304k1+WO2lqMgrq91nU3A5nKTrMr0nYckD7+iHo7qyNij7ZN
+ Y5dEaGJwKdxDczrGylqUt+yNwxh5kvsPLKgpW7qXwFETXJPQ9AlRB3T
+X-Developer-Key: i=azkali.limited@gmail.com; a=ed25519;
+ pk=I0Z0IdCdQJqNGX+FQUnXhrHg950u3cM6Xzz3YT6JOyQ=
+X-Endpoint-Received: by B4 Relay for azkali.limited@gmail.com/20260510 with
+ auth_id=774
+X-Original-From: Alexandre Hamamdjian <azkali.limited@gmail.com>
+Reply-To: azkali.limited@gmail.com
 
-On Sun, May 10, 2026 at 10:53:03AM +0500, Stepan Ionichev wrote:
-> The "at least 5ms" wait after software reset has no specific upper
-> bound. Use fsleep() with 5 * USEC_PER_MSEC to make the unit
-> explicit at the call site.
-> 
-> No functional change.
-> 
-> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-> ---
+From: CTCaer <ctcaer@gmail.com>
 
-You missed a changelog here.
+Add a YAML binding for the ROHM BH1730FVC ambient light sensor.
+Documents the required compatible string, the als-vdd/als-vid
+regulators, and the rohm,integration-cycle, rohm,lux-multiplier,
+rohm,opt-win-coeff and rohm,gain-coeff calibration properties
+consumed by the driver.
+
+Signed-off-by: CTCaer <ctcaer@gmail.com>
+Signed-off-by: Alexandre Hamamdjian <azkali.limited@gmail.com>
+---
+ .../bindings/iio/light/rohm,bh1730fvc.yaml         | 95 ++++++++++++++++++++++
+ 1 file changed, 95 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/light/rohm,bh1730fvc.yaml b/Documentation/devicetree/bindings/iio/light/rohm,bh1730fvc.yaml
+new file mode 100644
+index 000000000000..6273b69e82ab
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/rohm,bh1730fvc.yaml
+@@ -0,0 +1,95 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/rohm,bh1730fvc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ROHM BH1730FVC ambient light sensor
++
++maintainers:
++  - CTCaer <ctcaer@gmail.com>
++
++description:
++  Digital 16-bit ambient light sensor with an I2C interface. The device has
++  two photodiodes (visible and infrared) and supports four gain settings and
++  programmable integration time.
++
++properties:
++  compatible:
++    const: rohm,bh1730fvc
++
++  reg:
++    maxItems: 1
++
++  als-vdd-supply:
++    description: Regulator for the analog/digital supply (VDD).
++
++  als-vid-supply:
++    description: Regulator for the LED indicator supply (VID).
++
++  rohm,integration-cycle:
++    description:
++      Number of internal clock cycles used for the ADC integration time.
++      Used together with rohm,lux-multiplier to calibrate the lux output.
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  rohm,lux-multiplier:
++    description:
++      Lux scaling multiplier applied after integration. Used together with
++      rohm,integration-cycle to calibrate the lux output.
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  rohm,opt-win-coeff:
++    description:
++      Optical-window calibration coefficients. Specified as a flat list of
++      triplets <rc cv ci>, one triplet per window region, where rc is the
++      visible/IR ratio cutoff and cv/ci are the visible and IR weighting
++      factors used in that region.
++    $ref: /schemas/types.yaml#/definitions/uint32-matrix
++    items:
++      minItems: 3
++      maxItems: 3
++
++  rohm,gain-coeff:
++    description:
++      Per-gain sensitivity coefficients. Eight u32 values arranged as four
++      <cl fl> pairs, one pair for each supported gain (1x, 2x, 64x, 128x).
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    minItems: 8
++    maxItems: 8
++
++required:
++  - compatible
++  - reg
++
++dependencies:
++  rohm,integration-cycle: ['rohm,lux-multiplier']
++  rohm,lux-multiplier: ['rohm,integration-cycle']
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@29 {
++            compatible = "rohm,bh1730fvc";
++            reg = <0x29>;
++            als-vdd-supply = <&vdd_als>;
++            als-vid-supply = <&vid_als>;
++            rohm,integration-cycle = <38>;
++            rohm,lux-multiplier = <1000>;
++            rohm,opt-win-coeff = <260 1290 2733>,
++                                 <550 795 859>,
++                                 <1090 510 345>,
++                                 <2130 276 130>;
++            rohm,gain-coeff = <3000 0xffffffff
++                               2000 9800
++                               15 60000
++                               0 1300>;
++        };
++    };
++
++...
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.54.0
 
 
