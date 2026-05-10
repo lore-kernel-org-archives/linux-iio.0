@@ -1,134 +1,97 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11A1932ED2E
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 09:50:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E4BA21CFE0;
+	Sun, 10 May 2026 10:04:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778406631; cv=none; b=GVPnWvdF/NNDbuofO4rPUuxGYCHFfD0qrhapmI6YdmL17TREXh9vLAp8TEn2OJuZA6eBjornHkC9rNE3djLQDg6gnHD10MO/qjJjXRuO9lA4UVi9mVE07jnvbAyM+xZNAeVN5DCbZI8LGJKbvToMQTmdNQb6t75P7uoPHV6J+wY=
+	t=1778407473; cv=none; b=HpzncX+B9GAFAuIePEWHh8IHdSCUdWXpKRqtzAMB6zC9GUjQoDqH+LHtNSyCS9Zc25qhyB9vgVpiOPlbNg9zDeZ00HMzDOQ90WL89wDU7WQy2LJ2bgiOw+QIjpvBsr0yvaspEj2VcI7BYm5AldEOCyJIwUbXNQXq0N+dk7hK/T0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778406631; c=relaxed/simple;
-	bh=YLHPgK3pUAPlY51BqL6HNw4pwuJLemrMc6wvzb0DoaQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=p9WYlTPlHGqbEthkVKcxjLfCPNPYDRRJiSPIyh7wW2mkdt/3KpuMUaH9l5q18QT1Nb1WX535CD8K3SnMlkZ6ZHmJAT2QOwoZr+DXxkhSSpVQvto9q0NBfWQ72AT74FnCovGrozLscHXN2180Gz0cHO+mYSCRKxhOhsL0yF1uEDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kmtYPVyF; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778407473; c=relaxed/simple;
+	bh=PtNmBnkRtZniZ/Dwsrra0lsvuZm8ScicYV0EG0nj+rc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hywh/p17wJ/N4sgCn3tOs2s1hjoaQ1WxOO/Qv43ZE3iUDpevbJTL24B/rVQeVlk3QLfHRPDpIqaKCrPfoc80pfa2gAfh3/GWHTUZQ+pXYDRjZG8ysDRezMQwVdz8pDmmhoIyrF5hFzVNLmN3dSq2TAecdH1Vy7yGRr9rnxOMNO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IWEM48UU; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kmtYPVyF"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48a525dd2b5so3428115e9.2
-        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 02:50:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778406628; x=1779011428; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2UZfHcaRMhvdDu2UoYQ5a6aaE5AUxZFKI7bieKAj9Q4=;
-        b=kmtYPVyFJZdnxil6Cz0p8iSWhtd0oBPh6VAVG/7l3BVnnMtl6CyEMYrqzxsVEOG9CG
-         gxvAlSUWXEAk3L9/xGSgiw50uvNWcjw1FxIyRgXCt1HccGJu8bhaeiRDPOzgCdCT7U0z
-         hKhvV3AUJJgyz++Ob17dLdHFqK7OVXiG1AvCYDWE7hZalUHPPmdW3wCnhEjxCNnPlQYB
-         NvFV633IICygxLqG1o9IhRC2ZQoLhk/motltgi321t5wIbbqoqScvdupmyRKP/Zfx6DG
-         7xFIOV1BmVGjryaNQJZg4gUpTrl07SonFIsht2EYMFdeTvRUWIULTltwSwQ6J3DGfYYS
-         nhZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778406628; x=1779011428;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2UZfHcaRMhvdDu2UoYQ5a6aaE5AUxZFKI7bieKAj9Q4=;
-        b=c3wes0mFmpoX3oLZK6ekLHSCm30cJoFllM2XGz3qfs2ysvHkol2b1qA2LF4pe6h57Y
-         anwjLNcgpVlAqVxOwuqP7wAnTBRSXLpX9EQAP/1ihZacFNhkrRUTSc3Ue9c9xgddmXYW
-         w3XZyXtrXWj3XjMegUcGNcbH0JI5TEcF5l9X9kdRO6VExx1zfPiHw2xvXSreBwLr7U3Y
-         XlpvPzIeU1ucc8oNO0rgQg1HYCbwIdUijBV431nai5CvvMNgUjrYOYyKJr+CY+nxdlu/
-         X3DeV/pEFtS3Ptf0FNLE2I4PNyMXOnWuGMSSqFfbDTqPOD8PoME0ouNnP0A1ZFanT0Gw
-         7YxA==
-X-Forwarded-Encrypted: i=1; AFNElJ8DQrKOUequY5Pa+pGLajPxGABbErtMjk344L6siKQJlSLqulFjvtvi6lLbMaPxK09aMZlcAnsZA44=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy32wneuZZrjGruefhCU3+8lmzsRcAAVysSWUsXNcD7JCyvzwdB
-	61XwYxBi+MppU+lhqwjafbTw48gpCA9QnnSpR6blN3GTv38qdxlaSNph
-X-Gm-Gg: Acq92OFvD1s5mxkp7tEKgzd/xrhVlZFxXm20pizuIElf+YQSE1+UJjPdmlQpNkY6HC+
-	Cvsh2mRf3EIYUKrgw6SwYjMiZCMA6NE//euZ3GR4nEiiIThojOs9MC7e+oJbf8+uD5IU2X7K2Zu
-	+ehEy7rGPe+n/a2i558CWNAR9E8QcIlkPG2GEVOlPltTA00UjiFYaag43u0Es1AWC6vzKXi0yi6
-	S7BSNHSXrZJTE9U+o6/O5vm231cD07UX8h2mbyjZR98xm84oCAmDHFAy5VV2LjoieeNshIaJhvA
-	/Iy4T79pH/YkUR9/glfGDqRDkp4Kj4Wn/NBfGx+dIXW5GPCbzz2Lt9S3p9gYXvR87fnFTJ2VLNJ
-	s4pqQJCkvJ+P2f8+uoMm47dp6EhZzqcd+NUiS6vyGy/DOyE4kdwOnUXEWT1W6rsD+LZdyb4Hb3P
-	sEcxRO7/SKWkld/nHjSvnBuVwgCbU36BRc3LjgJnKwHEQ=
-X-Received: by 2002:a05:600c:4588:b0:48a:5302:8ed9 with SMTP id 5b1f17b1804b1-48e52f1574emr150415515e9.0.1778406628229;
-        Sun, 10 May 2026 02:50:28 -0700 (PDT)
-Received: from localhost.localdomain ([94.158.58.43])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e6db1413csm39247795e9.29.2026.05.10.02.50.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2026 02:50:27 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	gregkh@linuxfoundation.org,
-	hcazarim@yahoo.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: [PATCH] iio: gyro: bmg160: bail out when bandwidth/filter is not in table
-Date: Sun, 10 May 2026 07:35:00 +0500
-Message-Id: <20260510023500.61036-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IWEM48UU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778407471; x=1809943471;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PtNmBnkRtZniZ/Dwsrra0lsvuZm8ScicYV0EG0nj+rc=;
+  b=IWEM48UUV9YOt0lowUwsvEksD2MMYGve/MziLsuPSIj/TqZ3yAECQlz4
+   GgT5bIChml+ojWqRrg1Zh8992KH4Za7Gd0m71p/MdQ/1Qqv9URQhNLNQC
+   7j8fNLbrF+SYM5cOvKlx1rb3FHY/1H8rqhziCV6TrjFiUVHwxrWnD4R5k
+   Pm0MJVByEn5tJCcXtmH0ZoGXgNBySiXvw7SFS2hTOWla6z1yIFp9Hes0z
+   Un6Ibu+EzFl6lGFGsurAsOBmTZHGYctL86FfuwRbQsy0t8AAvHVQkkbwe
+   BKyVIQSyUDzL4fZ9tYfq51KbqT5LpX8EDebTNmTfFYqfH2rqIKFEuOCCc
+   Q==;
+X-CSE-ConnectionGUID: VwifFICFSxqPdmmExjmGMw==
+X-CSE-MsgGUID: h91OyYXOT3arLRe5URVPPw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="90425290"
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="90425290"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 03:04:30 -0700
+X-CSE-ConnectionGUID: SSJGZYLeRqOyJ3vOT7Wcaw==
+X-CSE-MsgGUID: ZBzH31wASo23TkHxnvyfdw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="232717499"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 03:04:27 -0700
+Date: Sun, 10 May 2026 13:04:23 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Denny Lin <dennylin0707@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+	gregkh@linuxfoundation.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: addac: adt7316: document SPI interface
+ switching sequence
+Message-ID: <agBYJ2BCEBoCcUsv@ashevche-desk.local>
+References: <20260510081041.85880-1-dennylin0707@gmail.com>
+ <agBH9QqHW-cJN0iQ@ashevche-desk.local>
+ <CAGEkeHf_wueMkwqQmQ0m2drXQ_m9UsvcFwqu5RVvg0WsjAJW1w@mail.gmail.com>
+ <agBPR9xke1MTzL0B@ashevche-desk.local>
+ <CAGEkeHdZoDGtHS0Cmh-HULo_vz44gF1sDMoxrtJ0Ykf9mqcZ=A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGEkeHdZoDGtHS0Cmh-HULo_vz44gF1sDMoxrtJ0Ykf9mqcZ=A@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-bmg160_get_filter() walks bmg160_samp_freq_table[] looking for the
-entry matching the bw_bits value read from the chip:
+On Sun, May 10, 2026 at 02:31:31AM -0700, Denny Lin wrote:
+> > Do you have the Datasheet version? Maybe URL?
+> 
+> The datasheet I am referring to is:
+> https://www.analog.com/en/products/adt7316.html
+> 
+> (ADT7316/ADT7317/ADT7318, Rev. B)
 
-	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
-		if (bmg160_samp_freq_table[i].bw_bits == bw_bits)
-			break;
-	}
-	*val = bmg160_samp_freq_table[i].filter;
+OK! Put the URL in the commit message as Datasheet tag and use the name in the
+comment in the code
 
-If no entry matches, i ends up equal to the array size and the next
-line reads one slot past the end. bmg160_set_filter() has the same
-shape, driven by 'val' instead of bw_bits.
+Datasheet: $URL
+Signed-off-by: ...
 
-smatch flags both:
+...
 
-  drivers/iio/gyro/bmg160_core.c:204 bmg160_get_filter() error:
-  buffer overflow 'bmg160_samp_freq_table' 7 <= 7
-  drivers/iio/gyro/bmg160_core.c:222 bmg160_set_filter() error:
-  buffer overflow 'bmg160_samp_freq_table' 7 <= 7
+ /*
+  *...datasheet "ADT7316/ADT7317/ADT7318", Rev. B...
+  */
 
-Return -EINVAL when no entry matches.
-
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
- drivers/iio/gyro/bmg160_core.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-index 38394b5f3..58963f3ea 100644
---- a/drivers/iio/gyro/bmg160_core.c
-+++ b/drivers/iio/gyro/bmg160_core.c
-@@ -201,6 +201,9 @@ static int bmg160_get_filter(struct bmg160_data *data, int *val)
- 			break;
- 	}
- 
-+	if (i == ARRAY_SIZE(bmg160_samp_freq_table))
-+		return -EINVAL;
-+
- 	*val = bmg160_samp_freq_table[i].filter;
- 
- 	return ret ? ret : IIO_VAL_INT;
-@@ -218,6 +221,9 @@ static int bmg160_set_filter(struct bmg160_data *data, int val)
- 			break;
- 	}
- 
-+	if (i == ARRAY_SIZE(bmg160_samp_freq_table))
-+		return -EINVAL;
-+
- 	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW,
- 			   bmg160_samp_freq_table[i].bw_bits);
- 	if (ret < 0) {
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
