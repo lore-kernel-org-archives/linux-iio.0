@@ -1,190 +1,127 @@
-Received: from slategray.cherry.relay.mailchannels.net (slategray.cherry.relay.mailchannels.net [23.83.223.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f68.google.com (mail-dl1-f68.google.com [74.125.82.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE0372F8EB7;
-	Sun, 10 May 2026 08:08:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.223.169
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778400539; cv=pass; b=BTaOjmikDWN4zHshflFhpMAoeddY7GYMsu7Ct9ZU7HoNLpeHi/SpVU15TaSrU6Sxs+w2STcemyYoZmhQelDRMF+ufYOsQswW8OwbANzT7iwGAQBY0N1ita7mUYHOC6qSZx2CTvcU7JT8r+hlyWBQdcwymlQNpqTENuVeTjaybtA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778400539; c=relaxed/simple;
-	bh=P/22JueRT2YcfwST+Ai7cWP0aGRqFirus+R0SB45WMI=;
-	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc:Date; b=QUr/0NasPAPnoVxs7ggQuDFOqFnRU5LrEyZNWUeZxbgxA94x0Ut8WFHCSqAFC91zrQDXNoCxEeCo6TfFXiEU2GabxseiURiMNhFwcrtrF56wW58cDcBXyUONqDFhyy5ZcZfLqicJSzjj04zKP1I1deBrFwXhR5YJG9vczgNwf80=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=ct9WOJPT; arc=pass smtp.client-ip=23.83.223.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9335631AA9B
+	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 08:11:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.68
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778400661; cv=none; b=RTN0C1K8yiT+O4pkQfZxK6Y8D+VP3YQ4bnl0Z6p3vSj4cDF9FGjklxxlblT1CEhoRaasz3b/9gmRl3ARFrwbct5EDozFoZhL4swPz5HWAcyf8/FcZabWzLBwSJPMvnFpHuKLIXEu7Piu4nqqDOAVtn5gNF9o9OmOWiPvhjeTHkw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778400661; c=relaxed/simple;
+	bh=qV39xNtfL4QWl44+opgnZA/dVGnBNDm/6My8Yisoxac=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=e6yCcN5ZPvchdAE7RWVvndZBtPIRz2XOhO7P13ExdNQvtVstdpRH6PDClSTie4L+fQOGxkd5e5aujDXW/zyktsyIWhf8fCUh4+akZphr/DH1+GoCLjuTjBVixuXfJLBFdHBmcAIy+fwjKb0eQ9q9LHGG6m2JJXpHBkca8/S7nng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qW3a4ALG; arc=none smtp.client-ip=74.125.82.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="ct9WOJPT"
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id B727E413B0;
-	Sun, 10 May 2026 07:01:46 +0000 (UTC)
-Received: from de-fra-smtpout6.hostinger.io (trex-green-3.trex.outbound.svc.cluster.local [100.103.33.89])
-	(Authenticated sender: hostingeremail)
-	by relay.mailchannels.net (Postfix) with ESMTPA id D873F41226;
-	Sun, 10 May 2026 07:01:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
-	t=1778396501;
-	b=41XfNHc0jg1FqK9ypanM7oJEOAkRASZzvjzeJ3YQoT5j42i9mWI5/lCudTkPeKTjCKsDI5
-	aoCuUnW5HfF8CZYCWp8FeU6N9lnr1YcYb38p92EoK26D0mCPACr3sPf1JVZoQb1S/tGrOB
-	xEJtz+/+Jx9ySRiMCqJcEmkN2MMCNr+CBve79bSRt1zADxf3GuoV9ENor3FwoaO0WVt2Ox
-	8MeKD/mrzahowNQ8RB4HSid2FZ1CN1yu4WJYXVAOdsFwwKe32TgT/NDEM9FJQ+o3IKP7Wm
-	tc9/qj8czDHnAQTifTuLRARFy+Hk/K1oU75BW1TEziA/tkIlZABhYYTVFN6kHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-	s=arc-2022; t=1778396501;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:dkim-signature;
-	bh=nHTwWN16ekffh0PsCuHvfyu0Z3TUsh+Kl9hX0JiCNZg=;
-	b=7KHtAeHbwR3U7e1fN+Sb1qIcX+67BJoEQFzRtdy5ZT1P/REx/i9LNuqC6j2ykBezQetRPF
-	nHYUIRKpgy1Cnz0AI0iVxqWiYIAJQOLv7bWZQbtDMVIAEQFApNj3qE6podEq5KhCesXJlS
-	TOVVOnQ93NvFNpXMNsXqtugZLkERXeqjvPCXyGvU1yXhPqVygr/9fB+43jpPmkDnI8zhmX
-	6yzo+yNOUO4PIfDkaPphfWzHZCZV564SN1wJIuhuuPQ+T5uJxEdSQu6nOBpaEqfZW4WHNp
-	oPV0zrCzbcU2KVMavkRZrJyYBHV4ZptJ8ITsiN7bvQ/BeOMki7x5zNpY5r+MKg==
-ARC-Authentication-Results: i=1;
-	rspamd-79cfc4d687-w9599;
-	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
-X-MailChannels-Auth-Id: hostingeremail
-X-Trade-Bubble: 2a619c8d5bad1f09_1778396506631_2140836899
-X-MC-Loop-Signature: 1778396506631:710262432
-X-MC-Ingress-Time: 1778396506630
-Received: from de-fra-smtpout6.hostinger.io (de-fra-smtpout6.hostinger.io
- [148.222.55.17])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.103.33.89 (trex/7.1.5);
-	Sun, 10 May 2026 07:01:46 +0000
-Received: from [172.17.0.2] (unknown [125.163.203.7])
-	(Authenticated sender: linux@smankusors.com)
-	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4gCv0Z02fnz3x62;
-	Sun, 10 May 2026 07:01:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
-	s=hostingermail-a; t=1778396497;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nHTwWN16ekffh0PsCuHvfyu0Z3TUsh+Kl9hX0JiCNZg=;
-	b=ct9WOJPTJmUc7OfF+riApYu0t5jC/5zI/lOYW97HgO9fnFrf/7JyoJ0+uCUJHflOxRgvjU
-	1iMbBPKZJNwcnpvCW4ItOQZgCUEMy7l3Xbym3ED3HABmlCVzz2zha4nSfoNLINzJB0EjPS
-	Fw4CUEBUnqJ1FW4LcGGVSHzubfyrjnovVt3GzKbjWO5hChfNDoaA3cR6GRFdlehljZh7FJ
-	gtOfy326YM5A/QpfMr1pFBiomytAxTd2o+UXrSkTTbsbgUBJ6yxaAWjHaW4Q4vrCPWdtDU
-	Y7HeTaGmLlcOoQflxuAYYT3QYaXBa+zDsfuQ+n9FnkYzDoHu83zmyY3LEmVqJw==
-From: Antony Kurniawan Soemardi <linux@smankusors.com>
-Subject: [PATCH v6 1/4] dt-bindings: iio: adc: qcom,pm8018-adc: add label
- property for ADC channels
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qW3a4ALG"
+Received: by mail-dl1-f68.google.com with SMTP id a92af1059eb24-1309f4ee97fso4216949c88.1
+        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 01:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778400660; x=1779005460; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=bIvPRt9dlizeEm93tbtAZzvWwvO1azBOrboHx0X4jRw=;
+        b=qW3a4ALGwDPT7Jkm5jDpnDIbkNo6znjZS/sC64xJ0u7nMQvsLb4MaJfDuwDtl/kjE7
+         boy1iT74PXqRp7efX7S5jt4UyXP4mtO9is4pywKuFlY1oY0ZMsfJDxk0Gp98Fml+ggho
+         62JG4WqxdOVk5lyg1aOm63T0ufw40Iva8KqoN/6+zeNzbrfxInbt0BRGkU8mpO8DnjVh
+         EdhOVz7jr2V1YQS4IxZhlrSCbWHWA0/32Jp24MneF6OhXykQxUchMKVMVLc32SF77xbX
+         AENrdZWl/pbNu/5MuDmhN/wIckwcMxAH8Zy4hpK5WCO5RNZz79fFlD76qGLxI4u0VEf+
+         BVKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778400660; x=1779005460;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bIvPRt9dlizeEm93tbtAZzvWwvO1azBOrboHx0X4jRw=;
+        b=IhgqieK+xGaeG0KGbxUS7Oxk9hH1VxFBLpHz1O7iULQp50+pcbu4dLKPaY9nts4KK3
+         chwGZbGaIsHZahSq5fZPqKPuTURJK/Rfetc0FClyBv5hWdtQzBzHD3/+OzcGSd68aPc6
+         +Xd2Sa+RaZ6lpjeAoZCx0V1T58TGKphSW2GmGuDRRZf/L9YqwCefSQneDdQ2eL4t7eOC
+         Bz7MhhQX4JbGZjFQcUzLWfwJG3AKkQ8x4JgZpEkIBV6MAWfDBBHhXXS5GkUVJaHquxas
+         9PUJkwgmghh1Q6+Nib12rnGpB3bAXhwEX+x7vGzmql3lyWw2l5y1pnG+rYfekGV2Zw+z
+         FXEQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8sOXWyvMSgD9taEzfXlxxXt7ujPZVgTmkOdHtdM5AHEeJXOOtDMhZQbE3jDfrpsbI+OeCbjLZqUKI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxIpgl9ekU9l2B/4GQZ+a2bJmh/RlThQd5mRImErWvyf1uf9cp7
+	rLav/ulQZAQWiB028a3mQHIJeYwAtWmbGGyE4v1I1ndk4shTiktHfKKh
+X-Gm-Gg: Acq92OEmdgdGUyIPCt9R1DYEosztrnb5Lv8ayIOT1bhHbq80vatIxo+7G1x2N3FugOB
+	HGKWOHDzasBPu5tigJpDsHA918CrOQjs/HmFTAL4LE+LDlMmnDbu/STq+QqqwLnNdl2XsYTVBDX
+	lUee3KT6bpVFFQlla61WgHt0sH4tG+zIwZKJckpzibx1+ocPb/29q9Ie1xEKaz4k+gN5L1iMXCJ
+	CTsit0rf43/gbjZ/LuxdkCLZsdzSdk96Z1MeYajbUcfhFsvonrxGx+TiCmKMgQGIjVmqDyKfeOb
+	7KSedVZtvpv7BTBvtC/Rxq8aAyMIAbJNtZWOh/P6G6TEuOOgjv1ZyG4fFBw/KRz5JECFd8yhe5q
+	RQb02Dz4s2+40povnFUs2FHZRYOlBY/it1QjSYclUJ0oJsFApro5oiQ7Q8TLm18yG9vD3J9pIqh
+	24d2ace1TOBUtqdxqJCgdS6TnZ2bzZfJOdmLZsUcl/v/ndgEGE80Ce7LKfdaciRSIY6g==
+X-Received: by 2002:a05:7022:4a9:b0:12d:de3e:be88 with SMTP id a92af1059eb24-131a69f2f19mr8868177c88.36.1778400659598;
+        Sun, 10 May 2026 01:10:59 -0700 (PDT)
+Received: from localhost.localdomain ([76.32.119.210])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-132787673ffsm12053688c88.15.2026.05.10.01.10.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 May 2026 01:10:59 -0700 (PDT)
+From: Hungyu Lin <dennylin0707@gmail.com>
+To: jic23@kernel.org,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	gregkh@linuxfoundation.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Hungyu Lin <dennylin0707@gmail.com>
+Subject: [PATCH v2] staging: iio: addac: adt7316: document SPI interface switching sequence
+Date: Sun, 10 May 2026 08:10:41 +0000
+Message-Id: <20260510081041.85880-1-dennylin0707@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260510-pm8xxx-xoadc-label-v6-1-49700fd03005@smankusors.com>
-References: <20260510-pm8xxx-xoadc-label-v6-0-49700fd03005@smankusors.com>
-In-Reply-To: <20260510-pm8xxx-xoadc-label-v6-0-49700fd03005@smankusors.com>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- phone-devel@vger.kernel.org, 
- Antony Kurniawan Soemardi <linux@smankusors.com>
-X-Mailer: b4 0.15.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778396489; l=2438;
- i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
- bh=P/22JueRT2YcfwST+Ai7cWP0aGRqFirus+R0SB45WMI=;
- b=6WkbgOkF+FKRgU1dnN25pJchwAv5UfY9nQ/kQupVKFQkDQLfKzk3tsCKQi52LMV5NEQQ7O2t3
- altWw3MiywlDPFmg+RjU32rl+ozgayr4o4L40IEfU+Ue//RcpcyM4eN
-X-Developer-Key: i=linux@smankusors.com; a=ed25519;
- pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
-Date: Sun, 10 May 2026 07:01:33 +0000 (UTC)
-X-CM-Envelope: MS4xfCPlUJzwSlZL7XgGFiWhQ00b15zlAW70QSrJYjidBWCEeE4w0EdBEqOlU5KTLdbzBLdr/xK4Cd+h++R42fAqCmtakXdYdd3St7Whkdf4IWlBwTuIgAxk 51LgG97bmh9ft9irkKcqcJa2Kgpp8m/4VkSU+0R0ts34mi9UaE1PLylg21kM73nwI1O7umTy0JeapOypYRH4SO7guPw+84Bv6yGWl1JSxwNTaUKzVz0Iy2SA wImJ6RqGPTZffup2FZR433ibL4Hz3JmHFAdcCM2ez+0rTBOOydHD0OurKdKy2UMdz8FjoeM9rdO2Ynh3eNVZMs9APOV6RW6qEBBIiQ+0+sZtwBVzT+RykWOy DDMIuview3DhwSMEEt0Bqm22nLzikYOIFClYHUKRvfW6KbUXz3WuL35QS8cnWbBtY7hkGBZ1J6RFZ/BpYxIJVTR2JUJBQ8NQfrhVEufnVBSJVJSETp3rMUUH uxrANpZ+Q8uP/+v/4vSVTDuUyQBk6WoODVv/TEU1JEVf3h7Ij1cwa18O+dQ0zfFpWhIKjkPCbKHpCpAuFrt7UOwdWswD5+sNSGLOnlUQ1jwf/Tl/EqnQ+80p tPgpsOYNWjCxKMrGy8X0luQgZ58djrEkQ1ElweoQbDTqhKINFr4gijBOC4OMpOUU+1Aesn11HVZ1CGo1lSSn2KAf
-X-CM-Analysis: v=2.4 cv=etGNzZpX c=1 sm=1 tr=0 ts=6a002d51 a=aYg++IQuMqL9NhcFIsEovw==:117 a=aYg++IQuMqL9NhcFIsEovw==:17 a=IkcTkHD0fZMA:10 a=wxLWbCv9AAAA:8 a=Y5Iuzig1aeAEnQA3VkkA:9 a=QEXdDO2ut3YA:10 a=vyqAJ5GITisAxiZ2Wwa1:22 a=QJY96suAAestDpCc5Gi9:22
-X-AuthUser: linux@smankusors.com
+Content-Transfer-Encoding: 8bit
 
-Add a new optional label property for ADC channels to help users
-identify each channel when reading values from the sysfs interface.
+The device powers up in I2C mode. Switching to SPI mode
+requires sending a sequence of SPI writes as described in
+the datasheet.
 
-Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+During this sequence, the device may still be in I2C mode,
+so SPI transactions may not be recognized and can fail.
+Such errors are expected and are ignored.
+
+Add a comment to clarify this behavior.
+
+Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
 ---
- .../devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml      | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+Changes in v2:
+- Add datasheet reference
+- Add TL;DR note
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
-index c978c3a3e31a..63aac8de22ad 100644
---- a/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/qcom,pm8018-adc.yaml
-@@ -78,6 +78,10 @@ patternProperties:
-       reg:
-         maxItems: 1
- 
-+      label:
-+        description: |
-+          Unique name to identify which channel this is.
-+
-       qcom,decimation:
-         $ref: /schemas/types.yaml#/definitions/uint32
-         description: |
-@@ -130,36 +134,47 @@ examples:
- 
-             vcoin: adc-channel@0 {
-                 reg = <0x00 0x00>;
-+                label = "vcoin";
-             };
-             vbat: adc-channel@1 {
-                 reg = <0x00 0x01>;
-+                label = "vbat";
-             };
-             dcin: adc-channel@2 {
-                 reg = <0x00 0x02>;
-+                label = "dcin";
-             };
-             ichg: adc-channel@3 {
-                 reg = <0x00 0x03>;
-+                label = "ichg";
-             };
-             vph_pwr: adc-channel@4 {
-                 reg = <0x00 0x04>;
-+                label = "vph_pwr";
-             };
-             usb_vbus: adc-channel@a {
-                 reg = <0x00 0x0a>;
-+                label = "usb_vbus";
-             };
-             die_temp: adc-channel@b {
-                 reg = <0x00 0x0b>;
-+                label = "die_temp";
-             };
-             ref_625mv: adc-channel@c {
-                 reg = <0x00 0x0c>;
-+                label = "ref_625mv";
-             };
-             ref_1250mv: adc-channel@d {
-                 reg = <0x00 0x0d>;
-+                label = "ref_1250mv";
-             };
-             ref_325mv: adc-channel@e {
-                 reg = <0x00 0x0e>;
-+                label = "ref_325mv";
-             };
-             ref_muxoff: adc-channel@f {
-                 reg = <0x00 0x0f>;
-+                label = "ref_muxoff";
-             };
-         };
-     };
+ drivers/staging/iio/addac/adt7316-spi.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
+index f91325d11394..980532b7fa1e 100644
+--- a/drivers/staging/iio/addac/adt7316-spi.c
++++ b/drivers/staging/iio/addac/adt7316-spi.c
+@@ -106,7 +106,17 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
+ 		return -EINVAL;
+ 	}
+ 
+-	/* switch from default I2C protocol to SPI protocol */
++	/*
++	 * The device powers up in I2C mode. Switching to SPI mode
++	 * requires sending a sequence of SPI writes as described in
++	 * the datasheet ("Serial Interface Selection" section).
++	 *
++	 * During this sequence, the device may still be in I2C mode,
++	 * so SPI transactions may not be recognized and can fail.
++	 * Such errors are expected and are ignored.
++	 *
++	 * TL;DR: Do not change this!
++	 */
+ 	adt7316_spi_write(spi_dev, 0, 0);
+ 	adt7316_spi_write(spi_dev, 0, 0);
+ 	adt7316_spi_write(spi_dev, 0, 0);
 -- 
 2.34.1
 
