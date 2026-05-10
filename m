@@ -1,79 +1,76 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 801B6371D13
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 12:38:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39BA538228C
+	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 12:39:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778416687; cv=none; b=PVY1oF2RZoLD9HDCwy6ZhdVikZ+liduDq2drPgQ5QPuAlgaSF/yumbgESTjCw2KY8xu2gr5uLNZCwLQCEiHfxQEsNOvOtLdW3BfbExhPLchUla9wML3Ha0bYzJFVzpewD8ndbjgyW2tZ+Ek177oDfNEnjq2w+4Q+Lh8C/AB2a9w=
+	t=1778416772; cv=none; b=jzZOKDnvXy/tjk4s6rc8Llw8afa4gAwxYsFPP43w4jUOdTZQm1GT1yN7P/dsSab8OZSW1dLBrhDF69HyYxy2fHJc26LD1mifUwt/S+z3lFf8dulNeIqoW9RsbT5IukZmded1VTeqDXazV7rOUgjICGG392YT6CHeaJw3oA8z2wU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778416687; c=relaxed/simple;
-	bh=LKT8F/bo+j3KgGf/YTp7nyOl8+Ejt9kpwLNK+n73S5A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=DvCdSJNNirU1/91F3nJj7cL63UkdCiqunZe3014bp9L/SnZFF48ZBJySFzZbQQTwpsrUl22M4E3EPDhtUWYH+h0wLECWWuavCXtul4P0A+lHSqqJ7I/pkCtCcaMdjPnOQ7we0H704sGKf5rUoY8yxgW/sbjlA/Owdjge+zgNAbw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=icg7SmQ8; arc=none smtp.client-ip=209.85.167.44
+	s=arc-20240116; t=1778416772; c=relaxed/simple;
+	bh=tiInRFXw0ChFtLG5uCZ8/at2VeXzGBG5juJLF6ywvqg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=DLEJRszPKHgP9zJPslPwFBRIxHv1BQld15t+taAHxUrryT/WIPL+fDr/dXFSKXcLCAWAV4xWp9CIkBr1v9ghsVMNKnZUNox69Fr0I9ShK+/aUHAOe0EPGq+gYbYpNmLmk/T9QW8M5wiPjK7UnsXOu9J+h06TR2eB8XgXW935zRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LZvOXDEr; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="icg7SmQ8"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5a40cfab24dso3744708e87.2
-        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 05:38:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LZvOXDEr"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-48910865133so2389395e9.2
+        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 05:39:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778416685; x=1779021485; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0QqlUk8X7Q1uAvmD37hhieqDSFoMSc9yS7Ffu0fC/jY=;
-        b=icg7SmQ8WT/LkgShUSlQd/jXRRTrZKvCU8Ku094PBBDPPlUQU8rxmN7Z696cpqINRT
-         Wyuy9bw+up8LWw8jDH/edfnZSn9CRmsTVqSjU/w3DpZ4Hcqh6AQvu4IDJiX8caavR0Aq
-         RGLALvUijFRvJ5T4SMw04lHLKp75dcXeum4C9wJg2VNTL5DdHtXBXNWIheND2URtOqjN
-         1XPc4myhjD2QoHQhXZWoeHnVPLafjlHDdBRbOTs1dAZqZ74LFBtwYowjPsmO7sbHfXFs
-         6KqBq02lfQNsDJIS1CgJXiZOQcgS0tX7QUIVbjK0SBeR4KjG4+6qaAQEa+CkRAa2hMHF
-         S86w==
+        d=gmail.com; s=20251104; t=1778416767; x=1779021567; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0MUjPS+klZ1lXoqWs8dy0+W7ygtu66uAdX5gWliSBmM=;
+        b=LZvOXDErmqAnDguVapI53BTExfbjpwbdO/k8Qpwfv81BJxrLsT6R3Vvgy29yyFeKo2
+         6DA9IcWMnWOwDEr3FNAnPzSki7jrf7XmGVaMUTo98UG9y7ddJX8f9uNEqJkktGoJ5rHv
+         kFlOEmHGV2oqpdjmP+5KnWsYJ9h+wLeNXT/E64sAfwEApWvx2PxLVbMXYKcpp84a4MvI
+         2JsDvJKJmTumvKy2AnXeeB7bBLeY0kvwHRFQUu2BsuSmhlWHztEmLdlmBoiWS7tHDU2i
+         EHemiM5OULQNniA71yc8MatAvMQI7Sn7Tu28VwVblh3XoZMcKvrnHfUR9qliQtnfpRRi
+         kg0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778416685; x=1779021485;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=0QqlUk8X7Q1uAvmD37hhieqDSFoMSc9yS7Ffu0fC/jY=;
-        b=b8EofI41FB03dAPOmLfJlKJv7II14VRUCOXefyFemlH325f+2g7laXqAP84tltKBa/
-         GsQ49L0lDnPioMyPnU9G8Hs5dvLpEy2TJp6DwOFCFpiSeyiUxQp37eZdnghlaaluhB4n
-         Cizd8pGsUXhFxD/9PXG3Zf514c6Y9RN0w6oCmE7QPKKRKNgIqWoUpb2wGjrwgLugNIgU
-         1tvYvNJMOMOWDP751WSIxWKrnAZJU9chpINqdekfuLo/grg3f3QKkfSJl1xrZ27xf0gJ
-         i8Cl9PBcYdG+qTq96agAVKsSxleieA+JZy47f6g95g5qYC2Bo+gELEqzSUuo2RwRtHE3
-         105g==
-X-Forwarded-Encrypted: i=1; AFNElJ/bXHJPavuF32MAT6Eo+ixMXHw11fTlsL2ANgEF1SSoHyJ+ib32h8s2ywi/J1IDgjHr5T8DApQuJbg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzsH+dxKPaxK4xhfY6vMQzERpFc/ReWPLxkGo84E2D/WVtXaU4/
-	r66VE7iGycbT0tg9KxIFbZZB9SHqCQM/+IK2q5OSLGHBIZU0RySJ8UBQ
-X-Gm-Gg: Acq92OHlw85sGrf2ryd344HHRjLr6ehLdki6WKyEn4UW2b2NtDza6KR0e1cNqoK+P+2
-	SLuUP6KQXxW10p+Apa3UZuJMu4tDBKcCa5nZykogr8RE+dK7Ot32AFiVM+qu8cRkYzFGJ/X9CxO
-	JYX0P6G4uF8NPxl+y7hLMy669V4mmRBVG2r7LW5w0R3XzZtMLKON+Hui9j7utJM0LYysar2K4df
-	J43zy0cXxDcTKmZgvOAXErqVFzQICI5hRb4hUTVdMpckgqgk89fskoOwPKFg9/Jr4VzODHTloGA
-	SzXJPU+K1H6TaGd19A+w1OsTTyZjQAxNRU/xMzlcsn3Q//KLODklO1YNe5hbfdKY8rLgA27x9gQ
-	CqrUX5Rp+FZvUnn7M13C1BFgWFQVjyPQuuvykhNjaP53uhCHJeVy0OHPe/dsDcM0lvtxeS+K+6I
-	yigMjt93xe4n8D9YgPyoexWXg3cVDjC3BvvF6lZ76ap7KpEQ1joO/yjQXuHuT3nXpMHE3yde6Oi
-	kw=
-X-Received: by 2002:a05:6512:39c2:b0:5a8:6c1c:6b07 with SMTP id 2adb3069b0e04-5a8a94c9327mr3090039e87.39.1778416684381;
-        Sun, 10 May 2026 05:38:04 -0700 (PDT)
-Received: from Shofiq (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a8a9515087sm1891190e87.12.2026.05.10.05.38.02
+        d=1e100.net; s=20251104; t=1778416767; x=1779021567;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0MUjPS+klZ1lXoqWs8dy0+W7ygtu66uAdX5gWliSBmM=;
+        b=Q+J/een6CY3e4pMJoAb1C7FjfRPGHylZhZUbAceJlfFPqykqRXMa8BzJ4ko+LWv2P3
+         8bmSiyfCs36F12u2HhSRr1rzY1sdWGdjp/j0VgXlAscdgujd2+BGYhTFAHX4qpYRk/Wf
+         2XEwZFVVxlfAS3CtgoNrIEfCvw5rU8AObSJQZngv+LyMKppxqUOPTm/obSsr9nwGEwgz
+         iIKaGdha4WjrGa8iuM4LHV6cKQwdRmpC8g0x3/yyeRDCjZyslyaJR71EdXaT337Pjd2c
+         HMMGSbG8KJw32lHYxXitu7sH7dvnrKEAdhFXq7YTgWAet7UWycx8AoDLAxpPpFiqFZQP
+         2jsA==
+X-Forwarded-Encrypted: i=1; AFNElJ89nG2hYqiuIdCbU+BGx8h50/FwwebeW1+dLNAD477AkERC0a0o9NG7OSNMbu50K8ZSxWjv6Ri1ekw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyqTXpe4Hs/0ko9Nke3Omb+K1pxfeJ4gg8yuRtNCEF5wqaYS4TK
+	jEVprJn4n124yY97+Gqwc8lRi6dk7AaHqLJYemgDv6WBpSc1r4EcfKeC
+X-Gm-Gg: Acq92OEbiQs0sal2nNoNqgjYHHnlk1zu/0FZDvWz8RFr1PGurbdqlv3z4zSLThTnbJZ
+	/y/lnqS0np0EW7pvb7wef5QI6+3mr9DjrLZlOaHAWjsgCm6gaRGs6OCJvCyExQ5Zf+/B1S/XVGn
+	f94R2WF+5VH3xXj3ee0uiKQ6w1zwlfKO9q5Ramh+cZve9hkrMHpcQk947zzqwft0eLfUCZIVYeO
+	E5/Nk7DucPx+Iqhw8YwCr/TXphFWtvLlUfIBM4fc42LCTRe1MxoinJ0xzo4l/ZnomeKJLNm54SJ
+	yRfI31qommPNZfvna1GzloYY4QABPApX/xXI+Ktu8EQ54uo7sO2/ZeI37wCDiauZj+QZB+lUSps
+	VsJopUWBj72RX68N0fxQqvs8Rblh0uUSPZyZXi0Tt5VimcDQElJnzxcsjsq93tRtVccCSpfmXNJ
+	EhKgJ6JcUpWZESmlJ5WnXFHaDpNa2oJqKY9jt8XtPpzoCt
+X-Received: by 2002:a05:600c:524a:b0:489:6c28:dbb4 with SMTP id 5b1f17b1804b1-48e5329e323mr145369685e9.5.1778416766695;
+        Sun, 10 May 2026 05:39:26 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4549120ec0asm17628703f8f.17.2026.05.10.05.39.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2026 05:38:03 -0700 (PDT)
-From: Md Shofiqul Islam <shofiqtest@gmail.com>
+        Sun, 10 May 2026 05:39:26 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
 To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	andy@kernel.org,
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	alisa.roman@analog.com,
+	dlechner@baylibre.com,
 	nuno.sa@analog.com,
-	mike.looijmans@topic.nl,
+	andy@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Md Shofiqul Islam <shofiqtest@gmail.com>
-Subject: [PATCH v3] iio: adc: ti-ads1298: Fix incorrect timeout comment
-Date: Sun, 10 May 2026 15:38:01 +0300
-Message-ID: <20260510123801.4066-1-shofiqtest@gmail.com>
-X-Mailer: git-send-email 2.54.0.windows.1
-In-Reply-To: <20260509071910.12345-1-shofiqtest@gmail.com>
-References: <20260509071910.12345-1-shofiqtest@gmail.com>
+	sozdayvek@gmail.com
+Subject: [PATCH] iio: adc: ad7192: replace usleep_range() with fsleep()
+Date: Sun, 10 May 2026 10:24:01 +0500
+Message-Id: <20260510052401.31057-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,37 +79,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-At the lowest supported data rate of 250Hz, one conversion period is
-4ms, not 40ms. The 50ms timeout is deliberately conservative to allow
-for kernel scheduling latency, which can be significant under load or
-on slow machines.
+The "at least 500us" wait after serial interface reset has no specific
+upper bound. fsleep(500) expands to the same usleep_range(500, 1000)
+internally and is the kernel helper for plain "about N microseconds"
+delays.
 
-Fix the comment to state the correct conversion time, use "lowest sample
-rate" for clarity, and explain that the extra margin exists to absorb
-scheduling latency so that no one is tempted to shrink the timeout to
-match the conversion period.
+No functional change.
 
-Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
 ---
- drivers/iio/adc/ti-ads1298.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ad7192.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
-index cf5f954206..128b45a301 100644
---- a/drivers/iio/adc/ti-ads1298.c
-+++ b/drivers/iio/adc/ti-ads1298.c
-@@ -210,7 +210,11 @@ static int ads1298_read_one(struct ads1298_private *priv, int chan_index)
+diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
+index 8b1664f6b..712004ab5 100644
+--- a/drivers/iio/adc/ad7192.c
++++ b/drivers/iio/adc/ad7192.c
+@@ -576,7 +576,7 @@ static int ad7192_setup(struct iio_dev *indio_dev, struct device *dev)
+ 	ret = ad_sd_reset(&st->sd);
+ 	if (ret < 0)
  		return ret;
- 	}
-
--	/* Cannot take longer than 40ms (250Hz) */
-+	/*
-+	 * One conversion takes at most 4ms at the lowest sample rate (250Hz).
-+	 * Use 50ms to allow for kernel scheduling latency.
-+	 */
- 	ret = wait_for_completion_timeout(&priv->completion, msecs_to_jiffies(50));
- 	if (!ret)
- 		return -ETIMEDOUT;
---
-2.54.0.windows.1
+-	usleep_range(500, 1000); /* Wait for at least 500us */
++	fsleep(500); /* Wait for at least 500us */
+ 
+ 	/* write/read test for device presence */
+ 	ret = ad_sd_read_reg(&st->sd, AD7192_REG_ID, 1, &id);
+-- 
+2.43.0
 
