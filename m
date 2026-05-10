@@ -1,70 +1,58 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2BB11EE01A;
-	Sun, 10 May 2026 10:07:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81AEC336EC0;
+	Sun, 10 May 2026 10:15:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778407661; cv=none; b=SQNBFsCsXimA0bTdgExM9vUqJRfI/bE8yNpd/V3IrhmRgaZE9MmYhcW/ySdsbGzatnjv6MUB/aHESvKHiFxhpms4Lwbf9kvt+EP2daiHEHoGriRpHUcRlTcKWCo1FpBujHyzsqLpYj/RKg2OZAPshJjTVmTk3Ov/m2Sq7R/49/Y=
+	t=1778408135; cv=none; b=JfNzviYRjpNqlEgMmE3T/WWBZnkHrjE2KQtwwHSAiLgkVR5u/NIt51hcfSSMRJFvDq2SLUbqtzEIw4/mrxaQPQcHS1+xqD039tTPrrTTr1nXdv1MYn1Dfkh5JXDrvJigl9T6Uczyfsyy3LsJ3sRQhaaGmzyB5lkAjzF6eeL30Kc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778407661; c=relaxed/simple;
-	bh=4tph0zy3cNEHlCYe18lSKwujBZx0a7J4karvXTYGrE8=;
+	s=arc-20240116; t=1778408135; c=relaxed/simple;
+	bh=TCoslgYWtFXtVaMKjld4JGo1RWuMBzOg8/d/BqWfKnw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IC/T7N9DjmSFa82AJDWGx37woNF2idNGzf08n8wNe1Qb25gR+D8OrxWWHLZu1BJWsgRECMOYdrx6nqBpB9IK6UknECq1gpK5oCEudpMfiA5XMTc0835WD8JPEUnlIy2tiu5x++4irXHj3M50VxgaWlxopbOOE0IznZH+LIBdPYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e5RMGs0+; arc=none smtp.client-ip=198.175.65.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=kkdtYnk7nuFLgepjgj25e1MUUDRJMKbHy2GVyc+cH1c/0zmyhKmTvl5bvoVTmXp6Fd/ui/SS6HtItA/rILFTyIszOM36IGbZhF0MbMbHFvHuVbWdJOFVvJvlQezmAp4IutSYaL7JpzwrkA9TzD0PJ+G8jl766/P3BcPU0MYWcdE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WTEk58Gg; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e5RMGs0+"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WTEk58Gg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778407660; x=1809943660;
+  t=1778408133; x=1809944133;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=4tph0zy3cNEHlCYe18lSKwujBZx0a7J4karvXTYGrE8=;
-  b=e5RMGs0+3bWK6V26AckrwiGvF+WD6nLwLjsb6u/GM1YUY3h+MzHNQXzw
-   +g3tynYEkccdbw8KJpxFakBwIyLnSqqmnejgMTUnpgR901woOITIUl4WI
-   pc0E8PLmROjyJ2tHeKiMvyhJFAlP8ij0kmW8A8tru1JoEyHKC/bYr9XW1
-   myWF6qNtLYvOevWCJ48Sm1wibI189iIZZWQyCaD1n0vYhERcztWR6InBC
-   tOLYxu4PoT+BP+Jff2Qg0R9krdRQ0cWSK9SYk3H2ws9HjmoH1tYF1v6PG
-   sZRHdBKxf/YVuZrEDthoWqt+miYU92m1DRQg22R5KaVwiox9dmFgdjaPK
-   Q==;
-X-CSE-ConnectionGUID: 84pCywhOQy2jWBRNQ6r/jw==
-X-CSE-MsgGUID: /90UUjQRRc+bFVk7GCdgtQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="96744709"
+  bh=TCoslgYWtFXtVaMKjld4JGo1RWuMBzOg8/d/BqWfKnw=;
+  b=WTEk58GgkZLQuPWpswpmVelubPfyXaKDFox1rKqdu2tbRdPYow0KR/VZ
+   qww6+OT6Ej4qPFkPEBWGJPthgAq/ZO8WK/ECzgkfMtu4LHCdpmpCBB2qJ
+   CHarDIV27FUc7CvhhwMxYdRfpFjcqaIp66wUD9qejSHXp9XZAw7+cq/tE
+   aqo2l5v/6u4LpIvz81szl0kjPwvd8bVseZjFEBas1mUMFgFu8G91onNNZ
+   xvElmpPlyxcMECtF7Y0a0xXFmoSyG50yKMRc0jdDdQlcK3riJyz+OMktl
+   RbSDnrItCGt5vpCT3YB2NKn4PHCCl2djmo6ifxuPmNvd++JgnstaQbvQc
+   g==;
+X-CSE-ConnectionGUID: aUr70gn0Sm2/U6yGvLK40w==
+X-CSE-MsgGUID: DAXOSpceTH6SKIInJ1IGFw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="82937680"
 X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
-   d="scan'208";a="96744709"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 03:07:39 -0700
-X-CSE-ConnectionGUID: 3OnfRC1yQxiv9c42gUcypg==
-X-CSE-MsgGUID: 5kbNoDiKSfi7LeB6WpsP1g==
+   d="scan'208";a="82937680"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 03:15:32 -0700
+X-CSE-ConnectionGUID: aKur0x1PR0W9NKnZWiQ0Mg==
+X-CSE-MsgGUID: /9Kw6ssNQWe9hTh8TQoTWw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
-   d="scan'208";a="237414075"
+   d="scan'208";a="239005242"
 Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 03:07:35 -0700
-Date: Sun, 10 May 2026 13:07:32 +0300
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 03:15:30 -0700
+Date: Sun, 10 May 2026 13:15:28 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rodrigo.alencar@analog.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-hardening@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v4 02/10] iio: core: support 64-bit register through
- debugfs
-Message-ID: <agBY5K4qN3jda2up@ashevche-desk.local>
-References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
- <20260508-ad9910-iio-driver-v4-2-d26bfd20ee3d@analog.com>
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, gregkh@linuxfoundation.org, hcazarim@yahoo.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: gyro: bmg160: bail out when bandwidth/filter is not
+ in table
+Message-ID: <agBawCtL8vutEaoB@ashevche-desk.local>
+References: <20260510023500.61036-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,19 +61,35 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260508-ad9910-iio-driver-v4-2-d26bfd20ee3d@analog.com>
+In-Reply-To: <20260510023500.61036-1-sozdayvek@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, May 08, 2026 at 06:00:18PM +0100, Rodrigo Alencar via B4 Relay wrote:
+On Sun, May 10, 2026 at 07:35:00AM +0500, Stepan Ionichev wrote:
+> bmg160_get_filter() walks bmg160_samp_freq_table[] looking for the
+> entry matching the bw_bits value read from the chip:
+> 
+> 	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+> 		if (bmg160_samp_freq_table[i].bw_bits == bw_bits)
+> 			break;
+> 	}
+> 	*val = bmg160_samp_freq_table[i].filter;
+> 
+> If no entry matches, i ends up equal to the array size and the next
+> line reads one slot past the end. bmg160_set_filter() has the same
+> shape, driven by 'val' instead of bw_bits.
+> 
+> smatch flags both:
+> 
+>   drivers/iio/gyro/bmg160_core.c:204 bmg160_get_filter() error:
+>   buffer overflow 'bmg160_samp_freq_table' 7 <= 7
+>   drivers/iio/gyro/bmg160_core.c:222 bmg160_set_filter() error:
+>   buffer overflow 'bmg160_samp_freq_table' 7 <= 7
+> 
+> Return -EINVAL when no entry matches.
 
-> Add debugfs_reg64_access function pointer field into iio_info and modify
-> file operation callbacks to favor 64-bit variant when it is available.
-
-To write a value with bit 63 set it will require negative number, right?
-Isn't this  counter intuitive and may lead to rejection of the (correct)
-values?
-
+Have you checked the mailing list archive? I have a weak memory of seeing this
+or something similar in the (recent) past...
 
 -- 
 With Best Regards,
