@@ -1,133 +1,116 @@
-Received: from mail-yx1-f41.google.com (mail-yx1-f41.google.com [74.125.224.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 389491DE2AD
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 07:16:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778397390; cv=pass; b=F688kv6ENVAwL9nZbOR5WJBzk6jYhFDxcPU2cjfGdOfevkfxlEHCKmjvvkedECbY64iP/0CmxhXZ7ag3VKLX/tONA8ycflbFyDadJaOP19o6vAYpcPcZ5u9bPoUolxidw1iqjC1XEcyuJvab3Dd0xLKLe+haOtmVO/Kg6XS/f9o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778397390; c=relaxed/simple;
-	bh=gHDivU3MdKNaCJgVsacc/ZmhFlDj8+M89UZqTQuFnFY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uasrdCZSXzCYmJ9Hi4SvPHb7fMSK8cuZ5S/V2q+zH3iswOlbJaaLq/SYmitsae1dJ4DhIJPUT12dYYmDR3KJe2Wk6KPckZtucyqrU7x62gV4JiykeYprPHlfKAIShckM3GC8/Yvptod1MeZmJdRLwK8//shZA9Pdmx5jYz6oBlM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l+zOqpDQ; arc=pass smtp.client-ip=74.125.224.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA8802F8EB7;
+	Sun, 10 May 2026 07:19:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778397586; cv=none; b=Bfl2uk+2+7HTDP6dGd8MpStTOHq9+YWQm08nzd9wQOzKyxDGXmiTKiXW3z5TuhmyTYHiAJrD3GSHFfIFwu24oRNQBEE0tbP/nqK+msVi9pg1v8ziz/fVfZypikFtDD0stvDmOFSrmJcNLC4ISMdiSOYSmL9JnaazUehUpCrFwtc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778397586; c=relaxed/simple;
+	bh=eohYJHwoejrU/BXmKoOTeozRPO2vN5Bzmy9y7RhES0M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LDhHNiUO7ynGb+Vu1WS9FwF0xaJ4lJ1xPgQGJ9cLWO06drphRM+lZVAdjhsLZzE5felc44nqVcD6/UFRn1747wF5fRvODiK2FIBWYclR5EFc+6p0qWJAxRysLVkXOMVJwHf2D7OAt/SVL7RDtY0VnWz3lRA1vfPvfeHN3G8AJSM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h1AiuAu5; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l+zOqpDQ"
-Received: by mail-yx1-f41.google.com with SMTP id 956f58d0204a3-651c7ddf514so3590765d50.1
-        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 00:16:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778397388; cv=none;
-        d=google.com; s=arc-20240605;
-        b=inEDtnZFSYHAEc9YRPlRelc8bcKKixeGTYZ/cJxXVxDqVOzg17H6K1Ych+qFHp5kzw
-         LLSjQhh3tr4XxbzABxgC8qaNpBz55MBhhkd7Xp0hocnLuhMR9Q2nZ5vA/3+31PbPyPfZ
-         f2ZUXeo98uonzjyjwEgcV80chWHxHsVLi1n0rj/jauotM2HvnYt5PJqmQMJmrZC4z6v/
-         hcFEGZkoWYDOV2idaKHHUTgyZX/Wi10D0X3ZF2vJ5r66Mk+TJX3/ewuYC/RU94dL6FKl
-         awMQ+y1uWmJkTKuEKamTRTUR8nak5PxHHf+i8X+0Phhw9oy42G1VKs8c0OvrcW+WknmL
-         O2AA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=gHDivU3MdKNaCJgVsacc/ZmhFlDj8+M89UZqTQuFnFY=;
-        fh=rsG++t4TFSPYBnDKQquA4P8x3mDghc0+mmGy80Gp74A=;
-        b=QlOuizUmjRr9RG6+MnokuvAM9UBF/iw836H7m8ArcIwTLYvVOf4wGGRLk2s6Sp1e3n
-         vxyL2mIAlR0ywGqH6oI6QdDmWrniYA6NnJUj3nrI7gGmiNpPOLgOvmy9nsCB3Q63C01t
-         FLRG6OgMHH61nVfiIAtWh6+LnzwHBjDiSxSWQOJq4aDcQllssfOzUpJ+qkX1lklvq7tB
-         lZqSFquNCCcShpq7R0qpiHJbr8EDjFB0PbOXVtbeK2NAvX+9N9jgAsOoAtlU2mmmWlCd
-         dz1Ox26PMzKW/bCG1Nfl0yDn4yUsy9cNFObbNu1j9+CEbZJeGj1rbgzzZna93AhpSzLZ
-         EukA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778397388; x=1779002188; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gHDivU3MdKNaCJgVsacc/ZmhFlDj8+M89UZqTQuFnFY=;
-        b=l+zOqpDQiMntJ8gqL43pOJ6SXQjf9OOEjLVkbH8HsQiP5T2jAdDMOHILbJuAwi8YLP
-         bjTwDA3SVRaF4Oa6x89C8ryNSaoNUVnBRK6ugdTx7jd0ORCss/3gH9I3GIhuFYu3xZPw
-         HmsKr1dLe2MqkwF0HFH/tiIexUQHOzMQChs0LWIP0Oleah65m3c8d69q9h4F43LyCIlg
-         NaQQNEqW8ymsS4wdUoURM5mFKGwtjPJltXHklL+upUQ7xwEBFs3pNPcSlg1UNisHbyNQ
-         tu3Sot1JFjbAHxtrYRr99J28ZSvFepqZaNvey23jkFbTWhSEbReFyMHuU4IGIpexE20j
-         nvfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778397388; x=1779002188;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gHDivU3MdKNaCJgVsacc/ZmhFlDj8+M89UZqTQuFnFY=;
-        b=ZDHLgj+de6lvYaF9jvWobJ99pGN2uRVIGiYztXSwNv1DDsOymeInYnCpwcvnx/odpa
-         cjWsqz97/MX5V2OBho4mb8UkrHywp1shiZPUGluB8uplCQP+9Y/ZOMnwnp+dNTq2gnQk
-         nS2CWojKJjy8UMrvVkodnNyVoU0lW/3YXq8dvrzIyYcc5QUsdmeDs90RlOPV2CQIqHED
-         LzX1Z/IaqlMd8WxZnFgR9VjhGxrV765a8Zhi1bQV4B85o39uiKnoiILRb00ak7de9tm1
-         vGtHet0Mye+7xfd2XF+pGBoBRsnw3vhi2iNwpmUoWwKqxEkYbE0rJ4ICGrq0UKCQGqO4
-         iU5g==
-X-Forwarded-Encrypted: i=1; AFNElJ9YTTOapJjKzCPhZkthABx1gLjxXIjog5YZW0P07k8GFfgC9aivCbkeEyIuUue0m0Pr1gv3CqjvBzs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxFW8aHJpBX5c8IV8Mto4yfKyjKv9bno650BLXC7+m3ygb6l8aN
-	BEvPIA10yhk9jl871TVckfcZO4dZL9sHXM/lbBZnyRxDJbDhFJFf7oFHMYt+ryGYk619rBx7/FM
-	SHgR7aytculux5RmlGU9wKVODo9fiP7I=
-X-Gm-Gg: Acq92OEQi38G5HvyeXWQML4gVRc+kJ7QvyC3m10k1cM6pC3sRSKMd5pWtCKc3otM8DQ
-	6fvKsHEY+3/F6h6qinoI5cZ3FX7HpB260LUtdgqHcAnBNKAoJsywvZM8A2/qc1nJdToLJeXhD67
-	MS8SOjJqnrWEzA7P7av75dRX8yHE7ZJ6O0noyWeEmMJNalVH4m6AKD/uaTk/uwPt6Wui8CQYaij
-	KP6pYyZvNr3qXp3X4AENWhV46mFFduno6Wl9TVzOb3lUXE1KW6EvahMuJqp8D+O7t4zaRCBAqLO
-	o4+HtKI/ToNO3C4=
-X-Received: by 2002:a05:690c:c504:b0:7bd:8cb2:4fa1 with SMTP id
- 00721157ae682-7bdf5d98fd6mr205966717b3.5.1778397388171; Sun, 10 May 2026
- 00:16:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h1AiuAu5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778397585; x=1809933585;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eohYJHwoejrU/BXmKoOTeozRPO2vN5Bzmy9y7RhES0M=;
+  b=h1AiuAu55/KNr3uVvxL+/yGJmKo7IwfJ6FnB4t2T3CK3BwT2CwSn5cVg
+   OECEnB/cp41cheu7DPfYCISj+g3fhcRa8Fti81iMN68lx8cgutGgf15IK
+   j79XC9DafqNBLWzwzRZOP0nFMvWXWBbgDhbi3o0j1qvLGkwrq7pNEtWqA
+   DaL/uRk/jkTOU58ACgzKjB+NhUjnbhS/M5dZoFx7LRLlzJF2qQXAUixIs
+   POJ9Mzar18Jw+L9nRrxg49hZ1aFmr1CUR7Fyzzp7NRvN0XKCipT2Y1Cdk
+   8OzPvEs0GdfepiooE7pOgpB9fq0LUfd5zoPPFTkbUjb5QATbfRf39eC0l
+   g==;
+X-CSE-ConnectionGUID: o4n/zY+KTruEZDRf9MMFIQ==
+X-CSE-MsgGUID: QKQeaYEQQe622zZvJR88IA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="81883150"
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="81883150"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 00:19:40 -0700
+X-CSE-ConnectionGUID: Q6NL2Ul6RrWvEv4v96Pz4Q==
+X-CSE-MsgGUID: 9B1zZ9kDQaawGMPUIXQGdw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="237390094"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 00:19:36 -0700
+Date: Sun, 10 May 2026 10:19:33 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Antony Kurniawan Soemardi <linux@smankusors.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Linus Walleij <linusw@kernel.org>, linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, phone-devel@vger.kernel.org,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Subject: Re: [PATCH v6 4/4] iio: adc: qcom-pm8xxx-xoadc: add support for
+ reading channel labels
+Message-ID: <agAxhcwXH4jCnJLO@ashevche-desk.local>
+References: <20260510-pm8xxx-xoadc-label-v6-0-49700fd03005@smankusors.com>
+ <20260510-pm8xxx-xoadc-label-v6-4-49700fd03005@smankusors.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAKqfh0GxasvVEMVySviw5vB1QmbNF-RKBjuoMD9ffEtnQjDkJQ@mail.gmail.com>
- <agAvydze87mMLaVC@ashevche-desk.local>
-In-Reply-To: <agAvydze87mMLaVC@ashevche-desk.local>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Sun, 10 May 2026 02:16:17 -0500
-X-Gm-Features: AVHnY4KNsbPTHpmymyOCwaYYdix4H0QY2Cq3Ah3hsHITb0R-21zm2rQ_5OBGeqM
-Message-ID: <CAKqfh0GVuEPRK5mZ2odRF4pwY55_7F5=xsrj6NOUp8zXgVo5vg@mail.gmail.com>
-Subject: Re: [RFC] Maintenance status of SPS30 driver and related Tomasz
- Duszynski entries
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	"open list:PNI RM3100 IIO DRIVER" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, 
-	tduszyns@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260510-pm8xxx-xoadc-label-v6-4-49700fd03005@smankusors.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, May 10, 2026 at 2:12=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Sat, May 09, 2026 at 07:14:35PM -0500, Maxwell Doose wrote:
->
-> > I was preparing some other patches for the sps30 and scd30 and
-> > realized that Tomasz Duszynski (whom we've already considered
-> > inactive) is still listed as maintainer of the sps30 and some other
-> > drivers under a different email. I sent a patch for the sps30 and
-> > while his email didn't bounce, I still have reason to believe he's
-> > inactive as according to git log --author=3D"Tomasz Duszynski", he
-> > hasn't had a commit in a little over 3 years, which means the drivers
-> > he's maintaining are essentially orphans. I'd be willing to maintain
-> > them but I just wanted your input before we consider anything.
->
-> If email is not bouncing, let give him time to response. If there is no
-> response in a reasonable time (usually up to month in the summer time
-> due to people usually have long vacations), then we can act accordingly.
->
+On Sun, May 10, 2026 at 07:01:45AM +0000, Antony Kurniawan Soemardi wrote:
+> Implement the .read_label callback to allow userspace to identify ADC
 
-Of course, sounds good. Just wanted to follow up since Jonathan and I
-already determined that his entry for the SCD30 was dead (email
-bounced).
+I would write in a usual pattern here, id est .read_label().
+But no need to resend just for that.
 
-best regards,
-max
+> channels via the "label" property in the device tree. The name field in
+> pm8xxx_chan_info is renamed to label to better reflect its purpose. If
+> no label is provided in the device tree, it defaults to the hardware
+> datasheet name.
+> 
+> The change has been tested on Sony Xperia SP (PM8921).
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+...
+
+> +{
+> +	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
+> +	const struct pm8xxx_chan_info *ch;
+> +
+> +	ch = pm8xxx_get_channel(adc, chan->address);
+> +	if (!ch)
+> +		return -EINVAL;
+
+Usually we add blank line here (and in similar cases).
+
+> +	return sysfs_emit(label, "%s\n", ch->label);
+> +}
+
+Again, no need to resend, I hope these can be fixed by Jonathan whilst
+applying.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
