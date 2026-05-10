@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBE0E385503;
-	Sun, 10 May 2026 12:42:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DCC13859FA;
+	Sun, 10 May 2026 12:42:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778416955; cv=none; b=UiR4rRGMvxXNP3lS4HLCzvDhwByIaXNYRncfmEQ6Y0SOnlIwQJ3K/xEfNahCBEMQ2Wgqyrmaz6OpS2H6C7nHmvPWDp6J/KGj+TwUMIKyIGwgD6/QOw6lOu9AkIYsEUbwPDRqX0F31GxyUD5S+J8OCZCU0rFjy8ujgV3Zl+9/aco=
+	t=1778416955; cv=none; b=LonRPA3twyn/P4mHFBdhnwBQavq3ZGa5KDeYp28iyvZXsPxRlDXNfKk3Gz1gnTS9iW4QtTme3wLeZyLQvb2spUKPDh2yjqBlaZWI4xzjDrjxGPr5sVDTFB1L/lNDMoZW8cicY2lkeFOmLmBwHqm3ey3rrrayrbZKVH++Ks+LUVw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778416955; c=relaxed/simple;
-	bh=Gl8BKoBCF2V77XMlkR0lJ8OgLBba8DD++QnrWkI3lII=;
+	bh=7ZxmBI31tVNmqDynh/WxbVag+2UdL7v9GG5am+xfS7g=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=tcqQ92R3X1DS8bfaKCZr49bgu5q8sAUKaYYZM5+ig67NzHa4xgZ4Br1LllbhS52KXhOTy+hpTKl+XYoOFsspG05EwfMRaz3tDv7RYrTPGITtci67VSU0v/0RZKZeE2SCCICS22mV0rjucmSRheCCN42m821NrYqrO49mMKYdaAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uyt3+HUL; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=RQEV14JaO/l0l/WiOphp2pOv+dUfauqieeIyFMqyYRersq0oYHNANQgKgphGCd+ndBHrAj6n2/W1DRFRsby6OzMATmIwSZCjTrdooVHkjRZM++QFzAnSyf9LjuEmLh/8ZwF7VI+c8vtVszjCrSKsKp0XQdb2KDetnIFjK2uX8+Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lpqBVsm3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uyt3+HUL"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CD538C2BCFF;
-	Sun, 10 May 2026 12:42:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lpqBVsm3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F6F4C2BCB8;
+	Sun, 10 May 2026 12:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778416954;
-	bh=Gl8BKoBCF2V77XMlkR0lJ8OgLBba8DD++QnrWkI3lII=;
+	s=k20201202; t=1778416955;
+	bh=7ZxmBI31tVNmqDynh/WxbVag+2UdL7v9GG5am+xfS7g=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=uyt3+HULzb/ZvTir9w0MyJ6hGMGhPALucCsudUSIcGXat2phBDUtfqvudpmJ2zmdN
-	 5IEuk6Wbf4k45a7fY0byeHZFJtYjnWTU42/UEFTRDxDlpYCP159GcP0mpWxQtCuzAp
-	 vHqDNKymIbSzdGY5qXNI5Q1kZv8rk3BUNtoFCPJ6nzyr9yz0TpjLlwGCbwM9LQCE+2
-	 Y59q5T50x6U2+RfJmFS0OdXYkImPflbTnOqYbRzVwra78dsE1qQwea94ixpxMIiG6I
-	 9wJ/VcyStxUvWQUIgWd/N3xqP+6p2zg4lmqwOdlwexzfRPLbDTI2eyXbYt5z0bTLt6
-	 tSnSa//KslV6Q==
+	b=lpqBVsm3X6tGlyBOvyytsC8uStOOjzMqNZBychygEQrl1lg2meqiU9qyoYkDY7/HB
+	 W4rvleWZ+T37SaHD0fkReiOx9NJpzMIIxhkoZ55V9I+Fo4ZHKC/e5bQrLwXf7o8Hio
+	 t9DtoT+hly2QccGZhN++6mO7MBW8c7z9owBlFYa2QH26u+xAvuIibudJxCRSWE6AZk
+	 /CyJn3gNesa8zWfk6oNPRDxveOTEtoapF973zyqV1NDQRikTDx78Z2HmdTr14fx1BO
+	 I6Z4KwMIugmiaHqlLbEPUQE8FByb9529xFK28/KizTqoFToXuFeIp+Fmv/xTUXNEN2
+	 nOFOceODFJdgw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C60C4CD37B2;
-	Sun, 10 May 2026 12:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D25CD37B9;
+	Sun, 10 May 2026 12:42:35 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 10 May 2026 13:42:24 +0100
-Subject: [PATCH v12 06/11] iio: test: iio-test-format: add test case for
- decimal format
+Date: Sun, 10 May 2026 13:42:26 +0100
+Subject: [PATCH v12 08/11] iio: frequency: adf41513: handle LE
+ synchronization feature
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260510-adf41513-iio-driver-v12-6-34af2ed2779f@analog.com>
+Message-Id: <20260510-adf41513-iio-driver-v12-8-34af2ed2779f@analog.com>
 References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
 In-Reply-To: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -60,11 +60,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778416952; l=6713;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778416952; l=2627;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=z+7GfhAI5DqW1tt8XtRcWYlfgn90H7P6U7JnxowjBIY=;
- b=rosVWnu/BVQ45ooeXPO0lM/LTnifqRhCbdPXxs/qkKJnvRAoiIs83Z6s+/h4y8lt5gnJ8dGNH
- 5DJUpIe03vtBRJUEuEvK+S/e/EyC/vDIHYw7+X5Ds9Ai/p4bPWHkOtr
+ bh=MI4oXKG/9S67gARRXhXgSEG4lmLjEf89mrCLp3YmQ7I=;
+ b=Z0TPov+FQK5rWmWu1JbqdqyZKN3B1pnmPbJJhUITf6fq1iyQWeUGBOjNCdgs4sL3kgrgL8L6j
+ NvMtQyt6xZ/BVTqXPauOldCngCDKmtYf2EN2AguTObP/0nzLVps+nHA
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -74,159 +74,86 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add iio_test_iio_format_value_decimal_64() kunit test case for decimal
-value formatting, exploring different scales types. Also, the same
-iio_val_s64_array_populate() macro used to populate local array is used in
-iio_test_iio_format_value_integer_64().
+When LE sync is enabled, it must be set after powering up and it must be
+disabled when powering down. It is recommended when using the PLL as
+a frequency synthesizer, where reference signal will always be present
+while the device is being configured.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/test/iio-test-format.c | 97 +++++++++++++++++++++++++++++---------
- 1 file changed, 75 insertions(+), 22 deletions(-)
+ drivers/iio/frequency/adf41513.c | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
-index 872dd8582003..a2a9b4360c92 100644
---- a/drivers/iio/test/iio-test-format.c
-+++ b/drivers/iio/test/iio-test-format.c
-@@ -200,56 +200,108 @@ static void iio_test_iio_format_value_multiple(struct kunit *test)
- static void iio_test_iio_format_value_integer_64(struct kunit *test)
- {
- 	int values[2];
--	s64 value;
- 	char *buf;
- 	int ret;
+diff --git a/drivers/iio/frequency/adf41513.c b/drivers/iio/frequency/adf41513.c
+index b8a8b9fb81d9..397e859170cc 100644
+--- a/drivers/iio/frequency/adf41513.c
++++ b/drivers/iio/frequency/adf41513.c
+@@ -218,6 +218,7 @@ struct adf41513_data {
+ 	bool phase_detector_polarity;
  
- 	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
- 
--	value = 24;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(24, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "24\n");
- 
--	value = -24;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(-24, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-24\n");
- 
--	value = 0;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(0, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0\n");
- 
--	value = UINT_MAX;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(UINT_MAX, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "4294967295\n");
- 
--	value = -((s64)UINT_MAX);
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(-((s64)UINT_MAX), values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-4294967295\n");
- 
--	value = LLONG_MAX;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(LLONG_MAX, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854775807\n");
- 
--	value = LLONG_MIN;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_array_populate(LLONG_MIN, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036854775808\n");
- }
- 
-+static void iio_test_iio_format_value_decimal_64(struct kunit *test)
-+{
-+	int values[2];
-+	char *buf;
-+	int ret;
-+
-+	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
-+
-+	/* DECIMAL64_MILLI: positive >= 1, value 1.234 */
-+	iio_val_s64_array_populate(1234, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.234\n");
-+
-+	/* DECIMAL64_MICRO: positive >= 1, value 3.141592 */
-+	iio_val_s64_array_populate(3141592, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "3.141592\n");
-+
-+	/* DECIMAL64_MILLI: positive < 1, value 0.042 */
-+	iio_val_s64_array_populate(42, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.042\n");
-+
-+	/* DECIMAL64_MILLI: negative <= -1, value -1.234 */
-+	iio_val_s64_array_populate(-1234, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-1.234\n");
-+
-+	/* DECIMAL64_MILLI: negative > -1, value -0.123 */
-+	iio_val_s64_array_populate(-123, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.123\n");
-+
-+	/* DECIMAL64_MILLI: zero */
-+	iio_val_s64_array_populate(0, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000\n");
-+
-+	/* DECIMAL64_NANO: value 1.000000001 */
-+	iio_val_s64_array_populate(1000000001, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.000000001\n");
-+
-+	/* DECIMAL64_MICRO: large value using upper 32 bits */
-+	iio_val_s64_array_populate(5000000000000042LL, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "5000000000.000042\n");
-+
-+	/* limits */
-+	iio_val_s64_array_populate(LLONG_MAX, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372.036854775807\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036.854775807\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854.775807\n");
-+
-+	iio_val_s64_array_populate(LLONG_MIN, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372.036854775808\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036.854775808\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036854.775808\n");
-+}
-+
- static struct kunit_case iio_format_test_cases[] = {
- 		KUNIT_CASE(iio_test_iio_format_value_integer),
- 		KUNIT_CASE(iio_test_iio_format_value_fixedpoint),
-@@ -257,6 +309,7 @@ static struct kunit_case iio_format_test_cases[] = {
- 		KUNIT_CASE(iio_test_iio_format_value_fractional_log2),
- 		KUNIT_CASE(iio_test_iio_format_value_multiple),
- 		KUNIT_CASE(iio_test_iio_format_value_integer_64),
-+		KUNIT_CASE(iio_test_iio_format_value_decimal_64),
- 		{ }
+ 	bool logic_lvl_1v8_en;
++	bool le_sync_en;
  };
  
+ struct adf41513_pll_settings {
+@@ -634,13 +635,27 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
+ static int adf41513_suspend(struct adf41513_state *st)
+ {
+ 	st->regs[ADF41513_REG6] |= FIELD_PREP(ADF41513_REG6_POWER_DOWN_MSK, 1);
++	st->regs[ADF41513_REG12] &= ~ADF41513_REG12_LE_SELECT_MSK;
+ 	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
+ }
+ 
+ static int adf41513_resume(struct adf41513_state *st)
+ {
++	int ret;
++
+ 	st->regs[ADF41513_REG6] &= ~ADF41513_REG6_POWER_DOWN_MSK;
+-	return adf41513_sync_config(st, ADF41513_SYNC_ALL);
++	ret = adf41513_sync_config(st, ADF41513_SYNC_ALL);
++	if (ret)
++		return ret;
++
++	if (st->data.le_sync_en) {
++		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
++		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
+ }
+ 
+ static ssize_t adf41513_read_resolution(struct iio_dev *indio_dev,
+@@ -903,6 +918,8 @@ static int adf41513_parse_fw(struct adf41513_state *st)
+ 				     "invalid lock detect count: %u\n", tmp);
+ 	st->data.lock_detect_count = tmp;
+ 
++	/* load enable sync */
++	st->data.le_sync_en = device_property_read_bool(dev, "adi,le-sync-enable");
+ 	st->data.freq_resolution_uhz = MICROHZ_PER_HZ;
+ 
+ 	return 0;
+@@ -959,7 +976,18 @@ static int adf41513_setup(struct device *dev, struct adf41513_state *st)
+ 	if (ret)
+ 		return ret;
+ 
+-	return devm_add_action_or_reset(dev, adf41513_close, st);
++	ret = devm_add_action_or_reset(dev, adf41513_close, st);
++	if (ret)
++		return ret;
++
++	if (st->data.le_sync_en) {
++		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
++		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
+ }
+ 
+ static int adf41513_pm_suspend(struct device *dev)
 
 -- 
 2.43.0
