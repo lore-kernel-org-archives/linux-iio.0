@@ -1,63 +1,63 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10AC739B951
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 14:39:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AAB739E162
+	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 14:40:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778423962; cv=none; b=oDgP3t46DGdxVTCIYEHtrLCMJvfh4LD0lbQyaXhw1I6/gUZnVbEnis6Q/5cplBppozWxdIK2gVafPcGLthzswMODJ5br7tWByiMh+BW7kELvqj5TJlw5ji/VE+CTXDSkRMUdlNBNNZV9T0tBdbChuKJ3CweHiE/Hp6cIsZJ8IwU=
+	t=1778424031; cv=none; b=Y+K8bVfUVLnV/3AC8Jq/koGtvVx2iy86w/ouiuhoVlYsn9wypiAdtfakFnjqFkCfSOtOpvlx3OCU/LwlKTfGcMIRJQjTeo4nKVWXQZH8dAbqMab3/F1Ah56qbD3D8NaPdbyDMSWW9bNad/15vXDShQ9AvcOI3C3ZGxFPK8I+SCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778423962; c=relaxed/simple;
-	bh=DPz69dG2WKf8euz1EcuYAXv3m3RGGtTv0RTVAkcRGPY=;
+	s=arc-20240116; t=1778424031; c=relaxed/simple;
+	bh=5hMtyrpO4o/xrWDyBZAdZa2vglyjgQ5ZkQbZ7oKGLqM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=L7BgQUNCGxk57v/SjwF2hYM8UDpJ5gAA/Xbg20iPKpce/c1XRLQBeGJXz+XMnPq27MQP/aLPyhv3N6NbHzU4qhbrQ05rORBUlV0TablsfC4Ct431qNZ3FMjn5rJp7GeO3boBM+mxikxgrF8LNDJkOSt/GS84YNZs1Ev8zOpbu+0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ADYAYEW5; arc=none smtp.client-ip=209.85.128.53
+	 MIME-Version:Content-Type; b=C9piGm3z8StSu68OnDv5EiSaRGU8RAcxotCQRiRFm39aKfmCseT2skq2rVqmziIBza0bcIQKjpNqNJV30zQmqv8yN+yEYUyKP12Qm3Mb6LHUcHB2+TAXhoWLOUiOMHw/xc7a50SXWUShnOUrhjgrGITR0mypUnO50cBO2CtuUe4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kqpVP75G; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ADYAYEW5"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-488b0e1b870so58584855e9.2
-        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 07:39:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kqpVP75G"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4891e86fabeso41508985e9.1
+        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 07:40:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778423959; x=1779028759; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778424028; x=1779028828; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SWmgbjG7zGF24sa5WwQmGg6RVdKBUDJnnneFdOm7tsU=;
-        b=ADYAYEW5GwfC7PbW6fV7gsRUQkdF60X6CDZkXCDJtMuWb/YyRYCKRdSr4LTZFN1IXi
-         VxjbUS7yL5qhxfUUbslcn6yqpvAFlwSe6tdLUISJ9ftNCXZ8vZji5aUJ/rXB2AVjC16K
-         np9FjoYc1iDkcix9T7FxYgFAqJx4E09L9GGSg4/9EXObSItelH6zjNW3dJQkMQYlHFdP
-         Tz//Vfn+uja0Wp5T5FjxXsLBKWjxwgjIbQHchKkzcdhmDhUoi99dEYTB+FMYNgEtwxtO
-         CK0vCG6Tj6aRPb7HrhmlmTDT5o1kUIUDS+ooPRrb3UnX4GYM9ds087khi56N5Jnv4pkk
-         KQDA==
+        bh=hiN95M/W3RKJE3egtZ7DgExVN40C9ma45InA4oM+ByQ=;
+        b=kqpVP75GftTV6QggqGSG+9c4FfdACTr8KuWJBr2LQ59IkmzFtJ/UhMYYD3Fa7sOZUC
+         WZdrovplik/r8CbHESTNgAci/20KQwkZwq5EwCrUCV8KVsN1Wb3w6eUVqdXcMmWREkwO
+         zAeBsFbOScmI9ydfvasdSGXkA4lftCOnc85Oi8/j8KZsHkS4VJD1ENNTYHGSl49xyGA8
+         k+PVeljTdKfHgpEQQxA0Q0GRL1PBcPBuk0+esP2W+8yCQuIx7Un2N9ksY6RPTC27UwKo
+         5IUaM+xvK8JVZkVtFnDsB/cU2hiWR3v5Z/qCnGJNqi7sCKEFWPbW8xP2zyKtuI/QT42q
+         s7Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778423959; x=1779028759;
+        d=1e100.net; s=20251104; t=1778424028; x=1779028828;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=SWmgbjG7zGF24sa5WwQmGg6RVdKBUDJnnneFdOm7tsU=;
-        b=ZoS7SXojPDzjRYRMA1szGbgwJuPWjRMwY+TQkO2DDfZZCabA5PASd2YDxMja0C8i3h
-         wI4BPWqhpsiO85FD8ckiOFfUZ6P3XOmqmEpj1XZwlZOxunSsxrAVb7EXmzljoMUhrf8t
-         FeHqbRJgFjKVwJ4DlyItgkHCmwSu063Jh9toeB7P02Gw8Q96C46qNNxKXGe4jahdXU8e
-         7k7TdkDmzgqx4v3Cc4+uHk6slCEsq8eoM//xoc65omMEV4NI+6TYHRWNX5/jm05/vPGQ
-         amMMOvJaaFOPKwggyqLuNEg5PdCou2boyn0BrVY02Aid0zlaPRi3JLbQQIdo/IFza37V
-         vzUg==
-X-Gm-Message-State: AOJu0YyrL8j/CthLhK1d9q8RVAXCywskjvVCc1qhL69RHpwr2kRnL4g8
-	RzpEN5t3bOaSehogmKTsvC6dBDTiOwWHQtgxue7L/IPSJ3ANy2VeR2le
-X-Gm-Gg: Acq92OFlcf2zMMR+rHAHS4PyqLq68TTNEbDMutaqFxqvr9VibTMoE+qsK66S5xdGDZH
-	7u+ihJ78O6dWizrKg0pQ8jLy0CbqI3ypEVfrFOp+fsbBxs+zKfEhpFXdQ6/r3pReqng0qVv8M+k
-	V9RKhMzDLfxmAMCj6zKMHFpii0CzJBEPdnv+7jpzpYVw80CClgoAlHuxp9JbUr4XRXSlNkJ/+P7
-	+fnKNiqc4/WkpAOwUsKvYWnnF1ByeAmUIwZiSLBNhLUGNyhoRFO6uIk0wkaP/EFPNVlFL5R50BA
-	7wORKf6vPcOCfdZAf5M8mJLENiFUmz2IpvyKQ5YQVgTXnxGsmVtmXY+BtpO3Rz/iaq6rAyIxTTR
-	o735KLtHVmb+bQdKBZLXQ/sKI+Y2NkDfivVzmUT4VDe5uHSIEI+eM/C7hi2/UrUdlPw7zEaTbLN
-	2l97I858lN8ZXgfjTj+Vie9bB/JCz6YOBfupDI9FEjQHDSxM/c+Jurpm1EtE01BgVZWAMAX8eZF
-	K3aFiTOui/shgX7oQ==
-X-Received: by 2002:a05:600c:696:b0:489:1c1f:35df with SMTP id 5b1f17b1804b1-48e51e215a4mr187215675e9.10.1778423959237;
-        Sun, 10 May 2026 07:39:19 -0700 (PDT)
+        bh=hiN95M/W3RKJE3egtZ7DgExVN40C9ma45InA4oM+ByQ=;
+        b=Cv5jORndT3OiKcjnQ0bLNnL+DsH9BION0LxPjWCGz6lGkcJIDpuT7If2VQJeol3hCL
+         rTmImC3wsf6yTxwE1v3VyIgI+/1HolztN9G2XaDyoMntwHdTJkds15xUMGPDafvTSR26
+         e0b1l7Gz1PP2IwRmfPKAgugko8L128V64MRkVGxWYCuFVH/TXeEt1RDaIo6Oeei4hJEI
+         0ZYH+KWXuSlwGrRsVDDzSMAVbWkgkQyFVKFNIqXKm4NCaW9PQVXuVTf0/21XHPzp55P8
+         /w7vghVvwBp+lO5MAiMbDBo5orG/DHECbb/J19KjjrITovXU+zx73J1F2CI25me+IQvL
+         tbow==
+X-Gm-Message-State: AOJu0YxB8ZrfPfa2RfagKdfQ0xGyhYfOxtyf40mSAK55xP9UNfwv+OE4
+	CAMh0s1lEzp+WtPvmkDb9P9vAOtIeYH+uMJq0idF/l3fU4PaLn9B7AGM
+X-Gm-Gg: Acq92OHUNHp26txGX11/VCaL0Az5J6drBByVKyUiVIRcebXE0kLTdCYFQnkP1xkuiBk
+	u+GwDnFslefWwBTpaHQQQmLCks1JEcGeDWtvzhMj9bcc2CgY00vPFl/8rGZSG/3oxhgJC4phwpr
+	h+pdJ4wBlgL+dKCbrzh9uDY8yRWhVcXxaHWGq6Z4FXEpUe3MgntRx0O0rbGRMG2AACRrGzPUBR5
+	xseqVP5hsNkWi4K/Sm6GBI62vR33654X7u4aUwFJaeJybvgiBgaATmZB1BhAP9ggrdaebTlJRRN
+	oftuIMhQ9fr+NLIc1NwjIwOJIyH9elwEurUby59R+19ufJe9YUDZ/H41Dt7AAxLc7phAzbToPyp
+	sGNgRHiYvZ5J00sn4L+gznVX42gvakqdt3w8LccSKCWgZe0BqoSzUxxGixk9+29d4b+t/cJl63F
+	SC2SToy8n9bPSCUeSAxGRqTYrRRWmVdiflZ9PXi4pdltiVcUK3znWZ3Yz/cCVKWEuQitZ1hb+pI
+	ja5wMXQ
+X-Received: by 2002:a05:600c:4512:b0:489:284:44ab with SMTP id 5b1f17b1804b1-48e51e1deedmr319196545e9.12.1778424028175;
+        Sun, 10 May 2026 07:40:28 -0700 (PDT)
 Received: from jernej-laptop.localnet (46-150-62-216.dynamic.telemach.net. [46.150.62.216])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548ec6c79fsm20097047f8f.15.2026.05.10.07.39.18
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e6db09943sm44844115e9.19.2026.05.10.07.40.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2026 07:39:18 -0700 (PDT)
+        Sun, 10 May 2026 07:40:27 -0700 (PDT)
 From: Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
  David Lechner <dlechner@baylibre.com>,
@@ -70,13 +70,13 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
  linux-kernel@vger.kernel.org, Michal Piekos <michal.piekos@mmpsystems.pl>
-Subject: Re: [PATCH 3/3] arm64: dts: allwinner: a523: add gpadc node
-Date: Sun, 10 May 2026 16:39:17 +0200
-Message-ID: <U0YLqOw4SGiAdV7UGlJ3wQ@gmail.com>
-In-Reply-To: <20260510-sunxi-a523-gpadc-v1-3-4f6b0f4000fb@mmpsystems.pl>
+Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: Add GPADC for Allwinner A523
+Date: Sun, 10 May 2026 16:40:26 +0200
+Message-ID: <5JZHjuPfR4qv95vQhkLpDg@gmail.com>
+In-Reply-To: <20260510-sunxi-a523-gpadc-v1-1-4f6b0f4000fb@mmpsystems.pl>
 References:
  <20260510-sunxi-a523-gpadc-v1-0-4f6b0f4000fb@mmpsystems.pl>
- <20260510-sunxi-a523-gpadc-v1-3-4f6b0f4000fb@mmpsystems.pl>
+ <20260510-sunxi-a523-gpadc-v1-1-4f6b0f4000fb@mmpsystems.pl>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -86,53 +86,89 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="utf-8"
 
-Dne nedelja, 10. maj 2026 ob 14:57:24 Srednjeevropski poletni =C4=8Das je M=
+Dne nedelja, 10. maj 2026 ob 14:57:22 Srednjeevropski poletni =C4=8Das je M=
 ichal Piekos napisal(a):
-> Describe high speed timer block on Allwinner D1S-T113.
+> Add support for the GPADC for the Allwinner A523. It differs from the
+> D1/T113s/R329/T507 by having two clocks.
+>=20
+> Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
+> ---
+>  .../iio/adc/allwinner,sun20i-d1-gpadc.yaml         | 37 ++++++++++++++++=
++++++-
+>  1 file changed, 36 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d=
+1-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d=
+1-gpadc.yaml
+> index da605a051b94..89da96cd705f 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc=
+=2Eyaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc=
+=2Eyaml
+> @@ -17,6 +17,7 @@ properties:
+>        - items:
+>            - enum:
+>                - allwinner,sun50i-h616-gpadc
+> +              - allwinner,sun55i-a523-gpadc
 
-Above line doesn't make much sense.
+It shouldn't be combined if it has different number of clocks.
 
 Best regards,
 Jernej
 
->=20
-> Tested on Radxa Cubie A5E:
-> - 2 connected channels are showing voltages in agreement with
->   schematics.
->         BOOT-SEL-ADC ~500mV
->         BOM-ADC ~1800mV
-> - 3rd channel exposed on 40pin header is showing correct voltages when
->   connected to known voltage source.
->=20
-> Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
-> ---
->  arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
->=20
-> diff --git a/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi b/arch/arm64/=
-boot/dts/allwinner/sun55i-a523.dtsi
-> index 5afa8d92acbf..f6c5cae5b23a 100644
-> --- a/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
-> +++ b/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
-> @@ -340,6 +340,18 @@ ledc: led-controller@2008000 {
->  			status =3D "disabled";
->  		};
+>            - const: allwinner,sun20i-d1-gpadc
 > =20
-> +		gpadc: adc@2009000 {
-> +			compatible =3D "allwinner,sun55i-a523-gpadc",
-> +				     "allwinner,sun20i-d1-gpadc";
-> +			reg =3D <0x2009000 0x400>;
-> +			clocks =3D <&ccu CLK_BUS_GPADC0>, <&ccu CLK_GPADC0>;
-> +			clock-names =3D "bus", "mod";
-> +			resets =3D <&ccu RST_BUS_GPADC0>;
-> +			interrupts =3D <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
-> +			status =3D "disabled";
-> +			#io-channel-cells =3D <1>;
-> +		};
+>    "#io-channel-cells":
+> @@ -29,7 +30,12 @@ properties:
+>      const: 0
+> =20
+>    clocks:
+> -    maxItems: 1
+> +    minItems: 1
+> +    maxItems: 2
 > +
->  		wdt: watchdog@2050000 {
->  			compatible =3D "allwinner,sun55i-a523-wdt";
->  			reg =3D <0x2050000 0x20>;
+> +  clock-names:
+> +    minItems: 1
+> +    maxItems: 2
+> =20
+>    interrupts:
+>      maxItems: 1
+> @@ -40,6 +46,35 @@ properties:
+>    resets:
+>      maxItems: 1
+> =20
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          items:
+> +            - const: allwinner,sun55i-a523-gpadc
+> +            - const: allwinner,sun20i-d1-gpadc
+> +    then:
+> +      properties:
+> +        clocks:
+> +          minItems: 2
+> +          maxItems: 2
+> +          items:
+> +            - description: Bus clock
+> +            - description: Module clock
+> +        clock-names:
+> +          minItems: 2
+> +          maxItems: 2
+> +          items:
+> +            - const: bus
+> +            - const: mod
+> +      required:
+> +        - clock-names
+> +    else:
+> +      properties:
+> +        clocks:
+> +          maxItems: 1
+> +        clock-names: false
+> +
+>  patternProperties:
+>    "^channel@[0-9a-f]+$":
+>      $ref: adc.yaml
 >=20
 >=20
 
