@@ -1,63 +1,63 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9D9B368294
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 08:26:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 846D536C597
+	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 08:26:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778401572; cv=none; b=fAWWfWZfG6Iqc8V9sJtItKn4FOT5xZ+izI4VQyjAL+9GE107hk6TwLjy+FRx4Lc6TtMdTxrDVGO4yUGRYt99ahLphWDd9xpMMHh0DrARAukOPZ4MEUJkXRnuhNMKfycHlJB3NmsarfIg/vMvb92z9YTzGmdpdtWTfdbF81/4PkM=
+	t=1778401573; cv=none; b=V8SoAn72jDRI4sVTsdNbh1bXtJMyv/BXjYko8QPdNl9SSjpI4f7lbMCc2lB2ryInHiI1aCQkIpqHeZ5Tkv9oy2CDZhdOHuuchYa+V+sV/tK4cWG7GrM5OVHD7RXpf6y4Bftpt+7GoKza019+erCxtAz9Ftx9tQ2GWX8VBrfBSu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778401572; c=relaxed/simple;
-	bh=+YIe7oRvJo8UIKQmlfWHLG1pSr8JwM13JxLnWH7+BhU=;
+	s=arc-20240116; t=1778401573; c=relaxed/simple;
+	bh=iaJf4eQ8HxR6dXQrwEH11DB5zzXKQDKlPWgeVb4A6AU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FSBxsWWsPRWfnna8ohDCoD9cnj3udhiRFnYSIMYFt5MJj7Fvtzk4MmOVhCab1JfI3CDrydu6wKKe5q1XsiBeXTK8whu+RaTr0YpDpAG8CPSyKP9Tr+/MZ+7KJF61bXcku8XZRAfYN5NflbvNqhYQ2nBK59RnMSkv+CcZPa3AQfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CCU5ZLoP; arc=none smtp.client-ip=209.85.208.173
+	 MIME-Version; b=kBiOhTbK+nMKTFzq5vGubQzeaMo3sid4HTfNlyorg9Dm+p7v95OR2tqEYtXWGLeq3QkqKVAFQgBkMGK3xC+a0CJWxxYmb2IE7WTHOQAiv8+tzR4n9AWpOYiSA04Mn4sRt8F+h/kmuEDwLUrW7AC/jzRqwKRQ9mDdDxkAyjqXpZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m35KTjlB; arc=none smtp.client-ip=209.85.208.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CCU5ZLoP"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-393c93a0166so32870611fa.2
-        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 01:26:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m35KTjlB"
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-38be5e86918so42451241fa.3
+        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 01:26:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778401567; x=1779006367; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778401570; x=1779006370; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aHLxkH4NFWNDSnPeUf1ZCI9Mer6WRfMTeMy6jSpJ+T8=;
-        b=CCU5ZLoPzdBa+qdHWeXMODiJS9PWwqmu5x939ZfQ8L/p8dk17WOMHQz3TBk98yGxe/
-         jnJTP9NMejpufJfuYG5vbxQx8TsW3PVq5ote1vG6caZW171xaGCpDxcUC0757zqqfPHt
-         OABNuXbAIa/gzd20sgGJvOPtYrOHYDdbWFRhJDI/Hxvz0hqfHT2D2t4ZZ5EmQYViLbhc
-         dk4DPAQ5DA1xo9mP8HN9SOJuhafklbunAEd05Vd0ot2/8FGnTNJ1qW+7kdYFmqUKFtnL
-         FiBv74+abRHpRCIj5R23xyrtqN6vN5+FWM3slkeUYAkhMejdIMcla/06otfES6bUajh0
-         gMMQ==
+        bh=+59MZJaWkQ0G1PO4esX2L0KFQJFCEFOuwsd03ctIGgI=;
+        b=m35KTjlBno5uWoDpocK+m1a84Al+8z5c+ljMRczSvOaFoIWABqzfdsbkzQFheREQ6i
+         C3R0xNw+MYlmnno2j3nYTT/xnZ0VouOQ+i5Tfz2ubk44al5vi1mD5xAkwJJPJ1lojruG
+         82XiQYqKhJ89OVuiHoeAes286o/idtsYGBzjL4uC4Bj8VTkVpke5EszjCRsKgr9zi2oI
+         rJ9pVmtkkdH1x9yz0hoE+ZKQmv960ffa58FSW/o1C+6AlBYzRxDcq0FqASY+SW4AfmgL
+         deSmQW8WwcRhqyHkdDXV55TVpScjy/WwQ0wwgJmcl0HquG7s+GNgi/Ung4faNImipRzd
+         TlUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778401567; x=1779006367;
+        d=1e100.net; s=20251104; t=1778401570; x=1779006370;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=aHLxkH4NFWNDSnPeUf1ZCI9Mer6WRfMTeMy6jSpJ+T8=;
-        b=sZzYvgpNDF63oHcwlO5JhVFIuLR4hO6kduCoy2SzPvcJQWMn4vG/avcqjxvR2mEpvy
-         lZFcFKGevazHsDp+iaUPEDiUJ+ld07j2GmGi9XmR9bxeOGy+t9HCEtamBa+WMO6cGTQ1
-         A9mT7mbdqvtwKYdG/CiqGWg+F7fPyCz+Yv+kdcMs6r2tvTixUIB/dyRHw4WqlI9rRpfN
-         REGXv3bENKWK4raL2g+kr0XSximFz2d88XrBN9m3aVGhJwhAekpRk5kzcy51t99ClgTM
-         3J+Kp6aCEUHliSXzlKvjJBLIiEW538JV7Ivi/VKP6j9na5BtMP9GfSY25/rQqhR0UnOv
-         blZg==
-X-Forwarded-Encrypted: i=1; AFNElJ/HJ270POU2LgMmJHi/ioTGJWo2drBzZxRgxxTOqhdHHh/DAf45AqEm1GTntnGfz/xxhSG661RcZF0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwLvst63vLhgfgUK2mHXV5pkMukRiy7hQ5DfO4XN4nhFOgQGRgC
-	PtRNHL1nSixs0vvSbDuWd+SqCNxmrn/8lt4Do9i9J7RNR6LhZw9cRYKj
-X-Gm-Gg: Acq92OH2dacJIRNEQE+VZ0zSCPvGxP1aUfjW9MdJiWiNeUqJjHFlu4QRmgiJC2+mdMB
-	oIufBLUBsPBA7nbAjt+gbiThRzmXtgMfYWZCLQ8lyd1cdayjULTmLA8jjEs6Dk1rcMuegFju4jl
-	A1a8sRmfQeU4AEkLvQF2+d+0627wlksdPjm2mx9WNOUzJn+9bVR7x7sc0zUminyJMSz3cpDpWq7
-	fAwbi70qVtwY9zUsQspQFmh8lAjkMwFD2es5TsXM+xRK7objg5vAF3uAiKU+iI6jN81yqEZcpCK
-	/t8WhvoZs0C9A0PGkEbN9T+jNoAtfdRQx7dqBJNapyYsGzu5uCfK4KKJGGDjwj7ihuMlzEx9l5B
-	G8YFx1WGs6iYmsAyb04MJ75t7JqRB3seWtUVkc1GIZS+1SHy03Z0eKPSmqxQ117O9dAMfz76ooe
-	U/mtEEmfrE8QJkMirzRo1r82Hvn/EUVakxspeKCv9e9Qr8A0n9uywHW7JBEBcZSTnW
-X-Received: by 2002:a05:651c:19a4:b0:38e:294a:d447 with SMTP id 38308e7fff4ca-394081970f5mr14151401fa.28.1778401567240;
-        Sun, 10 May 2026 01:26:07 -0700 (PDT)
+        bh=+59MZJaWkQ0G1PO4esX2L0KFQJFCEFOuwsd03ctIGgI=;
+        b=jKgtFPDuFHogNdYBNnf07o9+aMpEb4jpNpUkMuusUocJu8rn25ysJQX4JZ6mcaRqHl
+         snJTTk81wNjfHXVpiKTzNJ8amFiv4lUGQMvu1UbC+46fAh8S+4bjjbZYV2yp29jXgTHu
+         1FrmgrrFxwfeFxuRZTxfcXfWUeDWllc0/+KzPbzSXAjSWIzFP4jhPl7O9Fjr+9OhmWzw
+         c5Sig6XXAWV67801keTuLG5mMtxdLcLJ5r1vP3yp2CxgzbFvoLuHSS4qVltQXmPUOEfG
+         2MpPwADZ7FrijSa9856BVMtedS7btHK9O4JUrxhBv/XxBlxfBUhLXmRmBDR7I4J8zfkF
+         zB/A==
+X-Forwarded-Encrypted: i=1; AFNElJ+z/cSp/Al7InITsXYw5gH/VUD+ujCGsC7/6EdUHApasIPDP/0yD/xPxzJXR4MvvaAl86bMBSLwdhw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzvsBDjzgTEF8pWf2vg8c8oXzNG3klocj3QqbUiU4X+nQkQMHCN
+	9GmFMKjRmEZcKEr7u6szML8PziBBaJQda+BisLU5aqjAmCbOK4v7BVV1
+X-Gm-Gg: Acq92OEk0OmwdtTdGkxXkV4QbUAbESPM3S+rxxyHS2HgVsgLcPZpXuKF3a4tXCaFDEM
+	0ugt5wBhE/x4OfCt6JMQ7gxKUx7h+kLHS9KQMOEyJc86m7O1Oa1A1Tr2PHS//FqNjSsFbsJ+8Al
+	LZERye26xQ+AXVwX5FpomNhBu16H5yr5hrRb209yJiC/Ok7vApXv5aRyjRLKpQ11mB2gxK9q0/L
+	gSNk5yuCO1eHGmzrnt3I6iLjlnEs0mDk1S/yEdVjeviTD+BxFsyYxtIF8edeUzcs2rGcl+ydXPp
+	C2XO+7A08c6CDjeEv3scxKM/5Z2YNu9CtJMWAPjgnmVJg9emJAtrBWZG+hNSvoaSzuecfw6BEQJ
+	legUMWz7yyjPzTbZQWZ/iBYREc0iAjwNPjyAoRXZXVA2cecNFf0wu1II0X5qG/VPxWHjmJ6m25+
+	VziWJKbK2brFOu325mj3SwpVNyeIQVh/WxlPrUyh7rYLbjvmpQW69WEBHOz7NTdns+
+X-Received: by 2002:a05:6512:23a0:b0:5a8:76c0:a7b7 with SMTP id 2adb3069b0e04-5a887add288mr6982498e87.7.1778401569489;
+        Sun, 10 May 2026 01:26:09 -0700 (PDT)
 Received: from Shofiq (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-393f60db4dasm17810681fa.20.2026.05.10.01.26.05
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-393f60db4dasm17810681fa.20.2026.05.10.01.26.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2026 01:26:06 -0700 (PDT)
+        Sun, 10 May 2026 01:26:08 -0700 (PDT)
 From: Md Shofiqul Islam <shofiqtest@gmail.com>
 To: jic23@kernel.org
 Cc: lars@metafoo.de,
@@ -68,9 +68,9 @@ Cc: lars@metafoo.de,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Md Shofiqul Islam <shofiqtest@gmail.com>
-Subject: [PATCH 3/5] iio: accel: adxl367: Add timestamp to FIFO data
-Date: Sun, 10 May 2026 11:25:54 +0300
-Message-ID: <20260510082556.3867-4-shofiqtest@gmail.com>
+Subject: [PATCH 4/5] iio: accel: adxl313: Add timestamp to FIFO data
+Date: Sun, 10 May 2026 11:25:55 +0300
+Message-ID: <20260510082556.3867-5-shofiqtest@gmail.com>
 X-Mailer: git-send-email 2.54.0.windows.1
 In-Reply-To: <20260510082556.3867-1-shofiqtest@gmail.com>
 References: <20260510082556.3867-1-shofiqtest@gmail.com>
@@ -84,72 +84,58 @@ Content-Transfer-Encoding: 8bit
 
 The driver pushes FIFO samples using iio_push_to_buffers() which does
 not attach a hardware timestamp to the data.  Add a scan buffer struct
-with an aligned_s64 timestamp field to the driver state, capture a
-single timestamp per IRQ with iio_get_time_ns() in the IRQ handler, and
-pass it into adxl367_push_fifo_data() (whose signature gains a s64 ts
-parameter) to switch the FIFO push loop to
-iio_push_to_buffers_with_timestamp().
+with an aligned_s64 timestamp field to struct adxl313_data (in
+adxl313.h), capture a timestamp with iio_get_time_ns() at the start of
+adxl313_fifo_push(), and switch the push loop to
+iio_push_to_buffers_with_timestamp().  The ADXL313 always scans all
+three axes together so the scan buffer layout is fixed.
 
 Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
 ---
- drivers/iio/accel/adxl367.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/iio/accel/adxl313.h      | 4 ++++
+ drivers/iio/accel/adxl313_core.c | 8 ++++++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/adxl367.c b/drivers/iio/accel/adxl367.c
-index 0c04b2bb7e..2852f2fdfa 100644
---- a/drivers/iio/accel/adxl367.c
-+++ b/drivers/iio/accel/adxl367.c
-@@ -179,6 +179,10 @@ struct adxl367_state {
- 
- 	__be16		fifo_buf[ADXL367_FIFO_SIZE] __aligned(IIO_DMA_MINALIGN);
- 	__be16		sample_buf;
+diff --git a/drivers/iio/accel/adxl313.h b/drivers/iio/accel/adxl313.h
+index 75ef54b60f..ea5792fae2 100644
+--- a/drivers/iio/accel/adxl313.h
++++ b/drivers/iio/accel/adxl313.h
+@@ -94,6 +94,10 @@ struct adxl313_data {
+ 	u8 watermark;
+ 	__le16		transf_buf __aligned(IIO_DMA_MINALIGN);
+ 	__le16		fifo_buf[ADXL313_NUM_AXIS * ADXL313_FIFO_SIZE + 1];
 +	struct {
-+		__be16 channels[4];
++		__le16 channels[ADXL313_NUM_AXIS];
 +		aligned_s64 ts;
 +	} scan;
- 	u8		act_threshold_buf[2];
- 	u8		inact_time_buf[2];
- 	u8		status_buf[3];
-@@ -779,7 +783,7 @@ static bool adxl367_push_event(struct iio_dev *indio_dev, u8 status)
- }
+ };
  
- static bool adxl367_push_fifo_data(struct iio_dev *indio_dev, u8 status,
--				   u16 fifo_entries)
-+				   u16 fifo_entries, s64 ts)
+ struct adxl313_chip_info {
+diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
+index bcc11dabdf..bd45b90c42 100644
+--- a/drivers/iio/accel/adxl313_core.c
++++ b/drivers/iio/accel/adxl313_core.c
+@@ -1013,6 +1013,7 @@ static const struct iio_buffer_setup_ops adxl313_buffer_ops = {
+ static int adxl313_fifo_push(struct iio_dev *indio_dev, int samples)
  {
- 	struct adxl367_state *st = iio_priv(indio_dev);
+ 	struct adxl313_data *data = iio_priv(indio_dev);
++	s64 ts = iio_get_time_ns(indio_dev);
+ 	unsigned int i;
  	int ret;
-@@ -796,8 +800,11 @@ static bool adxl367_push_fifo_data(struct iio_dev *indio_dev, u8 status,
- 		return true;
- 	}
  
--	for (i = 0; i < fifo_entries; i += st->fifo_set_size)
--		iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
-+	for (i = 0; i < fifo_entries; i += st->fifo_set_size) {
-+		memcpy(st->scan.channels, &st->fifo_buf[i],
-+		       st->fifo_set_size * sizeof(__be16));
-+		iio_push_to_buffers_with_timestamp(indio_dev, &st->scan, ts);
+@@ -1020,8 +1021,11 @@ static int adxl313_fifo_push(struct iio_dev *indio_dev, int samples)
+ 	if (ret)
+ 		return ret;
+ 
+-	for (i = 0; i < ADXL313_NUM_AXIS * samples; i += ADXL313_NUM_AXIS)
+-		iio_push_to_buffers(indio_dev, &data->fifo_buf[i]);
++	for (i = 0; i < ADXL313_NUM_AXIS * samples; i += ADXL313_NUM_AXIS) {
++		memcpy(data->scan.channels, &data->fifo_buf[i],
++		       sizeof(data->scan.channels));
++		iio_push_to_buffers_with_timestamp(indio_dev, &data->scan, ts);
 +	}
  
- 	return true;
- }
-@@ -809,14 +816,16 @@ static irqreturn_t adxl367_irq_handler(int irq, void *private)
- 	u16 fifo_entries;
- 	bool handled;
- 	u8 status;
-+	s64 ts;
- 	int ret;
- 
- 	ret = adxl367_get_status(st, &status, &fifo_entries);
- 	if (ret)
- 		return IRQ_NONE;
- 
-+	ts = iio_get_time_ns(indio_dev);
- 	handled = adxl367_push_event(indio_dev, status);
--	handled |= adxl367_push_fifo_data(indio_dev, status, fifo_entries);
-+	handled |= adxl367_push_fifo_data(indio_dev, status, fifo_entries, ts);
- 
- 	return handled ? IRQ_HANDLED : IRQ_NONE;
+ 	return 0;
  }
 -- 
 2.54.0.windows.1
