@@ -1,129 +1,104 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70AE213AA2F
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 02:12:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.169
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778379177; cv=pass; b=GIjrLx62qtuS9I1yKtSm4cY23pIl/27Gcw18Q5gFhcfP9BjgBx+WA6SfRiFFIVOz3381JDyar/nbuJzayoS+0l02ZuTWfQQJ3e0WcmJr+BidWRFtWAKsLJP9VvL8TgC7sDvfrcxaPplGmcc6BuVdc+PWyvsXV41BZ7NVTntE7Os=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778379177; c=relaxed/simple;
-	bh=3jDb3mTNEpyjHA6WW23n78bjF4KkyuBGc/FTG5xMqgU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RKcTIpX8c0whyT8l5yARe7AYJP1yN674ob5CrGIEHkNm91bGk86h7X2Tkqo+K7nEuVA4c5zLkXcBehDrHTLXgxVL6UOHYKjRsjQmbcf+Aq7X7PTUlFdSKEzRMSQFC32RXSWiMdJZYRHoCgnQIUkAIdHOYuT1sPiR0YnRgs5RL2I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OyFtctfr; arc=pass smtp.client-ip=209.85.128.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 714CD2628D;
+	Sun, 10 May 2026 06:23:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778394188; cv=none; b=bqd0XqfGZtcgZU5ixGPHzk9RMWL5EtCoyRld4ilKU7oO7IWNkLef+yMshUwbx5xLESIM3wnwq+C3kirKKfSD570CwKVG17ILaqs0M6sM6AHsnuOSu7J2w/hlzKX3UuT6LJ8239p1bgOydeRvwh4MVflodNUAJ9t5nMoyg4y7ISA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778394188; c=relaxed/simple;
+	bh=DemQALTRe1W/SGwESwIR0+U3c8CZVOze6PFTRJJTlxw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=H1SNM9kBMehh7hayWzr2bV5YMoirw/xJMeLn0tofewZHd1U1ViBhdLxoI9bUTiUNtM5GI0Ae7FPz5Nk7Y6kew7sDNnnm7j85opB1jjBPhrY82sGyZeMHvHT5mvWhYwwbpQ+UPfFZL+KKnIe+wLCD593G6vfnOMxjBt+98F8/SRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iVDE5JLU; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OyFtctfr"
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-7c0dea734b8so6534397b3.3
-        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 19:12:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778379175; cv=none;
-        d=google.com; s=arc-20240605;
-        b=RKkI0iojYMLf9xvklX44mBn4YyFugBYF1cG67/tw/gNirZfT1dG2K1o+XLK/EeauRK
-         TMbKdozFAhgt74PeDuLWEeOrO4Dwo8kb92SjBB72s9NmaSSRSLFTAZ8j4U5FpQg4fJFQ
-         WSYh9pezKXTTmMnfA2rDtnBxyctOw/fKB5HY9rnjPOT0//MqiDaiWp7wA161gQpZxpwl
-         agJ/ln7ufyBq1DSgdaZJjUC4QACJoIfRc40TKcLLaZ4HwoRfAn/Bv/JyyOuIF62GIlOu
-         C4JvJYQBKfESrKofdplQ5tioxZUWueRHJcxcgvmBIsaTr/AnoOxfLMnUHD4Yx8Fc68ZB
-         gHfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=3jDb3mTNEpyjHA6WW23n78bjF4KkyuBGc/FTG5xMqgU=;
-        fh=JpbR87HQNLXjxhKTcgJy8utYtt0kvRziLcuXh+H7JeE=;
-        b=FFF2DMYAUdrPCDmX+bZ5glHQApxYpYYQiTGS0FYMLlY/qJwFwVG1zLdTQrn5gnIwPI
-         P0yQ4hlfZj6tUgZVsioO7kLnNorAHtxlTDhdBzmzMQ88kz3YlQHB3sjpkAnwdgXciPYK
-         DOR9HCKujPBK8swss5pAu37jGuFAs0ciZmpzglTagZW9LPAVBlEGBsC8bz3y3UP9AnQV
-         uZpGgUi0jAsM3eB+L235KmpxXSE3rG0DW+MO7FOZo1QE+yWHBuZW+Cbe3IcAMpeKm+CR
-         DXWXUYWBPdHPh0G5li9+87PC7BMyAwdx6QEkzpFTZkuVruZTXmr1c8ouli2e4EIVP3Up
-         2WJw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778379175; x=1778983975; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3jDb3mTNEpyjHA6WW23n78bjF4KkyuBGc/FTG5xMqgU=;
-        b=OyFtctfrRz8SBEJNR7inqDFZcvtS4zb3S8LYPlUyR+Qv30e2ohIXSoEdL5O2vVp0wg
-         3X7iACDxLf7V5xeP5LcanH06DzpikL/8eZi6vrKJn8A4PeduM9hm6dzA4VHXB98b0Y1p
-         PgHX2h5jtwnzdlKJCb8eBTA/o+qJ5NjWNCqPdPBXRxeDOr0k17n86G3Lqyc8fYmg512t
-         3VRsUucEPb28BnAmYyXXYEyK2Xw+cqx+I4+hXSxnF/ukvCKfIbZrbd0Q7Rvlk9r37dAN
-         7RRCZ0bNoP2m127QlHnzUbFyh1PJ4rOjU1650QLlLjT8x9LicpRNq+bopJwptrGaLTAH
-         u2Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778379175; x=1778983975;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=3jDb3mTNEpyjHA6WW23n78bjF4KkyuBGc/FTG5xMqgU=;
-        b=ZGHaHH/Z1ZGW8ZTrmSp0W8LNGW+Zzgr177GjrTTo4U9y+FU6/wclMoVT9J7c7AVmV1
-         7abtRyW/myL+04y+eK//qHjU0HuWfUubVB4ZbmOB/xhyd4CGFry8lRtwQ+Fh1aB1WFyL
-         /iodT3LjEpdhV+GRlrWE4D0twEGKotBJ4PmddASpl1CVWIXbqFgI4GY+zrg8s8m36YWA
-         u192GMF3YFDJ/gsEN1hR/DvlYGGPwg8uYfS4c1BHr7bVXDK9SpsHWYAIFYf91BmGzIaO
-         6pbmYxSjQyUIN/Z57eXLY0SpaeqkvG27T3+tqruI0dxOqncZe2CRCp31YS0QKBMMk2I8
-         Ng1w==
-X-Gm-Message-State: AOJu0YwRi7O0kelYxSh/EcONrrsoomF5zgYQ7wlA4Rk7CbKhvztCfE01
-	Ddz71JAgRhriWgijauaw0/zuOIV7GZTr1Dm0CyL/3ObW+C6SHiSUNA1CYlqzBwOmz11u7TyAe6I
-	t0qszo2ppOGqFvRBlxb5gnYRAFNn+tEfhoPnR
-X-Gm-Gg: Acq92OGiADtG430Z14I/Fr2sxlBvo8eUb5+WwXQbXE/8SPOQd16G5Tp3kzO0QfCIR8K
-	au84wo5noiWVQryxpoAtsjAeN9Uh/FZbzhLWR12+sM2zsMMCow8FgnIWSckOSKPRyIgaXU0eGSU
-	E+s60u2z52Tg0wNQIBT7LXzV5sFc+ZPua6+ZV5qsqKUCfGvw+F187gfHyPfqz6/gIE14W8c5oB6
-	qvP+wwZRUaefm3AxVQy+5HjNHl3ybn8s4qP+Y6zczANOIzU2SqP7I4gfPWaQL2wUx8iT6bX9Tu6
-	LeRX
-X-Received: by 2002:a05:690c:9d:b0:7bd:a6ea:c4f0 with SMTP id
- 00721157ae682-7bdf5d9900fmr201868697b3.1.1778379175389; Sat, 09 May 2026
- 19:12:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iVDE5JLU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778394186; x=1809930186;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DemQALTRe1W/SGwESwIR0+U3c8CZVOze6PFTRJJTlxw=;
+  b=iVDE5JLU2ho9kgJ8yvmMuWHPG0TINs+VZFpH0Q+PqQVNspp8C6aSfaO/
+   mCkeI0S0Pnc9oOS0F9FsVpI3rXcjASd5ULE3gviLMKHeW/RxQSoHnQdN/
+   wtSGkqx0U0eMBFMX9tBKa7ndEgzdAmLPlABcsqQkchkxyjM421Bd7qG38
+   1SPRx5giH6vjqR0/e7RpW5JHdtuUeQNSv9UBbP6lqbe6qBu0Aab69NK+S
+   GqzLcnFFgNS0plHlwlbBByJkDwNi8cbIAuoLWDLJLb49Tl+faF2ktyjdI
+   n5KEZfVLNiv3XVdhsSx3cEV4OYma3o77AkLSG+R57e5FtFZLleiAAs6yl
+   A==;
+X-CSE-ConnectionGUID: w2gCrdD/Q9mGUvJ5nIyIDg==
+X-CSE-MsgGUID: 9rRALR3wSjWZEEZyhOWOWA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="78452905"
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="78452905"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 23:23:05 -0700
+X-CSE-ConnectionGUID: IREfSvvhTjaOISPJh3L5xQ==
+X-CSE-MsgGUID: xmnjNMkeTninQMw2aLEhYQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="275285352"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 23:23:03 -0700
+Date: Sun, 10 May 2026 09:23:00 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Hungyu Lin <dennylin0707@gmail.com>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: Re: [PATCH v2] staging: iio: addac: adt7316: check SPI write errors
+ in probe
+Message-ID: <agAkRBbJiTmWxGtS@ashevche-desk.local>
+References: <20260509090320.85481-1-dennylin0707@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260509090320.85481-1-dennylin0707@gmail.com>
- <CAKqfh0F+rAqAwdu=BtagPa2D-F-TANm8Tx3RCOoLyZXkYAn2pg@mail.gmail.com> <CAGEkeHcqG2_c7Ls_=ZMkKfR_MpSNiuRO5d159oWfuN_A6qNEoA@mail.gmail.com>
-In-Reply-To: <CAGEkeHcqG2_c7Ls_=ZMkKfR_MpSNiuRO5d159oWfuN_A6qNEoA@mail.gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Sat, 9 May 2026 21:12:44 -0500
-X-Gm-Features: AVHnY4LMH6WvX4zqy0BvUavMS7RDKEzSzDKDYvu3-Nxe1FV8HgIar59z8ZP1SfY
-Message-ID: <CAKqfh0G+vLjOHhpVi_CC_eWmEfw26ZW71ptRA1WKAhmY9HJJJA@mail.gmail.com>
-Subject: Re: [PATCH v2] staging: iio: addac: adt7316: check SPI write errors
- in probe
-To: Denny Lin <dennylin0707@gmail.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260509090320.85481-1-dennylin0707@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, May 9, 2026 at 9:00=E2=80=AFPM Denny Lin <dennylin0707@gmail.com> w=
-rote:
->
-> Hi Nuno, Maxwell,
->
-> Thanks for the feedback.
->
-> I agree that just warning is not very useful, and we should bail out on
-> errors if we check them. However, I currently cannot test the failure
-> case and I'm not sure how the device behaves if the switching sequence
-> is interrupted.
->
-> I've reached out to Analog Devices to clarify this. For now, I think it's
-> safer not to change the behavior until we have confirmation.
->
-> I'll follow up once I have more information.
->
-> Thanks,
-> Hungyu
->
+On Sat, May 09, 2026 at 09:03:20AM +0000, Hungyu Lin wrote:
+> The probe function issues three SPI writes to switch the device
+> from the default I2C protocol to SPI protocol, but ignores their
+> return values.
+> 
+> Switch the repeated SPI writes to a loop and return an error
+> if any of them fail, as failing to switch the protocol should
+> abort the probe.
 
-Two things. One, please don't top-post, and two, from what I've heard
-the switching sequence tends to be very error-prone since (I think)
-we're essentially spamming the bus with spi data while we're still in
-i2c mode, so we may want to ignore error codes anyways. Just a
-heads-up.
+...
 
-best regards,
-max
+>  	/* switch from default I2C protocol to SPI protocol */
+> -	adt7316_spi_write(spi_dev, 0, 0);
+> -	adt7316_spi_write(spi_dev, 0, 0);
+> -	adt7316_spi_write(spi_dev, 0, 0);
+> +	for (i = 0; i < 3; i++) {
+> +		ret = adt7316_spi_write(spi_dev, 0, 0);
+> +		if (ret)
+> +			return ret;
+> +	}
+
+There was an attempt in the past to do the same and it was NAKed, so is this now.
+NAK.
+
+Instead, add a better comment, if you wish, with the citing from the datasheet
+to explain the magic here and why we don't check for the error codes.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
