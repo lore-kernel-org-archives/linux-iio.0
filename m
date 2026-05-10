@@ -1,146 +1,112 @@
-Received: from s106b.cyber-folks.pl (s106b.cyber-folks.pl [195.78.66.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83687DDCD;
-	Sun, 10 May 2026 13:02:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.78.66.88
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61DF130F927
+	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 13:08:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778418171; cv=none; b=p9XnIB+lj27gcbw027ZHJQHWg4FztVnKFy1G3QMAEjgE1ESpzwyeH2cEbwXftjHGqD05i1BtI+NjXJGDn7LaTitYNBTPJgu9G300UGxh1J7AiW4ttHaN10y5nrOLV0ayuAxTl0WGQrRJUvxIYKYlCS2f8ERwV1uPaT7MKz+ZRlA=
+	t=1778418512; cv=none; b=VCUcX9n0p5GXWgVRsU5Gd0X+dp+7daM/OYvFUst5JqZEz2sJ0bdOjnCvIrqh9OOuv5UAbA7AT81Xclrxh2gyHMipLX9Y/Cuatfi1pYSNLTm/XLgE9rhatLXo3Rp7GD/vBnj9pYiumdKilRQ/idCsSGlPZQlRujY99V9Ho5U2tFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778418171; c=relaxed/simple;
-	bh=xdbmT5ZW7GBoQzuCduM7GoLy1ivg6Gv7iVshcr4SKOE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BqxqDkpThDW/EaIUyrRtGD0ug1Q5ylI2h3l+a0QckhPzuKC8X9gf8a8G5nPaSdFFTb1LrDTAQQ7Ywj/8I+koJojc65dnBS0OkGIuUIHqM7IB30oCiYiN0UBalBd2xfi0WP7SYjXHkO8LqbfJKeSYdx5k/REIPQFrPKZDGgiWhWw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl; spf=pass smtp.mailfrom=mmpsystems.pl; dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b=JXtnoFOT; arc=none smtp.client-ip=195.78.66.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mmpsystems.pl
+	s=arc-20240116; t=1778418512; c=relaxed/simple;
+	bh=/DOUNSvaEtfzaQTm7+qIQBIrmUenp2MbzW42H0OC6qc=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=aRvPYA+LrxsTdvG6dkUX+vZrJS3fEDvXYXKcIE/BO267dLn+BqP0K46oOQ9UZJtrlUXqkHKHDCbyCw1fY/bPQk2BlC+6WQO+BERf5IFACtr/Lm3zCKihyZ++wFMgEmJRKwI4XYQV0jj/bI+j1IUZlhnG8JmODmWJaf9i7KOQOow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H4vPIgqD; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b="JXtnoFOT"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=mmpsystems.pl; s=x; h=Cc:To:In-Reply-To:References:Message-Id:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=sQf9HV1kJe9QuSV63atEChSm9EINfgHOzkniR1z+XIk=; b=JXtnoFOTyvcCFbcT5mx3MDXD1j
-	fi/m5EU3GBPzTFUFimzzNUeohg8xvNmoXOASWvb2MKR7KHo1XdiuEwYrnY+enjjKKX/juVRBxQMTh
-	8Mnf86+/og/CSuMp/8vKqCee39VBfK6BHuyeEyoG5b2qfHGlG0qyUffRWmlq6qinguG0Qusdcdywv
-	DrDaPp1W1p3j+0iMFUfn1V+wp/Ni8+BH5MuIAdrJHUP2OJT5skvMS2stgJ8pyaXyV8SYsPfEAwiLN
-	5R9gR2+waAyuvpjfNgh20AyYZQbR6mD3l2KasZTt1Kgx2YaH5hfKPqOLxTl97cabM4A0ujsQZncMp
-	Dw8nZCAA==;
-Received: from user-188-33-36-99.play-internet.pl ([188.33.36.99] helo=localhost)
-	by s106.cyber-folks.pl with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <michal.piekos@mmpsystems.pl>)
-	id 1wM3nS-0000000DQb8-2khN;
-	Sun, 10 May 2026 15:02:14 +0200
-From: Michal Piekos <michal.piekos@mmpsystems.pl>
-Date: Sun, 10 May 2026 14:57:22 +0200
-Subject: [PATCH 1/3] dt-bindings: iio: adc: Add GPADC for Allwinner A523
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H4vPIgqD"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4836d9d54f6so4153995e9.1
+        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 06:08:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778418510; x=1779023310; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IakIyz4uwcJHUWjsUXZVog5qj4L77ZfSWeluiup+7EM=;
+        b=H4vPIgqDTX9vkVn3CS9RZzSFl93EaOyiDcwka3G8RFPvdNR8UYezZyCXi8A6/Kq7uW
+         PO0BQOaRAm2KiNF7vQjVkBAtXnVOr3ncubK5i9GFsXsPFpXMhJH9kPI0RUzm6+4Ca27z
+         7oO5pUpKJ3YGXVEWEsBYGc6d22hrkONEd8+8NazOtVd6UKW4dNk/0TrkkRuB/Hk2NhpV
+         aL/dXiT24OcBgYkWeCAtjVEY7O/ymAGW96Jbztss3CFYu00r8p8YBOJ1Ukjmk+BsXZnq
+         Mq2TY2O3dDW4gutTX/1F8Zm8rc0+yyAR5iFm9njupoQhbwUf/wK/oNqfepL88zSlKOOe
+         vV3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778418510; x=1779023310;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=IakIyz4uwcJHUWjsUXZVog5qj4L77ZfSWeluiup+7EM=;
+        b=YEuaWiGG8QCxYsbpTPyNZIXj3m/O+Kogx/N+AUVk8Qi+FVjQggUMwIwAg/R96nRY6X
+         s6/m22RjYqeAZDEF+CW9T0+sha7tH3W8W8xieB011zeglUqQPs1f0YiriXouRXV6GfLC
+         cVdxm0ZdZaOmIEfmV/Do6f/6r60Z4gxpqD7TxP0pa18TIIN9z/JDx+SFunOFmgrDTZ92
+         ObvZhsKZqXTKogaKI2wzy2a8rJzDT5nuk/hjVoVSnXipTXUrPd1WLlaATnE5KIQrwDRP
+         xXqYnx75MdQ5DRhBy8BWa0E9LV/ltRgOfslPAq0ipB0y3lUYdynDa8InIuTkgcEOcfeL
+         a9Yw==
+X-Forwarded-Encrypted: i=1; AFNElJ/yFl/evcrkged4cHCPLEyjjuTU1hOiWblwikOwzQL07VdQSB3Em7AvwqLI1zebR8BpGmjmIxM6Smk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzbazTcR1HvHE67yl293wckBTPGwfEzKUtExAm0HznNGGAcj4q6
+	uMLhlB3YXweXySzzefQl6Fy22HrKbqIVHJy+CvV9GhBbKf1gD0Kv6xlS
+X-Gm-Gg: Acq92OGuHkD3p0M107caYDW5GGiVKNdPoUxVnGd95Q4GxbQCzjvVR7kA/pFn9k6kzr3
+	V9DspbojJm+hKo2P3zgV8qMXNtNBw1Nf25U/NPOtdkFaci9P+9/Cgg8MKAA30mgBJeylZumFcYC
+	dMKLHTjzrCF9jx9DucLejnnC3XH+wtCKm/fJ5cp7CLluucJIpO9LlLMGAqNTC8ftYTC0xaCu64L
+	tkwHLfUAkGX4+WHHpQAKY3TvM/ncnuTpvOEBixpDfcJF8UNPSQEMWRymqj/JVrDc0zC+UTyhkdy
+	EcpoSe2DkzKDZbOMHT+LEWRqcF2EMGwRCHNziynfkP7oCkJxrHeGd6HTZYt3eL4b28/cNCZ09zI
+	rmXtwh06zzSxFCazX+Y3HD8sNN9nIIHfPPFN/epacxii95WxpZ+rxoHQe7p5811vPVZc9S/Mgif
+	BrI203H+lGWy+53GUYkpIjN5kLee0acsYpr+2UiZiHmy+x
+X-Received: by 2002:a05:600c:198c:b0:48a:58e1:6cf7 with SMTP id 5b1f17b1804b1-48e530bf915mr143017005e9.4.1778418509516;
+        Sun, 10 May 2026 06:08:29 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e702e6d41sm142327625e9.7.2026.05.10.06.08.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 May 2026 06:08:29 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	puranjay@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH v2] iio: accel: adxl355: replace usleep_range() with fsleep()
+Date: Sun, 10 May 2026 10:53:03 +0500
+Message-Id: <20260510055303.37221-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
+In-Reply-To: <20260510050820.27748-1-sozdayvek@gmail.com>
+References: <20260510050820.27748-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260510-sunxi-a523-gpadc-v1-1-4f6b0f4000fb@mmpsystems.pl>
-References: <20260510-sunxi-a523-gpadc-v1-0-4f6b0f4000fb@mmpsystems.pl>
-In-Reply-To: <20260510-sunxi-a523-gpadc-v1-0-4f6b0f4000fb@mmpsystems.pl>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, 
- Jernej Skrabec <jernej.skrabec@gmail.com>, 
- Samuel Holland <samuel@sholland.org>, 
- Maksim Kiselev <bigunclemax@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, 
- linux-kernel@vger.kernel.org, Michal Piekos <michal.piekos@mmpsystems.pl>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778417853; l=1939;
- i=michal.piekos@mmpsystems.pl; s=20260301; h=from:subject:message-id;
- bh=xdbmT5ZW7GBoQzuCduM7GoLy1ivg6Gv7iVshcr4SKOE=;
- b=+fLEdNfcGSL6q7kzk+Ig5Sr2kuXJVWe3+SHYOmbUDS87rrnQ6fhMO9DC/AKCCxgCFF3Q10qPu
- X+6KaQkpiD+AIwZYYzl51hk38WXOrIVbGw13bG+w05h71LjATWN5uwv
-X-Developer-Key: i=michal.piekos@mmpsystems.pl; a=ed25519;
- pk=Aixyx03If7ZDamiKKN0lsa+0mtA+WjIuIf2ZQVYNBqg=
-X-Authenticated-Id: michal.piekos@mmpsystems.pl
+Content-Transfer-Encoding: 8bit
 
-Add support for the GPADC for the Allwinner A523. It differs from the
-D1/T113s/R329/T507 by having two clocks.
+The "at least 5ms" wait after software reset has no specific upper
+bound. Use fsleep() with 5 * USEC_PER_MSEC to make the unit
+explicit at the call site.
 
-Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
+No functional change.
+
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
 ---
- .../iio/adc/allwinner,sun20i-d1-gpadc.yaml         | 37 +++++++++++++++++++++-
- 1 file changed, 36 insertions(+), 1 deletion(-)
+ drivers/iio/accel/adxl355_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-index da605a051b94..89da96cd705f 100644
---- a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-@@ -17,6 +17,7 @@ properties:
-       - items:
-           - enum:
-               - allwinner,sun50i-h616-gpadc
-+              - allwinner,sun55i-a523-gpadc
-           - const: allwinner,sun20i-d1-gpadc
+diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
+index 8f90c58f4..9d4421653 100644
+--- a/drivers/iio/accel/adxl355_core.c
++++ b/drivers/iio/accel/adxl355_core.c
+@@ -351,7 +351,7 @@ static int adxl355_setup(struct adxl355_data *data)
+ 			return ret;
  
-   "#io-channel-cells":
-@@ -29,7 +30,12 @@ properties:
-     const: 0
+ 		/* Wait at least 5ms after software reset */
+-		usleep_range(5000, 10000);
++		fsleep(5 * USEC_PER_MSEC);
  
-   clocks:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 2
-+
-+  clock-names:
-+    minItems: 1
-+    maxItems: 2
- 
-   interrupts:
-     maxItems: 1
-@@ -40,6 +46,35 @@ properties:
-   resets:
-     maxItems: 1
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          items:
-+            - const: allwinner,sun55i-a523-gpadc
-+            - const: allwinner,sun20i-d1-gpadc
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 2
-+          maxItems: 2
-+          items:
-+            - description: Bus clock
-+            - description: Module clock
-+        clock-names:
-+          minItems: 2
-+          maxItems: 2
-+          items:
-+            - const: bus
-+            - const: mod
-+      required:
-+        - clock-names
-+    else:
-+      properties:
-+        clocks:
-+          maxItems: 1
-+        clock-names: false
-+
- patternProperties:
-   "^channel@[0-9a-f]+$":
-     $ref: adc.yaml
-
+ 		/* Read shadow registers for comparison */
+ 		ret = regmap_bulk_read(data->regmap,
 -- 
 2.43.0
 
