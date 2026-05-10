@@ -1,80 +1,59 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03EDA366067
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 08:51:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDC7A261B9B;
+	Sun, 10 May 2026 08:55:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778403063; cv=none; b=WIMlxqWYY+rCT12JGp4l7Z3tZtMtB/ZXXFOhISiiq0I2Buzv0i0WD2wiAYEw51BaYAY4QSGCRzH/zkf+IIoEsOtuonhvEx9OitgLX0QlE0rUzQ414gHpn7fubs+uSeHUAwYArAWtwmQxlE6qbbH8KskWZtHSoSeuzGcJP1yKNrE=
+	t=1778403325; cv=none; b=Wsg31Z+/ygrDARnuEhasvb1LyaCRw+XPDbM1vfPHFAXaZfO/MnOT4T7yvBGx/1DAyae7Vl9lUDP3jaKdvhlw+IrfTPmqcu+ckhRT4GlDQ7+zVgoJj2+K+pK3FXiqNrrrl2g5dMZy8XBD2EOA1mgTySHkzgFsv/DwT+PGEZmkGNM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778403063; c=relaxed/simple;
-	bh=APsPwM7MyHrwDPyETr8QDqu7q2GGK+1JiXh2BcinVqw=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G3cM7MV363KzMRiql3s2slnPHP0lzmFLUeeAWf8DdEum9Mspq7gH6S+LuOFP2RiP8YhCLSP/8oAdm8BZbDo1OgfQ8ioeqlgP0KEPIl9R70B2XergAUgQs/l0pl+r5Ac2KOO7YVmzVErteJCz3R7v7Ib3HvdtEa9xKL9MaA0q6nY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cu+7o7u8; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778403325; c=relaxed/simple;
+	bh=36Z7bxNOr5LYjGHRIBEi05z8Vj5i2Y6FnZM3GRbXfAs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nsi3IrdVco628VlFJjdIXPqKcj7YPO8shY5/kyblgciU89PXkctzAuPQkvANFhPwklEoS9K35EAYNCUai/hZEvb5dPYkifmXGiEZU24wTOchd66DlQLQ85hzaj6AdRyNSdPFgvFHwdoe9dfMaP3pmANCnqaVqUUdbyv4yyhq69I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L1lzs/E5; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cu+7o7u8"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48e6db3ff7eso6936615e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 01:51:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778403060; x=1779007860; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1ZNF7ruP6zfWaL34BGu38nOIYnKqmgSGr7rjszlXHJE=;
-        b=Cu+7o7u8Z+dirRbcCaIHmbZUXXphw11ubrL6mx3C+z0YABYUvz+5LJDUgB3Eamd33M
-         3ZEIQwXuj0yXdUWut7gc9fbhVglih7Tykz2KeuODi12lnakyULynCh+ClJ8rmdKGSIp+
-         bQPnw5SIyTvloLcK9YaOGROWCdi7dLisTxAeAiAsi2JPIG+b0b8oSbf8oyVGkHtYFr5i
-         Xk9iWs5xyCUxsnE58Mp48g56Q86p5Qdjjq/4ZHsti3/v3Rrf6eQ/8zxf+v1+uw+wuzyI
-         6gEChU/uxKNsn/tfKlAv1EQv2B4wN4DRhcrJ1l0Xt2MSe9aGPnHD89Wn0n3kfskIm9Bw
-         60LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778403060; x=1779007860;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1ZNF7ruP6zfWaL34BGu38nOIYnKqmgSGr7rjszlXHJE=;
-        b=mNTp2lUsyrm3i9Lj1voNQRJUUPgb4AOZiSKFjLHi/8w0f9bZ5JHZ9JrIE6x0CItMyx
-         JA+wnKR55wrCifhcV0+tDqmNvUacm/l6ux0N4bBHEpPVOpr3KNp0QoA67facLX746x5r
-         7KbBbFdzLgkSa78+7Tw3a1MggpKpkiqDxtSDZrn5pG9qva+3Hbr6JjfTfGX6l0OVqUk+
-         hmnxrjhg+9OX21XtdYdGmQBLyqvLg/bgBfDBacEOLcBlyMti65LhkLIF7XysjBUnBmjS
-         quhlI9zgoY7RcKWq27mIqrxCU7SKplx8FOUhvX+eb5Zprr7u6SEPasXn3hqcV7GSIyoM
-         KN6Q==
-X-Forwarded-Encrypted: i=1; AFNElJ8Suz/jB9O0Zxs8fAdWf0arRgx37gdfTaIW2CcTRBhlQ7RI7WpG92mPIHQTrEg4NoAqMDlq0TU4/gE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwMOnWZUGS1SJ6XMREObTRJER6c13mbyZR6xU8UHXvnDSgQQKqo
-	q6X4AdpAXp08fS26Pj0vW3gGq4jq0anDad81LVlriKe5DVVf00oGaXr1
-X-Gm-Gg: Acq92OGDD4LO9dyzs9iu2RQO0vOXJeP0uu+cmDL8wH6DVZ9irGFqKW+OquzqRdkcdpu
-	RrGQzcY7Y4zno6+h2cQxz1zkEXSyrpkIDPtK7/mn8GabiHD+4/CnE1E2J9TnZZ7JBpL/pfazYUq
-	h6JRgvJ2jHGEWSZHwBaPecEOXpIDPZPmdTNx5CUUwOsNg7ac6qCvFuH6UXie7a0DMruGxKLVRyg
-	nEQriUX1hapVnLBGuAPvaBw2Q0oK5VUMsTBXweE+M34xHb8fYsiSkO2EAJxUj+UF4jtZKjLsg+F
-	ciDibPaWvD3+ntd+tsEymkkdsFikQztlSk1Xe43KwXzUhC6J0TuDKIZGIiqodSUQHkRHPc+vK97
-	cjBq2x/1akQdj8aFGX5C6eHakqUh9FB0KfZ9lGgmuldSO+fQXuz9bSE8QSaIu03KDVyS79c/Dm6
-	DTmhi/moiHg3D+rMRyDr6qWyYdwWvpYS4VqFYGewVpn92FPqCQt8YnQD8RzXND25rm6/mELJJxL
-	JBo8ro7+VMG8lEVreRbJICe75YptXc0QwtivUAxaq8Iv2eG/A==
-X-Received: by 2002:a05:600c:8b8b:b0:489:1aed:1658 with SMTP id 5b1f17b1804b1-48e51f3fd03mr321073295e9.23.1778403060285;
-        Sun, 10 May 2026 01:51:00 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e6d89af2esm39629535e9.0.2026.05.10.01.50.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2026 01:50:58 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Sun, 10 May 2026 09:50:51 +0100
-To: David Lechner <dlechner@baylibre.com>, rodrigo.alencar@analog.com, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v4 00/10] AD9910 Direct Digital Synthesizer
-Message-ID: <jqsr6q32kqnehzyc25vo2owv7b4xvoppnlbhrjrevahptm6pbg@pvghdgt2w4wf>
-References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
- <f3bb9f64-a0ef-4862-afdd-74ee39d7bfc1@baylibre.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L1lzs/E5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778403323; x=1809939323;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=36Z7bxNOr5LYjGHRIBEi05z8Vj5i2Y6FnZM3GRbXfAs=;
+  b=L1lzs/E5BY9DSsmaW18M5+bQNENjB1jtlg9eOmxAxe36DAz8vGRLax4Y
+   nzZ8FeFYCTXydTDQsggn40dU+lOg6ZD2SPKLp5/XMEl0vnviU1+PPeGD1
+   eDcjqJvpbnHWcdROtWvcf/RyBb3ifoJ0sAnZp6XxNaPUM8ac4mXJik7l9
+   9rGYDU4b4i/Z/KTrYFIo4ktyEdkFcvGUNzE2CC224Lqc46ii479Fn6yZ3
+   pK8GN0Cp0+cgeYdYaUYjPgRpM65AlKezuCHIR+uI1FI9epNMv5+VZlOn0
+   B1Uof7YqOj7C3jTgJ6ffWzD9OoOOxdvJrVBmsPixQEO9If+OYy7Iq/86c
+   A==;
+X-CSE-ConnectionGUID: BRYetLzkRXybsdrVStD7Ng==
+X-CSE-MsgGUID: 70fRYAPtTYuysu7XROVqbA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="104776540"
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="104776540"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 01:55:22 -0700
+X-CSE-ConnectionGUID: 5X9rqS4RS/iUrg1ZGL38Og==
+X-CSE-MsgGUID: 9w2URnD+R/eGMVCcmAi2dg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="242145801"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 01:55:19 -0700
+Date: Sun, 10 May 2026 11:55:17 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Hungyu Lin <dennylin0707@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+	gregkh@linuxfoundation.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: addac: adt7316: document SPI interface
+ switching sequence
+Message-ID: <agBH9QqHW-cJN0iQ@ashevche-desk.local>
+References: <20260510081041.85880-1-dennylin0707@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,42 +62,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f3bb9f64-a0ef-4862-afdd-74ee39d7bfc1@baylibre.com>
+In-Reply-To: <20260510081041.85880-1-dennylin0707@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 26/05/09 05:31PM, David Lechner wrote:
-> On 5/8/26 12:00 PM, Rodrigo Alencar via B4 Relay wrote:
-> > This patch series adds support for the Analog Devices AD9910 DDS.
-> > This is a RFC so that we can agree/discuss on the design that follows:
-> > 
-> > This is a follow-up of the V3 discussion. For V1, we reached into
-> > this channel composition agreement where physical channels may have
-> > sub-channels. That adds the flexibility necessary for this design.
-> > During V2, some feedback indicated that the ABI is too device-specific,
-> > so DRG/RAM destination and operating modes are configured through
-> > alternate paths and profile channels are created. In V3, there was
-> > further discussion on the ABI and on mode priority debug.
-> > 
-> What happened with the idea of adding a new attribute to show the
-> relationship of the sub-channels to the actual physical output
-> channels?
+On Sun, May 10, 2026 at 08:10:41AM +0000, Hungyu Lin wrote:
+> The device powers up in I2C mode. Switching to SPI mode
+> requires sending a sequence of SPI writes as described in
+> the datasheet.
+> 
+> During this sequence, the device may still be in I2C mode,
+> so SPI transactions may not be recognized and can fail.
+> Such errors are expected and are ignored.
+> 
+> Add a comment to clarify this behavior.
 
-That's still to be done in iio core. I was still to think on how to do that,
-and I am trying to get a mature ABI first.
+...
 
-I am not sure about the use case where a sub-channel is shared between
-multiple channels, but I thought of a iio_chan_spec pointer to a parent
-iio_chan_spec in the same struct. Similar to a device-tree, we have the
-primary tree structure and then phandles can be used separately to create
-more complex dependencies between channels. So a "channel ref" attribute
-could be separate concept.
+> Changes in v2:
+> - Add datasheet reference
 
-Then iio core would create the read-only attribute "subcomponent_of" or
-"parent" when that is not NULL. The read function would just output the parent
-channel label. Then labels would be important to create this logical dependency
-between channels, and maybe that is bad, but in this context, I suppose labels
-are going to be needed anyways.
+This is still odd. Please, put in a format
+
+	$SNUM "$STITLE"
+
+where $SNUM is the section number (like 2.1.4) and "$STITLE" as currently done
+in this version, Ideally the datasheet also needs a versioning.
+
+...
+
+With that being addressed,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
-Kind regards,
+With Best Regards,
+Andy Shevchenko
 
-Rodrigo Alencar
+
