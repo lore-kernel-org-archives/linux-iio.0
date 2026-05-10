@@ -1,149 +1,101 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2972734EF0C
-	for <linux-iio@vger.kernel.org>; Sun, 10 May 2026 06:58:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.175
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778396290; cv=pass; b=ppeHb9EDiCyZegBOHm0QXEhLczo4XdKpf3QZqtmWHS9It96PaAaar2WeHiU2prwJjInhX9zZvJGccYPli89zrNhc6C01TaSmxb87OtE8Wzn46UjYJZcFOgAICug7TCsrEyRznl5Liai9eNyY0RniH583IEaficXokVYDSCYOPBo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778396290; c=relaxed/simple;
-	bh=piUilFf4VMYYYXBbid82t4Ma3FMwGs3rg5q+XAJ/S/g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TvP4GtsD7enGjk189QvKjIvNOqKP9A3plQ0pWSw8ml0XNHJ3Rkpl31MFSpnwUGUsMZHBtGvZh7pwWuCra8YYJVcfvOHTI4MyqH03+07uKIPuei/vNPjJ4eF4Rpf1GHuJ2S0omeubOntDBIy6VZc5bwfZ+IDXqhYFPgcazZbibnw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DeJ+W777; arc=pass smtp.client-ip=209.85.128.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADCB523EAA0;
+	Sun, 10 May 2026 06:59:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778396391; cv=none; b=m4Ji6Lf/3a6fpkt0blYlUo2A8zKf59p32OSWSqPjPxZlViYKldh9LLvdnVYawJd3a91PBXdeUdKCk0kfSqnIgdfDva8gPl3ZKo+wxPbJ4Ob4yoTg4k7DP/G40ABkRTLzOdd0MqJAriqJFGBa+dbyIJvvOR5B9nBsbE+yvP6PSMw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778396391; c=relaxed/simple;
+	bh=u/zJk1bSaDMTKI7/Emhq7zr+eREy+gGdWkfhZAK0nHw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GGZL6/qGAv1GVjRmgIhSNHpAb+vtYV+eKp/gW6f8EK0pNycMWBTOMZrqTs2dFHZK2Ckh3vw6o7r+WS6qOT3r2O5N6WDoCbZV4DB9GRIcIkFuBpfxqcY8yj3NCSOhwiO2IaJnxO58NZ/OHrENp4o5QEjupSrlW76knY0ZW7o9ns4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nLlEWhOu; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DeJ+W777"
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-7b37d84a6b3so31532467b3.2
-        for <linux-iio@vger.kernel.org>; Sat, 09 May 2026 23:58:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778396288; cv=none;
-        d=google.com; s=arc-20240605;
-        b=LiLWLTNdSd3yT9BYegQY7YiBesTCAdulE58xgKYIFb/5JmNlBBv2LhCYZwc3FneCkE
-         keejfBeqIaGx/plMZ43i8mdsLUlBGLZs1YZifiRVVTu6/I7ZGLWIVgyvTkCgwJligJdq
-         m5AvWd5U+nKA/tnb0DB6tOFqU6/qtg9/BbmgKyzU8pic0CcYdtrBITTv1GlinJhXizrq
-         b6DcKVkavqtm0ltfVY9GTH9xHxD5X9vUDXiEgKmWPvtfGNf12JRI0zaUM8/BoZ2FZ4fJ
-         l5LQNZFkLW1qM4JYpaIDLF0xZSVnf6c+g0QWAcckGpvunP1gUPFRf56Jj20vypnDk0cd
-         Z8HQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=RbaGmPkB/uVp5z0DPvQ1IUqc8iqVsuTXUP+9XXj3zeE=;
-        fh=yY9+FL/XfcC1vH/mZZ98cnCNu2eYAMqXtd+u0eUvqiA=;
-        b=SYqhD7mni6QvzfoGKmLflHhXU7mdJs6RidFd4RLo7oeKgPNOdAKTucY9udiFYF9WuD
-         cGrb16fkbIowzGZ6DMfWvWAKZaQNz7vd4jFxSlM7ZjXCSEfwr0634ZrpuoqYcnoDf6b7
-         uOWMec98aoFN7QTd1bXBZ07F7869UA+GdjdsFk+1kxnbRByPXoWnMw6PyxlSwtVE+e40
-         iiy6HjD0A+KwKgsuKUXALEq6h3SULVn5auXGAcBm3gKXQBxatAO+oReTkHUYSUjAAIdQ
-         vksRuzTrhZGkkdmlKqk7hjDv3m01anmY1MvH4Lsg/U3DjczUegRP1ejt81JOiHAR87Q9
-         RGQQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778396288; x=1779001088; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RbaGmPkB/uVp5z0DPvQ1IUqc8iqVsuTXUP+9XXj3zeE=;
-        b=DeJ+W777V7j5B8tx+8JZBVMSxpCRn/PYaOV41r+M7fhCL6lt1n6XOuvzMrzRiMJIm4
-         hhFdJpgo6DFbiuCwnuJzZW2n3fhk4ZxMCdJFJoFB5IzGGkbmfyN8CUD9Q3Rnv/Cn4RGu
-         kLRGvRRtaA7dVau+fcTBGK66ex4y14Am/2CdYhhU7nYe5lNvj8dQfuMoAJyKqlzUKBO4
-         giprXnwNgkuJEqNtArvJYbBvwhKYJOJrAAJQTXT1it5zkk3elXso4YiHLc//HHkzlzip
-         dJmLnQz75gqI4Yen8qr8zrLZK7WmClYRF21pUqWWP03xjaa4omX9cwWbyCyMXDIDF3fz
-         ePuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778396288; x=1779001088;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=RbaGmPkB/uVp5z0DPvQ1IUqc8iqVsuTXUP+9XXj3zeE=;
-        b=r9w7U1BM/mZPAwi/BuJ0mEsnVtM4QPez1XVCFxqsxrB8Q8tC9nnuMB3exb9soMuufc
-         VWmBrs/wf8WhtkygW+SPd7rZ2nlXrRz7iXOf+wpU8AYMRJsDA3W0urBpaMwqmESaeRYh
-         gC5P3iDr4FFhwqvUzSnHw/ilVx/URAlxcO/nbLFjvNMSxH0hYq3TjRz1oWd7rdiaBkbJ
-         AoX8LziAjphWCFnLqsnlTD+Rw3gXo17ICDkMeyVOk3IJWQ5mh21eGM6NHALoqKFqx7TQ
-         DSsr3sUHsUdXuGqHjEoff0jQBFD3DBW7ryETnY9O6tNBC497Ufmqh+x850MYTEG2nZCA
-         IwyA==
-X-Forwarded-Encrypted: i=1; AFNElJ/KNuIjStSOnEE9J9JxRnyaYTK5Ib2gVOO4u3RedbO2rs5sAmTWDf7BcNSE+EuQKLaV0avMzYLPNas=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyVWxteq+1G3BECk3u+egvNQktIvpM2Nmt06/CE4znayZjaAmGw
-	7V3HIfG4hkDxMlXJ++nRI3X3byFyFgFojBPumRHCWhm3VYu8HEzOJ8c0exG/TY5P3cTkkN/iJ3E
-	kx/TEzlMA1LHhtPc4cio2Vh1pQq206T0=
-X-Gm-Gg: Acq92OF177A6AEggheu0i+vQX916FTb/KlhYxvCu3tCYI0b8d9MlDpB7abxt+EJ2AGn
-	7dCu51Mc1Xq7KRa51jXcAvpciMkZsJ+U6y28IPkSQnfZCzTpW/ck1a1VYiP3ShRwsvPXQuCEpv8
-	/cIU4tZ1rA5At4hEsTKhXz+mvxFQy2XpeLgXzsTO3PU9n7ty5OxYDCqz6gqU76uv3tAZ/MJ3MxK
-	szNWuASu2tapkFPWQ78mO1jEOpnz6McyhkjfDq2FCV++swxBYGg6SQZ8a6RgKo5oKSa75gGmbz+
-	e33u
-X-Received: by 2002:a05:690c:f06:b0:7b2:dad2:5dee with SMTP id
- 00721157ae682-7c10275fbe0mr47813597b3.2.1778396288198; Sat, 09 May 2026
- 23:58:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nLlEWhOu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778396390; x=1809932390;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=u/zJk1bSaDMTKI7/Emhq7zr+eREy+gGdWkfhZAK0nHw=;
+  b=nLlEWhOuHfxBgNyphTtriOxN97zOTg2hTl72HA0eSkesFqj8oGWcepjv
+   H11ma5mIIszuZqAdcnx3LffDRWIDjw/ar0Nc2MXkp4ABCeFRVP7/Qz+xK
+   w4NY44XhOBakQzNfDSYza4uSoMHNPstrlw0uAnfzIdgpCu14ZX3uod/Xd
+   7fS7dqxbhLPlSU/qdzsNpWt2Bu/h5hh/ARU41KhrfnGoRI1pIBGMqYKA0
+   w4mH7XcMhRQJt4By2W1jK/Rfi3gsakgOcoLF52VVFUFS5vAK5z4X5wZgm
+   S0kCo+nrVkSdiRwISaLsMUJnwINoNEf2j7EYnYAcIYBUspJvXkoxZPrCH
+   A==;
+X-CSE-ConnectionGUID: o8WuBZ/8S1eNwzXZH2nxtA==
+X-CSE-MsgGUID: UAHJLIieSWmLbLdqukyGBA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="66849426"
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="66849426"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 23:59:49 -0700
+X-CSE-ConnectionGUID: nU91MFn9QcqQmANcvHbxpw==
+X-CSE-MsgGUID: GEt4GagrSDaxk1xrQGbuOw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
+   d="scan'208";a="237386727"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 23:59:47 -0700
+Date: Sun, 10 May 2026 09:59:44 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jic23@kernel.org,
+	mike.looijmans@topic.nl, nuno.sa@analog.com, andy@kernel.org
+Subject: Re: [PATCH v4 2/3] iio: adc: ti-ads1298: Fix incorrect timeout
+ comment
+Message-ID: <agAs4IqohFKFhbhk@ashevche-desk.local>
+References: <20260509151959.3475-1-shofiqtest@gmail.com>
+ <20260509151959.3475-3-shofiqtest@gmail.com>
+ <f6189816-a157-466d-80bc-3f338c13d69b@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260509125201.29872-1-m32285159@gmail.com> <agArgcwufi288K2l@ashevche-desk.local>
-In-Reply-To: <agArgcwufi288K2l@ashevche-desk.local>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Sun, 10 May 2026 01:57:57 -0500
-X-Gm-Features: AVHnY4Jq2gnf0cZ2rKTlXCKngeoBbtcXbVuY834KxhoeaP3QO5c7fJ1FIhSJhao
-Message-ID: <CAKqfh0FWig8mRR-xhvnfcFeSinR6RySyPaf9Gbpb6WU+diiiUQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: chemical: sps30: Replace manual locking with RAII locking
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: tduszyns@gmail.com, jic23@kernel.org, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f6189816-a157-466d-80bc-3f338c13d69b@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, May 10, 2026 at 1:54=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Sat, May 09, 2026 at 07:52:00AM -0500, Maxwell Doose wrote:
-> > Replace manual mutex_lock() and mutex_unlock() calls with the much newe=
-r
-> > guard(mutex)() and scoped_guard() macros to enable RAII patterns,
-> > modernize the driver, and to increase readability.
->
-> ...
->
-> > -     mutex_lock(&state->lock);
-> > -     ret =3D sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
-> > -     mutex_unlock(&state->lock);
-> > +     scoped_guard(mutex, &state->lock)
-> > +             ret =3D sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.d=
-ata));
->
-> > +
->
-> It's the same mistake already had been told many times, do not add blank =
-line
-> to the coupled statements (usually assignment followed by a check).
->
+On Sat, May 09, 2026 at 03:27:35PM -0500, David Lechner wrote:
+> On 5/9/26 10:19 AM, Md Shofiqul Islam wrote:
+> > At the lowest supported data rate of 250Hz, one conversion period is
+> > 4ms, not 40ms. Fix the comment to correctly reflect the timing.
+> > The 50ms timeout value itself is correct as a conservative margin.
 
-Sorry! I tend to use that style for some of my other things. Will fix
-for v2 (I have to send that anyways).
+...
 
->
-> >       if (ret)
-> >               goto err;
->
-> And looking at the code, it's rather better to have this lock inside
-> sps30_do_meas() (it might require to create a locked wrapper as
-> sps30_do_meas() while renaming the current one to __sps30_do_meas()
-> to clarify locking rules).
->
+> > -	/* Cannot take longer than 40ms (250Hz) */
+> > +	/* Cannot take longer than 4ms at the lowest rate (250Hz) */
+> >  	ret = wait_for_completion_timeout(&priv->completion, msecs_to_jiffies(50));
+> 
+> I would say "lowest sample rate" so we know which rate it is talking about.
+> 
+> However, there could be latency in the kernel delaying the interrupt from
+> firing. The kernel latency can be much larger (I've seen 100s of ms on old
+> single core ARM CPUs). So I think we should mention that in the comment as
+> well so that no one is tempted to set it to msecs_to_jiffies(5) (or 4). Even
+> if that works most of the time on a fast machine, we may need the longer
+> timeout on slower machines.
 
-Sounds good, can also add for v2.
+Actually it's not about fast/slow machine, it's about scheduler and load.
+Even on the fast machine under heavy load the completion (if it's thread
+based) may take quite a significant time to be delivered. For the hard IRQ
+based completions it might be much better case, but nowadays it's more of
+a niche.
 
-best regards,
-max
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
