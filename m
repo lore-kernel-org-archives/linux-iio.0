@@ -1,98 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74257369999;
-	Sun, 10 May 2026 09:15:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 938562EF67A;
+	Sun, 10 May 2026 09:21:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778404535; cv=none; b=l2dXQcLfcJsh/n8mOFzlZtXVkW+dEqenFSRmWhw8V9cZRGCoHF+5FhWna21CxoGVoBZ+vZxjoBEfVcUcKaFlx0oIej9X4LSPu8+knDhSw6YM9KwdWWhET+khRLdBpZv0bxmhkywx4Xul6XERoJWl0rFfzCTDaoGzpysbsTvf2PE=
+	t=1778404870; cv=none; b=TcUPVynD+aCi6f2RRZdMhW6CljJN9bkZUWVTG4WrotpZytN61EB9xf9dqyfPMwMrELW4bxGe4jgV7m7IrkkQaDffArcsWH1MQiulfLVRYjN/fQBsDW0v+0HYIfvY9UuYXC7NmS8T7VLR5RkkXu7YaNW0pUFCc/fEasbVMHDaF4E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778404535; c=relaxed/simple;
-	bh=U6F/U4NS7VSEsA8AMXLMHMbfZESNteTRbtpClgkGYQA=;
+	s=arc-20240116; t=1778404870; c=relaxed/simple;
+	bh=C4b1bYnFGuVujbg9Y8JGTiBzfNfNrEuwLUAPIMG+0ag=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=E/SsyRZBjkcknGRQNdjDvcjlvgwSi8FjFdljTiurUdLEC3DEDtlcel1OFc8mxqIhRjwhSyCzaGszCw0p8tNqG8LiUuIKXSW7KHBv0OtSik23k5nN6osXORQlMOzEm9jjaQLSBRWwoTRSoAXSTk3Jo5QdOY9JxWiTu3Nvu+5kTUY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f/t9eWW7; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=Un+dAe5Bwyh/kRFRpOryQtQP00NAxNZu2rPFQVYIqK4IEK1Yh4D4QiCVAm5Ah8ywTPUYSiO/dcSQmxJ99NICOiR/HTvpAZEL+2Ma3QbhctujpVQFmHgFWcVlQbxNZHW3I0nCuCuIRJC2Y0c6CZlcnxApnPe2XWdc830xJsoZwas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NU2w9YnH; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f/t9eWW7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NU2w9YnH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778404533; x=1809940533;
+  t=1778404868; x=1809940868;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=U6F/U4NS7VSEsA8AMXLMHMbfZESNteTRbtpClgkGYQA=;
-  b=f/t9eWW7SyrXn0TaVSCipG75STXnltPnaXflYFi6lVUtgA4crma+oVRI
-   GR2lEf25mvRn0DQeVgSn8bQvT9Nxrihk+D19HPMosxmAETizV4Vl7540M
-   6ecw8JTu8qpqj9F3SGxEUhUSagm2pX/BPr116MrLKfbze3/xrvOqWaoBI
-   CZnKfJLwF4yEwgo4sD+XOwk8XcqSMAt4b0R6OH+oH8OFewV42NCC5+hx2
-   GNWzoKiZKLGTlpI9bAbImf9z4OnBuenrOXYJWqurAok6ofaraD9xh0m7H
-   qwB5rbzHnnCxCIcaxzPQP28QGr9SCdy9dAMcM8K4pJ7o4fOA29CbIFUzA
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=C4b1bYnFGuVujbg9Y8JGTiBzfNfNrEuwLUAPIMG+0ag=;
+  b=NU2w9YnHfT6Iw/+/1B5R1YOJV1mzm/xHTtD5Zqge2S42a0ioJRQt2SU5
+   fvrHF8LGSR7/Z/VDlFmd6UMyfxaBjlojY94kC9Kc3s4iv1hCX8n8kTqPj
+   5ZsY/VQJxfujxIWMeAewXw9OrRv9x5soxpnqDfv7IaUNpFySK1+rEG7+Q
+   lSyQmp0LFXe09LR3zpsDF54txfGEqV1JeuMeidiOyeUoy1hDc5iF3AHg0
+   56bDG383sUZZFpkxdZpZ/dRKtHW6iKoNVc1+HBbRBZBYXv6EK+yaoB7yY
+   vMSlrANCV1dDIewOUMvyJlyjGGzbG9CmG61elBZ3upFmfY6jisjTvpOwm
    g==;
-X-CSE-ConnectionGUID: vKO/Kf4ERgK93ctz3Yi7Wg==
-X-CSE-MsgGUID: HZZE74zKTvqCsqKqvHnDVA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="79043136"
+X-CSE-ConnectionGUID: x9ixFyyZR5e1oo5aIx9rmQ==
+X-CSE-MsgGUID: 66l2mQkvQv6ORQUyFcUJOQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="83169315"
 X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
-   d="scan'208";a="79043136"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 02:15:33 -0700
-X-CSE-ConnectionGUID: YP6JxZF2TR6byB+dTQTRgQ==
-X-CSE-MsgGUID: +qUh2xFPS3m5G/yrWTj0LQ==
+   d="scan'208";a="83169315"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 02:21:07 -0700
+X-CSE-ConnectionGUID: N+qeKfgxR5u5o37/JJtvTQ==
+X-CSE-MsgGUID: S04jVMeMQ9e1WJZNXldpSQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,227,1770624000"; 
-   d="scan'208";a="234120797"
+   d="scan'208";a="236217599"
 Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 02:15:30 -0700
-Date: Sun, 10 May 2026 12:15:28 +0300
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2026 02:21:05 -0700
+Date: Sun, 10 May 2026 12:21:02 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Maxwell Doose <m32285159@gmail.com>
-Cc: jic23@kernel.org, Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, jic23@kernel.org,
+	Tomasz Duszynski <tomasz.duszynski@octakon.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iio: chemical: scd30: Cleanup initializations in
  scd30_float_to_fp()
-Message-ID: <agBMsBIHknCVhut7@ashevche-desk.local>
+Message-ID: <agBN_htQ5qGc_e0H@ashevche-desk.local>
 References: <20260508225501.86448-1-m32285159@gmail.com>
+ <8F49F478-AAA8-4AE8-B6BC-BF3C3923AAD7@gmail.com>
+ <CAKqfh0FOJ+k3E8Kc5+acsvhK7ATapbhPsas4YZOzjXBkSRFKuA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260508225501.86448-1-m32285159@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKqfh0FOJ+k3E8Kc5+acsvhK7ATapbhPsas4YZOzjXBkSRFKuA@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, May 08, 2026 at 05:55:00PM -0500, Maxwell Doose wrote:
-> The current variable declaration and initializations are barely readable
-> and use comma separations across multiple lines. Refactor the
-> initializations so that mantissa and exp have separate declarations and
-> sign gets initialized later.
+On Sat, May 09, 2026 at 07:27:38AM -0500, Maxwell Doose wrote:
+> On Fri, May 8, 2026 at 9:56 PM Sanjay Chitroda
+> <sanjayembeddedse@gmail.com> wrote:
+> >
+> > Thank you for the refactor change.
+> >
+> > The previous version was more compact and readable. Splitting the variable
+> > declarations and expanding the sign assignment into an if/else block does
+> > not improve clarity significantly.
+> 
+> Are you sure? I find it to be far more readable than the comma mess
+> that there was before, plus not a huge fan of the ternary operator in
+> such expressions. One of the goals I have as the new maintainer [1] of
+> the scd30 driver is to get rid of "clever" code and replace it with
+> more explicit and readable code. It's going to get optimized by the
+> compiler anyways. As a wise man once said,
+> 
+> “Programs must be written for people to read, and only incidentally
+> for machines to execute.”
+> 
+> Plus if we need to drop a printk() or whatever in there to see the
+> variable assignment we can just add {} and add the printk(), no
+> messing with the ternary required.
 
-The change LGTM,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Sanjay, the comma operator is discouraged in the kernel. For this part I'm
+fully on the Maxwell's side. As for if-else versus ternary it depends on the
+maintainer, but in general if-else is considered better. (For instance, I'm
+judging on case-by-case basis, and in some cases ternary makes a lot of sense.)
+So, in this case I have no strong opinion about sign assignment.
 
-...
+> > You can keep it simpler like:
+> >
+> > sign = (float32 & BIT(31)) ? -1 : 1;
+> 
+> See above.
+> 
+> > The IEEE 754 representation is already implicit from the bit manipulation,
+> > so additional comment is probably unnecessary.
 
->  ps:
->  Hi Jonathan, I noticed a potential divide-by-zero bug on line 241 in
->  scd30_read_raw(), where the value of tmp is dictated by hardware.
->  If the scd30_command_read() call on line 236 assigns 0 to tmp, then
->  when we run:
->  *val2 = 1000000000 / tmp;
->  we'll get a divide-by-zero. Will send a patch for this later.
-
-Have you checked the Clang and GCC compiled code in that cases?
-Do they put anything interesting in the binary? (I.o.w. can they prove
-the division-by-zero at compile-time?)
-
-See the (somehow) related case in the 7e5c0f97c66a ("iio: adc: nxp-sar-adc:
-Avoid division by zero"), which is in Linux Next only (for now).
+Since we don't do floats in the kernel (all arithmetics is integer-based)
+some might find the comment useful. But here as well, no strong opinion.
 
 -- 
 With Best Regards,
