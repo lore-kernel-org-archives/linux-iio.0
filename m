@@ -1,46 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 457E42ED860;
-	Mon, 11 May 2026 16:41:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91ECE439010;
+	Mon, 11 May 2026 16:52:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778517719; cv=none; b=oNhKt0Q3VdWFCQtkej+FZx+VMNDCg2U8b+NHB4gWxFRp/yMOifmoIl4BorSFy3hfPG4JBAOwBl202kOT4t4uIaTBTcXdBaQfoioas/I1FnfeuteX1mkepVBR2ChrFmh4b870KzuLj1TijB6gIq8LoF9Drg0z7hQCqD1cT7IyvO8=
+	t=1778518330; cv=none; b=jfEn/L3wbLVdwrOSen7myROj+3LZgWbPhhvmURbUJLIEX1jaYATEyBoHJKSZpYMtEyZpcdb2HJVF7emk2CgAa8nVVSWAGh16oAB89T549+KSPYA3N1FSwa+PyuQwgRX65lXpIxoPnniZ9nhBglCB1CCf6NdvM5G1+8MP40ZNhyM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778517719; c=relaxed/simple;
-	bh=CxVp0plSHEIQhkQveZ6NYMKan6gU1ZXBE0U7Sguh0oQ=;
+	s=arc-20240116; t=1778518330; c=relaxed/simple;
+	bh=2S8ZAcXDE/Jd8pI3dYogOS2qdMX1wFg0U5A6c+GH+78=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tlCyqKm9HaGEAT80Phz+SPyL7IVtRvb/ciWHz8rdBU9gDKRdbpCLQQzi80UL+NKBVSt3OoRCMJhVOQ/skkcO8vyQUY72GxOJWjHA7cYny9VbtgaxM1I8Q5DTMcUDRQgTn864ogK0B51c8gcpJ5E0raEzPVVqYW4ys1X3TZSXSWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p4vkgSNp; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Ry79rqhcW+Tp0YY4oWeCRX/zmqH4FFtyd/aHnqXpP3d/zmO5cG6khLCy7M5tydA+M0do5V86+Nw1/NaJ2e7XJHcyWUpqeKa0mse4Po3x8ZQLmkfyHr8z9V5JPWAheZ3IxHYE0+eozTI3jiJxbS2FIdA/e5h9CUaI3s9nfPsZJ8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fxRZGi14; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p4vkgSNp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF85C2BCB0;
-	Mon, 11 May 2026 16:41:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fxRZGi14"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD28C2BCC9;
+	Mon, 11 May 2026 16:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778517718;
-	bh=CxVp0plSHEIQhkQveZ6NYMKan6gU1ZXBE0U7Sguh0oQ=;
+	s=k20201202; t=1778518330;
+	bh=2S8ZAcXDE/Jd8pI3dYogOS2qdMX1wFg0U5A6c+GH+78=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=p4vkgSNp3q3SucHxljXAtT/daJvNrjkDyeTr2YbJ05CAxRN8ykRTqSxzaohl2GqJ+
-	 ll3VCajnkgV+3/95oPLGfGXyaWlPgrTce3HbvqaOSNmNPu9MpiBidy4azk2LJAPP4/
-	 YBLptyrMDT129XckVmyUIU2xPcW9GhpR5YDuTDhwwzgO6D3By3pCaM1n8pPyMdn5Ui
-	 5tUw5tEZc84FI6CSdGV7j/eS/0d+pUhSO48PbT7a8RBJ8QG4k26EvRJG5Kx/TOeLu7
-	 FIwcp5aHOK2HR+4IEaqwra2KsBQ7cgyWWpVzualvn4FHbPt0Ox5eKNhNIFT55PvrBR
-	 3SeTateAZKUeg==
-Date: Mon, 11 May 2026 17:41:49 +0100
+	b=fxRZGi14jcm/S8DES72Fk3kvFvy9LDzSSHEMsFbUyvHRIOmDQbv7E8LLcGaqccYDF
+	 07T3MwTbeGqFVV0YZuzdSXWVinr95/CeOUpHgRa2r8HQzTOUy4yJpLMobLQ59LMJQi
+	 np7hJukQZufze1ahgXF0+9/0gHo3yTcEP4BsiWfVh21Jv9GElIhNPmqsR8B0oYdGOe
+	 6n/rj/UxgB7it987GOvoGtLXmDoO48cB3V2KeGrJ7czgHfsORmxvIjVbZ+9fK9JIWI
+	 DuyMAQBnmyxX1Ua8WEH8TfjG18gK87NEoeU3/3jfkA68af4wl9QwAuLQX1SKo/mOKU
+	 uGiEGTJozqhkQ==
+Date: Mon, 11 May 2026 17:52:00 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, jikos@kernel.org,
- srinivas.pandruvada@linux.intel.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, sakari.ailus@linux.intel.com,
- linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 7/9] iio: humidity: hid-sensor-humidity: use common
- device for devres
-Message-ID: <20260511174149.37f5eacb@jic23-huawei>
-In-Reply-To: <agAo6fXUaoTwl326@ashevche-desk.local>
-References: <20260509101040.791404-1-sanjayembedded@gmail.com>
-	<20260509101040.791404-8-sanjayembedded@gmail.com>
-	<agAo6fXUaoTwl326@ashevche-desk.local>
+To: Hungyu Lin <dennylin0707@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] dt-bindings: iio: adc: add AD7816/AD7817/AD7818
+ binding
+Message-ID: <20260511175200.40f809d1@jic23-huawei>
+In-Reply-To: <20260509022718.82957-2-dennylin0707@gmail.com>
+References: <20260509022718.82957-1-dennylin0707@gmail.com>
+	<20260509022718.82957-2-dennylin0707@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,49 +46,32 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, 10 May 2026 09:42:49 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Sat,  9 May 2026 02:27:18 +0000
+Hungyu Lin <dennylin0707@gmail.com> wrote:
 
-> On Sat, May 09, 2026 at 03:40:38PM +0530, Sanjay Chitroda wrote:
->=20
-> > kmemdup() is used for memory that is logically tied to the HID
-> > platform device, even though the driver binds into the IIO framework.
-> >=20
-> > Using &indio_dev->dev for devres allocations works functionally, but it
-> > results in two separate devres ownership trees=E2=80=94one for the HID
-> > platform device (pdev) and another for the IIO device (indio_dev).
-> >=20
-> > The devres framework is intended to have a single, well-defined parent
-> > device. Since the memory originates from HID sensor probing and is not
-> > IIO-specific, &pdev->dev is the correct and logical owner.
-> >=20
-> > Switch to using the platform device for devm_kmemdup() so that all
-> > resources are released deterministically and consistently. =20
->=20
-> This patch sounds like a required fix and has to be placed in the beginni=
-ng of
-> the series along with the Fixes tag.
+> Add Device Tree binding documentation for the Analog Devices
+> AD7816, AD7817 and AD7818 SPI ADC devices.
+> 
+> The AD7816 provides temperature monitoring only, while the
+> AD7817 and AD7818 provide analog input channels with an
+> on-chip temperature sensor.
+> 
+> The devices use control GPIOs for RD/WR and CONVST. BUSY is required for
+> AD7816 and AD7817 variants.
+> 
+> Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
 
-Hmm. I always find these hard to prove...=20
-Ultimately for a device for which no driver is ever bound I believe
-the call to devres_release_all() in device_release() catches these.
+Subject to the discussion you had with David about us only normally
+adding a dt-binding as part of the final series that moves a driver
+out of staging.  This looks fine to me.
 
-That should I think happen when the last reference to the iio_dev->dev
-is dropped (for the device we care about in the 'buggy' code).
-Now that may well be at a different time to when it would happen on
-the underlying bus device unbind.  However here we are talking about
-an allocation so as long as we release it at somepoint and that's late
-enough (which it will be either way) then it's not a bug - it just makes
-the code harder to reason about.
+Note I've been hopefully checking analog.com every 6 months or so for
+the ad7817 to go obsolete - (no luck yet!) - hence I haven't deleted
+the driver despite no one getting it into a reasonable state for
+many years. If you are interested in doing that work then great!
+Maybe the Analog devices folk can help you out with testing etc.
 
 Jonathan
-
-p.s. I remember testing the releases on some other drivers years ago
-     to figure out if they had an actual bug based on the pattern we have
-     here. It 'works' but yuk.
-
-
-
