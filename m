@@ -1,40 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEECC3290A9
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 12:21:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE52439A808
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 12:26:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778502079; cv=none; b=fnkWLFss81RMb3lfqnbrnP8f48t/uuUnvAg3KcRmRS6hUfkpmDV7YxczYxm+WfJfz5uq++xDIs4Hd55qdoB/XH0mdmSnSnnJuYtlN2gbq7B5CqaP5xbunYRr0ymNbfCLQFeEEJ/5qnAjVRTsw2Wb9HBvLnIPVkUn8zL1OBHYI5c=
+	t=1778502402; cv=none; b=OBxLRO4uEQ213VCmNCuGKggOoMh3iGiShAo2rr5iGsRmbCuqXlVP7kQudZLcIEJXQpJgiO3opsdLy6+dqaCzo+UvzcAmQyIxosU9iEHsjakk3LNuNwalCrgVHn3fgbJ0r3NuOI+Zq0i/WzuBir9BsygM6D6y9aH1o/HYMC1VQQs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778502079; c=relaxed/simple;
-	bh=IgXwTtAGGSh+9hwv9Hf7xQrK8lqm1+gizPiM9/I1ezU=;
+	s=arc-20240116; t=1778502402; c=relaxed/simple;
+	bh=nSZcj2yYQaeRzk6N+kOkm3GS91s5Kw6/WI/khK3dvKY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JFA++LHn17aK8a+3kelNPvOyFqLT30TxvQtuXDHNxD4ga2LRvrIHU61l5oxCnGfKDojF7mgb5TUW5QwsFq45e+pxBKx6EOhJb3A1wzMlTx7M1/mrTHW1lQ7CfYvhROteY91+g9/+ceMxCDgaN0LcGyOwaNA9VrmyDKtw5h38JaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eyhddBQ1; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=tBjrHJaZRMssahnq9hn4MRzH1zfVlceVTKzZ0YqqJOTrOsOCkHDaxXWV7LFqc6P68N1WHBXqs14PUAK8ihRnLEqktXptbPxIBjpUZOcjP4rP63FX2H2FqN1TsUGA9V7FyH2FynqwpzXW/eM56V0bdWjUcNH1nfDiI1wJqI+LPF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SCy9O2cQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eyhddBQ1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D85E6C2BCB0;
-	Mon, 11 May 2026 12:21:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SCy9O2cQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E0C8C2BCC9;
+	Mon, 11 May 2026 12:26:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778502079;
-	bh=IgXwTtAGGSh+9hwv9Hf7xQrK8lqm1+gizPiM9/I1ezU=;
+	s=k20201202; t=1778502402;
+	bh=nSZcj2yYQaeRzk6N+kOkm3GS91s5Kw6/WI/khK3dvKY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=eyhddBQ1LP6+f0/E/2CeVmITyvxksm0CQT8EwRmeIWEcnMfV3t1cBfVYyLULdzrZb
-	 D9E9jn6HykKQGLwcawBSz05AjudPeBJsJ8B5M3RhAySzJz+5Na+dsCSjpvqzapWvX1
-	 g0ekmNK//t8FbBod/l+BWOZWuXEgQXxzp3wgLqdcQG5EM02JDn6JaHqP6VAjcHwGvj
-	 VaQG+0tuW0KGrTctQRfwDjBUCi9bVAgHws8abLFw3lwKyLa/fMFORFxAHYTl/otTeF
-	 1ULh1p89k1XzpGaU+PWbhZc44Dw6/p4u1xvzVLskjCEfOz2T5Z3J59bQGghxu3001j
-	 fNR0PEfhkNQsg==
-Date: Mon, 11 May 2026 13:21:12 +0100
+	b=SCy9O2cQYYrPHCzgXGZZoM2xNBj0RUzMwyTq/k/mh+27QLJzRkQyN9L4mc70dcLL1
+	 noXjNkQ2nbLwKlTB3aXW62LO2QzQJDyRy5OGE6XwiXJY9Qq0V33zBuV91wn3+WCu1n
+	 NylWOYGZb1404JkblT5/uhsyld5Pnq9HyLdJV7LUSpfPoDsNC6TvYOqVV7LsIet0G2
+	 vtRFUh6/scW1KZE0nIfH8T1nJpKvxty/3S/C47yprJWckVSkKElZdvGG9F4+ob5PJm
+	 tqzkKg789R7BwokxEBrlP9iANw9RZ4DWhmi/ElyXNkvnduRHLtR2mogX3HpPxIA7Cl
+	 vGkO1NOB/Prbw==
+Date: Mon, 11 May 2026 13:26:35 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
  =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [RFC 0/4] iio: light: add driver for Broadcom APDS9999
-Message-ID: <20260511132112.66246dc8@jic23-huawei>
-In-Reply-To: <cover.1778491503.git.azpijr@gmail.com>
+Subject: Re: [RFC 1/4] dt-bindings: iio: light: add DT binding for Broadcom
+ APDS9999
+Message-ID: <20260511132635.7f0855c4@jic23-huawei>
+In-Reply-To: <6acd3ce2a0e417699a8184817a4a8eb381450beb.1778491503.git.azpijr@gmail.com>
 References: <cover.1778491503.git.azpijr@gmail.com>
+	<6acd3ce2a0e417699a8184817a4a8eb381450beb.1778491503.git.azpijr@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,54 +47,89 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 11 May 2026 12:14:42 +0200
+On Mon, 11 May 2026 12:14:44 +0200
 "Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
 
-> This series adds support for the Broadcom APDS9999 ambient light
-> sensor. The APDS9999 is a digital proximity and RGB sensor with
-> ALS capability, featuring I2C interface, programmable gain and
-> integration time.
+Title doesn't need to mention binding twice.
+
+dt-bindings: iio: light: add Broadcomm ADPS9999
+
+> Add Device Tree binding documentation for the Broadcom APDS9999
+> ambient light sensor.
 > 
-> This chip is considered by Broadcom to be the 'successor' to the
-> APDS-9960 which has technically been discontinued.
+> Proximity and RGB features are not yet implemented in the driver
+> and therefore not included in this binding.
 > 
-> The initial driver implements the ALS/Lux functionality using the
-> green channel, which approximates the human eye spectral response.
+> Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
 
-That's not normally a good approximation unless it is also has
-very bad colour curves for green!  Better than any other channel
-on it's own but still not good. If we had calibrated sRGB it would be:
+Can you combine this with the existing avago,apds9300.yaml binding?
+Other than the missing interrupt in this file they look identical.
 
- Something like: 0.2126R+0.7152G+0.0722B
-for example.
+Note that a separate driver doesn't necessarily need a separate binding
+doc.  May not be worth doing given the extra supply this part takes
+(which you are currently missing by the look of it)
 
-The lux vs white light and lux vs incandecent light are fairly linear
-so 'maybe' it's good enough but it's a bit of a stretch to describe it
-as an illuminance measure which is what we'd need for it to be measured
-in lux.
+Other comments inline.
 
-So I'm on the fence at the moment.  We might be better off teaching userspace
-code to do it's own approximation if it has an RGB sensor.
+Thanks,
 
 Jonathan
 
-> 
-> Sent as RFC to gather feedback on the driver structure
-> and DT binding.
-> 
-> Jose A. Perez de Azpillaga (4):
->   dt-bindings: iio: light: add DT binding for Broadcom APDS9999
->   iio: light: add support for APDS9999 sensor
->   iio: light: add build support for APDS9999
->   MAINTAINERS: add myself as APDS9999 maintainer
-> 
->  .../bindings/iio/light/brcm,apds9999.yaml     |  33 ++
->  MAINTAINERS                                   |   7 +
->  drivers/iio/light/Kconfig                     |  10 +
->  drivers/iio/light/Makefile                    |   1 +
->  drivers/iio/light/apds9999.c                  | 325 ++++++++++++++++++
->  5 files changed, 376 insertions(+)
+ 
+> ---
+>  .../bindings/iio/light/brcm,apds9999.yaml     | 33 +++++++++++++++++++
+>  1 file changed, 33 insertions(+)
 >  create mode 100644 Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
->  create mode 100644 drivers/iio/light/apds9999.c
 > 
+> diff --git a/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+> new file mode 100644
+> index 000000000000..b20ef3677670
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+> @@ -0,0 +1,33 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/light/brcm,apds9999.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +title: Broadcom APDS-9999 Ambient Light Sensor
+> +maintainers:
+> +  - Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> +description: |
+> +  Datasheet: https://docs.broadcom.com/docs/APDS-9999-DS
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - brcm,apds9999
+blank line.  In general add some more above as well. Just follow style of
+other similar files.
+
+> +  reg:
+> +    maxItems: 1
+Blank line normal here.
+> +  vdd-supply: true
+and here
+> +additionalProperties: false
+and here
+> +required:
+> +  - compatible
+> +  - reg
+and here
+
+Power supply should be required
+Also you need to fully describe the part where possible. Here there
+is an interrupt and a vcsel-supply by the look of it.
+
+> +examples:
+> +  - |
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        light-sensor@52 {
+> +            compatible = "brcm,apds9999";
+> +            reg = <0x52>;
+> +            vdd-supply = <&vdd_reg>;
+> +        };
+> +    };
 
