@@ -1,125 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E94573BF675;
-	Mon, 11 May 2026 17:28:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B0704657F2
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 17:43:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778520526; cv=none; b=Mlm+BFHE8wDrTyBJXcUxUR3586y/uDwKwuaeXoDcUO1vdMUOl5Zcjppo8rIHfx6xaMp6Swqbi4cve4UtCtf19mgZLxgKRJIihIdyG2JnEgN+nboq3mhZ+fTxETfoJzp3AepWI0/9CijWjFaSSPqbJWRCsZHfhek6hoeqtIqeCmM=
+	t=1778521435; cv=none; b=JHVTteKAgucbxKeinTvbqYQyPRvXO8wMbtDq6WoF4ygXCwrFdPmnrDxOOc4KVUoPSZ6WlQmIKAE+Kqs1yG1Sv4/CoYf1b4Aqtk4hkeF5D8OfPsX0GcF00b1/UAXlVbvJRI44UsYx5jqidK+C7YJLdeIpKEmvfWQ53PIhc9NApmE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778520526; c=relaxed/simple;
-	bh=/7lcKVtHcO2bade24O1Ns8KyvOdt6ALKGo8fUbFVtN4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EdO1TyiTf58PbY/207D00Ei4nLWGZ6l+nzohJngrC95NJJcrjObPIpBr9bEG+CcGRVp2xCkuBA9/Racq7XXGqcB4AxPDiFTQkrtW0Wd/Z0SJeB1Rktksn59XQU6jCDduivMs8nA4bibtF99NCYFqtwi+O0wD7Z8TWz3ZuPBzQsk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XTtvDwwI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778521435; c=relaxed/simple;
+	bh=NZUNw0asM8Uh79fDTRNXCJ95Tgrkji7DhAnpBxZELIE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oDXc69yT059XRbSVSOiC/3U3r+ZCNdxLqRgusY3AWVwJmGiIeEAwATDrEJG6Z/n6hoS/y2zJupWiaGKxCNV0qR5lOwcVzmIzI/RumizqToGoxytPHviDu0D1qBfJhzK7V+t7t/uF5Qr2/MjbozW+03JubHAA8I2lk6vGWQrgh24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ritCKHfU; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XTtvDwwI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94B30C2BCB0;
-	Mon, 11 May 2026 17:28:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778520525;
-	bh=/7lcKVtHcO2bade24O1Ns8KyvOdt6ALKGo8fUbFVtN4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XTtvDwwI79E4njgtXHfNOGBpIzWYX0SBy1hs4DHwer35jw3Gn2GCI8USWitGgTbp+
-	 S0qkO1LX5z3i78TNeAwvJHokU9IpGH7L2IYPrpZ5OouVJtihV35sgoPNj5yo9IUVed
-	 Ge5rJ2QAw9QOIBrt9eXFaxCKvonam4Z3NWzTSlUY8XR28N8KaEKBLOQBrD+Y4w0KhC
-	 fmmsZ+u9VrzUsQrj1odv0pGaxCnFCf7Fwoj2cSrjukGRrbWtOK5JBn0K4oLEOyjWCC
-	 PgFe4Vc9835XliGjND/gyc/bgXFFxM6KK+sp2jX8rjz8EtK5+W5M+PH6QnxfvyHbo7
-	 9WrS+GBMI008w==
-Date: Mon, 11 May 2026 18:28:35 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
- dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
- linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
- heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
- andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V5 03/11] iio: imu: inv_icm42607: Add inv_icm42607 Core
- Driver
-Message-ID: <20260511182835.3754c543@jic23-huawei>
-In-Reply-To: <20260509191907.24734-4-macroalpha82@gmail.com>
-References: <20260509191907.24734-1-macroalpha82@gmail.com>
-	<20260509191907.24734-4-macroalpha82@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ritCKHfU"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2baca4df358so28272055ad.2
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 10:43:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778521434; x=1779126234; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=B2jGSpuCkFnZZPSgBqwuaE2iTkPzgpCQONBBuaB+fDw=;
+        b=ritCKHfU4elqPO1sNYB3ysv7Yeq4rKDVX3JJdVgi1iieqemLkLpk6fB5wHDL66ujAN
+         rGV8ACqn1Rl/bHsEBqk6Dbs8RoUmbaj5km9DL/SpJqHTTz4GF3tmSbDn6jo39D9efHkW
+         vJpujdioRaKhktECo1VVE/Bs6ZrPOVhHG1HWSDY/WgZfPmxZPJvQg4tkqPGuRoN4okth
+         0ySpDnPoDV6vj7jyabKote550QjYUyKpBx+AZ59LVZ7QvdAKOboM0dKY4IAxXfEivIaw
+         /bDNEPCoLVMZvZdvqRe4SrGz+okOOVxwgYl8D9ouAbzK3R8sU+vsT0+u21kpCVTRwsc5
+         Kzsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778521434; x=1779126234;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B2jGSpuCkFnZZPSgBqwuaE2iTkPzgpCQONBBuaB+fDw=;
+        b=Qln2w/M14o6I9OkoypcWmBUBrgaz/lziX38aXMJGwjmjjRTt02OsO/x7tBGyfyPmcU
+         +TN1uW/kXlQCaZtG8fa2FgOhlFGv+SylZcm5q2P1BgxHwvqisSBbnh1ASNWZzHFbr5UJ
+         M0GnL9oNfsMEVZ1foYcx9tkOz0NNxtCkDx/+5dYFla1MUZT90yHRPV+l0PGdm8hAbP3Y
+         C25/8rU1sUtIBVuurlZpJmG6sE6ThTn8OPltNR4L3/rog/pxVEWR3W2v+giT1cny47aG
+         27/uaQ9Xt0SFbxhg9EVtq4gX+NXKqCFyeezxoMBit+0LkBTxSNEMcpNYcv1dFkRk5fJ4
+         xcFQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+n/DgwIVxVDmIMgNpyKcPEluvSXpASxPcyO+TCjZCah2OUytdTCJY7HECCiWX0Zyw0CkS3bVea3Ts=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxgYTsq5267zN6Fu8yk41BtzmEij5+mZqR2sRaBB5Dr1/5VFPxg
+	xnffefqZGT1Oey7Rn73BXVuJFWoy6OgJKHYXyFzfYMtGjgNYux4fcgqJ
+X-Gm-Gg: Acq92OEDafxiF9j1oDeRkRxZFSp8NstDcmHo4CUa6jGrYjZoktrUTRqfqT0RTQ1Qtol
+	STeMfUnE47TbARaTey8rTsGpFA9kh2oNlW/2xwcwDZMPAe5cDrGf8W2GEvdmb2V0x4TyrBO0YIX
+	ngevwIFE1Jy1LcVurV4V9ZdCMQECFiJrNjrUSNKS444V950yPa8fxjP2xLGHS4/oEkOcMCquOjq
+	J4s4uFHyi0898GsUCqN+1Gn2DvUnRTzL92rwRBZKLNzwEiEDpyy1IyJLpjQACkkwnWvGgfhNPm8
+	MtevkDVfXTe5fzD51Y6NIRkLWXDC9OTx1G9dJ6v2sPd+cvqGgI0OJP4CDITM93Jb/qJYTpwp25O
+	Kc5KvdUGlm+IJ1dKvxxVuVrO+HQPJMpSGuTKUJjymmWGMpdDHycyqFDlfDBp2aWx8ZL4hVGpOYt
+	yXSyqT6EJGkvD8k4k2ezUtQ3blyu8AKjr/dTMnaxxTBQeJEAhGJlDT52xQOSH0LU5+DlHCvZ/2j
+	BHCqSqVRnmZ4kNFjwcRhsmgYBAZ42K2JRonOSkKA7fSlOb1ig6L9+W47jJZ7oM6hvP8rpA=
+X-Received: by 2002:a17:903:2796:b0:2b2:58c7:2ce1 with SMTP id d9443c01a7336-2ba7a345555mr192439805ad.36.1778521433704;
+        Mon, 11 May 2026 10:43:53 -0700 (PDT)
+Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.www.tendawifi.com ([14.139.108.62])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1e365a1sm106838425ad.44.2026.05.11.10.43.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2026 10:43:53 -0700 (PDT)
+From: Piyush Patle <piyushpatle228@gmail.com>
+To: jic23@kernel.org
+Cc: ak@it-klinger.de,
+	andriy.shevchenko@linux.intel.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v8 00/11] iio: adc: hx711: add HX710B support
+Date: Mon, 11 May 2026 23:13:25 +0530
+Message-ID: <20260511174342.123820-1-piyushpatle228@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sat,  9 May 2026 14:18:57 -0500
-Chris Morgan <macroalpha82@gmail.com> wrote:
+Add support for the AVIA HX710B ADC, a HX711-compatible converter with
+the same GPIO interface but a different channel-selection model and a
+fixed gain of 128.
 
-> From: Chris Morgan <macromorgan@hotmail.com>
-> 
-> Add the core component of a new inv_icm42607 driver. This includes
-> a few setup functions and the full register definition in the
-> header file.
-> 
-> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-Hi Chris
+Compared to v7, this series folds in the remaining review feedback:
 
-The sashiko bot has taken a look and had some comments
-and one in this patch is valid.
+- patches 01-04: add Acked-by from Conor Dooley
+- patch 06: reorder hx711_chip_info fields so channels and num_channels
+  are adjacent; annotate channels with __counted_by_ptr(num_channels)
+  (Jonathan Cameron)
+- patch 08: add blank line between int val declaration and its first use
+  in hx711_reset() (Andy Shevchenko, Jonathan Cameron)
+- patch 11: add blank line between linux/ and linux/iio/* include groups;
+  replace the open-coded triggered-buffer struct with
+  IIO_DECLARE_BUFFER_WITH_TS(u32, buffer, 3) (Jonathan Cameron)
 
-https://sashiko.dev/#/patchset/20260509191907.24734-1-macroalpha82%40gmail.com
+Tested on PocketBeagle2 with an HX710B breakout module. The device
+probed successfully, all three channels returned stable raw readings,
+and alternating reads confirmed channel switching between the
+differential input and the DVDD-AVDD supply monitor path.
 
-It's minor though so if everything else looks good I might
-just tweak whilst applying.
+Build-tested with:
+- make -s W=1 drivers/iio/adc/hx711.o
+- make -s dt_binding_check \
+  DT_SCHEMA_FILES=Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+- pahole -C hx711_chip_info drivers/iio/adc/hx711.o
 
+Piyush Patle (11):
+  dt-bindings: iio: adc: hx711: clean up existing binding text
+  dt-bindings: iio: adc: hx711: add VSUP supply property
+  dt-bindings: iio: adc: hx711: add RATE GPIO property
+  dt-bindings: iio: adc: hx711: add HX710B support
+  iio: adc: hx711: move scale computation to per-device storage
+  iio: adc: hx711: introduce hx711_chip_info structure
+  iio: adc: hx711: pass trailing pulse count into hx711_read
+  iio: adc: hx711: split variable assignments in hx711_read and
+    hx711_reset
+  iio: adc: hx711: localize loop iterators in hx711_read
+  iio: adc: hx711: pass iio_chan_spec to hx711_reset_read
+  iio: adc: hx711: add support for HX710B
 
-> ---
->  drivers/iio/imu/inv_icm42607/inv_icm42607.h   | 332 ++++++++++++++++++
->  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 210 +++++++++++
->  2 files changed, 542 insertions(+)
->  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607.h
->  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> 
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> new file mode 100644
-> index 000000000000..10dcd3473e9c
-> --- /dev/null
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> new file mode 100644
-> index 000000000000..e84e84416dab
-> --- /dev/null
-> +/**
-> + *  inv_icm42607_setup() - check and setup chip
-> + *  @st:	driver internal state
-> + *  @bus_setup:	callback for setting up bus specific registers
-> + *
-> + *  Returns 0 on success, a negative error code otherwise.
-> + */
-> +static int inv_icm42607_setup(struct inv_icm42607_state *st,
-> +			      inv_icm42607_bus_setup bus_setup)
-> +{
-> +	const struct device *dev = regmap_get_device(st->map);
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	ret = regmap_read(st->map, INV_ICM42607_REG_WHOAMI, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (val != st->hw->whoami)
-> +		dev_warn_probe(dev, -ENODEV,
-> +			       "invalid whoami %#02x expected %#02x (%s)\n",
-> +			       val, st->hw->whoami, st->hw->name);
-Sashiko correctly called this out as a bit nonsensical.
-dev_warn_probe() is useful for dealing with deferral or that can't happen
-with allowing a return dev_warn_probe() type call.
+ .../bindings/iio/adc/avia-hx711.yaml          |  77 ++++-
+ drivers/iio/adc/Kconfig                       |   8 +-
+ drivers/iio/adc/hx711.c                       | 311 ++++++++++++++----
+ 3 files changed, 312 insertions(+), 84 deletions(-)
 
-In this particular case it brings us nothing over dev_warn() so better
-to just use that.
-
-> +
-> +	ret = regmap_write(st->map, INV_ICM42607_REG_SIGNAL_PATH_RESET,
-> +			   INV_ICM42607_SIGNAL_PATH_RESET_SOFT_RESET);
-> +	if (ret)
-> +		return ret;
-
+-- 
+2.43.0
 
