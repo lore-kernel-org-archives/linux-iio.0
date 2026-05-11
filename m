@@ -1,71 +1,71 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54E344014B4
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 15:31:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8F312EB5A1
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 15:33:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778513466; cv=none; b=G1STzpv37W3TaFTfBN76oztYiG3HDTZiOgBIeUXvyc2kOCy7UMg39pzHg47KamgCNAwLEI67lkLjnJrj/tfCtu9ILo+FZMrsR3QAU9GcIekFo1rhvxJ53mpmRwe730MXaWF+lpBZiglhP+10aIYEWw5j6NFqgqq2NrZvz7Yo2Og=
+	t=1778513617; cv=none; b=FgkhbMYdYeGJ5HOjGHKPpNVvbJSucfdmpYw03cnjdWd3iseAjY/F1zWcHflVlAEl/u4e2zdypJyBfSeF4hHTwAYeerQ1/HzDoxY8Jl3d4r0VlC3nUYKQRoc72pcoj6eyqkAjad3RSLYbjeqFUag0Sxenh0ua80vYESeM6xb2ymY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778513466; c=relaxed/simple;
-	bh=1VLl6umAE+P+6rl1yUlRHZHMLvBlVyzOUgCmwbPpXdo=;
+	s=arc-20240116; t=1778513617; c=relaxed/simple;
+	bh=wWgNO5D7pwoBe3Xr8kN3gWYMS6UvxZkvM5VSQmPYjIw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h210bTGovBDWppM1VquVQexbRK8ZSTKGBH+2OGFF7ENeFl8LkDvCd5kJEua8u5Wuv/NK1/eGacXZ88/53z4w/r9Tebs9CFjeSq6ka0kknFp0NVMjk4eAqkCjIEhjbuj5nu7sKsfMG8Y32H36CdsCmtFl6d+jw0LPSv0xx1WoCjs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e0U/Zk07; arc=none smtp.client-ip=209.85.218.54
+	 Content-Type:Content-Disposition:In-Reply-To; b=m6vw1UDGrW1Hb6E7pfZSH/BIWIYJ3+o7GmfaO+LfzeXbF1P++ns1hYRCGSjPJD6GV3ljOQ5Js6gwM4afHwr7A+xDF1ZKSD0p+37YtOpvxj5MAqAIWCyI98032ot2s1C2Db/ClAK+izdsYY756mvsIBbESjq7/+qrEAAUfujtgHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kCLA+uNP; arc=none smtp.client-ip=209.85.218.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e0U/Zk07"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b936331786dso560378466b.3
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 08:31:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kCLA+uNP"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-bcc9fdc959cso289916766b.2
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 08:33:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778513464; x=1779118264; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778513614; x=1779118414; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kWZzStjqE2I91mJHHt3o+qyvptKZ/dRPtDvuD3l0QAc=;
-        b=e0U/Zk0707EjXpLtQsfoYOQzUE88vRWXYdbmZ4ybJwx8wrZ7nIe2t+1tDmmA8Ionh8
-         yb5CBza7D7xRMTCeqYiKjE8Em0b1BMaaV/cJsCVnThdkkAGoIJx2B9bVbD1n5bIQAcwy
-         OCrlQjxPeXnpX1Ri/6w+/FtgcjqYIxy63SdBe/HFY4OyAVlTQMsw50vtpdU2KjGzI8li
-         /h7xVuYst8aS3o5nVwfFDtQMAwV25KWoHwpoeDKSh7OoeKMQskgbu9ET3KG3cfyEH4oe
-         HLmFydGE25QSrdag0u6d/v7jtMLIxMZ/otq1r31JZ/e4O8aj9NXg+E3ccP9bCSHeq9Gn
-         E6rQ==
+        bh=tT6LZmKXfjnHi+vvSeRz4PAaAP3mDaknA4l7KqBcn3o=;
+        b=kCLA+uNPAEfPQv0Qj1Nr7kxs6eILuqAiZFgDd85DAyZJ/0xwcLh7pfv8XT8Jb7K8IY
+         yJvs6JjbaFHRtQpBmMcM7Z2QbsdExnx6O2m887sGspg4dbOQMddCrn06MvRgH/KdGTyw
+         SqgYdFE2/M3SL8d2NzIzjHvksDCf1lxGXqszdI2jS4LI7CdvVQ0m3R2j6QKaSnpuHDv+
+         8ua72TpADPafliS1rPHxRDyoDsPQ7aAn2liJfZrhJPvtscutdA+fvuS0a2BYI/Nt1Q95
+         87yZTRuNlmQwFy/gz8QoN3Oi4bob2YbCskQOW5TXNv68Qz9kg8UPojsvs1Mau+Y25nzw
+         R1iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778513464; x=1779118264;
+        d=1e100.net; s=20251104; t=1778513614; x=1779118414;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=kWZzStjqE2I91mJHHt3o+qyvptKZ/dRPtDvuD3l0QAc=;
-        b=dpTCRBc89mI2vn2/o4DOMCEGeq4F84MMPWgMhoGBEPt0lJd+QsGL/AOJrM+L1Bgm/m
-         ouJdVghJt7ZN6zE8oEqylbw+Ir8GRPGKCMDHqjkaEQiP563mD1+rI5t+BxAiCylcVpXJ
-         jSEGHDoIilJsZ7Co/EoqTXPECaZXOYXabKuG77Ll6J70SdK+XA2fvsNH01aUjJgR2H4W
-         wjMs1RoNQOboIfus73nZM7nW6RZmX3llritSHVL0YT19BAuNgXbUbVUdASEjq12JbP6K
-         fQVuKBB/JK9aqeRQ23zAc2nSsJgiTuktrUlkhVIw5oTVF9rZ/LzpR1+Y1BPg2Lgu6/IA
-         XHuw==
-X-Gm-Message-State: AOJu0YxGevS8B6iZRYsQJMcJUdqiN5Tc5pgZmDZOiuv5Qj3i1cGdypjp
-	vRzTvIdWomBmw9Mt44AyGnbAGFLH3vneCDed0+2UD16LeuEeqS3Rws74
-X-Gm-Gg: Acq92OGJWBTwv82sfbVP+cb/LpGrueEcvwok4CR0QbWg21ggX8D9O+B7hRwx4jVXdeB
-	E9dBxUyln8mnfqWdlqy8JI/6AxmdwGWmXHymzz47TCLyJWd24yI0vCUrsf+70erVTxA84Q8N4hf
-	Ye+zeZe1mpkjICGYy293EvLk02TAeA0IcIKh7FQrCNZVYF8ASS/jmQdr9EkaRVQRcjgUwEI8Moo
-	79Bx/VeoFyyQSc+MUtFjQ4hYjYjGwkBMk57zebuR0ukPkhexO8A1RTFneIFiXedyJwrnmSial/K
-	H7u4MGPGYkqfUCPOr1B8T+z/RtQfnCB4psvJvJLG4LMyrJPmWXhVaY2UkwaVmJtCi30Bnl4Dzy8
-	7Fx0rL19qMj9K3XROufFnkQzyOWPMxBumATDa6nJVo9RVSDZOPA/5Ss3EVPfV4LEXbnv9/RS12G
-	xnV9nLYQxv3VPkZxXYJfJxGXTk8ik=
-X-Received: by 2002:a17:907:e148:10b0:bd1:d4e8:42a4 with SMTP id a640c23a62f3a-bd1d4e84518mr109531666b.11.1778513458881;
-        Mon, 11 May 2026 08:30:58 -0700 (PDT)
+        bh=tT6LZmKXfjnHi+vvSeRz4PAaAP3mDaknA4l7KqBcn3o=;
+        b=aASWKwkyAbc1frn1HuOVhElkmd4hCip5HJfP/zMJP0/Ejy5lROmQf9fJyt6qIWcZ3g
+         N49xzYnw50V4Il2M4jDlZj21nxWIF7JDB2pcYV0N+lCi8U4jfvoAs5yYoDXLjaHKeR9w
+         J/NlAMIHdbcy+u/blP4vHsNHpvNkCKQxRV3HIk5zT26DGMp8pvKJLkZr4i9Hn7+Bm1Jc
+         LdG/+Sjr3ZLury42gnyH4pIVN566XPwDfG3T66o0fh9d1a+ujaAAOZkyG+bAQ/iQaMdu
+         V7M9XRFXFlRejhIrNif9KD0YOCP+s3QfdhBgUWhTHRQe2O2lFeO3edR9tt0BlEbe2wW5
+         soAQ==
+X-Gm-Message-State: AOJu0YwO5Itibq3lgHA8nj15cYpOOdFi78/NpUpCJDwEhF5EVqA6KUn8
+	JwzMEtOJn4FRUk7AKOwUOprqP14mN/rrLI3GKSA5cWcr2LN7s/FR1fWs
+X-Gm-Gg: Acq92OFzb5dsetoIrmKuDqgzBKg4DGEQ7QEXXbSqJvzJDysHgU5xrWBT2+kIQqg/M0W
+	0fU4MNOCyhGgy9WC7bTcZzF6kWqdYBHTrBIGaB+Res4ctfEs9Ix0zJPIKp34eaYF2U9hXOt4t1t
+	dvj6V7rCAtJpyIEM5U1ICFifLA5zEP/T7bfy2B51U/HojamCwwVd7awJVbixVyndL3VOuTt9Vxs
+	t1h0ZXeVfRiWMJmBP84iWu451/bXazJsyTBV1mFl2WxGeOInaqI29JGpAapWLyKEGuVUweh8Eck
+	/MhzajFKqEL79SAqkDD2yjVsrnCmSINJrP5yqXFNEfpJZ4PH1bgArs3gr5Tc+TRI8l/4Mv/9keb
+	3bCe+vz7tO88D3LOZffZdw0fYXMxD7NRT5oILKe3fupTKB/g78KK8ncqCRNlXnDNZEj5vN6FxJ9
+	PgBVao6Ipd+RFgu4VaXJS0TENVEkSZU9s9qFdP+Q==
+X-Received: by 2002:a17:907:2d2a:b0:bd2:2657:9b7f with SMTP id a640c23a62f3a-bd226579ff1mr31146266b.44.1778513613759;
+        Mon, 11 May 2026 08:33:33 -0700 (PDT)
 Received: from gmail.com ([212.75.105.246])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bcbb2b1c3adsm429487666b.35.2026.05.11.08.30.57
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bcc384b75b9sm372810666b.21.2026.05.11.08.33.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 08:30:58 -0700 (PDT)
-Date: Mon, 11 May 2026 17:30:55 +0200
+        Mon, 11 May 2026 08:33:33 -0700 (PDT)
+Date: Mon, 11 May 2026 17:33:31 +0200
 From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
 	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [RFC 3/4] iio: light: add build support for APDS9999
-Message-ID: <agH1u965gpFJDxbt@gmail.com>
+Subject: Re: [RFC 4/4] MAINTAINERS: add myself as APDS9999 maintainer
+Message-ID: <agH2OVN9CZLu4RwT@gmail.com>
 References: <cover.1778491503.git.azpijr@gmail.com>
- <4bffb49a6b8a47037a08e728caab539fea6a88b8.1778491503.git.azpijr@gmail.com>
- <20260511132804.2d2c54b5@jic23-huawei>
+ <dced0d8107c8f046a80128ec0fba85b764ef1848.1778491503.git.azpijr@gmail.com>
+ <20260511132908.6aea342e@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,26 +74,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260511132804.2d2c54b5@jic23-huawei>
+In-Reply-To: <20260511132908.6aea342e@jic23-huawei>
 
-On Mon, May 11, 2026 at 01:28:04PM +0100, Jonathan Cameron wrote:
-> On Mon, 11 May 2026 12:14:50 +0200
+On Mon, May 11, 2026 at 01:29:08PM +0100, Jonathan Cameron wrote:
+> On Mon, 11 May 2026 12:14:52 +0200
 > "Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
 >
-> > Add Kconfig entry and Makefile rule for the APDS9999 driver.
+> > Add maintainer entry for the APDS9999 driver.
 > >
 > > Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> Squash with previous patch.   There are some corners of the kernel
-> where they have a pattern of building up particularly complex drivers
-> in multiple patches that won't compile then adding build support.
+> > ---
+> >  MAINTAINERS | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> >
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 1aa9c989973f..cdb703f37f06 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -4302,6 +4302,13 @@ S:	Maintained
+> >  F:	Documentation/devicetree/bindings/iio/light/avago,apds9300.yaml
+> >  F:	drivers/iio/light/apds9306.c
+> >
+> > +BROADCOM APDS9999 AMBIENT LIGHT SENSOR DRIVER
+> > +M:	Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> > +L:	linux-iio@vger.kernel.org
+> > +S:	Maintained
+> > +F:	Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+> > +F:	drivers/iio/light/apds9999.c
+> Build this up as part of the earlier patches.
 >
-> We never do that in IIO each patch must build whatever was added
-> (slightly exception for complex multi module drivers where it can
->  be tricky to do).
+> So add the initial entry in the dt-binding patch (if that's a separate
+> file) then add th driver in the follow on patch.
 >
-> Anyhow, short story is merge with previous.
+> There is no advantage in having it separate and it annoys some tooling
+> that checks for valid coverage for each file added on a patch by
+> patch basis.
 
-okay, I'll squash Kconfig and Makefile into the driver patch in v2.
+okay, I'm sorry for that. noted for v2.
 
 --
 jose a. p-a
