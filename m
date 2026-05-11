@@ -1,82 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5586B3BED1F
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 09:29:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AF1B37C930;
+	Mon, 11 May 2026 09:36:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778491757; cv=none; b=fCav+Q34oUGP2dxq7L0GtP5AKaqsnfMkFZSRsoQFbn5QWzIARkNogb0O0/EK8ZUybM++Iczc2BfCL1OJLycRTArwSntBG7fh2u866YNLwQKuiIPiqfMHGOA64rBkMRdLYtzCPUI9KVi/kZoxwwTeq56R+hXFICeoZusFw5VgPFE=
+	t=1778492199; cv=none; b=pa9KffSsi1iBDK2q0rGJNN6p2mK/UtCBrCHfLS99MXkpMFmX39B8Xx96E5PP37Vozq03kebebSWvN3s9GoY/b9MdCuWD47vW8KJn0xSYivkFxViQCe1DerFtrWwpJvZ+Lbij43Qg0Rs0rZrdUQZGlFyyGrsErZrTeth6Nqzc0BA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778491757; c=relaxed/simple;
-	bh=/8WLgKR5wjFJrUpA/ZQ4kOdLYBjqDpn/KJQ+OzXehHQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oDaL4L7yPNFcHuq5V6FujT4gM6Q8ti18pKHw3mmHDFssE+++rddxG/Bw5bG6NGizRDE2/Tva2/lUGxW+lkAXUotEOR5xZK8kbo96WqxNysNJC80lO59uqprrTesZ6rmOIkfC6EszhK242vePogKXNbzQvH6JxaA9hkYcpNvLZsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GlfcsNeD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778492199; c=relaxed/simple;
+	bh=Nr6wvmQNMPiK7f1NhJgebpOuZMeoDGQZHRr1LBzM/B8=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=j5Rty6pZAJNukB5H/BB2fPskSsMIgb4s3vlE+/o/yX5JimxlrjDn9WdsAiO3Vj+5skJ5VTN7UTMyCkgKq4vZ5ATPtjaUUPyKKjzXmyTQH4FDtm7vEcoYYX4u5f8ox1u2Epujc2phhAXtBXfRub/eOziLTp6VYNIuNZ0CTTLG84A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=jUZGEs+G; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GlfcsNeD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA3FC2BCF7
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 09:29:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778491757;
-	bh=/8WLgKR5wjFJrUpA/ZQ4kOdLYBjqDpn/KJQ+OzXehHQ=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=GlfcsNeDUKVhz4/ZQU9+SQdfSg36gL5hFVfiQc4Z0zYA21UxlassSvsCPna/ZtlUH
-	 jWBinOniQJeqx3mAgpeZEZilpwLFOxsVJjEXkALbc5tAGgf9SIG2r1k2b07BmIx+2C
-	 uIkhf22bfPCYt7Sk9krSJBMjeGxTMSEYGFLQOe3ceuWAUeTUBVLl6S37LFecleLHvC
-	 yregLvD5gTV22d1Ui5jAXv2ML2Yh/FxR/UGrmvCiSS9zvzjdIeWrkty3RVesOecJvi
-	 xZN6vS8PWvK3DVGXgAhpwkJbUkgAW5IEZNJj+x00UQVj7RrhZcRBp6fLgL3qoN3MzP
-	 s3K+MoMBNyd0w==
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5a865d1547aso4675352e87.1
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 02:29:16 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ9npxDcQOsioiDaHsALq1vpkat5TbVLKA+8np0I/qmfd7j4B32GtMb36Xej5yxkAMQhQ3RX1t6xOS0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwkSuLoS7RPoO8X1bCR/rrBcYK8cm7PX6g0WVPQZPO36vvac92K
-	dBrYD4Zndm2RH+op2OpmEZMn+BRG1TmMbyekfL0sROeCVQ1+qLeYg0Z2taJqHy5zJ2Sd4m3v20l
-	k4YYa0Vz8eifNLirJvSefsQ5jNhmjPJM=
-X-Received: by 2002:a05:6512:39c6:b0:5a8:7360:5c59 with SMTP id
- 2adb3069b0e04-5a899b98095mr4948327e87.10.1778491755749; Mon, 11 May 2026
- 02:29:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="jUZGEs+G"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1778492196;
+	bh=Nr6wvmQNMPiK7f1NhJgebpOuZMeoDGQZHRr1LBzM/B8=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=jUZGEs+GvzsZz3+HsXxPjVObkW/RwXvByy0gotGnwNX2p0o/p+H8lMt+yt2XlhND8
+	 wzHsFq0+aGcC2zBTnjeOrxO0/JVrGUAxl8omDgKL7stc9INZ2bZ7zLcAUyo8I7g+rY
+	 FuuZWS//2ZCOtwdpK+h5QpcrBHsDa43T7b1dTK1KNKuCawe4Lqdb5ZC8G9Qr6kf0Sb
+	 HFj/QnR+KtSzxaDQ23mDbGZjYvPFQCVdKqNzDfTkaTav42xbN7Y4/3pfifTF9cvpt3
+	 gctruCbaPNM4V4qAbPY4BvFuxLHjJcVhP76n+VkRT0ilnTIssF0/Qr/JXJOBRx7ODl
+	 ZtfXjP8Lk875w==
+Received: from IcarusMOD.eternityproject.eu (unknown [100.64.1.21])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id C621817E040C;
+	Mon, 11 May 2026 11:36:35 +0200 (CEST)
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+To: Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, 
+ Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+ Chen Zhong <chen.zhong@mediatek.com>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+Cc: kernel@collabora.com, linux-pm@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
+ linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+In-Reply-To: <20260429-mediatek-genio-mt6365-cleanup-v1-0-6f43838be92f@collabora.com>
+References: <20260429-mediatek-genio-mt6365-cleanup-v1-0-6f43838be92f@collabora.com>
+Subject: Re: (subset) [PATCH 0/9] MT6365 PMIC support cleanup
+Message-Id: <177849219574.115964.17730768791948162996.b4-ty@collabora.com>
+Date: Mon, 11 May 2026 11:36:35 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260510-pm8xxx-xoadc-label-v6-0-49700fd03005@smankusors.com> <20260510-pm8xxx-xoadc-label-v6-4-49700fd03005@smankusors.com>
-In-Reply-To: <20260510-pm8xxx-xoadc-label-v6-4-49700fd03005@smankusors.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Mon, 11 May 2026 11:29:02 +0200
-X-Gmail-Original-Message-ID: <CAD++jLkR8HULNncaKre2jhkCfrvSGhuaNjun_WBaTK0Gib2=vw@mail.gmail.com>
-X-Gm-Features: AVHnY4LOpGAki2ZZx-8fEzwB0VI2UtPd19xvaRIQQUjKadmi0IYy9LQrvAehbGc
-Message-ID: <CAD++jLkR8HULNncaKre2jhkCfrvSGhuaNjun_WBaTK0Gib2=vw@mail.gmail.com>
-Subject: Re: [PATCH v6 4/4] iio: adc: qcom-pm8xxx-xoadc: add support for
- reading channel labels
-To: Antony Kurniawan Soemardi <linux@smankusors.com>
-Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	phone-devel@vger.kernel.org, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.14.3
 
-On Sun, May 10, 2026 at 9:02=E2=80=AFAM Antony Kurniawan Soemardi
-<linux@smankusors.com> wrote:
+On Wed, 29 Apr 2026 11:44:13 +0200, Louis-Alexis Eyraud wrote:
+> Several Mediatek and Radxa boards, based on MT8370, MT8390 or MT8395
+> SoC, integrate the MT6365 PMIC, that is a MT6359P variant:
+>  - Mediatek Genio 1200-EVK
+>  - Mediatek Genio 700-EVK
+>  - Mediatek Genio 510-EVK
+>  - Radxa NIO-12L
+> It is compatible with the MT6359 PMIC.
+> 
+> [...]
 
-> Implement the .read_label callback to allow userspace to identify ADC
-> channels via the "label" property in the device tree. The name field in
-> pm8xxx_chan_info is renamed to label to better reflect its purpose. If
-> no label is provided in the device tree, it defaults to the hardware
-> datasheet name.
->
-> The change has been tested on Sony Xperia SP (PM8921).
->
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-> Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+Applied to v7.1-next/dts64, thanks!
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+[6/9] arm64: dts: mediatek: add MT6365 PMIC include
+      commit: dd85b476c5bb164e5978e42867e1f4deb23b23fd
+[7/9] arm64: dts: mediatek: mt8390-genio-common: use MT6365 PMIC definitions
+      commit: 38c2adaccd3618882e3c5b8ec76ef77a1ecb8de9
+[8/9] arm64: dts: mediatek: mt8395-genio-common: use MT6365 PMIC definitions
+      commit: c264c7958a36ceedebedf8a437fa719906e4e1af
+[9/9] arm64: dts: mediatek: mt8395-radxa-nio-12l: use MT6365 PMIC definitions
+      commit: 4d2b8fcd8bbd7f00335a52b86189d85686fdc707
 
-Yours,
-Linus Walleij
+Cheers,
+Angelo
+
+
