@@ -1,100 +1,147 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 309CC6FC5;
-	Mon, 11 May 2026 15:08:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28780311977;
+	Mon, 11 May 2026 15:14:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778512101; cv=none; b=QmzBMVeFghT5fBm/zupP8qZAYVzedQvIwIgaDnvSuAtIG8LkOWby2xg+klcK5AMYSoNNgjYDahjDFbjQtHNwqTPkPY7SA6i+Qm+rnOECbF5pAcmeygilItd1c0OCOqMZFM5W2ILvcvuVdZy1qNbHg7/6vtSeMinz/T4oLPR8AeY=
+	t=1778512479; cv=none; b=JZ9O8KDlo0ALGsguqxwQyS8kwlrxnSoHt6OxdmHh+tyakHaExi9QzadnmRSzxC41O18UxqFJzKm8YMBDRnqpNrdIggA0niqqBnoe1CcUjKJ26T/g2xQOquYdwO2maGEjCfwHi5QzhtWU4s/ZTVisl4qHLkL17I0PWuKIL1HiRII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778512101; c=relaxed/simple;
-	bh=XrJiy4Of5x6PwOlrooRvt5BslKJ9N+GSCRrhYCp7sOE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J6M4oej8EwXHU4LkL5w/D4B5SL8E4MNJXVzBzJboIPTBg4Lj+wMqPk4+t3Cr8asIVyL25RhxoMyk2xpqHXUEhD8W9vtBNCYUC1RMBdcwS9i3AcV/EQAMer6irXKJogpKzDvrF1DuCOeelFz3FuuZlGVGoMgeM+cWL99ow2baM5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jgdH2N5W; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778512479; c=relaxed/simple;
+	bh=crVWr+28yBZGxL0/BvjDDHA8a8BhulirWvY6XRK9mi0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GPj458ep6Sr/4alRinWcuShhKiZPpqxEJQ8bOpoK8tZfe8aukGLhW26nyQF0dc0OpcXU/cJbRxsJcua2qfxJb8R8vrKX5QAzm2CK8hzK/0C1gFcSBjZN0Bj4WEQnZUORkS/Jmk/W6ceqSv3YqZS4gFOXX4glfi8SdJsQr4tJ0qM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aKSV38LI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jgdH2N5W"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778512100; x=1810048100;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XrJiy4Of5x6PwOlrooRvt5BslKJ9N+GSCRrhYCp7sOE=;
-  b=jgdH2N5WzHZ7EGwVTj6zukI8Sz5iV/bUuJbcNKBGR664qDOu/2LHH6QF
-   Wq37g8Q6XWY7uxNpXEEkUuG1s00jr3gwjQ/IsEyP4ZRApctODQ4lI8i4Y
-   RRb8lBvLSb22wkZ0SOeVtcPDC9HbhXpGIIiwoRFYs+4dvfo+tFnp4POUX
-   6bL5lGxjTOGtGNPWdWHhvUnS15nvubiuq3+jeOi4+mTgjmTOKp+h/X4SV
-   Y3HyIlKoyEy+bKhU29FFL9kHr5kHbApr00LFJzWNT3stYD0HR6yCEXvu1
-   tD9aHHHP/+onfSOEFfTQ+V08z332LN/GEP9LptQWNhax+0j9jMcZMyL+L
-   g==;
-X-CSE-ConnectionGUID: Bux0utzESmKugNGpglo/pQ==
-X-CSE-MsgGUID: Xy22KwZOTtWsborytpO8FA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="83272556"
-X-IronPort-AV: E=Sophos;i="6.23,229,1770624000"; 
-   d="scan'208";a="83272556"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2026 08:08:19 -0700
-X-CSE-ConnectionGUID: 6CfwrRK1RPCo3crw4vnPxQ==
-X-CSE-MsgGUID: m6OB2HxjQKK4nvQJfvOX2Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,229,1770624000"; 
-   d="scan'208";a="242441545"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2026 08:05:38 -0700
-Date: Mon, 11 May 2026 18:05:36 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, gregkh@linuxfoundation.org, hcazarim@yahoo.com,
-	joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: trigger: iio-trig-interrupt: use devm_* helpers
-Message-ID: <agHwQAn3iq7L7eF8@ashevche-desk.local>
-References: <20260511060732.7728-1-sozdayvek@gmail.com>
- <20260511063229.1433-1-sozdayvek@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aKSV38LI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80938C2BCB0;
+	Mon, 11 May 2026 15:14:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778512478;
+	bh=crVWr+28yBZGxL0/BvjDDHA8a8BhulirWvY6XRK9mi0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=aKSV38LIMNnXA/E4GTrEu9JYHV6FxIMH09sutlIk3czUgDjDSF1Y5WZN375JnQTtL
+	 8qxXL1aKPmnb8zhSqHe1lxpK7fKlVyqg+sllaK+UwFLZPTvyriyzL2rVqdlb1CvEMB
+	 1x3ee6n6IL/VvdIpWJKnv+ZW3oXBgh/KSMkDsNFguAPxxmxDlNXF9GVU1au3MOR+S1
+	 UcS03t2octOtlODJ6EM1PDc8U7yEZHWUsm8Dbx3rHKpkHMkFgqOWngihSI2ykFdJYu
+	 JzcmD3h11RVXX1sNkMZsr9WlTt/X97Ke7zjM0KhG53Xw60GOtEPgEGF6S+1ifCgTDc
+	 v4iq8+/a1HjAw==
+Date: Mon, 11 May 2026 16:14:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Alexandre Hamamdjian <azkali.limited@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, CTCaer
+ <ctcaer@gmail.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Add ROHM BH1730FVC binding
+Message-ID: <20260511161429.6cae5b7b@jic23-huawei>
+In-Reply-To: <00855a46-20f9-4b4c-8bec-bb64d9d8efe6@gmail.com>
+References: <20260511-bh1730-v1-0-e0df1f499135@gmail.com>
+	<20260511-bh1730-v1-1-e0df1f499135@gmail.com>
+	<92e2d1ab-c973-45a2-b0c4-d7c672c610e0@gmail.com>
+	<00855a46-20f9-4b4c-8bec-bb64d9d8efe6@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260511063229.1433-1-sozdayvek@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 11, 2026 at 11:32:29AM +0500, Stepan Ionichev wrote:
-> Convert to devm_iio_trigger_alloc(), devm_request_irq() and
-> devm_iio_trigger_register(). The driver-managed lifecycle removes
-> the manual error-cleanup ladder in probe and the entire .remove()
-> callback.
-> 
-> Drop the now-unused iio_interrupt_trigger_info structure: its
-> only purpose was to hold the IRQ number for the manual free_irq()
-> call in .remove(), which is no longer needed. The matching
-> linux/slab.h include is also dropped.
+On Mon, 11 May 2026 13:43:56 +0300
+Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-...
+> On 11/05/2026 11:22, Matti Vaittinen wrote:
+> > Thanks for patches Alexandre!
+> >=20
+> > It's nice to see these upstreamed :)
+> >=20
+> > On 10/05/2026 21:09, Alexandre Hamamdjian wrote: =20
+> >> From: CTCaer <ctcaer@gmail.com>
+> >>
+> >> Add a YAML binding for the ROHM BH1730FVC ambient light sensor.
+> >> Documents the required compatible string, the als-vdd/als-vid
+> >> regulators, and the rohm,integration-cycle, rohm,lux-multiplier,
+> >> rohm,opt-win-coeff and rohm,gain-coeff calibration properties
+> >> consumed by the driver. =20
+>=20
+> // snip
+>=20
+> >> +=C2=A0 rohm,opt-win-coeff:
+> >> +=C2=A0=C2=A0=C2=A0 description:
+> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Optical-window calibration coefficient=
+s. Specified as a flat=20
+> >> list of
+> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 triplets <rc cv ci>, one triplet per w=
+indow region, where rc is=20
+> >> the
+> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 visible/IR ratio cutoff and cv/ci are =
+the visible and IR weighting
+> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 factors used in that region.
+> >> +=C2=A0=C2=A0=C2=A0 $ref: /schemas/types.yaml#/definitions/uint32-matr=
+ix
+> >> +=C2=A0=C2=A0=C2=A0 items:
+> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 minItems: 3
+> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 maxItems: 3 =20
+> >=20
+> > I am not sure if I read the driver patch (2/2) correctly, but if I did,=
+=20
+> > then these coefficients are used to compute Luxes out of the raw sensor=
+=20
+> > data. I believe it would help anyone integrating (or investigating) thi=
+s=20
+> > sensor, if you added the actual formula here as a comment. If I read=20
+> > this right, the formula is _somehting_ like:
+> >=20
+> >=20
+> > Lx =3D (cv[win] * ch0_data - ci[win] * ch1_data) / gain / int_time
+> >=20
+> > Here the cv[win] and ci[win] are selected from the opt-win-coeff -table=
+,=20
+> > depending on the measured ch1_data/ch0_data ratio, right? =20
+>=20
+> One thing came to my mind. This 'window' -approach for lux calculation=20
+> is not too unique. For example the rohm-bu27034.c uses similar approach.
+>=20
+> The thing is that some of the sensors have more than 2 channels. (For=20
+> example, the first version of BU27034 did. [That was BU27034NUC, which=20
+> got cancelled when BU27034_A_NUC emerged]). These ICs may still may use=20
+> similar approach of having light regions, determined by ratio of (2)=20
+> channels. BUT, they may then have more than 2 coefficients / window.
+>=20
+> So, maybe this could be made generic enough so it could be re-used for=20
+> such devices if needed? I am not sure if other manufacturers but ROHM=20
+> does this in Lux computations - if yes, then it might be worth making=20
+> this more generic and not just a ROHM property? Maybe Jonathan has some=20
+> insight on other Lux computations.
 
-> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-> ---
-> v2:
-> - Drop the dev_err() call after devm_request_irq(); really_probe()
->   in the driver core already logs probe failures, so the message
->   would be duplicate (per Andy)
+It used to be very common to have multiple sensor / window setups for
+ambient light sensors - though perhaps less so on more modern devices
+(we have one on list today where they just say use the green channel
+ of an RGB sensor - so there are more windows but not relevant to=20
+ illuminance measurement).
 
-FWIW, it's IRQ core (not driver core!) that does printing.
+Sometimes the window bit isn't well enough described in the datasheet
+so we only dealt with the parts on the actual sensor package and those
+were handled in driver rather than being in dt.
 
-> - Use a local struct device *dev = &pdev->dev (per Joshua)
-> - Drop the "No functional change" claim from the commit message;
->   the resource lifecycle model changes (per Joshua)
-> - Use .remove() function notation in the commit message (per Andy)
+What I'm not sure on here is how much of what is being described
+is part of the 'chip' packaging - i.e. the bit that is constant for
+all instances of this device and how much is part of the wider=20
+device - i.e. the laptop / phone etc window infront of the sensor.
 
--- 
-With Best Regards,
-Andy Shevchenko
+The chip bit we shouldn't have dt, the other part we should and it
+would indeed be interesting to work on a generalizing that description.
 
+Jonathan
+
+
+>=20
+> Yours,
+> 	-- Matti
+>=20
 
