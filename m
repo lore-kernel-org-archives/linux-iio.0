@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9691934AB06;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 967D7344D83;
 	Mon, 11 May 2026 10:04:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778493848; cv=none; b=YzuIozW3mjoAK1b+AUn0aEb9RrRcttmgEjW57szLwK6zZKZ61n8NvNbmQUP5M3PvgSCi2y5ZcWG3S9wtm+b1jz3zSIl9HUeMW3r4evH5fetVwQsoEXfmywAyD3MRSYhut+Azf6gRR7fGjjUp8XOS+IU0+U761EIF9Pbwe2wf6Ho=
+	t=1778493848; cv=none; b=Eyz0wZ8ue450k7Vz/TgXmtJIlSSicf3R9DPM/3hUytqMpQgc/3xn9bo7LevYmnwCCbK5xJCJ4M1HSzVR7YAm4uARYO4t1cV/yAl1E2jvveMH6jz8hqdoMUSRpjYWubeJ9XWrBxRfcboMIt+Y+IihO5N6S07lcZCe/b6mwgPeAjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778493848; c=relaxed/simple;
-	bh=QdjYDTc663t50gmUWHyxhNky6o/XS1/BZyT41mBAD0w=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ixB2FtCywUpGhYfwWrenTKwdGT+bO4IkPdGDMVOdSFXu+AH2STjpbgj45XY/4MzFxJkjkSi7lmgTuBoWxxmN5eV8WgeAJebRw5MbKudLA9y403fF4NjR/9x5nyvx5LU1rzIvC78Y1OGJ09MsRYBJfWQxX3lZFeBQRa3L9sChqKg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W5BXXHGi; arc=none smtp.client-ip=10.30.226.201
+	bh=Q1rBnzssda7tdLwjVM6yNMHp5lDEFrPzQPGj06IIvNE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=WD9ndKBoBy4vMzPIW9tsm8AQuAoE9lZ8V8LnlX5QYnGrD4mGpPZP1L33/G3ERiKolewtnldO9K2OsD5akJl1LT7ZmAWxor7zRb0yPVbV77pbOlOcMkKvjAs/9QCv1CMVqsmPC/N1u568A9O3ww8seNJNl19qpoRz2CWN2KDnVQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zt1zCHrx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W5BXXHGi"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0CF61C2BCC9;
-	Mon, 11 May 2026 10:04:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zt1zCHrx"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E313BC2BCB0;
+	Mon, 11 May 2026 10:04:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778493848;
-	bh=QdjYDTc663t50gmUWHyxhNky6o/XS1/BZyT41mBAD0w=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=W5BXXHGizoc366bhchIbasRej/Td6cmmcMxu5KOKrlsV5PKwFDGYQJ7khGkAmR0fZ
-	 B86Y7aMuyMPe3JBkkX7jlzbH5Lw4CtATLmCQieJKbg0Av7QIbsmlj66EgMGICPeZDm
-	 Zngobqud5AOvK0vgbgJtwQjc6fI3cDWDNdinxkrFXcM1pD+7CSnCSwAuaaThFJeMXw
-	 LopnGajc/Z1XY+dKS/1wsznAWz5BAnJyeruAIiqUtlarKNbpclkhg1BPw6VJ9LLsS+
-	 QxPkeVoOybZNpRcfbbmraax8z1uaSGyj11qBvqit2iv5X46LaEsWvKMrhqURtHAzEn
-	 eiXW/xw33K0mQ==
+	s=k20201202; t=1778493847;
+	bh=Q1rBnzssda7tdLwjVM6yNMHp5lDEFrPzQPGj06IIvNE=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=Zt1zCHrxHC9hOI5LDDm3nM82IJx2zVOY+4pQdFEnEasKiMeYcf3SHPfTXUfrDh7Y5
+	 dk9XKqyZ3FlxnCGZX6ktgIhAztjelOFp23w/DrOudRqXXEiTwHN92aF96jQUxP6AdO
+	 uPdziuhtWwNYrb0iZdKEed9kmZyLW8h0fEaWEn+ITtod9Qek3VrgpkxfUlWPvN7iMr
+	 06+cbwcJuoJ0wRzFDVM/3hD8/8qv87ehxV6vYhpaHCqpTU72/80JeqlkOqkhV6NdC5
+	 XmO/Uhx19Tu8KbYJURrZqGQYMLOPdHu8U2mLl9GxPwmJYz+KF/cODy393rQces90Tx
+	 DQSG78KAGWKwQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04814CD37B9;
-	Mon, 11 May 2026 10:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D29DDCD37B5;
+	Mon, 11 May 2026 10:04:07 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Mon, 11 May 2026 12:04:07 +0200
-Subject: [PATCH 2/7] iio: light: opt3001: use macros from bits.h header
+Subject: [PATCH 0/7] iio: light: opt3001: driver cleanup
+Date: Mon, 11 May 2026 12:04:05 +0200
+Message-Id: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,9 +40,10 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260511-opt3001-cleanup-v1-2-f7879dc3455c@gmail.com>
-References: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
-In-Reply-To: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAJWpAWoC/x3MQQqAIBBA0avErBtwtIK6SrQQm2ogVLQiiO6et
+ HyL/x/InIQzDNUDiS/JEnwB1RW4zfqVUeZi0Ep3qiXCEA+jFKHb2fozoqOGaGZqTK+hVDHxIvd
+ /HKf3/QBeb772YQAAAA==
+X-Change-ID: 20260511-opt3001-cleanup-c1411de14392
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -50,11 +51,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493846; l=1682;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493846; l=1156;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=zkqAxPRq6/NV7Ilc+m0WZWAlcRf1i5Dhxp0SPGrlRjQ=;
- b=0ZeX+lchsOcqZ4Qd3Ks6hyYrVBLNiiotTh2GxqSFczFkylWut1VavjFcFW0qK2tAALw7WdIv1
- uflqOVaB6LDDUQV0UzW+VB+Fhvli6Kd1dwhpJ/kAwMUGe3jjRMUBgKu
+ bh=Q1rBnzssda7tdLwjVM6yNMHp5lDEFrPzQPGj06IIvNE=;
+ b=/+p4LeIyG0DDi3UZU1Qms2lGU+xW0Tyo4EOnNspDbQDu1duMoRwvwwkq/mNBdoLE1YCokXAab
+ kSRylgBkEXBAF+hEHA48ZCl/2twrtqzRv9LrsJY7/ksnJTnjHRnst0Z
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -62,54 +63,35 @@ X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
 X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
 Reply-To: joshua.crofts1@gmail.com
 
-From: Joshua Crofts <joshua.crofts1@gmail.com>
+This series deals with cleaning up the TI OPT3001 sensor driver,
+moving it to more modern kernel practices and improving the code style.
 
-Use GENMASK() and BIT() macros from bits.h header where it makes
-sense. While at it, remove unused macro.
-
-No functional change.
+Changes include:
+- moving the driver to use devm_* functions
+- IWYU cleanups
+- removal of unnecessary macros and comments
+- using dev_err_probe() in probe and probe path functions
+- checkpatch.pl warning cleanups
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+Joshua Crofts (7):
+      iio: light: opt3001: make headers conform to iwyu
+      iio: light: opt3001: use macros from bits.h header
+      iio: light: opt3001: prefer dev_err_probe()
+      iio: light: opt3001: move driver to guard(mutex)() use
+      iio: light: opt3001: localize for loop iterator
+      iio: light: opt3001: remove unnecessary comments
+      iio: light: opt3001: switch driver to managed resources
 
-diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index e6c3665f46be47129097c3997c7551ba9a8f6440..47f0e01a95e772954de0f1337ac0d881b8b32de6 100644
---- a/drivers/iio/light/opt3001.c
-+++ b/drivers/iio/light/opt3001.c
-@@ -33,17 +33,16 @@
- #define OPT3001_MANUFACTURER_ID	0x7e
- #define OPT3001_DEVICE_ID	0x7f
- 
--#define OPT3001_CONFIGURATION_RN_MASK	(0xf << 12)
-+#define OPT3001_CONFIGURATION_RN_MASK	GENMASK(15, 12)
- #define OPT3001_CONFIGURATION_RN_AUTO	(0xc << 12)
- 
- #define OPT3001_CONFIGURATION_CT	BIT(11)
- 
--#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
-+#define OPT3001_CONFIGURATION_M_MASK	GENMASK(10, 9)
- #define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
--#define OPT3001_CONFIGURATION_M_SINGLE	(1 << 9)
-+#define OPT3001_CONFIGURATION_M_SINGLE	BIT(9)
- #define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 << 9 */
- 
--#define OPT3001_CONFIGURATION_OVF	BIT(8)
- #define OPT3001_CONFIGURATION_CRF	BIT(7)
- #define OPT3001_CONFIGURATION_FH	BIT(6)
- #define OPT3001_CONFIGURATION_FL	BIT(5)
-@@ -51,7 +50,7 @@
- #define OPT3001_CONFIGURATION_POL	BIT(3)
- #define OPT3001_CONFIGURATION_ME	BIT(2)
- 
--#define OPT3001_CONFIGURATION_FC_MASK	(3 << 0)
-+#define OPT3001_CONFIGURATION_FC_MASK	GENMASK(1, 0)
- 
- /* The end-of-conversion enable is located in the low-limit register */
- #define OPT3001_LOW_LIMIT_EOC_ENABLE	0xc000
+ drivers/iio/light/opt3001.c | 208 +++++++++++++++++++-------------------------
+ 1 file changed, 88 insertions(+), 120 deletions(-)
+---
+base-commit: 74d173f29572951629d1e0b7456b424006e51b87
+change-id: 20260511-opt3001-cleanup-c1411de14392
 
+Best regards,
 -- 
-2.47.3
+Joshua Crofts <joshua.crofts1@gmail.com>
 
 
