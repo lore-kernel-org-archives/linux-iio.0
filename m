@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23DAC378826;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EBED38C41B;
 	Mon, 11 May 2026 10:04:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778493849; cv=none; b=kP4cH23NlFH0elXBHOPKxmzmhRR67H1QhunnNS4bYM2JQoShzAvq/32uyKbxhYp/WNvna5t9G0Xbinf6IOqbusewEEgF/72EpZrnuaVLpZLcQlS6iXGsrZ1VluDoueTQtJZuov74kcC1Mp2m/r/f9DHvXibTXeP/LKdlEudo9tg=
+	t=1778493849; cv=none; b=HFkBTFg6V+rNwapjQSwwU6fiE8HdLcCuxTtShX8wCcai0I6lszNEQZIS3yakn87eLrqZn8vXfU6addwYrqqlq0C/tFT1n1sjMFL6CXD6wwyMBQZ374kMtJq1kgjPymCmaO+nsYGWM6TYHl6yxFqoYD4R742VtYndi8wLxm1VLG0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778493849; c=relaxed/simple;
-	bh=xZnzQbmymtfLwTpYLEWapi2G9Grc7MhAbvfH2/xNP40=;
+	bh=wNrwPBAxH/ZRlv8+EgsSsrh9pCV6eZXbE6d7MqZdawg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=NayWSXcGXr3GxVibpIU7Ufog94fF6leRM9es//y0uuRJP65HV9CxWhhI+8Xgh/Ag/GxOGO7tb2skPOcW8aFeEQXIwYwS/XBy9nitlYr7/SvhOkOrqfVzwJRmo1qAT3xmG6/X7/jE/w+b2bpOxIUxsa+eLN/l5H3t8PtQdtbaQOY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YVooXnOw; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=EzmqZ8o1GRff0unncxW9gQjaP9bNJml+2nXNu2lgkzoqRI2mslnJFEE3MapjfJU8TT+7MawHQujZNqgCgl8VWrqrTJUD6MuQ8heg0aa3CizYAJIAPrlEs4i08sbqxOKUXL/79LTkfRuIPIQf4NQLgdGBXSH1dSFcJRm1v5ifl1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LSrbkm4c; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YVooXnOw"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 46DCFC2BCFA;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LSrbkm4c"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E5C2C2BD01;
 	Mon, 11 May 2026 10:04:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1778493848;
-	bh=xZnzQbmymtfLwTpYLEWapi2G9Grc7MhAbvfH2/xNP40=;
+	bh=wNrwPBAxH/ZRlv8+EgsSsrh9pCV6eZXbE6d7MqZdawg=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=YVooXnOwMsAyEcUWTEa6E/5JjQsDsPuTk5fqIMiKArOIK8QZcIzQVy/bQsrbGAerl
-	 KbjuQqSnSmgp3ERoz5ALXPghYEY/421umdsNO+zKQr8IfkoRhO/zGP9kfReq+3g6h+
-	 nmgQmK20G8rV5n5ZlPPcSst+/qNze2dDndwWQta+yUUhu2Uxp6LlNufHsH8ehyRnlJ
-	 kboNlFx+KM0uKzIiZ+QyWzESXfi9Z1gqJ4Uu4ERG02gDbiVwyqvnjzkw7a/EbDuI1v
-	 8GpOkiqmOnzSCIBTtXGrW9Rsq9BM7xnA0jgofB2CzG9fuVji392flNDT/Y4k63JvP4
-	 2UJwF+vyEsLBA==
+	b=LSrbkm4cBudqCfxEbn0X74QtMiyb9Iao/ZhpWhwEwmU5I72WwpMpVo4Iq3OmHbIyf
+	 TasEgSKBT0bmRKoMUd+B5vW4/9zkG9Y2mVDvhAa3044dLNmeSg/86d7YCbhEyoAf0n
+	 gl5z+fTw6wLaUuPzN7YzWLMSMKSGoKhPra8PS0e4jDuTEu4sy3pEOUVe3a2m0XlSVF
+	 EobZeF7mYKlEoSfqCNHtMssYkQqOuMUWvXod5pfo/RFFthei8ag3xnTGcCkzZs9S0o
+	 qkp6+aVZYpL7dt0NpXJSLKUaoKcy8/eYqBFsCEqT5qAY2T0I894FiFMuBNdvDQie8b
+	 VlgB65sqI1bnA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F055CD37B7;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 664E1CD37B9;
 	Mon, 11 May 2026 10:04:08 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Mon, 11 May 2026 12:04:09 +0200
-Subject: [PATCH 4/7] iio: light: opt3001: move driver to guard(mutex)() use
+Date: Mon, 11 May 2026 12:04:11 +0200
+Subject: [PATCH 6/7] iio: light: opt3001: remove unnecessary comments
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260511-opt3001-cleanup-v1-4-f7879dc3455c@gmail.com>
+Message-Id: <20260511-opt3001-cleanup-v1-6-f7879dc3455c@gmail.com>
 References: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
 In-Reply-To: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -50,11 +50,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493846; l=4899;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493846; l=1455;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=XWsG3BHkkDBA7GXFpyBdwvkQTMljrbd6jqDNEGFJaN8=;
- b=8KSszUzy4a0H0dtNVqmPjBpJHSKzHegXar85FigjLhXDQ065uI99XwwNblwVLhNF4EwMkZH4q
- 7dmwh9wYCbTDLaZ9PguZv+2ipglzIvONPkqrgSQbIzEa8CvUXKmD7nt
+ bh=CvHqUzEKYCIaa3N5Ba+LTLV0AD0IUgdZt4E0WfgOkO0=;
+ b=kq+ViCYTpJEMuFKTmLB8xYd+E7aaOT2pMcseoIDJy1ikaxaUa82+PpyppDf8eTy1eTKdgBeqn
+ 0SX0Hl8VCUHCP73MvCV+nXy13peu0xGFU+h/9l6Qnt5It/Sg8zwkMVH
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -64,188 +64,44 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Move driver to use guard(mutex)() macro, to facilitate automatic
-locking/unlocking of resources. This modernizes the driver and
-improves code style.
+Remove unnecessary comments as code is self explanatory.
 
-While at it, remove unnecessary gotos and return variables.
+No functional change.
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 61 +++++++++++++--------------------------------
- 1 file changed, 18 insertions(+), 43 deletions(-)
+ drivers/iio/light/opt3001.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 4d9a17be04555aca368f7bc70a9d9a47fb5b279e..bdff785bcfa9744cd25d32c5d00d62a11dd9d866 100644
+index 3719757f6ed7784cbf2e4aa659e5c69a39b0cce2..155794bb28f68a945e20b083e382561ca6ad462e 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -10,6 +10,7 @@
+@@ -369,7 +369,6 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		if (ret == 0)
+ 			return -ETIMEDOUT;
+ 	} else {
+-		/* Sleep for result ready time */
+ 		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
+ 			OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
+ 		msleep(timeout);
+@@ -388,7 +387,6 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 			goto err;
+ 		}
  
- #include <linux/array_size.h>
- #include <linux/bits.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/dev_printk.h>
- #include <linux/errno.h>
-@@ -478,7 +479,6 @@ static int opt3001_read_raw(struct iio_dev *iio,
- 		long mask)
- {
- 	struct opt3001 *opt = iio_priv(iio);
--	int ret;
+-		/* Obtain value */
+ 		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
+ 		if (ret < 0) {
+ 			dev_err(opt->dev, "failed to read register %02x\n",
+@@ -919,7 +917,7 @@ static const struct opt3001_chip_info opt3002_chip_information = {
+ static const struct i2c_device_id opt3001_id[] = {
+ 	{ "opt3001", (kernel_ulong_t)&opt3001_chip_information },
+ 	{ "opt3002", (kernel_ulong_t)&opt3002_chip_information },
+-	{ } /* Terminating Entry */
++	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, opt3001_id);
  
- 	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
- 		return -EBUSY;
-@@ -486,23 +486,17 @@ static int opt3001_read_raw(struct iio_dev *iio,
- 	if (chan->type != opt->chip_info->chan_type)
- 		return -EINVAL;
- 
--	mutex_lock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 	case IIO_CHAN_INFO_PROCESSED:
--		ret = opt3001_get_processed(opt, val, val2);
--		break;
-+		return opt3001_get_processed(opt, val, val2);
- 	case IIO_CHAN_INFO_INT_TIME:
--		ret = opt3001_get_int_time(opt, val, val2);
--		break;
-+		return opt3001_get_int_time(opt, val, val2);
- 	default:
--		ret = -EINVAL;
-+		return -EINVAL;
- 	}
--
--	mutex_unlock(&opt->lock);
--
--	return ret;
- }
- 
- static int opt3001_write_raw(struct iio_dev *iio,
-@@ -510,7 +504,6 @@ static int opt3001_write_raw(struct iio_dev *iio,
- 		long mask)
- {
- 	struct opt3001 *opt = iio_priv(iio);
--	int ret;
- 
- 	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
- 		return -EBUSY;
-@@ -524,11 +517,9 @@ static int opt3001_write_raw(struct iio_dev *iio,
- 	if (val != 0)
- 		return -EINVAL;
- 
--	mutex_lock(&opt->lock);
--	ret = opt3001_set_int_time(opt, val2);
--	mutex_unlock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
--	return ret;
-+	return opt3001_set_int_time(opt, val2);
- }
- 
- static int opt3001_read_event_value(struct iio_dev *iio,
-@@ -537,26 +528,21 @@ static int opt3001_read_event_value(struct iio_dev *iio,
- 		int *val, int *val2)
- {
- 	struct opt3001 *opt = iio_priv(iio);
--	int ret = IIO_VAL_INT_PLUS_MICRO;
- 
--	mutex_lock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
- 	switch (dir) {
- 	case IIO_EV_DIR_RISING:
- 		opt3001_to_iio_ret(opt, opt->high_thresh_exp,
- 				opt->high_thresh_mantissa, val, val2);
--		break;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_EV_DIR_FALLING:
- 		opt3001_to_iio_ret(opt, opt->low_thresh_exp,
- 				opt->low_thresh_mantissa, val, val2);
--		break;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
--		ret = -EINVAL;
-+		return -EINVAL;
- 	}
--
--	mutex_unlock(&opt->lock);
--
--	return ret;
- }
- 
- static int opt3001_write_event_value(struct iio_dev *iio,
-@@ -579,12 +565,12 @@ static int opt3001_write_event_value(struct iio_dev *iio,
- 	if (val < 0)
- 		return -EINVAL;
- 
--	mutex_lock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
- 	ret = opt3001_find_scale(opt, val, val2, &exponent);
- 	if (ret < 0) {
- 		dev_err(opt->dev, "can't find scale for %d.%06u\n", val, val2);
--		goto err;
-+		return ret;
- 	}
- 
- 	whole = opt->chip_info->factor_whole;
-@@ -607,18 +593,12 @@ static int opt3001_write_event_value(struct iio_dev *iio,
- 		opt->low_thresh_exp = exponent;
- 		break;
- 	default:
--		ret = -EINVAL;
--		goto err;
-+		return -EINVAL;
- 	}
- 
- 	ret = i2c_smbus_write_word_swapped(opt->client, reg, value);
--	if (ret < 0) {
-+	if (ret < 0)
- 		dev_err(opt->dev, "failed to write register %02x\n", reg);
--		goto err;
--	}
--
--err:
--	mutex_unlock(&opt->lock);
- 
- 	return ret;
- }
-@@ -647,7 +627,7 @@ static int opt3001_write_event_config(struct iio_dev *iio,
- 	if (!state && opt->mode == OPT3001_CONFIGURATION_M_SHUTDOWN)
- 		return 0;
- 
--	mutex_lock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
- 	mode = state ? OPT3001_CONFIGURATION_M_CONTINUOUS
- 		: OPT3001_CONFIGURATION_M_SHUTDOWN;
-@@ -656,7 +636,7 @@ static int opt3001_write_event_config(struct iio_dev *iio,
- 	if (ret < 0) {
- 		dev_err(opt->dev, "failed to read register %02x\n",
- 				OPT3001_CONFIGURATION);
--		goto err;
-+		return ret;
- 	}
- 
- 	reg = ret;
-@@ -664,14 +644,9 @@ static int opt3001_write_event_config(struct iio_dev *iio,
- 
- 	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
- 			reg);
--	if (ret < 0) {
-+	if (ret < 0)
- 		dev_err(opt->dev, "failed to write register %02x\n",
- 				OPT3001_CONFIGURATION);
--		goto err;
--	}
--
--err:
--	mutex_unlock(&opt->lock);
- 
- 	return ret;
- }
 
 -- 
 2.47.3
