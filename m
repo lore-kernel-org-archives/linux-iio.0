@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C808C308F15;
-	Mon, 11 May 2026 14:33:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 968D3308F15;
+	Mon, 11 May 2026 14:34:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778510019; cv=none; b=mgyCak7pMIdkbKQslX14QeapimHdz2HT7MSSkHgr08EcLyPQRNF93mTzDuj4yjwmGf4BfrsM/aeOZyi2ETsR9oedXDclxV6c87EcqJ7tKcPIEgpYbgj1oHykJ6Z6yqqz7u29wL3TuPaW7j+RFXqNywDTxOKjMYdF5Scwh2JU5fI=
+	t=1778510096; cv=none; b=Vxfxj2c8/WH4/MMa4fgfhx4vPlm1hh5mtRukqRO5jgYXBopnZ1uCD+NGb5Hv3Sg57tcmO2v1sZAURGBqSj8xyRE8GsFaCM0UiBV5ejNGEclH7ABHsyGKuilNFFbje7pG4MVkQyQdgKpfwu+VB1D6bFUr2B8mcto7KMFJZim64MQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778510019; c=relaxed/simple;
-	bh=NBCgubS6QiSJMV7x68tX/AQy1HLj65hfR5SgOZ/lS7Y=;
+	s=arc-20240116; t=1778510096; c=relaxed/simple;
+	bh=ff5K1YahL+W6BYrNSAw+gF/VIPU32ovACXbWzSdEUF4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rRVKDQqwS/yoLPuw3lDzPJuQA1UzVnGTaq2gUGXm84xK5z7a3kHGLWJ9ANLgJ/6T+sQcQtVQb5OZ/o0iUqokjs92cuvBwSfc62SeQbB2NlyIk5D+L8UjtBBEkL12DFGpKbDpweciO93RxYTGve/hc1wVswBsae4F4U026kH+E5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r1p0IY+R; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=MYq8wgxPiXViMaEH7aaF4P6t5DhMP5RkrU/9OPSRTyDfpkSWh6l6MY9hITwOOLQcY/JMwDyQbExHxHeRTxxBdQuu5Vk5qMGDNMXxy6Ogt9IzcvbXBLUG8FM8CSRJ1nUk7c+6OUx8uyd87/0Zhkkd9jue2HtGJj18mS+ZSgaZ3Is=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=le5matBd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r1p0IY+R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FD4C2BCB0;
-	Mon, 11 May 2026 14:33:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="le5matBd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9CF3C2BCF7;
+	Mon, 11 May 2026 14:34:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778510019;
-	bh=NBCgubS6QiSJMV7x68tX/AQy1HLj65hfR5SgOZ/lS7Y=;
+	s=k20201202; t=1778510096;
+	bh=ff5K1YahL+W6BYrNSAw+gF/VIPU32ovACXbWzSdEUF4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=r1p0IY+RLrwQjhFTiagbzK5Xecn9JeIp+t1KxqL3unskdK4frUKyhbcnmc+a2jTBy
-	 fSxuR12ATB/KiauRE4Zn0adLxwfBgU8/ou0k5lkCWjC6ZuClvaGVw9m3QllmfLEXGC
-	 2raJxkyqb4gPrN+kbDCOKfr573Ze/5Z15+h0lBHgWoJLNszuZ+hhLPo00Y9YD4pkRm
-	 YVUX2AfcPTnLYCGRHPASThZlXESjLJzSceRVj0AOS25WipztSJ7GiEQR2CNXBAPzmW
-	 lEwiI4ffVez//YRVRke8gZHu/iON2naz5wcZEQFynU0Mf5mpfJKYyBRQbrw0X4bGn8
-	 CVwJM3M+1/yRg==
-Date: Mon, 11 May 2026 15:33:29 +0100
+	b=le5matBd68sP1nWObQASOK7xWbxJHzedvpNwa2nzrrZdgGyNP6SibqXAPUdHV+1gW
+	 6/BKyGskQ831BJS+6OPJ8ObJ26VZc5LLmMyqkAys48N57gaSyZuCax3icqA8CI42bf
+	 iKIhhRt3tIqaT2tI49xnukP1xQfKPewq2vvXvtu0UZzyUxYK3JIxVTVjVhg+s+yMPp
+	 kFLKUc9SvRk9iYfBvJF1hKl/CiOMWIztWxFp12rJg4sJuEL7prcCaL69hfcqGTHBSe
+	 hHgW/sJYxR4CblftLy+8hWv7zX4wQEVsnLXo6Pfrd4gzyJygNQXQFoHvXeJjPSifQw
+	 RGrypb2HJOoDA==
+Date: Mon, 11 May 2026 15:34:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: ak@it-klinger.de, andriy.shevchenko@intel.com, dlechner@baylibre.com,
- nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 06/11] iio: adc: hx711: introduce hx711_chip_info
- structure
-Message-ID: <20260511153329.1ddf41fe@jic23-huawei>
-In-Reply-To: <20260510194947.31997-7-piyushpatle228@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Piyush Patle <piyushpatle228@gmail.com>, ak@it-klinger.de,
+ dlechner@baylibre.com, nuno.sa@analog.com, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 08/11] iio: adc: hx711: split variable assignments in
+ hx711_read and hx711_reset
+Message-ID: <20260511153446.14d0b95e@jic23-huawei>
+In-Reply-To: <agG8AG1srKZ4oWp6@ashevche-desk.local>
 References: <20260510194947.31997-1-piyushpatle228@gmail.com>
-	<20260510194947.31997-7-piyushpatle228@gmail.com>
+	<20260510194947.31997-9-piyushpatle228@gmail.com>
+	<agG8AG1srKZ4oWp6@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,62 +50,43 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 11 May 2026 01:19:28 +0530
-Piyush Patle <piyushpatle228@gmail.com> wrote:
+On Mon, 11 May 2026 14:22:40 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Add a per-variant static configuration structure and populate the IIO
-> device fields from it at probe time.
+> On Mon, May 11, 2026 at 01:19:30AM +0530, Piyush Patle wrote:
+> > Separate the initial value assignments from the declarations in
+> > hx711_read() and hx711_reset().
+> > 
+> > This is a small preparatory cleanup before the later loop-iterator and
+> > variant-specific changes adjust the local variable layout in these
+> > functions.  
 > 
-> This is a preparatory change for adding support for more HX711-compatible
-> hardware variants without duplicating the probe-time setup.
+> ...
 > 
-> No functional change for existing HX711 users.
+> >  static int hx711_reset(struct hx711_data *hx711_data)
+> >  {
+> > -	int val = hx711_wait_for_ready(hx711_data);
+> > +	int val;
+> > +	val = hx711_wait_for_ready(hx711_data);
+> >  
+> >  	if (val) {  
 > 
-> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Really minor things inline but given you are doing a v8 for the buffer
-thing might as well tidy them up!
-> ---
->  drivers/iio/adc/hx711.c | 41 ++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 36 insertions(+), 5 deletions(-)
+> No, blank line should divide the definitions and code, and should not be in
+> semantically coupled places.
 > 
-> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-> index 01097e0fb848..331d47e1bbc4 100644
-> --- a/drivers/iio/adc/hx711.c
-> +++ b/drivers/iio/adc/hx711.c
-> @@ -4,6 +4,8 @@
->   *
->   * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
->   */
-> +#include <linux/array_size.h>
-> +#include <linux/dev_printk.h>
->  #include <linux/err.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> @@ -74,6 +76,20 @@ static int hx711_get_scale_to_gain(const int *gain_scale, int scale)
->  	return -EINVAL;
->  }
->  
-> +/**
-> + * struct hx711_chip_info - per-variant static configuration
-> + * @name: IIO device name
-> + * @channels: channel specification array
-> + * @iio_info: IIO info ops for this variant
-> + * @num_channels: number of entries in @channels
-> + */
-> +struct hx711_chip_info {
-> +	const char			*name;
-> +	const struct iio_chan_spec	*channels;
+> ...
+> 
+> Again, no need to resend, but keep in mind if you need a v8, this and other
+> comments needs to be addressed.
+> 
 
-Trivial but can you swap this and iio_info so that we have channels and
-num_channels near each other.  Won't change the structure size.
-Can we also mark this __counted_by_ptr(num_channels)?
-Lets analysis tools and compilers have a tiny bit more info that
-can be helpful for detecting some types of bug.
+Looks like we are getting a v8 so to make sure this is super clear..
 
+	int val;
 
-> +	const struct iio_info		*iio_info;
-> +	unsigned int			num_channels;
-> +};
-> +
+	val = ....
+	if (val) {
+	}
 
+is the correct spacing. So also a line missing above val =
+that I don't think Andy has called out explicitly.
