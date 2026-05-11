@@ -1,158 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F30C0372ECF;
-	Mon, 11 May 2026 11:26:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAC0D370D6C;
+	Mon, 11 May 2026 11:27:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778498780; cv=none; b=U+TksjiOFEQitFZlsXGsRsY3Yq+f3B8dQlzMjQoACE9ZhLJf7qaq/trbSaLhaYrkD+P6B75DXrpAMv9JN3p08Ore8mOTHtzbmhdTaTFpCzNWxMDQ9oOKC3zecRQkfZn+bRVZ08ukGa4S+O/BNG6scHlg84B7H4yjrTzJ/Hk9vdc=
+	t=1778498843; cv=none; b=XmZR31++xC2gku1utMrx9NaKbIhGsbLxXLGTUtZ73nJPURI6S5BC1pbzfvEZmSEyW8G8Gv8OaBMRWuR3cN3Mjxch2QaKvarWru4fxoGpb/gHLa4uxh3DJH0gR7Lf+5pK6Rr9E5yLdBwvdQrcW22Py+hEDU8eNJJNiKQbU8EkRD0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778498780; c=relaxed/simple;
-	bh=JMPHUtGRLp4XYT3qoYRr7853oC/XlIRIvjLWhcOanPA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=E/rG97hkkX5fiNqHHP1B/X3E38Mg9o2yx6BeUeYMIp8mnFptE2rj7sL3alsf81+WJ+llM+trS2m+W6mQ6s6EnJcOpkUTukKnI9RqwtrUzjkWJqzV0gXJ4VEWA2necwPlyPangtmvjl0QIA1JI4lw2/uNfU0vXyjA4OhuvDGgUgg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m3DkDLPi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778498843; c=relaxed/simple;
+	bh=S2n25drV7o+i0GWQBkS5bwkU3nNipLDZ3PSumJWDLKc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BgqGIfbYYYreBFCoaxLQxB4K3K1K/0cxAhb6vxFdG6CSX4IcRvZysvhAmJpLV5WGHfuw2VR2oWWqXh/oA7qEER/Kxtz9l/rI5NdA1ZkqfNulMh/QVBIPtl4axBx0btRRQTuOs5afCzChur3qjRi5kYYs/wyF+/UL4pBw6Eqq4oY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Nx3beeKk; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m3DkDLPi"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D6E7BC2BCB0;
-	Mon, 11 May 2026 11:26:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778498779;
-	bh=JMPHUtGRLp4XYT3qoYRr7853oC/XlIRIvjLWhcOanPA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=m3DkDLPih3/KujpML9+JMToMg0xOZx2MZsFvbWNnnED+bVdWSntIXNc9X4D74lwq4
-	 kv8alp6+OC4eRsf3s+g7EFCDLuFYgWD4HCNK9+BU/frKwa791TldDkGklh7X2gbhNL
-	 1VmsqJSv/JxLSvDBd3bN0YJhrLyRd2RQf172yyuYty8QAYiWPOlS6iOGR7IWVOsWZS
-	 XFSFenmJlkBusvoBJl5HsSHk9f6XyIGJ4wv19bNLTL+GD/pwcQZB9E7CS32SUf6wsL
-	 jE3FZ6IAEhj3UbxhjsJEC/fQpftrJ1nmMJ8e7mSDimfBNKu7zjwqKOOyNt9+ovPbod
-	 WbutgMlOKxhpg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDD5CD37B9;
-	Mon, 11 May 2026 11:26:19 +0000 (UTC)
-From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Mon, 11 May 2026 13:26:17 +0200
-Subject: [PATCH v7 8/8] iio: magnetometer: ak8975: make use of the macros
- from bits.h
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Nx3beeKk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778498842; x=1810034842;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=S2n25drV7o+i0GWQBkS5bwkU3nNipLDZ3PSumJWDLKc=;
+  b=Nx3beeKk5BIJaal6XPTEOnI6LoKrcChwampyQEbtudTSs9ImcDhTEmGp
+   PDWUfAsqGDl7rMoJxdyA9+82spzvnSoKfOnvPbsCQTBhcvZuvia6MPkcl
+   hJjZbWnHdobl8KYiFECmQynj5J+O7HKl11HN2o6MsTAyK9LkMUo6vyvB0
+   JHrrzDwQeanr1zO58tCx69eC3d5NxTXDcXMjugfU9yeSr2rgYqI0hYJuC
+   /2eVuFBA19AtcCq5+ZEe9vNaq2edKwiSekDiI3mJHDiur60fKZvcNGO6U
+   R1YfRnWSIVCOnucY0+9YrRL+1K4MFlVxbxQHTmFFqVm6CbbzJlTbfBUmN
+   w==;
+X-CSE-ConnectionGUID: BCHEdPRWRn6TKx5sxmDy1w==
+X-CSE-MsgGUID: UDTk7dMsQb2+trMKbkRN3g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11782"; a="79563615"
+X-IronPort-AV: E=Sophos;i="6.23,228,1770624000"; 
+   d="scan'208";a="79563615"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2026 04:27:21 -0700
+X-CSE-ConnectionGUID: JMn5JZlNS5Wy68eyb0mObA==
+X-CSE-MsgGUID: oHfiZRgLSaud5h7O0argEg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,228,1770624000"; 
+   d="scan'208";a="231037044"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2026 04:27:18 -0700
+Date: Mon, 11 May 2026 14:27:16 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Piyush Patle <piyushpatle228@gmail.com>
+Cc: ak@it-klinger.de, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 11/11] iio: adc: hx711: add support for HX710B
+Message-ID: <agG9FAXXiTKDIEDf@ashevche-desk.local>
+References: <20260510194947.31997-1-piyushpatle228@gmail.com>
+ <20260510202657.38326-1-piyushpatle228@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260511-magnetometer-fixes-post-pickup-v7-8-9d910faa28b6@gmail.com>
-References: <20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6@gmail.com>
-In-Reply-To: <20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778498777; l=3070;
- i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=raM4Osn4NOSANS9V3gWU6boxJNZiWShxAROFiRWtIAY=;
- b=TP0D4CypFbMuyzjysRkUKOG9vatbV58hCmoS0rYS/KDF5K6851oG/XMMb2uT5UulpQlwTpKFg
- UXP04o0RjTIDNnmBF/HBrDf9Nx0GSe2GS8rY+9PB23LgdtKxiAfIAiw
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
-X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
- auth_id=746
-X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Reply-To: joshua.crofts1@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260510202657.38326-1-piyushpatle228@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Mon, May 11, 2026 at 01:56:55AM +0530, Piyush Patle wrote:
+> Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
+> interface but uses trailing PD_SCK pulses to select the active mode.
+> 
+> Model the HX710B with variant-specific channel tables and IIO info,
+> track the active channel across conversions, and use the fixed gain
+> value when computing scale.
+> 
+> Also update the adjacent Kconfig text, file header, and module
+> description so the driver text matches the newly supported variant.
 
-Make use of BIT() and GENMASK() where it makes sense.
+...
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Co-developed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- drivers/iio/magnetometer/ak8975.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+>  #include <linux/slab.h>
+>  #include <linux/sched.h>
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index d87a98090c991508ac835839286da0371d689cd8..d8fbdc5debc1cc65ea6e86167a79c860d019cc32 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -45,8 +45,7 @@
- #define AK8975_REG_INFO			0x01
- 
- #define AK8975_REG_ST1			0x02
--#define AK8975_REG_ST1_DRDY_SHIFT	0
--#define AK8975_REG_ST1_DRDY_MASK	(1 << AK8975_REG_ST1_DRDY_SHIFT)
-+#define AK8975_REG_ST1_DRDY_MASK	BIT(0)
- 
- #define AK8975_REG_HXL			0x03
- #define AK8975_REG_HXH			0x04
-@@ -55,15 +54,12 @@
- #define AK8975_REG_HZL			0x07
- #define AK8975_REG_HZH			0x08
- #define AK8975_REG_ST2			0x09
--#define AK8975_REG_ST2_DERR_SHIFT	2
--#define AK8975_REG_ST2_DERR_MASK	(1 << AK8975_REG_ST2_DERR_SHIFT)
-+#define AK8975_REG_ST2_DERR_MASK	BIT(2)
- 
--#define AK8975_REG_ST2_HOFL_SHIFT	3
--#define AK8975_REG_ST2_HOFL_MASK	(1 << AK8975_REG_ST2_HOFL_SHIFT)
-+#define AK8975_REG_ST2_HOFL_MASK	BIT(3)
- 
- #define AK8975_REG_CNTL			0x0A
--#define AK8975_REG_CNTL_MODE_SHIFT	0
--#define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
-+#define AK8975_REG_CNTL_MODE_MASK	GENMASK(3, 0)
- #define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
- #define AK8975_REG_CNTL_MODE_ONCE	0x01
- #define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
-@@ -95,8 +91,7 @@
- 
- #define AK09912_REG_ST1			0x10
- 
--#define AK09912_REG_ST1_DRDY_SHIFT	0
--#define AK09912_REG_ST1_DRDY_MASK	(1 << AK09912_REG_ST1_DRDY_SHIFT)
-+#define AK09912_REG_ST1_DRDY_MASK	BIT(0)
- 
- #define AK09912_REG_HXL			0x11
- #define AK09912_REG_HXH			0x12
-@@ -107,8 +102,7 @@
- #define AK09912_REG_TMPS		0x17
- 
- #define AK09912_REG_ST2			0x18
--#define AK09912_REG_ST2_HOFL_SHIFT	3
--#define AK09912_REG_ST2_HOFL_MASK	(1 << AK09912_REG_ST2_HOFL_SHIFT)
-+#define AK09912_REG_ST2_HOFL_MASK	BIT(3)
- 
- #define AK09912_REG_CNTL1		0x30
- 
-@@ -117,8 +111,7 @@
- #define AK09912_REG_CNTL_MODE_ONCE	0x01
- #define AK09912_REG_CNTL_MODE_SELF_TEST	0x10
- #define AK09912_REG_CNTL_MODE_FUSE_ROM	0x1F
--#define AK09912_REG_CNTL2_MODE_SHIFT	0
--#define AK09912_REG_CNTL2_MODE_MASK	(0x1F << AK09912_REG_CNTL2_MODE_SHIFT)
-+#define AK09912_REG_CNTL2_MODE_MASK	GENMASK(4, 0)
- 
- #define AK09912_REG_CNTL3		0x32
- 
-@@ -848,7 +841,10 @@ static const struct iio_chan_spec ak8975_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(AK8975_SCAN_TS),
- };
- 
--static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
-+static const unsigned long ak8975_scan_masks[] = {
-+	BIT(AK8975_SCAN_X) | BIT(AK8975_SCAN_Y) | BIT(AK8975_SCAN_Z),
-+	0
-+};
- 
- static const struct iio_info ak8975_info = {
- 	.read_raw = &ak8975_read_raw,
+>  #include <linux/delay.h>
+> +#include <linux/types.h>
+
+Seems wrong order.
+
+And here + blank line to make linux/iio/* to be a separate group.
+
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/iio/buffer.h>
+
+...
+
+>  	/*
+>  	 * triggered buffer
+> -	 * 2x32-bit channel + 64-bit naturally aligned timestamp
+> +	 * up to 3x32-bit channels + 64-bit naturally aligned timestamp
+> +	 *
+> +	 * aligned_s64 satisfies the 8-byte alignment requirement for the
+> +	 * timestamp. For HX711 (at most 2 active channels), iio_push_to_
+> +	 * buffers_with_timestamp() places the timestamp at offset 8
+> +	 * (scan_bytes=8, already 8-byte aligned), identical to the original
+> +	 * 2-channel layout. The extra channel slot for HX710B does not affect
+> +	 * the HX711 ABI.
+>  	 */
+>  	struct {
+> -		u32 channel[2];
+> +		u32 channel[3];
+>  		aligned_s64 timestamp;
+>  	} buffer;
+
+Why can't we used a recently introduced macro for this?
+IIO_DECLARE_BUFFER_WITH_TS().
 
 -- 
-2.47.3
+With Best Regards,
+Andy Shevchenko
 
 
