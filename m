@@ -1,117 +1,85 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 885FC3A3E7A
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 13:43:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 278A12F8EB7;
+	Mon, 11 May 2026 13:43:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778507003; cv=none; b=pR4dwhNs2W5aKeiTJoGC7ezUUOij7CNGRM8yLsITHeY6caC2wp5L4ezMlj9Xo5XMN080Gu3ACnozB6ENzvgIVVdwPHTePrEXk69y9GFdhZW3rJdAvMGSQj1Kv9s3r95IYG4HTKaABZZ4nnyDG4+560i0Lw0KPozobXCOYLcoE4E=
+	t=1778507026; cv=none; b=eb+7JeX6OeUvNAlys4t0y13KgVvUZ3V9PbVvCoqZAu60CafckevhFH7tJWgyve2DtuPrKWgTH0wOL926l7af1QzXJTg3n/xJssvYwo3S5d/hOvvKWoOnOv8wKCl6gyfcFvh6ECyMnDKUcyEtVyngX26BjSJJMGsdRSCwGn3iwTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778507003; c=relaxed/simple;
-	bh=mZMfpnTdnLr0aOmmb29NZteWLRSVAezX26+ecj/KXLE=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=V8TL5zhMvElX2VDj4pfhlO4hOExSzg5nnxmof33MyOFclYWYGNebmCuEpMNJ54Rwyjaju/N1kq5z0BMuGbteb4kCLMx53h0tFD29iA5jFCb2/iCNSqvyFiKk3nW0mFMQeHR7Bjpq5SlzVLHwB2EBAAcNauo4L3kPuR93VWq4dqs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KXj/LWOd; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778507026; c=relaxed/simple;
+	bh=/3pzqEMxogsnI9LeMDIUXAeHoMObYEHvJ/92er2SczU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JIf9LV/CwIuZFLKQSAWPaNG6NbZZuBSQD1x2Nk+SrW5+wxXMkUWx1za9T4y7G9QgQLeIh9IOI1f2M+Kbw3UmC0Pi82d6x8tP8XPpA98qJmtSRbespsK8uEks8awR+lduLP+8HC4EAHNb+aiUVL2C+z9fB08rl49NlFSyZQhI/W8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g7qEZJBa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KXj/LWOd"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4891c569cb1so3993555e9.2
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 06:43:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778507001; x=1779111801; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=JHMd7RvPcvLzlV0c3MAuHkYdaeF/YNvuNQd+ogFq8k4=;
-        b=KXj/LWOdeKYP06et9zYqMR/JDYJoNIW4fg5wR8tMU8a6RlUZu6cl07qaAIwPxufoyW
-         E7GWOgEnBheN7+F2QiNPvCHiQFHwCDwsG7ATDXXsexny7vfaGenzP1hRaxlwW/C5a7oD
-         SWXSADpevlIQaADUYvovXBvnB05fo/ArF8mAMBb9nDZic1FIstrVtade4x3lRfeqBHoQ
-         ojRQ2Og6UKc84JZhUDNG9qUPGboR73GqDXJJSQ6jeZmAf8LeqVW92CReAN07fP76jfVI
-         HQcE5XyYYQSqbMbJar4Qloe9OFIuh1QNJgApz6xQqnYB5/5Xa3tV56hyxdubkK3fM8wd
-         QsDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778507001; x=1779111801;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JHMd7RvPcvLzlV0c3MAuHkYdaeF/YNvuNQd+ogFq8k4=;
-        b=V5z9eJM/l3hLpgxeXjuZLBdWciFNsigCIQsvQax5adquITyiKxWcaDbtbArDo//Mck
-         nigNerMS8BNU3Ybfb1+LzJOkj9ha/TCrwdjr/IZ4qwyL80Dff0ySOM8g8hcnAX1D1LZA
-         WwvqzYfTPKJEDgqg7Hsw9MFHLI4DtKK1UXseHHJJMsbypoE1T+AKXHCt364n/Nidkukx
-         X8w3DYiWlyK3Sx7V75FaLqm0hnZGZuCQNJQ4ePmXxsCz7ON5BAd0K5a/ORZWHGvbkTU7
-         Vr1uq4i0v/XsnPbtdGKYerfbtevP3gTb6fcNCkPOGnI/Lslw3vG687O/Tkz6W2m7d31N
-         9mqA==
-X-Forwarded-Encrypted: i=1; AFNElJ9/fWByfVdO40MEzJDkf81MVk7rZAOrQ7sHXULDotfSKCPWLSNc+KVZG52y6NBUlSulCN14dTimwLk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzo9mqU0LIbQbmbMAup2vE6rsnTQxxT8aZpsXcpgaxY1dEu8JEX
-	tfMUgoEXu/cbdHCu6v/+INyrMLNkwqmuvMj4T98stdIaplOmQvkFZAQR
-X-Gm-Gg: Acq92OFUWUk2wyrJtnHr0dErHrMNRWWf1URKrbGnJOsll0K9pXESH+g/NGM+RwEgbrc
-	fXl/i9zdKVKOPepfZaVJm49DGN7NQS0R81rUY1JaQyNbG9Bcv5disJvUkdK67U8zvWWkp439C5o
-	2CVBqjAfGyPtuIoz0Sr2bu5F4rkR6eQgu9Pkod5gqkMCogMHQCOJjVGZW8JbntfBWRVBKYP5aZ1
-	t1iApnNk5cI/i+tBN98WdHqFWUGVdPVEhfQ4Pi/gj3YUvzyIkFTQHQMp+2Y8Aw5LzCDux67Oy9c
-	2rznIjDsL8zQLwYqDDW9AgbAITj7PlHHx/+3xfkxkrLnKGaNPlPibSdnq8YD1TlvrSzGd+VX656
-	iOXzexWQWU2MfEoqj0x8IJT2m1ktQ/xrtHK1vURTNMWfmdCWJc4NAMdIp+tXfJ74ghwO5ugWpQo
-	0GpzRPFDhIeq1bJjZIONoDcKk++IKMnxOCZXvvTzzXJMyj
-X-Received: by 2002:a05:600c:8908:b0:488:93c5:4dc with SMTP id 5b1f17b1804b1-48e51f4fda1mr137473205e9.7.1778507000897;
-        Mon, 11 May 2026 06:43:20 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e7040a9a9sm324847825e9.9.2026.05.11.06.43.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 06:43:20 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	gregkh@linuxfoundation.org,
-	hcazarim@yahoo.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: [PATCH] iio: gyro: bmg160: wait full startup time after mode change at probe
-Date: Mon, 11 May 2026 11:27:55 +0500
-Message-Id: <20260511062755.30-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g7qEZJBa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F6DEC2BCB0;
+	Mon, 11 May 2026 13:43:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778507025;
+	bh=/3pzqEMxogsnI9LeMDIUXAeHoMObYEHvJ/92er2SczU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=g7qEZJBaLEKZB6dfsjzqIn05MuFvwzH+jFEVifEZVAZsyoKIywOFKR4qq5OZmedl6
+	 3tUSUDcU6Tm3oE6j4PLJmmwBUQVSa1cq321XV1L+tbuxAIH1cuxtWpiUFfx8r/pDg1
+	 Hof+euH9qhhW6SKGtiMjaefcLGW7uJMTp8zEvvAftmIXVLJWq7Ig1GzZsSg8FfuN9h
+	 bKoaCs6/0PVCxNTfCA9T8J4nWkxwrOmJAd78++0S63eW11+lqzHIaz+cmTePyAtSrx
+	 3TTwcN7bh6A7hPwwxVnYXwo71GYYOt+fLHgjI8smPqQ/Xlq+lyCIwXN3kd3EkZv8zQ
+	 6XcBo/5rEjPmg==
+Date: Mon, 11 May 2026 14:43:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Ethan Tidmore <ethantidmore06@gmail.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ad7766: Update to use
+ iio_push_to_buffers_with_ts()
+Message-ID: <20260511144336.765f72a5@jic23-huawei>
+In-Reply-To: <agGyGgI6vlINm-V8@ashevche-desk.local>
+References: <20260510221404.22834-1-ethantidmore06@gmail.com>
+	<agGyGgI6vlINm-V8@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-bmg160_chip_init() calls bmg160_set_mode(BMG160_MODE_NORMAL) and
-then waits only 500-1000 us. Per the BMG160 datasheet
-(BST-BMG160-DS000-07 Rev. 1.0, May 2013), the start-up and wake-up
-times (tsu, twusm) are 30 ms.
+On Mon, 11 May 2026 13:40:26 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-The same file already waits BMG160_MAX_STARTUP_TIME_MS (80 ms)
-in bmg160_runtime_resume() after the same set_mode(NORMAL)
-operation. The 500 us value at probe was likely a unit mix-up;
-the old comment said "500 ms" while the code used microseconds.
+> On Sun, May 10, 2026 at 05:14:04PM -0500, Ethan Tidmore wrote:
+> > The old ABI function iio_push_to_buffers_with_timestamp() is no longer
+> > preferred due to it being inherently unsafe.
+> > 
+> > Update to the current standard iio_push_to_buffers_with_ts().  
+> 
+> Nice, but there is nothing about correctness of the change. This is quite
+> sensitive area which is ABI. Any breakage is a big deal. Have you studied
+> the case deeper? What are the contents of the buffers with the old one and
+> new one versus channels enabled? Is timestamp located in the same offset
+> in both cases?
+> 
+Lazy hint on this - check the implementations. One's implemented using the
+other making these questions straight forward.
 
-Reuse the same constant via msleep_interruptible() to match the
-runtime resume path. Without this, register writes that follow
-the mode change can hit the chip before it is ready.
+More interesting to me would be a statement of why that size is correct one
+to pass. That is the most common source of bugs around these changes rather
+than data placement issues (good to understand though!)  Note that we have
+broken data placement by 'cleaning' up the functions themselves in the past
+but not just switching from one to the other.
 
-Fixes: 22b46c45fb9b ("iio:gyro:bmg160 Gyro Sensor driver")
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
- drivers/iio/gyro/bmg160_core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+So patch is right but a brief statement that struct ad7766.data is an
+embedded array and so we can just take it's size would be nice to have in
+the patch description.
 
-diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-index 38394b5f3..44e90af5c 100644
---- a/drivers/iio/gyro/bmg160_core.c
-+++ b/drivers/iio/gyro/bmg160_core.c
-@@ -258,8 +258,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
- 	if (ret < 0)
- 		return ret;
- 
--	/* Wait upto 500 ms to be ready after changing mode */
--	usleep_range(500, 1000);
-+	msleep_interruptible(BMG160_MAX_STARTUP_TIME_MS);
- 
- 	/* Set Bandwidth */
- 	ret = bmg160_set_bw(data, BMG160_DEF_BW);
--- 
-2.43.0
+Thanks!
+
+Jonathan
+
 
