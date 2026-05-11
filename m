@@ -1,202 +1,171 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20B7043CEF7
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 16:01:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A924330EF8F;
+	Mon, 11 May 2026 16:02:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778515277; cv=none; b=FKsraCURw8oIAVSD9adpKMB9BxYvwqK0fskb4iPqlFlQ6alexeEmeQGRRLSTIW0IUHDPBTDOfnnf6vEplOQeSQIUbfvNn9VML4I0xU6ikfZBPA172aV/VY1kZJ8ghz/oUVocNHZdqTOdM19qDstaV6KOa1LaFhy2+Yx4gKHawdU=
+	t=1778515343; cv=none; b=PmHryeli62mWNZUp9MHk+9XymHKCqnMw0QQhYM3ZsN9DIr3dF+yqrtaOrL+AIrjtECxWoQxt6ivKWr4T+dAa95vmwppeJUS59ASS9EcWUl9q4zPUMfBu3v34za/NPvAXiYAm4adL/CLqsMUeVYmN9Pt7LVRbrnXCBZjqH0nherA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778515277; c=relaxed/simple;
-	bh=nl++y2pvb//UUvo8RmKvBN/IlF4N9wSAx9HwCsTdjHU=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BrbrvzE8JZJ2VMkxYlZ9T2CUhv916QvW1pPQoru4cK83HIMN/QkdUrnAw4vqfIaU+/06Xxbw6ge1QfTQgPbHjjLd1joOISFs2mbPbIN59Dd1YLLYlQWQuhk6pxDgY39BSXuTPlAxW4gVQx0KOTzDEQuGaT2dDzrx7qFd2y4hd7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EPksM0KQ; arc=none smtp.client-ip=209.85.218.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778515343; c=relaxed/simple;
+	bh=d8WItIwthuDEpX/UiQlfKMc9royYtzyV+pGcQrzVbPU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tjrBXks+XDd3kabapx7dW6bq9IhE8LIO0Y3mPp/1SsXPrnZtvc1KNuaRHYyeISM7JnoIPoJyQf7EX/tI32JI6JXTo1ZQNafvfm9Jt/B5V5qsPXI3pC3gliq2x9rfWRFYWhA4H2y4IJHwZadZl5ZQx8l2gxq3urrtipxsZdHAOpI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=GvQN5vbE; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EPksM0KQ"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-bc66ad3742fso735981466b.1
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 09:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778515274; x=1779120074; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dDajMNhsK8ctloggkRH1qn8pJypaS73T3qG8KCV509o=;
-        b=EPksM0KQt1LbNCli2KGRcMuMkA457QfbDFvV/ouokqbTvVLlDeNC4BjfqamZe4gLIN
-         4e1GRlwzM9d0fevf/fYhWuOuKPVph002ISnQrOiD9CVm7dY7dexk2yA7Enj49RHHMhxz
-         dSF36mABiN9Ce76N4/Dhsc9V8K+O4+Gk8xcWnR15iyDFsM3/cr920kFh8lWPhoRSwTl4
-         nsatV+VG3Mrvjy5q4Pzy7s9w+Uh/l49/Z47tkuXVNyqfNY7xqGgqoSbWF68+H/1EKEV1
-         m5HuIJyOamWKBdYcOv2k+HMw9X1IeFOCgm7uCiluMVuQ75CJb47lDaQE7SPnT4axT3/z
-         Dj6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778515274; x=1779120074;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dDajMNhsK8ctloggkRH1qn8pJypaS73T3qG8KCV509o=;
-        b=bK2Ujqs7iOVPoswHRvVNcQr5+ulwKLDw0mgjM3c36l0q+zQ4iXuyu18IcmKrZiwfju
-         cpBgqOZeNQg5ww931B3c0rKagG37W7k0BmwQEBdTMD+FVTPVdAIMpNdDhhLpM/Qp2loa
-         abI8dvfUWG3YAFGWzK80bVrAa0LYJXFjtMPFwJB7hg+jqfvezboTDBJTzKpjy+ZObKSi
-         1DFSbV0oWyvHFF7bQAXD0zO4U/rByreuI7WCSzTssTXktemFl0zQnk+Gq+Lwad01Ixwb
-         6jWFCMnFpFNlLer6uXQsQjtlkHc0lN1p5g2ur8bYshyjWZK9E+0jUscOAJ61phrpWjJj
-         jltA==
-X-Forwarded-Encrypted: i=1; AFNElJ8AG4QNRyoOpHgRScP0nsX7WA7fmQ8YX+L67Po0mhGWO7Nxv9kLHEhNj8C27GBrXBMtbesod6USz1c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YymnKhW3kP4DSv1uXffoCpMBaWdQVO9dlo+dKr5JzCkN2ZgWqqW
-	DtSfusg+vsS8O1nDUbHsTLCs+kdkqIaoidBybJhNRQVV2kDtSIBn2iS2Tz0XxI6S
-X-Gm-Gg: Acq92OEucZ8TGriWAy06ZbbQ1c4CKvajf4eIxQs+I/XMfXwfYtBYQ1AKnHZ9TMqjBlP
-	3DqrD7indcO0cy+/16APGbumy9c44d3eqPHfp1lhVAHSlbT7/60e0s2AJt4xCBd3RIfJF+ZVfhg
-	t4RTlOzFiIp3ahH7WcQn5Ifvvub9z1dayitM4xpcQRSvkmWDxKntOSpmc6pSQYDovSye9ixoDf2
-	M2VEn5zR5A4bYvZLJ0jN9+rAycSdOzvMnt+CNIIvbfSNf7grTLHa+jfyBb5C4evVtZX12qjRX3W
-	A2hUdI7K92FUz6APCx5URB2m5xtrKra64+ZnvQXYnJlrY54ON/YuKgfxAdGVrjgMbra4oC20wep
-	8aTyQ19SlukFEbGAlA9MPlb+B93HgjpPKT5lr8j8Ws9lCAm1Y5Y/cn4TVCjZBZVgCMaF17leSxR
-	2GR3TyeXOkQD6vnBqAqWIoiydFLXwp0txVHtRaoPLi6+lKl8R98lrDXojgdy3YIWErnkesmzS1e
-	6uPAmUHIJf7sYgd4G2eL5JPwY7nWz8DqdIB0KhimwpNLAb0XA==
-X-Received: by 2002:a17:907:849:b0:bab:1839:cc61 with SMTP id a640c23a62f3a-bcaacf2b3a8mr762286466b.40.1778515274081;
-        Mon, 11 May 2026 09:01:14 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bcd3cc282d3sm315940466b.4.2026.05.11.09.01.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 09:01:13 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Mon, 11 May 2026 17:01:05 +0100
-To: David Lechner <dlechner@baylibre.com>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-hardening@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v4 10/10] docs: iio: add documentation for ad9910
- driver
-Message-ID: <wpoiyqezs6lus5o7smlibbxrxqudvijgqh3gwgft2xjpiirwa4@xtdwe3kzleku>
-References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
- <20260508-ad9910-iio-driver-v4-10-d26bfd20ee3d@analog.com>
- <b8f9a174-f3d0-4cb8-a571-605be79165d6@baylibre.com>
- <zvulxrrvg4sf7m5pjfpfucg7yssgallfu6zi6mcyblu2qy24hn@wdzs7h77vkoz>
- <18c2eab9-c0c7-4e93-b4e8-73b18531e784@baylibre.com>
- <uphcx5zr4lmukuom75g66hp4agurty7yq6mo6ri6otrsscqfek@tn3u5jjszaoy>
- <5bce7868-feca-4c54-a14d-ad4bf4072c29@baylibre.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="GvQN5vbE"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AD43B16F3;
+	Mon, 11 May 2026 09:02:15 -0700 (PDT)
+Received: from [192.168.178.24] (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 67AD03F836;
+	Mon, 11 May 2026 09:02:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1778515341; bh=d8WItIwthuDEpX/UiQlfKMc9royYtzyV+pGcQrzVbPU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=GvQN5vbEqBrW0wVLOoCaZCwYaB+zRsucAkYwhhEFXPQKUICM7t7svrPEDy5uaj+ns
+	 koT6QL4ySkLHNb8hlT0lW7CUe/p8+ozsHkVDoem0J+IMLPLrb8zunUwkoguvPjtPiQ
+	 LU6mDfZgyMRgjD6pA5Fr64Sd6Zr6hbl/BrrcWKu4=
+Message-ID: <e7269822-afc4-4a80-8408-297f9dbd6791@arm.com>
+Date: Mon, 11 May 2026 18:02:16 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5bce7868-feca-4c54-a14d-ad4bf4072c29@baylibre.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: Add GPADC for Allwinner A523
+To: Michal Piekos <michal.piekos@mmpsystems.pl>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Maksim Kiselev <bigunclemax@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260510-sunxi-a523-gpadc-v1-0-4f6b0f4000fb@mmpsystems.pl>
+ <20260510-sunxi-a523-gpadc-v1-1-4f6b0f4000fb@mmpsystems.pl>
+Content-Language: en-US
+From: Andre Przywara <andre.przywara@arm.com>
+In-Reply-To: <20260510-sunxi-a523-gpadc-v1-1-4f6b0f4000fb@mmpsystems.pl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 26/05/11 10:23AM, David Lechner wrote:
-> On 5/11/26 10:02 AM, Rodrigo Alencar wrote:
-> > On 26/05/11 09:46AM, David Lechner wrote:
-> >> On 5/10/26 4:30 AM, Rodrigo Alencar wrote:
-> >>> On 26/05/09 06:42PM, David Lechner wrote:
-> >>>> On 5/8/26 12:00 PM, Rodrigo Alencar via B4 Relay wrote:
-> >>>>> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> >>>>>
-> >>>>> Add documentation for the AD9910 DDS IIO driver, which describes channels,
-> >>>>> DDS modes, attributes and ABI usage examples.
+Hi Michal,
 
-...
+thanks for adding this!
 
-> >>>> And a practical note, they should be "frequencyscale". I don't like that it is
-> >>>> harder to read, but it is easier for a machine to parse.
-> >>>
-> >>> Parsers like the ones in libiio is not having problems with that.
-> >>>
-> >>>>> +Usage examples
-> >>>>> +^^^^^^^^^^^^^^
-> >>>>> +
-> >>>>> +Set parallel port frequency modulation with a scale of 16 and a 50 MHz
-> >>>>> +offset:
-> >>>>> +
-> >>>>> +.. code-block:: bash
-> >>>>> +
-> >>>>> +  echo 16 > /sys/bus/iio/devices/iio:device0/out_altvoltage113_frequency_scale
-> >>>>> +  echo 50000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage113_frequency_offset
-> >>>>> +
-> >>>>> +Digital ramp generator (DRG)
-> >>>>> +----------------------------
-> >>>>> +
-> >>>>> +The DRG produces linear frequency, phase or amplitude sweeps using dedicated
-> >>>>> +hardware. It is controlled through three channels: a parent control channel
-> >>>>> +(``digital_ramp_generator``) and two child ramp channels
-> >>>>> +(``digital_ramp_up``, ``digital_ramp_down``). DRG destination is set when
-> >>>>> +ramp attributes are written, i.e. writing to ``frequency`` or ``frequency_roc``
-> >>>>> +sets the destination to frequency.
-> >>>>
-> >>>> Would it be better to say that the destination is set when the the
-> >>>> value is non-zero? Otherwise, how would one change the destination
-> >>>> once set?
-> >>>
-> >>> Destination is only one, so you just need to write phase or phase_roc, if you want
-> >>> to target phase then. Does that not sound intuitive?
-> >>
-> >> I was thinking about if you needed to change the configuration.
-> >> If you set it to phase, then want to change it to frequency, how
-> >> could you do that if 0 is a valid value for phase?
-> >>
-> >> Also how could you know which is selected by reading back the
-> >> values if 0 is a valid value?
-> > 
-> > This is where Jonathan raised some concerns, so it is a good oportunity for you
-> > to provide your inputs! Right now, I am returning -EBUSY on read of an attribute
-> > where its destination is not selected. As pointed out, the destination selection
-> > is happening when writting to the attribute. In the previous patch, Jonathan
-> > suggested frequency_active, phase_active and scale_active to track mode priority,
-> > and It could be leveraged here for DRG destination selection. I havent gone for
-> > that because I was not willing to add that to all the channels given that it is
-> > mostly used for debugging, so I added frequency_source, phase_source and
-> > amplitude_source to debugfs instead.
+On 5/10/26 14:57, Michal Piekos wrote:
+> Add support for the GPADC for the Allwinner A523. It differs from the
+> D1/T113s/R329/T507 by having two clocks.
 > 
-> The "last write wins" with the others changing to EBUSY makes more sense to
-> me now. If the docs said that, I missed it. Otherwise, that would be a helpful
-> thing to add to the docs here.
+> Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
+> ---
+>   .../iio/adc/allwinner,sun20i-d1-gpadc.yaml         | 37 +++++++++++++++++++++-
+>   1 file changed, 36 insertions(+), 1 deletion(-)
 > 
-> > 
-> > Destination selection for RAM mode is firmware based at this point.
+> diff --git a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
+> index da605a051b94..89da96cd705f 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
+> @@ -17,6 +17,7 @@ properties:
+>         - items:
+>             - enum:
+>                 - allwinner,sun50i-h616-gpadc
+> +              - allwinner,sun55i-a523-gpadc
+>             - const: allwinner,sun20i-d1-gpadc
+
+As Jernej already mentioned, the A523 GPADC is not fully compatible, 
+since it adds another clock. The question to ask is: Can a driver only 
+knowing about the fallback device handle this new device? For which the 
+answer here is: No, it misses a clock.
+So add just a single entry for the A523 (plus adding it to the driver).
+
+So looking at this I wonder if we should add some property to describe 
+the number of supported channels, since they are slightly different 
+between the SoCs:
+- The D1 manual mentions 2 channels.
+- The T113s manual (same die as the D1?) describes 1 channel only.
+- The T507 manual (same die as the H616) reports 4 channels.
+- The A733 has 6 channels.
+- The A133 has 1 channel, but it's channel 1, not 0.
+
+So all of this is somewhat covered as channels are described as child 
+nodes, and have a reg property. Ideally non-existing channels just 
+wouldn't be listed, but I don't know if we want to rely on that.
+
+So I am wondering if we should introduce a limit, or rather a mask (to 
+cover the A133 oddity)?
+Either a DT property (channel-mask, as a single sell representing the 
+bit mask), or derived in the driver from the compatible string.
+The former would avoid introducing different compatible strings just 
+because of that, though I think this type of property is somewhat 
+discouraged?
+
+Any thoughts?
+
+>   
+>     "#io-channel-cells":
+> @@ -29,7 +30,12 @@ properties:
+>       const: 0
+>   
+>     clocks:
+> -    maxItems: 1
+> +    minItems: 1
+> +    maxItems: 2
+> +
+> +  clock-names:
+> +    minItems: 1
+> +    maxItems: 2
+>   
+>     interrupts:
+>       maxItems: 1
+> @@ -40,6 +46,35 @@ properties:
+>     resets:
+>       maxItems: 1
+>   
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          items:
+> +            - const: allwinner,sun55i-a523-gpadc
+> +            - const: allwinner,sun20i-d1-gpadc
+> +    then:
+> +      properties:
+> +        clocks:
+> +          minItems: 2
+> +          maxItems: 2
+> +          items:
+> +            - description: Bus clock
+> +            - description: Module clock
+
+I am not a YAML expert, but I think you can drop the min and max 
+properties, if you just enumerate the cases. Same for the names.
+
+Cheers,
+Andre
+
+> +        clock-names:
+> +          minItems: 2
+> +          maxItems: 2
+> +          items:
+> +            - const: bus
+> +            - const: mod
+> +      required:
+> +        - clock-names
+> +    else:
+> +      properties:
+> +        clocks:
+> +          maxItems: 1
+> +        clock-names: false
+> +
+>   patternProperties:
+>     "^channel@[0-9a-f]+$":
+>       $ref: adc.yaml
 > 
-> Seems reasonable.
-> 
-> > Destination selection for Parallel mode is still not clear... could use
-> > those *_active attributes or separate channels.
-> 
-> Since there are _offset attributes proposed for parallel input already,
-> could we just make it the same where you have to write one of those
-> attributes?
 
-Different from the DRG, both RAM and Parallel mode has this extra polar
-destination, which targets both amplitude and phase at the same time.
-
-For parallel mode I have the attributes:
-- frequency_scale: applied when destination is frequency
-- frequency_offset: applied when destination is frequency
-- scale_offset: applied when destination is polar
-- phase_offset: applied when destination is polar
-
-In parallel mode, there aren't knobs like those for amplitude and phase
-destinations. With the *_active thing or similar, polar can be both
-phase_active and scale_active enabled at the same time. However, this
-would not behave the same way Jonathan suggested, i.e. to be used for
-mode priority indication... it would be used for destination configuration
-instead.
-
-> 
-> > 
-> >>>
-> >>> Zero is a valid value to be written.
-> >>>
-> >>>>
-> > 
-> 
-
--- 
-Kind regards,
-
-Rodrigo Alencar
