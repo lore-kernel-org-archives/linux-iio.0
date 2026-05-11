@@ -1,204 +1,150 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E843C3793A8
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 13:06:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A61943A4524
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 13:10:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778504818; cv=pass; b=CVXGQVhxortp6qIYJeq9nlDYbp1141AYS7tBv/nXeDcoXffqyhVo9W29evkqhmfO63wlLuK4GnXYUkBq/kefRZpJ61dHyIw+ozhtiLSQY55stbJ2JFYAahwXvdJrqyFis9nXiS+aNOQQzgebBGRIn6WWER+WUidy3UzCGaj5lN8=
+	t=1778505021; cv=pass; b=Rr+wv+D9lWXwcWaQiT6Pb5P8melLzEq0VG0ww99w5gFlv6DmlacSR1eDxAzaPdtSqbCg0miM1oSJ3Ey1xI3HrCuRJjpyp3ehV3BIMWrstREDpVWWPALaH9+bCK067hGd/qxh0BrCiFdL1TQuWvypzQB0GYmx/xBlA29gOCm/RQo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778504818; c=relaxed/simple;
-	bh=4BvO/zQBhU6Zin4IwiJKbfVTvw5Wae/xIPKxl9ygjI0=;
+	s=arc-20240116; t=1778505021; c=relaxed/simple;
+	bh=9I8sW1yK+1uF9zmqUjtnhC2S2QxfHvvouTgT1eiyjzc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YmRS9eOapi6EZdZxOkFEP1dUXGWhU9aW9l3RudG6BT9vT3shSRHXA6GSjaaAlY7XUeQ9ZrO+UGJ3PG4bA9kzcW7MAI5UBGj6VqJB2sslOzxH5C7X5ZJZHBS2HpZwLWAalIQ9R3AlpM+KR7p2o3SY3n4dcAVX2KjF0lMc2CHChsU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ni38hodP; arc=pass smtp.client-ip=209.85.128.169
+	 To:Cc:Content-Type; b=gy2cfIDhzG7bV7nAUDaNX69J4sIxRJq/IK3ddYXN1vdluqTBn8F97qgdcfxJf9Bo1Vx0nCvRChp++liTYLmN97f/1O5ab3d89q3JU+rp4mRkURQotF8BfZfQmJCv9W5ec46sxBN/QpMmn6XUxQp5VwHc9h2wwMaMITAVIr07UaU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j7LE38Oh; arc=pass smtp.client-ip=74.125.224.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ni38hodP"
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-7c23248f3a3so11716657b3.1
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 06:06:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778504816; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j7LE38Oh"
+Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-65d071aac6eso3757183d50.0
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 06:10:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778505020; cv=none;
         d=google.com; s=arc-20240605;
-        b=CCUUas8wooehs1+RDBXhltaTjMtIKabN5Qyv4eQx+mTWYT8tDfRNbCXvM1dd0LI3Bp
-         72ewI3c43zRhBq+sY1qZSIHQ66gcpLL5hPs7CVoUEAKyyDKifkFG0LUB+wotblhrORD8
-         VGbXT6InUqjeHryL/Qy1Zlnr9Nrw7u7PCdL8yyD+mhYK9aiTB7wQXXULnKvK3k8AhAlV
-         vubwC5rhfXEGwCYquNCiPu5JX7vZNHUxLTbaXEvZJFYNcp634vBXn+SFhsiyGu/Of0rh
-         4CT3DEbtykgKAr4z4dBdDpVIzt4laf3qi6hp9s61RTlyZkK4mdQ1h7D+T3FHFHi5MTW4
-         q8QQ==
+        b=F3VMHASQxe4Tx878+lCjX++UnVutx4l4Of96T/td+XAoEbTsW37Nrfcy7OWqVM2Xmg
+         0k0/ga6DyOHDD3E7sD0e7j7tUU2pQmaqcfl0qraWz2ToZORbmXv3GY2G2GtXp9zDniKW
+         sDil2xSspAfOCSWrHJI3kEBnro4Wt2qlloLoFhKXXC2AUNWRZnl2tuq0SN/xzbthMR3E
+         Rhi9d5Xa/jDfVWSZNndHZ0eYS415+DtN26Yc4pjV+20sb4i+1K17NrclPRQ8EWZt1xvJ
+         6c4LfImSW701L8phKI+ZwlJVDLMDgw4eAUz5bQfvfb4ZWHIwDJKzGydvYSsoheMvaiYr
+         CJAg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=yeRFt246thamc1v1zIYHej9YGBJf7rTRJ6nPINihISU=;
-        fh=r+n3TQGJpjCUkewFYUxsMOjObHph4QBkQBomOMR00bA=;
-        b=QoENuVQ4YuCgoliU5AYdzM/QV5avbnyBTLXIpB63bxnk/iW9okcIpgi5lsw2xU+rwt
-         +QQkh1/9NrYj6Lu5PPSN8n2S63rzPCdXr7oE8QtER2ql1A3y/nwPYQaqDO3fulqwdqXS
-         /vEOcj5vos5AYhCxG/rIqqLIilzdrK2uayDoeyTEt1AYiE6tGpu1xK41NdTzAnXbqWYu
-         t04sue6YlpHJG0tzpEH/dnWNmJhEv8JwdwBTR62TmexngNTUrJsGb6OhXDZVuApmjwfb
-         sXlApX7MUC2sxBL6Ujh8Zys/tfZIdmP2xJ4zxsTpbtLeApn+BnIjoA28cPoc4zZaakA0
-         yLDQ==;
+        bh=EMlQ7Lcxo2gsa3Lli7NaTUBt5TanTRF2EnHPAACroY4=;
+        fh=jUlpkVVodXq5mCeYQYaTG0hIXu3lvOvkHo5qaVvWk44=;
+        b=Vs1PteQ0wsfVLR7PQVq7lmaqgdW1lozayqgH0R8qw0yVHcKQ4nPSrej0Plec7rO/2U
+         pskf6eLTMhS4h6x1QnCrXbFC64qed9VMe+3viV2pkhHuI2QLDMyZEQidEAGGMHtykF8G
+         5/40BHSyIjVMMOXFNUWIqWQqyuAV+9QS0f26LOtbEwznfoRW73fXGd78ztLqiqvmISv8
+         +pleFZOICZTrIrHbo2tUuwxijX38DWRHwRO2fJmf42v0qX5+T88ck0B4l3Uv5JmCsTCt
+         o28WpYFiYKUtqaSwbtLbkpdl7da7vNEe8QTaO+2RkrXS1EIjDF+JNEegA5QgYXfnE8dw
+         7Ucw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778504816; x=1779109616; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778505020; x=1779109820; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=yeRFt246thamc1v1zIYHej9YGBJf7rTRJ6nPINihISU=;
-        b=Ni38hodPt1/Qi/MZWu2lcStvnIsmpwuatWr3tLyglmQF/fwY/0bHB8CyvB0eAw6e5X
-         GB4obsOpvBNxar8ED8mp3SeH7P0elJBnjV1dSR465zVFEvB8QoOUIFPw4PLG41g2QjDR
-         3YRdoAJ5453K2c84tA0jANEeuFyNfoJd5KdpoUqBOWqgsq5DMbqhvEXjSb+wDj0ysMHn
-         93LwSka1Ky2dmyITh9fLZVtjhrf4bmVAENi1VQ4ZruMbs86VE0RfcrnLIVLdwidgF+B4
-         DtoZPwI37MdMxcmihfl9RVATg/B4uHxha8BAOMBq99BzFknXgbgrgXo++PMzRe4FVqVH
-         Ufbg==
+        bh=EMlQ7Lcxo2gsa3Lli7NaTUBt5TanTRF2EnHPAACroY4=;
+        b=j7LE38Ohz16Zo3MLibRDZsXmAJye7pl1Qoy3ZYwsCXPZ1kJWLgVb4nxORwAglUJ7+9
+         b9V6+0JefRnF1wITYHFvOjfpjnXC6YLTlLmrIGGTsQawcmnusA1UvMj589W6KTeWcckK
+         C4ijZFbcbWWo+p/Y+x7Odp/+B7OVgfrTxGP2z9ohAJaJz0+8+ccsMcMwSkdk7ZMDkkcp
+         PjopJFHi8MqPyqc0eO/FULHMfc6HIrUgA+FxtWmpbM7ki/GvSUpPv2aaLEOCplK4I9C+
+         oQcKX/oxWeYOAfMea15+FNhFyDmNDzRatuaH2+lGPT+aGz6KD72iqmIU4rWqR4DyIkYZ
+         HZag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778504816; x=1779109616;
+        d=1e100.net; s=20251104; t=1778505020; x=1779109820;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=yeRFt246thamc1v1zIYHej9YGBJf7rTRJ6nPINihISU=;
-        b=oWuVOiwzyTiTgGhq1+Dhe37yw/0EKCBRIHnsQPiRrHYEmTyJB3teksL2Nl9oLONhAf
-         sGG82j+X7jkZIdOGfO5xhCk05/dy9fCPHaV8gxZQQDdxUTcSB7u5caoH8oou2L11c0Y0
-         hzI7aRvfDGrv7QPGCu/k6Avpucp6qrBbMZ9rDEDkz90rtlGM2Lxa3J/SbNH5OA1Hp3Jo
-         5nDiq1kz3AcULC9/oKaD3o3Ij2F6FLmvTIM/7PH8D6tx7sbaEO1QXHRn4chR5pnjD0re
-         NYzbC7ZFUe8efAWVFttnq+ljRnLStJhoytS2CDFUdtGJPMk7jnzV5olyEffYKbwBjmqp
-         BT9w==
-X-Forwarded-Encrypted: i=1; AFNElJ9hoEf8hH04PLJ/5n4OdLNdrOXAuryQl8FoCyh1+caVb95uy5oRg1A/Fyv+vACaW3zImWU61iqUWcA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyyKMcQfEWOnKi59gaWes1CxZGqypSCWe+/7K5H1S9CWZLD8eo0
-	Q2bO/jcBL4Y+SWLwdwZG7lUQ37NnfayvuXv2c1rLGJVTiDzGmWUQuxRolJiyFi8qHq1gKpEGSeK
-	fXSRONBnW3/rhRVvKV3CNKjCR1V3oMX70KLJs+hI=
-X-Gm-Gg: Acq92OG2iggu16AAVGUiRTGB2qiIpebh+gdVAr4fDetgHjcUv7XXJKjUklc5H+MzpNM
-	MToIDQkfGL+D+C5OqO96gKkPAFtqqtDwefBCa7B1t9+BwLam2hdubUdEwsxdNAOBBMQSGMvCQcm
-	dC9jcJ8xBVUDuaQRXjWKI5WdevxEh92JU/VOih5zm/wgLRh58hnpdeA8Q/ALAoVL2yaB3pZKFve
-	/1Dz4e7mvVlSEC76BIhqWfwuj5zaHi8r5D7HKADWpVL7nBt1nc/ThKBbrRR4NT7PZDTBiwjMBQP
-	AZVEp+1iX9gI2Dd6XbE=
-X-Received: by 2002:a05:690c:288:b0:7bd:7039:f30a with SMTP id
- 00721157ae682-7bdf5f2ce76mr240629717b3.48.1778504815811; Mon, 11 May 2026
- 06:06:55 -0700 (PDT)
+        bh=EMlQ7Lcxo2gsa3Lli7NaTUBt5TanTRF2EnHPAACroY4=;
+        b=IVPw+H+9MtcdNVcE0o+EuQNqWRMgXNq771FErXKY4CKqqICA8Ne8YWgGYR8wsts+mC
+         iUyzoiJJL0dIawfODiUfhS8pnP/FasLV64dO8kSrXVb0iddep79jPSrPAnTJMtfhXDrO
+         WQzxxW+wPU+FRCtqVflmBKilI/ULBhrZVP9m4uXbaRAW+2Ww2dFr5vHqFDXFLry2068d
+         GgERq8mbYxa65KNpqh0fDzOOwfDvzsnHncgI0wI7x8W+0Ymb0mebVVUf8OVKZBNoj7re
+         Gykz7GnehPJScVKApB5X2f7XaiPQW4oAbdXs1ZhjTR1YDy3TRFWXVC2voZxKtRiIPYgC
+         k/9Q==
+X-Forwarded-Encrypted: i=1; AFNElJ914weL6oCi+q2Ptgoz0wIMuUcnkh4QxjU3L+MG1ZA7XikazLAUYkXfNqO3QCeKh0tLFFwyggPDEfE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzn88qebIZiR2qabXcdhrxcuObTbJnEvxstlGMcYyEXih7ulgDF
+	nbvVRq+itFussRTecnO03euHpoqI0WVpWuTfTxWf5Xrytry/N4Oj2TuIF3TCcPBggt7lJIV7/IB
+	acay6zV+9u2vhRoneSIo+NAbn36twM8s=
+X-Gm-Gg: Acq92OG0IuqugwApLoKy+KVw77RPrLfom3Y33H5W3wbU5rcZVNO7V2gN85+1Nc2DIeX
+	SsxZHwnh7tk/hQsBObTt1mJMqjEkOCgu5PgAnKY0eZTtDaSR3qOseUmaRYyUgOUYRrpHnjMcjr4
+	3rfP5Tjz1dotL+oQ4PFMiQCqZvRYD730HgqEVs6HCsVWXqdTZL+9P2PAaT7q1+R5euV+rhoxb/2
+	o5VJbYM2hfYSBp5v+XJrIjD/8Xa7A3GgGX86mtRlkmeELUnc1O1nMsYZpoo4XwMyCDPebgHkC1e
+	QHueeSTqtIs5I8GBB0RwFOD/P5kqJb7BMSX3ieKXtyTwc9mqE0xp
+X-Received: by 2002:a05:690e:1906:b0:651:b53e:4acf with SMTP id
+ 956f58d0204a3-65c79c4e1bcmr23389872d50.26.1778505019585; Mon, 11 May 2026
+ 06:10:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260508225501.86448-1-m32285159@gmail.com> <20260511130008.38592c5c@jic23-huawei>
-In-Reply-To: <20260511130008.38592c5c@jic23-huawei>
+References: <20260510020758.233721-1-m32285159@gmail.com> <20260511130959.7cea81ff@jic23-huawei>
+In-Reply-To: <20260511130959.7cea81ff@jic23-huawei>
 From: Maxwell Doose <m32285159@gmail.com>
-Date: Mon, 11 May 2026 08:06:43 -0500
-X-Gm-Features: AVHnY4IJzvjkFeRzbpCdKj7qf1xzvYWcvoNFj1DzoVijFRs4kOde6o9hZwI8XnU
-Message-ID: <CAKqfh0EnJ=ViAafjeWGPSnkR0fxhOGYnhopowK-+H0bn=GM3wA@mail.gmail.com>
-Subject: Re: [PATCH] iio: chemical: scd30: Cleanup initializations in scd30_float_to_fp()
+Date: Mon, 11 May 2026 08:10:07 -0500
+X-Gm-Features: AVHnY4JVwVt74p8AFne9jPgsWzoREMqufrpvP7IUlPyPsKSVfN07JtRhDihE-4w
+Message-ID: <CAKqfh0EOAie4bjCPaOcocw_N5KpzXoG7hxrT7s-dKpairPUYzg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: iio: chemical: sensiron,scd30: Update
+ maintainers field
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>, David Lechner <dlechner@baylibre.com>, 
+Cc: tomasz.duszynski@octakon.com, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
 	Andy Shevchenko <andy@kernel.org>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, 
+	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 11, 2026 at 7:00=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
+On Mon, May 11, 2026 at 7:10=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
  wrote:
 >
-> On Fri,  8 May 2026 17:55:00 -0500
+> On Sat,  9 May 2026 21:07:58 -0500
 > Maxwell Doose <m32285159@gmail.com> wrote:
 >
-> > The current variable declaration and initializations are barely readabl=
-e
-> > and use comma separations across multiple lines. Refactor the
-> > initializations so that mantissa and exp have separate declarations and
-> > sign gets initialized later.
+> > Tomasz Duszynski is no longer the maintainer of the SCD30 driver.
+> > Replace his entry with mine.
 > >
-> > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> > Link: https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/com=
+mit/?h=3Dtogreg
 >
-> This is good but we can take this opportunity to make it more
-> idiomatic - so more 'standard' for new kernel code.
->
-
-Yea that all sounds good. TBH I'd like to get some of the kernel dev
-beginners to check out this driver since in some of my earlier emails
-I said it was messy (+ I'd like to get it cleaned up) and there are
-probably a metric ton of low hanging fruit.
-
->
-> > ---
-> >  ps:
-> >  Hi Jonathan, I noticed a potential divide-by-zero bug on line 241 in
-> >  scd30_read_raw(), where the value of tmp is dictated by hardware.
-> >  If the scd30_command_read() call on line 236 assigns 0 to tmp, then
-> >  when we run:
-> >  *val2 =3D 1000000000 / tmp;
-> >  we'll get a divide-by-zero. Will send a patch for this later.
-> Good to know but not sure why you'd put that comment in this patch.
-> Also as a fix, it should come first - ah so maybe you were indicating it
-> might cause a merge issue?
+> That link is not stable given it's whatever is head of my tree rather tha=
+n
+> what I suspect you were aiming for.  Use a link to the email on lore inst=
+ead.
 >
 
-Well now that you told me that the div-by-zero in the write path was
-already fixed my v2 would cause a conflict, shouldn't be a problem if
-I revert it and add some of the other fixes into it.
-
->
-> >
-> >  best regards,
-> >  max
-> >
-> >  drivers/iio/chemical/scd30_core.c | 13 +++++++++----
-> >  1 file changed, 9 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/s=
-cd30_core.c
-> > index a665fcb78806..be8c055be184 100644
-> > --- a/drivers/iio/chemical/scd30_core.c
-> > +++ b/drivers/iio/chemical/scd30_core.c
-> > @@ -89,10 +89,15 @@ static int scd30_reset(struct scd30_state *state)
-> >  /* simplified float to fixed point conversion with a scaling factor of=
- 0.01 */
-> >  static int scd30_float_to_fp(int float32)
-> >  {
-> > -     int fraction, shift,
-> > -         mantissa =3D float32 & GENMASK(22, 0),
-> > -         sign =3D (float32 & BIT(31)) ? -1 : 1,
-> > -         exp =3D (float32 & ~BIT(31)) >> 23;
-> > +     int fraction, shift, sign;
-> > +     int mantissa =3D float32 & GENMASK(22, 0);
->         int mantissa =3D FIELD_GET(GENMASK(22, 0), float32);
->
-> though maybe worth some field defines as well.
-> //up by defines at top of file.
-> #define SCD30_FLOAT_MANTISSA_MSK GENMASK(22, 0)
->
->         int mantissa =3D FIELD_GET(SCD30_FLOAT_MANTISSA_MSK, float32);
->
->
-> > +     int exp =3D (float32 & ~BIT(31)) >> 23;
-> Again with a field define this can become something like:
->
->
-> //up by defines at top of file - and check carefully I got this right!
-> #define SCD30_FLOAT_EXPONENT_MSK GENMASK(30, 23)
->
->         int exp =3D FIELD_GET(SCD30_FLOAT_EXPONENT_MSK, float32);
->
-> > +
-> > +     /* Determine sign of received float based on IEEE 754 standard */
-> > +     if (float32 & BIT(31))
->         if (FIELD_GET(SCD30_FLOAT_SIGN, float32))
->
-> > +             sign =3D -1;
-> > +     else
-> > +             sign =3D 1;
-> >
-> >       /* special case 0 */
-> >       if (!exp && !mantissa)
-> > --
-> > 2.54.0
->
->
-
-I'll add those macros for the v2. Also will probably add a comment
-saying something along the lines of:
-
-/* IEEE 754 floating point arithmetic macros */
+Ah (right, git might rehash the commit). Will switch it over to lore.
 
 best regards,
 max
+
+
+
+> > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> > ---
+> >  .../devicetree/bindings/iio/chemical/sensirion,scd30.yaml       | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/chemical/sensirion,s=
+cd30.yaml b/Documentation/devicetree/bindings/iio/chemical/sensirion,scd30.=
+yaml
+> > index 40d87346ff4c..a5b0debe85b1 100644
+> > --- a/Documentation/devicetree/bindings/iio/chemical/sensirion,scd30.ya=
+ml
+> > +++ b/Documentation/devicetree/bindings/iio/chemical/sensirion,scd30.ya=
+ml
+> > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+> >  title: Sensirion SCD30 carbon dioxide sensor
+> >
+> >  maintainers:
+> > -  - Tomasz Duszynski <tomasz.duszynski@octakon.com>
+> > +  - Maxwell Doose <m32285159@gmail.com>
+> >
+> >  description: |
+> >    Air quality sensor capable of measuring co2 concentration, temperatu=
+re
+>
