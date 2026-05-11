@@ -1,72 +1,71 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7234E277C88
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 15:28:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54E344014B4
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 15:31:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778513306; cv=none; b=QzchF0gzsd1IHhU5SQwdo+ldnDm0UEvfS/Pc9ELhn0b0L8EpdrPODxmf2+tDRaYJa5YkAxdwL0bu7UsF7iyp239yRXqmNO2yi+lY+Yrc3p8zskeMIT/hntAqhot/xvqTY8mpbozFWsPYcf4NGN5Y0VSNoAfXOQuDyP474oE/66I=
+	t=1778513466; cv=none; b=G1STzpv37W3TaFTfBN76oztYiG3HDTZiOgBIeUXvyc2kOCy7UMg39pzHg47KamgCNAwLEI67lkLjnJrj/tfCtu9ILo+FZMrsR3QAU9GcIekFo1rhvxJ53mpmRwe730MXaWF+lpBZiglhP+10aIYEWw5j6NFqgqq2NrZvz7Yo2Og=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778513306; c=relaxed/simple;
-	bh=FzMqaD7IuFQJaxpXLFJvhMohEqMmqbQyxCiMp3Nf8is=;
+	s=arc-20240116; t=1778513466; c=relaxed/simple;
+	bh=1VLl6umAE+P+6rl1yUlRHZHMLvBlVyzOUgCmwbPpXdo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fg4whawoAxkeWSbG5hG5YCv4/WomFI3uEh7GCbl+OhQsNFL294LPclDyLSqGmatkdpwBHvX21nh5yjHES2Wc6pOXRDorC0ePAd3IFdE/w81OTBROfwbFH5/14fyLu1azjVG7GtkrjhTSJLktTszoS8diftoQx1f8uNx0mvJfidg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lVdyqq2I; arc=none smtp.client-ip=209.85.208.42
+	 Content-Type:Content-Disposition:In-Reply-To; b=h210bTGovBDWppM1VquVQexbRK8ZSTKGBH+2OGFF7ENeFl8LkDvCd5kJEua8u5Wuv/NK1/eGacXZ88/53z4w/r9Tebs9CFjeSq6ka0kknFp0NVMjk4eAqkCjIEhjbuj5nu7sKsfMG8Y32H36CdsCmtFl6d+jw0LPSv0xx1WoCjs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e0U/Zk07; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lVdyqq2I"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-67c2d57a5ceso7820553a12.3
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 08:28:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e0U/Zk07"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b936331786dso560378466b.3
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 08:31:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778513304; x=1779118104; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778513464; x=1779118264; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Cx/fracOZJpjZlO4z/Wctta7RdzXOVS4izK5f1NPMvk=;
-        b=lVdyqq2IQ7zU2uRKmPh6vjmxazS8Dd8BBsZi8gT+GGgQUepL8ELyAF5GMqxT51vM2Y
-         jISdif4tZ7gyUeuNK2JpZlNQKYgP3hNie6Es7i6aHaXvMKdfP/x1tHgCwliL4Mf4B7ya
-         h+cEU2isIph2tPee4HoLqVg8iAIOdRugu0bH0wUKspubZVeG8W4kEG/1Le8QJCSmfd8B
-         bEAtp/4vfiVWSViN1lYpjKkZO2KIWbbZeHqx6TRH1XOPKzBOctvKAslXbdaoP/Q392WA
-         YWrrZhZEfaoUPy9fu1nivKzkGQ30H0cFcT2oJSUhrgVa18Z6VlAdkxlZi8VScvLFBkgx
-         zoAA==
+        bh=kWZzStjqE2I91mJHHt3o+qyvptKZ/dRPtDvuD3l0QAc=;
+        b=e0U/Zk0707EjXpLtQsfoYOQzUE88vRWXYdbmZ4ybJwx8wrZ7nIe2t+1tDmmA8Ionh8
+         yb5CBza7D7xRMTCeqYiKjE8Em0b1BMaaV/cJsCVnThdkkAGoIJx2B9bVbD1n5bIQAcwy
+         OCrlQjxPeXnpX1Ri/6w+/FtgcjqYIxy63SdBe/HFY4OyAVlTQMsw50vtpdU2KjGzI8li
+         /h7xVuYst8aS3o5nVwfFDtQMAwV25KWoHwpoeDKSh7OoeKMQskgbu9ET3KG3cfyEH4oe
+         HLmFydGE25QSrdag0u6d/v7jtMLIxMZ/otq1r31JZ/e4O8aj9NXg+E3ccP9bCSHeq9Gn
+         E6rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778513304; x=1779118104;
+        d=1e100.net; s=20251104; t=1778513464; x=1779118264;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Cx/fracOZJpjZlO4z/Wctta7RdzXOVS4izK5f1NPMvk=;
-        b=WQ/XtdtgASh7MF/YBGCWkH1RsG1tZcUflDAsq+Iit50E7+wh1WBpM521GGovcQGcGc
-         8cPIX2+COv5T+Wap2Oyr8VH8MMR+CKIWZPeOjRfTjVVGA6FVeAah0c0CLzJ2eUEbdsxP
-         J2plIHtNY5EM8I4qlAr58SZcSlFd1nZHWWYksAcgYadmIeBfwAnqC5I0UsKfH4gyhpLE
-         Yf3WKDI5YtfVEVAdInKndYr2Qia9KMgbUlqaTXOrPjX3wnCtFHumM79U+ED9WygwYnPW
-         oYwR6k0/IYArCHfTDqycTnoMy9YcnfymYRVXO5Jl52Kvmc6RpdnXyx8Hgfa4ZDwpt6OO
-         Bg2g==
-X-Gm-Message-State: AOJu0YwMXi3gzAWMryyqO+R7qu8cg7uA97EpFjYFQMKBCPvC2zWPvS7m
-	PGuyX2XH5if/Ia7oI3ZvCe/ckpyfOnbki2GQMNcfdeOD18XzkxLsg9GF
-X-Gm-Gg: Acq92OHWR0d9E/jeCOjTKY76NivjgT9PdqK8eAnTOwcuMInJ2h41Nm5/m5b/pnGfj+R
-	x/5sEThnIfELA+NlSn0A2pu1MMTdtyo/6d+jMU2+yz2338f47wU3U4eKjo7/m3b7VHXB7FyIbrJ
-	xXMnsWkA/2LBRYBjJeGmujwStRTj7E8xfddgsrk4lVVc8g8I1xzcbUEr/1V4QIaHw5uiBZR1z6B
-	KPUniVOWrgwWK3/q2qBELCs40d7cPjBbR01HouPMtV9+AAxv3P/WqTxk6qisDuURtUA4SWpGCeV
-	W/X7bcjs0ntTDJmN+Lu5olPXRtR5GcvxhNEalpZ+fRbzDHpYT7ytItwovpPi9AEZ1wdvsvSMK/7
-	Y94r4itqIpaJRWetSYf6UCI4DsZsodfWplvOlqzr7OgbyhPSjhgU7z6T+6ihENQqArEssl6wzaG
-	8IzAgdA+joe0tHlJ6USVNjm7gVORg=
-X-Received: by 2002:a05:6402:278d:b0:67d:d904:df2b with SMTP id 4fb4d7f45d1cf-67f706f8439mr4424559a12.7.1778513303557;
-        Mon, 11 May 2026 08:28:23 -0700 (PDT)
+        bh=kWZzStjqE2I91mJHHt3o+qyvptKZ/dRPtDvuD3l0QAc=;
+        b=dpTCRBc89mI2vn2/o4DOMCEGeq4F84MMPWgMhoGBEPt0lJd+QsGL/AOJrM+L1Bgm/m
+         ouJdVghJt7ZN6zE8oEqylbw+Ir8GRPGKCMDHqjkaEQiP563mD1+rI5t+BxAiCylcVpXJ
+         jSEGHDoIilJsZ7Co/EoqTXPECaZXOYXabKuG77Ll6J70SdK+XA2fvsNH01aUjJgR2H4W
+         wjMs1RoNQOboIfus73nZM7nW6RZmX3llritSHVL0YT19BAuNgXbUbVUdASEjq12JbP6K
+         fQVuKBB/JK9aqeRQ23zAc2nSsJgiTuktrUlkhVIw5oTVF9rZ/LzpR1+Y1BPg2Lgu6/IA
+         XHuw==
+X-Gm-Message-State: AOJu0YxGevS8B6iZRYsQJMcJUdqiN5Tc5pgZmDZOiuv5Qj3i1cGdypjp
+	vRzTvIdWomBmw9Mt44AyGnbAGFLH3vneCDed0+2UD16LeuEeqS3Rws74
+X-Gm-Gg: Acq92OGJWBTwv82sfbVP+cb/LpGrueEcvwok4CR0QbWg21ggX8D9O+B7hRwx4jVXdeB
+	E9dBxUyln8mnfqWdlqy8JI/6AxmdwGWmXHymzz47TCLyJWd24yI0vCUrsf+70erVTxA84Q8N4hf
+	Ye+zeZe1mpkjICGYy293EvLk02TAeA0IcIKh7FQrCNZVYF8ASS/jmQdr9EkaRVQRcjgUwEI8Moo
+	79Bx/VeoFyyQSc+MUtFjQ4hYjYjGwkBMk57zebuR0ukPkhexO8A1RTFneIFiXedyJwrnmSial/K
+	H7u4MGPGYkqfUCPOr1B8T+z/RtQfnCB4psvJvJLG4LMyrJPmWXhVaY2UkwaVmJtCi30Bnl4Dzy8
+	7Fx0rL19qMj9K3XROufFnkQzyOWPMxBumATDa6nJVo9RVSDZOPA/5Ss3EVPfV4LEXbnv9/RS12G
+	xnV9nLYQxv3VPkZxXYJfJxGXTk8ik=
+X-Received: by 2002:a17:907:e148:10b0:bd1:d4e8:42a4 with SMTP id a640c23a62f3a-bd1d4e84518mr109531666b.11.1778513458881;
+        Mon, 11 May 2026 08:30:58 -0700 (PDT)
 Received: from gmail.com ([212.75.105.246])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-67ef0dfd34fsm3896183a12.14.2026.05.11.08.28.21
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bcbb2b1c3adsm429487666b.35.2026.05.11.08.30.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 08:28:22 -0700 (PDT)
-Date: Mon, 11 May 2026 17:28:19 +0200
+        Mon, 11 May 2026 08:30:58 -0700 (PDT)
+Date: Mon, 11 May 2026 17:30:55 +0200
 From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
 	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [RFC 1/4] dt-bindings: iio: light: add DT binding for Broadcom
- APDS9999
-Message-ID: <agHzqPiGttkJtTMz@gmail.com>
+Subject: Re: [RFC 3/4] iio: light: add build support for APDS9999
+Message-ID: <agH1u965gpFJDxbt@gmail.com>
 References: <cover.1778491503.git.azpijr@gmail.com>
- <6acd3ce2a0e417699a8184817a4a8eb381450beb.1778491503.git.azpijr@gmail.com>
- <20260511132635.7f0855c4@jic23-huawei>
+ <4bffb49a6b8a47037a08e728caab539fea6a88b8.1778491503.git.azpijr@gmail.com>
+ <20260511132804.2d2c54b5@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,46 +74,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260511132635.7f0855c4@jic23-huawei>
+In-Reply-To: <20260511132804.2d2c54b5@jic23-huawei>
 
-On Mon, May 11, 2026 at 01:26:35PM +0100, Jonathan Cameron wrote:
-> On Mon, 11 May 2026 12:14:44 +0200
+On Mon, May 11, 2026 at 01:28:04PM +0100, Jonathan Cameron wrote:
+> On Mon, 11 May 2026 12:14:50 +0200
 > "Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
 >
-> Title doesn't need to mention binding twice.
-
-I will fix it in v2.
-
-> dt-bindings: iio: light: add Broadcomm ADPS9999
->
-> > Add Device Tree binding documentation for the Broadcom APDS9999
-> > ambient light sensor.
-> >
-> > Proximity and RGB features are not yet implemented in the driver
-> > and therefore not included in this binding.
+> > Add Kconfig entry and Makefile rule for the APDS9999 driver.
 > >
 > > Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> Squash with previous patch.   There are some corners of the kernel
+> where they have a pattern of building up particularly complex drivers
+> in multiple patches that won't compile then adding build support.
 >
-> Can you combine this with the existing avago,apds9300.yaml binding?
-> Other than the missing interrupt in this file they look identical.
+> We never do that in IIO each patch must build whatever was added
+> (slightly exception for complex multi module drivers where it can
+>  be tricky to do).
 >
-> Note that a separate driver doesn't necessarily need a separate binding
-> doc.  May not be worth doing given the extra supply this part takes
-> (which you are currently missing by the look of it)
+> Anyhow, short story is merge with previous.
 
-the VCSEL supply and required vdd-supply make a combined binding messy
-with conditional schemas. keeping it separate.
-
-...
-
-> Power supply should be required
-
-noted for v2.
-
-> Also you need to fully describe the part where possible. Here there
-> is an interrupt and a vcsel-supply by the look of it.
-
-okay, I'll address everything said in v2.
+okay, I'll squash Kconfig and Makefile into the driver patch in v2.
 
 --
 jose a. p-a
