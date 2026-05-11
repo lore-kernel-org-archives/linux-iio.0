@@ -1,107 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B20241C2FD;
-	Mon, 11 May 2026 18:17:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 796424ADD85
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 19:11:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778523466; cv=none; b=jQjFbR2eZLP2NmF2SPAK8m5kxxVWXTVEZAcslqO6ttyCXB59VFw9J0SZKfr5IZ/zKBPgUDXjdYAcXKD3xn7aFWqOZIETlAWhHVHttsxs4s9ezRfhAfKZyVcPxq0NJ/aGbHVijGKzBsjY3vm5jLw36JpeLISGuQExtRWjlN6haW0=
+	t=1778526707; cv=none; b=h6c4IkVs7jzY4kGDg1vpw44yDXgefsARBYokCDrdpCBlMZPaGONAg3ybaikH8Lm+GuYudO900BfQgndxERWamOzxwC3bAHKBd6eEJB/38K+HHVQYZw6L2lD9znUGhtcy6ZwfzUtpcQs32rnbvXhaupGJb8xmY3M9CAomcYu41So=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778523466; c=relaxed/simple;
-	bh=CQ2FJ1AOIv6jLghN32DAmSv4RJjdmOUH9BEaBlYWLuw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qqs++AQ0hEXE0WM+RXPT7VxflTodxj2gB6wkVHGgRNyWaKu1XhzwWBlVj7ko66rg6D2zwArrP50dICKuSci0zV8rsuHm/HjJpzvuaAzL6BavN0VVPk6ebM1ubRx8qpET6bbBr1jl6d4ZKlAg+oOlauvdwt5MZL/BaaAiTU6wfb4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t2/sro2O; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778526707; c=relaxed/simple;
+	bh=/bV64msSqSRcKdn5zUAfHwX3xqByCyEZfFcODECYZ5g=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=p9AfuUKJeilT3xtEre++OPbJgPW5gGeYLhtvScz8eYV2bED8u7M7Ri+4V8nGZ5MazP0YaCQRDKb3lf61fheKECR97MBes3nMJPzYK3boIis70sqgMNmxBFTprrDweJQ08aom/VNDtkR2r62uxNvqdMf12JqLEjkjlo1ETmrqPF0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V7bKWAC1; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t2/sro2O"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA7BC2BCFB;
-	Mon, 11 May 2026 18:17:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778523466;
-	bh=CQ2FJ1AOIv6jLghN32DAmSv4RJjdmOUH9BEaBlYWLuw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=t2/sro2OSuQC9LRmYhTtFe+APFuOj/MYlYgKKsYiieEvXd3ey5+Y0xKr/M7xxed7Q
-	 qg1DiwXdEeNxuD/Kb4lT6kOPnzhcIxdM7Ldv8uG2IRLuqjvyfP/JgOlkgV/UZwFoRh
-	 qR3+EPlTziPdOe5AsxlAaA3xPrl8y40aSMtsGKAlPr+3XMZZK2kKwqfbH5XIrv6bWi
-	 a3LGgUH0LWmSiGhzfE2egKPRGH/ufIwizbSmgUJxgcXcPQu3v6kkqWn2pV3wuR3Peq
-	 OUyl+ww6qeYybDzbSuON6R2qUfHUqTzQSHuR6qMx94dMn0R17tlCU6JD7HtaWFAGWu
-	 4gGWiQTv4Ri5w==
-Date: Mon, 11 May 2026 19:17:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/8] iio: magnetometer: ak8975: switch to using managed
- resources
-Message-ID: <20260511191741.5f45d6f3@jic23-huawei>
-In-Reply-To: <af7oKgtzyFmPogJJ@ashevche-desk.local>
-References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
-	<20260507-magnetometer-fixes-post-pickup-v1-3-37827ca68fb3@gmail.com>
-	<af2zup3PFlgs2DtE@ashevche-desk.local>
-	<CALoEA-y-Qg22NSfVBLtqx4VFp0q=xqLOuL5Wf8TxW1AswW1+hQ@mail.gmail.com>
-	<af7Zql3NkhDwKWBc@ashevche-desk.local>
-	<CALoEA-zBRC+sZqtP4YiSu8ZBgw69t9_ZqaOQ9BDResRWhnGR=g@mail.gmail.com>
-	<af7oKgtzyFmPogJJ@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V7bKWAC1"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-45297094718so3755664f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 12:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778526705; x=1779131505; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=YmHJticu6I9cJGzHOpTilWbp0zgjsUaADkfyTWFWIYU=;
+        b=V7bKWAC18y0TpSw3qoSuRByWyygvI70FnIIGsNGixqZlBxuP6joMVrGxB9XibOZ1kU
+         zSTpLuGA8MuiIpvj1/jvmZpKHt1kkjGL6fr3rYpL2c6HJtnpDPfcu83mJwVMoLgAtZxO
+         GmE9NoI2CTXtW3VUfYNNZ1q88ae8s+JVR059abwUHUc3JhdY+RkFMOPbpiJqhfmHNAbG
+         PszPQTnVfoS+VSh8qbBKXuKLqWTArVRDJk4/ZjUX4LjV/cMkT+hGi95FAGLqw+oQxcbI
+         mHxBnUOYgTl6IyrNDgM/f39Ba8V2NLw/+fztt0a9zUaYGBofggeQSZOWgoCH9cFi2nkP
+         y0SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778526705; x=1779131505;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YmHJticu6I9cJGzHOpTilWbp0zgjsUaADkfyTWFWIYU=;
+        b=fIzADtIkfZdnAA80B/nbaiRRlRphWTd0K+mNGVMO/7bIgryUgbUZrd3OB+owBIGP77
+         dsI0D+Oqm35SBiqEGyFt9PM9j6fLD6u9Hz5qZSJiTsqiFpQZ81zFZAE1uo9dJy0MU795
+         RQE6hkO+UlHWkXTWLfUVQjDH4osSp/n/zcdZEtSh2P5Vn5IWikKox0ko9GR34EkUnB8k
+         XKaa0n7NzoCTSJi49HoDLeT8z2yBSOywm4fSjPKG2dp+N/17ZXGhUPHrDrBkCzIJe+IT
+         poLHL4n6xSzr7NRTA3yasJ2O2+WlLsFOCSaD07pKPdRkvR1Slycc4B3PcDcox4K+kVJK
+         Lm4A==
+X-Forwarded-Encrypted: i=1; AFNElJ+AKZGZo9zSlZ5WafWq4C0XXvQLvaCz6ZpvzzWJWq7sWkkOuKVJDtBaJo9HaUyNJOYZsMqSvVLBj8A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyLKs3oQDpCboCn7qb2j8uGvcYzBO9Jsq6hiNXqUGWlalMwSZcJ
+	dFCknt84U0PFcRpRJ5X7grilXU3ttj7YmnC5XmfjTFDk7wHIcT0J9oah
+X-Gm-Gg: Acq92OHLinKnnmfqhWn+ETS8YJKiuvI1ksYxt8dKymFYpN/HRwJWNsl6AEGvj6LYQgv
+	1WkbrzqqSuapSmyEIw178arYJXynD3impWiaWfnBR0vZ6gcMEdRrQD8RVk2DdXEPM2CNQOOHJtL
+	XJfPPcIRqTgX4Lh28Gkb1p9WZCEVX0yWOawqP8UgfgIYOU91DReD8FSquDSa1hK/mstDEYunGG2
+	Pz2xRxcT3c+O9vgWlCtVeIbJQRQAqpmSEAh91SenZsM8EpP52jxVYy1SO35dWoGjV9bxiCPNUL2
+	QaPMffDqY4jQi2RVuhaIX1DOcifntCrJ+7mlN/AiTtbk2FtpmpZwZwsk8WKCu6csQIWegsOPGo1
+	5CCCJvjJRCbRlkWP7I4zhl5MRB78eTs7YebNZhN0TTygbc94s9IaakW9/5PuAud9djBEUfAvt6k
+	7FJ0VxIFGxkallutY+t+jmwRQ/ig0hUsqrpdePLo75RhiN7RlXesaaekPs5xSFrhf8RRnG12XdA
+	srp4HZO
+X-Received: by 2002:a5d:5c84:0:b0:43f:e721:76bf with SMTP id ffacd0b85a97d-4515df66f27mr37344432f8f.41.1778526704678;
+        Mon, 11 May 2026 12:11:44 -0700 (PDT)
+Received: from ai-node.taila4f726.ts.net (89-139-15-25.bb.netvision.net.il. [89.139.15.25])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548e6a5b65sm28541785f8f.8.2026.05.11.12.11.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2026 12:11:44 -0700 (PDT)
+From: Vladislav Kulikov <vlad.kulikov.c@gmail.com>
+To: jic23@kernel.org,
+	krzk+dt@kernel.org,
+	robh@kernel.org,
+	conor+dt@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	andriy.shevchenko@intel.com,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Vladislav Kulikov <vlad.kulikov.c@gmail.com>
+Subject: [PATCH v3 0/2] iio: magnetometer: add MEMSIC MMC5983MA driver
+Date: Mon, 11 May 2026 19:11:33 +0000
+Message-ID: <20260511191135.36691-1-vlad.kulikov.c@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sat, 9 May 2026 10:54:18 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+Add an IIO driver for the MEMSIC MMC5983MA 3-axis magnetometer over
+I2C. The driver provides raw magnetic field readings with
+per-measurement SET/RESET offset cancellation, giving 18-bit output
+with a full-scale range of +/-8 Gauss.
 
-> On Sat, May 09, 2026 at 09:47:25AM +0200, Joshua Crofts wrote:
-> > On Sat, 9 May 2026 at 08:52, Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> wrote:  
-> > > On Fri, May 08, 2026 at 03:51:06PM +0200, Joshua Crofts wrote:  
-> > > > On Fri, 8 May 2026 at 11:58, Andy Shevchenko
-> > > > <andriy.shevchenko@linux.intel.com> wrote:  
-> > > > > On Thu, May 07, 2026 at 04:35:52PM +0200, Joshua Crofts via B4 Relay wrote:  
-> 
-> ...
-> 
-> > > > > > +     /* Only power down if currently active */
-> > > > > > +     if (pm_runtime_status_suspended(dev))  
-> > > > >
-> > > > > Is this one a correct one?
-> > > > > We also have pm_runtime_suspended(), which is different.  
-> > > >
-> > > > As we only require the status of the device and not the power.disable_depth,
-> > > > pm_runtime_status_suspended() seems adequate.  
-> > >
-> > > Last time I have checked the code on this I remember that probably this one
-> > > doesn't guarantee that immediately after returning to the caller the device is
-> > > still in a suspend status.
-> > >
-> > > The difference between two as documentation said is in "...if runtime PM
-> > > is enabled for @dev..." for the pm_runtime_suspended(). So the
-> > > pm_runtime_suspended() is stricter in that sense.  
-> > 
-> > Okay, if you prefer pm_runtime_suspended() then I have no issue with it.
-> > I can amend the series version this time.  
-> 
-> It's not about my preference (I am fine with either call), it's about
-> understanding the code flow and what does fit better in _this_ case.
-> 
+MMC5983MA is not register-compatible with the existing MEMSIC
+magnetometer drivers. It has a different register map, 18-bit output
+data format, and I2C/SPI transport support.
 
-https://sashiko.dev/#/patchset/20260509191907.24734-1-macroalpha82%40gmail.com
+Tested on a Raspberry Pi 2B with the sensor on I2C-1 at 0x30.
 
-See patch 5 review.  I haven't checked the details but looks like this
-dance might not work and we need to figure out something more clever.
+The initial driver implements the validated I2C single-measurement path.
+Other chip features are left for future work:
 
-This particular example 'might' be fine as we don't end up with
-pm_runtime_set_suspended_action() being registered.
+- SPI transport: the binding describes SPI wiring, but driver support is
+  left for follow-up validation of the SPI command and SET/RESET
+  sequencing.
+- Temperature channel: left until the temperature output behavior is
+  better validated.
+- Continuous measurement mode and Auto SET/RESET: left until the
+  interaction between CMM, TM_M, Meas_M_Done, and SET/RESET sequencing
+  is better understood.
+- Saturation/self-test bits and BW/decimation tuning: not exposed until
+  their behavior can be described reliably through stable IIO ABI.
 
-May be fine but needs more careful analysis :(
+The driver uses a conservative 500 us post-SET/RESET delay before
+starting the following measurement. The datasheet describes a 500 ns
+SET/RESET coil pulse, but testing showed that a longer software delay is
+needed before taking the next measurement.
 
-I'm a little concerned we get some stale state because in the 'early'
-set active approach used here we don't undo the pm_runtime_set_active()
-anywhere.
+Changes since v2:
+- Driver:
+  - refactored SET/RESET coil pulse into mmc5983_pulse_coil() helper
+  - used USEC_PER_MSEC for regmap_read_poll_timeout and fsleep constants
+- DT binding:
+  - removed redundant comments from examples
+- Cover letter:
+  - added "why a new driver" explanation
+- Collected Reviewed-by and Acked-by tags
+
+Changes since v1:
+- DT binding:
+  - added SPI bus support, interrupts, and vddio-supply
+  - made vdd-supply required
+  - switched to unevaluatedProperties with spi-peripheral-props ref
+- Driver:
+  - replaced scoped_guard() with guard(mutex) in a case block
+  - added datasheet page references for timing values
+  - changed product ID mismatch from probe failure to dev_info()
+  - hardcoded the IIO device name
+  - added trailing commas
+  - added local struct device and regmap pointers in mmc5983_init()
+- MAINTAINERS:
+  - split binding and driver F: entries across the relevant patches
+
+Vladislav Kulikov (2):
+  dt-bindings: iio: magnetometer: add MEMSIC MMC5983MA
+  iio: magnetometer: add driver for MEMSIC MMC5983MA
+
+ .../iio/magnetometer/memsic,mmc5983.yaml      |  63 ++++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/magnetometer/Kconfig              |  11 +
+ drivers/iio/magnetometer/Makefile             |   1 +
+ drivers/iio/magnetometer/mmc5983.c            | 345 ++++++++++++++++++
+ 5 files changed, 427 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5983.yaml
+ create mode 100644 drivers/iio/magnetometer/mmc5983.c
+
+
+base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+-- 
+2.43.0
 
