@@ -1,42 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6CC9426D0D;
-	Mon, 11 May 2026 16:05:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D3A42B736;
+	Mon, 11 May 2026 16:06:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778515527; cv=none; b=DRYa70jpS3T9pxa63+OyQM5HHdnsKizZ15jdeUs1BqTWKlRXpAiZw4z9xHbL65Wy5bYr64BbG3TfmSsGgTCtFPDHqWHiUi8sLbTYd1GCHIMEnEwSSFC0pFO6k7CiqMM6kWy5pmhYoiTX/wfl3ILdhXOFXFfMsFwEFl4LOnIwE/k=
+	t=1778515604; cv=none; b=ika6fa173cL1eB9MxJSPLf0GN8MNG7llDywZKSn8r1nbpQzvnwUJCscsC9OyVQsR9O/Zra+3YstYzQ419qxwQYihNuqe03ezVV2zVhQGe5f3CbY6BkSPudpAOXn3Ez3v0ML0q611+GpERevnKlMsILMGohatIsH/1K3nrmBbpZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778515527; c=relaxed/simple;
-	bh=OC30CTDYYP8HGkjCaQAIE4BfP6M58+iTsfv+Bqq1eRI=;
+	s=arc-20240116; t=1778515604; c=relaxed/simple;
+	bh=MFu5kyNHAjvhRdKnpSg4dwGBGsjHQSJa6B+mXY5NfBI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=r+D1abVFy8Qej7JwjmbjmjNxfGc3g8cXKMnAh+CxS1y0wYZGSiTS67hqbduaae5sj8YWjmQGj15XG6apWlNq6PJVvBLZ/zs8g3B3tU+slDIcR1TMNjRYXl83Zt051EDsFHrdvRrPIwjfK6inEPVjmKFyBHvXXzGc/n1MYt8WMMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pl2irjo8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=lqAHNGKDCTl9ivXAr9rebaS0Y6ndGaAXFewcuraZ9VfMcQJVg9x4blQwjU9cc+OmvqoH488TdUqcdbnZr8wLziTiew4IwYLHov4azp4d9EWUBqkjjYqiDrPzL81XbZWWImi9+lXhWXRJXWvUX/4P7uGssy30UyO8q0OZjSNqCZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=odtiOl86; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pl2irjo8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A81B9C2BCFA;
-	Mon, 11 May 2026 16:05:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="odtiOl86"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C8A3C2BCF5;
+	Mon, 11 May 2026 16:06:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778515527;
-	bh=OC30CTDYYP8HGkjCaQAIE4BfP6M58+iTsfv+Bqq1eRI=;
+	s=k20201202; t=1778515604;
+	bh=MFu5kyNHAjvhRdKnpSg4dwGBGsjHQSJa6B+mXY5NfBI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Pl2irjo8l4uipm4yox1HbZlpcloRHMWF8y1m/wNzpl6dsyMdGsJFejCXZam785+uM
-	 XE78+CPvWchzF2c2A4Lwy839JzJyxbpK0V4aa1gY+cOeQoa0HMUfz050XiXqmzAteR
-	 QR656KyDLVpKi1xaMBifmpyZ4Y08EeI2vn59MtNAZYNj36UJsV9N+vN8lL1phiiqZB
-	 Ma/M9kw7Yla4bAhZx/Pd3HYhFmp9/HZkcNv+amhh3DFGURs3LcnKnMhzbBdRlbsSyz
-	 jWX41CPDrZ8+dtcmqh/Mq3MvM0H89rLzYfSThKKODrAjvt9ZwiwJ3iM+3tQSADhtOF
-	 llKlH97+byLtg==
-Date: Mon, 11 May 2026 17:05:19 +0100
+	b=odtiOl86rA1tvN7Xa9l2YvaYh9kt90TtESzaoEgTF0F6hSLARQ945LhWZZKvZwVix
+	 g9A5L5BY5V+5oQ+MhfWJLbXIajbMwgDk0qsSI7Rf3DEBd0e47dCVMFsTAyMHOMDBZD
+	 cRcgZxrnvTFf15zsFzUr8ueIBlE+oQ0MTMIoA2C+pLt0YkqGMw62nAHvccWGLHlZG8
+	 HiKoali05KCMCq0rT6H5/5669GmWHFZvg0iqkrsp2krFyr0J02Mf+IkZAvvlrDxpZ5
+	 iWrGzZtpyQJin7+nGeiYJqGR7OVCiVh4F8sbn0nZUPurmioIUWbch7zkqDSnw0+vx5
+	 aeBudWMsIkz3g==
+Date: Mon, 11 May 2026 17:06:35 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: shofiqtest@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] iio: adc: ti-ads1298: Add parentheses around
- macro parameter
-Message-ID: <20260511170519.4f381ae2@jic23-huawei>
-In-Reply-To: <20260509113809.26224-1-sozdayvek@gmail.com>
-References: <20260509151959.3475-2-shofiqtest@gmail.com>
-	<20260509113809.26224-1-sozdayvek@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, mike.looijmans@topic.nl, nuno.sa@analog.com,
+ andy@kernel.org, andriy.shevchenko@intel.com
+Subject: Re: [PATCH v4 3/3] iio: adc: ti-ads1298: Remove unnecessary CONFIG2
+ write during init
+Message-ID: <20260511170635.4dd3fdc9@jic23-huawei>
+In-Reply-To: <7ff89e1f-f5ef-461c-83af-18360ad5dab0@baylibre.com>
+References: <20260509151959.3475-1-shofiqtest@gmail.com>
+	<20260509151959.3475-4-shofiqtest@gmail.com>
+	<7ff89e1f-f5ef-461c-83af-18360ad5dab0@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,19 +49,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat,  9 May 2026 16:38:09 +0500
-Stepan Ionichev <sozdayvek@gmail.com> wrote:
+On Sat, 9 May 2026 15:36:19 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> The current call sites all pass plain identifiers (chan_index,
-> channel, i), so this is a preventive hardening rather than a bug
-> fix, but wrapping macro arguments matches the kernel macro style
-> recommended by checkpatch and avoids surprises for future callers
-> that pass an expression.
+> On 5/9/26 10:19 AM, Md Shofiqul Islam wrote:
+> > The driver was enabling the internal test signal (INT_TEST), double
+> > amplitude (TEST_AMP), and fast frequency (TEST_FREQ_FAST) bits in
+> > CONFIG2 during initialization. These bits activate an internal square
+> > wave generator intended for device testing and calibration, not normal
+> > ECG operation.
+> > 
+> > CONFIG2 defaults to having only the RESERVED bit set after reset, which
+> > is the correct value for normal operation. Remove the write entirely
+> > since it would just be writing the reset default value.
+> > 
+> > Suggested-by: Mike Looijmans <mike.looijmans@topic.nl>
+> > Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+> > ---
+> >  drivers/iio/adc/ti-ads1298.c | 9 ---------
+> >  1 file changed, 9 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
+> > index 186bda3087..8957e873e1 100644
+> > --- a/drivers/iio/adc/ti-ads1298.c
+> > +++ b/drivers/iio/adc/ti-ads1298.c
+> > @@ -615,15 +615,6 @@ static int ads1298_init(struct iio_dev *indio_dev)
+> >  	if (!indio_dev->name)
+> >  		return -ENOMEM;
+> >  
+> > -	/* Enable internal test signal, double amplitude, double frequency */  
 > 
-> Reviewed-by: Stepan Ionichev <sozdayvek@gmail.com>
+> This is why comments should say why and not what. If the original author
+> had a plan for this, we don't know what it was.
 > 
-> Stepan
+Mike, any recollection?
 
-Picked up this patch.
+Anyhow I'm going to apply it anyway given Mike suggested it and fairly 
+sure it was Mikes' code ;)
 
-J
+Applied.
+> I look at the datasheet and the driver. Seems OK since the test signals
+> aren't used anywhere in the driver right now. 
+> 
+> > -	ret = regmap_write(priv->regmap, ADS1298_REG_CONFIG2,
+> > -			   ADS1298_MASK_CONFIG2_RESERVED |
+> > -			   ADS1298_MASK_CONFIG2_INT_TEST |
+> > -			   ADS1298_MASK_CONFIG2_TEST_AMP |
+> > -			   ADS1298_MASK_CONFIG2_TEST_FREQ_FAST);
+> > -	if (ret)
+> > -		return ret;
+> > -
+> >  	val = ADS1298_MASK_CONFIG3_RESERVED; /* Must write 1 always */
+> >  	if (!priv->reg_vref) {
+> >  		/* Enable internal reference */  
+> 
+
