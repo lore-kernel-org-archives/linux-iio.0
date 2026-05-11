@@ -1,64 +1,64 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2590046AF12
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 17:45:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA4E4466B52
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 17:45:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778521505; cv=none; b=pFy5TVyQv98OGG5q97sD/kfgswKa4Y3n/2zhFJMeKHhCtBXNwvHiCaV6hm2zg1/WNn2eL9jepj/DG0BwZ2RSZQVkoEq2hGmRR5UrLComTHjTCI9ansszGcphi0NM/gZigNExR4t0LfT+YnVwTrOZSbCsAXOup/IDHe3mU9G86JA=
+	t=1778521511; cv=none; b=gl5k56Ga4J6pcsyS/JxPeAWc2fhBK738CJk4s0HcsKwKkq/iRpyELAU5icTEgJ8YbhUIrBR5TKVLxdFhbKqluizMeXSIPF9tfBU2Qf0O1Cfzpn2GGXX7LOhWPjihG9fnI1qLRlonAJymwo0VoqEGo4PgNvUQpfoiVEIEELhy8nU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778521505; c=relaxed/simple;
-	bh=aTUwaw1cZjKNO7pd1qP0S4T7HG4+2wRyJbUWydgN08M=;
+	s=arc-20240116; t=1778521511; c=relaxed/simple;
+	bh=+rRs+S/GLbvYjpkwKDsmz1ERbvZm35SJtB9f3RxI0O0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=GKbBT3R8RkXIX9jhialW1XC4v9lcN12xE3l3qUr8xwbPWOfqXdRR7MS9CRNO/4Efj21uScFjQ83Xui+6eiHvj510RtJmweEaFMoW4b+TVZY0MLLnE+239e01Fk07Nl4XAJqLmKf9BXdpyKxTt8NqLISerzVzL4gitKz5PuZx1mM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iugoT4zO; arc=none smtp.client-ip=209.85.214.171
+	 MIME-Version; b=rURneJNg4/w5gD3Iq+bujh89V0YLBdurLZ8wnqNORnTn4PQ+8jtw08ep4tL/zoPWQL8N0UzgVx4QfHYJitLpO8KjZtFeG7h/JdaoHv0dK0SYsA3RvyTNa44DalCT6BJb7GYlodbkMX8SsHnezs9MhW843uC84HFqeCCu7IXsqjY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JBZC1dMI; arc=none smtp.client-ip=209.85.214.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iugoT4zO"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2aaed195901so22471495ad.0
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 10:45:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JBZC1dMI"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2ba0fc8b1f0so29005125ad.3
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 10:45:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778521503; x=1779126303; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778521509; x=1779126309; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=J4zRyyXIwuf/G23ISEa4BernDl6SyQJXsQmJd0MnDOM=;
-        b=iugoT4zOwhqoOslTvEWq6jSQPZdUlKnjUWLn9zojPyzSJM2BNwOEP0W2MTmzeGayzr
-         qPt32qxJLKwU/pal7vstzTQBbnnPcDGqne8n9L83xHWl+535q+Xedj99DQdApNHTCB1/
-         127+JD+ottbZmY+NvNYbjBM3y4XMkXZMOT4L7doO0ea8+NI/DjNYCFQ7PIpabgifRHpb
-         GyzS66UbupAcBu5OuK/AKiR+yHOf0DEXk7L6ARN0IkC46iaO93LX0GbJM3Cn3w3cf43v
-         zHkCEF6QUW/72hm4irBWn+zGU7hYZTH4W2WU/s3bwusC15cG4dWTfYvYOsO/ytMHjlr1
-         BSiA==
+        bh=YhqG9aI2ukn/g8i1UCfEdn6XwpCGaYuhsFZEF1np09M=;
+        b=JBZC1dMI+6OsA++7jm5Y7d+5/DAvKY59w/oHQ9Rs1Nl7qLj95zl73CYUZOSuozKemh
+         HM0gYwHDbJIiZ8P9XbD20502u1kDPB/zm/uOnnyH6/RkviuSBZpm8nZ8cbahTaCoR6xK
+         nnVmdREKfcnRhLLi0fyMRHyuvhs1/OE2pSmySF4slsfA2GuVo5xe6oMqrQrXC+5IlcbO
+         XM5eBrtb30fhfOzOKswm80icbBWZ0CbTByuxWghyt+FHu+D1Iqsn/tcwffdYF/5SFlpn
+         7H/RagVwRHTWCG4bb3hinMxzIjx8mIqfOLd0rsDGfnvUlCRCpp+jZLKPJ+SwAivxLBOG
+         uirg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778521503; x=1779126303;
+        d=1e100.net; s=20251104; t=1778521509; x=1779126309;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=J4zRyyXIwuf/G23ISEa4BernDl6SyQJXsQmJd0MnDOM=;
-        b=ByfzMrD0oz2zaFISlbfL/TiyXL062+z9mI4WaE9d6JaJxbsDLQe5qjsBbVQZhVVODX
-         i2gtYyRMFMLSx21Cw/q3fpX/5YKPPooBvElX2rlBnRB/Yc170OblIwn3ApKpRN/QnDTA
-         e9hqxdTDEDTb/gy9m3vjl2OM3aoC2laz1Fp+d1NOvQg/C0ZTB0aYO38T0P7ZlD9LbKEK
-         Uq3EOIXuavb3G17Wjo8ND41Oc1QNM1af75dqTtjrGw6cr9UqdNuoHV4a43Xe4xkgOY/g
-         yq9ErLtSuA51gnkBrqofQdXBwCdX2YhxG3gDSFXiXWHTBBkxswZpyYfdrGDVRL9SniMY
-         UWWA==
-X-Forwarded-Encrypted: i=1; AFNElJ8TrqofYyuHP23jzFohCOhPEXvawextFU+sPN+wEv+cNNZDhLSdX0oj9IVlR00WOYYaFPRpi+V03mc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyABvaUhr9uUhAJANzaFJkHmy42GZYDiULOTzFYIUF0W6k2ZaBX
-	6gRGWrl6Dn+YL8lxmQd/6DCKCP3a72lEmSJVtP1p+CeaV/uU4VXZp5ze
-X-Gm-Gg: Acq92OFCcyvv+o724Uyl/Y+hBwwBSApWT2PjBL1Vc0fPwH5KqhU3hPfa6yPMiMN2SjC
-	uZbr07x75dAJ8EcjNwCVo7FYSAi80/+kiJL6xFm4bqrja/ysOg2THg/ivJ6/dNhDb8xdfUeDqbi
-	OX9XUp4hfHaDBPldxFD7nyNQxtMVZ2QOavZsRwaCgFVOH6PnS0jWALqCQVACkbavZY9rhqYnFns
-	GsRpNRDkn6CF9Czcwn2wFOOpSQe4a23VFC2QaR8NMNxQeg/ScDJ/hzcCVSez2pTfKThl56HzTkF
-	hK3JIt0nsDGfL2GgIepxu0PaMT5SnNAfmRnyAdP4Jdgu9zL3ZF2FUUXK4/RtEa+4pcd0tat3y/K
-	9vBN/+xEGhdVGLKY4lsOUPZCtMSmA/I6UiAI3JiNYzaodr3XqJVMzu7T2bGqxoPQ3hfnBi7m7Ul
-	G9ECgx4iNP0BDkcTWKJjKC//pV3svVVBJbAGEzfn7HQj/l5mBxcATa0IveF23vZvmbZSSkyyE/z
-	xRzZqNrBdDi9Sd29IlNkhvsal8tXDC1R5itYUlvZLNJvRLloWB4ALap5opuwgp5p1GzJtE=
-X-Received: by 2002:a17:902:c946:b0:2ba:d97b:4baa with SMTP id d9443c01a7336-2bc7aa202dbmr97909805ad.20.1778521503394;
-        Mon, 11 May 2026 10:45:03 -0700 (PDT)
+        bh=YhqG9aI2ukn/g8i1UCfEdn6XwpCGaYuhsFZEF1np09M=;
+        b=R0+yzJFzEkKC+uWjCb8MqZLQmhbQfrIZ0w8ECwhOicTmZuFCo9RQXyLK1SFq1YmFc2
+         BVuQ61HkYNuAdF0A5L/xCmVRa5qS+5iPYBUR7W6hKKgAyHpaLBThiwkDU/WXpwpdJjFH
+         m65b62+izlra31ePiJHde8nRrdw+c8veRwUqJgq0icYeCemw1Oe4fDYPZfjljFfZtcVq
+         6Xw4uPzcrmler0CLIuo+f0ISn5jcWNElO6K46sA/MQK7R+OFwV2SkILotQJ/B0zvdg2y
+         bqQzuwdITkivtoeYeXBqg9ofsb3uaYApj44OseLAinCDiLoVL72K7k9OlmV9MTXFVtAM
+         EdOA==
+X-Forwarded-Encrypted: i=1; AFNElJ+ASH+2VjjCFGGoDKF7vCN8h/oGiiTPWRydx5uJomlo2cLXVeryjmdVA10lAd0l8DyCvPZXiUt9l1s=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxtqzz3xMzo9HXS9CalBxsmNJeivS4PLtx6GMnLT0Aq3uu/EwFw
+	ZiqT/IekV/z7ede7dYkI9AHFsl+ehXzkMxkRb74WDbG9ISQXiBWHkcMu
+X-Gm-Gg: Acq92OH4RZ+1zHIuHtztuPlwIY1lsgpnLoQbM4VIQ0En25kho3qZZPo+jQ1iYYDn8rj
+	7CeqTt3iT/Kx1Z3KUmKjNySpZP0zEe2dRusBMM0Okc/EUh8XP5mav40knzyaIGRi+IViN6H066t
+	yCDe0B5em0umnU4kpfN2624NoI6F9an/0iKl2+3OHUu5l8yb/CA9rPqhnWQoEQTz3Kjkzz/sb3q
+	cYeUAh9lP6jm9EJ0Un0IJqRJaFMSAS0m6kXkJnsI7m1lFZBCRnie2KdDKi6aAx5O80xZZEyuYNp
+	LABrTjEhhCmbS1BR/S73vkRkG/XV/Wfdo8FOMbCj344w5ITPt4V5/vkwKRDWwoYwQWKOtaXQT6V
+	B8RrJbAWQketCj9RklQaSCoGbIeq3IW6rYIQ30fAq58FU2NBMkhfp0YGJW637z0xR77SfTdJ6cz
+	5tdFCaChkI6vvUK1wuhZKCQgyXBJp3Dd/456Hx8OCsPB35bZbZ75FDwoJLZeboCaLeVPiKYev1M
+	4gqrOG3ZLMd0fgUXMKbAn/YLqnaKxyO3HMeRoA2QYSKZUNwreaMPR5yko5c
+X-Received: by 2002:a17:903:3bcc:b0:2ba:4e84:976 with SMTP id d9443c01a7336-2ba78f45b67mr249352365ad.13.1778521509323;
+        Mon, 11 May 2026 10:45:09 -0700 (PDT)
 Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.www.tendawifi.com ([14.139.108.62])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1e365a1sm106838425ad.44.2026.05.11.10.44.58
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1e365a1sm106838425ad.44.2026.05.11.10.45.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 10:45:02 -0700 (PDT)
+        Mon, 11 May 2026 10:45:08 -0700 (PDT)
 From: Piyush Patle <piyushpatle228@gmail.com>
 To: jic23@kernel.org
 Cc: ak@it-klinger.de,
@@ -71,9 +71,9 @@ Cc: ak@it-klinger.de,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v8 v8 07/11] iio: adc: hx711: pass trailing pulse count into hx711_read
-Date: Mon, 11 May 2026 23:13:32 +0530
-Message-ID: <20260511174342.123820-8-piyushpatle228@gmail.com>
+Subject: [PATCH v8 v8 08/11] iio: adc: hx711: split variable assignments in hx711_read and hx711_reset
+Date: Mon, 11 May 2026 23:13:33 +0530
+Message-ID: <20260511174342.123820-9-piyushpatle228@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260511174342.123820-1-piyushpatle228@gmail.com>
 References: <20260511174342.123820-1-piyushpatle228@gmail.com>
@@ -85,94 +85,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Move the trailing-pulse selection out of hx711_read() and into its
-callers.
+Separate the initial value assignments from the declarations in
+hx711_read() and hx711_reset().
 
-This is a preparatory change so later variant-specific code can pass the
-per-channel pulse count without adding a separate read path.
+This is a small preparatory cleanup before the later loop-iterator and
+variant-specific changes adjust the local variable layout in these
+functions.
 
 No functional change.
 
 Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
- drivers/iio/adc/hx711.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ drivers/iio/adc/hx711.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-index 10ccc69f209b..30e1ce321747 100644
+index 30e1ce321747..9e5cafa1e307 100644
 --- a/drivers/iio/adc/hx711.c
 +++ b/drivers/iio/adc/hx711.c
-@@ -155,7 +155,7 @@ static int hx711_cycle(struct hx711_data *hx711_data)
- 	return gpiod_get_value(hx711_data->gpiod_dout);
- }
- 
--static int hx711_read(struct hx711_data *hx711_data)
-+static int hx711_read(struct hx711_data *hx711_data, int trailing_pulses)
+@@ -159,9 +159,10 @@ static int hx711_read(struct hx711_data *hx711_data, int trailing_pulses)
  {
  	int i, ret;
  	int value = 0;
-@@ -174,7 +174,7 @@ static int hx711_read(struct hx711_data *hx711_data)
+-	int val = gpiod_get_value(hx711_data->gpiod_dout);
++	int val;
  
- 	value ^= 0x800000;
+ 	/* we double check if it's really down */
++	val = gpiod_get_value(hx711_data->gpiod_dout);
+ 	if (val)
+ 		return -EIO;
  
--	for (i = 0; i < hx711_get_gain_to_pulse(hx711_data->gain_set); i++)
-+	for (i = 0; i < trailing_pulses; i++)
- 		hx711_cycle(hx711_data);
+@@ -204,7 +205,9 @@ static int hx711_wait_for_ready(struct hx711_data *hx711_data)
  
- 	return value;
-@@ -237,7 +237,8 @@ static int hx711_set_gain_for_channel(struct hx711_data *hx711_data, int chan)
- 		if (hx711_data->gain_set == 32) {
- 			hx711_data->gain_set = hx711_data->gain_chan_a;
- 
--			ret = hx711_read(hx711_data);
-+			ret = hx711_read(hx711_data,
-+					 hx711_get_gain_to_pulse(hx711_data->gain_set));
- 			if (ret < 0)
- 				return ret;
- 
-@@ -249,7 +250,8 @@ static int hx711_set_gain_for_channel(struct hx711_data *hx711_data, int chan)
- 		if (hx711_data->gain_set != 32) {
- 			hx711_data->gain_set = 32;
- 
--			ret = hx711_read(hx711_data);
-+			ret = hx711_read(hx711_data,
-+					 hx711_get_gain_to_pulse(hx711_data->gain_set));
- 			if (ret < 0)
- 				return ret;
- 
-@@ -264,8 +266,8 @@ static int hx711_set_gain_for_channel(struct hx711_data *hx711_data, int chan)
- 
- static int hx711_reset_read(struct hx711_data *hx711_data, int chan)
+ static int hx711_reset(struct hx711_data *hx711_data)
  {
-+	int trailing_pulses;
- 	int ret;
--	int val;
+-	int val = hx711_wait_for_ready(hx711_data);
++	int val;
++
++	val = hx711_wait_for_ready(hx711_data);
  
- 	/*
- 	 * hx711_reset() must be called from here
-@@ -280,9 +282,8 @@ static int hx711_reset_read(struct hx711_data *hx711_data, int chan)
- 	if (ret < 0)
- 		return ret;
- 
--	val = hx711_read(hx711_data);
--
--	return val;
-+	trailing_pulses = hx711_get_gain_to_pulse(hx711_data->gain_set);
-+	return hx711_read(hx711_data, trailing_pulses);
- }
- 
- static int hx711_read_raw(struct iio_dev *indio_dev,
-@@ -349,7 +350,8 @@ static int hx711_write_raw(struct iio_dev *indio_dev,
- 			if (gain != 32)
- 				hx711_data->gain_chan_a = gain;
- 
--			ret = hx711_read(hx711_data);
-+			ret = hx711_read(hx711_data,
-+					 hx711_get_gain_to_pulse(hx711_data->gain_set));
- 			if (ret < 0) {
- 				mutex_unlock(&hx711_data->lock);
- 				return ret;
+ 	if (val) {
+ 		/*
 -- 
 2.43.0
 
