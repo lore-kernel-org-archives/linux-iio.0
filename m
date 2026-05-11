@@ -1,86 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCD1B3DDDAB
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 12:29:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DBC43A1CE6
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 12:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778502555; cv=none; b=Dc+rLX63Al+jHOXOfYLomkwW2UT0GaXEXYQouB/YydMqHsyAuDlNmClhfDfR5BN1kajGIciqn6CZxuEZSLZSodraDN3TYGPVmXK7oUC+Takea+Bj6S3HjBlfs1ZhGKFd5UaivZwTP/u8AiRroF57tTRDwPBigblB07EGnXQ8JWw=
+	t=1778503568; cv=none; b=AwkBitB3HZzyBHAw4HUUDDGcfbf+8eKlhhUqMq/OeD778ZgX/qY2dddslUPdu6VeuB3j9zALrw8ptjZTxeJPgBVmWVvLMRsyVzUZPNM5PQUvEXLrMAe1t+rNWPR2ZrgDggeCmCOkpIa+QKUOtFT+grZn0JCWylyD9imcPUyY9eg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778502555; c=relaxed/simple;
-	bh=k48BkzRng8yeSZHxzuPJjNAgQF1o0orrztKWc9YG+NI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=krTecUG2p9vH+LKXyDzdiO9aUvRBb59YWIvzyGzipgmEg6IcioNpXSGVfmuOw9HZaxwC5Hu8eG2CLpNhFgy5u42xCkEb7IVqePZbtX1oOupG62fn0OXbNpwi7CPLEkMdC2/agzpX090AnGEdNti4tGcSjRgos8swWIy8A2ZtKTI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D5AkJzWo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778503568; c=relaxed/simple;
+	bh=ah+L7XjFPxAStMvJXlWIUi2176ncgWCDMGxDiPNGJBM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=U8g74M9iBWCgfJOBFVN8KJeUmdkQvEw3tPjNP1Up8l1UNjXLxcx37B5QVDPTRI2IMH59HqSejQRKm0cTYqvEC0CxBM0kSzO6acpX0do7UIByf0rriYJAAiVO49MJ8An6470C/a4yIDzxMv6ZaFjSciGi8hcDY8eEhDTHD0nZ5MM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q9sLFMU7; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D5AkJzWo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6517C2BCB0;
-	Mon, 11 May 2026 12:29:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778502555;
-	bh=k48BkzRng8yeSZHxzuPJjNAgQF1o0orrztKWc9YG+NI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=D5AkJzWoJEhqqjlEBhVUb4Lo/ummz2ETnxVCitsmQod1so1VcA+XmGmYtsH6BRwgo
-	 5201vgRemjKt79K5cE1l9AGyhyFFkNG+WQyEqKoadMcnd6ywKn88UXRHH0gwnDqaE2
-	 X8cKrv5mR0tDRVjBYH2nmymkQ41K3wZvc+U0VC71PDZWSE25vHCg9RiOuQvtjo+NRC
-	 CfF89OnPsheetIZBi2mmdnrMeu01L/WHZaPT2NGJy5DFq+MJ3ivt/LJiAgROC2keQk
-	 UkcgKE8+7QwblEZdEXWFWlZj3HFm32nYvgajqPSsGzY0O9k44vXUgmOYoz8lEsGx8w
-	 PIQgCGHJEfjmQ==
-Date: Mon, 11 May 2026 13:29:08 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [RFC 4/4] MAINTAINERS: add myself as APDS9999 maintainer
-Message-ID: <20260511132908.6aea342e@jic23-huawei>
-In-Reply-To: <dced0d8107c8f046a80128ec0fba85b764ef1848.1778491503.git.azpijr@gmail.com>
-References: <cover.1778491503.git.azpijr@gmail.com>
-	<dced0d8107c8f046a80128ec0fba85b764ef1848.1778491503.git.azpijr@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q9sLFMU7"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-44c44af71f8so463027f8f.1
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 05:46:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778503564; x=1779108364; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=t1BQNIkn+QGmcRpc4xARpcTaU9/uXxyUpoOywmJXqXA=;
+        b=q9sLFMU7gcq2BdPX+q4/UWV7/LjJGdDQrRucGmiT89VMvKQdl6s5u/A41fadlWvYcH
+         iV602/19Csviu3Nbg+HU1lEKH4bZwChxo9SA/V8HfUh1m8fuoSEG82UE3WvNsozx/N1C
+         yWH/9JD8DnNLuLP9F5aV0Nlx/Vx8aMasxg5Df4aQqT9YOCULwKoXftXntMVD5CgEX6Lh
+         EML9XjoVIpCHhuyiMjkvM5FS6Xc+a93KkcxrmnCgxtjIgXd/9e0b1VURr7u59eVR03hO
+         zl7nPpwpbOqEX/cv4J13Xp8eM2Kxqbv+rSPKF4ze7m6fgQYMaimuH1nXpzRxofDg1CYc
+         i3rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778503564; x=1779108364;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=t1BQNIkn+QGmcRpc4xARpcTaU9/uXxyUpoOywmJXqXA=;
+        b=bHu3bj7Espipv7pc7z9TLwCvylyTfDG0wZ5oL6KRafZ1eB9/QX1dqJY/bXaRiOwmV8
+         qtnwj7D5yEikfJYaF7hrPulXe7gEinjRVC8jNyXKohJxY33Bs3GAJx5jNZKr4jC+xxwU
+         s1Vw+thy1NOutWZkeh2XIU1S/BS98iUE7Iy5b/OgbEOh4kqLP40oFqEdYbx22NVV1n9h
+         FtPG0wwO2UA7orkGtMBlUfBvRKZpQK+UVZ4xhSPON75vgWK36zLVXnZ84DcffUFS6r6L
+         ev4EAyceld5TK4itiT67ESQsAdEoQAe+5ccZcmD4Fuugeyq7LOehm6s7H8M4R2vuapYP
+         kFqQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/iFLirFAI8o7O9gy11qyT/uUbvbFpTITY0k+8zHwoby9nZEMhsNpoH+g/kvwmin240Fg/er2HV/hY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwcGLasd90sorkBxkTKoDsWUbh6LS1X8q3vHOcR/gXFIcGNLXkC
+	Boe5p7noGGoIKbakuTir2qHvPRLtMFAD+vsB9hFacLxPzZQ36zR8TZKN
+X-Gm-Gg: Acq92OH+PNMZe/YFFmbW0tMuawJRl3mB+3Er3X+8/HhTEGVTQ3n7nqn+3ztE9YNUvLF
+	vYYQ6taEpMm/iCtMosOgPRtKYqaG5kG+nOC0ZkY9hCZwUcm1o2BUc+iKsOPOhCBGjZQsQ2KYRNs
+	ww1jMC1uF4+jw1PfMfsNtlAlvPocDL/wE/CT2bWDcgGXuTh52IKvUFspqjhzaTJpUeFHF3PkxA5
+	3qsKt+MfOB1Ali+llNKdZShYF3WEaDMCRcmwt3qADHRe0iEjAXVjXgYBQ+swJu5ZHSjh28ZCoq9
+	QsVNGFS6nrmu6RW0AvbxSxZqxruDMfNuYUE+ACTCjgRFPAKsHEu2VqXxEJscCzJgBsCgbaUkh/P
+	6FlvhGMyLyUj1HachWTn+4s7Gs+LlKiE4mIPHqfi6rhgEeVHEYxti1Ci7hvKhJWsSOocmPU3Vcu
+	J5kKK1mPgCBhyHgogqqR4XbWVAHK50nEglxNd9fFPMmbfP
+X-Received: by 2002:a05:600c:3508:b0:488:ac4b:59d1 with SMTP id 5b1f17b1804b1-48e532b5cd4mr172402775e9.8.1778503564268;
+        Mon, 11 May 2026 05:46:04 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e7e45ff89sm129305255e9.8.2026.05.11.05.46.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2026 05:46:03 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH] iio: adc: ad7793: replace usleep_range() with fsleep()
+Date: Mon, 11 May 2026 10:30:43 +0500
+Message-Id: <20260511053043.229-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Mon, 11 May 2026 12:14:52 +0200
-"Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
+The AD7792/AD7793 datasheet (Rev. B, page 25, RESET section)
+says: "When a reset is initiated, the user must allow a period
+of 500 us before accessing any of the on-chip registers."
 
-> Add maintainer entry for the APDS9999 driver.
-> 
-> Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> ---
->  MAINTAINERS | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 1aa9c989973f..cdb703f37f06 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -4302,6 +4302,13 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/light/avago,apds9300.yaml
->  F:	drivers/iio/light/apds9306.c
->  
-> +BROADCOM APDS9999 AMBIENT LIGHT SENSOR DRIVER
-> +M:	Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
-> +F:	drivers/iio/light/apds9999.c
-Build this up as part of the earlier patches.
+Use fsleep(500) instead of usleep_range(500, 2000). The 500 us
+minimum stays the same; fsleep() picks the upper slack itself
+(about +25% on a default config -- narrower than the original
+2000 us).
 
-So add the initial entry in the dt-binding patch (if that's a separate
-file) then add th driver in the follow on patch.
+Add a code comment with the datasheet reference so the "why"
+of the wait is visible at the call site.
 
-There is no advantage in having it separate and it annoys some tooling
-that checks for valid coverage for each file added on a patch by
-patch basis.
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
+ drivers/iio/adc/ad7793.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-> +
->  AVIA HX711 ANALOG DIGITAL CONVERTER IIO DRIVER
->  M:	Andreas Klinger <ak@it-klinger.de>
->  L:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index 8ff7b70d6..dbc6b47b7 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -268,7 +268,12 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+ 	ret = ad_sd_reset(&st->sd);
+ 	if (ret < 0)
+ 		goto out;
+-	usleep_range(500, 2000); /* Wait for at least 500us */
++
++	/*
++	 * Per AD7792/AD7793 datasheet (Rev. B, page 25, RESET section),
++	 * allow 500 us after a reset before accessing on-chip registers.
++	 */
++	fsleep(500);
+ 
+ 	/* write/read test for device presence */
+ 	ret = ad_sd_read_reg(&st->sd, AD7793_REG_ID, 1, &id);
+-- 
+2.43.0
 
