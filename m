@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9193BE631;
-	Mon, 11 May 2026 10:04:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9691934AB06;
+	Mon, 11 May 2026 10:04:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778493849; cv=none; b=qHMtaBxmj2ef0erggcqdQhD1V+5JGyxxEdbqRSlaAOuBMZiwaDI9K0/LQqpR4EikkZpjs9BQIlEEjCqVjMW00xCynGZreTUMMOkAtx2sU2KHF+0cVpQgjzu6YwBxwYy/PZuRKhgW6YZixj+d6pEvVQtK3QoyiZ0PqcPSgmxgHqY=
+	t=1778493848; cv=none; b=YzuIozW3mjoAK1b+AUn0aEb9RrRcttmgEjW57szLwK6zZKZ61n8NvNbmQUP5M3PvgSCi2y5ZcWG3S9wtm+b1jz3zSIl9HUeMW3r4evH5fetVwQsoEXfmywAyD3MRSYhut+Azf6gRR7fGjjUp8XOS+IU0+U761EIF9Pbwe2wf6Ho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778493849; c=relaxed/simple;
-	bh=WswLr6Us1TjtRXLIEomwDybgJpR/RaTpxgWU/yYhRrg=;
+	s=arc-20240116; t=1778493848; c=relaxed/simple;
+	bh=QdjYDTc663t50gmUWHyxhNky6o/XS1/BZyT41mBAD0w=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Rm2H5NN+TI2b56glMJf8f2BjEw+D5y/HR29nxT84U8qsu9SXWDAkhGzxt+/5MI1uQ5IyU9L1jP1kFvoQ+32vw/IaiAvYuHpqoe9jVnYkujsAHEgNtfqy9SzseowjrccYGVEGUT3RA6Nb2iW729Obmw0aqXJksTP0BtbBuERv/fA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WaTS38+W; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ixB2FtCywUpGhYfwWrenTKwdGT+bO4IkPdGDMVOdSFXu+AH2STjpbgj45XY/4MzFxJkjkSi7lmgTuBoWxxmN5eV8WgeAJebRw5MbKudLA9y403fF4NjR/9x5nyvx5LU1rzIvC78Y1OGJ09MsRYBJfWQxX3lZFeBQRa3L9sChqKg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W5BXXHGi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WaTS38+W"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A579C2BD04;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W5BXXHGi"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0CF61C2BCC9;
 	Mon, 11 May 2026 10:04:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1778493848;
-	bh=WswLr6Us1TjtRXLIEomwDybgJpR/RaTpxgWU/yYhRrg=;
+	bh=QdjYDTc663t50gmUWHyxhNky6o/XS1/BZyT41mBAD0w=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=WaTS38+WREuGS3XEptKR2u80s1ubJKS/jCLnJmesoENdWkpVq/CtjSZKEcTEKzPw0
-	 CLiFVNI6BXxaJUERYLGvT9g6br0sVFSbgLpwuvKX3ZrFmjiivGJdZnzZNmczJoo4zS
-	 9jh8RmYsN81VP0j/hsBHqlurKaSJgl1CcKoI5+9I+GxE7bBrVklRJwlXmDfkudAMQ/
-	 4TYLscLifpzW+jpCxdO1/XoajgEQcr+5slSt6fpNtTAGk+6lpuCZPKE+VvJSu5akWO
-	 yee0RRV+CU9o3juuFNAlAM/22i/f+ra17SQVwwPlJQCaccDBhiYUPNeJ4jQ2yAHv+M
-	 mxhy7sLmR6Dbg==
+	b=W5BXXHGizoc366bhchIbasRej/Td6cmmcMxu5KOKrlsV5PKwFDGYQJ7khGkAmR0fZ
+	 B86Y7aMuyMPe3JBkkX7jlzbH5Lw4CtATLmCQieJKbg0Av7QIbsmlj66EgMGICPeZDm
+	 Zngobqud5AOvK0vgbgJtwQjc6fI3cDWDNdinxkrFXcM1pD+7CSnCSwAuaaThFJeMXw
+	 LopnGajc/Z1XY+dKS/1wsznAWz5BAnJyeruAIiqUtlarKNbpclkhg1BPw6VJ9LLsS+
+	 QxPkeVoOybZNpRcfbbmraax8z1uaSGyj11qBvqit2iv5X46LaEsWvKMrhqURtHAzEn
+	 eiXW/xw33K0mQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C0ACD37AC;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04814CD37B9;
 	Mon, 11 May 2026 10:04:08 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Mon, 11 May 2026 12:04:12 +0200
-Subject: [PATCH 7/7] iio: light: opt3001: switch driver to managed
- resources
+Date: Mon, 11 May 2026 12:04:07 +0200
+Subject: [PATCH 2/7] iio: light: opt3001: use macros from bits.h header
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260511-opt3001-cleanup-v1-7-f7879dc3455c@gmail.com>
+Message-Id: <20260511-opt3001-cleanup-v1-2-f7879dc3455c@gmail.com>
 References: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
 In-Reply-To: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -51,11 +50,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493846; l=3774;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493846; l=1682;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=8ovE0Y0dodKlQ5XVRY91rGrO9oJoS2L9RVHQLBYzFz0=;
- b=TwEasXxf3piT93+uKgZLsbAE9vhMlHhXjVS55oEy78azUucyuaePGvbXhPNWqyvt3J3Tv01tB
- /hZ7y4a1WI4C+PMb5f9KEBGO0lTXWTpWelbY/1kMEpF8W9fn3Mj23Z4
+ bh=zkqAxPRq6/NV7Ilc+m0WZWAlcRf1i5Dhxp0SPGrlRjQ=;
+ b=0ZeX+lchsOcqZ4Qd3Ks6hyYrVBLNiiotTh2GxqSFczFkylWut1VavjFcFW0qK2tAALw7WdIv1
+ uflqOVaB6LDDUQV0UzW+VB+Fhvli6Kd1dwhpJ/kAwMUGe3jjRMUBgKu
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -65,128 +64,50 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Move the driver to use devm_* functions to automate resource
-management and simplify error handling. This also allows removal
-of the opt3001_remove() function.
+Use GENMASK() and BIT() macros from bits.h header where it makes
+sense. While at it, remove unused macro.
+
+No functional change.
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 67 +++++++++++++++++++++++----------------------
- 1 file changed, 34 insertions(+), 33 deletions(-)
+ drivers/iio/light/opt3001.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 155794bb28f68a945e20b083e382561ca6ad462e..3ea18d8993da627ae226ac414e8035d8c968861b 100644
+index e6c3665f46be47129097c3997c7551ba9a8f6440..47f0e01a95e772954de0f1337ac0d881b8b32de6 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -804,6 +804,29 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
- 	return IRQ_HANDLED;
- }
+@@ -33,17 +33,16 @@
+ #define OPT3001_MANUFACTURER_ID	0x7e
+ #define OPT3001_DEVICE_ID	0x7f
  
-+static void opt3001_power_off(void *data)
-+{
-+	struct opt3001 *opt = data;
-+	int ret;
-+	u16 reg;
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+			OPT3001_CONFIGURATION);
-+		return;
-+	}
-+
-+	reg = ret;
-+	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
-+
-+	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
-+					   reg);
-+	if (ret < 0)
-+		dev_err(opt->dev, "failed to write register %02x\n",
-+			OPT3001_CONFIGURATION);
-+}
-+
- static int opt3001_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
-@@ -822,7 +845,10 @@ static int opt3001_probe(struct i2c_client *client)
- 	opt->dev = dev;
- 	opt->chip_info = i2c_get_match_data(client);
+-#define OPT3001_CONFIGURATION_RN_MASK	(0xf << 12)
++#define OPT3001_CONFIGURATION_RN_MASK	GENMASK(15, 12)
+ #define OPT3001_CONFIGURATION_RN_AUTO	(0xc << 12)
  
--	mutex_init(&opt->lock);
-+	ret = devm_mutex_init(dev, &opt->lock);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to initialize mutex\n");
-+
- 	init_waitqueue_head(&opt->result_ready_queue);
- 	i2c_set_clientdata(client, iio);
+ #define OPT3001_CONFIGURATION_CT	BIT(11)
  
-@@ -836,6 +862,10 @@ static int opt3001_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
+-#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
++#define OPT3001_CONFIGURATION_M_MASK	GENMASK(10, 9)
+ #define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
+-#define OPT3001_CONFIGURATION_M_SINGLE	(1 << 9)
++#define OPT3001_CONFIGURATION_M_SINGLE	BIT(9)
+ #define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 << 9 */
  
-+	ret = devm_add_action_or_reset(dev, opt3001_power_off, opt);
-+	if (ret)
-+		return ret;
-+
- 	iio->name = client->name;
- 	iio->channels = *opt->chip_info->channels;
- 	iio->num_channels = opt->chip_info->num_channels;
-@@ -849,9 +879,9 @@ static int opt3001_probe(struct i2c_client *client)
+-#define OPT3001_CONFIGURATION_OVF	BIT(8)
+ #define OPT3001_CONFIGURATION_CRF	BIT(7)
+ #define OPT3001_CONFIGURATION_FH	BIT(6)
+ #define OPT3001_CONFIGURATION_FL	BIT(5)
+@@ -51,7 +50,7 @@
+ #define OPT3001_CONFIGURATION_POL	BIT(3)
+ #define OPT3001_CONFIGURATION_ME	BIT(2)
  
- 	/* Make use of INT pin only if valid IRQ no. is given */
- 	if (irq > 0) {
--		ret = request_threaded_irq(irq, NULL, opt3001_irq,
--				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
--				"opt3001", iio);
-+		ret = devm_request_threaded_irq(dev, irq, NULL, opt3001_irq,
-+						IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-+						"opt3001", iio);
- 		if (ret)
- 			return dev_err_probe(dev, ret,
- 					     "failed to request IRQ #%d\n",
-@@ -864,34 +894,6 @@ static int opt3001_probe(struct i2c_client *client)
- 	return 0;
- }
+-#define OPT3001_CONFIGURATION_FC_MASK	(3 << 0)
++#define OPT3001_CONFIGURATION_FC_MASK	GENMASK(1, 0)
  
--static void opt3001_remove(struct i2c_client *client)
--{
--	struct iio_dev *iio = i2c_get_clientdata(client);
--	struct opt3001 *opt = iio_priv(iio);
--	int ret;
--	u16 reg;
--
--	if (opt->use_irq)
--		free_irq(client->irq, iio);
--
--	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
--	if (ret < 0) {
--		dev_err(opt->dev, "failed to read register %02x\n",
--				OPT3001_CONFIGURATION);
--		return;
--	}
--
--	reg = ret;
--	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
--
--	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
--			reg);
--	if (ret < 0) {
--		dev_err(opt->dev, "failed to write register %02x\n",
--				OPT3001_CONFIGURATION);
--	}
--}
--
- static const struct opt3001_chip_info opt3001_chip_information = {
- 	.channels = &opt3001_channels,
- 	.chan_type = IIO_LIGHT,
-@@ -930,7 +932,6 @@ MODULE_DEVICE_TABLE(of, opt3001_of_match);
- 
- static struct i2c_driver opt3001_driver = {
- 	.probe = opt3001_probe,
--	.remove = opt3001_remove,
- 	.id_table = opt3001_id,
- 
- 	.driver = {
+ /* The end-of-conversion enable is located in the low-limit register */
+ #define OPT3001_LOW_LIMIT_EOC_ENABLE	0xc000
 
 -- 
 2.47.3
