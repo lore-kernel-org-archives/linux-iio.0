@@ -1,204 +1,90 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 800AA29C328
-	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 13:22:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4423029C328;
+	Mon, 11 May 2026 13:23:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778505778; cv=none; b=CtuCTrbyPOIVIh1QMCSZo3ZiJFrhNVjw/twVUTpg7zYxITsO9C2VLsBR/sHAIkj2IuslnPY5ACj5tuLh5tphtO+vdJYkmdEmLrrvbs5eC/lQWXxZBm0NvzBmFCAaMS3r/q/VU8Zwu345w0+dhuCmjdxKNr9EZqp0CXGL1InCZaE=
+	t=1778505821; cv=none; b=m5FrWu2Ijgr4VxaPJ5Nt3l3BxPnP7ssedSBlHhZdw0kelz7R6S9TyokROgT9zOC7dEa4B76mgU/zHogurPx8V6xnVanIHmraKqyoFEwY4Ift56CaJfSZkCDuy42cwYkL7YAF8ccoGRHLAwcbgUCvPkHf2A7WiylAag7k+b0OZv8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778505778; c=relaxed/simple;
-	bh=7bj9Shz27ymdJxvAShbWN6eBUNTlvQqeCYKehlMyfc8=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=QT/qiAP05UwM8aAvl6kUH1yZzUkg1v1QGyq6ls7vvZYbaJWOrx5LtAG0JN52mnqVZ2SqosahiGfx1WmPmrb1S+B6g0xKWfN0cmVQo+/vilJx70U5A8x1F7JZr1eDSFOJ26RYbJpuI4ilnha97rd4TLHVkvVNsCY12GDwa58CEIU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UTfnxnrg; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778505821; c=relaxed/simple;
+	bh=xEqLPQVY3OdExRLGBBRfr7eX/EsUjFIbnWKcS5G4GJo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Wd9YV30vzmYCi7y+lEF+sqA8wJytUgADqgriCDdccyhCY7IvM1119cMNQiCAu3mpPkGIUesfJj/Mu87fjf8D1enrvHFQ8IMs8YtfN+spf+Bw9Xaau4i4iS2DzklIZh/Fy7oTQ+YTxfLAc0SwXETApDNNrVOmcoqQJ1s+W3GAJ0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FIXos+kI; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UTfnxnrg"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4889d0a9df0so4171255e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 06:22:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778505774; x=1779110574; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SB1bzvAZ6Njmh1JX3tJzouTVDFsiOD3VPRvbyVuZzcA=;
-        b=UTfnxnrgmlv5/vfG/vj9Av0IV1aHrdfEgTH6KeFlE9kujZPsL+U5QfmaD6p7ESVEhJ
-         wYifQ/T5u7ZgRFkRmLPSpUy1rcjSyq1CYGoS5QHZ4zDAMPMkmcWYQ9esHgzQOg7wMU6Z
-         rzSt1SNJxkWe6ZX70jf3Nka3issPf5276drWHp6g5v7i3/cQ6h7Fhe38mrghRac3IHsk
-         dFcopk/VulIvmgT8JOSkF69+pkIS1AEaG6WHWDmqA7OyB78DHqWkpL/Mfp9nspnA7NMz
-         Pc+H1UnRPmHhjjDEKDbkVENYdi6rzh+szwkQ2F2Eh+EWzg+6UaOo7baAgB5orciWCFRv
-         i1bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778505774; x=1779110574;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SB1bzvAZ6Njmh1JX3tJzouTVDFsiOD3VPRvbyVuZzcA=;
-        b=PzdAjRpjH+Oq4ELiSztj0dvHAvqTURvn7rc0TlChnA4hpBG2m9LyrSnT9toNCB3KG1
-         JHurS/pyLNlqPO5klHmTacpgLXXeh55CzL2ffTEtHwwjQENdS+8yxOMwsUNLTeYZD1DS
-         EePnjWY9D64Bje/arE5ks1YxKRUZe+67yZvQzYl8i/lDcfWddtyWwE7LACXUf1HWfGdS
-         J9tuWq/DAM5GQQ6VmIxEv75NTEGBusQLazCb2SfTR/BNEjR49uDSiLviADgN0EJvsrfD
-         oSfml+CESgvH7ALyf+cNOePAgp+6Larna8OxaPTVqNSS2pMo6Mmnodt8jmZN20quF0YJ
-         tjaw==
-X-Forwarded-Encrypted: i=1; AFNElJ+Wmqw+HU5z5vzETlPV2+KpPhB9RS4RacHajunV1Q7ksTgxNhvLNeQalD5m46HfbZFr5+HjN/hB44U=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzx7kktRcGYPzSs12SQJ7sjylrsq9l5etRtncyQiMWm3Y7SIc/U
-	tFal9IwaTVGvEkqYz5yuJiKnzKWVKYo8gDI9WMjMPh0ZnF9UfSjufFCq
-X-Gm-Gg: Acq92OHEm38BrmQ+v9Mw2AQz1K5pztAQTEkIQxGcW6Fug4721G0tSO5pr1P7AU2redp
-	uo7oQcp1NiQ05A4hisrTSCjEftJ1/r3YEl/jl999pZ0uG32kHyZMj5LbW/dcdO/bMkD9jiN1mxV
-	lUo7hr6fO1E6IyiMAjtK+kjCEETvXC3pH7GOEeJiL8O9lZZoc+yIfozPuJGkVyE7mtzBl4wLo2q
-	fr7BoKFpxFTOK5v99eCdmY2xP11pj82aKiboQpZzQ2RaYdTstKNKwIGbcyWAefnTZu2w57tm6yZ
-	9tHD0n4d/qM1NWRWyEd5J1TZcAT6tDvKVBwJ2SCnxmjdnezIdKyv5llcDUqCdC/R9hF2ho5UETU
-	UlbVwR9wKkvteulyL0Ro2SUXrODyb+Qz52ismWQi9qYVXoYAn7DQ2INZwWDVHrYHp27H4+tL/AK
-	yaQ+9olpxzImpuddrEckQEPWP7jvF+6OxPCvQzpUOEEGag
-X-Received: by 2002:a05:600c:478a:b0:48e:6db5:76e6 with SMTP id 5b1f17b1804b1-48e6db57727mr51981645e9.2.1778505774315;
-        Mon, 11 May 2026 06:22:54 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e6d8e4f0dsm64359625e9.11.2026.05.11.06.22.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 06:22:53 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	gregkh@linuxfoundation.org,
-	hcazarim@yahoo.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: [PATCH] iio: trigger: iio-trig-interrupt: use devm_* helpers
-Date: Mon, 11 May 2026 11:07:32 +0500
-Message-Id: <20260511060732.7728-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FIXos+kI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778505820; x=1810041820;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xEqLPQVY3OdExRLGBBRfr7eX/EsUjFIbnWKcS5G4GJo=;
+  b=FIXos+kIWfGlyL1NNDyJSCIlQdmzuMl68IOWZdCNc8kvWl8iCFLHkfUL
+   FH65k++iXLF39yWES4LhiBlSq9ZFWpAy73MbniUQUzebmWKJVzZw7vbm7
+   AsJIikUCZ4koG/k1aHwIxYtC3cbNE4vwML9D+qZ0Rkehp2RabRCxLJ6zd
+   yl0E5qo2Vl4cp0MVmHaTaXTBKZuQ3nSm/DkuGc8PwPXnN73b30c7uHm+C
+   Q85P7CkOO7INitmoQcUsfLVsygXIYE1vR63+Jg/4aqeIw+ZjuQzynDGXi
+   +Xn6VE1oh0U3dG5+ioVaPBevP1AXfcrIQ/yVkO8QS3zn4qZbnzpbwhXon
+   A==;
+X-CSE-ConnectionGUID: b9HoocCETxi2u0tdVr673w==
+X-CSE-MsgGUID: xqa/zfYNQeytOmSTDP8txw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="79572528"
+X-IronPort-AV: E=Sophos;i="6.23,229,1770624000"; 
+   d="scan'208";a="79572528"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2026 06:23:31 -0700
+X-CSE-ConnectionGUID: B84ACLHzTYWAkW3zbxXS4g==
+X-CSE-MsgGUID: PT9mKmUiRMmIrZcVf8NoVg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,229,1770624000"; 
+   d="scan'208";a="234785014"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2026 06:23:28 -0700
+Date: Mon, 11 May 2026 16:23:26 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+	antoniu.miclaus@analog.com, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: frequency: adrf6780: replace usleep_range() with
+ fsleep()
+Message-ID: <agHYTpgmec5nDosZ@ashevche-desk.local>
+References: <20260511054441.2980-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260511054441.2980-1-sozdayvek@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Convert to devm_iio_trigger_alloc(), devm_request_irq() and
-devm_iio_trigger_register(). The driver-managed lifecycle removes
-the manual error-cleanup ladder in probe and the entire .remove
-callback.
+On Mon, May 11, 2026 at 10:44:41AM +0500, Stepan Ionichev wrote:
+> The ADRF6780 datasheet (Rev. D, page 23, ADC section) says:
+> "Wait approximately 200 us for the ADC to be ready."
+> 
+> fsleep(200) expands to the same usleep_range(200, 250). Use the
+> flexible sleep helper, which picks the right primitive for the
+> given microsecond delay.
+> 
+> Replace the generic "Recommended delay for the ADC to be ready"
+> comment with the datasheet reference so the "why" of the wait is
+> visible at the call site.
+> 
+> No functional change.
 
-Drop the now-unused iio_interrupt_trigger_info structure: its
-only purpose was to hold the IRQ number for the manual free_irq()
-call in .remove, which is no longer needed. The matching
-linux/slab.h include is also dropped.
+In this case the commit message is fine.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-No functional change.
-
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
- drivers/iio/trigger/iio-trig-interrupt.c | 63 ++++--------------------
- 1 file changed, 9 insertions(+), 54 deletions(-)
-
-diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
-index a100c2e3a..e7db61fed 100644
---- a/drivers/iio/trigger/iio-trig-interrupt.c
-+++ b/drivers/iio/trigger/iio-trig-interrupt.c
-@@ -9,16 +9,11 @@
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/interrupt.h>
--#include <linux/slab.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger.h>
- 
- 
--struct iio_interrupt_trigger_info {
--	unsigned int irq;
--};
--
- static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
- {
- 	iio_trigger_poll(private);
-@@ -27,11 +22,10 @@ static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
- 
- static int iio_interrupt_trigger_probe(struct platform_device *pdev)
- {
--	struct iio_interrupt_trigger_info *trig_info;
- 	struct iio_trigger *trig;
- 	unsigned long irqflags;
- 	struct resource *irq_res;
--	int irq, ret = 0;
-+	int irq, ret;
- 
- 	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 
-@@ -42,61 +36,22 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
- 
- 	irq = irq_res->start;
- 
--	trig = iio_trigger_alloc(NULL, "irqtrig%d", irq);
--	if (!trig) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
-+	trig = devm_iio_trigger_alloc(&pdev->dev, "irqtrig%d", irq);
-+	if (!trig)
-+		return -ENOMEM;
- 
--	trig_info = kzalloc_obj(*trig_info);
--	if (!trig_info) {
--		ret = -ENOMEM;
--		goto error_free_trigger;
--	}
--	iio_trigger_set_drvdata(trig, trig_info);
--	trig_info->irq = irq;
--	ret = request_irq(irq, iio_interrupt_trigger_poll,
--			  irqflags, trig->name, trig);
-+	ret = devm_request_irq(&pdev->dev, irq, iio_interrupt_trigger_poll,
-+			       irqflags, trig->name, trig);
- 	if (ret) {
--		dev_err(&pdev->dev,
--			"request IRQ-%d failed", irq);
--		goto error_free_trig_info;
-+		dev_err(&pdev->dev, "request IRQ-%d failed", irq);
-+		return ret;
- 	}
- 
--	ret = iio_trigger_register(trig);
--	if (ret)
--		goto error_release_irq;
--	platform_set_drvdata(pdev, trig);
--
--	return 0;
--
--/* First clean up the partly allocated trigger */
--error_release_irq:
--	free_irq(irq, trig);
--error_free_trig_info:
--	kfree(trig_info);
--error_free_trigger:
--	iio_trigger_free(trig);
--error_ret:
--	return ret;
--}
--
--static void iio_interrupt_trigger_remove(struct platform_device *pdev)
--{
--	struct iio_trigger *trig;
--	struct iio_interrupt_trigger_info *trig_info;
--
--	trig = platform_get_drvdata(pdev);
--	trig_info = iio_trigger_get_drvdata(trig);
--	iio_trigger_unregister(trig);
--	free_irq(trig_info->irq, trig);
--	kfree(trig_info);
--	iio_trigger_free(trig);
-+	return devm_iio_trigger_register(&pdev->dev, trig);
- }
- 
- static struct platform_driver iio_interrupt_trigger_driver = {
- 	.probe = iio_interrupt_trigger_probe,
--	.remove = iio_interrupt_trigger_remove,
- 	.driver = {
- 		.name = "iio_interrupt_trigger",
- 	},
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
