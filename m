@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23F9A3BED69;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E9673B2FE5;
 	Mon, 11 May 2026 10:04:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778493849; cv=none; b=ulPJu2Heu5iCQUFAehJxQUkH3ky0K++/X+W5BwH2vnVKc4nP+SZT3RgV+siHS+wmMYXB1ad9l2fJMODgxmobtLnFGrYLyCR347Y9R1qdOki9oAWiqqikJDQawP1WPax46bUj5I9FHQCtEVg6hgA+SXHYkXMlAK0cDuOpI+vwA/E=
+	t=1778493849; cv=none; b=qIcgx2jnkqrGg2YX+Gp4yytxkZEavYjaGIEbzCGXCv+v4DMq22oreLhpyFYAUxFNQxFhK1RduqEf43YvaVFuRoJOkJIfybRRAl2qBAIkQ1SQT//x9Gud+VbuSnENFGwrdi1BSrAbCUomHqszKqrSWdWuLPhuEWgdLyMuzCIh+PE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778493849; c=relaxed/simple;
-	bh=MFHojmFQf9VayktGRWT7VpOQGCXGKQOTcmOc4TyTDOU=;
+	bh=nb4kCBCHyrfIFcgNEo3rbjwW9n+s6utiA5PwbihLkAk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GrqN+d1yVgsVoYn1vG9LY+zkLwO1gBg4831UUD2nS8GBk7LFxKxFL7ib3jMcVJP8+X7EgInFLTq36Y+zSh2b+UWij/eupLSHIRJUNeHqJFz6Urcvykt1NHZTBohmCC82QnC8UVo8iF2iUBERVPVJ1gq9Rbfd7CnFN3ps20IgmiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MKhz+bar; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=r/ypCMek8+mXIyuwhsU8clzlHm5MxtOiHengjJ5H810hzqOC/eUdurizeIzYG+8vQjYRZPjKMKJIIgGF3229Dh/bCqq51tz05bRU9SWvC3MuM7pulLzs5TYB5ExnAc9PoB7S2pWYJftAZmgoX5m9dRx9dllFo9GzW+Mkom544jU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AbCwdWyc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MKhz+bar"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 06779C2BCF7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AbCwdWyc"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 582E5C2BD05;
 	Mon, 11 May 2026 10:04:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1778493848;
-	bh=MFHojmFQf9VayktGRWT7VpOQGCXGKQOTcmOc4TyTDOU=;
+	bh=nb4kCBCHyrfIFcgNEo3rbjwW9n+s6utiA5PwbihLkAk=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=MKhz+barPjqlcWohCpvxPbkbldkEzhSjseQkpBapv7zssT7nB6gww0yDKGRPEoZhc
-	 0uBPsqYq/v1fsiT+hL2MxlbnW+rHswYhJzTq79Fwif3Sdp0UhvttbUvlIrKeFhEayV
-	 Pac7MqY8oV8oTppR4oNIwqpK56mbH+cM7hau3IvnTcpfWysU5OVIH9JzTFNm6GgNJX
-	 Ww1bMqdHYemQKZ1uyl511APmvx2XtKUmXjInIiRBYPONBriYRhVRNOXVWnb+Pktx+4
-	 ImuQpm+mG+CDmAyRXzFU+Jf3bEglpj21wND7DeuIJTG/B/Wh/sGPeTK3foewCLFKG+
-	 3g5KugOQLiYSA==
+	b=AbCwdWycKrxJRzCdcXypPh1c9rgqL+GpBGTmS0f0hJKvJIlZFgaDvLysRkdTj1qe1
+	 7Uahryk3ZWi78YzQVsoCSFczbXwTX4cffLo2PiHxcjFHW3a6SKGaPx7RgXrsJBiuzo
+	 +4tlUUDz4wv7A7DvPE5CEnAOrb16fhG8BR7kJxfb4GA7dYhyQI4lwRJA3IJaEaJqsM
+	 Rqk5oPSKa7urlh2zkCNE3TyoS/h4ubGlCFpzPpIBLzrRb4+1afuM/3sD2dCbRTOpkh
+	 k5nlS2v45Tdx+MkyjsIYDvcIi9zFLmPrjcukb09Ymjq+zVIieQn2t74gbYWiBDO/2a
+	 Bj8Jfraa6S47A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E860ACD37AC;
-	Mon, 11 May 2026 10:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50510CD37B5;
+	Mon, 11 May 2026 10:04:08 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Mon, 11 May 2026 12:04:06 +0200
-Subject: [PATCH 1/7] iio: light: opt3001: make headers conform to iwyu
+Date: Mon, 11 May 2026 12:04:10 +0200
+Subject: [PATCH 5/7] iio: light: opt3001: localize for loop iterator
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260511-opt3001-cleanup-v1-1-f7879dc3455c@gmail.com>
+Message-Id: <20260511-opt3001-cleanup-v1-5-f7879dc3455c@gmail.com>
 References: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
 In-Reply-To: <20260511-opt3001-cleanup-v1-0-f7879dc3455c@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -50,11 +50,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493846; l=1404;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493846; l=965;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=sYBEFSgXpCTsp4tslKj24XkY3mo8Z+wM+iHH5uIcud8=;
- b=RaQLZ5q+3Ed1Kjee8RbUjs4MNQk8sssWqDyvUiES5i/iPY67EdehWu4ZVccI0qzWGPkHXUZ/N
- Vskl+Qs5GLjA+OiR00F4GR7hetb1EExOOAxrqSZ8Gb1vYqcCYRHVHzT
+ bh=u/HUKTzIcOfpvygcTLqBLKYbkfqnk+THD3TcTD43zww=;
+ b=V7B5NHXs7MXVYQtshZ/EhhLkFp17pi8ropfMt6deX/iiH4b0+lfgOE2fYaPw5+ae7vzoouYJG
+ cPbn7gWmtnyBMVWAXKQr2lX6hrT8R7q5KRpOVvg44Z0S2qo9pX0fcpJ
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -64,47 +64,29 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Remove kernel.h proxy header, device.h, irq.h, slab.h as they are
-unnecessary and add missing headers (array_size.h, dev_printk.h,
-errno.h, jiffies.h, wait.h) to enforce IWYU principle and reduce
-transitive dependencies. Also, replace bitops.h with bits.h as only
-the BIT() macro is used.
+Localize loop iterator to tighten scope and fix checkpatch.pl error.
+
+No functional change.
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/iio/light/opt3001.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 53bc455b7bad142695d9fecc6cabb934fb3ace0c..e6c3665f46be47129097c3997c7551ba9a8f6440 100644
+index bdff785bcfa9744cd25d32c5d00d62a11dd9d866..3719757f6ed7784cbf2e4aa659e5c69a39b0cce2 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -8,18 +8,19 @@
-  * Based on previous work from: Felipe Balbi <balbi@ti.com>
-  */
- 
--#include <linux/bitops.h>
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
- #include <linux/delay.h>
--#include <linux/device.h>
-+#include <linux/dev_printk.h>
-+#include <linux/errno.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/kernel.h>
--#include <linux/module.h>
-+#include <linux/jiffies.h>
- #include <linux/mod_devicetable.h>
-+#include <linux/module.h>
- #include <linux/mutex.h>
--#include <linux/slab.h>
- #include <linux/types.h>
-+#include <linux/wait.h>
- 
- #include <linux/iio/events.h>
- #include <linux/iio/iio.h>
+@@ -228,8 +228,7 @@ static const struct opt3001_scale opt3002_scales[] = {
+ static int opt3001_find_scale(const struct opt3001 *opt, int val,
+ 		int val2, u8 *exponent)
+ {
+-	int i;
+-	for (i = 0; i < ARRAY_SIZE(*opt->chip_info->scales); i++) {
++	for (int i = 0; i < ARRAY_SIZE(*opt->chip_info->scales); i++) {
+ 		const struct opt3001_scale *scale = &(*opt->chip_info->scales)[i];
+ 		/*
+ 		 * Compare the integer and micro parts to determine value scale.
 
 -- 
 2.47.3
