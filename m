@@ -1,147 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28780311977;
-	Mon, 11 May 2026 15:14:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA57A2EA154
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 15:19:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778512479; cv=none; b=JZ9O8KDlo0ALGsguqxwQyS8kwlrxnSoHt6OxdmHh+tyakHaExi9QzadnmRSzxC41O18UxqFJzKm8YMBDRnqpNrdIggA0niqqBnoe1CcUjKJ26T/g2xQOquYdwO2maGEjCfwHi5QzhtWU4s/ZTVisl4qHLkL17I0PWuKIL1HiRII=
+	t=1778512800; cv=none; b=dMYkBO3NM1GqCQzNFb5Mx3UKrr8w2Pkrs8T+DG3DczNdAvRuwoHx3WFXAyXIWmLJkuJ8t04iMIORuDd5f0hUDf0NiCPrIc5VSkmKUhUbsw0LyP2uCZWxYr59m7jpfpe7XtWE9I4YmglLowJVFYKDfrLZx5gOaJxgPtoMBhPYzK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778512479; c=relaxed/simple;
-	bh=crVWr+28yBZGxL0/BvjDDHA8a8BhulirWvY6XRK9mi0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GPj458ep6Sr/4alRinWcuShhKiZPpqxEJQ8bOpoK8tZfe8aukGLhW26nyQF0dc0OpcXU/cJbRxsJcua2qfxJb8R8vrKX5QAzm2CK8hzK/0C1gFcSBjZN0Bj4WEQnZUORkS/Jmk/W6ceqSv3YqZS4gFOXX4glfi8SdJsQr4tJ0qM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aKSV38LI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778512800; c=relaxed/simple;
+	bh=l1AKxsU7Vv7r5hZe+yZNlGPNtgDDr6Rf4GCgb5WvzQU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=esaq7aBKq3hgszCjSNSUGlqmsk9b9KZ/G9+NinnUSsQxfcfVMIko1uWdtVapvpgxr3oKivJZGaTKkOdzL7kVM8n/9IxG6uWG0vywj3giDIN41iAB+NbzQ2TnWJ98eA2l8+c1/Qe9pKZ/UkwlkSayHKjckLF1llPZbN9UZrJ2KFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CC987Fpx; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aKSV38LI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80938C2BCB0;
-	Mon, 11 May 2026 15:14:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778512478;
-	bh=crVWr+28yBZGxL0/BvjDDHA8a8BhulirWvY6XRK9mi0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=aKSV38LIMNnXA/E4GTrEu9JYHV6FxIMH09sutlIk3czUgDjDSF1Y5WZN375JnQTtL
-	 8qxXL1aKPmnb8zhSqHe1lxpK7fKlVyqg+sllaK+UwFLZPTvyriyzL2rVqdlb1CvEMB
-	 1x3ee6n6IL/VvdIpWJKnv+ZW3oXBgh/KSMkDsNFguAPxxmxDlNXF9GVU1au3MOR+S1
-	 UcS03t2octOtlODJ6EM1PDc8U7yEZHWUsm8Dbx3rHKpkHMkFgqOWngihSI2ykFdJYu
-	 JzcmD3h11RVXX1sNkMZsr9WlTt/X97Ke7zjM0KhG53Xw60GOtEPgEGF6S+1ifCgTDc
-	 v4iq8+/a1HjAw==
-Date: Mon, 11 May 2026 16:14:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Alexandre Hamamdjian <azkali.limited@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, CTCaer
- <ctcaer@gmail.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Add ROHM BH1730FVC binding
-Message-ID: <20260511161429.6cae5b7b@jic23-huawei>
-In-Reply-To: <00855a46-20f9-4b4c-8bec-bb64d9d8efe6@gmail.com>
-References: <20260511-bh1730-v1-0-e0df1f499135@gmail.com>
-	<20260511-bh1730-v1-1-e0df1f499135@gmail.com>
-	<92e2d1ab-c973-45a2-b0c4-d7c672c610e0@gmail.com>
-	<00855a46-20f9-4b4c-8bec-bb64d9d8efe6@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CC987Fpx"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-67be871ed3fso8634665a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 08:19:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778512797; x=1779117597; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=72c0mZVwmJDnKI60CHSdtI6byXZvr12pO3foJDjqiso=;
+        b=CC987FpxU33Ew8lrWODVd869JJfp3VZLZ62Eb5qadYI/EV7UWwgIuTnApo+42aHTEe
+         NMUS8Mr6JjCk3nYjtmEo7uj7wVOBBs+DI/uxCRR90Yh1tSY5rDuZSBuCoEfVQ5YAGXSk
+         A7gkJ3vAVy2QXnq6qTCe7xu/EZuU/C/zpmbVFfhfqh0MJGERfGC7mbA+GTMlo6WxoPvE
+         nrKkgUQneqfyKS2hlcJ30MUDP7mLVdiykojlcicMn7YDgi1vkRFPPxlFDOjCe0jS6t6w
+         i2sv9JEdlFy3BGx3uOmivTHBTgWFbySCfb1av1fVEAZ0m9iTk5hcaAvq5dYe2PrH1bqJ
+         eJiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778512797; x=1779117597;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=72c0mZVwmJDnKI60CHSdtI6byXZvr12pO3foJDjqiso=;
+        b=ehH4ypqP5DrdxCeqOtageohp4+n4S9acqKmQFfE4xdqeBTqgwah1JDredVCPSR1CUR
+         B2QFVW2wXUwPKlYKUCGAA+lh8wF0NXkgi9C9HltF3gfb5oD4ws8dowPb/SxRf+2c5TJe
+         GCN35MWCF9J/ll0JMtAD1lWbExty6FdZl4tNf7x/JMuR9+5anQ43V47XZ7Q96NhtdX6F
+         GiYEkUT8OieyGBi166mE5ANGrljA4mBTeGtJRcE+nW3JU5+shBKKOnQylQ+Q0icoPYoo
+         XWI5AbkqBYrnhIwl0BL63ZLLnIYMllsSHTyhDAvm6AgWJ5MIYKyJzNvNfZyvN1WRBzhS
+         vteA==
+X-Gm-Message-State: AOJu0YxsMXD8iWOxTk07P8z0DJzGfUj7PnPS+L5r286Yi1XWkKeZJCHK
+	RnSSTDHREIVyyRWVac8ZuJhM6wvRyYgTgRxvjADuWOR4bMc+iNoPiImg
+X-Gm-Gg: Acq92OFHlGS5JrpVdptphLZATfgz6IL1/q2fTiFKaUho496igQMKmK4/gu8feJpwTID
+	FPjs1prep9p/EGUIWZc0SFx7zX26zrKatQyTW013/bFFarqFEyBiM+MAQehXWM1dN7cF8QavZLD
+	3Pp27WZijLHpooqs6MScC5ZZs912Zsm/QHJcqoOKuo9eBvJ0fb3FmEnkvimek8X9L8ororkHVXG
+	XXdHVE1i2oSYrV48xSr+fl5j1LOlPbYwh5BiHjxGDKzrrDCVXQEHiQ7eV6lEgLl3HZXNGQ1BHn+
+	OeB7i0zZZ9ID+BvdsdRcPDlwvpJ7boQaIWLSHRwJmXNIFWsNl+kdKO7d92Ct/Ez4YDJVkoIenRd
+	sISGcnr56c6iyZCRtRAl8jJDP8S31Ff9ick/1/aPvFNlczBNPNdj8iI5EaBW3iD2bAsM0M+Nj1Q
+	yUcj07Nk2NWbu4GATUEejG4hGEPHU=
+X-Received: by 2002:a17:907:868b:b0:bcf:9dd2:f79e with SMTP id a640c23a62f3a-bcf9dd2fa70mr327636066b.29.1778512796650;
+        Mon, 11 May 2026 08:19:56 -0700 (PDT)
+Received: from gmail.com ([212.75.105.246])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bcf15a034cesm213822466b.55.2026.05.11.08.19.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2026 08:19:56 -0700 (PDT)
+Date: Mon, 11 May 2026 17:19:54 +0200
+From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
+Subject: Re: [RFC 0/4] iio: light: add driver for Broadcom APDS9999
+Message-ID: <agHzLu-W7MBNXxmx@gmail.com>
+References: <cover.1778491503.git.azpijr@gmail.com>
+ <20260511132112.66246dc8@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260511132112.66246dc8@jic23-huawei>
 
-On Mon, 11 May 2026 13:43:56 +0300
-Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+On Mon, May 11, 2026 at 01:21:12PM +0100, Jonathan Cameron wrote:
+> On Mon, 11 May 2026 12:14:42 +0200
+> "Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
+>
+> > This series adds support for the Broadcom APDS9999 ambient light
+> > sensor. The APDS9999 is a digital proximity and RGB sensor with
+> > ALS capability, featuring I2C interface, programmable gain and
+> > integration time.
+> >
+> > This chip is considered by Broadcom to be the 'successor' to the
+> > APDS-9960 which has technically been discontinued.
+> >
+> > The initial driver implements the ALS/Lux functionality using the
+> > green channel, which approximates the human eye spectral response.
+>
+> That's not normally a good approximation unless it is also has
+> very bad colour curves for green!  Better than any other channel
+> on it's own but still not good. If we had calibrated sRGB it would be:
+>
+>  Something like: 0.2126R+0.7152G+0.0722B
+> for example.
+>
+> The lux vs white light and lux vs incandecent light are fairly linear
+> so 'maybe' it's good enough but it's a bit of a stretch to describe it
+> as an illuminance measure which is what we'd need for it to be measured
+> in lux.
 
-> On 11/05/2026 11:22, Matti Vaittinen wrote:
-> > Thanks for patches Alexandre!
-> >=20
-> > It's nice to see these upstreamed :)
-> >=20
-> > On 10/05/2026 21:09, Alexandre Hamamdjian wrote: =20
-> >> From: CTCaer <ctcaer@gmail.com>
-> >>
-> >> Add a YAML binding for the ROHM BH1730FVC ambient light sensor.
-> >> Documents the required compatible string, the als-vdd/als-vid
-> >> regulators, and the rohm,integration-cycle, rohm,lux-multiplier,
-> >> rohm,opt-win-coeff and rohm,gain-coeff calibration properties
-> >> consumed by the driver. =20
->=20
-> // snip
->=20
-> >> +=C2=A0 rohm,opt-win-coeff:
-> >> +=C2=A0=C2=A0=C2=A0 description:
-> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Optical-window calibration coefficient=
-s. Specified as a flat=20
-> >> list of
-> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 triplets <rc cv ci>, one triplet per w=
-indow region, where rc is=20
-> >> the
-> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 visible/IR ratio cutoff and cv/ci are =
-the visible and IR weighting
-> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 factors used in that region.
-> >> +=C2=A0=C2=A0=C2=A0 $ref: /schemas/types.yaml#/definitions/uint32-matr=
-ix
-> >> +=C2=A0=C2=A0=C2=A0 items:
-> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 minItems: 3
-> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 maxItems: 3 =20
-> >=20
-> > I am not sure if I read the driver patch (2/2) correctly, but if I did,=
-=20
-> > then these coefficients are used to compute Luxes out of the raw sensor=
-=20
-> > data. I believe it would help anyone integrating (or investigating) thi=
-s=20
-> > sensor, if you added the actual formula here as a comment. If I read=20
-> > this right, the formula is _somehting_ like:
-> >=20
-> >=20
-> > Lx =3D (cv[win] * ch0_data - ci[win] * ch1_data) / gain / int_time
-> >=20
-> > Here the cv[win] and ci[win] are selected from the opt-win-coeff -table=
-,=20
-> > depending on the measured ch1_data/ch0_data ratio, right? =20
->=20
-> One thing came to my mind. This 'window' -approach for lux calculation=20
-> is not too unique. For example the rohm-bu27034.c uses similar approach.
->=20
-> The thing is that some of the sensors have more than 2 channels. (For=20
-> example, the first version of BU27034 did. [That was BU27034NUC, which=20
-> got cancelled when BU27034_A_NUC emerged]). These ICs may still may use=20
-> similar approach of having light regions, determined by ratio of (2)=20
-> channels. BUT, they may then have more than 2 coefficients / window.
->=20
-> So, maybe this could be made generic enough so it could be re-used for=20
-> such devices if needed? I am not sure if other manufacturers but ROHM=20
-> does this in Lux computations - if yes, then it might be worth making=20
-> this more generic and not just a ROHM property? Maybe Jonathan has some=20
-> insight on other Lux computations.
+the datasheet states: "Approximates human eye response with green
+channel" and "Uses optical coating technology to emulate human eye
+spectral response."
 
-It used to be very common to have multiple sensor / window setups for
-ambient light sensors - though perhaps less so on more modern devices
-(we have one on list today where they just say use the green channel
- of an RGB sensor - so there are more windows but not relevant to=20
- illuminance measurement).
+that's the reason why I chose to use green channel.
 
-Sometimes the window bit isn't well enough described in the datasheet
-so we only dealt with the parts on the actual sensor package and those
-were handled in driver rather than being in dt.
+> So I'm on the fence at the moment.  We might be better off teaching userspace
+> code to do it's own approximation if it has an RGB sensor.
 
-What I'm not sure on here is how much of what is being described
-is part of the 'chip' packaging - i.e. the bit that is constant for
-all instances of this device and how much is part of the wider=20
-device - i.e. the laptop / phone etc window infront of the sensor.
+I'll also add IIO_INTENSITY channels for R, G, B in v2 so userspace can
+comapute its own weighted lux if it prefers.
 
-The chip bit we shouldn't have dt, the other part we should and it
-would indeed be interesting to work on a generalizing that description.
-
-Jonathan
-
-
->=20
-> Yours,
-> 	-- Matti
->=20
-
+--
+jose a. p-a
