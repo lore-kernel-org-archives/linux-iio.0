@@ -1,171 +1,110 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A924330EF8F;
-	Mon, 11 May 2026 16:02:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A7B1402BA0
+	for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 16:03:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778515343; cv=none; b=PmHryeli62mWNZUp9MHk+9XymHKCqnMw0QQhYM3ZsN9DIr3dF+yqrtaOrL+AIrjtECxWoQxt6ivKWr4T+dAa95vmwppeJUS59ASS9EcWUl9q4zPUMfBu3v34za/NPvAXiYAm4adL/CLqsMUeVYmN9Pt7LVRbrnXCBZjqH0nherA=
+	t=1778515435; cv=none; b=CdQWhF+l1lkcgYN88pGM9mtK4PMwXEb90hL3tQ7UBbHJvoxFdpXspHdcyNSkCZU88hsRZH2d64/56WhNEvaPPhMk8xzxkUZ2lAV+3XfViJ565+6uYrn9IYzHjDO40gC8wW7xFDOWxluNiyOtokDoOa0mTXgZNr1cFi6pMQeeraA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778515343; c=relaxed/simple;
-	bh=d8WItIwthuDEpX/UiQlfKMc9royYtzyV+pGcQrzVbPU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tjrBXks+XDd3kabapx7dW6bq9IhE8LIO0Y3mPp/1SsXPrnZtvc1KNuaRHYyeISM7JnoIPoJyQf7EX/tI32JI6JXTo1ZQNafvfm9Jt/B5V5qsPXI3pC3gliq2x9rfWRFYWhA4H2y4IJHwZadZl5ZQx8l2gxq3urrtipxsZdHAOpI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=GvQN5vbE; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1778515435; c=relaxed/simple;
+	bh=IIRiUxZMZ99KdC1fuostfl0a2KSy8fRMOgeT+hPLW6g=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fTPRNiwDB4m6FuAoq+31W/ZuYUs/KTaqtyz3c035YCwlQCaOslJDhiIFzaynKj7yZyIlYrnC159FWRwt3FnbsqB9Z1WUI2Lf1sGA+Hn04k9qkxh98h3MH7JhuxtYAHYSV1EvmSFzpV/6kPLyIQ2NqVE3UDBp0+HA4W6zLflBfhk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LKUOIBdn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="GvQN5vbE"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AD43B16F3;
-	Mon, 11 May 2026 09:02:15 -0700 (PDT)
-Received: from [192.168.178.24] (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 67AD03F836;
-	Mon, 11 May 2026 09:02:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1778515341; bh=d8WItIwthuDEpX/UiQlfKMc9royYtzyV+pGcQrzVbPU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=GvQN5vbEqBrW0wVLOoCaZCwYaB+zRsucAkYwhhEFXPQKUICM7t7svrPEDy5uaj+ns
-	 koT6QL4ySkLHNb8hlT0lW7CUe/p8+ozsHkVDoem0J+IMLPLrb8zunUwkoguvPjtPiQ
-	 LU6mDfZgyMRgjD6pA5Fr64Sd6Zr6hbl/BrrcWKu4=
-Message-ID: <e7269822-afc4-4a80-8408-297f9dbd6791@arm.com>
-Date: Mon, 11 May 2026 18:02:16 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LKUOIBdn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 681E1C2BCB0;
+	Mon, 11 May 2026 16:03:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778515434;
+	bh=IIRiUxZMZ99KdC1fuostfl0a2KSy8fRMOgeT+hPLW6g=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=LKUOIBdnQp7Hn57LqdK0RTXlqDMhsb0B5ydSMVQx2UWPccHgpJQB+ZbL4IatYftvU
+	 CJuiVcXZ1sWdlCuAk00dDZVh0/UFLaT0NnKiSz8moOLDAzKPoVKQbt27fpuUlNIFzR
+	 69Hsn5zvawD+Wi/qwXviHSz68qLhtatGuJTIurILZYoNZjCL8DzVugFK6DSfHThkth
+	 lWtFayqm8+Kc9uCs29FxQMYiy+9tNzHuGlg+NSKL/HTFRCEyaSc7+91XDqBuF5pH/y
+	 au02rpYjmZv3xcYy3myUMQRV7jYjTaa8OL+LTycp+DK8Hl5qjgxbryIwIkm1cxj/lE
+	 qPyFGQUBEk9VA==
+Date: Mon, 11 May 2026 17:03:46 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Md Shofiqul Islam <shofiqtest@gmail.com>
+Cc: linux-iio@vger.kernel.org, lars@metafoo.de, andy.shevchenko@gmail.com,
+ dlechner@baylibre.com, mike.looijmans@topic.nl
+Subject: Re: [PATCH v4] iio: adc: ti-ads1298: Fix incorrect timeout comment
+Message-ID: <20260511170346.2499e13a@jic23-huawei>
+In-Reply-To: <20260510193645.4616-1-shofiqtest@gmail.com>
+References: <20260510123801.4066-1-shofiqtest@gmail.com>
+	<20260510193645.4616-1-shofiqtest@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: Add GPADC for Allwinner A523
-To: Michal Piekos <michal.piekos@mmpsystems.pl>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>, Maksim Kiselev <bigunclemax@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20260510-sunxi-a523-gpadc-v1-0-4f6b0f4000fb@mmpsystems.pl>
- <20260510-sunxi-a523-gpadc-v1-1-4f6b0f4000fb@mmpsystems.pl>
-Content-Language: en-US
-From: Andre Przywara <andre.przywara@arm.com>
-In-Reply-To: <20260510-sunxi-a523-gpadc-v1-1-4f6b0f4000fb@mmpsystems.pl>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Michal,
+On Sun, 10 May 2026 22:36:45 +0300
+Md Shofiqul Islam <shofiqtest@gmail.com> wrote:
 
-thanks for adding this!
-
-On 5/10/26 14:57, Michal Piekos wrote:
-> Add support for the GPADC for the Allwinner A523. It differs from the
-> D1/T113s/R329/T507 by having two clocks.
+> At the lowest supported data rate of 250Hz, one conversion period is
+> 4ms, not 40ms. The 50ms timeout is deliberately conservative to allow
+> for kernel scheduling latency, which can be significant under load or
+> on slow machines.
 > 
-> Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
+> Fix the comment to state the correct conversion time, use "lowest sample
+> rate" for clarity, and explain that the extra margin exists to absorb
+> scheduling latency so that no one is tempted to shrink the timeout to
+> match the conversion period.
+> 
+> Also drop the redundant ret variable assignment by using the return value
+> of wait_for_completion_timeout() directly in the if() condition.
+> 
+> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+Given the versioning mess - please check I got the right one on
+the testing branch of iio.git.
+
+Probably applied this one - it broke b4 btw as that picked up two
+near identical patches as a single series.
+
+Jonathan
+
 > ---
->   .../iio/adc/allwinner,sun20i-d1-gpadc.yaml         | 37 +++++++++++++++++++++-
->   1 file changed, 36 insertions(+), 1 deletion(-)
+> Changes in v4:
+>  - Drop the ret assignment for wait_for_completion_timeout(); use the
+>    return value directly in the if() condition (Andy Shevchenko)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-> index da605a051b94..89da96cd705f 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-> @@ -17,6 +17,7 @@ properties:
->         - items:
->             - enum:
->                 - allwinner,sun50i-h616-gpadc
-> +              - allwinner,sun55i-a523-gpadc
->             - const: allwinner,sun20i-d1-gpadc
-
-As Jernej already mentioned, the A523 GPADC is not fully compatible, 
-since it adds another clock. The question to ask is: Can a driver only 
-knowing about the fallback device handle this new device? For which the 
-answer here is: No, it misses a clock.
-So add just a single entry for the A523 (plus adding it to the driver).
-
-So looking at this I wonder if we should add some property to describe 
-the number of supported channels, since they are slightly different 
-between the SoCs:
-- The D1 manual mentions 2 channels.
-- The T113s manual (same die as the D1?) describes 1 channel only.
-- The T507 manual (same die as the H616) reports 4 channels.
-- The A733 has 6 channels.
-- The A133 has 1 channel, but it's channel 1, not 0.
-
-So all of this is somewhat covered as channels are described as child 
-nodes, and have a reg property. Ideally non-existing channels just 
-wouldn't be listed, but I don't know if we want to rely on that.
-
-So I am wondering if we should introduce a limit, or rather a mask (to 
-cover the A133 oddity)?
-Either a DT property (channel-mask, as a single sell representing the 
-bit mask), or derived in the driver from the compatible string.
-The former would avoid introducing different compatible strings just 
-because of that, though I think this type of property is somewhat 
-discouraged?
-
-Any thoughts?
-
->   
->     "#io-channel-cells":
-> @@ -29,7 +30,12 @@ properties:
->       const: 0
->   
->     clocks:
-> -    maxItems: 1
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  clock-names:
-> +    minItems: 1
-> +    maxItems: 2
->   
->     interrupts:
->       maxItems: 1
-> @@ -40,6 +46,35 @@ properties:
->     resets:
->       maxItems: 1
->   
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          items:
-> +            - const: allwinner,sun55i-a523-gpadc
-> +            - const: allwinner,sun20i-d1-gpadc
-> +    then:
-> +      properties:
-> +        clocks:
-> +          minItems: 2
-> +          maxItems: 2
-> +          items:
-> +            - description: Bus clock
-> +            - description: Module clock
-
-I am not a YAML expert, but I think you can drop the min and max 
-properties, if you just enumerate the cases. Same for the names.
-
-Cheers,
-Andre
-
-> +        clock-names:
-> +          minItems: 2
-> +          maxItems: 2
-> +          items:
-> +            - const: bus
-> +            - const: mod
-> +      required:
-> +        - clock-names
-> +    else:
-> +      properties:
-> +        clocks:
-> +          maxItems: 1
-> +        clock-names: false
-> +
->   patternProperties:
->     "^channel@[0-9a-f]+$":
->       $ref: adc.yaml
+> Changes in v3:
+>  - Fix multi-line comment style: move comment text to its own line
+>    after '/*' (Andy Shevchenko)
 > 
+> Changes in v2:
+>  - Correct conversion time to 4ms (was wrong 40ms), add scheduling
+>    latency explanation, clarify "lowest sample rate" (David Lechner,
+>    Andy Shevchenko)
+> 
+>  drivers/iio/adc/ti-ads1298.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
+> index ae30b47e45..25261163d3 100644
+> --- a/drivers/iio/adc/ti-ads1298.c
+> +++ b/drivers/iio/adc/ti-ads1298.c
+> @@ -210,9 +210,11 @@ static int ads1298_read_one(struct ads1298_private *priv, int chan_index)
+>  		return ret;
+>  	}
+>  
+> -	/* Cannot take longer than 40ms (250Hz) */
+> -	ret = wait_for_completion_timeout(&priv->completion, msecs_to_jiffies(50));
+> -	if (!ret)
+> +	/*
+> +	 * One conversion takes at most 4ms at the lowest sample rate (250Hz).
+> +	 * Use 50ms to allow for kernel scheduling latency.
+> +	 */
+> +	if (!wait_for_completion_timeout(&priv->completion, msecs_to_jiffies(50)))
+>  		return -ETIMEDOUT;
+>  
+>  	return 0;
 
