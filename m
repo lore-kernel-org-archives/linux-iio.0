@@ -1,100 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mail-10697.protonmail.ch (mail-10697.protonmail.ch [79.135.106.97])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D5034921BC;
-	Tue, 12 May 2026 08:23:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47AF63A75BB;
+	Tue, 12 May 2026 08:56:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.97
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778574226; cv=none; b=uCPkDbwa/H+jG5tx8SEnpW4ExM8yElIP/fiL1jX9aKx8FMHF/0mcfr/Oe3nblSMaFcgXOZtJG2sMz4SLj3yIlmdoUaoS6RkuqHq/8avfFVP95LqmqDAGfZxU/Bg7dqJi641MdX/1anpoAdkBG7Gb3q647PGK0nPDSw14ixYqz4g=
+	t=1778576175; cv=none; b=EmR2c2ZDWiYK2SgHgw1rFlaiwd1qQkX+4J2Avv8SAqtB3Ey3RCVd/P22Y7qI058AmyioEXzJupYJmawpHNksIDAG6QiNynjuHU/HCpQaik8h9vUZQ1adYIzTh5ruLjHmCtXi7ONZMgEvRRSQ3lkVC3q3yPMHgGIYLn6lCqbjvw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778574226; c=relaxed/simple;
-	bh=hnqf3NW6SjnvcZcCs4gI8M96mYXiZxmRIBSprSPGbJM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sINrTup3kK05T7VSFOEyobubEeAoA9KDJpkDdyh8ey/2xBY1xtxmhnwbDC/eF3dSedu1n8raNBxtIMuL9TnZqZs+SnX/R9u2/1JZKfeULmmDXDAuNvRo0yVJpS0UBTqwGIkuBtjujwooMrJkODzVUqz84tduP/1tjz/gd0hC09w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PiHFKSBV; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778576175; c=relaxed/simple;
+	bh=ypEdE9S5W+el7BIfAW6PiDD5x4AkWrlByb2LeodoAac=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fC8m8Pexu46L2Y2U0SsBRwcnAspcbBUJny80HBKsIjgZs74wEfNrE+BFxRswm5pEToKF12xEuaGpFTL6uDoTA0WFc9TmQ0ZTpJBTcW0k5Bx2fB/QISUK3q/JEdbcXig4S5GY8u+jGGNE+A75fA2V4RGqmEtB0+ChZPzRNdAbdTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=u3/+/i0k; arc=none smtp.client-ip=79.135.106.97
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PiHFKSBV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778574223; x=1810110223;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=hnqf3NW6SjnvcZcCs4gI8M96mYXiZxmRIBSprSPGbJM=;
-  b=PiHFKSBVgYOYrsjhjNl8q3qeNd58R4Go7IwxZAJvnvw99dni0Ie58fFc
-   FnAtkZxUlsW74heZgAbk1TO6oPoF9ZCE/9OlXld0HwfrmVi4UYYPsgec3
-   0Qk36UN0Ih26ksBnLXZoW8YPS6CTAs22ZhOT1TJH/oU5oZxSyxWIiIesO
-   F9KDtKDRT8otkmx5nsqv24hJr+77o0yomOYU6Yt+ZCuRdaCUf2LsszYi+
-   MpU46YoPSZo73F0bo7eCqFru8ur3wyM5E2/wxDAU/FYggvTBMbPareIvb
-   wXk6dEoxFLROwZRMstX6FPqs4KPoe+wMkxgFqO6c6/ShTr1P1awb/y+tl
-   w==;
-X-CSE-ConnectionGUID: MWCZfWNJS1em2yIEFq16IA==
-X-CSE-MsgGUID: RtvHKzuXRnS6+3DauzSjcQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="104931933"
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="104931933"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 01:23:41 -0700
-X-CSE-ConnectionGUID: +cqM3aUFRSeUh6vZk1fpxA==
-X-CSE-MsgGUID: Kg9gyPXGSqyTQvMdvI28qA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="261458598"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 01:23:39 -0700
-Date: Tue, 12 May 2026 11:23:37 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/8] iio: magnetometer: ak8975: switch to using managed
- resources
-Message-ID: <agLjiS9xv9HyzX8K@ashevche-desk.local>
-References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
- <20260507-magnetometer-fixes-post-pickup-v1-3-37827ca68fb3@gmail.com>
- <0a3e455c86cef14fe3481019031ebf04f98470f7.camel@gmail.com>
- <CALoEA-x9TtnWbGCtTo-jhrJ7Zic1S7J=xRYSL0VZgOvTb1GGCA@mail.gmail.com>
- <agLd7t10HBjbEzYq@nsa>
- <CALoEA-zJTJ1nA7-7nyeMnF7m87utM8SZvTBcMOY6kibZPA4-hg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="u3/+/i0k"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1778576151; x=1778835351;
+	bh=WkOaXzKPMuxC5YGc6fREz2IvVZ152n0pdW2k9zoo3oc=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=u3/+/i0kg2rBQhVXxJemYSUcFAGCTQQ5eoCfvqgeXVzweKsu9dyDZqh1kHcAT5SEY
+	 mQ+DTe+TrXX/uL/DZc3SyZ38hw2gO7HNpiFSj7TD7Ehq+pYyzxurFV0HjjLtu1eNTl
+	 zrEeGMKk5pPvFwKkLtIVxUzMgdCgcNofjtO6D1gElCGO1lVHG7UNzUyJ+hAhDhYHfR
+	 UpfJlX6JvTnkRYftUjyZpxc/eaBPdcFV9B6BmBDUbi0E7mx0pXKK+uZuOCkVYSWg6P
+	 eS5OQmKBJPZMQrY0w+r996i5NkPtz0X/7ppBiM8aATXs99rfikyPazuN2FL/Jb3G/h
+	 Eqn06hkG1gDlg==
+Date: Tue, 12 May 2026 08:55:44 +0000
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+From: Roman Vivchar <rva333@protonmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>, Srinivas Kandagatla <srini@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH v2 07/16] thermal: mediatek: add PMIC thermal support
+Message-ID: <j2uhavC9edilBoD6VJnlz8cCmMPhE9rQavh1epqLk61zrlZ3k1rqlyj8fVYWnkddIY1fEfPk1DfcW09i39hd-Q7I9Y8Vxd0w8C2eCjVGLc4=@protonmail.com>
+In-Reply-To: <CAHp75VfgrbEDLavMKFp2maFCH08RBUxF2wYhh56GG1HCq4ogmA@mail.gmail.com>
+References: <20260512-mt6323-v2-0-3efcba579e88@protonmail.com> <20260512-mt6323-v2-7-3efcba579e88@protonmail.com> <CAHp75VfgrbEDLavMKFp2maFCH08RBUxF2wYhh56GG1HCq4ogmA@mail.gmail.com>
+Feedback-ID: 173184497:user:proton
+X-Pm-Message-ID: 981c736e97e4dbd1e20caa42f42d8805c8c23015
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALoEA-zJTJ1nA7-7nyeMnF7m87utM8SZvTBcMOY6kibZPA4-hg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 12, 2026 at 10:12:35AM +0200, Joshua Crofts wrote:
-> On Tue, 12 May 2026 at 10:06, Nuno Sá <noname.nuno@gmail.com> wrote:
-> > > This is to prevent a resource leak. If we register the power_off
-> > > function at the end,
-> > > any potential probe() failures will leave the regulators on.
-> >
-> > Okay it does make sense! I now see the action is registered after
-> > ak8975_power_on() which what makes sense. Still would like to avoid that
-> > weird pm_runtime_set_active() call. It would be nice if we could
-> > guarantee through PM that the device get's suspended on unbind. Oh well,
-> > I guess this is ok.
-> 
-> FYI, there is a new version where I addressed some of your comments.
+On Tuesday, May 12th, 2026 at 10:05 AM, Andy Shevchenko <andy.shevchenko@gm=
+ail.com> wrote:
 
-Btw, can we rearrange the patches that the most controversial one(s?) will go
-at the end (as much as possible) of the new series? Then we can work on it with
-a less burden and unneeded dragging of the 'good' patches. Jonathan, what do
-you think?
+> On Tue, May 12, 2026 at 8:21=E2=80=AFAM Roman Vivchar via B4 Relay
+> <devnull+rva333.protonmail.com@kernel.org> wrote:
 
--- 
-With Best Regards,
-Andy Shevchenko
+...
 
+> > +#include <linux/kernel.h>
+>
+> No way the driver(s) nowadays use this header. Please, drop it and add
+> the ones that are really in use (there are missing ones).
 
+Is there a tool or script that can check for IWYU? For example,
+the u32 and s32 types are defined in the asm-generic/int-ll64.h, which
+is not used by any device driver. Instead, types.h should be used.
+It's difficult to guess which header to use for a given type/function.
+
+I've tried include-what-you-use [1], but it gives bad results like
+"add #include <asm-generic/int-ll64.h> // for u32".
+
+> > +#include <linux/module.h>
+> > +#include <linux/nvmem-consumer.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/property.h>
+> > +#include <linux/regmap.h>
+>
+> > +#include <linux/slab.h>
+>
+> Is it used?
+
+Yes, without slab.h the __free would complain about missing __free_kfree,
+which is DEFINE_FREE(kfree, void *, if (!IS_ERR_OR_NULL(_T)) kfree(_T)).
+
+...
+
+> > +#define MT6323_ADC_VOLTAGE_RANGE       1800
+> > +#define MT6323_ADC_RESOLUTION          32768
+>
+> These two ring a bell with the first code patch. Are they the same?
+> Can they be deduplicated?
+
+They can, but I doubt it's worth creating a header just for 2 constants.
+It would look too small compared to the other headers in the include/linux/=
+iio/adc.
+
+1: https://github.com/include-what-you-use/include-what-you-use
+
+Best regards,
+Roman
