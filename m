@@ -1,172 +1,124 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF6E2213E89;
-	Tue, 12 May 2026 11:13:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778584416; cv=none; b=rEsn88d7TzaNuDQAKziuJvBIzeMQoJrjdoDeJUQJ2nUyMr+KQvohWt+3xWVHSqRGP1nnYo+a0XiQn/YkiNZ4V61eIom4q9w/Z2omUTtU9lBL4yt+BbMchDgW1c+TwXwRH8MnxMZ1wHuBDY6wmzLw6lxQpyO9VyVD3MoFWSPjGRk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778584416; c=relaxed/simple;
-	bh=iB3ztN846EP3D59KRDHOP+RhbUQzpbIy6BVpmGbhx50=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aICwRbHIDtu6ZsJf16k3npKgqXLmFwVWFJLKjCyZqoTSnOA7bhJrQCsyNrSq/baF8OB6POkr8VvzR4E+S/CBSQ43Gki9X5g4QGbuIVWvbEBMxbFU+liml1KZJR4uUUMcSU4uPWeixtM1BfturGPC+H4A3TcFHfjO/CRza1htgXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z5+9feBo; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AAA145BD5F
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 11:13:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778584428; cv=pass; b=JSze59g188xEdzEHjGRE3cpKdHlOanHJ4Efp1u+Gn/34/vbIVZmDpvdJjlm0xexVvu6N1ZJUGaUnLt3V0tgX45Rgp8D7z1EJP57FWTnOuGpnjBH+30ZpgDD2HdL/pN+v6gatMZdMW3RBSZwXBxWGgCq20rK2ms4W9UYdns5SI3w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778584428; c=relaxed/simple;
+	bh=E0VQ+XN2t5SibAAIbZUVCk7J5Um752qWqYuS3Vl0lgw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=PvnGroNXSGJjA/it/k32o0L2yyyLd2LEsAdZjhCPqI89LTWjTQqI5xRRGgKjtNGwrzY3wXFkksx5jz3zr3gBlpCC5UY8AMTO98Aavmds3AzmZ9Ha5d/uTrDxgnD3/fvJLw765U/YtIX5jzB9IekS9emxt562I5dN3JCH7pEH6B0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JeDxPVOG; arc=pass smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z5+9feBo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6023CC2BCF5;
-	Tue, 12 May 2026 11:13:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778584415;
-	bh=iB3ztN846EP3D59KRDHOP+RhbUQzpbIy6BVpmGbhx50=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Z5+9feBobw3jljJucygSeW/2oaK77sLWZTF7bHfRuO27Z0RDKtlHMBxPR7ptltB0Y
-	 aNjX2cnl9YF8xpGIVNlamRcPSlVGwetz+llgTadrg6SJ0eD6gfSVEUmUlFNkMpTU/I
-	 yZQuglo2+9WcHPQQe36IpO6dc3KP5Akz4V9Xaj9oxVfrNCad5HX6IlnM4lLwtcwm9T
-	 DfpZQL/YLgXVIKDcR61khjrV93PKYCy0+nNiIRR8yLg28JW4VPb0nuzSXD3T3Q8/Kd
-	 zddnoxWJXcPaqSrZtstpm3uc9oW1jzE9DRMQ/5wgD81m+G2AKS5elEx3s+HTH71CSN
-	 aSCESBxyWhM5w==
-Date: Tue, 12 May 2026 12:13:26 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- <u.kleine-koenig@baylibre.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ad_sigma_delta: fix CS held asserted after
- single conversion
-Message-ID: <20260512121326.189817b8@jic23-huawei>
-In-Reply-To: <20260507-ad_sigma_delta-fix-v2-1-ec86eb0463bd@analog.com>
-References: <20260507-ad_sigma_delta-fix-v2-1-ec86eb0463bd@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JeDxPVOG"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4891f625344so50588075e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 04:13:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778584424; cv=none;
+        d=google.com; s=arc-20240605;
+        b=TWENNC6m5jrNFjjJSAC3zTqjrf1G3TdXdr7pVeNbnLQ/ErX/p0lF2lVmacxrmbvT3D
+         l1PsU1xy3zs2IxjJgHA8a2e2pKvXhi+RsgUVgvVrpouol/jLNEnlLMYLyiISsfNX/3lu
+         tebwZP1wwnrOaGFzNfpQwMxlRIRYHpZxtcKc1mSnOZl6s7I+RAv0eN4MP/BUWAGtcc1A
+         jG3rMtckcMEJeHGY6VN57H52Sua3eZuAbteT+r3dgQIBe8qjvGPlSgQs2kB0o7TzBRQp
+         xZqDIFoAZlPH6Mc6UsWfY997bWZ8fibBmU4VMV2jUxENVWtygr7B99npEu3ipH2br+eQ
+         3V5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=Y2hnGqOpC3haVJBTcSD5kcpEXo0Ennm/4nt4Cg7s2sc=;
+        fh=4JJmZY4RgFISvQASKwezq96d7a9WwFU5JzjdfMARIJA=;
+        b=T43K7tKYgnV2INOA17lmFTZ+wmJZJVKnZ4xV17+EbYCUJ4fiGy/+UMXFOHzQ4YYlFb
+         0sjM7TfWEwpqUc4daWH57MqM83VBzeb3n9AN2xeh+1PAQ5XF717VTyk6TsNUPXyIFsIr
+         QsvSJKauQrnwmgx9ePdBvnGNaUFM3mIDywkBnhi7iTOmDsWs/TGuidnOH46ntVNm1W5F
+         xt5gXrBgszOv7b/3OsdH4Z+KKCEQYhNna319AnraNUkMFBa4Ln01gD9C089T8Ahcrjmn
+         0I/OsQEdsupUiB1VoK2WxAn8obSRjam6V0q6dKHCG47c77fiGRd0Di6o3VwT5iUUVx9P
+         BgBw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778584424; x=1779189224; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Y2hnGqOpC3haVJBTcSD5kcpEXo0Ennm/4nt4Cg7s2sc=;
+        b=JeDxPVOGIGldoymUqxmSCzgJNk++PMoCwaWm5cuFy+A+EmcIaFLEy8pDLou8NFZiCE
+         SGWeiX765cp0z2GQNFZDws3suGKGN0kFhAmrzo6eyvhXRqYYuhW/4ePHyE5eIyQqgFjK
+         PGDVicFgtQtyJo2c93GLxVKCFh/bJSi15KwjQppKgu5y1z1t4vpdXqTGZaenxKn7AybB
+         kioMT3JQ113xBfr2edWbZI5TgXTJEhfzzjIjKVRcxk+7DZMmMGC97R9b7oyiQWD8Zn83
+         uC7CwJ4llj0XZYAZhIr3iNTuABUzsXT+gAPwa0UCdIe3xgRr0YAHl3HbN2mMVtfJOcNO
+         hp5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778584424; x=1779189224;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Y2hnGqOpC3haVJBTcSD5kcpEXo0Ennm/4nt4Cg7s2sc=;
+        b=tNuVcFrohAitV0jkub0yFMGiLB1S2jj91T70zK2VzOX6hdhlpvhUEO1HWex3h3CaOJ
+         4gG8EyQ693w2HupH5kX4guIuWTZ7hNiNI9o45nP4aOn+DRvdXETN4l3UKf/lfPK0YqoA
+         l6qcvpDXM4yKhSkAqwKMA+DTi2n2ux1a4vcl1ygomZ8Whg05HKSpNlrZd3bqDfPxTYk4
+         XMltbwBaXWjShnP68J4GPXskIB5hKIAR/HiyAWl4y+xVzjS6TJn/E0fucj/QjkccD1Wp
+         4HkB7gb8BJyRVdUhCcdoPsIJBMu7R57TiFE4bwmDK0FREWz6NrDAmDTmR2PXyn56TOsk
+         o6Jg==
+X-Forwarded-Encrypted: i=1; AFNElJ8H+j8oPHhggXpAWzCfz3gQz/rjYhpy3e/28R/XHiTbK6WZDxnc5Sc/mJZMWQ7t7ll1wLoKqn1XFBI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxhuIYCKwxCCWKtvYZZuki6gWnICl9uMmkeZNYw8awRcTL1k6im
+	SGfFqnb1M2tDUoE3pqemSED/tguZ885vqTVjYQbR0ltHWBm8pubJDIGhm2qYwF2It7YUc6zjwyZ
+	1fWPdfaBxjKB7jhWTKc3aw35oO+xLYkg=
+X-Gm-Gg: Acq92OFqVEz3hbm3Lo3tiL/CWsmCt4UFLNBRc2I7tYkq2LVHfC7SK/p6Z9SXBulUzOh
+	QNQaMooovv1dvtF9T/jICizNYTg2CPOa0qod8nfqLDOZK8QnEQum0VSV1qiWx71Qi8aWwQ1m0q4
+	HFHiFh88WbZt8qvq6cJbPXQLs4w1XpuvGGHD+Z+PfGRpKhneTuoLib7rM8397R3MvNXxmXRsWe4
+	JnR2KDQByGHE8TRFQw6P54yFYsZoVkxY+Xa/1UaHGJf/sO4Ih9ii7u7m418/IpYOocx1t+6VEgK
+	Nhco+wmuTJYudZ/9khupOhG8Kuax9rR/xjOLNkeZzEa28Z5nR3QttnlOxE1HpuMmSDqU9bVW7tu
+	oGrT7Y987sSVXYuF/oFpSf7OF2mrdC7xxozG7md4Shx6xD+l0AhPR0nZ9Ahs9Y2+XqE2Facmyo3
+	0/fv9w9g==
+X-Received: by 2002:a05:600c:3547:b0:485:3c2e:60d5 with SMTP id
+ 5b1f17b1804b1-48e8e1e6eb9mr47774995e9.2.1778584423450; Tue, 12 May 2026
+ 04:13:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20260512-opt3001-cleanup-v2-0-8018cf3a8a0a@gmail.com>
+ <20260512-opt3001-cleanup-v2-4-8018cf3a8a0a@gmail.com> <agMKd0GVvDxqs7Xh@ashevche-desk.local>
+In-Reply-To: <agMKd0GVvDxqs7Xh@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Tue, 12 May 2026 13:13:32 +0200
+X-Gm-Features: AVHnY4K2Wgbbed-vQdsDIqOTVDWCXD3p56hif3lirYHT-u4kPPyAS7LCHjvgLr0
+Message-ID: <CALoEA-wtBazysBZb7o=MEw_CfY_t9uDZrvKd7jX1xaPD-sHVjA@mail.gmail.com>
+Subject: Re: [PATCH v2 04/10] iio: light: opt3001: use local struct device and
+ i2c_client variables
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Alexander Koch <mail@alexanderkoch.net>, 
+	Michael Hornung <mhornung.linux@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 07 May 2026 17:00:38 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
+On Tue, 12 May 2026 at 13:09, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Tue, May 12, 2026 at 12:57:24PM +0200, Joshua Crofts via B4 Relay wrote:
+>
+> > Switch the driver to use local variables for struct device and struct
+> > i2c_client to improve code style.
+> >
+> > While at it, ensure that parentheses alignment is correct in functions
+> > that were changed in this patch.
+>
+> > No functional change.
+>
+> Right, but what I meant is to drop dev member from struct opt3001 completely
+> and derive it from client. Maybe it's done in the following patches? Haven't
 
-> From: Radu Sabau <radu.sabau@analog.com>
->=20
-> Commit 132d44dc6966 ("iio: adc: ad_sigma_delta: Check for previous
-> ready signals") introduced a new out_unlock: label for an early-exit
-> path and moved sigma_delta->keep_cs_asserted =3D false there.
-> Unfortunately it left both ad_sigma_delta_set_mode(AD_SD_MODE_IDLE)
-> and ad_sigma_delta_disable_one() in the out: block above that label,
-> so both SPI writes are issued while keep_cs_asserted is still true.
-> keep_cs_asserted feeds directly into the cs_change field of the
-> spi_transfer, so the final write to the device carries cs_change=3D1.
-> The SPI framework only calls spi_set_cs() to deassert CS as part of
-> message teardown when cs_change is not set on the last transfer; with
-> cs_change=3D1, that teardown is skipped and CS stays physically asserted.
-> No further transfer to the device is made, so the driver never
-> deasserts CS.  The framework provides no automatic CS deassert on bus
-> unlock or when switching to another device, so CS remains stuck low
-> until the next SPI operation to that same device.
->=20
-> On a shared SPI bus this is problematic: with CS stuck low the ADC
-> remains selected and subsequent SPI traffic intended for another device
-> is interpreted as commands by the ADC.  Devices like the AD7124 that
-> multiplex /RDY onto the MISO line will start spurious conversions and
-> pull MISO low, corrupting reads from the other device and causing a
-> deadlock.
->=20
-> Fix both calls by moving them into the out_unlock: block, after
-> keep_cs_asserted is cleared, mirroring the existing correct pattern in
-> ad_sd_calibrate().  With keep_cs_asserted false, both set_mode(IDLE)
-> and disable_one() execute with cs_change=3D0, so the SPI framework
-> deasserts CS as part of normal message teardown.  For devices that do
-> not implement the optional disable_one callback, set_mode(IDLE) issues
-> the last SPI transfer and CS is properly released in all cases.
->=20
-> Also fix a pre-existing state leak in ad_sd_buffer_postenable(): the
-> err_unlock: error path called spi_bus_unlock() without first resetting
-> bus_locked and keep_cs_asserted to false.  Subsequent SPI calls would
-> observe bus_locked =3D=3D true and invoke spi_sync_locked() on a controll=
-er
-> that is no longer locked, potentially allowing concurrent bus access.
->=20
-> Fixes: 132d44dc6966 ("iio: adc: ad_sigma_delta: Check for previous ready =
-signals")
-> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+Ohhh, now I understand. Unfortunately you'll be disappointed, my patches don't
+deal with this...
 
-Actually - dropped again. I forgot to check Sashiko.
-(Note please do this yourself in future and reply to the patch if changes a=
-re
-needed).  It raises some concerns about devices that don't provide
-the callbacks and hence won't ever use that keep_cs_asserted =3D false call=
-back.
+-- 
+Kind regards
 
-I'm struggling a bit on how the max11205 works at all as there seems
-to be a status register read on a device which claims to have no registers.
-ad_sigma_delta_clear_pending_event() as the binding suggests this device
-doesn't have a drdy_gpio
-
-Anyhow, please take a look at the feedback and if it's wrong please provide
-an explanation of why in this thread.
-
-Thanks
-
-Jonathan
-
-
-> ---
-> Changes in v2:
-> - Move set_mode(AD_SD_MODE_IDLE) into out_unlock: as well, not only
->   disable_one(); v1 left set_mode() above the label where
->   keep_cs_asserted is still true, so devices without the optional
->   disable_one callback still had CS stuck after that transfer.
-> - Fix pre-existing state leak in ad_sd_buffer_postenable() err_unlock:
->   reset bus_locked and keep_cs_asserted before spi_bus_unlock() to
->   prevent spi_sync_locked() being called on an unlocked controller.
-> - Link to v1: https://lore.kernel.org/r/20260428-ad_sigma_delta-fix-v1-1-=
-8e3f925ee8d2@analog.com
-> ---
->  drivers/iio/adc/ad_sigma_delta.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_=
-delta.c
-> index a955556f9ec8..a33a7e8c264f 100644
-> --- a/drivers/iio/adc/ad_sigma_delta.c
-> +++ b/drivers/iio/adc/ad_sigma_delta.c
-> @@ -441,11 +441,10 @@ int ad_sigma_delta_single_conversion(struct iio_dev=
- *indio_dev,
->  out:
->  	ad_sd_disable_irq(sigma_delta);
-> =20
-> -	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
-> -	ad_sigma_delta_disable_one(sigma_delta, chan->address);
-> -
->  out_unlock:
->  	sigma_delta->keep_cs_asserted =3D false;
-> +	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
-> +	ad_sigma_delta_disable_one(sigma_delta, chan->address);
->  	sigma_delta->bus_locked =3D false;
->  	spi_bus_unlock(sigma_delta->spi->controller);
->  out_release:
-> @@ -578,6 +577,8 @@ static int ad_sd_buffer_postenable(struct iio_dev *in=
-dio_dev)
->  	return 0;
-> =20
->  err_unlock:
-> +	sigma_delta->keep_cs_asserted =3D false;
-> +	sigma_delta->bus_locked =3D false;
->  	spi_bus_unlock(sigma_delta->spi->controller);
->  	spi_unoptimize_message(&sigma_delta->sample_msg);
-> =20
->=20
-> ---
-> base-commit: 3b3bea6d4b9c162f9e555905d96b8c1da67ecd5b
-> change-id: 20260428-ad_sigma_delta-fix-bb65d56ccbb0
->=20
-> Best regards,
-
+CJD
