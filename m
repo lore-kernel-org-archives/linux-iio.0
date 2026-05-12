@@ -1,62 +1,62 @@
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D3B739D6E9
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 22:19:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBCF439EF05
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 22:19:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778624345; cv=none; b=lhH2IYBJWfg5vyfvGfwOwRtBTYB9OIEtznFqVEDWQg49unlAWSZoWwoLtlP/Nih27y4yXDbk3TcZHL8ph349guD3saoSqOBN7DysUWS5GoSarGJ/crsX+MrjpPQfZtN7D9HdmxMc6SyqnzRzwMFg+40/aAfltDArZP72TLLLR6I=
+	t=1778624347; cv=none; b=Yed7bpefnLuJR4bhSRFX9xPzm21RVwYw8QaHo0r4ogr+5pW74o1gQV9K57IUlFFOZRIF03sYWX63MSeg+rxa6gwD7sxrnOQCPfaIQosl6aCgeIw7FgxdVv1dMDc5AIJTekYN2Z6Bmnxg6zEq/8s5RlAvCHWNOMLnt99udyd5stc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778624345; c=relaxed/simple;
-	bh=rzSuhraAI4cLyzTVmma+9iEM834IMLSQLVOxkCesmqI=;
+	s=arc-20240116; t=1778624347; c=relaxed/simple;
+	bh=pZ5AZCE8CUlKxhBSvGXDDmIUbmvrCQOnJDfJS2TH6eY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nZHs5gCN97e09B/Srld+bVrxwl10AH/nplC2RfsnYQNVwi8WYuRiJX6/+IQTB3CHV0GlHLj8zDnwgpcBoeKfPcr2fOX0s2ORegJOkH2NnnwFw5emROpj9+0P5GwH38HQ5pZWzCuCzt6IZS+FAx7yqjq8P4FwDUTF748RU0CrNY4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Os/6+FTr; arc=none smtp.client-ip=209.85.167.169
+	 MIME-Version; b=SeNWzTSWAbmynnU/0rPoT9jUI8abXkUDYZLmB9H/GEFLUpz4Dc3dS0ZGNXCFhqqqpiRf1yorYxTiQ+mURU9gMYO/3L70VbidLZrOX3DnhZ0/FJfCbio22e6brfz9D+IAPviFoh/llanimirTv+x4aSqOwYFwmIEk9xsS6+2sU3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bBDe5nLf; arc=none smtp.client-ip=209.85.167.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Os/6+FTr"
-Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-4824176bbbeso1624702b6e.0
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:19:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bBDe5nLf"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-4645dde00a7so5673096b6e.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:19:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778624343; x=1779229143; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778624344; x=1779229144; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=A10z2V6mAiVce4BytYqy/qmrWiH198BizlsZzZUSoec=;
-        b=Os/6+FTrF6sOE0KLI5E70a8KOzVFxbHPSMkr1/rrne7MrXTc2MN+lEGRHO2fvjSi16
-         67B52hOESa1qQNlVfMqpQ+99j6PkHfIzTivuMOQqVY5UTU+eaazbRgM2wCGgaIrVP8/A
-         HK7QYN+xHt1B+aaiD81a36cS1yDRpE7B+tiKA2h4pVL9gKu5YNTWHPuFurmsEEc+E57V
-         U9MXzXmQUPpSHyjC/idjSKBmBHnAbEqBuY0A88avwwswyiUrrA/cnT0CM4VughKrOZPJ
-         L5dKdFqVGtz6suj32GGrKqEVTJEmbL4rHV8OYKWZzhngh2HzQ+cUeYJcouCT1Zp0yj2/
-         lZbg==
+        bh=glwT5koQsVbYhX7I4MEF51k8vuLfNT2TtvwRkG3+C44=;
+        b=bBDe5nLfjFKrhqUya1g6DhZlX+i2MZWmMYUTidZMKZEZjJNxk41BQ6+xhd+Yczkd83
+         7t4nxQr/kX9ZihYDG7RnqqmYpt1EP9PMxZ3hNG0gmbXFNGiIvbMtyOEAah0H5eosP5/J
+         5ADjIT2JpsmJW/z3gyujdeP/fQkRFA6S7aMljKjjdYSmXTuTs1XA7S04QLpnrhHOPtM6
+         Xwb0WHLszRqopyEJu3/rLE9ACB8k1AJzYniHAMxyowcXSLLg6IUCnG3cFKMhWWVB9rSh
+         /s0dCrCQFd8+cUBY/eqO56ea2M9KSp572lvKXsHa74m0N05UQEKsisnnHfnyx57hpNuW
+         VxPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778624343; x=1779229143;
+        d=1e100.net; s=20251104; t=1778624344; x=1779229144;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=A10z2V6mAiVce4BytYqy/qmrWiH198BizlsZzZUSoec=;
-        b=FE+D/VZJ1sqZ+vhNCdKCUkyWbhdubW/vXWKpLun7IAI/r3BENvYpBRwP7yJ9b+GbJH
-         R3PrAmLopgcTZkumySRaGLfH6GwisIFrZdKVS7Tjg9Gh+oELS9SnTD3dTYgqQ60Ulkck
-         JIw9s7Yj3Bz5zR0RyFcoqegZHrdEACfcXA6yjUhWG4oYl3fJ0TztDO8yO/EZK05AMd7A
-         whRu/TsKc//dpCLNbRrh4QS3EIL4oK9GEL5knsEkomVcPpvbs42uDp0+sBA30+3hEQhu
-         NNP/I6RHc4e83CEMuGNhdMuNFiJQD14UoUtDcKZBNlChOfbjpRam19ijKjWmDiK3qunn
-         4v+g==
-X-Gm-Message-State: AOJu0YzbiN/jlNjOxxruzhfC2x/3ApjSuesnldI22CgGW2/4pWdSPWKy
-	n22+QnfC4AMgzkytl62x/OpibVei8HUxpJl6ZCI1UkMUjWSds2Qc1QluhSQe93YU
-X-Gm-Gg: Acq92OHkwG0uw3zMP3XxVmPKDxAMeogIkX0pEGzRQ8vtk0G/VHnUYedYicBgRNJiMgq
-	PjXmz8aw2ZDxuCNChnqYeJDQyf+iKOyOZ+KBYT8jjHsmdXLwLzZrPuGeP44dDTYF4LEeejzNBxo
-	gYmQ8cwdZOodIJe9NmgQmF2WAWyXC6qk57TzKOsqCzau/A1DerFB9S72aGjD+r2kL1uLvvts+Ep
-	yvtbEulk/b1qGQI0/34GWTxIFBz5Oqd2JdaUUihCjF3p/NRFlqfTj7cTcaJZtxi5Tt+Ggi27YOm
-	8kTUEFVQqlQR9AwhBZlWp7kNRVpGnuZ7OiD4xaX9ghKwAKLer+w33yM37YTCFqipMi8bD0EG9PF
-	q63LTp8aYc0TCAoYz4OWVmlWLcknACm5RxaOJEixfffZeXpXiiiBbi/eiMWKpgzp8ko2OEK6nSI
-	ejTJaYVdD/cAP+qrNM/Imp
-X-Received: by 2002:a05:6808:444b:b0:479:ac7d:6da8 with SMTP id 5614622812f47-482b2b2187emr786356b6e.18.1778624343187;
-        Tue, 12 May 2026 15:19:03 -0700 (PDT)
+        bh=glwT5koQsVbYhX7I4MEF51k8vuLfNT2TtvwRkG3+C44=;
+        b=CI3Rj+oZ7WoY4rpnCZ1pb9gX7Z+hJQmsP5DhdLzjVHYUN/nC2a6MykbFC46B6yvcQL
+         LIjR83/O4LAI8pAxOQO9IFdwA3GT1PSZq7irIXOmkeVuEVarKJsM5CDc2gpgposSqnEg
+         pT/3iSFepW5/p9fTWgPFWMc16MUrMs+xCkB7of18BMRjzc7zrMLg8sWMQwmkWHjBlJdH
+         lXOlgxRt8d5ngfWxwSsKr6D6G/06VSzO07TQ7vfR7749hQ/9pEQpvnxmPsH4xdG7ruaj
+         Qm3yirjy126/WD5v1KBuxbpK0SWq/nukFDRpUUK53JTPghQx2cS76lSGurY4QEKOxiXj
+         HjUQ==
+X-Gm-Message-State: AOJu0YyD3e4fcXELBy38GZOoAeOvpesFUxTbl3U0f+3THQTDCkUGA+Hh
+	7IgvioZOk0KegY9uxm+1YtidHqlkgfXXXjBHsjYkaEPzuCemwmxtEUEHNI6qT6ug
+X-Gm-Gg: Acq92OEal+/NynUrK8OiiRpVxyXTijCSZ4W8Izoo5KI9IhXJrvcp/uGMXShaSNxF+2n
+	FJZHsqaIYROoG9lRD4jcJvs7HQYQa9QcSVmHaKaK64pdI72uMnN4IwsXihBH88PNO2wDO376Q02
+	IWLDuJqhQpT6+9wSq6+IpTjijyPloXDVUzkZ1D0wIBYkBzuFVYqjm5j2CBOq1DckOIxq+BaZvWm
+	TCUtxgmHdz5V1RNaK5YB/Xalt4RpDQySnK+mpokHq4lNjkyZI7bE1xLGLlEz9+rtIbTtKK6Ygqc
+	5wheV9nx0qsMP774wgpmlTs7N+yLEmByNKVB1+RqHrJoLzgQ6g3sZZknq2wj8O27TLtCt9rwxJW
+	u3B9Fuft66O2GaTjxZz223pvvGnSftJWJvSKXHPHL2gx2zW9qN6AGMfd0CJ7U8bvADyGnOAhaug
+	NOH4yPLejyb5TaZfHVWKyM
+X-Received: by 2002:a05:6808:19a3:b0:479:ae1d:fff6 with SMTP id 5614622812f47-482b2cf1259mr540768b6e.11.1778624344580;
+        Tue, 12 May 2026 15:19:04 -0700 (PDT)
 Received: from localhost.localdomain ([2600:1700:fb0:1bc0::54])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-47c76986f87sm23291473b6e.13.2026.05.12.15.19.01
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-47c76986f87sm23291473b6e.13.2026.05.12.15.19.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 15:19:02 -0700 (PDT)
+        Tue, 12 May 2026 15:19:03 -0700 (PDT)
 From: Chris Morgan <macroalpha82@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: andy@kernel.org,
@@ -72,9 +72,9 @@ Cc: andy@kernel.org,
 	robh@kernel.org,
 	andriy.shevchenko@intel.com,
 	Chris Morgan <macromorgan@hotmail.com>
-Subject: [PATCH V6 01/11] dt-bindings: iio: imu: icm42600: Add mount-matrix to icm42600
-Date: Tue, 12 May 2026 17:16:22 -0500
-Message-ID: <20260512221634.256747-2-macroalpha82@gmail.com>
+Subject: [PATCH V6 02/11] dt-bindings: iio: imu: icm42600: Add icm42607 binding
+Date: Tue, 12 May 2026 17:16:23 -0500
+Message-ID: <20260512221634.256747-3-macroalpha82@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260512221634.256747-1-macroalpha82@gmail.com>
 References: <20260512221634.256747-1-macroalpha82@gmail.com>
@@ -88,8 +88,12 @@ Content-Transfer-Encoding: 8bit
 
 From: Chris Morgan <macromorgan@hotmail.com>
 
-Add mount-matrix attribute to schema. This attribute has been supported
-since the first revision of this driver, but was not documented.
+Add devicetree binding for the Invensense ICM42607 and Invensense
+ICM42607P inertial measurement unit. This unit is a combined
+accelerometer, gyroscope, and thermometer available via I2C or SPI.
+
+This device is functionally very similar to the icm42600 series with a
+very different register layout.
 
 Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 ---
@@ -97,18 +101,18 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-index 119e28a833fd..9b2af104f186 100644
+index 9b2af104f186..b69c6bbb6f6b 100644
 --- a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
 +++ b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-@@ -53,6 +53,8 @@ properties:
-   drive-open-drain:
-     type: boolean
- 
-+  mount-matrix: true
-+
-   vdd-supply:
-     description: Regulator that provides power to the sensor
- 
+@@ -30,6 +30,8 @@ properties:
+       - invensense,icm42600
+       - invensense,icm42602
+       - invensense,icm42605
++      - invensense,icm42607
++      - invensense,icm42607p
+       - invensense,icm42622
+       - invensense,icm42631
+       - invensense,icm42686
 -- 
 2.43.0
 
