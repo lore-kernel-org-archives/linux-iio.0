@@ -1,170 +1,270 @@
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED4F03E0724
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 17:38:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.170
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778607490; cv=pass; b=SHSDqxfHcQRB6tuSzZD3xX0pGEMGnzhDi3umcCLU8NteYihlJNMSN8lHWg5X86qgFzKFAe2BAhjdlzKibBsHmcKbO93JqV2ZVuLWGmTU1aqeQewgdq71m7I5wS1K4/0iHC7sF4ZcO0XUUdVMOboczdWr1ADe8u4iOnNPYnjii2w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778607490; c=relaxed/simple;
-	bh=CV5UnxnkBEtRShENGkBCB2rsomBz0C400j2DBJ2LrVU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ksZvIsIsXiOPxGEDqUUZR4i6NMjzPrnCQ24VpIsOLA9qRzYtS0ESJAiQBjoPM7mkFsTiseupZ5rw501gcfWk0cd4powfDKAGzZNA4cykYH+MmvTm3+JvLoYqO7TCzEcYb76Xkw/BuzlrEPiep8R0gsyepZ/H4GhX/fmlUZL6Aj4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CI/sSeue; arc=pass smtp.client-ip=209.85.128.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31AC32EBB84;
+	Tue, 12 May 2026 17:46:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778608008; cv=none; b=qa1K6mZEY5OsYtKNl3lg0bTjbCoB6OvCftMmRIzsMD6xQ64NfP6F10cKM7ctSxNhx730H9OFmGGmM4Z3NmnrFWhiNZskgBn/t1/B077z5ndnI2sNDDsqqM4wiJSjg6N4/iv6dhYfcRudf+0pgpzXEwdP78pU7hDMZyR3kyzQ5QA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778608008; c=relaxed/simple;
+	bh=bHtDWYlh7qWp/rUZKOZwCyZPCkE6LQ6XG3TERWH3mes=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DfNOEeKUwHg4PhN6FsaVSknHZrD2fUPCCwXU+HEOWrJH/Pe8+rztLxg5OTpOYYB0kG0WAqzN0l6CY+fiJ0XAGKkT8okUgpcj1g47mD9bqmmBV8ZpVUSuVOKHPHtgEQ7V2SeB1ZuSG+eCIQLL96FRu4JWc4hb7mIF0ypRdKUPXgE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g/H8x1wa; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CI/sSeue"
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-7bdaa68cf81so58243477b3.3
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 10:38:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778607488; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Yln9N/ARvRPJb4TqzrWrsCR5jjtBJdra5Cp7Jw0REev/xndsX95KHKhF/UveKpb20c
-         nhacnuH0KmsMIOed38aTvL4WeE+VBu6bRbeYy5/0r2Jk7gtnGZBwOfJVBari+yEu1/ot
-         AreaYHjaaW4S51XCdtbP5bovyuQAjQ0Nihs5FfZQLzKAMecv7YmodCg/WAEIYJXap2pK
-         MS3PwxfzN+uO2X1c3JlLYz1HflYBpNIY1uGo2MeO7iieeTkZMgGcoCBB1+fJany5mhIK
-         vDHGw1v8djyJeulBGfN71rcP2Taa01x0oBIlRF+wXXi+FoNEA72eocWLekFFNpRI8lpY
-         fvcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=6xwf2mAn4PLlLI8/tSPjVXt+hsPj4dYrxB4sPLFg6go=;
-        fh=jYWyFzhDDMJPhfE5q0H7hT6l0vtDF44SBxQcaVSpKsw=;
-        b=YltENsf3IsV0xWEu78GvsFcMqFBTbKWTQuelNmrG8GbjYTihapFQJQ3YQ9yGHeeFXA
-         qLwolK83Z3AQCMje3aaHA7SSgf2F4FTAo3M6eJSeeY8WF/XxeFEJV5oDseez8ZVXSyZR
-         prKGdc+PXEM93v+rmQifMrSVhrpa4eNnuhQRhC4vIZIH4CNhSXxGl/LqtXJcB0xHQ2cA
-         qON4DELH1P5RhRaIBju4aL0eEcl73CztVRZ3iGNpKyI4cmxhu6R4J59uTOyp3NGa1fOx
-         6ILxCQSK/naA3HRytPCq+unh2sK9R+y7CmY5unAeUYvshWXq6fV0zJOLvp+cBuAt7u7f
-         dj7g==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778607488; x=1779212288; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6xwf2mAn4PLlLI8/tSPjVXt+hsPj4dYrxB4sPLFg6go=;
-        b=CI/sSeueSbkYZiyzm0DxpKu9vXl1kK0kMtVIJp4Qik4EvH5e7/006ykku4iDloyLWI
-         oI7L/FtOdOWm8xb0CEvZEMF27zFi6ZdI8eJz667A6pZ9uZF0RJEWO4d+gv0c09FL1JVQ
-         l6TjUx/2wGbtGuplonh3roaHA3V26/4DMHExiqvteaOY0IkpESbztybmikg2RlVx11iX
-         RuAyrWmo6QQm845W0xodXoXE/vKNyL7GuFScWe12DIanyblvz//4frOmvcfr3J5McfIK
-         i2AMek8nhQEGJ6RzA3wFe0BCX6Vw/QKGEHV5AE3xRAMiVUX9cySKNTT8xBlgRKXenktt
-         JutQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778607488; x=1779212288;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=6xwf2mAn4PLlLI8/tSPjVXt+hsPj4dYrxB4sPLFg6go=;
-        b=fHH29bcTZGHRGjO84Qzpbf1yC0NDSHfkdoV29XD3ZO3BA1W4H9Kojq7TM62HuoSlOH
-         QGLbtr3n+7vH+w74M8M9TuBH5KQYTikYYhzYG909Ur1FEo1li+zAKMwnkA15oWoJdHHx
-         K1x61U/EtwVxR/4yTVeHsQy9q9L6WdtcTdvpANeHTbs8ztrccFQcRhiPUJZL+PMY2M+Y
-         Nxmv14yVP0PIh6vB6cOsGrxU0b7tarAoFims3YOk7EfJu8AF0JmgVYOKTBYLZBu5cEyr
-         NgpEpeyS6OKRNVqCVnZ/u+jLnBjJRo7BtUrDyPDpN/xDOcZ51qMx8N1o/v5dtLUZ9PNa
-         aVIg==
-X-Forwarded-Encrypted: i=1; AFNElJ8x1nbh/AhK9jE+gPWK/jVbAPhUFhmujOc85FBsPkYTNG44KWCawGLGsLN3JxbMPm04AwbpT3Vdwhc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzSdkWAmHe3pREO+lkhoqZ83hQ0FGx264vW7T8mgx/RM4u8IdMr
-	8iROtRmMQ4FOGL0h7selDdsXaky/hm1IqOCMc7juVeQ+GpxZA/RYaTrUDdqiEvvJ3uHdkR8Sy/m
-	+ylCdaz4uqxMQZkdIMxprPyRTrr1zIUg=
-X-Gm-Gg: Acq92OGDB41ce4m08oAnp518UlOYnk7hslUR0IvYkX2DyP4YRUmfiegGm+kCnqWIXlx
-	wpZ0qE5fDN7u5C1sEdQxawrATPJIulvVfJyh2abzPCEQX/0GgWMwi3ykjeLUL7exvfj4ciLVGks
-	1mSN/+kzpJ+wgLt9CWoM/N1B7x7G6xzJXoiupSan8nlUpVE0lM9t682ybsdFaDTmeyEYuhjgysO
-	U18WzWUbDDU/aF1GF8/Lh6KdIq7GjUVfLBZPdDZdJTxJSy39+D/2k33rApw7Fw8jTOEXGAmKIcZ
-	0tJtvXb/L2sCbYoIkmEq
-X-Received: by 2002:a05:690c:ed5:b0:7bd:8782:bb65 with SMTP id
- 00721157ae682-7bdf5d9913emr331643737b3.1.1778607487765; Tue, 12 May 2026
- 10:38:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g/H8x1wa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778608006; x=1810144006;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=bHtDWYlh7qWp/rUZKOZwCyZPCkE6LQ6XG3TERWH3mes=;
+  b=g/H8x1wajtMGpQRPnxitpu7V7CD/ECoFijxTr/UrAN1QEa9yII4wBhNX
+   jgA3VY3RKdUqFZvfpma054TYG41//0wf+qhx1g4lXJV0rrvZSjajUOnlP
+   Jwc1IFTlK2Tmqt0tPq7diqbUEhku67FfZ0Fje/w05krZRXm1HpeWJnIcF
+   8XmXi6r14+hKUBnZM9Bqfp4Ci5xDCoJ2L3UQ656+jnvTCCOPWcqyzoXPm
+   Wcjp8DhH+hsQqr/JThkhd7oodwdL/rGJCdYOtWGPBLf5+PWQxnekKvKJB
+   PjEfx5swFQGRYE6YXIAYjg/4Y/JDS2FGMW9kWPu4fppJ9zItWABBeS+Iu
+   Q==;
+X-CSE-ConnectionGUID: DuFbUSXbRoaZrWpqSECMGA==
+X-CSE-MsgGUID: dtOflJNYTa2cPmj4oRaS6g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79383617"
+X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
+   d="scan'208";a="79383617"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 10:46:45 -0700
+X-CSE-ConnectionGUID: BbLviimOTouA2OEQpzfrDg==
+X-CSE-MsgGUID: m8ObnuKLSy2QV0ceWEs4zA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
+   d="scan'208";a="242832195"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.244])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 10:46:40 -0700
+Date: Tue, 12 May 2026 20:46:37 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
+	rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	David Laight <david.laight.linux@gmail.com>
+Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <agNnfWZa9_NyLoWq@ashevche-desk.local>
+References: <agMnWzMjW1LwCSyT@ashevche-desk.local>
+ <sj6cpjhakyfvv6rgox6cnhl2u2tgaecugcok6fw2l7zgku5wtc@aqx3ul72vgca>
+ <agMvlS3-0wvGmBwh@ashevche-desk.local>
+ <dxjg2sdyxb7ieb4abmeyyye7qok6cczrxabpsjyjhcbehwoec3@sbbqoo4wmzre>
+ <agM8pWrM6j_XksvN@ashevche-desk.local>
+ <ur6brs3yjzyb4mtelabmcglxjltddqvjxtgl3lkdkmbjlkmnsq@bwd6rz7gided>
+ <CAHp75VeoH3yVfp8NWjKfc_df0VRLkyf_SK4e==-wJOEodVjW_A@mail.gmail.com>
+ <q4rmlkgecvztnvjg7b7wtqyvhdy7uxgaouvhae2mlsxaasasbf@dfakp4m5l5sl>
+ <agNfqiZpGZAM-x_H@ashevche-desk.local>
+ <ru2h3ip7qf6j54dlrij54nwp45uyq6m2e6zspt6v6eynpsagqq@eo5v3yparuhh>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512120356.40839-1-m32285159@gmail.com> <DIGSQPV2STJK.2S7C67L7I0RTJ@gmail.com>
- <CAHp75VdxUR0jdW2-k5SVGC22OK07VxHK2ORtVdSdniPWdcniPA@mail.gmail.com>
- <CAKqfh0FyELOpgB1W+_nv4a1G1tuSjnVxbEFrUeR2+KCT2Q=-Ug@mail.gmail.com> <20260512181040.7578fbd0@jic23-huawei>
-In-Reply-To: <20260512181040.7578fbd0@jic23-huawei>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 12 May 2026 12:37:56 -0500
-X-Gm-Features: AVHnY4L-QZs66Vl8D02oGR8PIwcfowfxFdhyTewpWy3DOQOsWugPrGBDqMY1pCI
-Message-ID: <CAKqfh0GPx8D-eGfoDw0epa8mN7fQGD-hpm9sZfimPKcj_RR3QA@mail.gmail.com>
-Subject: Re: [PATCH] iio: imu: kmx61: Fix TOCTOU race condition
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ru2h3ip7qf6j54dlrij54nwp45uyq6m2e6zspt6v6eynpsagqq@eo5v3yparuhh>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, May 12, 2026 at 12:10=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
-> wrote:
->
-> On Tue, 12 May 2026 10:30:42 -0500
-> Maxwell Doose <m32285159@gmail.com> wrote:
->
-> > On Tue, May 12, 2026 at 10:25=E2=80=AFAM Andy Shevchenko
-> > <andy.shevchenko@gmail.com> wrote:
-> > >
-> > > On Tue, May 12, 2026 at 6:17=E2=80=AFPM Maxwell Doose <m32285159@gmai=
-l.com> wrote:
-> > > >
-> > > > On Tue May 12, 2026 at 7:03 AM CDT, Maxwell Doose wrote:
-> > > > > A Time-of-check to Time-of-use race condition is present in
-> > > > > kmx61_write_event_config(). Move the mutex_lock() call above it t=
-o fix
-> > > > > it.
-> > >
-> > > I think you want to elaborate a bit more on this. Id est explain why
-> > > ev_enable_state needs to be protected. Not everybody is willing to go
-> > > to some site to read some AI reports and interpreted them.
-> > >
-> >
-> > Can do that for v2. I believe that it needs to be protected since
-> > later we set ev_enable_state to false (basically right after). Could
-> > be wrong of course, but Jonathan did confirm the TOCTOU.
->
-> I'd talk more about how we'd get a race.  If two calls enter the function
-> at the same time (which is easy to do) they may both pass this check befo=
-re
-> getting to the lock.  Therefore we end up with at best pointless repeated
-> work, at worst a reference or similar count issue. You'd need to look clo=
-sely
-> at what is protected to be sure whether it benign waste of time or a real
-> bug.
->
+On Tue, May 12, 2026 at 06:26:12PM +0100, Rodrigo Alencar wrote:
+> On 26/05/12 08:13PM, Andy Shevchenko wrote:
+> > On Tue, May 12, 2026 at 05:35:59PM +0100, Rodrigo Alencar wrote:
+> > > On 26/05/12 06:21PM, Andy Shevchenko wrote:
+> > > > On Tue, May 12, 2026 at 6:11 PM Rodrigo Alencar
+> > > > <455.rodrigo.alencar@gmail.com> wrote:
+> > > > > On 26/05/12 05:43PM, Andy Shevchenko wrote:
+> > > > > > On Tue, May 12, 2026 at 03:12:24PM +0100, Rodrigo Alencar wrote:
+> > > > > > > On 26/05/12 04:48PM, Andy Shevchenko wrote:
+> > > > > > > > On Tue, May 12, 2026 at 02:21:14PM +0100, Rodrigo Alencar wrote:
+> > > > > > > > > On 26/05/12 04:12PM, Andy Shevchenko wrote:
+> > > > > > > > > > On Tue, May 12, 2026 at 12:39:53PM +0100, Jonathan Cameron wrote:
+> > > > > > > > > > > On Sun, 10 May 2026 13:42:20 +0100
+> > > > > > > > > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> > > > > > > > > > >
+> > > > > > > > > > > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+> > > > > > > > > > > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+> > > > > > > > > > > > precision). After the decimal point, digits beyond the specified scale
+> > > > > > > > > > > > are ignored.
+> > > > > > > > > > >
+> > > > > > > > > > > Whilst Rodrigo has already replied to say there will be another version
+> > > > > > > > > > > I'd like to request final feedback from those who were involved in the parser
+> > > > > > > > > > > discussions.
+> > > > > > > > > > >
+> > > > > > > > > > > They got very involved and I'm far from an expert in the right way to do
+> > > > > > > > > > > this stuff.
+> > > > > > > > > > >
+> > > > > > > > > > > I don't think David Laight was +CC so I've added that.
+> > > > > > > > > > > David, Andy - I think you two were most involved in that discussion:
+> > > > > > > > > > > Any objections to the end result?
+> > > > > > > > > >
+> > > > > > > > > > I already said a few times about the naming. I do not like the kstrto*()
+> > > > > > > > > > be semantically different on how they treat the input. Second point is
+> > > > > > > > > > to avoid code duplication, but this one is less of a concern since the
+> > > > > > > > > > new code is in the library close to the other potentially duplicate code
+> > > > > > > > > > piece and hence can be addressed later.
+> > > > > > > > >
+> > > > > > > > > I suppose I reached into kstrtodec64() and kstrtoudec64() because it aligns
+> > > > > > > > > with your expectations for kstrto*() semantics, no? Those include:
+> > > > > > > > >  - overflow check;
+> > > > > > > > >  - extensive input validation;
+> > > > > > > > >  - optional '\n' in the end;
+> > > > > > > > >  - mandatory nul-termination.
+> > > > > > > > >
+> > > > > > > > > am I missing anything?
+> > > > > > > >
+> > > > > > > > When we add scale we basically make that not true. Moreover the code in this
+> > > > > > > > patch makes scale == number_of_characters which I think a bit fragile, however
+> > > > > > > > it's about the fractional part when the amount of digits is equal to scale.
+> > > > > > >
+> > > > > > > That is not really the case. It is being set as a limit, so it does check for
+> > > > > > > truncation and zero-padding.
+> > > > > >
+> > > > > > I do not see it happens in _parse_integer_limit(). It doesn't try to parse more
+> > > > > > characters than it's requested in max_chars. It doesn't check if there are more
+> > > > > > character nor their converted values.
+> > > > > >
+> > > > > > > > To make this work as expected we need to add an additional call like
+> > > > > > > > kstrtoull() (and perhaps drop that \n and NUL-terminator checks) and see
+> > > > > > > > if that overflows or not. Since it's a fractional part it must have less
+> > > > > > > > than 20 (decimal) digits there, so we check the rv (or how many digits
+> > > > > > > > were parsed successfully) and compare to 20. If it's more, we got too many
+> > > > > > > > decimal digits.
+> > > > > > >
+> > > > > > > For overflow it checks the KSTRTOX_OVERFLOW flag and leverages check_mul_overflow()
+> > > > > > > and check_add_overflow() when combining fractional and integer parts. The amount
+> > > > > > > of characters is not really important there. The scale cannot be bigger than 19 and
+> > > > > > > that makes sure that int_pow() does not overflow. The code uses _parse_integer_limit()
+> > > > > > > due to the nature of input and to avoid 64-bit division, kstrtoull() at any point
+> > > > > > > (parsing integer or fractional parts) does not make much sense.
+> > > > > >
+> > > > > > Under 'like kstrotoull()' I meant something that repeats needed functionality.
+> > > > > > I believe it's parse_integer() (without limit).
+> > > > >
+> > > > > I think we are going in circles here and we could look at the code instead:
+> > > > > - integer parsing with _parse_integer()
+> > > > >         - overflow check and validation of the return value
+> > > > > - fractional parsing with _parse_integer_limit()
+> > > > >         - overflow check and validation of the return value
+> > > > 
+> > > > No, this is not fully true. That's what my whole point is about. The
+> > > > max_chars parameter limits the input check, then it skips an arbitrary
+> > > > number of digits and only *then* it checks for \n and \0. What will be
+> > > > the result of the
+> > > > 0.00000000000000000000000000000000423 in your case? Whatever scale you
+> > > > gave it will return 0 without checking on how many digits were
+> > > > supplied.
+> > > 
+> > > I suppose that is a valid input and 0 is the expected result there.
+> > > 
+> > > > All the same for 0.9999999999999999999999999999999000423. My
+> > > > point is that we should limit this by 19 digits.
+> > > 
+> > > why we need to limit by 19? Digits beyond the scale carry no value...
+> > 
+> > ...only if they are all 0:s.
+> 
+> I thought your concern was on input length.
 
-Well, since we're accessing the shared state via kmx61_get_data (by
-the way of iio_priv), we could check that value, pass the check, and
-then have the value change before we acquire the lock. TOCTOU race,
-no? If data->ev_enable_state is false then becomes true after we check
-the value but before we get the lock, then ev_enable_state changes to
-whatever the input variable state is. Anyways, just saying that this
-is certainly a bug. Would coming across it be common? Probably not,
-likely one of the much rarer ones, but still worth fixing.
+One of, since I think you rose the topic of leading 0:s for integers and
+I agreed with that which makes sense to have mirrored in fractional part.
 
-best regards,
-max
+> > > just like leading zeros to the integer part (which is also accepted by
+> > > kstrtoull() when parsing with base 10). Not sure why this is invalid input.
+> > 
+> > See above. I agree on truncating trailing 0:s as it's done for leading ones
+> > in integer part, but if any of the digit behind 19th is not 0, it's an overflow
+> > condition (or bad input, depending how strict the rules are).
+> 
+> stating in the documentation that digits beyond the scale are ignored is not
+> enough?
+
+It's in case we are not for kstrto*() family. My understanding that kstrto*()
+use strict rules on the input in overflow check.
+
+> > > > On top of that, what about -0.9(19 times) ? the fraction should be u64
+> > > > in this case and it's fine. The sign applies to the combined value.
+> > > 
+> > > yes, range for signed values are verified later.
+> > 
+> > > > >         - extra scaling and truncation happening outside if needed.
+> > > > 
+> > > > Right, but the given input may be way too long and still needs more validation.
+> > > 
+> > > What is the problem with a long input of digits?
+> > > C compiler does not complain about this when parsing a float value,
+> > > python does not
+> > > complain about this when parsing floats or decimals either.
+> > 
+> > Because there is an exponent limit and for double it's something like 1e307
+> > IIRC, meaning, try 1024 digits to be sure.
+> > 
+> > Python most likely uses the library for big numbers, you can't compare it at all with this.
+> 
+> You would be fine if the truncation loop:
+> 
+> while (isdigit(*s)) /* truncate */
+> 	s++;
+> 
+> is bounded by (19-scale) iteration count? or it should keep iterating if those are zero?
+
+Ideally both.
+
+We don't care about the digits in the range of 19-scale and skip all 0:s after
+that.
+
+	/* truncate unrequired digits within type limit, i.e. 19 decimal digits */
+	while (isdigit(*s) && "(s - pos_of_dot) is less than 19")
+		s++;
+	while (s == '0') /* truncate trailing 0:s, it's not a bad input nor overflow */
+		s++;
+
+	// Now if it's not \0 nor \n and
+	//	a) still a digit consider either overflow or bad input,
+	//	b) if not a digit, consider as bad input.
+
+In a) I tend to be on par with the other k*() and consider that as overflow.
+
+> is that the only concern? Again, the usage of _parse_integer_limit(s, 10, &_frac, scale)
+> avoids a 64-bit division when checking the rv.
+
+I'm not against usage of _parse_integer_limit(), I'm for stricter rules on the input.
+With the above addressed, I have no more concerns.
+
+> > > > > - check for input termination
+> > > > > - combination of integer and fractional parts with check_mul_overflow() and check_add_overflow()
+> > > > >
+> > > > > > > > Maybe I'm missing these checks already performed?
+> > > > > > > >
+> > > > > > > > > > Having the test cases is a big benefit, and that part I like the most.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-
-> Jonathan
->
-> >
-> > best regards,
-> > max
-> >
-> >
-> >
-> > >
-> > > > Reported-by: sashiko <sashiko-bot@kernel.org>
-> > > > Closes: https://sashiko.dev/#/patchset/20260507223337.48437-1-m3228=
-5159%40gmail.com
-> > >
-> > >
-> > > --
-> > > With Best Regards,
-> > > Andy Shevchenko
->
