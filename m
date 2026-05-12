@@ -1,94 +1,94 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C02AE284690
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 06:44:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4188D29D27A
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 06:48:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778568275; cv=pass; b=XxXArwBK9ZviRar4OHGd3LpMXqBLFtCZNonPiHVBlu683HjL9VFCF4EZXJ/TRfWVEOuEk77ez26ay5NLpRnk2NNa1bn1C0Oojku4STTJX9vQ4PLkQaqS/8EiqaOR1XtPUBxxrwhJPlbyPmIiMUcQRsZMWWqJzMgjOoh5/nj2MxQ=
+	t=1778568514; cv=pass; b=Z2H89uvcV+Wl9s5Bj9w6Ec4zJ/jyHcIo/qLamTbhQpWJoVa6PV0aBl974p/dQrweXdR3UyA/pFD2Syyi7PhLUMp32ErxPRSveAwUms8ECEh2mjbcdmVMzl0llVIp5kWWwXRvddPLJ7R4E6rkbTAuHaGru70ynn7HWC6Pr6dXr5w=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778568275; c=relaxed/simple;
-	bh=FjgzfIcEzFg1b096kbJ3RIQzKX5tIHlT5F677cNirk8=;
+	s=arc-20240116; t=1778568514; c=relaxed/simple;
+	bh=LfcVaG8MSoLybwq7I+cGS/0geSQDT90LoxEK6iJoQms=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fu9eM+TLXL0IzyhyTRbQOWYGsUPkvN9sFX/igVvD/JYMq6P2WW27MkaQwK2AN0vLnb78cnHbFfdDrfKjICVs0cmDyBjdxWvzRmnQwxl71LAPmhUXs3F/lx1075S8HfQK6VCPw0uQ769Jjk//dro2WpB0aohbWG5SdoOfRDNzRgQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sZ8k1arB; arc=pass smtp.client-ip=209.85.218.49
+	 To:Cc:Content-Type; b=Yyl/UnHMVULVjgmVfVAyRBbUd5wMkc/MQ63LpUmiBzOLYDXXcii9lEB/Ibz5xpxvqk6ZjHi9QZLv0tRMdbaK8NiiwTbuSdbPPOKqrOMApYq0D/MBVlXbu/X4KbeAIjsm+KT8lvyEid+UT/Fvxawk7kdwktoz4sTkwlRXIvLtqSM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iLjXtwIT; arc=pass smtp.client-ip=209.85.218.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sZ8k1arB"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-ba7a1cc0380so915830766b.2
-        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 23:44:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778568256; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iLjXtwIT"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-bd24f466598so109673566b.3
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 23:48:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778568502; cv=none;
         d=google.com; s=arc-20240605;
-        b=kKcjEB02YHt/rkrGJYCm92+rfycg9bfqcSHQ1S7GCmBbA8Xvr0CIA0vDVyuYFmsyzh
-         FmRUKPrNEja/DUUuOkpNvm2sDbvU8j0ZUHve94TXV6I7SaRjkQaCtIU9KDHetayhG0DU
-         z7QHNMxUqtg20FSjBO10cYjoYQblMmKhCuqkKIIwEDr79cQHuC8nn7MgT+6Mf8rbIMra
-         IxrPyoD7jPewd+ItOewzKINtXiEdgIYbW6gIar/EtfKx2nV55uBt1rl3yn5c0GzWPIKF
-         w//9EHqG42HUnHvB5t7LU9kVnazodJsCYRKJQfmiipMcBMFGkiTrRseGRlwm7sUoLNUa
-         Docw==
+        b=QGqnMUEI7EMksqL4gaeg/rZIJjxU3b7asmSmizYvmcj8dDirZv2yior9ySQtdA2JWA
+         vaSgElxrc36UnmuufYpXQJ25CTrP5BNoFIMCSefRNBaOEZ4rkcUsRCooxi/sF0QpuMaP
+         RIY4c8zxSOsdHo/kQTS8FTnrsFnOeLchhsYzRmthSuKA8qp6OLqGGpeBzQsRG/3iA/vb
+         JdI4D5cAvsf78C+/WRMoK+x6OfdjWYGu0quy/f705sOdnOUQ76Wuj6mJKpySuwU2e+AR
+         Ezu3E6lZmK2Y3qbDQ7TyqplDpRIez4PG8w98Jrn0r1fUzyIwcfaXUxYVZEkc1foEbrIH
+         VAJA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=s9/juFQ5EkLeK4MRC7rvbjQzQu8ytDf6s79QFENqFt0=;
-        fh=k0lSfoY4K4PVr/3JuZ9KTb8efoOrSs76Tua021rSRuE=;
-        b=fBbT0a40/qK7/zVBjURWGmpBS5+lrwj+tKKgqPldyKTEJN/bU5PjI5zaTI3mDhvC0e
-         TeNOG3Nkz0jPLz9l44z8sY/RVVI+C05Jcgz+gcY1xkH1IoC256Z5LLfVpOKpacRDgJBd
-         JGSEiQhfF08DmyBhf8St6TivmlnomsBALVD6d984+p+H1dKwWMGYtTjXr3Vo3NDnNSzZ
-         8Qc4XWySUogZtTLlFzCUD95JUdiDCqm6/JvSXSpWRvZBbZZy2x57K/swsMo1IlleFrJd
-         9Ebke4nRawP6w0JlKaFZF65HmffWSfJBzi+LnC1WjWhGJiDj4mfVP0uGIVNDjcsXstVH
-         HQVg==;
+        bh=wFTa1Qu4vivHMZ7h/kjmMuCcTIeg1RKlZ789oyl3YpU=;
+        fh=WRgh7DouO0dNE7joTR2ggT4QUrTwQEuqahyQYwMFV+0=;
+        b=GLOmpEAJQsteUrsC5v1KYUjzEUGm8ZxaPr/pbwMBeeXyTSFB00497XjMBM7c3kg1yS
+         VAct8jJhe/lf0/LJTR4iWIzaLRenh7QMfKviDIasl1KQGWg/GD3ZpVozLdpU8rd8f9es
+         STR8ydod5XDmzdXxzxZeMapmNYOk8GB/7yPnICKhDtPC2N/q6y2wzPtkKc8NI6vYUlhD
+         XUgECioyEJoB4na9Y47jIip6prkw5qMSqF61/sNDP1UWAoZ2zbW80fFYosymC0AESvPQ
+         E0564Ec+4GsUeVB3hDPNhx93DFr4Y3wa3+7x89g2O8ArWnIdZR1CUkdHf+yeQmAD8OJF
+         yLRQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778568256; x=1779173056; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778568502; x=1779173302; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=s9/juFQ5EkLeK4MRC7rvbjQzQu8ytDf6s79QFENqFt0=;
-        b=sZ8k1arBo/iltA0Zjf84h/5CURPNlBi/IQ10S32q1NesXxFDyIwF1txkWydnxMi1j1
-         JtwnGLPQFB3sBFbZmkQgffqpzZ69/vklgxsF4by7Fu/h3SMsgM/FNkKBJRx2JcXbAyJt
-         QcxHjT54H1WIf4CU1DDFVDRTX71KQMo29gOTkJwH0uhBZ2Nkr0StX8fOj7vY018pkNjd
-         0LVy+gbJ9vOOZfcP09HIdeXsGxL/++qHn8h0ECVgQvtgroMag2bIzASLM6QJo7KD8n2V
-         wd9ZpjCbfT/NXHweROqU0Y1ikwhKBEaq9LRpXZZFN2i5AF9h61R3zgbQCr3rG1yg5TUD
-         5gag==
+        bh=wFTa1Qu4vivHMZ7h/kjmMuCcTIeg1RKlZ789oyl3YpU=;
+        b=iLjXtwIT6b7SSIH0nK2u0LKJaeuHqdrTkDrh+Eg1uqTroYRxJIqBDEY8nA3nHFnVfb
+         sjYcvc84dcUaMKVebF/nekYCZL4+yo+4wJD3I/ahGzaterqThvytQ3a1dbMuV8BwlFLz
+         NUMnfaZcJZuuqhNaWKaDgcmEd6aqgUlQYXIHOuYoZlHTi+B1HBE/5P4rUy3crQvRdidh
+         PFi6N0U7G5f/BxgGVajjSnU07dbmKFPIHInHEc/iJipbWV5iEp9F8g4cFqjRb11nkHoH
+         0id/m6rTcJTUXie2WkuDUd6Z0J0e8DP1ibNxfBS+RdT8YKiOGUrEGW9WGuLEqeMcwZ8F
+         Yt+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778568256; x=1779173056;
+        d=1e100.net; s=20251104; t=1778568502; x=1779173302;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=s9/juFQ5EkLeK4MRC7rvbjQzQu8ytDf6s79QFENqFt0=;
-        b=DkD9ekcFwIZNfN/39jRcBtDyK2iUhhXQbmf9XPSVRh9H7xFtu4Yz9dw/7WeE2MMTCS
-         +kAzqlxMsc/QPOKi+AdvwD/gVM4C/qTEnCt8KOqFSovBfqiXNkrw9Re7LP8IVnfOJMHU
-         97McCG5A8dU2+BcPE/2q9nZCHXCbKwlEu9+vByjeyoQz0NZRkI58+HDVOLCWPIaEPdrn
-         d1ozxJIZ1OPmI+5VNES/DakHOehLVHVnIiGKw0bud7B8Kq7scxyI1qG6/IQn8ZyqM1U6
-         +eeuAQLm/cDh33gI8TFVbYi8RExDDWj7LKjEzt7rxI78Dg85Ok/wPmYcF3/wUYPic42s
-         mUBQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/PxLpxwB3S7s40KxRwR4OLxHcicLBVeMPGCqF4DLbzVXB5gHf9ByGK/wXRiEJCBtGy19+aqq5AGyM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx1TFt16itubKe12trHvfX9oDhkwSsPzeFFjVhZrYc3r22GnWoq
-	xzFhUTE+vttI49BSJnlKGJiNOwvDYyDdRsIZPJd622+JsKWEcrStnoTbLiTz8e3f60FjLvJpKpO
-	1o/FNQc0C+j8Z71x5e9a5Gr8KdY8rCFE=
-X-Gm-Gg: Acq92OHOxx0SjITB53pfOZoVtdYpdXAgtZCM1wt1PKqGw75dRespcnohtnkfxY237D2
-	3ezU7+L+X5tnq67hjN6syJJNDj7Mwimtv5NqLFqDtw30h4CQj9i9lU5ID3v+hZn6mRdqRKo8y0P
-	cEz5U7bGc5Pzrp0wJv8N4BSJF7TzuY3GWPFAa1xBAdwRNIywmVhsIhqzx0mF+o55oMFH3g1FDRB
-	Z5y3yKe6XqTuOXQf+usU9+nuMpSRdiDcHISnlvjJhyNfdbO30rH1njNtX7TD/60DctTJ3bCbcTA
-	X4JVLj30dsLomDiwWbwQSOb0QIxEWj9s9rUlHyy8KoEr1Tfp+JefQQcWEK6Yb4i8w0TZiy6udHH
-	2/eoC90g=
-X-Received: by 2002:a17:907:728f:b0:bd1:d244:ca24 with SMTP id
- a640c23a62f3a-bd28e412eadmr84527766b.14.1778568255436; Mon, 11 May 2026
- 23:44:15 -0700 (PDT)
+        bh=wFTa1Qu4vivHMZ7h/kjmMuCcTIeg1RKlZ789oyl3YpU=;
+        b=JXYewck7SHDPaeWoTJ6EvQmCSClByn9e3d2ws2geqRH4IkZsqY4vH/FmU+nFCPtec7
+         ibN7SZtzfOLUoGmomEvrr/dY6i498PmAjvnUXBe67bT5xP8OeU+Br0S8ypSC9Cilz8iH
+         PNo25ovtjzs9g69lySHV5ZRD1e7I7P6NgpCsq5ZfJatcd4DtfCz9eQtW/hyFUyjI8r7R
+         mwMIIAyXmS0jHrFIZ+CYALo++VWhBEOajSTdKQ6h+VN7eaAjnYKCwYsMULRKkyEUe3vB
+         CUAaoPTSJf9FR5Hr3zI5GiYACqXQlaRONqSSi1i2Pk1Tf+XbfxBK5J1C7pHEHcMAz6/o
+         6olg==
+X-Forwarded-Encrypted: i=1; AFNElJ8znCPGSO5K/Fo40DnceMvwNYdNTRJdCFjLViVx21Rzkxt7qEqPn+QExbHADVbdyfc0A6vPoqy71Ok=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzzIioZDKQIrFUBxuXJIINr7xa586zZQ57MRn4v81TFuZ8u4dHr
+	F5Ctv2d6bv2onxPCTuT7N5xTsLh0GGc7i5iLC+vNRcZcP+6Jr2AL+CW0JvAxTDYdg930c8pfVH4
+	STjDsMEW5XvMnR18v271/W6dI3gSCri8=
+X-Gm-Gg: Acq92OFRpKrkeyU+8zOdncEKfYNFK177ZChPKGeVpKLTACL1CMEpoSiQVz46aQSYOCH
+	TYgf3Wv6Ps3Em17//XQWz2t9hlnR7ZuAOz5+tLfUkSpzuwziEDNEGqpLhKmO5vxhGGIq1jjqTHN
+	G9j3c63RyhrXCjpLgVWQNdtrC5UDvBXZegCXtL11BJKEs9syhYCwJbmrJzB18NBPI0lsr4Xf3Fp
+	uMRUz4Datty9mDZ0mT7fQk34ngT1yV4cbIotJqGXKW5mfYe5kkSsbrtC5nGLAwBU9H3G+D3/nTA
+	zha/PJxR68iX0YRNkDqXXM4E6A3WnXRp+pxJaJ6C4xmQ0oJR3UDIxfW5q0Q/CfjPxBo9s4OK5co
+	ruIWJpNU=
+X-Received: by 2002:a17:907:809:b0:bca:48de:5cce with SMTP id
+ a640c23a62f3a-bcc1499a53cmr609442966b.36.1778568501606; Mon, 11 May 2026
+ 23:48:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512-mt6323-v2-0-3efcba579e88@protonmail.com> <20260512-mt6323-v2-5-3efcba579e88@protonmail.com>
-In-Reply-To: <20260512-mt6323-v2-5-3efcba579e88@protonmail.com>
+References: <20260512-mt6323-v2-0-3efcba579e88@protonmail.com> <20260512-mt6323-v2-6-3efcba579e88@protonmail.com>
+In-Reply-To: <20260512-mt6323-v2-6-3efcba579e88@protonmail.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 12 May 2026 09:43:38 +0300
-X-Gm-Features: AVHnY4ISc11FAtQmtWdJlGYyo0XawWUZJbHlaYzrkD_vnuBBxzJNK6YMpmrGwVg
-Message-ID: <CAHp75VdtORjmCCWy3-oiN-RQd+s7z=2G4s8hemv3xrq47vXu5g@mail.gmail.com>
-Subject: Re: [PATCH v2 05/16] iio: adc: mediatek: add mt6323 PMIC AUXADC driver
+Date: Tue, 12 May 2026 09:47:44 +0300
+X-Gm-Features: AVHnY4LmZe6op_7Q9Zb_x2R3mJ89A3uDVU-76OXP9otXVwwfDX_cH9Q0T5k4R6I
+Message-ID: <CAHp75VcR2pzdT-JbNXE_nOM-XC--4y8D81tk+7rvjA71ugTkzA@mail.gmail.com>
+Subject: Re: [PATCH v2 06/16] nvmem: add mt6323 PMIC EFUSE driver
 To: rva333@protonmail.com
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
@@ -109,215 +109,59 @@ Content-Transfer-Encoding: quoted-printable
 On Tue, May 12, 2026 at 8:21=E2=80=AFAM Roman Vivchar via B4 Relay
 <devnull+rva333.protonmail.com@kernel.org> wrote:
 >
-> The mt6323 AUXADC is a 15-bit ADC used for system monitoring. This driver
-> provides support for reading various channels including battery and
-> charger voltages, battery and chip temperature, current sensing and
-> accessory detection.
->
-> Add a driver for the AUXADC found in the MediaTek mt6323 PMIC.
+> Add support for the EFUSE controller found in the Mediatek MT6323 PMIC.
+> The MT6323 EFUSE stores 24 bytes of hardware-related data, such as
+> thermal sensor calibration values.
 
 ...
 
-> +#include <linux/array_size.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/delay.h>
-> +#include <linux/iio/iio.h>
+> +#include <linux/err.h>
+
+> +#include <linux/errno.h>
+
+Doesn't seem to be used as err.h implies asm/errno.h that provides
+basic error codes.
+
 > +#include <linux/mod_devicetable.h>
 > +#include <linux/module.h>
-> +#include <linux/mutex.h>
+> +#include <linux/nvmem-provider.h>
 > +#include <linux/platform_device.h>
-> +#include <linux/property.h>
 > +#include <linux/regmap.h>
-> +#include <linux/stringify.h>
-
-+ time.h // USEC_PER_MSEC
-
 > +#include <linux/types.h>
 
 ...
 
-> +#define AUXADC_TRIM_CH2                (3 << 10)
-> +#define AUXADC_TRIM_CH4                (3 << 8)
-> +#define AUXADC_TRIM_CH5                (3 << 4)
-> +#define AUXADC_TRIM_CH6                (3 << 2)
-
-Without a comment it's hard to say if these are like masks or actual
-values. Can you clarify that in the comment on top of these four?
-
-> +#define VOLTAGE_FULL_RANGE     1800
-
-Are there any units? Are they millivolts or is it just some scale?
-
-...
-
-> +#define MTK_PMIC_IIO_CHAN(_name, _idx, _ch_type)       \
-> +{                                                      \
-> +       .type =3D _ch_type,                              \
-> +       .indexed =3D 1,                                  \
-> +       .channel =3D _idx,                               \
-> +       .address =3D _idx,                               \
-> +       .datasheet_name =3D __stringify(_name),          \
-> +       .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) | \
-> +                             BIT(IIO_CHAN_INFO_SCALE) \
-
-Keep the trailing comma as this is not a terminator.
-
-> +}
-
-...
-
-> +/**
-> + * struct mt6323_auxadc - Main driver structure
-> + * @regmap:        Regmap from PWRAP
-> + * @lock:          Mutex to serialize AUXADC reading vs configuration
-> + *
-> + * The MediaTek MT6323 (as well as lot of other PMICs) have the followin=
-g hierarchy:
-> + * PMIC AUXADC <- PMIC MFD <- SoC PWRAP (wrapper for PWRAP FSM)
-> + *
-> + * Therefore, PWRAP regmap should be get using dev->parent->parent.
-
-get --> obtained
-
-> + */
-
-...
-
-> +static int mt6323_auxadc_prepare_channel(struct mt6323_auxadc *auxadc)
+> +static int mt6323_efuse_read(void *context, unsigned int offset, void *v=
+al,
+> +                            size_t bytes)
 > +{
-> +       struct regmap *map =3D auxadc->regmap;
-> +       u32 val;
+> +       struct regmap *map =3D context;
+> +       u32 tmp;
+> +       u16 *buf =3D val;
 > +       int ret;
 > +
-> +       ret =3D regmap_read(map, MT6323_AUXADC_CON19, &val);
-> +       if (ret)
-> +               return ret;
-> +
-> +       /* The ADC is idle */
-> +       if (!(val & AUXADC_DECI_GDLY_MASK))
-> +               return 0;
-> +
-> +       ret =3D regmap_read_poll_timeout(map, MT6323_AUXADC_ADC19, val,
-> +                                      !(val & AUXADC_ADC19_BUSY_MASK), 1=
-0, 500);
+> +       /*
+> +        * Manual regmap_read with loop is needed, because PWRAP is not
+> +        * a continuous MMIO space, but rather FSM which doesn't implemen=
+t
+> +        * necessary read callback for the regmap_read_raw and regmap_rea=
+d_bulk
+> +        * functions.
+> +        */
+> +       for (size_t i =3D 0; i < bytes; i +=3D sizeof(*buf)) {
+> +               ret =3D regmap_read(map, MT6323_EFUSE_DOUT_BASE + offset =
++ i, &tmp);
+> +               if (ret)
+> +                       return ret;
 
-It's better to have a logical split
+> +               *buf++ =3D (u16)tmp;
 
-       ret =3D regmap_read_poll_timeout(map, MT6323_AUXADC_ADC19,
-                                      val, !(val & AUXADC_ADC19_BUSY_MASK),
-                                      10, 500);
+Why explicit casting?
 
-> +       if (ret)
-> +               return ret;
-> +
-> +       return regmap_clear_bits(map, MT6323_AUXADC_CON19,
-> +                                AUXADC_DECI_GDLY_MASK);
-> +}
-
-...
-
-> +static int mt6323_auxadc_read(struct mt6323_auxadc *auxadc,
-> +                             const struct iio_chan_spec *chan, int *out)
-> +{
-> +       struct regmap *map =3D auxadc->regmap;
-> +       u32 val, reg =3D mt6323_auxadc_channel_to_reg(chan->address);
-> +       int ret;
-> +
-> +       ret =3D regmap_read_poll_timeout(map, reg, val, (val & AUXADC_RDY=
-_MASK),
-
-Parentheses are not needed in this case. But I'm fine with it here as
-it probably makes it easier to get the idea.
-
-> +                                      1 * USEC_PER_MSEC, 100 * USEC_PER_=
-MSEC);
-> +       if (ret)
-> +               return ret;
-> +
-> +       *out =3D FIELD_GET(AUXADC_DATA_MASK, val);
+> +       }
 > +
 > +       return 0;
 > +}
-> +
-> +static int mt6323_auxadc_read_raw(struct iio_dev *indio_dev,
-> +                                 const struct iio_chan_spec *chan, int *=
-val,
-> +                                 int *val2, long mask)
-
-Logical split
-
-static int mt6323_auxadc_read_raw(struct iio_dev *indio_dev,
-                                 const struct iio_chan_spec *chan,
-                                 int *val, int *val2, long mask)
-
-> +{
-> +       struct mt6323_auxadc *auxadc =3D iio_priv(indio_dev);
-> +       int ret, mult =3D 1;
-
-Decouple assignment and definition. These types of assignments are
-hard to maintain and might lead to subtle mistakes in the future.
-
-> +       if (mask =3D=3D IIO_CHAN_INFO_RAW) {
-> +               guard(mutex)(&auxadc->lock);
-> +               ret =3D mt6323_auxadc_prepare_channel(auxadc);
-> +               if (ret)
-> +                       return ret;
-> +
-> +               ret =3D mt6323_auxadc_request(auxadc, chan->address);
-> +               if (ret)
-> +                       return ret;
-
-Please, add a comment with the reference to a datasheet (ideally)
-explaining this sleep.
-
-> +               fsleep(300);
-> +
-> +               ret =3D mt6323_auxadc_read(auxadc, chan, val);
-> +               if (ret)
-> +                       return ret;
-> +               return IIO_VAL_INT;
-> +       } else if (mask =3D=3D IIO_CHAN_INFO_SCALE) {
-
-Redundant 'else'
-
-> +               if (chan->channel =3D=3D MT6323_AUXADC_ISENSE ||
-> +                   chan->channel =3D=3D MT6323_AUXADC_BATSNS)
-> +                       mult =3D 4;
-> +
-> +               *val =3D mult * VOLTAGE_FULL_RANGE;
-> +               *val2 =3D AUXADC_PRECISE;
-> +
-> +               return IIO_VAL_FRACTIONAL;
-
-> +       } else
-
-Ditto, and it's the wrong style. Read the Coding Style documentation
-to clarify this.
-
-> +               return -EINVAL;
-> +}
-
-...
-
-> +       ret =3D devm_mutex_init(dev, &auxadc->lock);
-> +       if (ret)
-> +               return dev_err_probe(dev, ret, "failed to initialize mute=
-x\n");
-
-Unneeded error message. Most likely it's -ENOMEM, which will be
-ignored by dev_err_probe() anyway.
-
-...
-
-> +       ret =3D devm_iio_device_register(dev, iio);
-> +       if (ret)
-> +               return dev_err_probe(dev, ret, "failed to register iio de=
-vice\n");
-
-If you don't see the device, it's failed to register, do we need this messa=
-ge?
 
 --=20
 With Best Regards,
