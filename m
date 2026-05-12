@@ -1,483 +1,133 @@
-Received: from mail-yx1-f47.google.com (mail-yx1-f47.google.com [74.125.224.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 076253E1721
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 17:46:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778608009; cv=pass; b=plWxqulNELcI3kN0Q1qwQvpNVVNdjIT/wMosRNdw6VP1TljRaaFzEdwsAsDey0wWyoReitERdOkmoWkLHAGBvbyeFr1kgNObtU6GBf6j7VE+NCNtKVGCtiqD7sa3KpoFgP2h7dq3XaEZ3oTIh96j1ZpFqowbhDpy5l5xR2V2yj8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778608009; c=relaxed/simple;
-	bh=+V1dARKY25n41L2hs5jrYatHgpCNLnr9GbKuRLlIAUk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GpwbhIu69EKpIlDg5CRIK4i43WOMqAnjfpDahWvkDeXS045IAXW46+dJ4+iggdRoNRYhWcTcSucCXld8ZNwGFN4NOHUKC4B+A3gqYP1yxj2yrCjxmJE4uOlsaKKY0tb/0A3hT1ZKB/Gdc6p6V5ZhRUM0LSyhFa1Uspjt2y5JkKM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bmDjE/CN; arc=pass smtp.client-ip=74.125.224.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48ABD3EDE66;
+	Tue, 12 May 2026 17:49:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778608178; cv=none; b=rGyfExC/05gkxkF0lHeh+qb7sSneCJD3Du2FVYz9By8GcEo3yM9k/aruitWbch/KtDee1v5AsENv1tggn3YRNXAQzne1rT3RVGHdDY2e8zoF7GuSfKmggOZd5TpjY9wyokZE04HK/W43Lni3NUAQucO6kGIF1JnDaAzpHI9jxCQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778608178; c=relaxed/simple;
+	bh=hGoLgFvqmnL2T34vovl9lReM81TwNgRLYfnvDPzQ79Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=daJ8HIsCmdw8UviTF6/3WjqfP2KLOViDh4+V1+HEZGmkC7kEBsQlKIIpUBOqvB1FTYbNW302YfmYc8zSz7HEDjCIR6DtzQvE2VVhOhIXEyl9JjOHIGy4ijlMTGe8bF+FwkIjqtZWT9WJSzHTPS68d1K7CgDe1SPcSKmoY9Yq1e8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QkLzH+wE; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bmDjE/CN"
-Received: by mail-yx1-f47.google.com with SMTP id 956f58d0204a3-65c5361142fso6318392d50.0
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 10:46:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778608007; cv=none;
-        d=google.com; s=arc-20240605;
-        b=a3ssZNP4c8dltmjOrpbW9X7ZGR12hwAMSGS4HE+3tj6p6j2RCRcUiDhNAyDEnVazFe
-         eHzfNLoq9PBsu/Yje74NjFSmfyKKuQ2w0RrtmNiHUoLRPEabQxMZmIEjl4y7huDnYpJ0
-         /M9bwsAI1kpgpr1oDK1iGAkidE4w0xyhkyxpBO8z7YWJs09+hRLL3+Ky/epKXkYJfqXw
-         5PwbhRoro6/Ne9Wx0eqFXYHjQjp08MPYHHA1nmDeqUthLozRV6eE2I5JAAmnA5r2c0vA
-         HA+7AYgy/jXrPxxbu9614mXbkNUfQkKu1HxKe6FqrH/uEIoxHsyJMFjfw6PjRFm82R+g
-         I/LA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=/E8eESWUFmOHzNzbpZcQn/GEf/wu0onNIWF1hymOZpI=;
-        fh=xhtQyfTfYcThjymqAEiPTf1v3WvkvEb9jHQnGtdMwI8=;
-        b=Of9kr/zV+FOuKxVGLD9yVbnHQu9S2zolIWLSUdx5Ywm8Ib/p0skrXHbwsKez+hfSXN
-         RvBgg4EapErSnz8VUnIU2Ym1y+OTasLxdNFRMuUzMvoZdEZnp3teM390Io3ZDO1dLhJO
-         8su1Fv3m5f+tj30z6W6VaPjUHVXjHx8Rn0jR65PCLA0NvlFDHmwNHyXqXwii6ShVG+n1
-         9aua0QjLKeY1wCZ677h5aVrN8C8S65F8kBsnXgaRN7Y0BPNeYmZpN4z1xC6t8/FluGDB
-         ODHFdxFp8HDFw9EF/C4C7u+jSNSamXpRjlCbF5vvxmu+bbxAX5ZE7C447p4mraJmiga0
-         Edfw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778608007; x=1779212807; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/E8eESWUFmOHzNzbpZcQn/GEf/wu0onNIWF1hymOZpI=;
-        b=bmDjE/CNi+D/7xdcs/mgoEg6brvjkhhm8TKdokJL9FuQw6G03X6HFYqi6bxmXB+J4S
-         rsovP92B9LT3D+WyAM0VMdJOu/YrxRjC1TyqEaRKG5YQdPWGG6oscy6f3IeFdnnb/W8/
-         rElFJ4tLf5g9MQSh4oKeeW7qTTy9PI7b7INmG4LSeAfkhmI/Pi+XKdcNeO/n3RBfNhbd
-         81GgtkYML381gvKbbGow/rbSLbWnhEes/+hFxukXQNHY3srjRtvFizZL2IgMRNhneYQN
-         ECNudq2HS0eJyv0ImUVGqVqZD4aktUkLuLpFxeV88d+ttZFCKGDSQuj4FjGtK+2HSLxg
-         2HmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778608007; x=1779212807;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=/E8eESWUFmOHzNzbpZcQn/GEf/wu0onNIWF1hymOZpI=;
-        b=bBRxT8dGLvlG0MF6mHrDm4nZBRyZMsJECV+mZL7epVX1tAzPi0w/Hm86oFM62H6JtI
-         IdThuoTcvrDdQAzVW58oem5aot0Mw+fTpggZMFsaMw7svxubJLvFmYaD01pdpTrK8HpB
-         yxg/JKoDCPhGjV4TNa0mXrL/iqVBJLbN0xgb9dbhbFoI3jMqJJtJ/RxBhUkBbjoaqebb
-         uF5qoG57av7kadtO0v6DjVZb6YxK+UWXcxnLi+Xe8op23SLN+Lbvlo4RInYx+9fzHfel
-         mt4/vxv67WNjeWwWiOmkOyNeAIzcmgjAEn9COMd9d4XGbA67YFu/rg/yX0IBMXB1zoq2
-         Rk9Q==
-X-Forwarded-Encrypted: i=1; AFNElJ/4B5bvwYD1Gxw/4pcMq+rjvAN1GggbdUW3NZGI4Uz5cbG93CBAEdOYFri2aeO2I31FqppC2dNppCw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyymxUZPB8lKDvzbQL7Gt/qDbHih7Oz3UndXQEoDA3DhOvANKcA
-	S6rPr6Gsq5qV2SvcF0VrJpebRCay0HGqCFPvtnIW/7Y0xgDWq1MGEV+Aeh4zEgsjmzdBqH2ggrT
-	gmJdEGV/XQ1xDTJMX59zqzpBhn63faHw=
-X-Gm-Gg: Acq92OGI/lF8zsGfulGgXr1zJS/fSfDgRj/CFYalBwNNhJZhSBaXCPDx2Cs3SSqK0OF
-	DheevxcBaW73CJIW21UNMLxYQAZiMXxCRbQkWlAMVq0JZp0KNt7NXqQe03m4WXygBNdfc+pemTm
-	Guy46aOFf4YJ1iyKZWLKb9xDw0ZaE31RQDxOEGjLFLjV8jM5rrlqIY+htSecaqNTkCyIxOZ8z72
-	28UO3gp2SB+xiUIO4NsqylL/0JAiqXXE/hQ6stsbrEvmPHkduqYFzmbhs4eqjRFHiXh9aVlI1+T
-	00+hRFqh5g==
-X-Received: by 2002:a05:690e:134a:b0:651:b73f:2046 with SMTP id
- 956f58d0204a3-65da8551145mr13689537d50.59.1778608006815; Tue, 12 May 2026
- 10:46:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QkLzH+wE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778608178; x=1810144178;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hGoLgFvqmnL2T34vovl9lReM81TwNgRLYfnvDPzQ79Y=;
+  b=QkLzH+wE9c6lQtfHumg6f/aCO4oY7Ju4H4gpmlYkQZYC+0rALjG6pIXS
+   Cd4P0Zti8u3ZNVVCRamcMZ/xr34ARVphlKQl9tZGZF1GLbkj4VkCKr//3
+   1JhUTwB1d9li53ZLZbOK0kxXHI69NWQxwhaDY705sXy6IS/cFcOwlnCv4
+   NN8VZLWg6osOIg4meG5Dw/jd/5Qx2ZqStTJB6lc+F1W/fffcc7uFDTryk
+   s6WtXa1tPjrrkjj6D/xH6Nx8pksnt2D6AYM4zlm9ptuHCKP++nRlyZYjQ
+   6iExuosnLiQauE2C+I8VX2fbzeyIFYgNI8iPo8n7P5VNgmYOvXb/mZqdD
+   g==;
+X-CSE-ConnectionGUID: HgpRW/v3SLO0h8d++51/Ng==
+X-CSE-MsgGUID: 5eQoEL9zRb+vdnJbHR8KGg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="89828685"
+X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
+   d="scan'208";a="89828685"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 10:49:37 -0700
+X-CSE-ConnectionGUID: bD2MznS+Qjq6sKdEpImUKg==
+X-CSE-MsgGUID: QRO0mplfRH2QqADyc2KxGg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
+   d="scan'208";a="235165510"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.244])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 10:49:32 -0700
+Date: Tue, 12 May 2026 20:49:29 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v12 05/11] iio: core: add decimal value formatting into
+ 64-bit value
+Message-ID: <agNoKbcwT6_spC93@ashevche-desk.local>
+References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
+ <20260510-adf41513-iio-driver-v12-5-34af2ed2779f@analog.com>
+ <agM6uzhdn7o8g9v5@ashevche-desk.local>
+ <ql7smsqza7liupm7fhdts73cxsltrpxsqofu5ovzpxpwvcscuv@qigi3dwukk7k>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512172538.101383-1-aline.nakazawa@ime.usp.br>
-In-Reply-To: <20260512172538.101383-1-aline.nakazawa@ime.usp.br>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 12 May 2026 12:46:36 -0500
-X-Gm-Features: AVHnY4LBxz6Qr7CTXcJ0MIOiDFtFEBSE0x1uVHHW6M-3Kh5Gu5LAE6kJ8C5UoKM
-Message-ID: <CAKqfh0FxvJh2VXH_Q0FBZxYBeCmw8r2XTiwErtfSQm-g-YtT9w@mail.gmail.com>
-Subject: Re: [PATCH] iio: imu: inv_mpu6050: use guard(mutex) and scoped_guard
-To: Aline Ayumi Nakazawa <aline.nakazawa@ime.usp.br>
-Cc: jean-baptiste.maneyrol@tdk.com, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ql7smsqza7liupm7fhdts73cxsltrpxsqofu5ovzpxpwvcscuv@qigi3dwukk7k>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi there Aline,
+On Tue, May 12, 2026 at 05:09:32PM +0100, Rodrigo Alencar wrote:
+> On 26/05/12 05:35PM, Andy Shevchenko wrote:
+> > On Sun, May 10, 2026 at 01:42:23PM +0100, Rodrigo Alencar via B4 Relay wrote:
+> > 
+> > > Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
+> > > defines the representation of fixed decimal point values into a single
+> > > 64-bit number. This new format increases the range of represented values,
+> > > allowing for integer parts greater than 2^32, as bits are not "wasted"
+> > > in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
+> > > IIO_VAL_INT_PLUS_NANO. Helpers are created to compose and decompose 64-bit
+> > > decimals into integer values used in IIO formatting interfaces, which
+> > > creates consistency and avoid error-prone manual assignments when using
+> > > wordpart macros. When doing the parsing, kstrtodec64() is used with the
+> > > scale defined by the specific decimal format type.
 
-On Tue, May 12, 2026 at 12:37=E2=80=AFPM Aline Ayumi Nakazawa
-<aline.nakazawa@ime.usp.br> wrote:
->
-> From: Aline Nakazawa <aline.nakazawa@ime.usp.br>
->
-> Replace manual mutex_lock/unlock calls with guard() and scoped_guard()
-> macros.
->
-> Signed-off-by: Aline Nakazawa <aline.nakazawa@ime.usp.br>
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 199 ++++++++++-----------
->  1 file changed, 92 insertions(+), 107 deletions(-)
->
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu=
-/inv_mpu6050/inv_mpu_core.c
-> index 5796896d54cd..154d9086b6e9 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -20,6 +20,7 @@
->  #include <linux/pm.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/property.h>
-> +#include <linux/cleanup.h>
->
->  #include <linux/iio/common/inv_sensors_timestamp.h>
->  #include <linux/iio/iio.h>
-> @@ -756,27 +757,27 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
->         case IIO_CHAN_INFO_RAW:
->                 if (!iio_device_claim_direct(indio_dev))
->                         return -EBUSY;
-> -               mutex_lock(&st->lock);
-> -               ret =3D inv_mpu6050_read_channel_data(indio_dev, chan, va=
-l);
-> -               mutex_unlock(&st->lock);
-> +               scoped_guard(mutex, &st->lock) {
-> +                       ret =3D inv_mpu6050_read_channel_data(indio_dev, =
-chan, val);
-> +               }
+...
 
-This doesn't need braces, it's a single line.
+> > > +		tmp2 = div64_s64_rem(iio_val_s64_from_array(vals),
+> > > +				     int_pow(10, scale), &frac);
+> > > +		if (tmp2 == 0 && frac < 0)
+> > > +			return sysfs_emit_at(buf, offset, "-0.%0*lld", scale,
+> > > +					     abs(frac));
+> > > +		else
+> > > +			return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2,
+> > > +					     scale, abs(frac));
+> > > +	}
+> > 
+> > What about
+> > 
+> > 		/* Print a leading '-' for negative fractions */
+> > 		if (tmp2 == 0 && frac < 0)
+> > 			offset += sysfs_emit_at(buf, offset, "-");
+> > 
+> > 		return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2, scale, abs(frac));
+> > 
+> > Also note this won't work with the frac that are == S64_MIN. It's UB (undefined
+> > behaviour), see the comment at abs() implementation. Maybe a time to add abs()
+> > corner case tests...
+> 
+> frac cannot be S64_MIN, it is always and remainder of a power of 10 modulus.
 
->                 iio_device_release_direct(indio_dev);
->                 return ret;
->         case IIO_CHAN_INFO_SCALE:
->                 switch (chan->type) {
-> -               case IIO_ANGL_VEL:
-> -                       mutex_lock(&st->lock);
-> +               case IIO_ANGL_VEL: {
-> +                       guard(mutex)(&st->lock);
+Okay, but what about input of -0.9999999999999999999 ? Will it fit the signed
+frac type?
 
-Usually Andy prefers if you separate guard()() and other code with a blank =
-line.
-
->                         *val  =3D 0;
->                         *val2 =3D gyro_scale_6050[st->chip_config.fsr];
-> -                       mutex_unlock(&st->lock);
->
->                         return IIO_VAL_INT_PLUS_NANO;
-> -               case IIO_ACCEL:
-> -                       mutex_lock(&st->lock);
-> +               }
-> +               case IIO_ACCEL: {
-> +                       guard(mutex)(&st->lock);
->                         *val =3D 0;
->                         *val2 =3D accel_scale[st->chip_config.accl_fs];
-> -                       mutex_unlock(&st->lock);
->
->                         return IIO_VAL_INT_PLUS_MICRO;
-> +               }
->                 case IIO_TEMP:
->                         *val =3D st->hw->temp.scale / 1000000;
->                         *val2 =3D st->hw->temp.scale % 1000000;
-> @@ -797,18 +798,13 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
->         case IIO_CHAN_INFO_CALIBBIAS:
->                 switch (chan->type) {
->                 case IIO_ANGL_VEL:
-> -                       mutex_lock(&st->lock);
-> -                       ret =3D inv_mpu6050_sensor_show(st, st->reg->gyro=
-_offset,
-> +                       guard(mutex)(&st->lock);
-> +                       return inv_mpu6050_sensor_show(st, st->reg->gyro_=
-offset,
->                                                 chan->channel2, val);
-
-Shouldn't this have caused a compiler warning/error? guard()()
-declares a random variable, so you're jumping over variable
-declarations/initializations which isn't allowed.
-
-> -                       mutex_unlock(&st->lock);
-> -                       return ret;
->                 case IIO_ACCEL:
-> -                       mutex_lock(&st->lock);
-> -                       ret =3D inv_mpu6050_sensor_show(st, st->reg->accl=
-_offset,
-> +                       guard(mutex)(&st->lock);
-> +                       return inv_mpu6050_sensor_show(st, st->reg->accl_=
-offset,
->                                                 chan->channel2, val);
-> -                       mutex_unlock(&st->lock);
-> -                       return ret;
-> -
->                 default:
->                         return -EINVAL;
->                 }
-> @@ -896,50 +892,49 @@ static int inv_mpu6050_write_raw(struct iio_dev *in=
-dio_dev,
->         if (!iio_device_claim_direct(indio_dev))
->                 return -EBUSY;
->
-> -       mutex_lock(&st->lock);
-> -       result =3D pm_runtime_resume_and_get(pdev);
-> -       if (result)
-> -               goto error_write_raw_unlock;
-> -
-> -       switch (mask) {
-> -       case IIO_CHAN_INFO_SCALE:
-> -               switch (chan->type) {
-> -               case IIO_ANGL_VEL:
-> -                       result =3D inv_mpu6050_write_gyro_scale(st, val, =
-val2);
-> -                       break;
-> -               case IIO_ACCEL:
-> -                       result =3D inv_mpu6050_write_accel_scale(st, val,=
- val2);
-> -                       break;
-> -               default:
-> -                       result =3D -EINVAL;
-> +       scoped_guard(mutex, &st->lock) {
-> +               result =3D pm_runtime_resume_and_get(pdev);
-> +               if (result)
->                         break;
-> -               }
-> -               break;
-> -       case IIO_CHAN_INFO_CALIBBIAS:
-> -               switch (chan->type) {
-> -               case IIO_ANGL_VEL:
-> -                       result =3D inv_mpu6050_sensor_set(st,
-> -                                                       st->reg->gyro_off=
-set,
-> -                                                       chan->channel2, v=
-al);
-> +
-> +               switch (mask) {
-> +               case IIO_CHAN_INFO_SCALE:
-> +                       switch (chan->type) {
-> +                       case IIO_ANGL_VEL:
-> +                               result =3D inv_mpu6050_write_gyro_scale(s=
-t, val, val2);
-> +                               break;
-> +                       case IIO_ACCEL:
-> +                               result =3D inv_mpu6050_write_accel_scale(=
-st, val, val2);
-> +                               break;
-> +                       default:
-> +                               result =3D -EINVAL;
-> +                               break;
-> +                       }
->                         break;
-> -               case IIO_ACCEL:
-> -                       result =3D inv_mpu6050_sensor_set(st,
-> -                                                       st->reg->accl_off=
-set,
-> -                                                       chan->channel2, v=
-al);
-> +               case IIO_CHAN_INFO_CALIBBIAS:
-> +                       switch (chan->type) {
-> +                       case IIO_ANGL_VEL:
-> +                               result =3D inv_mpu6050_sensor_set(st,
-> +                                                               st->reg->=
-gyro_offset,
-> +                                                               chan->cha=
-nnel2, val);
-> +                               break;
-> +                       case IIO_ACCEL:
-> +                               result =3D inv_mpu6050_sensor_set(st,
-> +                                                               st->reg->=
-accl_offset,
-> +                                                               chan->cha=
-nnel2, val);
-> +                               break;
-> +                       default:
-> +                               result =3D -EINVAL;
-> +                               break;
-> +                       }
->                         break;
->                 default:
->                         result =3D -EINVAL;
->                         break;
->                 }
-
-Might be worth just making a helper, but ask Jonathan or Andy first.
-
-> -               break;
-> -       default:
-> -               result =3D -EINVAL;
-> -               break;
-> -       }
->
-> -       pm_runtime_put_autosuspend(pdev);
-> -error_write_raw_unlock:
-> -       mutex_unlock(&st->lock);
-> +               pm_runtime_put_autosuspend(pdev);
-> +       }
->         iio_device_release_direct(indio_dev);
->
->         return result;
-> @@ -1315,49 +1310,46 @@ inv_mpu6050_fifo_rate_store(struct device *dev, s=
-truct device_attribute *attr,
->         fifo_rate =3D INV_MPU6050_DIVIDER_TO_FIFO_RATE(d);
->         fifo_period =3D NSEC_PER_SEC / fifo_rate;
->
-> -       mutex_lock(&st->lock);
-> -       if (d =3D=3D st->chip_config.divider) {
-> -               result =3D 0;
-> -               goto fifo_rate_fail_unlock;
-> -       }
-> -
-> -       fifo_on =3D st->chip_config.accl_fifo_enable ||
-> -                 st->chip_config.gyro_fifo_enable ||
-> -                 st->chip_config.magn_fifo_enable;
-> -       result =3D inv_sensors_timestamp_update_odr(&st->timestamp, fifo_=
-period, fifo_on);
-> -       if (result)
-> -               goto fifo_rate_fail_unlock;
-> +       scoped_guard(mutex, &st->lock) {
-> +               if (d =3D=3D st->chip_config.divider)
-> +                       return count;
->
-> -       result =3D pm_runtime_resume_and_get(pdev);
-> -       if (result)
-> -               goto fifo_rate_fail_unlock;
-> +               fifo_on =3D st->chip_config.accl_fifo_enable ||
-> +                       st->chip_config.gyro_fifo_enable ||
-> +                       st->chip_config.magn_fifo_enable;
-> +               result =3D inv_sensors_timestamp_update_odr(&st->timestam=
-p, fifo_period, fifo_on);
-> +               if (result)
-> +                       return result;
->
-> -       result =3D regmap_write(st->map, st->reg->sample_rate_div, d);
-> -       if (result)
-> -               goto fifo_rate_fail_power_off;
-> -       st->chip_config.divider =3D d;
-> +               result =3D pm_runtime_resume_and_get(pdev);
-> +               if (result)
-> +                       return result;
->
-> -       result =3D inv_mpu6050_set_lpf(st, fifo_rate);
-> -       if (result)
-> -               goto fifo_rate_fail_power_off;
-> +               result =3D regmap_write(st->map, st->reg->sample_rate_div=
-, d);
-> +               if (!result) {
-> +                       st->chip_config.divider =3D d;
->
-> -       /* update rate for magn, noop if not present in chip */
-> -       result =3D inv_mpu_magn_set_rate(st, fifo_rate);
-> -       if (result)
-> -               goto fifo_rate_fail_power_off;
-> +                       result =3D inv_mpu6050_set_lpf(st, fifo_rate);
-> +                       if (!result) {
-> +                               /* update rate for magn, noop if not pres=
-ent in chip */
-> +                               result =3D inv_mpu_magn_set_rate(st, fifo=
-_rate);
-> +                       }
->
-> -       /* update wom threshold since roc is dependent on sampling freque=
-ncy */
-> -       result =3D inv_mpu6050_set_wom_threshold(st, st->chip_config.roc_=
-threshold,
-> -                                              INV_MPU6050_FREQ_DIVIDER(s=
-t));
-> -       if (result)
-> -               goto fifo_rate_fail_power_off;
-> +                       if (!result) {
-> +                               /*
-> +                                * update wom threshold since roc is depe=
-ndent on
-> +                                * sampling frequency
-> +                                */
-> +                               result =3D inv_mpu6050_set_wom_threshold(=
-st,
-> +                                               st->chip_config.roc_thres=
-hold,
-> +                                               INV_MPU6050_FREQ_DIVIDER(=
-st));
-> +                       }
-> +               }
->
-> -fifo_rate_fail_power_off:
-> -       pm_runtime_put_autosuspend(pdev);
-> -fifo_rate_fail_unlock:
-> -       mutex_unlock(&st->lock);
-> -       if (result)
-> -               return result;
-> +               pm_runtime_put_autosuspend(pdev);
-> +               if (result)
-> +                       return result;
-> +       }
-
-Can't guard()() be used here, or?
-
->
->         return count;
->  }
-> @@ -1372,9 +1364,9 @@ inv_fifo_rate_show(struct device *dev, struct devic=
-e_attribute *attr,
->         struct inv_mpu6050_state *st =3D iio_priv(dev_to_iio_dev(dev));
->         unsigned fifo_rate;
->
-> -       mutex_lock(&st->lock);
-> -       fifo_rate =3D INV_MPU6050_DIVIDER_TO_FIFO_RATE(st->chip_config.di=
-vider);
-> -       mutex_unlock(&st->lock);
-> +       scoped_guard(mutex, &st->lock) {
-> +               fifo_rate =3D INV_MPU6050_DIVIDER_TO_FIFO_RATE(st->chip_c=
-onfig.divider);
-> +       }
-
-Don't need {} for a single line.
-
-best regards,
-max
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-
->
->         return sysfs_emit(buf, "%u\n", fifo_rate);
->  }
-> @@ -1718,16 +1710,12 @@ static int inv_mpu6050_reg_access(struct iio_dev =
-*indio_dev,
->                                   unsigned int *readval)
->  {
->         struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
-> -       int ret;
->
-> -       mutex_lock(&st->lock);
-> +       guard(mutex)(&st->lock);
->         if (readval)
-> -               ret =3D regmap_read(st->map, reg, readval);
-> -       else
-> -               ret =3D regmap_write(st->map, reg, writeval);
-> -       mutex_unlock(&st->lock);
-> +               return regmap_read(st->map, reg, readval);
->
-> -       return ret;
-> +       return regmap_write(st->map, reg, writeval);
->  }
->
->  static const struct iio_info mpu_info =3D {
-> @@ -2227,23 +2215,20 @@ static int inv_mpu_runtime_suspend(struct device =
-*dev)
->         unsigned int sensors;
->         int ret;
->
-> -       mutex_lock(&st->lock);
-> +       guard(mutex)(&st->lock);
->
->         sensors =3D INV_MPU6050_SENSOR_ACCL | INV_MPU6050_SENSOR_GYRO |
->                         INV_MPU6050_SENSOR_TEMP | INV_MPU6050_SENSOR_MAGN=
- |
->                         INV_MPU6050_SENSOR_WOM;
->         ret =3D inv_mpu6050_switch_engine(st, false, sensors);
->         if (ret)
-> -               goto out_unlock;
-> +               return ret;
->
->         ret =3D inv_mpu6050_set_power_itg(st, false);
->         if (ret)
-> -               goto out_unlock;
-> +               return ret;
->
->         inv_mpu_core_disable_regulator_vddio(st);
-> -
-> -out_unlock:
-> -       mutex_unlock(&st->lock);
->         return ret;
->  }
->
-> --
-> 2.51.0
->
->
