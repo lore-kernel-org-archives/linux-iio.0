@@ -1,124 +1,125 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432BB39B949
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:54:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C4753C4B93;
+	Tue, 12 May 2026 15:54:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778601252; cv=none; b=MO/+P9S2Ew8C26YN6RqnN+Z5aXaPExKTxumPCt6CXuixYZdt4qPLF2jLCsp+su0uS1O0O/HDaT7DzqiRG8QhjDrOx0kQtE+5U/umB39wnbzpivq55bN6XXrARKGvwwjAaHNz4xOd68aTdLBXWnhQD+MFi5XsPKx1odFcaK+m65M=
+	t=1778601294; cv=none; b=LWt6TBDz9dzhJHtyvOu3yH84pjv36wAJA0PL78Y4+Ft2VLE8/1u7TSC7hUTMYZSUhNyw9DBIbtyuqLuXIzhXKYClGwO3Pw36MMkEUOUELZJJFzBc7Mzuz1Q1Us6bhAtGVPHbAFa1WsarQCzlvQjrRyEyMJwHvrY0sEUcwBert9c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778601252; c=relaxed/simple;
-	bh=ar7r0CplPhOBjT9O7jDUVxLUCoUGYulfCXSofIIVZxg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mzLGqILBFUjQdgxdhnYz5PyH57/5mCsuPOz9IRWp5t0IE3W8LIuZ/KOkDNYloS0dhhpL07MDLPFmPxS3r7OsI5ccMRQLEY2Shgneu+MM0lve0LOTZh0nd0KNJtof8HOcCJ+G8gS6TOVVgH6JLwHSkemNWu+XwV5eX6+/qx4Oy8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=x53TWIKz; arc=none smtp.client-ip=209.85.161.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1778601294; c=relaxed/simple;
+	bh=x96C7kQutkpEZcWiUIFWIivDdMrS5yAQtQyf7GWWB70=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=m6ttuXd08DMb+JrcsJDIYl4orHCG8cWINc3BTnIxyMwPIyG1cAPQRRDzslRpGX/VmJ3wCS2/lWfETqiutYp3QcJkAk60Z3O2UzrnWYiDNjzPjl5N/XlpVK9dSRv+rHS8QtskSoB+rdlDfuJhJNnPJCzvO2Qj5LL7az61jAtY2+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mWnObZ5u; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="x53TWIKz"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-6966d0665baso3455546eaf.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:54:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778601248; x=1779206048; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mu9LntJbCssD7Nm2DFnHOLJ9ocvl6E8VHMXK5m9CjY8=;
-        b=x53TWIKzeyMKFVktKRdzanktnalpKFgdRGZbKkQFiPb3Q0OsUaqqiujnGzSeMiqkvL
-         TV6boZgKVgU9baz3Vsb2TANUgjgM1ttGdjTG+c0JckHhABdDHdffq/TenH7FJzdIqryV
-         3/7su7QAlyDwg7Tw+uMpvagNjnt3g6xqTtRP0eO9f6aoEiukqnjdeNiOMDlWS2oXJhGB
-         EkgKZMS15PL5xF0nOBXXI3oWryXRIZWHP+MbXTbU7P6IMMlu+8ShDjKqtoZ06WlHSwf1
-         CN2M47cffSbS6BCbmAHDFqVljbuNJhOxnZFqhCDcU9QUrprqjpWQS016aQhJ7Hh3oU2Y
-         X38w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778601248; x=1779206048;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mu9LntJbCssD7Nm2DFnHOLJ9ocvl6E8VHMXK5m9CjY8=;
-        b=flTryXK0fkXG9uYQXDPlE9WaFhXUco+pZ4SkzExoqPRWRZCfI9WLmIoWYFcvkO5V6r
-         ODW5GakOeEVDx7M7b31HCoW21qCK1V6dNVHZ1faGH8wwTfspu8C9s3VZQWBR6D8tZ+yy
-         KgAL5Br+77jfdTPlDzRbx4F5AvbRMOPlBlYZIJtROfox+I2DtT165ldPxfm3nKNoleZZ
-         OnnxxXAznRURZetoedgLFso+U5UCSKZ9CIgpijvbz+Lqo1tbVYkrcbt0vWPYGU1beleU
-         zXfzXSkdOyF/viCJZKPLGZbUjATc5WsVZ/3ox760qLNxUmNuFwfLtYv0ACrRfEVea6ax
-         e19Q==
-X-Forwarded-Encrypted: i=1; AFNElJ+9X+33htB4AX/0+1EPLYPvoNg7B0/oQ7P4it4oTvbTpXe08ZJe4FubQ7zfgcTUwRl5VfMqFtc5Cvo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxxDRqhDIDKfUB//TfFvAwjK0HDQvRlfzjRkOsXgDcFIVhQXTYI
-	Aee0w7uIh9BYqj6w7CvYRJ88iIp00znvHZBSLgguFkXJsdtVY3YlAZ0rHZbOC6qlmbo=
-X-Gm-Gg: Acq92OEdLhdwQOGN5rEj97TQwPzptyyxLpsA9gJF7WzlAJHsfJ4fOTsQbmoWMUIlDlU
-	Oq2tgRVJB54W4sM1Jh3fI7msZ432+xKFycZqwSkYohRTShcowFjrvaAlgmfsuWmHO/kCMtgOWSz
-	xKf3XvT9R/faZ4ODD3eTBnv29bp8tcoyyjk91j648X8GXoBMxMglCyXDcmLyOqGToIN86D/suoD
-	yhrB0Vrc8KaBRR4gdTVRSuhapVkRMTEOrTRgdf1GQKs/HTUoZshf17/owYuVkY3sXVICZHVbd1F
-	eTmRGDB0TN7SppI0eYubSv0QvGbGMTxy+8geSwv6yJOGKltj0tgHrHv6EZTSfALzd+LiBIMlc6v
-	jXp8Du+lp3JIpwyCZ25ea/YIdb/lF55pvEgzrf2G52wnbbOnt88XU9KEFMlC0t54Pc4d+bviupm
-	YDhQv/8UqhF0FMELJOLGSUFGc06Uylc1FqoYHeiK/4riUGInLjr75FxnAWtUbfiR+DB1/rN7BSB
-	g==
-X-Received: by 2002:a05:6820:1610:b0:696:1a85:586b with SMTP id 006d021491bc7-69998d103cemr16189557eaf.35.1778601248273;
-        Tue, 12 May 2026 08:54:08 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:baa4:f7fb:528a:2457? ([2600:8803:e7e4:500:baa4:f7fb:528a:2457])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4355736f517sm13105588fac.12.2026.05.12.08.54.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 May 2026 08:54:07 -0700 (PDT)
-Message-ID: <051ee23d-cc9d-4eff-bd2f-3ad2085f2162@baylibre.com>
-Date: Tue, 12 May 2026 10:54:07 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mWnObZ5u"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB472C2BCC7;
+	Tue, 12 May 2026 15:54:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778601293;
+	bh=x96C7kQutkpEZcWiUIFWIivDdMrS5yAQtQyf7GWWB70=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=mWnObZ5ueRQ8TBR7X3/Qbh3RbLcNntE9kfz4JIelJJIZzfz6H+3kEsUFfvYemSfvz
+	 Z3oBIpQecJzCt4OxWEthqCNIm50zojS9KMhtzzDEQRlwP9rNU5aLmYWmSVT/CgDwgh
+	 jbFu9BdGrO+oAGC7YMHooJMWqvX3Y21c5oYhHUIQKdHT9VMHJW1YtUSKBx+KIplCL3
+	 VtzJaqQRmpjfgxFf+QFUb2NoOgulQ/I+7hWbCjrQkVmk9TFczoy93c0pQ6ySx7HOlh
+	 4WUOZAzK/4FzJHtxL7dObM6YHsNls0Jhe6dCB3V4lwxKyNw2iSlwVSdWwyMRu/ZGLx
+	 cxS66hxSL5pjQ==
+Date: Tue, 12 May 2026 16:54:44 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+Cc: Salih Erim <salih.erim@amd.com>, "Conall O'Griofa"
+ <conall.ogriofa@amd.com>, Michal Simek <michal.simek@amd.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] iio: adc: xilinx-ams: fix out-of-bounds channel
+ lookup in event handling
+Message-ID: <20260512165444.4ae39d90@jic23-huawei>
+In-Reply-To: <CAJgF-xum3OQ36keRW5gCnTTbnUhsHZUzL41xKn0hjJ3GqgyOZg@mail.gmail.com>
+References: <20260414224245.8493-1-guilherme.bozi@usp.br>
+	<20260414224245.8493-2-guilherme.bozi@usp.br>
+	<46bcd2ce-bfb4-4fc3-b840-dba657f39a7f@amd.com>
+	<CAJgF-xum3OQ36keRW5gCnTTbnUhsHZUzL41xKn0hjJ3GqgyOZg@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: imu: kmx61: Fix TOCTOU race condition
-To: Maxwell Doose <m32285159@gmail.com>, jic23@kernel.org
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>,
- "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20260512120356.40839-1-m32285159@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260512120356.40839-1-m32285159@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-On 5/12/26 7:03 AM, Maxwell Doose wrote:
-> A Time-of-check to Time-of-use race condition is present in
-> kmx61_write_event_config(). Move the mutex_lock() call above it to fix
-> it.
-> 
-> Fixes: fd3ae7a9f21c ("iio: imu: kmx61: Add support for any motion trigger")
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
-> ---
->  drivers/iio/imu/kmx61.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-> index 3cd91d8a89ee..9aa00acc7f14 100644
-> --- a/drivers/iio/imu/kmx61.c
-> +++ b/drivers/iio/imu/kmx61.c
-> @@ -942,11 +942,13 @@ static int kmx61_write_event_config(struct iio_dev *indio_dev,
->  	struct kmx61_data *data = kmx61_get_data(indio_dev);
->  	int ret = 0;
->  
-> -	if (state && data->ev_enable_state)
-> -		return 0;
-> -
->  	mutex_lock(&data->lock);
->  
-> +	if (state && data->ev_enable_state) {
-> +		ret = 0;
-> +		goto err_unlock;
-> +	}
-> +
->  	if (!state && data->motion_trig_on) {
->  		data->ev_enable_state = false;
->  		goto err_unlock;
+On Tue, 12 May 2026 12:40:05 -0300
+Guilherme Ivo Bozi <guilherme.bozi@usp.br> wrote:
 
-There are actually 3 other drivers that have identical code
-which likely need the same fix.
+> Hi Salih,
+>=20
+> Replies are inline.
+>=20
+> On Tue, May 12, 2026 at 11:22=E2=80=AFAM Salih Erim <salih.erim@amd.com> =
+wrote:
+> >
+> > Hi Guilherme,
+> >
+> > Replies are inline.
+> >
+> > On 4/14/2026 11:40 PM, Guilherme Ivo Bozi wrote: =20
+> > > ams_event_to_channel() may return a pointer past the end of
+> > > dev->channels when no matching scan_index is found. This can lead
+> > > to invalid memory access in ams_handle_event().
+> > >
+> > > Add a bounds check in ams_event_to_channel() and return NULL when
+> > > no channel is found. Also guard the caller to safely handle this
+> > > case.
+> > >
+> > > Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+> > > Signed-off-by: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
+> > > ---
+> > >   drivers/iio/adc/xilinx-ams.c | 5 +++++
+> > >   1 file changed, 5 insertions(+)
+> > >
+> > > diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-am=
+s.c
+> > > index 124470c92529..6191cd1b29a5 100644
+> > > --- a/drivers/iio/adc/xilinx-ams.c
+> > > +++ b/drivers/iio/adc/xilinx-ams.c
+> > > @@ -871,6 +871,9 @@ static const struct iio_chan_spec *ams_event_to_c=
+hannel(struct iio_dev *dev,
+> > >                  if (dev->channels[i].scan_index =3D=3D scan_index)
+> > >                          break;
+> > >
+> > > +       if (i =3D=3D dev->num_channels)
+> > > +               return NULL;
+> > > + =20
+> > The added lines use spaces for indentation instead of tabs. =20
+> I checked both locally and the raw mbox from lore.kernel.org, and the
+> indentation uses TAB characters consistently (^I in the diff).
+>=20
+> To verify, I inspected the relevant hunk using cat -A:
+>=20
+> ^I^Iif (dev->channels[i].scan_index =3D=3D scan_index)
+> ^I^I^Ibreak;
+>=20
+> +^Iif (i =3D=3D dev->num_channels)
+> +^I^Ireturn NULL;
+>=20
+> ^Ireturn &dev->channels[i];
+>=20
+> I could not observe any indentation issues locally or from the raw mbox.
+FWIW they look good to me as well. Salih, I'd guess you have a local issue.
+b4 (on git.kernel.org) is really handy for ensuring none of those occur!
 
-And in all of these, there is an write_event() callback that
-reads ev_enable_state without holding the mutex that looks
-suspicious too.
+Jonathan
+
+>=20
+> >
+> > Salih
+> > =20
+>=20
+> --
+> Guilherme Ivo
 
