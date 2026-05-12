@@ -1,76 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0424F254B18;
-	Tue, 12 May 2026 11:02:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30B58395AED
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 11:05:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778583781; cv=none; b=R2K5cSIwNRyQwvGMsMWzoijDH1EH9eC+74WQwiANRMgkkHSd1CVOQ5aIIijTqRfCEf7xFxisXD/hrLFAO3oDnlebI01WEayLmIvh+BT9ei+cdjzGV97FL1uRtVPBObhfFrrKgz47ZxiAkOXl8c2OEaR5Wd/JUZ/OmR73hF6AURk=
+	t=1778583960; cv=none; b=u/4HMTZPSgLgeChRGAq7sqfBTwya7F1laOv33r6wZw3jCE9ru0RU2arkCwjiFNr+lJt+f/6M2DsC8nIPIhJ439o2zMW+tF5ybvg2kL5klzA5+qr3mbP2KJkAPru+mLNnK+EwuURizsewRB9Fpx9Na/BsIX43zNdICXh1Yzm7hDw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778583781; c=relaxed/simple;
-	bh=211a2Vxapw/LkkPIC3ja7VhK866mFfc0k18gWRdnhG4=;
+	s=arc-20240116; t=1778583960; c=relaxed/simple;
+	bh=yihKF7r74w0pKwj7IKwES1AT1LtYO73g8Ehu3pfaJQI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ue3stFRxU+09dwcQJIruQhMJuGMgrmkcm3N2VpcLPEKuZ3ciOElY3INjTz7DXSLWYXLIjpbcu8uhFfVeCEXS1SLFRGwO5hWiSq5vBq9/8sAFf5ja+xmHRjLr9EVLsDMJGWTOqgcELXIf8Z/I3pSs4t5ygdEG4wrCxWi+Il/GjwU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U9TIXKWa; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=coLyFeIPwECJqTK6elxIRlTpVmyLJ8gXPCkYUQUtLUIUblpjtBj9B1jbtfrIxTNPXCRcXJ37pdo3frhAowfzHyWnlGIqWpTUuLcwF3bnIIJVP3jn3yBLrIbvendrr5YXBRGRb7eY5p1RmG7Ty65wDCu0dfRGk5ge/FA7V5TZO6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jeofbcTZ; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U9TIXKWa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778583781; x=1810119781;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=211a2Vxapw/LkkPIC3ja7VhK866mFfc0k18gWRdnhG4=;
-  b=U9TIXKWan48rS+/jlkVbDtacCkw9JNd4CV6mfktT2t4yhSRxKeZy7YD7
-   1vrGjklSqDpnB35K89Bqec2Faa9Dp0T7RMieIPahe7rntrXBiuPMePvaw
-   I/liu7Q46NNe17fC20J/43hP6RxzSmGoOin5V3VJaeKp/OwX3/yHDHXo0
-   kYnQeUFRzVN9+l2F9xg8QuMuc1XwRxdWr7ccsWoFSbMnX/w3Ley7K0uRg
-   vIu5MmR8lPkIv+tOgc0++SYInWmhdvCqa4Di5YU6srSPdKR7kti9QlyMc
-   /4kWb8dq5MDqhjJxEwCJJM0l9Ye1gI3IHfOLEGKHuwJPW8tWIc0AsCy+k
-   w==;
-X-CSE-ConnectionGUID: 9YNLjYVTTHWS8eIkd7+FJw==
-X-CSE-MsgGUID: zo9fbd7GREmy+LS5SDz1uQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="79472977"
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="79472977"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:03:00 -0700
-X-CSE-ConnectionGUID: W3uW7XpITSGWtGxlCqug2g==
-X-CSE-MsgGUID: o+ExLhcIQcmFTXdW7A7Y+g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="242733224"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:02:54 -0700
-Date: Tue, 12 May 2026 14:02:50 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Roman Vivchar <rva333@protonmail.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
-	Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
-	Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH v2 07/16] thermal: mediatek: add PMIC thermal support
-Message-ID: <agMI2phk0AQF6QP9@ashevche-desk.local>
-References: <20260512-mt6323-v2-0-3efcba579e88@protonmail.com>
- <20260512-mt6323-v2-7-3efcba579e88@protonmail.com>
- <CAHp75VfgrbEDLavMKFp2maFCH08RBUxF2wYhh56GG1HCq4ogmA@mail.gmail.com>
- <j2uhavC9edilBoD6VJnlz8cCmMPhE9rQavh1epqLk61zrlZ3k1rqlyj8fVYWnkddIY1fEfPk1DfcW09i39hd-Q7I9Y8Vxd0w8C2eCjVGLc4=@protonmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jeofbcTZ"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-4585a116a4aso1645863f8f.3
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 04:05:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778583958; x=1779188758; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=OidTfMPPXPs1lrurNfI8WbziimaZNAI/uHskYuG7YWY=;
+        b=jeofbcTZ3AqRExLzMOU5OAbgBEice6Dmx7hiksNZsgW55ETvj/Yqi69CX76JEj1FTg
+         ozTJXc+igDhttCAeVq824OnhPrQbX48AElDsY0mwoeyifFwrBbW9mUi2/gDO0LUEORIC
+         eZlojqripnru9Hq040ccd88Xo/XjGGI+fCxDpWVB5jqZtYWYGf++t7HCMesK8H+Jtoe8
+         ndsQ/wOri2axIUuMK+0oCLeSwuCKH57AU9NlCkI3YgZwEibZ58zypqXLPEqIgUAoFgnQ
+         trBnI4q12XN5eVSftDwCETag1fOXRrlpmf+E/b4DPaQ513mGPMmA8QYsBax+zExDsmXg
+         q7UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778583958; x=1779188758;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OidTfMPPXPs1lrurNfI8WbziimaZNAI/uHskYuG7YWY=;
+        b=PUC/SR3cHmATl+YO2H0DM4BTjb5K+MBZ2dptPxG9i93inhkXevprugUa0tx+Xc33WO
+         1UBvCnqkTQaBwd83umh8FS6OhN7eXVIRp7+h3Wb/Au7CgQMcQvh6LUL0RloPiGPLnpe/
+         0p/PFae5eLGe+K3Iu+cWVnI7nMpHmcf1TUE+5z4uKDFOYDkKIUfC3eG7A999Vz2a47Z+
+         hTzIw1iEviLHxZcCJwtjMsOUD15pAsg8JoGpDJHZ/sDZQfaSDMC3ErpttiO25MvxzkHZ
+         aFf5ORvy44yPnW7xPLonrZXx/Lu/5G7CvZ/J8Srw7Z5otjEm3xZyEL/0TXqukZSYSbLB
+         NH2g==
+X-Forwarded-Encrypted: i=1; AFNElJ+AVtsdOh7f4YKS78hb1yjvVStG4wHeoOsPTcZqjsPMiduaSXtGU4iU+PaN87qJ44yKAi+O2PFzCug=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyUp32IxsR2RRw3oJhQBg5T3ddv0PQsSMsZRk8x5BWLVwJtF2Kq
+	Gbk6sMKm6cSMDbGmokuAM8NOFQ1YBXBn67XEP1shAVv7Tp3Iu91o6Qte
+X-Gm-Gg: Acq92OEIGkLAi80Ypw/t4UPQW1fLWsOgEZV64zYqjPtVWg1d8ixQxju/Lts8w0ySsXW
+	hraONhLEHBpXHAiUQtInLA393NGLwORmLa6MKnxJv55eI7tp+4Uml1uwE/bD8mzOp2gVkQOnkn2
+	/3+ExkBtFxA/IM6zwgakomeSRAuURUV8OZskq6Hj8Aot+fqUGYm9aibalN5k4eemBPkv2LSPoey
+	me0J/gJG9vnwy8Atv469w7DL7Se7MPcjzfzFCv64OGqc/WGNnalAKTOe6630ioHL5lR3bOB6h4y
+	fLHILrhXYYxTjNewEUali2X8sphZbEutHPgJXTiuNiAqYK8+uARohOgtK55fvkLG0AqkNE07HCz
+	AfUKFBwJCrsHLxI5/x6aa0v0/qN8wz/ff09VEpcSeiojyk+sHU2/wQt2tWHZ1V1KADLLKTqIsn4
+	XIvnwioTgyEtqhqQ==
+X-Received: by 2002:a05:6000:2c01:b0:43e:a72e:ec5a with SMTP id ffacd0b85a97d-4515ce1c804mr44450540f8f.20.1778583957170;
+        Tue, 12 May 2026 04:05:57 -0700 (PDT)
+Received: from nsa ([185.128.9.145])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4549120eab7sm31284036f8f.23.2026.05.12.04.05.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2026 04:05:56 -0700 (PDT)
+Date: Tue, 12 May 2026 12:06:51 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "Stan, Liviu" <Liviu.Stan@analog.com>, 
+	Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael" <Michael.Hennerich@analog.com>, 
+	"Sa, Nuno" <Nuno.Sa@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: temperature: ltc2983: Add support for ADT7604
+Message-ID: <agMIxeg1zqz4n4e8@nsa>
+References: <SA5PR03MB83778AB3C41E0AF56EC754F8F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <af3oezNmmBhI4Yu4@nsa>
+ <SA5PR03MB837710AE7FD8B8FFF138B7C5F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <af4LCQiqNaiMzFkX@nsa>
+ <20260509154600.02e2d11a@jic23-huawei>
+ <SA5PR03MB83770D945E92C40A74D9C0DAF6382@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <20260511121820.3be9e635@jic23-huawei>
+ <SA5PR03MB83772A1A57DC052CB21B9187F6382@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <agLhb-S2ISSjaopc@nsa>
+ <20260512115520.5833ce45@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,63 +89,77 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <j2uhavC9edilBoD6VJnlz8cCmMPhE9rQavh1epqLk61zrlZ3k1rqlyj8fVYWnkddIY1fEfPk1DfcW09i39hd-Q7I9Y8Vxd0w8C2eCjVGLc4=@protonmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260512115520.5833ce45@jic23-huawei>
 
-On Tue, May 12, 2026 at 08:55:44AM +0000, Roman Vivchar wrote:
-> On Tuesday, May 12th, 2026 at 10:05 AM, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Tue, May 12, 2026 at 8:21 AM Roman Vivchar via B4 Relay
-> > <devnull+rva333.protonmail.com@kernel.org> wrote:
-
-...
-
-> > > +#include <linux/kernel.h>
-> >
-> > No way the driver(s) nowadays use this header. Please, drop it and add
-> > the ones that are really in use (there are missing ones).
+On Tue, May 12, 2026 at 11:55:20AM +0100, Jonathan Cameron wrote:
+> On Tue, 12 May 2026 09:24:27 +0100
+> Nuno Sá <noname.nuno@gmail.com> wrote:
 > 
-> Is there a tool or script that can check for IWYU?
-
-The `iwyu` tool with customised configuration is the closest what we have
-(but quite far from ideal), you can read this thread [2].
-
-> For example,
-> the u32 and s32 types are defined in the asm-generic/int-ll64.h, which
-> is not used by any device driver. Instead, types.h should be used.
-> It's difficult to guess which header to use for a given type/function.
-
-I know. I got this knowledge because:
-- I do a lot of reviews and patches and gathered it from the experience
-- I am the one who reshuffled *some* of the headers
-
-> I've tried include-what-you-use [1], but it gives bad results like
-> "add #include <asm-generic/int-ll64.h> // for u32".
-
-See above.
-
-> > > +#include <linux/module.h>
-> > > +#include <linux/nvmem-consumer.h>
-> > > +#include <linux/platform_device.h>
-> > > +#include <linux/property.h>
-> > > +#include <linux/regmap.h>
-> >
-> > > +#include <linux/slab.h>
-> >
-> > Is it used?
+> > On Mon, May 11, 2026 at 12:02:31PM +0000, Stan, Liviu wrote:
+> > > On Mon, 11 May 2026 Jonathan Cameron wrote:  
+> > > > > > Ok. So what are our options here?  Present it as simple resistance and leave
+> > > > > > userspace to figure it out or add a new channel type? To me feels like new
+> > > > > > channel type makes sense.  
+> > > > >
+> > > > > The current approach presents it as IIO_TEMP since the chip outputs coverage
+> > > > > (using the custom table interpolation) via the temperature result bank, not
+> > > > > the resistance bank, but I agree a new channel type makes sense. Should I
+> > > > > create a specific type like IIO_COVERAGE_PERCENT or would a general
+> > > > > IIO_PERCENTAGE be better?  
+> > > > 
+> > > > For ABI purposes we don't care where it comes from.
+> > > > 
+> > > > We already have some 'ratio' type measurements like concentration which are
+> > > > percentages and similar to those I think we need some indication of 'what'
+> > > > is being measured given it's unit free.  Hence IIO_COVERAGE_PERCENT seems
+> > > > the better choice to me.  
+> > > 
+> > > Understood. Will do that in v2.  
+> > 
+> > I do wonder if a complete type is what we want? How will we present it?
+> > 
+> > in_coverage_ratio?
+> > 
+> > What I'm not too convinced is that coverage is relative to what? Well
+> > it's a percentage so I guess we could not care and leave interpretation to
+> > userspace (to know which device is dealing with). Still I wonder if a
+> > new iio_chan_info wouldn't be more appropriate? In this case applied to
+> > iio_resistance. So something like:
+> > 
+> > in_resistance_coverage_ratio
 > 
-> Yes, without slab.h the __free would complain about missing __free_kfree,
-> which is DEFINE_FREE(kfree, void *, if (!IS_ERR_OR_NULL(_T)) kfree(_T)).
+> I'm perhaps missing something - as far as I understand it there is no meaningful
+> connection to resistance in what is being measured.
 
-Ah, indeed. I forgot that this is not the part of cleanup.h.
+Maybe I'm the one missing something but as I understand it is that the
+more coverage we have (more liquid in the sensor area), the less
+resistance.
 
-...
+> I think what you are proposing is similar to measuring current via voltage
+> drop over a sense resistor. We don't present that as modified voltage, we
+> present it as current.
+>
+> Here the thing being measured is coverage rather than resistance
+> so keeping resistance in there is confusing for the user.
+>
 
-> 1: https://github.com/include-what-you-use/include-what-you-use
-[2]: https://lore.kernel.org/all/20260512073505.1310-1-joshua.crofts1@gmail.com/
+Hmm ok! The above two paragraphs make sense to me. Hard to disagree :)
 
--- 
-With Best Regards,
-Andy Shevchenko
+- Nuno Sá
 
-
+> If we wanted a type to modify then we could do this as a modified area measurement.
+> Channel type IIO_AREA (which is new) and modifier IIO_MOD_RATIO (also new).
+> 
+> Jonathan
+> 
+> > 
+> > So it's clear what physical quantity coverage ratio is affecting.
+> > 
+> > Thoughts?
+> > - Nuno Sá
+> > 
+> > > 
+> > > Thank you!
+> > > 
+> > > Liviu  
+> 
