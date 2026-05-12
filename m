@@ -1,146 +1,251 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 901CA33F598
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 19:01:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E429184;
+	Tue, 12 May 2026 19:08:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778612485; cv=none; b=IOOl8kW1Y5c9aPkM9b8c1XzQ9FB3vuwBIajfDS5ChnN9v/k/W14VEsIE1RQU5OMtm9973lEWUWLBys/bA9vMblWNnJw0yPtBvYBaZ3MpQVyNYWiYvlrdkF+nc1hySvZAQSK7WJUDkgQkTPreul0/opg08J0dK7gtTcTRn4DbDQw=
+	t=1778612909; cv=none; b=hDPloL5wQ4PJyTyxxHk8g35NBg8eQ35g55imIk7nsrWnjlUSwJZXxyJhWDNvNRg0r29DFYOP3VECy585XFv8Y5mWwBKW6hjUiLHcIQ7Ebiq1nSNhgbEmeZmwTSp91nRevV64GOSKPfgphbCl6FLqzcMsoxn+fO0jMGfhnwZFcXQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778612485; c=relaxed/simple;
-	bh=SeD74GBi/WomNdZYaNJemftdaB+eK35ZhAEI9YJm9K4=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LUsYvXAy3ZDyZzuF8ldwSAMYCjKq/GRs44c2DL9NAzgIEt/fNRx7eCU9bi1jnBXD6yfVpSsRiJUYP9csib9arQZFJqyqewih06GqQPeUoVEJP1cKx8mjBK0fXFp7WMqwdgGEKBEaOh6VSbg1fezl9XSMRRSaL4E8goYkb0WQ/MM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m72a46az; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778612909; c=relaxed/simple;
+	bh=2oRNzYLp2UtLjevt33P/GMy6EecRdItSX1iAaPpYIm4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J9p+qvJFINvSzV+vt4/v4rJlzQszI45dYhOFJSYYt6T8UuBFhqoPb2K66oSogM2PF4dLe81PN/ZQ18mPxz4B2wb59iKTNBZ8yoTye30JW//rFxQeHlkULuECec6Jf6k+tJK6z424awb+DLXWdlcWPhMpY+XXKnEKH3KDW6p2NZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L8bI+GCf; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m72a46az"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-488af9fdaa7so33867335e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 12:01:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778612482; x=1779217282; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=JfVrzDr86zATEwD1OuodPd4t6Fj18Y970qlap5qDmRM=;
-        b=m72a46azprArlIiQaehve9LLM/bCBXAENf2OiFcAC7x7juTLUxIudkYCYs1z1+d+WA
-         K7WTmZSc3BWFpTGzqk5pBLB+yt/U7/ztVeCxAnN5RZIpl1WbD0qx29KvgAeb5/WTOFyM
-         4tNZHY4xIk39z1SQiGYUwCzAR0lYyCG7wxbfWRDvQOQzZXJiQC8vCI5kov8NndsWZuI5
-         MC0lBywBq19Yv9SDm83fb+8jQ4x+G8ZTwWvilfHDziJpG5Frg6frmticLdAK6177eZgC
-         oFkmGUBev6+HnKFEovWML5dC8SMO2qHX1UITg4jkOfRl9eOF5eaYdA3vGJZsn8LH2BVt
-         ksEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778612482; x=1779217282;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JfVrzDr86zATEwD1OuodPd4t6Fj18Y970qlap5qDmRM=;
-        b=KmlqMgUTianGeuPOfpGPQc9cAkRlNWcmkmZZJBgPgqaSiAOZRfS8gAWopoBxM1rxgu
-         AlAa3+KITw5xlWZQfhHkY8u3aH2ipFaGe78dYpSa0CczVCSFWak47J4rnahpfqLNpo+y
-         G8zqdKs+K6+Dj4R7jtZwF/rj4z8wJDJT54UWCpKms8wToCCuSa7Bj6iCpnw6X0YmAkPr
-         BNtCbupYdepBT06FhZIM0dXB7yf+tlWpJRnWvg4qoSgWEpinyXjq9XLDKovHMeUthvQR
-         x1eWk3lE/24BnswYEBVeAyaBhSK0T5eDT6GYBJU+wfuB5VlrWx9ivJlGGGo3xGy8GNhE
-         Qk+g==
-X-Forwarded-Encrypted: i=1; AFNElJ8x3BMKjEmhtXbkQhzgAzxxqohkBSv+U7/G6BnCcDHJgXMUBBBf+C5lTHJ0dJ/gtFWOZhAN9Q8dcZE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxUiAXLRG+RxLSmWkpUrDMjLD9eQznomPEgbFymVT/aOoeK+3gG
-	FYXZo8P96WkiiYozr3rw+VBtSEy8jR6kxNOeQhoOs13jayWhtKnjTA0W
-X-Gm-Gg: Acq92OGFd2UAwzTLewVjZvaHloDTacarryMuiwk2t0nOixXTWz9LiGPUxTIiUWcYWVV
-	Aw8jtKwcnp2KZOFIxJc9Fe0531g0Cs8oYRLwIAXyJ1oBn+9AjlvCFhXJlUMul8BGCYgrSDhOKRt
-	AXJUVfOBLjKmub6m+dULqtIne1gFgl04zQjF6EN4YMmx0SUW7F7XM3FgLWge9K82XFFd+FYsghE
-	F+jG23raX7HZOVZ2AfCHaA1xgywlrO++y1hd1HJCt2D3n8Cz4DKLLZ0yLN76hNFh/xBCUYBair4
-	FzXcwnYNIGy1VEPxxDRDpdB5mrLfLakeR2ytABVE7cQ8RSJNC3YRFF4YsQa6kfTu8v4EDnUqOpU
-	2HR24hmthU0aqHj154MM4n/f7yPZXWr5K6SFYa/KnLOwBhSxzRzlSa1sbiJ0Gv1fi11Oxa3OkJ4
-	GsDTU+2f0z/Ax5lRj9LUuNngiHNrp+v7WOipbQeHdEZNo2iwKCSIffALGdKvzc9KVwEfB5BE9rm
-	NVRO6x5n1KF+LlJY2jLfCEy2UVjZWWb5/FLnhuLwEvnYGowHQ==
-X-Received: by 2002:a05:600c:8b56:b0:48a:599a:3716 with SMTP id 5b1f17b1804b1-48fc9a45891mr1464025e9.23.1778612481673;
-        Tue, 12 May 2026 12:01:21 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fc8d1b100sm17867995e9.4.2026.05.12.12.01.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 12:01:21 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 12 May 2026 20:01:14 +0100
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Andrew Morton <akpm@linux-foundation.org>, 
-	Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v12 05/11] iio: core: add decimal value formatting into
- 64-bit value
-Message-ID: <b6wjjzv7wpyv3cpgftltu7sppttmrvrqxcs5b4gre5d7goknqd@vlhenvjct6la>
-References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
- <20260510-adf41513-iio-driver-v12-5-34af2ed2779f@analog.com>
- <agM6uzhdn7o8g9v5@ashevche-desk.local>
- <ql7smsqza7liupm7fhdts73cxsltrpxsqofu5ovzpxpwvcscuv@qigi3dwukk7k>
- <agNoKbcwT6_spC93@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L8bI+GCf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778612907; x=1810148907;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=2oRNzYLp2UtLjevt33P/GMy6EecRdItSX1iAaPpYIm4=;
+  b=L8bI+GCf3o+qUtXxXEFSrqs+PxXWIz/KEzoZfDKO6noFErNndS/ATuKz
+   rTyCImoUJ5a2wKe935fAPAjtLGKcr3qajOQLcDBndd6uiMtqTFlmNBO+j
+   O2rLJS8CMp6VabwwD54A/zclIiY9s6yJa443GKdwZliPz8gMgaJwvf94C
+   EPIo/wABqxvkSzBSR2dnhyiMkpYx+hoIvF2VjPnP/jXvUmv+hpoO/YCyb
+   s5zmxamWrO/LmKTWF5eateguaNFYRuzP40fkZ0rLhbdTwFa5J9UbLEOdg
+   cRIg7djpUDE2dA5kNXKHKjh0YXUXeP9OuY9h+Zfj1WSaRZssuS1pBsAOZ
+   A==;
+X-CSE-ConnectionGUID: 4FbAgkIpS5yNEWCyy8lk4A==
+X-CSE-MsgGUID: JlOm19VPREe4TGQUaF5ZoA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="67059359"
+X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
+   d="scan'208";a="67059359"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 12:08:26 -0700
+X-CSE-ConnectionGUID: Xg4bsBnpTA2oUKYGkf2taw==
+X-CSE-MsgGUID: oX/xv+ZbQQK46SFYMJYaew==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
+   d="scan'208";a="241868320"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.244])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 12:08:21 -0700
+Date: Tue, 12 May 2026 22:08:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
+	rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	David Laight <david.laight.linux@gmail.com>
+Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <agN6onIAwG1yn5p6@ashevche-desk.local>
+References: <agMvlS3-0wvGmBwh@ashevche-desk.local>
+ <dxjg2sdyxb7ieb4abmeyyye7qok6cczrxabpsjyjhcbehwoec3@sbbqoo4wmzre>
+ <agM8pWrM6j_XksvN@ashevche-desk.local>
+ <ur6brs3yjzyb4mtelabmcglxjltddqvjxtgl3lkdkmbjlkmnsq@bwd6rz7gided>
+ <CAHp75VeoH3yVfp8NWjKfc_df0VRLkyf_SK4e==-wJOEodVjW_A@mail.gmail.com>
+ <q4rmlkgecvztnvjg7b7wtqyvhdy7uxgaouvhae2mlsxaasasbf@dfakp4m5l5sl>
+ <agNfqiZpGZAM-x_H@ashevche-desk.local>
+ <ru2h3ip7qf6j54dlrij54nwp45uyq6m2e6zspt6v6eynpsagqq@eo5v3yparuhh>
+ <agNnfWZa9_NyLoWq@ashevche-desk.local>
+ <bc7mqfgll34vyaxdtvfssgypkhyx233wd4hxfzu32rddxnolaq@rd6c3z6yu6aq>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <agNoKbcwT6_spC93@ashevche-desk.local>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bc7mqfgll34vyaxdtvfssgypkhyx233wd4hxfzu32rddxnolaq@rd6c3z6yu6aq>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 26/05/12 08:49PM, Andy Shevchenko wrote:
-> On Tue, May 12, 2026 at 05:09:32PM +0100, Rodrigo Alencar wrote:
-> > On 26/05/12 05:35PM, Andy Shevchenko wrote:
-> > > On Sun, May 10, 2026 at 01:42:23PM +0100, Rodrigo Alencar via B4 Relay wrote:
+On Tue, May 12, 2026 at 07:15:17PM +0100, Rodrigo Alencar wrote:
+> On 26/05/12 08:46PM, Andy Shevchenko wrote:
+> > On Tue, May 12, 2026 at 06:26:12PM +0100, Rodrigo Alencar wrote:
+> > > On 26/05/12 08:13PM, Andy Shevchenko wrote:
+> > > > On Tue, May 12, 2026 at 05:35:59PM +0100, Rodrigo Alencar wrote:
+> > > > > On 26/05/12 06:21PM, Andy Shevchenko wrote:
+> > > > > > On Tue, May 12, 2026 at 6:11 PM Rodrigo Alencar
+> > > > > > <455.rodrigo.alencar@gmail.com> wrote:
+> > > > > > > On 26/05/12 05:43PM, Andy Shevchenko wrote:
+> > > > > > > > On Tue, May 12, 2026 at 03:12:24PM +0100, Rodrigo Alencar wrote:
+> > > > > > > > > On 26/05/12 04:48PM, Andy Shevchenko wrote:
+> > > > > > > > > > On Tue, May 12, 2026 at 02:21:14PM +0100, Rodrigo Alencar wrote:
+> > > > > > > > > > > On 26/05/12 04:12PM, Andy Shevchenko wrote:
+> > > > > > > > > > > > On Tue, May 12, 2026 at 12:39:53PM +0100, Jonathan Cameron wrote:
+> > > > > > > > > > > > > On Sun, 10 May 2026 13:42:20 +0100
+> > > > > > > > > > > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> > > > > > > > > > > > >
+> > > > > > > > > > > > > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+> > > > > > > > > > > > > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+> > > > > > > > > > > > > > precision). After the decimal point, digits beyond the specified scale
+> > > > > > > > > > > > > > are ignored.
+
+...
+
+> > > > > > > I think we are going in circles here and we could look at the code instead:
+> > > > > > > - integer parsing with _parse_integer()
+> > > > > > >         - overflow check and validation of the return value
+> > > > > > > - fractional parsing with _parse_integer_limit()
+> > > > > > >         - overflow check and validation of the return value
+> > > > > > 
+> > > > > > No, this is not fully true. That's what my whole point is about. The
+> > > > > > max_chars parameter limits the input check, then it skips an arbitrary
+> > > > > > number of digits and only *then* it checks for \n and \0. What will be
+> > > > > > the result of the
+> > > > > > 0.00000000000000000000000000000000423 in your case? Whatever scale you
+> > > > > > gave it will return 0 without checking on how many digits were
+> > > > > > supplied.
+> > > > > 
+> > > > > I suppose that is a valid input and 0 is the expected result there.
+> > > > > 
+> > > > > > All the same for 0.9999999999999999999999999999999000423. My
+> > > > > > point is that we should limit this by 19 digits.
+> > > > > 
+> > > > > why we need to limit by 19? Digits beyond the scale carry no value...
+> > > > 
+> > > > ...only if they are all 0:s.
 > > > 
-> > > > Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
-> > > > defines the representation of fixed decimal point values into a single
-> > > > 64-bit number. This new format increases the range of represented values,
-> > > > allowing for integer parts greater than 2^32, as bits are not "wasted"
-> > > > in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
-> > > > IIO_VAL_INT_PLUS_NANO. Helpers are created to compose and decompose 64-bit
-> > > > decimals into integer values used in IIO formatting interfaces, which
-> > > > creates consistency and avoid error-prone manual assignments when using
-> > > > wordpart macros. When doing the parsing, kstrtodec64() is used with the
-> > > > scale defined by the specific decimal format type.
-> 
-> ...
-> 
-> > > > +		tmp2 = div64_s64_rem(iio_val_s64_from_array(vals),
-> > > > +				     int_pow(10, scale), &frac);
-> > > > +		if (tmp2 == 0 && frac < 0)
-> > > > +			return sysfs_emit_at(buf, offset, "-0.%0*lld", scale,
-> > > > +					     abs(frac));
-> > > > +		else
-> > > > +			return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2,
-> > > > +					     scale, abs(frac));
-> > > > +	}
-> > > 
-> > > What about
-> > > 
-> > > 		/* Print a leading '-' for negative fractions */
-> > > 		if (tmp2 == 0 && frac < 0)
-> > > 			offset += sysfs_emit_at(buf, offset, "-");
-> > > 
-> > > 		return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2, scale, abs(frac));
-> > > 
-> > > Also note this won't work with the frac that are == S64_MIN. It's UB (undefined
-> > > behaviour), see the comment at abs() implementation. Maybe a time to add abs()
-> > > corner case tests...
+> > > I thought your concern was on input length.
 > > 
-> > frac cannot be S64_MIN, it is always and remainder of a power of 10 modulus.
+> > One of, since I think you rose the topic of leading 0:s for integers and
+> > I agreed with that which makes sense to have mirrored in fractional part.
+> > 
+> > > > > just like leading zeros to the integer part (which is also accepted by
+> > > > > kstrtoull() when parsing with base 10). Not sure why this is invalid input.
+> > > > 
+> > > > See above. I agree on truncating trailing 0:s as it's done for leading ones
+> > > > in integer part, but if any of the digit behind 19th is not 0, it's an overflow
+> > > > condition (or bad input, depending how strict the rules are).
+> > > 
+> > > stating in the documentation that digits beyond the scale are ignored is not
+> > > enough?
+> > 
+> > It's in case we are not for kstrto*() family. My understanding that kstrto*()
+> > use strict rules on the input in overflow check.
+> > 
+> > > > > > On top of that, what about -0.9(19 times) ? the fraction should be u64
+> > > > > > in this case and it's fine. The sign applies to the combined value.
+> > > > > 
+> > > > > yes, range for signed values are verified later.
+> > > > 
+> > > > > > >         - extra scaling and truncation happening outside if needed.
+> > > > > > 
+> > > > > > Right, but the given input may be way too long and still needs more validation.
+> > > > > 
+> > > > > What is the problem with a long input of digits?
+> > > > > C compiler does not complain about this when parsing a float value,
+> > > > > python does not
+> > > > > complain about this when parsing floats or decimals either.
+> > > > 
+> > > > Because there is an exponent limit and for double it's something like 1e307
+> > > > IIRC, meaning, try 1024 digits to be sure.
+> > > > 
+> > > > Python most likely uses the library for big numbers, you can't compare it at all with this.
+> > > 
+> > > You would be fine if the truncation loop:
+> > > 
+> > > while (isdigit(*s)) /* truncate */
+> > > 	s++;
+> > > 
+> > > is bounded by (19-scale) iteration count? or it should keep iterating if those are zero?
+> > 
+> > Ideally both.
+> > 
+> > We don't care about the digits in the range of 19-scale and skip all 0:s after
+> > that.
+> > 
+> > 	/* truncate unrequired digits within type limit, i.e. 19 decimal digits */
+> > 	while (isdigit(*s) && "(s - pos_of_dot) is less than 19")
+> > 		s++;
+> > 	while (s == '0') /* truncate trailing 0:s, it's not a bad input nor overflow */
+> > 		s++;
 > 
-> Okay, but what about input of -0.9999999999999999999 ? Will it fit the signed
-> frac type?
+> We could have agreed on something like that since the beginning!
 
-For the scales considered here it would not be a problem (*_PICO = 12 + *_BASE).
-For the max scale of 19 it would probably fail the parsing of the fractional part
-with overflow.
- 
+Yes, but who knew that we go to have this agreement?
+
+> And I think that changing the logic to something like this would not change a
+> thing on the kind of inputs we expect, it will just complicate the code.
+> I suppose that kind of kstrto*() rules were never stated anywhere.
+> 
+>                            |> 20th digit 
+> Also, 0.00000000000000000001 still sounds like a valid decimal number to me, even
+> though it is going to be parsed as 0!
+
+Hmm... It would mean that testing for 19th/20th digits is not enough... :-(
+
+> > 
+> > 	// Now if it's not \0 nor \n and
+> > 	//	a) still a digit consider either overflow or bad input,
+> > 	//	b) if not a digit, consider as bad input.
+> > 
+> > In a) I tend to be on par with the other k*() and consider that as overflow.
+> > 
+> > > is that the only concern? Again, the usage of _parse_integer_limit(s, 10, &_frac, scale)
+> > > avoids a 64-bit division when checking the rv.
+> > 
+> > I'm not against usage of _parse_integer_limit(), I'm for stricter rules on the input.
+> > With the above addressed, I have no more concerns.
+> 
+> Thanks! I will proceed with the requested adjustments.
+
+But it seems it's not enough as you pointed out!
+
+So the biggest fraction we may consume in 64-bit (unsigned) value is
+0.18446744073709551615. If we go with one digit less, the whole value
+can be
+
+In [3]: hex(9999999999999999999)
+Out[3]: '0x8ac7230489e7ffff'
+
+So, I don't know how we are supposed to represent values between
+-0.9223372036854775808
+-0.9999999999999999999
+in a signed type as they have bit 63 set.
+
+The easiest way out is to limit scale to 18 (but still accept 19th digit, and
+with check for overflow even 20th up to 0.18446744073709551615). This will need
+to run _parse_integer_limit() twice (with given scale and with 20).
+
+Can you add the respective test cases and see what is currently going on with
+them?
+
 -- 
-Kind regards,
+With Best Regards,
+Andy Shevchenko
 
-Rodrigo Alencar
+
