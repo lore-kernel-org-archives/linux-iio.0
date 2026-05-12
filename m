@@ -1,155 +1,204 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010030.outbound.protection.outlook.com [52.101.46.30])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D62552848BE;
-	Tue, 12 May 2026 14:25:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.30
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778595913; cv=fail; b=SaRfZMrhn1gYUd7TzMIbSonYubBClIL5WWWCUncJXUT8aWIehHZuMmZaSPWsaG5gzM+acamfGTMUp+6l4rHfMGjONoqwDEnqdDfiacRID0xEb5ZujlfX0LIxSIlkn6gxG3Jn5orjl4+T7g0YGFz0mOiibFoV+MH/MuWP3XV+DyY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778595913; c=relaxed/simple;
-	bh=0wsvA+Z9MedfiSpxGDh+LTXeTyjKodaezGDbgAbeF3c=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=e2Bc/5aT1c94BiAWjgvp93Kyfmx9yR57znqUf8+KzsxCgJd2gIsc7tt3YDppwOIMhf36qX0r4V1Ns460ppJkQKwasSULUWUy5zgmVmZAdLXr7tOO+uyP/GRDLtOSPzP3kquvlPslh8JLi0IGIoTEeCtPIbzqI8sJDaQSKhOrBL0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=2hEFa7Me; arc=fail smtp.client-ip=52.101.46.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A31F33AFAF4;
+	Tue, 12 May 2026 14:26:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778595969; cv=none; b=hs7Sku6G1hmxANca6zyhos/XjcWeIIdZI/j6eaBpIrGicQmQTVYUraorxPSUwiHG+WhURjk7LTs590D5N7QPcquk2udnoQe4TN0ousS8UjONqLST0nyyHfVyNLEteLOWymCcfSpeOY37EDZkRA5EPH2Uu9TL4KqwvwRaRCQp6nE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778595969; c=relaxed/simple;
+	bh=EYtJNTGix1ffkXhf5VB49qJE891RKBx7m+VdsYOjJ5g=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=iW6fI0S/qkB2v1wAelrYnIUy1U42u6ileocyBbCDOw/lveCuBXJfpRj3+GaYtR352fjbxemqtYHlYFhh9hZLWN/dXufWC9t4QypHTUielS7FLmJdqNHwlfNASxMltvBXsomaVSM9rjgC2mzbCF/rImTlYOweRruuDEC8Rrv1Ccw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OZJtKp32; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="2hEFa7Me"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=maOC1ZdAhJLq9NizlmwB8h269MB2filRZaCGUgIpRE7FYjwPcJXCnorvCb20qks5lMmHyV7KkbV2aE8gTgEHx/kPAU0lk4eXZtuNiOohRxIg6ubRfKaViwsV+YxMhIAkqDi4ZfCeHR/3JsL6cQ6xk8I4ZwafYsxulOfhK3BYsXz00AlSDIgzywKTO6+GCuKi3YwPmeeTagusUaFcqinT9brLZ9jGGhVOwpvEBwdotPz4IC4ZUKkCmJzZ+pU+YQEaql6NZSH02ffJB3el0G7ZRex9z4DM+UuoyWgpXaf7YmGpOkwOQ9AMLM4IXXwyaarOEtSyQau0KOmJG4EUlTH92g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3nv/s3JGwdaVoEwZ6HeV6M3lLqapj0ZAu62VClmSSXw=;
- b=wqlNsX2vIC+J9ug/4XkhWqnFuxk3hFcfoYZ2hknV63dAhYgf08MdUrsh52vn1zpZsoh2BdyKErHD1ieAXo4eL5D7vm0Gkzi8ie8BZRP52nEWYzJJc87MIzCUVYqOiDFMP0U7sc6ib+h75jMHYH1CY1N5vuIINiuQ6dRVuD6yBkpg7oVaMFIpFAZ3elK5w4t8YC+ZFf9gUkAZN82hV1U0Gxfsrft6PvjZdYkULpVmcInPEztcj93tQxOrylLceJ8GHQS6M7UIMwaYAew0G7Zsj8+3IKc7JVA9yfJfG0lua1Vh45EiLPnHCRnFFFjAQ31rzq0u6zFe7m8SKparfsTJ2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3nv/s3JGwdaVoEwZ6HeV6M3lLqapj0ZAu62VClmSSXw=;
- b=2hEFa7MeU25ToTPWnKVYP5te1sSM00MtTuN30lCuZ7dy47eh0sF5IFgh03YUgqmfEfEfyNNk2LyDt2babTbWWn+pynsGMjY9cd8C4zN6mALOIbvfI4bd0LyKQ7tmjjEbxRppQptJ0QQv01lJUBTKjGgiRCWlVrkVBq7Mk1qED/Y=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by DS0PR12MB6486.namprd12.prod.outlook.com (2603:10b6:8:c5::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.23; Tue, 12 May
- 2026 14:25:07 +0000
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.20.9891.021; Tue, 12 May 2026
- 14:25:07 +0000
-Message-ID: <02ae12fd-2a70-40fb-9c29-6b9b572e5119@amd.com>
-Date: Tue, 12 May 2026 15:25:04 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/3] iio: adc: xilinx-ams: use guard(mutex) for
- automatic locking
-To: Guilherme Ivo Bozi <guilherme.bozi@usp.br>,
- Conall O'Griofa <conall.ogriofa@amd.com>, Jonathan Cameron
- <jic23@kernel.org>, Michal Simek <michal.simek@amd.com>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>
-References: <20260414224245.8493-1-guilherme.bozi@usp.br>
- <20260414224245.8493-3-guilherme.bozi@usp.br>
-Content-Language: en-US
-From: Salih Erim <salih.erim@amd.com>
-In-Reply-To: <20260414224245.8493-3-guilherme.bozi@usp.br>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P265CA0068.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:2af::22) To IA1PR12MB7736.namprd12.prod.outlook.com
- (2603:10b6:208:420::15)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OZJtKp32"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9FC5C2BCB0;
+	Tue, 12 May 2026 14:26:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778595969;
+	bh=EYtJNTGix1ffkXhf5VB49qJE891RKBx7m+VdsYOjJ5g=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=OZJtKp32SVhouSjVafhoijb7P1hcoobnsRCtZuCzMcVM/sTwfzPukPokjzzXOhvpA
+	 ZEboM70Q5BVh4QtAeRNhsFIvTl5i64nMp2SELQIkHjjwDswHFOt9ngkQz92Jg+XzgT
+	 vjz8fDA3H0BErMUXhB1CsygyOxSURsPnWJv9Gqfxzey/DAI/xNkeSsmMhkRVYHk8p1
+	 8AEPgTDmEAgiAUNzVhQb+pQpBMd+fFD7bhdMaq8p6tjBnsJDZtULTNwUYY1kGdZMyp
+	 rKPmrhnpwLwiQYqEIsjayIFaK1/TYJbZ72cDfuKHlmpdd/tkHNsM52dP67Zb+7iINP
+	 qylmSwQCaEowA==
+Date: Tue, 12 May 2026 15:26:00 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Alexander Koch <mail@alexanderkoch.net>, Michael Hornung
+ <mhornung.linux@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 09/10] iio: light: opt3001: switch driver to managed
+ resources
+Message-ID: <20260512152600.764ff7c7@jic23-huawei>
+In-Reply-To: <20260512-opt3001-cleanup-v2-9-8018cf3a8a0a@gmail.com>
+References: <20260512-opt3001-cleanup-v2-0-8018cf3a8a0a@gmail.com>
+	<20260512-opt3001-cleanup-v2-9-8018cf3a8a0a@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|DS0PR12MB6486:EE_
-X-MS-Office365-Filtering-Correlation-Id: 024ddb9b-f68f-4161-3ab8-08deb0324462
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|366016|11063799003|56012099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	jiOniOvjt23ktL1r061AaJRlnebkuoczkh03SU4JHlhvUaCqmdKkzURK2vGCQMkSQbpNlvArHsT/+D71aIuSRHGdc/uh+2C5bRMC0+TJyujbDbhFIUdJa9QFGdox+Iz4N4lAiGqDUBFGYeYDHhOSQoSoX3UFHaYZ2EjqLuo8BmwSnJkSwGMwLuS0qst6pgnFIZuOURweB/l6ntU9uKkEEn72gJu5gAFAUxCKkmgx0p4Pq34WaRrB+PEymbNuqbBj3AG8AXhvh3utu9kFs+yCSmyvUmV81aU+xVxK12eg+GXE5qELkWLd1B+kyerdkCxxaRCqwQYhL071v+y0A4ZDRltcYv3WG6V+m5lorrFMFrZot6HObAymG1EXfa5M9JE7c1bxg/LQFn4L4hfxVrIrQXS5kS4xADBHuqzqAFMcvHVKCHpuj8oZKlp5XiXkhWrTpdZPF9sDoiEPxXdF42PAf8qw6Nfh0l4zNRWpHhPKD/R3m0nKWRtO/VdE1sGMIo7dRuqoYwD7O/2zdEY9OfxtWqSHXn3g+CMoxrrV8dcr5BgjJjh1ajr/4jcrkqN/JKrqCbYJ/zCFLaCj41hPhM7qBJMKIt64xg7ndjYTcpfFbMFuzjnNPH8bu+ic4PZ0AUs7j3zC7RjKWsgxxGUpBP0/21Ge3W7cDihZ6O435y8k3ODh5JuqwtJ8aeLRLxePq8BF
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(11063799003)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RlNDVE1mSkl0ZnJIdTN1d2psK040YVFRRFdIaVVhM0d2T2E1TSthTHFaWnpP?=
- =?utf-8?B?ZGlrOGhqWkw5a0o5d3NudEt0SHV4QjMza05zQXBVbTBvK3hFTW9iNEtZZEVT?=
- =?utf-8?B?WHZ0cUZVOERLWE45bkllU21VcGNIbmt2cUpmMGUvUnlDZCs2TTRUQWdOUm9l?=
- =?utf-8?B?Zi9IZFdYRTR1aUdZRldXc0NKaDUzZ2t4UGp3UlVQMm5NK2x4OUYrbzFsZjVC?=
- =?utf-8?B?YUJPWDZLOXBIVENob1EveW1kaFBERXRJMmdJdG8vakM5dDBBeWpNYnpZY2dy?=
- =?utf-8?B?UUpNbkhUWUZySjkxYXZUNGlWVDVFbzk4RCt1eHFGSnhMR0llNGk0VHl1N0NC?=
- =?utf-8?B?WkU4TzlZOCt5bzNvZzEvT1FvVVpMWVFDeUVsa0FIMFl4WWh1ZlBJb25MeFg3?=
- =?utf-8?B?VjlIOUFTc0RIUDBrTUViRllyemVUeFNOS3F6TTg3UHFGdWkrMWlrYm5ZR0ZI?=
- =?utf-8?B?ZWdNd2QwZFoxMnl6TmVlZXA4Y3hCb2NMM1I4dHRESmE5OXVBK256SVdJUGU5?=
- =?utf-8?B?bS8vcng3Um5HMGVGekxmR3JkUWFCR1gzT0VPNFlmRk4vd2Q5c1NBTzhYVGdI?=
- =?utf-8?B?MDluNjUrTy8zMGNKNjM2UkdaU3ArNlRnd2FmVUFRdW54SnVpUStrSUh1QUkr?=
- =?utf-8?B?TG9lM1ZlcXNnN1pPelgrcjJPTitya2hQS3hvVVVvNGo4ZG5vN0NLL2s4UlVM?=
- =?utf-8?B?UnRwaUQxcGdVUnRHRG16aTcvcWdDbmdITTdGR1c5aG5LWFQzU2RtT1UyV3A4?=
- =?utf-8?B?bEY0Rkl5TGZxZUFEVW43WDhOUjlwWmtzeThsWlJjVndJVVJURk9HK3RXZlp5?=
- =?utf-8?B?LzdWUzBSeWpFQmI4NDEydERQSHlPYnU2ZGhGcEw3ZmxRbHRHdm1RVms4dE5B?=
- =?utf-8?B?d1NwVTVSMVpSZXpuL2t0Mlg0SzVDSlVsaS9oWW9nRGE2dk9EMzNtbXBUSDFC?=
- =?utf-8?B?Rk9qUk9TbFR1Vi9ZUkRIQzRLN1FFQ3VheExGdXcwbWhkMmVTaThnTmQ0MFpB?=
- =?utf-8?B?U1pxbWdlUEhwSll3enoyRWw4NGtibFlYdU9oQy9YU05zNVhwellOTUN4aWFl?=
- =?utf-8?B?ZTZ4VUQwRndjQVd2TDBCSEtRSU5QTFpEZGk1UVhlWkNuYlVHVEhodUkwOVE3?=
- =?utf-8?B?TEZTTDQwT0J2OExNUWxFOHVIbGpwSkdiemlrMkl6YWpLK1BBa2xBM2FvcWhw?=
- =?utf-8?B?MWpFOVpPUEhTa1dsOHFGNnlZZHpJb0FwdjgyeUloYWVYYXpQZFBSVGRtOGw5?=
- =?utf-8?B?V1QrOTJHVUlQaVhwcDN6NTRhOEplNzYvTTZJM2RVUDkzSHZ5c2t4TjVQd3c4?=
- =?utf-8?B?cC9ITm13cnpXLytWNFkveGlPVkNnS29BU21zSWJ4L2MxSHdja0ZyalJ4eXox?=
- =?utf-8?B?ZDlrb1U5UklJK1BGVEhhZXFPM2RWYmFmUDVoUHRBbUhTVG5zTDA2ZCtVRCt3?=
- =?utf-8?B?NUlxNEFNd1YzeiszWWlKZkM4ZTNrRXFyb1UvbXNzazk2MkhPY2hTTmw4dUpN?=
- =?utf-8?B?ZUR2UFRpeWpWZmI0bCtnREkxZStmeTBXaFFWQmZqZmtrVlIrRzg0ZFlhRVA4?=
- =?utf-8?B?S1JSRTNBSUo0cGJQRzRWMFFWU2pHRU1pSGNkUGNtcDJzR3hTcjJFMzRac2Jz?=
- =?utf-8?B?WUJxLytqUDhXcFBBbzllZy9WdDg2aWJiak1vUWQwZzVLdVVER1lXYWZ6UlVW?=
- =?utf-8?B?MEpMeUJESUNGVHMzUnFFN0RFTDg2c1laU28wdlV4aVdRZHBUTi9qZm9BZzlk?=
- =?utf-8?B?UXdqMHBmVnBPT0t2U2R3QW1JU3RCM29SVWdhdm4va3ZTanZLM3lXRVA3Yllj?=
- =?utf-8?B?MC9xUStjRi9CUXFBRkVvYy9POWxJcDdlck02NkJWTVdZMGNBRUV3ZlZqNFhV?=
- =?utf-8?B?UFQ5bzNlZWpnWnJKY3FrN0wzZE1WY244blhtd2ZIdStUcTJlN3F5Y09JcVJo?=
- =?utf-8?B?dU5oajFjY2Q5Y3JleER6dWFjQnVlUHl6Q0JacmdmaTZacWZOSlJsUGlNMkFX?=
- =?utf-8?B?UFM4VnMxU1RMOWhJYVBzZ3RyQW1YTG1yUTJqVGMyMVkxUU9aVXNHS2Z4bUtL?=
- =?utf-8?B?UjFqZmkxbHhDdWg0WWY1dkNKLzBPblNwOGRBYUhqblc2WDUwL3NhMTNEMzFr?=
- =?utf-8?B?OG03QWtOVk9iUzIybVNUZDBjRUlvSlVtaHkwVHpqK3pSZGJDTjhxaERGc0F0?=
- =?utf-8?B?L05JUERwTEw5UWlud0cxZkx0QVplQUVqNHptNE42WEpjNTZiay9rNml2WDFs?=
- =?utf-8?B?SUF5WCtjOE1jNkhJRFI4bitvaVI5S0p4aG5UQU9UMGl3dFA5Q0VWOFN2U2t3?=
- =?utf-8?Q?peE73bZ5qNSJ+723Fg?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 024ddb9b-f68f-4161-3ab8-08deb0324462
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2026 14:25:07.7515
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZQbLcw57LDRBIIxnIDd51AmzCaTnRfXwFS4CScU2+GxBIlPvu2F6JRmt51sPYGyW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6486
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi,
+On Tue, 12 May 2026 12:57:29 +0200
+Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
 
-On 4/14/2026 11:40 PM, Guilherme Ivo Bozi wrote:
-> Replace open-coded mutex_lock()/mutex_unlock() pairs with
-> guard(mutex) to simplify locking and ensure proper unlock on
-> all control flow paths.
+> From: Joshua Crofts <joshua.crofts1@gmail.com>
 > 
-> This removes explicit unlock handling, reduces boilerplate,
-> and avoids potential mistakes in error paths while keeping
-> the behavior unchanged.
+> Move the driver to use devm_* functions to automate resource
+> management and simplify error handling. This also allows removal
+> of the opt3001_remove() function.
 > 
-> Signed-off-by: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Some trivial stuff inline.  I'll probably wait for sashiko to catch up with
+it's backlog and get to this one.  If nothing comes up there or in other reviews
+I'm fine tweaking the stuff below whilst applying the series.
+
+Jonathan
+
 > ---
->   drivers/iio/adc/xilinx-ams.c | 24 ++++++++----------------
->   1 file changed, 8 insertions(+), 16 deletions(-)
+>  drivers/iio/light/opt3001.c | 75 +++++++++++++++++++++++----------------------
+>  1 file changed, 39 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+> index 39ea60c0af2c1ec7473d49b73778cac1f9bb6086..1319e5941b66bd82e4dc2badf5ea27cacbcfd54a 100644
+> --- a/drivers/iio/light/opt3001.c
+> +++ b/drivers/iio/light/opt3001.c
+> @@ -702,6 +702,31 @@ static int opt3001_read_id(struct opt3001 *opt)
+>  	return 0;
+>  }
+>  
+> +static void opt3001_power_off(void *data)
+> +{
+> +	struct opt3001 *opt = data;
+> +	struct i2c_client *client = opt->client;
+> +	struct device *dev = opt->dev;
+> +
+Really trivial but why the blank line here?  If nothing else comes up
+I might bother dropping it whilst picking up the series.
 
-Same indentation issue -- spaces instead of tabs on all new lines.
+> +	int ret;
+> +	u16 reg;
+Obviously not a change you made - but none the less reg is a bad name.
+It is often used for register address rather than value.  So better as
+regval.  Again maybe I'll tweak this if nothing comes up but if you
+do another version for other reasons nice to change it.
 
-Salih
+> +
+> +	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read register %02x\n",
+> +			OPT3001_CONFIGURATION);
+> +		return;
+> +	}
+> +
+> +	reg = ret;
+> +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+> +
+> +	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+> +	if (ret < 0)
+> +		dev_err(dev, "failed to write to register %02x\n",
+> +			OPT3001_CONFIGURATION);
+> +}
+> +
+>  static int opt3001_configure(struct opt3001 *opt)
+>  {
+>  	struct i2c_client *client = opt->client;
+> @@ -740,6 +765,11 @@ static int opt3001_configure(struct opt3001 *opt)
+>  		return dev_err_probe(dev, ret, "failed to write register %02x\n",
+>  				     OPT3001_CONFIGURATION);
+>  
+> +	ret = devm_add_action_or_reset(dev, opt3001_power_off, opt);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to register power off function\n");
+> +
+>  	ret = i2c_smbus_read_word_swapped(client, OPT3001_LOW_LIMIT);
+>  	if (ret < 0)
+>  		return dev_err_probe(dev, ret, "failed to read register %02x\n",
+> @@ -834,7 +864,10 @@ static int opt3001_probe(struct i2c_client *client)
+>  	opt->dev = dev;
+>  	opt->chip_info = i2c_get_match_data(client);
+>  
+> -	mutex_init(&opt->lock);
+> +	ret = devm_mutex_init(dev, &opt->lock);
+> +	if (ret)
+> +		return ret;
+> +
+>  	init_waitqueue_head(&opt->result_ready_queue);
+>  	i2c_set_clientdata(client, iio);
+>  
+> @@ -856,13 +889,12 @@ static int opt3001_probe(struct i2c_client *client)
+>  
+>  	/* Make use of INT pin only if valid IRQ no. is given */
+>  	if (irq > 0) {
+> -		ret = request_threaded_irq(irq, NULL, opt3001_irq,
+> -					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> -					   "opt3001", iio);
+> +		ret = devm_request_threaded_irq(dev, irq, NULL, opt3001_irq,
+> +						IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> +						"opt3001", iio);
+>  		if (ret)
+> -			return dev_err_probe(dev, ret,
+> -					     "failed to request IRQ #%d\n",
+> -					     irq);
+> +			return ret;
+> +
+>  		opt->use_irq = true;
+>  	} else {
+>  		dev_dbg(dev, "enabling interrupt-less operation\n");
+> @@ -876,34 +908,6 @@ static int opt3001_probe(struct i2c_client *client)
+>  	return 0;
+>  }
+>  
+> -static void opt3001_remove(struct i2c_client *client)
+> -{
+> -	struct iio_dev *iio = i2c_get_clientdata(client);
+> -	struct opt3001 *opt = iio_priv(iio);
+> -	struct device *dev = opt->dev;
+> -	int ret;
+> -	u16 reg;
+> -
+> -	if (opt->use_irq)
+> -		free_irq(client->irq, iio);
+> -
+> -	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to read register %02x\n",
+> -			OPT3001_CONFIGURATION);
+> -		return;
+> -	}
+> -
+> -	reg = ret;
+> -	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+> -
+> -	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to write register %02x\n",
+> -			OPT3001_CONFIGURATION);
+> -	}
+> -}
+> -
+>  static const struct opt3001_chip_info opt3001_chip_information = {
+>  	.channels = &opt3001_channels,
+>  	.chan_type = IIO_LIGHT,
+> @@ -942,7 +946,6 @@ MODULE_DEVICE_TABLE(of, opt3001_of_match);
+>  
+>  static struct i2c_driver opt3001_driver = {
+>  	.probe = opt3001_probe,
+> -	.remove = opt3001_remove,
+>  	.id_table = opt3001_id,
+>  
+>  	.driver = {
+> 
+
