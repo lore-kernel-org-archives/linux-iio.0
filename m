@@ -1,178 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B2BB3B8128;
-	Tue, 12 May 2026 12:38:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BBF737DADF;
+	Tue, 12 May 2026 12:39:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778589496; cv=none; b=a2qCyhryykDWbwcKqHBCl7VRelvGMNWg6nz4dJ8fxzKbzcMy0shuARlOeKS8SrwGBCgF7LrOj3sasr2TemyPH/hjl7edTd4wA7EqNAgYaXgxbyeT5013PQV84CMw16FPGDNMYWO88AHthuGeagT4Twnjj3I5B39p6eyP+RBV1bk=
+	t=1778589580; cv=none; b=uljSq/bYuiAQakiLTKgSb2oQrZqNkDYjtzUWY0eXe3cVRGnYnJHjqXdIHm/nevxEoeLB54DKexkuQmhrAuhilxWlsM4izgZHbNgU+LgaWJtx9cCVxa8R8ERIkThGV4S0dPAoQZxSY5A7hXC8/TESxeao1kWWlGLbP5jtASAF0jg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778589496; c=relaxed/simple;
-	bh=CvcYX0aW+qbT8PxZMbz3l4WtmRd4Pj2jMjb2HPVhMh4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=e2CQDvUybb6r5DZBv2PZZk89fXsrfvFuCZ08zBOtYUup38eIVoVt41nfwmmbh/CtTJsRE3xZFQbJSuMCTcQk/q9lCbO7zjwBbMoRKjGDUA34xF40WCQjxOLFQ74u7H0jDPVTJBuJqBQmL7D1RFr2kvLgcyoQU9q5QDsH42qsFIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=USRdppdm; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778589580; c=relaxed/simple;
+	bh=04sY2tHchrSKRsoEFOHsFW9xROhO5HAH3Nb5i3wcoA0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=etVVCcODP72iwdhnVHHk9W3k1zZPYUNTqEbX5SLuaFstYxdtwwxCLLiGiWoK39DT0TgFdOf2yxRPVAgE0FvjVevh7SE5/7D6AaAy6NLgR8WGXU4gbANFi4JiL16xgjfkOSW82EYH3Pg8XV4WCFwJmdzfLNoRcQZ2TSxumgE0xAQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TktNMgEy; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="USRdppdm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68285C2BCB0;
-	Tue, 12 May 2026 12:38:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778589495;
-	bh=CvcYX0aW+qbT8PxZMbz3l4WtmRd4Pj2jMjb2HPVhMh4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=USRdppdmI3rJa1UGbq8Cx+GR2IiXoqtYLNrPZJ462Wnlm57s2g7ZiIFkZrt55I769
-	 tZ0gvp6t+x+j0zx8qNSzbDcLgyZww86wC4jWeyIXisIWINblVXHUAZdUWet+wzE5Mp
-	 ai4FRmZQXu42nAWJk4aY0OwvgG1XvM4LbCfU0Z0W59Lszz1dAPG2zXww/jN/DtHD2x
-	 Edaq2mo67lWtkXXiZ1LIhAji/zKt28bxqq43VJe3m3dECv2G3yxEoUXopsRjtb5Vpp
-	 pQykrSq0cJs4GX2d42eGwkynvIo/BjX208+Vvc8BFgHvLiEZphCGNKzfquldrtb3cx
-	 EXJPsZVJnBVKg==
-Date: Tue, 12 May 2026 13:38:06 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: ak@it-klinger.de, andriy.shevchenko@linux.intel.com,
- dlechner@baylibre.com, nuno.sa@analog.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 v8 11/11] iio: adc: hx711: add support for HX710B
-Message-ID: <20260512133806.74c566e0@jic23-huawei>
-In-Reply-To: <20260511174342.123820-12-piyushpatle228@gmail.com>
-References: <20260511174342.123820-1-piyushpatle228@gmail.com>
-	<20260511174342.123820-12-piyushpatle228@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TktNMgEy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778589577; x=1810125577;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=04sY2tHchrSKRsoEFOHsFW9xROhO5HAH3Nb5i3wcoA0=;
+  b=TktNMgEyoCqzom1lzLkZHrRLQaBgLWBHzFr5QgkZYql3JZuMPmAxHQe9
+   GZSEarzQvekGDz4AFmJHZwxCVc2fgGVEcJOWpl0014RwWRfWqi+Hk8gjU
+   osE12dMBq0h3oJF7pHrRg1XcD1Ta29I0emzKDOc4M8r7Kj3VJZ8QlW7L6
+   vQAiPW/BHoSQ6OXluUmHXow4nsWppXdLBnJynSCteA+mYC6I1nyZTKiXO
+   wqKn9CQ3TkI+1AQ/2PWGJt6qp8YL3CTA5mRkJ6UbYvEI/mbYSNChvJIuf
+   ZGhhToZ7NJDji1u/KXeJQ4b4i8cIfy1zrDnuOdCHmvkbUwDPq19PmH2HZ
+   A==;
+X-CSE-ConnectionGUID: COyR8dcDQsajwJCFbv6YDg==
+X-CSE-MsgGUID: S51z4Xn0T9qCG30k+SxoPw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="96920436"
+X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
+   d="scan'208";a="96920436"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 05:39:31 -0700
+X-CSE-ConnectionGUID: 8zWfj0BdSLuiOhq9dEemhg==
+X-CSE-MsgGUID: 3FmTHLdVSZ+e7830PI/v4g==
+X-ExtLoop1: 1
+Received: from gabaabhi-mobl2.amr.corp.intel.com (HELO [10.125.111.218]) ([10.125.111.218])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 05:39:29 -0700
+Message-ID: <5e1c5ec3b02bedef5e94f7482f83034389d1ee9b.camel@linux.intel.com>
+Subject: Re: [PATCH v3 2/9] iio: hid-sensors: cleanup codestyle warning
+From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>, jikos@kernel.org, 
+	jic23@kernel.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	sakari.ailus@linux.intel.com, linux-input@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Tue, 12 May 2026 05:39:27 -0700
+In-Reply-To: <20260509101040.791404-3-sanjayembedded@gmail.com>
+References: <20260509101040.791404-1-sanjayembedded@gmail.com>
+	 <20260509101040.791404-3-sanjayembedded@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-On Mon, 11 May 2026 23:13:36 +0530
-Piyush Patle <piyushpatle228@gmail.com> wrote:
+On Sat, 2026-05-09 at 15:40 +0530, Sanjay Chitroda wrote:
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+>=20
+> Reported by checkpatch:
+> FILE: drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>=20
+> WARNING: Missing a blank line after declarations
+>=20
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-> Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
-> interface but uses trailing PD_SCK pulses to select the active mode.
-> 
-> Model the HX710B with variant-specific channel tables and IIO info,
-> track the active channel across conversions, and use the fixed gain
-> value when computing scale.
-> 
-> Also update the adjacent Kconfig text, file header, and module
-> description so the driver text matches the newly supported variant.
-> 
-> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Hi Piyush,
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-A few things I'd missed that Sashiko mentioned.
-Note that most of what it calls out in v7 of this patch is wrong because
-of the whole active_scan_mask / timestamp bit being set or not thing.
-
-The channel representation is indeed odd and I think that bit needs
-a rethink unfortunately.  I'd failed to notice it wasn't just two different
-channels but instead is one physical set of inputs measured at different
-sampling rates.
-
-
-> @@ -403,16 +442,16 @@ static irqreturn_t hx711_trigger(int irq, void *p)
->  
->  	mutex_lock(&hx711_data->lock);
->  
-> -	memset(&hx711_data->buffer, 0, sizeof(hx711_data->buffer));
-> +	memset(hx711_data->buffer, 0, sizeof(hx711_data->buffer));
->  
->  	iio_for_each_active_channel(indio_dev, i) {
-> -		hx711_data->buffer.channel[j] =
-> +		hx711_data->buffer[j] =
->  			hx711_reset_read(hx711_data, &indio_dev->channels[i]);
-
-Sashiko pointed out (v7 review) that this can return an error. We should
-really be checking for negative values and if they occur don't push data
-to the buffer.  Given this is unlikely to happen except when the device
-is very broken, a rate limited dev_err is usual way to report this then
-carry on without calling iio_push_to_buffers_with_timestamp().
-
->  		j++;
->  	}
->  
-> -	iio_push_to_buffers_with_timestamp(indio_dev, &hx711_data->buffer,
-> -							pf->timestamp);
-> +	iio_push_to_buffers_with_timestamp(indio_dev, hx711_data->buffer,
-> +					   pf->timestamp);
->  
->  	mutex_unlock(&hx711_data->lock);
->  
-> @@ -463,6 +502,10 @@ static const struct iio_info hx711_iio_info = {
->  	.attrs			= &hx711_attribute_group,
->  };
-
-> +/*
-> + * HX710B channels (Table 3 in datasheet).
-> + * 25 pulses (1 trailing): differential input, 10 SPS -> channel 0
-> + * 26 pulses (2 trailing): DVDD-AVDD supply monitor, 40 SPS -> channel 2
-> + * 27 pulses (3 trailing): differential input, 40 SPS -> channel 3
-
-I'd missed this previously but sashiko raised a question on it.
-Why are we representing the same physical input channel as two different IIO channels
-based only on the sampling rate?  That doesn't seem to make a lot of sense.
-Should be one channel with a sampling_frequency control.
-
-
-> + * .address stores the trailing pulse count for hx711_set_hx710b_channel().
-> + * Channel 2 is used for the supply monitor to avoid aliasing the
-> + * channel2 terminal of the first differential pair.
-> + */
-> +static const struct iio_chan_spec hx710b_chan_spec[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.differential = 1,
-> +		.channel = 0,
-> +		.channel2 = 1,
-> +		.indexed = 1,
-> +		.address = 1,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.channel = 2,
-> +		.indexed = 1,
-> +		.address = 2,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 1,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.differential = 1,
-> +		.channel = 3,
-> +		.channel2 = 4,
-> +		.indexed = 1,
-> +		.address = 3,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 2,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +};
-
+> ---
+> =C2=A0drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 3 +++
+> =C2=A01 file changed, 3 insertions(+)
+>=20
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> index 28d050b45c74..98fadc61a68a 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> @@ -313,7 +313,9 @@ static int __maybe_unused
+> hid_sensor_resume(struct device *dev)
+> =C2=A0{
+> =C2=A0	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
+> =C2=A0	struct hid_sensor_common *attrb =3D
+> iio_device_get_drvdata(indio_dev);
+> +
+> =C2=A0	schedule_work(&attrb->work);
+> +
+> =C2=A0	return 0;
+> =C2=A0}
+> =C2=A0
+> @@ -321,6 +323,7 @@ static int __maybe_unused
+> hid_sensor_runtime_resume(struct device *dev)
+> =C2=A0{
+> =C2=A0	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
+> =C2=A0	struct hid_sensor_common *attrb =3D
+> iio_device_get_drvdata(indio_dev);
+> +
+> =C2=A0	return _hid_sensor_power_state(attrb, true);
+> =C2=A0}
+> =C2=A0
