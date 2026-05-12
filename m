@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32B613839B0;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DAC03839B9;
 	Tue, 12 May 2026 10:57:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778583473; cv=none; b=K/GDz4s9PiBRYVLQG+YeAPAgL1zYkqNJLpOxiMSRajk1E4CwTIsWCr0FR4t7N8izU1Xxtq9Gl0qLgq1PJpQfX1PHTgnh6DIvxgUzYLNd8uielHcBRqkS2vJPoPuSnsGefjQJJMFUUHlodAkU94UdV/kx45Ju7EPJM6Jcl8z4p94=
+	t=1778583473; cv=none; b=h/3y/O/6isvEqk0/vIKpU5r/QxuQho3A6x82IVhUG+0ueMTIz7YdNh4r7V2wDR7olHubZlAA1a+xsHFpC15OKYFrell+q1JKHPFb4zzxpxxxzWhF1qmrooA1gFkt0GBbjRcetJLD4Tt4neUQNOqvrDBM5sgYJS5a7iUaaW//SWI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778583473; c=relaxed/simple;
-	bh=6rT0wjV5Mp5NJt3Q/yrwp0wtVx6Rtz1rqHLINeyPuxQ=;
+	bh=39wWtrgo0RAPyJym1LAUfomYkJ3GOE1+Fm/W1AN3sM0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=k2j61av5qrm3i/+gdwBKRmdbsTT98j4Ze2h8zPnextC7ZO0UbmFx/YB97FhfY7Txpf6M5tLy4FV/rfvYdQOJjR/XxPSPG4/NEwwbv0uU+bIOVAWYjb8+AH4wzeQzW+SKgj6Ybulj1sXrsyiGMmKDZdUY5xutgT+v4dnLkH8Lnlc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jt2Y0lid; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=g5sF1rPZZZNdGLsO20fkYX0mNX87aercS9iARa0DTk4XAfRqxCTq5Fj5s+NMVwQDHtp30DEHo6gWvXKpKhwpvC0LBlLoa4En6J7fKOFyvtvsjQ1DcSDzcKK1sFLkamlOmMN44ZYNr0O5BmFLwBMF4tkPmEKC+vzjHFYllYrQOtA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D8D2PnrU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jt2Y0lid"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D58C9C2BCF6;
-	Tue, 12 May 2026 10:57:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D8D2PnrU"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 198D6C4AF0C;
+	Tue, 12 May 2026 10:57:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778583472;
-	bh=6rT0wjV5Mp5NJt3Q/yrwp0wtVx6Rtz1rqHLINeyPuxQ=;
+	s=k20201202; t=1778583473;
+	bh=39wWtrgo0RAPyJym1LAUfomYkJ3GOE1+Fm/W1AN3sM0=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Jt2Y0lidVjFeLy0gLCJTqFKFhi86CHGKiIiBWVGExUZf1G3awfLxkjhFypzcBWG7n
-	 xvCXfv5TU82/U72QIiDeTffYPXjFjfRLIBx+YDKEqMQK5W131LG1lPcKgP0sDpHgmV
-	 gUaXRLnPWzRRw/GbpcqYFYoH0Dr7jBUIyndWUB0xD80jnYWK0OVxnw2mcDR/TBNhLn
-	 AHxUWIEi5SevBg75uS/c4ZjyEoZ5tS0MR6k0WwAd5xzaU3sDO8M3YHljxVnv1KXC5T
-	 gk2UTKiPKsDxyDR8HRt1ft4TAmnrL4CBIxJ7rRchLGRr/NTafXy+1psZXLNZ/aUokg
-	 J4UjQB53RLC7g==
+	b=D8D2PnrUbi0WE7ArQWBvmBxJaR/nH++/IhiAO6l7Lxqsku+4y3iQcWVGJWL2S09N2
+	 gj2t8CpuqKTZ3/4VCW+XwSB+XOePM1eZNkoaUxMyZxn5ZwLhlFtGp+iYci/TQF0WJk
+	 bhwsOFOYXrf6t2p5ULSwU8emfioRleJkPgeuKJMB1lL8pTXf3NNWAoZw1iqc5QTl0o
+	 dJgX9RVk2EsP9iB9g5c9x3lwUVaLsIhXKxtf/ErYNMtJMXn5OoPUPQ3BPwXoXiLPYc
+	 Vg6V7iGuvE0+QVQO361UVnnlcM53RC/EYpWYvuBKUkkfrx9tFVpiCyZ+Njp6Vuge9d
+	 jgDjVzyohYQSQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C378BCD4F21;
-	Tue, 12 May 2026 10:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C410CD4F35;
+	Tue, 12 May 2026 10:57:53 +0000 (UTC)
 From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Tue, 12 May 2026 12:57:21 +0200
-Subject: [PATCH v2 01/10] iio: light: opt3001: move device registration to
- end of probe()
+Date: Tue, 12 May 2026 12:57:24 +0200
+Subject: [PATCH v2 04/10] iio: light: opt3001: use local struct device and
+ i2c_client variables
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260512-opt3001-cleanup-v2-1-8018cf3a8a0a@gmail.com>
+Message-Id: <20260512-opt3001-cleanup-v2-4-8018cf3a8a0a@gmail.com>
 References: <20260512-opt3001-cleanup-v2-0-8018cf3a8a0a@gmail.com>
 In-Reply-To: <20260512-opt3001-cleanup-v2-0-8018cf3a8a0a@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -50,13 +50,14 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Andy Shevchenko <andy@kernel.org>, Alexander Koch <mail@alexanderkoch.net>, 
  Michael Hornung <mhornung.linux@gmail.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, Sashiko <sashiko-bot@kernel.org>
+ Joshua Crofts <joshua.crofts1@gmail.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778583471; l=1566;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778583471; l=13132;
  i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=nHPjQtXZ5RMpyhB4rSm3vBLNZNU5C/mIRnD5ecXS1Bc=;
- b=6/PIMfcUOxDdRs2DP/ReF8xt/OCjoTdSTgKXfqc2UBjW2HlCSmYeWie3lz4JmV8DWdY0bQi+U
- QIGFQodeiaDA3FKg4h/dkJvoOCJ0wRwW+F05WMK8lB2RhMAhO2r+VBQ
+ bh=n9X8FvvW2gp4AIL5sDgYDgQM74cfBtmwn4ULrWzCkdk=;
+ b=DAnVbVhavYgRSLYAIObNBFC9D38HG3RXOke83YSOhnYeGibdZCPa2rg3RCN1o4+b85MGRn/p1
+ /XIwA44L7OMBIRxW5ycf10CjLzQ8/zWUfRmT9a8suWH3uqx0AKeFHs+
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
 X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
@@ -66,45 +67,392 @@ Reply-To: joshua.crofts1@gmail.com
 
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Move devm_iio_device_register() to end of the opt3001_probe() function
-to prevent a race condition where userspace could interact with the
-device before the hardware IRQ was set up.
+Switch the driver to use local variables for struct device and struct
+i2c_client to improve code style.
 
-Fixes: ac663db3678a ("iio: light: opt3001: enable operation w/o IRQ")
-Reported-by: Jonathan Cameron <jic23@kernel.org>
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Closes: https://sashiko.dev/#/patchset/20260511-opt3001-cleanup-v1-0-f7879dc3455c%40gmail.com?part=7
+While at it, ensure that parentheses alignment is correct in functions
+that were changed in this patch.
+
+No functional change.
+
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/iio/light/opt3001.c | 147 +++++++++++++++++++++++---------------------
+ 1 file changed, 78 insertions(+), 69 deletions(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 53bc455b7bad142695d9fecc6cabb934fb3ace0c..3c79e0c4ca32fedf33e318d047d6ab3f62b6c03b 100644
+index 6ce1a2d7647a3b9cd8964a276878630d31f61794..0de8ef4f3e68e6380b47d27e35882c604563377c 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -874,12 +874,6 @@ static int opt3001_probe(struct i2c_client *client)
- 	iio->modes = INDIO_DIRECT_MODE;
- 	iio->info = &opt3001_info;
+@@ -313,6 +313,8 @@ static const struct iio_chan_spec opt3002_channels[] = {
  
--	ret = devm_iio_device_register(dev, iio);
--	if (ret) {
--		dev_err(dev, "failed to register IIO device\n");
--		return ret;
--	}
--
- 	/* Make use of INT pin only if valid IRQ no. is given */
- 	if (irq > 0) {
- 		ret = request_threaded_irq(irq, NULL, opt3001_irq,
-@@ -894,6 +888,10 @@ static int opt3001_probe(struct i2c_client *client)
- 		dev_dbg(opt->dev, "enabling interrupt-less operation\n");
+ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ {
++	struct i2c_client *client = opt->client;
++	struct device *dev = opt->dev;
+ 	int ret;
+ 	u16 mantissa;
+ 	u16 reg;
+@@ -326,12 +328,12 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		 * doing so will overwrite the low-level limit value however we
+ 		 * will restore this value later on.
+ 		 */
+-		ret = i2c_smbus_write_word_swapped(opt->client,
+-					OPT3001_LOW_LIMIT,
+-					OPT3001_LOW_LIMIT_EOC_ENABLE);
++		ret = i2c_smbus_write_word_swapped(client,
++						   OPT3001_LOW_LIMIT,
++						   OPT3001_LOW_LIMIT_EOC_ENABLE);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to write register %02x\n",
+-					OPT3001_LOW_LIMIT);
++			dev_err(dev, "failed to write register %02x\n",
++				OPT3001_LOW_LIMIT);
+ 			return ret;
+ 		}
+ 
+@@ -343,21 +345,20 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 	opt->result_ready = false;
+ 
+ 	/* Configure for single-conversion mode and start a new conversion */
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto err;
  	}
  
-+	ret = devm_iio_device_register(dev, iio);
-+	if (ret)
-+		return dev_err(dev, "failed to register IIO device\n");
-+
+ 	reg = ret;
+ 	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SINGLE);
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto err;
+ 	}
+ 
+@@ -375,10 +376,9 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		msleep(timeout);
+ 
+ 		/* Check result ready flag */
+-		ret = i2c_smbus_read_word_swapped(opt->client,
+-						  OPT3001_CONFIGURATION);
++		ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to read register %02x\n",
++			dev_err(dev, "failed to read register %02x\n",
+ 				OPT3001_CONFIGURATION);
+ 			goto err;
+ 		}
+@@ -389,9 +389,9 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		}
+ 
+ 		/* Obtain value */
+-		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
++		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to read register %02x\n",
++			dev_err(dev, "failed to read register %02x\n",
+ 				OPT3001_RESULT);
+ 			goto err;
+ 		}
+@@ -416,12 +416,12 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		 * bit-overlap and therefore can't be done.
+ 		 */
+ 		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+-		ret = i2c_smbus_write_word_swapped(opt->client,
++		ret = i2c_smbus_write_word_swapped(client,
+ 						   OPT3001_LOW_LIMIT,
+ 						   value);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to write register %02x\n",
+-					OPT3001_LOW_LIMIT);
++			dev_err(dev, "failed to write register %02x\n",
++				OPT3001_LOW_LIMIT);
+ 			return ret;
+ 		}
+ 	}
+@@ -444,13 +444,15 @@ static int opt3001_get_int_time(struct opt3001 *opt, int *val, int *val2)
+ 
+ static int opt3001_set_int_time(struct opt3001 *opt, int time)
+ {
++	struct i2c_client *client = opt->client;
++	struct device *dev = opt->dev;
+ 	int ret;
+ 	u16 reg;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		return ret;
+ 	}
+ 
+@@ -469,8 +471,7 @@ static int opt3001_set_int_time(struct opt3001 *opt, int time)
+ 		return -EINVAL;
+ 	}
+ 
+-	return i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	return i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ }
+ 
+ static int opt3001_read_raw(struct iio_dev *iio,
+@@ -565,6 +566,8 @@ static int opt3001_write_event_value(struct iio_dev *iio,
+ 		int val, int val2)
+ {
+ 	struct opt3001 *opt = iio_priv(iio);
++	struct i2c_client *client = opt->client;
++	struct device *dev = opt->dev;
+ 	int ret;
+ 	int whole;
+ 	int integer;
+@@ -583,7 +586,7 @@ static int opt3001_write_event_value(struct iio_dev *iio,
+ 
+ 	ret = opt3001_find_scale(opt, val, val2, &exponent);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "can't find scale for %d.%06u\n", val, val2);
++		dev_err(dev, "can't find scale for %d.%06u\n", val, val2);
+ 		goto err;
+ 	}
+ 
+@@ -611,9 +614,9 @@ static int opt3001_write_event_value(struct iio_dev *iio,
+ 		goto err;
+ 	}
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, reg, value);
++	ret = i2c_smbus_write_word_swapped(client, reg, value);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n", reg);
++		dev_err(dev, "failed to write register %02x\n", reg);
+ 		goto err;
+ 	}
+ 
+@@ -637,6 +640,8 @@ static int opt3001_write_event_config(struct iio_dev *iio,
+ 		enum iio_event_direction dir, bool state)
+ {
+ 	struct opt3001 *opt = iio_priv(iio);
++	struct i2c_client *client = opt->client;
++	struct device *dev = opt->dev;
+ 	int ret;
+ 	u16 mode;
+ 	u16 reg;
+@@ -652,21 +657,20 @@ static int opt3001_write_event_config(struct iio_dev *iio,
+ 	mode = state ? OPT3001_CONFIGURATION_M_CONTINUOUS
+ 		: OPT3001_CONFIGURATION_M_SHUTDOWN;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto err;
+ 	}
+ 
+ 	reg = ret;
+ 	opt3001_set_mode(opt, &reg, mode);
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto err;
+ 	}
+ 
+@@ -688,44 +692,48 @@ static const struct iio_info opt3001_info = {
+ 
+ static int opt3001_read_id(struct opt3001 *opt)
+ {
++	struct i2c_client *client = opt->client;
++	struct device *dev = opt->dev;
+ 	char manufacturer[2];
+ 	u16 device_id;
+ 	int ret;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_MANUFACTURER_ID);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_MANUFACTURER_ID);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_MANUFACTURER_ID);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_MANUFACTURER_ID);
+ 		return ret;
+ 	}
+ 
+ 	manufacturer[0] = ret >> 8;
+ 	manufacturer[1] = ret & 0xff;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_DEVICE_ID);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_DEVICE_ID);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
++		dev_err(dev, "failed to read register %02x\n",
+ 			OPT3001_DEVICE_ID);
+ 		return ret;
+ 	}
+ 
+ 	device_id = ret;
+ 
+-	dev_info(opt->dev, "Found %c%c OPT%04x\n", manufacturer[0],
+-			manufacturer[1], device_id);
++	dev_info(dev, "Found %c%c OPT%04x\n", manufacturer[0], manufacturer[1],
++		 device_id);
+ 
  	return 0;
+ }
+ 
+ static int opt3001_configure(struct opt3001 *opt)
+ {
++	struct i2c_client *client = opt->client;
++	struct device *dev = opt->dev;
+ 	int ret;
+ 	u16 reg;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		return ret;
+ 	}
+ 
+@@ -750,28 +758,27 @@ static int opt3001_configure(struct opt3001 *opt)
+ 	reg &= ~OPT3001_CONFIGURATION_ME;
+ 	reg &= ~OPT3001_CONFIGURATION_FC_MASK;
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		return ret;
+ 	}
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_LOW_LIMIT);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_LOW_LIMIT);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_LOW_LIMIT);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_LOW_LIMIT);
+ 		return ret;
+ 	}
+ 
+ 	opt->low_thresh_mantissa = OPT3001_REG_MANTISSA(ret);
+ 	opt->low_thresh_exp = OPT3001_REG_EXPONENT(ret);
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_HIGH_LIMIT);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_HIGH_LIMIT);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_HIGH_LIMIT);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_HIGH_LIMIT);
+ 		return ret;
+ 	}
+ 
+@@ -785,6 +792,8 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+ {
+ 	struct iio_dev *iio = _iio;
+ 	struct opt3001 *opt = iio_priv(iio);
++	struct i2c_client *client = opt->client;
++	struct device *dev = opt->dev;
+ 	int ret;
+ 	bool wake_result_ready_queue = false;
+ 	enum iio_chan_type chan_type = opt->chip_info->chan_type;
+@@ -793,10 +802,10 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+ 	if (!ok_to_ignore_lock)
+ 		mutex_lock(&opt->lock);
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto out;
+ 	}
+ 
+@@ -815,10 +824,10 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+ 							IIO_EV_DIR_FALLING),
+ 					iio_get_time_ns(iio));
+ 	} else if (ret & OPT3001_CONFIGURATION_CRF) {
+-		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
++		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to read register %02x\n",
+-					OPT3001_RESULT);
++			dev_err(dev, "failed to read register %02x\n",
++				OPT3001_RESULT);
+ 			goto out;
+ 		}
+ 		opt->result = ret;
+@@ -885,7 +894,7 @@ static int opt3001_probe(struct i2c_client *client)
+ 		}
+ 		opt->use_irq = true;
+ 	} else {
+-		dev_dbg(opt->dev, "enabling interrupt-less operation\n");
++		dev_dbg(dev, "enabling interrupt-less operation\n");
+ 	}
+ 
+ 	ret = devm_iio_device_register(dev, iio);
+@@ -899,27 +908,27 @@ static void opt3001_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *iio = i2c_get_clientdata(client);
+ 	struct opt3001 *opt = iio_priv(iio);
++	struct device *dev = opt->dev;
+ 	int ret;
+ 	u16 reg;
+ 
+ 	if (opt->use_irq)
+ 		free_irq(client->irq, iio);
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		return;
+ 	}
+ 
+ 	reg = ret;
+ 	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
+ 	}
  }
  
 
