@@ -1,448 +1,656 @@
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4260317153
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 18:47:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F7183EDE72;
+	Tue, 12 May 2026 18:50:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778611671; cv=none; b=gx4Dbatirwt+NoDuiotI0KjifjnBOQR+Wf4w0udTOoYYtISoWnlkPNdXa57LRH3c1JXiMfrcq1jTThQf2f71YBi6QSXTpVy8u+hfRGMyG8yRCjzD9tjBJuferwEE1MfCD8cjRdakL43CWUJuLMlY+NrJ2asUSxvMSUqPAmWmb0E=
+	t=1778611839; cv=none; b=Mu9xDfsRiSFBTL5cvw9VLD4KTSZYeJrYjs4dl2HbszeIcYoy/IfNWwGccpN78GaxnCTYjLOrgeLHC0gx7LaWKO4usEvedwUQJsgufAp9ds1ijD8HHLs0SDiSaIjIY9k0jLmjepcOauq8E/LCFhei/+mP1ZGc1++Dv7GsPBhJGwM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778611671; c=relaxed/simple;
-	bh=BDsdMP+pjZG4vSXOF6ecFDXwYRlu+D0/7JwopaiEhcg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bpLPFgRImsBhIPx0G31Tf7fJrTXDXfCDd8YeKPHYOkw88vyskIxQ0duGXYAOTzNHqd5PlSpCQtpsj3CE5qKbml6k/SQO3ZD8T1hZ641SSLox/cMkmBR4z4x+fgYqNaHvx6XX6RO/uNgKm/KELNWH1VgKZyZCNpwhvIgUUjEUpS8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=x8fC7wAz; arc=none smtp.client-ip=209.85.221.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1778611839; c=relaxed/simple;
+	bh=gn2mqCWuO/Bd8Kw7m/1Ds6LVl80q/dEcyqXRuGSpPhI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FehArKoDkapSLu0TukHze6MWS2yMHFXl7/YlV15rsHTjUR0TSnWgmiBISOCmua0XTMkBqH+IqVTwc7jIae3WWDUdT6mDbM5taRBEwAuHFh+Vf7GA/0JLMqMfxyjDuspaQqpJgalf5ZHzjWk8X0dgGorMdgFwYwpl+V3tg7+Pup4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BjvJBClt; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="x8fC7wAz"
-Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-575267e3398so4134468e0c.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 11:47:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1778611667; x=1779216467; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=isdotys3vsn+u1Oh8//bwlSjZMntjd7+ukLze9DPOz0=;
-        b=x8fC7wAzDT9710lOa7ojh0J5vBz0xKV/PfMO0dK3YN7BnE+fIFZFTYDI7EyPjlW4C6
-         3fH3F5MPaHLaNRa4hFItP02jBE8WCYVrPXX/CLEKNkAFCzgsJmvGbxxTmIj+ChelkKET
-         0dn/JeWB1UR/qKsQJUNXLqCrIx3VqFh752NyAFr+H+vlJ11GAaY5brzhBaG7RNsKWLg1
-         WC9Amm5e4aChRNwE7gR5M3Q0MpFA2Xo7vYRL/k8qGFDPY5mXkANi2kolLgOnvYkIe321
-         iiWrKno0m92J49H+bZfVoJ6ASjX0s1qOkI504piUVkd6SGKD/H+gqvzx1CZMc4/jgTkS
-         /+Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778611667; x=1779216467;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=isdotys3vsn+u1Oh8//bwlSjZMntjd7+ukLze9DPOz0=;
-        b=YAgcHtq1g93i1nWpiCkwCwlsboTJVgy7HbJ/dOm6jBSraONE2Go4Wf29Z23nkfIqJ9
-         aGuEopHtfs7ekohxZ+HQd/46ScIa4AYuGh2AH0qRfhwNgeForXdWmNxLK7OyGwP2Mqjf
-         2nZ67hE4m4M7gDRyJvbVBcaQlTlz3F5F9TW0g2qtMjY5iu4w/kikLjx1YMlTFN4AI8x8
-         /2KNC0tIx88v4kb6cWkij8pO6/FrBsfHUTkZAQ06nkali2OJ2eD6OIZfUZuvNbMZar+R
-         qCehqTu2pQRa/oD8x0QEOQ7MMM+szN3qtLmWQiCBy6R6T0ZJWqxBxkFDKgfutr6bt70e
-         C1VA==
-X-Forwarded-Encrypted: i=1; AFNElJ94m+jlg4aR6crNx85yocFidr165Jz3QGTp35w/umpPROGi+Z2Eut9hW5Fql/PU1hIDbCn24aEXbqQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwOk8SDgSiXb7XbjuPcCQPEIxj13eQ7+Ti8zzcQCtVfr0paQqVs
-	0CC7HP8CkHx2F3zof41/PL4zY5E6iOdgmUYvegOJetNEUPY7R1HvgHzMs23CEq/kWmA=
-X-Gm-Gg: Acq92OGi9yDhxvapiOcmU9QrJGaL437GvustD+dgjgJ4nyMfhfxAarPdyumE1beRiHj
-	E6U/UbojHVpNN06LG+QCTOq0w31qrS4cxIzf4Vvoy4aU7e1+qGnuhHdial3F2ieAKnrVERQ6Gbv
-	oVUj/Cy+3gPcfyUOzmbYqYI1X2wgIACnS0xGBXwmn71ksqqWhuTrRaaienRLb4vfznUwZQv5xKX
-	W3gCdRa9oHUlk8v1SGK6dgk3gkn99GCWig18sEakaQDG5QBoc5PM9Xnh7USSxoXMVpmg/9Moha1
-	1ZyJO7beA3qqkQfKOvnq6vdzZE7Cysqeh5WHgpl5r0hivBxrm/MmMf53sj+02QsyKG6bTghYK6N
-	c6prPwYD5B+Q88Asum+7tKlvEwpSqQqz73heNu4zsLX3UwWqsTd+VcQZZzuk54HB63TQZ8Q==
-X-Received: by 2002:a05:6122:a5c7:20b0:575:cbe6:8416 with SMTP id 71dfb90a1353d-575cbe6866fmr2952707e0c.14.1778611666611;
-        Tue, 12 May 2026 11:47:46 -0700 (PDT)
-Received: from yukhui ([2804:7f0:74c0:2c15:8112:b874:d72f:54f4])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-575869f2d08sm9429694e0c.0.2026.05.12.11.47.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 11:47:46 -0700 (PDT)
-From: Raffael Raiel Trindade <raffaelraiel@usp.br>
-X-Google-Original-From: Raffael Raiel Trindade
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Raffael Raiel Trindade <raffaelraiel@usp.br>,
-	Kim Carvalho <kim.ca@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v5] iio: light: vcnl4000: use lock guard()
-Date: Tue, 12 May 2026 15:46:43 -0300
-Message-ID: <20260512184728.298680-1-raffaelraiel@usp.br>
-X-Mailer: git-send-email 2.51.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BjvJBClt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778611837; x=1810147837;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gn2mqCWuO/Bd8Kw7m/1Ds6LVl80q/dEcyqXRuGSpPhI=;
+  b=BjvJBCltf5rzhKhQ/am1879r1jZrcSTMgsDITCkr+oNkmTiMINdsMpqd
+   r5qo1qDL7dcXfLo2SGsaOqI3jwu8lpZbBhI20VBMMYfIbKu2uHM71Z9Pa
+   +67ZT/1W/n7Zba8ZAcww/u0Obi1UOdYSPd5Yu6jeTdvvgA9nLnpYeerx2
+   5f9sU5KPqdCeDxtkAgbNOdLyGil0FQsCK7ZIEy6TVg59KOuLA6lwF07OI
+   0eD8KLww93l5SImM6vA+ofzLqmgzfvJRUFu6QJxQuPcF3R52Prl7aP06j
+   fyS58G6UkOEx2CGBiGcKbNAq6DFMv1SAI/vuJYxrrdI0EkydiQJ3zp1Wb
+   g==;
+X-CSE-ConnectionGUID: h5go8fkNRhWXcLs/lZGGNA==
+X-CSE-MsgGUID: 0wsjomd+TdCP29hh+Eratg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79387564"
+X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
+   d="scan'208";a="79387564"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 11:50:36 -0700
+X-CSE-ConnectionGUID: YzjR3+gfToq3htuRrHU5dg==
+X-CSE-MsgGUID: wMVzpF3kTCyEUPE6IIa1Lw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
+   d="scan'208";a="237771313"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.244])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 11:50:30 -0700
+Date: Tue, 12 May 2026 21:50:28 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Yu-Chun Lin <eleanor.lin@realtek.com>
+Cc: linusw@kernel.org, brgl@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, afaerber@suse.com, wbg@kernel.org,
+	mathieu.dubois-briand@bootlin.com, mwalle@kernel.org,
+	lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	nuno.sa@analog.com, andy@kernel.org, dlechner@baylibre.com,
+	tychang@realtek.com, linux-gpio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-realtek-soc@lists.infradead.org, linux-iio@vger.kernel.org,
+	cy.huang@realtek.com, stanley_chang@realtek.com,
+	james.tai@realtek.com
+Subject: Re: [PATCH v3 6/7] gpio: realtek: Add driver for Realtek DHC RTD1625
+ SoC
+Message-ID: <agN2dGAikxV0bw4M@ashevche-desk.local>
+References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
+ <20260512033317.1602537-7-eleanor.lin@realtek.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260512033317.1602537-7-eleanor.lin@realtek.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Raffael Raiel Trindade <raffaelraiel@usp.br>
+On Tue, May 12, 2026 at 11:33:16AM +0800, Yu-Chun Lin wrote:
 
-Use guard() and scoped_guard() for handling mutex lock instead of manually
-locking and unlocking. Remove gotos in error handling logic. This prevents
-forgotten locks on early exits.
+> Add support for the GPIO controller found on Realtek DHC RTD1625 SoCs.
 
-Signed-off-by: Raffael Raiel Trindade <raffaelraiel@usp.br>
-Co-developed-by: Kim Carvalho <kim.ca@usp.br>
-Signed-off-by: Kim Carvalho <kim.ca@usp.br>
----
-v5:
- - fix return ret introduced when return
-   is always success
+The below paragraphs are all the implementation details that are not so
+important to be in the commit message. They fit the comment block after
+the '---' line below, though...
 
-v4:
- - use guard() and scoped_guard() instead of
-   lock() and unlock() in all functions
- - drop ret = -EINVAL initialization
+> Unlike the existing Realtek GPIO driver (drivers/gpio/gpio-rtd.c),
+> which manages pins via shared bank registers, the RTD1625 introduces
+> a per-pin register architecture. Each GPIO line now has its own
+> dedicated 32-bit control register to manage configuration independently,
+> including direction, output value, input value, interrupt enable, and
+> debounce. Therefore, this distinct hardware design requires a separate
+> driver.
+> 
+> The driver leverages the gpio-regmap framework, utilizing the recently
+> introduced write-enable and operation-specific mask translation features.
+> 
+> Additionally, because the controller utilizes multiple independent IRQ
+> status registers (assert, de-assert, and level) which cannot be mapped
+> via standard regmap_irq_chip, the driver implements a custom irq_domain.
+> 
+> Signed-off-by: Tzuyi Chang <tychang@realtek.com>
+> Co-developed-by: Yu-Chun Lin <eleanor.lin@realtek.com>
+> Signed-off-by: Yu-Chun Lin <eleanor.lin@realtek.com>
+> ---
 
-v3:
- - fix indentation problems on line breaks
+...somewhere here.
 
-v2:
- - remove unnecessary ret attributions on non-error logic.
- - remove breaks on switch-case after return
+...
 
- drivers/iio/light/vcnl4000.c | 148 +++++++++++------------------------
- 1 file changed, 45 insertions(+), 103 deletions(-)
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index c08927e34b4e..8800fa68edda 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -18,6 +18,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/i2c.h>
-@@ -268,46 +269,36 @@ static ssize_t vcnl4000_write_als_enable(struct vcnl4000_data *data, bool en)
- {
- 	int ret;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	if (en)
- 		ret &= ~VCNL4040_ALS_CONF_ALS_SHUTDOWN;
- 	else
- 		ret |= VCNL4040_ALS_CONF_ALS_SHUTDOWN;
- 
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, ret);
--
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, ret);
- }
- 
- static ssize_t vcnl4000_write_ps_enable(struct vcnl4000_data *data, bool en)
- {
- 	int ret;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	if (en)
- 		ret &= ~VCNL4040_PS_CONF1_PS_SHUTDOWN;
- 	else
- 		ret |= VCNL4040_PS_CONF1_PS_SHUTDOWN;
- 
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, ret);
--
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, ret);
- }
- 
- static int vcnl4200_set_power_state(struct vcnl4000_data *data, bool on)
-@@ -442,18 +433,18 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 	int tries = 20;
- 	int ret;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
- 					req_mask);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	/* wait for data to become ready */
- 	while (tries--) {
- 		ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
- 		if (ret < 0)
--			goto fail;
-+			return ret;
- 		if (ret & rdy_mask)
- 			break;
- 		msleep(20); /* measurement takes up to 100 ms */
-@@ -462,21 +453,14 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 	if (tries < 0) {
- 		dev_err(&data->client->dev,
- 			"vcnl4000_measure() failed, data not ready\n");
--		ret = -EIO;
--		goto fail;
-+		return -EIO;
- 	}
- 
- 	ret = vcnl4000_read_data(data, data_reg, val);
- 	if (ret < 0)
--		goto fail;
--
--	mutex_unlock(&data->vcnl4000_lock);
-+		return ret;
- 
- 	return 0;
--
--fail:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
- }
- 
- static int vcnl4200_measure(struct vcnl4000_data *data,
-@@ -486,16 +470,14 @@ static int vcnl4200_measure(struct vcnl4000_data *data,
- 	s64 delta;
- 	ktime_t next_measurement;
- 
--	mutex_lock(&chan->lock);
--
--	next_measurement = ktime_add(chan->last_measurement,
--			chan->sampling_rate);
--	delta = ktime_us_delta(next_measurement, ktime_get());
--	if (delta > 0)
--		usleep_range(delta, delta + 500);
--	chan->last_measurement = ktime_get();
--
--	mutex_unlock(&chan->lock);
-+	scoped_guard(mutex, &chan->lock) {
-+		next_measurement = ktime_add(chan->last_measurement,
-+				chan->sampling_rate);
-+		delta = ktime_us_delta(next_measurement, ktime_get());
-+		if (delta > 0)
-+			usleep_range(delta, delta + 500);
-+		chan->last_measurement = ktime_get();
-+	}
- 
- 	ret = i2c_smbus_read_word_data(data->client, chan->reg);
- 	if (ret < 0)
-@@ -606,21 +588,15 @@ static ssize_t vcnl4040_write_als_it(struct vcnl4000_data *data, int val)
- 			 (*data->chip_spec->als_it_times)[0][1]),
- 			 val);
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = FIELD_PREP(VCNL4040_ALS_CONF_IT, i);
- 	regval |= (ret & ~VCNL4040_ALS_CONF_IT);
--	ret = i2c_smbus_write_word_data(data->client,
--					VCNL4200_AL_CONF,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, regval);
- }
- 
- static int vcnl4040_read_ps_it(struct vcnl4000_data *data, int *val, int *val2)
-@@ -660,20 +636,15 @@ static ssize_t vcnl4040_write_ps_it(struct vcnl4000_data *data, int val)
- 
- 	data->vcnl4200_ps.sampling_rate = ktime_set(0, val * 60 * NSEC_PER_USEC);
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	regval = (ret & ~VCNL4040_PS_CONF2_PS_IT) |
- 	    FIELD_PREP(VCNL4040_PS_CONF2_PS_IT, index);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
--					regval);
--
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, regval);
- }
- 
- static ssize_t vcnl4040_read_als_period(struct vcnl4000_data *data, int *val, int *val2)
-@@ -721,20 +692,15 @@ static ssize_t vcnl4040_write_als_period(struct vcnl4000_data *data, int val, in
- 			break;
- 	}
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = FIELD_PREP(VCNL4040_ALS_CONF_PERS, i);
- 	regval |= (ret & ~VCNL4040_ALS_CONF_PERS);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, regval);
- }
- 
- static ssize_t vcnl4040_read_ps_period(struct vcnl4000_data *data, int *val, int *val2)
-@@ -783,20 +749,15 @@ static ssize_t vcnl4040_write_ps_period(struct vcnl4000_data *data, int val, int
- 		}
- 	}
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = FIELD_PREP(VCNL4040_CONF1_PS_PERS, i);
- 	regval |= (ret & ~VCNL4040_CONF1_PS_PERS);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, regval);
- }
- 
- static ssize_t vcnl4040_read_ps_oversampling_ratio(struct vcnl4000_data *data, int *val)
-@@ -830,20 +791,15 @@ static ssize_t vcnl4040_write_ps_oversampling_ratio(struct vcnl4000_data *data,
- 	if (i >= ARRAY_SIZE(vcnl4040_ps_oversampling_ratio))
- 		return -EINVAL;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = FIELD_PREP(VCNL4040_PS_CONF3_MPS, i);
- 	regval |= (ret & ~VCNL4040_PS_CONF3_MPS);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3, regval);
- }
- 
- static ssize_t vcnl4040_read_ps_calibbias(struct vcnl4000_data *data, int *val, int *val2)
-@@ -878,20 +834,15 @@ static ssize_t vcnl4040_write_ps_calibbias(struct vcnl4000_data *data, int val)
- 	if (i >= ARRAY_SIZE(vcnl4040_ps_calibbias_ua))
- 		return -EINVAL;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = (ret & ~VCNL4040_PS_MS_LED_I);
- 	regval |= FIELD_PREP(VCNL4040_PS_MS_LED_I, i);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3, regval);
- }
- 
- static int vcnl4000_read_raw(struct iio_dev *indio_dev,
-@@ -1476,17 +1427,17 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 				       enum iio_event_direction dir,
- 				       bool state)
- {
--	int ret = -EINVAL;
-+	int ret;
- 	u16 val, mask;
- 	struct vcnl4000_data *data = iio_priv(indio_dev);
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	switch (chan->type) {
- 	case IIO_LIGHT:
- 		ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 		if (ret < 0)
--			goto out;
-+			return ret;
- 
- 		mask = VCNL4040_ALS_CONF_INT_EN;
- 		if (state)
-@@ -1495,13 +1446,11 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 			val = (ret & ~mask);
- 
- 		data->als_int = FIELD_GET(VCNL4040_ALS_CONF_INT_EN, val);
--		ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF,
--						val);
--		break;
-+		return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, val);
- 	case IIO_PROXIMITY:
- 		ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 		if (ret < 0)
--			goto out;
-+			return ret;
- 
- 		if (dir == IIO_EV_DIR_RISING)
- 			mask = VCNL4040_PS_IF_AWAY;
-@@ -1511,17 +1460,10 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 		val = state ? (ret | mask) : (ret & ~mask);
- 
- 		data->ps_int = FIELD_GET(VCNL4040_PS_CONF2_PS_INT, val);
--		ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
--						val);
--		break;
-+		return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, val);
- 	default:
--		break;
-+		return -EINVAL;
- 	}
--
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
--	return ret;
- }
- 
- static irqreturn_t vcnl4040_irq_thread(int irq, void *p)
+> +#include <linux/bitfield.h>
+> +#include <linux/bitops.h>
+
+Missing cleanup.h, may be more.
+
+> +#include <linux/gpio/driver.h>
+> +#include <linux/gpio/regmap.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irqchip.h>
+
+> +#include <linux/irqdomain.h>
+> +#include <linux/irqchip/chained_irq.h>
+> +#include <linux/irqdomain.h>
+
+If you sort headers alphabetically, you will see the duplication.
+
+> +#include <linux/mfd/syscon.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/types.h>
+
+...
+
+> +struct rtd1625_gpio {
+> +	struct gpio_chip *gpio_chip;
+> +	const struct rtd1625_gpio_info *info;
+
+> +	void __iomem *base;
+
+Is it used? Also naming is confusing with unsigned int base in some functions
+below.
+
+> +	struct regmap *regmap;
+> +	unsigned int irqs[3];
+
+This 3 is also used when assign num_irqs below, perhaps define it with
+meaningful name? (The 2 also might need a definition in the same way.)
+
+> +	raw_spinlock_t lock;
+> +	struct irq_domain *domain;
+> +	unsigned int *save_regs;
+> +};
+
+...
+
+> +static int rtd1625_reg_mask_xlate(struct gpio_regmap *gpio, enum gpio_regmap_operation op,
+> +				  unsigned int base, unsigned int offset, unsigned int *reg,
+> +				  unsigned int *mask)
+
+Use logical split.
+
+static int rtd1625_reg_mask_xlate(struct gpio_regmap *gpio, enum gpio_regmap_operation op,
+				  unsigned int base, unsigned int offset,
+				  unsigned int *reg, unsigned int *mask)
+
+OR (as suggested earlier)
+
+static int rtd1625_reg_mask_xlate(struct gpio_regmap *gpio,
+				  enum gpio_regmap_operation op,
+				  unsigned int base, unsigned int offset,
+				  unsigned int *reg, unsigned int *mask)
+
+...
+
+> +static unsigned int rtd1625_gpio_set_debounce(struct gpio_chip *chip, unsigned int offset,
+> +					      unsigned int debounce)
+> +{
+> +	struct rtd1625_gpio *data = gpiochip_get_data(chip);
+> +	u8 deb_val;
+> +	u32 val;
+> +
+> +	switch (debounce) {
+> +	case 1:
+> +		deb_val = RTD1625_GPIO_DEBOUNCE_1US;
+> +		break;
+> +	case 10:
+> +		deb_val = RTD1625_GPIO_DEBOUNCE_10US;
+> +		break;
+> +	case 100:
+> +		deb_val = RTD1625_GPIO_DEBOUNCE_100US;
+> +		break;
+> +	case 1000:
+> +		deb_val = RTD1625_GPIO_DEBOUNCE_1MS;
+> +		break;
+> +	case 10000:
+> +		deb_val = RTD1625_GPIO_DEBOUNCE_10MS;
+> +		break;
+> +	case 20000:
+> +		deb_val = RTD1625_GPIO_DEBOUNCE_20MS;
+> +		break;
+> +	case 30000:
+> +		deb_val = RTD1625_GPIO_DEBOUNCE_30MS;
+> +		break;
+> +	case 50000:
+> +		deb_val = RTD1625_GPIO_DEBOUNCE_50MS;
+> +		break;
+> +	default:
+> +		return -ENOTSUPP;
+> +	}
+> +
+> +	val = FIELD_PREP(RTD1625_GPIO_DEBOUNCE, deb_val) | RTD1625_GPIO_DEBOUNCE_WREN;
+
+> +	regmap_write(data->regmap, GPIO_CONTROL(offset), val);
+
+Neither here, nor in some other places the returned value from regmap APIs is
+not checked. Is it okay?
+
+> +	return 0;
+> +}
+> +
+> +static int rtd1625_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
+> +				   unsigned long config)
+> +{
+> +	int debounce;
+
+Can it be negative?
+
+> +	if (pinconf_to_config_param(config) == PIN_CONFIG_INPUT_DEBOUNCE) {
+> +		debounce = pinconf_to_config_argument(config);
+> +		return rtd1625_gpio_set_debounce(chip, offset, debounce);
+> +	}
+> +
+> +	return gpiochip_generic_config(chip, offset, config);
+> +}
+
+...
+
+> +static void rtd1625_gpio_irq_handle(struct irq_desc *desc)
+> +{
+> +	unsigned int (*get_reg_offset)(struct rtd1625_gpio *gpio, unsigned int offset);
+> +	struct rtd1625_gpio *data = irq_desc_get_handler_data(desc);
+> +	struct irq_chip *chip = irq_desc_get_chip(desc);
+> +	unsigned int irq = irq_desc_get_irq(desc);
+> +	struct irq_domain *domain = data->domain;
+> +	unsigned int reg_offset, i, j, val;
+> +	irq_hw_number_t hwirq;
+> +	unsigned long status;
+> +	unsigned int girq;
+> +	u32 irq_type;
+> +
+> +	if (irq == data->irqs[0])
+> +		get_reg_offset = &rtd1625_gpio_gpa_offset;
+> +	else if (irq == data->irqs[1])
+> +		get_reg_offset = &rtd1625_gpio_gpda_offset;
+> +	else if (irq == data->irqs[2])
+> +		get_reg_offset = &rtd1625_gpio_level_offset;
+> +	else
+> +		return;
+> +
+> +	chained_irq_enter(chip, desc);
+
+> +	for (i = 0; i < data->info->num_gpios; i += 32) {
+
+	for (unsigned int i = 0; i < data->info->num_gpios; i += 32) {
+
+> +		reg_offset = get_reg_offset(data, i);
+> +		regmap_read(data->regmap, reg_offset, &val);
+> +
+> +		status = val;
+> +
+> +		/* Clear edge interrupts; level interrupts are cleared in ->irq_ack() */
+> +		if (irq != data->irqs[2])
+> +			regmap_write(data->regmap, reg_offset, status);
+
+This is interesting... Can't we rely on IRQ core to take care of this? (And
+replay if required.)
+
+> +		for_each_set_bit(j, &status, 32) {
+> +			hwirq = i + j;
+> +			girq = irq_find_mapping(domain, hwirq);
+> +			irq_type = irq_get_trigger_type(girq);
+
+> +			if (irq == data->irqs[1] && irq_type != IRQ_TYPE_EDGE_BOTH)
+
+Why is the IRQ type check here and not in set_type() callback?
+I think we should simply reject to even lock such a configuration as IRQ.
+
+> +				continue;
+> +
+> +			generic_handle_domain_irq(domain, hwirq);
+> +		}
+> +	}
+> +
+> +	chained_irq_exit(chip, desc);
+> +}
+
+> +static void rtd1625_gpio_enable_edge_irq(struct rtd1625_gpio *data, irq_hw_number_t hwirq)
+> +{
+> +	int gpda_reg_offset = rtd1625_gpio_gpda_offset(data, hwirq);
+> +	int gpa_reg_offset = rtd1625_gpio_gpa_offset(data, hwirq);
+> +	u32 clr_mask = BIT(hwirq % 32);
+> +	u32 val;
+> +
+> +	guard(raw_spinlock_irqsave)(&data->lock);
+
++ blank line. Same to other cases when guard()() is being used.
+
+> +	regmap_write(data->regmap, gpa_reg_offset, clr_mask);
+> +	regmap_write(data->regmap, gpda_reg_offset, clr_mask);
+> +	val = RTD1625_GPIO_EDGE_INT_EN | RTD1625_GPIO_WREN(RTD1625_GPIO_EDGE_INT_EN);
+> +	regmap_write(data->regmap, data->info->base_offset + GPIO_CONTROL(hwirq), val);
+> +}
+
+...
+
+> +static void rtd1625_gpio_enable_irq(struct irq_data *d)
+> +{
+> +	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+> +	irq_hw_number_t hwirq = irqd_to_hwirq(d);
+> +	u32 irq_type = irqd_get_trigger_type(d);
+> +	struct rtd1625_gpio *data;
+> +	struct gpio_regmap *gpio;
+
+> +	gpio = gpiochip_get_data(gc);
+> +	data = gpio_regmap_get_drvdata(gpio);
+
+Why not unify these with the above, we don't validate them anyway...
+Same Q to other cases like this.
+
+> +	gpiochip_enable_irq(gc, hwirq);
+> +
+> +	if (irq_type & IRQ_TYPE_EDGE_BOTH)
+> +		rtd1625_gpio_enable_edge_irq(data, hwirq);
+> +	else if (irq_type & IRQ_TYPE_LEVEL_MASK)
+> +		rtd1625_gpio_enable_level_irq(data, hwirq);
+> +}
+
+...
+
+> +static int rtd1625_gpio_irq_set_level_type(struct irq_data *d, bool level)
+> +{
+> +	u32 val = RTD1625_GPIO_WREN(RTD1625_GPIO_LEVEL_INT_DP);
+> +	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+> +	irq_hw_number_t hwirq = irqd_to_hwirq(d);
+> +	struct rtd1625_gpio *data;
+> +	struct gpio_regmap *gpio;
+> +
+> +	gpio = gpiochip_get_data(gc);
+> +	data = gpio_regmap_get_drvdata(gpio);
+
++ blank line (and actually see above).
+
+> +	if (!(data->info->irq_type_support & IRQ_TYPE_LEVEL_MASK))
+> +		return -EINVAL;
+
+> +	scoped_guard(raw_spinlock_irqsave, &data->lock) {
+
+> +		if (level)
+> +			val |= RTD1625_GPIO_LEVEL_INT_DP;
+
+Why this local variable change is under the lock?
+
+> +		regmap_write(data->regmap, data->info->base_offset + GPIO_CONTROL(hwirq), val);
+> +	}
+> +
+> +	irq_set_handler_locked(d, handle_level_irq);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int rtd1625_gpio_irq_set_edge_type(struct irq_data *d, bool polarity)
+
+Similar comments as per above.
+
+...
+
+> +static int rtd1625_gpio_irq_set_type(struct irq_data *d, unsigned int type)
+> +{
+> +	int ret;
+
+Unneeded, just return directly from each of the cases.
+
+> +
+> +	switch (type & IRQ_TYPE_SENSE_MASK) {
+> +	case IRQ_TYPE_EDGE_RISING:
+> +		ret = rtd1625_gpio_irq_set_edge_type(d, 1);
+> +		break;
+> +	case IRQ_TYPE_EDGE_FALLING:
+> +		ret = rtd1625_gpio_irq_set_edge_type(d, 0);
+> +		break;
+> +	case IRQ_TYPE_EDGE_BOTH:
+> +		ret = rtd1625_gpio_irq_set_edge_type(d, 1);
+> +		break;
+> +	case IRQ_TYPE_LEVEL_HIGH:
+> +		ret = rtd1625_gpio_irq_set_level_type(d, 0);
+> +		break;
+> +	case IRQ_TYPE_LEVEL_LOW:
+> +		ret = rtd1625_gpio_irq_set_level_type(d, 1);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+
+Missing break, but rather simply
+
+		return -EINVAL;
+
+as mentioned above. In the similar way for the rest of switch-cases.
+
+> +	}
+> +
+> +	return ret;
+> +}
+
+...
+
+> +static int rtd1625_gpio_setup_irq(struct platform_device *pdev, struct rtd1625_gpio *data)
+> +{
+> +	int num_irqs, irq, i;
+
+Why is 'num_irqs' signed?
+
+> +	irq = platform_get_irq_optional(pdev, 0);
+> +	if (irq == -ENXIO)
+> +		return 0;
+
+This is strange. You mean that you are only interested in the first IRQ? What
+about the case when the first one is not available, while the second is?
+
+> +	if (irq < 0)
+> +		return irq;
+
+This partially duplicates the below.
+
+> +	num_irqs = (data->info->irq_type_support & IRQ_TYPE_LEVEL_MASK) ? 3 : 2;
+
+> +	for (i = 0; i < num_irqs; i++) {
+
+The iterator is local to the loop, hence
+
+	for (unsigned int i = 0; i < num_irqs; i++) {
+
+> +		irq = platform_get_irq(pdev, i);
+> +		if (irq < 0)
+> +			return irq;
+> +
+> +		data->irqs[i] = irq;
+> +		irq_set_chained_handler_and_data(data->irqs[i], rtd1625_gpio_irq_handle, data);
+> +	}
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int rtd1625_gpio_irq_map(struct irq_domain *domain, unsigned int irq,
+> +				irq_hw_number_t hwirq)
+> +{
+> +	struct rtd1625_gpio *data = domain->host_data;
+> +
+> +	irq_set_chip_data(irq, data->gpio_chip);
+> +
+> +	irq_set_chip_and_handler(irq, &rtd1625_iso_gpio_irq_chip, handle_bad_irq);
+> +
+> +	irq_set_noprobe(irq);
+
+Shouldn't you assign a lockdep class?
+
+> +	return 0;
+> +}
+
+...
+
+> +static const struct regmap_config rtd1625_gpio_regmap_config = {
+> +	.reg_bits = 32,
+> +	.reg_stride = 4,
+> +	.val_bits = 32,
+
+> +	.disable_locking = true,
+
+Hmm... This effectively drops the debugfs support, perhaps make it depend on
+CONFIG_DEBUG_GPIO?
+
+> +};
+
+...
+
+> +static int rtd1625_gpio_probe(struct platform_device *pdev)
+> +{
+> +	struct gpio_regmap_config config = {0};
+
+'0' is redundant.
+
+> +	struct device *dev = &pdev->dev;
+> +	struct gpio_regmap *gpio_reg;
+> +	struct rtd1625_gpio *data;
+> +	void __iomem *irq_base;
+> +	int ret;
+> +
+> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	data->info = device_get_match_data(dev);
+> +	if (!data->info)
+> +		return -EINVAL;
+> +
+> +	irq_base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(irq_base))
+> +		return PTR_ERR(irq_base);
+> +
+> +	data->regmap = devm_regmap_init_mmio(dev, irq_base,
+> +					     &rtd1625_gpio_regmap_config);
+
+I would go with a single line
+
+	data->regmap = devm_regmap_init_mmio(dev, irq_base, &rtd1625_gpio_regmap_config);
+
+> +	if (IS_ERR(data->regmap))
+> +		return PTR_ERR(data->regmap);
+> +
+> +	data->save_regs = devm_kzalloc(dev, data->info->num_gpios *
+> +				       sizeof(*data->save_regs), GFP_KERNEL);
+
+This is devm_kcalloc().
+
+> +	if (!data->save_regs)
+> +		return -ENOMEM;
+> +
+> +	config.parent = dev;
+> +	config.regmap = data->regmap;
+> +	config.ngpio = data->info->num_gpios;
+> +	config.reg_dat_base = data->info->base_offset;
+> +	config.reg_set_base = data->info->base_offset;
+> +	config.reg_mask_xlate = rtd1625_reg_mask_xlate;
+> +	config.set_config = rtd1625_gpio_set_config;
+> +	config.reg_dir_out_base = data->info->base_offset;
+> +
+> +	data->domain = irq_domain_add_linear(dev->of_node,
+
+No, use fwnode variant from the start.
+
+> +					     data->info->num_gpios,
+> +					     &rtd1625_gpio_irq_domain_ops,
+> +					     data);
+> +	if (!data->domain)
+> +		return -ENOMEM;
+> +
+> +	ret = rtd1625_gpio_setup_irq(pdev, data);
+> +	if (ret) {
+> +		irq_domain_remove(data->domain);
+> +		return ret;
+> +	}
+> +
+> +	config.irq_domain = data->domain;
+> +	config.drvdata = data;
+> +	platform_set_drvdata(pdev, data);
+> +
+> +	gpio_reg = devm_gpio_regmap_register(dev, &config);
+> +	if (IS_ERR(gpio_reg)) {
+
+> +		irq_domain_remove(data->domain);
+
+This is wrong. The remove will do the opposite order. It means that
+irq_domain_create_linear() has to be wrapped to become a managed resource.
+
+> +		return PTR_ERR(gpio_reg);
+> +	}
+> +
+> +	data->gpio_chip = gpio_regmap_get_gpiochip(gpio_reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct rtd1625_gpio_info rtd1625_iso_gpio_info = {
+> +	.num_gpios		= 166,
+> +	.irq_type_support	= IRQ_TYPE_EDGE_BOTH,
+> +	.base_offset		= 0x100,
+> +	.gpa_offset		= 0x0,
+> +	.gpda_offset		= 0x20,
+
+Use fixed-width for the register offsets, id est 0x000, 0x020, and so on...
+
+> +	.write_en_all		= RTD1625_ISO_GPIO_WREN_ALL,
+> +};
+> +
+> +static const struct rtd1625_gpio_info rtd1625_isom_gpio_info = {
+> +	.num_gpios		= 4,
+> +	.irq_type_support	= IRQ_TYPE_EDGE_BOTH | IRQ_TYPE_LEVEL_LOW |
+> +				  IRQ_TYPE_LEVEL_HIGH,
+> +	.base_offset		= 0x20,
+> +	.gpa_offset		= 0x0,
+> +	.gpda_offset		= 0x4,
+> +	.level_offset		= 0x18,
+> +	.write_en_all		= RTD1625_ISOM_GPIO_WREN_ALL,
+> +};
+
+...
+
+> +static const struct of_device_id rtd1625_gpio_of_matches[] = {
+> +	{ .compatible = "realtek,rtd1625-iso-gpio", .data = &rtd1625_iso_gpio_info },
+> +	{ .compatible = "realtek,rtd1625-isom-gpio", .data = &rtd1625_isom_gpio_info },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, rtd1625_gpio_of_matches);
+
+Move the initialiser and respective MODULE_DEVICE_TABLE() closer to its user.
+
+...
+
+> +static int rtd1625_gpio_suspend(struct device *dev)
+> +{
+> +	struct rtd1625_gpio *data = dev_get_drvdata(dev);
+> +	const struct rtd1625_gpio_info *info = data->info;
+> +	int i;
+> +
+> +	for (i = 0; i < info->num_gpios; i++)
+
+	for (unsigned int i = 0; i < info->num_gpios; i++)
+
+> +		regmap_read(data->regmap, data->info->base_offset + GPIO_CONTROL(i),
+> +			    &data->save_regs[i]);
+> +
+> +	return 0;
+> +}
+> +
+> +static int rtd1625_gpio_resume(struct device *dev)
+> +{
+> +	struct rtd1625_gpio *data = dev_get_drvdata(dev);
+> +	const struct rtd1625_gpio_info *info = data->info;
+> +	int i;
+> +
+> +	for (i = 0; i < info->num_gpios; i++)
+
+Ditto.
+
+> +		regmap_write(data->regmap, data->info->base_offset + GPIO_CONTROL(i),
+> +			     data->save_regs[i] | info->write_en_all);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +DEFINE_NOIRQ_DEV_PM_OPS(rtd1625_gpio_pm_ops, rtd1625_gpio_suspend, rtd1625_gpio_resume);
+
+Not static? Why?
+
 -- 
-2.51.0
+With Best Regards,
+Andy Shevchenko
+
 
