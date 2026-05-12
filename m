@@ -1,95 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C07C3911A9;
-	Tue, 12 May 2026 13:36:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC8943905E6;
+	Tue, 12 May 2026 13:48:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778593020; cv=none; b=fqChEVk6RDgmip6ZWcu4cmZxZjQDKdBJLLvLBELW0/tqzmSsbkFVfS1WXw2pJ/L45hAJnwEqK9UIyWQeuxo+fvYX/2JTsNtLEG7rQaMcFCDqtFxeTJR7BnJdh8Q//UnECiVJpsaVYuqaSfX1gotNrqp0S2EyRtqa8ZRBdjWToDA=
+	t=1778593692; cv=none; b=JzqrOgxPB4VktYG8I/BA/5w1hnm9qdtxOPRBagmLYhqCwcT2uqSlzFaX7tIHhcl2D9QNofQSj5yhEI0rMTG6VkKiDQOWjPKyC/eZSk8AngKntaj3MmMUq7Jbk1IijNt2VCiimoZcTip7k0nNJLD91WWstrQx1j9yfJdOv+Sknf0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778593020; c=relaxed/simple;
-	bh=x32bCq5aJ+bGmDmdT/N1et7DubPIFjtOHl9ouElgZW4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Ki8+GUnmfhQXlEwiadOzzMfSN3A9cykYSffLzGUZ+v5r1ghjGnOGuhKczhDocnLNrNFlGVZFgQC4a+XQppc7ppoPIp2ymmABLIjH429+UceUu+d04qNJBPHLiplA2U/i+MpWxkgpOXkrLilNKxEchS3lGw+Pj/0noJSZQdnXyIY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W5by0G01; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778593692; c=relaxed/simple;
+	bh=OOEl7Ee3v2lvVmXZkjR9vENiJNiSv2BYwxgLSf9hiw8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qo8+svkT6rLbC9+HJFGhSRLDMnG4CXedEMeM5K1tz1nbhN8KX+j/25gs2fiyPEIMu1Ye+Rjukb2xJ3AE2RsZljM5zXndU4GTXIFBb2hNAmkV2JAqS2WOQlbPTjkaieePooclpHJUwSHHbw5Yg6EeSJoRpdKg9qFm3yweQCVkYYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=DjNptRD3; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W5by0G01"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D73AFC2BCB0;
-	Tue, 12 May 2026 13:36:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778593019;
-	bh=x32bCq5aJ+bGmDmdT/N1et7DubPIFjtOHl9ouElgZW4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=W5by0G01+CuK8d7NBzJ7Am772HxNBgv0MQ45OjkYM2HyR9uLFfPo5YZnaTf4XO95k
-	 ljIJvsMUfBmWw4l2OUDAjzteHlDwoLKOUFmxQkajXJV7apqBn1rSDhbozuOjdX0Lw4
-	 cOJ3xCgX495b0TvSaELMpDH0LSxT15WLzd5UFN96n2bQds6hSWbEU5cT5xOoSShfxM
-	 QcHAdDivIYMJI26fwH4cBBu5uHu16pUmiAqAQt8rT02zkM3sXGGaWlHrrXinNBbpTM
-	 ZepIwf1yL6aIsSGxxMH09Z/NWpistREYLPi0qUUCCsaJQoFDaQ1Pj84pWLtT/XH+XK
-	 5391L+ROVUElw==
-Date: Tue, 12 May 2026 14:36:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
-Cc: rva333@protonmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>, Sen Chu <sen.chu@mediatek.com>,
- Sean Wang <sean.wang@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>,
- Lee Jones <lee@kernel.org>, Srinivas Kandagatla <srini@kernel.org>, "Rafael
- J. Wysocki" <rafael@kernel.org>, Daniel Lezcano
- <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba
- <lukasz.luba@arm.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-pm@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH v2 14/16] MAINTAINERS: add MediaTek mt6323 PMIC AUXADC
- driver maintainer
-Message-ID: <20260512143646.15d0aa0e@jic23-huawei>
-In-Reply-To: <20260512-mt6323-v2-14-3efcba579e88@protonmail.com>
-References: <20260512-mt6323-v2-0-3efcba579e88@protonmail.com>
-	<20260512-mt6323-v2-14-3efcba579e88@protonmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="DjNptRD3"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9F6641655;
+	Tue, 12 May 2026 06:48:05 -0700 (PDT)
+Received: from [10.57.33.240] (unknown [10.57.33.240])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D6BD63F85F;
+	Tue, 12 May 2026 06:48:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1778593690; bh=OOEl7Ee3v2lvVmXZkjR9vENiJNiSv2BYwxgLSf9hiw8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=DjNptRD3V6bvItp9OSAF88zx5I9jZmWvqzrzPUdgdrZLNcdLQDqA6SIjnlcVWL4fc
+	 eKpZpYKfRC4U2FugcbGB5KReWOFqR2VFf1k1tc6M0CxzT+uoTaXPzAOLWw1YAetIbp
+	 3VvkIpQmXGEexpxJQ5U4KpIRTM6KMebD8HElYdIQ=
+Message-ID: <7e073ece-4fd6-4c36-ac2f-7604ccd38fff@arm.com>
+Date: Tue, 12 May 2026 15:48:05 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] iio: adc: sun20i-gpadc: add A523 gpadc support
+To: Jonathan Cameron <jic23@kernel.org>,
+ Michal Piekos <michal.piekos@mmpsystems.pl>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Maksim Kiselev
+ <bigunclemax@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260510-sunxi-a523-gpadc-v1-0-4f6b0f4000fb@mmpsystems.pl>
+ <20260510-sunxi-a523-gpadc-v1-2-4f6b0f4000fb@mmpsystems.pl>
+ <20260512125106.718d48d9@jic23-huawei>
+Content-Language: en-US
+From: Andre Przywara <andre.przywara@arm.com>
+In-Reply-To: <20260512125106.718d48d9@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Tue, 12 May 2026 08:18:28 +0300
-Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
+Hi,
 
-> From: Roman Vivchar <rva333@protonmail.com>
+On 5/12/26 13:51, Jonathan Cameron wrote:
+> On Sun, 10 May 2026 14:57:23 +0200
+> Michal Piekos <michal.piekos@mmpsystems.pl> wrote:
 > 
-> Add myself as MediaTek mt6323 AUXADC driver maintainer.
-> 
-> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
-> ---
->  MAINTAINERS | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d1cc0e12fe1f..52249c301633 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -16337,6 +16337,11 @@ S:	Orphan
->  F:	Documentation/devicetree/bindings/mtd/mediatek,mtk-nfc.yaml
->  F:	drivers/mtd/nand/raw/mtk_*
->  
-> +MEDIATEK PMIC AUXADC DRIVER
+>> A523 differs from existing sun20i-gpadc-iio by having two clocks; bus
+>> clock and module clock.
+>>
+>> Change driver to enable all clocks.
+>>
+>> Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
+> I'm expecting this to change given comment on not being quite compatible so
+> I'll wait for v2 before reviewing.
 
-Given this is one of quite a few Mediatek PMIC drivers, you either
-need to be more specific in that title or offer to handle them all.
+Yes, we need a v2, but just for adding the new compatible string. 
+Otherwise I think this patch is a neat solution, because we don't need 
+to further differentiate between the different SoC's number of required 
+clocks.
 
-> +M:	Roman Vivchar <rva333@protonmail.com>
-> +S:	Odd Fixes
-> +F:	drivers/iio/adc/mt6323-auxadc.c
-> +
->  MEDIATEK PMIC LED DRIVER
->  M:	Sen Chu <sen.chu@mediatek.com>
->  M:	Sean Wang <sean.wang@mediatek.com>
+Cheers,
+Andre
+
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+>> ---
+>>   drivers/iio/adc/sun20i-gpadc-iio.c | 8 ++++----
+>>   1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/sun20i-gpadc-iio.c b/drivers/iio/adc/sun20i-gpadc-iio.c
+>> index 861c14da75ad..dd4c7e6e3d76 100644
+>> --- a/drivers/iio/adc/sun20i-gpadc-iio.c
+>> +++ b/drivers/iio/adc/sun20i-gpadc-iio.c
+>> @@ -180,7 +180,7 @@ static int sun20i_gpadc_probe(struct platform_device *pdev)
+>>   	struct iio_dev *indio_dev;
+>>   	struct sun20i_gpadc_iio *info;
+>>   	struct reset_control *rst;
+>> -	struct clk *clk;
+>> +	struct clk_bulk_data *clks;
+>>   	int irq;
+>>   	int ret;
+>>   
+>> @@ -205,9 +205,9 @@ static int sun20i_gpadc_probe(struct platform_device *pdev)
+>>   	if (IS_ERR(info->regs))
+>>   		return PTR_ERR(info->regs);
+>>   
+>> -	clk = devm_clk_get_enabled(dev, NULL);
+>> -	if (IS_ERR(clk))
+>> -		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable bus clock\n");
+>> +	ret = devm_clk_bulk_get_all_enabled(dev, &clks);
+>> +	if (ret < 0)
+>> +		return dev_err_probe(dev, ret, "failed to enable clocks\n");
+>>   
+>>   	rst = devm_reset_control_get_exclusive(dev, NULL);
+>>   	if (IS_ERR(rst))
+>>
+> 
 > 
 
