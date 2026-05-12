@@ -1,134 +1,119 @@
-Received: from mail-yx1-f43.google.com (mail-yx1-f43.google.com [74.125.224.43])
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F20A037DE9C
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:30:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778599856; cv=pass; b=ePLd/zCvd+ksKCdLAtczPMRm9diHIKJKafRXRUGDar74/xG4CnA2EoKaFwMFqjCQWZip+MgZ86Oj9at2x5uGfUo6YWoUlYOvU8CgDzSCWUSR6ijE0pctZ2NdCM7NC2qCpkxI18wwvxnbOM6yOqMax1zAtUtlp7dQmepOorQ5l9k=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778599856; c=relaxed/simple;
-	bh=T7o5n9MEAOe7XTP5RbwXd1auuooTYnlsv+kjrxWvh1I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=H7hK/82zqar6PAAH++bpyVPqBfOQl4bYZG92JB9eXvQEy5YpQ4bjycgEyXM6PW2sGgXI0KajGoNi5N1YnfoZKInFnVLFFk8O6TrRS6qp1cxfqHDemtK2tjuoy0E3fMu/ntbgbXXeutDrmsz/AuUgbDcJ1py4WlGcNyGT/kbNS70=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oIG7vbfG; arc=pass smtp.client-ip=74.125.224.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60B643B840E
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778600164; cv=none; b=cck7pXi7OvHyed1cWXVbArcOKfD5UslbzRssMmfcmTEBXJOxnj4wGVvMvS0cCoiWZIwZTf0QESx+B4G4PDSuEgTsh/SEZ3r53SM7oGd0YVjXM9dQQzg/JbXo4P3yp9/4xaw/fMWkzV0XPUrXVpCj5WIVJMj1SHMa5TSLRjIDNNs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778600164; c=relaxed/simple;
+	bh=gDWzC4y7x8TzNrpLYlnHloWbt2a+j3So8giBK9XgK5U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Y8HP/c6qq8ETJkI40vGdphq4Cqqwa5bAZuuvXwzNLg0U/PU23gsqQ9bBo8JMmOZPkWZiZ8nTRazJorBOxg3TSryvPUkXy1l+1OoDe1OmPbP6KY5jdhCxpjj0jPxk93lsqfMJEG5oVQ0oa422SHUyepEQf4ZLkTgvYu3zTqT097c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=RwKVjtRy; arc=none smtp.client-ip=209.85.210.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oIG7vbfG"
-Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-65c7efdb7d8so6078490d50.3
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:30:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778599854; cv=none;
-        d=google.com; s=arc-20240605;
-        b=PVL4pmb+wQuv26dztnDRy2atuBYxOSvXkGs/ykm8pfOR0El9blvosFmgAs48glfrFB
-         c4mpkMn93HAonFGuQlnY4cJutGm62QaNJePilTaaUUDsc6p5p1g+fHHW9TiAqtd8oF/V
-         tsCoxXAAUVKCFc9KFuv/9rpzJQdM4LtLLJlOYhkZwlN3DiPpMHtx9kHJuru1uOXmlXrq
-         wmZc5CLYlYejbCplmwQNi7ENVkrWGAxODg/B9zGJmEFIMCZUsfaEKgpSdCriQPoRwozw
-         yOe/i6bHQJLblyv/bQSoETHLMhlQKaHZcA8q3IhNkJ4mtXZUbD5HTHGorfrFFWLP+fmK
-         VcTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=T7o5n9MEAOe7XTP5RbwXd1auuooTYnlsv+kjrxWvh1I=;
-        fh=0UZI3/OaYfwnikJK5tGQ2na8XFte2PzdQAdHualFTJs=;
-        b=JxHsosIkooa+rjHGlLlVQOVcVkXog3lMaanGdVU4qxzQD1jHlKMzTXMi4xF+smuNae
-         rf+Sai7dKWKemAFVtrkBszXfRTrAGfJcSvhVcdO/nqWSuVJmT55uMJrdJIjtM04/a87T
-         FsNaapx1Jlw/dsr0OhUgfW6nL81X4CVGVUFlfdmMrUou6drJEPAgeFuCyamddQPNyeWM
-         Qcxtq5SoqhSEZ+oJlkFhUnpKMLC49HzM6pti9kdbMXQEOFqY/5heeEQBrfGIMxg55jMU
-         +yhxV8uZsWW2bczYGEI8WzLS3WL4QthpEVBVm73XSsAZ1eYtkUVMMi3v1Inm0tcPbkk2
-         w2/A==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="RwKVjtRy"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7de44ed7a11so4561200a34.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:36:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778599854; x=1779204654; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T7o5n9MEAOe7XTP5RbwXd1auuooTYnlsv+kjrxWvh1I=;
-        b=oIG7vbfGhrcMXMxkxIGdAstHtSYm/QZQXyLkJH97tqDX0j+SBGpapbDdnXT7OUpXXI
-         3slrASqMlJY6D6C3sH1i5Xv+UzzDlygxgiC93faGCggE8gKLyytF8XOq909qFawsRj4V
-         zgj4cLkfRlkNqhEOG1/tJLJgk3c7jQhH/+hExcoRpV0kmN+orioRcd1OmDEbNKb4zkN1
-         4ANz2yPzZW9eiGxZ/8GQeB1aGEQUyW9vyMVsdzEwA+lDtCzBg+1fJ5IpOvtMFc10/P5M
-         LyLvGsA9y5xm6zg49TvLrYhw+tIVQWXJPh9WPPl7UDQLgyUolZ3HO6JFH8eDr28TAozw
-         isUQ==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778600161; x=1779204961; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mb5db91tQ+COT2wwgeDAq4Be+yhOzSwg/V/uXAcag4Y=;
+        b=RwKVjtRypmA4W5bRnMyaZBDpCnuoVKDpmMCcQBYM3l03X3G38RY8RVdk4dgGedjM/d
+         c9BK2DTHJFqffMUPRBTovaIW8mwCyC31DtVzFS3+jRe8QKEL1hTPoF+g87WOUeQCMft7
+         mGQscAgTFgM1BCGRutyCWPMz//oAtJDra5r9en6wfC/D0+xAM7QlhinQY4MW5iPGGUqS
+         Hfek625VGOD0Ao0bmoTBQLVR5xAhLvNWCHqs6Oz+VG3sgkiYj/3WVfEBUnmJPQfok1KU
+         B+ciFAHG4UjOyEHvaVYu/jedUesRCV+3h5dXtfxEA/vHUnhI07siMcHOH6uykB+7Geg9
+         teoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778599854; x=1779204654;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=T7o5n9MEAOe7XTP5RbwXd1auuooTYnlsv+kjrxWvh1I=;
-        b=l2FSBpTF+Hf9Fjm52/KjErZ7uwzzE3S96jDYkVK37kF9hnf/Gbd8rHAmzDScD1gtkY
-         04uTKGJibWMtHCifbPoXgWmlohTHFIzn+NzpfmRQMIWfnroUzPwL2mBAV5IHlIU4OLe4
-         lQg/g5eMfL9DoLn6IoC/ZWKEk/u+kUt4UT20qwpKc4SeNJyCJz6S2pEFaRHV1+97C1hE
-         rfNAXCybifwPOQHzczLkUxS87tFFnzOcv+d8XC8G/VfEvNuZptNEMsxtMRrPbzs8AcTt
-         WusMa2/FMWaGkdVcvQ5Wmdym/RFvaR/XjbCq1NZUS/VDta9g4v+os4Fqh8azKvsZlg3F
-         I6hw==
-X-Forwarded-Encrypted: i=1; AFNElJ/+138KsUUd8rapL1gTm9QEBNon06uKw91RLP2jCsPQlyFVgJmXwtBsoYuAaN5mt8MCgPQDR/lGybY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1IoY8kLzIrfMCSmPnneG0X3T9vD3O8MJTrDnSYFtogpFj2W1o
-	Z0Axkt5myZoxEKNQY7IoVlTYBs4c1r9EKH7lqGsbIt6Vc8ex3mrkU0quiQ7rj0VieeN+m/NXqnW
-	+tIEZJMlGs8PYqLr7eP3AlCo+sQUtd70=
-X-Gm-Gg: Acq92OFtcr1q2js2xMytGJxPgCsVI6lz7XOvYjsfU1jdrxezM4MphOB1Bw5AFsODZeF
-	F/NknNwtWM9ewbbJfzMcquOF054iyrSqQ7bZTZin5hW9n/r1IWUVaUkf9mvLVmotLpjkuiQVMKb
-	JkeeI5O/6HgWQhQO4L0lzGPkLhomuK22whPFg0YBQ2U5okEWDwnZ0ijawF5e2aJkJFiE8vhyVlZ
-	GBNJL3WSkQSpL47J8eQGdGzsQ7subiiR7j9H+U/ZME4dttWATA7otGazXVY4o7keMfFg+h1XQly
-	/LrCa9G0oQ==
-X-Received: by 2002:a05:690e:12c8:b0:654:a000:94bd with SMTP id
- 956f58d0204a3-65de12e6c93mr2935575d50.57.1778599853589; Tue, 12 May 2026
- 08:30:53 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778600161; x=1779204961;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mb5db91tQ+COT2wwgeDAq4Be+yhOzSwg/V/uXAcag4Y=;
+        b=gi3S0CpFeXotztGFzne7MNH/QhBJf4MrPZHcCIg9PHJp6yioU9UMTVFez8D5XHms1d
+         DyVNvrbxQeq68kt1ZON/TItMoOL3K3KwLLMvwiyhyjb8TdhM6c5ktlWvHafePHbT/JkU
+         rSyqnHu9i6BMqFio/hW8rQk0LD6G3l/D822U1xUPynIgfhoOBcaLpndFYgM0gbCa5fPP
+         xT1CEXRc1nppDYpw9cupq2ufo0Au9Sm9JYhZ1nmdP6ZMh5Szgj0V2bldZuzdMS9aiWAQ
+         uHV4qTDshCim/jCG5ahLLdw16HC5GUnmbAFtNYXZRM6q2M9uMTQxg747LEUWoUUEycxT
+         OUBg==
+X-Forwarded-Encrypted: i=1; AFNElJ9QHKLyqvXHA3vzDdnasslXWHK1Vi4C4b7tU5OFeCRjBdTz5xWH90RpsuhwE6MKCiN+AD+RFgHITaY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxpRlxSFOm2hv7AgkctRdEztGxkpUwwjPZmSPMPnNq1p05wQbXd
+	JPqbhk96wMK64VXPizyKLKp+Xp/sTsgi9E5OVxvtlJafafEptY11shjoP8JmS1DQRCg=
+X-Gm-Gg: Acq92OHqjg495GmZt3jSWyp9sUR1XopKx/gZQtPM7ZvPA7Se7HkPo/4/vHnujgblIS8
+	xqWKAnvL3I9v2S8Kivlq16R9IeL27/zk2q6VqQOkAFHYMCA72HbDsrissl0bBj44mxX73HCsNR7
+	BimaYE4aEQKLIVSfojiIZxjA5xnH5UDaEzOqzDzLeJY0ePVu7pbONXQKvsCOGXcBHwrJtlVa2KS
+	TOEsxh6DbleIhd8l/8SrgtXVkweTmfaFpXxg2h827pieKCgVwHH4uOHLWcC/LsTXvEDSBg5KejE
+	KkXCIuQLZvAYjyFSdcf1jZbdu8OEpWmMRJca4Gc99nuYWTd4tv5dfprVTwT/BwUN0hWPY1a7G+c
+	y7FWNNKq4v/n91dYSJ12fc19ExJr/TnzcBHfbX0RSlt6Ci1Bbr7gTSSQitRWh7GfgtZve4keQY5
+	ydVcBifTf/l87qT4ki+nXVbiHkL0tzYfIkFtPoUUVEWwraUu8Vum3fLWDARcX3HStvXOqqNKgGA
+	A==
+X-Received: by 2002:a05:6830:608b:b0:7d7:58b0:7685 with SMTP id 46e09a7af769-7e3666ccc61mr11422802a34.13.1778600161338;
+        Tue, 12 May 2026 08:36:01 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:baa4:f7fb:528a:2457? ([2600:8803:e7e4:500:baa4:f7fb:528a:2457])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e367d90148sm9413517a34.20.2026.05.12.08.36.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2026 08:36:00 -0700 (PDT)
+Message-ID: <4742ea18-f3df-46dd-aad4-18d1e5f03f7f@baylibre.com>
+Date: Tue, 12 May 2026 10:36:00 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512120356.40839-1-m32285159@gmail.com> <DIGSQPV2STJK.2S7C67L7I0RTJ@gmail.com>
- <CAHp75VdxUR0jdW2-k5SVGC22OK07VxHK2ORtVdSdniPWdcniPA@mail.gmail.com>
-In-Reply-To: <CAHp75VdxUR0jdW2-k5SVGC22OK07VxHK2ORtVdSdniPWdcniPA@mail.gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 12 May 2026 10:30:42 -0500
-X-Gm-Features: AVHnY4KyqKslBynbe2M73er-aGuvb4ECN2y5YTNm4jOXrq02u41JlXjmg5UX1I4
-Message-ID: <CAKqfh0FyELOpgB1W+_nv4a1G1tuSjnVxbEFrUeR2+KCT2Q=-Ug@mail.gmail.com>
-Subject: Re: [PATCH] iio: imu: kmx61: Fix TOCTOU race condition
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: jic23@kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: mapping file for include-what-you-use tool
+To: Joshua Crofts <joshua.crofts1@gmail.com>, jic23@kernel.org
+Cc: nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260512073505.1310-1-joshua.crofts1@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260512073505.1310-1-joshua.crofts1@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 12, 2026 at 10:25=E2=80=AFAM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Tue, May 12, 2026 at 6:17=E2=80=AFPM Maxwell Doose <m32285159@gmail.co=
-m> wrote:
-> >
-> > On Tue May 12, 2026 at 7:03 AM CDT, Maxwell Doose wrote:
-> > > A Time-of-check to Time-of-use race condition is present in
-> > > kmx61_write_event_config(). Move the mutex_lock() call above it to fi=
-x
-> > > it.
->
-> I think you want to elaborate a bit more on this. Id est explain why
-> ev_enable_state needs to be protected. Not everybody is willing to go
-> to some site to read some AI reports and interpreted them.
->
+On 5/12/26 2:35 AM, Joshua Crofts wrote:
+> As promised, I'm sending my IWYU mapping file, based on Jonathan's
+> version with a few additional tweaks by me.
+> 
+> Other than adding support for more assembly file business, I've also
+> experimented with individual symbol definition (see BIT() and GENMASK()
+> in the following file) - this is to prevent issues such as the tool
+> wanting you to include <linux/bits.h> when you already have
+> <linux/bitops.h> in the source file (I agree, doing this symbol by
+> symbol is tedious, but BIT() and GENMASK() are symbols that especially
+> do this, and they're included in most, if not all drivers).
 
-Can do that for v2. I believe that it needs to be protected since
-later we set ev_enable_state to false (basically right after). Could
-be wrong of course, but Jonathan did confirm the TOCTOU.
+TBH, I would favor rules that are easy for machines over rules that
+follow existing human conventions. Is there really anything terribly
+wrong with including both bits.h and bitops.h other than "convention"?
 
-best regards,
-max
+> 
+> Feel free to improve this file and pass it on. I wouldn't really fully
+> rely on IWYU as even with the mapping file the results can be weird,
+> but it definitely serves as a good starting point when doing driver
+> cleanup.
+> 
+> I'm making this patch an RFC - this is not intended for merging.
+> 
+Sharing it is nice. Automating it would be amazing.
 
+Not sure what the best way to do this would be though. I've considered
+the idea of having an IIO linting service that could run iwyu and some
+other checkers that catch common issues, like spaces in { }, where and
+where not to use trailing commas, etc.
 
+At first, it could just post the results on a public page (like sashisko).
+And if it ends up working well, it could eventually automatically reply
+to patch emails.
 
->
-> > Reported-by: sashiko <sashiko-bot@kernel.org>
-> > Closes: https://sashiko.dev/#/patchset/20260507223337.48437-1-m32285159=
-%40gmail.com
->
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+The hardest part would be finding someone willing to host and maintain it.
+
