@@ -1,282 +1,210 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E602386C1E
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 11:52:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1BE9349CCA;
+	Tue, 12 May 2026 11:55:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778586756; cv=none; b=uYvWH025GZ6uLvy4ihzFK1/LuWM9AoSpzoISUXryM/s2h1n2YMQJmbUWUofxmG4XBJwLn8+k150TIGa4JVas5wHaS57C3/OpGMfJlTBrpJMtoHtWrrjB887InxupVlNW1ZRqegrb4Y949YJvA7H47Aem9YuLsKiVReeI61XpYao=
+	t=1778586921; cv=none; b=l0kktpnpbqtBZO8I/C3OI0mlyac8CzoOL6J49V9UiS7Hi0LXJdxwFeivcFpAUmX2HpH3GeNTp33JY8jJluiyw9w9eC4d63G16r2gjzURoR2PbdHpSi21l867FgdamqXxa+ElKBXU105/kC+Z1ZNzXw4opCIYL/hRnfTSun12BdM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778586756; c=relaxed/simple;
-	bh=q0toXFtdCq3Gd+N6IgETwyG7TGJD8jNf6JYTpn7lJtI=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tG1yJy9Cx/yjuAcruA/W1OWchqLA8hgpkRrLhEdB8KzLakl8UYZ12QC/+Z5tnSjn+ks2dlab56byhdVBlMCmHpYYoFeAc9Duc9tr8H34yLSWGwb4TGOvLYZCBUTjppnsgvx7uSTV4Hd9ghDPRvGWhOb2oNbLjKNJRulH6ehkT0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=icLlewEA; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778586921; c=relaxed/simple;
+	bh=fswiufGYrNpPaT8jrpxSu7XF/ePr1DAq6rYJEl56Fao=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ECCteyOHHZiDoqZhvIGE86YMJwJLfBt9OKndLf/d7iap1RtOnvEngvGSu99ZvH1siHMYI4rNIe7LnpsDVN+4gFAWNCt09+Ui7nOv7oqzD2wXP5BVAvMGoJWzm9R1QKg4C9ElMRgRaHNtralN9m+SEi4UXrK6jxV/D0Nw8ymEbCc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bRKxhjCP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="icLlewEA"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488e1a8ac40so53069625e9.2
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 04:52:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778586753; x=1779191553; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=xiotYhVrHRnwS6rwT87KZq6Tjp1oH1i2jknlxHPxVk0=;
-        b=icLlewEApWrjhDb7l1QbIfjfj97emDKwPEDz8PQuWPsO3Luw42gifpz+WZ/an2n0OK
-         Cqs4nCT/Ntv8kVr4fXQr1HYwmSl0YXkF813l286yTQBsbfXWievHgJA3tM+QDc2e2WFf
-         p9GY+14Sa8SOrWzJjq2XaeVqTtQsqM5Vz155RUmvrYFVHyvGo6xPdp15b0TWAwEO1pbK
-         wW2ZGm2Lbr5HleDT/To24q89YUOe/S5FZxPNCXNN5YCXCbAhPnIGVTAOjoqQeJJXxsP8
-         FBpyEpWutcxr/+N5tJC7Z1aPw9sCNIYDEVbXROu4UT7OaQo4/Af16pVolqlD3Gg/S7mO
-         EF+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778586753; x=1779191553;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xiotYhVrHRnwS6rwT87KZq6Tjp1oH1i2jknlxHPxVk0=;
-        b=h7+M0oF8hFNRzyS/ucSnBCYDUC86pfeo0ca14hw/4zxJc7O3jQuUXTcwTaDY38gy9H
-         n6ZtsGHm246D1mpH5t8qUm4Cmq5J+DIaBOqSQWx2dcl+fQESrfhsZMCrfz4pf/60uunz
-         w+G/Fi4rMV7MecoZYejCEJ14FHW25+1lU9zoYM3Agicz4rj5WT1FG0ZD1rjOCVbCxCsP
-         iwYYZcKkdFHD91zHSAl8/IhPFkleqLN0wakQno6kNA0YCYCK04H/ls3MZ5T8NNVLNFdK
-         lsus3bsghEpCLEfVuqYY9V0c3Mx4cnVffN57CvPTGIy//CCIti9Sx8NqGozM/V8dlDkv
-         ybsA==
-X-Forwarded-Encrypted: i=1; AFNElJ/8jrkrNwakANWFepGEWOQ1WY5fGDAtdsHriIYpRwkMKQUKz9IyylXuxlqRK6PEQ5GqBOtxPTEkges=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx+3EgwI354VhlTFl/UO+TF7pxQdlVMP8Qc5I+sIDXoCq/wg1Sf
-	S7LNta0w5odrdpmRhYLMjBi+zaBgi6Tt4G2vsI25L96pvbXDngPlrG4L
-X-Gm-Gg: Acq92OGSDmHr5mIwkNYGE5H9pvtExNLkS9r8oqFGSDmk/32T/Yh4livA3iur8jzJsA3
-	U2cj3VZ4lRCmkHLq+uSi2h3wLuOqgoeMP+fqXA6A2qMOS1qtc3WAUmf5xX+BjvvGmpirTQC6oX+
-	nld5z/E/ITobzXzvVsr00c8eSLxfhBwzmkQ9SUjWXCZNdzDRKku1ha4RMSkYdnLXn+3+fUMTGd3
-	UWLzNqvqbLOmyEZVqPt/xkzPzaoSg8/8D5G9Q+NwdAccHl+NYl+tfRbZ5us2xtMQE/sLbOdkHmO
-	AjEV6Zzfoe7rqG2aro9GgcFokcZqru42arkqghrW1MndgIPcCSt0fCv8s+UgF/yfwLmEN0NXhMA
-	h0pemdG+oyGL0QkmzhRy9VM5pFxQDaTjr+iRwQvpC++3I/tyB5ec+7V1PDu0W/lDafOyDgc5+A+
-	ZSnaUEwQusUi5yy80s6fiUVg5x5jmrc5sK2JvgdCVQtu+hgr9KuFzFUq6Fx5ye8OHVHBPZr/MiD
-	EKHgkEtFgKdCoeuM5UNmdcdUGayioLMuiHBlg70cStCkDS0oA==
-X-Received: by 2002:a05:600c:8b57:b0:48e:706b:53e3 with SMTP id 5b1f17b1804b1-48e8fe4b07dmr43967305e9.1.1778586753200;
-        Tue, 12 May 2026 04:52:33 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e906ae8b5sm71070485e9.6.2026.05.12.04.52.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 04:52:32 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 12 May 2026 12:52:28 +0100
-To: Jonathan Cameron <jic23@kernel.org>, 
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Shuah Khan <skhan@linuxfoundation.org>, David Laight <david.laight.linux@gmail.com>
-Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <aldsbu5etakdgrg2qjpcnaehyvr7n352j5huv6ipyjrmnqtvxa@2rkypkhor4mi>
-References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
- <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
- <20260512123953.40d80bc9@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bRKxhjCP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CFAC2BCF5;
+	Tue, 12 May 2026 11:55:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778586921;
+	bh=fswiufGYrNpPaT8jrpxSu7XF/ePr1DAq6rYJEl56Fao=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=bRKxhjCPpAcqknJazCPoMcANxi5EQVfKJTW25qa6Ac5cvGPN82dM3K2vJijNcjLpI
+	 rrI/6utFs0NMZ9bm/rEECyQpDAWsc38Q4puS8FRa2fPalFfr+Rdd2axPBvl5dfgem3
+	 i1Z1vNlGWuG+ROIhOp6Yl4jnIMbz/QttnwxRqJ1QGrxVg8qMJgV9wYCkGk0lxkgklq
+	 kdYKWNBTsGA3uN/KMXjQOgtRpfPO0kaVbHVC7dlW+RuKFHZIZb1q+k1GmqKdMa2XIu
+	 TNm1ZovjB79dS7FBqPkQnqdL3Exu3xUE0sHiw3ScUnb1wMr1ANdkViQ7UkCkudPNyS
+	 QtH4ExAQFA/Fw==
+Date: Tue, 12 May 2026 12:55:10 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Alexandre Hamamdjian <azkali.limited@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, CTCaer
+ <ctcaer@gmail.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, heikki.haikola@fi.rohmeurope.com
+Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Add ROHM BH1730FVC binding
+Message-ID: <20260512125510.79c5298d@jic23-huawei>
+In-Reply-To: <f05093df-663e-417b-a671-d627811e82de@gmail.com>
+References: <20260511-bh1730-v1-0-e0df1f499135@gmail.com>
+	<20260511-bh1730-v1-1-e0df1f499135@gmail.com>
+	<92e2d1ab-c973-45a2-b0c4-d7c672c610e0@gmail.com>
+	<00855a46-20f9-4b4c-8bec-bb64d9d8efe6@gmail.com>
+	<20260511161429.6cae5b7b@jic23-huawei>
+	<f05093df-663e-417b-a671-d627811e82de@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260512123953.40d80bc9@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 26/05/12 12:39PM, Jonathan Cameron wrote:
-> On Sun, 10 May 2026 13:42:20 +0100
-> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> 
-> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > 
-> > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
-> > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
-> > precision). After the decimal point, digits beyond the specified scale
-> > are ignored.
-> > 
-> > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> 
-> Whilst Rodrigo has already replied to say there will be another version
-> I'd like to request final feedback from those who were involved in the parser
-> discussions.  
-> 
-> They got very involved and I'm far from an expert in the right way to do
-> this stuff.  
-> 
-> I don't think David Laight was +CC so I've added that.
-> David, Andy - I think you two were most involved in that discussion:
-> Any objections to the end result? 
+On Tue, 12 May 2026 07:42:46 +0300
+Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-I am evaluating on taking sashiko's feedback here too, so it is a good
-time to check this again indeed.
+> On 11/05/2026 18:14, Jonathan Cameron wrote:
+> > On Mon, 11 May 2026 13:43:56 +0300
+> > Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+> >  =20
+> >> On 11/05/2026 11:22, Matti Vaittinen wrote: =20
+> >>> Thanks for patches Alexandre!
+> >>>
+> >>> It's nice to see these upstreamed :)
+> >>>
+> >>> On 10/05/2026 21:09, Alexandre Hamamdjian wrote: =20
+> >>>> From: CTCaer <ctcaer@gmail.com>
+> >>>>
+> >>>> Add a YAML binding for the ROHM BH1730FVC ambient light sensor.
+> >>>> Documents the required compatible string, the als-vdd/als-vid
+> >>>> regulators, and the rohm,integration-cycle, rohm,lux-multiplier,
+> >>>> rohm,opt-win-coeff and rohm,gain-coeff calibration properties
+> >>>> consumed by the driver. =20
+> >>
+> >> // snip
+> >> =20
+> >>>> +=C2=A0 rohm,opt-win-coeff:
+> >>>> +=C2=A0=C2=A0=C2=A0 description:
+> >>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Optical-window calibration coefficie=
+nts. Specified as a flat
+> >>>> list of
+> >>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 triplets <rc cv ci>, one triplet per=
+ window region, where rc is
+> >>>> the
+> >>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 visible/IR ratio cutoff and cv/ci ar=
+e the visible and IR weighting
+> >>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 factors used in that region.
+> >>>> +=C2=A0=C2=A0=C2=A0 $ref: /schemas/types.yaml#/definitions/uint32-ma=
+trix
+> >>>> +=C2=A0=C2=A0=C2=A0 items:
+> >>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 minItems: 3
+> >>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 maxItems: 3 =20
+> >>>
+> >>> I am not sure if I read the driver patch (2/2) correctly, but if I di=
+d,
+> >>> then these coefficients are used to compute Luxes out of the raw sens=
+or
+> >>> data. I believe it would help anyone integrating (or investigating) t=
+his
+> >>> sensor, if you added the actual formula here as a comment. If I read
+> >>> this right, the formula is _somehting_ like:
+> >>>
+> >>>
+> >>> Lx =3D (cv[win] * ch0_data - ci[win] * ch1_data) / gain / int_time
+> >>>
+> >>> Here the cv[win] and ci[win] are selected from the opt-win-coeff -tab=
+le,
+> >>> depending on the measured ch1_data/ch0_data ratio, right? =20
+> >>
+> >> One thing came to my mind. This 'window' -approach for lux calculation
+> >> is not too unique. For example the rohm-bu27034.c uses similar approac=
+h.
+> >>
+> >> The thing is that some of the sensors have more than 2 channels. (For
+> >> example, the first version of BU27034 did. [That was BU27034NUC, which
+> >> got cancelled when BU27034_A_NUC emerged]). These ICs may still may use
+> >> similar approach of having light regions, determined by ratio of (2)
+> >> channels. BUT, they may then have more than 2 coefficients / window.
+> >>
+> >> So, maybe this could be made generic enough so it could be re-used for
+> >> such devices if needed? I am not sure if other manufacturers but ROHM
+> >> does this in Lux computations - if yes, then it might be worth making
+> >> this more generic and not just a ROHM property? Maybe Jonathan has some
+> >> insight on other Lux computations. =20
+> >=20
+> > It used to be very common to have multiple sensor / window setups for
+> > ambient light sensors - though perhaps less so on more modern devices
+> > (we have one on list today where they just say use the green channel
+> >   of an RGB sensor - so there are more windows but not relevant to
+> >   illuminance measurement).
+> >=20
+> > Sometimes the window bit isn't well enough described in the datasheet
+> > so we only dealt with the parts on the actual sensor package and those
+> > were handled in driver rather than being in dt.
+> >=20
+> > What I'm not sure on here is how much of what is being described
+> > is part of the 'chip' packaging - i.e. the bit that is constant for
+> > all instances of this device and how much is part of the wider
+> > device - i.e. the laptop / phone etc window infront of the sensor.
+> >=20
+> > The chip bit we shouldn't have dt, the other part we should and it
+> > would indeed be interesting to work on a generalizing that description.=
+ =20
+>=20
+> Hm. I kind of agree. The constant, 'common for all sensors'=20
+> -coefficients should probably be hard-coded as sensor defaults. The=20
+> BH1730 data-sheet seems to be describing a set of coefficients. I=20
+> suppose that's what comes from the packaging(?)
+>=20
+> And just to contradict myself...
+>=20
+> I can imagine two reasons to alter these coefficients:
+>=20
+> 1.(st) being what Jonathan described. Eg. having something like a lens=20
+> or a glass or whatever, on top of the sensor. That can alter the light=20
+> entering the sensor, and require change to the coefficients. And indeed,=
+=20
+> it would make sense to only describe this in the DT, because the sensor=20
+> is already described. That'd mean the DT should only contain the=20
+> 'coefficient delta' caused by <add the cause here>.
+>=20
+> 2. In theory, there could also be another reason. I bet the sensors are=20
+> all 'individuals' to some extent. So, for something requiring very high=20
+> accuracy, there could be some kind of calibration process at device=20
+> manufacturing. This might produce more accurate, device specific=20
+> coefficients. Considering this use-case, I am not 100% convinced it's=20
+> "wrong" to be able to give the device-specific coefficients from the DT.=
+=20
+> (Because, here the coefficients really are a property of the device=20
+> itself and aren't added by some external part).
 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> > ---
-> >  include/linux/kstrtox.h |   3 ++
-> >  lib/kstrtox.c           | 107 ++++++++++++++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 110 insertions(+)
-> > 
-> > diff --git a/include/linux/kstrtox.h b/include/linux/kstrtox.h
-> > index 6ea897222af1..bec2fc17bde0 100644
-> > --- a/include/linux/kstrtox.h
-> > +++ b/include/linux/kstrtox.h
-> > @@ -97,6 +97,9 @@ int __must_check kstrtou8(const char *s, unsigned int base, u8 *res);
-> >  int __must_check kstrtos8(const char *s, unsigned int base, s8 *res);
-> >  int __must_check kstrtobool(const char *s, bool *res);
-> >  
-> > +int __must_check kstrtoudec64(const char *s, unsigned int scale, u64 *res);
-> > +int __must_check kstrtodec64(const char *s, unsigned int scale, s64 *res);
-> > +
-> >  int __must_check kstrtoull_from_user(const char __user *s, size_t count, unsigned int base, unsigned long long *res);
-> >  int __must_check kstrtoll_from_user(const char __user *s, size_t count, unsigned int base, long long *res);
-> >  int __must_check kstrtoul_from_user(const char __user *s, size_t count, unsigned int base, unsigned long *res);
-> > diff --git a/lib/kstrtox.c b/lib/kstrtox.c
-> > index 97be2a39f537..da7b5f83a3c5 100644
-> > --- a/lib/kstrtox.c
-> > +++ b/lib/kstrtox.c
-> > @@ -17,6 +17,7 @@
-> >  #include <linux/export.h>
-> >  #include <linux/kstrtox.h>
-> >  #include <linux/math64.h>
-> > +#include <linux/overflow.h>
-> >  #include <linux/types.h>
-> >  #include <linux/uaccess.h>
-> >  
-> > @@ -392,6 +393,112 @@ int kstrtobool(const char *s, bool *res)
-> >  }
-> >  EXPORT_SYMBOL(kstrtobool);
-> >  
-> > +static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-> > +{
-> > +	u64 _res = 0, _frac = 0;
-> > +	unsigned int rv;
-> > +
-> > +	if (scale > 19) /* log10(2^64) = 19.26 */
-> > +		return -EINVAL;
-> > +
-> > +	if (*s != '.') {
-> > +		rv = _parse_integer(s, 10, &_res);
-> > +		if (rv & KSTRTOX_OVERFLOW)
-> > +			return -ERANGE;
-> > +		if (rv == 0)
-> > +			return -EINVAL;
-> > +		s += rv;
-> > +	}
-> > +
-> > +	if (*s == '.' && scale) {
+Agreed this happens - but you can't really put it in DT as every device
+then has it's own DT - which probably means an early boot firmware patching
+the DT based on something in ROM or similar.  Given that is usually impract=
+ical
+we have handled this via firmware files - if no file, use defaults.
 
-I havent really considered the scale == 0 case, I suppose that
-one could rely on kstrtoull() instead. But as sashiko points
-out, it deviates from the documented behavior. Also, I will
-consider accepting "123." as a valid input, I see that others
-parsers do that and should not be a problem. So I will add a
-small change here. Also will make sure the test cases are ok.
+>=20
+> And, if we consider allowing describing (the more accurate) device=20
+> coefficients from the DT (for case 2), then it would just be simpler to=20
+> always provide the "full coefficients" from the DT, no matter if they=20
+> are caused by the device packaging or added lens/glass/XXX. And, as the=20
+> infamous, and not even existing rohm,dh2228fv device shows, people do=20
+> use the simplest solutions even when it isn't really right ;)
+>=20
+> So, I am tempted to suggest we just go with the flow, and allow=20
+> describing the coefficients from the DT, without separating the source,=20
+> (lens/glass/device-packaging) which is what this patch does. (If I read=20
+> it right.) However, I would like to see a property which can be re-used=20
+> by other devices as this seems to be pretty common. Yeah, it's probably=20
+> not _right_, but it feels practical.
 
-> > +		s++; /* skip decimal point */
-> > +		rv = _parse_integer_limit(s, 10, &_frac, scale);
-> > +		if (rv & KSTRTOX_OVERFLOW)
-> > +			return -ERANGE;
-> > +		if (rv == 0)
-> > +			return -EINVAL;
-> > +		s += rv;
-> > +		if (rv < scale)
-> > +			_frac *= int_pow(10, scale - rv);
-> > +		while (isdigit(*s)) /* truncate */
-> > +			s++;
-> > +	}
-> > +
-> > +	if (*s == '\n')
-> > +		s++;
-> > +	if (*s)
-> > +		return -EINVAL;
-> > +
-> > +	if (check_mul_overflow(_res, int_pow(10, scale), &_res) ||
-> > +	    check_add_overflow(_res, _frac, &_res))
-> > +		return -ERANGE;
-> > +
-> > +	*res = _res;
-> > +	return 0;
-> > +}
-> > +
-> > +/**
-> > + * kstrtoudec64() - Convert a string to an unsigned 64-bit value that represents
-> > + *		    a scaled decimal number.
-> > + * @s: The start of the string. The string must be null-terminated, and may also
-> > + *  include a single newline before its terminating null. The first character
-> > + *  may also be a plus sign, but not a minus sign. Digits beyond the specified
-> > + *  scale are ignored.
-> > + * @scale: The number of digits to the right of the decimal point. For example,
-> > + *  a scale of 2 would mean the number is represented with two decimal places,
-> > + *  so "123.45" would be represented as 12345.
-> > + * @res: Where to write the result of the conversion on success.
-> > + *
-> > + * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
-> > + */
-> > +noinline
-> > +int kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-> > +{
-> > +	if (s[0] == '+')
-> > +		s++;
-> > +	return _kstrtoudec64(s, scale, res);
-> > +}
-> > +EXPORT_SYMBOL(kstrtoudec64);
-> > +
-> > +/**
-> > + * kstrtodec64() - Convert a string to a signed 64-bit value that represents a
-> > + *		   scaled decimal number.
-> > + * @s: The start of the string. The string must be null-terminated, and may also
-> > + *  include a single newline before its terminating null. The first character
-> > + *  may also be a plus sign or a minus sign. Digits beyond the specified
-> > + *  scale are ignored.
-> > + * @scale: The number of digits to the right of the decimal point. For example,
-> > + *  a scale of 5 would mean the number is represented with five decimal places,
-> > + *  so "-3.141592" would be represented as -314159.
-> > + * @res: Where to write the result of the conversion on success.
-> > + *
-> > + * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
-> > + */
-> > +noinline
-> > +int kstrtodec64(const char *s, unsigned int scale, s64 *res)
-> > +{
-> > +	u64 tmp;
-> > +	int rv;
-> > +
-> > +	if (s[0] == '-') {
-> > +		rv = _kstrtoudec64(s + 1, scale, &tmp);
-> > +		if (rv < 0)
-> > +			return rv;
-> > +		if ((s64)-tmp > 0)
-> > +			return -ERANGE;
-> > +		*res = -tmp;
-> > +	} else {
-> > +		rv = kstrtoudec64(s, scale, &tmp);
-> > +		if (rv < 0)
-> > +			return rv;
-> > +		if ((s64)tmp < 0)
-> > +			return -ERANGE;
-> > +		*res = tmp;
-> > +	}
-> > +	return 0;
-> > +}
-> > +EXPORT_SYMBOL(kstrtodec64);
-> > +
-> >  /*
-> >   * Since "base" would be a nonsense argument, this open-codes the
-> >   * _from_user helper instead of using the helper macro below.
-> > 
-> 
+I'm fine with doing that if we are sure the coefficients are incorporating
+windows in front of the sensor.  I know that wasn't the case for some
+of the previous devices we've covered - typically because they either
+had pretty optically clear windows - or didn't have one at all.
 
--- 
-Kind regards,
+>=20
+> Well, this is just my 0.5 cents, and even I may change my opinion on=20
+> this though :)
 
-Rodrigo Alencar
+I thought that was just me ;)
+>=20
+> Yours,
+> 	-- Matti
+>=20
+
