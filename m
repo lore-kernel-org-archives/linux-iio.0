@@ -1,138 +1,124 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60D7B3ADB94
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:14:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778598846; cv=pass; b=m0qyV92KT3ha73OShAmO6V7/4M2LK2UayqqNVfHvlvY9/pB7ppSQxOLDCiNma9Ts2o4NET5aFNbqGIrhWGlcQChdq5flErZtkMn5VNsgUprEVhtBLEMxXHAWqYgTwwRMn9jgvFj9V4z81DvLuFxg9bq/iE7TVE4wxPST4WlxOH0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778598846; c=relaxed/simple;
-	bh=RlnD02Ckc5yXw9Yc0x4TvRkLD4aoHnYNmd4TPpOTJIc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DPmj80H/E6hxoyatzEmQ9jNNh9lbJNXhNXQu7ASfYvp63hxqrVkkazuPdM9OYtfR7sxqzohQ1PzOHBiMlxc1X0B9AUt/7yHfJCCfHSg5ngdXBddU1lVBTPtWjjFR29PeHaUC2Xp6l3/B6sVX2snGF/apY82oexOTr/epQw0QfG0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rRU+/8PW; arc=pass smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36DE9377EBF
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:17:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778599050; cv=none; b=pFxsvV83Kpv76P4QCUxWMatJ+YvMZzq0IM1jx+7IfBJQvcrzqpff5jqwp43YC+dbVevAl+FZXQvSGm+OCQurPV9e/9aRviAETyQpmPOPqnscwqQ+3CWdS0FHeC3fOl6wi0zr1jxzQSPoicq0IIqKTbhZ15W9EMoxZQqHk/zvmHY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778599050; c=relaxed/simple;
+	bh=8TJgdzfi3lZ9KzNdiFtjj5Yc9QYnAhTeVBftcJhqnLs=;
+	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:Subject:From:
+	 References:In-Reply-To; b=EQw76U6uixLJtNGvMerzmzmkUhopnjI1vwrC/oV0Sm9AAojfJVtol7GIpLjtD2vExZSnga7BlRjMDHzlYUUUw/KJJ2F5JqAZPQSdYR1q2CH//+Tx2TvhinW7soTqDSaXQUQSHQvt0e5+ZDQADAxpfVTO4SlkKdsKBO/LjJRfU4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S+e9oCsY; arc=none smtp.client-ip=74.125.82.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rRU+/8PW"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-44ccbd3290aso4512659f8f.2
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:14:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778598844; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Tw/xe/GjAmW0iDIKq0RdZdFnGaAj2O1dH8kTyjYShvOnX8vI89TqztyD8RSSU1RyNn
-         XeCNhXpBMHjQmOajC+XkNoFDoPYYMatPTeW32xQFLDm2BQL4/AloNIvvXlIOj4bsYp8p
-         e95adZfMxBNRmtm1qkRv1mM/ZHXbyOgPoRpl3lMkd5/DMOkh7q7fhOLa95a1XIYdJ/gP
-         xwS4eIUA1EMEZ332ez7YCwXxYp7NmN/w4v4M4WNSzFdm5U+lisAB/jxOvOTo67hTqL/D
-         hNhzBoyW9j81eyBzTUL39OPdFVBlBo4mqH5ahrUzt5NvNARKsjyoCgdzJDx0ewGk2ipl
-         XbAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=02uzcGUDE7/45LZYMo1Mq9uyKmDbGuvM5rUwN6O92xc=;
-        fh=U8VhFXPfKN3B6DH16txn4dzWfGMofUi23QcFYxl0PeI=;
-        b=jfKr6P9PmtzNibMteP8ldl9z/5Ouk4GfDAaw/RcWN8tyji00hrPnyECFmvKp4rgUBW
-         GhAzoe0cWIAex5K+Ey3UKDQPvyeaqK2gEZYnPtKEHHabGi6KPhNaVfowi2xE2EC9cAjF
-         N98QxfDltQkrhguVBJD751uUuia2w9GFzA5lJLfckl50NNzVDRx/wFctuZL/6iCc4Ksy
-         NtKwxNOrKP7dKy7YeOazxV8O4jmqYOqbz2ecB/gsngzL88BqMdyt7CVunBGinW30S9Cj
-         r4MRVv+ERRs+aENpZHc0UfKIl45LuKnkb9uPF0FitwdeuljMqPHMJ4EfBBemV6alINXI
-         SdUw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S+e9oCsY"
+Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-13317450f83so3585112c88.0
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:17:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778598844; x=1779203644; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1778599048; x=1779203848; darn=vger.kernel.org;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=02uzcGUDE7/45LZYMo1Mq9uyKmDbGuvM5rUwN6O92xc=;
-        b=rRU+/8PWqA+x+2ZQuLyw2zTEYleseFyakYoaXxOnen8SRaxxdV7wgD4v4dDUWkyK2V
-         KQdc5/xZBWDeNMgmwcELCEwwyFMaOGVOcVWv671UWk1S3aXyLf9T/T/XL1f1CmhpQfTb
-         x4TKlLQAv9o003JZPvHhZJyZBRdLjFj5dThWqL/0Acc/Ru6folWk4IV7uxcKlEyWIcCP
-         NFL/LPcGisagb3X2Sv23MFnRAO2w6cXk70RsMKYKW5AAkUH4qCBrWwg4LKtkorlEsB4o
-         LRvhLG8Yt9/dzGXR8pNt11pB/5SgsTU+nh2YdVkh3j1Xgt4W05o6lOnRmOEA6+PzZ+ie
-         ILTA==
+        bh=BM9rz3n4Orrsu6iIEKdBnTkUTOxnT172ScZGK7tYZGU=;
+        b=S+e9oCsYyA6nNEwHrL/bcEsY0mZNgHMr0WONJHhJwpkjlejJUaXaecXK8wLjIl8pEs
+         VapRnUti+XxF8Pka0Woqr6pSngpUhoo5JCun2aV6dSS5FvfseX3MMRSekslU6kKU/fBc
+         fgO5ujiM7DPitwoG/CrLYfO0iNTzDqQUn9YqMi27Cx6WLbFuD1e3iWUM+TlTGZbFyinS
+         p3Bt+ruhengcT3Sxlxszn5sNXjQu/hSyRzSH+5uvSLgZx424NmX2t6+mZzNAKorc+3vs
+         wT49ByvOpsNwuDmChIeER0s907M6ByNDUnNRpzi70ljuaBA+LHNNjviLpCngiH3bF7ne
+         rDEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778598844; x=1779203644;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=02uzcGUDE7/45LZYMo1Mq9uyKmDbGuvM5rUwN6O92xc=;
-        b=EEhkghRoxTxMGCC5NIHhkDlurF0mq9Uqm8m5dJzTSicIat/gPIgRO2qvwm9ymDkk9q
-         /s4KWDfFSAEkkXEhGw5PpBrXaZ/KIBaJvZx/PgTmz3Pm7TeuV2gvR4sh8kfG8apVFpu/
-         o8Qf/hQByFpIIauTJ3peYYcRiRmysW8rbK58HqDNvdY1lLkmti2bBqMhQCbxhtQy+/f7
-         xAwvXGI5ELn9NEcLbrrPfXC37E9x+aKzE/0P47/XDkD3LDD0dfcOvSeVjOs47A9REhTb
-         DCYmgskueh/MJsPHp0rWyl+rF74XAGfleaUIyiUeaFHHCe/6PTjwrGoHt6Pw/Vn5Rb+/
-         7ZOA==
-X-Forwarded-Encrypted: i=1; AFNElJ+vK1TlcqF+CB2hqAYIu3EdN4Iew1g4kumta49EPCIhw3519K4LPdW5a+YxxTB8bB/K9CMYJUsASo0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxiiWJqgiQC/SZMiIF0ofl/CmvruUmFDOD7eUdBCX2cYL8Fjtfg
-	uQXp89WihmIueu/v1sLKpf77ndZdfLixGbwxcN8M1Rlud7wusB2io3IUvEapelfLIsivCiDFCcM
-	ioA2shCco8Of5YsGzbX0gGiR49pKyDys=
-X-Gm-Gg: Acq92OHqFCFvjVR3eDsoY5fgQsfexn99KYmlAXlFj6m/r6VkTier9ge/FdXZrbMAMNQ
-	fB8P9HsPJBaANixC7qaeb6SSpHf7LsH23X37CPrkM0W/+iMS/pYi7tXFTXh8fIJGDcQSzh4LzZE
-	HPwVT4D6GWYapQDGImkrfeYZANaMAtF+WxVmSyaSt/ZlUFXtDEE2lOg19wTfjQNJdGc46tGlUJj
-	Ut1sqLpPqDrqOacGYelmGqz6+2xsS+P4elAh2bldsydvPKuSFqi7w/S8EweEY5OqyyjDC+vBWeg
-	HCMONYlKtyPwpA2zfTXyOUkdtIH7MaJGq1GzUGIdyuLMEgvM4ceIbVicFYErjBIyH54g7UNusZk
-	jHSHUviMCco7pBPkf3oqL223TxZp8uOW9Qu719YlAiYu+0QTNzlujNmUXnSGRN9eK+ivLjV9htd
-	kQYhiRQTQxeApguvdP
-X-Received: by 2002:a05:6000:144f:b0:43c:f1a5:56f6 with SMTP id
- ffacd0b85a97d-45b1547c783mr5193943f8f.43.1778598843671; Tue, 12 May 2026
- 08:14:03 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778599048; x=1779203848;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BM9rz3n4Orrsu6iIEKdBnTkUTOxnT172ScZGK7tYZGU=;
+        b=gXWJSvftfve3Kpjtnk63V31tYaDWZOVryLvApWxXzHJqPNlBgEEcrCcFNUEtDI7+da
+         bsYg447zQJB+Co8ew7lkzr2gLAF5xVOMqFIg7kxIeF8DNex2ld/LOI8HP88/y4yZ0Ss/
+         862xuYeB5zVEZb1wyQbpebn+kLBSvTNfH/1R74eVE6eEiR7LleUBKiR9CWINicNiPm2k
+         aT0aNoTXV4Krs8tYqxGTDlYong46u8qVnu4S0ou5E8wyZNXpYYZH0IM1+5F2SdujDDtb
+         u6S/PFJx/F3sPqxzfzPxdni7QthiBumqpFqJK0AXqUSoFcAyAeb6KJXxvZxXtgJVp2Ue
+         nANQ==
+X-Forwarded-Encrypted: i=1; AFNElJ86u1Cu1uq13YHBi9N8R/zF1AuE9Rxj1jFh/1coFbsozqtsM97jdO/35N3owYMTONPpB377Y0rZGEI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzVWbKE9CrPAiQfp8EE/jTyDUg+FBcPPY7yWByV0wRcD94BLbVJ
+	UauheYT9qxtPIFLr4YpmIU4dkQDcCA0jnAKCIVCb9YwVTT838l+OsqWL
+X-Gm-Gg: Acq92OGrACeqA9XwS/0pe/VVWlaap1llKSlMe6w/pQRJJPYr+y5RcJIHDF1BoeE90h7
+	DQnUDLd5TNaCy+3NW7tmusDY4qSLGKilYjZeuSGd4/9vo0UPupBZ9S0fHgzc0Y5LcN1kCLNEYLy
+	uyMAndL/dh5m1ZBqbCUJbZSm3UzPcLInz71GdILppeiAd+3AULloLdSI6D84SkFSiSBlSuLby3I
+	P41yPv5CE+qQ1w8t90zJGglSOTXwhurKe6ZCjwL9NpQHonbfCfBuZO2ReQPtnJ+5ezRfRPzAvKv
+	LMJgOGW8mFsIeHWH8uogBMnOpmk3eDwJy8dInaNcj2gWMmHR5cuWPkD3T+FsyzjhFGWygkl6Fcq
+	x/iDUnDe6JM7/RhNRil1yeWy1OGAyhNO+cRokfl3WOe084TkmNOAFBvTkS/ub9ZQHqsZCxO0Ruz
+	N1q0p+AQRJO2JGJXQTueWRfhPpEQyy2RQOdkcG+w==
+X-Received: by 2002:a05:7300:570c:b0:2f5:3641:f10f with SMTP id 5a478bee46e88-2f85e62de09mr9745239eec.31.1778599048157;
+        Tue, 12 May 2026 08:17:28 -0700 (PDT)
+Received: from localhost ([208.185.137.147])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2f8862d429asm18326586eec.12.2026.05.12.08.17.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2026 08:17:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6@gmail.com>
- <20260511-magnetometer-fixes-post-pickup-v7-4-9d910faa28b6@gmail.com> <20260512160305.0be0be39@jic23-huawei>
-In-Reply-To: <20260512160305.0be0be39@jic23-huawei>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 12 May 2026 17:13:53 +0200
-X-Gm-Features: AVHnY4K_Wpb3S0Wsl1OrW6ag4ONfYJYQpyFz2Ffnmf3u7sa5lzgihiLJhGGYlPI
-Message-ID: <CALoEA-zL76rvM7JFoGgGMk8CsFmDRcQ9SG4TKHhEUrxX9hk-dQ@mail.gmail.com>
-Subject: Re: [PATCH v7 4/8] iio: magnetometer: ak8975: consistently use 'data' parameter
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 12 May 2026 10:17:26 -0500
+Message-Id: <DIGSQPV2STJK.2S7C67L7I0RTJ@gmail.com>
+To: "Maxwell Doose" <m32285159@gmail.com>, <jic23@kernel.org>
+Cc: "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, "Daniel Baluta"
+ <daniel.baluta@intel.com>, "open list:IIO SUBSYSTEM AND DRIVERS"
+ <linux-iio@vger.kernel.org>, "open list" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: imu: kmx61: Fix TOCTOU race condition
+From: "Maxwell Doose" <m32285159@gmail.com>
+X-Mailer: aerc 0.21.0
+References: <20260512120356.40839-1-m32285159@gmail.com>
+In-Reply-To: <20260512120356.40839-1-m32285159@gmail.com>
 
-On Tue, 12 May 2026 at 17:03, Jonathan Cameron <jic23@kernel.org> wrote:
+On Tue May 12, 2026 at 7:03 AM CDT, Maxwell Doose wrote:
+> A Time-of-check to Time-of-use race condition is present in
+> kmx61_write_event_config(). Move the mutex_lock() call above it to fix
+> it.
 >
-> On Mon, 11 May 2026 13:26:13 +0200
-> Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> =
-wrote:
+> Fixes: fd3ae7a9f21c ("iio: imu: kmx61: Add support for any motion trigger=
+")
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> ---
+>  drivers/iio/imu/kmx61.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 >
-> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> >
-> > Some of the functions use 'client', some use 'data', and some use both.
-> > Refactor the driver to consistently use 'data' in all cases.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Note that whilst I've applied this sashiko pointed out some more
-> while I was here issues.
->
-> The one about not ensuring the power is on for buffered captures
-> is a pretty major bug :(
->
-> https://sashiko.dev/#/patchset/20260511-magnetometer-fixes-post-pickup-v7=
--0-9d910faa28b6%40gmail.com
->
-> Which is a pain because we have lots of cleanup on this driver already
-> and I don't want to rip it out.  The fix is pretty simple though
-> (add a preenable, postdissable pair of opts and pm_runtime_get_sync()
-> / put_autosuspend() as appropriate.
->
-> So if you don't mind please put together that patch and I'll apply it
-> via the testing/togreg tree and we'll do a manual backport later.
+> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+> index 3cd91d8a89ee..9aa00acc7f14 100644
+> --- a/drivers/iio/imu/kmx61.c
+> +++ b/drivers/iio/imu/kmx61.c
+> @@ -942,11 +942,13 @@ static int kmx61_write_event_config(struct iio_dev =
+*indio_dev,
+>  	struct kmx61_data *data =3D kmx61_get_data(indio_dev);
+>  	int ret =3D 0;
+> =20
+> -	if (state && data->ev_enable_state)
+> -		return 0;
+> -
+>  	mutex_lock(&data->lock);
+> =20
+> +	if (state && data->ev_enable_state) {
+> +		ret =3D 0;
+> +		goto err_unlock;
+> +	}
+> +
+>  	if (!state && data->motion_trig_on) {
+>  		data->ev_enable_state =3D false;
+>  		goto err_unlock;
 
-Oh well, at least Sashiko caught it. Thanks for the heads up.
+Whoops, forgot to add reported-by and closes tags, so:
 
---
-Kind regards
+Reported-by: sashiko <sashiko-bot@kernel.org>
+Closes: https://sashiko.dev/#/patchset/20260507223337.48437-1-m32285159%40g=
+mail.com
 
-CJD
+best regards,
+max
