@@ -1,40 +1,44 @@
 Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1306336882;
-	Tue, 12 May 2026 03:34:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E98442F83A2;
+	Tue, 12 May 2026 03:34:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778556885; cv=none; b=YNlpDEmz5bn84FB8gQcLlw99IfuAlGu9VQpODpRUXFnJVJh7rhg7aWXZY5NqRlCLfIdbcrVbODitfpP67Fit4gpDQvGGSXQZnx34+gqD/ypUDsoTWEIpeuKYvHTCZOC6sjNdTtc4KuSnKaFUmhgaD6Dlfr11rz+4Zzh1fYfl8VU=
+	t=1778556899; cv=none; b=UMf1J66PWhfJS0BM7Z7HlAnoNyGGj/DhPdwzKVyf/DhW203v6Ynbf9HQ/2tx8tPO1+xDcjpBaSoWVhQN4Kc0qVG91QrfNEx4kjWQL0rbXB1yZt1hk1RQRtLEcN+lwEuGFQmzpwZsXjn5lCu+l0YxUhWv2pqGbUv68TOiRnPKEHY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778556885; c=relaxed/simple;
-	bh=LPSN3eQ6Hfl+bh1hHrV7lsLVpHxlV6ZShHXppbqRZ2c=;
+	s=arc-20240116; t=1778556899; c=relaxed/simple;
+	bh=ZhdPSsqU1VtoN3zjMNuxTnfCBHFJ8NuxN7BaGty72eo=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZOp9l0tF2gRoeeWRCWpuFyA6SjxVT7ftWUoG7ewGaM19G5oOpvD9VikodPAUGHTo3k/QgP7jib01MNnGUXMAkFHFBlk8Xux1q5fvilZ6B/hIQdVDMP3pqOyEN+7Hr6b8+3xxzWcB7QKg4uu0kQtNxCCzOZ7TVomNwAnVCAM4WmY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=ctkpsKx1; arc=none smtp.client-ip=211.75.126.72
+	 MIME-Version:Content-Type; b=oX/iepNlY+mWUaJuzKUcBbimm3ypyFNdONJkl94iJOzOglokISO9ff734Pr5js+eKavZSuHeSYmuabh4smmfQ7j+p2LCcbmfyid6LTCp9oQvnViAAW+Ozy0ExXC+X6BumcVSsV5Y/dFUlSvbGD0NE/aMuFMzVh1Dg8whqaskhZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=PH/ibe10; arc=none smtp.client-ip=211.75.126.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="ctkpsKx1"
-X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 64C3XKffC3571945, This message is accepted by code: ctloc85258
+	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="PH/ibe10"
+X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 64C3XJoF43571941, This message is accepted by code: ctloc85258
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
-	t=1778556800; bh=XX4NEwG2pnNEjdV2nkzI2Tf9svTHlhEtNdMCwQ6cceo=;
+	t=1778556799; bh=LtdXnQEVIb6c5aCwt7NTASRXJz0sr0Gu7xDW8knSUp0=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding:Content-Type;
-	b=ctkpsKx1wSZ8AcdhskcrjONKpf1gO0FWaT5CSTMK9bCBCf69seQDVs/wWQz78cHfU
-	 fwu1eyyI8cZFhmV+W1jlmuhw9AEV87nCjcm2QxTS4NDIs6h9GG3//DrYIjdqgEGvdp
-	 PbhNTM4Qieqxc7r2fO2JV7OLvJVqbSjRcNhpl6r6q3yxO+/9LQS+2NFac9zsfbv5Ph
-	 0Zkzw1gmzulo1fHv7ghx+iX1TAbXKE6cUCn91w6Dfya0qiGXioGt3/zIF5nsboGRBk
-	 5jb3fRD11TNzIAXoZhdryteR24v3TpZLGvbwK2PkNIkSV0kDUVIc6lXkmuv/qIm7LJ
-	 wKUD9RyY/p/dQ==
-Received: from mail.realtek.com (rtkexhmbs04.realtek.com.tw[10.21.1.54])
-	by rtits2.realtek.com.tw (8.15.2/3.27/5.94) with ESMTPS id 64C3XKffC3571945
+	b=PH/ibe10a+mefQYnoIHyfTzenlMWsYQCsiyitA/1ih68ubpjh4k6+k9o7bZ0qieRw
+	 PaDYkv2kH4AfQH0apvmW2y0R3AmXhvbyZx8kCVGVYAqtdcNTKffIieYTAIfAu73WNc
+	 bG74IX0xoiIyGCHxctQB/gfrzLgQWr+UE97QgqCUaAzPbpSBx/DvdXDPjK2hasHQRb
+	 xnfYO3PFRt+myy9gaBzM391GhMO4sOeVP0avb7ByxvJD+zwVm9a/LkFGNMi70CBzCT
+	 6SA5VN1OvC6fQGIztGBzOIne5eXDRVhKHC2EbrBGio+kOOLzp6DuJbtlGM69b/zBDt
+	 a/ZrCvPRA9YGg==
+Received: from mail.realtek.com (rtkexhmbs03.realtek.com.tw[10.21.1.53])
+	by rtits2.realtek.com.tw (8.15.2/3.27/5.94) with ESMTPS id 64C3XJoF43571941
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 12 May 2026 11:33:20 +0800
-Received: from RTKEXHMBS05.realtek.com.tw (10.21.1.55) by
- RTKEXHMBS04.realtek.com.tw (10.21.1.54) with Microsoft SMTP Server
+	Tue, 12 May 2026 11:33:19 +0800
+Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
+ RTKEXHMBS03.realtek.com.tw (10.21.1.53) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Tue, 12 May 2026 11:33:20 +0800
+ 15.2.2562.17; Tue, 12 May 2026 11:33:19 +0800
+Received: from RTKEXHMBS05.realtek.com.tw (10.21.1.55) by
+ RTKEXHMBS06.realtek.com.tw (10.21.1.56) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Tue, 12 May 2026 11:33:19 +0800
 Received: from cn1dhc-k02 (172.21.252.101) by RTKEXHMBS05.realtek.com.tw
  (10.21.1.55) with Microsoft SMTP Server id 15.2.2562.17 via Frontend
  Transport; Tue, 12 May 2026 11:33:19 +0800
@@ -50,11 +54,11 @@ CC: <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-realtek-soc@lists.infradead.org>, <linux-iio@vger.kernel.org>,
         <cy.huang@realtek.com>, <stanley_chang@realtek.com>,
         <eleanor.lin@realtek.com>, <james.tai@realtek.com>,
-        Bartosz Golaszewski
-	<bartosz.golaszewski@oss.qualcomm.com>
-Subject: [PATCH v3 7/7] arm64: dts: realtek: Add GPIO support for RTD1625
-Date: Tue, 12 May 2026 11:33:17 +0800
-Message-ID: <20260512033317.1602537-8-eleanor.lin@realtek.com>
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski@oss.qualcomm.com>
+Subject: [PATCH v3 5/7] dt-bindings: gpio: realtek: Add realtek,rtd1625-gpio
+Date: Tue, 12 May 2026 11:33:15 +0800
+Message-ID: <20260512033317.1602537-6-eleanor.lin@realtek.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260512033317.1602537-1-eleanor.lin@realtek.com>
 References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
@@ -67,74 +71,100 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Add the GPIO node for the Realtek RTD1625 SoC.
+From: Tzuyi Chang <tychang@realtek.com>
 
-Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Add the device tree bindings for the Realtek DHC (Digital Home Center)
+RTD1625 GPIO controllers.
+
+The RTD1625 GPIO controller features a per-pin register architecture
+that differs significantly from previous generations. It utilizes
+separate register blocks for GPIO configuration and interrupt control.
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Signed-off-by: Tzuyi Chang <tychang@realtek.com>
 Signed-off-by: Yu-Chun Lin <eleanor.lin@realtek.com>
 ---
-The changes are based on commit 856540ac9b441a8c0e39f1f1787277edc4097c9b,
-which was merged into the soc/for-next branch.
----
- arch/arm64/boot/dts/realtek/kent.dtsi | 39 +++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ .../bindings/gpio/realtek,rtd1625-gpio.yaml   | 71 +++++++++++++++++++
+ 1 file changed, 71 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/gpio/realtek,rtd1625-gpio.yaml
 
-diff --git a/arch/arm64/boot/dts/realtek/kent.dtsi b/arch/arm64/boot/dts/realtek/kent.dtsi
-index 8d4293cd4c03..228b82dfdb7a 100644
---- a/arch/arm64/boot/dts/realtek/kent.dtsi
-+++ b/arch/arm64/boot/dts/realtek/kent.dtsi
-@@ -151,6 +151,37 @@ uart0: serial@7800 {
- 				status = "disabled";
- 			};
- 
-+			gpio: gpio@31000 {
-+				compatible = "realtek,rtd1625-iso-gpio";
-+				reg = <0x31000 0x398>;
-+				gpio-controller;
-+				gpio-ranges = <&isom_pinctrl 0 0 2>,
-+					      <&ve4_pinctrl 2 0 6>,
-+					      <&iso_pinctrl 8 0 4>,
-+					      <&ve4_pinctrl 12 6 2>,
-+					      <&main2_pinctrl 14 0 2>,
-+					      <&ve4_pinctrl 16 8 4>,
-+					      <&main2_pinctrl 20 2 3>,
-+					      <&ve4_pinctrl 23 12 3>,
-+					      <&iso_pinctrl 26 4 2>,
-+					      <&isom_pinctrl 28 2 2>,
-+					      <&ve4_pinctrl 30 15 6>,
-+					      <&main2_pinctrl 36 5 6>,
-+					      <&ve4_pinctrl 42 21 3>,
-+					      <&iso_pinctrl 45 6 6>,
-+					      <&ve4_pinctrl 51 24 1>,
-+					      <&iso_pinctrl 52 12 1>,
-+					      <&ve4_pinctrl 53 25 11>,
-+					      <&main2_pinctrl 64 11 28>,
-+					      <&ve4_pinctrl 92 36 2>,
-+					      <&iso_pinctrl 94 13 19>,
-+					      <&iso_pinctrl 128 32 4>,
-+					      <&ve4_pinctrl 132 38 13>,
-+					      <&iso_pinctrl 145 36 19>,
-+					      <&ve4_pinctrl 164 51 2>;
-+				#gpio-cells = <2>;
-+			};
+diff --git a/Documentation/devicetree/bindings/gpio/realtek,rtd1625-gpio.yaml b/Documentation/devicetree/bindings/gpio/realtek,rtd1625-gpio.yaml
+new file mode 100644
+index 000000000000..f13c910b73c6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/gpio/realtek,rtd1625-gpio.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2023 Realtek Semiconductor Corporation
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/gpio/realtek,rtd1625-gpio.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 			iso_pinctrl: pinctrl@4e000 {
- 				compatible = "realtek,rtd1625-iso-pinctrl";
- 				reg = <0x4e000 0x1a4>;
-@@ -161,6 +192,14 @@ main2_pinctrl: pinctrl@4f200 {
- 				reg = <0x4f200 0x50>;
- 			};
- 
-+			iso_m_gpio: gpio@89100 {
-+				compatible = "realtek,rtd1625-isom-gpio";
-+				reg = <0x89100 0x30>;
-+				gpio-controller;
-+				gpio-ranges = <&isom_pinctrl 0 0 4>;
-+				#gpio-cells = <2>;
-+			};
++title: Realtek DHC RTD1625 GPIO controller
 +
- 			isom_pinctrl: pinctrl@146200 {
- 				compatible = "realtek,rtd1625-isom-pinctrl";
- 				reg = <0x146200 0x34>;
++maintainers:
++  - Tzuyi Chang <tychang@realtek.com>
++
++description: |
++  GPIO controller for the Realtek RTD1625 SoC, featuring a per-pin register
++  architecture that differs significantly from earlier RTD series controllers.
++  Each GPIO has dedicated registers for configuration (direction, input/output
++  values, debounce), and interrupt control supporting edge and level detection
++  modes.
++
++properties:
++  compatible:
++    enum:
++      - realtek,rtd1625-iso-gpio
++      - realtek,rtd1625-isom-gpio
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    items:
++      - description: Interrupt number of the assert GPIO interrupt, which is
++                     triggered when there is a rising edge.
++      - description: Interrupt number of the deassert GPIO interrupt, which is
++                     triggered when there is a falling edge.
++      - description: Interrupt number of the level-sensitive GPIO interrupt,
++                     triggered by a configured logic level.
++
++  interrupt-controller: true
++
++  "#interrupt-cells":
++    const: 2
++
++  gpio-ranges: true
++
++  gpio-controller: true
++
++  "#gpio-cells":
++    const: 2
++
++required:
++  - compatible
++  - reg
++  - gpio-ranges
++  - gpio-controller
++  - "#gpio-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    gpio@89100 {
++      compatible = "realtek,rtd1625-isom-gpio";
++      reg = <0x89100 0x30>;
++      interrupt-parent = <&iso_m_irq_mux>;
++      interrupts = <0>, <1>, <2>;
++      interrupt-controller;
++      #interrupt-cells = <2>;
++      gpio-ranges = <&isom_pinctrl 0 0 4>;
++      gpio-controller;
++      #gpio-cells = <2>;
++    };
 -- 
 2.34.1
 
