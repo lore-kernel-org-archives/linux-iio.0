@@ -1,141 +1,237 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7788368D55
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:05:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778573105; cv=pass; b=GXFrigQuEgjIEJrufWC21KkwaqoepBWLZyZG6+ME3M3HaPs2rIrOpvnSGqHH6uIkHmckTGPSq0/oecF1Yzu+8H7q3XL2eHTPJFvuoEY0xoPUZyLeraPG03gPyumc3vaCbt/joFDeemWxS9pkCLZp+C1jY8DnSjg58GwopusbQ30=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778573105; c=relaxed/simple;
-	bh=dmV7M9mEbwPg3k4IoLxCF3fkIUZ+ihJZpVsBTFmfOmg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WSfcvsCbDmlNfGVtMS/BE7UiM0BTtUeBd6s3zEWGftwTmZafZCjxKIdlYFfvAWK4P8VC7ivst8jr2SFQbGO8IZTTehO49Jv0mY4/gJIRACnBWtSecq0Gxr1yH6C1YSOGboXww6Ko2Vy+Fsok1RrWxrBZ11O8XEh7iPb+r6TjVc4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h5VRicGL; arc=pass smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BC9F48A2BE
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:06:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778573192; cv=none; b=D763T40FCAFxfFTspmEcXs0Zz4CK6hTMNQCg6bOXzCG1NLgMSPI71R2xe5RM4oVVQP1vqMK+gYTI+YhS51XH7wTl8x7pmsUj4ZskAMwXzXUIWI45ko9L8bwaAJHlVMaD91WuNbaq3qcxvjEM0yIAldw/VJ7s/Zqti0nKiHSP5g4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778573192; c=relaxed/simple;
+	bh=+5KS0O2K9/LUz5Y3nje0oEQg0pZ+5krWzURAvMW8v1k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i17xWWAaSmSz6BNa2F0hTrpeRjdTAuhiSZ5Otv/ptwiCl/Y37zBzS759uZeaLKJdBszFYpsmDBPvCqRtpkR60R27g4tMlVa9NLVzY2Kqa/CTTkFvnkroMjXg6gJBQi8Fm+FwnPpFpsbqY2cUp109M/oJCbJK4EvryH3J7Jakvss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LQNSHYfa; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h5VRicGL"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-4585a116a4aso1503340f8f.3
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 01:05:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778573102; cv=none;
-        d=google.com; s=arc-20240605;
-        b=k/hNHaoDDGVerxJl4gcoSdS8yA7uVO+snQOTDUhkobjDeNQFZUou1FYYnzdSbnOBF2
-         CfbvHFAE1GaHnliLYAPucX6eWo07Ruz+4Rem2iKWvfGjEXw8q27nuA+LTvpx6bUeLUoM
-         7HUHA6xz4m0+kwh4cuBf5b1+G40gZ2WVgszlOO+Tbxo0kgoWtz7Y2KdZtwAlSbcDfCyK
-         PbscVE/3dleknZHhXroH46Gw5Q96C+9l0mxF3l8Ph3GtuLFk+QINeJuobEYhcscOV7Ao
-         nQC33gB46Fsbj6u0R9B6fyF8HiYRxCV3u/dBnhraIENjOfFrOoFeQP9CvuK+qAqdd+fS
-         0+yQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=MPAWN+o2tXdd6tDwHP39TL8b7Fqc6jzG8EPSQl1Npog=;
-        fh=W/J7CyACRchrnnHrQBfvf8dHnoTf+27F4JdJhLh5UC4=;
-        b=TfLGEyTf/qqK1gs4Fl97AZUIQVNv88wxoJGZd1fVfsZrVz9eUvPvGpC0XPILFNnc7Z
-         t2+G54jx/2Aj9OBXlbYUPhJS8+7Q9YLIqZqd8Mxrm8D9nrFQPpYXD6sZTS8bSrRELUjp
-         LSWfYcQt/LpFtb7+J9cxX9F48khf6k3HPwZtI3P1Cs98B+8DKvSIVq20WXSvpYbgCp1v
-         wnqs6Kb/eMP0djcCFpBSxxrP8luYikTxP/5+sdoxkFaAIPcKjQ6JmijE7/tDVLu/hI87
-         zvuYZddTVaFbR/kL55Rt1+rql531l7jYfKy1ID9KpMOiZBXlhu5BedF6ew7BtsoG3k7U
-         lgzg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LQNSHYfa"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-44a5174670eso2884586f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 01:06:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778573102; x=1779177902; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=MPAWN+o2tXdd6tDwHP39TL8b7Fqc6jzG8EPSQl1Npog=;
-        b=h5VRicGL9LAQ6eb0L5EGRjdIqhNpekogaefphJ54WFqT6ihrAsM2aULf2WXag9XJzY
-         iQLURiOoxW7OKxxS9SIWogTheIf0MGBx/dWT+iTF3sDw9/C7GD5GE68g1cniWepG14OS
-         VMFESYSSv0Oywluob7U/ah1rQqz+vqCumCKTOHUVbsavhwnjW611WoQ53abe3XZ+0pwu
-         kPmHurJbJCIyaIlB7zBHl9HtYvAZgGrwL9O4wtm3iEkGCpWkUmKt0gkDPWbank8YHl4x
-         wSXoTrUUbQA72QTRFQUgO5qUw0Im/lOdubqaChSrRXglrbXK6z3x037slUHFwdRw0HUF
-         bSzw==
+        d=gmail.com; s=20251104; t=1778573189; x=1779177989; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=OZwdc1rq8NGBU/NyylRNOL9ywQsbRRReCOuX7R8/31Q=;
+        b=LQNSHYfalR3797pXrs35Ka2ertZVNS01egVmixsQirGX18kIX5pxpk4maY3xNKJPHU
+         6ED9/8xqBQraLwmyLvFRzDVexOQkj2jLFCmRGL8C+1w6F86NryqmKtPzTgtGUMKBYRVT
+         NTf6fMTSgn8g0DjAqAIAAl5pq/wQJd25K9u3YeJOSVXZAUJ4y6EQIthUbme3X7++/cXX
+         GzDmC+dUU3rKhzVeUQ2LFoLhyE06xEX4pENIY1sR6lwWSadXyc+vJMqlLEktrQtGKaHP
+         g6FLce1AbOd2BZpkuKxwRWaE6shRteqF86qAxTD709zs8lVSzW8OBOdz5hOSUOYq0QAb
+         x+OA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778573102; x=1779177902;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MPAWN+o2tXdd6tDwHP39TL8b7Fqc6jzG8EPSQl1Npog=;
-        b=RtzCG25riwPSMd2p0X9vk/HqqOfT17dsSEEoULuC3E6yrHn+BGBNWLo8m5KEAA8Fwx
-         sHxwXK/EXcvGXfCCUzpczeUk3lzSlpBfXNxPz4IUhTA5MD2v6b9fnd+i2PACFcn3qxtR
-         of26NIos/n86ZBCdhLKZgCrUyLAvRn1UDuS9WYmVT4lDlfIMRUL6SukI9TJKfilEszQ5
-         bQDErNPrD3+LUX6Tx+cWPhUB/8ebRdEABvYti34wtFFTp9xhN67J8qCdrQIUxGD2fogh
-         1kqrNHKeW379MswWDh3zPtWKOJDMEFTxwhrIqHi/1FSoCLrq6Za+KdOG4/TStwvrmecM
-         Usfw==
-X-Forwarded-Encrypted: i=1; AFNElJ+nawTQzaw2T66eAWLlS3XqkIe0ZS2t0wHml/BnP9mNh6UZ063Bl3txtqBfBE31OHMekSK1mrYrSJE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy9SaQA7/lBJpk0QB6fLtp7Fjk1+CGMazjMMsDwboJm5iLuHq9H
-	DcfHVDwB77fy7NE1cWplDmHFGlf18m6KaofybtUdJv8N9VLP1V0GyACjZkchsQc6gBUS06E7KXY
-	7kErJhYS7gp/oCWP3Z4bxSCQxmLynZVY=
-X-Gm-Gg: Acq92OHtJXskA2r1+kyoFUHUzH5HRD4dJX36NFVzssbHMSdjokck0wfjWW0VlIMuP65
-	85OBheZH1BA//zzzPKm3AyjmMxd1gbz7n1COhiW0D96oXWu++alqOJseyWck46T/IXRvLie0HtC
-	iw0lx9NfODo6rGPYL55n8y9TpMvPRjmUZJRyH1dNzCcwPCr+2vp71SlN4cF7iQv9lm3KIKDlNQh
-	yUcYnQm/24GGZa/2xduMCqXCvTE4wPRcLMltFbd5ArY5+M5//OOCSdH7odS2TX65zaYXJfmcUcV
-	DthgFIz2toy+aOZPs+HinDFAHnA1tLHGNUnDoltS6O9/LV8Q9CtO8OFrT/JYKfXmMsn111HwB/T
-	0/wNqMSfojbySWyHAF2G7Adgfi12TTHFjLEwRh7Vvx3Q/SvGOwSyV939YnPvUlNiXCzuQxb6IO/
-	bDPFsVWs7ZmoAsGc6d
-X-Received: by 2002:a05:6000:2383:b0:43d:7dcf:ae26 with SMTP id
- ffacd0b85a97d-4515d4d107bmr46262506f8f.34.1778573102193; Tue, 12 May 2026
- 01:05:02 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778573189; x=1779177989;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OZwdc1rq8NGBU/NyylRNOL9ywQsbRRReCOuX7R8/31Q=;
+        b=bVzdA/TDqx9cPeUarmaK5UNk6zxzOBmkS59Tf4cPB3/6S9OAnDwLaSP0Y+DsmjebT/
+         J2/tNurnFzM71sGftQ7ao3DzbgHDlEqvyEJXz7DTgOsDVOUDvBAeue/cDJRjySB8KPaX
+         adpXOeWZtUOq+weR9D6nojETXm7W6qkCGWVSK+itReJudya/oVUpIrkzlnBcwGc07ZlL
+         IsNghY7LSi1gt6mYDrHW95u6Uz+hEExjhxSYJl8Itb1R4vv6/MYu++tjIeMKk8oRttuk
+         mCfzwMttG/K95HgYhRAJ/8t6ftVPpfqTh+17s4hQLLsfxnTBEYjZziJdu/EKLQxtZDkU
+         PlLQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/4mtoaSduarE++gUpsXOtVm4D9mrhW7OOvo+E+WBmtscxR/HFvIOcFKxGVRjDZGQY5J/qVPgqc3CA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyauxbwuEfBCYn17TWgYaM7gOUPA/vwmVG3IsFLeKVGQBwTC0wl
+	wPqfzQu02tpm+B5vAQ0KQBO7hzSMPiLArIOHKbzs4GCbCVp57Gf8D0MA
+X-Gm-Gg: Acq92OHt3A8IJMwyoIwjKagf4Mrv9u2z3FWRSsHu+/aWJk1WYymx7Rr/40JEjjbFShf
+	2U5b0QkgvnHVTOS8LHmIYJqjkbR5u4PlGRFspN7VgpOMwTcsX4GCrUfkne9tK2GddMZ/G9JSeB3
+	xzACNE5PEqzX8DQwjKrTqOmiq8pI4vg2o+7ZFwM6YRF2RLS5RUDLm2XHrynWgQgyGJp+0a9KLNR
+	ee8p9Hxnfg+MsQuWyNA3Tu0Sx8Jv12yVaXQF9fGFsjSrRdBV6rQtY+XfgCFgdXIq5OOAyBFnyuq
+	wORqHcy57nJyoZoiywdE+k3djM69ZT1T84GXwXpb4KkGdlnsjhjMRt9G4Ai28wyyWpGfLttGsDq
+	Bp2tumnMZzfIy7mFPB0fI56VH6EH6E6lYlihfDK91p/5fAeShW5x+Gw5eN12kuUFA/nKpns4a3c
+	kKheMzSzlJm/4AEE5CS4oTCGt/
+X-Received: by 2002:a05:6000:1ac6:b0:43e:a9ba:b194 with SMTP id ffacd0b85a97d-4515d5c6b69mr44739016f8f.34.1778573188663;
+        Tue, 12 May 2026 01:06:28 -0700 (PDT)
+Received: from nsa ([185.128.9.145])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548bb51d40sm29894943f8f.0.2026.05.12.01.06.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2026 01:06:28 -0700 (PDT)
+Date: Tue, 12 May 2026 09:07:22 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 3/8] iio: magnetometer: ak8975: switch to using managed
+ resources
+Message-ID: <agLd7t10HBjbEzYq@nsa>
+References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
+ <20260507-magnetometer-fixes-post-pickup-v1-3-37827ca68fb3@gmail.com>
+ <0a3e455c86cef14fe3481019031ebf04f98470f7.camel@gmail.com>
+ <CALoEA-x9TtnWbGCtTo-jhrJ7Zic1S7J=xRYSL0VZgOvTb1GGCA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512073505.1310-1-joshua.crofts1@gmail.com> <agLeEitdYsi5O2E1@ashevche-desk.local>
-In-Reply-To: <agLeEitdYsi5O2E1@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 12 May 2026 10:04:51 +0200
-X-Gm-Features: AVHnY4KMiOJSr-GzO-_TBzSfSlqP2j6pIPpJGrMXE8WWQqWOXH4wNKmB35RcJug
-Message-ID: <CALoEA-wOAY9fYuZdZZHQFj=+xN=WB=Z30g_iKJUVQHHiHHXxuQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: mapping file for include-what-you-use tool
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALoEA-x9TtnWbGCtTo-jhrJ7Zic1S7J=xRYSL0VZgOvTb1GGCA@mail.gmail.com>
 
-On Tue, 12 May 2026 at 10:00, Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Tue, May 12, 2026 at 07:35:05AM +0000, Joshua Crofts wrote:
-> > As promised, I'm sending my IWYU mapping file, based on Jonathan's
-> > version with a few additional tweaks by me.
->
-> Please, also add a link to Jonathan's version.
-
-Good point, forgot to do that.
-
->
-> > Other than adding support for more assembly file business, I've also
-> > experimented with individual symbol definition (see BIT() and GENMASK()
-> > in the following file) - this is to prevent issues such as the tool
-> > wanting you to include <linux/bits.h> when you already have
-> > <linux/bitops.h> in the source file (I agree, doing this symbol by
-> > symbol is tedious, but BIT() and GENMASK() are symbols that especially
-> > do this, and they're included in most, if not all drivers).
+On Sat, May 09, 2026 at 03:32:59PM +0200, Joshua Crofts wrote:
+> On Sat, 9 May 2026 at 11:02, Nuno Sá <noname.nuno@gmail.com> wrote:
 > >
-> > Feel free to improve this file and pass it on. I wouldn't really fully
-> > rely on IWYU as even with the mapping file the results can be weird,
-> > but it definitely serves as a good starting point when doing driver
-> > cleanup.
+> > On Thu, 2026-05-07 at 16:35 +0200, Joshua Crofts via B4 Relay wrote:
+> > > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > >
+> > > Switch the driver to use managed resources (devm_*) which simplifier
+> > > error handling and allows removing ak8975_remove() method from
+> > > the driver.
+> > >
+> > > Note, on error path we now also set mode to POWER_DOWN state which is
+> > > fine. Even if the device is in that mode, there is no problem to set
+> > > that mode again, it should be no-op.
+> > >
+> > > Additionally, remove any pm_runtime_get/put*() function calls that
+> > > dummy cycled the counter to autosuspend the device.
+> > >
+> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > Co-developed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> > > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> > > ---
+> > >  drivers/iio/magnetometer/ak8975.c | 74 ++++++++++++++++++++++-----------------
+> > >  1 file changed, 41 insertions(+), 33 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> > > index
+> > > 63b6e8465f5f3873841550a1cd03ce86b95d1d67..1d8f448d5179fe9b33af989cc2f456ac91bc2f17
+> > > 100644
+> > > --- a/drivers/iio/magnetometer/ak8975.c
+> > > +++ b/drivers/iio/magnetometer/ak8975.c
+> > > @@ -898,9 +898,24 @@ static irqreturn_t ak8975_handle_trigger(int irq, void *p)
+> > >       return IRQ_HANDLED;
+> > >  }
+> > >
+> > > +static void devm_ak8975_power_off(void *data)
+> > > +{
+> > > +     struct ak8975_data *ak = data;
+> > > +     struct device *dev = &ak->client->dev;
+> > > +
+> > > +     /* Only power down if currently active */
+> > > +     if (pm_runtime_status_suspended(dev))
+> > > +             return;
+> > > +
+> > > +     /* Soft-stop the chip before hard-stopping the regulators */
+> > > +     ak8975_set_mode(data, POWER_DOWN);
+> > > +     ak8975_power_off(data);
+> > > +}
+> > > +
+> > >  static int ak8975_probe(struct i2c_client *client)
+> > >  {
+> > >       const struct i2c_device_id *id = i2c_client_get_device_id(client);
+> > > +     struct device *dev = &client->dev;
+> > >       struct ak8975_data *data;
+> > >       struct iio_dev *indio_dev;
+> > >       struct gpio_desc *eoc_gpiod;
+> > > @@ -968,10 +983,21 @@ static int ak8975_probe(struct i2c_client *client)
+> > >       if (ret)
+> > >               return ret;
+> > >
+> > > +     /*
+> > > +      * Set device as active early so pm_runtime_status_suspended() works
+> > > +      * correctly if probe fails before pm_runtime is enabled. Do not attempt
+> > > +      * to move this line lower.
+> > > +      */
+> > > +     pm_runtime_set_active(dev);
+> > > +
+> > > +     ret = devm_add_action_or_reset(dev, devm_ak8975_power_off, data);
+> > > +     if (ret)
+> > > +             return ret;
 > >
-> > I'm making this patch an RFC - this is not intended for merging.
->
-> ...
->
->
-> > +    { "include": ["\"vdso/bits.h\"", "private", "<linux/bits.h>", "public"] },
-> > +    { "include": ["\"vdso/ktime.h\"", "private", "<linux/ktime.h>", "public"] },
-> > +    { "include": ["\"vdso/limits.h\"", "private", "<linux/limits.h>", "public"] },
-> > +    { "include": ["\"vdso/time64.h\"", "private", "<linux/time64.h>", "public"] },
->
-> > +
->
-> Trailing whitespaces.
+> > This looks a bit hackish to me. Why don't we just register this powerdown action
+> > after enabling PM?
+> 
+> This is to prevent a resource leak. If we register the power_off
+> function at the end,
+> any potential probe() failures will leave the regulators on.
 
-Well, considering this is not intended to be an actual patch...
+Okay it does make sense! I now see the action is registered after
+ak8975_power_on() which what makes sense. Still would like to avoid that
+weird pm_runtime_set_active() call. It would be nice if we could
+guarantee through PM that the device get's suspended on unbind. Oh well,
+I guess this is ok.
 
--- 
-Kind regards
+- Nuno Sá
 
-CJD
+> 
+> > > +
+> > >       ret = ak8975_who_i_am(client, data->def->type);
+> > >       if (ret) {
+> > >               dev_err(&client->dev, "Unexpected device\n");
+> > > -             goto power_off;
+> > > +             return ret;
+> > >       }
+> > >       dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
+> > >
+> > > @@ -979,10 +1005,13 @@ static int ak8975_probe(struct i2c_client *client)
+> > >       ret = ak8975_setup(client);
+> > >       if (ret) {
+> > >               dev_err(&client->dev, "%s initialization fails\n", name);
+> > > -             goto power_off;
+> > > +             return ret;
+> > >       }
+> > >
+> > > -     mutex_init(&data->lock);
+> > > +     ret = devm_mutex_init(dev, &data->lock);
+> > > +     if (ret)
+> > > +             return ret;
+> > > +
+> > >       indio_dev->channels = ak8975_channels;
+> > >       indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+> > >       indio_dev->info = &ak8975_info;
+> > > @@ -990,52 +1019,32 @@ static int ak8975_probe(struct i2c_client *client)
+> > >       indio_dev->modes = INDIO_DIRECT_MODE;
+> > >       indio_dev->name = name;
+> > >
+> > > -     ret = iio_triggered_buffer_setup(indio_dev, NULL, ak8975_handle_trigger,
+> > > -                                      NULL);
+> > > +     ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+> > > +                                           ak8975_handle_trigger, NULL);
+> > >       if (ret) {
+> > >               dev_err(&client->dev, "triggered buffer setup failed\n");
+> > > -             goto power_off;
+> > > +             return ret;
+> > >       }
+> > >
+> > > -     ret = iio_device_register(indio_dev);
+> > > +     ret = devm_iio_device_register(dev, indio_dev);
+> > >       if (ret) {
+> > >               dev_err(&client->dev, "device register failed\n");
+> > > -             goto cleanup_buffer;
+> > > +             return ret;
+> > >       }
+> > >
+> > >       /* Enable runtime PM */
+> > > -     pm_runtime_get_noresume(&client->dev);
+> > > -     pm_runtime_set_active(&client->dev);
+> > > -     pm_runtime_enable(&client->dev);
+> > > +     ret = devm_pm_runtime_enable(dev);
+> > > +     if (ret)
+> > > +             return ret;
+> >
+> > Maybe it would make sense to move this before devm_iio_device_register(). At the
+> > point we register the device, userspace can start to interact with the device where
+> > we have pm calls? Not that it is a problem (I think) but makes sense to me to enable
+> > PM before exposing the device.
+> 
+> Sure, I agree with this.
+> 
+> -- 
+> Kind regards
+> 
+> CJD
