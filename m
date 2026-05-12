@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48ABD3EDE66;
-	Tue, 12 May 2026 17:49:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 379CA3EDE44;
+	Tue, 12 May 2026 17:51:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778608178; cv=none; b=rGyfExC/05gkxkF0lHeh+qb7sSneCJD3Du2FVYz9By8GcEo3yM9k/aruitWbch/KtDee1v5AsENv1tggn3YRNXAQzne1rT3RVGHdDY2e8zoF7GuSfKmggOZd5TpjY9wyokZE04HK/W43Lni3NUAQucO6kGIF1JnDaAzpHI9jxCQ=
+	t=1778608281; cv=none; b=Hwq1/BV/gfShAYKOWr6Fes+vc5RdMkuJXcHJbRZEqo4iAqcJZ4L53OWivP7j4vwNN4RbbnLZrhu/9Q1/aeKaAJ+a1ljUipOWXlLK2SjCnDdUxU9vMGUqHEAvdRzWauxRhiZsb0/L/ZOxwVkqc05PKSZUYL6extCjgMJrfEXBKTI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778608178; c=relaxed/simple;
-	bh=hGoLgFvqmnL2T34vovl9lReM81TwNgRLYfnvDPzQ79Y=;
+	s=arc-20240116; t=1778608281; c=relaxed/simple;
+	bh=bvCUcVn0iz8TaziT0OwkzCF7LWKUIolBmuyiRNVGJKk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=daJ8HIsCmdw8UviTF6/3WjqfP2KLOViDh4+V1+HEZGmkC7kEBsQlKIIpUBOqvB1FTYbNW302YfmYc8zSz7HEDjCIR6DtzQvE2VVhOhIXEyl9JjOHIGy4ijlMTGe8bF+FwkIjqtZWT9WJSzHTPS68d1K7CgDe1SPcSKmoY9Yq1e8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QkLzH+wE; arc=none smtp.client-ip=198.175.65.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=iPXpR/4pkKGuyormCsQ2HVGjfH27DUn+DRp1YCjE0KLY9nonfMrF1GCfpTudNgVbhjh5Pd7FEu1gameeB8ETuLJ7nbdjxe9/ItWvibQN7kDJaRhyg9EH6HnIWfnv/iN6a3m5s1l0xOcwLbfPBaXnmQgqEyDJ8PwKV23ZEzdZdx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gmoUTQYJ; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QkLzH+wE"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gmoUTQYJ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778608178; x=1810144178;
+  t=1778608281; x=1810144281;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=hGoLgFvqmnL2T34vovl9lReM81TwNgRLYfnvDPzQ79Y=;
-  b=QkLzH+wE9c6lQtfHumg6f/aCO4oY7Ju4H4gpmlYkQZYC+0rALjG6pIXS
-   Cd4P0Zti8u3ZNVVCRamcMZ/xr34ARVphlKQl9tZGZF1GLbkj4VkCKr//3
-   1JhUTwB1d9li53ZLZbOK0kxXHI69NWQxwhaDY705sXy6IS/cFcOwlnCv4
-   NN8VZLWg6osOIg4meG5Dw/jd/5Qx2ZqStTJB6lc+F1W/fffcc7uFDTryk
-   s6WtXa1tPjrrkjj6D/xH6Nx8pksnt2D6AYM4zlm9ptuHCKP++nRlyZYjQ
-   6iExuosnLiQauE2C+I8VX2fbzeyIFYgNI8iPo8n7P5VNgmYOvXb/mZqdD
-   g==;
-X-CSE-ConnectionGUID: HgpRW/v3SLO0h8d++51/Ng==
-X-CSE-MsgGUID: 5eQoEL9zRb+vdnJbHR8KGg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="89828685"
+  bh=bvCUcVn0iz8TaziT0OwkzCF7LWKUIolBmuyiRNVGJKk=;
+  b=gmoUTQYJ2oZisHfwmga8+NanWKLI9TT62joXBQbJ4hL1xO/1Kfnxg0WP
+   p6nFeiQUKQKOV+E46L2aW5z5uQRdCZlhDAjQK0AgVUTQC1HREQwacNhtW
+   wlSIKs4LRHbFZ13b2HwNf6qj8eEXuKYZXWcZYSHKqTPtqk46r06riTR9x
+   SPB4KF5sA/0ngVK+bRUcz8HX7CS6ZNv74qXxxWSdS6/uAQLZBb01kssWR
+   fvNk9WQ/EI6PU12IrDWYnPqLl0jdWupHWFETmLKSMYWIXIsqVlVNHz4LG
+   R5zc5/wj8wP1U+5LlnGUT6zwYgKo29EG3YAEWHFwfS1NoMynjVQggdjUZ
+   A==;
+X-CSE-ConnectionGUID: Bz/tJAMQQT+n/37fDzD/iQ==
+X-CSE-MsgGUID: wPJxq4kXTi+G3do6vS6lIg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="83399359"
 X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="89828685"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 10:49:37 -0700
-X-CSE-ConnectionGUID: bD2MznS+Qjq6sKdEpImUKg==
-X-CSE-MsgGUID: QRO0mplfRH2QqADyc2KxGg==
+   d="scan'208";a="83399359"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 10:51:20 -0700
+X-CSE-ConnectionGUID: duHizHbVQ0yTS4fddgm0kg==
+X-CSE-MsgGUID: VsDxFZLqSvKkOMBd6iNnNg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="235165510"
+   d="scan'208";a="241847653"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.244])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 10:49:32 -0700
-Date: Tue, 12 May 2026 20:49:29 +0300
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 10:51:14 -0700
+Date: Tue, 12 May 2026 20:51:12 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
 Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
@@ -63,13 +63,13 @@ Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
 	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v12 05/11] iio: core: add decimal value formatting into
- 64-bit value
-Message-ID: <agNoKbcwT6_spC93@ashevche-desk.local>
+Subject: Re: [PATCH v12 06/11] iio: test: iio-test-format: add test case for
+ decimal format
+Message-ID: <agNokGNa1wh-kIHb@ashevche-desk.local>
 References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
- <20260510-adf41513-iio-driver-v12-5-34af2ed2779f@analog.com>
- <agM6uzhdn7o8g9v5@ashevche-desk.local>
- <ql7smsqza7liupm7fhdts73cxsltrpxsqofu5ovzpxpwvcscuv@qigi3dwukk7k>
+ <20260510-adf41513-iio-driver-v12-6-34af2ed2779f@analog.com>
+ <agM7CT4RjzwliKmb@ashevche-desk.local>
+ <zugkmatjsacla7l7nguekmclfdkzsshr3gs434a3liccgokxb4@xg77y5tkts5c>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,53 +78,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ql7smsqza7liupm7fhdts73cxsltrpxsqofu5ovzpxpwvcscuv@qigi3dwukk7k>
+In-Reply-To: <zugkmatjsacla7l7nguekmclfdkzsshr3gs434a3liccgokxb4@xg77y5tkts5c>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, May 12, 2026 at 05:09:32PM +0100, Rodrigo Alencar wrote:
-> On 26/05/12 05:35PM, Andy Shevchenko wrote:
-> > On Sun, May 10, 2026 at 01:42:23PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> > 
-> > > Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
-> > > defines the representation of fixed decimal point values into a single
-> > > 64-bit number. This new format increases the range of represented values,
-> > > allowing for integer parts greater than 2^32, as bits are not "wasted"
-> > > in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
-> > > IIO_VAL_INT_PLUS_NANO. Helpers are created to compose and decompose 64-bit
-> > > decimals into integer values used in IIO formatting interfaces, which
-> > > creates consistency and avoid error-prone manual assignments when using
-> > > wordpart macros. When doing the parsing, kstrtodec64() is used with the
-> > > scale defined by the specific decimal format type.
+On Tue, May 12, 2026 at 06:02:22PM +0100, Rodrigo Alencar wrote:
+> On 26/05/12 05:36PM, Andy Shevchenko wrote:
+> > On Sun, May 10, 2026 at 01:42:24PM +0100, Rodrigo Alencar via B4 Relay wrote:
 
 ...
 
-> > > +		tmp2 = div64_s64_rem(iio_val_s64_from_array(vals),
-> > > +				     int_pow(10, scale), &frac);
-> > > +		if (tmp2 == 0 && frac < 0)
-> > > +			return sysfs_emit_at(buf, offset, "-0.%0*lld", scale,
-> > > +					     abs(frac));
-> > > +		else
-> > > +			return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2,
-> > > +					     scale, abs(frac));
-> > > +	}
+> > > +	iio_val_s64_array_populate(24, values);
 > > 
-> > What about
-> > 
-> > 		/* Print a leading '-' for negative fractions */
-> > 		if (tmp2 == 0 && frac < 0)
-> > 			offset += sysfs_emit_at(buf, offset, "-");
-> > 
-> > 		return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2, scale, abs(frac));
-> > 
-> > Also note this won't work with the frac that are == S64_MIN. It's UB (undefined
-> > behaviour), see the comment at abs() implementation. Maybe a time to add abs()
-> > corner case tests...
+> > You want to test this first...
+> > I think the previous patch needs new test cases.
 > 
-> frac cannot be S64_MIN, it is always and remainder of a power of 10 modulus.
+> This is no complex stuff.. those functions are straightforward and
+> goes into accordance with what the format function does... which is
+> the opposite, before populating the buffer. The assertion on the buffer
+> content accounts for that behavior.
 
-Okay, but what about input of -0.9999999999999999999 ? Will it fit the signed
-frac type?
+You never know what BE32 / BE64 architectures will give you...
+(but okay, it's simple enough to check the implementation),
 
 -- 
 With Best Regards,
