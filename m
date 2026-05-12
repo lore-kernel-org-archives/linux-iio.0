@@ -1,123 +1,135 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6365348C41E
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:12:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778573569; cv=pass; b=mbowE10rnmncVUQn9IVk43sJ7Gc7yPyaUS6Kwkh9Sa7Us5pTjOYObjq3DyMBkxrFE1/dTRyN4tWcQdM5NYR/cceXidjKJOEgkgxaQsyLHTGMWFHzoVVw4bZW3Ha06laReE+vIsROy+mIW94BrlWbw/ZJFQ1IgP7BjCId7mNE+GE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778573569; c=relaxed/simple;
-	bh=sGH+NCmWPRca5JfbIyaIsuTGu3IucXGsdcBDVqBzJHg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YJa/RjLBe1gcElaT9KYP70uoPTcfxdr6lX05tVgO4ucelyAuQ+j63HZCx+dKAGV/K4z6tbbEk58J6DugFqnuMjctbYUWnDITvEQ3ePUOsnqC1lchxiaKsZ+nmNeuzt/5TzPZhcQTir7/eUtc5eeoJXwiZdglhg3NdwNC/lWBok8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NgGi1at5; arc=pass smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50A2419D093
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:23:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778574216; cv=none; b=b/9fc3fssQH+67N3oL1ON4otj7iLszzbT6KDVqaXXHRPKyZ5qfGM54/TsAdRvZ7UvGOSlbTbOj5veHKJJz+bWw9CkfOQ8fppDAje2uJ4xmIj+jZvUu2XTN9Q7G3Vv3fiBzfVRNyt6oFP9/uON2HxCWrwwg45WxP04G0viPRI0TY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778574216; c=relaxed/simple;
+	bh=+sbc7iaL3aXBLrJpJnf/nT4NQhBQhxeKiXrJGnC5nZo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lWtbXLxbPpDhE7CTv0hiAPFo5LCz/b7L+mIFnzPyUjcuz+VFvl6R8vwQom6XJItxPVeLt5Aw89uOPI9rvIqcu0sRswnQN0/KCn11lffjKjwWkfzR37rgFULVCK/EtqGvy2OmZMzTM205DlsGaDTuHPQup9GYvQnaTNpRWy+1oyc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=r0ZV+IlB; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NgGi1at5"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-44e1860558fso3345791f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 01:12:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778573567; cv=none;
-        d=google.com; s=arc-20240605;
-        b=SdKC1dWfCIOxiix7Z01XLSgf3CGIFPHdsRHfrEHA6Sck2QsHdRQGuA6rqBI9YDMOXF
-         X8G1CqExaBKIBwye/M4rPoRPc8C5DKaI0GbaS1p5g43Wj4DMDwmhSP9iYYcLfRvev+PG
-         ZXKkc7BjHYluDbFyhy6T2XukSPlKbW9Giy47l+/VKg0T/Q1cO7eLdP8V1zOoPZbNH3Ms
-         EJ5qwW36DyVXVBjqnfwF5TYYJqEk0Z34FaN0yvda8BgnWkwUx9/nNY3Pxtd1ZKkAajMX
-         1WXjgzfUHUClyTk9mOB149RLvmyvdnJI0mC1kjT7xEfJxR2IWxMlOCFXwuE8TcPgnYdY
-         BLLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=sGH+NCmWPRca5JfbIyaIsuTGu3IucXGsdcBDVqBzJHg=;
-        fh=fqrL4b31USDTPTMdd+7yWmiVtya8JrtAI8HTC79sDzE=;
-        b=Oft6Dz8+2uXdNUjRubsw7b0rxoH+hZ8b/6ujJ1inx8F4J9Py0PIujcwGKsnOuEM1J1
-         /Pgdc5pdwYPaUFABlTjh4lbDjZz2UlA/g/ZxGxrwxsvYw8U4T7SCOm8iYfJ6gviULi0p
-         8sVIontI90qkERUI/cn9ylGQ6RFfiL2Q9HaT4ojeHAU7L2pBKiBosw6wlaKGzhVDFGBb
-         LBWZoXf1Y6Yl+MB7phpFjeocPSWcu9NWQTkQpmdhDl+a9kPebYetJi8JQfWiasGEKMJI
-         2IbMJP8BxZWGuOYzplsiXEHap5EyDYIpoUXEL39RrnN/RGt5ud0i/MVcx3dQmZeH6zlI
-         rRIQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r0ZV+IlB"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-44b052142e1so2879640f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 01:23:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778573567; x=1779178367; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sGH+NCmWPRca5JfbIyaIsuTGu3IucXGsdcBDVqBzJHg=;
-        b=NgGi1at5tGI5Tgwk5fvjcHKhUcATpIiGLq1QrJEBSeBUJqoxU8HRH9DJb2AGWftbDP
-         dOJokdBjryJDa64ow7p+ZMBQkoQFT+//mhm1zVTB3KdoYgr+x1e38Gh6IbfZWqrIArnX
-         WnfirSjlqsHQ88qOjcOmySCxQnIymmu/jr+O4zx2Zj3Wj2OdFIbIVxjKYGDXlcldbpr6
-         BA/Dy07rmeki61GjWDyF7idi5PC6rVFnP+zld1hAcUWuSLG+M2DbibCvooUmNuHwXHp/
-         fBlNrRU+baKbdjnC6SdSwX0YezXl1mRSB1FH3M6aKVswKYLbWruwc3HS/e15qvjmA3TP
-         8beg==
+        d=gmail.com; s=20251104; t=1778574214; x=1779179014; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=aljjnhKjR/iBbI/t8/f/eA69DSnDJrgp0J/o9iJh64E=;
+        b=r0ZV+IlBAiZNkXyvmJsWtLdUk7AQQ/hJMrT0LHjrNGxL+0g1g5KhnlZXqqC4kQCTW2
+         UFsqL3sQcCVMOzI53wP+I74P18F28gI+DfwcBtRvxKNie2fFkdZqHTl2+jGQgDiHPqwK
+         3FpBxNoDZaq/ELfRCzHlQSf8s2+zb4RFURmwgsO36D99LU5G3RJfAUJsn1qoofS1/E+y
+         kZXv2/guuJG1Ebe/5sgu0sTtYXrDoouaMbPNYVjaMAzkToV9NAGti+FRMHT8LAbbM72T
+         YkmIUPZxuZqTtJLLoGBDxoA3mGoSUCH+Hy4w/y8i7CEFDgHm2zrnLoLQFMfy7LH2aPVs
+         GNyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778573567; x=1779178367;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=sGH+NCmWPRca5JfbIyaIsuTGu3IucXGsdcBDVqBzJHg=;
-        b=OZ3HEyriGMUbt7zgAbBGe3/sQcDMbJ+F1gRbFWD1p5igzW/aREZINeoOU+p6EQOzC5
-         p5Nbz7yICoYRFYu/jnchWmSyVWHXSwm/zPsZNQctH1+myMz7IpOrhFT8pQrTW6gISdQ+
-         XfCy8Np2hQP4eNKSRE1va/ECH3nBQelQsdLKama+4iFAFRZnTbACTMfk3gWYQ7at9HWU
-         t938qkDHosDh3t8Y/QMY0GJHgTAf3aqIW+E+9N15umxoszh7uy9NsSLpJ8kZUF+i20UY
-         FT7TH8Uar6Ud3bcugfaaul3s37jMHNf7H/RkF1eY6/yRd9gBH2D8HFKQhzK391EKzt3P
-         kHRw==
-X-Forwarded-Encrypted: i=1; AFNElJ8YiPIiJ8+LqGRSU8cB27/B3BZWDXkVmpwUZZIZwtkj4mGQJiQipPwabwTqlbN+Cvjr4Ke03ejBgDo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw3xuw+XE8Xz+cZzISdz0DLmULkX9ZvcNafxHENXmK49dZLTXkb
-	zwfqk743k5GoEaHfdtj06VY2V/n3yxxV2fUrJb+W/fKbIYKXZUKummYnn91bVvp1g+9AJMNlSTa
-	A8yuqZi/pbGBDJRvLDAkK2lClEkbtRC0=
-X-Gm-Gg: Acq92OGBU9WEI5abRtoYkaTmdH0UBmtadQvhxYY/rxii8YuW0JzoP0WtSg643EuKnBL
-	3xYqWEJAA2xd07PGKsb9XpcMUP7Ls7cLShdp2gtDQZzpdZ6gH/KlXrHsSSs8EcacFE5GtiGPU3U
-	iFeK71UKx3HH4Acbgl0MPzs67AWpQkxeWUtO6aXNuqPntu+lmU+IRG+V4Jc2ihNrbUsONi5aH/j
-	HHaNdzqAKTNupl3TfJwpxx9aa3ahH9AxF8dRSFJ5psDeP2fO4N/fY+6XwgKrFTdSHJxPVWedqST
-	G4S1Mu+So06nxxmsZsuqlFQGX27ljS0KSi9CR4iWoq2tzOcPXLN0SdT9v5egV4vaANAi+eyYSu1
-	dFPX01VGyLf9mSVFuHWU64PwZO67X6Wr8992YPqlnM00DjySMpuWxA9I9/FQkPyriDeO25YYk4I
-	FNqUmIK/rgeubkUGOX
-X-Received: by 2002:a05:6000:4013:b0:43d:6787:9934 with SMTP id
- ffacd0b85a97d-45460e3f3d6mr26899381f8f.9.1778573566511; Tue, 12 May 2026
- 01:12:46 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778574214; x=1779179014;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=aljjnhKjR/iBbI/t8/f/eA69DSnDJrgp0J/o9iJh64E=;
+        b=Eo+NSUe04dR5g35Fk+g1EChpemW69V79U6VsOyvgYLC5TLB/0eQ/QWM5BPtiiyhnpl
+         6vlDwyzXkf+uQE+x4RMuqaF59WcM1LtrlAg5DabUTm7SiCBH04Rz7/Dc3X9n8z/23KKI
+         ZMd0+OIDPNiSHeNGroolTYm28MxuNj4HOLunplNptcw8N75Qm2rCayO11q/Qen8qMgDK
+         KNpIKD+u0zIPcGI8qVA7gXgCdD7a+t2q6uBRPQuYuJC+ED/l8Avkvt4V+5dswr4SSqtV
+         te3HHI6algiMfmq4R2UoKAwAwpxhO04eHtKe84grf+SG7Tgoa9hAJODvaSKRPGOeTlEw
+         mOAA==
+X-Forwarded-Encrypted: i=1; AFNElJ8cVYYoM0FEFRlfOF9w3kITAxyrvFqBeZvst9v1krxWeGkgCIuli3+NDQdT5ji2jtVv3ZUpIptYPqw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwAHXPpA4NNREH9y+IDe2Hi4I30CeCJFOo2y419lAjBjhxj/dPB
+	rZug3D7cHADSdFzaU7cXH8Xouigfe+6RyooU/CHb4JKH+7ehFrIDRveg
+X-Gm-Gg: Acq92OF6dNILfxX3I3CvS91vhXGA/KE3rnlMbZ3NnPW5BF2Mh6J1ROkKYEK66hLCNCL
+	tCv9BoM9N0XJTmWYyRONcwm9K3wLTjmk1kbKkwIZwkKJJ33U2WRFKhkS1lkAdaVt9RIBpJ+VrK4
+	JB12jbaV7RVSM6SKMTJfgOtQfArD8BVGUP5ROqfPkf4JQBZwbowHtWsAWUJLpiXcFQ7MwZX0L+f
+	19Ob0A2+U70cFWIsn22Zyt8ZlX6aalJ7A00ELycHYWZJnaapKDhA60sF1acGRrsiRcBSim4gOr1
+	JO3yasIj9gq6A8VQqDm5pT8tQKgxayTrWbiOYvEZ25Yizr9NjQnoVc9NBAO8MDIk6eI8iL+JXMF
+	1JVvKEomkCQTsUY9koqMEgW2/udJYL0Smek627WfUKLKGmA4oCkITw5YyCEnYwxgnSTtn4a2zEW
+	SPsA5IupDMrx8P3g==
+X-Received: by 2002:a5d:5f48:0:b0:44b:8fb6:9a2e with SMTP id ffacd0b85a97d-4568c19d154mr18872057f8f.20.1778574213510;
+        Tue, 12 May 2026 01:23:33 -0700 (PDT)
+Received: from nsa ([185.128.9.145])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548e6a68ebsm29359598f8f.1.2026.05.12.01.23.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2026 01:23:33 -0700 (PDT)
+Date: Tue, 12 May 2026 09:24:27 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: "Stan, Liviu" <Liviu.Stan@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael" <Michael.Hennerich@analog.com>, 
+	"Sa, Nuno" <Nuno.Sa@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: temperature: ltc2983: Add support for ADT7604
+Message-ID: <agLhb-S2ISSjaopc@nsa>
+References: <af2no3bJA9MSjXvV@nsa>
+ <20260508121441.39ad9f65@jic23-huawei>
+ <SA5PR03MB83778AB3C41E0AF56EC754F8F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <af3oezNmmBhI4Yu4@nsa>
+ <SA5PR03MB837710AE7FD8B8FFF138B7C5F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <af4LCQiqNaiMzFkX@nsa>
+ <20260509154600.02e2d11a@jic23-huawei>
+ <SA5PR03MB83770D945E92C40A74D9C0DAF6382@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <20260511121820.3be9e635@jic23-huawei>
+ <SA5PR03MB83772A1A57DC052CB21B9187F6382@SA5PR03MB8377.namprd03.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260507-magnetometer-fixes-post-pickup-v1-0-37827ca68fb3@gmail.com>
- <20260507-magnetometer-fixes-post-pickup-v1-3-37827ca68fb3@gmail.com>
- <0a3e455c86cef14fe3481019031ebf04f98470f7.camel@gmail.com>
- <CALoEA-x9TtnWbGCtTo-jhrJ7Zic1S7J=xRYSL0VZgOvTb1GGCA@mail.gmail.com> <agLd7t10HBjbEzYq@nsa>
-In-Reply-To: <agLd7t10HBjbEzYq@nsa>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 12 May 2026 10:12:35 +0200
-X-Gm-Features: AVHnY4KsWBXuUr9abznGcg5cjULx-jih10w5H0YiQMeFMTxOaIK__m5c2U7uMjg
-Message-ID: <CALoEA-zJTJ1nA7-7nyeMnF7m87utM8SZvTBcMOY6kibZPA4-hg@mail.gmail.com>
-Subject: Re: [PATCH 3/8] iio: magnetometer: ak8975: switch to using managed resources
-To: =?UTF-8?B?TnVubyBTw6E=?= <noname.nuno@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <SA5PR03MB83772A1A57DC052CB21B9187F6382@SA5PR03MB8377.namprd03.prod.outlook.com>
 
-On Tue, 12 May 2026 at 10:06, Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
-> > This is to prevent a resource leak. If we register the power_off
-> > function at the end,
-> > any potential probe() failures will leave the regulators on.
->
-> Okay it does make sense! I now see the action is registered after
-> ak8975_power_on() which what makes sense. Still would like to avoid that
-> weird pm_runtime_set_active() call. It would be nice if we could
-> guarantee through PM that the device get's suspended on unbind. Oh well,
-> I guess this is ok.
+On Mon, May 11, 2026 at 12:02:31PM +0000, Stan, Liviu wrote:
+> On Mon, 11 May 2026 Jonathan Cameron wrote:
+> > > > Ok. So what are our options here?  Present it as simple resistance and leave
+> > > > userspace to figure it out or add a new channel type? To me feels like new
+> > > > channel type makes sense.
+> > >
+> > > The current approach presents it as IIO_TEMP since the chip outputs coverage
+> > > (using the custom table interpolation) via the temperature result bank, not
+> > > the resistance bank, but I agree a new channel type makes sense. Should I
+> > > create a specific type like IIO_COVERAGE_PERCENT or would a general
+> > > IIO_PERCENTAGE be better?
+> > 
+> > For ABI purposes we don't care where it comes from.
+> > 
+> > We already have some 'ratio' type measurements like concentration which are
+> > percentages and similar to those I think we need some indication of 'what'
+> > is being measured given it's unit free.  Hence IIO_COVERAGE_PERCENT seems
+> > the better choice to me.
+> 
+> Understood. Will do that in v2.
 
-FYI, there is a new version where I addressed some of your comments.
+I do wonder if a complete type is what we want? How will we present it?
 
-https://lore.kernel.org/linux-iio/20260511-magnetometer-fixes-post-pickup-v=
-7-3-9d910faa28b6@gmail.com/T/#u
+in_coverage_ratio?
 
---=20
-Kind regards
+What I'm not too convinced is that coverage is relative to what? Well
+it's a percentage so I guess we could not care and leave interpretation to
+userspace (to know which device is dealing with). Still I wonder if a
+new iio_chan_info wouldn't be more appropriate? In this case applied to
+iio_resistance. So something like:
 
-CJD
+in_resistance_coverage_ratio
+
+So it's clear what physical quantity coverage ratio is affecting.
+
+Thoughts?
+- Nuno Sá
+
+> 
+> Thank you!
+> 
+> Liviu
