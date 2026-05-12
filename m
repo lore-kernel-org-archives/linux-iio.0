@@ -1,63 +1,56 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1EE63A381F;
-	Tue, 12 May 2026 20:06:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F40C925B0BF
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 20:11:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778616415; cv=none; b=CjyZOV30cCqObqPGvSBTwImaU0PooDXBNBr9V93ZL7xjVpiAIx++CJbZzf0Mf5ivoFWlNeGubImNPQf3EQOz01VnQi8G6eez6zdvU/y8J/siniBmjEp43ZJlohISkoOYnk1YSTy+0FdoQ9vPI08KW384oKAcjPyRdZMWg3OdDXM=
+	t=1778616718; cv=none; b=SJX8x/UG6ra0tIoKi4vSpZ+9OXImFrfN/CFA6aWzhwHVCFbY2Wo8Rij3WUc4NFV5jimNbeAj1FQrUixX35TZxTyRcyTnrObvrVWWb6qkofxb3ModYCxmlaLuE2Jg8luQHtCSkatoMpiL0toCOKZ+trOKSQrI6CcflyVfkyz+atU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778616415; c=relaxed/simple;
-	bh=A3BxN281PT5rUnAJb5+V9/2gOQ2KSzOgieKPmyoh/pY=;
+	s=arc-20240116; t=1778616718; c=relaxed/simple;
+	bh=1VRVEKNrSoK+HjBqhCQIVLIXS72QOaDi99C44aCDflc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MAB9p3i2wubhyYVx4DSuiSdklkzq6fGC0JEiS3i6YjY/ShWFpssRaNsjTG5ZooqF7BtVYmYY4fcwcrP2k/ttvu/xzEAkWLPEloIewoFXKy5SnCm/K0qXBTkVPHN6oFjio7qDeW2Y0kCWJteOXty/10C5Gh3SNhD3TO615xjwZKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WdaV4q2M; arc=none smtp.client-ip=192.198.163.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=BYm7DI45WqXvQzd5Vy09zaRIzRRp4gEPkK3RNqCIi8IGzKyG0RlDh/VmW4k9Qes0DTjEzGa2DNkuLbfY9Va4mQcNCK7CDclXsdZlg4umOQMb4u//LiUQ6wJSoyoHYudMbJB7ucFmFQjJJTrScHKx8lrfd4PUBaSo5xQUzcYbFSI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RCWvIBS6; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WdaV4q2M"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RCWvIBS6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778616412; x=1810152412;
+  t=1778616716; x=1810152716;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=A3BxN281PT5rUnAJb5+V9/2gOQ2KSzOgieKPmyoh/pY=;
-  b=WdaV4q2MYN4LqlrrB2sgKnIUsTaGjB912iDVqhvWHbikYGrv2FwPn2wz
-   MZNOwJvnfl6tI60HYA54WUguSwzcEJeuCongLKZjeHpD4MGDYS+X33DyL
-   TwK3JaKkPmCs9rPybwpuEGe/45ttfW6aKHJIqqfPsAg4PnXBq5IWYig69
-   84visHKtOMvGcuzGXQ2cmD2QUHiNqfuCFrLhB0KMToJ4Eg3gMkvptdTqW
-   Ylzs9H86OtSzt6U4LU1ksi8zNxH3kJ0gz/zKJNcNVq65xJC2u93nbChuh
-   sNzIHOcNkb5yPmWm/zZ35IT97ao3YpUP+q2bdY6JTowLLAPFcuu//ZrWZ
+  bh=1VRVEKNrSoK+HjBqhCQIVLIXS72QOaDi99C44aCDflc=;
+  b=RCWvIBS6zy64FsY0RkMgkLR6MSrjIJCORJuQSHcYqBKVtB/NRezBdc/H
+   3QYUlC2rh5ZYOSoUwWi/Hmhn6SSo+7D41pZy0f8G1kgmxau168dXY4TCm
+   6VPdMA21LLsa8hPdhkKw+NV7l/CuP1BQcjYLtkooHNYqdM1+suLQPxMWX
+   E8oCRqCGQuOI7nprR+wt8+b0UwoWMoR44LBr8subbWnYOtkdUrGGtaXeg
+   iSYQF9hDsvG1tPD1F5injF9kPUqs8s/JMmfPHlaKdMypJuY6iAU0OO8aa
+   WeIB94RJ9R9ygKasqQ1M24FK8+sCmC8ZBh+1P6rJNpoQK/5K1WkGUR+ac
    w==;
-X-CSE-ConnectionGUID: 2oMoXoh1RBmtF5mqlQmi1w==
-X-CSE-MsgGUID: 8kcDmVj4TcGrZCPyLapVww==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="90235339"
+X-CSE-ConnectionGUID: 2VQke8ZXRGWi+zm8BHE94w==
+X-CSE-MsgGUID: esHeKlJWTPiw+wj89l2SCQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="90920519"
 X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="90235339"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 13:06:51 -0700
-X-CSE-ConnectionGUID: fB5s0Bl1Q/yFcyCchVcgug==
-X-CSE-MsgGUID: Gu9jvxAHRcGaLxis4W+0Zg==
+   d="scan'208";a="90920519"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 13:11:55 -0700
+X-CSE-ConnectionGUID: MxKmPVU6S1+wSgwepBnsBA==
+X-CSE-MsgGUID: av7p0MmOQMGjOIcEpRaAVQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="231478266"
+   d="scan'208";a="242221428"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.244])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 13:06:48 -0700
-Date: Tue, 12 May 2026 23:06:46 +0300
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 13:11:53 -0700
+Date: Tue, 12 May 2026 23:11:50 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
-	andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
-	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
-	krzk+dt@kernel.org, robh@kernel.org,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V5 04/11] iio: imu: inv_icm42607: Add I2C and SPI For
- icm42607
-Message-ID: <agOIVqDOr1LsdSi8@ashevche-desk.local>
-References: <20260509191907.24734-1-macroalpha82@gmail.com>
- <20260509191907.24734-5-macroalpha82@gmail.com>
- <20260511184715.241be1f1@jic23-huawei>
+To: Aline Ayumi Nakazawa <aline.nakazawa@ime.usp.br>
+Cc: jean-baptiste.maneyrol@tdk.com, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: inv_mpu6050: use guard(mutex) and scoped_guard
+Message-ID: <agOJhr9lj6hKnX4q@ashevche-desk.local>
+References: <20260512172538.101383-1-aline.nakazawa@ime.usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,48 +59,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260511184715.241be1f1@jic23-huawei>
+In-Reply-To: <20260512172538.101383-1-aline.nakazawa@ime.usp.br>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, May 11, 2026 at 06:47:15PM +0100, Jonathan Cameron wrote:
-> On Sat,  9 May 2026 14:18:58 -0500
-> Chris Morgan <macroalpha82@gmail.com> wrote:
+On Tue, May 12, 2026 at 02:25:14PM -0300, Aline Ayumi Nakazawa wrote:
+
+> Replace manual mutex_lock/unlock calls with guard() and scoped_guard()
+> macros.
 
 ...
 
-> > +static const struct regmap_range_cfg inv_icm42607_regmap_ranges[] = {
-> > +	{
-> > +		.name = "user bank",
+>  #include <linux/pm.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/property.h>
+> +#include <linux/cleanup.h>
 
-> > +		.range_min = 0x0000,
-
-range_min == 0 is a bug for sure. Yet it may work with current regmap
-implementation, it has to be fixed. See, for example, this pending patch:
-https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git/commit/?h=regmap-warn-range-overlap&id=062bb97410835055036490c96cf77898f90d34ea
-
-> > +		.range_max = 0x00FF,
-> > +		.window_start = 0,
-> > +		.window_len = 0x0100,
-
-This makes no sense. If you have a page enabled the range max has to be PAGES *
-window_len value. This suggests that we have a single page, means no paging is
-used. Very confusing.
+Keep it ordered.
 
 ...
 
-> > +const struct regmap_config inv_icm42607_regmap_config = {
-> > +	.reg_bits = 8,
-> > +	.val_bits = 8,
-> > +	.max_register = 0x00FF,
-> > +	.ranges = inv_icm42607_regmap_ranges,
-> > +	.num_ranges = ARRAY_SIZE(inv_icm42607_regmap_ranges),
+Here I finished my review. We have a flood of the patches from the .usp.br.
+You, folks, have to talk to each other and share and study previous reviews.
+You are repeating same mistakes over and over!
 
-> > +	.cache_type = REGCACHE_NONE,
-
-Why no cache?
-
-> > +};
+Please, come again when you fix all the problems that were flagged in the
+previous reviews for the usp.br contributions *and beyond*, meaning start
+reviewing others' patches and learn from other reviews.
 
 -- 
 With Best Regards,
