@@ -1,101 +1,141 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E841A39D3F6
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 13:16:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A183E1736
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 13:21:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778591785; cv=none; b=AroST0p9ebBG0JpK4wh77J734VQNdjXLSI8hHHETMYgDWG4C+K/vQ5U/A4OErRTUnOLp40cfS1qg2Pa+7fSvTpxBEu+/t8D/YMuijZAny6FhIWK2TENraD/ght5OB6NH7aC8AdZ4+ZWDTwdRWnm8fjZIrj2ZqsKjMWUXpXHaQAU=
+	t=1778592081; cv=none; b=SBbZHc4ixmdAtpxoDPZqMMYD+Llhp1WEp8JasHbEWAAAsCWPmsneqqwmcfzU7hga+EZ6ow799A+PKCjyx1KCDjZB28Y2WDnFuQ94AN4PEvUAhMRf7YM3LaY6X8fibiZ9Frv8lRhWWdF5dXXhr8nzsb+luvHc7Spycv+p3oGcPgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778591785; c=relaxed/simple;
-	bh=0q6rLvOhV3GAh312vu5Sbu7h2QpsKqD9NtTiZ313GUo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QLVnpujyK0JDrHukKShBVNeaEGSpiFbNDJtyUWDKuYEdXWG4O6BrYyXaaMuDL9ij9y2U/6ucZSg+I17SCKPo/N/5LnwT9hHddDUrLW14pxtV0vx2TqJ/g3QBcOrdZOkz+c9PT0SUd8kYMA50qi4HIdmmTX/qqh7Y5u9ipIgGTUg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cNtEcd3c; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778592081; c=relaxed/simple;
+	bh=sEiYG2uut8eryJgiVxXirz97HD1qb4i40If2RpVaDvI=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=X+gC1YowxlhABSZVndi04G5/G2X8ZdF/nue+vJ49kZA9ak89EOoOXWSnE5/e6lFeK0C9DHRATdxslb/PaAxC6NID34NaCRTzvPYsvpGrsZPBXE5hEuw4gukMzj96S9D9PYn/MgKrNYLGoYizvPwiBcNI38f638ANtaqDRVUFIfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HW4WXrgQ; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cNtEcd3c"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C401C2BD05
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 13:16:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778591784;
-	bh=0q6rLvOhV3GAh312vu5Sbu7h2QpsKqD9NtTiZ313GUo=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=cNtEcd3c3u99l3Uk9FwEHf/Ja+DpVZAvASu80JACFrCNGxY8sdL0OA4uFgC9ZBe9M
-	 UXYxRhOVdIKOOKI5IAdOYrPagwkTm8llWAp8zJgukXTLICI73ka5fEHpf1ZM0yBJXQ
-	 PXe7QlgE50Uure3RiPqIuE759mUwIunM28XxZmXUH+u2sFe4pNPZE9+EYt6ToU+VpR
-	 xzl0+t18CbGcTf3rF4m13pxxSpEI9Y2ZuU9rxvo8O6ec/wiSZAI5YPBBMxUIcW/7Bj
-	 6AUHH0r1ivIa9AsEM/EmtrPOuZP6uQzEPu/q7mJmS+DAPIkywZIqW6dDqWHmzZjQ49
-	 M+4LfxGiPKWvw==
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5a8d648466bso2599603e87.3
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 06:16:24 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ9v+3lE900pGQhpv3/n1i1SoojU0WhjDEShwF6do9VgJzD70TDsx+kjmUJPClXYj2vx+PVFGc05kRg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyKTCK1heI9QNZ/yXcEaCYlxv3VHixUgeBDNMpoVu7s+Wybd5rV
-	8plkG0TU+CcJFLyZWLIPZCrTLtkBwSCXy7OKjTWrFcg5KPm+3yCmup0enu3zUJJ26+LiAD4IaYO
-	LdveY5W3cfu7dn0cAMxo9haZgtkfBsCA=
-X-Received: by 2002:a05:6512:401f:b0:5a8:a201:f27f with SMTP id
- 2adb3069b0e04-5a8e31e9ae4mr934576e87.34.1778591782863; Tue, 12 May 2026
- 06:16:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HW4WXrgQ"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-43fe608cb92so3506059f8f.2
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 06:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778592078; x=1779196878; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=H0iUBbHJXRnojwm2dbHMn4bUhVf32dcx1R5+1C6RZQw=;
+        b=HW4WXrgQJv/8u5VL/s2qAKveBKj0j9M6F11QIaxwdjh55mQx1OtuJ1fUm6YBNXWLVh
+         5xqZC2rN4vmzO3PV8WnKxVaB22uWj5NdIf2JYcINvJsgMXselYnS/zEa+EtVHMhS7vHo
+         KQ1P7mE3H+WwzWWPcyqwavohBt7J18tnCMLhwdY4rB2fntrqXz2m98Ngk6t5bVmsDVot
+         o//rWQG2SP+xzPUa227lCd8SPg/0nvy+GW26o3fBlPdT3+CiKkG3fGCNQYCg2loWLjho
+         j97JjqSlXGaXoaQZM+nxBlwTjHFsdaDZ6neTqJf72oXcJTibYrsk9PlOFfaNh9c+Fq4J
+         6JjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778592078; x=1779196878;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=H0iUBbHJXRnojwm2dbHMn4bUhVf32dcx1R5+1C6RZQw=;
+        b=kPfD9vKZ9jiNPMTc4wS0pRaVAlcohcvSL+KRCniV9xCvrTdAefwphLUVceSCnuK9Zr
+         CG2xuBpISZf6+3KTa1f+slh6CFv2Bxlj1rSi4whp0HBfFQBiWWO9UJ4owbr3+32anxBk
+         IS5QD3qvvd2W49DVzzjCkkh1zwo6aFMe2bdMCBw3cgdQVzKwD3K2YI70zv4PNXVeENB6
+         0A5DYSMHT1zl8D7xOK7pPTCoy+1Hl+2NBerQc0htPZ+4bOS1zZUys5RiufjtxCvDLn0n
+         RrHeBOev4e0KWrWTYdHoVi1RA/lbpY8ryi2NMExgP9zxT9S7puHBWYw28htPy8NDHle2
+         NqPg==
+X-Forwarded-Encrypted: i=1; AFNElJ+V+6g+u9QataCtKgTReP+V8eAtEPb1ngbZW3KrJZCRZJKkO4ekx1Fu5WLeJO8qO6CIkDESg1Vvu7c=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/l1UYFIB5LzLfeYkS28ye3O8/wx6EtA4b2330wiIDxezVVWPZ
+	lt2yhXo3tK/x/3hMGRfZrWvsL8yCgNWe4iePjNxXLYGLV9e30CcZfVhE
+X-Gm-Gg: Acq92OFz1K2IFs6+XknruKwybBJGNDzC5qHww+mlZm2FJCLy/zUk7eP3irFGPsy4h2Q
+	DPZ9ODEhRDBx/vdDZzkvUIs3uWdagjV40VUCDLNgVYBdoz06oXJEkdUe7h4Th8oBYWupqkcCUA7
+	a1wnph71D5dIdSIkbipQxKCn09jY9DlaUK+sJcns9yV/t5LZhmdZpeJXje8aUkA7UkO6P0n5NBG
+	ELDYFPVRIkSNGPllT2SNMPTxEF8LDEV4ER8LQGkx1u3OeHE5Ltyvsf6AvHA9N1LU8jupkLR+7ff
+	lOljeRYf0ZNubphxUaMvZ/v89a1/7VmwE8hAiqekw9+J4Hc0WlaY62kRHadwKtaIwf/3U8UMPkn
+	tZnOIcfLLiwegOfUYUVolZqd2Fmh4EuXbRQjDR5/UnTO8UuEuQoFuRFIY9mr6LHUMU3SMIFX0kX
+	BSz4fvRTXlHUHvEbR8D5dqJKmOxVILIjLo6cknd5bZXXtZSUlCHVeK2DTTxiXAsKAwsxJdSqTJf
+	lBIhzE15If8uzrtFI02u26XQTv+2dKH7GZm2rXn0KbcliOcVg==
+X-Received: by 2002:a05:600c:a412:b0:48a:525b:e148 with SMTP id 5b1f17b1804b1-48e6748a724mr188954735e9.4.1778592077610;
+        Tue, 12 May 2026 06:21:17 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e9055ec3dsm43552285e9.0.2026.05.12.06.21.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2026 06:21:16 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Tue, 12 May 2026 14:21:14 +0100
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Jonathan Cameron <jic23@kernel.org>
+Cc: 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>, rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
+	Sergey Senozhatsky <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>, 
+	David Laight <david.laight.linux@gmail.com>
+Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <sj6cpjhakyfvv6rgox6cnhl2u2tgaecugcok6fw2l7zgku5wtc@aqx3ul72vgca>
+References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
+ <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
+ <20260512123953.40d80bc9@jic23-huawei>
+ <agMnWzMjW1LwCSyT@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1778582187.git.u.kleine-koenig@baylibre.com> <35a46c1014a1452b0c191a588bee8a09ddea964e.1778582187.git.u.kleine-koenig@baylibre.com>
-In-Reply-To: <35a46c1014a1452b0c191a588bee8a09ddea964e.1778582187.git.u.kleine-koenig@baylibre.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Tue, 12 May 2026 15:16:11 +0200
-X-Gmail-Original-Message-ID: <CAD++jLmKqdjqCRrP7oPFLUD2=jeZ7p8F8BeC4oq9FK92riZbvA@mail.gmail.com>
-X-Gm-Features: AVHnY4L5oxgy02ks0GtY4XCao1COVsV2LlMOWkqfZyLtbCWH-UAvvM00eg2TUGY
-Message-ID: <CAD++jLmKqdjqCRrP7oPFLUD2=jeZ7p8F8BeC4oq9FK92riZbvA@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] iio: Initialize i2c_device_id arrays using member names
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Puranjay Mohan <puranjay@kernel.org>, 
-	Marcelo Schmitt <marcelo.schmitt@analog.com>, Antoniu Miclaus <antoniu.miclaus@analog.com>, 
-	Ramona Gradinariu <ramona.gradinariu@analog.com>, Ariana Lazar <ariana.lazar@microchip.com>, 
-	Alex Lanzano <lanzano.alex@gmail.com>, 
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, Remi Buisson <remi.buisson@tdk.com>, 
-	Lorenzo Bianconi <lorenzo@kernel.org>, Christian Eggers <ceggers@arri.de>, 
-	Tomasz Duszynski <tduszyns@gmail.com>, Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
-	Andreas Klinger <ak@it-klinger.de>, Waqar Hameed <waqar.hameed@axis.com>, 
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Gustavo Vaz <gustavo.vaz@usp.br>, 
-	Sakari Ailus <sakari.ailus@linux.intel.com>, Dixit Parmar <dixitparmar19@gmail.com>, 
-	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, Guenter Roeck <linux@roeck-us.net>, 
-	Chuang Zhu <git@chuang.cz>, Kyle Hsieh <kylehsieh1995@gmail.com>, 
-	Oleksij Rempel <o.rempel@pengutronix.de>, Sander Vanheule <sander@svanheule.net>, 
-	Romain Gantois <romain.gantois@bootlin.com>, David Jander <david@protonic.nl>, 
-	Kurt Borja <kuurtb@gmail.com>, Tomas Borquez <tomasborquez13@gmail.com>, 
-	Matti Vaittinen <mazziesaccount@gmail.com>, chuguangqing <chuguangqing@inspur.com>, 
-	Shi Hao <i.shihao.999@gmail.com>, Erikas Bitovtas <xerikasxx@gmail.com>, 
-	Marcus Folkesson <marcus.folkesson@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <agMnWzMjW1LwCSyT@ashevche-desk.local>
 
-On Tue, May 12, 2026 at 2:51=E2=80=AFPM Uwe Kleine-K=C3=B6nig (The Capable =
-Hub)
-<u.kleine-koenig@baylibre.com> wrote:
+On 26/05/12 04:12PM, Andy Shevchenko wrote:
+> On Tue, May 12, 2026 at 12:39:53PM +0100, Jonathan Cameron wrote:
+> > On Sun, 10 May 2026 13:42:20 +0100
+> > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> > 
+> > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+> > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+> > > precision). After the decimal point, digits beyond the specified scale
+> > > are ignored.
+> > 
+> > Whilst Rodrigo has already replied to say there will be another version
+> > I'd like to request final feedback from those who were involved in the parser
+> > discussions.  
+> > 
+> > They got very involved and I'm far from an expert in the right way to do
+> > this stuff.  
+> > 
+> > I don't think David Laight was +CC so I've added that.
+> > David, Andy - I think you two were most involved in that discussion:
+> > Any objections to the end result? 
+> 
+> I already said a few times about the naming. I do not like the kstrto*()
+> be semantically different on how they treat the input. Second point is
+> to avoid code duplication, but this one is less of a concern since the
+> new code is in the library close to the other potentially duplicate code
+> piece and hence can be addressed later.
 
-> While being less compact, using named initializers allows to more easily
-> see which members of the structs are assigned which value without having
-> to lookup the declaration of the struct. And it's also more robust
-> against changes to the struct definition.
->
-> The mentioned robustness is relevant for a planned change to struct
-> i2c_device_id that replaces .driver_data by an anonymous union.
->
-> This patch doesn't modify the compiled arrays, only their representation
-> in source form benefits. The former was confirmed with x86 and arm64
-> builds.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
-aylibre.com>
+I suppose I reached into kstrtodec64() and kstrtoudec64() because it aligns
+with your expectations for kstrto*() semantics, no? Those include:
+ - overflow check;
+ - extensive input validation;
+ - optional '\n' in the end;
+ - mandatory nul-termination.
 
-It's clearly the right thing to do.
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+am I missing anything?
 
-Yours,
-Linus Walleij
+> Having the test cases is a big benefit, and that part I like the most.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
