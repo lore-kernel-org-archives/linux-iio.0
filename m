@@ -1,97 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B38F32C15BE;
-	Tue, 12 May 2026 11:20:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2517F356758;
+	Tue, 12 May 2026 11:22:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778584832; cv=none; b=D+rNATS02b71GMPX4jNw1XEV7vO73No3Rke52WUZwfnU6dmXgEYIwxoPjC3aXREQ14Ud+j6YDwNC96LPP9/m2dICXiyQSx3ZUJf1guGBa6wIWK9Q8MQzxw8xlcSMzvU8KHmk0H+svXccmMwlWZ8AtR22YSKkhkXfpwAbTQj9IBE=
+	t=1778584936; cv=none; b=PkO+h2/GUZTJ/Ta2VL1crFmG6LiA8VJtQJjDtRCo5TGgg0nz3AuCsLTSFE2+Ur5Io15nM3PgfngkZ9SztcpE7WQ0eG96ZxW7W/eGRhDDZnyIHQaECqs2BGrecU1YgtnQldImArbTtMyzeiTaT+liwW86KDYJlbrXNJsxNUy/6Ac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778584832; c=relaxed/simple;
-	bh=TGiDaSQhQRSB081/ItP6wnZ2UDfNrEKeW34ihRjMV6Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kw2lbMZKAe8Pfm4BLtg4N8Jzse3DxzzG44RVV9XQZb1zw661gnVqAVnqkCr4jOLNqp63+GGTP2974eOPldR/x8/lpKR2VXlH2AGSSSCaIIDEtYFIIFw2kerpHsJL+jLvBqqnhi0mVjcXz9xthApDb8BHKr2PRNKVRSdM2g6mS+w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AxnA7a25; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778584936; c=relaxed/simple;
+	bh=DOiQlZe1EB4MaXBwDRxCPMJKGGDu5LYyRnNW9mPF/Q8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gA2UjNK/ySsp8X6xIVBXMBmpOWixjy9KKy+l7TEp/zMw/q6FTfLdpJi8Nta/yAg24S6JCe7dV5z2w6MzSrRCz5VGwOeSVauUNjwkY8jnQXGDPuv1KV13ctHBO9PeHZX2W3JPJc+rHFYf3U8F/nQLkxAC3F3R3eJH0efDiG/KmJ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UvI9vmgd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AxnA7a25"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778584831; x=1810120831;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TGiDaSQhQRSB081/ItP6wnZ2UDfNrEKeW34ihRjMV6Y=;
-  b=AxnA7a25BccuCOZzd3QTzbwGvHLCFE8KaUoABtV1z3YavI5MMYWoiOet
-   ZI2/IYlaZyjqhKIXZtnt7t5oY7JpG42WQv7losGRgDNYpAtK75WFAI2Vv
-   h1bRLNCTHua/vTjNljcuoLGwbQ7NOIWQN2p75oQrG1clYmhWuXynWhqi3
-   9zA8jHFFBrzQhXbhRn6WSz2bFBfJJRDWQbevEmLrHoBMeTXbNa8Q/DL88
-   EHfpSUUf6FaozbuOUj/Ku+mPtBMX6HWfpM5u/l+v0OevfGoWl81igB7I6
-   s9z0yKRBzlvlf7KlxOpQKQKXRytpxbMzNJZhwu3jAPnMyf/fYqGxJN/e+
-   A==;
-X-CSE-ConnectionGUID: xn0DGKlhTueuX0tCwiyL8g==
-X-CSE-MsgGUID: pFUt4vYOTx6R0RRN75S1IA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="79207659"
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="79207659"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:20:30 -0700
-X-CSE-ConnectionGUID: LlvnaGIsSGOpgmZ9mdtdmg==
-X-CSE-MsgGUID: 6nvCmJoMQA6pQGsIBkQzcQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="233432777"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:20:24 -0700
-Date: Tue, 12 May 2026 14:20:22 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Yu-Chun Lin <eleanor.lin@realtek.com>
-Cc: linusw@kernel.org, brgl@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, afaerber@suse.com, wbg@kernel.org,
-	mathieu.dubois-briand@bootlin.com, mwalle@kernel.org,
-	lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	nuno.sa@analog.com, andy@kernel.org, dlechner@baylibre.com,
-	tychang@realtek.com, linux-gpio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-realtek-soc@lists.infradead.org, linux-iio@vger.kernel.org,
-	cy.huang@realtek.com, stanley_chang@realtek.com,
-	james.tai@realtek.com
-Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
- accessor
-Message-ID: <agMM9soiqpG-TRSb@ashevche-desk.local>
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
- <20260512033317.1602537-3-eleanor.lin@realtek.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UvI9vmgd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B33DC2BCB0;
+	Tue, 12 May 2026 11:22:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778584935;
+	bh=DOiQlZe1EB4MaXBwDRxCPMJKGGDu5LYyRnNW9mPF/Q8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=UvI9vmgdxl7dYDg8W5BRdJ43d3B6x6LsdMCdSx8awUDl5bM8Q6suX0Iq91vjb53A2
+	 j7A0seeMOJt6QL62c9VGg99AOe0NHkqxaOdX3Zs3WTYo5BAy59gFrokPPHapyk7wtz
+	 ypj63aIR4IKSfSgmbTuo94WynDdqjBtpVlaOUhKC7RouOpHHvC1cRWFH20nZchRRw9
+	 GfihY7GWrsSVWpErJsivpe7/yYeHb2nzYVVw8pcMpcixCDeeq49n9IUBIsqLWpDI6P
+	 Rw0Upunqzf7D6CcoNLL8j5Q62NF+Xg44HFwh+m83+8cvtHut6S5lX4FkewH9bw/Etj
+	 pj/w6vyb9JgAQ==
+Date: Tue, 12 May 2026 12:22:05 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Denny Lin <dennylin0707@gmail.com>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] dt-bindings: iio: adc: add AD7816/AD7817/AD7818
+ binding
+Message-ID: <20260512122205.07733eff@jic23-huawei>
+In-Reply-To: <f9469c48-ea67-4106-a577-4818cf3dd51d@baylibre.com>
+References: <20260509022718.82957-1-dennylin0707@gmail.com>
+	<20260509022718.82957-2-dennylin0707@gmail.com>
+	<f6e2a4de-4c1d-46ef-b383-db62091fd0f4@baylibre.com>
+	<CAGEkeHfeZWi99TMvkXHhMSrUS8PshuekqjszBXaS39VsLUZ4eA@mail.gmail.com>
+	<3493d6ef-5f02-4eb1-b81a-89597045acbb@baylibre.com>
+	<CAGEkeHcA+aJ_h5APbL_bG3vpyY+rSGEVn=Dk1Abe76MKDdyVpg@mail.gmail.com>
+	<f9469c48-ea67-4106-a577-4818cf3dd51d@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260512033317.1602537-3-eleanor.lin@realtek.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 12, 2026 at 11:33:12AM +0800, Yu-Chun Lin wrote:
-> Expose an accessor function to retrieve the gpio_chip pointer from
-> a gpio_regmap instance.
-> 
-> This is needed by drivers that use gpio_regmap but also manage their
-> own irq_chip, where gpiochip_enable_irq()/gpiochip_disable_irq() must
-> be called with the gpio_chip pointer.
-> 
-> Add gpio_regmap_get_gpiochip() to allow drivers with complex custom IRQ
-> implementations.
+On Mon, 11 May 2026 11:31:13 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-Hmm... Can't we rather add gpio_regmap_enable_irq()/gpio_regmap_disable_irq()
-that take regmap or GPIO regmap (whatever suits better for the purpose) and
-do the magic inside GPIO regmap library code?
+> On 5/11/26 11:23 AM, Denny Lin wrote:
+> > On Mon, May 11, 2026 at 7:51=E2=80=AFAM David Lechner <dlechner@baylibr=
+e.com> wrote: =20
+> >>
+> >> Usually, we want to be moving the drivers out of staging when
+> >> adding the DT bindings so that it all gets reviewed for correctness
+> >> at the same time.
+> >>
+> >> Drivers in staging are usually there because they are doing things
+> >> that are not actually acceptable for the final stable mainline
+> >> version of a driver and need more work.
+> >> =20
+> >=20
+> > Thanks for the explanation.
+> >=20
+> > I took a look at the driver and noticed it still uses the older
+> > IIO sysfs-based interface rather than the iio_chan_spec + read_raw
+> > model.
+> >=20
+> > Would you recommend updating the driver first, or is it okay to
+> > proceed with the binding separately?
+> >=20
+> > Thanks,
+> > Hungyu =20
+>=20
+> ADI's website says that these parts are obsolete, so unless anyone is
+> actually still using these with a mainline kernel, I would suggest that
+> we drop the driver rather than spending time fixing it up.
 
+The ad7817 isn't obsolete yet unfortunately - that's the only reason I didn=
+'t
+drop this last time I checked..
 
--- 
-With Best Regards,
-Andy Shevchenko
+Any Analog folk want to take a view on this one - particularly if you
+can check if it will be going obsolete soon.   Good not to waste Denny's
+time on this if so!
 
+J
+
+>=20
+> In any case, unless you have the hardware for testing, it would be
+> best not to make significant changes. There is a non-standard "oti"
+> attribute that we would need to figure out what to do with. This is
+> likely why the driver is in staging in the first place.
 
