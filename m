@@ -1,80 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC5DB32143D;
-	Tue, 12 May 2026 14:43:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E201389118;
+	Tue, 12 May 2026 14:44:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778597039; cv=none; b=ATcqm/3RlYhmcQP6UHxkkiQbk7u4ifXrOMWHwr/WIR6grV9+76T5Wm0YGRmRFuY615k4SHXTSp8UyeoFvB7LoZT6M/aAW8KJZBdF0xa8Xy/cXbdWSy0WWe3s2WwMJO9TA1RaG3AKRCuZkcZprIrpje3d+rTRxnGp0yd7UCrOXtA=
+	t=1778597088; cv=none; b=UD/cmGSi/I6CrwVNmHnqNkNO6MALYS8dyyAAs/Qn0Z0TWXd9UEGOrDKCeySIF2/xhy+h7GyX5mSAqzuHNA6fjflPSPwQD2WSng1FGr6CwlvlvTiE6XWdFfupUNjsYu1syuQVN2TeRUiigrv2VzPjIVb6Yq+IbAxACVlF0LdQVrw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778597039; c=relaxed/simple;
-	bh=R/jhBIChVXR9kgDOd+WISzPt857TrAdWxKQz2nBrnrs=;
+	s=arc-20240116; t=1778597088; c=relaxed/simple;
+	bh=Uvtx33gVsoII9dmOYcnu/6OqaozcAFiDG6/Jts9qnYU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F+BYDqsIOdKc84apWOostO5KqlYC8K1HrrO6kpro+/p/Yyh71iFP25B8W1cxX8qrLJBWYHLIMgmpmfThuOBgdJEXTz6WkfS/TtB9aNH+iGQ592Nx6I0JL8bjPsvhBT6pNe1u+fOTBwH2Kwv96hPGXAiWzCJYuadfb7uCg2vwvgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oAsvFXSa; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=sBV/7f69w7hB33tEMSqF/PVPLUKgv8yqobfIO9YIq9we69FxPvpcniZ1Z/dBJKQcKXbXsMQ2B4ITXYZwLcaw7yHfkmpqmMnkaUu3miCZ8XM0T0xZ6N5YJAL4edxQyVqe+fRTAgIw+xSIsLrijhys7XLyd9yIUbAV8vKawaQp+HM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hm2ARjLy; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oAsvFXSa"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hm2ARjLy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778597037; x=1810133037;
+  t=1778597087; x=1810133087;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=R/jhBIChVXR9kgDOd+WISzPt857TrAdWxKQz2nBrnrs=;
-  b=oAsvFXSabNAc63pNQq5q0A723wie7n5EVd0/Y59qMB0vREq18G4bSIpi
-   Y+Od07+nATZS/sShNft8aSRyGb3z7bJlCXtWuq5gGNUXgrKDuhT2cgSZX
-   uIAzidKU5Vi2Eh/yh7ZRnh0DRJjRlbJaq/f/D34P/nV4Jh0Dw6quLiD52
-   ESPmpRmeacrYjJG7kr6L5fW3d5GYJurjhM8UN94whF8Uv8ImAw8QxeQb1
-   WiF6AfnZ6PgN7Nl7dpcJ8mhrjnul0tFUm5qGfMNyKCqAejk9bJOlyfX/9
-   0RoPd3O3oAUMCxA6tBsiGxnP56cAsynnn7HelpsGwkgG9eyRC/aOgEtEb
-   g==;
-X-CSE-ConnectionGUID: tkEaFxxDR72D+owv0RYPFA==
-X-CSE-MsgGUID: PeSqdWSQTp6OfWu5WKsWQw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79455322"
+  bh=Uvtx33gVsoII9dmOYcnu/6OqaozcAFiDG6/Jts9qnYU=;
+  b=Hm2ARjLyFz9u98jGIlcqHdXeiDZSZJtf8Y66LZ348jqsbXWNlTvllA5b
+   vdrdUom33mAmRnv61L/iZ20nyywaqjK+xmWC1kkO1ZDQ8yLfXX1fOzsf7
+   cwLz6qK4bGv5Ni2EoVPjtVwNj18ibx/3FMbR2UVlhWp64Dndk19F8z7gm
+   mjo8ns8HXCQjBvJCMFHAdlV30ynak3Ip5WtYdnTsBySxcIX+ldjV2Q7uO
+   K7RKJl9vf1UUDKg4cqjhz+EpgN4XqMsEvP99vhq0T4fJt8Cd3HduTZ27C
+   0dekLJSXRTdVbYXCkBFvV+BoRm3miHZVGe2MSIHDNGZuuxSwMdbonAiMw
+   A==;
+X-CSE-ConnectionGUID: R2cq2taPTRmZK6t8678XXQ==
+X-CSE-MsgGUID: niKAjb5cR/aaVcgsAdpS4A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79527351"
 X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="79455322"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 07:43:57 -0700
-X-CSE-ConnectionGUID: 10bEOBdlTOGu130+WC0xcw==
-X-CSE-MsgGUID: pPYNsW0wRmOrhbpoh4wDbA==
+   d="scan'208";a="79527351"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 07:44:47 -0700
+X-CSE-ConnectionGUID: t/M+o4PeSbu2mJwAZ4K0MQ==
+X-CSE-MsgGUID: XCqjoh+cQiinnlXLZQfKnA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="268130406"
+   d="scan'208";a="234723680"
 Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 07:43:51 -0700
-Date: Tue, 12 May 2026 17:43:49 +0300
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 07:44:44 -0700
+Date: Tue, 12 May 2026 17:44:42 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
-	rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	David Laight <david.laight.linux@gmail.com>
-Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <agM8pWrM6j_XksvN@ashevche-desk.local>
-References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
- <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
- <20260512123953.40d80bc9@jic23-huawei>
- <agMnWzMjW1LwCSyT@ashevche-desk.local>
- <sj6cpjhakyfvv6rgox6cnhl2u2tgaecugcok6fw2l7zgku5wtc@aqx3ul72vgca>
- <agMvlS3-0wvGmBwh@ashevche-desk.local>
- <dxjg2sdyxb7ieb4abmeyyye7qok6cczrxabpsjyjhcbehwoec3@sbbqoo4wmzre>
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 0/8] iio: magnetometer: ak8975: driver cleanup
+Message-ID: <agM82tuZGvfKlSdI@ashevche-desk.local>
+References: <20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6@gmail.com>
+ <agLu6wF3JhF9zZDN@ashevche-desk.local>
+ <CALoEA-y-bLur7tBnj61hXSnOdbJkco3zyAH8v_-y8+VFfVyEgw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,80 +64,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <dxjg2sdyxb7ieb4abmeyyye7qok6cczrxabpsjyjhcbehwoec3@sbbqoo4wmzre>
+In-Reply-To: <CALoEA-y-bLur7tBnj61hXSnOdbJkco3zyAH8v_-y8+VFfVyEgw@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, May 12, 2026 at 03:12:24PM +0100, Rodrigo Alencar wrote:
-> On 26/05/12 04:48PM, Andy Shevchenko wrote:
-> > On Tue, May 12, 2026 at 02:21:14PM +0100, Rodrigo Alencar wrote:
-> > > On 26/05/12 04:12PM, Andy Shevchenko wrote:
-> > > > On Tue, May 12, 2026 at 12:39:53PM +0100, Jonathan Cameron wrote:
-> > > > > On Sun, 10 May 2026 13:42:20 +0100
-> > > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> > > > > 
-> > > > > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
-> > > > > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
-> > > > > > precision). After the decimal point, digits beyond the specified scale
-> > > > > > are ignored.
-> > > > > 
-> > > > > Whilst Rodrigo has already replied to say there will be another version
-> > > > > I'd like to request final feedback from those who were involved in the parser
-> > > > > discussions.  
-> > > > > 
-> > > > > They got very involved and I'm far from an expert in the right way to do
-> > > > > this stuff.  
-> > > > > 
-> > > > > I don't think David Laight was +CC so I've added that.
-> > > > > David, Andy - I think you two were most involved in that discussion:
-> > > > > Any objections to the end result? 
-> > > > 
-> > > > I already said a few times about the naming. I do not like the kstrto*()
-> > > > be semantically different on how they treat the input. Second point is
-> > > > to avoid code duplication, but this one is less of a concern since the
-> > > > new code is in the library close to the other potentially duplicate code
-> > > > piece and hence can be addressed later.
-> > > 
-> > > I suppose I reached into kstrtodec64() and kstrtoudec64() because it aligns
-> > > with your expectations for kstrto*() semantics, no? Those include:
-> > >  - overflow check;
-> > >  - extensive input validation;
-> > >  - optional '\n' in the end;
-> > >  - mandatory nul-termination.
-> > > 
-> > > am I missing anything?
-> > 
-> > When we add scale we basically make that not true. Moreover the code in this
-> > patch makes scale == number_of_characters which I think a bit fragile, however
-> > it's about the fractional part when the amount of digits is equal to scale.
+On Tue, May 12, 2026 at 11:16:17AM +0200, Joshua Crofts wrote:
+> On Tue, 12 May 2026 at 11:12, Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > On Mon, May 11, 2026 at 01:26:09PM +0200, Joshua Crofts via B4 Relay wrote:
+> > > This series is a continuation of the previous ak8975 driver cleanup
+> > > effort, as most of the patches were picked.
+> > >
+> > > Changes include:
+> > > - using BIT() and GENMASK() macros
+> > > - moving to devm_* resource management
+> > > - adding a scan index enum
+> > > - moving from using wait loops to iopoll functions
+> > > - various code style changes
+> >
+> > Thanks for doing this!
+> >
+> > Jonathan, the same Q I had in previous version round, can we get some patches
+> > applied to reduce the burden of the series? (I think of 1, 2, 7, 8 and might be
+> > more.) As for the series, I think if this version is still not good enough
+> > (patch 3) we need to rearrange it so that patch is going to the end (as much as
+> > possible) of the series, so we want delay the 'good' ones to be applied.
 > 
-> That is not really the case. It is being set as a limit, so it does check for
-> truncation and zero-padding.
+> IMO all patches excluding the shared resource management patch are good
+> to go. I can send a new version reordered to reduce the headache.
 
-I do not see it happens in _parse_integer_limit(). It doesn't try to parse more
-characters than it's requested in max_chars. It doesn't check if there are more
-character nor their converted values.
-
-> > To make this work as expected we need to add an additional call like
-> > kstrtoull() (and perhaps drop that \n and NUL-terminator checks) and see
-> > if that overflows or not. Since it's a fractional part it must have less
-> > than 20 (decimal) digits there, so we check the rv (or how many digits
-> > were parsed successfully) and compare to 20. If it's more, we got too many
-> > decimal digits.
-> 
-> For overflow it checks the KSTRTOX_OVERFLOW flag and leverages check_mul_overflow()
-> and check_add_overflow() when combining fractional and integer parts. The amount
-> of characters is not really important there. The scale cannot be bigger than 19 and
-> that makes sure that int_pow() does not overflow. The code uses _parse_integer_limit()
-> due to the nature of input and to avoid 64-bit division, kstrtoull() at any point
-> (parsing integer or fractional parts) does not make much sense.
-
-Under 'like kstrotoull()' I meant something that repeats needed functionality.
-I believe it's parse_integer() (without limit).
-
-> > Maybe I'm missing these checks already performed?
-> > 
-> > > > Having the test cases is a big benefit, and that part I like the most.
+Let's wait for Jonathan. Whatever he prefers.
 
 -- 
 With Best Regards,
