@@ -1,134 +1,154 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B6892D94BA
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 16:09:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45CB539E9DE
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 16:18:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778602184; cv=none; b=fXu+hAAOdooCoee1zQBhpKLKI2zRy71o18AEWXX6mhQakIIbcPhQ09pKhCDHyfs69NU4X1VzSEYdjLZ0m26TQWCJrd13xGSc8DGQqmhY1NAYZ4bj8xW4Bp7MdLY7rv5x6KJJlpwMBvwn1OoeqQ+SlUWfaTlUY5TTr2oNG1gKXU4=
+	t=1778602700; cv=none; b=eWu4i0hIJfeTvRmu14MMb7A202UoRQugoJSq3qRXfleGM31cUxYsMSTrHNaErz2Z8vDg2YR8ParkJW30sbV3W+s5rR79HryWQVqIfBuZMMjka7rPUxwCnCTawav7wlC7LfzEcyiZ88wU3fteM1g2OA6XYWTCEhMbIv6AxCK8QRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778602184; c=relaxed/simple;
-	bh=3DX+Rca1nRAlC0Y/CMzTtz4gGTTY9EHGBBklGO2y5Ks=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JWhsxZt/CN5EC8egW/48WRfFy/iXhFGjhFXJxeVRqD+wKpiz4ywR56Nz7+GcEyq0F1KqoKguxJ93i0JwtpHiOApCgDEgpPJ1ipVtGXYo1krVxPrdL2n7VAYHNuRastKjKSVA13YlhDxNbH814P2EO6NYjD8rmLswyqCa2M5PPe4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q90DWDLL; arc=none smtp.client-ip=209.85.208.48
+	s=arc-20240116; t=1778602700; c=relaxed/simple;
+	bh=AtvxZEfNK52qh8Sntbt6SqFzqSBGmvWLF/8w119Z9Us=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mDEimW6Pr4IrW93EmjVD1FA50zbmUExPjoREdJYnZ+ujEL2LLiUX4IKkMqr8imT/w7YuGEQmih3t66+olsJ3kjXNbatqK3Kv+yI+z7pO8EqOLq0NfYjZUbqaC+EMeok1JYffNNtV9gUM/t/TFTsCUu69QvZU+xu8+AWu26EL+/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DRYzF1sF; arc=none smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q90DWDLL"
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-67e24b8ef55so8054809a12.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 09:09:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DRYzF1sF"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-44b052142e1so3232675f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 09:18:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778602182; x=1779206982; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=I9hIm7lzas2SuU6DZgX10mn3CRFrGahP/pnGCzUnmz8=;
-        b=Q90DWDLLHA36SrGLhW+9A1kNj9l0GqxxXpstExQjUi3OV6b7FlFWpnNBh4fqvyStRo
-         /4JwjCfwgloUE2/hTFZAwdzrUqPF4SkIYd0F2qHNi/DFmzlE1K3ZGtrwlydWIjUuqDk9
-         WFG+cH5bg2OPfSsw6WiHAeEJuEGWxZr/ATQY4hcwk6zgOClK77MmIJmIlkUViZncGcDI
-         Cx0vNUeHKVghg1N7GcfL9kGirWjtUTBvlEWkMefE5nb774hkn0DWrIHLn7nVwDBxcWi5
-         cd6iTdI57oWPYEYkyCHOHoSHOV5uk++eHdBQuPbmN1qZdWsMnP/CG94pF/1/MHXWgUMd
-         ADGg==
+        d=gmail.com; s=20251104; t=1778602697; x=1779207497; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LLDhRrsYYAieX5MKmnLKzaUv/WL8O+rmn/hVKUTlz+0=;
+        b=DRYzF1sFFkDifTiZl8MxVfreVi3OJ9c8ENougW5kmP1lmpZJ3qCAySvVWMyzWMgq0V
+         tupJ1ysCcidUX6DHiPfHukN+Poukp8+qX7f9clPGEyJB6lFqHbdnQt0aWcL6Y0hBfdzR
+         YjTh91NhBWF5BddPhz5piv22gpUfmvgpmpZFV766NVNo+mD6HVwHz8g9b82jolZxlrMW
+         xjou541h6eiBvrziplYmhOUNPlN9M+7sqm/VB5yl5S04LN3s+LlnH8wqhJ5WLMuO/cdN
+         t1gC/v85D2jfJ1+KGzVZcW6p9JYQpYwK2VhLg6UWMebPUsVJXlAjpD7Kfxp0uTQp0N2J
+         /zEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778602182; x=1779206982;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=I9hIm7lzas2SuU6DZgX10mn3CRFrGahP/pnGCzUnmz8=;
-        b=eYs4hQxmUJwswjPUpb9FC9J+KGQmzAQ0FonKkrCIF3jBLa0LubWB+XDeuMQ5nZ2yBL
-         H0MCwQ7+BHUzc6bNjEqOrPXH5vPzCuX5RT21FrLgC8gCiroK/uoDVzw2Xoq+R/MClf74
-         5HSHfBE6CP0sBmY9WbPX9khD5XFqCGb1SOxj779hRmtE5QedfIOeVcz/fmOQ986u8DPD
-         AfjjydG5AvM0Ebc1TR0uoILlbA16zDLvfKDB3x67ZWY9czd8Uox/9voIOfAham/nQMdo
-         cjNL6BiMsVC+gXTEpHf+JJbTiWIV9EKX2h9NCO0Yu00q8oNpeIzp1Q3g1kzOiHzB5piU
-         yFkA==
-X-Forwarded-Encrypted: i=1; AFNElJ+aU86QbdVegKjM+w52sw+HS3FWiRAfbXnN7OYP87iAQ8APZBvTALPnH7tb9iaHHvEv7c7gSd0u07k=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy+8TgRvqYM2TszayHRb6pM32o4bETDczaJWc++WwM1Fwim1L5L
-	5/NkqFM7z/cW2192cYSjAOvuQIJoLLfAbMevAEgPds6TjKhR/9umRvk0
-X-Gm-Gg: Acq92OEa0WBLN1olGB7KGOMUuAycNPQfzvS+bBdLyDl8ATK+Qpdy2uDa6L4Pw+gGj9x
-	htqOcEVYirWZJ+k9Dcmk5k9kE/pFEOL2YMpaeTcNsjOJS7W0jW5QgHL+bH17gzhROKYX1mdYxq1
-	Uyy6sMQCFnHZqPNuv5PlSHSXvR/ueq4B+BE6SdnOkn3FP9PHGiFTmVUpEh16gJTe3LRfD7rT7lQ
-	c2C3K0mWJimfPvBkVyDX4ArMqiKd1h/5ujZmqKO782FgWzZY+D+/ymAwrJz8/Fft5anw2MRthQF
-	7vX30BHU4l5inTCsrzQzumDdDxM4/saZo4+n1wSAFbv/gvfXl8mX0BJhx/ibkDq6Et14jnVa9+w
-	7je7AOCK5XdTTFPCJRGD5JGE5CY1tJyD0hpl+E6LLaUzzMXKz72RT9KL8tLy8pV4zDhZLN7Q7JG
-	j4iE035kzS6/8sKgcTk2ZvZVUB/XIJeGykGLtIros84qniWo+GT5lisBcQgSYoVsKpE6RLtDIau
-	mGMr+tkc1c0Nhv7QpC3jzVqPHDLu86Y4bpFvK5hFtkD8MbBdA==
-X-Received: by 2002:a05:6402:158d:b0:677:15b6:4d6b with SMTP id 4fb4d7f45d1cf-680d02f613cmr2125366a12.26.1778602181689;
-        Tue, 12 May 2026 09:09:41 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-67ef0b8a939sm5334930a12.13.2026.05.12.09.09.38
+        d=1e100.net; s=20251104; t=1778602697; x=1779207497;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=LLDhRrsYYAieX5MKmnLKzaUv/WL8O+rmn/hVKUTlz+0=;
+        b=OvvZ+nR1/ANPdkOp6el3BhVES+kl9gIHuz4aeDvq2qSlT+mgYSQpSMnB0nHXP7caP5
+         o3Fq3jzrSaB/BZWWXT0ni+lbZ+S1LRUm/7Qx7INjHm/l28UtSBpPAjOxo9nTo/ncO9a7
+         IJg+vmhl7INaK734E37NdI9xg/EW/lhkXDX334eXLZYO6BwH8G18Kv1tUQDOgJP2kAI3
+         O7Xsye00HQPXgwdCgjG0mp9GkC7YThBrtBo1od/a1iQ/O+MwYDfqGHJTmzW6FBqSmH1U
+         nR7zMJnPL9UFY3K2/0foEKy9D4cjVrrNJKLI9z+bOlcrnKD+RVO07UEGl+zB8cI9M/uQ
+         w05A==
+X-Forwarded-Encrypted: i=1; AFNElJ+7PlN8QtDkrDwRejTK0VpwP+XXFXww/15eV2viagsoGINhdvyTHYB+FCOszJCxdx4y+lRBxJ67uII=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxlM8XBB4CC7zavF7H2IuyK5NBGZ8popXDt0vi+vwP9krQnOchW
+	lvHHKln8dW9kUeBzuAEAEv5yt3rplVz6Da9ud65Quy/CWTcd2bTOUjh6
+X-Gm-Gg: Acq92OFLwpGizJ6uGTSNtWt0lo3KTuk2RRbXvktxwpFMfzQGML1ZjJMdF9mztX/2ZWT
+	piqq3nBE0S27yH0MQ0kXUD3RiHmj9om5AEqci0ecBmWDvBxmMzreljfQITn7Yc5Mw/7NWYY4oF5
+	7wMGHQYB3UrTEni68JdOlLyknlzcIIznzFUumU31G+X2GezeAO6Bjxs+aXfvXY4dtDUo6zp9emn
+	uQ1+tLmDzz4nVYZ0B68lgONRsokWtp00rSVOcNgtoD5cvh2kWYtCL/zQ2kZ04XehxtGjaJprAwp
+	R5/AAdxHauMxsO/8JSrTH2gFhPnSeMaipPFSNotupxELwbwxIzanv7TU/lDJ0HkxI9JzdFSlf11
+	f1+69veopTBFHArAGA0NpuZ2FCRbEs69CTokN6Pw+6Ibb91LCosEUatxONhUkKQjAc70EiteAaP
+	XwoWOlvzsXqvD7d2qV4VvMVjOtmKFpjLfTbDVXUIMTKbvosmuydpniA7pocnOn
+X-Received: by 2002:adf:e9d2:0:b0:456:b23d:e57 with SMTP id ffacd0b85a97d-456b23d0edcmr16115850f8f.0.1778602696592;
+        Tue, 12 May 2026 09:18:16 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548ec6b071sm33302475f8f.14.2026.05.12.09.18.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 09:09:40 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 12 May 2026 17:09:32 +0100
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
-	Sergey Senozhatsky <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v12 05/11] iio: core: add decimal value formatting into
- 64-bit value
-Message-ID: <ql7smsqza7liupm7fhdts73cxsltrpxsqofu5ovzpxpwvcscuv@qigi3dwukk7k>
+        Tue, 12 May 2026 09:18:16 -0700 (PDT)
+Date: Tue, 12 May 2026 17:18:14 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Jonathan Cameron <jic23@kernel.org>,
+ Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>,
+ rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Andrew Morton
+ <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
+ <rostedt@goodmis.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey
+ Senozhatsky <senozhatsky@chromium.org>, Shuah Khan
+ <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <20260512171814.1934aeb4@pumpkin>
+In-Reply-To: <CAHp75VeoH3yVfp8NWjKfc_df0VRLkyf_SK4e==-wJOEodVjW_A@mail.gmail.com>
 References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
- <20260510-adf41513-iio-driver-v12-5-34af2ed2779f@analog.com>
- <agM6uzhdn7o8g9v5@ashevche-desk.local>
+	<20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
+	<20260512123953.40d80bc9@jic23-huawei>
+	<agMnWzMjW1LwCSyT@ashevche-desk.local>
+	<sj6cpjhakyfvv6rgox6cnhl2u2tgaecugcok6fw2l7zgku5wtc@aqx3ul72vgca>
+	<agMvlS3-0wvGmBwh@ashevche-desk.local>
+	<dxjg2sdyxb7ieb4abmeyyye7qok6cczrxabpsjyjhcbehwoec3@sbbqoo4wmzre>
+	<agM8pWrM6j_XksvN@ashevche-desk.local>
+	<ur6brs3yjzyb4mtelabmcglxjltddqvjxtgl3lkdkmbjlkmnsq@bwd6rz7gided>
+	<CAHp75VeoH3yVfp8NWjKfc_df0VRLkyf_SK4e==-wJOEodVjW_A@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <agM6uzhdn7o8g9v5@ashevche-desk.local>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 26/05/12 05:35PM, Andy Shevchenko wrote:
-> On Sun, May 10, 2026 at 01:42:23PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> 
-> > Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
-> > defines the representation of fixed decimal point values into a single
-> > 64-bit number. This new format increases the range of represented values,
-> > allowing for integer parts greater than 2^32, as bits are not "wasted"
-> > in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
-> > IIO_VAL_INT_PLUS_NANO. Helpers are created to compose and decompose 64-bit
-> > decimals into integer values used in IIO formatting interfaces, which
-> > creates consistency and avoid error-prone manual assignments when using
-> > wordpart macros. When doing the parsing, kstrtodec64() is used with the
-> > scale defined by the specific decimal format type.
+On Tue, 12 May 2026 18:21:44 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
 ...
-
-> > +		tmp2 = div64_s64_rem(iio_val_s64_from_array(vals),
-> > +				     int_pow(10, scale), &frac);
-> > +		if (tmp2 == 0 && frac < 0)
-> > +			return sysfs_emit_at(buf, offset, "-0.%0*lld", scale,
-> > +					     abs(frac));
-> > +		else
-> > +			return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2,
-> > +					     scale, abs(frac));
-> > +	}
+> > I think we are going in circles here and we could look at the code instead:
+> > - integer parsing with _parse_integer()
+> >         - overflow check and validation of the return value
+> > - fractional parsing with _parse_integer_limit()
+> >         - overflow check and validation of the return value  
 > 
-> What about
-> 
-> 		/* Print a leading '-' for negative fractions */
-> 		if (tmp2 == 0 && frac < 0)
-> 			offset += sysfs_emit_at(buf, offset, "-");
-> 
-> 		return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2, scale, abs(frac));
-> 
-> Also note this won't work with the frac that are == S64_MIN. It's UB (undefined
-> behaviour), see the comment at abs() implementation. Maybe a time to add abs()
-> corner case tests...
+> No, this is not fully true. That's what my whole point is about. The
+> max_chars parameter limits the input check, then it skips an arbitrary
+> number of digits and only *then* it checks for \n and \0. What will be
+> the result of the
+> 0.00000000000000000000000000000000423 in your case? Whatever scale you
+> gave it will return 0 without checking on how many digits were
+> supplied. All the same for 0.9999999999999999999999999999999000423. My
+> point is that we should limit this by 19 digits.
 
-frac cannot be S64_MIN, it is always and remainder of a power of 10 modulus.
+Don't forget about 000000000.123
+And that you also need to worry about leading spaces affecting the length.
 
--- 
-Kind regards,
+To me, the easy way to parse it is to know how many digits are valid
+after the '.' and just carry on parsing digits after a '.' until the
+limit is hit.
+If you really want one function, pass zero to indicate that '.' is invalid.
 
-Rodrigo Alencar
+> 
+> On top of that, what about -0.9(19 times) ? the fraction should be u64
+> in this case and it's fine. The sign applies to the combined value.
+> 
+> >         - extra scaling and truncation happening outside if needed.  
+> 
+> Right, but the given input may be way too long and still needs more validation.
+> 
+> > - check for input termination
+> > - combination of integer and fractional parts with check_mul_overflow() and check_add_overflow()
+
+A lot of the time overflow can be ignored because the digit string is short.
+The check_mul_overflow() code is likely to measurably slow things down.
+(Especially on 32bit where even a compare against 2**64/10 isn't cheap.)
+
+-- David
+
+> >  
+> > > > > Maybe I'm missing these checks already performed?
+> > > > >  
+> > > > > > > Having the test cases is a big benefit, and that part I like the most.  
+> 
+> 
+> 
+
