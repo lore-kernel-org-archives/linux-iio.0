@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1BF2395AC3;
-	Tue, 12 May 2026 11:36:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 892D3360EC9;
+	Tue, 12 May 2026 11:40:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778585784; cv=none; b=QB1aYpyEj4FKbjjI0Cds53rb9knMFfs2/nO0iHQkIQk4wLE3SNf3o6k3rtLoz31VKJOow8pp+tlv+Jo+9VPLT+ye0AIzg1ye3h6vugRVnUIeGwgvKJ/dHoODFe1WJ6FumJ8gSAjZt35sP9TmK1LEM6+rHY8eqJz2SvBoiqVz3nY=
+	t=1778586007; cv=none; b=ml5XSoLWrqo7yznRN6LpCULGSzzsx686vKxI2eVN7MIw5dZdJUSS90OeuCrkwjCaZsEQEC/QtZWtcG0L5vf8e7VbE9EF5c1PbItQQT7PTCgluytuiaSVi5c0P64OfuTwuNzYPIAdo79ODUWgT7NfONU4qjMvEgK/KCS6buNuuL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778585784; c=relaxed/simple;
-	bh=Gpg3egQ6vVUcNICfzOq/Sa6D9k/UQM2BtrpCKf33v2g=;
+	s=arc-20240116; t=1778586007; c=relaxed/simple;
+	bh=sAb39qTp+vHuh7hzcoR8g5rHErQJcRmQkIRa9ZzBAVw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rVIo/eGfsY5pTEXvrpxEY2HrxOlpYbF8wyE8hzpSWGisl0YYS5u9xF+s9WCLGqLyNxRCtvFQx3/3zuEJxyiuVXgM2cpkFHNkctvsXMmCN2i9LvhwkYpU5h08XS5dw4bzaIWxVE2hUZcuZEhRN3Qsm5tZVSWu49rNVAJ+ebvDBso=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e2Rnbnhj; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=rHwUeDk2BK5KR1d4g5lCUYukZqpvkvtEIEK9nWYJXfv78ccw2ZYyCBgFTDkF1hVeNoRZF//ixyz2BN6gw0NNg+P+MHApCUtKCDaO7mdNEkI92vEMLHr6KtMmVGIcGJfl8P5uRQomlY8w2Nctyzpaig4Whu2JFVprxu4sz9LLZgM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KoLTI9kP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e2Rnbnhj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99D04C2BCB0;
-	Tue, 12 May 2026 11:36:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KoLTI9kP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2374EC2BCB0;
+	Tue, 12 May 2026 11:39:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778585783;
-	bh=Gpg3egQ6vVUcNICfzOq/Sa6D9k/UQM2BtrpCKf33v2g=;
+	s=k20201202; t=1778586007;
+	bh=sAb39qTp+vHuh7hzcoR8g5rHErQJcRmQkIRa9ZzBAVw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=e2RnbnhjTAo3qtGayxzsmWU1sRgq+V0oZYN23S+Mt/m89xN3VBTL2Ks4pUXdk20WA
-	 B/eUGtbj25ODFGRpha1DJ8uzlZlNEXNJKdZ6/VdRd9KLM4eCxCoqIx3mh0bNHurSYr
-	 JWzX2y80GzPQHZd3ll9FJ6o3Q8jiTjuAkHls62Au/9bIoJWEboG9K+ti3Wev0bJTvD
-	 LBYVypJ9fkLl/9XSUwIDR3A479GhTMKz7IG/zk5J/MenXQCfIoNQEiSBL8+YSZh0ZT
-	 pO0KL4C6przBKkXp6EUCPqhL59ubYsF5JaPjYQbIOujYmxIPSXgrLrnsMAU8Hs+VQv
-	 CdzxHEydPRT4Q==
-Date: Tue, 12 May 2026 12:36:11 +0100
+	b=KoLTI9kPKwZ0lflIzroveAtPnWPcLJqjlyB6cOjWmkqnB7LTr4z1o8Ltsbd/ndRpV
+	 ogtt/WIdFckg9YLw7eUIlrIzb467u9+OPPy0c6raarVOjjJwb7RMlBo3R0BpgQen11
+	 Xmuhw53x6yB5HFfiUuiQprbBYpWdCgmz8AAYjr8wQ0pupJDeZ5S+JIcYZIw+jYjLrG
+	 dMJQIWuYPhXOkaJ0q9NbcGsnrcscsNevuuv1aBenrn1B1XMhe1V6ypTdWSXpQv//RR
+	 TxA9G+4tDLD8PPcPVhrECehx2bskvtHtKnIHmJ/u9gE9FwFFuT+R9CEyAvdiOuCvlP
+	 nX9CYy9limntA==
+Date: Tue, 12 May 2026 12:39:53 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rodrigo Alencar via B4 Relay
  <devnull+rodrigo.alencar.analog.com@kernel.org>
@@ -40,13 +40,14 @@ Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
  <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
  <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
  Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v12 11/11] Documentation: ABI: testing: add common ABI
- file for iio/frequency
-Message-ID: <20260512123611.2f7369f8@jic23-huawei>
-In-Reply-To: <20260510-adf41513-iio-driver-v12-11-34af2ed2779f@analog.com>
+ <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>, David
+ Laight <david.laight.linux@gmail.com>
+Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <20260512123953.40d80bc9@jic23-huawei>
+In-Reply-To: <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
 References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
-	<20260510-adf41513-iio-driver-v12-11-34af2ed2779f@analog.com>
+	<20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,57 +58,177 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 10 May 2026 13:42:29 +0100
+On Sun, 10 May 2026 13:42:20 +0100
 Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
 > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> Add ABI documentation file for PLL/DDS devices with frequency_resolution
-> sysfs entry attribute used by both ADF4350 and ADF41513.
+> Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+> point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+> precision). After the decimal point, digits beyond the specified scale
+> are ignored.
 > 
 > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio-frequency         | 11 +++++++++++
->  Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 | 10 ----------
->  2 files changed, 11 insertions(+), 10 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-> new file mode 100644
-> index 000000000000..1ce8ae578fd6
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-> @@ -0,0 +1,11 @@
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
-> +KernelVersion:	6.20
-FWIW Sashiko correctly points out that moving documentation doesn't change the kernel version
-in which it wsa introduced.  So this should be 3.4.0
 
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Stores channel Y frequency resolution/channel spacing in Hz for PLL
-> +		devices. The given value directly influences the operating mode when
-> +		fractional-N synthesis is required, as it derives values for
-> +		configurable modulus parameters used in the calculation of the output
-> +		frequency. It is assumed that the algorithm that is used to compute
-> +		the various dividers, is able to generate proper values for multiples
-> +		of channel spacing.
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-> index 1254457a726e..76987a119feb 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-> @@ -1,13 +1,3 @@
-> -What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
-> -KernelVersion:	3.4.0
-> -Contact:	linux-iio@vger.kernel.org
-> -Description:
-> -		Stores channel Y frequency resolution/channel spacing in Hz.
-> -		The value given directly influences the MODULUS used by
-> -		the fractional-N PLL. It is assumed that the algorithm
-> -		that is used to compute the various dividers, is able to
-> -		generate proper values for multiples of channel spacing.
-> -
->  What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_refin_frequency
->  KernelVersion:	3.4.0
->  Contact:	linux-iio@vger.kernel.org
+Whilst Rodrigo has already replied to say there will be another version
+I'd like to request final feedback from those who were involved in the parser
+discussions.  
+
+They got very involved and I'm far from an expert in the right way to do
+this stuff.  
+
+I don't think David Laight was +CC so I've added that.
+David, Andy - I think you two were most involved in that discussion:
+Any objections to the end result? 
+
+Thanks,
+
+Jonathan
+
+
+> ---
+>  include/linux/kstrtox.h |   3 ++
+>  lib/kstrtox.c           | 107 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 110 insertions(+)
+> 
+> diff --git a/include/linux/kstrtox.h b/include/linux/kstrtox.h
+> index 6ea897222af1..bec2fc17bde0 100644
+> --- a/include/linux/kstrtox.h
+> +++ b/include/linux/kstrtox.h
+> @@ -97,6 +97,9 @@ int __must_check kstrtou8(const char *s, unsigned int base, u8 *res);
+>  int __must_check kstrtos8(const char *s, unsigned int base, s8 *res);
+>  int __must_check kstrtobool(const char *s, bool *res);
+>  
+> +int __must_check kstrtoudec64(const char *s, unsigned int scale, u64 *res);
+> +int __must_check kstrtodec64(const char *s, unsigned int scale, s64 *res);
+> +
+>  int __must_check kstrtoull_from_user(const char __user *s, size_t count, unsigned int base, unsigned long long *res);
+>  int __must_check kstrtoll_from_user(const char __user *s, size_t count, unsigned int base, long long *res);
+>  int __must_check kstrtoul_from_user(const char __user *s, size_t count, unsigned int base, unsigned long *res);
+> diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+> index 97be2a39f537..da7b5f83a3c5 100644
+> --- a/lib/kstrtox.c
+> +++ b/lib/kstrtox.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/export.h>
+>  #include <linux/kstrtox.h>
+>  #include <linux/math64.h>
+> +#include <linux/overflow.h>
+>  #include <linux/types.h>
+>  #include <linux/uaccess.h>
+>  
+> @@ -392,6 +393,112 @@ int kstrtobool(const char *s, bool *res)
+>  }
+>  EXPORT_SYMBOL(kstrtobool);
+>  
+> +static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+> +{
+> +	u64 _res = 0, _frac = 0;
+> +	unsigned int rv;
+> +
+> +	if (scale > 19) /* log10(2^64) = 19.26 */
+> +		return -EINVAL;
+> +
+> +	if (*s != '.') {
+> +		rv = _parse_integer(s, 10, &_res);
+> +		if (rv & KSTRTOX_OVERFLOW)
+> +			return -ERANGE;
+> +		if (rv == 0)
+> +			return -EINVAL;
+> +		s += rv;
+> +	}
+> +
+> +	if (*s == '.' && scale) {
+> +		s++; /* skip decimal point */
+> +		rv = _parse_integer_limit(s, 10, &_frac, scale);
+> +		if (rv & KSTRTOX_OVERFLOW)
+> +			return -ERANGE;
+> +		if (rv == 0)
+> +			return -EINVAL;
+> +		s += rv;
+> +		if (rv < scale)
+> +			_frac *= int_pow(10, scale - rv);
+> +		while (isdigit(*s)) /* truncate */
+> +			s++;
+> +	}
+> +
+> +	if (*s == '\n')
+> +		s++;
+> +	if (*s)
+> +		return -EINVAL;
+> +
+> +	if (check_mul_overflow(_res, int_pow(10, scale), &_res) ||
+> +	    check_add_overflow(_res, _frac, &_res))
+> +		return -ERANGE;
+> +
+> +	*res = _res;
+> +	return 0;
+> +}
+> +
+> +/**
+> + * kstrtoudec64() - Convert a string to an unsigned 64-bit value that represents
+> + *		    a scaled decimal number.
+> + * @s: The start of the string. The string must be null-terminated, and may also
+> + *  include a single newline before its terminating null. The first character
+> + *  may also be a plus sign, but not a minus sign. Digits beyond the specified
+> + *  scale are ignored.
+> + * @scale: The number of digits to the right of the decimal point. For example,
+> + *  a scale of 2 would mean the number is represented with two decimal places,
+> + *  so "123.45" would be represented as 12345.
+> + * @res: Where to write the result of the conversion on success.
+> + *
+> + * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
+> + */
+> +noinline
+> +int kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+> +{
+> +	if (s[0] == '+')
+> +		s++;
+> +	return _kstrtoudec64(s, scale, res);
+> +}
+> +EXPORT_SYMBOL(kstrtoudec64);
+> +
+> +/**
+> + * kstrtodec64() - Convert a string to a signed 64-bit value that represents a
+> + *		   scaled decimal number.
+> + * @s: The start of the string. The string must be null-terminated, and may also
+> + *  include a single newline before its terminating null. The first character
+> + *  may also be a plus sign or a minus sign. Digits beyond the specified
+> + *  scale are ignored.
+> + * @scale: The number of digits to the right of the decimal point. For example,
+> + *  a scale of 5 would mean the number is represented with five decimal places,
+> + *  so "-3.141592" would be represented as -314159.
+> + * @res: Where to write the result of the conversion on success.
+> + *
+> + * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
+> + */
+> +noinline
+> +int kstrtodec64(const char *s, unsigned int scale, s64 *res)
+> +{
+> +	u64 tmp;
+> +	int rv;
+> +
+> +	if (s[0] == '-') {
+> +		rv = _kstrtoudec64(s + 1, scale, &tmp);
+> +		if (rv < 0)
+> +			return rv;
+> +		if ((s64)-tmp > 0)
+> +			return -ERANGE;
+> +		*res = -tmp;
+> +	} else {
+> +		rv = kstrtoudec64(s, scale, &tmp);
+> +		if (rv < 0)
+> +			return rv;
+> +		if ((s64)tmp < 0)
+> +			return -ERANGE;
+> +		*res = tmp;
+> +	}
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(kstrtodec64);
+> +
+>  /*
+>   * Since "base" would be a nonsense argument, this open-codes the
+>   * _from_user helper instead of using the helper macro below.
 > 
 
