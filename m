@@ -1,88 +1,136 @@
-Received: from mail-43166.protonmail.ch (mail-43166.protonmail.ch [185.70.43.166])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A82F839989F
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 13:55:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.166
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7358C3A2E03
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 13:58:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778594142; cv=none; b=p9t0ROZP69R8m5TLIzHh24Epw7k0521S8dj0Z9WJ1s42x89iDq6tSf97HqmTTD7cz7trQmXLJSxw+yd72bUR9TbhNfT4zyJvAtRifn649ex/oRr2CDvKS3kPn7Yc5DC+x+BsQ5CliDQEdKu9ZyCZmWZh1sTMz/06fFnYv2VLh6Y=
+	t=1778594311; cv=none; b=U+ktKqe8h2srUOFD1/CKhT2J9qwG0uWnemohWsm5dTav3dW/+ZsPPTxV4cAKzJ0MWxribR9VfnLAmUWq16X51znoxRsO2dh5fmYukjgrymkyy+fi7lho9B3RDRQeqRjbOYx8s1fhopG87nb1oL6OcP9WRMj3wIEFgLPesoOvZoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778594142; c=relaxed/simple;
-	bh=jgRlifEBlOM8yFGWiEiX/OPeYroUTUbLgteOg6HKHWg=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XxT7EU3PKVwx13wSEeQ+nEpNujpU5BlbQ0L0JwkpUIDyVTUwPgM7Y7ReW69CgUwjQ9/abq7RrLzaOUEv7RrkFnw0/CocbVC8VjI+tXgCefTN/ZAfl1oXAEiPrtmVXXhh00wMXBX4SrTR47++YXEoTbS70Z8EDjhWBh7UGbMHtvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=Jd7WmbEU; arc=none smtp.client-ip=185.70.43.166
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	s=arc-20240116; t=1778594311; c=relaxed/simple;
+	bh=a4HxmRePg579v/b8gM9feacNUVnpKNRtdZ9UULWANTY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rOMXfxGv2Kp5ceXHVmPwNAcYokeOn7b964LVWuInksdIBAMmSWhAh5QZLtvFW1e5dVUs//eYjq14dqorbMZS75SbS8UTIrPbZxrq+2T7wJ8GKLO8PuhMDG86qOjfdN+rqICRWSkH0SQu2+p5LhqJNKy2AuSGxZby5FvtzREs36U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=XDS94KA2; arc=none smtp.client-ip=209.85.167.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="Jd7WmbEU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1778594132; x=1778853332;
-	bh=LeXgjKzkNMDeBopPQNfwTQzIIVjtMI+vtYIQNjQTAik=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=Jd7WmbEUFTq/LzB5l9+t3kyztP2gdvUHz51SIZGm3lcxKFmPL0hRk2J0HGyC1bXf0
-	 tOPn51ILtDwmgvkazusbJ9t6HpF7P/FXF229xOA0ZU+Jcsc1LPp4ITaoNaR+X4Agoc
-	 y5JmO3T7QM9gQZVm0+AIpEJlBYHHbPYLokJvnFcqIt1WaJJu18Jn3n3ltBpL04hRRC
-	 BUUf9xSiQRU8xg4YQd6eCjhq/36k5u+J//5u14rS3zG2CFWweyKDsPkkKAAbmcsIRf
-	 TkkV/oc05YWPQ6iWAbm+jOx2OOQ2F2Lp1hGL/mxMOqf+met+oLr541Fd+/CG/lprYb
-	 r4K7x/DPYMASg==
-Date: Tue, 12 May 2026 13:55:26 +0000
-To: Jonathan Cameron <jic23@kernel.org>
-From: Roman Vivchar <rva333@protonmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>, Srinivas Kandagatla <srini@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH v2 01/16] dt-bindings: iio: adc: mt6359: generalize description for mt63xx series
-Message-ID: <wTd36596tJhd0sPk-1MSi79xz14IBgTKXpD25tnKuRXLfGywkoenZ-wIDtOvRxEZL8xpqijZ0nxMsCFTOJgJq__y26VzCpe_9f0JQGWrJVo=@protonmail.com>
-In-Reply-To: <20260512141313.425535d9@jic23-huawei>
-References: <20260512-mt6323-v2-0-3efcba579e88@protonmail.com> <20260512-mt6323-v2-1-3efcba579e88@protonmail.com> <20260512141313.425535d9@jic23-huawei>
-Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: ff83f57ffc4d622d3c6e2bc332a83f392b3034e1
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="XDS94KA2"
+Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-47c941f7213so3368658b6e.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 06:58:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778594307; x=1779199107; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4qZUPICcL2SqDibVA/1E3uKAtRLts6kMoCRLGyFkOb4=;
+        b=XDS94KA2a5mhRLuFxFO/nEidomi7TW8/ycnSN1MqzEnnAfc6t2tT9dPIxKEKipoF92
+         Aoa2ucEswLH1Kzl1jIINz4riQsZDWOfKdCvzKRsxl1wS4UEVSWwnW576ZrZY2XwIO8Pz
+         3b8MLmMRjemcKSt4e6k+bSdhX5eeUSIcOcOF2+C6F8wcLDJYsHeK+XnrCfM7JF9fG36w
+         eu7lUbVH70sPPDL02+X+7VG5wM7E24WsymTHHmioFjlkQmTfjIg+hDUHX4EHvkkunMYQ
+         vVs5TUApmg9sjbMLDrThQ1QGYoh0JNl/eIc+v4uk2l6SVvwcsn6kwSqgFSJn8i3PbrCF
+         T7NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778594307; x=1779199107;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4qZUPICcL2SqDibVA/1E3uKAtRLts6kMoCRLGyFkOb4=;
+        b=TcIX7VDGQSFIGOSI6zQGG09nYRB8UthCOpw8V3uDBja6u1q83MZnP5hlYZtslXHNMQ
+         g74joGhlQdIIzRd2Z4rWp597Tt5ux+VUzl1pTGEOxJeVlvVjvYGAF7xJaNxybQf9CvvL
+         WcQ0HswNDoWvAy95p1IoY/0Yq5VBXsnc5ABCQfmwcrMj5d9Wnys+tQQ6slEAPHjDKsvV
+         phMVhq6ufC+Xdv44JD0iNOjE9MNf6veJ/KiN/MD1uRujc3Pll36K0jpRSFFfxZnAexVb
+         GWryonm4fstjxFHDbMCCQAZaxn0uhpQPgQiHe6enasPd6TT44ORMe3tWkx48DDso2KnM
+         uVjw==
+X-Forwarded-Encrypted: i=1; AFNElJ8dOFpS2EiRdnDjuVuGl5pSj8UJ/y9e4uU6hKLtBbxyQ7xQ9YFsaa0q8/6Eln2njponepjtTEKyxEY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyMlOCuj3g/4MAW5JibyfnJKk2OWVqs9QFlPRFWLY8HuCf4/OoC
+	oiPolBgtfe4IBl8uoopxG15jiAOGXVX+GIIXe/5QxbJ8Na4lht+jeIuVKtYwaUmuZ/KItR91bxi
+	g6VQS
+X-Gm-Gg: Acq92OGx1fG3oC354GP6rPjm7yrzVOW8SE0Rd/YzHiO3Cbgpkbd6RKKIpoWhCRK+pKs
+	AqOdoPMfp4OAnUV+YpXNViSL91dJSo4WRJwxGKMhj75cshdJTHrf4g4yx84JWzke77H/rVKJ8Sz
+	v9CqtRPw4l4LIMsaWOX8GOKGfri/v2cjda9zzkcqpyDv9/wX/lfxqgaj8K3wEc8/KV9xdz8h8VB
+	yBH8M5q/m9R94BMvYXo1S/ukpbUabOt1h2OABkapOG4ksT7LaXAf7WoSU1gpxZ6xc6+H9J5ZdvP
+	8TGfeBKsJmmYXyQ65fGZ9AfQSX7WDzuDkeiSS/jV9xAJyjHnyu4ptXLxodJd4NXOPjGgtAG2SWg
+	nErcQAxL7Fm6Y404l74INj+chn+X6OGv4swJBJTVaPwaMXZbOWOZo3eBHXWbsfk2Dvd4EAO8KsB
+	aNCF4e7RP9pDsrXkRLAEv161QSiXH87iX0Om98ktV8JxPUNQIgUJYHcKdqzhNc0pxMSBqZDHa70
+	A==
+X-Received: by 2002:a05:6808:508b:b0:467:23e2:5097 with SMTP id 5614622812f47-480424a4bc1mr18863086b6e.37.1778594307354;
+        Tue, 12 May 2026 06:58:27 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:baa4:f7fb:528a:2457? ([2600:8803:e7e4:500:baa4:f7fb:528a:2457])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-47c763b33c1sm22558261b6e.1.2026.05.12.06.58.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2026 06:58:26 -0700 (PDT)
+Message-ID: <a4ecfb27-5ef4-4682-b87c-24917f81b4f0@baylibre.com>
+Date: Tue, 12 May 2026 08:58:26 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] dt-bindings: iio: adc: Convert xilinx-xadc bindings to
+ YAML schema
+To: Rob Herring <robh@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Pramod Maurya <pramod.nexgen@gmail.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Michal Simek <michal.simek@amd.com>,
+ Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+References: <20260510083219.70224-1-pramod.nexgen@gmail.com>
+ <20260510120141.118057-1-pramod.nexgen@gmail.com>
+ <20260511171554.6541042b@jic23-huawei>
+ <7baf9ca5-50ff-4131-995b-70ee094ed247@baylibre.com>
+ <CAL_JsqLxtWLR+jxRXt7Uz6dcF-90NYmfyGWYQk9um9TYHSWbTw@mail.gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <CAL_JsqLxtWLR+jxRXt7Uz6dcF-90NYmfyGWYQk9um9TYHSWbTw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tuesday, May 12th, 2026 at 4:13 PM, Jonathan Cameron <jic23@kernel.org> =
-wrote:
+On 5/12/26 7:14 AM, Rob Herring wrote:
+> On Mon, May 11, 2026 at 11:24 AM David Lechner <dlechner@baylibre.com> wrote:
+>>
+>> On 5/11/26 11:15 AM, Jonathan Cameron wrote:
+>>> On Sun, 10 May 2026 08:01:36 -0400
+>>> Pramod Maurya <pramod.nexgen@gmail.com> wrote:
+>>>
+>>>> Convert the Xilinx XADC and UltraScale System Monitor device tree binding
+>>>> from the legacy plain-text format to a YAML schema, enabling automated
+>>>> validation with dt-schema.
+>>>>
+>>>> The new binding covers the same hardware and compatible strings:
+>>>>   - xlnx,zynq-xadc-1.00.a (ZYNQ hardmacro)
+>>>>   - xlnx,axi-xadc-1.00.a  (AXI softmacro)
+>>>>   - xlnx,system-management-wiz-1.3 (UltraScale System Management Wizard)
+>>>>
+>>>> Signed-off-by: Pramod Maurya <pramod.nexgen@gmail.com>
+>>> Hi Pramod,
+>>>
+>>> Something went wrong with your sending of v3. I have two versions sent
+>>> half a day apart and no idea how they are related.
+>>>
+>>> Anyhow one of them got feedback from Rob's bot so I'll assume we are
+>>> getting a v4 and wait for that.
+>>>
+>>> Jonathan
+>>
+>> I think Rob will have to fix the bot to make an exception for the
+>> legacy bindings. This should have been called out in the commit message
+>> as requested in a previous revision.
+> 
+> The bot is not the problem. It just runs validation. The schemas will
+> have to either drop this check (comma's in nodenames) or exclude just
+> this property.
+> 
+> 
+> Rob
 
-> On Tue, 12 May 2026 08:18:15 +0300
-> Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wro=
-te:
->=20
-> > From: Roman Vivchar <rva333@protonmail.com>
-> >
-> > Update binding title to the MT63xx, since the list of compatibles alrea=
-dy
-> > includes mt6363 and mt6373 which don't belong to the mt6350 family.
-> Hi Roman,
->=20
-> Wild cards have a nasty habit of going wrong.  I'd prefer to see
-> language like: MT6359 and similar PMIC AUXADC
-
-Hi Jonathan,
-
-I agree that it would be better to specify the exact PMIC models, however
-'similar' wording might be a bit misleading here. As far as I know,
-the mt6363 and mt6373 use SPMI, while mt635x (and older models, like
-most of the mt63xx series) use PWRAP (a custom SPI-based protocol).
-The mt6323 has an older AUXADC revision which is not compatible
-with the mt635x driver.
-
-Would you prefer more explicit list like 'MT6323, MT6350 series, MT6363
-and MT6373 PMIC AUXADC'? It's a bit mess because some mt63xx
-(like mt6333) are sub-PMICs and use I2C instead of PWRAP.
-
-> It is less important here than in many other places because the
-> file has an explicit list soon after this, but none the less
-> we've been bitten by this too often to think manufacturers won't
-> throw a completely non compatible part in the middle of a wild
-> card covered range.
->=20
-
-Best regards,
-Roman
+Even though this is an existing text-based schema that has been around
+for 12 years with this name already? Changing it could be a breaking
+change to existing users. Although there aren't any in any .dts in the
+kernel source.
