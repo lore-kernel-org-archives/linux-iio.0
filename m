@@ -1,67 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F7183EDE72;
-	Tue, 12 May 2026 18:50:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 901CA33F598
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 19:01:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778611839; cv=none; b=Mu9xDfsRiSFBTL5cvw9VLD4KTSZYeJrYjs4dl2HbszeIcYoy/IfNWwGccpN78GaxnCTYjLOrgeLHC0gx7LaWKO4usEvedwUQJsgufAp9ds1ijD8HHLs0SDiSaIjIY9k0jLmjepcOauq8E/LCFhei/+mP1ZGc1++Dv7GsPBhJGwM=
+	t=1778612485; cv=none; b=IOOl8kW1Y5c9aPkM9b8c1XzQ9FB3vuwBIajfDS5ChnN9v/k/W14VEsIE1RQU5OMtm9973lEWUWLBys/bA9vMblWNnJw0yPtBvYBaZ3MpQVyNYWiYvlrdkF+nc1hySvZAQSK7WJUDkgQkTPreul0/opg08J0dK7gtTcTRn4DbDQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778611839; c=relaxed/simple;
-	bh=gn2mqCWuO/Bd8Kw7m/1Ds6LVl80q/dEcyqXRuGSpPhI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FehArKoDkapSLu0TukHze6MWS2yMHFXl7/YlV15rsHTjUR0TSnWgmiBISOCmua0XTMkBqH+IqVTwc7jIae3WWDUdT6mDbM5taRBEwAuHFh+Vf7GA/0JLMqMfxyjDuspaQqpJgalf5ZHzjWk8X0dgGorMdgFwYwpl+V3tg7+Pup4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BjvJBClt; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778612485; c=relaxed/simple;
+	bh=SeD74GBi/WomNdZYaNJemftdaB+eK35ZhAEI9YJm9K4=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LUsYvXAy3ZDyZzuF8ldwSAMYCjKq/GRs44c2DL9NAzgIEt/fNRx7eCU9bi1jnBXD6yfVpSsRiJUYP9csib9arQZFJqyqewih06GqQPeUoVEJP1cKx8mjBK0fXFp7WMqwdgGEKBEaOh6VSbg1fezl9XSMRRSaL4E8goYkb0WQ/MM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m72a46az; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BjvJBClt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778611837; x=1810147837;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gn2mqCWuO/Bd8Kw7m/1Ds6LVl80q/dEcyqXRuGSpPhI=;
-  b=BjvJBCltf5rzhKhQ/am1879r1jZrcSTMgsDITCkr+oNkmTiMINdsMpqd
-   r5qo1qDL7dcXfLo2SGsaOqI3jwu8lpZbBhI20VBMMYfIbKu2uHM71Z9Pa
-   +67ZT/1W/n7Zba8ZAcww/u0Obi1UOdYSPd5Yu6jeTdvvgA9nLnpYeerx2
-   5f9sU5KPqdCeDxtkAgbNOdLyGil0FQsCK7ZIEy6TVg59KOuLA6lwF07OI
-   0eD8KLww93l5SImM6vA+ofzLqmgzfvJRUFu6QJxQuPcF3R52Prl7aP06j
-   fyS58G6UkOEx2CGBiGcKbNAq6DFMv1SAI/vuJYxrrdI0EkydiQJ3zp1Wb
-   g==;
-X-CSE-ConnectionGUID: h5go8fkNRhWXcLs/lZGGNA==
-X-CSE-MsgGUID: 0wsjomd+TdCP29hh+Eratg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79387564"
-X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="79387564"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 11:50:36 -0700
-X-CSE-ConnectionGUID: YzjR3+gfToq3htuRrHU5dg==
-X-CSE-MsgGUID: wMVzpF3kTCyEUPE6IIa1Lw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="237771313"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.244])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 11:50:30 -0700
-Date: Tue, 12 May 2026 21:50:28 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Yu-Chun Lin <eleanor.lin@realtek.com>
-Cc: linusw@kernel.org, brgl@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, afaerber@suse.com, wbg@kernel.org,
-	mathieu.dubois-briand@bootlin.com, mwalle@kernel.org,
-	lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	nuno.sa@analog.com, andy@kernel.org, dlechner@baylibre.com,
-	tychang@realtek.com, linux-gpio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-realtek-soc@lists.infradead.org, linux-iio@vger.kernel.org,
-	cy.huang@realtek.com, stanley_chang@realtek.com,
-	james.tai@realtek.com
-Subject: Re: [PATCH v3 6/7] gpio: realtek: Add driver for Realtek DHC RTD1625
- SoC
-Message-ID: <agN2dGAikxV0bw4M@ashevche-desk.local>
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
- <20260512033317.1602537-7-eleanor.lin@realtek.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m72a46az"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-488af9fdaa7so33867335e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 12:01:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778612482; x=1779217282; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=JfVrzDr86zATEwD1OuodPd4t6Fj18Y970qlap5qDmRM=;
+        b=m72a46azprArlIiQaehve9LLM/bCBXAENf2OiFcAC7x7juTLUxIudkYCYs1z1+d+WA
+         K7WTmZSc3BWFpTGzqk5pBLB+yt/U7/ztVeCxAnN5RZIpl1WbD0qx29KvgAeb5/WTOFyM
+         4tNZHY4xIk39z1SQiGYUwCzAR0lYyCG7wxbfWRDvQOQzZXJiQC8vCI5kov8NndsWZuI5
+         MC0lBywBq19Yv9SDm83fb+8jQ4x+G8ZTwWvilfHDziJpG5Frg6frmticLdAK6177eZgC
+         oFkmGUBev6+HnKFEovWML5dC8SMO2qHX1UITg4jkOfRl9eOF5eaYdA3vGJZsn8LH2BVt
+         ksEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778612482; x=1779217282;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JfVrzDr86zATEwD1OuodPd4t6Fj18Y970qlap5qDmRM=;
+        b=KmlqMgUTianGeuPOfpGPQc9cAkRlNWcmkmZZJBgPgqaSiAOZRfS8gAWopoBxM1rxgu
+         AlAa3+KITw5xlWZQfhHkY8u3aH2ipFaGe78dYpSa0CczVCSFWak47J4rnahpfqLNpo+y
+         G8zqdKs+K6+Dj4R7jtZwF/rj4z8wJDJT54UWCpKms8wToCCuSa7Bj6iCpnw6X0YmAkPr
+         BNtCbupYdepBT06FhZIM0dXB7yf+tlWpJRnWvg4qoSgWEpinyXjq9XLDKovHMeUthvQR
+         x1eWk3lE/24BnswYEBVeAyaBhSK0T5eDT6GYBJU+wfuB5VlrWx9ivJlGGGo3xGy8GNhE
+         Qk+g==
+X-Forwarded-Encrypted: i=1; AFNElJ8x3BMKjEmhtXbkQhzgAzxxqohkBSv+U7/G6BnCcDHJgXMUBBBf+C5lTHJ0dJ/gtFWOZhAN9Q8dcZE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxUiAXLRG+RxLSmWkpUrDMjLD9eQznomPEgbFymVT/aOoeK+3gG
+	FYXZo8P96WkiiYozr3rw+VBtSEy8jR6kxNOeQhoOs13jayWhtKnjTA0W
+X-Gm-Gg: Acq92OGFd2UAwzTLewVjZvaHloDTacarryMuiwk2t0nOixXTWz9LiGPUxTIiUWcYWVV
+	Aw8jtKwcnp2KZOFIxJc9Fe0531g0Cs8oYRLwIAXyJ1oBn+9AjlvCFhXJlUMul8BGCYgrSDhOKRt
+	AXJUVfOBLjKmub6m+dULqtIne1gFgl04zQjF6EN4YMmx0SUW7F7XM3FgLWge9K82XFFd+FYsghE
+	F+jG23raX7HZOVZ2AfCHaA1xgywlrO++y1hd1HJCt2D3n8Cz4DKLLZ0yLN76hNFh/xBCUYBair4
+	FzXcwnYNIGy1VEPxxDRDpdB5mrLfLakeR2ytABVE7cQ8RSJNC3YRFF4YsQa6kfTu8v4EDnUqOpU
+	2HR24hmthU0aqHj154MM4n/f7yPZXWr5K6SFYa/KnLOwBhSxzRzlSa1sbiJ0Gv1fi11Oxa3OkJ4
+	GsDTU+2f0z/Ax5lRj9LUuNngiHNrp+v7WOipbQeHdEZNo2iwKCSIffALGdKvzc9KVwEfB5BE9rm
+	NVRO6x5n1KF+LlJY2jLfCEy2UVjZWWb5/FLnhuLwEvnYGowHQ==
+X-Received: by 2002:a05:600c:8b56:b0:48a:599a:3716 with SMTP id 5b1f17b1804b1-48fc9a45891mr1464025e9.23.1778612481673;
+        Tue, 12 May 2026 12:01:21 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fc8d1b100sm17867995e9.4.2026.05.12.12.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2026 12:01:21 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Tue, 12 May 2026 20:01:14 +0100
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Andrew Morton <akpm@linux-foundation.org>, 
+	Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v12 05/11] iio: core: add decimal value formatting into
+ 64-bit value
+Message-ID: <b6wjjzv7wpyv3cpgftltu7sppttmrvrqxcs5b4gre5d7goknqd@vlhenvjct6la>
+References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
+ <20260510-adf41513-iio-driver-v12-5-34af2ed2779f@analog.com>
+ <agM6uzhdn7o8g9v5@ashevche-desk.local>
+ <ql7smsqza7liupm7fhdts73cxsltrpxsqofu5ovzpxpwvcscuv@qigi3dwukk7k>
+ <agNoKbcwT6_spC93@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,587 +89,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260512033317.1602537-7-eleanor.lin@realtek.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <agNoKbcwT6_spC93@ashevche-desk.local>
 
-On Tue, May 12, 2026 at 11:33:16AM +0800, Yu-Chun Lin wrote:
-
-> Add support for the GPIO controller found on Realtek DHC RTD1625 SoCs.
-
-The below paragraphs are all the implementation details that are not so
-important to be in the commit message. They fit the comment block after
-the '---' line below, though...
-
-> Unlike the existing Realtek GPIO driver (drivers/gpio/gpio-rtd.c),
-> which manages pins via shared bank registers, the RTD1625 introduces
-> a per-pin register architecture. Each GPIO line now has its own
-> dedicated 32-bit control register to manage configuration independently,
-> including direction, output value, input value, interrupt enable, and
-> debounce. Therefore, this distinct hardware design requires a separate
-> driver.
+On 26/05/12 08:49PM, Andy Shevchenko wrote:
+> On Tue, May 12, 2026 at 05:09:32PM +0100, Rodrigo Alencar wrote:
+> > On 26/05/12 05:35PM, Andy Shevchenko wrote:
+> > > On Sun, May 10, 2026 at 01:42:23PM +0100, Rodrigo Alencar via B4 Relay wrote:
+> > > 
+> > > > Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
+> > > > defines the representation of fixed decimal point values into a single
+> > > > 64-bit number. This new format increases the range of represented values,
+> > > > allowing for integer parts greater than 2^32, as bits are not "wasted"
+> > > > in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
+> > > > IIO_VAL_INT_PLUS_NANO. Helpers are created to compose and decompose 64-bit
+> > > > decimals into integer values used in IIO formatting interfaces, which
+> > > > creates consistency and avoid error-prone manual assignments when using
+> > > > wordpart macros. When doing the parsing, kstrtodec64() is used with the
+> > > > scale defined by the specific decimal format type.
 > 
-> The driver leverages the gpio-regmap framework, utilizing the recently
-> introduced write-enable and operation-specific mask translation features.
+> ...
 > 
-> Additionally, because the controller utilizes multiple independent IRQ
-> status registers (assert, de-assert, and level) which cannot be mapped
-> via standard regmap_irq_chip, the driver implements a custom irq_domain.
+> > > > +		tmp2 = div64_s64_rem(iio_val_s64_from_array(vals),
+> > > > +				     int_pow(10, scale), &frac);
+> > > > +		if (tmp2 == 0 && frac < 0)
+> > > > +			return sysfs_emit_at(buf, offset, "-0.%0*lld", scale,
+> > > > +					     abs(frac));
+> > > > +		else
+> > > > +			return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2,
+> > > > +					     scale, abs(frac));
+> > > > +	}
+> > > 
+> > > What about
+> > > 
+> > > 		/* Print a leading '-' for negative fractions */
+> > > 		if (tmp2 == 0 && frac < 0)
+> > > 			offset += sysfs_emit_at(buf, offset, "-");
+> > > 
+> > > 		return sysfs_emit_at(buf, offset, "%lld.%0*lld", tmp2, scale, abs(frac));
+> > > 
+> > > Also note this won't work with the frac that are == S64_MIN. It's UB (undefined
+> > > behaviour), see the comment at abs() implementation. Maybe a time to add abs()
+> > > corner case tests...
+> > 
+> > frac cannot be S64_MIN, it is always and remainder of a power of 10 modulus.
 > 
-> Signed-off-by: Tzuyi Chang <tychang@realtek.com>
-> Co-developed-by: Yu-Chun Lin <eleanor.lin@realtek.com>
-> Signed-off-by: Yu-Chun Lin <eleanor.lin@realtek.com>
-> ---
-
-...somewhere here.
-
-...
-
-
-> +#include <linux/bitfield.h>
-> +#include <linux/bitops.h>
-
-Missing cleanup.h, may be more.
-
-> +#include <linux/gpio/driver.h>
-> +#include <linux/gpio/regmap.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irqchip.h>
-
-> +#include <linux/irqdomain.h>
-> +#include <linux/irqchip/chained_irq.h>
-> +#include <linux/irqdomain.h>
-
-If you sort headers alphabetically, you will see the duplication.
-
-> +#include <linux/mfd/syscon.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/property.h>
-> +#include <linux/regmap.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/types.h>
-
-...
-
-> +struct rtd1625_gpio {
-> +	struct gpio_chip *gpio_chip;
-> +	const struct rtd1625_gpio_info *info;
-
-> +	void __iomem *base;
-
-Is it used? Also naming is confusing with unsigned int base in some functions
-below.
-
-> +	struct regmap *regmap;
-> +	unsigned int irqs[3];
-
-This 3 is also used when assign num_irqs below, perhaps define it with
-meaningful name? (The 2 also might need a definition in the same way.)
-
-> +	raw_spinlock_t lock;
-> +	struct irq_domain *domain;
-> +	unsigned int *save_regs;
-> +};
-
-...
-
-> +static int rtd1625_reg_mask_xlate(struct gpio_regmap *gpio, enum gpio_regmap_operation op,
-> +				  unsigned int base, unsigned int offset, unsigned int *reg,
-> +				  unsigned int *mask)
-
-Use logical split.
-
-static int rtd1625_reg_mask_xlate(struct gpio_regmap *gpio, enum gpio_regmap_operation op,
-				  unsigned int base, unsigned int offset,
-				  unsigned int *reg, unsigned int *mask)
-
-OR (as suggested earlier)
-
-static int rtd1625_reg_mask_xlate(struct gpio_regmap *gpio,
-				  enum gpio_regmap_operation op,
-				  unsigned int base, unsigned int offset,
-				  unsigned int *reg, unsigned int *mask)
-
-...
-
-> +static unsigned int rtd1625_gpio_set_debounce(struct gpio_chip *chip, unsigned int offset,
-> +					      unsigned int debounce)
-> +{
-> +	struct rtd1625_gpio *data = gpiochip_get_data(chip);
-> +	u8 deb_val;
-> +	u32 val;
-> +
-> +	switch (debounce) {
-> +	case 1:
-> +		deb_val = RTD1625_GPIO_DEBOUNCE_1US;
-> +		break;
-> +	case 10:
-> +		deb_val = RTD1625_GPIO_DEBOUNCE_10US;
-> +		break;
-> +	case 100:
-> +		deb_val = RTD1625_GPIO_DEBOUNCE_100US;
-> +		break;
-> +	case 1000:
-> +		deb_val = RTD1625_GPIO_DEBOUNCE_1MS;
-> +		break;
-> +	case 10000:
-> +		deb_val = RTD1625_GPIO_DEBOUNCE_10MS;
-> +		break;
-> +	case 20000:
-> +		deb_val = RTD1625_GPIO_DEBOUNCE_20MS;
-> +		break;
-> +	case 30000:
-> +		deb_val = RTD1625_GPIO_DEBOUNCE_30MS;
-> +		break;
-> +	case 50000:
-> +		deb_val = RTD1625_GPIO_DEBOUNCE_50MS;
-> +		break;
-> +	default:
-> +		return -ENOTSUPP;
-> +	}
-> +
-> +	val = FIELD_PREP(RTD1625_GPIO_DEBOUNCE, deb_val) | RTD1625_GPIO_DEBOUNCE_WREN;
-
-> +	regmap_write(data->regmap, GPIO_CONTROL(offset), val);
-
-Neither here, nor in some other places the returned value from regmap APIs is
-not checked. Is it okay?
-
-> +	return 0;
-> +}
-> +
-> +static int rtd1625_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
-> +				   unsigned long config)
-> +{
-> +	int debounce;
-
-Can it be negative?
-
-> +	if (pinconf_to_config_param(config) == PIN_CONFIG_INPUT_DEBOUNCE) {
-> +		debounce = pinconf_to_config_argument(config);
-> +		return rtd1625_gpio_set_debounce(chip, offset, debounce);
-> +	}
-> +
-> +	return gpiochip_generic_config(chip, offset, config);
-> +}
-
-...
-
-> +static void rtd1625_gpio_irq_handle(struct irq_desc *desc)
-> +{
-> +	unsigned int (*get_reg_offset)(struct rtd1625_gpio *gpio, unsigned int offset);
-> +	struct rtd1625_gpio *data = irq_desc_get_handler_data(desc);
-> +	struct irq_chip *chip = irq_desc_get_chip(desc);
-> +	unsigned int irq = irq_desc_get_irq(desc);
-> +	struct irq_domain *domain = data->domain;
-> +	unsigned int reg_offset, i, j, val;
-> +	irq_hw_number_t hwirq;
-> +	unsigned long status;
-> +	unsigned int girq;
-> +	u32 irq_type;
-> +
-> +	if (irq == data->irqs[0])
-> +		get_reg_offset = &rtd1625_gpio_gpa_offset;
-> +	else if (irq == data->irqs[1])
-> +		get_reg_offset = &rtd1625_gpio_gpda_offset;
-> +	else if (irq == data->irqs[2])
-> +		get_reg_offset = &rtd1625_gpio_level_offset;
-> +	else
-> +		return;
-> +
-> +	chained_irq_enter(chip, desc);
-
-> +	for (i = 0; i < data->info->num_gpios; i += 32) {
-
-	for (unsigned int i = 0; i < data->info->num_gpios; i += 32) {
-
-> +		reg_offset = get_reg_offset(data, i);
-> +		regmap_read(data->regmap, reg_offset, &val);
-> +
-> +		status = val;
-> +
-> +		/* Clear edge interrupts; level interrupts are cleared in ->irq_ack() */
-> +		if (irq != data->irqs[2])
-> +			regmap_write(data->regmap, reg_offset, status);
-
-This is interesting... Can't we rely on IRQ core to take care of this? (And
-replay if required.)
-
-> +		for_each_set_bit(j, &status, 32) {
-> +			hwirq = i + j;
-> +			girq = irq_find_mapping(domain, hwirq);
-> +			irq_type = irq_get_trigger_type(girq);
-
-> +			if (irq == data->irqs[1] && irq_type != IRQ_TYPE_EDGE_BOTH)
-
-Why is the IRQ type check here and not in set_type() callback?
-I think we should simply reject to even lock such a configuration as IRQ.
-
-> +				continue;
-> +
-> +			generic_handle_domain_irq(domain, hwirq);
-> +		}
-> +	}
-> +
-> +	chained_irq_exit(chip, desc);
-> +}
-
-> +static void rtd1625_gpio_enable_edge_irq(struct rtd1625_gpio *data, irq_hw_number_t hwirq)
-> +{
-> +	int gpda_reg_offset = rtd1625_gpio_gpda_offset(data, hwirq);
-> +	int gpa_reg_offset = rtd1625_gpio_gpa_offset(data, hwirq);
-> +	u32 clr_mask = BIT(hwirq % 32);
-> +	u32 val;
-> +
-> +	guard(raw_spinlock_irqsave)(&data->lock);
-
-+ blank line. Same to other cases when guard()() is being used.
-
-> +	regmap_write(data->regmap, gpa_reg_offset, clr_mask);
-> +	regmap_write(data->regmap, gpda_reg_offset, clr_mask);
-> +	val = RTD1625_GPIO_EDGE_INT_EN | RTD1625_GPIO_WREN(RTD1625_GPIO_EDGE_INT_EN);
-> +	regmap_write(data->regmap, data->info->base_offset + GPIO_CONTROL(hwirq), val);
-> +}
-
-...
-
-> +static void rtd1625_gpio_enable_irq(struct irq_data *d)
-> +{
-> +	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-> +	irq_hw_number_t hwirq = irqd_to_hwirq(d);
-> +	u32 irq_type = irqd_get_trigger_type(d);
-> +	struct rtd1625_gpio *data;
-> +	struct gpio_regmap *gpio;
-
-> +	gpio = gpiochip_get_data(gc);
-> +	data = gpio_regmap_get_drvdata(gpio);
-
-Why not unify these with the above, we don't validate them anyway...
-Same Q to other cases like this.
-
-> +	gpiochip_enable_irq(gc, hwirq);
-> +
-> +	if (irq_type & IRQ_TYPE_EDGE_BOTH)
-> +		rtd1625_gpio_enable_edge_irq(data, hwirq);
-> +	else if (irq_type & IRQ_TYPE_LEVEL_MASK)
-> +		rtd1625_gpio_enable_level_irq(data, hwirq);
-> +}
-
-...
-
-> +static int rtd1625_gpio_irq_set_level_type(struct irq_data *d, bool level)
-> +{
-> +	u32 val = RTD1625_GPIO_WREN(RTD1625_GPIO_LEVEL_INT_DP);
-> +	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-> +	irq_hw_number_t hwirq = irqd_to_hwirq(d);
-> +	struct rtd1625_gpio *data;
-> +	struct gpio_regmap *gpio;
-> +
-> +	gpio = gpiochip_get_data(gc);
-> +	data = gpio_regmap_get_drvdata(gpio);
-
-+ blank line (and actually see above).
-
-> +	if (!(data->info->irq_type_support & IRQ_TYPE_LEVEL_MASK))
-> +		return -EINVAL;
-
-> +	scoped_guard(raw_spinlock_irqsave, &data->lock) {
-
-> +		if (level)
-> +			val |= RTD1625_GPIO_LEVEL_INT_DP;
-
-Why this local variable change is under the lock?
-
-> +		regmap_write(data->regmap, data->info->base_offset + GPIO_CONTROL(hwirq), val);
-> +	}
-> +
-> +	irq_set_handler_locked(d, handle_level_irq);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int rtd1625_gpio_irq_set_edge_type(struct irq_data *d, bool polarity)
-
-Similar comments as per above.
-
-...
-
-> +static int rtd1625_gpio_irq_set_type(struct irq_data *d, unsigned int type)
-> +{
-> +	int ret;
-
-Unneeded, just return directly from each of the cases.
-
-> +
-> +	switch (type & IRQ_TYPE_SENSE_MASK) {
-> +	case IRQ_TYPE_EDGE_RISING:
-> +		ret = rtd1625_gpio_irq_set_edge_type(d, 1);
-> +		break;
-> +	case IRQ_TYPE_EDGE_FALLING:
-> +		ret = rtd1625_gpio_irq_set_edge_type(d, 0);
-> +		break;
-> +	case IRQ_TYPE_EDGE_BOTH:
-> +		ret = rtd1625_gpio_irq_set_edge_type(d, 1);
-> +		break;
-> +	case IRQ_TYPE_LEVEL_HIGH:
-> +		ret = rtd1625_gpio_irq_set_level_type(d, 0);
-> +		break;
-> +	case IRQ_TYPE_LEVEL_LOW:
-> +		ret = rtd1625_gpio_irq_set_level_type(d, 1);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-
-Missing break, but rather simply
-
-		return -EINVAL;
-
-as mentioned above. In the similar way for the rest of switch-cases.
-
-> +	}
-> +
-> +	return ret;
-> +}
-
-...
-
-> +static int rtd1625_gpio_setup_irq(struct platform_device *pdev, struct rtd1625_gpio *data)
-> +{
-> +	int num_irqs, irq, i;
-
-Why is 'num_irqs' signed?
-
-> +	irq = platform_get_irq_optional(pdev, 0);
-> +	if (irq == -ENXIO)
-> +		return 0;
-
-This is strange. You mean that you are only interested in the first IRQ? What
-about the case when the first one is not available, while the second is?
-
-> +	if (irq < 0)
-> +		return irq;
-
-This partially duplicates the below.
-
-> +	num_irqs = (data->info->irq_type_support & IRQ_TYPE_LEVEL_MASK) ? 3 : 2;
-
-> +	for (i = 0; i < num_irqs; i++) {
-
-The iterator is local to the loop, hence
-
-	for (unsigned int i = 0; i < num_irqs; i++) {
-
-> +		irq = platform_get_irq(pdev, i);
-> +		if (irq < 0)
-> +			return irq;
-> +
-> +		data->irqs[i] = irq;
-> +		irq_set_chained_handler_and_data(data->irqs[i], rtd1625_gpio_irq_handle, data);
-> +	}
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int rtd1625_gpio_irq_map(struct irq_domain *domain, unsigned int irq,
-> +				irq_hw_number_t hwirq)
-> +{
-> +	struct rtd1625_gpio *data = domain->host_data;
-> +
-> +	irq_set_chip_data(irq, data->gpio_chip);
-> +
-> +	irq_set_chip_and_handler(irq, &rtd1625_iso_gpio_irq_chip, handle_bad_irq);
-> +
-> +	irq_set_noprobe(irq);
-
-Shouldn't you assign a lockdep class?
-
-> +	return 0;
-> +}
-
-...
-
-> +static const struct regmap_config rtd1625_gpio_regmap_config = {
-> +	.reg_bits = 32,
-> +	.reg_stride = 4,
-> +	.val_bits = 32,
-
-> +	.disable_locking = true,
-
-Hmm... This effectively drops the debugfs support, perhaps make it depend on
-CONFIG_DEBUG_GPIO?
-
-> +};
-
-...
-
-> +static int rtd1625_gpio_probe(struct platform_device *pdev)
-> +{
-> +	struct gpio_regmap_config config = {0};
-
-'0' is redundant.
-
-> +	struct device *dev = &pdev->dev;
-> +	struct gpio_regmap *gpio_reg;
-> +	struct rtd1625_gpio *data;
-> +	void __iomem *irq_base;
-> +	int ret;
-> +
-> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
-> +
-> +	data->info = device_get_match_data(dev);
-> +	if (!data->info)
-> +		return -EINVAL;
-> +
-> +	irq_base = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(irq_base))
-> +		return PTR_ERR(irq_base);
-> +
-> +	data->regmap = devm_regmap_init_mmio(dev, irq_base,
-> +					     &rtd1625_gpio_regmap_config);
-
-I would go with a single line
-
-	data->regmap = devm_regmap_init_mmio(dev, irq_base, &rtd1625_gpio_regmap_config);
-
-> +	if (IS_ERR(data->regmap))
-> +		return PTR_ERR(data->regmap);
-> +
-> +	data->save_regs = devm_kzalloc(dev, data->info->num_gpios *
-> +				       sizeof(*data->save_regs), GFP_KERNEL);
-
-This is devm_kcalloc().
-
-> +	if (!data->save_regs)
-> +		return -ENOMEM;
-> +
-> +	config.parent = dev;
-> +	config.regmap = data->regmap;
-> +	config.ngpio = data->info->num_gpios;
-> +	config.reg_dat_base = data->info->base_offset;
-> +	config.reg_set_base = data->info->base_offset;
-> +	config.reg_mask_xlate = rtd1625_reg_mask_xlate;
-> +	config.set_config = rtd1625_gpio_set_config;
-> +	config.reg_dir_out_base = data->info->base_offset;
-> +
-> +	data->domain = irq_domain_add_linear(dev->of_node,
-
-No, use fwnode variant from the start.
-
-> +					     data->info->num_gpios,
-> +					     &rtd1625_gpio_irq_domain_ops,
-> +					     data);
-> +	if (!data->domain)
-> +		return -ENOMEM;
-> +
-> +	ret = rtd1625_gpio_setup_irq(pdev, data);
-> +	if (ret) {
-> +		irq_domain_remove(data->domain);
-> +		return ret;
-> +	}
-> +
-> +	config.irq_domain = data->domain;
-> +	config.drvdata = data;
-> +	platform_set_drvdata(pdev, data);
-> +
-> +	gpio_reg = devm_gpio_regmap_register(dev, &config);
-> +	if (IS_ERR(gpio_reg)) {
-
-> +		irq_domain_remove(data->domain);
-
-This is wrong. The remove will do the opposite order. It means that
-irq_domain_create_linear() has to be wrapped to become a managed resource.
-
-> +		return PTR_ERR(gpio_reg);
-> +	}
-> +
-> +	data->gpio_chip = gpio_regmap_get_gpiochip(gpio_reg);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct rtd1625_gpio_info rtd1625_iso_gpio_info = {
-> +	.num_gpios		= 166,
-> +	.irq_type_support	= IRQ_TYPE_EDGE_BOTH,
-> +	.base_offset		= 0x100,
-> +	.gpa_offset		= 0x0,
-> +	.gpda_offset		= 0x20,
-
-Use fixed-width for the register offsets, id est 0x000, 0x020, and so on...
-
-> +	.write_en_all		= RTD1625_ISO_GPIO_WREN_ALL,
-> +};
-> +
-> +static const struct rtd1625_gpio_info rtd1625_isom_gpio_info = {
-> +	.num_gpios		= 4,
-> +	.irq_type_support	= IRQ_TYPE_EDGE_BOTH | IRQ_TYPE_LEVEL_LOW |
-> +				  IRQ_TYPE_LEVEL_HIGH,
-> +	.base_offset		= 0x20,
-> +	.gpa_offset		= 0x0,
-> +	.gpda_offset		= 0x4,
-> +	.level_offset		= 0x18,
-> +	.write_en_all		= RTD1625_ISOM_GPIO_WREN_ALL,
-> +};
-
-...
-
-> +static const struct of_device_id rtd1625_gpio_of_matches[] = {
-> +	{ .compatible = "realtek,rtd1625-iso-gpio", .data = &rtd1625_iso_gpio_info },
-> +	{ .compatible = "realtek,rtd1625-isom-gpio", .data = &rtd1625_isom_gpio_info },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, rtd1625_gpio_of_matches);
-
-Move the initialiser and respective MODULE_DEVICE_TABLE() closer to its user.
-
-...
-
-> +static int rtd1625_gpio_suspend(struct device *dev)
-> +{
-> +	struct rtd1625_gpio *data = dev_get_drvdata(dev);
-> +	const struct rtd1625_gpio_info *info = data->info;
-> +	int i;
-> +
-> +	for (i = 0; i < info->num_gpios; i++)
-
-	for (unsigned int i = 0; i < info->num_gpios; i++)
-
-> +		regmap_read(data->regmap, data->info->base_offset + GPIO_CONTROL(i),
-> +			    &data->save_regs[i]);
-> +
-> +	return 0;
-> +}
-> +
-> +static int rtd1625_gpio_resume(struct device *dev)
-> +{
-> +	struct rtd1625_gpio *data = dev_get_drvdata(dev);
-> +	const struct rtd1625_gpio_info *info = data->info;
-> +	int i;
-> +
-> +	for (i = 0; i < info->num_gpios; i++)
-
-Ditto.
-
-> +		regmap_write(data->regmap, data->info->base_offset + GPIO_CONTROL(i),
-> +			     data->save_regs[i] | info->write_en_all);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +DEFINE_NOIRQ_DEV_PM_OPS(rtd1625_gpio_pm_ops, rtd1625_gpio_suspend, rtd1625_gpio_resume);
-
-Not static? Why?
-
+> Okay, but what about input of -0.9999999999999999999 ? Will it fit the signed
+> frac type?
+
+For the scales considered here it would not be a problem (*_PICO = 12 + *_BASE).
+For the max scale of 19 it would probably fail the parsing of the fractional part
+with overflow.
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards,
 
-
+Rodrigo Alencar
