@@ -1,113 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A06D7379C20;
-	Tue, 12 May 2026 08:07:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778573249; cv=none; b=nr1BzdFhBdwlfLIKlTIp+UX25khNzbt+ZhpLYydoAkB16xh0jZbfZehBadVaF/c09HObQbyBMDv1QFByi1f1mUtUZuhqoa0WgG8MFE9lNqBHwhtX3tI6fDpiRb/fSmiJ8Wn/Y7kU277Q05E+BUmY0j0fabWBHXG+ch+9wqd0MNE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778573249; c=relaxed/simple;
-	bh=FZKzdla3viWXJzc83bWJjwXFCESyLGP6T3814RSABVo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TMKqGLXK9jVF1xhLHISDvSaY/tq6amZrl4pBrZWR2U/PlX01Jo7yLgsNqBjyvAoDlzyriAivo+kn/xDq0A6MBvEhzyF3c4y3vUsEv8MhCcuDTOsF21gbjlPcgmF1/ajUnTLhA3WilnARa6Iq5VFBt9Mb0gc7RTiQm7qv+pZGmXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=buAE0Bhm; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2F27481236
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:10:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778573438; cv=pass; b=ut2/PLupzJs5EKsUFvD927t3+JIWqht1VXL3EXAJvGEo74FpU15wHcFelJGXSY2Af/8c8dj4dOJKcIgJwI/boyD40cj47aocWpLtzn3ZAu0/ymiJPahRpX416CexOH56asfMetCP0feNVAlgW8pVA8cqkSyMa8HOAHfjjeMhu3I=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778573438; c=relaxed/simple;
+	bh=MszvAbBwqTX+k2iSHA4uvDzJvGHpDb2qzCRzurGw+NM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tGh8eJJke9pXgolhyMqqZ4gBl7brX9hl21q3RuA1BJdb8DURLdK+JRL2MLKbI8O6zXUxiH5jrTD5ShhuiaSp8njz2Q31F6LsaCuk6KqQDzLZA5YA/SYayFvReyRJ3YQtJiEEq0mJcVKZ9+huXM2/ambkVaZAfSOoZqPJHglDS9U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jeRf4XLK; arc=pass smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="buAE0Bhm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778573249; x=1810109249;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FZKzdla3viWXJzc83bWJjwXFCESyLGP6T3814RSABVo=;
-  b=buAE0BhmstnypwQ5nvQptQ8/IDzZkCmesUmra1+2Pi25Fx+Ee2PUnzGF
-   4sx8qoyKLCbg4d8N6m7QLNIiRVhAnSQRb5bExxxfWNB6wo1yemsOw12tl
-   8qKivaJfquh/FfSvmwpgaC2P5xAZaz3UuHW/IbLn9YqgmqPeQQjHq+Q0h
-   9VpQaz+OGrSYJHraPpFdKv/30tRg4Wq5StO1ICJJxYQg04yVtbQnjDR2z
-   s4POl5CozZBsmxak2Wg8bzGtDG30Dxz4Lj5g4gjFF+cwxOOM39VN5MQXh
-   EavB9iYys8wrNzAjAFNIGHdt7SzZ4dTj3kgT3lp/3gDini+QvR59tnwK/
-   Q==;
-X-CSE-ConnectionGUID: TUFB1Di4RXa4Otv69rd/Ww==
-X-CSE-MsgGUID: KQw33yu4QD69qKkfdef8Qg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="79497835"
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="79497835"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 01:07:29 -0700
-X-CSE-ConnectionGUID: T2AQlK93R2aWh6Fj285LcQ==
-X-CSE-MsgGUID: +UEyy3wTRkm5BwA+k5wcTg==
-X-ExtLoop1: 1
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 01:07:26 -0700
-Date: Tue, 12 May 2026 11:07:23 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: mapping file for include-what-you-use tool
-Message-ID: <agLfuwvEH3YTT2qV@ashevche-desk.local>
-References: <20260512073505.1310-1-joshua.crofts1@gmail.com>
- <agLeEitdYsi5O2E1@ashevche-desk.local>
- <CALoEA-wOAY9fYuZdZZHQFj=+xN=WB=Z30g_iKJUVQHHiHHXxuQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jeRf4XLK"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-43d73422431so3976571f8f.2
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 01:10:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778573435; cv=none;
+        d=google.com; s=arc-20240605;
+        b=ILNjaBpxRxg42YvNVyEvkMUU3Ajay0KS+eIU4KgnD6DoL8KyVH1UqCLWEHH1GV1I8l
+         IyIWIC/1Y9avhIU6wAi8b2OF1m06G5PPhv0dXHBZG6RVazA7m0JX+0wJUFMIFwV4fnzX
+         0g3uigv54tlD23LIGijYN0U+LJoe/SkoMbe6vTjdgIT5/eTnQQ9jEyyOEASPwBcPqjDj
+         Ym9tK8jwZgyzsImjLVCmcgN1D9O1lmd+8MysIQ8Kqg91FeRGjAexSPkzPI89uJe6Qbkn
+         AtuoWTi3XHpHXcN1w2HQ8pLg+vLj7GZMrVufITQ8wG/sKPCygkENctc3mA1NnU5GwSUF
+         HUjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=IxmTZetwWXAIZATVRXYrpmvB1+EmW44U6XwNwEq+3G8=;
+        fh=jhRbd+YuJJtH7/rGCg9APoLlHVvtgzgvN/f7WFMQqSQ=;
+        b=dMr/uRpq/iD2EEED7iYUkRkkfQtbFFJjwN4miPFQ51HPeLi8eNhNDEnljQRsXux6C5
+         PbKP3FNU0Y9YJH/2PpWXBvQ0Oj6IyEPNabVjCrxO0ChFuZ7g72oreW+LE9J2ogZGF5+d
+         mtOAECtTYZKe15kshPedqYyqzWxrlR06G+FKsbHRejUXdAc3ghe1qvr0QBxEbpQsngjv
+         n/himFAgh/0Ttn0Vw+2VOpKrB0joUgzF0WRX/8jGTudFcYQWGE/JAIag/Wx4R4n8Xol4
+         6Fnjr3ZIhGNxHvQQHca98iaTl8ikIUaens2P43oqUAuU0Gn2O0ZxKZDVkRVU4UN9BjG/
+         aTkg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778573435; x=1779178235; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=IxmTZetwWXAIZATVRXYrpmvB1+EmW44U6XwNwEq+3G8=;
+        b=jeRf4XLKq9p2b7Zcnu/W9f/yzJ414B3dfKRmNNxUfIHR78jKqFS6y3V6p5CSzexYzu
+         KtbOoZcv5AR9hkRggJn+vmbXrxNDfr8mYQk4EkIxDEyyN05R8UANB05+vNsMxvCw5Ofb
+         zILjQKBwqftAhZzjSZLhNVXlw234naGEpCkb5OTCyat5dqjxNTfczWv7TPCU0iubr5b8
+         pUbim3GxyNkY+ep/vbQYWV12k2tr84CNw9WausHWrxOJp2uR91hW/LAb9P9KhRidUZVp
+         cbgPC+es5dU55cj/nh9bNqcYHh6PsO1vG5Km4UJ7gYcN1ATPk4t1tUz08spnCibT04eN
+         NuJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778573435; x=1779178235;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IxmTZetwWXAIZATVRXYrpmvB1+EmW44U6XwNwEq+3G8=;
+        b=rPr/PaS+IP5wPFp0mdhd9lRBwjaHfRgeknfL2bTz5jbWTGoJZzQjomM+k1ONhJMAWM
+         3hPGhueCqqlOa+oPRXcQLOCAVKBsV/6Fo1/+7M7fRji6uyplHvikFb+tvR9ZV2cOTOK9
+         LFy+yKMdzKp1jv94m7lul9r7GWXEJ1wHchhALtfYKUUC/P8ZF/oVZNdSA4R3JotLhZle
+         DzgoqxZknvgTzkpUtgyXEpwFrJ5Zymr+IzE4gyThfkonZKVwrWueEO2rb6IoHgOtsrI3
+         zCSvB4gxKC3ecquywQpEZqzS0Xdp9bGo55pIvrwpWJlAko3ZMDfH0kej7exqoHKYMKPC
+         8+pA==
+X-Forwarded-Encrypted: i=1; AFNElJ8uIpmDGRiDhWWoWd5oULKHalxmAM6ttLfF9NbWnprqwz8m3HYQRhiTuWhZAI90C6dTGmop29ZJTQw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxg33DU2zV1G/bbfQGrv+Xoge5hdqlLunLhiXKP5LjJSK1z31bl
+	pKxKlVX/CEQ/VtqOHIjc0pe6OpzAlHLkV+gOFR8gmQP7/CXJQ6tJUq2FyShRB6r1geCQCNN2KYo
+	ew4xZmVwML92V8sgJUs8aouF7wszhd0zFJd3ykMA=
+X-Gm-Gg: Acq92OHgn/hOO+44FyV6wd1T/ZEvRoDjJHQffHnUIrrXAYtb8+17yf2BcfaYkflTWNc
+	NHhLS1UTjvL9XV5mETcSIgnqR1kkiZg4WPE+X/iD3DwIe4flTUsgOSpYiC2/x3EwI6B8EJ8gF5R
+	WRQSHYFcH70p0s+bYCB8jZZEIBVI0swiARUfxMN9/htUI5AYJ1Vkl23sFvDiX4FgHlPzadRJZ4v
+	WP1fKWxdRaVZ285817FOmYW/wIpMGKlkD4tWn8z10VdkgyxK29TtntN+DBwBTd/qfmLbyxoMNsk
+	b1b7gplASgnXgCDFiL10pv48EM8g3KmmrTz4D7jDTBjz/RAr4HfLQWQkMBOPxyTQzK0Pe5Zvfe0
+	bAZcHmjwx7PHhM6J59QPLmWPsrJqAhT+FMgt/v5MsSCRLUOOi6VdbCjkwtqRtkqC7lqNwcjh5JV
+	15UKS4ug==
+X-Received: by 2002:a5d:5f42:0:b0:455:460a:33a5 with SMTP id
+ ffacd0b85a97d-455460a3511mr23293118f8f.34.1778573435387; Tue, 12 May 2026
+ 01:10:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALoEA-wOAY9fYuZdZZHQFj=+xN=WB=Z30g_iKJUVQHHiHHXxuQ@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260512073505.1310-1-joshua.crofts1@gmail.com>
+ <agLeEitdYsi5O2E1@ashevche-desk.local> <CALoEA-wOAY9fYuZdZZHQFj=+xN=WB=Z30g_iKJUVQHHiHHXxuQ@mail.gmail.com>
+ <agLfuwvEH3YTT2qV@ashevche-desk.local>
+In-Reply-To: <agLfuwvEH3YTT2qV@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Tue, 12 May 2026 10:10:22 +0200
+X-Gm-Features: AVHnY4Jvg2idfz9sgWXlml-ATpciqzG4ONCvAMbtls0uecmKY369GmhRfUEe6Q8
+Message-ID: <CALoEA-z-C2tq=5wg_+JOpda-GCpY+mCBMHxishvhGbUFxp6f_w@mail.gmail.com>
+Subject: Re: [PATCH] iio: mapping file for include-what-you-use tool
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, May 12, 2026 at 10:04:51AM +0200, Joshua Crofts wrote:
-> On Tue, 12 May 2026 at 10:00, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
+On Tue, 12 May 2026 at 10:07, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> > > Trailing whitespaces.
 > >
-> > On Tue, May 12, 2026 at 07:35:05AM +0000, Joshua Crofts wrote:
-> > > As promised, I'm sending my IWYU mapping file, based on Jonathan's
-> > > version with a few additional tweaks by me.
-> >
-> > Please, also add a link to Jonathan's version.
-> 
-> Good point, forgot to do that.
+> > Well, considering this is not intended to be an actual patch...
+>
+> Still better to follow the common style.
 
-> > > Other than adding support for more assembly file business, I've also
-> > > experimented with individual symbol definition (see BIT() and GENMASK()
-> > > in the following file) - this is to prevent issues such as the tool
-> > > wanting you to include <linux/bits.h> when you already have
-> > > <linux/bitops.h> in the source file (I agree, doing this symbol by
-> > > symbol is tedious, but BIT() and GENMASK() are symbols that especially
-> > > do this, and they're included in most, if not all drivers).
-> > >
-> > > Feel free to improve this file and pass it on. I wouldn't really fully
-> > > rely on IWYU as even with the mapping file the results can be weird,
-> > > but it definitely serves as a good starting point when doing driver
-> > > cleanup.
-> > >
-> > > I'm making this patch an RFC - this is not intended for merging.
-
-...
-
-> > > +    { "include": ["\"vdso/bits.h\"", "private", "<linux/bits.h>", "public"] },
-> > > +    { "include": ["\"vdso/ktime.h\"", "private", "<linux/ktime.h>", "public"] },
-> > > +    { "include": ["\"vdso/limits.h\"", "private", "<linux/limits.h>", "public"] },
-> > > +    { "include": ["\"vdso/time64.h\"", "private", "<linux/time64.h>", "public"] },
-> >
-> > > +
-> >
-> > Trailing whitespaces.
-> 
-> Well, considering this is not intended to be an actual patch...
-
-Still better to follow the common style.
+No exceptions :)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
