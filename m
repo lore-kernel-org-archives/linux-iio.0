@@ -1,112 +1,146 @@
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 352132E8DFC
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 12:03:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E816C4D90AA
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 12:05:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778587440; cv=none; b=f73J7BylHP6XwxsOI2xs1ydIZcv2Vy70IJ+WLOf+uAF7K7eRQ3R+6FFmB0SfVVG6+BTYOsrQzaEIUj4EoREu8FSS+Qr1mNxMsvV60H2AOZuSpYA3cyOYA1Rfwk0LanjbJxBchFG3X6sj/SF35O2/BOJdXVYki+KTbiBN47AiReI=
+	t=1778587526; cv=none; b=cod8RDC43lwuYr8MLdNjVNrmFWOZ06VDSDS7hVVYM5l7ZS1FG9cRmVSYbWrpRpV+eHFUN7Z+altzmQN6rPvisxAnsr1zxSXXPfUeZwtMKaZSgswRrRQrPQiy6UgFidglHrDanZOqguMY0shr+0FNXpmHlex6/eZQeveItrCubHA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778587440; c=relaxed/simple;
-	bh=1+6MYKvV+5BS+eAUvaNLAeFQNXYVxvknnLg4E9YZMo0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sqTrqkenR0US+Te7fsBXcBAzO0QAD301Y3laDeSK388Wg6HStPBEXGZy9R2Wr1515TApiSu96hTFA2M8idCOP39pnVOaGLCU5dtgQYFIf1tz35ru9gBIWEuNZsYmpbc0guWlynJSI8YmAx9nWbzwenvwX6IwMh5NtMyuvOMU+l0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k5wFDjR1; arc=none smtp.client-ip=209.85.167.173
+	s=arc-20240116; t=1778587526; c=relaxed/simple;
+	bh=eiiQn3LPaQ1C0TSaD+je1ad7MkAQEuJiYrexYHR8JW4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iFx+QLmBxbU0PuWkEd2z3+VRR/BMfbUR02PlJDN7PZQkaRp2ZDmNj9yFDY6VbW0EODarBIz7AGtrjtagGIBBkkEXf1o7MWQ+FlzZNu7A8tp+oDymiOGyTqFoFPKhUa3HEw+7ovg4ZeXb2wLjV/e9oiZhfYhkz3HoZ4DsMhYHfdA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EG+HTSV4; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k5wFDjR1"
-Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-479eb8bcacbso3442606b6e.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 05:03:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EG+HTSV4"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-48374014a77so50163695e9.3
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 05:05:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778587438; x=1779192238; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1nftdodi1LgeZkHeml0qMiUT6XfhDfN3/n6bj1crBc8=;
-        b=k5wFDjR1aieZAW6VwR23PwAaUGJkcLuWmLzEOZbpBga6T0PaVprJqDnRJwDtbWGZqk
-         nF098ALiNoll1VllNRZrt6tT+7/GgobR/p/X9is6hWtC7JOp5luv2FrBqHTuYWJX/fzt
-         EIqe8rgkZUTvAE7PAnr5ytJarRXWEQhSFwBzPm/PZdgNesfghdmJPwl00rLKrWWXNryI
-         WHIWT2Hngh6d7socdL/S40TsJ7jitj9kfTdl9oniGZ6Nb2fFYd3NWy8U9jvLtjJIosd7
-         mUD7z7cbnA011iudjCeMqjbQPOCswvHwAOV3LrWLmApFrUyrjwv6D+KGY5/uN4uxGl5d
-         torQ==
+        d=gmail.com; s=20251104; t=1778587521; x=1779192321; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=MPixCwLYwSCQ7IjJ5OrD8u4Z57ctKq7410nlp6rxWgQ=;
+        b=EG+HTSV4JkPS3hTqHjB+yt+2e+0nzu+OuRQI95huriZbSXg2R2D6Tx5aZDlNrwPJvU
+         SKK9Yh2q15m2Nnvi0x6TgxU3vupDmFvZZOrBcjYoMnJTnUfohr5mhUiJ/qWziCI2i0uW
+         3olmrnHEDreSZzClwTG7ly3Q60/mh4sUGZXowJdDw3NP+A0EcKrmS6dbqCmXhDkBV9ZI
+         I2Tfcqv8rC4cy50GfBXnOY+ePaTMduZgGTIqN8XKKmqgwnt1sW+ZTySYNTox3aUIoDVq
+         2v/Xl7eXkcLxgdmDIqVlTV4pmoe4Q1Ixtn+fv9UTqOue/nYuDLcYu3psdITUkSgsdxl0
+         BP0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778587438; x=1779192238;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1nftdodi1LgeZkHeml0qMiUT6XfhDfN3/n6bj1crBc8=;
-        b=GyOpiXaF63IinRC6Ol/dnp/h0cwwA2ua9X085MJO36S/8C7kHaHcTrHQeIqHu/SdFe
-         lIvFpLbkaj3uBixU3w86KwxTnPY3oTNV7K6bPiu5PoLwDAuH3ZTVSc6wo4l5EIrU0h7f
-         oNydTvQp3SujFhtdPK9rBtvjJlJP3hahvttpzT/NNPcFeZt710kdgIf88P+h2w1lTwoe
-         CPQv9zI6rzjnTHkrN6mwzQkNgknxBDH4FL4p0c0BbY5mZ0cdyL9MzHv+f6EaVuC5T8YU
-         fwL5sYtV7HDvZjpILa57e6lHuSRGKOEdqDO5WR+nHrW2z7ZABXNI0UNR96WaLQYXxgBQ
-         rhDQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+sPz+KlrL5IyvCg5DBvD55x2E1oydOnUl86nsN1XZXIyGyBhj088edhj/BZh2KnAqAOljRLZI4KKE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxqJNqndr1U4fhgJum3217PitgdD58qXv0mQfSMZE5ez8wu/bTw
-	/DVBlYs1SdeO4DK0mJsns9Fd4WuXQlcfdcbQrUngeVtRkZTZqUQ5rR5wSNM7IyJJFzk=
-X-Gm-Gg: Acq92OHy4SyL/k8QksTX75Na3eJPYHcHpP/vTI4PnqDIXYgynZcsdjcGWdlwXxDKbcX
-	3w+eijoaFy/kmLik4FP/3jHtazLaHDTR7mG0ER4gfZ/3deAM87JliiEjFI8cq3kEKkbbF0oFUrM
-	56LWdmxis0QsE4BRRtiEoPYlOxuPmFqarVHEQiOt6/R0hHw/3wg/Rpzp3TJjtA0sTyPS5rvTKkw
-	k1w4LcWq20Etm56cbjPxrFrAfmZDIvdltrrdHP4nzArT5PvfM90L6GGh6sSh00jWhx+hdNx112P
-	Hc8Oa2q6ulJyn5etU1TCTgqZIfuJxNS/v2CzjzMOfOIEjl1KC+8dHq+o9xn2aPwtDPMndhU5KSA
-	pZZ4iuP+gFHckq+uASrjKhQMw1nfMVoDkDche3pBgTz+EASbPPpDLtlECOX3o5iOyE2MNx7FNFP
-	FANZyMJgPJofE9rMlFlLvKjj66/lNd+HlNMyIWaeGSDZMf/QjfBqflBvwbNOlnUoOsMxpq
-X-Received: by 2002:a05:6808:2507:b0:47c:6c9c:6016 with SMTP id 5614622812f47-480420569ccmr16956686b6e.5.1778587437914;
-        Tue, 12 May 2026 05:03:57 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-435570ad8f4sm12296325fac.4.2026.05.12.05.03.57
+        d=1e100.net; s=20251104; t=1778587521; x=1779192321;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MPixCwLYwSCQ7IjJ5OrD8u4Z57ctKq7410nlp6rxWgQ=;
+        b=YOS3uVeqGfLaJoNnbIveu49C5SQj5V6XNnwJbpoZms3p+PqEGkggNw4KFyjQfrfmSm
+         nOUPOZPpBZTbsC6OEBarM6taR5yuOyRlQEpstnZ4chJsF7T8UiO2x31/FzvTMBOR9faz
+         lDnrh7rBC1mn4je4CTHU1uSAwS55hH0tr3Sre33qLKDg+INjDCCbxyqIwpx+NNTard/J
+         PL4ZJ6TC698r0qS7M+cCKpDXCRB3Fcso1BfisVD7eFrAIYfqxnyos4O3RU5KOBuv0aqw
+         TGi3JLheInZ0hLMY+F4h+vBcX07JuKx2/PooEIlqGPI3KdhUpKYKwTvoNigaT2qUduZT
+         uzcA==
+X-Forwarded-Encrypted: i=1; AFNElJ9vxyYw2//A6eKtHyvIUu7O1WjyUGHUFGmfDLJP+mEbSo6d8xH3ajtjx+P0ktVR6oj6GzxiXp7bmHs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzP2LjC+ScXnuulwxUB9UZ6HQYIHzOsAhVzCH16SgCps5I8Ngk3
+	Vzy8pvFNjsInK5H9EMqKXgCIPKUxc+oo1u8NjOEhiFV4cmGtkVFtn5ByWUBwlQ==
+X-Gm-Gg: Acq92OHSghuZdKUv1DmEsBf0sTj1Q2im3nvjQ3ifv69bgfnxBBoBhMY1BuJTgpivSuQ
+	hUGUGd7YsIkivfZOz33FPbG1p8cc9ILqSwDJN3s45hepfqxeQ6bbS7qhdWcVG9RQFym4tz8y/Lo
+	8bj6zy5r0zevHLf/rdon4OADuBiuma8MfNyxaF0Wc8Ebsprq+x5y1uZ8DCEj85h3zlLoK0LnhpX
+	sfpOv+kuCBV6ZpuzqoV+r50SMTb19IryvLvdLwVwzGFA5rwLkauPS0/HsyS9M9H19KXzQ+4zXsZ
+	U5wPWC3ZSK+SUcc7VQyY9abo8gkf9apKy2+b/D2pe5rm8nALxYmoCAtar3jInOsuaQkqqlRQnbn
+	8xkR98mGl2/EBZCNqD/eY3lDRZ3M4wgB6ix/8DCCiRiHHjQ2HzSsApEWogy3IoNUSsnsL7QW7V5
+	9rqmYsM8YEzpgF5Q==
+X-Received: by 2002:a05:600c:4f46:b0:489:e126:b757 with SMTP id 5b1f17b1804b1-48e707fbb13mr229757235e9.25.1778587520803;
+        Tue, 12 May 2026 05:05:20 -0700 (PDT)
+Received: from nsa ([185.128.9.145])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e8f42a845sm15997055e9.20.2026.05.12.05.05.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 05:03:57 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: jic23@kernel.org
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] iio: imu: kmx61: Fix TOCTOU race condition
-Date: Tue, 12 May 2026 07:03:55 -0500
-Message-ID: <20260512120356.40839-1-m32285159@gmail.com>
-X-Mailer: git-send-email 2.54.0
+        Tue, 12 May 2026 05:05:20 -0700 (PDT)
+Date: Tue, 12 May 2026 13:06:14 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: "Stan, Liviu" <Liviu.Stan@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael" <Michael.Hennerich@analog.com>, 
+	"Sa, Nuno" <Nuno.Sa@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: temperature: ltc2983: Add support for ADT7604
+Message-ID: <agMXiWA39tW9mZ2O@nsa>
+References: <SA5PR03MB83778AB3C41E0AF56EC754F8F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <af3oezNmmBhI4Yu4@nsa>
+ <SA5PR03MB837710AE7FD8B8FFF138B7C5F63D2@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <af4LCQiqNaiMzFkX@nsa>
+ <20260509154600.02e2d11a@jic23-huawei>
+ <SA5PR03MB83770D945E92C40A74D9C0DAF6382@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <20260511121820.3be9e635@jic23-huawei>
+ <SA5PR03MB83772A1A57DC052CB21B9187F6382@SA5PR03MB8377.namprd03.prod.outlook.com>
+ <agLhb-S2ISSjaopc@nsa>
+ <SA5PR03MB837758532C0007A97121F6CCF6392@SA5PR03MB8377.namprd03.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <SA5PR03MB837758532C0007A97121F6CCF6392@SA5PR03MB8377.namprd03.prod.outlook.com>
 
-A Time-of-check to Time-of-use race condition is present in
-kmx61_write_event_config(). Move the mutex_lock() call above it to fix
-it.
+On Tue, May 12, 2026 at 11:55:21AM +0000, Stan, Liviu wrote:
+> On Tue, May 12, 2026, Nuno Sá wrote:
+> > > > > The current approach presents it as IIO_TEMP since the chip outputs
+> > > > > coverage (using the custom table interpolation) via the temperature 
+> > > > > result bank, not the resistance bank, but I agree a new channel type
+> > > > > makes sense. Should I create a specific type like
+> > > > > IIO_COVERAGE_PERCENT or would a general IIO_PERCENTAGE 
+> > > > > be better?
+> > > >
+> > > > For ABI purposes we don't care where it comes from.
+> > > >
+> > > > We already have some 'ratio' type measurements like concentration which
+> > > > are percentages and similar to those I think we need some indication of 'what'
+> > > > is being measured given it's unit free.  Hence IIO_COVERAGE_PERCENT
+> > > > seems the better choice to me.
+> > >
+> > > Understood. Will do that in v2.
+> > 
+> > I do wonder if a complete type is what we want? How will we present it?
+> > 
+> > in_coverage_ratio?
+> > 
+> > What I'm not too convinced is that coverage is relative to what? Well
+> > it's a percentage so I guess we could not care and leave interpretation to
+> > userspace (to know which device is dealing with). Still I wonder if a
+> > new iio_chan_info wouldn't be more appropriate? In this case applied to
+> > iio_resistance. So something like:
+> > 
+> > in_resistance_coverage_ratio
+> > 
+> > So it's clear what physical quantity coverage ratio is affecting.
+> 
+> I still think a new channel type is the right approach. Consider copper 
+> trace sensors - they also support a custom table, and when one is 
+> provided the chip outputs both a resistance result and a temperature 
+> result (the interpolation output), each in their own register bank. The 
+> current approach handles that with separate IIO_RESISTANCE and 
+> IIO_TEMP channels. So, for consistency, if we use a chan_info 
+> attribute for the leak detector coverage output, we would need to do
+> the same for the copper trace temperature output. Since IIO_TEMP
+> makes sense for the interpolation result for copper traces and
+> because it is a distinct physical quantity output by the chip, I think it
+> would make the most sense that leak detectors follow the same
+> pattern and create a separate IIO channel.
+> 
+> What do you think?
+> 
 
-Fixes: fd3ae7a9f21c ("iio: imu: kmx61: Add support for any motion trigger")
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
----
- drivers/iio/imu/kmx61.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Yeah, makes sense. Jonathan already put it very nicely for the distinct
+channel case.
 
-diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-index 3cd91d8a89ee..9aa00acc7f14 100644
---- a/drivers/iio/imu/kmx61.c
-+++ b/drivers/iio/imu/kmx61.c
-@@ -942,11 +942,13 @@ static int kmx61_write_event_config(struct iio_dev *indio_dev,
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 	int ret = 0;
- 
--	if (state && data->ev_enable_state)
--		return 0;
--
- 	mutex_lock(&data->lock);
- 
-+	if (state && data->ev_enable_state) {
-+		ret = 0;
-+		goto err_unlock;
-+	}
-+
- 	if (!state && data->motion_trig_on) {
- 		data->ev_enable_state = false;
- 		goto err_unlock;
--- 
-2.54.0
+- Nuno Sá
 
