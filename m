@@ -1,120 +1,325 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BDA337E2E0
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:25:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.179
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778599536; cv=pass; b=HWIWXJABaZak37otUEXY5T53vT/6K8wh1TSGE+ZS49fawL9btyMgkIgo2lKwVDh6zqZTESYXZxdlE1ohx5i5zkEyZl+pJslfOn2iF+//clFjHojQ3MuCctndnXZ/iCqu7WMZGjoKxrk27H0N2ZedwIQYr4uhRBNkPDrtDT/j3Ls=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778599536; c=relaxed/simple;
-	bh=RN0oi1OCydLHZNYjP3k8xWSXRUQOZgpfvAXEWO/zPAA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YkyGvGcSpPbIxav8fo0WmzIxvKiz7hGiJcHTyyY0ErDlCwUhjsLCrlmlJLi5e4CjGlcGfpQT7fyCR3ERmSFzokAcr7n3x7HWPpbzS796w9y64HyQaA13sL8hoT3TMKRkmHjVVoNxpMd9XF7WRiIhKR+aJBRGqVczKDShnc7zCXk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DXYIHWnC; arc=pass smtp.client-ip=209.85.208.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 769691E492D;
+	Tue, 12 May 2026 15:26:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778599572; cv=none; b=UENPXPv5mzTQTrIKoFyQ+KqLvsrgi6Dm4W2TXPQHkZfyGA6bwZPrDB9FJQPEIMto4LEV6ORBwr41bsOpNh8jTQMbOf/0jjqTIlAAuRSh1EBcFVk2sRgVuqSS7LLHbVlNSaS8c4OpPGx0ju0PCuMHH+4BQR9x7bkGoiI4MdkWnY8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778599572; c=relaxed/simple;
+	bh=bQJFkEtLqjdexrXMn601sYKTcRHWpk5xDsyl0OdHy/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=SrHC1BEHFYA6bf1k/qX5Jj1fh5aDB4wmf8st+GUim0JY22+xS1ajmpO+UxIzY4vJKnjblREz2WQSQ3JrRAPD9YtKAqsBsDm9NEvYZi7i7RSJbfsLISUGmap5FemRxL/swsmqEPLfusXq0ydZ/6khQMdJVSjRIkcSrsqxJLpskOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EbeijzDr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DXYIHWnC"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-38e84ed22bdso52232771fa.2
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:25:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778599534; cv=none;
-        d=google.com; s=arc-20240605;
-        b=X7NRWuRondja9ZiPTkbigAz9TWytNjgBC6o2J5V5ZFc1wIWzo9uF+YPjBy6Qp6kzZi
-         bebTDAVkCMUW2HBsLB30THmHabjZf9wYBZ/uzXAn0ExaABQQrU/HdcgdNdBj3XdqPJDJ
-         AdZqiScJblnxJeDBLoNv8ewY9BcUwUeLg+Sux0tU4mrtexmUrHK9Y0fWMN6ik0uszRQV
-         c2YBEsIg4usuR7EWJFsvVZx5U2TFY7jaVW9WexbgndV0+SvBiwYhQO3dy57vElamckG2
-         LhIyYtc5BT5ARskwlEKSFBTj5LEQhEWv4oZ6nxY1Wtu5w4z2JrIp6wi2jTFoKtJsmlCR
-         0yzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=RN0oi1OCydLHZNYjP3k8xWSXRUQOZgpfvAXEWO/zPAA=;
-        fh=t3BWYHkAgIGuVUfASEbkhkjBurvHQcMOoea3FZdzCOs=;
-        b=c4xFfBURE8bPygTIlnIrVtrD1UuiJWGdaalApeZHyzmeWMhJvAt2Tc+scZMQWs8eLv
-         VZW3uD27Rz6ITHBe16ZYlCCoBf4R41hOO1Oqxwzp4AsyH+IwgDbyKYgUWs88memJP0Kd
-         unEe9IA9Jaw41RM7lG/ZXBXFSzVi4T3zRJqfra82t+j5wVqfRL6OrP0wq5rFt6ReSfum
-         J0r/sTgSuW1eL8O8kv9pfy6iA9eZYTRlhV/5z46RXZCtwzrHCOIKhq6CfiC+1aRoGPv2
-         zjJ76Q8g2387Ar4LFqwsvcqaMAmAdBYQWZBYDuWF7hEKUKVtrwy2UEtgNTBwVgne7+lE
-         zPnA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778599534; x=1779204334; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RN0oi1OCydLHZNYjP3k8xWSXRUQOZgpfvAXEWO/zPAA=;
-        b=DXYIHWnCKWMYgpYaqaiaU0FTe1nvZffO/sxyIpSfzOdrgRH/vipGStV3kOEyiEQemr
-         12wzpKz2fnwmGTCIAAsgLUd9h6otPmjzg4WH7bRUHa7XwvvFCwyX/r13MZvdnLl25AsI
-         UYTLbAA9ywRVsGNupXcYvK1pt1nLxUVrr07dWO18Lgq/nsg/eFct9XuRXqzLwUPP4II6
-         fzdaRhdR3hP13d9Cnq8DQOVdjntwrhbdH8uoOnVdf0ZBsiG8dFF7IFsLv+nMmWzJSavp
-         1ugfyCk1+MFsAd8FIXbX1YulOwaxvfIGHPsu0jCmZbtwyV5HTGTNwPDknE/ID5J1au3c
-         PuSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778599534; x=1779204334;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=RN0oi1OCydLHZNYjP3k8xWSXRUQOZgpfvAXEWO/zPAA=;
-        b=O7N6UiK8T9OHL8yfDI39Pa5B0qGIsprHZNkp2mML/4MnLY4rECMs0hETB2dJqWTm6L
-         wVj/epEAyT4gUtV9MFq1dEOYwpy3YaF+q53RKzXslnbWSxx8nwucOK7XnxnX/yznhViP
-         0xx2i6FN4w88qRynXKMmZK+zwF1eGptjdyVJJ6LIm1CroIkoYwi4T32gFGVrKqK5ieFs
-         rGPqC+56EEADmM8XeAIdpLulN27+Q4M/oUJaCnag+BufIg0C4nFenYNaQ21cYROHSGud
-         2CTuyH4rzdIrf29fLpXpDxJiaDfVjT20ZcunwDGjZUuuB4B2KMnqMlOrTARkeZFmgJvc
-         QOVw==
-X-Forwarded-Encrypted: i=1; AFNElJ+2lyJWlepVtAOKemR5krseyfIVOItwyN64XZ7agnixXUPW9rJAIoQwaD7ovmoi2FmAQ3k/q3YnWRk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/bXWAu/Z0EeoFqKxzdwyDpTajakvOkeVIlEJK/uMgRA6lLt35
-	SbM9cocBmMuFWQ/2Vw5xuzUz+2WcaOCZG0tWTT7b6pNlfIFeuNE06zRSglyEKJt+XujbHRWVeiZ
-	WhApE5UIWCtXbZRk2n+PbeCW+UB6bF6M=
-X-Gm-Gg: Acq92OF5Oj0z8FBxPwVXUPVPmSVLqXONpN1oIrrwEH+CFBSEFU2VyNSt9XdUOcKshi4
-	ODRrvnzXZwKgrzhpxStBBjr1XSlUUh35tdD9THDhRz8+1PvYCSZu7di8Nu0sgGFu3omcOdJYBUP
-	fntMdhJQ4xijl6Z/LTTfShSeWRi9zS1AneOPA8TzW/e7PbojmiGww1ZUjfnpI5UH1xmP4YczU1p
-	AaZqlPjQb4zavOiht1tUC5mbRAENVCb0inFx+EI4614sDwXvzkdqqOjnXv6ZFHLuH23n7uLQNIP
-	Cx8a/9k0QFLSGycyy4FY8OL17p+e0iUL5a2mXhDa0tqJn/krtGjh5Kc1gxIgcpKd2Xg0d2u53FS
-	osJjubIj7feSToLjPRQ==
-X-Received: by 2002:a05:6512:114f:b0:5a3:6731:910a with SMTP id
- 2adb3069b0e04-5a8b6ca1d53mr4742597e87.11.1778599533136; Tue, 12 May 2026
- 08:25:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EbeijzDr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73177C2BCB0;
+	Tue, 12 May 2026 15:26:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778599572;
+	bh=bQJFkEtLqjdexrXMn601sYKTcRHWpk5xDsyl0OdHy/U=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=EbeijzDrzyXgBJmo5oj83m1ZIz7sf5LwfXKQTSA8HlaiRS02Mwhn9ZGkvi45bJ2D0
+	 upXM/EL0izFe9NZ/dKQuGdm4n+taoqrTMSFTQfQ+2TyfWbk1mWvQ0wyZO+d8op0alm
+	 MLpooCHG0wE4sHBq+bE/qApJcBBBC4WiINs1UjdzOuoqUzeh8Kx3c92VtlZgLTHu0H
+	 Lb4dkbTmz2bLwLM90EFt8eaZw/vRdOIQ2wgf72xLD4930C1ROGtdwV2Z9YD213PjX7
+	 RJ1XR0yZOU1wdO+f/W8Q0Jn58Tyvr08ynIvuVb1vTWCFlcbvaszCY4L048IIa0REYL
+	 wifuZULPEm4gQ==
+Date: Tue, 12 May 2026 16:25:58 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v10 2/6] iio: adc: ad4691: add initial driver for AD4691
+ family
+Message-ID: <20260512162558.5bbbd464@jic23-huawei>
+In-Reply-To: <20260511-ad4692-multichannel-sar-adc-driver-v10-2-e1fbb1744e38@analog.com>
+References: <20260511-ad4692-multichannel-sar-adc-driver-v10-0-e1fbb1744e38@analog.com>
+	<20260511-ad4692-multichannel-sar-adc-driver-v10-2-e1fbb1744e38@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512120356.40839-1-m32285159@gmail.com> <DIGSQPV2STJK.2S7C67L7I0RTJ@gmail.com>
-In-Reply-To: <DIGSQPV2STJK.2S7C67L7I0RTJ@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 12 May 2026 18:24:56 +0300
-X-Gm-Features: AVHnY4KCDZ9jmfYdPkVocKjJxQXb_MTsVFGLStnqvx5mp3eWZKeb8ubnun0NPVI
-Message-ID: <CAHp75VdxUR0jdW2-k5SVGC22OK07VxHK2ORtVdSdniPWdcniPA@mail.gmail.com>
-Subject: Re: [PATCH] iio: imu: kmx61: Fix TOCTOU race condition
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: jic23@kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 12, 2026 at 6:17=E2=80=AFPM Maxwell Doose <m32285159@gmail.com>=
- wrote:
+On Mon, 11 May 2026 14:54:14 +0300
+Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
+
+> From: Radu Sabau <radu.sabau@analog.com>
+> 
+> Add support for the Analog Devices AD4691 family of high-speed,
+> low-power multichannel SAR ADCs: AD4691 (16-ch, 500 kSPS),
+> AD4692 (16-ch, 1 MSPS), AD4693 (8-ch, 500 kSPS) and
+> AD4694 (8-ch, 1 MSPS).
+> 
+> The driver implements a custom regmap layer over raw SPI to handle the
+> device's mixed 1/2/3/4-byte register widths and uses the standard IIO
+> read_raw/write_raw interface for single-channel reads.
+> 
+> The chip idles in Autonomous Mode so that single-shot read_raw can use
+> the internal oscillator without disturbing the hardware configuration.
+> 
+> Three voltage supply domains are managed: avdd (required), vio, and a
+> reference supply on either the REF pin (ref-supply, external buffer)
+> or the REFIN pin (refin-supply, uses the on-chip reference buffer;
+> REFBUF_EN is set accordingly). Hardware reset is performed via
+> the reset controller framework; a software reset through SPI_CONFIG_A
+> is used as fallback when no hardware reset is available.
+> 
+> Accumulator channel masking for single-shot reads uses ACC_MASK_REG via
+> an ADDR_DESCENDING SPI write, which covers both mask bytes in a single
+> 16-bit transfer.
+> 
+> IIO_CHAN_INFO_SAMP_FREQ is exposed as info_mask_shared_by_all because
+> the AD4691 family has a single internal oscillator whose frequency
+> register is shared across all channels. Writing sampling_frequency for
+> any one channel necessarily changes the conversion rate for every other
+> channel, so the shared annotation correctly reflects the hardware
+> behaviour.
+
+Sashiko correctly points out that this last paragraph doesn't correspond to
+the driver. Needs an update.
+https://sashiko.dev/#/patchset/20260511-ad4692-multichannel-sar-adc-driver-v10-0-e1fbb1744e38%40analog.com
+
+Otherwise just a few more sashiko things inline and my
+comments on whether they are true - I think they are in this case...
+
+> 
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+
+> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
+> new file mode 100644
+> index 000000000000..5b72216bca80
+> --- /dev/null
+> +++ b/drivers/iio/adc/ad4691.c
+
+> +
+> +static int ad4691_reg_read(void *context, unsigned int reg, unsigned int *val)
+> +{
+> +	struct spi_device *spi = context;
+> +	u8 tx[2], rx[4];
+> +	int ret;
+> +
+> +	/* Set bit 15 to mark the operation as READ. */
+> +	put_unaligned_be16(0x8000 | reg, tx);
+> +
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_MASK_REG - 1:
+> +	case AD4691_ACC_MASK_REG + 1 ... AD4691_ACC_SAT_OVR_REG(15):
+> +		ret = spi_write_then_read(spi, tx, sizeof(tx), rx, 1);
+> +		if (ret)
+> +			return ret;
+> +		*val = rx[0];
+> +		return 0;
+> +	case AD4691_ACC_MASK_REG:
+> +	case AD4691_STD_SEQ_CONFIG:
+> +	case AD4691_AVG_IN(0) ... AD4691_AVG_IN(15):
+> +		ret = spi_write_then_read(spi, tx, sizeof(tx), rx, 2);
+
+Just to check - (another sashiko one) is it a problem if via debugfs we
+read addresses that aren't the base ones of these bigger reads?
+
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be16(rx);
+> +		return 0;
+> +	case AD4691_AVG_STS_IN(0) ... AD4691_AVG_STS_IN(15):
+> +	case AD4691_ACC_IN(0) ... AD4691_ACC_IN(15):
+> +		ret = spi_write_then_read(spi, tx, sizeof(tx), rx, 3);
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be24(rx);
+> +		return 0;
+> +	case AD4691_ACC_STS_DATA(0) ... AD4691_ACC_STS_DATA(15):
+> +		ret = spi_write_then_read(spi, tx, sizeof(tx), rx, 4);
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be32(rx);
+> +		return 0;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+> +}
+> +
+> +static bool ad4691_volatile_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case AD4691_STATUS_REG:
+> +	case AD4691_CLAMP_STATUS1_REG:
+> +	case AD4691_CLAMP_STATUS2_REG:
+> +	case AD4691_GPIO_READ:
+> +	case AD4691_ACC_STATUS_FULL1_REG ... AD4691_ACC_STATUS_SAT2_REG:
+> +	case AD4691_ACC_SAT_OVR_REG(0) ... AD4691_ACC_SAT_OVR_REG(15):
+> +	case AD4691_AVG_IN(0) ... AD4691_AVG_IN(15):
+> +	case AD4691_AVG_STS_IN(0) ... AD4691_AVG_STS_IN(15):
+> +	case AD4691_ACC_IN(0) ... AD4691_ACC_IN(15):
+> +	case AD4691_ACC_STS_DATA(0) ... AD4691_ACC_STS_DATA(15):
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static bool ad4691_readable_reg(struct device *dev, unsigned int reg)
+
+I think this will all end up easier to follow if you add some checks in
+this and the next one to exclude the latter parts of multi address registers.
+Neater to do it here than in the read and write calls themselves.
+
+> +{
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_SAT_OVR_REG(15):
+> +	case AD4691_STD_SEQ_CONFIG:
+> +	case AD4691_AVG_IN(0) ... AD4691_AVG_IN(15):
+> +	case AD4691_AVG_STS_IN(0) ... AD4691_AVG_STS_IN(15):
+> +	case AD4691_ACC_IN(0) ... AD4691_ACC_IN(15):
+> +	case AD4691_ACC_STS_DATA(0) ... AD4691_ACC_STS_DATA(15):
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static bool ad4691_writeable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_STD_SEQ_CONFIG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_GPIO_MODE2_REG:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
 >
-> On Tue May 12, 2026 at 7:03 AM CDT, Maxwell Doose wrote:
-> > A Time-of-check to Time-of-use race condition is present in
-> > kmx61_write_event_config(). Move the mutex_lock() call above it to fix
-> > it.
+> +
+> +static int ad4691_get_sampling_freq(struct ad4691_state *st, int *val)
+> +{
+> +	unsigned int reg_val;
+> +	int ret;
+> +
+I think sashiko's comment on locking here is a false positive because you'll
+always get the value from regcache. Maybe worth a comment on that though.
 
-I think you want to elaborate a bit more on this. Id est explain why
-ev_enable_state needs to be protected. Not everybody is willing to go
-to some site to read some AI reports and interpreted them.
-
-
-> Reported-by: sashiko <sashiko-bot@kernel.org>
-> Closes: https://sashiko.dev/#/patchset/20260507223337.48437-1-m32285159%4=
-0gmail.com
+Sashiko suggests the direct read goes away later anyway.
 
 
---=20
-With Best Regards,
-Andy Shevchenko
+> +	ret = regmap_read(st->regmap, AD4691_OSC_FREQ_REG, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val = ad4691_osc_freqs_Hz[FIELD_GET(AD4691_OSC_FREQ_MASK, reg_val)];
+> +	return IIO_VAL_INT;
+> +}
+
+
+> +static int ad4691_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+> +			     unsigned int writeval, unsigned int *readval)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	if (readval)
+> +		return regmap_read(st->regmap, reg, readval);
+> +
+> +	return regmap_write(st->regmap, reg, writeval);
+
+This is where we perhaps have too much freedom given the effective gaps
+in register addresses due for the larger 'registers'.
+
+Using those wrong addresses might not be a problem belong filling the
+regcache with garbage. If we can just screen them out in the readable
+writeable checks that would be better.
+
+> +}
+
+...
+
+
+> +static int ad4691_config(struct ad4691_state *st)
+> +{
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	enum ad4691_ref_ctrl ref_val;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	switch (st->vref_uV) {
+> +	case AD4691_VREF_uV_MIN ... AD4691_VREF_2P5_uV_MAX:
+> +		ref_val = AD4691_VREF_2P5;
+> +		break;
+> +	case AD4691_VREF_2P5_uV_MAX + 1 ... AD4691_VREF_3P0_uV_MAX:
+> +		ref_val = AD4691_VREF_3P0;
+> +		break;
+> +	case AD4691_VREF_3P0_uV_MAX + 1 ... AD4691_VREF_3P3_uV_MAX:
+> +		ref_val = AD4691_VREF_3P3;
+> +		break;
+> +	case AD4691_VREF_3P3_uV_MAX + 1 ... AD4691_VREF_4P096_uV_MAX:
+> +		ref_val = AD4691_VREF_4P096;
+> +		break;
+> +	case AD4691_VREF_4P096_uV_MAX + 1 ... AD4691_VREF_uV_MAX:
+> +		ref_val = AD4691_VREF_5P0;
+> +		break;
+> +	default:
+> +		return dev_err_probe(dev, -EINVAL,
+> +				     "Unsupported vref voltage: %d uV\n",
+> +				     st->vref_uV);
+> +	}
+> +
+> +	val = FIELD_PREP(AD4691_REF_CTRL_MASK, ref_val);
+> +	if (st->refbuf_en)
+> +		val |= AD4691_REFBUF_EN;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_REF_CTRL, val);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write REF_CTRL\n");
+> +
+> +	ret = regmap_assign_bits(st->regmap, AD4691_DEVICE_SETUP,
+> +				 AD4691_LDO_EN, st->ldo_en);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write DEVICE_SETUP\n");
+> +
+> +	/*
+> +	 * Set the internal oscillator to the highest rate this chip supports.
+> +	 * Index 0 (1 MHz) exceeds the 500 kHz max of AD4691/AD4693, so those
+> +	 * chips start at index 1 (500 kHz).
+> +	 */
+> +	ret = regmap_write(st->regmap, AD4691_OSC_FREQ_REG,
+
+As per the comment above - I think this is why we don't have a bug reading
+back the frequency during an ADC sampling sequence.  This ensures we have
+the value cached.
+
+> +			   ad4691_samp_freq_start(st->info));
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write OSC_FREQ\n");
+> +
+> +	ret = regmap_update_bits(st->regmap, AD4691_ADC_SETUP,
+> +				 AD4691_ADC_MODE_MASK, AD4691_AUTONOMOUS_MODE);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write ADC_SETUP\n");
+> +
+> +	return 0;
+> +}
+
