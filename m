@@ -1,150 +1,116 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66CDC3C5853
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:46:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778600795; cv=pass; b=aY23vkByRsBMhsBX39ANLmxIh/NRBVNfQ/L9dj81eSE/RCiUa2imjin7jeDTHyGtLYymcLSCUIZJodFhpmlruZkKG4vno/AsEWmQOUAhQTGYeZ7GLf1KsgaQUqtesC4yiD3bcP5tJ+HK/zZMbi3WiLW2lFbosHnJFLL2xbWuKYo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778600795; c=relaxed/simple;
-	bh=MlqmcRfcwklEFYZj4ORXJCCotePm2Hc+RRIBORt8cgk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LQliiFSv+IXTXnP9RHBYwI5NI9f8+eSkzy2gHs61wCFjhFZCl3ChPaH4Q/Bvc3QhM4TppQOH9K2ljPFzmY6RptvB/fpqugiJWFdIV6fM9l8F+yJ91wygXaDu4J63wI0in7OhaJ66naRMBaaBn5ygLXyxi21lp88gpyVwNIEIdR4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=ekSFSDKj; arc=pass smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 547A735F5E0;
+	Tue, 12 May 2026 15:49:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778600996; cv=none; b=oEjaQMW6RolA6k2WiqYAz5tHUtt6hbzsKdDehkO9AAOMNhAEbv3GcUNPpnrYmRbsd1SbbBHQsbHCsoQirovf8kahnqYgjt0zgwYcAqwovj+qNyqHU7KRIrodV+6mJ1764HStP1o8fLZPqsuUi+LsG/2hn69UmY+a+fEmBMNKEHg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778600996; c=relaxed/simple;
+	bh=xT04KsS3vdFr5U9rnS1OIQVoQ8mPOcKNw2Vjgn0vL8o=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=W0EBCjkHGW2H9mE8pG8HhiOkXoCtONKtvmKWrcnfJC2CP7a5Z2g11pdKhUDuAIAHluP7CEEMEhpLIx7qAFd+AzcuhQvdGy1BWWGuF0CqPMf6ASPN9KiCABfKQvRgsZtLwPB3YSMFNXOpzmoDUfomq/FmZStyyTdISXGcFOUel30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bqe+MtoJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="ekSFSDKj"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6804e24803bso3719188a12.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 08:46:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778600792; cv=none;
-        d=google.com; s=arc-20240605;
-        b=igwaYnx6dYWRS6v90qyypoFitNx6eXu7IUaQimBUxZyx4+K98YUVEOBlEujWbIVOa1
-         PziA0ErYrnH3v5Zmx4/REJpSeEraNfgkeCTb6LCL2H165UL1xr0Ni5TNa1I+dXHMIRbu
-         NY2IfGmVKqSSOOlFulaLUIRlR2wtHiC4WofpU3E6gDpV5HLB1txwBsB956UngV1vF3IS
-         9MXhOeWd7wTLnAQl5dq5W4otp+ksturvGFioHZWAfsB0RwhGjXKx/zduU6DhK8Ku32KF
-         O2r/fCABL+ExV+njH3DAZRakZ2PV2gk4wqXgOweTSPM0sqLUk5XaudH0uGGVmm32pZRC
-         I1Jw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=75qBxmQOIEAlKUJsCU6kHkks8y+FZFXi5YOHbTzTprU=;
-        fh=GQqTEiSJe2P8bAk/mf6QSq4puMtQJBkMuWqugSt0v6o=;
-        b=YKrtz/VSzJHPjKkLZU216qOmTvOhXOLYZCLc9UdbOxjKtMFqRv6fUCUR1c0EWBNkQJ
-         uoMh8S6Tw+AL/51RyxWB7PkXKup4THDUXR1SGHIL+G3RZ1PQ4BCSE77LtC0zdfrQyXDv
-         /K1CViG5Gnimn/VPdmUYgLj7FgDtjVRMqOS83/qrOC2vUTHhaPOSvALcBGeNRtCuOXEi
-         pDNHCDTsRleG5gsrUnedoVi9/vvYfg3xuWcybjLHjttG4qk5llycYX+rnodspsYSIS+4
-         6tMVShYb9me/jFSh9iDHdeHEntz1hHQGINmOjEYTwdEwsk2XnT37XqVrluN4cH3RC6jN
-         KMkA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1778600792; x=1779205592; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=75qBxmQOIEAlKUJsCU6kHkks8y+FZFXi5YOHbTzTprU=;
-        b=ekSFSDKjbsF0IfYbY0rnMbCptM+sVsJzrUxI7gVAX3ISB8XHIPjH9hmMluWbfAGMbc
-         dBpjdODCPPCxqywIeMgFiv/epiMSIW/mWl76zFdXVpf+LS4WGtHVS1BUIgTBuvHoJ7Ie
-         I6QVNoIhZBuuCfI52OcX3ZZJsWl9YaAbcoPC/4DaRCig/tdKj44aIeoFZPZO3kxyh8dH
-         IQ5kBRfkV7GF3SLiyF8s685AZSDROlMNq4xmh3rEp2bgkrgmEuiQS4YEhYC5uLLcALbI
-         gN1VDfZIuA8Bc2A6AAYAxgOrxIcSVS5CPnFI/hWbc4Ml1YwvxLPkOel/N06YfhqSBqXo
-         bxXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778600792; x=1779205592;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=75qBxmQOIEAlKUJsCU6kHkks8y+FZFXi5YOHbTzTprU=;
-        b=k3zj4BKpN8yDqdG4Y6UY2MLi2wkaY84aO8U4muenbeza4kJYDH3PnQDPaG6vwMTCJY
-         Mm4rrJHFDLQJnLH3s6YFK4JBvbtxf0W4/sL6ddkWvt9IpeyB3FIsvGoHWmq36/y25ILv
-         K7sXcMErELyBPGYNBbHm/sydM4D1pUxd1kCtSX5JYFxlnKzwnRLE/5yK0HELrQadCvgA
-         NJ0Xo9AbstG8q4e47XHh9RlOiV8gx7y/xkroc3jEBTwnShboOvDnN/qwK0SR0wCFpNdb
-         ELHEIUXV6XEVwFh6qmmSiWbS2NQYCiwn7y+Fpa2nj0TyVKwckLtZh2QaJ2HIPox/DuGu
-         lDrQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9JHRK09gzXYPHb9R4s+SLZ3XNkilH+euqooRYY49CQSvCUvLi+hWisTTJe/WFou8mJK6akzO1Iu08=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz7nknNYwJEzfm2iRPDFp6b7Eov0nkfORJ+kQV7BLSj5UU4crrK
-	fYy3oCtmajvpfIjFdzpuxaLhGL9l3J5GGuVFcKkdPg9kSW4UWkknBLV67eATjgUPSBVK1e/7N3f
-	J7WEx4LnDYEAbgAQRWAPylR8cEREgIaacU9dUX9kE3g==
-X-Gm-Gg: Acq92OHe1rN/1I2E2+c1GOKubkhJQC5wV5g1fkPRR+W0zxhmXshd/F+4/Dt1t1s6DO5
-	Cj740vCcQQ+rNsD2w20QW26/prOGoBwEQEVxQxV5dpLvLPTIXL6cZowQLfH0X2PbhXJqmeY8AZq
-	3a1q9WniBR1dxqMZke6ojgRw7AVPoF1PWUo+yd9fcpw0sk20Jv51JcfphLAsDM0rAq0n5iIe053
-	015P33oAqEVhZPVsHsa/glLKlDmkhrGO52gBTFUTEt2TcL3EpOoaxWrSb0nAvF7fudPeEHqfOnf
-	bocNqkQyXDyIkpbHfLFrMVeouWWSRa9p+qUuj46+cIcSzWzmdL1Z9tzCuPpyvg6rynGL4Q9vwdW
-	4rVtVBKc5vVhhtOm3EMvJavGz
-X-Received: by 2002:a17:907:6d10:b0:bca:4861:65d5 with SMTP id
- a640c23a62f3a-bcaac35f762mr1082691066b.29.1778600791859; Tue, 12 May 2026
- 08:46:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bqe+MtoJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9D79C2BCB0;
+	Tue, 12 May 2026 15:49:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778600996;
+	bh=xT04KsS3vdFr5U9rnS1OIQVoQ8mPOcKNw2Vjgn0vL8o=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=bqe+MtoJUKckxiSp8SbZEmLkoM0jygdg7+XXnLKdgCwg1KIV1Nj/wxMBj5dqlHWsX
+	 Bldeh+G56RqSmhFyUa9n/T1inPZLhq5zSpFCCB91toQamYQm3p1RF+lO43zAmEe+4L
+	 R6VLmWQiq76CQAKXvKAPKEiIEToLW04NIEdjqD6DCoszNgKWrU+91AJfmIgnO49Xoo
+	 4cy4mvnNPM3SjoiZdvDjbMPnpzfV06cvdahdkeSqyOwfa9N5n52q+/qiED3AHeOqFU
+	 Eer19JGdk+JVGp/rsFfyV3Btesq2riF7mMaJ15mdymmKL4/ACEVDBMNOPQvp2iPlFS
+	 Z6ArnMfFy13Tw==
+Date: Tue, 12 May 2026 16:49:42 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v10 4/6] iio: adc: ad4691: add SPI offload support
+Message-ID: <20260512164942.6ef07ee9@jic23-huawei>
+In-Reply-To: <20260511-ad4692-multichannel-sar-adc-driver-v10-4-e1fbb1744e38@analog.com>
+References: <20260511-ad4692-multichannel-sar-adc-driver-v10-0-e1fbb1744e38@analog.com>
+	<20260511-ad4692-multichannel-sar-adc-driver-v10-4-e1fbb1744e38@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260414224245.8493-1-guilherme.bozi@usp.br> <20260414224245.8493-4-guilherme.bozi@usp.br>
- <e84d98dd-c81c-418d-8cbe-5867f8bdd4c3@amd.com>
-In-Reply-To: <e84d98dd-c81c-418d-8cbe-5867f8bdd4c3@amd.com>
-From: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
-Date: Tue, 12 May 2026 12:46:20 -0300
-X-Gm-Features: AVHnY4K46d1uZa3D0VTlOTLicMN_W7masSFd8TRMYjScY4EWQs5rQm5x0V1Tk8Q
-Message-ID: <CAJgF-xt5UFzPsBXX-MUNOmqBTjZrZC8Wj4DTtqHehWCjUfYfFQ@mail.gmail.com>
-Subject: Re: [PATCH v3 3/3] iio: adc: xilinx-ams: refactor alarm mapping to
- table-driven approach
-To: Salih Erim <salih.erim@amd.com>
-Cc: "Conall O'Griofa" <conall.ogriofa@amd.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Michal Simek <michal.simek@amd.com>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Salih,
+On Mon, 11 May 2026 14:54:16 +0300
+Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
-On Tue, May 12, 2026 at 11:34=E2=80=AFAM Salih Erim <salih.erim@amd.com> wr=
-ote:
->
-> Hi,
->
-> On 4/14/2026 11:40 PM, Guilherme Ivo Bozi wrote:
-> > Replace multiple open-coded switch statements that map between
-> > scan_index, alarm bits, and register offsets with a centralized
-> > table-driven approach.
-> >
-> > Introduce a struct-based alarm_map to describe the relationship
-> > between scan indices and alarm offsets, and add a helper to
-> > translate scan_index to event IDs. This removes duplicated logic
-> > across ams_get_alarm_offset(), ams_event_to_channel(), and
-> > ams_get_alarm_mask().
-> >
-> > The new approach improves maintainability, reduces code size,
-> > and makes it easier to extend or modify alarm mappings in the
-> > future, while preserving existing behavior.
-> >
-> > Signed-off-by: Guilherme Ivo Bozi <guilherme.bozi@usp.br>
-> > ---
-> >   drivers/iio/adc/xilinx-ams.c | 161 +++++++++++++---------------------=
--
-> >   1 file changed, 58 insertions(+), 103 deletions(-)
->
-> Two issues:
->
-> 1) Same tabs-vs-spaces indentation problem as patches 1 and 2.
->
-> 2) In ams_event_to_channel():
->
-> > +       if (event < 0 || event >=3D ARRAY_SIZE(alarm_map))
-> > +               return NULL;
->
-> The 'event' parameter is u32, so 'event < 0' is always false.
-> Either drop the < 0 check or change the parameter type to int
-> if you intend to handle negative values.
-You are correct regarding the u32 type -- the event < 0 check is
-unnecessary. I will remove it in the next revision.
+> From: Radu Sabau <radu.sabau@analog.com>
+> 
+> Add SPI offload support to enable DMA-based, CPU-independent data
+> acquisition using the SPI Engine offload framework.
+> 
+> When an SPI offload is available (devm_spi_offload_get() succeeds),
+> the driver registers a DMA engine IIO buffer and uses dedicated buffer
+> setup operations. If no offload is available the existing software
+> triggered buffer path is used unchanged.
+> 
+> Both CNV Burst Mode and Manual Mode support offload, but use different
+> trigger mechanisms:
+> 
+> CNV Burst Mode: the SPI Engine is triggered by the ADC's DATA_READY
+> signal on the GP pin specified by the trigger-source consumer reference
+> in the device tree (one cell = GP pin number 0-3). For this mode the
+> driver acts as both an SPI offload consumer (DMA RX stream, message
+> optimization) and a trigger source provider: it registers the
+> GP/DATA_READY output via devm_spi_offload_trigger_register() so the
+> offload framework can match the '#trigger-source-cells' phandle and
+> automatically fire the SPI Engine DMA transfer at end-of-conversion.
+> 
+> Manual Mode: the SPI Engine is triggered by a periodic trigger at
+> the configured sampling frequency. The pre-built SPI message uses
+> the pipelined CNV-on-CS protocol: N+1 16-bit transfers are issued
+> for N active channels (the first result is discarded as garbage from
+> the pipeline flush) and the remaining N results are captured by DMA.
+> 
+> All offload transfers use 16-bit frames (bits_per_word=16, len=2).
+> The channel scan_type (storagebits=16, shift=0) is shared between the
+> software triggered-buffer and offload paths; no separate scan_type or
+> channel array is needed for the offload case at this stage. Oversampling
+> support and mode-specific channel array distinctions are introduced in
+> the following commit.
+> 
+> IIO_BUFFER_DMAENGINE is selected because the offload path uses
+> devm_iio_dmaengine_buffer_setup_with_handle() to allocate and
+> attach the DMA RX buffer to the IIO device.
 
->
-> Salih
+More stuff from sashiko - it also not noticed the BE marking is
+in a later patch - but given you are doing 16bit words here likely
+the chan spec needs to be different.
 
---
-Guilherme Ivo
+Hohum. It then seems to have timed out.  Maybe that should be a new
+rule - if your patch set is too big for sashiko it's too big and
+complex for reviewers too ;)
+
+> 
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+
+I didn't really spot anything myself on this pass so just a question
+of analysing the bot output and groaning at what I missed :(
+
+Jonathan
