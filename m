@@ -1,50 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0C4E3B5F5D;
-	Tue, 12 May 2026 14:37:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C735397338;
+	Tue, 12 May 2026 14:42:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778596678; cv=none; b=IQDRlJ169nyw1PsDmZQ1M7vrvyHw0TbRIzKOWYVoG7otx1mjCYFhgA4Abw3cDrcQUOE+1ddTuumlFbq5XIKozP+VcJ0CZifNsIXG60PuWdg929u6TixZ11VgbATfJpe7iq4c9hhxneHy8/16QsNKhcmQfsb+sQkn0ZaO7e23D/0=
+	t=1778596933; cv=none; b=M2x6I8J9c7vVzyBeXiE4+ulmhHegX2G/i7v+wyQrm4jz6O2Tr682rg/JW0uLAUhu7/rLkJk/8Ct9l/C/2hf9hjAt4lxQemCKQ+ewltJtk+WQSZRbzz0qIygm9pZwlJRHMDbofoduf2B7lKphWHPT4VHqzkD567M90lKXcj6z9hQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778596678; c=relaxed/simple;
-	bh=80j3GK9Ky80LtSOqwjpJhxCkLUAXDfbcjbp8T8hGbwA=;
+	s=arc-20240116; t=1778596933; c=relaxed/simple;
+	bh=XhldWkwLybGtIRmwWQW/hSgfW/uayjDVD1tfLLqTL9w=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=greLscAqMeZ6/nm2qf9eak6jrsGHFsr7CjIM46Bgl0huOnCBzYW2C1Md8KQnDaOUu3ph+VwsuyZcqI99QxO4ARwjFp2qR57NAO3tlYRBJ4dXZK2QmxTzBMtldXqdZBnoTb9iPJplu/48E/PmF0FCCiAx+b+qTAfjtIjKFmD2tOg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RU0ua3zO; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=YjGNVQvKAMdxbFgDnk53TiV2msxL3nMEuq5uI72gbQX45Z3PGRhZh6ZXJHRUCoy+H/z/mWTejEwudkDUiDvjudmNpBBgQiDXAv9p4J1jNtc0Hz8QYYaaeRR3lxOavYEao248dQR6OOHGutx8WMJCTXQ4c7zHlaEI1zxZH4jj5ao=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dKc96mLY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RU0ua3zO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C47C2BCF6;
-	Tue, 12 May 2026 14:37:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dKc96mLY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB059C2BCB0;
+	Tue, 12 May 2026 14:42:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778596678;
-	bh=80j3GK9Ky80LtSOqwjpJhxCkLUAXDfbcjbp8T8hGbwA=;
+	s=k20201202; t=1778596933;
+	bh=XhldWkwLybGtIRmwWQW/hSgfW/uayjDVD1tfLLqTL9w=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=RU0ua3zOPzd4L/YCZwE2kd9BD+QWdEVWpNMLhEtTCRBDVlYFWdwunBaUp+nYfgr9P
-	 kintRagou4DCi8iB/GcbwFgRCX5moMgdTV2LpB/qW/1GkoycwRfl7tv+xpmyMcqXrG
-	 f7A4aQDA27yilq67keceHfKxBIQdeeAkw5ZVGRo3kz8n1LTdn1yDS5i1ZdTfo0IzPK
-	 NlfCZdHNghOWZX2pWd5bOHZMyKmpFm16ZoZgw+ldxI7gQnRme/Eiwte1QiYljHauoz
-	 Nald8RK22uuthwLyq249SyrkH31H27N4eowH83oyDoxFnPwu6PDi4MQcro617OGbDJ
-	 Wm7jGgN4LQS8Q==
-Date: Tue, 12 May 2026 15:37:45 +0100
+	b=dKc96mLYrdKgvd6SkS0yFp4N/l0dvPFEtnA/6+9WFp4Cv+Nqqfd4ehiG1LMGGttCB
+	 wMaDOZlfS3IChcs/YwY1FbBW79AklLGvv9G8qN+ep+vd+ijka0ctgr0FFPA1gLrghv
+	 AlHwg0W4iKPyPohd8zjegRwcSlwtAsJbdkLvD0KkCeQJ6TBWucpthGLuY5+M6ovNzH
+	 HazCfJ15qszNirY16xf5KNACY8b4jrOFQxj6+VsG5pev9IcD5bBD40D5+PLcknRAYC
+	 AdfwWDsxD0cYXgy24/Mk+TwSuHyDf2SvW21RR2/K35dGZ7F2/XRL34hWi1yDRVrxX5
+	 jZu6HAVAiKPXg==
+Date: Tue, 12 May 2026 15:42:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Yu-Chun Lin <eleanor.lin@realtek.com>
-Cc: <linusw@kernel.org>, <brgl@kernel.org>, <robh@kernel.org>,
- <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <afaerber@suse.com>,
- <wbg@kernel.org>, <mathieu.dubois-briand@bootlin.com>, <mwalle@kernel.org>,
- <lars@metafoo.de>, <Michael.Hennerich@analog.com>, <nuno.sa@analog.com>,
- <andy@kernel.org>, <dlechner@baylibre.com>, <tychang@realtek.com>,
- <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <linux-realtek-soc@lists.infradead.org>, <linux-iio@vger.kernel.org>,
- <cy.huang@realtek.com>, <stanley_chang@realtek.com>,
- <james.tai@realtek.com>, Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v3 3/7] gpio: regmap: Add gpio_regmap_operation and
- write-enable support
-Message-ID: <20260512153745.3ec68675@jic23-huawei>
-In-Reply-To: <20260512033317.1602537-4-eleanor.lin@realtek.com>
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
-	<20260512033317.1602537-4-eleanor.lin@realtek.com>
+To: =?UTF-8?B?TmF0w6FsaWE=?= Salvino =?UTF-8?B?QW5kcsOp?=
+ <natalia.andre@ime.usp.br>
+Cc: andy@kernel.org, dlechner@baylibre.com, jikos@kernel.org,
+ nuno.sa@analog.com, srinivas.pandruvada@linux.intel.com,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH v3 0/6] iio: hid-sensor: standardize scan_type
+ initialization
+Message-ID: <20260512154204.0052b352@jic23-huawei>
+In-Reply-To: <20260512012302.20883-1-natalia.andre@ime.usp.br>
+References: <20260512012302.20883-1-natalia.andre@ime.usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,216 +45,47 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 12 May 2026 11:33:13 +0800
-Yu-Chun Lin <eleanor.lin@realtek.com> wrote:
+On Mon, 11 May 2026 22:16:16 -0300
+Nat=C3=A1lia Salvino Andr=C3=A9 <natalia.andre@ime.usp.br> wrote:
 
-> Extend the reg_mask_xlate callback with an operation type parameter
-> (gpio_regmap_operation) to allow drivers to return different
-> register/mask combinations for different GPIO operations.
-> 
-> Also add write-enable mechanism for hardware that requires setting a
-> write-enable bit before modifying GPIO control registers.
-> 
-> Consequently, update all existing drivers utilizing the gpio-regmap
-> framework (across drivers/gpio, drivers/iio, and drivers/pinctrl)
-> to accommodate the new reg_mask_xlate function signature.
+> This series refactors the HID sensor drivers to standardize the
+> initialization of the iio_chan_spec scan_type structure.
+> Direct initialization using compound literals was used.
+>=20
+> This change improves code readability and ensures that all fields
+> of the scan_type structure are properly zero-initialized.
+> Additionally, for the hid-sensor-accel-3d driver, the channel
+> initialization loop was refactored to iterate directly over the
+> scan indices, eliminating redundant logic.
+Hi Nat=C3=A1lia,
 
-What is the reasoning behind setting *mask = 0 for unsupported operations?
-If it is a special value why not just return an error code to indicate
-not supported?  This seems to come from the assumption that you will want
-to | that with masks for another operation.
+I'm a little confused.  How is this v3?  Where is the change log?
 
-I'm coming into this late but to me there look to be a bunch of undocumented
-assumptions. Why do the operations have to share a register for example?
+I'll review it as a fresh series.
 
-Perhaps an interface where you provide a single operation for write_enable
-and whatever else and hence t here is only one 'reg' would work better?
+thanks
 
+Jonathan
 
-> 
-> Suggested-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Yu-Chun Lin <eleanor.lin@realtek.com>
+>=20
+> Nat=C3=A1lia Salvino Andr=C3=A9 (6):
+>   iio: accel: HID: hid-sensor-accel-3d: Refactor channel initialization
+>   iio: gyro: HID: hid-sensor-gyro-3d: Refactor channel initialization
+>   iio: light: HID: hid-sensor-als: Refactor channel initialization
+>   iio: light: HID: hid-sensor-prox: Refactor channel initialization
+>   iio: magnetometer: HID: hid-sensor-magn-3d: Refactor channel
+>     initialization
+>   iio: pressure: HID: hid-sensor-press: Refactor channel initialization
+>=20
+>  drivers/iio/accel/hid-sensor-accel-3d.c       | 27 +++++++------------
+>  drivers/iio/gyro/hid-sensor-gyro-3d.c         | 24 +++++++----------
+>  drivers/iio/light/hid-sensor-als.c            | 18 +++++--------
+>  drivers/iio/light/hid-sensor-prox.c           | 19 +++++--------
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 20 +++++---------
+>  drivers/iio/pressure/hid-sensor-press.c       | 19 +++++--------
+>  6 files changed, 42 insertions(+), 85 deletions(-)
+>=20
 
-> diff --git a/drivers/gpio/gpio-regmap.c b/drivers/gpio/gpio-regmap.c
-> index deb9eebb58de..c76eef20e412 100644
-> --- a/drivers/gpio/gpio-regmap.c
-> +++ b/drivers/gpio/gpio-regmap.c
-> @@ -38,9 +38,10 @@ struct gpio_regmap {
->  	struct regmap_irq_chip_data *irq_chip_data;
->  #endif
->  
-> -	int (*reg_mask_xlate)(struct gpio_regmap *gpio, unsigned int base,
-> -			      unsigned int offset, unsigned int *reg,
-> -			      unsigned int *mask);
-> +	int (*reg_mask_xlate)(struct gpio_regmap *gpio,
-> +			      enum gpio_regmap_operation op,
-> +			      unsigned int base, unsigned int offset,
-> +			      unsigned int *reg, unsigned int *mask);
->  
->  	void *driver_data;
->  };
-> @@ -54,6 +55,7 @@ static unsigned int gpio_regmap_addr(unsigned int addr)
->  }
->  
->  static int gpio_regmap_simple_xlate(struct gpio_regmap *gpio,
-> +				    enum gpio_regmap_operation op,
->  				    unsigned int base, unsigned int offset,
->  				    unsigned int *reg, unsigned int *mask)
->  {
-> @@ -61,7 +63,16 @@ static int gpio_regmap_simple_xlate(struct gpio_regmap *gpio,
->  	unsigned int stride = offset / gpio->ngpio_per_reg;
->  
->  	*reg = base + stride * gpio->reg_stride;
-> -	*mask = BIT(line);
-> +
-> +	switch (op) {
-> +	case GPIO_REGMAP_SET_WREN_OP:
-> +	case GPIO_REGMAP_SET_DIR_WREN_OP:
-> +		*mask = 0;
-> +		break;
-> +	default:
-> +		*mask = BIT(line);
-> +		break;
-> +	}
->  
->  	return 0;
->  }
-> @@ -69,7 +80,7 @@ static int gpio_regmap_simple_xlate(struct gpio_regmap *gpio,
->  static int gpio_regmap_get(struct gpio_chip *chip, unsigned int offset)
->  {
->  	struct gpio_regmap *gpio = gpiochip_get_data(chip);
-> -	unsigned int base, val, reg, mask;
-> +	unsigned int base, val, reg, mask, dir_mask;
->  	int ret;
->  
->  	/* we might not have an output register if we are input only */
-> @@ -78,10 +89,24 @@ static int gpio_regmap_get(struct gpio_chip *chip, unsigned int offset)
->  	else
->  		base = gpio_regmap_addr(gpio->reg_set_base);
->  
-> -	ret = gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_GET_OP, base, offset, &reg, &dir_mask);
->  	if (ret)
->  		return ret;
->  
-> +	ret = regmap_read(gpio->regmap, reg, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (val & dir_mask) {
-> +		ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_OUT, base, offset, &reg, &mask);
-> +		if (ret)
-> +			return ret;
-> +	} else {
-> +		ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_IN, base, offset, &reg, &mask);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
->  	/* ensure we don't spoil any register cache with pin input values */
->  	if (gpio->reg_dat_base == gpio->reg_set_base)
->  		ret = regmap_read_bypassed(gpio->regmap, reg, &val);
-> @@ -98,10 +123,14 @@ static int gpio_regmap_set(struct gpio_chip *chip, unsigned int offset,
->  {
->  	struct gpio_regmap *gpio = gpiochip_get_data(chip);
->  	unsigned int base = gpio_regmap_addr(gpio->reg_set_base);
-> -	unsigned int reg, mask, mask_val;
-> +	unsigned int reg, mask, mask_val, wren_mask;
->  	int ret;
->  
-> -	ret = gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_WREN_OP, base, offset, &reg, &wren_mask);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_OP, base, offset, &reg, &mask);
->  	if (ret)
->  		return ret;
->  
-> @@ -112,9 +141,9 @@ static int gpio_regmap_set(struct gpio_chip *chip, unsigned int offset,
->  
->  	/* ignore input values which shadow the old output value */
->  	if (gpio->reg_dat_base == gpio->reg_set_base)
-> -		ret = regmap_write_bits(gpio->regmap, reg, mask, mask_val);
-> +		ret = regmap_write_bits(gpio->regmap, reg, mask | wren_mask, mask_val | wren_mask);
->  	else
-> -		ret = regmap_update_bits(gpio->regmap, reg, mask, mask_val);
-> +		ret = regmap_update_bits(gpio->regmap, reg, mask | wren_mask, mask_val | wren_mask);
->  
->  	return ret;
->  }
-> @@ -123,7 +152,7 @@ static int gpio_regmap_set_with_clear(struct gpio_chip *chip,
->  				      unsigned int offset, int val)
->  {
->  	struct gpio_regmap *gpio = gpiochip_get_data(chip);
-> -	unsigned int base, reg, mask;
-> +	unsigned int base, reg, mask, wren_mask;
->  	int ret;
->  
->  	if (val)
-> @@ -131,11 +160,15 @@ static int gpio_regmap_set_with_clear(struct gpio_chip *chip,
->  	else
->  		base = gpio_regmap_addr(gpio->reg_clr_base);
->  
-> -	ret = gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_WREN_OP, base, offset, &reg, &wren_mask);
->  	if (ret)
->  		return ret;
->  
-> -	return regmap_write(gpio->regmap, reg, mask);
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_WITH_CLEAR_OP, base, offset, &reg, &mask);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_write(gpio->regmap, reg, mask | wren_mask);
->  }
->  
->  static int gpio_regmap_get_direction(struct gpio_chip *chip,
-> @@ -167,7 +200,7 @@ static int gpio_regmap_get_direction(struct gpio_chip *chip,
->  		return -ENOTSUPP;
->  	}
->  
-> -	ret = gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_GET_DIR_OP, base, offset, &reg, &mask);
->  	if (ret)
->  		return ret;
->  
-> @@ -185,7 +218,7 @@ static int gpio_regmap_set_direction(struct gpio_chip *chip,
->  				     unsigned int offset, bool output)
->  {
->  	struct gpio_regmap *gpio = gpiochip_get_data(chip);
-> -	unsigned int base, val, reg, mask;
-> +	unsigned int base, val, reg, mask, wren_mask;
->  	int invert, ret;
->  
->  	if (gpio->reg_dir_out_base) {
-> @@ -198,7 +231,12 @@ static int gpio_regmap_set_direction(struct gpio_chip *chip,
->  		return -ENOTSUPP;
->  	}
->  
-> -	ret = gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_DIR_OP, base, offset, &reg, &mask);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_DIR_WREN_OP, base, offset, &reg,
-> +				   &wren_mask);
-
-What constrains these two to provide the same value back for reg?
-To me it seems like the write enable might well be in a different register.
-
->  	if (ret)
->  		return ret;
->  
-> @@ -207,7 +245,7 @@ static int gpio_regmap_set_direction(struct gpio_chip *chip,
->  	else
->  		val = output ? mask : 0;
->  
-> -	return regmap_update_bits(gpio->regmap, reg, mask, val);
-> +	return regmap_update_bits(gpio->regmap, reg, mask | wren_mask, val | wren_mask);
->  }
->  
->  static int gpio_regmap_direction_input(struct gpio_chip *chip,
