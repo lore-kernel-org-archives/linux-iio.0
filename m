@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 552203750BC;
-	Tue, 12 May 2026 15:03:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 318A0244685;
+	Tue, 12 May 2026 15:04:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778598195; cv=none; b=syD2jq0cl7JErItgmtyR6y2vc7ywbGoUh6seCRU3jfl3sQzQ0+xtMOR4RsGM5DmiAwbkH5KIYvBAWtBpj0TUbzUZFsaOx6ZcP3MJ+dhFY1ywQubBWQQ79ajWvNx17SGsB9f1dL4e2kpKLn0E/WqHNpS1LD13Yqnf3LSxD4pcDmc=
+	t=1778598277; cv=none; b=UTDJX/iwzbIHT9DA9UjXDI02i51cnyrwA9ffGQ+N+430vD6dSQxSaXMi6HwalVJ3f511CuHbP2fa6sllmKfY3t9HyJxdU8bErAveH9ex5sLEnb57c19zp6YALC9PPhH7H3kOY/frKhlGK5UevRQ2FCuIS7P2WqUkH4hrvaD3dYc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778598195; c=relaxed/simple;
-	bh=A6gczLsaZq3zBOhRjXwc9TdaKC8D3z04BguFV52hlNI=;
+	s=arc-20240116; t=1778598277; c=relaxed/simple;
+	bh=Jh8wB++nRMfksvgJFGNw/6TDIGfcr7pUEu394XbV1bk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZiveIAh0E3stUokWc9pPkbaeVNnIwuiRAQDVfPss0cfgg2bEynOvbht42qQe3toD8t9/fxFyRHJes6gaPC/2eGaMdgU51r6t1ZFeOszMorpZYP1fkI3z71aMz1YeltS4I8jCcrRLvv0vXeVOI3Gf5jEjISfwxlY2Fc5Q6SoDImQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QAIeQU/9; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ZDYfsd5zcZ8nDRSJa6xUv+mgwGGWXHAoXVXMFiJYC7Evo3QllTBBhVgPBWz3DGAB2AgQN+ymVHy3ycNLETlja5indJLXlCDjqRTxqy8Ll+pUW1tL4WpKFobQ5sE5nijp8s9oin/9Cc8+ckQEpXVjeYI2lKjVVr50qVvqrRLhk2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t6VGoOc+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QAIeQU/9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B22C32782;
-	Tue, 12 May 2026 15:03:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t6VGoOc+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA00C2BCB0;
+	Tue, 12 May 2026 15:04:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778598194;
-	bh=A6gczLsaZq3zBOhRjXwc9TdaKC8D3z04BguFV52hlNI=;
+	s=k20201202; t=1778598277;
+	bh=Jh8wB++nRMfksvgJFGNw/6TDIGfcr7pUEu394XbV1bk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QAIeQU/9zsLfrclnujSFoVSvvx+r8eN2Z7vl6wVh47nJhYu1+JKCBppTJ1LNwT+uG
-	 yCjXN7o4ecbKud4fiQwpq1GVcv+jyuC9MYOm/Ouh0jZ8EodPuVv/ikK3pOYx+C2T/K
-	 6h0TjL0XuBJT4ohtKVRRKKc9qTOUXk2H9RuAuI9HGwaRKhqEOHqVSwCPv4RTirqsah
-	 uaqO966ALBLnJ6UhO1kFfCd30WWQMq+X2H2fJsTHpiRg4hRjmMASiJiSqYXwGHea5c
-	 /OTfVZuCfPNnN4maMBb+PPGdT2Sf+Rn36m2q2kIyQ5cQ7ybiCrOpAtx1BZD8QjUt4X
-	 rfzDQS6tUNFiA==
-Date: Tue, 12 May 2026 16:03:05 +0100
+	b=t6VGoOc+J7TDv95MHjr5sFqF3z02wNhrGLykWBhtkom7pEGcPBg/zvMCSL1Tc09WX
+	 DvD20azI6Xdd4+hjbLq1UTkAhgkyXqWa3rKgMpVv5y9xi3ZARgJbqIWGqoheSpCc64
+	 2CxU0qOcntGCjPodTKMcquficYdPG3bIB/nqmDNXfF5nQeZo6vouCRbEvzBMsShNtY
+	 IUu4+UUangZ40KrAzi37BvspuG3/peelYSzly5rTDjyiuQ4EFl/gREI64JJXRY6gi4
+	 EF9xiReLsvvg0a5D4HVnqUXVKB+NsEJzuQMWh9NY2UwEldieZAY2YuNnCGKUkLPvJ1
+	 2aCsw++WAmaYw==
+Date: Tue, 12 May 2026 16:04:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
 Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
  =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
  <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v7 4/8] iio: magnetometer: ak8975: consistently use
- 'data' parameter
-Message-ID: <20260512160305.0be0be39@jic23-huawei>
-In-Reply-To: <20260511-magnetometer-fixes-post-pickup-v7-4-9d910faa28b6@gmail.com>
+Subject: Re: [PATCH v7 5/8] iio: magnetometer: ak8975: unify messages with
+ help of dev_err_probe()
+Message-ID: <20260512160428.51c1e1f4@jic23-huawei>
+In-Reply-To: <20260511-magnetometer-fixes-post-pickup-v7-5-9d910faa28b6@gmail.com>
 References: <20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6@gmail.com>
-	<20260511-magnetometer-fixes-post-pickup-v7-4-9d910faa28b6@gmail.com>
+	<20260511-magnetometer-fixes-post-pickup-v7-5-9d910faa28b6@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,36 +49,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 11 May 2026 13:26:13 +0200
+On Mon, 11 May 2026 13:26:14 +0200
 Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wr=
 ote:
 
 > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 >=20
-> Some of the functions use 'client', some use 'data', and some use both.
-> Refactor the driver to consistently use 'data' in all cases.
+> Unify error messages that might appear during probe phase by
+> switching to use dev_err_probe().
 >=20
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Note that whilst I've applied this sashiko pointed out some more
-while I was here issues.
+At this point things have become non trivial enough that I won't pick up
+any more today and will wait for a reorder with any fixes etc.
 
-The one about not ensuring the power is on for buffered captures
-is a pretty major bug :(=20
-
-https://sashiko.dev/#/patchset/20260511-magnetometer-fixes-post-pickup-v7-0=
--9d910faa28b6%40gmail.com
-
-Which is a pain because we have lots of cleanup on this driver already
-and I don't want to rip it out.  The fix is pretty simple though
-(add a preenable, postdissable pair of opts and pm_runtime_get_sync()
-/ put_autosuspend() as appropriate.
-
-So if you don't mind please put together that patch and I'll apply it
-via the testing/togreg tree and we'll do a manual backport later.
+Thanks
 
 Jonathan
-
-
-
