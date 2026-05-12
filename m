@@ -1,105 +1,91 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2517F356758;
-	Tue, 12 May 2026 11:22:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9016A357D0B
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 11:22:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778584936; cv=none; b=PkO+h2/GUZTJ/Ta2VL1crFmG6LiA8VJtQJjDtRCo5TGgg0nz3AuCsLTSFE2+Ur5Io15nM3PgfngkZ9SztcpE7WQ0eG96ZxW7W/eGRhDDZnyIHQaECqs2BGrecU1YgtnQldImArbTtMyzeiTaT+liwW86KDYJlbrXNJsxNUy/6Ac=
+	t=1778584982; cv=none; b=ShHFtKQid4Wh2Wd1+Itduey55RXkGmWGpz1zMq6Z2P1LUd6swiE7KNVg1u26NV2hoiEAgMxhwGUFlsBDQR/sFYP4zroSwz+8eQKcDQA8h/S+bRuO476yE8YkqlnsMBYmgXVdwMeHAB+GvgZEbeAqFwNeXF0df8deUCfbVXY4ORo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778584936; c=relaxed/simple;
-	bh=DOiQlZe1EB4MaXBwDRxCPMJKGGDu5LYyRnNW9mPF/Q8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gA2UjNK/ySsp8X6xIVBXMBmpOWixjy9KKy+l7TEp/zMw/q6FTfLdpJi8Nta/yAg24S6JCe7dV5z2w6MzSrRCz5VGwOeSVauUNjwkY8jnQXGDPuv1KV13ctHBO9PeHZX2W3JPJc+rHFYf3U8F/nQLkxAC3F3R3eJH0efDiG/KmJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UvI9vmgd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778584982; c=relaxed/simple;
+	bh=WiedUllKP5LQlMEpKVmgR6jyDGxqakz4LohTu34imYM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=u10lFkxlMr9jf41hr/718LAr9PUJOEmmSicFoJY1w9IrnG9CIbBjoDNxHIgy6AqDmlG9Ne4haCcEV6Suq7dw3RG+fEDI3wEGQuDWD3YVZH8GWHNCbWVylV9LXEG/8Z4efchHQjmY6CQ193ViPXn2PEDLJOVEmyCTpy7qAlSdQZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZFoCcEfJ; arc=none smtp.client-ip=74.125.82.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UvI9vmgd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B33DC2BCB0;
-	Tue, 12 May 2026 11:22:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778584935;
-	bh=DOiQlZe1EB4MaXBwDRxCPMJKGGDu5LYyRnNW9mPF/Q8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=UvI9vmgdxl7dYDg8W5BRdJ43d3B6x6LsdMCdSx8awUDl5bM8Q6suX0Iq91vjb53A2
-	 j7A0seeMOJt6QL62c9VGg99AOe0NHkqxaOdX3Zs3WTYo5BAy59gFrokPPHapyk7wtz
-	 ypj63aIR4IKSfSgmbTuo94WynDdqjBtpVlaOUhKC7RouOpHHvC1cRWFH20nZchRRw9
-	 GfihY7GWrsSVWpErJsivpe7/yYeHb2nzYVVw8pcMpcixCDeeq49n9IUBIsqLWpDI6P
-	 Rw0Upunqzf7D6CcoNLL8j5Q62NF+Xg44HFwh+m83+8cvtHut6S5lX4FkewH9bw/Etj
-	 pj/w6vyb9JgAQ==
-Date: Tue, 12 May 2026 12:22:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Denny Lin <dennylin0707@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] dt-bindings: iio: adc: add AD7816/AD7817/AD7818
- binding
-Message-ID: <20260512122205.07733eff@jic23-huawei>
-In-Reply-To: <f9469c48-ea67-4106-a577-4818cf3dd51d@baylibre.com>
-References: <20260509022718.82957-1-dennylin0707@gmail.com>
-	<20260509022718.82957-2-dennylin0707@gmail.com>
-	<f6e2a4de-4c1d-46ef-b383-db62091fd0f4@baylibre.com>
-	<CAGEkeHfeZWi99TMvkXHhMSrUS8PshuekqjszBXaS39VsLUZ4eA@mail.gmail.com>
-	<3493d6ef-5f02-4eb1-b81a-89597045acbb@baylibre.com>
-	<CAGEkeHcA+aJ_h5APbL_bG3vpyY+rSGEVn=Dk1Abe76MKDdyVpg@mail.gmail.com>
-	<f9469c48-ea67-4106-a577-4818cf3dd51d@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZFoCcEfJ"
+Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-1335cb20406so666376c88.0
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 04:22:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778584978; x=1779189778; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QXIRGdEZlDNlu9gJ4QIb0me+oQaUDZr93yY16iQ8em8=;
+        b=ZFoCcEfJU4wL7lEF5aJDWhy69afRQXek7wX7CgVY0vhprh1xklvh1SWAMimUy/3i2d
+         W607d7GpBwpl1EFZPBJVos1MxFMNIDVIOLwMlDnDzuMf2bOx+l2WO5O4055TdjXSFlDS
+         EvmERppfa4/D8sIrg0SCqP4nxdSAulyBzZn01SWh6b31TdtlfRLIj//6FwcMdRq2qIIE
+         oaJYjCPJPcr7Xvn/0WfLRlMB2o3g3O81r9SGw1YYy+e7AyzCkgKDnAmReT/XzHg066a+
+         qzU0nt/k1id7DIAdsoBX1LhlaMJSWdrDIclOxqSnPez6QchpneBGT4ChxesAWlTiXFJu
+         f49A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778584978; x=1779189778;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QXIRGdEZlDNlu9gJ4QIb0me+oQaUDZr93yY16iQ8em8=;
+        b=ipDrrZDV6z2syC7XqbpBe4ZE4kHsC+x57ittVyvHgoRxnKB9ugMuOel3IHCpLTdLUV
+         UcvnPNdj9aRkZgWzjyelRdSj/GLDptJX4GzQgRncfHhkikW0HuhXbJmjheFE4TP7iLSP
+         t7nsf849ooTjwrBujCfpg0DISWFvDM/V5U968nFzEtydBGjFTnueef5cP3sru7wqYZE4
+         CchNqjOjyvqrFgJNYiu7DuG6qMHjsONRL5SSF3kJD2hZHktDOUqcS7Ssn/IBMqBsj9vI
+         fisjUv9Qck5yz/WLvlyxKofZjf7m4c022rH+jI91PdQdEYid+jDR6fAry/WMNocKxugk
+         gg8g==
+X-Forwarded-Encrypted: i=1; AFNElJ8wsl/nzPDjbDA5ulPfjHp7DpIXnx9p0b1ZOwvyoFSIo4nNQqJi42zBr025UEoScuxd3v3vVif5870=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwQVIKPt+HFfp0VnR5Zq8TkpxTfb8ZAQNfzOkoZCZQXBRQsbB1+
+	OnEBbqUHg5B7Qr+WGwKnguxeb4HYecE1Ts4YoQgnTPF6PIt0a/O76wUXX3J87g==
+X-Gm-Gg: Acq92OHmxwJPLprtRhygEI+jeSPNicv9Qie4BDM8IedhV7K5Z3+uxdlCBfVw46h+bP9
+	0XEw9NF54z9pq1ozdzO75NB2EcR+7gDs5+oExXkj8a8/PvBrdXh+4PVJlhkwwPKNOVMm8f1hExo
+	j5a0kbQFvQn10ErfI3XoJ7cYhEmBpd/XSK9nSt5PvTtMgYExqRLjMmjFM3MoCEbfVi/3advVkMy
+	WkqfT0STkIfg8hUEATXp4nPfjGXWDLnim24gjwrkvcwOoS0wHGaDt9viz6idxh92a84mZZxs5Xs
+	XRX000xlvDB5W+dBrpyZs9wc0c+ccUk2DPT00kt6vKk7BMT90aNBa8M9FPHhx9fAwg94qL72W3d
+	0fdPthOp+bOtzOCW7QPG2NkxHbx1APm34xVFMudRdM0VSUn0JwwlCHBCeejlm0gbsqyWGBQ9dkr
+	w8OwKNB/9A+iULy/IjxM3C/QhzCbWG2w==
+X-Received: by 2002:a05:7300:3205:b0:2ed:e15:c923 with SMTP id 5a478bee46e88-2ffd7fd640dmr1395399eec.31.1778584978021;
+        Tue, 12 May 2026 04:22:58 -0700 (PDT)
+Received: from localhost ([2804:30c:b6e:3000:875:bcea:c04e:7fef])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2f888e381c9sm17088753eec.26.2026.05.12.04.22.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2026 04:22:56 -0700 (PDT)
+Date: Tue, 12 May 2026 08:23:08 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jic23@kernel.org, marcelo.schmitt@analog.com, nuno.sa@analog.com,
+	dlechner@baylibre.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	lars@metafoo.de, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] MAINTAINERS: Update maintainer for IIO drivers
+Message-ID: <agMNnD7_QFMsGPlf@debian-BULLSEYE-live-builder-AMD64>
+References: <20260511171643.3173872-1-sanjayembedded@gmail.com>
+ <20260511171643.3173872-3-sanjayembedded@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260511171643.3173872-3-sanjayembedded@gmail.com>
 
-On Mon, 11 May 2026 11:31:13 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On 05/11, Sanjay Chitroda wrote:
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> 
+> The listed Analog Devices domain email for Cosmin Tanislav is no
+> longer valid, and he is no longer maintaining these IIO drivers.
+> 
+> Add Marcelo Schmitt as the maintainer from Analog Devices to continue
+> support and maintenance of the affected drivers.
+> 
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-> On 5/11/26 11:23 AM, Denny Lin wrote:
-> > On Mon, May 11, 2026 at 7:51=E2=80=AFAM David Lechner <dlechner@baylibr=
-e.com> wrote: =20
-> >>
-> >> Usually, we want to be moving the drivers out of staging when
-> >> adding the DT bindings so that it all gets reviewed for correctness
-> >> at the same time.
-> >>
-> >> Drivers in staging are usually there because they are doing things
-> >> that are not actually acceptable for the final stable mainline
-> >> version of a driver and need more work.
-> >> =20
-> >=20
-> > Thanks for the explanation.
-> >=20
-> > I took a look at the driver and noticed it still uses the older
-> > IIO sysfs-based interface rather than the iio_chan_spec + read_raw
-> > model.
-> >=20
-> > Would you recommend updating the driver first, or is it okay to
-> > proceed with the binding separately?
-> >=20
-> > Thanks,
-> > Hungyu =20
->=20
-> ADI's website says that these parts are obsolete, so unless anyone is
-> actually still using these with a mainline kernel, I would suggest that
-> we drop the driver rather than spending time fixing it up.
-
-The ad7817 isn't obsolete yet unfortunately - that's the only reason I didn=
-'t
-drop this last time I checked..
-
-Any Analog folk want to take a view on this one - particularly if you
-can check if it will be going obsolete soon.   Good not to waste Denny's
-time on this if so!
-
-J
-
->=20
-> In any case, unless you have the hardware for testing, it would be
-> best not to make significant changes. There is a non-standard "oti"
-> attribute that we would need to figure out what to do with. This is
-> likely why the driver is in staging in the first place.
-
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
