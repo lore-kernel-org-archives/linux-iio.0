@@ -1,61 +1,63 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 371B13A5442
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 22:32:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADAAC3A6F03
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 22:32:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778625140; cv=none; b=q+v7udAsFRqKbXR0/oQboBG6g4NkmkQpJwKWx8ITAHHMdwduJRcxJ/HEsNgZU0n2riZsgDfMk6JG6UQ6q4aC9/exak5paSJXZhmiMSledq5mJgHkJ0AOucR2aIIiXcfH5DWKS3JmbNEN2ene/stjDJg0ZYdlQhOhN34gQZmyt5s=
+	t=1778625142; cv=none; b=EvZyg+a6ZcsdBx78nI8k1c51LdASWQjfMMUmymCgjNfCNFKIwAkcHRv5gi/cJNjcy3Lard0T6XoCq3NWNT7Pc3eZ4eSdnrGL6mq71Y/dZom0SIEP6p9RarOxJ/uGdvnJMYQObusq54AuYuNsrFaZeGw+yWgvkw39zH/4s3pYuUA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778625140; c=relaxed/simple;
-	bh=NzPSdUf6T+ORUNm6PzVWnjy3jXA+qpDxvB4jvR8BSlM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sdTinMkTfCzwwK7OAot5y9s0jstPlMkkTEIAj6q4Ox6gfjFNG9XiNMUQulOKusjCurdWR+IedX8Ydj6J8pFWn2OYD8M5/Zdz3fAmEwtK+v6M7EISdojjBfDuvW0+0/ccowWiqZQG8mnDQ8rpOdoehZQuSfFasBsZ5bxCZ6Jvcfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C5ZRjnOw; arc=none smtp.client-ip=209.85.128.54
+	s=arc-20240116; t=1778625142; c=relaxed/simple;
+	bh=ND2HtCTQC52eoNszzlf2ntg7RmeZZ7jwrn6D3EdhVS8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=GYsocLOZT9J5FfmjPFq6aHXx8GIG/5QQv9bZ9pSmd7EyNhGuNjH95j5ksFaxFfUt1QzD1unUHQiD1bKHhG2agOaKyEMUuRxFHAQ5TLx6eVCMniPG+xt6bg+3N51xCFPs0fSvFeizwLc7mgycYCvHhv1P2FbIR8ZNKdwcqPqkpUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XefkX2el; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C5ZRjnOw"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-48a3e9862f0so41507195e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:32:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XefkX2el"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-48a7fe4f40bso69645845e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 15:32:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778625138; x=1779229938; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=gld2CLWnRnPqjxg7OzSmNjNiyBF8uhbwEKKeGB5tZE0=;
-        b=C5ZRjnOwaHjt2IrNdvcZwuH/dWpi2qeYpA82LUV2AbhVqp6uwu5qS7Qi0IeH6fDu0j
-         YHlKBSWA18/GgAtQAhEfh9EfrWekYMcvlx7Q+QpyNbqIEOaQOnRvCvSesq2viYvxD01W
-         XTSGINWoZUnlVKlQB8BG0LR9Yokh7fmWpxj/Og7qv8aYEY1m1Wy9AbIrIUMP9IbLQ5Qk
-         ADgrONyQEkAcagFaw+2I6WAgecNkchKvXExpfqLhyWH1s08iT2Upu5WjddxUUwX6xkmJ
-         s+g/yaZ/4gcwuPE1jyahBIZDETk/0AFQIxUoJI190cFz+qrG/bYKHeawghKZxivwQbjk
-         vT8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778625138; x=1779229938;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1778625139; x=1779229939; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gld2CLWnRnPqjxg7OzSmNjNiyBF8uhbwEKKeGB5tZE0=;
-        b=mNqnnAkDxZd/GXi9AuAmGAl+w3l6f4XZKIHqOUSN39X07JjLuVoYyiqyIcEpTjXs2c
-         VDxOZH58KrI15rV4q/6fCdhSJbSvk7Xth8WP7mmWu+ybNTm9b6ZYnUx0+d27F3NyfXbi
-         pxyaCVjbA7DRRdXLUuXt0Swb2zhS2AYmiNtyGT2IDLJdSwO+11ucYvFUU7CnMmQqDVs3
-         UQtGkVecUZ+Jfl37HGeE7tkS8htwI09IRS4HjLgu+n0h/pdYx9cQcAzkNZ95fb9z3wIM
-         835wrD4OXNlX55DCW2nlCep3uY1A0mRDonG4OvqLyVx30wcs8NWTZopl967ZbH7BJ4a2
-         1qNg==
-X-Forwarded-Encrypted: i=1; AFNElJ9QAjGW21d2j7rO2A2prsoota3/NdMws3rD9x0qXO+Dgrf/4RPVE9pPkzBK07GoroOeS8mWIXy5bGU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfBkGIENOO3pkdicWekSNPrY4YsQqwZh/16tvp81EpWOUeHtXv
-	HZBqxN+4Qg17Fz86qB4JCgh2pVDy7gcds5xZ0zfNRYdg+Ls/3hNytLx2
-X-Gm-Gg: Acq92OHVT+yNUyDeKRmBk8ms3eJ3Oauqv9zIwrL+KVw6PDtR8V9J8WM2pWy+AtFO+yl
-	U9YZRonjocHAVuTh4JUQDV2WKPDRUzNoqlxD58USRuRvQ/X0TdljD2e/gRTYMD2UDYsJ/OryEcu
-	bX44LoH3CjLcPihUXfQ0fq5U1s52YhO09lGjyNeJsu+8drmSF9Z5TeQyqC6m1TqsatmdjZ4+K43
-	V+YH9H1ZLSIi3U5RefzMZqiPyRh5D2+I7Dv+VKVBcBo/aVP9vvm81v+ws1H637fDqsmIhhkQJlM
-	oMN2gprInAUQV+X0ngCvjOFeUAfetM6X4EPHe3m/c8NupJeti/SCQAiNlnps0686xvnoEJVorms
-	M+j3EJJf8iescGamN3hP3k0tmo/2QR8brLcD2fSao2u/sKURdvoFX/cj2yiepRSbKyYh8qrbx3Y
-	n3wdhWc0ppgQ60UUeSAcSqAiAh6Mz53dWbahwwcu+HnEU2MRn02BSkYBY=
-X-Received: by 2002:a05:600c:4e55:b0:48a:761:5816 with SMTP id 5b1f17b1804b1-48fc99275d3mr10977985e9.8.1778625137467;
-        Tue, 12 May 2026 15:32:17 -0700 (PDT)
+        bh=t6/kdt7V8DIKCNh3YMA+Wq12M5OeKEn3QJo7BlhEzSU=;
+        b=XefkX2elF3XE0P/3ZHHuM2wwbbkrDITHcRRbJqwdNBb3dtDUkWY+IhETn1J6Vmd10M
+         E1Z/V2HfvdXyguuDko3rMyUSQ3Fstf7ja36vWQNtggWHOV2SlcJ+zrQX4MoDLZ+2IPfI
+         qO9eOpTWZtibZnRHPPYf3ocN6TF5v1KkuQeD9cL0XWHf97721Aho/FMOBJu/4uCwyD48
+         NYH0AwCgBHcPUEaMcBy4o3sVSXltVK6+0tBdGgKK88JfDPP9maAHqG++xWt7SGffC+Bw
+         qhgurib6GMucBH+eXQtJISpXVPOex/egfzpZN1jB2TOvcgj5W0GdIkLetp4zpACHGH2x
+         VkXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778625139; x=1779229939;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=t6/kdt7V8DIKCNh3YMA+Wq12M5OeKEn3QJo7BlhEzSU=;
+        b=fAsQwtcvuDUmo1WPWrvup6uRaNMV+H0KFVyii9TIOH6h/VlCr2KjPz4XEIFds6aNGy
+         TiwkYFBxaLhzXMwSHjqtmakVp+KPngZUcZy4L7CUURWXufghYcRoOh93HHnexmAGjXtO
+         MkOVw2MyqQYx/95ZqCSHzvLG4W2UWwojyYkJiX9+FOni5UMK/X1pIkkMXcASVIQPonin
+         0cSQWEuxDqTJVXZZDIO1AmtDZJ8ahJiSr6gJOrF9tC75tiA5m7p4h6qeYtkfC1xFDgKr
+         3/0EirwRXka5aa5/3Y9M8xpGkbCT2JBa72HbhAjG5hvFZyJwEgx8j6Xg3ChUyC0jIHwi
+         Y9ww==
+X-Forwarded-Encrypted: i=1; AFNElJ+rbWldZ2K3qMb/S0iZK62i4vw7v+0O1HietqFatd/hQZo8LVLGVNqH5zDHoNqfzd8sqLtc41ldp+8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzawrrUyO+zabqeWUm2wX7vo1JSQyqZ9Cn0CqU0DPFrrrcCuE4W
+	WXyzOM7deebf4p2HlX1Q4XIFJJFMDO5DU1yCh0zGlGkGbwJcGamwBqGG
+X-Gm-Gg: Acq92OFecl919cfgZMEYJHuoUOX3mLoJ3lttHT5D8O4L0IQR4ENT+jjCYy3DL/mZSoD
+	j23AoMoP05IcNkjfH0QESN/XSPdQKCbANYLjzWeIIBiu9HuROaLrJ6Gn1eLtgkEmasmKomdK+Ua
+	6FFuAE3JIHH8H/ZbbjE8TWUqBcB1GaclVJxqc1u0eQTF8LAxh/ueevdgHi4sQws+cINWK8fTjxx
+	iUhJtKbqKGF0oG7poeyV97aRIHTMqTaYDT8qtEFk2QgxQNsuhQNl7+MFvuIUQzOMcmmx1500v9i
+	MxisK1zJwAhTqbgGz1mJaFY01iZJ5DYqVAMUXV0r8TDg4aXS707kgxlklZzJ2KkayPLyBas9W00
+	Tlo1z2zZa10X+XT2kjbquGojHLy2d/qPbIzbB51u/sfRFXXAG29Q0s0vPvYQG//8qlXaStBjl2f
+	su37P+uqqGj8lEaiNFd4Xdk3YFmMKb5Y2/KW5pCel2DDRk2xe88JOUUe8=
+X-Received: by 2002:a05:600c:1f90:b0:48f:81ea:ebbb with SMTP id 5b1f17b1804b1-48fce99dc1cmr929805e9.6.1778625138873;
+        Tue, 12 May 2026 15:32:18 -0700 (PDT)
 Received: from aldo-conte-t14.tailf68ad9.ts.net ([2a01:e11:5402:d840:f1ee:c5d:74e4:6e19])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e8f3c65f2sm47377375e9.1.2026.05.12.15.32.16
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e8f3c65f2sm47377375e9.1.2026.05.12.15.32.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 15:32:17 -0700 (PDT)
+        Tue, 12 May 2026 15:32:18 -0700 (PDT)
 From: Aldo Conte <aldocontelk@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -65,10 +67,12 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH v2 0/5] devm conversion, wait time, locking cleanup
-Date: Wed, 13 May 2026 00:32:10 +0200
-Message-ID: <20260512223215.25596-1-aldocontelk@gmail.com>
+Subject: [PATCH v2 1/5] iio: light: tcs3472: sort headers alphabetically
+Date: Wed, 13 May 2026 00:32:11 +0200
+Message-ID: <20260512223215.25596-2-aldocontelk@gmail.com>
 X-Mailer: git-send-email 2.54.0
+In-Reply-To: <20260512223215.25596-1-aldocontelk@gmail.com>
+References: <20260512223215.25596-1-aldocontelk@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,114 +81,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is v2 of the TCS3472 series, addressing the review comments from
-Andy Shevchenko on v1. The series modernizes the tcs3472 driver by
-converting it to use devm for resource management, switching to
-guard(mutex) for locking, implementing wait time support exposed
-through sampling_frequency (which was a long-standing TODO).
+Sort the #include directives in alphabetical order in preparation for
+adding new headers in upcoming patches.
 
-Patch 1: sorts the #include block alphabetically.
-         v2:
-         - New in v2 (suggested by Andy).
+No functional change.
 
-Patch 2: converts the remaining mutex_lock/unlock pairs to
-         guard(mutex).
-         v2: (suggested by Andy).
-         - Moved earlier in the series; dropped "Found by code inspection".
+Suggested-by: Andy Shevchenko <andy@kernel.org>
+Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+---
+ drivers/iio/light/tcs3472.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Patch 3: converts the driver to devm for resource allocation, drops
-         the explicit remove() callback, and adds 
-         tcs3472_powerdown_action()
-         to power down the chip on cleanup or probe failure.
-         v2: (suggested by Andy).
-         - Read-modify-write in powerdown/resume rewritten as 
-           "compute, write, commit on success".
-         - Use local 'struct device *dev = &client->dev' in probe.
-
-Patch 4: implements wait time support, closing a long-standing TODO.
-         The user controls WTIME indirectly via sampling_frequency.
-         WTIME is recomputed when integration_time changes, preserving 
-         the requested frequency.
-         WEN is disabled when the frequency is too high; WLONG is
-         enabled when the period exceeds the WTIME range.
-         v2: (suggested by Andy).
-         - validation tightened (rejects val > 0 with val2 < 0).
-         - target_freq_uhz uses div_u64() for 32-bit portability.
-         - TCS3472_ENABLE_RUN introduced here with AEN | PON | WEN,
-           no longer redefined between patches.
-
-Patch 5: moves the trailing return -EINVAL in tcs3472_read_raw() and
-         tcs3472_write_raw() into explicit default: cases.
-         v2:
-         - New in v2 (suggested by Andy).
-
-Testing:
-
-All five patches were tested individually on a Raspberry Pi 3B with
-an Adafruit TCS3472 breakout connected to I2C-1 at address 0x29.
-Each patch was checked out and built separately to ensure the driver
-remains functional in every intermediate state of the series.
-
-Patch 1 (sort headers):
-  - Driver loads cleanly; RGBC channel reads return reasonable values.
-  - No warnings in dmesg.
-
-Patch 2 (guard(mutex)):
-  - Threshold value writes (RISING=1000, FALLING=200) read back
-    correctly; AIHT/AILT registers on the chip mirror the values.
-  - Threshold enable toggles the AIEN bit in ENABLE
-    (sysfs '1' -> 0x13, sysfs '0' -> 0x03).
-  - rmmod completes with no lock leak in dmesg.
-
-Patch 3 (devm conversion):
-  - Probe completes with ENABLE = 0x03 (PON|AEN, WEN not yet
-    introduced).
-  - RGBC reads return sensible values (e.g. clear=525, red=269,
-    green=151, blue=97).
-  - calibscale, integration_time, threshold value/period, and
-    threshold enable all work as before.
-  - After echo 0x29 to delete_device, ENABLE reads back as 0x00,
-    confirming that devm_add_action_or_reset() invokes
-    tcs3472_powerdown() on cleanup.
-  - rmmod completes with no warning.
-
-Patch 4 (wait time / sampling_frequency):
-  - Initial state after probe: ATIME=0x00, WTIME=0xff, CONFIG=0x00,
-    ENABLE=0x0b (PON|AEN|WEN), sampling_frequency=1.614987 Hz.
-  - Write 1 Hz: WTIME=0x60, CONFIG=0x00, ENABLE=0x0b,
-    sampling_frequency reads back 0.999200 Hz.
-  - Write 5 Hz (too high for any wait time): WEN cleared,
-    ENABLE=0x03, sampling_frequency reads back 1.621271 Hz (cycle
-    with ATIME alone).
-  - Write 0.5 Hz (period exceeds WTIME range): WLONG enabled,
-    CONFIG=0x02, WTIME=0xd0, WEN re-enabled, ENABLE=0x0b,
-    sampling_frequency reads back 0.500200 Hz.
-  - After setting 0.5 Hz, changing integration_time to 0.024000 s:
-    WTIME automatically recomputed to 0xbb, sampling_frequency reads
-    back 0.496622 Hz (closest achievable to 0.5 Hz at the new ATIME).
-  - Invalid inputs (-1.0, 0.0) rejected with -EINVAL; chip state
-    unchanged.
-  - After rmmod, ENABLE reads back as 0x00 (PON, AEN and WEN all
-    cleared by powerdown via devm).
-
-Patch 5 (default case):
-  - All read_raw and write_raw cases (raw RGBC, calibscale,
-    integration_time, sampling_frequency) handle attributes
-    identically to the previous patch.
-  - Invalid inputs still rejected with -EINVAL through the explicit
-    default: case.
-  - rmmod completes cleanly with ENABLE = 0x00
-
-Aldo Conte (5):
-  iio: light: tcs3472: sort headers alphabetically
-  iio: light: tcs3472: convert remaining locking to guard(mutex)
-  iio: light: tcs3472: use devm for resource management
-  iio: light: tcs3472: implement wait time and sampling frequency
-  iio: light: tcs3472: move standalone return to default case
-
- drivers/iio/light/tcs3472.c | 357 +++++++++++++++++++++++++-----------
- 1 file changed, 249 insertions(+), 108 deletions(-)
-
+diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
+index 12429a3261b3..9b0f64cd9c50 100644
+--- a/drivers/iio/light/tcs3472.c
++++ b/drivers/iio/light/tcs3472.c
+@@ -13,16 +13,16 @@
+  * TODO: wait time
+  */
+ 
+-#include <linux/module.h>
+-#include <linux/i2c.h>
+ #include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
+ #include <linux/pm.h>
+ 
++#include <linux/iio/buffer.h>
++#include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include <linux/iio/events.h>
+ #include <linux/iio/trigger_consumer.h>
+-#include <linux/iio/buffer.h>
+ #include <linux/iio/triggered_buffer.h>
+ 
+ #define TCS3472_DRV_NAME "tcs3472"
 -- 
 2.54.0
 
