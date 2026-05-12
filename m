@@ -1,163 +1,81 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9FA1389454;
-	Tue, 12 May 2026 11:26:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B437427A1B;
+	Tue, 12 May 2026 11:26:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778585183; cv=none; b=ezi/tmC8PL21FdrmL9mXiwLCyRkgMvilW+Uw6uOqi9E3ntdvJaj5fOfrmBq1LVXe7tPXWYNBsWn+HAd8lvb2HW2AN/N7N+vvKrDsoF1u5S5PBQd91gIXYVvj3PIl/qHclCDiLRiE6DcL103eJdxxGapToQ9aPIBN7ILiZedQHwQ=
+	t=1778585194; cv=none; b=C8tNeNG8xCDU6/AHn3DKJHRXAHhaFr2OlxTtY86m0fNkwfRqD3rYKrGF+gk/fUP4pt86O5VGC2fx/iiJzf+CfSX0hNmQ1WfZF1FiQpEkgrsz3N66XULoVlzO6j+OlkK+MaXq3Xpw0C9R2SwgYH/wuerTM6hR2/fZZdy67JN6djA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778585183; c=relaxed/simple;
-	bh=53DBMlKkfiAeBOgRgTQe8lRFc8+g8uGxzl/ji6L+mVQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XHKNpINOKwFBjgN86cjNMQ1dEC7VFZnMjxqF2gQh6AGg+umA6Eg2biKa4zfyndGTLZkz0s8YGyRdKldsLg427NXXXxzQac2F7KWVD1bx7ia7bihBOB32WkofR29BNJiqO+Dv13U4RiPejc+137G1kJQaGOKua5f50heH8VIaeU8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nUtKqz0R; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778585194; c=relaxed/simple;
+	bh=ZBUU84ONRzGWT6gYVgtzY5cHeUph9XvKw8+PLmJ49oU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fxim4kpDjNfvJY7+GS8rqZsZEhRrdJD2ISqK4HyI87fK6l/wtVBrEQjndhjXu3Ji7SNn0gBGudFs00qOytsu1TPmkfObuYmt7S65TIizXN1ZSxqkvWxbnAdZL1dJglUyUrjEbaD069jdGZJolP32SUJfFfhCtvB0L4vywcpkI8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vs5R8Aob; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nUtKqz0R"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778585182; x=1810121182;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=53DBMlKkfiAeBOgRgTQe8lRFc8+g8uGxzl/ji6L+mVQ=;
-  b=nUtKqz0RbnbRPya0Pl1y3f9KC4U9uPMOH45FTcEw/i4q+SoYHK6M7ILq
-   xE5nSud7KV9NKhVrIFre7V0wGYz/pJiKOl+oYhfpdtSB6Wt4rqDxwgy5B
-   6b7g1vPVfRs4TewomfTF2NQZ91VZ3BWBC3O/XSDPuOODf1Ky9thJ9mTja
-   s2uoizGq5bzYGBOq/4jh6cIoPmzjXOre0kARtEyCzmYvjZegvW2vU374+
-   j61Om/O2X2q9o8XAZow5NlZ2kYOTwsxF8ce6sVZSRIZd3t7zW5zzYrd1Y
-   EyYGINzaT75tHU53RA6CLexmUwuLxMLppmus0QUVfz95iMh196Q6P2dLF
-   A==;
-X-CSE-ConnectionGUID: fN50iNSPQ3mu2r2qffxs+A==
-X-CSE-MsgGUID: z+CTFK3sTqCkHuaglj/uSA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="79512026"
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="79512026"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:26:21 -0700
-X-CSE-ConnectionGUID: ziLjYj4/QpSJWTTVZ++n9w==
-X-CSE-MsgGUID: FlPvWD+4QOuKYhoES0hRVQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="237983683"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:26:13 -0700
-Date: Tue, 12 May 2026 14:26:13 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Yu-Chun Lin <eleanor.lin@realtek.com>
-Cc: linusw@kernel.org, brgl@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, afaerber@suse.com, wbg@kernel.org,
-	mathieu.dubois-briand@bootlin.com, mwalle@kernel.org,
-	lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	nuno.sa@analog.com, andy@kernel.org, dlechner@baylibre.com,
-	tychang@realtek.com, linux-gpio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-realtek-soc@lists.infradead.org, linux-iio@vger.kernel.org,
-	cy.huang@realtek.com, stanley_chang@realtek.com,
-	james.tai@realtek.com, Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v3 3/7] gpio: regmap: Add gpio_regmap_operation and
- write-enable support
-Message-ID: <agMOVcg38vQ4GxAh@ashevche-desk.local>
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
- <20260512033317.1602537-4-eleanor.lin@realtek.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vs5R8Aob"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B45CC2BCB0;
+	Tue, 12 May 2026 11:26:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778585193;
+	bh=ZBUU84ONRzGWT6gYVgtzY5cHeUph9XvKw8+PLmJ49oU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Vs5R8AobgDClMuUgEsjBx7lMMfWOfWGIswPdrsUQ1KjKoDxLFataVtmUdNv/wAa4U
+	 jAmC8RCvn26EVySJiiScHNhKv+eUXitAodD475jK8OKJm4Pn6te9yqRh3OzgsNDBxw
+	 tzKD7/LLRKJYp7qB4KFXLagsnDlD4C/fILApynIV4dkgUBD7s4j+xUVydVNhGFIuER
+	 S3vevMWPfPVucKuNFlRmXKQNbIcsYL285eHeM+mRJtl+4lyO8+vJr3T0f7dZtKJBjV
+	 o/dQvqJxXCjtltjNEUJVEM8bAzDw9K0m27YntlgI+qIupZtc8F80roQ4xRpyMZVUwo
+	 IwkvbKguX0Faw==
+Date: Tue, 12 May 2026 12:26:24 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Stepan Ionichev <sozdayvek@gmail.com>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, puranjay@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iio: accel: adxl355: replace usleep_range() with
+ fsleep()
+Message-ID: <20260512122624.5d2138b7@jic23-huawei>
+In-Reply-To: <agLXhxaVkqj-UeM0@ashevche-desk.local>
+References: <20260510113853.50019-1-sozdayvek@gmail.com>
+	<agGE7F5zm2pN_dBk@ashevche-desk.local>
+	<20260511171331.77f3ef39@jic23-huawei>
+	<agLXhxaVkqj-UeM0@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260512033317.1602537-4-eleanor.lin@realtek.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 12, 2026 at 11:33:13AM +0800, Yu-Chun Lin wrote:
-> Extend the reg_mask_xlate callback with an operation type parameter
-> (gpio_regmap_operation) to allow drivers to return different
-> register/mask combinations for different GPIO operations.
+On Tue, 12 May 2026 10:32:23 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+
+> On Mon, May 11, 2026 at 05:13:31PM +0100, Jonathan Cameron wrote:
+> > On Mon, 11 May 2026 10:27:40 +0300
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
+> > > On Sun, May 10, 2026 at 04:38:52PM +0500, Stepan Ionichev wrote:  
 > 
-> Also add write-enable mechanism for hardware that requires setting a
-> write-enable bit before modifying GPIO control registers.
+> ...
 > 
-> Consequently, update all existing drivers utilizing the gpio-regmap
-> framework (across drivers/gpio, drivers/iio, and drivers/pinctrl)
-> to accommodate the new reg_mask_xlate function signature.
+> > > > No functional change.    
+> > > 
+> > > Strictly speaking the upper limit is not set as 10 milliseconds now,
+> > > but defined by the internals of fsleep(), usually +25%.  
+> > 
+> > I'm not following.  There doesn't seem to be a statement of anything
+> > about the upper limit that is used - just one on it not being specified
+> > for the part.  
+> 
+> I meant that switching from usleep_range() with explicit high limit is
+> different to implicit fsleep(). And that's a (subtle) functional change.
+> Hence "No functional change" is not fully true. Hope now it's clearer.
+Ah. Got you.  Thanks for talking me through it!
 
-Dunno if we want per-driver patches (in that case it will be a new name and
-callback, conversion per driver, removal old name, and, if required, renaming
-back). In any case looks reasonable change.
+Jonathan
 
-...
-
-> -static int idi_48_reg_mask_xlate(struct gpio_regmap *gpio, unsigned int base,
-> -				 unsigned int offset, unsigned int *reg,
-> -				 unsigned int *mask)
-> +static int idi_48_reg_mask_xlate(struct gpio_regmap *gpio,
-> +				 enum gpio_regmap_operation op,
-> +				 unsigned int base, unsigned int offset,
-> +				 unsigned int *reg, unsigned int *mask)
-
-In every case, use this logical split.
-
-...
-
-> -static int i8255_reg_mask_xlate(struct gpio_regmap *gpio, unsigned int base,
-> -				unsigned int offset, unsigned int *reg,
-> +static int i8255_reg_mask_xlate(struct gpio_regmap *gpio, enum gpio_regmap_operation op,
-> +				unsigned int base, unsigned int offset, unsigned int *reg,
->  				unsigned int *mask)
-
-Exempli gratia, this one looks illogical, harder to read.
-
-...
-
-> +	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_DIR_WREN_OP, base, offset, &reg,
-> +				   &wren_mask);
-
-Ditto. Easier to follow when
-
-	ret = gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_DIR_WREN_OP, base, offset,
-				   &reg, &wren_mask);
-
->  	if (ret)
->  		return ret;
-
-...
-
-> +/**
-> + * enum gpio_regmap_operation - Operation type for reg_mask_xlate callback
-> + *
-> + * This enum is used to distinguish between different types of GPIO operations
-> + * so that the reg_mask_xlate callback can return the appropriate mask for each
-> + * operation type.
-> + *
-> + * Value operations:
-
-Have you checked the rendered text (HTML, PDF)? I believe this will look awfully wrong.
-
-> + * @GPIO_REGMAP_GET_OP: Mask for reading direction to detect if GPIO is input or output.
-> + *                      Used in gpio_regmap_get() to determine the GPIO direction.
-> + * @GPIO_REGMAP_IN: Mask for reading input value. Used when GPIO is configured as input.
-> + * @GPIO_REGMAP_OUT: Mask for reading output value. Used when GPIO is configured as output.
-> + *
-> + * Output operations:
-> + * @GPIO_REGMAP_SET_OP: Mask for setting GPIO output value.
-> + * @GPIO_REGMAP_SET_WITH_CLEAR_OP: Mask for setting/clearing GPIO using separate registers.
-> + * @GPIO_REGMAP_SET_WREN_OP: Write-enable mask for output operations. May be used to enable
-> + *                           writes to protected registers.
-> + *
-> + * Direction operations:
-> + * @GPIO_REGMAP_GET_DIR_OP: Mask for reading GPIO direction (input/output).
-> + * @GPIO_REGMAP_SET_DIR_OP: Mask for setting GPIO direction (input/output).
-> + * @GPIO_REGMAP_SET_DIR_WREN_OP: Write-enable mask for direction operations. May be used to
-> + *                               enable writes to protected direction registers.
-> + */
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> 
 
