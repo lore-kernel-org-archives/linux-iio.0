@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB7B336A37F;
-	Tue, 12 May 2026 14:56:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 552203750BC;
+	Tue, 12 May 2026 15:03:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778597811; cv=none; b=sJU81oZvrWsRd0PNWumvTynA57OjUSsWpbqW0vI/FstASlrjmBibWj7iYGH/RKm6asSYL9VbwMpykn9I5L7xZoG9KWPiZVLN/zNE3qIYgbWcM1Dq2hxdGJWfxk84FGE7e6+9S3367d4+wRC8JnTbrJYbZdPGU6zqHTjISa6XyDI=
+	t=1778598195; cv=none; b=syD2jq0cl7JErItgmtyR6y2vc7ywbGoUh6seCRU3jfl3sQzQ0+xtMOR4RsGM5DmiAwbkH5KIYvBAWtBpj0TUbzUZFsaOx6ZcP3MJ+dhFY1ywQubBWQQ79ajWvNx17SGsB9f1dL4e2kpKLn0E/WqHNpS1LD13Yqnf3LSxD4pcDmc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778597811; c=relaxed/simple;
-	bh=X7Rj3vr/hEga8Oa14GUBBAxAVe9FSsqs/jIniTnQfw4=;
+	s=arc-20240116; t=1778598195; c=relaxed/simple;
+	bh=A6gczLsaZq3zBOhRjXwc9TdaKC8D3z04BguFV52hlNI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mmwLUs6lxqX0TrvlGFAewGnVJSL2LleIhi+qlXkWtkWRsHtWRm4MtaS3pkIhsI4iUPqwEPXvhqtR9S2W3I6FhhgR93fmnzVOez+CYFRlJgnW2N+0BMwGo2e81tP7zKi9i/s8n1bjY495v2kFgQk/FPc2X5vS99sfjn8KuQJhKus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qa8XURt6; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ZiveIAh0E3stUokWc9pPkbaeVNnIwuiRAQDVfPss0cfgg2bEynOvbht42qQe3toD8t9/fxFyRHJes6gaPC/2eGaMdgU51r6t1ZFeOszMorpZYP1fkI3z71aMz1YeltS4I8jCcrRLvv0vXeVOI3Gf5jEjISfwxlY2Fc5Q6SoDImQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QAIeQU/9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qa8XURt6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1D19C2BCB0;
-	Tue, 12 May 2026 14:56:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QAIeQU/9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B22C32782;
+	Tue, 12 May 2026 15:03:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778597811;
-	bh=X7Rj3vr/hEga8Oa14GUBBAxAVe9FSsqs/jIniTnQfw4=;
+	s=k20201202; t=1778598194;
+	bh=A6gczLsaZq3zBOhRjXwc9TdaKC8D3z04BguFV52hlNI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=qa8XURt66A/NXEPD564L1g0anorMORaD4p5c1Tgh2p60/hdIxqIgu5bPGZCbcUbJb
-	 qpLG0uQPUHouYFjGgN3jTjofLISUtgg8Cif9nROf9AC6as8PNmhd9Cb+mmcCMBKIax
-	 1uRpAyDDpxJpuB567bvzV7DecmSvqtup95D4ocs9H3c/6lkiZUrVBtp86++Yt65+BK
-	 tim7SG8woLALOi+tmtTr5BAvuI20DjsG/7IRhoHVqhy3UY78G21XNiwBJTrQOeKXSM
-	 nJ1wgHtnPmzWHMZ+Am1hOAEPdphW0f++eHqs2kwOljK8WBWPpgIxNIX0qz+s2fDmHw
-	 WATowAXC5/qnw==
-Date: Tue, 12 May 2026 15:56:43 +0100
+	b=QAIeQU/9zsLfrclnujSFoVSvvx+r8eN2Z7vl6wVh47nJhYu1+JKCBppTJ1LNwT+uG
+	 yCjXN7o4ecbKud4fiQwpq1GVcv+jyuC9MYOm/Ouh0jZ8EodPuVv/ikK3pOYx+C2T/K
+	 6h0TjL0XuBJT4ohtKVRRKKc9qTOUXk2H9RuAuI9HGwaRKhqEOHqVSwCPv4RTirqsah
+	 uaqO966ALBLnJ6UhO1kFfCd30WWQMq+X2H2fJsTHpiRg4hRjmMASiJiSqYXwGHea5c
+	 /OTfVZuCfPNnN4maMBb+PPGdT2Sf+Rn36m2q2kIyQ5cQ7ybiCrOpAtx1BZD8QjUt4X
+	 rfzDQS6tUNFiA==
+Date: Tue, 12 May 2026 16:03:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
 Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
@@ -35,7 +35,7 @@ Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
  <andriy.shevchenko@linux.intel.com>
 Subject: Re: [PATCH v7 4/8] iio: magnetometer: ak8975: consistently use
  'data' parameter
-Message-ID: <20260512155643.6213c4f9@jic23-huawei>
+Message-ID: <20260512160305.0be0be39@jic23-huawei>
 In-Reply-To: <20260511-magnetometer-fixes-post-pickup-v7-4-9d910faa28b6@gmail.com>
 References: <20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6@gmail.com>
 	<20260511-magnetometer-fixes-post-pickup-v7-4-9d910faa28b6@gmail.com>
@@ -61,7 +61,24 @@ ote:
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-A bit of fuzz on this one but looks minor so applied anyway (leaving
-patch 3 for now)
+Note that whilst I've applied this sashiko pointed out some more
+while I was here issues.
+
+The one about not ensuring the power is on for buffered captures
+is a pretty major bug :(=20
+
+https://sashiko.dev/#/patchset/20260511-magnetometer-fixes-post-pickup-v7-0=
+-9d910faa28b6%40gmail.com
+
+Which is a pain because we have lots of cleanup on this driver already
+and I don't want to rip it out.  The fix is pretty simple though
+(add a preenable, postdissable pair of opts and pm_runtime_get_sync()
+/ put_autosuspend() as appropriate.
+
+So if you don't mind please put together that patch and I'll apply it
+via the testing/togreg tree and we'll do a manual backport later.
 
 Jonathan
+
+
+
