@@ -1,227 +1,195 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82CA43D25AD
-	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 16:36:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778603771; cv=none; b=tJQcJUsMtBHRTKVQQJB2o+6vTJ1IARSsByVF+uKuSpixkIqo+BzF/qK2Ex9prj0lwRZWIHEhJ3q1CiFqQVT2+c7zl+P3X457hEBOR39IMIlAJEAO5gX5h8kCtUkglyefjsZDzU0PG/YO9WEByMnzfhxlqgqyx1ajW9DDkMK4TfI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778603771; c=relaxed/simple;
-	bh=G+elPRfb5pjp9ejJ2WFTvVTAj2Yq9+7JbBIVvG0CSuc=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PqQ6EmVTjm0fA/A7u4cQzLF6G0m7BzmBrPoz1MqlKA8sbnrS0BrWX/24/XweBzTWvs++Z/Q7NIdXpIYShjJsxDGM27Q6A7wzjLrdaO+yNXNb4DxT8Z+16z9tnwarB3Nml81bXxbefXpTGq8fgnVxTdkSaAUJ8lzBcG3l/Kcdzwc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DG5r0Uzq; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 865992C1788
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 16:44:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.174
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778604289; cv=pass; b=P401TZHdvhCX7vEfZNlp5zPIsiVvsJnQZhYqMcG5NVFtxDjsL67rPXusU68Uj4S/UTPrgs1btN7vgg9YSW+Rmi3LLhNDi+N7bzd8URjHeHsoGKrk/gspfDj5XQ3tQg8FkyFVnxOHR4GsSrAVgOa3yPaB11o7Fw7bcoDoVe3C6RQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778604289; c=relaxed/simple;
+	bh=K6EwhBYgR8WREX71C7289RCShC9p/K05c7wVnAzzM+4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RfrL6f6qfV+q2SYiDK+piTA94eqB7w29GRQgWochOqVKrjz7PMWhZLVDYm0pfuYy0I1753YDZgcIf5cuStGT8w3dLibQjXQp/2gijfDHJpcSkOp034g2gbVKRfbXSKdaih6WLQ9EWqZRRJW3LomfPXyQSxUSDsMaT/kQF56u/6E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T0C2vyPt; arc=pass smtp.client-ip=74.125.82.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DG5r0Uzq"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-bcd3c190f71so469931766b.0
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 09:36:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T0C2vyPt"
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-2ee1054627bso4846372eec.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 09:44:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778604288; cv=none;
+        d=google.com; s=arc-20240605;
+        b=U4noBmzvACOZpf04VgfDO8gfyNpWtLDGyiPaSwpzUxLWnB1WxmVDl3U/NHJs1xHaPS
+         nbl30IdxuT8NlltRqS0gIacF3vyLCr7XIv82U6kmhPyEM2vV30u7lWWj1W2/0Ek58Jv4
+         6IsF5/V/IxLh4Bl4U2m91Z0CVV1G/5XpUmo0FRediux02lYqfBDf8GXSb6tApjIEt6Vq
+         bvMo/DP3/lSjckmsjfJwvdesRCQvZSU46ffsvT7rVV1VmYw9K4SqXfXaBE9ro133Iz/l
+         bO6VBV9eg+9Tu+jTb1JnhacdyZ9jVo+fvmYwqIuckOh2LodpfzolqvYpnhLEI13hDOro
+         sGUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=KE98TqSBxX5Jt7KSWTUV2v7V5IAS8/o4Rankgx3Gkes=;
+        fh=sIV5Dy9/sOJNezvPr/w1wqHZwGFYZD/n/SbCwfRFnC8=;
+        b=GvxwDMvP9zadO250xvpLRMM9H2fzPBt40l6aVetckCkRzi8kYZmSPhS6mM3SGF7af/
+         fPj8GQfeXUz0iDlOxscxzlNO66kAdRsJTe9iPOm+feBt6P2pRMHOU027DptZshu7cDlO
+         tFTZI6OkIY4dXKa80bREyYqlnEjRhJptEQ0i0COcgPbwEpxVe+CMDVidtTQwO1PHb6M6
+         mZzqAI3/mAy1L5vRRE0mWIrWvT03117hCOxuWidi7kKCWRaVrs9zi1wJkVlRcuXUkVEH
+         ljLdIiXuJzn88pLJLSPVo60pj7mxJ0rmURWhFUZv3+x24qJZmBVLJNxxxZ9DsisjwgJM
+         ppQA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778603765; x=1779208565; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=kZd2jwWErlU8p+pvlP7UuokLuT/ajSujPqtlbnDh3o8=;
-        b=DG5r0Uzq3ftjrnFlOFBuVc+zijdhTixDy9nUfaFbUG2UnVng7RGKRuMbGvkZPY5Oef
-         biURNe9goVxypxI74ZPNUfkBHA7ObQmHaTHjie8/JM6qAE2cQk2x+AscZVgq/47ilqB3
-         rZpedQqRVZznM+NdvAcsmXFJXT73jzBXjnHN5lYZVLVgf56aVguTABEKj3I2y4EyQjMt
-         tntM44DDBPttbEoA6FB9fb4acAh/HYufhJOTaKiE4g6D699pqe5pV+mu8j0h8wBE+v/q
-         yAccdRrzuEzN+GOG7L3+UEXvqVvewfdOKEVywRLoUTUzpnbN20RrfJAEmEnSlV0UseQX
-         oRDA==
+        d=gmail.com; s=20251104; t=1778604288; x=1779209088; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KE98TqSBxX5Jt7KSWTUV2v7V5IAS8/o4Rankgx3Gkes=;
+        b=T0C2vyPtmBDZz1CwbXmfil97CioW4CdwFWqfK1cBlop3Wl9nrd9I5nCKpBsTw5ej++
+         mnk19p3RLoXLY2B4eSiD7WDKecEdWVoVyRqOfiyi4YHMjuHXRNHDtOookVIlHU/lSas8
+         ZzaWkKDTZSpZL1ZQsA5CAhnRPepnneamxv11bMoq/rTyEA6QMChDhnyvEVjHIbIGk+CF
+         mVL/HTV647ldjpxGwQT0TcvymSw9YGhfYoGCJ1M1mSSfMZHnZake8b0T1svU7mHd2Zw5
+         2ebxh9x5G2JesQhjHGIj/f7kdVArbUSgV8mt4zRdPQQIFhuryiHG4zlS0QOUA5Klwie/
+         5jZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778603765; x=1779208565;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kZd2jwWErlU8p+pvlP7UuokLuT/ajSujPqtlbnDh3o8=;
-        b=CDvgflQCMhL2ddeb9wfxh4UMjWm/aVNWf5DYf3pUKmUpnyTvlXg6y46KTB9wIy902W
-         RYidac3pwkVjLUQfEOaan13lTZZDT/ffj1uOJluMV2e5GjmOJ3RlGOXs7cuBETVqN2aL
-         0CbBq4jGKu5MahNWBmJ4a7QxdGNKs0kTlhTkM5xvA+fIeyxGoaBLBCuXG1xJk6I5gMQq
-         gN/mowMS13eS0PXRX/kq5qm3nIrxaU/LrajN+2reRm4Bt2JQofZBbWbT7wDgNEFMVkQW
-         nJEowfv+eUNGyMMk/Zg0AYOKprof7CJgijPBSA/KUMGst1NF/pfyFVCVnZge1b8rVIy1
-         N0hQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8oysXxMSy5Rg5quTwDLWj+9g2UYe1QSfakekkEm+EvYNhWdusI378Cp0fzBWkL7Kmsb6Bt3v2+wtc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyVoGazba6Z9vEeoJbYcHeeJg3ZrwyZU9LhzrhYcqec12n7jpFj
-	7Dect/GuGM210EDV5lCKw6J9ZLr4ylQwDJeLcuGKqh98KfJwvqq04sWm
-X-Gm-Gg: Acq92OELJ7fDhtNPik3Evf252oWPJV0P14tkrrExQdPIBjrzFKZNRdw6uQIqvX27NSD
-	d/5lN9bf7YtfntPrLzKl2TifLbCVcK9gIejGJ0AUogALHeVmTrkFgNLXSkYU1zMDwCtKOtHI5Q9
-	vn+Kdxhxvz8C4v7DMUSLhRKpvkxLLlWtTXOROS4ypzB/sx0uFJg2UNbdyLLsLvxC0KPDYjuoIBH
-	L8HKrH/ztDe25W26hgx6+MJlfRqtWP0Upw/5oGrFicy7FJRXoyNRjbUBWujtyKHiL8/yra0vyP8
-	CP5Bcnd87Hb6bUa75T5ll2jPmUngoki2CD3pNEbdb17EqpDSvNayZrsfym6OvhHQgCZGaIQoKGE
-	vS81AF0vUsk/SY3Q9BxKJ0N7zXj83RO1l9Nz+4xqjDTS1VheVoLhhCVrEdU6UH8YuTsoYT+B1dI
-	Sm1UVnfyvRjKRvyn1xUURR05MZRlsv9gXTBxSgL+pCEzAqFvnap9/fGmjI7P6whTCy+2jlcWaFz
-	8AJwLX00eU9i1GOoWHElTVs20nqZwPTX3lBwtqyhDLbSHBnxw==
-X-Received: by 2002:a17:907:c29:b0:ba7:f5fd:ede0 with SMTP id a640c23a62f3a-bcc11a6e057mr847059466b.6.1778603765039;
-        Tue, 12 May 2026 09:36:05 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bcb2882737fsm665806166b.63.2026.05.12.09.36.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 09:36:04 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 12 May 2026 17:35:59 +0100
-To: Andy Shevchenko <andy.shevchenko@gmail.com>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Jonathan Cameron <jic23@kernel.org>, 
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>, rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
-	Sergey Senozhatsky <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>, 
-	David Laight <david.laight.linux@gmail.com>
-Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <q4rmlkgecvztnvjg7b7wtqyvhdy7uxgaouvhae2mlsxaasasbf@dfakp4m5l5sl>
-References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
- <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
- <20260512123953.40d80bc9@jic23-huawei>
- <agMnWzMjW1LwCSyT@ashevche-desk.local>
- <sj6cpjhakyfvv6rgox6cnhl2u2tgaecugcok6fw2l7zgku5wtc@aqx3ul72vgca>
- <agMvlS3-0wvGmBwh@ashevche-desk.local>
- <dxjg2sdyxb7ieb4abmeyyye7qok6cczrxabpsjyjhcbehwoec3@sbbqoo4wmzre>
- <agM8pWrM6j_XksvN@ashevche-desk.local>
- <ur6brs3yjzyb4mtelabmcglxjltddqvjxtgl3lkdkmbjlkmnsq@bwd6rz7gided>
- <CAHp75VeoH3yVfp8NWjKfc_df0VRLkyf_SK4e==-wJOEodVjW_A@mail.gmail.com>
+        d=1e100.net; s=20251104; t=1778604288; x=1779209088;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=KE98TqSBxX5Jt7KSWTUV2v7V5IAS8/o4Rankgx3Gkes=;
+        b=d/B2Aku9kTEJkS3kd12VGnU9r4+hA42L44A9IYPKRNqy+9ZlsJUAF+wagVN9n7t1jw
+         tFDZBQRRRc/ou8TRPeVNSb3Y5A5zAcHtBhXWpb9xq82cjTjXETg67ZJHqzYuBEFNt+Z/
+         oymYhvZluQHrXqbjWLs9RhiZmqH2sBp3wstBNvGCZanSmv66+cc2A0Z8oH48Q/wcB0NX
+         pMdNp2XTEoL9qbsyHWHXSGU00k1n4TAbL8l8VqB0ny89lAMa/zJK08IMp09QZoqItTPU
+         m34/5DYE0bpXj6rqupSVsfqEm7tqlm+CA6xISYQ8bTvzZWRmVnE/p+/jeKrs4hG0DPp+
+         VYoA==
+X-Forwarded-Encrypted: i=1; AFNElJ/1QLNm3b+dwfMkaZNWNGjOByaXXcmFmE6LO9ztPzSuKwQD/4nxC2IJOo+ESt9vZLbPeFmoWN+EAHU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyOBEf+rMjYXeZiim7xEOLt4qX1SbVgZebulokIKFzk2mcvh77Y
+	f4wAU//NOgqbJvOgyUKGntW5JMTTVQDgAp1SGiL94J12DDTS+5nzI9/gCsHc4GvpkKs1hf9ULC6
+	a9Rm4YzuJjgMi8sAcXzJ55S4jzTT9YkM=
+X-Gm-Gg: Acq92OHzn2HXvFuwHeEHmYqjFYy1EPdsji6sUVaXTat2KYQYrLrRqqHvHPZVRlfK0ZE
+	ceZrlRRds+EnZHxOwzXqCwrfy0eG2XiHYiYDsQ1p4JBDroAs+lBdFyZNJdlVD8sf/pHYG9EeJu3
+	O4zjmZZLJszUOjzIb6oc28TB6fvZwGNPM0Wa5G2rzNPN37f2zAvtBJAZCAF3nzml/tpocb9uAsD
+	ee3K+u9LlCe41kO9vmd5clwubUV5Y4146zDLKSRZwvmUEukiAVq1+iiA0N1vCMOhHUvuWrnkUpx
+	IkSp8Jdi
+X-Received: by 2002:a05:7300:503:b0:2ed:e16:6b38 with SMTP id
+ 5a478bee46e88-2ff944e99b9mr2499775eec.16.1778604287204; Tue, 12 May 2026
+ 09:44:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75VeoH3yVfp8NWjKfc_df0VRLkyf_SK4e==-wJOEodVjW_A@mail.gmail.com>
+References: <20260511171255.9668-1-abinashsinghlalotra@gmail.com> <20260512150846.76f896a7@jic23-huawei>
+In-Reply-To: <20260512150846.76f896a7@jic23-huawei>
+From: Abinash Singh <abinashsinghlalotra@gmail.com>
+Date: Tue, 12 May 2026 22:14:34 +0530
+X-Gm-Features: AVHnY4IgZXPWJF00K01R5LMvN5_zrc3SvwalKeQUzotOXkiT2RgTCJ5QeEP2vUI
+Message-ID: <CAMV7Lq7NqxO5cpy7zSrawBORWgtEhm2QTTgRtLptV9==yCs+wg@mail.gmail.com>
+Subject: Re: [PATCH] staging: Documentation: dds: replace frequencyY with frequency
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, Abinash Singh <abinashlalotra@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 26/05/12 06:21PM, Andy Shevchenko wrote:
-> On Tue, May 12, 2026 at 6:11 PM Rodrigo Alencar
-> <455.rodrigo.alencar@gmail.com> wrote:
-> > On 26/05/12 05:43PM, Andy Shevchenko wrote:
-> > > On Tue, May 12, 2026 at 03:12:24PM +0100, Rodrigo Alencar wrote:
-> > > > On 26/05/12 04:48PM, Andy Shevchenko wrote:
-> > > > > On Tue, May 12, 2026 at 02:21:14PM +0100, Rodrigo Alencar wrote:
-> > > > > > On 26/05/12 04:12PM, Andy Shevchenko wrote:
-> > > > > > > On Tue, May 12, 2026 at 12:39:53PM +0100, Jonathan Cameron wrote:
-> > > > > > > > On Sun, 10 May 2026 13:42:20 +0100
-> > > > > > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> > > > > > > >
-> > > > > > > > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
-> > > > > > > > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
-> > > > > > > > > precision). After the decimal point, digits beyond the specified scale
-> > > > > > > > > are ignored.
-> > > > > > > >
-> > > > > > > > Whilst Rodrigo has already replied to say there will be another version
-> > > > > > > > I'd like to request final feedback from those who were involved in the parser
-> > > > > > > > discussions.
-> > > > > > > >
-> > > > > > > > They got very involved and I'm far from an expert in the right way to do
-> > > > > > > > this stuff.
-> > > > > > > >
-> > > > > > > > I don't think David Laight was +CC so I've added that.
-> > > > > > > > David, Andy - I think you two were most involved in that discussion:
-> > > > > > > > Any objections to the end result?
-> > > > > > >
-> > > > > > > I already said a few times about the naming. I do not like the kstrto*()
-> > > > > > > be semantically different on how they treat the input. Second point is
-> > > > > > > to avoid code duplication, but this one is less of a concern since the
-> > > > > > > new code is in the library close to the other potentially duplicate code
-> > > > > > > piece and hence can be addressed later.
-> > > > > >
-> > > > > > I suppose I reached into kstrtodec64() and kstrtoudec64() because it aligns
-> > > > > > with your expectations for kstrto*() semantics, no? Those include:
-> > > > > >  - overflow check;
-> > > > > >  - extensive input validation;
-> > > > > >  - optional '\n' in the end;
-> > > > > >  - mandatory nul-termination.
-> > > > > >
-> > > > > > am I missing anything?
-> > > > >
-> > > > > When we add scale we basically make that not true. Moreover the code in this
-> > > > > patch makes scale == number_of_characters which I think a bit fragile, however
-> > > > > it's about the fractional part when the amount of digits is equal to scale.
-> > > >
-> > > > That is not really the case. It is being set as a limit, so it does check for
-> > > > truncation and zero-padding.
-> > >
-> > > I do not see it happens in _parse_integer_limit(). It doesn't try to parse more
-> > > characters than it's requested in max_chars. It doesn't check if there are more
-> > > character nor their converted values.
-> > >
-> > > > > To make this work as expected we need to add an additional call like
-> > > > > kstrtoull() (and perhaps drop that \n and NUL-terminator checks) and see
-> > > > > if that overflows or not. Since it's a fractional part it must have less
-> > > > > than 20 (decimal) digits there, so we check the rv (or how many digits
-> > > > > were parsed successfully) and compare to 20. If it's more, we got too many
-> > > > > decimal digits.
-> > > >
-> > > > For overflow it checks the KSTRTOX_OVERFLOW flag and leverages check_mul_overflow()
-> > > > and check_add_overflow() when combining fractional and integer parts. The amount
-> > > > of characters is not really important there. The scale cannot be bigger than 19 and
-> > > > that makes sure that int_pow() does not overflow. The code uses _parse_integer_limit()
-> > > > due to the nature of input and to avoid 64-bit division, kstrtoull() at any point
-> > > > (parsing integer or fractional parts) does not make much sense.
-> > >
-> > > Under 'like kstrotoull()' I meant something that repeats needed functionality.
-> > > I believe it's parse_integer() (without limit).
+Hi Jonathan
+
+On Tue, May 12, 2026 at 7:38=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
+> On Mon, 11 May 2026 22:42:55 +0530
+> Abinash Singh <abinashsinghlalotra@gmail.com> wrote:
+>
+> > From: Abinash Singh <abinashlalotra@gmail.com>
 > >
-> > I think we are going in circles here and we could look at the code instead:
-> > - integer parsing with _parse_integer()
-> >         - overflow check and validation of the return value
-> > - fractional parsing with _parse_integer_limit()
-> >         - overflow check and validation of the return value
-> 
-> No, this is not fully true. That's what my whole point is about. The
-> max_chars parameter limits the input check, then it skips an arbitrary
-> number of digits and only *then* it checks for \n and \0. What will be
-> the result of the
-> 0.00000000000000000000000000000000423 in your case? Whatever scale you
-> gave it will return 0 without checking on how many digits were
-> supplied.
-
-I suppose that is a valid input and 0 is the expected result there.
-
-> All the same for 0.9999999999999999999999999999999000423. My
-> point is that we should limit this by 19 digits.
-
-why we need to limit by 19? Digits beyond the scale carry no value...
-just like leading zeros to the integer part (which is also accepted by
-kstrtoull() when parsing with base 10). Not sure why this is invalid input.
-
-> On top of that, what about -0.9(19 times) ? the fraction should be u64
-> in this case and it's fine. The sign applies to the combined value.
-
-yes, range for signed values are verified later.
-
-> 
-> >         - extra scaling and truncation happening outside if needed.
-> 
-> Right, but the given input may be way too long and still needs more validation.
-
-What is the problem with a long input of digits?
-C compiler does not complain about this when parsing a float value, python does not
-complain about this when parsing floats or decimals either.
-
-> > - check for input termination
-> > - combination of integer and fractional parts with check_mul_overflow() and check_add_overflow()
+> > The documented frequencyY attribute naming is implementation
+> > specific and differs from common IIO sysfs attribute
+> > conventions.
 > >
-> > > > > Maybe I'm missing these checks already performed?
-> > > > >
-> > > > > > > Having the test cases is a big benefit, and that part I like the most.
-> 
-> 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+> > Replace the non-standard frequencyY attribute documentation with
+> > out_altvoltageX_frequency and document tuning word selection
+> > through out_altvoltageX_frequencysymbol
+> >
+> > This makes the documented ABI naming consistent with standard
+> > IIO sysfs attribute conventions and clarifies how tuning word
+> > registers are selected and programmed.
+> >
+>
+> Hmm. So some history on why it was done like this (long time back
+> but I think I recall the basic argument).
+>
+> Consider the programming you need to set up FSK on a channel and
+> the fact that someone is recieving the result.
+>
+> When you set the symbol to program it that channel will begin
+> outputting the voltage. That means someone at the other end starts
+> decoding it.
+>
+> Hence we normally expect to set a frequency 'before' changing the
+> symbol.  Hence the per symbol files.
+>
+> There might be a valid way to set them up using your proposed
+> interface but I'm not currently understanding what it is.
 
--- 
-Kind regards,
+I think I misunderstood the purpose of
+out_altvoltageX_frequencysymbol.
 
-Rodrigo Alencar
+I initially thought it was used to select which tuning word register
+to write into, whereas it actually selects the active output tuning
+word. That explains why my proposed interface was confusing.
+
+The ordering requirement you described for FSK setup makes sense now.
+With separate frequency0/frequency1 files, userspace can configure both
+tuning words before switching the active symbol.
+
+>
+> We went through the same dance with the more complex DDS that
+> Rodrigo is working on. Take a look at the multichannel approach
+> he is using.  It may apply here - I'm not sure.
+>
+
+With my approach we can have a new entry  /out_altvoltageX_frequencySelect
+which can act as a mux to write into FREQ0 and FREQ1 register
+via  /out_altvoltage_frequency.
+
+I will take a look at Rodrigo's multichannel DDS approach before
+proposing any ABI changes further. It would be helpful if you could
+share links to the relevant discussion or patches.
+
+>
+> >
+> > Signed-off-by: Abinash Singh <abinashlalotra@gmail.com>
+> > ---
+> >
+> > The out_altvoltageX_frequencysymbol and
+> > out_altvoltageX_frequency_scale attributes can be added
+> > through extended channel attributes (.ext_info in channel_spec struct o=
+f IIO)
+> >
+> > Feedback on this approach would be appreciated, and if
+> > there is some other way in your mind. I would like to
+> > work on that.
+> >
+> > I am also interested in working on the sysfs-bus-iio-dds
+> > documentation and the ad9834 driver. I recently bought an
+> > AD9833 IC for experimentation and testing.
+> >
+> Excellent!
+>
+> Thanks,
+>
+> Jonathan
+>
+> > Thanks
+
+
+And do we need to really work on this documentation in order to work on ad9=
+834.c
+What else can be done in ad9834.c apart from this naming.??
+
+Thanks
+
+Abinash Singh
