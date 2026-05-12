@@ -1,188 +1,220 @@
-Received: from s106b.cyber-folks.pl (s106b.cyber-folks.pl [195.78.66.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8324C275AE4;
-	Tue, 12 May 2026 03:57:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.78.66.88
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FC881DF980
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 04:42:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778558278; cv=none; b=EIKqCj0NrxJuxwvOKU5n4rpUl4LdcneqrW3FUIVIB7icbXHksXvTtYMIJiznwCUk8TgqHbtrszBTcq4dencfiSP626gfYD1fsPJBK6Ml9iDva7fO7Ut8CtiUl5wpuSIH59NA3cl4ximfVzCgu9eouF7xskMXg+Z5xAFSJGG9cdg=
+	t=1778560974; cv=none; b=jcHyKR5fhKDrt0hnwP0ozmNKmZBhoUmzzxnLu4m7/k2p/PaFrpb8XgSUz6NVC42eczOpjEUQNo04b/lcsNp7tLeucr+E+2Aox9PD5EjOjuXQEjesasJ7YtlBvVPjTtV10Tkw2lGVWacK8A0c5/a3XNuuWofbIrYV8sIijDHMZ3Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778558278; c=relaxed/simple;
-	bh=X1nLH4CetOnQQJUP4BtGE7WFhHgvzfUYTHQaumR+N1A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k2Zfj7HYYDraWtaNFowtStyPGt1BgK1kjJUXqe1K3PW7cEmvcqFZm18/wg6dcfh0q64SlnV3C5V4oIsaqImXitXcA3rYMq3FATSXRICIWBuYXya2QrAprCWeMU1pGQ021AIv61ioELo5ZA/cVZAu+7xGQ2vrrwfFsZyu9nsKuPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl; spf=pass smtp.mailfrom=mmpsystems.pl; dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b=pVbVIxXB; arc=none smtp.client-ip=195.78.66.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mmpsystems.pl
+	s=arc-20240116; t=1778560974; c=relaxed/simple;
+	bh=85ENHegQMyU0oBr+Mh/9sBGntPYtRFq66m7uI/8ElgY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pybRs5MDt4Np/0eDd/v0lTUaiypffmvtBqScjgn2WcROmBV+Fdg8J/Ex70z7Yb2tTTyA3tin5iVMh57Nte9qRF4VSvH+MPwo73/LfG8SGW+7pqYKdtWE4PqsvVTqojFnpqs/EC7Vhs97Dak3O/iYl4w5hGuwMZOvwVMwfqvO0oA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R+jP9rap; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b="pVbVIxXB"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=mmpsystems.pl; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=Euouo/K/RbEumsaT1GH2JUlCYd6qzEvxZUoNiId5TT4=; b=pVbVIxXByLhlXqnNT+0d+CbEve
-	TjY0bwKs+/AYKrfSWu8mPOnImLsJNhc0Lmg7JggF9Q0CQHzdtFogBgpRGiAHApaocHOFShgOykLpk
-	eysv5YIBb4pLQGwd3tNAl0P0hkNNONnv6tunaHzK9+7s5xdYNkjistxxT9WqqgrZxsT6Zu2ALrdM3
-	AsQU/uqgI02OxtyW9MujjNgIY8puI4mfJkKjBzRGF9Y1ClyabokNj/hczmAjrYBl98cuCOxACZ8tj
-	U3qI9h+MUaJIXtZ6vaWGLQrxGcoorF8i1AF3Nt7sZl4X3kfR8kBKrhAk9fZ43pXn01ciUFFQJx9ee
-	0gcTliDA==;
-Received: from user-188-33-36-12.play-internet.pl ([188.33.36.12] helo=localhost)
-	by s106.cyber-folks.pl with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <michal.piekos@mmpsystems.pl>)
-	id 1wMeFj-00000007kOo-3hb9;
-	Tue, 12 May 2026 05:57:52 +0200
-Date: Tue, 12 May 2026 05:56:54 +0200
-From: Michal Piekos <michal.piekos@mmpsystems.pl>
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
-	Samuel Holland <samuel@sholland.org>, Maksim Kiselev <bigunclemax@gmail.com>, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: Add GPADC for Allwinner A523
-Message-ID: <3aabrtlih2z3b4v5ec5jdb76cb4aesqm2grjudzxhlkk3iwzcn@bawiakcija6d>
-References: <20260510-sunxi-a523-gpadc-v1-0-4f6b0f4000fb@mmpsystems.pl>
- <20260510-sunxi-a523-gpadc-v1-1-4f6b0f4000fb@mmpsystems.pl>
- <e7269822-afc4-4a80-8408-297f9dbd6791@arm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R+jP9rap"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5a4113ab355so4775265e87.1
+        for <linux-iio@vger.kernel.org>; Mon, 11 May 2026 21:42:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778560971; x=1779165771; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9+uh20BD/IzP+h/IzZKctyoQqKGuFbHGFEDS1sAuZ/g=;
+        b=R+jP9rapR1HgZC1WkixXLoN1ZsABtjhDKZB1D9APNhVIMzBcMTYrwfYs0a0jrGn6MK
+         ToOLc4+atNgrsQaX5HkndRoJh3mDxqSMh+ZkT9fLJaYb0ZOu9dJV3xxoVL/eoNwinHb5
+         Efq7p4zmTzjsg6IE7eGI2HixZV/zeXUppDHdmarb71xCXs85soM78gtVLqhzfMSYeEcl
+         uyRCZKcG5RPf8ZtttAS2lg+4yrAOc4Tmt28ijLJdK+8imxV1cD42wSsTTNlJPU5rPTwH
+         Euyr4TOaRQnDKxHFrl4TRouHdvJzdDT/2q3G/+vBQSzrZhAhLtzVGAsNpK05k8NMfgtT
+         q+iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778560971; x=1779165771;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9+uh20BD/IzP+h/IzZKctyoQqKGuFbHGFEDS1sAuZ/g=;
+        b=tNnGdSmqzN7D8O1VhMLrYfnqGxpDnXfgFWwW3J+P00O3Y2WT9gGEG3uZJbwWU5YXMt
+         0BFXlE7f3WYu69h7IPo59/R6SKPXpMrHhspQHAn3uvP1L+dqJkzeO/trI36Jl8wBghyB
+         BLelZXB8azo57sRJPTGNExVNYUDw+CRAYDmGQautcWPVn7oov7qaZjbaOYIgvsvtDpGq
+         T1yHFqfx/nYzQIoYpw3PMmJRgNG7ioVzz2WEbCpmvAkZ6+vO4jbljd1gd6MNldi9Jq4f
+         UyA2b4m5+rtZnav317sVvk++w9M9WlzJBssq7wH98HDNLwLD8sEockA9RkXN/qmgKe0Y
+         uqMg==
+X-Forwarded-Encrypted: i=1; AFNElJ8xzp8fghZGy+w6unOU7kgtbuUtQr0afkMc8flt2Nq1wq2ySdj8sD2Jk3BUTiIhYRYntZTxt0ZZUTQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyu8Q/B7PxFCmAXgZJ+PXdD7t0fUcCRzbIwprnQsmDljrFIMtXT
+	w9SQrVKfccOPOnHM9vtYvy0L4WoYVBTlZivLQgfcqDqtaTHm0nRffjk0
+X-Gm-Gg: Acq92OHBJrNUGt8dAGeUXkTQfb92XI3R7PXrJZ2n+xVNx+I69hs8iGm2OFf5ZKA/8/2
+	9CpaqO+EdmkXYIWHAyOBgFfyd80L/wG5i+J+WpDyuFV6ZXkkvPf7BG4zXmaRHF4zUt35n9Q+ogu
+	6+KOI8LjCihXZxvR+8SDhkgqcH/p2KvZ4o/2LQ8ZWTFcJcUpr2W7t6GGLnorG3Rw1Pr7MhQLvVI
+	E67V67RhsIiXs0PIRig6DiBCDbtji8AxaoLMng8IRtZ3zSQrtl7jruwLrX0Ee4h2si+xOrbfqGE
+	g/iTZZ41AmiKBNh1SgCQ2pKjROcZiCVmHGzGR9XCSflnqmJF9bhBXKC7UgD77Oa3tTcp7Tfu1W7
+	oWIMjaQrGi0+8S6FVWK7ET/kSg/QVCMT3KRtYTonUZhz/7wp97hVWRvQVQQ48aWdwmWCGVTB2IH
+	yE0SkPdpDPh5S2FldH6wX3/KbzRt2OJZCeoqH2mEp78hzXRHgeYWfJZ/kSoDqar00PiFKtj9Lgk
+	jnAvjZ/
+X-Received: by 2002:a05:6512:3e21:b0:5a4:ab6:81b8 with SMTP id 2adb3069b0e04-5a8a94caf78mr4382507e87.40.1778560970858;
+        Mon, 11 May 2026 21:42:50 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a8a955df99sm3134316e87.45.2026.05.11.21.42.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 May 2026 21:42:49 -0700 (PDT)
+Message-ID: <f05093df-663e-417b-a671-d627811e82de@gmail.com>
+Date: Tue, 12 May 2026 07:42:46 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e7269822-afc4-4a80-8408-297f9dbd6791@arm.com>
-X-Authenticated-Id: michal.piekos@mmpsystems.pl
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Add ROHM BH1730FVC binding
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Alexandre Hamamdjian <azkali.limited@gmail.com>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, CTCaer <ctcaer@gmail.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, heikki.haikola@fi.rohmeurope.com
+References: <20260511-bh1730-v1-0-e0df1f499135@gmail.com>
+ <20260511-bh1730-v1-1-e0df1f499135@gmail.com>
+ <92e2d1ab-c973-45a2-b0c4-d7c672c610e0@gmail.com>
+ <00855a46-20f9-4b4c-8bec-bb64d9d8efe6@gmail.com>
+ <20260511161429.6cae5b7b@jic23-huawei>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20260511161429.6cae5b7b@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, May 11, 2026 at 06:02:16PM +0200, Andre Przywara wrote:
-> Hi Michal,
+On 11/05/2026 18:14, Jonathan Cameron wrote:
+> On Mon, 11 May 2026 13:43:56 +0300
+> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 > 
-> thanks for adding this!
+>> On 11/05/2026 11:22, Matti Vaittinen wrote:
+>>> Thanks for patches Alexandre!
+>>>
+>>> It's nice to see these upstreamed :)
+>>>
+>>> On 10/05/2026 21:09, Alexandre Hamamdjian wrote:
+>>>> From: CTCaer <ctcaer@gmail.com>
+>>>>
+>>>> Add a YAML binding for the ROHM BH1730FVC ambient light sensor.
+>>>> Documents the required compatible string, the als-vdd/als-vid
+>>>> regulators, and the rohm,integration-cycle, rohm,lux-multiplier,
+>>>> rohm,opt-win-coeff and rohm,gain-coeff calibration properties
+>>>> consumed by the driver.
+>>
+>> // snip
+>>
+>>>> +  rohm,opt-win-coeff:
+>>>> +    description:
+>>>> +      Optical-window calibration coefficients. Specified as a flat
+>>>> list of
+>>>> +      triplets <rc cv ci>, one triplet per window region, where rc is
+>>>> the
+>>>> +      visible/IR ratio cutoff and cv/ci are the visible and IR weighting
+>>>> +      factors used in that region.
+>>>> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+>>>> +    items:
+>>>> +      minItems: 3
+>>>> +      maxItems: 3
+>>>
+>>> I am not sure if I read the driver patch (2/2) correctly, but if I did,
+>>> then these coefficients are used to compute Luxes out of the raw sensor
+>>> data. I believe it would help anyone integrating (or investigating) this
+>>> sensor, if you added the actual formula here as a comment. If I read
+>>> this right, the formula is _somehting_ like:
+>>>
+>>>
+>>> Lx = (cv[win] * ch0_data - ci[win] * ch1_data) / gain / int_time
+>>>
+>>> Here the cv[win] and ci[win] are selected from the opt-win-coeff -table,
+>>> depending on the measured ch1_data/ch0_data ratio, right?
+>>
+>> One thing came to my mind. This 'window' -approach for lux calculation
+>> is not too unique. For example the rohm-bu27034.c uses similar approach.
+>>
+>> The thing is that some of the sensors have more than 2 channels. (For
+>> example, the first version of BU27034 did. [That was BU27034NUC, which
+>> got cancelled when BU27034_A_NUC emerged]). These ICs may still may use
+>> similar approach of having light regions, determined by ratio of (2)
+>> channels. BUT, they may then have more than 2 coefficients / window.
+>>
+>> So, maybe this could be made generic enough so it could be re-used for
+>> such devices if needed? I am not sure if other manufacturers but ROHM
+>> does this in Lux computations - if yes, then it might be worth making
+>> this more generic and not just a ROHM property? Maybe Jonathan has some
+>> insight on other Lux computations.
 > 
-> On 5/10/26 14:57, Michal Piekos wrote:
-> > Add support for the GPADC for the Allwinner A523. It differs from the
-> > D1/T113s/R329/T507 by having two clocks.
-> > 
-> > Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
-> > ---
-> >   .../iio/adc/allwinner,sun20i-d1-gpadc.yaml         | 37 +++++++++++++++++++++-
-> >   1 file changed, 36 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-> > index da605a051b94..89da96cd705f 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/adc/allwinner,sun20i-d1-gpadc.yaml
-> > @@ -17,6 +17,7 @@ properties:
-> >         - items:
-> >             - enum:
-> >                 - allwinner,sun50i-h616-gpadc
-> > +              - allwinner,sun55i-a523-gpadc
-> >             - const: allwinner,sun20i-d1-gpadc
+> It used to be very common to have multiple sensor / window setups for
+> ambient light sensors - though perhaps less so on more modern devices
+> (we have one on list today where they just say use the green channel
+>   of an RGB sensor - so there are more windows but not relevant to
+>   illuminance measurement).
 > 
-> As Jernej already mentioned, the A523 GPADC is not fully compatible, since
-> it adds another clock. The question to ask is: Can a driver only knowing
-> about the fallback device handle this new device? For which the answer here
-> is: No, it misses a clock.
-> So add just a single entry for the A523 (plus adding it to the driver).
+> Sometimes the window bit isn't well enough described in the datasheet
+> so we only dealt with the parts on the actual sensor package and those
+> were handled in driver rather than being in dt.
 > 
-> So looking at this I wonder if we should add some property to describe the
-> number of supported channels, since they are slightly different between the
-> SoCs:
-> - The D1 manual mentions 2 channels.
-> - The T113s manual (same die as the D1?) describes 1 channel only.
-> - The T507 manual (same die as the H616) reports 4 channels.
-> - The A733 has 6 channels.
-> - The A133 has 1 channel, but it's channel 1, not 0.
+> What I'm not sure on here is how much of what is being described
+> is part of the 'chip' packaging - i.e. the bit that is constant for
+> all instances of this device and how much is part of the wider
+> device - i.e. the laptop / phone etc window infront of the sensor.
 > 
-> So all of this is somewhat covered as channels are described as child nodes,
-> and have a reg property. Ideally non-existing channels just wouldn't be
-> listed, but I don't know if we want to rely on that.
-> 
-> So I am wondering if we should introduce a limit, or rather a mask (to cover
-> the A133 oddity)?
-> Either a DT property (channel-mask, as a single sell representing the bit
-> mask), or derived in the driver from the compatible string.
-> The former would avoid introducing different compatible strings just because
-> of that, though I think this type of property is somewhat discouraged?
-> 
-> Any thoughts?
+> The chip bit we shouldn't have dt, the other part we should and it
+> would indeed be interesting to work on a generalizing that description.
 
-Thanks. I have missed that sparse channels are also possible. I think in
-current implementation it will cause issue with lookup through
-<&gpadc 1> as sun20i_gpadc_alloc_channels would effectively create
-channels[0].channel = 1 in such scenario. I will try to verify if my
-logic is correct and provide separate fix if needed.
+Hm. I kind of agree. The constant, 'common for all sensors' 
+-coefficients should probably be hard-coded as sensor defaults. The 
+BH1730 data-sheet seems to be describing a set of coefficients. I 
+suppose that's what comes from the packaging(?)
 
-Regarding DT property masking channels there is already precedence:
-atmel,adc-channels-used is a bitmask of muxed and enabled channels.
-Not sure if preferable though...
+And just to contradict myself...
 
-Michal
-> 
-> >     "#io-channel-cells":
-> > @@ -29,7 +30,12 @@ properties:
-> >       const: 0
-> >     clocks:
-> > -    maxItems: 1
-> > +    minItems: 1
-> > +    maxItems: 2
-> > +
-> > +  clock-names:
-> > +    minItems: 1
-> > +    maxItems: 2
-> >     interrupts:
-> >       maxItems: 1
-> > @@ -40,6 +46,35 @@ properties:
-> >     resets:
-> >       maxItems: 1
-> > +allOf:
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          items:
-> > +            - const: allwinner,sun55i-a523-gpadc
-> > +            - const: allwinner,sun20i-d1-gpadc
-> > +    then:
-> > +      properties:
-> > +        clocks:
-> > +          minItems: 2
-> > +          maxItems: 2
-> > +          items:
-> > +            - description: Bus clock
-> > +            - description: Module clock
-> 
-> I am not a YAML expert, but I think you can drop the min and max properties,
-> if you just enumerate the cases. Same for the names.
-> 
-> Cheers,
-> Andre
+I can imagine two reasons to alter these coefficients:
 
-I will correct that in v2.
-Michal.
-> 
-> > +        clock-names:
-> > +          minItems: 2
-> > +          maxItems: 2
-> > +          items:
-> > +            - const: bus
-> > +            - const: mod
-> > +      required:
-> > +        - clock-names
-> > +    else:
-> > +      properties:
-> > +        clocks:
-> > +          maxItems: 1
-> > +        clock-names: false
-> > +
-> >   patternProperties:
-> >     "^channel@[0-9a-f]+$":
-> >       $ref: adc.yaml
-> > 
-> 
+1.(st) being what Jonathan described. Eg. having something like a lens 
+or a glass or whatever, on top of the sensor. That can alter the light 
+entering the sensor, and require change to the coefficients. And indeed, 
+it would make sense to only describe this in the DT, because the sensor 
+is already described. That'd mean the DT should only contain the 
+'coefficient delta' caused by <add the cause here>.
+
+2. In theory, there could also be another reason. I bet the sensors are 
+all 'individuals' to some extent. So, for something requiring very high 
+accuracy, there could be some kind of calibration process at device 
+manufacturing. This might produce more accurate, device specific 
+coefficients. Considering this use-case, I am not 100% convinced it's 
+"wrong" to be able to give the device-specific coefficients from the DT. 
+(Because, here the coefficients really are a property of the device 
+itself and aren't added by some external part).
+
+And, if we consider allowing describing (the more accurate) device 
+coefficients from the DT (for case 2), then it would just be simpler to 
+always provide the "full coefficients" from the DT, no matter if they 
+are caused by the device packaging or added lens/glass/XXX. And, as the 
+infamous, and not even existing rohm,dh2228fv device shows, people do 
+use the simplest solutions even when it isn't really right ;)
+
+So, I am tempted to suggest we just go with the flow, and allow 
+describing the coefficients from the DT, without separating the source, 
+(lens/glass/device-packaging) which is what this patch does. (If I read 
+it right.) However, I would like to see a property which can be re-used 
+by other devices as this seems to be pretty common. Yeah, it's probably 
+not _right_, but it feels practical.
+
+Well, this is just my 0.5 cents, and even I may change my opinion on 
+this though :)
+
+Yours,
+	-- Matti
+
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
