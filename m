@@ -1,97 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mail-43166.protonmail.ch (mail-43166.protonmail.ch [185.70.43.166])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA197397B0F;
-	Tue, 12 May 2026 13:51:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A82F839989F
+	for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 13:55:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.166
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778593916; cv=none; b=ZJQwgTWvqk4p8/cl+Zz8yfuPkedx1vVypdRtSAb+pqAf2OUC90Q8BF7T887LoUs6UydL66EFlfJULzeXQIc9t7pEFAcckZnE2iNvA8rA8gNj3bEGTBV9w6xwocfxNk59gGwkSGpEYjqJ5PfaEnOrceTArkXDJ1NY49HV5qWCzKY=
+	t=1778594142; cv=none; b=p9t0ROZP69R8m5TLIzHh24Epw7k0521S8dj0Z9WJ1s42x89iDq6tSf97HqmTTD7cz7trQmXLJSxw+yd72bUR9TbhNfT4zyJvAtRifn649ex/oRr2CDvKS3kPn7Yc5DC+x+BsQ5CliDQEdKu9ZyCZmWZh1sTMz/06fFnYv2VLh6Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778593916; c=relaxed/simple;
-	bh=4bcw/QGUCsKM8pagXrlTL8ZxHoSsmyHotb14LwtQjQs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LMOYwpJ+iEKWn5NbPM2OkzfCGIkMDbWEsL0SPuNjED4Xk6vOP2Uh8WKCt9Jn+Kf5YEw72is/TUQVKX2lnERXF7ehTWxWQGhTcQuZzzcNdU8q5SqXMmNCYn2UtpYy2/7f2HmWPtYKAzPYVuqpwGSu0Jd5oDVr9rmJuw/Kb+xGIRo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GuXv+/WB; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778594142; c=relaxed/simple;
+	bh=jgRlifEBlOM8yFGWiEiX/OPeYroUTUbLgteOg6HKHWg=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XxT7EU3PKVwx13wSEeQ+nEpNujpU5BlbQ0L0JwkpUIDyVTUwPgM7Y7ReW69CgUwjQ9/abq7RrLzaOUEv7RrkFnw0/CocbVC8VjI+tXgCefTN/ZAfl1oXAEiPrtmVXXhh00wMXBX4SrTR47++YXEoTbS70Z8EDjhWBh7UGbMHtvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=Jd7WmbEU; arc=none smtp.client-ip=185.70.43.166
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GuXv+/WB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778593915; x=1810129915;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4bcw/QGUCsKM8pagXrlTL8ZxHoSsmyHotb14LwtQjQs=;
-  b=GuXv+/WB+SZX/CIMUpXfCEvoQnr/OtMfOYzDPr/6efQl70MwIknTag9f
-   aNm5uI0VPZ/zce6bH3Ralc5dp82GwiX0jtnWSXDFZfw8Dz4oMLknu0zg4
-   7D1/JMnvsadanO/Dqc7ADDRR3Z+y5MQ42fLA1RwNKRcMA7byuGIFACqIU
-   PpiFlxIIsCGAHQrS0hS5UTJwQf5mGiVbxe4StF0TBIqLB33pEkUNQwmPW
-   LWXbe/bdBjgbVxhepj3gswbNBQl+KrKH1TrRDfLK9BDGix4Y9mCy1GPcp
-   EOT1fxFZvmuRLC5dOdG4lAQaDGbkG0zRiv2vXCh5sKCVKUVimTo+6m91L
-   A==;
-X-CSE-ConnectionGUID: +hMD+UZaSru3Pf1sFuN1Eg==
-X-CSE-MsgGUID: iCD2IfMWTsKN8Ifbl+ertA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79522657"
-X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="79522657"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 06:51:53 -0700
-X-CSE-ConnectionGUID: Dctv8Xt5Q4Kc5w4usCacQA==
-X-CSE-MsgGUID: sSCSRKpDQuSjk/8GaOdg1Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="236917194"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 06:51:47 -0700
-Date: Tue, 12 May 2026 16:51:45 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v12 03/11] lib: test-kstrtox: tests for kstrtodec64() and
- kstrtoudec64()
-Message-ID: <agMwcZUD0cwcJZFv@ashevche-desk.local>
-References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
- <20260510-adf41513-iio-driver-v12-3-34af2ed2779f@analog.com>
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="Jd7WmbEU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1778594132; x=1778853332;
+	bh=LeXgjKzkNMDeBopPQNfwTQzIIVjtMI+vtYIQNjQTAik=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=Jd7WmbEUFTq/LzB5l9+t3kyztP2gdvUHz51SIZGm3lcxKFmPL0hRk2J0HGyC1bXf0
+	 tOPn51ILtDwmgvkazusbJ9t6HpF7P/FXF229xOA0ZU+Jcsc1LPp4ITaoNaR+X4Agoc
+	 y5JmO3T7QM9gQZVm0+AIpEJlBYHHbPYLokJvnFcqIt1WaJJu18Jn3n3ltBpL04hRRC
+	 BUUf9xSiQRU8xg4YQd6eCjhq/36k5u+J//5u14rS3zG2CFWweyKDsPkkKAAbmcsIRf
+	 TkkV/oc05YWPQ6iWAbm+jOx2OOQ2F2Lp1hGL/mxMOqf+met+oLr541Fd+/CG/lprYb
+	 r4K7x/DPYMASg==
+Date: Tue, 12 May 2026 13:55:26 +0000
+To: Jonathan Cameron <jic23@kernel.org>
+From: Roman Vivchar <rva333@protonmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>, Srinivas Kandagatla <srini@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH v2 01/16] dt-bindings: iio: adc: mt6359: generalize description for mt63xx series
+Message-ID: <wTd36596tJhd0sPk-1MSi79xz14IBgTKXpD25tnKuRXLfGywkoenZ-wIDtOvRxEZL8xpqijZ0nxMsCFTOJgJq__y26VzCpe_9f0JQGWrJVo=@protonmail.com>
+In-Reply-To: <20260512141313.425535d9@jic23-huawei>
+References: <20260512-mt6323-v2-0-3efcba579e88@protonmail.com> <20260512-mt6323-v2-1-3efcba579e88@protonmail.com> <20260512141313.425535d9@jic23-huawei>
+Feedback-ID: 173184497:user:proton
+X-Pm-Message-ID: ff83f57ffc4d622d3c6e2bc332a83f392b3034e1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260510-adf41513-iio-driver-v12-3-34af2ed2779f@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, May 10, 2026 at 01:42:21PM +0100, Rodrigo Alencar via B4 Relay wrote:
+On Tuesday, May 12th, 2026 at 4:13 PM, Jonathan Cameron <jic23@kernel.org> =
+wrote:
 
-> Add tests for decimal parsing helpers kstrtodec64() and kstrtoudec64().
-> The test infrastructure is reused from other kstrto*() functions, i.e.,
-> the decimal parsers have fixed base of 10, so base field is used as
-> scale input for the helpers.
+> On Tue, 12 May 2026 08:18:15 +0300
+> Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wro=
+te:
+>=20
+> > From: Roman Vivchar <rva333@protonmail.com>
+> >
+> > Update binding title to the MT63xx, since the list of compatibles alrea=
+dy
+> > includes mt6363 and mt6373 which don't belong to the mt6350 family.
+> Hi Roman,
+>=20
+> Wild cards have a nasty habit of going wrong.  I'd prefer to see
+> language like: MT6359 and similar PMIC AUXADC
 
-I think I gave you a tag at some point, but in case I'm mistaken here we are
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Hi Jonathan,
 
--- 
-With Best Regards,
-Andy Shevchenko
+I agree that it would be better to specify the exact PMIC models, however
+'similar' wording might be a bit misleading here. As far as I know,
+the mt6363 and mt6373 use SPMI, while mt635x (and older models, like
+most of the mt63xx series) use PWRAP (a custom SPI-based protocol).
+The mt6323 has an older AUXADC revision which is not compatible
+with the mt635x driver.
 
+Would you prefer more explicit list like 'MT6323, MT6350 series, MT6363
+and MT6373 PMIC AUXADC'? It's a bit mess because some mt63xx
+(like mt6333) are sub-PMICs and use I2C instead of PWRAP.
 
+> It is less important here than in many other places because the
+> file has an explicit list soon after this, but none the less
+> we've been bitten by this too often to think manufacturers won't
+> throw a completely non compatible part in the middle of a wild
+> card covered range.
+>=20
+
+Best regards,
+Roman
