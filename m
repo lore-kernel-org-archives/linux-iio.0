@@ -1,102 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E201389118;
-	Tue, 12 May 2026 14:44:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D568346A04;
+	Tue, 12 May 2026 14:49:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778597088; cv=none; b=UD/cmGSi/I6CrwVNmHnqNkNO6MALYS8dyyAAs/Qn0Z0TWXd9UEGOrDKCeySIF2/xhy+h7GyX5mSAqzuHNA6fjflPSPwQD2WSng1FGr6CwlvlvTiE6XWdFfupUNjsYu1syuQVN2TeRUiigrv2VzPjIVb6Yq+IbAxACVlF0LdQVrw=
+	t=1778597343; cv=none; b=DU7Ojq2KmmVYu5z9OmqGjHpmAuS9MXtkjsYZw/CZj6MX7Yf6aKHavRmq73KenD+CMgIncd3b8auKj8Na5iO+3l8SVzp4lMQ14kLb/588LOU0eFd8F6/7a37uHBk9mI20juk3FZIBSMirBlYlZg/uwY9ZlD1XMf6Y6whRNwhXtJ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778597088; c=relaxed/simple;
-	bh=Uvtx33gVsoII9dmOYcnu/6OqaozcAFiDG6/Jts9qnYU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sBV/7f69w7hB33tEMSqF/PVPLUKgv8yqobfIO9YIq9we69FxPvpcniZ1Z/dBJKQcKXbXsMQ2B4ITXYZwLcaw7yHfkmpqmMnkaUu3miCZ8XM0T0xZ6N5YJAL4edxQyVqe+fRTAgIw+xSIsLrijhys7XLyd9yIUbAV8vKawaQp+HM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hm2ARjLy; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778597343; c=relaxed/simple;
+	bh=HqMWsj5xhVtEVnrADxvN0x0WXP1ecXU7oSbUzyMJ87M=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uiKan9VzObWGWrv1rEV1ZdK2yK2GMRfxBbXq2uE8DaXZT4YKWdV3u82/aGQMuzxbV7f0vhlQXOJhDrPX1G7pjRY58NDxUL8qaaY/qzHpbN11x47IWuhlWLe1cvD6nEef8IGVgeUP0AUQyDLGvnVIuGLdJhcE95P+q5ryP7BAFJU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iE/5yAkl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hm2ARjLy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778597087; x=1810133087;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Uvtx33gVsoII9dmOYcnu/6OqaozcAFiDG6/Jts9qnYU=;
-  b=Hm2ARjLyFz9u98jGIlcqHdXeiDZSZJtf8Y66LZ348jqsbXWNlTvllA5b
-   vdrdUom33mAmRnv61L/iZ20nyywaqjK+xmWC1kkO1ZDQ8yLfXX1fOzsf7
-   cwLz6qK4bGv5Ni2EoVPjtVwNj18ibx/3FMbR2UVlhWp64Dndk19F8z7gm
-   mjo8ns8HXCQjBvJCMFHAdlV30ynak3Ip5WtYdnTsBySxcIX+ldjV2Q7uO
-   K7RKJl9vf1UUDKg4cqjhz+EpgN4XqMsEvP99vhq0T4fJt8Cd3HduTZ27C
-   0dekLJSXRTdVbYXCkBFvV+BoRm3miHZVGe2MSIHDNGZuuxSwMdbonAiMw
-   A==;
-X-CSE-ConnectionGUID: R2cq2taPTRmZK6t8678XXQ==
-X-CSE-MsgGUID: niKAjb5cR/aaVcgsAdpS4A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79527351"
-X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="79527351"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 07:44:47 -0700
-X-CSE-ConnectionGUID: t/M+o4PeSbu2mJwAZ4K0MQ==
-X-CSE-MsgGUID: XCqjoh+cQiinnlXLZQfKnA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="234723680"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 07:44:44 -0700
-Date: Tue, 12 May 2026 17:44:42 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 0/8] iio: magnetometer: ak8975: driver cleanup
-Message-ID: <agM82tuZGvfKlSdI@ashevche-desk.local>
-References: <20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6@gmail.com>
- <agLu6wF3JhF9zZDN@ashevche-desk.local>
- <CALoEA-y-bLur7tBnj61hXSnOdbJkco3zyAH8v_-y8+VFfVyEgw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iE/5yAkl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB8BC2BCB0;
+	Tue, 12 May 2026 14:48:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778597342;
+	bh=HqMWsj5xhVtEVnrADxvN0x0WXP1ecXU7oSbUzyMJ87M=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=iE/5yAkltDhxuPVUcng64WH8yyhDz/sAKT1fBdOmrvmx/LNih1u4QUqcrcynoolrE
+	 p++udCnlcA6f4zjfUYcmxRL2FDmcUmMyiVjWIhnjRuLifc/vt+e/iSe+DfaEui1tqc
+	 7TcW8imBKHR1GPvde3R4KbPdIL3t1u5OCBBQAZHdZPSmtV+n4mzG23M4CROqQR1GI4
+	 uh1QF96qLu6Vm9BeF7ToPxLdrPvef9rckW+MAhRh9NP7V9I3SqMy/z4QY22xWV5NDJ
+	 4A2zPkA05hApRvstKMLG6UN3XnwD6aooZ7idiR0EcTxKIIJ/iFlbcNHsji0YhGMYP3
+	 HUc1m+9zMx2Rg==
+Date: Tue, 12 May 2026 15:48:53 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: =?UTF-8?B?TmF0w6FsaWE=?= Salvino =?UTF-8?B?QW5kcsOp?=
+ <natalia.andre@ime.usp.br>
+Cc: andy@kernel.org, dlechner@baylibre.com, jikos@kernel.org,
+ nuno.sa@analog.com, srinivas.pandruvada@linux.intel.com,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org, "Zhang, Lixu"
+ <lixu.zhang@intel.com>
+Subject: Re: [PATCH v3 0/6] iio: hid-sensor: standardize scan_type
+ initialization
+Message-ID: <20260512154853.10aa2902@jic23-huawei>
+In-Reply-To: <20260512012302.20883-1-natalia.andre@ime.usp.br>
+References: <20260512012302.20883-1-natalia.andre@ime.usp.br>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALoEA-y-bLur7tBnj61hXSnOdbJkco3zyAH8v_-y8+VFfVyEgw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 12, 2026 at 11:16:17AM +0200, Joshua Crofts wrote:
-> On Tue, 12 May 2026 at 11:12, Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Mon, May 11, 2026 at 01:26:09PM +0200, Joshua Crofts via B4 Relay wrote:
-> > > This series is a continuation of the previous ak8975 driver cleanup
-> > > effort, as most of the patches were picked.
-> > >
-> > > Changes include:
-> > > - using BIT() and GENMASK() macros
-> > > - moving to devm_* resource management
-> > > - adding a scan index enum
-> > > - moving from using wait loops to iopoll functions
-> > > - various code style changes
-> >
-> > Thanks for doing this!
-> >
-> > Jonathan, the same Q I had in previous version round, can we get some patches
-> > applied to reduce the burden of the series? (I think of 1, 2, 7, 8 and might be
-> > more.) As for the series, I think if this version is still not good enough
-> > (patch 3) we need to rearrange it so that patch is going to the end (as much as
-> > possible) of the series, so we want delay the 'good' ones to be applied.
-> 
-> IMO all patches excluding the shared resource management patch are good
-> to go. I can send a new version reordered to reduce the headache.
+On Mon, 11 May 2026 22:16:16 -0300
+Nat=C3=A1lia Salvino Andr=C3=A9 <natalia.andre@ime.usp.br> wrote:
 
-Let's wait for Jonathan. Whatever he prefers.
+> This series refactors the HID sensor drivers to standardize the
+> initialization of the iio_chan_spec scan_type structure.
+> Direct initialization using compound literals was used.
+>=20
+> This change improves code readability and ensures that all fields
+> of the scan_type structure are properly zero-initialized.
+> Additionally, for the hid-sensor-accel-3d driver, the channel
+> initialization loop was refactored to iterate directly over the
+> scan indices, eliminating redundant logic.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Series looks good to me but I'll leave it on the list a while to
+both let sashiko catch up and anyone else who wants to can have time
+to look.  Also ideally get some testing.
 
+Lixu, if you don't mind, please can you give this a test on top
+of the more radical refactor patches?
+
+To me it looks safe enough but this is the sort of series that subtle
+typos can hide in!
+
+Thanks,
+
+Jonathan
+
+
+>=20
+> Nat=C3=A1lia Salvino Andr=C3=A9 (6):
+>   iio: accel: HID: hid-sensor-accel-3d: Refactor channel initialization
+>   iio: gyro: HID: hid-sensor-gyro-3d: Refactor channel initialization
+>   iio: light: HID: hid-sensor-als: Refactor channel initialization
+>   iio: light: HID: hid-sensor-prox: Refactor channel initialization
+>   iio: magnetometer: HID: hid-sensor-magn-3d: Refactor channel
+>     initialization
+>   iio: pressure: HID: hid-sensor-press: Refactor channel initialization
+>=20
+>  drivers/iio/accel/hid-sensor-accel-3d.c       | 27 +++++++------------
+>  drivers/iio/gyro/hid-sensor-gyro-3d.c         | 24 +++++++----------
+>  drivers/iio/light/hid-sensor-als.c            | 18 +++++--------
+>  drivers/iio/light/hid-sensor-prox.c           | 19 +++++--------
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 20 +++++---------
+>  drivers/iio/pressure/hid-sensor-press.c       | 19 +++++--------
+>  6 files changed, 42 insertions(+), 85 deletions(-)
+>=20
 
