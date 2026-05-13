@@ -1,135 +1,123 @@
-Received: from mail-dl1-f41.google.com (mail-dl1-f41.google.com [74.125.82.41])
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57835218E91
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 15:08:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778684910; cv=pass; b=n4yV94Ongz9fA0+3poUw55XlR/S1ASYi9QStFIDs+QeCg5GExEHy8tLALfuSXP6KNnR9v63flhds+3kNjbRSd9yrx74gN8c1VfsAF95hPSjiK4Kdz6/4F51Fk255yC37oYwVqs+MPxJK7/mWZBZtUgtmZvNUgfIJYrWMNyk7PdQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778684910; c=relaxed/simple;
-	bh=A1XioEkQCxu7L7Wf/qeH/pwCt0V36L8KzrjydDFazJ8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=niSmossfBOgCMnZYDcRwCt2kmKakK/wLHyWfYeag2VIb6cIqMRgUWxql6UGNB70CUC18vtvSJVJ6ZSKIm4gtRlTj1kEWbwCghrbdBEtII48JC3ArdaxgbVZ9yIk0/ycMGXzIaPLkR+IF4ACqmlVyaHPkpI9kCD3ij1CGgFIRCEs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=frfdm/DG; arc=pass smtp.client-ip=74.125.82.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF01047DD5C
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 15:09:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778684974; cv=none; b=DZYnfbtsk4mIhIPZ7lqkmpXsXr3crtaL2jjQDQeO+KSpp737y4mhltMwvejOP7Sn7FxphCkZyVddzK+voCOJybG+pw1voXNJh280cFm5Mm1VOe6+u791wUAduGLkWlS8+DRPqzEBjSDppRCw63JoZUD3TQP3vRqolpRGYPXyG4E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778684974; c=relaxed/simple;
+	bh=6xl1OZ39wivS4tq4DwCHKYc6atV3f69XK8Y07bvYulk=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=B60ZS1eQvr0IwUyxLp6avFp7GBQMLkIkcxWLKJJXcYLR5UXxudOp85XvdnfoGbv2kZvUEjwJ9QXIL2/cHsgYRrGBqUe7Y4HSmMPIuKPJ95XMsa+hfxRThZnBeqvJOgFRX4KAodZ6FyLBQ2JB+JWYOwX4sHGoHg5KdmpmbdBdUA8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UKTY2ck6; arc=none smtp.client-ip=209.85.221.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="frfdm/DG"
-Received: by mail-dl1-f41.google.com with SMTP id a92af1059eb24-1329507c387so883733c88.1
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 08:08:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778684908; cv=none;
-        d=google.com; s=arc-20240605;
-        b=bIzSw0V2tpNCvPuu/bbaS4Yg3YHMEHDP2EnaJQ04L8QpYYyTqZWAlwRlElAeZ/S7TE
-         4A1l7i2CDNCzlBSdRdlTLNfG3YVvoKqfmp/PyXa1IO7eD2sCu8UEaHSW0L5ZZsiqMSFO
-         dK6xt490OK8Xzb1+bK92lBEhUXltubLnI9oxEU4llqS4d7afvltS+dN4xxuGFsHX0ms8
-         isAuEd1p17eCaPVK0JY3gLPbwixlBdnaKU8g8XOTVP/L//B71BnTzn6RnNdJZrcn1B4Z
-         KhyVoyPDl2d+MWVgiDwX7fHOHf0fYTJf81jNktCOQJ69FqyCGYAJXTse4X1NnkjxlYTU
-         qDvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=gfdsVavF1ADNUkRaWbbhdb5o1A1seHzrAfprJOgGQ1c=;
-        fh=PCofPnZnVCj44LMlw1nTZILFDjiU0OIu4uRNQURNFMY=;
-        b=PZTvr67ppmUVLZIlFJZHmO3ILrli5rVXQwnkX/lkx7FZpZHTWZIGvvhHTLNBFCW6/h
-         nvb02yBQRpI5Ay9xFhWn5qsf+ikzUPEJvRk54pOaXT2W6MC+jDWyzpe2o5ZafpUHsdiY
-         5ov8lRpBCVFjgEO1GwyFjbaKuF94C5Da/R4my7QALjybqwm8ib6N6FUdmlQTBLzw1LN9
-         5S5xeIQRh9CCW9AisPBElv5S9SE5L0BtaRFYs+9vZy7LDs601bclKRLJf6KjQUfFGx0f
-         Dc8RBzvBFRGBp5v4AnoDPEGRxg6zHYjcqvxqXSIhZUfhch0JimGt6ZvIu2IUa6jNElJH
-         uNEA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UKTY2ck6"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-44ccbd3290aso5583731f8f.2
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 08:09:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778684908; x=1779289708; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gfdsVavF1ADNUkRaWbbhdb5o1A1seHzrAfprJOgGQ1c=;
-        b=frfdm/DG71+ksjIfiinp4XmA3BmILCicxzWZc9plwm2IJBFikUDZsTIfnWdLQaw1Cg
-         R3uWcRmZsJLg8FhIgsX1qajEsfZqlEvEADxhU4jYri/+xdrON8Gutnp+wmn0yC7kxQi+
-         myzrSPK6q6xtrRGSpPeJMpR0VJf5C5o42vC3KEHOwVf9R0MrJePVtrc+tFS3BO7E3Qxg
-         wwH/UuS+RSIZkUJonDqaumx7nXwd/BgdvGAqYgN8uH7Rw9iEgPmksIQaOgJTIL0bIFXF
-         p4DfFe1kJLMIItlTaODpYwA/es400ylRhLWklc3ao60cJ2sihMd3a6/mnJ3ZqhXinEko
-         2imA==
+        d=gmail.com; s=20251104; t=1778684971; x=1779289771; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=90qdZzTNiTsSE1LEeRcQYoXszr3HSv7vr/Z4t6wMOgk=;
+        b=UKTY2ck6pXR6CIazO9ViC2GBc8u7VlKlZELwDr4XBON+z8O34h4T8RJfuyqqLJkTcE
+         5TGtLNllxjZcgjeg/Pn1/z9l42mWqCjd0iTYJHtkhn6k0QY/TyRvxWlWrBdk8ZgSfDnl
+         Yc5B8aBaQpyRTi1LThoiuOZu47gkgQCrjvNKplqx4M2jFq9wq1H2TcuE9xbejlXqqaRm
+         IIgOSuPdVj1pew/ap8JQ4lM+cVgxfBpDJL/Cn4XpgGkyv13ZLgBN8Y3eYVz/0mlfs6jV
+         Mqv0VXQ1ydsNh6N/NY7QPNojx8WVA1So4nzcZfvk0juT5oVcnJu5JFnHVtRFuRytQwcU
+         hPxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778684908; x=1779289708;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gfdsVavF1ADNUkRaWbbhdb5o1A1seHzrAfprJOgGQ1c=;
-        b=NNR4zby+MjFLLLSDbiHyV8AJsuqhAZu62y/L+iEA7x8NCBni/RTPOJTSoMM5ML779D
-         o4tWTscB3uVuH4E9FMlNXPgAnZT7nDMk49/vlCOoycqHFk0YtKmeVcC10xHQw31zw0Fy
-         9M2o8yPW86GGS57005nclUCjq5J2OPuWTd/7cImJIGyDrSMbpByvnnE4QASmAx/R3aeg
-         UKBQTw4TcP/y9egCWnaqI/tKMZ8Rmmradg3vzhJrZVKEy2vEEnXaRMRDUK4npWCPVoIV
-         ebNF6TJZdTqX3nUUevjj6wp5qvkX0UlJHe9duD2rwXarKKUWIJ2x4JuVARHm1aS/3S9N
-         hzQA==
-X-Forwarded-Encrypted: i=1; AFNElJ8t/UJHEzJtYm38J9/SF1EzK04Y7++VqDdktm6TYxpnDtPf0D7XbXgNoYAiHI2T05HxeYRrssOEctk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyHSrsaHBFR3ZkdfroXX6+6SJinMWGoIzDARjUVPwnt986X0eZj
-	vCbHT3D/r6HHnUzl43wgQufjjy1DGZkBMkHhT2D3fqWZmJDG2UUK6TOmnl34SyBF6wMmZkcg9Kd
-	ME75vsMh4tMt9f3J1jLdXMyP9falWS8v0wNjfmdE=
-X-Gm-Gg: Acq92OHggrK2c41SmeEYjm4oC22N62l8BvGLBgLWXEGQoPD67EffAQpkYt7PddRS+CK
-	KOw26xXp8K0jRQzceoikf5bv5w1CNDtExGgsDjjb6aigEJEC6yUHihagDRVtsV1Bd/2q6Sb6R5p
-	bv7/yIWU+9yWlM6jgbpT4olyUMDox4SmoBRPQBmG/MAQidLCVqPPLfiMQeu04/RN0ZeKUlFC3DG
-	9nxP3+1Lql+JyLMozFeJq9VriwGFN2j2PGT6E6UQN+WBRJ4dlslwvStyaABV+CGhPHYpBTvwRg2
-	SmdPYs8mIw==
-X-Received: by 2002:a05:690c:3481:b0:79a:7157:879 with SMTP id
- 00721157ae682-7c6dd2a8f86mr28172257b3.50.1778684430546; Wed, 13 May 2026
- 08:00:30 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778684971; x=1779289771;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=90qdZzTNiTsSE1LEeRcQYoXszr3HSv7vr/Z4t6wMOgk=;
+        b=b9jsGUQD2X6HBFdBU3/veGqevRmOrknLb6IE1+QzKUsD3eryUq+Wcxh92wKI5RYF91
+         EoqBQF7T7WjCsNw5+eDI5aXCQHRgRJ9z+ls9CqG+VP4rXdKhMbQew1O+QQeH/Ft0WPW8
+         6eIgdv4El5LBM5/E4trbNnL0KpeJ2gmbT14Q8hBRimT4b9rKZGfK6osh5bTl0Fav9TGH
+         cxXul62HHIMxyKYwFqu3NRxocncA218xZdoymknOfiZse4PYTWu6gMKO4j71Lpm4pCSn
+         6CCxvlgLV7AMHo5JPHPZP79wkR8dHzuNrCUdTw/vE/Pi7IJ/ez7H3Hku7AaA6rvt79qv
+         8+Bw==
+X-Forwarded-Encrypted: i=1; AFNElJ/w6VeEibTiOjbcQSLDXGHlX653G+GhAhOAb8peQpWQp2I0V8sNtUUOYBmUjNAe7qn5lHUa9EpEc1Q=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyNo8o4pK9aBE/gLtFB9gmS1mMRkN3Rsg17GIcX2CaX+rPPweE0
+	aMW0vA/dvNg8xbvUuM9i1dwn+nuRd+JxwFvVJJTG+Fc77wJdkxpfLeDJ9xPM0TKN
+X-Gm-Gg: Acq92OHSJRuu1/uSyXr3gTTJZ3Zj8+gJG+c5uTxff2h4Cmi3mMv/8E06YZaBn4rRd8k
+	39IO2QKhoEGtzF6LxANqe6SIFMhDj6Vn/ZL0bBcFy/yx8bNQ4KHSvVTpNj1R7vvSetQRb7DLbUj
+	YHorcQdOqQXh7tEcXMlHBtkfa7dOtxZcmzeeLt2Q1U4KOz+cRKijTNv66dIhrLevMAI/2TT8oAj
+	hGx73ABKrCJzQL5q6xTJZg9lBwGGOGmpI84axWJaOVmFZyXdAzLZMSlVYb/zvb7a92PvTWJXxFs
+	JwxTePSj0QgAkIsp4PDkWVp8WU6cGJGhvYannfiCJBHs7KrPMVIMAPGdouIufncbkR851UkP/iM
+	UGjPh5UXrhPYV/ziOwhA2JPVchiU7Roo2MDajT5BQ8jpVP/m3H5YcKIqEH0Fl+hBuI9buqBXrp5
+	kNNmkDbwIS9GJN/OLOXbZSABp5WT5qr169r6ozL4PZBSCASAlBY5ZFVotQch5kaBS2CsfYJJWWm
+	BuQQPMZrwRkOXOEcBAPRy7NhJ0ucuAFJ2EDO6t76v7tEkB3WfYQudDS8f3/
+X-Received: by 2002:adf:e30c:0:b0:45d:4688:2571 with SMTP id ffacd0b85a97d-45d468825c6mr1533975f8f.41.1778684971053;
+        Wed, 13 May 2026 08:09:31 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548e4bb87bsm39821178f8f.2.2026.05.13.08.09.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2026 08:09:30 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Wed, 13 May 2026 16:09:24 +0100
+To: Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH RFC v4 01/10] dt-bindings: iio: frequency: add ad9910
+Message-ID: <vklczsi4vk3sqf53zifslhp5pysdmj3gfyhvdgrwo4bg3wdkxj@lnbftaf5jcbf>
+References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
+ <20260508-ad9910-iio-driver-v4-1-d26bfd20ee3d@analog.com>
+ <20260512193129.777d62a8@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260513013638.147606-1-m32285159@gmail.com> <agRfpI_eqG7QHYas@ashevche-desk.local>
-In-Reply-To: <agRfpI_eqG7QHYas@ashevche-desk.local>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Wed, 13 May 2026 10:00:18 -0500
-X-Gm-Features: AVHnY4Kbv751BmzfoNU399-2gX4JpWDdAV2q0rTvy2qYXNfGWdvRLPNRB0kR6lI
-Message-ID: <CAKqfh0FbgATxfz__pF4WQx+pgxJ0s-D9S6bH8Lcky9npy7jrUQ@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: imu: kmx61: Fix potential time-of-check to
- time-of-use race
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, sashiko <sashiko-bot@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260512193129.777d62a8@jic23-huawei>
 
-On Wed, May 13, 2026 at 6:25=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Tue, May 12, 2026 at 08:36:38PM -0500, Maxwell Doose wrote:
->
-> The Subject can be made better:
->
->   iio: imu: kmx61: Fix potential TOCTOU race in kmx61_write_event_config(=
-)
+On 26/05/12 07:31PM, Jonathan Cameron wrote:
+> On Fri, 08 May 2026 18:00:17 +0100
+> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> 
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+> > configurations for clocks, DAC current, reset and basic GPIO control.
+> 
+> I think this is getting close enough now that for next version you should
+> drop the RFC (which is probably gating DT binding folk giving it
+> a detailed review!)
+> 
+> > 
+> > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> 
+> > +
+> > +  adi,dac-output-current-microamp:
+> > +    minimum: 8640
+> > +    maximum: 31590
+> > +    default: 20070
+> > +    description:
+> > +      DAC full-scale output current in microamps.
+> > +
+> Can we use generic dac.yaml defined output-range-microamp? The base will be 0 always but
+> that shouldn't matter.
 >
 
-That all sounds good. Will wait for Jonathan to see if he just wants
-to merge as is, change the subject, or ask for v3.
+would that be fine even if we do not have those child channel nodes in the device-tree node? 
 
-best regards,
-max
+-- 
+Kind regards,
 
-
-
-> > A time-of-check to time-of-use race condition exists in
-> > kmx61_write_event_config(). If two threads enter the function at the
-> > same time, both threads may pass the check and get to the lock. Thus,
-> > when the first thread releases the lock allowing the second thread to
-> > start execution after the first thread modifies data->ev_enable_state t=
-o
-> > force returning from the function, the second thread continues executio=
-n
-> > regardless. Fix this by moving the data->ev_enable_state check inside o=
-f
-> > the critical section.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+Rodrigo Alencar
