@@ -1,63 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 647F13B7B9E;
-	Wed, 13 May 2026 10:53:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 272F13806A7;
+	Wed, 13 May 2026 10:55:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778669637; cv=none; b=jjp/kDZ3MV1xma6bmOyG2tSatTtL4iyDLqu5ih3fJM+f/77wJYgi1tkERfQ+vt5/JJj1h+9kMNUypig8neixSULewIFNG4G27CHCFpH5JipKczchCGv/pW5PhEY/qSEGWuITByBORMX1Rcnv5S7qdaE8lgwk7+7lSXQLLg2E7yE=
+	t=1778669741; cv=none; b=kSmyu5KQ3I4zpf8bFmfWrnYEAbQAlO9/7ebE/lcq2G1xLZghBR3AvYVQntstjoDSgastloSLn7r/TVvsSO6UzK6xr325FvXTZkzWOgJO+yEdwsMhKehvaG/4weHYTCGG1EE4hVYL473ObA2bxkO3UzMAC8s7b21R8AWN2JJPAB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778669637; c=relaxed/simple;
-	bh=1AxrIZee8mUjA5ewU8xipjThvn2WeWg0jk/1WI0ykVk=;
+	s=arc-20240116; t=1778669741; c=relaxed/simple;
+	bh=25ewgeTPa6XKOgYwQxiWFZpBia3tMhVkypFZfaLGri0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QmRJf3tBR6VYK2+zoM5tsqn1lVapkcbHMQks4Sw4YW2RoHUuSfyc0V3tf/s4n3m/zLCwBQP6lImYppgtwu1QnNhRUIXdMedEY4IYsckubNpFiLsPtrUCywF1i5LuvfYvJ6n3APj6+ZCRnTw+ErmWkKbI2KhgygOkYuFSPKpAs8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JQddftd3; arc=none smtp.client-ip=192.198.163.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=hdUMo6dzRcClBDDmiFDbFutIiyhgOQuLDK+LMB74fJAtpYbAMcsTuRyc+e+y2xUfkBm3n9ggfy9VoNwudamt4LjwjTo9HiOkO/sPZYDKlKuzOBFvgPOJQ9kzp3PkC5gMwvY/nP3BUESMdYBMdC5kNwYoOv19zxJdQQAil7D/+Po=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DMZNVUNS; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JQddftd3"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DMZNVUNS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778669636; x=1810205636;
+  t=1778669740; x=1810205740;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=1AxrIZee8mUjA5ewU8xipjThvn2WeWg0jk/1WI0ykVk=;
-  b=JQddftd3UdHADdVVAGu4HFvqcSDYeZKSh/1ICbIQ6hEZrdBQQybDn/iF
-   O5xnO4U0/Wa+YpYxlEZT6kSjqBDiHINZH6VkyOVNHc9ZyK/tpTj0hoZBR
-   oFwCl9UmfT3lT+ddIpqZG50kwNDN0RAIHh82xcx5OHfOvNY5KIJtUmJeZ
-   TmiP3EwI0ojDGc2c4NFIjlEJIKUFIY0e/WavXPxguJdJ4HBNyv7b5Oo2n
-   LYBnQPUujThtJwPjlWVvKQFzrEggKkdEzBeGTJAEbNwZwNCj+zz7j1XS+
-   2hQHbHwRB5M6u5P+K48PtLXDnIASnDxFv2NAh9gXLmA6WSHD94WDj1Rv9
-   w==;
-X-CSE-ConnectionGUID: l+WGcak9SceKoCf2kGWrxw==
-X-CSE-MsgGUID: LTHKgbpAQFWpRW9zAjmUaw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79449518"
+  bh=25ewgeTPa6XKOgYwQxiWFZpBia3tMhVkypFZfaLGri0=;
+  b=DMZNVUNScoOLQPlz1d1Y0a7bzoH3MdZIYWq3stl6Cc4EHVd+HS9NGkzM
+   L/Bx0yRoZc6LlqCS2E5yOEY5F2BqGkjHaY90cbqwM5/J8WFU6/DiQ84Is
+   BYTgnGwtfQ0o3esret9yhETowzs1XW6Rz6+2idEOEjog6bAuQhtsLmHyl
+   oCWimRCgEQicqpTG2BNVCSs3LNbUvNGhAv2o2ZmOarf98rfOZoH204F2C
+   utuKxJrHxZEqWSehsoCcanAsmtrhU4WL1BUg5kVnGnrzEbC6NbByj6Dqq
+   zfPN3izw3tuymJoTTHCf7fFORxofUDa+6qQOwEjxtlorNze6wysdP6EF6
+   g==;
+X-CSE-ConnectionGUID: tVJFHIIiSi6q9udp/33Shw==
+X-CSE-MsgGUID: PYGIffLBTUGVd1N77I24qQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79545044"
 X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
-   d="scan'208";a="79449518"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 03:53:56 -0700
-X-CSE-ConnectionGUID: XPRGVeq3Rmy5HvACLGK81Q==
-X-CSE-MsgGUID: ayfzuQmoTYq7p7cJC1RroA==
+   d="scan'208";a="79545044"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 03:55:39 -0700
+X-CSE-ConnectionGUID: QmSk2qzZR0u64dp5mDgWIA==
+X-CSE-MsgGUID: tCBFVPsmSQ6p6ZB/jpYCXw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
-   d="scan'208";a="231665666"
+   d="scan'208";a="276158129"
 Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.106])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 03:53:53 -0700
-Date: Wed, 13 May 2026 13:53:50 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 03:55:36 -0700
+Date: Wed, 13 May 2026 13:55:34 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Michal Piekos <michal.piekos@mmpsystems.pl>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: corbet@lwn.net, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, skhan@linuxfoundation.org,
+	gregkh@linuxfoundation.org, hcazarim@yahoo.com,
+	linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: sun20i-gpadc: support non-contiguous channel
- lookups
-Message-ID: <agRYPp5JQ3CyCQHJ@ashevche-desk.local>
-References: <20260513-fix-sunxi-gpadc-sparse-channels-v1-1-6c21e290bcee@mmpsystems.pl>
+Subject: Re: [PATCH] Documentation: iio: fix typo in triggered-buffers example
+Message-ID: <agRYppUhsyKs3WBt@ashevche-desk.local>
+References: <20260513100657.8498-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,43 +62,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260513-fix-sunxi-gpadc-sparse-channels-v1-1-6c21e290bcee@mmpsystems.pl>
+In-Reply-To: <20260513100657.8498-1-sozdayvek@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, May 13, 2026 at 11:51:31AM +0200, Michal Piekos wrote:
-> Using consumer driver like iio-hwmon which resolve channels thorugh
-> io-channels phandles will fail for sparse channels because IIO core
-> threats phandle argument as index into channel array.
->         eg. <&gpadc 1> will fail if there is only channel@1 specified
-> 
-> Add fwnode_xlate which maps DT phandle to the registered channel whose
+On Wed, May 13, 2026 at 03:06:57PM +0500, Stepan Ionichev wrote:
+> The function call example in triggered-buffers.rst uses "polfunc"
 
-.fwnode_xlate()
+No need to repeat the file name here, see below what is better to use.
 
-> chan->channel matches the hardware channel number. It allows sparse
-> channel maps to be consumed by drivers like iio-hwmon.
+> (single 'l') while the function is defined as "pollfunc" (double
+> 'l') on line 24 and referenced as "pollfunc" further down on
+> line 56. Fix the misspelling so the example is consistent.
+
+Line references are fragile, try to describe in terms of section and example
+(names).
 
 ...
 
-> +static int sun20i_gpadc_fwnode_xlate(struct iio_dev *indio_dev,
-> +		const struct fwnode_reference_args *iiospec)
-
-Broken indentation (I understand the motivation to shift left, but I leave it
-to Jonathan on how to proceed with this).
-
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < indio_dev->num_channels; i++)
-
-	for (unsigned int i = 0; i < indio_dev->num_channels; i++)
-
-> +		if (indio_dev->channels[i].channel == iiospec->args[0])
-> +			return i;
-> +
-> +	return -EINVAL;
-> +}
+Code fix is good, nevertheless.
 
 -- 
 With Best Regards,
