@@ -1,231 +1,155 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B7B3DD861
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 09:41:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5B7E38D018
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 09:46:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778665271; cv=none; b=vCcEc/5NiiUdmECciuA67GB3W/MADee+cZ6YhNjRfMXucHgO/cuIPko3iiNPVxk74EJj9PaISzFjlDedIjgUphwk5zc6eU8eCIDSVt8w1daRaZ1/fyekV2GmTD++6MOFL4xCGrTa//frrXnlxEsIpowoi/1XYhtz03WXRO9cfwQ=
+	t=1778665596; cv=none; b=W7VPVGonBY0I9hL7E7aoJutg+eIa4EVmr2ztaJzGu2yf2Xt2MRFOYB37nPWH+gbE29Fm4OrH+YLJvG9xugrYPoqO0THMKT11iH6LJRxJJWcXol1oYOAwndXBwPq71GwXSdksUB1r0E746KtcysIVIVM/vvKeoFMCaH+G+LZ7gVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778665271; c=relaxed/simple;
-	bh=PAU2R/mmEAtckT1JPUyhTUH7nnNckQQzn5lSj4Tw6o8=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SGEaqF3CeDUQwRMxYqPWwtLoe9b3sZNX+70X4voGthqr6qQAd8cEcPv8w3MukIcWJbo6Qvmhgrnhj5FmjeS6knzg23/SwCuZWjKlnPcFVR0VhebNDVdvXMPcRcObICQlq29mM/7bZDoF+GimI5LVNeP4Fokcku078JcpFeAwAvE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=asahv3DL; arc=none smtp.client-ip=209.85.221.49
+	s=arc-20240116; t=1778665596; c=relaxed/simple;
+	bh=pO2Gj0v2j/36f3z1q/IxyG4uyJpEwZsOyGHqPuWLmFk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=arOnDES+4D2JGQ+AXKaFy0Bc1WoHOMcYnEJSJ8veNC3UHDAQzYIgYuI0s+MxSyO3+hxL+IZua1fgjTXw2vfYGInYo5ePfxODViFd4Hk2Grq4YRYdN5sQ1rAa+yVDFzb7Eoaedti9tqcTrnZuoh0Hgv50LpZxtFtFDUEKUc3vVXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=r/mGninc; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="asahv3DL"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-459bf19e87bso1814401f8f.1
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 02:41:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r/mGninc"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4830b67aa6bso7327645e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 02:46:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778665268; x=1779270068; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=OxLUoJngBn+Ee9sp6PTsXdvWew0l0KazwAtq9GZfxlQ=;
-        b=asahv3DLvkanN8Eldv+07C5jRWKy9/AsEDUgRNjAbuC/q3tqv8KtIaOFGyMB0VHDEQ
-         L0kHKf4s/MCt7ztelNFAxsscH8gghhSsJqTFmVfXpSWA+1Uw64K3TLhjctT1EaFCS5M4
-         yoxf7ccJbSYEflDN7o1JJBQs8CO3v8UmQfVK79zTx5nrmKcxXCZcqMp0fsvbCJaH9pRo
-         I9OqYJDSQJSQAa8KQfvU9l9iltYVcKn1m6RDeVUYwPwTu1ZHERdb13G901YleB1E2oJh
-         Tln2WRsshpxaqCMG4W0EdgtjbAZO3NaOQtpkLWlZk8946QauPbhvVwlU60p6HlmA+XXT
-         H6TQ==
+        d=gmail.com; s=20251104; t=1778665587; x=1779270387; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Yv5NWoKadJwa5peeIuFPciCVZufaAVsLKsWJ1tkRxdc=;
+        b=r/mGnincyXT9sUm0kDt3/04SX8Xq5Rmc9zdGQGrA3/y7pQNgrTbcHODKh4hqSjO9tv
+         ZdLU3evlPVXto1dmpc5AHaYDGismYnPLH6vBfhsOmTwmlDaBS9KkS9rDcPX/pC/jwwsf
+         JiSBKGlqYD9Roy8gcBnp6EO57f0hOfWCYoj/OQcwcPQ0mFyZL22ikE+D0GOyLjFpwQPF
+         ac1fiZVRojAVpXR8ojSgLwbKvHUI1GXOzurBOzfkEr29wlk24eFQeQX5WoJp9BeAUJ4a
+         lJbRZ68fvtRK4XgMWVoq/84/jflP0f/JMPGtrCfpDpD1RFO9sw4USwvsv62tQ9YUKl+e
+         hMMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778665268; x=1779270068;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OxLUoJngBn+Ee9sp6PTsXdvWew0l0KazwAtq9GZfxlQ=;
-        b=TGaUCWK0zFyXeYsNmeorftwUGK/r8587i5vsTZca1rMktsk4Swkd/QKVcVlxW57T6C
-         RYpcWIQ8Tfpm5PahESV12z8AeENEmcAUjJyv3WUzEvTDQeXvhKw0gKA8LYaMnEptOsMC
-         hcz6gPkJcmcUoMN6Vuo2gOmtF3+5rMG4N+ZTTs7Z3XRAIPRd9uA5VUFdOkPjP2rZYJvJ
-         BnnAWF5NgxAM7ggzgd3KrzeHKN4C2efq6evEglJ3ctxZHtbkEA/6mGu1DxYXZFYhhV7Z
-         gBSQUwosEZXyhwlspBT/Xm4Tg87eQDPeIa9LPiikam0Yu/4F74rarAIpmBnVS3G0M/VU
-         VzGA==
-X-Forwarded-Encrypted: i=1; AFNElJ+Z7LNhcSWTdCt4o2NQAo3ETpr/UZ3TDZMzl149vyAs2xby5rGh/IPKWpQ0GyDysMGJA6xEblS+Wnw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyu+dN78R9yHe+cuQSkzvWb+X+7oBNISTLLogNRU7vcqXg9CBZF
-	sGGfg+UFWZcbq1HRiuwu4IhS3+UgvYo5Lswn9urMwW/HX+B8wN3QIXF8
-X-Gm-Gg: Acq92OHrxeUds7R5LZt5dSHV6mR3UYa6cCCrzMj/3MqUfxr0ivBoxuir30b8wkdVY2O
-	dh4yvY7NZOX4llScp67RRPGqbilf2X5lAHw8R3VLCbHh+DBEmIIxSTdTm9eAMN9ENlCc9/qyVC/
-	ec4IOJLDWM/ywCGvERK72arbGIobNc1bYvfGVyYxECpAx3MYx0R/7C2T/rSiJ4wFU+oPJtL+pVs
-	xppWHI7xV+7Vk01PoPpTSgOFp3I4Bb6oOU6iBA7hLzztB4CtStML3c9I7OQJzh76N0grc9F8X+F
-	cu/922J6FVyuO1i+2ZbfYk3eeDEuKZjWfnEa8Q6GD30rWIPWSG99VI3JFJmZWOII3xaNE1X0/oO
-	DzgovItjqOed5Mr7dMFf+fSWmU7foN+CxuJH1igH+jLsZTZ+wd5JKidLWvDQ3X4r7DTl1Kavgth
-	N7kxiWlYYPkynHFySA/xYfECYWIqXKm7Uq6bgTd9btlSXlcBBw0qCd0I/13xPJHMwPQ6MxefEe6
-	wL3vLNn1XO5npPtHACJDvG6r5/UtPvsfVGzFJB+gXXcON6YbA==
-X-Received: by 2002:a05:6000:144c:b0:44b:cd2f:a3c8 with SMTP id ffacd0b85a97d-45c580ce3abmr3330603f8f.4.1778665268082;
-        Wed, 13 May 2026 02:41:08 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45491bae13csm37966733f8f.29.2026.05.13.02.41.05
+        d=1e100.net; s=20251104; t=1778665587; x=1779270387;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Yv5NWoKadJwa5peeIuFPciCVZufaAVsLKsWJ1tkRxdc=;
+        b=sdRoSRE6yTQm7eZMr8AOG9Q6kE5/DmXhmXGPlIok3SRejpa2/0J3vbUKFwgwZCD7Ol
+         Uu3b1JdtnIotcq2cs5QdtJqAnLFfBEFSP1F6h5ck6CD51KWsy84cM3K0+m4sayxFCusN
+         QCoiGKQgrn0EK7LLNQYJ/OXtVNE9rBHeHbu66ImzUsSdJjoPy0GXhI+p83vM2Jcs5xIw
+         V6HuJBYMx3/Et8oEcd6WhiYcvYtGHggEm3HbkK8jIfmBHOmumCi2lt55hwUm6lQaPIZF
+         Caalzv2yaSoxzvi0Vlz3xVStKl5Q3UxXt6Q+Cr2I0nAGxhOy5r+652TmT/OJtfuLVq1F
+         4jFw==
+X-Forwarded-Encrypted: i=1; AFNElJ+w4/J/J6o8lRd/M0f/ohZcZBbBrM8ZITCsN17f7zl8PHhkNeGMZvsEToInLUrQ/Rtuwr9PUsexT/g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YypJAVq4kVd8j0U/PoBKbcsrmUkyucdnASV49jabGdhskfTulnA
+	6eTKWlCC8mpq9VAeRphegPWATuk6t9vFQmZOcxj6cghZU/yx1/ws7IVK
+X-Gm-Gg: Acq92OG+Uw/FziJK8zNLSmjsI9eFboW+3NrrxGQ8KcyIO/RJOphAEn6B599NUT2X3ID
+	s4d6Ty9QYTwMeOX4lqPEkv0uRBER5oecCFhOfmyGxXVKMfrpZXaIKtoX9cXSgJGns8qcOeJoWHo
+	4ELcSHw6W7NqdaSXiK6OOkEIJ25XuJagcBa1g/rTi3fPe4/oKhwli8uDIDKdzL7NdpZEjh1Zvxh
+	2m6OZfXULENewPO9mfATQEO7elsvu3CAKTQ/bEWJsuVSYdJUbra5UNurlKOj7qhZzaqaweqSsTR
+	1TFEIfI95MYsHvOjuywq65lHhRd8KAgN2ryrL0TG3HG771UyWqQt2aeqxXumXJ/S3afY1UF871q
+	5dr8Mdlu/SQtsvlhYIsIr2M8i07ZP1xZHfCzM7pMWBV9KhhuEoSezQ1MAKPVlstLQiWXpFoQn20
+	zbJPBoadrUWNJ36rlzeJtyYddMFsVxhrIAMLUdx+hX1YU=
+X-Received: by 2002:a05:600c:3109:b0:489:1fa8:b895 with SMTP id 5b1f17b1804b1-48fc9a09508mr17704875e9.2.1778665586497;
+        Wed, 13 May 2026 02:46:26 -0700 (PDT)
+Received: from localhost.localdomain ([94.158.58.43])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fc8d27d31sm100167475e9.8.2026.05.13.02.46.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 02:41:07 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Wed, 13 May 2026 10:41:01 +0100
-To: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <kwjoyikbygik4futknqpua2tlzokradms25n2dmfa5czyj2uts@4rdfl6zlul2q>
-References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
- <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
+        Wed, 13 May 2026 02:46:26 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: jic23@kernel.org
+Cc: arthur.becker@sentec.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	gregkh@linuxfoundation.org,
+	hcazarim@yahoo.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH] iio: light: veml6040: add suspend/resume support
+Date: Wed, 13 May 2026 14:45:36 +0500
+Message-Id: <20260513094536.8038-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
+Content-Transfer-Encoding: 8bit
 
-On 26/05/10 01:42PM, Rodrigo Alencar via B4 Relay wrote:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> 
-> Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
-> point numbers with pre-defined scale are parsed into a 64-bit value (fixed
-> precision). After the decimal point, digits beyond the specified scale
-> are ignored.
+The VEML6040 RGBW light sensor stays in auto-measurement mode at all
+times once probed, drawing its full active current (~200 uA per
+Vishay VEML6040 datasheet, Doc# 84276 Rev. 1.7). On system suspend
+there is no need to keep the sensor running.
 
-Hi Andy,
+Add system sleep PM callbacks that toggle the SD (shutdown) bit in
+CONF register 00H to put the chip into shutdown on suspend and back
+into normal operation on resume. The bit semantics are documented in
+the datasheet Tables 2-1 and 2-2.
 
-I am starting over here, the other conversation is getting hard to follow.
-This is my new proposal...
+The existing veml6040_shutdown_action() is unchanged; it still runs
+on module unload to leave the chip shut down.
 
-...
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
+ drivers/iio/light/veml6040.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-> +static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-> +{
-> +	u64 _res = 0, _frac = 0;
-> +	unsigned int rv;
-> +
-> +	if (scale > 19) /* log10(2^64) = 19.26 */
-> +		return -EINVAL;
-> +
-> +	if (*s != '.') {
-> +		rv = _parse_integer(s, 10, &_res);
-> +		if (rv & KSTRTOX_OVERFLOW)
-> +			return -ERANGE;
-> +		if (rv == 0)
-> +			return -EINVAL;
-> +		s += rv;
-> +	}
-> +
-> +	if (*s == '.' && scale) {
-> +		s++; /* skip decimal point */
-> +		rv = _parse_integer_limit(s, 10, &_frac, scale);
-> +		if (rv & KSTRTOX_OVERFLOW)
-> +			return -ERANGE;
-> +		if (rv == 0)
-> +			return -EINVAL;
-> +		s += rv;
-> +		if (rv < scale)
-> +			_frac *= int_pow(10, scale - rv);
-> +		while (isdigit(*s)) /* truncate */
-> +			s++;
-> +	}
-> +
-> +	if (*s == '\n')
-> +		s++;
-> +	if (*s)
-> +		return -EINVAL;
-> +
-> +	if (check_mul_overflow(_res, int_pow(10, scale), &_res) ||
-> +	    check_add_overflow(_res, _frac, &_res))
-> +		return -ERANGE;
-> +
-> +	*res = _res;
-> +	return 0;
-> +}
-
-This function now becomes:
-
-	static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-	{
-		u64 _res = 0;
-		unsigned int rv_int, rv_frac;
-
-		rv_int = _parse_integer(s, 10, &_res);
-		if (rv_int & KSTRTOX_OVERFLOW)
-			return -ERANGE;
-		s += rv_int;
-
-		if (*s == '.')
-			s++; /* skip decimal point */
-
-		rv_frac = _parse_integer_limit_init(s, 10, _res, &_res, scale);
-		if (rv_frac & KSTRTOX_OVERFLOW)
-			return -ERANGE;
-		s += rv_frac;
-
-		if (!rv_int && !rv_frac && !isdigit(*s))
-			return -EINVAL; /* no digits at all */
-
-		while (isdigit(*s)) /* truncate digits */
-			s++;
-
-		if (*s == '\n')
-			s++;
-		if (*s)
-			return -EINVAL;
-
-		if (_res && (scale > (19 + rv_frac) || /* log10(2^64) = 19.26 */
-		    check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
-			return -ERANGE;
-
-		*res = _res;
-		return 0;
-	}
-
-The new thing here is _parse_integer_limit_init(), which is a local modified
-helper that accepts an init value, so _parse_integer_limit() becomes:
-
-	unsigned int _parse_integer_limit(const char *s, unsigned int base,
-					  unsigned long long *p, size_t max_chars)
-	{
-		return _parse_integer_limit_init(s, base, 0, p, max_chars);
-	}
-
-with init = 0:
-
-	static unsigned int _parse_integer_limit_init(const char *s, unsigned int base,
-						      unsigned long long init,
-						      unsigned long long *p,
-						      size_t max_chars)
-	{
-		unsigned long long res;
-		unsigned int rv;
-
-		res = init;
-		/* ...
-		 * the rest is the same implementation as _parse_integer_limit()
-		 * ...
-		 */
-		return rv;
-	}
-
-That allows to accumulate the final value into the same variable, which makes
-things simpler and decreases the amount of overflow checks.
-
-The scale can now be a bigger value, like 0.00000000000000000000000000000000423
-can be parsed with scale = 35, resulting into 423.
-
-The truncation loop is still there... I think this implementation is better,
-and I am not sure what is the input limit that you would consider ok to allow
-non-zero digits to be truncated once the scale can now be something bigger than 19.
-As long as the output fits into a u64 variable, the parser still works.
-
-I am also adding new test cases for that!
-
+diff --git a/drivers/iio/light/veml6040.c b/drivers/iio/light/veml6040.c
+index f563f9f0e..ffd0a2a70 100644
+--- a/drivers/iio/light/veml6040.c
++++ b/drivers/iio/light/veml6040.c
+@@ -13,6 +13,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/module.h>
++#include <linux/pm.h>
+ #include <linux/regmap.h>
+ 
+ /* VEML6040 Configuration Registers
+@@ -201,6 +202,32 @@ static void veml6040_shutdown_action(void *data)
+ 			   VEML6040_CONF_SD_MSK, VEML6040_CONF_SD_MSK);
+ }
+ 
++/*
++ * Per Vishay VEML6040 datasheet (Doc# 84276 Rev. 1.7), Table 2-1 and
++ * Table 2-2, the SD bit in CONF register 00H controls chip shutdown:
++ * SD = 1 disables the color sensor, SD = 0 re-enables it.
++ */
++static int veml6040_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct veml6040_data *data = iio_priv(indio_dev);
++
++	return regmap_update_bits(data->regmap, VEML6040_CONF_REG,
++				  VEML6040_CONF_SD_MSK, VEML6040_CONF_SD_MSK);
++}
++
++static int veml6040_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct veml6040_data *data = iio_priv(indio_dev);
++
++	return regmap_update_bits(data->regmap, VEML6040_CONF_REG,
++				  VEML6040_CONF_SD_MSK, 0);
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(veml6040_pm_ops, veml6040_suspend,
++				veml6040_resume);
++
+ static int veml6040_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+@@ -271,6 +298,7 @@ static struct i2c_driver veml6040_driver = {
+ 	.driver = {
+ 		.name = "veml6040",
+ 		.of_match_table = veml6040_of_match,
++		.pm = pm_sleep_ptr(&veml6040_pm_ops),
+ 	},
+ };
+ module_i2c_driver(veml6040_driver);
 -- 
-Kind regards,
+2.43.0
 
-Rodrigo Alencar
