@@ -1,70 +1,58 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA50E363084;
-	Wed, 13 May 2026 20:56:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F35CB1F2380;
+	Wed, 13 May 2026 21:01:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778705769; cv=none; b=QIoh4fG6bAbMvv/MRC0gsqNY3iIUL11jC9kD2Vlzq9FimTkirAf1pC8+Vy/NEafVy7IIFC/kwOwq03baR4mpBMgwCf0qtlBp/eRN2kcYhSEP3V1grLkaJQtBQsKXBnH7GSDg6dOsoQqaE5ehKiKubymVigUiv7voPkAWDOHcuxc=
+	t=1778706115; cv=none; b=cZk5tIetu4Cedv17YFc//AR6x0qcltyrw1d2iHlXqwAdtNTpfF63hhxVN6gwn3R+Vgam+/m6KfBmFLp/zIO7K/ZM+mAqS4qAu2PYUux+JsPmh33uZfKPgg0fhYJkdvjHHhVAzSjJdTkOdI9aorma5di5jQNOBrryuaew2LGBTfQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778705769; c=relaxed/simple;
-	bh=V4y+OjS8E1WJzQXloo/NVjG5JG5WZAq1w3Lv2299+GU=;
+	s=arc-20240116; t=1778706115; c=relaxed/simple;
+	bh=zMCbaORT6xUeb259rppjUN2BQFDDYZqv4dSV64W+coQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Kqs2wQ5xtQHKpOTNrMTzjQFOERVaQeYe7aqAVFG/2hlTkL4LbjRzcBhtSE9nlZNQ0MAJMyjP4JvipHVgVpGSK1hkmB6Yj5/cOPG14gr4Fo+lQYAD5Vic215XE/F94JK02AndosW1iQ1aB3ISqRJ/AE0KOkdPryDg6i0tAS+mmug=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P/ja/fKq; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=GMiAA5V8ouP6op8TZsK4pJ5wGhktsUl5lGwSxpibQa4se7LAJgFgkmIbpQOkpgoRDPS8hI87j8V7Jd1HsesEkH0EgmytwpyTKgWIS5btHKNht4BHiiS2A67K2Jl4BiIZISN0+NZbscPXuDQGQGYOJM4nARH1u3z3PV9cRbAl5SE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NQvJG4gb; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P/ja/fKq"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NQvJG4gb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778705767; x=1810241767;
+  t=1778706115; x=1810242115;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=V4y+OjS8E1WJzQXloo/NVjG5JG5WZAq1w3Lv2299+GU=;
-  b=P/ja/fKqrHznDcfrPxb0X+mwXvV0DroDlaOCNT8/Re9LAN73r7ysX371
-   n915pp7xslUH7LK4l3TWul9xBcx+s/hlorbEczsLYPw2U5mx1MgutCAE6
-   AFhcbm3l3XkygwHrSFDIsGqI+Z/E3plt2d9xenixScQOrGtiKJoHV17RS
-   cWs0nnrBtoagpX/r6Vf+c3ctWdaH7m+1KfY3AI9lxX+aF/DvJW6lwgMYS
-   uQD+f8JkVvVEhPGpjSMAZ/Utue7OvwaZ0ajmtexHKgu6k2LflZO24ZMug
-   AF7CyOe5PE57AQKgSOfvn9k4LCayRCcfjEqRVY99Hk7gF6VInE/05y2xp
-   g==;
-X-CSE-ConnectionGUID: UQjkc83VSrmKQvBGtGy+oA==
-X-CSE-MsgGUID: Z/d9Vp7eSGeRPCZcHek8BA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11785"; a="79596719"
+  bh=zMCbaORT6xUeb259rppjUN2BQFDDYZqv4dSV64W+coQ=;
+  b=NQvJG4gbcx+dLQrXTw+j/MuzdG+BmZ5SSvpPRJBT/QlmqrvN1/07OLol
+   1753zKcw5ZdiXcBlPZtve5ih0nZnWMS6YTJd45JWdtrzfPXSm7Y90Phi/
+   K/yrz3AVt2iRArXrLaWxorf6i+6GtWO0Y5zNgdgh+rvWdG++GVyXadaLh
+   +caqeJLgnXyADz+zElkGxCSLWMJrOwBTrdIDZaz4g88YusSF4wXwYhm4s
+   5lqqpSqDSi9zmMVpePnyK1tWgeHQaqREoyfEOx8N4JPzidRs2F9HJzwQr
+   yc0LRFZICWjwn8OaHxi/1kAo2nBGi4QDYgFtOg1NHxvDj9nd1riwQzPAt
+   w==;
+X-CSE-ConnectionGUID: N+V0NQnBSiuXTlkVhcHAZw==
+X-CSE-MsgGUID: D+fXqdoyRm2uoobUICWhaQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11785"; a="79625993"
 X-IronPort-AV: E=Sophos;i="6.23,233,1770624000"; 
-   d="scan'208";a="79596719"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 13:56:07 -0700
-X-CSE-ConnectionGUID: bRw1Kc4SRKurZCtH1z+efg==
-X-CSE-MsgGUID: r1K5P1YwRau7iK7LpcFRFg==
+   d="scan'208";a="79625993"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 14:01:54 -0700
+X-CSE-ConnectionGUID: VQJCWWMxQoi3npGyGi+SBA==
+X-CSE-MsgGUID: 5veV9v3GR5+T3+wzi6S0CA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,233,1770624000"; 
-   d="scan'208";a="261944455"
+   d="scan'208";a="276292747"
 Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.106])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 13:56:04 -0700
-Date: Wed, 13 May 2026 23:56:01 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 14:01:51 -0700
+Date: Thu, 14 May 2026 00:01:49 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Rishi Gupta <gupt21@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: jic23@kernel.org, songqiang1304521@gmail.com, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] iio: light: veml6030: fix channel type when
- pushing events
-Message-ID: <agTlYWBzzcbidNOO@ashevche-desk.local>
-References: <20260513-veml6031x00-v2-0-4703ca661a1d@gmail.com>
- <20260513-veml6031x00-v2-2-4703ca661a1d@gmail.com>
- <agS5Xu8ORtEwuwOB@ashevche-desk.local>
- <DIHR47ZGCUOK.2CNX05W0I8F6F@gmail.com>
- <agTY71MPPJ1b7qLC@ashevche-desk.local>
- <DIHUBAWF7RQ4.205UNZAU31THF@gmail.com>
+Subject: Re: [PATCH] iio: proximity: vl53l0x: notify trigger and clear IRQ on
+ error paths
+Message-ID: <agTmvRc__VChBPLt@ashevche-desk.local>
+References: <20260513193119.17884-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,92 +61,50 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DIHUBAWF7RQ4.205UNZAU31THF@gmail.com>
+In-Reply-To: <20260513193119.17884-1-sozdayvek@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, May 14, 2026 at 09:44:00AM +1300, Javier Carrasco wrote:
-> On Thu May 14, 2026 at 9:02 AM +13, Andy Shevchenko wrote:
-> > On Thu, May 14, 2026 at 07:13:41AM +1300, Javier Carrasco wrote:
-> >> On Thu May 14, 2026 at 6:48 AM +13, Andy Shevchenko wrote:
-> >> > On Wed, May 13, 2026 at 05:49:42PM +1300, Javier Carrasco wrote:
-> >> >> The events are registered for IIO_LIGHT and not for IIO_INTENSITY.
-> >> >> Use the correct channel type.
-> >> >
-> >> >> This bug was introduced in the first version of the driver.
-> >> >
-> >> > Unneeded detail, if it's a bug, use Fixes tag.
-> >>
-> >> >> When at it, fix minor checkpatch code style warning (alignment).
+On Thu, May 14, 2026 at 12:31:19AM +0500, Stepan Ionichev wrote:
+> vl53l0x_trigger_handler() returns directly on the I2C read failure
+> paths without calling iio_trigger_notify_done() or
+> vl53l0x_clear_irq():
+
+> 	ret = i2c_smbus_read_i2c_block_data(...);
+> 	if (ret < 0)
+> 		return ret;
+> 	else if (ret != 12)
+> 		return -EREMOTEIO;
+
+Unneeded citation of the code which is visible from the change.
+
+> A single transient i2c_smbus_read_i2c_block_data() failure (negative
+> errno or a short read) therefore leaves two pieces of state behind:
+> 
+>   - iio_trigger_notify_done() never decrements the trigger's use_count,
+>     so iio_trigger_poll_nested() silently drops further dispatches
+>     (see industrialio-trigger.c, the !atomic_read(&trig->use_count)
+>     guard);
+>   - vl53l0x_clear_irq() never writes SYSTEM_INTERRUPT_CLEAR, so the
+>     chip keeps the DRDY interrupt asserted.
+> 
+> The sensor's buffer mode stays wedged from then on, recoverable only
+> by re-binding the driver. The sibling driver vl53l1x-i2c.c handles
+> exactly the same case correctly by jumping to a "notify_and_clear_irq"
+> label that always calls both helpers; mirror that here.
+> 
+> The bogus negative-int return value cast to irqreturn_t also goes
+> away as a side effect.
 
 ...
 
-> >> >> -	iio_push_event(indio_dev, IIO_UNMOD_EVENT_CODE(IIO_INTENSITY,
-> >> >> -					0, IIO_EV_TYPE_THRESH, evtdir),
-> >> >> -					iio_get_time_ns(indio_dev));
-> >> >> +	iio_push_event(indio_dev, IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
-> >> >> +						       0,
-> >> >> +						       IIO_EV_TYPE_THRESH,
-> >> >> +						       evtdir),
-> >> >> +			iio_get_time_ns(indio_dev));
-> >> >
-> >> > AFAICS the indentation is still broken. Why not doing like this:
-> >> >
-> >> > 	iio_push_event(indio_dev,
-> >> > 		       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0, IIO_EV_TYPE_THRESH, evtdir),
-> >> > 		       iio_get_time_ns(indio_dev));
-> >>
-> >> Thank you for your feedback. According to checkpatch.pl, both variants
-> >> are fine. Mine takes into account the indentation within
-> >> IIO_UNMOD_EVENT_CODE(),
-> >
-> > And still have broken indentation with the last parameter. So it's not fine.
-> 
-> I am sorry to insist on this, but I beg to differ. The last paramter
-> (iio_get_time_ns()) is properly
+> -	else if (ret != 12)
+> -		return -EREMOTEIO;
+> +	if (ret < 0 || ret != 12)
+> +		goto done;
 
-Nope. It's aligned with TAB TAB TAB, the correct one is TAB TAB 7 spaces.
-I dunno what the editor or fonts you are using, but that's what I see with my
-Vim and monospace fonts.
-
-> aligned as an argument of
-> iio_push_event() and not IIO_UNMOD_EVENT_CODE(). That is exactly my
-> point: with my indentation it is clear that iio_get_time_ns() is an
-> argument of iio_push_event() and not IIO_UNMOD_EVENT_CODE() because of
-> the alignment. Moreove, my proposed alignment (which again, is fine with
-> checkpatch --strict and the original one for example wasn't) is
-> consistent with many usages of iio_push_event() in existing drivers. I
-> just checked that there are dozens like mine, being the majority when it
-> comes to this kind of indentation.
-> 
-> >> and yours only accounts for the indentation for
-> >> the arguments of iio_push_event(). Moreover, your suggestion goes beyond
-> >> 80 characters and mine does not,
-> >
-> > When it's about readability the 80 characters is not a strict limit.
-> >
-> >> so I would prefer sticking to mine if
-> >> possible.
-> >
-> > I recommend to reconsider. Mine has no indentation issues, the only subtle
-> > "problem" is 86 character line. And looking at the result I find mine better
-> > to read (hence the exception may apply and we are fine with the length of
-> > the line).
-> >
-> >> As I said, it passes checkpatch --strict without warnings
-> >> in both cases.
-> >
-> >> I will send a new version adding the Fixes tag and removing the comment.
-> >
-> > Make it the first patch as the currently first one does not sound like a fix
-> > to me.
-> 
-> Ok, I will make this one the first patch of a smaller series with the
-> right Fixes tag added to it and removed from the other patch that
-> affects veml6030. I will split the new driver in smaller chunks and send
-> it as a dedicated series but continuing with the current versioning.
-
-Thanks!
+While this magic 12 is in the original code, perhaps a patch on top to make it
+use sizeof() instead.
 
 -- 
 With Best Regards,
