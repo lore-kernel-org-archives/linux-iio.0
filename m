@@ -1,87 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66FFB3F413C;
-	Wed, 13 May 2026 13:35:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 839A62BD58A;
+	Wed, 13 May 2026 13:53:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778679337; cv=none; b=LXZithycURrJZAFGWalBXid1Ymn0vjaEqcMEovN97mmcSSIVSagJBI/TjNPwOGWZ3KCw+f5a9ov2fFFPMo5NonoWVamkorFdDkRXE+wEaJNOZ7THW1HGnmvsoWywNC51gjhULs+lQDLWyAKiIa7klXGv0mWWcKMWlFWmdNbjXs4=
+	t=1778680393; cv=none; b=qlazr5GV9WpIEi2Ojbz2DGcAV+m+QKP9xGETNJhNFCkaeaaBcJge1gPjlI28EAWvK73BMjJoYV0n3ynJDc4btYvx7a/DuwMaxi6UfbGD7+yVeJ9TynUDt6HXupVSZg81Qs2epItkkwTRnDm3uLvfSz1ejKCemqFM3TK3YTE7wio=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778679337; c=relaxed/simple;
-	bh=m9bnNBxEWAPGWVDQW/6kO/Q86jZja45Wm51skwSpr54=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JiikHDBNyMBfxYQOLgTWreVnIx2PYDG7ZRPu1MzOYfDQBTOhKEXINVRKiS3lZWlpMTZQCdpHj/w8nHkxY3VKkEEXFKWpzkwjBpuYXeR8zJl6p0R7vn8Sz5zHTy6RlffaQQVwrCjys9yqBbOYiSeMeS5R6RoK6YFGicIBtK0kjL8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eARA8XBF; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778680393; c=relaxed/simple;
+	bh=vboSbNrhRoqpwhCEDdVvoJxSw2POTG5BmRbeyr6o4VY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=IbTOOOl9QiKuKQbskR6NB/ItWzA9fsCKkFU2ObyR0V5FJVu614pvXv5M1YDDjk4h1jbKzYBHgtTeeg0Zb53zJ9gYbG/j6CUyu2T7oqhOvwgmhv9RPBrl1FrqEBIjXZTcJdfD632BhEGJtZ2xoTS9aOJYJqYaVZZvV/7L7LlDfa8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GTNKAIBk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eARA8XBF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778679335; x=1810215335;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=m9bnNBxEWAPGWVDQW/6kO/Q86jZja45Wm51skwSpr54=;
-  b=eARA8XBFb5kER+Qo6Ygg+fR2ZDiRqGOug7i1+IiFkb0ClfnbeQyWv9U0
-   fEgj6DxAp7/jTidkqDg8qbh+ENNdXNdfkwgjDFAmfjfpLAcfGQv2FCz4Z
-   E/z2rAAgXIngzs+Vkg5ph8un4k7fOhyrXhbf1Y2aKiGV3bpTW0PzrHojm
-   J50GRjeJOPLof5SlvxcJHqoGUPpcKXuMAcY8O+JvRI29Yp3TVICByHHVU
-   BC7Y6Lf3JR6xJOcMdlSbN07MvzjsjAzP0t2cPWX8SnPAM9dh9AiSI9Dx5
-   3w0fglmrBQVFpBM7Y4Do3Jwkubv8CLT2iyka/RtGSg+MabCFHKaRS7PmI
-   w==;
-X-CSE-ConnectionGUID: KUlewN42TtKi8Y6b6o1yIA==
-X-CSE-MsgGUID: O1jtZmruTYqZL5ubeZK5bQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="78633488"
-X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
-   d="scan'208";a="78633488"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 06:35:35 -0700
-X-CSE-ConnectionGUID: p8FjQ+m5Q7GmcXRrz0mcAQ==
-X-CSE-MsgGUID: csouucPvSQKVloD07jTm1Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
-   d="scan'208";a="233820929"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.106])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 06:35:32 -0700
-Date: Wed, 13 May 2026 16:35:30 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	alisa.roman@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad7192: fix GPOCON register access annotation
-Message-ID: <agR-Is0LLtfvhUne@ashevche-desk.local>
-References: <20260513101332.8699-1-sozdayvek@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GTNKAIBk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30095C2BCB7;
+	Wed, 13 May 2026 13:53:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778680393;
+	bh=vboSbNrhRoqpwhCEDdVvoJxSw2POTG5BmRbeyr6o4VY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=GTNKAIBkIXuP1UZacQ3v4jPyQXH2SdW/3YmEtUUU6GFKwEzHnJdSFeXI1PhulfTK9
+	 ov7ztaqGpNo9EldG4Nl+Kzsl6GNzsoB3b/EdxxQZtMaPDBXWEtUDg1E4Bfd+jpH3Iy
+	 F08WTE6Sop4lRBVC1YWBs4PPuX1u+MRSBR1nkOsl9A9TjclBBKgvZR3DG2HMzLDUKB
+	 0KcfEWZkEaFfHl05tcnkWJPcIFyOpadHMiBQlX9dvZtcQmy27OcG6FIRz50kgaUTfn
+	 9SPXpYHiS6/IQlQJqCHvaOYFZdVjmNVpTX1OaCIUmBsaC4f7ZGp5y/hLUHIemFzIfP
+	 tVnmoTc3wrZyw==
+Date: Wed, 13 May 2026 14:53:00 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Angelo Dureghello <adureghello@baylibre.com>
+Cc: Greg Ungerer <gerg@linux-m68k.org>, Geert Uytterhoeven
+ <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann
+ <arnd@arndb.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre
+ Torgue <alexandre.torgue@foss.st.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>,
+ linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 08/11] m68k: stmark2: add mcf5441x DAC platform
+ devices
+Message-ID: <20260513145300.11b4fdd6@jic23-huawei>
+In-Reply-To: <20260513-wip-stmark2-dac-v2-8-fcdae50cf51a@baylibre.com>
+References: <20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com>
+	<20260513-wip-stmark2-dac-v2-8-fcdae50cf51a@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260513101332.8699-1-sozdayvek@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 13, 2026 at 03:13:32PM +0500, Stepan Ionichev wrote:
-> The comment next to AD7192_REG_GPOCON marks the register as RO,
-> but the AD7192 datasheet (Rev. A, page 24, GPOCON REGISTER) says:
-> "The GPOCON register is an 8-bit register from which data can be
-> read or to which data can be written."
+On Wed, 13 May 2026 11:14:32 +0200
+Angelo Dureghello <adureghello@baylibre.com> wrote:
+
+> From: Angelo Dureghello <adureghello@baylibre.com>
 > 
-> The driver itself uses ad_sd_write_reg() against this register in
-> ad7192_show_scale() / write paths to control the bridge power-down
-> switch and digital outputs, which matches the RW datasheet
-> description. Update the comment to RW so it does not mislead
-> future readers.
-
-Makes sense,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> Add mcf5441x DAC platform devices.
+> 
+> Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+Looks good now.
+Reviewed-by: Jonathan Cameron <jic23@kernel.org>
