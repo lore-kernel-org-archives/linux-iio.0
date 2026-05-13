@@ -1,160 +1,85 @@
-Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DECBA395AC6
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 18:27:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4871A3B19CA;
+	Wed, 13 May 2026 19:15:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778696846; cv=none; b=Yf53mP/Bc0nmqk0zojnCv95wa7MfiUT/b8V32T/QZePjsfxsdcUr1pn3H76wp+O+j++KXIUZRlnzSIXqG1DzaeZLMiwgNxacO+Z+IZHJrlGOuJ9HripDOASMFxTqYbjjCX8N/vBA0Iec/X3uvpsj/sV6Aj5QU0ItkNpZWlEceWg=
+	t=1778699726; cv=none; b=YcyOn9P+55HbEhezXaqsuyvH/weAX2h7lJgv1I9TQe/T8IpYErY3IKYPwnljOMk5V08oNVUwov8rGDagDQjcQAwDo9OfRD0aomNaq74CGLz9Wb2FOhVWPBaMb/VKiaxR+h9QI4KUXAOa2SvKoL6Rip8GWjAOywiJhd2nWJ2fbrM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778696846; c=relaxed/simple;
-	bh=k5IVFtFkizYO9JvUz++Nf75KXmQjUQ2V7WuK3NLE/xs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hl3DE/jRYzlMpMburj9h6TwVA8s9zH4YW0Dq0e6WUb+eDmd5zEraPi5vHvbfJBRpd5h0L+3kD/B8SQnD3dmFaxIgqZHH6Kua4GKcpff7tC7bgyPPdy5a0yS10agFBqvIKFwqNUyI9Q8TMwoGE26Bmtk7+/Pv7OiYCT34znMRWpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ljVtTYYk; arc=none smtp.client-ip=74.125.82.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778699726; c=relaxed/simple;
+	bh=PjwdZnGMafMUAXlwoDYJu7XCJtlyP+MGZdLjge7uq2o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=g4ra+LJ2yoMJAsyMVVqBiXevHkulQbSImtBCrSZxu1uWyj2iJ1WX5k8RVAYNCbCHnwddtD5pfuNrNZCHLWva3BDXVlBPpYQRN3s1jAioDOo8k1M0dvpvKoA8P3b6NLUXYerRJCNZJmCIb2YyhvcF3TT5bysLi8vb4jt+xS+6r14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rorca4yK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ljVtTYYk"
-Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-2f0ad52830cso10485753eec.1
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 11:27:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778696844; x=1779301644; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=mKJozyiXPAnQIsv7H4f79u/+ZUVGgrXC9SUuc+YMN9A=;
-        b=ljVtTYYkSIjLVTuxIcZsyq14SxBn+lld8q4T+BAfKaunDYIxdmHD6rpbNhBpqKUrTS
-         JOy4RxfUQPiNRM4OeBuQ6JbUaOMFYYueIVpZyXRPZ4M+5CphViVFr52yzPfq3BnarQX+
-         3cU2gDA9iFB5rfhgGdbBw4fQ35j8sNds4/93YKx3bGD5GjWxNSP0/TqA5i07kzNNHekw
-         JCpPjFtUGLbm+Ab0jKqSrke6SdPW1Ob6d7jIhfsyI65ZKQA0SaOofeTB48fzUEJna3rr
-         Pkrbzmf1VX6FKaTxQii1tDXPW3v5qmHKDYi75BxAQovFfxrwgqY6g9IvFyoiwtn9dKsv
-         wd0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778696844; x=1779301644;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:sender:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mKJozyiXPAnQIsv7H4f79u/+ZUVGgrXC9SUuc+YMN9A=;
-        b=ZlM7GSnHWidTZ17//ZPS9ON6m4ReR+QJEI64a1Rjy94wB5Xlq7jFrapnzs7WcBswRo
-         42xgg4zRpHDAYDIeD+4R11bwP3G2VRKEPRweHV3BWsJ59okoQWco/dpmrq9dFRvuRHw6
-         lwtljct37irDpRrqekKJVd1MwIfTgt77s8U8iIUvQbrbvgwQC5PlwPOjresOYDWMLYGD
-         L9NYKgKaINKIfbimQQzG1No9EUA2MkJJvyfYMyI5yyCY2WFTk/oUc2obJg/eVzNbGTkF
-         +5qx5VCpkNG4sRydIpKOpjvnGJysnfTUf+bPwD/b/bpdyCgzwTzFY8B2rCMkNY1raB9p
-         mMRA==
-X-Forwarded-Encrypted: i=1; AFNElJ/Meq+shW2A3ZfG8horMdcdWWBHcVPX8aMH48QLGpxg0bqCBXQPfBdtTz5t9rRxOZOVlrEuBpI3gVk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxQi7XZ117xIdoQjj5rG8ttZGjAGGTMFpHXBk0C27N0n37Qyb3H
-	2HfFhp+DG52lcc1eaejtsLtxoyyWi1tzHgPhU3EUnkVh+LwPZekQO5sl
-X-Gm-Gg: Acq92OErkCOQEsYU7I0XhsJDoWg8T3wwNVRaqmmTseIXS7AWxvKo1iOaK3kmtQXRq33
-	4oLhykc8soD9ybBbj88cdboS4OOnhM/1dd6luG2p9XQbXrOSesSETTFQ6BW+YDWLWXKqmIKnSaQ
-	g/1XPT8uB0py/PuoYVCJBtVhkwRrQt5SX3XufILbw3GUHB6tWCG5LD31mzCw4oEnVW4RRbfpvnv
-	mWapJ6/M5Ap1I+IFqqAWqVrdkuCHSa/hU4JfdaY2jxKO6bnkOd5UsUn40ZWy2cdmIWUrEY/jXV0
-	hFLLoVSnUwD2Yota0/Rx3Fv5v3tO7C+FwvfCcAfMH9U6yetSXJpPgK+D6G+GEsEsQkA7241OJY+
-	f7mXWvsetU2k77yi9WpgTbNDD4quXzAiRx7oq5BH43Byt33jXnEcgri7Lx7seYmmmZNVuZqoFfu
-	fzH2yEpwq8sYbdYBJhx/U4Rse3QuHLHUqjSK5vc//vbF3N6y/5MoPWMkbqZyKJk0uk7gjtyi3u
-X-Received: by 2002:a05:7301:7c0c:b0:2c5:60d0:702e with SMTP id 5a478bee46e88-3011996d245mr2563952eec.18.1778696843940;
-        Wed, 13 May 2026 11:27:23 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:da43:aeff:fecc:bfd5? ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2f888e3e285sm27544171eec.27.2026.05.13.11.27.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 May 2026 11:27:23 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <1f2fb1de-ebc8-40ef-ac53-3348499295e3@roeck-us.net>
-Date: Wed, 13 May 2026 11:27:21 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rorca4yK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5DFBC19425;
+	Wed, 13 May 2026 19:15:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778699725;
+	bh=PjwdZnGMafMUAXlwoDYJu7XCJtlyP+MGZdLjge7uq2o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=rorca4yKcR0UvmQ9gFa2iw5rNfofSdwMTdtbpp63XHOj3eGTKE2Fun+85tzr8+J/3
+	 WnhSKmjGpNSaK0/Lm1qgXWR/63fEVq0iVCWS2r4lg53roiDvLquAhpuVH+V+rOD6x8
+	 dCFI+xtTcbtEPxNR6E6zFOzfyGyhKhTUpENrDue5DWSBcnmERHy6mzD3GgIy4OhgES
+	 c6MiQjvYSGUSsl3+PizY1+hrdzqMy1EaYPID393I0s5NcDsqsWbtatCBQQo6gwIam1
+	 BVlHTzkJbvz+fLTkkGkEdz9n4sx7Ng13A1LhRWjZN6itR8DVMSKCFk4TwUB5/ntCvv
+	 Pr64hY38CJoQA==
+Date: Wed, 13 May 2026 20:15:20 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Michal Piekos <michal.piekos@mmpsystems.pl>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Maksim Kiselev <bigunclemax@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: iio: adc: Add GPADC for Allwinner
+ A523
+Message-ID: <20260513-retreat-accompany-d3d2c5314402@spud>
+References: <20260513-sunxi-a523-gpadc-v2-0-d5efde151dac@mmpsystems.pl>
+ <20260513-sunxi-a523-gpadc-v2-1-d5efde151dac@mmpsystems.pl>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/5] scmi: Log client subsystem entity counts
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
- Alex Tran <alex.tran@oss.qualcomm.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jyoti Bhayana <jbhayana@google.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Sudeep Holla <sudeep.holla@kernel.org>,
- Cristian Marussi <cristian.marussi@arm.com>,
- Linus Walleij <linusw@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Philipp Zabel <p.zabel@pengutronix.de>,
- Viresh Kumar <viresh.kumar@linaro.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, arm-scmi@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org
-References: <20260513-scmi-client-probe-log-v1-0-00b47b1be009@oss.qualcomm.com>
- <agS8udcvqgQmiqB4@ashevche-desk.local>
-Content-Language: en-US
-From: Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- xsFNBE6H1WcBEACu6jIcw5kZ5dGeJ7E7B2uweQR/4FGxH10/H1O1+ApmcQ9i87XdZQiB9cpN
- RYHA7RCEK2dh6dDccykQk3bC90xXMPg+O3R+C/SkwcnUak1UZaeK/SwQbq/t0tkMzYDRxfJ7
- nyFiKxUehbNF3r9qlJgPqONwX5vJy4/GvDHdddSCxV41P/ejsZ8PykxyJs98UWhF54tGRWFl
- 7i1xvaDB9lN5WTLRKSO7wICuLiSz5WZHXMkyF4d+/O5ll7yz/o/JxK5vO/sduYDIlFTvBZDh
- gzaEtNf5tQjsjG4io8E0Yq0ViobLkS2RTNZT8ICq/Jmvl0SpbHRvYwa2DhNsK0YjHFQBB0FX
- IdhdUEzNefcNcYvqigJpdICoP2e4yJSyflHFO4dr0OrdnGLe1Zi/8Xo/2+M1dSSEt196rXaC
- kwu2KgIgmkRBb3cp2vIBBIIowU8W3qC1+w+RdMUrZxKGWJ3juwcgveJlzMpMZNyM1jobSXZ0
- VHGMNJ3MwXlrEFPXaYJgibcg6brM6wGfX/LBvc/haWw4yO24lT5eitm4UBdIy9pKkKmHHh7s
- jfZJkB5fWKVdoCv/omy6UyH6ykLOPFugl+hVL2Prf8xrXuZe1CMS7ID9Lc8FaL1ROIN/W8Vk
- BIsJMaWOhks//7d92Uf3EArDlDShwR2+D+AMon8NULuLBHiEUQARAQABzTJHdWVudGVyIFJv
- ZWNrIChMaW51eCBhY2NvdW50KSA8bGludXhAcm9lY2stdXMubmV0PsLBgQQTAQIAKwIbAwYL
- CQgHAwIGFQgCCQoLBBYCAwECHgECF4ACGQEFAmgrMyQFCSbODQkACgkQyx8mb86fmYGcWRAA
- oRwrk7V8fULqnGGpBIjp7pvR187Yzx+lhMGUHuM5H56TFEqeVwCMLWB2x1YRolYbY4MEFlQg
- VUFcfeW0OknSr1s6wtrtQm0gdkolM8OcCL9ptTHOg1mmXa4YpW8QJiL0AVtbpE9BroeWGl9v
- 2TGILPm9mVp+GmMQgkNeCS7Jonq5f5pDUGumAMguWzMFEg+Imt9wr2YA7aGen7KPSqJeQPpj
- onPKhu7O/KJKkuC50ylxizHzmGx+IUSmOZxN950pZUFvVZH9CwhAAl+NYUtcF5ry/uSYG2U7
- DCvpzqOryJRemKN63qt1bjF6cltsXwxjKOw6CvdjJYA3n6xCWLuJ6yk6CAy1Ukh545NhgBAs
- rGGVkl6TUBi0ixL3EF3RWLa9IMDcHN32r7OBhw6vbul8HqyTFZWY2ksTvlTl+qG3zV6AJuzT
- WdXmbcKN+TdhO5XlxVlbZoCm7ViBj1+PvIFQZCnLAhqSd/DJlhaq8fFXx1dCUPgQDcD+wo65
- qulV/NijfU8bzFfEPgYP/3LP+BSAyFs33y/mdP8kbMxSCjnLEhimQMrSSo/To1Gxp5C97fw5
- 3m1CaMILGKCmfI1B8iA8zd8ib7t1Rg0qCwcAnvsM36SkrID32GfFbv873bNskJCHAISK3Xkz
- qo7IYZmjk/IJGbsiGzxUhvicwkgKE9r7a1rOwU0ETofVZwEQALlLbQeBDTDbwQYrj0gbx3bq
- 7kpKABxN2MqeuqGr02DpS9883d/t7ontxasXoEz2GTioevvRmllJlPQERVxM8gQoNg22twF7
- pB/zsrIjxkE9heE4wYfN1AyzT+AxgYN6f8hVQ7Nrc9XgZZe+8IkuW/Nf64KzNJXnSH4u6nJM
- J2+Dt274YoFcXR1nG76Q259mKwzbCukKbd6piL+VsT/qBrLhZe9Ivbjq5WMdkQKnP7gYKCAi
- pNVJC4enWfivZsYupMd9qn7Uv/oCZDYoBTdMSBUblaLMwlcjnPpOYK5rfHvC4opxl+P/Vzyz
- 6WC2TLkPtKvYvXmdsI6rnEI4Uucg0Au/Ulg7aqqKhzGPIbVaL+U0Wk82nz6hz+WP2ggTrY1w
- ZlPlRt8WM9w6WfLf2j+PuGklj37m+KvaOEfLsF1v464dSpy1tQVHhhp8LFTxh/6RWkRIR2uF
- I4v3Xu/k5D0LhaZHpQ4C+xKsQxpTGuYh2tnRaRL14YMW1dlI3HfeB2gj7Yc8XdHh9vkpPyuT
- nY/ZsFbnvBtiw7GchKKri2gDhRb2QNNDyBnQn5mRFw7CyuFclAksOdV/sdpQnYlYcRQWOUGY
- HhQ5eqTRZjm9z+qQe/T0HQpmiPTqQcIaG/edgKVTUjITfA7AJMKLQHgp04Vylb+G6jocnQQX
- JqvvP09whbqrABEBAAHCwWUEGAECAA8CGwwFAmgrMyQFCSbODQkACgkQyx8mb86fmYHlgg/9
- H5JeDmB4jsreE9Bn621wZk7NMzxy9STxiVKSh8Mq4pb+IDu1RU2iLyetCY1TiJlcxnE362kj
- njrfAdqyPteHM+LU59NtEbGwrfcXdQoh4XdMuPA5ADetPLma3YiRa3VsVkLwpnR7ilgwQw6u
- dycEaOxQ7LUXCs0JaGVVP25Z2hMkHBwx6BlW6EZLNgzGI2rswSZ7SKcsBd1IRHVf0miwIFYy
- j/UEfAFNW+tbtKPNn3xZTLs3quQN7GdYLh+J0XxITpBZaFOpwEKV+VS36pSLnNl0T5wm0E/y
- scPJ0OVY7ly5Vm1nnoH4licaU5Y1nSkFR/j2douI5P7Cj687WuNMC6CcFd6j72kRfxklOqXw
- zvy+2NEcXyziiLXp84130yxAKXfluax9sZhhrhKT6VrD45S6N3HxJpXQ/RY/EX35neH2/F7B
- RgSloce2+zWfpELyS1qRkCUTt1tlGV2p+y2BPfXzrHn2vxvbhEn1QpQ6t+85FKN8YEhJEygJ
- F0WaMvQMNrk9UAUziVcUkLU52NS9SXqpVg8vgrO0JKx97IXFPcNh0DWsSj/0Y8HO/RDkGXYn
- FDMj7fZSPKyPQPmEHg+W/KzxSSfdgWIHF2QaQ0b2q1wOSec4Rti52ohmNSY+KNIW/zODhugJ
- np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
-In-Reply-To: <agS8udcvqgQmiqB4@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="T0kZ9Mx4riVIcj7x"
+Content-Disposition: inline
+In-Reply-To: <20260513-sunxi-a523-gpadc-v2-1-d5efde151dac@mmpsystems.pl>
 
-On 5/13/26 11:02, Andy Shevchenko wrote:
-> +Greg (I believe the trend is to drop such messages and not add them [back]?)
-> 
 
-Is there some common guidance on this ? I'd be all for dropping messages
-instead of adding them, but there seems to be a perpetual battle between
-people who want to log everything and people concerned about logging noise.
-As maintainer I always seem to be stuck between those two camps.
+--T0kZ9Mx4riVIcj7x
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Guenter
+On Wed, May 13, 2026 at 06:59:42AM +0200, Michal Piekos wrote:
+> Add support for the GPADC for the Allwinner A523. It differs from the
+> D1/T113s/R329/T507 by having two clocks.
+>=20
+> Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
 
-> On Wed, May 13, 2026 at 09:44:18AM -0700, Alex Tran wrote:
->> SCMI client drivers do not consistently log the number of supported
->> entities discovered from firmware. This information is useful during
->> debugging because it shows which domains or resources were exposed by
->> firmware during probe.
->>
->> Add logging of the number of supported entities to the SCMI cpufreq,
->> pinctrl, reset, hwmon, and powercap client drivers after a successful
->> probe. This aligns these drivers with the existing logging in the SCMI
->> power and performance domain drivers.
-> 
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
+--T0kZ9Mx4riVIcj7x
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCagTNyAAKCRB4tDGHoIJi
+0lhuAQDymppi/A7f9420QrmVJJ6kfQRuhlS2uA4AZgvA3B4+QQEAoYZJzXdLJ8X3
+vOkfbI8aNxT7XjRdXyjPG+HWOUKtEAU=
+=+BH6
+-----END PGP SIGNATURE-----
+
+--T0kZ9Mx4riVIcj7x--
