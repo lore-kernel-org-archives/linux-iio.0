@@ -1,135 +1,135 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-dl1-f41.google.com (mail-dl1-f41.google.com [74.125.82.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8230247799E
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 15:01:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778684465; cv=none; b=aH7qaXoc3Hv87Z+oDPnToH0j583/imvxnLd3CZb/W+Lh12hnZD6gJFu0CBOEjzIWcyBc1FCHW1vbNFaXkXWlU0FGYkAxF1XPvH+d0Zey1DgJmh9xpLhZlScq8nXsYRFCyA1HzDY9b+wGyc0henCcwvpfb0buC/mCeKBbH3UbE2g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778684465; c=relaxed/simple;
-	bh=ZUBkWHDNNvICnLU9GU27LlsMgHqEabh4B/qNR53L8kI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=cwRMURRwXlW8jy9jhd+kYHD9+pvwSW6P7sVkp9xcEH9NvoyS61GT6rxTV4cDJfiRJKOTSHpmzUdJ/m3njpqAgNaSqwkikOLHuCnDQDepqTJ3qQlThh1Op7kRyABF12Aya2HzQge09oVVTHXmJfgsxNppQzQIBUS5DCnL+4JuRyM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k/u+nY2s; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57835218E91
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 15:08:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778684910; cv=pass; b=n4yV94Ongz9fA0+3poUw55XlR/S1ASYi9QStFIDs+QeCg5GExEHy8tLALfuSXP6KNnR9v63flhds+3kNjbRSd9yrx74gN8c1VfsAF95hPSjiK4Kdz6/4F51Fk255yC37oYwVqs+MPxJK7/mWZBZtUgtmZvNUgfIJYrWMNyk7PdQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778684910; c=relaxed/simple;
+	bh=A1XioEkQCxu7L7Wf/qeH/pwCt0V36L8KzrjydDFazJ8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=niSmossfBOgCMnZYDcRwCt2kmKakK/wLHyWfYeag2VIb6cIqMRgUWxql6UGNB70CUC18vtvSJVJ6ZSKIm4gtRlTj1kEWbwCghrbdBEtII48JC3ArdaxgbVZ9yIk0/ycMGXzIaPLkR+IF4ACqmlVyaHPkpI9kCD3ij1CGgFIRCEs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=frfdm/DG; arc=pass smtp.client-ip=74.125.82.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k/u+nY2s"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4891cd5927dso6188755e9.0
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 08:01:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="frfdm/DG"
+Received: by mail-dl1-f41.google.com with SMTP id a92af1059eb24-1329507c387so883733c88.1
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 08:08:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778684908; cv=none;
+        d=google.com; s=arc-20240605;
+        b=bIzSw0V2tpNCvPuu/bbaS4Yg3YHMEHDP2EnaJQ04L8QpYYyTqZWAlwRlElAeZ/S7TE
+         4A1l7i2CDNCzlBSdRdlTLNfG3YVvoKqfmp/PyXa1IO7eD2sCu8UEaHSW0L5ZZsiqMSFO
+         dK6xt490OK8Xzb1+bK92lBEhUXltubLnI9oxEU4llqS4d7afvltS+dN4xxuGFsHX0ms8
+         isAuEd1p17eCaPVK0JY3gLPbwixlBdnaKU8g8XOTVP/L//B71BnTzn6RnNdJZrcn1B4Z
+         KhyVoyPDl2d+MWVgiDwX7fHOHf0fYTJf81jNktCOQJ69FqyCGYAJXTse4X1NnkjxlYTU
+         qDvQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=gfdsVavF1ADNUkRaWbbhdb5o1A1seHzrAfprJOgGQ1c=;
+        fh=PCofPnZnVCj44LMlw1nTZILFDjiU0OIu4uRNQURNFMY=;
+        b=PZTvr67ppmUVLZIlFJZHmO3ILrli5rVXQwnkX/lkx7FZpZHTWZIGvvhHTLNBFCW6/h
+         nvb02yBQRpI5Ay9xFhWn5qsf+ikzUPEJvRk54pOaXT2W6MC+jDWyzpe2o5ZafpUHsdiY
+         5ov8lRpBCVFjgEO1GwyFjbaKuF94C5Da/R4my7QALjybqwm8ib6N6FUdmlQTBLzw1LN9
+         5S5xeIQRh9CCW9AisPBElv5S9SE5L0BtaRFYs+9vZy7LDs601bclKRLJf6KjQUfFGx0f
+         Dc8RBzvBFRGBp5v4AnoDPEGRxg6zHYjcqvxqXSIhZUfhch0JimGt6ZvIu2IUa6jNElJH
+         uNEA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778684462; x=1779289262; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=IyKod4Q239zP2cEeM8E4uNjyl2/tK22/naTotBTyYKk=;
-        b=k/u+nY2s4RLUVItpngEYXRBn7YNgl5FgIWM7CPLPXp0qPpL2jqZuamrMeO1VqLS98M
-         8XJ9YQQFkYeCQXF+PklPYff4k4cUIaVXaX4CG11jloo5l6fmiVoA9z8o2myvFYqgx+4w
-         S5zo5b34qpPqJf2141lKmRLy/a7bn2zlU94u2c3aPt2j9YWAyp9Cg7RT8LKIoQ+FK5KT
-         SaKEVye5CLZ/aqwtrQGJJ/fpc9Y1YcBVpyzN6StVDg6FJRTFR/3qhjRW0MDjzzLoyptW
-         uAfLaYAuhhmPT9iBK88c5g0gDbfMutWX7o+U01oUxSY6iegEJBNNN1ZWRHJG0yNAtV48
-         Mccw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778684462; x=1779289262;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1778684908; x=1779289708; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=IyKod4Q239zP2cEeM8E4uNjyl2/tK22/naTotBTyYKk=;
-        b=QxMsPYQUQr0fdV3aFUA4Y+ZC7QmBAu8yOeruHsRsW4B1ng3269a4FqO5jxMRsaqnp3
-         mDmfr0yQBc8JC6UnedODRpBbc6feMm7/EWf7cgSFzA5LrS8V09BU1ZQy4YkQfgxzGzCB
-         zX2y7eIRfrtsEQ+OxjAmuKG8rSMu8A8+8N/ZGSW6d6tsNV6ZgK3xIM/fyAd+husb04Qq
-         eA4+7coviSfhNaJNZg6vb5qgPsZn0gNklzjk5atdAadDYDhTjEcl7nWSu7AEu+4urJ0E
-         sMEo5snJ4kQs4Wf4rXP55iZkAPDX7LjUVCDSlglaZ+Qr08TZtkKDMwXq49R9jkei3d+s
-         9v4Q==
-X-Forwarded-Encrypted: i=1; AFNElJ83WLnrwU4d6uXw1IJjCZGPBUG2BB1NmAgWqWRXkjb/AhxFsjhigKh+Kr++/GmACBDVgH899Kis5WY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwTpuOLKpC72GVSWob1R/pa4WOImJogZLGHIOdApEDBqqTNxZz+
-	Y8LgFL7BCaestw7YD2PtfKbf4IdknhDq9EDYeN9e7tMSzOOnJ4udIHXKRgfslKN2u2c=
-X-Gm-Gg: Acq92OFu0ifWuzpEAeqCtHRlaSLCytkjxmfZ2bbVjNahKPnzThJkKTiWRx40bMkauW6
-	C6VXl1a4e4Zp4c/ESC5SOPNxM+2BVcU99eI4ynq+vbkzQbEeRj/ThYAh76J7zMGTAqIq56apK0z
-	x5scJ1ynxTgb9URk183qOXoZH4/qeVJbH+7TWY0ElJzixHE/eIsUs7xy7CwUEK+hxdM5l19trg1
-	W5rVh5xs9/ESKOOjKs6LbosRwCsxSsBPG/f8uRTgHGr6aLdV2eah+J6Uh+BBduFYWdRC4XHV12c
-	Cfm2a2o8KHcOOSE5VmceqvWme/ApY3PtI6bxiXtMWScCQuK4bP9mSDNaPMwVh4YFlNvjB2YGMsE
-	hXBFHvyEX/AWRBgYmqNUztxFj1WA4qb3BiqvvDTbq8yU3PPKBd8i0LrGX6rGWOBXA8Yh/tZF0/0
-	Z+VH6YGtuMmnP5iktqeT916ZG2sGArXIAZFoHRPbMGfiXX
-X-Received: by 2002:a05:600c:4685:b0:48a:52ce:a4d3 with SMTP id 5b1f17b1804b1-48fc9a53344mr25375055e9.8.1778684461850;
-        Wed, 13 May 2026 08:01:01 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fce066eeasm48822885e9.7.2026.05.13.08.01.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 08:01:01 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: Michael.Hennerich@analog.com,
-	nuno.sa@analog.com
-Cc: lars@metafoo.de,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: ad7768-1: GPIO reset path delays do not match the datasheet
-Date: Wed, 13 May 2026 20:00:42 +0500
-Message-Id: <20260513150042.10939-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+        bh=gfdsVavF1ADNUkRaWbbhdb5o1A1seHzrAfprJOgGQ1c=;
+        b=frfdm/DG71+ksjIfiinp4XmA3BmILCicxzWZc9plwm2IJBFikUDZsTIfnWdLQaw1Cg
+         R3uWcRmZsJLg8FhIgsX1qajEsfZqlEvEADxhU4jYri/+xdrON8Gutnp+wmn0yC7kxQi+
+         myzrSPK6q6xtrRGSpPeJMpR0VJf5C5o42vC3KEHOwVf9R0MrJePVtrc+tFS3BO7E3Qxg
+         wwH/UuS+RSIZkUJonDqaumx7nXwd/BgdvGAqYgN8uH7Rw9iEgPmksIQaOgJTIL0bIFXF
+         p4DfFe1kJLMIItlTaODpYwA/es400ylRhLWklc3ao60cJ2sihMd3a6/mnJ3ZqhXinEko
+         2imA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778684908; x=1779289708;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=gfdsVavF1ADNUkRaWbbhdb5o1A1seHzrAfprJOgGQ1c=;
+        b=NNR4zby+MjFLLLSDbiHyV8AJsuqhAZu62y/L+iEA7x8NCBni/RTPOJTSoMM5ML779D
+         o4tWTscB3uVuH4E9FMlNXPgAnZT7nDMk49/vlCOoycqHFk0YtKmeVcC10xHQw31zw0Fy
+         9M2o8yPW86GGS57005nclUCjq5J2OPuWTd/7cImJIGyDrSMbpByvnnE4QASmAx/R3aeg
+         UKBQTw4TcP/y9egCWnaqI/tKMZ8Rmmradg3vzhJrZVKEy2vEEnXaRMRDUK4npWCPVoIV
+         ebNF6TJZdTqX3nUUevjj6wp5qvkX0UlJHe9duD2rwXarKKUWIJ2x4JuVARHm1aS/3S9N
+         hzQA==
+X-Forwarded-Encrypted: i=1; AFNElJ8t/UJHEzJtYm38J9/SF1EzK04Y7++VqDdktm6TYxpnDtPf0D7XbXgNoYAiHI2T05HxeYRrssOEctk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyHSrsaHBFR3ZkdfroXX6+6SJinMWGoIzDARjUVPwnt986X0eZj
+	vCbHT3D/r6HHnUzl43wgQufjjy1DGZkBMkHhT2D3fqWZmJDG2UUK6TOmnl34SyBF6wMmZkcg9Kd
+	ME75vsMh4tMt9f3J1jLdXMyP9falWS8v0wNjfmdE=
+X-Gm-Gg: Acq92OHggrK2c41SmeEYjm4oC22N62l8BvGLBgLWXEGQoPD67EffAQpkYt7PddRS+CK
+	KOw26xXp8K0jRQzceoikf5bv5w1CNDtExGgsDjjb6aigEJEC6yUHihagDRVtsV1Bd/2q6Sb6R5p
+	bv7/yIWU+9yWlM6jgbpT4olyUMDox4SmoBRPQBmG/MAQidLCVqPPLfiMQeu04/RN0ZeKUlFC3DG
+	9nxP3+1Lql+JyLMozFeJq9VriwGFN2j2PGT6E6UQN+WBRJ4dlslwvStyaABV+CGhPHYpBTvwRg2
+	SmdPYs8mIw==
+X-Received: by 2002:a05:690c:3481:b0:79a:7157:879 with SMTP id
+ 00721157ae682-7c6dd2a8f86mr28172257b3.50.1778684430546; Wed, 13 May 2026
+ 08:00:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260513013638.147606-1-m32285159@gmail.com> <agRfpI_eqG7QHYas@ashevche-desk.local>
+In-Reply-To: <agRfpI_eqG7QHYas@ashevche-desk.local>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Wed, 13 May 2026 10:00:18 -0500
+X-Gm-Features: AVHnY4Kbv751BmzfoNU399-2gX4JpWDdAV2q0rTvy2qYXNfGWdvRLPNRB0kR6lI
+Message-ID: <CAKqfh0FbgATxfz__pF4WQx+pgxJ0s-D9S6bH8Lcky9npy7jrUQ@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: imu: kmx61: Fix potential time-of-check to
+ time-of-use race
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, sashiko <sashiko-bot@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+On Wed, May 13, 2026 at 6:25=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Tue, May 12, 2026 at 08:36:38PM -0500, Maxwell Doose wrote:
+>
+> The Subject can be made better:
+>
+>   iio: imu: kmx61: Fix potential TOCTOU race in kmx61_write_event_config(=
+)
+>
 
-Reading drivers/iio/adc/ad7768-1.c I noticed the GPIO reset path
-uses two bare fsleep() calls that seem to disagree with the AD7768-1
-datasheet (Rev. B). I do not have AD7768-1 hardware to test this,
-so I am reporting it rather than sending a patch -- maybe someone
-with a board can verify and fix.
+That all sounds good. Will wait for Jonathan to see if he just wants
+to merge as is, change the subject, or ask for v3.
 
-Code (drivers/iio/adc/ad7768-1.c, around lines 1249-1252):
+best regards,
+max
 
-    if (st->gpio_reset) {
-        fsleep(10);
-        gpiod_set_value_cansleep(st->gpio_reset, 0);
-        fsleep(200);
-    }
 
-Compared with the datasheet (AD7768-1 Rev. B, page 6, Table 1
-"Specifications", ADC RESET section):
 
-    Reset Low Pulse Width        minimum 100 us
-    ADC Start-Up Time After Reset           17 ms
-                                  (Reset rising edge to first DRDY,
-                                   PIN mode, decimate by 8)
-
-So the in-tree code:
-  - holds the RESET pin low for ~10 us, where the datasheet
-    requires a minimum of 100 us;
-  - waits ~200 us after deasserting RESET before issuing SPI
-    traffic / set_mode, where the datasheet specifies 17 ms from
-    the reset rising edge to the first DRDY.
-
-The neighbouring SPI-reset branch already cites the datasheet
-(page 70), which is why this jumped out.
-
-If anyone with an AD7768-1 board can confirm whether the chip
-actually needs the datasheet-spec timing (or whether something
-else makes the shorter waits fine in practice), this looks worth
-a follow-up patch -- something like:
-
-    if (st->gpio_reset) {
-        /* RESET low pulse width: datasheet Rev. B, page 6,
-         * Table 1, min 100 us. */
-        fsleep(100);
-        gpiod_set_value_cansleep(st->gpio_reset, 0);
-        /* ADC start-up time after reset: datasheet Rev. B,
-         * page 6, Table 1, 17 ms (reset rising edge to first
-         * DRDY, PIN mode, decimate by 8). */
-        msleep(17);
-    }
-
-I am happy to send the patch myself if someone with hardware
-confirms it does not regress -- I would rather not submit an
-untested timing change blind.
-
-Stepan
+> > A time-of-check to time-of-use race condition exists in
+> > kmx61_write_event_config(). If two threads enter the function at the
+> > same time, both threads may pass the check and get to the lock. Thus,
+> > when the first thread releases the lock allowing the second thread to
+> > start execution after the first thread modifies data->ev_enable_state t=
+o
+> > force returning from the function, the second thread continues executio=
+n
+> > regardless. Fix this by moving the data->ev_enable_state check inside o=
+f
+> > the critical section.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
