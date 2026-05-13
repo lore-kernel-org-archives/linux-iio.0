@@ -1,129 +1,145 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C00A83D4105
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 07:25:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B4733A7837
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 07:35:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778657106; cv=pass; b=In7Yw1ka4Li88dXal8zV8dJ9XEhcr2FYedxQAUNL1vyl0Ae9hkix/sVIMM20akP66wJBlRXgA7dTzamXbAtDJPSKraMuaZnLvfF+y6qUbioFJWXouKOHfYUh3BmGHB4ACFvUwfhqgnm1mlf2k+/vNIptQvfdtflQ50I/YdTBrww=
+	t=1778657726; cv=pass; b=a36jg4MBTnaeCZTLnEObs4+fhqcGuNgO7M/Dz8ILuk8I88q435RGLXe8KuJKwCAyAfYXQOCcgmQ+iWjJ1n58H3C6SPU3Sck197yPcC69C1hqYDeMMvNhs2MsgSg0NXXb41UXb+JiPugluZiCn3RrTRYSFiAQcI6x90NWpuExDxA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778657106; c=relaxed/simple;
-	bh=XGuG27J3v37ZHxwOAImhqn3ug4/YcO+/2fFHRMOAmAA=;
+	s=arc-20240116; t=1778657726; c=relaxed/simple;
+	bh=nuRCO9IYFFtXa8z/NHL2G1ASexmEoC1NhlY6M5KpFQA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rjhm4SeSYhD1MY+olrsbB41DR7VPnh0vO88cz02q3ImOc5qNqs/Y/X/sZQ6M7VVUo4kP5Ofh9oC8ZNmd1eaetR36u6f0vyC5FsfIMdmuIzK0HzQl6XSVTx4aP1/Dy+8AKaBPZOlQ8wsVF/Xa6pKrY17VbBOyG9EiD9rGew4KoCQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Wzv4lrIa; arc=pass smtp.client-ip=209.85.221.50
+	 To:Cc:Content-Type; b=UF7vV4rGVddUGZdo6kAk5l+9oGD0nE2m/MPwWp/pNxOGqU/dl8vmsx3FCklCJwjy2JqSHoDEl0uyD/3+akPSTUbn/ZfqkDDOd3VBq+N7PCjkecxEqJ4T4PSIhLn4HyTfSyysJcx0sV9igq9h6ykmUcT2dCX+XZfuRXn/9yM6nls=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rDUFVTHy; arc=pass smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Wzv4lrIa"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-449d6c68ed8so5474697f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 00:25:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778657103; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rDUFVTHy"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-48909558b3aso64209565e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 00:35:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778657723; cv=none;
         d=google.com; s=arc-20240605;
-        b=Lhac7bAnZTEDeIPwNpLObcFD5B/4wNgkJtp+VjhZHYSXUb3yqZ5rWeB3LkwtgHadBy
-         dDRaU3BzuXDMmnk/S72LlppUPO/awe9e6gRnNnzwTlZmpLrkZ3nNY7hsWK/3fJR8f0MR
-         xNISqJtY6nm5hsa4IfgV8OmPwA2knzqzoQOgwVuBkRK6T/fQvg1QkofORowssvh2JtyK
-         zD9BIxyDwJtOd2/Q/ywa+ogHDT1g07o4A+AIqAeg7N3tJj+kAzgQyUkz9bdsghUkfW9C
-         9MojxlwmeT9wHzYHUJRe2SXT9FAjwSYqp/VbbDeGS7ROJ2rKMIyVtJflanuxSADYRllE
-         kGEQ==
+        b=a0c9GZuuWAHkpCcabm3y48IVSNScx2wFcctVpVk3CkRd5tRHfDtQG/4+Wrw42eJHy6
+         Vaw5Wit6pH1h+u20obmcd3iteNfbHxPPSfQQt9eY6Uuo4HtZ9wCKki4ue8Plwp8eIxQ9
+         z6vOchJ3Wu9bzCbl8Alpj2z7Pxrw0mSj6Vqq1HBwnP/qIwzX3YOga2jebAjaKQZaJ+uW
+         pEZyXGF3JdA9qhppgHL/0lqX4BC1X5tQn1tL8L8/Sjwvb61r4cWUKuCjfpMfxau75uBi
+         6UnZlpGd/mJFAYyXUyCPY+XtgqDGFsJDrw6AdE0/7NGuBtCI/tzeEZafF22OQ5SRXNwO
+         bzmA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=zw3iy68c6pKhl8mHUbMeoXF91Rwx4b68Iaooq/Otd9g=;
-        fh=/bMIbmm1w02rv1unzOkMKGTEylhos9htMwdjlkryaDs=;
-        b=PRLvw8Jlg/fdzg//uRNJtN091BXf1eKdJzis1CwyxXiWUqjQFqIjF/2RbbULzEkPXN
-         NIyc9SWTGL85sjaXISRUthdXjqNmbtzt2estx4eZEuvkm7bqPjYVvtvg0faRDPD4S5bo
-         zc6SjFg5d8JYYQTp71NKo/niT0i0UmH/JD9+54ycz6hUNIuyTS8d28eDoXBsKaw7HxWX
-         dtUmVOgCgnwWyEYbjf8uixJ+VzcQ8gJgs/bC47l0Z3zJE4+aoElRKbCfiSPpvNbyFtRN
-         BIxWDbpcTxqjmzYIL9qTLJU2+x9MN1p2k/KkMBz0WnimTaHlSXcIwTcNhxb0hzabTBHA
-         jQiw==;
+        bh=gaube2ImOLcS/ZfM2KYlRFBUyRqup2Q8P5YJR9gIEYE=;
+        fh=HiQo3khK4gy8rcIZHArNAk0PuXYbWeQaOsGdse6lsu0=;
+        b=SphoTrGoD6TGLu6Fyoy8Omp95aFH+ggcLRjYDj79ZDmCcTMc7yC74zxgNib+YqBxYu
+         ImaVJPkza4YFSMD+gs8Od528Vgx7LNpYAFNdH/NzR6XcGF/FXUT0tAXMVoo1cobqFIFt
+         aS7z7W4lCFOI7nrtWbj2incYcnC8V7KyL+egd+cBOFK67sZ9RWEwMDRw3fuUA7LhEX/+
+         vMM7RGsCMHQyFSZ5T31qwA+QpCESp/CDZ4FphndnF3dixxie32+D1flC7We0GZgFsWYH
+         K8l5ACFXrBPDt2m8dA3RChpSB5zF6skFCp9fpWU24hR5DZF5O+cFQUNbt56AcdgATopZ
+         DYCQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778657103; x=1779261903; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778657723; x=1779262523; darn=vger.kernel.org;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=zw3iy68c6pKhl8mHUbMeoXF91Rwx4b68Iaooq/Otd9g=;
-        b=Wzv4lrIanmys5+vhvNtu9bPDPbNUVC3u8hSIAx+jiugmwk1fc08jm9dB6OD1X5P1H1
-         QvB6rWRCLykgrF8WppxetquBCpfo1AeAv75skIco8v/FGgyX+0RF+NnRkwMA54zJfS/U
-         ug7XjLkmeF+w6n8ZXMbkoaXmO1VlGgY1+ZCJABkEhd1eWx5P4obcvn7XI4gIKdQig2CG
-         nGEZvKwaCgUkPD6zPWUZKd6SNFWdaUUukkVB6/302nPBR+H4XpFSE/8IURdCw3YUEg7d
-         F/OC9Dkz5rvWOHDJuI4jkwwf5+L7J32Eb3aNOGk/9cWlin7ZtAMNRbFkPsU12n5djGa+
-         lX+w==
+        bh=gaube2ImOLcS/ZfM2KYlRFBUyRqup2Q8P5YJR9gIEYE=;
+        b=rDUFVTHy0rgQQRQnZqie4C1lp89B4IdmaRd+3yC3vnjC+I8zZn68aX4DHMkGAQxeKG
+         TMa+sLa9UYZhdrf3h3LtCF+KGLFwwrVOq79d51zb0KlKkmbuAIvRaDBifv9iAQ5vX0oM
+         a+sHCotrLLpedtB6R93w95/38IBd3XYd6nCqn2Tqi+Qu5q+5RB/IdlH/bxj+mtSbJ43y
+         oS3ADTod5uYpTj2XRTS3L43EMZ59Eliv3zs4uBrg5JLLc9I3EJtvH0WCrnXw2tU7NoaF
+         YW5rQh1+cYUAkEFNydjeH+ZEflT6cyfZp8fWDgwZoPPOMQoWB/hFUV5ZhUshK4+QRWmJ
+         Os+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778657103; x=1779261903;
+        d=1e100.net; s=20251104; t=1778657723; x=1779262523;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zw3iy68c6pKhl8mHUbMeoXF91Rwx4b68Iaooq/Otd9g=;
-        b=avBXTF3KLsTs+rOFQ3FUEILfGpUzc4ZY58duYNDoK9XEORKPiDzJofqn033nYkAjDu
-         Y7ONGU51zdU4qjjtoCfHrS4gf9PpiD48DMwex5oBahSgY+kEcUngdMoEBy3MdZLALYJI
-         if975q9kh+SA2yXRUln9rrZPO6O4wVgOXmxSRbPXgj8P6l97EdPFXRhCqgLvydys0j8A
-         fmw6XxhjOt4Qw1aD+AvY4qC+OIZxOBrsTBSde/bBmPA2vaFF5ROj7qfm/dcec6sO/2C0
-         NhCbmKQsb4v0vR28Z4zkbOLcCPyxAZynl1MDBHJFmPQoDRvPk4c0lQ750WrhgtQHY0hr
-         6w7w==
-X-Forwarded-Encrypted: i=1; AFNElJ+HkQWYKBE2nmX36wHKDJj79dFhlL7cNKSRZxZtZLbTUBwgAOu6zgnTG8K/Ur9gGSjBYxKZ57cLVec=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzLlnSECu2VNOTRjwcCaqDvzrKhBNr/+DyyVd3TOBoPxkjWUB/E
-	rAyquNeeFProOx1Ls9d45JKVJRhiouy0uElwwdX2xt+kc64HFsKG9+fpKBcmGIezVLm/7kkrfvv
-	TenObg1rGV73ILpwbKOuu5zTCtWojlGQ=
-X-Gm-Gg: Acq92OFw8i3jGYLOEzFvmXyHsR0zQXU95KckuOz5YOgdwStxN1Kykhg1e0ZAmsOFbPw
-	HWKmLPbC7uY0p/ierG1YthrIIy5HT9pAOBMVyCVCI2qJssuvjEddrJg0OfFRAou6RUa2AUL3B/B
-	XNDOmQrWw/mNa34gndm0BCdcfOAKlpnxLos3PSc/JVHa6YsqEsUiTq+k5DQU/x0B0zyatkCAM5G
-	ZtWlPCJ8Rx2Or2JGvvnyQGF2T9U/vuLDKzMt5x2/u4cnxDtZ93X5muBvayJkqhduMP3gcAkubY0
-	llyGFDdJfqKuE0cXE9ObZaPJz/CyE+1a7HBZzojsCftpzDe2YXhX0jhh4fjWxu2lRvyGQ3Vvk4S
-	zCPgauwO+M22+mp3ta2zA0QAtHKoqW9tJGAxBxvA8zca2Vf9+DW2tTndDpa8ivRh5dBlGas+YPs
-	0h5i/+Qw==
-X-Received: by 2002:a05:6000:1acc:b0:449:fb9e:4b4e with SMTP id
- ffacd0b85a97d-45c584a8680mr2854887f8f.15.1778657102887; Wed, 13 May 2026
- 00:25:02 -0700 (PDT)
+        bh=gaube2ImOLcS/ZfM2KYlRFBUyRqup2Q8P5YJR9gIEYE=;
+        b=lwMTmeEyrqCPWCLP61q8zvmXR8v6OyoHLDEqvvZcEqJsiVLBMf6eSoIzhkw/ri8ocN
+         qYr7xIS46qPivD9A/WRwpkxpP4ydb0VYtxfh0FK1NusGxeHR16qtc1AD1JMByvicskox
+         5coxxIPr18J2jSj4JOUa3Tz461XCqqs34hXNRfwoFRG94cu8457lFaeZr7v/w/X/c+Ah
+         VEi9uXVNtgBIRwhMfOECxUrEZn6P3ksy9PpDSYSz1uYf8u8HERi0xEoH9+VgWz3tebmC
+         angdZBDVoC9oqlZP2UXHWcfvc3yPxitGjAb9lQ71+zAnH6tTXh1u5osXXDILP+CMjOtc
+         mSvw==
+X-Forwarded-Encrypted: i=1; AFNElJ+Yc6kJO1m4QPkKIuZAnU0qBDEaL8fhukGYst0X8bVqAszj4xgXLkZk0GBmeYXGL67fl6e4tJyO20M=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzrg/PicqtdEYgxXHa0awJMEOsj2J5CrkPvxeecHRgGBB4g5Pc2
+	d2xvE4/mcmu1MBbDHci7qiV0L29yM13aaCZkh6iNfbPEuhj3rFcCM43K/FYzCTu3knPO1kVLTXo
+	z68BaT6T5pfVM6JyuwnkIf9UX6+ACQPQ=
+X-Gm-Gg: Acq92OH66QHZSXkaLOv5aaGvsQYmUSXRUrks3LMTG4gr7AauUDngmXGUcmN1rfttlm7
+	Pf8/EwTKAr4T4LR4d/YfwktyaEsXgB5jjRnZsLEkl1PV36paBxeFujeacgradva+/ucMEslTP8D
+	qiDunGnHZx3Bog6a9G3uG1iuR0Xu34aVBQJ5hnQ0rXF6NGtUegrl0JST9RwPchdP2n6mUV9M5K1
+	f7rE7oz9FLuDOVQSPP7qJEvBhLuVJVWJB6VbOlCU3B/loB27iKBpTsdIQFFneBFR4W06mvm656p
+	AMtYSPQS/Ojp3L6oGPBCgHMyv6rbLCxD/QptkiRzWvgZd6/MbFP+wKpIKhhmonXec81244rWFP9
+	aS12PEZKfW7ZvA+fGJ1/qV//D1g2EeDa02x8fYPlGOo/PYfukrFvz5IsikrAr8vOVUA3St+zMsF
+	mYyedZOA==
+X-Received: by 2002:a05:600c:a11b:b0:489:1fa4:50c6 with SMTP id
+ 5b1f17b1804b1-48fce9fc34fmr12237025e9.20.1778657723295; Wed, 13 May 2026
+ 00:35:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512172538.101383-1-aline.nakazawa@ime.usp.br> <agOJhr9lj6hKnX4q@ashevche-desk.local>
-In-Reply-To: <agOJhr9lj6hKnX4q@ashevche-desk.local>
+References: <20260513013638.147606-1-m32285159@gmail.com>
+In-Reply-To: <20260513013638.147606-1-m32285159@gmail.com>
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 13 May 2026 09:24:52 +0200
-X-Gm-Features: AVHnY4JJCa6aFOkAmr2FKSKoLC5iQpEr-jyHm17uZHrqhN37uaRJPCw-4dEk-wI
-Message-ID: <CALoEA-z_Ags7_orj1LipkU+_eYZ=zBgiq1=iZXzizm9Th3m8ug@mail.gmail.com>
-Subject: Re: [PATCH] iio: imu: inv_mpu6050: use guard(mutex) and scoped_guard
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Aline Ayumi Nakazawa <aline.nakazawa@ime.usp.br>, jean-baptiste.maneyrol@tdk.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org
+Date: Wed, 13 May 2026 09:35:10 +0200
+X-Gm-Features: AVHnY4LYhIA7O4upvoRkUx2TTJpJCHELFRuUdgOHKvjpr8GtQr43zrnnFOST5gw
+Message-ID: <CALoEA-wKrJ3nZ-o+Oogy6gcZijLTvXmi+vQi4f9sCYhYqHD9Kw@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: imu: kmx61: Fix potential time-of-check to
+ time-of-use race
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: jic23@kernel.org, sashiko <sashiko-bot@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 12 May 2026 at 22:11, Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
+On Wed, 13 May 2026 at 03:41, Maxwell Doose <m32285159@gmail.com> wrote:
 >
-> On Tue, May 12, 2026 at 02:25:14PM -0300, Aline Ayumi Nakazawa wrote:
+> A time-of-check to time-of-use race condition exists in
+> kmx61_write_event_config(). If two threads enter the function at the
+> same time, both threads may pass the check and get to the lock. Thus,
+> when the first thread releases the lock allowing the second thread to
+> start execution after the first thread modifies data->ev_enable_state to
+> force returning from the function, the second thread continues execution
+> regardless. Fix this by moving the data->ev_enable_state check inside of
+> the critical section.
 >
-> > Replace manual mutex_lock/unlock calls with guard() and scoped_guard()
-> > macros.
+> Fixes: fd3ae7a9f21c ("iio: imu: kmx61: Add support for any motion trigger")
+> Reported-by: sashiko <sashiko-bot@kernel.org>
+> Closes: https://sashiko.dev/#/patchset/20260507223337.48437-1-m32285159%40gmail.com
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> ---
+>  drivers/iio/imu/kmx61.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 >
-> ...
+> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+> index 3cd91d8a89ee..3afa369de3cf 100644
+> --- a/drivers/iio/imu/kmx61.c
+> +++ b/drivers/iio/imu/kmx61.c
+> @@ -942,11 +942,11 @@ static int kmx61_write_event_config(struct iio_dev *indio_dev,
+>         struct kmx61_data *data = kmx61_get_data(indio_dev);
+>         int ret = 0;
 >
-> >  #include <linux/pm.h>
-> >  #include <linux/pm_runtime.h>
-> >  #include <linux/property.h>
-> > +#include <linux/cleanup.h>
+> -       if (state && data->ev_enable_state)
+> -               return 0;
+> -
+>         mutex_lock(&data->lock);
 >
-> Keep it ordered.
->
-> ...
->
-> Here I finished my review. We have a flood of the patches from the .usp.br.
-> You, folks, have to talk to each other and share and study previous reviews.
-> You are repeating same mistakes over and over!
->
-> Please, come again when you fix all the problems that were flagged in the
-> previous reviews for the usp.br contributions *and beyond*, meaning start
-> reviewing others' patches and learn from other reviews.
+> +       if (state && data->ev_enable_state)
+> +               goto err_unlock;
+> +
+>         if (!state && data->motion_trig_on) {
+>                 data->ev_enable_state = false;
+>                 goto err_unlock;
+> --
 
-I wonder if USP has a Linux course where one of the assignments is to send
-a patch to the mailing list... Too bad my school didn't offer courses like this.
+This seems simple enough.
+
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
 Kind regards
