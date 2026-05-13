@@ -1,116 +1,160 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6806F3DE44B
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 08:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 690DF3D47A0
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 09:14:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778661253; cv=none; b=fVibHGldQ1VxxiYmlg5OR7SwWzfzzAokP/gGZs950EHx54UrwhZ6ObTn0SVdGapoCFx/Dp44YmWT9Gsj/nMKrDhHGK32/JxTne0JWkcfHBtmuUG39QoTqTYnlewAfRwEkhacTa5Yk00aW71N/kL9xgC+igubzn3ebc3Sw8FRnIw=
+	t=1778663683; cv=none; b=c91vP9atiIbH0+HA2QTEVNrWgb1ok5c4OshNht1o5b2P6Chh2vO3O+uhMNaE3mlhDur7gcyXHWC3xPlA3Vs24AOS8EdPIERS6/cCQbXUofd465G+1SJCZtxCuzshU+clgDrsGfg2RcAm4W4lq1WWOEHBEwfHEsmuIRqA8FLcLbc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778661253; c=relaxed/simple;
-	bh=OrIAJGsFuBQiGgUsDd2CSgMI5mNp/5mAvXSnocVoF3c=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Zb6Ht5S1JyXN6/ECaW3qCW32uOVEKuYZCHvyjXIExPgawVlVfhOkFIyyPr7GVy2w4na6l3zl9kTf/7n10egRrH3+2SjMpTnOFsQLs0CSyiTiHkaqt9kfo4rQBQKfBe0jvQ6sB49hlkWjhNl2SVEjIe7bZk9Y073p8DEmO0uWgCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QDI5kLvG; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778663683; c=relaxed/simple;
+	bh=+Yx1Zg5rFuonF5evcV4LLzCgrpfxwRi5dFqTUCk4UQY=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=NOwZ6760tm2o4Lmvt58HmKQ+EZQnox+HBCLpnHlG1cnp9QzxhQy+UQW3fkDbg0yxaj7G+ytJIoaz6MFppilFtNPxEwx+OzY+d0t9xzMUMOjE6cFP1NbXRWAP3jjibZi2t0zV++uz8f+GJYXH1a+ldCCw9ojSYTgkkoffSvICyKs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=Z6b8bTK7; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QDI5kLvG"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-44a7c719151so626616f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 01:34:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="Z6b8bTK7"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-48984d29fe3so69234075e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 02:14:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778661245; x=1779266045; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Q1TXpP8EWw3w0nxfBveD4rpPSB3AQWGhFzMn2wB3t7Q=;
-        b=QDI5kLvGgELEILoVN3AKrxzKacKR9MPFBjvThIYmuMZnqysjBJEuiT8tCRSuR3JtVA
-         w3qsae5bU/tD53uIONHDzjw9hIwd+A8R7/YyE8rZRkEuXnk0wAqBKJI5GowqKsqC8Dud
-         w/v748OT9Lqlz62w2yYKP0a7sHQrHSeEIc1xLe+a7hiWByogtLOBbaHW9UI4bk2JNeAE
-         C2BGaI9ut3JaiwZ1tyUWsrOYT4w3YgC+6KgciuwpjCR4HERrjLIvEMB4r+NGrue7ucRf
-         wTPngmjBBkdzF5A7G7s8LYHbOQnUkVKd+szJEw5m9vu4qAnRkuWvgoBtjb5tNkesgc7g
-         sCtw==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778663680; x=1779268480; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3M6rRLTQ9CGPGf8NA7+4xvB1DmVHioIYgHph20eH9Ks=;
+        b=Z6b8bTK7nBSUrsrAS0SquX81SyhGcYnWW/DyfDSREcYfhc4WAxxXfLKZgZBxz3wdGh
+         Tl52X6vL288nwIk+ml2UBXeBiSydt6Bp7PN50K5yp2K11OA5v+JPMA8I1cEqMXdFz3H+
+         S10sxh6dNolP4Vu47cwH25THnBqPKRIjvUrfzoMHbty4fAv1Sm8mbjlTo1c83XDtbNrW
+         g6V6gUQQobB2ZMlMXqotHMwh9fMWAUcJ/VvjqF6luhqdCMu6y/qGs9qx7NBDuMIk+mV/
+         JM8Ip3V0yahr3gz4B1W/X5igy0BJ+q++AKv9DklCRNMN68gnQkVDKpDM8i+ZZ/RWliUg
+         PckA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778661245; x=1779266045;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Q1TXpP8EWw3w0nxfBveD4rpPSB3AQWGhFzMn2wB3t7Q=;
-        b=W49gMk+Ltuk52bCMCA9KqwfbV6jhUzZAJuhDE/q8UJHFCxItQkZBSPnUt8a2FNR2S6
-         319PiLqBRihi+OTiIJisnZJWiNGWrsbbicjdkFNhR+k0tdKeRa71PE2DsH4Ui8gTbUVX
-         /DZrwbjQwu2wPmnLV0Xv2uGV8jJB0djZ0mMlVAsDaqbbFJ4+9uya2UNdNLd45AbmnZ9z
-         79Mz05YNNXCsPTdXw6gF35OIJOEAhKGpYuYyRqOvIlBHdUFEC8e/b8Zc3rVI3neWa3Is
-         gPvpgmdEt1E6XlKUeZ9DKp11qU5f4hJ2dBWoSh/umhHWqB4hco0qPrLoGH9OZHUSNZdN
-         4uBg==
-X-Forwarded-Encrypted: i=1; AFNElJ+Rm2nCNxbHXKo1H0XCLr/qWeVn4XjlfTB1ddLHFYiYyI1QBbd5s2cVevvbq6RaTB4LkFTaFU4B8Z4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzhZebpR3rSSWRR663PX8bWUH9k8BKouBmu+hi+XTfkr0kx2f1c
-	vdhGpDiZ0HDsBh6d+AMb/Hs8mcP4xZRkTLgSYXgQsv5JOg//W8brhXbI
-X-Gm-Gg: Acq92OHiOoRZpvxydLuwsl92kVRA+e99MVpqkUOtaNNS0cowZbkuYosKC70vohGeBc1
-	k7mUwov31rF9gmYPWvNUmKhdBW1CysrMeU+c4/ugk11VzCmrHYr/ORY7Mln0pkPgwdM2bez0AW2
-	msAX0579hX/Cl6oZ7mTW7VWE8JD2vgeP+I+o0pRVxUFGOFU4T7f5yvLuR6zCiLdEUKcpwaT+J7u
-	FF88dc1p65IiXOiCXniWphbXbATI6zgr8Kku9wiTMEBw49FGWoMS+SW+g8C/QcfBzimg1n1/gRT
-	N9TVPdGkUcdUlV3zTbw1287BJnXTiU0UBrjzlEgZ3+CurYAm/TjGoSXsa471tQBy8yHtu/Qaibt
-	v6aiA5QjAK8takQJGqkLyn+SoAj63zDXX33Q/TLcGs6B6VMDkCm9sGdFc47wHr245unxv+c4//h
-	gPaWydSfxcmmbmmwgskIzI058Jt0uLHZ+7ab1Vz/hy1rGV
-X-Received: by 2002:a05:6000:2c12:b0:454:454a:4cbd with SMTP id ffacd0b85a97d-45c5b5f69f9mr1664293f8f.5.1778661244540;
-        Wed, 13 May 2026 01:34:04 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4549120eb95sm37750863f8f.20.2026.05.13.01.34.02
+        d=1e100.net; s=20251104; t=1778663680; x=1779268480;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3M6rRLTQ9CGPGf8NA7+4xvB1DmVHioIYgHph20eH9Ks=;
+        b=ADvmx+8ta5nDbKQsMEWg31d73Wc+7Nqh1YuMHY3n3EwXK5Tx1ek6xfA+ilxS7+ftZA
+         1u+zpSz7G/P/3bLoKoYSKexJgrPIsc06mw+RizEUEuUKsToY+VI/QyJhBOUhiPvGWi2x
+         o6F0iflx8DylZHTtYQgpuEcD+aLBoDHqkYx2TEcRYxJ+BR9d7nFUeS+8wCKqDKLuGciv
+         xXxbePj6JKVCQ8peGyl1jBnxTcLgEs5chBo6Bs19oPnULu40cyzt2VqiLp/FHRG28TSJ
+         2Ch+hUtmoT6GQ+fCO4MkPeqBDr8cCumJYF5es/syB0k9rW8aOUGXFxLOsStIgM/EgPlQ
+         1Xvg==
+X-Forwarded-Encrypted: i=1; AFNElJ/jOsqXJzLGfqcuPN/m/L/L+O9d9IfGvnC1xvX5YYqtMiZSXujPcrdo3roCQ4GZLtQoPeyYNAxKH2U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzzLpAG4gP7vMZSflV/vUapWibGmeXHZIdK43QPlMuLu5v7M3kH
+	VIwZhWrXjsaKoupsm00NXPpT8Vf+Jf7ysno11qViypN6Zox1iUAXEvG4hAwQBqwlZg8=
+X-Gm-Gg: Acq92OHg+dufCetnmKf6vZmicL6cQPgcNM+UgqIcV3qj6zhi3HBlQMi5Hq/9ZPTG6b9
+	09oxtPKlCNs8Z4v1FdSwpR/mSQ97BBJYXARuTwdlfPQq/PtNBQ5eZ7RpMiiCVpQsro8660OFuLP
+	0wjCU7fAKeSlMta2Y9T00fLYjHZcy+Ebev6dnsE9+gGS983kArKgjZt8ZNWKZMBGTWUw1xNrACY
+	fp412WGEZx6Kccp3ArVyZAGsi0SE6Wl6DlBKVlM+Q2wrKjHluOaS9oANrP1Nvxy5JRmA7bP0W//
+	O5Qjap0nIf8EQf7AuODsx3eAAUICGuOeti9MN+ShwdJmIAFd5X/Y9cykdaVogfKnP1/saPqLSjF
+	a55kqw7V1SEcLUT7+0cETuaoJ+arc3jq4JyT8YzbyEq79opsf8tv20LCwW4gO2DcA6CZSSemDH0
+	Q7BgzY+6TJ3ias0kHSzmpbuG896zkVW5cvJU/lToIwsQ==
+X-Received: by 2002:a05:600c:c4ab:b0:485:30d4:6b9e with SMTP id 5b1f17b1804b1-48fc9a3c1ffmr38082135e9.21.1778663679846;
+        Wed, 13 May 2026 02:14:39 -0700 (PDT)
+Received: from [192.168.0.2] ([2a07:7e81:7daa:0:62cf:84ff:feee:627])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548e6a66bfsm34590821f8f.4.2026.05.13.02.14.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 01:34:04 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: jic23@kernel.org
-Cc: andriy.shevchenko@intel.com,
-	joshua.crofts1@gmail.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	gregkh@linuxfoundation.org,
-	hcazarim@yahoo.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: Re: [PATCH] iio: trigger: iio-trig-interrupt: use devm_* helpers
-Date: Wed, 13 May 2026 13:33:42 +0500
-Message-Id: <20260513083342.764-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
-In-Reply-To: <20260511060732.7728-1-sozdayvek@gmail.com>
-References: <20260511060732.7728-1-sozdayvek@gmail.com>
+        Wed, 13 May 2026 02:14:39 -0700 (PDT)
+From: Angelo Dureghello <adureghello@baylibre.com>
+X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
+Subject: [PATCH v2 00/11] add mcf54415 DAC driver
+Date: Wed, 13 May 2026 11:14:24 +0200
+Message-Id: <20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4XNyQrCMBgE4FeRnI38Wbp58j3EQ5rFRu1CUqul9
+ N1N6kFwwePAzDcT8tpZ7dF2NSGnB+tt24RA1yskK9EcNbYqZESBpsAZ4JvtsO9r4c4UKyFxBik
+ YXihVcIPCqnPa2Psi7g/P7K/lScs+MrFRWd+3blwuBxp7v/WBYsCaCZOnueQgyK4U48WWTm9kW
+ 6N4MLAXkQD/JFggIKFcECOJZN8I8ocggcgzLlkqeEFAvRHzPD8AnWT3ykkBAAA=
+X-Change-ID: 20260430-wip-stmark2-dac-7060f49dd94f
+To: Greg Ungerer <gerg@linux-m68k.org>, 
+ Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, 
+ Arnd Bergmann <arnd@arndb.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+ Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, 
+ linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, 
+ Angelo Dureghello <adureghello@baylibre.com>
+X-Mailer: b4 0.15.2
 
-On Mon, May 11, 2026 at 19:56, Jonathan Cameron wrote:
-> Silly question for you - how does this driver actually bind on a
-> modern platform? That is - how do we get one of these?
+This patchset adds a minimalistic DAC driver for the NXP mcf54415/6/7/8
+ibuiltin DACs.
 
-It does not, as far as I can see.
+Currently the driver enables the raw write only. Feature as dma, sync, or
+format are not supoprted for this version.
 
-Grep across the mainline tree:
+Additional options suppoerted by the DAC module will be added to the driver
+later on, as needed.
 
-- The string "iio_interrupt_trigger" appears only in the driver itself
-  (drivers/iio/trigger/iio-trig-interrupt.c:101 — the .driver.name).
-- No .of_match_table and no .id_table on the driver.
-- No platform_device_register*() call anywhere in arch/, drivers/ or
-  board files that would create a device named "iio_interrupt_trigger".
-- No Documentation/devicetree/bindings/ entry.
+The same patchset prepares the m68k/coldfire architecture to support
+the driver.
 
-So the only way to instantiate it on a current kernel is an explicit
-out-of-tree platform_device_register("iio_interrupt_trigger", ...), and
-nothing in mainline does that.
+Below soem basic tests done on stmark2 mcf54415-based board, voltage check
+on DAC0 and DAC1:
 
-Given that, please drop v1 and v2 of this patch. The cleanup-for-its-
-own-sake is not worth the parent / sysfs-hierarchy change Andy flagged
-when there are no in-tree users to validate it against.
+~ # cd /sys/bus/iio/devices/iio:device0/
+/sys/bus/iio/devices/iio:device0 # ls
+name               out_voltage_scale  uevent
+out_voltage_raw    subsystem
+/sys/bus/iio/devices/iio:device0 # cat name
+mcf54415
+/sys/bus/iio/devices/iio:device0 # echo 4095 > out_voltage_raw 
+/sys/bus/iio/devices/iio:device0 # echo 2048 > out_voltage_raw 
+/sys/bus/iio/devices/iio:device0 # echo 4096 > out_voltage_raw 
+sh: write error: Invalid argument
+/sys/bus/iio/devices/iio:device0 # cat out_voltage_raw 
+2048
+/sys/bus/iio/devices/iio:device0 # 
 
-If at some point a user appears in mainline (DT binding, ACPI hookup
-or a board file), the devm_* conversion can come along with that work.
+Same behavior for /sys/bus/iio/devices/iio:device1.
 
-Sorry for the noise.
+Generated a sine wave by shell script, sine shape is good.
 
-Stepan
+Note: this patchset depends on mew mcf_read/mcf_write implementation:
+Link: https://lore.kernel.org/linux-m68k/209d0653-6386-4b64-9e15-e358f84453ab@app.fastmail.com/T/#t
+
+---
+Changes in v2:
+- keeping changelog in each single patch, where any
+- Link to v1: https://patch.msgid.link/20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com
+
+---
+Angelo Dureghello (11):
+      m68k: mcf5441x: fix clocks numbering
+      m68k: mcf5441x: add clock for DAC channel 1
+      m68k: mcf5441x: setup DAC clock name as per driver name
+      m68k: defconfig: update stmark2 defconfig
+      m68k: add DAC modules base addresses
+      m68k: mcf5441x: add CCM registers
+      m68k: mcf5441x: add CCR MISCCR2 bitfields
+      m68k: stmark2: add mcf5441x DAC platform devices
+      m68k: stmark2: use ioport.h macros for resources
+      m68k: stmark2: enable DACs outputs
+      iio: dac: add mcf54415 DAC
+
+ arch/m68k/coldfire/m5441x.c         |  21 ++--
+ arch/m68k/coldfire/stmark2.c        |  51 ++++++---
+ arch/m68k/configs/stmark2_defconfig |   2 +
+ arch/m68k/include/asm/m5441xsim.h   |  42 ++++++++
+ drivers/iio/dac/Kconfig             |  10 ++
+ drivers/iio/dac/Makefile            |   1 +
+ drivers/iio/dac/mcf54415_dac.c      | 203 ++++++++++++++++++++++++++++++++++++
+ 7 files changed, 306 insertions(+), 24 deletions(-)
+---
+base-commit: 25c66a1b49f3c5463ee8266a3fd5256cbc794610
+change-id: 20260430-wip-stmark2-dac-7060f49dd94f
+
+Best regards,
+--  
+Angelo Dureghello <adureghello@baylibre.com>
+
