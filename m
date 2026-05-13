@@ -1,113 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F35CB1F2380;
-	Wed, 13 May 2026 21:01:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E8395371CEA;
+	Wed, 13 May 2026 21:19:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778706115; cv=none; b=cZk5tIetu4Cedv17YFc//AR6x0qcltyrw1d2iHlXqwAdtNTpfF63hhxVN6gwn3R+Vgam+/m6KfBmFLp/zIO7K/ZM+mAqS4qAu2PYUux+JsPmh33uZfKPgg0fhYJkdvjHHhVAzSjJdTkOdI9aorma5di5jQNOBrryuaew2LGBTfQ=
+	t=1778707194; cv=none; b=C20v8ou/EEHamyut3VG+UEWLSScUZVWM3vDB4m6mKpu5R7kfVbOLYJ/xty1E8HWAUvdewU7y3yrqZ5/SkMeU/UVYX3/Gm7X5D8atv0gS/F2VdmHAE2ObsYeqgDsvv3Zf+kzvASYq3dQ1NXQvxwZEK8QhYY0LueGDvW0Vrla6AOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778706115; c=relaxed/simple;
-	bh=zMCbaORT6xUeb259rppjUN2BQFDDYZqv4dSV64W+coQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GMiAA5V8ouP6op8TZsK4pJ5wGhktsUl5lGwSxpibQa4se7LAJgFgkmIbpQOkpgoRDPS8hI87j8V7Jd1HsesEkH0EgmytwpyTKgWIS5btHKNht4BHiiS2A67K2Jl4BiIZISN0+NZbscPXuDQGQGYOJM4nARH1u3z3PV9cRbAl5SE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NQvJG4gb; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778707194; c=relaxed/simple;
+	bh=0Lebhxow8NENn55awGNqCenjr3a2y8mPr2YpEwm2E9Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mB3gQcbHxvjzZAiY3mhcf04tkxYLLXIcDTMTCTB86cKwbqBYii90AN945JeAqZCcuju3NmdmeotYiHIEoTQAZAk0B6RMdbVfUnoj21rukK9q2bc2mtdBJ6YPu1Vpo9vLAIue85B/trxF4Gq37z/RV9Tc3r6NWVUdoXuaUAtuTHI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=aWn6yRsP; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NQvJG4gb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778706115; x=1810242115;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zMCbaORT6xUeb259rppjUN2BQFDDYZqv4dSV64W+coQ=;
-  b=NQvJG4gbcx+dLQrXTw+j/MuzdG+BmZ5SSvpPRJBT/QlmqrvN1/07OLol
-   1753zKcw5ZdiXcBlPZtve5ih0nZnWMS6YTJd45JWdtrzfPXSm7Y90Phi/
-   K/yrz3AVt2iRArXrLaWxorf6i+6GtWO0Y5zNgdgh+rvWdG++GVyXadaLh
-   +caqeJLgnXyADz+zElkGxCSLWMJrOwBTrdIDZaz4g88YusSF4wXwYhm4s
-   5lqqpSqDSi9zmMVpePnyK1tWgeHQaqREoyfEOx8N4JPzidRs2F9HJzwQr
-   yc0LRFZICWjwn8OaHxi/1kAo2nBGi4QDYgFtOg1NHxvDj9nd1riwQzPAt
-   w==;
-X-CSE-ConnectionGUID: N+V0NQnBSiuXTlkVhcHAZw==
-X-CSE-MsgGUID: D+fXqdoyRm2uoobUICWhaQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11785"; a="79625993"
-X-IronPort-AV: E=Sophos;i="6.23,233,1770624000"; 
-   d="scan'208";a="79625993"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 14:01:54 -0700
-X-CSE-ConnectionGUID: VQJCWWMxQoi3npGyGi+SBA==
-X-CSE-MsgGUID: 5veV9v3GR5+T3+wzi6S0CA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,233,1770624000"; 
-   d="scan'208";a="276292747"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.106])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 14:01:51 -0700
-Date: Thu, 14 May 2026 00:01:49 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, songqiang1304521@gmail.com, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: proximity: vl53l0x: notify trigger and clear IRQ on
- error paths
-Message-ID: <agTmvRc__VChBPLt@ashevche-desk.local>
-References: <20260513193119.17884-1-sozdayvek@gmail.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="aWn6yRsP"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B1D591570;
+	Wed, 13 May 2026 14:19:45 -0700 (PDT)
+Received: from ryzen.lan (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E0253F836;
+	Wed, 13 May 2026 14:19:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1778707191; bh=0Lebhxow8NENn55awGNqCenjr3a2y8mPr2YpEwm2E9Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=aWn6yRsPrgj1szjsbnBgCXW++nb/Lx3T6nyTZrCqYcM08h00TKY6S2j0Bl0R9wpdy
+	 jd1LkJ/DiUsek75w2fd1w7BXdhsy5V1rcMebOyYAYRu1ozk/UI7z+gDd5sYQHBQzp8
+	 d+LEGdf4s8tbTvOZlMf3eACGJhG31OFXK74rCzUY=
+Date: Wed, 13 May 2026 23:19:01 +0200
+From: Andre Przywara <andre.przywara@arm.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, Michal Piekos
+ <michal.piekos@mmpsystems.pl>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec
+ <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, Maksim
+ Kiselev <bigunclemax@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] iio: adc: sun20i-gpadc: add A523 gpadc support
+Message-ID: <20260513231901.05dc9a82@ryzen.lan>
+In-Reply-To: <agTbFbicv9yzTQb9@ashevche-desk.local>
+References: <20260513-sunxi-a523-gpadc-v2-0-d5efde151dac@mmpsystems.pl>
+	<20260513-sunxi-a523-gpadc-v2-2-d5efde151dac@mmpsystems.pl>
+	<A7772824-E704-4BFD-A796-BCD81197E5A2@gmail.com>
+	<4248ac7e-3cce-4db8-a2c1-710f2c903490@arm.com>
+	<agTbFbicv9yzTQb9@ashevche-desk.local>
+Organization: Arm Ltd.
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.31; x86_64-slackware-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260513193119.17884-1-sozdayvek@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 14, 2026 at 12:31:19AM +0500, Stepan Ionichev wrote:
-> vl53l0x_trigger_handler() returns directly on the I2C read failure
-> paths without calling iio_trigger_notify_done() or
-> vl53l0x_clear_irq():
+On Wed, 13 May 2026 23:12:05 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> 	ret = i2c_smbus_read_i2c_block_data(...);
-> 	if (ret < 0)
-> 		return ret;
-> 	else if (ret != 12)
-> 		return -EREMOTEIO;
+Hi Andy,
 
-Unneeded citation of the code which is visible from the change.
+> On Wed, May 13, 2026 at 01:53:49PM +0200, Andre Przywara wrote:
+> > On 5/13/26 13:44, Sanjay Chitroda wrote: =20
+> > > On 13 May 2026 10:29:43=E2=80=AFam IST, Michal Piekos <michal.piekos@=
+mmpsystems.pl> wrote: =20
+>=20
+> > > > +	if (ret <=3D 0) =20
+> > >=20
+> > > Thank you Michal for the change.
+> > >=20
+> > > Have you validated the changes ?
+> > > It looks while success ret would be 0 and it would give return error.
 
-> A single transient i2c_smbus_read_i2c_block_data() failure (negative
-> errno or a short read) therefore leaves two pieces of state behind:
-> 
->   - iio_trigger_notify_done() never decrements the trigger's use_count,
->     so iio_trigger_poll_nested() silently drops further dispatches
->     (see industrialio-trigger.c, the !atomic_read(&trig->use_count)
->     guard);
->   - vl53l0x_clear_irq() never writes SYSTEM_INTERRUPT_CLEAR, so the
->     chip keeps the DRDY interrupt asserted.
-> 
-> The sensor's buffer mode stays wedged from then on, recoverable only
-> by re-binding the driver. The sibling driver vl53l1x-i2c.c handles
-> exactly the same case correctly by jumping to a "notify_and_clear_irq"
-> label that always calls both helpers; mirror that here.
-> 
-> The bogus negative-int return value cast to irqreturn_t also goes
-> away as a side effect.
+No, it doesn't. Returning 0 means no clocks found:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/dri=
+vers/clk/clk-devres.c#n300
 
-...
+>=20
+> Good catch!
+>=20
+> > But devm_clk_bulk_get_all_enabled() returns the number of clocks found =
+and
+> > enabled. And since we need at least one, I think this is correct, and t=
+he
+> > error message below reflects that.
+> >=20
+> > To me that change looks good:
+> >=20
+> > Reviewed-by: Andre Przywara <andre.przywara@arm.com> =20
+>=20
+> =3D=3D 0 ???
+> Doesn't look like correct code.
 
-> -	else if (ret != 12)
-> -		return -EREMOTEIO;
-> +	if (ret < 0 || ret != 12)
-> +		goto done;
+Not sure I follow:
+devm_clk_bulk_get_all_enabled() returns the number of clocks in that
+node, or a negative error value. If it returns 0, that means no clocks
+have been found, which is an error in our case, since we expect at
+least one clock. This is what the second part of the error message
+refers to.
+So we want one or two as the return value, with the current bindings,
+but really anything greater than 0 is fine, from the driver's
+perspective, since we don't care about the clocks beyond them being
+enabled.
 
-While this magic 12 is in the original code, perhaps a patch on top to make it
-use sizeof() instead.
+So am I missing something?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Cheers,
+Andre
