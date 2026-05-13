@@ -1,124 +1,122 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12548368D4E
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 08:08:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778659685; cv=pass; b=c0B5wN98PyY+uRfCmuz51pdvPukS97Afmk4NQqQS+grA1CUi90Mz5TCf6p/CZy9cAVpaCJ9UGasg1c4cOUYhCHQYK7Ear/MawTIWWpJv5yEqExL6DD7SFxgFCzp3Wqa5SZMrjEua+glCeKSeVUJRRBHvB5vImSPjTXRiHla0UUU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778659685; c=relaxed/simple;
-	bh=o5OHLJcOxC7Fnsmq4GqMfsK7bdTelOza+cD1NXwktmM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oAqJxNNFkB+conPIAnHVjXst2iimavOwm4Mp6Jj0rv0KRgpyCNaYskG9+7GKF7vBbhH/2RixVX7hJQ+DfC3QqCWfcgy8U4jnPvGE3NHCkO04Txglx0h0h5cK+bxfgVAV95mlgSuNB9aMyAdKVD6oQUTZK7VrkzvlB4pSA45EcF0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G5VKF50I; arc=pass smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83BFB379C3D
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 08:09:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778659749; cv=none; b=KDGkhkzcvVBM4S1oA+ysiTLUfIglpRUWpjKMSIBhtGKbjNUFnC1QgkYfGX5s0eA1c2H+d6gZyW+xauw+Cx4nt9NMhpTjsK26XUhlwaMCIuoUWjqeMbaV73VflexwkN+yXf47lYwsXVANwobMlUGoTcOoz0dI0p3nUf09DcJAvbo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778659749; c=relaxed/simple;
+	bh=6cU1utVTOBgVJVUtxCofcenB3rOuCBtz+uM6g9cjRG8=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=lYdBAsmpkqlGFDOkwIFeKE4Ef4cxQTSZbB32ULKX0XmLcR3cnjnwkhYrgW4O370LVcuId6ZN3099i2MSxS33GbPVLMsZx9MlCZG875W4jE2RS2uBXWcOcxlzs3dDMvetbQDWi6RDxUThVq3pIz8KyxWtPS+ixlFk/ZL5cv1QQz4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mc6WF0b/; arc=none smtp.client-ip=209.85.208.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G5VKF50I"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-488e1a8ac40so62243935e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 01:08:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778659682; cv=none;
-        d=google.com; s=arc-20240605;
-        b=F/mtSY/uQWaid5fd0KAOI5JQOIkon+Eeo1ivn39HPxZNfP41LjtE1XkOJ8NWr3lG0E
-         pEuXVmCqMzBrCl0vzH2noTjs5Y27ox0qb/AHwRixZUWyJg8om40z2o2A0z3sswudRrOb
-         /ysKlNdrnJiltfjHAGoHlfTAdDlGSNAp8TiUaE/DA54D91SMsakgh+IADvgh7y8/I43i
-         4BGML+jZsg45kzJMx7THDtYplluh80xZ+/X5BO6GrSb1IjMdIbEbMog8zOF7r1TQoFQJ
-         b/yQlqrnqy51zrv1gUNKd3UJfROGOOmdWrgLpcChYvtVMITCS6vNRqfR04lBHaQ2D8II
-         gtTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=HUj67/5/NXFLHIIXZ/GvpTp6xgEkKvOgSGVkKjkoapI=;
-        fh=GXt3cBBlUAE7gFEDYzxlmmsXVqKu+zT+FinSAGjhl78=;
-        b=GFi4L+6OTutqf1zG+zZG4dElMezfSw5emxEv1op//YN2rfZsUXTmR0v9urWnLhhyC3
-         dfNe9Hi0eQ8vWl9riMEWMbnr/chwFFns01tFNul4E0h0YM8W6wd5LKIufNOdPYfuDScZ
-         gOYApP0xIxg5js1GG4fdOnJWaWlV2dELdocC7lmp8b9/v+kyBrkFcJwSLDPWvhyDE9P7
-         71PU0x6sSc8FRy0ch+Th2EG0hBYltrLD8U4vff4OFDPNAQlkaFHiQCYalp7lgZiHkbmh
-         NRx/Z5cUK9SvwPUVuSNShuaH/yHxGu9GbecHChg8uehn2HQLIACOJT7/AnDJprI0aJlQ
-         H9Gg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mc6WF0b/"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-67c2b4809baso12750338a12.3
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 01:09:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778659682; x=1779264482; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=HUj67/5/NXFLHIIXZ/GvpTp6xgEkKvOgSGVkKjkoapI=;
-        b=G5VKF50IHjHV3f7ZEjSwDT9Srsh6isFMp0fjew0IMANdM+/xVVsxM5PCR1Y0E9oJsn
-         uaZ0EDeqdbtcbdaETqc0rkLWGpnR6IaaSZqMRih0Arl17ao7M43PZkxQZ70tDgabGAGO
-         7h6MAE5uI9xoOd9uTCmJQg3f7ZSmqG81OY6i+RwQsOJRCGGC2QCdOikUhlDD5/3kBXRB
-         M6e7pXUvUYl5CnJy8MhkHvifJxZIzEZycMIxkWgKcRPVL0fmqwtPN3AKkQYdbN7i1vEK
-         NdwpjLi2GmNyVKsTksB3+ZZfS84k3I0qEzqKRIUJePHK6ppdNgxECXSsjojImNXduunH
-         JatQ==
+        d=gmail.com; s=20251104; t=1778659745; x=1779264545; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Hbw67revHUjmNsphID1mbAlYMpamHh2eKQtH/zH6ok0=;
+        b=mc6WF0b/6s7L0krPqEyAnQhH74q9O+gFvoLSgLpy1S1oc2xu91MThgam57Ql3wwTuh
+         knwPKmThSTv7oqtfdTEmDb8cZ+TPcqcfxnRERU1BUCznQHUalOd5f2TY6hSqHfaEEsQ1
+         KV2g9J3mi2YhXWzISkJ1zGCiQVbUxmIwUOINNmve6SP2pY+klBuUS0PPyHx56IZsV5Jw
+         aVmTkfS7Hr2hEO1CWgUkzDaHN5sNLm/Oh3p4FZ9uYY7W66UR7uNS5pxw9K1tQqTG99SO
+         wAx1HgzvQ3Xz+LBo36LqDbrCtEMZeYaiVi8FHtuggbA8rVC6D9eWQICaFKfQlkCC594l
+         3RHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778659682; x=1779264482;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HUj67/5/NXFLHIIXZ/GvpTp6xgEkKvOgSGVkKjkoapI=;
-        b=XxBSUVWJpPFjrObvDqK2ubzLTZiXlpxCuHnLCPRlgHuzs4qrHNUsMKmXrMviwZxjw4
-         h3HEGlDwf9L8oyQhjirNwOqUVH51vc0LXEf29V43UaAc8Zh8iQM0iX8HLexwvSYKeJYG
-         a74K52B/bJjCRnVdzrsKKdXSH9scGo7TXovjtssDaZ00PzdOvDXRSr77KmYJrBIdtO3n
-         +5C+ZB5AnN3h56FWvYSvbxQyNu76UEAQXUdaavIJSE3RAN55j+LaytE49nijnZt3mFuT
-         f/iQO/Vk+Jk0T97YF2WP16ZRYBGYKUZUCJ7cxZIceLbDeOWb9xRZxyDtbzCtS+dTEMOS
-         9fQw==
-X-Forwarded-Encrypted: i=1; AFNElJ+pxxq1y0Cxf9a+1h4fLDZ15ovS9+4BrH2qCJu8Y9aGjrvLoIhcdBNRc/CLzVD4kugcf46aeO/i76A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzdMWksLY/lUdZ1dmKdkpb9/fXuambfJLnlj+mc/ndPfK3lDSaD
-	nI8hgEpuT4fgYcEeygOTt6NJ8LerLCa6Ju7uqcAA8SjP4wYh9FW+kaQXr5BNS3NKg6WRwkUX+HG
-	A16q21W31TzZjKA4/Kgx4YXkUmwzn/HU=
-X-Gm-Gg: Acq92OGCweI5UQ35/gpUyR5N/j/iFXipcbxfmroKtGBXcT4cU6V30/jeT7bUbnJCWKs
-	9CBrd2O0yuUHeuWgyLetHKvoiw0ouIpwWwhHDB80pvHRCoDiWumUPHcgmDDowec4BwIBSoo0OQP
-	VHSx72pqTHOAOtifmAnh0etIunaS+XTDFYJjFg5ZTzVkQ5YOi+QIdduu257zKbeU+YERSmqeUBF
-	8biTq8lJAXm9oJ6NddqzgwbtbcvQzXxKWlqrEQ3a6EqOUBFD4jsWX/UGIkJT0DGS6eoyow9viL8
-	pynx1k3il+PQ3bh2ccA/tMxTluckpPdPsBuFLp4rAjc3JqrpUXd1VtBZRInXhR+4CWpdu+h36LI
-	RV6Re/DdSJstsYO7ffira0sIOCYKN1LJn4gtudJGf3H3voXdQlJSRBN8i45g2LcwwSUusbACXxQ
-	+0CB3MfA==
-X-Received: by 2002:a05:600c:44c7:b0:48f:d2fc:d042 with SMTP id
- 5b1f17b1804b1-48fd2fcd1fcmr1702915e9.13.1778659682565; Wed, 13 May 2026
- 01:08:02 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778659745; x=1779264545;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Hbw67revHUjmNsphID1mbAlYMpamHh2eKQtH/zH6ok0=;
+        b=eyEFRBrEHNeo4S7lnyStR3crHetdiXRwW4k1E/vp3crTFcxdxbgwA6jwa/ef02UGq1
+         7g5nv5K85Mmujn+GwJ18yIYs378xUP9BKZwjtYFDIBCftNDY/Jj6zXj8X4xxDAZBiw+H
+         h4TR3n7QuVmojsQxr3vuNQKy07k6DQTvpNStUc+yA8n9t4Jh8OEBvtdrQSRConUgSk/h
+         VcZMrcUeyPirH6CJgCkvTK4zLS/eUqtaQjaz+xKzd0jD+1P1rTEn/9DPWM982107+MCB
+         wYyyKq/YH+QJRtx0IstkBSk5FEhmdY59Z2jU8aOMobYYJqtYifJdB5UOuKzRJgmNIo/S
+         upog==
+X-Gm-Message-State: AOJu0YxmUOayMuEAxdp9kwUX3WaUSVqmqRlvGLzLoT02fpNISlzUhzXm
+	KRPKioXMrN9XQPlTZB+vneLsxhEx+dTzDAp95VTv88LmBaPMcGGqnJ3wXDIiFj2B
+X-Gm-Gg: Acq92OEm1qtwSiZ9jVGW94UuW3wNybiRA5uXPoIncIgGYqBbQqLKSWa8FJy23sOT8EQ
+	XVH5dqDIbwfHCRqciw/VxztUsPc1AwAPPY/cBfuoW0iloJhiAejj/w8qu+z2dpRWkfrRnxuyPja
+	h7SaLVLHYbrhN96jWnPX5/gAmakISCVKsa+MmDCJ/r0a/hlghubHIWemAQZq+QrmUR0bkyvgTDD
+	EBL9fgr9vQnqmDSP34Cb3M7PTssMpySUpwdSDErDF+LxgiVBgm41+377NihfFmodn51xLTcWb2f
+	1Pe4MMjiWECYFKLOcismA/LVHsc0eraiCD2u6U10KmEtViBg3sNi33UW6fiDHUdq22gsk5G4qWj
+	vn9WlZUrP2CzYtTkilgSpYLPWDqxLuaYTNkB1Kkv1WlzrKKVKk1fNu8ezHzxwBnlf0eUGZiFQ45
+	5S0qf+s+vJwdDFO0klLzyM9Fpi3YM=
+X-Received: by 2002:a05:6402:e0f:b0:671:121e:dd4a with SMTP id 4fb4d7f45d1cf-682a6e08183mr863286a12.5.1778659745229;
+        Wed, 13 May 2026 01:09:05 -0700 (PDT)
+Received: from gmail.com ([212.75.105.246])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-67ef0b6a3f3sm5852447a12.10.2026.05.13.01.09.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2026 01:09:03 -0700 (PDT)
+Date: Wed, 13 May 2026 10:09:02 +0200
+From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
+Subject: [RFC PATCH v2 0/2] iio: light: add support for Broadcom APDS9999
+Message-ID: <cover.1778659152.git.azpijr@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512223215.25596-1-aldocontelk@gmail.com> <20260512223215.25596-4-aldocontelk@gmail.com>
-In-Reply-To: <20260512223215.25596-4-aldocontelk@gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 13 May 2026 10:07:51 +0200
-X-Gm-Features: AVHnY4JIZlyHMUEtu8JAG8Og1-Jhw8uH7BQkFJ-WmDJC-mCDgjabVWeU1G_IkCE
-Message-ID: <CALoEA-xdQJPR35WAtsU+4Wd1O=a=1Yg0GSYDOHRLRKLY2XcS1A@mail.gmail.com>
-Subject: Re: [PATCH v2 3/5] iio: light: tcs3472: use devm for resource management
-To: Aldo Conte <aldocontelk@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Wed, 13 May 2026 at 00:40, Aldo Conte <aldocontelk@gmail.com> wrote:
->  static int tcs3472_probe(struct i2c_client *client)
->  {
-> +       struct device *dev = &client->dev;
->         struct tcs3472_data *data;
->         struct iio_dev *indio_dev;
->         int ret;
->
-> -       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +       indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
->         if (indio_dev == NULL)
+Add IIO driver and DT binding for the Broadcom APDS9999 ambient light
+and proximity sensor. The green channel uses optical coating technology
+to approximate the human eye spectral response for ALS/lux measurements.
+IIO_INTENSITY channels are also provided for red, green, blue, and
+clear/IR so userspace can compute its own weighted lux.
 
-Not introduced by this patch, but `if (!indio_dev)` is better if you're checking
-for NULL (checkpatch.pl would probably mention it during a run).
+Questions for reviewers:
+  1. Is the green channel as an ALS/lux approximation acceptable given
+     the datasheet's claim of optical coating to emulate V(lambda)?
+  2. Is the IIO_INTENSITY channel layout correct? (red, green, blue,
+     clear with modifiers, no scale)
+  3. Should the binding be merged with avago,apds9300.yaml or kept
+     separate given the extra vled-supply?
 
-Since you're moving the driver to use devm_* functions, might I suggest
-moving mutex_init() to devm_mutex_init() in the probe() function? Something
-along the lines of the following:
+v2:
+  - Added IIO_INTENSITY channels for R, G, B, clear
+  - Switched to guard(mutex)(), devm_mutex_init(), dev_err_probe()
+  - Replaced remove() with devm_add_action_or_reset()
+  - Don't fail probe on PART_ID mismatch (fallback compatibles)
+  - Replaced manual shifts with FIELD_PREP() / GENMASK
+  - Used get_unaligned_le24(), sizeof(buf), NSEC_PER_SEC, fsleep()
+  - Named gain register values, explicit resolution enum values
+  - Removed section comments, grouped bit defines under registers
+  - Squashed Kconfig/Makefile into driver patch
+  - Split MAINTAINERS entry across patches
+  - DT binding: added vled-supply, interrupts, required vdd-supply
+  - DT binding: fixed title, added blank lines, full description
+  - Dropped "DT binding" duplication from binding commit subject
 
-ret = devm_mutex_int(dev, &data->lock);
-if (ret)
-         return ret;
+Link to v1: https://lore.kernel.org/linux-iio/cover.1778491503.git.azpijr@gmail.com/
+
+Jose A. Perez de Azpillaga (2):
+  dt-bindings: iio: light: add Broadcom APDS9999
+  iio: light: add support for APDS9999 sensor
+
+ .../bindings/iio/light/brcm,apds9999.yaml     |  53 +++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/light/Kconfig                     |  10 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/apds9999.c                  | 344 ++++++++++++++++++
+ 5 files changed, 415 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+ create mode 100644 drivers/iio/light/apds9999.c
+
 
 -- 
-Kind regards
-
-CJD
+jose a. p-a
