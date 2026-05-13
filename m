@@ -1,239 +1,177 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C34C3B5837;
-	Wed, 13 May 2026 20:28:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF7C3B95FA
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 20:29:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778704119; cv=none; b=RUg2OKFGHm/EJall1w8n/wnLKiTVk7Tg6fyuvrhp408UM0xvgTW+v9wR0xNxtNkgZJLPY+JcDr0YsZfhQBM2tkI1Z9goDDM1SRqvpT/yjVTSHXAlq4QKcqbyqoh8rk/MmP2lpvnDBM2WO6ku93b0AjC4ZZXrOAMbHbXq4aYTRdA=
+	t=1778704201; cv=none; b=Nru9sAHF37xa5QvabgTu5mdg1Yma62ziottBfoAAthpAbQN44RR33F2H2q6WioTXTOS+3dwv/PihmdkR580JdYhg1jZWtW7q7WbEL0Eg9g80TgA4xl21NT2y9/ecGRyeq5c2fdtzGAY5DuUOLOju+moB4l+2k5padFWLX+ZPUJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778704119; c=relaxed/simple;
-	bh=94YyXNzMTEt4UesTQXEg5EHXkdJVDB9o4CXu2ck8OUA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OwA8chPO1UNZqph3GI8a749D+Z0/UyMzCgYRSQ5ENvbYCfTk14s14K3kdhJEzjttQS9h0wvIlogaLRDtZivTtC/x0y8yaItAqTfnzJ/y0I6rqOV8ET3BLAGzF0UWrQsLLHWKqThCLD4/o4AGy6631qDhYpeDNHXRRi1PddLUH6I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DK+koLMu; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778704201; c=relaxed/simple;
+	bh=jHFlF295HYzF2B3H7tjKS4sy/QRMeoh2eLu7AGEMh9s=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=O1J4uUqZCMOsSMIuPblL+S0JoOjqszgpDsAqWcwjRRVchUM4CUkw1ZXjbQbW6WqFH6+S66qXVacETy+6NeaLcUY9rWh8j9TTEtbE/kmsYp6oqUGG2GUomQRkpNG3ywkGERbf0ZsKKvnIDrFmlPAQny33/snI8CIe5caUTtCkSgk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xx9HbNyr; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DK+koLMu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778704118; x=1810240118;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=94YyXNzMTEt4UesTQXEg5EHXkdJVDB9o4CXu2ck8OUA=;
-  b=DK+koLMuk52ZhwgxpWlh197s8n+9uCiNO3dIIPVME9QL19n0mfP5YSvH
-   /WCHe3245fe+BafCaHnz46KVsMvi+E0SjamXsynK76R7S/8Aa54eCCSSX
-   LmWNHrnok3cGMrNlALgd6IADFjpPfC/kBwyXWEol433u7CSiL/VJ/772E
-   TzAw21bLLIOyiHQon4//R3ezgpRjy8W7Il/ucVjREwT31bKwz7zLVrQkY
-   VTci3UgN3FtEiNPF4oWLQFQ8XYBWKVTtG/ldKXbZtqtTiH5F3aVXFRh2b
-   6s8vI5jrPh2vTd2MI5CCGLD4zja+dnn7oEl4EKl+FDhndMP2KaRx3JlEn
-   A==;
-X-CSE-ConnectionGUID: RNZ9FFWaTuGYHh/z3daM6w==
-X-CSE-MsgGUID: J8NWEHKsR/KCXq3ipad5Sw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11785"; a="102309901"
-X-IronPort-AV: E=Sophos;i="6.23,233,1770624000"; 
-   d="scan'208";a="102309901"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 13:28:37 -0700
-X-CSE-ConnectionGUID: aedUM+sTS4aBSfGy9nseAA==
-X-CSE-MsgGUID: Oz9845mtQWuod6gKW4p9zw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,233,1770624000"; 
-   d="scan'208";a="261936442"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.106])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 13:28:33 -0700
-Date: Wed, 13 May 2026 23:28:30 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Angelo Dureghello <adureghello@baylibre.com>
-Cc: Greg Ungerer <gerg@linux-m68k.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>,
-	linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 11/11] iio: dac: add mcf54415 DAC
-Message-ID: <agTe7vZ94DnmD4Ed@ashevche-desk.local>
-References: <20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com>
- <20260513-wip-stmark2-dac-v2-11-fcdae50cf51a@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xx9HbNyr"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-488a8ca4aadso64906275e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 13:29:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778704197; x=1779308997; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=jAvNBpV8Q/y6fPQg34WIPbh535gNEElB5bP/5NvjoC4=;
+        b=Xx9HbNyrYcJOT8m4WnyaLZAkFWLN3aED7h6xo7TK8oYCKZia50wjwcEilqx8ntNcaL
+         /Q2qHNkaxcdJ/Y2hJVOU4VepF48K6hy6aWHhO7um7gOMGKklSFfK/Io/UpyAMluWWIUo
+         JR5454exVT6FElSE0r30zp6qXLt4JrHF5dYr6/VlGr4wqBw2XvFhAUBRbLZrZqFkw1/b
+         yuC/pagVj25a3XqdV2O8ron+oBq7oX/mNqXPXY8JKQCqnKlMjK35xT4oDEJB2n0Fnzf5
+         SX1RjWY63B+NL6aUuDLSmIIbr4hsKk+EkfSuSkR4riXe8UPXU7A90wtdfuld8VXzvMrH
+         QgXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778704197; x=1779308997;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jAvNBpV8Q/y6fPQg34WIPbh535gNEElB5bP/5NvjoC4=;
+        b=im2Nz/f6knBzOfu1PVp0D1XPsOtGeBet3va56cd5MdQvznuotRi+miW5QbLojHaK30
+         K0DfkMKZcMPAXP/pwRmtzEVGVSRyDui49J/rHGYefaBa7AS9HxjZPf3vMz+BVp8cnjzk
+         APq3zEBBpS++Z847+ZUv0nEmKW/5CBvHp/2sxaU1+yXsrdbX0VkSfpDmxPHyLa1onzn4
+         GEJf7z/zpOJoAjdlYFQ/UCmfJG+rrPu8ep91pD0RbRnr84uKuMIPqLKm0wKpVAVZAycW
+         e4m9y477/BPD+hxCNa6SCFK739qEdVQX63Z4DzGrMB9cs+sLn1b+joU/JhZf0QHsazaC
+         1l5A==
+X-Forwarded-Encrypted: i=1; AFNElJ+GwhaeC+c6fqMRSRppqqQI/ZJoY5OdEPyobxTbPym4YdA9dCN3LZ1KB5NO1bAS70Uj4l7FYX+RvV4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzaTcxmSOmCeVpGJOtgILIhuo7cPkx9tmYHu5M4NWnKSeOkX5x/
+	834StILwPaMjzTjgVG+zAHi6wewn4G/Z5YoxcYN2bAuBDEcLDEVzV9TJ
+X-Gm-Gg: Acq92OEMwPCYj6LUafbfxfgvFPWdxfI4PhzB7gDjlEgyODTIn407JQi8PbYN6Erbk4l
+	DJLYLuGkcRzsTnhkD/GRtGwGkPMCSs0W/K9fvEumq7ST4dZr+7atiFgqgV6WNw0hrMci3o9ZJxm
+	Giz1sycqgXanWaMBoOHmS0kkMpZ3qOx6B7QyLKe/kcMicYXoog4YSH5/TpL5T5cLjvuG9dhhvMG
+	sPwWs8zZw/+JzwGyiU5ddXXk2aEgbiucw3QHESV+oI2qlEi4RFqYpND0pIrvTAVBkDYwuitoie8
+	WjEPVLmESfnq1YEqt3bqGvC8Fc82G++P9ulHR7YmykxTpXUmsdAG5kjp7NbDxBn/KJBXIe+hWs9
+	DzTNgeJtgdy5Kz6Rx84OB8baYdJJi2fhDULySdm5m5rauNghLHvlSX/1c79WftyFUs2Exs/ddDv
+	w0eKTSxobOtr5kUsNMDT1lGdy63Dyx8FbPzrEDS93vVszCWlEZz67YrvMXXZ9KJ09eUV2cYs8=
+X-Received: by 2002:a05:600c:8705:b0:487:5c0:671f with SMTP id 5b1f17b1804b1-48fce9c731dmr74047535e9.9.1778704196412;
+        Wed, 13 May 2026 13:29:56 -0700 (PDT)
+Received: from ?IPV6:2a01:e11:5402:d840:f1ee:c5d:74e4:6e19? ([2a01:e11:5402:d840:f1ee:c5d:74e4:6e19])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fd64da1absm21690035e9.14.2026.05.13.13.29.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2026 13:29:56 -0700 (PDT)
+Message-ID: <0de09560-6a79-46f0-8a63-3fb904a38231@gmail.com>
+Date: Wed, 13 May 2026 22:29:55 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260513-wip-stmark2-dac-v2-11-fcdae50cf51a@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/5] iio: light: tcs3472: use devm for resource
+ management
+From: Aldo Conte <aldocontelk@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ shuah@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-kernel-mentees@lists.linux.dev,
+ Joshua Crofts <joshua.crofts1@gmail.com>
+References: <20260512223215.25596-1-aldocontelk@gmail.com>
+ <20260512223215.25596-4-aldocontelk@gmail.com>
+Content-Language: en-US
+In-Reply-To: <20260512223215.25596-4-aldocontelk@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 13, 2026 at 11:14:35AM +0200, Angelo Dureghello wrote:
+On 5/13/26 00:32, Aldo Conte wrote:
+> Convert the driver to use device-managed resource allocation:
+> - Add tcs3472_powerdown_action() and register it with
+>    devm_add_action_or_reset() to ensure the device is powered down on
+>    cleanup. Before this patch, the chip remained powered if probe
+>    failed after enabling it.
+> - Replace iio_triggered_buffer_setup() with
+>    devm_iio_triggered_buffer_setup().
+> - Replace request_threaded_irq() with devm_request_threaded_irq().
+> - Replace iio_device_register() with devm_iio_device_register().
+> - Remove tcs3472_remove() as all cleanup is now handled by devm.
 > 
-> Add basic version of mcf54415 DAC driver. DAC is embedded in the cpu and
-> DAC configuration registers are mapped in the internal IO address space.
+> Rewrite the read-modify-write pattern in tcs3472_powerdown() and
+> tcs3472_resume() so the new register value is computed first, written
+> to the chip, and committed to data->enable only on success.
 > 
-> The DAC accepts a 12-bit digital signal and creates a monotonic 12-bit
-> analog output varying from DAC_VREFL to DAC_VREFH. The DAC module
-> consists of a conversion unit, an output amplifier, and the associated
-> digital control blocks. Default register values for DAC_VREFL and DAC_VREFH
-> are respectively 0 and 0xfff, left untouched in this initial version.
+> Use a local 'dev = &client->dev' in tcs3472_probe() to keep the devm
+> calls compact.
 > 
-> This initial version of the driver is minimalistic, "output raw" only, to
-> be extended in the future. DMA and external sync are disabled, default mode
-> is high speed, default format is right-justified 12bit on 16bit word.
-
-...
-
-> +#include <linux/array_size.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/clk.h>
-> +#include <linux/compiler_types.h>
-> +#include <linux/delay.h>
-
-+ err.h
-
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-
-...
-
-> +struct mcf54415_dac {
-> +	struct clk *clk;
-> +	struct regmap *map;
-
-I believe that regmap pointer is used more often, can you check with
-bloat-o-meter that swapping these two (by the order) gives any benefit in
-object size?
-
-> +};
-
-...
-
-> +	.max_register = 0x1F,
-
-No definition? What datasheet says about this? Perhaps define the MAX as per
-last defined register in the datasheet?
-
-> +};
-
-...
-
-> +static void mcf54415_dac_init(struct mcf54415_dac *info)
+> Suggested-by: Andy Shevchenko <andy@kernel.org>
+> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+> ---
+> v2:
+> (Suggested by Andy)
+> - Rewrote read-modify-write in tcs3472_powerdown() and tcs3472_resume()
+> - Use local 'struct device *dev = &client->dev' in probe.
+> - Dropped "Compiled with W=1" and test details from the commit message.
+> 
+>   drivers/iio/light/tcs3472.c | 107 +++++++++++++++++-------------------
+>   1 file changed, 51 insertions(+), 56 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
+> index 4fd4fd74d0d6..7a6dc8360326 100644
+> --- a/drivers/iio/light/tcs3472.c
+> +++ b/drivers/iio/light/tcs3472.c
+> @@ -427,13 +427,38 @@ static const struct iio_info tcs3472_info = {
+>   	.attrs = &tcs3472_attribute_group,
+>   };
+>   
+> +static int tcs3472_powerdown(struct tcs3472_data *data)
 > +{
-> +	/* Keeping defaults and enable DAC (bit 0 set to 0) */
-> +	regmap_write(info->map, MCF54415_DAC_CR, MCF54415_DAC_CR_FILT |
-> +		     FIELD_PREP(MCF54415_DAC_CR_WMLVL, 1));
-
-Seems the whole driver ignores IO errors, why?
-
-> +	/* DAC is ready after 12us, from RM table 40-3  */
-> +	fsleep(12);
-> +}
-
-...
-
-> +static void mcf54415_dac_exit(void *data)
-> +{
-> +	struct mcf54415_dac *info = data;
-> +
-> +	regmap_update_bits(info->map, MCF54415_DAC_CR, MCF54415_DAC_CR_PDN,
-> +			   MCF54415_DAC_CR_PDN);
-
-regmap_set_bits()
-
-> +}
-
-...
-
-> +static int mcf54415_write_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int val, int val2, long mask)
-> +{
-> +	struct mcf54415_dac *info = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val < 0 || val > 4095)
-
-Do we have a definition for the resolution? I'm fine with the plain numbers,
-but it's better to add a short comment to say that this is "based on the
-resolution of XXX register per datasheet".
-
-> +			return -EINVAL;
-> +		regmap_write(info->map, MCF54415_DAC_DATA, val);
-> +		return 0;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-...
-
-> +static int mcf54415_dac_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct mcf54415_dac *info;
-> +	void __iomem *regs;
+> +	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
+> +	u8 value;
 > +	int ret;
 > +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*info));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
+> +	guard(mutex)(&data->lock);
 > +
-> +	info = iio_priv(indio_dev);
+> +	value = data->enable & ~enable_mask;
 > +
-> +	regs = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(regs))
-> +		return dev_err_probe(dev, PTR_ERR(regs),
-> +				     "failed to get io regs\n");
-
-One line.
-
-> +
-> +	info->map = devm_regmap_init_mmio(dev, regs,
-> +					  &mcf54415_dac_regmap_config);
-> +	if (IS_ERR(info->map))
-> +		return PTR_ERR(info->map);
-> +
-> +	info->clk = devm_clk_get_enabled(dev, "dac");
-> +	if (IS_ERR(info->clk))
-> +		return dev_err_probe(dev, PTR_ERR(info->clk),
-> +				     "failed getting clock\n");
-
-Also can be a single line, but this one a bit longer than above, gives
-88 characters.
-
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	indio_dev->name = "mcf54415";
-> +	indio_dev->info = &mcf54415_dac_iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mcf54415_dac_iio_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mcf54415_dac_iio_channels);
-> +
-> +	mcf54415_dac_init(info);
-> +
-> +	ret = devm_add_action_or_reset(dev, mcf54415_dac_exit, info);
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE, value);
 > +	if (ret)
 > +		return ret;
 > +
-> +	return devm_iio_device_register(dev, indio_dev);
+> +	data->enable = value;
+> +
+> +	return 0;
 > +}
+> +
+> +static void tcs3472_powerdown_action(void *data)
+> +{
+> +	tcs3472_powerdown(data);
+> +}
+> +
+>   static int tcs3472_probe(struct i2c_client *client)
+>   {
+> +	struct device *dev = &client->dev;
+>   	struct tcs3472_data *data;
+>   	struct iio_dev *indio_dev;
+>   	int ret;
+>   
+> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>   	if (indio_dev == NULL)
+>   		return -ENOMEM;
+> 
 
--- 
-With Best Regards,
-Andy Shevchenko
+Hi Jonathan,
 
+In v3 I have a small style cleanup: replacing 'if (indio_dev == NULL)'
+with 'if (!indio_dev)' in tcs3472_probe(). This was suggested by
+Joshua Crofts in his v2 review.
+
+What do you prefer it is a separate patch
+or folded into the devm conversion patch (which already modifies the
+context next to that line).
+
+Either way works for me. Which do you prefer?
+
+Thanks,
+Aldo
+
+...
 
