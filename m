@@ -1,112 +1,142 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EE051A01BE
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 14:26:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE9C40FDAC;
+	Wed, 13 May 2026 14:35:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778682414; cv=none; b=g6rgae2Cp5kVTsjCQjY8QjPDPjlNg/LFI55Jh0quElA/e2h3fZcALaEc0EEI+uYMdA5e2vbXpGbF2wNOdBIOuQA8u9ciTV5Za934kUd8pStQU6MyF6cFuDoibnAfdtsyPvYcjqGAMLQQqHVl6s2ak2MkVfRWoUtZDFG80D3zG58=
+	t=1778682955; cv=none; b=Nam2RolKoj4fM/R11+JEUq+UZFqN2hUNYYH5FVzhPP6K0F5zuwCUmkKviIbFjWZ3ZiiBBjU2lxuILZJjPEQR6P4Sk6M2NZmlwY+VHEtM7eVxVCwnoVBgs4HP8IzwkjaXHwCAfQqdI/wWVGW0BzVIsnjrD0vM38mmFoup4wbQkCk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778682414; c=relaxed/simple;
-	bh=43usKQwgDJhhxBpU9LGaTevXnc0colQXUWRKIdd7avg=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=e/gi4esJHK1Zs8HbwwDp16ZzIy2ZLA2fHDu14PvP9edlGGnXQIKkw0MkxSsoXqMVTTVVjNA6XzLHoF1Erou1klnCHR7E6BuB14g1ydwFMpbMNa15j1x10CUbgqnleGyLh7qtOEJGfpofQd8USWg423wfgNQ2z9SzshMfkPx1UtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D3jild4F; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778682955; c=relaxed/simple;
+	bh=pjD11zRsbQWQcQk+VgqnALwP9zHuTaLO7rBGhGemF2o=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=NlYQZClkK4+5oIqUvm+5XzAar4W/lYTxfM0YGOVDk/feIUpVDNkUHTDwWKGCsrrIwnO8HX307HQManAz3dIE4U0KVeZuvFy5VdvOPzRCeXnOtrL2s9vAoU/4C3aARhqu8sWiYPe1J+ZuL5Vahz+HRV49pcciaeFd5zU1bcMmxDo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IQ/Vtn1Z; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D3jild4F"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4891c569cb1so5993555e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 07:26:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778682411; x=1779287211; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=43usKQwgDJhhxBpU9LGaTevXnc0colQXUWRKIdd7avg=;
-        b=D3jild4FxeQPXuHb5bKt+qPGIMbt+7grMLaaf6ggWlb2p4eNZ+sbY6c6WRU2HvV+gA
-         gi3tAIDoB4Q8D27SCaqS5nd3sO/nJOvjJzleMzeHnpVplzs5jP2nI16ihmyMORgFng1U
-         zBZncD9L02fUz4zHzreOVEEx8CrAXhC+DjoJFBayMT5WmRvNR8v/GfZyL3APfH0MMQp3
-         MULKks59x0JtU5kkFkuLKcAk8LNBgmwX95NYTc66ixUbbys/SOoWigvU4dd4XHQIKCrx
-         PEvrqFqxWlay1jFIhiSEVtQ2+amNn2IiuVMm4fiC6rit/QQ98k6g55j/WkcIVf9aIEgV
-         MtXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778682411; x=1779287211;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=43usKQwgDJhhxBpU9LGaTevXnc0colQXUWRKIdd7avg=;
-        b=f0OPBggE9FVqSVh7tGb/IbOAW8+22SCaYkczjPPsGSpsgAmB420IKrreHJN8f82ba+
-         DUQc6pCgN/HSPOgJg6yc9HbirLfRFnSVVe1WP6DmjLwBKVKC7/8eiZMjr0FsL2AjQxxC
-         k7RoCotvzzFgwG7g2rIA8GQDExz97cDvJ9bDPIb0iykh7MkRc38ahId32XkEBFPy0gMj
-         KVjw+zF+gREKaFWWyXJIeLATginKuq5sXd+sHbLRth37Zq7J/zFx4wn7IBl9amJaax/p
-         VVd1Mqgflcs9GUkQH+n47Y0XEIQGhR3Q4VBkY1K6bJomSnXzqV+3t5ZlIvIcvicXuRZn
-         /0Lg==
-X-Forwarded-Encrypted: i=1; AFNElJ9Df7mNFzzJtr/9FEClHy/M+BImK/pPbUAZugzSea/02j3U35YU3+UwUuhuBW1/Hmwo9v/dVsm68Xo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw5uN2nQwWb1bno72mX41V316O9hky11B/aQIs3eURnMXXoOaWc
-	WPyk1soMw4DwsSttC5x9fGxJZU8A9JFGfH3iZ1bsDJ0R4NVx8kPz5xQdoywIIB6HWNU=
-X-Gm-Gg: Acq92OGVFzebT41TK7DcU4Ygw8eNj+rixJ3UlqxJ8LQMu6FV6RFlXVg7qVfmnxU3a/D
-	/w44M7BP8qiqnCC+t5VDa5UZG7Xy33UbLGpSIZOb9klkdtzdWAl7RBjtpaQqwh8A5p0a3RXYWkC
-	uazZ7F3ppAhA5T6TWHPGVLDSZYgLuTW/exnoFEpIUKaYN3j+36A5EowUQvaFwSghOaHDtmp2fAo
-	6wWZ2nsd+o/XS1QFfu0nD851onPHKtAxnyuEg/oixjwXGTzPCMB7g7y92hnFdbulgXmpnl1esL9
-	0nCMQCX5HaOEqRcYT/Pcay8zIrLNvVoswjGE9RdJ9T2iLbE5XjdGchN1PuziUfh4LEHKXCjz6UB
-	TqhureUDID9kxQNE7xtwZit21McCJsAuJrUYVU3poedqD2sk7TBE83BtN/5XLxhZ6JskjcmF0Dx
-	UJxY5RWr4dvMTp1KegeHymEq7QjPGBwrw1O4z202o77k4Q
-X-Received: by 2002:a05:600c:1385:b0:485:c456:5e4f with SMTP id 5b1f17b1804b1-48fc99a0f46mr25896095e9.0.1778682411364;
-        Wed, 13 May 2026 07:26:51 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fc8d624fbsm183169395e9.10.2026.05.13.07.26.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 07:26:50 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: jic23@kernel.org
-Cc: arthur.becker@sentec.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	gregkh@linuxfoundation.org,
-	hcazarim@yahoo.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: Re: [PATCH] iio: light: veml6040: add suspend/resume support
-Date: Wed, 13 May 2026 19:26:32 +0500
-Message-Id: <20260513142632.9445-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
-In-Reply-To: <20260513094536.8038-1-sozdayvek@gmail.com>
-References: <20260513094536.8038-1-sozdayvek@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IQ/Vtn1Z"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E9684C19425;
+	Wed, 13 May 2026 14:35:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778682955;
+	bh=pjD11zRsbQWQcQk+VgqnALwP9zHuTaLO7rBGhGemF2o=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=IQ/Vtn1Zy7QlUMpmv5PlH4CzbqLMW/KSthOAeH+U6s5X0p18S5dD3p743NPaleEIN
+	 ypnb6YDpG9LagFFOwJZ80woIR08GFoQ1yLCeXf3wJ92IOWC8qzWYd0f8Jd/48duxhW
+	 vTp35k0gf/IIvLTmDpHzrEJqViRMJM6LABXHlI++wJQLl7xLNJXXrzFAeGxUKjY74n
+	 zBBnMg+aMrz3rZZveSsjtTjFZhjAvby4wdssVxYpayMW9Rjfplc36ZeMOOWWKQKCzh
+	 fxA49a8AzT7NfsNvPl6+3ZbvtUE+gIiH63HolLxpdrCatz/m0sXBPVkELiUeKiGs3M
+	 qej1dkc3530Ng==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8054CD4F24;
+	Wed, 13 May 2026 14:35:54 +0000 (UTC)
+From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Date: Wed, 13 May 2026 16:35:52 +0200
+Subject: [PATCH] iio: magnetometer: ak8975: ensure device is awake for
+ buffered capture
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260513-ak8975-fix-v1-1-104ea605dd54@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAEeMBGoC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDU0Nj3cRsC0tzU920zApdU+MkwyQDIwtT85QUJaCGgqJUoDDYsOjY2lo
+ AUQqcPFwAAAA=
+X-Change-ID: 20260513-ak8975-fix-53b1b02857dd
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Gregor Boirie <gregor.boirie@parrot.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Sashiko <sashiko-bot@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778682953; l=2687;
+ i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
+ bh=t9KRDGrt1AwFqcezKrfyVWVsvRmTCT6cOir8KV8zCzQ=;
+ b=pgfmeaJf5C7P8Kn+b50rdXeQMnMKI9HhvqalTRYgdX7Eq+EWidWuVRKwcWCLx5AcFXZbiwSLr
+ 4X08gT1EMmsB50JpPvnF/vYqgneka5z8V/FvPwo3WN3l+IchwNVM0yv
+X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
+ pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
+X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
+ auth_id=746
+X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
+Reply-To: joshua.crofts1@gmail.com
 
-On Wed, May 13, 2026 at 19:15, Jonathan Cameron wrote:
-> Suspend / resume tend to be a little non trivial to add and datasheets
-> are sometimes less than perfect in describing powerdown modes, so can
-> I confirm: Do you have one of these that you are testing this with?
+From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Honest disclosure: no, I do not have a VEML6040 board to test with.
-The patch was prepared from datasheet inspection only (Vishay Doc#
-84276 Rev. 1.7, Tables 2-1 and 2-2) plus the existing in-tree usage
-of the same SD bit in veml6040_shutdown_action(). If lack of hardware
-testing is a blocker for a PM addition, please drop the patch; I am
-OK with that.
+Currently, the ak8975_start_read_axis() can be called while the device
+is autosuspended, causing two issues:
 
-> dev_get_drvdata() rather than going in circles. It's get of
-> 'implicit' knowledge that works for i2c sequences like this
+1. I2C transfers in the aforementioned function will fail or timeout
+because ak8975_runtime_suspend() disables the device regulators.
+2. Since ak8975_fill_buffer() does not hold runtime references,
+ak8975_runtime_suspend() can run concurrently, and since PM callbacks
+do not use a locking mechanism, it may cause a race accessing the
+control register via the I2C bus.
 
-Noted -- if this stays in scope I will switch to dev_get_drvdata(dev)
-in the suspend/resume callbacks.
+Fix this issue by adding struct iio_buffer_setup_ops that contains
+preenable and postdisable functions to ensure correct that device is
+powered on when running a buffered capture.
 
-> Andy pointed out regmap_clear_bits() is handy here and set_bits above.
+Fixes: bc11ca4a0b84 ("iio:magnetometer:ak8975: triggered buffer support")
+Reported-by: Sashiko <sashiko-bot@kernel.org>
+Closes: https://sashiko.dev/#/patchset/20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6%40gmail.com
+Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+---
+ drivers/iio/magnetometer/ak8975.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
-Yes -- Andy made the same suggestion on v1 and I have a local v2 that
-uses regmap_set_bits()/regmap_clear_bits() (and applies the same
-simplification to the existing veml6040_shutdown_action() for
-consistency). I was going to send it after the 24h wait, but happy
-to hold it until the hardware-testing question is settled.
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index dbab4d0bba348be70e5c8b71678de935879bff42..0fb2fd03d11ce195a67949056c000c473a8d3e99 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -899,6 +899,28 @@ static irqreturn_t ak8975_handle_trigger(int irq, void *p)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int ak8975_buffer_preenable(struct iio_dev *indio_dev)
++{
++	struct ak8975_data *data = iio_priv(indio_dev);
++	struct device *dev = &data->client->dev;
++
++	return pm_runtime_resume_and_get(dev);
++}
++
++static int ak8975_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct ak8975_data *data = iio_priv(indio_dev);
++	struct device *dev = &data->client->dev;
++
++	pm_runtime_put_autosuspend(dev);
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops ak8975_buffer_setup_ops = {
++	.preenable = ak8975_buffer_preenable,
++	.postdisable = ak8975_buffer_postdisable,
++};
+ static int ak8975_probe(struct i2c_client *client)
+ {
+ 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+@@ -992,7 +1014,7 @@ static int ak8975_probe(struct i2c_client *client)
+ 	indio_dev->name = name;
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL, ak8975_handle_trigger,
+-					 NULL);
++					 &ak8975_buffer_setup_ops);
+ 	if (ret) {
+ 		dev_err(&client->dev, "triggered buffer setup failed\n");
+ 		goto power_off;
 
-Stepan
+---
+base-commit: 1548c54e9adc32a719499216f63fba14b2fc07c3
+change-id: 20260513-ak8975-fix-53b1b02857dd
+
+Best regards,
+-- 
+Joshua Crofts <joshua.crofts1@gmail.com>
+
+
