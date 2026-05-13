@@ -1,197 +1,142 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85C98309EF4;
-	Wed, 13 May 2026 14:12:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D38533451BA;
+	Wed, 13 May 2026 14:15:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778681543; cv=none; b=ZhgeXI6+HkwY6lroAmxGFVsSRX68jOyVTBczhgTubNnkf/BE81uocr9EPtoa8RBxTclcr7i7Eox1vIAEyPXlwngv/0FuA8Mzy1swzb9bNQu5qH50WdHvCEZF5vjYxmaXuOyi9Z5icBZL7WZNKvs8l2xPm9wXku2ikwtgudFpE7w=
+	t=1778681749; cv=none; b=N7mmWR9WA90FP7GzvYnJwTDQjZD1AdMKJBXT/Xk+grHZ3PBce7ipEKK3ylin2tdbHaui5jwMuOF8VERvvAxgukPK07NKTVOKPqXmiHwCu8kwYkq/KT/QllC0572F2kGUxl0Ze1XmpneBcjBc/pwTg9Dtec22IvVw/sNlZ+wtvQs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778681543; c=relaxed/simple;
-	bh=FneLC5Y8ebM1bPUQXuiZSuwdyebbAuAFdFrj9Xpa0UI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q/h8DyyBHltnO7Yxo6ivid8bWPDPWJzJFV7Oce3P3pT4ycbt2vPyxgE1MHQ5j1Q3WgKZP2qC0BTOjlGdksgowak8mfZ1xUuE8tecvIIBaIE4P4LFsXQ1fND/5+87RjHvORh0awLeZkzBL0laI0xRqNxDZ9WSDLKhzdP7rScma34=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ktYSF6U8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778681749; c=relaxed/simple;
+	bh=AB+vxV1pQc0hUy3u/xhnUS6AlF5DDT962iXFGB+wIZ8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=poxyAY3f3pWq/bmipSFu7pTnZv5643KF0bW1nnaLi00y81Gv1u8OH+oI/ad1IYGF/hAWslQZcOSAlFdDugnFPxMgCfTcj319AqADEQf7dFvgaWnro5mvCIyGYQfcK5mMDDiXTw+FTPgdFok9623/cTmSj1GDu06v8GIQ7sDU/V4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DTwxPgWQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ktYSF6U8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB105C19425;
-	Wed, 13 May 2026 14:12:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DTwxPgWQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EBC2C19425;
+	Wed, 13 May 2026 14:15:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778681543;
-	bh=FneLC5Y8ebM1bPUQXuiZSuwdyebbAuAFdFrj9Xpa0UI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ktYSF6U8y7nOrjFy0itrSUtBYWTHhFHQEIkQW8PDRyf4uOBw2DmnMZX83JvVZLsWH
-	 s1X2+AZLI55TNeI5DILq6kNEY7pUwOTZZrlZqjM8akjTkrmn5OcM86K7h/Fg8XpT4H
-	 l01axXQM+KGbHX137/Zhhlc64Six8BSdCBKdDtuDlxnLJ6FGY20xx5XELdH6JNRPoA
-	 POkIbqrnqPO/RMSUWeLVu78sr4VpFs0HjMvLAIPd5/WFnt7m6SDORVwdw/OWdn8s37
-	 uqamTULzvS/bl9NOZ7uVobJi3xgFqXDLm4Tbc6epeYFiwKb+T/csZCwncY4mEqfsgU
-	 v9+Uii1vfxcxw==
-Date: Wed, 13 May 2026 15:12:16 +0100
-From: Lee Jones <lee@kernel.org>
-To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	"magnus.damm" <magnus.damm@gmail.com>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: Re: [PATCH v2 02/10] mfd: rz-mtu3: use device-managed reset deassert
-Message-ID: <20260513141216.GE305027@google.com>
-References: <20260410163530.383818-1-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260410163530.383818-3-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260507123903.GI305027@google.com>
- <TYYPR01MB156155B2A517931DADFBEA65B853C2@TYYPR01MB15615.jpnprd01.prod.outlook.com>
+	s=k20201202; t=1778681747;
+	bh=AB+vxV1pQc0hUy3u/xhnUS6AlF5DDT962iXFGB+wIZ8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=DTwxPgWQFwiTmnJ4+Rq/7ZaEpzfxB7Jlro9FRIPX4ZpwhorJ0rUExcz2zMNqIVW9b
+	 HwTOepRuOn71FLXnIYWStKnAiuSwaS+9FdSwvkxz7plIGHv9b0Jljzxg6wPAh/XIyh
+	 qh8lYxIjgNtFRfOGjrtl6ZsvCnReFg5UGTrdSweaXJdlDCimF0yqhSTPJUeuqp4zpg
+	 ImCaLvYuiHOMx1Krs1dR1pKteJImQzEzw6UDs/FXt8dGN5IMlxRT/xw+qXXeW6qM1r
+	 wn906G68gpT8mVjeqNUDwBrCFK+RHvCSb50nLuCO4+1bR5p/Jau8uXXofW3zUYXbH5
+	 2hhffj/qwPsuw==
+Date: Wed, 13 May 2026 15:15:39 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: arthur.becker@sentec.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, gregkh@linuxfoundation.org, hcazarim@yahoo.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: veml6040: add suspend/resume support
+Message-ID: <20260513151539.48b0207c@jic23-huawei>
+In-Reply-To: <20260513094536.8038-1-sozdayvek@gmail.com>
+References: <20260513094536.8038-1-sozdayvek@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <TYYPR01MB156155B2A517931DADFBEA65B853C2@TYYPR01MB15615.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 07 May 2026, Cosmin-Gabriel Tanislav wrote:
+On Wed, 13 May 2026 14:45:36 +0500
+Stepan Ionichev <sozdayvek@gmail.com> wrote:
 
-> > From: Lee Jones <lee@kernel.org>
-> > Sent: Thursday, May 7, 2026 3:39 PM
-> > 
-> > On Fri, 10 Apr 2026, Cosmin Tanislav wrote:
-> > 
-> > > Replace devm_reset_control_get_exclusive() and the manual
-> > > reset_control_deassert()/reset_control_assert() with handling by
-> > > devm_reset_control_get_exclusive_deasserted().
-> > >
-> > > While at it, remove struct rz_mtu3_priv::rstc and use a local variable
-> > > for it as it is not needed inside rz_mtu3_reset_assert().
-> > >
-> > > Rename rz_mtu3_reset_assert() to rz_mtu3_mfd_remove() to accurately
-> > > describe its usage since it no longer calls reset_control_assert().
-> > >
-> > > Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-> > > ---
-> > >
-> > > V2:
-> > >  * no changes
-> > >
-> > >  drivers/mfd/rz-mtu3.c | 23 +++++++----------------
-> > >  1 file changed, 7 insertions(+), 16 deletions(-)
-> > >
-> > > diff --git a/drivers/mfd/rz-mtu3.c b/drivers/mfd/rz-mtu3.c
-> > > index 9cdfef610398f..6b9c6831dffa9 100644
-> > > --- a/drivers/mfd/rz-mtu3.c
-> > > +++ b/drivers/mfd/rz-mtu3.c
-> > > @@ -21,7 +21,6 @@
-> > >
-> > >  struct rz_mtu3_priv {
-> > >  	void __iomem *mmio;
-> > > -	struct reset_control *rstc;
-> > >  	spinlock_t lock;
-> > >  };
-> > >
-> > > @@ -301,13 +300,9 @@ void rz_mtu3_disable(struct rz_mtu3_channel *ch)
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(rz_mtu3_disable);
-> > >
-> > > -static void rz_mtu3_reset_assert(void *data)
-> > > +static void rz_mtu3_mfd_remove(void *data)
-> > 
-> > Remove any mention of "mfd".
-> > 
+> The VEML6040 RGBW light sensor stays in auto-measurement mode at all
+> times once probed, drawing its full active current (~200 uA per
+> Vishay VEML6040 datasheet, Doc# 84276 Rev. 1.7). On system suspend
+> there is no need to keep the sensor running.
 > 
-> _mfd here is to describe that it removes MFD devices, not that it is
-> part of a MFD driver.
+> Add system sleep PM callbacks that toggle the SD (shutdown) bit in
+> CONF register 00H to put the chip into shutdown on suspend and back
+> into normal operation on resume. The bit semantics are documented in
+> the datasheet Tables 2-1 and 2-2.
 > 
-> What name would you prefer to use in this case?
-
-If you want to be specific about what it's doing:
-
-  rz_mtu3_remove_devices()
-  
-However, my advice would be to go with something more generic.
-
-  rz_mtu3_remove()
-
-[...] 
-
-> > >  static const struct mfd_cell rz_mtu3_devs[] = {
-> > > @@ -321,6 +316,7 @@ static const struct mfd_cell rz_mtu3_devs[] = {
-> > >
-> > >  static int rz_mtu3_probe(struct platform_device *pdev)
-> > >  {
-> > > +	struct reset_control *rstc;
-> > 
-> > This shouldn't go above the main device data structs.
-> > 
+> The existing veml6040_shutdown_action() is unchanged; it still runs
+> on module unload to leave the chip shut down.
 > 
-> I was following reverse fir tree ordering, as required in some other
-> subsystems.
+> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+Hi Stepan
+
+Suspend / resume tend to be a little non trivial to add and datasheets
+are sometimes less than perfect in describing powerdown modes, so can
+I confirm: Do you have one of these that you are testing this with?
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/light/veml6040.c | 28 ++++++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
 > 
-> Is there an MFD-specific preferred style that I should follow?
-> 
-> Would you prefer having it right before unsigned int i?
+> diff --git a/drivers/iio/light/veml6040.c b/drivers/iio/light/veml6040.c
+> index f563f9f0e..ffd0a2a70 100644
+> --- a/drivers/iio/light/veml6040.c
+> +++ b/drivers/iio/light/veml6040.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/module.h>
+> +#include <linux/pm.h>
+>  #include <linux/regmap.h>
+>  
+>  /* VEML6040 Configuration Registers
+> @@ -201,6 +202,32 @@ static void veml6040_shutdown_action(void *data)
+>  			   VEML6040_CONF_SD_MSK, VEML6040_CONF_SD_MSK);
+>  }
+>  
+> +/*
+> + * Per Vishay VEML6040 datasheet (Doc# 84276 Rev. 1.7), Table 2-1 and
+> + * Table 2-2, the SD bit in CONF register 00H controls chip shutdown:
+> + * SD = 1 disables the color sensor, SD = 0 re-enables it.
+> + */
+> +static int veml6040_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct veml6040_data *data = iio_priv(indio_dev);
+> +
+> +	return regmap_update_bits(data->regmap, VEML6040_CONF_REG,
+> +				  VEML6040_CONF_SD_MSK, VEML6040_CONF_SD_MSK);
+> +}
+> +
+> +static int veml6040_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
 
-Reverse Christmas-tree order doesn't make sense in quite a lot of cases.
+dev_get_drvdata() rather than going in circles.  It's get of 'implicit'
+knowledge that works for i2c sequences like this so most instances of what
+you have here got ripped out years ago.  I've never really like the missbalance
+and would love to get rid of i2c_set_clientdata() but such is life!
 
-I have no strong opinions, but _generally_ prefer to put the important
-and physically large ones at the top (structs) and the little ones at
-the bottom (ints and bools) - this also _mostly_ works out as RCT.
 
-The really important ones here are the device driver structs.
+> +	struct veml6040_data *data = iio_priv(indio_dev);
+> +
+> +	return regmap_update_bits(data->regmap, VEML6040_CONF_REG,
+> +				  VEML6040_CONF_SD_MSK, 0);
+Andy pointed out regmap_clear_bits() is handy here and set_bits above.
 
-> > >  	struct rz_mtu3_priv *priv;
-> > >  	struct rz_mtu3 *ddata;
-> > >  	unsigned int i;
-> > > @@ -340,15 +336,14 @@ static int rz_mtu3_probe(struct platform_device *pdev)
-> > >  	if (IS_ERR(priv->mmio))
-> > >  		return PTR_ERR(priv->mmio);
-> > >
-> > > -	priv->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
-> > > -	if (IS_ERR(priv->rstc))
-> > > -		return PTR_ERR(priv->rstc);
-> > > +	rstc = devm_reset_control_get_exclusive_deasserted(&pdev->dev, NULL);
-> > > +	if (IS_ERR(rstc))
-> > > +		return PTR_ERR(rstc);
-> > >
-> > >  	ddata->clk = devm_clk_get(&pdev->dev, NULL);
-> > >  	if (IS_ERR(ddata->clk))
-> > >  		return PTR_ERR(ddata->clk);
-> > >
-> > > -	reset_control_deassert(priv->rstc);
-> > >  	spin_lock_init(&priv->lock);
-> > >  	platform_set_drvdata(pdev, ddata);
-> > >
-> > > @@ -361,14 +356,10 @@ static int rz_mtu3_probe(struct platform_device *pdev)
-> > >  	ret = mfd_add_devices(&pdev->dev, 0, rz_mtu3_devs,
-> > >  			      ARRAY_SIZE(rz_mtu3_devs), NULL, 0, NULL);
-> > >  	if (ret < 0)
-> > > -		goto err_assert;
-> > > +		return ret;
-> > >
-> > > -	return devm_add_action_or_reset(&pdev->dev, rz_mtu3_reset_assert,
-> > > +	return devm_add_action_or_reset(&pdev->dev, rz_mtu3_mfd_remove,
-> > >  					&pdev->dev);
-> > > -
-> > > -err_assert:
-> > > -	reset_control_assert(priv->rstc);
-> > > -	return ret;
-> > >  }
-> > >
-> > >  static const struct of_device_id rz_mtu3_of_match[] = {
-> > > --
-> > > 2.53.0
-> > 
-> > --
-> > Lee Jones
+> +}
+> +
+> +static DEFINE_SIMPLE_DEV_PM_OPS(veml6040_pm_ops, veml6040_suspend,
+> +				veml6040_resume);
+> +
+>  static int veml6040_probe(struct i2c_client *client)
+>  {
+>  	struct device *dev = &client->dev;
+> @@ -271,6 +298,7 @@ static struct i2c_driver veml6040_driver = {
+>  	.driver = {
+>  		.name = "veml6040",
+>  		.of_match_table = veml6040_of_match,
+> +		.pm = pm_sleep_ptr(&veml6040_pm_ops),
+>  	},
+>  };
+>  module_i2c_driver(veml6040_driver);
 
--- 
-Lee Jones
