@@ -1,151 +1,113 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9028039182F
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 10:09:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1753806CE
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 10:13:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778667005; cv=none; b=sojhb/iINPdWgyYk52gQjv/qza99AaWSa3EoxpZa+QltgP5hunsN6AQlYPSSRZuyDK422COPnIYTxVxJv3YoMrQBKCZEBMCIGIeXEHmROxBQ7n0hCzK1lDAwOcBCUuTQTwodnrGw+c9KJlFnOhqQZN5MLhlFTXZgLtT3l/0NxOc=
+	t=1778667234; cv=none; b=oE0s9LBimid14+rveRawkmJD/dcKMfvY5BdP4DryprOWjcJl9nmyA0UUAcX3DWbfV8w0I/CZO6wuj4nzpjR18/X3hIdX/XuUETsLIw4RTSscJDYNxlrzTzxEN2AG06h+bJ/TXVI0qh9F7GpN4tOETWEEngEKAjzhdN5aS0+tJwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778667005; c=relaxed/simple;
-	bh=dI7Vy4tSt+ipoY1cvrv4SzZXvFAstFFCphZE2K3dz3Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JprxdvYfFooqzxAixrU4v2cuo4g9i5VK1sVL3LUip5fJDBxqm2IDG4nB0iNViA8/sLx4WNprdUfCCakLiHK5+j6gQt8z3YApG072/ZQ/esNTe+lDm0OfwPgFzBQ5gbxQ2xJKf30pJlyOsFoXdv2u4FWy/kwMSbpHOlEuB4XDWDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rlFLZ/ly; arc=none smtp.client-ip=209.85.208.50
+	s=arc-20240116; t=1778667234; c=relaxed/simple;
+	bh=N1D4+ThOR51fuz2bA2bhFDKhujGy63am3i09AJ0bWOw=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PpHNA6/QA57L6VwK6R2TwHEK6yRtaFGlb4tC0yckZMLJXK3IJQPAoXW02pViFil/zsuDQPxskXdH/d9vN5NQDdaUqJ3iAv701BRSar1CYmt3SWEkeYoKmXxtjy7IAxYWkkC8JkGPnkQjO6xuDiHkvyH1t/NB+8A8qfaB34Lv+mw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RIfrpCaU; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rlFLZ/ly"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-67b32c695efso12024484a12.1
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 03:09:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RIfrpCaU"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-43d7670826bso544821f8f.3
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 03:13:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778666991; x=1779271791; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uPWJdSc2I6JXF+VrIjabBYnBXUVNyLPtG2ThRSxbw6I=;
-        b=rlFLZ/lymCTUE59oMDF22xJoc/GrGrm86Zlf6fzn5pfdHOBtZYv5C5S7va59i5HCYU
-         eDre+qhAloU5M3bjSi7iIn40fIgYw2PkYdDDQiOZtYtBeGSSVxlzfxO8NfpiFa9m55sj
-         NcMoNt1vHhqltVi+sE0euhgDxgGSQadA5hB2YKgrV0XB0FsrJcDFjIPAsIwaeWxR4X7+
-         /LTGVKsdHFKpTlXwGPyV972awoouVeOoxVhD5tEypphE8hQs4XPftOHVBYoRFmSHAkNO
-         VwkPzoaUnnKBZGQv5qH/t1W+JvdxOBZ0VPh4cRq/rfIXP25Nvemg2wzoXjkG0kjAYnvZ
-         f+fg==
+        d=gmail.com; s=20251104; t=1778667232; x=1779272032; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mvKlKrwKM8+snVTmyzpnAxlGtVAs/9zFD/dqGiX2UJg=;
+        b=RIfrpCaUOI9wwaMdvDi23Ab+VaaK+z+PhiCDQgo/wYj7vKPlA8sdxFvB2b1RkZWIX0
+         AlyGCQ0hMqCoIB2ZPcBr+h4yxGSi8zmxP7amsPQt1XP6FoPHeSO2GuQX3ejosqDbKnUL
+         Zof+i4w97AOQV+h7JY4ZPdGS6IrqftokTXy3IdKmYUsbqAfncCxt4VDiUf812gJb5yRX
+         ngRXhoRisxj4d5KHvaAFK6ttAiBgqfAYURfm/uBM0oq9/LxGOfWkxLcI95ttqWaxeHY7
+         I6OzkVp8JxV8AwGALhZ6P0mS+2sm9pBDGSD1l1MdLsIyZMR26YGnXXf3+jTz+9xaVweQ
+         Ygow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778666991; x=1779271791;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=uPWJdSc2I6JXF+VrIjabBYnBXUVNyLPtG2ThRSxbw6I=;
-        b=YxgH26SPfMfU8Tq1b6mpHlq6JXxxHnWMC2UV3UtslwkuXrYlMZcaK20R7xJtRF+dJZ
-         ZGgu4IEQXtMQ6RAxC95i4U/LgioSgq3xexwDgMvhSxIonWVekx3oSVAMFT1J97/cpQMx
-         qNIINUUTezAfyyx7U8LyLB1LZ/MoHab7jWPB3tJKbTKPzQzaFAXFbjfiaAzjyjNgiU62
-         5XC5JxNyawcAep9rWGvnilEhZ2yzU/+Mg+VxJKht+48vQbvfZ+JR28v3aXQevp9L0pUe
-         SCx6zvdunTcPdY1DZQyv7qAvbae6TnVA67uuKk1ME2LCr0MYT+emYw9v7IVljCf8RiYT
-         Br9w==
-X-Forwarded-Encrypted: i=1; AFNElJ8hhCrg7H+T76T2OSbYb3L8qiD+g1ZPWIlL3n175+uZb3lNyw5zMrtioeCK1eQdyrs8w9Zh7uxK6uQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzvDy/+ijxgu/FiBKYxvi64tK8GVKwcIWYCbB6O3decz2sMzrG4
-	bnzc+xKln4F6eO+thuPXfmtAVfet4CBW0NH6w3QZ95rV34t84Km3r7/w
-X-Gm-Gg: Acq92OFPDMDS1KBA5k3mTde6gUOqYWc3CDRcDkVMpwDL213t5/cw4R8XVWC8PUM1rCv
-	S+7taEKhCPQu2FXdX94j/TXI1cm/VLsp1vnpXsr89iPlTJ6y6uWnZ2mOnaL14GUFfZ9MazAHfl+
-	XojdFIdR41wueaIw6EGFpkfoVvxK2WLxKv9kC659CJ5NRa4kk890GA4W5q52iJmIKvXlacsBqjR
-	2jQsK00Cyn69MRK/OOB5NOwYoY103qan/+ZeheUvUj/aqM7/WleNXyxHXOR8ql3zRAttlIRnwPy
-	CuqDh+nY0iJCypn+eE4WpZYNW6p4THD7fRKVxjngWQksQ6bIv0q8KpnlFvl7xUmXCWQIdxNLsde
-	80igJuUdEpg2NJIwrhHiAztX3pFpPtri9gul7ohOOFTy6fqaEv149jML9KdkjNbeRMpsWbkjJsp
-	LlQOycdV1V3W3c0o8dtiMErca6Ciw0rP1Hc3nRcVGBcXYXTfcGbnkeXJBuXnaaboyQL12CnYM=
-X-Received: by 2002:a17:906:730e:b0:bc3:99d5:a29f with SMTP id a640c23a62f3a-bd23aa18252mr420029866b.5.1778666989980;
-        Wed, 13 May 2026 03:09:49 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bcb78493d1asm727760666b.39.2026.05.13.03.09.49
+        d=1e100.net; s=20251104; t=1778667232; x=1779272032;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mvKlKrwKM8+snVTmyzpnAxlGtVAs/9zFD/dqGiX2UJg=;
+        b=lxJsSlkEH9PrLNvzOBTyyy8Q6k+bdHhYZxjvOpBnbpqvreZ0VZIYignTkM73YIeOsQ
+         EQ6boVO9XvmGnRwUBaeRUaq6Gaw3Rzj13wOetIdPZbweavSzIzfP8C01YxmYgxPws4K+
+         wMWGIbCtHb2nFWbrOr4k+5llacNt1ZUwS4P9AtQcLlBR1MYXPymRslz50On3ylVhoUAN
+         fGWKHpQuoFM/1T+hTW+VD57q2xuIGgNueFu4IJ7OqYpPwBTuzP+psBRHu255hOuSRfzR
+         UEQA2AbuCzmhqvBxwYnELQD5QFonE2LUXziDdxO5OcvCbYivnNm/QZJd5DELYVyaTbUu
+         ZnPA==
+X-Forwarded-Encrypted: i=1; AFNElJ8cxKP8BAAJns2ZDwncZZTMueyDbNGZNWd3FV4lBQq7STAwAdammaqivBElOQCOEqiCdqgdA/QyHUk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyoE9z+rZPB5RZjTYyLuxiVUR3TCKT7hSzWkk7NDNYageRBHUT3
+	KgBnPIrxB39NwPkXiGYQUb5ACR7EmK3uXCFMaF3AJ/v9pSOEPdnFAFbA
+X-Gm-Gg: Acq92OHHLh6XCL+lxACZ6y657lOCnoilx+U2m3QCOWjXLg1Bb5sqyxDo2MrIS3YDqR0
+	pby9qpMY9PF4ZjKBYbNryny40BNrwyVc7t8268IZGYpa7w5LeKlIWKQCvpBfQgJWz+Fw1w9SYFi
+	0fmSHuSjp0NsoR+GE13mKdoCuB3u2IT3oOILIRNgkNokCUvB67UOUwKennbKV8AMdurobE8TNHv
+	DooiG/DEcfBg+/HLs6UnZ8d71NEkauETqpWXvCJqDIIE3Xc03vZ0VHcTGbXoqYINQqGt8TfCqVA
+	BUZQuEbJcGiI0DEVrXgabY4I35lpZ4aMKx9GUQXJE0Cpwb/cdc/0AUDw70vJZQE/nDaneciTSzz
+	H9Ga4BDKxSQUgDXWupsnEwBDJP7w4BkqLIhvqoIEE+AS5ayYbOvv4V6lMhztHdT7rqdxYDV7QXX
+	guDKL7QylNVX1JnhuFMZqM9gGZTuN9D8wTTcdNBCxQWkHL
+X-Received: by 2002:a05:600c:a08:b0:489:1c1f:35e5 with SMTP id 5b1f17b1804b1-48fc9a44496mr18460915e9.6.1778667231534;
+        Wed, 13 May 2026 03:13:51 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fce05f41csm64944635e9.5.2026.05.13.03.13.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 03:09:49 -0700 (PDT)
-Date: Wed, 13 May 2026 11:09:48 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Andy Shevchenko
- <andy.shevchenko@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Rodrigo
- Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
- rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Andrew Morton
- <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
- <rostedt@goodmis.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey
- Senozhatsky <senozhatsky@chromium.org>, Shuah Khan
- <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <20260513110948.16db5243@pumpkin>
-In-Reply-To: <sqt72hd4xdu6rj3zecvcpo3bbfsxlh7u4bi76enbq64hpgjm3t@vksuk4cuo76x>
-References: <ur6brs3yjzyb4mtelabmcglxjltddqvjxtgl3lkdkmbjlkmnsq@bwd6rz7gided>
-	<CAHp75VeoH3yVfp8NWjKfc_df0VRLkyf_SK4e==-wJOEodVjW_A@mail.gmail.com>
-	<q4rmlkgecvztnvjg7b7wtqyvhdy7uxgaouvhae2mlsxaasasbf@dfakp4m5l5sl>
-	<agNfqiZpGZAM-x_H@ashevche-desk.local>
-	<ru2h3ip7qf6j54dlrij54nwp45uyq6m2e6zspt6v6eynpsagqq@eo5v3yparuhh>
-	<agNnfWZa9_NyLoWq@ashevche-desk.local>
-	<bc7mqfgll34vyaxdtvfssgypkhyx233wd4hxfzu32rddxnolaq@rd6c3z6yu6aq>
-	<agN6onIAwG1yn5p6@ashevche-desk.local>
-	<hvwyrb7g3ar7hzesj32zoxzqvjmdtwybamy4zxepqdbu37qvog@xnmgqhfya34f>
-	<agOKq0iH2CHQ3TIg@ashevche-desk.local>
-	<sqt72hd4xdu6rj3zecvcpo3bbfsxlh7u4bi76enbq64hpgjm3t@vksuk4cuo76x>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        Wed, 13 May 2026 03:13:50 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	alisa.roman@analog.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH] iio: adc: ad7192: fix GPOCON register access annotation
+Date: Wed, 13 May 2026 15:13:32 +0500
+Message-Id: <20260513101332.8699-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Wed, 13 May 2026 08:14:28 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+The comment next to AD7192_REG_GPOCON marks the register as RO,
+but the AD7192 datasheet (Rev. A, page 24, GPOCON REGISTER) says:
+"The GPOCON register is an 8-bit register from which data can be
+read or to which data can be written."
 
-> On 26/05/12 11:16PM, Andy Shevchenko wrote:
-> > On Tue, May 12, 2026 at 08:39:21PM +0100, Rodrigo Alencar wrote:  
-...
-> > Oh, I only now realised that this is sliding window for a single 64-bit signed value!
-> > I was under impression that you wanted implementation that covers 128-bit signed value
-> > (with 64 + 64)...  
-> 
-> So that was the initial approach with strntoull() with integer and fractional parts
-> combined in iio core. At that time I realized that we ended up combining them anyways
-> with:
-> 
-> 	val64 = (u64)val * MICRO + val2
-> 
-> so why not have val64 already! And all this made me realise that once leading 0s are ok,
-> scale can be even bigger, e.g.
-> 
-> scale = 20
-> 	max = 0.09223372036854775807, min = -0.09223372036854775808
-> scale = 21
-> 	max = 0.009223372036854775807, min = -0.009223372036854775808
-> 
-> It might be a sliding window of 19 digits, but here we trade range for scale, precision
-> is still fixed at 64-bit.
+The driver itself uses ad_sd_write_reg() against this register in
+ad7192_show_scale() / write paths to control the bridge power-down
+switch and digital outputs, which matches the RW datasheet
+description. Update the comment to RW so it does not mislead
+future readers.
 
-I wouldn't worry about that case unless it 'falls out in the wash'.
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
+ drivers/iio/adc/ad7192.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> I have a new idea to make thing simpler, actually
-> it would go back to what David pointed out in the past.
-
-:-)
-
--- David
-
-> Let me put this together...
-> 
-> > > I am not representing -0.9999999999999999999 as is. The desired scale will have this
-> > > truncated. It may be -0.9999 or -0.999999 or -0.9. And this is practical for a
-> > > reasonable scale value... for pico and femto precision you still get a decent range.  
-> > 
-> > -- 
-> > With Best Regards,
-> > Andy Shevchenko
-> > 
-> >   
-> 
+diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
+index 8b1664f6b..98c1420a9 100644
+--- a/drivers/iio/adc/ad7192.c
++++ b/drivers/iio/adc/ad7192.c
+@@ -39,7 +39,7 @@
+ #define AD7192_REG_CONF		2 /* Configuration Register  (RW, 24-bit) */
+ #define AD7192_REG_DATA		3 /* Data Register	     (RO, 24/32-bit) */
+ #define AD7192_REG_ID		4 /* ID Register	     (RO, 8-bit) */
+-#define AD7192_REG_GPOCON	5 /* GPOCON Register	     (RO, 8-bit) */
++#define AD7192_REG_GPOCON	5 /* GPOCON Register	     (RW, 8-bit) */
+ #define AD7192_REG_OFFSET	6 /* Offset Register	     (RW, 16-bit */
+ 				  /* (AD7792)/24-bit (AD7192)) */
+ #define AD7192_REG_FULLSALE	7 /* Full-Scale Register */
+-- 
+2.43.0
 
