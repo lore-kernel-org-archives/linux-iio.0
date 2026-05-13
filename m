@@ -1,424 +1,200 @@
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E572237B00C
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 02:06:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778638019; cv=none; b=pCSXxEtIlZ7SV55MA8n2/JQGRAjw2xDr52FAo9Qt7AVMrsup9gUwlwojoGOhDbJxV/c2+M+rhkG8dziWJTljF8ur1jXrbIJ/MZder11NKGcY0VdB+PQlLG8ASvJxd3d+0o+Xq4CvpN6cN+S5Udmi/yLXFfIvkz6JnvaoGAp+9B0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778638019; c=relaxed/simple;
-	bh=vond2xIWWthhre52p1kIFAniJV4Kjqp9incPlq1jEgA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MWH0eaxl7LecrJvjlJZnhNm7WuOPAdEGiM6DqLLs1FUOjqQPON/tEHFnjynia6U1Zhb1sZ5vx6fZpFYGSWYZpzNxMHOSlOzcmvjK5zcsUerbmHTZwskQYu53c4VMg7Sk91qNhMlpMRLD/FQIqxNILuqwVIvNec4ziBm/41wNLEI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hh2ECuTP; arc=none smtp.client-ip=209.85.167.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96DB52DC783;
+	Wed, 13 May 2026 03:27:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778642855; cv=fail; b=kcaoed53rBtXthBBymt8f20byBD+zW6rcpN4ux/0J04LISo2TDaZG/82Um9s6cfRml09ra3Pyoje53uj22fLG99cmzWEJwu9Ldr+cGjg+eA621AJS3aG0G9W4muCT9ex1mJlc5J1rDbu1RxchNIq9Cg+wQN7XTH4hrU4G2Rc3W0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778642855; c=relaxed/simple;
+	bh=QU6hR6c5Gzz08ICnzQ7pihQk4TztNKmI6CR1aYy4u8g=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=alZdA8icmpkhdKw/AG0DtW3iURhCuJz81clcfUMfJSiD/q2dUoywZlns8FD4s4sRTbFUmayjebst/ICGQxVUVcHoGKS4ol8dIp4zNV9r4zEnsa3ElsCNEeuH2lSTsBvH83CI6ootxQUkp2U+/wkP6qsCuq0QYI0uz4kfpyeV+4M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D7sNhhNH; arc=fail smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hh2ECuTP"
-Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-479d4df9035so4638602b6e.0
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2026 19:06:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778638017; x=1779242817; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=CDhy/x3DM4FisnOspwaroIeEW+Xi4GBI8y9aLOvUOX8=;
-        b=Hh2ECuTPrYPkf3Wa4kf+scDIsUFCNdUIK4o+3Z9WB3fTJIqd3Qso4WaJqHzTBXydTN
-         PrGWhPPkoGCTym2g82UgQSPMsCW9LK+zSXiRopSovdgEmzkk8/W6aQoA8c30ttBe2pFL
-         cDJWzx350ugC67oKKMI6Dzod+npzuB7BSIur+uLh/bH72zMsU2GAXLM5eNTFRXrywSIQ
-         hCgXg5wOUxdYvJGlioL3YmVF+GpwB0vEmX3BewAroufmFmMQj1UIQlnZR44KuJaTj1Ul
-         z1kG4Rhwk48CfQBds6zIsLLmFqo6vtf1TASZKdksQlTKwBxvaqx7sezEzwLqUfcXFnlJ
-         kVlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778638017; x=1779242817;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CDhy/x3DM4FisnOspwaroIeEW+Xi4GBI8y9aLOvUOX8=;
-        b=rO9nABhVamFAN9D4XT0B7DheXhsiTry8Y03WDuSTPvZQ6bWLY/MRRr4yFOt5nTm8ew
-         SDBDwCiPOEbUk1+uXA7ILeMTaOj8+7jf0akycd4vZe7tgGc1jhvW+I18662r7n/cE2xU
-         CD3JOGJsAWWOqECttXNw6oCcFOj5tTRm4YV3wfudvgx6F1detbTX6PPgX7CSO6HfLNrl
-         BQiOwD4x/QQ4bQ1VbBbTCHwzCcRMFiIJzUmBKzyIXP3MEmUOq9JonQOkkoZCpFdfqsMb
-         3TziWCaMbX2CJRWKLbKC/3RI29s8i/BEUvtlcJsSkNvykxSLxBCWtltt0ttNwmCqX4gx
-         9+UQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8Netfg7+0DhHcUZ/0o369Dswc4slKb+b2vnfCmi8RPj2nEzT7NoCyR7Fh9oGByMhit0peV5OR8nAk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yywn5xQS0fU9pTpxfKrInvzXSjILvSJJZqM4FME2cU9LKTW7cFP
-	SFbnm9yEZDRs2y/ndRNIH6wqc64lXfjczv8F9w3mBjny23kx2mLXAu3j
-X-Gm-Gg: Acq92OGuLZWu6fuO6Bj/vghxz6zUmejB/cmgxHF8i0Cp3otFZTktNPFi4fVQ/a0grfj
-	GCHYaSrz4fwYUSjdhf8v5bDznV62TTKRQNiUmtz9hprfJE1WE9w0a3TRIBzluomIKD2sDRpNJzI
-	nPTg97PpS8+KBY2z77lOvphJWMvrbftDS9xPXjbLvWc0ERI+Uy9qJb9yCnHgYJNipMuiGr8EwrF
-	zRMc0/kFNo1COATvj6/0Rw8rDrDDqNwijQmbj89CGVWMO1bWN23qYjPQ6MNlZmCzVzJGnydeSTJ
-	HN1MzWmW9Uah/3AED94UjA0rFbGHdrdpjmcPIqfUpk5lKtuSKCeTOKoRs3qrl9JcfpH/aGXCCuF
-	aqecKvct8z7xXKgSrrr38or+CD8gkBCTzi4utZrijqKfhedr4qDkfOkecLISIaQG7vq/DKPG3UM
-	AD6/wZLvTgUNbIVnskIkH3THNLJFXbOful0fuuM79kPkSBYhActNVhIb4HQw==
-X-Received: by 2002:a05:6808:e401:b0:479:40d4:b140 with SMTP id 5614622812f47-482b2de0676mr726248b6e.21.1778638016806;
-        Tue, 12 May 2026 19:06:56 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-47c76936271sm23449951b6e.9.2026.05.12.19.06.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2026 19:06:56 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: jic23@kernel.org
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v6] iio: imu: kmx61: Use guard(mutex)() over manual locking
-Date: Tue, 12 May 2026 21:06:54 -0500
-Message-ID: <20260513020654.168071-1-m32285159@gmail.com>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D7sNhhNH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778642854; x=1810178854;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=QU6hR6c5Gzz08ICnzQ7pihQk4TztNKmI6CR1aYy4u8g=;
+  b=D7sNhhNHWiAvX2jppfzpYY9O1WzyVjyVOsj73VwtrGzNizzv/PHZil0T
+   zKPvxHexb991rx3GscZ/6upJWuWekmgja5YytcUJwF7RvuKk6JJUaW28W
+   nSnYC6eoGn2G87RyNBnn/zA7ijhFvDeMU/wSkBHy50fLl0HTr5C1FEmQT
+   WH0J5XX2s0azLhCk0PRB7uPPc5Pv8IbCBlPwdW9v9UgxPwf2mauXm4BB+
+   Hzo63NNYl43y6mK5C9DvbUoXaO6azYLgt4A7G0AJzq1UamCzzP0737o2U
+   3ZuKP6Lh7vj5XDmiYbyS0urZA0pqcBuHn9H3uhEO/Pa8InOTC0v/1Qg1D
+   A==;
+X-CSE-ConnectionGUID: mXyc/8d8TiOC6O/f1FmtKg==
+X-CSE-MsgGUID: PYONigKHQfyJjevboefdPw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="96991022"
+X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
+   d="scan'208";a="96991022"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 20:27:33 -0700
+X-CSE-ConnectionGUID: Wf5y8RfBRFimProMblVRlQ==
+X-CSE-MsgGUID: YRsGu+q+S/epxEQ5xAT+HA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
+   d="scan'208";a="276079358"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 20:27:34 -0700
+Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 12 May 2026 20:27:32 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Tue, 12 May 2026 20:27:32 -0700
+Received: from CH4PR04CU002.outbound.protection.outlook.com (40.107.201.12) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 12 May 2026 20:27:32 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=F02XWhFVSviiCYuKYAJlzRXomVAgvsCd/DLAv9vE6gM6UIMht5TdtNV7USj4eKwK5zpFul8iE0lKGYf+qVS5VOghoH5YnC+RaUxl5CFFt2bYmzy7yrU8m5KNzbWyfgv6SAcxF6rMV53XpxVHBijF8+ywWps/2ycUzZm6r7MeX3QInEa0gK/dzO5gIXbtTmauJzaZ0rUwgKRMTC/9vpLZnhzczqpm2Jz+X/fD6kI1qAGixE3A8UJXwLocU/W1orYHINYmpEcd1Oe2HEXLuULI7jpkdD4gVDySUnQY5zTaP+WIfmPV3CvxeYIYkjoQj/GZwDmsodtlmsYR6Oyil6Hmcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QU6hR6c5Gzz08ICnzQ7pihQk4TztNKmI6CR1aYy4u8g=;
+ b=GUxOROleQuSUBaMRtZzeMZyHfb0rpmjALYpnSITiy5vE39sYDoqCauEiOyM2zve6ZPom0//JzQ32smLdqzY0NAQ12HXee/qHMEc97WUT7XZ+KH4bONMzXvK+FhVkCGcHBgD51LNX8YbT2gnpbE+ZbhVSXvEcAIJ+vOey1Q+p9xmzMxT+uhBJu9iUEm/ff2favk/ZQkA/o32iCtKES/Z77wZYPASzYJqFmGifbxP+XkkxpXczLxy4VLqrQWw1lBfnKhdxzZsdcbzPJSbe4I2Pz8S0fCbUxefE5+Eqb8/7IjvINmc3NPlvaWHihdx0YcOTfBYOB3UPFckw1rbgBVIr0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SJ0PR11MB5613.namprd11.prod.outlook.com (2603:10b6:a03:3ab::12)
+ by IA0PR11MB7911.namprd11.prod.outlook.com (2603:10b6:208:40e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.11; Wed, 13 May
+ 2026 03:27:29 +0000
+Received: from SJ0PR11MB5613.namprd11.prod.outlook.com
+ ([fe80::a7ca:db6b:7913:d6ae]) by SJ0PR11MB5613.namprd11.prod.outlook.com
+ ([fe80::a7ca:db6b:7913:d6ae%6]) with mapi id 15.20.9913.009; Wed, 13 May 2026
+ 03:27:29 +0000
+From: "Zhang, Lixu" <lixu.zhang@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	=?utf-8?B?TmF0w6FsaWEgU2FsdmlubyBBbmRyw6k=?= <natalia.andre@ime.usp.br>
+CC: "andy@kernel.org" <andy@kernel.org>, "Lechner, David"
+	<dlechner@baylibre.com>, "jikos@kernel.org" <jikos@kernel.org>,
+	"nuno.sa@analog.com" <nuno.sa@analog.com>,
+	"srinivas.pandruvada@linux.intel.com" <srinivas.pandruvada@linux.intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+Subject: RE: [PATCH v3 0/6] iio: hid-sensor: standardize scan_type
+ initialization
+Thread-Topic: [PATCH v3 0/6] iio: hid-sensor: standardize scan_type
+ initialization
+Thread-Index: AQHc4a35jFWNDiPfx0atDa64awI2DLYKeYuAgADS7mA=
+Date: Wed, 13 May 2026 03:27:29 +0000
+Message-ID: <SJ0PR11MB56134DDB91B66E4D9E63B3FC93062@SJ0PR11MB5613.namprd11.prod.outlook.com>
+References: <20260512012302.20883-1-natalia.andre@ime.usp.br>
+ <20260512154853.10aa2902@jic23-huawei>
+In-Reply-To: <20260512154853.10aa2902@jic23-huawei>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SJ0PR11MB5613:EE_|IA0PR11MB7911:EE_
+x-ms-office365-filtering-correlation-id: 93899d3c-782d-4e85-a5c8-08deb09f8ff8
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|1800799024|366016|11063799003|18002099003|56012099003|22082099003|38070700021;
+x-microsoft-antispam-message-info: Yc8qlD7ZNjBk3J7SqRk1c3eHXfolikXOx6TUiuT9jtiW2J/H8dIcsP3hcmDhaa3dZSN8FuBLDG3QYGhtuHwOJwfReXiNeH+m13zSrQnJOOvXRuD9m7Fxi95Wx7b+5koh2C/A5EtHN4D32yChFdenb7+iLmiIwkb4V45pFtXkRwZYsLrO6hPCuLbqnwmhgLBmcxQHwwdvaFLCIIFZ7x2g7V0j1k8d2/wb3hEnPN/X6cKwNfSKnPBqmzCn7h6psl5cimsgXw0mVNm7FO1xLGIhSRbpoCuqBnf6iFEhYrZPNtJ2cw1yXY/ALW/ga3BnC/6QeoCTbs7YpPa+OsJQG4mPJEgKr4rSCfG29MrcjUekFiLAI1ldXV5ScWOSYyxZr+qGSiy/2xFiNQbhLJuUrnQe7gasRkIyEthj1sMUOOo4/V2LPPYL+8mcjNEho0T/Yn5s7IRtMsnMKP8Dce3lmqZw6/oUqaYZcOVdQ+egCaS8y/PZrpmUCMiA3ev8mmGbeyf4xqm7fKyWgNn39rRumzqzM8ow4nQnQeE3d+ZxJrQgb4jgLccr6q3aVv8n+BoU1X1Zqnu6MP9Iezjwi5l4Qfov3FbFIusFsioOJKIPO56SvHuuONv7b78OYScvHvo89Knyw17k/+LhfUKIFZspXIaU4bOLBEKPIsaSdtWhB2tSa4WC8RW9sUQnyMZ6ySP6OjfftvoikzJZ6UvUMYQeCIuQ3EGPYKTrSrkHAOsBSp8jZTzjc3orI0ZGlsw2ohiBaaUo
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB5613.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(11063799003)(18002099003)(56012099003)(22082099003)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?d3NWNXpjLzVsTkc5STNYZG5ZS1FNYjlQcjVEbEN2MFZSRnFQbUZveFVnTU8r?=
+ =?utf-8?B?N3FwY2R4cXRMZEpiWXJ6TVoyVnFuU1pjM0gyR0xmK2IyakNiLzFDdDFuTVZU?=
+ =?utf-8?B?UWpDK3Npd25GbjJpaE9qdGppQ2hneVJTOHNJOFVORkhaWXh2QXBpekVJd2pF?=
+ =?utf-8?B?dlorTG5RRXEwQnNFbUlpRDBueHVtbzJFQmZCTWhXbmdadWhhL0Jhd0JZcWpV?=
+ =?utf-8?B?ODNxcEhIVllNbUtXZG9haVQ0SG9IZm9CdWlvamE1ZWMxRkQ2OG1zem5ERE1o?=
+ =?utf-8?B?MXRYWlA2aytOSUt2NXJObTFnTi9xNktoQUJqT3lIejA5WlZ4VXRncnlWU2xw?=
+ =?utf-8?B?Q0pKR0N4NDNHNmxjQmVvT2xlRm9CVWFGN1ZhTUFuNDRnMHVOVEQweVBvYXBj?=
+ =?utf-8?B?WVNvT2Y2Q2lKOXFSTDg3cVBaS2VocmdPK01MZmdOWnJYb3RFZjgxNVBCVjBF?=
+ =?utf-8?B?eVNQaDFtMmppSnluWWw4eWgwUFNDL3AwTURlSkFsM25JWlVLV1dJM0VjSldK?=
+ =?utf-8?B?TXk3WkhLbWhhRnVYYlVITmo5RTc4N1A4TVFmTXYzT3ZNTlgvOEphTFFxdFJ2?=
+ =?utf-8?B?TllsUTJNcERiWnhPbGFDS2xiNEFkcW1wdjlxNVJjcisxRFdaZ2VJbHVPbHdK?=
+ =?utf-8?B?S0plNGwzbU5IYm1LaUdKNUlJVjRyeGtLdUxGS1lhVitLd3pMZUIxWnVleTdv?=
+ =?utf-8?B?Z2dCV0NtR0hjMHdEdFBJK3l2L0JDQ0lSbkR5U3B5bjk5YXZ6UHB3U1I1d2F4?=
+ =?utf-8?B?U2VPdjk0cjFsd3V0aVV6YjhCSDkwekJEOXpXZjZNNVhSSVBoQThHenpzbHJD?=
+ =?utf-8?B?MDBNTFdJNlZXTkYwa1NCT2Y3TTYrTGhpRTNOY0JHSUJhNkFiUmNLMEdoazJz?=
+ =?utf-8?B?U29hc1dyUVdUNStZN2ZONld5NUdldUdDcjBtMTVmTXZiejI0bEFZcWtrZ1NG?=
+ =?utf-8?B?elJmcTNWMk9ielBCak1LNk1ocVJydTZVZzRjZWFlT1lXSlVibjIvZ0ZjZ3Bq?=
+ =?utf-8?B?S3BZb3c3VXl5WTNtV1c5SUsySW9JNExqb1lSUThnUmc0NERHRG56OVJEMG1P?=
+ =?utf-8?B?TTNtVTdkM3kvWDlFVEdsTCtTcmNRZnVlMGZyM1VQZDhUVnVNR1QwYzhUNDlw?=
+ =?utf-8?B?VW00UWFPYWZCVXVhVkxLL1MwNy9rcUc5YmdaU3RranNTdk1UWm1YWTVJZCtw?=
+ =?utf-8?B?VnlJZlltSGwxTW8zNkg4ZDJTR0E2MEphbk5nWTNCakY5RGw2TVl2b1pRcmNl?=
+ =?utf-8?B?UHZsRURMcWYzYTJnY1lqd1ZJSWFMcWl2ZzQzdkZ2S0FuZ1VRVzJoQ1NvT3cv?=
+ =?utf-8?B?c3dLb21NbkNWdElCN0EyN29rNmdHN2JtUjJ0c2tNLytrSFNxRzNPamN1NlE1?=
+ =?utf-8?B?ZVZpQ3pXWG05OVRZWUp2KzQvb0ZXY1VWZW5oQUU2cDM4SUlBWGluVjRvSnJZ?=
+ =?utf-8?B?ekRhSTBFWFI0V1ZBU2ZjcklWaXdZMk51MWt0MExadG1rTGRqa0J4SEFVTW9o?=
+ =?utf-8?B?azE2V29ndm5QSENKamhHdHptZnR5b1FRZjhJRW9xUTc3bnEweTZwaXdBOEZt?=
+ =?utf-8?B?VFdmZEVmZDkrYXVOK1RuZ2xxNDQzdEpkVE9NZ0JES0Z4YlpvaWRBSm9NNnpK?=
+ =?utf-8?B?Tk1iQkZnUmNTQmg3Mmc1NzVxcFZ5S2RWUUVOK0I3NVM2N1krbVhKT0Q5aS92?=
+ =?utf-8?B?dFZQN1dlSU0zT2NSNTY4SVNvczZCZy8xRGlISmVOdjdCbmt2S0JURlIxMTAx?=
+ =?utf-8?B?MHY5dk45MmNwV2s1Rnk4ZFFNTUFUeWlwL1RTNTN1QkZ5Rk1yT1JLYlp4a2dM?=
+ =?utf-8?B?ZDdnd2xhWHlnR3hyVGhlNFNMb3hBZ0puTWxCN0VMWGM3UmZUaDBGdlpwa3cx?=
+ =?utf-8?B?VEtFV2lqTklFb3VuRFNCdnBhclA0T0xPRExwdjZXNjY0bnorbzAxaFhiSWZN?=
+ =?utf-8?B?NjRwOGF5aVNGcE91L24xK0U0bzNneFZNTjdoRk5wYllrVWtKZ1B0UUUvYWs1?=
+ =?utf-8?B?NFhESnllYytoSC9TaXNRbWx5b3ZNcTdNbEdBQzZiTkticFM3cms4bTNyalpK?=
+ =?utf-8?B?dEx2TjI1OVpFOGJ3c2tsKzUvbnRPSkR2TVdDSktvVnhNSDlTZWl1bE5RY1JB?=
+ =?utf-8?B?K1d0czcvU0djdTBXU0VVUHRGYWN2U1pDc2FGL2xZblpLRzVpT2RSck1KRVFz?=
+ =?utf-8?B?anRGWnA3MTlpekxTclRmTnY0VXpTemlxR0ZpcmdpZUJhS2xwNENXLzFHa3Ez?=
+ =?utf-8?B?VnVIUXQ4ejNjcE5WZHA3ZnBsMUhGclJhaWVEdjVkS2VUZWpJV0pmY1g3QW5C?=
+ =?utf-8?B?TkNoWWtjRUFlRmhrcFpPZ0dPcG9MNHpqZ0pLdEVnajVjMWNheHVYQT09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Exchange-RoutingPolicyChecked: ICOy/V1gkSICUYofqst6ZJIpk2k04taMbTZNjT2VFo/K4ajPLm1gB5afX+Wvv95npHsNAw+q87EQHQeUJEMfioEQtaSegExWlMswuU8H0LJLof7pbiPFOn21KErHL8jnA7w+gAzwGu0t5FHnDcUdZZmcEyDHPtvmzz95smdEzaHYpYchmisJRZ12k6LskEBTqh5UWz84htWNJx/afvQ6AXXD+qeuB9e4dFswlRaDG5UMnbbjHHhLz0mpVD4UOdnEIpQZcqaVIT3WWv44Ez1A0BMrSGr+b+0mM0L8J6/GVgZf1NMj3/8K9enDexQ2BIVr7FVpIEIw8M/Bj+4evNESDw==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB5613.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93899d3c-782d-4e85-a5c8-08deb09f8ff8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 May 2026 03:27:29.3853
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8FUAvqE2aUafGelsl5FfnMxWi6baq5SUilhxTCHBpOu/OwAxUUZ2eay6Nfplic/ZQxnhtT/oMqDxcHUruk6fcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7911
+X-OriginatorOrg: intel.com
 
-Include linux/cleanup.h to take advantage of new macros.
-
-Replace manual mutex_lock() and mutex_unlock() calls across the file
-with guard(mutex)() and scoped_guard() where appropriate to simplify
-error paths and eliminate manual locking calls.
-
-Add new helper function kmx61_read_for_each_active_channel() to mitigate
-certain style issues and to prevent notifying that the IRQ is finished
-whilst holding the lock.
-
-Update certain returns, and add default case to return -EINVAL in
-kmx61_read_raw().
-
-Remove now-redundant gotos and ret variables, as the new RAII macros
-make them unneeded.
-
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
----
- v2:
- - Remove redundant blank line per Andy.
- - Put kmx61_set_mode() function call in kmx61_runtime_suspend() on one
-   line per Andy.
-
- v3:
- - Add dedicated scope for guards.
-
- v4:
- - Fix certain scoping in switch-case blocks.
- - Remove stray ret variable.
- - Used scoped_guard() in kmx61_trigger_handler() instead of guard()().
-
- v5:
- - Added new helper function kmx61_read_for_each_active_channel() per
-   Jonathan's suggestion.
- - Add default case to return -EINVAL in kmx61_read_raw() per Andy's
-   suggestion.
- - Add blank lines between guard(mutex)() calls and regular code per
-   Andy's suggestion.
- - Change last return statement of kmx61_write_event_config() to be 0
-   per Jonathan's suggestion.
-
- v6:
- - Rebased onto TOCTOU fix per Jonathan's suggestion.
- 	- (note: now dependent on said commit, link below)
-	- link: https://lore.kernel.org/linux-iio/CAKqfh0GHVtAS6Uw3Bjo+B0PCpcfT8FogqEPCmt2x59zhmmh1Kg@mail.gmail.com/T/#t
-
- drivers/iio/imu/kmx61.c | 127 +++++++++++++++++++++-------------------
- 1 file changed, 67 insertions(+), 60 deletions(-)
-
-diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-index 3afa369de3cf..b7bd2497fecd 100644
---- a/drivers/iio/imu/kmx61.c
-+++ b/drivers/iio/imu/kmx61.c
-@@ -7,6 +7,7 @@
-  * IIO driver for KMX61 (7-bit I2C slave address 0x0E or 0x0F).
-  */
- 
-+#include <linux/cleanup.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/mod_devicetable.h>
-@@ -783,7 +784,7 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 
- 	switch (mask) {
--	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_RAW: {
- 		switch (chan->type) {
- 		case IIO_ACCEL:
- 			base_reg = KMX61_ACC_XOUT_L;
-@@ -794,28 +795,24 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
--		mutex_lock(&data->lock);
-+		guard(mutex)(&data->lock);
- 
- 		ret = kmx61_set_power_state(data, true, chan->address);
--		if (ret) {
--			mutex_unlock(&data->lock);
-+		if (ret)
- 			return ret;
--		}
- 
- 		ret = kmx61_read_measurement(data, base_reg, chan->scan_index);
- 		if (ret < 0) {
- 			kmx61_set_power_state(data, false, chan->address);
--			mutex_unlock(&data->lock);
- 			return ret;
- 		}
- 		*val = sign_extend32(ret >> chan->scan_type.shift,
- 				     chan->scan_type.realbits - 1);
- 		ret = kmx61_set_power_state(data, false, chan->address);
--
--		mutex_unlock(&data->lock);
- 		if (ret)
- 			return ret;
- 		return IIO_VAL_INT;
-+	}
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_ACCEL:
-@@ -834,41 +831,41 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
- 		if (chan->type != IIO_ACCEL && chan->type != IIO_MAGN)
- 			return -EINVAL;
- 
--		mutex_lock(&data->lock);
--		ret = kmx61_get_odr(data, val, val2, chan->address);
--		mutex_unlock(&data->lock);
-+		scoped_guard(mutex, &data->lock)
-+			ret = kmx61_get_odr(data, val, val2, chan->address);
- 		if (ret)
- 			return -EINVAL;
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
- 	}
--	return -EINVAL;
-+
- }
- 
- static int kmx61_write_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan, int val,
- 			   int val2, long mask)
- {
--	int ret;
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 
- 	switch (mask) {
--	case IIO_CHAN_INFO_SAMP_FREQ:
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
- 		if (chan->type != IIO_ACCEL && chan->type != IIO_MAGN)
- 			return -EINVAL;
- 
--		mutex_lock(&data->lock);
--		ret = kmx61_set_odr(data, val, val2, chan->address);
--		mutex_unlock(&data->lock);
--		return ret;
-+		guard(mutex)(&data->lock);
-+
-+		return kmx61_set_odr(data, val, val2, chan->address);
-+	}
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
--		case IIO_ACCEL:
-+		case IIO_ACCEL: {
- 			if (val != 0)
- 				return -EINVAL;
--			mutex_lock(&data->lock);
--			ret = kmx61_set_scale(data, val2);
--			mutex_unlock(&data->lock);
--			return ret;
-+			guard(mutex)(&data->lock);
-+
-+			return kmx61_set_scale(data, val2);
-+		}
- 		default:
- 			return -EINVAL;
- 		}
-@@ -942,32 +939,29 @@ static int kmx61_write_event_config(struct iio_dev *indio_dev,
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 	int ret = 0;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	if (state && data->ev_enable_state)
--		goto err_unlock;
-+		return 0;
- 
- 	if (!state && data->motion_trig_on) {
- 		data->ev_enable_state = false;
--		goto err_unlock;
-+		return ret;
- 	}
- 
- 	ret = kmx61_set_power_state(data, state, KMX61_ACC);
- 	if (ret < 0)
--		goto err_unlock;
-+		return ret;
- 
- 	ret = kmx61_setup_any_motion_interrupt(data, state);
- 	if (ret < 0) {
- 		kmx61_set_power_state(data, false, KMX61_ACC);
--		goto err_unlock;
-+		return ret;
- 	}
- 
- 	data->ev_enable_state = state;
- 
--err_unlock:
--	mutex_unlock(&data->lock);
--
--	return ret;
-+	return 0;
- }
- 
- static int kmx61_acc_validate_trigger(struct iio_dev *indio_dev,
-@@ -1020,11 +1014,11 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	if (!state && data->ev_enable_state && data->motion_trig_on) {
- 		data->motion_trig_on = false;
--		goto err_unlock;
-+		return ret;
- 	}
- 
- 	if (data->acc_dready_trig == trig || data->motion_trig == trig)
-@@ -1034,7 +1028,7 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 
- 	ret = kmx61_set_power_state(data, state, device);
- 	if (ret < 0)
--		goto err_unlock;
-+		return ret;
- 
- 	if (data->acc_dready_trig == trig || data->mag_dready_trig == trig)
- 		ret = kmx61_setup_new_data_interrupt(data, state, device);
-@@ -1042,7 +1036,7 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 		ret = kmx61_setup_any_motion_interrupt(data, state);
- 	if (ret < 0) {
- 		kmx61_set_power_state(data, false, device);
--		goto err_unlock;
-+		return ret;
- 	}
- 
- 	if (data->acc_dready_trig == trig)
-@@ -1051,8 +1045,6 @@ static int kmx61_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 		data->mag_dready_trig_on = state;
- 	else
- 		data->motion_trig_on = state;
--err_unlock:
--	mutex_unlock(&data->lock);
- 
- 	return ret;
- }
-@@ -1181,30 +1173,52 @@ static irqreturn_t kmx61_data_rdy_trig_poll(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
--static irqreturn_t kmx61_trigger_handler(int irq, void *p)
-+/**
-+ * kmx61_read_for_each_active_channel - Read each active channel into a buffer
-+ *
-+ * @indio_dev: IIO Device struct to read from
-+ * @buffer: Destination buffer to write to, the array must be of at least size 8
-+ *
-+ * Intended only for use in kmx61_trigger_handler().
-+ *
-+ * Return:
-+ * 0 on success, negative errno on failure.
-+ */
-+static int kmx61_read_for_each_active_channel(struct iio_dev *indio_dev, s16 *buffer)
- {
--	struct iio_poll_func *pf = p;
--	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
--	int bit, ret, i = 0;
- 	u8 base;
--	s16 buffer[8] = { };
-+	int ret, bit;
-+	int i = 0;
- 
- 	if (indio_dev == data->acc_indio_dev)
- 		base = KMX61_ACC_XOUT_L;
- 	else
- 		base = KMX61_MAG_XOUT_L;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
-+
- 	iio_for_each_active_channel(indio_dev, bit) {
- 		ret = kmx61_read_measurement(data, base, bit);
- 		if (ret < 0) {
--			mutex_unlock(&data->lock);
--			goto err;
-+			return ret;
- 		}
- 		buffer[i++] = ret;
- 	}
--	mutex_unlock(&data->lock);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t kmx61_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	int ret;
-+	s16 buffer[8] = { };
-+
-+	ret = kmx61_read_for_each_active_channel(indio_dev, buffer);
-+	if (ret < 0)
-+		goto err;
- 
- 	iio_push_to_buffers(indio_dev, buffer);
- err:
-@@ -1419,22 +1433,18 @@ static void kmx61_remove(struct i2c_client *client)
- 		iio_trigger_unregister(data->motion_trig);
- 	}
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
-+
- 	kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
--	mutex_unlock(&data->lock);
- }
- 
- static int kmx61_suspend(struct device *dev)
- {
--	int ret;
- 	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
- 
--	mutex_lock(&data->lock);
--	ret = kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG,
--			     false);
--	mutex_unlock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
--	return ret;
-+	return kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, false);
- }
- 
- static int kmx61_resume(struct device *dev)
-@@ -1453,13 +1463,10 @@ static int kmx61_resume(struct device *dev)
- static int kmx61_runtime_suspend(struct device *dev)
- {
- 	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
--	int ret;
- 
--	mutex_lock(&data->lock);
--	ret = kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
--	mutex_unlock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
--	return ret;
-+	return kmx61_set_mode(data, KMX61_ALL_STBY, KMX61_ACC | KMX61_MAG, true);
- }
- 
- static int kmx61_runtime_resume(struct device *dev)
--- 
-2.54.0
-
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSm9uYXRoYW4gQ2FtZXJvbiA8amlj
+MjNAa2VybmVsLm9yZz4NCj5TZW50OiBUdWVzZGF5LCBNYXkgMTIsIDIwMjYgMTA6NDkgUE0NCj5U
+bzogTmF0w6FsaWEgU2FsdmlubyBBbmRyw6kgPG5hdGFsaWEuYW5kcmVAaW1lLnVzcC5icj4NCj5D
+YzogYW5keUBrZXJuZWwub3JnOyBMZWNobmVyLCBEYXZpZCA8ZGxlY2huZXJAYmF5bGlicmUuY29t
+PjsNCj5qaWtvc0BrZXJuZWwub3JnOyBudW5vLnNhQGFuYWxvZy5jb207IHNyaW5pdmFzLnBhbmRy
+dXZhZGFAbGludXguaW50ZWwuY29tOw0KPmxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4
+LWlucHV0QHZnZXIua2VybmVsLm9yZzsgWmhhbmcsIExpeHUNCj48bGl4dS56aGFuZ0BpbnRlbC5j
+b20+DQo+U3ViamVjdDogUmU6IFtQQVRDSCB2MyAwLzZdIGlpbzogaGlkLXNlbnNvcjogc3RhbmRh
+cmRpemUgc2Nhbl90eXBlIGluaXRpYWxpemF0aW9uDQo+DQo+T24gTW9uLCAxMSBNYXkgMjAyNiAy
+MjoxNjoxNiAtMDMwMA0KPk5hdMOhbGlhIFNhbHZpbm8gQW5kcsOpIDxuYXRhbGlhLmFuZHJlQGlt
+ZS51c3AuYnI+IHdyb3RlOg0KPg0KPj4gVGhpcyBzZXJpZXMgcmVmYWN0b3JzIHRoZSBISUQgc2Vu
+c29yIGRyaXZlcnMgdG8gc3RhbmRhcmRpemUgdGhlDQo+PiBpbml0aWFsaXphdGlvbiBvZiB0aGUg
+aWlvX2NoYW5fc3BlYyBzY2FuX3R5cGUgc3RydWN0dXJlLg0KPj4gRGlyZWN0IGluaXRpYWxpemF0
+aW9uIHVzaW5nIGNvbXBvdW5kIGxpdGVyYWxzIHdhcyB1c2VkLg0KPj4NCj4+IFRoaXMgY2hhbmdl
+IGltcHJvdmVzIGNvZGUgcmVhZGFiaWxpdHkgYW5kIGVuc3VyZXMgdGhhdCBhbGwgZmllbGRzIG9m
+DQo+PiB0aGUgc2Nhbl90eXBlIHN0cnVjdHVyZSBhcmUgcHJvcGVybHkgemVyby1pbml0aWFsaXpl
+ZC4NCj4+IEFkZGl0aW9uYWxseSwgZm9yIHRoZSBoaWQtc2Vuc29yLWFjY2VsLTNkIGRyaXZlciwg
+dGhlIGNoYW5uZWwNCj4+IGluaXRpYWxpemF0aW9uIGxvb3Agd2FzIHJlZmFjdG9yZWQgdG8gaXRl
+cmF0ZSBkaXJlY3RseSBvdmVyIHRoZSBzY2FuDQo+PiBpbmRpY2VzLCBlbGltaW5hdGluZyByZWR1
+bmRhbnQgbG9naWMuDQo+DQo+U2VyaWVzIGxvb2tzIGdvb2QgdG8gbWUgYnV0IEknbGwgbGVhdmUg
+aXQgb24gdGhlIGxpc3QgYSB3aGlsZSB0byBib3RoIGxldCBzYXNoaWtvIGNhdGNoDQo+dXAgYW5k
+IGFueW9uZSBlbHNlIHdobyB3YW50cyB0byBjYW4gaGF2ZSB0aW1lIHRvIGxvb2suICBBbHNvIGlk
+ZWFsbHkgZ2V0IHNvbWUNCj50ZXN0aW5nLg0KPg0KPkxpeHUsIGlmIHlvdSBkb24ndCBtaW5kLCBw
+bGVhc2UgY2FuIHlvdSBnaXZlIHRoaXMgYSB0ZXN0IG9uIHRvcCBvZiB0aGUgbW9yZSByYWRpY2Fs
+DQo+cmVmYWN0b3IgcGF0Y2hlcz8NCg0KU3VyZSwgSSdsbCB0ZXN0IHRoaXMgc2VyaWVzIG9uIHRv
+cCBvZiB0aGUgcmVmYWN0b3IgcGF0Y2hlcyB3aGVuIEkgaGF2ZSBzb21lIHRpbWUuDQoNClRoYW5r
+cywNCkxpeHUNCg0KPg0KPlRvIG1lIGl0IGxvb2tzIHNhZmUgZW5vdWdoIGJ1dCB0aGlzIGlzIHRo
+ZSBzb3J0IG9mIHNlcmllcyB0aGF0IHN1YnRsZSB0eXBvcyBjYW4gaGlkZQ0KPmluIQ0KPg0KPlRo
+YW5rcywNCj4NCj5Kb25hdGhhbg0KPg0K
