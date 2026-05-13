@@ -1,122 +1,109 @@
-Received: from s106b.cyber-folks.pl (s106b.cyber-folks.pl [195.78.66.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69AA238838B;
-	Wed, 13 May 2026 09:51:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.78.66.88
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522B73EDE4C
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 10:07:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778665911; cv=none; b=F9QVt2qneZAj9IeJd+rAw5dnsv1aJmE9w0Mfb/e7D7ddH0ihCB3R/vAmAko00pa/yxBysJA+hRDrsF0cu3ABtgQze6hMoEulKKlFTLiM0XpROT3wDUiAgPnbCoIriQqXTkY9oYe8ZGTrvHtHahgnNYDXrEELhNbXIEM2iSI76JU=
+	t=1778666857; cv=none; b=qnWWQtkq/X5mevslXhH41H0wfiNbCh+hGC1p3mKgkZNGP58r2w/amnRpZCwzmrKpQ1Z7xh8RC/oVMXDWYbnNrM+c6/SMerlq8KcHuHh2IFZgNPItLs1K/ktzWWbR7F2mhgh6L1yZyTGkt2fOvhtnVLQLWYzaVhKWQ0W2B1l3y+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778665911; c=relaxed/simple;
-	bh=cGH9FzUEDSNXR8hZ+Ll1yk6IppIPYxWXZ6i8XZ0+QpM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=qz4yi6+YddzvZX44/32YFJsSn/mAjPHrCSOmqaoZc4ALzsUxRnO4T2+teBYVjA4sYROD8ms3InpavSj1OcOH8CX6aAMnQL0BJtyn+IjZQ/6ciBONXcbdRH5XEzPqA0QPNJ2qaznlJP+InAWT5Fs8qb1BEr/bds5ekSV0+6JSunQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl; spf=pass smtp.mailfrom=mmpsystems.pl; dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b=DqzR5+YU; arc=none smtp.client-ip=195.78.66.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mmpsystems.pl
+	s=arc-20240116; t=1778666857; c=relaxed/simple;
+	bh=7FYcAtqCkDRuAhNT0ZuaWJ+ehmXvvIPTDlt5vl6NT94=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PkkRvuFhZx4r+41EBrzuUuzWovyWos9toQ/GbmXGL9ppOuctn/U5fF04AjbH0MQkTmjTq3ABADR/951boyLpoorOzFe9wxRqo1OtNzrRzKI2TZ7A6xhWsm1Y0FVX7zPwMp7g9syTXpkM5curcUc9Wg8aQe1YFVoU9hR1KO9J0FM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y/5VuoIz; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b="DqzR5+YU"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=mmpsystems.pl; s=x; h=Cc:To:Message-Id:Content-Transfer-Encoding:
-	Content-Type:MIME-Version:Subject:Date:From:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=sUF7kixfrlUowh8RqG5O2aBsMX5gsB9s/0NEwNh+RqQ=; b=DqzR5+YUek1iEY7Vh400M8GQ+K
-	nEhniaHhAm5cF5i0ldrdJFoPGIobEknJmU1xhfDyCPszi+OVhcWkWSXhRN8B02GcQmAuu2Vg28/4s
-	WXVJPKTlGaKilclzQPuY0pty0WsEMyPrUi0m+LjRNIqaTndDZ7V1QK0ZKKEs5EhhRJYVPQUgbn+tI
-	3KbZv5eBGGZ+3qaoaZzIMkiA13ny5q3T2l9HQrTJDlQFq8hCfimqHa0VcuD0IDaN9ElDnkbdn6OSx
-	VIIR4rn7JktUrcFTSbk9qquVVEPWJRhigFuB6tDP86tlM6G+Uv7e10STgvnTxIAra83POvW2vydjN
-	IeoSSynw==;
-Received: from [91.102.182.218] (helo=localhost)
-	by s106.cyber-folks.pl with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <michal.piekos@mmpsystems.pl>)
-	id 1wN6Fi-00000004cgn-0oQE;
-	Wed, 13 May 2026 11:51:42 +0200
-From: Michal Piekos <michal.piekos@mmpsystems.pl>
-Date: Wed, 13 May 2026 11:51:31 +0200
-Subject: [PATCH] iio: adc: sun20i-gpadc: support non-contiguous channel
- lookups
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y/5VuoIz"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-44b7e8b65faso595913f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 03:07:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778666855; x=1779271655; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6OYzOoDs9BRlHknaQugKra02gfDHzOa/1dG9/aK3BrY=;
+        b=Y/5VuoIzBOChQkIdEa3t2Yu6PeA3zbbHRo0nuSfAX00Rk0O5NktRP/aS4fxo4VEaYQ
+         w8xnICzcYzritheKkMk2q9fM273InHFVPRRFKVLWqDLz6WzO6byCtIcV3+acqjq1wdaA
+         XmbmmniojP88Fp16lXcTgYYvNxF71FmfPn/Lruf/HvqvW39I0hcSMqVdVstfARTA1eLH
+         QQmsBs/xeEf0u8FtOZD5Cl2mDPNTfV87p1oaI7roIJaecw9hXnUkntcFICPJU1upbfC/
+         SgKcNBJTNWOOegN66t40yXo4Rxzr/SAiMciVv6V2ORLMnLY770elqK3B0lICL5c2B8oA
+         RADQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778666855; x=1779271655;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6OYzOoDs9BRlHknaQugKra02gfDHzOa/1dG9/aK3BrY=;
+        b=bgxwyQikeIq3uH+ZDTaZd28f3U0R2CDB73wGAJu0eQ/f332wvAKWxVCsCt2Ao+RQAX
+         KNyjidNEumigsp3v7Vhcjb4CJJspvp/2qzYDPI8x9jFOfIQFU+/jNo48pTQhr5+oCd4M
+         l7HaS/Dcerc/Hx4qYHvp0cSG1e+vV/k/Xnyjr5c4A95gQ25ssYKPSteQVKqtfQY/vRSY
+         nXiPuh0ZKhLn/36+lvjP+hgZhwC2SeqFViEWG1fY9z+XpwXB8JTCz8mGQ7RSpumYo+D9
+         283P6iHgjUqI0LTjpsYSOxg678TkV7e7kjqplWKxC07EXKjK28ER7XVadtHMHKyZ542q
+         njkA==
+X-Forwarded-Encrypted: i=1; AFNElJ//ZsGVVRYtyQN3vLRg5hGliGC5hIRzIPxN7bdZSD0R03vVON4J8VKeXXpdha7fBYeehg0SPmFyp1A=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzcx65W776JDv3IWtGA4gbPs7P9cJKUZdNs602JyB15xmG7XUDo
+	NPostJGt7YOJayAaHjLKWjJARRNTFLrQciSv0G8OldYaAsF5u/OcbmIC
+X-Gm-Gg: Acq92OGPPnMo1+ho8Jwt788vC1P4HVUI25+eWLvUwMETP1sEd37t34omJSCqBe3uWkA
+	FRgzWC/i7VkTxwoQgoIo/bKaPQUWckfUOfGab2FASTTTMa27uGaZQKI30iz2GvEj0k7nPRujsY9
+	np/alKOmkAlMK34joFid6N+ucDSrD5+QfsvzroH78Ql3t7B4OzOqTpTZ5dOPKM6IzIl538H6tZs
+	BfcyrVQVvFJatzUykSX4ks8XBcnysG/e39IeBJB1Tr9ItJ8QBJbrB/rdVDeWZ5MgEWmNRffjUXb
+	8Np7HHn08YGl6yC5fg2N46w5jIYLXetsRte2eX4PaqnUHs1NzebAdvZvxNzlSEQ+2LcHt7G5sM4
+	MPWS511kJAUJzsPlTRiu5ScYjVEbv4Mp0IaO953pbr0APU18NZBN5ZBul36THDM7JcnoWDRK1nT
+	sFntjGWfQgpUzQ64ly+vFr58zl5VaCyTGK7FFOM7othlV2JRee63njKDo=
+X-Received: by 2002:a05:600c:3042:b0:48f:d410:605e with SMTP id 5b1f17b1804b1-48fd4106119mr1140055e9.7.1778666854778;
+        Wed, 13 May 2026 03:07:34 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548ec6be40sm40978655f8f.12.2026.05.13.03.07.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2026 03:07:34 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: corbet@lwn.net
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	skhan@linuxfoundation.org,
+	gregkh@linuxfoundation.org,
+	hcazarim@yahoo.com,
+	linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH] Documentation: iio: fix typo in triggered-buffers example
+Date: Wed, 13 May 2026 15:06:57 +0500
+Message-Id: <20260513100657.8498-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260513-fix-sunxi-gpadc-sparse-channels-v1-1-6c21e290bcee@mmpsystems.pl>
-X-B4-Tracking: v=1; b=H4sIAKJJBGoC/yWNywqDMBBFf0Vm3YEYa6D+inSRx1SnSAwZFUH8d
- 2O7PHDuuQcIZSaBrjog08bCcyxQPyrwo40DIYfCoJU2qq0b/PCOssadcUg2eJRksxDecqRJUDv
- jtDKNC88XlErKVCa/h/79Z1ndl/xyZ+E8L+aYUk2DAAAA
-X-Change-ID: 20260513-fix-sunxi-gpadc-sparse-channels-2b6b2063bd49
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, 
- Jernej Skrabec <jernej.skrabec@gmail.com>, 
- Samuel Holland <samuel@sholland.org>
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Michal Piekos <michal.piekos@mmpsystems.pl>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778665899; l=1663;
- i=michal.piekos@mmpsystems.pl; s=20260301; h=from:subject:message-id;
- bh=cGH9FzUEDSNXR8hZ+Ll1yk6IppIPYxWXZ6i8XZ0+QpM=;
- b=I4zELAsqh5MojydjeCuuULqdQ5HXfFxa7ZjoWu9NybDGqL9c+AUOd/G4qnxyejw7+0sj9CyIV
- DEPG7GUNLpTDvlzKYQfIoupulHo17BfqRslGiiVKHBXeAnlbEfvv9DP
-X-Developer-Key: i=michal.piekos@mmpsystems.pl; a=ed25519;
- pk=Aixyx03If7ZDamiKKN0lsa+0mtA+WjIuIf2ZQVYNBqg=
-X-Authenticated-Id: michal.piekos@mmpsystems.pl
+Content-Transfer-Encoding: 8bit
 
-Using consumer driver like iio-hwmon which resolve channels thorugh
-io-channels phandles will fail for sparse channels because IIO core
-threats phandle argument as index into channel array.
-        eg. <&gpadc 1> will fail if there is only channel@1 specified
+The function call example in triggered-buffers.rst uses "polfunc"
+(single 'l') while the function is defined as "pollfunc" (double
+'l') on line 24 and referenced as "pollfunc" further down on
+line 56. Fix the misspelling so the example is consistent.
 
-Add fwnode_xlate which maps DT phandle to the registered channel whose
-chan->channel matches the hardware channel number. It allows sparse
-channel maps to be consumed by drivers like iio-hwmon.
-
-Tested on Radxa Cubie A5E.
-
-Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
 ---
- drivers/iio/adc/sun20i-gpadc-iio.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ Documentation/driver-api/iio/triggered-buffers.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/sun20i-gpadc-iio.c b/drivers/iio/adc/sun20i-gpadc-iio.c
-index 861c14da75ad..95f34a352158 100644
---- a/drivers/iio/adc/sun20i-gpadc-iio.c
-+++ b/drivers/iio/adc/sun20i-gpadc-iio.c
-@@ -139,8 +139,21 @@ static irqreturn_t sun20i_gpadc_irq_handler(int irq, void *data)
- 	return IRQ_HANDLED;
- }
+diff --git a/Documentation/driver-api/iio/triggered-buffers.rst b/Documentation/driver-api/iio/triggered-buffers.rst
+index 417555dbb..23b82357e 100644
+--- a/Documentation/driver-api/iio/triggered-buffers.rst
++++ b/Documentation/driver-api/iio/triggered-buffers.rst
+@@ -43,7 +43,7 @@ A typical triggered buffer setup looks like this::
+     }
  
-+static int sun20i_gpadc_fwnode_xlate(struct iio_dev *indio_dev,
-+		const struct fwnode_reference_args *iiospec)
-+{
-+	int i;
-+
-+	for (i = 0; i < indio_dev->num_channels; i++)
-+		if (indio_dev->channels[i].channel == iiospec->args[0])
-+			return i;
-+
-+	return -EINVAL;
-+}
-+
- static const struct iio_info sun20i_gpadc_iio_info = {
- 	.read_raw = sun20i_gpadc_read_raw,
-+	.fwnode_xlate = sun20i_gpadc_fwnode_xlate,
- };
+     /* setup triggered buffer, usually in probe function */
+-    iio_triggered_buffer_setup(indio_dev, sensor_iio_polfunc,
++    iio_triggered_buffer_setup(indio_dev, sensor_iio_pollfunc,
+                                sensor_trigger_handler,
+                                sensor_buffer_setup_ops);
  
- static void sun20i_gpadc_reset_assert(void *data)
-
----
-base-commit: 1d5dcaa3bd65f2e8c9baa14a393d3a2dc5db7524
-change-id: 20260513-fix-sunxi-gpadc-sparse-channels-2b6b2063bd49
-
-Best regards,
---  
-Michal Piekos <michal.piekos@mmpsystems.pl>
+-- 
+2.43.0
 
