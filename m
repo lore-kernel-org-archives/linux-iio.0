@@ -1,216 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E5013C276F;
-	Wed, 13 May 2026 09:48:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778665727; cv=none; b=Tn3hG/uizDcf6Em3cj/v506Ua2v55QJWUkBVHe0SyeX+LllIVJ2/21SYDre31QRCip4ERHf4wRDWRn6GvtsuSv8Npc7BfeK5pLPx/vtp1xuQwn7htovwahGaAPtkrt945VqGWlqLMAJGXFFkHZlYD4pVukCLpaxEFjrlAKWgrYI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778665727; c=relaxed/simple;
-	bh=h6zEhnKiZO4AK+ovjspwZRIiCSxS4eHud3WQyKCI6W8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CD+qF88d+JJKBgvtMFjihSwjj85n9aQrXsRfGgulO5Q/aatAuWHVhTzpsinHReArlYHTDZ/4AlRyjwYGMF5MH5YDDYkX6rUmZvFdNE9EYNhdyuESR+TdMwO1yIf6fpWVZUUw7avsnSy0ZYp7o+n9LINACMkc+wEvT9lsq3++Xm0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K9uDzFDn; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59AC93E9C28
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 09:51:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778665893; cv=pass; b=P4NybqfiSUFSm8eSJFhyzay6mYUvvuskF/DxvJVck++matYWM2Bv48DZywYpeu4meCR9minoh9wRVQed8EtHuOD90qqLGzkj7qRj8ip8rC3SbfEFzJyXe2AUzh2RS8V29aYD9VVp3/YiLp8PbtEmQ5dHjg7P5xRf5E3xt53KLRk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778665893; c=relaxed/simple;
+	bh=0X1D8weRx1XlR4/9bFNrfB17A1+4bazFtOO+uzBk4wY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=paXOwSt7BFVUeGdGlZq4N0IZfHfCuFOXQtyTr0fLgvHBW3Nx5woGAHBRU6kA9+CQv8iUg5xlZ4xRrBcrScoMIv4ZBE4obALVkV2ImZE0K9MY/N7D8b0wTnBYL3L66vGfrsjYFNVkLaF3MFWHiQI+M973n5CNghNlubhJrMQnIV4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k/li7ubG; arc=pass smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K9uDzFDn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78311C2BCB7;
-	Wed, 13 May 2026 09:48:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778665726;
-	bh=h6zEhnKiZO4AK+ovjspwZRIiCSxS4eHud3WQyKCI6W8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=K9uDzFDnS8v7C3pUMpD25t7ZG39xpqjimsyorx2WnmycPadk6J0LVbgh8lDsgvVMp
-	 kjb44z3g63nNp4bCbYL7h2w+e/UJgdl9rwruuY7k9mm6e2Nl7x8v6dpwLco2wlfrrd
-	 tAvhYinQM8EqmzwZ6YtWSslkCsc3socvGsNi+VY7kwaG9KwSlyJiH3YK6rL3SohcaR
-	 wnYEz7z6BYNMz3IJDPcVORUpGk7mENj1i8lo/z/02DnHFKAqwbWOjctkjCvxDFqnN/
-	 q55ECKNCAgjOhfa/YdRbLfq+NtTSYp5JtIE2nmBECQb0iUvMfepHZj5nZyhosWJ9Z3
-	 ns4S2rOXmHVXA==
-Date: Wed, 13 May 2026 10:48:39 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Dan Carpenter <error27@gmail.com>
-Cc: oe-kbuild@lists.linux.dev, Salah Triki <salah.triki@gmail.com>,
- lkp@intel.com, oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org
-Subject: Re: [jic23-iio:fixes-togreg 31/32]
- drivers/iio/potentiostat/lmp91000.c:353 lmp91000_probe() warn: missing
- unwind goto?
-Message-ID: <20260513104839.72b5a06c@jic23-huawei>
-In-Reply-To: <202605130437.SgMZ43gQ-lkp@intel.com>
-References: <202605130437.SgMZ43gQ-lkp@intel.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k/li7ubG"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-bce57c132b2so524432966b.0
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 02:51:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778665888; cv=none;
+        d=google.com; s=arc-20240605;
+        b=USRmV80NSZEjDYMiTa292mR3TGkRY9ghocTiMoNzL/F7EIUAIbBjKAcarK28Ubtzeq
+         PC/DsMkJSefJS1qx8M/RoJ5Bc5WFXb332aEiVVUr56OOwsb8ruHzl1fXHdHQWp8hlGUq
+         h0Lh/yOlpAGHpnTxiXd8oYQOOeUhnr4i/ofJw7ZrD9MZBRAspC1fkF8aIK7titmVRUri
+         kasizmMf32OR21uFS6F9lkViya8uFVslwk/8ywa0bKHSfUrNGUxJBFgaUtUew/LEy6oi
+         4eRNYjKjGX0qD1sg6UqdhBp1LDf79P+dt+4vcP+BVpk3CO1ju8hhcGQrhdMHOqKQrVAX
+         3pLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=0X1D8weRx1XlR4/9bFNrfB17A1+4bazFtOO+uzBk4wY=;
+        fh=4UpSqnNJPkVvhDdtn1hIUxz/HtLuSHM4rmjIFfQn12Y=;
+        b=ArJ3FHpN+WwSaorfv0CCC5rkv3qc9/5NY4fCqeT1Ac9TmjjDDcmzX4kfpExRCyjzUM
+         JGERuSro65wZeoEDRGC26KJP9wzyRuPGYpu7LU/+ETR9IAunY1bcjHmZC/AXTl3KdsAr
+         9A9+zwlHVaOtFObFAO9xnx+SFW1yJ5RB6KHVqnNAaDpmP89nDSeIf32iIe7DxF1pBvpZ
+         xuxcFljgTSYP1n3YvayJgqrdLkWB6YRfmPA53JgrlW6LVdJ7R0RgXMfbvBQqyX/mudfO
+         gmCYM1JdZnj/LZzXFwiY/UIj/IH9Wqo9LndIxGhbCiHqNT57NfM5U05XlFvdqz/6G7mF
+         egjA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778665888; x=1779270688; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0X1D8weRx1XlR4/9bFNrfB17A1+4bazFtOO+uzBk4wY=;
+        b=k/li7ubG3pXNDCR7ZbhAbEZzWYd9GAQLulkkvV3IGoddyG3W8TZrbdmulETwe9YiDg
+         NP+xcUJAdXUapAgsk7rIqoxqdz7b9MAmpBY9qHECzupGKHO7g7bRqROpC1W7Eo9F/4HS
+         itKYXjJlt+4j0ugVZ5FM5hvWuRxVOYa3JcOh1Gab/cNKwYzCmqIoZT9zZte5MpIo7OLb
+         o5RuZypYw45PXO+VQYWuRKSh27l7+yze/a+HqSWRh7gPDaAGJettn2G74cB6wrAnEeZm
+         zOH9FS//rqX0M2vHxE7ch9IlwiINnPbTKUABIxRiiA5X4+bEEY4pQSDXLMB5owl/ckD4
+         Y+6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778665888; x=1779270688;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=0X1D8weRx1XlR4/9bFNrfB17A1+4bazFtOO+uzBk4wY=;
+        b=lhpwOTZ5KGZvkkNgA13BeTn1nJyg2p5aRsSMXGVIoqHZMC7vVch3SfbtfokRQE8dQI
+         QkpYH1JedyPBQiVmdeRS4SkdNOGoC35HDNh8g649WH9kfpZztueIT/sh6lCjAqE3GmJK
+         lvHKxSDWGddM40MNoiolV38ZenNdNA4Iaj8vECsaWd/rRaTdFIZEvNUuCyyfvg3TKkLn
+         pk1S9HUMrfvXPdJrsJ91hWN8zNblsZUFOQwx+RD1T84ajwVUkfd8CWZi3BRjvt0jO5ic
+         AHhoPjqYHgbh+OJZYZNSY0QnQPqF6IkTaTrFd0lb2hFhFWAzkjaEEaoF8Tovla6I6cWN
+         pbOQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/4JwqCzTLddbD5OwAgJQuqkGY9beoS5apB9ZKSQa0xVO7fi0aLeNiBdSEYwx014AJKcJZTu2BiFU4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywwxqdq0HwGlWWFnrixQRWPbCK2gK1PBylKYK9+IB8S8Pgnw+AY
+	MBF0HczA0V5WNmPPxr4htOwroBSOZPAYCJf4yOzDWr2xrItACdWBOCRm1EfE/vwLXN8SyMfO+HF
+	3f8rfRodL3wj/mCcTFZbM+CqcbfOxo1w=
+X-Gm-Gg: Acq92OFy2ZmHB2qG7Y0oT0DcCVKg5hjLngPH8ns3Zefe9nqVcNC9nZLWNq/IWttgDN6
+	3WHpcmHCpFykT+eeAk54wbtHjyYoMTXy6Z69Pi2SOaHooBQMmAURCcxXijnxa4+2ur6Sbpv22RN
+	NMtqigqvOPPFT/mJZZuesxEwbZihKs5vc47xPIKpuJKFheioEcj+i1mg17kmqMZvFaUwx1zYhre
+	UflKroSXxm/j2KRc5XamWm+xQV55uzrhBHjUzjwYpYCyvuH9jZST8nvjFZtY79G+M8iMx3QX4RH
+	gqUmXtja1UvZl81Dwg+I9BBKn9TM4Bz26dFTalS6lcpFnZVPYQ7HVBplSNMLiGhMv02V8hACA/r
+	0BCCGn2c=
+X-Received: by 2002:a17:906:f5a3:b0:bd2:be3:572a with SMTP id
+ a640c23a62f3a-bd3abea020amr163641266b.6.1778665887795; Wed, 13 May 2026
+ 02:51:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20260513094536.8038-1-sozdayvek@gmail.com>
+In-Reply-To: <20260513094536.8038-1-sozdayvek@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 13 May 2026 12:50:51 +0300
+X-Gm-Features: AVHnY4LL61UXKMNhL-KvCGlTE_H4LX4RmAnjYJyzCc94eVdpIS0eWA5Yke-l-_Y
+Message-ID: <CAHp75VegkXgyv3zp+=RcsHZ=kdm9vYFiVgw3BvRSP8ZwhB4ztg@mail.gmail.com>
+Subject: Re: [PATCH] iio: light: veml6040: add suspend/resume support
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: jic23@kernel.org, arthur.becker@sentec.com, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, gregkh@linuxfoundation.org, 
+	hcazarim@yahoo.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 13 May 2026 10:02:40 +0300
-Dan Carpenter <error27@gmail.com> wrote:
+On Wed, May 13, 2026 at 12:46=E2=80=AFPM Stepan Ionichev <sozdayvek@gmail.c=
+om> wrote:
+>
+> The VEML6040 RGBW light sensor stays in auto-measurement mode at all
+> times once probed, drawing its full active current (~200 uA per
+> Vishay VEML6040 datasheet, Doc# 84276 Rev. 1.7). On system suspend
+> there is no need to keep the sensor running.
+>
+> Add system sleep PM callbacks that toggle the SD (shutdown) bit in
+> CONF register 00H to put the chip into shutdown on suspend and back
+> into normal operation on resume. The bit semantics are documented in
+> the datasheet Tables 2-1 and 2-2.
+>
+> The existing veml6040_shutdown_action() is unchanged; it still runs
+> on module unload to leave the chip shut down.
 
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git fix=
-es-togreg
-> head:   2ec11ebb4d0dea4aa9604f8336cd1e1c390d5dcb
-> commit: 82764dcb3643c70649f14fe8e92e667955574a8c [31/32] iio: potentiosta=
-t: lmp91000: fix probe order and cleanup paths
-> config: i386-randconfig-141-20260512 (https://download.01.org/0day-ci/arc=
-hive/20260513/202605130437.SgMZ43gQ-lkp@intel.com/config)
-> compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-> smatch: v0.5.0-9065-ge9cc34fd
->=20
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Reported-by: Dan Carpenter <error27@gmail.com>
-> | Closes: https://lore.kernel.org/r/202605130437.SgMZ43gQ-lkp@intel.com/
->=20
-> smatch warnings:
-> drivers/iio/potentiostat/lmp91000.c:353 lmp91000_probe() warn: missing un=
-wind goto?
-Dropped for now.  Salah can you take another look at this please.
+We also have regmap_set_bits() and regmap_clear_bits(). This will make
+your code shorter and easier to understand.
 
-Thanks,
-
-Jonathan
-
->=20
-> vim +353 drivers/iio/potentiostat/lmp91000.c
->=20
-> 7d8b3e100abeeff Uwe Kleine-K=C3=B6nig 2022-11-18  295  static int lmp9100=
-0_probe(struct i2c_client *client)
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  296  {
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  297  	struct device *dev =3D=
- &client->dev;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  298  	struct lmp91000_data *=
-data;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  299  	struct iio_dev *indio_=
-dev;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  300  	int ret;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  301 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  302  	indio_dev =3D devm_iio=
-_device_alloc(dev, sizeof(*data));
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  303  	if (!indio_dev)
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  304  		return -ENOMEM;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  305 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  306  	indio_dev->info =3D &l=
-mp91000_info;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  307  	indio_dev->channels =
-=3D lmp91000_channels;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  308  	indio_dev->num_channel=
-s =3D ARRAY_SIZE(lmp91000_channels);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  309  	indio_dev->name =3D LM=
-P91000_DRV_NAME;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  310  	indio_dev->modes =3D I=
-NDIO_DIRECT_MODE;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  311  	i2c_set_clientdata(cli=
-ent, indio_dev);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  312 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  313  	data =3D iio_priv(indi=
-o_dev);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  314  	data->dev =3D dev;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  315  	data->regmap =3D devm_=
-regmap_init_i2c(client, &lmp91000_regmap_config);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  316  	if (IS_ERR(data->regma=
-p)) {
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  317  		dev_err(dev, "regmap =
-initialization failed.\n");
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  318  		return PTR_ERR(data->=
-regmap);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  319  	}
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  320 =20
-> 4d031666560da23 Gwendal Grignou  2021-03-09  321  	data->trig =3D devm_ii=
-o_trigger_alloc(dev, "%s-mux%d",
-> 15ea2878bfb2550 Jonathan Cameron 2021-04-26  322  					    indio_dev->nam=
-e,
-> 15ea2878bfb2550 Jonathan Cameron 2021-04-26  323  					    iio_device_id(=
-indio_dev));
-> 368e8718875f17a Dixit Parmar     2025-08-22  324  	if (!data->trig)
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  325  		return -ENOMEM;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  326 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  327  	init_completion(&data-=
->completion);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  328 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  329  	ret =3D lmp91000_read_=
-config(data);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  330  	if (ret)
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  331  		return ret;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  332 =20
-> 82764dcb3643c70 Salah Triki      2026-05-07  333  	data->cb_buffer =3D ii=
-o_channel_get_all_cb(dev, &lmp91000_buffer_cb, indio_dev);
-> 82764dcb3643c70 Salah Triki      2026-05-07  334  	if (IS_ERR(data->cb_bu=
-ffer)) {
-> 82764dcb3643c70 Salah Triki      2026-05-07  335  		if (PTR_ERR(data->cb_=
-buffer) =3D=3D -ENODEV)
-> 82764dcb3643c70 Salah Triki      2026-05-07  336  			ret =3D -EPROBE_DEFE=
-R;
-> 82764dcb3643c70 Salah Triki      2026-05-07  337  		else
-> 82764dcb3643c70 Salah Triki      2026-05-07  338  			ret =3D PTR_ERR(data=
-->cb_buffer);
-> 82764dcb3643c70 Salah Triki      2026-05-07  339 =20
-> 82764dcb3643c70 Salah Triki      2026-05-07  340  		goto error_unreg_buff=
-er;
-> 82764dcb3643c70 Salah Triki      2026-05-07  341  	}
-> 82764dcb3643c70 Salah Triki      2026-05-07  342 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  343  	ret =3D iio_trigger_se=
-t_immutable(iio_channel_cb_get_iio_dev(data->cb_buffer),
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  344  					data->trig);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  345  	if (ret) {
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  346  		dev_err(dev, "cannot =
-set immutable trigger.\n");
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  347  		return ret;
->=20
-> Need to goto cleanup before returning
->=20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  348  	}
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  349 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  350  	ret =3D iio_trigger_re=
-gister(data->trig);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  351  	if (ret) {
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  352  		dev_err(dev, "cannot =
-register iio trigger.\n");
-> 67e17300dc1d760 Matt Ranostay    2016-09-24 @353  		return ret;
->=20
-> Same.
->=20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  354  	}
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  355 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  356  	ret =3D iio_triggered_=
-buffer_setup(indio_dev, NULL,
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  357  					 &lmp91000_buffer_=
-handler,
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  358  					 &lmp91000_buffer_=
-setup_ops);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  359  	if (ret)
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  360  		goto error_unreg_trig=
-ger;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  361 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  362  	data->adc_chan =3D iio=
-_channel_cb_get_channels(data->cb_buffer);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  363 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  364  	ret =3D iio_device_reg=
-ister(indio_dev);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  365  	if (ret)
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  366  		goto error_unreg_cb_b=
-uffer;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  367 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  368  	return 0;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  369 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  370  error_unreg_cb_buffer:
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  371  	iio_channel_release_al=
-l_cb(data->cb_buffer);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  372 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  373  error_unreg_trigger:
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  374  	iio_trigger_unregister=
-(data->trig);
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  375 =20
-> 82764dcb3643c70 Salah Triki      2026-05-07  376  error_unreg_buffer:
-> 82764dcb3643c70 Salah Triki      2026-05-07  377  	iio_triggered_buffer_c=
-leanup(indio_dev);
-> 82764dcb3643c70 Salah Triki      2026-05-07  378 =20
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  379  	return ret;
-> 67e17300dc1d760 Matt Ranostay    2016-09-24  380  }
->=20
-
+--=20
+With Best Regards,
+Andy Shevchenko
