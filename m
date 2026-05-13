@@ -1,126 +1,155 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FFEC48122E
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 16:12:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 489B2282F34;
+	Wed, 13 May 2026 16:16:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778688749; cv=none; b=nqM+ToVzZUybYcJ+nUy6rzNDoA7zJHMDfVl9S9AQgxmBYUJIA73uLMZuuCbIxHGakjvzK9mPz3/uoHqPZ7d4Du4wKURbWbGhwLU8zepZ1kyHDubSPP/2m4gYzRanYGSUslMNkSPaoXfr9HNDaZF+XcmFLClDKSLwNr3oXpXNFp0=
+	t=1778689010; cv=none; b=LG4Pt6RQTmLYh9Y2NNZE5QkMnWHllls5eh83K3T1EeJ+TPg8yjT2CQLnnoDPJX/8QB1gS0SNCa57UKem3tdPIG7AFLZ1038OsOjl0jlBu/D76kV/W5bsUiv4hGFCYw2uBZs5S9FaKwOBdImqXJmrdHtfdMPS6h7tEDW28DbrO9Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778688749; c=relaxed/simple;
-	bh=Lf94+U8uB4d6shrtPK64fSV3D5WpuG9aew0bJ7m7ysA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jAuPwKuDHnu9kMe21+RG5NGVBj8rMF0R1NLjWK70LbW8/TbQ2aW/UqtG4h2Vdm1SelU/a2M8TEFLHMC/la1URzuB5r/hGOwX9I7KbHXDqcCdDvJpaU5/Alz0nTTcU6kmKR4YzGemjaasUe4J6ytNUd8RgKjI7XLb4cQN/sNaDo8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j8FWFoJe; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778689010; c=relaxed/simple;
+	bh=f9/+E/R+ZsrcOhqa7I2GlG4cd6p5UxzOvSrd5ynQGt0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=M+nfBhi0tOp/7ErXVqCafmq3LAcuUKA/1TdRyRqQObv0sMCxI8x3kT+SlB6JrzUUaCCfM0fEiRM8Ac6Dm29fB7cztr+t1E2xYb6K1Zr93VqloI/dQJQ31yshoJ4yWzPcILi80dsagFP0KQoZPTalvYUBe/qAWH+Q0hv3cD9xBGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cVhdmWOq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j8FWFoJe"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-43d77f6092eso4426110f8f.2
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 09:12:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778688747; x=1779293547; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ai6dR/bymyCWlBYI6Ti2e17lWUNYyrdNZIbrxhMJBME=;
-        b=j8FWFoJeQy3kVUFweQOdgG+jhq3GxPuxV5CSbOUCvNaJkCB72i3ljiUCHNk7e3todL
-         sQ2/vQ0BbSCox0NoNCVLuaUZ9eAb6aRkmV07WIfftcmrVyeUbzUwUtN+Sawm63bN0Ifo
-         wfsWfTurOZrU22m7tyLx8JQmrQGRtVw0AmzSNkYzWDxbbLBaxJ7LeXnMkHUB5Ib1Gkil
-         /dxrDopoJiD/amFH+hTvAqmKHcBel5m3A+rfRKxUfT9S6vzBo4JTodDJXCkxKudlsAon
-         2iz3inK7NJ4Ut8bB4bD7wa1nnuHCsW+Tg7t9eyU42n2eGONDD8EnVrQA6X2KLcK2c6uj
-         oyVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778688747; x=1779293547;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Ai6dR/bymyCWlBYI6Ti2e17lWUNYyrdNZIbrxhMJBME=;
-        b=rXurKS/Yjhqpi73Nn4JSVtrKyi4/UkBSn+SCVNJFvWmOcHBE9hhmGDU+Va070XD+8e
-         E11UIUuF/vx+/PoBO/1mPOVO3c55X2I3+m28Jur966UHxphaUpEdCD5uyixML2X5F6Sa
-         hroK/zUxZd4tIbihxEXJ7JkTUL+HogTuYJOHSL8S+A3TZkhOQFQ2kpEyKHPzA7Tl5FIF
-         G/+SP8Z+RP/cjMHu+z50J3cwlpgcvNfQ4uoceFpaNlaqlYkcOBcMqoVRt1mWaOZIhXE4
-         m8T8M5ijfIgfQ9kxp5gFj14Ed2NroRrPqzgC74nRqfHsSqbCfKWnF6o7BqP0oV9SWI5t
-         cpJA==
-X-Forwarded-Encrypted: i=1; AFNElJ9LYhr/slxdIye5i5l9R7rLyo0PAuRlLj+uHp1OW+z8fm0c/l3tvGo5djWx+0pL5q8ZDEwgxDuNl5E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyNubSdwzaT4N/tRck8SvUxb0RFCheIcQf6J7hZ0OmQLDvZX9Vd
-	5e7twRTMnRSd3gri4kKlyKNvNUQMBqpz070pW3I2SHYRqfyYRrGdcDHX
-X-Gm-Gg: Acq92OHbBFQZWowpHGBvMFZewwn+3tUQxX3q83BpPJYoLneK2DOb9VjS82i9ZmAz0ds
-	fmArKzjCxG1MA3BcgkCB7az8ajNAAKVjvG9Y3OkDTCvsP0zADWLcXIpep76kjEmUQcxZtvKI+4u
-	kP1c9wwqoeeQIOw6xGAwwDybputa9KDaMJaOh51xG9OO7t82CIcTmxfbkfrL8gfhIo66Pbv6cPH
-	VOemEdrrC5LXUvV92KXiWYoy+xkvrYXIBTJamtsaQocN8k0mRvPuTb3cOwL+KVT7y7G+WrTYQHH
-	oVb0zVaIGz4HuUKvvJYv+VuniTuwjhDtjTThe3P5N5AM2rseNz3ZKtZoLmAwycmv+ieLDVZ4iqU
-	obemRgTADTd1LhGoz2mzdleJ1ET/ypgXt3cyKxJt4AAl97Sy/bXJHFSTomL5+w7zlCrwaaVklLD
-	ltXTZec8yjrHuJjVK2xEhee2Cz9ntLCw==
-X-Received: by 2002:a05:6000:220c:b0:44f:f4de:a844 with SMTP id ffacd0b85a97d-45c5a392f2fmr6242310f8f.37.1778688746247;
-        Wed, 13 May 2026 09:12:26 -0700 (PDT)
-Received: from [192.168.37.44] ([217.61.173.50])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45491bae13csm40293279f8f.29.2026.05.13.09.12.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 May 2026 09:12:25 -0700 (PDT)
-Message-ID: <36ed59a7-8af7-4458-9e90-70ea251b389e@gmail.com>
-Date: Wed, 13 May 2026 18:12:25 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cVhdmWOq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99B83C19425;
+	Wed, 13 May 2026 16:16:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778689009;
+	bh=f9/+E/R+ZsrcOhqa7I2GlG4cd6p5UxzOvSrd5ynQGt0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=cVhdmWOqiQYoyW8bUF+ngNWqknk7z4gf+QmUKAr3BBZm6uaeuJ0cYtl2NeeT4FDyS
+	 DgMTu5oDqIM73e7fv+r1Upc9vUx4R/YjwQwXzvRoS/bU4eyBtbvUVgSvTFpIn3vhrn
+	 R5QMj5QD8qvVtuFi3dFxGkc+Vj1QDpiTLf80hp4V9U5zaw6bximvuKbpg4N+kWyYee
+	 vm0cr4cYs1aiaW426q5TtrbM0bCaEwmojWjCcCwXu6GUW0mRYKHgAOLQ0UwaERxrPj
+	 H9sW0nYDn7Uj0G/dYpIE5jbjHB3wp5VbHZVryf7t5wOTTnpg+umJlgZ3UTip5f7Ezp
+	 3VH7ND4j2ykkQ==
+Date: Wed, 13 May 2026 17:16:38 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, Michal Piekos
+ <michal.piekos@mmpsystems.pl>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, Jernej
+ Skrabec <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>,
+ Maksim Kiselev <bigunclemax@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] iio: adc: sun20i-gpadc: add A523 gpadc support
+Message-ID: <20260513171638.77af3b24@jic23-huawei>
+In-Reply-To: <4248ac7e-3cce-4db8-a2c1-710f2c903490@arm.com>
+References: <20260513-sunxi-a523-gpadc-v2-0-d5efde151dac@mmpsystems.pl>
+	<20260513-sunxi-a523-gpadc-v2-2-d5efde151dac@mmpsystems.pl>
+	<A7772824-E704-4BFD-A796-BCD81197E5A2@gmail.com>
+	<4248ac7e-3cce-4db8-a2c1-710f2c903490@arm.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/5] iio: light: tcs3472: move standalone return to
- default case
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-References: <20260512223215.25596-1-aldocontelk@gmail.com>
- <20260512223215.25596-6-aldocontelk@gmail.com>
- <agRfMWL9BughLT2x@ashevche-desk.local>
-Content-Language: en-US
-From: Aldo Conte <aldocontelk@gmail.com>
-In-Reply-To: <agRfMWL9BughLT2x@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 5/13/26 13:23, Andy Shevchenko wrote:
-> On Wed, May 13, 2026 at 12:32:15AM +0200, Aldo Conte wrote:
->> Move the trailing 'return -EINVAL' statements at the end of
->> tcs3472_read_raw() and tcs3472_write_raw() into explicit default:
->> cases inside the respective switch statements.
->>
->> This removes the need for a separate return statement after the switch.
->>
->> No functional change.
-> 
-> Reviewed-by: Andy Shevchenko <andy@kernel.org>
-> 
-Hi Andy, Joshua,
+On Wed, 13 May 2026 13:53:49 +0200
+Andre Przywara <andre.przywara@arm.com> wrote:
 
-Thanks for the review. Before I send v3, I want to make sure I split
-the series the way you want.
+> Hi Sanjay,
+>=20
+> thanks for having a look!
+>=20
+> On 5/13/26 13:44, Sanjay Chitroda wrote:
+> >=20
+> >=20
+> > On 13 May 2026 10:29:43=E2=80=AFam IST, Michal Piekos <michal.piekos@mm=
+psystems.pl> wrote: =20
+> >> A523 differs from existing sun20i-gpadc-iio by having two clocks; bus
+> >> clock and module clock.
+> >>
+> >> Change driver to enable all clocks.
+> >>
+> >> Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
+> >> ---
+> >> drivers/iio/adc/sun20i-gpadc-iio.c | 11 +++++++----
+> >> 1 file changed, 7 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/iio/adc/sun20i-gpadc-iio.c b/drivers/iio/adc/sun2=
+0i-gpadc-iio.c
+> >> index 861c14da75ad..3f1f07b3a385 100644
+> >> --- a/drivers/iio/adc/sun20i-gpadc-iio.c
+> >> +++ b/drivers/iio/adc/sun20i-gpadc-iio.c
+> >> @@ -180,7 +180,7 @@ static int sun20i_gpadc_probe(struct platform_devi=
+ce *pdev)
+> >> 	struct iio_dev *indio_dev;
+> >> 	struct sun20i_gpadc_iio *info;
+> >> 	struct reset_control *rst;
+> >> -	struct clk *clk;
+> >> +	struct clk_bulk_data *clks;
+> >> 	int irq;
+> >> 	int ret;
+> >>
+> >> @@ -205,9 +205,11 @@ static int sun20i_gpadc_probe(struct platform_dev=
+ice *pdev)
+> >> 	if (IS_ERR(info->regs))
+> >> 		return PTR_ERR(info->regs);
+> >>
+> >> -	clk =3D devm_clk_get_enabled(dev, NULL);
+> >> -	if (IS_ERR(clk))
+> >> -		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable bus clock=
+\n");
+> >> +	ret =3D devm_clk_bulk_get_all_enabled(dev, &clks);
+> >> +	if (ret <=3D 0) =20
+> >=20
+> > Thank you Michal for the change.
+> >=20
+> > Have you validated the changes ?
+> > It looks while success ret would be 0 and it would give return error. =
+=20
+>=20
+> But devm_clk_bulk_get_all_enabled() returns the number of clocks found=20
+> and enabled. And since we need at least one, I think this is correct,=20
+> and the error message below reflects that.
 
-My plan is to split v2 into 7 patches:
+True but passing 0 to dev_err_probe() isn't going to do the right thing.
 
-   1. sort headers (same as v2)
-   2. convert locking to guard(mutex) (drop Suggested-by, clean up
-      trigger_handler)
-   3. replace == NULL with ! (add Suggested-by: Joshua Crofts)
-   4. use devm for resource management (drop Suggested-by, remove the
-      dev_info change, add devm_mutex_init)
-   5. use 'dev' for dev_info() calls (new, taken out of patch 4)
-   6. implement wait time and sampling_frequency (drop Suggested-by,
-      fix macro style, simplify cycle_us and all the other revisions)
-   7. move standalone return to default case (same as v2)
-
-Two things I am not sure about:
-
-   - Should patch 3 ("replace == NULL with !") really be its own patch,
-     or do you prefer it inside patch 4, since that line is right next
-     to devm_iio_device_alloc?
-
-   - Is patch 5 (dev_info refactor) in the right place after the devm
-     patch?
+Though from this function, 0 is an error you need to return an error code
+not 0 which to the caller looks like a success.
 
 
-Aldo
+
+>=20
+> To me that change looks good:
+>=20
+> Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+>=20
+> Cheers,
+> Andre
+>=20
+>=20
+> >=20
+> > Thanks, Sanjay
+> >=20
+> >  =20
+> >> +		return dev_err_probe(
+> >> +			dev, ret,
+> >> +			"failed to enable clocks or no clocks defined\n");
+> >>
+> >> 	rst =3D devm_reset_control_get_exclusive(dev, NULL);
+> >> 	if (IS_ERR(rst))
+> >> @@ -243,6 +245,7 @@ static int sun20i_gpadc_probe(struct platform_devi=
+ce *pdev)
+> >>
+> >> static const struct of_device_id sun20i_gpadc_of_id[] =3D {
+> >> 	{ .compatible =3D "allwinner,sun20i-d1-gpadc" },
+> >> +	{ .compatible =3D "allwinner,sun55i-a523-gpadc" },
+> >> 	{ }
+> >> };
+> >> MODULE_DEVICE_TABLE(of, sun20i_gpadc_of_id);
+> >> =20
+> >  =20
+>=20
+
