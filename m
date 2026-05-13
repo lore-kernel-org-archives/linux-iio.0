@@ -1,91 +1,151 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96D843921F1;
-	Wed, 13 May 2026 11:25:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 835633A4531
+	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 11:44:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778671530; cv=none; b=SB+M/gvB320p2GEzeXOA97GEb/iiRDo7RJWv7DHZWo5lmhA8vZ5SPAV+efOsOChi4rO8vMpMm4XHvVBeA2NsXKm0+oYgE40qbukW6PikeIQCVbD1eD1Z4jk59I/ArDkLlG/gR76spCVy6uGLy533WPCuB79BygrAIGLylb+QWh4=
+	t=1778672653; cv=none; b=OrSpz4X2J0TiG1Qc6zqi8lzGx0uA2iQ4X5Q+X6XSppoLJWEeBzF8X49B1iON/Kju5i0i8A8QeRfDqnMe9o08kYzViV63Q46NRPrkEzqzT89jt28T7WwMIERAKjdU/3Zam4zE5oma7fXEV7iUhH9B14K4k5qn+TNb6wd9BU3itLY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778671530; c=relaxed/simple;
-	bh=sYwpw2HJD2TzkCKHDWNgQ2irhxl4vnaPF1E4Elfkk84=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hqYotL77z3zj4DFtIAcNOmP7HPwijrpN/8rKjoGdx2HgdDCi1kB2Ic7djs2GgUKfYQtihYKx9HM9f0cBxai5HSj+p/6J9GurwSLWUI8tHBZm7i+UIOns27VPgdxJ+MPo0L9HZWE1dj9gMI/YeROtR/L0JYonOHCSDq7X2hh3i0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B3MrAknl; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778672653; c=relaxed/simple;
+	bh=1a+V7SN5Ad1tvDfgTgTwhX+lul4htUJKibU3Otb53LQ=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=IAXpr5MzEJjZL3W6T/Ehgtb5vPiwY61XINmFi3F7kptn02QO5ZB8xXWkNVXP/mXRg/ujaDb4LxB5sMELnVFG3oewvLNihnhkUP3SM7+nYML2gHz5o4Z+85fUV5zeMuDxifQ1QcX03uPAsB+0BYMKJ5/FH7uJzDJ4b0qdx2nhXw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gEq1hdHh; arc=none smtp.client-ip=209.85.216.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B3MrAknl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778671529; x=1810207529;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sYwpw2HJD2TzkCKHDWNgQ2irhxl4vnaPF1E4Elfkk84=;
-  b=B3MrAknlb+zm2q21vDC9THMS5GpKDN3kPODOd7QDC+YaXp9T3+glUEvy
-   D2RN/a63DfTORP4GFUK0KvUhx5T7R10caJB+IoGU+kgizLpGuf7bR60yu
-   TUPnh8v9CUkTqn7xMVJ5EeamdjHJzhVlm++jNdUDIKj9EBZNszEjVfOyS
-   B+fByJyGiYC5uh2t9nRsbOzPw7Uj5u/wBaaCBX95qqdHLqaaWc1l5Jm7n
-   oIdZ1KPzMZqUgSA16kjsyoGTEVwvpOtMHG3d1nyMVnq0HGzmufzjaZjrs
-   MuVClWsdVcCbLkiVYIAEXZu04MHIS5fdpcA3+mhop0VlmyfAFlE2uzAcq
-   Q==;
-X-CSE-ConnectionGUID: dSR7zmxpTVGSl39HUCgXZg==
-X-CSE-MsgGUID: Pa/P0XZtT/2Lt1Xu6DQbIQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="83210959"
-X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
-   d="scan'208";a="83210959"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 04:25:29 -0700
-X-CSE-ConnectionGUID: w4RvVCw7RDmrZVAQd4H1NA==
-X-CSE-MsgGUID: XPgqELt8SGyUGBBY9gIMrw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
-   d="scan'208";a="231671978"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.106])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 04:25:27 -0700
-Date: Wed, 13 May 2026 14:25:24 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: jic23@kernel.org, sashiko <sashiko-bot@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: imu: kmx61: Fix potential time-of-check to
- time-of-use race
-Message-ID: <agRfpI_eqG7QHYas@ashevche-desk.local>
-References: <20260513013638.147606-1-m32285159@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gEq1hdHh"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-36643b96b99so4393855a91.0
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 04:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778672652; x=1779277452; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=qYAcfX5TZQ1aO/tUlnMIN+1pF6qLETPLwxG8ZHIUVfI=;
+        b=gEq1hdHhXaN9hfUHDRC7spe2P68YK/n731u3tq7uWrGdzINNnmUDOW8Oh9KoWScOJQ
+         DN+ORe3jW3HsyQaZlizJ061yElkn9LWzIsSBZXdnsVWC//Z4qEac0uH3WC7WtQt/r6Lp
+         LpJbgi/L7q30rhoCdMLKlMEArpOvB3gabBHhgdz7oLPiDlUXRwVYuIgNL96jLwq6F+s7
+         V0LzfBYxepKqOYbH7jtH0yybby9sEZnliRKesNpyzUdmDLqSxybjHEGu5z6TA4izw8ag
+         KJjuiM5FQBkGf9fvN5lPrNRGAsfzfPNAVXIOiZxizw0YMfntq/c89OBKQfIN7XwvTy4U
+         FTcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778672652; x=1779277452;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qYAcfX5TZQ1aO/tUlnMIN+1pF6qLETPLwxG8ZHIUVfI=;
+        b=TBlW3Z1y2+t50C1awaUqsnqeiozAk3E7cEWP9QVoPyzLIuZ6hI6BvM4uRP96QPJ8vI
+         bsaVvSvoJhIpl0xSikwBZDQZFKt7u7sosLH4dV2yQ/nygPUyLRfuMsS1HpzIPOrv5VtB
+         ftdizOerhrTA6gUlV52ItLvnRKkqYBGLIps2xZ2N4TKttN9Pv5qvv4TtqrhjltAsYFa+
+         IdF0FMgJ4+CXIDUcc3lvdcyjSKNhgzFzc/LerpbxeGI74ic65ivWCz2k7T0uu7xCjXpP
+         cKQXhyCiyOAa5Fcq+zCJV7WCZSKDbqpHikWD6zc+R6hD+asH3qVrjqhmqFhfOxqooPUL
+         agFg==
+X-Gm-Message-State: AOJu0YxaxDJUvBueN+YzYA7U5rDQipWr6xwyK0SHQSEBLM0RKzJqYEuL
+	bYOzMK1Kwnu/FGWCpLNdX2iz3NV5VN/bEq7Tc6RuBXu4uv0yZZIGQ4Mg
+X-Gm-Gg: Acq92OECYESonORcFEGccoUsmoAzGRI58D0tW4tqanzWgvLyeDgNTHvidM1XXPLd3OT
+	weau5EWIsKv6oRIZZnErb+R+h1XLyCRuNuL/OYwVd0zOjYhw8fXULi+KFyeJE08h5kMe/Vi6Ppw
+	wjg9NWV9Yi8NSkcp2eW3wbiINdRMFGf7S3zTFcc90LlxCzoGx7tkCBxnnxOjOaN5xtx+DCV2ntO
+	CVB5CPu9tTdAZAJqSu+KZzvNCsRwAbdq6XI0NCeucLYRGf3RI2EtuE0XMCFuKAOaEYxpI+OYcfJ
+	HlAMS7IR+Z7Zr2oFgPVoon/h4MgD83vBT9VI3zaCC2so8Qwa3eIYKqy1DsV6yvVvHJxBkuyQp+b
+	/0rebJzIOIslSHnBw5T3IAzLvgYcUdoRsUlK14j16aPML9puy1n2MgZS6ou1qvHpnm3F4dnteFN
+	qj1t22v3LNjaTj2z2TUzQyrRJM99LWqTfvAzmf1UlgdvaQ4Ic=
+X-Received: by 2002:a17:903:9ce:b0:2bd:56c:97ad with SMTP id d9443c01a7336-2bd2ec5abd3mr25711825ad.0.1778672651705;
+        Wed, 13 May 2026 04:44:11 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:ac0f:c362:ceaf:f4a4:19f1:7e92])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1d52f27sm204870005ad.36.2026.05.13.04.44.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2026 04:44:11 -0700 (PDT)
+Date: Wed, 13 May 2026 17:14:05 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: Michal Piekos <michal.piekos@mmpsystems.pl>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Maksim Kiselev <bigunclemax@gmail.com>
+CC: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] iio: adc: sun20i-gpadc: add A523 gpadc support
+User-Agent: Thunderbird for Android
+In-Reply-To: <20260513-sunxi-a523-gpadc-v2-2-d5efde151dac@mmpsystems.pl>
+References: <20260513-sunxi-a523-gpadc-v2-0-d5efde151dac@mmpsystems.pl> <20260513-sunxi-a523-gpadc-v2-2-d5efde151dac@mmpsystems.pl>
+Message-ID: <A7772824-E704-4BFD-A796-BCD81197E5A2@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260513013638.147606-1-m32285159@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
-
-On Tue, May 12, 2026 at 08:36:38PM -0500, Maxwell Doose wrote:
-
-The Subject can be made better:
-
-  iio: imu: kmx61: Fix potential TOCTOU race in kmx61_write_event_config()
-
-> A time-of-check to time-of-use race condition exists in
-> kmx61_write_event_config(). If two threads enter the function at the
-> same time, both threads may pass the check and get to the lock. Thus,
-> when the first thread releases the lock allowing the second thread to
-> start execution after the first thread modifies data->ev_enable_state to
-> force returning from the function, the second thread continues execution
-> regardless. Fix this by moving the data->ev_enable_state check inside of
-> the critical section.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
 
+
+On 13 May 2026 10:29:43=E2=80=AFam IST, Michal Piekos <michal=2Epiekos@mmp=
+systems=2Epl> wrote:
+>A523 differs from existing sun20i-gpadc-iio by having two clocks; bus
+>clock and module clock=2E
+>
+>Change driver to enable all clocks=2E
+>
+>Signed-off-by: Michal Piekos <michal=2Epiekos@mmpsystems=2Epl>
+>---
+> drivers/iio/adc/sun20i-gpadc-iio=2Ec | 11 +++++++----
+> 1 file changed, 7 insertions(+), 4 deletions(-)
+>
+>diff --git a/drivers/iio/adc/sun20i-gpadc-iio=2Ec b/drivers/iio/adc/sun20=
+i-gpadc-iio=2Ec
+>index 861c14da75ad=2E=2E3f1f07b3a385 100644
+>--- a/drivers/iio/adc/sun20i-gpadc-iio=2Ec
+>+++ b/drivers/iio/adc/sun20i-gpadc-iio=2Ec
+>@@ -180,7 +180,7 @@ static int sun20i_gpadc_probe(struct platform_device =
+*pdev)
+> 	struct iio_dev *indio_dev;
+> 	struct sun20i_gpadc_iio *info;
+> 	struct reset_control *rst;
+>-	struct clk *clk;
+>+	struct clk_bulk_data *clks;
+> 	int irq;
+> 	int ret;
+>=20
+>@@ -205,9 +205,11 @@ static int sun20i_gpadc_probe(struct platform_device=
+ *pdev)
+> 	if (IS_ERR(info->regs))
+> 		return PTR_ERR(info->regs);
+>=20
+>-	clk =3D devm_clk_get_enabled(dev, NULL);
+>-	if (IS_ERR(clk))
+>-		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable bus clock\n"=
+);
+>+	ret =3D devm_clk_bulk_get_all_enabled(dev, &clks);
+>+	if (ret <=3D 0)
+
+Thank you Michal for the change=2E
+
+Have you validated the changes ?
+It looks while success ret would be 0 and it would give return error=2E
+
+Thanks, Sanjay
+
+
+>+		return dev_err_probe(
+>+			dev, ret,
+>+			"failed to enable clocks or no clocks defined\n");
+>=20
+> 	rst =3D devm_reset_control_get_exclusive(dev, NULL);
+> 	if (IS_ERR(rst))
+>@@ -243,6 +245,7 @@ static int sun20i_gpadc_probe(struct platform_device =
+*pdev)
+>=20
+> static const struct of_device_id sun20i_gpadc_of_id[] =3D {
+> 	{ =2Ecompatible =3D "allwinner,sun20i-d1-gpadc" },
+>+	{ =2Ecompatible =3D "allwinner,sun55i-a523-gpadc" },
+> 	{ }
+> };
+> MODULE_DEVICE_TABLE(of, sun20i_gpadc_of_id);
+>
