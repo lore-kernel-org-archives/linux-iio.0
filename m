@@ -1,120 +1,122 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from s106b.cyber-folks.pl (s106b.cyber-folks.pl [195.78.66.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59AC93E9C28
-	for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 09:51:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778665893; cv=pass; b=P4NybqfiSUFSm8eSJFhyzay6mYUvvuskF/DxvJVck++matYWM2Bv48DZywYpeu4meCR9minoh9wRVQed8EtHuOD90qqLGzkj7qRj8ip8rC3SbfEFzJyXe2AUzh2RS8V29aYD9VVp3/YiLp8PbtEmQ5dHjg7P5xRf5E3xt53KLRk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778665893; c=relaxed/simple;
-	bh=0X1D8weRx1XlR4/9bFNrfB17A1+4bazFtOO+uzBk4wY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=paXOwSt7BFVUeGdGlZq4N0IZfHfCuFOXQtyTr0fLgvHBW3Nx5woGAHBRU6kA9+CQv8iUg5xlZ4xRrBcrScoMIv4ZBE4obALVkV2ImZE0K9MY/N7D8b0wTnBYL3L66vGfrsjYFNVkLaF3MFWHiQI+M973n5CNghNlubhJrMQnIV4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k/li7ubG; arc=pass smtp.client-ip=209.85.218.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69AA238838B;
+	Wed, 13 May 2026 09:51:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.78.66.88
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778665911; cv=none; b=F9QVt2qneZAj9IeJd+rAw5dnsv1aJmE9w0Mfb/e7D7ddH0ihCB3R/vAmAko00pa/yxBysJA+hRDrsF0cu3ABtgQze6hMoEulKKlFTLiM0XpROT3wDUiAgPnbCoIriQqXTkY9oYe8ZGTrvHtHahgnNYDXrEELhNbXIEM2iSI76JU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778665911; c=relaxed/simple;
+	bh=cGH9FzUEDSNXR8hZ+Ll1yk6IppIPYxWXZ6i8XZ0+QpM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=qz4yi6+YddzvZX44/32YFJsSn/mAjPHrCSOmqaoZc4ALzsUxRnO4T2+teBYVjA4sYROD8ms3InpavSj1OcOH8CX6aAMnQL0BJtyn+IjZQ/6ciBONXcbdRH5XEzPqA0QPNJ2qaznlJP+InAWT5Fs8qb1BEr/bds5ekSV0+6JSunQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl; spf=pass smtp.mailfrom=mmpsystems.pl; dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b=DqzR5+YU; arc=none smtp.client-ip=195.78.66.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mmpsystems.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k/li7ubG"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-bce57c132b2so524432966b.0
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 02:51:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778665888; cv=none;
-        d=google.com; s=arc-20240605;
-        b=USRmV80NSZEjDYMiTa292mR3TGkRY9ghocTiMoNzL/F7EIUAIbBjKAcarK28Ubtzeq
-         PC/DsMkJSefJS1qx8M/RoJ5Bc5WFXb332aEiVVUr56OOwsb8ruHzl1fXHdHQWp8hlGUq
-         h0Lh/yOlpAGHpnTxiXd8oYQOOeUhnr4i/ofJw7ZrD9MZBRAspC1fkF8aIK7titmVRUri
-         kasizmMf32OR21uFS6F9lkViya8uFVslwk/8ywa0bKHSfUrNGUxJBFgaUtUew/LEy6oi
-         4eRNYjKjGX0qD1sg6UqdhBp1LDf79P+dt+4vcP+BVpk3CO1ju8hhcGQrhdMHOqKQrVAX
-         3pLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=0X1D8weRx1XlR4/9bFNrfB17A1+4bazFtOO+uzBk4wY=;
-        fh=4UpSqnNJPkVvhDdtn1hIUxz/HtLuSHM4rmjIFfQn12Y=;
-        b=ArJ3FHpN+WwSaorfv0CCC5rkv3qc9/5NY4fCqeT1Ac9TmjjDDcmzX4kfpExRCyjzUM
-         JGERuSro65wZeoEDRGC26KJP9wzyRuPGYpu7LU/+ETR9IAunY1bcjHmZC/AXTl3KdsAr
-         9A9+zwlHVaOtFObFAO9xnx+SFW1yJ5RB6KHVqnNAaDpmP89nDSeIf32iIe7DxF1pBvpZ
-         xuxcFljgTSYP1n3YvayJgqrdLkWB6YRfmPA53JgrlW6LVdJ7R0RgXMfbvBQqyX/mudfO
-         gmCYM1JdZnj/LZzXFwiY/UIj/IH9Wqo9LndIxGhbCiHqNT57NfM5U05XlFvdqz/6G7mF
-         egjA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778665888; x=1779270688; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0X1D8weRx1XlR4/9bFNrfB17A1+4bazFtOO+uzBk4wY=;
-        b=k/li7ubG3pXNDCR7ZbhAbEZzWYd9GAQLulkkvV3IGoddyG3W8TZrbdmulETwe9YiDg
-         NP+xcUJAdXUapAgsk7rIqoxqdz7b9MAmpBY9qHECzupGKHO7g7bRqROpC1W7Eo9F/4HS
-         itKYXjJlt+4j0ugVZ5FM5hvWuRxVOYa3JcOh1Gab/cNKwYzCmqIoZT9zZte5MpIo7OLb
-         o5RuZypYw45PXO+VQYWuRKSh27l7+yze/a+HqSWRh7gPDaAGJettn2G74cB6wrAnEeZm
-         zOH9FS//rqX0M2vHxE7ch9IlwiINnPbTKUABIxRiiA5X4+bEEY4pQSDXLMB5owl/ckD4
-         Y+6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778665888; x=1779270688;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=0X1D8weRx1XlR4/9bFNrfB17A1+4bazFtOO+uzBk4wY=;
-        b=lhpwOTZ5KGZvkkNgA13BeTn1nJyg2p5aRsSMXGVIoqHZMC7vVch3SfbtfokRQE8dQI
-         QkpYH1JedyPBQiVmdeRS4SkdNOGoC35HDNh8g649WH9kfpZztueIT/sh6lCjAqE3GmJK
-         lvHKxSDWGddM40MNoiolV38ZenNdNA4Iaj8vECsaWd/rRaTdFIZEvNUuCyyfvg3TKkLn
-         pk1S9HUMrfvXPdJrsJ91hWN8zNblsZUFOQwx+RD1T84ajwVUkfd8CWZi3BRjvt0jO5ic
-         AHhoPjqYHgbh+OJZYZNSY0QnQPqF6IkTaTrFd0lb2hFhFWAzkjaEEaoF8Tovla6I6cWN
-         pbOQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/4JwqCzTLddbD5OwAgJQuqkGY9beoS5apB9ZKSQa0xVO7fi0aLeNiBdSEYwx014AJKcJZTu2BiFU4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywwxqdq0HwGlWWFnrixQRWPbCK2gK1PBylKYK9+IB8S8Pgnw+AY
-	MBF0HczA0V5WNmPPxr4htOwroBSOZPAYCJf4yOzDWr2xrItACdWBOCRm1EfE/vwLXN8SyMfO+HF
-	3f8rfRodL3wj/mCcTFZbM+CqcbfOxo1w=
-X-Gm-Gg: Acq92OFy2ZmHB2qG7Y0oT0DcCVKg5hjLngPH8ns3Zefe9nqVcNC9nZLWNq/IWttgDN6
-	3WHpcmHCpFykT+eeAk54wbtHjyYoMTXy6Z69Pi2SOaHooBQMmAURCcxXijnxa4+2ur6Sbpv22RN
-	NMtqigqvOPPFT/mJZZuesxEwbZihKs5vc47xPIKpuJKFheioEcj+i1mg17kmqMZvFaUwx1zYhre
-	UflKroSXxm/j2KRc5XamWm+xQV55uzrhBHjUzjwYpYCyvuH9jZST8nvjFZtY79G+M8iMx3QX4RH
-	gqUmXtja1UvZl81Dwg+I9BBKn9TM4Bz26dFTalS6lcpFnZVPYQ7HVBplSNMLiGhMv02V8hACA/r
-	0BCCGn2c=
-X-Received: by 2002:a17:906:f5a3:b0:bd2:be3:572a with SMTP id
- a640c23a62f3a-bd3abea020amr163641266b.6.1778665887795; Wed, 13 May 2026
- 02:51:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b="DqzR5+YU"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=mmpsystems.pl; s=x; h=Cc:To:Message-Id:Content-Transfer-Encoding:
+	Content-Type:MIME-Version:Subject:Date:From:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=sUF7kixfrlUowh8RqG5O2aBsMX5gsB9s/0NEwNh+RqQ=; b=DqzR5+YUek1iEY7Vh400M8GQ+K
+	nEhniaHhAm5cF5i0ldrdJFoPGIobEknJmU1xhfDyCPszi+OVhcWkWSXhRN8B02GcQmAuu2Vg28/4s
+	WXVJPKTlGaKilclzQPuY0pty0WsEMyPrUi0m+LjRNIqaTndDZ7V1QK0ZKKEs5EhhRJYVPQUgbn+tI
+	3KbZv5eBGGZ+3qaoaZzIMkiA13ny5q3T2l9HQrTJDlQFq8hCfimqHa0VcuD0IDaN9ElDnkbdn6OSx
+	VIIR4rn7JktUrcFTSbk9qquVVEPWJRhigFuB6tDP86tlM6G+Uv7e10STgvnTxIAra83POvW2vydjN
+	IeoSSynw==;
+Received: from [91.102.182.218] (helo=localhost)
+	by s106.cyber-folks.pl with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <michal.piekos@mmpsystems.pl>)
+	id 1wN6Fi-00000004cgn-0oQE;
+	Wed, 13 May 2026 11:51:42 +0200
+From: Michal Piekos <michal.piekos@mmpsystems.pl>
+Date: Wed, 13 May 2026 11:51:31 +0200
+Subject: [PATCH] iio: adc: sun20i-gpadc: support non-contiguous channel
+ lookups
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260513094536.8038-1-sozdayvek@gmail.com>
-In-Reply-To: <20260513094536.8038-1-sozdayvek@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 13 May 2026 12:50:51 +0300
-X-Gm-Features: AVHnY4LL61UXKMNhL-KvCGlTE_H4LX4RmAnjYJyzCc94eVdpIS0eWA5Yke-l-_Y
-Message-ID: <CAHp75VegkXgyv3zp+=RcsHZ=kdm9vYFiVgw3BvRSP8ZwhB4ztg@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: veml6040: add suspend/resume support
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, arthur.becker@sentec.com, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, gregkh@linuxfoundation.org, 
-	hcazarim@yahoo.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260513-fix-sunxi-gpadc-sparse-channels-v1-1-6c21e290bcee@mmpsystems.pl>
+X-B4-Tracking: v=1; b=H4sIAKJJBGoC/yWNywqDMBBFf0Vm3YEYa6D+inSRx1SnSAwZFUH8d
+ 2O7PHDuuQcIZSaBrjog08bCcyxQPyrwo40DIYfCoJU2qq0b/PCOssadcUg2eJRksxDecqRJUDv
+ jtDKNC88XlErKVCa/h/79Z1ndl/xyZ+E8L+aYUk2DAAAA
+X-Change-ID: 20260513-fix-sunxi-gpadc-sparse-channels-2b6b2063bd49
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, 
+ Jernej Skrabec <jernej.skrabec@gmail.com>, 
+ Samuel Holland <samuel@sholland.org>
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Michal Piekos <michal.piekos@mmpsystems.pl>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778665899; l=1663;
+ i=michal.piekos@mmpsystems.pl; s=20260301; h=from:subject:message-id;
+ bh=cGH9FzUEDSNXR8hZ+Ll1yk6IppIPYxWXZ6i8XZ0+QpM=;
+ b=I4zELAsqh5MojydjeCuuULqdQ5HXfFxa7ZjoWu9NybDGqL9c+AUOd/G4qnxyejw7+0sj9CyIV
+ DEPG7GUNLpTDvlzKYQfIoupulHo17BfqRslGiiVKHBXeAnlbEfvv9DP
+X-Developer-Key: i=michal.piekos@mmpsystems.pl; a=ed25519;
+ pk=Aixyx03If7ZDamiKKN0lsa+0mtA+WjIuIf2ZQVYNBqg=
+X-Authenticated-Id: michal.piekos@mmpsystems.pl
 
-On Wed, May 13, 2026 at 12:46=E2=80=AFPM Stepan Ionichev <sozdayvek@gmail.c=
-om> wrote:
->
-> The VEML6040 RGBW light sensor stays in auto-measurement mode at all
-> times once probed, drawing its full active current (~200 uA per
-> Vishay VEML6040 datasheet, Doc# 84276 Rev. 1.7). On system suspend
-> there is no need to keep the sensor running.
->
-> Add system sleep PM callbacks that toggle the SD (shutdown) bit in
-> CONF register 00H to put the chip into shutdown on suspend and back
-> into normal operation on resume. The bit semantics are documented in
-> the datasheet Tables 2-1 and 2-2.
->
-> The existing veml6040_shutdown_action() is unchanged; it still runs
-> on module unload to leave the chip shut down.
+Using consumer driver like iio-hwmon which resolve channels thorugh
+io-channels phandles will fail for sparse channels because IIO core
+threats phandle argument as index into channel array.
+        eg. <&gpadc 1> will fail if there is only channel@1 specified
 
-We also have regmap_set_bits() and regmap_clear_bits(). This will make
-your code shorter and easier to understand.
+Add fwnode_xlate which maps DT phandle to the registered channel whose
+chan->channel matches the hardware channel number. It allows sparse
+channel maps to be consumed by drivers like iio-hwmon.
 
---=20
-With Best Regards,
-Andy Shevchenko
+Tested on Radxa Cubie A5E.
+
+Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
+---
+ drivers/iio/adc/sun20i-gpadc-iio.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/iio/adc/sun20i-gpadc-iio.c b/drivers/iio/adc/sun20i-gpadc-iio.c
+index 861c14da75ad..95f34a352158 100644
+--- a/drivers/iio/adc/sun20i-gpadc-iio.c
++++ b/drivers/iio/adc/sun20i-gpadc-iio.c
+@@ -139,8 +139,21 @@ static irqreturn_t sun20i_gpadc_irq_handler(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int sun20i_gpadc_fwnode_xlate(struct iio_dev *indio_dev,
++		const struct fwnode_reference_args *iiospec)
++{
++	int i;
++
++	for (i = 0; i < indio_dev->num_channels; i++)
++		if (indio_dev->channels[i].channel == iiospec->args[0])
++			return i;
++
++	return -EINVAL;
++}
++
+ static const struct iio_info sun20i_gpadc_iio_info = {
+ 	.read_raw = sun20i_gpadc_read_raw,
++	.fwnode_xlate = sun20i_gpadc_fwnode_xlate,
+ };
+ 
+ static void sun20i_gpadc_reset_assert(void *data)
+
+---
+base-commit: 1d5dcaa3bd65f2e8c9baa14a393d3a2dc5db7524
+change-id: 20260513-fix-sunxi-gpadc-sparse-channels-2b6b2063bd49
+
+Best regards,
+--  
+Michal Piekos <michal.piekos@mmpsystems.pl>
+
