@@ -1,56 +1,52 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25CF3410D23;
-	Thu, 14 May 2026 14:49:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7259C3955F4;
+	Thu, 14 May 2026 14:49:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778770169; cv=none; b=lJyrH5JYeRkcjVboStiKH4kUR/CQsTb0BHE4WPYLpooYA/grWevuCRUZelxkghcBQ4JIuIBi0ik6p1GGRxsSBjBip2Sy7ACVHbFhouJtjq6uFIx8CNXkwZaCeNdd/HO2Mom0ADMqJADaxG278cXSy9wpMHPFR2YRzoVFCVBeDeQ=
+	t=1778770172; cv=none; b=X4dZ5GTPcj3iJema5iY89nBS6jhdSReh9XQiieoFyYlNsu5ApeHv4Y61HhCQq0TPcEY+R+uWeYXiOtNJ+aOt5dbCyzCjmk21dZ262x/XQaKmGi/auhzilWbcn48SbVNoT4sVU4/P2wcpZgqNHHD4KHsb807HfFqS+9qDM3TfcUc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778770169; c=relaxed/simple;
-	bh=duDgURhAN5oYYVXUrhfRVinD8NPfPQY0Y6yQ8n4x5f4=;
+	s=arc-20240116; t=1778770172; c=relaxed/simple;
+	bh=dIGR54g+j/9yoCqVw2BlXyFlQd0JBTGgLT5LEFMHCCs=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YILewbt/R+yHiJik5qlEGLyjmo5dQ14dnjviGmoEgmKM0Drgqhy4eyOfFwhTTzQ51EbQRa76E7bE420RbVj9fU05bCtrOMXoYNb+Bx1wsl9haoJQRM2muLce89jIi8qUI8Y9AZMmctWQgeHfJ9TRet6bEANUtwDS8JoSdA8pMsg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=kbSRf13f; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=mZKRtFBS57B7WKfMcvodlU0ZvnkmUHrry3vXmrcKuNCDgsaXpRQ1gNxjUXSZmPS1km9OpF5/aO0ZK7kORUJ6WwLRvxqp/qp3TfNscVNzRjD6DSG81dXrNAs7xtbXaT/B72u2VHEwhp+IQBg/XlNOe6t1w9MbqnF2XvpxEKVWCO4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=nR8wzgMN; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="kbSRf13f"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64ECGVbM1715006;
-	Thu, 14 May 2026 10:49:23 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="nR8wzgMN"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64EE2VrN2905295;
+	Thu, 14 May 2026 10:49:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=74tKB
-	mROut+RkvXALnxp1TLYvm/iDa0vljBZ6eq/b2Y=; b=kbSRf13fg3uXERaT2lj7D
-	QvdD8h6AkTJqfPOvn+xle5DcjQuIgYWm3XyJvQLPA0hnCweAHUqBYWnVEWMpwycF
-	nxIaAV3pVJriaczdYcPjDRG9TKZWM0IkXM4bVRhS8DjjG+K0oNarTMt29mMh1C7u
-	5spoOZ0EWLtZdvMxoK9a9zqywGJKrK8Ncg33Mkm0/DranYN3MaMFNjLbwa2GPrva
-	hCb+S2xO4O30cCa5GDyq9tPK7mMymmfUqxoQYqaMu97elECPwUF0zcIqhEjE6rej
-	9Mz8TChnN/bx2AX3EnkqIuVps03EKUMswbI1PcK77vP8eU3oLcVmZ9VzlFknuUYg
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=IYoon
+	QSyJ+0IlGtHVpgFXc+0gu5zJqKJ93oSnh/aYLs=; b=nR8wzgMNq328zAF33A3MN
+	44KK+U/jtv9hrWG7lgCB06JModNBwRMFYDIM5PFE/zSdpSQx54rS7CN77pPRW2KN
+	royuu51TugkL5UKLcK+IDERcmYyvyJ/bhVp3vub4qc6UMTRDZKyPrVXEq31jKr4D
+	cjZDH0jIzv2uZxFapWvU050S91p02Hj6WrIbkqadoPwM2nr6g/2frOCnzmRcrkvI
+	Z34PKK86EbwZjEZWxii9fi44PZHUS4mgzFHVAqtH3HjCEXXT0s1aAMRNVPWRyP+Y
+	NQ64wZeIbB5W558Xf74hkaF1do9L/jc42Mi0ITIYjR4HjJ44o8o9QslL/t3R+hZY
 	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4e54xgtj3d-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4e4t1xvwbb-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 14 May 2026 10:49:23 -0400 (EDT)
+	Thu, 14 May 2026 10:49:27 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64EEnMaM041725
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64EEnQbm041731
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 14 May 2026 10:49:22 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 14 May 2026 10:49:22 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 14 May 2026 10:49:22 -0400
+	Thu, 14 May 2026 10:49:26 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 14 May
+ 2026 10:49:26 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 14 May 2026 10:49:22 -0400
+ Transport; Thu, 14 May 2026 10:49:26 -0400
 Received: from HYB-MkYHBcJRSnh.ad.analog.com (HYB-MkYHBcJRSnh.ad.analog.com [10.48.65.202])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64EEmjAZ014051;
-	Thu, 14 May 2026 10:49:13 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64EEmjAa014051;
+	Thu, 14 May 2026 10:49:17 -0400
 From: Liviu Stan <liviu.stan@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>,
         David Lechner
@@ -60,18 +56,18 @@ To: Jonathan Cameron <jic23@kernel.org>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
         Rob Herring <robh@kernel.org>,
-        "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,
+        Krzysztof
+ Kozlowski <krzk+dt@kernel.org>,
         Conor Dooley <conor+dt@kernel.org>,
-        "Antoniu
- Miclaus" <antoniu.miclaus@analog.com>,
-        Francesco Lavra <flavra@baylibre.com>,
-        Liviu Stan <liviu.stan@analog.com>, <linux-iio@vger.kernel.org>,
+        Antoniu
+ Miclaus <antoniu.miclaus@analog.com>,
+        Liviu Stan <liviu.stan@analog.com>,
+        Francesco Lavra <flavra@baylibre.com>, <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux@analog.com>,
         <devicetree@vger.kernel.org>
-Subject: [PATCH v2 2/7] iio: temperature: ltc2983: Use local device pointer consistently
-Date: Thu, 14 May 2026 17:46:49 +0300
-Message-ID: <20260514144712.64374-3-liviu.stan@analog.com>
+Subject: [PATCH v2 3/7] iio: temperature: ltc2983: Fix inconsistent channel wording in messages
+Date: Thu, 14 May 2026 17:46:50 +0300
+Message-ID: <20260514144712.64374-4-liviu.stan@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260514144712.64374-1-liviu.stan@analog.com>
 References: <20260514144712.64374-1-liviu.stan@analog.com>
@@ -84,411 +80,150 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE0MDE1MCBTYWx0ZWRfX5mg6ER8c8QMp
- r/7ZPu378u0hM+RUHT14nSG3GeCbO4RhWTZR4xsJbM8Z25TvuME9UMnGnCLyC11AxPsISxGkJnv
- /PEvaP7j35AsqdmTIFB2Qa8QZIZWvDI0xKfJFI6FGpvudqjA1TWX5ePsHYAjiZ+NSKfH8PpOId1
- GfTvyBu6aED03cEjSTt9ceUzyG86LERQPbX5nZovVxV9zgZZ/jZiBxfJKhGr9Nrvmo2hBVgowoR
- uutFMezw0GeKrzZ2aAuLvI7iHxuO0w5YkKy47IUGRqDPma6sAxsa6Gyvc6c+b83p/DlAGaDJbHT
- 8tTWc24O+53lQzogknHonAGydtISqgnX5wt6c+S9qEkcD6Jhf5/lbGLWE/F9hcH2MSsPkEudFmm
- yuOFpXgRxQGneiU9dQHwwqyPz6g97A9I9Zvsgey/f7DqfMShCYPnMcWYWxYNcj6QdZ2WcGCeoDW
- crGc+KcLuWsQB1aJUJw==
-X-Proofpoint-GUID: 4K-92xfRaS2XruBbJ6hYatoQxJf-DVL5
-X-Proofpoint-ORIG-GUID: 4K-92xfRaS2XruBbJ6hYatoQxJf-DVL5
-X-Authority-Analysis: v=2.4 cv=MMFQXsZl c=1 sm=1 tr=0 ts=6a05e0f3 cx=c_pps
+X-Proofpoint-ORIG-GUID: ie4FAFkXJBVlzenKnbOmK5Nh5CJBFrJn
+X-Authority-Analysis: v=2.4 cv=Wbo8rUhX c=1 sm=1 tr=0 ts=6a05e0f7 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=yv4WWxIh8xz3Wh6Jmy8A:9
+ a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=ns7QdhbT8QDaN8w0EOgA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE0MDE1MCBTYWx0ZWRfXyFNwQ2afk3Co
+ GZr3V580ZudqjCWrw9HiBl7Ojvb5s2wYt1DL7K3JJ0SpjldJcvdTc9b2uGXmfK2pjMmlkgf7PrJ
+ Kb4oWPSQ20XpFazNCKp7wpENQa90IxJokUD0UhI9Qz9zdrGrwOO0M9vuSfd8Pkwxl8DYBDkLrPh
+ fM7tOaPMaBWoGrjXhtRHHk4Xyg61uOv8fehjWxzoerMIVg+V9Oe1kGomPcJj1z8fUcRrxR9zSLJ
+ xrpk0g15PrKsrfMFmT3SvzWSTfJ9htaqCviCJqJBO+QOIAiutL8CJT/2HvMh16J9FmhFsHdECUX
+ CeF5Ye6tdNuTf4q+efQHAOHnYEGqXZB4VxOeAN+NfskT+rvLfnRG2lVKJiLL5iD6n4r/xU4icfV
+ aUbA+01l96ihBZOY5WV5LB+Rswa7IuySiGIjpsJ4Q4DB9OZZcJKvwPa59JqNAYWD6NCtZlQQBVF
+ GVDsX8mnjCjABuDi1cg==
+X-Proofpoint-GUID: ie4FAFkXJBVlzenKnbOmK5Nh5CJBFrJn
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-05-14_03,2026-05-13_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 adultscore=0 spamscore=0 impostorscore=0 malwarescore=0
- priorityscore=1501 phishscore=0 suspectscore=0 bulkscore=0 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605050000 definitions=main-2605140150
+ bulkscore=0 priorityscore=1501 suspectscore=0 lowpriorityscore=0
+ malwarescore=0 clxscore=1015 spamscore=0 impostorscore=0 phishscore=0
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605050000
+ definitions=main-2605140150
 
-Some functions define a local 'dev' pointer but still use bare
-'&st->spi->dev' in some code paths, and some don't have it at all.
-Replace all bare references with the local pointer for consistency.
+Replace all occurrences of the abbreviated 'chann' and 'chan' with
+'channel' in error and debug messages throughout the driver.
 
 Fixes: f110f3188e5639c81c457b2b831d40dfe3891bdb ("iio: temperature: Add support for LTC2983")
+Fixes: a00838cae079b9b9b90969c2b7b031b1bfd9ab3a ("iio: temperature: ltc2983: convert to dev_err_probe()")
 Signed-off-by: Liviu Stan <liviu.stan@analog.com>
 ---
 Changes in v2:
 - New patch.
 
- drivers/iio/temperature/ltc2983.c | 81 ++++++++++++++++++-------------
- 1 file changed, 46 insertions(+), 35 deletions(-)
+ drivers/iio/temperature/ltc2983.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-index a292274e6ff0..e74ea4f87ec9 100644
+index e74ea4f87ec9..f42777c1f3c2 100644
 --- a/drivers/iio/temperature/ltc2983.c
 +++ b/drivers/iio/temperature/ltc2983.c
-@@ -351,6 +351,7 @@ static int __ltc2983_chan_assign_common(struct ltc2983_data *st,
- 					const struct ltc2983_sensor *sensor,
- 					u32 chan_val)
- {
-+	struct device *dev = &st->spi->dev;
- 	u32 reg = LTC2983_CHAN_ASSIGN_ADDR(sensor->chan);
- 
- 	chan_val |= LTC2983_CHAN_TYPE(sensor->type);
-@@ -656,11 +657,12 @@ static struct ltc2983_sensor *
- ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data *st,
- 			 const struct ltc2983_sensor *sensor)
- {
-+	struct device *dev = &st->spi->dev;
- 	struct ltc2983_thermocouple *thermo;
- 	u32 oc_current;
- 	int ret;
- 
--	thermo = devm_kzalloc(&st->spi->dev, sizeof(*thermo), GFP_KERNEL);
-+	thermo = devm_kzalloc(dev, sizeof(*thermo), GFP_KERNEL);
- 	if (!thermo)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -687,7 +689,7 @@ ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data
- 					LTC2983_THERMOCOUPLE_OC_CURR(3);
- 			break;
- 		default:
--			return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+			return dev_err_ptr_probe(dev, -EINVAL,
- 						 "Invalid open circuit current:%u\n",
- 						 oc_current);
- 		}
-@@ -697,7 +699,7 @@ ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data
- 	/* validate channel index */
+@@ -700,7 +700,7 @@ ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data
  	if (!(thermo->sensor_config & LTC2983_THERMOCOUPLE_DIFF_MASK) &&
  	    sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
--		return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_ptr_probe(dev, -EINVAL,
- 					 "Invalid chann:%d for differential thermocouple\n",
+ 		return dev_err_ptr_probe(dev, -EINVAL,
+-					 "Invalid chann:%d for differential thermocouple\n",
++					 "Invalid channel %d for differential thermocouple\n",
  					 sensor->chan);
  
-@@ -712,7 +714,7 @@ ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data
- 			 * This would be caught later but we can just return
- 			 * the error right away.
- 			 */
--			return dev_err_ptr_probe(&st->spi->dev, ret,
-+			return dev_err_ptr_probe(dev, ret,
- 						 "Property reg must be given\n");
- 	}
+ 	struct fwnode_handle *ref __free(fwnode_handle) =
+@@ -798,7 +798,7 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
+ 	/*
+ 	 * rtd channel indexes are a bit more complicated to validate.
+ 	 * For 4wire RTD with rotation, the channel selection cannot be
+-	 * >=19 since the chann + 1 is used in this configuration.
++	 * >=19 since the channel + 1 is used in this configuration.
+ 	 * For 4wire RTDs with kelvin rsense, the rsense channel cannot be
+ 	 * <=1 since channel - 1 and channel - 2 are used.
+ 	 */
+@@ -815,18 +815,18 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
+ 		    (rtd->r_sense_chan <=  min))
+ 			/* kelvin rsense*/
+ 			return dev_err_ptr_probe(dev, -EINVAL,
+-						 "Invalid rsense chann:%d to use in kelvin rsense\n",
++						 "Invalid channel %d for kelvin rsense\n",
+ 						 rtd->r_sense_chan);
  
-@@ -823,7 +825,7 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
+ 		if (sensor->chan < min || sensor->chan > max)
+ 			return dev_err_ptr_probe(dev, -EINVAL,
+-						 "Invalid chann:%d for the rtd config\n",
++						 "Invalid channel %d for RTD config\n",
+ 						 sensor->chan);
  	} else {
  		/* same as differential case */
  		if (sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
--			return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+			return dev_err_ptr_probe(dev, -EINVAL,
- 						 "Invalid chann:%d for RTD\n",
+ 			return dev_err_ptr_probe(dev, -EINVAL,
+-						 "Invalid chann:%d for RTD\n",
++						 "Invalid channel %d for RTD\n",
  						 sensor->chan);
  	}
-@@ -873,7 +875,7 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
- 			rtd->excitation_current = 0x08;
- 			break;
- 		default:
--			return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+			return dev_err_ptr_probe(dev, -EINVAL,
- 						 "Invalid value for excitation current(%u)\n",
- 						 excitation_current);
- 		}
-@@ -922,7 +924,7 @@ ltc2983_thermistor_new(const struct fwnode_handle *child, struct ltc2983_data *s
- 	/* validate channel index */
+ 
+@@ -925,7 +925,7 @@ ltc2983_thermistor_new(const struct fwnode_handle *child, struct ltc2983_data *s
  	if (!(thermistor->sensor_config & LTC2983_THERMISTOR_DIFF_MASK) &&
  	    sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
--		return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_ptr_probe(dev, -EINVAL,
- 					 "Invalid chann:%d for differential thermistor\n",
+ 		return dev_err_ptr_probe(dev, -EINVAL,
+-					 "Invalid chann:%d for differential thermistor\n",
++					 "Invalid channel %d for differential thermistor\n",
  					 sensor->chan);
  
-@@ -964,7 +966,7 @@ ltc2983_thermistor_new(const struct fwnode_handle *child, struct ltc2983_data *s
- 		case 0:
- 			/* auto range */
- 			if (sensor->type >= LTC2983_SENSOR_THERMISTOR_STEINHART)
--				return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+				return dev_err_ptr_probe(dev, -EINVAL,
- 							 "Auto Range not allowed for custom sensors\n");
- 
- 			thermistor->excitation_current = 0x0c;
-@@ -1003,7 +1005,7 @@ ltc2983_thermistor_new(const struct fwnode_handle *child, struct ltc2983_data *s
- 			thermistor->excitation_current = 0x0b;
- 			break;
- 		default:
--			return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+			return dev_err_ptr_probe(dev, -EINVAL,
- 						 "Invalid value for excitation current(%u)\n",
- 						 excitation_current);
- 		}
-@@ -1016,11 +1018,12 @@ static struct ltc2983_sensor *
- ltc2983_diode_new(const struct fwnode_handle *child, const struct ltc2983_data *st,
- 		  const struct ltc2983_sensor *sensor)
- {
-+	struct device *dev = &st->spi->dev;
- 	struct ltc2983_diode *diode;
- 	u32 temp = 0, excitation_current = 0;
- 	int ret;
- 
--	diode = devm_kzalloc(&st->spi->dev, sizeof(*diode), GFP_KERNEL);
-+	diode = devm_kzalloc(dev, sizeof(*diode), GFP_KERNEL);
- 	if (!diode)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -1036,7 +1039,7 @@ ltc2983_diode_new(const struct fwnode_handle *child, const struct ltc2983_data *
- 	/* validate channel index */
+ 	/* check custom sensor */
+@@ -1040,7 +1040,7 @@ ltc2983_diode_new(const struct fwnode_handle *child, const struct ltc2983_data *
  	if (!(diode->sensor_config & LTC2983_DIODE_DIFF_MASK) &&
  	    sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
--		return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_ptr_probe(dev, -EINVAL,
- 					 "Invalid chann:%d for differential thermistor\n",
+ 		return dev_err_ptr_probe(dev, -EINVAL,
+-					 "Invalid chann:%d for differential thermistor\n",
++					 "Invalid channel %d for differential thermistor\n",
  					 sensor->chan);
  
-@@ -1061,7 +1064,7 @@ ltc2983_diode_new(const struct fwnode_handle *child, const struct ltc2983_data *
- 			diode->excitation_current = 0x03;
- 			break;
- 		default:
--			return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+			return dev_err_ptr_probe(dev, -EINVAL,
- 						 "Invalid value for excitation current(%u)\n",
- 						 excitation_current);
- 		}
-@@ -1079,23 +1082,24 @@ static struct ltc2983_sensor *ltc2983_r_sense_new(struct fwnode_handle *child,
- 					struct ltc2983_data *st,
- 					const struct ltc2983_sensor *sensor)
- {
-+	struct device *dev = &st->spi->dev;
- 	struct ltc2983_rsense *rsense;
- 	int ret;
- 	u32 temp;
- 
--	rsense = devm_kzalloc(&st->spi->dev, sizeof(*rsense), GFP_KERNEL);
-+	rsense = devm_kzalloc(dev, sizeof(*rsense), GFP_KERNEL);
- 	if (!rsense)
- 		return ERR_PTR(-ENOMEM);
- 
+ 	/* set common parameters */
+@@ -1094,7 +1094,7 @@ static struct ltc2983_sensor *ltc2983_r_sense_new(struct fwnode_handle *child,
  	/* validate channel index */
  	if (sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
--		return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_ptr_probe(dev, -EINVAL,
- 					 "Invalid chann:%d for r_sense\n",
+ 		return dev_err_ptr_probe(dev, -EINVAL,
+-					 "Invalid chann:%d for r_sense\n",
++					 "Invalid channel %d for r_sense\n",
  					 sensor->chan);
  
  	ret = fwnode_property_read_u32(child, "adi,rsense-val-milli-ohms", &temp);
- 	if (ret)
--		return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_ptr_probe(dev, -EINVAL,
- 					 "Property adi,rsense-val-milli-ohms missing\n");
- 	/*
- 	 * Times 1000 because we have milli-ohms and __convert_to_raw
-@@ -1115,9 +1119,10 @@ static struct ltc2983_sensor *ltc2983_adc_new(struct fwnode_handle *child,
- 					 struct ltc2983_data *st,
- 					 const struct ltc2983_sensor *sensor)
- {
-+	struct device *dev = &st->spi->dev;
- 	struct ltc2983_adc *adc;
- 
--	adc = devm_kzalloc(&st->spi->dev, sizeof(*adc), GFP_KERNEL);
-+	adc = devm_kzalloc(dev, sizeof(*adc), GFP_KERNEL);
- 	if (!adc)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -1125,7 +1130,7 @@ static struct ltc2983_sensor *ltc2983_adc_new(struct fwnode_handle *child,
- 		adc->single_ended = true;
+@@ -1131,7 +1131,7 @@ static struct ltc2983_sensor *ltc2983_adc_new(struct fwnode_handle *child,
  
  	if (!adc->single_ended && sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
--		return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_ptr_probe(dev, -EINVAL,
- 					 "Invalid chan:%d for differential adc\n",
+ 		return dev_err_ptr_probe(dev, -EINVAL,
+-					 "Invalid chan:%d for differential adc\n",
++					 "Invalid channel %d for differential ADC\n",
  					 sensor->chan);
  
-@@ -1140,9 +1145,10 @@ static struct ltc2983_sensor *ltc2983_temp_new(struct fwnode_handle *child,
- 					       struct ltc2983_data *st,
- 					       const struct ltc2983_sensor *sensor)
- {
-+	struct device *dev = &st->spi->dev;
- 	struct ltc2983_temp *temp;
- 
--	temp = devm_kzalloc(&st->spi->dev, sizeof(*temp), GFP_KERNEL);
-+	temp = devm_kzalloc(dev, sizeof(*temp), GFP_KERNEL);
- 	if (!temp)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -1150,7 +1156,7 @@ static struct ltc2983_sensor *ltc2983_temp_new(struct fwnode_handle *child,
- 		temp->single_ended = true;
+ 	/* set common parameters */
+@@ -1157,7 +1157,7 @@ static struct ltc2983_sensor *ltc2983_temp_new(struct fwnode_handle *child,
  
  	if (!temp->single_ended && sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
--		return dev_err_ptr_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_ptr_probe(dev, -EINVAL,
- 					 "Invalid chan:%d for differential temp\n",
+ 		return dev_err_ptr_probe(dev, -EINVAL,
+-					 "Invalid chan:%d for differential temp\n",
++					 "Invalid channel %d for differential temp\n",
  					 sensor->chan);
  
-@@ -1169,13 +1175,14 @@ static struct ltc2983_sensor *ltc2983_temp_new(struct fwnode_handle *child,
- static int ltc2983_chan_read(struct ltc2983_data *st,
- 			const struct ltc2983_sensor *sensor, int *val)
- {
-+	struct device *dev = &st->spi->dev;
- 	u32 start_conversion = 0;
- 	int ret;
- 	unsigned long time;
+ 	temp->custom = __ltc2983_custom_sensor_new(st, child, "adi,custom-temp",
+@@ -1182,7 +1182,7 @@ static int ltc2983_chan_read(struct ltc2983_data *st,
  
  	start_conversion = LTC2983_STATUS_START(true);
  	start_conversion |= LTC2983_STATUS_CHAN_SEL(sensor->chan);
--	dev_dbg(&st->spi->dev, "Start conversion on chan:%d, status:%02X\n",
-+	dev_dbg(dev, "Start conversion on chan:%d, status:%02X\n",
+-	dev_dbg(dev, "Start conversion on chan:%d, status:%02X\n",
++	dev_dbg(dev, "Start conversion on channel:%d, status:%02X\n",
  		sensor->chan, start_conversion);
  	/* start conversion */
  	ret = regmap_write(st->regmap, LTC2983_STATUS_REG, start_conversion);
-@@ -1192,7 +1199,7 @@ static int ltc2983_chan_read(struct ltc2983_data *st,
- 	time = wait_for_completion_timeout(&st->completion,
- 					   msecs_to_jiffies(300));
- 	if (!time) {
--		dev_warn(&st->spi->dev, "Conversion timed out\n");
-+		dev_warn(dev, "Conversion timed out\n");
- 		return -ETIMEDOUT;
- 	}
- 
-@@ -1205,7 +1212,7 @@ static int ltc2983_chan_read(struct ltc2983_data *st,
- 	*val = __be32_to_cpu(st->temp);
- 
- 	if (!(LTC2983_RES_VALID_MASK & *val)) {
--		dev_err(&st->spi->dev, "Invalid conversion detected\n");
-+		dev_err(dev, "Invalid conversion detected\n");
- 		return -EIO;
- 	}
- 
-@@ -1222,11 +1229,12 @@ static int ltc2983_read_raw(struct iio_dev *indio_dev,
- 			    int *val, int *val2, long mask)
- {
- 	struct ltc2983_data *st = iio_priv(indio_dev);
-+	struct device *dev = &st->spi->dev;
- 	int ret;
+@@ -1234,7 +1234,7 @@ static int ltc2983_read_raw(struct iio_dev *indio_dev,
  
  	/* sanity check */
  	if (chan->address >= st->num_channels) {
--		dev_err(&st->spi->dev, "Invalid chan address:%ld",
-+		dev_err(dev, "Invalid chan address:%ld",
+-		dev_err(dev, "Invalid chan address:%ld",
++		dev_err(dev, "Invalid channel address: %ld\n",
  			chan->address);
  		return -EINVAL;
  	}
-@@ -1303,7 +1311,7 @@ static int ltc2983_parse_fw(struct ltc2983_data *st)
- 
- 	st->num_channels = device_get_child_node_count(dev);
- 	if (!st->num_channels)
--		return dev_err_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_probe(dev, -EINVAL,
- 				     "At least one channel must be given!\n");
- 
- 	st->sensors = devm_kcalloc(dev, st->num_channels, sizeof(*st->sensors),
-@@ -1391,6 +1399,7 @@ static int ltc2983_eeprom_cmd(struct ltc2983_data *st, unsigned int cmd,
- 			      unsigned int wait_time, unsigned int status_reg,
- 			      unsigned long status_fail_mask)
- {
-+	struct device *dev = &st->spi->dev;
- 	unsigned long time;
- 	unsigned int val;
- 	int ret;
-@@ -1410,7 +1419,7 @@ static int ltc2983_eeprom_cmd(struct ltc2983_data *st, unsigned int cmd,
- 	time = wait_for_completion_timeout(&st->completion,
- 					   msecs_to_jiffies(wait_time));
- 	if (!time)
--		return dev_err_probe(&st->spi->dev, -ETIMEDOUT,
-+		return dev_err_probe(dev, -ETIMEDOUT,
- 				     "EEPROM command timed out\n");
- 
- 	ret = regmap_read(st->regmap, status_reg, &val);
-@@ -1418,7 +1427,7 @@ static int ltc2983_eeprom_cmd(struct ltc2983_data *st, unsigned int cmd,
- 		return ret;
- 
- 	if (val & status_fail_mask)
--		return dev_err_probe(&st->spi->dev, -EINVAL,
-+		return dev_err_probe(dev, -EINVAL,
- 				     "EEPROM command failed: 0x%02X\n", val);
- 
- 	return 0;
-@@ -1427,6 +1436,7 @@ static int ltc2983_eeprom_cmd(struct ltc2983_data *st, unsigned int cmd,
- static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
- {
- 	u32 iio_chan_t = 0, iio_chan_v = 0, chan, iio_idx = 0, status;
-+	struct device *dev = &st->spi->dev;
- 	int ret;
- 
- 	/* make sure the device is up: start bit (7) is 0 and done bit (6) is 1 */
-@@ -1434,7 +1444,7 @@ static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
- 				       LTC2983_STATUS_UP(status) == 1, 25000,
- 				       25000 * 10);
- 	if (ret)
--		return dev_err_probe(&st->spi->dev, ret,
-+		return dev_err_probe(dev, ret,
- 				     "Device startup timed out\n");
- 
- 	ret = regmap_update_bits(st->regmap, LTC2983_GLOBAL_CONFIG_REG,
-@@ -1535,12 +1545,13 @@ static const struct  iio_info ltc2983_iio_info = {
- 
- static int ltc2983_probe(struct spi_device *spi)
- {
-+	struct device *dev = &spi->dev;
- 	struct ltc2983_data *st;
- 	struct iio_dev *indio_dev;
- 	struct gpio_desc *gpio;
- 	int ret;
- 
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
-@@ -1552,7 +1563,7 @@ static int ltc2983_probe(struct spi_device *spi)
- 
- 	st->regmap = devm_regmap_init_spi(spi, &ltc2983_regmap_config);
- 	if (IS_ERR(st->regmap))
--		return dev_err_probe(&spi->dev, PTR_ERR(st->regmap),
-+		return dev_err_probe(dev, PTR_ERR(st->regmap),
- 				     "Failed to initialize regmap\n");
- 
- 	mutex_init(&st->lock);
-@@ -1565,11 +1576,11 @@ static int ltc2983_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
- 
--	ret = devm_regulator_get_enable(&spi->dev, "vdd");
-+	ret = devm_regulator_get_enable(dev, "vdd");
- 	if (ret)
- 		return ret;
- 
--	gpio = devm_gpiod_get_optional(&st->spi->dev, "reset", GPIOD_OUT_HIGH);
-+	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
- 	if (IS_ERR(gpio))
- 		return PTR_ERR(gpio);
- 
-@@ -1579,7 +1590,7 @@ static int ltc2983_probe(struct spi_device *spi)
- 		gpiod_set_value_cansleep(gpio, 0);
- 	}
- 
--	st->iio_chan = devm_kzalloc(&spi->dev,
-+	st->iio_chan = devm_kzalloc(dev,
- 				    st->iio_channels * sizeof(*st->iio_chan),
- 				    GFP_KERNEL);
- 	if (!st->iio_chan)
-@@ -1589,10 +1600,10 @@ static int ltc2983_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
- 
--	ret = devm_request_irq(&spi->dev, spi->irq, ltc2983_irq_handler,
-+	ret = devm_request_irq(dev, spi->irq, ltc2983_irq_handler,
- 			       IRQF_TRIGGER_RISING, st->info->name, st);
- 	if (ret)
--		return dev_err_probe(&spi->dev, ret,
-+		return dev_err_probe(dev, ret,
- 				     "failed to request an irq\n");
- 
- 	if (st->info->has_eeprom) {
-@@ -1610,7 +1621,7 @@ static int ltc2983_probe(struct spi_device *spi)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &ltc2983_iio_info;
- 
--	return devm_iio_device_register(&spi->dev, indio_dev);
-+	return devm_iio_device_register(dev, indio_dev);
- }
- 
- static int ltc2983_resume(struct device *dev)
 -- 
 2.43.0
 
