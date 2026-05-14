@@ -1,174 +1,137 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6E1FF3BE623;
-	Wed, 13 May 2026 21:35:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CDB52D3EF2
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 01:01:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778708128; cv=none; b=fR3vpOk/RxKi5c3ismDfpJIQtpD2WLg2bh0TodzTVuOblCGZoHpTsCW7ybb3Q5oU0d31TmSyw7UlqQzoAIyFmuTg+vDp0yZtu3zHtp10rxWsCC760bhMigx/S2ytxb1mSHxKhSNHo5Yx/CZlAmf0WVDLg1ujR2DBHCTJpoKGLts=
+	t=1778720483; cv=none; b=OGBx15aijflWDPr9/exWtxiU9evctOH51RYGe7ry8qK0YVG+LkhFyeY3AFQrYbYcmgo7AnIzSJhmk+d+x3RzVyMtGi/cS9O0IQBg1MPx4TDRja8lr+4a6PbxWJ5Jduj5xVkp5YlrSgeF9KidvuweZ5Xjf7dYdh4sf1RgLZ1Hly4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778708128; c=relaxed/simple;
-	bh=V4Z9P+e2GyvMrVAC0rqhZI/HKDK4a0CYJ4lhRPYRqmU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EoakFGer74Y+Kbc+oZf6Sl1zr16tiGzG5gd/jIdShAZti6F5Hug3No/QVY90O6A6G4RY8mion7P9FapjuG0GOYqeVOkold4OTp+iYax+nzkG+HWtRZnw8QSXfpfdGv4UQiNaXHH3RIIkaly8j5RD69AB6y5XqmolSaIdws5JFew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Kdc5qFLS; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1778720483; c=relaxed/simple;
+	bh=NbKYeMkM5NguN09KkOFfqTgmRSOZdoHYNf89lOAIJxs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Cf6RyJuCIgs4DQmJldUb91h4S4YJpMPt58UYN21oMHIKaoL+hJuKDjxe/asm2ORPAPN2D4HPZO5T8cQaNsgEd0MQRuvzvZtRM627gZC1SZrOFv1EiidylHCdSjURm8A5wzTeXQ53s7dKfEv9MjaodH+eLIAAsflKEbr6en4iX9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AtSUalGF; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Kdc5qFLS"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 864ED1595;
-	Wed, 13 May 2026 14:35:20 -0700 (PDT)
-Received: from ryzen.lan (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D45333F836;
-	Wed, 13 May 2026 14:35:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1778708125; bh=V4Z9P+e2GyvMrVAC0rqhZI/HKDK4a0CYJ4lhRPYRqmU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Kdc5qFLSoy7UP4qMQ1TYe6wOFSpqTGrPIVjQ0dmIODVJGPJO8opMmhOg3QJUZYVwE
-	 YcuooyzWUOc+8Fh+i9StCkCB+DjYgIrQQeBbDZfFvzJ3xjtinPcapSwlhygdP749c4
-	 jalwVuE4X0IDBxDUHBcNP3UmAAC6Mi1HeQAUMLPw=
-Date: Wed, 13 May 2026 23:34:38 +0200
-From: Andre Przywara <andre.przywara@arm.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, Michal Piekos
- <michal.piekos@mmpsystems.pl>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, Jernej
- Skrabec <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>,
- Maksim Kiselev <bigunclemax@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: adc: sun20i-gpadc: add A523 gpadc support
-Message-ID: <20260513233438.2715cfb5@ryzen.lan>
-In-Reply-To: <20260513171638.77af3b24@jic23-huawei>
-References: <20260513-sunxi-a523-gpadc-v2-0-d5efde151dac@mmpsystems.pl>
-	<20260513-sunxi-a523-gpadc-v2-2-d5efde151dac@mmpsystems.pl>
-	<A7772824-E704-4BFD-A796-BCD81197E5A2@gmail.com>
-	<4248ac7e-3cce-4db8-a2c1-710f2c903490@arm.com>
-	<20260513171638.77af3b24@jic23-huawei>
-Organization: Arm Ltd.
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.31; x86_64-slackware-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AtSUalGF"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2b941cd869cso47107355ad.1
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 18:01:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778720481; x=1779325281; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=2wuQ5LwedAkHBzdU2pK2avP+JBelQMIXLc0TXPSN3NU=;
+        b=AtSUalGF6HKT4+eO7+Uzv6lI/zfGGH39C1aVBWNwVM6K5Q14UWhY/PRoy7kh/mAX1B
+         UvfW2tZ3ZK3ZZuVL0pjiQijh7v4KVrqHGSUUHnQhZMAYfxe4GpNXYTEpO+/gTHzVTzTZ
+         bHV9zQ8JFNp+v+53UFiuwjtdvNU6sG7jRaCepgO0h+Mco+iM/ucqM86vUONqoIZTH9CM
+         6pWhaeQK8GvGQRI4D2frknK5F+vrWStCWkXmvA6lRcH6wrU41TQzQOSP1CyP1DMP6zW6
+         Dl6U5yTTfDveTu+G3wqUfklBnELRM2VzC7AuPoqOyKxtE9BCLQ+JGDLvThfq2OQ98W6U
+         duJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778720481; x=1779325281;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2wuQ5LwedAkHBzdU2pK2avP+JBelQMIXLc0TXPSN3NU=;
+        b=TdVk6EVcC3Za+RJ/EYBiGe9qh7syhZa0lr6I+uFjwRXl9Ewf07ow3bNoEXh574F6Dj
+         UmXqUg39vqv7t/MBf/AlDmRs/TFqyJgmsOqNPhzLdvh+UZjO5F9Tm9jmvltRXGIJwYAX
+         SfTFlVOuJyZ1b3iYMrkgRX1207BV6qSnqDz/mTwnl1OU4LslSWb8vNnNXmu6/XBXAtBi
+         /3/cXqrq3Jl6v2Dikclfeuzv83UiPAv5Bav2CN5NcLJoio9OJN4yao7aiJt9FK0wg9Ky
+         TwNnbBwZ7iE48OWzmIz94ZKvYTkVbxDDyvsi8wb3Jl6UdQ9OkeaFEzBoYEG4ZE2BrkTR
+         6kBg==
+X-Forwarded-Encrypted: i=1; AFNElJ8xyBHhc+3+rsgLMO0vqlHnMl0p8NUpqymaYMSlriizOshUN//teprL7FrY6JmU1TZ1lBghAfnJZ4E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwzDwW4tZ53C/v66GPXJDEXY6hLCVC/imdGlWQl2LJu5mPnWsZ5
+	ndLC5yFLoXrFNAZtRXW0g+R3uwECjyXwsgcIvz4SOzkcrlZ6rAxsVHXYbqpM5r4G
+X-Gm-Gg: Acq92OHWAgv8ej6sDmw3yy5Ujs5Zth4SzudVP2ZTdJCC43sDj0KLVrRDiAwXz6T0QnL
+	5eFpR9mdPQQsUkCIOMdKPPKyX87CMozhROnCbcEMfwz+7wdtD/mkOXd/yhbfwdQPSj6vq1x/jcu
+	OwtK84xXHuellrqQEUNY5VGf7g4fAcex9c/TOYM4Wg1753Kk33Rjy1PqbQOVmY9j5FH1EpHfyNN
+	XKXwKh6K75VZKd+o0eH8camrrwylnpVJzHUQ06wHP59TQdNJi5JP9IDKFMmJxJqx3NtRLgOTHQE
+	2qUEPoWHonQwKCPdT6v/o/E2vvM/FOTsQ08s5utwzkhBmN6DBA0pb4MgHj66DIluxOk8GMzwbCq
+	KpAXiicraMdVl/p4PNgwSKgBaCriDbEWcpC0qdm5wFQ5KaWPb7nfom9RC6aYDxbGy0Qndb7oF21
+	vExVUtdqsgPxla2qPb2DA7zE482zaFnvDElLXD
+X-Received: by 2002:a17:902:ea0e:b0:2bc:ac76:c1cf with SMTP id d9443c01a7336-2bd2fe21d31mr52498435ad.24.1778720481118;
+        Wed, 13 May 2026 18:01:21 -0700 (PDT)
+Received: from [127.0.1.1] ([203.99.159.231])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5d0fbc05sm4645895ad.57.2026.05.13.18.01.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2026 18:01:20 -0700 (PDT)
+From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Subject: [PATCH v2 0/2] iio: light: veml6030: fix channel type for events
+ and remove unused read
+Date: Thu, 14 May 2026 14:01:10 +1300
+Message-Id: <20260514-veml6030-fixes-v2-0-abdd5837be50@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIANYeBWoC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyjHQUlJIzE
+ vPSU3UzU4B8JSMDIzMDU0MT3bLU3BwzA2MD3bTMitRi3aREE+Nk42RzIwtTcyWgpoKiVLAEUE9
+ 0bG0tAP3bmQxgAAAA
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rishi Gupta <gupt21@gmail.com>
+Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778720474; l=1937;
+ i=javier.carrasco.cruz@gmail.com; s=20260111; h=from:subject:message-id;
+ bh=NbKYeMkM5NguN09KkOFfqTgmRSOZdoHYNf89lOAIJxs=;
+ b=A75f/7N/g7XYIsoGd3lKvTwGkRrCG4ZcjYc7Mj0Ue8hfjtcs7GrYt/tlwqP+NbkG3q4h2j/tl
+ ZThnAmCNUx8DeMmld/prRxRhv4yoEaGAl9DaC5xUFZYVEZ7rHauUa/d
+X-Developer-Key: i=javier.carrasco.cruz@gmail.com; a=ed25519;
+ pk=Lge8w8xidNSf/INy7JAIbAW+Hezkp3nsBh2OjKL7lLU=
 
-On Wed, 13 May 2026 17:16:38 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+This series fixes a current bug that leads to pushing events with the
+wrong channel type (IIO_INTENSITY instead of IIO_LIGHT, the latter being
+the configured channel for events), and also removes an unnecessary read
+operation when setting a new scale.
 
-Hi,
+This series has been tested on real HW (veml6030) with positive results.
 
-> On Wed, 13 May 2026 13:53:49 +0200
-> Andre Przywara <andre.przywara@arm.com> wrote:
->=20
-> > Hi Sanjay,
-> >=20
-> > thanks for having a look!
-> >=20
-> > On 5/13/26 13:44, Sanjay Chitroda wrote: =20
-> > >=20
-> > >=20
-> > > On 13 May 2026 10:29:43=E2=80=AFam IST, Michal Piekos <michal.piekos@=
-mmpsystems.pl> wrote:   =20
-> > >> A523 differs from existing sun20i-gpadc-iio by having two clocks; bus
-> > >> clock and module clock.
-> > >>
-> > >> Change driver to enable all clocks.
-> > >>
-> > >> Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
-> > >> ---
-> > >> drivers/iio/adc/sun20i-gpadc-iio.c | 11 +++++++----
-> > >> 1 file changed, 7 insertions(+), 4 deletions(-)
-> > >>
-> > >> diff --git a/drivers/iio/adc/sun20i-gpadc-iio.c b/drivers/iio/adc/su=
-n20i-gpadc-iio.c
-> > >> index 861c14da75ad..3f1f07b3a385 100644
-> > >> --- a/drivers/iio/adc/sun20i-gpadc-iio.c
-> > >> +++ b/drivers/iio/adc/sun20i-gpadc-iio.c
-> > >> @@ -180,7 +180,7 @@ static int sun20i_gpadc_probe(struct platform_de=
-vice *pdev)
-> > >> 	struct iio_dev *indio_dev;
-> > >> 	struct sun20i_gpadc_iio *info;
-> > >> 	struct reset_control *rst;
-> > >> -	struct clk *clk;
-> > >> +	struct clk_bulk_data *clks;
-> > >> 	int irq;
-> > >> 	int ret;
-> > >>
-> > >> @@ -205,9 +205,11 @@ static int sun20i_gpadc_probe(struct platform_d=
-evice *pdev)
-> > >> 	if (IS_ERR(info->regs))
-> > >> 		return PTR_ERR(info->regs);
-> > >>
-> > >> -	clk =3D devm_clk_get_enabled(dev, NULL);
-> > >> -	if (IS_ERR(clk))
-> > >> -		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable bus clo=
-ck\n");
-> > >> +	ret =3D devm_clk_bulk_get_all_enabled(dev, &clks);
-> > >> +	if (ret <=3D 0)   =20
-> > >=20
-> > > Thank you Michal for the change.
-> > >=20
-> > > Have you validated the changes ?
-> > > It looks while success ret would be 0 and it would give return error.=
-   =20
-> >=20
-> > But devm_clk_bulk_get_all_enabled() returns the number of clocks found=
-=20
-> > and enabled. And since we need at least one, I think this is correct,=20
-> > and the error message below reflects that. =20
->=20
-> True but passing 0 to dev_err_probe() isn't going to do the right thing.
->=20
-> Though from this function, 0 is an error you need to return an error code
-> not 0 which to the caller looks like a success.
+V1 of this new series is V2 of the one I recently sent to provide a new
+driver for the veml6031x00 family, and additionally fix these issues.
+As the driver will be split to ease the review, it will take some
+time until I send V3, and they are actually independent matters,
+I have moved these 2 simpler patches to this separate series, keeping V2
+(where these 2 patches were sent for the first time) as the common
+ancestor. I have provided a link to it at the end of this cover letter.
 
-Ah, that's true - should have read your email first before answering to
-Andy ;-)
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+To: Rishi Gupta <gupt21@gmail.com>
+Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
 
-So yeah, that needs a split handling, for =3D=3D 0, and for < 0.
+Changes in v2:
+- Add fixes tag to the bug fix in [1/2].
+- Remove Fixes tag for [2/2] as it does not fix a bug.
+- Fix indentation in [1/2].
+- Link to v1: https://lore.kernel.org/r/20260513-veml6031x00-v2-0-4703ca661a1d@gmail.com
 
-Cheers,
-Andre
+---
+Javier Carrasco (2):
+      iio: light: veml6030: fix channel type when pushing events
+      iio: light: veml6030: remove unnecessary read of IT index
 
->=20
->=20
->=20
-> >=20
-> > To me that change looks good:
-> >=20
-> > Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-> >=20
-> > Cheers,
-> > Andre
-> >=20
-> >  =20
-> > >=20
-> > > Thanks, Sanjay
-> > >=20
-> > >    =20
-> > >> +		return dev_err_probe(
-> > >> +			dev, ret,
-> > >> +			"failed to enable clocks or no clocks defined\n");
-> > >>
-> > >> 	rst =3D devm_reset_control_get_exclusive(dev, NULL);
-> > >> 	if (IS_ERR(rst))
-> > >> @@ -243,6 +245,7 @@ static int sun20i_gpadc_probe(struct platform_de=
-vice *pdev)
-> > >>
-> > >> static const struct of_device_id sun20i_gpadc_of_id[] =3D {
-> > >> 	{ .compatible =3D "allwinner,sun20i-d1-gpadc" },
-> > >> +	{ .compatible =3D "allwinner,sun55i-a523-gpadc" },
-> > >> 	{ }
-> > >> };
-> > >> MODULE_DEVICE_TABLE(of, sun20i_gpadc_of_id);
-> > >>   =20
-> > >    =20
-> >  =20
->=20
->=20
+ drivers/iio/light/veml6030.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+---
+base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
+change-id: 20260514-veml6030-fixes-ba43c3c72857
+
+Best regards,
+-- 
+Javier Carrasco <javier.carrasco.cruz@gmail.com>
 
