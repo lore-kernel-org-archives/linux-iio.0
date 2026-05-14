@@ -1,72 +1,78 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5F9A3DD840
-	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 08:42:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E0C83D9040
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 08:53:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778748123; cv=none; b=uhxi94yxkz2xJUlzp5yAi4V0COJRMJQHjve3GxS7Uvp6JzzmcO0oipK6UEIZG+oXKYYpaRODI8vJ3NtAPQ4OYtaUJ2W+/W+vlxConz2nfQ7mkCfjWi0TUZGH2uN3937KFQiRm0bMvHS8Sty8ztwYTRib+Zgg+l192VLmT7D7RBw=
+	t=1778748824; cv=none; b=duSRSfAhW3dNFz8EJ2TslDWfiD8gA51z91WzPYcdVRv9LYs4zkmE+rOaNZWf3bMSvZWQveAfyEWE3wLT/KiNaDrzPtAQNGQ1N15gNbS8Uc/xWEYQEYqJ2S+RgSxCUF63FuPj5nN1M0X9WbvyauqwPIicD2bHpjabiFlOBUkEaMQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778748123; c=relaxed/simple;
-	bh=LuPxpyHvmy+t1hj/p2H8/JlujCymj9F2cMcV+eBA5WI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=N9Bz1dk+48tW3UneS73gbroQh+QZP0pe5RX+17nmGtcvvxvrab+yNfZzPYQmYDGGNJJmc3VpiMpTOvD81Lt3LLX1H0E690Ie1UqDGRmW0FHl2sKO7YkDAIk+uQSo8Unzyq+9GNxmnao4SwF+4S3GZahyT/4wXOpI1pYT6iSEagE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QlbgcrVn; arc=none smtp.client-ip=209.85.128.48
+	s=arc-20240116; t=1778748824; c=relaxed/simple;
+	bh=mdcOcRFdk+kFxge8RF1JHjCRLxgOkic/0vjen1/AoRs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=swsPEoC5f1t0UNEz2uwv50E/lH+nZGvEWMod3K3Mq6dUUeytIQ2VAj/dGgXJitDPtYcFxWTwR+jufoKifzn5Nm3aW7aYYy5iTTkhw3Nc6vSw60JHP2knxufhhma97aUDl27ycN0exu1qNWnf6j5CJU2gSl03rMxk4TWlfA0s1cs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ByTl8RvL; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QlbgcrVn"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-488d2079582so78831405e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 01:42:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ByTl8RvL"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48fde653997so118545e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 01:53:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778748120; x=1779352920; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778748821; x=1779353621; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=oKh3xbTRFTYgVsr7K3mUWoC6h/DQrJ3+p7VCS66GyV0=;
-        b=QlbgcrVncZMD4iKF5thLzM1U+i3/u89/T1fZfg/rLUTXEXSGfv8vE2dKMiMJuKHeTg
-         qZF4z4p9Jukt7qfzcJz/jcuHdZHESdiBSWurFeVaawTYHV8RYIIhgAoKJuuTDsWKVfHl
-         njDVDc0ma9T9NS7mviTUPEiHD7oT7mEFKow32/pPVavHggwckEqocRFxmkPAxtv8HxYJ
-         LbKcRGG0MQYghWljDYC4OIynyLcno8vkdIG51nnIprlZp4pws1XelleQqXKawgKJ9TOp
-         yHIddfuyySXrGo6NG3HHah6qWfDlpDUnD4WguFgpHcE40L8v7qdb+HpnXRY6suW+XLht
-         TUYA==
+        bh=H02A+VbK9Aj1S680nY/rdW6eTeDyQxWPgrNJtVSjlqQ=;
+        b=ByTl8RvLFh2+HKL4oGqOqjKY0x9jo29ZPMKCr3r2UR3+wEIGa0yFCCSBFpXk3iSzL5
+         yUB8k3XyIXMUUcj4iSLqjhB+eJrWAxJDutpckzEK/r2Y2YHQ7lLnkj/r+yqHOz9rOKTt
+         jldQQfAaEbGvjsLzCrIJOcVYWVA24kBPhZpIl1aGl8U8J9x7QjN7O7aBYbhHm1cbaly5
+         6537hupxkp9UEE9/HHvzyXj2Pjl/Nhb/H2NMyshlusQdt/1p7DTDTy9uwi+yPuN0HsUt
+         aWGDc62KaVuEczpNx22+lBx6j5XA5HxYLWJR6WZqvL46TGqXdvSfr3UbyoN/rIDW0Pnx
+         JPCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778748120; x=1779352920;
+        d=1e100.net; s=20251104; t=1778748821; x=1779353621;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=oKh3xbTRFTYgVsr7K3mUWoC6h/DQrJ3+p7VCS66GyV0=;
-        b=Af7QWc/xc4FlQgL4bNJhQmQsARfqTy8uKoVSrJY+tGMbfv3NA8t9wqMQ/9beb8vmLk
-         F7ROgAZ2oRUs01lvGbtOqOr8ZLVWGhIYJJ1r5gSgRbIBq57FRscw/fX2/8BBaVZezD8p
-         k5GVqTs9bIeDl3yuIBhefnlasQbqwQaKRVYSrsn+974YlIENtxbjl2zCYQwyBkW/oB3k
-         iK5BTewwk2veRR37+9uEGLQQ0+VOGjsXX/nkWXR9yx27kcd6XQ+93VNtiFNuY9f+SjgL
-         8BjXhk772m7wWd5/ElxbRJI1EMiJVeAqwXm+nGNmUJZSDQUpL2nY6GySmjlbZQUUrUoy
-         46Wg==
-X-Gm-Message-State: AOJu0YyPVhKCaQInya3HpDHxalDiOXShfwy9sHw8sru2P7pEFQbYalh6
-	II312Rq2ZH9xrsLBtJTIZgGCk0Z0bLSDizqaTkam0OePsLPtt/qRfMbJ
-X-Gm-Gg: Acq92OHuhXJrU5hQJgmhhkPGr3mNKqfX9PbR6qpIF7e/JhQICFCjGYD+UkQSFXyqq7Q
-	NtmzHxGNsEPtwOxkzWGpEzftbqU0kRFFqKDFevLFJJejbv6Rkrxn/4JSenS0OBLOv1PkoRKH/3n
-	WH754Udvn+zCP+VWlx7KOcYuwIYcTSjRtciY2BWmP96GpMqEcHfP9VHFfWa8dseZ6llo2XXz7iz
-	vqKNcNLMEepnsKznBiDCLGJ9Du+cJvjO0QoW0K3Bl9D3XdZJq/KpwpUcNx/LPbi445RCXUw6eUg
-	PAd7UNIAApHxwv4mFmnlDe4P//jRCxuP2EhIVswwIJLQ9ffkfysURfIQZcWl5v9R4VDBp2IpqkX
-	4oLjptmbZ1nAgbQaIEDxeHoqfqCJUAGmoRhswFhu0Rzf+cNbJ85n47PKoLsZXGxp2FGFWBg0xIf
-	CjOCojjkEAnVgZgwrLsf6NkSBGv2i3p4TZ5mxWag==
-X-Received: by 2002:a05:600c:8105:b0:48f:d5e8:758c with SMTP id 5b1f17b1804b1-48fd5e875e7mr52919755e9.16.1778748120041;
-        Thu, 14 May 2026 01:42:00 -0700 (PDT)
-Received: from localhost.localdomain ([196.235.65.162])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fd649a21asm53190365e9.6.2026.05.14.01.41.58
+        bh=H02A+VbK9Aj1S680nY/rdW6eTeDyQxWPgrNJtVSjlqQ=;
+        b=E8W8s8OW+E1A87spDtSJGMVihA+m3WvHIc2xDE8HJC+bpf4qJIGncd89cvKarMpGEh
+         tGyeh93OKkbOXGJ5z3HWZYxWN/f3so+ggIVoTIQl+47OlkpLLH+9s6q4QC4c+ukOQbqX
+         A5F9XrfV1Mc81deH5j/yQ0IYqkyBxz7BtT8T7AIg5lC+L/i82mI8/CCKWLWwM15g/su3
+         WPHnSjveDz7iqRHiRy5m5QJTOzSnoWXOB8V15bEaVsNxxUEvbDYb+TfnsHB62wQfS1ia
+         slRdwEq49AugHglWKzmqQNY/l3azWIe0p6CyGMP7wxK4U4mzBAWz4q/a/4/30kqLgt6x
+         iTVw==
+X-Forwarded-Encrypted: i=1; AFNElJ80pTdviMu2CB5yxtk5wWPcdbQHla5lGijwDQ965/OnYQ3O26PcodrKg2jS6x6q9ovfExK8Hnj0OJM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywo88vEXydAm0rAo2c9SzdFbhpAB9qItaLdxGCcvNwBKmA3T28+
+	82eqwUB02Pe4Exl6Ks+/C20xQ9E876Yy2tj+nKEOLcV1b981sl5+BtpBTgZbCitRX+w=
+X-Gm-Gg: Acq92OHqmhN/3DnTGcrFGCZA2gFwOICdg0TEqqa0PFG+FtgrmiVCysyE4F/paO07qBC
+	8yXN5/mfbiy7I+uqQFiyFWIam8jkSrsszrTEj03kyUFIaLyc8djR9uTA9Fz0WMxaXhFsVVKXUxn
+	8gGVZrl/IPdRIrA81MNIoqhNyz2hpnMSSP86WliOOyNyusS5LRQA8cTUgk/y/WPj5MKq6b8Jus0
+	dDlphwP7BWVs3q9epn7+lJYqWXYx8u8sGbecNSb2+stpuPDOUQPtlOi0dURkST/7RGUoFAmfGQ7
+	lufbbLZJDQ07gDWCxf+hzMKjUb2fXYt07j+pxfvRwRQ5Qc82v4UbwMrR12Miwb2p9BynvxqA5lt
+	0gtNiiTWK2ymAtODyNBM0k25wSlr9aAU/gILuTx+277rpgjxES88DnNTO9Nh1UOjuXMW2HKozKh
+	oeABCT2VT8TGY/CsvQOzD22UstycXsBZfBIDsH8rZDSzk=
+X-Received: by 2002:a05:600c:a08:b0:489:1c1f:35e5 with SMTP id 5b1f17b1804b1-48fc9a44496mr50115175e9.6.1778748820886;
+        Thu, 14 May 2026 01:53:40 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fd649a21asm53831875e9.6.2026.05.14.01.53.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2026 01:41:59 -0700 (PDT)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
+        Thu, 14 May 2026 01:53:40 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: corbet@lwn.net
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	skhan@linuxfoundation.org,
+	gregkh@linuxfoundation.org,
+	hcazarim@yahoo.com,
+	linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH v7] iio: humidity: ens210: Extend I2C functionality check
-Date: Thu, 14 May 2026 09:41:54 +0100
-Message-ID: <20260514084154.298154-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	sozdayvek@gmail.com
+Subject: [PATCH v2] Documentation: iio: fix typo in triggered-buffers example
+Date: Thu, 14 May 2026 13:51:57 +0500
+Message-Id: <20260514085157.20327-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,61 +81,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The ENS210 driver requires several specific SMBus protocols to operate:
-- WRITE_BYTE for sending commands.
-- BYTE_DATA and WORD_DATA for register access.
-- I2C_BLOCK_DATA for reading humidity/temperature results.
+In the "IIO triggered buffer setup" example, iio_triggered_buffer_setup()
+is called with "sensor_iio_polfunc" (single 'l') while the function is
+defined and later referenced as "sensor_iio_pollfunc" (double 'l'). Fix
+the misspelling so the example is consistent.
 
-Update the probe function to explicitly check for these required
-functionalities using standard macros. This ensures the driver only
-binds to adapters that support the necessary transaction types.
-
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
 ---
-Changes since v6:
-- Replaced the incorrect use of I2C_FUNC_SMBUS_EMUL with an explicit 
-  list of required SMBus functionalities as requested by Jonathan Cameron.
-- Used combined macros (BYTE_DATA, WORD_DATA) to simplify the check.
+v2:
+- Drop the file name and line numbers from the commit body, refer
+  to the example by its section name instead (per Andy)
 
-Changes since v5:
-- Changed patch title from "Fix missing I2C functionality checks" to
-  "Simplify I2C functionality check" to reflect the new approach.
-- Dropped the Fixes tag as the change is now considered hardening rather
-  than a bug fix.
-- Replaced individual functionality checks with a single check for
-  I2C_FUNC_SMBUS_EMUL as suggested by Jonathan Cameron.
+ Documentation/driver-api/iio/triggered-buffers.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes since v4:
-- Fixed the alignment and indentation of the I2C functionality check
-  per Andy's review.
-
-Changes since v3:
-- Fixed the alignment and indentation of the I2C functionality check
-  per Andy's review.
-
-Changes since v2:
-- Fixed the alignment and indentation of the I2C functionality check
-  per Maxime's review.
-
-Changes since v1:
-- Updated the I2C functionality test to check for both required native
-  operations and SMBus emulation (`I2C_FUNC_SMBUS_EMUL`)
- drivers/iio/humidity/ens210.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/iio/humidity/ens210.c b/drivers/iio/humidity/ens210.c
-index 77418d97f30d..d209f30d61ed 100644
---- a/drivers/iio/humidity/ens210.c
-+++ b/drivers/iio/humidity/ens210.c
-@@ -204,6 +204,8 @@ static int ens210_probe(struct i2c_client *client)
- 	if (!i2c_check_functionality(client->adapter,
- 				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
- 				     I2C_FUNC_SMBUS_WRITE_BYTE |
-+				     I2C_FUNC_SMBUS_BYTE_DATA |
-+				     I2C_FUNC_SMBUS_WORD_DATA |
- 				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
- 		return dev_err_probe(&client->dev, -EOPNOTSUPP,
- 			"adapter does not support some i2c transactions\n");
+diff --git a/Documentation/driver-api/iio/triggered-buffers.rst b/Documentation/driver-api/iio/triggered-buffers.rst
+index 417555dbb..23b82357e 100644
+--- a/Documentation/driver-api/iio/triggered-buffers.rst
++++ b/Documentation/driver-api/iio/triggered-buffers.rst
+@@ -43,7 +43,7 @@ A typical triggered buffer setup looks like this::
+     }
+ 
+     /* setup triggered buffer, usually in probe function */
+-    iio_triggered_buffer_setup(indio_dev, sensor_iio_polfunc,
++    iio_triggered_buffer_setup(indio_dev, sensor_iio_pollfunc,
+                                sensor_trigger_handler,
+                                sensor_buffer_setup_ops);
+ 
 -- 
 2.43.0
 
