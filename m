@@ -1,43 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B79125B0B7;
-	Thu, 14 May 2026 15:41:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1533423A62;
+	Thu, 14 May 2026 15:44:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778773301; cv=none; b=hr38nL4sxlCPTSoLsf74RYOCpfVwqtIxOFd/EVspHi7FMZTMxt3PL5gTkHyKhTEaaeGcMH6B09hgzKAqvKT4gJTBA/aynXHVHzAUV+8gFsDdWUOyfOrrXZWy8EbDe6plMjA9kSl7rux/i24tASA9hXuEGlP5UZaKh9D/mSCE4YA=
+	t=1778773475; cv=none; b=F/PNjlVDGT0riO/6nhaA1eTyogE5Js9qkp71ER2Vq6xQfBfM8mhxPZkTfVLcigxGUC1ukvXsEbrbo6HDmY0zSW1yBe3hUWhdDI1Y6JYeHj1a3qmir397yn6bdwI117t9Oh7VIY96NVMzXri0SXaUMNMuzvsaTfNW9dqeaoIQuiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778773301; c=relaxed/simple;
-	bh=l/I4OW+DP3r+c/C9F3yLDoWt4IkW5vNZBEHIUy9fTK4=;
+	s=arc-20240116; t=1778773475; c=relaxed/simple;
+	bh=CVhvSu6SkBppssOg7G5C2DGY9lLATzw7R1N/Bet/nzg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SMTvkq05+QHzuQ1uZ037vvJR2kARjjsG/Se8X8LeCb3Rf9HAs++lAwGwgS3W/GFTx+AL5i36PdQ/hTHhjbYHtVpe1i/smcaSHjwHbpnu1Z6IoJxgpI+xz2dYROUnJSyUCWbzHkDNlP561kGDfacOXeT6Y8EF4mEawNoocK/pQpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aEtBAXeo; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=QC1F2BIB+C7o99mOvr+8/71qVZnmZ2JxM7vUW4x3CrjpGC74y7OlyWmoAZNTZAiw0MsohCPTglMV0kvyPnh5ocQBKYQCHdhUwjcKTUsu1L2/TuWYVLAwXzSNQessC89dr7AyaoGaiUkTI4WowY8g2iFIey5ogiHD0I5bwiaVPO4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OfPF7T8D; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aEtBAXeo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F496C2BCB3;
-	Thu, 14 May 2026 15:41:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OfPF7T8D"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31F46C2BCB3;
+	Thu, 14 May 2026 15:44:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778773301;
-	bh=l/I4OW+DP3r+c/C9F3yLDoWt4IkW5vNZBEHIUy9fTK4=;
+	s=k20201202; t=1778773474;
+	bh=CVhvSu6SkBppssOg7G5C2DGY9lLATzw7R1N/Bet/nzg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=aEtBAXeoNLqUEGokae36mkM25KLnyjUNEPH+VSV/tchzN4TL2JIUobt0cgi34bE2t
-	 TWJNQhnhJYQEcZp609vloS5pl+kdhEzDFMr1t7XiWLGzvSvl7qjFussUCIcZhcPnoZ
-	 HUE0wqLD4KwLdWx6OpZsaEl2ApO60b0E6WkXplqWWfikTRkQPxdMjvtDqFy06vl1mT
-	 M4I1rt+V+VXMqeJmNjpeuel3R/cpCTs8Ei5q822DvD1bUVV7bbF03LyBXOYozz9734
-	 nVxoGxcNz8HzaJLneX88EPzpNuRycYmoaQ5JsMuvtgJh4F5NJqxrvkaCfp4YK+AiVZ
-	 Xx5pQHrnNWYCQ==
-Date: Thu, 14 May 2026 16:41:32 +0100
+	b=OfPF7T8Dkf57fQNYbdn1sJwBXS6alw7Q80vJL5FGwa2aKEx8wDyDBLGSLWsSEshsu
+	 Pn1xToB2PgjjLwZO2moTMx3IQ4j/GJussxwCtDD3BhgSJIw9qfu2RGM+IePNiMOu2e
+	 b6vVqN6As7QplUup4ak5gPy3O2D2Ri/ruJxq1IwnxJ9AhQbEid5RYXmOxbatN0RaNN
+	 W1H0TaDNZRCTLaovQQpHLbMI1jg3QzHUmGuhEgud8dgNYV9Hs0EvuRl5J5EfZhn4vI
+	 Rp+Orfxw6qDTq57H5bli8GIvbfV1OQQ7dubMPGcxe2pJGgTPJVECRXxLEo5s/InDVf
+	 VsflAmexmcR7Q==
+Date: Thu, 14 May 2026 16:44:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- kernel@pengutronix.de
-Subject: Re: [PATCH] iio: iio_triggered_buffer_setup_ext(): request
- IRQF_ONESHOT only if threaded handler is present
-Message-ID: <20260514164132.6545e492@jic23-huawei>
-In-Reply-To: <20260514-iio-irq-fixes-v1-1-3bc28b094ad6@pengutronix.de>
-References: <20260514-iio-irq-fixes-v1-1-3bc28b094ad6@pengutronix.de>
+To: Alex Tran <alex.tran@oss.qualcomm.com>
+Cc: Jyoti Bhayana <jbhayana@google.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Sudeep Holla <sudeep.holla@kernel.org>,
+ Cristian Marussi <cristian.marussi@arm.com>, Linus Walleij
+ <linusw@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Viresh Kumar <viresh.kumar@linaro.org>, Guenter
+ Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, arm-scmi@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH v2 0/5] scmi: Log client subsystem entity counts
+Message-ID: <20260514164422.0eba9a61@jic23-huawei>
+In-Reply-To: <20260513-scmi-client-probe-log-v2-0-36607e9dd540@oss.qualcomm.com>
+References: <20260513-scmi-client-probe-log-v2-0-36607e9dd540@oss.qualcomm.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,103 +53,54 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 14 May 2026 16:43:41 +0200
-Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+On Wed, 13 May 2026 10:16:53 -0700
+Alex Tran <alex.tran@oss.qualcomm.com> wrote:
 
-> Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT without a
-> threaded handler") the kernel warns when requesting an IRQ using
-> IRQF_ONESHOT without a threaded handler.
+> SCMI client drivers do not consistently log the number of supported
+> entities discovered from firmware. This information is useful during
+> debugging because it shows which domains or resources were exposed by
+> firmware during probe.
 > 
-> iio_triggered_buffer_setup_ext() always passes IRQF_ONESHOT to
-> iio_alloc_pollfunc(), even if no threaded handler is given by the caller,
-> which results in a kernel warning.
+> Add logging of the number of supported entities to the SCMI cpufreq,
+> pinctrl, reset, hwmon, and powercap client drivers after a successful
+> probe. This aligns these drivers with the existing logging in the SCMI
+> power and performance domain drivers.
 > 
-> Fix this warning by only passing IRQF_ONESHOT if a threaded handler is
-> given.
-> 
-> Fixes: 23f2d735a932 ("iio: Add helper function for initializing triggered buffers")
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> ---
-> Hello,
-Hi Marc,
+> Signed-off-by: Alex Tran <alex.tran@oss.qualcomm.com>
+Hi Alex,
 
-Thanks for the report + patch.
-> 
-> I'm not sure if this is the correct fix, or if the
-> stm32-adc.c/stm32-dfsdm-adc.c driver needs fixing.
+Just curious but why +CC linux-iio and IIO folk?
 
-Sounds like another case of what we had to fix for hid-sensors (and a few others
-IIRC).
+May be you had a false suggestion to add them from get maintainers.
+If so be sure to check it's suggestions make sense!
 
-They should never have been using triggers in the first place for this path -
-but now we have ABI we can't touch.  Note there are even comments saying that
-the infrastructure registered is not used!
-
-So we have to have do a small dance to ensure the sysfs files are still created
-but without the need for the pollfunc setup etc.
-
-https://lore.kernel.org/all/20260220224514.471348-1-srinivas.pandruvada@linux.intel.com/
-
-It is in theory possible to have a case that needs the fix you have below
-but that would not be using iio_pollfunc_store_time().
-That being used without a thread is pretty much pointless as no one reads
-the timestamp.
-
-I took a look just at stm32_adc and things are more complex because in some
-cases we should be registering a triggered buffer (with both top and bottom
-half set) and in some cases we should not - but should be doing what we
-did in the hid sensors.
-
-Given I believe this is a harmless warning I'm not in a huge rush to fix it.
-We need someone who has the time + hardware to test solutions as they
-can be a bit fiddly.
-
-Whilst the code you have here papers over the problem it's changing from
-having an entirely correct warning to hiding that the code is wrong so
-I'd rather not merge that.  I've rejected it as a proposed solution a couple
-of times so far - and thought we were getting to the end of drivers that abused
-this stuff :(  Seems not quite yet.
+Not to worry - we can all hit the delete button ;)
 
 Jonathan
 
-> 
-> For iio_triggered_buffer_setup(), they both use iio_pollfunc_store_time()
-> as the hard IRQ handler, but the stm32-adc.c in PIO mode and the
-> stm32-dfsdm-adc.c always no threaded IRQ handler.
-> 
-> As iio_triggered_buffer_setup_ext() always uses IRQF_ONESHOT this triggers
-> a warning since ommit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
-> without a threaded handler").
-> 
-> Another thing I noticed is that iio_pollfunc_store_time() returns
-> IRQ_WAKE_THREAD, which should trigger yet another warning ("IRQ %d device
-> %s returned IRQ_WAKE_THREAD but no thread function available.") if used
-> without a IRQ thread. But I'm not using this subsystem right now, just
-> stumbled over the new warning.
+
 > ---
->  drivers/iio/buffer/industrialio-triggered-buffer.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> index 9bf75dee7ff8..40eea3a44724 100644
-> --- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-> +++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> @@ -64,7 +64,7 @@ int iio_triggered_buffer_setup_ext(struct iio_dev *indio_dev,
->  
->  	indio_dev->pollfunc = iio_alloc_pollfunc(h,
->  						 thread,
-> -						 IRQF_ONESHOT,
-> +						 thread ? IRQF_ONESHOT : 0,
->  						 indio_dev,
->  						 "%s_consumer%d",
->  						 indio_dev->name,
+> Changes in v2:
+> - Use dev_dbg instead of dev_info log level
+> - Link to v1: https://lore.kernel.org/r/20260513-scmi-client-probe-log-v1-0-00b47b1be009@oss.qualcomm.com
 > 
 > ---
-> base-commit: 86138b484d6367a57312f69af4ec958806c2673c
-> change-id: 20260514-iio-irq-fixes-1485db263ac3
+> Alex Tran (5):
+>       powercap: arm_scmi_powercap: Log number of powercap domains
+>       cpufreq: scmi-cpufreq: Log number of perf domains
+>       hwmon: scmi-hwmon: Log number of sensors
+>       reset: reset-scmi: Log number of reset domains
+>       pinctrl: pinctrl-scmi: Log number of pins, groups, functions
+> 
+>  drivers/cpufreq/scmi-cpufreq.c       |  5 ++++-
+>  drivers/hwmon/scmi-hwmon.c           |  1 +
+>  drivers/pinctrl/pinctrl-scmi.c       | 11 ++++++++++-
+>  drivers/powercap/arm_scmi_powercap.c |  1 +
+>  drivers/reset/reset-scmi.c           |  8 +++++++-
+>  5 files changed, 23 insertions(+), 3 deletions(-)
+> ---
+> base-commit: 1bfaee9d3351b9b32a99766bbfb1f5baed60ddef
+> change-id: 20260509-scmi-client-probe-log-173cf85d5563
 > 
 > Best regards,
-> --  
-> Marc Kleine-Budde <mkl@pengutronix.de>
-> 
 
