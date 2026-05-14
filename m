@@ -1,453 +1,171 @@
-Received: from mail-dl1-f41.google.com (mail-dl1-f41.google.com [74.125.82.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEB913B7B98
-	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 20:13:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7650F3B6371
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 21:24:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778789606; cv=none; b=K/MP60ewhq7RTsv/ZnhopbTPWsU0tDuNf36ybGjNEYLqRMqtCe2SpfF7/AN7Dvp78w1FMKNHAMPUs8gHpNhRvgAtSjRzuKAaBsM3o3DRalq9NuKAtF4WY9wOrLZ/Os/zdiBzg1Phi9WfCTKwLh9aAL0PODaOYQebAAz3R8b3q0c=
+	t=1778793842; cv=none; b=mO2Q4xwsu1b6dP/kXHTwRDsawNwX0nQmDr0n929RQwzflr2JY7SErHuELQaC+vy1CA1rV07TbIyIgcsNADEp6+iKeM4jFIJ36dhyJh/CS9EKfGTgdCFIUArCu59uEBNribwveme7zCoNuUv7ljHKJRJlL6a/WlTKdc7r+6REX4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778789606; c=relaxed/simple;
-	bh=g2omP6OwwaVaZtqKMKo5bYDZDAuGobiaOQnmZa+vx08=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CR13K9a2t59rzw9mA3Pr5fBchPrtg7APayZ8N00JdtGeZ5MKZBpdY3+9rdAOzD6o2Wl2E9VKbgQs/SAapcpJ5r/BNNlQnfO6ENOy97u57rwnn362yNeKGRhABa3KakRmCPnnoPsQFs7k1YQsRTWOn/d2TnOAdcmEMnQSXDfAJAs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=jvkUGHWk; arc=none smtp.client-ip=74.125.82.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1778793842; c=relaxed/simple;
+	bh=Wi9wq6ITuBhZ0//XzAr/F1HphLRzl3ZxiOclMvD0KoE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bYhmT2+PgkVMZ3V1sBElJ3/db4GJmOGZV+EwXTMCuNDmdPyNemuKgcJ+EOoqOh0b4m5vPWComliKrapnZCqWbGI8GS96H5bS27fGNApKHG3LSKhNnC12pfVfwDFNNqrUcT+ySa42svDeZMftR1gSlAXtWmamdZm8vOiyoRpvSlY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=pB1PvYyE; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=BC/6aT81; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="jvkUGHWk"
-Received: by mail-dl1-f41.google.com with SMTP id a92af1059eb24-1330d6bb78dso5249098c88.1
-        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 13:13:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="pB1PvYyE";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="BC/6aT81"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64EIpg1Z3795697
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 21:23:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Wi9wq6ITuBhZ0//XzAr/F1HphLRzl3ZxiOclMvD0KoE=; b=pB1PvYyErK43eAPY
+	8GRxW3u7AM7AHohNM0M3cHCMCNo1VwAlgiEmlPBRRhAH3qzvDhBijYNB8Mozuu1t
+	A0lh6pes7yXko1c9nG+m9lUnW0Id2COTnlBJXuVbwlwJcKrTpdQyWe3r3T1io7Wj
+	SjhPG5n4X8xvsENTS0CdPmtrRTaEQKdFIWa0HxwsCZDv1rMxb4234qxcRW5FPYMB
+	6eFs8mtHEJekZQyzkcvtIws/TE/h1OvUe7QYba9+pcSqPKlYR/Ya1dKobZLgN1kS
+	yEs0DqhocJ+ok1uVUHzxmQen9ZwP+lp1oWjuC5BaSko7GFzEEpB+JYeXEl2cRUyP
+	AHWxDg==
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e5m1sreeb-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 21:23:59 +0000 (GMT)
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-2f3ec2e8d07so7177931eec.1
+        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 14:23:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1778789602; x=1779394402; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1b03IdG6d+k+oaakW+L7ThzKuIv82Zf07V1YgnSKHuM=;
-        b=jvkUGHWkutmYa5HwcEfrjK8dR4cWyqBH7wuU68Qa4ni1JD4jU/gh+4nwSJUhZabVUR
-         yf40R3T9ZLOX9sN1JmliJviX8e6pyyayx+MSKbPqxwE5bKleEA5KPOM6qplp0Nd+9J2R
-         HXxbiFEyGHHr1112B2iGaBh2GVUrDIHe+aimCIM9Jq0hnfGLG/P60JJfJG1dd26zr4sZ
-         JMYj89AxwGHzyNVTcrLcoINrQVFSwycXy2s8EbTa5EmI8+hDxhstXGNiTC5LJB/61StN
-         46+Xz1CFbhezO3I5PWaK+6988XKKuhEG5O+ZGcRF/X44ctJdgWYTqU0jntAurrA+7FbL
-         7DwQ==
+        d=oss.qualcomm.com; s=google; t=1778793838; x=1779398638; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Wi9wq6ITuBhZ0//XzAr/F1HphLRzl3ZxiOclMvD0KoE=;
+        b=BC/6aT81v1IKW/jRwglaUTZ4VgJb2m3X6e9uWA651mOdjSw+TgBCXkCV7f96Pw1cVl
+         wn6mSAxs4FEVjWeTtHXkzZtKjJV5huI2Zn7f+CDjCiriUFZLuPqDIG5YBVR5aldhMLXI
+         ci/VRXNk3Utuwa2don0zO2DNcyJuF//bCB/n3OJc73fNuQJhS5wB95iVyekLwW1+Nd2d
+         E6Uq5h+lRYDiFrhoqqChO++WST91KGaUC1AO5ucDI47A2hiC5JzpAM3B/iKZaXBSHwdc
+         Qs5XTy4XIjQf/6X108DAOmE/gUwpHCQJ1bDiJkcL9Dl41ELCKjU07Fw/MmIY36QF3jML
+         c/Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778789602; x=1779394402;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1b03IdG6d+k+oaakW+L7ThzKuIv82Zf07V1YgnSKHuM=;
-        b=tAhYZrfffADQFgxgKE0Zt+waRhxg4S+nFJLjUgFxR6TWtpHxbGZuirypEcgwoe5/QM
-         DvaVxz5EnmPFROmq6gphvueRSNHWMfFtgDUCZYsNYiD09bZlpYlq7xKpmzgJlZnKpFyM
-         LdHDNARRiJdi+PtRRpAswo0h3waReK0CKgkPFtS0Muqr40q9ZoCV6ZhQ8zSNUb705gzp
-         KkWla7m7iRxbJAqSpBgzXa/hs2bose9GxgW40V4WhCVj9JFZESNuOpRscfImkBzbH8Jb
-         2CCDska+GffYL+vpzG4sW/sCMPp8J5Nu64jhwxl/6QDRqBEwn8q0wMcUcKbfd0BnwHgr
-         yoDQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/JB9R/Mk93eChQ6uxddksb3Mm7fVbjtRvlLrI9CuGC5k11aT8+8o3IT0Ye7yokdej1ByXbK7ZrxsA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzF/x1HU5t1qFlthd06qAxLo7XQO+oQFdg34bVz+Hf6JDDXDlew
-	yozxSu3+bkQnkteLsdZufy6sgeNelQE36qK1poFQqnT2UAYbyo4EY2C270N1/8mVuuxmoVpkACT
-	sGBgL1U0=
-X-Gm-Gg: Acq92OE1wC5ani4eiMCspDohkVEZdUasMcN6BtrDbrchcm4CWtSb2Y0mV2amjlLfff8
-	ZGMvDDVBo4dalkpWKRn3PdPZMn6F+IXMzFQJy4oHeJ5axaxOwxWXOFdGxFsLeAmGidtFJ1BGVL0
-	jxfzF0zYA1xtEEH+Slamjb1rlc5befxHeBXWA0r02EjiyBMonrSuR9Qvxzw8MyzUzcUGKKrICoC
-	9LprtGJaENeg9LZhHsb0Ycbot1w+ZLycnztuoZMOrI5eToZKYdd00Gs9FlD4pkJDnSKRgekK5SG
-	2FEwIdDVk1dkaf7nI7OqDFyGs66kpXIBnjpFrdig+EcRR8+slNYi9PsJxtf8Du/lbS+r9gXAvwg
-	SdvyU72dSNSDDPmK8yKzMdH72l7XxDIHr4ArjisfjbogYVhipUJA0wwHbOI2/LmpKUSodCA==
-X-Received: by 2002:a05:7022:4a2:b0:134:e90f:7cd5 with SMTP id a92af1059eb24-13504744749mr317541c88.21.1778789601671;
-        Thu, 14 May 2026 13:13:21 -0700 (PDT)
-Received: from yukhui ([2804:7f0:74c0:2c15:3034:1970:7d6a:12b6])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cc33a618sm5943167c88.12.2026.05.14.13.13.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2026 13:13:21 -0700 (PDT)
-From: Raffael Raiel Trindade <raffaelraiel@usp.br>
-X-Google-Original-From: Raffael Raiel Trindade
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Raffael Raiel Trindade <raffaelraiel@usp.br>,
-	Kim Carvalho <kim.ca@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v6] iio: light: vcnl4000: use lock guard()
-Date: Thu, 14 May 2026 17:11:49 -0300
-Message-ID: <20260514201312.678131-1-raffaelraiel@usp.br>
-X-Mailer: git-send-email 2.51.0
+        d=1e100.net; s=20251104; t=1778793838; x=1779398638;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Wi9wq6ITuBhZ0//XzAr/F1HphLRzl3ZxiOclMvD0KoE=;
+        b=Nh1hQWxjovnMbDWMH9DY2wg/G07hFuCwyjdB3wJn8cHIEHUMNJsUWxkovjZl4qgZAh
+         hfDScS5Va6E6PfKNTAB7st3OjIDQVG7uj8ZHcOdIJd5SWJL2/SmBaMknOTDUTxsG0JY3
+         UQK9SQSHmvlM35VBdWdE+XHrFCKMJUYqKj5LRXxWsjnCydq/EKfh3ue1FvgycGltIf6G
+         dtduH7+7ySi29WN3EH5I8Gl/R+6Z/0OGOaiqrnxpfAWHHkm8hiHx8e2exROBU2NSJYO3
+         OJfNfQqboYSf627W+Si7rj4bFKvWJLY3FKQhRwXhmiCgSjkXsar6UdkvC6/NTJNOEeBO
+         yudA==
+X-Forwarded-Encrypted: i=1; AFNElJ9F1Ug1hv8/To//grXd1/hWcktcAEnRZ/rPlTyrRIZsWsD0JfnSv80+/efb2jBrqLjsjQbdNO1my3E=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzro8Z9EMHyhes6j1fh637mlV/NGlNtV8hPaiCZ75bPUxM9q5GV
+	mdcwEUOOKS7CtXRH6HuY+cc/cXEgOXj8T9/LHEen6Cyjlkl2HwJ38h0VT+nBCgGVYBKGLkP4sT6
+	9IiJje2XlyboyJ9kRTppm/8nKZp5pdPu5JY6lo1ALMU2GBzgXBOyR2GHzBs6Fu4E=
+X-Gm-Gg: Acq92OGWEAVpeE/TGnjb/UANOFrCHzh1Ceonn2v834/ywD03ip8yADl/BhaAZ/EwKsT
+	jeVAW28cdzRzValzeFWMOSeFCAr/maBWouNx3Ba3LKOAlFH2HzFZUGPC/V8YAv+rmsrjNX0Quch
+	QOg9mNoR7d2l63tYqs5ObBBSHUCcR4l3v6BVGFzNonegNdjGsopj8zxRnU6zBxVgAClSZdpnuiO
+	IAlWSOd73NscpReYerDGlBazrIJVFhaazUwZ1/Ys9zczI7NbrMFof9/htXL2Xs0mrp9Wncvtb7N
+	FvtfvD3Trug308m0DLjVMDLPuAGpCdsjVInEbK6NEZrTunR525BwO4cyCYI41gteGq8FXwP9os2
+	aSrJPVq5l3Qc9FcIg8TbZrVpqiYoOw0HbG+fTwadxCpXPqIgph80ipGa/DNkCSwRPG9yOdklK+M
+	Gm
+X-Received: by 2002:a05:7300:724f:b0:2ed:27a3:eae2 with SMTP id 5a478bee46e88-30398189fa8mr789533eec.15.1778793838370;
+        Thu, 14 May 2026 14:23:58 -0700 (PDT)
+X-Received: by 2002:a05:7300:724f:b0:2ed:27a3:eae2 with SMTP id 5a478bee46e88-30398189fa8mr789513eec.15.1778793837795;
+        Thu, 14 May 2026 14:23:57 -0700 (PDT)
+Received: from [10.73.236.148] (pat_11.qualcomm.com. [192.35.156.11])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-302946f2149sm4468333eec.11.2026.05.14.14.23.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 May 2026 14:23:57 -0700 (PDT)
+Message-ID: <8857fc71-aec6-4682-b4f4-0bd463f367c4@oss.qualcomm.com>
+Date: Thu, 14 May 2026 14:23:56 -0700
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/5] scmi: Log client subsystem entity counts
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jyoti Bhayana <jbhayana@google.com>,
+        David Lechner
+ <dlechner@baylibre.com>,
+        =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Sudeep Holla <sudeep.holla@kernel.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Linus Walleij <linusw@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, arm-scmi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org
+References: <20260513-scmi-client-probe-log-v2-0-36607e9dd540@oss.qualcomm.com>
+ <20260514164422.0eba9a61@jic23-huawei>
+Content-Language: en-US
+From: Alex Tran <alex.tran@oss.qualcomm.com>
+In-Reply-To: <20260514164422.0eba9a61@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE0MDIxMSBTYWx0ZWRfXyQq/7z94wn5G
+ XezIIr0Q79yhvZCDopGWy9N4YBjbkmm2/7sTnRreupG1Q0RvWOpxlLuOFuvV1ZKx93/zxtJcRyC
+ JksRqbNQBdChETe6W0MkxJaD6USGmTR6oIRY4TgC80nPH8K3YyqzKJ9JTmInoC5tPGkR03qwunQ
+ Qy2NRpvtFMkL89wf/Y5yUOGvEps7ApcoQr39P7hEhZwWbCA0bwme9Bv8Ek3PzvEAxVxasxwjJnN
+ rpExI3LyVOBTNJrNeWqwcb5N5jFBXIyA5CXRtPRrVstZxr2aiH/XApUsx2PbiGy2WpT6qeHD503
+ IEPiFMOu0P5KQ9bF80qeWOi2G1MxZse9Reqt1News1SsA8N/Ge/ztlSjDjzNMD9S18KYOPIvMBE
+ g3PXuK78xuk+ugRH93DnCfT+fITmRfrR2BF2IaZlte1fKOwgOKhUqgK8gf5t9dWFaWZ9nn5/d5a
+ Ug2L8vp1VClqE25IlNQ==
+X-Authority-Analysis: v=2.4 cv=cZXiaHDM c=1 sm=1 tr=0 ts=6a063d6f cx=c_pps
+ a=cFYjgdjTJScbgFmBucgdfQ==:117 a=ZdW6uxA9NKXbfdqeeS2OGA==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=EUspDBNiAAAA:8 a=yQWfTViADuQTjb5oKp4A:9 a=QEXdDO2ut3YA:10
+ a=scEy_gLbYbu1JhEsrz4S:22
+X-Proofpoint-GUID: lH5GKhah1xu2LVrWmV7t-UU8W_HmGtZq
+X-Proofpoint-ORIG-GUID: lH5GKhah1xu2LVrWmV7t-UU8W_HmGtZq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-14_05,2026-05-13_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 spamscore=0 phishscore=0 suspectscore=0 adultscore=0
+ bulkscore=0 impostorscore=0 malwarescore=0 clxscore=1015 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605140211
 
-From: Raffael Raiel Trindade <raffaelraiel@usp.br>
+On 5/14/2026 8:44 AM, Jonathan Cameron wrote:
 
-Use guard() and scoped_guard() for handling mutex lock instead of manually
-locking and unlocking. Remove gotos in error handling logic. This prevents
-forgotten locks on early exits.
+> On Wed, 13 May 2026 10:16:53 -0700
+> Alex Tran <alex.tran@oss.qualcomm.com> wrote:
+>
+>> SCMI client drivers do not consistently log the number of supported
+>> entities discovered from firmware. This information is useful during
+>> debugging because it shows which domains or resources were exposed by
+>> firmware during probe.
+>>
+>> Add logging of the number of supported entities to the SCMI cpufreq,
+>> pinctrl, reset, hwmon, and powercap client drivers after a successful
+>> probe. This aligns these drivers with the existing logging in the SCMI
+>> power and performance domain drivers.
+>>
+>> Signed-off-by: Alex Tran <alex.tran@oss.qualcomm.com>
+> Hi Alex,
+>
+> Just curious but why +CC linux-iio and IIO folk?
+>
+> May be you had a false suggestion to add them from get maintainers.
+> If so be sure to check it's suggestions make sense!
+>
+> Not to worry - we can all hit the delete button ;)
+>
+> Jonathan
+Hi Jonathan,
 
-Signed-off-by: Raffael Raiel Trindade <raffaelraiel@usp.br>
-Co-developed-by: Kim Carvalho <kim.ca@usp.br>
-Signed-off-by: Kim Carvalho <kim.ca@usp.br>
----
-v6:
- - remove unnecessary ret < 0 check
- - direct return on vcnl400_measure
+Originally, there was another patch in this series to add the same functionality to scmi_iio probe but it was dropped. Apparently running b4 prep --auto-to-cc does not prune stale entries from the cover letter. Will manually remove all entries and rerun the command in the future.
 
-v5:
- - fix return ret introduced when return
-   is always success
-
-v4:
- - use guard() and scoped_guard() instead of
-   lock() and unlock() in all functions
- - drop ret = -EINVAL initialization
-
-v3:
- - fix indentation problems on line breaks
-
-v2:
- - remove unnecessary ret attributions on non-error logic.
- - remove breaks on switch-case after return
-
- drivers/iio/light/vcnl4000.c | 152 +++++++++++------------------------
- 1 file changed, 45 insertions(+), 107 deletions(-)
-
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index c08927e34b4e..88fc7424ae35 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -18,6 +18,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/i2c.h>
-@@ -268,46 +269,36 @@ static ssize_t vcnl4000_write_als_enable(struct vcnl4000_data *data, bool en)
- {
- 	int ret;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	if (en)
- 		ret &= ~VCNL4040_ALS_CONF_ALS_SHUTDOWN;
- 	else
- 		ret |= VCNL4040_ALS_CONF_ALS_SHUTDOWN;
- 
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, ret);
--
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, ret);
- }
- 
- static ssize_t vcnl4000_write_ps_enable(struct vcnl4000_data *data, bool en)
- {
- 	int ret;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	if (en)
- 		ret &= ~VCNL4040_PS_CONF1_PS_SHUTDOWN;
- 	else
- 		ret |= VCNL4040_PS_CONF1_PS_SHUTDOWN;
- 
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, ret);
--
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, ret);
- }
- 
- static int vcnl4200_set_power_state(struct vcnl4000_data *data, bool on)
-@@ -442,18 +433,18 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 	int tries = 20;
- 	int ret;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
- 					req_mask);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	/* wait for data to become ready */
- 	while (tries--) {
- 		ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
- 		if (ret < 0)
--			goto fail;
-+			return ret;
- 		if (ret & rdy_mask)
- 			break;
- 		msleep(20); /* measurement takes up to 100 ms */
-@@ -462,21 +453,10 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 	if (tries < 0) {
- 		dev_err(&data->client->dev,
- 			"vcnl4000_measure() failed, data not ready\n");
--		ret = -EIO;
--		goto fail;
-+		return -EIO;
- 	}
- 
--	ret = vcnl4000_read_data(data, data_reg, val);
--	if (ret < 0)
--		goto fail;
--
--	mutex_unlock(&data->vcnl4000_lock);
--
--	return 0;
--
--fail:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return vcnl4000_read_data(data, data_reg, val);
- }
- 
- static int vcnl4200_measure(struct vcnl4000_data *data,
-@@ -486,16 +466,14 @@ static int vcnl4200_measure(struct vcnl4000_data *data,
- 	s64 delta;
- 	ktime_t next_measurement;
- 
--	mutex_lock(&chan->lock);
--
--	next_measurement = ktime_add(chan->last_measurement,
--			chan->sampling_rate);
--	delta = ktime_us_delta(next_measurement, ktime_get());
--	if (delta > 0)
--		usleep_range(delta, delta + 500);
--	chan->last_measurement = ktime_get();
--
--	mutex_unlock(&chan->lock);
-+	scoped_guard(mutex, &chan->lock) {
-+		next_measurement = ktime_add(chan->last_measurement,
-+				chan->sampling_rate);
-+		delta = ktime_us_delta(next_measurement, ktime_get());
-+		if (delta > 0)
-+			usleep_range(delta, delta + 500);
-+		chan->last_measurement = ktime_get();
-+	}
- 
- 	ret = i2c_smbus_read_word_data(data->client, chan->reg);
- 	if (ret < 0)
-@@ -606,21 +584,15 @@ static ssize_t vcnl4040_write_als_it(struct vcnl4000_data *data, int val)
- 			 (*data->chip_spec->als_it_times)[0][1]),
- 			 val);
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = FIELD_PREP(VCNL4040_ALS_CONF_IT, i);
- 	regval |= (ret & ~VCNL4040_ALS_CONF_IT);
--	ret = i2c_smbus_write_word_data(data->client,
--					VCNL4200_AL_CONF,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, regval);
- }
- 
- static int vcnl4040_read_ps_it(struct vcnl4000_data *data, int *val, int *val2)
-@@ -660,20 +632,15 @@ static ssize_t vcnl4040_write_ps_it(struct vcnl4000_data *data, int val)
- 
- 	data->vcnl4200_ps.sampling_rate = ktime_set(0, val * 60 * NSEC_PER_USEC);
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
--		goto out;
-+		return ret;
- 
- 	regval = (ret & ~VCNL4040_PS_CONF2_PS_IT) |
- 	    FIELD_PREP(VCNL4040_PS_CONF2_PS_IT, index);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
--					regval);
--
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, regval);
- }
- 
- static ssize_t vcnl4040_read_als_period(struct vcnl4000_data *data, int *val, int *val2)
-@@ -721,20 +688,15 @@ static ssize_t vcnl4040_write_als_period(struct vcnl4000_data *data, int val, in
- 			break;
- 	}
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = FIELD_PREP(VCNL4040_ALS_CONF_PERS, i);
- 	regval |= (ret & ~VCNL4040_ALS_CONF_PERS);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, regval);
- }
- 
- static ssize_t vcnl4040_read_ps_period(struct vcnl4000_data *data, int *val, int *val2)
-@@ -783,20 +745,15 @@ static ssize_t vcnl4040_write_ps_period(struct vcnl4000_data *data, int val, int
- 		}
- 	}
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = FIELD_PREP(VCNL4040_CONF1_PS_PERS, i);
- 	regval |= (ret & ~VCNL4040_CONF1_PS_PERS);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, regval);
- }
- 
- static ssize_t vcnl4040_read_ps_oversampling_ratio(struct vcnl4000_data *data, int *val)
-@@ -830,20 +787,15 @@ static ssize_t vcnl4040_write_ps_oversampling_ratio(struct vcnl4000_data *data,
- 	if (i >= ARRAY_SIZE(vcnl4040_ps_oversampling_ratio))
- 		return -EINVAL;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = FIELD_PREP(VCNL4040_PS_CONF3_MPS, i);
- 	regval |= (ret & ~VCNL4040_PS_CONF3_MPS);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3, regval);
- }
- 
- static ssize_t vcnl4040_read_ps_calibbias(struct vcnl4000_data *data, int *val, int *val2)
-@@ -878,20 +830,15 @@ static ssize_t vcnl4040_write_ps_calibbias(struct vcnl4000_data *data, int val)
- 	if (i >= ARRAY_SIZE(vcnl4040_ps_calibbias_ua))
- 		return -EINVAL;
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
- 	if (ret < 0)
--		goto out_unlock;
-+		return ret;
- 
- 	regval = (ret & ~VCNL4040_PS_MS_LED_I);
- 	regval |= FIELD_PREP(VCNL4040_PS_MS_LED_I, i);
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3,
--					regval);
--
--out_unlock:
--	mutex_unlock(&data->vcnl4000_lock);
--	return ret;
-+	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3, regval);
- }
- 
- static int vcnl4000_read_raw(struct iio_dev *indio_dev,
-@@ -1476,17 +1423,17 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 				       enum iio_event_direction dir,
- 				       bool state)
- {
--	int ret = -EINVAL;
-+	int ret;
- 	u16 val, mask;
- 	struct vcnl4000_data *data = iio_priv(indio_dev);
- 
--	mutex_lock(&data->vcnl4000_lock);
-+	guard(mutex)(&data->vcnl4000_lock);
- 
- 	switch (chan->type) {
- 	case IIO_LIGHT:
- 		ret = i2c_smbus_read_word_data(data->client, VCNL4200_AL_CONF);
- 		if (ret < 0)
--			goto out;
-+			return ret;
- 
- 		mask = VCNL4040_ALS_CONF_INT_EN;
- 		if (state)
-@@ -1495,13 +1442,11 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 			val = (ret & ~mask);
- 
- 		data->als_int = FIELD_GET(VCNL4040_ALS_CONF_INT_EN, val);
--		ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF,
--						val);
--		break;
-+		return i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, val);
- 	case IIO_PROXIMITY:
- 		ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
- 		if (ret < 0)
--			goto out;
-+			return ret;
- 
- 		if (dir == IIO_EV_DIR_RISING)
- 			mask = VCNL4040_PS_IF_AWAY;
-@@ -1511,17 +1456,10 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
- 		val = state ? (ret | mask) : (ret & ~mask);
- 
- 		data->ps_int = FIELD_GET(VCNL4040_PS_CONF2_PS_INT, val);
--		ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
--						val);
--		break;
-+		return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, val);
- 	default:
--		break;
-+		return -EINVAL;
- 	}
--
--out:
--	mutex_unlock(&data->vcnl4000_lock);
--
--	return ret;
- }
- 
- static irqreturn_t vcnl4040_irq_thread(int irq, void *p)
--- 
-2.51.0
-
+Alex
