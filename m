@@ -1,97 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 930AC3845AA;
-	Thu, 14 May 2026 10:38:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778755092; cv=none; b=Ricecf8eZFeQRIuxFhfpwZblrjsr2HD4gOeCld/Sb1t9ep6Fj0r8jYSVnzVoxdwxsinzXjrv0iwzo8qqOkxAfvraEkJYCHRkqwpluwHaPHPhHyAaQJE6OW8saLBoZacSo3rsKOq2YedEZZBff02EoGinFyhaswSJeijAXYs0waU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778755092; c=relaxed/simple;
-	bh=6KuqpnKj9sobxjDeqvX+sSPZ/QSHETFRdP4dGEBM9Kk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IK1YD+gIhASAc6Sy4egXO+hOn3OpmObEJdQCKHqdD6VPvs0+T8LDH9e0nj85vKiv+ft7xSdpzxDmorICJEUHMkIgjsogLLYuoe0cdTA6LWSML2IOerOBkkkCtZD3L3WfF8o3aRccG/PWUqXgta07Qzg6IdaM5Tq/NfOk2TvNrWo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CP2+Q6k+; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 372DF39B94B
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 11:01:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778756510; cv=pass; b=BVrOuq+erCBsJ5b8x4uG2ooCLtaiDAfQ7Oz+kyeqPLQw7eoM2KGlVjNnKaDxy6s/LdYRG2z75hFl8S8o+anc5rqDqWxbMwJwfZ4lpcXp9CahlqISEybfUi554YORWWOPfpsRYquwbzul4B5SeclkScmyF+7B5PItwxwtfPuQuzY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778756510; c=relaxed/simple;
+	bh=R8FmuO9ytE7ii9dxdPkU5C9agt3DuPWhWQL1X9mtYmo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FWQtHUH27V5eFkbBKX5pb6a2u7ptpVQS/3ML8wQVYjbg9vtoTMo/Q+KjXKVYGz7uJlpcokOOfNTLWMJL8CooYeo70SIH3q0WzLLH7B6DgwsyszpNzVYYhvBYcG4Lvm99pNa45xzFKJGXofMZc1qrvsttpAM2ahixQZMYX/WP94A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j07Gsd7A; arc=pass smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CP2+Q6k+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D05ABC2BCB3;
-	Thu, 14 May 2026 10:38:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778755092;
-	bh=6KuqpnKj9sobxjDeqvX+sSPZ/QSHETFRdP4dGEBM9Kk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CP2+Q6k+vOdNmZMCBg/czK3/XTzKq0VLFIDXnQfI8q1f+VEZYn5dEFbuxpbhMVrKZ
-	 LcDgW9pgW31NqQNAkn7M4q9P5MWsdEG75eNTJNuHXQu3VLIt8HrPHm/up/QrlZ3mY0
-	 fzPYe8svCetFMPVLD/SM0Yi3iVTZb0iVGk8XokfoS+fbK6L+SHkBqDT/iorLvpG0GL
-	 PQ5KaPxmJRTwQgTrA9hbLpPyHj25xksmDOIASEbpj14sISdX9+X/KOJo2yX7u0wUjc
-	 feFwDC2Dyev2jez7STICOVKK3blTa65kRGL11nWgCmZE1UFBSxg9fUCpd+b1OWCmNb
-	 jxpZVrv2QQt9w==
-Date: Thu, 14 May 2026 11:38:06 +0100
-From: Sudeep Holla <sudeep.holla@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Guenter Roeck <linux@roeck-us.net>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Alex Tran <alex.tran@oss.qualcomm.com>,
-	Sudeep Holla <sudeep.holla@kernel.org>,
-	Jyoti Bhayana <jbhayana@google.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Cristian Marussi <cristian.marussi@arm.com>,
-	Linus Walleij <linusw@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Viresh Kumar <viresh.kumar@linaro.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, arm-scmi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-	linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH 0/5] scmi: Log client subsystem entity counts
-Message-ID: <20260514-finicky-acoustic-flounder-2dd405@sudeepholla>
-References: <20260513-scmi-client-probe-log-v1-0-00b47b1be009@oss.qualcomm.com>
- <agS8udcvqgQmiqB4@ashevche-desk.local>
- <1f2fb1de-ebc8-40ef-ac53-3348499295e3@roeck-us.net>
- <2026051441-agreed-suffice-bbe1@gregkh>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j07Gsd7A"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-bcc2b199c17so725916566b.3
+        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 04:01:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778756508; cv=none;
+        d=google.com; s=arc-20240605;
+        b=I+HYTTkF0H+6N8V2PGZETnWJgM3T3rVgOxQVOODX9U4rxb9hBke6Fpzm45m2jWIiKU
+         TQ0fVFP8GePqKZqYJwyyVSIUaooNXNtTtlja/DncRz18RbKqqtKHZA4CmM7ZHWg0+02Y
+         JV+OtmNrNUzkr9ixtA0ZC8z+hrION9zhmAmEoYf83oVVwKd2piI6y7aX7WxOy3XraZEH
+         bTuv6LVKxj9ZOf4Q8Y7zCG/1bxdqPn0N9sFIH0ouMX0SjklV+lGHkyBSCquu7pkdJpwx
+         5A30PLtC0Q4FqmbXxs3uYwJ2sFjVdETpZuQCLeeyel+qCmvBBkeA1Hz2lEahlQn9FLWB
+         XThA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=R8FmuO9ytE7ii9dxdPkU5C9agt3DuPWhWQL1X9mtYmo=;
+        fh=m3iW9RCHIyXbhhDynpEjUtCaDAQ/Yspx7kkdLMT1M8I=;
+        b=RbZZwB94n7JONZp56+rhgvILW5mCecZFFpemnpS4JbP+toI5INBlmO2n4wWXATNx4M
+         wIZKlqyfcxt/j70kHDmON6c80khVRRpwWVulUUFo9VavhR1r2dLIrKH3YkPCaiKGpasj
+         jRkCQnad7YCwEtrTg5HeFBPh8THa5+UaoBVIFhFS6nL9JcW1LYoJ0CEp3iQ7gk5qyjnN
+         M2COZON9H+1TTJplU8JnmGgdTYFP86rv3ThYqzHAh8u0ocnXoOjORY1GFN1zsdZ6deWr
+         uYghK/6sp2PkoQ895k16/FpgOHcnwVXwxZ1XOFqU9wokuWO7AYj4KKQMyl6gCMXeM8ex
+         EHnw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778756508; x=1779361308; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=R8FmuO9ytE7ii9dxdPkU5C9agt3DuPWhWQL1X9mtYmo=;
+        b=j07Gsd7A465c8sOgkF45bwFTCUVvYtOU0op1Ff3RJ/PJIlmzYkfOx10wufv5uz0SOS
+         lQa/yNQ6fRxuQ6JpdNBkfb/E/AqW2uLqq3YWhhWCvZLwvzrD3NylPW8iAg70fcl2TUNC
+         CtpfLCev2T7IsaUAbtTClaOBDy8RyGCRKHIk/SvnYHEis493wSRXT27avw4+pcKXWQki
+         33JN2VKcOWDPWIJ0ehPMI5l13pA/czvw7su6Y2OBNhoZxpCPOMI3+DmvcdFol4J8evnH
+         eJVzJ/uTzwt6hQrH1xWM6SIlFscxahXykVjIPe8fUdB5TsnTphfXEzoM3lGv+bOnfHhU
+         GP4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778756508; x=1779361308;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R8FmuO9ytE7ii9dxdPkU5C9agt3DuPWhWQL1X9mtYmo=;
+        b=Kap2PgjZp+v9/nhG6yZGfTfawVyFuF/jfm43u5siUwRCGykKkreB3tJaPmjMbYwu6B
+         0PGB1QafwmG/mz392hpK2cW3iRHTuV+dDAGlFceLwb8DvBdgouiawBzZYZAOAmCO8sUr
+         1Eh4Sf0YJFJJm/ced767/+GDgiYkgiFSy8ykZxahp7O/DXecoCE8o5tVlYRq4MsDWxXt
+         CvvTF2LaZFYy4EbUoMtyZ0YdC4g9/8QCHESkdDpowsV0CsnDHmFjQzaCYcgYcHlriunu
+         SHL0ca05JiW1akNdrdbitwXXKTg6i/EtBzm5/qKqckIOIzBjIxwon5ePoxDNAXpzo1NZ
+         CaMw==
+X-Forwarded-Encrypted: i=1; AFNElJ9TvZAGpTsa6R/ou4ZclCffN7W63sHw9qhQUqkThf4MvFEzlPUcgFnqUGhPNXpG98PvgRjBYIpgLc4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzshRKZsemRPYbvLllGGMX8JmNzV7dk54nA87yFd/gR4vxYIcFd
+	nEHr8oBXsFxU1xfHHTb42UsQqOBYlsiQhrEssQ5SXYftAny8blR+fwrRwTiF3RmC73oitugrQ52
+	i6tym87n/Qv1V1cEzdRI2tYi4AxNcXxY=
+X-Gm-Gg: Acq92OEGmZ9f+v7csAGrCd7w9+NMXPVQFZk6FqiNFIK5vCAGu9bPzlxe9K2Zvre7DcM
+	kxGcWyaOMO2HGqiMkdaUM+BpidMragYYbaVViEZzrHdCkp+ZeEGnK4q/Z3OZRXzKwwtJ1XGnHrR
+	rFs5R7wMO2Jhk2ZlnPlftE7Ias6PVYD7aXT52fqIIVc5y0mRTtCMVLBWEEdX7VAc+f8nfihK9KT
+	H1zFSx/1lSL+++lsWKAm6Blijt15erGg6YFAEedbR17qUQ/sPEhP0/hyAqde+Q7Z9Eo5HHoIJ6M
+	x16twjP80KNPzRhcxBUka89CmBivkh7O3GAlEf5917CcdxgU67qSq7D9QonVJ7wopKDd4GTnJJ3
+	3+tPbMuwz4ly/rZMzmKmAUzmhOq1iJ8sHPlXQ01yiBhNJneWrT52GBpA1xDkFSwe0f6s8L9sHX5
+	v83zJWnA==
+X-Received: by 2002:a17:906:4790:b0:bd1:ba58:17ae with SMTP id
+ a640c23a62f3a-bd3e2eb962amr461411666b.43.1778756507200; Thu, 14 May 2026
+ 04:01:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2026051441-agreed-suffice-bbe1@gregkh>
+References: <20260513-ak8975-fix-v1-1-104ea605dd54@gmail.com>
+In-Reply-To: <20260513-ak8975-fix-v1-1-104ea605dd54@gmail.com>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Thu, 14 May 2026 13:01:35 +0200
+X-Gm-Features: AVHnY4LlRUsfL0Fm8kkHF7WQTlEZOXvMse9kaAAxyMARFOjw0tXhQ-j2YVKGiTE
+Message-ID: <CALoEA-zd_hBEK=tjqKmtZvpwoEhDWKW2a9ZN-Ltu1r09Y7zMbg@mail.gmail.com>
+Subject: Re: [PATCH] iio: magnetometer: ak8975: ensure device is awake for
+ buffered capture
+To: joshua.crofts1@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, May 14, 2026 at 08:48:19AM +0200, Greg Kroah-Hartman wrote:
-> On Wed, May 13, 2026 at 11:27:21AM -0700, Guenter Roeck wrote:
-> > On 5/13/26 11:02, Andy Shevchenko wrote:
-> > > +Greg (I believe the trend is to drop such messages and not add them [back]?)
-> > > 
-> > 
-> > Is there some common guidance on this ? I'd be all for dropping messages
-> > instead of adding them, but there seems to be a perpetual battle between
-> > people who want to log everything and people concerned about logging noise.
-> > As maintainer I always seem to be stuck between those two camps.
-> 
-> When drivers work properly, they should be quiet.  This patch series
-> adds a bunch of dev_info() calls, which is not ok.  If a developer wants
-> to see extra messages, use the dev_dbg() infrastructure, or the tracing
-> infrastructure, both of which are there for this very reason.
-> 
+On Wed, 13 May 2026 at 16:35, Joshua Crofts via B4 Relay
+<devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+>
+> From: Joshua Crofts <joshua.crofts1@gmail.com>
+>
+> Currently, the ak8975_start_read_axis() can be called while the device
+> is autosuspended, causing two issues:
+>
+> 1. I2C transfers in the aforementioned function will fail or timeout
+> because ak8975_runtime_suspend() disables the device regulators.
+> 2. Since ak8975_fill_buffer() does not hold runtime references,
+> ak8975_runtime_suspend() can run concurrently, and since PM callbacks
+> do not use a locking mechanism, it may cause a race accessing the
+> control register via the I2C bus.
+>
+> Fix this issue by adding struct iio_buffer_setup_ops that contains
+> preenable and postdisable functions to ensure correct that device is
+> powered on when running a buffered capture.
+>
+> Fixes: bc11ca4a0b84 ("iio:magnetometer:ak8975: triggered buffer support")
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Closes: https://sashiko.dev/#/patchset/20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6%40gmail.com
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> ---
 
-I completely agree and tend to follow that. But I always assumed it was
-left to maintainers taste.
+FYI, Sashiko reported an additional issue concerning the leaking
+of uninitialized kernel stack memory.
 
-> So yes, I agree with Andy, this series is not ok, don't make more noise
-> please.
-> 
-
-I am now thinking if [1] was the one setting example for this series. I did
-ack it as I left it to the subsystem maintainer's choice(in this case author
-as well).
-
--- 
-Regards,
-Sudeep
-
-[1] https://lore.kernel.org/all/20260304101457.7470-1-ulf.hansson@linaro.org/
+https://sashiko.dev/#/patchset/20260513-ak8975-fix-v1-1-104ea605dd54%40gmail.com
