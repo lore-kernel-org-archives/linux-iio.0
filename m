@@ -1,52 +1,56 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7259C3955F4;
-	Thu, 14 May 2026 14:49:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AE0E423165;
+	Thu, 14 May 2026 14:49:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778770172; cv=none; b=X4dZ5GTPcj3iJema5iY89nBS6jhdSReh9XQiieoFyYlNsu5ApeHv4Y61HhCQq0TPcEY+R+uWeYXiOtNJ+aOt5dbCyzCjmk21dZ262x/XQaKmGi/auhzilWbcn48SbVNoT4sVU4/P2wcpZgqNHHD4KHsb807HfFqS+9qDM3TfcUc=
+	t=1778770174; cv=none; b=EluK9c1T6DhbaJMMbUQg5p6CZY8tDc+34kVyy9JQTmqxam63HRFqEktoVlaPLuqxcitwq4RoCTYqp852jrRt0n2ftFzRwSn0/28BDfsgPEv4iFN1aylSkiLncGy+aFnH53r5nsuQSYcKj79Tf7UCuZlbCN/XBEr1v5x/m2wqHa8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778770172; c=relaxed/simple;
-	bh=dIGR54g+j/9yoCqVw2BlXyFlQd0JBTGgLT5LEFMHCCs=;
+	s=arc-20240116; t=1778770174; c=relaxed/simple;
+	bh=CmySF8OIktTFikW7ESRHWnlGhBvyzZUhf3Nml0FqDaE=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mZKRtFBS57B7WKfMcvodlU0ZvnkmUHrry3vXmrcKuNCDgsaXpRQ1gNxjUXSZmPS1km9OpF5/aO0ZK7kORUJ6WwLRvxqp/qp3TfNscVNzRjD6DSG81dXrNAs7xtbXaT/B72u2VHEwhp+IQBg/XlNOe6t1w9MbqnF2XvpxEKVWCO4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=nR8wzgMN; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=Fic5Vr4ckY+BXOm17/9wi2BUHSn5hv7TpCUvmlyAuI0Futt29W3bCacuR+Pk9jy8YZvpx49I16evoEzNo/dvbjzJU7nl8Pdk7Zf4++XK5XhNhOWT58D68mROCFg3nlBQywFrsbz56mdwZg1rMKe6120svXNjc2dIN2Ol6FtlMgk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=LKywOuQ5; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="nR8wzgMN"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64EE2VrN2905295;
-	Thu, 14 May 2026 10:49:27 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="LKywOuQ5"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64ED0aeZ1714990;
+	Thu, 14 May 2026 10:49:30 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=IYoon
-	QSyJ+0IlGtHVpgFXc+0gu5zJqKJ93oSnh/aYLs=; b=nR8wzgMNq328zAF33A3MN
-	44KK+U/jtv9hrWG7lgCB06JModNBwRMFYDIM5PFE/zSdpSQx54rS7CN77pPRW2KN
-	royuu51TugkL5UKLcK+IDERcmYyvyJ/bhVp3vub4qc6UMTRDZKyPrVXEq31jKr4D
-	cjZDH0jIzv2uZxFapWvU050S91p02Hj6WrIbkqadoPwM2nr6g/2frOCnzmRcrkvI
-	Z34PKK86EbwZjEZWxii9fi44PZHUS4mgzFHVAqtH3HjCEXXT0s1aAMRNVPWRyP+Y
-	NQ64wZeIbB5W558Xf74hkaF1do9L/jc42Mi0ITIYjR4HjJ44o8o9QslL/t3R+hZY
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=uL2Xs
+	S9P02fsmG4qiSfp1w8XJbwFYe73+oRLPk88/pU=; b=LKywOuQ5hJvEG4h2KiNTl
+	eEQxmgt0gjKAyeiMuMdKhwAgfVFFgnSbJSdOvT8vcGAoH79PuM0szXlkt1R+mGWa
+	AyzCoYZhWouoyFrGINRTk+G8866+j6RD0cUqoY9xyTw5uywYO3A0XQVeT3yV/HIy
+	OG2fzLN8CN0rumcgKT+961qMiGjS5dhgpKbDfujgoloOcUWP0w3VlDFYX5MY+VNw
+	mO9J+dDUblZOuRO5yKYFuUgOoSDbH4SAmMxE+xxFzTvNGSMGpuM8roELDzODOZEM
+	4pZ25/AC1H9lJoKmCF9QrxHEqscgRUygczxOdsI5VvAqKQSmgWmPkzOD1O7kzV6Z
 	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4e4t1xvwbb-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4e54xgtj3u-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 14 May 2026 10:49:27 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64EEnQbm041731
+	Thu, 14 May 2026 10:49:29 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64EEnSwc041737
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 14 May 2026 10:49:26 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 14 May
- 2026 10:49:26 -0400
+	Thu, 14 May 2026 10:49:28 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Thu, 14 May 2026 10:49:28 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Thu, 14 May 2026 10:49:28 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 14 May 2026 10:49:26 -0400
+ Transport; Thu, 14 May 2026 10:49:28 -0400
 Received: from HYB-MkYHBcJRSnh.ad.analog.com (HYB-MkYHBcJRSnh.ad.analog.com [10.48.65.202])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64EEmjAa014051;
-	Thu, 14 May 2026 10:49:17 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64EEmjAb014051;
+	Thu, 14 May 2026 10:49:21 -0400
 From: Liviu Stan <liviu.stan@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>,
         David Lechner
@@ -56,18 +60,18 @@ To: Jonathan Cameron <jic23@kernel.org>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
         Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
+        "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>,
         Conor Dooley <conor+dt@kernel.org>,
-        Antoniu
- Miclaus <antoniu.miclaus@analog.com>,
+        "Antoniu
+ Miclaus" <antoniu.miclaus@analog.com>,
         Liviu Stan <liviu.stan@analog.com>,
         Francesco Lavra <flavra@baylibre.com>, <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux@analog.com>,
         <devicetree@vger.kernel.org>
-Subject: [PATCH v2 3/7] iio: temperature: ltc2983: Fix inconsistent channel wording in messages
-Date: Thu, 14 May 2026 17:46:50 +0300
-Message-ID: <20260514144712.64374-4-liviu.stan@analog.com>
+Subject: [PATCH v2 4/7] iio: temperature: ltc2983: Use fwnode_property_present() for optional properties
+Date: Thu, 14 May 2026 17:46:51 +0300
+Message-ID: <20260514144712.64374-5-liviu.stan@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260514144712.64374-1-liviu.stan@analog.com>
 References: <20260514144712.64374-1-liviu.stan@analog.com>
@@ -80,150 +84,80 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: ie4FAFkXJBVlzenKnbOmK5Nh5CJBFrJn
-X-Authority-Analysis: v=2.4 cv=Wbo8rUhX c=1 sm=1 tr=0 ts=6a05e0f7 cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE0MDE1MCBTYWx0ZWRfX3jVY58Rv7lUP
+ d4MaglooeIilaZNigsgSUjiS09nNXX8aWEprgYoFeTJaxpDz2hMAYpIAb8kF9ySm0N91xt3P6Rz
+ LfdjAVVGYr/SHHOpNjbIzb97JMr9qUTv9YAWWvna38qPqUD9yTWuYmGZ9BBcntquu7V2vv4YMMB
+ Djr82g+sPZ4jEGuztvElv8ZXVVaLMaxoI8iF44rMZS7F6N+91w4AOQVWefDMki09ruLACrPsWUb
+ z0Mna5cv7Sx4o4VOnPQgkmB93kNeuIG4gViAT6CO0huDpqodvEv6cWkbuAmPkAUO9Yns8qy3th+
+ KHETC0DpesxzjttbtZF5I8XS2ZuoaPb4w1kKjsrA3i734xsqrXJiuvFfS1abPCK/pI1pLd2YQsH
+ HTcCa/k4KyeplVcBh3KJlXH5Fu5QYxMDJQF2jU4m16scfJL2jzvqLuLNQB9b0MIRiCIWexqYXVt
+ 0DY6S+HyY9oneuGbbWA==
+X-Proofpoint-GUID: DKhB2dHvskD5AA1gNShxDjxRjOTx3o-S
+X-Proofpoint-ORIG-GUID: DKhB2dHvskD5AA1gNShxDjxRjOTx3o-S
+X-Authority-Analysis: v=2.4 cv=MMFQXsZl c=1 sm=1 tr=0 ts=6a05e0f9 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=ns7QdhbT8QDaN8w0EOgA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE0MDE1MCBTYWx0ZWRfXyFNwQ2afk3Co
- GZr3V580ZudqjCWrw9HiBl7Ojvb5s2wYt1DL7K3JJ0SpjldJcvdTc9b2uGXmfK2pjMmlkgf7PrJ
- Kb4oWPSQ20XpFazNCKp7wpENQa90IxJokUD0UhI9Qz9zdrGrwOO0M9vuSfd8Pkwxl8DYBDkLrPh
- fM7tOaPMaBWoGrjXhtRHHk4Xyg61uOv8fehjWxzoerMIVg+V9Oe1kGomPcJj1z8fUcRrxR9zSLJ
- xrpk0g15PrKsrfMFmT3SvzWSTfJ9htaqCviCJqJBO+QOIAiutL8CJT/2HvMh16J9FmhFsHdECUX
- CeF5Ye6tdNuTf4q+efQHAOHnYEGqXZB4VxOeAN+NfskT+rvLfnRG2lVKJiLL5iD6n4r/xU4icfV
- aUbA+01l96ihBZOY5WV5LB+Rswa7IuySiGIjpsJ4Q4DB9OZZcJKvwPa59JqNAYWD6NCtZlQQBVF
- GVDsX8mnjCjABuDi1cg==
-X-Proofpoint-GUID: ie4FAFkXJBVlzenKnbOmK5Nh5CJBFrJn
+ a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=anXMOi7fFe8hw7OE3YUA:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-05-14_03,2026-05-13_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 priorityscore=1501 suspectscore=0 lowpriorityscore=0
- malwarescore=0 clxscore=1015 spamscore=0 impostorscore=0 phishscore=0
- adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605050000
- definitions=main-2605140150
+ lowpriorityscore=0 adultscore=0 spamscore=0 impostorscore=0 malwarescore=0
+ priorityscore=1501 phishscore=0 suspectscore=0 bulkscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605050000 definitions=main-2605140150
 
-Replace all occurrences of the abbreviated 'chann' and 'chan' with
-'channel' in error and debug messages throughout the driver.
+Checking fwnode_property_read_u32() return value with if (!ret)
+silently swallows meaningful error codes when a property is present
+but malformed. Use fwnode_property_present() first so that absence
+uses the default while a present but unreadable property returns
+a proper error.
 
 Fixes: f110f3188e5639c81c457b2b831d40dfe3891bdb ("iio: temperature: Add support for LTC2983")
-Fixes: a00838cae079b9b9b90969c2b7b031b1bfd9ab3a ("iio: temperature: ltc2983: convert to dev_err_probe()")
 Signed-off-by: Liviu Stan <liviu.stan@analog.com>
 ---
 Changes in v2:
 - New patch.
 
- drivers/iio/temperature/ltc2983.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/iio/temperature/ltc2983.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-index e74ea4f87ec9..f42777c1f3c2 100644
+index f42777c1f3c2..bf435e965c6d 100644
 --- a/drivers/iio/temperature/ltc2983.c
 +++ b/drivers/iio/temperature/ltc2983.c
-@@ -700,7 +700,7 @@ ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data
- 	if (!(thermo->sensor_config & LTC2983_THERMOCOUPLE_DIFF_MASK) &&
- 	    sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
- 		return dev_err_ptr_probe(dev, -EINVAL,
--					 "Invalid chann:%d for differential thermocouple\n",
-+					 "Invalid channel %d for differential thermocouple\n",
- 					 sensor->chan);
+@@ -669,8 +669,14 @@ ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data
+ 	if (fwnode_property_read_bool(child, "adi,single-ended"))
+ 		thermo->sensor_config = LTC2983_THERMOCOUPLE_SGL(1);
  
- 	struct fwnode_handle *ref __free(fwnode_handle) =
-@@ -798,7 +798,7 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
- 	/*
- 	 * rtd channel indexes are a bit more complicated to validate.
- 	 * For 4wire RTD with rotation, the channel selection cannot be
--	 * >=19 since the chann + 1 is used in this configuration.
-+	 * >=19 since the channel + 1 is used in this configuration.
- 	 * For 4wire RTDs with kelvin rsense, the rsense channel cannot be
- 	 * <=1 since channel - 1 and channel - 2 are used.
- 	 */
-@@ -815,18 +815,18 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
- 		    (rtd->r_sense_chan <=  min))
- 			/* kelvin rsense*/
- 			return dev_err_ptr_probe(dev, -EINVAL,
--						 "Invalid rsense chann:%d to use in kelvin rsense\n",
-+						 "Invalid channel %d for kelvin rsense\n",
- 						 rtd->r_sense_chan);
+-	ret = fwnode_property_read_u32(child, "adi,sensor-oc-current-microamp", &oc_current);
+-	if (!ret) {
++	if (fwnode_property_present(child, "adi,sensor-oc-current-microamp")) {
++		ret = fwnode_property_read_u32(child,
++					       "adi,sensor-oc-current-microamp",
++					       &oc_current);
++		if (ret)
++			return dev_err_ptr_probe(dev, ret,
++						 "Failed to read adi,sensor-oc-current-microamp\n");
++
+ 		switch (oc_current) {
+ 		case 10:
+ 			thermo->sensor_config |=
+@@ -760,8 +766,12 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
+ 		return dev_err_ptr_probe(dev, ret,
+ 					 "Property reg must be given\n");
  
- 		if (sensor->chan < min || sensor->chan > max)
- 			return dev_err_ptr_probe(dev, -EINVAL,
--						 "Invalid chann:%d for the rtd config\n",
-+						 "Invalid channel %d for RTD config\n",
- 						 sensor->chan);
- 	} else {
- 		/* same as differential case */
- 		if (sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
- 			return dev_err_ptr_probe(dev, -EINVAL,
--						 "Invalid chann:%d for RTD\n",
-+						 "Invalid channel %d for RTD\n",
- 						 sensor->chan);
- 	}
- 
-@@ -925,7 +925,7 @@ ltc2983_thermistor_new(const struct fwnode_handle *child, struct ltc2983_data *s
- 	if (!(thermistor->sensor_config & LTC2983_THERMISTOR_DIFF_MASK) &&
- 	    sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
- 		return dev_err_ptr_probe(dev, -EINVAL,
--					 "Invalid chann:%d for differential thermistor\n",
-+					 "Invalid channel %d for differential thermistor\n",
- 					 sensor->chan);
- 
- 	/* check custom sensor */
-@@ -1040,7 +1040,7 @@ ltc2983_diode_new(const struct fwnode_handle *child, const struct ltc2983_data *
- 	if (!(diode->sensor_config & LTC2983_DIODE_DIFF_MASK) &&
- 	    sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
- 		return dev_err_ptr_probe(dev, -EINVAL,
--					 "Invalid chann:%d for differential thermistor\n",
-+					 "Invalid channel %d for differential thermistor\n",
- 					 sensor->chan);
- 
- 	/* set common parameters */
-@@ -1094,7 +1094,7 @@ static struct ltc2983_sensor *ltc2983_r_sense_new(struct fwnode_handle *child,
- 	/* validate channel index */
- 	if (sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
- 		return dev_err_ptr_probe(dev, -EINVAL,
--					 "Invalid chann:%d for r_sense\n",
-+					 "Invalid channel %d for r_sense\n",
- 					 sensor->chan);
- 
- 	ret = fwnode_property_read_u32(child, "adi,rsense-val-milli-ohms", &temp);
-@@ -1131,7 +1131,7 @@ static struct ltc2983_sensor *ltc2983_adc_new(struct fwnode_handle *child,
- 
- 	if (!adc->single_ended && sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
- 		return dev_err_ptr_probe(dev, -EINVAL,
--					 "Invalid chan:%d for differential adc\n",
-+					 "Invalid channel %d for differential ADC\n",
- 					 sensor->chan);
- 
- 	/* set common parameters */
-@@ -1157,7 +1157,7 @@ static struct ltc2983_sensor *ltc2983_temp_new(struct fwnode_handle *child,
- 
- 	if (!temp->single_ended && sensor->chan < LTC2983_DIFFERENTIAL_CHAN_MIN)
- 		return dev_err_ptr_probe(dev, -EINVAL,
--					 "Invalid chan:%d for differential temp\n",
-+					 "Invalid channel %d for differential temp\n",
- 					 sensor->chan);
- 
- 	temp->custom = __ltc2983_custom_sensor_new(st, child, "adi,custom-temp",
-@@ -1182,7 +1182,7 @@ static int ltc2983_chan_read(struct ltc2983_data *st,
- 
- 	start_conversion = LTC2983_STATUS_START(true);
- 	start_conversion |= LTC2983_STATUS_CHAN_SEL(sensor->chan);
--	dev_dbg(dev, "Start conversion on chan:%d, status:%02X\n",
-+	dev_dbg(dev, "Start conversion on channel:%d, status:%02X\n",
- 		sensor->chan, start_conversion);
- 	/* start conversion */
- 	ret = regmap_write(st->regmap, LTC2983_STATUS_REG, start_conversion);
-@@ -1234,7 +1234,7 @@ static int ltc2983_read_raw(struct iio_dev *indio_dev,
- 
- 	/* sanity check */
- 	if (chan->address >= st->num_channels) {
--		dev_err(dev, "Invalid chan address:%ld",
-+		dev_err(dev, "Invalid channel address: %ld\n",
- 			chan->address);
- 		return -EINVAL;
- 	}
+-	ret = fwnode_property_read_u32(child, "adi,number-of-wires", &n_wires);
+-	if (!ret) {
++	if (fwnode_property_present(child, "adi,number-of-wires")) {
++		ret = fwnode_property_read_u32(child, "adi,number-of-wires", &n_wires);
++		if (ret)
++			return dev_err_ptr_probe(dev, ret,
++						 "Failed to read adi,number-of-wires\n");
++
+ 		switch (n_wires) {
+ 		case 2:
+ 			rtd->sensor_config = LTC2983_RTD_N_WIRES(0);
 -- 
 2.43.0
 
