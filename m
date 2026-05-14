@@ -1,105 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2FAA33C532;
-	Thu, 14 May 2026 16:23:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0969639AD55
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 18:35:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778775807; cv=none; b=p2eBRdupnUnHf0/mEaWxImjkJaR/SK5+l+tJQR2XRzT/jNqmRhWqzmodcz7HCSjEkXdD/iPNuwoHa2KBCDve5iDn58vyHHdrfzjdYblZc6y+VNbiJxlc02AvuS/qweDGoNIx8fRL8fiBsqoKpdmfLYf9uiJI3ACxpIc70IJ939g=
+	t=1778783742; cv=none; b=Rke+DG5fIHGYEGsXGvnv3zIT4GpeJ0iu0rCr8FqCEcjhqzUIZql5cGGxR5rztTqCcTcDbWk9H9HJw9qnmOPyUG548pHvYbz2Ko9Bv5x2UamyQV4RVRwRMoW/JScnJx1vGL7NaO8z4ois5yTvN1BeqWaaizRNpoo/Qx3db/sSCXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778775807; c=relaxed/simple;
-	bh=+Bv5eiBvvnBmA0eM3BYxLe5zZe76ZDBqgaGVnQZsA8U=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ObBVWjWXy9sLizACi4f4R6uEQ0op/mJXE1f9qMu8N5pNLJ/sMJWOjiliJsdYENVAuoEsDW78IWKiT7ut4wbdG4toigBSVbwk/LrInx8kzy9oeodwK0SCjACbuHhHgDl2SsofnpbPy65QaZ9l2oqJgoxgfbXYey/WwkcRNuwoBl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=V4h5wLIy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778783742; c=relaxed/simple;
+	bh=UHLZrmkbalB21d3x+8akHIEbjFUQb+tufhtJvMP9eno=;
+	h=Content-Type:MIME-Version:From:To:Cc:Subject:Date:Message-ID:
+	 In-Reply-To:References; b=cgTKjNxp5BDa3NHs4DYYtzbwgBFPtka5TnvYoOxjnLBxDl+luSO6riLnGPrLq34+Kb3J9Txq9LXMGAewfJNAkVN0RvATY7HOm8XPqSapzJIuWD/JBqhc+9y86kSQHPTS2ndn4zoB3ZGFq636RLSK0FNp8GwqJGy9nmtZ+6cRPWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sEmOLkhM; arc=none smtp.client-ip=209.85.208.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="V4h5wLIy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29411C2BCC7;
-	Thu, 14 May 2026 16:23:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1778775807;
-	bh=+Bv5eiBvvnBmA0eM3BYxLe5zZe76ZDBqgaGVnQZsA8U=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=V4h5wLIybsTaoXf/+XqIKVRWq5D9xMkilAMYkYkS6QW45p8ZqiET12w336T3hOBYJ
-	 Ynt+oRpxOOpTOZs54bFFQ0BcHGImHICBxmt5dFZCXhirnigvxtEFMmN6Lafk1Zxsgc
-	 YcKgPEGXBXwL6P8spM3a5IAl7/ygm/ZnNeBTYDCk=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Sam Daly <sam@samdaly.ie>,
-	stable <stable@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 3/3] iio: adc: ad7768-1: add bounds check to ad7768_filter_regval_to_type index
-Date: Thu, 14 May 2026 18:23:22 +0200
-Message-ID: <2026051423-snowcap-excusably-2b68@gregkh>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <2026051420-strudel-graves-f6cd@gregkh>
-References: <2026051420-strudel-graves-f6cd@gregkh>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sEmOLkhM"
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-393925cb1baso86265821fa.0
+        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 11:35:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778783739; x=1779388539; darn=vger.kernel.org;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UHLZrmkbalB21d3x+8akHIEbjFUQb+tufhtJvMP9eno=;
+        b=sEmOLkhMpT9TlxwU35rArQ67YdMfcipI/Uv7DmTvldynXL7A0cSHfUeFhlPglbMliG
+         mwdfaRYFQHY44wyr6oC0MXVM7lw21m1z3H2ZyYCD0MqJWBAaV46wHzn0ZvPsu92V6OXZ
+         rPPYegGEVq3uwnMYswZvtfvexdjPx5f+CB8CWu1mw3R1VYrNddV/otYm2bj6zjIp/LAK
+         qxKXrvgatXaz1O3/wAMAI4vEYo8KoUtmDN9xqP2j/wC4tHvMaJMbYGgU2oQTf2He2pqv
+         QNgrKQi1xRj4pX6kYphW1ewK+VDdaVVLB1SqzKkgiVhdWC6EuYdtFYhBzQVE+kvolNpE
+         LiaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778783739; x=1779388539;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UHLZrmkbalB21d3x+8akHIEbjFUQb+tufhtJvMP9eno=;
+        b=dlvLdcjYR7Mo/w757yBYOCqmHIiRFqbFU6hrlBq8js387FAOjOwNczHfIe/1yiLhRl
+         wP/jTRli+ldCc2tMcRNs8hwo6QW7hKjhXiMEMCfW5AmdH4QCi5dxk4r70IsF/N948FmG
+         Ts9tGDdinUaFnlRuSXpaLugq4+ngfQyOpwpNSPfMw6jN8eyd3Nzk1Pzwl7+7lKDs01GP
+         4TcOfQLDvUDoCOPQdsrmhH6H1mGnnTg0KOoo4T6l3DRR4uuhdn/3zTC5yRMo8YriB4Ns
+         K3Fy36pDU3Xud/yvNLj7VkgsKevLJ3j3C3kpvm0zhtful42N1yvi1FZxad5Q/vwoX5rb
+         YBng==
+X-Forwarded-Encrypted: i=1; AFNElJ+w4w8zRfFHn+YKi6fgxtWiuxPue5m2fa5YvYjQG413RaV0bX4nLceIRrU1Soq1vVqJZgsMO6bYu+0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy7EuPgvwe4P+rsYDiuhBY+hYm+6XGcG8jnDgyiHkbIMhKKo0Mh
+	tEr2mGwMY2zhltIQv9+gQtYoUQZVpW2u3PNaddb6vdCDnpF95yU3q97y
+X-Gm-Gg: Acq92OH1wzg/1jgd9Qcv0jvqKMSFBiAjF7GsgJ2aHoowUomm1TkPPQHJXaHbIJcMH+N
+	GsN2zCtim3fiuOZOQHhZED6VdCcjda0lLwHv6e1xcqE2O3vmgA4VNaaB8vPlYv1j4ckvl/xL5qY
+	0Ln7+tKDkDm3To3zyt4RRbOU0OEpq2uQhCT1j68dOotgd7fQJ5TsuoXtXA5vDF7MOKP1TLVwW1v
+	KUCHRM0AWsoshxphf5k5BQxb8tH7v9NQXsUVKsHDlyOOeD0YtTapoSlnZR5nraLm3WqKa6IwC49
+	jg0K8ghVbaeLaES5CqwhnrzXapHFdUd7X3bE2rwq17TMSmr56wizHyE0Uk4OmXfCJq+iKHC0Apx
+	JS1tl6F1syDzi5ygRd/AWRImO0zGQe4NIvxfjU6J0zJ2HwC1UfsuQ0yBoL0AA9ynOgvdiYWKM07
+	PdriYb/mPpeUYurBCMoO58JOyb7cxLycs+JAWneqGgnV8aWw0zm1FHYdznunSz2m0qzw/n/ds4i
+	icAJLkd2A==
+X-Received: by 2002:a05:651c:e09:b0:393:a5dd:135b with SMTP id 38308e7fff4ca-39561d4c039mr653601fa.14.1778783738891;
+        Thu, 14 May 2026 11:35:38 -0700 (PDT)
+Received: from Shofiq.home (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3945c8dc7afsm8013021fa.14.2026.05.14.11.35.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 May 2026 11:35:38 -0700 (PDT)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1830; i=gregkh@linuxfoundation.org; h=from:subject:message-id; bh=nSZlQUuq3Oo62ys9TbIblpj55BYjV5T7o4FWuL2pjBE=; b=owGbwMvMwCRo6H6F97bub03G02pJDFms334vsUmbtMYrUTOtpuOttrRI8voVa/+kTu/I5DNrl y14I5PVEcvCIMjEICumyPJlG8/R/RWHFL0MbU/DzGFlAhnCwMUpABNR72RYsOHD+cuXHyVf+Hdx t0XmhwehvMElSxhmszXqSESK/hJQvaDTn83O2ClS150DAA==
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
+To: jic23@kernel.org
+Cc: andy@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] iio: accel: adxl3xx: Add timestamps to FIFO data
+Date: Thu, 14 May 2026 21:35:37 +0300
+Message-ID: <177878373700.35036.18408837738235928455@gmail.com>
+In-Reply-To: <20260510082556.3867-1-shofiqtest@gmail.com>
+References: <20260510082556.3867-1-shofiqtest@gmail.com>
 
-From: Sam Daly <sam@samdaly.ie>
-
-ad7768_filter_regval_to_type has 12 elements but the combined mask
-AD7768_DIG_FIL_EN_60HZ_REJ | AD7768_DIG_FIL_FIL_MSK spans 4 bits
-and can yield values 0-15. If it returns a value >= 12, this causes
-an out-of-bounds array access. Add a bounds check and return -EINVAL
-if the index is out of range.
-
-Assisted-by: gkh_clanker_2000
-Cc: stable <stable@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>
-Cc: "Nuno Sá" <nuno.sa@analog.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Signed-off-by: Sam Daly <sam@samdaly.ie>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/iio/adc/ad7768-1.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
-index e16dede687d3..52e95017d36b 100644
---- a/drivers/iio/adc/ad7768-1.c
-+++ b/drivers/iio/adc/ad7768-1.c
-@@ -897,7 +897,7 @@ static int ad7768_get_filter_type_attr(struct iio_dev *dev,
- {
- 	struct ad7768_state *st = iio_priv(dev);
- 	int ret;
--	unsigned int mode, mask;
-+	unsigned int mode, mask, idx;
- 
- 	ret = regmap_read(st->regmap, AD7768_REG_DIGITAL_FILTER, &mode);
- 	if (ret)
-@@ -905,7 +905,11 @@ static int ad7768_get_filter_type_attr(struct iio_dev *dev,
- 
- 	mask = AD7768_DIG_FIL_EN_60HZ_REJ | AD7768_DIG_FIL_FIL_MSK;
- 	/* From the register value, get the corresponding filter type */
--	return ad7768_filter_regval_to_type[FIELD_GET(mask, mode)];
-+	idx = FIELD_GET(mask, mode);
-+	if (idx >= ARRAY_SIZE(ad7768_filter_regval_to_type))
-+		return -EINVAL;
-+
-+	return ad7768_filter_regval_to_type[idx];
- }
- 
- static int ad7768_update_dec_rate(struct iio_dev *dev, unsigned int dec_rate)
--- 
-2.54.0
-
+T24gTW9uLCAxMSBNYXkgMjAyNiwgSm9uYXRoYW4gQ2FtZXJvbiB3cm90ZToKPiBJdCBpcyBwb3Nz
+aWJsZSB0byBhcHByb3hpbWF0ZSB0aGUgY29ycmVjdCB0aW1lc3RhbXBzIGJ1dCBpdCdzIGNvbXBs
+ZXguCj4gWW91IGRlZmluaXRlbHkgZG9uJ3Qgd2FudCB0byB0cnkgZ2V0dGluZyB0aW1lc3RhbXBz
+IHdvcmtpbmcgZm9yIGEgZmlmbwo+IGVxdWlwcGVkIHBhcnQgd2l0aG91dCByZWFsIGhhcmR3YXJl
+IHNvIHlvdSBjYW4gcGxvdCB0aGVtIG92ZXIgdGltZSBhbmQKPiB2ZXJpZnkgdGhlcmUgYXJlIG5v
+IGluY29uc2lzdGVuY2llcyBvciBidWdzIGluIHlvdXIgdGltZXN0YW1wCj4gYXBwcm94aW1hdGlv
+biBhbGdvcml0aG0uCgpVbmRlcnN0b29kIC0tIHRoYW5rIHlvdSBmb3IgdGhlIGRldGFpbGVkIGV4
+cGxhbmF0aW9uLiBJJ2xsIGRyb3AgdGhpcwpzZXJpZXMuIEkgZG9uJ3QgaGF2ZSBhY2Nlc3MgdG8g
+YW55IG9mIHRoZSBBRFhMIGhhcmR3YXJlIHNvIEkgY2Fubm90CnZhbGlkYXRlIGEgcGVyLXNhbXBs
+ZSB0aW1lc3RhbXAgYXBwcm94aW1hdGlvbiBhbGdvcml0aG0uIEknbGwgbGVhdmUKdGhpcyBmb3Ig
+c29tZW9uZSB3aXRoIHJlYWwgZGV2aWNlcyB0byBwaWNrIHVwIHdoZW4gdGhleSBhcmUgcmVhZHkg
+dG8KaW1wbGVtZW50IGl0IHByb3Blcmx5LCB3aXRoIHRoZSBjb3JyZWN0IHBlci1zYW1wbGUgYmFj
+a2ZpbGxpbmcgZnJvbQp0aGUgRklGTyB3YXRlcm1hcmsgdGltZXN0YW1wLgoKVGhhbmtzLApTaG9m
+aXEK
