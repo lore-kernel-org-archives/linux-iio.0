@@ -1,66 +1,67 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CDB52D3EF2
-	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 01:01:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 720071531C8
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 01:01:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778720483; cv=none; b=OGBx15aijflWDPr9/exWtxiU9evctOH51RYGe7ry8qK0YVG+LkhFyeY3AFQrYbYcmgo7AnIzSJhmk+d+x3RzVyMtGi/cS9O0IQBg1MPx4TDRja8lr+4a6PbxWJ5Jduj5xVkp5YlrSgeF9KidvuweZ5Xjf7dYdh4sf1RgLZ1Hly4=
+	t=1778720491; cv=none; b=uRtcIZpfRPr2rk8/NSOzEDbSXlyfFj6JbtR/CCSmxtOUpzU0gJ7Rc2jC1wb6wtoXzVuK3i1R7lfTt/s4pO/M8v/yn+EUPkf6gaO3rpspYIt0U5IHR1vKaqMLn4ogx+n7+c/7TlAGc4n5yPqwzOveMXqlgPzSkdcCh0vmWhRxoHI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778720483; c=relaxed/simple;
-	bh=NbKYeMkM5NguN09KkOFfqTgmRSOZdoHYNf89lOAIJxs=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Cf6RyJuCIgs4DQmJldUb91h4S4YJpMPt58UYN21oMHIKaoL+hJuKDjxe/asm2ORPAPN2D4HPZO5T8cQaNsgEd0MQRuvzvZtRM627gZC1SZrOFv1EiidylHCdSjURm8A5wzTeXQ53s7dKfEv9MjaodH+eLIAAsflKEbr6en4iX9k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AtSUalGF; arc=none smtp.client-ip=209.85.214.172
+	s=arc-20240116; t=1778720491; c=relaxed/simple;
+	bh=DpZqDpgWFdqDiUupU3hy+hp66wdYNBtQrPd1t+nKiRM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Rz3yGY7yqPI99kdbQgpyVE3rQz2YbQulD+JoAPkJlJObFtBabG8y+Ql4KGrhWtG8QA5BBlfE3vszIL19bFVd/GQesXwvIaStgDGvw9WGceIJKJyXBTLrU7zJn0CQhuOJoJaLTVl1WzvOykVJPEyNh9ub67ykp5srXOTgRaXyGoE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nE8kAGLE; arc=none smtp.client-ip=209.85.215.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AtSUalGF"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2b941cd869cso47107355ad.1
-        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 18:01:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nE8kAGLE"
+Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-c8021c8c42fso3208032a12.3
+        for <linux-iio@vger.kernel.org>; Wed, 13 May 2026 18:01:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778720481; x=1779325281; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2wuQ5LwedAkHBzdU2pK2avP+JBelQMIXLc0TXPSN3NU=;
-        b=AtSUalGF6HKT4+eO7+Uzv6lI/zfGGH39C1aVBWNwVM6K5Q14UWhY/PRoy7kh/mAX1B
-         UvfW2tZ3ZK3ZZuVL0pjiQijh7v4KVrqHGSUUHnQhZMAYfxe4GpNXYTEpO+/gTHzVTzTZ
-         bHV9zQ8JFNp+v+53UFiuwjtdvNU6sG7jRaCepgO0h+Mco+iM/ucqM86vUONqoIZTH9CM
-         6pWhaeQK8GvGQRI4D2frknK5F+vrWStCWkXmvA6lRcH6wrU41TQzQOSP1CyP1DMP6zW6
-         Dl6U5yTTfDveTu+G3wqUfklBnELRM2VzC7AuPoqOyKxtE9BCLQ+JGDLvThfq2OQ98W6U
-         duJw==
+        d=gmail.com; s=20251104; t=1778720490; x=1779325290; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=P/TJCCyg3GNNF+cgc4ppW8pNVQF/2kpZ5OGVnmEUE2Y=;
+        b=nE8kAGLEOnpAiwsOx7rhu/Ae7K6KKRSzvz0GHMEVYNMyFMjOFhy6pyJckphG4RAK6z
+         WIqDffZ6sUAS/UAcvoo58JZ5qWT6gsFuQ8JxBzfUqt4oWtmWSheOkZPU+tZne3CQOuBt
+         eb5bCZA8VCywwpV3VfuHmdnCZ7LCgrAn6HanNt80uFLRAPVVhMud6uCKiH4ddQOuBeb4
+         1uwLq3M5Y3HjJuG1jv85f5AtvyN/lbhcHuiTjgrCK8Nvp1Mzs5680Ds4Lm40TDQ4zWRo
+         3NCpDzn5FCSBWKx2vsJdUiVYi3knc0HJEB9Wm+j3OOxvA7Bno3R8NGiCrEihniwUfVTr
+         7sZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778720481; x=1779325281;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2wuQ5LwedAkHBzdU2pK2avP+JBelQMIXLc0TXPSN3NU=;
-        b=TdVk6EVcC3Za+RJ/EYBiGe9qh7syhZa0lr6I+uFjwRXl9Ewf07ow3bNoEXh574F6Dj
-         UmXqUg39vqv7t/MBf/AlDmRs/TFqyJgmsOqNPhzLdvh+UZjO5F9Tm9jmvltRXGIJwYAX
-         SfTFlVOuJyZ1b3iYMrkgRX1207BV6qSnqDz/mTwnl1OU4LslSWb8vNnNXmu6/XBXAtBi
-         /3/cXqrq3Jl6v2Dikclfeuzv83UiPAv5Bav2CN5NcLJoio9OJN4yao7aiJt9FK0wg9Ky
-         TwNnbBwZ7iE48OWzmIz94ZKvYTkVbxDDyvsi8wb3Jl6UdQ9OkeaFEzBoYEG4ZE2BrkTR
-         6kBg==
-X-Forwarded-Encrypted: i=1; AFNElJ8xyBHhc+3+rsgLMO0vqlHnMl0p8NUpqymaYMSlriizOshUN//teprL7FrY6JmU1TZ1lBghAfnJZ4E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwzDwW4tZ53C/v66GPXJDEXY6hLCVC/imdGlWQl2LJu5mPnWsZ5
-	ndLC5yFLoXrFNAZtRXW0g+R3uwECjyXwsgcIvz4SOzkcrlZ6rAxsVHXYbqpM5r4G
-X-Gm-Gg: Acq92OHWAgv8ej6sDmw3yy5Ujs5Zth4SzudVP2ZTdJCC43sDj0KLVrRDiAwXz6T0QnL
-	5eFpR9mdPQQsUkCIOMdKPPKyX87CMozhROnCbcEMfwz+7wdtD/mkOXd/yhbfwdQPSj6vq1x/jcu
-	OwtK84xXHuellrqQEUNY5VGf7g4fAcex9c/TOYM4Wg1753Kk33Rjy1PqbQOVmY9j5FH1EpHfyNN
-	XKXwKh6K75VZKd+o0eH8camrrwylnpVJzHUQ06wHP59TQdNJi5JP9IDKFMmJxJqx3NtRLgOTHQE
-	2qUEPoWHonQwKCPdT6v/o/E2vvM/FOTsQ08s5utwzkhBmN6DBA0pb4MgHj66DIluxOk8GMzwbCq
-	KpAXiicraMdVl/p4PNgwSKgBaCriDbEWcpC0qdm5wFQ5KaWPb7nfom9RC6aYDxbGy0Qndb7oF21
-	vExVUtdqsgPxla2qPb2DA7zE482zaFnvDElLXD
-X-Received: by 2002:a17:902:ea0e:b0:2bc:ac76:c1cf with SMTP id d9443c01a7336-2bd2fe21d31mr52498435ad.24.1778720481118;
-        Wed, 13 May 2026 18:01:21 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778720490; x=1779325290;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=P/TJCCyg3GNNF+cgc4ppW8pNVQF/2kpZ5OGVnmEUE2Y=;
+        b=NcGpXP7IDa69uLzC6P5Pu9S8+SGP7SO9Mk2GaV+B9CE5B0SJtsGeZzr5DwzqmIcClF
+         g1NoykhNmRtfXsspqR5cBNrV+22rMEMHpuk23qERuir1xDAkKcsqL8OBxDwAuVy7Sqlv
+         7rAIUvQuQDQPVBFz5llF/nU46yM4syIiEplpQx+lq2oTTc4MzpLLi70tNfwqH4hunHF+
+         W+TrlNwNeDZRmJW93DcJ8tlvNP9Lv+NHsfBTggU6jS2AMUkXVx2SogQ7JgSYOm/ZUiDO
+         xGFs5NB7lWQ8xY7bz497KKidDKYzdDS5/QXfUIZ6LMXDxvWMwvsZZE+P47QMjRzN0buM
+         PQRA==
+X-Forwarded-Encrypted: i=1; AFNElJ8iY2TERLrrF0fPPftF3LoyyXmA3GCfy0GG/+FwU9T+hTkCaOoDl6TQ04SroiqpUd6oaMgIRHrob3M=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynF9gjU/LxFxr4HntkAr/RWskTmjaijm0gXF6SuwVc30+ZUa18
+	4D9Z/aLDDn02URMoJfzQJ7Bw3kkPk2VlS6MfOL5RIJFxe/8T8X5xli0R
+X-Gm-Gg: Acq92OGL+3zAUXpmK6EqvjW9oLOm85Pr8ArxE782UIpTTzCQxdrpZeluF/jgbjSpYDD
+	1cLPann0b1/Utd08/QvWKemhRWUg2thPFXEnLfIW2MJvUh+Yf5YYjtm2MgCtu3Y+XwLsJL1bJa9
+	8iRG2Wklp0q0wQTX657AFPnb3eGLv34CVttdVmnA8sLgfXEvtqJ8wCC6rRZcRmIlzItxTZSJotL
+	t7woeKQAZD6t3WnFdKbwbTuu2G5rYZIKopSqaGqSvybrRuM13PWW4Xb3oJDV9Oj/r7zNpx9EcfM
+	vJDMj9bP4Yc756xHr9HCk1903I85hkfAqEX3At1SnsbCyOZHu7Nfi3pzTJPjlwXGeTqD3iRb5Sp
+	Dj3zGfpE6I1wpikeNc3TjunL7S2/FmdSMxceA8tJNH91+qFUQYYYUjA6hIgL7bH6td7F8/NCIz5
+	jhCMuZR0jzx1nfw05Hb55Q5aAtT1+K6Bxl44XT
+X-Received: by 2002:a17:903:bc2:b0:2b0:c45a:bc2 with SMTP id d9443c01a7336-2bd27139901mr47310305ad.16.1778720489578;
+        Wed, 13 May 2026 18:01:29 -0700 (PDT)
 Received: from [127.0.1.1] ([203.99.159.231])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5d0fbc05sm4645895ad.57.2026.05.13.18.01.15
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5d0fbc05sm4645895ad.57.2026.05.13.18.01.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 18:01:20 -0700 (PDT)
+        Wed, 13 May 2026 18:01:29 -0700 (PDT)
 From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Subject: [PATCH v2 0/2] iio: light: veml6030: fix channel type for events
- and remove unused read
-Date: Thu, 14 May 2026 14:01:10 +1300
-Message-Id: <20260514-veml6030-fixes-v2-0-abdd5837be50@gmail.com>
+Date: Thu, 14 May 2026 14:01:11 +1300
+Subject: [PATCH v2 1/2] iio: light: veml6030: fix channel type when pushing
+ events
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,10 +69,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIANYeBWoC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyjHQUlJIzE
- vPSU3UzU4B8JSMDIzMDU0MT3bLU3BwzA2MD3bTMitRi3aREE+Nk42RzIwtTcyWgpoKiVLAEUE9
- 0bG0tAP3bmQxgAAAA
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260514-veml6030-fixes-v2-1-abdd5837be50@gmail.com>
+References: <20260514-veml6030-fixes-v2-0-abdd5837be50@gmail.com>
+In-Reply-To: <20260514-veml6030-fixes-v2-0-abdd5837be50@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -80,58 +81,46 @@ Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778720474; l=1937;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778720474; l=1127;
  i=javier.carrasco.cruz@gmail.com; s=20260111; h=from:subject:message-id;
- bh=NbKYeMkM5NguN09KkOFfqTgmRSOZdoHYNf89lOAIJxs=;
- b=A75f/7N/g7XYIsoGd3lKvTwGkRrCG4ZcjYc7Mj0Ue8hfjtcs7GrYt/tlwqP+NbkG3q4h2j/tl
- ZThnAmCNUx8DeMmld/prRxRhv4yoEaGAl9DaC5xUFZYVEZ7rHauUa/d
+ bh=DpZqDpgWFdqDiUupU3hy+hp66wdYNBtQrPd1t+nKiRM=;
+ b=OrFqgirHI7m+cM4ZxxgUcUAQM1us2yF8oTs0fAFVY6/ocWNtSozbqMaHSve1Ak/YMHkAT7vNQ
+ zldFm4QZ10pC8uirk0rCYe9S9qWdG1/XtG2wmY8jMPFlLrvsbw27Pxb
 X-Developer-Key: i=javier.carrasco.cruz@gmail.com; a=ed25519;
  pk=Lge8w8xidNSf/INy7JAIbAW+Hezkp3nsBh2OjKL7lLU=
 
-This series fixes a current bug that leads to pushing events with the
-wrong channel type (IIO_INTENSITY instead of IIO_LIGHT, the latter being
-the configured channel for events), and also removes an unnecessary read
-operation when setting a new scale.
+The events are registered for IIO_LIGHT and not for IIO_INTENSITY.
+Use the correct channel type.
 
-This series has been tested on real HW (veml6030) with positive results.
+When at it, fix minor checkpatch code style warning (alignment).
 
-V1 of this new series is V2 of the one I recently sent to provide a new
-driver for the veml6031x00 family, and additionally fix these issues.
-As the driver will be split to ease the review, it will take some
-time until I send V3, and they are actually independent matters,
-I have moved these 2 simpler patches to this separate series, keeping V2
-(where these 2 patches were sent for the first time) as the common
-ancestor. I have provided a link to it at the end of this cover letter.
-
-To: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-To: Rishi Gupta <gupt21@gmail.com>
-Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Cc: stable@vger.kernel.org
+Fixes: 7b779f573c48 ("iio: light: add driver for veml6030 ambient light sensor")
 Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-
-Changes in v2:
-- Add fixes tag to the bug fix in [1/2].
-- Remove Fixes tag for [2/2] as it does not fix a bug.
-- Fix indentation in [1/2].
-- Link to v1: https://lore.kernel.org/r/20260513-veml6031x00-v2-0-4703ca661a1d@gmail.com
-
 ---
-Javier Carrasco (2):
-      iio: light: veml6030: fix channel type when pushing events
-      iio: light: veml6030: remove unnecessary read of IT index
+ drivers/iio/light/veml6030.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
- drivers/iio/light/veml6030.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
----
-base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
-change-id: 20260514-veml6030-fixes-ba43c3c72857
+diff --git a/drivers/iio/light/veml6030.c b/drivers/iio/light/veml6030.c
+index 6bcacae3863c..da8c32cabfd6 100644
+--- a/drivers/iio/light/veml6030.c
++++ b/drivers/iio/light/veml6030.c
+@@ -875,9 +875,11 @@ static irqreturn_t veml6030_event_handler(int irq, void *private)
+ 	else
+ 		evtdir = IIO_EV_DIR_FALLING;
+ 
+-	iio_push_event(indio_dev, IIO_UNMOD_EVENT_CODE(IIO_INTENSITY,
+-					0, IIO_EV_TYPE_THRESH, evtdir),
+-					iio_get_time_ns(indio_dev));
++	iio_push_event(indio_dev, IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
++						       0,
++						       IIO_EV_TYPE_THRESH,
++						       evtdir),
++		       iio_get_time_ns(indio_dev));
+ 
+ 	return IRQ_HANDLED;
+ }
 
-Best regards,
 -- 
-Javier Carrasco <javier.carrasco.cruz@gmail.com>
+2.43.0
 
