@@ -1,147 +1,136 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 942613D7D8C
-	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 07:20:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778743243; cv=none; b=OdvhxrlhPptAatyyxjo0dlV9wyIufhBgNq+txLWBZskfl8EQ36icwaa051tbHh4LNS9m9XJADOOzx1aiAYeXClO5yR1m8Yfiz2SjlmAQhHLJLV5DDwLzKOjyfHlNDo2awL+EU19qb95hM3o671JKv095yh7ZnldXxsdnyrpQZ/A=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778743243; c=relaxed/simple;
-	bh=ZulYaDZ2N9XXIWtdGiKHOKqvRY9okY1TNX4dzGcSjZM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PnK2GbC7T9Hn/at0zMLRrh2sJrVOzYeXPcZ8/wYQ6g48SK8EMjSUCRQVpxzqkdzANnKvkJp2NUu7g2PTVkqXAkBnJeYBSGEUhRGCXuybZTC8XRr/DkMc0IS1q6HKWtq/gcaFaCpK97aQXEqUAYNvZ2rSSfUoljvEIdQ6i7hWDvw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=tPhEUh1D; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C11390616
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 07:32:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778743945; cv=pass; b=ApJ4GXrRalQCe9uA2Wmajturc7yKv+c6+m5FdHwqp+A8DMrMKwq19KV+hs0fWUCFZyeBHpvseHFHdfZy4OXMXxQTnv5YN9Z8CGLv/9hMykG2S752GKu7/cX56yNH1siDNt/OBMyQFvwZrdtPoaovWYVxYHfeO/xwHVzy5VjZgLE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778743945; c=relaxed/simple;
+	bh=xZQQ2jsY8Gds4YAn9e8B+Vn+W8udOLbAEFE8PIBNAJU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TAl0qNmJmhwEEZ7OH1StZOIdEAAC0793uKuzPhnQT98wahYuOlLRm7AngpMe1ZgSv4wHZeXl6YTTETBjU+pKZygHi04mIvA4TIRtqUvtzt1N9/JOrRKeNlntzjwZLKAWfo15wEiZJsIt0cthIaunqa7HjKcXJXXPlYLq18CFEJw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RN2u+N3C; arc=pass smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="tPhEUh1D"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-48e82c23840so37243055e9.3
-        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 00:20:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RN2u+N3C"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-44a14580111so5577895f8f.0
+        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 00:32:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778743942; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Sc8Ng2XnnmkTGe/8vn6cDEtGWdyx96KqhA4cB24/U8ZfQDmW119+BJp+GIj70B02GD
+         9DuKPmPnAneqgt6opAYCimralRfdegpudHWavqh0VP6U9cMUGU2KNLXKZ6mRBGtOFJ6F
+         WMI8LnwtJEz1yM095+14ikJUE7yE3aly7hGp20PHDmK6VI1nix47kq58CSUuF+tW/CjC
+         QLJn3TeVc1dDYToh/7ZJ+6rfEDMtp2jqjGuB9d2sGnEvrXpp/Z6uePujwPDkA0kX/lRu
+         21Q0oenauH0ZOxe9wFeIeqgVCXbAH4e+vNiGOBUgrIv3WrtSDiqRRlxzmQ1Ibm4M002Z
+         TjZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=ol4YGTHSHAsC6/QhQStMUey9/GMdJMxJVTKF3sKpABc=;
+        fh=kRH+wc10jSKtLQtyijzIHgnb5gS4vnBjSSpn28p2qNU=;
+        b=bTjVRtL2TaSo/hOoaz9hgg1av00vzWXXPsskBw9Fvi3BJBqitZ1t9qzyvZWHK+/wiI
+         aOJTiB9PKLm9d9DAPKwR20LxNn+rDdQdOeh2/+9jctEkYcR6N1xQ9qcolSQPNQjcpF2C
+         Sdjaq99D+scDdZGp/U4sdgrN570CMbenvGm+K8KrS7yJi+lKGjYd+U/sTe4GXgn2iggh
+         dAyD0REXycDOiFGea3GvDe4m+EyEcs9y0JRo+aLJw3t3hDNHjJpRvaLsbEQiNuRzfLu5
+         s83OKpOH8R5JFv/k9Hu5m3W7weSlgd5TjOE/Ye3K49YtFG71ClonJkGgzwNfRBXnMgin
+         kgpA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778743240; x=1779348040; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ojBKerXcsom5YLOUywnRgFuJgAkEyWjWD8C2JpwtbUw=;
-        b=tPhEUh1D4DkZGMPerlaVlAQtKP+2wlqlC6D+PHsyU85+wBEdhm1BxSmusR25aOqlQ9
-         W0oJut3zr1K69uqk7P7al2vlGQ2UAH9fmjMSrkbKnZ0GvHdw1y3NMpfAaKKd1rs8PdnU
-         2f8TyPrHoWkNvNrMMVhpXgxsjZXvigAQvaC4+pqsySG10GJylwvtN5c1PqbK09bqgcLX
-         urOi4RNjNNJuAnPlcJaWME86f3o1zX5QdtTCCwjozCmFcKPqynWbv02NyCBviKT18dqm
-         h+TAuVNgDA8E3sC7VgrQ/IxhTGx0G5rQZtfmlMczEktY8+8lve3/gspCSqUFUIr/D2XF
-         nYWw==
+        d=gmail.com; s=20251104; t=1778743942; x=1779348742; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ol4YGTHSHAsC6/QhQStMUey9/GMdJMxJVTKF3sKpABc=;
+        b=RN2u+N3Cg37geTF8McQNRm6Uxp/GClatiZ7Eb2kEUGhYMNlEV+w/IAzhjKYLZlbV/2
+         29GgT04eJ3LY1wtEo5MTqZJrqkByCIuIP8km6RAQ/XxBf5vG+kMNugR/gE/K8XL/QHAX
+         jdQxRC1/TSzK9N0YHk7SGqZ/Q1uwktCnvFmdYmG4F0+lsgncidU1Rqqm20532My8/Yw8
+         Z/kSDQS4J3afeYt9QWA6LBBTxIgXCleDGbI4UvwIRnWZVwuR1vS7kbxxJrTiOWqJYCIN
+         M41q7REhKVLnMMEDIo2YXOjcTVZ9i+zhwLh5a1RUd21HySKAwmzkUl0vGs41/iz33V1l
+         R12Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778743240; x=1779348040;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ojBKerXcsom5YLOUywnRgFuJgAkEyWjWD8C2JpwtbUw=;
-        b=gJHcR+HJj4R2CxAcYgEV33EaAd30xe8VsKdVwhu2TREOxjmGxFBSp3Hmi6HGgs9awK
-         m9Vkp8I1FvbWuNGN8mA0wrN4G2hCRTIa5eQCCKPgweIPm4S5xhqvjo1YLDiT6NgqgiiN
-         gqjUBEBJajomN6PVr7ih7tRLZmr1LXVoZc4WFCUbChddaWYGW5RzMfsbVfdUBVy+UerC
-         zoxvlLU4ou6xoFbfSjh10Yq8JUlr+fg1Df2RFgNIFuemp6to6lFTeIoAJQUuZNxg4gVK
-         36ygR7uyoeDRPa/+ZQwPs50s+ADX/adH7Uk321rsH1YCKNTYpkHVsIdcNMBj1jjNJzUH
-         s2Pw==
-X-Forwarded-Encrypted: i=1; AFNElJ8LvEnYsEmludQCc05DzXnUHpPOwiFi6cVAUgZ/lnklysJNIIXEFXf6Bu2DW9dXXGodu4nbYaU7QF8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyZ1t6oXXSxqXZVBzl278+BldLzroEUF4WGRcy1DDPSrjqQRcd9
-	jn28vInZ8GQ2pftvCMrMF92oBR02b5hD20LXUJCpmRs0pQyhfCZzNeAm2R9DVsMkKCY=
-X-Gm-Gg: Acq92OG2WzucYNNkwzikyxfzp62wMGMLR5m1OZ4caErPQGODxcyg1XhMMjK1X5LgxDk
-	Pdr9ihIhGOxbWolBNjmzu7AG362Zsd73b0j2RBWeY5pONPs4Z7FO20R1bHjWGUljjOEOdtY0CBU
-	a7UulJHCXgh6cceYGRxlWwN7Lv8OCDapzKxMbikBnXagC3Dypc2BDZkmyVNxgrZzv6BfBI4QJZF
-	P769Bi+fxUHng3rVBzq/JLlCBI0SH+pnPss7NaHv8bJZvTaUkpvXpOIVspfNF8+SbXZWt78oKw4
-	dEQ5tx8GVpeFYQ1FopWjQ3JNvbBTP0a4whu7N8WmY0xjSKtGti/Qu4w63VZOdYIX1INkSjLSShe
-	uy1/afJKWXg7trIWur0mY/f3CjMkazFYrBQ5Ss6tyNf8Z9Zh9hfEJjMwnfZaCS73BjNf3drINLK
-	HsszQ4VoYEhMm5vDFHN86A1QHfP8+/MlBTP6vr
-X-Received: by 2002:a05:600c:1547:b0:485:ae14:8191 with SMTP id 5b1f17b1804b1-48fc9a02785mr93973495e9.5.1778743239978;
-        Thu, 14 May 2026 00:20:39 -0700 (PDT)
-Received: from archlinux ([2a07:7e81:7daa:0:62cf:84ff:feee:627])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fdc6f0ab7sm22461275e9.15.2026.05.14.00.20.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2026 00:20:39 -0700 (PDT)
-Date: Thu, 14 May 2026 09:20:38 +0200
-From: Angelo Dureghello <adureghello@baylibre.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Greg Ungerer <gerg@linux-m68k.org>, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 09/11] m68k: stmark2: use ioport.h macros for resources
-Message-ID: <cabngw2wuxh7cfx4cw4ik46dmxs72u47jyo6hcwgdd7a5whny2@dsp4cysetarw>
-Mail-Followup-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Greg Ungerer <gerg@linux-m68k.org>, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-References: <20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com>
- <20260513-wip-stmark2-dac-v2-9-fcdae50cf51a@baylibre.com>
- <agTcoVbImqMgfQy5@ashevche-desk.local>
+        d=1e100.net; s=20251104; t=1778743942; x=1779348742;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ol4YGTHSHAsC6/QhQStMUey9/GMdJMxJVTKF3sKpABc=;
+        b=WI3bBgaof6wLAIWqrJEUQMbJ7ceR96Xo+y3e8sHv6MrDtFbhhNkFbmjhABMDb+dpPz
+         Ppj4WqI/uY6MkvsTy1pG+/C/Ji+wcBVI9HGZ9OR0X6EKAK2+lVDXtrYV44wz6yFkVIyV
+         gmSzWpKG/Adtjyk1Ho3LW0Fz3O4IBDBH3N5yu7ul0hWOsANEoDUj1ssgqlUDCm64TTTf
+         vlqyNeg/0R2e+hO9E69zgJt+8yUJKJHgYKzAUvsbXWcbjdV06L0UjzyPuih+8Sub9QaH
+         ezBz9oK9hY5L0db+wV+Pn4CH85mYGfdUaXn/Akc+0thzAmX07R9g2Nopz3ElVWx4OLcF
+         8F6Q==
+X-Forwarded-Encrypted: i=1; AFNElJ/nvKzb4OOXP+V13+rHC6aAjW2eZt3am3MSnQm2fs6uxHP5oewBDadJ7ZaL1G1SPsYDE+JY88fW9MY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxHnRQNlmrgEhDDPSCKURXb//xeQFKKGYS4cP+TltLGmX6n0u1K
+	j7bziuBTDkQ9ozhj3muOKw49BLuWaTkYv2qx96J5Hkc1264mk+a9kkKC0LizM7LdrkajXsFnoKw
+	hTDzkq3xiXtaZ2Ij/GHAFfJkLyF+zsy8=
+X-Gm-Gg: Acq92OElL5R4wad7FDh/gzXyJgY5fdziwwYC6XfNW2JRPjbs+ZdYJC8rCC82esWfqaq
+	eOenB/i0R3dqgpKtY7aW/gFgtZQMyD7YhajTJDHEi3I1Hg3eiyRSfPrsENyGOAg1be9uFMk4gbT
+	gzBYouYRJkr9KcuuGco0EULv4FXVy9XI3JnD8vBOE8+Whb//2hkKEu8fSoB4++udtijzJcjBEdw
+	PJrxzAqW+IuyiebhgU2wqwmji1ksVvqK57mUu4WFvKcQ/V23aDF7Sg1QDb49os6VT0mnOaKY022
+	TESFaF7u97nCsaOOQmIxHn/T170PwjAzbgKeHDogR46SYBzwX0Uem2ClrWE+BX7l2g9hioQdjod
+	XFnP8HPhQLTQu3Oj+ZbOVt+otuzMHG6fmAlfl4u/PzjHt6HCHRsUV7pljqVRyguIEgog+u0J7tY
+	zazeG4Lg==
+X-Received: by 2002:a05:6000:2c0c:b0:43d:7d6f:f529 with SMTP id
+ ffacd0b85a97d-45c7a4ef881mr10255796f8f.31.1778743942318; Thu, 14 May 2026
+ 00:32:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <agTcoVbImqMgfQy5@ashevche-desk.local>
+References: <20260513-ak8975-fix-v1-1-104ea605dd54@gmail.com> <agThqGpaYk7KNCv7@ashevche-desk.local>
+In-Reply-To: <agThqGpaYk7KNCv7@ashevche-desk.local>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Thu, 14 May 2026 09:32:11 +0200
+X-Gm-Features: AVHnY4Kx00bmKx6GizCDwfpbW1Kskt0DqkGM346smQDWeOyXmlOKg4A4tlUw76A
+Message-ID: <CALoEA-zPQOK9f4SuDTxkKWP+ncvfQbzq=ehXXopHd=ZC55HbVg@mail.gmail.com>
+Subject: Re: [PATCH] iio: magnetometer: ak8975: ensure device is awake for
+ buffered capture
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Andy,
-
-On 13.05.2026 23:18, Andy Shevchenko wrote:
-> On Wed, May 13, 2026 at 11:14:33AM +0200, Angelo Dureghello wrote:
-> 
-> > Align also other resource declaration using DEFINE_RES_.
-> 
-> DEFINE_RES_*()
-> 
-> ...
-> 
-> >  static struct resource dspi_spi0_resource[] = {
-> > -	[0] = {
-> > -		.start = MCFDSPI_BASE0,
-> > -		.end   = MCFDSPI_BASE0 + 0xFF,
-> > -		.flags = IORESOURCE_MEM,
-> > -		},
-> > -	[1] = {
-> > -		.start = 12,
-> > -		.end   = 13,
-> > -		.flags = IORESOURCE_DMA,
-> > -	},
-> > -	[2] = {
-> > -		.start = MCF_IRQ_DSPI0,
-> > -		.end   = MCF_IRQ_DSPI0,
-> > -		.flags = IORESOURCE_IRQ,
-> > -	},
-> > +	DEFINE_RES_MEM(MCFDSPI_BASE0, 0x100),
-> > +	DEFINE_RES_DMA(12),
-> > +	DEFINE_RES_DMA(13),
-> > +	DEFINE_RES_IRQ(MCF_IRQ_DSPI0),
-> >  };
-> 
-> This conversion drops hard indices, would it be a problem (for example,
-> some code modifies the fields based on the [hard coded] index...)?
-> 
-> If not, perhaps good to mention in the commit message and move IRQ to be the
-> second one?
+On Wed, 13 May 2026 at 22:40, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
 >
+> On Wed, May 13, 2026 at 04:35:52PM +0200, Joshua Crofts via B4 Relay wrote:
+> > Currently, the ak8975_start_read_axis() can be called while the device
+> > is autosuspended, causing two issues:
+> >
+> > 1. I2C transfers in the aforementioned function will fail or timeout
+> > because ak8975_runtime_suspend() disables the device regulators.
+> > 2. Since ak8975_fill_buffer() does not hold runtime references,
+> > ak8975_runtime_suspend() can run concurrently, and since PM callbacks
+> > do not use a locking mechanism, it may cause a race accessing the
+> > control register via the I2C bus.
+> >
+> > Fix this issue by adding struct iio_buffer_setup_ops that contains
+> > preenable and postdisable functions to ensure correct that device is
+> > powered on when running a buffered capture.
+>
+> I think Suggested-by: Jonathan is appropriate here.
+>
+> ...
+>
+> > +static int ak8975_buffer_preenable(struct iio_dev *indio_dev)
+> > +{
+> > +     struct ak8975_data *data = iio_priv(indio_dev);
+> > +     struct device *dev = &data->client->dev;
+>
+> Not sure if actually may use indio_dev->dev.parent here instead of this, but at
+> least this one is robust against changing parent-child relations).
 
-i can't see any directly-related code accessing these resources by index,
-so would not change this if there isn't any risk. 
-Also i see DEFINE_RES_() stuff widely used in other arch, so thios make me
-think accessing by index is something wrong.
+It being robust was my intention, considering this will be backported at some
+point.
 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+-- 
+Kind regards
 
-Regards,
-angelo
-
-> 
-> 
+CJD
