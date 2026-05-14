@@ -1,71 +1,80 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAC6038F929;
-	Thu, 14 May 2026 06:49:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC7C38F929;
+	Thu, 14 May 2026 06:49:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778741341; cv=none; b=lZ8bcDIbXYK4KgE6zjb+t0qXPcAWynUTXT6P8jwe54/ueKS5cLioSNqZvNAHsr/JOBwMAG35O5wNwY2Bp4x7p88beYsWGMV+/qbAy2TKo5i0huINZJV2C+HyUTtnp8R1epAAykTUI9Z5NeSxXNs/Hb8hnN00M+KI3IDVyzHOluc=
+	t=1778741344; cv=none; b=A3mHQJdkq8suXr7XcmKiXpLmiz7fWx+tZsqRdaCov2NFv4r7rUntzUnq+RNuh1bPc6l1HWLuvYsFXl485IdR9bFx1q8lAfK9M3dmCbv7uV2TLGZU1WTU9GQ5Kq59LU8A6Xsd2tWVqFz1KoqyW4Ecb8xCwHdaaRhmWycIFOW5Ue0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778741341; c=relaxed/simple;
-	bh=kV2o7etbiZ1xCvqmtMuywQhhRRr9HS66gjhYQJ3K4ZU=;
+	s=arc-20240116; t=1778741344; c=relaxed/simple;
+	bh=ScTbkdHtQwGqkowBWsSjhjRkE6Kb+/LGJ07lyfcr+U4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MbP/FrTIHFwXO2dqo+25jvmLyhCFY8UtimZxZFBzuRhoR37qa9V+6/zD7aX+/D8+CpPF3cjbPqCCSXZT/OtsI5JOxG4CcU1tZpfpoBV7dq/k3mgHvSZ7GveDwhFKfMVVlN+iFINxWhAJq21r4c1ENO4RF/Q9scRyKtIvCPeBEy4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Btuh47Gb; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=Lriehd02FvMoQ0uufXh/IgrQ2aNo6FiYjIFeira28vPGzCrbwfV0Y6gCFF7yUC3EJjeBBTuQyOOOzxs0OzzuqzeDcO5TzX2E9DmhWNE3dRpov8Pv7EF0NQjkN1o4OVZ1pdk1zpT+IOOHXdoK6wEVlT70N1lJxl5s08IG4m5/YoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=rjqpkp0W; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Btuh47Gb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18B6DC2BCC6;
-	Thu, 14 May 2026 06:49:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778741341;
-	bh=kV2o7etbiZ1xCvqmtMuywQhhRRr9HS66gjhYQJ3K4ZU=;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="rjqpkp0W"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA1CAC2BCB7;
+	Thu, 14 May 2026 06:49:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1778741344;
+	bh=ScTbkdHtQwGqkowBWsSjhjRkE6Kb+/LGJ07lyfcr+U4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Btuh47GbvI3I1oCGW2UgyyI/bokQrBi1bCH27SWwJgV6o30DAmiXr666HA6hBjKpU
-	 osqSwAGpNim0btT5qrBPlOO9dzx6pygFnEDrxIWjaBKxJhwcPrG0+RLI0EcmBzHk7v
-	 JLl/rucGHc50nC7YZBH/WQLK73sA7Oo6xjUMREuEYLOxyV+KRSGSn8aMiO6BKjp/3w
-	 nhZl/D45kayoeUz4bG+taqd3Llf0OCoBkplKgK+Q4hTzDjiCcHRiJnanEjWsaWNBmT
-	 Bv3rzRnyVaS/qR3rW8eXZZrS+oa+fv7s0+WK9Uxb1WMpYZHBkf/OYvqKxdfunTpI7I
-	 EGc29mH0DQNRA==
-Date: Thu, 14 May 2026 08:48:59 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com, 
-	dlechner@baylibre.com, jic23@kernel.org, jean-baptiste.maneyrol@tdk.com, 
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org, 
-	krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com, 
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V6 02/11] dt-bindings: iio: imu: icm42600: Add icm42607
- binding
-Message-ID: <20260514-optimal-warping-donkey-fbf24c@quoll>
-References: <20260512221634.256747-1-macroalpha82@gmail.com>
- <20260512221634.256747-3-macroalpha82@gmail.com>
+	b=rjqpkp0WQIRm9dgM5y5Y/4JTN1V+PEHl5Ifbr7UWYeHD6WROSNpbjXEPZ6bQ0eU+J
+	 mMzx0UqRapFU76U0xsAY/BdR116hHq1mwy2ifivXLXaGs2M0EuycoDjpS8D4ri4iIA
+	 P53bjzBKT4DGAm9h7MnhuPT51SAqMLnjpTYe6Ngk=
+Date: Thu, 14 May 2026 08:48:19 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Alex Tran <alex.tran@oss.qualcomm.com>,
+	Jyoti Bhayana <jbhayana@google.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Sudeep Holla <sudeep.holla@kernel.org>,
+	Cristian Marussi <cristian.marussi@arm.com>,
+	Linus Walleij <linusw@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Viresh Kumar <viresh.kumar@linaro.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, arm-scmi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+	linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH 0/5] scmi: Log client subsystem entity counts
+Message-ID: <2026051441-agreed-suffice-bbe1@gregkh>
+References: <20260513-scmi-client-probe-log-v1-0-00b47b1be009@oss.qualcomm.com>
+ <agS8udcvqgQmiqB4@ashevche-desk.local>
+ <1f2fb1de-ebc8-40ef-ac53-3348499295e3@roeck-us.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260512221634.256747-3-macroalpha82@gmail.com>
+In-Reply-To: <1f2fb1de-ebc8-40ef-ac53-3348499295e3@roeck-us.net>
 
-On Tue, May 12, 2026 at 05:16:23PM -0500, Chris Morgan wrote:
-> From: Chris Morgan <macromorgan@hotmail.com>
+On Wed, May 13, 2026 at 11:27:21AM -0700, Guenter Roeck wrote:
+> On 5/13/26 11:02, Andy Shevchenko wrote:
+> > +Greg (I believe the trend is to drop such messages and not add them [back]?)
+> > 
 > 
-> Add devicetree binding for the Invensense ICM42607 and Invensense
-> ICM42607P inertial measurement unit. This unit is a combined
-> accelerometer, gyroscope, and thermometer available via I2C or SPI.
-> 
-> This device is functionally very similar to the icm42600 series with a
-> very different register layout.
-> 
-> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-> ---
->  .../devicetree/bindings/iio/imu/invensense,icm42600.yaml        | 2 ++
->  1 file changed, 2 insertions(+)
+> Is there some common guidance on this ? I'd be all for dropping messages
+> instead of adding them, but there seems to be a perpetual battle between
+> people who want to log everything and people concerned about logging noise.
+> As maintainer I always seem to be stuck between those two camps.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+When drivers work properly, they should be quiet.  This patch series
+adds a bunch of dev_info() calls, which is not ok.  If a developer wants
+to see extra messages, use the dev_dbg() infrastructure, or the tracing
+infrastructure, both of which are there for this very reason.
 
-Best regards,
-Krzysztof
+So yes, I agree with Andy, this series is not ok, don't make more noise
+please.
 
+thanks,
+
+greg k-h
