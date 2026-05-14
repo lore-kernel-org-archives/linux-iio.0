@@ -1,64 +1,64 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C253F3A7D72
-	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 07:15:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 942613D7D8C
+	for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 07:20:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778742916; cv=none; b=Y/SdRj6R7saySS7GGmvhVUsHwbvTUNG0KmbZC4Itv74b0GDI7LtTQlynN0rpyxXUfgkOgaAnfbl9AtzYluTGyfnWshLNFt0aoe1ZRovh5L2GI94j2qdC4N1yvCm880fqAo9uaRxa3cMba9xxlNCuEoOXGve/1aX7Mlc0rKkFYgY=
+	t=1778743243; cv=none; b=OdvhxrlhPptAatyyxjo0dlV9wyIufhBgNq+txLWBZskfl8EQ36icwaa051tbHh4LNS9m9XJADOOzx1aiAYeXClO5yR1m8Yfiz2SjlmAQhHLJLV5DDwLzKOjyfHlNDo2awL+EU19qb95hM3o671JKv095yh7ZnldXxsdnyrpQZ/A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778742916; c=relaxed/simple;
-	bh=l+NFTLiwTFo0Y0mDMz8N3XAktp3gRZfqvr2Jmi+ta18=;
+	s=arc-20240116; t=1778743243; c=relaxed/simple;
+	bh=ZulYaDZ2N9XXIWtdGiKHOKqvRY9okY1TNX4dzGcSjZM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dBRsF3dEJn6OlKhfzx3eCYXHZKv/vs7nfip1cGLQnwqabUGE1/9i3U/cp8AFonQ+jjNdzsTVS4gWnULvw2pAwRJcB2FccasCXCfPXKMgrqMXtMOacRY0B/Hrp4CTZiX7T0ocQszQbVXP1KRasGP2EKDsxcyg9e9Z4Nul9vbzpmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=kPPUTtSY; arc=none smtp.client-ip=209.85.221.43
+	 Content-Type:Content-Disposition:In-Reply-To; b=PnK2GbC7T9Hn/at0zMLRrh2sJrVOzYeXPcZ8/wYQ6g48SK8EMjSUCRQVpxzqkdzANnKvkJp2NUu7g2PTVkqXAkBnJeYBSGEUhRGCXuybZTC8XRr/DkMc0IS1q6HKWtq/gcaFaCpK97aQXEqUAYNvZ2rSSfUoljvEIdQ6i7hWDvw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=tPhEUh1D; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="kPPUTtSY"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-44a14580111so5564837f8f.0
-        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 00:15:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="tPhEUh1D"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-48e82c23840so37243055e9.3
+        for <linux-iio@vger.kernel.org>; Thu, 14 May 2026 00:20:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778742911; x=1779347711; darn=vger.kernel.org;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778743240; x=1779348040; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references
          :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cb1yUNLCTgn66O03RLwbPulTwZS1mMXYrlXUWjjfA8I=;
-        b=kPPUTtSY4tPVs1yng0X/ZXIWLCWeGzPVJeFJdO8FcymRD2bXI8ShMkAgVMM1NH5LVK
-         YwZXXEFh1/OosAwd8KiduMim++cP7aPoTV0aIbgaeD3fNS3s2Bah6WXqztsGHlvpINM8
-         xWhz/aj9qNsLugEi6G3ftD6i45mWzBdbWrueud7NNW0ew/tv5dZDJSlFEwpEvnimwF2b
-         tRAtdoQmz7PqWOVVF0rMXCgDXjn6OpPZZnya5oX27Lf3m/W7M0XfR1hh1juY/O4Mwr57
-         mNgSWB04R/tmImOs5Tm3c5SrZUhGr0B0LTLOlQoOLUTyro5xT0KGsbz90aq6LsCXeOqp
-         gqUw==
+        bh=ojBKerXcsom5YLOUywnRgFuJgAkEyWjWD8C2JpwtbUw=;
+        b=tPhEUh1D4DkZGMPerlaVlAQtKP+2wlqlC6D+PHsyU85+wBEdhm1BxSmusR25aOqlQ9
+         W0oJut3zr1K69uqk7P7al2vlGQ2UAH9fmjMSrkbKnZ0GvHdw1y3NMpfAaKKd1rs8PdnU
+         2f8TyPrHoWkNvNrMMVhpXgxsjZXvigAQvaC4+pqsySG10GJylwvtN5c1PqbK09bqgcLX
+         urOi4RNjNNJuAnPlcJaWME86f3o1zX5QdtTCCwjozCmFcKPqynWbv02NyCBviKT18dqm
+         h+TAuVNgDA8E3sC7VgrQ/IxhTGx0G5rQZtfmlMczEktY8+8lve3/gspCSqUFUIr/D2XF
+         nYWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778742911; x=1779347711;
+        d=1e100.net; s=20251104; t=1778743240; x=1779348040;
         h=in-reply-to:content-disposition:mime-version:references
          :mail-followup-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cb1yUNLCTgn66O03RLwbPulTwZS1mMXYrlXUWjjfA8I=;
-        b=pHgwmqtkh43kejfT5MtEyNSSWpzPss4J/Qvv2edxpLH1q1I97+uxe30mEN3NEQiC4W
-         oYKGnQ9+2jhlkP2mYwCGctKglFElNtZmit60YesBr3cLc7Ta07tMzzSeDsYwApTigEay
-         z9QrIYzmCqoi4EcB4nrsiPW/Ry5YTaERF4eAW4oYCPZaJdCcYk+DR0/O9zmh6Eb19+I1
-         btGrGHwzlTdjBhABYdVq782hmW288mZuhbbnNCm0jfnuhzr25bauBXOnIFX81FYuO0NA
-         Od+ytlbSANhRlcOMK0oeCAXSWRbxOrnhdey8aMrDgETt0ed5OJaBLD9DzbjQBDRFk0z+
-         Aizg==
-X-Forwarded-Encrypted: i=1; AFNElJ+ST2fdARXBii9FRs9H7oRQQUAH9BQT4hRK+xJvJR5R+bSdX068s0N9kPBHGC+FD0fy80l5CaW/VlQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yza1fqgdPQ0cI0ah0ammGKrJxu7qUi7KeslmdGD88JiCHbyLxV9
-	3Vk6cjPsP856WoaNZ2wd+A9ZpmgtHIdYPT77tOB0hGIXI7KdKpRrpVlHwQcmIUhzY4c=
-X-Gm-Gg: Acq92OEAGerA0VLzJGpZ9H2Gq3sJsyOFAPD4woyJlaDHjmRF0v8Uw3aGuxKuqCBziz5
-	K/DCOf/tKbexe1hMqT2NJErHjezza9pZtMoB0NrFSg0EWwpT5q1iRIWO55C9K0A2BnNFwpDdW0N
-	MMzSeDvo+B5PIONZSoK3NRFMGKYSFDjY/fQkeFLHwrJsx+sWihZRNeiqLHICOLqvrKdqypkFnLi
-	PBZcfn26Pwz8SA34umq0f88TnByc+hZ30yWNax/W9eQ+JeSRhlrbvK92WMJwRgHH+V7QQR3QIG5
-	Z/U4vTNMDLbDqgEf3nwDoumAyob3u9AwRD+BfDujpe24q85Aqo8d8bRosKfVdX7IgZlr6EX4iUA
-	/Jo+reCIDZNuO2G42qd0UMd6oMqHXIuQV1Me9F3hvvCSj/g3uJMfBEjLPG6fiYLFk2duydh9d9N
-	Uod08s1iDlMKlA5yuEclWpOVwxTg==
-X-Received: by 2002:a5d:588f:0:b0:44a:9b52:8891 with SMTP id ffacd0b85a97d-45c7814a552mr9697538f8f.11.1778742910811;
-        Thu, 14 May 2026 00:15:10 -0700 (PDT)
+        bh=ojBKerXcsom5YLOUywnRgFuJgAkEyWjWD8C2JpwtbUw=;
+        b=gJHcR+HJj4R2CxAcYgEV33EaAd30xe8VsKdVwhu2TREOxjmGxFBSp3Hmi6HGgs9awK
+         m9Vkp8I1FvbWuNGN8mA0wrN4G2hCRTIa5eQCCKPgweIPm4S5xhqvjo1YLDiT6NgqgiiN
+         gqjUBEBJajomN6PVr7ih7tRLZmr1LXVoZc4WFCUbChddaWYGW5RzMfsbVfdUBVy+UerC
+         zoxvlLU4ou6xoFbfSjh10Yq8JUlr+fg1Df2RFgNIFuemp6to6lFTeIoAJQUuZNxg4gVK
+         36ygR7uyoeDRPa/+ZQwPs50s+ADX/adH7Uk321rsH1YCKNTYpkHVsIdcNMBj1jjNJzUH
+         s2Pw==
+X-Forwarded-Encrypted: i=1; AFNElJ8LvEnYsEmludQCc05DzXnUHpPOwiFi6cVAUgZ/lnklysJNIIXEFXf6Bu2DW9dXXGodu4nbYaU7QF8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyZ1t6oXXSxqXZVBzl278+BldLzroEUF4WGRcy1DDPSrjqQRcd9
+	jn28vInZ8GQ2pftvCMrMF92oBR02b5hD20LXUJCpmRs0pQyhfCZzNeAm2R9DVsMkKCY=
+X-Gm-Gg: Acq92OG2WzucYNNkwzikyxfzp62wMGMLR5m1OZ4caErPQGODxcyg1XhMMjK1X5LgxDk
+	Pdr9ihIhGOxbWolBNjmzu7AG362Zsd73b0j2RBWeY5pONPs4Z7FO20R1bHjWGUljjOEOdtY0CBU
+	a7UulJHCXgh6cceYGRxlWwN7Lv8OCDapzKxMbikBnXagC3Dypc2BDZkmyVNxgrZzv6BfBI4QJZF
+	P769Bi+fxUHng3rVBzq/JLlCBI0SH+pnPss7NaHv8bJZvTaUkpvXpOIVspfNF8+SbXZWt78oKw4
+	dEQ5tx8GVpeFYQ1FopWjQ3JNvbBTP0a4whu7N8WmY0xjSKtGti/Qu4w63VZOdYIX1INkSjLSShe
+	uy1/afJKWXg7trIWur0mY/f3CjMkazFYrBQ5Ss6tyNf8Z9Zh9hfEJjMwnfZaCS73BjNf3drINLK
+	HsszQ4VoYEhMm5vDFHN86A1QHfP8+/MlBTP6vr
+X-Received: by 2002:a05:600c:1547:b0:485:ae14:8191 with SMTP id 5b1f17b1804b1-48fc9a02785mr93973495e9.5.1778743239978;
+        Thu, 14 May 2026 00:20:39 -0700 (PDT)
 Received: from archlinux ([2a07:7e81:7daa:0:62cf:84ff:feee:627])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da15a666fsm4327136f8f.36.2026.05.14.00.15.09
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fdc6f0ab7sm22461275e9.15.2026.05.14.00.20.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2026 00:15:10 -0700 (PDT)
-Date: Thu, 14 May 2026 09:15:09 +0200
+        Thu, 14 May 2026 00:20:39 -0700 (PDT)
+Date: Thu, 14 May 2026 09:20:38 +0200
 From: Angelo Dureghello <adureghello@baylibre.com>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Greg Ungerer <gerg@linux-m68k.org>, 
@@ -68,8 +68,8 @@ Cc: Greg Ungerer <gerg@linux-m68k.org>,
 	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
 	Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
 	linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 08/11] m68k: stmark2: add mcf5441x DAC platform devices
-Message-ID: <y4zg2d5zghoz3miqevutiin5swfnx5y2zew2zlv4jklxsyly5g@sxeyvth2tkrk>
+Subject: Re: [PATCH v2 09/11] m68k: stmark2: use ioport.h macros for resources
+Message-ID: <cabngw2wuxh7cfx4cw4ik46dmxs72u47jyo6hcwgdd7a5whny2@dsp4cysetarw>
 Mail-Followup-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
 	Greg Ungerer <gerg@linux-m68k.org>, Geert Uytterhoeven <geert@linux-m68k.org>, 
 	Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>, 
@@ -79,8 +79,8 @@ Mail-Followup-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
 	Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
 	linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
 References: <20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com>
- <20260513-wip-stmark2-dac-v2-8-fcdae50cf51a@baylibre.com>
- <agTcEECgJvBydhe2@ashevche-desk.local>
+ <20260513-wip-stmark2-dac-v2-9-fcdae50cf51a@baylibre.com>
+ <agTcoVbImqMgfQy5@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -89,56 +89,59 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <agTcEECgJvBydhe2@ashevche-desk.local>
+In-Reply-To: <agTcoVbImqMgfQy5@ashevche-desk.local>
 
 Hi Andy,
 
-On 13.05.2026 23:16, Andy Shevchenko wrote:
-> On Wed, May 13, 2026 at 11:14:32AM +0200, Angelo Dureghello wrote:
+On 13.05.2026 23:18, Andy Shevchenko wrote:
+> On Wed, May 13, 2026 at 11:14:33AM +0200, Angelo Dureghello wrote:
 > 
-> > Add mcf5441x DAC platform devices.
+> > Align also other resource declaration using DEFINE_RES_.
 > 
-> ...
-> 
-> > +static struct resource dac0_resource[] = {
-> > +	DEFINE_RES_MEM(MCFDAC_BASE0, 0x100),
-> > +};
-> > +
-> > +static struct platform_device dac0_device = {
-> > +	.name = "mcf54415_dac",
-> > +	.id = 0,
-> > +	.num_resources = ARRAY_SIZE(dac0_resource),
-> > +	.resource = dac0_resource,
-> > +};
-> 
-> It can be
-> 
-> static struct resource dac0_resource = DEFINE_RES_MEM(MCFDAC_BASE0, 0x100);
-> 
-> static struct platform_device dac0_device = {
-> 	.name = "mcf54415_dac",
-> 	.id = 0,
-> 	.num_resources = 1,
-> 	.resource = &dac0_resource,
-> };
+> DEFINE_RES_*()
 > 
 > ...
 > 
-> Same for the rest. But I haven't seen the followups and don't know if those
-> structures are going to be expanded. The commit message doesn't say anything
-> about that. So I assume my suggestion valid.
+> >  static struct resource dspi_spi0_resource[] = {
+> > -	[0] = {
+> > -		.start = MCFDSPI_BASE0,
+> > -		.end   = MCFDSPI_BASE0 + 0xFF,
+> > -		.flags = IORESOURCE_MEM,
+> > -		},
+> > -	[1] = {
+> > -		.start = 12,
+> > -		.end   = 13,
+> > -		.flags = IORESOURCE_DMA,
+> > -	},
+> > -	[2] = {
+> > -		.start = MCF_IRQ_DSPI0,
+> > -		.end   = MCF_IRQ_DSPI0,
+> > -		.flags = IORESOURCE_IRQ,
+> > -	},
+> > +	DEFINE_RES_MEM(MCFDSPI_BASE0, 0x100),
+> > +	DEFINE_RES_DMA(12),
+> > +	DEFINE_RES_DMA(13),
+> > +	DEFINE_RES_IRQ(MCF_IRQ_DSPI0),
+> >  };
 > 
+> This conversion drops hard indices, would it be a problem (for example,
+> some code modifies the fields based on the [hard coded] index...)?
+> 
+> If not, perhaps good to mention in the commit message and move IRQ to be the
+> second one?
+>
 
-no. They are not going to be expanded, anyway, is there a real gain
-using an hardcoded 1 there ?
-
-Would not reissue a v3 for this honestly.
+i can't see any directly-related code accessing these resources by index,
+so would not change this if there isn't any risk. 
+Also i see DEFINE_RES_() stuff widely used in other arch, so thios make me
+think accessing by index is something wrong.
 
 > -- 
 > With Best Regards,
 > Andy Shevchenko
-> 
-> 
 
 Regards,
 angelo
+
+> 
+> 
