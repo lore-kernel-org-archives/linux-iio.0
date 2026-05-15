@@ -1,82 +1,68 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D1C477E23;
-	Fri, 15 May 2026 10:59:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83361477993;
+	Fri, 15 May 2026 11:03:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778842753; cv=none; b=KyYQa/DLzUeWmDBOd2PFaY06Ndf/8yXPKeEdLxPhy8p/9t2bczLUNyN9zga1xC/as5t1g5okpGkcQ4zQn3y4HzKniq8rgQJxAUPqG/gj6jYnk+cvu2yAbM7tqdBDM6sUqtRBaYw377hBMkuVBqVDlS+GjPzmDgQrANtuAcvTzAQ=
+	t=1778842984; cv=none; b=jX+f24zDulSzrT2loPmeAxu6sM5vBi9UN/9/RSgzsG3kVRvnZp4jjV/9Ah5sUU4GiyWQ7niUS3dr7bKnAyq04CT++2BCbWKGi+ZpN378upra5nv+GI8b5GdVfgtMD7aWVDLl1U8nquviTFDvHyfbm4eeGyVcpT2aCS9WFaQOo90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778842753; c=relaxed/simple;
-	bh=4jqNKlcyDLNP0H9XvSwJ6TiI0tKmDB0nTdQ87STpK+I=;
+	s=arc-20240116; t=1778842984; c=relaxed/simple;
+	bh=iqvi9Y/GWvrW9fciGmNSpOmk0BoqpWnGIAgMHnaPJUA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CiP0kKls+maNR6m/GsbffhD8D+xR4S+JGpp8VuBtcH1IuwbYq5i2spE38clk3yZxup9zk9XpMYgMQzmhZQf8YEcw4Ilxp3yw6eAKWuyhxyToepgWFQZXsNHJmUbseKU6FM2L5jBIWElxEkEaMKwZ1TQGiWytLYcEpZ1rRXN3EBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NWwLA4nD; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Fkb6vQfXuZjFiNrQ8ux1nW5C9+z5tWK1t/srgOVDXuAEY9Uz4zajKs6QInwuCMyosa+8GTxj0h5GrYyyNe/1u+a5ox5YJoW06MIUgRyGQBRgjRpSSAUVbtDVVPvclCUbgWb013Gpegm9xmFX1OzTcHppjCasYvuDtSdwGVdPHVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U9VkMeLd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NWwLA4nD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778842752; x=1810378752;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4jqNKlcyDLNP0H9XvSwJ6TiI0tKmDB0nTdQ87STpK+I=;
-  b=NWwLA4nD+4L283Svtnz0MxGLr2KdDBuFq5co4j1n50nwCvzRKjQI7FwU
-   vDfaA+7k4zWKwj4zrLWF4ViAjCsOkD8FvuXDXT4oOIiHryQ8NbKosdzaj
-   +VF7R3Suqu01P55JB6/3VvvTcc9TbYicWICVsXi4K0WdWqmvUJp1WSlgS
-   Q3G0Bhd2js1RagyOPS/S4LFNWbETpVFozFA6snKhzO/kvCIoVvPqTwXAh
-   MIfKkxGbzJb+E0GqC2PRp1Mi9aNxT/fHHcmvbWrnFQ5MSwRKXJNEQuzGu
-   4J2c2saupm+/U8GH9Y7q7V/bDXkLqJxYAwdAy2UaVSa9bPZau+EbbA3cE
-   A==;
-X-CSE-ConnectionGUID: e4K964+5Q72tpJ9ZNS7cgQ==
-X-CSE-MsgGUID: k7dtlAFqTLywEZlcR8ftkg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11786"; a="79825002"
-X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
-   d="scan'208";a="79825002"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 03:59:12 -0700
-X-CSE-ConnectionGUID: YVPTwRT6Q5GmSrHOMhBi0w==
-X-CSE-MsgGUID: mnIghHqlQnWYhRfSgIh66Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
-   d="scan'208";a="262183744"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.33])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 03:59:08 -0700
-Date: Fri, 15 May 2026 13:59:06 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: corbet@lwn.net, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, skhan@linuxfoundation.org,
-	gregkh@linuxfoundation.org, hcazarim@yahoo.com,
-	linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Documentation: iio: fix typo in triggered-buffers
- example
-Message-ID: <agb8enneR8dWE_uL@ashevche-desk.local>
-References: <20260514085157.20327-1-sozdayvek@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U9VkMeLd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 762A9C2BCB0;
+	Fri, 15 May 2026 11:03:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778842984;
+	bh=iqvi9Y/GWvrW9fciGmNSpOmk0BoqpWnGIAgMHnaPJUA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=U9VkMeLdg7idNmwcldP/7WxFI6CC4J6niGePUREf6je2aPM7xYjMwLKTcLA/wKJF8
+	 MNrbQY8mI0a+FyS9648emQ17BTXO31EecJ50+JcPWZLl8aXZr6bzcpgH+bgvA+thr1
+	 fiHUuHeNG6avA1ayKjWWdajjaRTlhS+J5ht6HUVCe137vzGsTBSAuEezeofSWZLv8L
+	 oe2yl44QlSEjkF2FvtIs2C94JZ9PSYviK95OtMMR5yTds7iUDBEZzolW2LJn+q6X46
+	 7d9HEk8/AMqcZ0ya5u/Ncw/xun+0gNO7H4N8I0zFUJt12kTpPNh4PBH06IeJBSiWOY
+	 3tCdkUD4TC9gw==
+Date: Fri, 15 May 2026 13:03:01 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Pramod Maurya <pramod.nexgen@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH v4 3/3] dt-bindings: misc: Add binding for Xilinx
+ AXI-Stream FIFO
+Message-ID: <20260515-crazy-cheerful-teal-af566d@quoll>
+References: <20260510083219.70224-1-pramod.nexgen@gmail.com>
+ <20260515075736.172172-1-pramod.nexgen@gmail.com>
+ <20260515075736.172172-4-pramod.nexgen@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260514085157.20327-1-sozdayvek@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260515075736.172172-4-pramod.nexgen@gmail.com>
 
-On Thu, May 14, 2026 at 01:51:57PM +0500, Stepan Ionichev wrote:
-> In the "IIO triggered buffer setup" example, iio_triggered_buffer_setup()
-> is called with "sensor_iio_polfunc" (single 'l') while the function is
-> defined and later referenced as "sensor_iio_pollfunc" (double 'l'). Fix
-> the misspelling so the example is consistent.
+On Fri, May 15, 2026 at 03:57:36AM -0400, Pramod Maurya wrote:
+> Add a YAML schema for the Xilinx AXI-Stream FIFO IP core (PG080).
+> The binding documents the three supported compatible strings and the
+> vendor-specific properties that the axis-fifo staging driver reads from
+> the device tree.
+> 
+> This resolves the following checkpatch.pl warnings in
+> drivers/staging/axis-fifo/axis-fifo.c:
+>   WARNING: DT compatible string "xlnx,axi-fifo-mm-s-4.1" appears un-documented
+>   WARNING: DT compatible string "xlnx,axi-fifo-mm-s-4.2" appears un-documented
+>   WARNING: DT compatible string "xlnx,axi-fifo-mm-s-4.3" appears un-documented
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Do not fix checkpatch warnings blindly. You could have checked the
+mailing list before sending this.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards,
+Krzysztof
 
