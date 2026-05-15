@@ -1,63 +1,63 @@
-Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40B9D3F39DF
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 17:40:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF33B3F8EA8
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 17:40:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778866848; cv=none; b=tdivO/pLtrEuneC0gmggyoxEenVzqLJqTXAT9bkl8kmIO0LF+PvKjR9yXf/tyxeUX4VvG9Y1Ng0Xr2w1GKN6GYyHa604H7zMz77vUqove+BCtQtDVgpre16ZEmzv2ARvWB75jsTrS4AzJHQ8sx9je6rNIqmts24W7Z6XcVAifLo=
+	t=1778866852; cv=none; b=Po0QJ53jKe9t8zzkekUj25A9d67juHSuJ+/D1uPuKjE4aUPzRP2VMpOVQowpVbOmLyqJodv2Ikj0WjKf7gRg+5/geXRy+YWMwvNP5e2etMJU9ggMO0EIRnDZWFJson8XqHZV1lDx+x9LAf5wOF1EX074/ox19J2gBsoFdkMhfmI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778866848; c=relaxed/simple;
-	bh=QpOYFv8tYMRTdnNISpiGdgVYHufG68uVcQwITa5shwI=;
+	s=arc-20240116; t=1778866852; c=relaxed/simple;
+	bh=upDmu/wUadyn7EkK4pxxtaTje+RL6foxGGvrGCWVzw4=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=J4Qjwx4Me2TIyb2fBzWOUtQX/V/BqOzUdvc1Glsn/ECurVTSoHMNjTY4DmEvBgx4jCgGm1gm5lrq5cW1U9uh/YS2TbEN3e5Wu4phfX+L/d6VWVIpcUoSGkHMvp++2NF1IVrSEf/FRJhWXU6yJlmUa8dsLqrlnGzEJFXyFJjZWD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LysmruCW; arc=none smtp.client-ip=209.85.210.171
+	 MIME-Version; b=FKN/07VT0USHtPHX4d3cwRK58p4zogcM1LAyM1j3hfk4SkPe/mSOhPt8HARZtj9QYoYdgJY5njzWIKo+jlBC25wfYqEPfz/GwrENbzjenhTW1jqVbFY4NNw4CT29wuyyVHv/VsxV4DitXtO/wt5kcbVV0lRaUHDlfCqypbyvqOU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gm1g4beq; arc=none smtp.client-ip=209.85.210.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LysmruCW"
-Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-82fa8d6425bso75017b3a.0
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:40:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gm1g4beq"
+Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-83d31ac4017so51999b3a.3
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:40:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778866846; x=1779471646; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778866851; x=1779471651; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fcTs3eLyOIE0l5GPVRit0A4+HMRVxCXis7Msp6YvA7k=;
-        b=LysmruCWLLA+qeUSFHWT3o8XBjJYByrhpoRtqpxx5eV3mpG8Na61N9NWiA68QVUP0k
-         u+SnKMZv2F6mGeVJVIxUSJ4fzyotGhMm70br/l8k9GqkYsMC7/pcXj9nO41m4GeFP8ar
-         1tgy/Yh/MQBlrWYHXJqxfrTkeyatne8783CjDV969FW3IhjEZ+2S6EYYPjHAah3z22AE
-         6uC1r0cwUneqYwvbIsAUZU78d4wnWCqGxQ29+i2CfC85/Wy9Y94M24UmNdUYqeciBmhx
-         +chXlfs0IeDo6YBi7BwnW0iH9qDyKTbrv+Cmngrmn715V4pta8fyzGUI0+Vn8rQEw+/I
-         oIbQ==
+        bh=282Ldj8nwArLBdvCOtPNg09aNYay2lAqdtbMbUdvaTA=;
+        b=Gm1g4beq7j88XosZnxydKG7VhRcMvNAqeJ3G8y0gjVU7wCkDpwKx7IwJYIvDq37I2O
+         waLOoDc3vhYAxlgvfvGS9/SYbgAzfobhPv/0y6hFxMNKsm/yWTvjUPMLaUEj0OjYJTRK
+         nIzu3u03YBn68XK5lR43o5sOv/zbTOr6tC+jPbQs7WIfMLXwooS2Jw1kfX4qjKifireQ
+         lNGBLefdApQQiYIVJ8eLZerTPGUnsHIrU4d50YftH+HZCiiBMtDVM8+ofFTXSnksYHOk
+         Xp+xPZ4ssy99mCRW7+lF6rStf66MtSp4IcxTSqXL6diLpVoiv0vFSSp+vV7vlG+W/vaQ
+         MACQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778866846; x=1779471646;
+        d=1e100.net; s=20251104; t=1778866851; x=1779471651;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=fcTs3eLyOIE0l5GPVRit0A4+HMRVxCXis7Msp6YvA7k=;
-        b=Yu0CJwrhY/Nlrbas1Jgwv75LtA1BUwCG5fVAzYLGNhBjADS0UZaTb7SphhpAT9iuj+
-         d+upEvXlVfwwvFfi7xE/mNICeewrmCLGBlXa5qm+Z1BvvtMByCNsxD2mKvVBxlMxqY6u
-         O5XDij7u890zFknXVb3+KjRDlCWlXwzdevTZ7w/ig6K2Fcg29giWzJ4YlyCVIK/dGvLg
-         ge/3Yd8MnZZNU46m69UQjENfaOoaPBWO1NlUZpvmgEgs+6fg2S3hQ9eVHKQqmB8Tk6Jy
-         7Y1/z8VigCW2s8QK4HUNt+KuiIPfImtvz7kL4gTM2/zfmcBwxf+u15pvq8SSQGcTiSTV
-         rA1w==
-X-Forwarded-Encrypted: i=1; AFNElJ9DlN25e+LY6P23U/bHZclWSamcqoO5/FPvlYwhmzRhm8TRPSV2xAz2kfzU5JVqtBNJsn0+PdWTEyk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwLcMxOErbQdSiZ9GQGLmg/1la8mX2tW9NY2CiHj6mv9SItIqgZ
-	osvIoI3O5QwYE7s0r9XzBpXmXW48FDeiRb+wwhoO/K5/nGgcIOlttiFd
-X-Gm-Gg: Acq92OG+vpdJ0gJpGSSR7/dbuOKtwQMlCRXdj8K45O6MD35YR0N70OE44JKr4wKB2a7
-	ja2qy+WwgsTcxFezlJDwWeXs+aVSKlStZVQFFYYyp5D6qRBqidnT6dYNO9JxmCKC7zmYXmn45Pj
-	CrOaQyhyuj8PXcGUqDveqJUqzXzTh1/FqjZTu3B3qnjFrFd68gbOq7Yus/+v84U8YiHZtsF/v+4
-	n8yJywvIXUT0tbJctyhilnDCf9XoJrVP0/ex58DQT2Nhl9jPVdLPv1+98oJuWELXvQINHt9yJF3
-	s86AvfG0LqKENB9N6Ccxn2LFNTE3LHmpaH7uwfRQRvxzB1pyVzw8rN4abboNxcUaX0wPR+XLfWb
-	JTbtV8faGS2GUxy37HsTxn4Zt1JXWGKr2YcWAutitZ9owiWBlXgjgG3I8j/NDIMzn2wCvxRNiHf
-	5ySpqiA3rT6Lm85cGH++8pfA6eW8QX0QsE2WK7Z3pj39aDhCCMKLUlEq92QSY=
-X-Received: by 2002:a05:6a00:4f8f:b0:837:b5b6:1b98 with SMTP id d2e1a72fcca58-83f33c7aef6mr5385845b3a.12.1778866846467;
-        Fri, 15 May 2026 10:40:46 -0700 (PDT)
+        bh=282Ldj8nwArLBdvCOtPNg09aNYay2lAqdtbMbUdvaTA=;
+        b=kb7tfYZMnMcahpTh7QcFEmeQKntHpcJc9756lovoDdIlmno95T5nx+WMHb8zQBoOY0
+         LYJ5k+FcPsXfI/rdSVH9tdrwX9iDDTPfUIm4FE3+9xodrRscAiPwKCtRNvsL1w95HhIW
+         jUikKEY7TduQL3HLq8pY0YOSIz9IE8UT27gU3VEmttxkWTK0J8/dWU9xjfy95Dw6BnIa
+         /z6PR6fsnLQZMxfHJJBt0RKqwknkUD1ydRsDOPVt/XlpgMWw2ySv39wUjalVbbMw2nmv
+         jyrMsIVWEKpQfrMBvBxeJrmSdLXhh4aSq2+nT7G02JR9xLDUR0DdqZOKqTcwwwmOB1W4
+         Hrhw==
+X-Forwarded-Encrypted: i=1; AFNElJ85H+4E/KJ3NhzizgG3C12cP81jAMpkJ3Ps6l6M3WV5qR2MCrW8K1J5/pyDzs8sh2RD0EdM8hf+a2I=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzol9Cl8zUdjLglliqRzs55zy8/A1ddcR+dw5OWa+B3kqGFxl49
+	69jtPgdWgJWWsM8dMTkPUOsVKpDsxaviVc2I1WTAWyOU/9CJZKbyqcz2
+X-Gm-Gg: Acq92OEwCDKQ14FCSps98mssNkx1uGYBMvJJ/9GjQIcBB6I4/X9tc8rZdnNyMbH1ouS
+	n79nIAKkUUAVyr8IeifpS40sMjPJKZW+G0OT6z8ANsVBL7frWRLvr8MhnqeR5bCKoLAYsH+y0Ru
+	74eVQKZHzTEsJc/vg8TvVeCe2WasGyteVQUmqbrSltLfY69GfMhG2XwzngmnE5Byi5DuZ1oCOmF
+	eKWX1G90Pvyx4FL2nqgsfFncRsJL4JUkviVN8VdQLQqtuwE81ALZcWPt8TJjPi38RuI671wpxde
+	tbMQsI/jFFN6UEbbX/Nssp4PvcRwr4VJ8BOc7hrHpTffPzyrKzwzJ6gMlBrTLR1nvxxMVFjbn+W
+	+dpx+Qb0/LeIdoozj78FdNhUJSZk3KxeAuZpSKg58IY2j/voCP/cySLi/yn8wQcYm8Lqb++PsQo
+	/zurWjP6/GQYUiAnRgXplftUa0pRhLTAegjD91AUT1lskijn1+ijgaa2U1bzM=
+X-Received: by 2002:a05:6a00:3d54:b0:824:afe1:f7e3 with SMTP id d2e1a72fcca58-83f33cc0b04mr5789896b3a.15.1778866850954;
+        Fri, 15 May 2026 10:40:50 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f2875f0fbsm5579034b3a.57.2026.05.15.10.40.42
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f2875f0fbsm5579034b3a.57.2026.05.15.10.40.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 10:40:46 -0700 (PDT)
+        Fri, 15 May 2026 10:40:50 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org
@@ -73,9 +73,9 @@ Cc: dlechner@baylibre.com,
 	kyungmin.park@samsung.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v8 05/12] iio: ssp_sensors: use local struct device
-Date: Fri, 15 May 2026 23:10:10 +0530
-Message-Id: <20260515174017.3962168-6-sanjayembedded@gmail.com>
+Subject: [PATCH v8 06/12] iio: ssp_sensors: fix variable type and declaration order in probe()
+Date: Fri, 15 May 2026 23:10:11 +0530
+Message-Id: <20260515174017.3962168-7-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260515174017.3962168-1-sanjayembedded@gmail.com>
 References: <20260515174017.3962168-1-sanjayembedded@gmail.com>
@@ -89,91 +89,30 @@ Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Introduce a struct device *dev derived from &spi->dev to improve
-readability and drop redundant "Probe failed!" log in probe path.
+The ssp_probe() function declares both loop index and return code
+in a single statement. The loop index is unsigned and split declarations
+to follow common kernel coding style.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
-Changes in v8:
-- Following input from Andy and Jonathan don't mix variable reorder
-  with new variable addition and drop redundant log
-- v7 change: https://lore.kernel.org/all/20260426091710.3722035-6-sanjayembedded@gmail.com/
----
- drivers/iio/common/ssp_sensors/ssp_dev.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ drivers/iio/common/ssp_sensors/ssp_dev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-index 4280eb590c03..a652bb56c61f 100644
+index a652bb56c61f..f3ad2b38cc12 100644
 --- a/drivers/iio/common/ssp_sensors/ssp_dev.c
 +++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-@@ -487,27 +487,28 @@ EXPORT_SYMBOL_NS(ssp_register_consumer, "IIO_SSP_SENSORS");
- 
+@@ -488,8 +488,9 @@ EXPORT_SYMBOL_NS(ssp_register_consumer, "IIO_SSP_SENSORS");
  static int ssp_probe(struct spi_device *spi)
  {
-+	struct device *dev = &spi->dev;
- 	int ret, i;
+ 	struct device *dev = &spi->dev;
+-	int ret, i;
  	struct ssp_data *data;
++	unsigned int i;
++	int ret;
  
--	data = ssp_parse_dt(&spi->dev);
-+	data = ssp_parse_dt(dev);
+ 	data = ssp_parse_dt(dev);
  	if (!data) {
--		dev_err(&spi->dev, "Failed to find platform data\n");
-+		dev_err(dev, "Failed to find platform data\n");
- 		return -ENODEV;
- 	}
- 
--	ret = mfd_add_devices(&spi->dev, PLATFORM_DEVID_NONE,
-+	ret = mfd_add_devices(dev, PLATFORM_DEVID_NONE,
- 			      sensorhub_sensor_devs,
- 			      ARRAY_SIZE(sensorhub_sensor_devs), NULL, 0, NULL);
- 	if (ret < 0) {
--		dev_err(&spi->dev, "mfd add devices fail\n");
-+		dev_err(dev, "mfd add devices fail\n");
- 		return ret;
- 	}
- 
- 	spi->mode = SPI_MODE_1;
- 	ret = spi_setup(spi);
- 	if (ret < 0) {
--		dev_err(&spi->dev, "Failed to setup spi\n");
-+		dev_err(dev, "Failed to setup spi\n");
- 		goto err_setup_spi;
- 	}
- 
-@@ -543,7 +544,7 @@ static int ssp_probe(struct spi_device *spi)
- 				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
- 				   "SSP_Int", data);
- 	if (ret < 0) {
--		dev_err(&spi->dev, "Irq request fail\n");
-+		dev_err(dev, "Irq request fail\n");
- 		goto err_setup_irq;
- 	}
- 
-@@ -557,11 +558,11 @@ static int ssp_probe(struct spi_device *spi)
- 	if (data->fw_dl_state == SSP_FW_DL_STATE_NONE) {
- 		ret = ssp_initialize_mcu(data);
- 		if (ret < 0) {
--			dev_err(&spi->dev, "Initialize_mcu failed\n");
-+			dev_err(dev, "Initialize_mcu failed\n");
- 			goto err_read_reg;
- 		}
- 	} else {
--		dev_err(&spi->dev, "Firmware version not supported\n");
-+		dev_err(dev, "Firmware version not supported\n");
- 		ret = -EPERM;
- 		goto err_read_reg;
- 	}
-@@ -574,9 +575,7 @@ static int ssp_probe(struct spi_device *spi)
- 	mutex_destroy(&data->pending_lock);
- 	mutex_destroy(&data->comm_lock);
- err_setup_spi:
--	mfd_remove_devices(&spi->dev);
--
--	dev_err(&spi->dev, "Probe failed!\n");
-+	mfd_remove_devices(dev);
- 
- 	return ret;
- }
 -- 
 2.34.1
 
