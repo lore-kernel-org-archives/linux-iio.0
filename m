@@ -1,51 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99F41449EB6;
-	Fri, 15 May 2026 13:55:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 431A43CC7C5;
+	Fri, 15 May 2026 14:13:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778853302; cv=none; b=lP+Umx6Y/7cf066N5eErkujGInrDxG8CAKwaf4dQaVmADbqO5vKy4O9mvDksK+MnUKoGQ8kX9HnTEFFubakE4/qgtRLmhTPPk5JI7ravRSMWPNTiYNA0QMaa7Mi/R3/GSpygPAP2icVdhN2S37HHsRRyFvKu/vgG1nf3LmnrCLc=
+	t=1778854426; cv=none; b=ICj53wMeVF6/GVIlzBbSBm3t5vouSo84ezZ4XxmPVjN+30SYY/bstCJY7rvYtbHZDIQxakFQ82YKo9ck9WvxB6hbfEe+zftnDGQtvC3yYEVTALUZMCXbITaFoDOKlsYUo3ZmAoC/waWORxiKPMfJIUQPP4jVg3+2jbdbYAvxNWM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778853302; c=relaxed/simple;
-	bh=YEw8QsNbTR0Bjj5KFEn2xnY8kv81Y3WRy0+A343Zzdw=;
+	s=arc-20240116; t=1778854426; c=relaxed/simple;
+	bh=tS1kqdYdrQCmfjOyA0ydX6lOpFCcu4ctaNTGFnFAoMI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=e1tbh2sZO5BTslv3PvYxR7OceuziVAQZDPAXxFzfc0Zi+toAQO8A/xVcgf2p9ULLVwmTv2qw4boSXOznYYdauu6Ee7Gbn1LuVQgi4xPqi5ZZL2zcJD7px4JB/yb2vFpxmybBj7jbppkvflnbNT9n034RpT4xk/nlSVcoWk4kfEM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l/fRDR4U; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=riat4KUGKnHuT1rMyWa+wSd8GVGVShFZmfaqysJEnW/88TYsK52BPAavDh6xsCjN9mW7iuyqV7QAhsw2VAfuMvR2pQ6SA37m0En0y6YKeM1igK6lzy/iW7+qprOQqoEHNkFJPMZhgdLbum4q3LGXQBs6xKR+qH7aZ16GwFoeT0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BUZt9v+R; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l/fRDR4U"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54994C2BCB0;
-	Fri, 15 May 2026 13:54:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BUZt9v+R"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0432C2BCB0;
+	Fri, 15 May 2026 14:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778853302;
-	bh=YEw8QsNbTR0Bjj5KFEn2xnY8kv81Y3WRy0+A343Zzdw=;
+	s=k20201202; t=1778854425;
+	bh=tS1kqdYdrQCmfjOyA0ydX6lOpFCcu4ctaNTGFnFAoMI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=l/fRDR4UWYXrQmT8brio4XNBW6Hu3zhuxgNUUKbDQ8EM5WB6hbmxI3bKQcPClBpu+
-	 dQ7GXzFaNFSo2IQ5eaN/yavI7W5WnDBU5ssi84pMsG/ixUOtSgPy3k+vrFeD3FL9Zt
-	 zTu3XlmdN28F2n5hRLIf+Rxa8Ls2KBL7K+/46yTp3PfKJAsbuvE0hT2HzQKQAdhH7m
-	 MSnd6fW4lK7/NbjQYyefHh6YtgnVJ1U12JUo4IThuD1goIYW4NMU2XsmPCtOtm6iTX
-	 GLMYXGZ0GCHWkFcbEsBtdfzYMuaEbHsj21SMG60dJJtVXnozdj+UKQDWO2y87tpGfC
-	 gFPHyZg69X/3A==
-Date: Fri, 15 May 2026 14:54:50 +0100
+	b=BUZt9v+R6Zx0TPkBRa76ke7p9Qy8Phy2UHMVEJXcQTfmYHZ2snf7U5vhchL0LSeeh
+	 pJdzLIMFrrrr2q577V/kApPKKbVXLroUbWtLH+ta1/DJq8c3XxXyUQ7nM0n+S9PZHM
+	 b9V2UT5tzYbCaXVTAZA2K/a4dxzUXlBoVCSbFZtVeR54+IMSgpZVSWTg6BL+46Cv7z
+	 tHxBtzu1dQaRx/4qfsFmZv6Xajijs1xGrB0o6Ru9YbLtk7TOzsrLtaUPvriJUigOZu
+	 7mkC5W/QFFQk9PF816wmYbLQJ15RI9GcN+IhSbABPlX2JMEpuFT77heL+1cyY7GAbk
+	 7V8GP6ed/10eQ==
+Date: Fri, 15 May 2026 15:13:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Amit Kucheria
- <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J.
- Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>,
- Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
- linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
- <kamal.wadhwa@oss.qualcomm.com>, David Collins
- <david.collins@oss.qualcomm.com>, Anjelique Melendez
- <anjelique.melendez@oss.qualcomm.com>, Neil Armstrong
- <neil.armstrong@linaro.org>, Stephan Gerhold <stephan.gerhold@linaro.org>
-Subject: Re: [PATCH 1/2] iio: adc: qcom-spmi-adc5-gen3: Share SDAM0 IRQ with
- ADC_TM auxiliary driver
-Message-ID: <20260515145450.3b1e9c3d@jic23-huawei>
-In-Reply-To: <20260515-gen3_adc_tm-v1-1-39ba29f9b4ab@oss.qualcomm.com>
-References: <20260515-gen3_adc_tm-v1-0-39ba29f9b4ab@oss.qualcomm.com>
-	<20260515-gen3_adc_tm-v1-1-39ba29f9b4ab@oss.qualcomm.com>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org (open list:IIO
+ SUBSYSTEM AND DRIVERS), linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH] iio: chemical: scd30: Replace manual locking with RAII
+ locking
+Message-ID: <20260515151338.74a1ce81@jic23-huawei>
+In-Reply-To: <20260515002603.19240-1-m32285159@gmail.com>
+References: <20260515002603.19240-1-m32285159@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -56,76 +48,73 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 15 May 2026 14:23:44 +0530
-Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+On Thu, 14 May 2026 19:26:03 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
-> The SDAM0 IRQ can be triggered for both EOC (end of conversion) events for
-> immediate ADC reads done in this driver and for threshold violation events,
-> based on ADC_TM thresholds configured from the auxiliary ADC_TM driver on
-> TM channels on the first SDAM.
+> scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
+> calls. Replace them with the newer guard(mutex)() for cleaner RAII
+> patterns and to improve maintainability.
 > 
-> At present, this interrupt is handled only in the ISR in the main ADC driver.
-> When the ISR is triggered for an ADC_TM event, this driver notifies the ADC_TM
-> driver by calling a notifier callback exposed from it for this purpose.
+> In addition, minor refactors in control logic to remove gotos where the
+> guard(mutex)() calls would be used, and replace the "?:" operator with
+> regular if/else returns.
 > 
-> To simplify the interrupt handling in both drivers, share the interrupt between
-> the drivers. With this, ADC_TM interrupts on SDAM0 will be handled directly in
-> the ADC_TM driver, so remove the notifier callback and all TM interrupt
-> handling in the main ADC ISR.
-> 
-> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+https://sashiko.dev/#/patchset/20260515002603.19240-1-m32285159%40gmail.com
+
+It caught the main issue. Given that is a fairly common bad pattern
+I might have noticed it. But then maybe not. Another win to the bot ;)
 > ---
-
-Some stuff from Sashiko on this one:
-https://sashiko.dev/#/patchset/20260515-gen3_adc_tm-v1-0-39ba29f9b4ab%40oss.qualcomm.com
-
-Given I assume you didn't see the warning (I'm fairly sure the bots analysis is correct
-as we've been busy fixing similar cases all cycle), can I just check, have you tested
-this on latest upstream?
-
-Thanks,
-
-Jonathan
-
-
->  drivers/iio/adc/qcom-spmi-adc5-gen3.c         | 52 +++++----------------------
->  include/linux/iio/adc/qcom-adc5-gen3-common.h |  2 --
->  2 files changed, 8 insertions(+), 46 deletions(-)
+>  drivers/iio/chemical/scd30_core.c | 53 +++++++++++++++++--------------
+>  1 file changed, 29 insertions(+), 24 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> index f8168a14b907..a819c3e627a0 100644
-> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
+> index a665fcb78806..a24c95874fd3 100644
+> --- a/drivers/iio/chemical/scd30_core.c
+> +++ b/drivers/iio/chemical/scd30_core.c
 
->  static int adc5_gen3_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
-> @@ -818,7 +782,7 @@ static int adc5_gen3_probe(struct platform_device *pdev)
->  	}
 >  
->  	ret = devm_request_irq(dev, adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq,
-> -			       adc5_gen3_isr, 0,
-> +			       adc5_gen3_isr, IRQF_ONESHOT | IRQF_SHARED,
-
-Sashikio points out that IRQF_ONESHOT is never correct for a non threaded
-interrupt.  The point of that flag is to ensure we don't handle another interrupt
-until the thread is done. If there isn't a thread then it doesn't do anything
-(other than omit a warning!)
-
->  			       adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq_name,
->  			       adc);
->  	if (ret)
-> diff --git a/include/linux/iio/adc/qcom-adc5-gen3-common.h b/include/linux/iio/adc/qcom-adc5-gen3-common.h
-> index 6303eaa6640b..39cbfcbdb101 100644
-> --- a/include/linux/iio/adc/qcom-adc5-gen3-common.h
-> +++ b/include/linux/iio/adc/qcom-adc5-gen3-common.h
-> @@ -205,7 +205,5 @@ int adc5_gen3_get_scaled_reading(struct device *dev,
->  int adc5_gen3_therm_code_to_temp(struct device *dev,
->  				 struct adc5_channel_common_prop *common_props,
->  				 u16 code, int *val);
-> -void adc5_gen3_register_tm_event_notifier(struct device *dev,
-> -					  void (*handler)(struct auxiliary_device *));
+>  static IIO_DEVICE_ATTR_RO(sampling_frequency_available, 0);
+> @@ -590,19 +598,16 @@ static irqreturn_t scd30_trigger_handler(int irq, void *p)
+>  	} scan = { };
+>  	int ret;
 >  
->  #endif /* QCOM_ADC5_GEN3_COMMON_H */
-> 
+> -	mutex_lock(&state->lock);
+> +	guard(mutex)(&state->lock);
+
+I agree with sashiko here (I might have noticed) that it is in appropriate
+to extend the lock scope so far. In particular over the iio_trigger_notify_done().
+Depending on exactly what happens in there we might end up with a deadlock.
+
+For this one I'd factor out the reading code and memcpy + lock into a helper
+- you can use guard() in that safely without expanding the scope and keep
+to the goto pattern for the outer function.
+
+Or just leave this one alone as too complex.
+
+> +
+>  	if (!iio_trigger_using_own(indio_dev))
+>  		ret = scd30_read_poll(state);
+>  	else
+>  		ret = scd30_read_meas(state);
+>  	memcpy(scan.data, state->meas, sizeof(state->meas));
+> -	mutex_unlock(&state->lock);
+> -	if (ret)
+> -		goto out;
+> -
+> -	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
+> -				    iio_get_time_ns(indio_dev));
+> -out:
+> +	if (!ret)
+Very rarely will I be happy with a change that flips from having the
+error path out of line to one where the good path is out of line.
+If you do decide to change this one via a helper, keep the goto pattern
+for this error handling.
+
+
+> +		iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
+> +					    iio_get_time_ns(indio_dev));
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  	return IRQ_HANDLED;
+>  }
 
