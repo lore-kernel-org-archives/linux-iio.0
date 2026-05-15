@@ -1,146 +1,205 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A875949550E
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 15:28:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 561DC4DD6FE
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 15:36:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778858922; cv=none; b=gSU+DqJwmDUd4+AFC2rUwtE8kz7bNrV+ZWAI+3IQCNglIrKU8zJKo+E+btJuIPjgI8BYwd1qMiLD0sWfwsCbVexIxw7Uv2EzLdHHRjczozJBcgV6cGhqo2NCQ0/uvG9SVEn2rPFn6gXTI8o2VPcH/KzzRTY+/hZddedL5KY8x/w=
+	t=1778859391; cv=none; b=uL4m580NxMxh7hJrCX0RdBHG26y0R/oDIEhQ7UwA+2h4gPTLXxr7IVE8eU9ghM264FXoCMnLhE69/WPh10st3NHOQ4qON+K9HQ6xyCJfXZMdcTAlu3SalqKRytWAMSs4hU6akqhPb7ZIIrhzra7s+zHDzuAMlbBKVQ0+nseTghA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778858922; c=relaxed/simple;
-	bh=9Yh5Rv/5NTveSKLIFpJb2uAp/Hs1/EpekiXV1I3jm5Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OLwhRgkBLOIcJ3zbq/kcQ3eEgQgIR7VSMiRdnNxDcnEIn9/WQKOpntshctJmFghpLogLn0YEcPDXk4Oujg5dm2rl70MA2uEubViTntdcgeu2aNPgd95WL044DTEsTMGlblMZ7hlGjOrbWXad6gsFjGCplJP4BKNzBudoGgRHTuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WkiuvzzT; arc=none smtp.client-ip=209.85.218.44
+	s=arc-20240116; t=1778859391; c=relaxed/simple;
+	bh=Ue7Tvvw7GFTqaBvUsscsm3qFYirOrsg+j8q4YjBo1CE=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=r2ElfrGtglbucZe5n8Zu3exlMCS7fBUHwJhwbjRo7uFoMxyP6a/Pk/4/mc0QWSJ9qvHDcAPElrGzmfzRlt6H9S0b1y6yaE5jtTS9YKSXEUwjluU8sIZ4UmdmAA1S1fEY+wVo/RQj9ueN23F96KbrdDcT3iR7k5FWKbvz5AJCdBU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=n/NofypE; arc=none smtp.client-ip=209.85.208.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WkiuvzzT"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-bd3d7c29b4dso516601466b.2
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 08:28:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="n/NofypE"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-67be41d5eeeso14269032a12.1
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 08:36:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778858919; x=1779463719; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4aHjUz6BqcPUtuPTSYRX/Wrmbz9WV9jZg68a5nWa4X0=;
-        b=WkiuvzzTIAgzCrW6Ug14NleN6DTHB30bhgTwWXpTMeiDgNS3+vfMoB/fsR6C0jGac/
-         wRxlWuv/Zn7h7wvf3qSIXFFLZhwvHIb1wWM7HZF6ZyDvdUB7oeuxCHIotWhlwaskW1P3
-         4R7xq6TDiO1mhPA1vNMwmXMKX17PstzcQ5ruPXzEIxrnuAzu2ErCsRS0lHa5nP2f59Tc
-         i1MFO4gom5ZOqHUr1uBIscUnjrUnr6qgJ3JIERKnzJ64Z9u9LvjK0FAw39R7qN/JAtz8
-         EBO/4GP23DAc4SeANhvRtljFj6zYSdRVALigRYnhGxeHy5Y1D1RP5ZJmNMmz77MpXXON
-         MKhA==
+        d=gmail.com; s=20251104; t=1778859385; x=1779464185; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ymIxrmc8NVaPgX08Zo9PR76YEwhybRQaJK3HcXypHmg=;
+        b=n/NofypEixIxI4Hbct0To7VQbRDFEBM3uZXNpwdcfzaEmGaVxzmgcONkwVLaa9ciHU
+         50EVeEFSjr32FNTaW2TAEUrPTfZ57NXeuEWT4rSO9Vi9pn8Z9kMg0adlqTlGDdtzkn+A
+         ZYTW8nkqbOrNoFgdM0HN/HZYZqao5a2fxFpsNVX2u86Rbg5h96kNkovRRjT9VUhl8AQz
+         f8vTWhtFSTOJ/zLa4Rq4Bqn5VJHHyHZEaEoZoAGgHDpgVQXPeagaex+U+Vl8+Z+ruAhK
+         cgJWAZvqNppsygY6/r/kzLo1OyeTO8/QlQ6glTArp+eiauxYYBQB1Ybm8UOQaqUdcinA
+         0myw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778858919; x=1779463719;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4aHjUz6BqcPUtuPTSYRX/Wrmbz9WV9jZg68a5nWa4X0=;
-        b=MXYaTlrqSgaa0OPxkjKOhsb0fdIeiYhKFMmWaa3v1hJ1uJ+gtNZ4Tz+g9qxi7uqCTG
-         wb6Es26g6cywKEnnPHDpwjzBk1w7snQV3c/Cks54HJxdCIRpCR/BZ559wcVQQD/qhocZ
-         9o4Ow2mXRppugNxz/zGp+Aqc6URT1o07VSh1JHiIKDFMqYEPYJyO4lEbu1AgYrpOS6dP
-         wOR9qZqUqqXTHJDfJ54ySPnzU1wW6kaOJoN2n+PvCdUnY26FTbpx9vJAd4lNG+UYge1G
-         jLqmsMDEwmh5fUmgLEW+6uRW6Bt5LWB7rVAem7G+bkOnkZxGPQqPnj2jO1KdUg9VUelE
-         XzcQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+13oRe8WkwpMZclQV8XZyQaTLbymgPZZWvJu3NrSoV7IkMDNsSADWgdyUb/pIsxXKhG4wfSBg21sc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyL8vvTPfSVobWIIqmQ9+zzVp7S5/gqQkhwYWQBuiSMCPOl79A9
-	XCzZ2YygUKCbsWdecgKx4ceXoFFRQjgNQNx8H2U79xfUo+YqaVTGnnU/
-X-Gm-Gg: Acq92OGsHoCkFQz4v7/gs3pAH0V8INT/9eZlPv7yMJjnywPe0VbJ3Dpa34FRLQjSlCg
-	sfoCIjLnndHmDJGYmp25ak05wYIO01ds8RNVs4AAOLqI6wS7vFPuDxQVTFJW66pYFmkc4hLX/VV
-	0SozTIHiAk1W1+UrVyXkdFkHdJs8LaPZ3kuqfLcMuWKXN4oiC8BRJh8N5UUYQukTKKlKj6yzVMR
-	X8VErtaZ2XtR7VvghdLfAycyZ1NiCkAeXTHPSh4+jgryihEJw4eC6V0Fn4sG8ZCEK8ElAbr9KZc
-	Tooqh+48WBfaCViPu+ETOXGHoFv1AYMCf22OIKJIWFtG2vTT1rv5UNmui8bomraVS7pphaNZbyZ
-	xxm4hhZH3klx3qprYCWQB3r3132832ILvuWvaBwYU0tmTQT5p+47EKJxx1rsN6c0KRq4xRXBccw
+        d=1e100.net; s=20251104; t=1778859385; x=1779464185;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ymIxrmc8NVaPgX08Zo9PR76YEwhybRQaJK3HcXypHmg=;
+        b=Qc1TZyd0woen/1IJXOqRv0NdHov54+c5OTKRsuzBAfJwzsgBWb8WfcYhzS+NKZZGpC
+         BZ+OlH6+i+20ZyL9+lxnl+kS6yHOVL8fC84vc2d/0JK1LYih3Rhn5WSTqIXXi9389Pch
+         7omLzjoAEnMBgDuRClh5Zio1nzwp7mN34Zkt/Jn7WjASy04iXjmILUiaz+ueIyoX5CEB
+         kfHNPeC2R65fWFNC4PS+Jt1jynSO1GhVqXXw4vuordX77NbGRDWK2RQ032896HrURKzf
+         0MQCC5bLAroJ+dcIn65d1pHjSzFyNgTZ9XzIoFqimAlErecMEv/x5LysQH3c4Fs1AZRM
+         foQA==
+X-Gm-Message-State: AOJu0Ywv/tmvQ+aHWMB8Qz75cLExYzsNXb6+FNvYU+DWlR7J9mswbLtB
+	EPGZo3rocleLS1FH7u/w5LoDcveLI1I6IaBnPXhnApts2lPhvI5/J/aZ
+X-Gm-Gg: Acq92OFelwfkLHyk/XCDXtGlSDBRMy92DCJoVLNGXXXukVpaCTuJqyMS8ggJOQTL4aO
+	Q3Xbx/k/f9nADhwYWzrWVstshJZBE51CF+Epmo/F5jvRHl1eV0HidEDNp7rwHPUn983XNg29Vt/
+	kDMJPXcpQnfAlx1c4dRM0PRemOGfaS1wm3HuglwtKbzLCN8HiR1IjAqjwAOkIu8KgUDTt9XQhSa
+	8SLPin3yUyFL8qpjWGznKOYhOPERx68j9VOVjkxltWAbsOCcaIdjmJC6YgppASN67MXlRX5jtIa
+	IMofwxcKyyhkFg+Bo05gLmBTdIzrpDI5OXpzntwZzRj6MhKU0/ovjMIDZayPa8SukXJjQCtxWOa
+	kE2EuTwhUGq84r90cIZwmkrBQcQqoDFoW0Iid5q5cdMwZUGIgwkkX8A3H3IxPIO/WaIdvcpOkaw
 	==
-X-Received: by 2002:a17:906:ba84:b0:bc2:70ca:c41e with SMTP id a640c23a62f3a-bd51791d078mr261330066b.25.1778858918659;
-        Fri, 15 May 2026 08:28:38 -0700 (PDT)
+X-Received: by 2002:a05:6402:148a:b0:67e:2624:b8ab with SMTP id 4fb4d7f45d1cf-683bd682186mr1528958a12.24.1778859385260;
+        Fri, 15 May 2026 08:36:25 -0700 (PDT)
 Received: from fedora ([2a02:8071:50c5:5c0::6182])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bd4f4bd1bc9sm249989066b.9.2026.05.15.08.28.37
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68310d510fasm2205089a12.11.2026.05.15.08.36.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 08:28:38 -0700 (PDT)
-Date: Fri, 15 May 2026 17:28:36 +0200
+        Fri, 15 May 2026 08:36:24 -0700 (PDT)
 From: Wadim Mueller <wafgo01@gmail.com>
-To: William Breathitt Gray <wbg@kernel.org>
-Cc: conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org, 
-	conor.dooley@microchip.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linusw@kernel.org, brgl@kernel.org
-Subject: Re: [PATCH v3 2/3] counter: add GPIO-based quadrature encoder driver
-Message-ID: <s5xt3l6fy2vp6qvk66qdywccp5w2gv3sfksufxxybytstsuunh@b3th2uqk56jd>
-References: <20260501200749.20029-3-wafgo01@gmail.com>
- <20260515054819.302445-1-wbg@kernel.org>
+To: William Breathitt Gray <wbg@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Wadim Mueller <wafgo01@gmail.com>
+Subject: [PATCH v4 0/3] counter: add GPIO-based quadrature encoder driver
+Date: Fri, 15 May 2026 17:36:13 +0200
+Message-ID: <20260515153616.157605-1-wafgo01@gmail.com>
+X-Mailer: git-send-email 2.52.0
+In-Reply-To: <20260501200749.20029-1-wafgo01@gmail.com>
+References: <20260501200749.20029-1-wafgo01@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260515054819.302445-1-wbg@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-Hi William,
+This series adds a new counter subsystem driver which implements
+quadrature encoder position tracking using plain GPIO pins with
+edge-triggered interrupts.
 
-thanks a lot for the very thorough review -- this was really
-helpful. I went through all your points and addressed them in v4
-which i will send shortly as a follow-up to this thread (in-reply-to
-the v3 cover).
+The driver targets low- to medium-speed rotary encoders on SoCs where
+hardware quadrature counter peripherals (eQEP, FTM, ...) are either
+not available or already in use. It complements interrupt-cnt.c by
+providing full A/B/Index quadrature decoding instead of just pulse
+counting.
 
-A short rundown so you can already see what to expect:
+The strategic question from v3 -- "why kernel and not libgpiod in
+userspace?" -- was already discussed in the v3 cover thread. A
+reproducible benchmark on AM64x (kernel counter vs gpiomon/libgpiod
+2.1.2, 3-run sweeps from 1 kHz up to 200 kHz) was posted there and
+is also mirrored at https://github.com/wafgo/qenc-bench. William
+accepted the case for a kernel implementation based on this, so i
+will not repeat the numbers here, only the link.
 
-  - gpio_qenc_function enum dropped, priv stores enum counter_function
-    directly, function_read/write are now trivial accessors.
-  - priv->count is now u64 and ceiling defaults to U64_MAX in probe,
-    so ceiling == 0 is a real "ceiling of 0" again, not a sentinel.
-  - update_count rewritten direction-first, with proper saturation
-    at 0 / ceiling, +/-1 per transition.
-  - CREATE_QE_STATE(prev_a, prev_b, curr_a, curr_b) macro plus a
-    single 16-entry X4 transition table; the delta == 2 path is gone,
-    the table just has 0 in those slots.
-  - ISR switches use default: instead of listing every ignored case.
-  - The "enabled" flag in the ISRs is dropped. Gating happens via
-    enable_irq/disable_irq anyway and enable_read derives the state
-    from irqd_irq_disabled(irq_get_irq_data(priv->irq_a)) so there
-    is only one source of truth.
-  - enable_write simplified: no !!, assign directly, two branches
-    split by return.
-  - events_configure() removed (was no-op).
-  - Synapses: A and B keep the full action list including
-    FALLING_EDGE; Index gets its own list with only NONE and
-    RISING_EDGE.
-  - action_read restructured: default to NONE, Index handled as
-    early return, per-function switch. X1_A and X1_B now report
-    RISING_EDGE when going forward and FALLING_EDGE when going
-    backward, as the COUNTER_FUNCTION_QUADRATURE_X1_{A,B} semantics
-    say.
-  - All generic Count functions supported now: INCREASE, DECREASE,
-    PULSE_DIRECTION, QUADRATURE_X1_{A,B}, QUADRATURE_X2_{A,B},
-    QUADRATURE_X4.
-  - Index migrated to the COUNTER_COMP_PRESET + PRESET_ENABLE pair,
-    the custom "index_enabled" COUNTER_COMP_COUNT_BOOL is gone. The
-    Index ISR loads preset into count when preset_enable is set,
-    like intel-qep does.
-  - signal_read: the !gpio guard is gone; the Index synapse is only
-    registered in probe when an index GPIO is actually wired, so no
-    zombie entries.
-  - cnts is now a single-element array (priv->cnts[1]) and
-    counter->num_counts uses ARRAY_SIZE(priv->cnts). To not trigger
-    checkpatch's "deprecated flexible array" warning the array is
-    not the last field of the priv struct anymore.
-  - The Count is renamed from "Position" to "Count".
+Changes in v4 address the detailed review feedback from William on
+PATCH 3/3 of v3:
 
-About the COMPARE/FLOOR components and the OVERFLOW/UNDERFLOW/
-THRESHOLD/DIRECTION_CHANGE events you suggested: i would prefer to
-send those as a separate series on top of this one, once it lands,
-so the diff size for the initial driver stays in a reviewable shape.
-I will announce that as a follow-up in the v4 cover letter.
+Counter ABI / generic semantics:
+  - Drop the private gpio_qenc_function enum, store and exchange the
+    function as enum counter_function directly. function_read/write
+    become trivial accessors.
+  - Support the full set of generic Count functions:
+    INCREASE, DECREASE, PULSE_DIRECTION,
+    QUADRATURE_X1_{A,B}, QUADRATURE_X2_{A,B}, QUADRATURE_X4.
+  - Add COUNTER_SYNAPSE_ACTION_FALLING_EDGE to the synapse action
+    list and report it from action_read for the function modes
+    where it does apply.
+  - In QUADRATURE_X1_{A,B} the reported synapse action is now
+    direction-dependent (RISING_EDGE when going forward, FALLING_EDGE
+    when going backward) to match the Counter ABI semantics.
+  - Restructure action_read: default to NONE, handle the Index
+    synapse as a single early-return case, drop the per-function
+    if/else cascade.
+  - Use a dedicated action list for the Index synapse with only NONE
+    and RISING_EDGE, since the other synapse actions do not apply
+    there.
+  - Migrate the Index feature from a custom "index_enabled"
+    COUNTER_COMP_COUNT_BOOL to the generic COUNTER_COMP_PRESET +
+    COUNTER_COMP_PRESET_ENABLE pair. The Index ISR now loads the
+    preset value into count when preset_enable is set, like
+    intel-qep and other drivers do.
 
-While at it i also picked up Krzysztofs note from v2 on the const
-scalar parameters -- v3 only had the Acked-by from Conor on the
-binding and no code changes, so the const scalars were still in v3.
-They are gone in v4.
+Driver internals:
+  - Change priv->count from s64 to u64. ceiling now defaults to
+    U64_MAX instead of using ceiling == 0 as a sentinel for "no
+    ceiling", which i think is also more clean.
+  - Rewrite gpio_qenc_update_count direction-first, +/-1, with
+    proper saturation at 0 and at ceiling.
+  - Introduce CREATE_QE_STATE(prev_a, prev_b, curr_a, curr_b) and a
+    single 16-entry X4 transition table indexed by the macro. The
+    delta == 2 "invalid transition" path is gone, the table just
+    has 0 in that slot.
+  - Use default: in the ISR switches instead of listing every
+    ignored case.
+  - Drop the now-redundant enabled flag in the ISRs. Gating happens
+    via enable_irq/disable_irq anyway and enable_read derives the
+    state from irq_get_irq_data() so there is only one source of
+    truth.
+  - Simplify enable_write: no !!, assign directly, split the two
+    branches by return.
+  - Drop the no-op events_configure() hook from counter_ops, this
+    one was just left over.
+  - Do not register a synapse for the Index signal when no Index
+    GPIO is wired (no zombie entries) and drop the corresponding
+    !gpio guard in signal_read which was only there to catch the
+    zombie case.
+  - Declare priv->cnts as a single-element array and use
+    ARRAY_SIZE(priv->cnts) for counter->num_counts, for consistency
+    with the rest of the subsystem.
+  - Rename the Count from "Position" to the more generic "Count",
+    since positioning is only one of the use cases for a quadrature
+    encoder.
 
-If anything from above is not what you had in mind please tell me,
-i will fix it in v5.
+Documentation / style:
+  - Add a short comment to the priv spinlock.
 
-Thanks again for the time,
+Krzysztofs "drop const on scalar parameters" note from PATCH 2/3
+of v2 is also taken care of in this rewrite -- v3 was Acked-by
+Conor only and did not carry code changes yet, so the const scalar
+parameters survived there. In v4 there are no const-qualified scalar
+parameters left in the driver.
 
-Wadim
+The follow-up scope which was discussed with William -- COMPARE/FLOOR
+components plus OVERFLOW/UNDERFLOW/THRESHOLD/DIRECTION_CHANGE events
+-- is on purpose not included in v4. I will send those as a separate
+series on top of this one once it lands, so the diff size stays
+reviewable.
+
+Changes in v4:
+  - Major review-driven rewrite of the driver (see above).
+
+Changes in v3:
+  - Pick up Acked-by: Conor Dooley on the DT binding patch.
+  - No code changes.
+
+Changes in v2:
+  - DT binding: rephrase description to describe the hardware, not
+    the driver/sysfs behaviour (Conor Dooley)
+  - DT binding: drop redundant example without index GPIO (Conor Dooley)
+
+Wadim Mueller (3):
+  dt-bindings: counter: add gpio-quadrature-encoder binding
+  counter: add GPIO-based quadrature encoder driver
+  MAINTAINERS: add entry for GPIO quadrature encoder counter driver
+
+ .../counter/gpio-quadrature-encoder.yaml      |  60 ++
+ MAINTAINERS                                   |   7 +
+ drivers/counter/Kconfig                       |  15 +
+ drivers/counter/Makefile                      |   1 +
+ drivers/counter/gpio-quadrature-encoder.c     | 739 ++++++++++++++++++
+ 5 files changed, 822 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/counter/gpio-quadrature-encoder.yaml
+ create mode 100644 drivers/counter/gpio-quadrature-encoder.c
+
+
+base-commit: 3cd8b194bf3428dfa53120fee47e827a7c495815
+-- 
+2.52.0
+
