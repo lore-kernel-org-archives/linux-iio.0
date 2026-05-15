@@ -1,41 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 629C747D933;
-	Fri, 15 May 2026 11:47:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4BE825B0BD;
+	Fri, 15 May 2026 11:58:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778845644; cv=none; b=cEoo5ehPaqEgbTfU0nm08po5m++NhOSxfd86sdZxxV2sFd02qEUvVhR0I3ICw2IAj96ek/2u0106cPLFTOmkaKDFb3TMm+PfHGyrT3BV02KtJiKwWBRqQ/tvcupdfDkWGvDRZY7fECLXrhubAmS8e4UDjZ+FiZ4jdx6GDb/bCQY=
+	t=1778846310; cv=none; b=c6PgF2FgT/59ikOTsh+bITaWj1PdZrwCxTJlgK+z0dWGeWZKXx7lBxvBGEok0+K/PwCGhrEFwazz4ShF473wRSTqhUgrSogj7odOJRAUPjAmKYJJ6oC1kRubd9wDNVITRrXatzlNjz8oGH8WU94iE7fXFpI0FSWODRVye/R7pMA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778845644; c=relaxed/simple;
-	bh=izu3Yv8C0HpytL1nX8WW6ktwrKLP2bk22wNZ1K2u+JA=;
+	s=arc-20240116; t=1778846310; c=relaxed/simple;
+	bh=EiDxThBjH/orVAO+UXvFfacjhpPKOmWFFF3myJAIkOY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VSng5NT15kN9Zlbn3X4vZbg0BEPHUd8SGhpRBeZdwn0iyelJlNykZxBnNlI9DvdvYQyTN9R8LXtcZIdPI05ui2cSaBuRHRTQ805jpVDXW+Q8TPLFTYvVnJi+gQa45ZYBr0p/z68mBOPsOKmEbhB5cvbIa77feemjVE3UMhKb1bg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LvIC/fP0; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=X69rW3ma0G96/8n+2EMtx+urqaSKVpmi/AZH7u7fxWSEIe1YreH4QhKSfD4NRIckuKPYzlBTKuQWazqNNx6jiJ6BcMzAHeX8sCzuCZdBqUKqKbrStktG5CIqvbxrAhRWKgPcmWNIV2LiuCZuzxlYTJhDuyuxSl+tCVnKPbYPTYg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aavd3qgk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LvIC/fP0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC7C0C2BCF5;
-	Fri, 15 May 2026 11:47:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aavd3qgk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE0B4C2BCB0;
+	Fri, 15 May 2026 11:58:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778845643;
-	bh=izu3Yv8C0HpytL1nX8WW6ktwrKLP2bk22wNZ1K2u+JA=;
+	s=k20201202; t=1778846310;
+	bh=EiDxThBjH/orVAO+UXvFfacjhpPKOmWFFF3myJAIkOY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=LvIC/fP0DzdjseVvlkV3EoUVKWnugHxTrYBwZJGSPupLpomtZy+SyTRKWjq/NAweq
-	 80IpXbCzMX86AmbZUvFQBkSfoFpQ5mgfuciwx5OTLyfsGyvplxiYRttJzroN1Xn5iF
-	 AwiZl/rvglEIHx+FbFw+73dPvRqM5msDn1ZDGRivdsfvjCNIX+0nzSnJpuDdbXPrpa
-	 4wBA7dnHbUymCjS98TF/tzbajhiCWWaEWE4AXq7bof9sCS1sAhgmbajzEDO48HzefF
-	 KxEp6DOEqiQQuDRLC0qX0MfolZ7wL5RaQd3FHOFLf6yowHd9WvyLIygn5uZyx5qJdE
-	 ii/1WNeEOaF4w==
-Date: Fri, 15 May 2026 12:47:18 +0100
+	b=aavd3qgkMJuJA1d78zTyZO5gj+yMhUOFCwv5gjGXBeNFrNRnJquuKqAmt9/q9GU6B
+	 Fahk1hozxrbOeSUXqm75uHjeB4fG9Vw9MLIRt3yv2wBFyHGzj7ALThUUP/s3bx2QhD
+	 P5MXXKPWqnrhoLQRWZ8SH60N6aX9uBLOwjGMeMROQp0ICfby2NcJ1JG54XcsVJy8wu
+	 Lxz5YCp4V4IMFc6k11VPEJbKa/TyMDxML1AUkDGBtu48DSsKqz290Kzzb7kpY8N//O
+	 ahdKjaX8GoBOwV5eSDkMc3lm6Ny/WGH5nzlTplvGpqaOhbTDyXDvkOoyqeABmdkRoX
+	 8mS/VYAF3QDQw==
+Date: Fri, 15 May 2026 12:58:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: big.block0203@fastmail.com
-Cc: linux-iio@vger.kernel.org, platform-driver-x86@vger.kernel.org,
- linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [BUG] ACPI INT33D3 ambient light sensor not bound on Intel
- Lunar Lake (ThinkPad X1 Carbon Gen 13)
-Message-ID: <20260515124718.6481e2c3@jic23-huawei>
-In-Reply-To: <7915f7f0-d5fa-48a8-9aa6-fa2f8e621837@app.fastmail.com>
-References: <7915f7f0-d5fa-48a8-9aa6-fa2f8e621837@app.fastmail.com>
+To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: magnetometer: ak8975: fix potential kernel
+ stack memory leak
+Message-ID: <20260515125821.520fe56f@jic23-huawei>
+In-Reply-To: <20260515-magnetometer-kernel-mem-leak-v2-1-320e1ad4843d@gmail.com>
+References: <20260515-magnetometer-kernel-mem-leak-v2-1-320e1ad4843d@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -43,129 +46,112 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 15 May 2026 14:51:09 +0400
-big.block0203@fastmail.com wrote:
+On Fri, 15 May 2026 12:28:23 +0200
+Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
 
-> Hi,
->=20
-> On a Lenovo ThinkPad X1 Carbon Gen 13 (Intel Lunar Lake), the ACPI
-> firmware declares an INT33D3 ambient light sensor as present, enabled,
-> and functional, but no Linux driver binds to it. As a result, no IIO
-> device is created and no ambient light data is available to userspace
-> (KDE/GNOME auto-brightness, iio-sensor-proxy, etc.).
+> From: Joshua Crofts <joshua.crofts1@gmail.com>
+> 
+> Currently in the AK8975 driver there are four instances where potential
+> uninitialized kernel stack memory leaks can occur. If
+> i2c_smbus_read_i2c_block_data_or_emulated() returns a value less than
+> the size of the buffer, uninitialized bytes are retained in the buffer
+> and later the buffer is passed on to IIO buffers, potentially leaking
+> memory to userspace.
+> 
+> Fix this by adding checks whether the return value of the function is
+> equal to the size of the buffer and subsequently if the value is
+> lesser than zero to distinguish from a returned error code.
+> 
+> Fixes: bc11ca4a0b84 ("iio:magnetometer:ak8975: triggered buffer support")
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Closes: https://sashiko.dev/#/patchset/20260513-ak8975-fix-v1-1-104ea605dd54%40gmail.com
+> Cc: stable@vger.kernel.org
 
-So INT33D3 is a new ID to IIO at least but looks like it
-binds to drivers/input/misc/soc_button_array.c=20
+I'm doubtful about a stable marking for the patch.
 
-So I'm guessing not an ALS unless that's a multipurpose chip - seems
-unlikely though as that combination isn't common.
+Personally I've never seen an i2c response that was short (yet correct
+enough not to trigger an error return).  There are specific devices
+that will do this because they are not ready for instance, but not on
+a general read.
 
-So if there is an ambient light sensor here that is exposed to
-the OS we need to find it amongst the other IDs..
+Whilst I know in theory they can occur, has anyone else ever seen one?
 
->=20
-> I did not find an existing report covering this on Lunar Lake. Apologies
-> if this duplicates one I missed; pointers welcome.
->=20
-> Hardware
-> =3D=3D=3D=3D=3D=3D=3D=3D
-> - Lenovo ThinkPad X1 Carbon Gen 13
-> - Intel Core Ultra 7 258V (Lunar Lake, Xe2)
-> - iGPU: PCI 8086:64a0 (rev 04), subsystem 17aa:2339
-> - Panel: Samsung Display ATNA40YK20-0 (2.8K OLED)
->=20
-> Software
-> =3D=3D=3D=3D=3D=3D=3D=3D
-> - Fedora Kinoite 44
-> - kernel 7.0.6-200.fc44.x86_64
-> - KDE Plasma 6 on Wayland
->=20
-> Symptom
-> =3D=3D=3D=3D=3D=3D=3D
-> No IIO devices are exposed at all:
->=20
->     $ ls /sys/bus/iio/devices/
->     (empty)
->     $ ls /sys/class/iio/
->     (empty)
->=20
-> But the ALS is declared in ACPI:
->=20
->     $ cat /sys/bus/acpi/devices/INT33D3:00/hid
->     INT33D3
->=20
->     $ cat /sys/bus/acpi/devices/INT33D3:00/status
->     15
->=20
->     $ ls /sys/bus/acpi/devices/INT33D3:00/
->     cid  hid  modalias  path  physical_node  power  status  subsystem  ue=
-vent
->     # No `driver` symlink under physical_node =E2=80=94 nothing bound.
->=20
->     $ readlink /sys/bus/acpi/devices/INT33D3:00/physical_node
->     ../../../../../../pci0000:00/0000:00:1f.0/PNP0C09:00/INT33D3:00
->=20
->     $ sudo dmesg | grep -i INT33D3
->     (no output =E2=80=94 no driver even attempted to probe)
->=20
-> Status 0xf per ACPI spec means: present (bit 0), enabled (bit 1), shown
-> in UI (bit 2), functional (bit 3). The firmware unambiguously declares
-> the device as available. dmesg shows no probe attempt and no error.
->=20
-> Other unclaimed firmware-declared devices on this platform (for context)
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->     INTC1025:00     status=3D?    driver=3DNONE
->     INTC105D:00     status=3D15   driver=3Dintel-pinctrl
->     INTC105D:01     status=3D15   driver=3Dintel-pinctrl
->     INTC105D:02     status=3D15   driver=3Dintel-pinctrl
->     INTC105D:03     status=3D15   driver=3Dintel-pinctrl
->     INTC105D:04     status=3D15   driver=3Dintel-pinctrl
->     INTC1068:00     status=3D15   driver=3Dint3400 thermal
->     INTC1069:00     status=3D15   driver=3Dint3403 thermal
->     INTC1069:01     status=3D15   driver=3Dint3403 thermal
->     INTC1069:02     status=3D15   driver=3Dint3403 thermal
->     INTC1069:03     status=3D15   driver=3Dint3403 thermal
->     INTC1069:04     status=3D15   driver=3Dint3403 thermal
->     INTC107B:00     status=3D15   driver=3Dintel-hid
+I don't mind hardening against it but not something I'd rush
+to backport or even necessarily to take as a fix.
 
-It's more than possible that the ALS is presented as part of the HID.
+Patch looks fine to me and the thing sashiko is moaning about is already
+fixed on my tree.  Note this is going the slow way at least partly because
+of all the other work on the driver!
 
->     INTC1092:00     status=3D0    driver=3DNONE
-not 100% sure but there are some references to a wireless modem related
-thing associated with this ID.
+So picked up by stable tag dropped.  Applied to the togreg branch of iio.git
 
->     INTC109D:00     status=3D15   driver=3DNONE
-Might be the watchdog.  Maybe see if it has a cid entry.
-
-
-Other alternatives would be it's on a discoverable bus...
-
-So without figuring out where it is, not much we can do here.
-
-Good luck on finding more info!
+Thanks,
 
 Jonathan
 
-
->=20
-> INTC109D:00 is also present-and-enabled but has no driver bound. Its
-> function is unknown to me; including it for awareness in case it is
-> sensor-hub-related and a prerequisite for INT33D3.
->=20
-> INT3519:00 is also present in ACPI but with status=3D0 (disabled by
-> firmware), so likely not relevant here.
->=20
-> Expected behavior
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> An IIO device of class `in_illuminance*` should appear under
-> /sys/bus/iio/devices/, allowing iio-sensor-proxy and desktop
-> environments to consume ambient light data for auto-brightness.
->=20
-> Thanks,
-> big.block
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> ---
+> Changes in v2:
+> - Added 2 additional checks
+> - Removed nested if statements
+> - Link to v1: https://lore.kernel.org/r/20260514-magnetometer-kernel-mem-leak-v1-1-35b48d699faf@gmail.com
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index b648b0afa5733fd7a54bdf2b8f92f00e924c074b..e085c5a6583dfe40c653abf4936594a5acd08f51 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -495,6 +495,10 @@ static int ak8975_who_i_am(struct i2c_client *client,
+>  		dev_err(&client->dev, "Error reading WIA\n");
+>  		return ret;
+>  	}
+> +	if (ret != sizeof(wia_val)) {
+> +		dev_err(&client->dev, "Error reading WIA\n");
+> +		return -EIO;
+> +	}
+>  
+>  	if (wia_val[0] != AK8975_DEVICE_ID)
+>  		return -ENODEV;
+> @@ -619,6 +623,10 @@ static int ak8975_setup(struct i2c_client *client)
+>  		dev_err(&client->dev, "Not able to read asa data\n");
+>  		return ret;
+>  	}
+> +	if (ret != sizeof(data->asa)) {
+> +		dev_err(&client->dev, "Error reading asa data\n");
+> +		return -EIO;
+> +	}
+>  
+>  	/* After reading fuse ROM data set power-down mode */
+>  	ret = ak8975_set_mode(data, POWER_DOWN);
+> @@ -758,6 +766,10 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+>  			sizeof(rval), (u8*)&rval);
+>  	if (ret < 0)
+>  		goto exit;
+> +	if (ret != sizeof(rval)) {
+> +		ret = -EIO;
+> +		goto exit;
+> +	}
+>  
+>  	/* Read out ST2 for release lock on measurement data. */
+>  	ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST2]);
+> @@ -873,6 +885,8 @@ static void ak8975_fill_buffer(struct iio_dev *indio_dev)
+>  							(u8 *)fval);
+>  	if (ret < 0)
+>  		goto unlock;
+> +	if (ret != sizeof(fval))
+> +		goto unlock;
+>  
+>  	mutex_unlock(&data->lock);
+>  
+> 
+> ---
+> base-commit: 86138b484d6367a57312f69af4ec958806c2673c
+> change-id: 20260514-magnetometer-kernel-mem-leak-d88a85d28a60
+> 
+> Best regards,
 
