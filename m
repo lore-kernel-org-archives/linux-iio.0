@@ -1,248 +1,242 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD77C30567B
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 15:57:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72B5E3EFFCC
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 16:05:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778860636; cv=none; b=BVSwJrljtTkDQDrT3g2VYbhoaQgOTI+s8f6pxo0/SJzJpAmTBJC6X0ySb7gxuitWH5DumB6HJBU2ztVeDyAB04UKoBqGgpMCKmr8GMjug3C3V4j7LvmBtr8Bdp4tkb17SYpA/Mot7ex/3ricQuTiO4+DFLelraWyC3WKHguuTs4=
+	t=1778861112; cv=none; b=VXLk+rTA4pcmddJvm+faNaT8k24Ld4od3orEyEFagUQ/ugyp8LEtcf/WdFQLhHK4gaGSLrQyP1aGjfRUVdO5H1QzG+2m8002KvnO1USasyvhSibElAQNS+FmDxLZjsiA5FDWCq5zBbZoDJW7+2SbHBurT1oIXfCtX6Kb3JY3lwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778860636; c=relaxed/simple;
-	bh=IguJtA/166vSHwZlyrAaam1VOaDrr3Yd0bxakY+IMn8=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=AXHIk2sAp2YS24y81v7KvxW77j/O+2AEDuMDLEs0hFjSZLVDCDS/9dB8ODxoIkyzb/YozJGaPJMI8tIhrg5K0oDWaRAb/lTElPjSPVPrvZwXnF3Y0hx5T3xx1EWMAtzyW/260LUcBK77efHSLAXdpgZGvv+d+6/0eImAc1AuWL8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rlyW0zQg; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1778861112; c=relaxed/simple;
+	bh=b5pd97Ki+/XAUp6J5p3HNpRMAnmllhdnuVwxI2OEYhs=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bnj7cnIWGPniHuhTpie4pzmKsYxa+/uTECgtloEm2ymhTG+skTfZxqg6PlMsx6cLWIlrMGeJ73ZGpMKluVgpnt0gxUz7ZeVtpfnzTswN4jVBqmx0RaVjTEjIU70h2ts02skOV+z53U7fE/b3DiGzDKQXaHxG8G3G4/mgXR1HpT8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hp4DJTo9; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rlyW0zQg"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-488b0e1b870so154867205e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 08:57:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hp4DJTo9"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-48374014a77so81134305e9.3
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 09:05:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778860633; x=1779465433; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=1uF5OyOIkN83/pI3J73aYzFyGQaV0SrzSZ1PhK/Byvg=;
-        b=rlyW0zQgt63GS99uebdBbFutHr0n/DjBKy/69ruHQG0DdYofF3AkK5qTQfLw0kc+2o
-         bfKai7zyJo56pSPKNWUxzl/EGqjDOXHwkiB7lY+bCMy7couuXIMNqMmGsYcUaGcNyfdB
-         xYhYjO9AuPdb1H6gR8FKnlva2e52uBvyemkfoiTGkXsrwNicpR8TR6MiiqUzCIgRORIt
-         6+RAlDlBntU9dOpyOT/Z32IJosIiF5JKVuP6mBUj2cxPqPOZIrROqOCTpG3QfR702vSK
-         P5gzj61pbn3Z2NnCKABkKfMPPeohyShvclzECEfwtmlTfTQFoUA2W6LUMc8c1Lf9V/YU
-         MTcw==
+        d=gmail.com; s=20251104; t=1778861110; x=1779465910; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=QJEHw+NfjmamzJ6e+wpSFeRm2Y9ZjDhLNyEd/6LMzgY=;
+        b=Hp4DJTo9/dal9rKDfqruemL6qWUHBIxzK+15BqFeM+cHOaTO7tTP4IUgkmaqys+1Xi
+         aJCK4+0GNKj+cyXtrMq0lW5tGV2QfcQDPABZ5pFmSDZUD0Mw10f5HdB5/s0QkCFf4TfK
+         qNNlhGG6hU3AeRW+5KrpkRbYDeW3nuhV5RFGI8F8Tb1ijyCDBgOMsqpjfcoGPxqkaguw
+         Vocbee+LUBXPhkPd2g52aQr1HxytgMpikYSWUPKRBzTQKXn3/xNv7wrhiN9yREhq3qLY
+         kqfRgzyOfjSnlhIXW7YAFV4Ly+qGrv81faAiMGugle5QPVWArhlzlr9YJV+AV5sIdCpl
+         QuHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778860633; x=1779465433;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1uF5OyOIkN83/pI3J73aYzFyGQaV0SrzSZ1PhK/Byvg=;
-        b=qznUXJanw9lDMvEyEEmSD90z/jJZxcXbQSYDE0KB62BSgzEM4wEqUktvzf7gqk5p3y
-         xm9SI9Xs3KsRAiMio1r76zG9/tlAjs1r3UHCDMNy6dnOoGPU2sb6sqU3dDeAn+Lh6GAP
-         wS5NmpwTdnxnKnFCrp1Kqns7YSDJm/YyTZUIjWLUZVllPrBlDkQ+b6llK4E5h/bx2IM2
-         1R+j93BXz4NYTk0Q7yl+TPaBvq/RQpK71t1isTexQTJh5oqNhvKw5nA7jQKjEMcekzsN
-         My/G8ohpSzbo2JtXfj5S276r4tW7wkdZCUjCvZTJYNFsJ+dDtcFK/YZ5VPt/BIp/jEDK
-         cjtw==
-X-Forwarded-Encrypted: i=1; AFNElJ/KMgvsGx85SNhaKaU3G9kHQ1edQQrosxnQXptQSlDR+1z47cSi1Nw7/NXG2baCHagHJkb8uLfV3Kw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxw+S0Zybd8xfe14at84x+Ilo1sukE3WxQFCpKQ+9+S9/puZvrM
-	S/tVZ1B3TzlaHHwOasT0Zk/jrW6YDzP58UewpDRerMi7HMTuK5XD1Gs4
-X-Gm-Gg: Acq92OFo1S1wT9GuXzw8qQ8k6ih4Nahyk89BfNG8krpvNUhEoe6bHdENdcaBHskFsRO
-	M2NlKudMdb6/U+2RnB82dW12ZYMIKLcgcGRpJ47ewrN8++AeiqcMRpdJfSxSGW9CbVE/G8+xy+Z
-	87qbB33UbyfpbZpSWxCtj8AknSEuyFJFBsImz1vYibWfOjgSXnvC/TtWkdiS2whuX9ArQpqeE9I
-	gaSFZlBJigp8KghCJNZ4mVZcoGzjtHX96B+cH9dvavcHcBN+VfbpzXxVdNosgehFztcM1kIfoRQ
-	U38g99s9MXtJLTPnKu54Zg4ln85KA3Yg/LTvTAYvQrp7C2JHTnlInbG8lHgTCfYI+MAzwub6ZQA
-	bUXoSkFwImqm8LcwwxCzPQXxwffyoShHe7yIIOj/2dn2RgHusIhhjXLcS8eTIGae1mkXRVLgDji
-	5bzMNt126zGrsnt+WSnWe6Pmc0tXoZPA==
-X-Received: by 2002:a05:600c:3b28:b0:48f:d835:e0e1 with SMTP id 5b1f17b1804b1-48fe632678amr64882635e9.20.1778860632725;
-        Fri, 15 May 2026 08:57:12 -0700 (PDT)
-Received: from [192.168.37.44] ([217.61.173.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48febe60fc0sm20287995e9.21.2026.05.15.08.57.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 May 2026 08:57:12 -0700 (PDT)
-Message-ID: <0a0d0931-f1a3-4ee0-99fc-91d379490838@gmail.com>
-Date: Fri, 15 May 2026 17:57:11 +0200
+        d=1e100.net; s=20251104; t=1778861110; x=1779465910;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QJEHw+NfjmamzJ6e+wpSFeRm2Y9ZjDhLNyEd/6LMzgY=;
+        b=WaldAhdwJEjo3E4Ib3Dn8qNC5+EnzX3wdkp2OTx8cPWqmglGfUR0AiXjynW0bvM3Qx
+         9TiGh1fBYA++YNYRe7UUJ9wM3zb/4Jo3BxvHciD/+osI9byBa3Y4z1F2TLd48ww+Rfyg
+         Kk9PhNgHzNT+830j10fCUXkcfY6+eu5pWmPw7xlt3JmB1ASWu6fVgUaw8IKUb/p3nJ40
+         0FDDEaskFidMpxyTYhioumEiAqKpiU/u1yXSt9W6q0IxF11wpd44xvtX0umfO4KWSQ6h
+         YtKf3fUe3YBzZR9NLQZxc+WSweVYbFTtiHMT8kn7VInM8QDTBf+KrGV5jof3u7X/DIMG
+         76sA==
+X-Forwarded-Encrypted: i=1; AFNElJ+B6+B93NRtVGgD31XEWIcoUR5QPcRCe6KedcRCOmUYx9JrB0Gb8C51jiiEBfBwjX3ZE64dUr6MSWk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxBxlTcwNIDtDP/tXdbKkDxz/vvXgXWOaOURjFgEE6xNK2jKVFf
+	bVsgTxz4EkRfCPr5UiaoUsE0dlDXKjlJmVkWCMsW0UoZdSG8yPnCr7jO
+X-Gm-Gg: Acq92OEQxs22HnufBrEKLU1Sns7qc143/RcAf6vfqWJJmTpAPlqzc5IB6TvoZeqEQgz
+	K0FOIgZKE5AGf5te+rayHcwP0V4qO67LO80/+WT2KrhfMvz0i7lK1jTCuJNazN0gjv/JewfyMpq
+	5vTw0S7d4bayXAWBYizJt9z/uLCdjDjmggDmZWVLkJAeYpVD81tRAdE1HJLxLqUCyEok/xM3fpH
+	hv0jj4hTIzmwPpeO+hHpD0fVrF8SLUwElXuzHVhJPZsdZSQDcnFXTnu8Ie0FqDpYGhe+8lR819I
+	WbbtIdQ+ZOX3cz6trCNwniif3S4geSpuX6q21YeXHeHqL/UYrlWOqEbxrGgsg56unpXIfKYT+lk
+	nhN4nOabGe1Hv+QdD8K6vtGouZbONeUiGxrkHl05ajJuA4YiG/7Oc9G7t7POGx4O3wUVNJHms4N
+	Sxh9pxMTdaLNP6eQ962SxC20ZCjlK/6AkuHdlfQvJLJkAeYtP6CGy84j9mv6pCdtERflmXaA6Cg
+	wzfIcEgLjDltf1Nrod4RpVPS/OqFZS6TM+oIlL1W24VWy6FWw==
+X-Received: by 2002:a05:600c:8184:b0:489:1c1f:35f1 with SMTP id 5b1f17b1804b1-48fe60e1451mr65158195e9.4.1778861109715;
+        Fri, 15 May 2026 09:05:09 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48febe67688sm21102505e9.5.2026.05.15.09.05.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 May 2026 09:05:09 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Fri, 15 May 2026 17:05:06 +0100
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, 
+	rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
+	Shuah Khan <skhan@linuxfoundation.org>, David Laight <david.laight.linux@gmail.com>
+Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <ex6p5qpgsfvm5wzalpwo7whcj4m4uxzscpzxvb5ihfu2prx3fj@7skhmz3cbshw>
+References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
+ <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
+ <kwjoyikbygik4futknqpua2tlzokradms25n2dmfa5czyj2uts@4rdfl6zlul2q>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Aldo Conte <aldocontelk@gmail.com>
-Subject: Re: [PATCH v2 4/5] iio: light: tcs3472: implement wait time and
- sampling frequency
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-References: <20260512223215.25596-1-aldocontelk@gmail.com>
- <20260512223215.25596-5-aldocontelk@gmail.com>
- <agRdzneWb2RIidIp@ashevche-desk.local>
-Content-Language: en-US
-In-Reply-To: <agRdzneWb2RIidIp@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <kwjoyikbygik4futknqpua2tlzokradms25n2dmfa5czyj2uts@4rdfl6zlul2q>
 
-On 13/05/26 13:17, Andy Shevchenko wrote:
-> On Wed, May 13, 2026 at 12:32:14AM +0200, Aldo Conte wrote:
->> The TCS3472 has a wait state controlled by the WEN bit in the ENABLE
->> register and the WAIT register, with an additional WLONG bit in CONFIG
->> that if set multiplies the wait step by 12. The driver previously
->> defined TCS3472_WTIME but never used it leaving the TODO comment on
->> the top of the source file.
->>
->> Implement control of the wait time through IIO_CHAN_INFO_SAMP_FREQ:
->>
->>    - Reading sampling_frequency returns the chip's current cycle time,
->>      computed as the sum of ATIME, the fixed RGBC initialization time
->>      and the wait time (which depends on WEN and WLONG).
->>
->>    - Writing sampling_frequency programs WTIME so that the resulting
->>      cycle period approximates the requested frequency. If the
->>      requested frequency cannot be reached with any
->>      non-zero wait time, WEN is disabled and the chip runs
->>      back-to-back conversions at the maximum rate allowed by ATIME.
->>      If the requested period exceeds the maximum WTIME range, WLONG
->>      is enabled to extend the wait step from 2.4 ms to 28.8 ms.
->>
->>    - The user's last requested frequency is stored in the driver's
->>      private data so that subsequent changes to integration_time
->>      recompute WTIME and preserve the requested sampling rate as
->>      closely as possible.
->>
->> Add TCS3472_ENABLE_WEN, TCS3472_ENABLE_RUN and TCS3472_CONFIG_WLONG
->> bit definitions. TCS3472_ENABLE_RUN bundles the bits
->> (AEN | PON | WEN) that are simultaneously set when the chip is in
->> running state and cleared during powerdown, and is used by
->> tcs3472_probe(), tcs3472_powerdown() and tcs3472_resume().
->>
->> Remove the "TODO: wait time" comment at the top of the file.
+On 26/05/13 10:41AM, Rodrigo Alencar wrote:
+> On 26/05/10 01:42PM, Rodrigo Alencar via B4 Relay wrote:
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+> > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+> > precision). After the decimal point, digits beyond the specified scale
+> > are ignored.
 > 
->> Suggested-by: Andy Shevchenko <andy@kernel.org>
+> Hi Andy,
 > 
-> Inappropriate tag.
-> You must not put tags on your own, if in doubt, ask first!
-> 
+> I am starting over here, the other conversation is getting hard to follow.
+> This is my new proposal...
+
++cc David
+ 
 > ...
 > 
->> +#define TCS3472_ENABLE_RUN (TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON | \
->> +			    TCS3472_ENABLE_WEN)
+> > +static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+> > +{
+> > +	u64 _res = 0, _frac = 0;
+> > +	unsigned int rv;
+> > +
+> > +	if (scale > 19) /* log10(2^64) = 19.26 */
+> > +		return -EINVAL;
+> > +
+> > +	if (*s != '.') {
+> > +		rv = _parse_integer(s, 10, &_res);
+> > +		if (rv & KSTRTOX_OVERFLOW)
+> > +			return -ERANGE;
+> > +		if (rv == 0)
+> > +			return -EINVAL;
+> > +		s += rv;
+> > +	}
+> > +
+> > +	if (*s == '.' && scale) {
+> > +		s++; /* skip decimal point */
+> > +		rv = _parse_integer_limit(s, 10, &_frac, scale);
+> > +		if (rv & KSTRTOX_OVERFLOW)
+> > +			return -ERANGE;
+> > +		if (rv == 0)
+> > +			return -EINVAL;
+> > +		s += rv;
+> > +		if (rv < scale)
+> > +			_frac *= int_pow(10, scale - rv);
+> > +		while (isdigit(*s)) /* truncate */
+> > +			s++;
+> > +	}
+> > +
+> > +	if (*s == '\n')
+> > +		s++;
+> > +	if (*s)
+> > +		return -EINVAL;
+> > +
+> > +	if (check_mul_overflow(_res, int_pow(10, scale), &_res) ||
+> > +	    check_add_overflow(_res, _frac, &_res))
+> > +		return -ERANGE;
+> > +
+> > +	*res = _res;
+> > +	return 0;
+> > +}
 > 
-> Better style is
+> This function now becomes:
 > 
-> #define TCS3472_ENABLE_RUN						\
-> 	(TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON | TCS3472_ENABLE_WEN)
+> 	static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+> 	{
+> 		u64 _res = 0;
+> 		unsigned int rv_int, rv_frac;
 > 
-> ...
+> 		rv_int = _parse_integer(s, 10, &_res);
+> 		if (rv_int & KSTRTOX_OVERFLOW)
+> 			return -ERANGE;
+> 		s += rv_int;
 > 
->> +	cycle_us = div_u64((u64)PSEC_PER_SEC,
->> +			   (u64)val * USEC_PER_SEC + val2);
+> 		if (*s == '.')
+> 			s++; /* skip decimal point */
 > 
-> First of all, it's one line. Second, the divisor for this function is 32-bit.
-> And at last the castings are not needed. I think I already told these...
+> 		rv_frac = _parse_integer_limit_init(s, 10, _res, &_res, scale);
+> 		if (rv_frac & KSTRTOX_OVERFLOW)
+> 			return -ERANGE;
+> 		s += rv_frac;
+> 
+> 		if (!rv_int && !rv_frac && !isdigit(*s))
+> 			return -EINVAL; /* no digits at all */
+> 
+> 		while (isdigit(*s)) /* truncate digits */
+> 			s++;
+> 
+> 		if (*s == '\n')
+> 			s++;
+> 		if (*s)
+> 			return -EINVAL;
+> 
+> 		if (_res && (scale > (19 + rv_frac) || /* log10(2^64) = 19.26 */
+> 		    check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
+> 			return -ERANGE;
+> 
+> 		*res = _res;
+> 		return 0;
+> 	}
+> 
+> The new thing here is _parse_integer_limit_init(), which is a local modified
+> helper that accepts an init value, so _parse_integer_limit() becomes:
+> 
+> 	unsigned int _parse_integer_limit(const char *s, unsigned int base,
+> 					  unsigned long long *p, size_t max_chars)
+> 	{
+> 		return _parse_integer_limit_init(s, base, 0, p, max_chars);
+> 	}
+> 
+> with init = 0:
+> 
+> 	static unsigned int _parse_integer_limit_init(const char *s, unsigned int base,
+> 						      unsigned long long init,
+> 						      unsigned long long *p,
+> 						      size_t max_chars)
+> 	{
+> 		unsigned long long res;
+> 		unsigned int rv;
+> 
+> 		res = init;
+> 		/* ...
+> 		 * the rest is the same implementation as _parse_integer_limit()
+> 		 * ...
+> 		 */
+> 		return rv;
+> 	}
+> 
+> That allows to accumulate the final value into the same variable, which makes
+> things simpler and decreases the amount of overflow checks.
+> 
+> The scale can now be a bigger value, like 0.00000000000000000000000000000000423
+> can be parsed with scale = 35, resulting into 423.
+> 
+> The truncation loop is still there... I think this implementation is better,
+> and I am not sure what is the input limit that you would consider ok to allow
+> non-zero digits to be truncated once the scale can now be something bigger than 19.
+> As long as the output fits into a u64 variable, the parser still works.
 
-In theory, val and val2 could have a value of INT_MAX. Therefore, the 
-calculation INT_MAX * USEC_PER_SEC + INT_MAX results in a value of 
-2,147,483,861,748,364,700, which can only be stored in 64 bits. This is, 
-of course, an extremely rare case in which userspace writes an 
-impossible frequency that is simply too high.
-Therefore, div64_u64() should be used instead of div_u64().
-Therefore, the following code would be required:
-
-cycle_us = div64_u64(PSEC_PER_SEC, val * USEC_PER_SEC + val2);
-
-
-
-> ...
-> 
->> +	wtime = 256 - DIV_ROUND_CLOSEST_ULL(wait_us, 2400);
->> +	if (wtime < 0) {
->> +		wlong = true;
->> +		wtime = 256 - DIV_ROUND_CLOSEST_ULL(wait_us, 28800);
->> +	}
-> 
-> Why 64-bit divisions? Do you expect the wait_us be outside INT_MIN/INT_MAX range?
-> This will need a comment and/or dropping the 64-bit arithmetics.
-
-cycle_us_MIN is reached when (u64)val * USEC_PER_SEC + val2 is MAX and 
-so is INT_MAX * USEC_PER_SEC + INT_MAX. Assuming this, the division 
-would be 10⁶ / (INT_MAX * USEC_PER_SEC + INT_MAX) = 0.000465661, so 0.
-
-Therefore, cycle_us_MIN would equal 0 and cycle_us_MAX would equal 
-PSEC_PER_SEC/1, i.e. 10⁶; consequently, wait_us_MIN would equal −614400:
-
-wait_us_min = 0−2400−612000= −614400
-
-and wait_us_MAX would equal 999999995200:
-
-wait_us_MAX = 1000000000000 −2400−2400 = 999999995200
-
-This means that wait_us needs to be s64 if i am not wrong.
-> 
->> +	wtime = clamp(wtime, 0, 255);
-> 
-> ...
-> 
->> +	ret = i2c_smbus_write_byte_data(data->client, TCS3472_WTIME, wtime);
->> +	if (ret < 0)
-> 
-> What's the meaning of positive returned values? I think this function never
-> does that. If I'm right, drop ' < 0' parts in all similar cases.
-The i2c_smbus_write_byte_data() function returns a value of 0 on success 
-and a value less than 0 in the event of an error. I do not understand 
-this comment. Could you please explain it to me in more detail?
+The truncation loop is at least stricting the input on digits!
+Any comments on that?
 
 > 
->> +		return ret;
-> 
-> ...
-> 
->> +		*val = USEC_PER_SEC / cycle_us;
->> +		*val2 = div_u64((u64)(USEC_PER_SEC % cycle_us) * USEC_PER_SEC,
->> +				cycle_us);
-> 
-> Is this even correct? We take modulo of cycle_us to get under the MICRO range,
-> then multiply to MICRO (seconds) and divide by full cycle_us. I'm lost here.
+> I am also adding new test cases for that!
 
+I have a v13 ready with this. I'll give it a go soon...
 
-> 
-> ...
-> 
->> +	cycle_us = tcs3472_cycle_time_us(data);
->> +	data->target_freq_hz = USEC_PER_SEC / cycle_us;
->> +	data->target_freq_uhz = div_u64((u64)(USEC_PER_SEC % cycle_us) *
->> +					USEC_PER_SEC, cycle_us);
-> 
-> Okay, this might help with the above... Can you deduplicate this division to
-> a helper with a comment that explains the calculations behind?
-> 
-Something like this could be ok?
+-- 
+Kind regards,
 
-/*
-  * Convert cycle time in microseconds to frequency in Hz and microhertz.
-  *
-  * Given:
-  *   cycle_us = T, i.e. 1 cycle lasts T microseconds
-  *
-  * The frequency is:
-  *   f = 10^6 / T    [Hz]
-  *
-  * We split it as:
-  *   val = floor(10^6 / T)
-  *   val2 = (10^6 mod T) * 10^6 / T   [microhertz]
-  *
-  * I.E.:
-  *   val = 10^6 / T          (integer division)
-  *   val2 = (10^6 % T) * 10^6 / T   (fraction scaled to microhertz)
-  */
-static void
-us_cycle_to_freq_hz(int cycle_us, int *val, int *val2)
-{
-         *val = USEC_PER_SEC / cycle_us;
-         *val2 = div_u64((u64)(USEC_PER_SEC % cycle_us) * USEC_PER_SEC,
-                         cycle_us);
-}
-
-
-thank you,
-
-Aldo
+Rodrigo Alencar
