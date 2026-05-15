@@ -1,251 +1,124 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+Received: from mail-yx1-f51.google.com (mail-yx1-f51.google.com [74.125.224.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24ABB37BE86
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 19:21:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778872908; cv=none; b=KkZ1QmACeaLEhem7TPQb4KUuU6/aMlRAtw4qZj1Xgh9pRG5RWsOc9bkzYW+cIbbr+26WE2vcDNeCGxNRuABIgy+ykd8VIJGANg6yIUPIr6ldkwc/T/Gfq6e9efQC53JMK5xf7HJono66NwJ6z28FF7Dvlm5vxTylHWs1UmVtO8E=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778872908; c=relaxed/simple;
-	bh=PC+eYExL43HQD6QN2u2W/QZPE1OoN9bOyL9f4JUb+X4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OpC3wPAkriKc2KhpgDsOmWiYWTFtr8inCNmPxzDEKiGPdIdLeJ1IgYXkMyEC/+46LIuO+/DUc4BEQwlptSbYWZ5TThe8OBa9m2SRvRNYir9gu2oTEaDUQcU1BH/CWwy1HcF8E2H56k3PZdwZ+8T2lyNQhhPpRnFofinkLyeX02g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MbQcTri7; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42F8F37C0E9
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 19:22:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778872960; cv=pass; b=rA+rJu9BlE26GwqD4prqF3XHobnyvH0N9IGaqbtBHiDgoXYZwfzSTFCBi3OuOwRYKgGoOgx2SkqrzZ1t6gnX8kvzu/EgUjCQVtCCwc6hCawx34kjeN2Qtze7VHdBc7kQ8SRVL+4Z66wDjdI0bYA4iNwG3wqw+0Eh0OePimEADk4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778872960; c=relaxed/simple;
+	bh=CmEabtso8fytfCC/XdPirdcB0ToUBjauUPZD/bbMsm4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=D2yAphNFY6idCkS3zqoRsBdfOoYLaLw/EwDssvqdn98OI4AF2n7AWvT5Fjx6b37HZivkaM6aZXOi8nKc81OcsqzIQmaRK8g++in1VADHARq2+8iQlO/1/dWvna1L4XnUGK/h3YPgtQN+1givpi4j29d4/v7AqDPRaOfDOVz3Ahw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qULyBhdm; arc=pass smtp.client-ip=74.125.224.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MbQcTri7"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-43d7e23defbso67640f8f.0
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 12:21:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qULyBhdm"
+Received: by mail-yx1-f51.google.com with SMTP id 956f58d0204a3-65c364b893aso429834d50.0
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 12:22:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778872958; cv=none;
+        d=google.com; s=arc-20240605;
+        b=VgJOI7SQn7vDBIbzx/ssLjZt2thnyDvz9ID6kYFGy/jTgvX4sfwDgzh1gkf4ILE7PU
+         P1tfb+qvI1mY1tMc+F3SV8KjfQk2BdMJlQjf6g4Mscy0iODVB6AVdi9jvXSLMmoOnRXs
+         XByf66XWeX9H2EfFbjRRb1bWp5BKqTHIa/XJovwOaL9yxCwWW5c3M9oJZlURXU8vQLJY
+         WcdlcfN2gV02JjYHTT3E+Gb5nEKjY9JlGgO7fHUhldl/9vcWEPze0Gi4NdCzDEF2RSGC
+         Yfm0SOytV4pU8g2ixqfwlghHlg4IL4JDYR7EUF9qnnSz5hoL2o2jnmy6Z6nJGGsdUo/l
+         FBGw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=BdLEiNbmOgInlweBjXEfSGJrQ7wVbhJbBzYaPn06QlE=;
+        fh=uuvQEYNr9r81zbPO+ZkCZqnP3mZ1LMNSVVvvo8utkw8=;
+        b=l2tCkST5TNFo9XY57bv3l8Z426nnfXP2VU/BIj+cMvPkbAunAuQj+eu6Rmlk8yM3Wx
+         EA3UMOFHpbsu6VvuPSu08p3v6gefmi2Y+914s6R6Nvj7lC7D42NdWHVVd1daMwVXRCGR
+         9Xi/9FBzM1eYpwlwRgLWXLLk1ckp2m+EqOOal2r7QUiFjS54Tct/uRxqFsIai+pyYF8z
+         Iy5ObmW0sk1uFcomtjb5S9Ta0n008o4gPK/RWP7K/kubRclcY9cME/Xe8iHdLuHzYAuQ
+         QRsBQRUP6NuFhdUKRueabniSoqclv1dgh5vkhKtjCz5nx86DcnClZhV2MDX4qfHNmk/r
+         VniQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778872905; x=1779477705; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tCrd21DK6hlmbOR3hhmA8HZohwWInKchx0V1//iPLP4=;
-        b=MbQcTri7TzuCO2iz4Iq1tdVusJxTeWv7inUDRNp2Hy0CMn2klZkrtZtc/y6a9lXlrg
-         s+4U5ovCC7868guFHT7nm0XyWZGfsR+/uc9iTO8OynZeBEIybrjZEK8iktoslyNrfyy1
-         4rutqWFCdD+LYOT+PR+sN5xxT83Vlx6iItHDWHbgirrelGTcOB7iDEVjyBf8nm/X9Amz
-         A0lHo9uk41X/1WPla/oH9s3zt37DEtIQCd+zZQkiC8yuPXr6q706cnvGconREEX1w773
-         LqnAmxoI1rPNb+UanJJObZJ9/L5FhFyjU/R4Y1SPQdJKbUe6DQmhXByT15kWSVcgBx9B
-         uPyQ==
+        d=gmail.com; s=20251104; t=1778872958; x=1779477758; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=BdLEiNbmOgInlweBjXEfSGJrQ7wVbhJbBzYaPn06QlE=;
+        b=qULyBhdm68v6IlQ//wliyHrgfazHg26HFbhqq8PqSp4VK8/KN0OxkWuIu728rEXV54
+         0GWXo91/IGcv+wm/LeIzss5R3k1/Mb/uahTJzWPApQGAAWPJ+SSlLxx/x+KW5VzraJM8
+         lCqelBNmGLwpa+BBfNhl6wNe+5bd6hXMxiGD7QeG/q7+gSpibNz3nUQW7vhrvahwYbLn
+         LH5yu0I6reySCB3i+vzmmiySIalRVKx2mI9468FXQENL0zPBWcvjPKxgXEHojsEsVAJw
+         X0GrWwG+42K9NuDuqyomA1cy8z+90QHWzh32f/oYAMHLyhQwWLZWFmaaR8HBoCEUYeBc
+         YxhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778872905; x=1779477705;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=tCrd21DK6hlmbOR3hhmA8HZohwWInKchx0V1//iPLP4=;
-        b=aREqw293u2Sgg8vA4jdBkvXFDIM6sXUslMtzLTZ9WECVDH8KTL+ym1NkFav3LoDmGO
-         btccWFPjYcjg2woYf3pkclTgd6EPWe6K6ak/fBxJ52rAMHVS5nd9jP2s3jG5294n82c3
-         XE6GhjWcAO2x5zF8/85QZ6ABs/T0+7RWSpDH0tDfKh0CRngv2QOZiI4lPSRxUXwviwMR
-         Fkdx7bTwWZKnJJr94FPrD/tC13dhZo7xd/HAWMGw81Q3RROls7BWCIC17Oqu3QL+U+l/
-         URblc+cHGTDNFbx2BY7u78I/hlKupqO9e5huBSxFkBJP4+BJLMfhCe14FOemr5CUqnp7
-         Ctlw==
-X-Forwarded-Encrypted: i=1; AFNElJ8cMsgYmjGU4NmnzXvuDA18lKY3QwhYsLxRq4q86IxUPuqwm5iLG4N86X92950N5dJ04hH3Gv57J5U=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwU78BFSpzNyyu5Ug3DU3B23URJcU2xjI8SLlzZHX7s5OCnRWJB
-	dLKVDo2XPm0jDc2dIgWqJYEUTs8Zf6/WzOCj7hsQDqCTiyyZCSy9BOSp
-X-Gm-Gg: Acq92OGujMcYjgeXfGaLSajv367ykHBw7lMySOOr9ns3x88430GRKxSO/UVca/Mx7Es
-	USBqdAaH3yYb5meqD0UgXxqKJmleRxxy0jb7QTNVCkGujruoGeLuA3vELb6029UubP/wMgph0Zf
-	A+G+RQcpLSwujAxuZpXjyyQ3IFCLPD0yWVKD035rXZr+dW6mPSUNBpkwDaVIX3KdryJThlo0vHK
-	CrNLAh61vRZSToRyQ4U+DQUzv3UOsdWIJm6h/5wuURrK7Q1SCfcnni0KZXAxJBTBO09z6+kg5YP
-	gsSla9G1ANGvnCtbJF2n6iYQuazXpjQ163p0jzu/3WjtLY+6Sc67rl6SWuQggGO/myTv+Nqqch9
-	h57e4Rj0Gc1eoZ+NoyBprTaKyQXQjPXq5uikpsi1cyJHmLfA6sF/wZQfcDg42tPjn0foJrm2C4h
-	q3DMqYnqj9SKyDG8AG8iqrnbwsz8KnQjSmo5n+06oxlRQeczF8fZXFvsRno/0P
-X-Received: by 2002:a5d:5c84:0:b0:44a:fe14:3738 with SMTP id ffacd0b85a97d-45e5c5be136mr6962053f8f.10.1778872905360;
-        Fri, 15 May 2026 12:21:45 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da15a666fsm15064400f8f.36.2026.05.15.12.21.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 12:21:45 -0700 (PDT)
-Date: Fri, 15 May 2026 20:21:42 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, Andrew Morton
- <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
- <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <20260515202142.5dc561e0@pumpkin>
-In-Reply-To: <ex6p5qpgsfvm5wzalpwo7whcj4m4uxzscpzxvb5ihfu2prx3fj@7skhmz3cbshw>
-References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
-	<20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
-	<kwjoyikbygik4futknqpua2tlzokradms25n2dmfa5czyj2uts@4rdfl6zlul2q>
-	<ex6p5qpgsfvm5wzalpwo7whcj4m4uxzscpzxvb5ihfu2prx3fj@7skhmz3cbshw>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        d=1e100.net; s=20251104; t=1778872958; x=1779477758;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BdLEiNbmOgInlweBjXEfSGJrQ7wVbhJbBzYaPn06QlE=;
+        b=DTc1FyouxsvyL0Y1kzp9SBQ3ROOV7vmmY4TgtuGbUodVHEd5M+N55ue88AQmf02uqI
+         BK5hcNID+vfNLIiptrzXyug6WsUcNM1w1qUL9EaC/aWBceriD5ojauThuhAuuKE5I+Xx
+         EucJFU8J3T3gc1qN0Ml/se4WtldubefcSNJnk12aPJ88QyUIY2s6BmTLXWLzV+ZHXKyj
+         /0SGM4nfD9SSZ71yZo/uz6I7lRGNSlMzfynki+0m1exUoDZsm5Aprg0BnHVQ4591wGd0
+         NbwK0nCd+Z2j6zf3ZfhZbPNJJhzjl+Nipk7WQEFbIRcxt//4Ra3I+MgMIGybeZdEDlTz
+         a82w==
+X-Forwarded-Encrypted: i=1; AFNElJ/FDOdSM8gqdSVyWZ/HYMecXUdlNgHcM8nVcl3+ijyNmJQEZROgvYdZrxoEbpzdDpJdhAe5jt2ln6o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzrQuvyyxeE3tEU04qKbWmDuPDpl8Xa7Awyrnr4/44hbZw5JTUW
+	4AxXVwTe/AAea9yHSeiwOkj11pc6FIRxBiQS41yYJpXXr9IFKHB/mcT9Wpg29M0Ag9aSyO1DwEf
+	ZRGPYJYrYiTNrbNYb3XPXPGGJvPKM2Vg=
+X-Gm-Gg: Acq92OE46vhLIxVqHNUhlB+Akm+C9nCz/caAPz86d+v3jtxUEmTqdtOwbhyJykAexne
+	DqSKGtvD26mZVuBtb/BatLqi8h028J4XZjbydx9KKd94YhtB8LEWxYI4scM95Rs27pJQZurAKk/
+	xtpWgJt1fJnvUBCniVvl5Rb/t1ssxHiFG/wpMMQ12rcSucxlZebJnUlrY0Kh1xafnm0v2JXn6Bd
+	txtLgR/WrxuuvbvMcbzVagbtxjF1+va+iitWIMeQJuNy26I84cKgnvZXhIa7fxCluxaEPzvUsIP
+	9WtOEoY=
+X-Received: by 2002:a05:690c:e4d7:b0:7bd:5cc4:3e5c with SMTP id
+ 00721157ae682-7c9593b7a63mr54259307b3.3.1778872958310; Fri, 15 May 2026
+ 12:22:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260515-patch-iio-buffer-v1-1-667dac4e55e5@gmail.com>
+ <agb5hiF6GhNwGa6c@ashevche-desk.local> <20260515152005.355fffaf@jic23-huawei>
+ <CAEk1YH7jYFHPJFEZrsW9Nuzy0RAiYa_HdQfx3nbv=Wnp=2-qxw@mail.gmail.com>
+ <20260515155508.4c606a23@jic23-huawei> <CAEk1YH4-AAVJtO+22x4vC-f-8UVYQKaAvEJxskrUQ7gKMBNsPQ@mail.gmail.com>
+In-Reply-To: <CAEk1YH4-AAVJtO+22x4vC-f-8UVYQKaAvEJxskrUQ7gKMBNsPQ@mail.gmail.com>
+From: Damjan Georgievski <gdamjan@gmail.com>
+Date: Fri, 15 May 2026 21:22:26 +0200
+X-Gm-Features: AVHnY4IIh-6c9oX86gOgWVJ6MV0uZtNUiCZORL6MtX9-WYYwPIpDKdf1kZxHg7g
+Message-ID: <CAEk1YH6pM_rWDb4N5wGeE8su-C2dibPa8kQD1OPRZYxvrpqAiA@mail.gmail.com>
+Subject: Re: [PATCH] iio: buffer: only set IRQF_ONESHOT when thread handler is provided
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 15 May 2026 17:05:06 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> > > Not sure which exactly driver ended up triggering the warning, is it
+> > > possible it is " hid_sensor_prox"?
+> >
+> > I believe hid should already be fixed.
+> >
+> > c47ac75f5f24020cc0c8b835457a7637ad450939 iio: hid-sensors: Use software trigger
+> >
+> > Maybe something is missing however. Can you check if you have that commit?
+> > I think due to it coming in late last cycle and me travelling it went in
+> > during the last merge window.
+>
+> I'll test again on top of v7.1-rc3 (which I self-compile for other
+> reasons) and on 7.0.7.arch1-1
+> I did keep this patch since some of the 7.0-rc1 when it first broke.
 
-> On 26/05/13 10:41AM, Rodrigo Alencar wrote:
-> > On 26/05/10 01:42PM, Rodrigo Alencar via B4 Relay wrote:  
-> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > 
-> > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
-> > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
-> > > precision). After the decimal point, digits beyond the specified scale
-> > > are ignored.  
-> > 
-> > Hi Andy,
-> > 
-> > I am starting over here, the other conversation is getting hard to follow.
-> > This is my new proposal...  
-> 
-> +cc David
+Thanks Jonathan,
+I can confirm that the issue is indeed fixed in both 7.0.7.arch1-1 and v7.1-rc3
 
-I just wouldn't do it this way :-)
+I was sitting on this patch too long, didn't occur to me to retest without it.
+(also wrongly used git log to see if there are any changes to the wrong  file)
 
-You end up with more code than you would get if you just converted the digits.
+Thanks again and sorry about the noise.
 
--- David
 
->  
-> > ...
-> >   
-> > > +static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-> > > +{
-> > > +	u64 _res = 0, _frac = 0;
-> > > +	unsigned int rv;
-> > > +
-> > > +	if (scale > 19) /* log10(2^64) = 19.26 */
-> > > +		return -EINVAL;
-> > > +
-> > > +	if (*s != '.') {
-> > > +		rv = _parse_integer(s, 10, &_res);
-> > > +		if (rv & KSTRTOX_OVERFLOW)
-> > > +			return -ERANGE;
-> > > +		if (rv == 0)
-> > > +			return -EINVAL;
-> > > +		s += rv;
-> > > +	}
-> > > +
-> > > +	if (*s == '.' && scale) {
-> > > +		s++; /* skip decimal point */
-> > > +		rv = _parse_integer_limit(s, 10, &_frac, scale);
-> > > +		if (rv & KSTRTOX_OVERFLOW)
-> > > +			return -ERANGE;
-> > > +		if (rv == 0)
-> > > +			return -EINVAL;
-> > > +		s += rv;
-> > > +		if (rv < scale)
-> > > +			_frac *= int_pow(10, scale - rv);
-> > > +		while (isdigit(*s)) /* truncate */
-> > > +			s++;
-> > > +	}
-> > > +
-> > > +	if (*s == '\n')
-> > > +		s++;
-> > > +	if (*s)
-> > > +		return -EINVAL;
-> > > +
-> > > +	if (check_mul_overflow(_res, int_pow(10, scale), &_res) ||
-> > > +	    check_add_overflow(_res, _frac, &_res))
-> > > +		return -ERANGE;
-> > > +
-> > > +	*res = _res;
-> > > +	return 0;
-> > > +}  
-> > 
-> > This function now becomes:
-> > 
-> > 	static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-> > 	{
-> > 		u64 _res = 0;
-> > 		unsigned int rv_int, rv_frac;
-> > 
-> > 		rv_int = _parse_integer(s, 10, &_res);
-> > 		if (rv_int & KSTRTOX_OVERFLOW)
-> > 			return -ERANGE;
-> > 		s += rv_int;
-> > 
-> > 		if (*s == '.')
-> > 			s++; /* skip decimal point */
-> > 
-> > 		rv_frac = _parse_integer_limit_init(s, 10, _res, &_res, scale);
-> > 		if (rv_frac & KSTRTOX_OVERFLOW)
-> > 			return -ERANGE;
-> > 		s += rv_frac;
-> > 
-> > 		if (!rv_int && !rv_frac && !isdigit(*s))
-> > 			return -EINVAL; /* no digits at all */
-> > 
-> > 		while (isdigit(*s)) /* truncate digits */
-> > 			s++;
-> > 
-> > 		if (*s == '\n')
-> > 			s++;
-> > 		if (*s)
-> > 			return -EINVAL;
-> > 
-> > 		if (_res && (scale > (19 + rv_frac) || /* log10(2^64) = 19.26 */
-> > 		    check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
-> > 			return -ERANGE;
-> > 
-> > 		*res = _res;
-> > 		return 0;
-> > 	}
-> > 
-> > The new thing here is _parse_integer_limit_init(), which is a local modified
-> > helper that accepts an init value, so _parse_integer_limit() becomes:
-> > 
-> > 	unsigned int _parse_integer_limit(const char *s, unsigned int base,
-> > 					  unsigned long long *p, size_t max_chars)
-> > 	{
-> > 		return _parse_integer_limit_init(s, base, 0, p, max_chars);
-> > 	}
-> > 
-> > with init = 0:
-> > 
-> > 	static unsigned int _parse_integer_limit_init(const char *s, unsigned int base,
-> > 						      unsigned long long init,
-> > 						      unsigned long long *p,
-> > 						      size_t max_chars)
-> > 	{
-> > 		unsigned long long res;
-> > 		unsigned int rv;
-> > 
-> > 		res = init;
-> > 		/* ...
-> > 		 * the rest is the same implementation as _parse_integer_limit()
-> > 		 * ...
-> > 		 */
-> > 		return rv;
-> > 	}
-> > 
-> > That allows to accumulate the final value into the same variable, which makes
-> > things simpler and decreases the amount of overflow checks.
-> > 
-> > The scale can now be a bigger value, like 0.00000000000000000000000000000000423
-> > can be parsed with scale = 35, resulting into 423.
-> > 
-> > The truncation loop is still there... I think this implementation is better,
-> > and I am not sure what is the input limit that you would consider ok to allow
-> > non-zero digits to be truncated once the scale can now be something bigger than 19.
-> > As long as the output fits into a u64 variable, the parser still works.  
-> 
-> The truncation loop is at least stricting the input on digits!
-> Any comments on that?
-> 
-> > 
-> > I am also adding new test cases for that!  
-> 
-> I have a v13 ready with this. I'll give it a go soon...
-> 
-
+-- 
+damjan
