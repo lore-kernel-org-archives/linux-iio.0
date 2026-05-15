@@ -1,151 +1,197 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C77A32652AF
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 13:22:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778851377; cv=pass; b=p0qsS/Jifjd+Lxk4jysis9/ZzMkY4wPMo9h0hHssZaYeR77ikYLbZM33vjE6lvTi8YdPyG4mpurknfDiTdPjtp5p3NCLy/adLkdfxt01moTVmyGuFWeOgYEsepo8dyzcA7g/4trA2Mehr6Ki0JxKdss4jqzMCMfwerl0HujutL0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778851377; c=relaxed/simple;
-	bh=IWo6Gf2mUr0MercCDXDBbIXoT1ZLYNzTQek2HP91B4g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=m3SOSJdYsV8igs7oAd76gA0ksCJDKYpus42bWrxcL72SJEO1LQErFZ0IwzPvHD2LQ+nyLYP/MvsqyDJ5Zu79gQ2+qz9nZTGxad4qm032L1XdNlLG7GNHncl0H52IfaTRKzMP8C81Bxfr/0zYLKYsl+QBrMzHgwseNl2dgJnT32A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PcLSUpe+; arc=pass smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 400B82DEA64
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 13:27:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778851651; cv=none; b=rgVuT+iQHeBcThqVMmSwg/IgUYqxRXlm+zTdZH/NfarY6wQrK0GwB0oX2DMJ3Y4x6AbpZVr6RIQvDlMpV2mZmP625UbK+SZLyye6X5rZxONbzdZQgUq/xg8ZhK2Obfwdk2in6b7Vch4FVwTRAKtt02ZRpn/o1zutaOJtAPH9+TE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778851651; c=relaxed/simple;
+	bh=dsBj6e4mpRjfZ9vKYdxVQ6NMr+Ia6+LRhvSK55by1rU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XKVlc4R2UZftgkCykdr/iVW0TVFCskwe0V3nlsckEkqaJMj1SkFyzJkdKYUmDaYB2xyoMx1F32iWcKuX1CluHaTvtIRFJ9ikjZJmaA5Gau+Cy9e6JsVYBP4LKeCWfUmee1fJ8zuoOufT/+AXipmUJyS7k/7lyAhmO5FA+9ZG0f8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=B0rjD8CP; arc=none smtp.client-ip=209.85.160.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PcLSUpe+"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-48984d29fe3so98370455e9.0
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 06:22:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778851374; cv=none;
-        d=google.com; s=arc-20240605;
-        b=jAg/hV+LRK4tLGX2D/T0xDyM1BWJzYu884rpQRHWYt8H3s9MHocPPQRGM6RJ19eXKl
-         4eLdHn9pzfmDxzgMoPx5WOO/4TQrFBgoB1VsrgNSenIHw8SPTkHR7kTVoZ2Uzx9l5Hci
-         Od6hrnQ9y+hkEhkbjUZJ3FBstbKQynzczsKxFPmofhofZLjQnyGoXkGkihxMfzbR/VbZ
-         hBNKEKFqEmXJq2GaF5ov4dH2xKy6E/JPkSS0boE9uAFhZkFibt99hvzREJmNVGmJ0P1Z
-         Oz7h1XdrEdc2csBUqcLJF1FnXOkldfvn932VLKXZRZqk/HNzsDboPGg+wzWrPJaHlxed
-         GIEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=Kczg8yvREhgmNjpIG9Wb/cydRxK/LtqKtZ+QVUqTT8Y=;
-        fh=cEYFqWJcwic5o0aZlA6Spk3NFQ2ODGdfUflURzIp5vg=;
-        b=KR14ib90JqeO8MJ1011TRLjDWEOBE2MIkFA9FchjnQZIRVmFQwCvZGitymTtKLtOBG
-         VWEE86pHoatsimxRes7H9W1PR/duGc2AnJb5qYX0bBuAha3Wo+LC6vGEBPvo4WLddLW3
-         qdYRbd+zlqnpCoKGPFiojElBnV6Pw+OMlmQyXyoS/nUXzdxghuJ4mqGPvl6TLJV0LbTt
-         /OM3ig2ztUNUCYRRkUo/NKtF7aBbReNY8l62OEhvvUoSGHIG7EDZC4Kbn/3EfC2M9plV
-         w01UiRoliHgVkKjKPaW1iG/78oOBiYjazbWlpJGPsBA0mBdfCO9605KwwUVCC+03BbXi
-         By/g==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="B0rjD8CP"
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-435153d9b68so5902415fac.3
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 06:27:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778851374; x=1779456174; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kczg8yvREhgmNjpIG9Wb/cydRxK/LtqKtZ+QVUqTT8Y=;
-        b=PcLSUpe+npLk3ScMbL2PNslkTTMHVRjPeMruJUlQ2pqxCghiDZXtoJfceKw4P+yoTG
-         9V2/ymH4I5GMQ5OPns6DaOnIWHMrj2S6Tq8lnuJ/vjOaEK0APpOqfRxmORLv2Ao8pRZi
-         x397C8tLaUViiI+hleEkSEe/JA+4+FCYzuPUV6NLcCY49bHF4mrL+zRl3CJbIclzmJEq
-         b1wzn36rhODXmF8IGYbmUVrjZDKqxkK3tV60aHscfOskddLRwpe/ZHI+vSwGz9+mBNah
-         FlrVe2VwlLf8hF9YWEqzVugFaAUFTgFRXAhHOmydoRMk2SKj/nuZlMfXdxeyOLCKQMEL
-         GYFw==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778851648; x=1779456448; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1T+fF1LSGT29QbQTVrKLQjASXgTTvqvLHzdAkxvN5gs=;
+        b=B0rjD8CPT5ZZsS31HPON/PaH2DrNhbCAGiy0w9mWAq+ivBFWoXPCQ/Yt3A/azZt9ua
+         FoCOIk+8Xnvy+GDltAENJFmgRnnwLmF1Jq/EU20KMpvunbcX8sfg/Xm7w2Vh6jwyjY5o
+         qsFzKcPsBHKHUevyqExEBdkU6k8qJRmDFgGFpuolp+wy/lAPw4deTXOhvQNHgHTW8X3O
+         sOwh5lxnMew+6SAHab4sui2b9uwavkRANai0C6Hm1VNtOH8z+qWBlDLQDW47LPeMiJSa
+         jcK9Jo+nJL12mlkYcEYqs50wtdDCivu1WnYdNIc21CGRSssvQ0/5gq8vflPkXyFDIQTv
+         8Ohg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778851374; x=1779456174;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Kczg8yvREhgmNjpIG9Wb/cydRxK/LtqKtZ+QVUqTT8Y=;
-        b=OAGMbfvA1sAmfp3Xrhr6+Ry+ojmozwzhBLldOxT8f/I6zK2xqglMXpJjin3egYTXtB
-         r2Jg1T6C2/ahMSjvgnm88ZIhjbjZBos/QEBgIARazxHFhyYIEFZFNgFx3kTeo4m0i+tz
-         SueEhfyS6asjSSJfrNWBzFu5KqBwB6xKfFV5yt5RmI4y2l7X2zixdJkfANTA+gSmNRLk
-         aXYuJXqevmmXp8sZSwzbYT8Kh859EkPnAUACmOxaH6nkdK3rVo1bq+w+wxGPtG85YhCC
-         Bpci9O70Udi64eg+qJh5fVJ46JAVvkHLA5Zp3YzgmZXfzV1nEwornNfru+/Kmtp+zYGY
-         L1Iw==
-X-Forwarded-Encrypted: i=1; AFNElJ/z2i/puh/lT3bFCLKKqhiXh3RgOUF6G+sabBTfjIn24ISeyDi08GNq/ECn0CwLYDNGRK3JP00D5tI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxFg5wKz3mDpRZHNTIoTf7c35v8qjMEckfW51GwWR5g9tecxb7J
-	lXNWxGsXNgy/RaLVC5a4yppOTDV/LfLLftYcKN+BPv8oct0WaFvSqv6PcMTFSNUWyrbSJalA8rV
-	+kTrD9DRFHfQYr7XA3FGEqVf7uG5tVRyeRg==
-X-Gm-Gg: Acq92OGP6/9iJ51yP9GFLFuORJCwQs1d69A8PTCyCdk9M0Y2CXjKhmZ72EROv8oVKWM
-	s0WuECGr15GtUCaM5w54TLXhyehFQ7VFDJ3yioDPdKnbz6QDetclPsA9nPHRcCLEidOzMGzB5dr
-	ZdwNjHDOF9fuuGDenyOhS2UxcplkYKta9zPTl/ROe6FSJOpj6sKjhrOvvFax0K6MxCQl8JiSKiw
-	qps5piswUX3eszNmubeKN0uaICXETgon9jGH+FCBJdYjnNd5HRISOYCWHic8TfFz1I6+BY0Q2D/
-	lsG6t8oVhVEMrwELhWFPBtd9GLfPBb425pt9r2PDBFSMjgaexKCPjL0hfiGa3rZ1XfFQkpJcgNL
-	GBUptv/dm+AMHSQ0QkdQsTkt0TVHdmQO6IBU1E5zyBYs/pMZNFi5rVNZCgu58T3WjWGqXB7ySHc
-	4Nl3R75w==
-X-Received: by 2002:a05:600c:4f13:b0:485:30d4:6b9e with SMTP id
- 5b1f17b1804b1-48fe6328bb7mr60663425e9.21.1778851374045; Fri, 15 May 2026
- 06:22:54 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778851648; x=1779456448;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1T+fF1LSGT29QbQTVrKLQjASXgTTvqvLHzdAkxvN5gs=;
+        b=OqkzQxPMVoSxK6Ir9XN252C243FGIsapds1B7Kw6k0QUMF8HTmBqshsauVH2oAZJiY
+         LOPbGNWBvXuua7EyN0WaK30c0ZDMNQefnTgsGW4E7Gn3aq7BTT9xjbMTkThuOfUnlKIZ
+         K37XXGP5MJQnSVpuPfUDmKFhW1gbEjhjuhGzqiWKRvTIejkPB13k6mXHonajl56gLfGN
+         zXrbsB2E/BvOShqzoCI0zKVGq7JdS2XijhCp1v8I1ZaN5jwWsaNsCGyCUjv6LMVAGQrN
+         nUC1X5mB/1EN3biRGAmqNhY2A8/qZ6VMt+So6jsrYDpbk/Ct2JHNKpcvzDdANmYDFMuH
+         Fwmg==
+X-Forwarded-Encrypted: i=1; AFNElJ8d5vsGrIccCr9wnGIwZzWrrC3Z9y3cBZ777HFDGur44A6r0MnpS6t65JH5COhd7p4sb0b1yHAttus=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwfDVEHZ/rnc2NikMMbU4sXNgVmJUZu2Z4+pod/OyrsllPxR3mR
+	CcnXEwWiclD0zyg3U2hsQZs7PLvVM9S3RlfdVQxOl4T5nc8I7h4zB373e2980NGxd6fWeJcfg5H
+	GgbEIp5w=
+X-Gm-Gg: Acq92OEJH0pcwWRZkSYRahxd+LhsHpRqXWVyHh0Xbz0ICw/PauNC02nH3X40o6tG4uW
+	7QXixdYR5XmmZFhmK84CeAp3rJmrxLpkcK2P1eLqDVkuOL8k1OraVAr3jijQ/0K11QhnPZGoMWz
+	6hXT1xE/0oZVsJ4nGqMF7NlEyFtB+slo9q3F9i37vqTXkkIuao8Kt2qxUcEVACFcYuFj3/XgGFP
+	PGbiFuSD0/8FrvlMCVA0NiStPtIqf4NfJ+6ikvINnSs5Dw4ATSSadVZrUw7y6aiA8Z8bbjUlN/e
+	wZngupOIAGpNGltCK06xnxq8+OktVfm2YpBHtpDQmcjtOgN0t5pOVtoPtUcEAf2jox0EZ6gO1yU
+	g4EcZazWZDthvVO+Tost8/O+gjfdbSTyLa8lW5YZuzOxP7VN39hwPcxyiugbNq3CAb+QELT3+xX
+	60TIF4SnINCgmj+QOE819a+z7wQnIzAvwMHLwEelOtDcvGF6NfBV4IDlevyuKur5Eb7+PxvukI6
+	ATTjopLuZAC
+X-Received: by 2002:a05:6870:2e89:b0:422:ff63:9a6 with SMTP id 586e51a60fabf-43a2de0786amr2788795fac.34.1778851648025;
+        Fri, 15 May 2026 06:27:28 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:7217:ac62:908d:d3a2? ([2600:8803:e7e4:500:7217:ac62:908d:d3a2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-439fc4d8027sm4233175fac.10.2026.05.15.06.27.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 May 2026 06:27:26 -0700 (PDT)
+Message-ID: <4b9fbf8d-6dec-4e18-a3c5-a4b87d34af08@baylibre.com>
+Date: Fri, 15 May 2026 08:27:25 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260513-ak8975-fix-v1-1-104ea605dd54@gmail.com> <20260515141723.5fbcaeca@jic23-huawei>
-In-Reply-To: <20260515141723.5fbcaeca@jic23-huawei>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Fri, 15 May 2026 15:22:42 +0200
-X-Gm-Features: AVHnY4J-jELMTK-0EUBhYQX59rm50m-8Z0iYN8fkQLqo2U29FcR1E6OJRg3Byms
-Message-ID: <CALoEA-w+Oe1jwX+M5_sNPVaTcGOTPPhT2g3-90NNd6aamZL+UQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: magnetometer: ak8975: ensure device is awake for
- buffered capture
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: adc: ad_sigma_delta: fix CS held asserted after
+ single conversion
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+ "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ "Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ =?UTF-8?Q?Uwe_Kleine_K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20260507-ad_sigma_delta-fix-v2-1-ec86eb0463bd@analog.com>
+ <20260512121326.189817b8@jic23-huawei>
+ <LV9PR03MB84148EC966F80CB723325B46F7072@LV9PR03MB8414.namprd03.prod.outlook.com>
+ <e17532c6-3568-4c9a-9d6f-64af7e4736ba@baylibre.com>
+ <LV9PR03MB8414852B21F8B66AF821055CF7042@LV9PR03MB8414.namprd03.prod.outlook.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <LV9PR03MB8414852B21F8B66AF821055CF7042@LV9PR03MB8414.namprd03.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, 15 May 2026 at 15:17, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Wed, 13 May 2026 16:35:52 +0200
-> Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
->
-> > From: Joshua Crofts <joshua.crofts1@gmail.com>
-> >
-> > Currently, the ak8975_start_read_axis() can be called while the device
-> > is autosuspended, causing two issues:
-> >
-> > 1. I2C transfers in the aforementioned function will fail or timeout
-> > because ak8975_runtime_suspend() disables the device regulators.
-> > 2. Since ak8975_fill_buffer() does not hold runtime references,
-> > ak8975_runtime_suspend() can run concurrently, and since PM callbacks
-> > do not use a locking mechanism, it may cause a race accessing the
-> > control register via the I2C bus.
-> >
-> > Fix this issue by adding struct iio_buffer_setup_ops that contains
-> > preenable and postdisable functions to ensure correct that device is
-> > powered on when running a buffered capture.
-> >
-> > Fixes: bc11ca4a0b84 ("iio:magnetometer:ak8975: triggered buffer support")
-> > Reported-by: Sashiko <sashiko-bot@kernel.org>
-> > Closes: https://sashiko.dev/#/patchset/20260511-magnetometer-fixes-post-pickup-v7-0-9d910faa28b6%40gmail.com
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> I'm going to take this as a clear improvement but the point sashiko makes
-> about turning runtime PM on only after the interfaces are exposed is possibly valid
-> as a general comment.  It applies to all the other paths though, not just
-> the buffered capture.
->
-> I believe we are actually fine here because the device is powered up
-> at that point (the set_active making that clear).
->
-> Open to other people's views on this though.
->
-> This is another place where we really should work out a best practice
-> guide / set of standard patterns to use.
->
-> Anyhow, applied this one and this is one I've marked for stable.
-> However given mass of stuff around this driver it'll still go the slow
-> way and we may need to manually do backports.  So applied to the
-> testing branch of iio.git.
+On 5/15/26 4:20 AM, Sabau, Radu bogdan wrote:
+>> -----Original Message-----
+>> From: David Lechner <dlechner@baylibre.com>
+>> Sent: Thursday, May 14, 2026 5:57 PM
+> 
+> ...
+> 
+>>>> I'm struggling a bit on how the max11205 works at all as there seems
+>>>> to be a status register read on a device which claims to have no registers.
+>>>> ad_sigma_delta_clear_pending_event() as the binding suggests this device
+>>>> doesn't have a drdy_gpio
+>>>>
+>>>> Anyhow, please take a look at the feedback and if it's wrong please provide
+>>>> an explanation of why in this thread.
+>>>>
+>>>
+>>> Hi Jonathan,
+>>>
+>>> First of all sorry for forgetting about Sashiko. I had a look at max11205 and it
+>>> seems like the device doesn't have a CS so therefore the concern Sashiko
+>>> raises regarding CS may not be valid, I will make sure to mention
+>>> that in the commit message.
+>>>
+>>> On the other hand, I see the IC has a shared pin for DRDY and DOUT and
+>>> the bindings specify some interrupt though no specific rdy-gpios are
+>>> mentioned there. The device reads a register that doesn't exist which
+>>> in this case means it blindly clocks out whatever comes on MISO...
+>>>
+>>> However I may have a fix for this and would appear in a second commit.
+>>> In clear_pending_event where rdy_gpiod is checked there could be yet
+>>> another else branch that could simply return 0 and here is why I think this
+>> would work:
+>>>
+>>> Since the IRQ is requested with IRQF_NO_AUTOEN and IRQ_DISABLE_UNLAZY,
+>> the latter
+>>> keeps the IRQ hardware-unmasked even while software-disabled, so any
+>> falling edge
+>>
+>> This should depend on the IRQ controller. There are some past discussions
+>> on this on the mailing list. The ideal behavior should be that if the
+>> IRQ controller can fully disable the interrupt so that we don't get the
+>> spurious interrupt on enable (from the normal SPI data, not DRDY). If
+>> the interrupt controller can't do this, then it requires the rdy-gpios
+>> to be able to distinguish DRDY from SPI data.
+>>
+> 
+> rdy-gpios added to yaml of devices that don’t have them and also don't have
+> registers is a solution too. Though I think what you mean by this is that the
+> rdy-gpios should be something optional to be added by the user depending
+> on his IRQ controller capabilities, right? Perhaps this is the case here already.
+> 
+>> I have used this on ad7173 on a ZedBoard without rdy-gpios and the
+>> interrupt was working correctly. So unless something changed with
+>> the interrupt config in this code since the last time I was using,
+>> I would not expect to see this problem on _all_ interrupt controllers.
+>>
+> 
+> Yes but ad7173 has registers, max11205 and few others don't.
+> In the cases where no rdy-gpios, although registers are present or not,
+> it "reads" the status register which in these cases means clocking 1 byte
 
-Ah, I forgot to send the v2 with your Suggested-by tag. Up to you to amend
-it I guess.
+There is already sigma_delta->info->has_registers. Why is this not
+used to prevent reading the status register when there are no
+registers?
 
-Thanks
+> from the DOUT line, and here 2 cases appear:
+> 
+> 1. DOUT/RDY is still high which means DOUT reads 0xFF
+> 
+> - "status reg" = 0xFF
+> - pending_event = !(0xFF & 0x80) = !(0x80) = false
+> - returns 0, nothing bad happens -> Works by accident
+> 
+> 2. DOUT reads 0x00 (line LOW) , perhaps RDY dropped already.
+> 
+> - The 1 byte read already consumed 8 bits of the actual conversion result and
+> data stream is already corrupted.
+> - "status reg" = 0x00
+> - pending_event = !(0x00 & 0x80) = !(0) = true
+> - Continues into the drain path
+> - kzalloc(0 + 1) -> allocates 1 byte
+> - memset(data + 2, 0xff, 0 - 1) -> data_read_len is unsigned int, so 0 - 1 = SIZE_MAX
+> - memeset of SIZE_MAX bytes -> heap corruption, kernel crash -> Worst case, but
+> still possible
+> 
+> I would then say that the solutions are 1 of :
+> - add rdy-gpios as well where has_registers are false.
+> - add another else with return 0, since if the DRDY is not low, it will be after enable_irq,
+> and if it is low, it will be triggered afterwards and clock data correctly. For these devices
+> as far as I can tell, there should be no spurious signals, only the DRDY interrupt unless
+> clocking data. I may be wrong though, and perhaps the rdy-gpios is the safer move,
+> though this would mean less churn.
 
--- 
-Kind regards
+I would expect the need for rdy-gpios to be the same whether not not
+the chip has registers (only depends on the interrupt controller).
 
-CJD
+> 
+> What do you guys think?
+> 
+> Thanks,
+> Radu
+> 
+
