@@ -1,269 +1,237 @@
-Received: from fout-b3-smtp.messagingengine.com (fout-b3-smtp.messagingengine.com [202.12.124.146])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4F893EEACB;
-	Fri, 15 May 2026 18:33:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.146
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F4BD3EEAFC;
+	Fri, 15 May 2026 18:43:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778870000; cv=none; b=fIi23J8IPGh/EoS3TJqFJGD15NG4+/OV95Rha13xUrOzKNJRi8IsaEg9mC58HzraQb/LXpAlYe4T9kEF6duo57P7f4KF48I4b1Cosn9tK7rotL4xTNgivtMXvxyKXZukeKtZR5MQDngwOBHKwPQ19KGTKMDPOByLUSpUiRzlimE=
+	t=1778870601; cv=none; b=Y/jnJwP7uOl7NDojHiriltK67I8xFaU0mtySH5wqtLr8SuPdoM7xJjUmYS8UbrbFUUm+Vgm+FX9whxpInSbOvLJ4HZ533ShJFACMkGLMAEHFUpXSaOBCsY6r/PRmAkQ26qFxgbhVuk6lcbHyQ5O5rG6zkMNenxY2fL/0ESxxthI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778870000; c=relaxed/simple;
-	bh=xfZSxIoJK19gwrE9E7SGifWh9eoEO3UHtHjk6DVDYBI=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=A/mK17njU+NSngfktirTNq9pFmVQu5zPTyVEerJhJP2HjkmRlJ6O+rHwI/b4tcxt4FJIXFUQoBQllYmdKFHG8YvOutRyczYaXB59+wZBSGtkcF0xGVpYkL6SrqydCTmeSd9S66STBrQe1zDBqRFS6GyOGnmOkn9hXpzHqr258l0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fastmail.com; spf=pass smtp.mailfrom=fastmail.com; dkim=pass (2048-bit key) header.d=fastmail.com header.i=@fastmail.com header.b=BJeUiZlh; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=o7OXka5e; arc=none smtp.client-ip=202.12.124.146
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fastmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fastmail.com
+	s=arc-20240116; t=1778870601; c=relaxed/simple;
+	bh=5tR1Qq6xXLAVWqV0dkBVwnCvUhjaha/lBnGmx1miMN4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=lRIS+9TOzW5bDDdSlfFV9WO+/IHwcMISXjALKBM40KM3ZyOY3ct/geiMqwP3YX2Yr87eYV5bdHnWC54df3Rm/36ig0cjE3Be2rpeXtDu9SfdrsNgPwhXxa0vzmWNxaZ2MOMg5tGmVWvqXaLpV2iDSwWd3HwGhiE9NwoLO5skPBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PG3fN/s0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fastmail.com header.i=@fastmail.com header.b="BJeUiZlh";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="o7OXka5e"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfout.stl.internal (Postfix) with ESMTP id 2A2671D00061;
-	Fri, 15 May 2026 14:33:18 -0400 (EDT)
-Received: from phl-imap-16 ([10.202.2.88])
-  by phl-compute-04.internal (MEProxy); Fri, 15 May 2026 14:33:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fastmail.com; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1778869997;
-	 x=1778956397; bh=ilS9yHfUk0M+1nOJH4mmR6H8ZDbliMMuc3QgNvTZS/U=; b=
-	BJeUiZlhIpQd6yjL5xw9BjIuCcIlyA/kMGeGJWr1QTXRG/tIorpjY2AOCALrzl4F
-	TPoCv9+3lADxAwnvASKkR2pW4ZTlDNg9bfN6XmNwdf4k2sxJe72wI3RjZOodiNok
-	PRMRgJaRLQsPX6EYZPxeAAr7BK24d/otXz4OKnzKbYU4SDmyYiGbRum/ABKUhzJT
-	MXPYsn1rTpZcG4VBc9J2jOfrDDMBwwGAOWJ2tCevgnQDvegLwNPwlI5i0gND1PTy
-	1DPvG+0oVCeLlrKuQSiPBF2NlUWIFi27zFRFDHOo6GAiBtEBYKK+/S2zJrXyUbaj
-	uQGAZvFqMfCqtBuCgUHXiw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1778869997; x=
-	1778956397; bh=ilS9yHfUk0M+1nOJH4mmR6H8ZDbliMMuc3QgNvTZS/U=; b=o
-	7OXka5eMJadY7reqfK5caOEEyt0q1nOcRuij4WJsMoQgbEG+6wA8k4XbW4emcInb
-	92actggAh2SloVr8qUkZOYAeOMY1Wu+/DFkTZoiqm6S5vB9sicMUtBXXei6r1CGb
-	r+vyZVa/pGzDL0z5lPMJ/7gCJe/QqzZvUIukZllMHqsOVweYugCWX2clXMKVU33K
-	xd68+s2nRUbktN10zY5hSwaDyuO9cnosxuqiK88G6E1FmfavpMPRuQNVVSy1E5IP
-	2yg5LRafXgMmkOdERt3A4s+LoTOb2Cd6AN3cHcwZcDrvwtFfAX7drF/N2Vbpwlny
-	6SKN6qcJF3wUUPtfv1ECg==
-X-ME-Sender: <xms:7WYHarFl3gwhlQ_PolvIi5RfwsKLt3mBPtQqo6Jiz0rmw6klHLTjbA>
-    <xme:7WYHajImyWLjrzdb5AFCZxPO0XHiL6YXYSnRrHvLZBgrdiJ58fFTVI1f50OLwfZb9
-    PGN4UIq9HeeaB0uUCrufJAchZzZLz7_BPvwL31hJ3kUILxRmxFbqYXo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgddufeduudefucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucenucfjughrpefoggffhffvvefkjghfufgtgfesthhqre
-    dtredtjeenucfhrhhomhepsghighdrsghlohgtkhdtvddtfeesfhgrshhtmhgrihhlrdgt
-    ohhmnecuggftrfgrthhtvghrnhepleeuleelgeffheekteegheevtdduffelveektdevgf
-    ehtdfhgeeflefgfeffheefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehm
-    rghilhhfrhhomhepsghighdrsghlohgtkhdtvddtfeesfhgrshhtmhgrihhlrdgtohhmpd
-    hnsggprhgtphhtthhopeehpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehjihgt
-    vdefsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvg
-    hrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhiihhosehvghgvrhdr
-    khgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrh
-    drkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepphhlrghtfhhorhhmqdgurhhivhgvrhdq
-    giekieesvhhgvghrrdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:7WYHagxsX3I_b-zUWTu_DRDP3ey55wK4X3xMTrRhHWAqumpS5vBnZQ>
-    <xmx:7WYHatk4sVQNKTjhnftpFnafAlIDt0eKhn3vq_8x5mjvvQgCqFfVIw>
-    <xmx:7WYHapn5CUUEZMg9vsaPH5vv3O-aDCnWy7XiLndxtGrVz4VqKZWzAw>
-    <xmx:7WYHavzaurE2Z59xBIgt37kNFRdjzSfJRidFucS3of7nsVrzMBad4g>
-    <xmx:7WYHaidxIokX-HrrL2IhCOMWJD3T2_AAe-rEjlrCPY3XftPlTPkC1Nl0>
-Feedback-ID: i35d941ae:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id CB9922CC0083; Fri, 15 May 2026 14:33:17 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PG3fN/s0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC384C2BCB0;
+	Fri, 15 May 2026 18:43:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778870600;
+	bh=5tR1Qq6xXLAVWqV0dkBVwnCvUhjaha/lBnGmx1miMN4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=PG3fN/s00vPlguRABctf1XyvtT7LxFl38BgcWW3iuZl+rxXwOte//qx3tcUDBdqWz
+	 vlVD+et8rq3B35sMYC1+6KYdUdnKNNx6DrZsg6RVjn4iQP2O+FEZc8Hu9hqkqvIW00
+	 iaiQ4kB/Qt6gjzEs4hl8saGH3m8hHVsn+hbhbHSIU7LJ/yvBWo2Ar8Cycu7Y45b6OH
+	 uO7cNbAZ+XofZM1B9azZvXScfJiQ7pVVzThHCt7SF61EE9mK9WPTPyc1DVFqCmWuSB
+	 JpfzhrD74D9t+N7EO6b5RWt1ZP6mbmEjk3DrHFFZwxLHj/pf2DIB6i3vhslMrAJp0S
+	 77DrEUkl1uQSA==
+Date: Fri, 15 May 2026 19:43:10 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Chris Morgan <macroalpha82@gmail.com>
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
+ dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
+ linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+ heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
+ andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH V7 04/11] iio: imu: inv_icm42607: Add I2C and SPI For
+ icm42607
+Message-ID: <20260515194310.49fa6fb0@jic23-huawei>
+In-Reply-To: <20260515130018.237378-5-macroalpha82@gmail.com>
+References: <20260515130018.237378-1-macroalpha82@gmail.com>
+	<20260515130018.237378-5-macroalpha82@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Fri, 15 May 2026 22:32:57 +0400
-From: big.block0203@fastmail.com
-To: "Jonathan Cameron" <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, platform-driver-x86@vger.kernel.org,
- linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <32f3063c-16cf-42a1-b122-118c291b3217@app.fastmail.com>
-In-Reply-To: <20260515124718.6481e2c3@jic23-huawei>
-References: <7915f7f0-d5fa-48a8-9aa6-fa2f8e621837@app.fastmail.com>
- <20260515124718.6481e2c3@jic23-huawei>
-Subject: Re: [BUG] ACPI INT33D3 ambient light sensor not bound on Intel Lunar Lake
- (ThinkPad X1 Carbon Gen 13)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Jonathan,
+On Fri, 15 May 2026 08:00:09 -0500
+Chris Morgan <macroalpha82@gmail.com> wrote:
 
-Following up: PNP0C60 is not what I read it as initially. Per Microsoft's
-ACPI/GPIO button documentation, _CID PNP0C60 is the laptop/slate mode
-state indicator (the soc_button_array binding you mentioned). The
-matching ACPI ID for an ALS is ACPI0008, and that device is not present
-anywhere in this machine's namespace.
+> From: Chris Morgan <macromorgan@hotmail.com>
+> 
+> Add I2C and SPI driver support for InvenSense ICM-42607 devices.
+> Add necessary Kconfig and Makefile to allow building of (incomplete)
+> driver.
+> 
+> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+I'm a little amused that sashiko seems to have halucinated part of the
+previous patch as part of this one as so repeated some comments. Oh well.
+Some of it's other comments are correct.
 
-The laptop has a small unidentified optical element in the top bezel
-beside the camera assembly that may be an ALS =E2=80=94 but the ACPI side
-doesn't expose anything named like one. A walk of the LEN* and INT33D3
-devices on this system:
+The only thing I added was a few formatting things.
 
-    LEN0071:00  status=3D?   driver=3Di8042 kbd    (TrackPoint keyboard)
-    LEN009F:00  status=3D0   driver=3DNONE         (disabled by firmware)
-    LEN0100:00  status=3D15  driver=3DNONE
-    LEN0111:00  status=3D15  driver=3DNONE
-    LEN0112:00  status=3D15  driver=3DNONE
-    LEN0130:00  status=3D15  driver=3DNONE         (Fn / Function Keys p=
-er Lenovo Windows driver naming)
-    LEN0140:00  status=3D0   driver=3DNONE         (disabled by firmware)
-    LEN0268:00  status=3D15  driver=3DNONE         (ThinkPad HKEY; think=
-pad_acpi matches this HID)
-    LEN0310:00  status=3D?   driver=3Di8042 aux    (TrackPoint pointing =
-device)
-    INT33D3:00  status=3D15  driver=3DNONE
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> index 9784709319b9..1088c5c7076f 100644
+> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+BOL_NS_GPL(inv_icm42607p_hw_data, "IIO_ICM42607");
+> +
+>  static int inv_icm42607_set_conf(struct inv_icm42607_state *st,
+>  				 const struct inv_icm42607_conf *conf)
+>  {
+> @@ -81,6 +138,14 @@ static int inv_icm42607_setup(struct inv_icm42607_state *st,
+>  	unsigned int val;
+>  	int ret;
+>  
+> +	/*
+> +	 * Setup the bus first in case we need to set the SPI mode or
+> +	 * change the slew rate in order.
 
-(driver=3D taken from physical_node/driver. thinkpad_acpi registers via
-the ACPI bus rather than creating a platform-bus binding, so it doesn't
-appear here even though it uses LEN0268.)
+Short wrap.  change at least shold be on the line above.
 
-LEN0100, LEN0111, LEN0112 are the genuine unknowns. No IPU6 / INT3472
-stack is present either =E2=80=94 this SKU's camera is a UVC device on U=
-SB
-(Chicony 04f2:b7e0, uvcvideo), so the ALS, if there is one, isn't
-behind that path.
+> +	 */
+> +	ret = bus_setup(st);
+> +	if (ret)
+> +		return ret;
+> +
+>  	ret = regmap_read(st->map, INV_ICM42607_REG_WHOAMI, &val);
+>  	if (ret)
+>  		return ret;
+> @@ -94,20 +159,27 @@ static int inv_icm42607_setup(struct inv_icm42607_state *st,
+>  	if (ret)
+>  		return ret;
+>  
+> -	fsleep(1000);
+> +	/*
+> +	 * In order to confirm a reset is complete, we need to read the reset
+> +	 * bit, but in certain circumstances we need to set the bus up before
+> +	 * we can do a read. So we should wait the required amount of time
+> +	 * per the datasheet first, then set the bus up again, then read to
+> +	 * ensure the reset status is done. Invalidate the regmap cache since
+> +	 * we're doing a hardware reset.
+> +	 */
+> +	regcache_mark_dirty(st->map);
+Sashiko has some comments here as well:
+"
+Because regcache_mark_dirty() only flags the cache as needing a sync but does
+not clear the cached values, will regmap_update_bits() in this second
+bus_setup() call silently skip the hardware writes?
+The cache would still show the bits as set from the first bus_setup(), leaving
+the hardware in its default reset state.
+Would regcache_sync() or regcache_drop_region() be more appropriate here to
+force the actual hardware writes?"
 
-This looks like a thinkpad_acpi / platform-driver-x86 question rather
-than an IIO one. I'll continue the discussion there. Thanks for the
-help narrowing it down =E2=80=94 pointing at the cid field is what got u=
-s here.
+>  
+> -	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
+> -				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
+> -				       INV_ICM42607_RESET_TIME_MS * 100,
+> -				       INV_ICM42607_RESET_TIME_MS * 1000);
+> -	if (ret)
+> -		return dev_err_probe(dev, ret,
+> -				     "reset error, reset done bit not set\n");
+> +	fsleep(INV_ICM42607_RESET_TIME_MS * 1000);
+>  
+>  	ret = bus_setup(st);
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = regmap_read(st->map, INV_ICM42607_REG_INT_STATUS, &val);
+> +	if (ret || (!(val & INV_ICM42607_INT_STATUS_RESET_DONE)))
+I agree with sashiko here. If you get ret you should return it.
 
-Regards,
-big.block
+	if (ret)
+		return dev_err_probe(dev, ret, "reset error\n");
+	if (!(val & INV...))
+		return dev_err_probe(dev, -EIO, "reset done bit not set\n");
+or something like that.
+ 
+> +		return dev_err_probe(dev, -EIO,
+> +				     "reset error, reset done bit not set\n");
+> +
+>  	ret = regmap_set_bits(st->map, INV_ICM42607_REG_INTF_CONFIG0,
+>  			      INV_ICM42607_INTF_CONFIG0_SENSOR_DATA_ENDIAN);
+>  	if (ret)
 
-On Fri, May 15, 2026, at 15:47, Jonathan Cameron wrote:
-> On Fri, 15 May 2026 14:51:09 +0400
-> big.block0203@fastmail.com wrote:
->=20
-> > Hi,
-> >=20
-> > On a Lenovo ThinkPad X1 Carbon Gen 13 (Intel Lunar Lake), the ACPI
-> > firmware declares an INT33D3 ambient light sensor as present, enable=
-d,
-> > and functional, but no Linux driver binds to it. As a result, no IIO
-> > device is created and no ambient light data is available to userspace
-> > (KDE/GNOME auto-brightness, iio-sensor-proxy, etc.).
->=20
-> So INT33D3 is a new ID to IIO at least but looks like it
-> binds to drivers/input/misc/soc_button_array.c=20
->=20
-> So I'm guessing not an ALS unless that's a multipurpose chip - seems
-> unlikely though as that combination isn't common.
->=20
-> So if there is an ambient light sensor here that is exposed to
-> the OS we need to find it amongst the other IDs..
->=20
-> >=20
-> > I did not find an existing report covering this on Lunar Lake. Apolo=
-gies
-> > if this duplicates one I missed; pointers welcome.
-> >=20
-> > Hardware
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> > - Lenovo ThinkPad X1 Carbon Gen 13
-> > - Intel Core Ultra 7 258V (Lunar Lake, Xe2)
-> > - iGPU: PCI 8086:64a0 (rev 04), subsystem 17aa:2339
-> > - Panel: Samsung Display ATNA40YK20-0 (2.8K OLED)
-> >=20
-> > Software
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> > - Fedora Kinoite 44
-> > - kernel 7.0.6-200.fc44.x86_64
-> > - KDE Plasma 6 on Wayland
-> >=20
-> > Symptom
-> > =3D=3D=3D=3D=3D=3D=3D
-> > No IIO devices are exposed at all:
-> >=20
-> >     $ ls /sys/bus/iio/devices/
-> >     (empty)
-> >     $ ls /sys/class/iio/
-> >     (empty)
-> >=20
-> > But the ALS is declared in ACPI:
-> >=20
-> >     $ cat /sys/bus/acpi/devices/INT33D3:00/hid
-> >     INT33D3
-> >=20
-> >     $ cat /sys/bus/acpi/devices/INT33D3:00/status
-> >     15
-> >=20
-> >     $ ls /sys/bus/acpi/devices/INT33D3:00/
-> >     cid  hid  modalias  path  physical_node  power  status  subsyste=
-m  uevent
-> >     # No `driver` symlink under physical_node =E2=80=94 nothing boun=
-d.
-> >=20
-> >     $ readlink /sys/bus/acpi/devices/INT33D3:00/physical_node
-> >     ../../../../../../pci0000:00/0000:00:1f.0/PNP0C09:00/INT33D3:00
-> >=20
-> >     $ sudo dmesg | grep -i INT33D3
-> >     (no output =E2=80=94 no driver even attempted to probe)
-> >=20
-> > Status 0xf per ACPI spec means: present (bit 0), enabled (bit 1), sh=
-own
-> > in UI (bit 2), functional (bit 3). The firmware unambiguously declar=
-es
-> > the device as available. dmesg shows no probe attempt and no error.
-> >=20
-> > Other unclaimed firmware-declared devices on this platform (for cont=
-ext)
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >     INTC1025:00     status=3D?    driver=3DNONE
-> >     INTC105D:00     status=3D15   driver=3Dintel-pinctrl
-> >     INTC105D:01     status=3D15   driver=3Dintel-pinctrl
-> >     INTC105D:02     status=3D15   driver=3Dintel-pinctrl
-> >     INTC105D:03     status=3D15   driver=3Dintel-pinctrl
-> >     INTC105D:04     status=3D15   driver=3Dintel-pinctrl
-> >     INTC1068:00     status=3D15   driver=3Dint3400 thermal
-> >     INTC1069:00     status=3D15   driver=3Dint3403 thermal
-> >     INTC1069:01     status=3D15   driver=3Dint3403 thermal
-> >     INTC1069:02     status=3D15   driver=3Dint3403 thermal
-> >     INTC1069:03     status=3D15   driver=3Dint3403 thermal
-> >     INTC1069:04     status=3D15   driver=3Dint3403 thermal
-> >     INTC107B:00     status=3D15   driver=3Dintel-hid
->=20
-> It's more than possible that the ALS is presented as part of the HID.
->=20
-> >     INTC1092:00     status=3D0    driver=3DNONE
-> not 100% sure but there are some references to a wireless modem related
-> thing associated with this ID.
->=20
-> >     INTC109D:00     status=3D15   driver=3DNONE
-> Might be the watchdog.  Maybe see if it has a cid entry.
->=20
->=20
-> Other alternatives would be it's on a discoverable bus...
->=20
-> So without figuring out where it is, not much we can do here.
->=20
-> Good luck on finding more info!
->=20
-> Jonathan
->=20
->=20
-> >=20
-> > INTC109D:00 is also present-and-enabled but has no driver bound. Its
-> > function is unknown to me; including it for awareness in case it is
-> > sensor-hub-related and a prerequisite for INT33D3.
-> >=20
-> > INT3519:00 is also present in ACPI but with status=3D0 (disabled by
-> > firmware), so likely not relevant here.
-> >=20
-> > Expected behavior
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > An IIO device of class `in_illuminance*` should appear under
-> > /sys/bus/iio/devices/, allowing iio-sensor-proxy and desktop
-> > environments to consume ambient light data for auto-brightness.
-> >=20
-> > Thanks,
-> > big.block
->=20
->=20
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c
+> new file mode 100644
+> index 000000000000..49438fa6f867
+> --- /dev/null
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c
+> @@ -0,0 +1,102 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Copyright (C) 2026 InvenSense, Inc.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +#include <linux/spi/spi.h>
+> +
+> +#include "inv_icm42607.h"
+> +
+> +static int inv_icm42607_spi_bus_setup(struct inv_icm42607_state *st)
+> +{
+> +	const struct device *dev = regmap_get_device(st->map);
+> +	const struct spi_device *spi = to_spi_device(dev);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	if (spi->mode & SPI_3WIRE)
+> +		ret = regmap_clear_bits(st->map, INV_ICM42607_REG_DEVICE_CONFIG,
+> +					INV_ICM42607_DEVICE_CONFIG_SPI_AP_4WIRE);
+> +	else
+> +		ret = regmap_set_bits(st->map, INV_ICM42607_REG_DEVICE_CONFIG,
+> +				      INV_ICM42607_DEVICE_CONFIG_SPI_AP_4WIRE);
+
+I'm inclined to agree with sashiko on these.  You need a 'write' not an update
+as the read in a read / modify / write cycle will fail if you are in the wrong mode.
+https://sashiko.dev/#/patchset/20260515130018.237378-1-macroalpha82%40gmail.com
+
+Given we are near merging this it can be helpful that if you disagree with sashiko's
+comments reply to say so and why.
+
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_clear_bits(st->map, INV_ICM42607_REG_INTF_CONFIG1,
+> +				INV_ICM42607_INTF_CONFIG1_I3C_DDR_EN |
+> +				INV_ICM42607_INTF_CONFIG1_I3C_SDR_EN);
+> +	if (ret)
+> +		return ret;
+> +
+> +	val = FIELD_PREP(INV_ICM42607_DRIVE_CONFIG3_SPI_MASK,
+> +			 INV_ICM42607_SLEW_RATE_INF_2NS);
+> +	ret = regmap_update_bits(st->map, INV_ICM42607_REG_DRIVE_CONFIG3,
+> +				 INV_ICM42607_DRIVE_CONFIG3_SPI_MASK, val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_update_bits(st->map, INV_ICM42607_REG_INTF_CONFIG0,
+> +				  INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_MASK,
+> +				  INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_I2C_DIS);
+> +}
+> +
+> +static int inv_icm42607_probe(struct spi_device *spi)
+> +{
+> +	const struct inv_icm42607_hw *hw;
+> +	struct regmap *regmap;
+> +
+> +	hw = spi_get_device_match_data(spi);
+> +	if (!hw)
+> +		return dev_err_probe(&spi->dev, -ENODEV,
+> +				     "Failed to get SPI data\n");
+> +
+> +	regmap = devm_regmap_init_spi(spi, &inv_icm42607_regmap_config);
+> +	if (IS_ERR(regmap))
+> +		return dev_err_probe(&spi->dev, PTR_ERR(regmap),
+> +				     "Failed to register spi regmap %ld\n",
+> +				     PTR_ERR(regmap));
+> +
+> +	return inv_icm42607_core_probe(regmap, hw,
+> +				       inv_icm42607_spi_bus_setup);
+
+Fits on one line under 80 chars.  Have another scan through the whole
+series for places where edits during revisions might now allow for
+less wrapping.
+
+> +}
