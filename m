@@ -1,113 +1,153 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F121A3E00AD
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 16:42:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BB6D4C0408;
+	Fri, 15 May 2026 16:48:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778863369; cv=none; b=F2PRFEBKBBJ/sjN/SLA6liZjn1rHfBKjMhlweCEMmWKcrLWVI99XlZ78TE4tClK+n/+4lmvhFv3Ma2wECGbXZLnRSo9J0vT1HIwXH4zGkuoquinGRv3PvAhnBD0QG8Gazo58J7J2X3SUQoeHx3UO9yf20T1ES4cdXpcHMOJIaHM=
+	t=1778863718; cv=none; b=HVn9iFbdwX0KrRiSoCNx82/8HaqDQzaHgmbN9HkaU9S3t0e47Q7kB7/xOAoyI9sZSxR1/FJ5OV5mOHIKQ2mNRwqV2tckykqWztsRqRwXsJW0cOd3L5R6Se8AoNw0Gdh9YlO5vRFWlcBuEyRoWfYjjQ9eim4znBYxO5RRCDiE7Aw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778863369; c=relaxed/simple;
-	bh=7kQvjor5v4XqPvM2zH32NLsWXJydYn+5ezoF7CWh9VY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lakUzfTaveaXOpRrJZYgx32Ft9bwWrotZoW9FVNCLFXN7phIkXF7cExSziA55eV0EiWrx9rMK+2yqOlEeFiZp5lYSVJUb1j81P1EnnsejyB10kCIcbwDKsfAURkkFIg02gZw8fUhTbc7RKAqOmaWCiT723p4ZRMTV2iM7kRbTuk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VN2pHOYD; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778863718; c=relaxed/simple;
+	bh=0z/7MPC7cDzPuD+TXUN8q2ab9tjd61U+LxsMgtE4YDU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=prTB2Sz6UVHMfbQVwhw8OaT55IO1O1GhYgCEwjxRT5FtK7dDoYCPIm157WFP8sLtJOjQhaxmkslHKqqkvlEVrSqOGwOIN4FjEYdO01f+r1zSXHn/Nnz+J2kds4iOybBPbyl6MA3mbTKwwOKZ7LDazE4snApQnF2PGFYTl4UyBpA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dVC+caWY; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VN2pHOYD"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-452aacde862so105f8f.0
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 09:42:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778863366; x=1779468166; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=G6pK3eKs2RTKJdVg/qW7uXwTeSJV4j7AU1HgoODeg7U=;
-        b=VN2pHOYDfCiAPPsf8Q+okPr1j+uCWrA8gkmObBsSQ9AQhyfo/RhU9x22oKdjOrR70f
-         u9+GZCiIVesatk+R3+f/GHMWXf4Q0rMtFh2zw3etLudbqYuEumPYG3Nx5SeZ/izr591X
-         q3Y7LIsrU+lSJMcj1VqToafydjPuIovPx4ac75maqokfJelYKxrZupSbhIAu4xz2upnE
-         t3gPbZYsfArpPCTQ1L2l1kcwQxbyw3x/Valc+er2nzAxkKuNGt+ajxqGacNko77vKO7W
-         9jObCM6UnPyztHDFt+H10nXwltnMOxya/WKNwDVyyLOfB10aQgaopihxP3CsriEnqV/+
-         SLnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778863366; x=1779468166;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=G6pK3eKs2RTKJdVg/qW7uXwTeSJV4j7AU1HgoODeg7U=;
-        b=jJBu3EIVnodzrk4aR9DW5oo1/ONedMbbsYlmd2lvFJxBlPaF+W9hIOKXpPhrLI6Kgq
-         xj6c7AgKGgjMf7c3MWUp+9wmrUFUrbN5nes9jGhl0h7kFouDWXR0qxhBye4KjaS9Q2Jn
-         fV2iQIGQ55ElOAZJOw8evNu0LXJPQs9+N5WVwPe8J9jfYXBFYPvgrfCQHmCtPzESRHuh
-         Lxyg5v7xrbb95qmDfAr2043obv/GGgokX7L3pZM4WSv+7XfsAzApAVuydF/B5rZbEdjS
-         MgC5F6wsPyZV/HKEejwuPiAuOOUtiO2QrKDcvDFVimdtnXYXdUAcdY6yPJdZ3UmPyG7K
-         Vylw==
-X-Gm-Message-State: AOJu0Yy5BvoiDgSJ2mqlMYQNm1jMsvSGWFzNB114OJ7OX7MhCgF3jjbG
-	RGspyAHeQJJajlaZhVHNUTd7VobQsVuaOm0tF3uFS7jL1Sh7a9puBmzr
-X-Gm-Gg: Acq92OHklNdLzup6dUKpJGYNJ8tSp7ufrFVo0CYRF9cFunV6nNX1K6yCNaL5Oo0/r2B
-	iwrlQU0mhvlvA/8fB8Ob79aHzQgAqYzH68usV6gHCSfuxymgq5iBXKZm8wn+LRPjdojuNpgdoMa
-	tI8a1TENvX02liaak+DicsdmH28sS/G5e5ekHShMGe8GbQzzEnR0qMRPTzrAqFa79A1+laaxtQr
-	hgixOz7tl7ij4TOHvR/wocfvw3Kri/vluUj/9n36vTneykLOzoOOV+aaGWXgjMZrlfxjMreOoIB
-	8X7dQMBxzg9uzgOzVkHw3LlyDdoelTPZ3/Gypd38H7yJaLLm/QFBtqIBXiz2QJDWu2tvoERg7Er
-	UVf0E6cQlI9akzZWOleMTnVp0ouAw83uyXh14WVzwTfgKzfJjEe364VeAmd9xe8f9ZuK5i73Rse
-	kdArusp5ziWyy0TGxRshdr4Mn33sGSeDyzjVurex2rslBBIcwxzmuoSg==
-X-Received: by 2002:a05:600c:c177:b0:48a:56d4:7274 with SMTP id 5b1f17b1804b1-48fe66423ecmr32080695e9.3.1778863366175;
-        Fri, 15 May 2026 09:42:46 -0700 (PDT)
-Received: from JSANTO12-L01.ad.analog.com ([191.255.131.70])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe57943b2sm73504275e9.8.2026.05.15.09.42.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 09:42:45 -0700 (PDT)
-Date: Fri, 15 May 2026 13:42:40 -0300
-From: Jonathan Santos <jonath4nns@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	marcelo.schmitt1@gmail.com
-Subject: Re: [RFC] iio: adc: support for multi-device aggregation
-Message-ID: <agdNAGDW5yHP6QeR@JSANTO12-L01.ad.analog.com>
-References: <af0EGv172ZMl/6N5@JSANTO12-L01.ad.analog.com>
- <af2QdVmncMtTS-Yf@ashevche-desk.local>
- <af2RPuqpuMJ1yD2M@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dVC+caWY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778863715; x=1810399715;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=0z/7MPC7cDzPuD+TXUN8q2ab9tjd61U+LxsMgtE4YDU=;
+  b=dVC+caWYtrT2D61VI+Y4QQAclApfsyus2rCgR7UR729wtH5hoCV0QKdW
+   H1FmpB9ipJNFf2ZCaqn8XnBqANEcBDBulmswOq7sEiuJJpVvPeNwYXPcx
+   ht0uScnmgFaX/NdKW8myPro5uYGlHsKmvClAs3PbczvssmJ0Rlt30a19A
+   1TyCEELmnU52h+MlYbiyTC3538kfx1jn85lOU29Zv3RIe/ACHK/HWWUbX
+   QXfQev3jxJ/n17Y0vzEY6rpdOu0f5zBSCaN+Q5Lpq/vQ3QSpwoa9TkBMe
+   Ivfx53gepxVcZQN6WGyknoUFyb2+981V+oHbactmWJEivKdABEgqTDgBg
+   w==;
+X-CSE-ConnectionGUID: NebYlhw9RJOBp6oR1GQjRQ==
+X-CSE-MsgGUID: Fpl6V2rbQ5ODEuNiBlSsXQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11787"; a="78846428"
+X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
+   d="scan'208";a="78846428"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 09:48:34 -0700
+X-CSE-ConnectionGUID: yAd87xEVTV2VaZKwwbztUg==
+X-CSE-MsgGUID: 7NXHeSrxR0SIiOsLR69bdg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
+   d="scan'208";a="269101211"
+Received: from spandruv-desk2.jf.intel.com ([10.88.27.176])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 09:48:34 -0700
+Message-ID: <873e576772dc7b283bb4f01b3c838894cc7a35de.camel@linux.intel.com>
+Subject: Re: [PATCH v3 2/6] iio: gyro: HID: hid-sensor-gyro-3d: Refactor
+ channel initialization
+From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To: =?ISO-8859-1?Q?Nat=E1lia?= Salvino =?ISO-8859-1?Q?Andr=E9?=
+	 <natalia.andre@ime.usp.br>, andy@kernel.org, dlechner@baylibre.com, 
+	jic23@kernel.org, jikos@kernel.org, nuno.sa@analog.com
+Cc: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>, 
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Date: Fri, 15 May 2026 09:48:34 -0700
+In-Reply-To: <20260512012302.20883-3-natalia.andre@ime.usp.br>
+References: <20260512012302.20883-1-natalia.andre@ime.usp.br>
+	 <20260512012302.20883-3-natalia.andre@ime.usp.br>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <af2RPuqpuMJ1yD2M@ashevche-desk.local>
 
-On 05/08, Andy Shevchenko wrote:
-> On Fri, May 08, 2026 at 10:27:54AM +0300, Andy Shevchenko wrote:
-> > On Thu, May 07, 2026 at 06:28:58PM -0300, Jonathan Santos wrote:
-> > > 
-> > > We have a request to support multiple devices tied together in a single evaluation
-> > > board. The goal is to be able to read them simultaneously via the IIO framework,
-> > > while also controlling them individually. Currently we have two ADC devices that
-> > > would benefit from this, but there might be more in the future.
-> > 
-> > > To summarize, the devices share SPI pins such as SCLK and MOSI, but have individual
-> > > chip-selects and MOSIs (we can consider individual SPI interfaces). The ideia
-> > > is to allow users to aggregate these devices so they can be read simultaneously
-> > > from the user space.
-> > 
-> > This paragraph contradicts itself. The they share the bus. The bus is serial
-> > and can't do at all what you are describing. Try to rephrase, or forget about
-> > this, it's simply impossible.
-> 
-> Ah, this is semi-shared bus... Interesting how the host controller looks like
-> for this? It's not a regular SPI.
->
+On Mon, 2026-05-11 at 22:16 -0300, Nat=C3=A1lia Salvino Andr=C3=A9 wrote:
+> Replace the local gyro_3d_adjust_channel_bit_mask() function with a
+> compound literal for scan_type initialization to improve code
+> readability.
+>=20
+> Signed-off-by: Nat=C3=A1lia Salvino Andr=C3=A9 <natalia.andre@ime.usp.br>
+> Co-developed-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
+> Signed-off-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
+> ---
+> =C2=A0drivers/iio/gyro/hid-sensor-gyro-3d.c | 24 +++++++++---------------
+> =C2=A01 file changed, 9 insertions(+), 15 deletions(-)
+>=20
+> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> index c340cc899a7c..4cbe4d93a0a1 100644
+> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> @@ -3,6 +3,7 @@
+> =C2=A0 * HID Sensors Driver
+> =C2=A0 * Copyright (c) 2012, Intel Corporation.
+> =C2=A0 */
+> +#include <linux/bitops.h>
+> =C2=A0#include <linux/device.h>
+> =C2=A0#include <linux/platform_device.h>
+> =C2=A0#include <linux/module.h>
+> @@ -82,17 +83,6 @@ static const struct iio_chan_spec
+> gyro_3d_channels[] =3D {
+> =C2=A0	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIMESTAMP)
+> =C2=A0};
+> =C2=A0
+> -/* Adjust channel real bits based on report descriptor */
+> -static void gyro_3d_adjust_channel_bit_mask(struct iio_chan_spec
+> *channels,
+> -						int channel, int
+> size)
+> -{
+> -	channels[channel].scan_type.sign =3D 's';
+> -	/* Real storage bits will change based on the report desc.
+> */
+> -	channels[channel].scan_type.realbits =3D size * 8;
+> -	/* Maximum size of a sample to capture is u32 */
+> -	channels[channel].scan_type.storagebits =3D sizeof(u32) * 8;
+> -}
+> -
+> =C2=A0/* Channel read_raw handler */
+> =C2=A0static int gyro_3d_read_raw(struct iio_dev *indio_dev,
+> =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan,
+> @@ -251,16 +241,20 @@ static int gyro_3d_parse_report(struct
+> platform_device *pdev,
+> =C2=A0	int i;
+> =C2=A0
+> =C2=A0	for (i =3D 0; i <=3D CHANNEL_SCAN_INDEX_Z; ++i) {
+> +		unsigned int ch =3D CHANNEL_SCAN_INDEX_X + i;
+> +
 
-Yes, the only pins they don't share is the SDI and CS. The main
-difference in the controller is the multiple SDI lanes, but that is
-something we support in the SPI driver. Because of this feature, the 
-controller can read all lanes simultaneously and put them in order on the
-DMA buffer.
+When you do code change more than what you described, then you should
+add to commit description that you are also doing this at the same
+time.
 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
+Thanks,
+Srinivas
+
+> =C2=A0		ret =3D sensor_hub_input_get_attribute_info(hsdev,
+> =C2=A0				HID_INPUT_REPORT,
+> =C2=A0				usage_id,
+> =C2=A0				HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXI
+> S + i,
+> -				&st->gyro[CHANNEL_SCAN_INDEX_X +
+> i]);
+> +				&st->gyro[ch]);
+> =C2=A0		if (ret < 0)
+> =C2=A0			break;
+> -		gyro_3d_adjust_channel_bit_mask(channels,
+> -				CHANNEL_SCAN_INDEX_X + i,
+> -				st->gyro[CHANNEL_SCAN_INDEX_X +
+> i].size);
+> +		channels[ch].scan_type =3D (struct iio_scan_type) {
+> +			.format =3D 's',
+> +			.realbits =3D BYTES_TO_BITS(st-
+> >gyro[ch].size),
+> +			.storagebits =3D BITS_PER_TYPE(u32),
+> +		};
+> =C2=A0	}
+> =C2=A0	dev_dbg(&pdev->dev, "gyro_3d %x:%x, %x:%x, %x:%x\n",
+> =C2=A0			st->gyro[0].index,
