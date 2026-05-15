@@ -1,123 +1,178 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 244DE23A99F;
-	Fri, 15 May 2026 14:33:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778855597; cv=none; b=iG0pwMCI1zNZVIMUQccbP/pCO5dUh4BVn0gzbvVPWSgCb77R/OH8o68ED5Rms02ZObwJENTOsEbNgD4hC1HbRCeS5WgDHV5ubQ0m//p8/QylDiyFB0iBF1ddWKluz4tHkFKJT5t0nT5MCgMDbZ4nSVUoDHMOpuZmRepE2E4ZxTY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778855597; c=relaxed/simple;
-	bh=b7K22fBrDRjX+dFafBF2IkKKKy3zgtXAEFFW0KHMvJo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hZ/OAdZIYufu3NepE+M2U37hZebU3EAcT1WdxVP4FPbxHSebHF9+erBsnkO3jJ9roDBcKYm0GGIbsNf5X4eHqYLmSu7v0E+2Oj0Ta6VlYvXUwGFt5ZOvTqNkJevuWWlBjs/n1WLZFVP/jrosuIqrpJs/FIdUhYnrGJLbA7ZuPjE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W7jQTq/b; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A54E3A9D89
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 14:35:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778855716; cv=pass; b=VTKLrJPU0UHvYgplR44ixS8E4ZUOYlY8x/7uN1Dk0gwnJxXT4bW2zhafCkSIud0ajXUufmttrifnZ3sQsYwtWlpBPekm/rxwKCD5B7CfZ1CZqhvGX32nvA/2WODgKw2dIvI5bqurYV1ib4oxI2Prq4lsk9ObXMMhDR3vGhEbxAk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778855716; c=relaxed/simple;
+	bh=iIGx3wWcvy2hW++9/pqWeIQsqWoIHGLW3SARD6WBHuA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BxhqA/5F6PWgESjcbp7SO8WJutW/tOOAGikeN6/mNZRj9Vlr/7MZgDWLGBDlBXuMHSqFwJi8LQIcePR8s3nfpSfeJzsQ5c2TyTwLUg83/ts2csDVEeQVhMXFJ+BE8Dk70zjVZbR3DOM9IuYl06ds8uoVhhYxynKDqwNKgsIxbww=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NhqRS7YH; arc=pass smtp.client-ip=74.125.224.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W7jQTq/b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 372EFC2BCB0;
-	Fri, 15 May 2026 14:33:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778855596;
-	bh=b7K22fBrDRjX+dFafBF2IkKKKy3zgtXAEFFW0KHMvJo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=W7jQTq/bcboPWQDCcakZwTX44IUXl64cVaKCTolg9WxBIuzXTP6cz5TvCoajdfHJB
-	 AvDez7BUo1g355WqiHFG4ntN5Yumf9TztCt8Md30QhUh73jqihrKG7+NmWDegEfNhF
-	 njQy7hF4useaY4w7uiV9NHQuJThcZoA7xieT4mJiLBKG2D0W+kexMWry7gsl1ReGsz
-	 lTO+ZRKizHNfEjcbxqeP2f7myTlYPblLo09UUp9jJhnOUkDTOorOL+noLhJmUe7hYd
-	 4y3zbWLs1U1xbUZgHYEg2n2jOKBU360L7z0S/PsLG0laIOGdnncIYzAVLYfhye5pLQ
-	 RczTPKuySWS3Q==
-Date: Fri, 15 May 2026 15:33:07 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Sam Daly"
- <sam@samdaly.ie>, "stable" <stable@kernel.org>, "David Lechner"
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>
-Subject: Re: [PATCH 2/3] iio: light: veml6075: add bounds check to
- veml6075_it_ms index
-Message-ID: <20260515153236.1acf1ca4@jic23-huawei>
-In-Reply-To: <DIIN3H0YMILE.3PFQWDK2BULIT@gmail.com>
-References: <2026051420-strudel-graves-f6cd@gregkh>
-	<2026051422-hungry-dolly-0250@gregkh>
-	<DIIN3H0YMILE.3PFQWDK2BULIT@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NhqRS7YH"
+Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-65c5361142fso12393450d50.0
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 07:35:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778855715; cv=none;
+        d=google.com; s=arc-20240605;
+        b=RZYIW9KRrVK2sJX0+QlKMRp69udj0eTwMC30p2sjVrVTapdFHo4LpcJ7rzDlSfRKiz
+         uwwg6gQ3bR5KBqZfp8Up2wQjJY2jXarfGXv8G8QIF95lksb92MmKXjo/kptSJENLYOAb
+         uYQ022M4HTjyb0ljDzEvX/r6/DTU0uuikc+qh5YkSnFtHZ+4sRB5fKvnf2W2m1zdJCZx
+         B35EDQzPICk7pyxF9BZv8eptvpr6sfxTbRzDxjGFxyAkhCyoWDL2PG7lUQZC6RQNXKo5
+         M1m/BPWNXBg7KPhEqt83QDqu3RswRHyqoWU3ox2YZpPAqcuP3relgPq0AocWlWPkJGTl
+         w6iw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=DX5ZKB9f4dwcj9Cdy6Hzvwc/BA4Io4VFjHj9xGpv0PY=;
+        fh=/JkYBjgzVR4BgWQR/WYKkI8HIBSmymYCjT01Ixbyanc=;
+        b=IgrSqmUvXbxt8hMvTYSE4DzufSh5FcgKvXvcEDJIafVr9vVE/WfvL4fm/0xgj/yRFZ
+         ELEHk9Wb2hreYTSp+3lyfSRP4Ptjb/HYe4T4VCioOw9Rv7671oef/zA1JOwSl5XtzqsX
+         BuWCEKG7idit3kMkyMQNLjhYs1WgmX+SOxWxopbFp/+bS++iC/N8wA0q3t78qrz1hYtj
+         D1FSYMSY1OZTaLqKu9E9CGsZnBgpkJRV9wBHilxd1mFR1F8QWUT6u5bDs2LzDhVjS6OV
+         8fGj4AM6H0y0GiFiwuQEni6MltlTQJOiWwK1M9pY00IwdOHLoW3VsayCfXD/y0jGmqAh
+         24Kg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778855715; x=1779460515; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DX5ZKB9f4dwcj9Cdy6Hzvwc/BA4Io4VFjHj9xGpv0PY=;
+        b=NhqRS7YHej6hz+do3ie2uR/Kwh+aWXj0RzSOI1zR1xj7GnQO4a78UIleSJOfZO/aLT
+         T0npTjqG1A23r2HDo+IGaX44/dIjG5bVvSXWTdqHbV6DOEUQp16dQyFrBsG2ScSLX6PZ
+         34++LgzxPvYY5OJqX2Fb7trstkMcuBYDskAIRaQERl0NJg+k5/DPsR/T3Jq2++Qg6l9J
+         ypPhVzQQ5lFx5mEAKRDoWim1YnNxF6JvTO6lqXHFIA9XRehSMWd0uEnf+wbaK1MtsQHr
+         Hq7tgMrrNNxuhUZ6L87DcPskb01CCklX3yHBLD+maQnFoet1QrhNpEWlUiNi0doDkH9c
+         N9/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778855715; x=1779460515;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=DX5ZKB9f4dwcj9Cdy6Hzvwc/BA4Io4VFjHj9xGpv0PY=;
+        b=LsGmafgXNUgrlGOKA7qdWSw+ZTYAylkDolM5ezbYXLd7eNG60ayN8Serna5f4jjqX2
+         NRZRbgNKBtSVcNqIgggN+X/SZydkCov93LGzFjk29LMatVHU9qv7cRQOnNseqNsKLoMF
+         9Lshz/wa1JjsPW4Hqn3svcy+NmD6QInPOgZFMH0eZr7OEidH6MAyK+NQ//Tk1wBEaMq1
+         ZVYzSv6RAhB9xLVvnsS7vJosjs9xpAW0z3vjctcZbES4LQ4t90608Rjcir33j3MVlkcW
+         bbI51pSKMYprrrmW7dI8gCPe9BODg4cy0LcsmeTjzSF6EvAV1RYsvHzu8WAcUsmoL0lK
+         +LWQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+MN4Zc1CrbNmqFZIR5CKfb7+5c+53MNhp3Zo+lpwj6vM2oBnTMgX9SObstkMlSy3An+ISF67ULx2A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxYKENPHJI7ongPdhB/4QDQHPVXkD07csBgYEK3LD+YwaCNVlgS
+	qj/XQmscrtkAVErfersLW2GDi0wspk8Dsp/TylcBybB+y5LBmJLXgEvMXolgN1yvHM0Sr5wRE26
+	Ph6tS6DpPcGDPonihQ5XO7hVCbbIk154+9OgLkfY=
+X-Gm-Gg: Acq92OEpRcCdAFux3XpUo0pmLkv7p1oHvA75kBpRDObzCsatI5rnyAT6Wu3e4aqvxox
+	FPcRCy2yrp98fu8PHdgEkOKwmF6EMAeA4MmAc7Cd6HE37FFUFCq1i48bbsGtrrgNbe3KOiAtNUh
+	0irBlcF5iDcF1gaZlPpYQEPBW3XoubHRJoDib57WHYyymJ7DBtkd0eF+QqiLUSXfU9nNUNg6sXH
+	TkMKGlPxTzLEuBvv5Ce9yVTe8SpFwp0We2VOkyu2EoEThBa41ksqwU0mAI4lNtfOD+AbiFo1bgB
+	R3ckWnNCzShslDCJokXS
+X-Received: by 2002:a05:690c:8d0c:b0:7bd:69b8:f2e5 with SMTP id
+ 00721157ae682-7c95a56f98fmr39785677b3.3.1778855714645; Fri, 15 May 2026
+ 07:35:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20260515031343.56039-1-m32285159@gmail.com> <20260515151840.48a42705@jic23-huawei>
+In-Reply-To: <20260515151840.48a42705@jic23-huawei>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Fri, 15 May 2026 09:35:03 -0500
+X-Gm-Features: AVHnY4KptTzsLcEKAGM5ihlL_7QTTdPjXg48kurju3Hxuqeoyryw8u4tBBEd5m0
+Message-ID: <CAKqfh0Fi3+jDP_UeKuTvdc2QkB3jttgRa=mjhgPPppc9sMkc4A@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: chemical: sps30: Replace manual locking with RAII locking
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Tomasz Duszynski <tduszyns@gmail.com>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 15 May 2026 08:17:18 +1300
-"Javier Carrasco" <javier.carrasco.cruz@gmail.com> wrote:
-
-> On Fri May 15, 2026 at 5:23 AM +13, Greg Kroah-Hartman wrote:
-> > From: Sam Daly <sam@samdaly.ie>
+On Fri, May 15, 2026 at 9:18=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
+> On Thu, 14 May 2026 22:13:42 -0500
+> Maxwell Doose <m32285159@gmail.com> wrote:
+>
+> > Replace manual mutex_lock() and mutex_unlock() calls with the much newe=
+r
+> > guard(mutex)() and scoped_guard() macros to enable RAII patterns,
+> > modernize the driver, and to increase readability.
 > >
-> > veml6075_it_ms has 5 elements but VEML6075_CONF_IT can yield
-> > values 0-7. If it returns a value >=3D 5, this causes an
-> > out-of-bounds array access. Add a bounds check and return
-> > -EINVAL if the index is out of range.
-
-I'd prefer it if this sort of change called out that we don't expect
-to ever see those values except when we have bus corruption or
-a broken device.  Good to protect against but that info might help
-folk decide whether to backport or not.
-
-I'll add a note whilst applying.  Applied to the fixes-togreg
-branch of iio.git.  I also rewrapped the description as 60 chars
-is rather short.
-
-Applied
-
-Jonathan
-
-> >
-> > Assisted-by: gkh_clanker_2000
-> > Cc: stable <stable@kernel.org>
-> > Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-> > Cc: Jonathan Cameron <jic23@kernel.org>
-> > Cc: David Lechner <dlechner@baylibre.com>
-> > Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
-> > Cc: Andy Shevchenko <andy@kernel.org>
-> > Signed-off-by: Sam Daly <sam@samdaly.ie>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
 > > ---
-> >  drivers/iio/light/veml6075.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
+> > v2:
+> >  - Switch over some scoped_guard()s to guard(mutex)() per David's
+> >    suggestion.
+> >  - Remove redundant whitespace per Andy's suggestion.
+> >  - Add new wrapper sps30_do_meas() per Andy's suggestion (see commit
+> >    message).
+> >  - Add Joshua's RB
+> >    (link: https://lore.kernel.org/linux-iio/CAKqfh0FWig8mRR-xhvnfcFeSin=
+R6RySyPaf9Gbpb6WU+diiiUQ@mail.gmail.com/T/#t)
 > >
-> > diff --git a/drivers/iio/light/veml6075.c b/drivers/iio/light/veml6075.c
-> > index edbb43407054..f7eb159e5cb4 100644
-> > --- a/drivers/iio/light/veml6075.c
-> > +++ b/drivers/iio/light/veml6075.c
-> > @@ -100,7 +100,7 @@ static const struct iio_chan_spec veml6075_channels=
-[] =3D {
-> >
-> >  static int veml6075_request_measurement(struct veml6075_data *data)
-> >  {
-> > -	int ret, conf, int_time;
-> > +	int ret, conf, int_time, int_index;
-> >
-> >  	ret =3D regmap_read(data->regmap, VEML6075_CMD_CONF, &conf);
-> >  	if (ret < 0)
-> > @@ -117,7 +117,11 @@ static int veml6075_request_measurement(struct vem=
-l6075_data *data)
-> >  	 * time for all possible configurations. Using a 1.50 factor simplifi=
-es
-> >  	 * operations and ensures reliability under all circumstances.
-> >  	 */
-> > -	int_time =3D veml6075_it_ms[FIELD_GET(VEML6075_CONF_IT, conf)];
-> > +	int_index =3D FIELD_GET(VEML6075_CONF_IT, conf);
-> > +	if (int_index >=3D ARRAY_SIZE(veml6075_it_ms))
-> > +		return -EINVAL;
-> > +
-> > +	int_time =3D veml6075_it_ms[int_index];
-> >  	msleep(int_time + (int_time / 2));
-> >
-> >  	/* shutdown again, data registers are still accessible */ =20
->=20
-> Reviewed-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+> > v3:
+> >  - Remove sps30_do_meas() wrapper per Andy's suggestion.
+> I think this wasn't what Andy meant. I think he meant just
+> push the guard into the the function you were wrapping.
+>
 
+TBH I'm fairly confused on what Andy wanted in terms of "what do I
+wrap". If he wants me to put the guard()() into the function call
+itself I can do that but see the (ps) in my other email.
+
+> >  - Remove Joshua's RB (major changes).
+> >
+> >  drivers/iio/chemical/sps30.c | 29 +++++++++++++----------------
+> >  1 file changed, 13 insertions(+), 16 deletions(-)
+> >
+> > diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.=
+c
+> > index a934bf0298dd..9cb201cf0f15 100644
+> > --- a/drivers/iio/chemical/sps30.c
+> > +++ b/drivers/iio/chemical/sps30.c
+> > @@ -5,6 +5,7 @@
+> >   * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
+> >   */
+> >
+> > +#include <linux/cleanup.h>
+> >  #include <linux/crc8.h>
+> >  #include <linux/delay.h>
+> >  #include <linux/i2c.h>
+> > @@ -111,9 +112,8 @@ static irqreturn_t sps30_trigger_handler(int irq, v=
+oid *p)
+> >               aligned_s64 ts;
+> >       } scan;
+> >
+> > -     mutex_lock(&state->lock);
+> > -     ret =3D sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
+> > -     mutex_unlock(&state->lock);
+> > +     scoped_guard(mutex, &state->lock)
+> > +             ret =3D sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.d=
+ata));
+> Every call to sps30_do_meas() is done with the lock held just over that c=
+all.
+>
+> So just move the lock (as a guard) into sps30_do_meas().
+>
+> I think that's what Andy was suggesting in v2 review, but maybe not!
+>
+
+Perhaps, we'll see I suppose.
+
+best regards,
+max
+
+
+>
+> >       if (ret)
+> >               goto err;
+> >
