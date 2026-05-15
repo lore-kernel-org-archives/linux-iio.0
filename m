@@ -1,199 +1,379 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C00923F8882
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 17:41:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73A963F9A18;
+	Fri, 15 May 2026 18:01:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778866880; cv=none; b=gdB9svNpS2+8ZQ/byWfGgibpVotmH8A9JN9q4InFCuregwj+5jtGXMn73A/tgTO2i4GYWY0o4Y9v3IhRIzIhXUdFghVPrXMWL6yyUu3WX8u3WsW2BorS7evxQSU8GykFXi+mfp2WGdFwlRg/p2bug3rjMcsxsdN0e9Xjefpnb8s=
+	t=1778868112; cv=none; b=iZ4Wkx3vQNZYA9HhIuFiIMUEBtd5yEggNMjYaO/2fenrc70EIUFLQgdb2Q3pF8G0UGQEBz9YIMQmOPMSzRTHy98m1fSgY9A6eZ0E5gilyD0/bcDE/13HGQM3+yixxswMAhVYPClp3mDJfsiGezGaIt0TTzsWI2595ip1tXIkpmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778866880; c=relaxed/simple;
-	bh=4RiR+ZXEajF7MeBQ0TdkfqGWEbJftjIU7gULv29t+Q8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=OFcuNNqA2TyQn6zRWUu+cKqE4Letck4po4Lrh0XJ8XxF61xTlLEFcRRm/ZYZzJ3TRoiGBZ+irM4U7jtrTOp0vEI+XXWDdPPzTJbgEJSaZbp7CLR6S7+Pwdg4TDzd/h3GSC5xHQHq83sVLEjifhW4RFpATL7OD68KWyIbtFRcWYg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PI6dYQ3q; arc=none smtp.client-ip=209.85.210.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778868112; c=relaxed/simple;
+	bh=xmYf/YPTmkCZ+t09NgazYb7Z+oQhA12ZG0mDF/i775Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ohrNAJFZlfV8PW2yhdUwHLQqaHfaDEirBXpfTdFQTW0s+N37E2UBvAoXeifJuXsiouu5758Uh8ozv/QpnFURCyAMusnFU6e78A3CUdrg5lFVNCGn2xeowHfHNlg92uh5276zneaCK/BWzQ07IAS6Rta0exCfC0l7j3dAub6gWZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QdX87ovF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PI6dYQ3q"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-8383fb7143aso46082b3a.3
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:41:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778866878; x=1779471678; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iFFgsQxDV1wnCquFjABZPsKXi5LVlrEz4bXpwyRs9wI=;
-        b=PI6dYQ3qL+yHRxHK9ghKhrUultc8CCq3H884B9spwy2M+3l3dNKOb+GmEdFZDCyyEd
-         MThBGb0J7eMzyISXi1MwFZBSKKriL9EaoLyFXB/0tZonUvqWyijR07QjXS2TvLeqp0rI
-         bgKqzmAyuA2bszEuU/Gp9AC6ftcjUh2GWw7MFlgJzgx5sUDG6gEePlPDkIvd3AIqY9rv
-         LIxmGlN6ufQyfXbSORJyvQnJaTFIaRitFHoa4vgbSSL8RXoXaX0h8I1Beqm0PRm0iT3v
-         xvqOAzfDezv4NZEtsV74QgO47qSi4r6QJ1CgCMevJnr+MT7LE+kacvRsK9XrYnPBeBjT
-         +5Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778866878; x=1779471678;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=iFFgsQxDV1wnCquFjABZPsKXi5LVlrEz4bXpwyRs9wI=;
-        b=LmLchO8hwq8w3OCBMpkqGDl/xvDJ+AZPyg3FsZIM/QpS2sHj6kpYoJuEJDeyPmGN7H
-         OIqKXhQV+NrUHNuUbAyyVHa9rJ2orzEtPwMQGy1NhpM4PugUG97KnxmiTMwShqNb4wq2
-         sjacmqF3CmW+BxO9sM7TaFdwto+kkuG1qwjHjR6NWZZNmlsJL+mkjsT8bAfhysOkUZE6
-         4J2NOqzbVVHyW38nNAVvw64MH3/H+PKUZ97aSjvd8A+nndZczwJ91MORldu8ab/otf4t
-         LufEQzhHoRf2N7NCzJBgbssxYNr9C0najf7Qi4SWZKjVzF8nxNE4hkTmWKQMLOkyR6eJ
-         RcKA==
-X-Forwarded-Encrypted: i=1; AFNElJ8eAn/ZxAWGN6cnYMifywGhwb8mJ6bYLQdZIz/4jQn+n09n9aBuHKlGF9kHUwsDOtBX2CZCmSHImew=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/0thsPH8aPiI5o8q2OLPBfGWOQdhRwjK96nkpnowmY5jklSEi
-	qC68FUkXAbO7Xq8hibJtnkGetGl2df9T7YsPeR1YvbJ9HX+p4E10cYDH
-X-Gm-Gg: Acq92OFWUWyta9lvlceI1sIwKj62q4ux5hQKmodJE6eTpberzn+5+OShePAxftK0PeC
-	hdIUyq5/P+JwH7YwQVYLdVRIQ8swCPPnXTNhGhP1T0NjmPuMC0GWbc/6+TpCxO+8+fjCTiXltzB
-	EV3OAR02Xg3AUSE4AhGiUVQZk0jDer7EkKpk/5212pW+ljsY3vhOb5ZXeiGQvBhG7aFOOMlS4ta
-	qx3PCi+yC/nKlVHHHjz1psgld4RgnT8bN/B5oX+r6+tN3wFhCUfUpXYxGDk7QxLm3I/wHrXTMuu
-	9vJzvnYTo0R0EiMu3v9zlRBuY3wqVBsBzPthBto4VHlP0f2TZ6BmWZHDuY/Lko+JhiFyQ1arXfq
-	fqf+gbgkCArPCaIOfkSyrQqEFwOpDw+z3/8csBtzICHfzWayDid5OUIQrzKWnG79UU/mI8bcnM2
-	kdPMABQwx+B3rtcKip1k8O8H3aNoVii0uOaZwnv1LTMfmKgU/XEjUzMhDaBY4=
-X-Received: by 2002:a05:6a00:3928:b0:82f:4191:da10 with SMTP id d2e1a72fcca58-83f33bc89d7mr5727837b3a.6.1778866878104;
-        Fri, 15 May 2026 10:41:18 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f2875f0fbsm5579034b3a.57.2026.05.15.10.41.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 10:41:17 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	sanjayembeddedse@gmail.com,
-	tglx@kernel.org,
-	christophe.jaillet@wanadoo.fr,
-	mingo@kernel.org,
-	kees@kernel.org,
-	nabijaczleweli@nabijaczleweli.xyz,
-	kyungmin.park@samsung.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v8 12/12] iio: ssp_sensors: reuse embedded RX buffer for SPI transfers
-Date: Fri, 15 May 2026 23:10:17 +0530
-Message-Id: <20260515174017.3962168-13-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260515174017.3962168-1-sanjayembedded@gmail.com>
-References: <20260515174017.3962168-1-sanjayembedded@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QdX87ovF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4ADDC2BCB0;
+	Fri, 15 May 2026 18:01:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778868112;
+	bh=xmYf/YPTmkCZ+t09NgazYb7Z+oQhA12ZG0mDF/i775Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=QdX87ovFoEmiKJ9zc8biExCL6PGSkEPe2OP7xa/BS8TVlhryP0MHt+trXsHbpH0GK
+	 +SATQsLnKAWv3P8XZNERh5m6t7/Dtkhds53boiWIUGFKmUJ51/CWBPscDmH6UF4Pmb
+	 srHAdAUgDSlAV3ZMoaSyZfmNHNXWGWBdxqwbO4BzrHbQy7Fw01KlNWTOxXY5Z1dPn1
+	 ObI7CPlGuQ0JUVLD4P660EAd/SHJwrfvhUlc1WVbZ7GWtX6TIjAA4xPocYcL9i5uMy
+	 qG6juDSGYnxLg4K7mvEJ0PLNgkzgg8Jkalf83V70GgoPRgOaCLPhDAPbZeAtYfp+0i
+	 iLDo0mkTBuT1w==
+Date: Fri, 15 May 2026 19:01:43 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Aldo Conte <aldocontelk@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ shuah@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH v2 4/5] iio: light: tcs3472: implement wait time and
+ sampling frequency
+Message-ID: <20260515190143.028e80a2@jic23-huawei>
+In-Reply-To: <20260512223215.25596-5-aldocontelk@gmail.com>
+References: <20260512223215.25596-1-aldocontelk@gmail.com>
+	<20260512223215.25596-5-aldocontelk@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Wed, 13 May 2026 00:32:14 +0200
+Aldo Conte <aldocontelk@gmail.com> wrote:
 
-Avoid allocating a temporary DMA buffer in the interrupt context when
-handling hub-to-AP and AP-to-hub SPI write messages.
+> The TCS3472 has a wait state controlled by the WEN bit in the ENABLE
+> register and the WAIT register, with an additional WLONG bit in CONFIG
+> that if set multiplies the wait step by 12. The driver previously
+> defined TCS3472_WTIME but never used it leaving the TODO comment on
+> the top of the source file.
+> 
+> Implement control of the wait time through IIO_CHAN_INFO_SAMP_FREQ:
+> 
+>   - Reading sampling_frequency returns the chip's current cycle time,
+>     computed as the sum of ATIME, the fixed RGBC initialization time
+>     and the wait time (which depends on WEN and WLONG).
+> 
+>   - Writing sampling_frequency programs WTIME so that the resulting
+>     cycle period approximates the requested frequency. If the
+>     requested frequency cannot be reached with any
+>     non-zero wait time, WEN is disabled and the chip runs
+>     back-to-back conversions at the maximum rate allowed by ATIME.
+>     If the requested period exceeds the maximum WTIME range, WLONG
+>     is enabled to extend the wait step from 2.4 ms to 28.8 ms.
 
-Replace the dynamically allocated RX buffer with a fixed-size,
-preallocated buffer embedded in the driver structure and reused for all
-SPI receive operations. This removes memory allocation from the
-IRQ path, simplifies lifetime management.
+Tidy up wrap of this paragraph. Can go to 75 chars.
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
-Changes in v6:
-- Address review comment of Jonathan and use __aligned(IIO_DMA_MINALIGN)
-  and have buffer assignment specific to block instead of top.
-- Regarding DMA and size discussion point are open to check
-- v7 change: https://lore.kernel.org/all/20260426091710.3722035-10-sanjayembedded@gmail.com/
-Changes in v6:
-- Replace dynamically allocated RX buffer with embedded fixed-size buffer
-- Fix struct layout to satisfy DMA alignment constraints comment from David
-- v5 change: https://lore.kernel.org/all/20260406080852.2727453-6-sanjayembedded@gmail.com/
-Changes in v5:
-- Rebase change on top of latest v5 patch series.
-Changes in v4:
-- Use preallocated buffer and stash a buffer that gets reused each time instead of a fresh allocation.
-- v3 change: https://lore.kernel.org/all/20260315125509.857195-3-sanjayembedded@gmail.com/
-Changes in v3:
-- prepare series to have all respective cleanup API support for the ssp_sensors following input from Andy Shevchenko
-- v2 change: https://lore.kernel.org/all/20260311174151.3441429-1-sanjayembedded@gmail.com/
-Changes in v2:
-- split series to individual patch
-- address review comment from Andy Shevchenko
-- v1 change: https://lore.kernel.org/all/20260310200513.2162018-3-sanjayembedded@gmail.com/
----
- drivers/iio/common/ssp_sensors/ssp.h     |  3 +++
- drivers/iio/common/ssp_sensors/ssp_spi.c | 17 +++--------------
- 2 files changed, 6 insertions(+), 14 deletions(-)
+> 
+>   - The user's last requested frequency is stored in the driver's
+>     private data so that subsequent changes to integration_time
+>     recompute WTIME and preserve the requested sampling rate as
+>     closely as possible.
+> 
+> Add TCS3472_ENABLE_WEN, TCS3472_ENABLE_RUN and TCS3472_CONFIG_WLONG
+> bit definitions. TCS3472_ENABLE_RUN bundles the bits
+> (AEN | PON | WEN) that are simultaneously set when the chip is in
+> running state and cleared during powerdown, and is used by
+> tcs3472_probe(), tcs3472_powerdown() and tcs3472_resume().
+> 
+> Remove the "TODO: wait time" comment at the top of the file.
+> 
+> Suggested-by: Andy Shevchenko <andy@kernel.org>
+> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+A few comments inline though many may overlap with what Andy raised.
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp.h b/drivers/iio/common/ssp_sensors/ssp.h
-index f649cdecc277..6d7409db014e 100644
---- a/drivers/iio/common/ssp_sensors/ssp.h
-+++ b/drivers/iio/common/ssp_sensors/ssp.h
-@@ -174,6 +174,7 @@ struct ssp_sensorhub_info {
-  * @pending_list:	pending list for messages queued to be sent/read
-  * @sensor_devs:	registered IIO devices table
-  * @enable_refcount:	enable reference count for wdt (watchdog timer)
-+ * @rx_buf:		buffer to receive SPI data
-  * @header_buffer:	cache aligned buffer for packet header
-  */
- struct ssp_data {
-@@ -221,6 +222,8 @@ struct ssp_data {
- 	struct iio_dev *sensor_devs[SSP_SENSOR_MAX];
- 	atomic_t enable_refcount;
- 
-+	u8 rx_buf[SSP_DATA_PACKET_SIZE] __aligned(IIO_DMA_MINALIGN);
-+
- 	__le16 header_buffer[SSP_HEADER_BUFFER_SIZE / sizeof(__le16)] __aligned(IIO_DMA_MINALIGN);
- };
- 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-index 172b4bbd298c..d6919e86aa95 100644
---- a/drivers/iio/common/ssp_sensors/ssp_spi.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-@@ -396,17 +396,13 @@ int ssp_irq_msg(struct ssp_data *data)
- 			 * but the slave should not send such ones - it is to
- 			 * check but let's handle this
- 			 */
--			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
--			if (!buffer)
--				return -ENOMEM;
-+			buffer = data->rx_buf;
- 
- 			/* got dead packet so it is always an error */
- 			ret = spi_read(data->spi, buffer, length);
- 			if (ret >= 0)
- 				ret = -EPROTO;
- 
--			kfree(buffer);
--
- 			dev_err(SSP_DEV, "No match error %x\n",
- 				msg_options);
- 
-@@ -438,22 +434,15 @@ int ssp_irq_msg(struct ssp_data *data)
- 		return ret;
- 	}
- 	case SSP_HUB2AP_WRITE:
--		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
--		if (!buffer)
--			return -ENOMEM;
-+		buffer = data->rx_buf;
- 
- 		ret = spi_read(data->spi, buffer, length);
- 		if (ret < 0) {
- 			dev_err(SSP_DEV, "spi read fail\n");
--			kfree(buffer);
- 			return ret;
- 		}
- 
--		ret = ssp_parse_dataframe(data, buffer, length);
--
--		kfree(buffer);
--		return ret;
--
-+		return ssp_parse_dataframe(data, buffer, length);
- 	default:
- 		dev_err(SSP_DEV, "unknown msg type\n");
- 		return -EPROTO;
--- 
-2.34.1
+> ---
+> v2:
+> ( Suggested-by Andy )
+> - Validation also rejects val > 0 with val2 < 0
+> - cycle_us uses PSEC_PER_SEC (was USEC_PER_SEC * USEC_PER_SEC),
+> - clamp() replaces manual WTIME bounds checks.
+> - DIV_ROUND_CLOSEST_ULL() allows to avoid all the castings.
+> - CONFIG read-modify-write uses a separate 'config' variable instead of the
+>   ret = foo(ret).
+> - Multi-line comments now follow kernel style.
+> - Added comment explaining why wait_us can be negative.
+> - target_freq_uhz uses div_u64() for 32-bit portability.
+> - TCS3472_ENABLE_RUN introduced here with AEN | PON | WEN.
+> - Test details moved to the cover letter.
+> 
+>  drivers/iio/light/tcs3472.c | 189 +++++++++++++++++++++++++++++++++---
+>  1 file changed, 175 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
+> index 7a6dc8360326..f8f70399a4dc 100644
+> --- a/drivers/iio/light/tcs3472.c
+> +++ b/drivers/iio/light/tcs3472.c
 
+> @@ -135,6 +159,100 @@ static int tcs3472_req_data(struct tcs3472_data *data)
+>  	return 0;
+>  }
+>  
+> +static int tcs3472_set_sampling_freq(struct tcs3472_data *data,
+> +				     int val, int val2)
+> +{
+> +	unsigned int atime_us;
+> +	unsigned int init_us = 2400;
+> +	u64 cycle_us;
+> +	s64 wait_us;
+> +	int wtime;
+> +	bool wlong = false;
+> +	u8 config;
+> +	int ret;
+> +
+> +	if (val < 0 || val2 < 0 || (val == 0 && val2 == 0))
+> +		return -EINVAL;
+> +
+> +	guard(mutex)(&data->lock);
+> +
+> +	atime_us = (256 - data->atime) * 2400;
+> +	cycle_us = div_u64((u64)PSEC_PER_SEC,
+
+Sashiko points out truncation on these. as the divisor is 32 bit
+Probably div64_u64()
+https://sashiko.dev/#/patchset/20260512223215.25596-1-aldocontelk%40gmail.com
+
+Check for other instances of this.
+> +			   (u64)val * USEC_PER_SEC + val2);
+> +
+> +	/*
+> +	 * wait_us can be negative or smaller than the minimum wait step
+> +	 * (2400 us) when the requested frequency is too high to be reached.
+> +	 * In that case, disable WEN so that the chip can perform back-to-back
+> +	 * conversions at the maximum rate permitted by the current ATIME.
+> +	 */
+> +	wait_us = (s64)cycle_us - init_us - atime_us;
+> +
+> +	if (wait_us < 2400) {
+> +		if (data->enable & TCS3472_ENABLE_WEN) {
+> +			data->enable &= ~TCS3472_ENABLE_WEN;
+In resume you unconditionally use ENABLE_RUN
+
+Seems broken if you have previously passed through this path
+
+> +			ret = i2c_smbus_write_byte_data(data->client,
+> +							TCS3472_ENABLE,
+> +							data->enable);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
+> +
+> +		data->target_freq_hz = val;
+> +		data->target_freq_uhz = val2;
+> +		return 0;
+> +	}
+> +
+> +	/*
+> +	 * Wait state is needed: make sure WEN is active before
+> +	 * programming WTIME (and possibly WLONG).
+
+Wrap to 80 when no strong reason to do differently.
+
+> +	 */
+> +	if (!(data->enable & TCS3472_ENABLE_WEN)) {
+> +		data->enable |= TCS3472_ENABLE_WEN;
+> +		ret = i2c_smbus_write_byte_data(data->client,
+> +						TCS3472_ENABLE,
+> +						data->enable);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	wtime = 256 - DIV_ROUND_CLOSEST_ULL(wait_us, 2400);
+> +	if (wtime < 0) {
+> +		wlong = true;
+> +		wtime = 256 - DIV_ROUND_CLOSEST_ULL(wait_us, 28800);
+> +	}
+> +	wtime = clamp(wtime, 0, 255);
+> +
+> +	if (wlong != data->wlong) {
+All this dancing to avoid writes would be better replaced with
+regmap + regcache but that's a much bigger job.
+
+> +		ret = i2c_smbus_read_byte_data(data->client, TCS3472_CONFIG);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		config = ret;
+> +		if (wlong)
+> +			config |= TCS3472_CONFIG_WLONG;
+> +		else
+> +			config &= ~TCS3472_CONFIG_WLONG;
+> +
+> +		ret = i2c_smbus_write_byte_data(data->client, TCS3472_CONFIG,
+> +						config);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		data->wlong = wlong;
+> +	}
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3472_WTIME, wtime);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->wtime = wtime;
+> +	data->target_freq_hz = val;
+> +	data->target_freq_uhz = val2;
+> +
+> +	return 0;
+> +}
+> +
+>  static int tcs3472_read_raw(struct iio_dev *indio_dev,
+>  			   struct iio_chan_spec const *chan,
+>  			   int *val, int *val2, long mask)
+> @@ -165,6 +283,14 @@ static int tcs3472_read_raw(struct iio_dev *indio_dev,
+>  		*val = 0;
+>  		*val2 = (256 - data->atime) * 2400;
+>  		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_SAMP_FREQ: {
+> +		unsigned int cycle_us = tcs3472_cycle_time_us(data);
+> +
+> +		*val = USEC_PER_SEC / cycle_us;
+> +		*val2 = div_u64((u64)(USEC_PER_SEC % cycle_us) * USEC_PER_SEC,
+> +				cycle_us);
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+>  	}
+>  	return -EINVAL;
+>  }
+> @@ -175,6 +301,7 @@ static int tcs3472_write_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct tcs3472_data *data = iio_priv(indio_dev);
+>  	int i;
+> +	int ret;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_CALIBSCALE:
+> @@ -194,15 +321,29 @@ static int tcs3472_write_raw(struct iio_dev *indio_dev,
+>  		if (val != 0)
+>  			return -EINVAL;
+>  		for (i = 0; i < 256; i++) {
+> -			if (val2 == (256 - i) * 2400) {
+> -				data->atime = i;
+> -				return i2c_smbus_write_byte_data(
+> -					data->client, TCS3472_ATIME,
+> -					data->atime);
+> -			}
+> -
+> +			if (val2 != (256 - i) * 2400)
+> +				continue;
+> +
+> +			data->atime = i;
+> +			ret = i2c_smbus_write_byte_data(data->client,
+> +							TCS3472_ATIME,
+> +							data->atime);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			/*
+> +			 * ATIME just changed, so the cycle time changed too.
+> +			 * Re-run the sampling frequency logic to recompute
+> +			 * WTIME and preserve the user's last requested
+> +			 * frequency.
+> +			 */
+> +			return tcs3472_set_sampling_freq(data,
+> +							 data->target_freq_hz,
+> +							 data->target_freq_uhz);
+>  		}
+>  		return -EINVAL;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		return tcs3472_set_sampling_freq(data, val, val2);
+>  	}
+>  	return -EINVAL;
+>  }
+> @@ -429,13 +570,12 @@ static const struct iio_info tcs3472_info = {
+>  
+>  static int tcs3472_powerdown(struct tcs3472_data *data)
+>  {
+> -	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
+>  	u8 value;
+>  	int ret;
+>  
+>  	guard(mutex)(&data->lock);
+>  
+> -	value = data->enable & ~enable_mask;
+> +	value = data->enable & ~TCS3472_ENABLE_RUN;
+>  
+>  	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE, value);
+>  	if (ret)
+> @@ -456,6 +596,7 @@ static int tcs3472_probe(struct i2c_client *client)
+>  	struct device *dev = &client->dev;
+>  	struct tcs3472_data *data;
+>  	struct iio_dev *indio_dev;
+> +	unsigned int cycle_us;
+>  	int ret;
+>  
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> @@ -494,6 +635,16 @@ static int tcs3472_probe(struct i2c_client *client)
+>  		return ret;
+>  	data->atime = ret;
+>  
+> +	ret = i2c_smbus_read_byte_data(data->client, TCS3472_WTIME);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->wtime = ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, TCS3472_CONFIG);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->wlong = !!(ret & TCS3472_CONFIG_WLONG);
+
+!! is kind of frowned upon though it is common in older kernel code.
+Linus once got quite grumpy about it being tricky to read ;)
+
+? 1 : 0; probably given driver isn't using FIELD_GET()/_PREP()
+
+
+> +
+>  	ret = i2c_smbus_read_word_data(data->client, TCS3472_AILT);
+>  	if (ret < 0)
+>  		return ret;
+> @@ -515,13 +666,24 @@ static int tcs3472_probe(struct i2c_client *client)
+>  		return ret;
+>  
+>  	/* enable device */
+> -	data->enable = ret | TCS3472_ENABLE_PON | TCS3472_ENABLE_AEN;
+> +	data->enable = ret | TCS3472_ENABLE_RUN;
+>  	data->enable &= ~TCS3472_ENABLE_AIEN;
+>  	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
+>  		data->enable);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	/*
+> +	 * Initialize target frequency from the chip's current state so
+> +	 * that subsequent integration_time changes via IIO_CHAN_INFO_INT_TIME
+> +	 * can preserve a meaningful sampling rate, even before userspace
+> +	 * writes sampling_frequency for the first time.
+Slightly odd wrap. Go to 80 chars for comments.
+
+	 * Initialize target frequency from the chip's current state so that
+	 * subsequent integration_time changes via IIO_CHAN_INFO_INT_TIME can
+	 * preserve a meaningful sampling rate, even before userspace writes
+	 * sampling_frequency for the first time.
+
+It's one of those things where it doesn't really matter what the standard is
+as long as we keep to it as visual consistency is always good for readability.
+> +	 */
+> +	cycle_us = tcs3472_cycle_time_us(data);
+> +	data->target_freq_hz = USEC_PER_SEC / cycle_us;
+> +	data->target_freq_uhz = div_u64((u64)(USEC_PER_SEC % cycle_us) *
+> +					USEC_PER_SEC, cycle_us);
+
+I see Andy already queried the maths here. I was about to do the same
+as I'm failing to follow it.
+
+> +
+>  	ret = devm_add_action_or_reset(dev, tcs3472_powerdown_action, data);
+>  	if (ret)
+>  		return ret;
