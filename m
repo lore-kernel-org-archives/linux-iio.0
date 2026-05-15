@@ -1,68 +1,76 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83361477993;
-	Fri, 15 May 2026 11:03:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0257F426ECB;
+	Fri, 15 May 2026 11:04:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778842984; cv=none; b=jX+f24zDulSzrT2loPmeAxu6sM5vBi9UN/9/RSgzsG3kVRvnZp4jjV/9Ah5sUU4GiyWQ7niUS3dr7bKnAyq04CT++2BCbWKGi+ZpN378upra5nv+GI8b5GdVfgtMD7aWVDLl1U8nquviTFDvHyfbm4eeGyVcpT2aCS9WFaQOo90=
+	t=1778843043; cv=none; b=OLDgSm5A1cWteDZWgYhmuzq/DghjUuyDWAaVLz8ygOdoPzbrayK0yTq43sh2uZQEwVYgjkN4CsFBuWRPg04H7lsMTd7NtqFde9bD/k1FhWstXn3iKyDTherQMp48LB3v/9ACB153IwZUEsVrsxnAz/u6ux/5bWEh+jjN6vted9c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778842984; c=relaxed/simple;
-	bh=iqvi9Y/GWvrW9fciGmNSpOmk0BoqpWnGIAgMHnaPJUA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Fkb6vQfXuZjFiNrQ8ux1nW5C9+z5tWK1t/srgOVDXuAEY9Uz4zajKs6QInwuCMyosa+8GTxj0h5GrYyyNe/1u+a5ox5YJoW06MIUgRyGQBRgjRpSSAUVbtDVVPvclCUbgWb013Gpegm9xmFX1OzTcHppjCasYvuDtSdwGVdPHVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U9VkMeLd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778843043; c=relaxed/simple;
+	bh=pl6rBVUQVRKMyewnivlNOKajFYT0SQanIWO378xSorc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=hYpWrkzm2RSisJdXUURtujoppygOWqjlZ4xC3L0v423N1diLYkpffujM003OduWIoQM5h/cM8phdGw2YwOZdP9TA4eHOxS7/6xKOexD/w7L+VjujITcAqbDNBrq5uesIaYj9Gmxn3rIouuow1hniSJ4GDygfWFfqbKzThEryagM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b6WpO4TS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U9VkMeLd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 762A9C2BCB0;
-	Fri, 15 May 2026 11:03:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b6WpO4TS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88CC9C2BCB7;
+	Fri, 15 May 2026 11:03:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778842984;
-	bh=iqvi9Y/GWvrW9fciGmNSpOmk0BoqpWnGIAgMHnaPJUA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=U9VkMeLdg7idNmwcldP/7WxFI6CC4J6niGePUREf6je2aPM7xYjMwLKTcLA/wKJF8
-	 MNrbQY8mI0a+FyS9648emQ17BTXO31EecJ50+JcPWZLl8aXZr6bzcpgH+bgvA+thr1
-	 fiHUuHeNG6avA1ayKjWWdajjaRTlhS+J5ht6HUVCe137vzGsTBSAuEezeofSWZLv8L
-	 oe2yl44QlSEjkF2FvtIs2C94JZ9PSYviK95OtMMR5yTds7iUDBEZzolW2LJn+q6X46
-	 7d9HEk8/AMqcZ0ya5u/Ncw/xun+0gNO7H4N8I0zFUJt12kTpPNh4PBH06IeJBSiWOY
-	 3tCdkUD4TC9gw==
-Date: Fri, 15 May 2026 13:03:01 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Pramod Maurya <pramod.nexgen@gmail.com>
-Cc: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org
-Subject: Re: [PATCH v4 3/3] dt-bindings: misc: Add binding for Xilinx
- AXI-Stream FIFO
-Message-ID: <20260515-crazy-cheerful-teal-af566d@quoll>
-References: <20260510083219.70224-1-pramod.nexgen@gmail.com>
- <20260515075736.172172-1-pramod.nexgen@gmail.com>
- <20260515075736.172172-4-pramod.nexgen@gmail.com>
+	s=k20201202; t=1778843042;
+	bh=pl6rBVUQVRKMyewnivlNOKajFYT0SQanIWO378xSorc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=b6WpO4TSoQaftPV3FSQuWlYj50zLmA50Q1iY1mKNJPp/cUMShMgeg9Ii/bDZLpAUG
+	 GrK5+mWIDbk3LC3rSlfVRGl4Xwq/8Yl46W6SsXQi2sx0gg6IMJ8t7XQkxdAhfVPbi5
+	 LhsdfqJYqwtCd1nKJEpcKGgbR3u56YjfMStuTYs4CCzE2fXpbheKTCyOSFa2u0+lVC
+	 SFRrDvHsYYBXD6Avc8x43Ec2WSiWe9RM7dYkERfhRjhyveYKpPQrHvUBXzNmxrjWVI
+	 i0V2N+7efBtsvdzetg+16sbwwKoibtiKRfQTwK9wRmJIdHJs1MhJzFYaQnDl5HtQ40
+	 /yncUzpAfG0Vw==
+Date: Fri, 15 May 2026 12:03:53 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Alexandru-Catalin Ionita
+ <alexandru-catalin.ionita@nxp.com>, "Radu Pirea (NXP OSS)"
+ <radu-nicolae.pirea@oss.nxp.com>, Daniel Lezcano
+ <daniel.lezcano@linaro.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: adc: nxp-sar-adc: fix division by zero in
+ write_raw
+Message-ID: <20260515120353.4f9d08de@jic23-huawei>
+In-Reply-To: <20260420153418.21ef8f03@jic23-huawei>
+References: <20260401152924.58073-1-antoniu.miclaus@analog.com>
+	<20260420153418.21ef8f03@jic23-huawei>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260515075736.172172-4-pramod.nexgen@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, May 15, 2026 at 03:57:36AM -0400, Pramod Maurya wrote:
-> Add a YAML schema for the Xilinx AXI-Stream FIFO IP core (PG080).
-> The binding documents the three supported compatible strings and the
-> vendor-specific properties that the axis-fifo staging driver reads from
-> the device tree.
+On Mon, 20 Apr 2026 15:34:18 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
+
+> On Wed, 1 Apr 2026 18:29:24 +0300
+> Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 > 
-> This resolves the following checkpatch.pl warnings in
-> drivers/staging/axis-fifo/axis-fifo.c:
->   WARNING: DT compatible string "xlnx,axi-fifo-mm-s-4.1" appears un-documented
->   WARNING: DT compatible string "xlnx,axi-fifo-mm-s-4.2" appears un-documented
->   WARNING: DT compatible string "xlnx,axi-fifo-mm-s-4.3" appears un-documented
+> > Add a validation check for the sampling frequency value before using it
+> > as a divisor. A user writing zero or a negative value to the
+> > sampling_frequency sysfs attribute triggers a division by zero in the
+> > kernel.
+> > 
+> > Also prevent unsigned integer underflow when the computed cycle count is
+> > smaller than NXP_SAR_ADC_CONV_TIME, which would wrap the u32 inpsamp to
+> > a huge value.
+> > 
+> > Fixes: fdee77dea4b6 ("iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms")
+This tag is wrong.  I only just noticed when running final tests
+before sending a pull request.  I obviously missed running them
+earlier but please be very careful to get these right as I have
+to rebase whenever one gets past me.
 
-Do not fix checkpatch warnings blindly. You could have checked the
-mailing list before sending this.
+Correct hash is 4434072a893e
 
-Best regards,
-Krzysztof
-
+Jonathan
