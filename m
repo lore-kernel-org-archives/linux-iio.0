@@ -1,296 +1,248 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013060.outbound.protection.outlook.com [40.93.196.60])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71E443FF1A2;
-	Fri, 15 May 2026 15:51:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778860272; cv=fail; b=ukvmi66dksUZC9b5t3/3UF7pNcZulbyylwimeI/j5byY909/1jtMU447wNciH0mYZvhL0sRNyWDoYdidmLgoEDnQNwFb9ft+LfIO1l8m+FA19cuIAD4AnBbBwmvWTWhugOUgZk9tpxQiVLMb7wf1/K4SOWTpDhroI/yRLinlMV8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778860272; c=relaxed/simple;
-	bh=n41DC8Q4ReDLpy0A/O0S/apML0OePu9QEMxW03c4NTc=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=PIpbPdU8yyuU6F+n5pmTKRE6KlmMWM8FIzsT3qs4sKUkrliVTHnlH8sBI4ng4iWF4p3FhFFT5MAMIIzh9X7GLJAbxu0ue8mCnqOnA/44Ugcw6eajwgsicRoGr3q45StwP/uIxAihXLgf4nG5ZA5cEUS+DkcQXvMRNSZ4H+SZz4s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=zWUOXCbw; arc=fail smtp.client-ip=40.93.196.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD77C30567B
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 15:57:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778860636; cv=none; b=BVSwJrljtTkDQDrT3g2VYbhoaQgOTI+s8f6pxo0/SJzJpAmTBJC6X0ySb7gxuitWH5DumB6HJBU2ztVeDyAB04UKoBqGgpMCKmr8GMjug3C3V4j7LvmBtr8Bdp4tkb17SYpA/Mot7ex/3ricQuTiO4+DFLelraWyC3WKHguuTs4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778860636; c=relaxed/simple;
+	bh=IguJtA/166vSHwZlyrAaam1VOaDrr3Yd0bxakY+IMn8=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=AXHIk2sAp2YS24y81v7KvxW77j/O+2AEDuMDLEs0hFjSZLVDCDS/9dB8ODxoIkyzb/YozJGaPJMI8tIhrg5K0oDWaRAb/lTElPjSPVPrvZwXnF3Y0hx5T3xx1EWMAtzyW/260LUcBK77efHSLAXdpgZGvv+d+6/0eImAc1AuWL8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rlyW0zQg; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="zWUOXCbw"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=J5wQm3GDT9sIK5KKcI4FWw66tTMOIirRe6rOOuSkYQmcXPi5Av6k40PUVcJjVDwYVlNoTM5UCXhQDyPZJOVqWKbvuVu9oL/EPAHQmFqJqf5XpE8Yktz3Vw78DQQ0ApDmX19Ez/bvXwmuJQKLWLgXKip7zW3m8l/MoHax6g2aiKAxwLkPwRxKyHc25wod6+hqY3fzT506OngCcOrqwzo75ztLIvPeOa3ww9DktwlYrvMvP7JgLckGQ3RhIjn2xmZA/2/ZjaJ81JArC2pp9MdL/wnN/LLOxGkWhH+45I190QDfeqqXPndUvZNIz/ADVtzNFUiPLfSZvc2/LsS5fbeCaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rLTn8yOxUHmaFf0PLWhRe330eJYEyolccvbg7ARzbnk=;
- b=TswUUQMp4YaO6R1Ph+iOFoQOJwZkfRsBeLxBBZ/x8vul6YgPVTS6lN4yOvzNfmwMW2+BtrgweiiBMMwXQz/N7RxVAW+DULCzRp0cgYrLbe39Y/vO+3zqM8ToWNa3KxLyeFvUcWrIsH9yIeIbLKye70NQkOWWYPDHLZWrKjFATEwvcAk9QUQPLT+U9etBl7jGeYZ1cKRq5rll3rCOpz5ToGE5THLCa9yviuqAZSGgll5dQbp8XXi+LJgzl0kcxyRU353XaTMb79YIXLbOw6v2o+pliYo+qvPqZANtSwVrEUyrFoMrr95Hz4pbavYKnujw/qmWCIiM3nGjb1GF4HfEvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rLTn8yOxUHmaFf0PLWhRe330eJYEyolccvbg7ARzbnk=;
- b=zWUOXCbwaaPukvZ46rfuhgF9NVZw1aCEt6msfq3EIUkTutNxlaZDbnXo+4zFOFU+zMvjgyPF3sW54tHIt+rO5RcROIWNYYdn6HwAq6+v3soM8rW7eCeACekASrxAUOlh99a93QvmPTkH2bN/+ZujmBUK3gL61RwwRUYveWIonFc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by MW3PR12MB4473.namprd12.prod.outlook.com (2603:10b6:303:56::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.19; Fri, 15 May
- 2026 15:51:03 +0000
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0025.016; Fri, 15 May 2026
- 15:51:02 +0000
-Message-ID: <1f103bf5-c9fc-480b-9470-258e63d853ad@amd.com>
-Date: Fri, 15 May 2026 16:50:59 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/5] iio: adc: versal-sysmon: add I2C driver
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, git@amd.com, nuno.sa@analog.com, andy@kernel.org,
- dlechner@baylibre.com, michal.simek@amd.com, conall.ogriofa@amd.com,
- erimsalih@gmail.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260502111951.538488-1-salih.erim@amd.com>
- <20260502111951.538488-4-salih.erim@amd.com>
- <afh0GW_SXuq72KwJ@ashevche-desk.local>
-Content-Language: en-US
-From: "Erim, Salih" <salih.erim@amd.com>
-In-Reply-To: <afh0GW_SXuq72KwJ@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0681.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:351::15) To IA1PR12MB7736.namprd12.prod.outlook.com
- (2603:10b6:208:420::15)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rlyW0zQg"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-488b0e1b870so154867205e9.2
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 08:57:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778860633; x=1779465433; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=1uF5OyOIkN83/pI3J73aYzFyGQaV0SrzSZ1PhK/Byvg=;
+        b=rlyW0zQgt63GS99uebdBbFutHr0n/DjBKy/69ruHQG0DdYofF3AkK5qTQfLw0kc+2o
+         bfKai7zyJo56pSPKNWUxzl/EGqjDOXHwkiB7lY+bCMy7couuXIMNqMmGsYcUaGcNyfdB
+         xYhYjO9AuPdb1H6gR8FKnlva2e52uBvyemkfoiTGkXsrwNicpR8TR6MiiqUzCIgRORIt
+         6+RAlDlBntU9dOpyOT/Z32IJosIiF5JKVuP6mBUj2cxPqPOZIrROqOCTpG3QfR702vSK
+         P5gzj61pbn3Z2NnCKABkKfMPPeohyShvclzECEfwtmlTfTQFoUA2W6LUMc8c1Lf9V/YU
+         MTcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778860633; x=1779465433;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1uF5OyOIkN83/pI3J73aYzFyGQaV0SrzSZ1PhK/Byvg=;
+        b=qznUXJanw9lDMvEyEEmSD90z/jJZxcXbQSYDE0KB62BSgzEM4wEqUktvzf7gqk5p3y
+         xm9SI9Xs3KsRAiMio1r76zG9/tlAjs1r3UHCDMNy6dnOoGPU2sb6sqU3dDeAn+Lh6GAP
+         wS5NmpwTdnxnKnFCrp1Kqns7YSDJm/YyTZUIjWLUZVllPrBlDkQ+b6llK4E5h/bx2IM2
+         1R+j93BXz4NYTk0Q7yl+TPaBvq/RQpK71t1isTexQTJh5oqNhvKw5nA7jQKjEMcekzsN
+         My/G8ohpSzbo2JtXfj5S276r4tW7wkdZCUjCvZTJYNFsJ+dDtcFK/YZ5VPt/BIp/jEDK
+         cjtw==
+X-Forwarded-Encrypted: i=1; AFNElJ/KMgvsGx85SNhaKaU3G9kHQ1edQQrosxnQXptQSlDR+1z47cSi1Nw7/NXG2baCHagHJkb8uLfV3Kw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxw+S0Zybd8xfe14at84x+Ilo1sukE3WxQFCpKQ+9+S9/puZvrM
+	S/tVZ1B3TzlaHHwOasT0Zk/jrW6YDzP58UewpDRerMi7HMTuK5XD1Gs4
+X-Gm-Gg: Acq92OFo1S1wT9GuXzw8qQ8k6ih4Nahyk89BfNG8krpvNUhEoe6bHdENdcaBHskFsRO
+	M2NlKudMdb6/U+2RnB82dW12ZYMIKLcgcGRpJ47ewrN8++AeiqcMRpdJfSxSGW9CbVE/G8+xy+Z
+	87qbB33UbyfpbZpSWxCtj8AknSEuyFJFBsImz1vYibWfOjgSXnvC/TtWkdiS2whuX9ArQpqeE9I
+	gaSFZlBJigp8KghCJNZ4mVZcoGzjtHX96B+cH9dvavcHcBN+VfbpzXxVdNosgehFztcM1kIfoRQ
+	U38g99s9MXtJLTPnKu54Zg4ln85KA3Yg/LTvTAYvQrp7C2JHTnlInbG8lHgTCfYI+MAzwub6ZQA
+	bUXoSkFwImqm8LcwwxCzPQXxwffyoShHe7yIIOj/2dn2RgHusIhhjXLcS8eTIGae1mkXRVLgDji
+	5bzMNt126zGrsnt+WSnWe6Pmc0tXoZPA==
+X-Received: by 2002:a05:600c:3b28:b0:48f:d835:e0e1 with SMTP id 5b1f17b1804b1-48fe632678amr64882635e9.20.1778860632725;
+        Fri, 15 May 2026 08:57:12 -0700 (PDT)
+Received: from [192.168.37.44] ([217.61.173.50])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48febe60fc0sm20287995e9.21.2026.05.15.08.57.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 May 2026 08:57:12 -0700 (PDT)
+Message-ID: <0a0d0931-f1a3-4ee0-99fc-91d379490838@gmail.com>
+Date: Fri, 15 May 2026 17:57:11 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|MW3PR12MB4473:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7b15390a-ce09-4170-e02f-08deb299c449
-X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|7416014|1800799024|18002099003|22082099003|56012099003|3023799003|11063799003|4143699003;
-X-Microsoft-Antispam-Message-Info:
-	tFN6Gl7kY9PyZXMC3pTYeOyQHD+OXju2xJ4AIGwZGnZCmNX3uLQk7B6M71ux8j4GWDlpupW+47DwXAjOWuyTfKNzGi58Xr9dW0UrLLu3HEeQ9JrNV0P1oSLvA84GA9wJpGk+lRa7x2/RM/LM4Vip0eu70Zl0hXGbua9mtNZ6/ZZYZ2o+NGYQfVvcmURt7p4nJoigiKKZXfdl+IFpJRbq7j88j2cqQvE9KBBigcCag8s1iZT6WhaMGXOuusOmZMNYjpRBTlzHFZaIog4OI8G3woHiINkjRYFOh2qh/X+FrpbmT8dc7kPSS3KExvvBXOjB4LFiKE9s6B7LTnhixdkkCodjvUYHhy2BKk+rlAon72BDdAt/0pz6t4s+wTKAA/rBlkj+KdHoicqNrrlmOPQBLc+vA/GCj1CdtUvwGIpB3+2aBylhk2LiPqaQODyshqiAK2Qq3adwB9qO7v353iIb1j/ZGx1WB2aLiDVTBIj1su2v0cD8jtsApt2bbAirPU6V5gGFxzsnb1nm/IrSAvliRcO0ucdKOAJiyQecfCpBfzdcbR85xskeLiynHlmctg0Z0n8Nf43ayMh9sna4e5PBq3PxQWfLUBeySUZUR5IiMEVl1b9iKLI3535VKQv0T7rAfyrWp5BPpLy/FFZ5EQqFr0U4GgVYiEMfaxkYrsJfQ6CLt+b6XetB3+EdI4hl6c97
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(18002099003)(22082099003)(56012099003)(3023799003)(11063799003)(4143699003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TlRTMk1KdEZWOE5WRVhrdUQ3L0pkQjY5NzZDNU1mVHE3ODJ4Nko0Qm1HeWhl?=
- =?utf-8?B?OW1VdE1hQ1o0S3hKektTQXVpRWo0WTdlUTBmWDN6QXlBWis4emhtSTlscmhi?=
- =?utf-8?B?Z2FvSDFqVENIUVRvRmYyaWN1VW9lM1d1WTNES3pyYU03UXVCTHhXaVJvTVY2?=
- =?utf-8?B?M0V5SmhWM25acGNta2s3RitsMTRuMVhDODBNRmJwdHkzRXE0WVVpTm9yc1gx?=
- =?utf-8?B?Ty9odnhmRmNUR0R3NkRoVFQ2ZFBnVUpyTktHUkFud0ZFZCsvaTg4K05GZWJl?=
- =?utf-8?B?eTB5SUpPNkUwanNyaDNDVHRMdVZWMzBQNUF2VVdueG9GRWw5bXJjNnVmM1Ex?=
- =?utf-8?B?YVJkUHg5ZjhDNXcxVTFBTmVNTWwza1NLYnhYYi80Uy9HdGx0ZnhRMjNkemxG?=
- =?utf-8?B?TTd3dFI3MHhjTFNjTld4eEdLdGlCN1czdUk1TStKem94L29HdjdzYW16d1JD?=
- =?utf-8?B?M1JBWEFRMkJMSEp3bzVMb2dYRzRjQUk5VXRwYkx0b2tVRHNZdi9MSDhyRTdW?=
- =?utf-8?B?Vkw2Q0NMaEJ0bHhTUDRaaFVGSCt4V0hCdk9ibG56WmRQaDI0STBYcnBUeCtx?=
- =?utf-8?B?VW45Y0pudXUvRWtTUzNMOUFhVzR5Sndud3JHQ291eXRHRytwQUxXWnhmUita?=
- =?utf-8?B?WXNJbHBacXlGc053TjFYZWVpV3VLYlFzMElmdTNXb3laZmROMlFUNnFtREZ2?=
- =?utf-8?B?cThCQXhSSW9yZmxnckhiV0Jzc25yTm5tUkRJK1dnN3ZyOHVNVlZOWkpqSHkr?=
- =?utf-8?B?TGVYMU9rdTVhTTBzUmhDeGNLa0poazF4T0VRb3Rzb0U1OTlDNFVQc2tFM1hO?=
- =?utf-8?B?ZmROMnVaTklxZ3dsYnh4alF6Yk1FdkFnb2VCbXBoUjVvamVKR3VxM1FoRWJy?=
- =?utf-8?B?V3FMU3lBVS9VWjhseThyZlQzYzg2ZWRiMFlUUjVoTkd4blVWLzYyUmM4eU14?=
- =?utf-8?B?cVVRRUFzVi84V0JrSE53dG1CQkFzajY4cCtLZW9DUnByUmRVWnBoOW5OYk14?=
- =?utf-8?B?Q1Q1L2dzaXBYWHE3NGppbnlXeHF4cUZiWmM3dVUwcUMvZHZ0NWl2ZnRuZ0pG?=
- =?utf-8?B?TWZtaWN1UXdRcVVzWmhwazJVam9Zd2xObkY4YlBRTkpaWlFoYjZXWnFvTzI0?=
- =?utf-8?B?bWdod0RTSkpSM0RtMTVUL0MxU0wxRFYxVVNMMzlzSHFubndBT0FuQXlrMG4y?=
- =?utf-8?B?R0U1TDlINXVpMEFxZW5wangxb2JtVXhtK0V2NTNuY2tYKzBjYmRKREwwL2h4?=
- =?utf-8?B?dVd4L0V6R2FxdkY3TFNMbUNRekFBL3ZkMEI2S29HT1AzTVFyWDdwazlJeVN3?=
- =?utf-8?B?UXhxTGV2aGNWa3hWcXg4RnRYVkRCVm1LTlk1ZGQzaitzWEZON29GWjY2R0JR?=
- =?utf-8?B?TTg5dUJNcWRMZVQzZ1M3Qm81T0QvQmdLTG1Dc0F1NWVaZ212YXN0L011ZExo?=
- =?utf-8?B?TVV0QU1hSDZlTHRteWJEdzZrYVBnNXE5ek11UXBabWkrOHVIcEtrZG9raVRT?=
- =?utf-8?B?V1FCdlVMb3NsOE11dWEzZDlYKzdPYmxRc0lYVllLalJ0S2xROE1iRjFOcWpU?=
- =?utf-8?B?RFNibzFKcWhyd3BhNEJyaDFKczVBNWJ3QUcxVlQ4d3VnK3cybE5qcHpGY2Vx?=
- =?utf-8?B?dW0vaERVZ0ZMSGpoeXE0cElCTTF1bjdiSnFOeVgzRVBoWU9UOHJXbDkvRnBX?=
- =?utf-8?B?dVNTQUZxd3VwaFhYeFlBRGdxZmR2WEViWTZsUkkvYVU4UFZEbFd1QVcrS3p5?=
- =?utf-8?B?M20yd1E2eXQ5L09BeHNmcWQ3VjQ4WkJwQXBjTTk5dzJlODFGM2tUa0d4MFBz?=
- =?utf-8?B?Ky9wUlVyb0poS1ZuU3QrNUxHYStvQlYzSHRBNk8yUkREYlA5M3UyME5LT0ds?=
- =?utf-8?B?TENvaCtOQUg1NjFPRUp5QjhqcHBMN0hIb1lVRXpOMDlsNTlpaDBCVWREaFQz?=
- =?utf-8?B?VmlpbnhlME42R2ZBSW05cU43VUVJTWdIY1dGR2Q4S21EYy9hbEdhcmFTR0p3?=
- =?utf-8?B?VUd6OGV3NGxiZUxwOGliYjgxSEtyT0NORGFBQXBwZmtiaE42a1FPamhWVXBF?=
- =?utf-8?B?OEV6cXJNZ2h5TENKQk9lS1llVkZlTXYyMTRzVytTYlI4OVMyMUZNREhWOGlY?=
- =?utf-8?B?bVBndC9WejdDd3VEYUR0U0dWUzJtdG9hN2VSVjVGOEZqYVQvT0hiZTMzWkZT?=
- =?utf-8?B?MVd4ZFVMejRyd3FRbVVrYng4ZDVRakJsVzZjUEJTUmI1YjNmOXh4dHNjR1E3?=
- =?utf-8?B?R3l4TlN0Q1lRYTlyNThVZjZrVllteDFMWEVXRksvZ0FOSzNlQlArS3F0aDUy?=
- =?utf-8?Q?DXfUoMEWqZortHwykL?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b15390a-ce09-4170-e02f-08deb299c449
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2026 15:51:02.8462
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sWT7JDHlsF814bR997BOpX9CIM1/eY4F2TUKDkUC6xkVYrZHs+VCj5wn6HLZH+fN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4473
+User-Agent: Mozilla Thunderbird
+From: Aldo Conte <aldocontelk@gmail.com>
+Subject: Re: [PATCH v2 4/5] iio: light: tcs3472: implement wait time and
+ sampling frequency
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+References: <20260512223215.25596-1-aldocontelk@gmail.com>
+ <20260512223215.25596-5-aldocontelk@gmail.com>
+ <agRdzneWb2RIidIp@ashevche-desk.local>
+Content-Language: en-US
+In-Reply-To: <agRdzneWb2RIidIp@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Andy,
-
-Replies are inline.
-
-On 04/05/2026 11:25, Andy Shevchenko wrote:
-
->> +#include <linux/bitfield.h>
->> +#include <linux/bits.h>
->> +#include <linux/i2c.h>
->> +#include <linux/module.h>
->> +#include <linux/regmap.h>
+On 13/05/26 13:17, Andy Shevchenko wrote:
+> On Wed, May 13, 2026 at 12:32:14AM +0200, Aldo Conte wrote:
+>> The TCS3472 has a wait state controlled by the WEN bit in the ENABLE
+>> register and the WAIT register, with an additional WLONG bit in CONFIG
+>> that if set multiplies the wait step by 12. The driver previously
+>> defined TCS3472_WTIME but never used it leaving the TODO comment on
+>> the top of the source file.
+>>
+>> Implement control of the wait time through IIO_CHAN_INFO_SAMP_FREQ:
+>>
+>>    - Reading sampling_frequency returns the chip's current cycle time,
+>>      computed as the sum of ATIME, the fixed RGBC initialization time
+>>      and the wait time (which depends on WEN and WLONG).
+>>
+>>    - Writing sampling_frequency programs WTIME so that the resulting
+>>      cycle period approximates the requested frequency. If the
+>>      requested frequency cannot be reached with any
+>>      non-zero wait time, WEN is disabled and the chip runs
+>>      back-to-back conversions at the maximum rate allowed by ATIME.
+>>      If the requested period exceeds the maximum WTIME range, WLONG
+>>      is enabled to extend the wait step from 2.4 ms to 28.8 ms.
+>>
+>>    - The user's last requested frequency is stored in the driver's
+>>      private data so that subsequent changes to integration_time
+>>      recompute WTIME and preserve the requested sampling rate as
+>>      closely as possible.
+>>
+>> Add TCS3472_ENABLE_WEN, TCS3472_ENABLE_RUN and TCS3472_CONFIG_WLONG
+>> bit definitions. TCS3472_ENABLE_RUN bundles the bits
+>> (AEN | PON | WEN) that are simultaneously set when the chip is in
+>> running state and cleared during powerdown, and is used by
+>> tcs3472_probe(), tcs3472_powerdown() and tcs3472_resume().
+>>
+>> Remove the "TODO: wait time" comment at the top of the file.
 > 
-> Follow IWYU.
+>> Suggested-by: Andy Shevchenko <andy@kernel.org>
+> 
+> Inappropriate tag.
+> You must not put tags on your own, if in doubt, ask first!
+> 
+> ...
+> 
+>> +#define TCS3472_ENABLE_RUN (TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON | \
+>> +			    TCS3472_ENABLE_WEN)
+> 
+> Better style is
+> 
+> #define TCS3472_ENABLE_RUN						\
+> 	(TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON | TCS3472_ENABLE_WEN)
+> 
+> ...
+> 
+>> +	cycle_us = div_u64((u64)PSEC_PER_SEC,
+>> +			   (u64)val * USEC_PER_SEC + val2);
+> 
+> First of all, it's one line. Second, the divisor for this function is 32-bit.
+> And at last the castings are not needed. I think I already told these...
 
-Accepted. Will audit and add missing includes.
+In theory, val and val2 could have a value of INT_MAX. Therefore, the 
+calculation INT_MAX * USEC_PER_SEC + INT_MAX results in a value of 
+2,147,483,861,748,364,700, which can only be stored in 64 bits. This is, 
+of course, an extremely rare case in which userspace writes an 
+impossible frequency that is simply too high.
+Therefore, div64_u64() should be used instead of div_u64().
+Therefore, the following code would be required:
+
+cycle_us = div64_u64(PSEC_PER_SEC, val * USEC_PER_SEC + val2);
+
+
+
+> ...
+> 
+>> +	wtime = 256 - DIV_ROUND_CLOSEST_ULL(wait_us, 2400);
+>> +	if (wtime < 0) {
+>> +		wlong = true;
+>> +		wtime = 256 - DIV_ROUND_CLOSEST_ULL(wait_us, 28800);
+>> +	}
+> 
+> Why 64-bit divisions? Do you expect the wait_us be outside INT_MIN/INT_MAX range?
+> This will need a comment and/or dropping the 64-bit arithmetics.
+
+cycle_us_MIN is reached when (u64)val * USEC_PER_SEC + val2 is MAX and 
+so is INT_MAX * USEC_PER_SEC + INT_MAX. Assuming this, the division 
+would be 10⁶ / (INT_MAX * USEC_PER_SEC + INT_MAX) = 0.000465661, so 0.
+
+Therefore, cycle_us_MIN would equal 0 and cycle_us_MAX would equal 
+PSEC_PER_SEC/1, i.e. 10⁶; consequently, wait_us_MIN would equal −614400:
+
+wait_us_min = 0−2400−612000= −614400
+
+and wait_us_MAX would equal 999999995200:
+
+wait_us_MAX = 1000000000000 −2400−2400 = 999999995200
+
+This means that wait_us needs to be s64 if i am not wrong.
+> 
+>> +	wtime = clamp(wtime, 0, 255);
+> 
+> ...
+> 
+>> +	ret = i2c_smbus_write_byte_data(data->client, TCS3472_WTIME, wtime);
+>> +	if (ret < 0)
+> 
+> What's the meaning of positive returned values? I think this function never
+> does that. If I'm right, drop ' < 0' parts in all similar cases.
+The i2c_smbus_write_byte_data() function returns a value of 0 on success 
+and a value less than 0 in the event of an error. I do not understand 
+this comment. Could you please explain it to me in more detail?
+
+> 
+>> +		return ret;
+> 
+> ...
+> 
+>> +		*val = USEC_PER_SEC / cycle_us;
+>> +		*val2 = div_u64((u64)(USEC_PER_SEC % cycle_us) * USEC_PER_SEC,
+>> +				cycle_us);
+> 
+> Is this even correct? We take modulo of cycle_us to get under the MICRO range,
+> then multiply to MICRO (seconds) and divide by full cycle_us. I'm lost here.
+
 
 > 
 > ...
 > 
->> +enum sysmon_i2c_payload_idx {
->> +     SYSMON_I2C_DATA0_IDX = 0,
+>> +	cycle_us = tcs3472_cycle_time_us(data);
+>> +	data->target_freq_hz = USEC_PER_SEC / cycle_us;
+>> +	data->target_freq_uhz = div_u64((u64)(USEC_PER_SEC % cycle_us) *
+>> +					USEC_PER_SEC, cycle_us);
 > 
-> Is it mapped to HW bits or is it pure Linux enum? If the former, assign *all*
-> items as per datasheet, otherwise drop explicit assignment (it's rare that we
-> need it in the software).
+> Okay, this might help with the above... Can you deduplicate this division to
+> a helper with a comment that explains the calculations behind?
+> 
+Something like this could be ok?
 
-These are byte offsets in the I2C payload buffer, mapped to the
-hardware protocol. Will assign all items explicitly.
+/*
+  * Convert cycle time in microseconds to frequency in Hz and microhertz.
+  *
+  * Given:
+  *   cycle_us = T, i.e. 1 cycle lasts T microseconds
+  *
+  * The frequency is:
+  *   f = 10^6 / T    [Hz]
+  *
+  * We split it as:
+  *   val = floor(10^6 / T)
+  *   val2 = (10^6 mod T) * 10^6 / T   [microhertz]
+  *
+  * I.E.:
+  *   val = 10^6 / T          (integer division)
+  *   val2 = (10^6 % T) * 10^6 / T   (fraction scaled to microhertz)
+  */
+static void
+us_cycle_to_freq_hz(int cycle_us, int *val, int *val2)
+{
+         *val = USEC_PER_SEC / cycle_us;
+         *val2 = div_u64((u64)(USEC_PER_SEC % cycle_us) * USEC_PER_SEC,
+                         cycle_us);
+}
 
-> 
->> +     SYSMON_I2C_DATA1_IDX,
->> +     SYSMON_I2C_DATA2_IDX,
->> +     SYSMON_I2C_DATA3_IDX,
->> +     SYSMON_I2C_OFS_LOW_IDX,
->> +     SYSMON_I2C_OFS_HIGH_IDX,
->> +     SYSMON_I2C_INSTR_IDX,
->> +};
-> 
-> ...
-> 
->> +struct sysmon_i2c {
->> +     struct i2c_client *client;
->> +};
-> 
-> Can't be the struct i2c_client used directly? (Haven't checked if this is going
-> to be extended or have special uses.
 
-Yes, the struct only wraps the client pointer and is not extended
-in later patches. Will remove the wrapper and pass struct i2c_client
-directly as the regmap context.
+thank you,
 
-> 
-> ...
-> 
->> +static int sysmon_i2c_reg_read(void *context, unsigned int reg,
->> +                            unsigned int *val)
->> +{
->> +     u8 write_buf[SYSMON_I2C_WRITE_SIZE] = { 0 };
->> +     u8 read_buf[SYSMON_I2C_READ_SIZE];
->> +     struct sysmon_i2c *priv = context;
->> +     int ret;
->> +
->> +     write_buf[SYSMON_I2C_OFS_LOW_IDX] =
->> +             FIELD_GET(SYSMON_I2C_OFS_LOW_MASK, reg);
->> +     write_buf[SYSMON_I2C_OFS_HIGH_IDX] =
->> +             FIELD_GET(SYSMON_I2C_OFS_HIGH_MASK, reg);
->> +     write_buf[SYSMON_I2C_INSTR_IDX] = SYSMON_I2C_INSTR_READ;
->> +
->> +     ret = i2c_master_send(priv->client, write_buf, SYSMON_I2C_WRITE_SIZE);
-> 
-> sizeof()
-> 
->> +     if (ret < 0)
->> +             return ret;
->> +     if (ret != SYSMON_I2C_WRITE_SIZE)
-> 
-> sizeof()
-> 
->> +             return -EIO;
->> +
->> +     ret = i2c_master_recv(priv->client, read_buf, SYSMON_I2C_READ_SIZE);
-> 
-> sizeof()
-> 
->> +     if (ret < 0)
->> +             return ret;
->> +     if (ret != SYSMON_I2C_READ_SIZE)
-> 
-> sizeof()
-> 
-> With them the code will have one source of length an be robust to the changes
-> of the buffer sizes.
-
-Accepted. Will use sizeof(write_buf) and sizeof(read_buf) throughout
-instead of the defines.
-
-> 
->> +             return -EIO;
->> +
->> +     *val = FIELD_PREP(SYSMON_I2C_DATA0_MASK,
->> +                       read_buf[SYSMON_I2C_DATA0_IDX]) |
->> +            FIELD_PREP(SYSMON_I2C_DATA1_MASK,
->> +                       read_buf[SYSMON_I2C_DATA1_IDX]) |
->> +            FIELD_PREP(SYSMON_I2C_DATA2_MASK,
->> +                       read_buf[SYSMON_I2C_DATA2_IDX]) |
->> +            FIELD_PREP(SYSMON_I2C_DATA3_MASK,
->> +                       read_buf[SYSMON_I2C_DATA3_IDX]);
->> +
->> +     return 0;
->> +}
-> 
-> ...
-> 
->> +static int sysmon_i2c_reg_write(void *context, unsigned int reg,
->> +                             unsigned int val)
->> +{
->> +     u8 write_buf[SYSMON_I2C_WRITE_SIZE] = { 0 };
-> 
-> '0' is redundant.
-
-Accepted. Will use = { } instead.
-
-> 
->> +     struct sysmon_i2c *priv = context;
->> +     int ret;
->> +
->> +     write_buf[SYSMON_I2C_DATA0_IDX] =
->> +             FIELD_GET(SYSMON_I2C_DATA0_MASK, val);
->> +     write_buf[SYSMON_I2C_DATA1_IDX] =
->> +             FIELD_GET(SYSMON_I2C_DATA1_MASK, val);
->> +     write_buf[SYSMON_I2C_DATA2_IDX] =
->> +             FIELD_GET(SYSMON_I2C_DATA2_MASK, val);
->> +     write_buf[SYSMON_I2C_DATA3_IDX] =
->> +             FIELD_GET(SYSMON_I2C_DATA3_MASK, val);
->> +     write_buf[SYSMON_I2C_OFS_LOW_IDX] =
->> +             FIELD_GET(SYSMON_I2C_OFS_LOW_MASK, reg);
->> +     write_buf[SYSMON_I2C_OFS_HIGH_IDX] =
->> +             FIELD_GET(SYSMON_I2C_OFS_HIGH_MASK, reg);
->> +     write_buf[SYSMON_I2C_INSTR_IDX] = SYSMON_I2C_INSTR_WRITE;
-> 
->> +     ret = i2c_master_send(priv->client, write_buf, SYSMON_I2C_WRITE_SIZE);
->> +     if (ret < 0)
->> +             return ret;
->> +     if (ret != SYSMON_I2C_WRITE_SIZE)
->> +             return -EIO;
-> 
-> sizeof() in both cases.
-> 
->> +     return 0;
->> +}
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-
-All items will be addressed in v3.
-
-Salih
-
+Aldo
