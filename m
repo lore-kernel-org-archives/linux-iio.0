@@ -1,129 +1,174 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC41638758B
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:11:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778839901; cv=pass; b=JtKv0hSCxJC3AdSITKuyxaXQyC4xgGnY/aapCjh82432Wrdeitgrrbm1WrQt5xj3u2No58GImTyWVeaU9MIQnyilny7QkRluf8HtnwIWoBzpVoWWIECMhQ7ucNoQQ4WPdC+BI/xHZUhYTOAABkDBIugQwDmn/Q8tQA7MjADE3gM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778839901; c=relaxed/simple;
-	bh=utVbCxSx4wQLyjNHnWlnBe8NHEco57qRKSUCWgZQVP4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bPwIX5ki9Dx8RPJHgbVEiE38n1C3K2DbdMIC2Nlgf1UmVyv/ndvGP6xlROjelMPZ97c+PpmpJZrZvWeiY908pBbnzh1nbKrVC/AMON9beSYbA0jRRr42FxnO4o6Kiq00OYgMy72v2Xct5KLG0S5kpWI/667EcowQzLK+pPNi0cs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MHhdvcyn; arc=pass smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MHhdvcyn"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-441209fb77eso436066f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 03:11:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778839898; cv=none;
-        d=google.com; s=arc-20240605;
-        b=j51JriA4m+b6CDuX2VAnRE0hUQkqJ70DI7fHn4H+x0vrEaSH3eqi9tl7X7RHzJTxey
-         LYoADJwZfK/nV6RJOraiZFJbooZwJPfLkrFJAZOBQNicV2QdyY3lNijbNOHRroykZkZb
-         CmySPzvK6/+7lAinMCvHGdFrk9QJadu9CHq3GYQbm6i50XnpXas9FmIJ6eNsBbIR8A5U
-         ycu1zbJ8Dqt0GS1i6Q2Fl8umQKyFjQZDmYgEn52ui6zkfxkSbnQImttT/pKBUB3rXrEs
-         MHl4BbfrKyR4a2lh/zR2M6QVdBEdjhR5bO8kiTPXYGgz3mlsc00g55qZ4G73ru+QAPn+
-         o78Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=ipsP+ZgFcxWdZfStT+4SJ9Vx6hb0HvDTEGMqivduWAo=;
-        fh=T8XNH1flf1iVXP/fcupM1Y6B2CaTPy9zzFJOkpR9mp4=;
-        b=N9Zj2cNyj5DbPmxTnkBh0tOx0cKx9dmmCcmzYWN+H5WrAGE4A63ajGFDk6cy45uSZT
-         bQ43z7JuS8Q3yGWkSAoNLIcBkkYdCWddPGkCZr80BeBpXFB54LFCUAszpaZc4Qe4pi5/
-         kC+FalncbMwIfNDyJasCaxcewVPvkCnm8EuODlkMEOqgm5uJFJk39oUP/K9Mh4RIgBDe
-         TzJ4+cNapD/l1D0ULiRGrpKAkJtFE6rUYC1v4h95Zer4XDzHIgrEqc9nL7KHT53eoAxP
-         t/+6jbBZvCyF7gPrWcC2IKr1V9CepaIuoXBONC9fx+MSbD8BTMrMHurhcD1pDHCooIxu
-         /koA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778839898; x=1779444698; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ipsP+ZgFcxWdZfStT+4SJ9Vx6hb0HvDTEGMqivduWAo=;
-        b=MHhdvcynnl0+otgFbZfpfIFMCqaxRouWqFmcFeUbjOrHX50cCUcy9GKgUIeB2629JM
-         hFKihB+SPYVXXxWzZ9bzFmUYxvvjDJvejQA6wByBGLXJYB+Gw2UZPTv/CNhUCoXEhYr+
-         SJg34wxqlug24OudrcxOcZXuHy1CtmvYkfkrqKQWykBVE/c/kvuKMantwCZ9oufiGv0+
-         nfNxCHvZiVpio3jXokh3M2JlGOZDXWqKHObTSA48oy5f/2jV+vr8nN1fQmbN92gBMHVu
-         NDq+26uBBwY7B6fIF5QDz6Y4lu3XMcfuT1gBk3R2p3dRAzsPB9buFMoQ3Z3UdSu89CdV
-         sCcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778839898; x=1779444698;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ipsP+ZgFcxWdZfStT+4SJ9Vx6hb0HvDTEGMqivduWAo=;
-        b=Y8yvkH+CflZvMmbxTPZh8F7Jl1Aq4WXjy2sZwSgtvmN3UUghK+j8KtIW7oZDdDMUeD
-         bG3SthmwEaFUrvilvShN1DVb5gJ3Vv4Fq5evAOqZF4tyVsqoxi/OIJ4bhggx81sgLqv/
-         jwVCljAxSkxybPPsuR2UvkuNxb9uTHvWNhgDCoEJGbiDfum9z+1ms2DMhZyByN51agm8
-         PklbSh2z+Blvl5ENhKDmi0eQvggwnlLxqcUm93ufCiun9/k9GOvtnPIBVzCXdM39t/u0
-         0tPC6WSX11PIP12u2sma1X3RvFRtvpjwBLL/4dllG7JDbv2M2/DDCcv86WSyRKLV6Ajq
-         TxBg==
-X-Forwarded-Encrypted: i=1; AFNElJ/XsSpB9xgdrhFcHH5U3GjdWOGrJvOCvGNtyRY2GIqAbm26s6BYLsX8Gg57Dii68UxTcgKjHwvcRi0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyWYqC7LToZn6GIUuBSkE3k1PeVtfVR0rOKUee8Qb3dqJPj5QxV
-	HFZ5EoWwl56TS/qZ8g1iWgPT07uCKts88BF9P9ertmLGwgjOVJ1RSiFYRlx05Ce2dV0OoZAE26K
-	nWKQtic3xRpsMDlYAXyrdD8kHTBrCmtg=
-X-Gm-Gg: Acq92OFe0x5jCY7qMv8Ma+3Q3XHMLbdqW0e5o3AnDD0KEcxgANRoiJhwQf2konXjieU
-	eM4IndTv7+3xNoh5uOiMTHVAEgpYRJpVLh/B4jFphWjSrCD1bdhUs9mYSIYcOkSq53YrPNqdDUH
-	9p0++0fungfUME6kMudBq3nKEDTioUuUBU3dg1tpJR6mE1teEvWT6pBcAPPsLyit+4xdbt1Calr
-	DXf/vr90oX1VeDt8DQ/2/Q0scfMgaPN/Cth7JOH+xeedwKGEpwP5G7n6ofZIQIGCooOY3vJHW/i
-	oA9gS1SOsFN0lAS0R5iRSxV7Sn0iJOlpHRaEQFQFVNWBVh+hehGnRsA2SOYc19rq9HltIrnhgt8
-	v9R7j3zHYPikOB+2Y7PefE3PXhcrOsViPcj+iamAnJi5y3Tuye0FN8JSsqNUcM8IpHg2P+LLXBw
-	t9h29QDk611oDZuJlF
-X-Received: by 2002:a05:6000:2a02:b0:453:dc4d:9265 with SMTP id
- ffacd0b85a97d-45d90d76962mr8672926f8f.10.1778839897695; Fri, 15 May 2026
- 03:11:37 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 509933A7F73
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:19:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778840396; cv=none; b=DT7lP4NPoD9epczOHtqlMMsCzzNYQ5yJi2ZhavfAJZ4b/S4CYjyYMpOf6Y7+5vrhulopE/Sky6ak3qGKTvWYRnfqetpA38y2mtfx/sHJXmmBqsE5cbg0Zy5LMMZ9GqI8/SFPtZZS/Irso7arG9VswHoVHM06X0QUia84b5Bx4Q0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778840396; c=relaxed/simple;
+	bh=ov75P4p4oWTlDH2aWqiU6AXZOoA1BURDRcg2XELC2R4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JPG8cZVI1cyeNngzul2KlkUPhlj4oS/L1mvy1SxPTooGRBMB8NltTe26wpofoARY28gcLFZZx/Yu6pR/1Gff1vgHKOF4H/NQrsPF6bsOFOWzlOPIJb/tKjahQJxNlTH2IrgwZktKTTZvu2HIRmJV7s7A9RwA8zmpt1XSnAsJxpY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1wNpe0-0004YZ-MH; Fri, 15 May 2026 12:19:48 +0200
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1wNpe0-000uQu-0G;
+	Fri, 15 May 2026 12:19:48 +0200
+Received: from pengutronix.de (p4ffb2dc6.dip0.t-ipconnect.de [79.251.45.198])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id 53FF65373B5;
+	Fri, 15 May 2026 09:35:13 +0000 (UTC)
+Date: Fri, 15 May 2026 11:35:12 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, kernel@pengutronix.de, lgo@pengutronix.de
+Subject: Re: [PATCH] iio: iio_triggered_buffer_setup_ext(): request
+ IRQF_ONESHOT only if threaded handler is present
+Message-ID: <20260515-fierce-barracuda-of-enrichment-9e28d8-mkl@pengutronix.de>
+X-AI: stop_reason: "refusal"
+References: <20260514-iio-irq-fixes-v1-1-3bc28b094ad6@pengutronix.de>
+ <20260514164132.6545e492@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260514-magnetometer-kernel-mem-leak-v1-1-35b48d699faf@gmail.com>
- <CALoEA-x31YdsdCtubOw7o1GBakCBcc4ha_KvuP=W5URBHyZDtA@mail.gmail.com> <agbskYwLK31PCnhG@ashevche-desk.local>
-In-Reply-To: <agbskYwLK31PCnhG@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Fri, 15 May 2026 12:11:26 +0200
-X-Gm-Features: AVHnY4K85mkiuponRLsT_djJoxDAXdjc0diERy3Mb0F8d-LQP8_KqR7kVtdWyyk
-Message-ID: <CALoEA-wRTTZHDFEBBKZ98Vm+5TMnd8TPSKbn7F8W2LsEBuADrw@mail.gmail.com>
-Subject: Re: [PATCH] iio: magnetometer: ak8975: fix potential kernel stack
- memory leak
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
-	stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="7aqqtvsnvkxhw6os"
+Content-Disposition: inline
+In-Reply-To: <20260514164132.6545e492@jic23-huawei>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Fri, 15 May 2026 at 11:51, Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Fri, May 15, 2026 at 11:00:17AM +0200, Joshua Crofts wrote:
-> > On Thu, 14 May 2026 at 13:38, Joshua Crofts via B4 Relay
-> > <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
->
-> ...
->
-> > > -       if (ret < 0)
-> > > +       if (ret != sizeof(fval)) {
+
+--7aqqtvsnvkxhw6os
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] iio: iio_triggered_buffer_setup_ext(): request
+ IRQF_ONESHOT only if threaded handler is present
+MIME-Version: 1.0
+
+On 14.05.2026 16:41:32, Jonathan Cameron wrote:
+> Thanks for the report + patch.
 > >
-> > Hmm, Sashiko pointed out that I am comparing a signed integer with
-> > an unsigned integer, which would result in type promotion and subsequent
-> > mangling of any potential negative values... will fix in v2.
-> >
-> > https://sashiko.dev/#/patchset/20260514-magnetometer-kernel-mem-leak-v1-1-35b48d699faf%40gmail.com
+> > I'm not sure if this is the correct fix, or if the
+> > stm32-adc.c/stm32-dfsdm-adc.c driver needs fixing.
 >
-> See my response. That how it should be in your v2.
+> Sounds like another case of what we had to fix for hid-sensors (and a few=
+ others
+> IIRC).
+>
+> They should never have been using triggers in the first place for this pa=
+th -
+> but now we have ABI we can't touch.  Note there are even comments saying =
+that
+> the infrastructure registered is not used!
+>
+> So we have to have do a small dance to ensure the sysfs files are still c=
+reated
+> but without the need for the pollfunc setup etc.
+>
+> https://lore.kernel.org/all/20260220224514.471348-1-srinivas.pandruvada@l=
+inux.intel.com/
+>
+> It is in theory possible to have a case that needs the fix you have below
+> but that would not be using iio_pollfunc_store_time().
+> That being used without a thread is pretty much pointless as no one reads
+> the timestamp.
+>
+> I took a look just at stm32_adc and things are more complex because in so=
+me
+> cases we should be registering a triggered buffer (with both top and bott=
+om
+> half set) and in some cases we should not - but should be doing what we
+> did in the hid sensors.
+>
+> Given I believe this is a harmless warning I'm not in a huge rush to fix =
+it.
 
-Thanks. Checking the driver again I found 2 additional places where an
-I2C read is going
-into uninitialized memory that Sashiko missed.
+It's a warning including a stack trace:
 
--- 
-Kind regards
+| ------------[ cut here ]------------
+| WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x104/0x81c, CPU#1: adc-=
+stm32/370
+| Modules linked in:
+| CPU: 1 UID: 0 PID: 370 Comm: adc-stm32 Not tainted 7.1.0-rc3+ #2 PREEMPT =
+ dba7a20aa885d5558721d75378dc67d9c58ca68c
+| Hardware name: STM32 (Device Tree Support)
+| Call trace:
+|  unwind_backtrace from show_stack+0x18/0x1c
+|  show_stack from dump_stack_lvl+0x50/0x64
+|  dump_stack_lvl from __warn+0x98/0x178
+|  __warn from warn_slowpath_fmt+0x1a4/0x1ac
+|  warn_slowpath_fmt from __setup_irq+0x104/0x81c
+|  __setup_irq from request_threaded_irq+0xb8/0x14c
+|  request_threaded_irq from iio_trigger_attach_poll_func+0xa8/0x1a4
+|  iio_trigger_attach_poll_func from __iio_update_buffers+0xab8/0xb6c
+|  __iio_update_buffers from enable_store+0x84/0xd4
+|  enable_store from kernfs_fop_write_iter+0x154/0x220
+|  kernfs_fop_write_iter from vfs_write+0x27c/0x4fc
+|  vfs_write from ksys_write+0x68/0xf0
+|  ksys_write from ret_fast_syscall+0x0/0x54
+| Exception stack(0xe12f9fa8 to 0xe12f9ff0)
+| 9fa0:                   00000000 00000000 00000009 01ad2358 00000002 0000=
+0000
+| 9fc0: 00000000 00000000 0f387d24 00000004 01accc68 01ad13b8 01accc68 b5ff=
+e44c
+| 9fe0: b5ffdf08 b5ffdef4 b6d34659 b6d3d038
+| ---[ end trace 0000000000000000 ]---
 
-CJD
+which looks quite scary :)
+
+> We need someone who has the time + hardware to test solutions as they
+> can be a bit fiddly.
+
+We have the hardware, we're happy to test patches.
+
+> Whilst the code you have here papers over the problem it's changing from
+> having an entirely correct warning to hiding that the code is wrong so
+> I'd rather not merge that.  I've rejected it as a proposed solution a cou=
+ple
+> of times so far - and thought we were getting to the end of drivers that =
+abused
+> this stuff :(  Seems not quite yet.
+
+regards,
+Marc
+
+--
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--7aqqtvsnvkxhw6os
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSl+MghEFFAdY3pYJLMOmT6rpmt0gUCagbozwAKCRDMOmT6rpmt
+0gPhAQCcEES6yqYEf65pULzR7/4NHvkxWLU0uMhqNLQ9gH1s2QEA8VptmsoEFaox
+AYSbWejfEaTMTeHtxrVC/7Upglbq8w4=
+=8bpo
+-----END PGP SIGNATURE-----
+
+--7aqqtvsnvkxhw6os--
