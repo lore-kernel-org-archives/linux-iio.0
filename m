@@ -1,63 +1,63 @@
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D50CB403123
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 17:41:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67D8847CC99
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 17:41:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778866862; cv=none; b=VswpGRGbgURMZr0qKfyesa/XTyO6dXdYULuOS7SGNrl97n0mFo9/yp9m0j99bhQf8xJsc+mN+erJsfK1bQRruH7QH0t3PX6+k/rAlbqw1bsdwTAIxsTGXCGhMQ29Sv6pIyjV1eiEHEPj1wl8niF1UZThau/uTf/pnZgWhXXEkuc=
+	t=1778866866; cv=none; b=Gmw1O/OQFQRP/coo/eDIhfVAQyzkCjTHeF64dsHdnafo70A4gKDwC85nfZuT7qW4zAem55NY+hRL+mqmxKTA7nDcouVEjBv/wD5x07P3TDRm9zrDpfU237Uvuz0Jr6K9DO9Qg6SfzVm8JT+QXY6XqvSUnsr+XpXZcWFlDUByr5c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778866862; c=relaxed/simple;
-	bh=+gNU/PzW/qiy8WZGm3AmwTeKihAe2oIQqarPGjmyA4c=;
+	s=arc-20240116; t=1778866866; c=relaxed/simple;
+	bh=uSuA/aq+O3Tb5ToGC82xOWMuSAsrdYEFRBOSaXRb3SE=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=S8HPVu5bSAOb8TEGZrFDPrpQu/BP3TI9+5My4tU0maP5pzSg6can7TAKt9wmRp4H8DnyfMeKhgn6TKtXFWTw82AzBFyPQVtyxU9hggiU6b+TBx8kctCpDZ4553932xgzqWukGa66SKPsRQqjKtUnvDbaxS5Holk6rkHGoz9/WPk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=anE8hDbH; arc=none smtp.client-ip=209.85.210.176
+	 MIME-Version; b=djiY/lUo9b3l2kstvPTxCedKea4PdZoHI63XEhCmNijstnvIQsH96V2/09KmFUFlBn+92h8uBn8zFOZvIjo46LANKs5gKpoT1DiFv1xcltZqj+6HeBWro43NILj/fqblRmdAaFgyM3PzEx4JOyxVTJaDU37n/Vg8M0fp+a/zw4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JI4ORN7Z; arc=none smtp.client-ip=209.85.210.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="anE8hDbH"
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-835399c11e0so70759b3a.0
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:41:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JI4ORN7Z"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-82748257f5fso873002b3a.1
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:41:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778866860; x=1779471660; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778866864; x=1779471664; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YSF5lHJsM33tChHrGrFP0wNPuH6dLxO3ISGQ3D5XuKA=;
-        b=anE8hDbH3PnXcO72MAZItKosm+NXR8qNvhv9a7dysGdN33f+g5IDkDc/RRglf5iBR7
-         8Ht7uDIBpmKKubQuI+7s8twzXAWKuCWtNIxLUDGC+mOJydx4xjyXX6des67vvOBEr7YI
-         1dhqupZdS6Q5GevdBEbSWPbQCNozZGcI18yo7hPRn96IzgcZ15Ue/IrvEdoaSkK4P1oZ
-         0OGCJru8BKDx2VePaGJTMR7K1WSnOn0C99eEET9zBiBkuKLXotN36Npdq5L7msyTJw0k
-         MPXol+vOjRfGdq4ZmGxnHY81wfTNsmtTJY7EeROWcnN6h6FWkLFKGWo0U/E+batSdry+
-         Pmjg==
+        bh=W1EmbB9yn/ziU4+rXTkis0g6M2ccv54s7vfcqmIwSMw=;
+        b=JI4ORN7ZTdfwDCQZxQd7bTFB8st32rtMcjRODlJOSaNl4RpsU2zqp6Lb2Ret0yIGs7
+         WNS9LeEVPRHZH0q3GjhBWfknE2p5yrIxz7lmOwGMGuBg8uPriHUPGp32cdF04dhCMMBM
+         La9kknQy434r30JB+lVXokHqLSu4nOiIlTIWSbBlYKuh7vW8UwoQz24oeBcGPt4AGyHl
+         YxewfA804sYcUsxq7strIWNG33w6yawz04jdnEpJ3PyDKuq+dcSJNch5RB2ggq1Syn51
+         U9dEjPA/G2UDhCOvrzo2EMig9/1vI3zWoJNj5HrPTN66JjJDnIVBfZFbNhad44j98fFL
+         eO/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778866860; x=1779471660;
+        d=1e100.net; s=20251104; t=1778866864; x=1779471664;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=YSF5lHJsM33tChHrGrFP0wNPuH6dLxO3ISGQ3D5XuKA=;
-        b=opwLFBFCjj8fqfM6CrabU2rDmYzKq3gAKgi/84CMxGhoyaQMf6ygmamsApUgxRbjzH
-         CvjG1/KTwGokfa+17cjpCxEMezS9DelzefoQl4RqZWFblZ4HzLG/GVBHlabl5ZKZ4QjA
-         dEl8dC7NoQceafKuMtTkLSqBPhSNzSKbj2HpvaXlDVxXPzgVAW4Je2KEJj5aXEEvboaX
-         jQfzgxfbQvxhZDiEYQUlmLsVdeOJW4yivCrzDwMWFRfmdJHLV92BrUUcFeLaO5uVtksg
-         Ki8Tag703pt6NI/9MjcyBjCXbz0sFNHJ4eirbSjbho8HwAPfwYOQc+hhyMhdYNyKsD7a
-         RwZA==
-X-Forwarded-Encrypted: i=1; AFNElJ84nU1xMbYLcC/YhPuHfrSqQoPdhMCpc92knU+cIMWup45ueg77tcG9j183bqfrXwjXskpF/ytcfds=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzk6c2/5qTTbZkG3AtmBbvJ7FgPz/nNmgUuW2v4gR6E/kotlUw1
-	EQFRZRXB7nwfHmtP0H7BzX9z3nLsLgRAUE+ZIpPRu3rosLhf7Xuump/+
-X-Gm-Gg: Acq92OFcWUo2K1u4rzZm0G1hZtKYHZZXxkKG0lqgirVoIDXOv6m/9j/XansHP676f2O
-	7n20PGXvktVs1blADdgmfMzGEH0B+CHQ+vLgMTNcIDfmXpEZScynjVROjvVfGGiW+55YxY6HSIn
-	QRaX5MkdYyHClWU+3dkeyOmmFJzuwMRABsJ+URoAJKUPX9pmJhInK3D9W//vEb4NaG0DWHjNIys
-	WLRhGcVRdD/3stt5VWPAl5jqYn5HdVIaU+pJ17FMNiGy0KKzod6UeiWT2m7jkcbdCEOTkgtAmLA
-	HuS+5c1vEJV0xfiXFAT3b+Ob3Y6EUxPnF/1JKrKkhBzq37625K0K278FxySNEGEJZl4v1Nu9jcV
-	KgC0GGGexcXYOSog5bqKdgaew6qEg+D+yzY4FJUwGOWddhdn0CeJOnH3Vkhca5rlvswlelpUE1E
-	pMuYPoxyRAH7SFKGan9jyBOsQ1Jjsag6VaaNPx0PCaMnoR//1E
-X-Received: by 2002:a05:6a00:ac2:b0:83d:b11f:795f with SMTP id d2e1a72fcca58-83f33d235e0mr5454415b3a.22.1778866859967;
-        Fri, 15 May 2026 10:40:59 -0700 (PDT)
+        bh=W1EmbB9yn/ziU4+rXTkis0g6M2ccv54s7vfcqmIwSMw=;
+        b=tW0ZtgKNeLxrTYn/z3zalHa4q63CPG83wxdfbcgoaqPHxDeFFd0PWwXMeaudUfLPix
+         J8YdDcvXZpgDpgL3Hk8gAvKnY0eq/trLXAy2lQzIMAVEtAL6fu7Wu5vQqyPwLQE6ZBj4
+         pomBj3ZHbxWolDGDkAWL9dh6b2cu3Vw9oc+q2szkc0aegAb1SYASQzvfA7L0ZuF/rFMS
+         yZ9sC9HY5UWlzY7fLwUTNKlKzoSn8idV2DfayNN8Ii5FAapBCeF6C6Qa1SOiWJEBVl0P
+         lQqPafexr3BvHkKLswjfiKe9czSsVz20QhZkWkpvP6yK/sJaIpjlfAk5JyeLJ+BpclgS
+         xDkw==
+X-Forwarded-Encrypted: i=1; AFNElJ+zDmiLDXf/8uRSZAtP9zK1loFv4aruieHk3Bo0VcBtMgxKglUgFwNdsq4/j3ZLdYcF19A1L5rGpIo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz8grApPtl42GWa6Xqf+GE5FN7zcAY2pqW3NtCM2I4LqRNQRiCv
+	ZbeloPwQ9xyG1rUn/gyPpOdtI5Aer/TbwS+C1pZecx0X3QfZJWeHmaZt+EJPQA==
+X-Gm-Gg: Acq92OEuzgLgLIeVBhbsmhSNPR30x3fSZ7BlDPGyaDgL/MBdYuyztLQhZejY7AjlXG+
+	n9SvnBJSCJ6Z5afAV9z7y4pBgZzj7GYRykbcdKltm6PURBZ7PaSSgb/x4uWQqMAzBTa48TBfNOQ
+	KT98UENClYzH0m2ArMSvs1VoDLNrVn3Cx0YHRqWD9AGJ3wNZYQN9hIp3HX9wCns1/pUHVVtIOVI
+	Gyp/sSi/78PLMuDNuK7zaitXxvY8J6bl00Bll7z/icvwAm1lXur4hmyIuY9QQnpR8NStOasPYbM
+	e7Bo268sDK7yyp4HtABgO+/0N50LdruEJu5iBxAEV29Y0y57a/zlxWRQfc1/gaQuC9XjIW5R6dU
+	xP32LALbfclabiWgbFgMEMdq8sjEadzJvdWb+QEr03TiJQp1IKrXqAW5Y7XgkUci5GQKUnCRbb+
+	qk/EGgox9q9Vo/EEhee9PsfOxE/k+ye51ZdZt7Z9nU6KMsFgog
+X-Received: by 2002:a05:6a00:179b:b0:7e8:3fcb:9b03 with SMTP id d2e1a72fcca58-83f18eb0cbdmr8651952b3a.25.1778866864548;
+        Fri, 15 May 2026 10:41:04 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f2875f0fbsm5579034b3a.57.2026.05.15.10.40.55
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f2875f0fbsm5579034b3a.57.2026.05.15.10.41.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 10:40:59 -0700 (PDT)
+        Fri, 15 May 2026 10:41:04 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org
@@ -73,9 +73,9 @@ Cc: dlechner@baylibre.com,
 	kyungmin.park@samsung.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v8 08/12] iio: ssp_sensors: convert probe and teardown to devm-managed resources
-Date: Fri, 15 May 2026 23:10:13 +0530
-Message-Id: <20260515174017.3962168-9-sanjayembedded@gmail.com>
+Subject: [PATCH v8 09/12] iio: ssp_sensors: use guard() to release mutexes
+Date: Fri, 15 May 2026 23:10:14 +0530
+Message-Id: <20260515174017.3962168-10-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260515174017.3962168-1-sanjayembedded@gmail.com>
 References: <20260515174017.3962168-1-sanjayembedded@gmail.com>
@@ -89,204 +89,165 @@ Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Convert SSP driver resource management to use devm-managed helpers
-and devm actions, tying the lifetime of all resources to the device.
-
-Mutex initialization, IRQ registration, work items, timers, and MFD
-resource are now managed using devm APIs. Cleanup logic previously
-handled explicitly in probe error paths and the remove callback is
-replaced with devm_add_action_or_reset(), ensuring correct teardown
-ordering and consistent behaviour on probe failure and device unbind.
-
-This simplifies the probe path by removing goto-based error handling,
-eliminates the remove callback entirely.
-
-No functional change intended.
+Replace explicit mutex_lock() and mutex_unlock() with the guard() macro
+for cleaner and safer mutex handling.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- drivers/iio/common/ssp_sensors/ssp_dev.c | 114 +++++++++++++----------
- 1 file changed, 64 insertions(+), 50 deletions(-)
+ drivers/iio/common/ssp_sensors/ssp_spi.c | 47 ++++++++++--------------
+ 1 file changed, 20 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-index 88bb8ab0cd9b..441416c612a4 100644
---- a/drivers/iio/common/ssp_sensors/ssp_dev.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-@@ -199,6 +199,26 @@ static void ssp_disable_wdt_timer(struct ssp_data *data)
- 	cancel_work_sync(&data->work_wdt);
+diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
+index ebcda6de56c4..29bc3d48c42f 100644
+--- a/drivers/iio/common/ssp_sensors/ssp_spi.c
++++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include "ssp.h"
++#include <linux/cleanup.h>
+ 
+ #define SSP_DEV (&data->spi->dev)
+ #define SSP_GET_MESSAGE_TYPE(data) ((data) & (3 << SSP_RW))
+@@ -180,9 +181,8 @@ static inline void ssp_pending_add(struct ssp_data *data, struct ssp_msg *msg,
+ 	if (no_irq)
+ 		return;
+ 
+-	mutex_lock(&data->pending_lock);
++	guard(mutex)(&data->pending_lock);
+ 	list_add_tail(&msg->list, &data->pending_list);
+-	mutex_unlock(&data->pending_lock);
  }
  
-+static void ssp_disable_work_timer(void *ptr)
-+{
-+	struct ssp_data *data = ptr;
-+
-+	cancel_delayed_work_sync(&data->work_refresh);
-+	ssp_disable_wdt_timer(data);
-+}
-+
-+static void ssp_shutdown_action(void *ptr)
-+{
-+	struct ssp_data *data = ptr;
-+
-+	if (ssp_command(data, SSP_MSG2SSP_AP_STATUS_SHUTDOWN, 0) < 0)
-+		dev_err(&data->spi->dev,
-+			"SSP_MSG2SSP_AP_STATUS_SHUTDOWN failed\n");
-+
-+	ssp_disable_mcu(data);
-+	ssp_clean_pending_list(data);
-+}
-+
- /**
-  * ssp_get_sensor_delay() - gets sensor data acquisition period
-  * @data:	sensorhub structure
-@@ -498,9 +518,8 @@ static int ssp_probe(struct spi_device *spi)
- 		return -ENODEV;
+ static inline void ssp_pending_del(struct ssp_data *data, struct ssp_msg *msg,
+@@ -191,9 +191,8 @@ static inline void ssp_pending_del(struct ssp_data *data, struct ssp_msg *msg,
+ 	if (no_irq)
+ 		return;
+ 
+-	mutex_lock(&data->pending_lock);
++	guard(mutex)(&data->pending_lock);
+ 	list_del(&msg->list);
+-	mutex_unlock(&data->pending_lock);
+ }
+ 
+ static int __ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
+@@ -204,17 +203,20 @@ static int __ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
+ 	/* msg->done must be initialized by caller */
+ 	WARN_ON(!msg->done);
+ 
+-	mutex_lock(&data->comm_lock);
++	guard(mutex)(&data->comm_lock);
+ 
+ 	status = ssp_check_lines(data, false);
+-	if (status < 0)
+-		goto _error_locked;
++	if (status < 0) {
++		data->timeout_cnt++;
++		return status;
++	}
+ 
+ 	status = spi_write(data->spi, msg->buffer, SSP_HEADER_SIZE);
+ 	if (status < 0) {
+ 		gpiod_set_value_cansleep(data->ap_mcu_gpiod, 1);
+ 		dev_err(SSP_DEV, "%s spi_write fail\n", __func__);
+-		goto _error_locked;
++		data->timeout_cnt++;
++		return status;
  	}
  
--	ret = mfd_add_devices(dev, PLATFORM_DEVID_NONE,
--			      sensorhub_sensor_devs,
--			      ARRAY_SIZE(sensorhub_sensor_devs), NULL, 0, NULL);
-+	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE, sensorhub_sensor_devs,
-+				   ARRAY_SIZE(sensorhub_sensor_devs), NULL, 0, NULL);
- 	if (ret < 0) {
- 		dev_err(dev, "mfd add devices fail\n");
- 		return ret;
-@@ -510,14 +529,16 @@ static int ssp_probe(struct spi_device *spi)
- 	ret = spi_setup(spi);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to setup spi\n");
--		goto err_setup_spi;
-+		return ret;
+ 	ssp_pending_add(data, msg, no_irq);
+@@ -222,16 +224,11 @@ static int __ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
+ 	status = ssp_check_lines(data, true);
+ 	if (status < 0) {
+ 		ssp_pending_del(data, msg, no_irq);
+-		goto _error_locked;
++		data->timeout_cnt++;
++		return status;
  	}
  
- 	data->fw_dl_state = SSP_FW_DL_STATE_NONE;
- 	data->spi = spi;
- 	spi_set_drvdata(spi, data);
+-	mutex_unlock(&data->comm_lock);
+ 	return 0;
+-
+-_error_locked:
+-	mutex_unlock(&data->comm_lock);
+-	data->timeout_cnt++;
+-	return status;
+ }
  
--	mutex_init(&data->comm_lock);
-+	ret = devm_mutex_init(dev, &data->comm_lock);
-+	if (ret < 0)
-+		return ret;
+ static int ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
+@@ -379,12 +376,12 @@ int ssp_irq_msg(struct ssp_data *data)
  
- 	for (i = 0; i < SSP_SENSOR_MAX; ++i) {
- 		data->delay_buf[i] = SSP_DEFAULT_POLLING_DELAY;
-@@ -530,7 +551,9 @@ static int ssp_probe(struct spi_device *spi)
+ 	switch (msg_type) {
+ 	case SSP_AP2HUB_READ:
+-	case SSP_AP2HUB_WRITE:
++	case SSP_AP2HUB_WRITE: {
+ 		/*
+ 		 * this is a small list, a few elements - the packets can be
+ 		 * received with no order
+ 		 */
+-		mutex_lock(&data->pending_lock);
++		guard(mutex)(&data->pending_lock);
+ 		list_for_each_entry_safe(iter, n, &data->pending_list, list) {
+ 			if (iter->options == msg_options) {
+ 				list_del(&iter->list);
+@@ -400,10 +397,8 @@ int ssp_irq_msg(struct ssp_data *data)
+ 			 * check but let's handle this
+ 			 */
+ 			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
+-			if (!buffer) {
+-				ret = -ENOMEM;
+-				goto _unlock;
+-			}
++			if (!buffer)
++				return -ENOMEM;
  
- 	data->time_syncing = true;
+ 			/* got dead packet so it is always an error */
+ 			ret = spi_read(data->spi, buffer, length);
+@@ -415,7 +410,7 @@ int ssp_irq_msg(struct ssp_data *data)
+ 			dev_err(SSP_DEV, "No match error %x\n",
+ 				msg_options);
  
--	mutex_init(&data->pending_lock);
-+	ret = devm_mutex_init(dev, &data->pending_lock);
-+	if (ret < 0)
-+		return ret;
- 	INIT_LIST_HEAD(&data->pending_list);
- 
- 	atomic_set(&data->enable_refcount, 0);
-@@ -540,14 +563,23 @@ static int ssp_probe(struct spi_device *spi)
- 
- 	timer_setup(&data->wdt_timer, ssp_wdt_timer_func, 0);
- 
--	ret = request_threaded_irq(data->spi->irq, NULL,
--				   ssp_irq_thread_fn,
--				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
--				   "SSP_Int", data);
--	if (ret < 0) {
--		dev_err(dev, "Irq request fail\n");
--		goto err_setup_irq;
--	}
-+	/*
-+	 * Register deferred callback which disable timer and work after
-+	 * module unloaded.
-+	 *
-+	 * driver should cancel delayed refresh work, watchdog work and delete
-+	 * watchdog timer once interrupt is disabled and IRQ is freed.
-+	 */
-+	ret = devm_add_action_or_reset(dev, ssp_disable_work_timer, data);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = devm_request_threaded_irq(dev, data->spi->irq, NULL,
-+					ssp_irq_thread_fn,
-+					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-+					"SSP_Int", data);
-+	if (ret < 0)
-+		return ret;
- 
- 	/* Let's start with enabled one so irq balance could be ok */
- 	data->shut_down = false;
-@@ -560,47 +592,30 @@ static int ssp_probe(struct spi_device *spi)
- 		ret = ssp_initialize_mcu(data);
- 		if (ret < 0) {
- 			dev_err(dev, "Initialize_mcu failed\n");
--			goto err_read_reg;
-+			return ret;
+-			goto _unlock;
++			break;
  		}
- 	} else {
- 		dev_err(dev, "Firmware version not supported\n");
--		ret = -EPERM;
--		goto err_read_reg;
-+		return -EPERM;
+ 
+ 		if (msg_type == SSP_AP2HUB_READ)
+@@ -433,16 +428,15 @@ int ssp_irq_msg(struct ssp_data *data)
+ 				msg->length = 1;
+ 
+ 				list_add_tail(&msg->list, &data->pending_list);
+-				goto _unlock;
++				break;
+ 			}
+ 		}
+ 
+ 		if (msg->done)
+ 			if (!completion_done(msg->done))
+ 				complete(msg->done);
+-_unlock:
+-		mutex_unlock(&data->pending_lock);
+ 		break;
++	}
+ 	case SSP_HUB2AP_WRITE:
+ 		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
+ 		if (!buffer)
+@@ -472,7 +466,7 @@ void ssp_clean_pending_list(struct ssp_data *data)
+ {
+ 	struct ssp_msg *msg, *n;
+ 
+-	mutex_lock(&data->pending_lock);
++	guard(mutex)(&data->pending_lock);
+ 	list_for_each_entry_safe(msg, n, &data->pending_list, list) {
+ 		list_del(&msg->list);
+ 
+@@ -480,7 +474,6 @@ void ssp_clean_pending_list(struct ssp_data *data)
+ 			if (!completion_done(msg->done))
+ 				complete(msg->done);
  	}
- 
--	return 0;
--
--err_read_reg:
--	free_irq(data->spi->irq, data);
--err_setup_irq:
--	mutex_destroy(&data->pending_lock);
--	mutex_destroy(&data->comm_lock);
--err_setup_spi:
--	mfd_remove_devices(dev);
--
--	return ret;
--}
--
--static void ssp_remove(struct spi_device *spi)
--{
--	struct ssp_data *data = spi_get_drvdata(spi);
--
--	if (ssp_command(data, SSP_MSG2SSP_AP_STATUS_SHUTDOWN, 0) < 0)
--		dev_err(&data->spi->dev,
--			"SSP_MSG2SSP_AP_STATUS_SHUTDOWN failed\n");
--
--	ssp_disable_mcu(data);
--	ssp_clean_pending_list(data);
--
--	free_irq(data->spi->irq, data);
--	cancel_delayed_work_sync(&data->work_refresh);
--
--	ssp_disable_wdt_timer(data);
--
--	mutex_destroy(&data->comm_lock);
--	mutex_destroy(&data->pending_lock);
-+	/*
-+	 * Managed shutdown action for the SSP device lifecycle.
-+	 *
-+	 * This action unwinds state by:
-+	 *  - notifying the SSP firmware of AP shutdown,
-+	 *  - disabling the MCU to prevent further IRQ activity,
-+	 *  - cleaning up any pending command state.
-+	 *
-+	 * The action is registered once the MCU has been initialized so that
-+	 * both driver removal and probe failure after this point leave the
-+	 * device in a quiescent state.
-+	 */
-+	ret = devm_add_action_or_reset(dev, ssp_shutdown_action, data);
-+	if (ret < 0)
-+		return ret;
- 
--	mfd_remove_devices(&spi->dev);
-+	return 0;
+-	mutex_unlock(&data->pending_lock);
  }
  
- static int ssp_suspend(struct device *dev)
-@@ -656,7 +671,6 @@ static DEFINE_SIMPLE_DEV_PM_OPS(ssp_pm_ops, ssp_suspend, ssp_resume);
- 
- static struct spi_driver ssp_driver = {
- 	.probe = ssp_probe,
--	.remove = ssp_remove,
- 	.driver = {
- 		.pm = pm_sleep_ptr(&ssp_pm_ops),
- 		.of_match_table = ssp_of_match,
+ int ssp_command(struct ssp_data *data, char command, int arg)
 -- 
 2.34.1
 
