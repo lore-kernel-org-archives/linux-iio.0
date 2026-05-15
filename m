@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21516337BB0;
-	Fri, 15 May 2026 14:18:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6482379C2F;
+	Fri, 15 May 2026 14:20:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778854729; cv=none; b=gVXIcTunPeMZSsGM6fdg9GOEHS8HClmk9KDATXm1pwMxd2GX2LIamUdWexUPC77mHC3CiNrG8q5JrhySjZgSgvfFdFKc6H7FDeLs36qeHf6NNuU7DeUEzZcTo9vPV8oGPGj3Br7BZ9LGPzAd+FgnMf0sEyRwrRlvFGoa6AdFgic=
+	t=1778854814; cv=none; b=AMKxP5vuuFO0AvFyzbNpuTY986bvlAaazaYK6J7bz/JKqv6Mm1VHp8K9hB8Yd6AfeI0B2C/ou/lv6xQY9vtqT0ZYErXVnYnb5UfU/Asup0w9VZZBTSuJA+fn0QYnz7xuXr6vBTX5iSW/KsGkHsrrKk7YGHo+sG/31SoK4aNbOEI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778854729; c=relaxed/simple;
-	bh=S8sTaCOuLXBTBw5B1SQO164xBq5dUkwincaYQPeUIVo=;
+	s=arc-20240116; t=1778854814; c=relaxed/simple;
+	bh=+FjzTY1a2PXcqS7HPQ7lDJVZs4ZsJlmosw9TupILsLA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=S81lEh0AkoMOYK7Bm2Mm9ukgTcGxyfZRp70uV1acjstOShNxu170OidbiNO8Nh94BQcoUg/ZiHmazdZXMVw/o/Pcun+ZBlVRS4Y7gh6s1l+XtHfUACZjhU4aOGHgng+5ypFipVRyERoNaKe+mFocVECBgl65GKfrGzmyI/2ilLg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TE46AlnE; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=XNTLvyzMOSm1MdBVpRx2qg7IgcxfmL54x0VsYIKgKZXisrJMvcCy2kMA3+dMP5fDtyo94i+6y76HhN6pNfBu8d9bhLI5VhpZmwZ02pQesIuMAZnWY+Jf/WARCOGp0IisOYjjz06hifGHs1FcvJl9XIjKcT3JLrIkwBjpuYn7Vok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WSjqgTPi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TE46AlnE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCAD7C2BCB7;
-	Fri, 15 May 2026 14:18:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WSjqgTPi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91438C2BCC7;
+	Fri, 15 May 2026 14:20:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778854728;
-	bh=S8sTaCOuLXBTBw5B1SQO164xBq5dUkwincaYQPeUIVo=;
+	s=k20201202; t=1778854814;
+	bh=+FjzTY1a2PXcqS7HPQ7lDJVZs4ZsJlmosw9TupILsLA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=TE46AlnEXk84b5DPS2bKH+H93hQCGBjdmR5QgpOWQfK9opkXxlviYZDGeAbvjT9ci
-	 FUDLTHUb+3+TTO4gIKMH+9cQfNCQBNyZSottoSLFNgZrHCi7vXt+5yaFkV0ezgy7dz
-	 yd6d8WEbg7IdNg1W920ipABiauVPjvNjmwZOw7HWKYZUweJusm/AIM01b9Yv/bSEJV
-	 nBGesVGH94YOYXw0JXB8aa/y11Gs+VoD3OZXvLaOlXuSxoAqnBsZ/HAaQjf7D6hU9m
-	 sdsR4g9ecBRbpbEmcftKNb7ZtoQKGxgJx+ZYr6j78HCI2oVM99LMXzV5ZNX7TBT6b2
-	 ZOZTU+ZSDyiOA==
-Date: Fri, 15 May 2026 15:18:40 +0100
+	b=WSjqgTPiuDS0JViSJqGHBCLaE79ZfwWH/t48yLH/lXzAwVeYnuz/fWYEDpsLdHr6Y
+	 vkpCET9TzitH1akn+Z7ZQ4IfLbPU3rrP9iM5DkzrkcCrSvY9w8YBNW4/kaNpDY5zLx
+	 v8e0uU9bTvEGoFhKlm0f4xGTzwqzfKOsCYxRigb+czKH5CsgLLVzkXs+z5jQGODjGW
+	 BlHzDBzCPw+eT82pb9P6NS3mGCLyoecxIvkADjIeygOod9G5DoH91GyKyAVOXF8AQY
+	 JJ4nClpRW9MRGst1xDrnUFyGYPiChvHISWGdZugxyIwBnFNmVnMO+kM06k5f649ksx
+	 ciDwA9jwiXiig==
+Date: Fri, 15 May 2026 15:20:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: Tomasz Duszynski <tduszyns@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org (open list:IIO
- SUBSYSTEM AND DRIVERS), linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH v3] iio: chemical: sps30: Replace manual locking with
- RAII locking
-Message-ID: <20260515151840.48a42705@jic23-huawei>
-In-Reply-To: <20260515031343.56039-1-m32285159@gmail.com>
-References: <20260515031343.56039-1-m32285159@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: =?UTF-8?B?0JTQsNC80ZjQsNC9INCT0LXQviDRgNCz0LjQtdCy0YHQutC4?=
+ <gdamjan@gmail.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: buffer: only set IRQF_ONESHOT when thread handler
+ is provided
+Message-ID: <20260515152005.355fffaf@jic23-huawei>
+In-Reply-To: <agb5hiF6GhNwGa6c@ashevche-desk.local>
+References: <20260515-patch-iio-buffer-v1-1-667dac4e55e5@gmail.com>
+	<agb5hiF6GhNwGa6c@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,65 +46,35 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 14 May 2026 22:13:42 -0500
-Maxwell Doose <m32285159@gmail.com> wrote:
+On Fri, 15 May 2026 13:46:30 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Replace manual mutex_lock() and mutex_unlock() calls with the much newer
-> guard(mutex)() and scoped_guard() macros to enable RAII patterns,
-> modernize the driver, and to increase readability.
-> 
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
-> ---
-> v2:
->  - Switch over some scoped_guard()s to guard(mutex)() per David's
->    suggestion.
->  - Remove redundant whitespace per Andy's suggestion.
->  - Add new wrapper sps30_do_meas() per Andy's suggestion (see commit
->    message).
->  - Add Joshua's RB
->    (link: https://lore.kernel.org/linux-iio/CAKqfh0FWig8mRR-xhvnfcFeSinR6RySyPaf9Gbpb6WU+diiiUQ@mail.gmail.com/T/#t)
-> 
-> v3:
->  - Remove sps30_do_meas() wrapper per Andy's suggestion.
-I think this wasn't what Andy meant. I think he meant just
-push the guard into the the function you were wrapping.
-
->  - Remove Joshua's RB (major changes).
-> 
->  drivers/iio/chemical/sps30.c | 29 +++++++++++++----------------
->  1 file changed, 13 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-> index a934bf0298dd..9cb201cf0f15 100644
-> --- a/drivers/iio/chemical/sps30.c
-> +++ b/drivers/iio/chemical/sps30.c
-> @@ -5,6 +5,7 @@
->   * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
->   */
->  
-> +#include <linux/cleanup.h>
->  #include <linux/crc8.h>
->  #include <linux/delay.h>
->  #include <linux/i2c.h>
-> @@ -111,9 +112,8 @@ static irqreturn_t sps30_trigger_handler(int irq, void *p)
->  		aligned_s64 ts;
->  	} scan;
->  
-> -	mutex_lock(&state->lock);
-> -	ret = sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
-> -	mutex_unlock(&state->lock);
-> +	scoped_guard(mutex, &state->lock)
-> +		ret = sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
-Every call to sps30_do_meas() is done with the lock held just over that call.
-
-So just move the lock (as a guard) into sps30_do_meas().
-
-I think that's what Andy was suggesting in v2 review, but maybe not!
+> On Fri, May 15, 2026 at 12:46:00AM +0200, =D0=94=D0=B0=D0=BC=D1=98=D0=B0=
+=D0=BD =D0=93=D0=B5=D0=BE =D1=80=D0=B3=D0=B8=D0=B5=D0=B2=D1=81=D0=BA=D0=B8 =
+wrote:
+> > iio_triggered_buffer_setup_ext() unconditionally passes IRQF_ONESHOT to
+> > iio_alloc_pollfunc(), even when the caller provides no thread function.
+> > This causes a warning in __setup_irq() when the trigger is later
+> > attached:
+> >=20
+> >   WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x4ee/0x700
+> >=20
+> > IRQF_ONESHOT keeps the IRQ masked until the threaded handler completes,
+> > but with no threaded handler this is semantically wrong. Only set the
+> > flag when a thread function is actually provided. =20
+>=20
+> Yes, please read the mailing list archive and find the previous attempt t=
+o fix
+> this and the associated discussions.
+>=20
 
 
->  	if (ret)
->  		goto err;
->  
+Just to check - what is the driver in use?  The fixes so far all belong in =
+the
+drivers, not papering over it in the core (note this is maybe the 3rd time
+this same patch has been posted and rejected!)=20
+
+Jonathan
