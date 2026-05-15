@@ -1,63 +1,63 @@
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55FFC3E834C
-	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 17:40:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24BAC3F39D4
+	for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 17:40:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778866839; cv=none; b=jQDSJd4fU57S7vGTBh6BZwBbEeeokpHdVl0BoEeRC4jm6oQHhhO/38CPDJKOtU4UAi7zzGmJsvpVZC2uou3l6gVVh0aV2TpqHmHxwncG34dVPqdkNZ2qHvsN22I5qGy72QkPyq1ib9Vezsbj0W5A18S6qDQmGr+eRwbOfei1eLg=
+	t=1778866847; cv=none; b=qGLc0rknWnJnih6iabk7v7FO9bwiKjMhaDcV3UYNCV5n4vMqulHeKaSm/7cPTjqwGGVj3uGND5ZUMmmxyB4N1OGvw/1R8JgKmv84LNuwtbB4diN0pNi4mROhxpuYaX2GpHEYmzbw2xxYQR4Y7MWSYRoepkJmz2N/Tb8GkYCJdZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778866839; c=relaxed/simple;
-	bh=vUNSUQJ2vSW/5TNiCAc3VZ2D/GxuOb+QHqUWQE4SluI=;
+	s=arc-20240116; t=1778866847; c=relaxed/simple;
+	bh=YI085fm37/ypf/0BfgnyWYfjlnTlCAzVT3T4Drtf7HI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=DvMnwjKOA2SX+vjFCkW7C28wPbwDiRXN0UrHXYgh3kEuEnIzUhZgPFFn8seJEZ4NrFRd66ZBbxkMSir96BurqDMR3ZeBEsuez6bHXnKmtkzxY6BqSYOS4OMBDnj0RxfivxnBeSreZx1/XWBUqzu/fIDsPjLRhc2NcxLajqOtsLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dB16fdow; arc=none smtp.client-ip=209.85.210.178
+	 MIME-Version; b=qxsY0bz3p64+gXEIB2NDH4vPD6rmHeBKvpaGiA8zG0XC0dYFgLt2hB3K3b6I2TuvLDIPExNOoxV4rgcCa0yew5zbn/2o6+VziXsjEclHfpvyGj6x9G4VNYRrX7bBaKy41U1xzkCncZlsi8R3GJ7BiVGzgXLk1rTtDXedUSKXIuU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mHnUm0uq; arc=none smtp.client-ip=209.85.215.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dB16fdow"
-Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-82748257f5fso872796b3a.1
-        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:40:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mHnUm0uq"
+Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-c80227c9572so23951a12.2
+        for <linux-iio@vger.kernel.org>; Fri, 15 May 2026 10:40:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778866837; x=1779471637; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778866845; x=1779471645; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=oD4ghlSzEM0XpzQLkuHFPVSH8xE4TvBhIbAIWqVBMCw=;
-        b=dB16fdowP5S8zvRHJO/bOZdlfhcc0jYXycbFrUt8MuzaTZRc8Escv3p4eQZA+o/lQc
-         kV02zMXRMOW+E6Y/Q5nTOM1tUWM7csU+mqqIM3QedzmF8XVPn3DX6jFsY+/PQu4RHJJ2
-         7BEx2pCOT76mIoLtga5wSApk+6iBzkvG94H1PXuFUowhkYf9wz84WrV+DV2d8BA90UWl
-         IJtE8bbD78mP7GDH6YCk7xJWyEXpwKNcaJBj7IK3TWvv54yyNn1CXI5Fi4Fy5IZVASEB
-         O19Di4zq5AHgfohoevHT0HlBeWY9P0sYjBH8R1JsHvfLIAO4YoaFTQ2mWqAlgbxrm7ZG
-         YI1g==
+        bh=0kNSilLvGuFX4bD2pG7PVn8FSSIgnqfPybpOGUR9Wlw=;
+        b=mHnUm0uqF/pD3a8KEWartGoPp4hb90P0J5+PBdltIcCyIikMryCJtV4Z6h08c+fziv
+         KJpwQ/xCc6gah0s7dPiO01f02XguXiIU2UaYK+2v7rX3jtGCKNPk0tY5HbaDQJhrFhWY
+         WZWiTfkv34/qrVHbjAv6Dw8+piYn29qYK34EDn6oowSdKu42eXq8o1QZfD5rMfn6qrJi
+         xpiwLpfn7U2cy9VvLxTEY95Q++I0zxsOEH0PPHDoocfVK1qaZdROzf7g/GLcoABS45lA
+         NUbfw3lZ4aCZhq93JCUEKEfl0tWECdJjtsPReXCUhvNmbvdi6BWt5Yx3w+wFgtE1Yk1D
+         mcbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778866837; x=1779471637;
+        d=1e100.net; s=20251104; t=1778866845; x=1779471645;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=oD4ghlSzEM0XpzQLkuHFPVSH8xE4TvBhIbAIWqVBMCw=;
-        b=pLjFD4RkG7xYhnMEf4Epon9O7LYCzM14fbHPD1Pz7HkIHyCrC3Akhv4JXz5NTXeiKk
-         krpHNFwvzdxZ9hEJqm0c+nAZQB1RGTSQQVB+Ui/LsoxE4FOQ664ZG209s5PxzPoaie7J
-         ycD/RFLgvrqn52WqEjKV4yHG6Nm2DVSiSdWY2wYCoIfL9eKydA4iRmWd2Zt5F75Q6SUY
-         jca50wZgaGYDb3Hz6gNK95Y3PPqVLVW3cofw8hR3ht44Q932O3cGmXYsCur0k5fu73sg
-         RLnsu45aqBBBHWTh8DByY/LjftulrmHsOLAXNF+2TtmghiEpJMsCO3l0cvUPHV5/BxiD
-         ihXA==
-X-Forwarded-Encrypted: i=1; AFNElJ8GtMYku8eUjM7veUALxrXTQiaWG1FMFCUt4KiBVnbI2wR6DhNR1HlzRjbW/T04ARAotoj4GdEDOmI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyHXzTxb0U0GTMpowrkf4Rbhs4gvOtUg8rFF0lIABNlJg3SKdPB
-	4nOf/IkaLIwqoQBRxyzV2Zxqd1F+Hdjo0eNQcWOx+cfs1wmpYbDHWx28
-X-Gm-Gg: Acq92OFK2sTYjSUHGmTISaRXgF5kD1RRgiSVMNj6aX3ElMZY96Q0U9kBx2hhhS1LTuf
-	Uuqp3XFjCuUUxqWRRluI5SOIhi29tHT0djszUR57S4JQyoT1bq1OeMSXftgiZWFa8JAoV79jAhl
-	ArhwRrjL8OOvbZGDwtt2qavkexXmvZQnfDpPmXUsdZs7tZjAegDVraIGTCzTPfTVduRslOYuegu
-	DoQQi5/mOL/IY/8TaEt23GZSIEU8stLA+6A7sMHup0XL/8mJm09QRKeLmsWHNQTdwZsF7bysjN0
-	1cdUch5GDto3QZ7kwrG1a/LN3GeFwM6NN+xbqkIvnzFP9TkVG8jrEk/T8u6cjrRuiECmt0GgChv
-	Sg8yGknH8NUmPxMD0MwXpfAtLOne1E4gal4Xem0YHCS21bjo1G5cnIYsRCzpTEZrqceaPvZ5PVk
-	+cXtcafIUf8sbi/e30s1CinXsj2fOsyuZ4nsghvr92oHiUwisv
-X-Received: by 2002:a05:6a00:ace:b0:829:6f7d:3086 with SMTP id d2e1a72fcca58-83f33b62df1mr4199988b3a.11.1778866837486;
-        Fri, 15 May 2026 10:40:37 -0700 (PDT)
+        bh=0kNSilLvGuFX4bD2pG7PVn8FSSIgnqfPybpOGUR9Wlw=;
+        b=o6ej5w6fHfLiTW5aze2IPA1ux0BRNwuhmKtpwlDYrdYjpJzU8pqpJg+//1d3GvBgVN
+         vW/gvFe3N8eNVedKp1qR/OlzA2nb8C8x2O4VnjDdK3mBc4D6ePGxoS9+57biqB0FR9KG
+         sqQZa/U0wmW0qKwGXuHBrvde+/Ycvm0E9Lh5tgQBXWGcEV1CS8tdrsgACIrkF4rjWY7e
+         4pz7yv+JVi8liuNx4mc17bCC4ujP9tUJdD/QZe8goMH0VSf94hFbQ4sLOIxjJwlctI3R
+         8C7c+2LjJKSecFV5D3bJWYwYT+J1Pso3wJZ8TgKfg7ejZOj+sLoAj0/yW/HpcX/rI4BZ
+         7+AQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+N8mXsAOVtZ1+5w5frgK0A4VNS7twTRqQW7X0Y4UGP3Uj8LkUb8DGEVuoaqNQCcFKYmH9dLKBE5p4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxC8/yz5mnxBhMmnmRXPdyl4Iixj3rqgF6FTRfhpxRMeQA2M0Rh
+	OBk/FzDeKt0heBGWgdW4YQ6ELG3gPV50M8IFheU64EoThejz85xRTzFf
+X-Gm-Gg: Acq92OFu14s5bhgWnBB0d7zqm7EddSjwsHA02laLCtRgX1hE1U4j2k2Aqh3FyfWbW+O
+	cLnQoXWzE48OTxwwT9/HVp8YB/auRd2uaz+bsAlpMh6GXt4wUHTYRmXAWzYMApOaGq9qklwfM6K
+	KBJ23Ys7qrgYGSdvgX5748QudnWvBtGoPAwv2uLaL4DdA+a88Q/wYwdwBLMn4ddkuUjubyVS9ov
+	sFblfNxqdLKeXML68NC/SJDHm45ychMtX63lO7+t0or6cMlaUW06VgcnC5l91JcWCQWAPTPsePe
+	ycCTckPGz5KauFkQV+yNBd1/75yGAiaEojyIeERl/IuDgUrEmpqLCx3qsRJQ9QoJjwADJem5Yu2
+	KmRhvk8x8m0xUrDMvS3InifM1nbMGcgQDbuE0J3SLaf10jAnT52+iw5Kp0GJCImzyz00RoQxErQ
+	eUrFAwb8fbssI6bmumq5Cy/l4gbPwj/DewSNRJ9SSLpJ8YyD8M
+X-Received: by 2002:a05:6a00:ad5:b0:823:cbb:a484 with SMTP id d2e1a72fcca58-83f33cbf6abmr5447942b3a.14.1778866842002;
+        Fri, 15 May 2026 10:40:42 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f2875f0fbsm5579034b3a.57.2026.05.15.10.40.33
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f2875f0fbsm5579034b3a.57.2026.05.15.10.40.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 10:40:37 -0700 (PDT)
+        Fri, 15 May 2026 10:40:41 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org
@@ -73,9 +73,9 @@ Cc: dlechner@baylibre.com,
 	kyungmin.park@samsung.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v8 03/12] iio: ssp_sensors: refactor transfer logic into helper
-Date: Fri, 15 May 2026 23:10:08 +0530
-Message-Id: <20260515174017.3962168-4-sanjayembedded@gmail.com>
+Subject: [PATCH v8 04/12] iio: ssp_sensors: factor out MCU enable/disable helpers
+Date: Fri, 15 May 2026 23:10:09 +0530
+Message-Id: <20260515174017.3962168-5-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260515174017.3962168-1-sanjayembedded@gmail.com>
 References: <20260515174017.3962168-1-sanjayembedded@gmail.com>
@@ -89,105 +89,92 @@ Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Extract the core transfer logic under comm_lock into a new
-__ssp_do_transfer() helper. The change is preparatory for converting
-mutex usage to guard() helpers in subsequent patches.
-
-This restructuring simplifies ssp_do_transfer() and makes the
-transfer flow easier to follow.
+Refactor the MCU enable and disable logic into small helper functions.
+This simplifies the control flow and improves readability.
 
 No functional change intended.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- drivers/iio/common/ssp_sensors/ssp_spi.c | 50 +++++++++++++++---------
- 1 file changed, 32 insertions(+), 18 deletions(-)
+Changes in v8:
+- Following comment from Jonathan, split function to have separate
+  changes for each small helper function and demote the log level
+- v7 change: https://lore.kernel.org/all/20260426091710.3722035-5-sanjayembedded@gmail.com/
+---
+ drivers/iio/common/ssp_sensors/ssp_dev.c | 43 +++++++++++++-----------
+ 1 file changed, 24 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-index 3d377a482161..ebcda6de56c4 100644
---- a/drivers/iio/common/ssp_sensors/ssp_spi.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-@@ -196,20 +196,13 @@ static inline void ssp_pending_del(struct ssp_data *data, struct ssp_msg *msg,
- 	mutex_unlock(&data->pending_lock);
+diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
+index 51730dae5871..4280eb590c03 100644
+--- a/drivers/iio/common/ssp_sensors/ssp_dev.c
++++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+@@ -89,23 +89,28 @@ static void ssp_sync_available_sensors(struct ssp_data *data)
+ 			"SSP_MSG2SSP_AP_MCU_SET_DUMPMODE failed\n");
  }
  
--static int ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
--			   struct completion *done, int timeout)
-+static int __ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
-+			     bool no_irq)
+-static void ssp_enable_mcu(struct ssp_data *data, bool enable)
++static void ssp_enable_mcu(struct ssp_data *data)
  {
- 	int status;
--	/*
--	 * check if this is a short one way message or the whole transfer has
--	 * second part after an interrupt
--	 */
--	const bool use_no_irq = msg->length == 0;
- 
--	if (data->shut_down)
--		return -EPERM;
+-	dev_info(&data->spi->dev, "current shutdown = %d, old = %d\n", enable,
+-		 data->shut_down);
 -
--	msg->done = done;
-+	/* msg->done must be initialized by caller */
-+	WARN_ON(!msg->done);
- 
- 	mutex_lock(&data->comm_lock);
- 
-@@ -224,15 +217,41 @@ static int ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
- 		goto _error_locked;
- 	}
- 
--	ssp_pending_add(data, msg, use_no_irq);
-+	ssp_pending_add(data, msg, no_irq);
- 
- 	status = ssp_check_lines(data, true);
- 	if (status < 0) {
--		ssp_pending_del(data, msg, use_no_irq);
-+		ssp_pending_del(data, msg, no_irq);
- 		goto _error_locked;
- 	}
- 
- 	mutex_unlock(&data->comm_lock);
-+	return 0;
+-	if (enable && data->shut_down) {
+-		data->shut_down = false;
+-		enable_irq(data->spi->irq);
+-		enable_irq_wake(data->spi->irq);
+-	} else if (!enable && !data->shut_down) {
+-		data->shut_down = true;
+-		disable_irq(data->spi->irq);
+-		disable_irq_wake(data->spi->irq);
+-	} else {
+-		dev_warn(&data->spi->dev, "current shutdown = %d, old = %d\n",
+-			 enable, data->shut_down);
+-	}
++	dev_dbg(&data->spi->dev, "enabling MCU (was shutdown: %d)\n", data->shut_down);
 +
-+_error_locked:
-+	mutex_unlock(&data->comm_lock);
-+	data->timeout_cnt++;
-+	return status;
++	if (!data->shut_down)
++		return;
++
++	data->shut_down = false;
++	enable_irq(data->spi->irq);
++	enable_irq_wake(data->spi->irq);
 +}
 +
-+static int ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
-+			   struct completion *done, int timeout)
++static void ssp_disable_mcu(struct ssp_data *data)
 +{
-+	int status;
-+	/*
-+	 * check if this is a short one way message or the whole transfer has
-+	 * second part after an interrupt
-+	 */
-+	const bool use_no_irq = msg->length == 0;
++	dev_dbg(&data->spi->dev, "disabling MCU (was shutdown: %d)\n", data->shut_down);
 +
 +	if (data->shut_down)
-+		return -EPERM;
++		return;
 +
-+	msg->done = done;
-+
-+	status = __ssp_do_transfer(data, msg, use_no_irq);
-+	if (status < 0)
-+		return status;
- 
- 	if (!use_no_irq && done &&
- 	    !wait_for_completion_timeout(done, msecs_to_jiffies(timeout))) {
-@@ -243,11 +262,6 @@ static int ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
- 	}
- 
- 	return 0;
--
--_error_locked:
--	mutex_unlock(&data->comm_lock);
--	data->timeout_cnt++;
--	return status;
++	data->shut_down = true;
++	disable_irq(data->spi->irq);
++	disable_irq_wake(data->spi->irq);
  }
  
- static inline int ssp_spi_sync_command(struct ssp_data *data,
+ /*
+@@ -146,10 +151,10 @@ static int ssp_check_fwbl(struct ssp_data *data)
+ 
+ static void ssp_reset_mcu(struct ssp_data *data)
+ {
+-	ssp_enable_mcu(data, false);
++	ssp_disable_mcu(data);
+ 	ssp_clean_pending_list(data);
+ 	ssp_toggle_mcu_reset_gpio(data);
+-	ssp_enable_mcu(data, true);
++	ssp_enable_mcu(data);
+ }
+ 
+ static void ssp_wdt_work_func(struct work_struct *work)
+@@ -584,7 +589,7 @@ static void ssp_remove(struct spi_device *spi)
+ 		dev_err(&data->spi->dev,
+ 			"SSP_MSG2SSP_AP_STATUS_SHUTDOWN failed\n");
+ 
+-	ssp_enable_mcu(data, false);
++	ssp_disable_mcu(data);
+ 	ssp_disable_wdt_timer(data);
+ 
+ 	ssp_clean_pending_list(data);
 -- 
 2.34.1
 
