@@ -1,389 +1,269 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fout-b3-smtp.messagingengine.com (fout-b3-smtp.messagingengine.com [202.12.124.146])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 187DD37F8A0;
-	Fri, 15 May 2026 18:31:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4F893EEACB;
+	Fri, 15 May 2026 18:33:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778869873; cv=none; b=b7osjfZNcoM1iUKM07w41iIx2sEIuzWnGUJ7MvJsyUpFLRMnE3X2TKbQDi+AEO1V3jrkQyWKKzuL1Mfj0dqu55ZIYK5yY5sH+5qhPCf2ZM7/yYWqQ1ZKezQIbH7KbMufBXZ0hn6jP3uqfVveuDUwl7EpOdOEe+weTXwJ+2deTUk=
+	t=1778870000; cv=none; b=fIi23J8IPGh/EoS3TJqFJGD15NG4+/OV95Rha13xUrOzKNJRi8IsaEg9mC58HzraQb/LXpAlYe4T9kEF6duo57P7f4KF48I4b1Cosn9tK7rotL4xTNgivtMXvxyKXZukeKtZR5MQDngwOBHKwPQ19KGTKMDPOByLUSpUiRzlimE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778869873; c=relaxed/simple;
-	bh=IIaeX4/HmJDDekNk9hp/2YTL5IRngsNl+EbSt49v2KM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kcV5rUvy4QSKmz1gOx1LEaaPMgO9/x3RCXAHxqcwRVqiaGTfH79ZnkyWIV9XhZ4usPfCcILnQVEdeKeCroHY3K0PYJ4MPwjfADevaX9BUr9a1TmDk4HqXm8JQHy3IziYi5iT4a8pT9OjVAU5oynbZA91uaxOhuyg3ZKmvMknu5c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iRFj+s3+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778870000; c=relaxed/simple;
+	bh=xfZSxIoJK19gwrE9E7SGifWh9eoEO3UHtHjk6DVDYBI=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=A/mK17njU+NSngfktirTNq9pFmVQu5zPTyVEerJhJP2HjkmRlJ6O+rHwI/b4tcxt4FJIXFUQoBQllYmdKFHG8YvOutRyczYaXB59+wZBSGtkcF0xGVpYkL6SrqydCTmeSd9S66STBrQe1zDBqRFS6GyOGnmOkn9hXpzHqr258l0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fastmail.com; spf=pass smtp.mailfrom=fastmail.com; dkim=pass (2048-bit key) header.d=fastmail.com header.i=@fastmail.com header.b=BJeUiZlh; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=o7OXka5e; arc=none smtp.client-ip=202.12.124.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fastmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fastmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iRFj+s3+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 368A5C2BCB0;
-	Fri, 15 May 2026 18:31:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778869872;
-	bh=IIaeX4/HmJDDekNk9hp/2YTL5IRngsNl+EbSt49v2KM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=iRFj+s3+dHm7RQ2Z9GIB4uybsFHCumaD/HASJvfaOk/NeZbQqeMKdPK36+pqEwCm3
-	 HHf+uEoJBbossOeTiqMwTQASiWNyofbyK6bJkwshcd7zyv89sOhu/WtwYDRFktotro
-	 bv66McWalv1TqRhoA4LQAwAlYoahuVLoZZcmnKssXt79n+FiM5wx5vh7VleK+6NSX7
-	 +lma0g532JA1frXr5XTc48sWFgq1eKPv4pwz/mSosMdkPyffUuA2Zjj4U5/bBXwgxz
-	 9US61oUFvH5S8r3Mptbxk++GxAKXf+TYO9ZrdmlO4SOkT74RJaFNbmY9Qw1smNzd1g
-	 WzCxHaGhBmbgQ==
-Date: Fri, 15 May 2026 19:31:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
- dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
- linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
- heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
- andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V7 03/11] iio: imu: inv_icm42607: Add inv_icm42607 Core
- Driver
-Message-ID: <20260515193102.123b664a@jic23-huawei>
-In-Reply-To: <20260515130018.237378-4-macroalpha82@gmail.com>
-References: <20260515130018.237378-1-macroalpha82@gmail.com>
-	<20260515130018.237378-4-macroalpha82@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=fastmail.com header.i=@fastmail.com header.b="BJeUiZlh";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="o7OXka5e"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfout.stl.internal (Postfix) with ESMTP id 2A2671D00061;
+	Fri, 15 May 2026 14:33:18 -0400 (EDT)
+Received: from phl-imap-16 ([10.202.2.88])
+  by phl-compute-04.internal (MEProxy); Fri, 15 May 2026 14:33:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fastmail.com; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1778869997;
+	 x=1778956397; bh=ilS9yHfUk0M+1nOJH4mmR6H8ZDbliMMuc3QgNvTZS/U=; b=
+	BJeUiZlhIpQd6yjL5xw9BjIuCcIlyA/kMGeGJWr1QTXRG/tIorpjY2AOCALrzl4F
+	TPoCv9+3lADxAwnvASKkR2pW4ZTlDNg9bfN6XmNwdf4k2sxJe72wI3RjZOodiNok
+	PRMRgJaRLQsPX6EYZPxeAAr7BK24d/otXz4OKnzKbYU4SDmyYiGbRum/ABKUhzJT
+	MXPYsn1rTpZcG4VBc9J2jOfrDDMBwwGAOWJ2tCevgnQDvegLwNPwlI5i0gND1PTy
+	1DPvG+0oVCeLlrKuQSiPBF2NlUWIFi27zFRFDHOo6GAiBtEBYKK+/S2zJrXyUbaj
+	uQGAZvFqMfCqtBuCgUHXiw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1778869997; x=
+	1778956397; bh=ilS9yHfUk0M+1nOJH4mmR6H8ZDbliMMuc3QgNvTZS/U=; b=o
+	7OXka5eMJadY7reqfK5caOEEyt0q1nOcRuij4WJsMoQgbEG+6wA8k4XbW4emcInb
+	92actggAh2SloVr8qUkZOYAeOMY1Wu+/DFkTZoiqm6S5vB9sicMUtBXXei6r1CGb
+	r+vyZVa/pGzDL0z5lPMJ/7gCJe/QqzZvUIukZllMHqsOVweYugCWX2clXMKVU33K
+	xd68+s2nRUbktN10zY5hSwaDyuO9cnosxuqiK88G6E1FmfavpMPRuQNVVSy1E5IP
+	2yg5LRafXgMmkOdERt3A4s+LoTOb2Cd6AN3cHcwZcDrvwtFfAX7drF/N2Vbpwlny
+	6SKN6qcJF3wUUPtfv1ECg==
+X-ME-Sender: <xms:7WYHarFl3gwhlQ_PolvIi5RfwsKLt3mBPtQqo6Jiz0rmw6klHLTjbA>
+    <xme:7WYHajImyWLjrzdb5AFCZxPO0XHiL6YXYSnRrHvLZBgrdiJ58fFTVI1f50OLwfZb9
+    PGN4UIq9HeeaB0uUCrufJAchZzZLz7_BPvwL31hJ3kUILxRmxFbqYXo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgddufeduudefucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucenucfjughrpefoggffhffvvefkjghfufgtgfesthhqre
+    dtredtjeenucfhrhhomhepsghighdrsghlohgtkhdtvddtfeesfhgrshhtmhgrihhlrdgt
+    ohhmnecuggftrfgrthhtvghrnhepleeuleelgeffheekteegheevtdduffelveektdevgf
+    ehtdfhgeeflefgfeffheefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehm
+    rghilhhfrhhomhepsghighdrsghlohgtkhdtvddtfeesfhgrshhtmhgrihhlrdgtohhmpd
+    hnsggprhgtphhtthhopeehpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehjihgt
+    vdefsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvg
+    hrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhiihhosehvghgvrhdr
+    khgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrh
+    drkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepphhlrghtfhhorhhmqdgurhhivhgvrhdq
+    giekieesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:7WYHagxsX3I_b-zUWTu_DRDP3ey55wK4X3xMTrRhHWAqumpS5vBnZQ>
+    <xmx:7WYHatk4sVQNKTjhnftpFnafAlIDt0eKhn3vq_8x5mjvvQgCqFfVIw>
+    <xmx:7WYHapn5CUUEZMg9vsaPH5vv3O-aDCnWy7XiLndxtGrVz4VqKZWzAw>
+    <xmx:7WYHavzaurE2Z59xBIgt37kNFRdjzSfJRidFucS3of7nsVrzMBad4g>
+    <xmx:7WYHaidxIokX-HrrL2IhCOMWJD3T2_AAe-rEjlrCPY3XftPlTPkC1Nl0>
+Feedback-ID: i35d941ae:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id CB9922CC0083; Fri, 15 May 2026 14:33:17 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Date: Fri, 15 May 2026 22:32:57 +0400
+From: big.block0203@fastmail.com
+To: "Jonathan Cameron" <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+ linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <32f3063c-16cf-42a1-b122-118c291b3217@app.fastmail.com>
+In-Reply-To: <20260515124718.6481e2c3@jic23-huawei>
+References: <7915f7f0-d5fa-48a8-9aa6-fa2f8e621837@app.fastmail.com>
+ <20260515124718.6481e2c3@jic23-huawei>
+Subject: Re: [BUG] ACPI INT33D3 ambient light sensor not bound on Intel Lunar Lake
+ (ThinkPad X1 Carbon Gen 13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 15 May 2026 08:00:08 -0500
-Chris Morgan <macroalpha82@gmail.com> wrote:
+Hi Jonathan,
 
-> From: Chris Morgan <macromorgan@hotmail.com>
-> 
-> Add the core component of a new inv_icm42607 driver. This includes
-> a few setup functions and the full register definition in the
-> header file.
-> 
-> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Following up: PNP0C60 is not what I read it as initially. Per Microsoft's
+ACPI/GPIO button documentation, _CID PNP0C60 is the laptop/slate mode
+state indicator (the soc_button_array binding you mentioned). The
+matching ACPI ID for an ALS is ACPI0008, and that device is not present
+anywhere in this machine's namespace.
 
-Sashiko led you into the weeks with irq request return values.
-It was less broken in v6 :(
+The laptop has a small unidentified optical element in the top bezel
+beside the camera assembly that may be an ALS =E2=80=94 but the ACPI side
+doesn't expose anything named like one. A walk of the LEN* and INT33D3
+devices on this system:
 
-As to it's other comments on checking for line high/low values (0x00 / 0xFF)
-for whoami is something we don't normally bother with but you could if you like.
-I'm fairly sure we've had both those values turn up as valid in some devices
-in the past.
+    LEN0071:00  status=3D?   driver=3Di8042 kbd    (TrackPoint keyboard)
+    LEN009F:00  status=3D0   driver=3DNONE         (disabled by firmware)
+    LEN0100:00  status=3D15  driver=3DNONE
+    LEN0111:00  status=3D15  driver=3DNONE
+    LEN0112:00  status=3D15  driver=3DNONE
+    LEN0130:00  status=3D15  driver=3DNONE         (Fn / Function Keys p=
+er Lenovo Windows driver naming)
+    LEN0140:00  status=3D0   driver=3DNONE         (disabled by firmware)
+    LEN0268:00  status=3D15  driver=3DNONE         (ThinkPad HKEY; think=
+pad_acpi matches this HID)
+    LEN0310:00  status=3D?   driver=3Di8042 aux    (TrackPoint pointing =
+device)
+    INT33D3:00  status=3D15  driver=3DNONE
 
-Otherwise just trivial stuff I noticed whilst having a fresh read through.
-All stuff I might have tweaked whilst applying or just let through but
-seeing as you are going to be doing a v8, please take a look.
+(driver=3D taken from physical_node/driver. thinkpad_acpi registers via
+the ACPI bus rather than creating a platform-bus binding, so it doesn't
+appear here even though it uses LEN0268.)
 
-Jonathan
+LEN0100, LEN0111, LEN0112 are the genuine unknowns. No IPU6 / INT3472
+stack is present either =E2=80=94 this SKU's camera is a UVC device on U=
+SB
+(Chicony 04f2:b7e0, uvcvideo), so the ALS, if there is one, isn't
+behind that path.
 
+This looks like a thinkpad_acpi / platform-driver-x86 question rather
+than an IIO one. I'll continue the discussion there. Thanks for the
+help narrowing it down =E2=80=94 pointing at the cid field is what got u=
+s here.
 
-> ---
->  drivers/iio/imu/inv_icm42607/inv_icm42607.h   | 334 ++++++++++++++++++
->  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 207 +++++++++++
->  2 files changed, 541 insertions(+)
->  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607.h
->  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> 
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> new file mode 100644
-> index 000000000000..1916e0b08bca
-> --- /dev/null
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> @@ -0,0 +1,334 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/*
-> + * Copyright (C) 2026 InvenSense, Inc.
-> + */
-> +
-> +#ifndef INV_ICM42607_H_
-> +#define INV_ICM42607_H_
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bitops.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/mutex.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +
-> +enum inv_icm42607_sensor_mode {
-> +	INV_ICM42607_SENSOR_MODE_OFF,
-> +	INV_ICM42607_SENSOR_MODE_STANDBY,
-> +	INV_ICM42607_SENSOR_MODE_LOW_POWER,
-> +	INV_ICM42607_SENSOR_MODE_LOW_NOISE,
-> +	INV_ICM42607_SENSOR_MODE_NB
-> +};
-> +
-> +/* gyroscope fullscale values */
-> +enum inv_icm42607_gyro_fs {
-> +	INV_ICM42607_GYRO_FS_2000DPS,
-> +	INV_ICM42607_GYRO_FS_1000DPS,
-> +	INV_ICM42607_GYRO_FS_500DPS,
-> +	INV_ICM42607_GYRO_FS_250DPS,
-> +	INV_ICM42607_GYRO_FS_NB
-> +};
-> +
-> +/* accelerometer fullscale values */
-> +enum inv_icm42607_accel_fs {
-> +	INV_ICM42607_ACCEL_FS_16G,
-> +	INV_ICM42607_ACCEL_FS_8G,
-> +	INV_ICM42607_ACCEL_FS_4G,
-> +	INV_ICM42607_ACCEL_FS_2G,
-> +	INV_ICM42607_ACCEL_FS_NB
-> +};
-> +
-> +/* ODR values */
-> +enum inv_icm42607_odr {
-> +	INV_ICM42607_ODR_1600HZ = 5,
-> +	INV_ICM42607_ODR_800HZ,
-> +	INV_ICM42607_ODR_400HZ,
-> +	INV_ICM42607_ODR_200HZ,
-> +	INV_ICM42607_ODR_100HZ,
-> +	INV_ICM42607_ODR_50HZ,
-> +	INV_ICM42607_ODR_25HZ,
-> +	INV_ICM42607_ODR_12_5HZ,
-> +	INV_ICM42607_ODR_6_25HZ_LP,
-> +	INV_ICM42607_ODR_3_125HZ_LP,
-> +	INV_ICM42607_ODR_1_5625HZ_LP,
-> +	INV_ICM42607_ODR_NB
-> +};
-> +
-> +enum inv_icm42607_filter_bw {
-> +	/* Low-Noise mode sensor data filter (bandwidth) */
-> +	INV_ICM42607_FILTER_BYPASS,
-> +	INV_ICM42607_FILTER_BW_180HZ,
-> +	INV_ICM42607_FILTER_BW_121HZ,
-> +	INV_ICM42607_FILTER_BW_73HZ,
-> +	INV_ICM42607_FILTER_BW_53HZ,
-> +	INV_ICM42607_FILTER_BW_34HZ,
-> +	INV_ICM42607_FILTER_BW_25HZ,
-> +	INV_ICM42607_FILTER_BW_16HZ
+Regards,
+big.block
 
-That isn't a terminating entry so it should have a ,
-Rules on this are a bit obscure - but basically _NB type entries
-should never have a , anything else should - even if it's
-a register field enum where we know all values are there.
-
-> +};
-
-
-> +/* Sleep times required by the driver */
-> +#define INV_ICM42607_POWER_UP_TIME_US			100000
-> +#define INV_ICM42607_RESET_TIME_MS			1
-> +#define INV_ICM42607_ACCEL_STARTUP_TIME_MS		20
-> +#define INV_ICM42607_GYRO_STARTUP_TIME_MS		60
-> +#define INV_ICM42607_GYRO_STOP_TIME_MS			150
-> +#define INV_ICM42607_TEMP_STARTUP_TIME_MS		14
-> +#define INV_ICM42607_SUSPEND_DELAY_MS			2000
-
-Can we have spec references for these?  We often hit problems later
-with devices that are a little bit slow and no one is sure if it's because
-the sleeps are wrong or device is actually out of spec. Hence
-it is useful to be able to quickly check these.
-
-> +
-> +typedef int (*inv_icm42607_bus_setup)(struct inv_icm42607_state *);
-> +
-> +extern const struct regmap_config inv_icm42607_regmap_config;
-> +
-> +int inv_icm42607_core_probe(struct regmap *regmap, const struct inv_icm42607_hw *hw,
-> +			    inv_icm42607_bus_setup bus_setup);
-> +
-> +#endif
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> new file mode 100644
-> index 000000000000..9784709319b9
-> --- /dev/null
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> @@ -0,0 +1,207 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * Copyright (C) 2026 InvenSense, Inc.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/irq.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/property.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +
-> +#include "inv_icm42607.h"
-> +
-> +static int inv_icm42607_set_conf(struct inv_icm42607_state *st,
-> +				 const struct inv_icm42607_conf *conf)
-> +{
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	val = FIELD_PREP(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK,
-> +			 conf->gyro.mode);
-> +	val |= FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK,
-> +			  conf->accel.mode);
-
-As below - I'm fine with these going on one line (first is 80 chars, second just over)
-
-> +	/*
-> +	 * No temperature enable reg in datasheet, but BSP driver
-> +	 * selected RC oscillator clock in LP mode when temperature
-> +	 * was disabled.
-> +	 */
-	/*
-	 * No temperature enable reg in datasheet, but BSP driver selected 
-	 * RC oscillator clock in LP mode when temperature was disabled.
-	 */
-
-Basically go up to 80 chars. Here I think keeping RC oscillator on one line
-is a good idea though.
-
-
-> +	if (!conf->temp_en)
-> +		val |= INV_ICM42607_PWR_MGMT0_ACCEL_LP_CLK_SEL;
-> +	ret = regmap_write(st->map, INV_ICM42607_REG_PWR_MGMT0, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_FS_SEL_MASK,
-> +			 conf->gyro.fs);
-It's under 80 chars on one line so don't wrap.
-
-> +	val |= FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_ODR_MASK,
-> +			  conf->gyro.odr);
-
-As is this.
-
-> +	ret = regmap_write(st->map, INV_ICM42607_REG_GYRO_CONFIG0, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	val = FIELD_PREP(INV_ICM42607_ACCEL_CONFIG0_FS_SEL_MASK, conf->accel.fs);
-> +	val |= FIELD_PREP(INV_ICM42607_ACCEL_CONFIG0_ODR_MASK, conf->accel.odr);
-> +	ret = regmap_write(st->map, INV_ICM42607_REG_ACCEL_CONFIG0, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG1_FILTER_MASK,
-> +			 conf->gyro.filter);
-
-Whilst this one and next are a tiny bit over 80 chars, if you want to I don't
-mind those being a little long as single lines.
-
-> +	ret = regmap_write(st->map, INV_ICM42607_REG_GYRO_CONFIG1, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	val = FIELD_PREP(INV_ICM42607_ACCEL_CONFIG1_FILTER_MASK,
-> +			 conf->accel.filter);
-> +	ret = regmap_write(st->map, INV_ICM42607_REG_ACCEL_CONFIG1, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->conf = *conf;
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + *  inv_icm42607_setup() - check and setup chip
-> + *  @st:	driver internal state
-> + *  @bus_setup:	callback for setting up bus specific registers
-> + *
-> + *  Returns 0 on success, a negative error code otherwise.
-> + */
-> +static int inv_icm42607_setup(struct inv_icm42607_state *st,
-> +			      inv_icm42607_bus_setup bus_setup)
-> +{
-> +	const struct device *dev = regmap_get_device(st->map);
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	ret = regmap_read(st->map, INV_ICM42607_REG_WHOAMI, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (val != st->hw->whoami)
-> +		dev_warn(dev, "invalid whoami %#02x expected %#02x (%s)\n",
-> +			 val, st->hw->whoami, st->hw->name);
-> +
-> +	ret = regmap_write(st->map, INV_ICM42607_REG_SIGNAL_PATH_RESET,
-> +			   INV_ICM42607_SIGNAL_PATH_RESET_SOFT_RESET);
-> +	if (ret)
-> +		return ret;
-> +
-> +	fsleep(1000);
-
-Do we need an explicit sleep here, or is the idea just to save on
-a read that can't succeed in the poll that follows?  I'd be tempted
-to drop this if it's not absolutely needed just to avoid explaining it.
-This isn't fast path code. If we need to leave the device alone after
-reset for a bit then a datasheet reference is needed.
-
-> +
-> +	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
-> +				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
-> +				       INV_ICM42607_RESET_TIME_MS * 100,
-> +				       INV_ICM42607_RESET_TIME_MS * 1000);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +				     "reset error, reset done bit not set\n");
-> +
-> +	ret = bus_setup(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_set_bits(st->map, INV_ICM42607_REG_INTF_CONFIG0,
-> +			      INV_ICM42607_INTF_CONFIG0_SENSOR_DATA_ENDIAN);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_update_bits(st->map, INV_ICM42607_REG_INTF_CONFIG1,
-> +				 INV_ICM42607_INTF_CONFIG1_CLKSEL_MASK,
-> +				 INV_ICM42607_INTF_CONFIG1_CLKSEL_PLL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return inv_icm42607_set_conf(st, st->hw->conf);
-> +}
-
-> +int inv_icm42607_core_probe(struct regmap *regmap, const struct inv_icm42607_hw *hw,
-> +			    inv_icm42607_bus_setup bus_setup)
-> +{
-> +	struct device *dev = regmap_get_device(regmap);
-> +	struct fwnode_handle *fwnode = dev_fwnode(dev);
-> +	struct inv_icm42607_state *st;
-> +	int irq;
-> +	int ret;
-> +
-> +	irq = fwnode_irq_get_byname(fwnode, "INT1");
-Trivial but if fwnode is only used here (I didn't check later patches) then
-put the dev_fwnode() inline.
-
-I've never really understood why we don't have device_ variant of that - perhaps
-because it's hard to come up with a clear name.
-
-> +	if (!(irq > 0))
-> +		return dev_err_probe(dev, -EINVAL, "Unable to get INT1 interrupt\n");
-
-I assume this is in response to sashiko saying fwnode_irq_get_byname() can in some
-corner cases (where I suspect things are broken enough the system probably won't boot)
-return 0.   If we are actually going to defend against that then you need
-to special case it.  New sashiko review correctly reports this breaks probe
-deferal if say the interrupt chip driver hasn't loaded yet.
-
-	if (irq < 0) {
-		return dev_err_probe(dev, irq, ...);
-	if (irq == 0)
-		/* Odd corner case... */
-		return dev_err_probe(dev, -EINVAL, ...);
-
-However I'm deeply suspicious of whether the code paths that return 0 can happen in
-practice.  Given you have a suitable DT, can you try seeing if you can actually make
-it return 0 by messing around with the interrupt mappings?
-
-
-> +
-> +	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
-> +	if (!st)
-> +		return -ENOMEM;
-
+On Fri, May 15, 2026, at 15:47, Jonathan Cameron wrote:
+> On Fri, 15 May 2026 14:51:09 +0400
+> big.block0203@fastmail.com wrote:
+>=20
+> > Hi,
+> >=20
+> > On a Lenovo ThinkPad X1 Carbon Gen 13 (Intel Lunar Lake), the ACPI
+> > firmware declares an INT33D3 ambient light sensor as present, enable=
+d,
+> > and functional, but no Linux driver binds to it. As a result, no IIO
+> > device is created and no ambient light data is available to userspace
+> > (KDE/GNOME auto-brightness, iio-sensor-proxy, etc.).
+>=20
+> So INT33D3 is a new ID to IIO at least but looks like it
+> binds to drivers/input/misc/soc_button_array.c=20
+>=20
+> So I'm guessing not an ALS unless that's a multipurpose chip - seems
+> unlikely though as that combination isn't common.
+>=20
+> So if there is an ambient light sensor here that is exposed to
+> the OS we need to find it amongst the other IDs..
+>=20
+> >=20
+> > I did not find an existing report covering this on Lunar Lake. Apolo=
+gies
+> > if this duplicates one I missed; pointers welcome.
+> >=20
+> > Hardware
+> > =3D=3D=3D=3D=3D=3D=3D=3D
+> > - Lenovo ThinkPad X1 Carbon Gen 13
+> > - Intel Core Ultra 7 258V (Lunar Lake, Xe2)
+> > - iGPU: PCI 8086:64a0 (rev 04), subsystem 17aa:2339
+> > - Panel: Samsung Display ATNA40YK20-0 (2.8K OLED)
+> >=20
+> > Software
+> > =3D=3D=3D=3D=3D=3D=3D=3D
+> > - Fedora Kinoite 44
+> > - kernel 7.0.6-200.fc44.x86_64
+> > - KDE Plasma 6 on Wayland
+> >=20
+> > Symptom
+> > =3D=3D=3D=3D=3D=3D=3D
+> > No IIO devices are exposed at all:
+> >=20
+> >     $ ls /sys/bus/iio/devices/
+> >     (empty)
+> >     $ ls /sys/class/iio/
+> >     (empty)
+> >=20
+> > But the ALS is declared in ACPI:
+> >=20
+> >     $ cat /sys/bus/acpi/devices/INT33D3:00/hid
+> >     INT33D3
+> >=20
+> >     $ cat /sys/bus/acpi/devices/INT33D3:00/status
+> >     15
+> >=20
+> >     $ ls /sys/bus/acpi/devices/INT33D3:00/
+> >     cid  hid  modalias  path  physical_node  power  status  subsyste=
+m  uevent
+> >     # No `driver` symlink under physical_node =E2=80=94 nothing boun=
+d.
+> >=20
+> >     $ readlink /sys/bus/acpi/devices/INT33D3:00/physical_node
+> >     ../../../../../../pci0000:00/0000:00:1f.0/PNP0C09:00/INT33D3:00
+> >=20
+> >     $ sudo dmesg | grep -i INT33D3
+> >     (no output =E2=80=94 no driver even attempted to probe)
+> >=20
+> > Status 0xf per ACPI spec means: present (bit 0), enabled (bit 1), sh=
+own
+> > in UI (bit 2), functional (bit 3). The firmware unambiguously declar=
+es
+> > the device as available. dmesg shows no probe attempt and no error.
+> >=20
+> > Other unclaimed firmware-declared devices on this platform (for cont=
+ext)
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >     INTC1025:00     status=3D?    driver=3DNONE
+> >     INTC105D:00     status=3D15   driver=3Dintel-pinctrl
+> >     INTC105D:01     status=3D15   driver=3Dintel-pinctrl
+> >     INTC105D:02     status=3D15   driver=3Dintel-pinctrl
+> >     INTC105D:03     status=3D15   driver=3Dintel-pinctrl
+> >     INTC105D:04     status=3D15   driver=3Dintel-pinctrl
+> >     INTC1068:00     status=3D15   driver=3Dint3400 thermal
+> >     INTC1069:00     status=3D15   driver=3Dint3403 thermal
+> >     INTC1069:01     status=3D15   driver=3Dint3403 thermal
+> >     INTC1069:02     status=3D15   driver=3Dint3403 thermal
+> >     INTC1069:03     status=3D15   driver=3Dint3403 thermal
+> >     INTC1069:04     status=3D15   driver=3Dint3403 thermal
+> >     INTC107B:00     status=3D15   driver=3Dintel-hid
+>=20
+> It's more than possible that the ALS is presented as part of the HID.
+>=20
+> >     INTC1092:00     status=3D0    driver=3DNONE
+> not 100% sure but there are some references to a wireless modem related
+> thing associated with this ID.
+>=20
+> >     INTC109D:00     status=3D15   driver=3DNONE
+> Might be the watchdog.  Maybe see if it has a cid entry.
+>=20
+>=20
+> Other alternatives would be it's on a discoverable bus...
+>=20
+> So without figuring out where it is, not much we can do here.
+>=20
+> Good luck on finding more info!
+>=20
+> Jonathan
+>=20
+>=20
+> >=20
+> > INTC109D:00 is also present-and-enabled but has no driver bound. Its
+> > function is unknown to me; including it for awareness in case it is
+> > sensor-hub-related and a prerequisite for INT33D3.
+> >=20
+> > INT3519:00 is also present in ACPI but with status=3D0 (disabled by
+> > firmware), so likely not relevant here.
+> >=20
+> > Expected behavior
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > An IIO device of class `in_illuminance*` should appear under
+> > /sys/bus/iio/devices/, allowing iio-sensor-proxy and desktop
+> > environments to consume ambient light data for auto-brightness.
+> >=20
+> > Thanks,
+> > big.block
+>=20
+>=20
