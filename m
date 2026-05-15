@@ -1,44 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 272043002A9;
-	Fri, 15 May 2026 15:05:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DC0C3002A9;
+	Fri, 15 May 2026 15:06:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778857553; cv=none; b=H6PnhDWsFhqpxb4/V8n0fNUhSMSKO1uTv8AMpK3oxqie1f9QkAeYgvCTrYewu4ykAvxLFWAqOg63EtvGBTDx2SOU4kbxKzdVoDI1/3WjCcxuUsxrhRey2iWhyEJ8ud50kTZYVftxy7OTxXOcZxLTWuPIzPbsq+xTkXq7YvN0q/Q=
+	t=1778857612; cv=none; b=A/US1dT3vWLK5CC0qs8M5ckJ3xnF/dEeUjknyI+dOhrF38sjMs5x64y3c6/pz80DU1kmNIZLKbQ2R2mYEWsVw0BYYfoEAwkUv+KbkKOrs571vmDDpm0gIZvzaFcuPAH4FxZTxojpnrhYIbiC9WKMUKYGUE7TufDet/upyL4acuY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778857553; c=relaxed/simple;
-	bh=S97C/KlOBLA0A5zdQCJjCSKK2QuEAKkKCk/Nwjjp3J8=;
+	s=arc-20240116; t=1778857612; c=relaxed/simple;
+	bh=FILSLCcVXMhoQYUaMxaWQ5TYq2kwy4zGVK6Pqcj5O30=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TrlsdRmbQOeU1jCw5V8JHqBUYeRuIB5jHw6l0fhxg96S1vRYGqELQEU9Q/dyknpJNPUVOj2s5eLtLX+rfcfglnM/DveTOBelxq/CCu3gfew1BHnIHXr4U3awWXgLQTxPgPehNMF5yiihEWi876ZneIIeNCwJ0SaZ2M2+1z9FPtI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=vsEKCCF4; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=E/njqS49vDsre4CDgnjGHXI3vnc4VdLngu2Y8dssQqPO+lur+t+wT+t/gQnDCdVMWACArVbhU6Wn7IBgbFGQKnDqqeHYGGwGDJQYdKXTTivIEY7yMKKzUMuO6TXvgjHRc0FEIuAdXS2zAMJqzirJUBEmMqc0FNFXWvFC4oFssnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=W+Q1xLsu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="vsEKCCF4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91660C2BCB0;
-	Fri, 15 May 2026 15:05:52 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="W+Q1xLsu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8CEEC2BCB0;
+	Fri, 15 May 2026 15:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1778857553;
-	bh=S97C/KlOBLA0A5zdQCJjCSKK2QuEAKkKCk/Nwjjp3J8=;
+	s=korg; t=1778857612;
+	bh=FILSLCcVXMhoQYUaMxaWQ5TYq2kwy4zGVK6Pqcj5O30=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=vsEKCCF4NPWo6W/6ijfdBlkmS4bON4+BzFX3dvAWHmKiJuT2Lmj+Usm7dmic6Ky9E
-	 zFhRy17MQsj/gPRm/PhhW8rXzcQIyVkVsFr4KgB+/ukAtdKiphkmBsum5nSsEiSt/Q
-	 xN++OS/0KQvOC3c9VaeTujRc/D+T8X529+PIBrck=
-Date: Fri, 15 May 2026 17:05:57 +0200
+	b=W+Q1xLsuoPZoDvfHKQVlzqtbBW0nCvCzqrXul0uYtmU7iiNHmB7015+zTrn1H5bPz
+	 Kx6gBygBBieiRYgsbnnj0AAt85E/I+/tLFTVOPsLDx16T03SZz82C6e7yj72NxFwXF
+	 rX+hYkzDYbU4TAfJLK5nwyayBo1KRJOA+zPkqG0s=
+Date: Fri, 15 May 2026 17:06:56 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Sam Daly <sam@samdaly.ie>, stable <stable@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH 2/3] iio: light: veml6075: add bounds check to
- veml6075_it_ms index
-Message-ID: <2026051527-petri-obstruct-0312@gregkh>
+Subject: Re: [PATCH 1/3] iio: adc: ti-ads1298: add bounds check to
+ pga_settings index
+Message-ID: <2026051515-economist-bloomers-eb9d@gregkh>
 References: <2026051420-strudel-graves-f6cd@gregkh>
- <2026051422-hungry-dolly-0250@gregkh>
- <DIIN3H0YMILE.3PFQWDK2BULIT@gmail.com>
- <20260515153236.1acf1ca4@jic23-huawei>
+ <20260515153913.00150136@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -47,32 +44,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260515153236.1acf1ca4@jic23-huawei>
+In-Reply-To: <20260515153913.00150136@jic23-huawei>
 
-On Fri, May 15, 2026 at 03:33:07PM +0100, Jonathan Cameron wrote:
-> On Fri, 15 May 2026 08:17:18 +1300
-> "Javier Carrasco" <javier.carrasco.cruz@gmail.com> wrote:
+On Fri, May 15, 2026 at 03:39:13PM +0100, Jonathan Cameron wrote:
+> On Thu, 14 May 2026 18:23:20 +0200
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 > 
-> > On Fri May 15, 2026 at 5:23 AM +13, Greg Kroah-Hartman wrote:
-> > > From: Sam Daly <sam@samdaly.ie>
-> > >
-> > > veml6075_it_ms has 5 elements but VEML6075_CONF_IT can yield
-> > > values 0-7. If it returns a value >= 5, this causes an
-> > > out-of-bounds array access. Add a bounds check and return
-> > > -EINVAL if the index is out of range.
+> > From: Sam Daly <sam@samdaly.ie>
+> > 
+> > ads1298_pga_settings has 7 elements but ADS1298_MASK_CH_PGA can yield
+> > values 0-7. If it yields a value >= 7, this causes an out-of-bounds
+> > array access. Add a bounds check and return -EINVAL if the index
+> > is out of range.
+> > 
+> I'll add something about the other value be reserved whilst applying.
 > 
-> I'd prefer it if this sort of change called out that we don't expect
-> to ever see those values except when we have bus corruption or
-> a broken device.  Good to protect against but that info might help
-> folk decide whether to backport or not.
+> Note that Sashiko has found a more involved similar case (I haven't
+> checked it)
+> 
+> https://sashiko.dev/#/patchset/2026051420-strudel-graves-f6cd%40gregkh
+> 
+> Whilst ideally we should harden drivers against faulty values from
+> hardware, sometimes (like that one) it gets rather involved to actually
+> do!  Hence I'm not suggesting we actually fix that one but if anyone
+> does want to take a look - go ahead.
 
-Thanks.  This came from a run of "look at all of these bugfixes and find
-where we need to also apply the same pattern" of my bot.
+Right now, once a driver binds to a device, we "trust" the hardware
+works properly.  But "obvious issues" like this patch and the series are
+good to have for some devices where the same pattern of fix has been
+applied elsewhere in the tree.
 
-> I'll add a note whilst applying.  Applied to the fixes-togreg
-> branch of iio.git.  I also rewrapped the description as 60 chars
-> is rather short.
-
-Thanks!
+thanks,
 
 greg k-h
