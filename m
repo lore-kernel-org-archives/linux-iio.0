@@ -1,216 +1,178 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B8BC2745E
-	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 11:32:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774CD30C62D;
+	Sat, 16 May 2026 11:39:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778931151; cv=none; b=AO/Y4XgZSDZjnpGbM3qXOtzHDtFurclAGwVVzpShAUhYOu0AZ6F/9tJlKR72M969g/gIRJAgpq2efiEJD3DvwBmG6Bw6cuZPucy8tv4jylEwAwH4GQGoEcbmPL10fHsmFY8YlnVZ07ucs2OUPmKMuN4gizYVV2umwk8w/8AGFBI=
+	t=1778931542; cv=none; b=rUA89kVrBL0qTn/rVb+azeBx29LFm0U5uUkfyLgkLq2voHiNg7UcdW4Rn+/AeNA7AIcf5KYVR/u/NDq0DgepiE5SvBylVYiBz4Tw7koseaC+5LhGiK2sHEZr+dMA3IP+djRj0EhoW9rJR1OAq/hBIg4uu+E2xqfSzE3NccZAar0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778931151; c=relaxed/simple;
-	bh=g5cFH94NoRqNQcqi0o6uAdCMG2S19mVTTWTUtDQRkUU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=szPdFT+S/BSOJdk3y2tZj6Nnlr8MZvzHz1emPf04oA18VqGq0+cH6tBnmVSh69xiZDZeErrrp5eyeUpW3ssguaqaImfQ/cpLPnE5KrObBye4FH1pIH9XL4yMwg53fn2Z3H8bFm/ozdGGLZM6xF4lYbbmgHtizWO4cGlpufQE2AY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P1j/jOK7; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778931542; c=relaxed/simple;
+	bh=tFEB8nxGo12335xY/TcM4wiRXhshhkmKJYKNVDYt7t0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=V4jlwXbz5kLQRKYzEBNxOzSv98KCbrcvnGLRMq8Qhhr19/odoMefUkY+zufHf/5KOHKVfIbe8+M70E3y75buryPuOIwOYBda+BlugvbgdXoxXTizVxuj72HPImNDrm+2oycK0lcWrzagNRPcRzn2+/wNBUeHV/D7dBZ9j06RVuc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M5k4Xt+X; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P1j/jOK7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C75BAC19425;
-	Sat, 16 May 2026 11:32:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M5k4Xt+X"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B42AAC19425;
+	Sat, 16 May 2026 11:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778931151;
-	bh=g5cFH94NoRqNQcqi0o6uAdCMG2S19mVTTWTUtDQRkUU=;
-	h=From:To:Cc:Subject:Date:From;
-	b=P1j/jOK7IjCcGD89zkKWZLPpH+jaKx+7aon3jDgvzfOpJ3ghw3LgWGHx6h8//FwZy
-	 Mp9D3IgPfP/iIfyjJQXrKBQG9LcyvnwffwAuIwMHZi1Yg36rmyw5XjacEhcAmrwZUX
-	 lh6JMP8KNtDzlfdcyBFZvd4teQqdi6ZY5cwXMgGfGpvVfvSI5vY9tIVrrPJIXp2JXo
-	 3c9qS8TDpD5hW99HvzHmheZYaT0rURu4nHhg5JYiuwqSrfuHkXNCb3Myh++GWHGAAt
-	 2k5o5cRTiHFKowdW8nMLfpkNGtiffycKb1/w9dIV2iWRNR6Q7tma89DgHCGai5a1yl
-	 TLYDUNrUpWnQg==
+	s=k20201202; t=1778931542;
+	bh=tFEB8nxGo12335xY/TcM4wiRXhshhkmKJYKNVDYt7t0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=M5k4Xt+XjJDvmLIuRjxry94tF6mx8TIN1fZlihGmzndasAoDI/d39gok7zeOY5ymb
+	 d2DfFZ2E/58D22emBKC9lnykjyKNB/BwHIb2zwFVJyU2xTSk0lWyDDua7rJV+mu8Gx
+	 LpJQgZuSqxzD3CoDEUwUBEE+DFCiCn217OfJxs0Yr1XZilkrNX7vq1c2k2ID+YdXL7
+	 xC7+9fdvo4dg0D9e8rVzaU0JUlNZxTB4ZAwqTNeK87/5EAo2GacPeQ67YoqcHYppDZ
+	 Z+7Q23kKecf8EwDer3Uw/Nnu0Q3rsankXAzcDOOEcou0txJBwqQXz7lyw4vUBy7IRX
+	 4WAwD5RB0a3EQ==
+Date: Sat, 16 May 2026 12:38:53 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org,
-	Stepan Ionichev <sozdayvek@gmail.com>,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio: trigger: drop generic interrupt trigger.
-Date: Sat, 16 May 2026 12:32:19 +0100
-Message-ID: <20260516113219.573610-1-jic23@kernel.org>
-X-Mailer: git-send-email 2.54.0
+To: Abinash Singh <abinashsinghlalotra@gmail.com>
+Cc: gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Abinash Singh <abinashlalotra@gmail.com>
+Subject: Re: [PATCH] staging: Documentation: dds: replace frequencyY with
+ frequency
+Message-ID: <20260516123754.16becb25@jic23-huawei>
+In-Reply-To: <CAMV7Lq7NqxO5cpy7zSrawBORWgtEhm2QTTgRtLptV9==yCs+wg@mail.gmail.com>
+References: <20260511171255.9668-1-abinashsinghlalotra@gmail.com>
+	<20260512150846.76f896a7@jic23-huawei>
+	<CAMV7Lq7NqxO5cpy7zSrawBORWgtEhm2QTTgRtLptV9==yCs+wg@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-There is no way to bind to this driver from firmware and no explicit
-platform device creation calls exist in mainline.
+On Tue, 12 May 2026 22:14:34 +0530
+Abinash Singh <abinashsinghlalotra@gmail.com> wrote:
 
-As such it is dead code. So drop it rather than potentially wasting time
-modernizing it (see #1)
+> Hi Jonathan
+>=20
+> On Tue, May 12, 2026 at 7:38=E2=80=AFPM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >
+> > On Mon, 11 May 2026 22:42:55 +0530
+> > Abinash Singh <abinashsinghlalotra@gmail.com> wrote:
+> > =20
+> > > From: Abinash Singh <abinashlalotra@gmail.com>
+> > >
+> > > The documented frequencyY attribute naming is implementation
+> > > specific and differs from common IIO sysfs attribute
+> > > conventions.
+> > >
+> > > Replace the non-standard frequencyY attribute documentation with
+> > > out_altvoltageX_frequency and document tuning word selection
+> > > through out_altvoltageX_frequencysymbol
+> > >
+> > > This makes the documented ABI naming consistent with standard
+> > > IIO sysfs attribute conventions and clarifies how tuning word
+> > > registers are selected and programmed.
+> > > =20
+> >
+> > Hmm. So some history on why it was done like this (long time back
+> > but I think I recall the basic argument).
+> >
+> > Consider the programming you need to set up FSK on a channel and
+> > the fact that someone is recieving the result.
+> >
+> > When you set the symbol to program it that channel will begin
+> > outputting the voltage. That means someone at the other end starts
+> > decoding it.
+> >
+> > Hence we normally expect to set a frequency 'before' changing the
+> > symbol.  Hence the per symbol files.
+> >
+> > There might be a valid way to set them up using your proposed
+> > interface but I'm not currently understanding what it is. =20
+>=20
+> I think I misunderstood the purpose of
+> out_altvoltageX_frequencysymbol.
+>=20
+> I initially thought it was used to select which tuning word register
+> to write into, whereas it actually selects the active output tuning
+> word. That explains why my proposed interface was confusing.
+>=20
+> The ordering requirement you described for FSK setup makes sense now.
+> With separate frequency0/frequency1 files, userspace can configure both
+> tuning words before switching the active symbol.
+>=20
+> >
+> > We went through the same dance with the more complex DDS that
+> > Rodrigo is working on. Take a look at the multichannel approach
+> > he is using.  It may apply here - I'm not sure.
+> > =20
+>=20
+> With my approach we can have a new entry  /out_altvoltageX_frequencySelect
+> which can act as a mux to write into FREQ0 and FREQ1 register
+> via  /out_altvoltage_frequency.
 
-Link: https://lore.kernel.org/all/20260511063229.1433-1-sozdayvek@gmail.com/ #1
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
+We could but given that is custom ABI anyway, what is the advantage over
+per symbol controls?  Generally 'mux' control sysfs attributes are harder
+to use than separate files.  For starters you'd also need an
+out_outvoltageX_symbolcount or something like that to know what values
+can be used.  One file per symbol and that is explicit without yet
+more descriptive ABI needing to be defined.
 
-Long ago this was somewhat useful, but seems no one cares any more!
-If anyone has a usecase then shout - if not it will be easy to bring
-back anyway if one surfaces.  At that point we can modernize it.
 
- drivers/iio/trigger/Kconfig              |   9 --
- drivers/iio/trigger/Makefile             |   1 -
- drivers/iio/trigger/iio-trig-interrupt.c | 109 -----------------------
- 3 files changed, 119 deletions(-)
- delete mode 100644 drivers/iio/trigger/iio-trig-interrupt.c
+>=20
+> I will take a look at Rodrigo's multichannel DDS approach before
+> proposing any ABI changes further. It would be helpful if you could
+> share links to the relevant discussion or patches.
 
-diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
-index 7ecb69725b1d..52899c22d57c 100644
---- a/drivers/iio/trigger/Kconfig
-+++ b/drivers/iio/trigger/Kconfig
-@@ -16,15 +16,6 @@ config IIO_HRTIMER_TRIGGER
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called iio-trig-hrtimer.
- 
--config IIO_INTERRUPT_TRIGGER
--	tristate "Generic interrupt trigger"
--	help
--	  Provides support for using an interrupt of any type as an IIO
--	  trigger.  This may be provided by a gpio driver for example.
--
--	  To compile this driver as a module, choose M here: the
--	  module will be called iio-trig-interrupt.
--
- config IIO_STM32_LPTIMER_TRIGGER
- 	tristate "STM32 Low-Power Timer Trigger"
- 	depends on MFD_STM32_LPTIMER || COMPILE_TEST
-diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
-index f3d11acb8a0b..fc1fd5661c94 100644
---- a/drivers/iio/trigger/Makefile
-+++ b/drivers/iio/trigger/Makefile
-@@ -6,7 +6,6 @@
- # When adding new entries keep the list in alphabetical order
- 
- obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
--obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
- obj-$(CONFIG_IIO_STM32_LPTIMER_TRIGGER) += stm32-lptimer-trigger.o
- obj-$(CONFIG_IIO_STM32_TIMER_TRIGGER) += stm32-timer-trigger.o
- obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
-diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
-deleted file mode 100644
-index a100c2e3a0d9..000000000000
---- a/drivers/iio/trigger/iio-trig-interrupt.c
-+++ /dev/null
-@@ -1,109 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/*
-- * Industrial I/O - generic interrupt based trigger support
-- *
-- * Copyright (c) 2008-2013 Jonathan Cameron
-- */
--
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/platform_device.h>
--#include <linux/interrupt.h>
--#include <linux/slab.h>
--
--#include <linux/iio/iio.h>
--#include <linux/iio/trigger.h>
--
--
--struct iio_interrupt_trigger_info {
--	unsigned int irq;
--};
--
--static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
--{
--	iio_trigger_poll(private);
--	return IRQ_HANDLED;
--}
--
--static int iio_interrupt_trigger_probe(struct platform_device *pdev)
--{
--	struct iio_interrupt_trigger_info *trig_info;
--	struct iio_trigger *trig;
--	unsigned long irqflags;
--	struct resource *irq_res;
--	int irq, ret = 0;
--
--	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--
--	if (irq_res == NULL)
--		return -ENODEV;
--
--	irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
--
--	irq = irq_res->start;
--
--	trig = iio_trigger_alloc(NULL, "irqtrig%d", irq);
--	if (!trig) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--
--	trig_info = kzalloc_obj(*trig_info);
--	if (!trig_info) {
--		ret = -ENOMEM;
--		goto error_free_trigger;
--	}
--	iio_trigger_set_drvdata(trig, trig_info);
--	trig_info->irq = irq;
--	ret = request_irq(irq, iio_interrupt_trigger_poll,
--			  irqflags, trig->name, trig);
--	if (ret) {
--		dev_err(&pdev->dev,
--			"request IRQ-%d failed", irq);
--		goto error_free_trig_info;
--	}
--
--	ret = iio_trigger_register(trig);
--	if (ret)
--		goto error_release_irq;
--	platform_set_drvdata(pdev, trig);
--
--	return 0;
--
--/* First clean up the partly allocated trigger */
--error_release_irq:
--	free_irq(irq, trig);
--error_free_trig_info:
--	kfree(trig_info);
--error_free_trigger:
--	iio_trigger_free(trig);
--error_ret:
--	return ret;
--}
--
--static void iio_interrupt_trigger_remove(struct platform_device *pdev)
--{
--	struct iio_trigger *trig;
--	struct iio_interrupt_trigger_info *trig_info;
--
--	trig = platform_get_drvdata(pdev);
--	trig_info = iio_trigger_get_drvdata(trig);
--	iio_trigger_unregister(trig);
--	free_irq(trig_info->irq, trig);
--	kfree(trig_info);
--	iio_trigger_free(trig);
--}
--
--static struct platform_driver iio_interrupt_trigger_driver = {
--	.probe = iio_interrupt_trigger_probe,
--	.remove = iio_interrupt_trigger_remove,
--	.driver = {
--		.name = "iio_interrupt_trigger",
--	},
--};
--
--module_platform_driver(iio_interrupt_trigger_driver);
--
--MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
--MODULE_DESCRIPTION("Interrupt trigger for the iio subsystem");
--MODULE_LICENSE("GPL v2");
--- 
-2.54.0
+https://lore.kernel.org/all/20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@an=
+alog.com/
+
+and the earlier versions of that series.
+
+>=20
+> > =20
+> > >
+> > > Signed-off-by: Abinash Singh <abinashlalotra@gmail.com>
+> > > ---
+> > >
+> > > The out_altvoltageX_frequencysymbol and
+> > > out_altvoltageX_frequency_scale attributes can be added
+> > > through extended channel attributes (.ext_info in channel_spec struct=
+ of IIO)
+> > >
+> > > Feedback on this approach would be appreciated, and if
+> > > there is some other way in your mind. I would like to
+> > > work on that.
+> > >
+> > > I am also interested in working on the sysfs-bus-iio-dds
+> > > documentation and the ad9834 driver. I recently bought an
+> > > AD9833 IC for experimentation and testing.
+> > > =20
+> > Excellent!
+> >
+> > Thanks,
+> >
+> > Jonathan
+> > =20
+> > > Thanks =20
+>=20
+>=20
+> And do we need to really work on this documentation in order to work on a=
+d9834.c
+> What else can be done in ad9834.c apart from this naming.??
+
+The challenge has always been the ABI for these.
+We need to work out what it should be (which is kind of what Rodrigo is doi=
+ng
+in his RFCs) before we commit it in stone.  Whilst not ideal, we can evolve
+an ABI for a driver in staging (for IIO anyway - be careful in other places)
+but not once it is out of staging.
+
+Jonathan
+
+>=20
+> Thanks
+>=20
+> Abinash Singh
 
