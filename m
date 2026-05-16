@@ -1,46 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4824F2580CF;
-	Sat, 16 May 2026 12:10:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAF8C2264C7;
+	Sat, 16 May 2026 12:12:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778933425; cv=none; b=XKaKq5OleNEGGSp32S/DZNxiX5zHMpaipuEuIraT08sIzUcan3OjrEolxnvoqBb3BnFPXglAgB0tws0bfSqU2nlBIGwK9yd+w3pYKVgZ89OSNBrqcyNRbzCZLVPCX0F3Fb7fIFBEOe6Huqj4vmYldJNJ8ONgKYEJCv6MDNjwsp0=
+	t=1778933534; cv=none; b=UYKqs7f2vawYEHan/cwxJ5U+JN1or+28TsEKTpraQmzma5fv8MB3fr8sWadj06AzUfkcHHMZU8rVav7LqYSrLjOsuU4jTTYT0sryrP6I9I0cnzwa9jF0AObXEYGtapiYLvES36AgRaWR7czrspQaCQN5vk7tfRfyGFuXabIBzcQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778933425; c=relaxed/simple;
-	bh=Y4qnwMbeKZRjTVx0CxmZ9xmjEegISLUEnKnsvwK8gjk=;
+	s=arc-20240116; t=1778933534; c=relaxed/simple;
+	bh=iw02GvgfOz6Y8vYRzU4uyBf+jVodLAbtDsvU7P1nDFM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lwJXLtjt/0egdTOjxZasryQirzXieo8TVND7nkuEnwdbOlOZUuJOE7V+ixuJPLX84AUmx5EJvj6uLh1pqDY3qFDAE+BYvZQPAIyaJwfCCkxj1ANtCXwW/L9Vutylk4GqGf3/zOoIV8S48gmXkDxMlKGjvIxClLag0YHobUHzTvw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bbiDy3uF; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=PigM58l3HxrcdoPsnvkTpk1SJT7I48Kzgzp7ajAxIYqCXbYdaSuC+SYu1VzJ+7UyjYOkNwjpMEO0D9eape1u4EdjX5bGDl3siO+IxY+7Zud2V77CUgoeB9CkvqaIDsf/1oJmxjCVCDGmaBVqdQAnZ1bG8rbjgjacbUikBRSV6RA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XCfkDYLx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bbiDy3uF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3896C19425;
-	Sat, 16 May 2026 12:10:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XCfkDYLx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E853C19425;
+	Sat, 16 May 2026 12:12:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778933425;
-	bh=Y4qnwMbeKZRjTVx0CxmZ9xmjEegISLUEnKnsvwK8gjk=;
+	s=k20201202; t=1778933533;
+	bh=iw02GvgfOz6Y8vYRzU4uyBf+jVodLAbtDsvU7P1nDFM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=bbiDy3uF23dEt5TDGE8A9YT+rF5FvET6iRVnxltCpSUriRBh+CPZwMOyEkEm87K0h
-	 IEviLnDeM5M9OjEBguckqmW7rS5s8W7D3njy82hi91/N2RftUegSSXH09oMR8OZ0Ht
-	 rU2VPKVtb7NrO3jWOZH4BM/HwnDi0yboP/JaZxAGBGOdzXCGntkkrOBiK4a8gt0h1n
-	 GNs6wy/TybJlVlJPuyNQMTRY4jZnvk5AjxvVn6GLjnO716c4nkhMAdI7Q1c+8fmvf8
-	 vFH7gJUZHSoVSzaXUy2XOFoGraWHA1EMJR6lLY/jJ/MLxFJPO4sl8YBMzCsJZYCtwT
-	 6Ans/Wcb8XBxA==
-Date: Sat, 16 May 2026 13:10:17 +0100
+	b=XCfkDYLx9IDCyMRNvu9P7vZWkAC0hES+yTCsi/i86daZloWGCzULPE2Mm8WPx6q2H
+	 Wn33eCMyKHNbTkut7QZ8YICcDiBO9umufP5UdeuFBPU/+ebIDYDx2335Eu+rUNE7l/
+	 JD1ZBEKMLiZFcrT0Q6EO23CTjjWWplW/Y+DplgN5odftR6dFhKEPdEXXBNQgaHVBmt
+	 6VlhVeiM069hKriTH0n+SBjLWOSPoJh/u5xXss4HqPLZ7KVQzDSvdqQzoOcVhgylHW
+	 db9g5HexgXH/qFGx1Fo7l7/7vaYKJlLokbOtW9u1b+BLTP9P2IugbWq9zjwl4JdVOj
+	 4q4bRA6nbCibg==
+Date: Sat, 16 May 2026 13:12:06 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Alexander Koch <mail@alexanderkoch.net>, Michael Hornung
- <mhornung.linux@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 09/10] iio: light: opt3001: switch driver to managed
- resources
-Message-ID: <20260516131017.3de30733@jic23-huawei>
-In-Reply-To: <20260512152600.764ff7c7@jic23-huawei>
-References: <20260512-opt3001-cleanup-v2-0-8018cf3a8a0a@gmail.com>
-	<20260512-opt3001-cleanup-v2-9-8018cf3a8a0a@gmail.com>
-	<20260512152600.764ff7c7@jic23-huawei>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org, LKML
+ <linux-kernel@vger.kernel.org>, Linux ACPI <linux-acpi@vger.kernel.org>
+Subject: Re: [PATCH v1] iio: light: acpi-als: Check ACPI_COMPANION() against
+ NULL
+Message-ID: <20260516131206.2fec17b9@jic23-huawei>
+In-Reply-To: <agNZtFQ8XP3MTO4i@ashevche-desk.local>
+References: <2366919.iZASKD2KPV@rafael.j.wysocki>
+	<agNZtFQ8XP3MTO4i@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,31 +47,22 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 12 May 2026 15:26:00 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Tue, 12 May 2026 19:47:48 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> On Tue, 12 May 2026 12:57:29 +0200
-> Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+> On Tue, May 12, 2026 at 06:28:26PM +0200, Rafael J. Wysocki wrote:
 > 
-> > From: Joshua Crofts <joshua.crofts1@gmail.com>
+> > Every platform driver can be forced to match a device that doesn't match
+> > its list of device IDs because of device_match_driver_override(), so
+> > platform drivers that rely on the existence of a device's ACPI companion
+> > object need to verify its presence.
 > > 
-> > Move the driver to use devm_* functions to automate resource
-> > management and simplify error handling. This also allows removal
-> > of the opt3001_remove() function.
-> > 
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>  
-> Some trivial stuff inline.  I'll probably wait for sashiko to catch up with
-> it's backlog and get to this one.  If nothing comes up there or in other reviews
-> I'm fine tweaking the stuff below whilst applying the series.
+> > Accordingly, add a requisite ACPI_COMPANION() check against NULL to the
+> > acpi-als IIO driver.  
 > 
-Sashiko did come back with a lifetime issue.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
 
-I think it's a false positive as there aren't any workqueues or similar
-that might still be active. IRQs will long have been cleaned up before
-the mutex_destroy() occurs.
-
-Anyhow, do take a look 
-https://sashiko.dev/#/patchset/20260512-opt3001-cleanup-v2-0-8018cf3a8a0a%40gmail.com
-and make sure I'm not missing anything!
+Applied thanks.
 
 Jonathan
