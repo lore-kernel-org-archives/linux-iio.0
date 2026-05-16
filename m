@@ -1,41 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7E52B9B7
-	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 14:44:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F266B78F3A;
+	Sat, 16 May 2026 14:47:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778942699; cv=none; b=NS1nZUmUyoLMXxUECwz6PwBAZaQJH83Y9INNqvA2njg4A2oOWl4CEIBPkMXRfpizadd+oFwA4LZNukEngsnw1cPQetkyMNQkO/jjXRKPcCQJ+sMY62TJ4MlgvRASOqqB5hsZuToW1A/QP8gWoV0z8XbUlIkr4S1NJBvQL9OwOaI=
+	t=1778942879; cv=none; b=s3d6QhkI+jxNiKa3/5GZ/Nwd+v6It9hk6Wi/h/rfZnT7+t44DeoosweWK28PolTkGnkSRtsyspWpmb4Y+L2jTEeLlGcDe1xNytKnr2FlIXtdIQ1zVg8f2WFf8mcNChkXDDJP4f8MrhpEkM3DoSreOMJiVccnAYGqmXpm8fXaVOs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778942699; c=relaxed/simple;
-	bh=9M+JrVmDTPYZED8J+E6XPZkY3GK7HDO1YZWVEkorACY=;
+	s=arc-20240116; t=1778942879; c=relaxed/simple;
+	bh=f2EgpoFQ20CBNzrecfnZmWwifbC7DMq48xGeJOLXPlY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hvM0/OrZESiZuXaPdGEsQQexgWgVMEn4Z5Gt6g/SNF8u8YAAnDvTh7qtxd82T5c8wfmLOVi1o7NWb4COeZh6HX8CgQv8RLIBuksIfDGZBhYXBFoqXO+6n1W+LJ2Xnf+TeqWY+h55pXRF6RGi9r8jx6KZQJbpw2O7qkxHUIE7lTI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KvnCv8Rc; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=eitfsBgH4D+JXpdCg2IjS4FxOlzC22v9E2LZgepmzzWZxln3/dDCw1eiSZu2JfVC6XFNmKbzRivS0poBXkUTnnhf8PfKVfw4zoVOraK+GIKHX1U1rpc6i3aKlWRe304fdBFFaRBNpbRnZflxHWM8T1/CL/fk97G2m+rH4otq8zs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h99cy6nF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KvnCv8Rc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C4BFC19425;
-	Sat, 16 May 2026 14:44:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h99cy6nF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FF86C19425;
+	Sat, 16 May 2026 14:47:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778942699;
-	bh=9M+JrVmDTPYZED8J+E6XPZkY3GK7HDO1YZWVEkorACY=;
+	s=k20201202; t=1778942878;
+	bh=f2EgpoFQ20CBNzrecfnZmWwifbC7DMq48xGeJOLXPlY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=KvnCv8RcQD6ldeg1tu8qnK0vVpJ47+VS29SROgzZ1wB+nmDGt0KLYhNglmsLfPiMs
-	 4Lfp5E26j+9zHzyJW7DYI5N+lCeK7m87DbDzQgRUb5c4ALpNC+4MylRs4dKsNuG5DB
-	 GHvIwu7/RFx+sDWtk7+aJxNtcWKQlx/5hvKAFmPBIP7kWih5uCMIjU2qTHMsS4+2QJ
-	 hMdLl38n8MFvTFMDMyvqGcBwO9LPrCmEPb7qr5lr/ETlnos7HGdy8RsjGJpwmJOrUK
-	 UaONMB36w2EGf0LXBDEpT2/TZIJwS5UyXAnrz7PwZAl4Wa/WPwsfsz8XBab147/U+v
-	 gnZ/M0mk4zTLg==
-Date: Sat, 16 May 2026 15:44:52 +0100
+	b=h99cy6nFqh8qNLYCghTjPqlneJVdv6CI8TM71gxYF2IoNjLUCFo8uzCZs1lIWM4ha
+	 QLUhL20TYosj51fvqspvEFeFt7kpkpKtkcCIhu6hGTmZ0fbxqA2DhKaDI2gXJ6AOku
+	 hgWbSKYUWZ+Exz2dOs1p7dJ4adeT8fU5zRZWQ9znU8SjrnWNr4OZmK3VYfkJeQHkNR
+	 9Z6U9xBYIc6McdwIzhx/nYHIXP7f3RyEHo9z4o+R9TVVaU69kqCpvGcPftU8duqqqH
+	 7bDOndzVNy5vIU/4aFTzOoB5cVNUpFEtSujSmxWsI/fN2wvfYUzeUUklfp90t9oxH8
+	 +DY4/hOvXTJsQ==
+Date: Sat, 16 May 2026 15:47:50 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [RFC PATCH v2 0/2] iio: light: add support for Broadcom
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, devicetree@vger.kernel.org
+Subject: Re: [RFC PATCH v2 1/2] dt-bindings: iio: light: add Broadcom
  APDS9999
-Message-ID: <20260516154452.193b51a0@jic23-huawei>
-In-Reply-To: <cover.1778659152.git.azpijr@gmail.com>
+Message-ID: <20260516154750.176a89b0@jic23-huawei>
+In-Reply-To: <438370a42f57250cbead53ac73834fbf9ccb9269.1778659152.git.azpijr@gmail.com>
 References: <cover.1778659152.git.azpijr@gmail.com>
+	<438370a42f57250cbead53ac73834fbf9ccb9269.1778659152.git.azpijr@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,72 +47,116 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 13 May 2026 10:09:02 +0200
+On Wed, 13 May 2026 10:10:03 +0200
 "Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
 
-> Add IIO driver and DT binding for the Broadcom APDS9999 ambient light
-> and proximity sensor. The green channel uses optical coating technology
-> to approximate the human eye spectral response for ALS/lux measurements.
-> IIO_INTENSITY channels are also provided for red, green, blue, and
-> clear/IR so userspace can compute its own weighted lux.
+> Add Device Tree binding for the Broadcom APDS9999 ambient light
+> and proximity sensor.
 > 
-> Questions for reviewers:
->   1. Is the green channel as an ALS/lux approximation acceptable given
->      the datasheet's claim of optical coating to emulate V(lambda)?
+> The APDS9999 features individual R, G, B, and IR channels with
+> a green channel that uses optical coating to approximate the
+> human eye spectral response for ALS/lux measurements. Proximity
+> and RGB functionality are not yet implemented in the driver.
 
-It's the best we can do and the datasheet does say to do this. So whilst
-I'll express some doubts, it's fine. I think you shout about it enough that
-we shouldn't get that copied into other places.
+State in this description a little bit of why you didn't merge it
+with similar bindings.
 
->   2. Is the IIO_INTENSITY channel layout correct? (red, green, blue,
->      clear with modifiers, no scale)
 
-They sometimes still have scale if there is a variable gain amplifier
-we need to control / express the value of.  Looks like that might apply here.
-
-However, it's the one channel where the ABI docs make it clear there is not
-meaningful unit from _raw * _scale.  Just that if raw doubles and scale
-halves we should get the same value.
-
->   3. Should the binding be merged with avago,apds9300.yaml or kept
->      separate given the extra vled-supply?
-
-I'm fine with this either way. Marginal case.
-
-With those answered, you can drop the RFC for v3 ;)
-
-Jonathan
-
+Trivial stuff inline.
 > 
-> v2:
->   - Added IIO_INTENSITY channels for R, G, B, clear
->   - Switched to guard(mutex)(), devm_mutex_init(), dev_err_probe()
->   - Replaced remove() with devm_add_action_or_reset()
->   - Don't fail probe on PART_ID mismatch (fallback compatibles)
->   - Replaced manual shifts with FIELD_PREP() / GENMASK
->   - Used get_unaligned_le24(), sizeof(buf), NSEC_PER_SEC, fsleep()
->   - Named gain register values, explicit resolution enum values
->   - Removed section comments, grouped bit defines under registers
->   - Squashed Kconfig/Makefile into driver patch
->   - Split MAINTAINERS entry across patches
->   - DT binding: added vled-supply, interrupts, required vdd-supply
->   - DT binding: fixed title, added blank lines, full description
->   - Dropped "DT binding" duplication from binding commit subject
-> 
-> Link to v1: https://lore.kernel.org/linux-iio/cover.1778491503.git.azpijr@gmail.com/
-> 
-> Jose A. Perez de Azpillaga (2):
->   dt-bindings: iio: light: add Broadcom APDS9999
->   iio: light: add support for APDS9999 sensor
-> 
->  .../bindings/iio/light/brcm,apds9999.yaml     |  53 +++
->  MAINTAINERS                                   |   7 +
->  drivers/iio/light/Kconfig                     |  10 +
->  drivers/iio/light/Makefile                    |   1 +
->  drivers/iio/light/apds9999.c                  | 344 ++++++++++++++++++
->  5 files changed, 415 insertions(+)
+> Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> ---
+>  .../bindings/iio/light/brcm,apds9999.yaml     | 53 +++++++++++++++++++
+>  MAINTAINERS                                   |  6 +++
+>  2 files changed, 59 insertions(+)
 >  create mode 100644 Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
->  create mode 100644 drivers/iio/light/apds9999.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+> new file mode 100644
+> index 000000000000..759fe0151549
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+> @@ -0,0 +1,53 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/light/brcm,apds9999.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +title: Broadcom APDS-9999 Digital Proximity and RGB Sensor
+> +
+> +maintainers:
+> +  - Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> +
+> +description: |
+> +  Broadcom APDS-9999 is a digital proximity and RGB sensor with
+> +  ambient light sensing (ALS) capability. The device uses individual
+> +  R, G, B, and IR channels plus a VCSEL for proximity detection.
+
+What's a VCSEL?  Spell it out.
+
+Otherwise 
+> +
+> +  Datasheet: https://docs.broadcom.com/docs/APDS-9999-DS
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - brcm,apds9999
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  vdd-supply: true
+> +
+> +  vled-supply:
+> +    description: VCSEL power supply
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +additionalProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vdd-supply
+> +
+> +examples:
+> +  - |
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        light-sensor@52 {
+> +            compatible = "brcm,apds9999";
+> +            reg = <0x52>;
+> +            vdd-supply = <&vdd_reg>;
+> +            vled-supply = <&vled_reg>;
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1aa9c989973f..64c8cf2601e8 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4302,6 +4302,12 @@ S:	Maintained
+>  F:	Documentation/devicetree/bindings/iio/light/avago,apds9300.yaml
+>  F:	drivers/iio/light/apds9306.c
+> 
+> +BROADCOM APDS9999 AMBIENT LIGHT SENSOR DRIVER
+> +M:	Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+
+Sashiko pointed out this should be in alphabetical order.
+Bit annoying in this particular case but we'll just find someone
+else moves it if we don't do it from the start.
+
+> +
+>  AVIA HX711 ANALOG DIGITAL CONVERTER IIO DRIVER
+>  M:	Andreas Klinger <ak@it-klinger.de>
+>  L:	linux-iio@vger.kernel.org
+> 
 > 
 > 
 
