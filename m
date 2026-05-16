@@ -1,81 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20C382750FB
-	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 16:39:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA613E4C6A
+	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 16:40:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778949551; cv=none; b=T+mfF9viMA5FloOOftp8r8MaOFHFPxTsTKP5mH98/X0gBfigjwjxCVqGkLyskpubvb7JzoLREgkqHZGnpKKXJDXxsaHqisyLumhkHLKbejDZd3TAx0GuLsD+aPFEsW/joXP59TI5t+rFIU/WO3LpVLefZxixqrzd7tXbP5UG0uU=
+	t=1778949622; cv=none; b=jfLjoaRktO+GRKapmY1Lvhlo8H0REwMMxjaHAtJCDQc4Vfz+eiOYeLFfu/E7rC1LKwzVV5Ly6gVXmANhN4M3RY1GjiYDTgTTFY3g03bdei6Qo0jayH03tQp0QRyGdwKBwcay8geVE1FrVEE79v4lC3rKgEOaa5ikuOqhM/3BPCE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778949551; c=relaxed/simple;
-	bh=DrgI1F8SEYTmctsgluocodIMEfPVRwmpLPwyb/AG0LM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Y72+nAZsX+4bdY4OeTj9cuKRpbCSPSG32wB9hNJs1YaOQAA184EmSp2XDmexECF/ToJrOXa7F/bOrCW8IQVzYIc5M3gnNHRbT1uY0+qYTQDtiRQAroFSmW4Q/oFkzPJOL1i+S0povBOPktKxkgS0UJpW3565STUUuT7vBdKdNEk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xx7N5Egd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778949622; c=relaxed/simple;
+	bh=CdqJEGbSPF3YjVUNwmIAWhJJsL06rr85axwqdznAgzo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=N2BCvZO/2NLstk3CaElHu9IlBYrb4PrBWxh7YKbIX7GUQTPtk+4s5vMrtmJ3rx9BjJRy+k/rCDyUC5Itm+COrmYjF2Leo1cZseVaeDKFh+Ekf8NBK0a6yWDUWnRKTcitYNKE2slfL9F3UCVZDIKiWnQf2F61QHUU7G2SE4IWTlU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=zCtnHhv1; arc=none smtp.client-ip=209.85.161.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xx7N5Egd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8909C19425;
-	Sat, 16 May 2026 16:39:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778949550;
-	bh=DrgI1F8SEYTmctsgluocodIMEfPVRwmpLPwyb/AG0LM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Xx7N5Egdr6OsO0OGCvbh+FfV3bICU0Jv/OFVJpz5qkO+xqV6Dznh6m9jgRkl1KD/y
-	 V4YCBtRuSdcpki/OJNAyBBfecrTPHausWxrWi8T24HyQlvhei6aTMWOba+nlvYyY0f
-	 hp4tB0ldWrjcHTnx5+QX/mPcJlHBqxYJ2HNJJ5jgpfbJvDzubU7wQzjp8PMwwWF0+6
-	 vMGGZo1KsiMiDKFju8Bw6B8kL2UdEM7fqxSylh81HJQBsgU6Cdtc6MQTLl99c+6co1
-	 GVYobKDnJOb0b4apeogqLAUK1IZeAdQuJMzfVM9RZjKJs077y/KWe0Hlz+jiew4LRG
-	 pTBbfReKFvqng==
-Date: Sat, 16 May 2026 17:39:04 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
- linux-iio@vger.kernel.org, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [RFC PATCH v2 2/2] iio: light: add support for APDS9999 sensor
-Message-ID: <20260516173904.503259e6@jic23-huawei>
-In-Reply-To: <d98bcb3d-21ae-4b62-af63-48fad4301f70@baylibre.com>
-References: <cover.1778659152.git.azpijr@gmail.com>
-	<f389419972fc790a25b6041f1212e15f155804e2.1778659152.git.azpijr@gmail.com>
-	<d98bcb3d-21ae-4b62-af63-48fad4301f70@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="zCtnHhv1"
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-6948ed7139eso281581eaf.0
+        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 09:40:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778949620; x=1779554420; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6jm966xj7zPGPn8amxpVaRSTtZJqzq+SHHS0XJfx6jk=;
+        b=zCtnHhv11odmQgIWUhL+wGwI4/6RmSyjXuvnhbcoGP64Q59oBVsT0Acd59DCMYJeOG
+         E5s7egY1HKJYmAvAQWBg+p+YweqJw0WYX0gssePv4mbHHVLIyGr6T5tKJFWfYP0E056L
+         MwwgMscCiLczmIiIsuKJdG7MXjWRqmi+QVNAmg5Y6Dt5VWkINn1AhJtAFqoqppc8WuS6
+         wOiHC8+y4/ytIF5Gt+NiObGFA2IAt5R2MWZJAkQlMfAheSRrGD8W/ESrY3/4LzV96RbA
+         iZFvhNoptuyEYAHM32bV6zFCUe95v5RTNMqcZRWFTYD/Y+1BYHTQdpk6DBl1eP6C/B28
+         R4cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778949620; x=1779554420;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6jm966xj7zPGPn8amxpVaRSTtZJqzq+SHHS0XJfx6jk=;
+        b=GKiOwMpRCpJDP94e09/QCMozI9Qw3+d5mLmIfeKABElv1klbqH5OqCz4aZBuGW2hTe
+         SxrCBzWWspo9dDjv46m7NIfC5Z0GRUQXLNRs7JLSv/umCT3ZbUcwFiK+GtIth/34HI3h
+         vkw8J1kiPGe6kdYFy2bLtoFhM1gwXcAt2gJedsOz4nkSRjLqn0jKeISPBAiiUgPthAI6
+         yHsvl7+A8SRUievgp+d+B+5KgGXXN8ScrBMnwF2Ti9FjFBjKLN9l8PkXsaPOzSzc7MIc
+         TlZupW+JMIbqNQFQWQKiN7mGJ4uc4I8FOQ6RK0A0ZiCstAFLrFebxLpbF6D/Fwa2Bk2o
+         b4hQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9t5adH8pNwWtVYvIN3dD+MmAq2pXmiQ7Dl9D/5xyPkmciMzWurqHPwGFlWQPL+cwd+LhJA4rBnowc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxnDAGT5Gge60AqV8df0ft7jrrCo4ULl1dWG4Tk+8m27+w46fM+
+	W1s6xfS0a2SGUAYVn/V5oJLPFJDhVXdt7SDBUm6y/3O5iKlK8IMUad3FnSnW9nAQBGw=
+X-Gm-Gg: Acq92OH3jZL3Fz5iU81WC4mHgudsddfcD+9/qaESiuOzXUXCXznQy38CHIo8a3fiO9d
+	K8/k7Opr27FS1HuajGBkLwofH4nfYZotBwpL9nMsul7cijxU372W3l4sc8++tuNAAX7QFMIbNpj
+	AW2yhUFgU0Bfelnm1MjZ6lKmSylvx0Y8/9IWOwiTaKEAoQZ9u3wXOtQJqc0CsF3lRvZqGMomUUN
+	+prA8o3C/Xu6lg5IIrga9RJ1tzcaBS9GPz5vxhMTuxutFBlBhSnRYSua7X7WJTrregH4CZKT6pG
+	7YgSzAk/A1mL6OeSsxhbAk6wZ8KOpUPseGePQkuUSC/OirFwlaYDLqHya27qIEfvjjWQUYgZpvL
+	4XhrCC8VHVWryxuoaB0MxtOhEBPWdWbFrXq8n8Tz4Z1MyoJZuIyCz7V+nXg+SCd7TpANmmWXdGT
+	on9MuzF79CGfhWigVv7apnN8+mPab1TbXmtn7TEoC1T1Xm98wSRY3vURMZStaxow4zBSyntl7Mt
+	qBryEIaeM0C
+X-Received: by 2002:a05:6820:f034:b0:69b:5696:e518 with SMTP id 006d021491bc7-69c9429428dmr5894777eaf.2.1778949620026;
+        Sat, 16 May 2026 09:40:20 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:b36d:bd18:7c02:29e2? ([2600:8803:e7e4:500:b36d:bd18:7c02:29e2])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69d041da4basm2702766eaf.0.2026.05.16.09.40.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 May 2026 09:40:18 -0700 (PDT)
+Message-ID: <4c1b2887-1e95-4723-b42e-329ef5b1ee90@baylibre.com>
+Date: Sat, 16 May 2026 11:40:16 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/2] iio: adc: add support for PAC194X
+To: marius.cristea@microchip.com, jic23@kernel.org, nuno.sa@analog.com,
+ andy@kernel.org
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ broonie@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260515092946.10791-1-marius.cristea@microchip.com>
+ <20260515092946.10791-3-marius.cristea@microchip.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260515092946.10791-3-marius.cristea@microchip.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Sat, 16 May 2026 10:28:47 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On 5/15/26 4:29 AM, marius.cristea@microchip.com wrote:
+> From: Marius Cristea <marius.cristea@microchip.com>
+> 
+> This is the iio driver for Microchip PAC194X and PAC195X series of
+> Power Monitors with Accumulator. The PAC194X family supports 9V
+> Full-Scale Range and the PAC195X supports 32V Full-Scale Range.
+> 
+> There are two versions of the PAC194X/5X: the PAC194X/5X-1 devices
+> are for high-side current sensing and the PAC194X/5X-2 devices are
+> for low-side current sensing or floating VBUS applications. The
+> PAC194X/5X-1 is named shortly PAC194X/5X.
+> 
+> Signed-off-by: Marius Cristea <marius.cristea@microchip.com>
+> ---
+>  MAINTAINERS               |    1 +
+>  drivers/iio/adc/Kconfig   |   12 +
+>  drivers/iio/adc/Makefile  |    1 +
+>  drivers/iio/adc/pac1944.c | 2172 +++++++++++++++++++++++++++++++++++++
+>  4 files changed, 2186 insertions(+)
+>  create mode 100644 drivers/iio/adc/
+Can we please split this up into multiple patches by feature added?
 
-> On 5/13/26 3:10 AM, Jose A. Perez de Azpillaga wrote:
-> > Add IIO driver for Broadcom APDS9999 ambient light sensor.
-> > 
-> > The APDS9999 is a digital proximity and RGB sensor with ALS
-> > capability. This driver implements the ALS/Lux functionality using
-> > the green channel, which uses optical coating technology to
-> > approximate the human eye spectral response.
-> > 
-> > Proximity (PS) and RGB color features are not yet implemented.
-> >   
-> 
-> 
-> 
-> > +enum apds9999_gain {
-> > +	APDS9999_GAIN_1X = 0,
-> > +	APDS9999_GAIN_3X = 1,
-> > +	APDS9999_GAIN_6X = 2,
-> > +	APDS9999_GAIN_9X = 3,
-> > +	APDS9999_GAIN_18X = 4,
-> > +};  
-> 
-> Giving the natural values of enum explicitly just seems like noise
-> IMHO. I wasted time looking for an anomaly.
+We are already drowning in reviews here in the IIO subsystem. It takes
+many times longer to review things that are not split up into bite-sized
+pieces (aim for 500 lines in a patch).
 
-I tend to ask for this when they are hardware field values to make
-the point the values matter rather than just being an enum.
-I'm not that fussed though.
 
-Jonathan
