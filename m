@@ -1,152 +1,85 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F0B2F7F13
-	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 21:19:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC0872F7EEA
+	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 21:39:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778966382; cv=none; b=RvLx15pKoSkcuRH81WM0aCigqjJuJPdUnh/RfA5QjsNi1Dwg2ICbRDWTNETWqFjprGCUBliBZtudSqL8omxvTqB/7Jot7QTEjoC8PkLTwJrC3gp2tRx5CuYbvbr2SOI2MXPl1m+GxVkTjjpH18KP6VRN+++wwKXxEKajwDvRBao=
+	t=1778967561; cv=none; b=Ofv2lx5RTHnzGOdpkQS8jSv6y46MUBD1XZRxMNqBnz5lXqoFegb0oAACx0lCBDaKB66UVEw2Yuh9wC5RFKrRCYyrF7Nj9tAaaB2BPdJ1gmzXHjgAw+7o9/DymDOEmd06zQBa1P3m1rcqw//xzwCepBxqj6nV/jG23EeMsKITOaw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778966382; c=relaxed/simple;
-	bh=PC79iPS+240j7MFgm/wfU2Jxq6Do9p9oBBwpT5FYjcc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=J4MF2v1pd9tcVcR2C30DQrfyP6be/6FEASobCEcw26lh4hglCRXULB7eZ2/8vwuyFu8ugxb0kHVzVJP7v3YD2Mj19EDQ6fOXgsSgTehKzXl4NwemDKsD+wdwaN622LvaUZeOEPy2uupq3NzmZ//OXFcs50cSV+NV97DrmjcreuQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i142tKTF; arc=none smtp.client-ip=209.85.167.43
+	s=arc-20240116; t=1778967561; c=relaxed/simple;
+	bh=F5L2BjlPr/7mAEq89skRFFgFrAn8VGedWsV2emdfjtg=;
+	h=Message-ID:Date:Content-Type:MIME-Version:From:To:Cc:Subject:
+	 In-Reply-To:References; b=KYz8fzP0E/0fD+Eb312NqfVaz1TBc1QRSImiaXpowWFUyAlrNHboeul9WUPdUWwhgrR8pSQGBwo3TUbs0Ae0JVAtK/0Sd+yKEG3ka8Op1H4YbFwfFcuWKo181QjFbkiPT6bQWN8tLLyw0Z1rF+0g2F5NfA+IYQHieSRl0bNp+VA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mBeIbF8y; arc=none smtp.client-ip=209.85.208.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i142tKTF"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5a884815606so1417257e87.0
-        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 14:19:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mBeIbF8y"
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-394413a63d3so10609551fa.1
+        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 14:39:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778966379; x=1779571179; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=eqM1dQ0E8jRDZSUeqjW3SdY/BoKmGuJOH4GMYl0BB8o=;
-        b=i142tKTFctrrRadvAdSzBak8mvVzUdHLt26mSVwnrjPou+4uBNo7pNqkIFKx8XnyUN
-         Q79GhYHlosZPLATkNq6CLUI+HiXcefIgscpo4U7WTx0Nt89g34XhsPqNpHjraUn/rpNd
-         rF41PEwDF2dUh4ga1B64s/nk81SmiprOLQAs/Ty2uFYmAzxt3YhxuFn/UdAi0j/RtpYH
-         Z0pzjPw8XuI8DfL7V5NgStzadnZJgzytuIXzI3DVf73TeVSo6kBwS7kTZO3N4JDOaqN1
-         daQOZW9Fw9ASyoyQrbKX/oLjrt/K4PRY0Ad5FNbU5ANa6hsB8aKoJhBsrnGkuziC0BL1
-         Ywag==
+        d=gmail.com; s=20251104; t=1778967558; x=1779572358; darn=vger.kernel.org;
+        h=references:in-reply-to:subject:cc:to:from:content-transfer-encoding
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=F5L2BjlPr/7mAEq89skRFFgFrAn8VGedWsV2emdfjtg=;
+        b=mBeIbF8yaInD25qC1mm7qbAyLSvS7jGWK5B/cZlAdYlDvqzj6gzm5Mw/5PXT5V2cEx
+         +wQch4B5zSGuJD5eeU/xkkhcGvOjl12ct1lUacUxpHvvjIsr0rPf3LBUUlpEzRPsIDKE
+         wUwIUi+4akSWQqL+VN/AXS7lPsWvtEbefdfePnYE39ErDFmrW3Pc6dl1Z4mwGjOA71Wy
+         96Q8dFaC9HRlUUHVi94fezV4WNT0elffC2zg0YzBxoFU2BPeCkP1iTyXsWv+OHmFZwz4
+         n/1q6LjzYy1aJBea8fCgDuw73W6LR8kw/z1L4OxLC7DeSziBU+dkcaGPgDy5OdoO35BD
+         edxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778966379; x=1779571179;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eqM1dQ0E8jRDZSUeqjW3SdY/BoKmGuJOH4GMYl0BB8o=;
-        b=Q5/nUstI8ocrU/YFLdCes+K2gmDJlGiCiN2dBnglzjtUvPi8O+SRxr02pLSfPKyx2Q
-         R2O4kOzsgNHMS5C0MLvhYgeSlk0CmCgrH87Y1iaK7HHKA6awEhU9qQK47gamwVc29dvg
-         cZpsjrSg594KsaI0WdfbDQ9LcfYT20pBQSmD+QOL7+r4sCotWHRsRSkaCTEbZBFqOFxy
-         AwsWbLA2en4eYbC8RuKqSJMvzhuS6SUEHaQ05tvGCAhu8wMJE9uBdmJctklPW8MwTIwp
-         PNGae+NZzWtdtDF92TlFuHPBs3lwH374wYpMxJYroRlL0y/ZFqC4KF+SG4MuT1+JWRba
-         qDvA==
-X-Gm-Message-State: AOJu0YxMtjKubFHBy/aL93lth+TORY+Um1aCVtS5JgxPI2zxVrQ1C4CJ
-	VjnTW5mlRfdSls+L1SLafAkvZDqQh6KDcS+vmKIqohe6UmfLSd90TPPBBJZRFSdw
-X-Gm-Gg: Acq92OHpBUxWyspKQDBup53C87naZmldWvZvmRt8rQX7u6FfuYv3OfPfNxramezFzW7
-	VP0cTn+b2D7x5ZVHJ92cqTnQa5hSF174gkWyBtAvvitROilCQ/u77L4dBDs1iJaQG0/D9GqNK4h
-	MWC0D3hy9SGL6vTljGQ5d7mI2d1qQLAV0JDFBMmiG1Tx28bS29SB31W92Lsll6LCU8EZ/ClExPS
-	CD7RgWBklyzaeciOg/1+3nfIpoUENhQ8wuQuQWrRNyHS7sazMOtrMwaNbtAxFIgQL1yClpL7w8e
-	PV+jdWhPvRfiiWhBWhIboIWCnyRYJGT79W+VDMevL4C18G6ysn13uXbelJ7c4uGE2yWtClGN5C+
-	iUasOZFpInvfyiuFrMYRlPa8gnRGB7NScFLKQ0ZSXGBnZe7EtAHkVhziSbftwfGlE6X/7AuOS0q
-	Nenk6hbcfpTaqDpgJGVYN/Rww67vnp/y3YtlKW9ZtZr+c77vtvDb5GqDPu
-X-Received: by 2002:a05:6512:1106:b0:5a8:eaeb:40ca with SMTP id 2adb3069b0e04-5aa0e7426d4mr2496920e87.31.1778966378834;
-        Sat, 16 May 2026 14:19:38 -0700 (PDT)
-Received: from Shofiq.home (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a90f10c578sm2202070e87.12.2026.05.16.14.19.36
+        d=1e100.net; s=20251104; t=1778967558; x=1779572358;
+        h=references:in-reply-to:subject:cc:to:from:content-transfer-encoding
+         :mime-version:date:message-id:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=F5L2BjlPr/7mAEq89skRFFgFrAn8VGedWsV2emdfjtg=;
+        b=fQneUZQcaIDhJlEaEryUdWfEjaO0hPMNCl58jzuRWFPPnniwLvimTGHdr+w+ihxfy5
+         XvdJAYnxoioES7YnnfMR9B3dee6wEAAHW71cFXjzXqDwyRKEFd33q6aj6gz/skGSDjb6
+         GUnE2U/ie2ZvTMiho/s5GEIktWqMAwYtMkDPXRSaqhbkEcGuyO/W0uSfWKPlvcH7B1Ih
+         rC+nDAnoLMQLCba/U/AWsyWSrY6x2fFmtduiT+r5iKTL9P06OWc3ALgqlhhLCTwrpj7V
+         OJrbrPSF7h/DUUltSjVi9m9ZnfFU8vExcZJhys4NYlB47c2MO8JJiveioid+xEp0mbY4
+         7ucg==
+X-Gm-Message-State: AOJu0YzVKULz7tU4vv4nB1y7DebISSx0XhUE690VmrZ4psm1bXAN26DF
+	4BCa53jEsWPzeFQyzy4xrCuUzKfv00VNA7R9oW0tOj4h/F33rHxqmskb
+X-Gm-Gg: Acq92OEiLPNf20pvzjNtZNVXtSA42OJvLEIolZmECHyZ3flbOotVpbAjgJJrTWyddcI
+	5JjYDDTkxmmLAzPfwHxBvY4aY7VcvlAaUWIUZU1YByZ94inU06U+rjzM/v8oD6R/JsJEx5fAs4b
+	zBaan0BMalvvdII+YvIg72QBPvysVusST1xDBp+SO55tYBI5oYPFY+T2C3FO0krtDwwIf9HV/jc
+	l3rz0U/5MZG7xeo1xwksAkvATvpFpz8uFXMlZxLsTL10LCVDZT4kWnNsOkXa8jDiltwTqtwmsqC
+	EZc0k2qM+UtexKEmmX4c8bSRdbkP/GhrzKvikSDmkFfDi1vJ9B5pyxsMf5mRnYJP7W3kiLwCz/9
+	qOZyPaQZI64Y+NkCEz2zESA0nEB58ZWjPkPX1Gg1PTjhmGhSkcnz0hPzEwYhMiS0n8j9ixiy4U7
+	SnA5guOQVQGWOeLq2MYlak7Ak3t379HfKvGtBJrDqdVEDIhCrd/md3tbkDLeJ5W+YU/Q==
+X-Received: by 2002:a05:6512:15a2:b0:5a4:1918:20e with SMTP id 2adb3069b0e04-5aa0e741f89mr2632922e87.30.1778967557776;
+        Sat, 16 May 2026 14:39:17 -0700 (PDT)
+Received: from Shofiq.localdomain (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a9164cf0a5sm2201586e87.75.2026.05.16.14.39.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 May 2026 14:19:37 -0700 (PDT)
-From: Md Shofiqul Islam <shofiqtest@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: accel: adxl372: Add timestamp to FIFO data
-Date: Sun, 17 May 2026 00:19:35 +0300
-Message-ID: <20260516211935.36773-1-shofiqtest@gmail.com>
-X-Mailer: git-send-email 2.51.1
+        Sat, 16 May 2026 14:39:16 -0700 (PDT)
+Message-ID: <6a08e404.9cb0d8e3.2c93a2.545b@mx.google.com>
+Date: Sat, 16 May 2026 14:39:16 -0700 (PDT)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, lars@metafoo.de, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: health: max30102: Add timestamp to FIFO data
+In-Reply-To: <20260515160434.7749e240@jic23-huawei>
+References: <20260514200309.1597-1-shofiqtest@gmail.com>
+ <20260515160434.7749e240@jic23-huawei>
 
-The driver pushes FIFO samples using iio_push_to_buffers() which does
-not attach a hardware timestamp to the data.  Capture a single timestamp
-per IRQ with iio_get_time_ns() and reuse it for both the event push and
-the FIFO sample loop.
-
-Use IIO_DECLARE_BUFFER_WITH_TS() for fifo_buf to guarantee the required
-s64 alignment, and switch the FIFO push loop to
-iio_push_to_buffers_with_ts() which accepts an explicit data size and
-timestamp without requiring a separate scan struct or memcpy.
-
-Add IIO_CHAN_SOFT_TIMESTAMP(3) to the channel spec so the IIO core
-enables scan_timestamp and includes the timestamp slot in the buffer.
-
-Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
----
-Changes in v2:
-  - Use IIO_DECLARE_BUFFER_WITH_TS() + iio_push_to_buffers_with_ts() instead
-    of a separate scan struct + memcpy, per review from David Lechner
-  - Add IIO_CHAN_SOFT_TIMESTAMP(3) to channel spec (missing in v1)
- drivers/iio/accel/adxl372.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index e375d068a..266e80e27 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -344,6 +344,7 @@ static const struct iio_chan_spec adxl372_channels[] = {
- 	ADXL372_ACCEL_CHANNEL(0, ADXL372_X_DATA_H, X),
- 	ADXL372_ACCEL_CHANNEL(1, ADXL372_Y_DATA_H, Y),
- 	ADXL372_ACCEL_CHANNEL(2, ADXL372_Z_DATA_H, Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
- struct adxl372_state {
-@@ -365,7 +366,7 @@ struct adxl372_state {
- 	u8				fifo_set_size;
- 	unsigned long			int1_bitmask;
- 	u16				watermark;
--	__be16				fifo_buf[ADXL372_FIFO_SIZE];
-+	IIO_DECLARE_BUFFER_WITH_TS(__be16, fifo_buf, ADXL372_FIFO_SIZE);
- 	bool				peak_fifo_mode_en;
- 	struct mutex			threshold_m; /* lock for threshold */
- };
-@@ -703,13 +704,15 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
- 	struct adxl372_state *st = iio_priv(indio_dev);
- 	u8 status1, status2;
- 	u16 fifo_entries;
-+	s64 ts;
- 	int i, ret;
- 
- 	ret = adxl372_get_status(st, &status1, &status2, &fifo_entries);
- 	if (ret < 0)
- 		goto err;
- 
--	adxl372_push_event(indio_dev, iio_get_time_ns(indio_dev), status2);
-+	ts = iio_get_time_ns(indio_dev);
-+	adxl372_push_event(indio_dev, ts, status2);
- 
- 	if (st->fifo_mode != ADXL372_FIFO_BYPASSED &&
- 	    ADXL372_STATUS_1_FIFO_FULL(status1)) {
-@@ -733,7 +736,9 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
- 			/* filter peak detection data */
- 			if (st->peak_fifo_mode_en)
- 				adxl372_arrange_axis_data(st, &st->fifo_buf[i]);
--			iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
-+			iio_push_to_buffers_with_ts(indio_dev, &st->fifo_buf[i],
-+						    st->fifo_set_size * sizeof(__be16),
-+						    ts);
- 		}
- 	}
- err:
--- 
-2.51.1
+T24gRnJpLCAxNSBNYXkgMjAyNiAxNjowNDozNCArMDEwMApKb25hdGhhbiBDYW1lcm9uIDxqaWMy
+M0BrZXJuZWwub3JnPiB3cm90ZToKCj4gR2VuZXJhbGx5IGRvbid0IGFkZCBmZWF0dXJlcyB0byBh
+IGRyaXZlciB5b3UgYXJlbid0IHVzaW5nIC0gdGhleQo+IGVuZCB1cCBhcyBkZWFkIGNvZGUuCgpV
+bmRlcnN0b29kLiBEcm9wcGluZyB0aGlzIHBhdGNoLiBUaGUgc2Nhbl9pbmRleCA9IC0xIGRlc2ln
+biBhbmQgdGhlCnBlci1zYW1wbGUgdGltZXN0YW1wIHByb2JsZW0gYm90aCBtYWtlIHRoaXMgYSBu
+b24tc3RhcnRlciB3aXRob3V0IGEKbXVjaCBtb3JlIHN1YnN0YW50aWFsIHJld29yay4KClRoYW5r
+IHlvdSBmb3IgdGhlIHJldmlldy4KCk1kIFNob2ZpcXVsIElzbGFt
 
