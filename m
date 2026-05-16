@@ -1,44 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B112C2882BE;
-	Sat, 16 May 2026 10:49:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E067D2BD030;
+	Sat, 16 May 2026 10:54:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778928574; cv=none; b=pRtcskTfCRByf0eGZWFFKWdHLYsP0hkLMUbDb7DSHmhNAK6MfXiyLtkwFO0ubpMPJ1YXIexuDEh0LpovxG7qMuLtoT3JDUdcneBSbKe3qps0VlmkhqYmVa7LNwezF1dF271Jaoxd4euRUyhx4wz1X+2bHhVFXD5fP6Dp0RSoL6M=
+	t=1778928860; cv=none; b=QhfYWnwZUJKXBKsD0KNg30lX7bEA1hpCK/TWHIwklel/YmMlV1InUPH5Axti4/KrnzPjxUpQg2hfAfQ727yn5KirP2OAQSEwaiPfEYQCGsdcejF4YtX4kQxFW1y6Rs882qh4HNvrEOfv2QZAW93WSqPC2YAuxqbcEBgX0SJp+9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778928574; c=relaxed/simple;
-	bh=XZq193zuMYXEaB44tkd+FlCUgZXZjY7vz1COsu5GWPw=;
+	s=arc-20240116; t=1778928860; c=relaxed/simple;
+	bh=jMAeSSuWlWIqujpypaPE/kf/UfNekpv+m8476hvJzK4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jzMJGtCoiGgbegtBtKcsvch5fFYsutkRKa6nexX6w9kLf5Et8pHDf0upodBMl7+6CEReWwi7/Vl8nbW7S3oRO0OklsdwyxBnfwKtLi5BBvEdWH6T4YYugc6pmx5+zTsx6u0O1gM3IxK3j4lprY1boYHmdpi6uYlaPjpJVE3JzQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X0LwRGtt; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=mTtIlxSOeovcVJQAL2bsa7W2FDrELUicedYWD4LtYct0MCE2+jZy5kRhC12ftB1311PYdl+pe8QeMMFbYGaoWTCmRM7+jsHN5HSdZMQLTbuIV/5/0oRCEQR0rWuuqjWcWgGLM6WWos4ijzBbsFis0iHtsREq9TgLWGwlRpFtJOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aPxuvgRU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X0LwRGtt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC2F6C19425;
-	Sat, 16 May 2026 10:49:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aPxuvgRU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E56EC19425;
+	Sat, 16 May 2026 10:54:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778928574;
-	bh=XZq193zuMYXEaB44tkd+FlCUgZXZjY7vz1COsu5GWPw=;
+	s=k20201202; t=1778928859;
+	bh=jMAeSSuWlWIqujpypaPE/kf/UfNekpv+m8476hvJzK4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=X0LwRGttgFQ5k7lqvJCp0IO4ZyCzs+5qABpHWNBzrXo8ZxxnZt6cUvZFzJLB9ss8z
-	 UaZRz1Fsg5Yf3rEPxyh+0xHTilyVyE9O/c1PCaF36Fh+HfckWfmG87u+AxdTz/U31H
-	 c3PSEl/fUGNL5Yeidcdi+XWLPBNL3zGLjMOyi2DEpf1n0NqTPnZMRCZFmv3+eW5PzC
-	 SaQPND7p9jPGBLc/qpwHJZ1uGOwalKE5Lm1qObWKLdsjQnLWLJpOJ21PTjtoIH1T+Y
-	 y5n2ZBY43EaXUIkqBdnU9gxEh+va3qzg9kUqEGQAG7t6JyLI1y9rnkN5EKS+dSBjJg
-	 Yfu6smxLth/iw==
-Date: Sat, 16 May 2026 11:49:26 +0100
+	b=aPxuvgRUMhc2OoLri6XZpYrpjHRK0c6IZUBdiep+qjQ6eW3gnHkTiLh5qYEgN3Dzk
+	 0FjUdum4EeQdJ4MuqyEwg6bKZj7hSiaDYXejlmIWWztkju4+iH0LM+Ahka1NtLIbgm
+	 1SOYxzrMlVPC2j7Cw6v5mPon8zx69zx3d4QtOiaEyriZoKAO8CE+FhmH8H5wFtMaU2
+	 x5dCvcP8C4B3ZOH6hCK1BG5PTOZw7Sy9pJ0kaRfnq6z62eO51Ff/KH5GRMEpkZ+rB0
+	 V5OJhWviSI0WX/H2hF7T23W0RBIyXSpYWLIXCQw4oiB9/HWtAIxT5VI3XWNCmB3F0U
+	 xkUGMdZeinECA==
+Date: Sat, 16 May 2026 11:54:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- gregkh@linuxfoundation.org, hcazarim@yahoo.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: gyro: bmg160: wait full startup time after mode
- change at probe
-Message-ID: <20260516114926.3a8b7d38@jic23-huawei>
-In-Reply-To: <20260511154704.76967b74@jic23-huawei>
-References: <20260511062755.30-1-sozdayvek@gmail.com>
-	<20260511064020.362-1-sozdayvek@gmail.com>
-	<20260511154704.76967b74@jic23-huawei>
+Cc: songqiang1304521@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: proximity: vl53l0x: notify trigger and clear
+ IRQ on error paths
+Message-ID: <20260516115411.1e980a5c@jic23-huawei>
+In-Reply-To: <20260514143711.23648-1-sozdayvek@gmail.com>
+References: <20260514143711.23648-1-sozdayvek@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,86 +46,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 11 May 2026 15:47:04 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Thu, 14 May 2026 19:37:10 +0500
+Stepan Ionichev <sozdayvek@gmail.com> wrote:
 
-> On Mon, 11 May 2026 11:40:20 +0500
-> Stepan Ionichev <sozdayvek@gmail.com> wrote:
+> vl53l0x_trigger_handler() returns directly on the I2C read failure
+> paths without calling iio_trigger_notify_done() or vl53l0x_clear_irq().
 > 
-> > bmg160_chip_init() calls bmg160_set_mode(BMG160_MODE_NORMAL) and
-> > then waits only 500-1000 us. Per the BMG160 datasheet
-> > (BST-BMG160-DS000-07 Rev. 1.0, May 2013), the start-up and wake-up
-> > times (tsu, twusm) are 30 ms.
-> > 
-> > The same file already waits BMG160_MAX_STARTUP_TIME_MS (80 ms)
-> > in bmg160_runtime_resume() after the same set_mode(NORMAL)
-> > operation. The 500 us value at probe was likely a unit mix-up;
-> > the old comment said "500 ms" while the code used microseconds.
-> > 
-> > Reuse the same constant via msleep() and add a code comment
-> > explaining the datasheet basis for the wait. Without this,
-> > register writes that follow the mode change can hit the chip
-> > before it is ready.
-> > 
-> > Fixes: 22b46c45fb9b ("iio:gyro:bmg160 Gyro Sensor driver")
-> > Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>  
-> Some process stuff.
+> A single transient i2c_smbus_read_i2c_block_data() failure (negative
+> errno or a short read) therefore leaves two pieces of state behind:
 > 
-> Never send a new version in reply to the older one.  Always
-> a fresh thread - the reason is mainly that the threads become unreadable
-> if you got to more than one or two versions.
+>   - iio_trigger_notify_done() never decrements the trigger's use_count,
+>     so iio_trigger_poll_nested() silently drops further dispatches
+>     (see industrialio-trigger.c, the !atomic_read(&trig->use_count)
+>     guard);
+>   - vl53l0x_clear_irq() never writes SYSTEM_INTERRUPT_CLEAR, so the
+>     chip keeps the DRDY interrupt asserted.
 > 
-> Also, don't send a new version for a reasonable period of time.
-> Something small like this maybe a few days, a bigger patch 1 week.
+> The sensor's buffer mode stays wedged from then on, recoverable only
+> by re-binding the driver. The sibling driver vl53l1x-i2c.c handles
+> exactly the same case correctly by jumping to a "notify_and_clear_irq"
+> label that always calls both helpers; mirror that here.
 > 
-> That lets multiple reviewers have time to take a look.
-> If you have a lot on list already then slow down in general and
-> spend some time helping to review patches coming from others.
-> The biggest bottleneck in IIO is reviewer time.
+> The bogus negative-int return value cast to irqreturn_t also goes
+> away as a side effect.
 > 
-> Anyhow, I'm going ignore this for a little while at least...
+> Fixes: 762186c6e7b1 ("iio: proximity: vl53l0x-i2c: Added continuous mode support")
+> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+Applied and marked for stable, not so much because it wedges (as probably
+won't recover anyway) but more to get rid of a negative error return in an
+irq handler.
 
-Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-As fixes go it's pretty safe given it just extends a sleep, so
-I'll grab it now rather than waiting longer.
-
-Jonathan
-
+> ---
+> v2:
+> - Drop the cited error-path code from the commit body; the diff
+>   already shows it (per Andy)
 > 
-> Jonathan
+>  drivers/iio/proximity/vl53l0x-i2c.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 > 
-> > ---
-> > v2:
-> > - Use msleep() instead of msleep_interruptible() so the wait is not
-> >   cut short by signals during probe (per Andy)
-> > - Add a code comment with the datasheet basis for the 80 ms wait
-> >   (per Andy)
-> > 
-> >  drivers/iio/gyro/bmg160_core.c | 10 ++++++++--
-> >  1 file changed, 8 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-> > index 38394b5f3..6d9019451 100644
-> > --- a/drivers/iio/gyro/bmg160_core.c
-> > +++ b/drivers/iio/gyro/bmg160_core.c
-> > @@ -258,8 +258,14 @@ static int bmg160_chip_init(struct bmg160_data *data)
-> >  	if (ret < 0)
-> >  		return ret;
-> >  
-> > -	/* Wait upto 500 ms to be ready after changing mode */
-> > -	usleep_range(500, 1000);
-> > +	/*
-> > +	 * Wait for the chip to be ready after switching to normal mode.
-> > +	 * The BMG160 datasheet (BST-BMG160-DS000-07 Rev. 1.0, May 2013)
-> > +	 * specifies a start-up / wake-up time (tsu, twusm) of 30 ms; use
-> > +	 * BMG160_MAX_STARTUP_TIME_MS (80 ms) as a safety margin, matching
-> > +	 * what bmg160_runtime_resume() already does.
-> > +	 */
-> > +	msleep(BMG160_MAX_STARTUP_TIME_MS);
-> >  
-> >  	/* Set Bandwidth */
-> >  	ret = bmg160_set_bw(data, BMG160_DEF_BW);  
-> 
-> 
+> diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+> index ad3e46d47..7acb94acc 100644
+> --- a/drivers/iio/proximity/vl53l0x-i2c.c
+> +++ b/drivers/iio/proximity/vl53l0x-i2c.c
+> @@ -87,15 +87,14 @@ static irqreturn_t vl53l0x_trigger_handler(int irq, void *priv)
+>  	ret = i2c_smbus_read_i2c_block_data(data->client,
+>  					VL_REG_RESULT_RANGE_STATUS,
+>  					sizeof(buffer), buffer);
+> -	if (ret < 0)
+> -		return ret;
+> -	else if (ret != 12)
+> -		return -EREMOTEIO;
+> +	if (ret < 0 || ret != 12)
+> +		goto done;
+>  
+>  	scan.chan = get_unaligned_be16(&buffer[10]);
+>  	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
+>  				    iio_get_time_ns(indio_dev));
+>  
+> +done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  	vl53l0x_clear_irq(data);
+>  
 
