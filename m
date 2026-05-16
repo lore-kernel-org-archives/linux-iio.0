@@ -1,182 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7563B28686;
-	Sat, 16 May 2026 18:55:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D513446C8
+	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 18:55:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778957736; cv=none; b=VbUO0bxtX7u+CPfpoSS5Wk6he/e7nZnru3vdnavr2MO7DyfKtkW8NqyU1oF9WfUPdjU55T7BRaiF1/XAkqBshmpLP6RooIiZGto4dGhCSSjuwSwD4+bxTtyexwhU38bmYRGgBBLUCnpA8FJOu1jgeR8SbzG4R6jJ5MTrp54UUrQ=
+	t=1778957741; cv=none; b=D/38oSHS06KwkJUC2sWrYxdow4LMTM/mFma/fFqE65lR7GCrb2ZecoKhECTN2904h61mSNcc1DJb/1ZlhEV5RX5zG5x/tEWG5pOAHB3SZ+txinxwdw1tLswWq07eIdsQx6TzRiIfVNqjsgTi2rtyQe3GoDi4pVx9Oachw+sPjvs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778957736; c=relaxed/simple;
-	bh=q/IpILmr0azoC+t0Lf2g+yybKTzBbhfe+OMXbr5vnMg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kbo1J/U1puZ/DF9hsIJjmjoGN4XEBBd4AiHXppHBZU3bfixcD/Wp3s4k4HaObYxVY2eoJvsQ/oAjyAO1zxxR/nDEsG/AKgUpWKwhDGg6uwwxmxnB89zUa99Ud9unZ35DhpGOi9NcsQFfKz/8x7TSJcvYzd1H2v/PL8jUfwnb6ho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZhK1sizi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778957741; c=relaxed/simple;
+	bh=smXl1ACaQHdx8U9FRyQERdVxO1VUUXTtW/E9FaBEaAw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=V8UcR0Ln/JfPyBeZTIVXV3kJyMEHB4bqcEdoCSPfk/DjJPw6af18FxJYaQX1xMUfNUFfT1NXQA/PGxUWfGxvBNjVQ9iCC7tSu3+uRbngGtx/cOg/JOQAAMD9TXv87GG3t67zd/rKVpr91LnntniSOnGgijcKKXtvk6FDd7mKiFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=l2dfTfEX; arc=none smtp.client-ip=209.85.210.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZhK1sizi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DDB1C19425;
-	Sat, 16 May 2026 18:55:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778957736;
-	bh=q/IpILmr0azoC+t0Lf2g+yybKTzBbhfe+OMXbr5vnMg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ZhK1siziz+X7X/gaHEAf46XLp/wpndFW29ONEQhistZJ8LZL9NdVhquDzcCgPzRA7
-	 bYeyYR8bf5oaBqHnG4MFF7J/vDaW1WRDMr726TXGzMop61gPwHVD6HKwttfehaoLoA
-	 h7vseBAgDOF2R1upFMaCUfj+o0ws1/A5FYJEw9mg1eHlPYjnYCltvTi0BhptUvduT2
-	 9ZQ1zmnNifahl03+VVA7SFJfAiqMlxHu0iCqsxEmROOF0FY2eStn6JT/JHOpG/VQq5
-	 deKDcavTSAoCLRc5oCU4z03rHl+rmDgUp+Sn0RdZQMBSdjAowxOxCHcvXl1dC/Zb7q
-	 iT6k3kn+oWE+Q==
-Date: Sat, 16 May 2026 19:55:22 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
- <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org
-Subject: Re: [PATCH v11 5/6] iio: adc: ad4691: add oversampling support
-Message-ID: <20260516195522.6792f89e@jic23-huawei>
-In-Reply-To: <20260515-ad4692-multichannel-sar-adc-driver-v11-5-eab27d852ac2@analog.com>
-References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
-	<20260515-ad4692-multichannel-sar-adc-driver-v11-5-eab27d852ac2@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="l2dfTfEX"
+Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7de4e6c5a30so1388009a34.0
+        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 11:55:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778957736; x=1779562536; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eq1K19iN5oeMgMBNYzXC3DPpQmXlX4CG05SJjOP5vxI=;
+        b=l2dfTfEX4Gav4ZtONxQ8r+uwAzyrPuND4jKG4BNcI/miKn0PKiOD58T10MkINQA5lP
+         eGlfO43jKrMln1pTPtc1V8gxQ27XL+FhXe4JfALmwZ+ht4mDGGE8kQ+x6Xf5jN/Wmtie
+         w6khg3zGZ8f3XWKpWRq3HtIGVWNptQs9XI3rvhTuE9gMPhIm/R8GOGM+vru2QyRuVit9
+         fYjwHwdFpz5QngtS41chn8ThIDUUOkC4lDG1GEZFlQ9UJbkGbpztyBs2TkTkSQe6zhSA
+         w4K/mOBjSpc5JE2L/lHKV5iTeZpyK5+TPinRG4Z/nY2H4blIFMBSX+WWtdgYq8qCfuwK
+         DRbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778957736; x=1779562536;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eq1K19iN5oeMgMBNYzXC3DPpQmXlX4CG05SJjOP5vxI=;
+        b=F5w74CRpcemgBy400MAR+egtEmHTScouKlDRzHZ/i76eupFtjGiw2gy/nRchC0QbLm
+         xVHTHO1yp34AiJFYKfq1I8nZQGYb/KK6qg8mN29UPYJcb74AGLAk+T0lhVzBx914NH2m
+         66tKQeGGYG5huUuu6b1WNk+lDBVzkGvpv/mW0ISiaitSzUXfS8Jbm7gJRb8n0V4y7qJ7
+         zuMXlu7bRQXMl/GAmKo5UCw4Lcru7fr7Wj7oxiEntL21dE/aNOV4M/zVmCj0b/w2DDm0
+         7H45NXj5CO+usV/vhEfNB1jrvse/5MUxyJ02MXEkQlY6Q686F85k38LF48givTB5Gbbb
+         QShg==
+X-Forwarded-Encrypted: i=1; AFNElJ+DMmQFy0awq7ASVoO93H2U0eICWDzmxp7CZWVmDn3G6RLnFiyuWKpKHoKuhT8IE2qvSXtgsI7hYS4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz/Ewe5FTRAcR81e+txJr85/Dg+Q/PA+MfwTvWtxWULAAlh96eK
+	0F0agQl6OASplKtVKMRVusEfGGG3dx3RQvEQFW5Qxa7Lw6j3blMXkYUOSHmPXFNFAoc=
+X-Gm-Gg: Acq92OEJ+GtRcLaaWWBHW+5Qo1NwPWAGcqNp0ZExOdmn2kttA0LgARE+qGbNF5DHuNE
+	Rcw9h8wl9257BO/SJTffxybuSYC/xCJo28d6K51/dW13cgFwcJFgriuVD+oI+dGdn4FtCkARfsB
+	BBzLdhXpdw0FoTxWdS+MBMqyQ1/3+mwPJ2r59AaOsOVtBbCVKPH9d0rUi+IB+TgQe4mAW1Xu1vs
+	JgcT/SDnH/hh+6yYONrrA5CGyhNjZhu2wpVTTb8fCt1UgsGOHIaMs/zKP/SSGVWVxKuZpuhHrxn
+	pfffG2CFwPvEdE1riYUt+wudMs2BjCjm4eDA5S443F80qNjdUqF4mDl1TaLg0pX6ja1EjzX5Wam
+	LHOmAvDh6Ljf+WGOUoEsWC30p/VCT8dPv8EGWaqwGordSdNOfOtbFTOM+3w2NRdw5gljER+HSJg
+	yLNXgs6EvHY49QEU0eu7BWb9H9YX2pPmF3A2VZb0SPBqeg1JYlQXLZqBdLp4faShcKbsEjDDsla
+	5X0jwyA4TNh
+X-Received: by 2002:a05:6830:6d18:b0:7dd:91cd:2b19 with SMTP id 46e09a7af769-7e4f2b1d085mr6087518a34.14.1778957736535;
+        Sat, 16 May 2026 11:55:36 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:b36d:bd18:7c02:29e2? ([2600:8803:e7e4:500:b36d:bd18:7c02:29e2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e55bc13a0asm4453747a34.21.2026.05.16.11.55.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 May 2026 11:55:36 -0700 (PDT)
+Message-ID: <54eca584-b749-4417-b37a-40c5513b0442@baylibre.com>
+Date: Sat, 16 May 2026 13:55:34 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/5] iio: accel: adxl372: Add timestamp to FIFO data
+To: Md Shofiqul Islam <shofiqtest@gmail.com>, jic23@kernel.org
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260510082556.3867-1-shofiqtest@gmail.com>
+ <20260510082556.3867-2-shofiqtest@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260510082556.3867-2-shofiqtest@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Fri, 15 May 2026 16:31:34 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
-
-> From: Radu Sabau <radu.sabau@analog.com>
+On 5/10/26 3:25 AM, Md Shofiqul Islam wrote:
+> The driver pushes FIFO samples using iio_push_to_buffers() which does
+> not attach a hardware timestamp to the data.  Add a scan buffer struct
+> with an aligned_s64 timestamp field to the driver state, capture a
+> single timestamp per IRQ with iio_get_time_ns(), and switch the FIFO
+> push loop to iio_push_to_buffers_with_timestamp().  The same timestamp
+> is reused for the event push call in the same handler, replacing the
+> duplicate iio_get_time_ns() invocation there.
 > 
-> Add per-channel oversampling ratio (OSR) support for CNV burst mode.
-> The accumulator depth register (ACC_DEPTH_IN) is programmed with the
-> selected OSR at buffer enable time and before each single-shot read.
-> 
-> Supported OSR values: 1, 2, 4, 8, 16, 32.
-> 
-> Introduce AD4691_MANUAL_CHANNEL() for manual mode channels, which do
-> not expose the oversampling_ratio attribute since OSR is not applicable
-> in that mode. A separate manual_channels array is added to
-> struct ad4691_channel_info and selected at probe time.
-> 
-> in_voltageN_sampling_frequency represents the effective output rate for
-> channel N, defined as osc_freq / osr[N]. The chip has one internal
-> oscillator shared by all channels; each channel independently
-> accumulates osr[N] oscillator cycles before producing a result.
-> 
-> Writing sampling_frequency computes needed_osc = freq * osr[N] and
-> snaps down to the largest oscillator table entry that satisfies both
-> osc <= needed_osc and osc % osr[N] == 0, guaranteeing an exact integer
-> read-back. The result is stored in target_osc_freq_Hz and written to
-> OSC_FREQ_REG at buffer enable and single-shot time, so sampling_frequency
-> and oversampling_ratio can be set in any order.
-> 
-> in_voltageN_sampling_frequency_available is computed dynamically from
-> the channel's current OSR, listing only oscillator table entries that
-> divide evenly by osr[N], expressed as effective rates. The list becomes
-> sparser as OSR increases, capping at max_rate / osr[N].
-> 
-> Writing oversampling_ratio stores the new OSR for that channel and snaps
-> target_osc_freq_Hz to the largest oscillator table entry that is both
-> <= old_effective_rate * new_osr and evenly divisible by new_osr. This
-> preserves an integer read-back of in_voltageN_sampling_frequency after
-> the OSR change while keeping the oscillator as close as possible to the
-> previous effective rate.
-> 
-> OSR defaults to 1 (no accumulation) for all channels.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-
-Mostly to avoid others looking into it. We do indeed have some issues
-in the IIO core with races around read_avail().
-They've been there a long time and attempts to fix them haven't yet
-made it upstream.  Where possible it is better to precompute all the options
-and pick a pointer rather than copying on the fly.
-
-I think we can do that here but maybe I'm missing something.
-
-I'm running out of energy tonight and feel like some Eurovision silliness
-so I'm not going to do another full review today at least
-
+> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
 > ---
->  drivers/iio/adc/ad4691.c | 381 ++++++++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 343 insertions(+), 38 deletions(-)
+>  drivers/iio/accel/adxl372.c | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
-> index 25f7a6939b0f..39244e0e4a2d 100644
-> --- a/drivers/iio/adc/ad4691.c
-> +++ b/drivers/iio/adc/ad4691.c
+> diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
+> index 545a21e5a3..521e8313b1 100644
+> --- a/drivers/iio/accel/adxl372.c
+> +++ b/drivers/iio/accel/adxl372.c
+> @@ -367,6 +367,10 @@ struct adxl372_state {
+>  	u16				watermark;
 
+
+>  	__be16				fifo_buf[ADXL372_FIFO_SIZE];
+
+I would just change this line to:
+
+	IIO_DECLARE_BUFFER_WITH_TS(__be16, fifo_buf, ADXL372_FIFO_SIZE);
+
+>  	bool				peak_fifo_mode_en;
+> +	struct {
+> +		__be16 channels[3];
+> +		aligned_s64 ts;
+> +	} scan;
+
+Then we don't need the extra struct and memcpy().
+
+If we really do need the memcpy() for some reason, this struct
+can be declared on the stack instead of here.
+
+>  	struct mutex			threshold_m; /* lock for threshold */
+>  };
 >  
->  static int ad4691_read_avail(struct iio_dev *indio_dev,
-> @@ -634,10 +802,46 @@ static int ad4691_read_avail(struct iio_dev *indio_dev,
->  	unsigned int start = ad4691_samp_freq_start(st->info);
+> @@ -703,13 +707,15 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
+>  	struct adxl372_state *st = iio_priv(indio_dev);
+>  	u8 status1, status2;
+>  	u16 fifo_entries;
+> +	s64 ts;
+>  	int i, ret;
 >  
->  	switch (mask) {
-> -	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		*vals = &ad4691_osc_freqs_Hz[start];
-> +	case IIO_CHAN_INFO_SAMP_FREQ: {
-> +		unsigned int osr;
-> +		int n = 0;
-> +
-> +		/*
-> +		 * Hold the lock while reading osr[chan] and populating the
-> +		 * scratch buffer: a concurrent oversampling_ratio write modifies
-> +		 * both target_osc_freq_Hz and osr[] under the lock, so we must
-> +		 * read osr atomically with respect to that write. The scratch
-> +		 * buffer is per-channel, so concurrent reads on different
-> +		 * channels do not race; concurrent reads on the same channel
-> +		 * would compute identical values, but holding the lock avoids
-> +		 * the formal data race.
+>  	ret = adxl372_get_status(st, &status1, &status2, &fifo_entries);
+>  	if (ret < 0)
+>  		goto err;
+>  
+> -	adxl372_push_event(indio_dev, iio_get_time_ns(indio_dev), status2);
+> +	ts = iio_get_time_ns(indio_dev);
+> +	adxl372_push_event(indio_dev, ts, status2);
+>  
+>  	if (st->fifo_mode != ADXL372_FIFO_BYPASSED &&
+>  	    ADXL372_STATUS_1_FIFO_FULL(status1)) {
+> @@ -733,7 +739,10 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
+>  			/* filter peak detection data */
+>  			if (st->peak_fifo_mode_en)
+>  				adxl372_arrange_axis_data(st, &st->fifo_buf[i]);
+> -			iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
+> +			memcpy(st->scan.channels, &st->fifo_buf[i],
+> +			       st->fifo_set_size * sizeof(__be16));
+> +			iio_push_to_buffers_with_timestamp(indio_dev,
+> +							   &st->scan, ts);
+>  		}
+>  	}
+>  err:
 
-The further issue that sashiko points out is we might rip whilst the
-core is formatting this. It's actually worse than a small race as the
-consumer interface might hold the pointer indefinitely.  There are only
-a few osr values, can we precompute the lot and make this a pick?
-
-
-> +		 */
-> +		scoped_guard(mutex, &st->lock) {
-> +			osr = st->osr[chan->channel];
-> +
-> +			/*
-> +			 * Only oscillator frequencies evenly divisible by the
-> +			 * channel's OSR yield an integer effective rate; expose
-> +			 * those as effective rates (osc / osr) so the user works
-> +			 * entirely in output-sample space.
-> +			 */
-> +			for (unsigned int i = start;
-> +			     i < ARRAY_SIZE(ad4691_osc_freqs_Hz); i++) {
-> +				if (ad4691_osc_freqs_Hz[i] % osr)
-> +					continue;
-> +				st->samp_freq_avail[chan->channel][n++] =
-> +					ad4691_osc_freqs_Hz[i] / osr;
-> +			}
-> +		}
-> +		*vals = st->samp_freq_avail[chan->channel];
->  		*type = IIO_VAL_INT;
-> -		*length = ARRAY_SIZE(ad4691_osc_freqs_Hz) - start;
-> +		*length = n;
-> +		return IIO_AVAIL_LIST;
-> +	}
-> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> +		*vals = ad4691_oversampling_ratios;
-> +		*type = IIO_VAL_INT;
-> +		*length = ARRAY_SIZE(ad4691_oversampling_ratios);
->  		return IIO_AVAIL_LIST;
->  	default:
->  		return -EINVAL;
