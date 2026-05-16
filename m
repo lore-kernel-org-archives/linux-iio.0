@@ -1,46 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7935A3D6CB9;
-	Sat, 16 May 2026 11:44:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EDAE3E0257;
+	Sat, 16 May 2026 11:56:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778931888; cv=none; b=ilJS9BNT2hC+Va7Rthl6CVks32br7+KphiiIWyWa1XjEz1sysuuJ/IAADiggHMYLpYApQUsAT5Nzip7DPceOj8AbQ0PSUyv88UuE9tPVMn/Qu+YIdV/NW+NEFv0wsiX7LbEjCKbGoTIRqKoCHBc5g3Uq4lgQftgFjdQqVcZyXKE=
+	t=1778932610; cv=none; b=l94oN+35c+Smcxsn0nOJP43pDdpfXC0GerK9e/Xlu7dcnffaxOgb9NaJTjl52IQU5n74ZxPZljbU/iMoAOqA1qaARselEC6tiME8HhyrB6a3FUW6STg8eV5eRTejP3OFXt2QorB7tFzfPHIGIxAkFSM52KZ2haHFQeBbtb2VkDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778931888; c=relaxed/simple;
-	bh=7JDt2BdU8yt2fO2x7S9hFlrenXGdViWoX0Mkt/8SLDE=;
+	s=arc-20240116; t=1778932610; c=relaxed/simple;
+	bh=3PpX64/KwUcKCQovla4ev6y/V5oZSP13uo4LPEpInhI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TM1aqhSQhwFxM6wraZE5CjojPjAwOY81wyKmqLIWztMdBz3TChreN81DZT/FOAkVBQ39Z9DMFjNDoMRsdptxBJj0Z8otiDu/MxPkSpj7kmxtmH9SIr69o5z+nCSC/H+At89sPUiB2K0DwL8Tx00jH0rTbyMqFv8zpaD9EvGCpnI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vi+4UP/v; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=mFlrwnqPlHEbu13y7JRMHSDVWp30tIyn4YVXcFDLeBNJU6fABlT6jh1BTmnK+iQp2BswuALu2ul0xAWiMBITk6sl68sciSwEffTer3dJgrKLi1+JOpI4XrysL79H0BmcsyB5Xxq57/X6jON79w8yFpMVAeEtRqoPxVc5r9/oIpw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Tv21S8/7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vi+4UP/v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DADC19425;
-	Sat, 16 May 2026 11:44:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Tv21S8/7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9A67C2BCFA;
+	Sat, 16 May 2026 11:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778931888;
-	bh=7JDt2BdU8yt2fO2x7S9hFlrenXGdViWoX0Mkt/8SLDE=;
+	s=k20201202; t=1778932609;
+	bh=3PpX64/KwUcKCQovla4ev6y/V5oZSP13uo4LPEpInhI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Vi+4UP/vJlNbBOXcekpwXWO/oqmjiPfRA5cNAEbpacRaf+i1iyzO00moTQZYBuY67
-	 WzuRcLsCO6FVjuJAAgf7zw6bTKNDGFEtXMEuYy7EU1H9sSqqCYU5B/3NkIiRb54qSC
-	 vxoBWgx+xmXnuz++42jWDNqgZlfWo/SUeeOigFLnO9iYUqWFIds4glAnhYac0Klps7
-	 uuUOH5XknZnmT5Cq424tQEF8oEI2jgUqU7YbBWMqD6BSeTdeD0hH/dsGwD7kh/UFhF
-	 Np5koafs8aioygmWWXFMQona9Xz7YElanxJk1zyjVi5AVem8UQLI1Xg9yqecEEFybN
-	 o1Ql1xmCHan9w==
-Date: Sat, 16 May 2026 12:44:39 +0100
+	b=Tv21S8/73ErdswF1KG0234sRuaRJKddO2BYAYki+51EU3hoFtAKteb642PdaCMrCp
+	 RfxkOAFrmFN8pwSDlTSw+LuyDTJ4hWYzCZaA+8q6lsJsnLARtyp9KzWEdvAvjkmkVC
+	 oe5KzEwnFBAJAZ799bROTskx3Zz1Y4Qk0sv9dw0K7MyMsSJ2BDCLL+JZTN4p9ygXOU
+	 SHJtQtCjjAcTr4twlvvZquvvfjLuW0mZX10mmRfntmyp3TbupC7gJ3b8paF+nxegRB
+	 64qi50YenNJ6JXcQipdB6fXwamd6JWeU6L4k9BtOeeLBGpBofQNsg0L+YY8TBHkF+2
+	 T6Ye2ZvWJkypA==
+Date: Sat, 16 May 2026 12:56:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: =?UTF-8?B?TmF0w6FsaWE=?= Salvino =?UTF-8?B?QW5kcsOp?= 
- <natalia.andre@ime.usp.br>, andy@kernel.org, dlechner@baylibre.com,
- jikos@kernel.org, nuno.sa@analog.com, Pietro Di Consolo Gregorio
- <pietro.gregorio@usp.br>, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org
-Subject: Re: [PATCH v3 2/6] iio: gyro: HID: hid-sensor-gyro-3d: Refactor
- channel initialization
-Message-ID: <20260516124439.6ca0843f@jic23-huawei>
-In-Reply-To: <873e576772dc7b283bb4f01b3c838894cc7a35de.camel@linux.intel.com>
-References: <20260512012302.20883-1-natalia.andre@ime.usp.br>
-	<20260512012302.20883-3-natalia.andre@ime.usp.br>
-	<873e576772dc7b283bb4f01b3c838894cc7a35de.camel@linux.intel.com>
+To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Alexander Koch <mail@alexanderkoch.net>, Michael Hornung
+ <mhornung.linux@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>
+Subject: Re: [PATCH v2 01/10] iio: light: opt3001: move device registration
+ to end of probe()
+Message-ID: <20260516125628.53b90c7e@jic23-huawei>
+In-Reply-To: <20260512-opt3001-cleanup-v2-1-8018cf3a8a0a@gmail.com>
+References: <20260512-opt3001-cleanup-v2-0-8018cf3a8a0a@gmail.com>
+	<20260512-opt3001-cleanup-v2-1-8018cf3a8a0a@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,104 +47,73 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 15 May 2026 09:48:34 -0700
-srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+On Tue, 12 May 2026 12:57:21 +0200
+Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
 
-> On Mon, 2026-05-11 at 22:16 -0300, Nat=C3=A1lia Salvino Andr=C3=A9 wrote:
-> > Replace the local gyro_3d_adjust_channel_bit_mask() function with a
-> > compound literal for scan_type initialization to improve code
-> > readability.
-> >=20
-> > Signed-off-by: Nat=C3=A1lia Salvino Andr=C3=A9 <natalia.andre@ime.usp.b=
-r>
-> > Co-developed-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
-> > Signed-off-by: Pietro Di Consolo Gregorio <pietro.gregorio@usp.br>
-> > ---
-> > =C2=A0drivers/iio/gyro/hid-sensor-gyro-3d.c | 24 +++++++++-------------=
---
-> > =C2=A01 file changed, 9 insertions(+), 15 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> > b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> > index c340cc899a7c..4cbe4d93a0a1 100644
-> > --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> > +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> > @@ -3,6 +3,7 @@
-> > =C2=A0 * HID Sensors Driver
-> > =C2=A0 * Copyright (c) 2012, Intel Corporation.
-> > =C2=A0 */
-> > +#include <linux/bitops.h>
-> > =C2=A0#include <linux/device.h>
-> > =C2=A0#include <linux/platform_device.h>
-> > =C2=A0#include <linux/module.h>
-> > @@ -82,17 +83,6 @@ static const struct iio_chan_spec
-> > gyro_3d_channels[] =3D {
-> > =C2=A0	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIMESTAMP)
-> > =C2=A0};
-> > =C2=A0
-> > -/* Adjust channel real bits based on report descriptor */
-> > -static void gyro_3d_adjust_channel_bit_mask(struct iio_chan_spec
-> > *channels,
-> > -						int channel, int
-> > size)
-> > -{
-> > -	channels[channel].scan_type.sign =3D 's';
-> > -	/* Real storage bits will change based on the report desc.
-> > */
-> > -	channels[channel].scan_type.realbits =3D size * 8;
-> > -	/* Maximum size of a sample to capture is u32 */
-> > -	channels[channel].scan_type.storagebits =3D sizeof(u32) * 8;
-> > -}
-> > -
-> > =C2=A0/* Channel read_raw handler */
-> > =C2=A0static int gyro_3d_read_raw(struct iio_dev *indio_dev,
-> > =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *cha=
-n,
-> > @@ -251,16 +241,20 @@ static int gyro_3d_parse_report(struct
-> > platform_device *pdev,
-> > =C2=A0	int i;
-> > =C2=A0
-> > =C2=A0	for (i =3D 0; i <=3D CHANNEL_SCAN_INDEX_Z; ++i) {
-> > +		unsigned int ch =3D CHANNEL_SCAN_INDEX_X + i;
-> > + =20
->=20
-> When you do code change more than what you described, then you should
-> add to commit description that you are also doing this at the same
-> time.
-Particularly true when it is less than ideal.  Like in previous
-patch the loop shouldbe from CHANNEL_SCAN_INDEX_X to CHANNEL_SCAN_INDEX_Z
-not 0 (the value is 0 but if we assume that then the sum for ch makes little
-sense!)
+> From: Joshua Crofts <joshua.crofts1@gmail.com>
+> 
+> Move devm_iio_device_register() to end of the opt3001_probe() function
+> to prevent a race condition where userspace could interact with the
+> device before the hardware IRQ was set up.
+> 
+> Fixes: ac663db3678a ("iio: light: opt3001: enable operation w/o IRQ")
+> Reported-by: Jonathan Cameron <jic23@kernel.org>
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Closes: https://sashiko.dev/#/patchset/20260511-opt3001-cleanup-v1-0-f7879dc3455c%40gmail.com?part=7
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> ---
+>  drivers/iio/light/opt3001.c | 10 ++++------
+>  1 file changed, 4 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+> index 53bc455b7bad142695d9fecc6cabb934fb3ace0c..3c79e0c4ca32fedf33e318d047d6ab3f62b6c03b 100644
+> --- a/drivers/iio/light/opt3001.c
+> +++ b/drivers/iio/light/opt3001.c
+> @@ -874,12 +874,6 @@ static int opt3001_probe(struct i2c_client *client)
+>  	iio->modes = INDIO_DIRECT_MODE;
+>  	iio->info = &opt3001_info;
+>  
+> -	ret = devm_iio_device_register(dev, iio);
+> -	if (ret) {
+> -		dev_err(dev, "failed to register IIO device\n");
+> -		return ret;
+> -	}
+> -
+>  	/* Make use of INT pin only if valid IRQ no. is given */
+>  	if (irq > 0) {
+>  		ret = request_threaded_irq(irq, NULL, opt3001_irq,
+> @@ -894,6 +888,10 @@ static int opt3001_probe(struct i2c_client *client)
+>  		dev_dbg(opt->dev, "enabling interrupt-less operation\n");
+>  	}
+>  
+> +	ret = devm_iio_device_register(dev, iio);
+> +	if (ret)
+> +		return dev_err(dev, "failed to register IIO device\n");
 
->=20
-> Thanks,
-> Srinivas
->=20
-> > =C2=A0		ret =3D sensor_hub_input_get_attribute_info(hsdev,
-> > =C2=A0				HID_INPUT_REPORT,
-> > =C2=A0				usage_id,
-> > =C2=A0				HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXI
-> > S + i,
-> > -				&st->gyro[CHANNEL_SCAN_INDEX_X +
-> > i]);
-> > +				&st->gyro[ch]);
-> > =C2=A0		if (ret < 0)
-> > =C2=A0			break;
-> > -		gyro_3d_adjust_channel_bit_mask(channels,
-> > -				CHANNEL_SCAN_INDEX_X + i,
-> > -				st->gyro[CHANNEL_SCAN_INDEX_X +
-> > i].size);
-> > +		channels[ch].scan_type =3D (struct iio_scan_type) {
-> > +			.format =3D 's',
-> > +			.realbits =3D BYTES_TO_BITS(st- =20
-> > >gyro[ch].size), =20
-> > +			.storagebits =3D BITS_PER_TYPE(u32),
-> > +		};
-> > =C2=A0	}
-> > =C2=A0	dev_dbg(&pdev->dev, "gyro_3d %x:%x, %x:%x, %x:%x\n",
-> > =C2=A0			st->gyro[0].index, =20
->=20
+Sashiko correctly points out this won't build.  I guess you were aiming for
+	if (ret)
+		return dev_err_probe(dev, ret, "failed to register IIO device\n");
+
+My eyes skipped right over that whilst reading :(
+
+The devres comment is also correct. So given this is a fix you can't do it
+like this.  You'd need to move to
+	ret = iio_device_register(iio);
+and explicit iio_device_unregister(iio) in remove.
+
+Then later put it back to devm when you convert the rest.
+
+https://sashiko.dev/#/patchset/20260512-opt3001-cleanup-v2-0-8018cf3a8a0a%40gmail.com
+
+Jonathan
+
+
+> +
+>  	return 0;
+>  }
+>  
+> 
 
