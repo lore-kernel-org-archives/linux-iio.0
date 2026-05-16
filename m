@@ -1,44 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08D311E4BE;
-	Sat, 16 May 2026 13:09:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47C1D1E4BE;
+	Sat, 16 May 2026 13:11:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778936951; cv=none; b=DloUb+MZJqNhm3JTgpEux8zZJd3Cl7VQld4qRUNZZm2bXq/jHuiEVpdel6VCKMYtrNV4XuGEpH39DNXRsTOG1xDE2A9KjnbHovy4qaGgbHRGP2TNdoyFB3OnLTUkrkBaCkwHA7/osoz9P8WNH/gvB6hBwf5T7j0H817DWSD9xdA=
+	t=1778937101; cv=none; b=krJJEqAHlwWox4gWvgNbQIQVfCW2zkuYyH3Ln5UMf0YS8LvgxwgfTGqiLEZWiHfpXF1BtRuJ5VdmZ4Wnt15/wxvPta0vDxEMc/an8XRJ47gWX9XEuBKx/fRrzDDWe1gX0fW0IF6RZl8B2rcHDIPW10obiVpCL+9tQBmLiZHyTNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778936951; c=relaxed/simple;
-	bh=uAX/ioKdn5LkIKdFXTI4Zgcex39XS8ne1eSRva2GmWY=;
+	s=arc-20240116; t=1778937101; c=relaxed/simple;
+	bh=u9I/5oRja+XFyukkJyue2Vfe1y+CxJ/DhqtdydujKGM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QEESjNQr5YgnXgTCpMVQLTlAxBSrHXfc4HF+tdx/gqQuAtch//lscNHg5ug5TVw/8K8ytvCMTfzLvhwCnOWLOUhulIGl6glERzg9NsP+t3t0wPnwS3p2Qv73LZ9hiZ8HuX6e0y4mUE3Ciuc5vp1LfocvecF/cEkGodKNVHxqj/I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NN+mchfk; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=mvZvz9ZBvsnY4Pf1qZskh7TvKXVrWT6X2q5wFlR5WJUk1cnqzVuUmxEss423FfCsjLVZoWTUqsa5N8PQ4+izKxJ3fImdMYuE2kkzda+zN0RH40V0kRUK24mwIe8Msao2ai3zukmtl5Yk7Btmjyq06yNUO9lRc5JOTsGuTDR07Ls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ll1aO8jb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NN+mchfk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD3DC19425;
-	Sat, 16 May 2026 13:09:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ll1aO8jb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C671CC19425;
+	Sat, 16 May 2026 13:11:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778936950;
-	bh=uAX/ioKdn5LkIKdFXTI4Zgcex39XS8ne1eSRva2GmWY=;
+	s=k20201202; t=1778937100;
+	bh=u9I/5oRja+XFyukkJyue2Vfe1y+CxJ/DhqtdydujKGM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=NN+mchfkb8qvZDAO/2dXdv1WeK6oLpiglpj9oiHqj6ZeqSvebC84Pq+QaD0GvKBRI
-	 EOLQsp1qg59odcXtXmdG7lqXLZDW2vINsZmiKeKTW80BXjHJ0F5kHkxlk2n4QjYjeP
-	 qGfuK9C7csj14RWZUwqIKVSPbV/wzD8764n0FMNDcMAn+17fNupbNBSTueF8FRu4FR
-	 tUPxz6ZONZQ0fqotAMEPYEslA2yZpZ8NEy+er1swVHF21SUzJmS01Fj6yCGcxMy4tK
-	 qzkb5qtnWLzPFdnfeG92jILwRHlzW1en4bJmVXmOj0pAEN134MOSKk+9cT/geB1FBD
-	 hnzHrk5xdlITA==
-Date: Sat, 16 May 2026 14:09:02 +0100
+	b=ll1aO8jbY7y2Gex5zRtMjJHcVJMGluf+EgmJZedqK6Bl/9TaTblrqwRzYYxeE9BtT
+	 vFkmkeCU/tESFhzZ/rF7PnDuBagKOZB8tBL9fXmi5GSisUmOk30UmDJNM0tavLS8Ol
+	 C1unRBccQEwVRc7DgyuwIJPa1zBhkDB8mJHfRPsQtSb9slr0grB5up9WmzQ95oMQBR
+	 4+PhMuXFjH9NdufRgoKAYB46zI1pV002aLFrZY4ZvIIgDUXvi/a4sPyhxUfjeFZMzJ
+	 3C+6q+MTNzg/J9ssCmk7O9zqZKVd8KbP84juM7RazbXqLXpAuuuOzbJxcB8d/UXG3N
+	 ALtR26Wsg5XrQ==
+Date: Sat, 16 May 2026 14:11:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rishi Gupta
- <gupt21@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iio: light: veml6030: fix channel type when
- pushing events
-Message-ID: <20260516140902.2c3135ba@jic23-huawei>
-In-Reply-To: <20260514-veml6030-fixes-v2-1-abdd5837be50@gmail.com>
-References: <20260514-veml6030-fixes-v2-0-abdd5837be50@gmail.com>
-	<20260514-veml6030-fixes-v2-1-abdd5837be50@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Rishi Gupta
+ <gupt21@gmail.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Matti Vaittinen <mazziesaccount@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] iio: light: add support for veml6031x00 ALS
+ series
+Message-ID: <20260516141131.645e1ae0@jic23-huawei>
+In-Reply-To: <agStVi6NXRnQOOOO@ashevche-desk.local>
+References: <20260513-veml6031x00-v2-0-4703ca661a1d@gmail.com>
+	<20260513-veml6031x00-v2-4-4703ca661a1d@gmail.com>
+	<agStVi6NXRnQOOOO@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,45 +53,60 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 14 May 2026 14:01:11 +1300
-Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
+On Wed, 13 May 2026 19:56:54 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> The events are registered for IIO_LIGHT and not for IIO_INTENSITY.
-> Use the correct channel type.
+> On Wed, May 13, 2026 at 05:49:44PM +1300, Javier Carrasco wrote:
+> > These sensors provide two light channels (ALS and IR), I2C communication
+> > and a multiplexed interrupt line to signal data ready and configurable
+> > threshold alarms.  
 > 
-> When at it, fix minor checkpatch code style warning (alignment).
+> Can you split this to two or more patches:
+> - basic functionality
+> - feature 1 (exempli gratia, IR)
+> - feature 2 (exempli gratia, multiplexed interrupt)
+> - ...
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: 7b779f573c48 ("iio: light: add driver for veml6030 ambient light sensor")
-> Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Applied this one to the fixes-togreg branch of iio.git.
-
-Thanks
-
-Jonathan
-
-> ---
->  drivers/iio/light/veml6030.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
+> ?
 > 
-> diff --git a/drivers/iio/light/veml6030.c b/drivers/iio/light/veml6030.c
-> index 6bcacae3863c..da8c32cabfd6 100644
-> --- a/drivers/iio/light/veml6030.c
-> +++ b/drivers/iio/light/veml6030.c
-> @@ -875,9 +875,11 @@ static irqreturn_t veml6030_event_handler(int irq, void *private)
->  	else
->  		evtdir = IIO_EV_DIR_FALLING;
->  
-> -	iio_push_event(indio_dev, IIO_UNMOD_EVENT_CODE(IIO_INTENSITY,
-> -					0, IIO_EV_TYPE_THRESH, evtdir),
-> -					iio_get_time_ns(indio_dev));
-> +	iio_push_event(indio_dev, IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
-> +						       0,
-> +						       IIO_EV_TYPE_THRESH,
-> +						       evtdir),
-> +		       iio_get_time_ns(indio_dev));
->  
->  	return IRQ_HANDLED;
->  }
+> But let's wait for Sashiko if it swallows this big slice of the pie
+> and not choke on it.
+> 
+> ...
+> 
+> > +	{
+> > +		.compatible = "vishay,veml6031x01",
+> > +		.data = &veml6031x01_chip,
+> > +	},
+> > +	{
+> > +		.compatible = "vishay,veml60311x00",
+> > +		.data = &veml60311x00_chip,
+> > +	},
+> > +	{
+> > +		.compatible = "vishay,veml60311x01",
+> > +		.data = &veml60311x01_chip,
+> > +	},  
+> 
+> Oh, is 'x' is a real letter in the part number or a wildcard? If the latter,
+> please avoid. Choose the base part number instead.
+> 
+FWIW I wondered this before. It's an actual x not a wildcard.
+
+> ...
+> 
+> > +static const struct i2c_device_id veml6031x00_id[] = {
+> > +	{ "veml6031x00", (kernel_ulong_t)&veml6031x00_chip },
+> > +	{ "veml6031x01", (kernel_ulong_t)&veml6031x01_chip },
+> > +	{ "veml60311x00", (kernel_ulong_t)&veml60311x00_chip },
+> > +	{ "veml60311x01", (kernel_ulong_t)&veml60311x01_chip },
+> > +	{ }
+> > +};  
+> 
+> Perhaps use C99 initialisers, as there is an activity to change all drivers to
+> follow that. Jonathan, btw, what do you think we should do in the light of Uwe's
+> approach? Require C99 initialisers in new code, or something else?
+
+Require them for device_id tables so that Uwe doesn't fight a loosing battle for ever!
+
 > 
 
