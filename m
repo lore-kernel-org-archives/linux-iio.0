@@ -1,61 +1,63 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6086D1A9FB7
-	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 15:18:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFA7B3E3DBC
+	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 15:23:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778944702; cv=none; b=SUD4oUSJooyVB79+8Q/pTCTOyDloSF7e350Nx8VM2XMK3jJuGJkABdySP3sksqFgXy3MAmyDrAw1Hv4QxCLdH8WuDI6iKOKOlla6eQoC105IODnP1m424cN28W+1hkJNE2Nozav7KFxc0dqTviIZv1YyLUM7cyhW+mQZf2Jk/lk=
+	t=1778945037; cv=none; b=EjFAoeASEjmzHPMNrT9/SkoUF3Sgvt/AmGWvKFI7H8mA/v+VBkVsPdrvrzqkkURCxB7pLQdtlihttzBP6r0PSlF2dNvQxWUSWIE0gnKGxqLpAb+ZwwK/HrNImhT5OhpA/ClBvT2UMSTuZlLbDalxhOUQaaxKWo/6cCt5sbq50D4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778944702; c=relaxed/simple;
-	bh=5xCqo/NLI84yXmyv/8tPF56CFvUg9eOOUrmBLI7ZpEg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OIPvh59t81+5cbqym9xkubKFmUMPtGWiXfLiqR/dJmtQuPkBuYpnhp51ajR1PIW+blV2fLUdLQlDIyY2xgH1wvr/bGXdaKzfxcV4Mnb+tjaY22uBAlD7O8fZxb+NL5PZ8WbMxnM2awTdGTq9T2Fa0p8AalHmsTEJq3iUBGz7ATE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YQjgX3w3; arc=none smtp.client-ip=209.85.128.53
+	s=arc-20240116; t=1778945037; c=relaxed/simple;
+	bh=q21qE7CxpHCFqxnUE1xY9T/lsDJlzA/XTaD3r/DtQxM=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=OJnqUkr2xxs+5rUrlInfd7VjOmteRCc4qQ52w5hYG75eH8ag0TyrEJEcuPfh8ezYUBqQ2MOFdfw/8ZuX87TrM/3WKqNnUZo4Fqy7kp16CRqzYFvWbox7xBS7caj6QzlQD+V+XuiEw0on8ir9QsafhUWKp7K4zk6/MQjLsVk6ak8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A4c00kzJ; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YQjgX3w3"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-488a8f97f6bso1716085e9.2
-        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 08:18:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A4c00kzJ"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-488ac04e13dso925885e9.1
+        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 08:23:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778944699; x=1779549499; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GpoxQ6kC4ane6XwRPu1EFSN8ZEDWzHnTSyZhyFmWQ7k=;
-        b=YQjgX3w3x7Atm4v/9f92wpl82jVaBcJbRVmqao3NlWnYhWHM5X1Gfb9ENP100HDLNS
-         JlQtZWbn0txD29mUWEivzcQxuwJDBl41mNN0oH+wop71tKRgO+LTyiJFpjziDXsVyekb
-         dQk+MBDYgBPGYEl1+n4XT7eaWUo4IewL8pFozUtUTY953mfF9uK2aJenOA7eT6rbkLgc
-         cEFf9qZ7i1egssKSKDyI1Id7O5jTpMLwKoCDcmwALeYFy9CVFZgmkM179BF0bWzfxZH6
-         JdV16AO0xD3gqUCgerzg67KIjqNBmNDRWVfs8qgHe5j29mxdY+EO+0N3GKZBtDQOTzJm
-         rc1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778944699; x=1779549499;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1778945034; x=1779549834; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GpoxQ6kC4ane6XwRPu1EFSN8ZEDWzHnTSyZhyFmWQ7k=;
-        b=RZKohErY2LuYNsDSaAQD6bLoUFnk6Hq2b8LbgySUZgXynpfYBDLpNJkZh4PPPsCiUx
-         dtlSAR6j3QD20EaUj4738nQ95QcvvwByYjUt18rsO1Nkxzdnk66oNdGKmmhmhiGB57mf
-         hH7vP0S56tPO0xrzUSlu32mx6teTKZVzkmLoZgbMTB5N1Wg/YBK/sjWwzDKH0WBI3rR7
-         wxtyRrCM9Zum+WTJgZUILT0tk5dMO7wbYhrMjMpYYfLSZrvfVxnIn5wUE6QFD1WrHuMw
-         oQy1mDFiFJ0hZXfQ2Xoh+o6kFqrM7h3FM9rBiHugyrFVMjdlAr4rD48GZdCUzyU5dr2I
-         czbw==
-X-Forwarded-Encrypted: i=1; AFNElJ99Uod1W4EwALSz7gFPgJKjDD4DYm2okfceAbOg0NiiVTf4U6p5isHTr7J2unLmfuSun+NhmGSndW4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy6RlARss8XsWvpxgJOFmHk9k7ECyOGAiezt00UgrjU54QTYXCT
-	8OHfLGRUYALRcf0GPriWbTqIs8T5Ow5hLGFsxFve4Gjajy6DFrZ1AfGZ
-X-Gm-Gg: Acq92OF/NnbY3TxzpcszzBUkQhrhVT3DORkmMvIgsVKAYXjnkivH5nRiPU7f0onyMD6
-	veaWVahTDJGMPpB3BCldqKpNSqnuOXOn5ewAKb59b95n0rB8vpjI4lsf6TDj1mBGcTwLpqi5qOx
-	6/oGbSpsqNSWZOQ3TxNABjturfJQ3frHDmNZHngk7rvNWP8u05XJOT01yh7SxF47QDpCQXoTPNU
-	GvaNd9bgnpgit5WcR9WS2yYQwo01vAZE7L/DoF6N5dencCLsf705kkv7dYRPe0mreuunPUA6Gsa
-	FGT1hm5hKV0dma6wCr8Z4EBTGgRaehxkHrceGA6FDSj9JEDLlUhJyZ9Pm7k3PcYpH4k4o+fxfty
-	h5mKLA4zee4SKZwcbnu473jooR34SaNZQKpruBJY8e9bvehkFyjjdVul4f/PCZTppsup6eLqYzN
-	rIEBhCr8zh9O5K1DVQZ4uVAdC9HTux8TmX+sTYCrgbq+tfbw==
-X-Received: by 2002:a05:600c:45c3:b0:48a:797f:24f8 with SMTP id 5b1f17b1804b1-48fe59ab0e7mr55061735e9.0.1778944698581;
-        Sat, 16 May 2026 08:18:18 -0700 (PDT)
+        bh=0Q0up9/HrhOHj+j+adfhj2mtVYK497Nsuxv5I8Ikx+o=;
+        b=A4c00kzJWn2aRX/xchw2HayvIFzEFEAMMUWwtY/SXeOrnwQaF9/fsvTaN2A+FzA7Pb
+         o9DGxFkUn3L6pZQCu5eu6+r0fLHF+9lsQo6jU7XQVIMZ/aqvmOa8X6IC1AyJhRsVT6DR
+         F6yvCMYDraH3AWlg0qqQD7iG3F+BXQHBGK4p0tH9TIJaBoJ4Ye659vGWHHZXz8yvzZlX
+         0BKYWW5RJ4/odK+E0LmAim10zEZJ3fq+Oo2IE4v5YQ9uQx0Zs81M4CqAG0V2k7iAR/i9
+         c7jzE7KiEE5BC53f06C9hqTvoASIhDrxe5Sd/80X3NLEo/+kVOvSGQR81Pu86qenhavw
+         Wvqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778945034; x=1779549834;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=0Q0up9/HrhOHj+j+adfhj2mtVYK497Nsuxv5I8Ikx+o=;
+        b=rekK8b4xojjIeTDyGbX0jAWWzc4Fth752Z4TDGYjc0X/YR9JsrvV3pmTdRUac2d8Cm
+         volQoJ+wfN88MWt/VUsfcj5b6/rMdEOKrEuwVyoIH5hhWbJMnGBQT/oXP08yGGWJEhAM
+         LpIpzfIAJk+kee2tXqXNkzAn0oQ5dZWBWlnrN6I6yOxzU+MhjSBB5px3pdyg/ouCx7+i
+         d+dzwLSGZd+3LY6CcY7IaPaighxFiyZ/8YkHtyL2wnniuBn7gKx4th70VM1s8pM0PViE
+         p36P7liccJ7UpUfroFzTeSkKGvi/J3l0Q59H6oKdUa+X5JmTDKJgAtAh9q5wa/VP3xHr
+         YoDw==
+X-Forwarded-Encrypted: i=1; AFNElJ93sgPaEQM105pzz2xO+dg06dM3ajj7LAYJ1Auzr9Pxps50rlnKdD0jCuoZdgzTRBWml4n4qFwwW9s=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwhdGd+Uljo1E+FcqOjhnMLjOoWjywXW2PgkeliDRanvMfPvDOC
+	doTl1Jx4a/6JCYaiiphgchDCkcKs7Gf28U2qk/eW+GDzoc2y14gnuEzg
+X-Gm-Gg: Acq92OFG+Tl15m0EX5lh8GxaKaibXdjOcbWe8aZDueMgYuEv6jGPg9t4UhrPEn44GBZ
+	Z4QjdLFf6Hmrm2HETaGve4A5GWj0zgP/xhCluG28EO3efBmCP2Z+SsCnntaqOpj26lDGHqsTQhd
+	6qATdJTtVTfvaUFJtiZSzpkOdJp4mVtzL20BmkDInG0nFbpTUanPGILQbBTHHYAyBsq/L7bI/em
+	1Rd8d3ZLsidGx+cY/15SxsYPCpSfsYFjTeeXrAtKPI0ms6yQZSXAKZKmLGFOqDl4DYsxVxVH6R2
+	r7NFT2q39tqS7ANNDF5D8j6LALVAEeLhffDfN+TKMs9XUSRynchj3AX7JqY3d2dmkuYCcLNl+Mw
+	vfMTULO3o4OGHMiXD629GGqjlXgNQTFm4UMCaIV3P0uRl2Qy5p2LpcZ3MjflJSy/oxeduDIkO8p
+	kzF4ajEf7R9IKCgAmYqqWPoLPLmvwL+D8bXNOxfdrx3SVJjQ==
+X-Received: by 2002:a05:600c:c177:b0:48a:56d4:7274 with SMTP id 5b1f17b1804b1-48fe66423ecmr57106375e9.3.1778945034321;
+        Sat, 16 May 2026 08:23:54 -0700 (PDT)
 Received: from localhost.localdomain ([185.139.138.68])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48feab2a23dsm39712915e9.5.2026.05.16.08.18.15
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe537c788sm127342465e9.12.2026.05.16.08.23.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 May 2026 08:18:18 -0700 (PDT)
+        Sat, 16 May 2026 08:23:53 -0700 (PDT)
 From: Stepan Ionichev <sozdayvek@gmail.com>
 To: jic23@kernel.org
 Cc: lars@metafoo.de,
@@ -65,11 +67,13 @@ Cc: lars@metafoo.de,
 	andy@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: [PATCH] iio: resolver: ad2s1210: split trigger handler body into a helper
-Date: Sat, 16 May 2026 20:17:20 +0500
-Message-Id: <20260516151721.1982-1-sozdayvek@gmail.com>
+	Stepan Ionichev <sozdayvek@gmail.com>
+Subject: Re: [PATCH] iio: resolver: ad2s1210: split trigger handler body into a helper
+Date: Sat, 16 May 2026 20:23:37 +0500
+Message-Id: <20260516152337.1743-1-sozdayvek@gmail.com>
 X-Mailer: git-send-email 2.33.0.windows.2
+In-Reply-To: <20260516151721.1982-1-sozdayvek@gmail.com>
+References: <20260516151721.1982-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,121 +82,17 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-ad2s1210_trigger_handler() takes st->lock via guard(mutex), then runs
-the per-channel read/event/push sequence, and finally calls
-iio_trigger_notify_done() before returning IRQ_HANDLED. Because the
-guard releases at scope exit, iio_trigger_notify_done() runs with
-st->lock still held. The previous "goto error_ret" structure also
-hides that the locked region extends all the way to notify_done.
+On Sat, May 16, 2026 at 20:17:21, Stepan Ionichev wrote:
+> [PATCH] iio: resolver: ad2s1210: split trigger handler body into a helper
 
-The device does not register any triggers itself, so this is not a
-deadlock source today, but holding a device mutex across the trigger
-notification path is fragile if a trigger ever gets attached
-elsewhere.
+Please drop this -- I missed that David posted essentially the same
+refactor eight minutes earlier:
 
-Lift the body of the handler into a helper, ad2s1210_collect_and_push(),
-that owns the guard and returns 0 / negative errno via direct returns
-instead of "goto error_ret". The irq handler then becomes a short
-wrapper that calls the helper, calls iio_trigger_notify_done() with no
-state lock held, and returns IRQ_HANDLED.
+  https://lore.kernel.org/linux-iio/20260516-iio-resolver-refactor-trigger-handler-v1-1-25b11ba0155e@baylibre.com/
 
-No change in behaviour for the read paths: every error path still
-skips the event/buffer push, and iio_trigger_notify_done() is still
-called on every IRQ regardless of result. The fault-register read no
-longer leaks a negative errno into irqreturn_t either, since the
-caller never propagates the helper's return value.
+His version is cleaner (void helper, since the irq handler never
+looks at the return value).
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Link: https://lore.kernel.org/lkml/20260516122838.163a77d3@jic23-huawei/
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
- drivers/iio/resolver/ad2s1210.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+Reviewing his patch separately.
 
-diff --git a/drivers/iio/resolver/ad2s1210.c b/drivers/iio/resolver/ad2s1210.c
-index 1be19fe8a..20b0b2b5c 100644
---- a/drivers/iio/resolver/ad2s1210.c
-+++ b/drivers/iio/resolver/ad2s1210.c
-@@ -1276,10 +1276,8 @@ static int ad2s1210_debugfs_reg_access(struct iio_dev *indio_dev,
- 	return regmap_write(st->regmap, reg, writeval);
- }
- 
--static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
-+static int ad2s1210_collect_and_push(struct iio_dev *indio_dev, s64 timestamp)
- {
--	struct iio_poll_func *pf = p;
--	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct ad2s1210_state *st = iio_priv(indio_dev);
- 	size_t chan = 0;
- 	int ret;
-@@ -1295,15 +1293,15 @@ static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
- 					       AD2S1210_REG_POSITION_MSB,
- 					       &st->sample.raw, 2);
- 			if (ret < 0)
--				goto error_ret;
-+				return ret;
- 		} else {
- 			ret = ad2s1210_set_mode(st, MOD_POS);
- 			if (ret < 0)
--				goto error_ret;
-+				return ret;
- 
- 			ret = spi_read(st->sdev, &st->sample, 3);
- 			if (ret < 0)
--				goto error_ret;
-+				return ret;
- 		}
- 
- 		memcpy(&st->scan.chan[chan++], &st->sample.raw, 2);
-@@ -1315,15 +1313,15 @@ static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
- 					       AD2S1210_REG_VELOCITY_MSB,
- 					       &st->sample.raw, 2);
- 			if (ret < 0)
--				goto error_ret;
-+				return ret;
- 		} else {
- 			ret = ad2s1210_set_mode(st, MOD_VEL);
- 			if (ret < 0)
--				goto error_ret;
-+				return ret;
- 
- 			ret = spi_read(st->sdev, &st->sample, 3);
- 			if (ret < 0)
--				goto error_ret;
-+				return ret;
- 		}
- 
- 		memcpy(&st->scan.chan[chan++], &st->sample.raw, 2);
-@@ -1334,16 +1332,25 @@ static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
- 
- 		ret = regmap_read(st->regmap, AD2S1210_REG_FAULT, &reg_val);
- 		if (ret < 0)
--			goto error_ret;
-+			return ret;
- 
- 		st->sample.fault = reg_val;
- 	}
- 
--	ad2s1210_push_events(indio_dev, st->sample.fault, pf->timestamp);
-+	ad2s1210_push_events(indio_dev, st->sample.fault, timestamp);
- 	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
--				    pf->timestamp);
-+				    timestamp);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+
-+	ad2s1210_collect_and_push(indio_dev, pf->timestamp);
- 
--error_ret:
- 	iio_trigger_notify_done(indio_dev->trig);
- 
- 	return IRQ_HANDLED;
--- 
-2.43.0
-
+Stepan
