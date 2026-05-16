@@ -1,231 +1,200 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D03F48460;
-	Sat, 16 May 2026 15:08:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E62AA8460
+	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 15:09:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778944085; cv=none; b=TQBs/WkGM8N7aJyXhbZZn/RJ6tVA8BTksbBz360P0p0yyr+p92jb/NMTtEkKJv3sCUEcsszQ2TM9fo2kwmFO9kZYzxKqasukVKFBwtyAIF6IPSS4azlCrRM4MxiZzLn5uY+ak7eqezGdWf8l4qRdARuD9Oe3u+PpcGel3CVtw2E=
+	t=1778944191; cv=none; b=nD7iqDnmSqOtXOOzpUlYhvGmLGKpd3RdkO1j4XM2qBB/ptuwfEYu1ODC1AvEKEkCg+fTJr11HynUNmMSJJt4Hvc42nqYuturUP+WJzF1sCh93aH08LxCge1V8/jPaKmqca+4sC3/5RTFGg8H2ZT8vqqFM021AyT9YeGBkN/aySU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778944085; c=relaxed/simple;
-	bh=jho9MdaE5yAkm0BJknveYPFKVoDYTuZ4VchAhGg/BK4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oCR0YUhb+hEVuCNjWnC6pX4rmeQlM63nX1W/0yYUUGWxANf10wgyPebFeRdO50ujXhwh2v7TkGXBd2aw5wjeD4L5wRoRLJMChs+Fu07xD9S8Bi8+ZkkrQpOiRehCFpRxxDmfcSVBs/KqQke6vwgtgWvm9qWr5l1y8menHitWfv4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n0LfOzIm; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778944191; c=relaxed/simple;
+	bh=dSUXvSzLwKZG6Nl2GPO6UNxqhFumM97KURXLcfNsPkk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=By1IOy6uGFasYDOFO0XYjiwbyWsaDSjxncrMeMy315l0Lap3nCzob9/54Ay2ZfWwiZ4I6uXSMh1DZjTOnbWXjn46+iyjdChiQjumutVJZ9NT8Bl/5Mp6K0XTGbeiSsSuh5D1+vnISFVwmIsyefmXMg3ti8V8RiDDUDF9AVwvEiU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=gL7q7omr; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n0LfOzIm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 505AEC19425;
-	Sat, 16 May 2026 15:07:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778944085;
-	bh=jho9MdaE5yAkm0BJknveYPFKVoDYTuZ4VchAhGg/BK4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=n0LfOzImIclfoGNYZLw0Gsjg8a8TTDP/OnSDzlX9OwzLL+qHTlOF7LZGcMStxaVKc
-	 k5pv/PQ0Iiwsa39jk8JStUBycGHary6q0rlul+LooZe5TsoC2BbcJg09HoJQUwIAjR
-	 MXy2Y6ZTWGndxP6JUIczhTyx6Ul/oMXsth4II/hgXDyY80kcVkVwsPqjaGHCgtYaen
-	 soyuWtA+E1oEPqW92MfQA8WSwPZNS/vTdOUvCT5lua+ncepOkWRZkjwdLU9X73sWVi
-	 ou/4T/WGXrmNxPACe+fZY/P8Em4TRg4fz20Vw8P1+LbfcihRoI/Ez6uRi2s57z+xZI
-	 tkgwnBuFvSo8w==
-Date: Sat, 16 May 2026 16:07:54 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Morgan <macromorgan@hotmail.com>
-Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
- andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
- jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
- devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
- krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com
-Subject: Re: [PATCH V7 03/11] iio: imu: inv_icm42607: Add inv_icm42607 Core
- Driver
-Message-ID: <20260516160754.08e8e2e4@jic23-huawei>
-In-Reply-To: <DS4PR19MB997335152F245D758A97162671A5052@DS4PR19MB997335.namprd19.prod.outlook.com>
-References: <20260515130018.237378-1-macroalpha82@gmail.com>
-	<20260515130018.237378-4-macroalpha82@gmail.com>
-	<20260515193102.123b664a@jic23-huawei>
-	<DS4PR19MB997335152F245D758A97162671A5052@DS4PR19MB997335.namprd19.prod.outlook.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="gL7q7omr"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7e582b3bcaaso137664a34.3
+        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 08:09:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778944188; x=1779548988; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=JSdtmrJdHfFRkKT+UmZI3jwyLCc28bswVYuYpYjVngs=;
+        b=gL7q7omrTWl8sE82SEpoHSDofLX8ocI9EuHfBfxZfpWmucj9MJ2PfJVJ2/grP29SlX
+         1bdTslsbWBabE398+vxtQ/EClf8yYYYDFznf6h5F1vQezpTimWXsynkEh+A4kV+FNmEm
+         Uw0PLiYFItg9LqUDzWKGwgGKYpfIKtm47qShEWnAzDcxBbeRuhwWuOIolQXqSLwKKi7Z
+         eG0EZm8KTd5cRDyRga6RfLZhAeWLiZzNpHkhVmbz0ar5WV6otQUBOLhIhiHcaX7mDHsC
+         IbL++ngiuhvvbZZiwUCjUVY69+QQJQok7nJHHu0SON83rQbkVlX9IpMzDdb29FLDZfD4
+         jpYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778944188; x=1779548988;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JSdtmrJdHfFRkKT+UmZI3jwyLCc28bswVYuYpYjVngs=;
+        b=pnHcuguRrn/WJ7cuXgLrMY0qo+MxdTwfSXC6Xp1awp4/J9eldCbTq8ftqhqQGUpM01
+         TmtgB89vi2en2/WCz6M1i5U3UlXdiZY0nybRwjLBfKHkz2FyAQiue/GR4IloQmgHOLnv
+         xYLdETI6AY+TDe+nmL2rJAqJWyInCfGk13nxFCznal6FDcVrIWEnqJv0FhVEKe/D+mTL
+         M05U4gUxc8mPwmp2vjrVuL8WbVNlzIz3a7CE0B24fjHODez5EPjBqQc0rsjj+90thPPL
+         +3h0qX0Iw+ML67tPv4/Cerjs0KHKafXNKLQ/lCGdJGG/wlg8gw/s52A+TzW2lBOFNtX4
+         vc5g==
+X-Forwarded-Encrypted: i=1; AFNElJ9tjMSngEEtw5IJLH2VSpsrEQJsGILOeptu+zgx55jtDJG105yjaQVIsWw6hgRWUQch9wurZrjqKyY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyJoMn5sjqzvyXs+biLEBJ751DkZWwpIV4C/Xmx1GGRoVb3Eibb
+	tNmLH/vWgnZvKA/tvygf7uYmRNhnpC5PMnPC3iUHHrrsfOoLOK3m9BOCb6pDY9sfiy0=
+X-Gm-Gg: Acq92OHhUbWBQ+6nHXs+fhm0bRsmj3gfpS3mgdFncRkP4THj7Faver6GibDayOXsn3u
+	8b/v47pxx3ArEziV67PoXD8kPddWMK5AHKGkbwdUJDmLsOf9aQKqTJc4L3leEq7LgJGm2OUZPYO
+	4G30VmkCzde2S5sMUaygfeBvsU9qgtD+039J9OAdT6LaBHl/naklnl381zKJowoCt5jJ6OeGyzQ
+	lX7bXp7Wsiyqo55iXD2SDHGpp1en1SNHuxAaxh69PdnuRUwovDn7nSqhLA+hCfL1Td+XyIOtGC1
+	eUYO8YMLZ5Q+CWFWDEz1+7/xkWwjGqjYKO6RZtZvPhzaG2MngpX1QbHCk/DjnsRwiuur7W2E5SO
+	dgt8PruBj2iPC/z1fZeEDM33Pxdv+Q/YezE7r7paOhKoGjERNowqd2HmF9uIdU07q44ZnAMJQEY
+	L81MHMECEN/LdpO9LrFIRdYw4wN+Ax
+X-Received: by 2002:a05:6830:82bd:b0:7e3:fa31:1104 with SMTP id 46e09a7af769-7e4fa052bc2mr6092771a34.22.1778944187704;
+        Sat, 16 May 2026 08:09:47 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:b36d:bd18:7c02:29e2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e55bc4749esm3966205a34.23.2026.05.16.08.09.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 May 2026 08:09:46 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+Date: Sat, 16 May 2026 10:09:37 -0500
+Subject: [PATCH] iio: resolver: ad2s1210: refactor trigger handler
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260516-iio-resolver-refactor-trigger-handler-v1-1-25b11ba0155e@baylibre.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yWN0Q6CMAxFf4X0mSWwKSq/QnyYW5k1hJl2LiaEf
+ 7fqU3tubk83EGRCgbHZgLGSUF4V+raBcPdrQkNRGWxnh+7YD4YoG0bJS0XWZfahZDaFKSUN9CQ
+ uOv3szhfn4skfLKjrqU16//5M1z/L6/bAUL5y2PcPlZCm6okAAAA=
+X-Change-ID: 20260516-iio-resolver-refactor-trigger-handler-af38933d7a42
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Stepan Ionichev <sozdayvek@gmail.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3263; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=dSUXvSzLwKZG6Nl2GPO6UNxqhFumM97KURXLcfNsPkk=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqCIizbO7MNJvZcseRWKIROrfLq2QNC3HmjLvMr
+ FgyCpF/lHiJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCagiIswAKCRDCzCAB/wGP
+ wPJ0B/4yYesUcGybJbyzYuxORu53mb+ImyKUcJQpENBbpnNRCXrGXbnDUoeo4XVZXfLS2dD2I6k
+ 9diDKJ0qrv8mbi35acljLLIOZjToKcnxs1/xXLNEUfu0Tlj32Bo1uS+oFUz9dGcvP8OSNq73of5
+ v13m+xt2YtQULny+hW2MOHbmv5WYw411PqSz+EURgwvjLx0YAt+BsgHZhCdhAzGSfVnduMidumu
+ i7B5TxURXLroQq02XGhrgWgB73MvUOEx+W494Ee5X+vMd0RpsHGxsFrQiVYkvEDEvuXVOyvF8EX
+ OPJqCYM4VUK7Jbz1DMntpShadGojL/r93MRs9FNu8S0hzPkv
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-On Fri, 15 May 2026 20:51:01 -0500
-Chris Morgan <macromorgan@hotmail.com> wrote:
+Refactor the trigger handler to avoid use of goto in a guard() scope.
+Ideally, we should not be mixing goto and automatic cleanup.
 
-> On Fri, May 15, 2026 at 07:31:02PM +0100, Jonathan Cameron wrote:
-> > On Fri, 15 May 2026 08:00:08 -0500
-> > Chris Morgan <macroalpha82@gmail.com> wrote:
-> >   
-> > > From: Chris Morgan <macromorgan@hotmail.com>
-> > > 
-> > > Add the core component of a new inv_icm42607 driver. This includes
-> > > a few setup functions and the full register definition in the
-> > > header file.
-> > > 
-> > > Signed-off-by: Chris Morgan <macromorgan@hotmail.com>  
-> > 
-> > Sashiko led you into the weeks with irq request return values.
-> > It was less broken in v6 :(
-> > 
-> > As to it's other comments on checking for line high/low values (0x00 / 0xFF)
-> > for whoami is something we don't normally bother with but you could if you like.
-> > I'm fairly sure we've had both those values turn up as valid in some devices
-> > in the past.
-> > 
-> > Otherwise just trivial stuff I noticed whilst having a fresh read through.
-> > All stuff I might have tweaked whilst applying or just let through but
-> > seeing as you are going to be doing a v8, please take a look.
-> > 
-> > Jonathan  
-> 
-> I think I'll ignore that comment about the high-low values, but it does make
-> valid points about using the wrong call to invalidate the regmap cache and
-> also the wrong call to set the SPI_MODE_3 stuff.
-> 
-> All in all I'll try to post another version in another day or two with the
-> recommended fixes (as best I can) and see if it still complains. I'm expecting
-> a few complaints like the 0x00/0xFF or some stuff about "keeping the temp sensor
-> enabled" which is a non-issue per the datasheet. Hopefully I'm near the finish
-> line either way.
-> 
-Yup. It's a useful tool but not perfect!
+iio_trigger_notify_done() was not part of the critical section anyway,
+so is not moved to the new function.
 
-> > 
-> >   
-> > > ---
-> > >  drivers/iio/imu/inv_icm42607/inv_icm42607.h   | 334 ++++++++++++++++++
-> > >  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 207 +++++++++++
-> > >  2 files changed, 541 insertions(+)
-> > >  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> > >  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> > > 
-> > > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> > > new file mode 100644
-> > > index 000000000000..1916e0b08bca
-> > > --- /dev/null
-> > > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+Following up from [1]. This depends on a fix, so will have to wait a bit
+before this can be applied.
 
-> >   
-> > > +/* Sleep times required by the driver */
-> > > +#define INV_ICM42607_POWER_UP_TIME_US			100000
-> > > +#define INV_ICM42607_RESET_TIME_MS			1
-> > > +#define INV_ICM42607_ACCEL_STARTUP_TIME_MS		20
-> > > +#define INV_ICM42607_GYRO_STARTUP_TIME_MS		60
-> > > +#define INV_ICM42607_GYRO_STOP_TIME_MS			150
-> > > +#define INV_ICM42607_TEMP_STARTUP_TIME_MS		14
-> > > +#define INV_ICM42607_SUSPEND_DELAY_MS			2000  
-> > 
-> > Can we have spec references for these?  We often hit problems later
-> > with devices that are a little bit slow and no one is sure if it's because
-> > the sleeps are wrong or device is actually out of spec. Hence
-> > it is useful to be able to quickly check these.  
-> 
-> I took these from the driver I basically copied wholesale and changed
-> the registers for according to the datasheet, but I didn't take a very
-> close look at these (which I am now).
-> 
-> The POWER_UP_TIME_US, assuming it's the same as "Supply Ramp Time" from
-> the datasheet is 100ms which matches. Likewise, the "Start-up time for
-> register read/write" listed under "Power-On Reset" shows 1ms, which
-> matches.
-> 
-> The ACCEL_STARTUP_TIME_MS should probably be 10ms, and the
-> GYRO_STARTUP_TIME_MS should probably be 30ms. I don't see a startup
-> time listed for the temperature sensor but I do see "Stabilization
-> Time" which lists 77us. Gyro stop time and suspend delay time I cannot
-> find a reference for... logically if those values are needed I think
-> they should likely be the same as the gyro start time and power up
-> time, respectively right?
+[1]: https://lore.kernel.org/linux-iio/20260516122838.163a77d3@jic23-huawei/
+---
+ drivers/iio/resolver/ad2s1210.c | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-Stops tend to be pretty quick as no need to wait for stuff to stabilize.
-It's pretty rare to have a value for them - however, I guess if there
-was one in the driver maybe just add a comment that says 'from driver
-+ link'.
+diff --git a/drivers/iio/resolver/ad2s1210.c b/drivers/iio/resolver/ad2s1210.c
+index 1be19fe8aa3f..59c035311691 100644
+--- a/drivers/iio/resolver/ad2s1210.c
++++ b/drivers/iio/resolver/ad2s1210.c
+@@ -1276,10 +1276,8 @@ static int ad2s1210_debugfs_reg_access(struct iio_dev *indio_dev,
+ 	return regmap_write(st->regmap, reg, writeval);
+ }
+ 
+-static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
++static void ad2s1210_scan_to_buffers(struct iio_dev *indio_dev, s64 timestamp)
+ {
+-	struct iio_poll_func *pf = p;
+-	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad2s1210_state *st = iio_priv(indio_dev);
+ 	size_t chan = 0;
+ 	int ret;
+@@ -1295,15 +1293,15 @@ static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
+ 					       AD2S1210_REG_POSITION_MSB,
+ 					       &st->sample.raw, 2);
+ 			if (ret < 0)
+-				goto error_ret;
++				return;
+ 		} else {
+ 			ret = ad2s1210_set_mode(st, MOD_POS);
+ 			if (ret < 0)
+-				goto error_ret;
++				return;
+ 
+ 			ret = spi_read(st->sdev, &st->sample, 3);
+ 			if (ret < 0)
+-				goto error_ret;
++				return;
+ 		}
+ 
+ 		memcpy(&st->scan.chan[chan++], &st->sample.raw, 2);
+@@ -1315,15 +1313,15 @@ static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
+ 					       AD2S1210_REG_VELOCITY_MSB,
+ 					       &st->sample.raw, 2);
+ 			if (ret < 0)
+-				goto error_ret;
++				return;
+ 		} else {
+ 			ret = ad2s1210_set_mode(st, MOD_VEL);
+ 			if (ret < 0)
+-				goto error_ret;
++				return;
+ 
+ 			ret = spi_read(st->sdev, &st->sample, 3);
+ 			if (ret < 0)
+-				goto error_ret;
++				return;
+ 		}
+ 
+ 		memcpy(&st->scan.chan[chan++], &st->sample.raw, 2);
+@@ -1334,16 +1332,22 @@ static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
+ 
+ 		ret = regmap_read(st->regmap, AD2S1210_REG_FAULT, &reg_val);
+ 		if (ret < 0)
+-			goto error_ret;
++			return;
+ 
+ 		st->sample.fault = reg_val;
+ 	}
+ 
+-	ad2s1210_push_events(indio_dev, st->sample.fault, pf->timestamp);
++	ad2s1210_push_events(indio_dev, st->sample.fault, timestamp);
+ 	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
+-				    pf->timestamp);
++				    timestamp);
++}
++
++static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
+ 
+-error_ret:
++	ad2s1210_scan_to_buffers(indio_dev, pf->timestamp);
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+ 	return IRQ_HANDLED;
 
-> 
-> The values I am referencing now appear under the electrical
-> characteristics section (section 3) of the datasheet for both the
-> icm42607p (my test devices, over i2c) and the icm42607(c).
-> 
-Nice.
+---
+base-commit: 0eb0ac8b282b273c254dcda52d29b06a92840252
+change-id: 20260516-iio-resolver-refactor-trigger-handler-af38933d7a42
 
-> > > +static int inv_icm42607_setup(struct inv_icm42607_state *st,
-> > > +			      inv_icm42607_bus_setup bus_setup)
-> > > +{
-> > > +	const struct device *dev = regmap_get_device(st->map);
-> > > +	unsigned int val;
-> > > +	int ret;
-> > > +
-> > > +	ret = regmap_read(st->map, INV_ICM42607_REG_WHOAMI, &val);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	if (val != st->hw->whoami)
-> > > +		dev_warn(dev, "invalid whoami %#02x expected %#02x (%s)\n",
-> > > +			 val, st->hw->whoami, st->hw->name);
-> > > +
-> > > +	ret = regmap_write(st->map, INV_ICM42607_REG_SIGNAL_PATH_RESET,
-> > > +			   INV_ICM42607_SIGNAL_PATH_RESET_SOFT_RESET);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	fsleep(1000);  
-> > 
-> > Do we need an explicit sleep here, or is the idea just to save on
-> > a read that can't succeed in the poll that follows?  I'd be tempted
-> > to drop this if it's not absolutely needed just to avoid explaining it.
-> > This isn't fast path code. If we need to leave the device alone after
-> > reset for a bit then a datasheet reference is needed.
-> >   
-> 
-> Data sheet only really says that the time required after a *hard* reset
-> is 1ms, it honestly doesn't say anything about a soft reset.
-> 
-> I also thought I got rid of the read_poll_timeout, since I'm already
-> waiting 1ms... if you think this fsleep is needed or not I'll defer
-> to you.
-If you are sleeping long enough a single check + fail if not ready is fine.
-
-> 
-> Honestly this whole path thing got messed up when we wanted to code for
-> 3 wire SPI. For 3 wire I need to make sure I enable it as soon as the reset
-> completes, so it's probably not even right here. I need to add bus_setup()
-> before the read not after. So to support 3-wire it needs to go:
-> bus_setup()
-> whoami check
-> reset
-> wait (maybe)
-> bus_setup() again
-> check int_status (if we can after the bus_setup)
-> do the rest
-> 
-> whereas if we explicitly say no 3-wire then we can drop the first bus setup
-> and use regmap_read_poll_timeout to get the status.
-
-Can do no 3 wire initially as long as we check for dt-binding and error
-out with a helpful message.  It'll be a feature someone else can figure
-out how to add later.
-
-
-> 
-> >   
-> > > +
-> > > +	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
-> > > +	if (!st)
-> > > +		return -ENOMEM;  
-> >   
-> 
-> I sincerely appreciate all your help on this. Here I was thinking this would
-> be easy and I could focus on a joystick/LED driver next... how wrong I was!
-
-IMUs are about as hard as it gets for sensors!  This one is far from the most complex, but
-none the less there are a lot of things going on.
-
-Jonathan
-
-> 
-> Chris
+Best regards,
+--  
+David Lechner <dlechner@baylibre.com>
 
