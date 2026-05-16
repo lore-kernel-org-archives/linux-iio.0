@@ -1,42 +1,42 @@
 Received: from s106b.cyber-folks.pl (s106b.cyber-folks.pl [195.78.66.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 762D112FF69;
-	Sat, 16 May 2026 05:35:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3CFA1F1534;
+	Sat, 16 May 2026 05:49:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.78.66.88
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778909714; cv=none; b=TAsXnkJIP4yx9p7gy5IucVWKgWB6CtapNQwFSe1cEQKp3wS1hpBfdLiwFtXipGK6Q9Iukw8RGMXENO0IItQUCdV566r5SrrXBp1Oj8VvN7h1lSU5z6V8Mhb4I3Cu5+WjJfTbYtdFVEnBwBNHCsw5C7xvPSq4aZwm5V6vE4zlofU=
+	t=1778910546; cv=none; b=IYiMY1c/EoFjiT9lv1VLvx1LLBL3k1G3Y78bmoVARboPaNzcG46mz/Lz++1YBl9So5wDwGQWLJgcd2cP5vHBTeVtm0mZtpEeG6YoelkofCJ42o5q7PUnbJue6dekrWZBRRnxb8sdk2FHytKLCkBWmy0MN/U6M3CjCTaPOZ0cavg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778909714; c=relaxed/simple;
-	bh=8GoHeq9jR+/2KxfeL+lHcdywJFQkb502/IOBEjFLrJI=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=CgTVL4Pa0rORlxS8R64KmZnDyUN/l23d8ceF0mQ+zI81dNrQ/t77Bw9IruAek+fcjOafsQHDpUXQOTv7rbPSfKIjlS1xemT/EvRouMILHnHgBGRp3pRUGE/k6nei/gI2OOHUSyW+btPZRiZms6BXFBPSsl/HLebBjkmzUd4zeCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl; spf=pass smtp.mailfrom=mmpsystems.pl; dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b=B1KrSNTf; arc=none smtp.client-ip=195.78.66.88
+	s=arc-20240116; t=1778910546; c=relaxed/simple;
+	bh=kNt/Z4oKF9AixaAwpIu2Ml8Cbcb+f121JoIe7G1ZaY8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=D+O6ubJZ1htwBgBwd2BP3e6NTLiJU8mlAWHaz9RKD1/lgkeBVak8pY7icFTMkTmPdxWmnzHW+w0nfIq/60FWMLTAFY13jMJ/CIZU7qyZEySqg+0IWj8IGZqH4EzFLT3jeqvt1g+zjEcgq8W7Ft8F1aTjt+grYZaDlckBvzUx9b0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl; spf=pass smtp.mailfrom=mmpsystems.pl; dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b=ignd8rVG; arc=none smtp.client-ip=195.78.66.88
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mmpsystems.pl
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mmpsystems.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b="B1KrSNTf"
+	dkim=pass (2048-bit key) header.d=mmpsystems.pl header.i=@mmpsystems.pl header.b="ignd8rVG"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=mmpsystems.pl; s=x; h=Cc:To:Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Message-Id:Date:Subject:From:Sender:Reply-To:Content-ID:
+	d=mmpsystems.pl; s=x; h=Cc:To:Message-Id:Content-Transfer-Encoding:
+	Content-Type:MIME-Version:Subject:Date:From:Sender:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
 	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=IAiw1WCrW9eFilDGxnRI0+TcsuxqhR+PLAhpGbnPnBI=; b=B1KrSNTfg3tI+U7X15zpEzRQPk
-	zd2maOxtwHG8791lXzGr2gk5e0gO3jbZoicb2nkKiMWQ19yMlbCKbth71maitPhFaH7oVYubm0vqq
-	B1awmDli0kYzK0wPdJoBJK+0piBDI37LqdEgliDKGsK1DC1O7uziXxtBcVtwAjWBPfdL1iyKH+Aak
-	9tYY6XsgSls7Qp9Yx08g6WbQpejvMko7dpQefP5m5F/Q2ohFouO23U1mlir1dVo0MaMD3QlYWx6JN
-	AGUPr6bdvB/qoHaSJBCujDFxrIvPdnoVOW0WH1OKtclKK6k/DSPWmmBVNISC2TgMSm9ycd7Ii01Ir
-	QYt9wcug==;
+	bh=GeDSC6iDZRgDYmHR6t4TAJwQ3WTA5QzwDb/jb6aEs2I=; b=ignd8rVGRQS2G1AixRPUaMK0MV
+	/9QYtdHFRsbZ/YDr6TcTGkkroevffBEbYx5z8ABvqXo6XI6VfW3j4CtsRzUZi/wxwBXpMjHUdIu0P
+	W8Bj1f6caxG5eqt9Z/cPH0fgttPfEwm2NDfD/prcD39XBJs88NxIuLh21HhGQvWVcKKCL1Dh57tgQ
+	wfB1SW/+pc/FgrzET3TOlxwOPCtoJ166mKIW9x5dCz8mQ+xtyvnVGNpi4UEeogmnaugGKg8jUf2XX
+	tqKkw2d62BPgC+IuIX28e92ZFhLI12DB/Px9iS+GCnVKToSJSGqSHoR+RpMbDtGA+8z9/57wooGpO
+	Lzszt+Vw==;
 Received: from [91.102.182.218] (helo=localhost)
 	by s106.cyber-folks.pl with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
 	(Exim 4.99.3)
 	(envelope-from <michal.piekos@mmpsystems.pl>)
-	id 1wO7g2-0000000GasF-0t1M;
-	Sat, 16 May 2026 07:35:06 +0200
+	id 1wO7tS-0000000H5s0-3zR1;
+	Sat, 16 May 2026 07:48:59 +0200
 From: Michal Piekos <michal.piekos@mmpsystems.pl>
-Subject: [PATCH v3 0/3] Add GPADC support for A523
-Date: Sat, 16 May 2026 07:34:13 +0200
-Message-Id: <20260516-sunxi-a523-gpadc-v3-0-a3a04cff2620@mmpsystems.pl>
+Date: Sat, 16 May 2026 07:48:37 +0200
+Subject: [PATCH v3] iio: adc: sun20i-gpadc: support non-contiguous channel
+ lookups
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -45,89 +45,114 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIANUBCGoC/23NQQ6CMBQE0KuYrq35LRTUlfcwLgr9hRqBhg8EQ
- ri7BV0YdTnJzJuZEbYOiZ13M2txcOSaOoRov2N5qesCuTMhMwkyAQUpp74eHddKRrzw2uRcHNO
- T1srYVMUszHyL1o0beb29MvXZHfNuddZG6ahr2mn7HMTae/MCfvlBcOCxTTKwMQDY7FJVnibqs
- KKDf7D1YpCfSPQHkQExCq1BoYTR+TeyLMsTPrgiBQsBAAA=
-X-Change-ID: 20260507-sunxi-a523-gpadc-1879aa5df754
+Message-Id: <20260516-fix-sunxi-gpadc-sparse-channels-v3-1-4d229d18ff3b@mmpsystems.pl>
+X-B4-Tracking: v=1; b=H4sIADQFCGoC/42OzQ7CIBAGX8Vwdg3QSlNPvofxwM+qmBYJW4nG9
+ N0FvRgvepxkdr59MMLkkdhm8WAJsyd/CQWa5YLZkw5HBO8KM8ml4mvRwMHfgK7h5uEYtbNAUSd
+ CqHLAgUAaZSRXjXFtz0olJiwnr4Xd/s10NWe0U81W4+RpuqT764Usqvf/WhYgQFkpUPbcWMTtO
+ Ea604QjreLA6mKWn832d1OWpmu1UqbjttPdd3Oe5yfLtIJ9OAEAAA==
+X-Change-ID: 20260513-fix-sunxi-gpadc-sparse-channels-2b6b2063bd49
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, 
+ Andy Shevchenko <andy@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, 
  Jernej Skrabec <jernej.skrabec@gmail.com>, 
- Samuel Holland <samuel@sholland.org>, 
- Maksim Kiselev <bigunclemax@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, 
- linux-kernel@vger.kernel.org, Michal Piekos <michal.piekos@mmpsystems.pl>, 
- Conor Dooley <conor.dooley@microchip.com>
+ Samuel Holland <samuel@sholland.org>
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>, 
+ Michal Piekos <michal.piekos@mmpsystems.pl>, 
+ Nathan Chancellor <nathan@kernel.org>, 
+ Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
+ Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+ llvm@lists.linux.dev
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778909655; l=2320;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778910526; l=2985;
  i=michal.piekos@mmpsystems.pl; s=20260301; h=from:subject:message-id;
- bh=8GoHeq9jR+/2KxfeL+lHcdywJFQkb502/IOBEjFLrJI=;
- b=gt2LAeGzMxoGrrckQQX49mfSrf88U060DBS/Zb3T9J7WJN8StEtOUlcjWP7+fGGa0e60Fx6wn
- B7RnkDO0a/rAVi9jBXvTL5wnL/gGCVscyKy4/0dV+wjCUohLVMuKoig
+ bh=kNt/Z4oKF9AixaAwpIu2Ml8Cbcb+f121JoIe7G1ZaY8=;
+ b=bCBkkZO3AFDZx2E2f2OZ41t7+qc3Brbk3rwbgGezgw6GKjLXWyj7loNmA4mPZZw4yzhFl6g2h
+ gHmxqt/MmOSAqtZbVd6vCN3MA0aENuDRZ6lsyv0hoYWoIPXwyXovAih
 X-Developer-Key: i=michal.piekos@mmpsystems.pl; a=ed25519;
  pk=Aixyx03If7ZDamiKKN0lsa+0mtA+WjIuIf2ZQVYNBqg=
 X-Authenticated-Id: michal.piekos@mmpsystems.pl
 
-Add support for Allwinner A523 GPADC in sun20i gpadc driver and describe
-corresponding node in dts for A523 SoC.
+Using consumer driver like iio-hwmon which resolve channels through
+io-channels phandles will fail for sparse channels because IIO core by
+default treats phandle argument as index into channel array.
+        eg. <&gpadc 1> will fail if there is only channel@1 specified
 
-A523 uses same model as existing driver except it has two clocks.
+Add .fwnode_xlate() which maps DT phandle to the registered channel
+whose chan->channel matches the hardware channel number. It allows
+sparse channel maps to be consumed by drivers like iio-hwmon.
 
-Added support to enable more than one clock in the driver, extended the
-binding with new compatible and wired up dts node for A523 as its own
-fallback compatible.
+Tested on Radxa Cubie A5E.
 
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Michal Piekos <michal.piekos@mmpsystems.pl>
 ---
 Changes in v3:
-- More granular handling of devm_clk_bulk_get_all_enabled() return value
-- Added #size-cells and #address-cells to node description
-- Fixed formatting
-- Link to v2: https://patch.msgid.link/20260513-sunxi-a523-gpadc-v2-0-d5efde151dac@mmpsystems.pl
+- Add iiospec->nargs validation in sun20i_gpadc_fwnode_xlate()
+- Keep Andy's Reviewed-by tag since change is narrow validation fix
+- Fix spelling issues in commit message
+- Link to v2: https://patch.msgid.link/20260514-fix-sunxi-gpadc-sparse-channels-v2-1-d4a66b70c7a7@mmpsystems.pl
 
 Changes in v2:
-- Handle scenario when 0 clocks has been defined
-- Fix copy&paste sentence in 3rd patch commit message
-- Moved status as last property in dts node
-- Make A523 its own fallback compatible
-- Removed redundant maxItems/minItems properties from binding
-- Link to v1: https://patch.msgid.link/20260510-sunxi-a523-gpadc-v1-0-4f6b0f4000fb@mmpsystems.pl
+- Move loop variable declaration into the for statement
+- Fix indentation using clang-format
+- Correct commit wording
+- Link to v1: https://patch.msgid.link/20260513-fix-sunxi-gpadc-sparse-channels-v1-1-6c21e290bcee@mmpsystems.pl
 
 To: Jonathan Cameron <jic23@kernel.org>
 To: David Lechner <dlechner@baylibre.com>
 To: Nuno Sá <nuno.sa@analog.com>
 To: Andy Shevchenko <andy@kernel.org>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
 To: Chen-Yu Tsai <wens@kernel.org>
 To: Jernej Skrabec <jernej.skrabec@gmail.com>
 To: Samuel Holland <samuel@sholland.org>
-To: Maksim Kiselev <bigunclemax@gmail.com>
+To: Nathan Chancellor <nathan@kernel.org>
+To: Nick Desaulniers <nick.desaulniers+lkml@gmail.com>
+To: Bill Wendling <morbo@google.com>
+To: Justin Stitt <justinstitt@google.com>
 Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-sunxi@lists.linux.dev
 Cc: linux-kernel@vger.kernel.org
+Cc: llvm@lists.linux.dev
+---
+ drivers/iio/adc/sun20i-gpadc-iio.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/iio/adc/sun20i-gpadc-iio.c b/drivers/iio/adc/sun20i-gpadc-iio.c
+index 861c14da75ad..8a75498557ff 100644
+--- a/drivers/iio/adc/sun20i-gpadc-iio.c
++++ b/drivers/iio/adc/sun20i-gpadc-iio.c
+@@ -139,8 +139,23 @@ static irqreturn_t sun20i_gpadc_irq_handler(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int
++sun20i_gpadc_fwnode_xlate(struct iio_dev *indio_dev,
++			  const struct fwnode_reference_args *iiospec)
++{
++	if (iiospec->nargs != 1)
++		return -EINVAL;
++
++	for (unsigned int i = 0; i < indio_dev->num_channels; i++)
++		if (indio_dev->channels[i].channel == iiospec->args[0])
++			return i;
++
++	return -EINVAL;
++}
++
+ static const struct iio_info sun20i_gpadc_iio_info = {
+ 	.read_raw = sun20i_gpadc_read_raw,
++	.fwnode_xlate = sun20i_gpadc_fwnode_xlate,
+ };
+ 
+ static void sun20i_gpadc_reset_assert(void *data)
 
 ---
-Michal Piekos (3):
-      dt-bindings: iio: adc: Add GPADC for Allwinner A523
-      iio: adc: sun20i-gpadc: add A523 gpadc support
-      arm64: dts: allwinner: a523: add gpadc node
-
- .../iio/adc/allwinner,sun20i-d1-gpadc.yaml         | 32 +++++++++++++++++++++-
- arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi     | 13 +++++++++
- drivers/iio/adc/sun20i-gpadc-iio.c                 | 13 +++++----
- 3 files changed, 52 insertions(+), 6 deletions(-)
----
-base-commit: 8ab992f815d6736b5c7a6f5fd7bfe7bc106bb3dc
-change-id: 20260507-sunxi-a523-gpadc-1879aa5df754
+base-commit: 6916d5703ddf9a38f1f6c2cc793381a24ee914c6
+change-id: 20260513-fix-sunxi-gpadc-sparse-channels-2b6b2063bd49
 
 Best regards,
 --  
