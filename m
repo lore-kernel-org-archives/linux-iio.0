@@ -1,162 +1,136 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F266B78F3A;
-	Sat, 16 May 2026 14:47:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 351E427587D
+	for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 14:49:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778942879; cv=none; b=s3d6QhkI+jxNiKa3/5GZ/Nwd+v6It9hk6Wi/h/rfZnT7+t44DeoosweWK28PolTkGnkSRtsyspWpmb4Y+L2jTEeLlGcDe1xNytKnr2FlIXtdIQ1zVg8f2WFf8mcNChkXDDJP4f8MrhpEkM3DoSreOMJiVccnAYGqmXpm8fXaVOs=
+	t=1778942964; cv=none; b=dhwCsiSdM67WeWzJy/DB6GE3LbsEOCt5mfPmGGBSs+5p4JdKPGYR489qVKnTTJDV9nCax3IG3dGDkFfaH3g5pxpT5csJ00pOW3GRGIeEEtk8nzSyioSq0cWJUikXq2HjDB4RRC++cw02Op3TuHq/Fq6bzYi2INs2EBA7F7kBYrQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778942879; c=relaxed/simple;
-	bh=f2EgpoFQ20CBNzrecfnZmWwifbC7DMq48xGeJOLXPlY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eitfsBgH4D+JXpdCg2IjS4FxOlzC22v9E2LZgepmzzWZxln3/dDCw1eiSZu2JfVC6XFNmKbzRivS0poBXkUTnnhf8PfKVfw4zoVOraK+GIKHX1U1rpc6i3aKlWRe304fdBFFaRBNpbRnZflxHWM8T1/CL/fk97G2m+rH4otq8zs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h99cy6nF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778942964; c=relaxed/simple;
+	bh=sXhVfI3NRz3SRrQK02Pgiyri6oNx/XWwv+OBfC562qg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IpQ2onabZiVgwQ+fDWyAL8Q45uxtj5UgDAWULm3Ysg4L+u4d9QrWUEYU2Jn2S4pVvkrfEbiMMZGue+8eOCRu0LRRgGLn0Q7JuOqDMC/eoRhHj9aywYWrJqITy+F1k/8BbD4rWMYTbt5HHS7D/ASYd4smHq5y6MJ4XbS0N97sw68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=MeCkfSOZ; arc=none smtp.client-ip=209.85.167.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h99cy6nF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FF86C19425;
-	Sat, 16 May 2026 14:47:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778942878;
-	bh=f2EgpoFQ20CBNzrecfnZmWwifbC7DMq48xGeJOLXPlY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=h99cy6nFqh8qNLYCghTjPqlneJVdv6CI8TM71gxYF2IoNjLUCFo8uzCZs1lIWM4ha
-	 QLUhL20TYosj51fvqspvEFeFt7kpkpKtkcCIhu6hGTmZ0fbxqA2DhKaDI2gXJ6AOku
-	 hgWbSKYUWZ+Exz2dOs1p7dJ4adeT8fU5zRZWQ9znU8SjrnWNr4OZmK3VYfkJeQHkNR
-	 9Z6U9xBYIc6McdwIzhx/nYHIXP7f3RyEHo9z4o+R9TVVaU69kqCpvGcPftU8duqqqH
-	 7bDOndzVNy5vIU/4aFTzOoB5cVNUpFEtSujSmxWsI/fN2wvfYUzeUUklfp90t9oxH8
-	 +DY4/hOvXTJsQ==
-Date: Sat, 16 May 2026 15:47:50 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, devicetree@vger.kernel.org
-Subject: Re: [RFC PATCH v2 1/2] dt-bindings: iio: light: add Broadcom
- APDS9999
-Message-ID: <20260516154750.176a89b0@jic23-huawei>
-In-Reply-To: <438370a42f57250cbead53ac73834fbf9ccb9269.1778659152.git.azpijr@gmail.com>
-References: <cover.1778659152.git.azpijr@gmail.com>
-	<438370a42f57250cbead53ac73834fbf9ccb9269.1778659152.git.azpijr@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="MeCkfSOZ"
+Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-484ba8bc89eso198281b6e.2
+        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 07:49:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778942961; x=1779547761; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CAbp4aL3c3GEYP6hWoueO3Z1V0hSEOeuJ7yfKstkuDU=;
+        b=MeCkfSOZTSzpGVNQ+WS/nPcuPLJtN12Jgf1Uc2+LK8vadj66HClUwnU2t38++AHy6/
+         S/pTEMncVcM36inO2GmuXWlsifIF/4IfX3y3Lc3YlEMkVE3sy9anEBdmCe0fo9QPDkpt
+         aA9MIKM2UQ9yxnyImk/Mi16oiDYQMjJNI74m+RNbYMT1GJ+N71CS0/ES48Pf8F2TO9Ks
+         B40mV0C3UZEC9gAStZkR3sPCHviHYn62ftlkvJ7APeTTa59oVRft/v8oTfynkbR39p2W
+         /Sl23fPHT7pPK1jOYLq6SgXWSiSwbdys91iEHicnzHIgImZ7Q9NrjmGWXn5FzzTQcq5d
+         qNKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778942961; x=1779547761;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CAbp4aL3c3GEYP6hWoueO3Z1V0hSEOeuJ7yfKstkuDU=;
+        b=HnmcqSgUAIUL3ZDL6LoDl6p2QIdE+esRw5WakwVAkLn6v2iIk/gSjf9XWbHiDRrPHW
+         6Noho6MxHCT1HzWW13rCX+/nyP1ikQqdfAawWXLZ3bbHn0UWwWG64ylL+sprwLuGPdPX
+         bc33IKKIvUg6ajpRCdjmunwxHM0fmjI15XX4Jc6NnZAvZTkMcTfGnTpIBtPaqIIi5SUa
+         El57b5JtrNJqXGBR/LC1lx42KAzrBcjnQ+/gkVNyTPQlYlmOMbi07Lv+RbHPLvbUcjZb
+         5+vhSgW2LwFGr5pYJMY3KYr1lx6/CAXuBopeHlRTXVEomBE/X0uSvm97IiM2DZH5UAIn
+         mslg==
+X-Forwarded-Encrypted: i=1; AFNElJ+22rdGRQjPHi46c/z3e6o4r/YN1NjC7a5oUNkky8+5PsJ2r7Sx0vMREkTZrgn3JdL98i3GjRKKpDs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyeovOA+L7ZhD4IRgza4JC/3BsWo2R2OXv6fWtZA8rB3pgrxYvA
+	X7MZbi/0swwcD3sCOMNHYzV0jwtmmYa7013aRn1axv5MfZc42ngBTBgr1+hG+HSd3U0=
+X-Gm-Gg: Acq92OEFW/xwvVWjmoO5Ufx53nS0EZfFPGVA1mBrerasS3Dws6zrmGtjrKRTqd2vWFT
+	2ilsFP/FGNIl6xxhpC5bQFFCqVRTchj7bAKePiiZ/30q1o1AYV6tpuVcu+x/ZSP8QdUryTHfd1m
+	nO9bpXe5iCvxDr7/E/QzoKaaiZkoYAu3JCAj7w6ehpWJorfjsMvhAWnjUCAZ9M/8qceWeAmcd2h
+	9yv1BXLH9ZMHR2huA+1ld3Jlw6j4/UGTe9r4GJfUN9uex3/oTV16vEsEjgxHnRQqmBVhGRqOhfw
+	d5bRXk49cQvC1l3gjtXlVTGWgUiDTCSDH8qXRW84SSWo66yP+7qo1/hnbETsfUbE0NOj7jYpnDm
+	1Xqbqi7oDVBdNSJZxG9uitRyLlcHi8TacnrfGWI/ONqF7+FXKH8wE+AE82yd3Mol4dejyXn4vqB
+	PhYyQ4ZgdecsiM0LZk9WvErevS2qL1XSQ/4wwXc3gZEoNwceFuOb+cOzLu3Ofwk1vUBBfyEAyQO
+	w==
+X-Received: by 2002:a05:6808:1184:b0:467:1941:1f18 with SMTP id 5614622812f47-482e5609434mr5499724b6e.14.1778942961147;
+        Sat, 16 May 2026 07:49:21 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:b36d:bd18:7c02:29e2? ([2600:8803:e7e4:500:b36d:bd18:7c02:29e2])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-482ee331f90sm2473535b6e.4.2026.05.16.07.49.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 May 2026 07:49:20 -0700 (PDT)
+Message-ID: <09ecad6c-beb5-4b7c-b52c-ac151e6947a2@baylibre.com>
+Date: Sat, 16 May 2026 09:49:19 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: resolver: ad2s1210: notify trigger and clear state
+ on fault read error
+To: Jonathan Cameron <jic23@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260515133138.32319-1-sozdayvek@gmail.com>
+ <20260516122838.163a77d3@jic23-huawei>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260516122838.163a77d3@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Wed, 13 May 2026 10:10:03 +0200
-"Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
-
-> Add Device Tree binding for the Broadcom APDS9999 ambient light
-> and proximity sensor.
+On 5/16/26 6:28 AM, Jonathan Cameron wrote:
+> On Fri, 15 May 2026 18:31:38 +0500
+> Stepan Ionichev <sozdayvek@gmail.com> wrote:
 > 
-> The APDS9999 features individual R, G, B, and IR channels with
-> a green channel that uses optical coating to approximate the
-> human eye spectral response for ALS/lux measurements. Proximity
-> and RGB functionality are not yet implemented in the driver.
-
-State in this description a little bit of why you didn't merge it
-with similar bindings.
-
-
-Trivial stuff inline.
+>> ad2s1210_trigger_handler() walks several scan-mask branches and uses
+>> "goto error_ret" to land on the iio_trigger_notify_done() teardown at
+>> the bottom of the function for every I/O error -- except the
+>> MOD_CONFIG fault-register read, which uses a bare "return ret":
+>>
+>> 	if (st->fixed_mode == MOD_CONFIG) {
+>> 		unsigned int reg_val;
+>>
+>> 		ret = regmap_read(st->regmap, AD2S1210_REG_FAULT, &reg_val);
+>> 		if (ret < 0)
+>> 			return ret;
+>> 		...
+>> 	}
+>>
+>> Two problems on that path:
+>>
+>>   - the handler returns a negative errno where the prototype expects
+>>     an irqreturn_t (IRQ_HANDLED / IRQ_NONE), so the caller in the
+>>     IIO core sees a value outside the enum;
+>>   - iio_trigger_notify_done() is skipped, leaving the trigger
+>>     busy-flag set. A single transient SPI/regmap error on the fault
+>>     read then wedges the trigger so subsequent samples are dropped
+>>     until the consumer is detached.
+>>
+>> Convert the error path to "goto error_ret" so the failure path goes
+>> through the same notify_done() teardown as every other error in the
+>> handler.
+>>
+>> Fixes: f9b9ff95be8c ("iio: resolver: ad2s1210: add support for adi,fixed-mode")
+>> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
 > 
-> Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> ---
->  .../bindings/iio/light/brcm,apds9999.yaml     | 53 +++++++++++++++++++
->  MAINTAINERS                                   |  6 +++
->  2 files changed, 59 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+> Not related to this as the fix is good, but I was obviously half asleep
+> when guard() got added to this function which is full of gotos :(
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
-> new file mode 100644
-> index 000000000000..759fe0151549
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
-> @@ -0,0 +1,53 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/light/brcm,apds9999.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +title: Broadcom APDS-9999 Digital Proximity and RGB Sensor
-> +
-> +maintainers:
-> +  - Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> +
-> +description: |
-> +  Broadcom APDS-9999 is a digital proximity and RGB sensor with
-> +  ambient light sensing (ALS) capability. The device uses individual
-> +  R, G, B, and IR channels plus a VCSEL for proximity detection.
+> If you have time could you look at factoring out helper that basically lifts
+> everything before trigger_notify_done() which should not be done with
+> the guard held - at least in this case it's not a deadlock source
+> as the device doesn't have any triggers!
+> 
+> That helper can use guard() and do direct returns to simplify the code flow.
 
-What's a VCSEL?  Spell it out.
+I can do that since my name is all over the driver.
 
-Otherwise 
-> +
-> +  Datasheet: https://docs.broadcom.com/docs/APDS-9999-DS
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - brcm,apds9999
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  vdd-supply: true
-> +
-> +  vled-supply:
-> +    description: VCSEL power supply
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        light-sensor@52 {
-> +            compatible = "brcm,apds9999";
-> +            reg = <0x52>;
-> +            vdd-supply = <&vdd_reg>;
-> +            vled-supply = <&vled_reg>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 1aa9c989973f..64c8cf2601e8 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -4302,6 +4302,12 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/light/avago,apds9300.yaml
->  F:	drivers/iio/light/apds9306.c
 > 
-> +BROADCOM APDS9999 AMBIENT LIGHT SENSOR DRIVER
-> +M:	Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+> Anyhow, this fix is good so applied and marked for stable.
 
-Sashiko pointed out this should be in alphabetical order.
-Bit annoying in this particular case but we'll just find someone
-else moves it if we don't do it from the start.
-
-> +
->  AVIA HX711 ANALOG DIGITAL CONVERTER IIO DRIVER
->  M:	Andreas Klinger <ak@it-klinger.de>
->  L:	linux-iio@vger.kernel.org
-> 
-> 
-> 
+Reviewed-by: David Lechner <dlechner@baylibre.com>
 
