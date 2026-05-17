@@ -1,44 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A9DF405C5E
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 11:40:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E20F435A393;
+	Sun, 17 May 2026 11:43:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779018012; cv=none; b=FpErvTIO//c0cWpUVKv1RDxRMDV/z3y5eGYgM6PCOYg+yPWo3FJgI/6R+O/+pALzCj4IHFve0g+kt3tzM8IKCKyFCyR264J68KNF7bDZjWoZe6YH9kuPuS3M8jlEQP5FfX3soflx7402cQwNf7li/ZpmvQTrzNB+g324S5Ra+Rs=
+	t=1779018227; cv=none; b=ZpQcKofazmrmVVyKAIfickrhrGh0iJ/oGQMP7hvV+HIKtit8pdKCsnIVCM0TTDCP1yGbNdrjfrILIV68KJT4NMicCHHiGWg6676Vbfs5rVA+5lU3FKBgno//aJFHDMTK5IrAQckAPTAfRvFNSodGX2UpbgRcWjU5DAlmdbf7ukY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779018012; c=relaxed/simple;
-	bh=xvusDt/r+3yHshkqlx92jVDIZsDAlGM6wpILC69a0Xc=;
+	s=arc-20240116; t=1779018227; c=relaxed/simple;
+	bh=S2hLW0ECNDf1VAnqrTJ4Mw0W1eh9WjufgWQJI7GfTws=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cLtCi9qJ2WT1B9xpnVL6k2GyoeMfQZPK5QeOFbvE4Zxp+HxZTzg1RfEpRQmZYq5d8LTdrx8U9F/C/GJecN//dIXt4/aUwGdOqv59nlzeTTZlnpX9D4Vnth8lvav9vP4BnBzrCTsbU9CekcDsgJizhSvK2A9ugSrF3JWuNl9sDwg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bcud9mpa; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=M42SqkxJGQ7YQCIWhPpoUzpcRBXTFRoJqMZ+UYe8fB7ewja0aOGfSRlU02v1oGqLw8QZ5aPDckdQvYvJn+DXzoZqkI/RJo7gv72eO8IN3tW7BW+uihtJ/LPFWDkrERMo4zmGIl57Fq7ZkdYsPneRRaUnxaIILuf0rV47AusP/oY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fo7pCTs5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bcud9mpa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 477E2C2BCB0;
-	Sun, 17 May 2026 11:40:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fo7pCTs5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBCEC2BCB0;
+	Sun, 17 May 2026 11:43:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779018011;
-	bh=xvusDt/r+3yHshkqlx92jVDIZsDAlGM6wpILC69a0Xc=;
+	s=k20201202; t=1779018226;
+	bh=S2hLW0ECNDf1VAnqrTJ4Mw0W1eh9WjufgWQJI7GfTws=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Bcud9mpa4spjMVTeb7jQ30Pa0X3drA61GY3GH1Q+G7BrE9pjgYPmgrKgPeKAsQJUc
-	 HCvjOBHW5xdZW+zMF40L83173CophL4ismYkKJ3ykVZGCmGD9c92iPU5gNd90i3ukC
-	 gkVy0z4MjLNS6Q6n2zXKMyEjYrgP5ADpIktglNtqi/sU6CKBGbb+tTDFmXAMdalVOV
-	 aoHSp/OofuXwGL/4u5A7Xn+YfhNAST1F8+dLkK658jPIvFLkuVQ8ieWOwNAOSLg9M5
-	 FUf/nt35hIvJjfgeQnVZHHhz+4EM7okOxQCbBRlxRFQYDXA9mDUZxMihVLuBvVlcBX
-	 a/c4AYsgmgyaA==
-Date: Sun, 17 May 2026 12:40:05 +0100
+	b=fo7pCTs5v/OzRFKbx5k9YCj/rghUcBhldH+5CLLSwdZsLNoVl584fJVoCPPXI5U90
+	 fw7YgLqxkcV9YolrACZb6plA1swzMCM7nC/gnktIikW1/jSSsFfRpVv9Bjb5ruIsXy
+	 LnNIJVXTMTdlLZr81uPMpJSBh8f2gEeWf07Qkg/D9MGdVuCudTVQd18tjC/S99dMfj
+	 ooSluCxCmFQtf+oBLjLfYa4vl/1/7N1xPq4vojDZ8hYeBSud2VPC2e/wzsQkIRvtrn
+	 NJCUgziPa7K5+REs7TOAR+9jXJ0VCFsp5hb5KYKN/yIAjIy3pk4LnlGS7xHu/ShHpI
+	 R0i09NBKSQn7A==
+Date: Sun, 17 May 2026 12:43:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
- linux-iio@vger.kernel.org, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [RFC PATCH v2 2/2] iio: light: add support for APDS9999 sensor
-Message-ID: <20260517124005.27b738c1@jic23-huawei>
-In-Reply-To: <1da2847a-275b-4260-9d07-76ebbb2c558c@baylibre.com>
-References: <cover.1778659152.git.azpijr@gmail.com>
-	<f389419972fc790a25b6041f1212e15f155804e2.1778659152.git.azpijr@gmail.com>
-	<d98bcb3d-21ae-4b62-af63-48fad4301f70@baylibre.com>
-	<20260516173904.503259e6@jic23-huawei>
-	<1da2847a-275b-4260-9d07-76ebbb2c558c@baylibre.com>
+To: Angelo Dureghello <adureghello@baylibre.com>
+Cc: Greg Ungerer <gerg@linux-m68k.org>, Geert Uytterhoeven
+ <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann
+ <arnd@arndb.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre
+ Torgue <alexandre.torgue@foss.st.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>,
+ linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 03/11] m68k: mcf5441x: setup DAC clock name as per
+ driver name
+Message-ID: <20260517124336.242ffb6a@jic23-huawei>
+In-Reply-To: <CALSJ-wAqFni+OwSUcQS+KESfe7SbWMxc0aCURHtTZ93Rx6GZhw@mail.gmail.com>
+References: <CALSJ-wAqFni+OwSUcQS+KESfe7SbWMxc0aCURHtTZ93Rx6GZhw@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,51 +53,127 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 16 May 2026 13:19:28 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Sun, 17 May 2026 02:11:33 -0700
+Angelo Dureghello <adureghello@baylibre.com> wrote:
 
-> On 5/16/26 11:39 AM, Jonathan Cameron wrote:
-> > On Sat, 16 May 2026 10:28:47 -0500
-> > David Lechner <dlechner@baylibre.com> wrote:
-> >   
-> >> On 5/13/26 3:10 AM, Jose A. Perez de Azpillaga wrote:  
-> >>> Add IIO driver for Broadcom APDS9999 ambient light sensor.
-> >>>
-> >>> The APDS9999 is a digital proximity and RGB sensor with ALS
-> >>> capability. This driver implements the ALS/Lux functionality using
-> >>> the green channel, which uses optical coating technology to
-> >>> approximate the human eye spectral response.
-> >>>
-> >>> Proximity (PS) and RGB color features are not yet implemented.
-> >>>     
-> >>
-> >>
-> >>  
-> >>> +enum apds9999_gain {
-> >>> +	APDS9999_GAIN_1X = 0,
-> >>> +	APDS9999_GAIN_3X = 1,
-> >>> +	APDS9999_GAIN_6X = 2,
-> >>> +	APDS9999_GAIN_9X = 3,
-> >>> +	APDS9999_GAIN_18X = 4,
-> >>> +};    
-> >>
-> >> Giving the natural values of enum explicitly just seems like noise
-> >> IMHO. I wasted time looking for an anomaly.  
-> > 
-> > I tend to ask for this when they are hardware field values to make
-> > the point the values matter rather than just being an enum.
-> > I'm not that fussed though.
-> > 
-> > Jonathan  
+> Hi Greg,
 > 
-> In that case, I would just use #define instead of enum.
-Likewise unless the type is actually used.
+> jfyi, for some reason i was not in to/cc, but i could grab the message
+> in lore.
+> 
+> On Thu, May 14, 2026 at 10:54:32PM +1000, Greg Ungerer wrote:
+> > Hi Angelo,
+> >
+> > On 14/5/26 17:05, Angelo Dureghello wrote:  
+> > > Hi Greg,
+> > >
+> > > On 14.05.2026 11:27, Greg Ungerer wrote:  
+> > > > Hi Angelo,
+> > > >
+> > > > On 13/5/26 19:14, Angelo Dureghello wrote:  
+> > > > > From: Angelo Dureghello <adureghello@baylibre.com>
+> > > > >
+> > > > > Later in this patchset, the mcf54415 DAC driver is added.
+> > > > > Considering some other different ColdFire cpu DACs exists, the DAC driver
+> > > > > is named as "mcf54415_dac", related to the mcf5441x family SoCs with
+> > > > > DACs (mcf54415/6/7/8).
+> > > > >
+> > > > > So updating DAC clock names to bind with proper driver name.  
+> > > >
+> > > > I am not sure I like naming the clocks here with a prefix for the
+> > > > specific SoC part number this is in. It might be unlikely now, but
+> > > > what if another ColdFire family SoC member uses this same hardware block?
+> > > > That is very common amongst other hardware blocks within the ColdFire
+> > > > family. Can we come up with a name more specific to just this type
+> > > > of DAC hardware block?
+> > > >  
+> > >
+> > > from a brief study, this 12bit DAC, and DAC module in general, is only on
+> > > this mcf45441x family. There are some ColdFire with ADC only, as those
+> > > mcf5249/53/82.
+> > > The mcf51mm/ag/je are the opnly to have a 5bit dacs, but these are mcus.
+> > > So, if i don't miss any existing model, the name may be correct,
+> > > unless we want rename it to a more generic mcf_dac.  
+> >
+> > Yes, I would suggest just leaving it as is, "mcfdac".
+> > That is not currently used by any other ColdFire variants supported by
+> > the kernel.
+> >  
+> 
+> Ok, will fix this in a v3, just asking confirmation on the name to
+> Jonathan and all, since it involves iio too.
+> 
+> Chaches are:
+> mcfdac
+> mcf-dac  or mcf_dac (we have drivers as vf610_dac and cio-dac)
 
-For that matter if type is not used, should perhaps be an anon enum
-but that tends to also indicate defines are more appropriate.
+I'm a bit lost.  If we are talking about clocks that's fine as confusion is very
+unlikely.  If we are talking driver naming - pick a part on which it exists and
+name it after that.
+
+Historically we made a few mistakes letting in very generic driver names
+and it causes confusion when a non compatible part comes along.
+
+If we know these have 'versions' of IP like the QC ones do, then we could name
+them after generations but that is often not actually documented anywhere
+so would need confirmation from Coldfire folk.
 
 Jonathan
 
-
 > 
+> Regards,
+> angelo
+> 
+> > Regards
+> > Greg
+> >
+> >  
+> 
+> 
+> 
+> >  
+> > > > Regards
+> > > > Greg
+> > > >
+> > > >  
+> > >
+> > > Regards,
+> > > angelo  
+> > > >
+> > > >  
+> > > > > Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+> > > > > ---
+> > > > >    arch/m68k/coldfire/m5441x.c | 8 ++++----
+> > > > >    1 file changed, 4 insertions(+), 4 deletions(-)
+> > > > >
+> > > > > diff --git a/arch/m68k/coldfire/m5441x.c b/arch/m68k/coldfire/m5441x.c
+> > > > > index 5b5e09ecf487..b724d7fc1a08 100644
+> > > > > --- a/arch/m68k/coldfire/m5441x.c
+> > > > > +++ b/arch/m68k/coldfire/m5441x.c
+> > > > > @@ -43,8 +43,8 @@ DEFINE_CLK(0, "mcfpit.2", 34, MCF_BUSCLK);
+> > > > >    DEFINE_CLK(0, "mcfpit.3", 35, MCF_BUSCLK);
+> > > > >    DEFINE_CLK(0, "mcfeport.0", 36, MCF_CLK);
+> > > > >    DEFINE_CLK(0, "mcfadc.0", 37, MCF_CLK);
+> > > > > -DEFINE_CLK(0, "mcfdac.0", 38, MCF_CLK);
+> > > > > -DEFINE_CLK(0, "mcfdac.1", 39, MCF_CLK);
+> > > > > +DEFINE_CLK(0, "mcf54415_dac.0", 38, MCF_CLK);
+> > > > > +DEFINE_CLK(0, "mcf54415_dac.1", 39, MCF_CLK);
+> > > > >    DEFINE_CLK(0, "mcfrtc.0", 42, MCF_CLK);
+> > > > >    DEFINE_CLK(0, "mcfsim.0", 43, MCF_CLK);
+> > > > >    DEFINE_CLK(0, "mcfusb-otg.0", 44, MCF_CLK);
+> > > > > @@ -106,8 +106,8 @@ static struct clk_lookup m5411x_clk_lookup[] = {
+> > > > >    	CLKDEV_INIT("mcfpit.3", NULL, &__clk_0_35),
+> > > > >    	CLKDEV_INIT("mcfeport.0", NULL, &__clk_0_36),
+> > > > >    	CLKDEV_INIT("mcfadc.0", NULL, &__clk_0_37),
+> > > > > -	CLKDEV_INIT("mcfdac.0", NULL, &__clk_0_38),
+> > > > > -	CLKDEV_INIT("mcfdac.1", NULL, &__clk_0_39),
+> > > > > +	CLKDEV_INIT("mcf54415_dac.0", NULL, &__clk_0_38),
+> > > > > +	CLKDEV_INIT("mcf54415_dac.1", NULL, &__clk_0_39),
+> > > > >    	CLKDEV_INIT("mcfrtc.0", NULL, &__clk_0_42),
+> > > > >    	CLKDEV_INIT("mcfsim.0", NULL, &__clk_0_43),
+> > > > >    	CLKDEV_INIT("mcfusb-otg.0", NULL, &__clk_0_44),
+> > > > >  
+> > > >  
+> >
+> >  
 
