@@ -1,90 +1,170 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-yx1-f48.google.com (mail-yx1-f48.google.com [74.125.224.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60012328610
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 16:33:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779035639; cv=none; b=h6uZg/8Npizz3bY75PafMb7AMA+BQYwg4zqKnvz/13GyIvD0WyoC9XvFUGJifR80kJO/j2BFx2SNoxIw1q2lcT6bwjSSBr2Y4LxkepzlJFUCYNxd4cC5BVH2E/tchsTdcF5HW3mb3T5rRMRL63C271Q/aavV8KIVP8LUBBU8e2Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779035639; c=relaxed/simple;
-	bh=vxYJ1EoUv4O0XxXUOWDu+mlPan3ee45WOs5kfsA2tyU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=U0maTXzDSDJiWb1gyjdDbVwoFP5VUsn5+2hME4uAT7tm9yVgSIymDMyuDl0NHuohKGCi/br/BqcN7G0lrU4bWIqUUy2QgJ0WgX6qi3pfU2N/J1lwaaCMrz18WArGF2+fp+wsyeSYYO2z2ut50tAqDoGfEg132+EJRjUlLtJnWQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q0UNLXHu; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 851A92DB781
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 16:56:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779036995; cv=pass; b=H8CEfCF+IfCMTn+ndwnnr4rvx9gxwd3/Gh/KbXCYXcXcMFUzrwzgfEp8uVxqSnouWUhVOBede06+0EyCls4UbRISwPg7WfcR0omuQuMF+xW+3Ha5RpSpjUmYnI76gvw19O1Jib8JgBAdDGN75O4Mojwgsfj95A27ebnJYiXWnMk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779036995; c=relaxed/simple;
+	bh=MUjh+oHaRCc/cv9DTSI5erq1wByDpr8s0je1rxLgQl8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lcJPvhxjXvObGoM6k7uJhS9U3hxnFAG4fB2SbZ2YqSYXKSJIY/JfDa2BmrATPeekHrW23NqzCxY/74akgm+IMz96B2BX9J7UBnFI2rKeOS5VbQ0YTY600QWEpiNVYDcEeb/+qTHsTezToBQdE8lnFlRXsARiCtzz4UOc5rWZXcU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=si/Pimyj; arc=pass smtp.client-ip=74.125.224.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q0UNLXHu"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4889d0a9df0so1505555e9.3
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 09:33:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="si/Pimyj"
+Received: by mail-yx1-f48.google.com with SMTP id 956f58d0204a3-65e15fb394bso1125008d50.2
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 09:56:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779036993; cv=none;
+        d=google.com; s=arc-20240605;
+        b=ZUIOICwAPJf0W7mzmiQRq+qTgjojx67zsdKEzKDaD2wm+nAIDUXUFDXQNv5DlnGztg
+         wZ4pt8Z05zqXrsRS/9YpY1xC/RhAZ26iL+wa0wIixv+mrRyad7B85ggndP4a0lDsB/6f
+         lqcQZiA7567xP0wHtTJPfxZUsVb2Pp5av6EMrYUThsQsamhll56ucXjtvwa8aD8PEEUh
+         nwHkNFA8l1kD8yr8MZ/UvXFq+LJuye+0k+7wkk2HI86CbIzxOq/D+RBk+f9HMXbVNPvI
+         eXLCz5aJdlfhLGZankECYWtUFqGe559epjiQPElx4cnIbjskJuKcBbzYm5Ep+YOOOi1Y
+         c4Pg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=i/55JZGS4Yf5N+QpiIM3AsqyWU4hWY+2mWlPLLbuMos=;
+        fh=1IWNdY4tRrmlp9SeeLfSt9kLyGuczWtnye/9CZhwJvE=;
+        b=igSqLC6qFnepCG1RSEvjSGY29QYjzpJXasMsxgSuPUn1urn05TUEhtfaF+7RXn1Mq9
+         vJ9owDZO0D0TvjiYjbuZyI0fBxQv5DrYUj7xCRmi2Uc77RTyNgb7UxPI4Xtt7lYKLNwU
+         pd9BUILKoxM7M58PU7Bx/vnvT/9CVWqFi6JRnB6Rme5HZM3vnKF3MTxOrWNGaigbeX0m
+         tWqkDaXbrx9vJ4jgYh8P9qJhtnrz+4B6FoyrxAFKUZMGRD5JyZI/DYGAfCjBxrqYIb1V
+         ridCBLo2WJHZIUJ7jjFcnbbP7E+qPurzvtjBsZh9vK419W4VY6EXYPaTiMS0YDiZj7BX
+         7gtA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779035637; x=1779640437; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1779036993; x=1779641793; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vxYJ1EoUv4O0XxXUOWDu+mlPan3ee45WOs5kfsA2tyU=;
-        b=q0UNLXHuX1vfV1qjyfrbPlAScnmiBiCHNU5YsB7dMei6XztVnFyESODC8plinTBsYO
-         wjy9ZsSKhk+uhNzlKlui1Eyxgn532ykJVfgI4+RsxINXANH7g/lV3nHmSnd1J+aNIc0K
-         /2jmHwpN1d1MImCNuTDngLPJzclb8nHbsHRg0S7kFni0MYIrxpTCBqeH2s9pI/6vQfI5
-         BsRgg82CTAIvuc4HCWSJkEKsYPOewAZtTuxtjIvCBYeUPvmejvK/O2gVItFRIs4ultgg
-         oijpk7UIS+uGZ/V6F7r50jhA3YlkRBD4uBY6qrxdCMhuPW0/scf/+bHEI/CeAhm0oOW0
-         rGtA==
+        bh=i/55JZGS4Yf5N+QpiIM3AsqyWU4hWY+2mWlPLLbuMos=;
+        b=si/Pimyj0pjb2PN8IWIfDcw+wdAr02cdGpMyktLX2xFjH0b3FPaTmX965bH/wtWPqY
+         QrLVpIblzt5zF4bQAskbVoPtJ72KFqNhxNDvfu1WXpNUee7IwY2cRWQUgm0PNKKAUn4J
+         YeQb76vHUHyeXVfjH2SSFo49P1n9qOG4oloDmo/y3C56wFH2PT5Vh04IYH8NkEwCgTJQ
+         Qq6cOiuR1zGjZ+RjcbNs1xn5d1ZdDl9cn+NMaoJjcal7PIs+zfOSCbtb/7LMvKUBHCSo
+         hRwpiMC39V+7IikfioxEPuNTV7OEb/jyn0uhZ/4UUdDE8TxqWjxLpnesKEdS3ExSuZa2
+         qhOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779035637; x=1779640437;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20251104; t=1779036993; x=1779641793;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=vxYJ1EoUv4O0XxXUOWDu+mlPan3ee45WOs5kfsA2tyU=;
-        b=N8X5JfP0ROGd3r72w6HLKGd8Y1XeBg8YOrc7hABmSh1WLA4ROjlIDgR9WbLMYIpTBW
-         0BAuRrh4Ig4YmXdGUm+Gu560LyXbRIHvysi3DVQb1I0dxUXhFScGpAvF6HpA+6WjzKm5
-         W3JGcJtlwzjp8D5cQ11N7ZfcHgFZKiYP8ea5363fXD6PsVsiD4zP93y4o10bUY3cK65X
-         6xO65KEb/ESbGLfEQ9aTOFaDdzpUeK5D1mQaWgnhgqodGInl9w8OlOhMcpDwvrzl7CyR
-         EGXFMLFAdxgIHhPbV4v/2oSFqGASNfcTCtLNSaPe/58vDKvtXbXI8DJ3969wt3PsBCld
-         sL1Q==
-X-Forwarded-Encrypted: i=1; AFNElJ+zyu2Tfof7UTBqUwE4Za++TYM81vTLrRYGc2xF21W7Sh4QNYmPFJS8zZMxFg5ci/F6PWULCCoXsT8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzR50FSrHk4PPJTNNxtEaG4XjrsGq3/9z/jkfuEz6ut20Umpwlb
-	2PLA6pcMaBbcZmmIbJLC75HVV/RfkxvM14ISHtc/vq6GySAG1B5PqLlY
-X-Gm-Gg: Acq92OFSyG5VLsGMnat5130pN3L47BO5WEGL8CwVlnQtaDK6sLeBBunxaodrvzr+eEt
-	WzOEFjnwzP5oY16TugqrCuubLcPbb/uEAVgP0KzIU5cueAihI6cWYKlteyImFLCrkz4fQNJ1nuj
-	SSJuzLtHyLvLp4SrHw3iPsbY2CD0zB4ZthmwHqgJudcZbs7XMdnPzctWhZlOGv1sF2j58Oa3Hqi
-	j3gKCMwfFsZ4mmiVkBS7Fr5mMdvP0NxGKlIWMTCUdDgtFbD2ZyK3ZciYACNEenXJ81toXA6F6ZJ
-	g1AbWqReHaMX41eMjUH796MpVEUqmHlXk3pS8/lco3yhFbjQYGLFEtI3nDZVACnWyYh1Pou2M1k
-	0TNJCpv5RjJfFYayuyRkm8Ww2kqB6pf7pgXfXsTiPuKpfcLN9s2a7feZ4B1Xi8jrbSx/DqXSWuf
-	Z41UbvH2TVemowbBK8FMMs8hCZDcC7SKo/jYK+qerHTmFo
-X-Received: by 2002:a05:600c:c177:b0:48a:56d4:7274 with SMTP id 5b1f17b1804b1-48fe66423ecmr84053575e9.3.1779035636690;
-        Sun, 17 May 2026 09:33:56 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48febe78aadsm60608145e9.29.2026.05.17.09.33.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 09:33:56 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: jic23@kernel.org
-Cc: daniel.lezcano@linaro.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	gregkh@linuxfoundation.org,
-	hcazarim@yahoo.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Stepan Ionichev <sozdayvek@gmail.com>
-Subject: Re: [PATCH] iio: adc: nxp-sar-adc: notify trigger on channel read error in buffer ISR
-Date: Sun, 17 May 2026 21:33:43 +0500
-Message-Id: <20260517163343.1225-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
-In-Reply-To: <20260517163111.469-1-sozdayvek@gmail.com>
-References: <20260517163111.469-1-sozdayvek@gmail.com>
+        bh=i/55JZGS4Yf5N+QpiIM3AsqyWU4hWY+2mWlPLLbuMos=;
+        b=lqu3Yl8LEC3wRPrtbOkbWlfGW+WilZNXvyKjBa1i9AYZexqPVqYTmEHRNv7G4sKUwU
+         pCAUhwU6Ll3qH5d6dBGs5WQTDEr/e4O5EZ9f6YZbfrLXjSW7A4/pTotWI1J7uLhcPxrR
+         Z748TxUDu4aOo4dpxXL9aZXsgrlIF87qiwebax34JrPmJrHHZCU2F2XqHU3WT+osamcm
+         7+9M9yTo1if5QX0RicU7cGm0FRs573ig1ih/onWICFbDoDvX9Hf5OzAVjPzK4apAan9P
+         xC9C5tLepOBeDGjIhT9y8IeJEsiQ6fZ1dRRmBJcxN5AlUhaWo3+Y2OpB2um9Mn6FXSsR
+         w4Kg==
+X-Forwarded-Encrypted: i=1; AFNElJ/r3ril+YL+K/EZtSFHTHhdXYjA1yWiDSceF3PcrKmvdBA6W2/4Ehdab3HTqjCb8DefmZOjeBi1my4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzGVEXemLz07SwKAoxBB2WzpbXU+61wv2MLORThEhG5dsV7bkiN
+	dnYY3cKoyffRGSuyuQANFfIUMYWxgImn3zWC5Sn9B8yqpIEEVov5+vOKiRNoU45rPd4up6NaWzf
+	JeGYQYPCc0dN12e3NZY7Fylq4TojRX6Y=
+X-Gm-Gg: Acq92OGgiNfqpCSPIgjOpYaAM9LAnN+NIjT5b9vgCCrEp/TgvyuwBIagkP/OsnsweuJ
+	yfcK4NCLFHr5qwf8wPLoHuf3hmamcN1lPjI/ZNO3fbYzZ2ssu07RBereIiRqDDkFefFoGOA3qnA
+	dEbnrHZlYy9OLJCTFtDII0VjF1k1NQNOAm4KxfH466GTF7Jxdl1PqR7V1KMX70J12YDz7V1ZKuF
+	nEQmhYO8PaFadQjNRU7KAld6aJMQlHsyQyhnm0qHBvVoJwZPO8w71Ewp3cZ/Mlu0Vph8aOHCQio
+	d3DJvbG0r9oY438Q
+X-Received: by 2002:a05:690e:dc4:b0:65e:28f3:4a4c with SMTP id
+ 956f58d0204a3-65e28f3523dmr10361954d50.64.1779036993477; Sun, 17 May 2026
+ 09:56:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260513013638.147606-1-m32285159@gmail.com> <20260516135458.7a4c3b8f@jic23-huawei>
+In-Reply-To: <20260516135458.7a4c3b8f@jic23-huawei>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Sun, 17 May 2026 11:55:05 -0500
+X-Gm-Features: AVHnY4IyMPMrtZKmskGZjmKov8N0_97X1ePOQHDMaDQa6K1faUm8ExM2Q18PqBY
+Message-ID: <CAKqfh0G8xGBwwZ2-mVfR8PitUXh2gWJ9=pkXB_XVWD4fiXp8Tg@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: imu: kmx61: Fix potential time-of-check to
+ time-of-use race
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: sashiko <sashiko-bot@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Sorry, sent twice by accident. Please use the earlier copy
-(Message-Id: <20260517162346.189-1-sozdayvek@gmail.com>) and
-ignore this one.
+On Sat, May 16, 2026 at 7:55=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
+> On Tue, 12 May 2026 20:36:38 -0500
+> Maxwell Doose <m32285159@gmail.com> wrote:
+>
+> > A time-of-check to time-of-use race condition exists in
+> > kmx61_write_event_config(). If two threads enter the function at the
+> > same time, both threads may pass the check and get to the lock. Thus,
+> > when the first thread releases the lock allowing the second thread to
+> > start execution after the first thread modifies data->ev_enable_state t=
+o
+> > force returning from the function, the second thread continues executio=
+n
+> > regardless. Fix this by moving the data->ev_enable_state check inside o=
+f
+> > the critical section.
+> >
+> > Fixes: fd3ae7a9f21c ("iio: imu: kmx61: Add support for any motion trigg=
+er")
+> > Reported-by: sashiko <sashiko-bot@kernel.org>
+> > Closes: https://sashiko.dev/#/patchset/20260507223337.48437-1-m32285159=
+%40gmail.com
+> > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+>
+> Sashiko has more to say.. Please take a look.  I'm rather nervous
+> about trying to fix the bugs it's finding around reference counting
+> without anyone testing.
+>
+> Maybe we can get enough confidence with emulation or stubbing.
+>
+> https://sashiko.dev/#/patchset/20260513013638.147606-1-m32285159%40gmail.=
+com
+>
 
-Stepan
+Yea, unfortunately I don't have the hardware with me. If someone else
+wants to test then maybe...I haven't messed around with QEMU much so
+honestly I wouldn't know how to emulate such specific hardware.
+
+best regards,
+max
+
+
+
+
+
+> > ---
+> >  drivers/iio/imu/kmx61.c | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+> > index 3cd91d8a89ee..3afa369de3cf 100644
+> > --- a/drivers/iio/imu/kmx61.c
+> > +++ b/drivers/iio/imu/kmx61.c
+> > @@ -942,11 +942,11 @@ static int kmx61_write_event_config(struct iio_de=
+v *indio_dev,
+> >       struct kmx61_data *data =3D kmx61_get_data(indio_dev);
+> >       int ret =3D 0;
+> >
+> > -     if (state && data->ev_enable_state)
+> > -             return 0;
+> > -
+> >       mutex_lock(&data->lock);
+> >
+> > +     if (state && data->ev_enable_state)
+> > +             goto err_unlock;
+> > +
+> >       if (!state && data->motion_trig_on) {
+> >               data->ev_enable_state =3D false;
+> >               goto err_unlock;
+>
