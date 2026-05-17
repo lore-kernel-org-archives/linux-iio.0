@@ -1,106 +1,171 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F0B0277C9D;
-	Sun, 17 May 2026 15:55:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D10A364933
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 16:08:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779033322; cv=none; b=KggvfpzDZpLlidP+6QpE31OYVz+xRnGgDY0AZpb1v2nlek+jeB2q8o0UgYqAMEWxb/9FIy7+yGC3eaelWw0cCUjjGRRnsB3r5pCfHoXSOR53U1h7xRy5IGLikhGPivLetDRYMpQb/HukXNSl2Gu5unrDkNDuMCnAHUMPDfgi3zE=
+	t=1779034098; cv=none; b=FSRCp8ZnP6/evQcI00OrkSecg1IuCvmFDdj1ry0/2sBioMpaVngAnhf39qZ64IPiZEjfwSe86yDJAs3Y7Du9PF1p2ZhgtzsLCOOmwx1kuFmfpXxXnJ0UHUAZ/6RsIbYA7h0k67kWE8GJUuzASO66wsTB3NDVGxhC/g+orsFTTm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779033322; c=relaxed/simple;
-	bh=vuEiq6kXUHmnExqvqbNZrlASQuYXEDFkmYRBJ2KIifA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mHC7VWFuhAlMEANJmXpOMWPb4HA6+TcWGipMnVVihLDjmsU461w5FXR70JfPXMt+Zsyukc+wRFvuiSz/Hqk2ubGEhjcMOBYBoNYeA2OsPWhaakFL7dMWByry0JbFQNwMhZGFBlGmhE4dK28fWh+QOuUtsnMLz6eirOPuDgbj6gA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q83DkYiA; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779034098; c=relaxed/simple;
+	bh=hQ/rVVhIPkk7pPHac/pDnIhXRjBlYPw7rVFREviEY6s=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PBAVBWQYebOTYBiIsAGfOd/ogZ/GsWfOfHv3pmxxJW1Qne0rbjHP8CzngbVf0l1IuRONKf7w/tbGF6bWzzs0mtM8esUouLZmX6zpNx5JvGSVgK71+UcpC7Jb1Vd1n0DbneZeKjxgk78SrKphXZEErjIYmCZGrCYvaAKU/X5XCLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=smgWc+P2; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q83DkYiA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD9E6C2BCC6;
-	Sun, 17 May 2026 15:55:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779033322;
-	bh=vuEiq6kXUHmnExqvqbNZrlASQuYXEDFkmYRBJ2KIifA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=q83DkYiA7zSDa0jq3uQb/lUCY1fzyOAiE016Lmy4FwGHDLx/oplGf30aaqYpIw17F
-	 b6i5AB6evQYdIrl/DadnqHFf5crWLS973Ugt3Y8xzOYxholDqZv99cR2KtBFYNO/Zx
-	 3zPXDT33bmxzj4aT1AaNK2Mo2DkBzd7vd/BBnSUZAQO7Jwz7px+WmMGvJbjzq5F5Kb
-	 /PkbGLEqw1oJvGMPpxj82AlEh+tuvDJWo5BQ67QjDO4Fo2s4Wv589str4U5Kr68hKe
-	 Df+SdS5mQtLfnksdrMSMDT+q5YOw7OxVUD45u728L8IaMS4IPvA85iN6BC0IeN3rpZ
-	 e3pYeTawfCH+w==
-Date: Sun, 17 May 2026 16:55:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: light: veml3328: add support for new device
-Message-ID: <20260517165514.1bf08426@jic23-huawei>
-In-Reply-To: <CALoEA-z5dJLYC_L93hPo5zpgB+yhjH3iOje1V5XgQ1aOPppU=Q@mail.gmail.com>
-References: <20260516-veml3328-v1-0-1d4b663e2fe3@gmail.com>
-	<20260516-veml3328-v1-2-1d4b663e2fe3@gmail.com>
-	<20260517143449.6c30b99f@jic23-huawei>
-	<CALoEA-z5dJLYC_L93hPo5zpgB+yhjH3iOje1V5XgQ1aOPppU=Q@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="smgWc+P2"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-48d10c981e4so2424105e9.0
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 09:08:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779034095; x=1779638895; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=MmA31C4zCBuHUyR5/JDkmFyRbtrkEf1aMpi+puaLur8=;
+        b=smgWc+P2ttkEBAsankScA8k+PHZxnAl82fMmb7Sfw3ym/ofEDp/BNlZ99cAO1nkgHK
+         TNofGlESuR6+T3xz6aalee6mYA/h4fnDQDD2QkUMPeRfFl7mR9e9EYLdqYGsS33kWd5k
+         vlPxBblI5jeIkLjlxIsBtWDJ8/9EzlVqHghOSm8apBbq++aQlIuaMPLC0wAxQBXBXBta
+         IXCZdk13ImXokuNBPr04a70g1DhBWDAaIIP+KXZPMhNvlf71+OpTRyskpJ/qBFnAMtUS
+         Pe8r7/rZ4HRY/i5ut+FCovz/aImCDlLIiU94MMdibHj3V48WZY7CCL8ZqPICTtga2p9p
+         fIVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779034095; x=1779638895;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MmA31C4zCBuHUyR5/JDkmFyRbtrkEf1aMpi+puaLur8=;
+        b=H9sn8afTdtiHJNI8j19QClMo/+pxBUYgDMuMtnSI7d9sI7xeEFVwdEtMpMat5fOMXx
+         MVkZeDLVmKonPCTGkjwsfbQuzsPB1unwKw7SOKdbkTZMSpsRQoiA24/G3dY89V+CS8CF
+         9F+Td+KGJAyravbzfKH51u5CzEodDh515Z9LeifOhcZ5nBdBknnhdy4gIP5AJO295Jh3
+         sHUOoqo3Zu8433LP0MKePMJ7q2tjRdJiySZuj8V3Qc8N77PiIfB7il5pZwrUgp8H/yfg
+         ib/tAkGYGBesIS6OCvO1Bq2gNXcRrB7FxITH3X3gVXgGuPZXTGG2Ggoy9aO9f1UUYs7l
+         5ecA==
+X-Forwarded-Encrypted: i=1; AFNElJ/kWjpmTjQCZg+9at/QKGTDz7ryuf18p7u+QPdNSBcvcYXndTPQ1iSUecJkeq6ODAn3UI7sblhPUQw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz4HjYjcUQvP8kOolyQ1aem0Tv3VYCyFOJfkRbvfSd+gvNAEq3D
+	UoLVWC1KHeYR/mcZFyBnS+LL6/SPbnROYeAG1mRSM5CzbzNvrlmvZJdn
+X-Gm-Gg: Acq92OF87Km//ol/IySYZzJoRcOWDZFwe/D9I1xN4Gxn11bAOM1ylF6P6pQ9KMMmXbO
+	RaN/j4oSbKiMBDtVeJVLHymg9CoECz76vFL6gM3yVzUYkr+ZQM5QH+HZNJIyLAaQ0dPoFdN/bcO
+	a8Qfgvzsae9DsbZHeJEdRdvGyMEhsc0hJrqqrhkrRy/QKLOWqMm1NQSfDB9J5QNSEVHnwc9K/hz
+	YX1gX8viXXBJQkU85FrukdlbIfq22xz3cM8NrnXtru3072e8YCbxBOT2jspkW9YTV1lcFsHjshG
+	+GZu2VQ1Hrov6Uw5BhVvx3Ths5iiOlrJ8iKHB+33z4KPw5JpsxcMseO41VRpOZ8mEeQQnGNETsS
+	U1tpIA8NZapkFqoXbNSCA/yezhALWPn5WVEtwAfR5T14KKkozWmvAkFiyFy8/cbS/3uiE8B8+fY
+	P/na4gnxPRR4cOjpQl0TupnVIsa6myk/bc0NcSFr9cwaCx
+X-Received: by 2002:a05:600c:4704:b0:489:1ca4:c999 with SMTP id 5b1f17b1804b1-48fe66550aamr78753665e9.8.1779034095426;
+        Sun, 17 May 2026 09:08:15 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48febf81970sm83892645e9.8.2026.05.17.09.08.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 May 2026 09:08:14 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: mazziesaccount@gmail.com
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH] iio: pressure: rohm-bm1390: notify trigger on all error paths
+Date: Sun, 17 May 2026 21:08:01 +0500
+Message-Id: <20260517160801.269-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+bm1390_trigger_handler() has three error returns:
 
-> > > +
-> > > +struct veml3328_data {
-> > > +     struct regmap *regmap;
-> > > +     struct device *dev;  
-> > The use of the one embedded in regmap got mentioned already in another review.  
-> > > +     struct mutex lock;  
-> > All locks need a comment saying what data they are protecting
-> > (might well be in the device).
-> >
-> > Mind you - I'm seeing quite a bit of locking around simple regmap calls.
-> > Given there are locks in regmap, you may need to call out if there
-> > is a particular readout sequence that must not be interrupted.
-> >
-> > I'm not immediately seeing one and as such you might not need a local
-> > lock.  
-> 
-> I was on the fence with this one - my understanding was that the locking
-> in regmap was just for i2c bus interactions, not actual value read/writes.
-> I've no problem with removing it though if I am mistaken.
-> 
-The regmap calls themselves are all safe against races.
-E.g.
- */
-int regmap_update_bits_base(struct regmap *map, unsigned int reg,
-			    unsigned int mask, unsigned int val,
-			    bool *change, bool async, bool force)
-{
-	int ret;
+	if (ret || !status)
+		return IRQ_NONE;          /* status read failed */
+	...
+	if (ret) {
+		dev_warn(...);
+		return IRQ_NONE;          /* pressure read failed */
+	}
+	...
+	if (ret) {
+		dev_warn(...);
+		return IRQ_HANDLED;       /* temp read failed */
+	}
 
-	map->lock(map->lock_arg);
+None of them call iio_trigger_notify_done(). The success path at the
+end does, so on a single transient regmap or pressure-read error the
+trigger never sees its use_count decremented, and the
+!atomic_read(&trig->use_count) guard in iio_trigger_poll_chained()
+drops every subsequent dispatch for that trigger. The buffered-data
+flow stays wedged until the trigger is detached.
 
-	map->async = async;
+The IRQ_HANDLED return on the temperature path additionally leaves
+the temp branch's last partial state in &data->buf.temp without
+pushing the sample, which is the existing intended behaviour; only
+the missing notify_done() needs fixing.
 
-	ret = _regmap_update_bits(map, reg, mask, val, change, force);
+Funnel all returns through a single 'done' label that calls
+iio_trigger_notify_done() before returning the saved irqreturn_t.
 
-	map->async = false;
+Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
+ drivers/iio/pressure/rohm-bm1390.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-	map->unlock(map->lock_arg);
+diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm-bm1390.c
+index 08146ca0f..c18352399 100644
+--- a/drivers/iio/pressure/rohm-bm1390.c
++++ b/drivers/iio/pressure/rohm-bm1390.c
+@@ -626,12 +626,15 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *idev = pf->indio_dev;
+ 	struct bm1390_data *data = iio_priv(idev);
++	irqreturn_t result = IRQ_HANDLED;
+ 	int ret, status;
+ 
+ 	/* DRDY is acked by reading status reg */
+ 	ret = regmap_read(data->regmap, BM1390_REG_STATUS, &status);
+-	if (ret || !status)
+-		return IRQ_NONE;
++	if (ret || !status) {
++		result = IRQ_NONE;
++		goto done;
++	}
+ 
+ 	dev_dbg(data->dev, "DRDY trig status 0x%x\n", status);
+ 
+@@ -639,7 +642,8 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
+ 		ret = bm1390_pressure_read(data, &data->buf.pressure);
+ 		if (ret) {
+ 			dev_warn(data->dev, "sample read failed %d\n", ret);
+-			return IRQ_NONE;
++			result = IRQ_NONE;
++			goto done;
+ 		}
+ 	}
+ 
+@@ -648,15 +652,16 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
+ 				       &data->buf.temp, sizeof(data->buf.temp));
+ 		if (ret) {
+ 			dev_warn(data->dev, "temp read failed %d\n", ret);
+-			return IRQ_HANDLED;
++			goto done;
+ 		}
+ 	}
+ 
+ 	iio_push_to_buffers_with_ts(idev, &data->buf, sizeof(data->buf),
+ 				    data->timestamp);
++done:
+ 	iio_trigger_notify_done(idev->trig);
+ 
+-	return IRQ_HANDLED;
++	return result;
+ }
+ 
+ /* Get timestamps and wake the thread if we need to read data */
+-- 
+2.43.0
 
-	return ret;
-}
-EXPORT_SYMBOL_GPL(regmap_update_bits_base);
-
-is taking the lock - under the hood probably uses regmap_lock_mutex() but
-I haven't checked this specific config.
-
-So you only tend to need your own locking if:
-1) read modify write cycles occur that aren't handled by the simple regmap calls.
-2) need to maintain consistency between some internal state and a register.
-3) need to ensure a sequence of regmap accesses aren't interrupted.
-
-Jonathan
