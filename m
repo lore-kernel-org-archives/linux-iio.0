@@ -1,49 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99C7426F29B;
-	Sun, 17 May 2026 13:45:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD2011A9F9F;
+	Sun, 17 May 2026 13:54:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779025506; cv=none; b=LS8C4jnA49ahhfNxthauB1yuPai8cYeEWbRi7n/I9wgJ7XdNzvDTz1BGVFTeswy1Us13hdniwqPevp74NMcNga50pp5CWwWkjJcoG7kYFAATValJjuBYoJ2V2iSLmahK2QuAZp+GIHgBOoDFRA/OZmjZZdskyI2rP2lcPSJIAkk=
+	t=1779026045; cv=none; b=WlzH7YjR5YF8ahaapGQs/izAuJwcfgy7LkAbMOOebRkE2+9Ijixq/eJYPIOhmsxlJiaN8+Wkukq/v30Vbx7Vrxsb86ZM6+sDhNwpU6apTJ+PqHjRSd8i7xThDC8fmatpRqn0PsB+Nf4WVo4JTMIZk1YYtMPyzMVIfBoAQet51I8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779025506; c=relaxed/simple;
-	bh=Yhlx+peDKSMRGYl8zT9YWqABpdNepHKaSStG0Z7fuZQ=;
+	s=arc-20240116; t=1779026045; c=relaxed/simple;
+	bh=fQCNw4EnSJMI7bx7pm4XaYCM6Vupjq8oyL3GdPFn8Q0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gSR7WBkwvvyIlpSHbRMybh7qWgAiHlkl2+UZkTfdF5WJJcXOCi6n04ZOSD3zXBrZEKT9f2+ecBbvtqV3O0cE15lK81+x7eR9Wtk3dqQVuPUeJmiLs5YQypf1KwYYat/ZaPz/KbLvM8XSB8/WHF2B29opteinBqt2EgVoP3W8eeE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PwLTCZ45; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=WBUd8m4FXyGkmthX1rKOJfpUn8uK445I0Xy2nDmCsT+TtzpF/jE7FKfrAjSnnnLzGg/S7cgSPKKyHUbv9SzG8YeTuadsU6eCicFa3KEA/KmNA1Tmc4RCnCf07zPNR/fOx4Z6vjCEx19aYrLeebeDZggEVkX1Sk2PQjaKzM/Olqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ab9+YHNU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PwLTCZ45"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE23EC2BCB0;
-	Sun, 17 May 2026 13:44:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ab9+YHNU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB82C2BCB0;
+	Sun, 17 May 2026 13:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779025506;
-	bh=Yhlx+peDKSMRGYl8zT9YWqABpdNepHKaSStG0Z7fuZQ=;
+	s=k20201202; t=1779026045;
+	bh=fQCNw4EnSJMI7bx7pm4XaYCM6Vupjq8oyL3GdPFn8Q0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=PwLTCZ45pGDzdvmztnoD8yfkeN6fRVyVzZng8MUKQ1zxWLWv6zS8BA84KMl5CX3Ti
-	 M8EK73nR+FFWDPXHOLp64pZ2JPF2xLkQrzMu3Xef3xWYVqtz1j/jPY16A6aRLqeqai
-	 Cs2Cq59jvw4pcdRQ0MUI2tm2njYat8dxH7XDZbZH3exfu6JKe9pG37lA21CLYGhSAL
-	 q3pB1JkygH6zROInk6TUopqNxKWpQ9OpTEb+AHA3UHJtaE5KYfN9kl+u5j2+sXpoPM
-	 g6iMe6lH3mcp/8A/c8ZZfFYrgUgW+ASD2B+yzexi/ILtawigG9Lwq1IwFo02G6IBPh
-	 +ZKN5rYAzmmzw==
-Date: Sun, 17 May 2026 14:44:53 +0100
+	b=ab9+YHNUf/NlfMQYJ9XZnVPeNUOSgoPS1wojtV/MR6eLucxpYYgf6OYU+8G0aKNnY
+	 UhWcHcFMMmGvzqEUWqoTsTCKcdDoNq+wKaMYookjK6noRfmyXRNle74bC16/YwP3US
+	 0v9yE31Kgon9ztyHVMs2xFpSPZTm5S90199lwxVE+Ik/Tf89DDizjJZjaAnwHA+8lJ
+	 ngcBcq+/CtifzuBtsRBUYkSJeTxtTiAmfDVB2CuqwOYmq5i/6SCDMwPiclY/JtUcKd
+	 ynmNpb4R9h4gSywCrAVW2ya/0KcdtZQdPki6YM9ZwY00WqBLWfNzUKFajpgWEyrzPx
+	 yRQ2QXLzulSaQ==
+Date: Sun, 17 May 2026 14:53:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, Jingoo
- Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
- linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v1 1/6] dt-bindings: leds: Document TI LM3533 LED
- controller
-Message-ID: <20260517144453.61cc210c@jic23-huawei>
-In-Reply-To: <20260517074306.30937-2-clamor95@gmail.com>
-References: <20260517074306.30937-1-clamor95@gmail.com>
-	<20260517074306.30937-2-clamor95@gmail.com>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Andrew Morton
+ <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
+ <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v13 02/12] iio: kstrtox: add local
+ _parse_integer_limit_init() helper
+Message-ID: <20260517145352.5f059a41@jic23-huawei>
+In-Reply-To: <20260517-adf41513-iio-driver-v13-2-bb6e134a360f@analog.com>
+References: <20260517-adf41513-iio-driver-v13-0-bb6e134a360f@analog.com>
+	<20260517-adf41513-iio-driver-v13-2-bb6e134a360f@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,109 +57,88 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 17 May 2026 10:43:01 +0300
-Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+On Sun, 17 May 2026 10:13:57 +0100
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-> Document the LM3533 - a complete power source for backlight, keypad and
-> indicator LEDs in smartphone handsets. The high-voltage inductive boost
-> converter provides the power for two series LED strings display backlight
-> and keypad functions.
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-Hi Svyatoslav,
+> Add parsing helper that accepts an initial value for the accumulated
+> result when parsing an 64-bit integer. It reuses current implementation
+> for _parse_integer_limit(), which now consumes the new function with
+> init = 0. The diff algorithm would have the documentation header and
+> prototype of _parse_integer_limit() moved around so it is adjusted
+> according to guidelines.
+> 
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Sashiko makes a good point on this. It is not currently IIO specific
+so the patch title should make that clear.
 
-I focused on the ALS part.. A few comments.
+kstrox: add local_parse_integer_limit_init() helper.
 
-> +# see ti,lm3533.yaml for an example
-> diff --git a/Documentation/devicetree/bindings/leds/ti,lm3533.yaml b/Documentation/devicetree/bindings/leds/ti,lm3533.yaml
-> new file mode 100644
-> index 000000000000..2e200f172400
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/leds/ti,lm3533.yaml
-> @@ -0,0 +1,190 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/leds/ti,lm3533.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> ---
+>  lib/kstrtox.c | 39 ++++++++++++++++++++++++++-------------
+>  1 file changed, 26 insertions(+), 13 deletions(-)
+> 
+> diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+> index 97be2a39f537..0705461f51c0 100644
+> --- a/lib/kstrtox.c
+> +++ b/lib/kstrtox.c
+> @@ -39,23 +39,15 @@ const char *_parse_integer_fixup_radix(const char *s, unsigned int *base)
+>  	return s;
+>  }
+>  
+> -/*
+> - * Convert non-negative integer string representation in explicitly given radix
+> - * to an integer. A maximum of max_chars characters will be converted.
+> - *
+> - * Return number of characters consumed maybe or-ed with overflow bit.
+> - * If overflow occurs, result integer (incorrect) is still returned.
+> - *
+> - * Don't you dare use this function.
+> - */
+> -noinline
+> -unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned long long *p,
+> -				  size_t max_chars)
+> +static unsigned int _parse_integer_limit_init(const char *s, unsigned int base,
+> +					      unsigned long long init,
+> +					      unsigned long long *p,
+> +					      size_t max_chars)
+>  {
+>  	unsigned long long res;
+>  	unsigned int rv;
+>  
+> -	res = 0;
+> +	res = init;
+>  	rv = 0;
+>  	while (max_chars--) {
+>  		unsigned int c = *s;
+> @@ -87,6 +79,27 @@ unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned lon
+>  	return rv;
+>  }
+>  
+> +/**
+> + * _parse_integer_limit() - Convert integer string representation to an integer
+> + *			    limiting the number of characters parsed.
+> + * @s: The start of the string.
+> + * @base: The number base to use.
+> + * @p: Where to write the result of the conversion.
+> + * @max_chars: Maximum amount of characters to consume.
+> + *
+> + * Convert non-negative integer string representation in explicitly given radix
+> + * to an integer. A maximum of max_chars characters will be converted.
+> + *
+> + * Return: Number of characters consumed maybe or-ed with overflow bit.
+> + *	   If overflow occurs, result integer (incorrect) is still returned.
+> + */
+> +noinline
+> +unsigned int _parse_integer_limit(const char *s, unsigned int base,
+> +				  unsigned long long *p, size_t max_chars)
+> +{
+> +	return _parse_integer_limit_init(s, base, 0, p, max_chars);
+> +}
 > +
-> +title: TI LM3533 Complete Lighting Power Solution
-> +
-> +description: >
-> +  The LM3533 is a complete power source for backlight, keypad, and indicator LEDs
-> +  in smartphone handsets. The high-voltage inductive boost converter provides the
-> +  power for two high voltage series LED strings for display backlight and four low
-> +  voltage control banks for individual LEDs. Additionally, LM3533 features an ALS
-> +  sensor support.
-Mention it is an interface for an external ALS.
-
-> +  light-sensor:
-> +    type: object
-> +    additionalProperties: false
-> +
-> +    properties:
-> +      compatible:
-> +        const: ti,lm3533-als
-> +
-> +      interrupts:
-> +        maxItems: 1
-> +
-> +      ti,resistor-ohm:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description:
-> +          Internal configuration resister value when ALS is in Analog Sensor
-> +          mode and PWM mode is disabled.
-
-Good to note why this is a firmware thing rather than a userspace controlled
-thing. I looked it up, it's because expectation is the input is a current from
-the external analog ALS and these are used to convert it to a voltage with target
-range.
-
-> +        minimum: 1575
-> +        maximum: 200000
-> +
-> +      ti,pwm-mode:
-> +        type: boolean
-> +        description:
-> +          Switch for mode in which ALS is running. If this property is set
-> +          then ALS is running in PWM mode, internal resistor value is set to
-> +          high-impedance (0) and ti,resistor-ohm property is ignored.
-I'd mention the ALS is an external device - so this is saying what interface thing
-thing connected is using.
-
-> +
-> +    required:
-> +      - compatible
-> +
-> +    anyOf:
-> +      - required:
-> +          - ti,resistor-ohm
-> +      - required:
-> +          - ti,pwm-mode
-> +
-> +patternProperties:
-> +  "^backlight@[01]$":
-> +    $ref: /schemas/leds/backlight/ti,lm3533-backlight.yaml#
-> +
-> +  "^led@[2-5]$":
-> +    $ref: /schemas/leds/ti,lm3533-leds.yaml#
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - light-sensor
-> +  - backlight@0
-> +  - backlight@1
-
-Similar for the led nodes.
-
-> +  - led@2
-> +  - led@3
-> +  - led@4
-> +  - led@5
-
-Curious - why are all the led nodes required?  What if some aren't wired to anything?
-
-> +
-> +additionalProperties: false
+>  noinline
+>  unsigned int _parse_integer(const char *s, unsigned int base, unsigned long long *p)
+>  {
+> 
 
