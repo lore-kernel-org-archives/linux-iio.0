@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6383CF67F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B8793CF680;
 	Sun, 17 May 2026 18:38:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779043096; cv=none; b=ZHP1dZ5uhU7b0a9NYs7oojbewHQ2M4ZwfOqKIgRwiZMkR3MuzUwMJhZ0YCbiqgSaNXqNL0idTWWZpnk2V0oWYZL93vWMjAJW4rPAoBrWfxqh3cRayowJmB0G6pNLHNohQzavXXcfcnETdMxlBbNAwcmJ8uuOPfqVk5tR8gIRDgo=
+	t=1779043096; cv=none; b=mdYyP7JupF5mQQSZ8d5NNLhz42QGhvzT6kXiiOcZMmka9w8kRb0zH5iMtxsC3GX7LFm6sCztAI+pp61XHlqrTkbu535ftpMjrGX3FYLv7BxTCApe7JK036bzgmfzViS7u1WxcEVleXyOkgQeDWd91SvUcRC4TMWKfWlnabZq58I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1779043096; c=relaxed/simple;
-	bh=uSGL8dMbIPWbCHilTKkbyu1O1HC9fYsQy2nXzCbqsRA=;
+	bh=vw/6QJJ2gS7QVTkMQLuUMXyrddyW6VBFtu0qRhUhZsw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=uFwmczMj1/uRpGjqlxRFqT3BRD/7kGITVPAmhlNI0T01aq7yV0lt1joEtsD7mpmGCmi9mALtPenvFv+/mLO+OzM4MgQihtijOi0MERQbjpweFr+bbDe5TYmpdrl549RPUUoqzIIBFqDa6YgomOMYm2vAaToTqUR+N+ss/1XeCq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ln83ZWhJ; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=NZfiz3qTADv6urgMYjVuxQJYc2QkfBWkQZHNVdsbwx1KEQMKkh+QwJhMQPwdVt58Z2rVUocWgwGNbSbtnV/AUM5ZJf/lPJ+mEx2jfYjUFtau2XZRySYsdj5SG4SZZcdOMg39IU5ua2z9RkndYUfJjVmoYfBaSEkWmWxgVhJBXds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i6dQnPQd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ln83ZWhJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F8A9C2BCFD;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i6dQnPQd"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 614F8C4AF14;
 	Sun, 17 May 2026 18:38:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1779043096;
-	bh=uSGL8dMbIPWbCHilTKkbyu1O1HC9fYsQy2nXzCbqsRA=;
+	bh=vw/6QJJ2gS7QVTkMQLuUMXyrddyW6VBFtu0qRhUhZsw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ln83ZWhJtVD82v89MPR1kcP+HU1Yv5SG1jkVdwfKXiZ6Xd6dCYwxQ3mBTcaTeC94h
-	 T6Rqp6i9NFgX5DCXWkSKT9CC9G1fZ4gR8ZLRdxkZewpV+3V+acg6TjAv+2i8UyQjJh
-	 s8AU+GCTcVHDvWLtJiRs1I33UcJU8ScdNIp3DoE9eBOPf5KQn8Ov58yD0KDLf5rAj1
-	 D34qU3bD/lRgcyx39nwUcHOD0ob7Stdclw5Nhg6KvIVZ8V0JNIy8mFaqDgFN1rel+6
-	 IouTzxK9l9Hots5+RxWslfiyZgrY/VyEZMUdiN7XCuk1Ojkc7029KN2mPol8nrRgaG
-	 UExtKmbF/lSIw==
+	b=i6dQnPQdikLKJSE/uTtXtHLRfpR4xDv5Eg5HIM3avVkvaP4SKpSBHyn18GcNk+DDJ
+	 EGRSveftHjyfSM28ACWCWmclWOZQ7e6BV4+ZB250Ou2NndG2TOBMjBNSBlnMwWNJzc
+	 saeHRqfFsiry4dC/J/KSbSNoRelJHal4ExjnoNx/KUqGDCxRkyFW/iUPUcU41GV5eQ
+	 webeWHxguLsen5f2HYmugpyGvTT5sidhi3V+I1xpMhdW9hAF3/RpYhhWOLk4b2Yyd7
+	 VMUWqsCVH2arUIc7iwIpBw4helI1PP64a7VwLRscqE9mCpjsAwdEp5zGmJW4fUbB6+
+	 J3EhQ84oQ63hQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EFACD4F3D;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57273CD4F4F;
 	Sun, 17 May 2026 18:38:16 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 17 May 2026 19:37:47 +0100
-Subject: [PATCH v5 03/13] iio: core: add hierarchical channel relationships
+Date: Sun, 17 May 2026 19:37:49 +0100
+Subject: [PATCH v5 05/13] dt-bindings: iio: frequency: add ad9910
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260517-ad9910-iio-driver-v5-3-31599c88314a@analog.com>
+Message-Id: <20260517-ad9910-iio-driver-v5-5-31599c88314a@analog.com>
 References: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
 In-Reply-To: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -56,11 +56,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779043094; l=3380;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779043094; l=6780;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=A7fhI4etUphuvUOLbYT+tvvvSQiaXddEibbLDuTWMKQ=;
- b=O166oJxTAzSETzOt/aK2ziw8mQeBeTOK5BgBoxWQh9PTsv+5c8xmim0lhMPYWXWmqwJ3rwPtr
- R2rn8X3X8VmDxfHjtsa4meQ9o7lZHkZGYcPqwyIIh6w4TSiSHScY2vg
+ bh=ng92/K6wd/76MVn3VHCyx1hqbcXC28DpSN9wOX05Goc=;
+ b=8Xl6q7Li1bCjW9aCvSitPxC0g8sERIi0zu+LJTUjyD7+e9h7Bt9ZMSutxTV/OA05GZkMPps+9
+ /7PItZ2kDoqD5iAxjPAeUg28OLusVwLg2XaKlYWkVFxpFU2ZkXh506P
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -70,102 +70,239 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add parent-child relationship between iio channels by creating a parent
-pointer field in iio_chan_spec struct and exposing a sysfs attribute that
-returns the parent channel label.
+DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+configurations for clocks, DAC current, reset and basic GPIO control.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-core.c | 38 ++++++++++++++++++++++++++++++++++++++
- include/linux/iio/iio.h         |  5 +++++
- 2 files changed, 43 insertions(+)
+ .../bindings/iio/frequency/adi,ad9910.yaml         | 200 +++++++++++++++++++++
+ MAINTAINERS                                        |   7 +
+ 2 files changed, 207 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 5c8404efd0a5..348ac7a59738 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -776,6 +776,14 @@ static ssize_t iio_read_channel_label(struct device *dev,
- 					 to_iio_dev_attr(attr)->c, buf);
- }
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+new file mode 100644
+index 000000000000..5ab0db62dbf1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+@@ -0,0 +1,200 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD9910 Direct Digital Synthesizer
++
++maintainers:
++  - Rodrigo Alencar <rodrigo.alencar@analog.com>
++
++description:
++  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
++  14-bit DAC. It features single tone mode with 8 configurable profiles,
++  a digital ramp generator, RAM control, OSK, and a parallel data port for
++  high-speed streaming.
++
++  https://www.analog.com/en/products/ad9910.html
++
++properties:
++  compatible:
++    const: adi,ad9910
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 70000000
++
++  clocks:
++    minItems: 1
++    items:
++      - description: Reference clock (REF_CLK).
++      - description: Optional synchronization clock (SYNC_IN).
++
++  clock-names:
++    oneOf:
++      - items:
++          - const: ref_clk
++      - items:
++          - const: ref_clk
++          - const: sync_in
++
++  '#clock-cells':
++    const: 1
++
++  clock-output-names:
++    minItems: 1
++    maxItems: 3
++    items:
++      enum: [ sync_clk, pdclk, sync_out ]
++
++  interrupts:
++    minItems: 1
++    items:
++      - description:
++          Signal that indicates that Digital Ramp Generator has reached a limit.
++      - description:
++          Signal that indicates the end of a RAM Sweep.
++
++  interrupt-names:
++    minItems: 1
++    maxItems: 2
++    items:
++      enum: [ drover, ram_swp_ovr ]
++
++  dvdd-io33-supply:
++    description: 3.3V Digital I/O supply.
++
++  avdd33-supply:
++    description: 3.3V Analog DAC supply.
++
++  dvdd18-supply:
++    description: 1.8V Digital Core supply.
++
++  avdd18-supply:
++    description: 1.8V Analog Core supply.
++
++  reset-gpios:
++    description:
++      GPIOs controlling the Main Device reset.
++
++  io-reset-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_RESET pin.
++
++  powerdown-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the EXT_PWR_DWN pin.
++
++  update-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_UPDATE pin.
++
++  profile-gpios:
++    minItems: 3
++    maxItems: 3
++    description:
++      GPIOs controlling the PROFILE[2:0] pins for profile selection.
++
++  sync-err-gpios:
++    maxItems: 1
++    description:
++      GPIO used to read SYNC_SMP_ERR pin status.
++
++  lock-detect-gpios:
++    maxItems: 1
++    description:
++      GPIO used to read PLL_LOCK pin status.
++
++  adi,pll-enable:
++    type: boolean
++    description:
++      Indicates that a loop filter is connected and the internal PLL is enabled.
++      Often used when the reference clock is provided by a crystal or by a
++      single-ended on-board oscillator.
++
++  adi,charge-pump-current-microamp:
++    minimum: 212
++    maximum: 387
++    default: 212
++    description:
++      PLL charge pump current in microamps. Only applicable when the internal
++      PLL is enabled. The value is rounded to the nearest supported step. This
++      value depends mostly on the loop filter design.
++
++  adi,refclk-out-drive-strength:
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [ disabled, low, medium, high ]
++    default: disabled
++    description:
++      Reference clock output (DRV0) drive strength. Only applicable when
++      the internal PLL is enabled.
++
++  output-range-microamp:
++    description: DAC full-scale output current in microamps.
++    items:
++      - const: 0
++      - minimum: 8640
++        maximum: 31590
++        default: 20070
++
++dependencies:
++  adi,charge-pump-current-microamp: [ 'adi,pll-enable' ]
++  adi,refclk-out-drive-strength: [ 'adi,pll-enable' ]
++  lock-detect-gpios: [ 'adi,pll-enable' ]
++  interrupts: [ interrupt-names ]
++  clocks: [ clock-names ]
++  '#clock-cells': [ clock-output-names ]
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - dvdd-io33-supply
++  - avdd33-supply
++  - dvdd18-supply
++  - avdd18-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        dds@0 {
++            compatible = "adi,ad9910";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++            clocks = <&ad9910_refclk>;
++            clock-names = "ref_clk";
++
++            dvdd-io33-supply = <&vdd_io33>;
++            avdd33-supply = <&vdd_a33>;
++            dvdd18-supply = <&vdd_d18>;
++            avdd18-supply = <&vdd_a18>;
++
++            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
++            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
++            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
++            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
++            profile-gpios = <&gpio 4 GPIO_ACTIVE_HIGH>,
++                            <&gpio 5 GPIO_ACTIVE_HIGH>,
++                            <&gpio 6 GPIO_ACTIVE_HIGH>;
++
++            adi,pll-enable;
++            adi,charge-pump-current-microamp = <387>;
++            adi,refclk-out-drive-strength = "disabled";
++            output-range-microamp = <0 20070>;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3115538ce829..ea70b8449eb4 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1638,6 +1638,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
+ F:	drivers/iio/dac/ad9739a.c
  
-+static ssize_t iio_read_channel_parent(struct device *dev,
-+				       struct device_attribute *attr,
-+				       char *buf)
-+{
-+	return do_iio_read_channel_label(dev_to_iio_dev(dev),
-+					 to_iio_dev_attr(attr)->c->parent, buf);
-+}
++ANALOG DEVICES INC AD9910 DRIVER
++M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
 +
- static ssize_t iio_read_channel_info(struct device *dev,
- 				     struct device_attribute *attr,
- 				     char *buf)
-@@ -1263,6 +1271,31 @@ static int iio_device_add_channel_label(struct iio_dev *indio_dev,
- 	return 1;
- }
- 
-+static int iio_device_add_channel_parent(struct iio_dev *indio_dev,
-+					 struct iio_chan_spec const *chan)
-+{
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+	int ret;
-+
-+	if (!chan->parent || (!indio_dev->info->read_label &&
-+			      !chan->parent->extend_name))
-+		return 0;
-+
-+	ret = __iio_add_chan_devattr("parent",
-+				     chan,
-+				     &iio_read_channel_parent,
-+				     NULL,
-+				     0,
-+				     IIO_SEPARATE,
-+				     &indio_dev->dev,
-+				     NULL,
-+				     &iio_dev_opaque->channel_attr_list);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 1;
-+}
-+
- static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
- 					 struct iio_chan_spec const *chan,
- 					 enum iio_shared_by shared_by,
-@@ -1401,6 +1434,11 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 		return ret;
- 	attrcount += ret;
- 
-+	ret = iio_device_add_channel_parent(indio_dev, chan);
-+	if (ret < 0)
-+		return ret;
-+	attrcount += ret;
-+
- 	if (chan->ext_info) {
- 		unsigned int i = 0;
- 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 86d17ee69e05..09a97518e4bd 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -258,6 +258,10 @@ struct iio_scan_type {
-  *			by all channels.
-  * @info_mask_shared_by_all_available: What availability information is to be
-  *			exported that is shared by all channels.
-+ * @parent:		Optional pointer to the parent channel spec for
-+ *			hierarchical channel relationships. When set, a read-only
-+ *			"parent" sysfs attribute is created containing the
-+ *			parent channel's label.
-  * @event_spec:		Array of events which should be registered for this
-  *			channel.
-  * @num_event_specs:	Size of the event_spec array.
-@@ -306,6 +310,7 @@ struct iio_chan_spec {
- 	unsigned long			info_mask_shared_by_dir_available;
- 	unsigned long			info_mask_shared_by_all;
- 	unsigned long			info_mask_shared_by_all_available;
-+	const struct iio_chan_spec *parent;
- 	const struct iio_event_spec *event_spec;
- 	unsigned int		num_event_specs;
- 	const struct iio_chan_spec_ext_info *ext_info;
+ ANALOG DEVICES INC MAX22007 DRIVER
+ M:	Janani Sunil <janani.sunil@analog.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
 2.43.0
