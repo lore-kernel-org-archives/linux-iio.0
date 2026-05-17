@@ -1,156 +1,191 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F33CF2848A8;
-	Sun, 17 May 2026 08:38:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 483A434DCD2
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 09:10:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779007119; cv=none; b=lVesCn5tuQthZMaRQisDo/aUMCJ7nJ3xAuSQnnNexhN+jknhHpjT2gpbxqrXmiWKsBaDFwKU/XCvDR8SaBBxqtRoQ1PG4ZJfdBAtvFb4kUkotj48WUr4a9NewkcPgcznHTZ+ku40RC4HepUBCEBnbI/TwSYalIgy26BLSq/mNcg=
+	t=1779009031; cv=none; b=XjoXsmbElPEGXxWVfB6luZ/6hQzeInnBgAVpR/voTfkQ0zageIMY2oaYVe8l0N41zi/Cos/Wpp5Wl1CO3eky5iJrAPiiXpG7NJ4b00sSwsoC8dNGgLIusTS8eO8Nhfuwx7dvcg6UejF5WyXGHBLOAV5jiOe2+iTs6Hb66PjIxAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779007119; c=relaxed/simple;
-	bh=FGzPm2ufVQl2aWKft8Id9YMZuI3FeW6z5bURo1rFCVs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=T7xcf8ho90vPZTYEcCk20uD3fN5GD7mLm6+3dGp+AWmzfdaeHtiXqW/6vKJZ8dYWNYGM6p+UA87G8OYEOR9Tvmc337FrJxayOCJ+KlmG0pT/pGTqfAs2kIh3WrYfUSmZ9g96tbjUlfMfPeoEQAS72IU9mMLzmdW7dnq4P3Mx/Xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uzRm6pjF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779009031; c=relaxed/simple;
+	bh=giZbbwb+KGFykexkY9wTcBPAz1X8drfgDFb3/DVXeog=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HVBuVuuh/l2KtQHwYx5ap8z4W+aOm7tYh3YWF/HgWdfhcyBZ+YrSqRM53nHWa73tScbKiQEZzmi7wM6/pyNJBW6S9AlLRzw5FetGui5NmnDj8bB4F/eFswqh6XooH0Th1D5Nt5zwwzak1IOk1mHKbczs9EanSAP1n/ytbjWF2u4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YdF2IBdZ; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uzRm6pjF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9F3C2BCB0;
-	Sun, 17 May 2026 08:38:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779007118;
-	bh=FGzPm2ufVQl2aWKft8Id9YMZuI3FeW6z5bURo1rFCVs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=uzRm6pjFEz4dhgkRk1yolI2w8+wsSRViyNpnb4f+JdJ/UfLdJoG+v2Eyga2e9Acwk
-	 DHLN/Me8kduRG9qlQ9m7WPjseSfGkjFzFUr2Rvp4eR6Bzd93frR4k10pJRM9SkQtNi
-	 rHV3ecQJ5BeZvx3Y4QadGQ+l/US1LBBHsyqP3zzNx793tlnpULOPSFF1PBofruIOEq
-	 IJD/wEo0JCwLlyIIh08tijmUil7R2qixLKMqYvdwfhP4nC3escap9s5ZKeopOENfMa
-	 k8l/CYFuqzrU5X462DNaTP1mm2e+PpxF03Lcq/7F5644sPtvu5NOzbLjnFrSSFEOBA
-	 4n2kgKvpXUpCA==
-Message-ID: <4d1d9af9-af4d-4cb9-bcc6-e70d7640b98d@kernel.org>
-Date: Sun, 17 May 2026 10:38:34 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YdF2IBdZ"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-488a14c31eeso6693555e9.0
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 02:10:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779009029; x=1779613829; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=LhmWRu1kAEOhlZEB2pEFFWdT70xT8IhgyYEkSNuFaIY=;
+        b=YdF2IBdZWg4rU9t4PVQ3oK64oST4DZ1z8hpjIhzYOwgy7Z2EbiOag+hBR71qYb2cNh
+         X0j9CMdfBXxbiMQE3T+XQQC6PIPnUXLUllM4DMf9XlBQLovZ0j59PQTdCihxGjp2hMJd
+         vGtciWWyfHVhanqF0lZI5wAaoP1jOuV9EssKgn6OQnFNzmXann2K1dUIrSWDb3CZg+8g
+         b9cboyitGC/EfmFUTwVegrP4O8CkrJkW9V+1fJWEhy/hFpngEG8LHWp5IQaQ6CARmEaZ
+         Ypg0/1FhecElngFM0ZSuUFqHFlLixvAPcxGDPqB/HjxnM8YcZHA7n15I8r5F10Kyc1/e
+         5URg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779009029; x=1779613829;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LhmWRu1kAEOhlZEB2pEFFWdT70xT8IhgyYEkSNuFaIY=;
+        b=WWr/fujZDU8GvPJRsgtHVdigDDTD0gYFv3VKt2fs8vIDMatJi/hrmXqg7Zsuo84yOV
+         wddcoMVV2hpaEKlMIc1pEO1A1pGk5cK2vEQ43oOd9yvrt1vTL4awbSn8FMy3w4JQeMB5
+         1DnaUZd13u3t9RA0oP103ovyCaFWu/2KA7fb089yMtG2jJXgNz5fF1zMrYywxf6aLMIW
+         8Verib7OJe/ay0fbem7yEOHKn7ck63iG9thSpQ5ArB5CyHali777dqAPP9qH1q5setUs
+         rvZ6ZkvaUFf5FtBUyhG6p9JpHV+vdGIymMLldg74GX5xaLvxkxx0NQGAFlISJp4W8oxR
+         wxvw==
+X-Forwarded-Encrypted: i=1; AFNElJ/0ADHT/1Be4MawJbfvWKkrIRYobdyUV/VyMRhZ2Gmw0VnJ1jtwjRUF2DDo1LsBhIltGzxM7glMAvc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxx6W8nquc8GidivqdOGMDDv91ydSPA2xpSMgUqqiOxqOJa9BnJ
+	qwAjEKDwc+7rmYL8W+UruTPD4U0W+/gSpHrR4Tu/BCjdq2JBRCk1Sg31
+X-Gm-Gg: Acq92OHk8u4lda1ZoFTtLbumv0QzFQpHTSVLeAIFvFYAjoIqjYcpXDS16UlZr3MfT4q
+	CJnFANpQPyzlZjyYYGb5Vm6F6bPv7PbkwFQiF+fUL5QCwHcNBv7pnIZ2uXGYN/NKbQNvsH9PqKP
+	ohNR8ylHX1Cbb9zO528ITnqL/WV91RKI78Y2rNdT2lG2aQauHeNE+STepNHAs1/TcYQC6cjCXue
+	kACTH5NB40N1HQ0HqxTFgCzZ6MmbuACPriJCu7ba0YjegvDyhlo9IK+YOXZnhX7ow1l+szZxjN8
+	Iiga/4ivj75DZt3GUDkSdlI+uOi+/GpzgO5sb05ifD2eKtb7kOYtBI0MwPGlJ2IOxGUFk6RWena
+	1qz7Z3s3fP1hPE+lOXnDkHt7IFcS8kSSmMm7OAW3CuWwaFvy7SyoNfu0GWUnFI45wfAv3sdGki9
+	f+kUUVvKMlstvv64HU72gxZnwX6iHR0sq+o4joTbyWdz4wcbno/0PHDsYTImNqdPHGbqn6jkYj3
+	8LLK3URi/Te7RJ0mGPsjeFPfrUREf7Yz1HzyyqpjD2rO1kong==
+X-Received: by 2002:a05:600c:8901:b0:48e:526e:1040 with SMTP id 5b1f17b1804b1-48fe63021f9mr136814135e9.23.1779009028470;
+        Sun, 17 May 2026 02:10:28 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0a19b1dsm27206239f8f.17.2026.05.17.02.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 May 2026 02:10:26 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Sun, 17 May 2026 10:10:21 +0100
+To: David Laight <david.laight.linux@gmail.com>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Andrew Morton <akpm@linux-foundation.org>, 
+	Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
+	Sergey Senozhatsky <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v12 02/11] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
+Message-ID: <uychuflukrllg3nfzzcuu4xmfi6f4trb7326yq2lg2nrbo6zpw@xjbatdimgaal>
+References: <20260510-adf41513-iio-driver-v12-0-34af2ed2779f@analog.com>
+ <20260510-adf41513-iio-driver-v12-2-34af2ed2779f@analog.com>
+ <kwjoyikbygik4futknqpua2tlzokradms25n2dmfa5czyj2uts@4rdfl6zlul2q>
+ <ex6p5qpgsfvm5wzalpwo7whcj4m4uxzscpzxvb5ihfu2prx3fj@7skhmz3cbshw>
+ <20260515202142.5dc561e0@pumpkin>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iio: light: veml3328: add devicetree binding for new
- sensor
-To: Joshua Crofts <joshua.crofts1@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260516-veml3328-v1-0-1d4b663e2fe3@gmail.com>
- <20260516-veml3328-v1-1-1d4b663e2fe3@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20260516-veml3328-v1-1-1d4b663e2fe3@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260515202142.5dc561e0@pumpkin>
 
-On 16/05/2026 23:50, Joshua Crofts wrote:
-> Add devicetree binding for the Vishay VEML3328 RGB/IR light sensor
-> connected via I2C (SMBus compatible).
-
-Please use subject prefixes matching the subsystem. You can get them for
-example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
-your patch is touching. For bindings, the preferred subjects are
-explained here:
-https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
-
-And then:
-drop second/last, redundant "devicetree binding for new". The
-"dt-bindings" prefix is already stating that these are bindings.
-See also:
-https://elixir.bootlin.com/linux/v6.17-rc3/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
-
+On 26/05/15 08:21PM, David Laight wrote:
+> On Fri, 15 May 2026 17:05:06 +0100
+> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 > 
-> Additionally, add an entry in MAINTAINERS.
-
-Drop, no need to describe what you did. We see that in the diff.
-
+> > On 26/05/13 10:41AM, Rodrigo Alencar wrote:
+> > > On 26/05/10 01:42PM, Rodrigo Alencar via B4 Relay wrote:  
+> > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > > 
+> > > > Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+> > > > point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+> > > > precision). After the decimal point, digits beyond the specified scale
+> > > > are ignored.  
+> > > 
+> > > Hi Andy,
+> > > 
+> > > I am starting over here, the other conversation is getting hard to follow.
+> > > This is my new proposal...  
+> > 
+> > +cc David
 > 
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
+> I just wouldn't do it this way :-)
+> 
+> You end up with more code than you would get if you just converted the digits.
+
+I am not sure about having more code, most of it is reused. The rest is input
+validation and scaling.
 
 ...
 
+> > > This function now becomes:
+> > > 
+> > > 	static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+> > > 	{
+> > > 		u64 _res = 0;
+> > > 		unsigned int rv_int, rv_frac;
+> > > 
 
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        light-sensor@10 {
-> +            compatible = "vishay,veml3328";
-> +            reg = <0x10>;
-> +            vdd-supply = <&vcc_3v3>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d6c3c7d22403..134690aa9866 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -28386,6 +28386,12 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
->  F:	drivers/iio/light/veml3235.c
->  
-> +VISHAY VEML3328 RGB IR LIGHT SENSOR DRIVER
-> +M:	Joshua Crofts <joshua.crofts1@gmail.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/light/vishay,veml3328.yaml
-> +F:	drivers/iio/light/veml3328.c
+integer part is parsed here:
 
-There is no such file at this point.
+> > > 		rv_int = _parse_integer(s, 10, &_res);
+> > > 		if (rv_int & KSTRTOX_OVERFLOW)
+> > > 			return -ERANGE;
+> > > 		s += rv_int;
+> > > 
+> > > 		if (*s == '.')
+> > > 			s++; /* skip decimal point */
+> > > 
 
+fractional part is parsed here:
+(combined into the result so we can just skip the decimal point)
 
-Best regards,
-Krzysztof
+> > > 		rv_frac = _parse_integer_limit_init(s, 10, _res, &_res, scale);
+> > > 		if (rv_frac & KSTRTOX_OVERFLOW)
+> > > 			return -ERANGE;
+> > > 		s += rv_frac;
+> > > 
+
+input validation on the presence of digits:
+(similar to checking rv in _kstrtoull())
+
+> > > 		if (!rv_int && !rv_frac && !isdigit(*s))
+> > > 			return -EINVAL; /* no digits at all */
+> > > 
+> > > 		while (isdigit(*s)) /* truncate digits */
+> > > 			s++;
+> > > 
+
+termination requirement:
+
+> > > 		if (*s == '\n')
+> > > 			s++;
+> > > 		if (*s)
+> > > 			return -EINVAL;
+> > > 
+
+result is scaled according to (scale - rv_frac):
+
+> > > 		if (_res && (scale > (19 + rv_frac) || /* log10(2^64) = 19.26 */
+> > > 		    check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
+> > > 			return -ERANGE;
+> > > 
+> > > 		*res = _res;
+> > > 		return 0;
+> > > 	}
+> > > 
+
+That above looks straightforward to me and the tests in the next patch are thorough.
+
+...
+
+> > I have a v13 ready with this. I'll give it a go soon...
+> > 
+> 
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
