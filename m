@@ -1,223 +1,289 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8326430E851
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 20:28:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779049707; cv=none; b=mWt9LpszluyLvuxY5f9a6dfWIbwLoO4L+cAwmOtPcNtN3dJO3oh5tSN1qPhzAX2Zc9FGnphQonjkefiOSUDX5MODxJwaFH0wYFNr7+C52NDuwxafFQXkBmxi0cbJ1+k2/vr1DE/MD9on3XadVVQ7b2p9LkpxGGa1Rb/D5aF7Mxc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779049707; c=relaxed/simple;
-	bh=TfH3mebqGdarguuuYyHFAQAgVU0MPwFuKF0xD/rxr8g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mGJ8Ih8ZpEAzVZkw/qlHrhnaI3FvUZTkMr/SM0pggtfgEHFmUaUKngyoEfOMeF254wisIlFlT8qv0z0hR4CyckRAu163O6KlUAWNyQG39a0mUUvNxpVnsWRYR875iditDfbjC/4bkxlQsM5vzdOv+vANzFzBxlPHwuEAxACDqgw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=0jPnodMk; arc=none smtp.client-ip=209.85.167.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11AD4245005
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 21:04:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779051892; cv=pass; b=fqtJQ5EjWvp9frvdtxuZUyh3XapBehcUMSQU1XliFOX6kYSAOz6cpIhyytgoGTfXmsLx7Nlthsh9Gsbfy3Fg/hjaPgCqC/ivQed5UlLomYbtVESnKaak9gD+IpFESlWYlStcP2nSC8CIb40chiE/blHLFM/Fu12qh5xC6GLFi9g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779051892; c=relaxed/simple;
+	bh=8Y7tVyTdZBcAIIySBt03TMMlzrrlO8mFfiBOXkd/HWc=;
+	h=References:MIME-Version:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IegXSpZjmeASbSHcI8fGhMI5lsATUJ80jY+Ag4alNSYXoabk5tmHcDvr98t+sdlrgbz3mSQkb9w4WJM6rTg/dpdwAKm8kwy0GBXOizgA2H2fnFYDk0I8hkohTDQKax2NJRmG5SX7s9TBnT5VXmEZI8D4Fb5TcD19xABYlfpFwCI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=KfNdSrQ6; arc=pass smtp.client-ip=209.85.218.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="0jPnodMk"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-48270f099d5so1392482b6e.0
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 13:28:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="KfNdSrQ6"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b9d9971d059so225087066b.2
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 14:04:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779051888; cv=none;
+        d=google.com; s=arc-20240605;
+        b=eU485aGyG2VV0+T2Uy0ZzXXagh1E6jRJlAJKRLx01ETO4V+HxUEKey7x1C4mKQTQYs
+         ozwXIttj8x06fm0UxMj0UAMHLIIOSuRNC+LMjALvZh+O+aOnbjebG7oQRt/qrdjE4sG8
+         W4wOHfV+nsfng6+cdueBs1oAhGJtCBOYeX0n9bAaxvkjomsurVX9BM/ZZ8JaFhSyZyNz
+         oZyV2JcKlKBAuWHSumRoJf1B+X/2n/cmsRHtwDNvFnjMdnSxF6dYyvrg1isJqnc211Co
+         Oe9hp7nG+askNlY6e50EZN2RYngH5Np9ZboN++9d1xEAtIsJ3ju/CcScbrRNGTRfWTDZ
+         LV4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:mime-version
+         :references:esfrom:mail-followup-to:dkim-signature;
+        bh=hDbYh8nveG6AJ4qGTnJ5WMHjZoY6FKTJ3XlYsYDU5zY=;
+        fh=WiuPjogJx2Fo/+BFPAqFLkvfiAE3hJxgUia4R9U2Sxk=;
+        b=jVvryByuqvPPxKpz2bwZOjet2Cak6GbV1wDizDMl7st3xuhD63Ot8uGDpcnGhEYQ0T
+         l94lLokfOWWsPvUaxhEtaeqNLmLxjpm/UKCOl1h4+bxBlb0MHUhXL0oYwqT3M/SEpLwC
+         va99dUraPADnhCJ/gfQIO53ePidMnyFNSSrMazNe2M1ZKHhaBqphPKV/801c1EJdB//X
+         D7KAXsbC0Q30LaUO3rgBD5p5vpkA8s27e6wKlYVO68Y4IHx7spTc7DsNscSjRogydUH7
+         hmxfLP1yu9FrQNywKVZ5HUUilXmY1X5nwL87NeV9psFwAlpYqXXp4tr5uAnzUOzxIvkP
+         bOQg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1779049704; x=1779654504; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7Z68gGNxfq6iDTV2nCWXatC0CvTWumwI6Opr30zc3J4=;
-        b=0jPnodMkGBuJS9tK3WYbqjIgcQVIsIcxW0LQ/XmuuyaHDMdD0GZNs9X19AVEzw9OoF
-         bL7Ot8DzMOZHUYT6cXQ6LkPx/A2rk0ScEO0eLhpfLRfLhKp4oE0WFLHkUsJ8n/L4Nbo9
-         2oDH+xl1OeSNqxxCGFcabYdq/RbEDQ6/iY3ehIiaF82HULiX8likyKpcgwupnU+c0B3W
-         jJ537D1pudJcLjNLmrn0pCIAbe43zMEHKeVnBNxkvQQLYArBcHAMqjyqiYRRzWuuJcJw
-         SUCdAzzsPf8lX8D1XubGxilcdHHI4stHcSFk1DWJNPhoLy2KeFNemK7P1LPBqx4NCn9t
-         7UyQ==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1779051888; x=1779656688; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:mime-version
+         :references:esfrom:mail-followup-to:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hDbYh8nveG6AJ4qGTnJ5WMHjZoY6FKTJ3XlYsYDU5zY=;
+        b=KfNdSrQ6RVsQ5LkF8t+sI0Xl5/dgeKBEeX0LH7mTqrmUEdSUvfJpOVzfrJa0yyGLZG
+         myvLqmgN9hi8ckT40VYuIWc+Oj4s5MXYTuUgozClENy50u/bxzRKIVYw7E+8WRxWjHv+
+         lFqg9Yro8N2ChFgWzNWpfUS1Xy9F94m0A17+Xe3KHraEaGcIYnz6u41eQb/jQrBdZaeA
+         ASnOCV+WLJI6t/ketCAJGGEmWOJ1CiQSYPZUDxWOUK1GkmDjucN2l4oSwKsBg13I2MBK
+         UEVEbinN6Jjp6oVF5nvHYXrSMfr4kGkXjn83wtLYO+PkN2/mzEEeqIgx1Uk0LdpO83Xc
+         5HTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779049704; x=1779654504;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7Z68gGNxfq6iDTV2nCWXatC0CvTWumwI6Opr30zc3J4=;
-        b=oTya5ZV34G+bUuU+XuqtKD49S9FTaPKDbkp+lb9sGE6xXNM4/Gi+d1873I+ROSTFvk
-         uxteWoiVv3Eis8XW2uC6l3NJ1/cPxLf7vXt6GC2Uj2/HDoHU0p95p3GE2mViVW+pYq43
-         NitBWAaEKBEk5UamFuAMDGgyMOPwDSUf6mHxO/J4tuNgfs76vXLEjpUTOyaNNpp16p02
-         FvJ1NHKOGLLcqeyl/x2X5h3bWeiTXUphHKs9tfLhXYG25BWfZAxa5OeobnoEGs8FdMIa
-         ZUldcj5e8IoaYKeYDuPHNiynF6QZCvmiLFg+NtGBmFUiqLRD6jQKGDz0CPnS1len3vWz
-         ZiVA==
-X-Forwarded-Encrypted: i=1; AFNElJ/lrGCXNvS7L4X7ngQhIS2/6mYtnfgPgooOcaUlUfKnseyrR4WZ3IuOeYbaXes6NKpFQZZZFU3vEZU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxwISOiX4XeNIN0Cz1I3VYAwW4kBmn42fDzaVFUX0LaEgRhZkPW
-	DkUc4uPd0Kcu3FgkcnxdrJO2yx5sjs5t6oNKE8QhlgDpeXTotjkIQKvqOZTt93bCMGY=
-X-Gm-Gg: Acq92OHOh6RONlbEmI42NwsTyQrWSE+sKWPc02UbgbSAFbMLnia9cgxETSQc42H0sQi
-	cF+S2WtAEjM9qFtqedK61dSXw//w0nCeLKDE8wQ7rESMA2UfSEyzD8U74WPi91ab9UB3YPtMRY9
-	Pi0OWQnOupfV4+ioK3kH1G6tTpOXdY4MNBFG/tZwOnLqBNtpDS3xM+OdHLFqcc5xci6ibFT2R9O
-	SzZlHpajFxvxGw3UPPSetKcN0llgvJKD0Kid61DrWD6KqR00yLrOe9DyZG+WY1hmtzl7MNMDqH3
-	35KFwBiZBMfquXWEV6T8FduKKEhP7GCr6CcBlQmgPYS0zMOeCdBUYrz5zmRfKEMMSzQQauK+Bh/
-	U1xylMPYUxyuh722xtE1zkqoJzWe18PO6sWS9ch+CkhYEVc1kr0tHU/MUv0teXezWZFCMCI4zdX
-	BPYTB8qpJeJDBW4k1VWy8A54RJ/JDNTx55Ue7/p4NQYV2+nMZjgemEBvOFIWLn+S1dM/OAC0A=
-X-Received: by 2002:a05:6808:e409:b0:482:4dbd:4fe1 with SMTP id 5614622812f47-482e57ce234mr6049210b6e.45.1779049704393;
-        Sun, 17 May 2026 13:28:24 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:7a4b:ddf0:f61:f58d? ([2600:8803:e7e4:500:7a4b:ddf0:f61:f58d])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e55bc4f04fsm6341703a34.27.2026.05.17.13.28.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 May 2026 13:28:23 -0700 (PDT)
-Message-ID: <166a6262-0ad4-4957-9729-863e2694e81d@baylibre.com>
-Date: Sun, 17 May 2026 15:28:22 -0500
+        d=1e100.net; s=20251104; t=1779051888; x=1779656688;
+        h=cc:to:subject:message-id:date:from:in-reply-to:mime-version
+         :references:esfrom:mail-followup-to:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=hDbYh8nveG6AJ4qGTnJ5WMHjZoY6FKTJ3XlYsYDU5zY=;
+        b=MYuf4eNEUqkhg40O8BXkzq7goNnpEiYrj/syToV0SgQdS/GANBNS1pg/RlLEZd0z0N
+         CNdIcSRyH1sXpUDrqzzMn7EF86iQ7HA+32fH2dgSVgwBUGL0xESggdrwoKYFKkOwxO2f
+         vrO6Bumffu97HGMiENXPAg1ien2V0VByF9ZvGx84/Gh0vXWFkMYEusWWaeNgzv9+rjhi
+         XhazC7SWhQusZvtcQYwWml0Ehkk1+2tDahSc33OdHXJimSWIEMkeqsm7LFgUdPkFy4At
+         xRKDSQv0QYQayl9POemXsnhkewKGhiOoKE/L9LjzFnyF/PTL6rS9ZjRDiyxuXO7gPOfG
+         7YNg==
+X-Forwarded-Encrypted: i=1; AFNElJ9mSQdIXUr/+15TYXZktujIurj6pni/2fM5pD2/iIaY3HeA/jJdtDSlhPxNMUF40aF09r/fNjSzO20=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzUpvzdVU2tkumK45ZtgIQYbV28BbNd7A20CmIHYW8tzAfyTLkh
+	SVGrhUZY5fuiphtPAOUtvsxsRv4N+1O3oOTbVuqBmx+nM0MFsgeBQW4W7UXseWbfaFX4sHFhyqr
+	3JmevE+EbVeu9Lt2AH2B0f9PuGaWZXrbA8KcAc1sekw==
+X-Gm-Gg: Acq92OHyGEEcAaWpVox6xZWccEisOspbQ7WNL4SoIT8oCs36YB8gOvCKPG0elx6sL5C
+	PJc4QDnz+sVca1jsL3t3IfDe5K0OdyJkS410holxXiqkoFUiYCcPXGLaP6cqqhYIYgd53TjVlRk
+	JF/jA1/a6v0lzNbqiawDEThk5oZHZKu+K6kh34jTKI0mB3nO69KufXksqOnDB8s++VfL2Bse1pO
+	5M7krtkyW8g1N2Vp4NJny86idvI57KIZtjIR6KOwSyaJkJNYuLGlaoVtHchFQf6xMCPbYEfwLS3
+	SQd4P36Egngg0vc9B2JauQRLu703cemhJo8L
+X-Received: by 2002:a17:907:e143:b0:bbf:74d7:1c4a with SMTP id
+ a640c23a62f3a-bd51797a62amr374507666b.40.1779051888479; Sun, 17 May 2026
+ 14:04:48 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Sun, 17 May 2026 14:04:46 -0700
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Sun, 17 May 2026 14:04:46 -0700
+Mail-Followup-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
+	Angelo Dureghello <adureghello@baylibre.com>, Greg Ungerer <gerg@linux-m68k.org>, 
+	Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, 
+	linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+esFrom: angelo@archlinux
+References: <20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com>
+ <20260513-wip-stmark2-dac-v2-11-fcdae50cf51a@baylibre.com> <agTe7vZ94DnmD4Ed@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/5] iio: magnetometer: add driver for QST QMC5883P
-To: Hardik Phalet <hardik.phalet@pm.me>, Jonathan Cameron <jic23@kernel.org>
-Cc: gregkh@linuxfoundation.org, andy@kernel.org, conor+dt@kernel.org,
- devicetree@vger.kernel.org, krzk+dt@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
- me@brighamcampbell.com, nuno.sa@analog.com, robh@kernel.org,
- skhan@linuxfoundation.org, Hardik Phalet <hardik.phalet@gmail.com>
-References: <20260420-qmc5883p-driver-v3-0-da1e97088f8b@pm.me>
- <20260420144534.0e47c06a@jic23-huawei> <DIL6ZC7KKYMN.36KGJXKDRGFB0@pm.me>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <DIL6ZC7KKYMN.36KGJXKDRGFB0@pm.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <agTe7vZ94DnmD4Ed@ashevche-desk.local>
+From: Angelo Dureghello <adureghello@baylibre.com>
+Date: Sun, 17 May 2026 14:04:46 -0700
+X-Gm-Features: AVHnY4LhOGXoyOJyplIGodv_eunK_4nruqdQdyOYVyqkdOdxsDpZTI4SCFL0VTw
+Message-ID: <CALSJ-wB4=fTTTExQf2pdoQVz7v5NjaaYQgwGwE+qoZNb6uzAqA@mail.gmail.com>
+Subject: Re: [PATCH v2 11/11] iio: dac: add mcf54415 DAC
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Angelo Dureghello <adureghello@baylibre.com>, Greg Ungerer <gerg@linux-m68k.org>, 
+	Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, 
+	linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 5/17/26 2:17 PM, Hardik Phalet wrote:
-> On Mon Apr 20, 2026 at 7:15 PM IST, Jonathan Cameron wrote:
->> On Sun, 19 Apr 2026 22:32:09 +0000
->> Hardik Phalet <hardik.phalet@pm.me> wrote:
->>
->>> This series adds an IIO driver for the QST QMC5883P, a 3-axis
->>> anisotropic magneto-resistive (AMR) magnetometer with a 16-bit ADC,
->>> communicating over I2C. To my knowledge there is no existing
->>> upstream driver for this device (see "Prior-art register-map check"
->>> below).
->>>
->>> The driver supports:
->>>   - Raw magnetic field readings on X, Y and Z axes
->>>   - Four full-scale ranges (+/-2 G, +/-8 G, +/-12 G, +/-30 G),
->>>     selectable via IIO_CHAN_INFO_SCALE
->>>   - Four output data rates (10, 50, 100, 200 Hz), selectable via
->>>     IIO_CHAN_INFO_SAMP_FREQ
->>>   - Four oversampling ratios (1, 2, 4, 8), selectable via
->>>     IIO_CHAN_INFO_OVERSAMPLING_RATIO
->>
->> I'm suspicious about this one based on a very quick read of the datasheet.
->> Conventional oversampling would involve running the internal sampling
->> engine at a multiple of the sampling frequency, and then averaging the
->> results.  The datasheet describes this as:
->> "Over sample Rate (OSR1) registers are used to control bandwidth of an
->>  internal digital filter. Larger OSR value leads to smaller filter bandwidth,
->>  less in-band noise and higher power consumption. It could be used to reach a
->>  good balance between noise and power. Four over sample ratios can be selected,
->>  8,4,2 or 1."
->>
->> That sounds like a boxcar filter to me not oversampling (which would be
->> a combination of box car and reducing the output data rate).
->>
->> If possible, can you enable the data ready output and put a scope on it
->> to see if that changes frequency when OSR or OSR2 are modified.
->>
->> Trickier to do would be looking at the noise levels whilst playing with
->> these filters and see if they at least match with standard filter types.
->>
->> If we can't figure these out, then it may be a case of picking something
->> that works well and hard coding that rather than letting userspace
->> change things in a fashion that might not match the ABI.
-> 
-> I could not arrange a oscilloscope. So wrote a small standalone tool that drives
-> the chip directly over /dev/i2c-N (skipping the driver) on a Pi 4 and
-> characterised all three fields in CTRL_1 with timing + noise measurements.
-> Summary:
-> 
->   Field    Bits     Role per measurement
->   ODR      [3:2]    output rate, accurate to ~3% of nominal in Normal Mode
->   OSR1     [5:4]    low-pass filter (bandwidth control), no rate change
->   OSR2     [7:6]    N-sample averaging, no rate change (real oversampling)
-> 
-> 1. DRDY interval vs each field (median of 500 samples per setting,
->    ms; SCHED_FIFO, pinned CPU):
-> 
->    vary ODR (OSR1=1, OSR2=1):
->      ODR=10 Hz  -> 100.9 ms       ODR=100 Hz -> 10.30 ms
->      ODR=50 Hz  ->  20.5 ms       ODR=200 Hz ->  5.14 ms
-> 
->    vary OSR1 (ODR=200 Hz, OSR2=1):
->      OSR1=1 -> 5.142 ms           OSR1=4 -> 5.139 ms
->      OSR1=2 -> 5.143 ms           OSR1=8 -> 5.141 ms
-> 
->    vary OSR2 (ODR=200 Hz, OSR1=1):
->      OSR2=1 -> 5.142 ms           OSR2=4 -> 5.142 ms
->      OSR2=2 -> 5.140 ms           OSR2=8 -> 5.141 ms
-> 
->    ODR is the only knob that changes the rate.
-> 
-> 2. Per-axis noise stddev (2000 samples, sensor still, ratios vs N=1):
-> 
->    vary OSR1:                   vary OSR2:
->      OSR1=1 -> 1.000              OSR2=1 -> 1.000
->      OSR1=2 -> 0.723              OSR2=2 -> 0.706
->      OSR1=4 -> 0.544              OSR2=4 -> 0.494
->      OSR1=8 -> 0.416              OSR2=8 -> 0.333
-> 
->    Reference for N-sample averaging (1/sqrt(N)):
->      1.000 / 0.707 / 0.500 / 0.354
-> 
->    OSR2 matches within measurement noise; OSR1 trails the curve,
->    which is the expected signature of a bandwidth-limiting filter
->    on non-white input noise.
-> 
-> So to my understanding, OSR2 is true oversampling. OSR1 is a filter.
+H Andy,
 
-The datasheet says that power consumption changes based on OSR1,
-so that makes me think that OSR1 is really oversampling since it
-would take more energy to do more conversions in the same amount
-of time. (Note 1 on table 2.1)
+On Wed, May 13, 2026 at 11:28:30PM +0300, Andy Shevchenko wrote:
+> On Wed, May 13, 2026 at 11:14:35AM +0200, Angelo Dureghello wrote:
+> >
+> > Add basic version of mcf54415 DAC driver. DAC is embedded in the cpu and
+> > DAC configuration registers are mapped in the internal IO address space.
+> >
+> > The DAC accepts a 12-bit digital signal and creates a monotonic 12-bit
+> > analog output varying from DAC_VREFL to DAC_VREFH. The DAC module
+> > consists of a conversion unit, an output amplifier, and the associated
+> > digital control blocks. Default register values for DAC_VREFL and DAC_VREFH
+> > are respectively 0 and 0xfff, left untouched in this initial version.
+> >
+> > This initial version of the driver is minimalistic, "output raw" only, to
+> > be extended in the future. DMA and external sync are disabled, default mode
+> > is high speed, default format is right-justified 12bit on 16bit word.
+>
+> ...
+>
+> > +#include <linux/array_size.h>
+> > +#include <linux/bitfield.h>
+> > +#include <linux/bits.h>
+> > +#include <linux/clk.h>
+> > +#include <linux/compiler_types.h>
+> > +#include <linux/delay.h>
+>
+> + err.h
+>
+> > +#include <linux/io.h>
+> > +#include <linux/module.h>
+> > +#include <linux/mutex.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/regmap.h>
+>
+> ...
+>
+> > +struct mcf54415_dac {
+> > +	struct clk *clk;
+> > +	struct regmap *map;
+>
+> I believe that regmap pointer is used more often, can you check with
+> bloat-o-meter that swapping these two (by the order) gives any benefit in
+> object size?
+>
+> > +};
+>
+> ...
+>
+> > +	.max_register = 0x1F,
+>
+> No definition? What datasheet says about this? Perhaps define the MAX as per
+> last defined register in the datasheet?
+>
+> > +};
+>
+> ...
+>
+> > +static void mcf54415_dac_init(struct mcf54415_dac *info)
+> > +{
+> > +	/* Keeping defaults and enable DAC (bit 0 set to 0) */
+> > +	regmap_write(info->map, MCF54415_DAC_CR, MCF54415_DAC_CR_FILT |
+> > +		     FIELD_PREP(MCF54415_DAC_CR_WMLVL, 1));
+>
+> Seems the whole driver ignores IO errors, why?
+>
+> > +	/* DAC is ready after 12us, from RM table 40-3  */
+> > +	fsleep(12);
+> > +}
+>
+> ...
+>
+> > +static void mcf54415_dac_exit(void *data)
+> > +{
+> > +	struct mcf54415_dac *info = data;
+> > +
+> > +	regmap_update_bits(info->map, MCF54415_DAC_CR, MCF54415_DAC_CR_PDN,
+> > +			   MCF54415_DAC_CR_PDN);
+>
+> regmap_set_bits()
+>
+> > +}
+>
+> ...
+>
+> > +static int mcf54415_write_raw(struct iio_dev *indio_dev,
+> > +			      struct iio_chan_spec const *chan,
+> > +			      int val, int val2, long mask)
+> > +{
+> > +	struct mcf54415_dac *info = iio_priv(indio_dev);
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_RAW:
+> > +		if (val < 0 || val > 4095)
+>
+> Do we have a definition for the resolution? I'm fine with the plain numbers,
+> but it's better to add a short comment to say that this is "based on the
+> resolution of XXX register per datasheet".
+>
+> > +			return -EINVAL;
+> > +		regmap_write(info->map, MCF54415_DAC_DATA, val);
+> > +		return 0;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +}
+>
+> ...
+>
+> > +static int mcf54415_dac_probe(struct platform_device *pdev)
+> > +{
+> > +	struct device *dev = &pdev->dev;
+> > +	struct iio_dev *indio_dev;
+> > +	struct mcf54415_dac *info;
+> > +	void __iomem *regs;
+> > +	int ret;
+> > +
+> > +	indio_dev = devm_iio_device_alloc(dev, sizeof(*info));
+> > +	if (!indio_dev)
+> > +		return -ENOMEM;
+> > +
+> > +	info = iio_priv(indio_dev);
+> > +
+> > +	regs = devm_platform_ioremap_resource(pdev, 0);
+> > +	if (IS_ERR(regs))
+> > +		return dev_err_probe(dev, PTR_ERR(regs),
+> > +				     "failed to get io regs\n");
+>
+> One line.
+>
+> > +
+> > +	info->map = devm_regmap_init_mmio(dev, regs,
+> > +					  &mcf54415_dac_regmap_config);
+> > +	if (IS_ERR(info->map))
+> > +		return PTR_ERR(info->map);
+> > +
+> > +	info->clk = devm_clk_get_enabled(dev, "dac");
+> > +	if (IS_ERR(info->clk))
+> > +		return dev_err_probe(dev, PTR_ERR(info->clk),
+> > +				     "failed getting clock\n");
+>
+> Also can be a single line, but this one a bit longer than above, gives
+> 88 characters.
+>
+> > +	platform_set_drvdata(pdev, indio_dev);
+> > +
+> > +	indio_dev->name = "mcf54415";
+> > +	indio_dev->info = &mcf54415_dac_iio_info;
+> > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> > +	indio_dev->channels = mcf54415_dac_iio_channels;
+> > +	indio_dev->num_channels = ARRAY_SIZE(mcf54415_dac_iio_channels);
+> > +
+> > +	mcf54415_dac_init(info);
+> > +
+> > +	ret = devm_add_action_or_reset(dev, mcf54415_dac_exit, info);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return devm_iio_device_register(dev, indio_dev);
+> > +}
 
-Another chip by the same mfg that looks like it has the same OSR1/
-OSR2 has a bit more info in the same table [1]. It looks like OSR2
-affects the sensitivity (and calls OSR2 a low pass filter instead
-of "down sampling rate").
+Thanks, will look into all the above, together with sashiko, and issue
+a v3 in short.
 
-[1] https://www.qstcorp.com/upload/pdf/202601/CF382A94E1424763B3DE87DC967757FC.pdf
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
 
-> 
-> v4 plan, pending your input on (c):
-> 
->   (a) Add an OSR2 regmap_field and expose it as
->       IIO_CHAN_INFO_OVERSAMPLING_RATIO with values {1, 2, 4, 8}.
->   (b) Drop the OVERSAMPLING_RATIO mapping on OSR1.
->   (c) For OSR1, two options:
->         i)  expose as IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY.
->             The public datasheet does not give cutoff frequencies,
->             so I'd have to either characterise them empirically and
->             document them in the driver, or use placeholder values
->             derived from the OSR1 setting alone (which feels wrong).
->         ii) hard-code OSR1=1 in chip_init and not expose it. Loses
->             the noise-vs-bandwidth tradeoff but keeps the ABI clean.
->       Slight preference for (ii) unless you'd rather see the filter
->       knob exposed.
-
-It sounds like we already figured out that OSR2 is just a moving average
-so might as well implement IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY.
-
->   (d) Keep ODR mapped to IIO_CHAN_INFO_SAMP_FREQ as in v3.
-> 
-> One other finding worth mentioning: the datasheet's setup examples
-> (sec 7.1, 7.2, 7.3) all write 0x06 to register 0x29 before entering
-> an active mode, with the comment "Define the sign for X Y and Z axis".
-> This register is not listed in the documented register map but the
-> write is required for axes Y and Z to come out with the documented
-> orientation. v4 will add this write to chip_init().
-> 
-> If you have other measurements you'd like to see before v4, happy to
-> run them.
-> 
->>
->>>   - Runtime PM with a 2 s autosuspend delay
->>>   - System suspend/resume delegated to the runtime callbacks
-> 
-> Best regards,
-> Hardik
-
+Regards,
+angelo
