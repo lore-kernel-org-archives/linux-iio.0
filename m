@@ -1,126 +1,84 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 401C835DA6A;
-	Sun, 17 May 2026 10:40:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 452942D8DA8;
+	Sun, 17 May 2026 10:42:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779014430; cv=none; b=tkeq54QWYqTk2uGixXnHGWdiIbQewl26b7OQY3JGQUldXZVEhxx+NVgeEbXXWlTcnIeBMlkm6xIE0qhuE4brkUhbYNUKRbX69xZPtvhykvaHSihO/VBaW2OY3+JYHu3y2Ux7IygKO6mo5u1nmAg3yDdqIEoge/rDZcbJElxmFmU=
+	t=1779014574; cv=none; b=RiqCQ6E30XjbmJQLNvVC6CKe7D4fgm1gfTvQCOAoiGSwTYBzJyAChDBKyigCTmTHydGE2ptD8kbENSWSxyFMXQnxDCV3mEYujwHKa2edskq1rha352yQpGRPY1P/lNGTLRtsTTxvx0zJc5nd+0putzlxw5cFM6DBB+tRsWu+GuQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779014430; c=relaxed/simple;
-	bh=3+pu7n1CG+XGB3Ldn4JBhKXZKe50YpSBlqvjDoYq7e4=;
+	s=arc-20240116; t=1779014574; c=relaxed/simple;
+	bh=2mK3XOvJnlCp6WMKByrqnYyniq34b0wgXrBMPKs1Bxo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=u7IBTjabDXUwDzl3xECg0hYMKkjt8ML7zEYjng2K/f5Y1bNLWosKS6IdwcBLoQ2Wka9/LB482/7bc0EEUOepCXdhfleC/u4IysUFE0OWJtnSSXlsj8M/srzQYTlTCC3MCeEEt6kmt0NWHRyOtLxGbqEZysK3715Kp5qoohoPJRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oCnt/T1h; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=VgbSl5eloacEuk05aIlQOb5m9KZ2ewv7hWoI5EKfesLD+bZxldGoVfX2VEJSFNb0BZ+DqLVZEqLgdqVr07qzlxZb2Ko+dTII5LA1+nhaFNgZGo/+Gqp7qVc1BwLtMcG6p+J7o5KpZ6zeMx183g+XXzgBeogSclrSA+SwRTnevaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KCzBLYVh; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oCnt/T1h"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KCzBLYVh"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779014429; x=1810550429;
+  t=1779014573; x=1810550573;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=3+pu7n1CG+XGB3Ldn4JBhKXZKe50YpSBlqvjDoYq7e4=;
-  b=oCnt/T1hrNEJC7ZFmXgtq96bERBAv0NCNjyDHCiXlkBJ99nze3/XJ0yT
-   C7ZJIjYlFmGBI3P6Og2bxDFREzoVfnJu1eChHDZE9+H1GBgSc5kh53vXr
-   8Dd6sNNnZp0De5DCjNFuTM5Z46qEmA2AjW+b4m4lowTKbMVD+TVb3upTj
-   j5EDFpol0p/udo08kZkP5iQk76NtunQVwMPlo6KasFiJ40O/6GLT9goWC
-   caGy/OcVen2FGhjROf71GhJsE6IxTPr8g+KFk2oCAi1t7dh+fZhFrctD7
-   7Wap0sP/dG6C78XkT4kS1iZnAUpfBlUAmP9UhoXoOK7A1uw/iyYBuawDk
-   g==;
-X-CSE-ConnectionGUID: ljCdVK8KQPGBGjdo9LBWlw==
-X-CSE-MsgGUID: vqRgCxZfR2iudSr9I+iX1A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11788"; a="79864304"
+   mime-version:in-reply-to;
+  bh=2mK3XOvJnlCp6WMKByrqnYyniq34b0wgXrBMPKs1Bxo=;
+  b=KCzBLYVhtHt4zr2ef8JVTCMutCXCyyXb5O+ttCuVpsqgFs0ITfIcFyCI
+   t2hQ7IJM2FJMkkenPQMnwKGkYFxVpwM0ii1PRhjOgxjUAlTdnbvxain1x
+   Tp/CSlpo+/7i/3kqQpq+LRZnPJ2vkABUMF+RWVeeKJZxcBNmChKjq/Xse
+   UcFvkxnbMowa31N0rATGgFtDH7kCm4BfemK0CDC8M/9CCAbNkThDF/jdb
+   fM6Tq5V8os3nXWE+F5exfUj20pM6cVcF27N6FbRZmQxgonZUGxpoBxQmI
+   GEa5dwLNFe8EU/UzUjEgIXejiAPg9FVpoSiVbE6WaVTa8B9M4P/cr+Vtp
+   w==;
+X-CSE-ConnectionGUID: IrD6DI8/T0eJ89QlDf/UQA==
+X-CSE-MsgGUID: 2u2ez3xKRqKoZWbqLChCxA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11788"; a="90475155"
 X-IronPort-AV: E=Sophos;i="6.23,239,1770624000"; 
-   d="scan'208";a="79864304"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2026 03:40:28 -0700
-X-CSE-ConnectionGUID: 0/XQ2Nl4Q3apw4ZJiajANw==
-X-CSE-MsgGUID: qo1alMKuTvC8X7PvF427pQ==
+   d="scan'208";a="90475155"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2026 03:42:53 -0700
+X-CSE-ConnectionGUID: +YPDP+DCSA2VTm+jzS9SSw==
+X-CSE-MsgGUID: sFu3YuWaS5e/Z2zRchOUGg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,239,1770624000"; 
-   d="scan'208";a="262908978"
+   d="scan'208";a="244122705"
 Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.182])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2026 03:40:23 -0700
-Date: Sun, 17 May 2026 13:40:21 +0300
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2026 03:42:49 -0700
+Date: Sun, 17 May 2026 13:42:47 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
-	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v1 0/6] mfd: lm3533: convert to OF bindings, improve
- support
-Message-ID: <agmbFQHezUl5Nydn@ashevche-desk.local>
-References: <20260517074306.30937-1-clamor95@gmail.com>
- <agl1T8O6kwP7SFZ1@ashevche-desk.local>
- <CAPVz0n0tfbwa1AbgO4eKrmNunHvmTFLDqXDFd1=VfLayuafH8w@mail.gmail.com>
- <agmWVdi3TkBb2cxV@ashevche-desk.local>
- <CAPVz0n3Kn5VVxWxCgq2EcRiOaLWnB85hD+-S2Eou=H1PyycJCQ@mail.gmail.com>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, tglx@kernel.org, christophe.jaillet@wanadoo.fr,
+	mingo@kernel.org, kees@kernel.org,
+	nabijaczleweli@nabijaczleweli.xyz, kyungmin.park@samsung.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 09/12] iio: ssp_sensors: use guard() to release mutexes
+Message-ID: <agmbp-ypdMWJCb_F@ashevche-desk.local>
+References: <20260515174017.3962168-1-sanjayembedded@gmail.com>
+ <20260515174017.3962168-10-sanjayembedded@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPVz0n3Kn5VVxWxCgq2EcRiOaLWnB85hD+-S2Eou=H1PyycJCQ@mail.gmail.com>
+In-Reply-To: <20260515174017.3962168-10-sanjayembedded@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, May 17, 2026 at 01:34:32PM +0300, Svyatoslav Ryhel wrote:
-> нд, 17 трав. 2026 р. о 13:20 Andy Shevchenko <andriy.shevchenko@intel.com> пише:
-> > On Sun, May 17, 2026 at 01:13:22PM +0300, Svyatoslav Ryhel wrote:
-> > > нд, 17 трав. 2026 р. о 10:59 Andy Shevchenko <andriy.shevchenko@intel.com> пише:
-> > > > On Sun, May 17, 2026 at 10:43:00AM +0300, Svyatoslav Ryhel wrote:
-> > > > > Convert LM3533 to OF bindings, add missing VIN supply, add support for
-> > > > > setting mapping mode and LED sources based on device tree.
-> > > >
-> > > > How is this being different to
-> > > > https://lore.kernel.org/lkml/20250218132702.114669-1-clamor95@gmail.com/
-> > > > ?
-> > >
-> > > I have decided to have a fresh look, this is continuation.
-> >
-> > Then it should be something like v4?
-> 
-> That was more than a year ago, lets start fresh. Those patches are
-> gone, though I did add many of suggestions from there.
-> 
-> > > > What about this comment
-> > > > https://lore.kernel.org/lkml/ZmBcvtLCzllQDWVX@hovoldconsulting.com/
-> > > > ? Have you talked to Bjorn A and Johan?
-> > >
-> > > No, but since grep -r "lm3533_platform_data" * gives 0 results there
-> > > are no platform_data users of lm3533.
-> >
-> > Johan was against driver removal (while it sounds logical due to above) and
-> > referred to some other patches from somebody else. I think you need to
-> > synchronise with the people to have a clear roadmap that all stakeholders
-> > are agree with. With that, the split and other technical issues can be solved
-> > during the normal process.
-> 
-> And this discussion was 2 years ago, and
-> 
-> "This device is used in a bunch of Sony phones and Bjorn A posted a
-> series adding devicetree bindings a few years ago"
-> 
-> They have had more than enough time, don't you think? You would
-> definitely know if there were any activity since you are IIO reviewer
-> and would be included, were there any activity?
+On Fri, May 15, 2026 at 11:10:14PM +0530, Sanjay Chitroda wrote:
 
-At least it's polite to Cc them your version.
+> Replace explicit mutex_lock() and mutex_unlock() with the guard() macro
+> for cleaner and safer mutex handling.
+
+...
+
+>  #include "ssp.h"
+> +#include <linux/cleanup.h>
+
+Generic headers comes earlier, the more custom they are the lower in the list
+they are being placed.
 
 -- 
 With Best Regards,
