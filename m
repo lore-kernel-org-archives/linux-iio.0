@@ -1,117 +1,113 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49963258CD7
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 18:25:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779042322; cv=pass; b=jSInKWym+FelBnrqGBMV/9tTPJOtvwkBMkVlWKYwckmj/h5OwiEyimf+u26jVEH6IhXQxFxEocLp7H6QteicDe/IYBs0ZFG8aBNiFm43GJWdEJQ4LhkbeOoAA9s64eu4dJ+NQ1hdqjc/7Qz/cq+xGsvuGh0GR/QhfBegAxL0PRU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779042322; c=relaxed/simple;
-	bh=GkbeR81ymc+H09AOsCzk6sr084l6KGeUJdbvFMLI0fY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XssQRdRcBibw+b/tU9rmrDyS2cpXPBdpfqzEcp6w6enOXWN9ulhWa5D/J8WXoNPw01gy6+e4AyulMk7DyDr41u/+2T298GrALzbS6ZYRYA7lUlclYlMwe5VPPx5Axd+JWD0sKf0f/jxm4VmtUUqfIxNzTDg7wwBmSGEn7R4w1Oc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FUlpBP57; arc=pass smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79B1A3CEBA6
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 18:26:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779042397; cv=none; b=q2uXYsHo0otPbQfN0Rou8KFx1fSCZkhe1dJfdzPg1buRxxczqsS+oIPMlmeHIMc7eT7qQLFHRf42sIxoCwtGSBg914/itgE237aV0b1K4bTC7J+J1K9Mev9z6Klgwoj1w/ZR6nf1iCYyaZujVwylsei1r9olcruOAtJSQJOAymY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779042397; c=relaxed/simple;
+	bh=Kr+wRFKCa78PP/xIkl6wWb5vru7OSFdDl39shroWsq0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=o0Hw0An3vAMzr0NIUaE9bkYEXxKZOKYyy24HqT27Tq6p/tKdJPU2Pq2Sz1RUJG9M18nNz2yy2YjO2bhms75hVd8z/O6iTohyyGp18UFpNSCs/n+A9iSSvU0LjUlfkM7C+vZosyvlG7NJERJUA6dUYewOy0fe/aOCi12Xv/vGkow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b9qd9H9S; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FUlpBP57"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4890d945eb4so13367775e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 11:25:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779042316; cv=none;
-        d=google.com; s=arc-20240605;
-        b=QgIfukLcQfouh3hYUTQWnARwt7cKa77MjeTTqNjmvr/4vWVfY/uEVlk/RENHxgp+d6
-         qbkA7FmOORlqxLQ2keYRY1cWIk232z1axHpQiY1NyvUAT4l3T3nDwovZ3WJlnY6t6zCi
-         kPTMdUbKAxSK2/38Z8HBq+tdWsCiiQ0PlLqLg2zjoVBY695Pwe81eE/LjZvWlDftdBUd
-         j5aDyY82MKaptxtjC3dsKwgQiDlB/d0SY1XB93uRUDy5iyoh9d6qo5SISk2sK4LkmUEY
-         Z1YYLjar0FDxqaIiuFA8LJr+FpeXXIiRmu+4lS48LSN1LleSrmdo7S1jPSAEjJMGrLxx
-         IgQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=bvu2S7uW8lMaReHhzULjOHAxqrKDkECvWWstyH1zeAc=;
-        fh=a4g7+cuuMDLFe9fgQ2AUjP8dpOasrODWj/zKreKfhqU=;
-        b=Ng/6mWkyGeeubpawGqq/kAXSNsdxur8QWA8jgv4WNZyIab7GORZZ6wzstqnsRq5vD7
-         uK/LD3gcwyouPIqv8DOpyJNkhbA5FrrQT1j6oNW6LR0U5QcZYbUmKZw8eLof23RnsmQ2
-         YG3a1DNhyMMPgcVUw+VTfCFJ44PTVk/pC+ChX3s++OX3wO9xtO74XcxlHRj5sz+BQJ18
-         rGRgTUrFYSqnCoC7buYMcC0DTppha1rw7+IVrbOYYF1UePMyqj8qAMb/NbA+Buf5ADDL
-         RXxCpVwSPl/O8dUCvi8ruzVgh/od+8VgUZD54iH1b1r0h9iIpirOfZZN6I5waZSGp8WJ
-         oM2w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b9qd9H9S"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48fde653997so1874515e9.2
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 11:26:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779042316; x=1779647116; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=bvu2S7uW8lMaReHhzULjOHAxqrKDkECvWWstyH1zeAc=;
-        b=FUlpBP57mz8juZSP2XJxdkCon1+YqbNFHwgxjQ/5KWdoKgYBHLsfHcSZ5bARVxhMzK
-         tm755C6gvthld8W/H10o3dJMLD7sengN1yGr5i+45mfMBE32SjMaN00xn89aCmCuClT6
-         I5HuCx0qY5uxIHmlrNHBr5SKTqrK4LZ55KU1U2S/ZCQWETcg4s0/rds02gxQ/luz5lOd
-         /A5TJW1T3fZdrJFrrG9dKJp6XPdxhAWucrsqh0T4KkaLaEIBhKXfJ5c+oL3yPlaAUU3P
-         DqcjTbjPd3LGelHyQhKwPVBmnEHWzf5FPKLxyCEaF3HIWeI2ePbQdfjaWGzOYx82RfEs
-         x8yg==
+        d=gmail.com; s=20251104; t=1779042388; x=1779647188; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=FdItoqgHnYFyIUQVhKieBd/PQ9Fluw8ZpOdySHOHHGI=;
+        b=b9qd9H9SX3BzXQr5ypnz3K8T9WC/BntkKBhCfHvGRbLUGuIC/3l/RQ3oINeMaPPGVQ
+         Z8lGvfNgG1qag12KpOukck4H6XYyTg/5RhqkZd4+uTzCpJWlS0JJcWTY6BzepWcWOi+U
+         cK+ATQkGCDNlmPqM3bn3IBIqhQZeMgyPFCepqfYo1z/TtNdJ/TwBN9pfu0txg4XVtcsR
+         b06Z3zpSV6P21JhwoB/TulhIjLr9ZetoAnl9gaxJ3RxhutXYER4u1JxSFWSQF71PYK04
+         9eOeNNd5io5RkHRYza62zbLnCh2wXX8bXPZBO/y2VkG6zfHVY6sgOLQYsNPTN95WIfty
+         IIrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779042316; x=1779647116;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1779042388; x=1779647188;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bvu2S7uW8lMaReHhzULjOHAxqrKDkECvWWstyH1zeAc=;
-        b=W4GjHN/Vrn7/ROgSYexWE/BQv74cV3wqD9YgQ9gFzdnfPeVhtHXYyISCdAjh6Wvvp9
-         vMPRo6fk9TTQFJdX1jSE/xCMap8rYzqHKlJ3QWNXAQcXistLg/DVkCbJzTPJpbMfXkym
-         /uZRUcrbLGEO46Aep/iAWfxhhgTRhueP0pGJL0PUMAK9h6VQH99tGiyReyVUcn+2vNRG
-         incAKF517Nq1P0f37nZm4TfRht6hLqpl39kkKMc3+ZNFQidsrVuYk9GrRrLezepoktkk
-         tcNf6/dp0PJ6Zxq1ZW6cZvQWnqwGh15DvaZizyRtAvfBXGCEO8D3POFDetp3DC7QHNsV
-         NnzA==
-X-Forwarded-Encrypted: i=1; AFNElJ8R6ztAu/nlik08jh7J9cF303DAuBTV3lsy08yyCXodhuPinbBU+/cUN82AqVQCtSC4fMH/h3VJ5Cw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzMr7Q5UY+mrry8DSzbpLnCaWO1Ed5lD9+jU4SMdYmovqgBLDsG
-	snBYobwARzRyWfjgk+EJOgoYRvnMZ7WKKhEImU1kwvl++DI3LVHUmawG1ffYz2vy41J4O5qWVOg
-	ieUkUiqOE/H0iZFMT5aFVpmkruyfjNJM=
-X-Gm-Gg: Acq92OHqiBVi+AkoEKK7ZQBnnRNiFx2VKrtVnpBFLKScG2Tm64cuKKyAS7qmB85hNWq
-	8sZVh4vdyAeOOwOFP1dD9lGLvbfwDjHgjZpJc2CFRPno+Q6J+duKXWVg+Es8qi+iZrqbpUJ9nec
-	vUG89sxXL3uWtBOn9VOmFIT1jQ0SOWVL/lpgVgKNaAIlykb8WvtO+ebCSbNFS3U+XRT1qd7Lm47
-	wqxvKUFZQ9u2KpQP5RMHkbiVauip9Ev/ZYcc4Et4lxizS8f5a66eKASOB+QnbU0QBIL/ll4gbZ7
-	isrLE06R6mPleWeLlECBXrVJRss01AO9Y8PlqHRQw/FcJNMMT2Wc72dvHCTkfeHqtOXo5ZWMOgL
-	ciQJkmgbQUmwC+6uq4YCtEVa8c9hcNruyKU6KsrMd8aACpwvQYOMC8Fa8DDrGHlc8Rfd1vXog96
-	IV3A4IJsq6dbbEyj0B
-X-Received: by 2002:a05:600d:8450:20b0:488:7d01:f67b with SMTP id
- 5b1f17b1804b1-48fd6333288mr179025615e9.6.1779042315978; Sun, 17 May 2026
- 11:25:15 -0700 (PDT)
+        bh=FdItoqgHnYFyIUQVhKieBd/PQ9Fluw8ZpOdySHOHHGI=;
+        b=iJFGrCY1KDhHr7+jTrd29/7CSDp6fAe9uORHgBcUNc4inatKn715mdWmwgaQF4yv6y
+         lnxWqOHxEsA33sDAI3MiAv/SOcQDdE4bhmZSSerI+rwuyiIIVudOmCPkOQ7JauHdmSkv
+         Oz7VoWdXHnwPZx54sgJ14xuj5JxY+0Tx2ixlxKBmDtGBqrjpflLDamiuVEc8FHD80pIN
+         lWizTcSA7+fKl/lqAvxRBWavRbo6CvrNyDw96wrwMF2GEcM33pAM99UarW8CHg1cOzCq
+         z6b0nDpMcYiPwb/C4agHlHgbT/hyP4Lpx0Cpc12j7sqArht3jFwR1i5reXRkjGURfS25
+         chSw==
+X-Forwarded-Encrypted: i=1; AFNElJ80MR+PTjnO2c0I3JJOf60cHDGif8qZD8yL5kpdW0x5y5rxKawYniQzbBA7lVthISZUhfetNqX8VRo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzxPstonoZLJhpSPLfmIMkkPNeaf8/sJoheoF2i0lWuHGU7FBpC
+	6D/hqzQYPRSUXxaJoo+9LvkVfJv9dGlsfuq4rzusv73UwdVZeFr7h6TU
+X-Gm-Gg: Acq92OFxkSQzwuA/hCG6FUo2x3PutZX+jCkoXOBVWMi9OA5foXqUlDOYLRtnBho4hZg
+	1gA+9e6Uz0eX+BkjBWmGz/4h0JkpRB5snRY0YXgF1mD5O+vM6ra/ogv36KYwLcBWjoGPk0iU3vP
+	XGzX5u84RGSY6uJewgXniYTPHi9GH8EiGyL8KpR5RMdh91sUsAalJmK9fEBlTnzwPW0JfRLbPVA
+	rN5Yt3dOcozjQyLNZFOH4nTpyDt3YFcQXmB534+wH0tkLazSV3A0A3lqkzYG9R170lTVL4pjg58
+	kCGTYtCneOlcvqe1o9qJCgv8bN4jD0mJNHczqr4eZtEpcQKyv9bxPG6XKdqlSNuEIKoLlGpRIa8
+	9JIhm+uK7GEBAsYwOQ4KEj+dLOtL8zwDYviNgD7NIkZdNkCtcQlBlGyDIElUQE/jyD+MviXGmlM
+	YcoumQnoIucphjf9jdNRQzx0rsT1zUyeyRazK+42yFWbhj
+X-Received: by 2002:a05:600c:3b07:b0:48e:6db5:76e6 with SMTP id 5b1f17b1804b1-48fe63099c6mr97084715e9.2.1779042388030;
+        Sun, 17 May 2026 11:26:28 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48febe81b2dsm64676625e9.34.2026.05.17.11.26.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 May 2026 11:26:26 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	hcazarim@yahoo.com,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH] iio: temperature: tmp006: use devm_iio_trigger_register
+Date: Sun, 17 May 2026 23:26:13 +0500
+Message-Id: <20260517182614.218-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260517181042.668-1-sozdayvek@gmail.com>
-In-Reply-To: <20260517181042.668-1-sozdayvek@gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sun, 17 May 2026 20:25:02 +0200
-X-Gm-Features: AVHnY4JKEuJMFvnl9Iuk2kfWUrTxhh5H5DAv-9mWSIWRzyZufvX9msH562IyovQ
-Message-ID: <CALoEA-yv5XGkYCLkxhENUnffN5gFNumN1aJhkjsDUEEMOv2=5g@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: tsl2591: return actual error from probe IRQ failure
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, hcazarim@yahoo.com, gregkh@linuxfoundation.org, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Sun, 17 May 2026 at 20:15, Stepan Ionichev <sozdayvek@gmail.com> wrote:
->
-> When devm_request_threaded_irq() fails, probe calls dev_err_probe()
-> but then returns -EINVAL, dropping the real error code and breaking
-> the deferred-probe flow that dev_err_probe() handles for -EPROBE_DEFER.
->
-> Return the value from dev_err_probe() instead.
->
-> Fixes: 2335f0d7c790 ("iio: light: Added AMS tsl2591 driver implementation")
-> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+tmp006_probe() allocates the DRDY trigger with devm_iio_trigger_alloc()
+but registers it with plain iio_trigger_register(). The driver has no
+.remove() callback, so on module unload the trigger stays in the global
+trigger list while its memory is freed by devm, leaving a dangling
+entry.
 
-Fine by me. Maybe this could also get marked for stable? (Up to Jonathan
-of course).
+Switch to devm_iio_trigger_register() so the registration is undone in
+the same devm scope as the allocation.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Fixes: 91f75ccf9f03 ("iio: temperature: tmp006: add triggered buffer support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
+ drivers/iio/temperature/tmp006.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/iio/temperature/tmp006.c b/drivers/iio/temperature/tmp006.c
+index d8d8c8936..bf62143fa 100644
+--- a/drivers/iio/temperature/tmp006.c
++++ b/drivers/iio/temperature/tmp006.c
+@@ -350,7 +350,7 @@ static int tmp006_probe(struct i2c_client *client)
+ 
+ 		data->drdy_trig->ops = &tmp006_trigger_ops;
+ 		iio_trigger_set_drvdata(data->drdy_trig, indio_dev);
+-		ret = iio_trigger_register(data->drdy_trig);
++		ret = devm_iio_trigger_register(&client->dev, data->drdy_trig);
+ 		if (ret)
+ 			return ret;
+ 
 -- 
-Kind regards
+2.43.0
 
-CJD
