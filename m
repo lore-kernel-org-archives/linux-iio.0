@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4916405C4B;
-	Sun, 17 May 2026 14:58:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19B5D330324;
+	Sun, 17 May 2026 15:01:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779029935; cv=none; b=dILhEEgMhSuRVpbcXjhNfygh+13/2HBAS6gM+6WvDw4V+UCUpOiV+NEzkOVcVDhaf8cND9wkWNz4IAiyhZZo+iaOjYpe8TL2dEn68xiu2BJTQp1DNz0pGaCVUb7B1Y05Pp5IvguU1sRmy9oFBx9nad0PYKyEPFfGeEaiyOB/6M0=
+	t=1779030076; cv=none; b=IQnVWcKdDWj0CO9VFvvUZFcrOmgNnweb9ftZmvcG5QLaW7aa8NoAie9mvakHivGmty7nq7s3C2QEI5Yk+jzRVibWhzqPuhdBq8rIILBpI6Fe/rAMeRRf2LyKEi9ArOrjVo8jNNultRzQWXHS/9jNcibuUWmuMqK1V4ICtub39hA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779029935; c=relaxed/simple;
-	bh=1/XxmtYLtJTXXPC9jwFGV3orfIZ2dD7+cPrHHIv2AGU=;
+	s=arc-20240116; t=1779030076; c=relaxed/simple;
+	bh=+p/T8f8U9P6+mPDJp11pUIiEZbrCsqeSPkt/HUib5V8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kcW4p2Bq3qId3AF7HU5bex0t4C5QkKbQ1ZVQAt9srHlUyqpmiy/tz5fX06LavlwTqfMReGj5JJ1j2UvEDXBLdy20NqrY8rb6ANmYOSRuLdxKKsTppb+FsNKo4F4WtdhCLFa5pLdoFPXy5gCIXxU84aomMhE/LO8MDXq6Fg1ujo4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IKgtW2vO; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Zs3Ec/El3OmjEpYpAaTlJMJEXRtIvexsygl5cbofN6fBiQkMnYYzgKhREsQ1UriAdrMa+56ULbP5NQM3q50Q4XHCbbOupfXUMkhugzKEAoJw1YleFLI0Ypv2+fj3Cr6eHJTihMkHK3QZppbeget1uE4FRgFZIMGOOWGO5HQ0FMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KxY2GF8e; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IKgtW2vO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC57CC2BCB0;
-	Sun, 17 May 2026 14:58:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KxY2GF8e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9433EC2BCB8;
+	Sun, 17 May 2026 15:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779029935;
-	bh=1/XxmtYLtJTXXPC9jwFGV3orfIZ2dD7+cPrHHIv2AGU=;
+	s=k20201202; t=1779030075;
+	bh=+p/T8f8U9P6+mPDJp11pUIiEZbrCsqeSPkt/HUib5V8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=IKgtW2vOic/gfcG5O3ydGgB+7FKV7JGIgLahQHzmy/KreAhEd1SsOI4gDDibKqKAw
-	 bVnubh7QiZs73Z91V8UuJ2kdtMDOZ6MkAKXNg+veC9PGX/IXh5Tj6Mef2pAO6LNUTw
-	 cz3PG6ya0zRR3fUp4amccfMVDwajsnMAZgC2DDDDDyjhaBoyApu11bDffkFxhD8xGX
-	 oFelShe4CUcIVgi70wVGqeEjOR/bU157HUnBZJrb205zAGxjA8f22JOZ9n3ZjDqz5H
-	 Wi3lyHg8VNjhIiXhTOF13HfUN3S0tNsgGhwBeKqXTNd0iBHvnP8tzuo7AZR5RlFrwh
-	 gGdQTbP0XH/EA==
-Date: Sun, 17 May 2026 15:58:43 +0100
+	b=KxY2GF8edvsnWPYhkTvlD9sJ/ueXhu6iUoG6HmnRof4HMVl/oJ8CkC2eqCxr5K4On
+	 w4TDOYGHQmzQZ7pXp9qsn7Tnn4BJeAmDsQv61IwGdV8VKkwHD/0XOQBzNd6nqcq6LO
+	 CDYT3sPoRN7jV1m85rPNv4hCBkoZcwyD/WzmYl0z6HSubMK2vV2wuJS72sCJe1W4wp
+	 IRtQCC8HUE1cGNa5fGjpFOxTxcQtMMKhf96ssf23Rf1c1Rx8yuHdh2wKgy1G7lmMbb
+	 UXtsHQiwT0uy55eYm93bLwQ/R2MTn2o+AmX84Ustp7+IhywFFlMo4HLPrXhSrWG/o7
+	 vG10IhCc8aDWA==
+Date: Sun, 17 May 2026 16:01:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rodrigo Alencar via B4 Relay
  <devnull+rodrigo.alencar.analog.com@kernel.org>
@@ -40,12 +40,12 @@ Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
  Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
  R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v4 09/10] Documentation: ABI: testing: add docs for
- ad9910 sysfs entries
-Message-ID: <20260517155843.7f833658@jic23-huawei>
-In-Reply-To: <20260508-ad9910-iio-driver-v4-9-d26bfd20ee3d@analog.com>
+Subject: Re: [PATCH RFC v4 05/10] iio: frequency: ad9910: add digital ramp
+ generator support
+Message-ID: <20260517160105.362d9208@jic23-huawei>
+In-Reply-To: <20260508-ad9910-iio-driver-v4-5-d26bfd20ee3d@analog.com>
 References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
-	<20260508-ad9910-iio-driver-v4-9-d26bfd20ee3d@analog.com>
+	<20260508-ad9910-iio-driver-v4-5-d26bfd20ee3d@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -56,45 +56,36 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 08 May 2026 18:00:25 +0100
+On Fri, 08 May 2026 18:00:21 +0100
 Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
 > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
-> control Parallel Port, Digital Ramp Generator and OSK parameters.
+> Add Digital Ramp Generator channels with destination selection (frequency,
+> phase, or amplitude) based on attribute writes, dwell mode control,
+> configurable upper/lower limits, step size controlled with rate of change
+> config, and step rate controlled as sampling frequency.
 > 
 > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-I'm fine with phase and frequency as defined, but for the scaling it made me wonder.
-For outvoltage0 channels the assumption the value is the peak voltage so if
-we know what input to be modulated by the ramp generator can we express them
-in volts (well milivolts) rather than as a scaling multiplier?
-
-That seems to me like it fits better with the overall ABI.
-
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_offset
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		For a channel that allows amplitude control through buffers, this
-> +		represents the value for a base amplitude scale. The actual output
-> +		amplitude scale is a result with the sum of this value.
-> +
-
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_roc
-
-Silly question perhaps but can work out how this related to millivolts/sec
-That might make a more intuitive interface than scaling multiplier per sec
-Perhaps the combination with offset makes this impossible though maybe that
-could be a expressed as a voltage offset?  Afterall if the amplitude being
-scaled is 5V then 5 * (offset + scale) = 5 * offset + 5 * scale
- 
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Amplitude scale rate of change in 1/s for channels that ramp
-> +		amplitude. This value may be influenced by the channel's
-> +		sampling_frequency setting.
+> ---
+>  drivers/iio/frequency/ad9910.c | 511 ++++++++++++++++++++++++++++++++++++++++-
 
 
+>  static const struct iio_chan_spec_ext_info ad9910_phy_ext_info[] = {
+>  	AD9910_EXT_INFO("powerdown", AD9910_POWERDOWN, IIO_SEPARATE),
+>  	{ }
+> @@ -677,6 +939,14 @@ static const struct iio_chan_spec_ext_info ad9910_pp_ext_info[] = {
+>  	{ }
+>  };
+>  
+> +static const struct iio_chan_spec_ext_info ad9910_drg_ramp_ext_info[] = {
+> +	AD9910_EXT_INFO("dwell_en", AD9910_DRG_DWELL_EN, IIO_SEPARATE),
+> +	AD9910_DRG_EXT_INFO("frequency_roc", AD9910_DRG_FREQ_ROC),
+> +	AD9910_DRG_EXT_INFO("phase_roc", AD9910_DRG_PHASE_ROC),
+> +	AD9910_DRG_EXT_INFO("scale_roc", AD9910_DRG_AMP_ROC),
+
+See abi docs reply. This scale made me wonder if we can make this just roc with it
+scaled to be in the base units for altvoltage.
+
+> +	{ }
+> +};
