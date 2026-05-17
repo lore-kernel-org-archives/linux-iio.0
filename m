@@ -1,295 +1,203 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DC823148A8
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 07:43:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87D0C2236F7;
+	Sun, 17 May 2026 07:53:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779003827; cv=none; b=MWloXgbbFHpeSGkMGxkGngdj/mxzCYdvltfyAllT0CJJJn8ng0giUR4cQcik/6GPiZaprHD9ayaSjHCKGWKpxU3VenG0dPp3Mq4Va/dOFF7ZKM/Lolwvjwc04/8G5Wi+d/edEsdx6KvjCvt4ssc42pgePD6Hd80aDCe4/grTPbI=
+	t=1779004393; cv=none; b=SxSKYMSdYFbbLh5kcCtHHhy52PQDwJEm20PYox7DtlZ9U+6owVBeVsNUFTgFzXZfqWvuN0m/jw73T93oH7GhbHrZhs/NVWoOgdHY9O+uO1DJtOCP0sQmOF2oA4ZWBe01G6IvhXjGKdDw2us8T0gY1RgWxhlUJgRDH6fXCFL/98A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779003827; c=relaxed/simple;
-	bh=txOclh6WzEZ2psojIZqT/u47okXxsKm65cDAQQqxUbU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=C04ECYklTDypHQQHYwAaZJAfPeVTxPENt8wSFKQiNU+BWk6cImyMIWvrUgoA8VAS+UzF9y2ltoZf4pcdSytxBP4VAJ9RnvbNACOb8XaK/U4GXIVb/XdC8cLHIxiZk+hPPhZ5ViE18lNafGP6ZGWYP/EDturPYljT0JNfLfWezJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y0m7rJCl; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779004393; c=relaxed/simple;
+	bh=gv4l1sSE01nRLJxydg83HiEFsHSgksAeLg7BXw/+rvU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WpbXO0Uk88c5nGk0UJatuEwS3jD25z0rDPZ3Zf5m4S++f3SnGjm5e65yaFCGS0YqO1/5S39Vfbkuh6+pK373YECZvK5Jz/jaHjgX4txA7/uEXcOGqskGay6+gWBKwkcCWk9lnqY92HFx0iUecFBSKsqGSmmGJ6XItLuIRjeIZUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XHtbIVgU; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y0m7rJCl"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-43d73422431so711139f8f.2
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 00:43:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779003820; x=1779608620; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fIRirlk7+iVvv+aIkrP/TTxntKDqtRTgAMbNyHeeulc=;
-        b=Y0m7rJCl3WVA+TclXfdJwwP0opYEszxaDLhFF1gewLciSbIslwjl/fgle3gZY8flZW
-         rM/RUX+stF1OeJIvEECD9KFd9hTCkqFOLMC0cs0MVhm+4NymBz/+gby+O14NEQDauLiC
-         bujCgC/Ik3T43kMC49yXr6xfInG7amndCbykpg/VSsnTx7F/bTVZuqCOrSAUNLpxFgXK
-         vvgC7KDyKE6wF23INni8Wx2CaJBGzKWmYoDx29C4UBkIitljt1964NkZhrbdXPwk0XUU
-         laYqHxKb4vsd2Nqygibm4x4l6UNq2tsS3uW1Qb2lZ1ycH7UFN413Rsgj7QOalasYewPY
-         lYtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779003820; x=1779608620;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=fIRirlk7+iVvv+aIkrP/TTxntKDqtRTgAMbNyHeeulc=;
-        b=lWcFsTmxYWh0neGXy+dQOZjfHKDTg3h7iM0LVg48TNldHnHyU4u3Q09+fNi6VwXfRn
-         BFzuNG0UCrqmeKGhZZXJWnPaQv60ahwL7YPBfbS+LEdqFTi/S0fTWxAToD35GuC3MCaV
-         KFdPdETg5n6If4I4Clw14y/3uzQJoyg9/mMnpE9fIm8AvzbqH4EFavY080Q2ZHohF/Y3
-         g3la4Mw/hcnB+ZL1CSiqBFNA0wd3W+qkTzeKIsDKhjJBxVBpQLbbJUUmpHYUawjXESwR
-         P9UbazVAVtvcJcIGTBxKmHnwZHYVjlSZz6C3NWLqRXt7snlmt9ET2qK4HzUNIlp9aS7Y
-         eS6g==
-X-Forwarded-Encrypted: i=1; AFNElJ/dvTzKzjNYES5SsqzYOyMqKj7SQqpWZi4kiVw0WbizsUWDW12D7MYqHrXPmLVqtORJqB4dXHjiLpo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxXf1GAr45rsSfzhO3pPJ2NXzn6B7uALq4L5W+ISwp0M7OVxj4a
-	qH4nwQu1OJIz69NzkxYOY5bS4LYglMlr3mp0OSIScZCITFas5weaaHyp
-X-Gm-Gg: Acq92OEkQVtnyY31GPJ9TOKQ/5KlsvNEZ180EVUSSrTBkSb6NqP7B+ERa5OAOUwQHrJ
-	2uHCCWeBa2e76TdLssS2af1kOqejo2gUspMRpQkoO90qdpZ2oc/Zhkr0kJ2VjYAXDjt0k87d/8B
-	oaKEyMbhG3nys6P8ISEmhpAH00hPJPe8pxAhBrkConvbfb8SIWSjOlLL1AJiXl/xlils9p29Vo7
-	CgDOpoJjP9dWFsxVqbxUScbKpfxNM2FPR/7+XuVKEdJzZtrrc89J1z0jPGzLjkxU3nfxZu+kzxn
-	qSdR4uoj9C4uikmdn3/ox5b9PKFiDY8Th/iYodXWYCFJXvjhDKYbhkc2tPz7qgbUxKxa93bH4is
-	dbOlALPl764jwMjJWP75NEf9Nb5nw+tiKZUQgdZtUucG48oprcolouwv845xlbva9bifWDwxt/5
-	h7+wK2yK6Pt7dB
-X-Received: by 2002:a05:6000:22c5:b0:43d:7d24:b510 with SMTP id ffacd0b85a97d-45e5c5fd8demr15790172f8f.22.1779003820408;
-        Sun, 17 May 2026 00:43:40 -0700 (PDT)
-Received: from xeon ([188.163.112.61])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0fe248dsm27512864f8f.30.2026.05.17.00.43.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 00:43:39 -0700 (PDT)
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-To: Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>,
-	Pavel Machek <pavel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XHtbIVgU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779004391; x=1810540391;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gv4l1sSE01nRLJxydg83HiEFsHSgksAeLg7BXw/+rvU=;
+  b=XHtbIVgUfwXqWcKWhWkrrUakvkoJjs9QYKYiF52C/12XZyaI77/s1TIq
+   KzZwF82LhvHa9nUtAqPjszzdEQkG2YM2aV0OAsF6F9b6oIRpXfPtrWr7s
+   bZujQD7fomZXksabZKItmpntZPS87IE4yTJRLHTp2Y4K+We+fqquqd2cw
+   gz8VYDtdSxoe/SNOfIS5KRlbOWiPVbily5oluSOVf6lNxeMwiV7tRefjQ
+   cnjr99rBnv388Snq+DWeYA0TFzqfQONxl/yXPsWpMsdswHJfBqA1Y+RQi
+   t+CVTxcP3QRr+wU/ke5tyvTf9zmoAE5+i5I7yuJHY6DV2kVqdn8Nj0Bwl
+   Q==;
+X-CSE-ConnectionGUID: 7IJU0CKOR8qkFXUBq5uE+w==
+X-CSE-MsgGUID: C7AmLG6ZQkSIhmiMqIEnwQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11788"; a="90588739"
+X-IronPort-AV: E=Sophos;i="6.23,239,1770624000"; 
+   d="scan'208";a="90588739"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2026 00:53:11 -0700
+X-CSE-ConnectionGUID: Pr5gpIB5Rp6B0GHqsiDFrg==
+X-CSE-MsgGUID: BzpCTiVlRMKCQN1JSVwDkw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,239,1770624000"; 
+   d="scan'208";a="277222968"
+Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.182])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2026 00:53:07 -0700
+Date: Sun, 17 May 2026 10:53:05 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Helge Deller <deller@gmx.de>,
-	Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: [PATCH v1 6/6] video: leds: backlight: lm3533: Support getting LED sources from DT
-Date: Sun, 17 May 2026 10:43:06 +0300
-Message-ID: <20260517074306.30937-7-clamor95@gmail.com>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260517074306.30937-1-clamor95@gmail.com>
-References: <20260517074306.30937-1-clamor95@gmail.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: light: veml3328: add support for new device
+Message-ID: <aglz4Z-10mzQBzvL@ashevche-desk.local>
+References: <20260516-veml3328-v1-0-1d4b663e2fe3@gmail.com>
+ <20260516-veml3328-v1-2-1d4b663e2fe3@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260516-veml3328-v1-2-1d4b663e2fe3@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add Control Bank to HVLED/LVLED muxing support based on the led-sources
-defined in the device tree.
+On Sat, May 16, 2026 at 11:50:54PM +0200, Joshua Crofts wrote:
+> Add support for the Vishay VEML3328 RGB/IR light sensor communicating
+> via I2C (SMBus compatible).
+> 
+> Also add a new entry for said driver into Kconfig and Makefile.
 
-Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
----
- drivers/leds/leds-lm3533.c          | 55 +++++++++++++++++++++++++++--
- drivers/video/backlight/lm3533_bl.c | 39 +++++++++++++++++++-
- 2 files changed, 91 insertions(+), 3 deletions(-)
+...
 
-diff --git a/drivers/leds/leds-lm3533.c b/drivers/leds/leds-lm3533.c
-index f6345bc1f443..c4eaf30880a1 100644
---- a/drivers/leds/leds-lm3533.c
-+++ b/drivers/leds/leds-lm3533.c
-@@ -7,6 +7,7 @@
-  * Author: Johan Hovold <jhovold@gmail.com>
-  */
- 
-+#include <linux/bits.h>
- #include <linux/module.h>
- #include <linux/leds.h>
- #include <linux/mfd/core.h>
-@@ -26,6 +27,12 @@
- #define LM3533_ALS_CHANNEL_LV_MIN	1
- #define LM3533_ALS_CHANNEL_LV_MAX	2
- 
-+#define LM3533_REG_OUTPUT_CONF1			0x10
-+#define   OUTPUT_CONF1_MASK			GENMASK(7, 2)
-+#define   OUTPUT_CONF1_SHIFT			2
-+#define LM3533_REG_OUTPUT_CONF2			0x11
-+#define   OUTPUT_CONF2_MASK			GENMASK(3, 0)
-+#define   OUTPUT_CONF2_SHIFT			6
- #define LM3533_REG_CTRLBANK_BCONF_BASE		0x1b
- #define LM3533_REG_PATTERN_ENABLE		0x28
- #define LM3533_REG_PATTERN_LOW_TIME_BASE	0x71
-@@ -40,7 +47,7 @@
- #define LM3533_REG_CTRLBANK_BCONF_ALS_CHANNEL_MASK	0x01
- 
- #define LM3533_LED_FLAG_PATTERN_ENABLE		1
--
-+#define LM3533_MAX_LEDS				5
- 
- struct lm3533_led {
- 	struct lm3533 *lm3533;
-@@ -53,6 +60,9 @@ struct lm3533_led {
- 
- 	u32 max_current;
- 	u32 pwm;
-+
-+	u32 num_leds;
-+	u32 leds[LM3533_MAX_LEDS];
- };
- 
- 
-@@ -639,7 +649,30 @@ static const struct attribute_group *lm3533_led_attribute_groups[] = {
- 
- static int lm3533_led_setup(struct lm3533_led *led)
- {
--	int ret;
-+	u32 output_cfg_shift = 0;
-+	u32 output_cfg_val = 0;
-+	int ret, i;
-+
-+	if (led->num_leds) {
-+		for (i = 0; i < led->num_leds; i++) {
-+			output_cfg_shift = led->leds[i] * 2;
-+			output_cfg_val |= led->id << output_cfg_shift;
-+		}
-+
-+		/* LVLED1, LVLED2 and LVLED3 */
-+		ret = lm3533_update(led->lm3533, LM3533_REG_OUTPUT_CONF1,
-+				    output_cfg_val << OUTPUT_CONF1_SHIFT,
-+				    OUTPUT_CONF1_MASK);
-+		if (ret)
-+			return ret;
-+
-+		/* LVLED4 and LVLED5 */
-+		ret = lm3533_update(led->lm3533, LM3533_REG_OUTPUT_CONF1,
-+				    output_cfg_val >> OUTPUT_CONF2_SHIFT,
-+				    OUTPUT_CONF2_MASK);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	ret = lm3533_ctrlbank_set_max_current(&led->cb, led->max_current);
- 	if (ret)
-@@ -713,6 +746,24 @@ static int lm3533_led_probe(struct platform_device *pdev)
- 	led->pwm = 0;
- 	device_property_read_u32(&pdev->dev, "ti,pwm-config-mask", &led->pwm);
- 
-+	led->num_leds = device_property_count_u32(&pdev->dev, "led-sources");
-+
-+	/*
-+	 * If led-sources property is not set then either this Control Bank uses
-+	 * its default LVLED or is not linked to any LVLED at all.
-+	 */
-+	if (led->num_leds <= 0 || led->num_leds > LM3533_MAX_LEDS)
-+		led->num_leds = 0;
-+
-+	if (led->num_leds > 0 && led->num_leds < LM3533_MAX_LEDS) {
-+		ret = device_property_read_u32_array(&pdev->dev, "led-sources",
-+						     led->leds, led->num_leds);
-+		if (ret) {
-+			dev_err(&pdev->dev, "failed to get led-sources\n");
-+			goto err_deregister;
-+		}
-+	}
-+
- 	ret = lm3533_led_setup(led);
- 	if (ret)
- 		goto err_deregister;
-diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
-index be9114b7e0ad..2898cb229643 100644
---- a/drivers/video/backlight/lm3533_bl.c
-+++ b/drivers/video/backlight/lm3533_bl.c
-@@ -7,6 +7,7 @@
-  * Author: Johan Hovold <jhovold@gmail.com>
-  */
- 
-+#include <linux/bits.h>
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/mod_devicetable.h>
-@@ -21,9 +22,12 @@
- #define LM3533_HVCTRLBANK_COUNT		2
- #define LM3533_BL_MAX_BRIGHTNESS	255
- 
-+#define LM3533_REG_OUTPUT_CONF1		0x10
-+#define   OUTPUT_CONF1_MASK		GENMASK(1, 0)
- #define LM3533_REG_CTRLBANK_AB_BCONF	0x1a
- #define   CTRLBANK_AB_BCONF_MODE(n)	BIT(2 * (n) + 1)
- 
-+#define LM3533_MAX_LED_STRINGS		2
- 
- struct lm3533_bl {
- 	struct lm3533 *lm3533;
-@@ -34,6 +38,9 @@ struct lm3533_bl {
- 	u32 max_current;
- 	u32 pwm;
- 	bool linear;
-+
-+	u32 num_leds;
-+	u32 led_strings[LM3533_MAX_LED_STRINGS];
- };
- 
- 
-@@ -248,7 +255,8 @@ static struct attribute_group lm3533_bl_attribute_group = {
- static int lm3533_bl_setup(struct lm3533_bl *bl)
- {
- 	int id = lm3533_bl_get_ctrlbank_id(bl);
--	int ret;
-+	u32 output_cfg_val = 0;
-+	int ret, i;
- 
- 	ret = lm3533_update(bl->lm3533, LM3533_REG_CTRLBANK_AB_BCONF,
- 			    bl->linear ? CTRLBANK_AB_BCONF_MODE(id) : 0,
-@@ -256,6 +264,16 @@ static int lm3533_bl_setup(struct lm3533_bl *bl)
- 	if (ret)
- 		return ret;
- 
-+	if (bl->num_leds) {
-+		for (i = 0; i < bl->num_leds; i++)
-+			output_cfg_val |= id << bl->led_strings[i];
-+
-+		ret = lm3533_update(bl->lm3533, LM3533_REG_OUTPUT_CONF1,
-+				    output_cfg_val, OUTPUT_CONF1_MASK);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	ret = lm3533_ctrlbank_set_max_current(&bl->cb, bl->max_current);
- 	if (ret)
- 		return ret;
-@@ -337,6 +355,25 @@ static int lm3533_bl_probe(struct platform_device *pdev)
- 	bl->linear = device_property_read_bool(&pdev->dev,
- 					       "ti,linear-mapping-mode");
- 
-+	bl->num_leds = device_property_count_u32(&pdev->dev, "led-sources");
-+
-+	/*
-+	 * If led-sources property is not set then either this Control Bank uses
-+	 * its default HVLED or is not linked to any HVLED at all.
-+	 */
-+	if (bl->num_leds <= 0 || bl->num_leds > LM3533_MAX_LED_STRINGS)
-+		bl->num_leds = 0;
-+
-+	if (bl->num_leds > 0 && bl->num_leds < LM3533_MAX_LED_STRINGS) {
-+		ret = device_property_read_u32_array(&pdev->dev, "led-sources",
-+						     bl->led_strings,
-+						     bl->num_leds);
-+		if (ret) {
-+			dev_err(&pdev->dev, "failed to get led-sources\n");
-+			goto err_sysfs_remove;
-+		}
-+	}
-+
- 	ret = lm3533_bl_setup(bl);
- 	if (ret)
- 		goto err_sysfs_remove;
+IWYU.
+
++ array_size.h
+
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+
+Most likely + types.h.
+
+...
+
+> +struct veml3328_data {
+> +	struct regmap *regmap;
+> +	struct device *dev;
+
+Dup? We may derive one from the other (in case if regmap is registered with
+the same dev, otherwise needs a good comment explaining why not).
+
+> +	struct mutex lock;
+> +};
+
+...
+
+> +/* integration times in microseconds */
+> +static const int veml3328_it_times[][2] = {
+> +	{ 0, 50000 },
+> +	{ 0, 100000 },
+> +	{ 0, 200000 },
+> +	{ 0, 400000 },
+
+USEC_PER_MSEC in all of them.
+
+> +};
+
+...
+
+> +	return regmap_update_bits(data->regmap, VEML3328_REG_CONF,
+> +				  VEML3328_SHUTDOWN, VEML3328_SHUTDOWN);
+
+Here and everywhere else, use regmap_set_bits()/regmap_clear_bits() when
+appropriate.
+
+...
+
+> +static int veml3328_power_up(struct veml3328_data *data)
+> +{
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(data->regmap, VEML3328_REG_CONF,
+> +				 VEML3328_SHUTDOWN, 0);
+> +	if (ret < 0)
+> +		return ret;
+
+> +	fsleep(veml3328_it_times[3][1]);
+
+This is not good. Why do we have a table from which we are using only one
+value? Define it properly and use here.
+
+> +	return 0;
+> +}
+
+...
+
+> +		ret = regmap_read(regmap, chan->address, &reg_val);
+> +		if (ret < 0)
+
+Do all these ' < 0' for regmap API make any sense?
+
+> +			goto exit;
+
+...
+
+> +	ret = pm_runtime_resume_and_get(data->dev);
+> +	if (ret < 0)
+> +		return ret;
+
+There are respective PM_RUNTIME_*() macros.
+
+...
+
+> +	if ((reg_val & 0xff) != VEML3328_ID_VAL)
+
+Do you need the & 0xff? Do you have register width > 8 bits?
+
+> +		return dev_err_probe(dev, -ENODEV, "Invalid device ID\n");
+
+We don't fail on that, now we just warn.
+
+...
+
+> +static DEFINE_RUNTIME_DEV_PM_OPS(veml3328_pm_ops, veml3328_runtime_suspend,
+> +				 veml3328_runtime_resume, NULL);
+
+Split logically.
+
+...
+
+> +static const struct i2c_device_id veml3328_id[] = {
+> +	{ "veml3328" },
+
+Use .name.
+This is a new development due to some Uwe's ongoing (re)work on ID tables.
+
+> +	{ }
+> +};
+
+...
+
+Was this AI-assisted? If so, don't forget to add tags.
+
 -- 
-2.51.0
+With Best Regards,
+Andy Shevchenko
+
 
