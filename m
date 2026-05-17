@@ -1,65 +1,66 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED98D3C13F1
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 17:01:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98A3B3C276E
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 17:01:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779037287; cv=none; b=nQu2Grf07GzM2/O/ECGcG/UyT16O+ba0ryC/XU7Xxw3lXLsAnSqAPqrE0iH1lzhN3TNUpYr6JKxBakhb5+wl/Llla0S0YeV8SFcOogroY8mwVHl6intvFVIeQNhx+Qwsl7ThMi80gZLx6BMqW1ZGRyB7YkyFpoI1j03Mifu6ZFE=
+	t=1779037287; cv=none; b=VVOq43ddh72aFTKfAYVBVLMscKRxb81009pJof0tFF3JctcunmWkB/uCSkmmEKlNl+lEZJaQr5gdHj/Q2mVLkCJqUyY1CMFFQNiUhXRC86nVGNqoOIDAs/FaBwvZvuIje7ABpVYK9SA2NPQCkYdI3UiE5zg/mvzQ0LTMCGBAzzs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1779037287; c=relaxed/simple;
-	bh=tmhO9ONS+I2ZZ/ogSFXIuW1oh1JcW7wCHoXai3f3evM=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=H1ODJp6m3r5stnq16JSG5665Il3VJO6IHaZ11c5wDzLYtWDwC63ywsLHPMenPhuTYqp+FQQDmQv7RYhF9/3AHyIaqIpOYfGE5mRynn6lMbLPNGfqKxjfi/fRV8dfWygnQJLYc6eGbP0SBZnPWq/PxSYV6rvR9OtYNdS2HmjhKBw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=gFFyo/bz; arc=none smtp.client-ip=209.85.210.50
+	bh=QpDJWtwhRx2DgAxOzaZv0LmkHcMquKEcvuDpOL43cYg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=aYux2pflF6ExbhP9N4AY2mBPoyfYcWwB4j3Uo/QmCDEaR/Lfn7pGX8L4m+QNL3ZJd1TBBSwo389J3vUk57Fe2fZgXn3/LJH9N+3qGm891p4385KgkgsY+a2VdsOySmBSXBcYtmIJQKuC4C/96KHUMH/kN3Sz4iL37po617uNGpw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=Whs9/7C7; arc=none smtp.client-ip=209.85.210.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="gFFyo/bz"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7dcd689829eso1399807a34.3
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 10:01:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="Whs9/7C7"
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7de4be15125so1496050a34.0
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 10:01:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1779037282; x=1779642082; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=eHtZ1FRLItPRp/kCXOsjA2zW8HDB2xesQ4ejF3mSkns=;
-        b=gFFyo/bzImcHmaVgDk4qOl1DTt/ieApMUF8PkY4yrZvqIr5At4+LNVPS+F5tPnh+Bc
-         6I24Bu2T7jZ5KMzC+gHlCePzc3ayUMUR90P6b0PeHf+bnjtJCZEdSjlPLA0gVHHDU7av
-         hJ65EoxJtBJIYRloAyqJl0Q2NvgrDFaWjzoYfLEsztnEbE7b5kmzD7nUELi99XNtKuJf
-         sOHFhZH+u4SrVUUFmklfhVZDt6q+ez7n69ULDCrO9A+XCbMq2kGod+/G7LimI6zQnPn3
-         HPLusXrGLptM++JWzkm5ashf3TtBftp1VqDDEvhLb4YSb0oUTV7nq97TVW5RD5TVULpQ
-         68vw==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1779037283; x=1779642083; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yipHWAGn3k6dstQXzJlgc9fTRy+Q2C3y6WOEJwPv3hc=;
+        b=Whs9/7C784qwD5Vb/7yfbOOCOZjN4dDu4m0xgLi+LP9hOQGxErGD+kR38lXop/VM5r
+         cV2iwSik39WiqjgHsDuSQv+QORRPFpRe6bljy4QSQYU7Wx+LK24QZHXCQ/W7mvKicA+E
+         xkFRT7nEGMEgJLB/4FENp8JE/yoLm+kig5l/UQaKlF33tuAEJtRGNpOGnAA189dRohZa
+         Gv3A/VYvjE9jKR53suAdWg0y7rM36ij/n04FNCweIDPr7fAUpvJi1pmhbZyFXVi38UYq
+         JJTe6JcbUvY0/pF5F51YGUkKx8lskXwlmDcMu4xMR8mblm3x7HJJGj2wiNF1CLGYqAw1
+         /n5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779037282; x=1779642082;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eHtZ1FRLItPRp/kCXOsjA2zW8HDB2xesQ4ejF3mSkns=;
-        b=oz6P/yH+L7zldOS2UPTYgOLt1bNY4OMYCQxc+fskHM848QFCq1wDLAM0xRKGZC3L0V
-         mQVEASeptpRDeDQqhmRjrhFNzAuHDBOKlHA7w3Gev9mq1thwaY70W0AsJjLeyMMNmOuT
-         Kglr/4Aj7J3scTKp01m8v+aLT3Bxr24MxCLFJT/BDLzjavV7jEYU/6DOY3krBpNQmRkx
-         Wzzl7/XIDzmSMC4bpGIyWafCSSlKVe39qV5SDpMoYBnshxj/AA2SdkkBf8BTKkitNL+O
-         oQLWu+7/8RGVIEVygmET1h9ku+Ag3dMsAPlHhmNjKMtldb/LYsU950TWY1yEJbE2xtLN
-         QFVw==
-X-Forwarded-Encrypted: i=1; AFNElJ9mn3D7NJ2qiMo34qi2ZlDDb+xSKp5oqWfzO2nOSLGAmCkhIXTQJLg+vlRFTJw2qSZ0uHK7BW9c9io=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzEpfYt1EuWwehkh7M3jC6qdmTZkpmMgxCwJDdMwmmltwXNWZZ6
-	6I+gc5+RDIT+GUcTFrzLws0z/qK7S8jm5Jly6NjwzuPcUVGyG3xfAyDqWrFEgHkqr2M=
-X-Gm-Gg: Acq92OGQE40JEZdgcCtG20uVVnxkMJnSLgIMiaBtGCZqUvpo2y8B/kQa+95vpDIjRCy
-	IIOMJjC7DH397HScDmiXtgyPUyTZSKZGOPwr5588N+ASUMmL3THUmt8rupsXktdyUL4dO5mFsjQ
-	MtAv1ZC0d20GCIEFE2i7dl7SQ0AyBaeLXOn7oMxSU0jd0vEwPkPpqBKd3GBVEcx1ztDix/PPYcH
-	TQ6Q+cAAMxUb39BbQmtLX0igbBs+St5gBZD9OA8nqZiurOu8DdRDEbpQyBB7S5zgq6pwz1r3rsL
-	V2hJwSU5fE+Yssby9GAcRdXTqjETMNIuLSYVne+1J9529z5RpZuE6lf5BepcFCWoE5/Nz/KzezN
-	g/k3NKW2G+cBYB181JiFIGXujhQDBJTIoboqPejymttU7jSzn09HwstwrPOJSCpbQPBIFBwh+cQ
-	tdOBaVPTpZ6atYYJ/3HdJjDhQHr9FVK6srBNkv4A==
-X-Received: by 2002:a05:6830:4118:b0:7dd:9b19:a875 with SMTP id 46e09a7af769-7e4ea0529cdmr8843719a34.2.1779037282041;
+        d=1e100.net; s=20251104; t=1779037283; x=1779642083;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=yipHWAGn3k6dstQXzJlgc9fTRy+Q2C3y6WOEJwPv3hc=;
+        b=ZKDifTVhqN68cOGjgIFwekFVLyf0RhYgkxTwsbGlQXz8BeB9uKFAe2tICDjPgaBuB/
+         Rm4+kunboojGW0vWVd+W4OQDrZPyMR/THmkBtClq4a+FJqhJQree4PKoluJ2mwTvq+gv
+         haOXky8c2Lb20RCbpmE58VNyLVKfrlH4T6j7VXbpDzRovtTN+LzTBmOrmb/ofze0Y1rb
+         N/23I5xTTr9FWPB2FHhTWK6qtbQdezaZU4wJbCSc3rtKlX9FVqmba24J2fJGJDMGO+5a
+         KXNTuQejZhXMBWkhFYQkzhyKyX+l5kFqfIFBXWLHzGjUPkl5Y5i7i81mLK/xrvpXl7d3
+         JDeQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8+72kphCwh7+8tPSXGxPBNKzhT7mdxtRYVa9kMzJbVDzfnyyKzK3DHbH2fee0kwJ+3PivFlbPJrW4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwkxS+ukNzaWqCOq/AR9PEQ4bzWU5wv0Vnrx454JC1ShZr6duqc
+	Li5N+/vpkLDhhCH9l/wDmrBLeTXhcFg/UJtdElB7wAXvn7//dVj8jQ/nPcbT9aad1Fo=
+X-Gm-Gg: Acq92OGhHBFSWcTz2B/RZ7IhLs4bpAdIKomF7eqiDNJH5vCBL58w0DClRupctt5lGNf
+	Wfd+56HC6N3fnxmh+IE4T7vo+QUgyk2nmfFsm3cjJiDzuj/R+7MICY0Rtqs+6V5pq9qyyVd6e1n
+	RqRAwSALgWZMlHb1fRaJWmaZ0vxDyzjBOs3vDNA6/qyOERcdN2CaOi/lSSfoS+1KEXnwk+wlMFI
+	ZpznLJ/vXhSOAeZn4m8ytvJBs2njqp3HsZGiEjKAw5z+nJ6vo69ys5GZLwmk9B8Y3o6dwrzaHpi
+	n01yXlMy+0Ub+8RDbSspb/GNES04ynWvQwKeb45Ch3tEXJFrcF9XP1M+LCQZnppD/MT48QmCHW8
+	Hg8xKhQN0+nUD8cePRebublslnvDC+7f+AxAHmMNdVvW9DdECx+NUZyPgHsjYTdj1I9FN1Fr+Nt
+	jCZJa7GCAhkIsagfKkEaJmcs/qAAU=
+X-Received: by 2002:a05:6830:6616:b0:7de:51f3:e7ed with SMTP id 46e09a7af769-7e4fa0cc2d0mr8672950a34.26.1779037282858;
         Sun, 17 May 2026 10:01:22 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:7a4b:ddf0:f61:f58d])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e55b7c68d6sm5890859a34.3.2026.05.17.10.01.21
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e55b7c68d6sm5890859a34.3.2026.05.17.10.01.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 10:01:21 -0700 (PDT)
+        Sun, 17 May 2026 10:01:22 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
-Subject: [PATCH 0/2] docs: iio: update dated triggered buffer example
-Date: Sun, 17 May 2026 12:00:57 -0500
-Message-Id: <20260517-iio-doc-triggered-buffer-update-helpers-v1-0-7f00d4188f6f@baylibre.com>
+Date: Sun, 17 May 2026 12:00:58 -0500
+Subject: [PATCH 1/2] MAINTAINERS: add match for IIO API docs
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,10 +69,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXNQQ6CMBBG4auQWTsJoIh4FeMC2r9ljIFm2hoTw
- t2tuvw2720UoYJI12ojxUuirEtBc6jIzOPiwWKLqa3bc901PYusbFfDScV7KCxP2Tko52DHBJ7
- xDNDIcD2Ol6EzgztRqQWFk/fvdLv/HfP0gEnfPO37ByfuTjqLAAAA
-X-Change-ID: 20260517-iio-doc-triggered-buffer-update-helpers-ef7e3895c9f4
+Message-Id: <20260517-iio-doc-triggered-buffer-update-helpers-v1-1-7f00d4188f6f@baylibre.com>
+References: <20260517-iio-doc-triggered-buffer-update-helpers-v1-0-7f00d4188f6f@baylibre.com>
+In-Reply-To: <20260517-iio-doc-triggered-buffer-update-helpers-v1-0-7f00d4188f6f@baylibre.com>
 To: Jonathan Corbet <corbet@lwn.net>, 
  Shuah Khan <skhan@linuxfoundation.org>, Jonathan Cameron <jic23@kernel.org>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -79,36 +79,40 @@ To: Jonathan Corbet <corbet@lwn.net>,
 Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=757; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=tmhO9ONS+I2ZZ/ogSFXIuW1oh1JcW7wCHoXai3f3evM=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqCfRM1LWCrjB+ROYhux20WhU+SwORuzhIZQO3S
- KLiHPPhofaJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCagn0TAAKCRDCzCAB/wGP
- wPylB/9wiTNT2XhBbdQ8ztto0m10cm30vTO+JQrjM6aswOjtMrjtDqLf7I87nUqvbKM8q3HBy/a
- UEfuCPP59lT+woFvpVfrm8kDRNRIOBNvN2q5uM0PqFUstP45GXb+KR66QgVkYGEO+9k2y+u85qZ
- CcAmI2QKy0Pn+x1wTi9QXUxi4Qmuf601Hq6Ug36lMkri0lNAgVVvyqyhfa91pRDOiT/d7f+n1IK
- ja0Rc/f0eC2XZpk4o7Mkjg1dCHvCy/2TGFKykc5mA+RnpVfS6ixVFsSMU2Md+SdcpUFtpV0/wr1
- CLNqT0yIuDXUME2SJFPjSi6/X/4xoZqSk2ZMsIO9pysqpE7X
+X-Developer-Signature: v=1; a=openpgp-sha256; l=737; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=QpDJWtwhRx2DgAxOzaZv0LmkHcMquKEcvuDpOL43cYg=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqCfRThXlweZQwoMnIe5R6VLjY8Bp4ic9gssvbe
+ 8D/KRE+ApOJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCagn0UwAKCRDCzCAB/wGP
+ wKyxB/wIM6zib71iX3w2Jr6wlJnb83EdxHPdxpPW9sgPEKVGP+4Tnl1T//BmSGSvJygrVUgsoMm
+ EdCFXg+23uG4iI+IS6BjmJmkFQ2mdS3KT1vCkxQAPNQ9gabbUW+/JixtIa9/2tyCIWJm5GwiI0k
+ /5Saht3JW5QtcH2jBYPJHF7GtTvBOkSoKdWpvypqbi3yvVeJRTL1Dc59qHYmbNt4VRD+ng9S6Kw
+ 2jh2B3R82Q2kFRXqW8ELvpS/8jCw7MnJFbaXSE+MMB0lug7cJxap9+O830gdf1ppReIyXJ5lex+
+ RTLuLm4n3q0Ej7aSObwjw8Oxj6WaeBJ24fopDaXgiZM0le0Q
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Noticed this example was out of date while grepping for something else.
-And when I did get_maintainer.pl on it, it didn't match the IIO
-subsystem, so we get a bonus patch to fix that too.
+Add a match for Documentation/driver-api/iio/ to the IIO subsystem in
+MAINTAINERS. Any changes to the IIO API documentation should be reviewed
+IIO folks.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
-David Lechner (2):
-      MAINTAINERS: add match for IIO API docs
-      docs: iio: triggered-buffers: use new helpers in example
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
- Documentation/driver-api/iio/triggered-buffers.rst | 8 ++++----
- MAINTAINERS                                        | 1 +
- 2 files changed, 5 insertions(+), 4 deletions(-)
----
-base-commit: 8678fb54958893818ddeccd05fea560a4e1fc759
-change-id: 20260517-iio-doc-triggered-buffer-update-helpers-ef7e3895c9f4
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0de74503df08..d14854677649 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12512,6 +12512,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+ F:	Documentation/ABI/testing/configfs-iio*
+ F:	Documentation/ABI/testing/sysfs-bus-iio*
+ F:	Documentation/devicetree/bindings/iio/
++F:	Documentation/driver-api/iio/
+ F:	Documentation/iio/
+ F:	drivers/iio/
+ F:	drivers/staging/iio/
 
-Best regards,
---  
-David Lechner <dlechner@baylibre.com>
+-- 
+2.43.0
 
