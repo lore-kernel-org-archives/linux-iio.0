@@ -1,206 +1,99 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFCF21B78F3
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 03:41:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31F7B36AF6;
+	Sun, 17 May 2026 06:03:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778989300; cv=none; b=c1WwSmQLzsuLL5jWc7ZIQfqeyz5IlerYtW380sACpxmDp1L8DnP8PUjc7T7C/X3cU1wFBuegnyt9tCPlPVkdbeylVCx/w+scQU2kQqcE6hxgGbqXE0AkOKOQIIOFe69cYKJ1MWFLp0ydnkgWZbzWw/grH8knmlc3nd70xF9hyoY=
+	t=1778997782; cv=none; b=NFMg88CcAGtb6PHp5KCknhbz7uPu3P4/TVBg+rkiHDhoMBrs3MuPVAKckImKOfJkIu53sqwznDZKdMalAo0kbxYKTHnnGghxzDQIMZsSUqyCX+JJxmGdtTrnj+92IkMGVAan48Y4lw8qs3NkZGpWlCrW1RyJM80LwLfhf99EcUM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778989300; c=relaxed/simple;
-	bh=TNHC9Hf6cEZxiHv3zfoIYVZ6ETXgaVN+xUbLK1W+djM=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=BVKjnMov9ExZJ71/qIweE4MiVcwDtq5NMcSscEs+Rf1X+L6SBYDtKvFkZMSuzNrG9DHuipq2vKJwq1aRstMY+QVTTvhQE+fyyaJQtx5qob9N0sXDAALkn5NiHrPLFz6THkuzLX4i/Av0HpehJGgJON6Ppg0H4IMRKWDV+/zRV6Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lgB9nkTy; arc=none smtp.client-ip=209.85.216.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778997782; c=relaxed/simple;
+	bh=RErmfycAQncLFjsSj4ZRL6Ch4MLjE4kAmLwUNayyEKk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kKFdJV0nrnwrOm0Wnzk5CfEm0TJW2zrTEhRCgvZeU8vQv+hr1Ri/eM+WZgoomPGzaEut5H4Anmj4EKGLTEq9nTJF6Ka3IP4cn/K9ROC9A7BRqhLpS5dQFG+QVB7/3zkyoi3B2DoH/UbAy19ebzsAJSBc7rd1fouXHn/s+IbQD8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AC0Z3Z80; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lgB9nkTy"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-366375c4076so334910a91.3
-        for <linux-iio@vger.kernel.org>; Sat, 16 May 2026 20:41:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778989298; x=1779594098; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=CKnqFmMYqo0djxyK2+5XZs3mGgV7B68vlxm58Out+D0=;
-        b=lgB9nkTycOqZiF5lgU+MtR9YmVqSaIhUtURSoOXJBPM2cMV02VfOKKYkYaf+dUWDfS
-         Xayf6h6vru3PoCijzpRGKV5QiNINsyf9Miatc9pCYYZ4XddBlTJtQ/OdHAFEMTN1tfPL
-         UMTDaxjh3CkUrvls96AcMlfCicaWU8Ogk6g58bBGRx5QkSSUv++lWXmrWNfaHda9fASt
-         QsiQaMAjpcMi6DS7x7rANBzCg2RdKgWQUtxYhMxLOn1Vc1/9h4dZ91Va+M4TGUdTm/u4
-         A1emxse1gLdiHvoxGlVpkhG4ghcNxqPBB4pfWS/waALlnOIoI74el5wh/qiLEZruePpE
-         BBTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778989298; x=1779594098;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CKnqFmMYqo0djxyK2+5XZs3mGgV7B68vlxm58Out+D0=;
-        b=HeFRnwLPNgbmjEmqbZzF4L004tOFVxDNrRW26/4RXpChF2fhPUzyG1TQPbw9u5W0yY
-         rN3DHs7kw+10rsafqpbrMFLbVViMwQ7UDaHvegoe2behJog5pcxHJU4NraoHOUyAPzdi
-         YLvNKKNiVqCrCsPQD6IZXmBOMra4UCFbgNQK0OVi62pOWOLDd530x+CE9OadOHCeMNq6
-         qVVhfDBZLCWDOwhY0od5oR7RurApa3rSd3MnDT/OIhH25hg1ZVRin+dr5OoXkVSSOmlO
-         fUl30wIyL5ti2WEYI+YCril5ePyW3Yk7XglXS2IsW3S+dFT1WEbcbkw/nZmE3ANG5haj
-         3LZg==
-X-Forwarded-Encrypted: i=1; AFNElJ+lbgies7Y8pwnX0ttbd82se2JT+PikRriPy5CrflmAIVoHHjICbjydZz/5wrKEKtFQhHTeaiz7qWQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzJSUPX7Nm59m5UJsovAANJJuUqKjuP90c6xhn+FWHKj/Cl64x+
-	fHCRmF1x7LML6NrAarnPebHcLV00V9nDgY3YSadKXiclcaUS5g73+9jK
-X-Gm-Gg: Acq92OGg40IbXxuvV3Ze473XgBC4seUdEttsKsZoPf1BxH0GR2iQdOpOCeRJUbYJZIy
-	2XW2xnySukO6JCJSAwRKxqZb8n3pZEHKSWqRBUB7OjhUwliWWaq+ChHqho3EuLXRu1qs9qJbiTY
-	hzSRIMKSm1w3WiiguGakbH18VpsHMqyb7d353E2dwu08V4tGVrxmXRn5lfYD8bWc2Tu2/jSt0Hb
-	i5Irc0wdvIRKSOxjuO/9f+OEHDycZAEr6L65PbPQQTvgAIkWhHegm9w5RZ1zvSiFKrp3/nE0ol6
-	ELkrbJoPlhqvYmrIG7lTRVVJJwRKnf2/MjyKYxn4bfRoW3vfbmx8DKX4hVVnmqLPJXMfY2Z/DkF
-	fngPN76eXhcPJYgmqTaWzTQkPpvW0ZNugBmpK4fx5vkeBsc+EW7nd2h8zP16BoMhYqj5I5BPkes
-	+0EkgXSXsUKqH6u+qjCTQj/JgX59XC+oCD1QTw9D68RZJshOaMAGB2QZgmZw==
-X-Received: by 2002:a17:90b:5290:b0:35c:30a8:32a with SMTP id 98e67ed59e1d1-369519ffc97mr10169030a91.9.1778989297957;
-        Sat, 16 May 2026 20:41:37 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:1f3f:2c19:c87e:d8bd:7518:c4f1])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c82bb07b007sm9374511a12.11.2026.05.16.20.41.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 May 2026 20:41:37 -0700 (PDT)
-Date: Sun, 17 May 2026 09:11:20 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Stepan Ionichev <sozdayvek@gmail.com>, jic23@kernel.org
-CC: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, sozdayvek@gmail.com
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH=5D_iio=3A_resolver=3A_ad2s1210=3A_s?=
- =?US-ASCII?Q?plit_trigger_handler_body_into_a_helper?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <6805AC3F-CF03-4CCC-ACA9-E7BA463C048D@gmail.com>
-References: <20260516151721.1982-1-sozdayvek@gmail.com> <6805AC3F-CF03-4CCC-ACA9-E7BA463C048D@gmail.com>
-Message-ID: <F66046FB-1E18-4E69-B053-7EF33CA872E3@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AC0Z3Z80"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778997780; x=1810533780;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RErmfycAQncLFjsSj4ZRL6Ch4MLjE4kAmLwUNayyEKk=;
+  b=AC0Z3Z80jXSl9ur0PK3NNuPs8weGsT5Gp3+b57IBFV5adjxrcn4vW2Oh
+   3WGTyTc8fzMZ/NdNkHfJr64jmWest5T5q8OeXliB11Mbm1hqfkgxHJSbD
+   DTake6jhcTKJ/ER+4BAfUXDG1qlEy0ZHdslTVr+cQmMFLeq5JQNq6Z0U/
+   LPJmLz/Quz7TSRcHP1uLqUuVOZlJLWqa2AMHmYYz+PZrzIyfOuQ+VjL+N
+   eOdtiv7Yw0sk7JgwqcjgnomjRKbxd729qm7aYL0GEMbKPtcJKNu+hytMq
+   AimEBUN1B9ruLqwiIGFW+eeoyLGfz0ZzCcxkwYQ8B30AC8oErOU4CWIbx
+   Q==;
+X-CSE-ConnectionGUID: +cNwu8FISNaqzacFwrk0MA==
+X-CSE-MsgGUID: LQ4SmbICSvSawy2iY+nuYw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11788"; a="90586011"
+X-IronPort-AV: E=Sophos;i="6.23,239,1770624000"; 
+   d="scan'208";a="90586011"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2026 23:02:59 -0700
+X-CSE-ConnectionGUID: jfCnAYtATRmghucDqyWBcw==
+X-CSE-MsgGUID: ur3eSMY/TXWUGViywdoT1A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,239,1770624000"; 
+   d="scan'208";a="238118899"
+Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.182])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2026 23:02:57 -0700
+Date: Sun, 17 May 2026 09:02:54 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Alexander Koch <mail@alexanderkoch.net>,
+	Michael Hornung <mhornung.linux@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Sashiko <sashiko-bot@kernel.org>
+Subject: Re: [PATCH v2 01/10] iio: light: opt3001: move device registration
+ to end of probe()
+Message-ID: <aglaDlDvhEfnqiqu@ashevche-desk.local>
+References: <20260512-opt3001-cleanup-v2-0-8018cf3a8a0a@gmail.com>
+ <20260512-opt3001-cleanup-v2-1-8018cf3a8a0a@gmail.com>
+ <20260516125628.53b90c7e@jic23-huawei>
+ <CALoEA-wakxKH8xKWvPWED1Afh0vTKASCOxsKYWF9ipAjBAytjQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALoEA-wakxKH8xKWvPWED1Afh0vTKASCOxsKYWF9ipAjBAytjQ@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
+
+On Sat, May 16, 2026 at 06:57:33PM +0200, Joshua Crofts wrote:
+> On Sat, 16 May 2026 at 13:56, Jonathan Cameron <jic23@kernel.org> wrote:
+> > On Tue, 12 May 2026 12:57:21 +0200
+> > Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+
+...
+
+> >                 return dev_err_probe(dev, ret, "failed to register IIO device\n");
+> >
+> > My eyes skipped right over that whilst reading :(
+> 
+> Yes, I've read the report and it should definitely be fixed, however
+> it is compilable
+> on my machine - what an oddity!
+
+The only possible explanation I see is that you have CONFIG_IIO=n, which makes
+that no-op and compiler's code elimination makes it not even consider.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-On 17 May 2026 8:57:38=E2=80=AFam IST, Sanjay Chitroda <sanjayembeddedse@g=
-mail=2Ecom> wrote:
->
->
->On 16 May 2026 8:47:20=E2=80=AFpm IST, Stepan Ionichev <sozdayvek@gmail=
-=2Ecom> wrote:
->>ad2s1210_trigger_handler() takes st->lock via guard(mutex), then runs
->
->>--- a/drivers/iio/resolver/ad2s1210=2Ec
->>+++ b/drivers/iio/resolver/ad2s1210=2Ec
->>@@ -1276,10 +1276,8 @@ static int ad2s1210_debugfs_reg_access(struct iio=
-_dev *indio_dev,
->> 	return regmap_write(st->regmap, reg, writeval);
->> }
->>=20
->>-static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
->>+static int ad2s1210_collect_and_push(struct iio_dev *indio_dev, s64 tim=
-estamp)
->Hi Stepan,
->
->Is the return value of this function checked by any caller?
->
->If not, should this helper return void instead?
->
->> {
->>-	struct iio_poll_func *pf =3D p;
->>-	struct iio_dev *indio_dev =3D pf->indio_dev;
->> 	struct ad2s1210_state *st =3D iio_priv(indio_dev);
->> 	size_t chan =3D 0;
->> 	int ret;
->>@@ -1295,15 +1293,15 @@ static irqreturn_t ad2s1210_trigger_handler(int =
-irq, void *p)
->> 					       AD2S1210_REG_POSITION_MSB,
->> 					       &st->sample=2Eraw, 2);
->> 			if (ret < 0)
->>-				goto error_ret;
->>+				return ret;
->> 		} else {
->> 			ret =3D ad2s1210_set_mode(st, MOD_POS);
->> 			if (ret < 0)
->>-				goto error_ret;
->>+				return ret;
->>=20
->> 			ret =3D spi_read(st->sdev, &st->sample, 3);
->> 			if (ret < 0)
->>-				goto error_ret;
->>+				return ret;
->> 		}
->>=20
->> 		memcpy(&st->scan=2Echan[chan++], &st->sample=2Eraw, 2);
->>@@ -1315,15 +1313,15 @@ static irqreturn_t ad2s1210_trigger_handler(int =
-irq, void *p)
->> 					       AD2S1210_REG_VELOCITY_MSB,
->> 					       &st->sample=2Eraw, 2);
->> 			if (ret < 0)
->>-				goto error_ret;
->>+				return ret;
->> 		} else {
->> 			ret =3D ad2s1210_set_mode(st, MOD_VEL);
->> 			if (ret < 0)
->>-				goto error_ret;
->>+				return ret;
->>=20
->> 			ret =3D spi_read(st->sdev, &st->sample, 3);
->> 			if (ret < 0)
->>-				goto error_ret;
->>+				return ret;
->> 		}
->>=20
->> 		memcpy(&st->scan=2Echan[chan++], &st->sample=2Eraw, 2);
->>@@ -1334,16 +1332,25 @@ static irqreturn_t ad2s1210_trigger_handler(int =
-irq, void *p)
->>=20
->> 		ret =3D regmap_read(st->regmap, AD2S1210_REG_FAULT, &reg_val);
->> 		if (ret < 0)
->>-			goto error_ret;
->>+			return ret;
->>=20
->
->I cannot find this goto instance in mainline=2E
->
->Is this patch based on top of iio/testing or another branch?
->
->For patch dependencies like this, is it preferred to mention the base com=
-mit in the changelog for single patches as well or in the commit prefix?
->
-Looks like David has submitted change answers my concern=2E
-
-Thanks, Sanjay
->
->> 		st->sample=2Efault =3D reg_val;
->> 	}
->>=20
->>-	ad2s1210_push_events(indio_dev, st->sample=2Efault, pf->timestamp);
->>+	ad2s1210_push_events(indio_dev, st->sample=2Efault, timestamp);
->> 	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
->>-				    pf->timestamp);
->>+				    timestamp);
->>+
->>+	return 0;
->>+}
->>+
->>+static irqreturn_t ad2s1210_trigger_handler(int irq, void *p)
->>+{
->>+	struct iio_poll_func *pf =3D p;
->>+	struct iio_dev *indio_dev =3D pf->indio_dev;
->>+
->>+	ad2s1210_collect_and_push(indio_dev, pf->timestamp);
->>=20
->The return value does not appear to be used by the caller=2E
->
->Should this helper return void instead, or should the caller handle the r=
-eturned error code?
->
->The helper function changes look good otherwise=2E
->
->Thanks, Sanjay
->
->>-error_ret:
->> 	iio_trigger_notify_done(indio_dev->trig);
->>=20
->> 	return IRQ_HANDLED;
