@@ -1,126 +1,127 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94AFB2DCC01
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 17:07:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779037658; cv=none; b=fiqnf8DGvXn92RLB2RHZ9iW8n91cVQEnMOa1EJGtUDQpMfpQ5MmOXABWC7FvY27Q75W0LTqs0Fvi2tPQeKm1/37USNK7YJ/e4DpMXyPI9vg9hzW6E16utp2B6moi58duEr0f8Qnlu0NfVsWJZar1zmVIbnOVeqRNaJ4gndx3Gck=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779037658; c=relaxed/simple;
-	bh=B+gnwHBAfIoCpLNTcKZqdCPscmLQ/yi14UzJTcxzsQc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KqQMPx2C5Y0PVr7HRKsPgcEPZfEYh6DsWAFz1f4eleqq4KoHG8hesSMmcZzzJ5Jv7LVyX6vsR4qCb2ZXxQPOK+ZVDNneZWY9mdDfLr40K8/lJjELhe/Phm5mkTF2JRBuErFpLtyn72OUncSAvnrB8jLgxz2f/P1N0sc2aqxIyAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=mFmthNfo; arc=none smtp.client-ip=209.85.210.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50C43C13F8
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 17:11:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779037883; cv=pass; b=I3qY0gx+Em+2ugzdVCXswu2S5bSd8JgTA79+XpdRn4nmJb9QLi40J1BDv+yMR9CboTx8Vt2WrIkQ3rjkdl5NYNeD+azNzRmh/rFGOfBNKbrLNrFVLloOTs+6SBwo9U5H5gqOw6JENs3fPgHW97e2nmr2CkzE/ZAhU6BGNNJU+GE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779037883; c=relaxed/simple;
+	bh=VcqMAEZLIy6UepcDNfGzxEP6jYWQESkbRSqSUZivUPI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=u9w8eAF+B7RavGPECgnNAI7fgWPKNBxV9oVbEqQASteu4/SAeLUn27LQhGGnMqgqqgSumQqCijlKAR28P0hCt+4IfXynMetkuSBIcmuywqTG1eJFdIDVdTKAan5RLx22amTVZZR10wmhOTBn0grRpKraNGwdXLl9ffQCkOdkUt4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XxMKUd8r; arc=pass smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="mFmthNfo"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7dcd689829eso1402241a34.3
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 10:07:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XxMKUd8r"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-44b330c5cc6so1000739f8f.1
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 10:11:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779037879; cv=none;
+        d=google.com; s=arc-20240605;
+        b=MtyKhUuCJLhV4+8r4dfHMjnPFGwyzxVeg4L0HL8PF8WB6D1UD/zkxkDPFTL6s/zjSn
+         1myuLx0HLrwmfHUO0HvONuD+naMKsbWxBuOu+mmWS68287EN688WG4C3TM+aAI0/PDgm
+         STaiZ5RfkWq88SWpPO2F7cKAbNcIjCPWGn+FSIDTTvdknB/+jsLL5kpI37McukWNLvpZ
+         hqlCpQXM22eVBe/uBtMRKOMR7x6ORg6Aekeo+AMIN/ay9ZBlMwRoak24iqcUPEx97EfO
+         ak5Pw8jRrYXgUW4k3wbER/wiql2GJZud4M1fFKSMJADgQfvzbWQL1zlyApTmv6qANM+L
+         /x9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=oOk3mNqwPe7B1Ha1xIvx/x5c0FAW1KnQKPwGG0/kFNQ=;
+        fh=+6TQ2pVa62FpOemCiJtl61nyWFETfHeNUygUpd6MdzI=;
+        b=HyCGleR676WksDEwrg2vXSxSqb64KEeZvCadI3rkkGLnT6pbXieimKNgzO2itNNAmZ
+         A4QCbY5e+ME79Qy0wn2CVGGLYMhq+er7YJL8lW4UJQ2YPxYm40mueh1ebEA7LmblwSnh
+         +A9xHqODYjMM0VfXCdxDMJLOw//WGtVIe88MkpYDtyUCCeeoeTKwl/9sNZjcTO7PFeMX
+         i+ytEE7Ntq2ewd9g0QQyGlm3MeRPTto9uGVV9TYv1c+IAudEhggMEgV/T9OzMNMQ3VZ/
+         yCNZvGXdaTG2ij16l+vWTz4Pvn5NOBnbi+G1Z571HJ3DwZXvprR58PdeeTuVjnViJhye
+         eo6g==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1779037655; x=1779642455; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hrOnBFPP1Ld1TfCVTVS9lLZmmZK95raO/NO3JK/+lUU=;
-        b=mFmthNfohzVMZ/SaWMnJUpMphLArtL698X24lYrEPvcrhq9//Pfwe7lBnuwY1j4Ljy
-         4/3abvjznNBNAXb6Tei/ErnSjbJUkmh+EfapJfxWpzr7BDnpWn5YJ4Qh8+uf2OadvaCK
-         H9ro9NzH10bqO0CNUH7L8JLnRcj8H7utZUZpLz0rPJ2+DeyQD4bMmYZ3vreJAKMWsqyo
-         HH0BEuz+IbQ4PCW/FgRA/FjpzyY2yoE5Eyxw3qyK9LUcW0nZ8Eky4YzwQq0P/m8iJcv0
-         REQMoDSE9jd3dnaz8dkbBehKoIMY+Lh3F4XDXMb3acXjyAmnaDRtOxB1EiHl+qfG17be
-         u7mw==
+        d=gmail.com; s=20251104; t=1779037879; x=1779642679; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=oOk3mNqwPe7B1Ha1xIvx/x5c0FAW1KnQKPwGG0/kFNQ=;
+        b=XxMKUd8rmMLu6gWYuWRq1Hj5nRmlz7egqhvLAFdPx//KO6cWwuqOIlW7AeAKfK8NoB
+         6B3WgF4K9/uIRakD2lc1OMH8n250R1E8ejLKdLDime433G9YfhetvpnpbygPZJkx6k1Z
+         8mdKmk5fIWC8YnOy8fr3GIg/6wRg5MegoZIg9QSOwhuuBJu/0GMIqCExyQEOoJrjgoMA
+         aueMT0Uckj32hbCpjYI6nVIcmjeB7bGeXApux7RSC8IxkAEVUc3LOqxfoNrvioDONaqf
+         U77DawZ698hWaTmtLmn+fS81IBMYlwgQATP+h10y9l2HmJ0VEfGM2sFdHTgk3CsLWbdv
+         uhPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779037655; x=1779642455;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hrOnBFPP1Ld1TfCVTVS9lLZmmZK95raO/NO3JK/+lUU=;
-        b=XRVST1YMMFcjkH5RFJQXUIW08VBAY7HnGE/mndtGuHFcvfTDCkdUuU1dD3LLBg0GkF
-         kRM6vY8F54DyD+o/Qa2XVTdp9OsrphM53f9iH/9tPPQDE1X+KRwjUInkSVnwO68nbWr3
-         yLPnwuzUogilKlUEDe4EWUa58pRS/VXr69tp48vVvnLC6OjioRjlNG9Rmc/Nc8PUnHa2
-         mK5HL7fiFLXC4jGxahDe+mR//OQZpVzRNivJHnOFj+rfGDZc15NBneBBcjr3Cpff614U
-         2y0asFByhXiQvLtRgQfiRaqyhQgF0tsA/ln7+cg03u3CG0cgX5i96a72ig71COBV56vT
-         7oVg==
-X-Forwarded-Encrypted: i=1; AFNElJ9AVpDQcPvmYm7GxzofHXQ/yYUBVoelXlR7ZdODMfwiXTg+McoixAvVT8ZvJIo4FXAu53WDuLoaRZU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxWXN7CmZA+g5A6w5JRRTRobQzt3oNtN6SHmDJdan8TQxQY7vlL
-	Gf6bUPPsNznjUOPQy77l7R84S8/veciVd8CuH3Y0I5+yQhmy9JLeHSntHTtdDHc4U58=
-X-Gm-Gg: Acq92OGF3ffA5sOyQH8cpoblUW2XnLg71J90QsAcnQffudQbconaER8MaNtwWgmGnlz
-	IjlEKd8cJtxcedOBCjz1Dla4uZ9Px6gv72R39KjszWEPwizoUcnU534JmEJi1/ac0u/Ms1mAwUZ
-	LSTdmaEX017mC5kVxUufYA3JubSK/lDYzLvKQi99CMC02tfq3CU4POxUhG+Kte4P67Wgfe17slf
-	HIhXgz6wnJKvwgKR8KUMhKct1NIFzrgT8Ru9LAtd3FBhVprlZDi/7gkEYfiFCKi83MomD97Jhd1
-	wkJUDnwiUD6PzFoys1GtZcaLMoLl/k/vzlb963LtZI5/Wi6VbRYz5TXvg8MaV/ZeWsNzCkYKZmU
-	Ykb3IXDjMF9S91ri2WJmMD8hf1+jvCG5tw0KqO0+UizqxUlCc7fARbps+KO909TBsl1mOgpiu08
-	IEz78orRADs+G9ZxrG1hP3NDZ0ZGY3YNLXzRSIxTOx5SgWyoW7LvfOeKT2qxc4VV/vA1DwdN8=
-X-Received: by 2002:a05:6830:710e:b0:7d9:71fa:3079 with SMTP id 46e09a7af769-7e4f2a13f65mr8565931a34.10.1779037655575;
-        Sun, 17 May 2026 10:07:35 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:7a4b:ddf0:f61:f58d? ([2600:8803:e7e4:500:7a4b:ddf0:f61:f58d])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e55bc111d6sm6311763a34.19.2026.05.17.10.07.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 May 2026 10:07:33 -0700 (PDT)
-Message-ID: <57d1d577-39fc-47bc-b01e-a2cc1d2ebdbd@baylibre.com>
-Date: Sun, 17 May 2026 12:07:33 -0500
+        d=1e100.net; s=20251104; t=1779037879; x=1779642679;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oOk3mNqwPe7B1Ha1xIvx/x5c0FAW1KnQKPwGG0/kFNQ=;
+        b=RZJxBFO4ZklM6kjoZ/X7T6/Q3+MIG3t/WxmEf/CWL+SVnzE0Eor/H3EK/CWZaYR8LZ
+         uxVXQ6OHlxrNOVHEg9m0tsyMVycoXvEISKVgs0Kmu4Ph81o0s99kLogsWKcbwQ9x8qVz
+         3j5pHdCmpzQqgdOA6zYT62NHMkqWta9i+uH8T9pSbEGvF4L321Up15pqAhI6tLvPGWtc
+         M2VtjYVx4YWYdVRk0EI32Fn13D563S8eomJKBTBSNWvH00ipicR3zj3SF6zDO8ShXVEY
+         vwaZ7nGMCTVm/Dcva1QTz7yhBwbthz/LME+bxNyUbtSc/NYB9SFW0oZIXKbusrr7TvWP
+         qBZA==
+X-Forwarded-Encrypted: i=1; AFNElJ+Wsvswk8wf0t1DQxGlFv4rXPAahvq2d4DWDlqRM1kN3IViuiFxgPeyOwvHSIpsipLcoJICIhsv9Bk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwNv7hyrUyu3Frdf/4nyE7CaLNRva04HyIUCV512Js3aOcNkDP1
+	+3Eq/Ym2pvphuPMJLb1tprzeqG8dmCepppetfl7QKiLa2Kcwsd+fikl0Jz3X/6sREuEm88epr+0
+	+nE1yXnK2BKuBLYhLc5XHqiYDzIKrDZs=
+X-Gm-Gg: Acq92OHEspAGgf6ymQr+FFdW2eYfqH40/GCqAIw9VD9HS4Ti6ViwOjhttlPeBsW/TbA
+	V2lGPFURxXaTEozc+X7RfFXZCJE6cs4LI+JxV2RE9uAPxwuLxbYs2Z1gqLX5PTp5nCiW0m9/OuM
+	iCD3nL0Lb/HuDtEidRDWzIuqI/U/Ypcmzne/50c1gWVBi10yIwwk6YjOEycVljQyGf+97I+Mqnd
+	Fzi5xCxuD0ggXRKiAKdLhFIoLqjMBzdk2rUz+XynexktLuAXHXOCxD4sevsB/7eno7syaObohEG
+	RFoS4tmw9vyKrRLtF+YU88tZzXYP0xAlxYkXMi1X7HNDtpM9PZ/4mop384BFVaKWM1z+Ea9jByP
+	ola9W190RmSLzvFHSEL9QyqLCy0h5oqJ4NyEEOUjzQUKwa8D+A/5w7rqowShNdLzQ2Q4IKEZITQ
+	szql24lg==
+X-Received: by 2002:a5d:5f49:0:b0:441:1e41:19c with SMTP id
+ ffacd0b85a97d-45e5c5fd484mr18023529f8f.20.1779037878885; Sun, 17 May 2026
+ 10:11:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: adc: nxp-sar-adc: notify trigger on channel read
- error in buffer ISR
-To: Stepan Ionichev <sozdayvek@gmail.com>, jic23@kernel.org
-Cc: daniel.lezcano@linaro.org, nuno.sa@analog.com, andy@kernel.org,
- gregkh@linuxfoundation.org, hcazarim@yahoo.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20260517162346.189-1-sozdayvek@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260517162346.189-1-sozdayvek@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20260516-veml3328-v1-0-1d4b663e2fe3@gmail.com>
+ <20260516-veml3328-v1-2-1d4b663e2fe3@gmail.com> <20260517143449.6c30b99f@jic23-huawei>
+In-Reply-To: <20260517143449.6c30b99f@jic23-huawei>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Sun, 17 May 2026 19:11:06 +0200
+X-Gm-Features: AVHnY4LXDVs3MpxIYkHyk_Tn4lGbYKhu0alZrM9Qpom4vtzjFVIC-DUNf0PWHcI
+Message-ID: <CALoEA-zpJ2B4W6N-++cBqE6fBLsd08D4j+Rozgpt+1=NBAga0g@mail.gmail.com>
+Subject: Re: [PATCH 2/2] iio: light: veml3328: add support for new device
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 5/17/26 11:23 AM, Stepan Ionichev wrote:
-> nxp_sar_adc_isr_buffer() bails on the first channel-read failure
-> without calling iio_trigger_notify_done(), so a single I/O error
-> leaves the trigger's use_count stuck and the buffer flow wedged
-> until rebind.
-> 
-> Route the error exit through a 'done:' label that always calls
-> iio_trigger_notify_done().
-> 
-> Fixes: 4434072a893e ("iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-> ---
->  drivers/iio/adc/nxp-sar-adc.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
-> index 9d9f2c76b..ed004812c 100644
-> --- a/drivers/iio/adc/nxp-sar-adc.c
-> +++ b/drivers/iio/adc/nxp-sar-adc.c
-> @@ -341,7 +341,7 @@ static void nxp_sar_adc_isr_buffer(struct iio_dev *indio_dev)
->  		ret = nxp_sar_adc_read_data(info, info->buffered_chan[i]);
->  		if (ret < 0) {
->  			nxp_sar_adc_read_notify(info);
-> -			return;
-> +			goto done;
->  		}
->  
->  		info->buffer[i] = ret;
-> @@ -352,6 +352,7 @@ static void nxp_sar_adc_isr_buffer(struct iio_dev *indio_dev)
->  	iio_push_to_buffers_with_ts(indio_dev, info->buffer, sizeof(info->buffer),
->  				    iio_get_time_ns(indio_dev));
->  
-> +done:
->  	iio_trigger_notify_done(indio_dev->trig);
->  }
->  
+On Sun, 17 May 2026 at 15:34, Jonathan Cameron <jic23@kernel.org> wrote:
+> > +static int veml3328_write_raw(struct iio_dev *indio_dev,
+> > +                           struct iio_chan_spec const *chan,
+> > +                           int val, int val2, long mask)
+> > +{
+> > +     struct veml3328_data *data = iio_priv(indio_dev);
+> > +     struct regmap *regmap = data->regmap;
+> > +     int ret;
+> > +     int i;
+> > +
+> > +     guard(mutex)(&data->lock);
+> > +
+> > +     ret = pm_runtime_resume_and_get(data->dev);
+>
+> PM_RUNTIME_ACQUIRE_AUTOSUSPEND() will mean you can rely on this
+> being auto suspended on exiting scope.  Will allow early returns
+> and get rid of your goto that you noted already.
 
-This is fine. Although we are already duplicating the call to
-nxp_sar_adc_read_notify(). So could be OK to just call
-iio_trigger_notify_done() and return too. Let's see if anyone
-else has an opinion.
+Sorry if this is a silly request, however I can't seem to understand how the
+macro mentioned above works... Could someone point me to documentation
+on it or a functioning example in a driver? I tried analyzing this
+with AI as well
+and it keeps going in circles that the macro does not exist :(
 
+-- 
+Kind regards
+
+CJD
