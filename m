@@ -1,163 +1,130 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65A082D8DC3
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 10:12:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779012746; cv=none; b=c7TRANnzymP/6Goattu7cQ+QUaL1YI03S+ViCJemyPlLQn4LqqORtGUOTp/eG95ev8KYPULmip7LclcM8OLSYbypx4zmYM+498Szq8T+WqxGTw3FhKqW1/mq31V6bgX8m/vIUNuWT/ZnoaPYklWGoASnBrNgHKrdS1uIqBQEv+0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779012746; c=relaxed/simple;
-	bh=KD/IuTgzVq18/vpJBrybXULGBqIH1vlZksMS0vB9c2E=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GlBb9iBs8NT946zdTLWtn4Aa5ayb7Q3A8Fbvb+5ZfyROvOedUfFKg+7z2IsSBOX0oIWXJQAiR7JSW9nC2OLf0z6EOFp3+kvcXzPAf5bbI5dtnWCU4lhFMQLO8Zk5OpdT0pJTa/OrwqTbXVh0GumHs7sBMEBtK/iG7ztMVu0PR8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g70Ccik1; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D39D335DA6A
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 10:13:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.175
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779012816; cv=pass; b=SlnGV/ddcJ4vLOCrL1n4RAS3dpVvql8ms4bDGlqVGXfChpQNw5UVVJZ8aPoL66MD0ibKYfZ1g4bzZy0s+e7TAc49IHqoLj7H14o7Kz7HHgecGTIKQUTtOA7Xnab/9PK75AyNuSrE/n8VASYPXztTzVoFy5iZGQ8Gym4yPYlnALI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779012816; c=relaxed/simple;
+	bh=Ah355/SrzZrFxRMEDg0nnxbwUFNinnvYb3ZHH5bVd7Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QGMaFf6NX7YlNlrRprTsFezLLHZEw0uorsY5WOA2V3AGmlaAXZLikaYyF3mUXtCsNA0PZmHEOqJRf1g6o+vfc5QtKEM+mOeeTH5aMaV3LOdnlOH8mGn3dPpFSxkm4Y9QZGpEbEZLPAJJ++8BC4KtUdPv4+1IStWmLPkqHRO7gcg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DpiZQz5C; arc=pass smtp.client-ip=74.125.82.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g70Ccik1"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4891e5b9c1fso8969345e9.2
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 03:12:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DpiZQz5C"
+Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-303dbfbec77so8896eec.0
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 03:13:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779012814; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Yvvf+HLb16ffaBL0OQNUN2fGmak0BkKxfbPafKV9DGNKAl7H7pV4LRXPju+N16ogZe
+         DqR7Jl03SGUG7MqNF7W7AkQLFgJdGr3RpDnIqdjgY3y4gJGluK/jH4OmDisR8Ts2dvwh
+         KrLh+3r07qrngbuA+7tf4v1DlPTAYgsgWXW4Dnbk2IWTtkw0kFdUUrzljxSJQyOZaE2l
+         BBy10txYPAwCOpdQNrE8LsMpjDWCde4ifuHiWXEdlHMjQSTgKdNV584bLsltmG2+e+NS
+         hyuqjNE0AHfB63FGaQkh82xVaNJ0J6A6jf+MeQ3Pg++n9OA/03eZrLF76OufcdZp00Jg
+         n8rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Ah355/SrzZrFxRMEDg0nnxbwUFNinnvYb3ZHH5bVd7Y=;
+        fh=NIbXpLFpbJt2SvVM353nqgKBvuxTb1PdYrv6RqgEQgI=;
+        b=FxtojQnS1pRviRAyG7khDUyzbbNwyLcykVjaANWD/JpDMhYOCUzxzqh4gVGY0OsCFU
+         UGAtNlx0JErHmIXjd6WXaKzbrM/HH7MF9XcfhhmQw6C43zTUdANRyq1BD5WV6kxYB2YA
+         KeApv9Tg5EEMW9W4zb52LqGlgyagX9m9JaaZGhxhUG5wFckZaMywoOHwzvYUyXqQmz4V
+         yhvp1MoxXi5xJPFOpdfSvX5blKIZFsFmA2XAFGXicablpKPur6diPmfAtFOa+soyTb8c
+         ejuymXnxg0WJwGv0J+GE9IX8dhuHNPuUaL1yRs1uEYWtraZM4FY4crOGcIi76884S0fu
+         zOew==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779012743; x=1779617543; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=NzQ+XkjFbbvnSSJgYiukqepa3NWBT/tqzId42RKwLNw=;
-        b=g70Ccik1II7afpDiDAjDi8pQvdlf45OLTbHgt6NPjxDHqXylsPDPi/VYbqo+Yr3sCU
-         7LiN6I6w8WYou1Z0z4Zftt67Z5CAohO7Oj9e+vTx8SzAjVfFiNo9MjaodLiGvf22U6jV
-         2T/39KbijVls5KHDwHib14+Yp5K+hCqQjI5CX6MgMCoClcYw2RCibCAmOmke+ja1xZUC
-         v2rjFgI16PlfXf2y+nEvbAwPcoCV1PeYbJOuQ0dzCdkeLwUNZzP0Na1pQARf7eLm8dJq
-         YfMLan7rR9dz1ZL1MwO2Oj0o+QOEKnIgwsQqFZ/Om+uUI6u8AXVZWvIXMrmZJIeGr2qb
-         H4vA==
+        d=gmail.com; s=20251104; t=1779012814; x=1779617614; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ah355/SrzZrFxRMEDg0nnxbwUFNinnvYb3ZHH5bVd7Y=;
+        b=DpiZQz5CG8ZsaOTOglNTkpxyCrOL2GT7MM2PeQzjC+91XVAbmvolTcCxLU63eB8NbQ
+         WEI6T07V2j1xZObTgOmqSnbrokDXpO6061B+NXhy4sDdEPgT5a+ubEBxizQ9myDYGlWC
+         O62zgIwpFxpPyLkH4EhPQqjEIdOWArEJXc7t0mML/K9fj+90Q+Qw71nRr09oxaXeqquh
+         J7egeAQ7ppT4Va5M2I63q2c6XcGN9klLocWjLb7ZYA9A4LNa6W9Uh2Bm5Y2nQku6s9lA
+         TgqsXMrnoAr8q01O+m4luSM4rbXjhePOOY7jxaFcDRXNkWopcSeGTB6F6pa6n0Qh3K1N
+         t1Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779012743; x=1779617543;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NzQ+XkjFbbvnSSJgYiukqepa3NWBT/tqzId42RKwLNw=;
-        b=NuEjJ4x24oAJTK2XfrlquG+gcMX46mzih2QBneZBBreY5qmWv0W7XL0kxcxGk1vZvY
-         ztL9ygFbsjueGhpYOY3D3DJ62PczhLtVicIW24ZkWImVn0KvGCDdk5eOyNguhXFNf/po
-         QlO0GNEcaTQqEURFhDkJSjRQcRa/dkfDwgoU2EZwPJjQ38bvq6pdXf0e+1Xb+DiH//5c
-         5Ud6ByEPOYh8Ri6lPKZfqvGakyvpvkgbfq4MK6m7L9QjG3FZY+pBJBkyAtDdt8JeFAeH
-         Lio0HYfzhbgFsgTb+IAlWi+BzCN7QYCJd8g6gXQ0xmeXi355kmYfpvfJGqpDNlOxJd6J
-         yH9w==
-X-Forwarded-Encrypted: i=1; AFNElJ+36YlfRqwPNNtNZTLrGZMx22g67Cp58FGX2axOPRmw9SqK4B4fKeSM1nTcGDjaWqsS66jP9qvH+xA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzvng9VhC2PEaEJgMb8LFqJOGN18J+iAMWLLBsBaoD1kfbRvl66
-	/u5NYS/R+hOl2He4EOhxV6WaBeijPiAcY+io7YCo9QZDD87SyAxc5VSY
-X-Gm-Gg: Acq92OFe/Ctl8YeA+vAIsjl4NkAr4HQaIaKJ9KOgCqFl/ZFIJHGc/Mw87T8JAgD1dJj
-	g0CMFfZdZF9d+XauXmEBSsLq30ZhjkvhrXCotmcI1q61rGZnBTpZ1GlAvAS8NDMQHgX8m8qdw0m
-	TOo+HUQSwakLHvNs//mVIlzg01vlNU2ToyLjXCYFbQE6fZBFsA91+g54RQrtTN6auB8IwkzcNJp
-	7vqJTAGq6EZTdtxvikZKsPeX+dumTAv3B6tBYERYiUKJ37WXwXrssNAzH0tKrbZcqUeTiCgwPWq
-	bNPlY884e+vpgeMRxsipy93Q4XVP9ELC6MrqnBk0XEHYyDAS7dPBtNJk0i6xVQrkQncbKyGxb78
-	+iRFbr+5j8AI7I9AQWPYkvY9tnN7G+sXUFFNuLV+XDdNfAyr0Uvc+G8T5A2c5mgbkwxfqCOuT8M
-	aym299Ds1/Pe1vpn3Z6KMvsWmzRMsEeJQ4BLnfXjQJg0e/d6xl08gmJXgNZBzpcX+xLnehc2MXK
-	iCzIQI1If11veiCSvnc5pwWQ3IvDCunWEknHYilipmrY293YA==
-X-Received: by 2002:a05:600c:8184:b0:488:ffb1:494c with SMTP id 5b1f17b1804b1-48fe60ed790mr148404075e9.12.1779012742660;
-        Sun, 17 May 2026 03:12:22 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe537ccf5sm181409985e9.14.2026.05.17.03.12.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 03:12:19 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Sun, 17 May 2026 11:12:14 +0100
-To: Jonathan Cameron <jic23@kernel.org>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: 
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>, rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v4 01/10] dt-bindings: iio: frequency: add ad9910
-Message-ID: <ikhp5dsb4ook2cx665p4xbqg5ykmnoytiaybv2cx5khyn3wngn@j752jkewd36b>
-References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
- <20260508-ad9910-iio-driver-v4-1-d26bfd20ee3d@analog.com>
- <20260512193129.777d62a8@jic23-huawei>
- <vklczsi4vk3sqf53zifslhp5pysdmj3gfyhvdgrwo4bg3wdkxj@lnbftaf5jcbf>
- <20260516114022.58949a06@jic23-huawei>
+        d=1e100.net; s=20251104; t=1779012814; x=1779617614;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Ah355/SrzZrFxRMEDg0nnxbwUFNinnvYb3ZHH5bVd7Y=;
+        b=s5bUUSExezEgozZniDGqWZ6LiUdDzy1o83MTXNe7AO6Q7AX+b9MLmitaRLkvpTJieo
+         HrkBNTCXPsLzuf/xTBmrySg8jMxsjGjx6IrFnXrTGshhSoxyeoAD3clIQs1EqFCE7vDO
+         oX/JBUCgcJodft6Ld0OintlX9QYtJc+Cc0uGnF8Ql+tr3sg0gn5IYUn1N/+la9qmKDIU
+         UyZUSjJTr0nzmtBWG3zuBmKwH+dnor+4IfXBxCWDN6Q+m515l2bbPswhQ0jfm11Z0htI
+         KLkCKfUKR8to4rAJNSsBs3uwH/F+ZajF4CHNXr5MsPln6QJB+ZqYFaB85oz41Wm26/9J
+         xS8g==
+X-Forwarded-Encrypted: i=1; AFNElJ+eBvlU8TxnHr2Cef1ea2XLafxT64aG6/MWcSwg0hx1r7zIM+aKC2UFc9qLcx+xQ3aaQELIBSCPFcw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxPjdWcIdbiZvibLetlzD/jsfeZgSn11r6H4FcaC07C+ExEQNNb
+	EK+vreuB3ja3u3LoqSH8gfMNpmoc/mGc4BuJshtnmhGfSRp3yG2Rs0Y47PovrvB3NL/1I2WW8uO
+	LSvPTWAb5HADMZzsERgi9knqOlYU0H1U=
+X-Gm-Gg: Acq92OEni28m+nGT37Q9z7+tuVCUB5JjfnbTF5Wct4sh97mPwzT+G202kszitCYNgmu
+	vMT8f0YVKwzy2zmq/86JatFss7psprzKHbX0BY+G3cvcEmoZNALecVq1UCxYhLlqXdoMiu4BnHX
+	zMDIWr/aFMUge/qHCBw6F/r9O4/tQmAvIh04CtUrBicv/JWKWhQdyrd00LkleUmSVGmKkGf+a5E
+	E4dWDIaB8+Sc+sHflskED02Zteg7hSfo1VF0+EzMnwL2y3UPYr8gioaVBLjIngUGttM0OD6r8b8
+	JtTjwSMZMf+d/pxrC4s=
+X-Received: by 2002:a05:7300:8b95:b0:2e0:1f09:d924 with SMTP id
+ 5a478bee46e88-3039813cab5mr5237843eec.5.1779012813884; Sun, 17 May 2026
+ 03:13:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260516114022.58949a06@jic23-huawei>
+References: <20260517074306.30937-1-clamor95@gmail.com> <agl1T8O6kwP7SFZ1@ashevche-desk.local>
+In-Reply-To: <agl1T8O6kwP7SFZ1@ashevche-desk.local>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Sun, 17 May 2026 13:13:22 +0300
+X-Gm-Features: AVHnY4IqE6FsGFbbFI5FSmJMlyOUEK62QOSOEKabbR3m07ZeyolRt90bM2zxkWg
+Message-ID: <CAPVz0n0tfbwa1AbgO4eKrmNunHvmTFLDqXDFd1=VfLayuafH8w@mail.gmail.com>
+Subject: Re: [PATCH v1 0/6] mfd: lm3533: convert to OF bindings, improve support
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org, 
+	linux-leds@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 26/05/16 11:40AM, Jonathan Cameron wrote:
-> On Wed, 13 May 2026 16:09:24 +0100
-> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> 
-> > On 26/05/12 07:31PM, Jonathan Cameron wrote:
-> > > On Fri, 08 May 2026 18:00:17 +0100
-> > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> > >   
-> > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > > 
-> > > > DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
-> > > > configurations for clocks, DAC current, reset and basic GPIO control.  
-> > > 
-> > > I think this is getting close enough now that for next version you should
-> > > drop the RFC (which is probably gating DT binding folk giving it
-> > > a detailed review!)
-> > >   
-> > > > 
-> > > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>  
-> > >   
-> > > > +
-> > > > +  adi,dac-output-current-microamp:
-> > > > +    minimum: 8640
-> > > > +    maximum: 31590
-> > > > +    default: 20070
-> > > > +    description:
-> > > > +      DAC full-scale output current in microamps.
-> > > > +  
-> > > Can we use generic dac.yaml defined output-range-microamp? The base will be 0 always but
-> > > that shouldn't matter.
-> > >  
-> > 
-> > would that be fine even if we do not have those child channel nodes in the device-tree node? 
-> > 
-> I think I'd rather we generalized to cover the 'one shared value' case rather
-> then went with a vendor specific binding.
+=D0=BD=D0=B4, 17 =D1=82=D1=80=D0=B0=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 10:5=
+9 Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On Sun, May 17, 2026 at 10:43:00AM +0300, Svyatoslav Ryhel wrote:
+> > Convert LM3533 to OF bindings, add missing VIN supply, add support for
+> > setting mapping mode and LED sources based on device tree.
+>
+> How is this being different to
+> https://lore.kernel.org/lkml/20250218132702.114669-1-clamor95@gmail.com/
+> ?
+>
 
-I can't reference dac.yaml in node level as it forces the nodename to match a pattern:
+I have decided to have a fresh look, this is continuation.
 
-	dds@0 (adi,ad9910): $nodename:0: 'dds@0' does not match '^channel(@[0-9a-f]+)?$'
+> What about this comment
+> https://lore.kernel.org/lkml/ZmBcvtLCzllQDWVX@hovoldconsulting.com/
+> ? Have you talked to Bjorn A and Johan?
+>
 
-Also, I can't reference the property only, because it ends with *-microamp:
+No, but since grep -r "lm3533_platform_data" * gives 0 results there
+are no platform_data users of lm3533.
 
-	  output-range-microamp:
-	    $ref: /schemas/iio/dac/dac.yaml#/properties/output-range-microamp
-	    items:
-	      - const: 0
-	      - minimum: 8640
-	        maximum: 31590
-	        default: 20070
-
-which gets me:
-
-	properties:output-range-microamp: '$ref' should not be valid under {'const': '$ref'}
-
-so I will adjust it to:
-
-	  output-range-microamp:
-	    description: DAC full-scale output current in microamps.
-	    items:
-	      - const: 0
-	      - minimum: 8640
-	        maximum: 31590
-	        default: 20070
-
-and not reference dac.yaml at all.
-
--- 
-Kind regards,
-
-Rodrigo Alencar
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
