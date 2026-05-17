@@ -1,174 +1,191 @@
-Received: from mail-106120.protonmail.ch (mail-106120.protonmail.ch [79.135.106.120])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 070792F7F1D
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 19:17:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.120
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59B9A30566E
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 19:21:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779045481; cv=none; b=SzuzjMLmP8MJbQitnEFwPTqTVj/Wo/WSU55n/yNJTVe9wAvbAZ+Wjuc8bftcgpJiE634qzFjR5qj29sYqiA2g+dUoaTZb8vZY23lvuZ9MofCtQ2A6M/1QTcaP5ZOqgRKNilFdNncWb1Z3juGe+Ug2XKjNB+ScTchJtLjMpe9mng=
+	t=1779045698; cv=none; b=pzpqMciA0sRlkobr+AkoQp/Zn6dNTcs9KRZLIeC74dfXIDvcWNyTDDyFVzXQZxWzdUorPaUcCLbLwESyvMFZG70rxsUTjhTNFZkoLTf5bDIHWUaTU9R9eJhIsDN8VMReNFqhmz0pCeBj9zapjFKANgWRvBk8ooOaT0kop0j2uMM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779045481; c=relaxed/simple;
-	bh=GOBi/pRWmVL+Veh9IwhLDZRHfmJP1ezRNfavGxJ3mzA=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XsfDFPTLMQ/oomULOEJ4AgIekVsGsoHq+TZQu4uDE79Cqf25nR1xmLeNE1w2CVXl8hR5Ox892RbpjrGJPq1dK6x62sC2cgXy0KZAzgI+N346mCKgMcNpr3kQn/H9KZ+ZNjjO30z5/lFARugs4ycI4QyBb0Q9V0HBDLezkWvYUbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=a5OjVGJ2; arc=none smtp.client-ip=79.135.106.120
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
+	s=arc-20240116; t=1779045698; c=relaxed/simple;
+	bh=lH1GgG6AZ3p8TFNccFcpJy8FScpxCDQooWelGA+EHCY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ni3ixQli4UVCTALYwXsmG8ioRzysE3llU5ImfvyNEig+jX0UQBX3q+2ez0KSQFxv2lEyssijbdpGqkw6CaM906Ps96FSSWHecqZD3AHaNdVLYLif4/p57W5simgLns+qSj9JtohnW8G7c8pj4NdswUdNpp6LfU+uacxAONSiI5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=WNgLu7g9; arc=none smtp.client-ip=209.85.161.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="a5OjVGJ2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-	s=protonmail3; t=1779045471; x=1779304671;
-	bh=K8NQAnOha8d5JNbdYdd0AJXyY7YRm1TTkyKzdhoGALc=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=a5OjVGJ2gfOIinrqLlNmFTz9/VT17fCi70c7K/d1artQVe18Du9SUYOFK+CKMbVZg
-	 XStVCZxrXgkYvlZ2KlHibkk9khiyX+3fGsjAyFhIRo3FuAv1s+phABggnef7L8nds1
-	 05MzWRkCl+KE0Wt6EyAb4UJ1uvVYWTiCsB16Sn5aS+TmksCHKfR2YOzE6YpQXxbGny
-	 pqEHPMR5KnEIEQEIYfhYkfmiRXPVWaGyuqFYGULBHdpPIb3R1IdrtNuge0FJTIjyIv
-	 aH7njgAPiz4kr4VCmap3/EqeqUkuk1dceWDiim2lJY5/rxNN3p2SuK45HjNSoa0OeX
-	 VhcCOK0N4If0Q==
-Date: Sun, 17 May 2026 19:17:44 +0000
-To: Jonathan Cameron <jic23@kernel.org>, Hardik Phalet <hardik.phalet@pm.me>
-From: Hardik Phalet <hardik.phalet@pm.me>
-Cc: gregkh@linuxfoundation.org, andy@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org, dlechner@baylibre.com, krzk+dt@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev, me@brighamcampbell.com, nuno.sa@analog.com, robh@kernel.org, skhan@linuxfoundation.org, Hardik Phalet <hardik.phalet@gmail.com>
-Subject: Re: [PATCH v3 0/5] iio: magnetometer: add driver for QST QMC5883P
-Message-ID: <DIL6ZC7KKYMN.36KGJXKDRGFB0@pm.me>
-In-Reply-To: <20260420144534.0e47c06a@jic23-huawei>
-References: <20260420-qmc5883p-driver-v3-0-da1e97088f8b@pm.me> <20260420144534.0e47c06a@jic23-huawei>
-Feedback-ID: 166659585:user:proton
-X-Pm-Message-ID: e13c3f58e0d2edfad5428b12adb06f0f421ca919
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="WNgLu7g9"
+Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-688a8e5fe5eso811165eaf.1
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 12:21:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1779045694; x=1779650494; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=avFUFeQjZc5s2Fh1Gw+bXzbv6Nmu8tEYY1j2IJydQzo=;
+        b=WNgLu7g9882rZjfblRCA0f7R+Si3jCbcL1IoVyJ8xem5nV0o4D+3VgpV6BfeA4DypW
+         7Vo0DDNEbaIeGQq9qpNKAXpZ3JbsRUKtkXXyQbd7LYp+UzlHtbWugKcwH9IYl6v+zreR
+         KhBLKDwI1nosZXqI7ZfeE+rJ1YwQVs/CmhQpEBtyQpi5ukocCLV7/wsBXGELBKHDcbGB
+         jQUO0U0mVjc2XXiatiROYmSGkeYuWtLX3PIGK25sItq8Y0yZxQKl3Yr3clEDHEZwTrzK
+         o/JNEU0loLdHQ2z5VhS0G0B/wYf0i1l9qJZLFJlBmossgWlMzZJb73d4iQJ+pXbLR2yZ
+         db8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779045694; x=1779650494;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=avFUFeQjZc5s2Fh1Gw+bXzbv6Nmu8tEYY1j2IJydQzo=;
+        b=AxSV1jOWGa6d3V8wRpZ5bYL3Sow29DakwEnvk1Y+6YJKI7/DIOh3K4zYwhvTM8a4Lk
+         WWssUyMHsFmvNA/r4BrPPBTKEvKPkW0u9hJyazgGRCHL94SlwGv0Mihp5sOHSMEmF65G
+         4JWQgziT3R5puujD0AC2XuRUjfe4QRxCXuUw74l8iqrOUZOoJGRvpOkBGtTIA5xQeADJ
+         BrzaHIFV13wnOxDbsZLxgXLUdtAkXvk+WFfypNQT0SgQwqa6uzMdfLOTCeEVnv/wivIU
+         IDhKxYTcvdEfehSyJDU5w3Ii6R8mWVozp4yIdnadhGDkvUcqc/+vADZixEHX29LOGulm
+         TN6w==
+X-Forwarded-Encrypted: i=1; AFNElJ/fFWZT47ApQ9u1J+F7SJZ9Yz3qQoPJ9eg+B7oRtzEt0VpKish/tB3ItQ6uxvFN8zMJZjI4iKKtmlk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyl02GKxa4blBR8/JYRF+dH7KtyQ/zQR+ZY+ZttzpvwRIYx4qma
+	QFor2dM5AwDHYZM4o+BHnGGxn7FxBBW+7QXB8w8AmJSAZMhxkyZwYR7LsYn3nuTL89s=
+X-Gm-Gg: Acq92OG8U6q1UISZSUXrzKt5x9BXhmJZU0uOANLKCRTZChTHmZ7INm/6heC57cAPMoW
+	uMuaCoIybOgdlz8gmsHyo/X8jQ5Ftf4nsXbaCjw5QoJBQ4Nsv7uxh/OMiRwBqX4zDUG1vOqgdQ7
+	7EyEafet/sfz4MFVnRuZDs8Vi3UuEzmmQRGU3qs1agFVlKFtCbTBbDPODuEv+sahOTpzZ4WZV75
+	AuFDMUzyHc17GhGFf+ggvSvjv2fKkAzQxDLWRxK1upjQdCLZjLSW5/mn+52UIOxB2M/34pGY/Cq
+	K2wiUWrXYkBJ4GjDRCynOku3umuOObkmofn4OCQpR3DfPLvNd5EhveBT+PmQijxpIJQpKhxiytm
+	Ig4PuKSvp2ZfLRNIEV4B+fQee9ZS/G6HiFjD6V3nSOSCS1FOSHCAWav08yCmP+Lh0WZBRL03Q5m
+	nf9ZU2j7qqd8au52++SL3nDQGoEhPrVACy1vtjwEv8lFsOjt2bxgYOpR7dmfvg+kiEZKk+iG56y
+	QAG0I/TdA==
+X-Received: by 2002:a05:6820:4c0b:b0:694:8e6e:2e1c with SMTP id 006d021491bc7-69c9bfc92a9mr7692055eaf.60.1779045694287;
+        Sun, 17 May 2026 12:21:34 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:7a4b:ddf0:f61:f58d? ([2600:8803:e7e4:500:7a4b:ddf0:f61:f58d])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69d045e6567sm4530406eaf.3.2026.05.17.12.21.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 May 2026 12:21:32 -0700 (PDT)
+Message-ID: <58a66855-9fb3-48ca-8cae-ff9277f745df@baylibre.com>
+Date: Sun, 17 May 2026 14:21:30 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v11 3/6] iio: adc: ad4691: add triggered buffer support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
+ <20260515-ad4692-multichannel-sar-adc-driver-v11-3-eab27d852ac2@analog.com>
+ <9b7986e1-6550-415d-b301-33089ba10177@baylibre.com>
+ <20260517132526.27c71b70@jic23-huawei>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260517132526.27c71b70@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon Apr 20, 2026 at 7:15 PM IST, Jonathan Cameron wrote:
-> On Sun, 19 Apr 2026 22:32:09 +0000
-> Hardik Phalet <hardik.phalet@pm.me> wrote:
->
->> This series adds an IIO driver for the QST QMC5883P, a 3-axis
->> anisotropic magneto-resistive (AMR) magnetometer with a 16-bit ADC,
->> communicating over I2C. To my knowledge there is no existing
->> upstream driver for this device (see "Prior-art register-map check"
->> below).
+On 5/17/26 7:25 AM, Jonathan Cameron wrote:
+> On Sat, 16 May 2026 12:32:51 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
+> 
+>> On 5/15/26 8:31 AM, Radu Sabau via B4 Relay wrote:
+>>> From: Radu Sabau <radu.sabau@analog.com>
+>>>
+>>> Add buffered capture support using the IIO triggered buffer framework.
+>>>
+>>> CNV Burst Mode: the GP pin identified by interrupt-names in the device
+>>> tree is configured as DATA_READY output. The IRQ handler stops
+>>> conversions and fires the IIO trigger; the trigger handler executes a
+>>> pre-built SPI message that reads all active channels from the AVG_IN
+>>> accumulator registers and then resets accumulator state and restarts
+>>> conversions for the next cycle.
+>>>
+>>> Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
+>>> reads the previous result and starts the next conversion (pipelined
+>>> N+1 scheme). At preenable time a pre-built, optimised SPI message of
+>>> N+1 transfers is constructed (N channel reads plus one NOOP to drain
+>>> the pipeline). The trigger handler executes the message in a single
+>>> spi_sync() call and collects the results. An external trigger (e.g.
+>>> iio-trig-hrtimer) is required to drive the trigger at the desired
+>>> sample rate.
+>>>
+>>> Both modes share the same trigger handler and push a complete scan —
+>>> one big-endian 16-bit (__be16) slot per active channel, densely packed
+>>> in scan_index order, followed by a timestamp.
+>>>
+>>> The CNV Burst Mode sampling frequency (PWM period) is exposed as a
+>>> buffer-level attribute via IIO_DEVICE_ATTR.
+>>>
+>>> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+> 
+>>> +
+>>> +static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
+>>> +{
+>>> +	struct ad4691_state *st = iio_priv(indio_dev);
+>>> +	unsigned int k, i;
+>>> +	int ret;
+>>> +
+>>> +	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
+>>> +	memset(st->scan_tx, 0, sizeof(st->scan_tx));
+>>> +
+>>> +	spi_message_init(&st->scan_msg);
+>>> +
+>>> +	k = 0;
+>>> +	iio_for_each_active_channel(indio_dev, i) {
+>>> +		if (i >= indio_dev->num_channels - 1)
+>>> +			break; /* skip soft timestamp */  
 >>
->> The driver supports:
->>   - Raw magnetic field readings on X, Y and Z axes
->>   - Four full-scale ranges (+/-2 G, +/-8 G, +/-12 G, +/-30 G),
->>     selectable via IIO_CHAN_INFO_SCALE
->>   - Four output data rates (10, 50, 100, 200 Hz), selectable via
->>     IIO_CHAN_INFO_SAMP_FREQ
->>   - Four oversampling ratios (1, 2, 4, 8), selectable via
->>     IIO_CHAN_INFO_OVERSAMPLING_RATIO
->
-> I'm suspicious about this one based on a very quick read of the datasheet=
-.
-> Conventional oversampling would involve running the internal sampling
-> engine at a multiple of the sampling frequency, and then averaging the
-> results.  The datasheet describes this as:
-> "Over sample Rate (OSR1) registers are used to control bandwidth of an
->  internal digital filter. Larger OSR value leads to smaller filter bandwi=
-dth,
->  less in-band noise and higher power consumption. It could be used to rea=
-ch a
->  good balance between noise and power. Four over sample ratios can be sel=
-ected,
->  8,4,2 or 1."
->
-> That sounds like a boxcar filter to me not oversampling (which would be
-> a combination of box car and reducing the output data rate).
->
-> If possible, can you enable the data ready output and put a scope on it
-> to see if that changes frequency when OSR or OSR2 are modified.
->
-> Trickier to do would be looking at the noise levels whilst playing with
-> these filters and see if they at least match with standard filter types.
->
-> If we can't figure these out, then it may be a case of picking something
-> that works well and hard coding that rather than letting userspace
-> change things in a fashion that might not match the ABI.
+>> I don't think timestamp gets set in the scan mask. It is handled separately.
+> 
+> FWIW that is a sashiko false postive (I believe anyway!)
+> If we do hit this please shout as we have a core bug.
+> 
+> If anyone has time to look at how hard it would be to tweak
+> iio_for_each_active_channel to skip a last element timestamp that
+> would be great.
+> 
+> I think that iterates one too far which is what sashiko is tripping over.
+> 
+> I'm only keen to fix that if we can make it low cost and hid it entirely
+> from drivers.
+> 
+> Jonathan
+> 
+This is what I came up with (totally untested).
 
-I could not arrange a oscilloscope. So wrote a small standalone tool that d=
-rives
-the chip directly over /dev/i2c-N (skipping the driver) on a Pi 4 and
-characterised all three fields in CTRL_1 with timing + noise measurements.
-Summary:
+Since timestamp can never be set in scan_mask/active_scan_mask, it should
+be safe to exclude it from masklength without breaking existing code.
 
-  Field    Bits     Role per measurement
-  ODR      [3:2]    output rate, accurate to ~3% of nominal in Normal Mode
-  OSR1     [5:4]    low-pass filter (bandwidth control), no rate change
-  OSR2     [7:6]    N-sample averaging, no rate change (real oversampling)
+I didn't check all callers of masklength/iio_get_masklength() though.
 
-1. DRDY interval vs each field (median of 500 samples per setting,
-   ms; SCHED_FIFO, pinned CPU):
+---
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 9d66510a1d49..17f539fc23e2 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -2300,8 +2300,10 @@ int iio_buffers_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ 	if (channels) {
+ 		int ml = 0;
+ 
+-		for (i = 0; i < indio_dev->num_channels; i++)
+-			ml = max(ml, channels[i].scan_index + 1);
++		for (i = 0; i < indio_dev->num_channels; i++) {
++			if (channels[i].type != IIO_TIMESTAMP)
++				ml = max(ml, channels[i].scan_index + 1);
++		}
+ 		ACCESS_PRIVATE(indio_dev, masklength) = ml;
+ 	}
+ 
 
-   vary ODR (OSR1=3D1, OSR2=3D1):
-     ODR=3D10 Hz  -> 100.9 ms       ODR=3D100 Hz -> 10.30 ms
-     ODR=3D50 Hz  ->  20.5 ms       ODR=3D200 Hz ->  5.14 ms
-
-   vary OSR1 (ODR=3D200 Hz, OSR2=3D1):
-     OSR1=3D1 -> 5.142 ms           OSR1=3D4 -> 5.139 ms
-     OSR1=3D2 -> 5.143 ms           OSR1=3D8 -> 5.141 ms
-
-   vary OSR2 (ODR=3D200 Hz, OSR1=3D1):
-     OSR2=3D1 -> 5.142 ms           OSR2=3D4 -> 5.142 ms
-     OSR2=3D2 -> 5.140 ms           OSR2=3D8 -> 5.141 ms
-
-   ODR is the only knob that changes the rate.
-
-2. Per-axis noise stddev (2000 samples, sensor still, ratios vs N=3D1):
-
-   vary OSR1:                   vary OSR2:
-     OSR1=3D1 -> 1.000              OSR2=3D1 -> 1.000
-     OSR1=3D2 -> 0.723              OSR2=3D2 -> 0.706
-     OSR1=3D4 -> 0.544              OSR2=3D4 -> 0.494
-     OSR1=3D8 -> 0.416              OSR2=3D8 -> 0.333
-
-   Reference for N-sample averaging (1/sqrt(N)):
-     1.000 / 0.707 / 0.500 / 0.354
-
-   OSR2 matches within measurement noise; OSR1 trails the curve,
-   which is the expected signature of a bandwidth-limiting filter
-   on non-white input noise.
-
-So to my understanding, OSR2 is true oversampling. OSR1 is a filter.
-
-v4 plan, pending your input on (c):
-
-  (a) Add an OSR2 regmap_field and expose it as
-      IIO_CHAN_INFO_OVERSAMPLING_RATIO with values {1, 2, 4, 8}.
-  (b) Drop the OVERSAMPLING_RATIO mapping on OSR1.
-  (c) For OSR1, two options:
-        i)  expose as IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY.
-            The public datasheet does not give cutoff frequencies,
-            so I'd have to either characterise them empirically and
-            document them in the driver, or use placeholder values
-            derived from the OSR1 setting alone (which feels wrong).
-        ii) hard-code OSR1=3D1 in chip_init and not expose it. Loses
-            the noise-vs-bandwidth tradeoff but keeps the ABI clean.
-      Slight preference for (ii) unless you'd rather see the filter
-      knob exposed.
-  (d) Keep ODR mapped to IIO_CHAN_INFO_SAMP_FREQ as in v3.
-
-One other finding worth mentioning: the datasheet's setup examples
-(sec 7.1, 7.2, 7.3) all write 0x06 to register 0x29 before entering
-an active mode, with the comment "Define the sign for X Y and Z axis".
-This register is not listed in the documented register map but the
-write is required for axes Y and Z to come out with the documented
-orientation. v4 will add this write to chip_init().
-
-If you have other measurements you'd like to see before v4, happy to
-run them.
-
->
->>   - Runtime PM with a 2 s autosuspend delay
->>   - System suspend/resume delegated to the runtime callbacks
-
-Best regards,
-Hardik
 
