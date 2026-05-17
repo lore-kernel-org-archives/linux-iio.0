@@ -1,43 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D429F361DBA;
-	Sun, 17 May 2026 11:31:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 098611A3157;
+	Sun, 17 May 2026 11:34:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779017468; cv=none; b=iO3FrWFV9VwtsYdCOa6AyAnzrm0zOYeCpbg/S9tTeRUqoUftaKIUzy+6qz/lksXGjhfopYLBG+uaGjEcFyuVEXiK/QeVKkVlzh5mtKskeihDine3LGV5AFBRHLewcbahMpEEzW8x5xp3VQCuxiaofzuocC68VViVllfo2hO48+I=
+	t=1779017665; cv=none; b=uHYsP22R3XcPMh+gQAii+jSIOy+lY1yYVa5K/UdkGjel8zi4iGW/umb6VId5h+yb3kieozS55ihtX5aE+VDJiBmAjXn7+AbiHQBJbQR1qCSFUK+Dpa+p4A10lTidO247a0TVg92RajNxoNAscV6W6bU+KjCJT46Rd8MQLMUUgXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779017468; c=relaxed/simple;
-	bh=WO8uXu6x7MUx0hTUSjc2zk7BrthCjLk4fddR5yAQSYs=;
+	s=arc-20240116; t=1779017665; c=relaxed/simple;
+	bh=wfMJVcoTZNVlRjuHf5b/mEOjJp6wntkIQeuLhzP1m0s=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WVG+cD22x+b5Unp26V/pncYBTPTyTRS47d0zYcXEn6Hv0foP+POQvvRiQ9SbjFewoUAcEF30jt3YMQd0NMOANbvXMqqshiV1K6MTC5DwFl43XDfb5+inuDS6vYmCQYXUVcCXpGHzPMBVSCTiz05cStM6BZJVbt3/rrx06SDTW9M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SBM4hD+W; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Zhwhj2sxbL1dbVk0pXRGzGyo6epUzfbJshe7H2boaP1GEA+1g8gyHQtvSJ3F1rAyImtwf3F9N24jYOLZKMpiTQxJZYVMCuhDYqybefWkpv1cqLApFMBWQx9AcnoGsFFIgLiokWJO3j+cgdz3fqqEcMzxkIcyDOULvmu4m9p/DyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JEdxs4ct; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SBM4hD+W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC89EC2BCB0;
-	Sun, 17 May 2026 11:31:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JEdxs4ct"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A6A7C2BCB0;
+	Sun, 17 May 2026 11:34:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779017468;
-	bh=WO8uXu6x7MUx0hTUSjc2zk7BrthCjLk4fddR5yAQSYs=;
+	s=k20201202; t=1779017664;
+	bh=wfMJVcoTZNVlRjuHf5b/mEOjJp6wntkIQeuLhzP1m0s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=SBM4hD+WXeYp7ftQj2pL6gdBhgVXBj20BIgWukYzagU5+3JZBCeO7oi/eoeIaK2Cc
-	 6hh3uJsFnhMBxCDM9tPtAQ3ZM6NriD+ePKrqIHGRo+tN8P+eaf1xec3EhEgsTNR6u4
-	 uX7GtLGQZ/uae1vMVZw3Tra1ko6STv6q/01uKQycKRZD9lFDkiZMXHNDIq1XHDaZaL
-	 oqF5KFstR4tZUKC7igVGbMae+kgZ4yqMbXUVj124nrMcg4k6pae/nf7wfMFaR6F1sk
-	 mY+X2fMRZaOgbRjRoJUB6euYjk49gym55shVjsIy3cDo30db/vQWBfP/NOn9IMUJLX
-	 8ZKZZgLoy+eRA==
-Date: Sun, 17 May 2026 12:30:59 +0100
+	b=JEdxs4ctVDEvHnT8+bI0xXDYXkjtH/5VJ+qLdauQFC2Ya3zsz0hFOeqMdekIHeKHp
+	 Sp/+RJh2lLHBixz9YIg9WFBFbSwKT9LRymqzhy0/vi3SsotdxEp2/c3NNrmxtOgqnE
+	 CMtVyMLZz7+aCcfMGX+RvCtlCMkGSPFcYaQX4NCpqxR2Q3FdiO9xzuT/VyZ3BFP4qk
+	 dGlD1aQxQkNbJuY88LQdwf5EpImf46wIJNm6TMpuQn+mb35uuXSI/dokEXw6ARaSUH
+	 3y/lXnBQ76EuVd+cQLLl0bKDvA1ALtGqIQdhyl0Hzbo3Xu72wYPdDhFtcXs/pJrN38
+	 CLkCiAjkXAIYg==
+Date: Sun, 17 May 2026 12:34:15 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Md Shofiqul Islam <shofiqtest@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/5] iio: accel: adxl372: Add timestamp to FIFO data
-Message-ID: <20260517123059.49570d36@jic23-huawei>
-In-Reply-To: <54eca584-b749-4417-b37a-40c5513b0442@baylibre.com>
-References: <20260510082556.3867-1-shofiqtest@gmail.com>
-	<20260510082556.3867-2-shofiqtest@gmail.com>
-	<54eca584-b749-4417-b37a-40c5513b0442@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Vladislav Kulikov <vlad.kulikov.c@gmail.com>, krzk+dt@kernel.org,
+ robh@kernel.org, conor+dt@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: magnetometer: add driver for MEMSIC
+ MMC5983MA
+Message-ID: <20260517123415.6bf8d020@jic23-huawei>
+In-Reply-To: <aglecY6YjWccJTza@ashevche-desk.local>
+References: <20260511191135.36691-1-vlad.kulikov.c@gmail.com>
+	<20260511191135.36691-3-vlad.kulikov.c@gmail.com>
+	<aglecY6YjWccJTza@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,91 +50,55 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 16 May 2026 13:55:34 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Sun, 17 May 2026 09:21:37 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On 5/10/26 3:25 AM, Md Shofiqul Islam wrote:
-> > The driver pushes FIFO samples using iio_push_to_buffers() which does
-> > not attach a hardware timestamp to the data.  Add a scan buffer struct
-> > with an aligned_s64 timestamp field to the driver state, capture a
-> > single timestamp per IRQ with iio_get_time_ns(), and switch the FIFO
-> > push loop to iio_push_to_buffers_with_timestamp().  The same timestamp
-> > is reused for the event push call in the same handler, replacing the
-> > duplicate iio_get_time_ns() invocation there.
-> > 
-> > Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
-> > ---
-> >  drivers/iio/accel/adxl372.c | 13 +++++++++++--
-> >  1 file changed, 11 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-> > index 545a21e5a3..521e8313b1 100644
-> > --- a/drivers/iio/accel/adxl372.c
-> > +++ b/drivers/iio/accel/adxl372.c
-> > @@ -367,6 +367,10 @@ struct adxl372_state {
-> >  	u16				watermark;  
+> On Mon, May 11, 2026 at 07:11:35PM +0000, Vladislav Kulikov wrote:
+> > Add support for the MEMSIC MMC5983MA 3-axis magnetometer. The driver
+> > provides raw magnetic field readings via IIO sysfs with SET/RESET
+> > offset cancellation for each measurement.  
 > 
+> Good driver, something to improve, though. Jonathan, can you tweak these in
+> tree? But perhaps wait a bit for the answer on "why no cache?".
 > 
-> >  	__be16				fifo_buf[ADXL372_FIFO_SIZE];  
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
-> I would just change this line to:
-> 
-> 	IIO_DECLARE_BUFFER_WITH_TS(__be16, fifo_buf, ADXL372_FIFO_SIZE);
-
-Doesn't work as timestamps are per sample and that's buffering the whole fifo.
-
-Anyhow, fifo timestamps are hard to do and this is no where near
-doing it right.  Far as I'm concerned this series is dead because that complexity
-isn't worth doing unless we have a user needing it and I don't think we do
-yet.
+I tweaked the headers.  If we do enable caching can be a follow up patch.
 
 Jonathan
 
-
+> ...
 > 
-> >  	bool				peak_fifo_mode_en;
-> > +	struct {
-> > +		__be16 channels[3];
-> > +		aligned_s64 ts;
-> > +	} scan;  
+> + arrray_size.h
 > 
-> Then we don't need the extra struct and memcpy().
+> > +#include <linux/bits.h>
+> > +#include <linux/cleanup.h>
+> > +#include <linux/delay.h>  
 > 
-> If we really do need the memcpy() for some reason, this struct
-> can be declared on the stack instead of here.
-Stack might indeed work..
+> + dev_printk.h
+> + err.h
 > 
-> >  	struct mutex			threshold_m; /* lock for threshold */
-> >  };
-> >  
-> > @@ -703,13 +707,15 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
-> >  	struct adxl372_state *st = iio_priv(indio_dev);
-> >  	u8 status1, status2;
-> >  	u16 fifo_entries;
-> > +	s64 ts;
-> >  	int i, ret;
-> >  
-> >  	ret = adxl372_get_status(st, &status1, &status2, &fifo_entries);
-> >  	if (ret < 0)
-> >  		goto err;
-> >  
-> > -	adxl372_push_event(indio_dev, iio_get_time_ns(indio_dev), status2);
-> > +	ts = iio_get_time_ns(indio_dev);
-> > +	adxl372_push_event(indio_dev, ts, status2);
-> >  
-> >  	if (st->fifo_mode != ADXL372_FIFO_BYPASSED &&
-> >  	    ADXL372_STATUS_1_FIFO_FULL(status1)) {
-> > @@ -733,7 +739,10 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
-> >  			/* filter peak detection data */
-> >  			if (st->peak_fifo_mode_en)
-> >  				adxl372_arrange_axis_data(st, &st->fifo_buf[i]);
-> > -			iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
-> > +			memcpy(st->scan.channels, &st->fifo_buf[i],
-> > +			       st->fifo_set_size * sizeof(__be16));
-> > +			iio_push_to_buffers_with_timestamp(indio_dev,
-> > +							   &st->scan, ts);
-> >  		}
-> >  	}
-> >  err:  
+> > +#include <linux/i2c.h>
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/mod_devicetable.h>
+> > +#include <linux/module.h>
+> > +#include <linux/mutex.h>
+> > +#include <linux/regmap.h>
+> > +#include <linux/time.h>
+> > +#include <linux/types.h>  
+> 
+> ...
+> 
+> > +static const struct regmap_config mmc5983_regmap_config = {
+> > +	.name = "mmc5983_regmap",
+> > +	.reg_bits = 8,
+> > +	.val_bits = 8,
+> > +	.max_register = MMC5983_REG_ID,
+> > +	.writeable_reg = mmc5983_is_writeable_reg,
+> > +	.readable_reg = mmc5983_is_readable_reg,
+> > +	.volatile_reg = mmc5983_is_volatile_reg,
+> > +};  
+> 
+> Why no cache?
 > 
 
