@@ -1,179 +1,172 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADA7134750E
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 12:19:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61A08364935;
+	Sun, 17 May 2026 12:25:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779020388; cv=none; b=Xx+yYo62uraeQTeiCIltQQSi+yNUcMros2eq9j2QYVLVxemd/Jq1fKL/vNht4JtRnhXn50gScm2VBhqNwgdxs9uRDoJEaHk7vBOo+zcqyXc75tOXze8Pf8TzfLn6EzDlghuoqB0PBKBFkdUPMDE+if0jUKZMj8PhKTk7dpyOVto=
+	t=1779020739; cv=none; b=GTjSd9mSQPyACqp4nTuoRi6m1MwZIM3S2rIG8KUeUgzf5JZabpReu7l2LE8f2HzkgBc1V14lMHh/RafgmiMbt9BpinjkspBKqoZH4XYm+U4D1Ropco7mrNK6j1XXg9qfq8OzGVKK0uurFoToqkx8oQeqZ5Dh//4va2b8kIeL2V0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779020388; c=relaxed/simple;
-	bh=4ORFF+hqy++5JiE4nhagBY/ZLP3fzcu7areLbccw1mE=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jXrTnNgN86UbV4BdDSmW8OnCcfCQUohnzX578Et5858NxdxwupqwH2CogkUH5Lyx8zrqEGQjJ+NAtGvbtl0nlFJxnVcZpndqkYrN0nAc8aPSgh98YFkZkBpl3qOUPqhLw1MtYGj+mSzdC/AaHAoliy6j+7ruWZLSUm3LLBua08w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CzU00kr1; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779020739; c=relaxed/simple;
+	bh=XSkWEDKw02puX5qq9iVXr5jO9QBcF6MO0A6mYsf1hdE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=dnghgpROWLC4u3g+M3TuxyfH9YwCum+0qrJvoxCzmbvhTZT0S08f/jlr6IqNwB1cnMhF1eNn60Sv7e0ud6G3/XkDFackMDbP6+lxcpl7uD3KcLGaBk6O1632Wf1bObDZWuoGCNZDtuj6m1zjgbm87LrwPtvIMHOPvIQdEjfxtFI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EZAIcCP7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CzU00kr1"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488ab2db91aso13567525e9.3
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 05:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779020385; x=1779625185; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=h1PMPeBjbxQbz6gz4zIfXl+IxRIZnCvMJpkmx9O6DI4=;
-        b=CzU00kr192XRukF0XOn//ebLoA822sba79VWZX/ZgKEI9BM5lrOsl/kPNDAcEQg2qG
-         jHrxUkSY3k1wD6yf49ki7EhuKnb4q2WETSvmBuyH1hZucWB/bscfOS0k4TFEJlqGHfB8
-         HbKu4MCYtJNogH8iRs1FNzVgAtWEp5z9dLGVt0YioFZEAS6a4MlIj39oVWBc7igR1Ers
-         4CnyEs+5vctuaFL2ima+ks/tahmyi6MJRA+RqefjW2ix8HKrAaEIyIpZY/d00HbzzERn
-         xJHYhYHEM8IkMaCZFXG5iKGVbizlPJ11na4mZLfwEfBjxYND4SeOn//vGJjGGATPUytC
-         0+jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779020385; x=1779625185;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=h1PMPeBjbxQbz6gz4zIfXl+IxRIZnCvMJpkmx9O6DI4=;
-        b=coPUUIdP3bLZ25p7sLATbAt/kMD47RPMwTp5tRStaeLp7xaVAyjjduJt8eOJ5CZh74
-         9Ygo0qE1W7OgcQTbx77+n2f2uq1ckB2oTDVWhrgh3OwWt5fw6kYJQNpOsnWEoZNg8q7d
-         i+X3yFRb/4kr9TGSYk08ITp+xXyzJid5JOC6OM5ge2xvgVVymvw1RtkUguGlF9yw7shp
-         zeFNQagqbFv0XGU7MXkeb4Fi9WJcm+gFNyEAoV7BVIyXm/eTdTkOkJ0nKv1ngD4RrEel
-         SOEVLbJSyMVl+EgUzlE6GE56+tqlczCqPtbLtpvVX+u2xnnKhaWQpMPFvg/VDWPZNgCx
-         MKNQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+VA5Bny3TS1hC5hOh5jW9HPRLdg+a+Ul/+1eVWOYmS5MRNyGGiNBTdjx1Z3n3O7XZPfpRJfo8Wqc4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyA0eCyGdoRVIxCyTv9XVbp00llyWEt+MKXd5sm2ujUT3IaLX8h
-	CxRwiyjMoeQhT+1VQCdv34UVeIfp/XvL9ol5GxZeCM/Nsd/QAkxfTEmA
-X-Gm-Gg: Acq92OFspMUMDefXGewaFbaqxBieZtuwFTkM7Ym4iFMC6rKiy3OkQ1esn4RXkQpjFr8
-	pmPS9RVPz8y4zXazcsaAPqUmoi2DIntWI8dyEbmDrmN+FUPJVllqtR+Uu+rnndPWHVySH8Xx8FX
-	cpf3Wi8A+bSLPwxUAdntFjHamCAQqe49eMnKG+AzajxH+jLgkK3dBQ3JUVuUjWyJ3TRGQX0yHYR
-	n+NqrxM6nIdlSkIoKB1myqc+WTsZJG4jNBB2zItxeJBoPgRqmPaMkct/yJawj/V8iEcAHFqqlm2
-	7yV9K26kq/INctyEmmmAK3GgLCdpV++3d2NUlecVxLxeA9zMEwFczuatpuiDiC4O2GVBOUQGy98
-	xuSXPSw0x5THVM85NvtmU2h0VuCpiuN/zZa+Y9dF/RrQxTy/Ahq2FhiQZqEwmU2/X7tYiJWILRk
-	CC8hFI8LNSi7PO1X8xDRnTvSKYTvkV3vl17dbzM4wk7p/QcM9tx6EgzelBtAvQ6FG7OXSK4mSpn
-	fK0rmpvILxgQ3zb+Dz33G2On3hCcaYuy94MaZvJUCZ6wHZV6w==
-X-Received: by 2002:a05:6000:2c07:b0:45e:75c5:1a6a with SMTP id ffacd0b85a97d-45e75c51b5emr2297637f8f.33.1779020384879;
-        Sun, 17 May 2026 05:19:44 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0a1aeafsm30436836f8f.23.2026.05.17.05.19.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 05:19:44 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Sun, 17 May 2026 13:19:38 +0100
-To: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v13 02/12] iio: kstrtox: add local
- _parse_integer_limit_init() helper
-Message-ID: <u6uqytictupj7kgaxadxmvuayc66cpfw2g4k4ebvdmtgpjqdfz@zlnl3arq73xn>
-References: <20260517-adf41513-iio-driver-v13-0-bb6e134a360f@analog.com>
- <20260517-adf41513-iio-driver-v13-2-bb6e134a360f@analog.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EZAIcCP7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D06C2BCB0;
+	Sun, 17 May 2026 12:25:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779020738;
+	bh=XSkWEDKw02puX5qq9iVXr5jO9QBcF6MO0A6mYsf1hdE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=EZAIcCP7v4Ac0pHIPolzYXkoyEpgmNqJuYvvoCfXRzGhU48cxxNog+zKms+IJtyQ8
+	 qiHSWt2RbE+p7qFLGY0zIT9kJWZNDIf+QEyS7xStQacOhcwwLtSkktiq/yfqjHL4ic
+	 vm4tu1Sdmud0fcfd4AQRs2/2oI1aFkOkDyGARhbXwEqJ2PplwVU3KKMP8RZkGWTJti
+	 poTy161sTSD2Z59gKnCwwzgt/brsxmfKFga7GqkNlou83OpWHqlzvX8ed+jpKmxzSz
+	 AH9xUuYP4J6X7FbRUA2JZ5xVspn2tO7VNW4HQM+YAPuFLJdXwiUX95R244DCdo+m1G
+	 IveIOhBeg0iPg==
+Date: Sun, 17 May 2026 13:25:26 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
+ <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v11 3/6] iio: adc: ad4691: add triggered buffer support
+Message-ID: <20260517132526.27c71b70@jic23-huawei>
+In-Reply-To: <9b7986e1-6550-415d-b301-33089ba10177@baylibre.com>
+References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
+	<20260515-ad4692-multichannel-sar-adc-driver-v11-3-eab27d852ac2@analog.com>
+	<9b7986e1-6550-415d-b301-33089ba10177@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260517-adf41513-iio-driver-v13-2-bb6e134a360f@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 26/05/17 10:13AM, Rodrigo Alencar via B4 Relay wrote:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> 
-> Add parsing helper that accepts an initial value for the accumulated
-> result when parsing an 64-bit integer. It reuses current implementation
-> for _parse_integer_limit(), which now consumes the new function with
-> init = 0. The diff algorithm would have the documentation header and
-> prototype of _parse_integer_limit() moved around so it is adjusted
-> according to guidelines.
+On Sat, 16 May 2026 12:32:51 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-Sashiko's feedback at:
-https://sashiko.dev/#/patchset/20260517-adf41513-iio-driver-v13-0-bb6e134a360f%40analog.com?part=2
+> On 5/15/26 8:31 AM, Radu Sabau via B4 Relay wrote:
+> > From: Radu Sabau <radu.sabau@analog.com>
+> >=20
+> > Add buffered capture support using the IIO triggered buffer framework.
+> >=20
+> > CNV Burst Mode: the GP pin identified by interrupt-names in the device
+> > tree is configured as DATA_READY output. The IRQ handler stops
+> > conversions and fires the IIO trigger; the trigger handler executes a
+> > pre-built SPI message that reads all active channels from the AVG_IN
+> > accumulator registers and then resets accumulator state and restarts
+> > conversions for the next cycle.
+> >=20
+> > Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
+> > reads the previous result and starts the next conversion (pipelined
+> > N+1 scheme). At preenable time a pre-built, optimised SPI message of
+> > N+1 transfers is constructed (N channel reads plus one NOOP to drain
+> > the pipeline). The trigger handler executes the message in a single
+> > spi_sync() call and collects the results. An external trigger (e.g.
+> > iio-trig-hrtimer) is required to drive the trigger at the desired
+> > sample rate.
+> >=20
+> > Both modes share the same trigger handler and push a complete scan =E2=
+=80=94
+> > one big-endian 16-bit (__be16) slot per active channel, densely packed
+> > in scan_index order, followed by a timestamp.
+> >=20
+> > The CNV Burst Mode sampling frequency (PWM period) is exposed as a
+> > buffer-level attribute via IIO_DEVICE_ATTR.
+> >=20
+> > Signed-off-by: Radu Sabau <radu.sabau@analog.com>
 
-...
+> > +
+> > +static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> > +	unsigned int k, i;
+> > +	int ret;
+> > +
+> > +	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
+> > +	memset(st->scan_tx, 0, sizeof(st->scan_tx));
+> > +
+> > +	spi_message_init(&st->scan_msg);
+> > +
+> > +	k =3D 0;
+> > +	iio_for_each_active_channel(indio_dev, i) {
+> > +		if (i >=3D indio_dev->num_channels - 1)
+> > +			break; /* skip soft timestamp */ =20
+>=20
+> I don't think timestamp gets set in the scan mask. It is handled separate=
+ly.
 
-> -/*
-> - * Convert non-negative integer string representation in explicitly given radix
-> - * to an integer. A maximum of max_chars characters will be converted.
-> - *
-> - * Return number of characters consumed maybe or-ed with overflow bit.
-> - * If overflow occurs, result integer (incorrect) is still returned.
-> - *
-> - * Don't you dare use this function.
-> - */
-> -noinline
-> -unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned long long *p,
-> -				  size_t max_chars)
+FWIW that is a sashiko false postive (I believe anyway!)
+If we do hit this please shout as we have a core bug.
 
-...
+If anyone has time to look at how hard it would be to tweak
+iio_for_each_active_channel to skip a last element timestamp that
+would be great.
 
-> +/**
-> + * _parse_integer_limit() - Convert integer string representation to an integer
-> + *			    limiting the number of characters parsed.
-> + * @s: The start of the string.
-> + * @base: The number base to use.
-> + * @p: Where to write the result of the conversion.
-> + * @max_chars: Maximum amount of characters to consume.
-> + *
-> + * Convert non-negative integer string representation in explicitly given radix
-> + * to an integer. A maximum of max_chars characters will be converted.
-> + *
-> + * Return: Number of characters consumed maybe or-ed with overflow bit.
-> + *	   If overflow occurs, result integer (incorrect) is still returned.
-> + */
-> +noinline
-> +unsigned int _parse_integer_limit(const char *s, unsigned int base,
-> +				  unsigned long long *p, size_t max_chars)
+I think that iterates one too far which is what sashiko is tripping over.
 
-	Is it safe to remove the "Don't you dare use this function." warning?
-	Since this function returns the number of consumed characters bitwise-ORed with
-	the KSTRTOX_OVERFLOW flag, turning the comment into standard kernel-doc format
-	makes it look like an inviting API.
-	If a developer uses this and directly advances a pointer by the return value
-	without masking the overflow bit, could an integer overflow during parsing cause
-	the pointer to jump out-of-bounds?
+I'm only keen to fix that if we can make it low cost and hid it entirely
+from drivers.
 
-That return value merged with the overflow indication is a bit weird in the first
-place. I wonder if we need a precursor patch cleaning _parse_integer_limit() and
-removing this KSTRTOX_OVERFLOW completely... turning it into:
+Jonathan
 
-	ssize_t _parse_integer_limit(const char *s,
-				     const char **endp,
-				     unsigned int base,
-				     unsigned long long *res,
-				     size_t max_chars);
-
-so ssize_t returns the amount of converted characters, or -ERANGE if overflow occurs.
-Also endp would point to the end of the conversion, so current usage (in _kstrtoull())
-
-	rv = _parse_integer(s, base, &_res);
-	if (rv & KSTRTOX_OVERFLOW)
-		return -ERANGE;
-	if (rv == 0)
-		return -EINVAL;
-	s += rv;
-
-would become:
-
-	ret = _parse_integer(s, &s, base, &_res);
-	if (ret < 0)
-		return ret;
-	if (!ret)
-		return -EINVAL;
-
-which seems more aligned to the code we see out there.
-
--- 
-Kind regards,
-
-Rodrigo Alencar
+>=20
+> > +		/*
+> > +		 * Channel-select command occupies the first (high) byte of the
+> > +		 * 16-bit DIN frame; the second byte is a don't-care zero pad.
+> > +		 * put_unaligned_be16() writes [cmd, 0x00] in memory so the
+> > +		 * SPI controller sends the command byte first on the wire.
+> > +		 */
+> > +		put_unaligned_be16((u16)(AD4691_ADC_CHAN(i) << 8), &st->scan_tx[k]);
+> > +		st->scan_xfers[k].tx_buf =3D &st->scan_tx[k];
+> > +		/*
+> > +		 * The pipeline means xfer[0] receives the residual from the
+> > +		 * previous sequence, not a valid sample. Discard it (rx_buf=3DNULL)
+> > +		 * to avoid aliasing vals[0] across two concurrent DMA mappings.
+> > +		 * xfer[1] (or the NOOP when only one channel is active) writes
+> > +		 * the real ch[0] result to vals[0]. Subsequent transfers write
+> > +		 * into vals[k-1] so each result lands at the next dense slot.
+> > +		 */
+> > +		st->scan_xfers[k].rx_buf =3D (k =3D=3D 0) ? NULL : &st->vals[k - 1];
+> > +		st->scan_xfers[k].len =3D sizeof(st->scan_tx[k]);
+> > +		st->scan_xfers[k].cs_change =3D 1;
+> > +		st->scan_xfers[k].cs_change_delay.value =3D AD4691_CNV_HIGH_TIME_NS;
+> > +		st->scan_xfers[k].cs_change_delay.unit =3D SPI_DELAY_UNIT_NSECS;
+> > +		spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
+> > +		k++;
+> > +	}
+> > +
+> > +	/* Final NOOP transfer retrieves the last channel's result. */
+> > +	st->scan_xfers[k].tx_buf =3D &st->scan_tx[k]; /* scan_tx[k] =3D=3D 0 =
+=3D=3D NOOP */
+> > +	st->scan_xfers[k].rx_buf =3D &st->vals[k - 1];
+> > +	st->scan_xfers[k].len =3D sizeof(st->scan_tx[k]);
+> > +	spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
+> > +
+> > +	ret =3D spi_optimize_message(st->spi, &st->scan_msg);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret =3D ad4691_enter_conversion_mode(st);
+> > +	if (ret) {
+> > +		spi_unoptimize_message(&st->scan_msg);
+> > +		return ret;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
