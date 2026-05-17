@@ -1,149 +1,182 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0488B3043C8
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 20:09:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AD082FE074;
+	Sun, 17 May 2026 20:15:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779048584; cv=none; b=IsK9fnE/ZJrlcfrmWVBCa6z2HzOXpKdWnh8z90idxj35ThDUZhJwZw7BWRLNYM9hBdBOHfXbLXDytTyl4s7oLxZoKaUxrSD57Fpom3pU1/eeZKZm13jX25L7COm/CdWlD/VyvT3MsfQ4FtBvZh7e982EnXvaHqTArjdhH34MwGg=
+	t=1779048917; cv=none; b=l7ZmiuQe5o2yn/pkelhp/m1x4mykOfhpKZ/H/az/5rYyMRUVt+2BGGZfbd3/GVfFZszDbCTlBAMmaQTSvjbUsoGiHnWx3/z7uykFRxTkukGG3yXzr/IGvMt7D/eOAHoQeASHh0yrs9dlhBjx6HKflaHbTIsGZY/+amnY9jIHQyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779048584; c=relaxed/simple;
-	bh=KTipVWBZ1vlWoeq+rUWIZFfKne6qza67HGveewURak4=;
+	s=arc-20240116; t=1779048917; c=relaxed/simple;
+	bh=wPGlipT5EbZIEdNt7MOHiAYU0AmXy3zaPqy5WBml5x4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uA/NgdFrZ2gWiR/DIM+Saw4Lj60zlQ1ST6QKGmYUSQoFhodM0RhatyTiOVWCdpCfwPxNkNwzifsoSVpo7tYsj/ykPAAeYOGkiR6qxgqbM/3cIjI9gcGy6R8lg8fVn239d1t5kWbasgUDujc8EoKXh6l4QdNFKZp6w7fI4WHtY/A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XHQ9WPXA; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=cQuOIRBbqE2rga3TKMIZMzuKHSGpRex4UeTwXc9BQRlhSiAvt/G7uBiP7kgaMwlf/rd+4IDZsdJcFQn1Zsgyvki9uDRPZjGP8pamwkXShgLtrfVu7NGXdHTrCTchL1+An+X/RArHAFt5DNLkzl4dGfbfYCANMLgahRwKmMq5204=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m9IHy5yy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XHQ9WPXA"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-8383fb7143aso625684b3a.3
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 13:09:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779048582; x=1779653382; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=w+5lXcHVq1Eqh6SdtRuIC5uuCQrXCwv21uMjbsUUpDc=;
-        b=XHQ9WPXAByNS0V0+iZa19uvmLfSXqyUlEXGpQZcFo5KHVZUehroYL/AIw0A9xwJY9o
-         vfDP3mJhd87eicUOVmwyB917VXljGJwBZCq8Bzmul6YjKt45aODoMxCiUnU22Df9bZK+
-         0Yw+cp9pnz6RxGZ18XHpog9GhVg8qHR8WnvVL6YLpZBoHmQmk200F5lJQ+uU5qiYJSH0
-         Ab6UOdSnu4WJF1eHFjSx7HPTXCQZJFox1NPf8l2OLmyXs44oIK3N1N+vx3ui95RIbFa9
-         +Bp41mISsAO3p2+fScbuPYrKA0kFslbgPVdpG/DP4yJYdBYBXB5WHt0a6m5SP70JBcnM
-         Tysg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779048582; x=1779653382;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=w+5lXcHVq1Eqh6SdtRuIC5uuCQrXCwv21uMjbsUUpDc=;
-        b=hMcV0zNu1DqPprxAUqR7q+89xTwvmqIN/EIbUbuTDOql5W16X2euFiFZBEgRSoEnvP
-         cRLuQrX/6RYSE6jwPQm01hodaAKS1venDSD2rYkqKUMCV4NPER+PpgRDV0HTxsvdme3W
-         HOscaR8JrgujVNoRn339y9j+h5wtEvW+6tsK5vKH5k+QLVHAKezwbW9HaWp4dIeC+Uwx
-         rcqy05uAMfTH3BeK4QbInLJWpQQJV5otYxq8XVKwoyuQ0r7N8KzzjfWR2SQh0mX5Z/v5
-         L+OoK7cJMtryyeNccD3/EtwQIedCbUavJI1FsOx99BSy+NswVudNFrZbimJPY12+qOYg
-         p2hA==
-X-Forwarded-Encrypted: i=1; AFNElJ+WwHALJuf4XkuGXldODX+jDEyeuhvwc5Ov+efkgo/0UaQIe14U+HOUuOieGRBqIhw82+qCEMIjtIU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz9Q9QsIvrz6NTMdl3ZE3hWDdSWKosLcDWVOtdVg6SrPNQNdab3
-	vezC6I+rw+mZxf0Mw73qgycdzsO6KpkoPO5UBLLvF+0DNldz3vOoDvIz
-X-Gm-Gg: Acq92OEKPj2IcIgcxxc1UDDDgv3h8DFtuSfmGsfpay7Qhje6+Mzh6bIIBPsQaIcZ0Za
-	rcRgLTF6y4D9HBhau8F9Z3eBc+VUI48o3KqsGj2C2/1GLMMkjFdilR6B7E4Iy6RLnlwEM0oJtQd
-	az8a36JEhh7EnFdTZnqZLMbDfJdVF7s34l+jjn7NlBqU8Ly60kCXnW2IWHnnYEdbsgyCchE7Nz3
-	GanCY7Y27nLLdkNoUKK0HVbF6sD4N5OQ9/USBKpheTOx1UvbELS3D0d8+jHOepz7gqj8WvBfCmP
-	yYBZ5apUkKsc2aFmKZhRp6GsxxdYj1s8Vau0FuWz8XiaH5BQuEV+32quIsksJqC/Z7RGcHC5Fip
-	Og5VXp+XlML0e3V4yBhQs7/lypd+O6HbkyiT3JDEzAu455kONIEB+zaoUkzyBRhpnav6l4U5S8s
-	0hbvmmx3WpXQ3jwwfOttESASRS4SuHswVm/8ZTWZlYilTjGqF4pHE=
-X-Received: by 2002:a05:6a00:39a0:b0:82c:d7c4:4c56 with SMTP id d2e1a72fcca58-83f33c43997mr12269745b3a.15.1779048582194;
-        Sun, 17 May 2026 13:09:42 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f19f7ccc7sm14261704b3a.58.2026.05.17.13.09.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 13:09:41 -0700 (PDT)
-Date: Mon, 18 May 2026 01:39:35 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	sakari.ailus@linux.intel.com,
-	christoph.muellner@theobroma-systems.com, martink@posteo.de,
-	mfuzzey@parkeon.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/10] iio: accel: mma8452: improve coding style, pm
- and resource cleanup
-Message-ID: <agogfypMDl6dS9D6@hu-ckantibh-hyd.qualcomm.com>
-References: <20260505174640.3998281-1-sanjayembedded@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m9IHy5yy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36FDC2BCB0;
+	Sun, 17 May 2026 20:15:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779048917;
+	bh=wPGlipT5EbZIEdNt7MOHiAYU0AmXy3zaPqy5WBml5x4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=m9IHy5yy0cEUZHHJNGSRFxXqJP7SBD/EyXD/oXlZHAy4p31o878utNEWToqVaQf8+
+	 /YwiiW6481YbXNrtgdPfbh/hAcOClmpdVTw4jrVCh7zv0brNy3vjmn/W/47Idypo4C
+	 2VbDjPIV2U786Sr5adfOp86IaP0Ajgpahkdo4Len+bhU15ZvQno+BwELKXmivNMFRc
+	 cYzkMBDddP3rCLlfyHWJLWpJsjIbqCL1byxE8GlFTced2LiDc0+7XTU0SDr7RZ8PFz
+	 /HKZ+A6k6AUtM8K82/JeF/zXYUO8eBxD+7m62MOT7/pc1umDohhGAYTe+Q2A4uoRsP
+	 gLNOEzkAV9Cvw==
+Date: Sun, 17 May 2026 22:15:14 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>, 
+	William Breathitt Gray <wbg@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
+ channel
+Message-ID: <agog7Z1wfrZAjHj-@monoceros>
+References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
+ <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
+ <aaqTVDQa7xn70bR_@monoceros>
+ <TYRPR01MB156191C8E77BDA44AE23A7D4F857AA@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+ <TYRPR01MB156192CC838EC0B3DD66246158540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+ <abkX1ssLhkGxryfM@monoceros>
+ <TYYPR01MB15615FA52860D81F04E42F2C48541A@TYYPR01MB15615.jpnprd01.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="q5alohvduecpctbe"
 Content-Disposition: inline
-In-Reply-To: <20260505174640.3998281-1-sanjayembedded@gmail.com>
+In-Reply-To: <TYYPR01MB15615FA52860D81F04E42F2C48541A@TYYPR01MB15615.jpnprd01.prod.outlook.com>
 
-On Tue, May 05, 2026 at 11:16:30PM +0530, Sanjay Chitroda wrote:
-> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> 
-> Hi all,
-> 
-> This series contains a small fixes, cleanup and improvements to use
-> modern kernel helper API and coding style for mma8452 accel driver.
-> 
-> The changes modernize mutex with guard(), dev_err_probe usage,
-> resolve checkpatch CHECKS and pm_ptr macro usage.
-> 
-> Changes in v3:
-> - Following input from Andy and Jonathan added new changes as following
->   0001: handle return value to have proper error propagation
->   0002: use non-devm API to maintain resource management LIFO order
->   0006: convert individual regulator using bulk regulator API
->   0009: use IIO cleanup helper for DIRECT_MODE
-> - Address kernel coding stype specific review comment
-> - Reorder local struct device and dev_err_probe change
-> v2 series -> https://lore.kernel.org/all/20260422165643.2148195-1-sanjayembedded@gmail.com/
-> Changes in v2:
-> - 0005: address review comment from Andy and Geert
->   and use DEFINE_RUNTIME_DEV_PM_OPS macro
-> - Added new cleanup channges in mma8452 driver
-> 
-> No functional behavior changes are intended.
-> 
-> Testing:
->   - Compiled with W=1
->   - Build-tested on QEMU x86_64
-> 
-> Feedback and reviews are very welcome.
-> 
-> Thanks,
-> Sanjay Chitroda
-> 
-> Sanjay Chitroda (10):
->   iio: accel: mma8452: handle I2C read error(s) in mma8452_read()
->   iio: accel: mma8452: switch to non-devm request_threaded_irq()
->   iio: accel: mma8452: cleanup codestyle warning
->   iio: accel: mma8452: sort headers alphabetically
->   iio: accel: mma8452: Use dev_err_probe()
->   iio: accel: mma8452: convert to bulk regulator usage
->   iio: accel: mma8452: use local struct device
->   iio: accel: mma8452: use pm_ptr() and direct runtime PM calls
->   iio: accel: mma8452: Use IIO cleanup helpers
->   iio: accel: mma8452: use guard() to release mutexes
 
-Hi Jonathan,
+--q5alohvduecpctbe
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
+ channel
+MIME-Version: 1.0
 
-It's been about two weeks since the latest posting, and it looks like
-there haven't been any major comments so far atleast on initial changes
-of series. I also don't see any progress on the iio/tesing branch yet.
+Hello Cosmin,
 
-Could you please guide me on how you'd like me to take this series forward?
-I'm happy to rework/resend partial/full if needed or wait further.
+On Tue, Mar 17, 2026 at 11:02:12PM +0000, Cosmin-Gabriel Tanislav wrote:
+> > From: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
+> > Sent: Tuesday, March 17, 2026 11:12 AM
+> >=20
+> > On Mon, Mar 16, 2026 at 03:49:35PM +0000, Cosmin-Gabriel Tanislav wrote:
+> > > static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_devic=
+e *pwm,
+> > > 			      const struct pwm_state *state)
+> > > {
+> > > 	...
+> > >
+> > > 	u32 enable_count;
+> > >
+> > > 	...
+> > >
+> > > 	/*
+> > > 	 * Account for the case where one IO is already enabled and this call
+> > > 	 * enables the second one, to prevent the prescale from being change=
+d.
+> > > 	 * If this PWM is currently disabled it will be enabled by this call,
+> > > 	 * so include it in the enable count. If it is already enabled, it h=
+as
+> > > 	 * already been accounted for.
+> > > 	 */
+> > > 	enable_count =3D rz_mtu3_pwm->enable_count[ch] + (pwm->state.enabled=
+ ? 0 : 1);
+> > >
+> > > 	...
+> > >
+> > > 	if (enable_count > 1) {
+> > > 		if (rz_mtu3_pwm->prescale[ch] > prescale)
+> > > 			return -EBUSY;
+> > >
+> > > 		prescale =3D rz_mtu3_pwm->prescale[ch];
+> > > 	}
+> > >
+> > > Please let me know what you think so we can proceed with the work
+> > > internally.
+> >=20
+> > I'd prefer the `rz_mtu3_pwm->enable_count[ch] + (pwm->state.enabled ? 0=
+ : 1);`
+> > variant. I understand that this is also the variant you prefer, so
+> > that's great, but I wouldn't stop you using the sibling option.
+>=20
+> I realized the check could be simplified quite a bit while achieving
+> the same outcome.
+>=20
+> 	if (rz_mtu3_pwm->enable_count[ch] > pwm->state.enabled) {
+> 		...
+> 	}
+>=20
+> 2 > 1 -> true, prescale gets checked when updating one of the IOs if
+> both are enabled
+>=20
+> 1 > 0 -> true, prescale gets checked when enabling the second IO
+>=20
+> 1 > 1 -> false, prescale is not checked when updating a single enabled
+> IO
+>=20
+> 0 > 0 -> false, prescale is not checked when enabling the first IO
+>=20
+> 2 > 0 and 0 > 1 -> impossible since enable_count is always in sync
+> with PWM state
 
-Thanks, Sanjay
+I didn't try to understand that, but on first glance it doesn't look
+intuitive, so needs a code comment.
 
-> 
->  drivers/iio/accel/mma8452.c | 278 +++++++++++++++---------------------
->  1 file changed, 116 insertions(+), 162 deletions(-)
-> 
-> 
-> base-commit: 39b80c5c9830d12d2d6531059001301c4265322a
-> -- 
-> 2.34.1
-> 
+> > You can gain some extra points for not using pwm->state. This is a relic
+> > from the legacy pwm abstraction and doesn't make much sense with the
+> > waveform callbacks.=20
+>=20
+> I can switch from enable_count to an enable_mask in a later commit, and
+> that will allow us to both get rid of PWM state access entirely and also
+> make the sibling check more obvious, by doing something like:
+>=20
+> 	if (rz_mtu3_pwm->enable_mask[ch] & ~BIT(rz_mtu3_hwpwm_io(pwm->hwpwm))) {
+> 		...
+> 	}
+>=20
+> Which would read like "is any other IO enabled?". If yes, don't touch
+> prescale.
+>=20
+> But for the scope of these fixes we need to keep accessing PWM state as I
+> would like them to be backported to stable.
+
+ack, getting rid of pwm->state is a separate patch that should be
+addressed only after the fixes under discussion.
+=20
+> enable_mask must remain per-HW channel because it makes the enable /
+> disable checks simpler.
+>=20
+> If this sounds good to you, I will proceed with all of these changes.
+
+It does, so go.
+
+Best regards
+Uwe
+
+--q5alohvduecpctbe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmoKIc8ACgkQj4D7WH0S
+/k7RGgf/VEvDtodT0+oisHcW2Z6vsU8mbZ6CyXyTYVCCAfxnCMh5+Pv0JrZGF0BB
+6HTuBpK3WzDLz18WhMRvuRX0lGQ0H1GdWgRhUfCRKjK3uQ0k94jqbTS3077LogCu
+KVddT3wgqd42HvVnoKKyX6kXLdhERF1feWJimAZMyN97EnCpYkXIrt6OjcqVw1uP
+CovKK1sipd9yubGD50twFyD1mvrfBgtlttGK3+jch85WrVpiEivYywkYlg50raGX
+nGLis6QRafoe/BszDCYaAYBcNBT9DV5Acs0ABucv1KcgUe2/wFXeQpyrLalaMk0+
+4c1SKThnhzLBWSP1Dh5L+TOi7CZlzw==
+=nQKn
+-----END PGP SIGNATURE-----
+
+--q5alohvduecpctbe--
