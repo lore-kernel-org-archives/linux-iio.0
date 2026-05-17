@@ -1,135 +1,257 @@
-Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C63C330F934
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 18:06:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779041187; cv=pass; b=PBePkZZBDZIoFtZ0Zilge7bWkREdQxID5+metY9i5OqEDigFbuIPwMgcy3xwfuUZ0QkuUOxAnfnf8j2622Fku5V67B4DgzILGnH79b7Q+vRB2ol2oEjRLiTWgb5Hh/4waO/eDdAo8RyKTWHKe5PZMKdcPVIn9pXlJ0KMh5KTrCQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779041187; c=relaxed/simple;
-	bh=H9GqYBpY5nB0Qh8HL53p/YzwyYeR43on70Vb4XQEMgc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sY2TIDU9r/PEWh3lBgk54C0Cg0I5gYN45yjSB18sLUPIR+2Yr3SgIBShjSI2FWQWsLip0MIWYDbCkHQHUKuBkVJk5rdCMTGS+ykzhywKToH3HA/6JBVitBIf9h85LQ21/xymvPx43OUZU+wn+pWucJCutGldlWeBS/AIRcfPCuo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gyeFwsey; arc=pass smtp.client-ip=74.125.224.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE843CAA39
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 18:07:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779041279; cv=none; b=KsL8V60otlyFx3jopeZWZ1IUDi9Rm5FQ6zupz12QFvGMRscXVdo3vcQPhUaPVbWt1cCDGxNJESSRjuVDj+bt7Uuo90LbpmZUENVxf+3Nz8WrIYKZvvxopGghlhbKe4DT8SjaAMeOCFTlwMVASQl83HxpeANhfnPtVFK6a9ZOfPM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779041279; c=relaxed/simple;
+	bh=AgfMqLVnS6YuQEuhwKQ5hHW609zHtmx345KIezt5J0Y=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gIrG37cM0npBL2Fr/XReAcqrYZRd9iXQPX6ZiB1LNsHbpEttrczUFn7ULbRt3D0uL8KjLQhb5wPgct+kvqovKw0lwaX061VHCtS43b9qoM9MCZr9WWD8herF6de+feAyk33w+CL0QzVpIs2IiDtsFI56d+cfHE/AFwwiZFsRebU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=li7PDmv8; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gyeFwsey"
-Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-654672a6d68so1618169d50.0
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 11:06:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779041185; cv=none;
-        d=google.com; s=arc-20240605;
-        b=bqsYxjUJjY4fYp9B8Rj3svfUZtySffM28bpmB5Zr275qkLae0mkCUE+PDSHQoHzT5+
-         fZP7OZPA011eJQTvfk/LyOvR4ajbGFavNQyMZRSZMFqjEc0r1qSVdYwM34HlP2QHEWcz
-         SMRGxxle7TWbMKSSrK8rS9kSsVXvbA7+lFqUxXbKxecUZ0wFMIoLduZ5V2JL+naGwVwM
-         VhAPOJ4oF0PkbDw5FNgyPRCXyPOOFcxTCYlWcQY4Y488R3rXAVK2S55vRsOaZKbH++Ck
-         Sv7u/vQyOeb7ayc92nVXW14v9N4xnhINwM8suYNJcGLKqMORzMQCXEnw4tx9eBZJHA1y
-         XXOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=p2jozFurG15oqS4RGkYlCCaBohKdo6o3NihM6Q/faNc=;
-        fh=CdWcTDcc+L7/jYBmMBDQW1JaBJIEkc4JTHARiikxV3c=;
-        b=bPukr1eINEvtBvCB6Y88JsdkDN1KOktrYqcwsX7jKMp4ztkBNDZV0KN29dqoTQB6k+
-         Z3FUWNy56aBucsx5AgK3h3ym9gpTTkutSeL83YShAlaDtOlcNV6nnjaxnMV7pZEWr7R/
-         5/1zDe/T4/dajpieKFvuZ63hS8X3GcPlpdnbyCuqXTeVOq/tEnN92RCVFvelCRlfr8C2
-         Xd1Pb+AghahyOpMCUk8xpFae5tby05ejKszh9csL3qb0cOpwa2QMgGlzD+TrGgFiUIPN
-         5U7Vgv0sk2Y/yhYzlg37NFSYg+ojlWLxrj/cC5MaCPdlBeb5EJar57ZT4lasG/sQaLa6
-         FtMA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="li7PDmv8"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4891c00e7aeso9132825e9.2
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 11:07:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779041185; x=1779645985; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p2jozFurG15oqS4RGkYlCCaBohKdo6o3NihM6Q/faNc=;
-        b=gyeFwseyu6A5SquAdCvhQAUl+DAfDsoxGNSzzW1rF/ziZSk35ATo9liF6row70Puh7
-         3PM+BB+79fwpcoXB0LGxuH+5L/Dh6ppgNHHJNcQrrh/sOVXkSoVMpHnoyeRe85aNfFr2
-         fMQVZkKsynDWDPpozcjPMuQUAKJzWrL3ttfTi79hUg88IQPKbRcYx1382szF5ChYzp8j
-         NkUMc6rOzvRo0Qtq84PtmI5VfMt0H0VrVVS6gtTAcSZWSuK/bMl9lWu5LR9nc/MStvMw
-         lCWyEzL2yXS17EvK3ffJEUwwmh18xUoRUlkY1VEhHdCZBtkgz1ttbbBNKW8u5HHvqviv
-         YaYw==
+        d=gmail.com; s=20251104; t=1779041276; x=1779646076; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+S9zwilvrDZ3FX02ClZfVO+ZKyFuGBJXYxf1fRCPzCo=;
+        b=li7PDmv8FHkRGCK5JWionVWSsCu/eAuom7LVWZy8NjjvGqJUYAFa9Ve4SlEAdC0/y4
+         1jImpBXIaFKfkplHSBlumQFnHeM41uBnNAq1SZHtYqE3rsXLdmXCC/ZeUiNnoVJ4Rxdm
+         1oOnslkuTX/r2AT/3+fUjio0cJowKSNW2voVMOysHqGESysD/Y03YDrxz4kM6dSFdT4Z
+         4Txae3DGDzGWHnSCbdjATNm7nkYb8aJSLkQYTAssZCAOxQzgK6H95x+kllytJEslWR5k
+         SdndN7gaf1aGMF8BAEXqnbBQZSUB2pTfgjCnd82H7bBMwjPHCk5ppTVCsvRZL3TiJdNV
+         DLIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779041185; x=1779645985;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=p2jozFurG15oqS4RGkYlCCaBohKdo6o3NihM6Q/faNc=;
-        b=XNk6CIIwJULpJr0rd0pGFDCuaawVGhXVE6yxSLG7mNH+sJGSNeZEW8vIZ0u/1Ds+Ye
-         AsmMPvwbX2dh4UagXh9rVly3eixd3vmLnakzs/eivtydJ2rWorIFwLoAU0YP8w8f4pNz
-         2S2IHdApZ8R/BaMvsgccY9WE3ZXfcGHa3nZpcjO5crPnBnA3jkAMIRc0LE41IjdHG1QF
-         hLl/8dPEsGb+UZoR/p++ikx6tzMm8cjvULE49oOmq4dcGeo3RTuDCQ3fPTiR+FIrk5Lp
-         UR59yarG1fN4rRRILNp3RwSIY57QTW7iXYgqFFeSNcVmAh5/tuJ5LHnyjqky9SqMca8N
-         /wKg==
-X-Forwarded-Encrypted: i=1; AFNElJ//fOIrwwEbEATanyUuopnYHva6uv2dmGb5p6tkyRysZwSNDYHrZOTtF/NbW+6dt+8qRXsasdxThoU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz3tLroRs6cRCPT/wn+TTRbj12fSLZZlITtFz4cxeojz0Gyp31a
-	mixubYe2cqdhYdLgFp+tFcnXXev4wPcCO5xTxZHfJN4zv5b3RNzXbtKskI4nHLIwR37/EKmgzgo
-	a2Xvsqdctc+Ox0qAitvg4woql/DgrNts=
-X-Gm-Gg: Acq92OFc419WNeB55QbdDaDJx5TBDWaCf9iqA107a1DLIjheUtqh+qOHcNON2mGjYPr
-	rRQExyNjq/h9FV9t8f2g4rgKGqWTGDuRu1WL8/f8rw+E9Crt/KBwT3kHA5klbIaZsJD05CVsq/l
-	TRUN55xPaCOu6q445BZ0Vf5LcIhESmNKgRou5IcOL+gQblojurR6zZVEmzBMPeYYEi2JJ/yDa8C
-	96Y4GQrXzYQ3Y8tJZ60NViFz2mTq94GZZmJeVJFio+bBPi3ZorDb4lgTlheXuKqMSwoFfnYlYmc
-	BC4uDWuDP5BTyk54
-X-Received: by 2002:a05:690e:1301:b0:65e:28f3:4a5a with SMTP id
- 956f58d0204a3-65e28f3509fmr11142962d50.37.1779041184799; Sun, 17 May 2026
- 11:06:24 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779041276; x=1779646076;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+S9zwilvrDZ3FX02ClZfVO+ZKyFuGBJXYxf1fRCPzCo=;
+        b=PozqacFrlw0Wq7mmFm0eY1Ps/UcWp6haW0O6z+fNVHId2KlNQtXsw1mWPJF3+9+e62
+         7Edc1jiM4DFZAPkmlQgoryjuqTNdoPC8N8zjQeKACzwZ0RtKSQnL7iOIisfPIt5RS6RF
+         gLYvW2yD9bvsNdqztK8BtOH5hqI2cColLBZj1wjFd0sooDyWsWUcUeUaehzNeY8CE5zV
+         V4Oj+RTZBitd+H8t3C1qG76bHfVdZm/5ez0roSNMWAEkBoEsYiXEf9YjPyUaRSvg8WBk
+         7fVwzkq60EAPNNh6AM3a0TsEd1Yka1AdM9FJNmcwPIGwy3hPi3BMVe/UdIiAH1eWJMOR
+         pBzw==
+X-Forwarded-Encrypted: i=1; AFNElJ/CYQ/K6dXqAbXpFS0vUSpu29oYBij9R2uWBmOSSBgYTsiOwxyN4g6Ft5g+tdf/N2ZNmEKiZMU5sZo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzu2aKVbtxuiY8YDqAP/UuHx2C+gC3N7iSBlTM8OVSIQ2Vy5UuK
+	uitRQayXqjeIIj4DUkQNOeq9n2V/lh+9+AUPCnmO/+TYQWDdvTHK62uA
+X-Gm-Gg: Acq92OGn+dt2fM5B0Z6NWSanEqRJrMtaPKalXBBaSReTFuwxpd8gLZ/bLsJMKdGMwTq
+	W4tJcOmYhTrLwSrQoMzHXA9ZO7DTgwWpRsRe7CVvkoufvbe5Kd+WoEgpQSs61l0an2MTXB6x4S0
+	TxX7SVVdPA78x/hT6PUsefsT2xNwTBZukooZVTVwTuJYN1Ftr/sQ6OBFB753b7ISqqZ6SBb9Uqd
+	c9xIqdDaKvuq7sWFWAeIxSCIc0gJS1iV+Rw7V6P/BUPZWt4UleEe3UT4YAUn8w/buc882S4yuSS
+	UAY1Aq3NoT+r3t04T68IjH0cP0LBGLb1D9ye+nXoE2YNPAscL5J4Aw3UUAgqJfUtJt+nSs3zsiX
+	w0Ad2o7zpzVl22IVh+JIe3qvJC6Y5KP9lGDUEYD+enT1I04kyIuk3usbW/PQUr6AljgOnSNroSz
+	zjFAyYFpFWAdqzk5qwdmUNrhb1lNkAl8IkefKbPEzf1zCTyknT8zNGhRNNYALkigvB3cqNBmxYK
+	oeA3CSZlUHgmdJwIaD6ov7W1aZBnpWugTd4OsYh+ef24infOA==
+X-Received: by 2002:a05:600c:8189:b0:488:ac01:72b6 with SMTP id 5b1f17b1804b1-48fe6323addmr185385535e9.21.1779041275890;
+        Sun, 17 May 2026 11:07:55 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe4862209sm207107125e9.0.2026.05.17.11.07.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 May 2026 11:07:55 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Sun, 17 May 2026 19:07:53 +0100
+To: Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH RFC v4 03/10] iio: frequency: ad9910: initial driver
+ implementation
+Message-ID: <is4rbxohz5icbaslatmjmzhb5oztnh6ytmntgkn3rssjijppb3@mur2heagprdi>
+References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
+ <20260508-ad9910-iio-driver-v4-3-d26bfd20ee3d@analog.com>
+ <20260517154745.5fbfcabf@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260512-opt3001-cleanup-v2-0-8018cf3a8a0a@gmail.com> <20260512-opt3001-cleanup-v2-10-8018cf3a8a0a@gmail.com>
-In-Reply-To: <20260512-opt3001-cleanup-v2-10-8018cf3a8a0a@gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Sun, 17 May 2026 13:04:57 -0500
-X-Gm-Features: AVHnY4Jl8N6kNDXOEaZ83QkFYkaG5l_aoyvurS3H1K64gciAAh_OStljljMFoy4
-Message-ID: <CAKqfh0GbMtsxVixf4tPuRB4mwWLk2T1fwr=LS2G_KuBnpQxWLg@mail.gmail.com>
-Subject: Re: [PATCH v2 10/10] iio: light: opt3001: add comment to mutex
-To: joshua.crofts1@gmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Alexander Koch <mail@alexanderkoch.net>, 
-	Michael Hornung <mhornung.linux@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260517154745.5fbfcabf@jic23-huawei>
 
-On Tue, May 12, 2026 at 5:58=E2=80=AFAM Joshua Crofts via B4 Relay
-<devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
->
-> From: Joshua Crofts <joshua.crofts1@gmail.com>
->
-> Add comment to mutex per checkpatch.pl report.
->
-> No functional change.
->
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
->  drivers/iio/light/opt3001.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-> index 1319e5941b66bd82e4dc2badf5ea27cacbcfd54a..81afee6993d08b1126f07b1c6=
-3c3d3496d8b380c 100644
-> --- a/drivers/iio/light/opt3001.c
-> +++ b/drivers/iio/light/opt3001.c
-> @@ -104,6 +104,7 @@ struct opt3001 {
->         struct i2c_client       *client;
->         struct device           *dev;
->
-> +       /* Mutex for ensuring one executed command at a time */
->         struct mutex            lock;
->         bool                    ok_to_ignore_lock;
->         bool                    result_ready;
->
-> --
-> 2.47.3
->
+On 26/05/17 03:47PM, Jonathan Cameron wrote:
+> On Fri, 08 May 2026 18:00:19 +0100
+> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> 
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Add the core AD9910 DDS driver infrastructure with single tone mode
+> > support. This includes SPI register access, profile management via GPIO
+> > pins, PLL/DAC configuration from firmware properties, and single tone
+> > frequency/phase/amplitude control through IIO attributes.
+> > 
+> > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> Hi Rodrigo
+> 
+> A few really minor things from a fresh look through.
+> 
+> Jonathan
+> 
+> > diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
+> > new file mode 100644
+> > index 000000000000..c75f2ef178c2
+> > --- /dev/null
+> > +++ b/drivers/iio/frequency/ad9910.c
+> 
+> > +
+> > +static int ad9910_read_raw(struct iio_dev *indio_dev,
+> > +			   struct iio_chan_spec const *chan,
+> > +			   int *val, int *val2, long info)
+> > +{
+> > +	struct ad9910_state *st = iio_priv(indio_dev);
+> > +	u64 tmp64;
+> > +	u32 tmp32;
+> > +
+> > +	guard(mutex)(&st->lock);
+> > +
+> > +	switch (info) {
+> > +	case IIO_CHAN_INFO_ENABLE:
+> > +		switch (chan->channel) {
+> > +		case AD9910_CHANNEL_PROFILE_0 ... AD9910_CHANNEL_PROFILE_7:
+> > +			if (ad9910_sw_powerdown_get(st)) {
+> > +				*val = 0;
+> > +			} else {
+> > +				tmp32 = chan->channel - AD9910_CHANNEL_PROFILE_0;
+> > +				*val = (tmp32 == st->profile);
+> > +			}
+> > +			break;
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> > +		return IIO_VAL_INT;
+> > +	case IIO_CHAN_INFO_FREQUENCY:
+> > +		switch (chan->channel) {
+> > +		case AD9910_CHANNEL_PROFILE_0 ... AD9910_CHANNEL_PROFILE_7:
+> > +			tmp32 = chan->channel - AD9910_CHANNEL_PROFILE_0;
+> > +			tmp64 = FIELD_GET(AD9910_PROFILE_ST_FTW_MSK,
+> > +					  st->reg[AD9910_REG_PROFILE(tmp32)].val64);
+> > +			break;
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> > +		tmp64 *= st->data.sysclk_freq_hz;
+> > +		*val = tmp64 >> 32;
+> > +		*val2 = ((tmp64 & GENMASK_ULL(31, 0)) * MICRO) >> 32;
+> 
+> Why in this particular case have this outside the switch / case whereas in others
+> you do the full maths and set inside? I'd put it inside and not worry about slightly
+> long lines.
 
-Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+for frequency, those calculations are going to be common for the other channels that are
+going to be populated by other patches...
 
-best regards,
-max
+DRG up/down and RAM will have tmp64 populated with a FTW value.
+
+> 
+> > +		return IIO_VAL_INT_PLUS_MICRO;
+> > +	case IIO_CHAN_INFO_PHASE:
+> > +		switch (chan->channel) {
+> > +		case AD9910_CHANNEL_PROFILE_0 ... AD9910_CHANNEL_PROFILE_7:
+> > +			tmp32 = chan->channel - AD9910_CHANNEL_PROFILE_0;
+> > +			tmp64 = FIELD_GET(AD9910_PROFILE_ST_POW_MSK,
+> > +					  st->reg[AD9910_REG_PROFILE(tmp32)].val64);
+> > +			tmp32 = (tmp64 * AD9910_MAX_PHASE_MICRORAD) >> 16;
+> > +			*val = tmp32 / MICRO;
+> > +			*val2 = tmp32 % MICRO;
+> > +			return IIO_VAL_INT_PLUS_MICRO;
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> > +	case IIO_CHAN_INFO_SCALE:
+> > +		switch (chan->channel) {
+> > +		case AD9910_CHANNEL_PROFILE_0 ... AD9910_CHANNEL_PROFILE_7:
+> > +			tmp32 = chan->channel - AD9910_CHANNEL_PROFILE_0;
+> > +			tmp64 = FIELD_GET(AD9910_PROFILE_ST_ASF_MSK,
+> > +					  st->reg[AD9910_REG_PROFILE(tmp32)].val64);
+> > +			*val = 0;
+> > +			*val2 = tmp64 * MICRO >> 14;
+> > +			return IIO_VAL_INT_PLUS_MICRO;
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> > +	case IIO_CHAN_INFO_SAMP_FREQ:
+> > +		switch (chan->channel) {
+> > +		case AD9910_CHANNEL_PHY:
+> > +			*val = st->data.sysclk_freq_hz;
+> > +			return IIO_VAL_INT;
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +}
+> 
+> 
+> 
+> > +
+> > +static int ad9910_setup(struct device *dev, struct ad9910_state *st,
+> > +			struct reset_control *dev_rst)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret = reset_control_deassert(dev_rst);
+> > +	if (ret)
+> > +		return ret;
+> No need to sleep at all after bringing device out of reset?
+> 
+> Sashiko has reasonably been asking about this in other drivers. If there
+> is no period needed or it is so quick as to be irrelevant add a comment here.
+
+I do not see any requirement on that in the datasheet.
+
+> > +
+> > +	ret = ad9910_reg32_write(st, AD9910_REG_CFR1,
+> > +				 AD9910_CFR1_SDIO_INPUT_ONLY_MSK, false);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = devm_add_action_or_reset(dev, ad9910_sw_powerdown_action, st);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = ad9910_reg32_write(st, AD9910_REG_CFR2,
+> > +				 AD9910_CFR2_AMP_SCALE_SINGLE_TONE_MSK |
+> > +				 AD9910_CFR2_SYNC_TIMING_VAL_DISABLE_MSK |
+> > +				 AD9910_CFR2_DRG_NO_DWELL_MSK |
+> > +				 AD9910_CFR2_DATA_ASM_HOLD_LAST_MSK |
+> > +				 AD9910_CFR2_SYNC_CLK_EN_MSK |
+> > +				 AD9910_CFR2_PDCLK_ENABLE_MSK, false);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = ad9910_cfg_sysclk(st, false);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = ad9910_set_dac_current(st, false);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return ad9910_io_update(st);
+> > +}
+> 
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
