@@ -1,40 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35592173
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 12:57:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00C3A3624B2;
+	Sun, 17 May 2026 13:09:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779022654; cv=none; b=Xj0rmQJHNhDgP0jRSMRIZM1VoSHkeIdnyPDZvNXpB9StpwoitpZzNPRehp/P5cPLdhgFto2bNe49Ev2e+ACokNBzgC1/M28FwGrZmGrvVP/E04+EizeswUCEYhYK7fqlAyBOk//Bkhm6JxLYkC8e6UgTrJ3g6d/zfEWzx8I2gKQ=
+	t=1779023348; cv=none; b=rCOX1GrVb0h+IVjQ3su5LUXTj2o/jVXyLRj7JeoL27Esyt1Az5h92icGntnu41vCHIs+LCeiW3Kb26C4UQK1SkyFARsyS6kiELyy3xHxfG/EPKmVl339l6HgxVGniKR72ud6P7BkcQu5FtojbSX+T8fN3xZCBGl1Wp2t6VS03SA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779022654; c=relaxed/simple;
-	bh=S1iUd6u6BW3uxvRj8LHWsmLcaClUttw0mwdSROHVzJQ=;
+	s=arc-20240116; t=1779023348; c=relaxed/simple;
+	bh=iz4EDq1G8o3X/r7ZNxnLgdF6x/MLHpXvs0W0iysATWk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=l72FYFRgRNmXen6JKZtF1JHzqftL0ydDU5Ozewv7S+1RqlUSgQzVRU4nQPTfqGs1FhJUABR/Fr7jO0zhuff0GFljNq2UzqROTNAwZPXfHkZu2tusCYt5e5x88ff9wLsRCylFx+b9BuHxZ8YnfVOCgdZkOMd6feiAetHL8j//EHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QpVFXOJc; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=BGJo24Pa7mHLv7zyf65NlMDRowNjiX9yUH38qb6iNUYxfQGLZOLsgG1a1WDMsChGdk04E7/xLMNmdcYIoWeKp+Qb+dSz6Z0YiVmhh0D+aT72RAuEU/h4xFfJH3j3fxpjv/bm4WlVDeQhftC8U7cjfIEdaS+wQMTcH4jC0xBuU3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jLqONTMN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QpVFXOJc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 376ABC2BCB0;
-	Sun, 17 May 2026 12:57:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jLqONTMN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52DADC2BCB0;
+	Sun, 17 May 2026 13:09:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779022653;
-	bh=S1iUd6u6BW3uxvRj8LHWsmLcaClUttw0mwdSROHVzJQ=;
+	s=k20201202; t=1779023347;
+	bh=iz4EDq1G8o3X/r7ZNxnLgdF6x/MLHpXvs0W0iysATWk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QpVFXOJcVkTinzec/+ff7SbD6pSWabS77WuZJRi1AMj7NYaFK7wKgZTnXIeYSyila
-	 +JK+MpmgLs2zKXniVd5vgIfd9wETtAriyWuRxvaCBqVTC2XylWmNUg6czaonEcptCR
-	 ivuOO26tfI3xdnxCBVdnYSJbavDRObsnvghykLRciWfCEzxBx4afwmSRqWnu5RNmIx
-	 YdwWuGeRx2ykT33qCBNgUWjCTH/RkXKHQIeEh9ub2MnSqIBoDH/9cCLkOvDk6VzLXX
-	 deQFIacd6Zf3TCNq2D3P/p1UdmRsESei9MTQCcMfY1RJMEcJVg/EkPhLrfNHE0Pdbt
-	 KSZin2oemHIFw==
-Date: Sun, 17 May 2026 13:57:26 +0100
+	b=jLqONTMNEpA23ymzW7NtSpB88pUx4ec2BHgkbFTji8LHoNhbmCzzYxLAA+yD17Ozq
+	 W/hjjYWjawGHb4nGRYiifezD56o3weEG5vCXQ3JdjplHoKq4efe8M0jDCCaN2gXs43
+	 XJOdnitCqQsa4ATkzD3SH3Ixns6k+l8i43lXZLJt+Dl2NSd1CNw4DkdqwB1ILkcnPg
+	 beub+wkgc61TBeQiSTKcY+lCzVjEK0rUGI02SP1wsb5PcTnkIFIibx5yWc/dLJ4kwA
+	 9/wyrwzWtm7Xs2Q6b9Xh26TQybhawGXBbiwXQdD6dpAanFuZUeqtGxATmBInW1tDGR
+	 LXZhIUDW9jFHQ==
+Date: Sun, 17 May 2026 14:08:58 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Md Shofiqul Islam <shofiqtest@gmail.com>
-Cc: dlechner@baylibre.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: accel: adxl372: Add timestamp to FIFO data
-Message-ID: <20260517135619.55f9b50a@jic23-huawei>
-In-Reply-To: <6a09881c.7a23d47e.35947f.2f62@mx.google.com>
-References: <20260516211935.36773-1-shofiqtest@gmail.com>
-	<6a09881c.7a23d47e.35947f.2f62@mx.google.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: light: veml3328: add devicetree binding for
+ new sensor
+Message-ID: <20260517140858.7db0edcb@jic23-huawei>
+In-Reply-To: <CALoEA-xQJ+JyJ0HHpNzed2NTXgnVnP14yVb0FHVCG=tC=DuuqA@mail.gmail.com>
+References: <20260516-veml3328-v1-0-1d4b663e2fe3@gmail.com>
+	<20260516-veml3328-v1-1-1d4b663e2fe3@gmail.com>
+	<4d1d9af9-af4d-4cb9-bcc6-e70d7640b98d@kernel.org>
+	<CALoEA-xQJ+JyJ0HHpNzed2NTXgnVnP14yVb0FHVCG=tC=DuuqA@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,56 +53,80 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 17 May 2026 02:19:24 -0700 (PDT)
-Md Shofiqul Islam <shofiqtest@gmail.com> wrote:
+On Sun, 17 May 2026 12:38:40 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> Hi David,
+> On Sun, 17 May 2026 at 10:38, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> >
+> > On 16/05/2026 23:50, Joshua Crofts wrote:  
+> > > Add devicetree binding for the Vishay VEML3328 RGB/IR light sensor
+> > > connected via I2C (SMBus compatible).  
+> >
+> > Please use subject prefixes matching the subsystem. You can get them for
+> > example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
+> > your patch is touching. For bindings, the preferred subjects are
+> > explained here:
+> > https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
+> >
+> > And then:
+> > drop second/last, redundant "devicetree binding for new". The
+> > "dt-bindings" prefix is already stating that these are bindings.
+> > See also:
+> > https://elixir.bootlin.com/linux/v6.17-rc3/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
+> >  
+> > >
+> > > Additionally, add an entry in MAINTAINERS.  
+> >
+> > Drop, no need to describe what you did. We see that in the diff.
+> >  
+> > >
+> > > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> > > ---  
+> >
+> > ...
+> >
+> >  
+> > > +examples:
+> > > +  - |
+> > > +    i2c {
+> > > +        #address-cells = <1>;
+> > > +        #size-cells = <0>;
+> > > +
+> > > +        light-sensor@10 {
+> > > +            compatible = "vishay,veml3328";
+> > > +            reg = <0x10>;
+> > > +            vdd-supply = <&vcc_3v3>;
+> > > +        };
+> > > +    };
+> > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > index d6c3c7d22403..134690aa9866 100644
+> > > --- a/MAINTAINERS
+> > > +++ b/MAINTAINERS
+> > > @@ -28386,6 +28386,12 @@ S:   Maintained
+> > >  F:   Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
+> > >  F:   drivers/iio/light/veml3235.c
+> > >
+> > > +VISHAY VEML3328 RGB IR LIGHT SENSOR DRIVER
+> > > +M:   Joshua Crofts <joshua.crofts1@gmail.com>
+> > > +S:   Maintained
+> > > +F:   Documentation/devicetree/bindings/iio/light/vishay,veml3328.yaml
+> > > +F:   drivers/iio/light/veml3328.c  
+> >
+> > There is no such file at this point.  
 > 
-> Thank you for the two review comments.
+> Thanks for the review, will address these in v2.
 > 
-> Regarding the timestamp accuracy concern from the v1 discussion: the commit
-> message in v3 now explicitly documents this. The timestamp is captured once
-> per FIFO watermark interrupt and reused for all samples drained in that
-> invocation. It is most accurate for the last sample in the burst and
-> progressively stale for earlier ones. This is noted as an acceptable
-> approximation for coarse event sequencing, consistent with watermark-based
-> FIFO readout in other IIO accelerometer drivers.
+Hi Joshua,
 
-Hi,
+One process thing - don't reply to say you'll address everything.
+Just put your thanks under the --- for instance in the change log for v2.
 
-No this is not valid under the standard way we handle timestamps for FIFOs
-and if we made this approximation in a given driver we would then be more
-or less stuck wrt to fixing it in future.  If you wanted to discuss
-that more you should have replied to the earlier feedback saying no
-to this approach, not wasted time on new versions when such a fundamental
-objection ha been raised.
+A reply like this is just noise that several people need to open and
+scroll down to see if discussion needs to continue!
 
-So I'll be ingoring this series and all other series adding timestamps
-to FIFOs that repeat a timestamp. 
-
-If you have a usecase for adding this then you need to look at how to
-do a decent approximation of timestamps. If this is feature addition
-because you feel it might be useful to someone else, then find that
-user and work with them.
-
-Also, replies to reviews need to the to the review not to the thread.
-Fix that before replying to other reviews as it is making it very hard
-to follow the flow of discussion.
+Note this is one of my most common bits of feedback to contributors who
+are moving on to more significant contributions!
 
 Jonathan
 
-> 
-> Regarding the function choice: Stepan Ionichev identified that
-> iio_push_to_buffers_with_ts() writes the timestamp directly into the source
-> buffer during the loop, corrupting subsequent FIFO entries. v3 switches to
-> iio_push_to_buffers_with_ts_unaligned() which copies into an internal bounce
-> buffer without modifying the caller's data. The size argument remains
-> st->fifo_set_size * sizeof(__be16) -- the actual per-sample data length --
-> which _unaligned() caps at min(scan_bytes, data_sz) internally.
-> 
-> v3 is at:
->   [PATCH v3] iio: accel: adxl372: Add timestamp to FIFO data
->   Message-ID: <20260517091735.135610-1-shofiqtest@gmail.com>
-> 
-> Md Shofiqul Islam
 
