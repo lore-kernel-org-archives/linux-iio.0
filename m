@@ -1,162 +1,106 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0BBF1B808
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 09:17:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CE3A31E106
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 09:19:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779009462; cv=none; b=glAA+lywNJ+LMSyumCXoeJAUsc7K4/hw9ymrBw5hLUvB/DKRknRzDwX0z/c013g/ffEv7pojYoDjUdPVszUnQjei0Myt9F5EcOfU6w8sXr+SlTwTQJ3RyMJAqHaAHEGueAY7F3Xjcf7h2hVranQbm3Snt4VcCQkxpCvPFIlkB8g=
+	t=1779009569; cv=none; b=Uf1ELXyBTfueLRotk4l9GUr1CxNxlJVrL610Lg1bWPcE870Y5+PmkMG2Wk+2s/gjVULC83Kh0xW9QM2Q76LfiwX0OWYiYz30/Ep5oNADf+LbJLUNqaQfu/ulNEkz+HDRREOLT81ashhCDG8Iu8J+cETiY8SdY8mwcYSXsV0sWB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779009462; c=relaxed/simple;
-	bh=5BAU+BmcR/O5jbb0JHnDDdzDYzzCjh86VvMn9SLtINo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=sCGKzpoOLSDX+0qJFMjoo2lTtbTgaGL+iRI/ySIJvM3vAJqGpNYLeKMbY6G8JdU2O2U4FJKOb1mHb6lc1rmP83ekn26zG19wXQLJmmuOG7kysOiEJqEVStUF1jCnFLK+WG3DyOo0IOv8c7keWWGNCYSYwTpBSZUjyEwXcs7fPhM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GmI5Vudi; arc=none smtp.client-ip=209.85.167.44
+	s=arc-20240116; t=1779009569; c=relaxed/simple;
+	bh=OI09udj8QTe1SX8de+cOIFJErQM7mv6XXzOib4wIeKc=;
+	h=Message-ID:Date:Content-Type:MIME-Version:From:To:Subject:Cc:
+	 In-Reply-To:References; b=Xmllr2KIcM/dUqSoUQHKIpc7x6pjkHQjxcouo1GT/ru2MnKPJgw3fO7ahcCHO2N/uMP2W6dHloLVbBenCxBNWFunag1UNQ6Pg/mvxwCvC8mdFnxYHTxSUicahyQWknnCw8njIOoKZcsibbu6mnL08MIA04pt+Mk9+h5A79f/xbo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Lm/oBWtR; arc=none smtp.client-ip=209.85.208.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GmI5Vudi"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5aa1b2327c8so614390e87.0
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 02:17:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lm/oBWtR"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-393a44854d2so12936801fa.3
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 02:19:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779009459; x=1779614259; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bsXVvKAHjvox1kSAnpaHc8zcTaIsvFES6v4D6Jm6txA=;
-        b=GmI5VudiyRqGU5kUbEz1zrqgquMmDYJ0nqRrvgvUvlmpeZ6a0cfn/v3Q8tKX5koIwz
-         FuGp10zdMbl7CtGlEUGINTtoQbGnfY/MSs5kRzgqbXY6T2gQzZnhWuYTIdf+o8zuyypc
-         0gCon3pDowsB5oN0rHUMHSGOY0lE2X8AtioX9n/vGbFvbjGMkY1pG7cBeoQEnjmyB/8Y
-         vgtHLTj8eN2nr2XbHsJT0okFiv2m8joTh+pVKCRRQ80mfX2oKbqYjEAJOVyUJvS5o3YD
-         fkCWVW2gA2s9GRNRRvUn0U+Jj1FaTghEa8yHfH910Af6KVyeonXYWVyYY3cppfCoc4S5
-         A0Iw==
+        d=gmail.com; s=20251104; t=1779009565; x=1779614365; darn=vger.kernel.org;
+        h=references:in-reply-to:cc:subject:to:from:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=sq8VdtxezKBE/tpgvS/F1F66FwRdNHAyIzqyCnGxbYw=;
+        b=Lm/oBWtR4uM0Gm7GgV0UzA+Oe/ST1N0lzHk9tc9lPW0XaF4AVxTAW7NWIg7ChKSkgY
+         0HLUnwTsIFBAv/ZMI0slr1pB6922AN09+TKfxQ4DxXfmXMnzXksU3cLgVw/7ZiNP5Cu8
+         fEd3UelixryOAVGMwwgla9h9ToBcqUfRe5+jJYBCatPfguhBC0hvZGKvnECDD3b1sie2
+         Lk6xnuyFZsA9g8MheozFdyCm9RnjU2n60rrDse13KM8I6n/6DauwIl6rflVe7r1Elw33
+         a7vQPi+3QZujG2QTEwQf8fQocZtZI59fqtfrCkpND2UetfmigRdRgS7a5Uk6JA86NMSu
+         f2Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779009459; x=1779614259;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=bsXVvKAHjvox1kSAnpaHc8zcTaIsvFES6v4D6Jm6txA=;
-        b=gbDfUO9xeKY6gsKFe+nWCQp5QlUsHaiGaBxjG+pIhv+BzFKgNj4wq/Z5EPAVVehh1m
-         OqiRmJZwFkNpLj1rb0ijPlCOuMTWgZYPWq/53qpQE6dq15FY6uL6CqTo2siim7THE5OF
-         smUXXUKMLpvUlnnx27rHDPPqZJw5PyIvorud156dgekyvpFeKaS5YkbRzuZtjCBVM1pW
-         e0kDvUxip+OvdzsRek1volHOpzzQXDZB6Ejj+X7G9WAUMbROIGI+qZw/XYkJb5pmns1j
-         E1CVguWr1emgxXOBVj/bgF3Suz8Zq8uLD2vsJAqIHjt1MJajN9iP4C9HUDqtRm0+h4Dv
-         Gipw==
-X-Gm-Message-State: AOJu0YweLyweOaV3DeFAPR8ffuT3olMkIn3libG7YSP7xflPR0xvt/xz
-	AVjqpJORY3SUzgNe548QXp3Gbu7/UoRiE1w7zRaZh7wEaUzkZsPC3vX6R25+1VUq
-X-Gm-Gg: Acq92OH3+c2DJiePTFqSzfarOpO5AXe29YK0U73dNhQsCzAha44xA0zMc3FQMbH3MMo
-	XiYtQQ7EGTNSpqvvDVyTvcD/wXPTL9kW3vQkTwPT9SKDC6I7LKWmZRHUAsTSPY3/D0UAPquDmk6
-	iMTcZMC0aRzvKra3tK4bjPNF386bCvnzZ0lt1OtZZnMc5Q/kC00Q4jWw6z9yIPuOW24kVqcZxtt
-	/j0iLQTV342SS6rfiyJTxUxkUx13/DYr+6eC3RYCzS60z41B+EIj2P2yJEgu49ShQedp4gpXBa2
-	dZKbSdFO+mCRhxK/PZ0KFsOL8QvhXrWCnkj95LaxxnoswiZk1qhOsqUnkzUeDmGKCGJr2IYW8Bc
-	Mm3VoLFH2gtim0yW3okiYlYjN+bmdrXsvFr7kD5JkziJFd0hpYchfhnN1ALn+EKoyJ9zLYIukQr
-	2X7LeotsL+uGOx2LnN9fJTkmp/WfRHTD93TGN96rqlpEEJuRKQy5JrRElV
-X-Received: by 2002:a05:6512:3b9b:b0:5a8:950f:e92e with SMTP id 2adb3069b0e04-5aa0e73059dmr4489926e87.23.1779009458578;
-        Sun, 17 May 2026 02:17:38 -0700 (PDT)
-Received: from Shofiq.home (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a90f11a5casm2603434e87.29.2026.05.17.02.17.36
+        d=1e100.net; s=20251104; t=1779009565; x=1779614365;
+        h=references:in-reply-to:cc:subject:to:from:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sq8VdtxezKBE/tpgvS/F1F66FwRdNHAyIzqyCnGxbYw=;
+        b=irabJNbn2/rFH44sNEGEead1/XfTXI+Vf+nk+SdjR62PoUNYN3QWBkd7t8Sywo0Fdj
+         f36B0Zr7DXiwYNVY58HMef+5SNDiHgMTxpZlbFXRBYf8dHzdgiLTKlb5hekYKz1pTsSY
+         cDD1u4zcZDEB0K1J3RXE4PPaqlqUU6wO6JM8NDwc/ZqHJ04xyTRFjOAHjqzhjJ8MSdjs
+         QCPzx7rFkTWxaBozoLAcP9nUj7pw/n1Lf5lSksTDQDo+/Bo0HlPgbY5/A+jN4iO7PpjH
+         v73OkRSyGj2mm1mANIpSmXaDYFqqRr7WLCUIXh1oR8ARSe2lUDdSrUF+zaFn8prmisdu
+         lrwA==
+X-Gm-Message-State: AOJu0Yxp9/HX4KMlxxvZ4HZIuWKuxRaK6ukvqMOGhVZgBJc1Rcu+6+10
+	HltjHh+XMGyupUEa/W6MznHGnMN38RA5KyzAOPfTjyYL1qDNH2SPIW69xF1SH1Ki
+X-Gm-Gg: Acq92OHfgSvXubMFE8McvU3Td7lDxdfHX8GcofuRsDuf070OFF09cMOgjavbtjyywPr
+	AvyB1KzMNXBr2gSI4UQ2+GeaMzIxnRlLl+1iatGXfzUE5WA6Haw00uN9BDSdoZFQv/Q3v5r4kgy
+	+PiFpBOtqOS+Y3TD3HXU2KCcFNMGFh6PWlVQxdsUi4XPFu3AUq7Ij6o9EyJUIGM91ZF+lmSyMSI
+	qm7utDu74efZUKUnGeOJuKJ7oE9Y/v3BtnPl9ncwrwJcRNUPwUfQAeqQ3O41gf7TPUopBv7MdUy
+	pn9BgAEQpWkzwMiwIZyXBr0PxzA63puoupTKCGxxgcqBTfwWxnGbkrKxtzoweuYyu1YygzUBPvE
+	ssJRtBp/KZlR4yyOQFGTrvcPC57+moF1LCv2q5sbczf8deZIn0maR+iPpCRJjUSYGmLxDIQ7r+C
+	VWmFkLeWT618SVHY0lOZJMPkCI3bk91HuZ5qkObNAUbkQlCiPpWE5TgxN1L+quG2UW8w==
+X-Received: by 2002:a2e:9793:0:b0:393:ef2b:fc05 with SMTP id 38308e7fff4ca-39561d630a7mr26163241fa.16.1779009564993;
+        Sun, 17 May 2026 02:19:24 -0700 (PDT)
+Received: from Shofiq.localdomain (87-92-218-151.rev.dnainternet.fi. [87.92.218.151])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-395887f7b99sm4036831fa.42.2026.05.17.02.19.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 02:17:37 -0700 (PDT)
-From: Md Shofiqul Islam <shofiqtest@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	lars@metafoo.de,
-	shofiqtest@gmail.com
-Subject: [PATCH v3] iio: accel: adxl372: Add timestamp to FIFO data
-Date: Sun, 17 May 2026 12:17:35 +0300
-Message-ID: <20260517091735.135610-1-shofiqtest@gmail.com>
-X-Mailer: git-send-email 2.51.1
-In-Reply-To: <20260516211935.36773-1-shofiqtest@gmail.com>
-References: <20260516211935.36773-1-shofiqtest@gmail.com>
+        Sun, 17 May 2026 02:19:24 -0700 (PDT)
+Message-ID: <6a09881c.7a23d47e.35947f.2f62@mx.google.com>
+Date: Sun, 17 May 2026 02:19:24 -0700 (PDT)
+Content-Type: multipart/mixed; boundary="===============6010766939070927020=="
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
+To: dlechner@baylibre.com
+Subject: Re: [PATCH v2] iio: accel: adxl372: Add timestamp to FIFO data
+Cc: linux-iio@vger.kernel.org
+In-Reply-To: <20260516211935.36773-1-shofiqtest@gmail.com>
+References: <20260516211935.36773-1-shofiqtest@gmail.com>
 
-Add a software timestamp to each sample set pushed to the IIO buffer
-during FIFO readout. IIO_CHAN_SOFT_TIMESTAMP(3) is added to the channel
-spec so the IIO core includes the timestamp slot in scan_bytes.
+--===============6010766939070927020==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 
-The timestamp is captured once per FIFO watermark interrupt via
-iio_get_time_ns() and reused for every sample set drained from the FIFO
-in that invocation. This is an approximation: the single timestamp
-reflects when the interrupt was handled, which is closest in time to the
-last sample in the burst. Earlier samples in the same burst carry an
-increasingly stale timestamp. This is acceptable for coarse event
-sequencing and consistent with watermark-based FIFO readout in other
-IIO accelerometer drivers.
+Hi David,
 
-Use iio_push_to_buffers_with_ts_unaligned() rather than
-iio_push_to_buffers_with_ts(): the latter writes the s64 timestamp
-directly into the source buffer at offset ALIGN(data_sz - 8, 8), which
-in a multi-sample FIFO drain loop overwrites FIFO entries not yet
-consumed by the next iteration. The _unaligned() variant copies each
-sample into an internal bounce buffer and leaves the callers data
-intact.
+Thank you for the two review comments.
 
-Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
----
-Changes since v2:
-- Use iio_push_to_buffers_with_ts_unaligned() instead of
-  iio_push_to_buffers_with_ts() to avoid writing the timestamp into the
-  source buffer during the FIFO drain loop (Stepan Ionichev)
-- Update commit message to explain the single-timestamp-per-IRQ
-  approximation and why _unaligned() is needed (David Lechner)
- drivers/iio/accel/adxl372.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+Regarding the timestamp accuracy concern from the v1 discussion: the commit
+message in v3 now explicitly documents this. The timestamp is captured once
+per FIFO watermark interrupt and reused for all samples drained in that
+invocation. It is most accurate for the last sample in the burst and
+progressively stale for earlier ones. This is noted as an acceptable
+approximation for coarse event sequencing, consistent with watermark-based
+FIFO readout in other IIO accelerometer drivers.
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index e375d068a..b108b214b 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -344,6 +344,7 @@ static const struct iio_chan_spec adxl372_channels[] = {
- 	ADXL372_ACCEL_CHANNEL(0, ADXL372_X_DATA_H, X),
- 	ADXL372_ACCEL_CHANNEL(1, ADXL372_Y_DATA_H, Y),
- 	ADXL372_ACCEL_CHANNEL(2, ADXL372_Z_DATA_H, Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
- struct adxl372_state {
-@@ -365,7 +366,7 @@ struct adxl372_state {
- 	u8				fifo_set_size;
- 	unsigned long			int1_bitmask;
- 	u16				watermark;
--	__be16				fifo_buf[ADXL372_FIFO_SIZE];
-+	IIO_DECLARE_BUFFER_WITH_TS(__be16, fifo_buf, ADXL372_FIFO_SIZE);
- 	bool				peak_fifo_mode_en;
- 	struct mutex			threshold_m; /* lock for threshold */
- };
-@@ -703,13 +704,15 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
- 	struct adxl372_state *st = iio_priv(indio_dev);
- 	u8 status1, status2;
- 	u16 fifo_entries;
-+	s64 ts;
- 	int i, ret;
- 
- 	ret = adxl372_get_status(st, &status1, &status2, &fifo_entries);
- 	if (ret < 0)
- 		goto err;
- 
--	adxl372_push_event(indio_dev, iio_get_time_ns(indio_dev), status2);
-+	ts = iio_get_time_ns(indio_dev);
-+	adxl372_push_event(indio_dev, ts, status2);
- 
- 	if (st->fifo_mode != ADXL372_FIFO_BYPASSED &&
- 	    ADXL372_STATUS_1_FIFO_FULL(status1)) {
-@@ -733,7 +736,9 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
- 			/* filter peak detection data */
- 			if (st->peak_fifo_mode_en)
- 				adxl372_arrange_axis_data(st, &st->fifo_buf[i]);
--			iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
-+			iio_push_to_buffers_with_ts_unaligned(indio_dev, &st->fifo_buf[i],
-+						    st->fifo_set_size * sizeof(__be16),
-+						    ts);
- 		}
- 	}
- err:
--- 
-2.51.1
+Regarding the function choice: Stepan Ionichev identified that
+iio_push_to_buffers_with_ts() writes the timestamp directly into the source
+buffer during the loop, corrupting subsequent FIFO entries. v3 switches to
+iio_push_to_buffers_with_ts_unaligned() which copies into an internal bounce
+buffer without modifying the caller's data. The size argument remains
+st->fifo_set_size * sizeof(__be16) -- the actual per-sample data length --
+which _unaligned() caps at min(scan_bytes, data_sz) internally.
 
+v3 is at:
+  [PATCH v3] iio: accel: adxl372: Add timestamp to FIFO data
+  Message-ID: <20260517091735.135610-1-shofiqtest@gmail.com>
+
+Md Shofiqul Islam
+
+--===============6010766939070927020==--
