@@ -1,136 +1,163 @@
-Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5523535CB6A
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 10:11:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.171
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779012678; cv=pass; b=dEpXWh4na69S685+Qqwlz8Bq9TGUlNBxom5F3lRZTmgCTDDYuIo8KwyPG2uPv1VrkSFC6m+4mmu4OAbSik96BmuybEDqxTs4cfea474mGxB6HHYUudapoOXJ19JvUMNx2bTp7CisxEdTHwpdZI6ZvB6suT8B6IzWMAWvyU9bxyw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779012678; c=relaxed/simple;
-	bh=ifauxA5VPfHKLiYlXWLHFvyPEzmbAuAokN126eppTSk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cfrkgFoCEQMvURff+J7lKXoH7zUcYd4CAsmW9KeJIcJpSQHjcJvjNTgvSlEXac4jz6waNoLRU/6GGw4c6UIwlMlhnUgt9QHfTKQPRIXPUjdxuiNVookTSHG328KtmlieLaIuRh6CNwbtkR2SQB9lpUiEVp4msDaYOzeliSsgEK0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rciXCJPe; arc=pass smtp.client-ip=74.125.82.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65A082D8DC3
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 10:12:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779012746; cv=none; b=c7TRANnzymP/6Goattu7cQ+QUaL1YI03S+ViCJemyPlLQn4LqqORtGUOTp/eG95ev8KYPULmip7LclcM8OLSYbypx4zmYM+498Szq8T+WqxGTw3FhKqW1/mq31V6bgX8m/vIUNuWT/ZnoaPYklWGoASnBrNgHKrdS1uIqBQEv+0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779012746; c=relaxed/simple;
+	bh=KD/IuTgzVq18/vpJBrybXULGBqIH1vlZksMS0vB9c2E=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GlBb9iBs8NT946zdTLWtn4Aa5ayb7Q3A8Fbvb+5ZfyROvOedUfFKg+7z2IsSBOX0oIWXJQAiR7JSW9nC2OLf0z6EOFp3+kvcXzPAf5bbI5dtnWCU4lhFMQLO8Zk5OpdT0pJTa/OrwqTbXVh0GumHs7sBMEBtK/iG7ztMVu0PR8U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g70Ccik1; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rciXCJPe"
-Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-30246cfd41aso2956937eec.1
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 03:11:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779012676; cv=none;
-        d=google.com; s=arc-20240605;
-        b=KyDrULywygUnll2pPTNoB5T3ajT6/Dm2ir6al/hkZfTd1U4OIzQgPcb+/jjRZjYMHu
-         k595UK/WH5DQowop8ys8u450TvvulsroAY1ksJPJ0/AsmCDXi4AW8riGmylGuceRocad
-         tLr4jLPnmUSuvH3MUVbw608uesiS3y6Lk5ebRpAPhW5iKr4YrzbGWwaP37pwCdT8z4Gi
-         X5NbDbvULl5pHAOZnRL98S7vr2Od0oO3yaTPF8aVK7WjoUGcFS7WDuN3hL91TK9nUz7D
-         i8EEdtjq+xv6Np3hAZ9qK1aO1feWg+CzXk7dofCsuuIM47Visf7w9u2+HLMg/tObd6hq
-         E0Ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ifauxA5VPfHKLiYlXWLHFvyPEzmbAuAokN126eppTSk=;
-        fh=NLPgmVU1jI82WcPQbms50rmb0xv5SODAiztNvXdsA18=;
-        b=KdoPcAmlKMa2U2x5WVzZv3WaMkjx0xgqQGkSOv4/1NaS7QvTdYjIU1oWKg9o4sXKhw
-         zUVhCn/AvPCRJh+BGpb10ARgFzX6oS5WX4aI/POV6tni7pUcVHuzyRzeVQhRVt5kwYak
-         oJJT6MlOXzHFaEgrDNr62d+Bh0Xz1+/IwwI7ZK8k8kFbXtxYXE/W5zFPf2leHsVuD3A4
-         nELYFBifNJjYlPyUZmH9sOiYJqAvvArYxOuXznpD4mCmd2W1Ex3zjc3f4edphazgVT2W
-         q9ytGUVZmL6ADbGjgowsKOgFaNNWWAHpuQTd9eXOLxspLUj/syOjewe4u8z9ah8m9pCv
-         N5HQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g70Ccik1"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4891e5b9c1fso8969345e9.2
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 03:12:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779012676; x=1779617476; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ifauxA5VPfHKLiYlXWLHFvyPEzmbAuAokN126eppTSk=;
-        b=rciXCJPeT566uKV/w+At0X8Rs0RZV/FR/rji3r7v5LvvlzTyLylSU/Xzt91AF8VNNW
-         XN8A0EauYbrgo4watG8Yts5hYBUsa709meo1B9CmObIghjF8H+BXZwjQt+yx2jMyDijH
-         2iwsLse01gO9RFaghvIQuT7SbEbt2SVzdL7E+wFMBA3OoPrhnAENZnH/VClpeWB4dxyk
-         oM3zMzSfboDWz8Vi28CYGvdqVRP3qZOWO5TjTgdfXKX1oNqoFXrB/XNvEegSWLQ3WnhM
-         tEgJK2s49ifJyLvNL2YCaFkq1OK7DDMjfXTPd1Q5PGC2tKUQv7RQv04N1Qz/BWVn3U/+
-         5DMg==
+        d=gmail.com; s=20251104; t=1779012743; x=1779617543; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=NzQ+XkjFbbvnSSJgYiukqepa3NWBT/tqzId42RKwLNw=;
+        b=g70Ccik1II7afpDiDAjDi8pQvdlf45OLTbHgt6NPjxDHqXylsPDPi/VYbqo+Yr3sCU
+         7LiN6I6w8WYou1Z0z4Zftt67Z5CAohO7Oj9e+vTx8SzAjVfFiNo9MjaodLiGvf22U6jV
+         2T/39KbijVls5KHDwHib14+Yp5K+hCqQjI5CX6MgMCoClcYw2RCibCAmOmke+ja1xZUC
+         v2rjFgI16PlfXf2y+nEvbAwPcoCV1PeYbJOuQ0dzCdkeLwUNZzP0Na1pQARf7eLm8dJq
+         YfMLan7rR9dz1ZL1MwO2Oj0o+QOEKnIgwsQqFZ/Om+uUI6u8AXVZWvIXMrmZJIeGr2qb
+         H4vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779012676; x=1779617476;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ifauxA5VPfHKLiYlXWLHFvyPEzmbAuAokN126eppTSk=;
-        b=R78RUGs/wp/FGP+MNPpx4BGr6qT+Nsf+IOM9MEwjyokzBFEBO+ziXkAIOZvHxXPbdo
-         mlzrnK8vFfPzClxCNmYk3/xvhc1t+OsSGSTUA+JeEZsdSBpyqwuE7kyPlOI7p3hwd0tn
-         sRhY4h7HVZorY+BnMiBz85hNZKBNc5Z7pANLjG8u/JxK9WKGtmfFltbagAUN3uezGbdV
-         xhP6Q5/n2f9qrM9gXvh8Yx+o0/4UsIiZzA0eBejvit9HiDh1pD4JJFxWqyWT0OgwQrfq
-         Z4Zamy3Mck6CvGwEZDvZYWC2r3VVE07hUHXirxjof1DQlXl2hxgGOOn+Y4sC0l5w9bzF
-         B8lQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8U2VT76dwIVh8R0Tc77QIhtwe0qpRzf7e3AIgcC8+43BDQ1n9HhMP4XICWDvz45j4CjFs7/fxuwnw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyUU4e6sPqxf07e5z3dCvBdszU+sG9yxqgklPLP+6lbc+W/5ut5
-	O0XKY61AyRSZLiqrLlbvcS+ltTvmivAJjx9OlO1eKL9J/B0G5vv6+T6rntRYgLi3fXGIgCY1CM7
-	91M/yiL0uTSQDnwLHtg8S4PujTBgeY2j7VRQQ
-X-Gm-Gg: Acq92OF2E+tzzjHlFrN80tdMErGtgpifuT6o2QhRR1OApcAGI8nkOmPbU0afaUhwel7
-	VxDUmtVmuWTA7Fzx1t5hobzHplVPJLECetHtQPrFOKxdw2jtRm8MOmWmJ4b0okZfPPKiZzpETun
-	e0iKhmHKNwJslr+iV7/lwTJb6t0PAqj4HbYJttVGs7hSE5rW/G96jReI4q/McdNYXQeJ2DccLg0
-	at0Z76TQ3p6Q3uMzBChYtvtaFCcm3YiVsMXEyxp7JIgWenL8aGNNMfzpvfqvgtsI8pgS8cA3ALj
-	NjaY9Xtt
-X-Received: by 2002:a05:7301:3d12:b0:2ea:5057:a304 with SMTP id
- 5a478bee46e88-3039818a65bmr4929254eec.2.1779012676435; Sun, 17 May 2026
- 03:11:16 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779012743; x=1779617543;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NzQ+XkjFbbvnSSJgYiukqepa3NWBT/tqzId42RKwLNw=;
+        b=NuEjJ4x24oAJTK2XfrlquG+gcMX46mzih2QBneZBBreY5qmWv0W7XL0kxcxGk1vZvY
+         ztL9ygFbsjueGhpYOY3D3DJ62PczhLtVicIW24ZkWImVn0KvGCDdk5eOyNguhXFNf/po
+         QlO0GNEcaTQqEURFhDkJSjRQcRa/dkfDwgoU2EZwPJjQ38bvq6pdXf0e+1Xb+DiH//5c
+         5Ud6ByEPOYh8Ri6lPKZfqvGakyvpvkgbfq4MK6m7L9QjG3FZY+pBJBkyAtDdt8JeFAeH
+         Lio0HYfzhbgFsgTb+IAlWi+BzCN7QYCJd8g6gXQ0xmeXi355kmYfpvfJGqpDNlOxJd6J
+         yH9w==
+X-Forwarded-Encrypted: i=1; AFNElJ+36YlfRqwPNNtNZTLrGZMx22g67Cp58FGX2axOPRmw9SqK4B4fKeSM1nTcGDjaWqsS66jP9qvH+xA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzvng9VhC2PEaEJgMb8LFqJOGN18J+iAMWLLBsBaoD1kfbRvl66
+	/u5NYS/R+hOl2He4EOhxV6WaBeijPiAcY+io7YCo9QZDD87SyAxc5VSY
+X-Gm-Gg: Acq92OFe/Ctl8YeA+vAIsjl4NkAr4HQaIaKJ9KOgCqFl/ZFIJHGc/Mw87T8JAgD1dJj
+	g0CMFfZdZF9d+XauXmEBSsLq30ZhjkvhrXCotmcI1q61rGZnBTpZ1GlAvAS8NDMQHgX8m8qdw0m
+	TOo+HUQSwakLHvNs//mVIlzg01vlNU2ToyLjXCYFbQE6fZBFsA91+g54RQrtTN6auB8IwkzcNJp
+	7vqJTAGq6EZTdtxvikZKsPeX+dumTAv3B6tBYERYiUKJ37WXwXrssNAzH0tKrbZcqUeTiCgwPWq
+	bNPlY884e+vpgeMRxsipy93Q4XVP9ELC6MrqnBk0XEHYyDAS7dPBtNJk0i6xVQrkQncbKyGxb78
+	+iRFbr+5j8AI7I9AQWPYkvY9tnN7G+sXUFFNuLV+XDdNfAyr0Uvc+G8T5A2c5mgbkwxfqCOuT8M
+	aym299Ds1/Pe1vpn3Z6KMvsWmzRMsEeJQ4BLnfXjQJg0e/d6xl08gmJXgNZBzpcX+xLnehc2MXK
+	iCzIQI1If11veiCSvnc5pwWQ3IvDCunWEknHYilipmrY293YA==
+X-Received: by 2002:a05:600c:8184:b0:488:ffb1:494c with SMTP id 5b1f17b1804b1-48fe60ed790mr148404075e9.12.1779012742660;
+        Sun, 17 May 2026 03:12:22 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe537ccf5sm181409985e9.14.2026.05.17.03.12.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 May 2026 03:12:19 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Sun, 17 May 2026 11:12:14 +0100
+To: Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>, rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH RFC v4 01/10] dt-bindings: iio: frequency: add ad9910
+Message-ID: <ikhp5dsb4ook2cx665p4xbqg5ykmnoytiaybv2cx5khyn3wngn@j752jkewd36b>
+References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
+ <20260508-ad9910-iio-driver-v4-1-d26bfd20ee3d@analog.com>
+ <20260512193129.777d62a8@jic23-huawei>
+ <vklczsi4vk3sqf53zifslhp5pysdmj3gfyhvdgrwo4bg3wdkxj@lnbftaf5jcbf>
+ <20260516114022.58949a06@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260517074306.30937-1-clamor95@gmail.com> <20260517074306.30937-3-clamor95@gmail.com>
- <agl0Z_EGzX8X4No4@ashevche-desk.local>
-In-Reply-To: <agl0Z_EGzX8X4No4@ashevche-desk.local>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Sun, 17 May 2026 13:11:05 +0300
-X-Gm-Features: AVHnY4L0_43-8RfJ6hM5f4ALu2Syvstfg64dnmlFGgfmiwaNMhHznD8dW2kFuMQ
-Message-ID: <CAPVz0n2D7q5kEECPr+bo=W=5OU=w4eni-FccdMEUMupkzHhvLw@mail.gmail.com>
-Subject: Re: [PATCH v1 2/6] mfd: lm3533: Convert to use OF bindings
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org, 
-	linux-leds@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260516114022.58949a06@jic23-huawei>
 
-=D0=BD=D0=B4, 17 =D1=82=D1=80=D0=B0=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 10:5=
-5 Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> On Sun, May 17, 2026 at 10:43:02AM +0300, Svyatoslav Ryhel wrote:
-> > Since there are no users of this driver via platform data, remove the
-> > platform data support and switch to using Device Tree bindings.
-> > Additionally, optimize functions used only by platform data.
->
-> This is a mixture of at least (!) three patches:
+On 26/05/16 11:40AM, Jonathan Cameron wrote:
+> On Wed, 13 May 2026 16:09:24 +0100
+> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> 
+> > On 26/05/12 07:31PM, Jonathan Cameron wrote:
+> > > On Fri, 08 May 2026 18:00:17 +0100
+> > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> > >   
+> > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > > 
+> > > > DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+> > > > configurations for clocks, DAC current, reset and basic GPIO control.  
+> > > 
+> > > I think this is getting close enough now that for next version you should
+> > > drop the RFC (which is probably gating DT binding folk giving it
+> > > a detailed review!)
+> > >   
+> > > > 
+> > > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>  
+> > >   
+> > > > +
+> > > > +  adi,dac-output-current-microamp:
+> > > > +    minimum: 8640
+> > > > +    maximum: 31590
+> > > > +    default: 20070
+> > > > +    description:
+> > > > +      DAC full-scale output current in microamps.
+> > > > +  
+> > > Can we use generic dac.yaml defined output-range-microamp? The base will be 0 always but
+> > > that shouldn't matter.
+> > >  
+> > 
+> > would that be fine even if we do not have those child channel nodes in the device-tree node? 
+> > 
+> I think I'd rather we generalized to cover the 'one shared value' case rather
+> then went with a vendor specific binding.
 
-Maybe you can make a list of how to split it then. I have tried to
-make it complete and remain readable. I am open to your suggestions.
+I can't reference dac.yaml in node level as it forces the nodename to match a pattern:
 
-> - devm conversion
+	dds@0 (adi,ad9910): $nodename:0: 'dds@0' does not match '^channel(@[0-9a-f]+)?$'
 
-This will be dropped.
+Also, I can't reference the property only, because it ends with *-microamp:
 
-> - the change of some constants
+	  output-range-microamp:
+	    $ref: /schemas/iio/dac/dac.yaml#/properties/output-range-microamp
+	    items:
+	      - const: 0
+	      - minimum: 8640
+	        maximum: 31590
+	        default: 20070
 
-If you mean LM3533_ALS_RESISTOR_MIN and LM3533_ALS_RESISTOR_MAX they
-are used explicitly in r_select value. Previously it was passed via
-pdata as register value and now it is obtained from the device tree as
-resistance in Ohms and register value is actually calculated.
-Naturally ALS_RESISTOR boundaries changed.
+which gets me:
 
-> - the rest
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+	properties:output-range-microamp: '$ref' should not be valid under {'const': '$ref'}
+
+so I will adjust it to:
+
+	  output-range-microamp:
+	    description: DAC full-scale output current in microamps.
+	    items:
+	      - const: 0
+	      - minimum: 8640
+	        maximum: 31590
+	        default: 20070
+
+and not reference dac.yaml at all.
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
