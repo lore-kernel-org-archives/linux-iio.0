@@ -1,64 +1,66 @@
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E6B849659
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 18:18:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D37C3B636B
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 18:18:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779041905; cv=none; b=Mw71r3pz/wZ+qlA+s1WEZ885GQaS24G3RSH2ZzSw1tyd8FzHEWND7NX1jN7bI3kt133n1MOLAKS0pJR8XKZSYNmNwt5cfOdzaoc5BlBN1+IBPkapabJp2BKhMFaIuAe9IGVte6VIE5iGUqt6D2TSFAkO28qLMoopyTS7oUAxYqE=
+	t=1779041907; cv=none; b=O6xwe1U/bi//+iZoUsXVfvgOqc8xMxEr8XDNr4g7u7Nkn6Pyi65Iips01uqMazdWcEGqYmoWibwJ31paD0vssJ6DjP1S1k9EGI955zO4lSRcIKyyQDxiCqKUt1jcJGVCZvq8ElKOylQqDkdzwTg60/L7zNFsiHdCBacsryqVzwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779041905; c=relaxed/simple;
-	bh=MZIBkvx/lDO1bwCjTF68CpPH6+1oeby0gOD1GNgDaLg=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=IhqFD6iW0yJnhC7skP+bzwDPf7v9d4VrRtk90vODCxiBKz2OmG9p83avn+CnvUtbakDIRPsrn8DG6/BImijdNdhNen/ydZXqu1D1LF5uIIS3lG748AvPgXcMvKdivpiJqefRS2O5dk8smXMjQcYMUeFmuKp1YC/EWsQO1Ri6M1A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=aWDKYZua; arc=none smtp.client-ip=209.85.161.43
+	s=arc-20240116; t=1779041907; c=relaxed/simple;
+	bh=YHpI50wSYZTXW1ieL+zX+tDCAyrdW9auMcLS2k6lfoQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=fv7TYhTnhb56LT6XD3QZfMIscq0MA7Q9JN0E1CHThPAY1aWNNeT+acmTLMiwlk9RsqxBDP0OCdXpDL9C/qdnNnzLxDFeDrL5+U/irt5XNYZXiyYBbWfna0elXDxvucXR28IgmwagJyujPsOkc+6k5AW+P6l3NST6AU+fjviK47c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=hiBRaWxq; arc=none smtp.client-ip=209.85.161.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="aWDKYZua"
-Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-6948e6bc30cso211493eaf.0
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 11:18:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="hiBRaWxq"
+Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-69b8bac50dcso198616eaf.3
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 11:18:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1779041902; x=1779646702; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=qsZdJm4r4wPMlOdbscvoNtCvMluN7DKgMfAmDRA1Fe4=;
-        b=aWDKYZuaDj441HEHt/6iB6EXQxa4kOhgs15UeS815IexLpwe55DHXwI9AHp71ttTb2
-         311jvkSfr5D6PYbELDu5d1XfMn05GeZdywz9MSPmEJ2b1Q+7NtJMsXgLaZLcaJyjYGzp
-         +17m4QQSy7/dhcumWVyRVAtg9MqLCbyOL2W1/ExjJ7R51ekpWm88I90Ha9qa9dBvBDgL
-         cc4O8XX+4RhTk7GA2gDoEM2EcNwnugE5/0hD4mrsjhJpuStkFGiLNh5wUKIQwD3r2P9e
-         uCZNXsVGHHcOwS+9WrogD+RsIjBU3++Y+pSH01aqoZILIZYHH+mCpyUwS3hk+anPYI9w
-         oUCQ==
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1779041904; x=1779646704; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=R5md7O2xvTV43+eK3/wu5mO/23eGXmmz5QIIajGxZX4=;
+        b=hiBRaWxqbpBeq7dtC7vIwQ4wlF57yjaYPHABhOUXbSxxOqQM4rUb5F1moFdH+jPd9U
+         3By/YH3Mb86TKoxQ83PadtEspCjDxK49OG3eRMDRTkPgTSvKT7JpbHMboLt4qMyXzJrJ
+         AB2DSca47v+JU7jM4qc4h9THvvoO3r/+m9rR0G/WCzeCdjgChJm7r9ltg2edseBE1U9r
+         JCOOwk87OSudrdsgF//7bgG2dBqyG6OPlIhEcsVvNFvMGEP8fNkckEqtm2kyuGnFf4M+
+         vbxcKp6pF2kSJyQ6npHavWAyw6zWssfGY/HJzlaCOIjmTcDez2PkBA2SEO8NJDTZb6ao
+         sl6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779041902; x=1779646702;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qsZdJm4r4wPMlOdbscvoNtCvMluN7DKgMfAmDRA1Fe4=;
-        b=RvflT/evFrn7r12uAKGn5xjTpLiJ6Q536m+I9wz6xraKHrBWqgTK35HSP77H6W1Z7L
-         fdj3lz9lZDD7F08u2z2JKzjIHKvLOBC7pBBnBeqMKzZiSMHM+BBto7qzc5Ab+hC+MWh+
-         oMmcx5UTLF95liClC3eYpZw5gZXe8bmI/G+KdpH7+ObR1qoXV1pbc5zdGIcJlwrZ5F0H
-         h8ds+8Zgqc2C9nbQLTsocxC2PRvBMJr/YeY/ZLNquPlW/JEnjVOul5z0vBTaoOK9UGMK
-         CR7+sPvZnUv1l7//xkymSP688Ybr0768Ap/qsh7J/viLBtpojY7s7tnS2sgJAwQ601bp
-         oa5g==
-X-Gm-Message-State: AOJu0Yznrxqp00TBq8k8o0DAAJgOzBRFNSqJsP80wF7S8ZzFgsyLpI8F
-	CmDjtO0j4rKD/v5v15mADwXCiEdnNUV0HP/8y8Z0w8HoP2fM81YWx1p4MOtDE/FNKro=
-X-Gm-Gg: Acq92OF3WSNHuBtE+QvbQaL42f5rdbhOXilKNNQ13/Wxc08D8tHQBteYoUnqwKEVZr8
-	HEQBMIn+KXMjvqZ1bI/41LU9Mir/lxcntLFHvy4LY+uikz7N4N/bb6HSrBnYbH3Ep5gGfUoeyUV
-	k3+P3RCzTnbsBz7m1diTqlVli5Ungjq6UI7q0tvzJ4I+0n83foJKp2AIjv5AaOYrUZ77mZzEjpI
-	BiHTFeCm2Dnw/bWo59+B4F6DdgCD02WV3N4lpWSYsDfb8Fnge46J+R+zJlRmGoPFLi3dkAwhFhS
-	pHpEn0MaPwteP+nydDEJ6x+ZVf+vf2evXX73gtwIY/ZVCd7RhcKBpn9iluBlkv93qmHpmY5vRz2
-	B9SHnntFm/MTBnnrU30jXNc4SXJ+YdSeYCz8C6pgJf4TiwIxyv8bJyvufJaXmfAL8/jYllicxMf
-	zjI5s52SIgSJFiP3mVTUsu6mEzs/ChLuT7idaO5DIHQE3rFO8N
-X-Received: by 2002:a05:6820:2210:b0:69b:8ff9:f582 with SMTP id 006d021491bc7-69c942ea069mr8317738eaf.14.1779041902495;
-        Sun, 17 May 2026 11:18:22 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779041904; x=1779646704;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=R5md7O2xvTV43+eK3/wu5mO/23eGXmmz5QIIajGxZX4=;
+        b=f1yPfb+09yUMYvkpPX/gOXtzQmnUQpqGzAQt3UGw3fJ4wyEF3KPTUyn9Maezy4b2o3
+         6xYJ62blhu25t3BvQUQ0/dFL4s+A6jGST2jMAr+s+QBbWCVU7dFe9/SunsPwo/NBPi1a
+         6ptxGQYjLOdN4ZxFh7b0TbxYXIVL7ZFJTMuAKCjSgQA0WPv+otEev+ggsueadwRs5EIu
+         BMf0cqS8B08whTARyc1Xo+Y3YGHuwCT9jgDiDKAPay+bysSCma1QdlvhBE6Rfm5Bc20l
+         e7Bc0kr68wFoIPJgQmQtHqo5WL5pgUVFMtyoUgfSI3Rc30Qg2tFELpKTmsUVUkINu/Q0
+         01kg==
+X-Gm-Message-State: AOJu0YzQPKYH/jNXc9txoXs+qP/lweQ+kFzGVWHJeTCnLvRlsVvYoLSl
+	QJyzWvxN7kaloqEReQbJ9yPP8h07HYOeJZwYhl8EmEOz3pX8GIC/w8dXfSiJlZc0a+I=
+X-Gm-Gg: Acq92OEsDjXBkRwmPCBj2b7FmAKn1c8Ivb7Wldup5NRRGxM2xqFEQ6j3P7MzEk6Ov0x
+	EvBm/srEA5RNk6YtuQkeSOQAfEdIWZF/y9IRypyK4kaZPodTrXEt1GHhztdqCYk1FZiXLLnxSlw
+	Kx2LHXQP9D5hkuhp2gU4UzCKCafEvXtJotH2FZs26Ca1B0dgk5ugIyljOe9C4mmlZqgAtz4ldCg
+	DSoCXR5X84JFf5+U4110tm+0yhCIQD48wShd7yhnmcVjpU+XpXmTqqYlk7Lz6d7nA0aJJleLocR
+	PyZBFFKpikoStXss58u42rPiG7i1HBso0H+w8yBRBvUfuLVAxpDw1eszy0dnWNWEaU7YIx8dEQa
+	bz6KO3/zm6NRaHUnxWRBpHMio43gz2MRkoiT26bJVV0z4r/jsHTUe+Q6qMzftgDcf3U47y7qKuQ
+	8L9Fh1y0hedscCTj8CeeHWOejJw+HBE1rYKjvTGg==
+X-Received: by 2002:a05:6820:4c87:b0:694:9707:4e59 with SMTP id 006d021491bc7-69c953dd3b3mr6941197eaf.46.1779041904452;
+        Sun, 17 May 2026 11:18:24 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:7a4b:ddf0:f61:f58d])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-43a95766535sm2085539fac.15.2026.05.17.11.18.19
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-43a95766535sm2085539fac.15.2026.05.17.11.18.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 11:18:21 -0700 (PDT)
+        Sun, 17 May 2026 11:18:23 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
-Subject: [PATCH 0/8] iio: timestamp declaration cleanup
-Date: Sun, 17 May 2026 13:17:17 -0500
-Message-Id: <20260517-iio-timestamp-cleanup-v1-0-61fb908c11c7@baylibre.com>
+Date: Sun, 17 May 2026 13:17:18 -0500
+Subject: [PATCH 1/8] iio: common: scmi_sensors: simplify timestamp channel
+ definition
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,10 +69,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQrCMBBG4auUWXcgCdgWryJdxPhXR2waMqkIp
- Xc31uW3eG8jRRYonZuNMt6issQK2zYUHj7ewXKrJmdcZ062Z5GFi8zQ4ufE4QUf18QWGNxkBut
- 7Q7VNGZN8ju9l/FvX6xOh/Ga071+ddszSeQAAAA==
-X-Change-ID: 20260517-iio-timestamp-cleanup-1ee82f081a70
+Message-Id: <20260517-iio-timestamp-cleanup-v1-1-61fb908c11c7@baylibre.com>
+References: <20260517-iio-timestamp-cleanup-v1-0-61fb908c11c7@baylibre.com>
+In-Reply-To: <20260517-iio-timestamp-cleanup-v1-0-61fb908c11c7@baylibre.com>
 To: Jyoti Bhayana <jbhayana@google.com>, 
  Jonathan Cameron <jic23@kernel.org>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -86,59 +87,66 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-stm32@st-md-mailman.stormreply.com, chrome-platform@lists.linux.dev, 
  David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2130; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=MZIBkvx/lDO1bwCjTF68CpPH6+1oeby0gOD1GNgDaLg=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqCgYvvz5e3v6t+m0Wx/sHGclkR4moFXIFRNL5j
- Yark2JG+RuJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCagoGLwAKCRDCzCAB/wGP
- wL2YCACJAC5NP41M0YnHAqSNkQZmeewP7XoDQMe6oGaErE+EeI/S4A/ytTbQDa6svMIA/r63BzZ
- uDS7S/8nbyVhwAsCra78MomRhRpjuZ+CbozTwamJHbIqHsw0MgU+tot4UZveWPlRLBNr/RMimSu
- QnGbYsInSPtIo8f0cQY458S6vcMkqGQwNoqfx4d8AZ+pX1FdO6axfFyMhOR4i05M/eh1uwCel1n
- RYmEHw/N6RX/1kq9CLVRQ1/l+m2rp+VYZ43fGdfmWrwXmgvAVNflkkSZqSs4vKkrk6UR3TxF1UR
- V8aTbiassPuhHkFYW2x/L5AvCqT5pn3gp5r/sgESNDAnSEyT
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1891; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=YHpI50wSYZTXW1ieL+zX+tDCAyrdW9auMcLS2k6lfoQ=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqCgY2aTT2VX5TYgMCbz8OOiBDnYFmV3i0a+6HO
+ ro398kMNK6JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCagoGNgAKCRDCzCAB/wGP
+ wOFCB/4xQ4eSKQgFfsKouXQR3vu8NexauORSshAXou2t3MRLSZK5t6EF9VUuh0inu/5WRCWFGej
+ u4u1nzKt/RtnOitc15cyY9Nnn7nkczdAzczNckuYghWXqK91XhaJgcRwG/HFuNtLIj4lKoxm+Sf
+ q0Pu9iIKleW9yv4r8X+98Kbv5DjrCSCaPYDHTexcSLUAT8wJohTJAL71EMnB6FODtdCObmx812I
+ rURmDEmfF633QDjdS0XJe4MEqg1T4IkiUhtfcGY8NszNTCxYMwSfI7i0oUR13FIruJz1m3VsXVT
+ jK2zkSF2GmXef8vaZjcYIebODvZ4ngMnNUIx3PtA78Mw9WPo
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-While looking around the code, I noticed that there are a lot of places
-were we are manually filling all of the fields of an IIO timestamp.
+Use IIO_CHAN_SOFT_TIMESTAMP() to define the timestamp channel instead of
+manually filling in the struct iio_chan_spec fields. This makes the code
+less verbose and mistake-prone.
 
-This is error-prone (as seen in the first patch) and more verbose than
-it needs to be.
+In fact, there was an error here as the sign should be 's' instead of
+'u' which is now changed to 's' by using IIO_CHAN_SOFT_TIMESTAMP().
 
-I went with the approach of using the existing IIO_CHAN_SOFT_TIMESTAMP()
-macro for doing a struct assignment. This does require a cast, which
-makes it a bit more verbose, but we were already doing that in to
-drivers, so I went with it anyway.
-
-If we want to consider alternatives, we could make a iio helper function
-or macro like the first and second patches did.
+If we find that this breaks userspace, we will have to revert this
+change, but seems unlikely since the timestamp channel is well-known to
+be a signed 64-bit integer globally.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
-David Lechner (8):
-      iio: common: scmi_sensors: simplify timestamp channel definition
-      iio: adc: dln2-adc: simplify timestamp channel definition
-      iio: adc: at91_adc: simplify timestamp channel definition
-      iio: adc: cc10001_adc: simplify timestamp channel definition
-      iio: adc: stm32-adc: simplify timestamp channel definition
-      iio: common: cros_ec_sensors: simplify timestamp channel definition
-      iio: light: cros_ec_light_prox: simplify timestamp channel definition
-      iio: pressure: cros_ec_baro: simplify timestamp channel definition
+ drivers/iio/common/scmi_sensors/scmi_iio.c | 13 +------------
+ 1 file changed, 1 insertion(+), 12 deletions(-)
 
- drivers/iio/adc/at91_adc.c                            | 12 +++---------
- drivers/iio/adc/cc10001_adc.c                         | 10 ++--------
- drivers/iio/adc/dln2-adc.c                            | 12 +-----------
- drivers/iio/adc/stm32-adc.c                           | 10 ++--------
- drivers/iio/common/cros_ec_sensors/cros_ec_activity.c |  8 +-------
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c  |  8 +-------
- drivers/iio/common/scmi_sensors/scmi_iio.c            | 13 +------------
- drivers/iio/light/cros_ec_light_prox.c                |  8 +-------
- drivers/iio/pressure/cros_ec_baro.c                   |  8 +-------
- 9 files changed, 13 insertions(+), 76 deletions(-)
----
-base-commit: 8678fb54958893818ddeccd05fea560a4e1fc759
-change-id: 20260517-iio-timestamp-cleanup-1ee82f081a70
+diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c b/drivers/iio/common/scmi_sensors/scmi_iio.c
+index 5136ad9ada04..86e1782deee5 100644
+--- a/drivers/iio/common/scmi_sensors/scmi_iio.c
++++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
+@@ -419,17 +419,6 @@ static const struct iio_chan_spec_ext_info scmi_iio_ext_info[] = {
+ 	{ }
+ };
+ 
+-static void scmi_iio_set_timestamp_channel(struct iio_chan_spec *iio_chan,
+-					   int scan_index)
+-{
+-	iio_chan->type = IIO_TIMESTAMP;
+-	iio_chan->channel = -1;
+-	iio_chan->scan_index = scan_index;
+-	iio_chan->scan_type.sign = 'u';
+-	iio_chan->scan_type.realbits = 64;
+-	iio_chan->scan_type.storagebits = 64;
+-}
+-
+ static void scmi_iio_set_data_channel(struct iio_chan_spec *iio_chan,
+ 				      enum iio_chan_type type,
+ 				      enum iio_modifier mod, int scan_index)
+@@ -629,7 +618,7 @@ scmi_alloc_iiodev(struct scmi_device *sdev,
+ 					 "Error in registering sensor update notifier for sensor %s\n",
+ 					 sensor->sensor_info->name);
+ 
+-	scmi_iio_set_timestamp_channel(&iio_channels[i], i);
++	iio_channels[i] = (struct iio_chan_spec)IIO_CHAN_SOFT_TIMESTAMP(i);
+ 	iiodev->channels = iio_channels;
+ 	return iiodev;
+ }
 
-Best regards,
---  
-David Lechner <dlechner@baylibre.com>
+-- 
+2.43.0
 
