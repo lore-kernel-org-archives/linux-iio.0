@@ -1,78 +1,85 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E7E830DED1
-	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 07:38:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6439630DED1
+	for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 07:43:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779003523; cv=none; b=ZPA42LLl7JCEI0Jxi/kIs4S/5GGaVx3xeIm3CzEZuj0bsrjcmFlA4ggdIJE7wMRZUt1x5Na/rlS6otS/8p8L1AM1IlAA6NkexmmVnnId2UgdMTts7hEC0UQ6bdFoO6Knt9mCiTXSKcPU9ofvEstzMmJTcMBRopFmjVLq6zyPwSE=
+	t=1779003814; cv=none; b=ARC+p/bST80JsWWCE7VWet8y+3BaapE/iNF3Q7mcZkv9/+oapEbBBRnXRq8x3yTMhaJr1equGYBAX+Wor7yIUj1/Unn5LwcI6WCyFDLNg/wGdACzH64fhv6soMWRNbHgBt+JH7Sc3M4LLeqbWqYJuKmOH56qWmnyoIdaBRZv708=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779003523; c=relaxed/simple;
-	bh=+bAYzSMtgGe6jAWIBLroL6sWqUmQ3b+44DTNSpTptZE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ln3O5c+X50ExC499UFUqmkVF835V2MrIHPO/w0JN0NtVS2mNI6GeWOybmk/nSS69i3b7daybt0rpbmYyeiUwD51GGz/KFt9k0OwIQHFaCmtB2wmqEgF0jvcGYxjOqQV/Y7nbXkdD841E23zwxnLcZgfZKslS6xz+qCbzgfJEsXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eqZ1jV7o; arc=none smtp.client-ip=209.85.221.49
+	s=arc-20240116; t=1779003814; c=relaxed/simple;
+	bh=Y+Ex24d/as2CHkwX1uEjCtuYJgz4R8M4AkquqzZdRGA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uubI+ZHG8qunK7yto3IJo2DBjCY9LMD8+MTTmQXtI4MGDN/ZIatqjB639+OObWXhnsD7ZaLVpnb23AygpQ1dn9IJZB64MnnCQhuiFpPRg9wDM07/3aDfPx9KkH2ATyZxYAZIZD/Mt6nR2WKes+UYq9Uws+dOu8WfdfszSyOwxyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ejglwb88; arc=none smtp.client-ip=209.85.221.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eqZ1jV7o"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-45e5f81074aso45176f8f.1
-        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 00:38:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ejglwb88"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-459bf19e87bso598499f8f.1
+        for <linux-iio@vger.kernel.org>; Sun, 17 May 2026 00:43:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779003520; x=1779608320; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Yz7DhL9krHcmEm4nIRswzkcLhOJC+H+xp62jTsPy1Ss=;
-        b=eqZ1jV7oEY/CbSqWC0AC3UuyML2oEzHqCF1Y2bWRLrFECUpcoSGI9XVJLPqI7GfILM
-         jcP6BX21/Q7UINbqhlbBtxV3nlPtjOyMTG0yRtke4Pj3kexwHeemWgAMCKqGSL7zHfab
-         CkKu4zbCOrNuGX1rrgMRwuMJGu9KfUg7b4kMph1rIKxPe5dJIve2iUIPqjeM9icrhzK7
-         xKZmH1jCZO8HssUmcCJGGnPb83o+HboMDdkCDlYifjig0bjJfonJgKt9WuoAUnTDhO7k
-         qE0V2sx55oAM4B7lmLJPNBOWVTK5cWzw4VL54kU4/UvRfORcX6wByiZ0haKyIn1pQ2hx
-         Fq7A==
+        d=gmail.com; s=20251104; t=1779003811; x=1779608611; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=kIN4QPzSpV0aaXXOpKphRYVC2gTnp619k6g01a8YFLQ=;
+        b=ejglwb88a7xr+VNBcXRowPG20Fb4Ffj/yk9XWlHVovJLEvHQb2KNJh8mqIuBs5ZkA3
+         MXbCNva6vdDuvZKqNbQ6CeWdbTWCQUbtRF93XyKlCKaTVvuhsZig468MInSZxUKnsuJk
+         4hmEiCTmAOIREGGzoLyJye8ZH7Nv0/kDGEWQ3xijEJ5+IM7bC6uAi1ReXE2jen4R1AVg
+         W9R+ukHqmBVixMrZkq5fmohIsW/gRWZFVdjm3jhLLEtUz/ASn0aHUiNpo8mlUzMNnBZx
+         7XBgDCLQoR62JnYpvUG5nDFbtJf46W9AVqQfOQEXT+ZhBiL6akdYCjgCYlFSOV52Loh6
+         rkZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779003520; x=1779608320;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Yz7DhL9krHcmEm4nIRswzkcLhOJC+H+xp62jTsPy1Ss=;
-        b=Bc6yNJ7t9NsMxauau1KBuyA5Vd8rP6Lk0dJcdqaPw+ua/nQmATWFCbbEf0Hek2T20v
-         OrlNSrwt+tQ0yO9KRV19vVudEBpQWYlDXteNT269+HZ6nnkMbR9HekNjj/4dRHVmE9KN
-         tVrFZVNhlpnqTlfT19dM6qK9TR7juFzAUFxfALzEVfFR3k3qphqRqhUYF7o5Hs4Iumy+
-         HOt71eFQtrpnVc2pB6k6x9bWMsvOPXI2o5LFhukE+fL9DxdEhanoCyy6l0UMCzpMmhTO
-         Q+Lu/80IdixzH2JIH+rLbhS/Oaot6CSH1f3kX9bQvTcqBZfzvPNzBb9+Q9ux3z7b+Vih
-         elOA==
-X-Forwarded-Encrypted: i=1; AFNElJ9K6NSJ04JdfLFjDXMiDF8xJlPhPds1wV7x8GiVkzx7OzRNCyqFrMZ3UvrTa5jE415eTs0uZdKYMIg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwIu6+w28LCJXMlzQGoPd3rBnoKVmEsmZDYV0T2Dhkh+7ksJ9yV
-	rPafk/qb1FKdLjwBHUgmWHU2ixMF7ccq+qy2hXzC2C4LbmIT3zrK+nYU
-X-Gm-Gg: Acq92OHA0YDS6BtRzXC/A+FvYOr5jdDpZdNBb6uAXGU3JwPLf3iIGYfdzDJ7Q4V1BVP
-	NeyusufjzR84oEFySQLSmrgmWsBf9nlNzjH1EVeYE5Jg0BOYDqgHV+vb9vyf35/gVD6RRpB1MSj
-	Ik8D0p+iwDpRaRSGj5eI7jKJ6hU+40NLAAwfCuFLdtIny7A8abgLCK+jgEPMM7kVwxl+mmKObco
-	HCjlxFO31R3H/sfVZ6Gue7XqSSxEN6PxAJ8zCI9LndkN8t/XvUgCu7FBEU3vP0bXNC1VJ/P9IIa
-	cUL2AG53e/5rNMtAooRiQ+v1zOHnjUWDt81K8evmOXBTJSW0fsbmoiAYxmYyiu3//C7htXqptiG
-	N2R0rFEJk/cDjxOW1ZW/z/TEj1/HO8qBqtPubjUbHCpVspMHWlno3bzJizDH/3o5vwwetG1gaZT
-	pN9F0gZgXK+5kCDgXyN947BpphmtELuMxESN5z4WAs2bYWa3bINjqRepo=
-X-Received: by 2002:a05:6000:4404:b0:45e:73a2:3093 with SMTP id ffacd0b85a97d-45e73a230eemr634420f8f.4.1779003520494;
-        Sun, 17 May 2026 00:38:40 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0fe248dsm27487015f8f.30.2026.05.17.00.38.38
+        d=1e100.net; s=20251104; t=1779003811; x=1779608611;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kIN4QPzSpV0aaXXOpKphRYVC2gTnp619k6g01a8YFLQ=;
+        b=Biz7Vc2yQ5+1praM6X++Wnm/59SMBhjeACPWp4UdctbeYHNfGpy751XbOn0MYVxr8K
+         lNeF+uXqb+hvANBwydMhUXED7Kzy01EVSRJ/tG+GDpZgiJCrf7DMCG4ejxRms/hGBIwc
+         4IIgRLqGAZl/B9E9i7S2Ulyl5HjmxMA3jj5FLcT0Yo8o0GlqnG+dwsvfKok7KCtFTRFd
+         RBktJT13hlGCwjlrhFcgDXeVCOX4fkMzcX0a0GbnU/O+0jTvh/4AF/ndC2NzlC5bXYjv
+         bAZ8X0tPJhgyXAkaV0GEOpCh6TRNmtehIl86Ir5nyoPXNGj0G3D+4QL3mFdZZ872z/5a
+         D6dA==
+X-Forwarded-Encrypted: i=1; AFNElJ8VfQIpgu8WlDVAkPQeHDOfr0lGYNMO3yNjwtElHCOARah9Lix8uuSfeJL7y7N0kJXCwws014ZNP3c=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyi8GjgV+8XBON+jP02pl7vId7SSPh7dnN9V9+AWz85h1IX/t6Q
+	pI39uGnr2yoKBi0R1aJzRS/3qf2DdFaRXC6vntnLduleai8QVALCLErx
+X-Gm-Gg: Acq92OGfIO90FPTJZGUT2ytKma3GakrkzIKJQsUBbvfZmqAcAIBrj8JY5vhzq5d3vu9
+	KDyPYYCGqljF6fKUknktiywlZNNcJ7ZU/PLVP5xBc8O/Xo/NzvqqUJby9T8mTsCixcbQiiiEemL
+	4YQHEuME+XFOMmRg6Mo1IKl4TUN04atANRkYyDaw+k+D6qbqY6ctUtFoYEKl1bYyYiVPLWKB1/T
+	YRNA4qSfO5/4qm9nhmAiD8IGs8F//h0686SYRoRsIBaSCqXWnxVBkccjs3Y+SdlGOq+81tEJFtg
+	8kXpQLbMoMhKHuu5biaY7PcKco/SaRBt2PdWPR8BQ/m7DiUBhHsPoIJKwhyHuPy/pxiOQ1esU9p
+	w1NgDkxv3JY/mWgaKZdqBFqE3Er093P/pmotTsiWO9PkWHI9o8Nv15DRbj4F+5ho2qh2pv/HuHN
+	538zdPd0rDcswb
+X-Received: by 2002:a05:6000:2302:b0:44f:c886:89b4 with SMTP id ffacd0b85a97d-45e5c589d83mr15861004f8f.15.1779003810524;
+        Sun, 17 May 2026 00:43:30 -0700 (PDT)
+Received: from xeon ([188.163.112.61])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0fe248dsm27512864f8f.30.2026.05.17.00.43.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 00:38:40 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: salah.triki@gmail.com
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
+        Sun, 17 May 2026 00:43:28 -0700 (PDT)
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Lee Jones <lee@kernel.org>,
+	Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>,
+	Pavel Machek <pavel@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Helge Deller <deller@gmx.de>,
+	Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Stepan Ionichev <sozdayvek@gmail.com>
-Subject: Re: [PATCH v7] iio: humidity: ens210: Extend I2C functionality check
-Date: Sun, 17 May 2026 12:38:22 +0500
-Message-Id: <20260517073823.1280-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
-In-Reply-To: <20260516173148.3209f7fe@jic23-huawei>
-References: <20260516173148.3209f7fe@jic23-huawei>
+	linux-iio@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: [PATCH v1 0/6] mfd: lm3533: convert to OF bindings, improve support
+Date: Sun, 17 May 2026 10:43:00 +0300
+Message-ID: <20260517074306.30937-1-clamor95@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,26 +88,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Fri, May 16, 2026, Jonathan Cameron wrote:
-> Sashiko pointed this out... Take a look at definition of I2C_FUNC_SMBUS_BYTE_DATA
-> and consider if the line above makes sense.  Check for other instances of
-> this.
+Convert LM3533 to OF bindings, add missing VIN supply, add support for
+setting mapping mode and LED sources based on device tree. 
 
-grep across the driver shows what actually gets called:
+Svyatoslav Ryhel (6):
+  dt-bindings: leds: Document TI LM3533 LED controller
+  mfd: lm3533: Convert to use OF bindings
+  mfd: lm3533: Add support for VIN power supply
+  mfd: lm3533: set DMA mask
+  video: backlight: lm3533_bl: Set initial mapping mode from DT
+  video: leds: backlight: lm3533: Support getting LED sources from DT
 
-  i2c_smbus_read_byte_data       -> I2C_FUNC_SMBUS_READ_BYTE_DATA
-  i2c_smbus_write_byte_data      -> I2C_FUNC_SMBUS_WRITE_BYTE_DATA
-  i2c_smbus_read_word_data       -> I2C_FUNC_SMBUS_READ_WORD_DATA
-  i2c_smbus_read_i2c_block_data  -> I2C_FUNC_SMBUS_READ_I2C_BLOCK
+ .../leds/backlight/ti,lm3533-backlight.yaml   |  68 +++++
+ .../bindings/leds/ti,lm3533-leds.yaml         |  66 ++++
+ .../devicetree/bindings/leds/ti,lm3533.yaml   | 190 ++++++++++++
+ drivers/iio/light/lm3533-als.c                | 123 +++-----
+ drivers/leds/leds-lm3533.c                    | 117 ++++++--
+ drivers/mfd/lm3533-core.c                     | 281 +++++++-----------
+ drivers/video/backlight/lm3533_bl.c           | 123 ++++++--
+ include/linux/mfd/lm3533.h                    |  52 +---
+ 8 files changed, 660 insertions(+), 360 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/backlight/ti,lm3533-backlight.yaml
+ create mode 100644 Documentation/devicetree/bindings/leds/ti,lm3533-leds.yaml
+ create mode 100644 Documentation/devicetree/bindings/leds/ti,lm3533.yaml
 
-i2c_smbus_write_byte() (without _data) is not called anywhere in the
-driver, so the WRITE_BYTE flag in the current mask is dead. WORD_DATA
-asks for both read and write word data, but only the read side is used.
+-- 
+2.51.0
 
-Minimal correct mask:
-
-	I2C_FUNC_SMBUS_BYTE_DATA |        /* read + write byte data */
-	I2C_FUNC_SMBUS_READ_WORD_DATA |
-	I2C_FUNC_SMBUS_READ_I2C_BLOCK
-
-Stepan
