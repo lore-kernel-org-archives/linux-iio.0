@@ -1,64 +1,74 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432D338657A;
-	Mon, 18 May 2026 18:31:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B92B381B0A
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 18:41:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779129114; cv=none; b=gtwAuDpJL2/zQPwScecQI23Yol94SiJHTQ8hOsXKvl962oPlFHcyKYCx08fU6/VNEpPTZUP5D18q/baiXKydlpiR0kf6KAzu/Zj8h6lcYqRT0OQwTuJMq/phJyIYGhMiejdN9hxVQIpySzvaoat4+/gbt1bYdXM5ecgGBNvlxSI=
+	t=1779129713; cv=none; b=uhsfnHJ13hd7GUJ7DSfNtOO1Oq5pTRdu2jAnrxHymQQnwhjjK8NQUdgQOAiJJWJlaNO5YOzntmV4Q8wL555Mo9StUWqszcUcRkMcZ0Iltk2Yev3btZ8fNfQx9MH3jlWLii1b3HzqsQxc3GcMsW8H8ed+AlIRn1Bz9ZtJ4X9FQpo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779129114; c=relaxed/simple;
-	bh=agUT8Mpk+dy8irIoWlm7UzBAg+qJnb8pUPGuEVZ5NvQ=;
+	s=arc-20240116; t=1779129713; c=relaxed/simple;
+	bh=JNbCHaWL9A4MjehkdwtKJsbWrGA6dxODtuxGwf4j9hE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jPvrIRZiG3msuZWNaqPnPbHTULH1gGhW0ODATTmoP8fGYaekti+s9nuaOjUqOk28QkX4yqULyyTpaS2TK6uhuTb8f5e7KGYOIahIqTQBb9U7ZgM/eLM2gQtcPcf8AcRa6rLQcfZBYgw1JUgZ+qebXtFjUqGjRTLV8fF0LZ0bMdI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mJSPPxBz; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=X+ONZyFHA5F+Sk0PbHu4Ot6c+T/iiaUM9icFPDArsgmk3FE3YcY2exTdLRnr93Wc1y6MfnszQGwp/NWaDIMNy4A/aDpJ7Jrjqp3jlSLmaV/iGpwUsqdOpTqfo5Ql+8+s1/0ZjlOUFhju4sc45XOIQKZDJtncWtj9u/3Ls5mdjQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GW1/Fpr4; arc=none smtp.client-ip=209.85.160.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mJSPPxBz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779129113; x=1810665113;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=agUT8Mpk+dy8irIoWlm7UzBAg+qJnb8pUPGuEVZ5NvQ=;
-  b=mJSPPxBzpmFzqd7/7c9+XKh/e3dbwPktwbrTiMy61Ff8Rdb7I5ewfK5r
-   /qvuWzcc3GtyaAFf/74JyugR0Ka+w1YGyNOrAO1uQ2bxrVVtyFeQUYSv8
-   IdCSYH6Pk0ib+eMShoZscWXAcdImTLpW/I75LuDCUWskxB4T1M5kECQp1
-   HB3985jw5ERMGgbGYgyRn5ofMWvzMwHF8dhqPCa4pWKannyM1dtK6+F/4
-   TQesk8D5CfYKiOAOJAWIeTPfRiReoc9VM+HOv8Japzv7+Mc49eG5l9rRR
-   cdJKuA4MH0BRT+Ohkjwr5MTqDEYkzMui6aAXFhNVqFGKIFiy5tjuQOlHd
-   g==;
-X-CSE-ConnectionGUID: hil9mQ6tSlekvSuMhMavUA==
-X-CSE-MsgGUID: 4ujVF/+oQ+yUNmdCaAbl3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11790"; a="80111813"
-X-IronPort-AV: E=Sophos;i="6.23,242,1770624000"; 
-   d="scan'208";a="80111813"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:31:52 -0700
-X-CSE-ConnectionGUID: J3D55b7RQkGsSXFj+aXtFw==
-X-CSE-MsgGUID: Sxq1+rIoQ5GKeaKswBrA1w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,242,1770624000"; 
-   d="scan'208";a="263290263"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.3])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:31:50 -0700
-Date: Mon, 18 May 2026 21:31:48 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Stepan Ionichev <sozdayvek@gmail.com>, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: pressure: rohm-bm1390: notify trigger on all error
- paths
-Message-ID: <agtbFDbw2m9ptEua@ashevche-desk.local>
-References: <20260517160801.269-1-sozdayvek@gmail.com>
- <54ee1fba-3209-4192-82c3-674a1ae3ca8f@baylibre.com>
- <3cb30f12-8b4f-415f-9a1d-823d8ff8c33b@gmail.com>
- <agq4zER5Tv2LErZV@ashevche-desk.local>
- <20260518155521.6c61504d@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GW1/Fpr4"
+Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-50e5eb0fabaso36870051cf.0
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 11:41:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779129711; x=1779734511; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=RjcXx1L02D57/85kmr8KRIpyy2DN3BNEA8TDg2cGfrc=;
+        b=GW1/Fpr4KJGV1w73HxVUBExobEEqxD+ZVKvNZzM3cODox/lJU6COlP3lO4/CvdOXE0
+         JGTY3h0QVkg8jb5TosmM/0YN78pI3JlMqP/USMohv7pasTKsjP63Hm/LGwVKXbMlzSBZ
+         w/j8Song2rMtZFCsTw+vocXOrT6AWIPy5Aejr7mexPBS+IixKirRKOD4X0GCN0uyFfdg
+         Z/NCQxlwCqF5j9BvU1g+BPsC4lzskgWIq2IK4k80B8UTWN7q8qOHkuYLH0d//Go6Qlcu
+         rNsmDX1NxObiej20UaelfHfmGXL49YuHIWN7ijjw8+LpwIE0S40Y0vRtffCXEWEEI69u
+         Co6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779129711; x=1779734511;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RjcXx1L02D57/85kmr8KRIpyy2DN3BNEA8TDg2cGfrc=;
+        b=cnnQUnXhadrfhNeKtmQCjBm1CX+fr77Zk6mOAsbKhdBRnBpE67/Eb4zthnMiVUl441
+         ObhnaQSI3KWc3NDpVlsGPLpot6CbgIWN7WKMr89t3wFLoXN9wlioSoVn9zlx/j4I1bPU
+         KibzU+XHi5ahc0WohFyAseOlB9x9hxSGE91Yxc7Q/CSBLcVqkmnP9Bk4d9BpGdJzWoaE
+         xs3l76VJ8RFeni/CyO3RWLvSsXWzFELe/4xdbU1jFhUbZ0ywV5vz+1paxSJu6V5i3y0j
+         HgHP41SeFjM5onWMVPcWpFkSRXUqPmxutO6J6IhB+LcgkjdV98VPM9//X8nZw1KLL1X6
+         rotg==
+X-Gm-Message-State: AOJu0YyGE1ynHCODu2LSH08oghPPQJ7gZuUO5w0hO/v5q/1vAe2ZAZcm
+	6XZYMk9ZAOifYcW98XaLgpLcAUKAEKvnaXK8tI+GI/CktoLA4vb5fWr2
+X-Gm-Gg: Acq92OE3IDorKOyJVQzBqk818GrfGYrfBjPs67QQf+DWAdZDA8oOT5rjo/xbL6SSK1w
+	A3BjSCp05DlFVyWuIvr1ci5TSokp03noF20NP/1KdHcMPh/5qKcQ7dc/30wvRuA+IwIvkU3NyRl
+	E5K/q/ZlOGLrUprsYGFRX9NTWR+nGENaiQn32A/3XI1bDoX3vgNKKYAtSTSg28+lYEs/ux047SA
+	8Si44MUuZysiTJKuhXSonXAkxWd72uJROP6Ks4H/HeyBPztJBVhDO+MYnbfOLUBGlD+BXDbYdSS
+	QIkEeqTaelRaFejmL+k9SqsZrIt35qbU2u317A0D7MLo+jKEG9UHhERwK1ToCZ4KuHj/nibURaB
+	M6f8JZTr5CvzUUHcOFdZdOznJAlBL2ZdXcamWjW7iG0XXmJwLtxFn3hX31rk1z9jzwzQd72rOYz
+	e+31LzoBP0Ge9NMszOp+FShFfR2fpBsovK
+X-Received: by 2002:a05:622a:1789:b0:509:3940:30ea with SMTP id d75a77b69052e-5165a255f15mr239848711cf.55.1779129710804;
+        Mon, 18 May 2026 11:41:50 -0700 (PDT)
+Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5168c968930sm50529931cf.0.2026.05.18.11.41.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2026 11:41:50 -0700 (PDT)
+Date: Mon, 18 May 2026 15:42:05 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
+	Michael.Hennerich@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Subject: Re: [PATCH v1 1/4] dt-bindings: iio: adc: Add ltc2378
+Message-ID: <agtdfXdUR-zwtFOe@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1779117444.git.marcelo.schmitt1@gmail.com>
+ <cf404216011b6972519436c63fcc7c4e2c883c54.1779117444.git.marcelo.schmitt1@gmail.com>
+ <20260518-trapped-gauze-ada279af89fc@spud>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,72 +77,87 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260518155521.6c61504d@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260518-trapped-gauze-ada279af89fc@spud>
 
-On Mon, May 18, 2026 at 03:55:21PM +0100, Jonathan Cameron wrote:
-> On Mon, 18 May 2026 09:59:24 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > On Mon, May 18, 2026 at 08:21:17AM +0300, Matti Vaittinen wrote:
-> > > On 17/05/2026 20:12, David Lechner wrote:  
-> > > > On 5/17/26 11:08 AM, Stepan Ionichev wrote:  
+Hi Conor,
+
+On 05/18, Conor Dooley wrote:
+> On Mon, May 18, 2026 at 12:21:01PM -0300, Marcelo Schmitt wrote:
+> > From: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > 
+> > Document how to describe LTC2378-20 and similar ADCs in device tree.
+> > 
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > ---
+...
+> > +properties:
+> > +  compatible:
+> > +    oneOf:
+> > +      - enum:
+> > +          - adi,ltc2338-18
+> > +          - adi,ltc2369-18
+> > +          - adi,ltc2370-16
+> > +          - adi,ltc2379-18
+> > +          - adi,ltc2380-16
+> > +      - items:
+> > +          - enum:
+> > +              - adi,ltc2364-18
+> > +              - adi,ltc2364-16 # fallback compatible
+> > +      - items:
+> > +          - enum:
+> > +              - adi,ltc2367-18
+> > +              - adi,ltc2367-16 # fallback compatible
+> > +      - items:
+> > +          - enum:
+> > +              - adi,ltc2368-18
+> > +              - adi,ltc2368-16 # fallback compatible
+> > +      - items:
+> > +          - enum:
+> > +              - adi,ltc2376-18
+> > +              - adi,ltc2376-20
+> > +              - adi,ltc2376-16 # fallback compatible
+> > +      - items:
+> > +          - enum:
+> > +              - adi,ltc2377-18
+> > +              - adi,ltc2377-20
+> > +              - adi,ltc2377-16 # fallback compatible
+> > +      - items:
+> > +          - enum:
+> > +              - adi,ltc2378-18
+> > +              - adi,ltc2378-20
+> > +              - adi,ltc2378-16 # fallback compatible
+> 
+> All of these are wrong.
+> 
+> Firstly, your "fallback" setups don't work, because they only permit a
+> single compatible. Secondly, if they did work, you still need to define
+> the fallback compatible in isolation for it to be permitted for use when
+> it isn't a fallback.
+> And thirdly, your driver appears to show that these devices aren't
+> actually compatible at all, given there's unique match data for each
+> one.
+...
+> 
+> Why do you have fallbacks here? Is it because a limited set of channels
+> could be used in the fallback case? At the very least, the rationale for
+> fallbacks should be explained.
+> 
+Some devices can be grouped by main number (e.g. ltc2378-16, -18, -20) and
+those vary only on the amount of precision bits. I initially thought we could
+fallback to reading only 16 or 18 bits if a driver compatible with ltc2378-20 is
+not found. Though, I now realize that won't work because the less significant
+bits would be missing which would compromise scaling the data to milli volts.
+Will make this a unique match list (no separate items lists, no fallbacks).
 
 ...
-
-> > > Maybe it would be better to do something like:
-> > > 
-> > > void iio_trigger_poll_nested(struct iio_trigger *trig)
-> > > {
-> > >         int i;
-> > > 
-> > >         if (!atomic_read(&trig->use_count)) {
-> > >                 atomic_set(&trig->use_count,
-> > > CONFIG_IIO_CONSUMERS_PER_TRIGGER);  
-> > 
-> > Just in case somebody is going to do that, avoid doing atomic_read() followed
-> > by atomic_set(). This is typical TOCTOU issue. This should be something like
-> > atomic_xchg() or atomic_add_return() or something like this in a single atomic
-> > operation.
+> > +
+> > +additionalProperties: false
 > 
-> Just to clarify - the current code is fine.  This got reported a few years
-> back and I did the analysis to prove it. From what I recall the key is
-> that the state space isn't as complex as it immediately looks.
-> That counter is either non 0 at the start (we don't use it here and we
-> skip an interrupt - that's actually the desired behaviour if the trigger is running
-> too fast - triggers must survive that - reenable() callback is there to make that
-> all work).
-> 
-> Otherwise there is a single path that sets it and we know any decrement until after
-> that happens would have undeflowed (and hence was a bug). The rest are decrement
-> only and it can never go to less than 0.
-> 
-> Hence it is fine.
-> 
-> Agreed things get messy if we make this alg any more complex though!
+> As sashiko pointed out, this is not correct if you want to permit spi
+> properties other than spi-max-frequency (although I could definitely see
+> how this would be correct).
 
-Perhaps we need a good comment just on top of this atomic_read()/atomic_set()
-pair. Because it's really the code no one should take as an example how to do
-atomics :-) Logical question, why do we even have atomics there? Shouldn't
-be that READ_ONCE()/WRITE_ONCE() to have an integrity in place? (This I believe
-even mentioned in the documentation for atomics.)
+Ack, switching to 'unevaluatedProperties: false'.
 
-> > >                 for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
-> > >                         if (trig->subirqs[i].enabled)
-> > >                                 handle_nested_irq(trig->subirq_base + i);
-> > >                         else
-> > >                                 iio_trigger_notify_done(trig);
-> > >                 }
-> > > 		atomic_set(&trig->use_count, 0); /* Clear the use_count if drivers didn't
-> > > */
-> > >         }
-> > > }
-> > > 
-> > > to prevent this class of problems once and for all. But yeah, wiser minds
-> > > have designed this - so let's hear some other opinions as well :)  
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Marcelo
