@@ -1,61 +1,79 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E7DC370D44;
-	Mon, 18 May 2026 18:17:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8DC238237D;
+	Mon, 18 May 2026 18:26:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779128266; cv=none; b=X4iZLkWu0qpgD4dXZl8zwKFMC3UJ0a1wrMKsocI3SBCfOxzKYrsEyvCalXBGygAlVgZQUcgwSzmLhlyehBnLbI/UTANH8Bk2MvMe5tSUcwo99U5Ehu4npOW5Z5wULIxPtZkbW8InRu+DKASliyNAq8MDhAumICWyW4yuEoQnDPQ=
+	t=1779128780; cv=none; b=K4qKyOo+CdkeUWENeTkd4r0lLziTuYsFg+M55ficJ9WjVLE0P6nUCQviCcPdpzoHfo5JCP046pn1YltIcpN4f1FgKtpiXxm3O2s8W9lx66St9syzvZt4LhmeUDrDa8tB2I44L5+MNe9U5Vm7Op4L7HHzp3JimzOcWjdkhYCE0Gg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779128266; c=relaxed/simple;
-	bh=pcmJn69RbLvbSk47qbYfZm+DmmsPrsWdrmhdQxKr1PE=;
+	s=arc-20240116; t=1779128780; c=relaxed/simple;
+	bh=pbXYLQ1mwct3+ssZlrWJpr6OzTUkZbnMsQ/G5sb/T3M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jd7ekTIdtE1D1Os3rleRR1UiUkx/s6LMpIEDEvrGCs3bJON5iJurDvuoIFqgYup9uVxw542vm6R6dSo/Hr8fEBQZxKTxX0x+lk6IK4etUomKp/kWFwK8bDE9ZHByEF+Xm19GbH8RyWzP7bUe2Fza92u1brEYssFikUMVASFW+4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eJRSiJBy; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=AD7/43eDuGOoEq+T35lC4QD/Y67eyRbJR31nR957MQEP33uzEiMhdd1Os9xCmMCY3IwNa6mJtH6kuzid6b1V1V0QMwYGzZ6Tal+6X1pqp/x9GUTkgvMDhlVWjPAxjcz1/VE5QjG9NyaeTs7t4nCrxNpTKBXlgY277v65NDN6foI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A2T0DUHL; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eJRSiJBy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A2T0DUHL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779128264; x=1810664264;
+  t=1779128779; x=1810664779;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=pcmJn69RbLvbSk47qbYfZm+DmmsPrsWdrmhdQxKr1PE=;
-  b=eJRSiJByMLtKosrqNO0bb7VgczjnJz7CEWMZuuUvDzr0I6A5hBkR6PQ1
-   r7UqBWD3+I6QUrg5lfOvNXpm0FBeZx+SsY2M7Y6A77c8BjHoy8ra3LT1z
-   64bdZyrro/OW6KKcMPET3BJdvkhfgZAYZ0UDMDf6eAunREgFiogdLsroU
-   CWxB3jWbwgARTX0iGJg68tANeuee+cWEw3uqkMYDv6tZvWcYR9yksfBk5
-   W3P225tXx7KWWfUDrPC7i0LsUf7yoloD0pVPcjxT3/2nzAr8QKUyHu2F/
-   uiftkrmSt/u013luTILbeHWnEevS6LEh/qIgODUWFJwWuqDL2vJfhGl5e
-   w==;
-X-CSE-ConnectionGUID: lOq/Nmx+Smycw+1RoIISkQ==
-X-CSE-MsgGUID: R7tEr6wAT5q3Vs3VZfOMyA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11790"; a="90574566"
+  bh=pbXYLQ1mwct3+ssZlrWJpr6OzTUkZbnMsQ/G5sb/T3M=;
+  b=A2T0DUHLXSAZYQw2jRiF+UoKrVoD0sUG+NgJtbnOEQb18t2vQsGxLopw
+   YUxKWtYH8sxVruSa43cAl3BbpnZ04oBxA4nDyeKXLSbRW1afM6G4WSkr4
+   ZJObrW+BGc0Icc6onS9dZJE4WOU0QPpHzD8wHPszfE+/amcnq74W8dnKi
+   ojxajFEfbqExWClaWwZqO4rARkYfU4V+fyjqBpaVjrQhtM0PqYc19qSsI
+   3nLaQA3OGxSSKCqC+ljONKYwvx39XAdeaOkXLxRLKrsuiGC3BZF3e3Dub
+   /9Ft5tR0johwFWGFLRiCCXov2JNgAOk0WOR15314fzbbobb8vfam97s1H
+   A==;
+X-CSE-ConnectionGUID: 9qriItO/ScWlODNBpfRg1Q==
+X-CSE-MsgGUID: +k3VPqE9SVOFJAvzB/QnXg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11790"; a="90575555"
 X-IronPort-AV: E=Sophos;i="6.23,242,1770624000"; 
-   d="scan'208";a="90574566"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:17:43 -0700
-X-CSE-ConnectionGUID: +5HqOXcFSa6MY0/078grhQ==
-X-CSE-MsgGUID: m0Qmm47LRBODBd/plzbVRw==
+   d="scan'208";a="90575555"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:26:18 -0700
+X-CSE-ConnectionGUID: O0zap/NiRba3AYD16GFVrA==
+X-CSE-MsgGUID: e9aNJkI4TGO68gsQIjE1Pw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,242,1770624000"; 
-   d="scan'208";a="235056247"
+   d="scan'208";a="239764455"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.3])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:17:40 -0700
-Date: Mon, 18 May 2026 21:17:38 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: kernel test robot <lkp@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, oe-kbuild-all@lists.linux.dev,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v0 1/1] iio: Convert IIO_CHAN_SOFT_TIMESTAMP() to be
- compound literal
-Message-ID: <agtXwmSPs8iARJ_e@ashevche-desk.local>
-References: <20260518071349.469748-1-andriy.shevchenko@linux.intel.com>
- <202605190130.oWitiRzG-lkp@intel.com>
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:26:12 -0700
+Date: Mon, 18 May 2026 21:26:09 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v11 4/6] iio: adc: ad4691: add SPI offload support
+Message-ID: <agtZwbeVeZdnlXTI@ashevche-desk.local>
+References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
+ <20260515-ad4692-multichannel-sar-adc-driver-v11-4-eab27d852ac2@analog.com>
+ <80f61c0b-1f36-4fee-9f76-b93f63b87abe@baylibre.com>
+ <LV9PR03MB841418AEF0059E802F7A69B2F7032@LV9PR03MB8414.namprd03.prod.outlook.com>
+ <60d66897-41cc-4f3f-afd2-64e49f0bb55e@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,40 +82,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202605190130.oWitiRzG-lkp@intel.com>
+In-Reply-To: <60d66897-41cc-4f3f-afd2-64e49f0bb55e@baylibre.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, May 19, 2026 at 01:32:51AM +0800, kernel test robot wrote:
+On Mon, May 18, 2026 at 10:16:38AM -0500, David Lechner wrote:
+> On 5/18/26 10:14 AM, Sabau, Radu bogdan wrote:
+> >> -----Original Message-----
+> >> From: David Lechner <dlechner@baylibre.com>
+> >> Sent: Saturday, May 16, 2026 8:53 PM
 
-> kernel test robot noticed the following build warnings:
-> 
-> [auto build test WARNING on jic23-iio/togreg]
-> [also build test WARNING on linus/master v7.1-rc4 next-20260518]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/iio-Convert-IIO_CHAN_SOFT_TIMESTAMP-to-be-compound-literal/20260518-151541
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-> patch link:    https://lore.kernel.org/r/20260518071349.469748-1-andriy.shevchenko%40linux.intel.com
-> patch subject: [PATCH v0 1/1] iio: Convert IIO_CHAN_SOFT_TIMESTAMP() to be compound literal
-> config: sparc64-randconfig-r132-20260518 (https://download.01.org/0day-ci/archive/20260519/202605190130.oWitiRzG-lkp@intel.com/config)
-> compiler: clang version 23.0.0git (https://github.com/llvm/llvm-project 5bac06718f502014fade905512f1d26d578a18f3)
-> sparse: v0.6.5-rc1
-> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260519/202605190130.oWitiRzG-lkp@intel.com/reproduce)
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202605190130.oWitiRzG-lkp@intel.com/
-> 
-> sparse warnings: (new ones prefixed by >>)
-> >> drivers/iio/adc/max11410.c:807:31: sparse: sparse: cast to non-scalar
-> >> drivers/iio/adc/max11410.c:807:31: sparse: sparse: cast from non-scalar
+...
 
-Thanks, the sparks were expected exactly in this and one more driver.
-I mentioned that in my reply to my own patch already.
+> >>> +	if (st->manual_mode && st->offload)
+> >>> +		return sysfs_emit(buf, "%llu\n", READ_ONCE(st->offload-
+> >>> trigger_hz));
+> >>
+> >> Why do we need READ_ONCE?
+> > 
+> > trigger_hz is u64 and if the target is 32-bit, a 64-bit access compiles to two 32-bit
+> > instructions, so show() reading it without a lock and store() writing it concurrently
+> > can produce a torn value at the compiler level. READ_ONCE/WRITE_ONCE suppress
+> > the compiler transformations that would allow that splitting or caching. We could
+> > have st->lock in show() instead, but that felt heavier than necessary for a single
+> > scalar where a transiently stale-but-whole read is fine.
+> 
+> I would go with the mutex. It will be easier for people to understand.
+
+But why? READ_ONCE() here is exactly enough. We do not care about
+serialisation, we care only about integrity. With mutex it will confuse
+(some) people more, e.g., me. Because in that case I would think about
+some specific access to it that may happen. Yes, I saw many times the show
+functions that do mutex and then print the result when mutex is not held
+anymore, but for simple cases like here, mutex is overkill. Interestingly
+that using guard()() inside show makes the mentioned functions to print
+(almost) latest value of the variable in question. It narrows window down
+as printing will go inside critical section.
 
 -- 
 With Best Regards,
