@@ -1,198 +1,146 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from CHN02-BJS-obe.outbound.protection.partner.outlook.cn (mail-bjschn02on2113.outbound.protection.partner.outlook.cn [139.219.17.113])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65FCE3E00BF;
-	Mon, 18 May 2026 08:08:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779091685; cv=none; b=Qm0cGg+fTJVOMkzKBt4F71l5AypQscPSxYYRAY7eSsp5Ic2D1yeptUqeNrct8mEM0AWNARXzqMAPSR1gG8pdKSaQjNyBJBRqKEN71hn3+xxcswG8CSWNYQfaKZl9wq97u4v98DVoU87h92YXTKzagxoVsk4RrlaSMrYoUAfYNrI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779091685; c=relaxed/simple;
-	bh=kkVu6KbuspfNySAVsvW3FsvEqu9yql8ziQaMin2nxBw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QDUqS4iJdtfjQi8W8v4qAnOyVz9EsU/pZQcrDXkG/Ms6Ldlue5OswOA3GeyG0VM0rh502vKQ67rpU4mlFPyflQztkcIU5IUDYcSoeHlj5njo+Ou4D/dicOJAPEqEM+HZnMmiFvjLatmnHYRLmX+fZdbTdYjZ86H1o4H32Du4IPQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=bswwgy79; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="bswwgy79"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64I3M7UT174954;
-	Mon, 18 May 2026 04:07:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=oEWE7
-	EY0P5l/hBScGfHoHisI61A1Pvwve2WFQHzEEBM=; b=bswwgy79BDTk05FdBBc/w
-	g9E1+DSnC+wP9QxSa5C1DuA0Ornr3J0xIeNXgVGGA9oq1fpUbXMdkeXqpYI450YZ
-	rHtgInO9j85hQX15sdowxMq2WsJn/H8vNrQPKmPMGWziTv4gY434Tqgbppwv13hx
-	RESI/0bGMFvfCGV6rFx0KizIALYR4QSqeP4sxc5gIdMBk7MBnmpfCKQlDCD7TWZn
-	KiW03MHenZ0qEXYCDwE+Wnp9Va+NnLMHL1x4TlNyEY8VY1zc22A53B8kXq/4swUG
-	WESaR8SKov1yEZdI2nGct+60RSlvCiuwZFnIJ5ORYsc2APAIDxqIsqjR6TkEwd0e
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4e76wd33px-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 May 2026 04:07:53 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64I87qht015323
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 18 May 2026 04:07:52 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 18 May
- 2026 04:07:52 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 18 May 2026 04:07:52 -0400
-Received: from HYB-MkYHBcJRSnh.ad.analog.com (HYB-MkYHBcJRSnh.ad.analog.com [10.48.65.202])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64I87fQa018119;
-	Mon, 18 May 2026 04:07:43 -0400
-From: Liviu Stan <liviu.stan@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Liviu Stan <liviu.stan@analog.com>, David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob
- Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor
- Dooley <conor+dt@kernel.org>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Francesco Lavra <flavra@baylibre.com>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@analog.com>,
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v2 7/7] iio: temperature: ltc2983: Add support for ADT7604
-Date: Mon, 18 May 2026 11:07:17 +0300
-Message-ID: <20260518080731.83585-1-liviu.stan@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260516181250.039e154a@jic23-huawei>
-References:
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E16E341057;
+	Mon, 18 May 2026 08:19:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.17.113
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779092357; cv=fail; b=Y4cg4UrAc/qkHKUl8VpUPoY7CwR+vweDln1DDFPtSD+yyr/TGfQ2FPrw7lBh3fRInhipkyFwyVsBwZOLA7ivGidC5npS5qfPWNzBf+CipeyZbl7P7cvTmDZRsLBi6JmniM4y+Rr/Q8nd/2NEMpsjdOW3ni0TFB7COzNsB9SRHP0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779092357; c=relaxed/simple;
+	bh=Gu5aHvQzblXmHqDX7o+TAByIaXu7TtBtqlCxjRTKwI4=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=sIMdLC/QJaLsyJEoxdzy+Bb8W+trlPv5JW9w4B/LIPyqQ68A5dEaJJXhO0JtH0rAphvRubxYeEMm+tREO48BTNZBYP6aYuEyaZKhQz141SlhUQspocWBk9ZZWH7dKRnDBSrJ0SJXi5EUaM5oIUgDiWNlhUABszgSkKEIGSV6HBY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.17.113
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=starfivetech.com
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HupkmPEkZUP/5MjGGjuECg+vNU9PiEb/raLmxISf6kn2yeUJnldrNZCJhh8232w/U5SIRTgKhtXxNtPq1L663DbOe+mJUer2GwAo8X+nIriFNqdnTNRGv7nITvCJjx9+ZmrqJdKpnniG879wkFY1zlklckbCz1+h723WV5tHX6zbqOBCWdqgZXg9teU8GpLG7zdG4D4suMH9LZusFIXb40SppTvAQL2nnUwL7tHhF4gOv8+6OghzgD/vRMUuNjXJKYAgtuT22PVRcARJtkgDVR0je3pMkUpXANIOxPYyHjSSyYkG8Bpybm1avbqBBz/bCIlQekrkov56w5Z1psnVkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EvcytlWwStyawa7aMTAyQe4haTVMKOPuEl13a3uKUag=;
+ b=CmYiMVPUgXpGoEAj1hB1yihVPXYwifUaQlALmtWx1+b1BOBB8Z+iRlL38d6Il0Uy8o1MEzdi5u1na78YfcxDIgKVosq79I7PVFPc02x4SHbFagscTcRcb4DkkTakeGJ2/c9iXMCcaAoo8WPLUpkyJztz3bNPAbErIsI7vwDtw8PXM/knN5/LjmWR3wC054GMkPegRs/7DpOjTOS7omD6dqDtKmb5g8MiIZz3NgYpghL5FvYFEbZFSc1reMcaicL1leq0cexhPlGmobs9wBDxWKG1j3/47wuBjblx+VZRyLwnPmDDBfx8jhzlK2qiYpJUYMqEtlVNbo2uaLB4PMFcxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=starfivetech.com; dmarc=pass action=none
+ header.from=starfivetech.com; dkim=pass header.d=starfivetech.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=starfivetech.com;
+Received: from NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
+ (2406:e500:c510:8::10) by NTZPR01MB1035.CHNPR01.prod.partner.outlook.cn
+ (2406:e500:c510:1::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.14; Mon, 18 May
+ 2026 08:19:01 +0000
+Received: from NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
+ ([fe80::d8e2:3f39:6ae7:bdf2]) by
+ NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn ([fe80::d8e2:3f39:6ae7:bdf2%6])
+ with mapi id 15.20.9913.012; Mon, 18 May 2026 08:19:00 +0000
+From: Xingyu Wu <xingyu.wu@starfivetech.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: Xingyu Wu <xingyu.wu@starfivetech.com>,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v1 0/2] Add StarFive SAR-ADC driver
+Date: Mon, 18 May 2026 16:18:50 +0800
+Message-Id: <20260518081852.116909-1-xingyu.wu@starfivetech.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SH0PR01CA0019.CHNPR01.prod.partner.outlook.cn
+ (2406:e500:c311:5::31) To NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
+ (2406:e500:c510:8::10)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE4MDA3NyBTYWx0ZWRfX4qUwewI7BlQH
- CcgM2TP1rHxSVHhZcuWZu6oWjmQqFkaRUf7U7oWeRuHxtoTgA9cAljTfL7ibdS2Ph0hS4m0sgO1
- DqoDtcR6obFaTRaVQ+W2IKYz5hlfRhXOv98mJORgpK8pf/G1hu1DMzJaS0qri8ESn13RU7Cwqv8
- llVgBMxXLqn9nCF24Ijl6St/FqZJd3aa7fbJshB0RfYNj6IQt9NUggfs5KI5rdRWmJFA8SKAjdf
- Fhg1ctMbNXnh6HeUd+TPXjsuJBlTrm9OmH/bXBviuIvMvtBm/EUQ4/BKR5cgrseNY4JCVrFliAc
- +2c13A0opZZoXjhnhe3sQWuYWKcPGK3Pt9HUbCDcodaDZ1Ft4LKa5uvWSaS2p55fSI8wwpNQ3Lg
- cAH+aA0/FafBD3ETE5JtmX/QB7vo1J0xinRgdClzzb9SggrwYFo38pNHWCRNvR/7qhoduRzzMPq
- 0JmNnjXBzO51c2A05AQ==
-X-Authority-Analysis: v=2.4 cv=bfRbluPB c=1 sm=1 tr=0 ts=6a0ac8d9 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=VwQbUJbxAAAA:8 a=g_30PTRQj-5-3ZeuMogA:9
-X-Proofpoint-ORIG-GUID: EtTz80t85O_IzfgMC75o2-mPmwSXi2zF
-X-Proofpoint-GUID: EtTz80t85O_IzfgMC75o2-mPmwSXi2zF
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-18_02,2026-05-15_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 lowpriorityscore=0 adultscore=0 malwarescore=0
- impostorscore=0 spamscore=0 phishscore=0 suspectscore=0 bulkscore=0
- clxscore=1015 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605130000
- definitions=main-2605180077
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: NTZPR01MB0956:EE_|NTZPR01MB1035:EE_
+X-MS-Office365-Filtering-Correlation-Id: ddff6fc0-1920-4833-52c6-08deb4b61d1e
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|7416014|52116014|376014|18002099003|56012099003|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	+wrKek0ZrxeofzylSCtEyN7OD+NHfB3h+bBNoMVpEg/6WuogZePR2huS9ajKNix8XBSj+1eaIIXj8T441N+QPkOyg84s00gw9FUiPexGDm/N74wIYcovhOIOZyemSscrPVbJ4qGlvSzmBRL1Kvez9R/43YIb5Gmjy11WyQ1O7s894DAeWpMAQdobQnBVmL+ESo/40nxrpZkIquknvkvVD03iYGnidkoDIr/cyPPweuMeIwFvm5nk05WWDPe/oQUXjUHKqYoP1LmtNHGYBbONTEug6/wVdTkbSHM/qTq1QPph8FavviZmiYoSTAjp5RzVqCLUy8xrjA2XquwUygbkiFnC7Lga/65AIAfjWXNXpNlwSwt9MBMKEPIOPNJxVy4ax0mTm6BhaAdSI/0SoIFRxeO3gIrlpH4o80J8JCuObpidnqT6Ck2g7fwjN6fLlIloU/mQTXfVcN8rzMBpPeUdyoYle9UFJH40me1AFVo/YDK6ViQK0mtnielTO8aZ/bdbSf08ewy+oQoo1ai7G7ZOKVA2M2Ra3nU5fnM+19ye6/laroKWzePYoe0mJZy0xXR1
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(52116014)(376014)(18002099003)(56012099003)(38350700014);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?iZbJ39YEb1ttyDjRejAahh6OKHR9HeRQbzA7bU8NjTmCH65ulS/8tzGXdJ2U?=
+ =?us-ascii?Q?MYrXQ1mlbdQWDPbvWrr1DrRSJO3RIVJMikT9Ru1065HP+SfM2z8riERI3rO9?=
+ =?us-ascii?Q?96NINkrGn2XGmr05EfzziyfC/6V81R+KpBehKKjjiSpatiKmpsIfu8zHlpbc?=
+ =?us-ascii?Q?y2LxiKXhpKuB06yijHzuKbGnX9b/m+iSVqmYPrQX6st3dxjMAg75qOx18YjX?=
+ =?us-ascii?Q?/e35o3PI372MzbPRBwGOaMQACKbg9EtOhHgos8xfqGATC0iUJHV6xnRlsNH2?=
+ =?us-ascii?Q?gnucQJrn1CvuJw+X8CNLa/wmNG4xVeQ3wLjZqJh5aIc5JbEe2PPAC3htMTWN?=
+ =?us-ascii?Q?ZcNrKb5XP+V6wF/x7N80Gd/R4SmnYF6y2Phkd3fxTDHE4RuaOZDOEZ2NqBEP?=
+ =?us-ascii?Q?qTAfp8Myeyxw7Cw9IAiUEitHHpwNuiScFDuLSdvzjmo8XwzH4ajeenYON9vM?=
+ =?us-ascii?Q?+ldLrXfs8nrhBakWj7KNvQWKWBuTjmVetUZPUb46cZP34rP9Pjlrp6BF5pEy?=
+ =?us-ascii?Q?E+8j7dqAgckWiA43tWy6soWOoG6AePA0ndYH5IQONq7UnlHVtBn4y7wAI1mM?=
+ =?us-ascii?Q?b6jJcsN1qtOOonE5FVS0TTHlg532IyqF0YMIbVDVJqOjUur0uyPdm20nt+cb?=
+ =?us-ascii?Q?QrgNCvADyxKzGHhM+PQUJSG4XdtBt1m/TGWoaS2t5xYk22CxhZ0U1d3NCecl?=
+ =?us-ascii?Q?rUDuiMCeRRlJTMuvuUCMDJTnAJTEz5hHIuan5QT8GitkQ7w9mDyanNFJMnlf?=
+ =?us-ascii?Q?swSsGAKmD9yAWiR+p6lC/sDdaa+M3LlespemvD6t8jyEpy+Y2Y9rcrNsz/tf?=
+ =?us-ascii?Q?Db5nfeiiE/Gqc/bzQM/onbMN5fGSJuFwu2l3wGDqeX177MEmkFqfyJxlrHco?=
+ =?us-ascii?Q?6jdbiEVA1SDVmqILl0Zj1FfYd0V6whX1UepiNnNYHSZ5ss4ccAh2nPztiqFq?=
+ =?us-ascii?Q?nD/Jtwn4ETNR7ufeIfT++LSrsFQmXIaTCNCAV0w5LyF1ucJxwBUjH5SXMIvX?=
+ =?us-ascii?Q?LAzYhUZfnGDY3OmI1qrEScDAnZxG1TQpojlb8RDoBX/KC+TYQdFMWtgYuKvR?=
+ =?us-ascii?Q?MuNgxWyNUDuYVG/oHFvL5WceIphGa4ta/rMrdHyUNr61xuRW9dUXhepFKpnp?=
+ =?us-ascii?Q?xsrXt801dDYrU0psgQ073ufIaXxSfYDcOVJAhW6IP6d6Zq0dKn4N0gkurLuF?=
+ =?us-ascii?Q?ssHWDDTmnPxSQbqGKQdj42EBy7Cx3cT9Qzt9I4wXcMkrDwnj6PxSCTgJRBmF?=
+ =?us-ascii?Q?LyCNb6x3J6dNjoJRglOYkDDd0a+1ymmv1F27v1Pdg8qOV2QoW0VDSJjPVEhF?=
+ =?us-ascii?Q?l50Ep+lKCfc+k+ik6HHVBEAkIafKihUMrzMQtomRg/G54GhpwdbnUcDdBDqj?=
+ =?us-ascii?Q?A4lJ2CRV/MJA+lrvVYnsDPcTVEyvYrKGWCdP+grhTjTlokcRAn5I0rHOB6m6?=
+ =?us-ascii?Q?g88NUNl9oPSBwJrbEDH2cbxIEgJZTlWjGtE36orp/oO5rNlPBWAC1BoheYKW?=
+ =?us-ascii?Q?IjcSK9fstjs8SEINCurmO/p5VyDrnXtIywOzh7j5Vc2lIRGG8m8zmOjWHzak?=
+ =?us-ascii?Q?giGvShEcKej+hikNU4ezioGY/x4TF+8v4W/gsWzvVMPbWiY5AkdUhKazVwoy?=
+ =?us-ascii?Q?vNVxrXmx5z6EpfCYZMx20lJlLnE8AgOFjxwgXQ8ihwd4SfDUMiWy3HaThuLU?=
+ =?us-ascii?Q?eS9/yLxD4wxDyOI9VEi0iYVnb2Xo5oMeDT9bV2oTj6GycCu1/11DRHUBbBu9?=
+ =?us-ascii?Q?RmHiYcyYk5VglryEodTz8Kh7bYY0Trs=3D?=
+X-OriginatorOrg: starfivetech.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ddff6fc0-1920-4833-52c6-08deb4b61d1e
+X-MS-Exchange-CrossTenant-AuthSource: NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2026 08:19:00.2688
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 06fe3fa3-1221-43d3-861b-5a4ee687a85c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: A16Uisv4bnDHwzGjx9+iSQgxODAGBtNRoZLv5i7oZ4dFRiBrqwdDc0iTqar6C23NmXvKUDEtdB//FbiF1EXD9Yngergl8/WbSP6pFgBaGFE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: NTZPR01MB1035
 
-On Sat, 16 May 2026 18:12:50 +0100 Jonathan Cameron <jic23@kernel.org> wrote:
-> > 
-> >  drivers/iio/temperature/ltc2983.c | 401 ++++++++++++++++++++++++++++--
-> >  1 file changed, 386 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-> > index bf435e965c6d..acd043ed62f5 100644
-> > --- a/drivers/iio/temperature/ltc2983.c
-> > +++ b/drivers/iio/temperature/ltc2983.c
-> > @@ -28,6 +28,8 @@
-> >  #define LTC2983_STATUS_REG			0x0000
-> >  #define LTC2983_TEMP_RES_START_REG		0x0010
-> >  #define LTC2983_TEMP_RES_END_REG		0x005F
-> > +#define ADT7604_RES_RES_START_REG		0x0060
-> > +#define ADT7604_RES_RES_END_REG			0x00AF
-> >  #define LTC2983_EEPROM_KEY_REG			0x00B0
-> >  #define LTC2983_EEPROM_READ_STATUS_REG		0x00D0
-> >  #define LTC2983_GLOBAL_CONFIG_REG		0x00F0
-> > @@ -186,17 +188,43 @@ enum {
-> >  	LTC2983_SENSOR_SENSE_RESISTOR = 29,
-> >  	LTC2983_SENSOR_DIRECT_ADC = 30,
-> >  	LTC2983_SENSOR_ACTIVE_TEMP = 31,
-> > +	/* Sensor types for some parts only; map to RTD_CUSTOM/THERMISTOR_CUSTOM in HW */
-> > +	LTC2983_SENSOR_COPPER_TRACE = 32,
-> > +	LTC2983_SENSOR_LEAK_DETECTOR = 33,
-> Given you care about being in range of this I'd add
-> 	LTC2983_SENSOR_NUM
-> >  };
-> 
-> > @@ -1329,7 +1649,7 @@ static int ltc2983_parse_fw(struct ltc2983_data *st)
-> >  	if (!st->sensors)
-> >  		return -ENOMEM;
-> >  
-> > -	st->iio_channels = st->num_channels;
-> > +	st->iio_channels = 0;
-> >  	device_for_each_child_node_scoped(dev, child) {
-> >  		struct ltc2983_sensor sensor;
-> >  
-> > @@ -1357,7 +1677,13 @@ static int ltc2983_parse_fw(struct ltc2983_data *st)
-> >  			return dev_err_probe(dev, ret,
-> >  				"adi,sensor-type property must given for child nodes\n");
-> >  
-> > -		dev_dbg(dev, "Create new sensor, type %u, chann %u",
-> > +		if (sensor.type > LTC2983_SENSOR_LEAK_DETECTOR ||
-> 
-> To make it easier to extend in future, perhaps add the NUM entry I mention
-> above then >= to it here.
-> 
+Hi all,
 
-This makes sense. I will change in v3. Thanks!
+This series adds an IIO ADC driver for the controller of StarFive
+Successive Approximation Register A/D converter (SAR-ADC).
 
-> > +		    !(st->info->supported_sensors & BIT_ULL(sensor.type)))
-> > +			return dev_err_probe(dev, -EINVAL,
-> > +					     "sensor type %d not supported on %s\n",
-> > +					     sensor.type, st->info->name);
-> > +
-> > +		dev_dbg(dev, "Create new sensor, type %u, channel %u",
-> >  			sensor.type, sensor.chan);
-> >  
-> 
-> > @@ -1445,8 +1782,9 @@ static int ltc2983_eeprom_cmd(struct ltc2983_data *st, unsigned int cmd,
-> >  
-> >  static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
-> >  {
-> > -	u32 iio_chan_t = 0, iio_chan_v = 0, chan, iio_idx = 0, status;
-> >  	struct device *dev = &st->spi->dev;
-> > +	u32 iio_chan_t = 0, iio_chan_v = 0, iio_chan_r = 0, iio_chan_c = 0;
-> > +	u32 chan, iio_idx = 0, status;
-> >  	int ret;
-> >  
-> >  	/* make sure the device is up: start bit (7) is 0 and done bit (6) is 1 */
-> > @@ -1493,8 +1831,26 @@ static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
-> >  		    !assign_iio)
-> >  			continue;
-> >  
-> > +		/*
-> > +		 * Copper trace and leak detector sensors without a custom table
-> > +		 * produce only a resistance result; the chip does not populate
-> > +		 * the temperature result register. Emit only an IIO_RESISTANCE
-> > +		 * channel in this case.
-> 
-> Do we care?  That is are they useful without the table? We could just make it
-> required in the binding.
-> 
+The StarFive SAR-ADC is a 12-bit converter with up to 8 input channels
+and a fixed 1.8V reference domain. The driver provides raw and processed
+voltage readouts via IIO, runtime PM support, and threshold-based
+voltage monitoring.
 
-The datasheet specifies the table is optional. But more practically, in order to
-be able to add accurate values to the custom table, the users first need to measure
-the sensor's resistance at multiple known conditions, so I think the resistance-only
-output is useful during that characterization phase, before the table exists. Making
-it required would force users to provide placeholder values just to get the driver
-to probe.
+Tested on StarFive JHB100 EVB with all ADC channels and monitor
+interrupt path.
 
-Thanks,
-Liviu
+Xingyu Wu (2):
+  bindings: iio: adc: Add StarFive JHB100 SARADC
+  iio: adc: Add StarFive SAR-ADC driver
+
+ .../iio/adc/starfive,jhb100-saradc.yaml       |  62 ++
+ MAINTAINERS                                   |   6 +
+ drivers/iio/adc/Kconfig                       |  11 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/starfive-saradc.c             | 978 ++++++++++++++++++
+ 5 files changed, 1058 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yaml
+ create mode 100644 drivers/iio/adc/starfive-saradc.c
+
+-- 
+2.34.1
+
