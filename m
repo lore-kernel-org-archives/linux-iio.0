@@ -1,121 +1,93 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BE943254A5
-	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 07:35:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 229E53DD523;
+	Mon, 18 May 2026 07:37:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779089721; cv=none; b=F6EpptsUI3afTthH6+TP01fBRKXszf0qWGZpEJ/al19VKzLKWHh6PPFsQVFv5Pr+zKgbYaLNwkffVzLhv5gLbU8LAygX+nyiuS2lztET8Pljgn0cEAw0NO9ZxSffs5AzuZOe7lxJ/de6Cx830CF/43ysz8BOCuwA5zgMbV3MqP8=
+	t=1779089872; cv=none; b=gSr7d8pk29M7e+hAUCryFbeTJSNVHyVEOxroIcTqkdDr3QnWKD4ATh0F9EL0EA/Aoom3JhLjSYMJfhCmx4FupRNB2I+WBJlmhfqFUJ0yjNpYa3HPvrnJVv5jZfNLUzAg08wpdhzv5M9BONdYcvybi8mRCP7nWS+iu+H382ArKTQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779089721; c=relaxed/simple;
-	bh=xAxy7fO2YlpiPg7YUBfWrXYpsnJqHkDmbkTaqIyM1LM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=R91Ex3CGnpnOZYuG3rIGZlCUZuzuvH66+uebOtlYhH02CavUDXzXgZyAkNe4o++SUsrqPZDLwvF+m6qweymTC/Z7EIMhKK8hXsdWXfSioO89Qk7y4/iHW2RovoklVrpfPZZ9E0ICjH1+2NnZg0I3p8Zb4p6/1ZEvwQvFye7vXfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NX61KUrC; arc=none smtp.client-ip=209.85.208.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779089872; c=relaxed/simple;
+	bh=eQ1ZMIkS0xQan/x2LSkxNV1KTXQCt2q5sq4HgKDY/A8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DW9ApYOPXYbcZbwzOnfQ/QXEa5Umxocnv25k0Xo0pl83IY6h95fHoiEmRmabdRGDYPE4EMTimDgRj6zoSSSPc4FCwwcvJDMS89HAmoq7rmY9CuFnfbzCstIlATZ+ugZ/U1Pl7ECXhRnbJ/nHvECN8eP/w3orf4ttw9UC6LPOfUM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mv0XHyqq; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NX61KUrC"
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-39393c1b5aaso18467021fa.3
-        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 00:35:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779089719; x=1779694519; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wWkpCpQ0FJ7/KTqsrEBZy/g0n+sB4k/74RUvdqaLZAk=;
-        b=NX61KUrC1uZro1+RMrqjUnudB6XMDVmlpnlDTVMfCkW5Qeuw0Cz1lOdjnS/GkwSTJH
-         jq0/621dHTbHSkA7biYG40w66nIKY1OIFQRxklHP64td0bzSq6nvtm5hKwz59baqtIP0
-         oTvn09Poe02Ul4MPwp9xDoV0/iwu2lNPPtDxJFP+eRdes4RxKz+Gp6alJTWudRvN9POr
-         K9E94ymI5P0N7vZJ3E7n2Z/j/b8m45NVzYBQjiUueJoGH6mbLS1JkcXDR4mYZT60YViz
-         07O3f12+ncZzy4J6ofy80CfjxfFASjaPd0tOWRGvJWMRQVsdumc9OwuJFSX228qu3pLF
-         QAzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779089719; x=1779694519;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wWkpCpQ0FJ7/KTqsrEBZy/g0n+sB4k/74RUvdqaLZAk=;
-        b=IBDxY/ErmfP2Dogw7NHH3HApJgumrm+0SX8xg08AHLSqfFcDuTCoNuNrYkoIF7aAIz
-         zBYCEWk6gvb4qiTRrzASlEzPZIuCOpszeV5l0h7fHd/Mm+coa7BBG/x3GepMsUEgGOF2
-         /XfEth7X8FCLPpVlj5uPA8T+CZ0aEnmr0ce/FGDeBnRUdNKV41bNLqhFx3TufozMhwJZ
-         /ilnaqhTx7nyBd4nKKSws4Dc1sMMY7u6a91QOz6mxJ/i/NECjZOIzzU2HaK1lC2A22Nd
-         aIntmwAuCzFBWDcAt0Kts4WiEN4+pbKYpBDkzkFLTF3PSNWUgLizRJj+RbvMfBpSw6F9
-         +ynQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+5d4vfJI8O3i2ifxXdaJjfv6ztNlh3jXKOXgE1dJ5DUTL8NExJ04ExmB6BGb/mWg8eTvgwQkxm96M=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxVng0ZyhN2x4z1UQPZszTuROm+5QM+GW5QsEN5jrCBbxRenner
-	4TRB72URWE/NdP2rnjxrsPyfZU3bJ0gMS0MufBt+SPrFCjrTIV733Di5
-X-Gm-Gg: Acq92OFHPg/nPvohTYijcAGrX21gaJoVYfVxb5kLwt+mdveLxy/IW25sVMoXc1a4r2y
-	ZMFcZuEtZ6TWZc14W8nXV4moBYMqISHxYISn50SQaE3wg7BQrWaFVYEQJc4qO6610+pkG5P+XPS
-	WK6sR5qRYMyAA3MHK7pumScbPR0NHdFRfvhZVObnCUhwtpi3WI/Co9DJUKoBLPc93HAV6EPiLaD
-	+v+CMnoXAfHCK9ZpGLeTYFV9Z2CcI1p4SexiDl9n4T3/PMgeVBoMO+wqcxeg2KPBJsIvDafYtxY
-	Rww25sjU/SXF+4fGqySO2dG24WVSk3lreVv7dKr0yuNVViiWpP+/B0kI15LQvOoHZM+XftJN56K
-	maks3Ec05BPQXrcyYjnZEs0PPWqRMS5NQmmWzVI4VBWf9XRowFCemt8S/61SPjFeAxhvfECJj1H
-	LixG79H6qGVkdHM8kDaVjnRRAyd2Jzs3MH
-X-Received: by 2002:a05:651c:1503:b0:393:bffa:d815 with SMTP id 38308e7fff4ca-39561fec6ebmr35018191fa.21.1779089718284;
-        Mon, 18 May 2026 00:35:18 -0700 (PDT)
-Received: from [10.38.18.54] ([213.255.186.37])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-395887b4064sm9563661fa.33.2026.05.18.00.35.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2026 00:35:17 -0700 (PDT)
-Message-ID: <11ce9c58-25ef-4c47-b3d6-7d189d3757c6@gmail.com>
-Date: Mon, 18 May 2026 10:35:16 +0300
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mv0XHyqq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779089871; x=1810625871;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eQ1ZMIkS0xQan/x2LSkxNV1KTXQCt2q5sq4HgKDY/A8=;
+  b=mv0XHyqq6kZ+wIZ2to9vGG6ZwB8bh63oPaTuUxkUSkGwvXILe3qdg/jk
+   kxG5m8h6bazmyQ7oIGsukakpy6u73zY/39Vy7dKh4+BxmCFa3U3De168k
+   VHLrpKQDQdLmlWK9fR5jaLoLBAgzIkmoXFvM9jQGCnLZdYU7X/qHYgBzR
+   KDCOMD2cl3uscEfBBzR6PB1UvVnCgTnsc4YEwn2+Uim3v5gLQdXdgW8Yh
+   kL3TNEo6+NcZVg7GtHM8HhCq6agF92//cdJJHnxKUIW81pkquUPVZdfFX
+   yS5LGT00SQtoWu0aV6E6pUopx178OJVMrYYznScrzXdVBH6CKTEbWOjwe
+   A==;
+X-CSE-ConnectionGUID: Az51fSmXQV++4+Uze8FJOQ==
+X-CSE-MsgGUID: iCMC6L8yRbqCFgv06lyFGg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11789"; a="79916406"
+X-IronPort-AV: E=Sophos;i="6.23,241,1770624000"; 
+   d="scan'208";a="79916406"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 00:37:51 -0700
+X-CSE-ConnectionGUID: 0I4ZaCiyQ4qwsBQst95XRg==
+X-CSE-MsgGUID: JF2vwdIETbqTHxCv22ttWA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,241,1770624000"; 
+   d="scan'208";a="235114883"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.3])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 00:37:48 -0700
+Date: Mon, 18 May 2026 10:37:45 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, hcazarim@yahoo.com, gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: tsl2591: return actual error from probe IRQ
+ failure
+Message-ID: <agrBycM8s0Uy9LJQ@ashevche-desk.local>
+References: <20260517181042.668-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: pressure: rohm-bm1390: notify trigger on all error
- paths
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: David Lechner <dlechner@baylibre.com>,
- Stepan Ionichev <sozdayvek@gmail.com>, jic23@kernel.org, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20260517160801.269-1-sozdayvek@gmail.com>
- <54ee1fba-3209-4192-82c3-674a1ae3ca8f@baylibre.com>
- <3cb30f12-8b4f-415f-9a1d-823d8ff8c33b@gmail.com>
- <agq4zER5Tv2LErZV@ashevche-desk.local>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <agq4zER5Tv2LErZV@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260517181042.668-1-sozdayvek@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 18/05/2026 09:59, Andy Shevchenko wrote:
-> On Mon, May 18, 2026 at 08:21:17AM +0300, Matti Vaittinen wrote:
->> On 17/05/2026 20:12, David Lechner wrote:
->>> On 5/17/26 11:08 AM, Stepan Ionichev wrote:
+On Sun, May 17, 2026 at 11:10:42PM +0500, Stepan Ionichev wrote:
+> When devm_request_threaded_irq() fails, probe calls dev_err_probe()
+> but then returns -EINVAL, dropping the real error code and breaking
+> the deferred-probe flow that dev_err_probe() handles for -EPROBE_DEFER.
 > 
-> ...
-> 
->> Maybe it would be better to do something like:
->>
->> void iio_trigger_poll_nested(struct iio_trigger *trig)
->> {
->>          int i;
->>
->>          if (!atomic_read(&trig->use_count)) {
->>                  atomic_set(&trig->use_count,
->> CONFIG_IIO_CONSUMERS_PER_TRIGGER);
-> 
-> Just in case somebody is going to do that, avoid doing atomic_read() followed
-> by atomic_set(). This is typical TOCTOU issue. This should be something like
-> atomic_xchg() or atomic_add_return() or something like this in a single atomic
-> operation.
+> Return the value from dev_err_probe() instead.
 
-Well spotted Andy. This is existing code, so perhaps this should be 
-fixed if the logic won't be altered after this discussion.
+...
 
-Yours,
-	-- Matti
+> -		if (ret) {
+> -			dev_err_probe(&client->dev, ret, "IRQ request error\n");
+> -			return -EINVAL;
+> -		}
+> +		if (ret)
+> +			return dev_err_probe(&client->dev, ret, "IRQ request error\n");
+
+Also remove dup message, at the end it should be
+
+		if (ret)
+			return ret;
 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+With Best Regards,
+Andy Shevchenko
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+
