@@ -1,80 +1,80 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 805CC38E5C4
-	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 21:27:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 389F237BE8B
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 21:30:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.51
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779139628; cv=pass; b=pCzjV81+eYa5hyuZ+3xPJxscGVbNXr/i61rX2tO8vbwt/KW253xajT5ENuLMqPxJR6dYpzxxrVmowtlhfpt9420pFSEzvr5PUqysY6R+RNoQYZBb2A8ac/jLoqe2ccg9MIbwcXehemLgfcPM87qoquNhrqe7mJV1O/Hbdw7nlvQ=
+	t=1779139855; cv=pass; b=Dt7NJeEsiF1UmVFeRTCq4hwRNtN2pOVPovJLa3hsX9J95nbNK5+B02TPek2o8V7TWMT6jto5cWKdY83AEbxto8xpO4gxh+GjzZm4w9iRIVnIAkhEREF2u11IR3W8VYJKnYax6kPX7BlflW7n6t/elEuI55fG4mpwTJ89+atg2fM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779139628; c=relaxed/simple;
-	bh=nxPytq5XAr6ypQMasFz4amNrG1i4LJ9r02D9OyHCQSE=;
+	s=arc-20240116; t=1779139855; c=relaxed/simple;
+	bh=le/hQYlmF/6b761T9Rx4bLDpGIWBkCA1cOsd1cBIlJQ=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GwsnpBdd4zqWVSIaZrbPFMKJ8AmKMN7RBKUhA9g2Rz7sag/EBAyQm+DnKB0o/UXOLM0EGx5V/fI55BbmnRtJ/uUVcdQfTNjw2TZIArtGCYnaoKKu2dgbBvMeouQ2icrXZscsWlq3tA58lCx0h50nqiKrAVP7ZdZhgLp6CSxPoCo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZfL+FRVJ; arc=pass smtp.client-ip=209.85.167.47
+	 To:Cc:Content-Type; b=qRMm9AEm/p+E1tmE9jEeZKIyOQT1I9NfG6BVrrJfx/Al6TEi6xiNjhcg875LrCJyei94roo7/RfJ1IQGQiM59q7NcEU2LOGJSIqE4FksvwuEsbi71E3u3miVxVVyHYjpsUB+whSt9b1aZQrOabXcPmwWOGKVAxvg65pZVdJl3cA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JOyc9ZyN; arc=pass smtp.client-ip=209.85.167.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZfL+FRVJ"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5a982409563so3641383e87.3
-        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 14:27:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779139625; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JOyc9ZyN"
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5a40d02b58bso2108356e87.3
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 14:30:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779139852; cv=none;
         d=google.com; s=arc-20240605;
-        b=PMuxKtrXcbVC+peVubeykiMp7DgTxJ+k6qLlXOY4A6+NViJj1PY19HOXYRTNKZmpX/
-         TS70g3D3I2YhVvruqnnru5mfc7n+oOeZY73aC6lhwCOg/D+xJM/HaZoUCuaFpvtJ4ee5
-         ziqUzdKbxoaX8sV+D0Gzimi6xV+osuLS/mkyy7eJIfgwW4c/G5NQk3MEK5MlVd4vgPcs
-         NX3Xr8m86c1naghnGEzcxsts2bUwcdpxovwy9auIHqQTVG514tL7cHKiyJ3wdstZAwTQ
-         1Wf2aqCcCJsg00Np0s+Pc4ouFed4eK9X4R/bJSYUqrlrq6OScRk5CJd9atPeMa14nVFs
-         oMxA==
+        b=Tnr81CFrw8LB687Bb6A1XH/sb/cLq1INO5sPjzeDUdmt4vSgTPFMMfI5eiQ7Cq6BzN
+         VMpAecg7HPXAxtT2apXVxA5ACDKsMeAvJ2ZNVUaJxvH4sMH+0BhKOvM7jp+l9LrAldgC
+         4buRzagtupAOr4qP80Le6x09h36fYUF6hw7iFQbMCT7KK7oP3CcC7ugQ+WBEaf3xGJL6
+         WYkO7vpapmucgqPZKqZ1i1DczrrO4JwyF5+RIJBFBtT006mTFyUBkerPPzM8EHeLC/13
+         RBHCBUbaD/oMbbWTD3XXm0spAqoEBVmkxyktXqV8FaSVIAiMUA/+5Dhfx13XB6KKFxcR
+         hE3w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=NXcI82h8LzUQR1Vm7aPakkDi0vBXkkrNR+KatJkgbcA=;
-        fh=9dpjNrQHYalBk/Meshyos9qNFP9eL/XeIfXmwpE1f1E=;
-        b=E8SEwIOaAJPZak2Xdx0JU/+cHRdBqGA4s4z10j+7M654+FeYr+7Km1OW4lvEwqPSia
-         YpZm+G4ZDADn3gSpilrooVTwjKh9apszqnrb/M8svq8Y7OoLjSFGRWfo7nxOmJEGYcLa
-         Am8in/LK5YJRjARwSq+vO9tkRtUWXEpvQJSGfIctHQ1GdhVgUk0k2HBQpylx1ErpMfSx
-         NWN/nt5jy7A//S7Nk6idUMscE1ZwEYS4Hv5FC1LZ5jrNObuxIf1OyPYejAx/uT/ucF3b
-         2hcRrAGYUbDvWfa4Jr4F0f5XYR8fBxhHldO7jfN/4nTEIyIi0KcLKY2Sc9iRFvDN118R
-         zXkQ==;
+        bh=bd7vYJplBbBzOnELLDZvPr8fn2AoBJSrdCftd49937E=;
+        fh=yWbAHmfV6S+abSDiEgR3ONFD3q2ch3OxQ/XE9fFK+dI=;
+        b=BvX7MXu77xj65+oJSkDc7Iyems24dQemVomjdpA7jBeG/bOJYGUZwdbLIL/EBZDCJn
+         ne/bge7fgfbIY+XGnll9Kd7VkchjP0URx3jDfH5UEaiVBOQCyOCf8Fgf/mbtf5xWJXm4
+         yGWbl5S42kySYafmvCXPNOizKtk9lg9jFRIr6Uha2OyuNNJB1Hj5IkLW8rC3bnP1jodK
+         LfYtrOC5aMhoI+Htj8H/ItyV8RQsfn8v4USMfApZj60NaoZtDlkYfYh4j6qafqPbifvp
+         vzWpglAzZftEEVjB6WPpdS/ezV69Ny0wQJYQ4RBFEmkoIQah2jEb3AUnqhjWTm7ieZOw
+         ma7g==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779139625; x=1779744425; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779139852; x=1779744652; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NXcI82h8LzUQR1Vm7aPakkDi0vBXkkrNR+KatJkgbcA=;
-        b=ZfL+FRVJyOBzUDhFzi762eoA3qj2x/5nXLfhPuNtcDoMsr9LF0BWKS12p/Kd4wYGuk
-         QK6W/3402uVVb3pdg0qJqoWwvjk+tLYW5vAfBBXsUu3Lqz0Q5fBVaxI+nCFNfSogm3+k
-         t+ZegKBG6c1aXMVkDO5mh4F0yCyLe5QEA670L9dtdGAeN8fvZhAmjyrxtWjG2EwFT3ZQ
-         oSgHudtV6lp770Zbm3QpzxDdYHQpg9RiRmsO+qQpe9EQ2IUiL/FDnkPKVVWeIM2RyPD7
-         w6K9EWZVFuA0HWNY4WRHkpv0rYQPJNk/iAdGWe0tBXUb7cefGYSxoJAIqycEzgWaVTIx
-         j8og==
+        bh=bd7vYJplBbBzOnELLDZvPr8fn2AoBJSrdCftd49937E=;
+        b=JOyc9ZyNV/vKgk0at0A6CFOI20ISSK3itlZoFEw0oK8jtS6XSPbZmQcKwLi6SogHlh
+         0PXqwCmiIjV/awuSubwaEnF1UCMbm7cqO5O6Tx7HjAg5XRn9ZBCDAGd1NtERVWI4alKc
+         4ERhLQbCfPm5T0kdnjDz3foZex72p3ZFuNxsYwcT26LTPmqBNjW8VGUoDEtK2bvryrZ3
+         8JlnxhYcn2hSxlnW84vUj80+3eolwl5Oa7nGL6utn7QMyZr0OmVOImhv05pKZUpymJdF
+         gHoQphGOc0TuOt6FG4g+B75hzgG+kQxFs8XS2cLH+fXR/D8keaGaH6yGzJDDez2WRioB
+         LXoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779139625; x=1779744425;
+        d=1e100.net; s=20251104; t=1779139852; x=1779744652;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=NXcI82h8LzUQR1Vm7aPakkDi0vBXkkrNR+KatJkgbcA=;
-        b=piAaBBtOtq/i7vobkdrdyBFskefKBXCIBC1BRTnHTpxB6lePK5riWogbW9iHE5uE2i
-         +H4qj5yzNu9lOqEFdScO0DZM7cU+zWshYW/YVdYpicenNAohIfaVim36SGxxNfbskO7O
-         wk/cTKXJ2f2PLV7XdY9TfVHNoOqnB/tjdzWWgnaV33JFhXruXdHo1ce+KQIaVLwncobt
-         h6HXyiCcBLMPoB5q9OSUsnHI6A2i65OoeOceX945x9mZY+ipHGolSZsnPvS2VwsPUo/K
-         rYi2kqA9Oy2ohcYTbRSt7HmzbqE/pcfiPdNErlbCUU4E8CnKisX7tHjf6pFdGINdWTld
-         oNew==
-X-Forwarded-Encrypted: i=1; AFNElJ8zb8Dt5AuYnV5CWOQq8Fxpz/imsSKERzEpOMRNb8XoEanwN3ahG4YbM+d/cMHUu4vMf3fpAhBQuow=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw2PAhLS9/LDnI0I76KEMHXZ/Tw6y+eZ++dDn30b5b5TMod2Z1r
-	8WJ+iv3EryRFNODg+PE0+Ebu6nE1j5+8M+0s9N/313m7AQNYB5LPJJ+hl5goUCKZyXnAfAorXsH
-	oftwbIJJLRFwJiiXB3F1mbBCBaPIEJYo=
-X-Gm-Gg: Acq92OEjw3cUJ35X6fOO9smJEHTxktN53g+fhktXDVUyIAOcsUgjzzJhzwhrA3x2Q0u
-	7e/Bi1Tz0ZlxJfKfxJJ9IrKmpIiXUtl0GsMOWC5wyi6wcdVuTx0d9mvAYbSannNAKyazvB9mrNC
-	gPtJntzIQwPpTKWPzffu+QTbmVkOfZbxzEe677wMFOuJuhy0VjPHrspJ7VnBPv8i64fr9Lzl53F
-	sgRIghB+WN1fpKto/+NMJT8mGIoQgSqP6T+AkMH6usfpQ8RAaZv4eCDwLLCnFWVp/84wgviQkNG
-	rnVZtJ/oHKZhjx3jOUp9ebBm2UbxJBD7JUtjMP4=
-X-Received: by 2002:a05:6512:39d0:b0:5a8:9b6a:5749 with SMTP id
- 2adb3069b0e04-5aa0e7649eemr5139908e87.28.1779139624308; Mon, 18 May 2026
- 14:27:04 -0700 (PDT)
+        bh=bd7vYJplBbBzOnELLDZvPr8fn2AoBJSrdCftd49937E=;
+        b=lkt346tVAn21YX7i5ZYWV+ZDNrSy5n8qFxIXzjyZBsK8LO5qsa5sJIVs6vOiI03/Gc
+         0FcIZBlijjMvXI5/qYm3/FtxxYrfCW4yYJx9B0NH4vZwanVHRZKwXiB+evnphIm21c+C
+         Lf7evP422xQgnMK5r8QwQwzeQN/CVdOlF2vl0bgHWGVZLi/y/+5/ykmja5j+o2Bthe0i
+         TLngNMbYXJdZYX3L15FLSuwmLU/ne1DCDLWV9KZ8Tdhl/GsEUqP+p4gy6ZknSxoX0Gab
+         WU9wT37pNlnwGYPhFOLWd51Z3ELfUJXJNdshsynClw3UEaLrhkhqDViwzicPWIFHNPY0
+         MGEw==
+X-Forwarded-Encrypted: i=1; AFNElJ9if8WvgJYS0gNQtWQrHUBBn80njxSSbAdtWhPxWhJ4gdVnq3ZeqACqMUDpUp1Y1aunV7JUq/isv5g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyfAqLBZeX+2xuD/Fsxdd2tZw59EtG+JfCD19knPTh07uCAZN9u
+	SD7y6+98GmytemL1QuhVT/ptZVsuO86zZ3b4f6wpMFsHclmv3OBWrunjTv7Pr0hvQC8tKMnLaQ5
+	Q9Mf6rVaUBAvPhXu+pBJIWcUPZvyIugM=
+X-Gm-Gg: Acq92OEIJCz8QTDU2XBmtjkim3fz1XPhY415Vm/nGwr7EagGmfD9we4wmMzkFAuBy+r
+	aCm5Sdy3e5N7cY+jRWIojILbO1R4bVnwazOnAHG9PUxSxOPoaLDXbg4D36cBo7wES1w5aZnUzr0
+	PEsxH9QQN/JbqPkTOiNqvEbV1hv6Fcb+oBUnz4TVsjJ/YCIRzYlGWO+GeKZmsfr9jtcUaqqJ47U
+	IzCTjgSSp37fgkq2beTJRb8KxU7zETdAnNrLj+LDDP+SFX4YwdmsVp37fCCKdPUj2dT9ZpEUsEH
+	QTe0kXHFZIlm+zNfOsFEA4NrpyJq5ewFBLJsT20=
+X-Received: by 2002:a05:6512:3087:b0:5a8:89d6:93e0 with SMTP id
+ 2adb3069b0e04-5aa0e742990mr4824546e87.13.1779139852267; Mon, 18 May 2026
+ 14:30:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,13 +82,13 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20260511174342.123820-1-piyushpatle228@gmail.com>
- <20260511174342.123820-7-piyushpatle228@gmail.com> <20260512131905.42c35224@jic23-huawei>
-In-Reply-To: <20260512131905.42c35224@jic23-huawei>
+ <20260511174342.123820-12-piyushpatle228@gmail.com> <20260512133806.74c566e0@jic23-huawei>
+In-Reply-To: <20260512133806.74c566e0@jic23-huawei>
 From: Piyush Patle <piyushpatle228@gmail.com>
-Date: Tue, 19 May 2026 02:56:26 +0530
-X-Gm-Features: AVHnY4KtXRxseogZwL6x1v83BXS5ovpqyHMus-9P32wYoM0i3oW_u29ke3e90Zk
-Message-ID: <CAMB+xkZUeDaca9Pr22DE9P7wJv1b=iBA743YaqxKOXj0Dyb37g@mail.gmail.com>
-Subject: Re: [PATCH v8 v8 06/11] iio: adc: hx711: introduce hx711_chip_info structure
+Date: Tue, 19 May 2026 03:00:13 +0530
+X-Gm-Features: AVHnY4KGl6KN8fz9MnmyUah6Swvo5JtlVgairdcJc8lsRYz7ujlNacoZz2O94KI
+Message-ID: <CAMB+xkYugs9GvcQBum_B_fx6Qcy5zD-KSEcZova39S0An4L-cw@mail.gmail.com>
+Subject: Re: [PATCH v8 v8 11/11] iio: adc: hx711: add support for HX710B
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: ak@it-klinger.de, andriy.shevchenko@linux.intel.com, dlechner@baylibre.com, 
 	nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
@@ -97,159 +97,162 @@ Cc: ak@it-klinger.de, andriy.shevchenko@linux.intel.com, dlechner@baylibre.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 12, 2026 at 5:49=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
+On Tue, May 12, 2026 at 6:08=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
  wrote:
 >
-> On Mon, 11 May 2026 23:13:31 +0530
+> On Mon, 11 May 2026 23:13:36 +0530
 > Piyush Patle <piyushpatle228@gmail.com> wrote:
 >
-> > Add a per-variant static configuration structure and populate the IIO
-> > device fields from it at probe time.
+> > Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
+> > interface but uses trailing PD_SCK pulses to select the active mode.
 > >
-> > This is a preparatory change for adding support for more HX711-compatib=
-le
-> > hardware variants without duplicating the probe-time setup.
+> > Model the HX710B with variant-specific channel tables and IIO info,
+> > track the active channel across conversions, and use the fixed gain
+> > value when computing scale.
 > >
-> > No functional change for existing HX711 users.
+> > Also update the adjacent Kconfig text, file header, and module
+> > description so the driver text matches the newly supported variant.
 > >
 > > Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
 > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Hi Piyush,
 >
-> Mostly for my reference when v8 sashiko comes in - there was feedback on =
-this
-> in v7 but it was something we don't care about - in a driver that support=
-s
-> multiple parts - if someone is using the legacy path to force a driver ma=
-tch
-> we can't do the right thing - guessing it is an hx711 is not appropriate.
+> A few things I'd missed that Sashiko mentioned.
+> Note that most of what it calls out in v7 of this patch is wrong because
+> of the whole active_scan_mask / timestamp bit being set or not thing.
 >
-> Given it is vanishingly unlikely (famous last words) anyone is using that
-> path with a device like this one (who isn't a developer who can easily fi=
-x
-> that) let us merge this and see if anyone screams before trying to
-> deal with that case.
-
-Ack. I will keep the code as-is and add a short note below the --- line for
-the Sashiko reports.
-For __counted_by_ptr(), this looks like a false positive. The annotation
-was added based on your v7 feedback and builds fine on the current
-mainline and for the legacy probe concern, I will note that this was discus=
-sed
-and accepted as very unlikely to affect real users, so I am not adding a
-fallback path.
+> The channel representation is indeed odd and I think that bit needs
+> a rethink unfortunately.  I'd failed to notice it wasn't just two differe=
+nt
+> channels but instead is one physical set of inputs measured at different
+> sampling rates.
 >
-> I'm going to hold off for now though as waiting on v8 sashiko review of t=
-he
-> rest of the series.
 >
-> Jonathan
->
-> > ---
-> >  drivers/iio/adc/hx711.c | 41 ++++++++++++++++++++++++++++++++++++-----
-> >  1 file changed, 36 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-> > index 86d2a70dd3de..10ccc69f209b 100644
-> > --- a/drivers/iio/adc/hx711.c
-> > +++ b/drivers/iio/adc/hx711.c
-> > @@ -4,6 +4,8 @@
-> >   *
-> >   * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
-> >   */
-> > +#include <linux/array_size.h>
-> > +#include <linux/dev_printk.h>
-> >  #include <linux/err.h>
-> >  #include <linux/kernel.h>
-> >  #include <linux/module.h>
-> > @@ -74,6 +76,20 @@ static int hx711_get_scale_to_gain(const int *gain_s=
-cale, int scale)
-> >       return -EINVAL;
-> >  }
-> >
-> > +/**
-> > + * struct hx711_chip_info - per-variant static configuration
-> > + * @name: IIO device name
-> > + * @channels: channel specification array
-> > + * @num_channels: number of entries in @channels
-> > + * @iio_info: IIO info ops for this variant
-> > + */
-> > +struct hx711_chip_info {
-> > +     const char                      *name;
-> > +     const struct iio_chan_spec      *channels __counted_by_ptr(num_ch=
-annels);
-> > +     unsigned int                    num_channels;
-> > +     const struct iio_info           *iio_info;
-> > +};
-> > +
-> >  struct hx711_data {
-> >       struct device           *dev;
-> >       struct gpio_desc        *gpiod_pd_sck;
-> > @@ -81,6 +97,7 @@ struct hx711_data {
-> >       int                     gain_set;       /* gain set on device */
-> >       int                     gain_chan_a;    /* gain for channel A */
-> >       int                     gain_scale[HX711_GAIN_MAX];
-> > +     const struct hx711_chip_info    *chip_info;
-> >       struct mutex            lock;
-> >       /*
-> >        * triggered buffer
-> > @@ -456,8 +473,16 @@ static const struct iio_chan_spec hx711_chan_spec[=
-] =3D {
-> >       IIO_CHAN_SOFT_TIMESTAMP(2),
-> >  };
-> >
-> > +static const struct hx711_chip_info hx711_chip =3D {
-> > +     .name           =3D "hx711",
-> > +     .channels       =3D hx711_chan_spec,
-> > +     .iio_info       =3D &hx711_iio_info,
-> > +     .num_channels   =3D ARRAY_SIZE(hx711_chan_spec),
-> > +};
-> > +
-> >  static int hx711_probe(struct platform_device *pdev)
-> >  {
-> > +     const struct hx711_chip_info *chip_info;
-> >       struct device *dev =3D &pdev->dev;
-> >       struct hx711_data *hx711_data;
-> >       struct iio_dev *indio_dev;
-> > @@ -473,6 +498,12 @@ static int hx711_probe(struct platform_device *pde=
-v)
-> >
-> >       mutex_init(&hx711_data->lock);
-> >
-> > +     chip_info =3D device_get_match_data(dev);
-> > +     if (!chip_info)
-> > +             return dev_err_probe(dev, -ENODEV, "missing driver data\n=
-");
-> > +
-> > +     hx711_data->chip_info =3D chip_info;
-> > +
-> >       /*
-> >        * PD_SCK stands for power down and serial clock input of HX711
-> >        * in the driver it is an output
-> > @@ -534,11 +565,11 @@ static int hx711_probe(struct platform_device *pd=
-ev)
-> >       hx711_data->data_ready_delay_ns =3D
-> >                               1000000000 / hx711_data->clock_frequency;
-> >
-> > -     indio_dev->name =3D "hx711";
-> > -     indio_dev->info =3D &hx711_iio_info;
-> > +     indio_dev->name =3D chip_info->name;
-> > +     indio_dev->info =3D chip_info->iio_info;
-> >       indio_dev->modes =3D INDIO_DIRECT_MODE;
-> > -     indio_dev->channels =3D hx711_chan_spec;
-> > -     indio_dev->num_channels =3D ARRAY_SIZE(hx711_chan_spec);
-> > +     indio_dev->channels =3D chip_info->channels;
-> > +     indio_dev->num_channels =3D chip_info->num_channels;
-> >
-> >       ret =3D devm_iio_triggered_buffer_setup(dev, indio_dev,
-> >                                             iio_pollfunc_store_time,
-> > @@ -555,7 +586,7 @@ static int hx711_probe(struct platform_device *pdev=
+> > @@ -403,16 +442,16 @@ static irqreturn_t hx711_trigger(int irq, void *p=
 )
-> >  }
 > >
-> >  static const struct of_device_id of_hx711_match[] =3D {
-> > -     { .compatible =3D "avia,hx711", },
-> > +     { .compatible =3D "avia,hx711", .data =3D &hx711_chip },
-> >       { }
+> >       mutex_lock(&hx711_data->lock);
+> >
+> > -     memset(&hx711_data->buffer, 0, sizeof(hx711_data->buffer));
+> > +     memset(hx711_data->buffer, 0, sizeof(hx711_data->buffer));
+> >
+> >       iio_for_each_active_channel(indio_dev, i) {
+> > -             hx711_data->buffer.channel[j] =3D
+> > +             hx711_data->buffer[j] =3D
+> >                       hx711_reset_read(hx711_data, &indio_dev->channels=
+[i]);
+>
+> Sashiko pointed out (v7 review) that this can return an error. We should
+> really be checking for negative values and if they occur don't push data
+> to the buffer.  Given this is unlikely to happen except when the device
+> is very broken, a rate limited dev_err is usual way to report this then
+> carry on without calling iio_push_to_buffers_with_timestamp().
+Agreed. I missed that.
+In v9 I will make hx711_trigger() check hx711_reset_read() and skip
+iio_push_to_buffers_with_timestamp() if any channel read fails.
+>
+> >               j++;
+> >       }
+> >
+> > -     iio_push_to_buffers_with_timestamp(indio_dev, &hx711_data->buffer=
+,
+> > -                                                     pf->timestamp);
+> > +     iio_push_to_buffers_with_timestamp(indio_dev, hx711_data->buffer,
+> > +                                        pf->timestamp);
+> >
+> >       mutex_unlock(&hx711_data->lock);
+> >
+> > @@ -463,6 +502,10 @@ static const struct iio_info hx711_iio_info =3D {
+> >       .attrs                  =3D &hx711_attribute_group,
 > >  };
-> >
+>
+> > +/*
+> > + * HX710B channels (Table 3 in datasheet).
+> > + * 25 pulses (1 trailing): differential input, 10 SPS -> channel 0
+> > + * 26 pulses (2 trailing): DVDD-AVDD supply monitor, 40 SPS -> channel=
+ 2
+> > + * 27 pulses (3 trailing): differential input, 40 SPS -> channel 3
+>
+> I'd missed this previously but sashiko raised a question on it.
+> Why are we representing the same physical input channel as two different =
+IIO channels
+> based only on the sampling rate?  That doesn't seem to make a lot of sens=
+e.
+> Should be one channel with a sampling_frequency control.
+>
+
+Yes, you are right. I should not expose the 10 SPS and 40 SPS
+differential modes as separate IIO channels.
+In v9 I will model HX710B as two physical channels:
+- voltage0-voltage1: differential input, with selectable sampling
+frequency of 10 or 40 SPS
+- voltage2: DVDD-AVDD supply monitor, fixed at 40 SPS
+The differential channel will get IIO_CHAN_INFO_SAMP_FREQ. The driver
+will map 10 SPS to one trailing pulse and 40 SPS to three trailing
+pulses at read time. The supply monitor will always use two trailing
+pulses.
+
+I will also update channel_set immediately after hx711_read() succeeds,
+because that is when the trailing pulses have been sent and the hardware
+state has actually changed.
+
+Will send v9 with these fixes.
+>
+> > + * .address stores the trailing pulse count for hx711_set_hx710b_chann=
+el().
+> > + * Channel 2 is used for the supply monitor to avoid aliasing the
+> > + * channel2 terminal of the first differential pair.
+> > + */
+> > +static const struct iio_chan_spec hx710b_chan_spec[] =3D {
+> > +     {
+> > +             .type =3D IIO_VOLTAGE,
+> > +             .differential =3D 1,
+> > +             .channel =3D 0,
+> > +             .channel2 =3D 1,
+> > +             .indexed =3D 1,
+> > +             .address =3D 1,
+> > +             .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> > +                                   BIT(IIO_CHAN_INFO_SCALE),
+> > +             .scan_index =3D 0,
+> > +             .scan_type =3D {
+> > +                     .sign =3D 'u',
+> > +                     .realbits =3D 24,
+> > +                     .storagebits =3D 32,
+> > +                     .endianness =3D IIO_CPU,
+> > +             },
+> > +     },
+> > +     {
+> > +             .type =3D IIO_VOLTAGE,
+> > +             .channel =3D 2,
+> > +             .indexed =3D 1,
+> > +             .address =3D 2,
+> > +             .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> > +                                   BIT(IIO_CHAN_INFO_SCALE),
+> > +             .scan_index =3D 1,
+> > +             .scan_type =3D {
+> > +                     .sign =3D 'u',
+> > +                     .realbits =3D 24,
+> > +                     .storagebits =3D 32,
+> > +                     .endianness =3D IIO_CPU,
+> > +             },
+> > +     },
+> > +     {
+> > +             .type =3D IIO_VOLTAGE,
+> > +             .differential =3D 1,
+> > +             .channel =3D 3,
+> > +             .channel2 =3D 4,
+> > +             .indexed =3D 1,
+> > +             .address =3D 3,
+> > +             .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> > +                                   BIT(IIO_CHAN_INFO_SCALE),
+> > +             .scan_index =3D 2,
+> > +             .scan_type =3D {
+> > +                     .sign =3D 'u',
+> > +                     .realbits =3D 24,
+> > +                     .storagebits =3D 32,
+> > +                     .endianness =3D IIO_CPU,
+> > +             },
+> > +     },
+> > +     IIO_CHAN_SOFT_TIMESTAMP(3),
+> > +};
 >
