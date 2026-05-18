@@ -1,163 +1,210 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B92B381B0A
-	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 18:41:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25E482C2349
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 18:58:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779129713; cv=none; b=uhsfnHJ13hd7GUJ7DSfNtOO1Oq5pTRdu2jAnrxHymQQnwhjjK8NQUdgQOAiJJWJlaNO5YOzntmV4Q8wL555Mo9StUWqszcUcRkMcZ0Iltk2Yev3btZ8fNfQx9MH3jlWLii1b3HzqsQxc3GcMsW8H8ed+AlIRn1Bz9ZtJ4X9FQpo=
+	t=1779130725; cv=none; b=muQsPs+cEqEtQ+2NMFgn3PF9s0U/lMFnwoDOchb/X1k4icKvaAyp5MxKwH48WAGaqvVLzzsvZmvbQ4iMMQvK6zx9pWcZJYAnM/2At/BEdMrvobBVher6Zo9FF0tTdfYR8/5LmDt30BPnJb8j9S1n7j//YPvk22JbnCHEOB2yh8k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779129713; c=relaxed/simple;
-	bh=JNbCHaWL9A4MjehkdwtKJsbWrGA6dxODtuxGwf4j9hE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X+ONZyFHA5F+Sk0PbHu4Ot6c+T/iiaUM9icFPDArsgmk3FE3YcY2exTdLRnr93Wc1y6MfnszQGwp/NWaDIMNy4A/aDpJ7Jrjqp3jlSLmaV/iGpwUsqdOpTqfo5Ql+8+s1/0ZjlOUFhju4sc45XOIQKZDJtncWtj9u/3Ls5mdjQ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GW1/Fpr4; arc=none smtp.client-ip=209.85.160.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779130725; c=relaxed/simple;
+	bh=cjDFScpnW1m1H9CNg95Pcn6/dttJpeTt5gAmTLS1VgI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jnUhdn6/vcHg9qBDTnNaDLABv/YkZYPoyD7J+oTqITYbcqIa3HWv6P51l44xgTam+QqAh99tvSmUImQohMnTkReGzWjXooUuOmJm7FO9R0s3iHwkxeHKL9xQ8JjmNlMeCwARKomRGUePlvputHHtoM27EbvxJlSgIpSt94J2dlw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PAy8I5fC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GW1/Fpr4"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-50e5eb0fabaso36870051cf.0
-        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 11:41:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779129711; x=1779734511; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RjcXx1L02D57/85kmr8KRIpyy2DN3BNEA8TDg2cGfrc=;
-        b=GW1/Fpr4KJGV1w73HxVUBExobEEqxD+ZVKvNZzM3cODox/lJU6COlP3lO4/CvdOXE0
-         JGTY3h0QVkg8jb5TosmM/0YN78pI3JlMqP/USMohv7pasTKsjP63Hm/LGwVKXbMlzSBZ
-         w/j8Song2rMtZFCsTw+vocXOrT6AWIPy5Aejr7mexPBS+IixKirRKOD4X0GCN0uyFfdg
-         Z/NCQxlwCqF5j9BvU1g+BPsC4lzskgWIq2IK4k80B8UTWN7q8qOHkuYLH0d//Go6Qlcu
-         rNsmDX1NxObiej20UaelfHfmGXL49YuHIWN7ijjw8+LpwIE0S40Y0vRtffCXEWEEI69u
-         Co6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779129711; x=1779734511;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RjcXx1L02D57/85kmr8KRIpyy2DN3BNEA8TDg2cGfrc=;
-        b=cnnQUnXhadrfhNeKtmQCjBm1CX+fr77Zk6mOAsbKhdBRnBpE67/Eb4zthnMiVUl441
-         ObhnaQSI3KWc3NDpVlsGPLpot6CbgIWN7WKMr89t3wFLoXN9wlioSoVn9zlx/j4I1bPU
-         KibzU+XHi5ahc0WohFyAseOlB9x9hxSGE91Yxc7Q/CSBLcVqkmnP9Bk4d9BpGdJzWoaE
-         xs3l76VJ8RFeni/CyO3RWLvSsXWzFELe/4xdbU1jFhUbZ0ywV5vz+1paxSJu6V5i3y0j
-         HgHP41SeFjM5onWMVPcWpFkSRXUqPmxutO6J6IhB+LcgkjdV98VPM9//X8nZw1KLL1X6
-         rotg==
-X-Gm-Message-State: AOJu0YyGE1ynHCODu2LSH08oghPPQJ7gZuUO5w0hO/v5q/1vAe2ZAZcm
-	6XZYMk9ZAOifYcW98XaLgpLcAUKAEKvnaXK8tI+GI/CktoLA4vb5fWr2
-X-Gm-Gg: Acq92OE3IDorKOyJVQzBqk818GrfGYrfBjPs67QQf+DWAdZDA8oOT5rjo/xbL6SSK1w
-	A3BjSCp05DlFVyWuIvr1ci5TSokp03noF20NP/1KdHcMPh/5qKcQ7dc/30wvRuA+IwIvkU3NyRl
-	E5K/q/ZlOGLrUprsYGFRX9NTWR+nGENaiQn32A/3XI1bDoX3vgNKKYAtSTSg28+lYEs/ux047SA
-	8Si44MUuZysiTJKuhXSonXAkxWd72uJROP6Ks4H/HeyBPztJBVhDO+MYnbfOLUBGlD+BXDbYdSS
-	QIkEeqTaelRaFejmL+k9SqsZrIt35qbU2u317A0D7MLo+jKEG9UHhERwK1ToCZ4KuHj/nibURaB
-	M6f8JZTr5CvzUUHcOFdZdOznJAlBL2ZdXcamWjW7iG0XXmJwLtxFn3hX31rk1z9jzwzQd72rOYz
-	e+31LzoBP0Ge9NMszOp+FShFfR2fpBsovK
-X-Received: by 2002:a05:622a:1789:b0:509:3940:30ea with SMTP id d75a77b69052e-5165a255f15mr239848711cf.55.1779129710804;
-        Mon, 18 May 2026 11:41:50 -0700 (PDT)
-Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5168c968930sm50529931cf.0.2026.05.18.11.41.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 11:41:50 -0700 (PDT)
-Date: Mon, 18 May 2026 15:42:05 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Conor Dooley <conor@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, dlechner@baylibre.com,
-	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Subject: Re: [PATCH v1 1/4] dt-bindings: iio: adc: Add ltc2378
-Message-ID: <agtdfXdUR-zwtFOe@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1779117444.git.marcelo.schmitt1@gmail.com>
- <cf404216011b6972519436c63fcc7c4e2c883c54.1779117444.git.marcelo.schmitt1@gmail.com>
- <20260518-trapped-gauze-ada279af89fc@spud>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PAy8I5fC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF47C2BCB7;
+	Mon, 18 May 2026 18:58:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779130725;
+	bh=cjDFScpnW1m1H9CNg95Pcn6/dttJpeTt5gAmTLS1VgI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=PAy8I5fCoXi9mdu8E/Q4qQx88TLhdNG2T53Av0FWFrLHnCYpRSte9HdItHB4J/4ZJ
+	 JW6qob3rtMVoZHZMlDakgGDIYHeNXkgtt8aZqkVx/0GXjyeC9aUPghQLFckM+5NIVF
+	 +hN6IPOYY5oIA6cUijb7r54feloLOOK3Ce+/tk95d8yjYJCHMkAw6xBzZOGf+7TrX1
+	 I9tWQ3kpVzcYqapu6ykydeSrK1UbTYXnIu6YhJpDSwpMVA+i8mVlKe9va5hhXpZAaV
+	 tK5WY9TMNcp6bwy7iZYPsoyoC9NRunPQxZNZbatCyJUXoU2sE9xVb8taQ006bL7/rw
+	 qBZfKmBDUunTg==
+Date: Mon, 18 May 2026 19:58:38 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: linux-iio@vger.kernel.org, eajames@linux.ibm.com
+Subject: Re: [PATCH] iio: pressure: dps310: add FIFO support
+Message-ID: <20260518195838.7afa1808@jic23-huawei>
+In-Reply-To: <20260518165320.1301071-1-zoone.rupert@gmail.com>
+References: <20260518165320.1301071-1-zoone.rupert@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260518-trapped-gauze-ada279af89fc@spud>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Conor,
+On Mon, 18 May 2026 19:53:20 +0300
+Rupesh Majhi <zoone.rupert@gmail.com> wrote:
 
-On 05/18, Conor Dooley wrote:
-> On Mon, May 18, 2026 at 12:21:01PM -0300, Marcelo Schmitt wrote:
-> > From: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > 
-> > Document how to describe LTC2378-20 and similar ADCs in device tree.
-> > 
-> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > ---
-...
-> > +properties:
-> > +  compatible:
-> > +    oneOf:
-> > +      - enum:
-> > +          - adi,ltc2338-18
-> > +          - adi,ltc2369-18
-> > +          - adi,ltc2370-16
-> > +          - adi,ltc2379-18
-> > +          - adi,ltc2380-16
-> > +      - items:
-> > +          - enum:
-> > +              - adi,ltc2364-18
-> > +              - adi,ltc2364-16 # fallback compatible
-> > +      - items:
-> > +          - enum:
-> > +              - adi,ltc2367-18
-> > +              - adi,ltc2367-16 # fallback compatible
-> > +      - items:
-> > +          - enum:
-> > +              - adi,ltc2368-18
-> > +              - adi,ltc2368-16 # fallback compatible
-> > +      - items:
-> > +          - enum:
-> > +              - adi,ltc2376-18
-> > +              - adi,ltc2376-20
-> > +              - adi,ltc2376-16 # fallback compatible
-> > +      - items:
-> > +          - enum:
-> > +              - adi,ltc2377-18
-> > +              - adi,ltc2377-20
-> > +              - adi,ltc2377-16 # fallback compatible
-> > +      - items:
-> > +          - enum:
-> > +              - adi,ltc2378-18
-> > +              - adi,ltc2378-20
-> > +              - adi,ltc2378-16 # fallback compatible
+> The DPS310 has a 32-sample hardware FIFO that buffers interleaved
+> pressure and temperature measurements in background mode. The FIFO_EN
+> bit was already defined but unused.
 > 
-> All of these are wrong.
+> Add register defines for the FIFO status register and sample type
+> encoding, implement FIFO enabled/flush helpers, and wire FIFO initialization
+> into the probe path after dps310_startup() has established background
+> measurement mode.
 > 
-> Firstly, your "fallback" setups don't work, because they only permit a
-> single compatible. Secondly, if they did work, you still need to define
-> the fallback compatible in isolation for it to be permitted for use when
-> it isn't a fallback.
-> And thirdly, your driver appears to show that these devices aren't
-> actually compatible at all, given there's unique match data for each
-> one.
-...
-> 
-> Why do you have fallbacks here? Is it because a limited set of channels
-> could be used in the fallback case? At the very least, the rationale for
-> fallbacks should be explained.
-> 
-Some devices can be grouped by main number (e.g. ltc2378-16, -18, -20) and
-those vary only on the amount of precision bits. I initially thought we could
-fallback to reading only 16 or 18 bits if a driver compatible with ltc2378-20 is
-not found. Though, I now realize that won't work because the less significant
-bits would be missing which would compromise scaling the data to milli volts.
-Will make this a unique match list (no separate items lists, no fallbacks).
+> FIFO initialization failure is treated as non-fatal so the driver continues
+> to operate via single reads if FIFO enable fails.
 
-...
-> > +
-> > +additionalProperties: false
+I'm not sure I understand why one would enable this?  You've not
+modified any of the reading paths. Normally we'd expect a hardware fifo
+to be connected up to an IIO buffered interface (via chrdev) and provide
+things like watermark control.
+
+There are lots of examples in tree of how to handle fifos. This seems
+to be maybe the 1st 5% of what's needed.  Was it perhaps meant to be
+an RFC with some questions?
+
+Jonathan
+
 > 
-> As sashiko pointed out, this is not correct if you want to permit spi
-> properties other than spi-max-frequency (although I could definitely see
-> how this would be correct).
+> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+> ---
+>  drivers/iio/pressure/dps310.c | 73 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 73 insertions(+)
+> 
+> diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+> index 8edaa4d10a70..5b031c9573d0 100644
+> --- a/drivers/iio/pressure/dps310.c
+> +++ b/drivers/iio/pressure/dps310.c
+> @@ -53,6 +53,19 @@
+>  #define  DPS310_PRS_SHIFT_EN	BIT(4)
+>  #define  DPS310_FIFO_EN		BIT(5)
+>  #define  DPS310_SPI_EN		BIT(6)
+> +/* FIFO status register */
+> +#define DPS310_FIFO_STS		0x0B
+> +#define DPS310_FIFO_EMPTY	BIT(0)
+> +#define DPS310_FIFO_FULL	BIT(1)
+> +
+> +/* FIFO samples are read from DPS310_PRS_BASE (0x00). The lower 2 bits
 
-Ack, switching to 'unevaluatedProperties: false'.
+Wrong comment style.
 
-Thanks,
-Marcelo
+> + * of the third byte encode the sample type; the remaining bits are
+> + * the signed measurement value.
+> + */
+> +#define DPS310_FIFO_TYPE_MASK	GENMASK(0, 0)
+
+Smells like a BIT(0)  We don't use genmask for single bits.
+However, you mention 2 bits.
+
+
+
+> +#define DPS310_FIFO_TMP_SAMPLE	0x00
+> +#define DPS310_FIFO_PRS_SAMPLE	0x01
+If it's only 2 bits (or maybe 1?) then 0  / 1 
+is fine.
+
+> +
+>  #define DPS310_RESET		0x0c
+>  #define  DPS310_RESET_MAGIC	0x09
+>  #define DPS310_COEF_BASE	0x10
+> @@ -90,6 +103,7 @@ struct dps310_data {
+>  	s32 pressure_raw;
+>  	s32 temp_raw;
+>  	bool timeout_recovery_failed;
+> +	bool fifo_enabled;
+>  };
+>  
+>  static const struct iio_chan_spec dps310_channels[] = {
+> @@ -843,6 +857,61 @@ static const struct iio_info dps310_info = {
+>  	.write_raw = dps310_write_raw,
+>  };
+>  
+> +static int dps310_fifo_flush(struct dps310_data *data)
+> +{
+> +	int rc;
+> +
+> +	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
+> +			DPS310_FIFO_EN, 0);
+> +	if (rc)
+> +		return rc;
+> +
+> +	data->fifo_enabled = false;
+> +	return 0;
+> +}
+> +
+> +static int __maybe_unused dps310_fifo_read_sample(struct dps310_data *data)
+
+Given the fairly obvious __maybe_unused what is the point?
+
+> +{
+> +	int rc;
+> +	u8 val[3];
+> +	s32 raw;
+> +	u8 type;
+> +
+> +	rc = regmap_bulk_read(data->regmap, DPS310_PRS_BASE,
+> +			val, sizeof(val));
+> +	if (rc)
+> +		return rc;
+> +
+> +	type = val[2] & DPS310_FIFO_TYPE_MASK;
+> +	raw = (val[0] << 16) | (val[1] << 8) | (val[2] & ~DPS310_FIFO_TYPE_MASK);
+get_unaligned_be24() and then mask.  However - why not also shift right to
+drop those 0s?
+
+> +	raw = sign_extend32(raw, 23);
+> +
+> +	if (type == DPS310_FIFO_TMP_SAMPLE)
+> +		data->temp_raw = raw;
+> +	else
+> +		data->pressure_raw = raw;
+> +
+> +	return 0;
+> +}
+> +
+> +static int dps310_fifo_init(struct dps310_data *data)
+> +{
+> +	int rc;
+> +
+> +	rc = dps310_fifo_flush(data);
+> +	if (rc)
+> +		return rc;
+> +
+> +	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
+> +			DPS310_FIFO_EN, DPS310_FIFO_EN);
+
+Align to just after (
+
+> +
+No blank line here.
+> +	if (rc)
+> +		return rc;
+> +
+> +	data->fifo_enabled = true;
+> +	return 0;
+> +}
+> +
+>  static int dps310_probe(struct i2c_client *client)
+>  {
+>  	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+> @@ -877,6 +946,10 @@ static int dps310_probe(struct i2c_client *client)
+>  	if (rc)
+>  		return rc;
+>  
+> +	rc = dps310_fifo_init(data);
+> +	if (rc)
+> +		dev_warn(&client->dev,
+> +			"FIFO init failed (%d), continuing without FIFO\n", rc);
+
+Why continue?  The hardware either has a fifo or it doesn't. Any failure
+in here smells like dead hardware to me. Hence just fail.
+
+>  	rc = devm_iio_device_register(&client->dev, iio);
+>  	if (rc)
+>  		return rc;
+
