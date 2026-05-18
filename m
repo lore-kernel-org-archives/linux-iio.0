@@ -1,79 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8DC238237D;
-	Mon, 18 May 2026 18:26:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432D338657A;
+	Mon, 18 May 2026 18:31:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779128780; cv=none; b=K4qKyOo+CdkeUWENeTkd4r0lLziTuYsFg+M55ficJ9WjVLE0P6nUCQviCcPdpzoHfo5JCP046pn1YltIcpN4f1FgKtpiXxm3O2s8W9lx66St9syzvZt4LhmeUDrDa8tB2I44L5+MNe9U5Vm7Op4L7HHzp3JimzOcWjdkhYCE0Gg=
+	t=1779129114; cv=none; b=gtwAuDpJL2/zQPwScecQI23Yol94SiJHTQ8hOsXKvl962oPlFHcyKYCx08fU6/VNEpPTZUP5D18q/baiXKydlpiR0kf6KAzu/Zj8h6lcYqRT0OQwTuJMq/phJyIYGhMiejdN9hxVQIpySzvaoat4+/gbt1bYdXM5ecgGBNvlxSI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779128780; c=relaxed/simple;
-	bh=pbXYLQ1mwct3+ssZlrWJpr6OzTUkZbnMsQ/G5sb/T3M=;
+	s=arc-20240116; t=1779129114; c=relaxed/simple;
+	bh=agUT8Mpk+dy8irIoWlm7UzBAg+qJnb8pUPGuEVZ5NvQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AD7/43eDuGOoEq+T35lC4QD/Y67eyRbJR31nR957MQEP33uzEiMhdd1Os9xCmMCY3IwNa6mJtH6kuzid6b1V1V0QMwYGzZ6Tal+6X1pqp/x9GUTkgvMDhlVWjPAxjcz1/VE5QjG9NyaeTs7t4nCrxNpTKBXlgY277v65NDN6foI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A2T0DUHL; arc=none smtp.client-ip=192.198.163.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=jPvrIRZiG3msuZWNaqPnPbHTULH1gGhW0ODATTmoP8fGYaekti+s9nuaOjUqOk28QkX4yqULyyTpaS2TK6uhuTb8f5e7KGYOIahIqTQBb9U7ZgM/eLM2gQtcPcf8AcRa6rLQcfZBYgw1JUgZ+qebXtFjUqGjRTLV8fF0LZ0bMdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mJSPPxBz; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A2T0DUHL"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mJSPPxBz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779128779; x=1810664779;
+  t=1779129113; x=1810665113;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=pbXYLQ1mwct3+ssZlrWJpr6OzTUkZbnMsQ/G5sb/T3M=;
-  b=A2T0DUHLXSAZYQw2jRiF+UoKrVoD0sUG+NgJtbnOEQb18t2vQsGxLopw
-   YUxKWtYH8sxVruSa43cAl3BbpnZ04oBxA4nDyeKXLSbRW1afM6G4WSkr4
-   ZJObrW+BGc0Icc6onS9dZJE4WOU0QPpHzD8wHPszfE+/amcnq74W8dnKi
-   ojxajFEfbqExWClaWwZqO4rARkYfU4V+fyjqBpaVjrQhtM0PqYc19qSsI
-   3nLaQA3OGxSSKCqC+ljONKYwvx39XAdeaOkXLxRLKrsuiGC3BZF3e3Dub
-   /9Ft5tR0johwFWGFLRiCCXov2JNgAOk0WOR15314fzbbobb8vfam97s1H
-   A==;
-X-CSE-ConnectionGUID: 9qriItO/ScWlODNBpfRg1Q==
-X-CSE-MsgGUID: +k3VPqE9SVOFJAvzB/QnXg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11790"; a="90575555"
+  bh=agUT8Mpk+dy8irIoWlm7UzBAg+qJnb8pUPGuEVZ5NvQ=;
+  b=mJSPPxBzpmFzqd7/7c9+XKh/e3dbwPktwbrTiMy61Ff8Rdb7I5ewfK5r
+   /qvuWzcc3GtyaAFf/74JyugR0Ka+w1YGyNOrAO1uQ2bxrVVtyFeQUYSv8
+   IdCSYH6Pk0ib+eMShoZscWXAcdImTLpW/I75LuDCUWskxB4T1M5kECQp1
+   HB3985jw5ERMGgbGYgyRn5ofMWvzMwHF8dhqPCa4pWKannyM1dtK6+F/4
+   TQesk8D5CfYKiOAOJAWIeTPfRiReoc9VM+HOv8Japzv7+Mc49eG5l9rRR
+   cdJKuA4MH0BRT+Ohkjwr5MTqDEYkzMui6aAXFhNVqFGKIFiy5tjuQOlHd
+   g==;
+X-CSE-ConnectionGUID: hil9mQ6tSlekvSuMhMavUA==
+X-CSE-MsgGUID: 4ujVF/+oQ+yUNmdCaAbl3g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11790"; a="80111813"
 X-IronPort-AV: E=Sophos;i="6.23,242,1770624000"; 
-   d="scan'208";a="90575555"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:26:18 -0700
-X-CSE-ConnectionGUID: O0zap/NiRba3AYD16GFVrA==
-X-CSE-MsgGUID: e9aNJkI4TGO68gsQIjE1Pw==
+   d="scan'208";a="80111813"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:31:52 -0700
+X-CSE-ConnectionGUID: J3D55b7RQkGsSXFj+aXtFw==
+X-CSE-MsgGUID: Sxq1+rIoQ5GKeaKswBrA1w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,242,1770624000"; 
-   d="scan'208";a="239764455"
+   d="scan'208";a="263290263"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.3])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:26:12 -0700
-Date: Mon, 18 May 2026 21:26:09 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:31:50 -0700
+Date: Mon, 18 May 2026 21:31:48 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH v11 4/6] iio: adc: ad4691: add SPI offload support
-Message-ID: <agtZwbeVeZdnlXTI@ashevche-desk.local>
-References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
- <20260515-ad4692-multichannel-sar-adc-driver-v11-4-eab27d852ac2@analog.com>
- <80f61c0b-1f36-4fee-9f76-b93f63b87abe@baylibre.com>
- <LV9PR03MB841418AEF0059E802F7A69B2F7032@LV9PR03MB8414.namprd03.prod.outlook.com>
- <60d66897-41cc-4f3f-afd2-64e49f0bb55e@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Stepan Ionichev <sozdayvek@gmail.com>, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: pressure: rohm-bm1390: notify trigger on all error
+ paths
+Message-ID: <agtbFDbw2m9ptEua@ashevche-desk.local>
+References: <20260517160801.269-1-sozdayvek@gmail.com>
+ <54ee1fba-3209-4192-82c3-674a1ae3ca8f@baylibre.com>
+ <3cb30f12-8b4f-415f-9a1d-823d8ff8c33b@gmail.com>
+ <agq4zER5Tv2LErZV@ashevche-desk.local>
+ <20260518155521.6c61504d@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,42 +67,69 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <60d66897-41cc-4f3f-afd2-64e49f0bb55e@baylibre.com>
+In-Reply-To: <20260518155521.6c61504d@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, May 18, 2026 at 10:16:38AM -0500, David Lechner wrote:
-> On 5/18/26 10:14 AM, Sabau, Radu bogdan wrote:
-> >> -----Original Message-----
-> >> From: David Lechner <dlechner@baylibre.com>
-> >> Sent: Saturday, May 16, 2026 8:53 PM
+On Mon, May 18, 2026 at 03:55:21PM +0100, Jonathan Cameron wrote:
+> On Mon, 18 May 2026 09:59:24 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Mon, May 18, 2026 at 08:21:17AM +0300, Matti Vaittinen wrote:
+> > > On 17/05/2026 20:12, David Lechner wrote:  
+> > > > On 5/17/26 11:08 AM, Stepan Ionichev wrote:  
 
 ...
 
-> >>> +	if (st->manual_mode && st->offload)
-> >>> +		return sysfs_emit(buf, "%llu\n", READ_ONCE(st->offload-
-> >>> trigger_hz));
-> >>
-> >> Why do we need READ_ONCE?
+> > > Maybe it would be better to do something like:
+> > > 
+> > > void iio_trigger_poll_nested(struct iio_trigger *trig)
+> > > {
+> > >         int i;
+> > > 
+> > >         if (!atomic_read(&trig->use_count)) {
+> > >                 atomic_set(&trig->use_count,
+> > > CONFIG_IIO_CONSUMERS_PER_TRIGGER);  
 > > 
-> > trigger_hz is u64 and if the target is 32-bit, a 64-bit access compiles to two 32-bit
-> > instructions, so show() reading it without a lock and store() writing it concurrently
-> > can produce a torn value at the compiler level. READ_ONCE/WRITE_ONCE suppress
-> > the compiler transformations that would allow that splitting or caching. We could
-> > have st->lock in show() instead, but that felt heavier than necessary for a single
-> > scalar where a transiently stale-but-whole read is fine.
+> > Just in case somebody is going to do that, avoid doing atomic_read() followed
+> > by atomic_set(). This is typical TOCTOU issue. This should be something like
+> > atomic_xchg() or atomic_add_return() or something like this in a single atomic
+> > operation.
 > 
-> I would go with the mutex. It will be easier for people to understand.
+> Just to clarify - the current code is fine.  This got reported a few years
+> back and I did the analysis to prove it. From what I recall the key is
+> that the state space isn't as complex as it immediately looks.
+> That counter is either non 0 at the start (we don't use it here and we
+> skip an interrupt - that's actually the desired behaviour if the trigger is running
+> too fast - triggers must survive that - reenable() callback is there to make that
+> all work).
+> 
+> Otherwise there is a single path that sets it and we know any decrement until after
+> that happens would have undeflowed (and hence was a bug). The rest are decrement
+> only and it can never go to less than 0.
+> 
+> Hence it is fine.
+> 
+> Agreed things get messy if we make this alg any more complex though!
 
-But why? READ_ONCE() here is exactly enough. We do not care about
-serialisation, we care only about integrity. With mutex it will confuse
-(some) people more, e.g., me. Because in that case I would think about
-some specific access to it that may happen. Yes, I saw many times the show
-functions that do mutex and then print the result when mutex is not held
-anymore, but for simple cases like here, mutex is overkill. Interestingly
-that using guard()() inside show makes the mentioned functions to print
-(almost) latest value of the variable in question. It narrows window down
-as printing will go inside critical section.
+Perhaps we need a good comment just on top of this atomic_read()/atomic_set()
+pair. Because it's really the code no one should take as an example how to do
+atomics :-) Logical question, why do we even have atomics there? Shouldn't
+be that READ_ONCE()/WRITE_ONCE() to have an integrity in place? (This I believe
+even mentioned in the documentation for atomics.)
+
+> > >                 for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
+> > >                         if (trig->subirqs[i].enabled)
+> > >                                 handle_nested_irq(trig->subirq_base + i);
+> > >                         else
+> > >                                 iio_trigger_notify_done(trig);
+> > >                 }
+> > > 		atomic_set(&trig->use_count, 0); /* Clear the use_count if drivers didn't
+> > > */
+> > >         }
+> > > }
+> > > 
+> > > to prevent this class of problems once and for all. But yeah, wiser minds
+> > > have designed this - so let's hear some other opinions as well :)  
 
 -- 
 With Best Regards,
