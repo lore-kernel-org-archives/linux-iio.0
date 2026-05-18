@@ -1,185 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9A0D376463;
-	Mon, 18 May 2026 15:15:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE084376475
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 15:16:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779117325; cv=none; b=l7LzHILxKsIRQP7DI2NNFWFJJo55ri5sJ05AcyLCydx+RetezgczEmF+aZb5FiJR6oqk3EFQN1N483y3ZXAE8RG8/qjMbF4POXn+qgYQVi/buZiBeRCjDv437a+bKgDmDRrceUJy3cTl7Eji1+hWqQYKhc8oq+E1lFVeyzR2GRg=
+	t=1779117404; cv=none; b=cokrxUiHTyUE3jWsKMXSjzYXtjN4tMrh2hLUcFYT7Wlo5Nvzzfqvbm0RUYGnqTK60eGHan8N3eYWykKkg1mwT2gNFzzE8pBUpPLl+K3E4t3OIztC5uUKIKlVcepZSTOcFUf7OgR3282CCcL6BRNArPcsSj5ErZexFPDU6KRJ/AA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779117325; c=relaxed/simple;
-	bh=9uDhlpHsb5w3hf5cOMdH2NCMUogL5P36dv20MAXaIc0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nt5TUnPKlzkwJCq7jQaqeAuSYhlQBrJdC41QuXAIbDUjr1N+apX4t66BRjwzBxp5TtrBSzeC0/rN/ZXoQt/kM2bzH2WZNo7wxT3OmOleggLXv7q355GcEMjllAL12MdjHh9KyvNf/FRGVMMD6MozUnurnPrqV9x1M8w/fNbndog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZaMNNXa/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779117404; c=relaxed/simple;
+	bh=WIuBIRVBEY5UXNn0IA/SjRUP6qFVmbXEj3WzcJbGoMk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Vhw70SkRNuESHrAwdSl69zLPZLfnvyg0U+WX4Xx9UiluX55x1LiNqPskXdX1stsC0CvTpT7UvDmTNsQfNQXF3d7JKhalc4iCCasDfWwSaVp1OKL5RnlVl2pXGywnrgevn5lWayBVD6MbMe4n1Eoyg7ZDx4n2GgHRqwai+wGdkEE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=fx/mFa8o; arc=none smtp.client-ip=209.85.167.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZaMNNXa/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EE68C2BCB7;
-	Mon, 18 May 2026 15:15:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779117325;
-	bh=9uDhlpHsb5w3hf5cOMdH2NCMUogL5P36dv20MAXaIc0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ZaMNNXa/eepQWtVs6gg9j/1KeRlMaANc+jcdDBmHY016JKth4MiLg1onQZC/eQFUD
-	 aMXgZsPMuKF+8NZzb/Eo2+6RInvVw7Q8LN7GLIy2AZDSMlpKug6/6LAxyLw0c0ZmM5
-	 HOvYhEboyCesJURcGxcpoSylTS3Bms+KodiLPJSPueyeJIsvFE1+2hv4mg4R3/S+dn
-	 0vBjt/+kINHqVtKUDriM5yDNhulFF+xa8ksbPfn5tjjdsCVX69+a5sAd+cWPLznT8a
-	 vzdoNDfvvgZ2AVfhzbX3SCxB8QVU9a9Za6b1+YdOHxdZiP3QRGsRIsmIaVEf5lBEeI
-	 zFlcy0YpFNqzA==
-Date: Mon, 18 May 2026 16:15:16 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: mazziesaccount@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: pressure: rohm-bm1390: notify trigger on all
- error paths
-Message-ID: <20260518161516.53f21777@jic23-huawei>
-In-Reply-To: <20260518094238.1986-1-sozdayvek@gmail.com>
-References: <20260517160801.269-1-sozdayvek@gmail.com>
-	<20260518094238.1986-1-sozdayvek@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="fx/mFa8o"
+Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-479d68a9063so783197b6e.0
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 08:16:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1779117400; x=1779722200; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HnVPqvj+TB5ocpICaZUeUZprZClJ7W/n+a216rMOu9M=;
+        b=fx/mFa8oJCpZrYpv/yxn9pTqx3cTqQQ1BTSB5AfnFgQDxZGKK3TFfV5NES+7elzVUc
+         9MIuAl+HxR1Az3RAdp9BI0w9s5uDlXxoQ8NfYpHfU1rMTAPfHNg7kcWqYvV4vBKAEn9I
+         bsvtzjhpmaWkx48dIv62huk811hak3h4JRv49YiZNIPFS+q9nZVIY3rOVMnDPS6i5Et0
+         gjbPUiKq92AakMhTyXByaKrBBMqBi0TziWoayMzXkp3dzlzQzgRVbSyv/PwMy4fFGhym
+         Z3hFESLMH9B/bZcxVD9JJixqKn8OJTOMjylkysqk4hzhRuPCK4gRIFiLb2OY4LF/Kra8
+         mjuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779117400; x=1779722200;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HnVPqvj+TB5ocpICaZUeUZprZClJ7W/n+a216rMOu9M=;
+        b=O/xBLUDc5VOGhCJ4uplvZ3jwDC3dmpqIdQPvbZVrE2lYa9Xa51OV3oso33/1KPRlwZ
+         o+RvmiEeDM4u2dgQ/A4bs5/hOfFqp+Mt+4ML1s6kJdmoA4HJKSbvSdwl3NK+A+hmRTy5
+         b/jKIu05vKj2u5ux6uhNAEtpiJy8B0shremjAc9FrOBj6ZmhxnWM8ggqSbUNc3bqsdr4
+         tj78tgTDanFXKzMRkym7FDdT9QNxN79HvM7o3942MXY4uYOCe7QGW/2FkNVE7nAqIhKO
+         px5JE/+tULgOz1xvNBSwcCMjik8vDMdklA4LvuzGcNASlNyCk0JjLI8JCkZV2mLtWfeV
+         tTWA==
+X-Gm-Message-State: AOJu0Yylriuxq07KSi776utYM/cSOOLJrsGCvaV135GgB6CYoRL7BR8F
+	8Tejk25wn62qSSogx6e4Z5QWTYWEVjV63m/KdYK3rQHVa2WyRbl5LrNO9PHUP10yB3s=
+X-Gm-Gg: Acq92OG9K5PlkA6pYOuspERMmS0d8hMAZnHow3KM2W3YISiv3nri+b1hgSVBEr7XSN+
+	dd4GyBTKH3d1calQeRfnvyz3C+mRztcYyJbnYM8L34TPH3keZFOhYPR38pJc3NMzkR+EPZhE9SM
+	gGyDFuTUBL6h83nEwCxHtDxZjMZ+uEnvq8xgc15cPSVuSwyHAKpPiaYxIVdhVxz/JA/KbMxb6/j
+	VoiF3t64+u0CkFguyLNsRIQa0V1GQ35HN7Ua0RsSSj5peacq2aR1FpDGaFGU5hvBblxrSV9q2r8
+	bhyDbLGFuLSJN/VkXBFRY5HKk1S+01+d81JFfDHQTtXmLF1nW0S29Y/DIcKB9gWKsw4WsD0c0e8
+	qf+EGhrYsbxKek2iVj+oylxtdPifkY+lXJN2088x+O2D8K0z385r6lhnqVzdjxIdjOAuACCmBt2
+	pFLNhfGEUHFvlxZIV0p9+XVFhkKFfv/AjCxhd9lVZFvo+pPO1RM0o3FrW49mDnh5CarZsUpS8RS
+	A==
+X-Received: by 2002:a05:6808:11c1:b0:467:2652:b29d with SMTP id 5614622812f47-482e55e64damr9452991b6e.8.1779117399487;
+        Mon, 18 May 2026 08:16:39 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:3be6:1187:fed4:378b? ([2600:8803:e7e4:500:3be6:1187:fed4:378b])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-482ee0999f3sm5028432b6e.0.2026.05.18.08.16.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 May 2026 08:16:39 -0700 (PDT)
+Message-ID: <60d66897-41cc-4f3f-afd2-64e49f0bb55e@baylibre.com>
+Date: Mon, 18 May 2026 10:16:38 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v11 4/6] iio: adc: ad4691: add SPI offload support
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, "Sa, Nuno" <Nuno.Sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+ "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+ "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
+ <20260515-ad4692-multichannel-sar-adc-driver-v11-4-eab27d852ac2@analog.com>
+ <80f61c0b-1f36-4fee-9f76-b93f63b87abe@baylibre.com>
+ <LV9PR03MB841418AEF0059E802F7A69B2F7032@LV9PR03MB8414.namprd03.prod.outlook.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <LV9PR03MB841418AEF0059E802F7A69B2F7032@LV9PR03MB8414.namprd03.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Mon, 18 May 2026 14:42:38 +0500
-Stepan Ionichev <sozdayvek@gmail.com> wrote:
-
-> bm1390_trigger_handler() returns from three error paths without
-> calling iio_trigger_notify_done(). The success path at the end
-> does, so on a single transient regmap or read failure the trigger
-> use_count is never decremented, and the !atomic_read(&trig->use_count)
-> guard in iio_trigger_poll_chained() drops every subsequent dispatch.
-> The buffered-data flow stays wedged until the trigger is detached.
+On 5/18/26 10:14 AM, Sabau, Radu bogdan wrote:
+>> -----Original Message-----
+>> From: David Lechner <dlechner@baylibre.com>
+>> Sent: Saturday, May 16, 2026 8:53 PM
 > 
-> Funnel all returns through a single done label that calls
-> iio_trigger_notify_done() and reports the outcome via IRQ_RETVAL().
+> ...
 > 
-> Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-
-These error path 'fixes' are fixes for hardware failure - so if anything
-they are hardending  against a possible error condition. I don't mind
-that bit it's not a bug to not do this so fixes tag an stable are not
-appropriate for any of these.
-
-Note however that hardening against these conditions is not this simple.
-It takes careful analysis of exactly how the hardware behaves and what
-each error condition 'might' mean.  Whilst they are probably harmless
-I'm also very dubious about taking them without comprehensive testing
-on the particular device.
-
-> ---
-> v2:
-> - Use a bool and IRQ_RETVAL() instead of irqreturn_t (Andy)
+>>>  static ssize_t sampling_frequency_show(struct device *dev,
+>>>  				       struct device_attribute *attr,
+>>>  				       char *buf)
+>>> @@ -880,6 +1229,9 @@ static ssize_t sampling_frequency_show(struct
+>> device *dev,
+>>>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>  	struct ad4691_state *st = iio_priv(indio_dev);
+>>>
+>>> +	if (st->manual_mode && st->offload)
+>>> +		return sysfs_emit(buf, "%llu\n", READ_ONCE(st->offload-
+>>> trigger_hz));
+>>
+>> Why do we need READ_ONCE?
+>>
 > 
-> v1: https://lore.kernel.org/all/20260517160801.269-1-sozdayvek@gmail.com/
+> trigger_hz is u64 and if the target is 32-bit, a 64-bit access compiles to two 32-bit
+> instructions, so show() reading it without a lock and store() writing it concurrently
+> can produce a torn value at the compiler level. READ_ONCE/WRITE_ONCE suppress
+> the compiler transformations that would allow that splitting or caching. We could
+> have st->lock in show() instead, but that felt heavier than necessary for a single
+> scalar where a transiently stale-but-whole read is fine.
 > 
->  drivers/iio/pressure/rohm-bm1390.c | 15 ++++++++++-----
->  1 file changed, 10 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm-bm1390.c
-> index 08146ca0f..81368e578 100644
-> --- a/drivers/iio/pressure/rohm-bm1390.c
-> +++ b/drivers/iio/pressure/rohm-bm1390.c
-> @@ -626,12 +626,15 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *idev = pf->indio_dev;
->  	struct bm1390_data *data = iio_priv(idev);
-> +	bool handled = true;
->  	int ret, status;
->  
->  	/* DRDY is acked by reading status reg */
->  	ret = regmap_read(data->regmap, BM1390_REG_STATUS, &status);
-So question 1.
-- What actually is device state if this read fails?  We have no idea.
-  It might have failed on the 'to device' path in which case the device
-  didn't see the read.  Or it might have failed on the 'from device path'.
 
-Gets more complex...
-
-> -	if (ret || !status)
-> -		return IRQ_NONE;
-
-The trigger in use might well be the dataready trigger provided by this driver
-(though I note this device has no validate callbacks so we do allow other
-triggers - that may or may not be a bug!)  I really dislike read to clear
-register designs as they make this stuff more complex.
-
-Anyhow question 2:
-- What happens if we don't clear it and do acknowledge the interrupt plus
-ack the trigger (which is what iio_trigger_done() is doing?
-  Two obvious options - wedged device, it re interrupts immediately.
-If we are wedged, then meh device dead. Without adding retry loops
-(don't) recovery path is reset the driver by unbinding and rebinding.
-
-Fun follow up is what happens if having acked the data ready trigger
-by this read, we get another read before getting to iio_trigger_notify_done()?
-
-Quite possibly we wedge. This drivers trigger may be missing a reenable() callback
-(which would typically reread the status register to clear any such interrupt).
-
-Whether it does is again a device implementation specific thing.
-
-
-> +	if (ret || !status) {
-> +		handled = false;
-> +		goto done;
-> +	}
->  
->  	dev_dbg(data->dev, "DRDY trig status 0x%x\n", status);
->  
-> @@ -639,7 +642,8 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
->  		ret = bm1390_pressure_read(data, &data->buf.pressure);
->  		if (ret) {
->  			dev_warn(data->dev, "sample read failed %d\n", ret);
-> -			return IRQ_NONE;
-> +			handled = false;
-> +			goto done;
-
-Hopefully all this stuff is unrelated to the trigger.  For these it is fair to
-ack the trigger and the interrupt.  Curiously the driver does it partly for the
-next one (IRQ_HANDLED).
-
->  		}
->  	}
->  
-> @@ -648,15 +652,16 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
->  				       &data->buf.temp, sizeof(data->buf.temp));
->  		if (ret) {
->  			dev_warn(data->dev, "temp read failed %d\n", ret);
-> -			return IRQ_HANDLED;
-> +			goto done;
->  		}
->  	}
->  
->  	iio_push_to_buffers_with_ts(idev, &data->buf, sizeof(data->buf),
->  				    data->timestamp);
-> +done:
->  	iio_trigger_notify_done(idev->trig);
->  
-> -	return IRQ_HANDLED;
-> +	return IRQ_RETVAL(handled);
-If we are doing this Andy's suggestion of a helper is neater.
-
-Anyhow, upshot is to get this stuff right requires device specific knowledge.
-Ideally the author tests injecting errors at each point to verify if the
-data capture survives.  However, it's up to a driver author to decide if they
-care.  There are normally dozens of paths in a driver that will result in needing
-a reset (unbind/bind for most IIO drivers) - that's expensive, complex, fragile
-handling code to maintain, so personally I consider it optional.
-
-Jonathan
-
-
->  }
->  
->  /* Get timestamps and wake the thread if we need to read data */
-
+I would go with the mutex. It will be easier for people to understand.
