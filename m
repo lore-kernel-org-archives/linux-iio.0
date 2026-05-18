@@ -1,97 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8C31441027;
-	Mon, 18 May 2026 12:50:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779108634; cv=none; b=CqHbNBrCXuiWbjtjyS+fDKltXyETsnQdVQ8pdb1Jb+uKYR4cFiHkesZaMkFmfMzuCAca7/LxgvV5rwQTZ23OamW1rK6oSUkhzuHNKLmOzggxIh8GX+Z1qBWu1cftig5Ozsqmn5DDETME6/XR8lx1jKV+15qj/6EY0SFWV7T0DyQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779108634; c=relaxed/simple;
-	bh=WPhw6qDiAGN2oBlqBBTsxK3ncCOIWcpD4zMUxAJ+iB8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZnXKugSIU9wekNozN1RTZ/LHTkqDE+gtVVL5Yy4+GdKERL9QLXkZbG1bjl55gNSN/DQ9jYoixAGFoOOv4gLC3bp+Kqbot4OUcI1+Rabq8GxZ0i3ZBM/llKVyHSXo+hfBDEpGOUf4uFhhziVEdQRCJ2I7W5X+ldiVET275IgibKw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XgXCLeDj; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42E8E449EC5
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 12:51:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779108671; cv=pass; b=oy0Icb8s1J7zYWTG6l4/qZMvfuFQxuDRpLznBGewD60Qcbypkhayn2FtlsRHp1cwVT/1MYgor33M8wUlRXkDUHqSZMpXqIcaQXdiq+ioaTds7ecCJSwg5AM/EuFHgHYvaQMXmTxIB2/u8QKy+dwxlXMdV59NxP3LBCgtK0SO/GM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779108671; c=relaxed/simple;
+	bh=3xZsA1EQdUTnM3K+9+rZZVCf4GsAj79x+j2RgB2i6Og=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=B205jMADhJlgW803ej7Mz1A3GvLS3rZgLJsWtPTG8OnzDe/6xw6zBHSU6lcm3G7gzdsnHkyx+c7xAjSf4U30iFPFvH/8HexINFcp9MGLB2lJz2TW/dlUvUc2fS2DP5/L6BH+1JD2aZEBeqkuiNlzgzcvnQqx2v2OAMrtKSw3X0k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F/ATbkNg; arc=pass smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XgXCLeDj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21682C2BCB8;
-	Mon, 18 May 2026 12:50:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779108634;
-	bh=WPhw6qDiAGN2oBlqBBTsxK3ncCOIWcpD4zMUxAJ+iB8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XgXCLeDjXm7KIH3AtGV+Uv1KWalHfmeIA9ngVbp+N3H9DnccUg8pi/AwCAugAqdWF
-	 0+5rXVuZ6NQ0TjAVG1PppbmsuH97UckJc0ugyJut5usQWzGvVvav9nvw0/MtLCjDhc
-	 AmF6W5BQa8cC+A2Se6bHEnRjtdOgDjE+GuGnuIN9kUpHiYLRWUmQt5bzTeranpwBgc
-	 ralLQE7FthKhP28IDYAGUmCoGKJZTMKogFeV2nQFtgR7n3f23Ux2VlhM3TFfAdntKH
-	 HrGL3+4CEUqyKhajj/c0HlKMj9AVjMuJ3dYSLxxtfj13kdrnfifp3RjFUxOCwmOygB
-	 Rtqb99WKcsKNg==
-Date: Mon, 18 May 2026 14:50:32 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Ethan Nelson-Moore <enelsonmoore@gmail.com>
-Cc: linux-doc@vger.kernel.org, devicetree@vger.kernel.org, 
-	workflows@vger.kernel.org, linux-arch@vger.kernel.org, dmaengine@vger.kernel.org, 
-	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org, linux-hardening@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, linux-csky@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Daniel Lezcano <daniel.lezcano@kernel.org>, Thomas Gleixner <tglx@kernel.org>, Alex Shi <alexs@kernel.org>, 
-	Yanteng Si <si.yanteng@linux.dev>, Dongliang Mu <dzm91@hust.edu.cn>, 
-	Hu Haowen <2023002089@link.tyut.edu.cn>, Dinh Nguyen <dinguyen@kernel.org>, Kees Cook <kees@kernel.org>, 
-	Oleg Nesterov <oleg@redhat.com>, Will Deacon <will@kernel.org>, 
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, 
-	Nick Piggin <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
-	Dave Penkler <dpenkler@gmail.com>, Andi Shyti <andi.shyti@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-Subject: Re: [PATCH] nios2: remove the architecture
-Message-ID: <20260518-vagabond-amigurumi-orangutan-6b1620@quoll>
-References: <20260518042833.272221-1-enelsonmoore@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F/ATbkNg"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-453903ee4adso1922672f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 05:51:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779108668; cv=none;
+        d=google.com; s=arc-20240605;
+        b=inwG6aH2eahc3m0Oa1+8Bm94bI8e7EGwYoLhm3Vxlkk3DGk46fVfEeqfJ1kzZMf2cQ
+         SoqhEO/EaTRW0XR7PwrPvKqiUHdBoA338tgoH3jYwOB5OJRMJDDATGItkvFVlAm+EjKu
+         KurdipQt+z5W4Kk4MxlkXSU+9ny8NzmsosBjWZq+ZrRsHraJt00/d7zGoNPFSK0sMlw/
+         i9B+Hga4l+MoEEuRHa1f/R7886TbsD6df0vhJ3xBebWRMbIUdo45prf0sRssjBjSgjky
+         ulBViFNPjP+BCOF/NP3AjHBud4KBSlZXG4xdluv9LQDp8r7dIFF+Dn7bWU1/QJB2H1RO
+         x+fA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=KVSSwreBmj6BUKqCeoSJUvxJRda2KM6i6vtOQyCV7Rs=;
+        fh=e4w5jBAJWHu9Cyb6FhYjJ+QCB79PALviH9H6s1r7nJY=;
+        b=AgKcX1UX9soCAgbveGWq2yVheUtselAXnGWwbIaFEzgXXsPrC9Mxh+rX54y4ZxkK4z
+         COcZRuicGRfd0nk+h6ooeKcwEPeSnmOgCwlruTT+qBcSUGVBOA7ykAdztkOE6FHvBH4f
+         cDj7B1T2f83CQHqtEysj4OHSrWP+GVc8+jk9Yabz73Mm15la9jfofwz2OVOvU/Y7OE21
+         TEzygaJ49SonlY5o27M0oi/Xj3Wugq0Cd8QubP9JsPYpQozVkDARAsDJ/0AVTNv4i4Bj
+         dgemXicjpgrz0RriHfclPqZMuuUpJQoJnJlxg1JXn5aYhrxVcSQi7HvfXpzl3uYFT+Yi
+         6PCA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779108668; x=1779713468; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=KVSSwreBmj6BUKqCeoSJUvxJRda2KM6i6vtOQyCV7Rs=;
+        b=F/ATbkNg6BcemWwjeN89yaGngvwPU9Oerc4VNtrjWlOITQm4gtPARhDaFxxsSsTB0S
+         FAxVV9i4JjPGcixN/PgP8ND3gR8Lw6yns2i2CYxDIq0TyjJHtORiLl8r9NiqBtkiuteu
+         LZtdCfyTs9+r0HtPF2vpkFxl+S4oVLYbRE3CwOME962O0PRTNwPmE5J3CR1SJQfYssms
+         R/Bqc1Avf4dhhCm2RBXHJVudfRrp3oE2tq/vDvNrf0NVP2FTYZEyh0yd4zseAbtbN0VJ
+         1Q5NswhDm0gKJpvDyCy9IkAXlZG15Ypd2AJTG5ILx+g9o6daXiZyDYJ/vWLs9zRc4XsC
+         cvOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779108668; x=1779713468;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KVSSwreBmj6BUKqCeoSJUvxJRda2KM6i6vtOQyCV7Rs=;
+        b=UigpO+AmqFz21cenw56BRnLnmSoZeGMEaIqWnUsRR7tKZFvrpccZYWEOBazj2IVg52
+         TIV+blQ0IAVZxChNrcfY/J6ccp5yycxJHfvvjjkPqBXu3xnbC5TyDihRHODLtlLKUQVn
+         CIsJUv2WxTCK9UgPtAqml2mfZgUoUn44/qAM6E64u1fmYI5yemCYE8GMy9+k8+jHZTxA
+         M7FJpQzMMb+xG7Hx/fDmaKKL5kFtcwf/7Hdh+tWL5FFm2cF6M/BxrpezSU5HY8Mf/uO6
+         iPW+FqL+dUFm9pFDl9oOEFlzM+FZ8hlJ8wjvkR+mmIEV56r5n7aZ87BcpOzx4QU5wp39
+         WzoA==
+X-Forwarded-Encrypted: i=1; AFNElJ+cDrMFEQocecr9EK4pmFXj8/bYH1bpITT0+4DC3oadvZZpHUg5AZowgYDBaePXrC14682EIfanhaY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwGWUVp5Ifrd/J9J2lFtmoCrw6PqvOXdLdTEe8V5NLw7RteUueD
+	3USjJ5hTJ7tgcHMKgkKAH+lfGw0Kk7bqeJVdDj/sfCLoqQyjOilm3eE7JcsWUoIU95DUMWeC1kq
+	UHYACd3TCCy8602o/d+g1FHyJuu2UGG0=
+X-Gm-Gg: Acq92OEyhjwioIu8+AVYIjOzIno7D33SmcrQvlVLORPAJcUmQ+iyQry2DVkCkU6m6fn
+	Pf1SaQ83e+KUNBacdt4KAfk8NrNnG7iUz+E8xlmz+w2WjTMH0u8oedyN5gulN+tFDRv5DXQD4pw
+	V0BgJzTdfjBYPuQr9eulwV4ru/CaPZWBD/GSBbximXyEHTwZowP7h8dUiSgw66QhIiUokGAAggE
+	EivTHXVcX5TNjilMkC3/grM8qJpfGWoT7z8INAXRLF4bIQCMBlsy7oAmhmJrbvYC0PV8EH0LchL
+	GWLut6b8JsfdPHzy6b826zXbaZZk+pevDzE5Cq6a5o6r2k8CsKcgeIyWBSAnBsC6apAuNwAosnq
+	j3BOWYZtu48HOV8GuVpafSlMkDHBtySMpvpPcd4zOVjHnlEIC7YHry8uOMX9n9+MQEXBh5IcoIX
+	ZYYKFPfgf8cFniLgvu
+X-Received: by 2002:a5d:44d2:0:b0:45e:739b:3e3c with SMTP id
+ ffacd0b85a97d-45e739b3f89mr7217630f8f.0.1779108668403; Mon, 18 May 2026
+ 05:51:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260518042833.272221-1-enelsonmoore@gmail.com>
+References: <20260518114502.219375-1-lukas.bulwahn@redhat.com>
+In-Reply-To: <20260518114502.219375-1-lukas.bulwahn@redhat.com>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Mon, 18 May 2026 14:50:55 +0200
+X-Gm-Features: AVHnY4JxxoQtajvr5dtFHjLH6n8K-ka8WVANAXjkpcTpZ4sRSGQchDL69-ctH1Y
+Message-ID: <CALoEA-yikL+PRDys2tXY5GKZhZtWRYdfhsczrgUWrr+rrbZqBQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: adjust file entry in ANALOG DEVICES INC
+ AD4691 DRIVER
+To: Lukas Bulwahn <lbulwahn@redhat.com>
+Cc: Radu Sabau <radu.sabau@analog.com>, Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, kernel-janitors@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Sun, May 17, 2026 at 09:28:33PM -0700, Ethan Nelson-Moore wrote:
-> The Nios II architecture is a soft-core architecture developed by
-> Altera (since acquired by Intel) and intended to run on their FPGAs.
-> 
-> Licenses for the architecture have not been available for purchase
-> since 2024 [1], and support for it has been removed from GCC 15 [2],
-> Buildroot [3], and QEMU [4].
-> 
-> Given all of these factors, it is time to remove Nios II support from
-> the kernel. The maintainer stated in 2024 that they were planning to do
-> so soon [5], but this did not come to pass.
-> 
-> Remove Nios II support from the kernel and move the former maintainer
-> to CREDITS. Thank you, Dinh Nguyen, for maintaining Nios II support!
-> 
-> References:
-> [1] https://docs.altera.com/v/u/docs/781327/is-discontinuing-ip-ordering-codes-listed-in-pdn2312-for-nios-ii-ip
-> [2] https://gcc.gnu.org/git/?p=gcc.git;a=commitdiff;h=e876acab6cdd84bb2b32c98fc69fb0ba29c81153
-> [3] https://github.com/buildroot/buildroot/commit/6775ccc5a199d574ad70b5f79ec58cce97a07c6f
-> [4] https://github.com/qemu/qemu/commit/6c3014858c4c0024dd0560f08a6eda0f92f658d6
-> [5] https://sourceware.org/pipermail/newlib/2024/021083.html
-> 
-> Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+On Mon, 18 May 2026 at 13:45, Lukas Bulwahn <lbulwahn@redhat.com> wrote:
+>
+> From: Lukas Bulwahn <lukas.bulwahn@redhat.com>
+>
+> Commit 963d07535e77 ("docs: iio: adc: ad4691: add driver documentation")
+> adds a file entry in the MAINTAINERS section ANALOG DEVICES INC AD4691
+> DRIVER referring to the non-existing file drivers/iio/adc/ad4691.rst. This
+> commit however adds Documentation/iio/ad4691.rst; so likely, the file entry
+> intends to refer to that newly added file.
+>
+> Correct the file entry to refer to the intended file.
+>
+> Fixes: 963d07535e77 ("docs: iio: adc: ad4691: add driver documentation")
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@redhat.com>
 > ---
 
-Wearing DT hat:
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+-- 
+Kind regards
 
-Best regards,
-Krzysztof
-
+CJD
