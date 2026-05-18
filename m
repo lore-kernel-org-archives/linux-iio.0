@@ -1,111 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2D8336DA14;
-	Mon, 18 May 2026 15:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4EA33783C6
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 15:19:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779117568; cv=none; b=n+jZeI5ls++90NYB2WeS59Evd6eSyKRulUhXVCUnJ7/OHUgLyrxEFIKNUdmW4EluicDUIxtAE4+ipanb2b0oJCoZvR6bX9+IASxlOyOImTkNvhTwe4fKxkdUMH/le+QqSuh2wfmfZMKNOlMK7LJLVItJRWGNV+Geg22Ct4RYkuo=
+	t=1779117599; cv=none; b=kPWKtM/E41pQEQqF9AXCDrMKexgdBjN74nS8khyuMqsMV7DqBv2dHimUX24TuAO4/MEKocuwqDEwaTfe9JPfgLj8t17ElFMzz4cslRrgCopv9mpY9Pc4QRjeamNzRMh+P0YnT7k6sP47wsmuU9Gm4k3wpCUbgYgh8HVnwN4TNb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779117568; c=relaxed/simple;
-	bh=ohYqeSjJ6o4iNeLfzsstcqkIZRcJMkgqoDKSN70mfK4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pmW7ybe4UXCLdrchHPBZbxdS9z1cHfi5T7Wgv0HFHJc0FZk2FqTjP5/7n9u4GL/kqIa5bqbSlgtwn4rfzOwENI21P/UwMpwnpxW6TzUeJRrx9WAPq9P9lnu/21OTTuEHroZSdhYqnf+gF/xBC+UUqI1TBJa6ZlLdW2vWGqcJt6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P4OMoSd0; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779117599; c=relaxed/simple;
+	bh=CnS2o1zT8hec3jI9u+cGMmxRIi/jhSnQ8LXjWXp9mxo=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=NW/7p3jZBFl8IecHHgXTOB9jYLsF97nvx+E+V/iXlxzsoB4QsYZnkQvU1JnqyqcK1BUW44hlfMssFp6806CA4W9QFsbcyC/nMgIksD6xj1gxD1v+AR5RDj+sLarXcg0kaYWIDCU7qFP7z4Th+DhI0pDaFXzVdupe3qugP9JG5tE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bK3d9tuM; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P4OMoSd0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A92AFC2BCB7;
-	Mon, 18 May 2026 15:19:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779117568;
-	bh=ohYqeSjJ6o4iNeLfzsstcqkIZRcJMkgqoDKSN70mfK4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=P4OMoSd0UR75fpog/Odnhc1MNlBT8mF5qZew6olhFqkIRWECKmYTcsAAT1cqT6ty5
-	 4on0ME7PWxNCEGbo5UuuErckvUkP9e+/yguisZY2vSdIToDYk9L8TK1NDT3+Ub3cBW
-	 DXfONs7A6QCEdAy44KrbO+D9k1M+XP6BPoxehEsSTiUIpgaRwnHbinMCRI2fvNud3t
-	 smQzCSebh+iaoDFYarLIZV/htHRfJKVAhKzz0EOvarIvxkffY+d0HsO1TxFNiLw6/i
-	 86tmpnboGKchngWbl9IXBB3Ktuz4KEX7elx4kVHe+dIOSupjpy5IK9PfKln7q7VJJt
-	 6deDnwNJV1gbw==
-Date: Mon, 18 May 2026 16:19:19 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Stepan Ionichev <sozdayvek@gmail.com>, daniel.lezcano@linaro.org,
- nuno.sa@analog.com, andy@kernel.org, gregkh@linuxfoundation.org,
- hcazarim@yahoo.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: nxp-sar-adc: notify trigger on channel read
- error in buffer ISR
-Message-ID: <20260518161919.4fc7507e@jic23-huawei>
-In-Reply-To: <57d1d577-39fc-47bc-b01e-a2cc1d2ebdbd@baylibre.com>
-References: <20260517162346.189-1-sozdayvek@gmail.com>
-	<57d1d577-39fc-47bc-b01e-a2cc1d2ebdbd@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bK3d9tuM"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-50fbd79350dso29169341cf.3
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 08:19:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779117595; x=1779722395; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bG7TbCRDRMYHiwznaFM1XuX97H+EAdoqdi/i2/8voRE=;
+        b=bK3d9tuMRCwqy9LaEfV3u3vb+WklUKMIgBeisFXtSaBRupAGDFyDjVbo+olCDc3MWd
+         VEWVJ8FWfd96zDRsD5Ej+ua1pozEYQg5lFQMl1bedhy5rOC/wktBpH4jjYP3r7SmG18B
+         +wQNyrXkiw5pufCeU+32qMXLXiRL5b8dVB0jrHAt35HcVqejA4qqEBVDlG7ynfXtS6/E
+         xD/hZ6sXcrRbiO+PJU79DBKm09OyV+yy6NarSiS8IFSIlBozWzIaAAEKGC3AOPgZzQi0
+         QJvyT6Zg7MTEVIjZN5nFXWWIt1WXWUpq0W9WX1Y1JGUea/zAsxNUlRJMkZnA/x61ATqO
+         KppA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779117595; x=1779722395;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bG7TbCRDRMYHiwznaFM1XuX97H+EAdoqdi/i2/8voRE=;
+        b=N8AyOaOK98204CcNT8Ip3RVwcOGCVm9pwRks4xhZQdUhzZOQzKw/PFPSjR+Zd6EmUe
+         TDeGaNfGDTzEF5L2ZPvwxLaxFFAKEej/PkJMx25Pr9OX1t4FxeBxuGH2Eokes39YqTo7
+         hiXs6mxfLcJVkWoMtPJq/L+NFs6xH5rUC0WeHvvL3E5EYsp5kdYC824/HZyARUqS111y
+         sl/iFx/sjy2RMeCWzEJxg0DgQsAU9CPYiioSOFC2NrASMQNRLUJvE2nGA3k2B5MqJ0qv
+         +Jf4PDDRUsmLkCpr1ngjVqjXNZlT5VZKqdc6E14HcwZMpeXP6ITxFk1B8mRhVfuyjZ36
+         sTjA==
+X-Gm-Message-State: AOJu0Yw++j/kx0pM4EwNrnV960rhmWRgjN8NGsTzEcz1ORNkdnvlyTU0
+	lDZbpN96+V3eL68ejfHqGXG9DbGFp/FkI7bxxusifGwBT0Jkc6yluMzgaAP/vyOrkeo=
+X-Gm-Gg: Acq92OGwirvo7cNDrVt2QsxqJI6rCl8SXij3Ob4MUBcbM9SGmCi8YO35imJzH+2q91F
+	01pe+j0+kBGgaJS2u+qOqUW/CIkmr7ZMkAsa/yejEKP0dLs5hioNrFQubfUgS2wcpZtBAGLn2CI
+	6qp3+Yg9oZ/YODmjcqE9xf2FeNUCP7z7E6EGd7aKbMfvKcZ86elUDYAtJwNJdQRtqbqzFimPlft
+	jYRVxhR0LYvlBVS4YfqRC6g9+Q6Bt93l0upnEsHtxheZdyNbmRam9n5QTk2i37ICue7mx2BFEZv
+	wRqhpMgnQBd+FuuPladuH1xeJ8jbXrrTZwDzPZxt7u++U2l+UOuuwXLFv8CbJetGXzsG/3Yu7/E
+	nfOrlFY704MHU34FXKroqFffNLKW8rL1dTyzmRpfc8arFJVW4lnGyFtsY6C9dA904V927PiVRc7
+	ApUQHlHotQB8hK4HHJZ1QYpcM2kePqF0jU
+X-Received: by 2002:a05:622a:588a:b0:50f:783f:31a9 with SMTP id d75a77b69052e-5165a1d9f12mr198110901cf.34.1779117594823;
+        Mon, 18 May 2026 08:19:54 -0700 (PDT)
+Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5168c968930sm45070691cf.0.2026.05.18.08.19.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2026 08:19:54 -0700 (PDT)
+Date: Mon, 18 May 2026 12:20:09 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, marcelo.schmitt1@gmail.com
+Subject: [PATCH v1 0/4] iio: adc: Add support for LTC2378 and similar ADCs
+Message-ID: <cover.1779117444.git.marcelo.schmitt1@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Sun, 17 May 2026 12:07:33 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+From: Marcelo Schmitt <marcelo.schmitt@analog.com>
 
-> On 5/17/26 11:23 AM, Stepan Ionichev wrote:
-> > nxp_sar_adc_isr_buffer() bails on the first channel-read failure
-> > without calling iio_trigger_notify_done(), so a single I/O error
-> > leaves the trigger's use_count stuck and the buffer flow wedged
-> > until rebind.
-> > 
-> > Route the error exit through a 'done:' label that always calls
-> > iio_trigger_notify_done().
-> > 
-> > Fixes: 4434072a893e ("iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-> > ---
-> >  drivers/iio/adc/nxp-sar-adc.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
-> > index 9d9f2c76b..ed004812c 100644
-> > --- a/drivers/iio/adc/nxp-sar-adc.c
-> > +++ b/drivers/iio/adc/nxp-sar-adc.c
-> > @@ -341,7 +341,7 @@ static void nxp_sar_adc_isr_buffer(struct iio_dev *indio_dev)
-> >  		ret = nxp_sar_adc_read_data(info, info->buffered_chan[i]);
-> >  		if (ret < 0) {
-> >  			nxp_sar_adc_read_notify(info);
-> > -			return;
-> > +			goto done;
-> >  		}
-> >  
-> >  		info->buffer[i] = ret;
-> > @@ -352,6 +352,7 @@ static void nxp_sar_adc_isr_buffer(struct iio_dev *indio_dev)
-> >  	iio_push_to_buffers_with_ts(indio_dev, info->buffer, sizeof(info->buffer),
-> >  				    iio_get_time_ns(indio_dev));
-> >  
-> > +done:
-> >  	iio_trigger_notify_done(indio_dev->trig);
-> >  }
-> >    
-> 
-> This is fine. Although we are already duplicating the call to
-> nxp_sar_adc_read_notify(). So could be OK to just call
-> iio_trigger_notify_done() and return too. Let's see if anyone
-> else has an opinion.
+This patch series adds support for LTC2378 and similar low noise, low power,
+high speed, successive approximation register (SAR) ADCs. These ADCs are similar
+among each other, varying mainly on the amount of precision bits, maximum sample
+rate, and input configuration (either fully differential or pseudo-differential).
 
-Similar questions arise for this one to the rohm one I just reviewed
-- does this actually help us?  What is the trigger, and is it going to
-be in a state where it will ever refire if an error occurs in here?
-Here we aren't dealing in bus issues, it's a state machine issue
-(either software bug or hardware in wrong state) if we hit these
-error paths.
+The initial support patch enables single-shot sample read with a GPIO connected
+to the CNV pin.
 
-That info needs to be in the commit description and again to me this
-is a hardening change rather than a fix (with need to backport etc).
+The second support patch enables high-speed data captures with SPI offloading.
+The setup is similar to AD4030, with a specialized PWM generator being used both
+for SPI offload triggering and conversion start signaling. 
 
-Jonathan
+The last support patch enables running buffered data captures without SPI offloading.
 
-> 
+Some structures and variables are introduced earlier to reduce diff in latter patches.
+
+With best regards,
+Marcelo
+
+
+Marcelo Schmitt (4):
+  dt-bindings: iio: adc: Add ltc2378
+  iio: adc: Add support for LTC2378-20 and similar ADCs
+  iio: adc: ltc2378: Enable high-speed data capture
+  iio: adc: ltc2378: Enable triggered buffer data capture
+
+ .../bindings/iio/adc/adi,ltc2378.yaml         | 131 +++++
+ MAINTAINERS                                   |   8 +
+ drivers/iio/adc/Kconfig                       |  25 +
+ drivers/iio/adc/Makefile                      |   2 +
+ drivers/iio/adc/ltc2378-offload-buffer.c      | 297 ++++++++++++
+ drivers/iio/adc/ltc2378.c                     | 447 ++++++++++++++++++
+ drivers/iio/adc/ltc2378.h                     |  82 ++++
+ 7 files changed, 992 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+ create mode 100644 drivers/iio/adc/ltc2378-offload-buffer.c
+ create mode 100644 drivers/iio/adc/ltc2378.c
+ create mode 100644 drivers/iio/adc/ltc2378.h
+
+
+base-commit: 8678fb54958893818ddeccd05fea560a4e1fc759
+-- 
+2.53.0
 
