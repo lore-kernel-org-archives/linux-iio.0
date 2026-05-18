@@ -1,99 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 296D03016E0;
-	Mon, 18 May 2026 10:21:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9653340286;
+	Mon, 18 May 2026 10:42:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779099716; cv=none; b=s0BQHAkbyhY/EV2oglayTJYnQnfcXwWmRa+u1uk28PbFHaAr5z5d0OT5AMpacGAX+popPNQOesuNTrDM/cTOKSlGUEHrQqPpOByCbfzDEJnA5YsYWPX6ksrt9kuOoppOjWyNGFCESZekuR2V2uZNvmm6US9Zg+6BC3LG/TrcLAo=
+	t=1779100962; cv=none; b=EUUtO5SVbByrZ5+waGz1p6Ax9MNgmPfLfx67+Aw0a7OJAlX3TnN0YWbQZPTACYVjKDlZTwqdrJnxvZV5OXO86fNlpX180B3NANXqfmiTeVNVMFkW6iEl/LfC53upl4tKWwg0XiFBK9zmuegtpaHvxgcobANJwRf2CwRDjBTbIJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779099716; c=relaxed/simple;
-	bh=+FPo66jE+nctTTtZTU3eJuQuezapEFOt7TMcMbyptjM=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=gF8uIHcLaWNOq6WiAviCB27a3ldQaXZshhkljqylHKbBB29F/k28+2NB0KmOoAQ4NDWfWFtbfaFn2w0WrhjHC7sAvggo8IlOhcd7C5oMX2JT3b++6ak1HnLcBTBothuW9rOIOGXoJXi/IGQKX1zEwLysc8ry0e/p4x2DPat11kI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d1emaE7I; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779100962; c=relaxed/simple;
+	bh=r1PVGf1rr4njrmbO5ueph0W/8kJGaLaf/v+erQVDj3M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OLfjAmn6u02hVxqKtVK3TZGFneO/oj4ygX6Rm4KYzK1yuNivcwWDysREjp3YkMLdD3zL4B5pYOdA2SmF51H0mVEPNjK7M3S55cZSglEDGl/NFZSdO7M9KeAhi/8FervwAtLOKeHDgmV6K0VBr4guHaWgNFJePnVwnasLeE7qs2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PllpDq6R; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d1emaE7I"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3066C2BCB7;
-	Mon, 18 May 2026 10:21:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779099715;
-	bh=+FPo66jE+nctTTtZTU3eJuQuezapEFOt7TMcMbyptjM=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=d1emaE7IlTHoepeHuTu3DfXFiazwE1+KRQ2ZE9uqvQ8PVePdOzl6dFU724vsisFVF
-	 Ui7T8ceJ36nNCVoze4JeCtDN3FW1UwNfvqs4zWkTLoBE9OLc0vKHbGs6fHX7gI3Sra
-	 CMowlIUP2W//SmRp2h7wrmFVjUmKcN/lmN/9ys3PoXJAc09DItlDK6uBXbnKXaX5VO
-	 uUpNqQOfKlyX5ohGw+91FNgcBvagj4BZ7iNJVFEbgQ+k3lmFQyqkm2M+1IrkwXaMTi
-	 ndi73Gyxbcc3yGCK1HO9P7wNsWTWD8I7241lGfW3LPDJRuHf6x+RR0Yzowdb56zHlo
-	 QBvc30+kNN+1w==
-Date: Mon, 18 May 2026 05:21:55 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PllpDq6R"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779100957; x=1810636957;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=r1PVGf1rr4njrmbO5ueph0W/8kJGaLaf/v+erQVDj3M=;
+  b=PllpDq6RqP5BvqjpUKam0DcAsxxLSqVQ0PwC6vK/RtHBAr9xfN6gb7ZU
+   hOo8ZKYCsuxw66roUdzmGdSGZOS36NKC/9dar/U3PwtlwZ3RktuHex8Rz
+   RjuND8IJgKXqhrplqovf0cx3ytJ9PiHkZQIpKjiQ0YmWQ50KFMY2GiffT
+   meXXHzKXXKHujbzEJqaLlCqHIzorCBCUg9vJS9U0e19mFvGulAnIt1Dh4
+   AWyTWM+2Y6ake7pOxKi3aYyBgYrs/zyzKeM+0VfQxAEvLrKztC6Xat4tp
+   LkXWMFrelTJJPRDUM5PFLq+RlCKo4KQ5yQMZrrnar9TuJxMA8JLYAXefF
+   Q==;
+X-CSE-ConnectionGUID: IKrNdqP5TZaVT+7SWtdqeg==
+X-CSE-MsgGUID: G4fRoKqEQUCIyOfrhHOLTw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11789"; a="79999385"
+X-IronPort-AV: E=Sophos;i="6.23,241,1770624000"; 
+   d="scan'208";a="79999385"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 03:42:32 -0700
+X-CSE-ConnectionGUID: mEUjukxRRhGM+xtGNpMN0Q==
+X-CSE-MsgGUID: TJDmR4IzSOaf9c5sZE5RvA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,241,1770624000"; 
+   d="scan'208";a="239471393"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.3])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 03:42:29 -0700
+Date: Mon, 18 May 2026 13:42:27 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: jic23@kernel.org, mazziesaccount@gmail.com, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: pressure: rohm-bm1390: notify trigger on all
+ error paths
+Message-ID: <agrtE3refLIQfICE@ashevche-desk.local>
+References: <20260517160801.269-1-sozdayvek@gmail.com>
+ <20260518094238.1986-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: linux-iio@vger.kernel.org, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- David Lechner <dlechner@baylibre.com>, devicetree@vger.kernel.org, 
- Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org, 
- Conor Dooley <conor+dt@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Andy Shevchenko <andy@kernel.org>
-To: Xingyu Wu <xingyu.wu@starfivetech.com>
-In-Reply-To: <20260518081852.116909-2-xingyu.wu@starfivetech.com>
-References: <20260518081852.116909-1-xingyu.wu@starfivetech.com>
- <20260518081852.116909-2-xingyu.wu@starfivetech.com>
-Message-Id: <177909971503.1256833.12911438583081090451.robh@kernel.org>
-Subject: Re: [PATCH v1 1/2] bindings: iio: adc: Add StarFive JHB100 SARADC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260518094238.1986-1-sozdayvek@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-
-On Mon, 18 May 2026 16:18:51 +0800, Xingyu Wu wrote:
-> Add the new documentation of SAR-ADC for the StarFive JHB100 SoC.
+On Mon, May 18, 2026 at 02:42:38PM +0500, Stepan Ionichev wrote:
+> bm1390_trigger_handler() returns from three error paths without
+> calling iio_trigger_notify_done(). The success path at the end
+> does, so on a single transient regmap or read failure the trigger
+> use_count is never decremented, and the !atomic_read(&trig->use_count)
+> guard in iio_trigger_poll_chained() drops every subsequent dispatch.
+> The buffered-data flow stays wedged until the trigger is detached.
 > 
-> Signed-off-by: Xingyu Wu <xingyu.wu@starfivetech.com>
-> ---
->  .../iio/adc/starfive,jhb100-saradc.yaml       | 62 +++++++++++++++++++
->  1 file changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yaml
-> 
+> Funnel all returns through a single done label that calls
+> iio_trigger_notify_done() and reports the outcome via IRQ_RETVAL().
 
-My bot found errors running 'make dt_binding_check' on your patch:
+...
 
-yamllint warnings/errors:
+> +done:
+>  	iio_trigger_notify_done(idev->trig);
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yaml: properties:reg: 'anyOf' conditional failed, one must be fixed:
-	'maxItem' is not one of ['$ref', 'additionalItems', 'additionalProperties', 'allOf', 'anyOf', 'const', 'contains', 'default', 'dependencies', 'dependentRequired', 'dependentSchemas', 'deprecated', 'description', 'else', 'enum', 'exclusiveMaximum', 'exclusiveMinimum', 'items', 'if', 'minItems', 'minimum', 'maxItems', 'maximum', 'multipleOf', 'not', 'oneOf', 'pattern', 'patternProperties', 'properties', 'required', 'then', 'typeSize', 'unevaluatedProperties', 'uniqueItems']
-	'type' was expected
-	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yaml: properties:reg: 'anyOf' conditional failed, one must be fixed:
-	'maxItems' is a required property
-		hint: Only "maxItems" is required for a single entry if there are no constraints defined for the values.
-	'maxItem' is not one of ['maxItems', 'description', 'deprecated']
-		hint: Only "maxItems" is required for a single entry if there are no constraints defined for the values.
-	Additional properties are not allowed ('maxItem' was unexpected)
-		hint: Arrays must be described with a combination of minItems/maxItems/items
-	'maxItem' is not one of ['description', 'deprecated', 'const', 'enum', 'minimum', 'maximum', 'multipleOf', 'default', '$ref', 'oneOf']
-	hint: cell array properties must define how many entries and what the entries are when there is more than one entry.
-	from schema $id: http://devicetree.org/meta-schemas/cell.yaml
 
-doc reference errors (make refcheckdocs):
+Maybe it's better to make this as an implementation and wrap it in something like
 
-See https://patchwork.kernel.org/project/devicetree/patch/20260518081852.116909-2-xingyu.wu@starfivetech.com
+handle_trigger_irq()
+{
+	bool result;
 
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
+	// that returns boolean and doesn't have notify call
+	result = this_old_function(...);
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+	iio_trigger_notify_done(idev->trig);
+	return IRQ_RETVAL(result);
+}
 
-pip3 install dtschema --upgrade
 
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
