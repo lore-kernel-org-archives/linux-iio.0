@@ -1,67 +1,67 @@
 Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DEA52BEFE5
-	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 14:34:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C7437D110
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 14:36:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779114893; cv=none; b=dt3/TFgX9UHkkNgCzRCxfq1lJNsuNj3fymtJ22sze+jqwX9zcYW3hc92p5V2lKlHuqFUkK6K05Kcx/BadToAOMAMVz4NBOF4Q+LYmSWCHNFsBuT+RHZWKM1rrh47hPJvxZyviWpA9u81XF4dDuLNS3deSOo2kPFHStUSqXIQK8Y=
+	t=1779114984; cv=none; b=OXP7isMKEqoE/brN2KI3d95/jRol1RJimkjsJDwGAMxsi1VypgF4o6urbn5/1t0eCVafDVF8+2JBLGWlOb9H0kuR8TZzBvEwJy3lT/8zkQ9K4XRnGmTJXQ+0KAoAtrGubKGxbFRXfsjy3zUkIBXfmQXPSh3z1MfG7YtE2FFnrUo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779114893; c=relaxed/simple;
-	bh=RHou1NZeZQJ2nBNPN4Aw2D1HXZfghIJsey4jXHsv5xk=;
+	s=arc-20240116; t=1779114984; c=relaxed/simple;
+	bh=1bKPGOExErouOjpPrT3S8xZj1iI3DTU5rL/7YJ3AEFM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pYNhDq7/Cmmv0b2xXBa74lmj24nwIdWhxMNfp0/S4c0YTsfck9H9OpMBk05Ui4IQQokEx+gapReoD1kkRW5tBdN29UVcNTx2zhFNPxGouZ+T5gp/g2WB3p1ef0rJje+N8xCZlyI65tUhG83pgIIIy33h8XIZNGw4wYQkmgxTSX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=fKsXV2jL; arc=none smtp.client-ip=209.85.210.53
+	 In-Reply-To:Content-Type; b=slRPeVtOCiSNPJFkAMHyeiTw109uV05Xn/aUT+ro7mEAdz34bG26gHCr5KZ4lWXP6FvRHuMlKSQwr/tybKiGA5DcjothFRI5jw1vwyiQdpSHfGQAiPqfjKnFsMdHM6e3iJX2sxARnPRSOwlVs4r+IhT+yKe2l3GlSnkEL33fkYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Oq0fjro5; arc=none smtp.client-ip=209.85.210.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="fKsXV2jL"
-Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7e4004a4a6fso2652485a34.1
-        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 07:34:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Oq0fjro5"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7d4c383f2fcso2400417a34.0
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 07:36:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1779114890; x=1779719690; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1779114980; x=1779719780; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=R76EEUUYziDn4rTNwghYF5TGd9QqSpO9um+ZkcmBhtY=;
-        b=fKsXV2jLOL811+xvlkYGS1r7FZs45Yb/wHJ0BVwZxAOnH+bVbnffG+bRcizN/XZAI5
-         bbEHiMtopvGf3WJSDjQmVxFkyjb60ENu1p/rqWfGLVXvAfdxwjcZc8965SMeG1/VSdH5
-         EfYkvIdfoIvED/t7PBiQQrHy+8Ac+AUGtgeplZfJO3h8g6XBd0ElD9JTqYMnvc0hwzD5
-         lAusEgg8tcJxq6eGDKtI4xba204nE3yRG/IU9djquaa4ZyZB4wBHCLm7Wnb+M69GH0kY
-         QW1XTX/qf1Mr6+hE7Wr9KWMR44Wf4QdOkRiwLtvM2T2lcIe6LvzlvpduaM4dgdZpbyqj
-         YGtQ==
+        bh=vLwaPu255e3pjQ0cFx1rgIs4MewOKBP6Q9vMpdbPUGw=;
+        b=Oq0fjro5KIfsejJ87DhSc3vsTad5eMsITAACmCBFJ5azZrac71mcOW0eXK7/nBExu+
+         kA+yactrjqSm+2spRHD2JgafYkZEhkNKe8MB8DfiUqBkWa+0Egtku+iNnvc6v7/8xD0E
+         vFDF2ogqdZpYHNpE3hW8lruYI/swht1jY3s3Yj6GHoQuTQQ+1+2+29UHGP8OnW3uxTno
+         8I+h9hbB73L0bK2ZOthR+i6XwXmTIWGralE2YUg8elzpPl4NsYPYrYnWj6ksZTAdSbBM
+         v0YywaihQd2ouaVlh331Hebu1tNoHohJ23jqRQwv+x4TZLgyW6o0EL6LrC6jtNZGrHib
+         +JGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779114890; x=1779719690;
+        d=1e100.net; s=20251104; t=1779114980; x=1779719780;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=R76EEUUYziDn4rTNwghYF5TGd9QqSpO9um+ZkcmBhtY=;
-        b=pQ085OsZkyunID/B8tdG2rYmlcfohF++UaWVSQv3KC4+MRa0j77yZPXD9Eg3MpKZ/j
-         AMgIYQqYX8zYLlG9phEeuzU6Rm9S6sO1rCPN1/1UeRo9s2+p0h5yigTa7RA3ikWxc0Ic
-         AIAy6EOCCcjPj7bYOWsmQNSUuFWPj4882qrh154KI1puP6FZkiy1wjjvjFzH+AOwMtWE
-         tM/w+LpgmgekQlaadrEvKo9XAtoZoZUbnAlBr+MPM7UecBuT1ZKqSZoP1nBf88oE88u1
-         jkagdFUJc0Oi2hWW8QTNKpdQb6tZCUC5DuUw4J4vDCYi5QDdVIZl4qHKRDU0vndWWX9S
-         qVTg==
-X-Forwarded-Encrypted: i=1; AFNElJ9mFoiHuLIQV7PVaaDo2EbvCMXIc9+gkeoZIQtiforVZqLe+Fmkf2k2nh9VtKufkt/lrLgN/SEEnN8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzjTUnr9ExP/H2wMkuzkMCDtFp/4byViX+fIdm7+pcSHeM+/6ib
-	PdAQJ0I4R3Mnzi/C1WJo7ZmFyWODfNDhCsJXzZnKrKZyE24/oaRIdST6ad8R8vN+jyI=
-X-Gm-Gg: Acq92OFFGAn2D22BemwVCiV5DqgukwGfcCmTFQ/QzNZbNlL17FH0veqPnrGbvToxB7J
-	mzciOs/GFytjyGc8jzi/VOwLrcONXozixnuycXxu/xWPigoDCWmHfxY6N64YxGNx1L1Lpm88tsa
-	HM5eci/Urx1dsLqJ7JZK0234nXtwhl1ll/Sq0H/hscddudDCM+IvP3Y0db+viXK94s+bEytPhXG
-	kV/8HpFBHg1UVk0feIxZI2+a1N62wPoJbM/V9uUq6nRP1PgQVzSdsxf0gqaU6OjZ9v7BN1d2w/E
-	KnFMli4g2BMwdsNuLcH3ALyBtTb8qmpAjHyl9ukFfg4oRRPE/PW1sQRTGbhnGhUbThOI5XudI1n
-	8I2Hz2G0bKy0uClZg1ZTD+tjysooHmVxH8/sJACIvGTLSYoUitm0wJgId1W2vRibcXsJW7myaz8
-	LZlrHhVGeDNIqK5gazvz2Ousjx4mDO9gGLM1R+8KHSGQXXZqZnyLDXVBti8CLxqOQqijNK/+Uoe
-	g==
-X-Received: by 2002:a05:6820:1746:b0:688:2480:7fa8 with SMTP id 006d021491bc7-69c942dac4dmr10442247eaf.21.1779114890563;
-        Mon, 18 May 2026 07:34:50 -0700 (PDT)
+        bh=vLwaPu255e3pjQ0cFx1rgIs4MewOKBP6Q9vMpdbPUGw=;
+        b=Evum/FzxUGhZRFG48UUsNuWj3A3256jzIGb1ktfySLkPLQMDLHWZ/i3bScR/I2ySM2
+         OzN2Fw6LWJQ0NPMdoQ5AXJrx6n1hMa7HhJnIiM5lUehrRTOUyEyNpQ69Op4L9qSLKeTZ
+         QEO763rmj6a0D3zZuGrHJZXr5bLTddPFGNzznUJ+atEoNOREwh8pP6dbXd2sL/yu7GRT
+         OmHIa+u4LQ0SKnzZO12iHGFEVdxM+xK2yfUDj0e6juJt8V721q6rc+uWLgy0+RfXCYPv
+         eGjHGLlTABiVo8Ip6Wc+JKB3fjhceSzxTtySh4FsqBKQLIJTRZCdnNmBdTSrEYidhF0d
+         7o2A==
+X-Forwarded-Encrypted: i=1; AFNElJ+iB8HLWMTv8G4XAJ7ZLnJQNPlT4Rwt6c9npFTnVZGZHqWn9T7UhC7+kQFYkerpxPY/kSrfi7nO3og=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz7jFAhdOrxr9P5sOep3qzuYsclnCMseqNZYDdOOnNal0m2bivN
+	ygfVuPE+Gu99UsVyLwE7LhJG7771TxRzUkjVrpLiuqZee/gMeJKXhHAlNmkd6wQxRQ0=
+X-Gm-Gg: Acq92OGAW5rDpbbMQrnbv7/GYjWz4exljI5jPA130ox7njA8VQxfj02whPtV3bO8QMO
+	yJZlUiQR3Ccl0/JoPXB4NdH8c/G7oHH2MKb4b9u58HgTJM21LAj+IKWJEXaZd1pfsy+z8g7tLZe
+	KfT6Z+nQ1fedftcMGk2bHgQpJJLVz+1/146dQom6l49eiJbNk9oqXtxOtMOwT+pcwlcDyz7CJZr
+	+KjXnW+vhORyHUqw1cX7Txg3U9pnXPQFqjlY5r3X77OlJhIiZHPtwo/Yg/STL2uk/pv3Venl39q
+	mTEQoJFgTsfC70lZjghmlZc2fLjX/w5BK2Z5Tks9wh0ccCZ0uqdK1WuJfI0RuK7V0YJYlCEfDB7
+	XzoBI7l8oWBotp9zKvIIxhfKLqAz3kIri5pcar6ixBmDVGuSNqLNh4rjlfXoPlF+q5v36aEBct1
+	afKz9G3AbcbrykVACEZGW7Q+6MSyQRjCQXs59MbEKw3FIZuW1TxjNEC7inYFhvrGB/mgF0IyQM2
+	KD6D8AMRqtV
+X-Received: by 2002:a05:6830:3902:b0:7e3:ef86:19f6 with SMTP id 46e09a7af769-7e4ea19d771mr10631883a34.8.1779114980228;
+        Mon, 18 May 2026 07:36:20 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:3be6:1187:fed4:378b? ([2600:8803:e7e4:500:3be6:1187:fed4:378b])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69d049384f6sm5675126eaf.14.2026.05.18.07.34.49
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e55b7c6b29sm7794934a34.1.2026.05.18.07.36.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2026 07:34:50 -0700 (PDT)
-Message-ID: <41c0317d-2ce8-412c-818a-4a84201fce29@baylibre.com>
-Date: Mon, 18 May 2026 09:34:48 -0500
+        Mon, 18 May 2026 07:36:19 -0700 (PDT)
+Message-ID: <c9610990-6b40-40a8-948c-fa1209242dbe@baylibre.com>
+Date: Mon, 18 May 2026 09:36:18 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,53 +69,234 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/8] iio: timestamp declaration cleanup
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jyoti Bhayana <jbhayana@google.com>, Jonathan Cameron <jic23@kernel.org>,
+Subject: Re: [PATCH v11 3/6] iio: adc: ad4691: add triggered buffer support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
  =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>,
- Nicolas Ferre <nicolas.ferre@microchip.com>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Claudiu Beznea <claudiu.beznea@tuxon.dev>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Benson Leung <bleung@chromium.org>, Guenter Roeck <groeck@chromium.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- linux-stm32@st-md-mailman.stormreply.com, chrome-platform@lists.linux.dev
-References: <20260517-iio-timestamp-cleanup-v1-0-61fb908c11c7@baylibre.com>
- <agq7PPw0qupI_8Dh@ashevche-desk.local> <agq8Q1wpzIw4XhNQ@ashevche-desk.local>
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
+ <20260515-ad4692-multichannel-sar-adc-driver-v11-3-eab27d852ac2@analog.com>
+ <9b7986e1-6550-415d-b301-33089ba10177@baylibre.com>
+ <20260517132526.27c71b70@jic23-huawei>
+ <58a66855-9fb3-48ca-8cae-ff9277f745df@baylibre.com>
+ <20260518152103.4d428c1e@jic23-huawei>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <agq8Q1wpzIw4XhNQ@ashevche-desk.local>
+In-Reply-To: <20260518152103.4d428c1e@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 5/18/26 2:14 AM, Andy Shevchenko wrote:
-> On Mon, May 18, 2026 at 10:09:48AM +0300, Andy Shevchenko wrote:
->> On Sun, May 17, 2026 at 01:17:17PM -0500, David Lechner wrote:
->>> While looking around the code, I noticed that there are a lot of places
->>> were we are manually filling all of the fields of an IIO timestamp.
->>>
->>> This is error-prone (as seen in the first patch) and more verbose than
->>> it needs to be.
->>>
->>> I went with the approach of using the existing IIO_CHAN_SOFT_TIMESTAMP()
->>> macro for doing a struct assignment. This does require a cast, which
->>
->> No, it's *not* a cast. It's a compound literal. And instead of doing this in
->> every driver, add it to the macro (in a separate patch). Oh, let me just cook
->> it for you (I added that to several cases in the past).
+On 5/18/26 9:21 AM, Jonathan Cameron wrote:
+> On Sun, 17 May 2026 14:21:30 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
 > 
-> 20260518071349.469748-1-andriy.shevchenko@linux.intel.com
+>> On 5/17/26 7:25 AM, Jonathan Cameron wrote:
+>>> On Sat, 16 May 2026 12:32:51 -0500
+>>> David Lechner <dlechner@baylibre.com> wrote:
+>>>   
+>>>> On 5/15/26 8:31 AM, Radu Sabau via B4 Relay wrote:  
+>>>>> From: Radu Sabau <radu.sabau@analog.com>
+>>>>>
+>>>>> Add buffered capture support using the IIO triggered buffer framework.
+>>>>>
+>>>>> CNV Burst Mode: the GP pin identified by interrupt-names in the device
+>>>>> tree is configured as DATA_READY output. The IRQ handler stops
+>>>>> conversions and fires the IIO trigger; the trigger handler executes a
+>>>>> pre-built SPI message that reads all active channels from the AVG_IN
+>>>>> accumulator registers and then resets accumulator state and restarts
+>>>>> conversions for the next cycle.
+>>>>>
+>>>>> Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
+>>>>> reads the previous result and starts the next conversion (pipelined
+>>>>> N+1 scheme). At preenable time a pre-built, optimised SPI message of
+>>>>> N+1 transfers is constructed (N channel reads plus one NOOP to drain
+>>>>> the pipeline). The trigger handler executes the message in a single
+>>>>> spi_sync() call and collects the results. An external trigger (e.g.
+>>>>> iio-trig-hrtimer) is required to drive the trigger at the desired
+>>>>> sample rate.
+>>>>>
+>>>>> Both modes share the same trigger handler and push a complete scan —
+>>>>> one big-endian 16-bit (__be16) slot per active channel, densely packed
+>>>>> in scan_index order, followed by a timestamp.
+>>>>>
+>>>>> The CNV Burst Mode sampling frequency (PWM period) is exposed as a
+>>>>> buffer-level attribute via IIO_DEVICE_ATTR.
+>>>>>
+>>>>> Signed-off-by: Radu Sabau <radu.sabau@analog.com>  
+>>>   
+>>>>> +
+>>>>> +static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
+>>>>> +{
+>>>>> +	struct ad4691_state *st = iio_priv(indio_dev);
+>>>>> +	unsigned int k, i;
+>>>>> +	int ret;
+>>>>> +
+>>>>> +	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
+>>>>> +	memset(st->scan_tx, 0, sizeof(st->scan_tx));
+>>>>> +
+>>>>> +	spi_message_init(&st->scan_msg);
+>>>>> +
+>>>>> +	k = 0;
+>>>>> +	iio_for_each_active_channel(indio_dev, i) {
+>>>>> +		if (i >= indio_dev->num_channels - 1)
+>>>>> +			break; /* skip soft timestamp */    
+>>>>
+>>>> I don't think timestamp gets set in the scan mask. It is handled separately.  
+>>>
+>>> FWIW that is a sashiko false postive (I believe anyway!)
+>>> If we do hit this please shout as we have a core bug.
+>>>
+>>> If anyone has time to look at how hard it would be to tweak
+>>> iio_for_each_active_channel to skip a last element timestamp that
+>>> would be great.
+>>>
+>>> I think that iterates one too far which is what sashiko is tripping over.
+>>>
+>>> I'm only keen to fix that if we can make it low cost and hid it entirely
+>>> from drivers.
+>>>
+>>> Jonathan
+>>>   
+>> This is what I came up with (totally untested).
+>>
+>> Since timestamp can never be set in scan_mask/active_scan_mask, it should
+>> be safe to exclude it from masklength without breaking existing code.
+> Probably... 
+>>
+>> I didn't check all callers of masklength/iio_get_masklength() though.
+> 
+> That was the bit that made me nervous. Particularly if there is an off
+> by one that is working by luck today - or someone who understood this
+> oddity and did it deliberately.
+> 
+> At one point we also had a few other timestamps - the ones come from hardware.
+> I can't remember how we handled those wrt to the scan mask.  I took a quick
+> look and thing they are all fine. 
+> FWIW a nice precursor would be to make sure all timestamp channels are assigned
+> using the macro. There are a few that are hand crafted.  I tested a few, but obviously
+> needs turning in to a proper set and cleaning up.
+> 
+> diff --git a/drivers/iio/adc/ad4170-4.c b/drivers/iio/adc/ad4170-4.c
+> index 627cbf5a37b0..890e25294baa 100644
+> --- a/drivers/iio/adc/ad4170-4.c
+> +++ b/drivers/iio/adc/ad4170-4.c
+> @@ -2385,9 +2385,7 @@ static int ad4170_parse_channels(struct iio_dev *indio_dev)
+>  	}
+>  
+>  	/* Add timestamp channel */
+> -	struct iio_chan_spec ts_chan = IIO_CHAN_SOFT_TIMESTAMP(chan_num);
+> -
+> -	st->chans[chan_num] = ts_chan;
+> +	st->chans[chan_num] = IIO_CHAN_SOFT_TIMESTAMP(chan_num);
+>  	num_channels = num_channels + 1;
+>  
+>  	indio_dev->num_channels = num_channels;
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index 6e1930f7c65d..56baca1f5026 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -521,13 +521,7 @@ static int at91_adc_channel_init(struct iio_dev *idev)
+>  	}
+>  	timestamp = chan_array + idx;
+>  
+> -	timestamp->type = IIO_TIMESTAMP;
+> -	timestamp->channel = -1;
+> -	timestamp->scan_index = idx;
+> -	timestamp->scan_type.sign = 's';
+> -	timestamp->scan_type.realbits = 64;
+> -	timestamp->scan_type.storagebits = 64;
+> -
+> +	*timestamp = IIO_CHAN_SOFT_TIMESTAMP(idx);
+>  	idev->channels = chan_array;
+>  	return idev->num_channels;
+>  }
+> diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
+> index 2c51b90b7101..d42b747325aa 100644
+> --- a/drivers/iio/adc/cc10001_adc.c
+> +++ b/drivers/iio/adc/cc10001_adc.c
+> @@ -262,7 +262,7 @@ static const struct iio_info cc10001_adc_info = {
+>  static int cc10001_adc_channel_init(struct iio_dev *indio_dev,
+>  				    unsigned long channel_map)
+>  {
+> -	struct iio_chan_spec *chan_array, *timestamp;
+> +	struct iio_chan_spec *chan_array;
+>  	unsigned int bit, idx = 0;
+>  
+>  	indio_dev->num_channels = bitmap_weight(&channel_map,
+> @@ -289,13 +289,7 @@ static int cc10001_adc_channel_init(struct iio_dev *indio_dev,
+>  		idx++;
+>  	}
+>  
+> -	timestamp = &chan_array[idx];
+> -	timestamp->type = IIO_TIMESTAMP;
+> -	timestamp->channel = -1;
+> -	timestamp->scan_index = idx;
+> -	timestamp->scan_type.sign = 's';
+> -	timestamp->scan_type.realbits = 64;
+> -	timestamp->scan_type.storagebits = 64;
+> +	chan_array[idx] = IIO_CHAN_SOFT_TIMESTAMP(idx);
+>  
+>  	indio_dev->channels = chan_array;
+>  
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 96b05c86c325..702b2fc66326 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -353,7 +353,7 @@ static inline bool iio_channel_has_available(const struct iio_chan_spec *chan,
+>  		(chan->info_mask_shared_by_all_available & BIT(type));
+>  }
+>  
+> -#define IIO_CHAN_SOFT_TIMESTAMP(_si) {					\
+> +#define IIO_CHAN_SOFT_TIMESTAMP(_si) (struct iio_chan_spec) {		\
+>  	.type = IIO_TIMESTAMP,						\
+>  	.channel = -1,							\
+>  	.scan_index = _si,						\
+> 
+> Doing that will mean we can spot any unusual use of IIO_TIMESTAMP much more
+> easily.
+> 
+> Anyhow, basic approach looks good to me.
 
-Nice, thanks. I agree this will be the cleanest solution.
+I guess you didn't see the other series cleaning up IIO_TIMESTAMP I already
+sent yet.
 
 > 
->>> makes it a bit more verbose, but we were already doing that in to
->>> drivers, so I went with it anyway.
+> Jonathan
+> 
+> 
+> 
 >>
->>> If we want to consider alternatives, we could make a iio helper function
->>> or macro like the first and second patches did.
+>> ---
+>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>> index 9d66510a1d49..17f539fc23e2 100644
+>> --- a/drivers/iio/industrialio-buffer.c
+>> +++ b/drivers/iio/industrialio-buffer.c
+>> @@ -2300,8 +2300,10 @@ int iio_buffers_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+>>  	if (channels) {
+>>  		int ml = 0;
+>>  
+>> -		for (i = 0; i < indio_dev->num_channels; i++)
+>> -			ml = max(ml, channels[i].scan_index + 1);
+>> +		for (i = 0; i < indio_dev->num_channels; i++) {
+>> +			if (channels[i].type != IIO_TIMESTAMP)
+>> +				ml = max(ml, channels[i].scan_index + 1);
+>> +		}
+>>  		ACCESS_PRIVATE(indio_dev, masklength) = ml;
+>>  	}
+>>  
+>>
+>>
+>>
 > 
 
