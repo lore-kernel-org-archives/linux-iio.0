@@ -1,131 +1,184 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E04C8317176;
-	Mon, 18 May 2026 09:59:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF26731A807
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 10:03:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779098345; cv=none; b=tHcCHYxIXGr1g/bWvh9N2SUlox2A1YOrQOiRBcTgNh+OYPjcW/9/GYvWzRQ66JB5vOKvqex7Pn9RBwbmfVhPxEFtnpqSQZyP0TJJ8/hT/KZvfWEbKLBg+I8+dmAbFxaZ99Wz3Au1ECD4Z1PipN6Z7LadCFEw4hRe4DIONO94pjk=
+	t=1779098615; cv=none; b=UCNjL3xrKh2Ud51x9JFC3lPhmMrCzg3Gj1GNojLmdEnzIJMRg721ciMZJh0BdnJGB+i48gCO8m5TLngDGnk5UApU3P7IIjXKnsyhB1dlA96fQ3WJ0AS93Eo4snWyDQRGsjmufx0Xz6qq0vL2YmqPgdpFDCcRypS4oBYm3y3xJik=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779098345; c=relaxed/simple;
-	bh=kItDCd7EvbNKulZLaZYqEk6tnoj2gCQ5biwGPGhGd7M=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=lQtgIdeqKjauoIkZHVMICNN6hPKPDPuSVwtaYuRaorNPRoPAf6pK7NsOAk5FCWajzTKSbzPgtpE8gHme2Dpdpftr5qEc09t1io976g0ce42nO3nOemSRsB+NxEQ2An3DYP5gk7ai0vzSJn4SXaQBd8sGYblKEzfkz0UInOFHD4Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=szxLO2bn; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779098615; c=relaxed/simple;
+	bh=OlVnZ6hgBjl6Z4wjcdiU1o7je41o2bODQ8xTkDcLa3M=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lL3rjf3+nWEnys0/mWg3oZnm1GSxG79Ras39Mch365mUZqD3aJ5ixxrsuJN3u4BZLSvYbod2ecSXbKVTxxLkUugTJBvT76TjpsAS/UWe2aKimx+yb4NYKij5lxDzlJ5hT1ZrfE68BLzpFG0jf0RIVghjbaYN2wxO4hCXCd2+uGo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l66c26y2; arc=none smtp.client-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="szxLO2bn"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C83EC2BCC6;
-	Mon, 18 May 2026 09:59:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779098344;
-	bh=kItDCd7EvbNKulZLaZYqEk6tnoj2gCQ5biwGPGhGd7M=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=szxLO2bnZeZ9Cha/v0CGtnuGthx4F0SJYLAnY/L8fDbQ96260pkwRZCIvzzobr4Qs
-	 n+Lsxr7oPs4Sedf8HUnYfdUXsCLFgDYRNzotrpVHVgGPQtNJxp/to0SzZGz/38hveL
-	 BHh9vCr6PWOWT/S8TJ8PUMzxC+rXuz0VWVQgqKoGNWffTiehXmK0SwXIwjy1eFgMoL
-	 0JGgp3fPA/y6yYFvI40/s0hAeiiaLFknOcWrA90oOI+/HddzgGz/Iqe9sjP3iLvOqr
-	 5fTnK7dYShsRlofPPTNenK1x2jVUtcu50ub/pBzl2N6xzJV3jNx/H96Zwj4cgCBjJr
-	 tAXXkkwAub2Qg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB32CD4F3C;
-	Mon, 18 May 2026 09:59:04 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Mon, 18 May 2026 12:59:03 +0300
-Subject: [PATCH v3 1/2] iio: adc: ad_sigma_delta: fix CS held asserted and
- state leaks
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l66c26y2"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-b9382e59c0eso456683266b.0
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 03:03:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779098612; x=1779703412; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=J9ylC37SeHhzEHv6vV+fwrRGDdNjQ9Rkf4Ee3GfdjHs=;
+        b=l66c26y2HCl2ofOgm8mN9gFQxNXJmjgUbaj22MJZalI0IQUYLh6KWDyebsE3k3jMG1
+         3TDqvmqoFvE0YpYF+YFCq6cVfOWsS5cSJuvvHkQ9/xlT0IkabPsPohCW9jjhtv2dnwsH
+         XR08ai3ORBF+584Xz55zcG0fFZVBORnNYeoMsQNOvQa34PT28d7ThEfQNEq8b8oTIh3W
+         I4qn5rcyBLmOaYDyi0Hw6bj/8i6ge/vJP2MGZaYOMtkLFNCrCiF3yiQmbXlzQb2hgwFY
+         pSqyyyUQ82tXkSN79KURiGMJfMKKeYblF/hanGGBiFoSWlZdcRTWUS69wLRKM7Oxy/eb
+         m7Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779098612; x=1779703412;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=J9ylC37SeHhzEHv6vV+fwrRGDdNjQ9Rkf4Ee3GfdjHs=;
+        b=G7D2YoIQbIOuxDH0Wlvs3eSkFy1yKH+LS33/Zp0ZBExb//4TYppZZMXhVO36lsrMfS
+         lDQ2H2qrRxdC52fIJROmR/mKkQuzgxz81+u0qHVL/GHKREz2jZ8CbFuTCZTXc/rILtzM
+         sSUKHB5frAU4H4w5eyeVJvnZg9ARlPiN1lI/znavWPUNVdI4NzOlcGat8pbeqd1Eveo1
+         Qy3Yeh3nBKK+lYWrGKpxoA56gk32z9ZrJIxX31fB46O79DIzxx4S1krkJyS2u5euA8z2
+         /bDxQlpkFYpqQiIgTUd5/XjI57IebDJiY/3dxuzDn12PrFLD6oBx2MuyVXJxkPBDlOqq
+         6rIQ==
+X-Gm-Message-State: AOJu0YyOTkislBkjhzv6FkGEqPcFH8vNOsp/aLIoedGDH4i+08H0eXNW
+	u3V7SXc4nEL5Wj0z3hgOKYUi90xJiah2iry7yrU9KgkPX3q1W9ejzDcw
+X-Gm-Gg: Acq92OHvulAdoM9Zxno9+knLbrgqtmZoMQbkpAtWem8yynLUZpKIPe7V2ClS+4Jtoaf
+	GO+U/+V2glOoI268ohT8883Ylu6iOWqkTNoI6QoJjK+f0hbMwHwF51hHOXhJuZKTUuu2AzVaMTm
+	K1LSWnybH9UwxFl7g5qEhfpfUg7/aplApSxma9Bx5kX4SUSQAEaj4ZHEGUNoUFepGpMzGLIs/4x
+	+rfOsa5yVxUJ3VXtJuuK3w2DccJMnksCmBJQgyOtY6qK5VgNQmoQQxKfY7Az4+dzdGSXr4k/R+T
+	qLNHB3eyjS6AEpm5iSCr/pK93pMI1QqYLvc5YpSMO69prr5Cj/xbI2lE37iU7Ngk9721N4Axw3R
+	QDJcbOw4YMY2ODKC7ITq2TeX6OiyYlJt4e4pXVmpb4p2CNz1CBG2GKJXnDQlGYBgghWj6frUc1n
+	pwdKoMOswgE+tRqVTer28Ev6zFvQPmDXu84UKBXdp3PlPylPp2DhPRjh0Br1ygI5fDuxB2hw/rD
+	hT+y5HzpSZLPVbqnSSl02vLRYdwkQcL11SrUS9H8Zabzpq8xcIECeq5jSeRApBmE3W1kZY=
+X-Received: by 2002:a17:907:1608:b0:bd4:9a55:18e2 with SMTP id a640c23a62f3a-bd51797a54dmr747720366b.45.1779098612039;
+        Mon, 18 May 2026 03:03:32 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bd4f4bd2f67sm541480966b.7.2026.05.18.03.03.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2026 03:03:31 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Mon, 18 May 2026 11:03:25 +0100
+To: Krzysztof Kozlowski <krzk@kernel.org>, 
+	Rodrigo Alencar <rodrigo.alencar@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v5 05/13] dt-bindings: iio: frequency: add ad9910
+Message-ID: <54aifnhtrlus35grvw2cgotvxwnp5p7peim3tke5wa5tjobmww@iiaajlvladrt>
+References: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
+ <20260517-ad9910-iio-driver-v5-5-31599c88314a@analog.com>
+ <20260518-zippy-ingenious-aardwolf-df46a2@quoll>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260518-ad_sigma_delta-fix-v3-1-a2a92b0c36f3@analog.com>
-References: <20260518-ad_sigma_delta-fix-v3-0-a2a92b0c36f3@analog.com>
-In-Reply-To: <20260518-ad_sigma_delta-fix-v3-0-a2a92b0c36f3@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Radu Sabau <radu.sabau@analog.com>, Jonathan Cameron <jic23@kernel.org>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779098343; l=2485;
- i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=jgsy//wSVhNGuw9UiQlTJ+vWzQIexEwOSspnPbjTdn0=;
- b=5FYm5eyXVfVif4vOdQyy+nX8Qi21HBhZgUb3RhOZsAecRSCjbPM4PLWb86JPRU1c44DjXfXWd
- 4AH6e/rD6JsD/+XTMVTojqmpz4tp/lXWnUxgbg1AUaoFTJc+0YmRpRZ
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
- auth_id=642
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260518-zippy-ingenious-aardwolf-df46a2@quoll>
 
-From: Radu Sabau <radu.sabau@analog.com>
+On 26/05/18 09:52AM, Krzysztof Kozlowski wrote:
+> On Sun, May 17, 2026 at 07:37:49PM +0100, Rodrigo Alencar wrote:
+> > +maintainers:
+> > +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > +
+> > +description:
+> > +  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
+> > +  14-bit DAC. It features single tone mode with 8 configurable profiles,
+> > +  a digital ramp generator, RAM control, OSK, and a parallel data port for
+> > +  high-speed streaming.
+> > +
+> > +  https://www.analog.com/en/products/ad9910.html
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: adi,ad9910
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  spi-max-frequency:
+> > +    maximum: 70000000
+> > +
+> > +  clocks:
+> > +    minItems: 1
+> > +    items:
+> > +      - description: Reference clock (REF_CLK).
+> > +      - description: Optional synchronization clock (SYNC_IN).
+> > +
+> > +  clock-names:
+> > +    oneOf:
+> > +      - items:
+> > +          - const: ref_clk
+> > +      - items:
+> > +          - const: ref_clk
+> > +          - const: sync_in
+> 
+> So that's just items with two items and minItems: 1. Like you have in
+> "clocks:".
+> 
+> You got this comment already at v2.
 
-In ad_sigma_delta_single_conversion(), set_mode(AD_SD_MODE_IDLE) and
-disable_one() were called from the out: block while keep_cs_asserted
-was still true. This caused any SPI transfer issued by those callbacks
-to carry cs_change=1, leaving CS permanently asserted after the
-conversion. Fix by moving both calls into the out_unlock: block, after
-keep_cs_asserted is cleared, matching the pattern already used in
-ad_sd_calibrate().
+You're right! will adjust. For some reason I thought I had problems with
+the dt-binding check without this.
 
-In the error path of ad_sd_buffer_postenable(), if an operation fails
-after set_mode(AD_SD_MODE_CONTINUOUS) has already succeeded (e.g.
-spi_offload_trigger_enable()), the device is left in continuous
-conversion mode with CS physically asserted. Additionally,
-bus_locked remaining true after spi_bus_unlock() causes subsequent
-SPI operations to call spi_sync_locked() without the bus lock actually
-held, allowing concurrent SPI access.
+> 
+> > +
+> > +  '#clock-cells':
+> > +    const: 1
+> > +
+> > +  clock-output-names:
+> > +    minItems: 1
+> > +    maxItems: 3
+> > +    items:
+> > +      enum: [ sync_clk, pdclk, sync_out ]
+> 
+> Why are the names fixed? And why is the order random?
 
-Fix the error path by clearing keep_cs_asserted first, then calling
-set_mode(AD_SD_MODE_IDLE) to revert the device mode and deassert CS,
-then clearing bus_locked before releasing the bus.
+All of those would be optional. Having it in a specific order we would need
+to register all the clocks even if only one (or none) is used?
 
-For devices that implement neither set_mode nor disable_one (such as
-MAX11205, which has no physical CS pin), no SPI transfer is issued
-during cleanup and the cs_change flag has no effect on any physical
-line.
+> > +
+> > +  interrupts:
+> > +    minItems: 1
+> > +    items:
+> > +      - description:
+> > +          Signal that indicates that Digital Ramp Generator has reached a limit.
+> > +      - description:
+> > +          Signal that indicates the end of a RAM Sweep.
+> > +
+> > +  interrupt-names:
+> > +    minItems: 1
+> > +    maxItems: 2
+> > +    items:
+> > +      enum: [ drover, ram_swp_ovr ]
+> 
+> Your "interrupts:" do not allow flexibility. Are you sure interrupts are
+> optional in the hardware?
 
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
- drivers/iio/adc/ad_sigma_delta.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Good point, They are optional. Should I drop the items and descriptions in "interrupts"?
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index a955556f9ec8..a33a7e8c264f 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -441,11 +441,10 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
- out:
- 	ad_sd_disable_irq(sigma_delta);
- 
--	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
--	ad_sigma_delta_disable_one(sigma_delta, chan->address);
--
- out_unlock:
- 	sigma_delta->keep_cs_asserted = false;
-+	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
-+	ad_sigma_delta_disable_one(sigma_delta, chan->address);
- 	sigma_delta->bus_locked = false;
- 	spi_bus_unlock(sigma_delta->spi->controller);
- out_release:
-@@ -578,6 +577,8 @@ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
- 	return 0;
- 
- err_unlock:
-+	sigma_delta->keep_cs_asserted = false;
-+	sigma_delta->bus_locked = false;
- 	spi_bus_unlock(sigma_delta->spi->controller);
- 	spi_unoptimize_message(&sigma_delta->sample_msg);
- 
+> > +
+> > +  dvdd-io33-supply:
+> > +    description: 3.3V Digital I/O supply.
+> > +
+> > +  avdd33-supply:
+> > +    description: 3.3V Analog DAC supply.
+> 
+> Best regards,
+> Krzysztof
+> 
 
 -- 
-2.43.0
+Kind regards,
 
-
+Rodrigo Alencar
