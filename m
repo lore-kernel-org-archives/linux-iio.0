@@ -1,111 +1,134 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 656CE3CF680;
-	Mon, 18 May 2026 10:58:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F18A3E1D1C
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 11:45:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779101889; cv=none; b=TfgvuwzCEI0Seko26+ALIdBTcUATqeXfkIXLgb0KWPLgJNBeGXTGZpEw59BLiZCEjaK50sSj+D3eDNj72cSBBOWolZzng+WbRKFg9gGUKBzZoqhwumwABprqW45LrQhZNtmW+qcqTvKgacInIMJOT+IEHre0xRAOQ8kF1zEc088=
+	t=1779104712; cv=none; b=XTdjfinh1h8JrG8OVxMYhBbR1DtVeStsp6fdlsTk8ei7L7MTAQpIrKs3cmWyIbMHBa97i6jLt3XCZFFqeStSQWUMUnRLWOumW0SvSNdtpRaceSlV4S21qR4BMnR/lyxqkKWhVUgcTmibS1z/Xjz53DqEwmUybxOmclCxlC3Znng=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779101889; c=relaxed/simple;
-	bh=CeJdp63t5M3yrMI58BNBOA4lTzNvLQlOWbKDErRCEaI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cyowQN+JroVJfEIo2v/kygpXyNFrxcLkEdvf9zACXdBok4tMEaurZAj43IF1E6TKbcvbr4FjZV7LLKmGMAuL8SnlqYtAzdZ8ov7vQohfKuRS9OeVuAEhfOroxeuQO8nTHYzsszEOVbevAejd+s4viFjla2y8ISDASuVzFPIwvzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=oaydknFL; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1779104712; c=relaxed/simple;
+	bh=oem4IMVPK2NhKna+J6ughkzUgCnu/vCJn4mkH0vRr0c=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AdpQjFtY5n0ykSR0r0km+JjPB9DoHHnfH8jnk8HWet603PcDAo1qw8oDj5FEhbU2lFV9bT8Pex+PeiDNsbI4GlsK+yw2ChEcnYWIkTKjf6a102pD/oUPCkCCpqg1sEauKBwnIEwdG6nz+jIYsDF6dIPpZj9z4gaOlPR5DBSpZJ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=LCtztQhl; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=VU3zrWZY; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="oaydknFL"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=jBVg5PAElT/VJaPv+0RYYYnJBg28cPCXxION0Y0Lv4k=; b=oaydknFLp/ZK1dYVkG8aeaicn4
-	tL8zn5YeFiI4wR8LwtlU5+J57P84vdG88LIZgwZyUqoBwsb6cJCKJ5KZGd2c/3AGzOVPXCLF2kmB8
-	8U7N0P6tDEQs90979e5/EUmvwWH7J/OrNiRpwUskUsse4lGRaVrJ2pu1fF6GcR7aSJwbY7pWs06hA
-	7t4sBerD3jWTQMAGXm1LSXYETXKuukJY1ngImNn+ebXj4m4P/onLMBfLQnxqWYf6zRvehFm8Z8fbu
-	+0nTRjXX3PqW1knekPfczMPT+Sd3qcdNc9JzLFcqjNsA0kMe4HgIx/hWZJDOQ5cM0fR7S8w8GURIp
-	RMQ12bOw==;
-Received: from 2001-1c00-8d85-4b00-266e-96ff-fe07-7dcc.cable.dynamic.v6.ziggo.nl ([2001:1c00:8d85:4b00:266e:96ff:fe07:7dcc] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wOvfE-0000000AqRU-2NAG;
-	Mon, 18 May 2026 10:57:40 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 730F53007A4; Mon, 18 May 2026 12:57:35 +0200 (CEST)
-Date: Mon, 18 May 2026 12:57:35 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>, linux-doc@vger.kernel.org,
-	devicetree@vger.kernel.org, workflows@vger.kernel.org,
-	Linux-Arch <linux-arch@vger.kernel.org>, dmaengine@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
-	Netdev <netdev@vger.kernel.org>, linux-pci@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-hardening@vger.kernel.org,
-	linux-kbuild@vger.kernel.org,
-	"linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Alex Shi <alexs@kernel.org>,
-	Yanteng Si <si.yanteng@linux.dev>, Dongliang Mu <dzm91@hust.edu.cn>,
-	Hu Haowen <2023002089@link.tyut.edu.cn>,
-	Dinh Nguyen <dinguyen@kernel.org>, Kees Cook <kees@kernel.org>,
-	Oleg Nesterov <oleg@redhat.com>, Will Deacon <will@kernel.org>,
-	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Nicholas Piggin <npiggin@gmail.com>, Vinod Koul <vkoul@kernel.org>,
-	Frank Li <Frank.Li@kernel.org>, Dave Penkler <dpenkler@gmail.com>,
-	Andi Shyti <andi.shyti@kernel.org>,
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LCtztQhl";
+	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="VU3zrWZY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1779104709;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=AlBqXl+zcv27ISWHI32Lwsf7wLr0+r4751NpMP8Mpt8=;
+	b=LCtztQhlSnVH2ZFzsT05ZLng7EaQ1XQby6RaOZv/T9GP92AaNl14x/L7a7GsHXRXD3+l+s
+	Iyw1K0Yn0VdC6qOQDanGErj/L41xfOvz0g/IcEW2wjDrQZ1G1BWFcU5JdZRlwRbKAqhBg4
+	J+R3L94NNhdEwnE8BDrKW3ZkJjsTY8c=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-25-WJK6okBIP-OSE0aF1okc6g-1; Mon, 18 May 2026 07:45:08 -0400
+X-MC-Unique: WJK6okBIP-OSE0aF1okc6g-1
+X-Mimecast-MFC-AGG-ID: WJK6okBIP-OSE0aF1okc6g_1779104707
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-44d9ace59efso1507576f8f.1
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 04:45:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=redhat.com; s=google; t=1779104707; x=1779709507; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AlBqXl+zcv27ISWHI32Lwsf7wLr0+r4751NpMP8Mpt8=;
+        b=VU3zrWZYk4zhv882hFIbdz66akuTGugJO+rkHd5y7/Ns7vPEgH0URE6DrkoeAmMv0A
+         ps58T+FqGkc9cJtBYvOVc7ga1toMdJWMFbzgLeOaOKga3rydIrouLFscyrziKQlIU2fY
+         xv8Xn8nu82gd9L6shj2sad4X60iTKNuWgLMDHN76hGaia1OaB0gyqibWr8AyJCXCU8wS
+         NwUcl9Nd3xmv+CUCm0xbxNfgCm+v9xMTQwNaM+49repR892n77PQQymsyxliv+WuLQVY
+         AjscklNYLdMxaN7YO6h937RhDXLRJEjR9O+biHisMd8C3AYg93QfVYYo3i8x2i8O4nGa
+         1cfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779104707; x=1779709507;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AlBqXl+zcv27ISWHI32Lwsf7wLr0+r4751NpMP8Mpt8=;
+        b=DMl4fHoG9kEkYYCXB6I8XP6bU9Q+qn4EZeNwccSfKhAUyUiVTEdUKtqSLai9rzKwJi
+         qUT4f9Wq/BtfzBIDvjRCicOaKMdzE8pE4Bb3SePfaNiWKM32R6ZLtovjAR9Eu22/aIwL
+         1QivGHfLwaV+reaf/iB8aAVbN6tE2Kfk9jPfGYSz9sv4u3gsJ97paZCKdD4Xo4KmPxGP
+         7IF/OqePOmj1WIuY5d9QGtKeroo7TtQhMeLfJfvskbU6VomfhHuBXn8Gg1B34OJQ6//w
+         N3aDtI6xejD+SzCDRFXGqjAwN9c3WrhMIC9TPQkGebznpK0Aq1Foq2cl7vXlR8GZM0zG
+         afOw==
+X-Forwarded-Encrypted: i=1; AFNElJ8L0DexkmOA58sTFtXjAenjEvPotKZMjOUZiErKRIgYCLYfbNGp0QOX9QHT137Cs9KCl/1FLz5e4ZM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzSBD4vAELMOwZ/Tv1Z/60wA0EteKPJdqBjeTTD2wlQwQZxPXyu
+	6qrP4d6j3FpFlbr+R9YXwzObFtVfDPeCV7bqE8LX0tA6NQmPsUuGZPUQJ2rmfUBfDCEBY/xgk2U
+	3M1YJ9evxavNM9ILZjO+Xq2dozQHpqPy0lXKxkzeH0dv+5QQiSqVsFscW5D8eSA==
+X-Gm-Gg: Acq92OFTjIjAhZKBoW+jjlaPruDxyqDoNnDt4dZTgIDk5j0wU0jBgbdjX7X0DNMgYiO
+	MIrHF2Nh85nLp4tUtlhohpkzioXv3bIeIUOlVBJ8aVogAsL6LJhHaK9HJNQAhJusGTuNNHgJqgP
+	Bt2MJWOpZI6mT0N5KYYmvMX98wzGJadLRWQ7y7Ep+zpVsnfhsiPpz3cpMAlrQwhW2wvlbf4JRgj
+	TIqd9jetnZBUM17IghXzH9cwBGPCZZgERCEH8Vgtf729+LukemI9ZpNEOKoMaDbsDVvdz3ePB6o
+	t6tZpADFkLcgfEuQwYaESt1kYjzUIQDaHcHInIVQDFjrkSPmfDQmlmPR9dd047sK+iSiXkHPKUO
+	OgEzl2BpE+8vV/ZkI9Y5iSz8gWVV1x3pC338/h/hRN+ns/0Y67q8jgG2I/8SR964kkIdJ9TA=
+X-Received: by 2002:a5d:5f90:0:b0:43d:300b:2285 with SMTP id ffacd0b85a97d-45e5c5be273mr22658941f8f.11.1779104706742;
+        Mon, 18 May 2026 04:45:06 -0700 (PDT)
+X-Received: by 2002:a5d:5f90:0:b0:43d:300b:2285 with SMTP id ffacd0b85a97d-45e5c5be273mr22658887f8f.11.1779104706289;
+        Mon, 18 May 2026 04:45:06 -0700 (PDT)
+Received: from lbulwahn-thinkpadx1carbongen12.rmtde.csb ([2a02:810d:7e01:ef00:ff56:9b88:c93b:ed43])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da15a562dsm36975605f8f.33.2026.05.18.04.45.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2026 04:45:05 -0700 (PDT)
+From: Lukas Bulwahn <lbulwahn@redhat.com>
+X-Google-Original-From: Lukas Bulwahn <lukas.bulwahn@redhat.com>
+To: Radu Sabau <radu.sabau@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Simon Schuster <schuster.simon@siemens-energy.com>,
-	Andreas Oetken <andreas.oetken@siemens-energy.com>
-Subject: Re: [PATCH] nios2: remove the architecture
-Message-ID: <20260518105735.GW3126523@noisy.programming.kicks-ass.net>
-References: <20260518042833.272221-1-enelsonmoore@gmail.com>
- <d40b1e80-37fc-4c88-9d7f-dae6458efe6c@app.fastmail.com>
+	kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lukas Bulwahn <lukas.bulwahn@redhat.com>
+Subject: [PATCH] MAINTAINERS: adjust file entry in ANALOG DEVICES INC AD4691 DRIVER
+Date: Mon, 18 May 2026 13:45:02 +0200
+Message-ID: <20260518114502.219375-1-lukas.bulwahn@redhat.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d40b1e80-37fc-4c88-9d7f-dae6458efe6c@app.fastmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, May 18, 2026 at 11:29:48AM +0200, Arnd Bergmann wrote:
-> On Mon, May 18, 2026, at 06:28, Ethan Nelson-Moore wrote:
-> > The Nios II architecture is a soft-core architecture developed by
-> > Altera (since acquired by Intel) and intended to run on their FPGAs.
-> >
-> > Licenses for the architecture have not been available for purchase
-> > since 2024 [1], and support for it has been removed from GCC 15 [2],
-> > Buildroot [3], and QEMU [4].
-> >
-> > Given all of these factors, it is time to remove Nios II support from
-> > the kernel. The maintainer stated in 2024 that they were planning to do
-> > so soon [5], but this did not come to pass.
-> >
-> > Remove Nios II support from the kernel and move the former maintainer
-> > to CREDITS. Thank you, Dinh Nguyen, for maintaining Nios II support!
-> 
-> Hi Ethan,
-> 
-> We last discussed this a year ago when Simon Schuster mentioned[1]
-> that Siemens Energy is still using NIOS-2 in production and would
-> prefer to have this still included in Linux for at least another
-> few years until the obligation for kernel updates ends.
+From: Lukas Bulwahn <lukas.bulwahn@redhat.com>
 
-Isn't that what we have LTS branches for?
+Commit 963d07535e77 ("docs: iio: adc: ad4691: add driver documentation")
+adds a file entry in the MAINTAINERS section ANALOG DEVICES INC AD4691
+DRIVER referring to the non-existing file drivers/iio/adc/ad4691.rst. This
+commit however adds Documentation/iio/ad4691.rst; so likely, the file entry
+intends to refer to that newly added file.
+
+Correct the file entry to refer to the intended file.
+
+Fixes: 963d07535e77 ("docs: iio: adc: ad4691: add driver documentation")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@redhat.com>
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f877e5aaf2c7..c2539ffc179b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1507,8 +1507,8 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
++F:	Documentation/iio/ad4691.rst
+ F:	drivers/iio/adc/ad4691.c
+-F:	drivers/iio/adc/ad4691.rst
+ 
+ ANALOG DEVICES INC AD4695 DRIVER
+ M:	Michael Hennerich <michael.hennerich@analog.com>
+-- 
+2.54.0
+
