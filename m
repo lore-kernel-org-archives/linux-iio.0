@@ -1,158 +1,136 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2491B3D1CB1;
-	Mon, 18 May 2026 07:50:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C0653254A5;
+	Mon, 18 May 2026 07:52:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779090642; cv=none; b=D9i4t4t2NQSIdQaMU8+JZHpxvKpCEh/vZi8DWpOD2EAla8IQqVDGJEizLWdqI6U3CMe2zv29F4pAcvE1hnIey2e3xtGzMFTxWKjdMm2ybsCEd8szZjtFOVn8YtYI+dHnuZcYDykW8ue9QAJJ7eQ1VbbZ8UqhJe6aKddkFBgdH3A=
+	t=1779090767; cv=none; b=asSU3yxVtlR1/V6iHxzmglldY9V0olNXi0K7kqvGVVIgzZFYXX0+vOMyL3zre8nvB7w0MzwdTbEolzGOP0/meDPF9/wKmR2RxtX3+wtoBSlPjrYxXpJZvrGgpB1lb0IMEJxo3Od1snw04sr/i8aPc5O4T5oADmIQfE0R5lMOKtI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779090642; c=relaxed/simple;
-	bh=zyLcdeqv/avz5A8qPCnkpPBKHA9DDyEAq0acfzNciec=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=YWCj4itXSSJs/pL3R8Pv/euk4+j9UqxhcO585Jx1dLa8nOF2jhrpVmKZ4OAgRhy71XVLKSLsEWDo80GtLDtkjm3ujPCS1tpOguCHnLO+BkmpWxCbjUAY/Dw8FkAYowr76Wv19tZa+m596YNyUpSo5Rbbj3Mo0MB9N31Fonv6v6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wyih6Pph; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779090767; c=relaxed/simple;
+	bh=8HjDunrHGVNoAqAd2Ojw7ILFQ5qR9o3ddT3DgEWklq0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gq2JO0HPthtQvEljASIAL/OPyI67/usW9l/ijrP2ReFhrm7471vH0HI8AOcIBzHatcsdQywWN8MyhtDSdvsPwTYsyFvM9/6+lVhRRt72SKI0v3Xh7V7pwJwTOTq+MzQHDS5JN5LhlgrMQXuTxPMu+4bYWFJ/WDnnlJ1AEOSVygM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IcQns8Lw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wyih6Pph"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 737C4C2BCFC;
-	Mon, 18 May 2026 07:50:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IcQns8Lw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33B0EC2BCB7;
+	Mon, 18 May 2026 07:52:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779090640;
-	bh=zyLcdeqv/avz5A8qPCnkpPBKHA9DDyEAq0acfzNciec=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Wyih6PphyD5YVClou7WM50Wdr8vgEmhfzpTxp/1YcdrNcO2gEcHh2niwNr+YSzq5Z
-	 T5aaPRn+vsmadOC5fFBtBQqy39fs4XsL/CPHINueFYPHkVCs92hI4py+dl/lQfytbR
-	 P5t9nZrUMmTmDsmL+0/HMZ3rpc2bjt4tASYOI1A5Ph6+H1i0IkbbyGwF5mwKlHNAU9
-	 CGIgk4yccyeINT4oXiwgZI9y5IQJFxWuiMexQlvZG60/AJ92Cvz5l3Tow7NQT+rTNc
-	 NapnUf7HRltLSH9HvdMQ3v/k68nkJaTqU67r7/z3oZ/hkNPB5aoVcfzOI7XKWPTFxz
-	 0WJxiEt59PoRg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E55CD4F48;
-	Mon, 18 May 2026 07:50:40 +0000 (UTC)
-From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Date: Mon, 18 May 2026 09:50:29 +0200
-Subject: [PATCH v8 5/5] iio: magnetometer: ak8975: make use of the macros
- from bits.h
+	s=k20201202; t=1779090765;
+	bh=8HjDunrHGVNoAqAd2Ojw7ILFQ5qR9o3ddT3DgEWklq0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=IcQns8LwzDfmgwrCFrwiXaiVkINvN5YIe9u9jhDZ2+G/cSH2BGX+/Ct/DPObrliVo
+	 AJUX2x4ufQ/kB/OC26wzW1AqzVegOJCG9acxrL2F7LLwOBYsfF+FsR+wFiBwRf4JSw
+	 LD1nFw9Z6gaCEJKQYmd18J6NuqFpBCkFFnZWrRaXdNpIhPZwQySqGx6cFTM4EZEKiO
+	 sswCdc/TDQKz8GxJDRKAPLzgXseOcvNBpc3zRqtgk16lniwkEz5FSkZTw7xhzmTRXM
+	 4veYWwF2bpKJ+I6KbdFWF5Xabh2PudKMH5eHtIQk7KRBEHu06gR7bi0/I1eL0DTTXp
+	 fC+WitaKgkvYQ==
+Date: Mon, 18 May 2026 09:52:43 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v5 05/13] dt-bindings: iio: frequency: add ad9910
+Message-ID: <20260518-zippy-ingenious-aardwolf-df46a2@quoll>
+References: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
+ <20260517-ad9910-iio-driver-v5-5-31599c88314a@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260518-magnetometer-fixes-post-pickup-v8-5-088d610108a0@gmail.com>
-References: <20260518-magnetometer-fixes-post-pickup-v8-0-088d610108a0@gmail.com>
-In-Reply-To: <20260518-magnetometer-fixes-post-pickup-v8-0-088d610108a0@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779090641; l=3070;
- i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
- bh=BtLMic4EKbvo/TXyU+z5jFmNKa9TTxTHDNruILvxV+I=;
- b=0UloWUoGbdrlQwxATeNTnYybF/7f7C+qzSQkpdMzqszHagHBl+kuJKGpmnHXDtAG3Iy+n1zWT
- e6452MKzYmaCg3dK+fRbFDcCYrXLGtBWzVBPh1DJjAqzrO6PwZxdcKs
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
-X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
- auth_id=746
-X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Reply-To: joshua.crofts1@gmail.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260517-ad9910-iio-driver-v5-5-31599c88314a@analog.com>
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Sun, May 17, 2026 at 07:37:49PM +0100, Rodrigo Alencar wrote:
+> +maintainers:
+> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
+> +
+> +description:
+> +  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
+> +  14-bit DAC. It features single tone mode with 8 configurable profiles,
+> +  a digital ramp generator, RAM control, OSK, and a parallel data port for
+> +  high-speed streaming.
+> +
+> +  https://www.analog.com/en/products/ad9910.html
+> +
+> +properties:
+> +  compatible:
+> +    const: adi,ad9910
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 70000000
+> +
+> +  clocks:
+> +    minItems: 1
+> +    items:
+> +      - description: Reference clock (REF_CLK).
+> +      - description: Optional synchronization clock (SYNC_IN).
+> +
+> +  clock-names:
+> +    oneOf:
+> +      - items:
+> +          - const: ref_clk
+> +      - items:
+> +          - const: ref_clk
+> +          - const: sync_in
 
-Make use of BIT() and GENMASK() where it makes sense.
+So that's just items with two items and minItems: 1. Like you have in
+"clocks:".
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Co-developed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- drivers/iio/magnetometer/ak8975.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+You got this comment already at v2.
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index a140d352bad663a138295dc0c44084a9a18a4c24..366d56a3f0355f9db3711e17e1215b1210f0c9b5 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -45,8 +45,7 @@
- #define AK8975_REG_INFO			0x01
- 
- #define AK8975_REG_ST1			0x02
--#define AK8975_REG_ST1_DRDY_SHIFT	0
--#define AK8975_REG_ST1_DRDY_MASK	(1 << AK8975_REG_ST1_DRDY_SHIFT)
-+#define AK8975_REG_ST1_DRDY_MASK	BIT(0)
- 
- #define AK8975_REG_HXL			0x03
- #define AK8975_REG_HXH			0x04
-@@ -55,15 +54,12 @@
- #define AK8975_REG_HZL			0x07
- #define AK8975_REG_HZH			0x08
- #define AK8975_REG_ST2			0x09
--#define AK8975_REG_ST2_DERR_SHIFT	2
--#define AK8975_REG_ST2_DERR_MASK	(1 << AK8975_REG_ST2_DERR_SHIFT)
-+#define AK8975_REG_ST2_DERR_MASK	BIT(2)
- 
--#define AK8975_REG_ST2_HOFL_SHIFT	3
--#define AK8975_REG_ST2_HOFL_MASK	(1 << AK8975_REG_ST2_HOFL_SHIFT)
-+#define AK8975_REG_ST2_HOFL_MASK	BIT(3)
- 
- #define AK8975_REG_CNTL			0x0A
--#define AK8975_REG_CNTL_MODE_SHIFT	0
--#define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
-+#define AK8975_REG_CNTL_MODE_MASK	GENMASK(3, 0)
- #define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
- #define AK8975_REG_CNTL_MODE_ONCE	0x01
- #define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
-@@ -95,8 +91,7 @@
- 
- #define AK09912_REG_ST1			0x10
- 
--#define AK09912_REG_ST1_DRDY_SHIFT	0
--#define AK09912_REG_ST1_DRDY_MASK	(1 << AK09912_REG_ST1_DRDY_SHIFT)
-+#define AK09912_REG_ST1_DRDY_MASK	BIT(0)
- 
- #define AK09912_REG_HXL			0x11
- #define AK09912_REG_HXH			0x12
-@@ -107,8 +102,7 @@
- #define AK09912_REG_TMPS		0x17
- 
- #define AK09912_REG_ST2			0x18
--#define AK09912_REG_ST2_HOFL_SHIFT	3
--#define AK09912_REG_ST2_HOFL_MASK	(1 << AK09912_REG_ST2_HOFL_SHIFT)
-+#define AK09912_REG_ST2_HOFL_MASK	BIT(3)
- 
- #define AK09912_REG_CNTL1		0x30
- 
-@@ -117,8 +111,7 @@
- #define AK09912_REG_CNTL_MODE_ONCE	0x01
- #define AK09912_REG_CNTL_MODE_SELF_TEST	0x10
- #define AK09912_REG_CNTL_MODE_FUSE_ROM	0x1F
--#define AK09912_REG_CNTL2_MODE_SHIFT	0
--#define AK09912_REG_CNTL2_MODE_MASK	(0x1F << AK09912_REG_CNTL2_MODE_SHIFT)
-+#define AK09912_REG_CNTL2_MODE_MASK	GENMASK(4, 0)
- 
- #define AK09912_REG_CNTL3		0x32
- 
-@@ -858,7 +851,10 @@ static const struct iio_chan_spec ak8975_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(AK8975_SCAN_TS),
- };
- 
--static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
-+static const unsigned long ak8975_scan_masks[] = {
-+	BIT(AK8975_SCAN_X) | BIT(AK8975_SCAN_Y) | BIT(AK8975_SCAN_Z),
-+	0
-+};
- 
- static const struct iio_info ak8975_info = {
- 	.read_raw = &ak8975_read_raw,
 
--- 
-2.47.3
+> +
+> +  '#clock-cells':
+> +    const: 1
+> +
+> +  clock-output-names:
+> +    minItems: 1
+> +    maxItems: 3
+> +    items:
+> +      enum: [ sync_clk, pdclk, sync_out ]
 
+Why are the names fixed? And why is the order random?
+
+> +
+> +  interrupts:
+> +    minItems: 1
+> +    items:
+> +      - description:
+> +          Signal that indicates that Digital Ramp Generator has reached a limit.
+> +      - description:
+> +          Signal that indicates the end of a RAM Sweep.
+> +
+> +  interrupt-names:
+> +    minItems: 1
+> +    maxItems: 2
+> +    items:
+> +      enum: [ drover, ram_swp_ovr ]
+
+Your "interrupts:" do not allow flexibility. Are you sure interrupts are
+optional in the hardware?
+
+> +
+> +  dvdd-io33-supply:
+> +    description: 3.3V Digital I/O supply.
+> +
+> +  avdd33-supply:
+> +    description: 3.3V Analog DAC supply.
+
+Best regards,
+Krzysztof
 
