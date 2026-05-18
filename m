@@ -1,136 +1,173 @@
-Received: from mta-65-143.flowmailer.net (mta-65-143.flowmailer.net [185.136.65.143])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8726238B131
-	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 18:05:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.143
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 621BC382F03
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 18:11:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779127508; cv=none; b=bDOO52K6qggKhIXnyZ99vTgA0BFjzVjswITd5WHzCWALcyLFGUms6fmK9pMEReJpgDd6cuoeRrWrwwWi2eGWXC7T2jtcVkEYl/+pMR2zxg2DxybLwvriCXjVfL4WKXWs6q5xh4v1oL3dPVav0dLH4hsW+m6by1ziEYdDXHSXaYo=
+	t=1779127889; cv=none; b=vFUEl0iqBjkCc/vhTLWQYZxCs7kHm47V+lsPAMcl+3F+3h7qUWXE3iG2JC6Drs3EAlRAPswUaQfXFx1m3UCDRZ6ZiyVimCgG3RQ2YNl/tTMOmhvRKN4vVrlxNIR8ShioOwZk3jUxIPdPgfOhaV2Sm3ihQJ7eD5JP9nV9pi6c+bM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779127508; c=relaxed/simple;
-	bh=+rYo9RwlleK8Myvw5KVXSvl5djJdJZXOJbD7irbefyc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nlGAZlEGdR47CEyKH2wYbGnrxjBdyRmUAOMOcuLFrU11ZqeGROKsSShW1xmjBFaRcX/EL1hi9kydzn8YLgFBQ3y+B3uXi2OBsRPxfXXvcPEqIv4Qelwq64n8MbWwVmmZuIK/Alud8GnkUG4pHbzGD2ce4N47jwuUnGTDhHMGWPM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens-energy.com; spf=pass smtp.mailfrom=errorhandling.siemens-energy.com; dkim=pass (1024-bit key) header.d=flowmailer.net header.i=@flowmailer.net header.b=oOv4FfQQ; dkim=pass (2048-bit key) header.d=siemens-energy.com header.i=schuster.simon@siemens-energy.com header.b=dI1aE97G; arc=none smtp.client-ip=185.136.65.143
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens-energy.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=errorhandling.siemens-energy.com
+	s=arc-20240116; t=1779127889; c=relaxed/simple;
+	bh=zKR+EqacPdt0290Iim3CCXYJMGml3J82UJUJ42S9aQc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ihsxikWRAA+pP1yLgfdHlOVb0Yfm0NWgEB2QocQz6Mvjo3IZ1svjnG6T919jeu2C23c/7chltOXFI1gqG52QFlSizfc51PskBKER6cxaa+WEnWTw4T9ORqHe046hYCj71FIn0uq4ETLtQcgSIlHL0RrbrGpTPrJA/qeEHV9nuaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sjC9ed6m; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=flowmailer.net header.i=@flowmailer.net header.b="oOv4FfQQ";
-	dkim=pass (2048-bit key) header.d=siemens-energy.com header.i=schuster.simon@siemens-energy.com header.b="dI1aE97G"
-Received: by mta-65-143.flowmailer.net with ESMTPSA id 202605181724465779a064840019fd60
-        for <linux-iio@vger.kernel.org>;
-        Mon, 18 May 2026 19:24:47 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=s1;
- d=flowmailer.net;
- h=from:from:sender:to:to:cc:cc:subject:subject:content-type:content-type:content-transfer-encoding:References:In-Reply-To:Date:Message-ID:MIME-Version;
- bh=/xBoFD2ZNsbMOTky3B3enP8bn+W9UZXo1Hl2aVCLXos=;
- b=oOv4FfQQlHtS5BCboX78gqtA1vOdIzc2Bde3Q6JtaXyf67I3yyl6ut16FqBNN9+Yj9rq9Z
- nyDRk4mSBg/XXlSyTrgBcXgDhCrmwyDzEj+K3hddaJfeuwolNJkOXXJ8o46GUX+ljc6wR96d
- SFujsYOnihqEglQ5vlocmhDkHNiKg=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm3;
- d=siemens-energy.com; i=schuster.simon@siemens-energy.com;
- h=from:from:sender:to:to:cc:cc:subject:subject:content-type:content-type:content-transfer-encoding:References:In-Reply-To:Date:Message-ID:MIME-Version;
- bh=/xBoFD2ZNsbMOTky3B3enP8bn+W9UZXo1Hl2aVCLXos=;
- b=dI1aE97GXW4w7iNDnE322TQwRLqhXPJ7u7OOtHXqPwbH7I8b7QZPUcsZ5dpM3aKOX+wuYT
- LPsjcYlVTxPExZ5kMJNCcDWODnTNTrGp6pV8qtNcwDcVLy69NW0vpvbVMGwrINlSJJ+x3xuE
- 8IjsHXj0AnDwTdczWEYMyN3ZXAMnYVljNLinrYheZqc9sCRB5uWpiqfkBE0KYz9ZVSj4gXWO
- W3XtjKRwxfg4DG16B+5mpyk1TGNVwWG+Fbcs2a0kj3mxu3xIuWEGyaVHCYP7ptwU5BzA0nrO
- 6VN6z+VVxxOzsIQ5H6Xp7Kj7GVjsxvKu6BvSATf/LyzOGeeNKmSh+lOw==;
-Date: Mon, 18 May 2026 19:24:44 +0200
-From: Simon Schuster <schuster.simon@siemens-energy.com>
-To: Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>,
-	Ethan Nelson-Moore <enelsonmoore@gmail.com>,
-	Dinh Nguyen <dinguyen@kernel.org>
-Cc: linux-doc@vger.kernel.org, devicetree@vger.kernel.org,
- workflows@vger.kernel.org, Linux-Arch <linux-arch@vger.kernel.org>,
- dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-iio@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
- linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-hardening@vger.kernel.org, linux-kbuild@vger.kernel.org,
- "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>, Jonathan Corbet
- <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, Thomas
- Gleixner <tglx@kernel.org>, Alex Shi <alexs@kernel.org>, Yanteng Si
- <si.yanteng@linux.dev>, Dongliang Mu <dzm91@hust.edu.cn>, Hu Haowen
- <2023002089@link.tyut.edu.cn>, Kees Cook <kees@kernel.org>, Oleg Nesterov
- <oleg@redhat.com>, Will Deacon <will@kernel.org>, "Aneesh Kumar K.V (Arm)"
- <aneesh.kumar@kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
- Nicholas Piggin <npiggin@gmail.com>, Vinod Koul <vkoul@kernel.org>, Frank
- Li <Frank.Li@kernel.org>, Dave Penkler <dpenkler@gmail.com>, Andi Shyti
- <andi.shyti@kernel.org>, Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Andrew Lunn <andrew+netdev@lunn.ch>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
- <pabeni@redhat.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, Krzysztof
- WilczyDski <kwilczynski@kernel.org>, Andreas Oetken
- <andreas.oetken@siemens-energy.com>
-Subject: Re: [PATCH] nios2: remove the architecture
-Message-ID: <20260518172444.zyd47mcagrcwu7wt@dev-vm-schuster>
-References: <20260518042833.272221-1-enelsonmoore@gmail.com>
- <d40b1e80-37fc-4c88-9d7f-dae6458efe6c@app.fastmail.com>
- <20260518105735.GW3126523@noisy.programming.kicks-ass.net>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sjC9ed6m"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-4462f8d2488so144628f8f.0
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 11:11:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779127887; x=1779732687; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=FGsfs0DFjcY+v4OH19XWVNeh3rO+tmY7PUU6YnQMlAY=;
+        b=sjC9ed6ms88Z6rqmg2wBu4CpF2p7xInZRZrMsoRnGI2Zmjxkkcy1AxCCC0gE5dPERh
+         wQ39uBhDwEEVs5Gn+HbwYI1HyV/wjtZj1GNwRokT77miIVtO5gYfB5IylCJACF+i6LZQ
+         9ae7IyHwmatGy6y12cnIfVjvf7n36ad1y5RA/40InLiSimk+eGOge4RTngbIjgmHSHTp
+         VKvSSiX9sgJx80u5zEkJkC2zKE302cDq1Vm5WfQI/AVQ/JwI/MLfl0houaxdj6KY9ly+
+         HDQDrbXLGjz4OG3X7Merq5gWbmDNvhf/LlAq0lg3vJP9lh0JCqilyWBMZox1vTcOGEym
+         eiOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779127887; x=1779732687;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FGsfs0DFjcY+v4OH19XWVNeh3rO+tmY7PUU6YnQMlAY=;
+        b=oZR5Mh+kR3o6fVNkRgxPohv+f+h0GwYHVjl7FA1ynVMFdRMOC6+ZV1WPjjDjarHPaL
+         y8cRMgLgUGMmIVDinQ7Ytyiw7poIuC6Zrs0jRRSnNgCUcPxFJA7XxYTjUJAhQgRhzdNq
+         7dzopwKVvkz2/1C2vZkjP+Ab0z1HiTspI0f7RrdZU26MDeeyU4BJ4FUL/DDHIAr5J7w8
+         AiT+NhLNrqACCICYl7nT4VLwl6dKL0detryw5lUQgCA7mFfpb9sLAwRLLgSj1FTMaJrf
+         Qt2RKBNJIDO5zg+D8BGiU8G//3s2/yk5r49J22PGZ5jhWL1Ai5Usz94yOGBmew7Noz6q
+         bP/Q==
+X-Forwarded-Encrypted: i=1; AFNElJ8XDxXOIpdLg6p/E5yk8bBUJJOX0JQKyto2y+TUQfD60ELl054vaNLxKTrYqAgFNZmYKaAjgx0JuJI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwV/TQTjAn31KBo/wwhLRiBTLo5AsM5/Y0S7x2lIPdoamZFRocR
+	KvcP/4dOE8b+Rc7+3lyvgk0Wxq6wS4CD0wvLD7TYzEzegshhx55Me3NN
+X-Gm-Gg: Acq92OG2vkTgCkNArkOE2RMigo38FaR8xFGWgJCTagJbcalnQ6jbdZhEGSQERSUQ0aA
+	Goty9e/x/5cKPNVMQnrb3eRYHm9AQwHUnweoaHnh1HIdxXcFhB+d1DOtF7jYA9AjTdb6x8Si6U4
+	vbfJP0GnbdfYPrJ8OR7vYurr86fEICa6l2HNL4Shr6TtG4DOtOWyfu5jC/D1epIqjQGkSvqZhRP
+	Sj4GbdYHjlDb9eMY9T+rEflPClvv6AwoA2gQhfnSOCY+FgAHkbu82plJ6w/wAM6C7M2OoYQ9tFR
+	f1RJ5+duUMv8RHCJKvUoVUDYxKjp6AHimLyYTz4sQuwWsnmOUD56EqaaRP5QHpCHNNsMYHgHZid
+	o00yKCK9TayaHOCsrsDmVIRXTAnAB3qHHOgNcztwMPnxZGiKWTJYW6DRHQHqs8xe7EjsXfkqjjX
+	Y8cAbFLgmSnRp9mFxoxcjgxZPV6yK30m3I6718O/CoZbFg
+X-Received: by 2002:a05:600c:1f8c:b0:488:abe9:86 with SMTP id 5b1f17b1804b1-48fe631817cmr115722685e9.7.1779127886455;
+        Mon, 18 May 2026 11:11:26 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe5cab7c5sm284281335e9.12.2026.05.18.11.11.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2026 11:11:26 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: jic23@kernel.org
+Cc: mazziesaccount@gmail.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH v3] iio: pressure: rohm-bm1390: harden trigger handler against transient errors
+Date: Mon, 18 May 2026 23:11:10 +0500
+Message-Id: <20260518181110.1467-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260518105735.GW3126523@noisy.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
 
-Hi Ethan, Arnd, Peter and Dinh,
+bm1390_trigger_handler() returns from three error paths without calling
+iio_trigger_notify_done(). The success path at the end does, so on a
+transient regmap or read failure the trigger's use_count is never
+decremented and iio_trigger_poll_chained() drops subsequent dispatches
+until the trigger is reattached.
 
-On Mon, May 18, 2026 at 11:29:48AM +0200, Arnd Bergmann wrote:
-> We last discussed this a year ago when Simon Schuster mentioned[1]
-> that Siemens Energy is still using NIOS-2 in production and would
-> prefer to have this still included in Linux for at least another
-> few years until the obligation for kernel updates ends.
+This is not a fix for a reported bug, only hardening against hardware
+or bus glitches; if a glitch is persistent the device is wedged and
+needs an unbind anyway, which is left to the user.
 
-First off, thank you, Arnd, for remembering us as this patch series came
-up and also to Dinh for his maintenance of the architecture!
+Split the function so the inner helper returns bool with the data-read
+outcome, and the outer IRQ handler calls iio_trigger_notify_done()
+once and reports the result via IRQ_RETVAL().
 
-Regarding our status in relation to nios2, Arnd's response already gives
-you the gist:
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
+v3:
+- Split into bm1390_handle_trigger() helper returning bool, with the IRQ
+  wrapper calling iio_trigger_notify_done() once (Andy)
+- Drop Fixes: and Cc: stable@; this is hardware-failure hardening, not
+  a user-visible bug fix (Jonathan)
+- Reframe the commit message accordingly
 
-We are well aware that the architecture was deprecated by Intel and are
-therefore phasing it out in favour of more contemporary hardware.
-I'm also fully aware of the uncertain future of 32-bit architectures as
-a whole [0] and that this fate will come to nios2 sooner or later.
-But as of now, the mainline support is still in very good shape.
+v1: https://lore.kernel.org/all/20260517160801.269-1-sozdayvek@gmail.com/
+v2: https://lore.kernel.org/all/20260518094238.1986-1-sozdayvek@gmail.com/
 
-On Mon, May 18, 2026 at 12:57:35PM +0200, Peter Zijlstra wrote:
-> Isn't that what we have LTS branches for?
+ drivers/iio/pressure/rohm-bm1390.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-Unfortunately, as we are an infrastructure provider for civil energy
-infrastructure, the refurbishment cycle is a bit slower than for
-traditional consumer systems. This implies that the traditional LTS
-support duration (max. Dec 2028 as of writing [1]) is rather short, and
-we would be glad if we could keep the architecture in mainline for at
-least 5 years and only then "decay" to LTS.
-
-On Mon, May 18, 2026 at 11:29:48AM +0200, Arnd Bergmann wrote:
-> My feeling is that the maintenance burden of keeping nios2 is
-> relatively low. On the other hand, maintaining it out of tree
-> as a patch set is also something that should not be all that
-> hard if it does get removed.
-
-Judging from the architecture's git history, it seems that it's
-currently mainly touched by treewide refactors, which are extremely
-helpful as we therefore do not have to piece these changes together 
-downstream. In other respects, we try to be good citizens and contribute
-bugfixes as well as required cleanups (such as implementing clone3 [2]
-and fixing its flag behaviour on 32-bit architectures) as they come up.
-
-If desired, we also would be happy to intensify our support regarding
-reviews or testing to share the maintnance burden if it helps to keep
-nios2 in mainline a bit longer.
-
-Best regards,
-Simon
+diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm-bm1390.c
+index 08146ca0f..007c1559f 100644
+--- a/drivers/iio/pressure/rohm-bm1390.c
++++ b/drivers/iio/pressure/rohm-bm1390.c
+@@ -621,17 +621,15 @@ static const struct iio_buffer_setup_ops bm1390_buffer_ops = {
+ 	.predisable = bm1390_buffer_predisable,
+ };
  
-0: https://lwn.net/Articles/1035727/
-1: https://www.kernel.org/category/releases.html
-2: https://lore.kernel.org/lkml/20250821-nios2-implement-clone3-v1-0-1bb24017376a@siemens-energy.com/
+-static irqreturn_t bm1390_trigger_handler(int irq, void *p)
++static bool bm1390_handle_trigger(struct iio_dev *idev)
+ {
+-	struct iio_poll_func *pf = p;
+-	struct iio_dev *idev = pf->indio_dev;
+ 	struct bm1390_data *data = iio_priv(idev);
+ 	int ret, status;
+ 
+ 	/* DRDY is acked by reading status reg */
+ 	ret = regmap_read(data->regmap, BM1390_REG_STATUS, &status);
+ 	if (ret || !status)
+-		return IRQ_NONE;
++		return false;
+ 
+ 	dev_dbg(data->dev, "DRDY trig status 0x%x\n", status);
+ 
+@@ -639,7 +637,7 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
+ 		ret = bm1390_pressure_read(data, &data->buf.pressure);
+ 		if (ret) {
+ 			dev_warn(data->dev, "sample read failed %d\n", ret);
+-			return IRQ_NONE;
++			return false;
+ 		}
+ 	}
+ 
+@@ -648,15 +646,26 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
+ 				       &data->buf.temp, sizeof(data->buf.temp));
+ 		if (ret) {
+ 			dev_warn(data->dev, "temp read failed %d\n", ret);
+-			return IRQ_HANDLED;
++			return true;
+ 		}
+ 	}
+ 
+ 	iio_push_to_buffers_with_ts(idev, &data->buf, sizeof(data->buf),
+ 				    data->timestamp);
++
++	return true;
++}
++
++static irqreturn_t bm1390_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *idev = pf->indio_dev;
++	bool result;
++
++	result = bm1390_handle_trigger(idev);
+ 	iio_trigger_notify_done(idev->trig);
+ 
+-	return IRQ_HANDLED;
++	return IRQ_RETVAL(result);
+ }
+ 
+ /* Get timestamps and wake the thread if we need to read data */
+-- 
+2.43.0
+
