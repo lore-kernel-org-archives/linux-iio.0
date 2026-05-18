@@ -1,63 +1,63 @@
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86F782F7F12
-	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 22:02:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 999CA39F16B
+	for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 22:03:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779141780; cv=none; b=lRIKR7GnVRvhvBzdprQ1RgoJVsD66Lf4qzovr9YEpUDtOV9PdYe7VazQfsg5sb7zWzBLVpxuf2q7kK2HFxAGzm9Zoe0UMS8NQA5TU/LGiA2kcMctD42tC56ySa52bzUqNFqvPjHLSl4t7Kvf7Nhi1Uk10g3E+VOSdrXNmu8rxM8=
+	t=1779141784; cv=none; b=b9kFbEzrpfjTWsWldY00o2+xGAsHpLv/z+Q9OhcjBrfE48icQ+/TjMlbno/v9XsSkogTkecOfYYGO66wX0uxNM8mnaf6bDg7mbYmj8/RLtpWy0LJGtyyNcTU9gUUc0rW4xzfoMIwAxuEmGTy2myloX65IKbhZTvbkAeaU8swqdo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779141780; c=relaxed/simple;
-	bh=YIgzdEh/qr3hlX5d3x7wEDgkdp098G1nkKAjjuV5Y7Y=;
+	s=arc-20240116; t=1779141784; c=relaxed/simple;
+	bh=/PNDd1zkwk3hDyvDb6EEtW8rYpRWUoc8QUNLfK9WR8I=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Hpb0EF428nhmr8VcdkduDrF4wT8lXCBT2gWKun3ZHHuSR2oUYnYRIZ4ZXW2DgKHkSnoiNRpQHe9GMnhy1gNca9jGAQ/GjbQUkvxHYFbPRn1lwOb8vt0qIFkFNxk4zOH6gSVxVV6MW0qVy/0nBwmghT2WQLEayrJqp3wJ5Md2zoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uzmnk/Mb; arc=none smtp.client-ip=209.85.210.176
+	 MIME-Version; b=TZPX5eSsvc6EPhnVuZFfoJaFiq+lTljhL0Em+S1nG/Buq78s6XjgxbspC/GvlqxSIBo/ty+Uun+FvITe9DJNrElOikx3TAiKsVIbfV+o/FSl0pzx1jflEXfwDIAFoc6rj67sirsbrEwQ1eGx2pn9vGMKNqJ9NaJgVbmOHZnKtes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RzxP95nd; arc=none smtp.client-ip=209.85.210.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uzmnk/Mb"
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-82fbf5d4dc2so1983497b3a.1
-        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 15:02:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RzxP95nd"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-83537a80ab6so1916919b3a.1
+        for <linux-iio@vger.kernel.org>; Mon, 18 May 2026 15:03:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779141778; x=1779746578; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779141782; x=1779746582; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bvK2VJD8fl/Rjr0aAvzpby1wY4IjpgTnX0YvfLJpkFQ=;
-        b=Uzmnk/MbTBsVOb9lDVD5zubjipoeduNTWfuI6vYvMENntdWqcHbhR3rqCMjyDO7m5n
-         auY7hJNcvxvxnyypYDEZArlZVan4aEpI3wx0aueuGx/RG6n39LMWEaTJ0X8QnoeXRo6C
-         AZ7zRVHkIa8XnF1GdcgZMGTXJfOgmByPIk8jpcI0YyLDdMpmbwViwD9KOGOxGcKHjr0V
-         RbvvMwuHwV7OLK24jO09udZncwfSx6lDRcAclXB8dveVz+OXv7fpWZdElpnyhix1q35e
-         uIQk7qpZS67XjpagzhH1/a4DN92RjAdIQGvyuGI2vidSowntKFPvc+WnKOjTmuHJnmrN
-         2DXA==
+        bh=5fjhdCnbV8ukBtWzUYd6fHgql0XE/IRGNUdKMo9fQMM=;
+        b=RzxP95ndTU2X/JgovZNgeCxSc/6gRqDr4+Z+lK5iGYAM+gAN2FWx6qUPW/Ab/xB7OE
+         L/BAfu+pWC4h1yG5NGsN0S9HkvGdeSUfw0wDTFTWHTLzj6iXdGOxZw5otatAnz1muHdr
+         87lPENNBXNu+ck9eKya+V6VuTGQujiKtr7EOM+b4nqsNWyRvc7sE5FqlXZnIFc24d9SR
+         sqtCk8yL6N5IIIP6dR1Qn/sbU+Z9XGF7dEoH3xts3CXm720R1FDqcoH1GkTM+9rpejqB
+         14MpxWhqUQN0zlRpusbazDOrWq/I7rKC45hv8uh/Vul0gxd8UMaQYYZfU2cVA4M9xbB1
+         CGCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779141778; x=1779746578;
+        d=1e100.net; s=20251104; t=1779141782; x=1779746582;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=bvK2VJD8fl/Rjr0aAvzpby1wY4IjpgTnX0YvfLJpkFQ=;
-        b=Vu8LJRh37jbXGOLvjQuWNTj99N2kYz3XCDHfz8+Gv8BblpafbyogEarLtyH+mQbQKF
-         g4v8Zs/FIg2szhqDKYBRwciGnB9XyDa19S1vrUjky+sMCVSsGAMXlzq1k15OSbnc+L66
-         x8GIRslKOf61/JhlHkDWVx9TrUM27Y2rnrDwFddjbXBW1jpWnSVrdQQm1vJD5hEApyeb
-         ymv4+JhtqLnWfiPo3MBfRC7I68JWULEWnNxOCFr09oZIDpDYAFvM2saHJkrxK3WD+DrK
-         wx8uL8+DTVaVqWPTfjPS+osYwBiAiw1ck+WWNFWzaSi27nqlkb6m11x04m/Cbgm9yk8i
-         EtEA==
-X-Gm-Message-State: AOJu0Yw8VxXVlUD7YLCwqstuyIpxWXoFNgw4S0o7kzNgRhGqziR9DsOc
-	xcZK2+3smye1GBqfBsI621SPmb1dqsdvtfHeZQulljYAFKFA60advuhR
-X-Gm-Gg: Acq92OGYFHrd4xA6UGGqWWv3L13h0WrPQxVW1nl6O1n0/Z+Axhqo7EBF3Er+fd/sKGV
-	u7DPoe05hJvc0q3YMR+/PWLacqIG24Bc0Fn+uBgiBx6J4w9pH0vXTU1cehmBel97+mm/rsNBclI
-	tZyWIGEHMQojKeeRHmbo8R4sx++osVLRSFnQnIfeXP25POi4VvUDfQXMoJ5fTSpronvImviK8KB
-	d5/dBEnJ7c2eKHDorSeHdb5gJIGFkt4IlwS805KwTr3c9IsM/bo+3L8Q9iIK3BM97jA0o5n7RG9
-	3F+LRv8lN0NwlMTTCRdBuU/YLJwn3cgFj0+XnxbQDcLqFXkMexIyNSVSwlb4f5EO3ExXZncLO8m
-	JiTaMhcVxaOCQBPNlgkrnLc9lw+aeg+6UXXarw94gn6oTs0zKogf5mNx5G4zHHZ1Bogd+8FVLXG
-	clbU8L+3qTaPnGoo8Z52hofnLYf5tg9LNiFc3RjD5kfKWVcLuVGgv8dhtJIByv75Cm8F+zCMJot
-	F7W8Dv0NgLM0rRgJTZTuDc0FAfg76Gtnc349UQdJ0+bC9grm3khWEhrByRO+haQYWOYgVY=
-X-Received: by 2002:a05:6a00:2d19:b0:82f:a89e:e16f with SMTP id d2e1a72fcca58-83f33b2f58fmr17303350b3a.14.1779141777904;
-        Mon, 18 May 2026 15:02:57 -0700 (PDT)
+        bh=5fjhdCnbV8ukBtWzUYd6fHgql0XE/IRGNUdKMo9fQMM=;
+        b=ob50K4exnhsVz89z1MPu9omf6/xs7pkUN8fXPGZe+7rLOYDADaROVZrP925uXUiTKk
+         ZjzN+hgkILFI9cWiDPkfxYhIJ78GWgxvmate9FI2rsfTSQF7Wdhtr8cUUtlksgouNcIn
+         36esMEeZ2HFZx5You6rXTxLo43L/zoNi2pg+XD7GFN8ggFo7kQwE50koOPST5iS3tSMB
+         EqpBbpp7LwRW6WninsOxgTgoIKI1z1qltukOuCgZeyu6DH52W20wJGr7Ps/eNxP00YR4
+         v0kYJJ/RFr9GurkQbNfO1X6QVVyGrIqj2joOy72KwMCXbdhXxACh6Qrnpmc/nHkXHxf+
+         dGvQ==
+X-Gm-Message-State: AOJu0YyAXiKxU/pZqa5PKslAzolTu//SzecHveNGBmYIKG+ib50cSOhC
+	MFYSkeOfgUuMOSdlPyGQ6B0tKJDuNnHicfOGagOkuqM763+TAmINC4Da
+X-Gm-Gg: Acq92OE5rD86M8smt7zsO5oHcmj+5+nh4l8I+JJ1c0aM9aVZCXaB6A/SgAHuJXngdQp
+	NE1CQQswbI1lC/z09S7igdW/EArKPiArvO+HLP2cHxc5isZOICqZVlh5WPSnGnG2A6lEV/sy9xG
+	BXxp3oXK1TDHNdvf49BMR3VqwvitZDyX8WMBeVHZd904wxoAYsnJtr07eksFAjrXOI05hxHyB7M
+	8s+soES3Q+sgLQ/2cS6UDYLKYitYjO3pC2p6KjVO/ZxLYfiYz4xlhmHjgoac8rP1HcDhgBT8Nhy
+	bt/6ZUS0AKPd/q//JUYDWpYkPGyueLJClI4CMXYEg8VJFINV6BCfsFBjud6psuqp9LDJ9GIGv/l
+	5nz7Id86Z5vxyw2mV2kvYxzmMKyto8Nh1GMONEQEeXWGyjjzxLpe0ziQXGS/riAE2bigB8ah0fn
+	7hkVo3HqJZVDrVI9n9+TD+OlV8x1KMRgr8rl6T4WPDizYlMxmhnFaKcbA9D3hHBXNjVxeadRlc2
+	8z9VTlzwgzFGa9TKybZUqtRx5UMZS2pxwfsECreVROy17b+/o7Q2JASVhJl
+X-Received: by 2002:a05:6a00:4fc8:b0:81f:5037:a317 with SMTP id d2e1a72fcca58-83f33c957bcmr17839336b3a.11.1779141781908;
+        Mon, 18 May 2026 15:03:01 -0700 (PDT)
 Received: from lord-daniel-VivoBook-ASUSLaptop-K3502ZA-S3502ZA.www.tendawifi.com ([14.139.108.62])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f1977b128sm15772960b3a.22.2026.05.18.15.02.54
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f1977b128sm15772960b3a.22.2026.05.18.15.02.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 15:02:57 -0700 (PDT)
+        Mon, 18 May 2026 15:03:01 -0700 (PDT)
 From: Piyush Patle <piyushpatle228@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org,
@@ -68,9 +68,9 @@ Cc: linux-iio@vger.kernel.org,
 	Conor Dooley <conor+dt@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Rob Herring <robh@kernel.org>
-Subject: [PATCH v9 05/11] iio: adc: hx711: move scale computation to per-device storage
-Date: Tue, 19 May 2026 03:32:21 +0530
-Message-ID: <20260518220228.63322-6-piyushpatle228@gmail.com>
+Subject: [PATCH v9 06/11] iio: adc: hx711: introduce hx711_chip_info structure
+Date: Tue, 19 May 2026 03:32:22 +0530
+Message-ID: <20260518220228.63322-7-piyushpatle228@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260518220228.63322-1-piyushpatle228@gmail.com>
 References: <20260518220228.63322-1-piyushpatle228@gmail.com>
@@ -82,133 +82,131 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The gain-to-scale table is global today, so probe-time scale updates for
-one device overwrite the values used by any earlier device instance.
+Add a per-variant static configuration structure and populate the IIO
+device fields from it at probe time.
 
-Fix this by making the gain table const and storing the computed scale
-values per device in hx711_data.
+This is a preparatory change for adding support for more HX711-compatible
+hardware variants without duplicating the probe-time setup.
 
-No functional change for single-sensor configurations.
+No functional change for existing HX711 users.
 
 Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
-No change from v8. Already applied to iio.git testing branch.
- drivers/iio/adc/hx711.c | 31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+No code change from v8.
+
+Regarding the __counted_by_ptr() annotation on hx711_chip_info.channels:
+this annotation was introduced in include/linux/compiler_types.h in
+commit 4b8a2e8e09be ("compiler_types.h: Add __counted_by_ptr()") which
+landed in 6.12-rc1.  This tree is 6.17, so the macro is
+well-defined.  Jonathan Cameron requested this annotation in his v7
+review; Sashiko's v8 bot flag was a false positive.
+
+Regarding the legacy platform_device probe path: the concern that
+probe could succeed without chip_info (returning a useless device) was
+acknowledged.  Jonathan has indicated the current device_get_match_data()
+guard is acceptable, so no change was made.
+
+ drivers/iio/adc/hx711.c | 41 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 36 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-index 1db8b68a8f64..86d2a70dd3de 100644
+index 86d2a70dd3de..10ccc69f209b 100644
 --- a/drivers/iio/adc/hx711.c
 +++ b/drivers/iio/adc/hx711.c
-@@ -28,22 +28,20 @@
- struct hx711_gain_to_scale {
- 	int			gain;
- 	int			gain_pulse;
--	int			scale;
- 	int			channel;
- };
- 
- /*
-  * .scale depends on AVDD which in turn is known as soon as the regulator
-- * is available
-- * therefore we set .scale in hx711_probe()
-+ * is available; it is stored per device in hx711_data.gain_scale[]
+@@ -4,6 +4,8 @@
   *
-  * channel A in documentation is channel 0 in source code
-  * channel B in documentation is channel 1 in source code
+  * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
   */
--static struct hx711_gain_to_scale hx711_gain_to_scale[HX711_GAIN_MAX] = {
--	{ 128, 1, 0, 0 },
--	{  32, 2, 0, 1 },
--	{  64, 3, 0, 0 }
-+static const struct hx711_gain_to_scale hx711_gain_to_scale[HX711_GAIN_MAX] = {
-+	{ 128, 1, 0 },
-+	{  32, 2, 1 },
-+	{  64, 3, 0 },
- };
- 
- static int hx711_get_gain_to_pulse(int gain)
-@@ -56,22 +54,22 @@ static int hx711_get_gain_to_pulse(int gain)
- 	return 1;
- }
- 
--static int hx711_get_gain_to_scale(int gain)
-+static int hx711_get_gain_to_scale(const int *gain_scale, int gain)
- {
- 	int i;
- 
- 	for (i = 0; i < HX711_GAIN_MAX; i++)
- 		if (hx711_gain_to_scale[i].gain == gain)
--			return hx711_gain_to_scale[i].scale;
-+			return gain_scale[i];
- 	return 0;
- }
- 
--static int hx711_get_scale_to_gain(int scale)
-+static int hx711_get_scale_to_gain(const int *gain_scale, int scale)
- {
- 	int i;
- 
- 	for (i = 0; i < HX711_GAIN_MAX; i++)
--		if (hx711_gain_to_scale[i].scale == scale)
-+		if (gain_scale[i] == scale)
- 			return hx711_gain_to_scale[i].gain;
++#include <linux/array_size.h>
++#include <linux/dev_printk.h>
+ #include <linux/err.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -74,6 +76,20 @@ static int hx711_get_scale_to_gain(const int *gain_scale, int scale)
  	return -EINVAL;
  }
-@@ -82,6 +80,7 @@ struct hx711_data {
- 	struct gpio_desc	*gpiod_dout;
+ 
++/**
++ * struct hx711_chip_info - per-variant static configuration
++ * @name: IIO device name
++ * @channels: channel specification array
++ * @num_channels: number of entries in @channels
++ * @iio_info: IIO info ops for this variant
++ */
++struct hx711_chip_info {
++	const char			*name;
++	const struct iio_chan_spec	*channels __counted_by_ptr(num_channels);
++	unsigned int			num_channels;
++	const struct iio_info		*iio_info;
++};
++
+ struct hx711_data {
+ 	struct device		*dev;
+ 	struct gpio_desc	*gpiod_pd_sck;
+@@ -81,6 +97,7 @@ struct hx711_data {
  	int			gain_set;	/* gain set on device */
  	int			gain_chan_a;	/* gain for channel A */
-+	int			gain_scale[HX711_GAIN_MAX];
+ 	int			gain_scale[HX711_GAIN_MAX];
++	const struct hx711_chip_info	*chip_info;
  	struct mutex		lock;
  	/*
  	 * triggered buffer
-@@ -290,7 +289,8 @@ static int hx711_read_raw(struct iio_dev *indio_dev,
- 		*val = 0;
- 		mutex_lock(&hx711_data->lock);
+@@ -456,8 +473,16 @@ static const struct iio_chan_spec hx711_chan_spec[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(2),
+ };
  
--		*val2 = hx711_get_gain_to_scale(hx711_data->gain_set);
-+		*val2 = hx711_get_gain_to_scale(hx711_data->gain_scale,
-+						hx711_data->gain_set);
- 
- 		mutex_unlock(&hx711_data->lock);
- 
-@@ -321,7 +321,7 @@ static int hx711_write_raw(struct iio_dev *indio_dev,
- 
- 		mutex_lock(&hx711_data->lock);
- 
--		gain = hx711_get_scale_to_gain(val2);
-+		gain = hx711_get_scale_to_gain(hx711_data->gain_scale, val2);
- 		if (gain < 0) {
- 			mutex_unlock(&hx711_data->lock);
- 			return gain;
-@@ -386,6 +386,7 @@ static ssize_t hx711_scale_available_show(struct device *dev,
- 				struct device_attribute *attr,
- 				char *buf)
++static const struct hx711_chip_info hx711_chip = {
++	.name		= "hx711",
++	.channels	= hx711_chan_spec,
++	.iio_info	= &hx711_iio_info,
++	.num_channels	= ARRAY_SIZE(hx711_chan_spec),
++};
++
+ static int hx711_probe(struct platform_device *pdev)
  {
-+	struct hx711_data *hx711_data = iio_priv(dev_to_iio_dev(dev));
- 	struct iio_dev_attr *iio_attr = to_iio_dev_attr(attr);
- 	int channel = iio_attr->address;
- 	int i, len = 0;
-@@ -393,7 +394,7 @@ static ssize_t hx711_scale_available_show(struct device *dev,
- 	for (i = 0; i < HX711_GAIN_MAX; i++)
- 		if (hx711_gain_to_scale[i].channel == channel)
- 			len += sprintf(buf + len, "0.%09d ",
--					hx711_gain_to_scale[i].scale);
-+				       hx711_data->gain_scale[i]);
++	const struct hx711_chip_info *chip_info;
+ 	struct device *dev = &pdev->dev;
+ 	struct hx711_data *hx711_data;
+ 	struct iio_dev *indio_dev;
+@@ -473,6 +498,12 @@ static int hx711_probe(struct platform_device *pdev)
  
- 	len += sprintf(buf + len, "\n");
+ 	mutex_init(&hx711_data->lock);
  
-@@ -511,7 +512,7 @@ static int hx711_probe(struct platform_device *pdev)
- 	ret *= 100;
++	chip_info = device_get_match_data(dev);
++	if (!chip_info)
++		return dev_err_probe(dev, -ENODEV, "missing driver data\n");
++
++	hx711_data->chip_info = chip_info;
++
+ 	/*
+ 	 * PD_SCK stands for power down and serial clock input of HX711
+ 	 * in the driver it is an output
+@@ -534,11 +565,11 @@ static int hx711_probe(struct platform_device *pdev)
+ 	hx711_data->data_ready_delay_ns =
+ 				1000000000 / hx711_data->clock_frequency;
  
- 	for (i = 0; i < HX711_GAIN_MAX; i++)
--		hx711_gain_to_scale[i].scale =
-+		hx711_data->gain_scale[i] =
- 			ret / hx711_gain_to_scale[i].gain / 1678;
+-	indio_dev->name = "hx711";
+-	indio_dev->info = &hx711_iio_info;
++	indio_dev->name = chip_info->name;
++	indio_dev->info = chip_info->iio_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->channels = hx711_chan_spec;
+-	indio_dev->num_channels = ARRAY_SIZE(hx711_chan_spec);
++	indio_dev->channels = chip_info->channels;
++	indio_dev->num_channels = chip_info->num_channels;
  
- 	hx711_data->gain_set = 128;
+ 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+ 					      iio_pollfunc_store_time,
+@@ -555,7 +586,7 @@ static int hx711_probe(struct platform_device *pdev)
+ }
+ 
+ static const struct of_device_id of_hx711_match[] = {
+-	{ .compatible = "avia,hx711", },
++	{ .compatible = "avia,hx711", .data = &hx711_chip },
+ 	{ }
+ };
+ 
 -- 
 2.43.0
 
