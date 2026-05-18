@@ -1,42 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22A26264FBD;
-	Mon, 18 May 2026 15:35:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F250288530;
+	Mon, 18 May 2026 15:40:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779118507; cv=none; b=rfX2i9ZHcGwaPRCJUnyvMOtBfcbuqogBG9ExORKRdzyUkRyX143/atl2CcBE0qGKjdE5peBXzzCxm+IDt56Hdun8VRCLwasXZGNE5JADpEjL8cIIHix76ZKS3LBqGJm2GQWzkbOSSShwO7j8gNL6WHrrwej/NJEWqmOz4dVdZoM=
+	t=1779118858; cv=none; b=UiT6Lcvrg4VShkFEbXPf+q0Dl7149f95TGkWBBLqkJ1x9Dw2D0LPIonQtvHYKQV2GvLK6DwFZ2USGe3aSrGLKK1BUdbvZt6grIrezC8v59vgIMFZfSl8zwlycmiwlwY5DrPcZ3+d9985Qt6hc/sG7G2iMvqHg4o2wdB65nJC/c8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779118507; c=relaxed/simple;
-	bh=gc2LKcuItvdOnPrBURn+gKlo4PmxYVrXV4Uu1cfjhSk=;
+	s=arc-20240116; t=1779118858; c=relaxed/simple;
+	bh=TCIx526+A3AbMfZ+N+q4IsjoBWU4M5CvRsNZ0djzGpI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FQNVCvjUp/NPVNRaiiMG27SN9blfeExndQAXS8K8CvwtuRTK49JJcEoaS6+2jSmHNL+7qQfeih1JJFrrqmsqu/cCgt8yEZWEb1BI48BxUTHjCyf2vff1N43/FbuSEzAYbXQCYmzHAseVS8BCoVGz+eXn6Qe15QF1gZ5o5hu8/jM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nAyFDl3i; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=M+aOUljHXcU4QiWjJxQhRdoxDvXmodR5TGxaaEZ2yk1eyv+gtHMWsfd+omB68YpC9FzomkVy2/YhL6/izyVxipOvYskekFbCvSg17rV0HCLv0ZpAcflNl8K8btr2a4520EBIgc4YWQ2leh2IGZdPmkmmVa2AB/Ml2QScOSMqD3o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nfCosSOI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nAyFDl3i"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93ECDC2BCB7;
-	Mon, 18 May 2026 15:35:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nfCosSOI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F01DC2BCB7;
+	Mon, 18 May 2026 15:40:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779118506;
-	bh=gc2LKcuItvdOnPrBURn+gKlo4PmxYVrXV4Uu1cfjhSk=;
+	s=k20201202; t=1779118857;
+	bh=TCIx526+A3AbMfZ+N+q4IsjoBWU4M5CvRsNZ0djzGpI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=nAyFDl3iM47+JQPVJpambibjwIuwoS54fFTZwGKLwKTy1dfoQEjkMtIRruu2xERle
-	 SZM4ndITvSfOI4e+UxcyckzOIwD3eQ2w5gd0u1BNkMhzYP2lUrTwlXAfOYHaFP/PH/
-	 YQhMNyxqNVwxO1l6lAGd3vbXeNosld1Y8zOTXIraRFpadf5Q2L8uysbxLrnCdBXqWN
-	 MKYpLjaPypk0h4+OW0auSFJ9vIEaWeKZxxRmpUcu1PlT/VDdVwTYPZbUxj8IyX9GTv
-	 jxAoctVpanLOLwf3niEvW3FBxmJKI7G18a/sMeBCXDbdmJvohZCKbgq/TjgbKjnVKh
-	 i6DHf4JemBtCg==
-Date: Mon, 18 May 2026 16:34:59 +0100
+	b=nfCosSOI00g829TCsgb1ycYjZPoPEjNP7bP3FIZVEPTEiliGWUup22kXrJO2NPXz4
+	 krNqVqyOqjjHjWPoC8jlpqd/SHtStcxRA+BWXuuNI2zZXTiNmB3WBoOxK6m8LT75m3
+	 5AQAwGz2Kdx5D7f8HtwnvE1SpBQJBeRlCws7iyO58KqCXt1Goe0AhcjAzeq9v7JiOf
+	 KoHIGaV7PrIZ/5SXunJrWo/DQDk064UF5Z568eptLD6gfOY5XCZLtioLP5t1YzR2+I
+	 6t99BeuqADc3CIGVao9GJ2b1FZ3kBwrCjS2JLhO+WIjf1+WIH8viz0To0lV1FFQpCB
+	 /znQDxEfBNhOg==
+Date: Mon, 18 May 2026 16:40:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: common: ssp: remove SSP_CHAN_TIMESTAMP() macro
-Message-ID: <20260518163459.38b39dac@jic23-huawei>
-In-Reply-To: <agq-4keSvfshINQy@ashevche-desk.local>
-References: <20260517-iio-ssp-timestamp-v1-1-228a9ed05c1b@baylibre.com>
-	<agq-4keSvfshINQy@ashevche-desk.local>
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ hcazarim@yahoo.com, joshua.crofts1@gmail.com, gregkh@linuxfoundation.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: tsl2591: return actual error from probe
+ IRQ failure
+Message-ID: <20260518163647.3b4966fb@jic23-huawei>
+In-Reply-To: <20260518094311.2000-1-sozdayvek@gmail.com>
+References: <20260517181042.668-1-sozdayvek@gmail.com>
+	<20260518094311.2000-1-sozdayvek@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,15 +49,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 18 May 2026 10:25:22 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 18 May 2026 14:43:11 +0500
+Stepan Ionichev <sozdayvek@gmail.com> wrote:
 
-> On Sun, May 17, 2026 at 12:29:35PM -0500, David Lechner wrote:
-> > Remove the SSP_CHAN_TIMESTAMP() macro and replace users with the
-> > IIO_CHAN_SOFT_TIMESTAMP() macro. The SSP_CHAN_TIMESTAMP() macro is
-> > identical to the IIO_CHAN_SOFT_TIMESTAMP() macro, so we don't need
-> > a separate macro for it.  
+> When devm_request_threaded_irq() fails, probe logs the error and
+> then returns -EINVAL, dropping the real error code and breaking the
+> deferred-probe flow for -EPROBE_DEFER.
 > 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Return ret directly; the IRQ subsystem already prints on failure.
 > 
-Applied.
+> Fixes: 2335f0d7c790 ("iio: light: Added AMS tsl2591 driver implementation")
+
+Hmm. To me borderline on whether it's a fix.  In theory a board may exist
+where the defer is a possibility.  In practice probably not given I don't
+think we've ever had a report of this.
+
+Meh, it's harmless enough and maybe helps someone.
+
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+New series versions should never be in reply to older series.
+
+It tends to hide them in people's inboxes and brings little nor no benefit.
+> ---
+> v2:
+> - Drop dev_err_probe(); just return ret (Andy)
+> - Add Cc: stable@ as suggested by Joshua
+Mostly for IIO I add those to patches that I think need it but don't object
+if people feel strongly enough and add them themselves.
+
+Applied to the iio-fixes branch of iio.git.
+
+> 
+> v1: https://lore.kernel.org/all/20260517181042.668-1-sozdayvek@gmail.com/
+> 
+>  drivers/iio/light/tsl2591.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
+> index c5557867e..c5ccd833d 100644
+> --- a/drivers/iio/light/tsl2591.c
+> +++ b/drivers/iio/light/tsl2591.c
+> @@ -1137,10 +1137,8 @@ static int tsl2591_probe(struct i2c_client *client)
+>  						NULL, tsl2591_event_handler,
+>  						IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>  						"tsl2591_irq", indio_dev);
+> -		if (ret) {
+> -			dev_err_probe(&client->dev, ret, "IRQ request error\n");
+> -			return -EINVAL;
+> -		}
+> +		if (ret)
+> +			return ret;
+>  		indio_dev->info = &tsl2591_info;
+>  	} else {
+>  		indio_dev->info = &tsl2591_info_no_irq;
+
