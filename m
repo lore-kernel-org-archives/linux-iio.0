@@ -1,42 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9148F3F20F4;
-	Mon, 18 May 2026 15:33:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22A26264FBD;
+	Mon, 18 May 2026 15:35:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779118420; cv=none; b=GnUoIeldQBHQ5EvTqRUHviWhMhDQQDATJLkkFqjqROtOl7wji1oCzQOXYAQll80LMzpugvZg3TiErmDyCdcAvkJRPmkxm8a2o0iJPkSxVhPYcLJ5dHRDZpk0dSPKZkURQ2nB9VKEXEkweWFIFLiEkfaTOILUESU5FcwM0FBZooM=
+	t=1779118507; cv=none; b=rfX2i9ZHcGwaPRCJUnyvMOtBfcbuqogBG9ExORKRdzyUkRyX143/atl2CcBE0qGKjdE5peBXzzCxm+IDt56Hdun8VRCLwasXZGNE5JADpEjL8cIIHix76ZKS3LBqGJm2GQWzkbOSSShwO7j8gNL6WHrrwej/NJEWqmOz4dVdZoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779118420; c=relaxed/simple;
-	bh=CfWMG6psagp1xgL5UHU3ENB/RiiCdo7XkEz+/lgOJ1s=;
+	s=arc-20240116; t=1779118507; c=relaxed/simple;
+	bh=gc2LKcuItvdOnPrBURn+gKlo4PmxYVrXV4Uu1cfjhSk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=moFVIaf+V640r2zVOslkL1Yt07Xpa4/z5449F9yl/6F58ua/ugPhlkMNHIP5TgfenkalysYn2K2Dwug64Bw3d2cG1CobyLTGG5g9dfpgF7DSc9dtZY+Wug7E/TSwMp6Z0b54xkV/HWTpNlJ2xpMAdmWrBInS7ciy4Fl2EEN1nvM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V8Fq7vGS; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=FQNVCvjUp/NPVNRaiiMG27SN9blfeExndQAXS8K8CvwtuRTK49JJcEoaS6+2jSmHNL+7qQfeih1JJFrrqmsqu/cCgt8yEZWEb1BI48BxUTHjCyf2vff1N43/FbuSEzAYbXQCYmzHAseVS8BCoVGz+eXn6Qe15QF1gZ5o5hu8/jM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nAyFDl3i; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V8Fq7vGS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 711EFC2BCB7;
-	Mon, 18 May 2026 15:33:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nAyFDl3i"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93ECDC2BCB7;
+	Mon, 18 May 2026 15:35:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779118419;
-	bh=CfWMG6psagp1xgL5UHU3ENB/RiiCdo7XkEz+/lgOJ1s=;
+	s=k20201202; t=1779118506;
+	bh=gc2LKcuItvdOnPrBURn+gKlo4PmxYVrXV4Uu1cfjhSk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=V8Fq7vGSTeDcuBOlj3+EQGgkQpnV/eBd6dKsBGUluCJ0Tqb/qFycHX+A21ZFQtsrS
-	 BdTHbRXy7kcjkn0QOnbhFsTwtyy4kg9SwftN2I6EMrXSaRlcPuK0g4FtXmBM/Q4XIr
-	 wrNYpPBzI0S/MKB1b5c0l4eWkNFQQlShErvFx+84Y7qLP0xJwUAOTowR3cmQrW3fB9
-	 KSn7/qJwmb3QnPj9voGT+M71q2CFsiNxpkSyB/5TbMtI0I52c65r4GbDDbYDDTzDcH
-	 NaRaP+xTv/BjCMbH6f6dOJBNstiq24wpRYwVKQ36CjNFdhu7XGwL3LgUYHWQOUpa0T
-	 Y5XH0AzEYKsPA==
-Date: Mon, 18 May 2026 16:33:31 +0100
+	b=nAyFDl3iM47+JQPVJpambibjwIuwoS54fFTZwGKLwKTy1dfoQEjkMtIRruu2xERle
+	 SZM4ndITvSfOI4e+UxcyckzOIwD3eQ2w5gd0u1BNkMhzYP2lUrTwlXAfOYHaFP/PH/
+	 YQhMNyxqNVwxO1l6lAGd3vbXeNosld1Y8zOTXIraRFpadf5Q2L8uysbxLrnCdBXqWN
+	 MKYpLjaPypk0h4+OW0auSFJ9vIEaWeKZxxRmpUcu1PlT/VDdVwTYPZbUxj8IyX9GTv
+	 jxAoctVpanLOLwf3niEvW3FBxmJKI7G18a/sMeBCXDbdmJvohZCKbgq/TjgbKjnVKh
+	 i6DHf4JemBtCg==
+Date: Mon, 18 May 2026 16:34:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/2] docs: iio: update dated triggered buffer example
-Message-ID: <20260518163331.2ba650eb@jic23-huawei>
-In-Reply-To: <20260517-iio-doc-triggered-buffer-update-helpers-v1-0-7f00d4188f6f@baylibre.com>
-References: <20260517-iio-doc-triggered-buffer-update-helpers-v1-0-7f00d4188f6f@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: common: ssp: remove SSP_CHAN_TIMESTAMP() macro
+Message-ID: <20260518163459.38b39dac@jic23-huawei>
+In-Reply-To: <agq-4keSvfshINQy@ashevche-desk.local>
+References: <20260517-iio-ssp-timestamp-v1-1-228a9ed05c1b@baylibre.com>
+	<agq-4keSvfshINQy@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,36 +47,15 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 17 May 2026 12:00:57 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Mon, 18 May 2026 10:25:22 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Noticed this example was out of date while grepping for something else.
-> And when I did get_maintainer.pl on it, it didn't match the IIO
-> subsystem, so we get a bonus patch to fix that too.
+> On Sun, May 17, 2026 at 12:29:35PM -0500, David Lechner wrote:
+> > Remove the SSP_CHAN_TIMESTAMP() macro and replace users with the
+> > IIO_CHAN_SOFT_TIMESTAMP() macro. The SSP_CHAN_TIMESTAMP() macro is
+> > identical to the IIO_CHAN_SOFT_TIMESTAMP() macro, so we don't need
+> > a separate macro for it.  
 > 
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-> ---
-> David Lechner (2):
->       MAINTAINERS: add match for IIO API docs
-Well I suppose we 'should' maintain those :)
-
->       docs: iio: triggered-buffers: use new helpers in example
-Series applied.
-
-Thanks,
-
-Jonathan
-
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
->  Documentation/driver-api/iio/triggered-buffers.rst | 8 ++++----
->  MAINTAINERS                                        | 1 +
->  2 files changed, 5 insertions(+), 4 deletions(-)
-> ---
-> base-commit: 8678fb54958893818ddeccd05fea560a4e1fc759
-> change-id: 20260517-iio-doc-triggered-buffer-update-helpers-ef7e3895c9f4
-> 
-> Best regards,
-> --  
-> David Lechner <dlechner@baylibre.com>
-> 
-
+Applied.
