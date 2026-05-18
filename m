@@ -1,180 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from flow-b5-smtp.messagingengine.com (flow-b5-smtp.messagingengine.com [202.12.124.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 861693D5645;
-	Mon, 18 May 2026 09:28:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1514C3E3C59;
+	Mon, 18 May 2026 09:32:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779096520; cv=none; b=IACjQ5GP83dqu1lTdVQdmDx90JYE1d9i/hFlE70aHBLSBuy7G8/+XPHSY9RADUJNIgoSYRCLAdN3OOCK5evSBmRgZ/Rlfw4pHRM396lAekBQqDySMEWS07LMI7M3h4Ql4XLj2aVmZwkEPg+W8P3QpR4saeS8TNizcxYfvJDdO9Q=
+	t=1779096739; cv=none; b=n5K7EiX+3imEzbBoYIomkyKXWQB9iI9mwA9/BVXmLpiRp0KarTwUlvQQnONr0alMtZwkqzXDTHfUkQZqBV8M9jXVm99U3yxsiNon9McOjumG/HGVX3l2Sicqi+5tYXcmjvq7QHkk4TuYcaf7IaGq421OEZtTSR4GwsLPIADNZvw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779096520; c=relaxed/simple;
-	bh=7jiJVFaVHqEpa/vY/b3zqTBK38U2WD0zOHsbX172uxU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dahGcXgZmLhZaYDaE7m1VeOguTJxNM2Cp0UQkZdUCbAiP0U4D/yu9SPnHm2VippfPX2F/cCE4PK21bmou+7usqxLIRuNEaBCniCoF2U2NUo91s5u1TvBRKZrq5qI+ReZCnSHjZdNsbCHtucBaTxjyccuua/1gtcObhwVoWfxCjU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ESY+xpJZ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779096739; c=relaxed/simple;
+	bh=ypzeTVt77Q2YbxNzeBXoLlB99i/DAfX/BMXiXdWvVGE=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=R8CjqA5q1PvxkAKfHKMWOoN1zXwm4hCiDyeNbCgWSlCaTEfAlBngES4jlmOwp7FUAjRyhxfrCwcMLSuo5GKWnaYec27h+FQ8/bfuE4bgvJwBeZ+V/uYaNLpkreranjZlOJ2UT6rXiGfSpBtyA26m/LXd02NZH2XIgHY+B+zz4K8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=Vt0ThH1r; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=d7Zrs/v1; arc=none smtp.client-ip=202.12.124.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ESY+xpJZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 868EFC2BCB7;
-	Mon, 18 May 2026 09:28:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779096520;
-	bh=7jiJVFaVHqEpa/vY/b3zqTBK38U2WD0zOHsbX172uxU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ESY+xpJZgiiW4dRX8xsLvNDZmYnhOex4lRiGucdsAAVVJtLaDyolBvPLJSdT8VfIW
-	 tckw9m8JIdJKD5ofNEYNKcKoqL6AyHGgQ8QbbM3vv8RO4uLRccRI4juJk2casLeUZq
-	 QpuS6UrR10ckEjX9x1Ko6iWj0BEkwLRNt3R2xWIcsAaeAvzg5PWgiTqLxvLxc5K3Ve
-	 cRX71Qfiut2MUbDlDb0TbAqauT35lOXrnhnX2nteQVbwmena0k2Ss2JF22zbsb3a6+
-	 /hvcbfD/anLXCJ5qvgofQzBIaCQ6x4U7ho8U+pg0y5RvxVkKD0ImFMO8YFfoNyEf6P
-	 Q9j3aLarx5boA==
-Date: Mon, 18 May 2026 10:28:33 +0100
-From: Lee Jones <lee@kernel.org>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Daniel Thompson <danielt@kernel.org>, Jingoo Han <jingoohan1@gmail.com>,
-	Rob Herring <robh@kernel.org>, Pavel Machek <pavel@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-fbdev@vger.kernel.org, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 2/6] mfd: lm3533: Convert to use OF bindings
-Message-ID: <20260518092833.GR305027@google.com>
-References: <20260517074306.30937-1-clamor95@gmail.com>
- <20260517074306.30937-3-clamor95@gmail.com>
- <CAPVz0n3gLYXab4H+DihfTkdBkGPqTvmoFVY1Cwuafd70KPtYbA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="Vt0ThH1r";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="d7Zrs/v1"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailflow.stl.internal (Postfix) with ESMTP id 91C52130011D;
+	Mon, 18 May 2026 05:32:14 -0400 (EDT)
+Received: from phl-imap-05 ([10.202.2.95])
+  by phl-compute-04.internal (MEProxy); Mon, 18 May 2026 05:32:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1779096734;
+	 x=1779103934; bh=Q1EsgrhmOtBlhH6lTl5Uo51ZkO0kpI0RkBVnwq5QUz4=; b=
+	Vt0ThH1rLYcI1Ix28b0JP5KyKVSNK7tWRDDAnyloBA5/OwJqvN0ri23ATRKH/uyF
+	y8piX8XfSOJ2Bufr6N0+eUn5rg446FLnMUuwx7hDbKGF/j7vqGhTISTNEbVMBtD3
+	Er3HNGz+7bqwmkQZXphusyxP6gZ5RoN5+grgyIc2fAVd5zF9uz9rWHF2yR2iKE6c
+	j5CWOhjqbuvDbRqe9DRYBaSya//gp1ZPuFln02tSYpandTwCO8xeGVrBKM1uBGsV
+	9p2JckdJcHMQXLay3F89Y+/C/8zpBN5u1/pireYxLZJvV/0ez2Hvrz9lErx9PSRW
+	EsZ3YkVJzigHewFB4l4G1A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1779096734; x=
+	1779103934; bh=Q1EsgrhmOtBlhH6lTl5Uo51ZkO0kpI0RkBVnwq5QUz4=; b=d
+	7Zrs/v1i2pD7/PQEYdz7BPzqLdbR898qrLSWf/HozUAsyPe+XrqlKiGdfOVHUinw
+	6Q0TqsEx4aDRD2knrLMZmE8pGW7wNnAsh4iVY1NGQyME8dm34CKZoUYySoSwGt3m
+	WO5a6SL/c0VjK4nrTWAgl+UOgREv8GocunpjwMzoH2o93J9K6JzFGz0Nv/ew5u7v
+	otDT3CesstoEPlNlDbtFawhwJUvW/W1HcemrhTjADJgyRVPcEmoEpY9owJYiw0so
+	hKSiM+D0KAtC7+FYC/VwBnzCVieL8gHr9uBPe1fZUpAoCDiIEatJShmPKAswwKNf
+	PdCn7RLUd8Xkv45idAYWQ==
+X-ME-Sender: <xms:m9wKaiS1nRXcm5q7ZK6FjXk-vPvsJCwaGlPICQR9d8H9UXzQ4G_8uA>
+    <xme:m9wKailMo_Vsg2pUTHY2LO2mRgZMiiYsetrfaJAgSSwVAluO1sPqyU7-v1LlFoahd
+    gD4YhMSwmAQLKH7qOY_UXwDIOVaw4Ju_GOiNEeGM_TfF_ltikUCbgY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgddufeekhedvucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrnhgu
+    uceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrthhtvg
+    hrnhepgfetleektedtheehheegffdtgfejvddvveeigfehjedvkefguefffedvhfehkeeu
+    necuffhomhgrihhnpehsohhurhgtvgifrghrvgdrohhrghenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggvpdhn
+    sggprhgtphhtthhopeehtddpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepnhhunh
+    hordhsrgesrghnrghlohhgrdgtohhmpdhrtghpthhtohepughlvggthhhnvghrsegsrgih
+    lhhisghrvgdrtghomhdprhgtphhtthhopegurghvvghmsegurghvvghmlhhofhhtrdhnvg
+    htpdhrtghpthhtohepughpvghnkhhlvghrsehgmhgrihhlrdgtohhmpdhrtghpthhtohep
+    vghnvghlshhonhhmohhorhgvsehgmhgrihhlrdgtohhmpdhrtghpthhtohepnhhpihhggh
+    hinhesghhmrghilhdrtghomhdprhgtphhtthhopegvughumhgriigvthesghhoohhglhgv
+    rdgtohhmpdhrtghpthhtohepugiimheludeshhhushhtrdgvughurdgtnhdprhgtphhtth
+    hopehpvghtvghriiesihhnfhhrrgguvggrugdrohhrgh
+X-ME-Proxy: <xmx:m9wKaoXO8csU_OfH3IC96vXBm6hf3_s4i74Aa2ze3_cRkDErTRhnQA>
+    <xmx:m9wKavCYpT9XIqZZ3KxcyxUwagyNayqYTaDfbOM66aYrE-DDmC3CvQ>
+    <xmx:m9wKaqGfXgsGxAHGFR9PVXMFX8vv_m3SQ0OhOrBlqJJ6MAENfFzlyA>
+    <xmx:m9wKameOBxifjWiOCFYmJ24tKTUi0NpUiwxhzkeayVo8Iddh1ByhbA>
+    <xmx:ntwKarDXvcCscqze7RatHo9_OeoAzcLLCvtlqj7thJsDiA792-MymQA7>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 5AE44182007E; Mon, 18 May 2026 05:32:11 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPVz0n3gLYXab4H+DihfTkdBkGPqTvmoFVY1Cwuafd70KPtYbA@mail.gmail.com>
+X-ThreadId: AoFiOxpvQUXV
+Date: Mon, 18 May 2026 11:29:48 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Ethan Nelson-Moore" <enelsonmoore@gmail.com>, linux-doc@vger.kernel.org,
+ devicetree@vger.kernel.org, workflows@vger.kernel.org,
+ Linux-Arch <linux-arch@vger.kernel.org>, dmaengine@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+ Netdev <netdev@vger.kernel.org>, linux-pci@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-hardening@vger.kernel.org,
+ linux-kbuild@vger.kernel.org,
+ "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>
+Cc: "Jonathan Corbet" <corbet@lwn.net>,
+ "Shuah Khan" <skhan@linuxfoundation.org>,
+ "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+ "Conor Dooley" <conor+dt@kernel.org>,
+ "Daniel Lezcano" <daniel.lezcano@kernel.org>,
+ "Thomas Gleixner" <tglx@kernel.org>, "Alex Shi" <alexs@kernel.org>,
+ "Yanteng Si" <si.yanteng@linux.dev>, "Dongliang Mu" <dzm91@hust.edu.cn>,
+ "Hu Haowen" <2023002089@link.tyut.edu.cn>,
+ "Dinh Nguyen" <dinguyen@kernel.org>, "Kees Cook" <kees@kernel.org>,
+ "Oleg Nesterov" <oleg@redhat.com>, "Will Deacon" <will@kernel.org>,
+ "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+ "Andrew Morton" <akpm@linux-foundation.org>,
+ "Nicholas Piggin" <npiggin@gmail.com>,
+ "Peter Zijlstra" <peterz@infradead.org>, "Vinod Koul" <vkoul@kernel.org>,
+ "Frank Li" <Frank.Li@kernel.org>, "Dave Penkler" <dpenkler@gmail.com>,
+ "Andi Shyti" <andi.shyti@kernel.org>,
+ "Jonathan Cameron" <jic23@kernel.org>,
+ "David Lechner" <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>,
+ "Andrew Lunn" <andrew+netdev@lunn.ch>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
+ "Paolo Abeni" <pabeni@redhat.com>,
+ "Lorenzo Pieralisi" <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ "Simon Schuster" <schuster.simon@siemens-energy.com>,
+ "Andreas Oetken" <andreas.oetken@siemens-energy.com>
+Message-Id: <d40b1e80-37fc-4c88-9d7f-dae6458efe6c@app.fastmail.com>
+In-Reply-To: <20260518042833.272221-1-enelsonmoore@gmail.com>
+References: <20260518042833.272221-1-enelsonmoore@gmail.com>
+Subject: Re: [PATCH] nios2: remove the architecture
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Sun, 17 May 2026, Svyatoslav Ryhel wrote:
+On Mon, May 18, 2026, at 06:28, Ethan Nelson-Moore wrote:
+> The Nios II architecture is a soft-core architecture developed by
+> Altera (since acquired by Intel) and intended to run on their FPGAs.
+>
+> Licenses for the architecture have not been available for purchase
+> since 2024 [1], and support for it has been removed from GCC 15 [2],
+> Buildroot [3], and QEMU [4].
+>
+> Given all of these factors, it is time to remove Nios II support from
+> the kernel. The maintainer stated in 2024 that they were planning to do
+> so soon [5], but this did not come to pass.
+>
+> Remove Nios II support from the kernel and move the former maintainer
+> to CREDITS. Thank you, Dinh Nguyen, for maintaining Nios II support!
 
-> нд, 17 трав. 2026 р. о 10:43 Svyatoslav Ryhel <clamor95@gmail.com> пише:
-> >
-> > Since there are no users of this driver via platform data, remove the
-> > platform data support and switch to using Device Tree bindings.
-> > Additionally, optimize functions used only by platform data.
-> >
-> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-> > ---
-> >  drivers/iio/light/lm3533-als.c      | 123 +++++--------
-> >  drivers/leds/leds-lm3533.c          |  60 ++++---
-> >  drivers/mfd/lm3533-core.c           | 257 +++++++++-------------------
-> >  drivers/video/backlight/lm3533_bl.c |  52 ++++--
-> >  include/linux/mfd/lm3533.h          |  51 +-----
-> >  5 files changed, 202 insertions(+), 341 deletions(-)
+Hi Ethan,
 
-Please snip replies.
+We last discussed this a year ago when Simon Schuster mentioned[1]
+that Siemens Energy is still using NIOS-2 in production and would
+prefer to have this still included in Linux for at least another
+few years until the obligation for kernel updates ends.
 
-[...]
+My feeling is that the maintenance burden of keeping nios2 is
+relatively low. On the other hand, maintaining it out of tree
+as a patch set is also something that should not be all that
+hard if it does get removed.
 
-> > -static int lm3533_device_led_init(struct lm3533 *lm3533)
-> > -{
-> > -       struct lm3533_platform_data *pdata = dev_get_platdata(lm3533->dev);
-> > -       int i;
-> > -       int ret;
-> > -
-> > -       if (!pdata->leds || pdata->num_leds == 0)
-> > -               return 0;
-> > -
-> > -       if (pdata->num_leds > ARRAY_SIZE(lm3533_led_devs))
-> > -               pdata->num_leds = ARRAY_SIZE(lm3533_led_devs);
-> > -
-> > -       for (i = 0; i < pdata->num_leds; ++i) {
-> > -               lm3533_led_devs[i].platform_data = &pdata->leds[i];
-> > -               lm3533_led_devs[i].pdata_size = sizeof(pdata->leds[i]);
-> > +               dev_err(dev, "failed to set boost ovp\n");
-> > +               goto err_disable;
-> >         }
-> >
-> > -       ret = mfd_add_devices(lm3533->dev, 0, lm3533_led_devs,
-> > -                             pdata->num_leds, NULL, 0, NULL);
-> > +       ret = devm_mfd_add_devices(dev, 0, lm3533_child_devices,
-> > +                                  ARRAY_SIZE(lm3533_child_devices),
-> > +                                  NULL, 0, NULL);
-> 
-> Question to Lee Jones. Would you find acceptable if the driver will
-> build cell list dynamically based on the nodes in the device tree?
-> This is LED controller after all, not all leds can be populated and
-> same LED control bank can be linked to all LVLEDs for example.
-> 
-> If you are ok, would this implementation satisfy you?
+Simon mentioned that he expected others to also use nios2 with
+new kernels, but I have not heard from anyone else actually
+doing it.
 
-Generally not.  Create the non-dynamical information statically
-(obviously not 'const'), then you can add dynamic data as you go.
+I've added Simon and Andreas to Cc here to let them comment
+more here.
 
->         struct mfd_cell lm3533_cells[LM3533_CELLS_MAX];
->         u32 count = 0, reg;
->         int ret;
-> 
->         device_for_each_child_node_scoped(lm3533->dev, child) {
->                 if (!fwnode_device_is_available(child))
->                         continue;
-> 
->                 if (count >= LM3533_CELLS_MAX)
->                         break;
-> 
->                 if (fwnode_device_is_compatible(child, "ti,lm3533-als")) {
->                         lm3533_cells[count].name = "lm3533-als";
->                         lm3533_cells[count].id = PLATFORM_DEVID_NONE;
->                         lm3533_cells[count].of_compatible = "ti,lm3533-als";
-> 
->                         lm3533->have_als = true;
->                 }
-> 
->                 if (fwnode_device_is_compatible(child, "ti,lm3533-backlight")) {
->                         ret = fwnode_property_read_u32(child, "reg", &reg);
->                         if (ret || reg > LM3533_HVLED_ID_MAX) {
->                                 dev_err(dev, "invalid backlight reg %d\n", reg);
->                                 continue;
->                         }
-> 
->                         lm3533_cells[count].name = "lm3533-backlight";
->                         lm3533_cells[count].id = reg;
->                         lm3533_cells[count].of_compatible =
-> "ti,lm3533-backlight";
-> 
->                         lm3533->have_backlights = true;
->                 }
-> 
->                 if (fwnode_device_is_compatible(child, "ti,lm3533-leds")) {
->                         ret = fwnode_property_read_u32(child, "reg", &reg);
->                         if (ret || reg < LM3533_HVLED_ID_MAX ||
->                             reg > LM3533_LVLED_ID_MAX) {
->                                 dev_err(dev, "invalid LED reg %d\n", reg);
->                                 continue;
->                         }
-> 
->                         lm3533_cells[count].name = "lm3533-leds";
->                         lm3533_cells[count].id = reg - LM3533_HVLED_ID_MAX;
->                         lm3533_cells[count].of_compatible = "ti,lm3533-leds";
-> 
->                         lm3533->have_leds = true;
->                 }
-> 
->                 count++;
->         }
-> 
-> >         if (ret) {
-> > -               dev_err(lm3533->dev, "failed to add LED devices\n");
-> > -               return ret;
-> > -       }
-> > -
-> > -       lm3533->have_leds = 1;
-> > -
-> > -       return 0;
-> > -}
+     Arnd
 
-[...]
-
--- 
-Lee Jones
+[1] https://sourceware.org/pipermail/binutils/2025-March/140140.html
