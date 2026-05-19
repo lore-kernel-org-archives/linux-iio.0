@@ -1,125 +1,130 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 613173DCDB5
-	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 07:59:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 509FA3E0228
+	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 08:13:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779177547; cv=none; b=oIg5pU8lWwGTtS9X4m2wqwJRec5itH+V6RAsP6uu8HV6+n1KHViCBDc624yQA59yLqKwKrcBN6mzMgOESW+lR288++QQNqmq40EV/8AES1TrHRXPGfi3LvKyz1WAG3JPA2SfNShqGcAR9nr5DhH6wpOhX5b8RvyFrEShh6FtfVY=
+	t=1779178422; cv=none; b=jZdboHjreRMQEy03o/m4ku+3Qmj+dCzm2x6wSyvpBdGGkze2GJrk+11SmmcdebGJgcL0stgW8AZJYnLzqvpSyU9YwhIOh1Ch/NwW92mcb1Ncwtk5fjUxTCl8zV65i3Bedni8u9jjxd281mI4PDAwMAsYcpezk6la9vE6J7geMFU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779177547; c=relaxed/simple;
-	bh=dDe5ISZtdomf+hnyNFOgzEv6n1mbjYqwSsrmVrOVxHY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ua1P/0s2ol5yxTz7nNc1/NWXEwBvo2KxvnMeVxnsfUM9/DBcvxV62eFt2o+7qrBfa3afCV2AqcTT8Y2WoAebbPIY+woumkapR3MuLRN91mkrD7kTZoRViEGyvQdq2wczOc0NQqxZMLDgpw9VFj3AnK1dTbDPa5BlW96NarhzcHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LIWK/DzL; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779178422; c=relaxed/simple;
+	bh=M7xMzDDwZ/A1sgg24zdNQRb81VZaFn4ErBaEK5dALkk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rLtMAl2V5H/QqK04j0hKQYnVIO2q/mu/wNmxekVufXMf3VEG/0qJ5FVtGCqQgQbaXjRoIuvapEquxEghb5uAitlYg2LZ73WQrsQvahLjdVfJn1fs60F9l9Q8sAgkXc5WHTIlFFWGTdy4oOfAWz6CcjXvTGBrMmUdDxvfS3dFwcg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Dw/uwLFX; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LIWK/DzL"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-488a14c31eeso19315115e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 00:59:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Dw/uwLFX"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-488e1a8ac40so31870255e9.2
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 01:13:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779177545; x=1779782345; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1779178420; x=1779783220; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qIaDQb61nFaJysAgVO0hYea1n6OBZz1pXSKqoKiGMyA=;
-        b=LIWK/DzL4zkfzBOWOKvBzq4+x4+q+/BIRAQCb3//LcZo5gNr+/EAl10gzO506DvQu/
-         wzo4e8sJ2SR2gbmPuBkzsAZyZaCm4yvI2Ex18oiQNwC0L1Fb/hi7lQ/HwpOCxnNnk/Jt
-         sCu3Z3s8lSMxg3y2gvqHe/TF0hxs+rtw/UqA1GwEmutIX2YSfvrg/MdEwBE1q+F7XUXa
-         ddno21Ah0CQBzyQenNHyJTRFGzRCiGODDLrUJ8ECKjSC/W0MxlaISSlHWbdXy/f09HCz
-         ghl/CKUiEP+l992g1fmb2HPTDk2GukOq8hI+djpkAF1Z4FEq6SP8bTH4j0mXXzOaWw/9
-         6jug==
+        bh=DFCO6IJf3Mp2M4P0MEbky1yuVhpsld0HPMHntoVtX14=;
+        b=Dw/uwLFXGi+mYD1HqAGORhmE3fG3iqCVzKfIVLM67hi43IQdnigpXUVunyxkGKx+Ra
+         tzxv2umYHVg9Pe9T0E0KZSy5q1M2HJvF94AKQJI9bFt4hX3GYcRj6cw0Vm5uRntw6Pi/
+         co6U5+wcDWFSEOEypPvUwE5SukWQol/+FXUjyQvNTB2umQchxApxUKs8xLDtGByPIA+V
+         WUjBEJOXbs9WukGZmT9Fm7KQfWeFHEQm6+XYJ1XYlbjLuqu39Nc/sagDGm9tENs20Jrr
+         OSM1FGvD/thu4crcVhQca34ErOVETAlWEoUkdp4H/K60sCwMoh/Uj2iWRxDJGO/BDSLJ
+         ixkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779177545; x=1779782345;
+        d=1e100.net; s=20251104; t=1779178420; x=1779783220;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=qIaDQb61nFaJysAgVO0hYea1n6OBZz1pXSKqoKiGMyA=;
-        b=SgYQlRIxdszzYeIaMx/YeThCbey6TVUGvbIBXGCs4ZVmColyt0Fd4kEpaOzAqD9bq7
-         lX1YjuuJCmZyIegOi1WbbEoo1YkuYpWV0KeSGWkZXIg1HJy6USmLDIegIlMqQFJF4qfW
-         dAnMSrc+OuoHEviKdf1RawX05xzaDIWMToraFjuYTmgX8YKXH6ttCOsN9Y9R1xO/9giI
-         8tdcqrWHCnmfNsj+yxXvSsYlyyw819FJQ/IxuiezfjoLSMrCoCnwEqYzRXn+EhM4tnNU
-         HK3HcUaOlg2QtRU/mM215VZbMS0fbArZmWLI8raH4ySNA7Of1CuNX3HvJd2ftjbK9wPU
-         UfWw==
-X-Forwarded-Encrypted: i=1; AFNElJ+VKhq5K0KB4UB0P36PIlGUzzW4IJWPPRt+dOiPb4SnZkIv7TkJE2eYgEvC9+6D5J4T06lomHbKFsw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzhhTjmYbqvCRwpWrlsLH4rzGTy5+iB5IWhl3f8E1o56Dxuuu6D
-	V68ZkQCVK5TuZzGQprwUrl2xqyEzMlYupIoCwKmxgRYKhEG2C+rHC84z
-X-Gm-Gg: Acq92OEnd/6TKjfw/IhLShckyddjfAwndK3+Td+wN9ujEkSyeJUGxNhb+eWAYv8jLIe
-	JqxtLHSVq6XYIS1MRkmV+vPGvm4Y1ujSKGVbqnkUvGUK+Oq2aFg3cPKyLOrgv3cwCs9KyNMqHnD
-	CB8HM0lBBFNlq8x0CY4Zrk71AlU2I2UZZN/ohdgBbn+oZFRcJeTDp5I8H8ADEsRR7POBNxOAbuA
-	ALZHuml2jEojVFNdFX/y+yTve1qUZuh8NpUWskfWTZovgzqmMeq4y8zBw2gMml62KwXAUCb8mTq
-	gNxt/6sIarIhjRhepbqwUOOoDbKKjQNo42u72qcGuVZDKHLU5dKWEDV6sS4RlG1+Dbuvp4XKvrq
-	3yU+2ayOJPHENUSz8Idkyy21tP/6riQfO0t8OhT/N40q/D5k79RePqYdr9lV8q95wJQf/b3nvT5
-	H5imFMbL95/obY3Y202teE7KqEn8+XGcLj3QcJhs1a3aOV7Yfx9Yhl8pxWRQetrOwS
-X-Received: by 2002:a05:600c:4685:b0:48e:5d91:cfe3 with SMTP id 5b1f17b1804b1-48fe5fd494dmr283200195e9.1.1779177544506;
-        Tue, 19 May 2026 00:59:04 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490225bf8d6sm1893155e9.13.2026.05.19.00.59.03
+        bh=DFCO6IJf3Mp2M4P0MEbky1yuVhpsld0HPMHntoVtX14=;
+        b=S4W8gdl3mY52NyBDKwtqp20K6eruSpIb/7BTkdMq8TD3vvGZeeMDbY11I1DQJbQAxW
+         Wo8f/5wye0xNLF2j+xGFw3uaA28DnZGXwCjwHcY+d1ZZh7RU1FxILY9wr9oBITpLjElT
+         7ghmYJ7jec1rXAPEd43W4vTmdPGhDoasrnoCRj83QfRX0xWA2lH8vJb0ZWTZDi8WHutn
+         m0Q11zAw+VDOTeJbQgKffrnp4/kcR/kwlprABk6SBVs4PU0gMWnrsyk2Z+5krrppNY0N
+         jXo33db4+5+UVkqB/qUJodA+arkVPRKXO/9iSDFqfcaMdZrlYrv7ZzkdCY1jsq44Ouf6
+         leiA==
+X-Forwarded-Encrypted: i=1; AFNElJ/XdLFdkR0YoIBsaB5KTR8ku0CQEFhUWtQQnZmFQvu80221bvQ6V3ePIrJUTVYfy14xffy47rFfKi0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxS2jo0ELZ5i+3uiciBj/1gbWrLwJF32LW4T2AorU3XI89tb8ZA
+	uG1tkR8+NLWlZbIvzj6BevkyzIOmsDNdmHLu1J4Tx+Cc717eWpQMVEdu8uwNZtODzYY=
+X-Gm-Gg: Acq92OFrWapX4NYhwnNW8HWAWSJCQ7wRhlWe4rURxTpf4nNAPDYNUsQ4Sv3QKcAV2jQ
+	J26Ok9qlUa0le2SgJ4R/Eeq30GKpqMSiur3PoPg7g/Ok3k7mno21CBwSpv2lADdNConCRc7eygK
+	UFBHnxF7odUrmI3gCnwMe0Q2dGU/Ersp2IRXjY5N5277Fk57UC1Q2qIMdmCwrZTPkgjgRmzdiiN
+	F5IASgZB3F8rJo0Y26Z0OOUxwUyCTZ+Z9NkmXVPS8AoPin0cOFu3/UdIYrA/x8aDcY8vWvePAM4
+	GoCMVXSNHWyOxYFKIqW9mZaBy4GvId4rIt1Y0s+Me8prWVzN9c3piW5Gi9qxDkA8NpGMeOmnI+Z
+	0/ER+mvcv38xzvBjcxvZnSYGJ/UV/BUjBURK6615GCg2HTtmstsf0FMrif8OZgcg/lzK93GsLmL
+	0PSPX/LLr6I2YJyjzJyb4Nk+YAfxgkwgqKZL/QIh83UUdFjko+rYkGOE+CjJZZyjGgyko+U5RgO
+	5VzpQqHn+K70/4=
+X-Received: by 2002:a05:600c:42ca:b0:48f:ef34:7ec1 with SMTP id 5b1f17b1804b1-48fef347fabmr151252405e9.25.1779178419821;
+        Tue, 19 May 2026 01:13:39 -0700 (PDT)
+Received: from localhost (p200300f65f47db0428dec7b135f55767.dip0.t-ipconnect.de. [2003:f6:5f47:db04:28de:c7b1:35f5:5767])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-45d9ec3acf7sm43677040f8f.12.2026.05.19.01.13.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 00:59:04 -0700 (PDT)
-Date: Tue, 19 May 2026 08:59:02 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: kernel test robot <lkp@intel.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, oe-kbuild-all@lists.linux.dev, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v0 1/1] iio: Convert IIO_CHAN_SOFT_TIMESTAMP() to be
- compound literal
-Message-ID: <20260519085902.28b1730a@pumpkin>
-In-Reply-To: <agtXwmSPs8iARJ_e@ashevche-desk.local>
-References: <20260518071349.469748-1-andriy.shevchenko@linux.intel.com>
-	<202605190130.oWitiRzG-lkp@intel.com>
-	<agtXwmSPs8iARJ_e@ashevche-desk.local>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        Tue, 19 May 2026 01:13:39 -0700 (PDT)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/7] iio: accel: bmc150: Explicitly set .driver_data
+Date: Tue, 19 May 2026 10:13:04 +0200
+Message-ID:  <7ff04e7dd864ed05df875174a29ade662135b683.1779136001.git.u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <cover.1779136001.git.u.kleine-koenig@baylibre.com>
+References: <cover.1779136001.git.u.kleine-koenig@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1700; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=M7xMzDDwZ/A1sgg24zdNQRb81VZaFn4ErBaEK5dALkk=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqDBudV8zSZVUAtTufVxfKRzNVq+Koiayb08YkV rhH1p1Bh3qJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCagwbnQAKCRCPgPtYfRL+ TnbpCACsJqVs2rniMz7FIJ7GZgXznpMlf5kG4UQmKI7Je6AcjOi07MQIAg2Q6Dl4wee51WM71Ah jU8pcdDz6Xl+R6o2WZvpHcKvoXt7W4kyv7B89HVJcx2XNeHAswdzI27/J7ZjbuxRvksPSCD5S0X 5UbR2uYkW77Y66ktSItIrrcoQE/Rz0M81UmzlmCGoUGK7I0M9UNQ/SlWJmG+zuTf1OfspkV9dl+ /STncONtsmxcI+MC0ntrVTlfRR5MX23Ynm1BHTES9Xzu2mnV4d9yv96rLVlxpIXDa0i8t8ZQC4I aXLXi2BA4qqU1giWjNE5Nh98ZFsCOwCLbPeBHUldgxh1Lnt5
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 
-On Mon, 18 May 2026 21:17:38 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+There is one id entry that has an explicit assignment to .driver_data.
+To make the intention clearer, assign BOSCH_UNKNOWN (which is also 0)
+for all previously ids that had .driver_data = 0 implicitly before.
 
-> On Tue, May 19, 2026 at 01:32:51AM +0800, kernel test robot wrote:
-> 
-> > kernel test robot noticed the following build warnings:
-> > 
-> > [auto build test WARNING on jic23-iio/togreg]
-> > [also build test WARNING on linus/master v7.1-rc4 next-20260518]
-> > [If your patch is applied to the wrong git tree, kindly drop us a note.
-> > And when submitting patch, we suggest to use '--base' as documented in
-> > https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> > 
-> > url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/iio-Convert-IIO_CHAN_SOFT_TIMESTAMP-to-be-compound-literal/20260518-151541
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-> > patch link:    https://lore.kernel.org/r/20260518071349.469748-1-andriy.shevchenko%40linux.intel.com
-> > patch subject: [PATCH v0 1/1] iio: Convert IIO_CHAN_SOFT_TIMESTAMP() to be compound literal
-> > config: sparc64-randconfig-r132-20260518 (https://download.01.org/0day-ci/archive/20260519/202605190130.oWitiRzG-lkp@intel.com/config)
-> > compiler: clang version 23.0.0git (https://github.com/llvm/llvm-project 5bac06718f502014fade905512f1d26d578a18f3)
-> > sparse: v0.6.5-rc1
-> > reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260519/202605190130.oWitiRzG-lkp@intel.com/reproduce)
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <lkp@intel.com>
-> > | Closes: https://lore.kernel.org/oe-kbuild-all/202605190130.oWitiRzG-lkp@intel.com/
-> > 
-> > sparse warnings: (new ones prefixed by >>)  
-> > >> drivers/iio/adc/max11410.c:807:31: sparse: sparse: cast to non-scalar
-> > >> drivers/iio/adc/max11410.c:807:31: sparse: sparse: cast from non-scalar  
-> 
-> Thanks, the sparks were expected exactly in this and one more driver.
-> I mentioned that in my reply to my own patch already.
-> 
+While touching all entries in this array, convert to named initializers.
 
-Can you just remove then cast from:
-a44ef7c4609724e Ibrahim Tilki    2022-10-03 @807 \
-  	channels[chan_idx] = (struct iio_chan_spec)IIO_CHAN_SOFT_TIMESTAMP(chan_idx);
-since it is no longer needed?
+Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
+---
+ drivers/iio/accel/bmc150-accel-i2c.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
--- David
+diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
+index b4604f441553..3315172742d0 100644
+--- a/drivers/iio/accel/bmc150-accel-i2c.c
++++ b/drivers/iio/accel/bmc150-accel-i2c.c
+@@ -245,16 +245,16 @@ static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+ MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+ 
+ static const struct i2c_device_id bmc150_accel_id[] = {
+-	{"bma222"},
+-	{"bma222e"},
+-	{"bma250e"},
+-	{"bma253"},
+-	{"bma254"},
+-	{"bma255"},
+-	{"bma280"},
+-	{"bmc150_accel"},
+-	{"bmc156_accel", BOSCH_BMC156},
+-	{"bmi055_accel"},
++	{ .name = "bma222", .driver_data = BOSCH_UNKNOWN },
++	{ .name = "bma222e", .driver_data = BOSCH_UNKNOWN },
++	{ .name = "bma250e", .driver_data = BOSCH_UNKNOWN },
++	{ .name = "bma253", .driver_data = BOSCH_UNKNOWN },
++	{ .name = "bma254", .driver_data = BOSCH_UNKNOWN },
++	{ .name = "bma255", .driver_data = BOSCH_UNKNOWN },
++	{ .name = "bma280", .driver_data = BOSCH_UNKNOWN },
++	{ .name = "bmc150_accel", .driver_data = BOSCH_UNKNOWN },
++	{ .name = "bmc156_accel", .driver_data = BOSCH_BMC156 },
++	{ .name = "bmi055_accel", .driver_data = BOSCH_UNKNOWN },
+ 	{ }
+ };
+ 
+-- 
+2.47.3
+
