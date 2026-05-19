@@ -1,124 +1,221 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07B1E221F26;
-	Tue, 19 May 2026 12:30:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43BA3340408
+	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 13:19:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779193814; cv=none; b=O+e5h0sgAe5Ak2bPK8a3n8TwhiPxUCDm/lkidnC2Qbf6vlmibY2Zda/GpP0unD9iiZsF0cX1eAdeZXiUmDAKJE1W5gZoUTwp8/bubuh87PGKeIJlxJgD/qg3rhGfkyzDr8Q2K48MmiyEEdZhpkvW1+rfn5Y4NDeNa54iHx8I5xI=
+	t=1779196788; cv=none; b=Bep6s/8QLrITymhrGtKBRKDUdfLwXqCny1KAX8/3dX7O82l2vuXCpBPW5uv/0cI4hp8qLTsePvHeFhxlKQ5Wb/QBYvphLD0H1kNPxzzD6UTVTFMn6oC0/w7EQgxVG/w8yje8u77X9WBcSfU8QbVPjy3reD0YHOq3k0smTBx5T0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779193814; c=relaxed/simple;
-	bh=wed1uInsNPuOCmWK6K2xVCOG9Mf8L2lAW4/zULYZeXc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vEf+JH2MNLtl4Lw+iC6VgsU4YmObg/JnUTN0polTdtOJmowE5WkQ+QZg/nI5fTCqZRmlpE8lENh8Yyt0FVV/vqzP8LIBz5+pyvMoaWAWrMfyOSuZlQ+DsBBlbWEGso1uDEdxkLuPljAkMaq3JBewrD62VOzM6K9HnJA11juNIcc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mzNbTxru; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1779196788; c=relaxed/simple;
+	bh=yRBLnOu2D2TEtY48hS/pBbjA7tsgUERhIz6SqgvMB/0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=H8i8E1XUT6yUMmhaxzk+DdcS6/4r1LzIGW5AQJv4fjJ8yu07EDboME5k5A81uPxHmp4FsZXQmtAdc/ZSLv5ynLzEo4PPcQCAir6+GdkxlolDaav9tu0+QBXdqPzmUKt4kRK1vJICtNXDgW7HwQupg5kLUO9j54yu95CT1+H0u9U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kkvtWZ0S; arc=none smtp.client-ip=209.85.160.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mzNbTxru"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779193813; x=1810729813;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wed1uInsNPuOCmWK6K2xVCOG9Mf8L2lAW4/zULYZeXc=;
-  b=mzNbTxruBSDL1EdGbyk/7XARIhFCRe4huoRsgi8DnpgyW1rBnHcGnWwB
-   vUDa3GqD2N58woDAC1OP/h6EQD2iiQ+ftbJaOcPIF1Uw0ssAkj7wK4LRa
-   KqgsQ5xRAo9PSTCRQ4MwG/mn0H20ie9bvo4s7FGdtmYPXBjNcXafRFoPQ
-   uM4CCQ+Is2+uoqMPJS2zvpWB+DOLVgirUMB9BpxumfMjWK/GCCu+HGaF/
-   t9PAR3sHgaqRlYaICRjP1itm2cXrK4S10o54GC7+fsGhiEhc9mWFXgKNp
-   zYHCohnwr88n83Xu8BFrPerJ3aX7K4H1Jq7rOd7Gv1xGqCW7k+Sjeg43i
-   g==;
-X-CSE-ConnectionGUID: idCIULNeRwqMiFmpGQvrdA==
-X-CSE-MsgGUID: IjGDafDaT8iIUVcUzPHzrg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11791"; a="80032830"
-X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
-   d="scan'208";a="80032830"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2026 05:30:10 -0700
-X-CSE-ConnectionGUID: tC35eIlVToW+FmKx2KVueQ==
-X-CSE-MsgGUID: B/otJDZGQwiecB1bgo/Seg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
-   d="scan'208";a="236747273"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.150])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2026 05:30:07 -0700
-Date: Tue, 19 May 2026 15:30:05 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: David Laight <david.laight.linux@gmail.com>
-Cc: kernel test robot <lkp@intel.com>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, oe-kbuild-all@lists.linux.dev,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v0 1/1] iio: Convert IIO_CHAN_SOFT_TIMESTAMP() to be
- compound literal
-Message-ID: <agxXzSvwvqyU9Jji@ashevche-desk.local>
-References: <20260518071349.469748-1-andriy.shevchenko@linux.intel.com>
- <202605190130.oWitiRzG-lkp@intel.com>
- <agtXwmSPs8iARJ_e@ashevche-desk.local>
- <20260519085902.28b1730a@pumpkin>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kkvtWZ0S"
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-408778a8ec4so2164243fac.0
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 06:19:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779196786; x=1779801586; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=w96kHrphpa3rQc4FeLDCOWrWTTQn4xzjAAyJPXRHqJc=;
+        b=kkvtWZ0SnDnBB9/GLXrce274xl//u0e9bN1+iwAcefqerXT4v3se5DtERY7RiYB48g
+         gqwKCT7HragHWmXqunKKpO4GmCjtAxp9VwzkuEsHjRWM4utGfsOxdfnupGQImwWOG5yn
+         J2d5Rxwg7DVe1Dl/ZsHuenWGUyAdv14eosFFEcqRYkfjKGqqIlXnWm8MJUReqRTUn2m/
+         VCFv4nbIH7lTt7I+cM1rbuw+X6+CVG1QAxTPjUTJusSqWN8C+xsDakouwFF4EH8jTI0c
+         85RfSC5ldWjjpccBLKCFmMD+8iwagCW5Y9OOf/eCECCPsR0J15RAoW2U/fM5aX2CzQaI
+         MN5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779196786; x=1779801586;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w96kHrphpa3rQc4FeLDCOWrWTTQn4xzjAAyJPXRHqJc=;
+        b=sS/Wsz/uIZ9oeRMqpbrnnc22cH3z5iITse/uT96352/CM877lcnaxufGoeprv9PHW9
+         1wSeumDiWP1JOxdoDEYXK0EcSHTrWL9o7wcTooKeEmpWpUFqmaPBJc5DxfN7cmXsbsXm
+         kzh9/tt8CpuN81P4Cl1FoYtcgPZIW8DZOuiW2AB4ySx9heRHJ/TB+XlPEyQ7ndJye1vR
+         I6qEIUTMnFzASPx7RriEeoDNycE93GPk9o0aRs3FgBUEGDqTuskTftex7KTpt9KDJWR2
+         dUgWP9s9jKb6O7e6enVSL9E4tq+7vEI1YhueA5jkYqaa9drt35l4UJCPjUt5sr6k9Fkv
+         4shg==
+X-Forwarded-Encrypted: i=1; AFNElJ+vuqU3LSLjR2V4aELF7+Ldb7S39IkZIyB34uXe6wq5Xmd4eHNUNZIBepduPI4Ipxp538bAmX/cMkc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyt6PwJS6TQqjKS6eFUWvxyFlp6TLIeQ2edNZljoGZZZ6bBX+JW
+	VJBpXooIwYBGNvKVk6rcH/dYj1D4fGjrwZxsre58ePoc6CDd0bTLxCzpe90877TQgSw=
+X-Gm-Gg: Acq92OEA/AsNBBsDmksP7IlKzFcg0GMnoXqUVoMcSogJS8GfsSxHkNi5JxVvC3BJa48
+	uZaPR1Ufp/cxKOz8Sh3xVSGIFP4YDhu/H6jCT1khcHEMFfWEm9syWK46ob0J7NMs97/HLgxJOs5
+	i2kYccua7w9i9eIHqdH9pDEwHCudGr93xigcs1AdQzKhB7GQ6XJdZv4BK+ye+XbR9VR0gnQI1+F
+	7LmFw5Mu+70x6xXH/oHiCO6aGOvy82d1sfdeYuCJa3ytNLCcbYC7Gj4xAjPSjfGBDuzUmCCyuSS
+	xHbgeOZPHOKP8va5wRrpQoy1pMH5862Rs3Zg6yR6y2vISm0iY7tH7U4zpxrhfQt1NKf1TIIh/AU
+	TG9SDOD77/9q7uJzXo5l6N4AUQg61DLYvwrHBU0E3MDosDXmlPmQKAfIRfbl36Z8kouz5TA3dUJ
+	pqyV+LFkfrx44N9aeJCxeaB0odChruqKb5phXKdYcW+YmAMQHf1leYHZ8GKmKc2mZFoh8w
+X-Received: by 2002:a05:6870:a093:b0:439:b6a0:5125 with SMTP id 586e51a60fabf-43a2de07a22mr12503222fac.30.1779196786074;
+        Tue, 19 May 2026 06:19:46 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-43a957b84fdsm7146229fac.18.2026.05.19.06.19.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2026 06:19:45 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: jic23@kernel.org
+Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] iio: chemical: scd30: Replace manual locking with RAII locking
+Date: Tue, 19 May 2026 08:19:43 -0500
+Message-ID: <20260519131944.25174-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260519085902.28b1730a@pumpkin>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 19, 2026 at 08:59:02AM +0100, David Laight wrote:
-> On Mon, 18 May 2026 21:17:38 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > On Tue, May 19, 2026 at 01:32:51AM +0800, kernel test robot wrote:
-> > 
-> > > kernel test robot noticed the following build warnings:
-> > > 
-> > > [auto build test WARNING on jic23-iio/togreg]
-> > > [also build test WARNING on linus/master v7.1-rc4 next-20260518]
-> > > [If your patch is applied to the wrong git tree, kindly drop us a note.
-> > > And when submitting patch, we suggest to use '--base' as documented in
-> > > https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> > > 
-> > > url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/iio-Convert-IIO_CHAN_SOFT_TIMESTAMP-to-be-compound-literal/20260518-151541
-> > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-> > > patch link:    https://lore.kernel.org/r/20260518071349.469748-1-andriy.shevchenko%40linux.intel.com
-> > > patch subject: [PATCH v0 1/1] iio: Convert IIO_CHAN_SOFT_TIMESTAMP() to be compound literal
-> > > config: sparc64-randconfig-r132-20260518 (https://download.01.org/0day-ci/archive/20260519/202605190130.oWitiRzG-lkp@intel.com/config)
-> > > compiler: clang version 23.0.0git (https://github.com/llvm/llvm-project 5bac06718f502014fade905512f1d26d578a18f3)
-> > > sparse: v0.6.5-rc1
-> > > reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260519/202605190130.oWitiRzG-lkp@intel.com/reproduce)
-> > > 
-> > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > > the same patch/commit), kindly add following tags
-> > > | Reported-by: kernel test robot <lkp@intel.com>
-> > > | Closes: https://lore.kernel.org/oe-kbuild-all/202605190130.oWitiRzG-lkp@intel.com/
-> > > 
-> > > sparse warnings: (new ones prefixed by >>)  
-> > > >> drivers/iio/adc/max11410.c:807:31: sparse: sparse: cast to non-scalar
-> > > >> drivers/iio/adc/max11410.c:807:31: sparse: sparse: cast from non-scalar  
-> > 
-> > Thanks, the sparks were expected exactly in this and one more driver.
-> > I mentioned that in my reply to my own patch already.
-> > 
-> 
-> Can you just remove then cast from:
+scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
+calls. Replace them with the newer guard(mutex)() for cleaner RAII
+patterns and to improve maintainability.
 
-Not a cast! :-)
+Add new helper function scd30_trigger_handler_helper_locked() containing
+the critical section for scd30_trigger_handler().
 
-> a44ef7c4609724e Ibrahim Tilki    2022-10-03 @807 \
->   	channels[chan_idx] = (struct iio_chan_spec)IIO_CHAN_SOFT_TIMESTAMP(chan_idx);
-> since it is no longer needed?
+In addition, small refactor to replace "?:" operator with regular
+if/else returns.
 
-I won't have time, if you can wait a couple of weeks (my vacations started,
-I am busy with something else). Otherwise, feel free to drop those from the
-two drivers in the same patch, thanks!
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+---
+ v2:
+ - Fix callback issue as noted by Jonathan v1.
+ - Refactor critical section of scd30_trigger_handler() into helper
+   called scd30_trigger_handler_helper_locked().
+ - Revert removal of goto in scd30_trigger_handler().
 
+ drivers/iio/chemical/scd30_core.c | 66 ++++++++++++++++++++-----------
+ 1 file changed, 42 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
+index a665fcb78806..bb8bdea7c833 100644
+--- a/drivers/iio/chemical/scd30_core.c
++++ b/drivers/iio/chemical/scd30_core.c
+@@ -368,11 +368,13 @@ static ssize_t calibration_auto_enable_show(struct device *dev, struct device_at
+ 	int ret;
+ 	u16 val;
+ 
+-	mutex_lock(&state->lock);
+-	ret = scd30_command_read(state, CMD_ASC, &val);
+-	mutex_unlock(&state->lock);
++	guard(mutex)(&state->lock);
+ 
+-	return ret ?: sysfs_emit(buf, "%d\n", val);
++	ret = scd30_command_read(state, CMD_ASC, &val);
++	if (ret)
++		return ret;
++
++	return sysfs_emit(buf, "%d\n", val);
+ }
+ 
+ static ssize_t calibration_auto_enable_store(struct device *dev, struct device_attribute *attr,
+@@ -387,11 +389,13 @@ static ssize_t calibration_auto_enable_store(struct device *dev, struct device_a
+ 	if (ret)
+ 		return ret;
+ 
+-	mutex_lock(&state->lock);
+-	ret = scd30_command_write(state, CMD_ASC, val);
+-	mutex_unlock(&state->lock);
++	guard(mutex)(&state->lock);
+ 
+-	return ret ?: len;
++	ret = scd30_command_write(state, CMD_ASC, val);
++	if (ret)
++		return ret;
++
++	return len;
+ }
+ 
+ static ssize_t calibration_forced_value_show(struct device *dev, struct device_attribute *attr,
+@@ -402,11 +406,13 @@ static ssize_t calibration_forced_value_show(struct device *dev, struct device_a
+ 	int ret;
+ 	u16 val;
+ 
+-	mutex_lock(&state->lock);
+-	ret = scd30_command_read(state, CMD_FRC, &val);
+-	mutex_unlock(&state->lock);
++	guard(mutex)(&state->lock);
+ 
+-	return ret ?: sysfs_emit(buf, "%d\n", val);
++	ret = scd30_command_read(state, CMD_FRC, &val);
++	if (ret)
++		return ret;
++
++	return sysfs_emit(buf, "%d\n", val);
+ }
+ 
+ static ssize_t calibration_forced_value_store(struct device *dev, struct device_attribute *attr,
+@@ -424,11 +430,13 @@ static ssize_t calibration_forced_value_store(struct device *dev, struct device_
+ 	if (val < SCD30_FRC_MIN_PPM || val > SCD30_FRC_MAX_PPM)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&state->lock);
+-	ret = scd30_command_write(state, CMD_FRC, val);
+-	mutex_unlock(&state->lock);
++	guard(mutex)(&state->lock);
+ 
+-	return ret ?: len;
++	ret = scd30_command_write(state, CMD_FRC, val);
++	if (ret)
++		return ret;
++
++	return len;
+ }
+ 
+ static IIO_DEVICE_ATTR_RO(sampling_frequency_available, 0);
+@@ -579,24 +587,34 @@ static irqreturn_t scd30_irq_thread_handler(int irq, void *priv)
+ 	return IRQ_HANDLED;
+ }
+ 
++/* Meant ONLY for scd30_trigger_handler() */
++static int scd30_trigger_handler_helper_locked(struct iio_dev *indio_dev,
++					       int *scan_data, int arr_size)
++{
++	struct scd30_state *state = iio_priv(indio_dev);
++	int ret;
++
++	guard(mutex)(&state->lock);
++
++	if (!iio_trigger_using_own(indio_dev))
++		ret = scd30_read_poll(state);
++	else
++		ret = scd30_read_meas(state);
++	memcpy(scan_data, state->meas, arr_size);
++	return ret;
++}
++
+ static irqreturn_t scd30_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct scd30_state *state = iio_priv(indio_dev);
+ 	struct {
+ 		int data[SCD30_MEAS_COUNT];
+ 		aligned_s64 ts;
+ 	} scan = { };
+ 	int ret;
+ 
+-	mutex_lock(&state->lock);
+-	if (!iio_trigger_using_own(indio_dev))
+-		ret = scd30_read_poll(state);
+-	else
+-		ret = scd30_read_meas(state);
+-	memcpy(scan.data, state->meas, sizeof(state->meas));
+-	mutex_unlock(&state->lock);
++	ret = scd30_trigger_handler_helper_locked(indio_dev, scan.data, sizeof(scan.data));
+ 	if (ret)
+ 		goto out;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.54.0
 
