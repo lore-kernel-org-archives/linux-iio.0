@@ -1,121 +1,166 @@
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57EBC44D033
-	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 09:43:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 713B93F0ABA;
+	Tue, 19 May 2026 10:00:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779183827; cv=none; b=LR+OxDBZ2nUSqKoCbP+paUHdanWHdvh5ko9b7gthRxnh1WC+UkyuAUCDKifjPrK6C50e4CckaOb41xmCw6nc6okzYmv1sIst8svwPLvfU6bzLVkzI3Eb+6L0vlNu0mhdGsdBLp9hFh0DowLnPG/jQja9vjHJeJwwILOPrv2ZwAw=
+	t=1779184804; cv=none; b=h1mQ/w1L4vGhxgozZCtAone+r80lZTmBZkPSGmFEfTgrz2nE4KkOslWuncYOVCqXQuws0Lkpr8sLE5V3jx9b4IOq7RFLEiOFzOnG5eKmfUwJNKWFGOZcLkN8G2wBPpzVYt1/aeII+5Dk6hEhS+IlwKXIqyFHoXnVKmqhPAFiOKE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779183827; c=relaxed/simple;
-	bh=VV0WQeCgbPqBTi7yab+uEYQeq6u9LFtTUX4clbsM2Vw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iuwJb+pSMU2hTto9CY9MjpRi3TR6toyDfdUUu1tx85jKKYZ2VGYd+HQEceSMPb/egBB3IWK7UKwujtZUZP4ewXHRig8cqDlSSTcslkbgJpZQNAxBbft/CWIi6u5gdwAGzVzszC2aPgmPXnFVYMTpEEwwokxrutg8lSrC1JGU388=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-956948531a1so707671241.2
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 02:43:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779183825; x=1779788625;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T+2SZGl9spcuw3ZVraVsNeWL62/l5e6HnqNdDh6fCso=;
-        b=GDM5AiW0Q44H1FyiyTRtwextFh/qcWpzDrstUOQ7sPjjQl7xCqt/awdtxmgH8o+bVe
-         wBbRxfeYuQH//VVm0g4mOr/w3ODAbFONnqnyRNGjzSMcA/gDLw3DVlsw22c/nJbILts/
-         I8iWVlqIedfVI9Rf8KF3hG1u7K085B8fkB10LKxyWOHGmdHoP0fpU6h9JV3otiSY59zL
-         eCbvHaK3R4wWX25CXFHFGgfZZ7eY9YUjYVwADZiQStfafoYo77hUH1WUf+GPc3CVFPVg
-         noE6h66UNxfDOWZKbCSZTYul+2YkBjGp+TzSiWEQS3sEe0B8pB7jSU3vde8zO4R92VdE
-         tZPQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+nu4uKqcprULDkgVhaSapDD5Dp9Quc82R/CvN+ASarQRPzIJ9S2GgQRVRmHUf+o2Fyzj440pqoz5c=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx6zuD2YtdB8ynUa+B09zODicrlGWZSsCeE+ZcUcsq6w47n0H3O
-	DljY5Kj4eDBDc1a0pKQkicsTN89I4Q6PmmuMUjpYG5P+p0K3KehkNUwFGC2rqCiT
-X-Gm-Gg: Acq92OG5rktzi0nwc4RDkuR9+ixXWWKXUvxcwTyHQuPZ5XqPUO7kVgOre2+l9FvznhH
-	M2SBKRZN5/VX5QAC/vx5k/gURyG/OJVUEOy5xb5QHn1aQmg32983Fj8I7M3guMLs0McS52qpw7f
-	oLEmTy6PZMT1vvh+foYQr2ZS5+FzEyt1azoO/dCsZ70AoZDR8ahXlSmMVlAqxdTDSsxswVPfcjL
-	qHgpcf85590U8dvz6zEurWJkwQWbi6bsQipIjAM2FsucfewKJOjgYRW+nI61yaSWZylLV9hkxpU
-	3s1AA4D9SIdxNp+KzlQXxfnt4PlMEcyRO4uMFqf4Ma8bG+GHZdqbMFNdm2cmT9+AEI8jvclXa+l
-	Rdqf2q+sTQUlHiqmsIw4JXimuCxLV3PpgNOChgabKXW/lBA8YLqaYKqN4IO+EfeU22tAO2/k/YA
-	/+YjxUWrhtMqRUxq3Mo2wPgJB5xaLft3EyyM2+wP0izkF5LpelEtXpashzFUMKelMaPD8MmZU=
-X-Received: by 2002:a67:e114:0:b0:631:4191:6f7e with SMTP id ada2fe7eead31-63a3d1212b9mr9090436137.4.1779183825221;
-        Tue, 19 May 2026 02:43:45 -0700 (PDT)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-95fc2f874easm5921252241.9.2026.05.19.02.43.41
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 May 2026 02:43:43 -0700 (PDT)
-Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-956948531a1so707658241.2
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 02:43:41 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ+hFTjQ2RNM4STUim8lif7GKoyGi0mHT2oxuCwxIDa00wb+owP6zTBu93hmsA0rmrWi3FPWbk7rdWM=@vger.kernel.org
-X-Received: by 2002:a05:6102:511f:b0:634:d42d:15e2 with SMTP id
- ada2fe7eead31-63a403ac9a2mr7077474137.26.1779183821499; Tue, 19 May 2026
- 02:43:41 -0700 (PDT)
+	s=arc-20240116; t=1779184804; c=relaxed/simple;
+	bh=uAiScvczUI4O3IsIs5+lkIvh8gaciDdlXIubMhnM/Ns=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HEABA7Sy5ZHSYuKP6kDLsdpSlDHTha4c3Yfr/V7lqB58PnakFJinycCDu1zXi+3I5ytXn287N1el5/X9TP/fyBkackKI+hNXShg3Ffo4mCYFWxPl51G9iE9Ow7QPz884GSmZOCMIpygXBVVbQ13rn/UxY568fQehS4jNhn4fUOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gct/8KWP; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gct/8KWP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16DC3C2BCC6;
+	Tue, 19 May 2026 10:00:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779184804;
+	bh=uAiScvczUI4O3IsIs5+lkIvh8gaciDdlXIubMhnM/Ns=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Gct/8KWPNYNL0cizP6viBRRDzICv+sJIt1OIlTDUboCm/cyeRRneaX04JU9lDNpqJ
+	 JbcThIHqxwlCCaVsh3QNNbphNiAS2ASHg7I7YWQsneEJqdaD+KHCxj/452N/yrSY/l
+	 xEDEDag8+ZHMXV/ltaQArvyR8P562k66ybKDNZTgKAsmZYExJW5uJ/hNQn3Qf1d82t
+	 htzgXf8w8gyx2yhNQAk+oAw+a6r9JAbT/kGg2SuWmMNaxOWmRoXXkwosPMI2SF4G09
+	 OAm7OIeJvQJUeg03Qhz3KxuCyi0WiZ23VT1lg45wsRxLAdKOFdl6OQT7NJiXvntpMB
+	 N59HylcbfD+GQ==
+Date: Tue, 19 May 2026 10:59:59 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Xingyu Wu <xingyu.wu@starfivetech.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v1 1/2] bindings: iio: adc: Add StarFive JHB100 SARADC
+Message-ID: <20260519-undoing-ambitious-012d608ebd7f@spud>
+References: <20260518081852.116909-1-xingyu.wu@starfivetech.com>
+ <20260518081852.116909-2-xingyu.wu@starfivetech.com>
+ <20260518-elderly-barman-2b1abfc3755c@spud>
+ <NTZPR01MB095679F35A873BBBA304655F9F002@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260518042833.272221-1-enelsonmoore@gmail.com> <20260519094820.1f05ab8e@pumpkin>
-In-Reply-To: <20260519094820.1f05ab8e@pumpkin>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 19 May 2026 11:43:30 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVw349EBZUuYZAns3FnTndx0A=PHbznxarYuAQr8nbqDQ@mail.gmail.com>
-X-Gm-Features: AVHnY4Lfn8Mcrjf-CZtgFTL8ilhwbGlXFwz-O3Z8xcIZpla9SRL4d3C994HiNs4
-Message-ID: <CAMuHMdVw349EBZUuYZAns3FnTndx0A=PHbznxarYuAQr8nbqDQ@mail.gmail.com>
-Subject: Re: [PATCH] nios2: remove the architecture
-To: David Laight <david.laight.linux@gmail.com>
-Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>, linux-doc@vger.kernel.org, 
-	devicetree@vger.kernel.org, workflows@vger.kernel.org, 
-	linux-arch@vger.kernel.org, dmaengine@vger.kernel.org, 
-	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	linux-csky@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Daniel Lezcano <daniel.lezcano@kernel.org>, Thomas Gleixner <tglx@kernel.org>, Alex Shi <alexs@kernel.org>, 
-	Yanteng Si <si.yanteng@linux.dev>, Dongliang Mu <dzm91@hust.edu.cn>, 
-	Hu Haowen <2023002089@link.tyut.edu.cn>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Kees Cook <kees@kernel.org>, Oleg Nesterov <oleg@redhat.com>, Will Deacon <will@kernel.org>, 
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, 
-	Nick Piggin <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Vinod Koul <vkoul@kernel.org>, 
-	Frank Li <Frank.Li@kernel.org>, Dave Penkler <dpenkler@gmail.com>, 
-	Andi Shyti <andi.shyti@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Andrew Lunn <andrew+netdev@lunn.ch>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="cVzWKkqrBwvAqBeG"
+Content-Disposition: inline
+In-Reply-To: <NTZPR01MB095679F35A873BBBA304655F9F002@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
 
-Hi David,
 
-On Tue, 19 May 2026 at 10:55, David Laight <david.laight.linux@gmail.com> wrote:
-> The company I used to work for used 4 NIOS II inside an fpga.
-> The instruction timing for one is pretty critical, it has some code that
-> has to complete in 122 clocks (worst case).
-> Our solution was to spend a few man-weeks writing a compatible cpu!
-> I think it came out with fewer pipeline stalls (in particular it 'lost'
-> the one for a (predicted) taken branch).
-> The maximum clock frequency might be lower; but it is ok at 62.5MHz and the
-> higher 125MHz in just impossible for all sorts of reasons.
->
-> OTOH I really wouldn't run Linux on it!
+--cVzWKkqrBwvAqBeG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sounds similar to what CoreSemi is doing with J2 (nommu, also for
-predictable latency), but their products do run Linux.
-See the video from the LPC session at
-https://lpc.events/event/19/contributions/2097/
+On Tue, May 19, 2026 at 09:26:03AM +0000, Xingyu Wu wrote:
+> On 2026/5/19 00:24, Conor Dooley wrote:
+> >=20
+> > On Mon, May 18, 2026 at 04:18:51PM +0800, Xingyu Wu wrote:
+> > > Add the new documentation of SAR-ADC for the StarFive JHB100 SoC.
+> > >
+> > > Signed-off-by: Xingyu Wu <xingyu.wu@starfivetech.com>
+> > > ---
+> > >  .../iio/adc/starfive,jhb100-saradc.yaml       | 62 +++++++++++++++++=
+++
+> > >  1 file changed, 62 insertions(+)
+> > >  create mode 100644
+> > > Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yaml
+> > >
+> > > diff --git
+> > > a/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yam
+> > > l
+> > > b/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yam
+> > > l
+> > > new file mode 100644
+> > > index 000000000000..ba8e19b72ad7
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc
+> > > +++ .yaml
+> > > @@ -0,0 +1,62 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) %YAML 1.2
+> > > +---
+> > > +$id:
+> > > +http://devicetree.org/schemas/iio/adc/starfive,jhb100-saradc.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Successive Approximation Register (SAR) A/D converter for the
+> > > +StarFive JHB100 SoC
+> > > +
+> > > +maintainers:
+> > > +  - Xingyu Wu <xingyu.wu@starfivetech.com>
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    const: starfive,jhb100-saradc
+> > > +
+> > > +  reg:
+> > > +    maxItem: 1
+> > > +
+> > > +  interrupts:
+> > > +    maxItems: 1
+> > > +
+> > > +  clocks:
+> > > +    maxItems: 1
+> > > +
+> > > +  resets:
+> > > +    maxItems: 2
+> > > +
+> > > +  "#io-channel-cells":
+> > > +    const: 1
+> > > +
+> > > +  upper-bound-mv:
+> > > +    description: The upper bound voltage value of the monitor.
+> > > +    $ref: /schemas/types.yaml#/definitions/uint16
+> > > +
+> > > +  lower-bound-mv:
+> > > +    description: The lower bound voltage value of the monitor.
+> > > +    $ref: /schemas/types.yaml#/definitions/uint16
+> > > +
+> > > +  scan-freq:
+> > > +    description: Number of the scan cycle interval.
+> > > +    $ref: /schemas/types.yaml#/definitions/uint16
+> >=20
+> > Can you explain why any of these three properties are something that sh=
+ould be in
+> > the devicetree rather than software controlled?
+>=20
+> My intention is to be able to obtain the initial values from the devicetr=
+ee during probe and preset them.
+> Do I need to drop them and just set them through sysfs?
 
-Gr{oetje,eeting}s,
+Unless the hardware configuration determines the values (which I can't
+really see being the case for scan-freq at least) then yes, you need to
+drop and set them via sysfs.
 
-                        Geert
+> > How are the bounds calculated?
+>=20
+> The measurement range of this ADC hardware is from 0 to 1800 mV. This set=
+ value cannot exceed it. This explanation will be added later.
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+I'm asking how this is calculated so that I can tell if you the property
+is permitted or not.=20
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Cheers,
+Conor.
+
+--cVzWKkqrBwvAqBeG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCagw0nwAKCRB4tDGHoIJi
+0hCiAQCUqcpmQkzaUypN9U0GqbGgA3LpY8xMgAIm4L+K8XQaiQEA4V2Z0epYb85N
+XR1/AqfdtL5G5oynVOg0Vv/ReV12iA4=
+=+IcM
+-----END PGP SIGNATURE-----
+
+--cVzWKkqrBwvAqBeG--
