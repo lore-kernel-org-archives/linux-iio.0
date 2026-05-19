@@ -1,359 +1,125 @@
-Received: from CHN02-BJS-obe.outbound.protection.partner.outlook.cn (mail-bjschn02on2125.outbound.protection.partner.outlook.cn [139.219.17.125])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B8403DD502;
-	Tue, 19 May 2026 07:47:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.17.125
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779176855; cv=fail; b=Nds+JKoYgscHMgo9idbUkFRkGrSGf3UVw9A8dHLimBf/0t3aNPwJeJ9AgOeUutYKtLyV3OWS2pRH7crbpmhcfEyAUtAMTIJv43YpUwKPGbu+fhV6LS2tsgB69oe+EVn/7LqK7UYjhoHvQKMhxkyF8usvIjJp6nm7Ebt6YLbuXa4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779176855; c=relaxed/simple;
-	bh=WjS5ijlfo6fDe03XOmS175lulgVNmHzORPWaP198BRE=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=J0a5IvktvFZ9Ao+C5MElhSSihVkn8lHodbgT711zMoNYRXXh16Jhc3Anx3r08klWHzs0Fx5YM9H8f8REaHoAfLAw8oLbxElf3wTGfjxJuc/prN/vTYZ367U2G/+hLG/LKXmpv4naU2TaPZaVmpsm4/hfoJPdksyOjfSht3KOc4c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.17.125
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=starfivetech.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nENfm9aU3HpTQbpKqwcvUGm/VFNGTvgG6kKH86LL4aixes6xPLwGeZ59nDuzC9ow1aQIxpVVM7EO0YefbBfAZ2XtqjruFq9/5mx33UEYRGLVmJ1BoxV6vo+SI8on/1o3JHDA60o+VDHGb2U4PJTe7mLABOEtSHUTk1IZPj+F9dwfqHSv7VwEBPIbuiYBZGUsxMq88jYmtqDQJLCe1bhU18Fd5R6qGYtzO3u/4MVzQgxB0irL3bdx5ZkBvy4PkALocoFItC1TcX60lR0uJPMRXFU76CyS4gydxPaC3gL1RncOifO/cr9Mqh+MZR6PyxElBQR8E3ozZ4SdScH8P2pMsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sv5jDHjjciP7WIxZRBADpKsBb5VByqXeyc3zUoiBWCQ=;
- b=fijvou60XiVu1wzrkn4zXIud0l6ibu9X6Sm5+QBomk7HsEWKTdFZSNg9X3LaOTx0pWkyM/4DbUiCPYOtlBOM0K9OinxwODUo9PNoxP/7/XIheJbTEqKlWzmRkOiIUJA0OyYeUB+Dz3+YllQoOhJNWhyZUPtOhQfhXzl3fUVho66sX4duXg5Eii5c7YclXlM+KGCBH+1et2GPLDQIHn+M6oapy0FufZZytmcJEKr38eaUNMBVMOAOAWb9aFNhVw0TPlMEQEcDRX7cMZo7msj3B9IJmcuAllDfgsj6uJRHwJ8XvTEcENxBsahI8HN7jzRnatE8O3jiJ2A9WoFGOyRVxQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=starfivetech.com; dmarc=pass action=none
- header.from=starfivetech.com; dkim=pass header.d=starfivetech.com; arc=none
-Received: from NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c510:8::10) by NTZPR01MB0972.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c510:8::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.25; Tue, 19 May
- 2026 07:47:22 +0000
-Received: from NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
- ([fe80::d8e2:3f39:6ae7:bdf2]) by
- NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn ([fe80::d8e2:3f39:6ae7:bdf2%6])
- with mapi id 15.21.0025.023; Tue, 19 May 2026 07:47:22 +0000
-From: Xingyu Wu <xingyu.wu@starfivetech.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?iso-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH v1 2/2] iio: adc: Add StarFive SAR-ADC driver
-Thread-Topic: [PATCH v1 2/2] iio: adc: Add StarFive SAR-ADC driver
-Thread-Index: AQHc5p78VOCTIhrpH0CxuRbZCQ5XkrYTdBqAgAFq61A=
-Date: Tue, 19 May 2026 07:47:22 +0000
-Message-ID:
- <NTZPR01MB09561F97E9F5BA2704A128369F002@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
-References: <20260518081852.116909-1-xingyu.wu@starfivetech.com>
- <20260518081852.116909-3-xingyu.wu@starfivetech.com>
- <agrOS-sqqldnGGeP@ashevche-desk.local>
-In-Reply-To: <agrOS-sqqldnGGeP@ashevche-desk.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=starfivetech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: NTZPR01MB0956:EE_|NTZPR01MB0972:EE_
-x-ms-office365-filtering-correlation-id: 9ef83edc-70ee-4fb7-27e6-08deb57adc74
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|7416014|376014|1800799024|22082099003|18002099003|56012099003|38070700021|4143699003;
-x-microsoft-antispam-message-info:
- ALSYxg6alqQALOpq/IMwMp28PfdsVGAKlfYUHKZfLMEY7AMrGV3k/ZX/nB5b1oqZ0EORqX9DyLteQ7orrs/J51RPUPA1cEgX2+gwRrs0oS3dfNjON19B1hSri+05mtW2fw5c8WyFglkC/25wHnbHkIRtVEAHmvaMzEY1GvIFoZyJpqeVht74gAuwm7PMMiRgAKSrLivMgG8QZp5taSxLNnltl5oLRxlIOmXgPfIsAKh47l5/dCQ2gLqGm5uJJaUX48oIopX8kQbHua00qjxAD/XCpBmqMmqojJin74bOGbKD9oLAXedVxyH/vuCOAORxfQMzRzVLxzbj434cjzSKrBIPPgy78iyhvzMtgAq0oE2hUQJ5aFHIvkDAKwpzQ8t7pBvIkBuBupEzykkvZXtSV1+Q2mEY/oUI/F6St57jzUzpAOUyTu4GaGuNtFrt+kLSYcBfgrd5SVeZOjIYgpAfsYG/A4eWtoIOL+uWqoZU8wkmWVG8tbmZpSTE47QA7zRfj60az2i0vXDTPrHjr+ErvkPSb49vFf0kpJxh0dnqkkrbejEauosb/ybDj5So450q
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(22082099003)(18002099003)(56012099003)(38070700021)(4143699003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?WowMQQeZpIpP3/a1fUFcCxT5ZBr1Y+Qtzk+hnu5RVajzXZtbyJ9nGhX4Kz?=
- =?iso-8859-1?Q?ZdfZRSNAFFwQp5MXAhT8XsH9uqyzjYsVwNRUan1D+NEei6OtETgYYaLUCD?=
- =?iso-8859-1?Q?1ngS112xstlZ6J8KV3FsOAaO7FeDhA/Y8OSdkepwnyEuFPpjTXGu4WApcU?=
- =?iso-8859-1?Q?EewBGSNCe7pExLv6NASYStZ/PROZExWgFu96XtbYIbmrgbjFcQOXJQubpr?=
- =?iso-8859-1?Q?oLcw2tIY3fiaVydKDltqsrMEStOG8McmynbFaNhdydoM1H1WTAslX0NoTp?=
- =?iso-8859-1?Q?VelnjY5YuQZuZUHB0QOYAJNyUdDWFf+DdB0qYvbFzqbdrSRPHb6buko4BU?=
- =?iso-8859-1?Q?gchUZo/L9pdTrKMpH6C5crqz4OD56pQL2yM7ik5nDqyyE1Fc3fsijHURHM?=
- =?iso-8859-1?Q?E2GqbDhIgTCURUiIbaLzvD5qMNoLZ1CvzmXFhm4svMVOYrjAJTEsG+6OCQ?=
- =?iso-8859-1?Q?DC2ZeLc1+75Wko1Gm1d+8++yE9RNAWMSn425tC7ubIukD0xcW16xbi4OvG?=
- =?iso-8859-1?Q?iIQUC3TNpg7VPq+ahYu/SJoyeclI0yPCykxbjnhOjLPf2ZmN5YbAP6NU16?=
- =?iso-8859-1?Q?l01eZkJi2rta6fTs7kblPEXg5pDZpbDvvLj9qUqyKIb7DE7ssuwtMM5dq1?=
- =?iso-8859-1?Q?C1UGnBU+Za12UGjrDDfJcAI+u3aXF2g/EmHMj+P4JOSEgU81Y5rDmUsQv1?=
- =?iso-8859-1?Q?Q25WL8BzV8YSdC4ph4GGzublloe+/psOn+fW+ltHddzR4+uXP/32i3LZ6o?=
- =?iso-8859-1?Q?2ZwZv1cGwqXXMmdUVdgMyy5ub75lP6iMSN0JO5sg8pBdVBX27M7NEa3LJY?=
- =?iso-8859-1?Q?7fKuZzTpncmWm7Zt2/PAXY5ahQbc/fJ6e/Op80f3fodbfuiMBLcw34eTpk?=
- =?iso-8859-1?Q?702duHOfFYDNef4baO/U01ieYsyGaOxdgqSpa/rwo/zxh2rqcDtuVE4OBU?=
- =?iso-8859-1?Q?mArUbAQg06aOq9RPfNDKk+6ARgK1xin0O3hYjWYAa3LH21WaoJYK3tFTqF?=
- =?iso-8859-1?Q?RS6xMVwc3pxxrpyUl2cTfX5F/ZWU67MMd4/VC282XDG9mhIPfVp6u7tzVo?=
- =?iso-8859-1?Q?c+akYe8CzPmY+JmViK3ElQpMMhBzitPVQh25FS+s19enkWPzU91FIjEV5w?=
- =?iso-8859-1?Q?yJiJyrIfod11Ne32XEspWYtjvNNOu36CRULrbgnsUGtSXTef7La1E4wPOt?=
- =?iso-8859-1?Q?RF16ROevUJphX+JJvM44g75XoRuw7aFKKvkGGqcLFputqLqk+hzqVd0v/u?=
- =?iso-8859-1?Q?zhZ6IwFbIlauZZCN/YFk0YQpNmBS1pUVt/GcHTz4RSkSnLzEF8zKS7xI6R?=
- =?iso-8859-1?Q?iLR2c793tWDEEHyOqhdCvl0Yk0335IBVzBRrYN3lfeIs5hCdasfv2Cr1P3?=
- =?iso-8859-1?Q?FLzy3M4xOb0a5dDsdJZXDlRUve/ucm6iWteD9kQlrIKx0RjTSNdYY02KnA?=
- =?iso-8859-1?Q?gThdyZA/NdpN+PFD9dJ/Vcg+BX0Kl2tpvh2qOcSxtCbVWqVfsovEWxxS++?=
- =?iso-8859-1?Q?vb56JfUwAr5/0AbMzEMG2tRauo5Fmae6TQwe0Jrx6PxwQN5Z4UXze+icql?=
- =?iso-8859-1?Q?iNFflcmEymvLavOr6d6wuPTsPYOIBqqlqEdxEjl53oO7p9eK5dzV7YWZSv?=
- =?iso-8859-1?Q?xQ0t5Efzwsg+Un8tGCBvFJtDAxHmG1O/qejHCOUQalcpfh+MKfINI3CAPw?=
- =?iso-8859-1?Q?1qS0lMp8rM/gG1wceBJ86/UItR5qCDpF/9Hi+U881O1cKDvzxKzbHc4heT?=
- =?iso-8859-1?Q?IP2wK2VN5qX2rk2k/G1m4+8QsbNBM9qsiad2DoihYf7+JE8Gk5WMNqL/15?=
- =?iso-8859-1?Q?VJgsWcn/BA=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 613173DCDB5
+	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 07:59:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779177547; cv=none; b=oIg5pU8lWwGTtS9X4m2wqwJRec5itH+V6RAsP6uu8HV6+n1KHViCBDc624yQA59yLqKwKrcBN6mzMgOESW+lR288++QQNqmq40EV/8AES1TrHRXPGfi3LvKyz1WAG3JPA2SfNShqGcAR9nr5DhH6wpOhX5b8RvyFrEShh6FtfVY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779177547; c=relaxed/simple;
+	bh=dDe5ISZtdomf+hnyNFOgzEv6n1mbjYqwSsrmVrOVxHY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ua1P/0s2ol5yxTz7nNc1/NWXEwBvo2KxvnMeVxnsfUM9/DBcvxV62eFt2o+7qrBfa3afCV2AqcTT8Y2WoAebbPIY+woumkapR3MuLRN91mkrD7kTZoRViEGyvQdq2wczOc0NQqxZMLDgpw9VFj3AnK1dTbDPa5BlW96NarhzcHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LIWK/DzL; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LIWK/DzL"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-488a14c31eeso19315115e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 00:59:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779177545; x=1779782345; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qIaDQb61nFaJysAgVO0hYea1n6OBZz1pXSKqoKiGMyA=;
+        b=LIWK/DzL4zkfzBOWOKvBzq4+x4+q+/BIRAQCb3//LcZo5gNr+/EAl10gzO506DvQu/
+         wzo4e8sJ2SR2gbmPuBkzsAZyZaCm4yvI2Ex18oiQNwC0L1Fb/hi7lQ/HwpOCxnNnk/Jt
+         sCu3Z3s8lSMxg3y2gvqHe/TF0hxs+rtw/UqA1GwEmutIX2YSfvrg/MdEwBE1q+F7XUXa
+         ddno21Ah0CQBzyQenNHyJTRFGzRCiGODDLrUJ8ECKjSC/W0MxlaISSlHWbdXy/f09HCz
+         ghl/CKUiEP+l992g1fmb2HPTDk2GukOq8hI+djpkAF1Z4FEq6SP8bTH4j0mXXzOaWw/9
+         6jug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779177545; x=1779782345;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=qIaDQb61nFaJysAgVO0hYea1n6OBZz1pXSKqoKiGMyA=;
+        b=SgYQlRIxdszzYeIaMx/YeThCbey6TVUGvbIBXGCs4ZVmColyt0Fd4kEpaOzAqD9bq7
+         lX1YjuuJCmZyIegOi1WbbEoo1YkuYpWV0KeSGWkZXIg1HJy6USmLDIegIlMqQFJF4qfW
+         dAnMSrc+OuoHEviKdf1RawX05xzaDIWMToraFjuYTmgX8YKXH6ttCOsN9Y9R1xO/9giI
+         8tdcqrWHCnmfNsj+yxXvSsYlyyw819FJQ/IxuiezfjoLSMrCoCnwEqYzRXn+EhM4tnNU
+         HK3HcUaOlg2QtRU/mM215VZbMS0fbArZmWLI8raH4ySNA7Of1CuNX3HvJd2ftjbK9wPU
+         UfWw==
+X-Forwarded-Encrypted: i=1; AFNElJ+VKhq5K0KB4UB0P36PIlGUzzW4IJWPPRt+dOiPb4SnZkIv7TkJE2eYgEvC9+6D5J4T06lomHbKFsw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzhhTjmYbqvCRwpWrlsLH4rzGTy5+iB5IWhl3f8E1o56Dxuuu6D
+	V68ZkQCVK5TuZzGQprwUrl2xqyEzMlYupIoCwKmxgRYKhEG2C+rHC84z
+X-Gm-Gg: Acq92OEnd/6TKjfw/IhLShckyddjfAwndK3+Td+wN9ujEkSyeJUGxNhb+eWAYv8jLIe
+	JqxtLHSVq6XYIS1MRkmV+vPGvm4Y1ujSKGVbqnkUvGUK+Oq2aFg3cPKyLOrgv3cwCs9KyNMqHnD
+	CB8HM0lBBFNlq8x0CY4Zrk71AlU2I2UZZN/ohdgBbn+oZFRcJeTDp5I8H8ADEsRR7POBNxOAbuA
+	ALZHuml2jEojVFNdFX/y+yTve1qUZuh8NpUWskfWTZovgzqmMeq4y8zBw2gMml62KwXAUCb8mTq
+	gNxt/6sIarIhjRhepbqwUOOoDbKKjQNo42u72qcGuVZDKHLU5dKWEDV6sS4RlG1+Dbuvp4XKvrq
+	3yU+2ayOJPHENUSz8Idkyy21tP/6riQfO0t8OhT/N40q/D5k79RePqYdr9lV8q95wJQf/b3nvT5
+	H5imFMbL95/obY3Y202teE7KqEn8+XGcLj3QcJhs1a3aOV7Yfx9Yhl8pxWRQetrOwS
+X-Received: by 2002:a05:600c:4685:b0:48e:5d91:cfe3 with SMTP id 5b1f17b1804b1-48fe5fd494dmr283200195e9.1.1779177544506;
+        Tue, 19 May 2026 00:59:04 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490225bf8d6sm1893155e9.13.2026.05.19.00.59.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2026 00:59:04 -0700 (PDT)
+Date: Tue, 19 May 2026 08:59:02 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: kernel test robot <lkp@intel.com>, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, oe-kbuild-all@lists.linux.dev, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v0 1/1] iio: Convert IIO_CHAN_SOFT_TIMESTAMP() to be
+ compound literal
+Message-ID: <20260519085902.28b1730a@pumpkin>
+In-Reply-To: <agtXwmSPs8iARJ_e@ashevche-desk.local>
+References: <20260518071349.469748-1-andriy.shevchenko@linux.intel.com>
+	<202605190130.oWitiRzG-lkp@intel.com>
+	<agtXwmSPs8iARJ_e@ashevche-desk.local>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: starfivetech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ef83edc-70ee-4fb7-27e6-08deb57adc74
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2026 07:47:22.1370
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 06fe3fa3-1221-43d3-861b-5a4ee687a85c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QsDMYEkptIclJ424DyAJ2oAkCyN7GiiwdGQfcf8EhxhWfOQOk9aZkNF9V+KM9y8K23wPUlZsjpbLLRpShArnzeo8OOit/oat2u6+OTkzJBM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: NTZPR01MB0972
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2026/5/18 16:31, Andy Shevchenko wrote:
->=20
-> On Mon, May 18, 2026 at 04:18:52PM +0800, Xingyu Wu wrote:
-> > Add a new IIO ADC driver for the StarFive JHB100 SAR ADC controller.
-> >
-> > The hardware provides 12-bit conversion precision and up to 8 input
-> > channels. This driver supports single-shot channel reads and exposes
-> > standard IIO interfaces for raw ADC values, processed voltages, and=20
-> > scale reporting. The driver also supports channel monitor mode with
-> > out-of-bound detection and scan frequency configuration.
->=20
-> Seems like this is just dust off code from ca 2020, as it uses sometimes =
-quite old
-> APIs (no driver uses in the past few years in IIO!).
-> This needs much more work, please take your time to go via existing IIO d=
-rivers
-> that were submitted and accepted in 2025/2026 and take them as examples (=
-may
-> be not the best, but good enough) and update your code accordingly. Note,
-> reviewing others' patches may help a lot to get your knowledge up-to-date=
-.=20
+On Mon, 18 May 2026 21:17:38 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Noted. I will update the driver in next patch.
+> On Tue, May 19, 2026 at 01:32:51AM +0800, kernel test robot wrote:
+> 
+> > kernel test robot noticed the following build warnings:
+> > 
+> > [auto build test WARNING on jic23-iio/togreg]
+> > [also build test WARNING on linus/master v7.1-rc4 next-20260518]
+> > [If your patch is applied to the wrong git tree, kindly drop us a note.
+> > And when submitting patch, we suggest to use '--base' as documented in
+> > https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> > 
+> > url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/iio-Convert-IIO_CHAN_SOFT_TIMESTAMP-to-be-compound-literal/20260518-151541
+> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+> > patch link:    https://lore.kernel.org/r/20260518071349.469748-1-andriy.shevchenko%40linux.intel.com
+> > patch subject: [PATCH v0 1/1] iio: Convert IIO_CHAN_SOFT_TIMESTAMP() to be compound literal
+> > config: sparc64-randconfig-r132-20260518 (https://download.01.org/0day-ci/archive/20260519/202605190130.oWitiRzG-lkp@intel.com/config)
+> > compiler: clang version 23.0.0git (https://github.com/llvm/llvm-project 5bac06718f502014fade905512f1d26d578a18f3)
+> > sparse: v0.6.5-rc1
+> > reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260519/202605190130.oWitiRzG-lkp@intel.com/reproduce)
+> > 
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <lkp@intel.com>
+> > | Closes: https://lore.kernel.org/oe-kbuild-all/202605190130.oWitiRzG-lkp@intel.com/
+> > 
+> > sparse warnings: (new ones prefixed by >>)  
+> > >> drivers/iio/adc/max11410.c:807:31: sparse: sparse: cast to non-scalar
+> > >> drivers/iio/adc/max11410.c:807:31: sparse: sparse: cast from non-scalar  
+> 
+> Thanks, the sparks were expected exactly in this and one more driver.
+> I mentioned that in my reply to my own patch already.
+> 
 
->=20
-> ...
->=20
-> > +config STARFIVE_SARADC
-> > +	tristate "StarFive SARADC driver"
-> > +	depends on ARCH_STARFIVE || COMPILE_TEST
-> > +	depends on COMMON_CLK && RESET_CONTROLLER
-> > +	help
-> > +	  Say yes here to build support for the SARADC found in SoCs from
-> > +	  StarFive.
-> > +
-> > +          To compile this driver as a module, choose M here: the
-> > +          module will be called starfive_saradc.
->=20
-> Indentation issues.
+Can you just remove then cast from:
+a44ef7c4609724e Ibrahim Tilki    2022-10-03 @807 \
+  	channels[chan_idx] = (struct iio_chan_spec)IIO_CHAN_SOFT_TIMESTAMP(chan_idx);
+since it is no longer needed?
 
-Noted.
-
->=20
-> ...
->=20
->=20
-> Follow IWYU.
->=20
-> > +#include <linux/bitfield.h>
-> > +#include <linux/clk.h>
-> > +#include <linux/completion.h>
-> > +#include <linux/delay.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/io.h>
-> > +#include <linux/iopoll.h>
-> > +#include <linux/module.h>
-> > +#include <linux/mutex.h>
->=20
-> > +#include <linux/of.h>
->=20
-> No OF in a new code for the drivers like this one.
-
-Will drop.
-
->=20
-> > +#include <linux/platform_device.h>
-> > +#include <linux/pm_runtime.h>
-> > +#include <linux/reset.h>
->=20
-> ...
->=20
-> > +#define SARADC_VDD_MV_TO_RAW(x)		({ \
-> > +						((x) =3D=3D 0) ? 0U : ({ \
-> > +							u32 _raw =3D \
-> > +							(u32)(((u64)(x) *
-> 64000000ULL + \
-> > +							4514610639ULL) /
-> 30318750ULL); \
-> > +							_raw > 4095 ? 4095 : _raw;
-> \
-> > +						}); \
-> > +					})
->=20
-> This is so ugly! Use your common sense and see tons of the examples aroun=
-d (the
-> more recent driver is the average better the code is).
-
-Will fix.
-
->=20
-> ...
->=20
-> > +struct starfive_saradc {
->=20
-> Use `pahole` to check the layout, also shuffle members to see what `bloat=
--o-
-> meter` says about the resulting binary (for example, moving 'dev' up migh=
-t give
-> less code).
-
-Noted.
-
->=20
-> > +	void __iomem		*base;
-> > +	struct device		*dev;
-> > +	struct clk		*clk;
-> > +	struct reset_control	*rst;
-> > +	/* lock to protect against multiple access to the device */
-> > +	struct mutex		lock;
-> > +	int			using_ch;
-> > +	/* flag of interrupts by error or data done */
-> > +	bool			err;
-> > +	bool			mon_working;
-> > +	u8			mon_ch;
-> > +	bool			mon_en;
-> > +	u32			up_bounds[SARADC_MAX_CHANNELS];
-> > +	u32			low_bounds[SARADC_MAX_CHANNELS];
-> > +};
->=20
-> ...
->=20
-> > +static inline void starfive_saradc_irq_clr_all(struct starfive_saradc
-> > +*priv) {
-> > +	unsigned int reg =3D readl(priv->base + SARADC_IRQ_EN_ST);
-> > +	int i;
-> > +
-> > +	starfive_saradc_irq_clr(priv, reg);
->=20
-> > +	for (i =3D 0; i < SARADC_MAX_CHANNELS; i++)
->=20
-> 	for (unsigned int i =3D 0; i < SARADC_MAX_CHANNELS; i++)
->=20
->=20
-> > +		starfive_saradc_data_clr_ch(priv, i); }
->=20
-> ...
->=20
-> > +static void starfive_saradc_ch_dis_save(struct starfive_saradc *priv)
-> > +{
-> > +	unsigned int reg;
-> > +
-> > +	if (priv->mon_en) {
-> > +		writel(ADC_IRQ_ST_MSK, priv->base + SARADC_IRQ_EN_ST);
-> > +
-> > +		reg =3D readl(priv->base + SARADC_CTRL) & ~ADC_CHAN_EN_MSK;
-> > +		writel(reg, priv->base + SARADC_CTRL);
-> > +		priv->mon_working =3D false;
-> > +	}
-> > +
-> > +	starfive_saradc_irq_clr_all(priv);
-> > +	msleep(20);
->=20
-> So long sleeps must be explained (in the code comments with the reference=
- to
-> datasheet or citing it in case of non-public document)!
-
-Explanations will be added.
-
->=20
-> > +}
-> > +
-> > +static void starfive_saradc_ch_start(struct starfive_saradc *priv) {
-> > +	int ch =3D priv->using_ch;
-> > +	unsigned int reg =3D readl(priv->base + SARADC_CTRL);
-> > +
-> > +	/* Enable channel */
-> > +	reg =3D (reg & ~ADC_CHAN_EN_MSK) | SARADC_CHAN_EN(ch);
-> > +	writel(reg, priv->base + SARADC_CTRL);
-> > +
-> > +	msleep(20);
->=20
-> Ditto!
->=20
-> > +	/* Enable conversion */
-> > +	writel(reg | ADC_EN_MSK, priv->base + SARADC_CTRL); }
->=20
-> ...
->=20
-> > +static ssize_t starfive_saradc_monitor_channel_show(struct device *dev=
-,
-> > +						    struct device_attribute *attr,
-> > +						    char *buf)
-> > +{
-> > +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> > +	struct starfive_saradc *priv =3D iio_priv(indio_dev);
->=20
-> > +	return sprintf(buf, "%d\n", priv->mon_ch);
->=20
-> Huh?! Is this driver taken from the ancient times and got just dust off?
->=20
-> > +}
->=20
-> ...
->=20
-> > +	irq =3D platform_get_irq(pdev, 0);
-> > +	if (irq < 0)
-> > +		return dev_err_probe(&pdev->dev, irq,
-> > +				     "failed to get irq\n");
->=20
-> No, we don't do dup messages.
-
-Drop it.
-
->=20
-> > +	ret =3D devm_request_threaded_irq(&pdev->dev, irq,
-> > +					starfive_saradc_irq_handler,
-> > +					starfive_saradc_mon_stop_threadfn,
-> > +					IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-> > +					dev_name(&pdev->dev), priv);
-> > +	if (ret)
-> > +		return dev_err_probe(&pdev->dev, ret,
-> > +				     "failed to request irq handler\n");
->=20
-> Ditto.
->=20
-> ...
->=20
-> > +
->=20
-> Unneeded blank line.
-
-Drop it.
-
->=20
-> > +module_platform_driver(starfive_saradc_driver);
->=20
-> --
-> With Best Regards,
-> Andy Shevchenko
->=20
-
-Best regards,
-Xingyu Wu
-
+-- David
