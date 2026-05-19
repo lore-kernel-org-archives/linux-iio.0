@@ -1,69 +1,71 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4FE23F660E
-	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 09:21:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E3A03EFFC2
+	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 09:23:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779182522; cv=none; b=h3FqOa8kST0LDkymvMfsThP4GL+M9nRk3dHho1EGkWRRm9G08y8AdhwQRIyTtFWMx6fDXZIEsMElLIJCaUSynzHKY7lnrQf8moBcxAPYjiHbLFId0DzSi/re/QAvIENqQnTIekB7cJ2r+I7TMRJVG/CaFvHmoW+8/TIzJpHet+k=
+	t=1779182599; cv=none; b=eEoG60zqp5baJt4+tIMgwD556paxuWcBNNme8nRZQX1+/Y2JXXyw/mWPXj+krJ94p0c9UBrBA7oW4NmuS/HmBUNK+N4IVMz23xb3ooiV0rNTmYgLfCwPS7GRvJ+oGdbwAq10YQScsknJCphzwWBartxEPeFLkSMcUng7QC02Qn4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779182522; c=relaxed/simple;
-	bh=hNvx08rWnMQ5uxUvhF0vqwzutLouzrdyDnVsqcZvK48=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=Xb7RsmpwZdLrmlvsKXVB7ZaPZi5Xn0TjGft0EmOCXin6ciIuyrEWjXTwEQkgyqrnLehWzOBOS+z2lDkLBlwHOeIZpNbdmM0I5FK55kfZptuktBgdaFRz9QYYkQ3eSS8qveqJNfqEdqetzHn5a5+yfDKx8mJoslopB4ZCL/H1jJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l8lUqjFP; arc=none smtp.client-ip=209.85.208.46
+	s=arc-20240116; t=1779182599; c=relaxed/simple;
+	bh=Ays/AOR03eQ9fnsVDYNlf8e3KW+AqPJ8S6XZihMvT+c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ihdvU21J0AaoD1wCRPRUOZk233wK+3Zh/+eHObd7c5ah8l/jYdXnlSRp7g201AESVAgJWrVUjW1HuZNwPD4CJoDBWf0dcqtDFFTfVV2HVI4SNFT5yAQnYPVEGiqclWURela7NDA5vQbUmw0mCBo89Dnba7wHqc27UZ67GPN1bfM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RiHBahwW; arc=none smtp.client-ip=209.85.218.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l8lUqjFP"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-67da63ae541so7319938a12.0
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 02:21:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RiHBahwW"
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-bd373f83042so687678366b.1
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 02:23:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779182517; x=1779787317; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wARBLVyDz9S/ISHJEKmdBILI41iLg0qRlq3LtWnKe8Y=;
-        b=l8lUqjFPfY7qN4ZjZo2qc/oxsuFGa3mehKmGXs9yfOyByPXCF4HBVtLThY3qOvDz2q
-         963ckz+gnTt+KU9C5vPYmc1eA9peVJRXP9Q9V+8HDG6Tnz/PPoe1inBrQqpwoDUTh7yi
-         bcNNT4Gq7+5WO+CII75ZHuLWrGsdEfdK6QIVNFmhsM78e9h39PRXjaglGKUUDvBwuB0u
-         j27U0j2istdQW2eAf8bHoeNtMXpfJzMSd0CARsKZRjKXQJbqVS7+VDf+xZuOSuu1E8f5
-         SuI3jZZaxG8+sIA4MQi2Pqj9vcNOvYRXZUbM3UtEogIe3g4UvEJ/vrCWKv4pQv6F6wGg
-         wJZA==
+        d=gmail.com; s=20251104; t=1779182596; x=1779787396; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/acds5PobtVmDUQ4dCMZg0BCAmtwvenliLGdACo8DBc=;
+        b=RiHBahwWY0MDJ4aTNs/BMihA/xEMDRzefOchXUGvw6ukYXKJ4ISGElHuTfOE7q7pvZ
+         sgxQA4nTEugM64uHJNG/eJMBdSF9H8tVwhM4BRHNkT0WTj7vBjAjgASC2l+j1FAxHRdN
+         k3QkxaeJ0LZclrxuroWi1PXkJaC5S15RGMoYCFtoG6Byx8QPONldLZzLwOuvh4zkS1Py
+         NaJzVVXL5BtM9dQ0yv8wHuNVLyXNE4bvNvOhLRuUzuphOowhLgOxBtDp8GOM8gHyQ8jD
+         DR7mdEO+ZlcuZWvkfFVKJpc5RQmNL12qksfeLDZaB6yHXWOstvYo6D9iWf/+BdS5u/0x
+         UMhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779182517; x=1779787317;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wARBLVyDz9S/ISHJEKmdBILI41iLg0qRlq3LtWnKe8Y=;
-        b=ai1YfFxJ1WA+02Vy0WmepaL7cpmDy0ux/dB3jBxAjZVerVvYCqk4JaAQfRBhEU8ELH
-         Nv9cp+TST2SyVhnfz8la1EoFd1miRVDo+zJ6dUlnrM5Q+i4W+GtaG4hF14WkgFKUmYti
-         y5Vt6BJTzFoxSfl60yAhm2FCPZLHMG9ZO+EnumNl+pxg1FRi9NcSgpAptzZLMHogHOI6
-         XJZXH8GBz+qtKfRsKot9QuOE/hlkVzLUOIC5ZeSXeFjRp1HWZ1J98zH9pH0hr61NhI8c
-         I8j0v+DCbM9XV8aCzhCNhwT6zImiWP9BMUwpEaw7/ayR13CELDvwb/ddg77IWStMD1Es
-         4DSg==
-X-Gm-Message-State: AOJu0YzO8ZDODAUiG4brqow7S21H8wFXrp/nZTlXvqGbDgQLcfFcqW/N
-	c2w3XhPivBvuMG8iQ+0sKUXbVgZI6TZuDoCIxoAoYWvtTnjYwZVLRQNGo27CD2GU0xM=
-X-Gm-Gg: Acq92OHuEAISGLPs42nwGy9j8aUTRZfL5krA/clrT1wLfdG/zuiBaEgMWX2IJzYIjhP
-	vQdHp9orbjNRpTGP5nksVfy4lcGawqGnGX8PrmybaJFr0wDu+xGCqlmgwXF2XK4as4z3gp4rsv1
-	CrzC5krUKIC8+jhq7575mb92GygOekf6pYXeFzGqJZh6aym/oYzqd/zGr8tB1geRKLxIZjPGf/u
-	Rcn00O2lY/OFzCCL+Jy0/p/CMqpT2KDeAyFc5es92y2hBlpz3BDAqGTZKQI1axu0vjlJwVg7Guq
-	R7DqvY4U1vArMZfUznkgpeVcOhlAGcl49UoQ6+QY3pBzAwK+w1bb2/8+to2nGBck6DV4lSEjh1P
-	zJiUozhrSLI0OAz5xMlRNCbHGscmRp7D+nAOoGOMA8MP4KrutZOIp1cCA0n6QPBu0neoMHQ4Icd
-	aV5xrf9b2P9QKmnL3SdcojWBThMb0=
-X-Received: by 2002:a17:907:c206:b0:bd8:f7f1:d31e with SMTP id a640c23a62f3a-bd8f7f1d8acmr242648966b.49.1779182517087;
-        Tue, 19 May 2026 02:21:57 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779182596; x=1779787396;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/acds5PobtVmDUQ4dCMZg0BCAmtwvenliLGdACo8DBc=;
+        b=GKG48eCBhD2uejW/xyot1Gy23tT+QoeR+wkPcgKIJRofp+mG50ku0CwqcGD6axd0Be
+         dRVp4i7b9bSXBs5hCQ9TukHeGwolFf3OzCOXgCoZGDLxF7xFd8pFRbkpcvAGpZ0YRUxC
+         8iP20GW7GIzqVnNVnzPRuCbMl0/H5bdr8wdyDPwufaswPb1SaDlPYpb5djVMZoDnUw9e
+         RjWkoqABnU5wdQniXS7c9OpON2Q2fKJdSyKwtVRXusKxK5jkXLLHKcFnCVlo4EFqnatH
+         rzTRopkZ7ynT7BYbfdQujAiLXzg3qKLTIjvfbgsyKJG6yIivkhGvSHTEa7/A5m32YNsI
+         VFTA==
+X-Gm-Message-State: AOJu0YyLegIK+zTOBWQ8Mb8+XLMh72IFS9of5c5wy7rQLvYTCTbA7ti9
+	pF4jh3FsWVeh5Kx9QCMfMYT4Wxf9CYKJvP1vVUPhU03XGy5uhZrtEr1q41RH4NLNrBU=
+X-Gm-Gg: Acq92OFDcvKrJqOoyHDPdk/iiXOj2wQENNOrKQgupEbevreaGwY63LUFxmVwfOBdkNm
+	jUXUJqyo6f0sV6581+wvVc0HY9KlrurAQ7Re1ijM+NJ8YYnij4LVEoxV0DUzEVTgXU/xGuU14aJ
+	zD1KO568IYs5F2Z1iaP3qQS8B1az6vqM4BuTuSrsUYNQMrxYAcNg2OT1IXh+0A8oAVvfgfQeei1
+	EwEnKUyEC3+7c37uI1fpzwsSHR6RuAKO/rNj6p1D3h3aX83c9pAMY+sXpxr5v7MHFphWAkAXDXR
+	QI4+3eYpmdLyqviVaTIEwQkUGlbRrpMg7gkvo8OtjMbc3scaWmosXmatKUXDZRtoptb7aisQhxx
+	AVqPKj5tzErUCtWITBY10fDKU/yN9dzKbufxyDuAmrlCO0pvpANKbrTnlyVdNhTMLnbAHDKG2lk
+	Gf1I/up9LCDnGiNyWQW/h6klDzDjY91yzE4uJc6g==
+X-Received: by 2002:a17:907:3d45:b0:bd5:27b7:adaf with SMTP id a640c23a62f3a-bd527b7af46mr818011166b.33.1779182595357;
+        Tue, 19 May 2026 02:23:15 -0700 (PDT)
 Received: from gmail.com ([212.75.105.246])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68310d58c79sm6320572a12.12.2026.05.19.02.21.54
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bd4f4dea93dsm675169366b.38.2026.05.19.02.23.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 02:21:55 -0700 (PDT)
-Date: Tue, 19 May 2026 11:21:53 +0200
+        Tue, 19 May 2026 02:23:15 -0700 (PDT)
+Date: Tue, 19 May 2026 11:23:13 +0200
 From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: [PATCH v3 0/2] iio: light: add support for Broadcom APDS9999
-Message-ID: <cover.1779181370.git.azpijr@gmail.com>
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	devicetree@vger.kernel.org
+Subject: [PATCH v3 1/2] dt-bindings: iio: light: add Broadcom APDS9999
+Message-ID: <12b145839a1a9c5381946a9e5237bfe6fe0ae9a7.1779181370.git.azpijr@gmail.com>
 X-Mailer: git-send-email 2.54.0
+References: <cover.1779181370.git.azpijr@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,56 +74,100 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <cover.1779181370.git.azpijr@gmail.com>
 
-Add IIO driver and DT binding for the Broadcom APDS9999 ambient light
-and proximity sensor. The green channel uses optical coating technology
-to approximate the human eye spectral response for ALS/lux measurements.
-IIO_INTENSITY channels are also provided for red, green, blue, and IR
-so userspace can compute its own weighted lux.
+Add Device Tree binding for the Broadcom APDS9999 ambient light
+and proximity sensor. A separate binding file is used rather
+than merging with avago,apds9300.yaml because the APDS9999
+has an additional vled-supply for the VCSEL.
 
-v3:
-  - Dropped RFC
-  - Fixed MAINTAINERS entry alphabetical order (B section)
-  - Changed IIO_MOD_LIGHT_CLEAR to IIO_MOD_LIGHT_IR
-  - Unified RAW read path via chan->address for all channels
-  - Switched enum gains/rates to #define (hardware field values)
-  - Used USEC_PER_MSEC for integration time table
-  - Removed redundant comments from resolution enum
-  - Added default rationale comment in _init()
-  - Added ALS rationale comment on IIO_LIGHT channel
-  - s/reg/regval/, fixed indent in poll loop, C99 .name for id table
-  - Moved iio_info right after read_raw function
-  - DT binding: expanded VCSEL acronym, explained separate binding
-  - Commit messages wrapped at 75 chars, clarified RGB vs raw status
+The APDS9999 features individual R, G, B, and IR channels with
+a green channel that uses optical coating to approximate the
+human eye spectral response for ALS/lux measurements. Calibrated
+RGB color sensing is not yet implemented in the driver.
 
-v2:
-  - Added IIO_INTENSITY channels for R, G, B, clear
-  - Switched to guard(mutex)(), devm_mutex_init(), dev_err_probe()
-  - Replaced remove() with devm_add_action_or_reset()
-  - Don't fail probe on PART_ID mismatch (fallback compatibles)
-  - Replaced manual shifts with FIELD_PREP() / GENMASK
-  - Used get_unaligned_le24(), sizeof(buf), NSEC_PER_SEC, fsleep()
-  - Named gain register values, explicit resolution enum values
-  - Removed section comments, grouped bit defines under registers
-  - Squashed Kconfig/Makefile into driver patch
-  - Split MAINTAINERS entry across patches
-  - DT binding: added vled-supply, interrupts, required vdd-supply
-  - DT binding: fixed title, added blank lines, full description
-  - Dropped "DT binding" duplication from binding commit subject
-
-Link to v2: https://lore.kernel.org/linux-iio/cover.1778659152.git.azpijr@gmail.com/
-Link to v1: https://lore.kernel.org/linux-iio/cover.1778491503.git.azpijr@gmail.com/
-
-Jose A. Perez de Azpillaga (2):
-  dt-bindings: iio: light: add Broadcom APDS9999
-  iio: light: add support for APDS9999 sensor
-
- .../bindings/iio/light/brcm,apds9999.yaml     |  54 +++
- MAINTAINERS                                   |   7 +
- drivers/iio/light/Kconfig                     |  10 +
- drivers/iio/light/Makefile                    |   1 +
- drivers/iio/light/apds9999.c                  | 337 ++++++++++++++++++
- 5 files changed, 409 insertions(+)
+Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+---
+ .../bindings/iio/light/brcm,apds9999.yaml     | 54 +++++++++++++++++++
+ MAINTAINERS                                   |  6 +++
+ 2 files changed, 60 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
- create mode 100644 drivers/iio/light/apds9999.c
+
+diff --git a/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+new file mode 100644
+index 000000000000..4d9e9aff8894
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+@@ -0,0 +1,54 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/brcm,apds9999.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++title: Broadcom APDS-9999 Digital Proximity and RGB Sensor
++
++maintainers:
++  - Jose A. Perez de Azpillaga <azpijr@gmail.com>
++
++description: |
++  Broadcom APDS-9999 is a digital proximity and RGB sensor with
++  ambient light sensing (ALS) capability. The device uses individual
++  R, G, B, and IR channels plus a Vertical Cavity Surface Emitting
++  Laser (VCSEL) for proximity detection.
++
++  Datasheet: https://docs.broadcom.com/docs/APDS-9999-DS
++
++properties:
++  compatible:
++    enum:
++      - brcm,apds9999
++
++  reg:
++    maxItems: 1
++
++  vdd-supply: true
++
++  vled-supply:
++    description: VCSEL power supply
++
++  interrupts:
++    maxItems: 1
++
++additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@52 {
++            compatible = "brcm,apds9999";
++            reg = <0x52>;
++            vdd-supply = <&vdd_reg>;
++            vled-supply = <&vled_reg>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1aa9c989973f..2d8d4e2eab6e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5000,6 +5000,12 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/light/brcm,apds9160.yaml
+ F:	drivers/iio/light/apds9160.c
+
++BROADCOM APDS9999 AMBIENT LIGHT SENSOR DRIVER
++M:	Jose A. Perez de Azpillaga <azpijr@gmail.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
++
+ BROADCOM ASP 2.0 ETHERNET DRIVER
+ M:	Justin Chen <justin.chen@broadcom.com>
+ M:	Florian Fainelli <florian.fainelli@broadcom.com>
 
