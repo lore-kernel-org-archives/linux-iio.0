@@ -1,196 +1,135 @@
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
+Received: from mail-yx1-f50.google.com (mail-yx1-f50.google.com [74.125.224.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6307C3BB68B
-	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 21:26:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779225967; cv=none; b=nOVeNX9pJrUOCVZsp06O8jnFpBIgYXAZOiw36C9xkX7xO3mhAk0Dn47erARWtzm/pWIQ/XT2wD+1+05OE7Yz389JtV+spUqTznQQSCvth1/SCLFnmt6pdfQ3izM4APylQCn20BoW9lclUPOtLjrninZPIB3ieX1P8Dv25SoYS0o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779225967; c=relaxed/simple;
-	bh=Q6Kpw7qYanWlv6raDyDWu1oLUku62fOxzuJhGCZ1q7A=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RVnYuj29T2cKHW6zXLOAxwMKYLWXgYJFT41O+G0vNyWomXWUP6VMIfCgxmcIwJcTrXtB4qjjApYStHu39DGNcSjELBfLE1B1DhcPqCkNysENnb99ECXGUYkxmm80Y1YLc+tbgRdch5s/t1ICDcmG8qVwUhDollzivKsgMmuc+2I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g3qZZlQN; arc=none smtp.client-ip=209.85.161.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D737127B50F
+	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 21:51:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779227479; cv=pass; b=Ea7fTG2ths4Zb+cixTL6N3HgGRT6gwISGvfq/ecuRTUvYTOpXLzR8j92bnF4jJtXSNhDz5d8E8wwM4goxRCIEXZ+ILGUIoKdq5zMrF7ZHwcLmrRGkdT6kRfWN2YwwyzP0CHHAWOS9jw4YPuATuEXlIuiExQz4dp7O5VeBuIQx98=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779227479; c=relaxed/simple;
+	bh=+L3OLuSoqvDNKM39a0snTfjnzPqSc00qTFoLuDjWE2w=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QOIRZX4xLQrv+qwqMYHvlaGII3XC+OHSBcADiB8ecjwL60TmuH4yUMaf3vlgt7R+Vvr1v5pERbwfVnHfXn9X/osGFDImAD7WslZUS4nlhJSNpoZXcoX9gUJhvXJUvS6MVOLL9fk+lrdl2sZ9iDho+t7wg5ywIpE7witGrQN7zlM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O6f4WDmw; arc=pass smtp.client-ip=74.125.224.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g3qZZlQN"
-Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-682fce74c06so2573971eaf.3
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 14:26:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O6f4WDmw"
+Received: by mail-yx1-f50.google.com with SMTP id 956f58d0204a3-6587cee8b57so5077043d50.2
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 14:51:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779227477; cv=none;
+        d=google.com; s=arc-20240605;
+        b=EGZZWXhFnXKRT0Wp8pJuD9/7FXIfYrg1TxUWPct7B20TuZaXyLAcwtCSWLtT2ZA9tG
+         GOUhVNAzzT0AqLtam96yz6VYuJuoSFYgclApp8WZDcJjsssTk8v9XRbmr6K4WpWa3Ixb
+         WLWTrh8Xc26nl3Ym2x8CUKo/7mZEnx+YJb11TM0FXJ0zAr1um+lxVCPgNes5ku0HQaLO
+         9E0TSa/deARWM1XrRlubJH1SN90DlJHoCmaOvS+e5NvJnlGgFiKiVgO8luQXJrQZJ9Ei
+         S8IgSMv8YJQL+Sfr5045wugz1AKVHGnPuWVABPOTtwd6xsrJpbZUMuSQLGsNdZW0x80O
+         62Ew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=+L3OLuSoqvDNKM39a0snTfjnzPqSc00qTFoLuDjWE2w=;
+        fh=FSUgPFrSLhlumj9P6n6sQnmfD5IBo9ey/F/mVbPcUjE=;
+        b=N3cwW1zDtMU7BdR8yUdgQJ7sKEFwz+OXEbGyZ3Set9PwRTE0gqTzSYCrG9sjv6ksZo
+         xiVETZGKZRkggxXcrLdsq7XaLjQGcF8+vB0PrvWl1qUaVk8+gA3GlUYADHTH/v9DUpZV
+         D8uST8MmXu92mbToelFsattXy6MyuEeGsPnaDByvFRSDbw1vgzFvEwUiAKyIsQqzjJWj
+         aFfR20s8lkUTavBBk6ir6sMmgld0xWJ05/jO//mx8ZquLIpD7IIVv5GOVNPB00d0RSZ7
+         +JGifgJuV9b9GbQEVoiqHd0hQnh25ZYh1C8lwHa9rYW8qkYA03kQWV/sFt+l0ZdB169g
+         bcbQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779225964; x=1779830764; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=B0KyhkGaS/nUapgZFdjRlHgIG4C/dkih9MtGyG/usJY=;
-        b=g3qZZlQNKF6mrtSMZzXAtU3s2UWfpZQTbCbl0f0I3WLCgXgeMIont9nk2+TlWdLdoc
-         S3hecVNIaLzIyPtdiG7+FlRWYGRN3ee+EgXuCkAQAVlvJYAF9BwsljQkH/wa+gSWmn/y
-         cowdzx3695EIAsxeB13IvOJ0n45zY8CqjH792sDUvL2PW+HjdXyDdWnpApqdyanbdmBW
-         yUSPQ8jL52EoXFlw6+2/dECh3msFH86hXR1eWTDIM/cY05XGo1yc/7Raj8FyCEJm+SUD
-         6fLimfDrXN2V+TCUEiP7Cm532YMAprd/wZZ34ZZ9eMl/giJKbsSQ5DZ5vVtCSADll/4z
-         hgUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779225964; x=1779830764;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1779227477; x=1779832277; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B0KyhkGaS/nUapgZFdjRlHgIG4C/dkih9MtGyG/usJY=;
-        b=lNFDYoTB/07JxuhtDopmjmHh3Q7j9faYtldG8gK9aHo+rb/pcKVtIsYiFy3ZUwRxzl
-         xGlqeB7nkLKhTS5fJCQWuZq64/6+Yg9/mpmn87cJ38HxgU78DWqE4a+pM5qlbaRprt5R
-         qtkPSIGPcfJqeDxi3yi8Y9z/+Bei+M8t/TYCS7ObavgplKDgi6M5EL/DpNBG8AqPVQtZ
-         x/x+kaEXH7jcph4KZTu75LTqbLmr4gQSu9LPU9WuE7pS0swXlF4zBbMkX836REykr9I1
-         S+Wc6p5hvWIWmsNZQ3puP2w3rifKluBnM837LM4BIaUrVB0NH8isZN9iX9CnxHbCG9Pb
-         dg0Q==
-X-Forwarded-Encrypted: i=1; AFNElJ8AI4JwhJLke4sBfywYo74n37+inERBX5EUtky/IjPY89CpEypFrl51tZX8291lRWlepMDC4f45uPk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YysiJsFpcy/hmL4pwTGmQzeYqRNjK6AfHLwoQPxuUnKcXcOrOu/
-	ipkxhMyrvW5ot2O07t8rxohVBnI0e6jfATLjiXMVEt64qXjVJ0FFb9LU
-X-Gm-Gg: Acq92OFLd6fnADwrAAqJh7uxUOMwlvZ9751BY5i9QZJZyyxkcqeJNjK+rmKehgez/Ck
-	Wb2RYeF4awpHdsmxN4Jik8sBlbldstRWrzcjPgtZONWkHD/SY79hN1ZLCfI7ZJF5f6VQ20gKA8d
-	sgDLeVYpLVLcdTPZ8ggUcLFMTdfPQXkf5QdUvwyy2iIn/yxolyiULjFkkFlLwfNZY7HF2h+qV0e
-	7KuXkAjrvqKk7kCE1iuSKSeFbuLKk4Cwslx6LtPzttEmOAnxYWM8wuvDAJgGxZhiZl7ssTHqncJ
-	oMV3dOfyI3w53fdQK9sZ7eHUukTOEZfau+SHELeumexLxGZHq0qoCYyqVeWpJnRmfZyaWUIEx1i
-	bivC7oi60autR42vSPd5QtQJmu/k+Oz6XgrbRk+KLm59+zndLXyNRnKAbC88MKuPBTfP6L/z2Kn
-	R3DbdwhpeJFLLKFBVZ6zkHY2dwdtxYY3+Y0Bi6pM84222U2BEkiIXMwgrDCQ==
-X-Received: by 2002:a05:6820:1513:b0:67b:baae:3339 with SMTP id 006d021491bc7-69c94583a5fmr14064058eaf.45.1779225964100;
-        Tue, 19 May 2026 14:26:04 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69d045e6646sm8012606eaf.1.2026.05.19.14.26.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 14:26:03 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: jic23@kernel.org
-Cc: Tomasz Duszynski <tduszyns@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v4] iio: chemical: sps30: Replace manual locking with RAII locking
-Date: Tue, 19 May 2026 16:26:02 -0500
-Message-ID: <20260519212602.30541-1-m32285159@gmail.com>
-X-Mailer: git-send-email 2.54.0
+        bh=+L3OLuSoqvDNKM39a0snTfjnzPqSc00qTFoLuDjWE2w=;
+        b=O6f4WDmwmiOGrWi2CT2NSNt5xqEYkFqYD2OG6XxZG9E1zNQrEDuium6WwmI/i637OE
+         mgeCGIghDrSiKXikP/kTdwKkTIgXWtOauTatI5lSwyjBQtsrtStYYwOsWSNqWfzKE5Ew
+         qgY09xWLV956S7HcOYWFavMcwmpHjQCgY8D50JDnBqrikN/4mIyIhmOO/+xEigrbDyY9
+         lQ0qeFs2WUq+uhshzslt8uknUBhv+uy0pBt7ja3v3o9yNOt2Hrs5NoaZzKVeC9uaYMPq
+         NDdlJdMcC9j4PApgHBzMDJNlogVbykLc/vtomLvIHS4NG/hnnuoOevR6jZk2lFFXet2P
+         WQjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779227477; x=1779832277;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=+L3OLuSoqvDNKM39a0snTfjnzPqSc00qTFoLuDjWE2w=;
+        b=LjXCBhmjbfqRfFZ0L26WQg8FiH+8lmo3/q/ycD0Mpculvgh0iN2oOCpm2poHLViRwJ
+         3YZzHa7A4uE1KvDb0UGjai4rf1HAP6wqJWYzXIeqOe04k2O0XZ/bRzKa1xnbZZv6W4EV
+         3I4klEr92+GmQ6zYT8LJn7yG0hhphorIgPPyIG0C3Px4k2KuXuh0pR1wvI4xM2P09U+T
+         Xg4QZ018x8MQXoE6V54LYQsK+w6HZs4x4/KJGkBTq13GX0Q8YCfzpEQ/tFWC4VAtrijs
+         1mM/2h//FKkfMw5k6XtpYxwr0BPVHeLbZahBYuTKVRCZhvV2sJkq6iNiHlhJ3j8ouIE5
+         Bvkw==
+X-Forwarded-Encrypted: i=1; AFNElJ+BE8cvvZ5pFQb/Tokr4q6l0haElw36jO4XtKF4S8aYZKNoHwuZiBb6EgIeZ+DkgjIfxKvqX78oySg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy4ucdOqr3cJGhzCa2uc7QVWDysIRmRJHMBwSi3UoBQe3wiZ9X3
+	pZ6jWsdGzp7Y9Uxz0qwoC3g3STJqcU95MCRA89wT7Oq19vZvWyrDR+LxzoGpR5e3pyP36fG2Qa8
+	4Ejvaaz7iXJa/LKGmNdDhesaz+cuGUew=
+X-Gm-Gg: Acq92OFJfVcSrSmiWtTAmJ+lr8Dgj7G6f/NrmO1/I5vi4/E8BbeFF9k/P/uqXI1YHsH
+	fPfUSdrS13cPqB4zkkGPuNLn3Ev/n1OYQ7572ONSie/Cs8gTRX3CG11DeE0BlH/b60HjtCIIz9F
+	GoxBQKoYVT2xNZB2Aw0odnYChrBzwyld7NaqVv79zXrwE4Qq5rwHTORQelHlSrQT3pOyrNGtdRS
+	c+tqSwwAEOvMHRD3A4k+rkhAaTqlui9wJhshjz235kiygGDh1BICWWhDRYVdavfdN6oa+Os7aET
+	c/Qg
+X-Received: by 2002:a05:690e:419b:b0:650:7841:6dd with SMTP id
+ 956f58d0204a3-65e2284edfemr18955768d50.31.1779227476894; Tue, 19 May 2026
+ 14:51:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260519131944.25174-1-m32285159@gmail.com> <CALoEA-ztSaPV_m0oj_aY5M+BKTFyzO6dh3R4fu_iOnfKz8oQiA@mail.gmail.com>
+In-Reply-To: <CALoEA-ztSaPV_m0oj_aY5M+BKTFyzO6dh3R4fu_iOnfKz8oQiA@mail.gmail.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Tue, 19 May 2026 16:51:06 -0500
+X-Gm-Features: AVHnY4Kif4zNqKRXU6N0asIX-crn0eYZ5jnqNnGYJ5SjoSegv0jI7YR3kW2KOTA
+Message-ID: <CAKqfh0E6uhVHEbnD+Jwr8kgmk+_YLxWVXeEoWPE6Au2gqQ85Qw@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: chemical: scd30: Replace manual locking with RAII locking
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: jic23@kernel.org, Tomasz Duszynski <tomasz.duszynski@octakon.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Replace manual mutex_lock() and mutex_unlock() calls with the much newer
-guard(mutex)() and scoped_guard() macros to enable RAII patterns,
-modernize the driver, and to increase readability.
+On Tue, May 19, 2026 at 8:41=E2=80=AFAM Joshua Crofts <joshua.crofts1@gmail=
+.com> wrote:
+>
+> On Tue, 19 May 2026 at 15:28, Maxwell Doose <m32285159@gmail.com> wrote:
+> >
+> > scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
+> > calls. Replace them with the newer guard(mutex)() for cleaner RAII
+> > patterns and to improve maintainability.
+> >
+> > Add new helper function scd30_trigger_handler_helper_locked() containin=
+g
+> > the critical section for scd30_trigger_handler().
+> >
+> > In addition, small refactor to replace "?:" operator with regular
+> > if/else returns.
+> >
+> > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> > ---
+>
+> LGTM, Sashiko also seems to be alright with it.
+>
+> On another note - this driver sure needs cleaning up.
+>
 
-Add guard(mutex)() into sps30_do_meas() as every caller locks it's call.
+Agreed. I've stated previously that it may be a good idea to get some
+newer kernel devs in here since there's a lot of things worth patching
+in here (when I say newer kernel devs, I don't mean the absolute
+beginners. should've at least submitted a patch in staging).
 
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
----
- drivers/iio/chemical/sps30.c | 25 +++++++++++--------------
- 1 file changed, 11 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-index a934bf0298dd..c10026509e9c 100644
---- a/drivers/iio/chemical/sps30.c
-+++ b/drivers/iio/chemical/sps30.c
-@@ -5,6 +5,7 @@
-  * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-  */
- 
-+#include <linux/cleanup.h>
- #include <linux/crc8.h>
- #include <linux/delay.h>
- #include <linux/i2c.h>
-@@ -69,6 +70,8 @@ static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
- {
- 	int i, ret;
- 
-+	guard(mutex)(&state->lock);
-+
- 	if (state->state == RESET) {
- 		ret = state->ops->start_meas(state);
- 		if (ret)
-@@ -111,9 +114,7 @@ static irqreturn_t sps30_trigger_handler(int irq, void *p)
- 		aligned_s64 ts;
- 	} scan;
- 
--	mutex_lock(&state->lock);
- 	ret = sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
--	mutex_unlock(&state->lock);
- 	if (ret)
- 		goto err;
- 
-@@ -136,7 +137,6 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_PROCESSED:
- 		switch (chan->type) {
- 		case IIO_MASSCONCENTRATION:
--			mutex_lock(&state->lock);
- 			/* read up to the number of bytes actually needed */
- 			switch (chan->channel2) {
- 			case IIO_MOD_PM1:
-@@ -152,7 +152,6 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
- 				ret = sps30_do_meas(state, data, 4);
- 				break;
- 			}
--			mutex_unlock(&state->lock);
- 			if (ret)
- 				return ret;
- 
-@@ -160,6 +159,7 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
- 			*val2 = (data[chan->address] % 100) * 10000;
- 
- 			return IIO_VAL_INT_PLUS_MICRO;
-+
- 		default:
- 			return -EINVAL;
- 		}
-@@ -197,9 +197,9 @@ static ssize_t start_cleaning_store(struct device *dev,
- 	if (kstrtoint(buf, 0, &val) || val != 1)
- 		return -EINVAL;
- 
--	mutex_lock(&state->lock);
-+	guard(mutex)(&state->lock);
-+
- 	ret = state->ops->clean_fan(state);
--	mutex_unlock(&state->lock);
- 	if (ret)
- 		return ret;
- 
-@@ -215,9 +215,9 @@ static ssize_t cleaning_period_show(struct device *dev,
- 	__be32 val;
- 	int ret;
- 
--	mutex_lock(&state->lock);
-+	guard(mutex)(&state->lock);
-+
- 	ret = state->ops->read_cleaning_period(state, &val);
--	mutex_unlock(&state->lock);
- 	if (ret)
- 		return ret;
- 
-@@ -238,12 +238,11 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
- 	    (val > SPS30_AUTO_CLEANING_PERIOD_MAX))
- 		return -EINVAL;
- 
--	mutex_lock(&state->lock);
-+	guard(mutex)(&state->lock);
-+
- 	ret = state->ops->write_cleaning_period(state, cpu_to_be32(val));
--	if (ret) {
--		mutex_unlock(&state->lock);
-+	if (ret)
- 		return ret;
--	}
- 
- 	msleep(20);
- 
-@@ -256,8 +255,6 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
- 		dev_warn(dev,
- 			 "period changed but reads will return the old value\n");
- 
--	mutex_unlock(&state->lock);
--
- 	return len;
- }
- 
--- 
-2.54.0
-
+best regards,
+max
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+>
+> --
+> Kind regards
+>
+> CJD
