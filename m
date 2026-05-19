@@ -1,205 +1,196 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3EA73AE18C
-	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 19:51:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6307C3BB68B
+	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 21:26:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779220287; cv=none; b=jmRnEdLrvHiOSMT31R55Knq9HZ3+o1qxpuI+YnbliwzUYOPqcuxhlrsIc75xtraGb6Rem4K1GCKrf2cmyZGF7x09VVX1qGJnP7vSVZfQSoU+4JydTPcgbgQGaT2Ur/r3Gjb55CQzRdwpyEDEfbEzH3hLF+VqdrhnTCUXnZE/ijc=
+	t=1779225967; cv=none; b=nOVeNX9pJrUOCVZsp06O8jnFpBIgYXAZOiw36C9xkX7xO3mhAk0Dn47erARWtzm/pWIQ/XT2wD+1+05OE7Yz389JtV+spUqTznQQSCvth1/SCLFnmt6pdfQ3izM4APylQCn20BoW9lclUPOtLjrninZPIB3ieX1P8Dv25SoYS0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779220287; c=relaxed/simple;
-	bh=0TaKRAnKnNwqy74i/sb/1XJBkSa4AsHKFyv20tLHTtk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kP10t4od9gGGWBzAdoKDoRXu5ABJX72CQvKT0Gm/Jr6BEWAZurnFOi5axPTFCKPr22Cwu2I9dkn3PbYfU/6mluz6EZ+HdJkhVl6VeMfIsD5Sz06/4a3Lqaj/sigK8TNrvF/CdoxS2YmefM6Ncu/RmP1MyWHn8iTEzQE8p9n3aqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=WTfsASQr; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1779225967; c=relaxed/simple;
+	bh=Q6Kpw7qYanWlv6raDyDWu1oLUku62fOxzuJhGCZ1q7A=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RVnYuj29T2cKHW6zXLOAxwMKYLWXgYJFT41O+G0vNyWomXWUP6VMIfCgxmcIwJcTrXtB4qjjApYStHu39DGNcSjELBfLE1B1DhcPqCkNysENnb99ECXGUYkxmm80Y1YLc+tbgRdch5s/t1ICDcmG8qVwUhDollzivKsgMmuc+2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g3qZZlQN; arc=none smtp.client-ip=209.85.161.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="WTfsASQr"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-48a7fe4f40bso48814595e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 12:51:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g3qZZlQN"
+Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-682fce74c06so2573971eaf.3
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 14:26:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1779220283; x=1779825083; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=v9NBzb9aKlIq7Sd0DoDjattmaS8U7WMC1EqfiH19BzM=;
-        b=WTfsASQr0Jq//3xmbSc3jbIgkQemnsI6NupcoBHfIP16hIulj5bLUr+6z3Oc560XJq
-         Jk+AdpZk6FTbhHZQaZyrEEign8WAMm6o6koWu80b5QwffSufZ8wKzFJH5bg2SE8fouv/
-         XytLDv6dbCDzdIn3l1SqghCAHG7F6xF3ghpqUqzCBakdVfs4DpnUhkJJIJviGldp8Iql
-         RB+lKGZtd/VnwGIuZNq05OMlaOB3rj8iKbiBau69ba2lbaFoTFDHB+5Lg6++LZg3pglG
-         opJRLNhpvN730jNVR2QnuUeB9uV2Dr2SVxWnX6TzJev2z11u5mtkkyPSvn1j3Pt/6EyP
-         eZxg==
+        d=gmail.com; s=20251104; t=1779225964; x=1779830764; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=B0KyhkGaS/nUapgZFdjRlHgIG4C/dkih9MtGyG/usJY=;
+        b=g3qZZlQNKF6mrtSMZzXAtU3s2UWfpZQTbCbl0f0I3WLCgXgeMIont9nk2+TlWdLdoc
+         S3hecVNIaLzIyPtdiG7+FlRWYGRN3ee+EgXuCkAQAVlvJYAF9BwsljQkH/wa+gSWmn/y
+         cowdzx3695EIAsxeB13IvOJ0n45zY8CqjH792sDUvL2PW+HjdXyDdWnpApqdyanbdmBW
+         yUSPQ8jL52EoXFlw6+2/dECh3msFH86hXR1eWTDIM/cY05XGo1yc/7Raj8FyCEJm+SUD
+         6fLimfDrXN2V+TCUEiP7Cm532YMAprd/wZZ34ZZ9eMl/giJKbsSQ5DZ5vVtCSADll/4z
+         hgUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779220283; x=1779825083;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=v9NBzb9aKlIq7Sd0DoDjattmaS8U7WMC1EqfiH19BzM=;
-        b=aoKUWKCeDCW6HKJsbaZtcTxkhoZvReLS8O7dtLpcNi3uhvINPSBGQ2PcA0ZPyYJDO1
-         Xzi4xZSHUo3X8HIXQt0ipRb/jrMfD7rVdFS4sD7m67NRfMF7j9oDFxFLhmOOLfnFMPc8
-         0lozE4yOzs3g4gvoJ7UI0KePxocVWrU+8wYOR/2OKiRuSDeJpavIaEq0l+Oc1W8XXNQ2
-         0Kdf3RvUzuTwEDjqswbQvUwif7QgTB4di2H1/1E0lX/UFUpqnEnNJLcnravbu8qsmN7j
-         WMV3SCPbIh4lvwqXbgiTIBO988JQjAqqI/3x+p2DMf4mQGmV2DvG7pjPFOZAO+8Ijnbw
-         2CxQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8u+yVBB2ID2TBlfDekM5JOFwj+hKDpQYa6hZFUMJI2O3rnHGEnoE26mVxyZXb2X5Ba0hmRRYLRbGM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxkFewgyySfNNgqz3YQLkydByYZF3WvvW4khdN75IXJeiLavSMB
-	xEz93eh+2+Wi3tzHP1qdMIZxVaxXpZg+i2NFAgvuv+8iHXyqMC56cq2+jM2BgAWPScI=
-X-Gm-Gg: Acq92OG+f+f0/8fFFckaqC2vK9T1QuO2PDyU6E0Kg6fE6nIrEEhimWsHHFOvP4zYwyW
-	E3aXb7tbmUbzP96MAl5bbQrEKx/SY20UKG5BA3KNA5gs0Vd52pbJhYNSw7viIsgFaJlB7qJNpc6
-	LqJI+TCI4RzsBPb05toNASiPG91EaREfDYZaQ9n/WDL3021EFQW6z960d/Lk19Gn3K0qudiSGvE
-	0pOnJjjU6Y/wuu85/bmag217DWZHw7I6QndWmLZQ6BVIgoss4COyCax0Q/m1R04r5xdLJt3cAEj
-	qCAXnF4sgRgrtUpBaV4KWIs+1xNjUOTLNLMisU0AbO2OoDmg77o5D3zwBB5/e0lGcI+/kkg7dnk
-	mn+SG/0OL5OnQv44StK8sjo9zg7J7VR2qeXeFc0QYVF6KWBlOZYu5EVVt2wEZ7+TMyMcfpf7UPg
-	qj0E8N+RiTMTKRX2/CNEUXr9AYqFae
-X-Received: by 2002:a05:600d:c:b0:48a:56de:d62a with SMTP id 5b1f17b1804b1-48fe60eca75mr296779745e9.11.1779220282884;
-        Tue, 19 May 2026 12:51:22 -0700 (PDT)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-48fe53ab6aasm372620935e9.2.2026.05.19.12.51.21
+        d=1e100.net; s=20251104; t=1779225964; x=1779830764;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B0KyhkGaS/nUapgZFdjRlHgIG4C/dkih9MtGyG/usJY=;
+        b=lNFDYoTB/07JxuhtDopmjmHh3Q7j9faYtldG8gK9aHo+rb/pcKVtIsYiFy3ZUwRxzl
+         xGlqeB7nkLKhTS5fJCQWuZq64/6+Yg9/mpmn87cJ38HxgU78DWqE4a+pM5qlbaRprt5R
+         qtkPSIGPcfJqeDxi3yi8Y9z/+Bei+M8t/TYCS7ObavgplKDgi6M5EL/DpNBG8AqPVQtZ
+         x/x+kaEXH7jcph4KZTu75LTqbLmr4gQSu9LPU9WuE7pS0swXlF4zBbMkX836REykr9I1
+         S+Wc6p5hvWIWmsNZQ3puP2w3rifKluBnM837LM4BIaUrVB0NH8isZN9iX9CnxHbCG9Pb
+         dg0Q==
+X-Forwarded-Encrypted: i=1; AFNElJ8AI4JwhJLke4sBfywYo74n37+inERBX5EUtky/IjPY89CpEypFrl51tZX8291lRWlepMDC4f45uPk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YysiJsFpcy/hmL4pwTGmQzeYqRNjK6AfHLwoQPxuUnKcXcOrOu/
+	ipkxhMyrvW5ot2O07t8rxohVBnI0e6jfATLjiXMVEt64qXjVJ0FFb9LU
+X-Gm-Gg: Acq92OFLd6fnADwrAAqJh7uxUOMwlvZ9751BY5i9QZJZyyxkcqeJNjK+rmKehgez/Ck
+	Wb2RYeF4awpHdsmxN4Jik8sBlbldstRWrzcjPgtZONWkHD/SY79hN1ZLCfI7ZJF5f6VQ20gKA8d
+	sgDLeVYpLVLcdTPZ8ggUcLFMTdfPQXkf5QdUvwyy2iIn/yxolyiULjFkkFlLwfNZY7HF2h+qV0e
+	7KuXkAjrvqKk7kCE1iuSKSeFbuLKk4Cwslx6LtPzttEmOAnxYWM8wuvDAJgGxZhiZl7ssTHqncJ
+	oMV3dOfyI3w53fdQK9sZ7eHUukTOEZfau+SHELeumexLxGZHq0qoCYyqVeWpJnRmfZyaWUIEx1i
+	bivC7oi60autR42vSPd5QtQJmu/k+Oz6XgrbRk+KLm59+zndLXyNRnKAbC88MKuPBTfP6L/z2Kn
+	R3DbdwhpeJFLLKFBVZ6zkHY2dwdtxYY3+Y0Bi6pM84222U2BEkiIXMwgrDCQ==
+X-Received: by 2002:a05:6820:1513:b0:67b:baae:3339 with SMTP id 006d021491bc7-69c94583a5fmr14064058eaf.45.1779225964100;
+        Tue, 19 May 2026 14:26:04 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69d045e6646sm8012606eaf.1.2026.05.19.14.26.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 12:51:22 -0700 (PDT)
-Date: Tue, 19 May 2026 21:51:20 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	Puranjay Mohan <puranjay@kernel.org>, Marcelo Schmitt <marcelo.schmitt@analog.com>, 
-	Antoniu Miclaus <antoniu.miclaus@analog.com>, Ramona Gradinariu <ramona.gradinariu@analog.com>, 
-	Petre Rodan <petre.rodan@subdimension.ro>, Dan Robertson <dan@dlrobertson.com>, 
-	Herve Codina <herve.codina@bootlin.com>, Matti Vaittinen <mazziesaccount@gmail.com>, 
-	Francesco Dolcini <francesco@dolcini.it>, 
-	=?utf-8?Q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <jpaulo.silvagoncalves@gmail.com>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
-	Anshul Dalal <anshulusr@gmail.com>, Gustavo Silva <gustavograzs@gmail.com>, 
-	Andreas Klinger <ak@it-klinger.de>, Tomasz Duszynski <tduszyns@gmail.com>, 
-	Ariana Lazar <ariana.lazar@microchip.com>, Rui Miguel Silva <rmfrfs@gmail.com>, 
-	Linus Walleij <linusw@kernel.org>, Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
-	Li peiyu <579lpy@gmail.com>, Lorenzo Bianconi <lorenzo@kernel.org>, 
-	Alex Lanzano <lanzano.alex@gmail.com>, Jagath Jog J <jagathjog1996@gmail.com>, 
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, Remi Buisson <remi.buisson@tdk.com>, 
-	Christian Eggers <ceggers@arri.de>, Mudit Sharma <muditsharma.info@gmail.com>, 
-	Kevin Tsai <ktsai@capellamicro.com>, =?utf-8?Q?Ond=C5=99ej?= Jirman <megi@xff.cz>, 
-	Dixit Parmar <dixitparmar19@gmail.com>, Gerald Loacker <gerald.loacker@wolfvision.net>, 
-	Akhilesh Patil <akhilesh@ee.iitb.ac.in>, Eddie James <eajames@linux.ibm.com>, 
-	Petar Stoykov <petar.stoykov@prodrive-technologies.com>, Song Qiang <songqiang1304521@gmail.com>, 
-	Siratul Islam <email@sirat.me>, Crt Mori <cmo@melexis.com>, Waqar Hameed <waqar.hameed@axis.com>, 
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Gustavo Vaz <gustavo.vaz@usp.br>, 
-	Sakari Ailus <sakari.ailus@linux.intel.com>, Marcus Folkesson <marcus.folkesson@gmail.com>, 
-	Guenter Roeck <linux@roeck-us.net>, Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, 
-	Chuang Zhu <git@chuang.cz>, Kyle Hsieh <kylehsieh1995@gmail.com>, 
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>, Chen-Yu Tsai <wens@kernel.org>, 
-	Oleksij Rempel <o.rempel@pengutronix.de>, Romain Gantois <romain.gantois@bootlin.com>, 
-	Sander Vanheule <sander@svanheule.net>, David Jander <david@protonic.nl>, Andrew Davis <afd@ti.com>, 
-	chuguangqing <chuguangqing@inspur.com>, Shrikant Raskar <raskar.shree97@gmail.com>, 
-	Kurt Borja <kuurtb@gmail.com>, Denis Benato <benato.denis96@gmail.com>, 
-	Ethan Tidmore <ethantidmore06@gmail.com>, Tomas Borquez <tomasborquez13@gmail.com>, 
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Shi Hao <i.shihao.999@gmail.com>, 
-	Xichao Zhao <zhao.xichao@vivo.com>, Erikas Bitovtas <xerikasxx@gmail.com>, 
-	Aldo Conte <aldocontelk@gmail.com>, Colin Ian King <colin.i.king@gmail.com>, 
-	Gabriel Almeida <gabrielsousa230@gmail.com>, Gabriela Victor <gabevictor333@gmail.com>, 
-	Beatriz Viana Costa <beatrizvianacosta16@gmail.com>, Frank Li <Frank.Li@nxp.com>, 
-	Adrian Fluturel <fluturel.adrian@gmail.com>, Antoni Pokusinski <apokusinski01@gmail.com>, 
-	Yasin Lee <yasin.lee.x@gmail.com>, Felix Gu <ustc.gu@gmail.com>, Ben Collins <bcollins@watter.com>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 7/7] iio: Initialize i2c_device_id arrays using member
- names
-Message-ID: <agy7IA69oPEHl7mL@monoceros>
-References: <cover.1779136001.git.u.kleine-koenig@baylibre.com>
- <4b6ea3483356d758a90bfb8970ed0f1df2f31cfc.1779136001.git.u.kleine-koenig@baylibre.com>
- <20260519193913.6466630b@jic23-huawei>
+        Tue, 19 May 2026 14:26:03 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: jic23@kernel.org
+Cc: Tomasz Duszynski <tduszyns@gmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v4] iio: chemical: sps30: Replace manual locking with RAII locking
+Date: Tue, 19 May 2026 16:26:02 -0500
+Message-ID: <20260519212602.30541-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="lct2h5a7d7neno6s"
-Content-Disposition: inline
-In-Reply-To: <20260519193913.6466630b@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 
+Replace manual mutex_lock() and mutex_unlock() calls with the much newer
+guard(mutex)() and scoped_guard() macros to enable RAII patterns,
+modernize the driver, and to increase readability.
 
---lct2h5a7d7neno6s
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 7/7] iio: Initialize i2c_device_id arrays using member
- names
-MIME-Version: 1.0
+Add guard(mutex)() into sps30_do_meas() as every caller locks it's call.
 
-[Dropped one recipient who's email address isn't valid any more]
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+---
+ drivers/iio/chemical/sps30.c | 25 +++++++++++--------------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
 
-Hello Jonathan,
+diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+index a934bf0298dd..c10026509e9c 100644
+--- a/drivers/iio/chemical/sps30.c
++++ b/drivers/iio/chemical/sps30.c
+@@ -5,6 +5,7 @@
+  * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
+  */
+ 
++#include <linux/cleanup.h>
+ #include <linux/crc8.h>
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
+@@ -69,6 +70,8 @@ static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
+ {
+ 	int i, ret;
+ 
++	guard(mutex)(&state->lock);
++
+ 	if (state->state == RESET) {
+ 		ret = state->ops->start_meas(state);
+ 		if (ret)
+@@ -111,9 +114,7 @@ static irqreturn_t sps30_trigger_handler(int irq, void *p)
+ 		aligned_s64 ts;
+ 	} scan;
+ 
+-	mutex_lock(&state->lock);
+ 	ret = sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
+-	mutex_unlock(&state->lock);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -136,7 +137,6 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
+ 		case IIO_MASSCONCENTRATION:
+-			mutex_lock(&state->lock);
+ 			/* read up to the number of bytes actually needed */
+ 			switch (chan->channel2) {
+ 			case IIO_MOD_PM1:
+@@ -152,7 +152,6 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+ 				ret = sps30_do_meas(state, data, 4);
+ 				break;
+ 			}
+-			mutex_unlock(&state->lock);
+ 			if (ret)
+ 				return ret;
+ 
+@@ -160,6 +159,7 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+ 			*val2 = (data[chan->address] % 100) * 10000;
+ 
+ 			return IIO_VAL_INT_PLUS_MICRO;
++
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -197,9 +197,9 @@ static ssize_t start_cleaning_store(struct device *dev,
+ 	if (kstrtoint(buf, 0, &val) || val != 1)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&state->lock);
++	guard(mutex)(&state->lock);
++
+ 	ret = state->ops->clean_fan(state);
+-	mutex_unlock(&state->lock);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -215,9 +215,9 @@ static ssize_t cleaning_period_show(struct device *dev,
+ 	__be32 val;
+ 	int ret;
+ 
+-	mutex_lock(&state->lock);
++	guard(mutex)(&state->lock);
++
+ 	ret = state->ops->read_cleaning_period(state, &val);
+-	mutex_unlock(&state->lock);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -238,12 +238,11 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
+ 	    (val > SPS30_AUTO_CLEANING_PERIOD_MAX))
+ 		return -EINVAL;
+ 
+-	mutex_lock(&state->lock);
++	guard(mutex)(&state->lock);
++
+ 	ret = state->ops->write_cleaning_period(state, cpu_to_be32(val));
+-	if (ret) {
+-		mutex_unlock(&state->lock);
++	if (ret)
+ 		return ret;
+-	}
+ 
+ 	msleep(20);
+ 
+@@ -256,8 +255,6 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
+ 		dev_warn(dev,
+ 			 "period changed but reads will return the old value\n");
+ 
+-	mutex_unlock(&state->lock);
+-
+ 	return len;
+ }
+ 
+-- 
+2.54.0
 
-On Tue, May 19, 2026 at 07:39:13PM +0100, Jonathan Cameron wrote:
-> On Tue, 19 May 2026 10:13:09 +0200
-> Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wr=
-ote:
->=20
-> > While being less compact, using named initializers allows to more easily
-> > see which members of the structs are assigned which value without having
-> > to lookup the declaration of the struct. And it's also more robust
-> > against changes to the struct definition.
-> >=20
-> > The mentioned robustness is relevant for a planned change to struct
-> > i2c_device_id that replaces .driver_data by an anonymous union.
-> >=20
-> > This patch doesn't modify the compiled arrays, only their representation
-> > in source form benefits. The former was confirmed with x86 and arm64
-> > builds.
-> >=20
-> > Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig=
-@baylibre.com>
->=20
-> I'd prefer it split into cases you care about (not just name) and the nam=
-e only ones.
-> That is unless I'm missing some potential change that breaks initializing
-> just the first element and hence not the union you plan to add.
->=20
-> It's a lot of churn and the name one isn't enabling anything new unless
-> I'm missing something.
-
-Today all hunks are about using named initializers to improve
-readability, so the split into only .name vs. .name+.driver_data feels
-very artificial to me. But if you think that's the compromise to use,
-I'll adapt.
-
-> We also get fixes in these annoyingly often so chances are this will mess
-> up backports.  Might even be worth splitting it up into directories
-> just to reduce that backport mess.
-
-In my opinion this is the reason to do this kind of cleanup with one
-patch per driver. This doesn't only make backports easier, it also
-allows to better record who reviewed and acked what, it reduces merge
-conflicts (because if one driver is updated in your tree already since
-my base, with one subsystem patch you get a merge conflict which makes
-the whole patch unapplicable, with one patch per driver only one out of
-(here) 208 fails).
-
-But that isn't popular with most subsystem maintainers and so I went
-with one patch per subsystem. =F0=9F=A4=B7
-
-> Also, have you done a checkpatch check for this?  Nice to not being fight=
-ing
-> it for ever.
-
-No, but that's on my agenda.
-
-Best regards
-Uwe
-
---lct2h5a7d7neno6s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmoMvzUACgkQj4D7WH0S
-/k5vLwgAiL6CW2R+kMxHjrhDUR7VIhFCG2wMBKLz5WbkBWU5squkTN/1qVtoWWar
-vci9CmfyXf4DAHwPE5VxqFdI/2hnHkZGY+9HdlZ5rCA0eE9uRtLRXpmagLU8vP7G
-qwGeXmdRXcSleK+2+J6mG2vC4TJ0UzR8V/2gwYk1Blpah9QGIHAWS3MlOHQpkatg
-qVvkxhTS+BBYcEf5Anqk+X2GoX5yM1BAJxN3ruPTt0kSKHs4IS5hDeorUgfadCD2
-Sh1f5bn07i2pkm8es6dISs5b5wruLTNr8sUXdDy3nFpOcTFl2esGEFYyc2F+QwWJ
-s9hr9xBFuzUzOyfUryv2POEO1qXSEg==
-=P7dV
------END PGP SIGNATURE-----
-
---lct2h5a7d7neno6s--
