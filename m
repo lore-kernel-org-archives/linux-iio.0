@@ -1,158 +1,123 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 426D94028CB
-	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 14:06:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779199595; cv=none; b=ZjeBgYuF1+JwKXjOo5hZCyIxrmMAfH9dP6qmFW0tKJ+hgr/YMvzGgfVKJhuR3CPeWwTYx74ZE4RBERQ8+B6StnCiCr6vm6YXcdRps11GpE34nMtPBNY2Q3C0bUrs9sDa2soMwt4N33Phibl5sVfXKPBRe8+5db+A4TSqhhReAqU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779199595; c=relaxed/simple;
-	bh=1FBR4g/VxQh+jJHTGxhfk5NruFCJTNpQXEUYu3wfoTo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=h04KGRX3kWEdbTD3Yvs0Mb0JCPSxBUk4Jw1HKGBRa9JUb1FD2GJoz3s/bohF4zVL03EYw3xHb76Vl98kttsKkyAx51y5T5XaEXIiQHNaediuBkul02h6LoaSAxdkxqU2vEBqs5C9HNspTd1Glkcwv+zrAczIAg3Pgp1fX7kvIqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=NGa9N5OU; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E36A4028F0
+	for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 14:20:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779200436; cv=pass; b=dxa6HT5B2j1imCR7RbsNg0ychDLU+5u0YPk0PF0FX3gz0pE4gxmzKgFBTIc+lNYbo/FA9KddMdYnw/K1BwLPuB0zy8ioKE0PmOt/24nr9gUTzw5FvNQC/A3n678/7Nn0/BNoQiyhGhkVdKB17lHZpNz/GzCIkJzEY1b3TIO14is=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779200436; c=relaxed/simple;
+	bh=Z67ptMys+N0txKzsrvuO8uwf/yKTvhIujA1K1RnDdTw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=PFQ7kO5UUBzlFue+trL+o0vy8NdnnI4O6KtTWAZ2MNCjczk7jmBdehfPjIS8ZBDjIT79uVFfTyNSzGBWHKEQK0n3A6fcI7XnLa9xhghNXka8NpfcDiDXFZagS73D9RUBXV/2yuIkFit4XyzYcuEfLfGST/b2YCtnelJOR8kX3vM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s8vp8ZVY; arc=pass smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="NGa9N5OU"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-44985f4ab0fso1896538f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 07:06:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s8vp8ZVY"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-459bf19e87bso2164542f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 07:20:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779200433; cv=none;
+        d=google.com; s=arc-20240605;
+        b=G8Cdh5FTnIax2I9UC/f1SL/OGlcSsKs6xTtDvbxeXj2c9RNEzmFwMNsy5lIS1K07Ft
+         VFkscuqjKHot9O5fkwyxa4DXAVZoY4T8zGUf/ydfYxbaQWD07S34WyTE3Xn+lJIw464s
+         UYe6YlzPOJK7slysTxhztr3qJKtDHieHOcn22k+YJgLms97zUG6/I/Dz0Qw2bcoCFxPL
+         cDaj1o4DcN+zKK6q2zZC7GUrqxTbOLSu4h8mSuQelseqQtswIjrQrbg3z25qYvdMeyh5
+         zl/fJVYbPjBLXLg9wFTJw9CntlSUhhmW6huVksPbnd4oa6/NhSIi0N4U0v+gaMdz6sCs
+         uWLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Z67ptMys+N0txKzsrvuO8uwf/yKTvhIujA1K1RnDdTw=;
+        fh=qr9ZGhL+y6nsWY0Kc17+AXlE2YdBcriwoVuZcD0PEQ8=;
+        b=Apan3q7MMWytjRCa0Ijr6zrlRarnIfwS3seWV4pgBRylmWe+iiLoloDTeCSxgqIt9/
+         l+gtYOR3w7SfOFbJuZYOdISdJMcAs4mixzSP/G6/ay7lUs/Ccpmt6Q5+0ZfuaLDrEIld
+         RTWyWnW/M7vssx+Zxlt3lnRc0YIswVnrVw9I385DxHRdcDP1tWrwwvZdBagpgjb4JYWe
+         YcR+1Q7MyIRoWn3059PWuNei2sot1yor8RF4XH7VDKOMvSEEdtXAeGvmwD4oAUL3Qudj
+         n52exDHV6C9Nd35O/s+yU9ZkyZ9ljVrPGOSuMYmaWMt5fa50QZpT/EWcjYFG6RhsKIvg
+         SsIw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1779199592; x=1779804392; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=F1rveWDJ/n3gZq22bLKQlpmlHtwzsA8j9KcVfu+WYds=;
-        b=NGa9N5OUjBMa7CexY9ZN1ZiNMR/bPr9W56ZGmXC+Tw/qmCrGlu4JHr7CEicDu7VnEA
-         Igpk6DsYiErKqDE6TsNEQCMGnQxjzAPcLhwwMipDLxrLoCsicMA9BRFJCqr+z05rDvN0
-         +jXKqqI8Yr4kXIpHmnQ7E2OXpsWiJOXVlHP9fd7Yd5r8x72S4u6uJOQn/FPh3RU+Syx9
-         L2Ene4cuDY8CWxwGcmBwdTai6EfOSxPgZeO903etp1VHxjSo4VcryfCqNTLiQbTaKNsg
-         jlxrLQC/kwjDp7tVHEEMKBWkwSWgfqe3Zv5WizmXIgNjdpMxzXXa85EOesLQS+qLuZ00
-         /IcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779199592; x=1779804392;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1779200433; x=1779805233; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=F1rveWDJ/n3gZq22bLKQlpmlHtwzsA8j9KcVfu+WYds=;
-        b=MjmYV3L7RF3gGvOv5xRx8joNno59texjFIAX16zv94Q6zcWCuNDguOOqI/do45/5Yv
-         YVb4fGZy3Bq9osXfP34tlPe/V1p/sWwpuLM9v+mPYzX2S4J7zV6iSChsUW7aJR4VP6Vu
-         FKBcLQ6Zo81M3u0GeVhVMmRMlSpvKAAeT0Kw9Tb5HGNLR3uVzmwznDthVUuU3+Vlq7io
-         OuZgfFDUK1aoodo5/Ofe/JIZXzHULcJCypMHf8yMEv6LnFirLVYtBQ1M05w/KnWOYR96
-         yY6Fm3KIBcTNjFcI3eJHskqplqNu4dwRg1xCNcJ6XuG0tgNoW1A8Mql0I4OgW0mEBqcp
-         CN3w==
-X-Forwarded-Encrypted: i=1; AFNElJ8ARcLtTWJiZJO7TvRU6rhJnM8Sy0Gb3xL3A6EjHmzAgl8mZVcd9hF9uTB7/j+Wsq+mLDIXThLcKNY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxvG+11bRRQCTY5RGXO3nCCh8Fdp2HSJibZidyFFgFbZDVIq6/m
-	IZyhEqdhvw4O0gafqMiUuZBwIN9eBSxAZ8EUsuA8CUiCTby2waYMv3/nrc51Z2B63V4=
-X-Gm-Gg: Acq92OEuUOEiDadXU9mkgUy38GEVREqDAPNdeLw46sE9DBdPyxhw/TCgUvc1gljnip8
-	/aGkI7rUaWezrncMuRi9ZLLjLUWXcY1FQA3RBAR5fPP6Ch233NPqEHY5h+bjn91z4N9eqxw/dEi
-	i7xHRz4WCQweasz5T1ZqZeSlxK0+9Hv+3owY7iWzw3Bi4E4Uj3BD0OsV8/TKc0r/kpG7mM9u12F
-	FZUCDCKUWRd4NbBiAkVLbrjiVl2kd0o0YVJLcVyxiM7QdHKqqhoCWlJmxDhmaQst5RcbyMz08aX
-	Jt6t5k2zwM+w8LeNcMOVlyToii/tm5JNsEZW2cV9kPkO1rOE/yS7RoaI9n3LRi9LTkOyI3Lv5SY
-	NexKZA7pjWNa5qyKWlWUDL2mv3EBKcuPh2hjiqmB0yeXYAf8ukAO/Q28VJNWf1iy/t9OTRpTRdr
-	i/TLdunfnRADAfE2S2pRqmP/c7fTRyJtYYCuU1qqBCKZEzejM5JoHhiH12Vy87QUkyEQleN780P
-	motoyRLdMIUnLk=
-X-Received: by 2002:adf:f284:0:b0:45e:65a3:badf with SMTP id ffacd0b85a97d-45e65a3bb1fmr18932862f8f.21.1779199591612;
-        Tue, 19 May 2026 07:06:31 -0700 (PDT)
-Received: from localhost (p200300f65f47db048a8dfcf61053817f.dip0.t-ipconnect.de. [2003:f6:5f47:db04:8a8d:fcf6:1053:817f])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-45da15a562dsm46552734f8f.33.2026.05.19.07.06.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 07:06:31 -0700 (PDT)
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v1] staging: iio: Use named initializers for struct i2c_device_id
-Date: Tue, 19 May 2026 16:06:20 +0200
-Message-ID: <20260519140624.1585534-2-u.kleine-koenig@baylibre.com>
-X-Mailer: git-send-email 2.47.3
+        bh=Z67ptMys+N0txKzsrvuO8uwf/yKTvhIujA1K1RnDdTw=;
+        b=s8vp8ZVYR/fSne0mQ7gNTtZ4bfkXz4O6dbxZzQZurj6U79oAFHHHwNu7GYZAvpAq64
+         M/qcn184r7hyzRthjPoiGfYVG/PwT99Pt3gvv4UmW13JlmItTn7gkQnMsnfsj/gZOhsH
+         oq9CYJy9xZJS5t3jxUf8LElukiyewm4rXlPHxmkmWwBqsq5Z4Z0kU9u8B3L2u+QIPbhJ
+         i2L+OkwACuFCMh8aEhrBdKoj7BGSjB9uEdobRQetIPF48RzXpsjOn4r/K7CYCuWBjI3n
+         iygHfvqs8d1vhH5YtPGtfHRz1ZpQKJUQZBavKPhcPsq1rqXR3xn8ZKnn9qsNruLBK2Rb
+         CFkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779200433; x=1779805233;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Z67ptMys+N0txKzsrvuO8uwf/yKTvhIujA1K1RnDdTw=;
+        b=Ry0qR49JovjO0tGURuCyYHBHTgvo9qLuBAGDwuFOcIfdIFSzSV+OBG9ysVvIlwaffN
+         Omg2CDeOoIMBxpZ0P+Vwd+lD3Jjvpf6d711wrD3TCpONkVMz0lK8Q2eL6k2RzjIICvjq
+         KUVyIeGgu1DLcppxALr+agxt7OnYYA1v9EBlPi8O8+10DBfCiXiIAZHltWiFyKYFtHbj
+         ebigJoe2RrEpV7ocmM9aqH+HvEsujHkoMZ6rbx1lyzew0B7v+iwv4ertLrpglbPE5PNj
+         FJoiS+ZYvLahE5x2rt+nJoxZKfXxGLIbZlghtSBxrU3aaZ66L5ZJeaMxrk5DchfMd2CT
+         mDdw==
+X-Forwarded-Encrypted: i=1; AFNElJ8weXNwQmbdvhj9AjeQG8QPl4Lx97X72E0m1rBLUtJm3MtIf0dqs/nL5Yzshy17pGeDtId9SewgpLc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzDNqZj0Krh41mHo0ex6SaoQAMWbGir10Q8Qi+EZZK4XwZLbGPD
+	CTB/8Gn1jFf/T5HutLuoC4Zt3CfhHN0qzJj8woL7lcf7zl2839BmZZj6nnaaT9bntzqpEQpcmZQ
+	IHCv4FCja/4drcQX/5EoyS3bxyUVpgkc=
+X-Gm-Gg: Acq92OF5A/zt71zhb7bkjc9a5zSg7YHaPz1FIxHMRYp1CdVe3LeE6nqncvU8LtIsjgg
+	QHm91o7/iaW9V0v4hbT9BYHfCzQACfBV59SCwxL1cvWi+trYb/vPF4StHlMK4Glu3kHtxcmu3U/
+	R9JCN0zLd0jTioZjRxN9ynm5yKyr0pcrLKrzGNxyChvogcOSG3LganYGWUwxckMj5T8khNmdYaY
+	LO6Hk2w+hbdwxcOkQ1PKDVVp2o4F7DyKiCdcEqwcVNuyfXutJvpggaD69NnYwCeco6ko8MphQb6
+	DZ1ERvl8CgR5iHGsSC28pcQF3g5r2rBHQrb1MmDExTTSBmOB1iCsw8szogBFeTjP6OTnmJK/ypm
+	oyXhRWgMOtKk1m85TYs+QacljHy+I+oi53l0zkfQFbjH2Gcb8H/RahvscdGbUKRBVZLPBR1NIpV
+	trZZjrMg==
+X-Received: by 2002:a5d:5f44:0:b0:45d:3a84:709c with SMTP id
+ ffacd0b85a97d-45e5c5ccac2mr31715019f8f.31.1779200432677; Tue, 19 May 2026
+ 07:20:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2374; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=1FBR4g/VxQh+jJHTGxhfk5NruFCJTNpQXEUYu3wfoTo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqDG5gwmZax1mAiiSWvVmAabAkcCFNeU0lUJ667 /MMFAeuYQmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCagxuYAAKCRCPgPtYfRL+ TsagCACejQTTKFEmHQ5sS0I7GdAhQh79jW5Ec/J2pSbo5S49iuFip5OtV+gI+wBtr7Q4FNCO2bZ mPlVyxCeEK6MpUexpedkiyJoyVYLIXClWYZnGToat8BT+7p0kKyjUwUTo5ao87hPVSscvHkws0h oTxpCXzz05df0YBsXp+UYtPwfTED9sDOieEEM2FOOCbcxpk3IOb6vs8KU04BuSddgWP4k4P47oG GAkLfhqToIMFVzXYoBMm/JSDJPZ3Iewo7QZOlbZu7WfBlyoM081ZR3Q+h/6mMij1pc39AHfNq0+ T63EfeucxqzUbEnsFksSd5xZZaGmPzH4hUzkfYx6hMelX7Mo
-X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+References: <20260519140624.1585534-2-u.kleine-koenig@baylibre.com>
+In-Reply-To: <20260519140624.1585534-2-u.kleine-koenig@baylibre.com>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Tue, 19 May 2026 16:20:19 +0200
+X-Gm-Features: AVHnY4LlDW3ubSlPMx0c7gHoDozmlrUrvwNJTXT5K8k4JAnzlwn3Y8_StWRJIeE
+Message-ID: <CALoEA-xV3nNhrJsNL7Ge_ym04FMHM+BsTADrriAMKAjpqm4BVw@mail.gmail.com>
+Subject: Re: [PATCH v1] staging: iio: Use named initializers for struct i2c_device_id
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-While being less compact, using named initializers allows to more easily
-see which members of the structs are assigned which value without having
-to lookup the declaration of the struct. And it's also more robust
-against changes to the struct definition.
+On Tue, 19 May 2026 at 16:17, Uwe Kleine-K=C3=B6nig (The Capable Hub)
+<u.kleine-koenig@baylibre.com> wrote:
+>
+> While being less compact, using named initializers allows to more easily
+> see which members of the structs are assigned which value without having
+> to lookup the declaration of the struct. And it's also more robust
+> against changes to the struct definition.
+>
+> This patch doesn't modify the compiled arrays, only their representation
+> in source form benefits. The former was confirmed with x86 and arm64
+> builds.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
+aylibre.com>
+> ---
 
-This patch doesn't modify the compiled arrays, only their representation
-in source form benefits. The former was confirmed with x86 and arm64
-builds.
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
----
-Hello,
+--=20
+Kind regards
 
-this patch is part of a bigger quest to use named initializers for
-mainly struct i2c_device_id::driver_data to be able to modify
-i2c_device_id. See e.g.
-https://lore.kernel.org/all/20260518111203.639603-2-u.kleine-koenig@baylibre.com/
-for the details.
-
-This patch here isn't critical for this quest, as no driver makes use of
-.driver_data, so apart from the better readability this is only about
-consistency with other subsystems.
-
-Best regards
-Uwe
-
- drivers/staging/iio/addac/adt7316-i2c.c         | 12 ++++++------
- drivers/staging/iio/impedance-analyzer/ad5933.c |  4 ++--
- 2 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/staging/iio/addac/adt7316-i2c.c b/drivers/staging/iio/addac/adt7316-i2c.c
-index 3bdaee925dee..98f2e23c6a4b 100644
---- a/drivers/staging/iio/addac/adt7316-i2c.c
-+++ b/drivers/staging/iio/addac/adt7316-i2c.c
-@@ -109,12 +109,12 @@ static int adt7316_i2c_probe(struct i2c_client *client)
- }
- 
- static const struct i2c_device_id adt7316_i2c_id[] = {
--	{ "adt7316" },
--	{ "adt7317" },
--	{ "adt7318" },
--	{ "adt7516" },
--	{ "adt7517" },
--	{ "adt7519" },
-+	{ .name = "adt7316" },
-+	{ .name = "adt7317" },
-+	{ .name = "adt7318" },
-+	{ .name = "adt7516" },
-+	{ .name = "adt7517" },
-+	{ .name = "adt7519" },
- 	{ }
- };
- 
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index dde2ec9d1f6a..798e62bae29b 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -726,8 +726,8 @@ static int ad5933_probe(struct i2c_client *client)
- }
- 
- static const struct i2c_device_id ad5933_id[] = {
--	{ "ad5933" },
--	{ "ad5934" },
-+	{ .name = "ad5933" },
-+	{ .name = "ad5934" },
- 	{ }
- };
- 
-
-base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
--- 
-2.47.3
-
+CJD
