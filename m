@@ -1,585 +1,259 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011021.outbound.protection.outlook.com [40.107.208.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F84937BE9C
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 21:16:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779311781; cv=none; b=TnVSJr3Q2lmrITCo4mcfKNmL942kD+H2ciIMo4eYVGoq5ceoDiSM3pBmcLKfk1JE9jTfa1Q1jLLBRaLGu+x73ars71DR6aT6hOnRjcGBqL6Ksrq328ZeHwH/HaExwEG1nCIFiDt6tB3oMKlHXZ3Wtcxvw+bT7EL5yPlXsV/IzRc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779311781; c=relaxed/simple;
-	bh=jcxmhUYCLzvJomDllJwXOr8J+/4SyOyHiCVicCdhhyM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=tEkVO6F9WTKM9/bAipj4AJQhcUJUDCkJFVYyy+LPWtncYJQfTgNKlrhcgNUwC0eOLcmFMU1rZiS+kui2sIdr963/9gvvX398uxnEfprhMJ9Go0jSIxETX8sHW+2rBq/elqmAOWSLag2K9N4hdIL2PoqvIJCTuzGuACXi2pmQER4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YlgrCGBW; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 731B329BD95;
+	Wed, 20 May 2026 23:15:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.21
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779318925; cv=fail; b=Rh5RXiUWk83WSQTAN7cntPjJCdRvMs3b9khqXvxmSGF8/DoJ0k7WMB3haoZu1RON4bteUQ6euRu0S1pQF3FQiPef8ybwqvwtqNODDDiETmq2G6+ytR2L+RzWEfO2crJ1zvDgFJ/TIl63B6V80QyTSJmw2/LRVoIutT3I348X3cg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779318925; c=relaxed/simple;
+	bh=DSzXC1bmBJ4kjk1Ohgg9jAXzH56WvZp8gnQhu5L93JU=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=mc+SSYZ6JmqoRJo1cG7eY7eLp0s7Tj9TVbkqrgweIgX3v1cMV9xfHcJZgu3QBuPpWne8LbRv2JUAJimJvxMzyNLAQ78uhvPgMUgUhY48ETEwZji2xx4HFoJcphKhRDAKJPWCUy7RygqN9HMgRLpH55CHo8oZKl4ToruuJS7V9ts=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=iHNkkm3O; arc=fail smtp.client-ip=40.107.208.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YlgrCGBW"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4891e5b9c1fso47573825e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 14:16:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779311778; x=1779916578; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=k2Wno4iGEmIqRcLVb/jC6n8e0g4QLXyqrnnmfOd1vJA=;
-        b=YlgrCGBWb9S1iUZagYuRuDRQc0mB2/KuSxgFRjDcqTdbtmdTUOS7Jn9hCZACbAvs/L
-         WmNt58bYUve4aCQOLw19iq67i5z2qIFoaa2LlRvC7U0EKXWVBpKHcxYzOOcx0FnJWz4m
-         vgpoJFWMYnKMfwmNwqlKx6S1O+ZbFlsQ9gUCZR7c7N1+XA6gThO5ro9khAfOG7RFCgj5
-         VLaAXeq5nPpMqcmEMSBp462iRcJVUDD4mJl+i4pmJXYmCJ9PP0kf4IjljhEh0Gubl/vr
-         8kgeR/j9a9+rzk4Ske07K1y3apHGKEezYz7FK3m2qh93ROVxIhLnp/fK/ydKUsGkUGLz
-         2fPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779311778; x=1779916578;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=k2Wno4iGEmIqRcLVb/jC6n8e0g4QLXyqrnnmfOd1vJA=;
-        b=j+utsnwxqYoVayA6OuGWizX6+grKicJTaHgyPCspKbkL+1206yeWJUEFSkTiaAD1iq
-         Wk2vKLgXA3bx2Hd1Hur1A+l5T4J91TBYCueplXJBYBKqBHlb422v+aLFwBrUyLMGaWdz
-         ZHeQPUGu6jcLHjW41HeV3JLoPy3MSDPvBdHLV7X0T5MDvU/bMU6UUJSx28NTzMvTMnSV
-         9uu0Tp309/lWA2Ms5tmUP2aB82p9KGnjahuDd0CnjfMN9lHDAtw3D6cfvf3MlAPaXOe/
-         KGPJmitzEdSSFqyCAxmHOHt9FU4x4jzPG6KsFIh3BHGzq4I3N7uJziz6VmWkLcwT4PWF
-         up8w==
-X-Gm-Message-State: AOJu0YytTtriAVe8Z2jeK937bleRakMIFEYVVrAVMQEqczIjEw1gZ7Uf
-	d72cnz5nI0B/rFnaxJ2cP9XwkunsU+8zOHq8HTxy2rY3hUdBMK8gA13u
-X-Gm-Gg: Acq92OGADedNqhGmPe2ykx36M+AjBzg2Nvy+uom3G/jAJBSVK6EDnHOD/XZnWTBxt4M
-	Mos+vWEz3AE4J/Mg9s4JLu7331MAn40vMlWdDCH6NP9Cb4Ki+Zs9NrXW+q2+t7aYoh8v3r0QbZc
-	MzNvSqAcGrrWC82hMlMndJSnHfaO6UuvewmN/0YqiKmIZrghioRr3vEno1YFtodhfj9gOBYCaL3
-	QUMQHWkAQNxqVEa7LAZ/scMIy05M9J9v5ljhlPJxJrhWZbfVdaTB9/Hd/jnTk8LJ6jg+8+vU09U
-	vrBkLFrCqUc7Y6vG8SnYilACwKcUoJxqd5NNVw2F5y5Fdch4dHDJbApsdddbmlQXZG0fZYVybUh
-	HSaVcSnToKglHyHhI1kNDSXBMoXioS6retUUd6X5X+MXBK0wUoN4dHQZaeOFLYp1xZSkKcUbMOe
-	2ATZr3gIjv8h+P1OZNoi18gKAD61sEkbSt9mKozBWHq1ANxkJlY3k6PjsmazfOOINRZMFCOSuaK
-	ltNR/oQXD0RJd3K+lBePrwF2AmU2ZcTHUXGlN2J96l37eVmiUejRYWrE8d6zkrsx/5n5dqfXAh0
-	tWthugPBofETiu6r5yccMYhtkWHQQDFrDT+F8fvZsijvkG8UKfDciUNkYSqQ2HUoOeDJZLKyL7/
-	1sJY=
-X-Received: by 2002:a05:600c:5298:b0:48a:563c:c8c0 with SMTP id 5b1f17b1804b1-49036034241mr669855e9.7.1779311777792;
-        Wed, 20 May 2026 14:16:17 -0700 (PDT)
-Received: from systembl0wer.localdomain (ip-86-49-246-187.bb.vodafone.cz. [86.49.246.187])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49033d5987esm16499845e9.12.2026.05.20.14.16.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 14:16:17 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 20 May 2026 23:15:38 +0200
-Subject: [PATCH v2 2/2] iio: light: veml3328: add support for new device
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="iHNkkm3O"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=YagvyaAAeCordrT00jTHd70aKabFL1nh/bV2GlEQGC91tylPPuq7JctYbVwOr1M6by4qQgd9JGyQ4EBqC9oMQGqbQ4eqYNx7qI1rKd7pVeZG6mxHwwncssPfUMEX7Ix3sPPPA4Er39tCjDF4fWhi5zyHQcQDUS+nGHXbwGCK3fR/Kb++nfzoV7R2AdDrDRxGi6VZHMXRk0rNqkzHmc0X3kwfo4D9IS1rPT+gWz2SKYg09dw8ArST6cYepyZg4sEdBA1CCcyR31Hy6OLYBNRxsgtNvmQNub7vJ+D5hSbr5sj8HGwSp/lIUZM0J8K/H+IKGwbxkneXOKo2eGpSNvF9Ew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dckk0Az9UL2L8ubPOaAxN6ICFxXfgkyv0Xf9wlcjLVc=;
+ b=gP4xp8v/jtdd3XvYgcpc0K6kwuor+PFOJpdPpvLnR0b1ftP3V1+JUL9mj0dR/0lOIkgRt044FpOFDRmoOYWg4pUZ3YaRg7IxX4/mcFpq43sNVBYx89AW9xahLWU+zHX3m0W5PYgiBhmIgYXVPSOFWB8nDmoSK8zPAAqCZccgzZK7HNI9nsMaE+XSa8MazBr23eqlbW8ROBS4leympQnBonC7x2v0SXcvfs5hwWPLW/KzK3GAoqMQrI/g9VC5fjbxy8KajvKg5JoopOTmQxwZiQiMF3nP4WmiT1y2b6zzbZoO2tCsSjsdhcjTm8zxLDgMtT5+NblS/a9MVU5jZWV8Mw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dckk0Az9UL2L8ubPOaAxN6ICFxXfgkyv0Xf9wlcjLVc=;
+ b=iHNkkm3OrFM+mmsCTBIZuwziVivIg0lVPCKjCac74zHh3YtYjhOlQ5fnN7jm69eyTCMHtmLbSVxnlAvZBHQ2FJVrqpxhDoLYOswOkjg9LSpI5D/y3GwlpuSZsJll6qc5DaIuky88GJ6TEPBf1PM+zcxLeadhyp/ZddZ4OdaEhkE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
+ by IA1PR12MB8465.namprd12.prod.outlook.com (2603:10b6:208:457::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.21; Wed, 20 May
+ 2026 23:15:16 +0000
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0048.013; Wed, 20 May 2026
+ 23:15:16 +0000
+Message-ID: <85c06df0-7cdf-4273-b033-9ec9dcd5781c@amd.com>
+Date: Thu, 21 May 2026 00:15:12 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/5] iio: adc: versal-sysmon: add threshold event
+ support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, git@amd.com,
+ nuno.sa@analog.com, andy@kernel.org, dlechner@baylibre.com,
+ michal.simek@amd.com, conall.ogriofa@amd.com, erimsalih@gmail.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260502111951.538488-1-salih.erim@amd.com>
+ <20260502111951.538488-5-salih.erim@amd.com>
+ <20260504184415.7b6688f5@jic23-huawei>
+ <59884fdc-a9d0-49c6-8167-11d56a21dd11@amd.com>
+ <20260520103708.24d59b6b@jic23-huawei>
+Content-Language: en-US
+From: "Erim, Salih" <salih.erim@amd.com>
+In-Reply-To: <20260520103708.24d59b6b@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0006.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:150::11) To IA1PR12MB7736.namprd12.prod.outlook.com
+ (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260520-veml3328-v2-2-a57f0d9e28d4@gmail.com>
-References: <20260520-veml3328-v2-0-a57f0d9e28d4@gmail.com>
-In-Reply-To: <20260520-veml3328-v2-0-a57f0d9e28d4@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
- Rishi Gupta <gupt21@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779311774; l=13434;
- i=joshua.crofts1@gmail.com; s=20260516; h=from:subject:message-id;
- bh=jcxmhUYCLzvJomDllJwXOr8J+/4SyOyHiCVicCdhhyM=;
- b=e6cztAnbWfR4Oq5Kx5j+AzARS/kwrjvNW+++YOCDNHi3yWRTtHWBnMt4Onsh9UKdz0Fdm62Zn
- mCXhqdRmJWGBi8/dqYL/JjHxBLY6SgTORYLhXII33uRNJkggLaa9jWi
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=d2X8EVKEB2uF4AaPPi3iSSI+IJF3/9kOoDYVVmc+G1o=
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|IA1PR12MB8465:EE_
+X-MS-Office365-Filtering-Correlation-Id: 646b5207-7e2d-4932-0887-08deb6c5a6c8
+X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|3023799007|18002099003|22082099003|56012099003|11063799006|4143699003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	QQNC8D/A3nWGBXmueR/ovCsKGZM7TuqC6R0/OPGQAipW2c1eKohj1F3p1KVIDBcoj4yZV7T+yJRZZNMYk4QN2pZ0RfJxTFbEVzrMTrsC0e8DwJwexiJIoXQth2M2pZF4DOVo5jYIAkgTZD/XC/zL9VBZploKtp5581HdNB/InbF2p8fJ4IhrfvbUpNf3TzCQxvuoTztP1iYZDi0PD2L6hI9yw+18OhOpzCpI0kbRsJCBu/eJXAtnjMpIUOfeFQkYAXrbBCAKaOMgxMmR0+iqofWagsr3EDZ795auQmL2KJ8tr24w4o0Famb/KyAM1SAfyp7w/xsJMvtT32a6JSAFvVSEfgz1ryNqRII0Gz2f3OJqbiEfF6DjetFDdANRzzEk4tCngD0YvpfFJpME+1OcDzmVFHjIVHdJ2Mury3dIGrUDkK8EINvi10vlX43NzIe9StLLzEW6pPeWG+UKTTJYbji6E4cACOAPCMFGf0ZFbBGg42f3tvheHzTHdVqksuTk1ztCUFr1rF60aVUQ88IlyWicZKJ3RhoTIxmoFSmz41kAqzMuPOAi4GkNO7Fc/y6n3tGPUkdIBB4Go038dNtSNobBKigKs6IRfsPQLVg5yBlJUY06voNXe6xFKQ6BJRiR+BaYy6Rhnko/x3ShVDHkwQ/Yw+/Fhxl8rr+GTVHKx0KvTjj/egQIL2I9RJuWz3FH
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(3023799007)(18002099003)(22082099003)(56012099003)(11063799006)(4143699003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZVZHMm1hWHpHVEV2RzF5ZHlhc3hkczRqbFV3RWtXN1lxeTNKVkowT2pxTXh2?=
+ =?utf-8?B?N3MwVE5LNzQwbTU3eGM4allpQjBCb3NIT1hXUzEyYTNiaFNkZ09IYWxNOTYz?=
+ =?utf-8?B?T1Bla3hTTjBBc1VnbHExODh1bWN5dzZUc1FnSTBySGYvb3hnL3ptN1VGTGdT?=
+ =?utf-8?B?emZMOGtCK2c2QUh2RzhJMmxvbWxMSTMyOEVYSkRkeldNYmZoMU9vdExjRzVi?=
+ =?utf-8?B?WEI3RGljczFRNWhCN251SHdJUGY3N1VaU1AwMUJqSjAvVjJLanc3OGtaUVBi?=
+ =?utf-8?B?V2FXTG4vYkxGNSs4RHBTSFRvKzgzWWp6ckczSVo1RlJTQTZsNkE0blFQazNz?=
+ =?utf-8?B?UGZqWnFtMmFIZ2tEdHgwbHNzYlBBWFhyLy9PV2trZnJ0TWtCclBHUVBrQ3VT?=
+ =?utf-8?B?VFpVK3cvbkFFOVpMSHhVbjhCOXp0bm9BdzZ0NnlGMmh2NlVzbktQbXo3MTNI?=
+ =?utf-8?B?c2tKbDRGMG5CYU41MUJ4RForK3l5OWZYVGk0YXc0Y1VLQUFkR0hkNklWZ0RD?=
+ =?utf-8?B?RTF2RVBHNWVDRXZWaXpKemZlVDlCelh3VzJib211TnQrUXNOd09yc05IN1g4?=
+ =?utf-8?B?UTJHa3NPSE5LMjFrWlZXZFNQSHhRK000c2tTdzVDSkUxdzJJZmJ5NmdYUnZE?=
+ =?utf-8?B?R1pUM0lPa2NITWYrdHFwZUhDZitGbktaWG81MTFlN2duVkFIMDNKdlRyam0y?=
+ =?utf-8?B?UkpUS09RWDlMNFRxUXBYay8vZlh2N2dTNEZtOFU4N3QxL293eUE3SzkvY0Zt?=
+ =?utf-8?B?OFB6WlB0NTVyWWtNMElQdi9adzA4RXFQQTN1Z242UzJGTWxtajhMY1FCd2RF?=
+ =?utf-8?B?MmF3d2NtV0FBMEExM1RrY1dYcW1taTBHRWRjM3o4dDhkUEE1Znd4WnRqbk00?=
+ =?utf-8?B?SUlOcmtibUdyT2JVNi9mZ2F4cUl2bzBFVlkxb2pwWUFWNjhKOU5SWFAveVVU?=
+ =?utf-8?B?UGpBUjYyNXZtOFRJcnhOc0hqNUFBK0w4VkZBaXdwK0pMSm9pM2VqNlljdCtK?=
+ =?utf-8?B?eWVmZlhuWG5qdzVvUjgxN0ZUUVJ2SC8rU0R3aTJSVFZ4ME5YV3NEZEw4Q2hO?=
+ =?utf-8?B?bjIyY2ZlNzhDQks0M1JVOXZrL3ZWMFoxWFoxdHMwTXVWRXcrRzZVSjl3M0Fp?=
+ =?utf-8?B?d25iSkg0czZYV0NaQ0x5a0k5M05KOWxWTjQ3Vmg2OFNHU1Rxb2VaRUdkallI?=
+ =?utf-8?B?TldzdGNLeHdHUHlqSU9iblJ1MHFXSnB2RWxzOWF3czlsS2licnFDQlBLMEFW?=
+ =?utf-8?B?bXNUbjN5S05CdWpXb1RNZTkwcmNiQ01LY0pOS1ZHVHRaWHUwVUJWam90amNm?=
+ =?utf-8?B?Yk1KVFk5RUttaGd2VzRBbUVtVTRFQ0szNGZKOHdHSk94STlaQmNCQXpDVnlY?=
+ =?utf-8?B?WWpWSnFOSElJTjgvL0tFcW50eWlKc0NBa214RlpkVkFpOXZsVTdVcGs3czd0?=
+ =?utf-8?B?OEdiZHVWMjBnSFd2U0JiOWJ6TFpFYzQ0MmRQbFZSYnFFb2RzV242WC80V2th?=
+ =?utf-8?B?UzZXWDhmOUJRYjZqa1hDMHZZYndQdWtuSmZNcFF6U1BCcklMQTZvc3BOZ2dD?=
+ =?utf-8?B?eUlBUlFucDRvZFYvd1dsVVpzMWlNN2V0enFNL2x5NWRaaGVkTVRSRnBacFJk?=
+ =?utf-8?B?T0FjWUttSzlVOTBidUJWM29HUUxlVFlOcWVMeFgzbzZoalZkemVWdm1tQ2Mr?=
+ =?utf-8?B?MmNBYXYwR00zMEQ1VzJXYVAxaTNQMDc2SlRySUlrbS9PNmdOdDQyNmRSeTJv?=
+ =?utf-8?B?UjZXUWl6eXlmOU9QVTNBS0I3VllzbDBxQjBLT3ErV0tyWGdkMmhLSGtDQ1NE?=
+ =?utf-8?B?NG01ZDV5TmM1M0ZZd2owc0p2ZUVqKzNtclNMOFhlVkhiQ2FaaGFJSkhVd0tv?=
+ =?utf-8?B?T0p2OU85WXNpRXlEUmFZa01vZXBTbjNQbE16MnI0WHl0NlZ1YTlnbXFRU3N4?=
+ =?utf-8?B?Zmt4cUhMVGtPN1dIY093MmNzN2hCdkI5RDJQRmR0SVh6Q3pGOEZnNk1pcEpJ?=
+ =?utf-8?B?emR2TytiRTlzQ3dQRTlHMi9NRnNnK3pXVHIwSHZZc1kzQ3RGODZxR28xMmdh?=
+ =?utf-8?B?bzlEMUczcW1veVVNc0N3bSt1N2VKWlpqMzY1T3N6SXlaYjdGVzM2cW5YWnp2?=
+ =?utf-8?B?cWpRTVpyZEVvcU8xZ3NxYmZzaC9mdkZ6RE1HdGVGdlpHd2VLY2ZQd3hlRzBq?=
+ =?utf-8?B?RG5sNmRrNXZ1eVZPMkkyNlJpbklaRGg0bUJVZ1B3TkNkbnVUcmo0ZnYvTjBQ?=
+ =?utf-8?B?QzQvL05uYmZMUHNPeDRHeXh1cHBDTmc1WFRMbHFkM0pRd3NUYU5BTjJucG5J?=
+ =?utf-8?Q?YdXqD04HGXCIlFU40n?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 646b5207-7e2d-4932-0887-08deb6c5a6c8
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2026 23:15:15.8978
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eoM424HW/rZSDuylLl/99lDojviNzU2KevFPkbNKTBBfjDFja8gwK8aC5RxTw2ij
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8465
 
-Add support for the Vishay VEML3328 RGB/IR light sensor communicating
-via I2C (SMBus compatible).
+Hi Jonathan,
 
-Also add a new entry for said driver into Kconfig and Makefile.
+Thanks for the detailed guidance on the ABI constraints.
+I have studied a bit more and have a suggestion inline.
 
-Assisted-by: Gemini:3.1-Pro
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- MAINTAINERS                  |   5 +
- drivers/iio/light/Kconfig    |  11 ++
- drivers/iio/light/Makefile   |   1 +
- drivers/iio/light/veml3328.c | 416 +++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 433 insertions(+)
+On 20/05/2026 10:37, Jonathan Cameron wrote:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d6c3c7d22403..8236ba0c41ca 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -28386,6 +28386,11 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
- F:	drivers/iio/light/veml3235.c
- 
-+VISHAY VEML3328 RGB IR LIGHT SENSOR DRIVER
-+M:	Joshua Crofts <joshua.crofts1@gmail.com>
-+S:	Maintained
-+F:	drivers/iio/light/veml3328.c
-+
- VISHAY VEML6030 AMBIENT LIGHT SENSOR DRIVER
- M:	Javier Carrasco <javier.carrasco.cruz@gmail.com>
- S:	Maintained
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index eff33e456c70..1c00bb0de6c8 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -699,6 +699,17 @@ config VEML3235
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called veml3235.
- 
-+config VEML3328
-+	tristate "VEML3328 RGBCIR light sensor"
-+	select REGMAP_I2C
-+	depends on I2C
-+	help
-+	  Say Y here if you want to build a driver for the Vishay VEML3328
-+	  RGB IR light sensor.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called veml3328
-+
- config VEML6030
- 	tristate "VEML6030 and VEML6035 ambient light sensors"
- 	select REGMAP_I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index c0048e0d5ca8..e03c6e23a9a4 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -65,6 +65,7 @@ obj-$(CONFIG_US5182D)		+= us5182d.o
- obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
- obj-$(CONFIG_VCNL4035)		+= vcnl4035.o
- obj-$(CONFIG_VEML3235)		+= veml3235.o
-+obj-$(CONFIG_VEML3328)		+= veml3328.o
- obj-$(CONFIG_VEML6030)		+= veml6030.o
- obj-$(CONFIG_VEML6040)		+= veml6040.o
- obj-$(CONFIG_VEML6046X00)	+= veml6046x00.o
-diff --git a/drivers/iio/light/veml3328.c b/drivers/iio/light/veml3328.c
-new file mode 100644
-index 000000000000..fdfa8fd1666b
---- /dev/null
-+++ b/drivers/iio/light/veml3328.c
-@@ -0,0 +1,416 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Vishay VEML3328 RGBCIR light sensor driver
-+ *
-+ * Copyright (c) 2026 Joshua Crofts <joshua.crofts1@gmail.com>
-+ *
-+ * Datasheet: https://www.vishay.com/docs/84968/veml3328.pdf
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/cleanup.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/time.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/iio.h>
-+
-+#define VEML3328_REG_CONF		0x00
-+#define VEML3328_REG_ID			0x0c
-+#define VEML3328_REG_DATA_C		0x04
-+#define VEML3328_REG_DATA_R		0x05
-+#define VEML3328_REG_DATA_G		0x06
-+#define VEML3328_REG_DATA_B		0x07
-+#define VEML3328_REG_DATA_IR		0x08
-+
-+#define VEML3328_CONF_IT_MASK		GENMASK(5, 4)
-+#define VEML3328_CONF_GAIN_MASK		GENMASK(11, 10)
-+
-+#define VEML3328_MAX_IT_TIME		(400 * USEC_PER_MSEC)
-+
-+#define VEML3328_ID_VAL			0x28
-+
-+#define VEML3328_SHUTDOWN		(BIT(0) | BIT(15))
-+
-+struct veml3328_data {
-+	struct regmap *regmap;
-+};
-+
-+static const struct regmap_config veml3328_regmap_config = {
-+	.name = "veml3328",
-+	.reg_bits = 8,
-+	.val_bits = 16,
-+	.max_register = VEML3328_REG_ID,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+};
-+
-+#define VEML3328_CHAN_SPEC(_color, _addr) { \
-+	.type = IIO_INTENSITY, \
-+	.modified = 1, \
-+	.channel2 = IIO_MOD_LIGHT_##_color, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME) | \
-+				   BIT(IIO_CHAN_INFO_SCALE), \
-+	.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME) | \
-+					     BIT(IIO_CHAN_INFO_SCALE), \
-+	.address = _addr, \
-+}
-+
-+static const struct iio_chan_spec veml3328_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),
-+		.address = VEML3328_REG_DATA_G,
-+	},
-+	VEML3328_CHAN_SPEC(CLEAR, VEML3328_REG_DATA_C),
-+	VEML3328_CHAN_SPEC(RED, VEML3328_REG_DATA_R),
-+	VEML3328_CHAN_SPEC(GREEN, VEML3328_REG_DATA_G),
-+	VEML3328_CHAN_SPEC(BLUE, VEML3328_REG_DATA_B),
-+	VEML3328_CHAN_SPEC(IR, VEML3328_REG_DATA_IR),
-+};
-+
-+/* scale values per datasheet */
-+static const int veml3328_scale_vals[][2] = {
-+	{ 0, 500000 },
-+	{ 1, 0 },
-+	{ 2, 0 },
-+	{ 4, 0 },
-+};
-+
-+/* integration times in microseconds */
-+static const int veml3328_it_times[][2] = {
-+	{ 0, 50 * USEC_PER_MSEC },
-+	{ 0, 100 * USEC_PER_MSEC },
-+	{ 0, 200 * USEC_PER_MSEC },
-+	{ 0, 400 * USEC_PER_MSEC },
-+};
-+
-+static int veml3328_power_down(struct veml3328_data *data)
-+{
-+	return regmap_set_bits(data->regmap, VEML3328_REG_CONF,
-+			       VEML3328_SHUTDOWN);
-+}
-+
-+static int veml3328_power_up(struct veml3328_data *data)
-+{
-+	int ret;
-+
-+	ret = regmap_clear_bits(data->regmap, VEML3328_REG_CONF,
-+				VEML3328_SHUTDOWN);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Sleep for maximum integration time to ensure sensor is powered on
-+	 * correctly.
-+	 */
-+	fsleep(VEML3328_MAX_IT_TIME);
-+
-+	return 0;
-+}
-+
-+static void veml3328_power_down_action(void *data)
-+{
-+	veml3328_power_down(data);
-+}
-+
-+static int veml3328_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct veml3328_data *data = iio_priv(indio_dev);
-+	struct regmap *regmap = data->regmap;
-+	struct device *dev = regmap_get_device(regmap);
-+	unsigned int reg_val;
-+	int ret;
-+	int reg;
-+
-+	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(dev, pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+	if (ret)
-+		return ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = regmap_read(regmap, chan->address, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		*val = reg_val;
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_INT_TIME:
-+		ret = regmap_read(regmap, VEML3328_REG_CONF, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		reg = FIELD_GET(VEML3328_CONF_IT_MASK, reg_val);
-+		if (reg >= ARRAY_SIZE(veml3328_it_times))
-+			return -EINVAL;
-+
-+		*val = veml3328_it_times[reg][0];
-+		*val2 = veml3328_it_times[reg][1];
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regmap_read(regmap, VEML3328_REG_CONF, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		if (chan->type == IIO_LIGHT) {
-+			int it_inx, gain_inx;
-+			int it_us, scale_u;
-+
-+			it_inx = FIELD_GET(VEML3328_CONF_IT_MASK, reg_val);
-+			gain_inx = FIELD_GET(VEML3328_CONF_GAIN_MASK, reg_val);
-+
-+			if (it_inx >= ARRAY_SIZE(veml3328_it_times) ||
-+			    gain_inx >= ARRAY_SIZE(veml3328_scale_vals))
-+				return -EINVAL;
-+
-+			it_us = veml3328_it_times[it_inx][1];
-+
-+			/*
-+			 * Equation for calculating ambient light scale:
-+			 * Scale = 0.384 * (50000 / Current_IT) * (1x / Current_Gain)
-+			 */
-+			scale_u = 384 * USEC_PER_MSEC;
-+			scale_u = scale_u  * 50000 / it_us;
-+
-+			switch (gain_inx) {
-+			case 0:
-+				scale_u *= 2;
-+				break;
-+			case 1:
-+				break;
-+			case 2:
-+				scale_u /= 2;
-+				break;
-+			case 3:
-+				scale_u /= 4;
-+				break;
-+			default:
-+				return -EINVAL;
-+			}
-+
-+			*val = 0;
-+			*val2 = scale_u;
-+
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		}
-+
-+		reg = FIELD_GET(VEML3328_CONF_GAIN_MASK, reg_val);
-+		if (reg >= ARRAY_SIZE(veml3328_scale_vals))
-+			return -EINVAL;
-+
-+		*val = veml3328_scale_vals[reg][0];
-+		*val2 = veml3328_scale_vals[reg][1];
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int veml3328_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_INT_TIME:
-+		*length = ARRAY_SIZE(veml3328_it_times) * 2;
-+		*vals = (const int *)veml3328_it_times;
-+		*type = IIO_VAL_INT_PLUS_MICRO;
-+		return IIO_AVAIL_LIST;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		*length = ARRAY_SIZE(veml3328_scale_vals) * 2;
-+		*vals = (const int *)veml3328_scale_vals;
-+		*type = IIO_VAL_INT_PLUS_MICRO;
-+		return IIO_AVAIL_LIST;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int veml3328_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long mask)
-+{
-+	struct veml3328_data *data = iio_priv(indio_dev);
-+	struct regmap *regmap = data->regmap;
-+	struct device *dev = regmap_get_device(regmap);
-+	int ret;
-+	int i;
-+
-+	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(dev, pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+	if (ret)
-+		return ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_INT_TIME:
-+		if (val != 0)
-+			return -EINVAL;
-+
-+		for (i = 0; i < ARRAY_SIZE(veml3328_it_times); i++) {
-+			if (veml3328_it_times[i][1] == val2)
-+				break;
-+		}
-+
-+		if (i == ARRAY_SIZE(veml3328_it_times))
-+			return -EINVAL;
-+
-+		return regmap_update_bits(regmap, VEML3328_REG_CONF,
-+					  VEML3328_CONF_IT_MASK,
-+					  FIELD_PREP(VEML3328_CONF_IT_MASK, i));
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		for (i = 0; i < ARRAY_SIZE(veml3328_scale_vals); i++) {
-+			if (val == veml3328_scale_vals[i][0] &&
-+			    val2 == veml3328_scale_vals[i][1])
-+				break;
-+		}
-+
-+		if (i == ARRAY_SIZE(veml3328_scale_vals))
-+			return -EINVAL;
-+
-+		return regmap_update_bits(regmap, VEML3328_REG_CONF,
-+					  VEML3328_CONF_GAIN_MASK,
-+					  FIELD_PREP(VEML3328_CONF_GAIN_MASK, i));
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info veml3328_info = {
-+	.read_raw = veml3328_read_raw,
-+	.write_raw = veml3328_write_raw,
-+	.read_avail = veml3328_read_avail,
-+};
-+
-+static int veml3328_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct veml3328_data *data;
-+	struct iio_dev *indio_dev;
-+	unsigned int reg_val;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	data->regmap = devm_regmap_init_i2c(client, &veml3328_regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return dev_err_probe(dev, PTR_ERR(data->regmap),
-+				     "Failed to initialize regmap\n");
-+
-+	ret = devm_regulator_get_enable(dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable regulator\n");
-+
-+	ret = regmap_read(data->regmap, VEML3328_REG_ID, &reg_val);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to read ID register\n");
-+
-+	if ((reg_val & 0xff) != VEML3328_ID_VAL)
-+		dev_warn(dev, "Unknown device ID: 0x%02x\n", reg_val & 0xff);
-+
-+	ret = veml3328_power_up(data);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to power on sensor\n");
-+
-+	ret = devm_add_action_or_reset(dev, veml3328_power_down_action, data);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to register teardown\n");
-+
-+	indio_dev->name = "veml3328";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &veml3328_info;
-+	indio_dev->channels = veml3328_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(veml3328_channels);
-+
-+	pm_runtime_set_active(dev);
-+	pm_runtime_set_autosuspend_delay(dev, 2000);
-+	pm_runtime_use_autosuspend(dev);
-+
-+	ret = devm_pm_runtime_enable(dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable runtime PM\n");
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static int veml3328_runtime_suspend(struct device *dev)
-+{
-+	struct veml3328_data *data = iio_priv(dev_get_drvdata(dev));
-+	int ret;
-+
-+	ret = veml3328_power_down(data);
-+	if (ret)
-+		dev_err(dev, "Failed to suspend: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static int veml3328_runtime_resume(struct device *dev)
-+{
-+	struct veml3328_data *data = iio_priv(dev_get_drvdata(dev));
-+	int ret;
-+
-+	ret = veml3328_power_up(data);
-+	if (ret)
-+		dev_err(dev, "Failed to resume: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static DEFINE_RUNTIME_DEV_PM_OPS(veml3328_pm_ops,
-+				 veml3328_runtime_suspend,
-+				 veml3328_runtime_resume,
-+				 NULL);
-+
-+static const struct of_device_id veml3328_of_match[] = {
-+	{ .compatible = "vishay,veml3328" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, veml3328_of_match);
-+
-+static const struct i2c_device_id veml3328_id[] = {
-+	{ .name = "veml3328" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, veml3328_id);
-+
-+static struct i2c_driver veml3328_driver = {
-+	.driver = {
-+		.name = "veml3328",
-+		.of_match_table = veml3328_of_match,
-+		.pm = pm_ptr(&veml3328_pm_ops),
-+	},
-+	.probe = veml3328_probe,
-+	.id_table = veml3328_id,
-+};
-+module_i2c_driver(veml3328_driver);
-+
-+MODULE_AUTHOR("Joshua Crofts <joshua.crofts1@gmail.com>");
-+MODULE_DESCRIPTION("VEML3328 RGBCIR Light Sensor");
-+MODULE_LICENSE("GPL");
+> 
+> 
+>>>> +static int sysmon_write_event_value(struct iio_dev *indio_dev,
+>>>> +                                 const struct iio_chan_spec *chan,
+>>>> +                                 enum iio_event_type type,
+>>>> +                                 enum iio_event_direction dir,
+>>>> +                                 enum iio_event_info info, int val, int val2)
+>>>> +{
+>>>> +     struct sysmon *sysmon = iio_priv(indio_dev);
+>>>> +     unsigned int reg_val;
+>>>> +     u32 mask, shift;
+>>>> +     u32 raw_val;
+>>>> +     int offset;
+>>>> +     int ret;
+>>>> +
+>>>> +     guard(mutex)(&sysmon->lock);
+>>>> +
+>>>> +     if (chan->type == IIO_TEMP) {
+>>>> +             if (info == IIO_EV_INFO_VALUE) {
+>>>> +                     offset = sysmon_temp_thresh_offset(chan->address, dir);
+>>>> +                     if (offset < 0)
+>>>> +                             return offset;
+>>>> +                     sysmon_millicelsius_to_q8p7(&raw_val, val);
+>>>> +                     return regmap_write(sysmon->regmap, offset, raw_val);
+>>>> +             }
+>>>> +             if (info == IIO_EV_INFO_HYSTERESIS) {
+>>>> +                     mask = (chan->address == SYSMON_ADDR_OT_EVENT) ?
+>>>> +                             SYSMON_OT_HYST_BIT : SYSMON_TEMP_HYST_BIT;
+>>>> +                     shift = (chan->address == SYSMON_ADDR_OT_EVENT) ? 0 : 1;
+>>>> +                     if (val & ~1)
+>>>
+>>> Just to confirm - this only has hysteresis values of 0 or 1?  That's unusually
+>>> small given hysteresis should be in same units as _raw.
+>>
+>> You're right, this is wrong. The current code exposes a mode-select
+>> bit from ALARM_CONFIG (0 = window mode, 1 = hysteresis mode), not an
+>> actual hysteresis value.
+>>
+>> The hardware has independent upper and lower threshold registers for
+>> each temperature alarm (DEVICE_TEMP and OT), plus a mode bit in
+>> ALARM_CONFIG that selects between window mode (alarm on crossing
+>> either threshold) and hysteresis mode (upper triggers, lower clears).
+>> Since the hardware has a single alarm bit per temperature channel,
+>> even in window mode you can't distinguish which threshold was
+>> crossed. Hysteresis mode maps naturally to the IIO event model.
+>>
+>> I'll rework this as follows:
+>> - Hard-code ALARM_CONFIG to hysteresis mode during init (both
+>>     DEVICE_TEMP and OT)
+>> - Expose hysteresis as a writable value in millicelsius, stored in
+>>     the driver
+>> - Keep both rising (upper) and falling (lower) thresholds writable
+> 
+>> - Couple the three attributes:
+>>       Write rising    -> recompute lower = upper - stored_hysteresis
+>>       Write falling   -> update stored_hysteresis = upper - lower
+>>       Write hysteresis -> recompute lower = upper - new_hysteresis
+>> - Read hysteresis returns the stored value
+>>
+>> This keeps full user control over both thresholds while exposing
+>> hysteresis as a proper temperature value, matching IIO semantics.
+>> Window mode support could be added later if needed without ABI
+>> changes.
+>>
+> Not quite because that falling attribute is not in line with the ABI.
+> 
+> This needs a little hammering to fit in the oddly shaped hole of our ABI.
+> 
+> If you are sticking to hystersis only (not window mode) then you need
+> to expose it as rising threshold + hysteresis (not falling threshold as
+> there is no even triggered in that direction - unless you are doing something
+> nastier like triggering on both edges of the interrupt - in which case this
+> is very similar to window mode and for both event directions you'd need
+> to set the hysteresis to the difference between the threshold values).
+> 
+> If you do want to do window mode - that would be fine but you'd need
+> to then do a falling event where the enable sets the hysteresis reported
+> to 0.  Whether a write to hysteresis would then fail or we'd disable the
+> falling direction would need some discussion - the ABI doesn't constrain
+> that so it's a case of what is less likely to confuse a user.
+> 
+> Jonathan
 
--- 
-2.34.1
+Understood. I'll go with pure hysteresis mode - no falling threshold.
+
+The hardware has a single ISR bit per temperature channel (REG_ISR
+bits 8 and 9) that only tells us the temperature is "outside the
+threshold(s)," with no indication of direction. In hysteresis mode
+the alarm asserts when temperature exceeds the upper threshold and
+clears when it drops below the lower, so the event is strictly
+rising, and the lower threshold is just the re-arm point.
+
+So the event spec becomes a single entry with everything on
+IIO_EV_DIR_RISING:
+
+     { IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING,
+       ENABLE | VALUE | HYSTERESIS }
+
+giving thresh_rising_value, thresh_rising_en and
+thresh_rising_hysteresis. The pushed event will also use
+IIO_EV_DIR_RISING.
+
+Hysteresis will be stored in millicelsius and initialized from
+the hardware registers at probe as (upper - lower). Writing the
+rising threshold or hysteresis recomputes the lower register
+internally. ALARM_CONFIG will be hard-coded to hysteresis mode
+during init.
+
+Window mode can be added later without ABI breakage by introducing
+a IIO_EV_DIR_FALLING entry and enabling it would switch the hardware
+mode.
+
+Salih
 
