@@ -1,211 +1,234 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B2853E832A;
-	Wed, 20 May 2026 18:03:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D563A6B99;
+	Wed, 20 May 2026 18:20:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779300190; cv=none; b=VCOtb03jITpga3tv6y/cPTgJrfzP2j8fGOI1BUmJgpQStV+cqlG8nVltSWNizFKD5MWRwQbmj6+uQCJEmBFDBGR/mC/E9ElNA23KsX4eK/bylBf9Nlh+53cHMTH/fi3zG3TWvj1hkIDwyPh9Id9o0XwjwtVH1Kj7dkEcqfmlEqU=
+	t=1779301210; cv=none; b=ar/9ZFD6oBVNWUz/SLRdydwsAf2bYjQ3m+Ody7FkEtgh+yxuZcEZxiqvap+OK58sbEpQcaRAgZg188xvKDfG6OESU9+r4cfV4pt/99nKJAQqbiJfIhJ0v/cPcUD1aRUBS0aaYHP7TRKy4s/9YkvGiQ39ga5jLgyCF0xWAOuzCc0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779300190; c=relaxed/simple;
-	bh=qi1sEj4maCRG7WAczfShVrhnLI0eRUgJtjRQsD5FnWU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=X12T5gScDSeTQDNrFXtCpCSSf1MuDWMB78Lq6LWHh2GZqdC9e5E3M7jQf9wKjKhCjKh7aMQ4eXkCcv0H38uHQIJsoxqx0ufihh/Vpg1kx33ljlwGdth00EpOpkdoExxy2DDp5tFIpIDbrvDqiX13qg+EVrrIm4ma3lRufztiGwo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SNqwosJD; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779301210; c=relaxed/simple;
+	bh=5kKsuOwfJfrcZs58nRlKq2lOcw+su6ViD5dTtabf2/Y=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=BQqlJ6luDGdXvtyDMM1ArzgOzIqyYfYqqpSayqFDBGzutJflQn50Rb8zIs8kbFeKSuFY0vgP8L1EG1mIJVHYfyrifvSRHKP4djLYymI+92z9g+YpjhZ9LlGtK/tbyZlVq0fpy0LwlKLKaBbgQ7E/PDW6k7CTOYblR7UAPs+5PIA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=nVeGxpKj; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SNqwosJD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF38C1F000E9;
-	Wed, 20 May 2026 18:03:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779300189;
-	bh=T07RLv8Nfn1pn/pjdddxibNYnRTBPWv6CXG78yzMqlM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=SNqwosJDtP3IuS7IRmCb15eC3eThYkHq9/j1RjksCRWWDnJEQXKghyxS+RguCp9yC
-	 zU1ScLZJRtX0NADuh2tLwgc16fmyYgropgTHQx4M5dsTDHGdvL1DD0Pc+TfCrA9MPq
-	 v5c3jD0DHlEEeLJYQbkBk8Hgtg45ys+b3w4JVT3hsBepq77x33KHtWQw7yPJ+lAfTj
-	 +/GY9W2W13bOWgO7atefpqZ3PlQDIYl9O4OLqe4ZIqykQF1nFHVPQnNX+790t/jcyp
-	 c5YvaBJpJPMkvuWT7xSBGDcpSBvU2HGU52y+j8F6do3kvZBdvkgB1Kkc43KK+OZZt2
-	 tKwY++z/NkA+g==
-Date: Wed, 20 May 2026 19:02:59 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
- dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
- linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
- heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
- andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V8 08/10] iio: imu: inv_icm42607: Add Accelerometer for
- icm42607
-Message-ID: <20260520190259.14be7925@jic23-huawei>
-In-Reply-To: <20260518200526.458421-9-macroalpha82@gmail.com>
-References: <20260518200526.458421-1-macroalpha82@gmail.com>
-	<20260518200526.458421-9-macroalpha82@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="nVeGxpKj"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64KDopJX416888;
+	Wed, 20 May 2026 14:19:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=NqWwN
+	kNZZcF7rAIasVqF0QpBlWWMevk4YAQsojXwevA=; b=nVeGxpKj3O9ahcuGhHhJD
+	Gexz34rW/IdBQ66oJR/I4q89vRSE52rXdyPsdzWRTLjSXZc3kfibGIBu3cwTl2eo
+	VparHouce/2QS5gu8pFDmfHU0rMDvO0ds79qlM1z8I/yERxwaLGgKwLbKJ4cHXf2
+	7FQMgHtvgYF2QF5Jvujiz7h15BbUWUBwGNabFf5WpIad1/jZMTQpxWGsom2wv2K/
+	mK61RdrDY6Qarn5GHFqZSdu6W7ZuLShxS4Xo+oJlVUf7SSLmzcR1gw7rWuPhDVPc
+	Vdkg8SoV6cdZLgcKW4Nlxf2DrkKxMmDHL6LAL6r4pRzXoz7E9NT+mSXIrLHqnF60
+	w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4e9e6wryuc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 20 May 2026 14:19:59 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64KIJwO7052865
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 20 May 2026 14:19:58 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 20 May 2026 14:19:58 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 20 May 2026 14:19:57 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 20 May 2026 14:19:57 -0400
+Received: from HYB-MkYHBcJRSnh.ad.analog.com (HYB-MkYHBcJRSnh.ad.analog.com [10.48.65.148])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64KIJiKo030378;
+	Wed, 20 May 2026 14:19:46 -0400
+From: Liviu Stan <liviu.stan@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Liviu Stan <liviu.stan@analog.com>, David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        "Rob
+ Herring" <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "Conor
+ Dooley" <conor+dt@kernel.org>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Francesco Lavra <flavra@baylibre.com>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux@analog.com>,
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v2 7/7] iio: temperature: ltc2983: Add support for ADT7604
+Date: Wed, 20 May 2026 21:19:37 +0300
+Message-ID: <20260520181940.548759-1-liviu.stan@analog.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260518145802.49a3bc94@jic23-huawei>
+References:
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: -Q2oC0WsZjWx2SHQzAmmedjMvjdqL4nl
+X-Proofpoint-ORIG-GUID: -Q2oC0WsZjWx2SHQzAmmedjMvjdqL4nl
+X-Authority-Analysis: v=2.4 cv=K8gS2SWI c=1 sm=1 tr=0 ts=6a0dfb4f cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=Z0pTeXoby7EwIRygza74:22 a=VwQbUJbxAAAA:8 a=dzM6K9NnNKbWQKe0cTMA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTIwMDE3OSBTYWx0ZWRfXyEyYp5ycarKZ
+ 5FP7bfOA/6zskAYuRfjB49UJ3ccryETPThYXDkz4gMWQ9o5CJmPVWx3hM5a71wMDRVnbMqZbeHr
+ V+wwWvx7JRt8meSA7PLbijJAv4ZaMB9vntUJ3qMCG8ykJyfxBIVJRYk+4TMUBaifpcQ14H7+53I
+ 2495KtQkXipzBtZ7bpV5G954NyqPOCe8SkDKeYUh9tcw6OpM4zgFJyajsNdV07WhVuevIKintus
+ Lb7h/BmwZ2Y+gmO5wPlnlUHwoyJghqaZBlnWSHUfuFVyadpDgqaXsCMQylOVd5e7MdWKrTPsVen
+ ilJLMJJAkcrtiIZO6DxJfdvAei3vgWJiMopRXD0rLD1W8+9iWOKx3vLXGUziKc6oNtaQbnAV2OC
+ TSq+tSq9CseS9CgWw52fNsU5U5iX+BgV01elkS7S0GR4fKKsI62nf5a0ff7rtHDlJjxQfT+UImv
+ +I2biID1uT8XeCuQ0gA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-20_03,2026-05-18_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 lowpriorityscore=0 spamscore=0 impostorscore=0 phishscore=0
+ priorityscore=1501 malwarescore=0 clxscore=1015 bulkscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605200179
 
-On Mon, 18 May 2026 15:05:23 -0500
-Chris Morgan <macroalpha82@gmail.com> wrote:
+On Mon, 18 May 2026 14:58:02 +0100 Jonathan Cameron <jic23@kernel.org> wrote:
+...
+> > > > +		    !(st->info->supported_sensors & BIT_ULL(sensor.type)))
+> > > > +			return dev_err_probe(dev, -EINVAL,
+> > > > +					     "sensor type %d not supported on %s\n",
+> > > > +					     sensor.type, st->info->name);
+> > > > +
+> > > > +		dev_dbg(dev, "Create new sensor, type %u, channel %u",
+> > > >  			sensor.type, sensor.chan);
+> > > >    
+> > >   
+> > > > @@ -1445,8 +1782,9 @@ static int ltc2983_eeprom_cmd(struct ltc2983_data *st, unsigned int cmd,
+> > > >  
+> > > >  static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
+> > > >  {
+> > > > -	u32 iio_chan_t = 0, iio_chan_v = 0, chan, iio_idx = 0, status;
+> > > >  	struct device *dev = &st->spi->dev;
+> > > > +	u32 iio_chan_t = 0, iio_chan_v = 0, iio_chan_r = 0, iio_chan_c = 0;
+> > > > +	u32 chan, iio_idx = 0, status;
+> > > >  	int ret;
+> > > >  
+> > > >  	/* make sure the device is up: start bit (7) is 0 and done bit (6) is 1 */
+> > > > @@ -1493,8 +1831,26 @@ static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
+> > > >  		    !assign_iio)
+> > > >  			continue;
+> > > >  
+> > > > +		/*
+> > > > +		 * Copper trace and leak detector sensors without a custom table
+> > > > +		 * produce only a resistance result; the chip does not populate
+> > > > +		 * the temperature result register. Emit only an IIO_RESISTANCE
+> > > > +		 * channel in this case.  
+> > > 
+> > > Do we care?  That is are they useful without the table? We could just make it
+> > > required in the binding.
+> > >   
+> > 
+> > The datasheet specifies the table is optional. But more practically, in order to
+> > be able to add accurate values to the custom table, the users first need to measure
+> > the sensor's resistance at multiple known conditions, so I think the resistance-only
+> > output is useful during that characterization phase, before the table exists. Making
+> > it required would force users to provide placeholder values just to get the driver
+> > to probe.
+> Who cares of datasheet is crazy :)
 
-> From: Chris Morgan <macromorgan@hotmail.com>
+Fair enough :)
+
 > 
-> Add icm42607 accelerometer sensor for icm42607.
-> 
-> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-https://sashiko.dev/#/patchset/20260518200526.458421-1-macroalpha82%40gmail.com
-More feedback. Some of it looks valid. I haven't looked at all of them.
+> The initial case could I think be handled by an 'identity' table. 
+> If it's useful in more general cases maybe we should always put out the resistance
+> channels? This would be a bit like we often do for ambient light sensors, where
+> we have a computed illuminance channel (IIO_LIGHT) + the data it comes from
+> (IIO_INTENSITY)
 
+I checked internally and we could make the table required for leak detectors. For
+copper traces, sub-ohms variants cannot have one, but we could make it required
+for > 1ohm ones.
 
-A few other bits and some comments on one or two of the sashiko ones
-that stood out to me.
+This means we could remove the LTC2983_SENSOR_LEAK_DETECTOR from the if condition,
+and have something like this in ltc2983_setup:
+
+if (st->sensors[chan]->type == LTC2983_SENSOR_COPPER_TRACE) {
+    if (st->sensors[chan]->n_iio_chan == 1) {
+        st->iio_chan[iio_idx++] =
+            LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+        continue;
+    }
+}
++ the n_iio_chan == 2 check at the end
+
+or drop the n_iio_chan == 2 check and do something like:
+
+if (st->sensors[chan]->type == LTC2983_SENSOR_COPPER_TRACE) {
+    if (st->sensors[chan]->n_iio_chan == 1) {
+        st->iio_chan[iio_idx++] =
+            LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+    } else {
+        st->iio_chan[iio_idx++] =
+            LTC2983_CHAN(IIO_TEMP, iio_chan_t++, chan);
+        st->iio_chan[iio_idx++] =
+            LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+    }
+    continue;
+}
+
+if (st->sensors[chan]->type == LTC2983_SENSOR_LEAK_DETECTOR) {
+    st->iio_chan[iio_idx++] =
+        LTC2983_CHAN(IIO_COVERAGE_PERCENT, iio_chan_c++, chan);
+    st->iio_chan[iio_idx++] =
+        LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+    continue;
+}
+
+or use a switch case:
+
+switch (st->sensors[chan]->type) {
+case LTC2983_SENSOR_COPPER_TRACE:
+    if (st->sensors[chan]->n_iio_chan == 1) {
+        st->iio_chan[iio_idx++] =
+            LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+    } else {
+        st->iio_chan[iio_idx++] =
+            LTC2983_CHAN(IIO_TEMP, iio_chan_t++, chan);
+        st->iio_chan[iio_idx++] =
+            LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+    }
+    continue;
+case LTC2983_SENSOR_LEAK_DETECTOR:
+    st->iio_chan[iio_idx++] =
+        LTC2983_CHAN(IIO_COVERAGE_PERCENT, iio_chan_c++, chan);
+    st->iio_chan[iio_idx++] =
+        LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+    continue;
+case LTC2983_SENSOR_DIRECT_ADC:
+    chan_type = IIO_VOLTAGE;
+    iio_chan = &iio_chan_v;
+    break;
+default:
+    chan_type = IIO_TEMP;
+    iio_chan = &iio_chan_t;
+    break;
+}
+st->iio_chan[iio_idx++] = LTC2983_CHAN(chan_type, (*iio_chan)++, chan);
+
+What do you think?
 
 Thanks,
-
-Jonathan
-
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> index 2542ad1bee51..c646c22b5e0e 100644
-> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> @@ -82,12 +82,24 @@ enum inv_icm42607_filter_bw {
->  	INV_ICM42607_FILTER_BW_16HZ,
->  };
->  
-> +enum inv_icm42607_filter_avg {
-> +	/* Low-Power mode sensor data filter (averaging) */
-> +	INV_ICM42607_FILTER_AVG_2X = 0,
-> +	INV_ICM42607_FILTER_AVG_4X,
-> +	INV_ICM42607_FILTER_AVG_8X,
-> +	INV_ICM42607_FILTER_AVG_16X,
-> +	INV_ICM42607_FILTER_AVG_32X,
-> +	INV_ICM42607_FILTER_AVG_64X
-trailing comma should be there.
-
-> +	/* values 7 and 8 also correspond to 64x. */
-> +};
-> +
-
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-> new file mode 100644
-> index 000000000000..623d60704609
-> --- /dev/null
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-> @@ -0,0 +1,587 @@
-
-> +static int inv_icm42607_accel_read_sensor(struct iio_dev *indio_dev,
-> +					  struct iio_chan_spec const *chan,
-> +					  s16 *val)
-> +{
-> +	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-> +	struct inv_icm42607_sensor_state *accel_st = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(st->map);
-> +	struct inv_icm42607_sensor_conf conf = INV_ICM42607_SENSOR_CONF_INIT;
-> +	unsigned int reg;
-> +	__be16 *data;
-> +	int ret;
-> +
-> +	if (chan->type != IIO_ACCEL)
-> +		return -EINVAL;
-> +
-> +	switch (chan->channel2) {
-> +	case IIO_MOD_X:
-> +		reg = INV_ICM42607_REG_ACCEL_DATA_X1;
-I didn't notice this until now, but you don't have anything using
-chan->address.  This is what would typically go in there.
-If you need multiple registers that would normally be an index into
-an array of per channel structures used to look up any register.
-
-Not that important but would move this 'code' into 'data' which would
-be nice.
-
-> +		break;
-> +	case IIO_MOD_Y:
-> +		reg = INV_ICM42607_REG_ACCEL_DATA_Y1;
-> +		break;
-> +	case IIO_MOD_Z:
-> +		reg = INV_ICM42607_REG_ACCEL_DATA_Z1;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
-> +	if (PM_RUNTIME_ACQUIRE_ERR(&pm))
-> +		return -ENXIO;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	/* enable accel sensor */
-> +	conf.mode = accel_st->power_mode;
-> +	conf.filter = accel_st->filter;
-> +	ret = inv_icm42607_set_accel_conf(st, &conf, NULL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* read accel register data */
-> +	data = &st->buffer[0];
-> +	ret = regmap_bulk_read(st->map, reg, data, sizeof(*data));
-> +	if (ret)
-> +		return ret;
-> +
-> +	*val = be16_to_cpup(data);
-> +	if (*val == INV_ICM42607_DATA_INVALID)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-
-> +}
-> +
-> +static int inv_icm42607_accel_read_avail(struct iio_dev *indio_dev,
-> +					 struct iio_chan_spec const *chan,
-> +					 const int **vals,
-> +					 int *type, int *length, long mask)
-> +{
-> +	if (chan->type != IIO_ACCEL)
-> +		return -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*vals = (const int *)inv_icm42607_accel_scale_nano;
-> +		*type = IIO_VAL_INT_PLUS_NANO;
-> +		*length = ARRAY_SIZE(inv_icm42607_accel_scale_nano) * 2;
-> +		return IIO_AVAIL_LIST;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*vals = (const int *)inv_icm42607_accel_odr;
-Sashiko is correctly pointing out that this is going to print a bunch
-of leading 0s as the array is only useful from 5 onwards.  Start
-there rather than at the beginning.
-
-> +		*type = IIO_VAL_INT_PLUS_MICRO;
-> +		*length = ARRAY_SIZE(inv_icm42607_accel_odr) * 2;
-> +		return IIO_AVAIL_LIST;
-> +	default:
-> +		return -EINVAL;	
-> +	}
-> +}
->
-> +struct iio_dev *inv_icm42607_accel_init(struct inv_icm42607_state *st)
-> +{
-
-> +	/* accel events are wakeup capable */
-> +	ret = devm_device_init_wakeup(&indio_dev->dev);
-Sashiko points out correctly that should probably be on the
-physical bus device rather than this one. Mind you I think for now you
-ripped that out anyway so don't set it at all.
-> +	if (ret)
-> +		return ERR_PTR(ret);
-> +
-> +	ret = devm_iio_device_register(dev, indio_dev);
-> +	if (ret)
-> +		return ERR_PTR(ret);
-> +
-> +	return indio_dev;
-> +}
-
+Liviu
