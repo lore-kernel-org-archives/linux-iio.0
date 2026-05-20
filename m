@@ -1,140 +1,94 @@
-Received: from m16.mail.126.com (m16.mail.126.com [220.197.31.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADA3A35200B;
-	Wed, 20 May 2026 15:23:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5592E21ABD7;
+	Wed, 20 May 2026 15:26:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779290588; cv=none; b=q4fT2unOhVXYLwYppOhvrCdgTe6KZ4LO3SdecAWx1OysOevtYVDCmmzCUN7Sjge9daYocHbPHouqZ4V489AdJ3jv5lLklheFUOh+/i8CnBAF4WVjViCDERIVqsaXU+jxSKyW+vv5xejsZ3VyQxSWDgsFpyp5hIl6EzNWkuv4HG4=
+	t=1779290787; cv=none; b=D0FUAU8czOkY0AeaqLy6OrTkJQoWfubNJ9JG88MEoJlOAPomxtvF8o44yTtSWjtK79sc959Pltn9f300dyNUqKbEgVpm/BQbh01xROrK/hkQ6YmEoXTHOyzkJyqpzGJmoZ8GC2oavKKSr0LWr2KeVk5+j6HCB7CQGalmqubgwRo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779290588; c=relaxed/simple;
-	bh=a17H+gRFUg3pQ2HqauP8NTee7OpsO1sruoyOJWfShag=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=XjWH4LTKzcKJ6ha/Vq1MB5bsvPau/33RmdcBwl1n0ENbkmQSxBK+4HP96KKymA75MjWCyFGaZ/izmtdqjipHru7kYWU113dE47sVoxsnLtqAETNLt+pKHUru+u+hNBy8vyd49veou3RzYXx72ZNgjGnTuPM7/pfMTJYH77ZIxqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com; spf=pass smtp.mailfrom=126.com; dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b=agsvUjDt; arc=none smtp.client-ip=220.197.31.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
+	s=arc-20240116; t=1779290787; c=relaxed/simple;
+	bh=wlo7UvgwYP16eDLQsjqB5+4swMbRE2kBVvvln25PfYs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NVeRPVDEUM+pLSn+F224QMJIucQlVSXB/YfzQyAmOZ9Tax/x5yDjXs3/fyhCy8Vf1vTUzrYa+1Zl9hLScXSb5ursZoHKs6EGJv4P7GFO/E12AdhY8LeHljL9GDbPYSJafhS5h3dr9FY19gzVjSFwYF7C5GcG9KS5rF+0XBNEeY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Utyz6gxc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b="agsvUjDt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=ZY
-	RmUyaAiGT4IkJxlhlOOH2kilgKViBK3UgMW2hETPs=; b=agsvUjDtHVJ+I8iZpd
-	GVVF8phkW3CNmFN+SRMKXcDk0IlTNOyFEZwOwAXDArEC09/xaTOBGN0Y5bbqbdV2
-	Hj0u6Ao3Ow36mCWtIhEOCKG7rHbnUVXP6Z2KY+EACH1xlp1smOsaYtrwAVwxHSqg
-	bat0QNMBc85Yqrk0kX7FEOG2E=
-Received: from DESKTOP-EQVOVNC.localdomain (unknown [])
-	by gzga-smtp-mtada-g0-4 (Coremail) with SMTP id _____wD3l3+80Q1qquHuBw--.49396S2;
-	Wed, 20 May 2026 23:22:37 +0800 (CST)
-From: Li Xinyu <xinyuili@126.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linusw@kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH v3] iio: gyro: mpu3050: fix missing iio_trigger_unregister and irq cleanup
-Date: Wed, 20 May 2026 23:22:36 +0800
-Message-Id: <20260520152236.2308686-1-xinyuili@126.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260520024153.1647951-1-xinyuili@126.com>
-References: <20260520024153.1647951-1-xinyuili@126.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Utyz6gxc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FCD1F000E9;
+	Wed, 20 May 2026 15:26:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779290786;
+	bh=VX5QXlO/FmCYpxFmNVmPdJNwz7Cx3UHOIbX66s/Mns0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Utyz6gxcGJ/e6rblW1DQ0G1pWtzHJG2lFS62wmEW3iLIWhn8CHeO7KI3ClxopW/Y/
+	 SxRS9vFZZsFRfa997iibKorGr6b3JL4+cTTYbLv2e6intFRz9lkEIQmE8IGsVdsw8l
+	 bYdf3ckKyC8tLDdH3bM/D0zsHxveal8mXz0pOKPWSZahVf25w8rcY4rVKz/PE+SkiU
+	 g/WXTep89HTWJYh7pYAqsh49kSObGBk+kmHopqCQWrjZGbc09Uc0FhNGQ5EBvigCkR
+	 RaZHlyKcOy6ZhBBFgu8VmhWv4jSxpdCPOLT6SDObwbt1WlMkD2xP8BzZ/VfmS3mre3
+	 z6aUT/LNKrJvA==
+Date: Wed, 20 May 2026 16:26:19 +0100
+From: Lee Jones <lee@kernel.org>
+To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	"magnus.damm" <magnus.damm@gmail.com>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: Re: [PATCH v2 03/10] mfd: rz-mtu3: use device-managed
+ mfd_add_devices()
+Message-ID: <20260520152619.GI2767592@google.com>
+References: <20260410163530.383818-1-cosmin-gabriel.tanislav.xa@renesas.com>
+ <20260410163530.383818-4-cosmin-gabriel.tanislav.xa@renesas.com>
+ <20260507124620.GJ305027@google.com>
+ <TYYPR01MB156155337B60155F08D6346EB853C2@TYYPR01MB15615.jpnprd01.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3l3+80Q1qquHuBw--.49396S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxAry8WrWUXFy7GrWUJr17Awb_yoW5ur4rpw
-	4fWF98CFZ5Xrn7Xr4kZ3WvgFy3JFWfArW8WrW8Wry2gay3CryrKr17tFy2qF10qry8Wr4U
-	JrWrGrsYkF4UJaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jiFxUUUUUU=
-X-CM-SenderInfo: 50lq53xlolqiyswou0bp/xtbBrh2ByWoN0b18kwAA3f
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <TYYPR01MB156155337B60155F08D6346EB853C2@TYYPR01MB15615.jpnprd01.prod.outlook.com>
 
-mpu3050_trigger_probe() registers the DRDY trigger with
-iio_trigger_register() but neither mpu3050_common_remove() nor
-the error path in mpu3050_common_probe() calls
-iio_trigger_unregister(). On module unload or probe failure the
-trigger remains in the global trigger list while its memory is
-freed by devm, leaving a dangling entry.
+On Thu, 07 May 2026, Cosmin-Gabriel Tanislav wrote:
 
-Also fix a use-after-free risk: when iio_trigger_register() fails,
-mpu3050->irq remained set to a non-zero value, which would cause
-mpu3050_common_remove() to attempt a double-free of the IRQ and
-an unregister of a never-registered trigger. Clear mpu3050->irq
-in the error path to prevent this.
+> > From: Lee Jones <lee@kernel.org>
+> > Sent: Thursday, May 7, 2026 3:46 PM
+> > 
+> > On Fri, 10 Apr 2026, Cosmin Tanislav wrote:
+> > 
+> > > Replace mfd_add_devices() and the custom cleanup action with
+> > > devm_mfd_add_devices().
+> > >
+> > > Remove the ret variable as it is now unused.
+> > 
+> > Do this first, then the changes in the first patch make more sense.
+> > 
+> 
+> Doing the devm_mfd_add_devices() conversion first would not be a simple
+> replacement, as devm_add_action_or_reset() would also need to be moved
+> before it to keep the intermediate patch correct.
+> 
+> Otherwise, on release, the reset will be asserted before the MFD devices
+> are removed. Doing the reset conversion first fixes that without extra
+> logic changes.
+> 
+> Alternatively, we can squash the two conversions to avoid the
+> intermediate states entirely, and remove struct rz_mtu3_priv::rstc in a
+> new separate patch. What do you think about this variant?
 
-Revert the v2 devm approach as requested by Jonathan: the driver
-mixes devm and non-devm resource management, so the minimal fix
-is to add the missing unregister calls and keep the existing
-manual resource management style.
+As you wish.
 
-Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-Cc: stable@vger.kernel.org
-Signed-off-by: Li Xinyu <xinyuili@126.com>
----
-Changes in v3:
-- Thanks Jonathan for the feedback on v2. Instead of mixing devm
-  with non-devm resource management in probe, revert to plain
-  iio_trigger_register() and add the missing iio_trigger_unregister()
-  calls in the error path and remove callback.
-- Also noticed that mpu3050->irq was set but not cleared when
-  iio_trigger_register() fails in trigger_probe, which would
-  cause a double-free on module unload. Set mpu3050->irq = 0
-  in the error path to prevent this.
-
-Changes in v2:
-- Fixed the name format in Signed-off-by. Thanks Maxime for
-  catching this.
----
- drivers/iio/gyro/mpu3050-core.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index bcfa83a46737..459d02aa3d18 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1127,7 +1127,7 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
- 	mpu3050->trig->ops = &mpu3050_trigger_ops;
- 	iio_trigger_set_drvdata(mpu3050->trig, indio_dev);
- 
--	ret = devm_iio_trigger_register(mpu3050->dev, mpu3050->trig);
-+	ret = iio_trigger_register(mpu3050->trig);
- 	if (ret)
- 		goto err_iio_trigger;
- 
-@@ -1137,6 +1137,7 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
- 
- err_iio_trigger:
- 	free_irq(mpu3050->irq, mpu3050->trig);
-+	mpu3050->irq = 0;
- 
- 	return ret;
- }
-@@ -1260,8 +1261,10 @@ int mpu3050_common_probe(struct device *dev,
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
--	if (irq)
-+	if (mpu3050->irq) {
-+		iio_trigger_unregister(mpu3050->trig);
- 		free_irq(mpu3050->irq, mpu3050->trig);
-+	}
- 	iio_triggered_buffer_cleanup(indio_dev);
- err_power_down:
- 	mpu3050_power_down(mpu3050);
-@@ -1278,8 +1281,10 @@ void mpu3050_common_remove(struct device *dev)
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
--	if (mpu3050->irq)
-+	if (mpu3050->irq) {
-+		iio_trigger_unregister(mpu3050->trig);
- 		free_irq(mpu3050->irq, mpu3050->trig);
-+	}
- 	iio_triggered_buffer_cleanup(indio_dev);
- 	mpu3050_power_down(mpu3050);
- }
 -- 
-2.34.1
-
+Lee Jones
