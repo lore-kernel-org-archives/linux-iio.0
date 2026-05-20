@@ -1,60 +1,52 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E43BA370ADC;
-	Wed, 20 May 2026 11:18:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB2F3371063;
+	Wed, 20 May 2026 11:31:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779275907; cv=none; b=A5jw6W6tsqyxwIidMMWS48BSSE92KwzUPQzhQSuMExt8DRuLlTsnWjjFW7BY+FJIifQcM3pk0dwv0RTMfs6PrP3DB1lL09F2FyMZILxT5lvD4dTRbQjUF0+1CqOTufngRF9z/KGRiFNsyep8lCn0Nr2wks01Bnpn7vf5Je++4nk=
+	t=1779276701; cv=none; b=oBrw2OKNQPwva8ZwIKw9SOh07FVUHXlOnhMjSLn9hiC8zCg0Nse+NC+B85XOcKwQhQtBSLS/98OvL1y9Mu7EXlGXZdSimg5AIDWtP/zsxytbIGeRf1a89+zwPvQMAI8QrdIIccCXHsWU27piIEI6V84Vb/Ukkv0uHYSWTkuDkW8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779275907; c=relaxed/simple;
-	bh=ggVGPJVk7kVGyp1NT77SRg+Wa7Rps5Xr4Ihm0W/M0Wc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=tIDh3KP4l2rFXZFCO60ykqM7x1DfTJyqJ71mlj4zZqJbFwA6VB5aoxuWDGbx5/GyAMEPJ+FTod/C7GqOjEXsFdKVGq2/KxwDaf68Aa1PLILrjPOTzuDHNBki4erMm3SdBpHzG54nnR2m09PVv7pijLp+Kt432iWBIKYHDhugHlg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JW+W81+L; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1779276701; c=relaxed/simple;
+	bh=EvB6gGfDNvT2Ao7Q0FP2fZ1gLkK/2Q87kWN9XljFsPU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Qabz18aTI7bn5utyG3BmFe+dvnV1auT2HJCbodRNYtAkgiPAWGwkS1QMB9OD/RSd4HH6/INocMCBegtj/MwW1/7Ds5H0MnL209z2bvPi488jjTbQsv5OhbWYjfxzyCYfJV0g2mx4oB37jaAAbDjJCRGvdn41zHV0WZ5uwGuR1fI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F/cEav5e; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JW+W81+L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779275906; x=1810811906;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ggVGPJVk7kVGyp1NT77SRg+Wa7Rps5Xr4Ihm0W/M0Wc=;
-  b=JW+W81+LbXuoO/d26VN1rau6wQkGJsQaRN9KHLYPycNwN4v63eBYbvEi
-   V7Loa+BszHZZoksEzprq45+cwe/yXZl35wFA71n+nX2ugO6uqyvdhpkh1
-   QE+t0PUMSk1sLgsiDHou127C+7Ks6DQYkEiJBCRLJpvuaOFfcmGWJ+gq6
-   4cl29SrFOZvCjLG2uE8ZdAnZO0eTtFKk+3DVpvM9xDq/royUsQ1tiXPKh
-   ajTiuEQzrtdNTITuzBM+PV9F0aobLi99aI72Pi5FQLMOv+RZvq9YTBvok
-   gER9Coak27LiFq4Vif2h0Bqv4nO0DCPFMaEEHsRKhp3Z45ACMlFRGuibm
-   A==;
-X-CSE-ConnectionGUID: wpTJekSIQACG8Xoa6WmKOg==
-X-CSE-MsgGUID: cJsyGzMCRzSkekfuoSk2qw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11791"; a="83786545"
-X-IronPort-AV: E=Sophos;i="6.23,244,1770624000"; 
-   d="scan'208";a="83786545"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2026 04:18:25 -0700
-X-CSE-ConnectionGUID: a9B0QlTOS3qaLKFjQMPI0g==
-X-CSE-MsgGUID: Cm6BF7SBSPensCsRlW4Zfg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,244,1770624000"; 
-   d="scan'208";a="240397999"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.181])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2026 04:18:23 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	William Breathitt Gray <wbg@kernel.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Raymond Tan <raymond.tan@intel.com>,
-	"Felipe Balbi (Intel)" <balbi@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
-Subject: [PATCH 1/1] counter: intel-qep: Use devm_mutex_init()
-Date: Wed, 20 May 2026 14:18:12 +0300
-Message-ID: <20260520111813.3934-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F/cEav5e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFA8F1F000E9;
+	Wed, 20 May 2026 11:31:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779276700;
+	bh=jU4RY1MXfxstue/GxrrGI/R6d88bgt3L79phjkKZMvI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=F/cEav5et0J4vrESdmHTeG45bNaj43c7+k/MXOyikkKJEEhvjM/IZSHvoxmnLhSzM
+	 ptgBzeYEmC46Z50IhKctJfFjfWeGuttKfRDXXXrEMRyajEwztAMhN5y7Rl4R0wKC8l
+	 +aivf+hPl7MioHsgJtduZQkTTGlZcy1bCCL9acQn+FTuUW0L7/1CfqyIhneSEn6w2G
+	 WIlPgRFU2JjwWHo1cYqVnSgKh7xRH10hcHI8mOV+WU67fsveipexcHqholyxbaKmsl
+	 /6kGZlyjHj2rlitQ4glHypCgLAG08R21QMXesVr1k3MFe5IOgDSp4wEfC6Y0SsXuUe
+	 3ToKllqW9lgwQ==
+Date: Wed, 20 May 2026 12:31:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
+ Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
+ Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
+ R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v5 02/13] iio: core: support 64-bit register through
+ debugfs
+Message-ID: <20260520123129.1696f2e3@jic23-huawei>
+In-Reply-To: <unsohuo2hfsa7zzhprfpvtbatmu3guew6jpal7k2wvirpzwxfn@rjb4uz3k5dp3>
+References: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
+	<20260517-ad9910-iio-driver-v5-2-31599c88314a@analog.com>
+	<unsohuo2hfsa7zzhprfpvtbatmu3guew6jpal7k2wvirpzwxfn@rjb4uz3k5dp3>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,36 +54,82 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 
-intel_qep_probe() calls mutex_init() but lacks the pairing
-mutex_destroy() calls. Convert to devm_mutex_init() which handles
-cleanup automatically.
+On Mon, 18 May 2026 14:56:06 +0100
+Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-Fixes: b711f687a1c1 ("counter: Add support for Intel Quadrature Encoder Peripheral")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/counter/intel-qep.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
-index c49c178056f4..816586893517 100644
---- a/drivers/counter/intel-qep.c
-+++ b/drivers/counter/intel-qep.c
-@@ -414,7 +414,9 @@ static int intel_qep_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 
- 	qep->dev = dev;
- 	qep->regs = regs;
--	mutex_init(&qep->lock);
-+	ret = devm_mutex_init(dev, &qep->lock);
-+	if (ret)
-+		return ret;
- 
- 	intel_qep_init(qep);
- 	pci_set_drvdata(pci, qep);
-
-base-commit: 1d5dcaa3bd65f2e8c9baa14a393d3a2dc5db7524
--- 
-2.47.3
+> On 26/05/17 06:56PM, sashiko-bot@kernel.org wrote:
+> > Thank you for your contribution! Sashiko AI review found 1 potential is=
+sue(s) to consider:
+> > - [Medium] Silent truncation of 64-bit values when written to a 32-bit =
+register access function.
+> > --
+> >=20
+> > commit 64785a0c1416e2cf718b558aa7a2cc9ac39b2d81
+> > Author: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> >=20
+> > iio: core: support 64-bit register through debugfs
+> >=20
+> > This commit introduces a debugfs_reg64_access function pointer to iio_i=
+nfo
+> > to allow 64-bit register reads and writes through debugfs. The file ope=
+ration
+> > callbacks are modified to prefer the 64-bit variant when available.
+> >  =20
+> > > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrial=
+io-core.c
+> > > index e587aca79b8e7..5c8404efd0a56 100644
+> > > --- a/drivers/iio/industrialio-core.c
+> > > +++ b/drivers/iio/industrialio-core.c =20
+> >=20
+> > [ ... ]
+> >  =20
+> > > @@ -429,7 +439,7 @@ static ssize_t iio_debugfs_write_reg(struct file =
+*file,
+> > > =20
+> > >  	buf[ret] =3D '\0';
+> > > =20
+> > > -	ret =3D sscanf(buf, "%i %i", &reg, &val);
+> > > +	ret =3D sscanf(buf, "%i %lli", &reg, &val64);
+> > > =20
+> > >  	switch (ret) {
+> > >  	case 1:
+> > > @@ -437,8 +447,12 @@ static ssize_t iio_debugfs_write_reg(struct file=
+ *file,
+> > >  		break;
+> > >  	case 2:
+> > >  		iio_dev_opaque->cached_reg_addr =3D reg;
+> > > -		ret =3D indio_dev->info->debugfs_reg_access(indio_dev, reg,
+> > > -							  val, NULL);
+> > > +		if (indio_dev->info->debugfs_reg64_access)
+> > > +			ret =3D indio_dev->info->debugfs_reg64_access(indio_dev, reg,
+> > > +								    val64, NULL);
+> > > +		else
+> > > +			ret =3D indio_dev->info->debugfs_reg_access(indio_dev, reg,
+> > > +								  val64, NULL); =20
+> >=20
+> > Could this introduce a regression where values are silently truncated i=
+f the
+> > provided input exceeds 32 bits?
+> >=20
+> > Since the input is now unconditionally parsed as a 64-bit integer, fall=
+ing
+> > back to debugfs_reg_access (which takes an unsigned int for writeval) w=
+ill
+> > implicitly cast val64. If a user provides a value larger than UINT_MAX =
+to a
+> > driver that only provides the 32-bit callback, it appears the value wil=
+l be
+> > truncated rather than rejected with an error like -EINVAL. =20
+>=20
+> Maybe -EINVAL can be returned for that case indeed. For a debug interface=
+ I
+> did not see that as a problem.
+Agreed - I don't see this as important either way.
+> =20
+> > --=20
+> > Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260517-ad9910=
+-iio-driver-v5-0-31599c88314a@analog.com?part=3D2 =20
+>=20
 
