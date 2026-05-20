@@ -1,237 +1,225 @@
-Received: from CHN02-BJS-obe.outbound.protection.partner.outlook.cn (mail-bjschn02on2093.outbound.protection.partner.outlook.cn [139.219.17.93])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A9D3B3890;
-	Wed, 20 May 2026 09:43:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.17.93
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779270199; cv=fail; b=ubcpQwQQHpxTC+oKvN0EY84wOWroj2MbXvDcum3OODjdq9F8FhAs3rwzYj0N0sMonIkh+cTsb5dXPm6wuoy3mpZX2cyMWVpxBC2yBDrJPnKRvp66KxqIJZWcE31kBYl4LYA5cjziOmZyM6cfzGbzi/haPJoyHgTkQP6HTcpvkYE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779270199; c=relaxed/simple;
-	bh=JKT6iFwCoMlnBhsn0DGGNVBl3RzdNo95TQMhYHWZRCk=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=uOFanTtdcPYgeG9IroOLezakjwYWmafm20ym1un7ffFjVVZL7U8YlW6CRokwFhtwt4Jxml6IhFBUWKq49ujtevrziLNK/ZuF426hmbnVX7fnFjhtY9LlIB6+Z0+NPX9T1l6IyY58IVnLT/BUPG+pDAsQeKyIF6j/R7gzwgW/oRw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.17.93
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=starfivetech.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LXCh1J3scJYf9zCPNXjje2IYYw693/SglDZc5p6FVhveCLv+xUszEpeTJ6oaLMjqSL67gDFp4isCEVDfqQ42TrltW+X5q6vhrtzGrNQB9u3BoE6SFLMoixIZEm8L3PLP5cZkdMpVqxhNBFMv7UZ7eZi0Z9h/wpb6eAVToz2C4lQjUETQKc7u8TMuh4wNC3NfhOezEnpkJGpffz67nHJuvR+Ky9NBYBiQwzlGe+tp0lLG/8OawE0guIAuDjZFvDR326EKy40VfQo6fGXwlXHOrpsPxfE1ZC1sIVp5BWstAjvj51DD9enwjGQ2gr5yQ1VpBvbbjNRgw/ZZmwgxxvAuqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Tbg8AUv3/JyYucfyPeKMp3PnrQ+8s38w2VG4Myh+Za8=;
- b=OkxYBTK+XFl1fD6qw0ZZO/uGQPaMDVsQ+sFHfPc1yq/uFhx6uq2tc6ry4KndJ+QQWatL5/ipE+NLHm286xEk3NKVSw/hyy6b26gEQe24pj9hkq22/yV4ydxdpA40y4rIJW+0NJx0wnOJ750waBRmr+hDo3NUgC9mfjeIBDSkjYi2qDJjyLL1kRxMDM2Nq3VYwF9NTaEMuoCL1XL7LSLE+GT+xJ3K8Cs8aEh3mHLJBuHAy5N403Xg4Gh45jA/XUy8Bji1yJH9xjfOY7kHe+tnXspU6rV9Hs066DP0gdLKIdgUzwV33Vd0LdW7rtLgQPLr1LuOTVGZtQ1ss1imgRUyqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=starfivetech.com; dmarc=pass action=none
- header.from=starfivetech.com; dkim=pass header.d=starfivetech.com; arc=none
-Received: from NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c510:8::10) by NTZPR01MB1131.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c510:1::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.15; Wed, 20 May
- 2026 09:43:02 +0000
-Received: from NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
- ([fe80::d8e2:3f39:6ae7:bdf2]) by
- NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn ([fe80::d8e2:3f39:6ae7:bdf2%6])
- with mapi id 15.21.0025.023; Wed, 20 May 2026 09:43:02 +0000
-From: Xingyu Wu <xingyu.wu@starfivetech.com>
-To: Conor Dooley <conor@kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?iso-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH v1 1/2] bindings: iio: adc: Add StarFive JHB100 SARADC
-Thread-Topic: [PATCH v1 1/2] bindings: iio: adc: Add StarFive JHB100 SARADC
-Thread-Index: AQHc5p77jQOM2JwohkK7qO7svRU7q7YT+EcAgAEVtmCAABFGgIABhc1A
-Date: Wed, 20 May 2026 09:43:02 +0000
-Message-ID:
- <NTZPR01MB095657AA216608109BEF9CBA9F012@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
-References: <20260518081852.116909-1-xingyu.wu@starfivetech.com>
- <20260518081852.116909-2-xingyu.wu@starfivetech.com>
- <20260518-elderly-barman-2b1abfc3755c@spud>
- <NTZPR01MB095679F35A873BBBA304655F9F002@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
- <20260519-undoing-ambitious-012d608ebd7f@spud>
-In-Reply-To: <20260519-undoing-ambitious-012d608ebd7f@spud>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=starfivetech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: NTZPR01MB0956:EE_|NTZPR01MB1131:EE_
-x-ms-office365-filtering-correlation-id: 3e5c7ed3-97f3-4f5e-e71a-08deb6542fa5
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|7416014|376014|1800799024|56012099003|22082099003|18002099003|38070700021|4143699003|3023799007;
-x-microsoft-antispam-message-info:
- Dr+L/V0p2s8kqo1Qf+SWEB2er6bfWRmCL0cMRvQQ7D53DMFl2/xsEAVMa5qcm+o2uQLskBhxq9QklyOK5oswnrm+nZWhqkTMs5ekXLskWaFrt8Q46IvzyP47GuX5NEMQRceXT0RHam9EcvIBSVFKTlqDxe09qVirCRsQsdhk+a9dPHp4kk/uqSakJoGpth1Z44Brrvixpavi0v0qqbezwJCD/ev+VCqogYSfni6alBha0DtuQduqgsRADUB6CFc/62zc3U6S00JrHPIl07e8XCHbvhaqbbZD5L4FIM1g34KtM0qCr0vnR7SIWWZSAf655dxkl8JgwvT9DaIXolBOz+CF4okEZOnnrvIf6ZgxF5BRYfiygf3fXS82aLX/0v0VIe4ir17OyEzFemS2wyykfRwV5/hYAOYDfpUk7BgjSPvlqs0tv7ALMCF86o15++BqPLA/kFCZqI1vWxqCG95alSwvmERm7gcA3eIl+SIoIslW/EHNKDI082ZTy8GVhzzefEQ9f2Q386r0WiuZt5v9Ntz4bYSQnu3qeBKMEtSP9jBdfyFI9L4nED9nDdngGu8l
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(56012099003)(22082099003)(18002099003)(38070700021)(4143699003)(3023799007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?S21sWxl8HylSIpSVybq9OvKDJiMa8rGrQbdIUHCbz01WunrH5jjsT7PotQ?=
- =?iso-8859-1?Q?Ti6LVWO8dAQtdONNyf70eZgYqWma47WoAQv/7aUGT3S9RGPfZfC3yO/znr?=
- =?iso-8859-1?Q?zy57x0mIOhzxWVb5TERAEAfA04QixoSS6zWi38ScjLX/m+xxCWBG2VD3Pp?=
- =?iso-8859-1?Q?292NkaddslZrASaKQ6G8htvPyxzzhSsLpPzpqrAfDk4S5CILgNWPOyA03k?=
- =?iso-8859-1?Q?34kr70BF7KnjRUtMEGWTvYLYSt0/ZwhEQObnoDVzIell9PYarDJJew7SPZ?=
- =?iso-8859-1?Q?EW4W+ikivyBIrr9KOGf7C8QYfTtUyWNk19bccBnqsYKtAPp987K+T8lVs/?=
- =?iso-8859-1?Q?+wXI/B6gyT0QYzqzISg6ZuqTEoKJZP4W8qtdMieLBnQBfkNAseHT955ecg?=
- =?iso-8859-1?Q?TJB3/0hixUGUTvEiExEVl/7mWPi27qxmWK+R0J/6Yr8HEw1t+4/qrxoSzn?=
- =?iso-8859-1?Q?hlz4qqB5Os9W1JCJCYOwOLqDg9tGhqAGXac4q6T8x4ck94oldhUCSAPIG9?=
- =?iso-8859-1?Q?534khaD3AxTpqcYf8cdqLI6LByGUmF1xcIY79v3LQyWJ4s+3OF2JAT9q5y?=
- =?iso-8859-1?Q?MNuo157or+H7nHTpgTw8FZkJGwrmCMA6DoSTTCm8VdZJJ11W5ZF+WJSa+g?=
- =?iso-8859-1?Q?vF2DAkqK8v9DgdwDvClTON0pKJkabANufIGpTxOVHqXtQd9rXKyXd7s+ET?=
- =?iso-8859-1?Q?3fBk9DUwS1YCT4KZnQj9zHfnBeoAt0k4MC/SX8wvRzw28dCg+e4lAGYYWP?=
- =?iso-8859-1?Q?6Ou4M4qJO4A8QHJU1GOKjJfFoshMUmgCDP+ThdIu98Kg5Au4HewYaAsbYD?=
- =?iso-8859-1?Q?2OidBEoNpQXodhLfoGcl4E1/iRuR3s4cFs6oSrlA6A6fiD2yrMMwTM6Ueg?=
- =?iso-8859-1?Q?K9q0vPH3JT7R8jCa+Zl/0XMGQFFBOFsYrZI/MkWrPqndouLF2ttkw8VqbE?=
- =?iso-8859-1?Q?H047Y+HxA0RtIEGK/5rmVeQuVHueLzkbrbdyA6wPRIq5NAsl/F/7r2xaae?=
- =?iso-8859-1?Q?VAvBwKOWcnb/SkNnZs51F5J2BpWjDnZRv4GuU+qUSRZmbFSIBTmg4s+UFj?=
- =?iso-8859-1?Q?bqiIHlm/VJrDTC5wwdrTfJSVFn8oOr8igduUb5/PLsqz0IwDYvdo8YPZNB?=
- =?iso-8859-1?Q?WnEn7iLFmJGeZwmiNnxglgFD5OOrBZnbACIsi9CxOe1PTjRx+fNCLE3XO7?=
- =?iso-8859-1?Q?6UR1bg/a9MZpS4on9QnaytsEaWbwytNilF94NZ8L1c9QclpG8vXFcfpWcR?=
- =?iso-8859-1?Q?gLKU5tAQhoKDn7kMBjdvD4fMVcoAP49gHO7k5XlzxivO+dbumqLHD04en9?=
- =?iso-8859-1?Q?DeB5Q5uBNKElI2UNVuZacH4zTD+fKVWqkQx7Cr11YR8H8/dhZNymwPhia9?=
- =?iso-8859-1?Q?lcaXhoDMsDLOtc5AG2xHLtlNYr0z6uPbWryowRHbjExDvKqAe4OvSXimOV?=
- =?iso-8859-1?Q?Di19JsCntHGqRmMXfHxcwfpwKg8Hsl08Kbh4o+idJWR3oFGCSBHpeo4vGX?=
- =?iso-8859-1?Q?4VD0gK256tApGNExg3efbNkXlC56/snlIPqLLiK0EHvxcvTFWcpn5uU5I3?=
- =?iso-8859-1?Q?ul0CfhNE8DVFr1bBO+/b9KWLe7zXf+2F0beCdmL1oZcD3VnA46qKjeWJoN?=
- =?iso-8859-1?Q?Y8A/sk1wh6xk8Hhcas+WCJhoFpydUdsUwa5WDFmRCoLzUja185yn4SROF0?=
- =?iso-8859-1?Q?wuPyNP3yK0gbuKpL3WYeOnJpwtbA3iKciIlKaj/kGMQqwDTOAZo8MFRfdc?=
- =?iso-8859-1?Q?NV+UUwNVWmo/TxGOyqfz4rLTYIpM1fs1W7NRY87iLycc9bLLPXwhFyx8o6?=
- =?iso-8859-1?Q?ByYER5Ti4g=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A6E3D091B;
+	Wed, 20 May 2026 09:55:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779270905; cv=none; b=kDcSiq2ZLYP7XvksrljRQo+a6WQB0iD8ts48vWuS2EQx4IGaYSrZ8+21A950mG2bEqXZpVqD/3x8PuVIrAGYC37vtw3jISKV1exRdh8rlEJUCb1KqdhyFJIqdP+zE5cHWrJmgKH4I3rSJ7SAwLSkEWuF3BXNSEBBPH6kB5zDI1Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779270905; c=relaxed/simple;
+	bh=W/ETVLQPiLWnEVzKK7qPp+AucWqlm4vH3u/jl9ung40=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=m1F9ZmgLEuR9lZ35rDeQRCyMM02aM+8ThBLgf3jUsH/N/CIOpizzxrye4jWHrF4nSg1ZP35vDviMWp865M+TWv+gYAm4rZbu8fTTpn6xF/5OL8/kUlA8U1WbJwB/tSEntl43touSjZsgjs4XGyL7r1CMDX8B1GdJl6VAQC+/Rp0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kubQ3jql; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kubQ3jql"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BEB21F000E9;
+	Wed, 20 May 2026 09:54:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779270903;
+	bh=1rR11SLMve5z99TMpOCckaXfI3pjGLYjtT01yolVcVA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=kubQ3jqlcjIHtJBWJBC/to3LSIkAaMm0l7XhtMWuGGmjExiV5CkoCbKTUfd3BvVhj
+	 eoS3nNKCqeYOwtIRPbX9yNtLX5Q0aMkyU0vxOdFjrnWPWo+D9A27XF+2A/bF71fC2/
+	 qMKLiG3fY/sZZZLYyNuL/nsSrYJQz/eEtNKr1beBxg4CPz4j4HqGkkmPj8jXYWGYUi
+	 +2s+wVVk70cgtJFgWGgQ9kcnhHkp+x97sWJ41S6cdb8sO5WKyo8D0cP2Cgy3VdKM9d
+	 6eeeQIeBT3FHMyWMXtOcnlKqyxJmAtteMMhXQe0T3nJRFXcERFCpdBcykGgGXJ07Zv
+	 k2yiMhfy9ywyQ==
+Date: Wed, 20 May 2026 10:54:50 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>,
+ rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
+ Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
+ Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
+ R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH RFC v4 09/10] Documentation: ABI: testing: add docs for
+ ad9910 sysfs entries
+Message-ID: <20260520105450.7fae5de1@jic23-huawei>
+In-Reply-To: <pkx5v4od3wkyyzxomfrjf4ei7leboadzth262xnl55fvu76pf3@yqrezmo6gtq7>
+References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
+	<20260508-ad9910-iio-driver-v4-9-d26bfd20ee3d@analog.com>
+	<20260517155843.7f833658@jic23-huawei>
+	<yrabhhhdkzmiuxlqzrrj6a47ftlzwvva7r2korzeszdy4yqrin@xl6obhhnnas4>
+	<20260518144537.7c998308@jic23-huawei>
+	<pkx5v4od3wkyyzxomfrjf4ei7leboadzth262xnl55fvu76pf3@yqrezmo6gtq7>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: starfivetech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3e5c7ed3-97f3-4f5e-e71a-08deb6542fa5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2026 09:43:02.5682
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 06fe3fa3-1221-43d3-861b-5a4ee687a85c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eqZRAqrV5G2i57hIumdxbmaAFvYeRXpujb7zfbQdF+edZGVEJ7gyzBYDy6TFH5y4A5JIiK/1CjVfxcCVNNL+6oNopjnOgVJ32QD6wvTSIJg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: NTZPR01MB1131
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2026/5/19 18:00, Conor Dooley wrote:
->=20
-> On Tue, May 19, 2026 at 09:26:03AM +0000, Xingyu Wu wrote:
-> > On 2026/5/19 00:24, Conor Dooley wrote:
-> > >
-> > > On Mon, May 18, 2026 at 04:18:51PM +0800, Xingyu Wu wrote:
-> > > > Add the new documentation of SAR-ADC for the StarFive JHB100 SoC.
-> > > >
-> > > > Signed-off-by: Xingyu Wu <xingyu.wu@starfivetech.com>
-> > > > ---
-> > > >  .../iio/adc/starfive,jhb100-saradc.yaml       | 62 +++++++++++++++=
-++++
-> > > >  1 file changed, 62 insertions(+)
-> > > >  create mode 100644
-> > > > Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.y
-> > > > aml
-> > > >
-> > > > diff --git
-> > > > a/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc
-> > > > .yam
-> > > > l
-> > > > b/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc
-> > > > .yam
-> > > > l
-> > > > new file mode 100644
-> > > > index 000000000000..ba8e19b72ad7
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-sa
-> > > > +++ radc
-> > > > +++ .yaml
-> > > > @@ -0,0 +1,62 @@
-> > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) %YAML 1.2
-> > > > +---
-> > > > +$id:
-> > > > +http://devicetree.org/schemas/iio/adc/starfive,jhb100-saradc.yaml
-> > > > +#
-> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > +
-> > > > +title: Successive Approximation Register (SAR) A/D converter for
-> > > > +the StarFive JHB100 SoC
-> > > > +
-> > > > +maintainers:
-> > > > +  - Xingyu Wu <xingyu.wu@starfivetech.com>
-> > > > +
-> > > > +properties:
-> > > > +  compatible:
-> > > > +    const: starfive,jhb100-saradc
-> > > > +
-> > > > +  reg:
-> > > > +    maxItem: 1
-> > > > +
-> > > > +  interrupts:
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  clocks:
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  resets:
-> > > > +    maxItems: 2
-> > > > +
-> > > > +  "#io-channel-cells":
-> > > > +    const: 1
-> > > > +
-> > > > +  upper-bound-mv:
-> > > > +    description: The upper bound voltage value of the monitor.
-> > > > +    $ref: /schemas/types.yaml#/definitions/uint16
-> > > > +
-> > > > +  lower-bound-mv:
-> > > > +    description: The lower bound voltage value of the monitor.
-> > > > +    $ref: /schemas/types.yaml#/definitions/uint16
-> > > > +
-> > > > +  scan-freq:
-> > > > +    description: Number of the scan cycle interval.
-> > > > +    $ref: /schemas/types.yaml#/definitions/uint16
-> > >
-> > > Can you explain why any of these three properties are something that
-> > > should be in the devicetree rather than software controlled?
-> >
-> > My intention is to be able to obtain the initial values from the device=
-tree during
-> probe and preset them.
-> > Do I need to drop them and just set them through sysfs?
->=20
-> Unless the hardware configuration determines the values (which I can't re=
-ally see
-> being the case for scan-freq at least) then yes, you need to drop and set=
- them via
-> sysfs.
+On Mon, 18 May 2026 16:27:23 +0100
+Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-The ADC hardware can be set the scan-freq register to determine how frequen=
-t it should scan its inputs.
-The calculation is:
-	frequency =3D 100/((register value) + 5) MHz, The register value should >=
-=3D 15.
-The maximum allowable scan frequency is 5MHz.=20
+> On 26/05/18 02:45PM, Jonathan Cameron wrote:
+> > On Sun, 17 May 2026 18:30:27 +0100
+> > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> >   
+> > > On 26/05/17 03:58PM, Jonathan Cameron wrote:  
+> > > > On Fri, 08 May 2026 18:00:25 +0100
+> > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> > > >     
+> > > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > > > 
+> > > > > Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
+> > > > > control Parallel Port, Digital Ramp Generator and OSK parameters.
+> > > > > 
+> > > > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>    
+> > > > I'm fine with phase and frequency as defined, but for the scaling it made me wonder.
+> > > > For outvoltage0 channels the assumption the value is the peak voltage so if
+> > > > we know what input to be modulated by the ramp generator can we express them
+> > > > in volts (well milivolts) rather than as a scaling multiplier?    
+> > > 
+> > > The DAC output is current-based and differential. Voltage conversion would happen
+> > > outside the device...  
+> > 
+> > Why aren't we representing this as out_altcurrentX-Y_xxxx?  
+> 
+> Good point! altcurrent makes more sense than altvoltage if we want to use raw to
+> control the output level rather than scale, which would be a constant to convert
+> raw into current units (what is the one that is used in the sysfs ABI? Ampere, mA or uA?)
 
->=20
-> > > How are the bounds calculated?
-> >
-> > The measurement range of this ADC hardware is from 0 to 1800 mV. This s=
-et
-> value cannot exceed it. This explanation will be added later.
->=20
-> I'm asking how this is calculated so that I can tell if you the property =
-is permitted or
-> not.
+Same as non alternating version so mA (which is a historical design error we have
+long been stuck with :()  The altvoltageY_raw docs don't give a unit either.
+If you don't mind, please send a patch adding that whilst you are here.
+Same mid to peak - hopefully that is what any users not modifying to RMS have
+been doing!
 
-The calculation of bound is:
-bound-mv =3D 1800mv * (register value) / 0xFFF
+Seems we either never had one or that particular bit of ABI doc is missing.
+Please add an entry for altcurrentX_raw
 
-Best regards,
-Xingyu Wu
+> 
+> Not sure about the benefits on setting "differential" in channel spec.. the name would
+> become out_altcurrentX-altcurrentY_xxxxx...
+
+Becomes a question of whether it is useful to represent that - maybe not
+in this particular case.
+
+> 
+> Is there any modifier for amplitude/peak/envelope? I see IIO_MOD_RMS, which could be used
+> if adding a 1/sqrt(2) factor to the fixed scale.
+
+For altcurrent / altvoltage assumption is it's mid to peak.  Unless the modifier switches
+it to RMS as you've noted.
+
+> 
+> Then, I would consider something like out_altcurrent_rms_xxxx as a good alternative.
+> 
+> "scale" would be a constant in the top-level phy channel
+> 
+> single tone profile channels would have:
+> - frequency
+> - phase
+> - raw
+> 
+> drg ramp up/down channels:
+> - frequency and frequency_roc
+> - phase and phase_roc
+> - raw and raw_roc
+> 
+> parallel port channel(s):
+> - frequency_scale and frequency_offset (frequency destination)
+> - phase_offset (polar destination)
+> - offset (polar destination)
+> 
+> osk channel:
+> - raw
+> - raw_roc
+> 
+> raw_roc could be just roc, but that sounds like it carries the scale and refers to
+> a current value? and maybe that breaks consistency with other destination attributes?
+> I am fine with just roc if that refers to the raw value, not (raw * scale).
+
+This is a good question.  We ran into ambiguity with events where we have to derive
+if it is _raw or _processed for the thresholds based on whether the main attribute
+is _raw or _processed.  Nice to avoid doing that again.
+
+I'd be interesting in others views on this but to me raw_roc seems fine.
+
+> 
+> With all the above, still using altvoltage is not incorrect, just a matter on how
+> we want to express the units.
+
+Agreed - but to get to directly useable values we'd need to provide info on the
+external circuit - and given we are dealing with AC signals that is tricky to do
+in a compact way.
+
+
+> Note that using raw instead of scale to control the
+> amplitude is just another option to tackle the problem. I suppose that the
+> important thing here is being technically corrent and consistent in terms of
+> usage. Maybe out_altcurrent_rms_* is more clear in terms of amplitude level.
+
+Agreed.  It is always (?) possible to switch between scale and raw.
+For an ADC the distinction is clear as we can't control _raw. For a DAC it all gets
+rather value as we can logically control both and for an AC type of DAC / DDS it
+all gets less intuitive.  As you say, consistency is key.
+
+I'd like us to at least be consistent across DDS devices. Perhaps we need some
+general documentation on whatever the outcome of this discussion is to record
+some of the logic behind those decisions.
+
+> 
+> > 
+> >   
+> > > using a resistor load or an op-amp transimpedance stage,
+> > > and I am no expert on that, but that often requires impedance matching so voltage
+> > > levels may depend on the frequency. Then, I suppose that voltage is not the right
+> > > unit to use.  
+> > 
+> > Understood that it can get complex!  
+> > > 
+> > > The scale here controls the amplitude of the varying signal. Assuming the peak voltage
+> > > (amplitude) is constant means we have a constant envelope, but that should not mean
+> > > we can't control it or it should not mean that the hardware can have other ways to
+> > > control it. That said, scale behaves as a "gain multiplier".  
+> > Understood. Given it's the envelope then if scale happened to be 1 always it would
+> > be presented as _processed. So this is consistent with other channel types.
+> >   
+> > >   
+> > > > 
+> > > > That seems to me like it fits better with the overall ABI.
+> > > >     
+> > > > > +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_offset
+> > > > > +KernelVersion:
+> > > > > +Contact:	linux-iio@vger.kernel.org
+> > > > > +Description:
+> > > > > +		For a channel that allows amplitude control through buffers, this
+> > > > > +		represents the value for a base amplitude scale. The actual output
+> > > > > +		amplitude scale is a result with the sum of this value.
+> > > > > +    
+> > > >     
+> > > > > +
+> > > > > +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_roc    
+> > > > 
+> > > > Silly question perhaps but can work out how this related to millivolts/sec
+> > > > That might make a more intuitive interface than scaling multiplier per sec
+> > > > Perhaps the combination with offset makes this impossible though maybe that
+> > > > could be a expressed as a voltage offset?  Afterall if the amplitude being
+> > > > scaled is 5V then 5 * (offset + scale) = 5 * offset + 5 * scale
+> > > >      
+> > > > > +KernelVersion:
+> > > > > +Contact:	linux-iio@vger.kernel.org
+> > > > > +Description:
+> > > > > +		Amplitude scale rate of change in 1/s for channels that ramp
+> > > > > +		amplitude. This value may be influenced by the channel's
+> > > > > +		sampling_frequency setting.    
+> > > > 
+> > > >     
+> > >   
+> >   
+> 
+
