@@ -1,137 +1,118 @@
-Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
+Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AC1A233928
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 03:13:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA1F531E828
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 03:19:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.46
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779246813; cv=pass; b=qtCPSiPzediIz4pjZ+InFxJQsi3npzVt+erOi3A6d42/lfRDU54IGbowaJBGVHCm9HIv5T/xlw/0xN7r++8/D8NojfGKjuJ2Kh+1JQjBHRvvrxFYsG53OMavwAutKN3HcLAELA46r9IQkcMWclQ0k9qpsdMUkwZR/iegp8y3wFE=
+	t=1779247165; cv=pass; b=cCo3yId0om7/3p5skizWDM9KAsLs2s8cdxlZ4rIiYg4hPX0Tge8NTPv6WS5WeDD5P7bPc1i4df78b2j8lIw3ZgYS6EEK8x+0h75Z2eAFKboG255hhkc5WPo3jazKS6r53hNURdsAkstlvqXayb7gzvqbEnWcM+sPOwaQKbSc5jI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779246813; c=relaxed/simple;
-	bh=2UCPhXwQ5IhnkhWY0Q7wRfIPQ1oxdh7lu/5FOWSh3u8=;
+	s=arc-20240116; t=1779247165; c=relaxed/simple;
+	bh=sNG+6bFeLw1iBghaaykGtH9JRexVRArkpWpqbiV/EEY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=N07m8YkT3W6fLbe9OvmS9IedZuhyZDpJs5QqPr2OjV9yNLN3s4paZvumBa4wkzLGza943vdqec7cq5iZELs3S9Omn5HnejVF4phef0ThvLopVLSb/QtYZ23yjhrWJULoP/FKpAoLu0gf3q03448of8/cJR9BQ4ltpdwDYyFJn/M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=daS0Lzim; arc=pass smtp.client-ip=74.125.224.49
+	 To:Cc:Content-Type; b=eRQ53pQhwPhfssTgJ0rKB28Y57EVsCdffZiGwE4Ukd3MGHAi8MTqvP2LP2hwQ/aGhEQvcnaAzYQMWO18eJEq1c0OvHZEDrw3jfK/7xwKoeHRnkuRRhAjAIqMVBr8ZWbqR4fjJSelKvYz+G10lKCFczNaPz/7SY/be29yHCuz+Gs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q2uVP65B; arc=pass smtp.client-ip=74.125.224.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="daS0Lzim"
-Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-65dead17c24so4045766d50.2
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 20:13:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779246811; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q2uVP65B"
+Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-65c305f381eso4564856d50.3
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2026 20:19:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779247163; cv=none;
         d=google.com; s=arc-20240605;
-        b=YtoqZFc3ZiLGYv0M7+UK/9dETbpvFlIau64ZTT57EIi8OYfPdLhEKOTeOZBmV3yDYm
-         4m+XROzdzQ0Wepy/SLIIbNkhn2yeZvgqWRNUvlVV8QRhWTuBbAyvNxDjegfgxWRMiKhp
-         y/MQ/zKDaRv8//MkcT6dj+VJUfbbNJxZdVM3IYndkGHwTnZKv/mHZ+ox/KjtB1TtCrh2
-         Ce5JNVbTOs5bNeDGs6YfkrMkf7VkcNf8ODsA71AHVPDnz1K9NdKPywcUQGUBALG2RnJo
-         igr3O1AUZ07WF30/cZwQkwnCzJhp2p4b+p3dXwDtQ47j5mAkxFGa4c97MRUlcT8zPFgi
-         kVRg==
+        b=P9uZsLErBLfbJmD/js2qE3/vVZ/NuBf5v52gfNatJumPpetsRW5qkuZ+7TAvGikk8Z
+         YoCAy3QRPB6VszJwFuLKOuTt4qFA9k6gT7kZZFaH93eFdrj8SbJqoUxSpO6V23zT3vhW
+         DwsYjbAOrivSGC4+OCiQABUDlzGQbDFN8oVrwgX80CNe0dU7OOZK0L5OkPJmsNyUiIvp
+         1S9sYKw0YtXiUrFYYTK9TeV4RIrvEXifUd6DJRpJXB9SG0K3r0HQtrTIA3s0QGdii9n8
+         xAERgR8zRkyyLCKzgEL98nnx+q/dVBwK9/sSJ1kt6W/1yXIb1qfrnDUkb6POEQd/EFi5
+         nCHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=9z+A+eqz7jph8RB8HWYKgrBGRWCq0b7uJxvrnIBinAY=;
-        fh=All8WwKWNXCPOPyl6h8b6kyVWLGFnZpTQeyUcuBzyx4=;
-        b=OMCBrA1eOW0opQ3uW5h4HKzWTJ+JAbXSHcFBS4Ks4OFJErmHTgxuFTvApYE4sR3Syc
-         qRYIw73ZYu1umDuBjekFqUoEQvolPiaaitdgizlezJ/JQRJMvVEieZ/BsJjc+NQCg95d
-         mcx6fk2Ksam9cpNcgbWq71aAn6CMlrI726fSJfsUQjg9N8Ui6+SC8EcAKoYEIJ5qfKlr
-         f9N/AFMkcDejBJq2SXQAVESdFtrVX/bRyyynkG0orXUEkjQw1a2y4UjExMDxvdScokad
-         xwm1+dPSsRnoos6HXSfVlDtAP34mb3W8OZ9SgSaITxwAV5yXghC7V7COzBFyq81jzb8c
-         E5tA==;
+        bh=sNG+6bFeLw1iBghaaykGtH9JRexVRArkpWpqbiV/EEY=;
+        fh=gQ266fx6Qte9TBnJ6l/VAMm0pm8pXXgft36kLLZmScw=;
+        b=HQ9H9O5z0ELpF2U2gqWB1/qCtqFoiyeXv8Qt15xCPhjelDaU2xV1xyNjKuQi7KwjeU
+         imsJJK4a8UbbKTILDvXBQ/SC+A5rPaaVke9I6zn3xFrNUu2LRsV3ShSZlzwTu3rPWska
+         CoY3ueiJCmmR6ZqyF4PULUd+5Fz7Ni42DzSAvlvnXWBiyZklBfMNUIYX9VY+BQM4TP5M
+         D7QGvQZint1spsJ0jQQotnb8mhAzS1vTCI7Ch4OAYMNQcU7N/HGzZn9/rqPfOJPi4bXr
+         0YIlhKfnEQHKvNvU4WUEsBuCOV37srFxRkjllkWuyj0+cwZCIT9XDJA1Rnmg0dT1QriF
+         vHgg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779246811; x=1779851611; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779247163; x=1779851963; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9z+A+eqz7jph8RB8HWYKgrBGRWCq0b7uJxvrnIBinAY=;
-        b=daS0LzimiR1KzZ/3h+xuGkaBqyC9azzNrc+wrGSVrFhHhnZKgyS+qg1D8p6igipQMU
-         GcjGyHcD/exe2WbSzSBRijfBRplR62+JdEzhVueCxSxTcPy5yo9xM/8ZKmbpGtxX1+mt
-         KZola8mOSX+1Djg9s9kLDchaOunryVWfJ4XFTPjGYuA0mNz1RuNIIoJmkXBBzBUG9urQ
-         m1Nea+uLekD7z749qk1qNXCRqsPSO5U49Hw1BZ8dl9AkCIhLf2sTLLWnx/oNDmkAsZaR
-         rJ2hKeHkdqDSnT2q1RlAlrluqyrSy82tXqQGHhA/TrKDW6zjzCkJ5xosZ6tBaONeMEM6
-         fEuA==
+        bh=sNG+6bFeLw1iBghaaykGtH9JRexVRArkpWpqbiV/EEY=;
+        b=Q2uVP65B9wMU0pExsDHv/BKqXUgUi8A4I4aQgJsGjVM5Uf9t/kMRqGocpY6E6+IMWL
+         jWDdKRmHWzlgbgPY0bx2LUkWf9kbUmsqB1BxLaOXU1MBT0ZpYkrHKl4EoN0OiTpzqbiX
+         ZmCnpyiXhD92yKhZQL1cLifFyk3IDi8QU0WhO95DzpeBwZKHwwoedDYy+V29cCR9TozT
+         Z2lVCRGnKtDe+olS1ubO+gziE6xwjE35R+AiZhky6QwBOdYTaWIm4b6C3R7HroFERBGG
+         hF/HPYqW2KQsF8WgKO+ktqHs+EJfnIf/6iN5TO6kIk0Y1cBll5wdstPF1xj2ACjZwoRV
+         RYSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779246811; x=1779851611;
+        d=1e100.net; s=20251104; t=1779247163; x=1779851963;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=9z+A+eqz7jph8RB8HWYKgrBGRWCq0b7uJxvrnIBinAY=;
-        b=gMkRqWb5sP8Ny7KJQhoB5YHr+vFN2BtkwOJuaalSKVm/KNycUoQfLVFbiFy0WVJe8d
-         3yt4Oz6eyQMZ+HRGcNoGoZo4oAde/D59Ag81SIY0Hs9hBUyLx6ELn0qu4Z47+COqbUVq
-         OHSXhjgGKBvbUVsKNCMz/O/TAqQfaADyWqRhKbDMgd3rOuKDxjE7I4oy++Ckc5lGvZ64
-         s+IoZ+5YsM4odePxDXCwtZijELLou6XeAH0rdNfHBJyCtd2HbU77RivDnEAiiBVKINL7
-         Zt4iNvzS4uEvCtixo8EDKldPi/bdhjeeZV6sDJ56OlLS4Cjsu0KuGnwn1ViMS+Yxxi/O
-         GMWQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/lyHbfQds9W88f5C8UF9Hv2E+12tVHej4rbHTIYCnkz6ib+Lo0gv0sIHVhflCEQ5cxupp2gveFipY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YznXzuWLyWrX5LfQLTOpkR3P7cySiryoCtKeKOsO0GvUrFHiRla
-	JEKCk21TSOAMrURnFGJuwfwSEAggQOQERiOcz3DUVjlj8P6Z8T6IJ4V44OS4HEOw68Y8ov4HA3M
-	9Q6qznQqSFcD543M83bLpUScdpsXJRmo=
-X-Gm-Gg: Acq92OFaMmzYXga69Fm88OROxq5rx1GLLkkZp2L/wx5n0tk9fHU6VapK+0xOwuVyk02
-	tm79YLsGMhr97ZZGm0mcQnFJ9fx6ANEGNFe8C6e6FXqNIV/5xJEd0VuHNavxNIiG1j+wp3tWChX
-	HHrPqEJo1KPD8hG1Hn7f/bytgxItcC9BNMaq/0RZjEhLlp8MBmjF5O0rrf/NCEfnv6QXqD+grc2
-	2x+JOP/Jog1w/oFFdJT9kPlu8GKYhG3zzwiU5/7DQWpwaN9W+KN3/5RWaocC0W0hBaFTKmP1rsT
-	jMknl015o19p0YY/rLeKB3o0lQ==
-X-Received: by 2002:a05:690e:1541:10b0:65c:6220:5fcb with SMTP id
- 956f58d0204a3-65e2281d333mr17390639d50.50.1779246810529; Tue, 19 May 2026
- 20:13:30 -0700 (PDT)
+        bh=sNG+6bFeLw1iBghaaykGtH9JRexVRArkpWpqbiV/EEY=;
+        b=s6ElTdCcLRbCEtCX7beRpQDKd39C0kxeQaZ68/q21sZ15fyxuuDzC0SVT5OAXmTnne
+         RWk736Og37jzIJISen0OjYJgUyJa1y+CFGGkg41VAUvjZlhVl2CQil7FhQ8OfILyHYnr
+         WxZu6tm1kF7dYqvbEkW6pl3Ish4cleVUVKhhLN5THEF4A0oNmE4hJxvhZh0gAfhPzcHV
+         LH9trNUd5MuFnFEP5TXT9FQnN4vgWenoWQqUrSeIE6gB04xp6Sczcp+BSG09Rt4wblYi
+         vNYKah715fyqOQhxPtPStcGS+6DQl4XIcUjBq+7618W7Otr0BBrrnp14EGK0x+PMIaO0
+         iwXQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9HBhGZY+LJY1c9eEYoBykP/OTLSyTv8JlZpyH1Wx6Z8Jz9ZPU0dsZWT0041lWCldyK4jS78+JdAfA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyYVXooA77rpat6I+ZTj1Mz49kW+mQmYyyJriRwFucdxMchRiDg
+	Q/uYHn9tpZsijvOXHmBEVo89uxJBb9K4wTIbnFjS4txZ94uJwR+/iqwEKEVPGAcVWY8bwdyqekZ
+	jwlmdnY0WgGbkZ3lMa9gg7yQ/eUqXh0WkPZhk1ZU=
+X-Gm-Gg: Acq92OGng6WXWNjwNKi+GJEDRcKHNcPUnlT+/W96NMfwti/oAwZzQu7ramJxD9nX54a
+	l4ZcHYJQu0o2/5pOupPoLkMiBdcxMgcChM+bjCWuGWzTmExOTaScB3AuHQPo8QJMv/yw+4CL4od
+	GhwUZSw9maXGwyvkybTgE4CG165kf0yDy8+jxLeaZcBLbtusymvPWOFGPQEk2Hed/ZwMkMxOcNY
+	aNQP+3auv9B36qhuL0r5rb39TRvGUXVLxD7+twAMSow92ZxdvWWyiZp8pCxTM70t6ssPZ8LH6vh
+	bHDx
+X-Received: by 2002:a53:d04a:0:20b0:65c:409b:1cc with SMTP id
+ 956f58d0204a3-65e227f76c7mr18434081d50.34.1779247162882; Tue, 19 May 2026
+ 20:19:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260502234348.131563-1-gabrielblo@ime.usp.br>
- <20260502234348.131563-3-gabrielblo@ime.usp.br> <DI8LMZHMMBVM.1O5Y8WSPHPM1O@gmail.com>
- <CAOmGE-0D3HZEtJcQMrzFh3GrJ4B6T-BJM-ZLDgHE4__bszZuTQ@mail.gmail.com>
-In-Reply-To: <CAOmGE-0D3HZEtJcQMrzFh3GrJ4B6T-BJM-ZLDgHE4__bszZuTQ@mail.gmail.com>
+References: <20260520024153.1647951-1-xinyuili@126.com>
+In-Reply-To: <20260520024153.1647951-1-xinyuili@126.com>
 From: Maxwell Doose <m32285159@gmail.com>
-Date: Tue, 19 May 2026 22:13:19 -0500
-X-Gm-Features: AVHnY4Jj0alG5Ouk-5sT3vtWj-w98_KKJtkaWtxgB1I6biABenWdNJ3GquVJtQE
-Message-ID: <CAKqfh0H0+ZQ1PvZyzWdpjYvpMtvEp1WyCC-fnxNC72pqOG9isg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: light: veml6030: Generalize hw_init for
- veml6030 and veml6035
-To: Gabriel Braga Lagrotaria de Oliveira <gabrielblo@ime.usp.br>
-Cc: andy@kernel.org, dlechner@baylibre.com, javier.carrasco.cruz@gmail.com, 
-	jic23@kernel.org, nuno.sa@analog.com, ricardo.kojo@ime.usp.br, 
-	elliancarlos@gmail.com, linux-iio@vger.kernel.org
+Date: Tue, 19 May 2026 22:19:12 -0500
+X-Gm-Features: AVHnY4K9ybD5EuFHYUdUilJnfUZs0eOI1mGWy_JDtoGhlYPGCYUVHFjVsnL9-oo
+Message-ID: <CAKqfh0GLQ=OZYnhNHNc1Cm5X-ZRzs3vGeM0ojCRnOxuLM2hn2A@mail.gmail.com>
+Subject: Re: [PATCH] iio: gyro: mpu3050: use devm_iio_trigger_register
+To: lixinyu <xinyuili@126.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Linus Walleij <linusw@kernel.org>, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 19, 2026 at 8:22=E2=80=AFPM Gabriel Braga Lagrotaria de Oliveir=
-a
-<gabrielblo@ime.usp.br> wrote:
+On Tue, May 19, 2026 at 9:43=E2=80=AFPM lixinyu <xinyuili@126.com> wrote:
 >
-> On Sat,  2 May 2026, 21:02, Maxwell Doose <m32285159@gmail.com> wrote:
+> mpu3050_trigger_probe() allocates the DRDY trigger with
+> devm_iio_trigger_alloc() but registers it with plain
+> iio_trigger_register(). The remove callback calls free_irq()
+> on the trigger but never calls iio_trigger_unregister(), so on
+> module unload the trigger remains in the global trigger list
+> while its memory is freed by devm, leaving a dangling entry.
 >
->> > Just curious, how was this tested? It seems like you're modifying the
->> > writing logic as well, and ordinarily patches like these don't get
->> > merged unless properly tested. I haven't fully looked over it yet but =
-I
->> > just wanted some background before I start.
->>
->> > best regards,
->> > maxwell
+> Switch to devm_iio_trigger_register() so the registration is
+> undone automatically in the same devm scope as the allocation.
 >
->
-> Hi Maxwell, sorry for the late reply. We did an local boot test using one=
- of the latest debian 14 arm64 images with qemu, and loaded the module with=
- modprobe. Also, we submitted to an internal CI with boot test at https://l=
-ore.kernel.ime.usp.br/kernel.ime/
-> Link to the pipeline run below:
-> https://gitlab.freedesktop.org/marcelomspessoto/dsl-linux/-/pipelines/165=
-5734
->
+> Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: lixinyu <xinyuili@126.com>
 
-I see. Well that all looks fine to me. Of course incorporate
-Jonathan's and Andy's feedback as well.
+Hm...this signed-off-by doesn't look right (unless, of course,
+"lixinyu" is your real name and not "Li Xinyu" or something like
+that). Please correct if you send v2.
 
 best regards,
 max
-
-(ps, please don't send HTML email, it gets rejected by the kernel
-mailing list servers! Send plaintext email instead.)
-
-> Regards,
-> Gabriel
->
