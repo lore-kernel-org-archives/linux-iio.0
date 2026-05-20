@@ -1,129 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 546463D8117;
-	Wed, 20 May 2026 10:39:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9264F3DA5A2
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 11:04:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779273567; cv=none; b=rHEBvPcUBw/1HEBYu5jdxYNfmLPehmdBwuMvMTMNygeZ+FFsid/oJamLvqo/8M9MbVcmqx6EcT2fs5+ACYn70Kqzdx/3COYFzD2oCM/TXu+Qadp7zKMsI9DC0S7xTqVqa6CCSqOvLJwW20dIMBV+2t3tgusD1aPYYifEYE3qlww=
+	t=1779275094; cv=none; b=ZtOVwnOQmnEC2rlf89LbsfoNGUCzrtxf7x29txm4Mf4Mr0oFgdg4bUWKlnaHEMRWjeZHM3oZsEQKxCLdBf5KgF2Ya/OBYKVquBA2wCo3ur7PVa4hqlb/u2VHuygRxVNH6Xinf7tVtRld3iogvfes+xzu0dnnWzcyaEvQolgRQCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779273567; c=relaxed/simple;
-	bh=5JJDNR+dZSYvqZY2l3m6GIwe+YErFLstimjoZfOAABI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=reoOhkVn0mLhWIA1JCJh/8JypQJNH8Y34vvJHqf+0r9s/M+hE75g/8htOfkd6zU2GVv4M0PNIH3e1Dy7fA5/UnUgQbw3mqd4P0bUnCBuvmp7jyYvXxN92LDNn/TdEZ+VooWJdHKQqb2RMW6KzQG/0itt+90GiVeF++Bsd+AIrBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z9goHgLp; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779275094; c=relaxed/simple;
+	bh=ke0gpjaGr+kZ3qP39FMMy64jhRk5PSmJHcJ62SMMYjs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=J0Y2rqbUJgbHxgoaaeklWC2M/F7NXYMjN23pFDWc5xZ3bsFI2eGMpsnb4OrBUUSJOs0xihNyyqMKCL46mXFBWzduuwZ8JDjV7e2D96dLPXLJwsKQ2EJK8IdY2V7ke5lqB958ijOEKPqiNIMah9GBKaMqAJhX1DRnzbSOz1lycBk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DnvTw0Dq; arc=none smtp.client-ip=209.85.208.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z9goHgLp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD6321F000E9;
-	Wed, 20 May 2026 10:39:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779273560;
-	bh=8kFn9W05qyL1k/0OdwAdZn7KvbzCgH579qyEY6ai480=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Z9goHgLpSpjaUCEYm71hbEKdr1WxNNGkPRC5VJxaCIG0wP/wWzInzAT2uhCxeQzcN
-	 6ByUkJTvWawtcB7uxLMVB+W/aBCxbh+rUgMJxH+1SS9gJ0bceN9H5AfrkgvxcsSkO0
-	 kA3JOFB2A0lR+KhKK9ket29iYSiIk8MBLDw1lkvfIJ/XT5DmhVFCeB5T9OoHtVEbjK
-	 LN58gFfVD7bZM7L8AkZoS8qVaeFHVBDCJ27uJnRS80HPPpCf2KkHBPJ3ssdgNIXSUu
-	 ZvG5NsyIpx0lKc9sLnQsfqSeqfPkkhMPSIavxITWhzx5UuapLgtwC6rJO2S/odkPa/
-	 ktCFczP1/GOaQ==
-Date: Wed, 20 May 2026 11:39:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Stepan Ionichev <sozdayvek@gmail.com>,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: pressure: rohm-bm1390: notify trigger on all error
- paths
-Message-ID: <20260520113914.7af0bdf7@jic23-huawei>
-In-Reply-To: <agtbFDbw2m9ptEua@ashevche-desk.local>
-References: <20260517160801.269-1-sozdayvek@gmail.com>
-	<54ee1fba-3209-4192-82c3-674a1ae3ca8f@baylibre.com>
-	<3cb30f12-8b4f-415f-9a1d-823d8ff8c33b@gmail.com>
-	<agq4zER5Tv2LErZV@ashevche-desk.local>
-	<20260518155521.6c61504d@jic23-huawei>
-	<agtbFDbw2m9ptEua@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DnvTw0Dq"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-393b0fa758fso7139341fa.3
+        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 04:04:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779275092; x=1779879892; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=RYIaXBYmg5H7GBqJdVw4CRmxqOBtJQxdADPRcv+Im8w=;
+        b=DnvTw0DqYPZxJGfX1RDJKe5jd69raCfcYUER0tXt4bpQuGIo87i3s1dffsq10217xN
+         E4ZqEaNdJvLqJ1Cii11nXq+tFZ8zjAK7qFmfdFXnekCSgOa/jsgWvIzBYZ+AchVMZtKs
+         6+1IMn6/ApOXaMr4KTRdbXOeHMOxQUaCYcGTo8L7BpRHX/nnpT7MJe/qo4qHdEAVWAZY
+         2L8Do8KVDE0vxi0uY32/VJgnydNKp8uMnXHwrHNErbZ4oA9jr7p+IKd9fdufiZ7ACYRz
+         EKeNtl0UOzZ66uwhA4YefWk6ZzGLm9AHQF2KgawXfRkLR7tRgyqBAiDANu3FoCZE4KNu
+         Fv/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779275092; x=1779879892;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RYIaXBYmg5H7GBqJdVw4CRmxqOBtJQxdADPRcv+Im8w=;
+        b=LpGrC1ZfmdE4ykcGW7/9iWQNwowjWBzhL5KNtrbc8H12LSFYrPAPr6xgAm2OJyeAfp
+         4/Cec8fByhb6QRIFSWq6waV3q3MA0twzANGN7FV9RYB5cpzaKidA1gFO6H8e6qPg1w0A
+         geI1DACcTTy0aqbQVj0+OnBdC05/WGFKU2vAE8iCsTA5mrjVB97/f2STSzOuGKyMTo3u
+         jj3M9USCVF0lBkWIP8zNDdpFYBSbc8o7/IqhOOhk1RND8/8Os/gp6UiX52dXO/3msSp7
+         8OoUwZM4GPezlcjyc+eH+4NoAL8YCfa1k3D4N2+pZj+4fELVidvgUFcfjcZtDaLAjIX1
+         H2Dw==
+X-Forwarded-Encrypted: i=1; AFNElJ/PuuHqsuuJmDgwlhPeRzILjHbW0Fj+6hSSZcGYLYoOS3G95UC65t4XKkr2D1aw5ja6w+bH5dZWTZs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzp53sg57S+t1/rizpbxNQd+y8cZwWQ2anB2/BkSsrr3289mBPJ
+	VJesYC726N31hKCF2VfNhILlXJNbOzjnHB25tEgEFAGUVFFiUsE7JZ0S
+X-Gm-Gg: Acq92OHdXx+dq3gC6t+nqLD9behcCe62dgzuNxuTVk5uJ6i6irWQjhcyrzIn05uN75N
+	Y58dSkmYzxyB8nl6YBHU2i98XCbo5lbm/viRPdO0puO2DFhNEnQFB7/0fuOWoW/yd9sQSwF4gGS
+	pacsMrsfsx02Gyf0sEwDOrbBN6j4/d9wydIBITh7JZKR+kA/J8TK+M3GfJjsNng0Ncr0H4c6uCt
+	R08n8PFj9+dLqKgKytjZvE3n84UXYevbxrerjJ0oSJ3RThdc4UULgkgKkuy/+rX6IDbFBXt8Iho
+	LsLOvF9HrXwa9ALt3MsjijTsTFwqaf5n2K35Slb6DDBOWpNxRzW05ysn11pwgjoaCubK3G2y6PE
+	DP5TTARwmg6Ct4BjsEw7FIyXiPFLZOVMUHMtqoPPW/eDfXjB+lO+MJlwVSml9smLY+nBP5UFBEG
+	yuqrfnWgeuDBH5EictKoBf6nHt8tprsYBVYmy+K1IfU+mQ1BA=
+X-Received: by 2002:a05:651c:515:b0:38c:670a:ca50 with SMTP id 38308e7fff4ca-39561d33220mr32468801fa.6.1779275091452;
+        Wed, 20 May 2026 04:04:51 -0700 (PDT)
+Received: from localhost.localdomain ([213.230.116.218])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-395882c41c1sm27572611fa.12.2026.05.20.04.04.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2026 04:04:50 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: jic23@kernel.org
+Cc: linus.walleij@linaro.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	hcazarim@yahoo.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH] iio: gyro: mpu3050: use devm_iio_trigger_register()
+Date: Wed, 20 May 2026 16:04:36 +0500
+Message-Id: <20260520110437.13955-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Mon, 18 May 2026 21:31:48 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+mpu3050_trigger_probe() allocates the DRDY trigger with
+devm_iio_trigger_alloc() but registers it with plain
+iio_trigger_register(). mpu3050_common_remove() never calls
+iio_trigger_unregister(), so on module unload the trigger stays
+in the global trigger list while its memory is later released by
+devm, leaving a dangling entry.
 
-> On Mon, May 18, 2026 at 03:55:21PM +0100, Jonathan Cameron wrote:
-> > On Mon, 18 May 2026 09:59:24 +0300
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
-> > > On Mon, May 18, 2026 at 08:21:17AM +0300, Matti Vaittinen wrote:  
-> > > > On 17/05/2026 20:12, David Lechner wrote:    
-> > > > > On 5/17/26 11:08 AM, Stepan Ionichev wrote:    
-> 
-> ...
-> 
-> > > > Maybe it would be better to do something like:
-> > > > 
-> > > > void iio_trigger_poll_nested(struct iio_trigger *trig)
-> > > > {
-> > > >         int i;
-> > > > 
-> > > >         if (!atomic_read(&trig->use_count)) {
-> > > >                 atomic_set(&trig->use_count,
-> > > > CONFIG_IIO_CONSUMERS_PER_TRIGGER);    
-> > > 
-> > > Just in case somebody is going to do that, avoid doing atomic_read() followed
-> > > by atomic_set(). This is typical TOCTOU issue. This should be something like
-> > > atomic_xchg() or atomic_add_return() or something like this in a single atomic
-> > > operation.  
-> > 
-> > Just to clarify - the current code is fine.  This got reported a few years
-> > back and I did the analysis to prove it. From what I recall the key is
-> > that the state space isn't as complex as it immediately looks.
-> > That counter is either non 0 at the start (we don't use it here and we
-> > skip an interrupt - that's actually the desired behaviour if the trigger is running
-> > too fast - triggers must survive that - reenable() callback is there to make that
-> > all work).
-> > 
-> > Otherwise there is a single path that sets it and we know any decrement until after
-> > that happens would have undeflowed (and hence was a bug). The rest are decrement
-> > only and it can never go to less than 0.
-> > 
-> > Hence it is fine.
-> > 
-> > Agreed things get messy if we make this alg any more complex though!  
-> 
-> Perhaps we need a good comment just on top of this atomic_read()/atomic_set()
-> pair. Because it's really the code no one should take as an example how to do
-> atomics :-) Logical question, why do we even have atomics there? Shouldn't
-> be that READ_ONCE()/WRITE_ONCE() to have an integrity in place? (This I believe
-> even mentioned in the documentation for atomics.)
+Switch to devm_iio_trigger_register() so the registration is
+undone in the same devm scope as the allocation.
 
-There are atomic decrements elsewhere that need to be (multiple drivers
-can decrement at the same time) and mixing and matching between atomic accessors
-and non atomic is a mess.
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
+ drivers/iio/gyro/mpu3050-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Comment wise. I'd like to say I'll get to it, but unlikely it'll be soon.
-
-Jonathan
-
-
-> 
-> > > >                 for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
-> > > >                         if (trig->subirqs[i].enabled)
-> > > >                                 handle_nested_irq(trig->subirq_base + i);
-> > > >                         else
-> > > >                                 iio_trigger_notify_done(trig);
-> > > >                 }
-> > > > 		atomic_set(&trig->use_count, 0); /* Clear the use_count if drivers didn't
-> > > > */
-> > > >         }
-> > > > }
-> > > > 
-> > > > to prevent this class of problems once and for all. But yeah, wiser minds
-> > > > have designed this - so let's hear some other opinions as well :)    
-> 
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index d84e04e4b..596919318 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -1127,7 +1127,7 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
+ 	mpu3050->trig->ops = &mpu3050_trigger_ops;
+ 	iio_trigger_set_drvdata(mpu3050->trig, indio_dev);
+ 
+-	ret = iio_trigger_register(mpu3050->trig);
++	ret = devm_iio_trigger_register(&indio_dev->dev, mpu3050->trig);
+ 	if (ret)
+ 		goto err_iio_trigger;
+ 
+-- 
+2.43.0
 
