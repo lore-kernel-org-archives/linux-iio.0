@@ -1,83 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 093B83D093B;
-	Wed, 20 May 2026 10:09:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A1C03BF69E
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 10:12:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779271798; cv=none; b=m6nzLATGKsg4lCDtzHyAKkO61TcXhWsQ9wBbKFWRdy7su48NvcmjbdlxTKx/p+9vFXFrXt6M402z/n5QnxhFSoxq7CHVnM8vFd4O7P/CYl8z8xoOsWNEGsh+y9Y8TzN5SoEAGT2738FegStRCaMNEMPDB7oQ5PfQ2edkRcS5O0I=
+	t=1779271970; cv=none; b=gcUDK4Mw4R8wphtbadQJJ0/QPNPNyYRxI1BmJFXbaenVwJeRLoEhN2DUSUFTQQm978yqB9oi68HhYAU9K3ByFC9GJ05uP8sAsuNHcNPu+98PaarDahNkiYSm0T5tYO6eJnf4IzHpvEC9qCnPBFBQhoq0i++zlcFC9vUu3v6ZLvI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779271798; c=relaxed/simple;
-	bh=1ppgeAFDo1cmwkY1CpueAD6t9/svUfEAWa5+bdroJTc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=doQYpasqoRIjVIzbjXXxKLY6MbPWCf2alk79GTW6vjOIg9WMZ3K0DheMS2+2SkBWvQ1urWxihfTiSWeiynBRwXPPsDQ5gTP+qWtYMP+djMXZU0G6/PEXQKhBfFzC3EQI6BP9GP/1YTzU1xqActdS7eBsjhDvJ6s5271pEumYsnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nkf1hj+G; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779271970; c=relaxed/simple;
+	bh=0B2p36/qTj2Fdw815lUlDWHFRk7MfZrklT7ORDPhlOI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ukSAMtx9/d1zVHQ/nA4IPBjPa0yKS6pgvJw7KIDjRgKv0tteku7SdRpIrYZEQwGObjv378w19YGofSXlG42s18mSQOgQJQdMXxtgEhSy2vUKSTJmZu2iPmYBk19JrQWq+9Z7JWm6IZZKVIGXaM+yqchsMz8yDc9pO5IusXVQ2Po=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OmA2MsAz; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nkf1hj+G"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D8F1F000E9;
-	Wed, 20 May 2026 10:09:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779271796;
-	bh=t9eA5JJdzPuY3YBlUchbJdm0CwMkj433FnoppyW6ysA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Nkf1hj+G86Z9L7YVCs48ElEEhd3IXiORAD+Gq81TfLl7tsHrYwC4CzpQfO6inaBI3
-	 KZXV7ITkOaFR9SvBQ6Oiw2c8VpSDTJEUIfmX4OB0dpnVzrloXAHPt6fwIrTDnZeNtV
-	 CyIOM0UPN3WbDlvspn2a8kOeVL/TAs1DvKQjP32qTZZgBjBsz0OrEqNkyBA5HtBNYG
-	 Ouv8E9vq4Y7FbTuFmbXeOja7CGLi5A0n77pq0BUb3yUy/TRHu2TDrNr4x0UoeEHx4f
-	 vS1P1JJVlAC9L0zSnJ0JX3IJBIJgx/ZGQHVHRrDcOxTg+Td9v722FyUpTth0leEZUv
-	 cY72gnDV2GoAQ==
-Date: Wed, 20 May 2026 11:09:48 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Andreas Klinger <ak@it-klinger.de>, Andy
- Shevchenko <andy@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v9 02/11] dt-bindings: iio: adc: hx711: add VSUP supply
- property
-Message-ID: <20260520110948.167c8e14@jic23-huawei>
-In-Reply-To: <20260518220228.63322-3-piyushpatle228@gmail.com>
-References: <20260518220228.63322-1-piyushpatle228@gmail.com>
-	<20260518220228.63322-3-piyushpatle228@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OmA2MsAz"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-45562c41ec7so2875560f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 03:12:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779271968; x=1779876768; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0B2p36/qTj2Fdw815lUlDWHFRk7MfZrklT7ORDPhlOI=;
+        b=OmA2MsAz2sR5y1NO37zy6c2vazFq9jIQ3DAafBB7de1wK3bso3yVKR3rD+KWTwClX7
+         NDwWrbGiTwC8TIdBBpY7hOhFZpPksgZ+QGOofg+Uv/TxA51xrHbC2bPI8Wlr0nEXm7td
+         BAq4DFQ+dZNC2vzeHrs1Dpi8a7jQgQsm3LLUA7AmQEYAJFjYWeSaHg/ERq98KtKA3YOf
+         pjC1v0P6A0bQBgVK6pKhewxcN4qGyl19yAOsiEwvCe+aoQJcpj8CeIqblBgN7615nMnJ
+         gndP+vEYPeOiS6L31/DNXz1kNZZy7uttNmx1UFp5hXSKo8Xv065R7ugwnGfdiOa+xQVd
+         KYHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779271968; x=1779876768;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0B2p36/qTj2Fdw815lUlDWHFRk7MfZrklT7ORDPhlOI=;
+        b=rhlvRC1XRuozLq/IcsbRVSLdktvWyOb9va7yetWT9CYNhmOo94R5lAyQ4O/Wvu9tW7
+         ivC/6zCvuTpsbd7C+aq3ZWtOwJsNjV7RloMq6CRtocNKYUekn1rq1FkbiXsNOzABdjH+
+         vEHhOJCdETrSEfgUUQosx6DqfpEIJSI3bJO5T+PV6Odfg9jTwUHwuVrzM8eqvEt6jBPs
+         sw9xwvYGf5GECG7JNhvAiOTcCR2D8p5SWCA3EJD10Ql0fI/V6DNmB/KUPG/NYNdbsZzH
+         4MY6Th9J4FKDJuE9235pn3JUGu8FEYS5/NoPubhsiuVltbxxXUD3tGgjuQeNMakfznGr
+         8NLA==
+X-Gm-Message-State: AOJu0YzlCtZFVrmr263y2AATIHVECrhAU5fFkr3hMDm0HsECIEHUozl4
+	Bv+TOtJeetELP4sYEfs+yV3qwiOU9cI678sE7pztIAXTONV3INijWPbV
+X-Gm-Gg: Acq92OEHz5HQtTTp+LMUV99NYJTC1hveWKaiL/rW8GzgQlAR7uJjIhtSnxOSrfpYgmd
+	qc+wxYy9Q0cXS/Kgvr130sgazvESODwJBFzkl3YkinQke8b/5wzjLnDIoNqoE0vOolHlJoTo+SG
+	B1ZKBJKmwqcDPlB3PISiT+qcqMD9u0lu6afOboIH811yx0/jo0Cvup2o8AKAiGkvTaxkGLeQeeC
+	5LgdwFb0QaJ+OeOJzY4/1FVeRzUt8NQk/yjVGgE+kUKOTSyGs8RUzLf4Nq/VwWr5VGe+v/ZnNu0
+	Du40dT5L2+fuX7tt/cEBXsoaJy8SUw0MdzrFbZPHdaRP51YdzUSpZw5l53fmjS0AeHnj0dkoWF+
+	KI06ky7BRFO7Se+5q0YfSwt84qzfZODmid3Wg/sVO1FtTLXUroFILHP3uq/1bFfD9One3O7B+w+
+	RHZatYdGPeBoqBEtfs7iTX01WLfm1qdghaFKL1GI7Tlea3J1wKg8LqCnXgIwyKtps=
+X-Received: by 2002:adf:f64c:0:b0:45e:73b3:4515 with SMTP id ffacd0b85a97d-45e73b34553mr17891059f8f.35.1779271967665;
+        Wed, 20 May 2026 03:12:47 -0700 (PDT)
+Received: from localhost.localdomain ([2001:8a0:6c9b:a000:ed18:5665:257e:fff1])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0fe0fecsm48760228f8f.26.2026.05.20.03.12.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2026 03:12:47 -0700 (PDT)
+From: Gabriel Rondon <grondon@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	andy@kernel.org,
+	nuno.sa@analog.com,
+	dlechner@baylibre.com
+Subject: Re: [PATCH] iio: accel: bmc150: use guard(mutex) for mutex handling
+Date: Wed, 20 May 2026 11:12:44 +0100
+Message-Id: <20260520101244.64434-1-grondon@gmail.com>
+X-Mailer: git-send-email 2.33.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Tue, 19 May 2026 03:32:18 +0530
-Piyush Patle <piyushpatle228@gmail.com> wrote:
+On Mon, 20 Apr 2026 19:15:19 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Document the optional VSUP supply used by the HX711 on-chip regulator.
-> 
-> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-See my reply to v8 around dvdd needing (I think) to be in this patch
-for the hx711 not later in the series.
+> Not sure this list is useful in the commit log. Rather verbose.
 
-> ---
-> No change from v8. Already applied to iio.git testing branch.
->  Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
-> index 1ea60dff98d5..a8eaa1f18de5 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
-> @@ -33,6 +33,10 @@ properties:
->      description:
->        Analog supply voltage (AVDD).
->  
-> +  vsup-supply:
-> +    description:
-> +      Supply voltage for the on-chip regulator (VSUP).
-> +
->    clock-frequency:
->      description:
->        Controls the SCK bit-bang timing. The value is used to derive the
+Dropped the function list from the commit log in v2.
 
+> I took a quick look and can't see anything beyond an if (ret) check
+> in bmc150_accel_get_axis()
+> If it's the only one left I'd use scoped_guard() for
+> bmc150_accel_trigger_handler()
+
+Agreed. v2 also converts bmc150_accel_get_axis() to guard(mutex), and
+uses scoped_guard() for bmc150_accel_trigger_handler(), so no manual
+mutex_lock()/mutex_unlock() pairs remain in the touched code.
+
+> Unrelated change [int ret; movement] - here it just acts as noise
+> [...] don't do this sort of code movement of lines we aren't
+> otherwise touching.
+
+Reverted; v2 leaves the declaration order in bmc150_accel_get_temp()
+untouched.
+
+> return sprintf(buf, "%d\n", data->watermark);
+> [...] maybe also return sysfs_emit(...) is appropriate.
+
+Done for bmc150_accel_get_fifo_watermark() and
+bmc150_accel_get_fifo_state(); the intermediate variables are gone.
+These already use sysfs_emit() in the current iio tree, so v2 keeps
+sysfs_emit() and returns directly.
+
+> Unrelated but [...] val = min(val, BMC150_ACCEL_FIFO_LENGTH);
+
+Left out of v2 to keep this to a single logical change. Happy to send
+it as a separate cleanup.
+
+Thanks for the review.
+
+Gabriel
