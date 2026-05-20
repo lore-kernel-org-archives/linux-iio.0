@@ -1,47 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D75E3A3826;
-	Wed, 20 May 2026 12:23:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6671C3D75B1;
+	Wed, 20 May 2026 12:28:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779279801; cv=none; b=YE5t38RralLTjyUm5066PB2xPAq+IQBTJfqCzfDV/13VbqI5AEw9MZU9azPXenAKlnMFlIQ5PBffEfDtMqD0YycvIirKVndYIN76WW1oMdunInOuzbEvO9NQ0yaaimxyrVVzGfDJVbDgL5srPldudp5h/26k4dczbShrvFinIyw=
+	t=1779280093; cv=none; b=Y9vf7zlHbjjJLX9fSaEuyeolyf3OIqdpHFw5ZJwp4IWOTvPmJxIKWFjavnd3RvmwTNjD6yt7kdeEQJ8x1cKOK8h7P7DziQo/pbfryvHC+ro5I9GhN32eXcKPWS2PabzjYOO7d6Y0S50jdWz1pRTEHP9ewif1EVnupLWPZIKRZmI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779279801; c=relaxed/simple;
-	bh=65GCmGHg32Tqq0NVP4hXIwSAH6YSIHyfOVK7i7Ty3zA=;
+	s=arc-20240116; t=1779280093; c=relaxed/simple;
+	bh=ZCm6TVH1EnykLRTmX44A1fDteqYudVaq3akJ1iaAlRI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lfCJ1Ws0cmMYl+uSRaxmmmx4ZmGOSxXy/Gq4QM782fryJWhVYsW2wVqzitq35c9N6QDJLYlsnzzPrPA56rmOwujVQy24IMN3tv4hezmZ3AfOAqo30HGcnn0BPN0alq2vYsXcgys6TC5i9EWkxp4W4gE7Fz+0R+E4NxvBRlwoA8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OivKzZX8; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=LeCXZUxhuZsNa5FJImvgzYre5wDa9nmbQ3BCSriUdrVPRZj/4+Lf9yuA5HHevvo8hznt/DN6b9juMJxuOnghNo6UXFtebZDVc9ajzURqo1Tx6sg1UmBlBJLtSffVR7jYzIdDlW9giKp5Bs2jqVderzh/rz+czVScBtvjQRRWd8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nlU5VnLR; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OivKzZX8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ACDC1F000E9;
-	Wed, 20 May 2026 12:23:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nlU5VnLR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00CC61F000E9;
+	Wed, 20 May 2026 12:28:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779279799;
-	bh=RJjCC9pEOnHE/hKjtUIx61IqbtK8HGknnmzYVlwzcik=;
+	s=k20260515; t=1779280089;
+	bh=IGpfL+0LAynm3LQxvQNaGz2SBov7K1DeTo1uYTEfziY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=OivKzZX8sYCpxcI9vsoDB0XA7aOyoPQ+22b93GO6WZJ0XG4a7N7mIyglEdYWGEIQ4
-	 SSS7lB9lMMZMfV2xsohDk17q+ejj3KjmzNwXEMWSlvlbhY7dQmtxxeykaW6r/zEpEw
-	 jojwTdXKUMpHwje8iLjlLljKzMtdFIMn7eEuJd7QYxMIAd1uOreZjOVUld6lztpEO3
-	 1MY78b/sJRGLbezObX0/uB+uqKST4eMFD6JSd/SitiiumwguN93IFPDHzyxAhjLWAT
-	 4ttsDdfBsh/g3Rxir+IUy3l+asW7y5SUlb1gTz8zPQZQK4awbl+75vK0+Gk5yvD90B
-	 DkitFDo+v1GUQ==
-Date: Wed, 20 May 2026 13:23:11 +0100
+	b=nlU5VnLRtUsG67Eo3H3qpoXFPbhkqh+7so8QP/EEexkBFlXkMyQ2RetweS0NAV+eU
+	 dDrs++y6pBZf5Z/6K4UVWEJNlWJKpAtTg35AT8WTlf6rOcr7o1j5LZeyYuEX/fJ3+B
+	 2qh6QXliLtgC51xfligEzThyRK/iwL5PKK2cZM3N7oMM0Ko8la5orwzvCaSs/PhZ/j
+	 siIy65lzZLAqFjYDghRFDVyHz7l9vVqj/GvGgWFhj7MJoT7/200QAfVDVPsMI/2zRl
+	 RMaJvpTyKZwpTKMFb+uaihDINVr/QKFa2JtQQp92HOZ5m8gcGK/BPgP8BDEp69A5vn
+	 yEVlYh/6Ed3dA==
+Date: Wed, 20 May 2026 13:28:02 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, "Sa,
- Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Uwe Kleine
- =?UTF-8?B?S8O2bmln?= <u.kleine-koenig@baylibre.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: adc: ad_sigma_delta: fix
- clear_pending_event for registerless devices
-Message-ID: <20260520132311.0f551943@jic23-huawei>
-In-Reply-To: <LV9PR03MB84140C8048A51E50F241EA28F7032@LV9PR03MB8414.namprd03.prod.outlook.com>
-References: <20260518-ad_sigma_delta-fix-v3-0-a2a92b0c36f3@analog.com>
-	<20260518-ad_sigma_delta-fix-v3-2-a2a92b0c36f3@analog.com>
-	<LV9PR03MB84140C8048A51E50F241EA28F7032@LV9PR03MB8414.namprd03.prod.outlook.com>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org (open list:IIO
+ SUBSYSTEM AND DRIVERS), linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH v2] iio: chemical: scd30: Replace manual locking with
+ RAII locking
+Message-ID: <20260520132802.34d82ccd@jic23-huawei>
+In-Reply-To: <20260519131944.25174-1-m32285159@gmail.com>
+References: <20260519131944.25174-1-m32285159@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,58 +48,91 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 18 May 2026 12:55:33 +0000
-"Sabau, Radu bogdan" <Radu.Sabau@analog.com> wrote:
+On Tue, 19 May 2026 08:19:43 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
-> Hi everyone, I am responding to Sashiko's review here:
+> scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
+> calls. Replace them with the newer guard(mutex)() for cleaner RAII
+> patterns and to improve maintainability.
 > 
-> > -----Original Message-----
-> > From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-> > Sent: Monday, May 18, 2026 12:59 PM  
+> Add new helper function scd30_trigger_handler_helper_locked() containing
+> the critical section for scd30_trigger_handler().
 > 
-> ...
+> In addition, small refactor to replace "?:" operator with regular
+> if/else returns.
 > 
-> > +	} else if (sigma_delta->info->has_registers) {
-> >  		unsigned int status_reg;
-> > 
-> >  		ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_STATUS, 1,
-> > &status_reg);
-> > @@ -274,6 +279,8 @@ static int ad_sigma_delta_clear_pending_event(struct
-> > ad_sigma_delta *sigma_delta
-> >  			return ret;
-> > 
-> >  		pending_event = !(status_reg & AD_SD_REG_STATUS_RDY);
-> > +	} else {
-> > +		return 0;
-> >  	}  
-> 
-> He is right about this one, the heap corruption may not be fully solved as a
-> registerless device with num_resetclks = 0 confiugred with rdy-gpios could
-> still have data_read_len = 0 further if GPIO indicates a pending event.
-> 
-> Perhaps I data_read_len == 0 should indeed be checked before attempting the
-> dummy SPI transfer as suggested, right?
-Indeed seems valid.   Make sure to leave some comments around on the
-'why' of the extra check
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+Hi Maxwell
 
-> 
-> > 
-> >  	if (!pending_event)
-> > @@ -578,6 +585,7 @@ static int ad_sd_buffer_postenable(struct iio_dev
-> > *indio_dev)
-> > 
-> >  err_unlock:
-> >  	sigma_delta->keep_cs_asserted = false;
-> > +	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);  
-> 
-> Also right about this one, it belongs in previous patch...
-> 
-> >  	sigma_delta->bus_locked = false;
-> >  	spi_bus_unlock(sigma_delta->spi->controller);
-> >  	spi_unoptimize_message(&sigma_delta->sample_msg);
-> > 
-> > --
-> > 2.43.0
-> >   
-> 
+One of those cases where it made us look at code for first time in a while.
+The original handling merrily copied garbage data.  Let's clean that up whilst
+we are here.
+
+Thanks,
+
+Jonathan
+>  static IIO_DEVICE_ATTR_RO(sampling_frequency_available, 0);
+> @@ -579,24 +587,34 @@ static irqreturn_t scd30_irq_thread_handler(int irq, void *priv)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> +/* Meant ONLY for scd30_trigger_handler() */
+> +static int scd30_trigger_handler_helper_locked(struct iio_dev *indio_dev,
+> +					       int *scan_data, int arr_size)
+> +{
+> +	struct scd30_state *state = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	guard(mutex)(&state->lock);
+> +
+> +	if (!iio_trigger_using_own(indio_dev))
+> +		ret = scd30_read_poll(state);
+> +	else
+> +		ret = scd30_read_meas(state);
+> +	memcpy(scan_data, state->meas, arr_size);
+
+Why is that a good thing to do if we are in an error condition?
+I've have thought the data wasn't valid.
+
+	if (ret)
+		return ret;
+
+	memcpy()..
+
+	return 0;
+
+Or is there something useful in that data?
+Looks like some less than ideal code in the original driver but
+I think it makes sense to clean that up now. Just make sure to put
+a note in the patch description.
+
+
+
+
+
+> +	return ret;
+> +}
+> +
+>  static irqreturn_t scd30_trigger_handler(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+> -	struct scd30_state *state = iio_priv(indio_dev);
+>  	struct {
+>  		int data[SCD30_MEAS_COUNT];
+>  		aligned_s64 ts;
+>  	} scan = { };
+>  	int ret;
+>  
+> -	mutex_lock(&state->lock);
+> -	if (!iio_trigger_using_own(indio_dev))
+> -		ret = scd30_read_poll(state);
+> -	else
+> -		ret = scd30_read_meas(state);
+> -	memcpy(scan.data, state->meas, sizeof(state->meas));
+> -	mutex_unlock(&state->lock);
+> +	ret = scd30_trigger_handler_helper_locked(indio_dev, scan.data, sizeof(scan.data));
+>  	if (ret)
+>  		goto out;
+>  
 
