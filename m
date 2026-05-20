@@ -1,122 +1,204 @@
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+Received: from mail-yx1-f47.google.com (mail-yx1-f47.google.com [74.125.224.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EA542F83A0
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 16:51:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A50C3EDAC6
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 16:54:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.47
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779295867; cv=pass; b=WoSadv4B9Rr1TU6vaqxVUHsLEbJ5bwzAn1H/UQuHK/PVma706Upwhdjlpvbdg4UbgHwAoAt+Mvt3AASX8lmkvYP2lmyVtRA4VdfN4Ss8vrcrfMNQR4n2tX88j+27d4VUYkMAaI0q8Oby3+vXy34NW5LP6j/fvhwq2S3CVZnvyC4=
+	t=1779296062; cv=pass; b=E62Hw5dhMv4olJ5EKxR8sAmiv5hjHZxEWou3PbaZLAzxGJUZz9c3ksVpKyL7a5bdVknyJUR3fBwzPRw/HbuDxAcxoAl8gs4ygAh+ktyYr/EGQhP7iBGIQyoIZJ/fWDL92N/vbvlV6+3SkuxZsuyiZqX6lscFwyOi8bn7ZdEiQ2E=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779295867; c=relaxed/simple;
-	bh=gd+1p3lzzF9MKF9AIXrMd9VPtA+MiW6T3xqSmR2TnJE=;
+	s=arc-20240116; t=1779296062; c=relaxed/simple;
+	bh=K19rBt/eH95YRdsee0UXy9o+MxGzvrklTahRBB0u/C0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NLZiUM3iv2Iwol/M4PYBysz6+mw8hbAYZspcakPP80Gr0zdrO/WzJxVI9m67bxA7cgzbdlJBt+nUg8WoRI575lUjfV+sZ3DL6sE2mc9qmgODWcmKoVpWtAlDRmzeODYvICU01BgHcLwj9peomVZzObACJZO7JUOXjFF8gjHvYSQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MmxuU4h/; arc=pass smtp.client-ip=209.85.128.171
+	 To:Cc:Content-Type; b=DN7U8ijqwxcPxsGl/0dVD8AaiXgbFt2xoDOncttKi1d4wDOgsqJ8coUAPpSqkhnvzfUgeerrNZIZQ1h6c/oY+3yXMNHmh9wNWzMDWSJwLBX88MPnqQPVR/2TLi0BIZhncD2bzkNY8Wy83t+l5pO9VinwInvf+hxHThVidpkGXXk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kXpH0cRT; arc=pass smtp.client-ip=74.125.224.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MmxuU4h/"
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-7c307937816so44148357b3.0
-        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 09:51:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779295865; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kXpH0cRT"
+Received: by mail-yx1-f47.google.com with SMTP id 956f58d0204a3-65c21049dafso4552578d50.2
+        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 09:54:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779296060; cv=none;
         d=google.com; s=arc-20240605;
-        b=S10o9FISKxjGsvlP08k/LhOOsfS0rsN7D6FRqG+tp6mYU8pK3Y+wGBIyTnEhnHjJT+
-         d2DtRmE2JsuPGzeyEp+FDueHxPKGIp8Arxo6xaRw02t1lq6nKkUh9bctxtjaqtReY5rt
-         7YiGaqjraEsvMJyV+sq1LSofMgQp5B72FhEk95XXoklEu/C85FVIf75qg4R1Yvy7VyCz
-         DnVmMWPnkRtoItp3Lc9RKxAvBdokDP4CIsq0nITwtPLXxYg+oT/BQRQsayMaUTOKwIZu
-         c3PVCJ86wL5+L2QEGdpcOl2ZqFZR2t67KGohRDjRwMA8wbptjij8dSLnBXL27AeDDJWU
-         mfgQ==
+        b=aAVDdbOKD4XFWBxlIwE3ZIG2zBA3O4wa5lSKSvHno15PeDB7/fdt8i+w0asg4z8WCE
+         GXLTLQKOd/IOjvq3OGOJY9/6oFdB5lGYMllUQZ5ANlYi8xxVL4S1rKKzm4+FE+6OLpmM
+         Ohp/JgPKNEKsPEQomEpapH/imYiRoM/GKPo972ELWkGwSA9s2V02V+Ebhl0S2n7aWtV2
+         nSOPJUuMDnxojMqrmnygzUIA+SFry1VlPQrNQkWSZXnWPY1WCwzj71bPQQBOmZD4VE7l
+         Vp9PZp/fZVEe2J9SRbFCLlHWPafnXdwfeIf8c1nZjYXkXus14BWYK/3E7kY8qPLAFSgJ
+         hYjQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=gd+1p3lzzF9MKF9AIXrMd9VPtA+MiW6T3xqSmR2TnJE=;
-        fh=NGveLK1mrWWObDCouU1V5VOXo5aYIlSDZz5Mm47l4s8=;
-        b=MiK6a9KG3hkPx1hQoAOoAqlLs6V41opUoKhFYCkM0LXP0eUYcAuBgdL4ZEJz3WMZey
-         sCRdKHrwvnXsEYmCnn7+50SO5pN7kGF7zkJsA1cNVYapzvJOMY/06JvMy7DXB2NqyRo7
-         BfZxmanmaVcaWAUx+QXWArqyWkKMoZAUoGFLnOiAX30dWk4cnFQN+ez6d9Wp787ZZvGS
-         ttIpYxtUvd09f2VqGn12GARmJt6n5DtjX0AQW5KwBRLOb0yFuoZWvS8JYK4J0qXvXaEv
-         7l5KuIoNgJrI2CwzUxr+hoAScgTnSNSgN3k6RuT2RHvMwj9pMmkGXjYoNR6D85Crxpld
-         Z5ng==;
+        bh=DZQo0WZO+VD70ZUmL23PDv5v/FwowYXdPD6P8/VZy+o=;
+        fh=e8ayNHkf6jPDCacubH9GsRzGQzRfAly7Y/v7MCc5MAM=;
+        b=iBUfdGVviWxSNBPApWCqxpFnjnPs6Gl7k97ijY1dc1Dwun1PxsBWjH73NfyLoPdL9c
+         eBarh25Qjr/l3gm5YSHHSwGVhpedyToebEcHtnO21iqYcqk9Sjv1ih+7LEnPJ/R9ouPh
+         t0k8t1NtP1XBdGASiv6/i4c4Vf7BUVuMV8itYdmNlBvKkgzMwBGL+/fhg6/EStaJiYY9
+         grWXiIAhFjviLJRw7kLs+d+YeMDbVWSiPgy3siL0SKdI5/l47CsVwGlqke6SCfsH7GLX
+         rmmcn6KsMlJ255QUbqE6f2WmF0EOs7YKsI7CeTRpJjo9yF+5akXVxKZeM+p1WwGimqAz
+         K6+g==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779295865; x=1779900665; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779296060; x=1779900860; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gd+1p3lzzF9MKF9AIXrMd9VPtA+MiW6T3xqSmR2TnJE=;
-        b=MmxuU4h/Ng2RJirZwGlssMyuApybL8FQbyCiw+x0kCK8QdGy2mCBUhjpsF/mbPDCxN
-         lIL/obcKt2MKctjhVvARBclmxqMa9sq0483k0yYnekngPEPEOMhCOBumpHDK+2Pj4DdB
-         nLgX7k5q7UtioHtel+OUK8/J2L8+Z9geGKGCx8coaW/HLBRWdXFUiA5pwhQPoeBuncfD
-         a8rPfcajy7Iglv/U0sfriVRnpsnSb29pBBUh5cidEx7isBUYQLDMnt/G+79MVvTbXVX1
-         LBQA8f15tSgSMc/DOnKCjO2GYDkah+RxjJmLjsKxyuk7GLDZGCXKZfhfbC08gIrxtejm
-         +4dA==
+        bh=DZQo0WZO+VD70ZUmL23PDv5v/FwowYXdPD6P8/VZy+o=;
+        b=kXpH0cRTgdTj15ZNi21L1H33lFp5SORu/t+NO0B6mjBq7MbCyrYrhlZI3xREadVsXO
+         /n+R77t7RK2STAdu9KgVPk+5KSuxL4Nh4i7+aWL+u1doX5N/nvSM4ojs2iNcI62FOlgC
+         KVU8dcKRvgeBFSMkMUpj4UNG5woboc5a1wP88Ujule9h3EKo3QE7z3FopEAK0f2izyJN
+         pnWTAkP5gH4BmzttQbq2xYKQnV8ZSV7AXp1RwgkWIkzytNHrEvxb4AIPOEYl8sudC4XD
+         qD8zVAm8aXc8aHa0TNpHJ0MrAKMET/cqQ0lTochhhaZw9tdrIflLcmI4IyuL/mMd+Wyk
+         zFQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779295865; x=1779900665;
+        d=1e100.net; s=20251104; t=1779296060; x=1779900860;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=gd+1p3lzzF9MKF9AIXrMd9VPtA+MiW6T3xqSmR2TnJE=;
-        b=Zh8QMonhMkEHXim78iWMs77HT1IZt5L8tZOrRvM+0m6d2PAwBwe88Ote+WqaETLia3
-         KQ9F3oiCdEy/OFZrMoMZfJenIwIxLvr+9FGlBMcrM/VOtuiQ2qlHuxPmrKRgB4MO5Pbh
-         BWR9k6teFhARysSSzoRnNvLuO/xPBWS1/3J1u1s7nCfqfiSqKsfKPGxgHEX+sW9sPNLD
-         SMbKzqnf20piZPiffapZ+xIBkYtMgXKuUAYGzkYA4I9ve051HTXOII2rw7oKWDnpzenS
-         oQMDqJ4WQZEt51f7SNcSHpl8dnbk9QRkUiwjjrdGfMoYHYqU6xNRvpRsI1M7FnNEyyn4
-         8D8Q==
-X-Forwarded-Encrypted: i=1; AFNElJ8Q6gNTH/gN30ADjhJrxHpM4hJT2Id8gYMyrhv5buyNPMX05X1jbNnyTRXcHqQvs4n7tFrvSQilPYQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzI0rAMyDzMTa/QF3UKAEWlR6/Ts12z+Bv/BNcDgKG+EFnRBIum
-	8MsjVqX/f6eTgXaFarFDGMfkNRXdPqVvILD6jkfqxP/9b/b/0yG+dov/O5UBQTwX2bKs2rWsgiB
-	nzi/BtMgN6QWNY5ROiOcdgwLzGPWzWs6thdJLQsBxRQ==
-X-Gm-Gg: Acq92OGekj+556/TjxMKiieF4X7gL1fHrslkT8pFmd52BTQI6hyqh2Z0WXByvyLryqu
-	KvwG7SBns+QS7jQw145qp9Mu/1tXDfcf+4PqoqxeUaAtJhmvmNlXoWCLjo2+JPj4MYqPtgfTwZq
-	4iyns64frEO1PfHDNtaQBccgE7Vkacu6zdJmFUu0WVrOh0AS+tmrmEpqwsUmkvbSiCP5GiA/Opw
-	E5tp68PgrNE9DKevgvXNX3UF1+su/zk6LMOl2ZIwyy9baLkGm7iVlwzM+AyQ+9N5K/lmyYwkauR
-	MHhjXw==
-X-Received: by 2002:a05:690c:6510:b0:7d0:6660:1608 with SMTP id
- 00721157ae682-7d0666025ffmr55848987b3.34.1779295865479; Wed, 20 May 2026
- 09:51:05 -0700 (PDT)
+        bh=DZQo0WZO+VD70ZUmL23PDv5v/FwowYXdPD6P8/VZy+o=;
+        b=VtiC2XkD4sx0kYNrRvLLSW4jSRfOyd2iT31ZGHNSVuihI9v8qT8VuoJTQCcMusf0h5
+         FeLx97Z3/5RnNDDaNlasunldCVdH5bLQmq02hE0OdvB5S0eMLXUOCsWovMvMNDqoFwrp
+         yKZxkEf+klpEAoKQ96IpAclqvqekyTDF3s9LM2YrBsjOAy3HRIktS1li56zi7nuwL3pZ
+         h6eOfAgbMxvgII1PdBw2RDTuPn5pvdAJWA5pXhz6qQoozSP/WW/eEwsmPZj3CgmRlEG1
+         Wj0GR9I+zBFnTidQ2Rxa4qYwGTub4EcbpjRGjjsw3Pux6AGeQoYlM076BSdiy+Bvfq8x
+         GwUQ==
+X-Forwarded-Encrypted: i=1; AFNElJ++syj4Y7R9kKgX3FfltO1qsPzaLCvCYzXhRsN4XO6x3C0HvyAcyzOeuw4E6dqXzqRTA28Q8w3ehdw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyhh1SDr8ycO+Spka7mNT5NAoOfAFHzUKl74xjxGugvajgQquuL
+	osLT/dhmQ4HUubveJJMlhMqjiX1688B99xPtOtNnDdu4cR2j6l/b3r4MtGA/lnQYBDgJa1xjvKV
+	LSZJj69l9dj9CSDa5JaCPKdNvO5njuo0=
+X-Gm-Gg: Acq92OHKUB035liEM84PTvmUkQVNSapQSVkWL7mSQYJAA70HPaU0W9/tkzIhfQu2Spe
+	ulgDOKzcL4IavzBNjGXPkgLb51fvUy7dqgR6PO6N0962xtRw+HrHXersFO/vzP90t4ZsOL6gRFQ
+	aa2fdNTFDJA/AIlBf5pFX9n3CooEYdHYmuRL4+JV7BWk58o8+jnLjF/ejvkujRLgAFiYs5wrj6r
+	RXeFOyqMs/qq7knjlkoB0J60JD0OY0S5/fjWUTxV7md+HdXq3/31JWuMW+8Q1gk2oI7JfxV4hqD
+	ItaOUw==
+X-Received: by 2002:a05:690c:f08:b0:7bd:882a:43ef with SMTP id
+ 00721157ae682-7c95b82774cmr260994167b3.26.1779296059408; Wed, 20 May 2026
+ 09:54:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260519212602.30541-1-m32285159@gmail.com> <20260520122229.15326-1-sozdayvek@gmail.com>
-In-Reply-To: <20260520122229.15326-1-sozdayvek@gmail.com>
+References: <20260519131944.25174-1-m32285159@gmail.com> <20260520132802.34d82ccd@jic23-huawei>
+In-Reply-To: <20260520132802.34d82ccd@jic23-huawei>
 From: Maxwell Doose <m32285159@gmail.com>
-Date: Wed, 20 May 2026 11:49:33 -0500
-X-Gm-Features: AVHnY4KSvzimm5epreAoU_b1KNZC3eJ_z6SJdnuuLIeErUkKrfjqyr1I834bieg
-Message-ID: <CAKqfh0G43HY9Mt5WW=0evk4Rveh_4hqkMdragdZcd+cQBNGr2g@mail.gmail.com>
-Subject: Re: [PATCH v4] iio: chemical: sps30: Replace manual locking with RAII locking
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, tomasz.duszynski@octakon.com, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
+Date: Wed, 20 May 2026 11:52:48 -0500
+X-Gm-Features: AVHnY4KfTfM0M0PjrEqeyOTAfReCPO_VFNyUeXim1966ay9y6FJCGgrZQHxesiE
+Message-ID: <CAKqfh0H_v+47GJNr9eGuAPc4ywdogFcR1YVUkE4FyPF_X_9pvw@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: chemical: scd30: Replace manual locking with RAII locking
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 20, 2026 at 7:22=E2=80=AFAM Stepan Ionichev <sozdayvek@gmail.co=
-m> wrote:
+On Wed, May 20, 2026 at 7:28=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
 >
-> The hunk in sps30_read_raw() adds an empty line before "default:" in
-> the switch, which is unrelated to the RAII conversion and probably
-> worth dropping.
+> On Tue, 19 May 2026 08:19:43 -0500
+> Maxwell Doose <m32285159@gmail.com> wrote:
+>
+> > scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
+> > calls. Replace them with the newer guard(mutex)() for cleaner RAII
+> > patterns and to improve maintainability.
+> >
+> > Add new helper function scd30_trigger_handler_helper_locked() containin=
+g
+> > the critical section for scd30_trigger_handler().
+> >
+> > In addition, small refactor to replace "?:" operator with regular
+> > if/else returns.
+> >
+> > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> Hi Maxwell
+>
+> One of those cases where it made us look at code for first time in a whil=
+e.
+> The original handling merrily copied garbage data.  Let's clean that up w=
+hilst
+> we are here.
+>
+> Thanks,
+>
+> Jonathan
+> >  static IIO_DEVICE_ATTR_RO(sampling_frequency_available, 0);
+> > @@ -579,24 +587,34 @@ static irqreturn_t scd30_irq_thread_handler(int i=
+rq, void *priv)
+> >       return IRQ_HANDLED;
+> >  }
+> >
+> > +/* Meant ONLY for scd30_trigger_handler() */
+> > +static int scd30_trigger_handler_helper_locked(struct iio_dev *indio_d=
+ev,
+> > +                                            int *scan_data, int arr_si=
+ze)
+> > +{
+> > +     struct scd30_state *state =3D iio_priv(indio_dev);
+> > +     int ret;
+> > +
+> > +     guard(mutex)(&state->lock);
+> > +
+> > +     if (!iio_trigger_using_own(indio_dev))
+> > +             ret =3D scd30_read_poll(state);
+> > +     else
+> > +             ret =3D scd30_read_meas(state);
+> > +     memcpy(scan_data, state->meas, arr_size);
+>
+> Why is that a good thing to do if we are in an error condition?
+> I've have thought the data wasn't valid.
+>
+>         if (ret)
+>                 return ret;
+>
+>         memcpy()..
+>
+>         return 0;
+>
+> Or is there something useful in that data?
+> Looks like some less than ideal code in the original driver but
+> I think it makes sense to clean that up now. Just make sure to put
+> a note in the patch description.
 >
 
-First one is a stray change, my bad.
-
-
-> Also, moving guard(mutex) into sps30_do_meas() changes its contract:
-> previously callers had to hold state->lock around the call, now the
-> function takes it itself. A line in the commit log would help future
-> readers avoid the obvious "I'll just wrap it in mutex_lock()" pitfall.
->
-> Stepan
-
-See:
->> Add guard(mutex)() into sps30_do_meas() as every caller locks it's call.
-
-Basic but still denotes that sps30_do_meas() holds the lock.
+That's likely a result of me being lazy and copy-pasting some of the
+code and touching it up so we can make the stack frame leaner. TBH I
+would say moving it may be out of scope for this patch? I don't know,
+I think it may be worth leaving since the original code did this. I'll
+still check the docs later to see if there is actually something
+useful in the data.
 
 best regards,
 max
+
+>
+> > +     return ret;
+> > +}
+> > +
+> >  static irqreturn_t scd30_trigger_handler(int irq, void *p)
+> >  {
+> >       struct iio_poll_func *pf =3D p;
+> >       struct iio_dev *indio_dev =3D pf->indio_dev;
+> > -     struct scd30_state *state =3D iio_priv(indio_dev);
+> >       struct {
+> >               int data[SCD30_MEAS_COUNT];
+> >               aligned_s64 ts;
+> >       } scan =3D { };
+> >       int ret;
+> >
+> > -     mutex_lock(&state->lock);
+> > -     if (!iio_trigger_using_own(indio_dev))
+> > -             ret =3D scd30_read_poll(state);
+> > -     else
+> > -             ret =3D scd30_read_meas(state);
+> > -     memcpy(scan.data, state->meas, sizeof(state->meas));
+> > -     mutex_unlock(&state->lock);
+> > +     ret =3D scd30_trigger_handler_helper_locked(indio_dev, scan.data,=
+ sizeof(scan.data));
+> >       if (ret)
+> >               goto out;
+> >
+>
