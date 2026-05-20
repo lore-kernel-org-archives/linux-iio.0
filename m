@@ -1,173 +1,197 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8C7B3FE37B
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 18:51:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA4E272E56;
+	Wed, 20 May 2026 18:53:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779303119; cv=none; b=htzs7uHcdcXQDLKRbJfDhARiK32YHmafJmiaUparYbqPQMel4aZCzPKnzayKCAh2oeIQR+nj7FlqYzXbg5fN5teCItfCIe5G7P3POeta7TaJnskQ3LC4JyotWxvcUkNb4bxrFHI7OHDfX51xggof6uerDk6bkiQcUvk/53bc7gA=
+	t=1779303199; cv=none; b=ahklsaQFp2UEG86MjMveoO4leShp0duMpCNkyBcqoAWwFaiT33hSJqDs0sskemfUMVnPyVfVD6X7xNYvUZ6YsFCRvqZEh3WYFF3ex6Lm2BkkOByyIbJKn0duVyiocZ07Rk8FPiAUb4NT2HkPWauHKT88oteOc0C9M5F6hYzliOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779303119; c=relaxed/simple;
-	bh=H3E+RZJ0ZZQdGvIV9hZi2HA8RPpyijoz6EaLubDIzr4=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=XA44sunqDF1CcL1tNiCZo3LnDdnYVpkAXbmanFji+Q4dDRqKWOO5ZsKxckThQG/yaV0JCJmFKt06XOWHwXQKCFpFulXhPdPkVCdLkhRh6b/lNE5qBFn+99dGSs6rzSX7s4G/o53uHCsH7Qmt9VEdC2rly+8qSrKyz9iq8bmgZG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yvuyyfv0; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779303199; c=relaxed/simple;
+	bh=Ywx1mGdSgqbv5k9HmpLCR0s+Q572k8jWkACMalkVr/Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HoHgq5XUqvhUk1kKw0lUZVvGEdNeO3l9etBR5tzQWBigBMSnxu14/qg+8wbyv8N027vi1cEupuhM7X1gCM4ZGfCfeLRmqRFhxHjcWrNioKas4QU9/0sHdjcJhscaluakEMeDR7ExqE6cYEVDqfyHiHBTNg6qwO09pE+A5id6XMM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IggBUpcT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yvuyyfv0"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-43fe5574cb9so351649f8f.3
-        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 11:51:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779303115; x=1779907915; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=kPQEZefd1Ef2xxJ5Qo6FIZLbI7JvvMhU7kzfA8EEsl8=;
-        b=Yvuyyfv0Z/yjvFrTAb0o8G0pe35OOxVwv5rt1hlTR1QBDknx+I9eTQTWCyN8R9hxdi
-         IN5Uz/LnuegGO2rsyOnhp3GLI52wxq4Ht6RanA2skwsB/unZoECcltT6tirFrTtruVnP
-         WwgNF9PowrmIVy1UzQmikIz44iC6kXwxZ1g2O/p2vFGxT/iyNvzgVDhMK9F/ekXUfIeh
-         GI7Sr7mI5JuvNqrasqX3L3RFpYdkq1J9l24Yb6W8V/1/loWLptycTqh0ZdV7n3zw1toZ
-         fNnseZ5CbM8mfO5LZ+bGiWcsqcFQnXRzx5yc6U5st/xSmUYTwIcGpHcUBTbwiMiy3OFC
-         r0HA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779303115; x=1779907915;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kPQEZefd1Ef2xxJ5Qo6FIZLbI7JvvMhU7kzfA8EEsl8=;
-        b=svGU0xP38UO3htKgHzukA3M2LPKfLTvAWqJgQwf945NGPMWovM73f7W/LXgFbtCImp
-         vW7ng6ZfotC3SECCZwgTFZml0N2PehlTtqM6AE7AKUeSRHXxnSBK29AGUqvOU3iLvMfA
-         ztS5FhFWOlK24v0nmYKWIoweaTShbItsvLIwXzsCAM/Q5NuLZKVM/VFfssCg2woqkO9m
-         XWnCEgjigJLo3t/wgML4MWaU43VmKs2yJu2WR2fwYKKhQnK7K20GmFfB6f3bWj9g/wQu
-         F0/In78Br0NfaPcSb1/VOq3MmOXEOmZq+OMGsLmuW68MbBBWfc2jrYevHCpkbZCfyM6h
-         MQBg==
-X-Forwarded-Encrypted: i=1; AFNElJ9DFannF+xi+O7BD3kI74WSuJpRUBy3w0a/z4PvB0CBnqn0jgObamvIlDqtXhJ6qoCaqX7Hmdibhic=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz35w19+42xr/7IJDlOsImllkgrxvzG9T1X0ZkpnZT4y6b0x3En
-	VXCu7xLk6BY8NtXibEq9rlnvr4pSUixAMLvkI/i9U3DxsG7QebbwUmWw
-X-Gm-Gg: Acq92OHiQd6HuTEMhk4wkFri5JyITavo/DHGO5evbqP+HWqstvyYg8fYD3tw+SKuxo1
-	JReY9T/I3VyGd9Wj1zZhNe4zxqCbV7bJrpBQvZOcHArAk8OslWh7ol1ilo6XuzkrHFrLC70y780
-	TQ74UAiezGhpb6uVd1SnJS6bxpCviHVFPB3JNRtsR6ugil6wztmDrae3567Dra4/onQb4iM6yJ/
-	fAoz/0GvJ9QcrSm/gcRNpxOpArerKJspDl2o2hJUW+krenAZKB+dJmafQZea5ueesajJO1XT7mr
-	xJEsVKjxWmWwZfp/kUta7mOvDP4oiE8VWJUzb8Fy0Ybjp+LnBQzJz4+erfmKltAGnseTdMGzc6u
-	3GvHW/dRBEIlQAvCiDQz+YEocZiA51XxWt+eLdM2ojTBbcL89qYkb+oIYEP4J5Tp41S8pV5Cmt7
-	gmYCp1Ah9e7ShwNnr6VwKEcx9nqw8DYCbZmcKAsaW3SKy9
-X-Received: by 2002:a05:6000:24c3:b0:45e:8a84:bf68 with SMTP id ffacd0b85a97d-45e8a84bfa2mr6451715f8f.3.1779303114806;
-        Wed, 20 May 2026 11:51:54 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0fe1a41sm60518272f8f.31.2026.05.20.11.51.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 11:51:54 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	hcazarim@yahoo.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: [PATCH] iio: potentiostat: lmp91000: fix NULL deref in probe by reordering setup
-Date: Wed, 20 May 2026 23:51:41 +0500
-Message-Id: <20260520185142.34015-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IggBUpcT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4A901F000E9;
+	Wed, 20 May 2026 18:53:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779303198;
+	bh=tdxodyJKcIQWQQePbZ1iQzbrwRLc3HZLKX6TGNn3DJg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=IggBUpcTMOD7KV5y7K3N5L0xosHIkx8y+TVtDSuHdZzDglbbW+mvovC06wfxbhVwD
+	 X8cD8qBFKK2y9FafiB7lErihgowON3bsLpwrHIzmEcr/k4uiG3F/W4guY8ThhF0Kd9
+	 EX/DDUPxdsMy9vAIYgA+Y6HVVGIqm6BZOzX3tsmZtbwcSd3ChQCq1q3rT21+NWblBR
+	 ZH5nSFcP7Uf30dbU8ywktbuzS5tvQIviQaLohjMV5GpPgUNaIW4fRS/2SmZctWpGRD
+	 no1V7oRHXRzZvAn+WFGQZeXAUvD1+Wlnlsq0RtprmPbn7emTLv1UxDHJ3qtMOw/QrJ
+	 ZJuVpq8v5jObA==
+Date: Wed, 20 May 2026 19:53:07 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Liviu Stan <liviu.stan@analog.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, "Rob Herring" <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>, Francesco Lavra
+ <flavra@baylibre.com>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux@analog.com>,
+ <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v2 7/7] iio: temperature: ltc2983: Add support for
+ ADT7604
+Message-ID: <20260520195307.6c06760d@jic23-huawei>
+In-Reply-To: <20260520181940.548759-1-liviu.stan@analog.com>
+References: <20260518145802.49a3bc94@jic23-huawei>
+	<20260520181940.548759-1-liviu.stan@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-lmp91000_probe() calls iio_trigger_set_immutable() with
-iio_channel_cb_get_iio_dev(data->cb_buffer) before data->cb_buffer is
-assigned. The struct is zero-initialised by devm_iio_device_alloc(), so
-cb_buffer is NULL on entry, and iio_channel_cb_get_iio_dev() does an
-unconditional cb_buffer->indio_dev which dereferences NULL.
+On Wed, 20 May 2026 21:19:37 +0300
+Liviu Stan <liviu.stan@analog.com> wrote:
 
-Reorder probe to acquire cb_buffer first (handling -EPROBE_DEFER) and
-only then set the immutable trigger, register the trigger, set up the
-triggered buffer, and register the iio device. Move the cb_buffer
-release to the end of the cleanup chain so a late failure properly
-unwinds in reverse order.
+> On Mon, 18 May 2026 14:58:02 +0100 Jonathan Cameron <jic23@kernel.org> wrote:
+> ...
+> > > > > +		    !(st->info->supported_sensors & BIT_ULL(sensor.type)))
+> > > > > +			return dev_err_probe(dev, -EINVAL,
+> > > > > +					     "sensor type %d not supported on %s\n",
+> > > > > +					     sensor.type, st->info->name);
+> > > > > +
+> > > > > +		dev_dbg(dev, "Create new sensor, type %u, channel %u",
+> > > > >  			sensor.type, sensor.chan);
+> > > > >      
+> > > >     
+> > > > > @@ -1445,8 +1782,9 @@ static int ltc2983_eeprom_cmd(struct ltc2983_data *st, unsigned int cmd,
+> > > > >  
+> > > > >  static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
+> > > > >  {
+> > > > > -	u32 iio_chan_t = 0, iio_chan_v = 0, chan, iio_idx = 0, status;
+> > > > >  	struct device *dev = &st->spi->dev;
+> > > > > +	u32 iio_chan_t = 0, iio_chan_v = 0, iio_chan_r = 0, iio_chan_c = 0;
+> > > > > +	u32 chan, iio_idx = 0, status;
+> > > > >  	int ret;
+> > > > >  
+> > > > >  	/* make sure the device is up: start bit (7) is 0 and done bit (6) is 1 */
+> > > > > @@ -1493,8 +1831,26 @@ static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
+> > > > >  		    !assign_iio)
+> > > > >  			continue;
+> > > > >  
+> > > > > +		/*
+> > > > > +		 * Copper trace and leak detector sensors without a custom table
+> > > > > +		 * produce only a resistance result; the chip does not populate
+> > > > > +		 * the temperature result register. Emit only an IIO_RESISTANCE
+> > > > > +		 * channel in this case.    
+> > > > 
+> > > > Do we care?  That is are they useful without the table? We could just make it
+> > > > required in the binding.
+> > > >     
+> > > 
+> > > The datasheet specifies the table is optional. But more practically, in order to
+> > > be able to add accurate values to the custom table, the users first need to measure
+> > > the sensor's resistance at multiple known conditions, so I think the resistance-only
+> > > output is useful during that characterization phase, before the table exists. Making
+> > > it required would force users to provide placeholder values just to get the driver
+> > > to probe.  
+> > Who cares of datasheet is crazy :)  
+> 
+> Fair enough :)
 
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
- drivers/iio/potentiostat/lmp91000.c | 36 +++++++++++++----------------
- 1 file changed, 16 insertions(+), 20 deletions(-)
+Nice if I could type "if" obviously!
 
-diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-index eccc2a343..7a938a023 100644
---- a/drivers/iio/potentiostat/lmp91000.c
-+++ b/drivers/iio/potentiostat/lmp91000.c
-@@ -330,17 +330,27 @@ static int lmp91000_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
-+	data->cb_buffer = iio_channel_get_all_cb(dev, &lmp91000_buffer_cb,
-+						 indio_dev);
-+	if (IS_ERR(data->cb_buffer)) {
-+		if (PTR_ERR(data->cb_buffer) == -ENODEV)
-+			return -EPROBE_DEFER;
-+		return PTR_ERR(data->cb_buffer);
-+	}
-+
-+	data->adc_chan = iio_channel_cb_get_channels(data->cb_buffer);
-+
- 	ret = iio_trigger_set_immutable(iio_channel_cb_get_iio_dev(data->cb_buffer),
- 					data->trig);
- 	if (ret) {
- 		dev_err(dev, "cannot set immutable trigger.\n");
--		return ret;
-+		goto error_release_cb;
- 	}
- 
- 	ret = iio_trigger_register(data->trig);
- 	if (ret) {
- 		dev_err(dev, "cannot register iio trigger.\n");
--		return ret;
-+		goto error_release_cb;
- 	}
- 
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-@@ -349,35 +359,21 @@ static int lmp91000_probe(struct i2c_client *client)
- 	if (ret)
- 		goto error_unreg_trigger;
- 
--	data->cb_buffer = iio_channel_get_all_cb(dev, &lmp91000_buffer_cb,
--						 indio_dev);
--
--	if (IS_ERR(data->cb_buffer)) {
--		if (PTR_ERR(data->cb_buffer) == -ENODEV)
--			ret = -EPROBE_DEFER;
--		else
--			ret = PTR_ERR(data->cb_buffer);
--
--		goto error_unreg_buffer;
--	}
--
--	data->adc_chan = iio_channel_cb_get_channels(data->cb_buffer);
--
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
--		goto error_unreg_cb_buffer;
-+		goto error_unreg_buffer;
- 
- 	return 0;
- 
--error_unreg_cb_buffer:
--	iio_channel_release_all_cb(data->cb_buffer);
--
- error_unreg_buffer:
- 	iio_triggered_buffer_cleanup(indio_dev);
- 
- error_unreg_trigger:
- 	iio_trigger_unregister(data->trig);
- 
-+error_release_cb:
-+	iio_channel_release_all_cb(data->cb_buffer);
-+
- 	return ret;
- }
- 
--- 
-2.43.0
+> 
+> > 
+> > The initial case could I think be handled by an 'identity' table. 
+> > If it's useful in more general cases maybe we should always put out the resistance
+> > channels? This would be a bit like we often do for ambient light sensors, where
+> > we have a computed illuminance channel (IIO_LIGHT) + the data it comes from
+> > (IIO_INTENSITY)  
+> 
+> I checked internally and we could make the table required for leak detectors. For
+> copper traces, sub-ohms variants cannot have one, but we could make it required
+> for > 1ohm ones.
+Great. Thanks for chasing that down.
+
+> 
+> This means we could remove the LTC2983_SENSOR_LEAK_DETECTOR from the if condition,
+> and have something like this in ltc2983_setup:
+> 
+> if (st->sensors[chan]->type == LTC2983_SENSOR_COPPER_TRACE) {
+>     if (st->sensors[chan]->n_iio_chan == 1) {
+>         st->iio_chan[iio_idx++] =
+>             LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+>         continue;
+>     }
+> }
+> + the n_iio_chan == 2 check at the end
+> 
+> or drop the n_iio_chan == 2 check and do something like:
+> 
+> if (st->sensors[chan]->type == LTC2983_SENSOR_COPPER_TRACE) {
+>     if (st->sensors[chan]->n_iio_chan == 1) {
+>         st->iio_chan[iio_idx++] =
+>             LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+>     } else {
+>         st->iio_chan[iio_idx++] =
+>             LTC2983_CHAN(IIO_TEMP, iio_chan_t++, chan);
+>         st->iio_chan[iio_idx++] =
+>             LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+>     }
+>     continue;
+> }
+> 
+> if (st->sensors[chan]->type == LTC2983_SENSOR_LEAK_DETECTOR) {
+>     st->iio_chan[iio_idx++] =
+>         LTC2983_CHAN(IIO_COVERAGE_PERCENT, iio_chan_c++, chan);
+>     st->iio_chan[iio_idx++] =
+>         LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+>     continue;
+> }
+> 
+> or use a switch case:
+> 
+> switch (st->sensors[chan]->type) {
+> case LTC2983_SENSOR_COPPER_TRACE:
+>     if (st->sensors[chan]->n_iio_chan == 1) {
+>         st->iio_chan[iio_idx++] =
+>             LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+>     } else {
+>         st->iio_chan[iio_idx++] =
+>             LTC2983_CHAN(IIO_TEMP, iio_chan_t++, chan);
+>         st->iio_chan[iio_idx++] =
+>             LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+>     }
+>     continue;
+> case LTC2983_SENSOR_LEAK_DETECTOR:
+>     st->iio_chan[iio_idx++] =
+>         LTC2983_CHAN(IIO_COVERAGE_PERCENT, iio_chan_c++, chan);
+>     st->iio_chan[iio_idx++] =
+>         LTC2983_CHAN(IIO_RESISTANCE, iio_chan_r++, chan);
+>     continue;
+> case LTC2983_SENSOR_DIRECT_ADC:
+>     chan_type = IIO_VOLTAGE;
+>     iio_chan = &iio_chan_v;
+>     break;
+> default:
+>     chan_type = IIO_TEMP;
+>     iio_chan = &iio_chan_t;
+>     break;
+> }
+> st->iio_chan[iio_idx++] = LTC2983_CHAN(chan_type, (*iio_chan)++, chan);
+> 
+> What do you think?
+> 
+I don't immediately have a strong opinion. So choose which ever
+looks most readable in situ.
+
+Jonathan
+
+
+> Thanks,
+> Liviu
 
