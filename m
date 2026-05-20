@@ -1,155 +1,147 @@
-Received: from ixit.cz (ixit.cz [185.100.197.86])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AED7A344DB4;
-	Wed, 20 May 2026 19:26:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.100.197.86
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779305206; cv=none; b=LPPkWtH5mcCdp0x7bSRLObZJwOKHXgnLeRTZF/avP/l66xWFRZI7Ls3fOFJU2n6F1bJfJ/3615n+fwJMsmmQ9T0VdeJPN8vdZ5edNui/XYfpUghCRvpl6PkFnSbwC7xshr8zBT8XEdIEgRqRtGa7HHYWDGKh9XAxmb7XaPPZGws=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779305206; c=relaxed/simple;
-	bh=yw6D6vMaD+vgXHJOMEqUhf9fU36hj001yMYdefjHHY8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=gi+xq5yGzY88v55GVzaht1TLRvFWMvgdE8d4DAwb61lP2dvtBSD0rN025DXpp4TYjT5yLiwRSP1uDf6zHgxVoykYju1Wx/cqUOf6Lv5umk0JTLE8N5cAB/iZKCS/izHB6famy2d+xG/AisezlnEuw3JcOf5/GhKlw67JEJbB30c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz; spf=pass smtp.mailfrom=ixit.cz; dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b=DkNst5rV; arc=none smtp.client-ip=185.100.197.86
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ixit.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 936A1344030
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 20:07:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.169
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779307643; cv=pass; b=ClfJgV2FhawqXBykb7XAerlOuT+ioTVPf2F5H/FS2UXQCYXnWhC67C6xIprRDAcWOdMRQY6EShY5XpjquOj79ncv+Xbpq8Qe7klZiDasmRgXpg1tQOwPPLhI79u5j48gXoZI88msatrWT9Qcpws8uq/M0BpHV20dJxYkNCqNulc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779307643; c=relaxed/simple;
+	bh=C5fLxlALN8cJkXmqKTu/L/NIXq55LS1VOn5r0/lEAss=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=HPQLS0cQ1RqWcE3wJzh2B2bmcmLAoNlXfoghiIyT1qI87xQqQ3LQbbqHghyBCKcQ8f0MLhnV5nlINHLlqX8b2fr3z0qCh3Iq3NvoKF/NfXsjaAFDTano1mT2GenJv3x1UknrQ6B3aTQjQElDT2NTNR1a+Q6+MosfEBNI2uWAgzw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jwsmoE8C; arc=pass smtp.client-ip=209.85.128.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b="DkNst5rV"
-Received: from [10.0.0.200] (unknown [10.88.125.21])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by ixit.cz (Postfix) with ESMTPSA id 142BE5340DCD;
-	Wed, 20 May 2026 21:26:40 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-	t=1779305200;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=fQhvp5ESTflHMXXIC9lMQiTPWDlHm55LluWU6t48Hkk=;
-	b=DkNst5rVFL5YoUOTeikgCPkTVctOaNY91+Dg7VWLiAc7Qmt/vLnkfsrDLc/RkVv/Ps3vN3
-	fO4SkuGqJKOBODsDY+xONlS4rSv3My65z7ZsZPd7HxbNwItdayKTMjo9tiPOD/PlDA0XwH
-	UwnDd14nVRDMMu+Vj6b/DmibPqAKc4I=
-Message-ID: <986c1262-b91d-4115-8a2b-793946054573@ixit.cz>
-Date: Wed, 20 May 2026 21:26:39 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jwsmoE8C"
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-7bd6f65c781so43682417b3.1
+        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 13:07:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779307642; cv=none;
+        d=google.com; s=arc-20240605;
+        b=C4JJzRgQXlNmseXsdRfSEWq0UJyjeyrll7hI6kTihNcQdP3Le0Fa96Rr81crlrwHj1
+         aFutHoadfnnK+8lPDyf/336HwtlcLG/xUsoUyGkuEzdpmx7YdBwuJzwjWDVNhsRKBneH
+         t4R/Bvf72Xs4D5Yv+tkSp33kmsr7eMrjxpIlBwycmKSIr+GFiXFSUngzHOTZ0yKVWxoY
+         VO/Y9RpfSUPsNO3T+d8RUN9N41rdKv11ntc+MZN11yfXjImCFgm5WwOuq2iqoe0DLWpY
+         6V/4wK9h/2zMnfYG7v63WwXqM6q5FeeMau6kO9cN1XySyRtV8sxMojD1krzCCFjUru3S
+         H3LQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=C5fLxlALN8cJkXmqKTu/L/NIXq55LS1VOn5r0/lEAss=;
+        fh=MB0aW4qdGz958zdRq+Awt3sqwOcMIwBtUacNFt9xN/k=;
+        b=c8ktDTcKhOf5dyQl2w1whUSobVUqzjyQJkDkZ/y4buWCHkJWciyLNdsxjzNSFM7jnu
+         YvOWXDz+3ZYyWrk3cVkhb0QVE07nSQlwMe/xNOL419mRJDcOPSB9arQEllyuJ+QeGP+M
+         eeh2mGtB8CkOUUdsTdG1ZJsetJQVBr8l/PPAk0n6/1i+OlnadXx/ZrBB2aykcLct9efl
+         YFOWvyVjkYslP3nzZ/CGLxoO29d3RD9YGLqv480jDkF4RRpanVN0EI34Cso8zJERr3+U
+         n68Z2lDu75ppXtdG3Wy4P25ZTh8pqUi+TdDkixd2jO5EmXm2ytckj5sRD6bNOsmyswCY
+         tjHw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779307642; x=1779912442; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=C5fLxlALN8cJkXmqKTu/L/NIXq55LS1VOn5r0/lEAss=;
+        b=jwsmoE8CPTj9PAoPbs6SAhylTpDWPqkUfJumGPILmieo+vG8Tyz8YFxrxtI0ZKhOPn
+         XomT+J4eYytEm/4TryAi1E342XR4M0Iib5hEk5n04F8QtSMP7WC/1FShNlzwRg5Y3GqT
+         xxp1Pguq5MM+OclmyZIpEMYmgCJfAbw7DJO8+lCsypEXN9q624WJyCiep0gRS9ICEXrw
+         lvyJkakI4hQnJuUFjsilzNglJvFT7kYmWBMMmIeGus1GE/c2Uy2/bU3Zxsyf18TdjqA/
+         Yl0JUKS3v2g1b0tPAzQHsDlVAbhsrD32B9BsWpf3PwYx/N3y+g102a8BRJZnyy+GCsf1
+         lhIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779307642; x=1779912442;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=C5fLxlALN8cJkXmqKTu/L/NIXq55LS1VOn5r0/lEAss=;
+        b=PlXhoD2uZPFas5M2bGYp1DjjFOPufpp1OfR+OsuRKSIFSXCu2rdSfqE7+e0m3KQgi2
+         kgx1P9AY7/cv0+sH3SSOiZfsX91i/MyYhYjRnBAb05y1cT1U75Eu4p+nH9QbSHxcVxwF
+         6cW7Oofsq/tRRseTmvcKbO3ar7Zi3/fqq4Invjg+0rbZkkEuEWVI8s/K/WMRE2DqGJVW
+         z7IBOcwNrUWbQYktDUxYOykQDqTVc0cNWU+aNsUK8J514vp2m0sFckIsKEH5Y+eUl6B8
+         9ci9bNyolJeiV3Xo7+HlPLlyyejq5t6TBVQ4lmpFZ2Gnr0pSKqMM9JCX21ngLBltl5bS
+         UxAw==
+X-Forwarded-Encrypted: i=1; AFNElJ/oBktVC64+I9AQDcxW7HNOT8vHOSINCK9GM1Tzm25pwujdDg4dejEcTQrLt48zqitS4dnB/0BXrBE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz01LoIxfTXu6/LVF4BObVtMIgpA+px2RNLbZjKNESDiOPzqcVM
+	KFYb+zvr1gMK6NoXdGt8pQEBYy7+8BtEy8ie/AucQhY29sxFv1uIsUcvAUgwGHM8gOquhoKfazQ
+	ibxbVDtiP1AY+S6rJlWLTIjJrQhTg/4g=
+X-Gm-Gg: Acq92OGCWHj9qBktdLsI4chSgYDay55Fkzro0Ztm6XGqKWOYWhEzliOXe2gBIyi7vse
+	cxBOktqo91iYyH/kACQEUBTL3r45Og9hgcZHkT/QSl/39TzBV05ZJvXCfFyWbyPfjGaJbkaVACz
+	9mIPNK9Gm4E7+WvEpQd0arQc/6xwa2JWHQSp4W+uLC3j4e48uK550YG0iGZMK0niZwAi/4KI18x
+	oAjpsVuNxLAr5CT8PeIEXBB6pBjUFvBxEF+Wk/6/eiFN46w6j3Rg+5C0Im4lHQXjzzK1zBOoYo6
+	8pDCjiq7nw==
+X-Received: by 2002:a05:690c:6609:b0:7cf:d535:9970 with SMTP id
+ 00721157ae682-7d1c519c927mr8898597b3.20.1779307641592; Wed, 20 May 2026
+ 13:07:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: light: al3010: read both ALS ADC registers again
-To: "Alexander A. Klimov" <grandmaster@al2klimov.de>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>,
- "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20260520175855.538098-1-grandmaster@al2klimov.de>
-Content-Language: en-US
-From: David Heidelberg <david@ixit.cz>
-Autocrypt: addr=david@ixit.cz; keydata=
- xsFNBF5v1x4BEADS3EddwsNsvVAI1XF8uQKbdYPY/GhjaSLziwVnbwv5BGwqB1tfXoHnccoA
- 9kTgKAbiXG/CiZFhD6l4WCIskQDKzyQN3JhCUIxh16Xyw0lECI7iqoW9LmMoN1dNKcUmCO9g
- lZxQaOl+1bY/7ttd7DapLh9rmBXJ2lKiMEaIpUwb/Nw0d7Enp4Jy2TpkhPywIpUn8CoJCv3/
- 61qbvI9y5utB/UhfMAUXsaAgwEJyGPAqHlC0YZjaTwOu+YQUE3AFzhCbksq95CwDz4U4gdls
- dmv9tkATfu2OmzERZQ6vJTehK0Pu4l5KmCAzYg42I9Dy4E6b17x6NncKbcByQFOXMtG0qVUk
- F1yeeOQUHwu+8t3ZDMBUhCkRL/juuoqLmyDWKMc0hKNNeZ9BNXgB8fXkRLWEUfgDXsFyEkKp
- NxUy5bDRlivf6XfExnikk5kj9l2gGlNQwqROti/46bfbmlmc/a2GM4k8ZyalHNEAdwtXYSpP
- 8JJmlbQ7hNTLkc3HQLRsIocN5th/ur7pPMz1Beyp0gbE9GcOceqmdZQB80vJ01XDyCAihf6l
- AMnzwpXZsjqIqH9r7T7tM6tVEVbPSwPt4eZYXSoJijEBC/43TBbmxDX+5+3txRaSCRQrG9dY
- k3mMGM3xJLCps2KnaqMcgUnvb1KdTgEFUZQaItw7HyRd6RppewARAQABzSBEYXZpZCBIZWlk
- ZWxiZXJnIDxkYXZpZEBpeGl0LmN6PsLBlAQTAQgAPgIbAwULCQgHAgYVCgkICwIEFgIDAQIe
- AQIXgBYhBNd6Cc/u3Cu9U6cEdGACP8TTSSByBQJl+KksBQkPDaAOAAoJEGACP8TTSSBy6IAQ
- AMqFqVi9LLxCEcUWBn82ssQGiVSDniKpFE/tp7lMXflwhjD5xoftoWOmMYkiWE86t5x5Fsp7
- afALx7SEDz599F1K1bLnaga+budu55JEAYGudD2WwpLJ0kPzRhqBwGFIx8k6F+goZJzxPDsf
- loAtXQE62UvEKa4KRRcZmF0GGoRsgA7vE7OnV8LMeocdD3eb2CuXLzauHAfdvqF50IfPH/sE
- jbzROiAZU+WgrwU946aOzrN8jVU+Cy8XAccGAZxsmPBfhTY5f2VN1IqvfaRdkKKlmWVJWGw+
- ycFpAEJKFRdfcc5PSjUJcALn5C+hxzL2hBpIZJdfdfStn+DWHXNgBeRDiZj1x6vvyaC43RAb
- VXvRzOQfG4EaMVMIOvBjBA/FtIpb1gtXA42ewhvPnd5RVCqD9YYUxsVpJ9d+XsAy7uib3BsV
- W2idAEsPtoqhVhq8bCUs/G4sC2DdyGZK8MRFDJqciJSUbqA+5z1ZCuE8UOPDpZKiW6H/OuOM
- zDcjh0lOzr4p+/1TSg1PbUh7fQ+nbMuiT044sC1lLtJK0+Zyn0GwhR82oNM4fldNsaHRW42w
- QGD35+eNo5Pvb3We5XRMlBdhFnj7Siggp4J8/PJ6MJvRyC+RIJPGtbdMB2/RxWunFLn87e5w
- UgwR9jPMHAstuTR1yR23c4SIYoQ2fzkrRzuazsFNBF5v1x4BEADnlrbta2WL87BlEOotZUh0
- zXANMrNV15WxexsirLetfqbs0AGCaTRNj+uWlTUDJRXOVIwzmF76Us3I2796+Od2ocNpLheZ
- 7EIkq8budtLVd1c06qJ+GMraz51zfgSIazVInNMPk9T6fz0lembji5yEcNPNNBA4sHiFmXfo
- IhepHFOBApjS0CiOPqowYxSTPe/DLcJ/LDwWpTi37doKPhBwlHev1BwVCbrLEIFjY0MLM0aT
- jiBBlyLJaTqvE48gblonu2SGaNmGtkC3VoQUQFcVYDXtlL9CVbNo7BAt5gwPcNqEqkUL60Jh
- FtvVSKyQh6gn7HHsyMtgltjZ3NKjv8S3yQd7zxvCn79tCKwoeNevsvoMq/bzlKxc9QiKaRPO
- aDj3FtW7R/3XoKJBY8Hckyug6uc2qYWRpnuXc0as6S0wfek6gauExUttBKrtSbPPHiuTeNHt
- NsT4+dyvaJtQKPBTbPHkXpTO8e1+YAg7kPj3aKFToE/dakIh8iqUHLNxywDAamRVn8Ha67WO
- AEAA3iklJ49QQk2ZyS1RJ2Ul28ePFDZ3QSr9LoJiOBZv9XkbhXS164iRB7rBZk6ZRVgCz3V6
- hhhjkipYvpJ/fpjXNsVL8jvel1mYNf0a46T4QQDQx4KQj0zXJbC2fFikAtu1AULktF4iEXEI
- rSjFoqhd4euZ+QARAQABwsF8BBgBCAAmAhsMFiEE13oJz+7cK71TpwR0YAI/xNNJIHIFAmX4
- qVAFCQ8NoDIACgkQYAI/xNNJIHKN4A/+Ine2Ii7JiuGITjJkcV6pgKlfwYdEs4eFD1pTRb/K
- 5dprUz3QSLP41u9OJQ23HnESMvn31UENk9ffebNoW7WxZ/8cTQY0JY/cgTTrlNXtyAlGbR3/
- 3Q/VBJptf04Er7I6TaKAmqWzdVeKTw33LljpkHp02vrbOdylb4JQG/SginLV9purGAFptYRO
- 8JNa2J4FAQtQTrfOUjulOWMxy7XRkqK3QqLcPW79/CFn7q1yxamPkpoXUJq9/fVjlhk7P+da
- NYQpe4WQQnktBY29SkFnvfIAwqIVU8ix5Oz8rghuCcAdR7lEJ7hCX9bR0EE05FOXdZy5FWL9
- GHvFa/Opkq3DPmFl/0nt4HJqq1Nwrr+WR6d0414oo1n2hPEllge/6iD3ZYwptTvOFKEw/v0A
- yqOoYSiKX9F7Ko7QO+VnYeVDsDDevKic2T/4GDpcSVd9ipiKxCQvUAzKUH7RUpqDTa+rYurm
- zRKcgRumz2Tc1ouHj6qINlzEe3a5ldctIn/dvR1l2Ko7GBTG+VGp9U5NOAEkGpxHG9yg6eeY
- fFYnMme51H/HKiyUlFiE3yd5LSmv8Dhbf+vsI4x6BOOOq4Iyop/Exavj1owGxW0hpdUGcCl1
- ovlwVPO/6l/XLAmSGwdnGqok5eGZQzSst0tj9RC9O0dXO1TZocOsf0tJ8dR2egX4kxM=
-In-Reply-To: <20260520175855.538098-1-grandmaster@al2klimov.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20260519212602.30541-1-m32285159@gmail.com> <20260520122229.15326-1-sozdayvek@gmail.com>
+ <CAKqfh0G43HY9Mt5WW=0evk4Rveh_4hqkMdragdZcd+cQBNGr2g@mail.gmail.com> <20260520200412.32068dcb@jic23-huawei>
+In-Reply-To: <20260520200412.32068dcb@jic23-huawei>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Wed, 20 May 2026 15:07:10 -0500
+X-Gm-Features: AVHnY4J_5RCnov4bD9ZA5MxtzJl9sXEVLY9zr0MX5QhISFowZc8fEXjUbQSQ0n4
+Message-ID: <CAKqfh0HuhE69rB8_QrLrMq229Q84=SGPVxAFWwYpk1hR=vMiVg@mail.gmail.com>
+Subject: Re: [PATCH v4] iio: chemical: sps30: Replace manual locking with RAII locking
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stepan Ionichev <sozdayvek@gmail.com>, tomasz.duszynski@octakon.com, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 20/05/2026 19:58, Alexander A. Klimov wrote:
-> al3010_read_raw() used to read two adjacent registers
-> until the driver was modernized using the regmap framework.
-> That cleanup accidentally replaced the 16-bit word read
-> with a single byte read. I'm reverting latter.
+On Wed, May 20, 2026 at 2:04=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
+> On Wed, 20 May 2026 11:49:33 -0500
+> Maxwell Doose <m32285159@gmail.com> wrote:
+>
+> > On Wed, May 20, 2026 at 7:22=E2=80=AFAM Stepan Ionichev <sozdayvek@gmai=
+l.com> wrote:
+> > >
+> > > The hunk in sps30_read_raw() adds an empty line before "default:" in
+> > > the switch, which is unrelated to the RAII conversion and probably
+> > > worth dropping.
+> > >
+> >
+> > First one is a stray change, my bad.
+> >
+> >
+> > > Also, moving guard(mutex) into sps30_do_meas() changes its contract:
+> > > previously callers had to hold state->lock around the call, now the
+> > > function takes it itself. A line in the commit log would help future
+> > > readers avoid the obvious "I'll just wrap it in mutex_lock()" pitfall=
+.
+> > >
+> > > Stepan
+> >
+> > See:
+> > >> Add guard(mutex)() into sps30_do_meas() as every caller locks it's c=
+all.
+> >
+> > Basic but still denotes that sps30_do_meas() holds the lock.
+>
+> I'd tweak to something a tiny bit more detailed like
+>
+> Move mutex locking (and switch to guard()) into sps30_do_meas() as every
+> caller takes the lock just for this call.
+>
 
-Good catch!
+Will do, while I'm at it I'll also fix the stray whitespace.
 
-Reviewed-by: David Heidelberg <david@ixit.cz>
+best regards,
+max
 
-Thank you. If you're at it, could you post same patch for the al3320a? Asus 
-tf701t likely suffer the same issue.
 
-David
 
-> 
-> Fixes: 0e5e21e23dd6 ("iio: light: al3010: Implement regmap support")
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
-> ---
->   drivers/iio/light/al3010.c | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/light/al3010.c b/drivers/iio/light/al3010.c
-> index 0932fa2b49fa..1800776d725e 100644
-> --- a/drivers/iio/light/al3010.c
-> +++ b/drivers/iio/light/al3010.c
-> @@ -111,7 +111,8 @@ static int al3010_read_raw(struct iio_dev *indio_dev,
->   			   int *val2, long mask)
->   {
->   	struct al3010_data *data = iio_priv(indio_dev);
-> -	int ret, gain, raw;
-> +	int ret, gain;
-> +	uint16_t raw;
->   
->   	switch (mask) {
->   	case IIO_CHAN_INFO_RAW:
-> @@ -120,11 +121,12 @@ static int al3010_read_raw(struct iio_dev *indio_dev,
->   		 * - low byte of output is stored at AL3010_REG_DATA_LOW
->   		 * - high byte of output is stored at AL3010_REG_DATA_LOW + 1
->   		 */
-> -		ret = regmap_read(data->regmap, AL3010_REG_DATA_LOW, &raw);
-> +		ret = regmap_bulk_read(data->regmap, AL3010_REG_DATA_LOW,
-> +				       &raw, sizeof(raw));
->   		if (ret)
->   			return ret;
->   
-> -		*val = raw;
-> +		*val = le16_to_cpu(raw);
->   
->   		return IIO_VAL_INT;
->   	case IIO_CHAN_INFO_SCALE:
-
--- 
-David Heidelberg
-
+> >
+> > best regards,
+> > max
+> >
+>
