@@ -1,86 +1,139 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 228D239BFE6
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 11:42:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779277349; cv=none; b=uAcxRJgDSFKWODga2pst7/KYara1EuIWfaRj6LTaEFT3bF+xDnorRxSTqZMbIlkT97kj67pSbmXm1n1zw7CGBx9h9cNkYVX6fB9XQltGejPRr2WZVHsxVjyF+Cabmwse7Y8to58NBZNHsyB9XIdgg/QO7gK9CGEbCwkGSY6aeTQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779277349; c=relaxed/simple;
-	bh=TAuvyYudARAkHTzjpNfFTMQwQ0je0Xwjq+y2av6CwfA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=PRnYlvsgkU8eVbyuKLAxo840mbkvaURWBAUzWl+VKJvd5EujL9Y6Yy4BBuYZLfL7Ux3enfVDssclNm8bbYSEhwWLlIKjVLC82GMlVamlB6NglTq6EqguHj5PXgZbt7F50i4ZGD4cV1Rrx482M1IZarkfEYJ4YPxYFzj0w+0tAMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=spkuAuKt; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CEF73C661A
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 11:42:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779277354; cv=pass; b=mfOkWt8KZs6ZuOQkVv2HB29KgmFvRxtkEEO1HKsECndJqDhiFKAZK3VEwQS2NXOQF/K0iXmvxd940QVHKYUVlDfeB4uLRMODV1sSEe6ZLKyPPTHp8h7JjaBmkj1xpxmgP/Ja8T2L1tX4XLD6yGoOhuLHK5smzHYuKU3Rez0Ay3o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779277354; c=relaxed/simple;
+	bh=Pn58G6B6srU9x/l70tU0AeYbvxSf8sqlQAHRn4ijBj0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=F5SeK1oB5Y59dkwIKxKLdWJtwdquhGplH5LsQ8NDnVNXFHkWnvENSx8LnzBh0MeeBAUkt5dDDxaTU89P+4yWEhELgzgzvkQdimFn2vqwXeCMX4Tqrl2/ZZ0HQ5XMVr12/ekEWX00CQXI8Sd+zJMhlv7hnhLb3i2e+IB0eKTUGIM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hnFeymiz; arc=pass smtp.client-ip=209.85.221.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="spkuAuKt"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5a8985fe4e6so586753e87.0
-        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 04:42:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hnFeymiz"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-441209fb77eso2951469f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 04:42:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779277351; cv=none;
+        d=google.com; s=arc-20240605;
+        b=MlnsCy7eUSq4Zj9yiIxbZkWWq/xWT4VcFQHaDe/tgLXkayYucRFhMGVz8l4+GmDfmu
+         J5UgMmDfDgz/C1xPCX2tXCWaH9omBzpuXALCKs06c6mlAcWvlONJJtIo+yelS0++vxCk
+         r/h0GCgohkS49hctZFNySKb/rdTEhBGtk8xx1iU8QhZ11f1cuwK5/A3uy5IXeJukEm2f
+         WdzS3vG08xqTooRSUkHTcGiJ7wun4KQ9T2f6eaVEIRizaQEO+ykVW883iOSejP7dT5RQ
+         9IeW4P2cMETOwl1pvlQJYUHhf2ri7OXczcr+du4IVxmtCCqS/bBLp0UIm7ZRMqnOIf+X
+         QvuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=tvby5vcIc0d7JYF/tLQ0qqSxaYmfxcE7JARtxN849bI=;
+        fh=JeuVm5B2fLFzUSEsZRjoiJ5rB8C6oE6MeHCxmNSjOzY=;
+        b=hznBcr19odisMWKMyr6aChMq69EL5LvyOOzZJERAelx8HQFoeMt+sHd+4ZoXfBTAIt
+         9AYjqb/YkBFR4OzrnT1romo/IPVj+vWgC5HaLLsEpEt3YfqXnofseHHEmcUAi8fcrxdl
+         WsZ9qIXrEQPWL0n5/xxR2F4ygR4uzL2MqHILtCt1N/kJh7b+ubVsSt2c1kJi5yw+0R+W
+         qgTr2pFghHKnV2fxl20LH9bKzDVK3jomXl+8Sw/dDyvNr1FZyaZ3jM00wBKrS0vUDfzO
+         Paz/mN5ICrUpEBp8nkJjEv1jSnTarMcNwRKMEbM2mVV+nOiMYpnlddTxlBEg41WqmQva
+         //gw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779277346; x=1779882146; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1779277351; x=1779882151; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=TAuvyYudARAkHTzjpNfFTMQwQ0je0Xwjq+y2av6CwfA=;
-        b=spkuAuKtLaB4HZH/1fxxhnlogCoR6uWa+2CWzr3jxmEVjK73XNEVSLKkG23+R87YZ/
-         WDpIP3Heu2WS/o71AU33W1fuG+38st8RtLyoiDp7fFk51uEfBsb7Ai6R1j0rclskRvlw
-         Y4qQFx4x+Jvx82ClYWak2bVSzDwPT+vKuX1V4ozFs0nApW7sDBA/jX4yMOPEP40f7/WK
-         +b5GUaEOZlN2czs7280GeDEPQ9OvDvNWz2gKeiIexSXb0GaT1QZyrKxGJ/tQgD1+PvKJ
-         4DfhgPvshTfaOxdMS20jewpdeYCMRnwL4nKClJVx9Z+V1ZBTcHrmklhnvHUKRRXi7ZMX
-         h2XQ==
+        bh=tvby5vcIc0d7JYF/tLQ0qqSxaYmfxcE7JARtxN849bI=;
+        b=hnFeymiztYYt2iaucl2i0wWCeXuyV0oHjRhTYaAILMRo2fhm35E8JkBiVt4dI0z90N
+         iupyhP6LL6r57gaiomay+aPwlO2H7cRXmAON1o7tqYfgD5BN/JDurOpcyrw0Mi+hwD7c
+         LrlWzb8CzQV64UPvc2/CJudJsrdmkQEEbUzpwbeL4RspLpIvAKdD0uIoc978pzgj0y7a
+         t36fDNweOB9stlrxrHddHcxUDfRCbOHA4fJYyx75TrlXPXHDPRzFP89URJ4QnIgliJmI
+         ZpgS/HzGUt2MZFr3yF0HlpYBqZYP2siTCfxmJsJvYy7vOhMrnQHU8vI/RsLIP9CCFpCK
+         w8Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779277346; x=1779882146;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20251104; t=1779277351; x=1779882151;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=TAuvyYudARAkHTzjpNfFTMQwQ0je0Xwjq+y2av6CwfA=;
-        b=rE1YFhJ5FI1nOuTSPWkWPbfnafWT/sQgPu65YQYueQ7ivS4gviLJ1Ai+LHcHiFMxxJ
-         rZQ/K0WHsTSl7bBBKRXmDM43RE6+Tq9kOf8d4FxVIov/FVyRLlSi/hkAHqF3+XJuTV2A
-         6eVCVWgDeRVC9kQf5IHodH0Wo5TcRc/B5Lb+JZfSp4LTgBuDwpESXkgeFnzQtINM5lv/
-         H5FnNrjG9aJieO1S5C7C5Yab3/9kVDLJDJmT63DV9SKsAmvmJaaYEJFQihRD6VEHcHF6
-         cBgca+eeVqgNP3hQup5P2MwagjnEK4NPX8GuypCzTNLK5BAi6YBtuJAPgPtHraGsoEJw
-         8hzg==
-X-Forwarded-Encrypted: i=1; AFNElJ8o2NIsN8axhKDlVzIAk/wmqJcSrGkmLnkrVAZOxdiPoR/6I++7qDLK6KF/gGjUs7pb+E3CwLSTcqM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywwnys03zJWGn+9LJfNjuD46n7JxR2jJdxUkkNLwK1oo4raARHd
-	Qu5HxfO50TdJOa9Qkknm1Iqgiek4ky9zK3CSCR9E4T8x0kT1T6oTPFrV
-X-Gm-Gg: Acq92OHYqcB59VdlCj4FKcEQIMzLPwH5apcVgMF5E4OXGuEl6lNgg6F07YaD2CrocMG
-	+3xeFzHH2uOqWOOrhGxqe1BjFima9o/VVWUZOWDseVG/ckBPhf0sgWoz8lpi9Zd8vClw7CxdvLy
-	KlD913BlAbBlF7ggd1WVtDDu8YnLIci0H9xw65n6fwW3AaOa7LcvmaNngbGgQE8Ojuc3IGr6ROw
-	sJv7vql6IjjDUhrarcQYqGIeRQf5hsNz99k6Sj/mHjpN4+qeSALYrWs1w9FafNWAToGOjcquYCp
-	TNWle1K1eI2aR9c53yrNb2id2fAP+1kyEVh7U6xp2mRNJPoubascO0O/op8hLhDwqMCj30qsxPI
-	QBdq69fhKo6To1ybR5MmHaKHfIehB8xLBBwXGE8gKj6WksVr+TvYJmaEdcxa4uAbbj8UfcQMfH9
-	+9M6KQksldpRN2M+TdGWi+nqrLh03/0odZqmvPDbFtY1aNkGdRkwkeNvm4XiQDQXksrX6i
-X-Received: by 2002:a05:6512:158a:b0:5a3:ff48:f7fd with SMTP id 2adb3069b0e04-5aa0e747406mr2918624e87.8.1779277346154;
-        Wed, 20 May 2026 04:42:26 -0700 (PDT)
-Received: from localhost.localdomain ([213.230.116.218])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a9164bc3fcsm4918597e87.48.2026.05.20.04.42.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 04:42:25 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: andriy.shevchenko@linux.intel.com
-Cc: jic23@kernel.org,
-	daniel.lezcano@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	sashiko-bot@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Stepan Ionichev <sozdayvek@gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: adc: nxp-sar-adc: Fix the delay calculation in nxp_sar_adc_wait_for()
-Date: Wed, 20 May 2026 16:42:13 +0500
-Message-Id: <20260520114213.14849-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
-In-Reply-To: <20260519215607.78241-1-andriy.shevchenko@linux.intel.com>
-References: <20260519215607.78241-1-andriy.shevchenko@linux.intel.com>
+        bh=tvby5vcIc0d7JYF/tLQ0qqSxaYmfxcE7JARtxN849bI=;
+        b=KcZe45Cu5kjZVHZjohklU9OuXSyO/mso4TkXOumAqWuleg0ijJSyoAVHkMOtonlsOI
+         zha3i3NA8kDuh5P28c/rPNPXCuaUeCyqT/hPn8VfdpEXjNQHL5jIvQC8QlEWeQeB1MsO
+         Qn2+W0r2KoeYVN7gt0Yb7RIIaSVlstWzUPsadeAk9IBwUyr0vo1v3GZKhcwCEjwwQ/n1
+         7bbhIdbMRI4s9N/nyfHiNRBBszHgpiXOO9GrYQL7IisVv4b71ScEqGyT+WGeEETFOWFd
+         p4Jk1gibCv/zmXvej+WWtbxYJfJjG8Wo/Iqh72qMVEEfBc00YWrfBUuS0+SibSoAdjiG
+         VQ5g==
+X-Forwarded-Encrypted: i=1; AFNElJ+Pm2J0X3SyYYm27ZDaEf8QW2Et9MfdBfeQTJGx/aclwh/ib/3JL5z6BmQI4JDpO0G1oT3sXBA3ACU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxr0qhGWLkSERRgV7FL1a4diWhKDQ99h8886ysu14PfpgH6j8bd
+	6zIixQv/87NDttyu59Iri0+caRGzZqyPWqdk2JnHTaek3mxx56hD6qI+GBroCxXJLeO1P7ZbBxq
+	ZdviW1zXE2Ez99r0HUp+aIHn7dUapYpo=
+X-Gm-Gg: Acq92OHHWGzwQahzhiUGWyqZoIGV6PvmcXhOeylSsADx5ZZT9hoSFiQMXKrXSoM075B
+	KEbT/FahpZB8R6iMbOqMP6kKK/66kuJMmsZLUt7s7j0e6SIlP9NNPZJuYPgRHSQcIOC6hi7yy6c
+	0cE3cSiavKeY74Pfy4SkAzEgoa/V8rNxN/uqTxGB5HKluNOOn7CiKl+8jYJCtrCAaVAhfrTjsgV
+	lyUiUHwqsMjGr+32yosIi4KYvJx9vIw5+a7oZoraK2y7Fo06D7NrDijchozap6/AS2q/Z5t4zzy
+	d8PdPm6L7kyjdXpZQxFTFnWRey27yIOmohKMBB7vKrtD9rNRrs8f3Z4j8LxUBS5okDXBrasLSkF
+	GaVaeiUibvyf+/dHQMPIWjyUY+up9TSOW+5nNF6NijSJVIl1+9RdcVFZ/xp+hBteK2aORTJGHJw
+	dFqZK8T/Anl6au+HNt
+X-Received: by 2002:a05:6000:2283:b0:45e:6a3e:1ddb with SMTP id
+ ffacd0b85a97d-45e6a3e1e0bmr28194289f8f.1.1779277350543; Wed, 20 May 2026
+ 04:42:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260520111813.3934-1-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20260520111813.3934-1-ilpo.jarvinen@linux.intel.com>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 20 May 2026 13:42:18 +0200
+X-Gm-Features: AVHnY4KEGOKhvk3Hb1Ln7prlR14Nvmy4Se09kZ-X-cWXAhtqIKADV8xHe-Uux_w
+Message-ID: <CALoEA-wrYjbkhM7EiS+f-JjXShpRJw+gqy2zzymq9Ue5t-XN5A@mail.gmail.com>
+Subject: Re: [PATCH 1/1] counter: intel-qep: Use devm_mutex_init()
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: William Breathitt Gray <wbg@kernel.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+	Raymond Tan <raymond.tan@intel.com>, "Felipe Balbi (Intel)" <balbi@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Stepan Ionichev <sozdayvek@gmail.com>
+On Wed, 20 May 2026 at 13:25, Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+>
+> intel_qep_probe() calls mutex_init() but lacks the pairing
+> mutex_destroy() calls. Convert to devm_mutex_init() which handles
+> cleanup automatically.
+>
+> Fixes: b711f687a1c1 ("counter: Add support for Intel Quadrature Encoder P=
+eripheral")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/counter/intel-qep.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
+> index c49c178056f4..816586893517 100644
+> --- a/drivers/counter/intel-qep.c
+> +++ b/drivers/counter/intel-qep.c
+> @@ -414,7 +414,9 @@ static int intel_qep_probe(struct pci_dev *pci, const=
+ struct pci_device_id *id)
+>
+>         qep->dev =3D dev;
+>         qep->regs =3D regs;
+> -       mutex_init(&qep->lock);
+> +       ret =3D devm_mutex_init(dev, &qep->lock);
+> +       if (ret)
+> +               return ret;
+
+Unless you're compiling with CONFIG_DEBUG_MUTEXES, mutex_destroy() is a
+nop, so a solo mutex_init() call is okay. Nevertheless the devm_
+counterpart makes
+debugging easier.
+
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
+--=20
+Kind regards
+
+CJD
