@@ -1,188 +1,206 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BF343F9F25
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 18:47:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B8A94028F3
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 18:49:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779302855; cv=none; b=UQlo17Xvzzktt8RzeqpmK2buHWfQfpZJahHyO6P4XhJO67aJP7HLYIiDzsJSelgzXICNJAC/iTghD4WMQaYPjz5rBkGI3zzl5YSGARp8tw1bicP0I5xi+gWWEQMOhTXkpGmPvCD9kJcapIfHF+X9OmmlbeVZKnyFnoUgVmY8PE8=
+	t=1779302980; cv=none; b=E4LJvAdAyAcqPKH1QOnBBFXGMRciYWfq7ga28WaeWD7pSZD1LGFG18HNZcWkfwp9oo8qjQ42jqxAvp+/Ux30Hgu5oIurOER1OWlZFhAlueQIIs9BXO46U51j4Y0QI2lDAfo2IQSttQ4xcs/5G12vyUorjPVdg+qXjU2YlvLwEfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779302855; c=relaxed/simple;
-	bh=GtWAvNoa8liocTFIE29GV3PrLzqRKVIbyQdAYPsgXsg=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gPb1VHBcOFLNqm63FIV8xNvi+4FpZN49s/ni0MuB6+Lx80enHAV7e64dGYRq9Pua1sabcu43EWdLfF3Inq/LqQG5iHUO01mQG+5yvbwFvPz6KF38pGfPxiilt0hrGHNEqQDUnsg2rWdOZG5XOlwk9OTPE+Ygm50+5cI5nv3N/rA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EQAVt12I; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779302980; c=relaxed/simple;
+	bh=J0LMFlWOctUVxFxjiVf/dseJRNuCaRqRgpJ/4PgLBCc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=sq84lXZ30T4PavF26n2233fktOaT17QulGOE4dU4H3CEOqw04ete1SgvpGtfrzswINDz4g4STNF4E+F9NjRZETct2/sFV3MjqFaxDqve9LWA1jkiPZSyBD1X/0yPvQtRgFFgtACECaBa9WKTg3rnZx6+49BBN43X05J3UFMmEls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fpp5eqiB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EQAVt12I"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-44e1860558fso3331757f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 11:47:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779302852; x=1779907652; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/hEwaR6TEFLYShpta6veHoxTDP0ik8niJki4wmQa0RY=;
-        b=EQAVt12IbPCrpc2rNHDrbX2HJWDPnRSLUJ3LwZMumBGjkgVcHLhN2JE9sX26byQqM1
-         fJtY9osxEJydypLMFZKL9mJiMD4ffHzmJ34EkXWh/5fEUCH/OBA8ez7e01BHYSddZz05
-         rzwzhq0tbdwbyM1J3Q8Mpmsx0og6xco2+KF65emtihqCh0DSxwvTZ65KsbJEurlYeIYz
-         kmA7J7vdlWQvKbGaDCTNlxlDS8bu1/HnSRkBIjvPPwK/jM+L3dOfcvz2tryfa8/pFCHf
-         n1w0lZxOVFwootJB/FmqRSLNDJKg6seXTr4UN3V3c+1SbJVyqm7q42tHtdzqkOGRlzVR
-         s96A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779302852; x=1779907652;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/hEwaR6TEFLYShpta6veHoxTDP0ik8niJki4wmQa0RY=;
-        b=GbIsWuB84YRIVltKzE/u71wbcMZotqPZcPoR5Y2dxSUCHXDOk286DFR8en1og8+PpO
-         MiyfNwiPuC1EBEnUtNCsSIEY/ZdNi7wU2ie/VPVS3GQZ5Q9Co00EIey/bUUGEpnJCNE3
-         aPFX99LCuTq/WgmmOEquVdOv0IP6YTgB8yq84fbhIJ0QUKvpUPrHsLPJgjbNwDWaeGPY
-         t3hfm1cuKBHTQ///U//1DLn4IJVjbK3qI8gteCRTqMo/+kDLsNIPN8qhbtH5cKR1QCE5
-         EpsGw1AvTkS9lNTDRHa9MI/8yD/qG+EhK71opGiHKDCVrHFOxH9qw+1ALex69bmFKHg6
-         mc/w==
-X-Forwarded-Encrypted: i=1; AFNElJ9U5NdDnZanZHB76Nk0kvzcyqvSwChbzsAIGrxjbKQlDUOWo5iRKYc7P3glCKFpi/a9RRgjcoh8pfY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyFoemIEnc2FURc+8pXOm4/1g+qy5cvO/n0fhfP75skJcdbPC2r
-	VbThz55B+zVquoMZPL92BlUL/MrHbGt/Qm9cUV+NuSTzR5iwCPVxuK5TBQB1PMsx
-X-Gm-Gg: Acq92OHJ3DHYRvcX7PQCIC39X+1JFtMUhmNGNwudp0SFlfoEbnfFDxfvlKEeTRUpZqg
-	KKm/U0q4g0Y7JSAPQUC78n3+GWQUkiIqiVWQ+AOOdP+OFx8ZkyHdqLV/rJeM7O6OtUPg64uOmDB
-	OkzO5dUhTmda5W0xbtZ3RUaIsUA+NczfGB2Wa6zQ0tU+19nzeNQSRMUTrFwQBQHFr9ysgyNA+H7
-	3tBF0PZ7vPGWmQzqHYWS5SplbsJ4SZIfF48Fm/9JpSXYVvFRXEriZAnYDxI+xlPANdo2pwpbpsB
-	O6Fn7rEQURpg3TR1z8yYdNd/O83NrZ7mF6qonm4XUzKn7H+5ibJKSFnhOh1bcmI8zK02CS/0puB
-	xOb4KIv10NYHexlGZ0383r82lsc0L5ZdWl65OuukcUNa72hQFrvm76qubCrrztqpjDSc2Mq/cye
-	7v1I1plAaLoMaEkGpXgN7ghNlTE9VWCI2l2f8808esye/35r9uQwBcne1dmjGK+5slBrRLmZPO2
-	LqWQ+q0gMa4dwRFHngi3a6/UXGdA28VwN+qEBdhzeuHMVRkBMKwtj0odecT
-X-Received: by 2002:a05:6000:2401:b0:43d:7275:c1eb with SMTP id ffacd0b85a97d-45e5c5dadeamr41206197f8f.39.1779302851879;
-        Wed, 20 May 2026 11:47:31 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45d9ec3acf7sm56929827f8f.12.2026.05.20.11.47.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 11:47:31 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Wed, 20 May 2026 19:47:25 +0100
-To: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-hardening@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v5 12/13] Documentation: ABI: testing: add docs for
- ad9910 sysfs entries
-Message-ID: <vqqvn2cgs3fbp5mq6xfac7iyosaqfrvgngqur4x355a3at7slo@ylrtd6fhi33a>
-References: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
- <20260517-ad9910-iio-driver-v5-12-31599c88314a@analog.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fpp5eqiB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 951681F00893;
+	Wed, 20 May 2026 18:49:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779302977;
+	bh=fpObeaUyH/d4i/7CkcUgGYkykLuluZoV1XzUwLAkzrY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=fpp5eqiBm4GNrmi8SzcJEYN3ZQqFqDev7KIZ+g4nm+eoG5d1MBSj8hbFUkTmibpiL
+	 NhkGwzRKGrl8/oAmwCEdDVXVCFB29YIeGE+AWjZkImB2Frlhx+LttpG9FEtLIukLEH
+	 g0i1fAWsfCQeF8eJHHyBiw6X6UBwxB2X8lqmNNJrG1eF6NhgqYkzIXIsK+KAv/NoX5
+	 04Vt/Huo3b7JTIVZ9zHOdQqJ9NPgylUQXSRtfSXxxaWdQIgA+XQgD+XoXx6D16/eP6
+	 jN0d+hNYruCb5YI9/2qN6pJig5lDGYnBs641JghCsMAxtv3rqcmpJTGaE1jkjDwU62
+	 TXnixhJ04mmQQ==
+Date: Wed, 20 May 2026 19:49:31 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Subject: Re: [PATCH v3 2/2] iio: light: add support for APDS9999 sensor
+Message-ID: <20260520194931.031830eb@jic23-huawei>
+In-Reply-To: <deb5c310f2b9780329f6210b9c2af498b8e1c42a.1779181370.git.azpijr@gmail.com>
+References: <cover.1779181370.git.azpijr@gmail.com>
+	<deb5c310f2b9780329f6210b9c2af498b8e1c42a.1779181370.git.azpijr@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260517-ad9910-iio-driver-v5-12-31599c88314a@analog.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 26/05/17 07:37PM, Rodrigo Alencar via B4 Relay wrote:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Tue, 19 May 2026 11:23:40 +0200
+"Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
+
+> Add IIO driver for Broadcom APDS9999 ambient light sensor.
 > 
-> Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
-> control Parallel Port, Digital Ramp Generator and OSK parameters.
+> The APDS9999 is a digital proximity and RGB sensor with ALS
+> capability. The driver implements the ALS/Lux functionality
+> using the green channel, which uses optical coating technology
+> to approximate the human eye spectral response.
+> 
+> Raw IIO_INTENSITY channels are exposed for red, green, blue,
+> and IR so userspace can compute its own weighted lux.
+> Proximity (PS) and calibrated RGB color sensing are not yet
+> implemented.
+> 
+> Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+Hi Jose,
 
-...
+A few minor comments inline
 
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_offset
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		For a channel that allows frequency control through buffers, this
-> +		represents the base frequency value in Hz. The actual output frequency
-> +		is derived from this offset combined with the processed buffer sample
-> +		value.
+Looking good.
+
+Jonathan
+> ---
+>  MAINTAINERS                  |   1 +
+>  drivers/iio/light/Kconfig    |  10 ++
+>  drivers/iio/light/Makefile   |   1 +
+>  drivers/iio/light/apds9999.c | 337 +++++++++++++++++++++++++++++++++++
+>  4 files changed, 349 insertions(+)
+>  create mode 100644 drivers/iio/light/apds9999.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 2d8d4e2eab6e..d36ab614aa53 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -5005,6 +5005,7 @@ M:	Jose A. Perez de Azpillaga <azpijr@gmail.com>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
+> +F:	drivers/iio/light/apds9999.c
+> 
+>  BROADCOM ASP 2.0 ETHERNET DRIVER
+>  M:	Justin Chen <justin.chen@broadcom.com>
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index eff33e456c70..c7256ffb972d 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -119,6 +119,16 @@ config APDS9960
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called apds9960
+> 
+> +config APDS9999
+> +	tristate "APDS9999 ambient light sensor"
+For such a capable device ambient light seems insufficient.
+I'd go with ALS, RGB and proximity sensor
+
+> +	depends on I2C
+> +	help
+> +	  Say Y here if you want to build support for the Broadcom APDS9999
+> +	  ambient light sensor (ALS/Lux).
+
+Similar here - but provide even more detail.
+
 > +
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_scale
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		For a channel that allows frequency control through buffers, this
-> +		represents the frequency modulation gain. This value multiplies the
-> +		buffer input sample value before it is added to a frequency offset.
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called apds9999.
 > +
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase_offset
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		For a channel that allows phase control through buffers, this
-> +		represents the base phase value in radians. The actual output phase	is
-> +		derived from this offset combined with the processed buffer sample
-> +		value.
+>  config AS73211
+>  	tristate "AMS AS73211 XYZ color sensor and AMS AS7331 UV sensor"
+>  	depends on I2C
+
+> diff --git a/drivers/iio/light/apds9999.c b/drivers/iio/light/apds9999.c
+> new file mode 100644
+> index 000000000000..938e43b39ad5
+> --- /dev/null
+> +++ b/drivers/iio/light/apds9999.c
+> @@ -0,0 +1,337 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * IIO driver for Broadcom APDS9999 Lux Light Sensor
+> + *
+> + * Copyright (C) 2026
+> + * Author: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> + *
+> + * TODO: proximity and color sensor
+
+color part of this seems to now be supported.
+
+> + */
+
+> +	struct i2c_client *client;
+> +	/* lock: protects als_gain_idx, als_res, als_rate */
+
+Protect against what?  Can we be more specific on whether
+something must be atomic, or not change during some operation.
+
+Other than during init (where arguably the lock isn't needed)
+only als_res is accessed with the lock held.
+
+> +	struct mutex lock;
+> +	int als_gain_idx;
+> +	int als_res;
+> +	int als_rate;
+> +};
+
+> +static int apds9999_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	struct apds9999_data *data = iio_priv(indio_dev);
+> +	int gain, itime_us;
+> +	u64 scale_nano;
+> +	u32 counts;
+> +	int ret;
 > +
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_offset
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		For a channel that allows amplitude control through buffers, this
-> +		represents the value for a base amplitude scale. The actual output
-> +		amplitude scale is derived from this offset combined with the processed
-> +		buffer sample value.
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = apds9999_read_channel(data, chan->address, &counts);
+> +		if (ret)
+> +			return ret;
+> +		*val = (int)counts;
+> +		return IIO_VAL_INT;
 > +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/*
+> +		 * Scale (lux per count) = 54 / (gain * integration_time_ms)
+> +		 *
+> +		 * The constant 54 is derived from the datasheet table:
+> +		 *   at gain = 3x, itime = 100 ms -> 0.180 lux/count
+> +		 *   -> C = 0.180 * 3 * 100 = 54
+> +		 *
+> +		 * Expressed as IIO_VAL_INT_PLUS_NANO.
+> +		 */
+> +		gain = apds9999_gains[data->als_gain_idx];
+> +		itime_us = apds9999_itimes_us[data->als_res];
+> +
+> +		/* scale_nano = 54e12 / (gain * itime_us) nano-lux/count */
+> +		scale_nano = div_u64(54000000000000ULL, (u32)(gain * itime_us));
 
-This will become just offset with altcurrent channels. I noticed we have a IIO_PHASE
-iio_chan_type, could we have a IIO_FREQUENCY too? Parallel port needs actual raw
-frequency values in that case to be written to the dma buffer.
+That's a lot of zeros. Is it effectively NANO * MICRO / MILLI 
 
-Then we may have buffer capable channels for the parallel port:
+(the second part being conversion from msecs to microsecs as used on the bottom)
+If so use those constants to express it rather than the many zeros.
 
-out_altcurrent120
-	offset
-out_phase120
-	offset
-out_frequency120
-	scale
-	offset
 
-Problem is that the math for the actual frequency output is:
-
-	f_OUT = f_FTW + (f_RAW * FM)
-
-where f_FTW is a base frequency (already scaled), FM is a
-modulation gain and f_RAW is the contribution from the parallel
-port, which is the already scaled:
-
-	f_RAW = RAW * f_SYSCLK / 2^32
-	f_FTW = FTW * f_SYSCLK / 2^32
-
-so the above becomes:
-
-	f_OUT = (FTW * f_SYSCLK / 2^32) + (RAW * f_SYSCLK / 2^32) * FM
-	f_OUT = (FTW/FM + RAW) * f_SYSCLK * FM / 2^32
-
-if I make:
-
-	SCALE = f_SYSCLK * FM / 2^32
-	OFFSET = FTW/FM
-	f_OUT = (OFFSET + RAW) * SCALE
-
-That would work for a IIO_FREQUENCY channel type, problem is that both
-scale and offset would depend on the modulation gain (FM)... I suppose
-scale should be setting that and offset assumes it is constant to act
-only on FTW.
-
-I suppose we can keep altcurrent for other modes as phase and frequency
-can be attributes (knobs) for them. However, in parallel mode we are effectively
-pushing frequency, phase or amplitude values into the buffer.
-
-The polar destination is a corner case, but can be solved when both
-phase and altcurrent channels are enabled. When that happens we can
-change the scan_type with has_ext_scan_type = 1, so the 16-bit data
-bus is split between the two.
-
-With the above, all of those *_offset and *_scale custom ABI can be dropped. 
-
--- 
-Kind regards,
-
-Rodrigo Alencar
+> +		*val = (int)(scale_nano / NSEC_PER_SEC);
+> +		*val2 = (int)(scale_nano % NSEC_PER_SEC);
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		*val2 = apds9999_itimes_us[data->als_res];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
