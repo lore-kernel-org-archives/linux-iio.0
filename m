@@ -1,60 +1,60 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A1C03BF69E
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 10:12:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 320F33D567B
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 10:12:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779271970; cv=none; b=gcUDK4Mw4R8wphtbadQJJ0/QPNPNyYRxI1BmJFXbaenVwJeRLoEhN2DUSUFTQQm978yqB9oi68HhYAU9K3ByFC9GJ05uP8sAsuNHcNPu+98PaarDahNkiYSm0T5tYO6eJnf4IzHpvEC9qCnPBFBQhoq0i++zlcFC9vUu3v6ZLvI=
+	t=1779271973; cv=none; b=gOPZWg9qOeR/WVkttIV4RU6wjPc8saAdboHvLbqHBv6WEUV8TM28Af+58m/wQBMtMtl7jx/22m6a03NSQL4ziHYZyxnVxW5TB1oOq1o/tUGI6qSg5TYAFlV+AXhS5nomoT0GmNTE358acGNgSLl9wgAh1uQYFqSabDsDj0bGC1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779271970; c=relaxed/simple;
-	bh=0B2p36/qTj2Fdw815lUlDWHFRk7MfZrklT7ORDPhlOI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ukSAMtx9/d1zVHQ/nA4IPBjPa0yKS6pgvJw7KIDjRgKv0tteku7SdRpIrYZEQwGObjv378w19YGofSXlG42s18mSQOgQJQdMXxtgEhSy2vUKSTJmZu2iPmYBk19JrQWq+9Z7JWm6IZZKVIGXaM+yqchsMz8yDc9pO5IusXVQ2Po=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OmA2MsAz; arc=none smtp.client-ip=209.85.221.41
+	s=arc-20240116; t=1779271973; c=relaxed/simple;
+	bh=4xcArRGRq+w57d8yxnb8jHbKeYqbOIs3eRr21NBoj3Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=CZh7loJhp/+eKuulKJLLhpwpNPoWuNMC2oo23lZ8mV+AapHhMmETktqD4COMcSPhXadgfyWqGDHZNbCSvxL5Tk5IdHXnJ6/Z3JEAPt4it03qt1LVg+/CFKg9PHS1NHfYRZic2rBX9ouwVT3y3ziHqBxJhec079ezqr98f1nDbfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gEAbv1sE; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OmA2MsAz"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-45562c41ec7so2875560f8f.1
-        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 03:12:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gEAbv1sE"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-49021532ebdso15730475e9.2
+        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 03:12:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779271968; x=1779876768; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779271970; x=1779876770; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=0B2p36/qTj2Fdw815lUlDWHFRk7MfZrklT7ORDPhlOI=;
-        b=OmA2MsAz2sR5y1NO37zy6c2vazFq9jIQ3DAafBB7de1wK3bso3yVKR3rD+KWTwClX7
-         NDwWrbGiTwC8TIdBBpY7hOhFZpPksgZ+QGOofg+Uv/TxA51xrHbC2bPI8Wlr0nEXm7td
-         BAq4DFQ+dZNC2vzeHrs1Dpi8a7jQgQsm3LLUA7AmQEYAJFjYWeSaHg/ERq98KtKA3YOf
-         pjC1v0P6A0bQBgVK6pKhewxcN4qGyl19yAOsiEwvCe+aoQJcpj8CeIqblBgN7615nMnJ
-         gndP+vEYPeOiS6L31/DNXz1kNZZy7uttNmx1UFp5hXSKo8Xv065R7ugwnGfdiOa+xQVd
-         KYHQ==
+        bh=2jlKj3vqVybuLuT9iC3xNZJPcSjtJp50MyUrzENU6qY=;
+        b=gEAbv1sEbHnyGS+Sur99fGSllT0Qz4eGqxKgZGaJi2jrnWaPCRbctcv2l0Hk4jsgj5
+         3+X1QV3wcY0F8QMYENIaMmtHSryzv33NjGdbwuYzdLCZ7DxeqBTKi7sBzZcSlzQ+J2ed
+         u5KsVUQ8w9R5KEAolU+fTupsE37t9SP+CeLC7axzL/qJEapyxtauxXAYNhP8bgor4sQY
+         7p46lANeYIEwxUJ4b7TnFhjCcPxzX40BzpcalSIAJkYcBrRAj8pIxeeox3JY9zMaDelm
+         KyOSJX0nfr4Dv7TgMkOVIGkcHhKQoFzw0O/XH4RWTJqvQ7C3Qn2zZnN09yZoV+yUiNJx
+         Ukgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779271968; x=1779876768;
+        d=1e100.net; s=20251104; t=1779271970; x=1779876770;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0B2p36/qTj2Fdw815lUlDWHFRk7MfZrklT7ORDPhlOI=;
-        b=rhlvRC1XRuozLq/IcsbRVSLdktvWyOb9va7yetWT9CYNhmOo94R5lAyQ4O/Wvu9tW7
-         ivC/6zCvuTpsbd7C+aq3ZWtOwJsNjV7RloMq6CRtocNKYUekn1rq1FkbiXsNOzABdjH+
-         vEHhOJCdETrSEfgUUQosx6DqfpEIJSI3bJO5T+PV6Odfg9jTwUHwuVrzM8eqvEt6jBPs
-         sw9xwvYGf5GECG7JNhvAiOTcCR2D8p5SWCA3EJD10Ql0fI/V6DNmB/KUPG/NYNdbsZzH
-         4MY6Th9J4FKDJuE9235pn3JUGu8FEYS5/NoPubhsiuVltbxxXUD3tGgjuQeNMakfznGr
-         8NLA==
-X-Gm-Message-State: AOJu0YzlCtZFVrmr263y2AATIHVECrhAU5fFkr3hMDm0HsECIEHUozl4
-	Bv+TOtJeetELP4sYEfs+yV3qwiOU9cI678sE7pztIAXTONV3INijWPbV
-X-Gm-Gg: Acq92OEHz5HQtTTp+LMUV99NYJTC1hveWKaiL/rW8GzgQlAR7uJjIhtSnxOSrfpYgmd
-	qc+wxYy9Q0cXS/Kgvr130sgazvESODwJBFzkl3YkinQke8b/5wzjLnDIoNqoE0vOolHlJoTo+SG
-	B1ZKBJKmwqcDPlB3PISiT+qcqMD9u0lu6afOboIH811yx0/jo0Cvup2o8AKAiGkvTaxkGLeQeeC
-	5LgdwFb0QaJ+OeOJzY4/1FVeRzUt8NQk/yjVGgE+kUKOTSyGs8RUzLf4Nq/VwWr5VGe+v/ZnNu0
-	Du40dT5L2+fuX7tt/cEBXsoaJy8SUw0MdzrFbZPHdaRP51YdzUSpZw5l53fmjS0AeHnj0dkoWF+
-	KI06ky7BRFO7Se+5q0YfSwt84qzfZODmid3Wg/sVO1FtTLXUroFILHP3uq/1bFfD9One3O7B+w+
-	RHZatYdGPeBoqBEtfs7iTX01WLfm1qdghaFKL1GI7Tlea3J1wKg8LqCnXgIwyKtps=
-X-Received: by 2002:adf:f64c:0:b0:45e:73b3:4515 with SMTP id ffacd0b85a97d-45e73b34553mr17891059f8f.35.1779271967665;
-        Wed, 20 May 2026 03:12:47 -0700 (PDT)
+        bh=2jlKj3vqVybuLuT9iC3xNZJPcSjtJp50MyUrzENU6qY=;
+        b=d2YwhyoEAHTfxER1QGHX8LEt76GM1N+tqZkVCpVtxp+1QwaLjP+rnDdnq7b4l+wCAV
+         11auJUgoiHQlOdVKv1w8tMmdhQKN6+iviYTOm16g97bQPpZJ4wOdndumLXlsdKKG49j2
+         gX+pFzWLNi14QHE4Ta3Al1o3U3hj8tuVqADXdlPyLN7fryAb9VBzkE5oTJAOPHZO/SBf
+         lTLcED+2Cwmi5WL0qNUakewHrn+ghc+FqcyYIWJ/mxKMCmY1vq4tjdr9clWtf34eqeBC
+         xT4aOg8jDKpTHFBEsztgFsUdR119ZkmkCvc8yRU1Mk+BXAywInqEfhEUe/rt39lPANu/
+         nQMw==
+X-Gm-Message-State: AOJu0YyGzPRGiet8xESXQmwty/jENNQY/Qgt03VpZ6w9cqNF0l228usm
+	NWrDuMC1lEh+xAZFD0wItbW7EpBx6FGQ5G+UTdf0ppZN4GYHyrrdHkYQ
+X-Gm-Gg: Acq92OHdDw1Uq0gkEdWCSKHckNsFIhv3Wq40gYbvgIFx7XwCSeBUlP1q67Spc2xq80h
+	L2wDXe73bYslsF02jOwaThuBLUF1LAVmDbyMefcEfwWi6SyHxjATZ5pH/vTjPoH8zD6SXlCL9Di
+	+8HTchKIBPvUTaVAKk+E1rNS4kVySXjvuuHO5KxApjZRRbIgqtkPimdVb83RiMUd0N9clnheE0y
+	o2k83H7ixBn6Bu4KV8z7pilEy0pGRsO8KyOfdaw9yskzzoC8P8v5HYVPMXTbyVoDagYKpM9qRfo
+	DQBYRRjoAOH22NJHZFm813Zexm5EZKUW39e7E3Lz2fllx+ZnpPVoQqyCkvB8lgSWL2agXCEhOmx
+	4F7L4IznN4F2EDoSg2pF7ZJqGlQflZLqGX4A0RHK4bE17lidLjLrMtrdtfRjpG1HxmBkuWafW0S
+	4XInZKdtS91v8C+rNBv1i0B4/9IM2VPRM9Aa5cSFYaVUM/JLbx0uMO
+X-Received: by 2002:a05:600c:3b0c:b0:48a:5821:5ff2 with SMTP id 5b1f17b1804b1-48fe60d55f9mr350093655e9.8.1779271970284;
+        Wed, 20 May 2026 03:12:50 -0700 (PDT)
 Received: from localhost.localdomain ([2001:8a0:6c9b:a000:ed18:5665:257e:fff1])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0fe0fecsm48760228f8f.26.2026.05.20.03.12.46
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48febe78aadsm124804255e9.29.2026.05.20.03.12.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 03:12:47 -0700 (PDT)
+        Wed, 20 May 2026 03:12:49 -0700 (PDT)
 From: Gabriel Rondon <grondon@gmail.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
@@ -62,9 +62,9 @@ Cc: linux-iio@vger.kernel.org,
 	andy@kernel.org,
 	nuno.sa@analog.com,
 	dlechner@baylibre.com
-Subject: Re: [PATCH] iio: accel: bmc150: use guard(mutex) for mutex handling
-Date: Wed, 20 May 2026 11:12:44 +0100
-Message-Id: <20260520101244.64434-1-grondon@gmail.com>
+Subject: [PATCH v2] iio: accel: bmc150: use guard(mutex) for mutex handling
+Date: Wed, 20 May 2026 11:12:47 +0100
+Message-Id: <20260520101247.64458-1-grondon@gmail.com>
 X-Mailer: git-send-email 2.33.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -74,42 +74,220 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Mon, 20 Apr 2026 19:15:19 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Replace manual mutex_lock()/mutex_unlock() pairs with guard(mutex)
+and scoped_guard() from cleanup.h. This simplifies error paths by
+removing the need for explicit unlock calls before returning.
 
-> Not sure this list is useful in the commit log. Rather verbose.
+Most converted functions hold the lock for their entire body, so
+guard(mutex) applies directly. bmc150_accel_trigger_handler() only
+holds the lock around a single register read, so scoped_guard() is
+used there to keep the lock scope unchanged.
 
-Dropped the function list from the commit log in v2.
+Signed-off-by: Gabriel Rondon <grondon@gmail.com>
+---
+Changes since v1:
+ - Drop the verbose list of converted functions from the commit message.
+ - bmc150_accel_get_temp(): keep the original declaration order; no
+   unrelated line movement.
+ - bmc150_accel_get_axis(): convert to guard(mutex) as well, the only
+   code outside the old lock scope was a trivial error check.
+ - bmc150_accel_trigger_handler(): use scoped_guard() so that no manual
+   mutex_lock()/mutex_unlock() pairs are left behind.
+ - bmc150_accel_get_fifo_watermark() / bmc150_accel_get_fifo_state():
+   drop the intermediate variable and return directly.
 
-> I took a quick look and can't see anything beyond an if (ret) check
-> in bmc150_accel_get_axis()
-> If it's the only one left I'd use scoped_guard() for
-> bmc150_accel_trigger_handler()
+ drivers/iio/accel/bmc150-accel-core.c | 68 ++++++++-------------------
+ 1 file changed, 20 insertions(+), 48 deletions(-)
 
-Agreed. v2 also converts bmc150_accel_get_axis() to guard(mutex), and
-uses scoped_guard() for bmc150_accel_trigger_handler(), so no manual
-mutex_lock()/mutex_unlock() pairs remain in the touched code.
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 2398eb7e12cd..1e0bd5ab4298 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -7,6 +7,7 @@
+ #include <linux/module.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
++#include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
+@@ -600,18 +601,15 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
+ 	int ret;
+ 	unsigned int value;
+ 
+-	mutex_lock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 
+ 	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_TEMP, &value);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Error reading reg_temp\n");
+-		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+ 	*val = sign_extend32(value, 7);
+ 
+-	mutex_unlock(&data->mutex);
+-
+ 	return IIO_VAL_INT;
+ }
+ 
+@@ -624,25 +622,21 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+ 	int axis = chan->scan_index;
+ 	__le16 raw_val;
+ 
+-	mutex_lock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 	ret = bmc150_accel_set_power_state(data, true);
+-	if (ret < 0) {
+-		mutex_unlock(&data->mutex);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_AXIS_TO_REG(axis),
+ 			       &raw_val, sizeof(raw_val));
+ 	if (ret < 0) {
+ 		dev_err(dev, "Error reading axis %d\n", axis);
+ 		bmc150_accel_set_power_state(data, false);
+-		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+ 	*val = sign_extend32(le16_to_cpu(raw_val) >> chan->scan_type.shift,
+ 			     chan->scan_type.realbits - 1);
+ 	ret = bmc150_accel_set_power_state(data, false);
+-	mutex_unlock(&data->mutex);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -810,17 +804,14 @@ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
+ 	if (state == data->ev_enable_state)
+ 		return 0;
+ 
+-	mutex_lock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 
+ 	ret = bmc150_accel_set_interrupt(data, BMC150_ACCEL_INT_ANY_MOTION,
+ 					 state);
+-	if (ret < 0) {
+-		mutex_unlock(&data->mutex);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	data->ev_enable_state = state;
+-	mutex_unlock(&data->mutex);
+ 
+ 	return 0;
+ }
+@@ -845,13 +836,10 @@ static ssize_t bmc150_accel_get_fifo_watermark(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+-	int wm;
+ 
+-	mutex_lock(&data->mutex);
+-	wm = data->watermark;
+-	mutex_unlock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 
+-	return sysfs_emit(buf, "%d\n", wm);
++	return sysfs_emit(buf, "%d\n", data->watermark);
+ }
+ 
+ static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
+@@ -860,13 +848,10 @@ static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+-	bool state;
+ 
+-	mutex_lock(&data->mutex);
+-	state = data->fifo_mode;
+-	mutex_unlock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 
+-	return sysfs_emit(buf, "%d\n", state);
++	return sysfs_emit(buf, "%d\n", data->fifo_mode);
+ }
+ 
+ static const struct iio_mount_matrix *
+@@ -906,9 +891,8 @@ static int bmc150_accel_set_watermark(struct iio_dev *indio_dev, unsigned val)
+ 	if (val > BMC150_ACCEL_FIFO_LENGTH)
+ 		val = BMC150_ACCEL_FIFO_LENGTH;
+ 
+-	mutex_lock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 	data->watermark = val;
+-	mutex_unlock(&data->mutex);
+ 
+ 	return 0;
+ }
+@@ -1021,13 +1005,10 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+ static int bmc150_accel_fifo_flush(struct iio_dev *indio_dev, unsigned samples)
+ {
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+-	int ret;
+ 
+-	mutex_lock(&data->mutex);
+-	ret = __bmc150_accel_fifo_flush(indio_dev, samples, false);
+-	mutex_unlock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 
+-	return ret;
++	return __bmc150_accel_fifo_flush(indio_dev, samples, false);
+ }
+ 
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+@@ -1187,10 +1168,9 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&data->mutex);
+-	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_REG_XOUT_L,
+-			       data->buffer, AXIS_MAX * 2);
+-	mutex_unlock(&data->mutex);
++	scoped_guard(mutex, &data->mutex)
++		ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_REG_XOUT_L,
++				       data->buffer, AXIS_MAX * 2);
+ 	if (ret < 0)
+ 		goto err_read;
+ 
+@@ -1230,31 +1210,23 @@ static int bmc150_accel_trigger_set_state(struct iio_trigger *trig,
+ 	struct bmc150_accel_data *data = t->data;
+ 	int ret;
+ 
+-	mutex_lock(&data->mutex);
++	guard(mutex)(&data->mutex);
+ 
+-	if (t->enabled == state) {
+-		mutex_unlock(&data->mutex);
++	if (t->enabled == state)
+ 		return 0;
+-	}
+ 
+ 	if (t->setup) {
+ 		ret = t->setup(t, state);
+-		if (ret < 0) {
+-			mutex_unlock(&data->mutex);
++		if (ret < 0)
+ 			return ret;
+-		}
+ 	}
+ 
+ 	ret = bmc150_accel_set_interrupt(data, t->intr, state);
+-	if (ret < 0) {
+-		mutex_unlock(&data->mutex);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	t->enabled = state;
+ 
+-	mutex_unlock(&data->mutex);
+-
+ 	return ret;
+ }
+ 
+-- 
+2.33.0
 
-> Unrelated change [int ret; movement] - here it just acts as noise
-> [...] don't do this sort of code movement of lines we aren't
-> otherwise touching.
-
-Reverted; v2 leaves the declaration order in bmc150_accel_get_temp()
-untouched.
-
-> return sprintf(buf, "%d\n", data->watermark);
-> [...] maybe also return sysfs_emit(...) is appropriate.
-
-Done for bmc150_accel_get_fifo_watermark() and
-bmc150_accel_get_fifo_state(); the intermediate variables are gone.
-These already use sysfs_emit() in the current iio tree, so v2 keeps
-sysfs_emit() and returns directly.
-
-> Unrelated but [...] val = min(val, BMC150_ACCEL_FIFO_LENGTH);
-
-Left out of v2 to keep this to a single logical change. Happy to send
-it as a separate cleanup.
-
-Thanks for the review.
-
-Gabriel
