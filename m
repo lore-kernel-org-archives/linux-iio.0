@@ -1,45 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A983D3A4520;
-	Wed, 20 May 2026 11:08:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24F7C36E493;
+	Wed, 20 May 2026 11:11:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779275313; cv=none; b=ABv9KgDV9pIayg8B3/dnorx6wEVEm0iMX2O+s6LhRbSea1uqZa5OSeqDeICn8DWGGIncqjXWm3Fn4b/BWU1ktzUechuaz3gJVAOH95RFxA7R7PChV9/FuhdcDK+7QWTo1smODs2Sos0t3K6k79t30jMYV7bzJvuDuPcQ0m/94DU=
+	t=1779275480; cv=none; b=YsXUjNTXAFxDI4MumkXnN+MPMAw1iZcBfAWrBrYHu+ewGm+dr2FnBJzAlYKS9KNznsT0qolXQVBM/Xjtcewx56aZnF8SqitX3rZGlyP7s1wbMqNQOJSuRbj8Db+ATVGXMZfn0woWFJE4B97RZ/wdh2CrPk3v//KBZiDpXkjl2UU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779275313; c=relaxed/simple;
-	bh=s9gIFjuqSq7HcN7GhoLjSkrZcGPyBmjz7TS5KGEoZWc=;
+	s=arc-20240116; t=1779275480; c=relaxed/simple;
+	bh=a25PvxRD0u523Q65ziaGi3BCivTs0OPTJ2Kx3Q5Nwk0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kkfWsRy09/eRA1T4G5tYyiX8iXBsxbqhHST2g75Fb0Rl9MStsjvYBX6NQtvtuXa3Rlt420AIjIGCJXJolbcn0yksJT/6PdG63a5Clx+ggKS+LBXVlNc8TX3gas63wK0SAxpqeknI9SYJ+1YdNEZb3PoIsc0PYXv/PkM2EttHj5Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eh6GDSVo; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=CxHEqcOZvK2V6pz3TfpyR44x+wIjGwKEEpid0aK7DuBAhItM6NEvqJoV0Be2U1a0JJs9FBcHnV80rmJh2wFB8ev5nNKjos8/CbqEBXdBl+BDJhPeGsZVpbfURJ0wi57uuSn+wCbVsQvlCnYUBgattog5Jzhop+6mHfh+Ngo5tOw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qmds433q; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eh6GDSVo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5798A1F000E9;
-	Wed, 20 May 2026 11:08:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qmds433q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A15551F000E9;
+	Wed, 20 May 2026 11:11:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779275311;
-	bh=DZDmUbfH2zCPIuRupE0bKTHndS0jrMizmuFeowVAL0Q=;
+	s=k20260515; t=1779275478;
+	bh=7pfxhOfA5bbrhWHUnRP/xfDrwWx5LVm1ScdG9LVG5qI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=eh6GDSVoeFK1YXqKcBXJP141Rwf3EB8VYyCLvgVPBVSPfTlGMPde6eb7WilvdECex
-	 S/WhoWkMcOEPTp+0J0ImXLGSamjj1goxKhhMI88+3aKOEKvAZDcWVMVXNmBr+Zrubu
-	 T/fnT5gPBybspdMjxhl63PJqt3iDAcSU+GMF3R9W8b/zZ0oOQBjyRUePSYaj0TCe4x
-	 JXB4SErdDWPuQdPJ/tCaG7dzWKKplWedSUHcdLOhOcKZ+6TSxjOuUhko6HcehRuwC8
-	 b8tkJTWDGtT3MahpUYLgCn2n176qv934GHjNB6270MOPZnePd3l7Hk0Hh0DITRmGlU
-	 x3d9yY6g4ebSQ==
-Date: Wed, 20 May 2026 12:08:22 +0100
+	b=Qmds433qnrPw20o2VbL3p9XC9+pkdwiBc3bxBMYTscox0EZ7X1r3wFzNohXb1zJgy
+	 MqT/rOMNctJFBL4sE5og6ewB7CEpRZme8FhCv0KDIi1P5ds2+Ko6618/XaqT3aFCcF
+	 FxfWK2xMa7CnGMkDKur1Wd7H1RN8QlnK5XHPBfnfSLHJTAsUiEotgMIt4F34qoqd1M
+	 BbQdqddItUMJ5qNHpPQBQDIcFm401CrYw6GnkyD4Bfhd4y9GU6VVu4W/yBDgYghHJ3
+	 vk9eJ1kDPyU7RFatIT2dGYvh8yPMkKkfo3VCAYTANw4X0zIYCiXLdnVL/QFFCZ3lLd
+	 +HiHE9R6nNdlQ==
+Date: Wed, 20 May 2026 12:11:09 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Stepan Ionichev <sozdayvek@gmail.com>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: pressure: rohm-bm1390: notify trigger on all
- error paths
-Message-ID: <20260520120822.351aa58f@jic23-huawei>
-In-Reply-To: <61d9cec3-6aed-416f-9604-94fe94cb2e3b@gmail.com>
-References: <20260517160801.269-1-sozdayvek@gmail.com>
-	<20260518094238.1986-1-sozdayvek@gmail.com>
-	<20260518161516.53f21777@jic23-huawei>
-	<61d9cec3-6aed-416f-9604-94fe94cb2e3b@gmail.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: Xingyu Wu <xingyu.wu@starfivetech.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v1 1/2] bindings: iio: adc: Add StarFive JHB100 SARADC
+Message-ID: <20260520121109.6b5faac0@jic23-huawei>
+In-Reply-To: <20260519-undoing-ambitious-012d608ebd7f@spud>
+References: <20260518081852.116909-1-xingyu.wu@starfivetech.com>
+	<20260518081852.116909-2-xingyu.wu@starfivetech.com>
+	<20260518-elderly-barman-2b1abfc3755c@spud>
+	<NTZPR01MB095679F35A873BBBA304655F9F002@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
+	<20260519-undoing-ambitious-012d608ebd7f@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,303 +54,99 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 19 May 2026 08:48:13 +0300
-Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+On Tue, 19 May 2026 10:59:59 +0100
+Conor Dooley <conor@kernel.org> wrote:
 
-> Thanks Jonathan,
-> 
-> Your post give me something to think about ;)
-
-This is a can of worms.  More below.
-
-I'm unconcerned as long as (and ideally someone should check it)
-we can get of being stuck by unbind/rebind of driver.  Anything
-else is best effort.
-
-
-> 
-> On 18/05/2026 18:15, Jonathan Cameron wrote:
-> > On Mon, 18 May 2026 14:42:38 +0500
-> > Stepan Ionichev <sozdayvek@gmail.com> wrote:
-> >   
-> >> bm1390_trigger_handler() returns from three error paths without
-> >> calling iio_trigger_notify_done(). The success path at the end
-> >> does, so on a single transient regmap or read failure the trigger
-> >> use_count is never decremented, and the !atomic_read(&trig->use_count)
-> >> guard in iio_trigger_poll_chained() drops every subsequent dispatch.
-> >> The buffered-data flow stays wedged until the trigger is detached.
-> >>
-> >> Funnel all returns through a single done label that calls
-> >> iio_trigger_notify_done() and reports the outcome via IRQ_RETVAL().
-> >>
-> >> Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
-> >> Cc: stable@vger.kernel.org
-> >> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>  
+> On Tue, May 19, 2026 at 09:26:03AM +0000, Xingyu Wu wrote:
+> > On 2026/5/19 00:24, Conor Dooley wrote:  
+> > > 
+> > > On Mon, May 18, 2026 at 04:18:51PM +0800, Xingyu Wu wrote:  
+> > > > Add the new documentation of SAR-ADC for the StarFive JHB100 SoC.
+> > > >
+> > > > Signed-off-by: Xingyu Wu <xingyu.wu@starfivetech.com>
+> > > > ---
+> > > >  .../iio/adc/starfive,jhb100-saradc.yaml       | 62 +++++++++++++++++++
+> > > >  1 file changed, 62 insertions(+)
+> > > >  create mode 100644
+> > > > Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yaml
+> > > >
+> > > > diff --git
+> > > > a/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yam
+> > > > l
+> > > > b/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc.yam
+> > > > l
+> > > > new file mode 100644
+> > > > index 000000000000..ba8e19b72ad7
+> > > > --- /dev/null
+> > > > +++ b/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-saradc
+> > > > +++ .yaml
+> > > > @@ -0,0 +1,62 @@
+> > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) %YAML 1.2
+> > > > +---
+> > > > +$id:
+> > > > +http://devicetree.org/schemas/iio/adc/starfive,jhb100-saradc.yaml#
+> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > +
+> > > > +title: Successive Approximation Register (SAR) A/D converter for the
+> > > > +StarFive JHB100 SoC
+> > > > +
+> > > > +maintainers:
+> > > > +  - Xingyu Wu <xingyu.wu@starfivetech.com>
+> > > > +
+> > > > +properties:
+> > > > +  compatible:
+> > > > +    const: starfive,jhb100-saradc
+> > > > +
+> > > > +  reg:
+> > > > +    maxItem: 1
+> > > > +
+> > > > +  interrupts:
+> > > > +    maxItems: 1
+> > > > +
+> > > > +  clocks:
+> > > > +    maxItems: 1
+> > > > +
+> > > > +  resets:
+> > > > +    maxItems: 2
+> > > > +
+> > > > +  "#io-channel-cells":
+> > > > +    const: 1
+> > > > +
+> > > > +  upper-bound-mv:
+> > > > +    description: The upper bound voltage value of the monitor.
+> > > > +    $ref: /schemas/types.yaml#/definitions/uint16
+> > > > +
+> > > > +  lower-bound-mv:
+> > > > +    description: The lower bound voltage value of the monitor.
+> > > > +    $ref: /schemas/types.yaml#/definitions/uint16
+> > > > +
+> > > > +  scan-freq:
+> > > > +    description: Number of the scan cycle interval.
+> > > > +    $ref: /schemas/types.yaml#/definitions/uint16  
+> > > 
+> > > Can you explain why any of these three properties are something that should be in
+> > > the devicetree rather than software controlled?  
 > > 
-> > These error path 'fixes' are fixes for hardware failure - so if anything
-> > they are hardending  against a possible error condition. I don't mind
-> > that bit it's not a bug to not do this so fixes tag an stable are not
-> > appropriate for any of these.
+> > My intention is to be able to obtain the initial values from the devicetree during probe and preset them.
+> > Do I need to drop them and just set them through sysfs?  
+> 
+> Unless the hardware configuration determines the values (which I can't
+> really see being the case for scan-freq at least) then yes, you need to
+> drop and set them via sysfs.
+> 
+> > > How are the bounds calculated?  
 > > 
-> > Note however that hardening against these conditions is not this simple.
-> > It takes careful analysis of exactly how the hardware behaves and what
-> > each error condition 'might' mean.  Whilst they are probably harmless
-> > I'm also very dubious about taking them without comprehensive testing
-> > on the particular device.
-> >   
-> >> ---
-> >> v2:
-> >> - Use a bool and IRQ_RETVAL() instead of irqreturn_t (Andy)
-> >>
-> >> v1: https://lore.kernel.org/all/20260517160801.269-1-sozdayvek@gmail.com/
-> >>
-> >>   drivers/iio/pressure/rohm-bm1390.c | 15 ++++++++++-----
-> >>   1 file changed, 10 insertions(+), 5 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm-bm1390.c
-> >> index 08146ca0f..81368e578 100644
-> >> --- a/drivers/iio/pressure/rohm-bm1390.c
-> >> +++ b/drivers/iio/pressure/rohm-bm1390.c
-> >> @@ -626,12 +626,15 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
-> >>   	struct iio_poll_func *pf = p;
-> >>   	struct iio_dev *idev = pf->indio_dev;
-> >>   	struct bm1390_data *data = iio_priv(idev);
-> >> +	bool handled = true;
-> >>   	int ret, status;
-> >>   
-> >>   	/* DRDY is acked by reading status reg */
-> >>   	ret = regmap_read(data->regmap, BM1390_REG_STATUS, &status);  
-> > So question 1.
-> > - What actually is device state if this read fails?  We have no idea.
-> >    It might have failed on the 'to device' path in which case the device
-> >    didn't see the read.  Or it might have failed on the 'from device path'.
-> > 
-> > Gets more complex...
-> >   
-> >> -	if (ret || !status)
-> >> -		return IRQ_NONE;  
-> > 
-> > The trigger in use might well be the dataready trigger provided by this driver
-> > (though I note this device has no validate callbacks so we do allow other
-> > triggers - that may or may not be a bug!)  I really dislike read to clear
-> > register designs as they make this stuff more complex.  
+> > The measurement range of this ADC hardware is from 0 to 1800 mV. This set value cannot exceed it. This explanation will be added later.  
 > 
-> I have a strong feeling it should be the dataready. Still, I have no 
-> idea about actual systems using this driver, so I am a bit cautious 
-> adding new restrictions.
+> I'm asking how this is calculated so that I can tell if you the property
+> is permitted or not. 
 
-If we can show it is broken with any of the other triggers then
-we can add the restriction without it being a potential regression. Not sure
-if that is doable - easiest way would be to just try it and see.
-
-
-> 
-> > Anyhow question 2:
-> > - What happens if we don't clear it and do acknowledge the interrupt plus
-> > ack the trigger (which is what iio_trigger_done() is doing?
-> >    Two obvious options - wedged device, it re interrupts immediately.
-> > If we are wedged, then meh device dead. Without adding retry loops
-> > (don't) recovery path is reset the driver by unbinding and rebinding.  
-> 
-> The BM1390 keeps the IRQ pin asserted.
-> 
-> > Fun follow up is what happens if having acked the data ready trigger
-> > by this read, we get another read before getting to iio_trigger_notify_done()?
-> > 
-> > Quite possibly we wedge.  
-> 
-> I see. This isn't fun at all. Even more so if the trigger use-count now 
-> prevents us from calling the handler, and returning further IRQ_NONEs, 
-> preventing the safety-mechanism intended to disable the offending IRQ. I 
-> have a feeling there is IRQF_ONESHOT set though, so perhaps we are safe 
-> from this (when no error path is taken in the handler).
-
-Good point.
-
-You are right (I think!) that saves us if using the trigger in this driver
-because the trigger is fired by iio_trigger_poll_nested()/handle_nested_irq()
-which runs the thread_fn()s for (pollfunc threads) in the thread belonging
-to the trigger interrupt.
-
-If we had a trigger that was doing in the top half (iio_trigger_poll()) then
-it would get messier but I think that could only slew the data by a sample
-which isn't too bad (as we don't need this interrupt to happen). 
-
-If we return an error because we know it's not our interrupt then we should
-be fine anyway because our interrupt will turn up later (as long as that
-is in the trigger itself).
-
-> 
-> > This drivers trigger may be missing a reenable() callback
-> > (which would typically reread the status register to clear any such interrupt).  
-> 
-> Which works for case where we "get another read before getting to 
-> iio_trigger_notify_done()" - but not for a case where we might have the 
-> bus stuck, causing read errors.
-
-If bus is stuck, I'm of the view recovery unlikely and if it really is a once
-in a blue moon thing, unbind and rebind the driver.
-
-> 
-> > Whether it does is again a device implementation specific thing.
-> > 
-> >   
-> >> +	if (ret || !status) {
-> >> +		handled = false;
-> >> +		goto done;
-> >> +	}
-> >>   
-> >>   	dev_dbg(data->dev, "DRDY trig status 0x%x\n", status);
-> >>   
-> >> @@ -639,7 +642,8 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
-> >>   		ret = bm1390_pressure_read(data, &data->buf.pressure);
-> >>   		if (ret) {
-> >>   			dev_warn(data->dev, "sample read failed %d\n", ret);
-> >> -			return IRQ_NONE;
-> >> +			handled = false;
-> >> +			goto done;  
-> > 
-> > Hopefully all this stuff is unrelated to the trigger.  For these it is fair to
-> > ack the trigger and the interrupt.  Curiously the driver does it partly for the
-> > next one (IRQ_HANDLED).  
-> 
-> I would keep the IRQ_NONE here because, if we keep constantly failing 
-> the reads, then the bus is likely to be unerliable - and disabling the 
-> useless IRQ is probably very sane thing to do. It should help debugging. 
-> What comes to acking the trigger - I am starting to agree with Stepan, 
-> we should probably ack the trigger in any case. If we don't ack the 
-> trigger, then the IRQ_NONE does not serve the purpose it is intended for.
-
-The interrupt that we'd get spurious detection on here would not be the device
-one it would be the software emulated one deep in the iio trigger stuff.
-
-Might still be useful for debug. Anyone fancy hacking an error in and reporting
-back what we actually get from the debug hardware?  (with that trigger acked
-as you suggest?)
-
-
-> 
-> >>   		}
-> >>   	}
-> >>   
-> >> @@ -648,15 +652,16 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
-> >>   				       &data->buf.temp, sizeof(data->buf.temp));
-> >>   		if (ret) {
-> >>   			dev_warn(data->dev, "temp read failed %d\n", ret);
-> >> -			return IRQ_HANDLED;
-> >> +			goto done;
-> >>   		}
-> >>   	}
-> >>   
-> >>   	iio_push_to_buffers_with_ts(idev, &data->buf, sizeof(data->buf),
-> >>   				    data->timestamp);
-> >> +done:
-> >>   	iio_trigger_notify_done(idev->trig);
-> >>   
-> >> -	return IRQ_HANDLED;
-> >> +	return IRQ_RETVAL(handled);  
-> > If we are doing this Andy's suggestion of a helper is neater.
-> > 
-> > Anyhow, upshot is to get this stuff right requires device specific knowledge.  
-> 
-> And time... :)
-
-Absolutely - I see it as value add, so its a business decision to work
-through all these or not.
-
-> 
-> > Ideally the author tests injecting errors at each point to verify if the
-> > data capture survives.  However, it's up to a driver author to decide if they
-> > care.  There are normally dozens of paths in a driver that will result in needing
-> > a reset (unbind/bind for most IIO drivers) - that's expensive, complex, fragile
-> > handling code to maintain, so personally I consider it optional.  
-> 
-> I am not going to try adding any such recovery code in driver. I am 
-> afraid it would be way too complex for me to maintain (with my memory, 
-> code I've seen last month is new Today) for the added benefit. If we 
-> have such a delicate system where this type of 'failure recovery w/o 
-> reset' is required, then such code should (in my opinion) be system 
-> specific and not generic. Most of the device users will never benefit 
-> from it, but will need to look at it...
-> 
-> What I DO care is the IRQ gets disabled (from host side) if it can't be 
-> acked (from device side). That shouldn't be so complex (although, it 
-> seems it is more complex I thought when I wrote this driver).
-> 
-> After all this babbling I've done - if I understood it right, omitting 
-> the call to iio_trigger_notify_done() will prevent further returns of 
-> the IRQ_NONE, even if the IRQ stays asserted. So yes, I would definitely 
-> like to see this fix getting in.
-
-I think you are right on this, but I'd kind of like someone to hammer
-some hardware to verify it. I'm not set up to do that today (even in
-emulation) but could get to it at some point. 
-
-The bit that makes me a bit doubtful is if this is a level interrupt
-and the clear is in the trigger handler I think we get an interrupt
-storm anyway - even with IRQ_NONE because that IRQ_NONE is for the
-nested interrupt.  We keep return IRQ_HANDLED from the main thread irq
-despite not actually doing anything.
-
-That's hard behavior to fix in the core as that skip is intended for
-annoying free running edge triggers - which are only ones where this race
-'should' happen. Those can run faster than we can actually read data
-and so we want to drop a scan.   Maybe we could cap the number
-that are skipped so we eventually report a problem from
-iio_trigger_poll_nested() or push that decision up to the caller?
-This would rely on not call iio_trigger_poll_done() in IRQ_NONE on
-the 'software' interrupts in that pollfuncs come from.
-
-bool iio_trigger_poll_nested(struct iio_trigger *trig)
-{
-	int i;
-
-	if (!atomic_read(&trig->use_count)) {
-		atomic_set(&trig->use_count, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
-
-		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
-			if (trig->subirqs[i].enabled)
-				handle_nested_irq(trig->subirq_base + i);
-			else
-				iio_trigger_notify_done(trig);
-		}
-	} else {
-		return false;
-	}
-	return true;
-}
-
-Then check that in the caller. That will tell us someone didn't finish
-the previous trigger. Note it's still not fun because if we let other consumers
-use the trigger, one of those might be running slow and do we want to throttle
-the capture to every other interrupt (which incidentally means the
-clear should be in the trigger irq handler, not the one grabbing the data).
-Ah - that's a good reason to add a validate_device to the trigger.  It is
-broken anyway for other devices using this trigger.
-
-This feels like yet another case where we need some docs on best
-practice and acceptable options.
-
-Gah. I hate analysing error paths in complex flows. Lunch time!
+Far as I can tell this stuff is boot script / udev rule stuff - doesn't
+belong in DT.
 
 Jonathan
 
 > 
-> Thanks guys for giving me a lesson again!
-> 
-> >   
-> >>   }
-> >>   
-> >>   /* Get timestamps and wake the thread if we need to read data */  
-> >   
-> 
-> Yours,
-> 	-- Matti
-> 
-> ---
-> Matti Vaittinen
-> Linux kernel developer at ROHM Semiconductors
-> Oulu Finland
-> 
-> ~~ When things go utterly wrong vim users can always type :help! ~~
+> Cheers,
+> Conor.
 
