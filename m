@@ -1,192 +1,172 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD9C83988FF
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 08:56:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C81323AEF20;
+	Wed, 20 May 2026 09:37:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779267385; cv=none; b=A6mUbNw8+JbeNTcDiF0LP+iPXuXJW++mGery6GDBXkhNSNzRCvPSWPqEEB6TIlHPg8K5sqg47ZOS3nxUmgg5Ra3JQe+p5JVBzdmsUFi+HIB3OBYSoIIwBD/Dv0OyeJKuYLPTpMLokS3i61D7ucH9SJy/DOjpdoddpsAUg1u4amw=
+	t=1779269841; cv=none; b=OrKPjvUS4Vmd5zEowYsHQVY3pel30Z2T9uoOQA0gIYYrwH+muXXA/I91JZXM0g0DfPvjx/3f3in/SJNqsEQly9es5MBj2rkEjcsHaRtThwvpy3REKWsWWWln/zrUv5dLUMtrvqpBjJpuTOwCgyKlgcwWdEdXGEslP1TCpUtFFaw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779267385; c=relaxed/simple;
-	bh=h2twtrvSw/ZLNACakCMYgiogsUQfuClwdgax8uZCdBg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LjXHHw18/LrIQaD0/PEWUV+YuiJhwm6BUQYk35JBXG+EcJihKMjCSp/+5gSPtCiNXv02I48q/64pwS4x0pxdpuF4x/iDcu0BX1cwy5CADp+0y22NaI8CqP7a8CuHLxchD8oqOgoXbJz5D6/IbNo3azJQUkT9G0SqtyVGy4X/+Ao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PQoD7gD8; arc=none smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779269841; c=relaxed/simple;
+	bh=FjA0lJigCLTNTws0AFg9xGOERjUY5/4BnVnS3AznamI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jZZ9kdneYkFUNRW4cpDzDWNsKcRtkFK5q9ojHdq3RFLPw+kqqBZdJos+mG3DU/1X83DBt0ztks2yw9Bre4O3MNh3IkkAuQky93jIb1mGc2L2aYJwPCaWqmwI077xcjhz7nQizYN0uvcViLbqBMqJI7Z0rR3ryP1at/egCrgLvoY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PVMM58rK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PQoD7gD8"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-bd6460b0d11so842340566b.1
-        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 01:56:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779267382; x=1779872182; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rUCdm1gmpZgWGg+Rje5CZp5EuHl/OpSitT/+cJx5sMA=;
-        b=PQoD7gD8rYLVeSzGyKG86FY5dawrkpIwontDn6zTXASH6ETj8qWkrGtZVrIoGToPwI
-         gdkuHrREEH3l9ROwu+qvqowG+f2YqgZ0HdVXosaWqn1JZZQep3XlTpSYnRdEovd4i6he
-         x89tkmrjW9FZvEbJHHOSll+4vhAcUMVZK5AYWqc6S96thX27a6BzCngS00VCeV4JPV2s
-         MY8DVR4eJxOTs2DYhZvfue2NM6OhF8P+eW0hp3Wg7m5T6ArumpKSUSbWZyjv0VHuZYC+
-         mEATRSOCFfmyiiHIttFdmlSKzFKswoYUH91xVsgrZLRiKIK3ZeCXALdF3GlmYHbpMbh8
-         nVNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779267382; x=1779872182;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rUCdm1gmpZgWGg+Rje5CZp5EuHl/OpSitT/+cJx5sMA=;
-        b=PmpOJqmDsH92xecKeTmvBd2XWDg43dTysxYtJkudebrrtLYkL5SHXmfLnqz51i9XE8
-         ppydmVvpNnx6OOGCpaTVUEn3Xf2whY/spJPmH8Y64BbiMM1CBQw15riNrs01U/s/w5a1
-         rMStRdnCq8OUkKztpXYkLOecgk8PUKgem0dHI64dogPvwZmGdhq7BSKFdFv5t18hsZKW
-         lP8Y4oZesKrFbC1WDL5tork+QSTk44nmHYMjBkpI9ENX9WqL1BiAopWuSb4kZLniPn9x
-         3f4LWbP1AdPhqgRMISHPXBPqu/7ILAIvYeZH7hi2H8LJreEoLmIQz8dfgb632SwMNk4X
-         /UjQ==
-X-Gm-Message-State: AOJu0Yyz9ZzSPgmCYFoBgnylZmOcvlAubnb23zKaA/Slp6GRj1Btu2o2
-	JGBpYUrE9lvgu0slL/Qvn87HGBHyhJpE7/qBIG3K4NInAkaXrdHNaEpp
-X-Gm-Gg: Acq92OGs/6mLcZoWpfixMIumMD5B0w8/DkH0TGWo8HMLvAoL3Am8dTKzg77RKUOfUg+
-	gBMR+jM7ph0mS6yNDCCQtMHLPXKYqQIpItJChvkdcOdW6pO184MQEbDDydivczM2LDNzVdhAhLS
-	R0G/ZThxYs++W/T3xFlyc/2ZiXFHJTCSvTqNRmyFZj747t/6UwVYOlpH3BnYWK5UFNGObAWOPVx
-	CGiDA5MLDpHlK6EDxw5cWHSFihfLOvecMfvHWOjHeA14Vxdr1lAdVEDNTsVRZH62nlG5yZpBGU0
-	rQjflAiUrqwNRvfvGWEFv6S5BQ3hQpuZB85fxJluVOX4PtHAslEQ2u3jwQqj8wrUNX1V9GRVv5O
-	8jyRWuU1qBZsZB+xY/56LrJLIyngOJODK7tTjNJQ50vrSS6zWf02WeptssdNUBIrYcYjcxSXM6t
-	R6EGwfcDbrtfU+EhUeb3wVLpmKjxE=
-X-Received: by 2002:a17:907:7b82:b0:bd4:c66e:9889 with SMTP id a640c23a62f3a-bd51790b3d5mr1249519366b.24.1779267381888;
-        Wed, 20 May 2026 01:56:21 -0700 (PDT)
-Received: from gmail.com ([212.75.105.246])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bd4f4ec000csm833929766b.60.2026.05.20.01.56.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 01:56:21 -0700 (PDT)
-Date: Wed, 20 May 2026 10:56:19 +0200
-From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-To: Conor Dooley <conor@kernel.org>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: light: add Broadcom APDS9999
-Message-ID: <ag123fx0az4B83-l@gmail.com>
-References: <cover.1779181370.git.azpijr@gmail.com>
- <12b145839a1a9c5381946a9e5237bfe6fe0ae9a7.1779181370.git.azpijr@gmail.com>
- <20260519-overdrawn-cofounder-59752aa87d4f@spud>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PVMM58rK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 482BD1F00894;
+	Wed, 20 May 2026 09:37:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779269839;
+	bh=IWslf9oeLWvEs3JsbwralhudzzXn6+q2Z6VbOV+CaT8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=PVMM58rKloa/G8Ow05xXHZDMW8Ox3iqRdSL4ekaV58jjNQ94ULrjBKZByXEq6xj8M
+	 F7YZM6GjfwjRh2onvA3bwS9mKhDpNse8n+O5FH3DTXdV1tZW6mpXoD35w6A8n0ofc6
+	 0HVxKMExEnQUtBHTouKW8ZrDP9xu4VujRq+g0HZqVm2c3MA2QBml8VwicX3IMC6HZ6
+	 Dmo1kCHryxjFl+Jo2yEpglixmxKRt8g3RamDrQpHMNHqFjo96R5P7xeAgIhgKqy+uO
+	 +BnnrdAsrDAMBEvDZFLy/qjiMizi5n7dXWs4/Q2tYkBnIs0dyNdTEFz0NAfZG4d0c9
+	 40xNbhwzOSxlQ==
+Date: Wed, 20 May 2026 10:37:08 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Erim, Salih" <salih.erim@amd.com>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, git@amd.com,
+ nuno.sa@analog.com, andy@kernel.org, dlechner@baylibre.com,
+ michal.simek@amd.com, conall.ogriofa@amd.com, erimsalih@gmail.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/5] iio: adc: versal-sysmon: add threshold event
+ support
+Message-ID: <20260520103708.24d59b6b@jic23-huawei>
+In-Reply-To: <59884fdc-a9d0-49c6-8167-11d56a21dd11@amd.com>
+References: <20260502111951.538488-1-salih.erim@amd.com>
+	<20260502111951.538488-5-salih.erim@amd.com>
+	<20260504184415.7b6688f5@jic23-huawei>
+	<59884fdc-a9d0-49c6-8167-11d56a21dd11@amd.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260519-overdrawn-cofounder-59752aa87d4f@spud>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 19, 2026 at 06:30:20PM +0100, Conor Dooley wrote:
-> On Tue, May 19, 2026 at 11:23:13AM +0200, Jose A. Perez de Azpillaga wrote:
-> > Add Device Tree binding for the Broadcom APDS9999 ambient light
-> > and proximity sensor. A separate binding file is used rather
-> > than merging with avago,apds9300.yaml because the APDS9999
-> > has an additional vled-supply for the VCSEL.
-> >
-> > The APDS9999 features individual R, G, B, and IR channels with
-> > a green channel that uses optical coating to approximate the
-> > human eye spectral response for ALS/lux measurements. Calibrated
-> > RGB color sensing is not yet implemented in the driver.
-> >
-> > Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> > ---
-> >  .../bindings/iio/light/brcm,apds9999.yaml     | 54 +++++++++++++++++++
-> >  MAINTAINERS                                   |  6 +++
-> >  2 files changed, 60 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
-> > new file mode 100644
-> > index 000000000000..4d9e9aff8894
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
-> > @@ -0,0 +1,54 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/light/brcm,apds9999.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +title: Broadcom APDS-9999 Digital Proximity and RGB Sensor
-> > +
-> > +maintainers:
-> > +  - Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> > +
-> > +description: |
-> > +  Broadcom APDS-9999 is a digital proximity and RGB sensor with
-> > +  ambient light sensing (ALS) capability. The device uses individual
-> > +  R, G, B, and IR channels plus a Vertical Cavity Surface Emitting
-> > +  Laser (VCSEL) for proximity detection.
-> > +
-> > +  Datasheet: https://docs.broadcom.com/docs/APDS-9999-DS
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - brcm,apds9999
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  vdd-supply: true
-> > +
-> > +  vled-supply:
-> > +    description: VCSEL power supply
->
-> Why does the name in the description disagree with the name in the
-> property? If the pin is called vcsel, please call the property that.
->
 
-will rename to vcsel-supply in v4.
+> >> +static int sysmon_write_event_value(struct iio_dev *indio_dev,
+> >> +                                 const struct iio_chan_spec *chan,
+> >> +                                 enum iio_event_type type,
+> >> +                                 enum iio_event_direction dir,
+> >> +                                 enum iio_event_info info, int val, int val2)
+> >> +{
+> >> +     struct sysmon *sysmon = iio_priv(indio_dev);
+> >> +     unsigned int reg_val;
+> >> +     u32 mask, shift;
+> >> +     u32 raw_val;
+> >> +     int offset;
+> >> +     int ret;
+> >> +
+> >> +     guard(mutex)(&sysmon->lock);
+> >> +
+> >> +     if (chan->type == IIO_TEMP) {
+> >> +             if (info == IIO_EV_INFO_VALUE) {
+> >> +                     offset = sysmon_temp_thresh_offset(chan->address, dir);
+> >> +                     if (offset < 0)
+> >> +                             return offset;
+> >> +                     sysmon_millicelsius_to_q8p7(&raw_val, val);
+> >> +                     return regmap_write(sysmon->regmap, offset, raw_val);
+> >> +             }
+> >> +             if (info == IIO_EV_INFO_HYSTERESIS) {
+> >> +                     mask = (chan->address == SYSMON_ADDR_OT_EVENT) ?
+> >> +                             SYSMON_OT_HYST_BIT : SYSMON_TEMP_HYST_BIT;
+> >> +                     shift = (chan->address == SYSMON_ADDR_OT_EVENT) ? 0 : 1;
+> >> +                     if (val & ~1)  
+> > 
+> > Just to confirm - this only has hysteresis values of 0 or 1?  That's unusually
+> > small given hysteresis should be in same units as _raw.  
+> 
+> You're right, this is wrong. The current code exposes a mode-select
+> bit from ALARM_CONFIG (0 = window mode, 1 = hysteresis mode), not an
+> actual hysteresis value.
+> 
+> The hardware has independent upper and lower threshold registers for
+> each temperature alarm (DEVICE_TEMP and OT), plus a mode bit in
+> ALARM_CONFIG that selects between window mode (alarm on crossing
+> either threshold) and hysteresis mode (upper triggers, lower clears).
+> Since the hardware has a single alarm bit per temperature channel,
+> even in window mode you can't distinguish which threshold was
+> crossed. Hysteresis mode maps naturally to the IIO event model.
+> 
+> I'll rework this as follows:
+> - Hard-code ALARM_CONFIG to hysteresis mode during init (both
+>    DEVICE_TEMP and OT)
+> - Expose hysteresis as a writable value in millicelsius, stored in
+>    the driver
+> - Keep both rising (upper) and falling (lower) thresholds writable
 
-> Cheers,
-> Conor.
->
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +additionalProperties: false
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - vdd-supply
-> > +
-> > +examples:
-> > +  - |
-> > +    i2c {
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +
-> > +        light-sensor@52 {
-> > +            compatible = "brcm,apds9999";
-> > +            reg = <0x52>;
-> > +            vdd-supply = <&vdd_reg>;
-> > +            vled-supply = <&vled_reg>;
-> > +        };
-> > +    };
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 1aa9c989973f..2d8d4e2eab6e 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -5000,6 +5000,12 @@ S:	Maintained
-> >  F:	Documentation/devicetree/bindings/iio/light/brcm,apds9160.yaml
-> >  F:	drivers/iio/light/apds9160.c
-> >
-> > +BROADCOM APDS9999 AMBIENT LIGHT SENSOR DRIVER
-> > +M:	Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> > +L:	linux-iio@vger.kernel.org
-> > +S:	Maintained
-> > +F:	Documentation/devicetree/bindings/iio/light/brcm,apds9999.yaml
-> > +
-> >  BROADCOM ASP 2.0 ETHERNET DRIVER
-> >  M:	Justin Chen <justin.chen@broadcom.com>
-> >  M:	Florian Fainelli <florian.fainelli@broadcom.com>
-> >
-> >
->
-> pw-bot: changes-requested
+> - Couple the three attributes:
+>      Write rising    -> recompute lower = upper - stored_hysteresis
+>      Write falling   -> update stored_hysteresis = upper - lower
+>      Write hysteresis -> recompute lower = upper - new_hysteresis
+> - Read hysteresis returns the stored value
+> 
+> This keeps full user control over both thresholds while exposing
+> hysteresis as a proper temperature value, matching IIO semantics.
+> Window mode support could be added later if needed without ABI
+> changes.
+> 
+Not quite because that falling attribute is not in line with the ABI.
 
---
-jose a. p-a
+This needs a little hammering to fit in the oddly shaped hole of our ABI.
+
+If you are sticking to hystersis only (not window mode) then you need
+to expose it as rising threshold + hysteresis (not falling threshold as
+there is no even triggered in that direction - unless you are doing something
+nastier like triggering on both edges of the interrupt - in which case this
+is very similar to window mode and for both event directions you'd need
+to set the hysteresis to the difference between the threshold values).
+
+If you do want to do window mode - that would be fine but you'd need
+to then do a falling event where the enable sets the hysteresis reported
+to 0.  Whether a write to hysteresis would then fail or we'd disable the
+falling direction would need some discussion - the ABI doesn't constrain
+that so it's a case of what is less likely to confuse a user.
+
+Jonathan
+
+
+> > 
+> > Also similar to above, I'd split the two cases and use FIELD_PREP()  
+> 
+> This block will be replaced by the hysteresis rework described above.
+> 
+> Best regards,
+> Salih
+> 
+> 
+> >   
+> >> +                             return -EINVAL;
+> >> +                     return regmap_update_bits(sysmon->regmap,
+> >> +                                               SYSMON_TEMP_EV_CFG,
+> >> +                                               mask, val << shift);
+> >> +             }
+> >> +     } else if (chan->type == IIO_VOLTAGE) {
+> >> +             offset = sysmon_supply_thresh_offset(chan->address, dir);
+> >> +             if (offset < 0)
+> >> +                     return offset;
+> >> +             ret = regmap_read(sysmon->regmap, offset, &reg_val);
+> >> +             if (ret)
+> >> +                     return ret;
+> >> +             sysmon_supply_processedtoraw(val, reg_val, &raw_val);
+> >> +             return regmap_write(sysmon->regmap, offset, raw_val);
+> >> +     }
+> >> +
+> >> +     return -EINVAL;
+> >> +}  
+> > 
+> >   
+> 
+> 
+> 
+> 
+
