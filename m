@@ -1,292 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B453B3403F4;
-	Wed, 20 May 2026 17:14:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC85B312825
+	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 17:31:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779297245; cv=none; b=AASlHm4aQ7XErf22Loq4BdYWbMZCYf/yAXlu5sanXC9SEqRNHfrnBv5yOLVB5rlJI11raS9NrCFPvxP/0EnCLR1f6oibiyB80NAi0EXDM7tmxtAy6fFzoDwh4sPeeT4yEYMsKDV8mYxz15lvS6B4ouLBEcXMtb/o+OAc1pnKEhU=
+	t=1779298299; cv=none; b=Oj4+ZbEpcEH1HCHtw5MMJT/l05PwSFSDMfKt74iLFzdEHiQaeGYqY2ZTXHYRc+agPAm/1qZUAGc5hTI0IHY2aZdbWHH90V+w68NKzONv1A+JyEAsjSLsrIyqnJcVuDqqEPe1L795zyqgxGwTQJ9dovzrfmy9L6iRkfg+VvWnmnc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779297245; c=relaxed/simple;
-	bh=EY94YMO9sHh4f4g0Z+qFJvxAsJyptKw8eW7DQ9sIwpU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YwmUr9CCYWZkE+g3VYpDUEzvAdVG02QpTkAsom+R3poUdSTu0AW40c6lQyG9IF5QSFubw3wu6EKvLMgLzFPrbKL1seq86HKWa8ePuDZg3D0wZiQ+pKsxq2pCAQzrzmkf5VwAsSWngWvJw5df8IvVuO1gyFqdtSYp5tjdEPce9g8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HLNG1H6n; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779298299; c=relaxed/simple;
+	bh=bq8bw6vwJh2kQuhVxT3kCdfwUyONAsS13CxP4mbE1Nc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rxGnkx88gJ4VQPmURrrojX9sz7MttuEBO6Q+U+rCphB9BNzhizW9J++meA8eI3CPBxadG5TghiNe32h9EQHIt3e7aSsvehaTtzvs5ajh+1xh0lnPb5ZsANh/f513OxWsQkfJD0er8kec0+QNr1QwO4Bdi48caRX6U0tHdZlYVOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qvu5+nsP; arc=none smtp.client-ip=209.85.221.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HLNG1H6n"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D04C11F00894;
-	Wed, 20 May 2026 17:13:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779297243;
-	bh=O9qgPLHr7QL0P1uZ8nEtWqDN2bcDhBU6RkhI9zGyM4o=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=HLNG1H6nlR1VlzFKDngGW+MuSrpjMZCAftunfsuU+/dDKM7Mr0NDVEl8YYg9yoxlZ
-	 qxfMquRjwL2m3+CHL97Xhmr8fEeVFMrUhgh30TuW6eTENshYdZL7RqCBSaoFIrHCKT
-	 F7UEwfs3PMCMsLE+o2V+ntBIceDoyAjyFBWhxZvi4IUfCTcrVjXbWawcPp+c313L++
-	 KFGxGlZn8nQSqhOXHas4A1DkSwEYVazcmvHl7bvcMHEdgee/hnPEKF0rmO+dYhAk9r
-	 25DJVUDrTr/b2G9KtxI8ZKmWkkVT7oyK8aSBoprpY/tmQcs7DbZCqDiEVgUkMrph7m
-	 pRY0bZo8EeBgA==
-Date: Wed, 20 May 2026 18:13:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
- dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
- linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
- heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
- andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V8 05/10] iio: imu: inv_icm42607: Add PM support for
- icm42607
-Message-ID: <20260520181353.0a0371cb@jic23-huawei>
-In-Reply-To: <20260518200526.458421-6-macroalpha82@gmail.com>
-References: <20260518200526.458421-1-macroalpha82@gmail.com>
-	<20260518200526.458421-6-macroalpha82@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qvu5+nsP"
+Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-57533363201so1580641e0c.0
+        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 10:31:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779298297; x=1779903097; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=NoU4YuxRQKK2zoh0YbbDzimdEIINpcIXLiLGPEgByIY=;
+        b=qvu5+nsP9XbziYrVP6CzDF8NtvaCdxIwczfLCUgZYA4jcRzTFSVQWy/NOcaF9UyCZR
+         XPZMhvLKll04OVZYQUi4CCTzPJn60FCDJCLH/e6RW0HRS0FVQe0wBvaz9gh9UrpwN5Zb
+         e30eBdjokRApvXsaGMzcmuK4LwXD0UUhTomO+PqrFmo5KaIq5dHx9APNzj6LXQPcww4Y
+         ubJHeUAgaAU89Yu7o7xPXK8uqIE1guFBRfb37jlPV0qWZDDQP5JINghRD04AfdIQQJoa
+         bMN1lHUjUdjTjhXf9Co2xI5mnd79XBzQ90P0rhZ/y2eebtPeGkcIajKja6BuvVp1jIJb
+         ucMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779298297; x=1779903097;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NoU4YuxRQKK2zoh0YbbDzimdEIINpcIXLiLGPEgByIY=;
+        b=kxh8zedARRS7kfrP7w2aNOKNokqdo3vvfk007cjC5liF5l+kJx844psQ2RtfWqz4Eh
+         C/Y2QWZ3Z2NBYWt6vaG/Pa/u1xvqCDCDP43LhYAnGUSYQm1LVvbhXcYx5drtnhVad7TK
+         wWW5ODUL1xKQ/PXaIe7mTA5FFL80cammBhoq9eFjijxABbHWXixMUYAL/5CMu5AvzgOP
+         wDwlcEaqUtU59MTxbJRQj9ELClicu1dSzZJzdn2Hy0VWIjGyYXWe5V+iKB16U6rIedm1
+         4MwM3LnHMNn2JtAXnxwM2xbGrx5RCPIy1ocgTrMMfzIUUZQoZ4NXf97KS4KtspalmD0n
+         ETaA==
+X-Gm-Message-State: AOJu0Yx9u8oxBkknN7Go5DMItPCJPI03+tOgl48oU/u0k2U5wF5yUaUJ
+	WOAK4BdAHUeHcy2NmbKFut+a7Q0ADEEkcA7NykvuBlrtKdZia6MUdA3c
+X-Gm-Gg: Acq92OEkHrUgC2FRVjWCeBvbp1HRK+XSrapAznVjAwLODLimqF8gqM0D8kobKWOCGsh
+	S+AOcBdUzxNnsvOUhnmeM/Xj3Ua3WD+cPr7PDhwcAgUTComCADfVpyKm+jY9PO5VOTkFMTkenhU
+	JMFOiVBVYsv7o7IJ5zUjLwtsuWZIW4uWpkXSTjSkccR50gVSKNCJD1VDVZLfbkqq4igG34mMxUn
+	LPBAWpekxKmKgn5K+Fmdjw64uiT/oKWpJ0pAUQU8NJOHsQsIbguJTznXxLLJJbfzY/ZyAiLMGOV
+	2vesdYijTg/lm0NDzbAg3sSXYFtfBbHZAbQZoJizkfJh+YCeaq+FJ8mn51eanl8KtUkarUBYzaZ
+	Za5AqP+BhrKDuQo9Vb+nGb4cSYa8GlauFM8kCQNYfNS7lJyTZvrRqNnsvHRL/bmWH/+APsNSX7u
+	+0nR2DrhnfDOFHao6DgpHpqZuNZ814z+G3
+X-Received: by 2002:a05:6122:e18c:b0:56c:da22:6921 with SMTP id 71dfb90a1353d-5760be4b464mr13831128e0c.5.1779298296647;
+        Wed, 20 May 2026 10:31:36 -0700 (PDT)
+Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5760faa5645sm12288301e0c.14.2026.05.20.10.31.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2026 10:31:35 -0700 (PDT)
+Date: Wed, 20 May 2026 14:31:51 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, nuno.sa@analog.com,
+	Michael.Hennerich@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Subject: Re: [PATCH v1 3/4] iio: adc: ltc2378: Enable high-speed data capture
+Message-ID: <ag3wB-dAHnm67kZu@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1779117444.git.marcelo.schmitt1@gmail.com>
+ <580ce8e03cdbda8ec20fed2e26f2226872ffcef3.1779117444.git.marcelo.schmitt1@gmail.com>
+ <20260520172740.783c8866@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260520172740.783c8866@jic23-huawei>
 
-On Mon, 18 May 2026 15:05:20 -0500
-Chris Morgan <macroalpha82@gmail.com> wrote:
-
-> From: Chris Morgan <macromorgan@hotmail.com>
+> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > index 70fec8e3e891..b5368ee783f7 100644
+> > --- a/drivers/iio/adc/Kconfig
+> > +++ b/drivers/iio/adc/Kconfig
+> > @@ -944,6 +944,7 @@ config LTC2378
+> >  	depends on SPI
+> >  	depends on GPIOLIB || PWM
+> >  	select IIO_BUFFER
+> > +	imply LTC2378_OFFLOAD_BUFFER
+> >  	help
+> >  	  Say yes here to build support for Analog Devices LTC2378-20 and
+> >  	  similar analog to digital converters.
+> > @@ -951,6 +952,17 @@ config LTC2378
+> >  	  This driver can also be built as a module. If so, the module will
+> >  	  be called ltc2378.
+> >  
+> > +config LTC2378_OFFLOAD_BUFFER
+> > +	bool "Offloaded data capture with LTC2378"
+> > +	depends on SPI && LTC2378
+> > +	depends on SPI_OFFLOAD=y
+> > +	depends on PWM=y
+> > +	depends on SPI_OFFLOAD_TRIGGER_PWM=y
+> > +	depends on IIO_BUFFER_DMA=y
+> > +	depends on IIO_BUFFER_DMAENGINE=y
 > 
-> Add power management support for the ICM42607 device driver.
+> why do all these have to be built in?  In general I think we need to jusitfy
+> why this driver needs to work on systems with out this stuff being built.
+> I.e. why do we need the separate optional file at all?
+
+Hi Jonathan, thank you for your review.
+
+I've applied fixes to all issues reported by sashiko, except for Kconfig
+configuration (see below) and the is_visible() thing I'm still working on.
+
+My intent with this design choice was to keep chip intrinsic dependencies
+separate from SPI offload dependencies. The indented benefit is to enable using
+the device without having to enable SPI_OFFLOAD (which is boolean and might not
+be supported on all platforms). The offload feature is indeed highly desirable
+hence the imply on the main driver Kconfig entry. The other symbols are tristate
+so, if we keep this approach, will drop =y.
+
+The separate optional file is part of the push for dependency separation. It
+helps avoid #ifdef in c code. If the proposal is not far from something
+acceptable, I'd like to have another try of making it work. Still, it's arguable
+that the real interest is only on supporting the offload thing. Also, since I
+don't have any request to support these without offload, I think it will also be
+okay to have everything combined into a single driver. 
+
+Will follow all the other suggestions.
+
 > 
-> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-
-Hi Chris,  runtime PM is my current place to look closest
-for bugs because we've had a lot of them recently.
-
-Anyhow, took another look and here I think we can optimize
-things a little more.
-
-> ---
->  drivers/iio/imu/inv_icm42607/inv_icm42607.h   |  18 +++
->  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 147 ++++++++++++++++++
->  .../iio/imu/inv_icm42607/inv_icm42607_i2c.c   |   1 +
->  .../iio/imu/inv_icm42607/inv_icm42607_spi.c   |   1 +
->  4 files changed, 167 insertions(+)
+> > +	help
+> > +	  Say yes here to build support for high speed data capture with LTC2378
+> > +
+> >  config LTC2471
+> >  	tristate "Linear Technology LTC2471 and LTC2473 ADC driver"
+> >  	depends on I2C
+> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> > index 1814fb78dde3..2fa5dce0ceea 100644
+> > --- a/drivers/iio/adc/Makefile
+> > +++ b/drivers/iio/adc/Makefile
+> > @@ -82,6 +82,7 @@ obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+> >  obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
+> >  obj-$(CONFIG_LTC2309) += ltc2309.o
+> >  obj-$(CONFIG_LTC2378) += ltc2378.o
+> > +obj-$(CONFIG_LTC2378_OFFLOAD_BUFFER) += ltc2378-offload-buffer.o
 > 
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> index 74d8d3d7c890..b05828415053 100644
-> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> @@ -10,6 +10,7 @@
->  #include <linux/bitops.h>
->  #include <linux/iio/iio.h>
->  #include <linux/mutex.h>
-> +#include <linux/pm.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
->  
-> @@ -96,24 +97,34 @@ struct inv_icm42607_hw {
->  	const struct inv_icm42607_conf *conf;
->  };
->  
-> +struct inv_icm42607_suspended {
-> +	enum inv_icm42607_sensor_mode gyro;
-> +	enum inv_icm42607_sensor_mode accel;
-> +	bool temp;
-> +};
-> +
->  /**
->   *  struct inv_icm42607_state - driver state variables
->   *  @lock:		lock for serializing multiple registers access.
->   *  @hw:		Hardware specific data.
->   *  @map:		regmap pointer.
->   *  @vddio_supply:	I/O voltage regulator for the chip.
-> + *  @vddio_en:		I/O voltage status for runtime PM.
->   *  @irq:		chip irq, required to enable/disable and set wakeup
->   *  @orientation:	sensor chip orientation relative to main hardware.
->   *  @conf:		chip sensors configurations.
-> + *  @suspended:		suspended sensors configuration.
->   */
->  struct inv_icm42607_state {
->  	struct mutex lock;
->  	const struct inv_icm42607_hw *hw;
->  	struct regmap *map;
->  	struct regulator *vddio_supply;
-> +	bool vddio_en;
->  	int irq;
->  	struct iio_mount_matrix orientation;
->  	struct inv_icm42607_conf conf;
-> +	struct inv_icm42607_suspended suspended;
+> Hmm. This is odd. The driver can be modular but not this and it's build seperately
+> rather than as part of the module. I think these bit needs a redesign.
+> We definitely want this extra support to be part of the module.  See how something
+> like the ADIS IMU library in iio/imu/Makefile is done.
 
-Is this used?  If not bring it in only when needed.
+Will check this out too.
 
->  };
-
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> index e9c81b52f9ef..bc0cefa2fb77 100644
-> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> @@ -9,6 +9,7 @@
->  #include <linux/irq.h>
->  #include <linux/module.h>
->  #include <linux/mutex.h>
-> +#include <linux/pm_runtime.h>
->  #include <linux/property.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
-> @@ -72,6 +73,62 @@ const struct inv_icm42607_hw inv_icm42607p_hw_data = {
->  };
->  EXPORT_SYMBOL_NS_GPL(inv_icm42607p_hw_data, "IIO_ICM42607");
->  
-> +static int inv_icm42607_set_pwr_mgmt0(struct inv_icm42607_state *st,
-> +				      enum inv_icm42607_sensor_mode gyro,
-> +				      enum inv_icm42607_sensor_mode accel,
-> +				      bool temp, unsigned int *sleep_ms)
-> +{
-> +	enum inv_icm42607_sensor_mode oldgyro = st->conf.gyro.mode;
-> +	enum inv_icm42607_sensor_mode oldaccel = st->conf.accel.mode;
-> +	bool oldtemp = st->conf.temp_en;
-> +	unsigned int sleepval;
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	if (gyro == oldgyro && accel == oldaccel && temp == oldtemp)
-> +		return 0;
-> +
-> +	val = FIELD_PREP(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK, gyro);
-> +	val |= FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, accel);
-> +	if (!temp)
-> +		val |= INV_ICM42607_PWR_MGMT0_ACCEL_LP_CLK_SEL;
-> +	ret = regmap_write(st->map, INV_ICM42607_REG_PWR_MGMT0, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->conf.gyro.mode = gyro;
-> +	st->conf.accel.mode = accel;
-> +	st->conf.temp_en = temp;
-> +
-> +	sleepval = 0;
-> +	if (temp && !oldtemp) {
-> +		if (sleepval < INV_ICM42607_TEMP_STARTUP_TIME_MS)
-> +			sleepval = INV_ICM42607_TEMP_STARTUP_TIME_MS;
-		sleepval = max(sleepval,)
-or just assign it here if not later patches add stuff in between
-the assignment to 0 and here.
-> +	}
-> +	if (accel != oldaccel && oldaccel == INV_ICM42607_SENSOR_MODE_OFF) {
-> +		usleep_range(200, 300);
-
-fsleep() + add a comment on why we are sleeping in here.
-
-> +		if (sleepval < INV_ICM42607_ACCEL_STARTUP_TIME_MS)
-> +			sleepval = INV_ICM42607_ACCEL_STARTUP_TIME_MS;
-		sleepval = max(sleepval, INV...);
-
-> +	}
-> +	if (gyro != oldgyro) {
-> +		if (oldgyro == INV_ICM42607_SENSOR_MODE_OFF) {
-> +			usleep_range(200, 300);
-
-fsleep()
-
-> +			if (sleepval < INV_ICM42607_GYRO_STARTUP_TIME_MS)
-> +				sleepval = INV_ICM42607_GYRO_STARTUP_TIME_MS;
-I'd use max for these as well.
-
-> +		} else if (gyro == INV_ICM42607_SENSOR_MODE_OFF) {
-> +			if (sleepval < INV_ICM42607_GYRO_STARTUP_TIME_MS)
-> +				sleepval = INV_ICM42607_GYRO_STARTUP_TIME_MS;
-> +		}
-> +	}
-> +
-> +	if (sleep_ms)
-> +		*sleep_ms = sleepval;
-> +	else if (sleepval)
-> +		msleep(sleepval);
-> +
-> +	return 0;
-> +}
-
->  
-> +static int inv_icm42607_suspend(struct device *dev)
-> +{
-> +	struct inv_icm42607_state *st = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-Could you use pm_runtime_force_suspend()?
-> +	if (pm_runtime_suspended(dev))
-> +		return 0;
-> +
-> +	ret = inv_icm42607_set_pwr_mgmt0(st, INV_ICM42607_SENSOR_MODE_OFF,
-> +					 INV_ICM42607_SENSOR_MODE_OFF,
-> +					 false, NULL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	inv_icm42607_disable_vddio_reg(st);
-> +
-> +	return 0;
-> +}
-> +
-> +static int inv_icm42607_resume(struct device *dev)
-> +{
-> +	struct inv_icm42607_state *st = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-Given the bunch of stuff we've run into recently around these
-I'm getting more paranoid.
-Similar to above, could you use pm_runtime_force_resume()
-You would need to gate stuff added later to not occur
-though if it wasn't runtime suspended.
-
-
-> +	if (pm_runtime_suspended(dev))
-> +		return 0;
-> +
-> +	ret = inv_icm42607_enable_vddio_reg(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Nothing else to restore at this time. */
-> +
-> +	return 0;
-> +}
-> +
-> +static int inv_icm42607_runtime_suspend(struct device *dev)
-> +{
-> +	struct inv_icm42607_state *st = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	ret = inv_icm42607_set_pwr_mgmt0(st, INV_ICM42607_SENSOR_MODE_OFF,
-> +					 INV_ICM42607_SENSOR_MODE_OFF, false,
-> +					 NULL);
-Different alignment to above - aim for consistent choices on this.
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	inv_icm42607_disable_vddio_reg(st);
-> +
-> +	return 0;
-> +}
-> +
-> +static int inv_icm42607_runtime_resume(struct device *dev)
-> +{
-> +	struct inv_icm42607_state *st = dev_get_drvdata(dev);
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	return inv_icm42607_enable_vddio_reg(st);
-> +}
-> +
-> +EXPORT_NS_GPL_DEV_PM_OPS(inv_icm42607_pm_ops, IIO_ICM42607) = {
-> +	SYSTEM_SLEEP_PM_OPS(inv_icm42607_suspend, inv_icm42607_resume)
-> +	RUNTIME_PM_OPS(inv_icm42607_runtime_suspend,
-> +		       inv_icm42607_runtime_resume, NULL)
-> +};
-> +
+> 
+> >  obj-$(CONFIG_LTC2471) += ltc2471.o
+> >  obj-$(CONFIG_LTC2485) += ltc2485.o
+> >  obj-$(CONFIG_LTC2496) += ltc2496.o ltc2497-core.o
