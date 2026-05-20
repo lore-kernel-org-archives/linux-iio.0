@@ -1,56 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A6E3D091B;
-	Wed, 20 May 2026 09:55:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25F4E3C4576;
+	Wed, 20 May 2026 10:01:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779270905; cv=none; b=kDcSiq2ZLYP7XvksrljRQo+a6WQB0iD8ts48vWuS2EQx4IGaYSrZ8+21A950mG2bEqXZpVqD/3x8PuVIrAGYC37vtw3jISKV1exRdh8rlEJUCb1KqdhyFJIqdP+zE5cHWrJmgKH4I3rSJ7SAwLSkEWuF3BXNSEBBPH6kB5zDI1Q=
+	t=1779271320; cv=none; b=oQG9sohhU6U3OK2SQVz6CifmOfKoAOPfTnn622uHHe9L4yJyr6tHbb+BWw/5DKuWeQS+K33D4eRjaTBzMoSdyzOb+kWNuDdFsqeTrPlA7fXQCiDYMfKHNUffgeFmCmJdYhRDDiCQWAK9M4ABuyshGvKJsh8F4mt3JVZnDZpjY/M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779270905; c=relaxed/simple;
-	bh=W/ETVLQPiLWnEVzKK7qPp+AucWqlm4vH3u/jl9ung40=;
+	s=arc-20240116; t=1779271320; c=relaxed/simple;
+	bh=qKMywVhaNw1tNHLhSK5k0a7DjEgI8FfNy9d3GoQjxis=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m1F9ZmgLEuR9lZ35rDeQRCyMM02aM+8ThBLgf3jUsH/N/CIOpizzxrye4jWHrF4nSg1ZP35vDviMWp865M+TWv+gYAm4rZbu8fTTpn6xF/5OL8/kUlA8U1WbJwB/tSEntl43touSjZsgjs4XGyL7r1CMDX8B1GdJl6VAQC+/Rp0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kubQ3jql; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=OVDLUWKR9gFyfI/P6Obu+I3aeuxhiN+9k2tiVH5Ge09XorLP9NDTIf5MuXHMsooApiZzosqY/2Z+Wp0/o+7UW5h0SL+pNIcJSBNj7xs1HkzFwVvygRb33l1V74MWRZr3LmQIQrmVCbywa52cpi6fK7q21H192EiwWZMwAoJkMm8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XXVHq6ej; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kubQ3jql"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BEB21F000E9;
-	Wed, 20 May 2026 09:54:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XXVHq6ej"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE1511F000E9;
+	Wed, 20 May 2026 10:01:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779270903;
-	bh=1rR11SLMve5z99TMpOCckaXfI3pjGLYjtT01yolVcVA=;
+	s=k20260515; t=1779271318;
+	bh=ND4Dzr/UsDZIl/Bhjbr0HOI2CU59MYoi8lOgRpb7/dg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=kubQ3jqlcjIHtJBWJBC/to3LSIkAaMm0l7XhtMWuGGmjExiV5CkoCbKTUfd3BvVhj
-	 eoS3nNKCqeYOwtIRPbX9yNtLX5Q0aMkyU0vxOdFjrnWPWo+D9A27XF+2A/bF71fC2/
-	 qMKLiG3fY/sZZZLYyNuL/nsSrYJQz/eEtNKr1beBxg4CPz4j4HqGkkmPj8jXYWGYUi
-	 +2s+wVVk70cgtJFgWGgQ9kcnhHkp+x97sWJ41S6cdb8sO5WKyo8D0cP2Cgy3VdKM9d
-	 6eeeQIeBT3FHMyWMXtOcnlKqyxJmAtteMMhXQe0T3nJRFXcERFCpdBcykGgGXJ07Zv
-	 k2yiMhfy9ywyQ==
-Date: Wed, 20 May 2026 10:54:50 +0100
+	b=XXVHq6ej+P3wxX8LJol8gghobYkIYzYi36g2WlGkBJRLMzIZvUo/xzlneSf+l7up1
+	 sxXYZWQdcTvTgNyxz2ycKnIsItolNDPZx3MLz9NyDv1FPwNK4xTRaif4ecRSd/Zo9Y
+	 QDO38YqYm3ah1IbpPPnXjBDv88vUoUUCi3WjrEqD7j7XpyuhsQkUCewXgUh1LCVd+e
+	 suK5pugHoERES/9mxbwGv7tKdUbmiwmiDscjTKsDVmplrKBC3V+rPZbYrscC1zHkSa
+	 B1tTieB91JHnV4Qmgxqo2/B9qoQRrtqyers8rTKJF47XQHPXJDY6yuDiGE5mMhZdR7
+	 DXgqpqw+R33sw==
+Date: Wed, 20 May 2026 11:01:49 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>,
- rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
- R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH RFC v4 09/10] Documentation: ABI: testing: add docs for
- ad9910 sysfs entries
-Message-ID: <20260520105450.7fae5de1@jic23-huawei>
-In-Reply-To: <pkx5v4od3wkyyzxomfrjf4ei7leboadzth262xnl55fvu76pf3@yqrezmo6gtq7>
-References: <20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com>
-	<20260508-ad9910-iio-driver-v4-9-d26bfd20ee3d@analog.com>
-	<20260517155843.7f833658@jic23-huawei>
-	<yrabhhhdkzmiuxlqzrrj6a47ftlzwvva7r2korzeszdy4yqrin@xl6obhhnnas4>
-	<20260518144537.7c998308@jic23-huawei>
-	<pkx5v4od3wkyyzxomfrjf4ei7leboadzth262xnl55fvu76pf3@yqrezmo6gtq7>
+To: Piyush Patle <piyushpatle228@gmail.com>
+Cc: ak@it-klinger.de, andriy.shevchenko@linux.intel.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 v8 02/11] dt-bindings: iio: adc: hx711: add VSUP
+ supply property
+Message-ID: <20260520110149.4086c934@jic23-huawei>
+In-Reply-To: <CAMB+xkaOEVbc=nO0nSODJC6cmbGiXZ9C+WA8NEY8Lhj=3c89JQ@mail.gmail.com>
+References: <20260511174342.123820-1-piyushpatle228@gmail.com>
+	<20260511174342.123820-3-piyushpatle228@gmail.com>
+	<20260512130622.1f3f4d08@jic23-huawei>
+	<20260512130809.5ab5eb90@jic23-huawei>
+	<CAMB+xkaOEVbc=nO0nSODJC6cmbGiXZ9C+WA8NEY8Lhj=3c89JQ@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -58,168 +49,101 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 18 May 2026 16:27:23 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+On Tue, 19 May 2026 02:47:44 +0530
+Piyush Patle <piyushpatle228@gmail.com> wrote:
 
-> On 26/05/18 02:45PM, Jonathan Cameron wrote:
-> > On Sun, 17 May 2026 18:30:27 +0100
-> > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> >   
-> > > On 26/05/17 03:58PM, Jonathan Cameron wrote:  
-> > > > On Fri, 08 May 2026 18:00:25 +0100
-> > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> > > >     
-> > > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > > > 
-> > > > > Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
-> > > > > control Parallel Port, Digital Ramp Generator and OSK parameters.
-> > > > > 
-> > > > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>    
-> > > > I'm fine with phase and frequency as defined, but for the scaling it made me wonder.
-> > > > For outvoltage0 channels the assumption the value is the peak voltage so if
-> > > > we know what input to be modulated by the ramp generator can we express them
-> > > > in volts (well milivolts) rather than as a scaling multiplier?    
-> > > 
-> > > The DAC output is current-based and differential. Voltage conversion would happen
-> > > outside the device...  
-> > 
-> > Why aren't we representing this as out_altcurrentX-Y_xxxx?  
-> 
-> Good point! altcurrent makes more sense than altvoltage if we want to use raw to
-> control the output level rather than scale, which would be a constant to convert
-> raw into current units (what is the one that is used in the sysfs ABI? Ampere, mA or uA?)
+> On Tue, May 12, 2026 at 5:38=E2=80=AFPM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >
+> > On Tue, 12 May 2026 13:06:22 +0100
+> > Jonathan Cameron <jic23@kernel.org> wrote:
+> > =20
+> > > On Mon, 11 May 2026 23:13:27 +0530
+> > > Piyush Patle <piyushpatle228@gmail.com> wrote:
+> > > =20
+> > > > Document the optional VSUP supply used by the HX711 on-chip regulat=
+or.
+> > > >
+> > > > Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
+> > > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > > > Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> > > > --- =20
+> > >
+> > > I got curious given the driver doesn't yet turn this on and wanted
+> > > to just sanity check it via a datasheet.
+> > >
+> > > Why are we including this one but not dvdd-supply?  The suggested
+> > > wiring does connect them to the same supply but it's external to the
+> > > chip so in theory they might not be.  Curiously dvdd supply is allowed
+> > > to be 0.1 V lower than vsup-supply. =20
+> The HX711 does have a DVDD pin, but it is the output of the internal
+> LDO and is normally just bypassed to ground. VSUP is the rail supplied by
+> the board, so that was the one I documented here.
 
-Same as non alternating version so mA (which is a historical design error we have
-long been stuck with :()  The altvoltageY_raw docs don't give a unit either.
-If you don't mind, please send a patch adding that whilst you are here.
-Same mid to peak - hopefully that is what any users not modifying to RMS have
-been doing!
+Not according to the diagram in figure 1 of
+https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
 
-Seems we either never had one or that particular bit of ABI doc is missing.
-Please add an entry for altcurrentX_raw
-
-> 
-> Not sure about the benefits on setting "differential" in channel spec.. the name would
-> become out_altcurrentX-altcurrentY_xxxxx...
-
-Becomes a question of whether it is useful to represent that - maybe not
-in this particular case.
-
-> 
-> Is there any modifier for amplitude/peak/envelope? I see IIO_MOD_RMS, which could be used
-> if adding a 1/sqrt(2) factor to the fixed scale.
-
-For altcurrent / altvoltage assumption is it's mid to peak.  Unless the modifier switches
-it to RMS as you've noted.
-
-> 
-> Then, I would consider something like out_altcurrent_rms_xxxx as a good alternative.
-> 
-> "scale" would be a constant in the top-level phy channel
-> 
-> single tone profile channels would have:
-> - frequency
-> - phase
-> - raw
-> 
-> drg ramp up/down channels:
-> - frequency and frequency_roc
-> - phase and phase_roc
-> - raw and raw_roc
-> 
-> parallel port channel(s):
-> - frequency_scale and frequency_offset (frequency destination)
-> - phase_offset (polar destination)
-> - offset (polar destination)
-> 
-> osk channel:
-> - raw
-> - raw_roc
-> 
-> raw_roc could be just roc, but that sounds like it carries the scale and refers to
-> a current value? and maybe that breaks consistency with other destination attributes?
-> I am fine with just roc if that refers to the raw value, not (raw * scale).
-
-This is a good question.  We ran into ambiguity with events where we have to derive
-if it is _raw or _processed for the thresholds based on whether the main attribute
-is _raw or _processed.  Nice to avoid doing that again.
-
-I'd be interesting in others views on this but to me raw_roc seems fine.
-
-> 
-> With all the above, still using altvoltage is not incorrect, just a matter on how
-> we want to express the units.
-
-Agreed - but to get to directly useable values we'd need to provide info on the
-external circuit - and given we are dealing with AC signals that is tricky to do
-in a compact way.
+That clearly shows DVDD connected to same input supply as VSUP.
+There is a note in there to say that if the internal regulator is not
+used VSUP should always be connected to the higher of DVDD and AVDD.
 
 
-> Note that using raw instead of scale to control the
-> amplitude is just another option to tackle the problem. I suppose that the
-> important thing here is being technically corrent and consistent in terms of
-> usage. Maybe out_altcurrent_rms_* is more clear in terms of amplitude level.
+> That said, dvdd-supply is already allowed for HX711 nodes by patch 04,
+> as only vref-supply is forbidden for HX711. So the binding does not block
+> a board from describing DVDD if needed.
 
-Agreed.  It is always (?) possible to switch between scale and raw.
-For an ADC the distinction is clear as we can't control _raw. For a DAC it all gets
-rather value as we can logically control both and for an AC type of DAC / DDS it
-all gets less intuitive.  As you say, consistency is key.
+Agreed you add it later, but it should be in this patch that is adding miss=
+ing
+dt-bindings for the existing part.
 
-I'd like us to at least be consistent across DDS devices. Perhaps we need some
-general documentation on whatever the outcome of this discussion is to record
-some of the logic behind those decisions.
+> The driver does not use DVDD for HX711 today, but explicit support can be
+> added later if there is a real user for it.
 
-> 
-> > 
-> >   
-> > > using a resistor load or an op-amp transimpedance stage,
-> > > and I am no expert on that, but that often requires impedance matching so voltage
-> > > levels may depend on the frequency. Then, I suppose that voltage is not the right
-> > > unit to use.  
-> > 
-> > Understood that it can get complex!  
-> > > 
-> > > The scale here controls the amplitude of the varying signal. Assuming the peak voltage
-> > > (amplitude) is constant means we have a constant envelope, but that should not mean
-> > > we can't control it or it should not mean that the hardware can have other ways to
-> > > control it. That said, scale behaves as a "gain multiplier".  
-> > Understood. Given it's the envelope then if scale happened to be 1 always it would
-> > be presented as _processed. So this is consistent with other channel types.
-> >   
-> > >   
-> > > > 
-> > > > That seems to me like it fits better with the overall ABI.
-> > > >     
-> > > > > +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_offset
-> > > > > +KernelVersion:
-> > > > > +Contact:	linux-iio@vger.kernel.org
-> > > > > +Description:
-> > > > > +		For a channel that allows amplitude control through buffers, this
-> > > > > +		represents the value for a base amplitude scale. The actual output
-> > > > > +		amplitude scale is a result with the sum of this value.
-> > > > > +    
-> > > >     
-> > > > > +
-> > > > > +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_roc    
-> > > > 
-> > > > Silly question perhaps but can work out how this related to millivolts/sec
-> > > > That might make a more intuitive interface than scaling multiplier per sec
-> > > > Perhaps the combination with offset makes this impossible though maybe that
-> > > > could be a expressed as a voltage offset?  Afterall if the amplitude being
-> > > > scaled is 5V then 5 * (offset + scale) = 5 * offset + 5 * scale
-> > > >      
-> > > > > +KernelVersion:
-> > > > > +Contact:	linux-iio@vger.kernel.org
-> > > > > +Description:
-> > > > > +		Amplitude scale rate of change in 1/s for channels that ramp
-> > > > > +		amplitude. This value may be influenced by the channel's
-> > > > > +		sampling_frequency setting.    
-> > > > 
-> > > >     
-> > >   
-> >   
-> 
+We should make dt-bindings complete.  That doesn't mean the driver has to
+use them though!
+
+Hence I'd like to see dvdd added in this patch rather than later with
+a statement of why it is used for the hx711.  As far as I can tell it should
+really be required and documented as a bug in the original binding.
+
+Jonathan
+
+
+> >
+> > I should have said, given there is nothing wrong with what you have here
+> > and the above is a possible additional change - applied to the testing
+> > branch of iio.git.
+> >
+> > Thanks,
+> >
+> > Jonathan
+> > =20
+> Thanks for applying patches 01-03.
+> > > =20
+> > > >  Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml | 4 ++++
+> > > >  1 file changed, 4 insertions(+)
+> > > >
+> > > > diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.y=
+aml b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+> > > > index 1ea60dff98d5..a8eaa1f18de5 100644
+> > > > --- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+> > > > +++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+> > > > @@ -33,6 +33,10 @@ properties:
+> > > >      description:
+> > > >        Analog supply voltage (AVDD).
+> > > >
+> > > > +  vsup-supply:
+> > > > +    description:
+> > > > +      Supply voltage for the on-chip regulator (VSUP).
+> > > > +
+> > > >    clock-frequency:
+> > > >      description:
+> > > >        Controls the SCK bit-bang timing. The value is used to deriv=
+e the =20
+> > > =20
+> > =20
+>=20
 
