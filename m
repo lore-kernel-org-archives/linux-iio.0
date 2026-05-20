@@ -1,159 +1,480 @@
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC85B312825
-	for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 17:31:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23A0B3EDACC;
+	Wed, 20 May 2026 17:41:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779298299; cv=none; b=Oj4+ZbEpcEH1HCHtw5MMJT/l05PwSFSDMfKt74iLFzdEHiQaeGYqY2ZTXHYRc+agPAm/1qZUAGc5hTI0IHY2aZdbWHH90V+w68NKzONv1A+JyEAsjSLsrIyqnJcVuDqqEPe1L795zyqgxGwTQJ9dovzrfmy9L6iRkfg+VvWnmnc=
+	t=1779298885; cv=none; b=jpeVPdqgxRYHtp+cAh8Gv9Zj/RbZyzTI6+X9rS9aoaB8kA5AH41D50ONof05EXiP+ABpkMzWmbcgfnIQKgzy6YqO+1f6PkQ5UbRvW8SFyIgYXbVLtXOuDcgyLxiDF6HSMpmBc6sSuT1HlS112A3Gy4/ZL6AKo30I5pORmS8kF5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779298299; c=relaxed/simple;
-	bh=bq8bw6vwJh2kQuhVxT3kCdfwUyONAsS13CxP4mbE1Nc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rxGnkx88gJ4VQPmURrrojX9sz7MttuEBO6Q+U+rCphB9BNzhizW9J++meA8eI3CPBxadG5TghiNe32h9EQHIt3e7aSsvehaTtzvs5ajh+1xh0lnPb5ZsANh/f513OxWsQkfJD0er8kec0+QNr1QwO4Bdi48caRX6U0tHdZlYVOg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qvu5+nsP; arc=none smtp.client-ip=209.85.221.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779298885; c=relaxed/simple;
+	bh=x8nwAIGk93YkM+3UTm8NofNd8Srsrtn1SKsTEFoOUwA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=N+BbvBEXf1pTLqH6tXlXCsxfCdpCFCIJ5vCQncnZHpRGKBLS3e+cC5zv9v7cPHZV4mRWx17xxxUNe4HAti0J9Dm9M+t9Swa+mTm6hZH2RJo1Y7QH8jP3PCPelYjE0H+pH2OPOTCneQVE00PKXxQ+T30f1VHxIVgFm5E+Ot77ERM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SKezlBOC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qvu5+nsP"
-Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-57533363201so1580641e0c.0
-        for <linux-iio@vger.kernel.org>; Wed, 20 May 2026 10:31:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779298297; x=1779903097; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NoU4YuxRQKK2zoh0YbbDzimdEIINpcIXLiLGPEgByIY=;
-        b=qvu5+nsP9XbziYrVP6CzDF8NtvaCdxIwczfLCUgZYA4jcRzTFSVQWy/NOcaF9UyCZR
-         XPZMhvLKll04OVZYQUi4CCTzPJn60FCDJCLH/e6RW0HRS0FVQe0wBvaz9gh9UrpwN5Zb
-         e30eBdjokRApvXsaGMzcmuK4LwXD0UUhTomO+PqrFmo5KaIq5dHx9APNzj6LXQPcww4Y
-         ubJHeUAgaAU89Yu7o7xPXK8uqIE1guFBRfb37jlPV0qWZDDQP5JINghRD04AfdIQQJoa
-         bMN1lHUjUdjTjhXf9Co2xI5mnd79XBzQ90P0rhZ/y2eebtPeGkcIajKja6BuvVp1jIJb
-         ucMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779298297; x=1779903097;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NoU4YuxRQKK2zoh0YbbDzimdEIINpcIXLiLGPEgByIY=;
-        b=kxh8zedARRS7kfrP7w2aNOKNokqdo3vvfk007cjC5liF5l+kJx844psQ2RtfWqz4Eh
-         C/Y2QWZ3Z2NBYWt6vaG/Pa/u1xvqCDCDP43LhYAnGUSYQm1LVvbhXcYx5drtnhVad7TK
-         wWW5ODUL1xKQ/PXaIe7mTA5FFL80cammBhoq9eFjijxABbHWXixMUYAL/5CMu5AvzgOP
-         wDwlcEaqUtU59MTxbJRQj9ELClicu1dSzZJzdn2Hy0VWIjGyYXWe5V+iKB16U6rIedm1
-         4MwM3LnHMNn2JtAXnxwM2xbGrx5RCPIy1ocgTrMMfzIUUZQoZ4NXf97KS4KtspalmD0n
-         ETaA==
-X-Gm-Message-State: AOJu0Yx9u8oxBkknN7Go5DMItPCJPI03+tOgl48oU/u0k2U5wF5yUaUJ
-	WOAK4BdAHUeHcy2NmbKFut+a7Q0ADEEkcA7NykvuBlrtKdZia6MUdA3c
-X-Gm-Gg: Acq92OEkHrUgC2FRVjWCeBvbp1HRK+XSrapAznVjAwLODLimqF8gqM0D8kobKWOCGsh
-	S+AOcBdUzxNnsvOUhnmeM/Xj3Ua3WD+cPr7PDhwcAgUTComCADfVpyKm+jY9PO5VOTkFMTkenhU
-	JMFOiVBVYsv7o7IJ5zUjLwtsuWZIW4uWpkXSTjSkccR50gVSKNCJD1VDVZLfbkqq4igG34mMxUn
-	LPBAWpekxKmKgn5K+Fmdjw64uiT/oKWpJ0pAUQU8NJOHsQsIbguJTznXxLLJJbfzY/ZyAiLMGOV
-	2vesdYijTg/lm0NDzbAg3sSXYFtfBbHZAbQZoJizkfJh+YCeaq+FJ8mn51eanl8KtUkarUBYzaZ
-	Za5AqP+BhrKDuQo9Vb+nGb4cSYa8GlauFM8kCQNYfNS7lJyTZvrRqNnsvHRL/bmWH/+APsNSX7u
-	+0nR2DrhnfDOFHao6DgpHpqZuNZ814z+G3
-X-Received: by 2002:a05:6122:e18c:b0:56c:da22:6921 with SMTP id 71dfb90a1353d-5760be4b464mr13831128e0c.5.1779298296647;
-        Wed, 20 May 2026 10:31:36 -0700 (PDT)
-Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5760faa5645sm12288301e0c.14.2026.05.20.10.31.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 10:31:35 -0700 (PDT)
-Date: Wed, 20 May 2026 14:31:51 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, dlechner@baylibre.com,
-	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Subject: Re: [PATCH v1 3/4] iio: adc: ltc2378: Enable high-speed data capture
-Message-ID: <ag3wB-dAHnm67kZu@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1779117444.git.marcelo.schmitt1@gmail.com>
- <580ce8e03cdbda8ec20fed2e26f2226872ffcef3.1779117444.git.marcelo.schmitt1@gmail.com>
- <20260520172740.783c8866@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SKezlBOC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE5401F000E9;
+	Wed, 20 May 2026 17:41:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779298883;
+	bh=GqncshP8bMhCZVCkr7YP7QMNen7yCu2zNyWcT7d0fMk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=SKezlBOCJ6eoZX3fHZUhYpvz7fbxd6+kEoMMa2UKmXrNd22Bewl/2BuO8NgAyEc0V
+	 Wd3n2G0axhVntgOU4mZe9fMpnN7+ZguFipT5sV/g8vJQf2oGMSOqQ7PeLakDJfolEs
+	 XI2j69UVRwdVQj7oTtVGQruqBHdS9BIBkYyyOu3/RpLdjGPr8wixo1xY8+WJMFLcrA
+	 6c6HCJH9VkLGYiTLEIn6zsdYOf/5VeqnNbCb1VoEd5OQ6eYO5blhFKBqd2BUajBGVw
+	 WVNlEis1vTnOI9Hs3fA7xv776ucl0Fa5Mn4t5S0/6bEG+jNyNUwf66mI6zJFaasG5K
+	 MRaMaTKEhzw3Q==
+Date: Wed, 20 May 2026 18:41:13 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Chris Morgan <macroalpha82@gmail.com>, devicetree@vger.kernel.org
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
+ dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
+ linux-rockchip@lists.infradead.org, heiko@sntech.de, conor+dt@kernel.org,
+ krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com, Chris
+ Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH V8 06/10] iio: imu: inv_icm42607: Add Buffer support for
+ icm42607
+Message-ID: <20260520184113.2c36f49a@jic23-huawei>
+In-Reply-To: <20260518200526.458421-7-macroalpha82@gmail.com>
+References: <20260518200526.458421-1-macroalpha82@gmail.com>
+	<20260518200526.458421-7-macroalpha82@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260520172740.783c8866@jic23-huawei>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index 70fec8e3e891..b5368ee783f7 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -944,6 +944,7 @@ config LTC2378
-> >  	depends on SPI
-> >  	depends on GPIOLIB || PWM
-> >  	select IIO_BUFFER
-> > +	imply LTC2378_OFFLOAD_BUFFER
-> >  	help
-> >  	  Say yes here to build support for Analog Devices LTC2378-20 and
-> >  	  similar analog to digital converters.
-> > @@ -951,6 +952,17 @@ config LTC2378
-> >  	  This driver can also be built as a module. If so, the module will
-> >  	  be called ltc2378.
-> >  
-> > +config LTC2378_OFFLOAD_BUFFER
-> > +	bool "Offloaded data capture with LTC2378"
-> > +	depends on SPI && LTC2378
-> > +	depends on SPI_OFFLOAD=y
-> > +	depends on PWM=y
-> > +	depends on SPI_OFFLOAD_TRIGGER_PWM=y
-> > +	depends on IIO_BUFFER_DMA=y
-> > +	depends on IIO_BUFFER_DMAENGINE=y
+On Mon, 18 May 2026 15:05:21 -0500
+Chris Morgan <macroalpha82@gmail.com> wrote:
+
+> From: Chris Morgan <macromorgan@hotmail.com>
 > 
-> why do all these have to be built in?  In general I think we need to jusitfy
-> why this driver needs to work on systems with out this stuff being built.
-> I.e. why do we need the separate optional file at all?
-
-Hi Jonathan, thank you for your review.
-
-I've applied fixes to all issues reported by sashiko, except for Kconfig
-configuration (see below) and the is_visible() thing I'm still working on.
-
-My intent with this design choice was to keep chip intrinsic dependencies
-separate from SPI offload dependencies. The indented benefit is to enable using
-the device without having to enable SPI_OFFLOAD (which is boolean and might not
-be supported on all platforms). The offload feature is indeed highly desirable
-hence the imply on the main driver Kconfig entry. The other symbols are tristate
-so, if we keep this approach, will drop =y.
-
-The separate optional file is part of the push for dependency separation. It
-helps avoid #ifdef in c code. If the proposal is not far from something
-acceptable, I'd like to have another try of making it work. Still, it's arguable
-that the real interest is only on supporting the offload thing. Also, since I
-don't have any request to support these without offload, I think it will also be
-okay to have everything combined into a single driver. 
-
-Will follow all the other suggestions.
-
+> Add all FIFO parsing and reading functions to support
+> inv_icm42607 hardware.
 > 
-> > +	help
-> > +	  Say yes here to build support for high speed data capture with LTC2378
-> > +
-> >  config LTC2471
-> >  	tristate "Linear Technology LTC2471 and LTC2473 ADC driver"
-> >  	depends on I2C
-> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> > index 1814fb78dde3..2fa5dce0ceea 100644
-> > --- a/drivers/iio/adc/Makefile
-> > +++ b/drivers/iio/adc/Makefile
-> > @@ -82,6 +82,7 @@ obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
-> >  obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
-> >  obj-$(CONFIG_LTC2309) += ltc2309.o
-> >  obj-$(CONFIG_LTC2378) += ltc2378.o
-> > +obj-$(CONFIG_LTC2378_OFFLOAD_BUFFER) += ltc2378-offload-buffer.o
-> 
-> Hmm. This is odd. The driver can be modular but not this and it's build seperately
-> rather than as part of the module. I think these bit needs a redesign.
-> We definitely want this extra support to be part of the module.  See how something
-> like the ADIS IMU library in iio/imu/Makefile is done.
+> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 
-Will check this out too.
+https://sashiko.dev/#/patchset/20260518200526.458421-1-macroalpha82%40gmail.com
+Is unhappy.  I haven't checked closely though - might be wrong.
 
-> 
-> >  obj-$(CONFIG_LTC2471) += ltc2471.o
-> >  obj-$(CONFIG_LTC2485) += ltc2485.o
-> >  obj-$(CONFIG_LTC2496) += ltc2496.o ltc2497-core.o
+> ---
+
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.c
+> new file mode 100644
+> index 000000000000..a011f1f728b9
+> --- /dev/null
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.c
+> @@ -0,0 +1,482 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Copyright (C) 2026 InvenSense, Inc.
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/minmax.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/regmap.h>
+> +
+> +#include <linux/iio/common/inv_sensors_timestamp.h>
+> +
+> +#include "inv_icm42607.h"
+> +#include "inv_icm42607_buffer.h"
+> +
+> +/* FIFO header: 1 byte */
+> +#define INV_ICM42607_FIFO_HEADER_MSG		BIT(7)
+> +#define INV_ICM42607_FIFO_HEADER_ACCEL		BIT(6)
+> +#define INV_ICM42607_FIFO_HEADER_GYRO		BIT(5)
+> +#define INV_ICM42607_FIFO_HEADER_TMST_FSYNC	GENMASK(3, 2)
+> +#define INV_ICM42607_FIFO_HEADER_ODR_ACCEL	BIT(1)
+> +#define INV_ICM42607_FIFO_HEADER_ODR_GYRO	BIT(0)
+> +
+> +struct inv_icm42607_fifo_1sensor_packet {
+> +	u8 header;
+> +	struct inv_icm42607_fifo_sensor_data data;
+One of the things sashiko doesn't like is pointers to unaligned
+structures.  I'm not sure what architectures we have that really
+don't like these still but it is correct that they can be a problem.
+
+Ultimately you need to use unaligned accessors
+
+> +	s8 temp;
+> +} __packed;
+> +
+> +struct inv_icm42607_fifo_2sensors_packet {
+> +	u8 header;
+> +	struct inv_icm42607_fifo_sensor_data accel;
+> +	struct inv_icm42607_fifo_sensor_data gyro;
+> +	s8 temp;
+> +	__be16 timestamp;
+> +} __packed;
+
+
+> +int inv_icm42607_buffer_set_fifo_en(struct inv_icm42607_state *st,
+> +				    unsigned int fifo_en)
+> +{
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	/* update FIFO EN bits for accel and gyro */
+> +	val = 0;
+> +	if (fifo_en & INV_ICM42607_SENSOR_GYRO)
+> +		val |= INV_ICM42607_FIFO_CONFIG1_MODE;
+> +	if (fifo_en & INV_ICM42607_SENSOR_ACCEL)
+> +		val |= INV_ICM42607_FIFO_CONFIG1_MODE;
+> +	if (fifo_en & INV_ICM42607_SENSOR_TEMP)
+> +		val |= INV_ICM42607_FIFO_CONFIG1_MODE;
+Odd to see these all set same bit like this.  Why not something
+that will stop confusing sashiko (and me ;) because it explicitly
+sets teh value only once.
+
+	if (fifo_en & (INV_ICM42607_SENSOR_GYRO |
+		       INV_ICM42607_SENSOR_ACCEL |
+		       INV_ICM42607_SENSOR_TEMP))
+		val = INV_...
+
+
+ 
+> +
+> +	ret = regmap_write(st->map, INV_ICM42607_REG_FIFO_CONFIG1, val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->fifo.en = fifo_en;
+> +	inv_icm42607_buffer_update_fifo_period(st);
+> +
+> +	return 0;
+> +}
+
+> +
+> +/**
+> + * inv_icm42607_buffer_update_watermark - update watermark FIFO threshold
+> + * @st:	driver internal state
+> + *
+> + * Returns 0 on success, a negative error code otherwise.
+> + */
+> +int inv_icm42607_buffer_update_watermark(struct inv_icm42607_state *st)
+> +{
+> +	const struct device *dev = regmap_get_device(st->map);
+> +	unsigned int wm_gyro, wm_accel, watermark;
+> +	u32 latency_gyro, latency_accel, latency;
+> +	u32 period_gyro, period_accel;
+> +	size_t packet_size, wm_size;
+> +	__le16 raw_wm;
+> +	bool restore;
+> +	int ret;
+> +
+> +	packet_size = inv_icm42607_get_packet_size(st->fifo.en);
+> +
+> +	/* compute sensors latency, depending on sensor watermark and odr */
+> +	wm_gyro = inv_icm42607_wm_truncate(st->fifo.watermark.gyro, packet_size);
+> +	wm_accel = inv_icm42607_wm_truncate(st->fifo.watermark.accel, packet_size);
+> +	/* use us for odr to avoid overflow using 32 bits values */
+> +	period_gyro = inv_icm42607_odr_to_period(st->conf.gyro.odr) / 1000UL;
+> +	period_accel = inv_icm42607_odr_to_period(st->conf.accel.odr) / 1000UL;
+> +	latency_gyro = period_gyro * wm_gyro;
+> +	latency_accel = period_accel * wm_accel;
+> +
+> +	/* 0 value for watermark means that the sensor is turned off */
+> +	if (wm_gyro == 0 && wm_accel == 0)
+> +		return 0;
+> +
+> +	if (latency_gyro == 0) {
+> +		watermark = wm_accel;
+> +		st->fifo.watermark.eff_accel = wm_accel;
+> +	} else if (latency_accel == 0) {
+> +		watermark = wm_gyro;
+> +		st->fifo.watermark.eff_gyro = wm_gyro;
+> +	} else {
+> +		/* compute the smallest latency that is a multiple of both */
+> +		if (latency_gyro <= latency_accel)
+> +			latency = latency_gyro - (latency_accel % latency_gyro);
+> +		else
+> +			latency = latency_accel - (latency_gyro % latency_accel);
+> +		/* all this works because periods are multiple of each others */
+> +		watermark = latency / min(period_gyro, period_accel);
+> +		watermark = max(watermark, 1);
+> +		/* update effective watermark */
+> +		st->fifo.watermark.eff_gyro = max(latency / period_gyro, 1);
+> +		st->fifo.watermark.eff_accel = max(latency / period_accel, 1);
+> +	}
+> +
+> +	/* changing FIFO watermark requires to turn off watermark interrupt */
+> +	ret = regmap_update_bits_check(st->map, INV_ICM42607_REG_INT_SOURCE0,
+> +				       INV_ICM42607_INT_SOURCE0_FIFO_THS_INT1_EN,
+> +				       0, &restore);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* compute watermark value in bytes */
+> +	wm_size = watermark * packet_size;
+> +	raw_wm = INV_ICM42607_FIFO_WATERMARK_VAL(wm_size);
+> +	memcpy(st->buffer, &raw_wm, sizeof(raw_wm));
+
+Shout a bit (comment) about this being le vs the be buffer. 
+
+> +	ret = regmap_bulk_write(st->map, INV_ICM42607_REG_FIFO_CONFIG2,
+> +				st->buffer, sizeof(raw_wm));
+> +	if (ret) {
+> +		dev_err(dev, "Unable to change watermark value: %d\n", ret);
+> +		if (restore)
+> +			regmap_update_bits(st->map, INV_ICM42607_REG_INT_SOURCE0,
+> +					   INV_ICM42607_INT_SOURCE0_FIFO_THS_INT1_EN,
+> +					   INV_ICM42607_INT_SOURCE0_FIFO_THS_INT1_EN);
+regmap_set_bits()
+> +		return ret;
+> +	}
+> +
+> +	/* restore watermark interrupt */
+> +	if (restore) {
+> +		ret = regmap_update_bits(st->map, INV_ICM42607_REG_INT_SOURCE0,
+> +					 INV_ICM42607_INT_SOURCE0_FIFO_THS_INT1_EN,
+> +					 INV_ICM42607_INT_SOURCE0_FIFO_THS_INT1_EN);
+regmap_set_bits()
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+>
+
+> +int inv_icm42607_buffer_fifo_read(struct inv_icm42607_state *st,
+> +				  unsigned int max)
+> +{
+> +	const void *accel, *gyro, *timestamp;
+> +	size_t i, max_count;
+> +	const s8 *temp;
+> +	ssize_t size;
+> +	int ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	/* reset all samples counters */
+> +	st->fifo.count = 0;
+> +	st->fifo.nb.gyro = 0;
+> +	st->fifo.nb.accel = 0;
+> +	st->fifo.nb.total = 0;
+> +
+> +	/* compute maximum FIFO read size */
+> +	if (max == 0)
+> +		max_count = sizeof(st->fifo.data);
+> +	else
+> +		max_count = min((max * inv_icm42607_get_packet_size(st->fifo.en)),
+> +				sizeof(st->fifo.data));
+> +
+> +	/* read FIFO count value */
+> +	ret = regmap_bulk_read(st->map, INV_ICM42607_REG_FIFO_COUNTH,
+> +			       st->buffer, sizeof(u8) * 2);
+Given buffer is an array of __be16, use size of buffer[0] to say you want to 
+read one value.
+
+> +	if (ret)
+> +		return ret;
+> +	st->fifo.count = be16_to_cpup(st->buffer);
+whilst it is the same thing we can use the easier to read
+	st->fifo.count = be16_to_cpu(st->buffer[0]);
+again making it clear this is just using one __be16 from
+the array.
+
+> +
+> +	/* check and clamp FIFO count value */
+> +	if (st->fifo.count == 0)
+> +		return 0;
+> +
+> +	st->fifo.count = min(st->fifo.count, max_count);
+> +
+> +	/* read all FIFO data in internal buffer */
+> +	ret = regmap_noinc_read(st->map, INV_ICM42607_REG_FIFO_DATA,
+> +				st->fifo.data, st->fifo.count);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* compute number of samples for each sensor */
+> +	for (i = 0; i < st->fifo.count; i += size) {
+> +		size = inv_icm42607_fifo_decode_packet(&st->fifo.data[i],
+> +				&accel, &gyro, &temp, &timestamp);
+> +		/* Make sure the size is at least 1 valid packet. */
+> +		if (size < INV_ICM42607_FIFO_1SENSOR_PACKET_SIZE)
+> +			break;
+> +		/* Error if we are going to overflow the buffer. */
+> +		if (i + size > st->fifo.count)
+> +			return -EIO;
+> +		if (gyro != NULL && inv_icm42607_fifo_is_data_valid(gyro))
+> +			st->fifo.nb.gyro++;
+> +		if (accel != NULL && inv_icm42607_fifo_is_data_valid(accel))
+> +			st->fifo.nb.accel++;
+> +		st->fifo.nb.total++;
+> +	}
+> +
+> +	return 0;
+> +}
+
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.h b/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.h
+> new file mode 100644
+> index 000000000000..b77deb66f8bd
+> --- /dev/null
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.h
+> @@ -0,0 +1,93 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +/*
+> + * Copyright (C) 2026 InvenSense, Inc.
+> + */
+> +
+> +#ifndef INV_ICM42607_BUFFER_H_
+> +#define INV_ICM42607_BUFFER_H_
+> +
+> +#include <linux/bitops.h>
+> +
+> +struct inv_icm42607_state;
+> +
+> +#define INV_ICM42607_SENSOR_GYRO	BIT(0)
+> +#define INV_ICM42607_SENSOR_ACCEL	BIT(1)
+> +#define INV_ICM42607_SENSOR_TEMP	BIT(2)
+> +
+> +/**
+> + * struct inv_icm42607_fifo - FIFO state variables
+> + * @on:		reference counter for FIFO on.
+> + * @en:		bits field of INV_ICM42607_SENSOR_* for FIFO EN bits.
+> + * @period:	FIFO internal period.
+> + * @watermark:	watermark configuration values for accel and gyro.
+> + * @count:	number of bytes in the FIFO data buffer.
+> + * @nb:		gyro, accel and total samples in the FIFO data buffer.
+> + * @data:	FIFO data buffer aligned for DMA (2kB + 32 bytes of read cache).
+> + */
+> +struct inv_icm42607_fifo {
+> +	unsigned int on;
+> +	unsigned int en;
+> +	u32 period;
+> +	struct {
+> +		unsigned int gyro;
+> +		unsigned int accel;
+> +		unsigned int eff_gyro;
+> +		unsigned int eff_accel;
+> +	} watermark;
+> +	size_t count;
+> +	struct {
+> +		size_t gyro;
+> +		size_t accel;
+> +		size_t total;
+> +	} nb;
+> +	u8 data[2080] __aligned(IIO_DMA_MINALIGN);
+> +};
+> +
+> +/* FIFO data packet */
+> +struct inv_icm42607_fifo_sensor_data {
+> +	__be16 x;
+> +	__be16 y;
+> +	__be16 z;
+> +};
+> +
+> +#define INV_ICM42607_FIFO_DATA_INVALID		-32768
+> +
+> +static inline bool
+> +inv_icm42607_fifo_is_data_valid(const struct inv_icm42607_fifo_sensor_data *s)
+> +{
+> +	s16 x, y, z;
+> +
+> +	x = be16_to_cpu(s->x);
+> +	y = be16_to_cpu(s->y);
+> +	z = be16_to_cpu(s->z);
+
+The input structure is unaligned and I think so are these so you need
+get_unaligned_be16() 
+
+
+> +
+> +	if (x == INV_ICM42607_FIFO_DATA_INVALID &&
+> +	    y == INV_ICM42607_FIFO_DATA_INVALID &&
+> +	    z == INV_ICM42607_FIFO_DATA_INVALID)
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+> +ssize_t inv_icm42607_fifo_decode_packet(const void *packet, const void **accel,
+> +					const void **gyro, const s8 **temp,
+> +					const void **timestamp);
+> +
+> +extern const struct iio_buffer_setup_ops inv_icm42607_buffer_ops;
+> +
+> +int inv_icm42607_buffer_init(struct inv_icm42607_state *st);
+> +
+> +void inv_icm42607_buffer_update_fifo_period(struct inv_icm42607_state *st);
+> +
+> +int inv_icm42607_buffer_set_fifo_en(struct inv_icm42607_state *st,
+> +				    unsigned int fifo_en);
+> +
+> +int inv_icm42607_buffer_update_watermark(struct inv_icm42607_state *st);
+> +
+> +int inv_icm42607_buffer_fifo_read(struct inv_icm42607_state *st,
+> +				  unsigned int max);
+> +
+> +int inv_icm42607_buffer_hwfifo_flush(struct inv_icm42607_state *st,
+> +				     unsigned int count);
+> +
+> +#endif
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> index bc0cefa2fb77..29573d4fc0f0 100644
+> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/regulator/consumer.h>
+>  
+>  #include "inv_icm42607.h"
+> +#include "inv_icm42607_buffer.h"
+>  
+>  static bool inv_icm42607_is_volatile_reg(struct device *dev, unsigned int reg)
+>  {
+> @@ -73,6 +74,38 @@ const struct inv_icm42607_hw inv_icm42607p_hw_data = {
+>  };
+>  EXPORT_SYMBOL_NS_GPL(inv_icm42607p_hw_data, "IIO_ICM42607");
+>  
+> +u32 inv_icm42607_odr_to_period(enum inv_icm42607_odr odr)
+> +{
+> +	static const u32 odr_periods[INV_ICM42607_ODR_NB] = {
+> +		/* 1600Hz */
+
+No need for comment as it's now obvious
+
+> +		[INV_ICM42607_ODR_1600HZ] = 625000,
+> +		/* 800Hz */
+
+Do [] = assignment for all of them and drop all the comments as they
+will be unneeded.
+
+> +		1250000,
+> +		/* 400Hz */
+> +		2500000,
+> +		/* 200Hz */
+> +		5000000,
+> +		/* 100 Hz */
+> +		10000000,
+> +		/* 50Hz */
+> +		20000000,
+> +		/* 25Hz */
+> +		40000000,
+> +		/* 12.5Hz */
+> +		80000000,
+> +		/* 6.25Hz */
+> +		160000000,
+> +		/* 3.125Hz */
+> +		320000000,
+> +		/* 1.5625Hz */
+> +		640000000,
+> +	};
+> +
+> +	odr = clamp(odr, INV_ICM42607_ODR_1600HZ, INV_ICM42607_ODR_1_5625HZ_LP);
+> +
+> +	return odr_periods[odr];
+> +}
+> +
+>
