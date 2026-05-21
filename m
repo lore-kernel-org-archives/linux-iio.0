@@ -1,108 +1,142 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75A093812F1;
-	Thu, 21 May 2026 02:57:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57910347537;
+	Thu, 21 May 2026 03:38:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779332268; cv=none; b=Pm68rY+Bjjcic1i9gSqE1WcIusb02K3/27InBKkfObp9jjXsbcXcrWeIvQkvN4B6nAHgZq2j9gO/6T2qfpEMTwoyqhwOxLfE+1QLHqkUl6SM/lzwc+xVZxnN3T+4Wdu4SSFy13NlJqWf4E/dwsScZL2aP+ijMuUryseI8OWapDw=
+	t=1779334685; cv=none; b=eXHZoFR0WartA2nJO6An4ywau6BZE9ffdpsXuyiMDauVqvSXNtDOWeKxlBvcGdNTMvw8Us3uet7OE79OUHgpq9KAHxWMcTsuzRsluPjMQVMOz+pnQoxVrfPzBhe/H5O+LN7stbQ5UrpJ/F3rjWVeyoCaWVSoWnfTdy5gfkHRDBg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779332268; c=relaxed/simple;
-	bh=2oJ2yqnu8oDpPBrB0B1iv6ZPrKCkuXOQO3/RZOGi6hw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=WSs0lQGEoG61AzQiha0An+TnkfNAflR4gV4blcbm0OPcHWwnAxXbzNPlVYO3YPTB2Ju+HmtL9z12fSgLE24TuEVXUPru3DeunIGqeXxz6PcaihQc1FWSepXHwxQikIw9a3fRtNzaSY9Lj0tn1tA/HCLU6pzW8SJs2YpTQGBlszk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: d38c9c8c54c011f1aa26b74ffac11d73-20260521
-X-CTIC-Tags:
-	HR_CC_COUNT, HR_CC_DOMAIN_COUNT, HR_CC_NAME, HR_CC_NO_NAME, HR_CTE_8B
-	HR_CTT_MISS, HR_DATE_H, HR_DATE_WKD, HR_DATE_ZONE, HR_FROM_NAME
-	HR_SJ_LANG, HR_SJ_LEN, HR_SJ_LETTER, HR_SJ_NOR_SYM, HR_SJ_PHRASE
-	HR_SJ_PHRASE_LEN, HR_SJ_WS, HR_TO_COUNT, HR_TO_DOMAIN_COUNT, HR_TO_NAME
-	IP_TRUSTED, SRC_TRUSTED, DN_TRUSTED, SA_EXISTED, SN_UNTRUSTED
-	SN_UNFAMILIAR, SPF_NOPASS, DKIM_NOPASS, DMARC_NOPASS, CIE_BAD
-	CIE_GOOD, CIE_GOOD_SPF, GTI_FG_BS, GTI_RG_INFO, GTI_C_BU
-	AMN_GOOD, ABX_MISS_RDNS
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.12,REQID:ba7bed4a-64e2-4a3d-aba6-4a4f2be26e6e,IP:15,
-	URL:0,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
-	N:release,TS:40
-X-CID-INFO: VERSION:1.3.12,REQID:ba7bed4a-64e2-4a3d-aba6-4a4f2be26e6e,IP:15,UR
-	L:0,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:40
-X-CID-META: VersionHash:e7bac3a,CLOUDID:b0aa13dab25bef30b4916f52bc42b50f,BulkI
-	D:260521105739XDDKLBYR,BulkQuantity:0,Recheck:0,SF:17|19|66|78|102|127|850
-	|865|898,TC:nil,Content:0|15|50,EDM:5,IP:-2,URL:0,File:nil,RT:nil,Bulk:nil
-	,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:
-	0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_FAS,TF_CID_SPAM_FSD
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: d38c9c8c54c011f1aa26b74ffac11d73-20260521
-X-User: lihongtao@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.171)] by mailgw.kylinos.cn
-	(envelope-from <lihongtao@kylinos.cn>)
-	(Generic MTA)
-	with ESMTP id 1472495926; Thu, 21 May 2026 10:57:38 +0800
-From: Hongtao Lee <lihongtao@kylinos.cn>
-To: William Breathitt Gray <william.gray@linaro.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Hongtao Lee <lihongtao@kylinos.cn>
-Subject: [PATCH] tools/counter: Fix fd leak in counter example
-Date: Thu, 21 May 2026 10:56:43 +0800
-Message-Id: <20260521025643.140972-1-lihongtao@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1779334685; c=relaxed/simple;
+	bh=dpteIV5u8Ka//7sxzVrWClp6oaVFdbRQXCHjQ+ht1vw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=u7agC7jAt/4pjBunJjnQCrWpZPa2pOpJBt9Jp9kraisNVy2h0IET20uXVsetQoOFSaS/n+IOVZi9fPuxOv33t4JbWO7t28a/G9VqAuOtKxVlDkDFhyVMY8UZzMOCB6EO8Z5xklbL/DGF/eBhGVI+OsJ1IAzwkezkc+80zl21bjs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ObDc/O1v; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ObDc/O1v"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779334685; x=1810870685;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dpteIV5u8Ka//7sxzVrWClp6oaVFdbRQXCHjQ+ht1vw=;
+  b=ObDc/O1vOjzdrjrPRFORvQa07RsHsHra1+NLiRa9niJOWzqYVt940Qgn
+   bWUY8t3Zs/uQWCShI0XU9QKk0VCEqdT4ONWip7bUBy7Vg6rR+br1aezRm
+   wZzoIBfqwY3p5b5nDv8llmRM2Tc18En/S7kTCtxT/N0eRpXspQhi+4IDV
+   dCbiH5yGBI+0NXX4mJcZnfV+YkSraS/ozsSKbOukkYhfl4B+5RSI/xxDl
+   QLvCO/grOqhHOlhlEI++HP0c3qkfof7z+bnCPl8YDuYDum+newtoQFU0S
+   UqGnnhefBgmoDPYY/3pA1+u/HbI0GzOVKHuyhUltm+dix469m2enHRFcH
+   A==;
+X-CSE-ConnectionGUID: Gt5YkcQoQVWpCPA+OHXAcA==
+X-CSE-MsgGUID: EC88Ej3OTfeqAAqUs9le4w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11792"; a="80214897"
+X-IronPort-AV: E=Sophos;i="6.23,245,1770624000"; 
+   d="scan'208";a="80214897"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2026 20:38:04 -0700
+X-CSE-ConnectionGUID: mZCB5cYpTO63b8c6SF65Sg==
+X-CSE-MsgGUID: /a7uBY0PTWmBjhQysn5Tmw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,245,1770624000"; 
+   d="scan'208";a="242204941"
+Received: from lkp-server02.sh.intel.com (HELO 30e86e9c1927) ([10.239.97.151])
+  by fmviesa004.fm.intel.com with ESMTP; 20 May 2026 20:38:02 -0700
+Received: from kbuild by 30e86e9c1927 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1wPuE2-000000004Iz-2m2Q;
+	Thu, 21 May 2026 03:37:48 +0000
+Date: Thu, 21 May 2026 11:33:28 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Alexander A. Klimov" <grandmaster@al2klimov.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, David Heidelberg <david@ixit.cz>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH] iio: light: al3010: read both ALS ADC registers again
+Message-ID: <202605211105.cR7k7vyR-lkp@intel.com>
+References: <20260520175855.538098-1-grandmaster@al2klimov.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260520175855.538098-1-grandmaster@al2klimov.de>
 
-After open /dev/counter0, it's necessary to close(fd) before return.
+Hi Alexander,
 
-Fixes: 086099893fce ("tools/counter: Create Counter tools")
-Signed-off-by: Hongtao Lee <lihongtao@kylinos.cn>
----
- tools/counter/counter_example.c | 4 ++++
- 1 file changed, 4 insertions(+)
+kernel test robot noticed the following build warnings:
 
-diff --git a/tools/counter/counter_example.c b/tools/counter/counter_example.c
-index be55287b950f..2f0f35e88fe0 100644
---- a/tools/counter/counter_example.c
-+++ b/tools/counter/counter_example.c
-@@ -57,12 +57,14 @@ int main(void)
- 		if (ret == -1) {
- 			fprintf(stderr, "Error adding watches[%d]: %s\n", i,
- 				strerror(errno));
-+			close(fd);
- 			return 1;
- 		}
- 	}
- 	ret = ioctl(fd, COUNTER_ENABLE_EVENTS_IOCTL);
- 	if (ret == -1) {
- 		perror("Error enabling events");
-+		close(fd);
- 		return 1;
- 	}
- 
-@@ -70,11 +72,13 @@ int main(void)
- 		ret = read(fd, event_data, sizeof(event_data));
- 		if (ret == -1) {
- 			perror("Failed to read event data");
-+			close(fd);
- 			return 1;
- 		}
- 
- 		if (ret != sizeof(event_data)) {
- 			fprintf(stderr, "Failed to read event data\n");
-+			close(fd);
- 			return -EIO;
- 		}
- 
--- 
-2.25.1
+[auto build test WARNING on jic23-iio/togreg]
+[also build test WARNING on linus/master v7.1-rc4 next-20260520]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Alexander-A-Klimov/iio-light-al3010-read-both-ALS-ADC-registers-again/20260521-024036
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20260520175855.538098-1-grandmaster%40al2klimov.de
+patch subject: [PATCH] iio: light: al3010: read both ALS ADC registers again
+config: sh-randconfig-r111-20260521 (https://download.01.org/0day-ci/archive/20260521/202605211105.cR7k7vyR-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 13.4.0
+sparse: v0.6.5-rc1
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260521/202605211105.cR7k7vyR-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202605211105.cR7k7vyR-lkp@intel.com/
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/iio/light/al3010.c:129:24: sparse: sparse: cast to restricted __le16
+
+vim +129 drivers/iio/light/al3010.c
+
+   108	
+   109	static int al3010_read_raw(struct iio_dev *indio_dev,
+   110				   struct iio_chan_spec const *chan, int *val,
+   111				   int *val2, long mask)
+   112	{
+   113		struct al3010_data *data = iio_priv(indio_dev);
+   114		int ret, gain;
+   115		uint16_t raw;
+   116	
+   117		switch (mask) {
+   118		case IIO_CHAN_INFO_RAW:
+   119			/*
+   120			 * ALS ADC value is stored in two adjacent registers:
+   121			 * - low byte of output is stored at AL3010_REG_DATA_LOW
+   122			 * - high byte of output is stored at AL3010_REG_DATA_LOW + 1
+   123			 */
+   124			ret = regmap_bulk_read(data->regmap, AL3010_REG_DATA_LOW,
+   125					       &raw, sizeof(raw));
+   126			if (ret)
+   127				return ret;
+   128	
+ > 129			*val = le16_to_cpu(raw);
+   130	
+   131			return IIO_VAL_INT;
+   132		case IIO_CHAN_INFO_SCALE:
+   133			ret = regmap_read(data->regmap, AL3010_REG_CONFIG, &gain);
+   134			if (ret)
+   135				return ret;
+   136	
+   137			gain = FIELD_GET(AL3010_GAIN_MASK, gain);
+   138			*val = al3010_scales[gain][0];
+   139			*val2 = al3010_scales[gain][1];
+   140	
+   141			return IIO_VAL_INT_PLUS_MICRO;
+   142		}
+   143		return -EINVAL;
+   144	}
+   145	
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
