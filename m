@@ -1,49 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B31473BED1E;
-	Thu, 21 May 2026 11:28:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F9833C3434;
+	Thu, 21 May 2026 11:31:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779362905; cv=none; b=tTMSY3jmBbjvaroudUBwLx08X1lSETnA4xXzye8TsyDoMVMC/r2K1f+2NnbK6L72MYSAWqyIw5L92PjzUfgOP9hICuo7Swlu641kLhjqDbCNhNp1fxz7fgBT/UXAkN3Gy0fLQv2iJewZa/QQ0KKbuWeLiVOjMr8QsoVZ5C+CxKg=
+	t=1779363095; cv=none; b=FcH74mIs+SHDQoDjrDEFoXhmVwMVSWiWkf2mIwwozYq0OUYnJSVqzrXD76B3sABTMiz7U4447C00TlWm6pGuedcry+39lvy++cZn5RJkODOKsGV5eThhqCsW8shIJU5AHNSQYT5D9PyLvTTrohZHobS+kz1V9TNJgsqsFsPrM8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779362905; c=relaxed/simple;
-	bh=wAuohOwvEir9xVG7P7eczB/XtYVOHLUlpLH01diejXM=;
+	s=arc-20240116; t=1779363095; c=relaxed/simple;
+	bh=azN7BJbKQrXNBIqnjQGFrjJ782DRpfncBxemk7SIoIk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=I7bc4lTkSUWvPZ/4B5fz7jaWgkohDw9sbqNThDwSkX0ExRYxB9gkYn3pA62uom/TCj9qYubdN+UQb/MPV/i0Fm7tqkMwff5SM9h6JUrrv1QH1hw/PshqrFrRRLAV/DJtqPj6jruq1PllwJwZj8F/CyrRstkKWygorN2+nQjrF+A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E7qUW34H; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=IDbJy4FymLC+1KH0QS00yaisipe0kjjKJkk9GQ+I6xmXitU3Gz0GeP9Ha52pz/Ib+36mCAn0hbW9k+kmOe8FwUbKGACaoaUFAxYAMHqHeO3ktpJzoyM07+80PlOP4uWHT9XNRKVtLh9GRklhsNmYxmd03SLJ0Cb+dQzqVBWcAZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QapwLD73; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E7qUW34H"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0271E1F00A3F;
-	Thu, 21 May 2026 11:28:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QapwLD73"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34EB01F00A3B;
+	Thu, 21 May 2026 11:31:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779362903;
-	bh=q9eDyGKnxJnsoZQ2iQmk1/xPAqo+itJbeMoIZ6q+594=;
+	s=k20260515; t=1779363093;
+	bh=PnNYpoO8Cvl1LC0thQiy1HYwVNEfqzP1Fv+pVlsE7Xs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=E7qUW34HwpEMhYL+n9L5MaiOP2O9x6v2c2anM1XEVU8+pEi39+4s2OzIVmEU5U3/G
-	 M8wZ6ZcchEpi6H/jAFiEbPmJ7NSwlivAPlhMU/6oLY5gFxkECRayBItmZ4GI9xORP1
-	 hvaEBrqXCvmIL9XD4yJ2ODh6DhTsU737qujDdqKXtZxPyUinmeotTqxCINZrmDYz1H
-	 YUbjMGiZX8gPaSu7OJzbay5sqpTMh7X0PyIMFpgOuhO/z08+xExAK8aDXymVKxSTEV
-	 zeIw2im0kk0LjzLUMu/Tt0OUtElJrbi8qK8uGdGOI6vR7ZXhIBQHHb+JUeQ5CVSkay
-	 T7iP0Y9QxjrcA==
-Date: Thu, 21 May 2026 12:28:12 +0100
+	b=QapwLD73V2UBGTt8kYiJfunNgatQiZS2eM1SpygOeN7pSdYDuIpaWrF0anmdARcB1
+	 grLfNTF+QC/kLj+HZTtTUOvat1whPX8TSS+RknrftBEzPm0SQjeKRoV1lgnvtE8oGw
+	 ltAaPMdSWAtMvnedtPobNnpDSv83NntKVv1IP0eyowxJuW2pphwElD0/EHkL6qin5U
+	 7Qehueieu0e8NjjBTqb+Fd2PaMiDDV+xoqGq8d+U4za6ClawPil8kzq+yznMU+g7iq
+	 YcOSv6oSQR9CN2JA3OzwlStDj8DrNGLp+ZGPwOlcv8LYZDmZz7at7lHYsUyP9wDai8
+	 44Hqa4e/mikcw==
+Date: Thu, 21 May 2026 12:31:25 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Erim, Salih" <salih.erim@amd.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, git@amd.com,
- nuno.sa@analog.com, andy@kernel.org, dlechner@baylibre.com,
- michal.simek@amd.com, conall.ogriofa@amd.com, erimsalih@gmail.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] iio: adc: versal-sysmon: add threshold event
- support
-Message-ID: <20260521122812.76a3487a@jic23-huawei>
-In-Reply-To: <85c06df0-7cdf-4273-b033-9ec9dcd5781c@amd.com>
-References: <20260502111951.538488-1-salih.erim@amd.com>
-	<20260502111951.538488-5-salih.erim@amd.com>
-	<20260504184415.7b6688f5@jic23-huawei>
-	<59884fdc-a9d0-49c6-8167-11d56a21dd11@amd.com>
-	<20260520103708.24d59b6b@jic23-huawei>
-	<85c06df0-7cdf-4273-b033-9ec9dcd5781c@amd.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Aldo Conte <aldocontelk@gmail.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, nuno.sa@analog.com, andy@kernel.org,
+ shuah@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH v2 5/5] iio: light: tcs3472: move standalone return to
+ default case
+Message-ID: <20260521123125.4000a67a@jic23-huawei>
+In-Reply-To: <bfd9d999-57cb-45fc-a7e1-369905896770@baylibre.com>
+References: <20260512223215.25596-1-aldocontelk@gmail.com>
+	<20260512223215.25596-6-aldocontelk@gmail.com>
+	<agRfMWL9BughLT2x@ashevche-desk.local>
+	<36ed59a7-8af7-4458-9e90-70ea251b389e@gmail.com>
+	<agS70Dph8-zQT-e6@ashevche-desk.local>
+	<20260515190517.70bb0ba5@jic23-huawei>
+	<1c87362a-bba8-45b8-a836-153f468815c4@gmail.com>
+	<20260516132555.64e27d62@jic23-huawei>
+	<7f56ee25-11ad-4dcf-87bc-a353bed3f914@gmail.com>
+	<bfd9d999-57cb-45fc-a7e1-369905896770@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,144 +54,120 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 21 May 2026 00:15:12 +0100
-"Erim, Salih" <salih.erim@amd.com> wrote:
+On Wed, 20 May 2026 20:03:26 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> Hi Jonathan,
-> 
-> Thanks for the detailed guidance on the ABI constraints.
-> I have studied a bit more and have a suggestion inline.
-> 
-> On 20/05/2026 10:37, Jonathan Cameron wrote:
-> 
-> > 
-> >   
-> >>>> +static int sysmon_write_event_value(struct iio_dev *indio_dev,
-> >>>> +                                 const struct iio_chan_spec *chan,
-> >>>> +                                 enum iio_event_type type,
-> >>>> +                                 enum iio_event_direction dir,
-> >>>> +                                 enum iio_event_info info, int val, int val2)
-> >>>> +{
-> >>>> +     struct sysmon *sysmon = iio_priv(indio_dev);
-> >>>> +     unsigned int reg_val;
-> >>>> +     u32 mask, shift;
-> >>>> +     u32 raw_val;
-> >>>> +     int offset;
-> >>>> +     int ret;
-> >>>> +
-> >>>> +     guard(mutex)(&sysmon->lock);
-> >>>> +
-> >>>> +     if (chan->type == IIO_TEMP) {
-> >>>> +             if (info == IIO_EV_INFO_VALUE) {
-> >>>> +                     offset = sysmon_temp_thresh_offset(chan->address, dir);
-> >>>> +                     if (offset < 0)
-> >>>> +                             return offset;
-> >>>> +                     sysmon_millicelsius_to_q8p7(&raw_val, val);
-> >>>> +                     return regmap_write(sysmon->regmap, offset, raw_val);
-> >>>> +             }
-> >>>> +             if (info == IIO_EV_INFO_HYSTERESIS) {
-> >>>> +                     mask = (chan->address == SYSMON_ADDR_OT_EVENT) ?
-> >>>> +                             SYSMON_OT_HYST_BIT : SYSMON_TEMP_HYST_BIT;
-> >>>> +                     shift = (chan->address == SYSMON_ADDR_OT_EVENT) ? 0 : 1;
-> >>>> +                     if (val & ~1)  
+> On 5/20/26 12:12 PM, Aldo Conte wrote:
+> > On 16/05/26 14:25, Jonathan Cameron wrote: =20
+> >> On Sat, 16 May 2026 13:04:13 +0200
+> >> Aldo Conte <aldocontelk@gmail.com> wrote:
+> >> =20
+> >>> On 15/05/26 20:05, Jonathan Cameron wrote: =20
+> >>>> On Wed, 13 May 2026 20:58:40 +0300
+> >>>> Andy Shevchenko <andriy.shevchenko@intel.com> wrote: =20
 > >>>
-> >>> Just to confirm - this only has hysteresis values of 0 or 1?  That's unusually
-> >>> small given hysteresis should be in same units as _raw.  
+> >>> ...
+> >>> =20
+> >>>>
+> >>>> I would add for this that, to reduce churn it's fine to add the
+> >>>> struct device *dev =3D ... bit and use it in new devm calls. Just do=
+ the
+> >>>> remainder in the follow on commit.
+> >>>> =C2=A0=C2=A0 =20
+> >>>>>
+> >>>>> =C2=A0  =20
+> >>>> =C2=A0=C2=A0  =20
+> >>>
+> >>> Hi Jonathan, Andy and all!
+> >>>
+> >>> Thanks for your reviews! they=E2=80=99re teaching me so much!
+> >>> If I understand correctly, I need to wait a week before submitting ve=
+rsion v3
+> >>> such that other reviewers can comment right?
+> >>>
+> >>> I=E2=80=99d like to take this opportunity to suggest two alternative =
+lists of what
+> >>> version v3 might look like in terms of patch order:
+> >>>
+> >>> First option does not consider the "=3D=3D NULL with !" patch and so:
+> >>> 1. iio: tcs3472: power down chip on probe failure (NEW precursor, bug=
+ fix)
+> >>> 2. iio: tcs3472: sort headers alphabetically (same)
+> >>> 3. iio: tcs3472: convert several functions to use guard(mutex)() (mod=
+ified)
+> >>> 4. iio: tcs3472: use devm for resource management (slimmed down)
+> >>> 5. iio: tcs3472: use locale struct device * for remaining cases (NEW)
+> >>> 6. iio: tcs3472: implement wait time and sampling frequency (revised)
+> >>> 7. iio: tcs3472: move standalone return to default case (same as v2)
+> >>>
+> >>> Second version will consider it:
+> >>> 1. iio: tcs3472: power down chip on probe failure (NEW precursor, bug=
+ fix)
+> >>> 2. iio: tcs3472: sort headers alphabetically (same as v2)
+> >>> 3. iio: tcs3472: convert several functions to use guard(mutex)() (mod=
+ified)
+> >>> 4. iio: tcs3472: replace =3D=3D NULL with ! (NEW, optional)
+> >>> 5. iio: tcs3472: use devm for resource management (slimmed down)
+> >>> 6. iio: tcs3472: use locale struct device * for remaining cases (NEW)
+> >>> 7. iio: tcs3472: implement wait time and sampling frequency (revised)
+> >>> 8. iio: tcs3472: move standalone return to default case (same as v2)
+> >>>
+> >>>
+> >>> What do you think? =20
+> >> Either is fine but swap the last two patches.=C2=A0 The wait time one =
+is
+> >> more complex than that trivial cleanup so might take more revisions.
 > >>
-> >> You're right, this is wrong. The current code exposes a mode-select
-> >> bit from ALARM_CONFIG (0 = window mode, 1 = hysteresis mode), not an
-> >> actual hysteresis value.
+> >> I frequently pick up the first part of series just to avoid people
+> >> having to keep sending the same unchanged code to the list (that I've
+> >> often forgotten about completely by the next version!)
 > >>
-> >> The hardware has independent upper and lower threshold registers for
-> >> each temperature alarm (DEVICE_TEMP and OT), plus a mode bit in
-> >> ALARM_CONFIG that selects between window mode (alarm on crossing
-> >> either threshold) and hysteresis mode (upper triggers, lower clears).
-> >> Since the hardware has a single alarm bit per temperature channel,
-> >> even in window mode you can't distinguish which threshold was
-> >> crossed. Hysteresis mode maps naturally to the IIO event model.
-> >>
-> >> I'll rework this as follows:
-> >> - Hard-code ALARM_CONFIG to hysteresis mode during init (both
-> >>     DEVICE_TEMP and OT)
-> >> - Expose hysteresis as a writable value in millicelsius, stored in
-> >>     the driver
-> >> - Keep both rising (upper) and falling (lower) thresholds writable  
-> >   
-> >> - Couple the three attributes:
-> >>       Write rising    -> recompute lower = upper - stored_hysteresis
-> >>       Write falling   -> update stored_hysteresis = upper - lower
-> >>       Write hysteresis -> recompute lower = upper - new_hysteresis
-> >> - Read hysteresis returns the stored value
-> >>
-> >> This keeps full user control over both thresholds while exposing
-> >> hysteresis as a proper temperature value, matching IIO semantics.
-> >> Window mode support could be added later if needed without ABI
-> >> changes.
-> >>  
-> > Not quite because that falling attribute is not in line with the ABI.
-> > 
-> > This needs a little hammering to fit in the oddly shaped hole of our ABI.
-> > 
-> > If you are sticking to hystersis only (not window mode) then you need
-> > to expose it as rising threshold + hysteresis (not falling threshold as
-> > there is no even triggered in that direction - unless you are doing something
-> > nastier like triggering on both edges of the interrupt - in which case this
-> > is very similar to window mode and for both event directions you'd need
-> > to set the hysteresis to the difference between the threshold values).
-> > 
-> > If you do want to do window mode - that would be fine but you'd need
-> > to then do a falling event where the enable sets the hysteresis reported
-> > to 0.  Whether a write to hysteresis would then fail or we'd disable the
-> > falling direction would need some discussion - the ABI doesn't constrain
-> > that so it's a case of what is less likely to confuse a user.
-> > 
-> > Jonathan  
-> 
-> Understood. I'll go with pure hysteresis mode - no falling threshold.
-> 
-> The hardware has a single ISR bit per temperature channel (REG_ISR
-> bits 8 and 9) that only tells us the temperature is "outside the
-> threshold(s)," with no indication of direction.
+> >> Jonathan
+> >> =20
+> >>>
+> >>>
+> >>> Thanks,
+> >>> Aldo =20
+> >> =20
+> >=20
+> > Hi Jonathan,
+> >=20
+> > I have two quick questions.
+> >=20
+> > First, Uwe's "[PATCH v2 0/7] iio: Rework i2c_device_id initialisation" =
+also touches tcs3472.c. My series modifies the same file for unrelated reas=
+ons. Should I wait for Uwe's series to land and rebase on top, or is it fin=
+e to send now and let you handle the overlap? How does it work in=C2=A0 cas=
+e? =20
+>=20
+> Just add a patch to your series that does the same change
+> for that one file. Then it won't matter which one gets picked
+> up first.
+>=20
+Normally I'd say don't bother unless you are modifying that specific code.
+If there is an actual conflict (rather than lines moving around a bit) then
+indeed having such a patch is good.
 
-For that we have a vague event with direction IIO_EV_DIR_EITHER.
-Not the nicest of interfaces though as requires userspace to be
-a little careful, in the case where there is shared event but
-separate enables.
-
-Anyhow, I'm happy not supporting it ;)
-
-> In hysteresis mode
-> the alarm asserts when temperature exceeds the upper threshold and
-> clears when it drops below the lower, so the event is strictly
-> rising, and the lower threshold is just the re-arm point.
-> 
-> So the event spec becomes a single entry with everything on
-> IIO_EV_DIR_RISING:
-> 
->      { IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING,
->        ENABLE | VALUE | HYSTERESIS }
-> 
-> giving thresh_rising_value, thresh_rising_en and
-> thresh_rising_hysteresis. The pushed event will also use
-> IIO_EV_DIR_RISING.
-> 
-> Hysteresis will be stored in millicelsius and initialized from
-> the hardware registers at probe as (upper - lower). Writing the
-> rising threshold or hysteresis recomputes the lower register
-> internally. ALARM_CONFIG will be hard-coded to hysteresis mode
-> during init.
-> 
-> Window mode can be added later without ABI breakage by introducing
-> a IIO_EV_DIR_FALLING entry and enabling it would switch the hardware
-> mode.
-Perfect.
+If minor conflicts occur I'll just fix them up whilst applying.
+Gets messy if conflict between a fix and a non fix if I don't notice
+it, but otherwise it is easy enough.
 
 J
-> 
-> Salih
-> 
-> 
+> >=20
+> > Second, the first patch in my series fixes missing power-down on probe =
+failure (goto err_powerdown). Do I need to add the =E2=80=9CFixes=E2=80=9D =
+tag? =20
+>=20
+> Sounds like it.
+>=20
+> >=20
+> > Thanks for your time.
+> >=20
+> > Aldo Conte
+> >  =20
+>=20
+>=20
 
