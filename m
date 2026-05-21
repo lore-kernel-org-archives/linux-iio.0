@@ -1,154 +1,142 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F37A0384CEC;
-	Thu, 21 May 2026 10:30:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D8583A1695;
+	Thu, 21 May 2026 10:34:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779359451; cv=none; b=iEiQiWyqoDbbFf6u/h/NgPURFC8g5ng4+Ef6Sf0F+I/IctgBQky/PxQheQUUv0gysUn68lBccNmZN1HTL4Gx5mU4twpwGKQZvVx6oScjeJed2ay1IxHfYBmK2qWI+HYjp5N6B0Kicj+f+A+XOkOItMQfGDKxhVDqjCcZuBJztVg=
+	t=1779359660; cv=none; b=fdOVI634sUsJREimrktJy6PXM8RCYp39j+yPnbVuE7nbE70U+swA+w7qKjvwlRpNcEbZG60KUK64sbmg/z6WtBRHyRkqTD9pX3h/34KbPn4p1CzIhHajEtWVEMhD43cFyCPPjkwz7Us6zqWS/oR3kEcUO5XBIZivOxif/GsTo4g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779359451; c=relaxed/simple;
-	bh=WeqN+OvVQLhFI36aCifsXRnz9voVflvhKf787rdOVCE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=UgTNIy9v3rJ8oPzQ4nOjkwme7IGQRAmgu3xzn+Lr+60t5D2WS/8ZuThfVE5avg76hHDY/Un1m3JPjGdeHw0SEfkl1q5SEGbCYkGWl5hJzarwLIMKLDzBEpcRdgOMYKZJMr3hvRcqJw1yvznkP200otwgVRGo3bN+B5nqVgXDD10=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gesz8rDS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779359660; c=relaxed/simple;
+	bh=/wcFPQ6xwY56biMvbixvgexBzo/UAOwrTYwoAkjU6eQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V74eDF5kkVJTWSA2gQvM/SM3/gzss+z9TqjXc0cFXE1MCAuIBhdLMa6gZ42RU0cv7350S576PG52nLgE/4Zkflokmygqodo1woNNXkuvcd4CT4xnIZ2QSaGbc79yQsUP193BB4yshaM6ws77hRuYCOxqQvtiFjO6ONWTe69KTV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a7dBeZdt; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gesz8rDS"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AC30CC2BCB9;
-	Thu, 21 May 2026 10:30:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779359450;
-	bh=WeqN+OvVQLhFI36aCifsXRnz9voVflvhKf787rdOVCE=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=gesz8rDSGK1t4MRT9R74CluVw8Y456S+/BXCSaJNHdzYlzDhlu3GzfE4EfS9qdLi9
-	 evsU3+wtTz+W98IZCwcVDwyguHbQFbU9Nynsx6Qx/4bMTKZ4lCttBw3rCX2CjQ0vSx
-	 j0PQ2JooyulAUZjCZCsLZ5MgqlosuuXlEQWq0I9jEo0tdN6wrHy9Wz0lGFIUGz8zg8
-	 3koM8Qh08whsYQVVP/buUtoyv/2Fi2VB40dUt1XH4sdJjPwM28P6RkihOkYRXt2aoF
-	 sF2gLXURz0e+bBF3Pf0KlMZ7aerlRlJE7G/osJhgBp52S5KAgJcP0g0yzMvd+og386
-	 bQ/JOxWC3E/Kg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1B8CD5BB1;
-	Thu, 21 May 2026 10:30:50 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Thu, 21 May 2026 13:30:49 +0300
-Subject: [PATCH v4 2/2] iio: adc: ad_sigma_delta: fix clear_pending_event
- for registerless devices
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a7dBeZdt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779359657; x=1810895657;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/wcFPQ6xwY56biMvbixvgexBzo/UAOwrTYwoAkjU6eQ=;
+  b=a7dBeZdtjRn9D0vXBYFrzsBLgBCL1s6WkZip9HrJ1U6wioaMtTGtp9mL
+   Rnx84Ha5jurJqeATIu/3fUp6f4iiqJMAtzyygvs2c9T3vlgOLlYwWt/js
+   ISGnvt4KIYl+8aTonisITNxbL5EMblPu9KoSY+9LYzXepP0VFKtFvhm2t
+   O/ptwTMLMA1y4UD9P03suVxNwnABh1EWAge/DkbMpOvAfuk3yE2NSBraX
+   BkNXeYPFY1qfXVraGNqpSycyKkVxAXP+ujTpauz+J8l5ayYK1PRq6KmO7
+   bVsg5R5Cm3ODFLrUd3qxYtVdg7QogQqLfaCp7pUd6B+2765obEYz8dZnP
+   g==;
+X-CSE-ConnectionGUID: BY12bYU8TqSjcCcINAKy3g==
+X-CSE-MsgGUID: ctA02Zv3RnyZxIXQ3uUmFA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11792"; a="80256460"
+X-IronPort-AV: E=Sophos;i="6.23,246,1770624000"; 
+   d="scan'208";a="80256460"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2026 03:34:17 -0700
+X-CSE-ConnectionGUID: NK2SNsHDSlSqcNMYQBh7iA==
+X-CSE-MsgGUID: MqHpp86PSNmCh79yTFuJ+g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,246,1770624000"; 
+   d="scan'208";a="270845138"
+Received: from lkp-server01.sh.intel.com (HELO fdb68b0ce653) ([10.239.97.150])
+  by orviesa002.jf.intel.com with ESMTP; 21 May 2026 03:34:15 -0700
+Received: from kbuild by fdb68b0ce653 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1wQ0jD-0000000007t-47a4;
+	Thu, 21 May 2026 10:34:11 +0000
+Date: Thu, 21 May 2026 18:33:44 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Alexander A. Klimov" <grandmaster@al2klimov.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, David Heidelberg <david@ixit.cz>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH] iio: light: al3320a: read both ALS ADC registers again
+Message-ID: <202605211815.ZBkYyHp5-lkp@intel.com>
+References: <20260521041041.542095-1-grandmaster@al2klimov.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260521-ad_sigma_delta-fix-v4-2-bfb3df3e36da@analog.com>
-References: <20260521-ad_sigma_delta-fix-v4-0-bfb3df3e36da@analog.com>
-In-Reply-To: <20260521-ad_sigma_delta-fix-v4-0-bfb3df3e36da@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Radu Sabau <radu.sabau@analog.com>, Jonathan Cameron <jic23@kernel.org>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779359449; l=3777;
- i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=YJn4ucDjfXYyLL0W25JZU0TDf0qEIYyxu+YF9hUqSaI=;
- b=PK2Ju6vFK6InwZgcxzt5N01tN1viC8aI+GX3Ziwix31s+NLl88AWPFNqTu3FTU1pwxMs3PIJP
- WTk33z8R249CwWuAmXDJrR2gDeyAfbcYAweGCQ2Tx1gEgh+s6N9GDEd
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
- auth_id=642
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260521041041.542095-1-grandmaster@al2klimov.de>
 
-From: Radu Sabau <radu.sabau@analog.com>
+Hi Alexander,
 
-ad_sigma_delta_clear_pending_event() falls through to the status register
-read path for devices with has_registers = false and no rdy_gpiod. For
-such devices, ad_sd_read_reg() skips the address byte entirely and clocks
-raw MISO bytes with no address phase — making it byte-for-byte identical
-to reading conversion data. If a pending conversion result is present,
-this partially consumes it and corrupts the data stream for the subsequent
-ad_sd_read_reg() call in ad_sigma_delta_single_conversion().
+kernel test robot noticed the following build warnings:
 
-Furthermore, with num_resetclks = 0 on these devices, data_read_len
-evaluates to 0. If the clocked byte has bit 7 clear, pending_event is set
-and the code attempts memset(data + 2, 0xff, 0 - 1), overflowing to
-SIZE_MAX and corrupting the heap.
+[auto build test WARNING on jic23-iio/togreg]
+[also build test WARNING on linus/master v7.1-rc4 next-20260520]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Fix by returning 0 immediately when neither rdy_gpiod nor has_registers
-is set. This is safe because the IRQ is requested with IRQF_NO_AUTOEN and
-IRQ_DISABLE_UNLAZY, which keeps the hardware IRQ line unmasked even while
-software-disabled. Any falling edge from a completed conversion is latched
-by the IRQ controller. When ad_sd_enable_irq() is subsequently called the
-latched edge fires immediately, and the existing ad_sd_read_reg() call in
-ad_sigma_delta_single_conversion() reads the complete stale result from
-the beginning with no prior partial clock corruption.
+url:    https://github.com/intel-lab-lkp/linux/commits/Alexander-A-Klimov/iio-light-al3320a-read-both-ALS-ADC-registers-again/20260521-121359
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20260521041041.542095-1-grandmaster%40al2klimov.de
+patch subject: [PATCH] iio: light: al3320a: read both ALS ADC registers again
+config: csky-randconfig-r133-20260521 (https://download.01.org/0day-ci/archive/20260521/202605211815.ZBkYyHp5-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 15.2.0
+sparse: v0.6.5-rc1
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260521/202605211815.ZBkYyHp5-lkp@intel.com/reproduce)
 
-The same heap corruption is reachable on any device with rdy_gpiod set
-but num_resetclks = 0: if the GPIO indicates a pending event, the drain
-path executes memset(data + 2, 0xff, 0 - 1) regardless of has_registers.
-Add an explicit data_read_len == 0 guard after the pending event check to
-cover this path.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202605211815.ZBkYyHp5-lkp@intel.com/
 
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
- drivers/iio/adc/ad_sigma_delta.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+sparse warnings: (new ones prefixed by >>)
+>> drivers/iio/light/al3320a.c:153:24: sparse: sparse: cast to restricted __le16
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index 651ade67ad2e..d4ded8d6b211 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -262,11 +262,16 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
- 
- 	/*
- 	 * Read R̅D̅Y̅ pin (if possible) or status register to check if there is an
--	 * old event.
-+	 * old event. For devices with neither an RDY GPIO nor registers,
-+	 * ad_sd_read_reg() transmits no address byte and clocks raw MISO bytes,
-+	 * which is indistinguishable from reading conversion data and would
-+	 * partially consume a pending result. Skip the check for such devices;
-+	 * IRQ_DISABLE_UNLAZY ensures any pending falling edge is latched and
-+	 * fires naturally on the next ad_sd_enable_irq() call.
- 	 */
- 	if (sigma_delta->rdy_gpiod) {
- 		pending_event = gpiod_get_value(sigma_delta->rdy_gpiod);
--	} else {
-+	} else if (sigma_delta->info->has_registers) {
- 		unsigned int status_reg;
- 
- 		ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_STATUS, 1, &status_reg);
-@@ -274,11 +279,23 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
- 			return ret;
- 
- 		pending_event = !(status_reg & AD_SD_REG_STATUS_RDY);
-+	} else {
-+		return 0;
- 	}
- 
- 	if (!pending_event)
- 		return 0;
- 
-+	/*
-+	 * With num_resetclks = 0, data_read_len is 0 and the drain sequence
-+	 * below would compute memset(data + 2, 0xff, 0 - 1), underflowing to
-+	 * SIZE_MAX and corrupting the heap. There is no safe way to drain the
-+	 * stale result without knowing the data register size, so return 0 and
-+	 * let the latched IRQ edge fire on the next ad_sd_enable_irq() call.
-+	 */
-+	if (!data_read_len)
-+		return 0;
-+
- 	/*
- 	 * In general the size of the data register is unknown. It varies from
- 	 * device to device, might be one byte longer if CONTROL.DATA_STATUS is
+vim +153 drivers/iio/light/al3320a.c
 
--- 
-2.43.0
+   132	
+   133	static int al3320a_read_raw(struct iio_dev *indio_dev,
+   134				    struct iio_chan_spec const *chan, int *val,
+   135				    int *val2, long mask)
+   136	{
+   137		struct al3320a_data *data = iio_priv(indio_dev);
+   138		int ret, gain;
+   139		uint16_t raw;
+   140	
+   141		switch (mask) {
+   142		case IIO_CHAN_INFO_RAW:
+   143			/*
+   144			 * ALS ADC value is stored in two adjacent registers:
+   145			 * - low byte of output is stored at AL3320A_REG_DATA_LOW
+   146			 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
+   147			 */
+   148			ret = regmap_bulk_read(data->regmap, AL3320A_REG_DATA_LOW,
+   149					       &raw, sizeof(raw));
+   150			if (ret)
+   151				return ret;
+   152	
+ > 153			*val = le16_to_cpu(raw);
+   154	
+   155			return IIO_VAL_INT;
+   156		case IIO_CHAN_INFO_SCALE:
+   157			ret = regmap_read(data->regmap, AL3320A_REG_CONFIG_RANGE, &gain);
+   158			if (ret)
+   159				return ret;
+   160	
+   161			gain = FIELD_GET(AL3320A_GAIN_MASK, gain);
+   162			*val = al3320a_scales[gain][0];
+   163			*val2 = al3320a_scales[gain][1];
+   164	
+   165			return IIO_VAL_INT_PLUS_MICRO;
+   166		}
+   167		return -EINVAL;
+   168	}
+   169	
 
-
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
