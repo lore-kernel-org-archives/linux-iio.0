@@ -1,132 +1,250 @@
-Received: from mta-65-143.flowmailer.net (mta-65-143.flowmailer.net [185.136.65.143])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05D2D360ED2
-	for <linux-iio@vger.kernel.org>; Thu, 21 May 2026 15:37:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.143
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CEF337E315;
+	Thu, 21 May 2026 16:41:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779377863; cv=none; b=glLIfcM1rcLkQzBSE1BwlDCQ7Hde2W5t/sqzzwo/NOh3GMuDTT5IDyZLI8tQL+03ScC9TU8GqaTwjbuHUL4jScP1vegns3vojbu/ji8Fraq8oWqM/cSWB5rkY1yR8eM6JmHk1DNg9hBtPBaBaJyZ2zz6ZpkbqWIzzYAKeNneaVk=
+	t=1779381706; cv=none; b=K3aOwb4F7Z8LwstigxmUznbjsjAtrjaWAcFfeXCf1CwSq5PZsHDGlUH/sbsacPul+lJDylGLkIaOSOLTW8xYUCM9GXgaLjbRe5Ce5zmu6y/SXIqnZKZzigjwgiLhUTGSJB8CNoWP/6rnZPVlH93N5GdTLBqL0ZJXhjMB207XtBQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779377863; c=relaxed/simple;
-	bh=ueEF+bxWvWqR586sT6h/9OE/noXhk1FsLD5ozFIo48g=;
+	s=arc-20240116; t=1779381706; c=relaxed/simple;
+	bh=VU5Xfsz0sCvrdTzWBmqB7INU/yy52sjoFdkRTJVli6E=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ca8Tl0GLP+3NlMoxBMmR+pEZECvlo3cTKjxLg6lyhpZh6obrUOCGULAOm70chPFF6dteJIS7zBUt+w3edSSgRTnYIFHYZlIMUM+y5wxQeoGtOlxuvduQT3cH05rgRbTGJDD/qqRW1Tv2+pSrKf4X0zXVMq8HgL0ys6Rrb06vPd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens-energy.com; spf=pass smtp.mailfrom=errorhandling.siemens-energy.com; dkim=pass (1024-bit key) header.d=flowmailer.net header.i=@flowmailer.net header.b=MMFq36yT; dkim=pass (2048-bit key) header.d=siemens-energy.com header.i=schuster.simon@siemens-energy.com header.b=Zq3CXr0l; arc=none smtp.client-ip=185.136.65.143
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens-energy.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=errorhandling.siemens-energy.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Upwpkl5SrIN0kVW2ntnaWBH7kbaPD03TQ0mBpf8YVYIYss1yMsd5SkLPmOOyc/+EE4OvXLF2d7/NTayXrM8j4jASUbE+46WcjX+alD1Ncu5rKBl3FVZiorUuml6YoudTYmM3tWsWrc6eqJZIgBNmDtr9JamGpm0jnBB1XOigwbQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Uh5//KY9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=flowmailer.net header.i=@flowmailer.net header.b="MMFq36yT";
-	dkim=pass (2048-bit key) header.d=siemens-energy.com header.i=schuster.simon@siemens-energy.com header.b="Zq3CXr0l"
-Received: by mta-65-143.flowmailer.net with ESMTPSA id 202605211537326f0fb59fb40019fdab
-        for <linux-iio@vger.kernel.org>;
-        Thu, 21 May 2026 17:37:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=s1;
- d=flowmailer.net;
- h=from:from:sender:to:to:cc:cc:subject:subject:content-type:content-type:content-transfer-encoding:References:In-Reply-To:Date:Message-ID:MIME-Version;
- bh=KcRzYfxPkdiV7UzaW+6lIfDEOBCRNUcUcG27X2U1VSs=;
- b=MMFq36yTf/DJOdkiWD8dxyVJTeBb2CpUxQWl6ikCBdoeyzPO1YF1TlVatLLSDsvGHWcQd5
- VDsmO4GbpHypEfkjO53Qz6kghqkYW63SBOu0Z3QcrtuSqWyhCWSOJvxnT/UwU+hUbYuuGM0J
- HuZSr59c5et2+K6wbsqMmvXOzxMIc=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm3;
- d=siemens-energy.com; i=schuster.simon@siemens-energy.com;
- h=from:from:sender:to:to:cc:cc:subject:subject:content-type:content-type:content-transfer-encoding:References:In-Reply-To:Date:Message-ID:MIME-Version;
- bh=KcRzYfxPkdiV7UzaW+6lIfDEOBCRNUcUcG27X2U1VSs=;
- b=Zq3CXr0liSNgT0BCELoEs6XA0YM8cHIjZYr0stylqb6wFZbahGV2hbEmOBF/1TqoTWIGML
- pQmKEA14s3UI+M6MccDXkCrApiCPspbcb8X1z4i0qqkc0XKsEuZWyaX++RCNyx2Oho4OkebH
- CljyjSOBruD/mCsSnEVDpu/bRn9huDA1sfKAPLG4TnjoGEs76ifH2dvqbyplGH4LM/bN//MJ
- TbAfvH9UHgJigDJ9qujRe7uPZe7uulWgnP1HXFpgW6KlqYd6iasg0kXPD7frFGW+6jdQlaQd
- pc5Ftr3JZPBE4ZdvXY4aK24gQwmJHg5mcdt41zeDIsJIor2N0FKdzstA==;
-Date: Thu, 21 May 2026 17:37:29 +0200
-From: Simon Schuster <schuster.simon@siemens-energy.com>
-To: Arnd Bergmann <arnd@arndb.de>, Dinh Nguyen <dinguyen@kernel.org>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>, Peter Zijlstra
- <peterz@infradead.org>, linux-doc@vger.kernel.org,
- devicetree@vger.kernel.org, workflows@vger.kernel.org, Linux-Arch
- <linux-arch@vger.kernel.org>, dmaengine@vger.kernel.org,
- linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, Netdev
- <netdev@vger.kernel.org>, linux-pci@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-hardening@vger.kernel.org,
- linux-kbuild@vger.kernel.org, "linux-csky@vger.kernel.org"
- <linux-csky@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Daniel
- Lezcano <daniel.lezcano@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
- Alex Shi <alexs@kernel.org>, Yanteng Si <si.yanteng@linux.dev>, Dongliang
- Mu <dzm91@hust.edu.cn>, Hu Haowen <2023002089@link.tyut.edu.cn>, Kees Cook
- <kees@kernel.org>, Oleg Nesterov <oleg@redhat.com>, Will Deacon
- <will@kernel.org>, "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>, Nicholas Piggin
- <npiggin@gmail.com>, Vinod Koul <vkoul@kernel.org>, Frank Li
- <Frank.Li@kernel.org>, Dave Penkler <dpenkler@gmail.com>, Andi Shyti
- <andi.shyti@kernel.org>, Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Andrew Lunn <andrew+netdev@lunn.ch>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
- <pabeni@redhat.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, Krzysztof
- WilczyDski <kwilczynski@kernel.org>, Andreas Oetken
- <andreas.oetken@siemens-energy.com>
-Subject: Re: [PATCH] nios2: remove the architecture
-Message-ID: <20260521153729.ig2xgvskkbg3nx47@dev-vm-schuster>
-References: <20260518042833.272221-1-enelsonmoore@gmail.com>
- <d40b1e80-37fc-4c88-9d7f-dae6458efe6c@app.fastmail.com>
- <20260518105735.GW3126523@noisy.programming.kicks-ass.net>
- <20260518172444.zyd47mcagrcwu7wt@dev-vm-schuster>
- <CADkSEUjhq6HSdg4ignzbuJiN5uXATsTdxFbRJ3BMxs5=WUWLDg@mail.gmail.com>
- <20260519103012.blot4bssgiqfer6p@dev-vm-schuster>
- <76af64fa-7820-4d92-8aa9-826c3bd812a1@app.fastmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Uh5//KY9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEBB1F000E9;
+	Thu, 21 May 2026 16:41:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779381705;
+	bh=B1Hochmn7Ftgm2hSmex2S+dtWfA5loj94Rn/V7AKHL4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Uh5//KY9gzo+i0z0LDqFWk4F6Xj7Ny9DUca9c8yKywXwiyYVJSAEKC4msOzxbwiWG
+	 VB/afahZlQYaqmmFYAMce46P4qEUKxmyUNizO8EgXbVx1CFtU2MnbsmUzy+OFg249R
+	 zbPh3I+kEUinSaZHl6HQxhaINt2dEy/OOrQaazaxjLqEuwRq6JRnlTsLsn6THWROiU
+	 yWGq7aZY5gaIF8UTYi76wpC1Yd+xnyksK9iyMmc6GIU08aQsCDbqeL4+kOk2/9Olge
+	 t0EsunJH2wu1I6nDJicRvbiZ2X7s5M0a1xT68RXZVHthgvlLbeUOwvFyZOyV+EjBre
+	 GoDiV78KC9Bow==
+Date: Thu, 21 May 2026 17:41:40 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Xingyu Wu <xingyu.wu@starfivetech.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v1 1/2] bindings: iio: adc: Add StarFive JHB100 SARADC
+Message-ID: <20260521-bunny-ranch-77fddc80ad83@spud>
+References: <20260518081852.116909-1-xingyu.wu@starfivetech.com>
+ <20260518081852.116909-2-xingyu.wu@starfivetech.com>
+ <20260518-elderly-barman-2b1abfc3755c@spud>
+ <NTZPR01MB095679F35A873BBBA304655F9F002@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
+ <20260519-undoing-ambitious-012d608ebd7f@spud>
+ <NTZPR01MB095657AA216608109BEF9CBA9F012@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
+ <20260520-relic-chloride-c5cdb96696ce@spud>
+ <NTZPR01MB0956DC43B5D6E6EBB4F457129F0E2@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
+ <20260521-growing-brunt-4e5a9f955a4f@spud>
+ <20260521123949.20e3c0a8@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="agohQFK3DQNGsMAx"
+Content-Disposition: inline
+In-Reply-To: <20260521123949.20e3c0a8@jic23-huawei>
+
+
+--agohQFK3DQNGsMAx
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <76af64fa-7820-4d92-8aa9-826c3bd812a1@app.fastmail.com>
+Content-Transfer-Encoding: quoted-printable
 
-Hi Arnd, Dinh, Wolfram, and Miguel,
+On Thu, May 21, 2026 at 12:39:49PM +0100, Jonathan Cameron wrote:
+> On Thu, 21 May 2026 11:20:52 +0100
+> Conor Dooley <conor@kernel.org> wrote:
+>=20
+> > On Thu, May 21, 2026 at 09:54:27AM +0000, Xingyu Wu wrote:
+> > > On 2026/5/20 23:15, Conor Dooley wrote: =20
+> > > >=20
+> > > > On Wed, May 20, 2026 at 09:43:02AM +0000, Xingyu Wu wrote: =20
+> > > > > On 2026/5/19 18:00, Conor Dooley wrote: =20
+> > > > > >
+> > > > > > On Tue, May 19, 2026 at 09:26:03AM +0000, Xingyu Wu wrote: =20
+> > > > > > > On 2026/5/19 00:24, Conor Dooley wrote: =20
+> > > > > > > >
+> > > > > > > > On Mon, May 18, 2026 at 04:18:51PM +0800, Xingyu Wu wrote: =
+=20
+> > > > > > > > > Add the new documentation of SAR-ADC for the StarFive JHB=
+100 SoC.
+> > > > > > > > >
+> > > > > > > > > Signed-off-by: Xingyu Wu <xingyu.wu@starfivetech.com>
+> > > > > > > > > ---
+> > > > > > > > >  .../iio/adc/starfive,jhb100-saradc.yaml       | 62 +++++=
+++++++++++++++
+> > > > > > > > >  1 file changed, 62 insertions(+)  create mode 100644
+> > > > > > > > > Documentation/devicetree/bindings/iio/adc/starfive,jhb100=
+-sara
+> > > > > > > > > dc.y
+> > > > > > > > > aml
+> > > > > > > > >
+> > > > > > > > > diff --git
+> > > > > > > > > a/Documentation/devicetree/bindings/iio/adc/starfive,jhb1=
+00-sa
+> > > > > > > > > radc
+> > > > > > > > > .yam
+> > > > > > > > > l
+> > > > > > > > > b/Documentation/devicetree/bindings/iio/adc/starfive,jhb1=
+00-sa
+> > > > > > > > > radc
+> > > > > > > > > .yam
+> > > > > > > > > l
+> > > > > > > > > new file mode 100644
+> > > > > > > > > index 000000000000..ba8e19b72ad7
+> > > > > > > > > --- /dev/null
+> > > > > > > > > +++ b/Documentation/devicetree/bindings/iio/adc/starfive,=
+jhb10
+> > > > > > > > > +++ 0-sa
+> > > > > > > > > +++ radc
+> > > > > > > > > +++ .yaml
+> > > > > > > > > @@ -0,0 +1,62 @@
+> > > > > > > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) %YA=
+ML
+> > > > > > > > > +1.2
+> > > > > > > > > +---
+> > > > > > > > > +$id:
+> > > > > > > > > +http://devicetree.org/schemas/iio/adc/starfive,jhb100-sa=
+radc.
+> > > > > > > > > +yaml
+> > > > > > > > > +#
+> > > > > > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > > > > > > +
+> > > > > > > > > +title: Successive Approximation Register (SAR) A/D conve=
+rter
+> > > > > > > > > +for the StarFive JHB100 SoC
+> > > > > > > > > +
+> > > > > > > > > +maintainers:
+> > > > > > > > > +  - Xingyu Wu <xingyu.wu@starfivetech.com>
+> > > > > > > > > +
+> > > > > > > > > +properties:
+> > > > > > > > > +  compatible:
+> > > > > > > > > +    const: starfive,jhb100-saradc
+> > > > > > > > > +
+> > > > > > > > > +  reg:
+> > > > > > > > > +    maxItem: 1
+> > > > > > > > > +
+> > > > > > > > > +  interrupts:
+> > > > > > > > > +    maxItems: 1
+> > > > > > > > > +
+> > > > > > > > > +  clocks:
+> > > > > > > > > +    maxItems: 1
+> > > > > > > > > +
+> > > > > > > > > +  resets:
+> > > > > > > > > +    maxItems: 2
+> > > > > > > > > +
+> > > > > > > > > +  "#io-channel-cells":
+> > > > > > > > > +    const: 1
+> > > > > > > > > +
+> > > > > > > > > +  upper-bound-mv:
+> > > > > > > > > +    description: The upper bound voltage value of the mo=
+nitor.
+> > > > > > > > > +    $ref: /schemas/types.yaml#/definitions/uint16
+> > > > > > > > > +
+> > > > > > > > > +  lower-bound-mv:
+> > > > > > > > > +    description: The lower bound voltage value of the mo=
+nitor.
+> > > > > > > > > +    $ref: /schemas/types.yaml#/definitions/uint16
+> > > > > > > > > +
+> > > > > > > > > +  scan-freq:
+> > > > > > > > > +    description: Number of the scan cycle interval.
+> > > > > > > > > +    $ref: /schemas/types.yaml#/definitions/uint16 =20
+> > > > > > > >
+> > > > > > > > Can you explain why any of these three properties are somet=
+hing
+> > > > > > > > that should be in the devicetree rather than software contr=
+olled? =20
+> > > > > > >
+> > > > > > > My intention is to be able to obtain the initial values from =
+the
+> > > > > > > devicetree during =20
+> > > > > > probe and preset them. =20
+> > > > > > > Do I need to drop them and just set them through sysfs? =20
+> > > > > >
+> > > > > > Unless the hardware configuration determines the values (which I
+> > > > > > can't really see being the case for scan-freq at least) then ye=
+s,
+> > > > > > you need to drop and set them via sysfs. =20
+> > > > >
+> > > > > The ADC hardware can be set the scan-freq register to determine h=
+ow frequent it =20
+> > > > should scan its inputs. =20
+> > > > > The calculation is:
+> > > > > 	frequency =3D 100/((register value) + 5) MHz, The register value=
+ should >=3D 15.
+> > > > > The maximum allowable scan frequency is 5MHz.
+> > > > > =20
+> > > > > > =20
+> > > > > > > > How are the bounds calculated? =20
+> > > > > > >
+> > > > > > > The measurement range of this ADC hardware is from 0 to 1800 =
+mV.
+> > > > > > > This set =20
+> > > > > > value cannot exceed it. This explanation will be added later.
+> > > > > >
+> > > > > > I'm asking how this is calculated so that I can tell if you the
+> > > > > > property is permitted or not. =20
+> > > > >
+> > > > > The calculation of bound is:
+> > > > > bound-mv =3D 1800mv * (register value) / 0xFFF =20
+> > > >=20
+> > > > These are the formulas, but how does someone know what the value fo=
+r bound-
+> > > > mv needs to be? Why would someone not just want to always use 1800m=
+v?
+> > > >  =20
+> > >=20
+> > > Can I add the 'maximum' and ' minimum' to provide clarification? And =
+the driver will also check. =20
+> >=20
+> > All that does is repeat the 1800 mV though, what I am interested in is
+> > how someone determines if they should use 1600 mV or 200 mV etc. What
+> > aspect of the hardware do the bounds depend on?
+>=20
+> There are two options here=20
+> 1. This is critical stuff to avoid hardware damage. (If you are relying on
+>    Linux for that you built your system wrong but if we ignore that...)
+>    Then userspace control should not be possible - or at least should
+>    only be able to move boundaries in directions that make them tighter.
+> 2. It is advisory only and not related to hardware damage - in that case
+>    generally doesn't belong in DT.
 
-thank you for your explanations and encouragement; I've now sent my
-application for co-maintainership for arch/nios2 to you, Dinh.
+Per Xingyu's latest response
+| These bounds are just for the monitor mode. If the input voltage is outsi=
+de this range, interrupt will be triggered to report the user space.
+| The bounds value (1600mv or 200mv) are determined by the users' applicati=
+ons. Users can freely set them according to the range they want to monitor.
+it controls the level at which interrupts occur, and is therefore not
+suitable for DT.
 
-On Wed, May 20, 2026 at 09:06:33AM +0200, Arnd Bergmann wrote:
-> I think that is a reasonable target. We have a bunch of embedded
-> architectures that have a similarly small user base and I expect
-> that we will want to remove most of them at some point, as we did
-> for seven architectures in linux-4.17.
-> 
-> As long as there is a maintainer for nios2 and it's not actively
-> getting in the way of a specific treewide change, I don't see any
-> reason to remove this any earlier than the other ones.
-> 
-> Obviously at some point nios2 will have to get removed because
-> of the limit to gcc-14 or older, but that should not be a problem
-> for the next few LTS releases.
+Cheers,
+Conor.
 
-This all sounds quite reasonable, including the toolchain
-considerations. Thank you for the offer to keep it around a bit.
-If any issues arise with tree-wide changes I'd be happy to look into
-what can be done on the arch/nios2 side; now that the issues should
-reliably reach me via mail.
+--agohQFK3DQNGsMAx
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> > Sure, I'd be glad to do so, but so far I refrained from it as I was a bit
-> > unsure about the netiquette (can I simply do so by self-proclamation? At
-> > least the git history seems to suggest so...).
-> 
-> Dinh already replied that he welcomes the help, and I also suggested
-> the same thing a year ago. As the only known user that has contributed
-> patches in a long time, you are obviously qualified.
-> 
-> Sending a patch for the MAINTAINERS file to Dinh is the first step,
-> once he has sent that upstream, you can (optionally) apply for
-> kernel.org account that would let you host a git tree on kernel.org
-> or have a tree that you both have access to.
+-----BEGIN PGP SIGNATURE-----
 
-I've sent the patch, I'm sure we can work everything else out from
-there.
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCag81xAAKCRB4tDGHoIJi
+0sFoAQCQDItEEWhdZzQ3dHjRK5GKPGLVqmqFoOawfYUgtLVjcAEAgvjg4V6jOywz
+vPslUbxs262tAVwfQ96Jg4cWBNF0IQk=
+=k/nI
+-----END PGP SIGNATURE-----
 
-Best regards,
-Simon
+--agohQFK3DQNGsMAx--
