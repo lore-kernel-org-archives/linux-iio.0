@@ -1,255 +1,480 @@
-Received: from CHN02-SH0-obe.outbound.protection.partner.outlook.cn (mail-sh0chn02on2131.outbound.protection.partner.outlook.cn [139.219.146.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 376C937F8C9;
-	Thu, 21 May 2026 09:54:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.146.131
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779357283; cv=fail; b=IsbqEBShaERGzMvL4FVsxwNOjurZAd7k2+w9ICDtaJllEHd9bO8TwfbyrA27uOnUDM9kn3x1aVL0z43DyQ7QWzZgluQDeCfEUaal6coSuGo3QA+EpRqNZZPlqkBZsaRyNoSsegMgNK9b+oNmxg51Ot5buYmdyfNz3h9YFS/yKzE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779357283; c=relaxed/simple;
-	bh=qknMe+0aFj3E/msjzSMVKzgfXUIhACrLr9ZkLV3hA+o=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=OqVMZj1tN6dOQFM+9QkigfbyPO3aSbljUS3nAOnJ98OSjSkpD4b1hwprFtvmIgdht58hk6t64YEERf2eW+Y71DvPZFICTdCZerSf17LZpSNzmtjHLpydGQCcVyRT93YLr6IUXY9ij9baXeotKleKftLt65APpoQsy6Dw9/dQ3LM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.146.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=starfivetech.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HlVhDmEmPKwgZ59qq1bEsopbQPbie6HuZOmtPonxhgNBAS5+FYeY89uCLdsH6Gv+Pd23iO+7QXkUQGTtvznhO0Lq8vzCJW84/eiIyZGn0ZweOAD+UmKtQ7xVjIgekGf12PBgyn1JS3UdGeJg7ofNj9IawX/hKPfrIHTj9U7EGA8E0mR85Pof+GF1Ph6hqjVh0p1l3bDQs0UwBzBzjz/43obsvTs3hr76hkRhSpZ2Vx+z4jqy9U5fb886zpeOQj/ynJtrLQIh1EycE1TqPWdWi8Ro1TxIHnmUIMkcwHaa+LI66VX+pMX3x7E8DIFSjKPkHAIxg536n5UixkawmWlkIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qh7tFLkzgfgpa+93JnjE3i9XpzaqT3Dn/HStU3Isqlc=;
- b=Hjcnj4Mut4Nflz+6uwoDq64YRqtJG4skqZ/CeLnaiBHXeVNZpcaa/d1DdccuQZbuzuEoJNC/ODCWuoCk7NjwRcUPg9Ll+9tkobMSB3vejPzKFr3nvX4XMR9CtzFtEuiGfYQ7dN8wlOWktsHrqDWCgoOSeho0H09PA1sqrpTEWdSIQU7ah48o4Ko6Uq8Fj90DAWdu/PDs++aSTQvInEsZhbqKiDDd+/TG2UoQaJjrmJzH5483WR+zsRy1bo3nm9mC0IvsTpWiki0SuKQXTDa/SfSqWpuMjLMMJWvGbEEqzf3wVSnk6QQzXXqZ89Qknykw1RBpFtQx8IW5FHepe+FG7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=starfivetech.com; dmarc=pass action=none
- header.from=starfivetech.com; dkim=pass header.d=starfivetech.com; arc=none
-Received: from NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c510:8::10) by NTZPR01MB1004.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c510:8::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.17; Thu, 21 May
- 2026 09:54:27 +0000
-Received: from NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
- ([fe80::d8e2:3f39:6ae7:bdf2]) by
- NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn ([fe80::d8e2:3f39:6ae7:bdf2%6])
- with mapi id 15.21.0048.016; Thu, 21 May 2026 09:54:27 +0000
-From: Xingyu Wu <xingyu.wu@starfivetech.com>
-To: Conor Dooley <conor@kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?iso-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH v1 1/2] bindings: iio: adc: Add StarFive JHB100 SARADC
-Thread-Topic: [PATCH v1 1/2] bindings: iio: adc: Add StarFive JHB100 SARADC
-Thread-Index:
- AQHc5p77jQOM2JwohkK7qO7svRU7q7YT+EcAgAEVtmCAABFGgIABhc1AgABkbYCAATcuwA==
-Date: Thu, 21 May 2026 09:54:27 +0000
-Message-ID:
- <NTZPR01MB0956DC43B5D6E6EBB4F457129F0E2@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
-References: <20260518081852.116909-1-xingyu.wu@starfivetech.com>
- <20260518081852.116909-2-xingyu.wu@starfivetech.com>
- <20260518-elderly-barman-2b1abfc3755c@spud>
- <NTZPR01MB095679F35A873BBBA304655F9F002@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
- <20260519-undoing-ambitious-012d608ebd7f@spud>
- <NTZPR01MB095657AA216608109BEF9CBA9F012@NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn>
- <20260520-relic-chloride-c5cdb96696ce@spud>
-In-Reply-To: <20260520-relic-chloride-c5cdb96696ce@spud>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=starfivetech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: NTZPR01MB0956:EE_|NTZPR01MB1004:EE_
-x-ms-office365-filtering-correlation-id: ffc1eeae-425b-4a37-f46d-08deb71ef262
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|376014|7416014|38070700021|18002099003|56012099003|22082099003|4143699003|6133799003|3023799007;
-x-microsoft-antispam-message-info:
- 0Kt7ouh6B1w4r3G7kYcTD0QOZq7ghl4pBY5ein/Sd6SteII16AXyoqTFJwirio8y2aRYIp5yi1hU5o4+lr0eJ+pCuLjxO/Xar7aSz0rw9WBulRg51vS7Uks3zC5rLlzajqiydWK1dOFgDVda30iHft+hq7kSu/zJwalYlRZxt6IKaLwvSZNZQXLeBlRwQSgcRmQCphS7tgVn5+PRBW2gWXLoCf1tve91GwEOE0d8P8zpmfkhPoVrBeYXGq05+nYRMkr6FyFy/3vcYxu2tJpaZXosFZPazUSO2aUTV9IKcvT9gTQVIpDWnC/tB6hZvg+ON07gC7WUDMp97Qok3izKd8Kw5is1Mudf7ul9zh60UUGmnpdNK9Y7gBGaxsl0tDt3CtopQYIeqlNqOU3uftXL1F2BT2tkjvu88UbAT8UJpfl+gWf8maGnizA1cUFiuNWXiqcR+7lVMuF+WGgp49HJzWFF9V/yp0osLt8CIzFOKIOkl+V3fTT6swRMA52BASrv1CbLdbnvJMkiFbsxmDMmL0FF+iLZ3ixwzIaMA9t+9OjNdAiQnpsozjxUTcqtXIw0
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(38070700021)(18002099003)(56012099003)(22082099003)(4143699003)(6133799003)(3023799007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?OIJ+YA7jQ4DIvK9XWzXIQVo65wmfdcOpFhSGnygPONrLR5ZE0fyQV9zAdC?=
- =?iso-8859-1?Q?oCWww9hF3JJA/Bvo8TpayvTiyhp9np94F6V4YVjOjoCre0m7QYLRnDiDX0?=
- =?iso-8859-1?Q?T13EII+J+b17flqVFY4V55RmdTU/QsAZQUK4kmhkkQgeYV/9cm/bNSsZ9E?=
- =?iso-8859-1?Q?ZnFzqlyu/SUihjSnAH8sWMY385Yqg+RVKImtyLDKMn2WVk/syg49yyIEkH?=
- =?iso-8859-1?Q?2qJKfBBoB2HQr6yxmH7LuAvuPu5KqLr5Ki//aRwSqRnNCYSsOsn61q/TOI?=
- =?iso-8859-1?Q?ihho1F2Q0FcvW31nJ9i7Q1x71XSvfX5WwDy1ppMptM61hphiosZKJGfDxN?=
- =?iso-8859-1?Q?9p/GwSGOwyTtvxmt9L+Y9c7GIJw6ZWo59iNgatVNzECW9rj4dBcMo1bra7?=
- =?iso-8859-1?Q?jc1tbqV2ahID083zxtqfFciqvIEtZ0B/DmkPtb8P6FNOiTTypuv06grCIH?=
- =?iso-8859-1?Q?Jv2fXNIQzfckRjGMHCElEM2CrEPFN9lzvqBexbxQqZF+3Zulrv88YH/3EY?=
- =?iso-8859-1?Q?/IE3BpGgb84GYn7W+SL69nAc4ZMiJnmbA6mGxeItm1yEboddmx04Nb+5Be?=
- =?iso-8859-1?Q?48SHs9eoyfITbBsD0rNaKW4IAXVMuoRtLwXvygY1HrSDxbvYNtjT1nevYn?=
- =?iso-8859-1?Q?fsv4JF9btzIpM+L0DELrj0NDfGOOPKqb5DyafJU/FaZO8Dw26QLDNLFjzx?=
- =?iso-8859-1?Q?00aSuaNcAGIwo8pn9pTekmSAy1tYEXfA1EYkIbp8CifUOBqmtG4jqoUT8h?=
- =?iso-8859-1?Q?pOS3m/RCjVI3Fll8Hd9Bxfios2Za7tcZ2c5ErqM4eyMoYIYKdOzTIkZ8LZ?=
- =?iso-8859-1?Q?4WpFHUz8H1ZvXJuT5O9kVzKvO4aTL57wLj7O52ttCs82TgjNLZeVEdFCVp?=
- =?iso-8859-1?Q?fxCXJ6B+Ajqe6NCd0o2VuO8w6pu5DpcpFr7ZXEr+Vgdqf45gLx43fyNb9T?=
- =?iso-8859-1?Q?UCKitpao9UVgBJrDstNDg0yxc02sw89VTNHC+QW84BR2hgVmA6gynCaXrZ?=
- =?iso-8859-1?Q?aUKWgk2lM1WhgkIDpBj1kacWd/XIzuvyB3/fiiV96PXt/fhCucbe199kg7?=
- =?iso-8859-1?Q?W10nIEDI0JNfJd0BqhUaRZXCLbWlJ8s1WZh5wopNOFqwdigo/+rGPlgYm1?=
- =?iso-8859-1?Q?BW5M3qxqbEqWn0jsoN2Vm9W3h7A+dmEl3/iJaoFG8sClpLuCWEmyMA4Wsg?=
- =?iso-8859-1?Q?ltA6DNd+2uU9CZKDHVcgPuJ/72drGBNx001uXgQRU6Kc+D4Uo8DU+dAzYE?=
- =?iso-8859-1?Q?pyA3yyDefs0+KZXhrQneMn/kTkOMoMVnOdJUIjTi8NB5xzdrSiqTtx+vZc?=
- =?iso-8859-1?Q?mHrh9iekciHIuJShGoEm6VIrLqLXnSgg+pH3Re53aHZC8wfDKAwsObaeA7?=
- =?iso-8859-1?Q?9Tbkoc+I/zBkClnrnK46L+nbOtuiPvnuDP8QJoRky4ISE3QtEpvdgFPbKS?=
- =?iso-8859-1?Q?4ay/bcWmZFga84KEe8+9vwuNTUBf2BWdRKZSg7QZ0adU9ulHnV1JSiTJuQ?=
- =?iso-8859-1?Q?LJkMD8jzxyMDS3o0kaw5SVbvCYWzMT1AzpiiAlBc7Um/rlpK6l+QOm4SEs?=
- =?iso-8859-1?Q?RNHMqZ4MxYqW0ijFJLZ/FIU9+PqbEqXevpFWByZuzZK8ivGW3I4QPRyUzw?=
- =?iso-8859-1?Q?pCoGKA1i0NAL58+qX7WECDnjZ0SNgL/WrF9qpirmmtbA/lMBmo9CWYGDfZ?=
- =?iso-8859-1?Q?2SxGAZrBxN5FOaBjaEUUu1+luwU9yqZbw74qR++peANXClMXhzpgSp6qD2?=
- =?iso-8859-1?Q?KtcA7jLDEyJuoZYeIJrXaYasKMEeVfP4rGVJUFEBMMHw5MG7xc8M/CrxVy?=
- =?iso-8859-1?Q?sZAyXsHA/A=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 278993806AA;
+	Thu, 21 May 2026 09:55:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779357343; cv=none; b=Dq8D/Yp5W2mbMAY67TRnlRONEmZZA/Lw56ZCvOnXC9Gv3cjtr0RleTGzH7DJqsskAJUG22/3pYVFEFbQJ722Mk4xUXsjN0kquoX19J4T4t3lflAanCm186wZNV2YNB9xWfYOZggaO73ajX3w6Zt3JH5/kvHRiFia9a6EuwPQTkE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779357343; c=relaxed/simple;
+	bh=oh6kF0J1mgrhmC7s6E3k0lNkRzs7Y77EwtYGCUsvosc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ha170pi0EU0/gwcO9deb40trtN4/BaOGrwF+8vHhxNaioXxcMqo1T7+zr9yU5TVIdQtFPiOqHHK/we2FLGGWLIuviqgbGZlRFllQIJLFYFXYvbWZTUwbWktG/Lu0sdoGs2mSEldDQ97+zYt0+A/+0PcyxKyM+NyDSlfT+nfIl2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QHxM8QsV; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QHxM8QsV"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E6C27C2BCC6;
+	Thu, 21 May 2026 09:55:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779357342;
+	bh=oh6kF0J1mgrhmC7s6E3k0lNkRzs7Y77EwtYGCUsvosc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=QHxM8QsVOajrH3WU7iv6qC39Y53nfQ1idt0SdBUUcyM1WknoWXD799KjC1lgxEFGN
+	 cf8hNv74VOnipJj6T5/46UjUafNKRklSufybLpo7NyOSd68zTXWuGr1LWAPbKTH0eh
+	 nSERn4GorP9uvY0wG+EYbNmftr5TIo+JH6obXOVZlJ+T+PZR21qkXUbBRvV6757/QS
+	 NSzoacGdCNfSdGbuHwc93/uUF6gQFqH5HPiPTShnM9A8bAQ7dCEcz5zk7+g1lhPwzf
+	 ahUveuVetViMmPxovFRDcbPK4fXoLEVGrmTVnh16iMpfZ9vyLyCdEpi33+aGUM5CYw
+	 o3zifEJv23tng==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8805CD5BAC;
+	Thu, 21 May 2026 09:55:42 +0000 (UTC)
+From: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Date: Thu, 21 May 2026 11:55:39 +0200
+Subject: [PATCH v3 2/7] iio: light: opt3001: use local struct device and
+ i2c_client variables
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: starfivetech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: NTZPR01MB0956.CHNPR01.prod.partner.outlook.cn
-X-MS-Exchange-CrossTenant-Network-Message-Id: ffc1eeae-425b-4a37-f46d-08deb71ef262
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2026 09:54:27.6040
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 06fe3fa3-1221-43d3-861b-5a4ee687a85c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HX5phvgDa3YQ1l6m4hp27y/vBaNXtMTNNJcaXmrf/3wIcv8PC/m6ckQ/IlTR92o1Y+83FQnTVedUNgXsHU017sV1pLcVfDJ353ikYC0suvo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: NTZPR01MB1004
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260521-opt3001-cleanup-v3-2-820169dec8c3@gmail.com>
+References: <20260521-opt3001-cleanup-v3-0-820169dec8c3@gmail.com>
+In-Reply-To: <20260521-opt3001-cleanup-v3-0-820169dec8c3@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Alexander Koch <mail@alexanderkoch.net>, 
+ Michael Hornung <mhornung.linux@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Joshua Crofts <joshua.crofts1@gmail.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779357341; l=13711;
+ i=joshua.crofts1@gmail.com; s=20260422; h=from:subject:message-id;
+ bh=KeQZYDuMseJbjGBQbnMphGWz8ys8FsC4yi93yHRm4cY=;
+ b=re8AL/CBr4UimuLAxRX5Q+lcYtxROR9+fUkSQRBfnx6DUq5/GqB72ln3c5boYyJl1pELb02SY
+ s3RZlCEF3JUAkIyVsNX0e1u/typY7XDuka432pzhZOcnGiSS03knwPr
+X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
+ pk=Xd+UVoRPiiI0K3LHQ2XIcXmO0jvVuFTv9eTx3lgBphI=
+X-Endpoint-Received: by B4 Relay for joshua.crofts1@gmail.com/20260422 with
+ auth_id=746
+X-Original-From: Joshua Crofts <joshua.crofts1@gmail.com>
+Reply-To: joshua.crofts1@gmail.com
 
-On 2026/5/20 23:15, Conor Dooley wrote:
->=20
-> On Wed, May 20, 2026 at 09:43:02AM +0000, Xingyu Wu wrote:
-> > On 2026/5/19 18:00, Conor Dooley wrote:
-> > >
-> > > On Tue, May 19, 2026 at 09:26:03AM +0000, Xingyu Wu wrote:
-> > > > On 2026/5/19 00:24, Conor Dooley wrote:
-> > > > >
-> > > > > On Mon, May 18, 2026 at 04:18:51PM +0800, Xingyu Wu wrote:
-> > > > > > Add the new documentation of SAR-ADC for the StarFive JHB100 So=
-C.
-> > > > > >
-> > > > > > Signed-off-by: Xingyu Wu <xingyu.wu@starfivetech.com>
-> > > > > > ---
-> > > > > >  .../iio/adc/starfive,jhb100-saradc.yaml       | 62 +++++++++++=
-++++++++
-> > > > > >  1 file changed, 62 insertions(+)  create mode 100644
-> > > > > > Documentation/devicetree/bindings/iio/adc/starfive,jhb100-sara
-> > > > > > dc.y
-> > > > > > aml
-> > > > > >
-> > > > > > diff --git
-> > > > > > a/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-sa
-> > > > > > radc
-> > > > > > .yam
-> > > > > > l
-> > > > > > b/Documentation/devicetree/bindings/iio/adc/starfive,jhb100-sa
-> > > > > > radc
-> > > > > > .yam
-> > > > > > l
-> > > > > > new file mode 100644
-> > > > > > index 000000000000..ba8e19b72ad7
-> > > > > > --- /dev/null
-> > > > > > +++ b/Documentation/devicetree/bindings/iio/adc/starfive,jhb10
-> > > > > > +++ 0-sa
-> > > > > > +++ radc
-> > > > > > +++ .yaml
-> > > > > > @@ -0,0 +1,62 @@
-> > > > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) %YAML
-> > > > > > +1.2
-> > > > > > +---
-> > > > > > +$id:
-> > > > > > +http://devicetree.org/schemas/iio/adc/starfive,jhb100-saradc.
-> > > > > > +yaml
-> > > > > > +#
-> > > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > > > +
-> > > > > > +title: Successive Approximation Register (SAR) A/D converter
-> > > > > > +for the StarFive JHB100 SoC
-> > > > > > +
-> > > > > > +maintainers:
-> > > > > > +  - Xingyu Wu <xingyu.wu@starfivetech.com>
-> > > > > > +
-> > > > > > +properties:
-> > > > > > +  compatible:
-> > > > > > +    const: starfive,jhb100-saradc
-> > > > > > +
-> > > > > > +  reg:
-> > > > > > +    maxItem: 1
-> > > > > > +
-> > > > > > +  interrupts:
-> > > > > > +    maxItems: 1
-> > > > > > +
-> > > > > > +  clocks:
-> > > > > > +    maxItems: 1
-> > > > > > +
-> > > > > > +  resets:
-> > > > > > +    maxItems: 2
-> > > > > > +
-> > > > > > +  "#io-channel-cells":
-> > > > > > +    const: 1
-> > > > > > +
-> > > > > > +  upper-bound-mv:
-> > > > > > +    description: The upper bound voltage value of the monitor.
-> > > > > > +    $ref: /schemas/types.yaml#/definitions/uint16
-> > > > > > +
-> > > > > > +  lower-bound-mv:
-> > > > > > +    description: The lower bound voltage value of the monitor.
-> > > > > > +    $ref: /schemas/types.yaml#/definitions/uint16
-> > > > > > +
-> > > > > > +  scan-freq:
-> > > > > > +    description: Number of the scan cycle interval.
-> > > > > > +    $ref: /schemas/types.yaml#/definitions/uint16
-> > > > >
-> > > > > Can you explain why any of these three properties are something
-> > > > > that should be in the devicetree rather than software controlled?
-> > > >
-> > > > My intention is to be able to obtain the initial values from the
-> > > > devicetree during
-> > > probe and preset them.
-> > > > Do I need to drop them and just set them through sysfs?
-> > >
-> > > Unless the hardware configuration determines the values (which I
-> > > can't really see being the case for scan-freq at least) then yes,
-> > > you need to drop and set them via sysfs.
-> >
-> > The ADC hardware can be set the scan-freq register to determine how fre=
-quent it
-> should scan its inputs.
-> > The calculation is:
-> > 	frequency =3D 100/((register value) + 5) MHz, The register value shoul=
-d >=3D 15.
-> > The maximum allowable scan frequency is 5MHz.
-> >
-> > >
-> > > > > How are the bounds calculated?
-> > > >
-> > > > The measurement range of this ADC hardware is from 0 to 1800 mV.
-> > > > This set
-> > > value cannot exceed it. This explanation will be added later.
-> > >
-> > > I'm asking how this is calculated so that I can tell if you the
-> > > property is permitted or not.
-> >
-> > The calculation of bound is:
-> > bound-mv =3D 1800mv * (register value) / 0xFFF
->=20
-> These are the formulas, but how does someone know what the value for boun=
-d-
-> mv needs to be? Why would someone not just want to always use 1800mv?
->=20
+From: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Can I add the 'maximum' and ' minimum' to provide clarification? And the dr=
-iver will also check.
+Switch the driver to use local variables for struct device and struct
+i2c_client and remove struct device member from struct opt3001, as the
+former can be derived from struct client.
 
-Best regards,
-Xingyu Wu
+While at it, ensure that parentheses alignment is correct in functions
+that were changed in this patch.
+
+No functional change.
+
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+---
+ drivers/iio/light/opt3001.c | 149 +++++++++++++++++++++++---------------------
+ 1 file changed, 78 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+index fe53a072b21ddaa26a23c76e82897fdbc1e4d846..5d88a697c245347bcb98254460308fc9a9f375f4 100644
+--- a/drivers/iio/light/opt3001.c
++++ b/drivers/iio/light/opt3001.c
+@@ -101,7 +101,6 @@ struct opt3001_chip_info {
+ 
+ struct opt3001 {
+ 	struct i2c_client	*client;
+-	struct device		*dev;
+ 
+ 	struct mutex		lock;
+ 	bool			ok_to_ignore_lock;
+@@ -313,6 +312,8 @@ static const struct iio_chan_spec opt3002_channels[] = {
+ 
+ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ {
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
+ 	int ret;
+ 	u16 mantissa;
+ 	u16 reg;
+@@ -326,12 +327,12 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		 * doing so will overwrite the low-level limit value however we
+ 		 * will restore this value later on.
+ 		 */
+-		ret = i2c_smbus_write_word_swapped(opt->client,
+-					OPT3001_LOW_LIMIT,
+-					OPT3001_LOW_LIMIT_EOC_ENABLE);
++		ret = i2c_smbus_write_word_swapped(client,
++						   OPT3001_LOW_LIMIT,
++						   OPT3001_LOW_LIMIT_EOC_ENABLE);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to write register %02x\n",
+-					OPT3001_LOW_LIMIT);
++			dev_err(dev, "failed to write register %02x\n",
++				OPT3001_LOW_LIMIT);
+ 			return ret;
+ 		}
+ 
+@@ -343,21 +344,20 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 	opt->result_ready = false;
+ 
+ 	/* Configure for single-conversion mode and start a new conversion */
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto err;
+ 	}
+ 
+ 	reg = ret;
+ 	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SINGLE);
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto err;
+ 	}
+ 
+@@ -375,10 +375,9 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		msleep(timeout);
+ 
+ 		/* Check result ready flag */
+-		ret = i2c_smbus_read_word_swapped(opt->client,
+-						  OPT3001_CONFIGURATION);
++		ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to read register %02x\n",
++			dev_err(dev, "failed to read register %02x\n",
+ 				OPT3001_CONFIGURATION);
+ 			goto err;
+ 		}
+@@ -389,9 +388,9 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		}
+ 
+ 		/* Obtain value */
+-		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
++		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to read register %02x\n",
++			dev_err(dev, "failed to read register %02x\n",
+ 				OPT3001_RESULT);
+ 			goto err;
+ 		}
+@@ -416,12 +415,12 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		 * bit-overlap and therefore can't be done.
+ 		 */
+ 		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+-		ret = i2c_smbus_write_word_swapped(opt->client,
++		ret = i2c_smbus_write_word_swapped(client,
+ 						   OPT3001_LOW_LIMIT,
+ 						   value);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to write register %02x\n",
+-					OPT3001_LOW_LIMIT);
++			dev_err(dev, "failed to write register %02x\n",
++				OPT3001_LOW_LIMIT);
+ 			return ret;
+ 		}
+ 	}
+@@ -444,13 +443,15 @@ static int opt3001_get_int_time(struct opt3001 *opt, int *val, int *val2)
+ 
+ static int opt3001_set_int_time(struct opt3001 *opt, int time)
+ {
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
+ 	int ret;
+ 	u16 reg;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		return ret;
+ 	}
+ 
+@@ -469,8 +470,7 @@ static int opt3001_set_int_time(struct opt3001 *opt, int time)
+ 		return -EINVAL;
+ 	}
+ 
+-	return i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	return i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ }
+ 
+ static int opt3001_read_raw(struct iio_dev *iio,
+@@ -565,6 +565,8 @@ static int opt3001_write_event_value(struct iio_dev *iio,
+ 		int val, int val2)
+ {
+ 	struct opt3001 *opt = iio_priv(iio);
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
+ 	int ret;
+ 	int whole;
+ 	int integer;
+@@ -583,7 +585,7 @@ static int opt3001_write_event_value(struct iio_dev *iio,
+ 
+ 	ret = opt3001_find_scale(opt, val, val2, &exponent);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "can't find scale for %d.%06u\n", val, val2);
++		dev_err(dev, "can't find scale for %d.%06u\n", val, val2);
+ 		goto err;
+ 	}
+ 
+@@ -611,9 +613,9 @@ static int opt3001_write_event_value(struct iio_dev *iio,
+ 		goto err;
+ 	}
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, reg, value);
++	ret = i2c_smbus_write_word_swapped(client, reg, value);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n", reg);
++		dev_err(dev, "failed to write register %02x\n", reg);
+ 		goto err;
+ 	}
+ 
+@@ -637,6 +639,8 @@ static int opt3001_write_event_config(struct iio_dev *iio,
+ 		enum iio_event_direction dir, bool state)
+ {
+ 	struct opt3001 *opt = iio_priv(iio);
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
+ 	int ret;
+ 	u16 mode;
+ 	u16 reg;
+@@ -652,21 +656,20 @@ static int opt3001_write_event_config(struct iio_dev *iio,
+ 	mode = state ? OPT3001_CONFIGURATION_M_CONTINUOUS
+ 		: OPT3001_CONFIGURATION_M_SHUTDOWN;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto err;
+ 	}
+ 
+ 	reg = ret;
+ 	opt3001_set_mode(opt, &reg, mode);
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto err;
+ 	}
+ 
+@@ -688,44 +691,48 @@ static const struct iio_info opt3001_info = {
+ 
+ static int opt3001_read_id(struct opt3001 *opt)
+ {
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
+ 	char manufacturer[2];
+ 	u16 device_id;
+ 	int ret;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_MANUFACTURER_ID);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_MANUFACTURER_ID);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_MANUFACTURER_ID);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_MANUFACTURER_ID);
+ 		return ret;
+ 	}
+ 
+ 	manufacturer[0] = ret >> 8;
+ 	manufacturer[1] = ret & 0xff;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_DEVICE_ID);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_DEVICE_ID);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
++		dev_err(dev, "failed to read register %02x\n",
+ 			OPT3001_DEVICE_ID);
+ 		return ret;
+ 	}
+ 
+ 	device_id = ret;
+ 
+-	dev_info(opt->dev, "Found %c%c OPT%04x\n", manufacturer[0],
+-			manufacturer[1], device_id);
++	dev_info(dev, "Found %c%c OPT%04x\n", manufacturer[0], manufacturer[1],
++		 device_id);
+ 
+ 	return 0;
+ }
+ 
+ static int opt3001_configure(struct opt3001 *opt)
+ {
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
+ 	int ret;
+ 	u16 reg;
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		return ret;
+ 	}
+ 
+@@ -750,28 +757,27 @@ static int opt3001_configure(struct opt3001 *opt)
+ 	reg &= ~OPT3001_CONFIGURATION_ME;
+ 	reg &= ~OPT3001_CONFIGURATION_FC_MASK;
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		return ret;
+ 	}
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_LOW_LIMIT);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_LOW_LIMIT);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_LOW_LIMIT);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_LOW_LIMIT);
+ 		return ret;
+ 	}
+ 
+ 	opt->low_thresh_mantissa = OPT3001_REG_MANTISSA(ret);
+ 	opt->low_thresh_exp = OPT3001_REG_EXPONENT(ret);
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_HIGH_LIMIT);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_HIGH_LIMIT);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_HIGH_LIMIT);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_HIGH_LIMIT);
+ 		return ret;
+ 	}
+ 
+@@ -785,6 +791,8 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+ {
+ 	struct iio_dev *iio = _iio;
+ 	struct opt3001 *opt = iio_priv(iio);
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
+ 	int ret;
+ 	bool wake_result_ready_queue = false;
+ 	enum iio_chan_type chan_type = opt->chip_info->chan_type;
+@@ -793,10 +801,10 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+ 	if (!ok_to_ignore_lock)
+ 		mutex_lock(&opt->lock);
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		goto out;
+ 	}
+ 
+@@ -815,10 +823,10 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+ 							IIO_EV_DIR_FALLING),
+ 					iio_get_time_ns(iio));
+ 	} else if (ret & OPT3001_CONFIGURATION_CRF) {
+-		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
++		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
+ 		if (ret < 0) {
+-			dev_err(opt->dev, "failed to read register %02x\n",
+-					OPT3001_RESULT);
++			dev_err(dev, "failed to read register %02x\n",
++				OPT3001_RESULT);
+ 			goto out;
+ 		}
+ 		opt->result = ret;
+@@ -851,7 +859,6 @@ static int opt3001_probe(struct i2c_client *client)
+ 
+ 	opt = iio_priv(iio);
+ 	opt->client = client;
+-	opt->dev = dev;
+ 	opt->chip_info = i2c_get_match_data(client);
+ 
+ 	mutex_init(&opt->lock);
+@@ -885,7 +892,7 @@ static int opt3001_probe(struct i2c_client *client)
+ 		}
+ 		opt->use_irq = true;
+ 	} else {
+-		dev_dbg(opt->dev, "enabling interrupt-less operation\n");
++		dev_dbg(dev, "enabling interrupt-less operation\n");
+ 	}
+ 
+ 	return iio_device_register(iio);
+@@ -895,6 +902,7 @@ static void opt3001_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *iio = i2c_get_clientdata(client);
+ 	struct opt3001 *opt = iio_priv(iio);
++	struct device *dev = &client->dev;
+ 	int ret;
+ 	u16 reg;
+ 
+@@ -903,21 +911,20 @@ static void opt3001_remove(struct i2c_client *client)
+ 	if (opt->use_irq)
+ 		free_irq(client->irq, iio);
+ 
+-	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
+ 		return;
+ 	}
+ 
+ 	reg = ret;
+ 	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+ 
+-	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+-			reg);
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+ 	if (ret < 0) {
+-		dev_err(opt->dev, "failed to write register %02x\n",
+-				OPT3001_CONFIGURATION);
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
+ 	}
+ }
+ 
+
+-- 
+2.47.3
+
+
