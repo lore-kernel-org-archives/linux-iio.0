@@ -1,46 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 125C03603D8;
-	Fri, 22 May 2026 15:05:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3E635504D;
+	Fri, 22 May 2026 15:17:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779462328; cv=none; b=Ygya+ksaQPRGdRa8lu1yT75YS/cDcBl1cnLj+Lcf6zJ1fGfDc6MAakCfaiilUDKokLEHWwcZYufmn3qCgSpSBwbDvysxxXmBowQgsmFs370Mk24KevEdVZkCUjcODXIH1SK5bU32b/ne2FgiwuOB9/scaQ2Gy3bTFPlT6YdJ+U0=
+	t=1779463036; cv=none; b=U78qp34MNWseYoCNYnLIFJhm6gd+uZl0M5fFp5fjkScoMICoPPw2L7DeYgpz/SxtkgapYZXKmbVGzLKx5xBSdQ6QQMTUNp7NRMYAhvolDpAEgQrKlfB0UBC+9N9TwipgOIyi+lLkoAkP6D4DmO/r62S5g15SnEaca8J9rLi6U74=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779462328; c=relaxed/simple;
-	bh=Ybz0geEtcPpUdrhYwHGCiqOijU+0CfH318psp3FIeaM=;
+	s=arc-20240116; t=1779463036; c=relaxed/simple;
+	bh=xFErot9MuC0Beo4FE1fjTafhNzDBCOrgi1VqQlY56ds=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F+GMI/NJfVsqswo8RA/jGJueLyZYSeI75+Gus9YG0umRya/1sjH1hYTNdOw4ZUpipvMZsY0D6nOJCaSQbfVDkct/xEP/BaFEtB2rG9i0QbOsvAYLqKOtrtKYOWviZWFldy2cC8IZ0ICQvuL003O7PJvOd8T/BmUntabzdKe0mTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oNLVjrSP; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=rTpz17zbfK733qQdn/9rsEJpSCzWeOwVRBZ3/965u32HF4X3CKY5XmmRaJXNMQi/uwxKFpinhPgUO1Wl9ch1xkQXHS3X65mBTnyFLJnhyM4iuprbd95xcLHemYouIVf+uYyqKd0UthxK1Xm+Ejut1HsoFQNho3z9FnkJtLTGIq4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fFDJjUNW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oNLVjrSP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A8511F000E9;
-	Fri, 22 May 2026 15:05:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fFDJjUNW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 434A61F00A3D;
+	Fri, 22 May 2026 15:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779462326;
-	bh=lH7d0WILS/uMZVZCW7jnVb9ulWfo73WxoGRa8wTNFtI=;
+	s=k20260515; t=1779463024;
+	bh=6e5k5Tewn48ms5gmW1BHQPKXS79ZUvoDF36RqZ5Eoyg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oNLVjrSPo+cvk9uDe2UPWymoR8jhQFisnEgItuGFaJFhnXn2WVytdRL7FpUm26F8x
-	 EsLicAGkobS1VJfU0AWwyuGQ8LjCG1hzdXY+HM7Jok3QSyftK0PVbIyGIxBmORqycz
-	 8Zm7mOXPzsRUytCceDIxxKMl0CHq/cehRlS9418o+eHIJQvmxqejlVng5y0bmXDRun
-	 dMMvW373h0Fz6bUumWi0thnsXhQtMw95B84CZSfymwFxawC5s9W+GlULeOM44ppw7Y
-	 6I6E0aJJEGGKP4JbjJfB29TFVfS/LndZei7Th3zbtONz3HKyqCbPJ5y3+Kphi8AxYQ
-	 AnAdgGPHNVciQ==
-Date: Fri, 22 May 2026 16:05:17 +0100
+	b=fFDJjUNWYMkY2usmxy9VuKo0fosl5NGQVA3lrMUtGUFoTH1aZkHJFIbpNkRPs5Fz0
+	 WZkdu7vtcGlExrJn8PQcNBsvfi5UlYnE13xg0oK6ojTWgKLYX1qpQ048JzlHigFRAU
+	 fP4tItkj8HtX1y/hORDHZohBQB+SA7kTZp67bazMUus6cUn4USVJqmn/AhARDJ5n0g
+	 zsKppbzSvNdErngLdtQHj/iWL5WONgh4LxGGvo1aBV/xEJiSft5QX5psa9p/EJYQvz
+	 ODr2HOqLFLl8RJzJWH1OWCVhn04uub7u3HXPk9pBgO6BrKGOyJtGV2AdQNTs4LdFjj
+	 7jRF+T7FDuZdA==
+Date: Fri, 22 May 2026 16:16:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: "Alexander A. Klimov" <grandmaster@al2klimov.de>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Alexandru Ardelean
- <alexandru.ardelean@analog.com>, Mircea Caprioru
- <mircea.caprioru@analog.com>, "open list:IIO SUBSYSTEM AND DRIVERS"
- <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: dac: ad5686: update of_match_table
-Message-ID: <20260522160517.766c42f0@jic23-huawei>
-In-Reply-To: <ba4tnwmwcqkovyq67ootyqxyqhzk4xd3crohdpv6so7nidjdgb@kgv5zi6aw2nw>
-References: <20260520175748.537850-1-grandmaster@al2klimov.de>
-	<ba4tnwmwcqkovyq67ootyqxyqhzk4xd3crohdpv6so7nidjdgb@kgv5zi6aw2nw>
+To: Gabriel Rondon <grondon@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com
+Subject: Re: [PATCH v2] iio: accel: bmc150: use guard(mutex) for mutex
+ handling
+Message-ID: <20260522161655.77d40513@jic23-huawei>
+In-Reply-To: <20260520101247.64458-1-grondon@gmail.com>
+References: <20260520101247.64458-1-grondon@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,51 +46,45 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 21 May 2026 09:18:24 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+On Wed, 20 May 2026 11:12:47 +0100
+Gabriel Rondon <grondon@gmail.com> wrote:
 
-> On 26/05/20 07:57PM, Alexander A. Klimov wrote:
-> > When AD5673R/AD5677R support was added, of_match_table wasn't updated,
-> > so these two devices couldn't be probed based on device tree contents
-> > until now. I fixed this.
-> > 
-> > Fixes: 477bd010c20e ("iio: dac: ad5686: Add support for AD5673R/AD5677R")
-> > Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
-> > ---
-> >  drivers/iio/dac/ad5696-i2c.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-> > index d3327bca0e07..fb118a02f76e 100644
-> > --- a/drivers/iio/dac/ad5696-i2c.c
-> > +++ b/drivers/iio/dac/ad5696-i2c.c
-> > @@ -91,7 +91,9 @@ static const struct of_device_id ad5686_of_match[] = {
-> >  	{ .compatible = "adi,ad5337r" },
-> >  	{ .compatible = "adi,ad5338r" },
-> >  	{ .compatible = "adi,ad5671r" },
-> > +	{ .compatible = "adi,ad5673r" },
-> >  	{ .compatible = "adi,ad5675r" },
-> > +	{ .compatible = "adi,ad5677r" },
-> >  	{ .compatible = "adi,ad5691r" },
-> >  	{ .compatible = "adi,ad5692r" },
-> >  	{ .compatible = "adi,ad5693" },
-> > -- 
-> > 2.54.0
-> >   
+> Replace manual mutex_lock()/mutex_unlock() pairs with guard(mutex)
+> and scoped_guard() from cleanup.h. This simplifies error paths by
+> removing the need for explicit unlock calls before returning.
 > 
-> I am aware of this, but it is going to conflict with:
-> https://lore.kernel.org/linux-iio/20260505-ad5686-fixes-v6-0-c2d5f7be32be@analog.com/
+> Most converted functions hold the lock for their entire body, so
+> guard(mutex) applies directly. bmc150_accel_trigger_handler() only
+> holds the lock around a single register read, so scoped_guard() is
+> used there to keep the lock scope unchanged.
 > 
-> This is also to be handled by follow up work:
-> https://lore.kernel.org/all/20260422-ad5313r-iio-support-v1-1-ed7dca001d1b@analog.com/
-> https://lore.kernel.org/all/20260422-ad5313r-iio-support-v1-9-ed7dca001d1b@analog.com/
-> 
-> checkpatch would complain about this, once the dt-binding needs to come first.
-> 
+> Signed-off-by: Gabriel Rondon <grondon@gmail.com>
+So sashiko reports a load of preexisting issues (I haven't checked them
+but it tends to be right most of the time). It spotted one issue in your
+changes that i missed.
 
-I'll assume for now the fix will show up as part of Rodrigo's work.
+The only other 'this patch' thing was scoped_guard() + gotos. The particular
+case you have is fine so don't worry about that.
 
-Thanks
 
-Jonathan
+>  static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
+> @@ -860,13 +848,10 @@ static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> -	bool state;
+>  
+> -	mutex_lock(&data->mutex);
+> -	state = data->fifo_mode;
+This cast an integer to a bool.   So 0x40 -> true.
+> -	mutex_unlock(&data->mutex);
+> +	guard(mutex)(&data->mutex);
+>  
+> -	return sysfs_emit(buf, "%d\n", state);
+> +	return sysfs_emit(buf, "%d\n", data->fifo_mode);
+This will just print that 0x40 (in decimal) whereas should be 0 or 1.
+I'd suggest data->fifo_mode ? 1 : 0 in this call.
+
+>  }
+>  
 
