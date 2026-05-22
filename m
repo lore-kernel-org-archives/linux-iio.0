@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD5F6390C90;
-	Fri, 22 May 2026 13:03:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12E61394464;
+	Fri, 22 May 2026 13:06:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779454988; cv=none; b=J6N+faNYn4RtK3t1NvGvQvzDAbcQ2XXosqet4f3lyYUXjU9d/msaT+LFBQPN1RaoxF7d7UKqzdipiVlYIkcPW5DtOtUh50gccOj/gBmJxPTHYNaFfHJzwsNdd6vziPp0ruBzshmLv9iUEJxfswaiNuWESWPXVVhYMbRKF939N/w=
+	t=1779455203; cv=none; b=LsYWP4ZR2VwDBpQsreixBBGtEtwozS2Ie0IeU9RHB4eCfz9mZXBqqC7+PL8fN3M+GOI3TBknx2+JKNMceMCfT8krUc0tlePBq1EGmmYMufnkc+mUyJ0L/OSuIYoEaIj1G3kGLInh22n+a4WjdNG9nLfhxj6D9edKatAjtxuSJs4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779454988; c=relaxed/simple;
-	bh=icPR2sKfzi4yECyNcYYGKxJDBBevjl1Y7FRUTs4zIH8=;
+	s=arc-20240116; t=1779455203; c=relaxed/simple;
+	bh=2WbdneWWhB4Wm5BcBlVigSrwJyY/JjXPmR1DRmFFbHM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pl8QNuiPe8tWFyoWb0HUzEeTT7iaFuzTk1KS6idWWcHdXZsPKOG9WsKaS3oJWP/6EYmfhWQnGBr9zY7pudfJf3Syig+28V4UCxTZcfJpS5Ht5H8wZaR/ElbjK6CpJRycw3olhY96FQHaVnMG6E2KLGBelnrnDNX8IfuLl3juVKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G/KElBMo; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=BxFb7R9R0Sd3KOe4kqXYgb96WvnHgctGoj0vAQqEND0ykWt6vWdD8H8O9anlDKeFxPLheL35iPvY2yQjq9Xu5QaRfw2awlDla3ASko4yX4OvjJCzIPDEh8nsU2mjge0l4tmVNH8/Zvtv6/QWtdEObxMe6VkRnvMGYMYMZ3j9tJs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UNly+OPs; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G/KElBMo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 381251F000E9;
-	Fri, 22 May 2026 13:03:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UNly+OPs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB991F000E9;
+	Fri, 22 May 2026 13:06:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779454986;
-	bh=sqD5iGBUDzbOWjAJkyeMBxvfUirt20hkDKhTn5GalBY=;
+	s=k20260515; t=1779455201;
+	bh=G708PB8YMR214JCN4+Lb7UbmZHjKq4QNdddngSh54Ig=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=G/KElBMoLxVZipvksseyucY8z/fSYf8stnFK6zNlhdFJFFIANCHFPk7HXVX0SjrkX
-	 Fd6q228ma+gcPswtENN2+exVecPPbWyZoOJs/UZRbgI3glDgxP0NwKetj0fckZXVRs
-	 QavdJxL1NYfU/9qBh4RcNYmCPlPllN8YY8bcnj+DDLc8FiV0I5HBCpwVGh2bknAzZj
-	 i0m7ZTXX61Rk17/eVbqnABjj+od23lqBD87U2Sp++GxTvBCoHG/phhp1gwlBXvjVWq
-	 aXu8lTFBnAcuPOAlI9FSfW24mSYVo1UTF1D+sa0TyFq2EHAbGg1kEc95QJTR68S3Cx
-	 QiwgE4a3kxLlw==
-Date: Fri, 22 May 2026 14:02:55 +0100
+	b=UNly+OPsECLxhinblKtg95cAdGyWjY7PvVg6w3pZOO9EPNeLc/D6VUo0/m6nXCWwe
+	 k8OijatmL3Pw6fp60PYq0hYfBa6R94JTY2KGtjbocRAtG+qT/MrBsVTlHOSuvrvrpU
+	 8VRzOgav5MHSZUdEXz3gWFTwBmxnik2umhSyEg9hR14I46w2AbhzEVdc6SguGqCEkW
+	 v13P99L6Fs0n3KQZZElkLBkRNugo7LeCSf/itkcr8w8om86gfUMFEMCQ229GKmUVZ2
+	 nC5QBkjCXn00cb63rxZleGSe3e6SJuzvLe79xJSRweN632L7o0/rfbRBf1yYkQv3I3
+	 gN2lpwtHwST2Q==
+Date: Fri, 22 May 2026 14:06:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Liviu Stan <liviu.stan@analog.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -37,12 +37,12 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <flavra@baylibre.com>, <linux-iio@vger.kernel.org>,
  <linux-kernel@vger.kernel.org>, <linux@analog.com>,
  <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 2/8] iio: temperature: ltc2983: Use local device
- pointer consistently
-Message-ID: <20260522140255.27445c41@jic23-huawei>
-In-Reply-To: <20260521164323.770626-3-liviu.stan@analog.com>
+Subject: Re: [PATCH v3 5/8] iio: temperature: ltc2983: Fix n_wires default
+ bypassing rotation check
+Message-ID: <20260522140631.537875e4@jic23-huawei>
+In-Reply-To: <20260521164323.770626-6-liviu.stan@analog.com>
 References: <20260521164323.770626-1-liviu.stan@analog.com>
-	<20260521164323.770626-3-liviu.stan@analog.com>
+	<20260521164323.770626-6-liviu.stan@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,126 +53,44 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 21 May 2026 19:42:55 +0300
+On Thu, 21 May 2026 19:42:58 +0300
 Liviu Stan <liviu.stan@analog.com> wrote:
 
-> Some functions define a local 'dev' pointer but still use bare
-> '&st->spi->dev' in some code paths, and some don't have it at all.
-> Replace bare references with the local pointer for consistency.
+> When adi,number-of-wires is absent, n_wires is left at 0. The binding
+> documents a default of 2 wires, matching the hardware default. However
+> the current-rotate validation checks n_wires == 2 || n_wires == 3, so
+> with n_wires = 0 the guard is bypassed and adi,current-rotate is accepted
+> for a 2-wire RTD.
 > 
+> Initialize n_wires = 2 to match the binding default and ensure the
+> rotation check fires correctly when the property is absent.
+> 
+> Fixes: f110f3188e56 ("iio: temperature: Add support for LTC2983")
 > Signed-off-by: Liviu Stan <liviu.stan@analog.com>
-
-Hi Liviu,
-
-When doing this sort of change, one of the advantages is often that code lines
-get shorter. So look at the lines touched and see if the wrapping remains
-appropriate.
-
-At least some of the cases I point out below already fitted on one line
-under 80 chars but none the less they are now even shorter so that needs
-tidying up.  Note that a few other cases are just over 80 chars.
-Take a look at those and decide if readability is improved much by just
-going a few characters over.  That line length isn't the hard rule it
-used to be!
-
-> ---
-> Changes in v3:
-> - Dropped the Fixes: tag
-> - Fixed one remaining dev_dbg() call in __ltc2983_chan_assign_common()
->   that was still using the raw device pointer instead of the dev local
->   variable introduced by this patch
-> 
->  drivers/iio/temperature/ltc2983.c | 83 +++++++++++++++++--------------
->  1 file changed, 47 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-> index 67a09934c5bd..d9dcf3e86696 100644
-> --- a/drivers/iio/temperature/ltc2983.c
-> +++ b/drivers/iio/temperature/ltc2983.c
-> @@ -351,10 +351,11 @@ static int __ltc2983_chan_assign_common(struct ltc2983_data *st,
->  					const struct ltc2983_sensor *sensor,
->  					u32 chan_val)
->  {
-> +	struct device *dev = &st->spi->dev;
->  	u32 reg = LTC2983_CHAN_ASSIGN_ADDR(sensor->chan);
->  
->  	chan_val |= LTC2983_CHAN_TYPE(sensor->type);
-> -	dev_dbg(&st->spi->dev, "Assign reg:0x%04X, val:0x%08X\n", reg,
-> +	dev_dbg(dev, "Assign reg:0x%04X, val:0x%08X\n", reg,
->  		chan_val);
-
-chan_val easily fits on the line above now.  It actually did before
-but given you are changing this lets tidy it up to;
-
-	dev_dbg(dev, "Assign reg:0x%04X, val:0x%08X\n", reg, chan_val);
-
-
->  	st->chan_val = cpu_to_be32(chan_val);
->  	return regmap_bulk_write(st->regmap, reg, &st->chan_val,
-
-
-
-
-> @@ -1222,11 +1229,12 @@ static int ltc2983_read_raw(struct iio_dev *indio_dev,
->  			    int *val, int *val2, long mask)
->  {
->  	struct ltc2983_data *st = iio_priv(indio_dev);
-> +	struct device *dev = &st->spi->dev;
->  	int ret;
->  
->  	/* sanity check */
->  	if (chan->address >= st->num_channels) {
-> -		dev_err(&st->spi->dev, "Invalid chan address:%ld",
-> +		dev_err(dev, "Invalid chan address:%ld",
->  			chan->address);
-
-		dev_err(dev, "Invalid chan address:%ld", chan->address);
-
->  		return -EINVAL;
->  	}
-
-> @@ -1427,6 +1436,7 @@ static int ltc2983_eeprom_cmd(struct ltc2983_data *st, unsigned int cmd,
->  static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
->  {
->  	u32 iio_chan_t = 0, iio_chan_v = 0, chan, iio_idx = 0, status;
-> +	struct device *dev = &st->spi->dev;
->  	int ret;
->  
->  	/* make sure the device is up: start bit (7) is 0 and done bit (6) is 1 */
-> @@ -1434,7 +1444,7 @@ static int ltc2983_setup(struct ltc2983_data *st, bool assign_iio)
->  				       LTC2983_STATUS_UP(status) == 1, 25000,
->  				       25000 * 10);
->  	if (ret)
-> -		return dev_err_probe(&st->spi->dev, ret,
-> +		return dev_err_probe(dev, ret,
->  				     "Device startup timed out\n");
-
-		return dev_err_probe(dev, ret, "Device startup timed out\n");
-
-
->  
->  	ret = regmap_update_bits(st->regmap, LTC2983_GLOBAL_CONFIG_REG,
-> @@ -1535,12 +1545,13 @@ static const struct  iio_info ltc2983_iio_info = {
-
-> @@ -1589,10 +1600,10 @@ static int ltc2983_probe(struct spi_device *spi)
->  	if (ret)
->  		return ret;
->  
-> -	ret = devm_request_irq(&spi->dev, spi->irq, ltc2983_irq_handler,
-> +	ret = devm_request_irq(dev, spi->irq, ltc2983_irq_handler,
->  			       IRQF_TRIGGER_RISING, st->info->name, st);
->  	if (ret)
-> -		return dev_err_probe(&spi->dev, ret,
-> +		return dev_err_probe(dev, ret,
->  				     "failed to request an irq\n");
-
-		return dev_err_probe(dev, ret, "failed to request an irq\n");
-
-Thanks,
+This should be the first patch in the series so it is obvious that it
+is easily backported without the rest + I might pick up via the fixes-togreg
+tree.
 
 Jonathan
 
-
-
-
+> ---
+> Changes in v3:
+> - New patch
+> 
+>  drivers/iio/temperature/ltc2983.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+> index 10f423fbe9cc..326f843f4271 100644
+> --- a/drivers/iio/temperature/ltc2983.c
+> +++ b/drivers/iio/temperature/ltc2983.c
+> @@ -749,7 +749,7 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
+>  	struct ltc2983_rtd *rtd;
+>  	int ret = 0;
+>  	struct device *dev = &st->spi->dev;
+> -	u32 excitation_current = 0, n_wires = 0;
+> +	u32 excitation_current = 0, n_wires = 2;
 >  
+>  	rtd = devm_kzalloc(dev, sizeof(*rtd), GFP_KERNEL);
+>  	if (!rtd)
+
