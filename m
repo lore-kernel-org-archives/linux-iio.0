@@ -1,174 +1,107 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA5D3F412B;
-	Fri, 22 May 2026 11:55:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AD572701C4;
+	Fri, 22 May 2026 11:59:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779450905; cv=none; b=Zdo69tNGGbkP5Cg8LrNFRV9MEr3M2oXwmysoJQ4FEKbTYchYS556umMx+EKOouQz/2SZ1YPm4wmGfFuHZwN7T3Gq52wRkjbl24Cwu0rwVi76sq6c0XRfOUcFwCF+nS/l74QykAwluYFkit6aSh/MeFxn+AHQxxfWD0GXlj4r9Gg=
+	t=1779451170; cv=none; b=QMzZ/xzAuuhGUol9upvTz9KAyPj5+7h/3VPVZPiGCIrcqr6ms+Lxy1NJA8sGrqP52utFD8hO0tFmg8et8xGQ6vOPJRkHMndRTRUr4M1XjqgHvumoZP4Wg3C3SMXi9Svyz/WinRz33JkpQEDWWPbSbbbr2cB+5s5mDk7AwRf2xls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779450905; c=relaxed/simple;
-	bh=uQB0D//jre4cpA2ULwsr6lu7cQqtjlTUdLXY+MLAnCY=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m623fUhvrCwpLKiX8VBqe8aFYmoQFutVvqLNAHptBgsbam7e0Gyu61iLi1p39yf58bcQC4nBtsQ1gl9Bh6cgEzJn2JK1wN2+nw+dEJFCWK3k5aoj1GuW5FxbauIN5fyYzjyCWsO583jfB8t2KMVVv7H5bhaSQOxTnlR9u1td8Qk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=vEf7iAXJ; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1779451170; c=relaxed/simple;
+	bh=aL2pS9GLvttib92W5qm/5QsnAP2sLgrRhXOhwnl9YXw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=k4S20COmRQlmGWN+eOpqgBX/wt9UkvhcTWrLjUB7joTtk9VVeTn+on9f3Y76Aw9K5PSIkdBh+if4NKePQZfC1XSsexa5v9xJML3RH9nD7iUrx+TvYJnEz16uymxSZpMDwskHD7ntX9ku5/jzlV+qJ/azgjDWgETToWOo4x5l9NY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JyyNTQsX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="vEf7iAXJ"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64M8K2D52392214;
-	Fri, 22 May 2026 07:55:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=QK95U
-	X7aIFtK82k+bOREWhP60kZSFnqkEP3UatlF4jE=; b=vEf7iAXJ5XM3fKlQMYQtn
-	tTibGGCAvjLABQNyyZBJ6hzh9l2Bcs3VRrOIBVlq2ONA34rwnO4u9HPVBXosBVF5
-	lGlP/Kr1IG3AKRRJk0fPFBKaaDLZ+M2mij0hzfk957n0BA3lR1F5Y1pVqNLusZDH
-	AGwPNXy6Gcwavg9U8kjGL2WUhB2bzR1Wxc0M8Z+VSXQL4QQ6lQz1i2cKwyhayn2a
-	wTnH1zDDiGo54865NLyNQMYLXVi7qt6K/pjlB1FxxfLzpXyw9OVb4J1cT7OkH9db
-	JKjOUlnE2u5wXWQAT8G1zw0r1HWf8MTTM0SCZiKlTtwQ6+t924kfRrNnUwtT+Jpr
-	A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4eakhsrk8y-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 22 May 2026 07:55:02 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64MBt1li020262
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 22 May 2026 07:55:01 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 22 May 2026 07:55:01 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 22 May 2026 07:55:01 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 22 May 2026 07:55:00 -0400
-Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.223.86])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64MBsi61027511;
-	Fri, 22 May 2026 07:54:53 -0400
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>, <linux@analog.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/2] iio: adc: ad4080: add support for AD4884
-Date: Fri, 22 May 2026 14:53:37 +0300
-Message-ID: <20260522115337.18188-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260522115337.18188-1-antoniu.miclaus@analog.com>
-References: <20260522115337.18188-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JyyNTQsX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F3591F000E9;
+	Fri, 22 May 2026 11:59:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779451169;
+	bh=MzgE7B181m4tHUc2HwIvJrR+2HmRVQIF19+dOgeF/PE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=JyyNTQsXfMQEMY0WKOCjmufUAvjl37T9QTqi7aa0FwUs6BARwNLnfVYzGo00spPq1
+	 Ujfy1+wFeqnPQeqlhiAwAotTD9NMwdQUleoChhT9nEEfPAPIu7jviw/Ymab1RoP8ba
+	 A0IiksOgNZ33eH/dgusb8hHUFRpLfRECNUsgCbhGZK9o3ISuBd1kCz4Ughxznh2t/B
+	 Gl5qSMjVpEpAGy8sFFjTM/sgx6ODY8WPmUXrJafKft10Rwgzc0InRe52Raa6KYV7Kc
+	 UFsyGfF1qH6CXlHqSdlK+GGyvPKxRfq1Sub6Pkeje69d+EJO0tZHuv5tZ1kQ9vP8Vk
+	 bTyp0rI8g2cWA==
+Date: Fri, 22 May 2026 12:59:22 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Ashwin Gundarapu <linuxuser509@zohomail.in>, linux-iio
+ <linux-iio@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: trigger: fix memory leak in viio_trigger_alloc()
+Message-ID: <20260522125922.19e5c7cf@jic23-huawei>
+In-Reply-To: <CALoEA-xYF-1Hf07JDVqbOGNXujLXWR9b7qW14RT9ZPwpmx9cjw@mail.gmail.com>
+References: <19e4f066d51.4e6bc94b96251.5845269359367162045@zohomail.in>
+	<CALoEA-xYF-1Hf07JDVqbOGNXujLXWR9b7qW14RT9ZPwpmx9cjw@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: 67arl4XVHQ3BbwuSn6aeBq3w-3AjZHod
-X-Authority-Analysis: v=2.4 cv=YYKNIQRf c=1 sm=1 tr=0 ts=6a104416 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8 a=9vqVBmU5rEgUO8YIPbMA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTIyMDExOSBTYWx0ZWRfX7HnpQKLxqWuJ
- aqnM3VvQZ8q84uk6cLXVhNAjVKeI3Ay3utWC9xbAGXgcvS5GNucY5ql41Qi3GV5nlFzBTzXwNmj
- 48Q2KN2n11WWy7/Dg345lvdIiJUpI8GFVrsRbFAkpQ23U5Nlcgawt+X1wGg0kyVrgPLLsI0ZlqR
- 71tWU5SF9Zs58y1z8KGUbUEG9P6g3fp/qPc9yU7wtD45d+8l8cUZoRYGTw04Ob7R2Ah+tsrJaqF
- 1DzeGZgVIm/prLjhKN/agwS8mktddXHX9QJo+HLYqOGyNCxXjLZ6NiSDp4La5VIaff5Qjzr79bX
- 6VWqDcIFaFEVSvbLv5DyKtmZcYTdy6DyUPGuWe898Etj1lkiI8NpfbVHOpZy4FG9zeWmNbinfKR
- RgkrBBccXwJ2Osf/ffP1rJZTthLJm0ZHeb/0anfTBpDAAhw749jDa9T1E298jUSzLwj2OKodNVe
- gznNZeM6Xu4ZfM18psw==
-X-Proofpoint-GUID: 67arl4XVHQ3BbwuSn6aeBq3w-3AjZHod
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-22_03,2026-05-18_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 malwarescore=0 clxscore=1015 priorityscore=1501 spamscore=0
- suspectscore=0 bulkscore=0 adultscore=0 impostorscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605220119
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Add support for the AD4884, a dual-channel, 16-bit, 40 MSPS SAR ADC.
+On Fri, 22 May 2026 12:23:52 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-The AD4884 is the dual-channel variant of the AD4084, sharing the same
-register map and SPI interface as the rest of the AD4080 family. Like
-the AD4880, it uses two independent ADC channels, each with its own SPI
-configuration interface.
+> On Fri, 22 May 2026 at 11:44, Ashwin Gundarapu <linuxuser509@zohomail.in> wrote:
+> >
+> > From: Ashwin Gundarapu <linuxuser509@zohomail.in>
+> > Date: Fri, 22 May 2026 14:34:46 +0530
+> > Subject: [PATCH] iio: trigger: fix memory leak in viio_trigger_alloc()
+> >
+> > Replace direct kfree() with put_device() in the error path after
+> > device_initialize() has been called.
+> >
+> > The direct kfree() bypasses the reference counting mechanism,
+> > causing memory leak and potential use-after-free.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/adc/ad4080.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+That statement needs a specific path to be called out.  It's correct
+but explaining why the reference count that is deleted is a problem
+is needed as often that wouldn't matter.
 
-diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
-index 265d85ac171a..764d49eca9e0 100644
---- a/drivers/iio/adc/ad4080.c
-+++ b/drivers/iio/adc/ad4080.c
-@@ -136,6 +136,7 @@
- #define AD4087_CHIP_ID						0x0057
- #define AD4088_CHIP_ID						0x0058
- #define AD4880_CHIP_ID						0x0750
-+#define AD4884_CHIP_ID						0x005C
- 
- #define AD4080_MAX_CHANNELS					2
- 
-@@ -541,6 +542,11 @@ static const struct iio_chan_spec ad4880_channels[] = {
- 	AD4880_CHANNEL_DEFINE(20, 32, 1),
- };
- 
-+static const struct iio_chan_spec ad4884_channels[] = {
-+	AD4880_CHANNEL_DEFINE(16, 16, 0),
-+	AD4880_CHANNEL_DEFINE(16, 16, 1),
-+};
-+
- static const struct ad4080_chip_info ad4080_chip_info = {
- 	.name = "ad4080",
- 	.product_id = AD4080_CHIP_ID,
-@@ -641,6 +647,16 @@ static const struct ad4080_chip_info ad4880_chip_info = {
- 	.lvds_cnv_clk_cnt_max = AD4080_LVDS_CNV_CLK_CNT_MAX,
- };
- 
-+static const struct ad4080_chip_info ad4884_chip_info = {
-+	.name = "ad4884",
-+	.product_id = AD4884_CHIP_ID,
-+	.scale_table = ad4080_scale_table,
-+	.num_scales = ARRAY_SIZE(ad4080_scale_table),
-+	.num_channels = 2,
-+	.channels = ad4884_channels,
-+	.lvds_cnv_clk_cnt_max = 2,
-+};
-+
- static int ad4080_setup_channel(struct ad4080_state *st, unsigned int ch)
- {
- 	struct device *dev = regmap_get_device(st->regmap[ch]);
-@@ -843,6 +859,7 @@ static const struct spi_device_id ad4080_id[] = {
- 	{ "ad4087", (kernel_ulong_t)&ad4087_chip_info },
- 	{ "ad4088", (kernel_ulong_t)&ad4088_chip_info },
- 	{ "ad4880", (kernel_ulong_t)&ad4880_chip_info },
-+	{ "ad4884", (kernel_ulong_t)&ad4884_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, ad4080_id);
-@@ -858,6 +875,7 @@ static const struct of_device_id ad4080_of_match[] = {
- 	{ .compatible = "adi,ad4087", &ad4087_chip_info },
- 	{ .compatible = "adi,ad4088", &ad4088_chip_info },
- 	{ .compatible = "adi,ad4880", &ad4880_chip_info },
-+	{ .compatible = "adi,ad4884", &ad4884_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ad4080_of_match);
--- 
-2.43.0
+Anyhow see below...
 
+
+> >
+> > Signed-off-by: Ashwin Gundarapu <linuxuser509@zohomail.in>
+> > ---
+> >  drivers/iio/industrialio-trigger.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> > index 17781c12bc85..9c72e7ae996c 100644
+> > --- a/drivers/iio/industrialio-trigger.c
+> > +++ b/drivers/iio/industrialio-trigger.c
+> > @@ -598,7 +598,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+> >  free_descs:
+> >         irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+> >  free_trig:
+> > -       kfree(trig);
+> > +       put_device(&trig->dev);
+> >         return NULL;  
+> 
+> IMO calling put_device() on an uninitialized struct device would cause a
+> panic, as there are multiple goto statements that jump to this section
+> before the struct is initialized. Additionally (as Sashiko points out), this
+> patch introduces a double free issue - the IRQs are freed after jumping
+> to the free_descs label, and then they would be freed again due to
+> put_device() being called and a subsequently triggered cleanup.
+> 
+> https://sashiko.dev/#/patchset/19e4f066d51.4e6bc94b96251.5845269359367162045%40zohomail.in
+> 
+
+I'm also curious kernel tree the author is looking at to find this bug.
+
+This was fixed (correctly I believe) in 
+https://web.git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=12b393486c70
+
+Key is it resolved the issues Joshua / Sashiko pointed out by moving the device_initialize()
+much later in the function.
+
+J
