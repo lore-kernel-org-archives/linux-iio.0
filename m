@@ -1,228 +1,154 @@
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com [209.85.222.44])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C231F145FE0
-	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 18:21:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F9DA3750CF
+	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 21:21:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779474069; cv=none; b=Ti+aX4gC4dCF4j9vcp5SkNiaqmySImNyWoyHps43L4xmWB3iONhNIrwVXyNxP/xkW6fktMyGSprkdSSYbraNJeQtMThW55azDWFnpViBaH/Zdf4//tkRDfTU9lT5o3rwRc7HUGWqPAcaQJoMpZ7VhdpJSKyXjb8m4wc1ZAQmu+w=
+	t=1779484879; cv=none; b=R/7C4ctcXhZ9xjbr9Wyw8KNsI4ahHMjXgLfOeXdnFkjLIf3CquX08gbeNXqmxCJhVpZ7WG4kXtE0WbQ/h0Df3+DZ3MIo/r/1oFx8Bdhp8VU8Y1EIMsnOAYKx6ED6XxED2FP9/0yZtNNs4ITvIMsVqKuXzEhvhUQByamCzpplCm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779474069; c=relaxed/simple;
-	bh=Mb/PVaaEnXa9ea8A4ZtYFhspDn9xR0tD4MLNdhCQIUs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ikWGyiwuH2xPQi2pwGR/qrhT4Xp+4fPmYT987maQ2AFkl+2APPhvhkZgjLDQ15lpN9UDPddE+E+tn2N+IP3TwLJwNTo8rNmlHcfopMCwdvYJHQ24GNIjX2OWBAMNsPYASm7/adTX1rcgC8zWy+CWK6vB7KIexRxuAxFBEe3Kxa8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=gyQFRgg/; arc=none smtp.client-ip=209.85.222.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1779484879; c=relaxed/simple;
+	bh=MIaaE/2mzFPAjGyRfiNactxhQ4J82Q69lpAJVLJ9J+4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=bIp5aSLYG6cY4GogEAQ6B06d74SZ4YW7hyMkSdq52X/UeIbmIDXpz0m4ggi8hiMGyOKelVIrVMs5E3pDMpG63fghJh3sRzvGdEttJvUd6LglDK9uEdy0jHfGmRevPclhgdGB9HoApISLpiybE2hhxFLDMfK9FbGvB3TmRl5tMnE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=nQepUvIG; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="gyQFRgg/"
-Received: by mail-ua1-f44.google.com with SMTP id a1e0cc1a2514c-95d0476490fso2321429241.1
-        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 11:21:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="nQepUvIG"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4904fd4f6aeso1817785e9.2
+        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 14:21:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1779474064; x=1780078864; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=AC2h6IXlNwuG8lxfp8Pf7QCdvyg+hXs1agCdA0oxeos=;
-        b=gyQFRgg/gXHvfYmFOOCnMs5fugS9RE8skB+/XmCScKcLmoxiGk4kLaRmLpUBbx+cQO
-         klACgZRyavXaV+JOisYSBEwBn5a1GHnHZNebrmMqwXKpYuAS3JmLqCAtKMJXeGZBH94y
-         SNbmEmjrDbf2lodXXM9TB6Ws/gOrKtCZTAyMbD/VIA08KT6vdKSqKIWsqlGpZexY+Ay7
-         01kkYp6ULo18Go/1XkSyYk6JeBOhP93bv+swQ7+vuzC2CNDnJ8DM3MDfOHGCt4M/fjOA
-         m5qIGxPx7VB1yNipI6dTdQOgybUzXJyZNdNd1bfcOhka/lRXrxc9CPT1+P9B1GeQhvEW
-         GWeA==
+        d=baylibre.com; s=google; t=1779484877; x=1780089677; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1oxdFj4Oh6M9kXl1w5/7S95bL1PgDTh+f8B3yZnortM=;
+        b=nQepUvIG6zW4L+dk/meupG8qSB0+wafuoY+eWYFfQk8yXxrd8GdQw2xXQzEe5FHQMa
+         rZ7fWxuy2muBBogX+tBvr/1z1X9oCzORBQlCxGEvsKVsFJCXgdAFCuNseiyMmPGQsUpo
+         ZGIBPGi50QdE4ShZuyZvRJ/CfCwFy1Y+1iCBWWEdbdiZXYPrejBrGZLXJ4b5HSTvLtVu
+         zDhvjYDpDxEpIZrMQrjTzR2NQNNIc8CpJrRGTv+8GHvadYC4k8QK2osY5TBaCrAgigCC
+         qX/UvHM/boJRg1HViqRbIpTCiqWsdLt5ERJFPyZ7XrwH5Tr+FbYEybmNa2URhkw1UtJk
+         8Rxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779474064; x=1780078864;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AC2h6IXlNwuG8lxfp8Pf7QCdvyg+hXs1agCdA0oxeos=;
-        b=AA1fS8YX1yOYfi2AQybylImZ+4jwpTEcyiU+t5NidNwtjK5xLMwbVb7yIA1wvjqjY3
-         sLB9eviXVV27m2FKIWS74ZTzNDFBHtCNu/OjZ1pVjaKupJoRDfn/FE2XJg8CLho5kIP8
-         9vPDFEi97WQPi72XgxclAOHjARbGkAGJfKaUqFCsOSMpkJn264IeOVnk1SGSo0RwjdlW
-         lx6rChxupmjDJHMwOcl2RA6pbl8xX44fDEwhi5goCbo0lQ34LsTxyDY0VIUXqhT9WBXB
-         QbksDLDXf9Ih4UwdN/Eb0TJCQpO7/4SkdZqFso/0/7a0bo9/BfaSy52sIHsreFxVtrDw
-         vF/g==
-X-Forwarded-Encrypted: i=1; AFNElJ89d1bEDdR1ofjr1+G0GSW8jY566JKh2+6J6zM4fIfPuawQS3dZ3rC5Ap3REVKWNPzepVtZmsbUFwA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyGyM2lZKYYvoionNmQRE7DN1XMGrKBAtHYJtoBaSt372FptvqT
-	EmcFm2ozfSS3FA7j2GjAzm0FuhhmC6l6Rt53zoBTq2sH2rET4CO9sNHLPuH1XHhE9Gg=
-X-Gm-Gg: Acq92OFOPORNbWCxKLpayU2DVlzXJRkRwuZNZenl17lO7HZHT3YhNAk9IYyPewmp6vs
-	x6nr6U4UiBk+LCVyqgjynAIT0/1PHPJCM7DZRw8bNNzj8fU8HcvFwT2LUptymsobxqdSrl8tTlr
-	kb/RRcnEIMHEqVuznLaw3ov2pExRFoXBjB64+YS5GpRPC7NGXQmHnjPf6F4uHTVKB2q0dB9EN6Z
-	TyZxsFjDZ+m9VbK8Sqi5FNkwImy0/fe1X8EwLTfnRShempWR8PaddB3TO8cV+wyMqFctnMD/zsD
-	kRf5+3onvEcRTvZv5/IejHee+z9LmWk1jWf1b7UMk8ODMfl4S+Gtqy2aZmV4elwtBSSks0GPiA1
-	Un3YOJdZDEqqrrr7y9sfBVmZcaqP1WQ7R/gEUe+47jrBfi34Esk0RPXaxM02zkniYRqtjJ2NIva
-	tcX6KJAojj/cu8g2VNFSRXyNe8uwrSvz5/hQptOno8n0trbUz/oFvXja2hQiY5JeKHGkdt1m8BK
-	wz8MQD1Yw==
-X-Received: by 2002:a05:6102:5114:b0:631:81d6:e15c with SMTP id ada2fe7eead31-67c7e1217bamr2769831137.4.1779474064460;
-        Fri, 22 May 2026 11:21:04 -0700 (PDT)
-Received: from outlook.com ([179.228.233.6])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-67fda9003a8sm2218783137.6.2026.05.22.11.21.01
+        d=1e100.net; s=20251104; t=1779484877; x=1780089677;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=1oxdFj4Oh6M9kXl1w5/7S95bL1PgDTh+f8B3yZnortM=;
+        b=F9C03Q7V6B4l9Sir1W9YS4u51NzLIXQVGAQmAEbcgCjikwpWtz4cVb8pv3KHa6sWXC
+         2t1LUi8X/NVhIpBX4MTYrjSfP2vNwVCmbQsjbn3fs4HBUNIX1oU6UwSKuroinVmRDm9y
+         DrUwZYlzt5BXvf+S1U6J9CfUBh+dwqjAImgblEThaIrOyDSo6Akp6zEHF/0gSNsDqRQq
+         34OoUJPssKvfW/EFD7uOrAzVPwHDML+uMwy3v8otN4w/41SEsGuogjfZyrPioX8+pstu
+         psv306kXpfoQg6uMlVGw3+RLg/Vbpxf58BJvu6gpeageGpv+aPbocwdAejfTkeJg61TG
+         dZPQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/RVCeXMHridANJAEYHpGAlYLyEhiv5mC3UMIoNLYr7o7yRwdMUvFEHr1rhK3wBV8beHMzKgJRtrWs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwCPFaQtaA110vJR87OUumk3WZoWAEQ4jYsycRrNVTMt+HH5QUE
+	Ou+Taba7NA1DFJImQCbvJ0BgbXYw+G7PZnMI9bfGQYGWxh7Yo3r8vMFBZHvFd/EjZrc=
+X-Gm-Gg: Acq92OH+Bk4+nk8LpauktdGivRnIM2FAbr1UyUSlh1NOH7XAdQstKO8L2fTQIi0+Vko
+	4XYEApDr97JpTzrRF2ngjQojkz1+5zqh4qGSF+UCLw+LVWzSqjUZjgcLBdA0Xsz5JmKrJg8G2UH
+	0ZHO+hKVXEqGyVvS+SnKZ2G3xzSO/F8MS8meNNwp4vlZTsya5dhcmBFWwNq1zI1FyRLXLdKKpFV
+	yOdPQDsViPVhp8JhtDXbj9QP77iPisgeyNCgZrgzhqxNSoNsjqvvfo/jG9d5feEyKh0Ka6eIaeb
+	VZ809QSdOpRwKt2Kq38KwKGw2V6YHPSYHHI6UEVgoIMxS5IgREvUi/Q/BAbKMajEXJ7CMiWCFu8
+	TYNiW3LYH8D/zYhvAh0sc8hbFOxtJfwRMy4qi8p+AWjA6hUWBRNfIV4hQFZqB6ko4pAbMrv1svE
+	fCZ5vG6i5R/J5htMDXY/dFMHYR7W4q354hADHcYxIEcQ==
+X-Received: by 2002:a7b:ca57:0:b0:490:4b89:535f with SMTP id 5b1f17b1804b1-4904b8956e5mr22552095e9.8.1779484876828;
+        Fri, 22 May 2026 14:21:16 -0700 (PDT)
+Received: from [192.168.0.2] ([2a07:7e81:7daa:0:62cf:84ff:feee:627])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490454a0b82sm73312225e9.9.2026.05.22.14.21.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2026 11:21:04 -0700 (PDT)
-From: matheus.feitosa@usp.br
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: matheus.feitosa@usp.br,
-	LucasRabaquim <lucas.rabaquim@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v3] iio: light: tsl2591: simplify tsl2591_persist functions via lookup table
-Date: Fri, 22 May 2026 15:12:57 -0300
-Message-ID: <20260522182058.199762-1-matheus.feitosa@usp.br>
-X-Mailer: git-send-email 2.43.0
+        Fri, 22 May 2026 14:21:16 -0700 (PDT)
+From: Angelo Dureghello <adureghello@baylibre.com>
+X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
+Date: Fri, 22 May 2026 23:20:29 +0200
+Subject: [PATCH v3 01/11] m68k: mcf5441x: fix clocks numbering
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260522-wip-stmark2-dac-v3-1-16be0ad35a67@baylibre.com>
+References: <20260522-wip-stmark2-dac-v3-0-16be0ad35a67@baylibre.com>
+In-Reply-To: <20260522-wip-stmark2-dac-v3-0-16be0ad35a67@baylibre.com>
+To: Greg Ungerer <gerg@linux-m68k.org>, 
+ Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, 
+ Arnd Bergmann <arnd@arndb.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+ Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, 
+ linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, 
+ Angelo Dureghello <adureghello@baylibre.com>
+X-Mailer: b4 0.15.2
 
-From: Matheus Silveira <matheus.feitosa@usp.br>
+From: Angelo Dureghello <adureghello@baylibre.com>
 
-Replace switch statements with an indexed lookup table for
-persist cycle conversions.
+Fix clocks numbering, set correct values for eport and DAC,
+as per RM Rev 5, 05/2018, table 9.5.
 
-Both functions contain redundant switch statements. This
-reduces code duplication and makes future updates to
-TSL2591_PRST_ALS_INT_CYCLE_* definitions easier to maintain
-by keeping the mapping in a single place.
-
-Signed-off-by: Matheus Silveira <matheus.feitosa@usp.br>
-Co-developed-by: LucasRabaquim <lucas.rabaquim@usp.br>
-Signed-off-by: LucasRabaquim <lucas.rabaquim@usp.br>
+Fixes: bea8bcb12da09 ("m68knommu: Add support for the Coldfire m5441x.")
+Fixes: 007f84ede6e3e ("m68k: coldfire: remove private clk_get/clk_put")
+Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
-Changes in V3:
- - Remove struct persist_entry and replace the struct
-   list with an array of u8 values
- - Remove the loop from tsl2591_persist_cycle_to_lit()
-   as suggested by Andy Shevchenko
- - Align tsl2591_persist_lit_to_cycle() with
-   tsl2591_als_time_to_fval()
- - Keep the loop in tsl2591_persist_lit_to_cycle()
-   as suggested during discussion by David Lechner
----
- drivers/iio/light/tsl2591.c | 95 +++++++++++--------------------------
- 1 file changed, 29 insertions(+), 66 deletions(-)
+ arch/m68k/coldfire/m5441x.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
-index 08476f193a44..0ba2e86a11fc 100644
---- a/drivers/iio/light/tsl2591.c
-+++ b/drivers/iio/light/tsl2591.c
-@@ -192,6 +192,24 @@ static const int tsl2591_calibscale_available[] = {
- 	1, 25, 428, 9876,
- };
+diff --git a/arch/m68k/coldfire/m5441x.c b/arch/m68k/coldfire/m5441x.c
+index 6ce730098ff6..613b0275d9d8 100644
+--- a/arch/m68k/coldfire/m5441x.c
++++ b/arch/m68k/coldfire/m5441x.c
+@@ -41,9 +41,9 @@ DEFINE_CLK(0, "mcfpit.0", 32, MCF_BUSCLK);
+ DEFINE_CLK(0, "mcfpit.1", 33, MCF_BUSCLK);
+ DEFINE_CLK(0, "mcfpit.2", 34, MCF_BUSCLK);
+ DEFINE_CLK(0, "mcfpit.3", 35, MCF_BUSCLK);
+-DEFINE_CLK(0, "mcfeport.0", 37, MCF_CLK);
+-DEFINE_CLK(0, "mcfadc.0", 38, MCF_CLK);
+-DEFINE_CLK(0, "mcfdac.0", 39, MCF_CLK);
++DEFINE_CLK(0, "mcfeport.0", 36, MCF_CLK);
++DEFINE_CLK(0, "mcfadc.0", 37, MCF_CLK);
++DEFINE_CLK(0, "mcfdac.0", 38, MCF_CLK);
+ DEFINE_CLK(0, "mcfrtc.0", 42, MCF_CLK);
+ DEFINE_CLK(0, "mcfsim.0", 43, MCF_CLK);
+ DEFINE_CLK(0, "mcfusb-otg.0", 44, MCF_CLK);
+@@ -103,9 +103,9 @@ static struct clk_lookup m5411x_clk_lookup[] = {
+ 	CLKDEV_INIT("mcfpit.1", NULL, &__clk_0_33),
+ 	CLKDEV_INIT("mcfpit.2", NULL, &__clk_0_34),
+ 	CLKDEV_INIT("mcfpit.3", NULL, &__clk_0_35),
+-	CLKDEV_INIT("mcfeport.0", NULL, &__clk_0_37),
+-	CLKDEV_INIT("mcfadc.0", NULL, &__clk_0_38),
+-	CLKDEV_INIT("mcfdac.0", NULL, &__clk_0_39),
++	CLKDEV_INIT("mcfeport.0", NULL, &__clk_0_36),
++	CLKDEV_INIT("mcfadc.0", NULL, &__clk_0_37),
++	CLKDEV_INIT("mcfdac.0", NULL, &__clk_0_38),
+ 	CLKDEV_INIT("mcfrtc.0", NULL, &__clk_0_42),
+ 	CLKDEV_INIT("mcfsim.0", NULL, &__clk_0_43),
+ 	CLKDEV_INIT("mcfusb-otg.0", NULL, &__clk_0_44),
+@@ -156,7 +156,7 @@ static struct clk * const enable_clks[] __initconst = {
+ 	&__clk_0_27, /* uart3 */
  
-+static const u8 tsl2591_persist_table[] = {
-+	[TSL2591_PRST_ALS_INT_CYCLE_ANY] = 1,
-+	[TSL2591_PRST_ALS_INT_CYCLE_2]   = 2,
-+	[TSL2591_PRST_ALS_INT_CYCLE_3]   = 3,
-+	[TSL2591_PRST_ALS_INT_CYCLE_5]   = 5,
-+	[TSL2591_PRST_ALS_INT_CYCLE_10]  = 10,
-+	[TSL2591_PRST_ALS_INT_CYCLE_15]  = 15,
-+	[TSL2591_PRST_ALS_INT_CYCLE_20]  = 20,
-+	[TSL2591_PRST_ALS_INT_CYCLE_25]  = 25,
-+	[TSL2591_PRST_ALS_INT_CYCLE_30]  = 30,
-+	[TSL2591_PRST_ALS_INT_CYCLE_35]  = 35,
-+	[TSL2591_PRST_ALS_INT_CYCLE_40]  = 40,
-+	[TSL2591_PRST_ALS_INT_CYCLE_45]  = 45,
-+	[TSL2591_PRST_ALS_INT_CYCLE_50]  = 50,
-+	[TSL2591_PRST_ALS_INT_CYCLE_55]  = 55,
-+	[TSL2591_PRST_ALS_INT_CYCLE_60]  = 60,
-+};
-+
- static int tsl2591_set_als_lower_threshold(struct tsl2591_chip *chip,
- 					   u16 als_lower_threshold);
- static int tsl2591_set_als_upper_threshold(struct tsl2591_chip *chip,
-@@ -231,78 +249,23 @@ static int tsl2591_multiplier_to_gain(const u32 multiplier)
+ 	&__clk_0_33, /* pit.1 */
+-	&__clk_0_37, /* eport */
++	&__clk_0_36, /* eport */
+ 	&__clk_0_48, /* pll */
+ 	&__clk_0_51, /* esdhc */
  
- static int tsl2591_persist_cycle_to_lit(const u8 als_persist)
- {
--	switch (als_persist) {
--	case TSL2591_PRST_ALS_INT_CYCLE_ANY:
--		return 1;
--	case TSL2591_PRST_ALS_INT_CYCLE_2:
--		return 2;
--	case TSL2591_PRST_ALS_INT_CYCLE_3:
--		return 3;
--	case TSL2591_PRST_ALS_INT_CYCLE_5:
--		return 5;
--	case TSL2591_PRST_ALS_INT_CYCLE_10:
--		return 10;
--	case TSL2591_PRST_ALS_INT_CYCLE_15:
--		return 15;
--	case TSL2591_PRST_ALS_INT_CYCLE_20:
--		return 20;
--	case TSL2591_PRST_ALS_INT_CYCLE_25:
--		return 25;
--	case TSL2591_PRST_ALS_INT_CYCLE_30:
--		return 30;
--	case TSL2591_PRST_ALS_INT_CYCLE_35:
--		return 35;
--	case TSL2591_PRST_ALS_INT_CYCLE_40:
--		return 40;
--	case TSL2591_PRST_ALS_INT_CYCLE_45:
--		return 45;
--	case TSL2591_PRST_ALS_INT_CYCLE_50:
--		return 50;
--	case TSL2591_PRST_ALS_INT_CYCLE_55:
--		return 55;
--	case TSL2591_PRST_ALS_INT_CYCLE_60:
--		return 60;
--	default:
-+	if (als_persist >= ARRAY_SIZE(tsl2591_persist_table) ||
-+	    !tsl2591_persist_table[als_persist])
- 		return -EINVAL;
--	}
-+
-+	return tsl2591_persist_table[als_persist];
- }
- 
- static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
- {
--	switch (als_persist) {
--	case 1:
--		return TSL2591_PRST_ALS_INT_CYCLE_ANY;
--	case 2:
--		return TSL2591_PRST_ALS_INT_CYCLE_2;
--	case 3:
--		return TSL2591_PRST_ALS_INT_CYCLE_3;
--	case 5:
--		return TSL2591_PRST_ALS_INT_CYCLE_5;
--	case 10:
--		return TSL2591_PRST_ALS_INT_CYCLE_10;
--	case 15:
--		return TSL2591_PRST_ALS_INT_CYCLE_15;
--	case 20:
--		return TSL2591_PRST_ALS_INT_CYCLE_20;
--	case 25:
--		return TSL2591_PRST_ALS_INT_CYCLE_25;
--	case 30:
--		return TSL2591_PRST_ALS_INT_CYCLE_30;
--	case 35:
--		return TSL2591_PRST_ALS_INT_CYCLE_35;
--	case 40:
--		return TSL2591_PRST_ALS_INT_CYCLE_40;
--	case 45:
--		return TSL2591_PRST_ALS_INT_CYCLE_45;
--	case 50:
--		return TSL2591_PRST_ALS_INT_CYCLE_50;
--	case 55:
--		return TSL2591_PRST_ALS_INT_CYCLE_55;
--	case 60:
--		return TSL2591_PRST_ALS_INT_CYCLE_60;
--	default:
--		return -EINVAL;
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
-+		if (als_persist == tsl2591_persist_table[i])
-+			return i;
- 	}
-+
-+	return -EINVAL;
- }
- 
- static int tsl2591_compatible_int_time(struct tsl2591_chip *chip,
+@@ -174,8 +174,8 @@ static struct clk * const disable_clks[] __initconst = {
+ 	&__clk_0_32, /* pit.0 */
+ 	&__clk_0_34, /* pit.2 */
+ 	&__clk_0_35, /* pit.3 */
+-	&__clk_0_38, /* adc */
+-	&__clk_0_39, /* dac */
++	&__clk_0_37, /* adc */
++	&__clk_0_38, /* dac.0 */
+ 	&__clk_0_44, /* usb otg */
+ 	&__clk_0_45, /* usb host */
+ 	&__clk_0_47, /* ssi.0 */
+
 -- 
-2.43.0
+2.54.0
 
