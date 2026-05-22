@@ -1,44 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5C5339D3DB;
-	Fri, 22 May 2026 16:51:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31F1E2222CC;
+	Fri, 22 May 2026 17:02:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779468718; cv=none; b=DhXr7pSIu48uY9Scf/IQ/arMiHMuljkGFdFEWMM4TSAqa/kdWVxiikLe+kBlEPPxhRPVkgTfi6etWPEkMXu8YV98T39D7I2rvyeswyS0A1zQQnKDXL5Y36on11JHh+YZnWnQHFgzor5tazdYzm187mO6yzIXoV2PxD4k4yhsl30=
+	t=1779469340; cv=none; b=O5pSA5mMBZAyV9odCKhQWxr8o6SZiUnSckYNuiARQLQnX/g6In9pkBq8gA5gBqaBmtiay35v5aglsx3TWFPClY1L1dfdYFpOA9mV9mnIOdZWzp5//XrHhd8/NBrGmTML7YJY540I2Qb9x1Jaj7bDG5oYZTeVE9ujJo5VPY2cGjM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779468718; c=relaxed/simple;
-	bh=rrN2UHU6sukW9A0E2XevrQ4xo+GgE44TQdkR8W0di4A=;
+	s=arc-20240116; t=1779469340; c=relaxed/simple;
+	bh=ZT438QpfdkV342To8rC4e986CAHRHP03DGVC4RwMVEI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gBeG6FyLt/kkT+SW80B+gJxLermkq8GHm9xMcq2u/MoQM0s7a66HMUMY7ALqHm7b+fHsPs/+JUe4jDZ21mOhoHmRa1iN/sRk3a+o1SUTed1Qfoc/wk0If4Rwy75DON+7f+rkk8j1MEvQJGR6pV1EAfNuWKW/ewhMYNB4sPRKUg8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OyiDPMi8; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=L/VaknVIP+DAp9PZbjXIA1viyLS2ftbgbjzKdL6Qub4kalTm3XpkRUfRuINr/WUukfuWjaIJMXdIbFV2og6z6Assd5WyKURiiv5CR08hQZN87XcX6V1vtaBOhatNu9R80YyUtFESk9wSVonyIhB2/4sX3hlN0GtGaM7wwY/w7as=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cOXAnMSw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OyiDPMi8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6226A1F000E9;
-	Fri, 22 May 2026 16:51:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cOXAnMSw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C1891F000E9;
+	Fri, 22 May 2026 17:02:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779468715;
-	bh=jg9R/ay5s9y4zVRrIR0bo6yD4CO+1XyodWSgNdNcHPw=;
+	s=k20260515; t=1779469338;
+	bh=dFLeOAy+lG1jO24092Be2VYCeGNtREL/YhJ4BDlk35k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=OyiDPMi8Pxa7LuD4ECeyEsGMtxCsFfWCuzndpKLtqWf1f4SaYbe/duJnxK3+CrWW1
-	 GIpglUlPcVxVlfdnlSMMqqoUKJReACO9DvDNSLLFoIZ3UssXNpwH4heC9MOhDyTsAR
-	 LbYMVpRPt1ThoPWj92pNrBljUH3brtmrMDgeNqm894RxEBHjw7ntjKF2tQyywKUUKP
-	 JW7O1Dxh1L3V1F0OZnQzXCpdxs2VuUse3qKFYm/iYOAGkI1S0Z0VDzQJpmJAIsmC/o
-	 PJAXhW/PihktKGlg+a0mOan9ffgWvNKtaitDp3Pxj5PPYZZTZu4WGjQKAZs8oj9RKh
-	 8apMYTdvISYcg==
-Date: Fri, 22 May 2026 17:51:47 +0100
+	b=cOXAnMSwXLS3Cx3pmWGfedk+qEDsnZLs9wI9mY6XdGLGV7mnkq2qaoUdVvE98nzg6
+	 UUAJWPxIKx2vMulFJ7HTK2hVGOIyk6oCM9kiJPWQQoc/B9gciTAn8XgpIlnB58Czsk
+	 6x+TO1BagE67DgE8xfeSPH89ni4PCj0tknYszJ5rx+i0VAQiR3CdZhzjEO+DI8XGLZ
+	 jKjaaTWN1FEI97QdfeYdM6TyujUjW8Dcp8Kafc7RleP1ETcp4FD/50Y2VuenfvhcxL
+	 7vpkfIZnEK2HJ+FQcLb+DtWSJ2WrSeKunLE6Xg2enYXwi0eFut2JVce04Z80HPkS1q
+	 1qgixNQS2FnEQ==
+Date: Fri, 22 May 2026 18:02:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: =?UTF-8?B?TmF0w6FsaWE=?= Salvino =?UTF-8?B?QW5kcsOp?=
- <natalia.andre@ime.usp.br>
-Cc: andy@kernel.org, dlechner@baylibre.com, jikos@kernel.org,
- nuno.sa@analog.com, srinivas.pandruvada@linux.intel.com,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org, "Zhang, Lixu"
- <lixu.zhang@intel.com>
-Subject: Re: [PATCH v4 0/6] iio: hid-sensor: standardize scan_type
- initialization
-Message-ID: <20260522175147.78e0e7bc@jic23-huawei>
-In-Reply-To: <20260519234752.23911-1-natalia.andre@ime.usp.br>
-References: <20260519234752.23911-1-natalia.andre@ime.usp.br>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>, Janani Sunil
+ <jan.sun97@gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
+Message-ID: <20260522180207.63b725fb@jic23-huawei>
+In-Reply-To: <20260519-ad5529r-driver-v3-1-267c0731aa68@analog.com>
+References: <20260519-ad5529r-driver-v3-0-267c0731aa68@analog.com>
+	<20260519-ad5529r-driver-v3-1-267c0731aa68@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,81 +53,79 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 19 May 2026 20:40:42 -0300
-Nat=C3=A1lia Salvino Andr=C3=A9 <natalia.andre@ime.usp.br> wrote:
+On Tue, 19 May 2026 17:42:58 +0200
+Janani Sunil <janani.sunil@analog.com> wrote:
 
-> This series refactors the HID sensor drivers to standardize the
-> initialization of the iio_chan_spec scan_type structure using compound
-> literals.
->=20
-> This change improves code readability and ensures that all fields of
-> the scan_type structure are properly zero-initialized, allowing the
-> removal of local helper functions.
->=20
-> Additionally, the channel initialization loops for hid-sensor-accel-3d
-> and hid-sensor-gyro-3d were cleaned up to iterate directly over the
-> scan indices, eliminating redundant index-offset logic.
+> Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
+> buffered voltage output digital-to-analog converter (DAC) with an
+> integrated precision reference.
 
-+CC Lixu=20
+Note that I'm seeing this as Changes Requested in the DT-binding patchwork
+but didn't see any replies.
 
-Please make sure to add to your +CC anyone who has been involve in earlier
-versions of the series.
-
-I'm going to queue this now to get some build coverage. Still fine
-to add tags though or indeed drop it if any problems.
-
-Applied to the testing branch of iio.git
-
-thanks,
-
-Jonathan
+Seems I didn't get the sashiko reply - nor did the IIO patchwork.
+Hopefully Janani did!
+https://patchwork.kernel.org/project/devicetree/patch/20260519-ad5529r-driv=
+er-v3-1-267c0731aa68@analog.com/
 
 >=20
+> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 > ---
+>  .../devicetree/bindings/iio/dac/adi,ad5529r.yaml   | 217 +++++++++++++++=
+++++++
+>  MAINTAINERS                                        |   7 +
+>  2 files changed, 224 insertions(+)
 >=20
-> Changes in v4:
->=20
-> - Fixed a bug in the sensor_hub_input_get_attribute_info()
-> call where passing the raw loop index 'ch' broke the HID report
-> field lookup in hid-sensor-accel-3d. Restored the proper HID
-> usage ID offset calculation using HID_USAGE_SENSOR_ACCEL_X_AXIS + ch
-> - Cleaned up the channel initialization loop to iterate
-> directly over the scan indices in hid-sensor-gyro-3d for consistency
->=20
-> Changes in v3:
->=20
-> - Dropped the global helper function implementation from
-> hid-sensor-attributes.c following maintainer feedback.
-> - Shifted to local refactoring inside the drivers using compound
-> literals and the  macros BYTES_TO_BITS() and BITS_PER_TYPE()
-> - Refactored the channel initialization loop in hid-sensor-accel-3d to
-> iterate directly over the scan enums instead of using 0-based
-> index offsets
-> - v3 link: https://lore.kernel.org/linux-iio/89a2e6775e3c922a4848a4b4730a=
-ab8d32097454.camel@linux.intel.com/T/#t
->=20
-> Changes in v2:
->=20
-> - Modified the helper function to use the BITS_PER_BYTE macro instead of
-> magic numbers for bit calculations
-> - Updated the scan_type structure field assignment from '.sign'
-> to '.format' based on recent subsystem renaming feedback
->=20
-> Nat=C3=A1lia Salvino Andr=C3=A9 (6):
->   iio: accel: HID: hid-sensor-accel-3d: Refactor channel initialization
->   iio: gyro: HID: hid-sensor-gyro-3d: Refactor channel initialization
->   iio: light: HID: hid-sensor-als: Refactor channel initialization
->   iio: light: HID: hid-sensor-prox: Refactor channel initialization
->   iio: magnetometer: HID: hid-sensor-magn-3d: Refactor channel
->     initialization
->   iio: pressure: HID: hid-sensor-press: Refactor channel initialization
->=20
->  drivers/iio/accel/hid-sensor-accel-3d.c       | 27 +++++++------------
->  drivers/iio/gyro/hid-sensor-gyro-3d.c         | 27 +++++++------------
->  drivers/iio/light/hid-sensor-als.c            | 18 +++++--------
->  drivers/iio/light/hid-sensor-prox.c           | 19 +++++--------
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 20 +++++---------
->  drivers/iio/pressure/hid-sensor-press.c       | 19 +++++--------
->  6 files changed, 42 insertions(+), 88 deletions(-)
->=20
+> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml b=
+/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
+> new file mode 100644
+> index 000000000000..eb66f6ca063d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
+> @@ -0,0 +1,217 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/dac/adi,ad5529r.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices AD5529R 16-Channel 12/16-bit High Voltage DAC
+> +
+> +maintainers:
+> +  - Janani Sunil <janani.sunil@analog.com>
+> +
+> +description: |
+> +  The AD5529R is a 16-channel, 12-bit or 16-bit, high voltage, buffered =
+voltage output
+
+Long line. Check the wrap.
+
+> +  digital-to-analog converter (DAC) with an integrated precision referen=
+ce.
+> +  The device operates from unipolar and bipolar supplies. It is guarante=
+ed
+> +  monotonic and has built-in rail-to-rail output buffers that can source=
+ or
+> +  sink up to 25mA.
+> +
+> +  Specifications:
+> +  * 16 independent 12-bit or 16-bit DAC channels
+> +  * Independently programmable output ranges: 0V to 5V, 0V to 10V, 0V to=
+ 20V,
+> +    0V to 40V, =C2=B15V, =C2=B110V, =C2=B115V, and =C2=B120V
+> +  * The device supports SPI communication with Mode 0 and Mode 3.
+> +  * 4.096V precision reference, 12ppm/=C2=B0C maximum
+> +  * Built-in function generation: Toggle, Sinusoidal Dither, and Ramp wa=
+veforms
+> +  * Multiplexer for output voltage, load current sense and die temperatu=
+re
+> +
+> +  Datasheet: https://www.analog.com/media/en/technical-documentation/dat=
+a-sheets/ad5529r.pdf
+> +
+
+> +patternProperties:
+> +  "^channel@([0-9]|1[0-5])$":
+
+Sashiko commented that this should be hex.  Why the forcing to decimal?
 
