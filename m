@@ -1,63 +1,63 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A9263BCD21
-	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 12:34:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB6CC3803DD
+	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 12:34:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779453271; cv=none; b=AT+AbRWwbHKnGp4TSOfyE14F1IOIRLTYuASfEG5cKIl7meYPThJHkiJCfCT9vcMsFQX+4ZHqXjkEJxBZVTtC3OT9HM3KsjhrXHI9sRm7004LzNL8INEbfLJmeGiuemHuRU/XPM2e5BcBlPpm0DLgKcEK0+fc3rkt6xnPJwVIweo=
+	t=1779453272; cv=none; b=kPh/rSVhpnYw72/GoRhAmbUXBI/l1pfc0g9hEv8SCluBsSoFeyL8VWuftRMgVjszFbUYXREeS+WXt0RvoiEjPvrTnlAdKgXXrkC/hC1VfGnvVkuQ2mBJcNCiQWVZw5wpJR7wsFGRaRwEwtHokGfXNJ5eksirSD327FfTC/6kzKc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779453271; c=relaxed/simple;
-	bh=HNVQB1Sx2eQiNy7XgLEbGRhcVanUAKDqdo7tkqRq+NY=;
+	s=arc-20240116; t=1779453272; c=relaxed/simple;
+	bh=HrONuiDMQBsyQKK/Qw9EDIlYqlICs8puzZEsFzw3q6E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IKSRGeJxyLt67v08q3j2igZ45lhalVk3QqZF2DuaoqVjwiN9do2L0L0iqgnBFTUCS8wTtZtY60JwWvePeEyrd+e/U9EuEEbqkBET38/kRhE/Yp6mmFfLEwlQbMjyHPTH47suom3QvukuKb5In2atN/oXMABF+u1dEHtdllPBkx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HqoaDxWk; arc=none smtp.client-ip=209.85.128.48
+	 MIME-Version; b=LtC1pflSvYM6HtoFo+EV81LNCEllooM8bRZ4+Notu/TWA0/ywsFCrs60z4R9Y6cINls4ki9R8yb2Uz452YcCadrpT2SfOttoMTasEI8NnTk3D3CeUe5E5KWWiTvc6e+q/7ChwR7UPI7OXSoyIXsItNsuTw5e5qUsK8Wmw4cpa5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e+8zUTAY; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HqoaDxWk"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49048e043e5so1744735e9.1
-        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 05:34:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e+8zUTAY"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4904127c32cso6634685e9.2
+        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 05:34:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779453268; x=1780058068; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779453269; x=1780058069; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vMlIJr0UEjBMHNhPJ63udc9c/uXuEqSnqN9pM/ii/fY=;
-        b=HqoaDxWkj+EbAyRjFhvsMl0E5lEU6Sh1cB/ef/JXsIDOu8skIwLb2xXfivS3Isia1x
-         P4dOPHBtUHbyxqdMKF452WrhD+BsGfb/o4mg3OfOFA+MTUiO8yv4rTWTK8bwkVxcJG9b
-         xsMosTBYdSD1d3GyjFm81Fnlo41szg/bKg+ybppa9HK51nzkyHf7OX1FliiZ4V53ETwU
-         WQIHQDv04Tv4wW1jWz5GeD9WFRL/E3VrX3OtpKVOXuZdwP21mRBam+ubvzu8p7/Fsmo3
-         YoEjr3wUwy19f+3xkdNHh/f13Vu+9WY6U4WS1jjptnmwnLGqCkC2DcIK9s6q8JBoMPEm
-         eXAA==
+        bh=lhPK+WD3x7b1l7d6v6GZpCF931oi4rpE7Ri3gLPt+mY=;
+        b=e+8zUTAYeTtU7iRnrBsiA4h6lrmOS8t56vvnTk4OaWHmQUv0vl/RN5cAGZ2AoBP0D3
+         gv74p0j3+QApIZvAvMYTtUcpoY5GxreuS3MXHN6F1V9sZ+h8kOfAD6BOuw1zrVoJeXua
+         3h0ryIK4DLMzUP3zdBi5L16bOGLwuMbtzV/zQl176JBdLd8fH5aGNjYMiGP6mURWjJNj
+         KiCoxAtF5g5RIA9JtrkvVJLs14H5XE5anJ2Z9cLqGa/Yb4RA/j4C+dL2t5qxKzsSzXIU
+         jl0dlcBjnlOcLtH7ZB0Q4nrF+Yh0IVE26g969hGCQAynTmhC5vjR608KAaNftR4tM9pl
+         Hc3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779453268; x=1780058068;
+        d=1e100.net; s=20251104; t=1779453269; x=1780058069;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=vMlIJr0UEjBMHNhPJ63udc9c/uXuEqSnqN9pM/ii/fY=;
-        b=Nua9iGUQoYkI1QQbSL9/myXuvjf/MhOIcCaGaMKROvy80iGRFxcFOpbOAXM4MLRNS2
-         n3lmvMMSgDCKI/agXxFT6dY/sCXslzAM4P8jWjoWr7AOxXh9ikd9TGb1WuyfRyPCyrFX
-         x2i9dRQOv/hAG6orgutXlcxEbuzpnfac85yJcU2N4pqj339ToO0Rub/o+eGmnyC/NVhB
-         K/F4TDxDrRJX2oabICbWRH8h8LxS/ePxsJVC309BA+s6kUPzgeGtEb+fwusCgPCToaTM
-         VhlaNE79adiTbq8mySHZdVNMtV2qZezVrlFU2lz9Nz0tWCHfC8LvY2EtbWjogsW8ptWO
-         NXJQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9oyJiODGXUWTgPCQVYUuQdO7dw0I1JMwfe206kGbcdzx4qzq5arKPk9Ry1kMbJaDMnF5uaXbZXODY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzjX04xf3IokJ+Q1eRNqVJSPLhFie0ap+hyiFHQxQku8vQanmtA
-	F23IXRdBxH2TEDF1BUlc2+a5aAwm28dPmj0v8jZN7BmtMYXiGlVdX+Cw
-X-Gm-Gg: Acq92OGSx4+BUgY02pTR+xa+DS4XU8MOQtzFdOzmD0/JSGlOeDegO+L/77LhUSEad+Z
-	kKPhalvaKQmky0SFuqHHnReL2mRBfDfEBSE1Yl1JpRyWplYmeDMSeCj/XE6gHZoZ+KoYxfbIrN5
-	Vlfm/cbUzNQ10Qlet6foazc7LBIJY65Uq1GdW8RZRW2Jjs1jU6eIvJwxk641H8y2Au4gy/87OHa
-	z1CWTxvHFzQaqcM1kRslaCMZ05tljUXybHDyN3iNrIrEF1otw+fzAEFGywm0pnKm3eBsxcHhCXl
-	NUozKY4arFPvM1XrHCuRdPV9iJevCTj1i7ZLtE5Mv5J+bclKeZZwrq9A2iYNxd/oc3MxoLZAhZe
-	zybzPSdcfE7s9waQMaqPntUrggEn34pF03lANRjKgQFOfqPUBPJa3FZT5zhHc2i+uQ4Glmzr+IZ
-	yD3fzviTdTKO2UPiUd81QVUWfCvmjb7kcOaPQRlOGVJ4dmRxMsRXkZwV1WmWjL7Kk=
-X-Received: by 2002:a05:600c:4ecc:b0:48f:e249:4094 with SMTP id 5b1f17b1804b1-490426d4bf0mr45733275e9.18.1779453267839;
-        Fri, 22 May 2026 05:34:27 -0700 (PDT)
+        bh=lhPK+WD3x7b1l7d6v6GZpCF931oi4rpE7Ri3gLPt+mY=;
+        b=iYUJiCvqq1PUcQYCcll1WA77eWMqoenhXw+zcdJftnFMHdPqV3kv5bHUf7QvXTMxJD
+         hbHsh3Tkbi0hVbWTGDtbs/J5ZBkbBjAI/tP+sjWIlmRqe9g+a/SQFKx4hQgWfkHPUQxV
+         gNMiXb0Xhdd9lluWQrJ61nxI0MvTI0c2ykzeHKoIVjFnE1vOT1zppkSgbOb8Txl9srUY
+         Ywptn9vcFU0vCXIFO2nMMS9aG5KHgBK6Xtkpdh1o4Zqu6RDJA9RX/TNubqrvnpYurBzn
+         f86TF9gY6lyl9/Rg+GONbjMIc8pen2Yd4pkZPQaxV3Z2YlgqY6YuB6fF7/eY6JhqOoeZ
+         L+Kg==
+X-Forwarded-Encrypted: i=1; AFNElJ8gvbdqIlSj6Mev4boKtT4g5uzZVmB+EeaB5h1aq2XjXlio3cJCrSqIYRT7A6mfCE+JHkb3NV3uadM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxSy2EAXgvBCnF+sEgaxcdmDn/5278wQr41EBfnuuZHGEUVzwHm
+	RsxpE0zwOPnaV+iE5HBJFP8u2HAijP7PpU04EjGQv94x07ymWzZS9KFa
+X-Gm-Gg: Acq92OEWljNaeTgGHVm5tw3zIS0iqbksb+lseXgzOW9z9VUJlIm16CRQV3Tne/vqjSk
+	DEXTQQ4r4jSE6opnOIhh6z4aHe+nq/aaa3YtzKV0dE7XnfQ0FIejF8uxLdxPKhW33gzBMsZL2IU
+	62lGv4eP9r1e0HPpi2JxZQrPb5Em6GCZt7u2Gpu0rwL18JA9bywF3Bdov7Emzmp0NQX9PZwiY+W
+	bi7Tgf1OyY5glvtRLT9cANP15xI1CfMYJMf4wnM1XzpwDKa7UrqyPotiOMBQWyJ2zipxu9zO1wG
+	x+T4lfIvLraOktVoHiF/BKt6r7iHqTEcKNujyLErs1hKTO/4SnSUJhVC5+WXDySVKC8EoGH3Tux
+	uwWtiwVzbq8UGOPoQtHnUjUr3WwyOpojHknUX41V9QgLZREdL2mW9mzB/QMgedh+IeT9zSZVLN3
+	04mbXYHe9N01y+l0Hb4WrwkSHrykC4lOBCjZ5W1eyhn0I2HUPs7MC8DL4Wcl7FOzk=
+X-Received: by 2002:a05:600c:1393:b0:489:c57:7836 with SMTP id 5b1f17b1804b1-490428e5b31mr47285995e9.27.1779453268890;
+        Fri, 22 May 2026 05:34:28 -0700 (PDT)
 Received: from aldo-conte-t14.tailf68ad9.ts.net ([217.61.173.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49042af0ac1sm14760175e9.31.2026.05.22.05.34.26
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49042af0ac1sm14760175e9.31.2026.05.22.05.34.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2026 05:34:27 -0700 (PDT)
+        Fri, 22 May 2026 05:34:28 -0700 (PDT)
 From: Aldo Conte <aldocontelk@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -68,9 +68,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH v3 6/8] iio: tcs3472: use local struct device * for remaining cases
-Date: Fri, 22 May 2026 14:34:17 +0200
-Message-ID: <20260522123420.45495-7-aldocontelk@gmail.com>
+Subject: [PATCH v3 7/8] iio: tcs3472: move standalone return to default case
+Date: Fri, 22 May 2026 14:34:18 +0200
+Message-ID: <20260522123420.45495-8-aldocontelk@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260522123420.45495-1-aldocontelk@gmail.com>
 References: <20260522123420.45495-1-aldocontelk@gmail.com>
@@ -82,36 +82,52 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use the local 'struct device *dev' variable introduced for the devm
-calls also for the dev_info() calls in tcs3472_probe(), to keep the
-probe function consistent.
+Move the trailing 'return -EINVAL' statements at the end of
+tcs3472_read_raw() and tcs3472_write_raw() into explicit default:
+cases inside the respective switch statements.
+
+This removes the need for a separate return statement
+after the switch.
 
 No functional change.
 
+Suggested-by: Andy Shevchenko <andy@kernel.org>
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
 ---
 v3:
-- New patch
+- No changes.
 
- drivers/iio/light/tcs3472.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/light/tcs3472.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
-index 4966abf83c18..f74e6633db45 100644
+index f74e6633db45..1f597ca93697 100644
 --- a/drivers/iio/light/tcs3472.c
 +++ b/drivers/iio/light/tcs3472.c
-@@ -480,9 +480,9 @@ static int tcs3472_probe(struct i2c_client *client)
- 		return ret;
+@@ -166,8 +166,9 @@ static int tcs3472_read_raw(struct iio_dev *indio_dev,
+ 		*val = 0;
+ 		*val2 = (256 - data->atime) * 2400;
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
+ 	}
+-	return -EINVAL;
+ }
  
- 	if (ret == 0x44)
--		dev_info(&client->dev, "TCS34721/34725 found\n");
-+		dev_info(dev, "TCS34721/34725 found\n");
- 	else if (ret == 0x4d)
--		dev_info(&client->dev, "TCS34723/34727 found\n");
-+		dev_info(dev, "TCS34723/34727 found\n");
- 	else
- 		return -ENODEV;
+ static int tcs3472_write_raw(struct iio_dev *indio_dev,
+@@ -204,8 +205,9 @@ static int tcs3472_write_raw(struct iio_dev *indio_dev,
  
+ 		}
+ 		return -EINVAL;
++	default:
++		return -EINVAL;
+ 	}
+-	return -EINVAL;
+ }
+ 
+ /*
 -- 
 2.54.0
 
