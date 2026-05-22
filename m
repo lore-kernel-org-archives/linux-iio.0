@@ -1,165 +1,146 @@
-Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2E1D33A9DA
-	for <linux-iio@vger.kernel.org>; Thu, 21 May 2026 22:34:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779402876; cv=pass; b=QHNr9twHWE/hUldMqVhoSPeCOpN+5jUYKN8+Hy8rzU3OjmO/QvosCM0y363pbz+m0rr1Ef9vlCM+dlpQOdvPfKa1cN5CvyUR94K2vyUucs0lu8uYhmruNkSp7N4XyzEMcFLkEd9qCob3iWfMF/OmPXqY+4mRz/ZTfr3Lp4Z/8rk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779402876; c=relaxed/simple;
-	bh=mhArStkcWM3iK1CFaFs5eNLMOZxVrRC5m7xoktEmPi4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MV8ce5wJwgis5cwSoRr4tliRJ88ygj0/siciykpwlsbMIll/byWu83ssqw0roZ1xVwM7fQmP39n2MeE0nDc2M5nh62JOwZZN8itHO1IxMsSKMgVNhoM3OKcV3mCsicY2wKBl1Rxylx1fBV+RsnbwjhlapFZIBw9WaphWV9iZ+5U=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PAW13tT2; arc=pass smtp.client-ip=74.125.224.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD6531E5207
+	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 01:25:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779413144; cv=none; b=qgGMKDhGxN0o2DvwWIo3xURvWwoDB/W9l6nl5qu4X6BsOZS7x8WemD2H40U6pzsmngPS89MGPxRpxPwNirXVdviBVXcAWxw8NNv/ZVdS9jmzCUb0hSRc+qXIA0/l4JYLJqUJ4h0CMgUR8w9t5y0on1mE35EtqTHW8ful6rYD8ak=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779413144; c=relaxed/simple;
+	bh=meNlnmmcCErRmtN5Q8uakEi614HtX8GhsUthztF+AeI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=I+peb40RX/dgUDYd5g8oT32Fq69bHIugnAE/8r0olNfDHo7q+38WzziS+m285rW8vrX/B3cryKVFSB3Tz58GfISJlmgUuJxVEu03GM13DUpGN0LlEZZ7a9RwIe7Tyc/SBHapMYyYgqRIPHYXj2fh+HE0Z2K7LF2zH60s/GO/oGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=aFvd+aP1; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PAW13tT2"
-Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-65c2cd216c9so5737485d50.3
-        for <linux-iio@vger.kernel.org>; Thu, 21 May 2026 15:34:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779402874; cv=none;
-        d=google.com; s=arc-20240605;
-        b=UfpfIo4HnouXZZtBEDOA4ukzUhCUiLfY622X/WEcj2qlvgXD6F0pfUi/w2FSskXvKE
-         OgsrreADnvJMZlCcq4DtGZDLOE7VsKM1CBeygtfCSAIKHYGHa8Tjz/d0hfnpC+qrM4H7
-         4NlfiLFZBV0nHDCkZX5GyS3EmRpv8cU3pwo7KyGYJoKTTRAaYvtBc2r24cQoXImUY6EM
-         09eFT4rFiwb2G63AlmhGlJGoUBOd6Y/lAYVz+SqnRY3z3jd0x6UqcozJBzFFIBc3yeFl
-         2sMte/1ysy+GfXSRSyezCmY2vYGhmO/nFt7t72iPuE+MT5IQb34nsJnT61M9DIUDbLCG
-         nDIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=FzD9WpTP1jsShhKHnMGI2DTH5MDC4tmr4MXo2S4FbLQ=;
-        fh=JbcBEQbA/KmMkUcLXLdGhCu0sk3bugH/8dJZaE/Ubz0=;
-        b=JXiSF9dWekjD6nrKmiZB/mw0nZb4aoGVkbM1ngovWwHbQdeHcABcLc+SwL/opblfRP
-         HaHW3IXXGzyjdiLoxCIpQ8k7O4oYhqD9HYrGXSV9ZwHmBoLZfcW1diCUEVLn8H6aI9AN
-         IvN6RZ72clEybUMPV9Neu3r5kZmIOPOie3oT+ZQe82IaXO9LB1UYw0b5/K7g+05n2IJ6
-         HhlQg7WGkvuPws5fLPdTmlrUzHsqHCCcBc+2Nq9kbaJLesPCQiDq/lim7lJLBmq1qzd/
-         prJhEuxPJGkCre+CAALeg6JD21TYJaC0KfeZBZxC5MpI1MLP5JXwLIRlABokN1u45jov
-         a7hA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="aFvd+aP1"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7dca00c1591so1954697a34.3
+        for <linux-iio@vger.kernel.org>; Thu, 21 May 2026 18:25:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779402874; x=1780007674; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FzD9WpTP1jsShhKHnMGI2DTH5MDC4tmr4MXo2S4FbLQ=;
-        b=PAW13tT26ycQkBXuyFHA4VSnI+uYnkfy0oGdzbdknUawMh5xfuJilf3VKyUkWnMJrK
-         NKgvjG1WIMVlqj75cfa1NIGaumcJqGPErX9mSRqo47Dc4ZdewXBp1h0TUUjbXUKxRRCS
-         xZxtvfZSFWgZP2H+7ua7cXwjoBqMVcOEtj/T0dNqOyDuVfREZCAVP3Ri4GrV0pPj+A0o
-         3y7s0nfw782XChrrEVTjI8i9b5/J9f4hds1m0SNUkH5BRRWhGEz0Ou23UX3wER04vW+/
-         6KrVfU9pRaBviqQX96ddasGFiIIpFXTYYRb681qmJ+h1TyI9+rUpJNM22B0ALcKrHZzQ
-         HmpQ==
+        d=baylibre.com; s=google; t=1779413140; x=1780017940; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=hA2gvcZ3PxG/BnJk7WhvBYIZEP6nJl42pt/2zxF+RLk=;
+        b=aFvd+aP1yUL2FbfI4mS4s29i4B5we+AifWgPlRBre4qqrFvgqf44lMl0fsVB6wSmjk
+         XDfUBhRztwPKF08zs+TLrLzShUeI/eSwVRT34b/d0WCkGUTwk6+npeyGLT37lXBiPN7u
+         2jsb8bTa38bjkSiThr079H11PSo+CoFlZNMRphrHTBeqEfrFIWXpYlFbe1xDjakSkc07
+         LT0X/4vyHSxRT7bF5rMJRGI+oP9gw4UFcj1Sd4bABgYqi7ac8D0ndW7ODhhsCFQgcB3v
+         YWwoBcWPm6s2rDGLx3RmPAvYwQJggVkMOHinKyZ+ECH7sy904Yi+jmkplxOTQdEq6uaX
+         M1HQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779402874; x=1780007674;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=FzD9WpTP1jsShhKHnMGI2DTH5MDC4tmr4MXo2S4FbLQ=;
-        b=IOnYBSfCDxDzEGVe9/al1SwlEe7Xg5JUaEwAeXxzlBkU/Ipr0H24iC726zA6PYYXhF
-         zqEgNl2xLVh0L0A0Oujby5qE0zMp1jQAlSysOrm0KyxEP9P3OYnXfnAO67GVHd+6sWCZ
-         +6NsT/aNBJ1Xw48CFGR4xxRwd6PPj0/vHw8gF0duKn8LvgO6jmLdv8mlFTQqwPiaAJGC
-         mzWYMrLeKCKR8963VZ8vKW5YF/iUCC5EBVR+/Tzv7ETwGwX+P5/b5fqavv2aGAmUN69w
-         igTbGT0SKfVL12eJCStPu4VPRGVcu41A/cDlp+E2ffKz+cOE0AgP7WGUSbDvRNNQyv9R
-         JRcg==
-X-Forwarded-Encrypted: i=1; AFNElJ8cxzGKwusCvkjrx8uU9Dj+GjLZUW3DbfrmtaCXSyu4ddIXnzkfqSjuwGashHp+92blpqu9qcaxifk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyHdxCMuDh8IS449zK1GyCno71TEPurWqDA0D3r+iaWXHfKESas
-	XbD6IEzx6TeeMx5fdyCfXqi+tie7CSgGK4i6/DoG3qDNT+mAIwo1epSf4MQNqaPp/qIArRH1FnC
-	6pJrcccBe6COywOBXM2V4kWwJstLoA4M=
-X-Gm-Gg: Acq92OG3Xhb2mvzmP/hbO4JNd0mMt39IlO7AXhi9guvO2Cb8CxmsWVS8YB3LjozGR9T
-	XNsK+2dxXwdTW2B4CJyWwevCcbytGM6BNOk5yaeI8y8TEbEZUPE5gQdB/BLmcB8GshC3pql7Ro9
-	TzdEhDBeBDPAOZr3qIE1+48AC+z+MXwEoI+x0VsqVMjDzmYiaf/JN9YKJpA7xjmk3zY6x5r4fMk
-	RQz9KPZYASkH1+5PhPMnVIj1OpJ3J+fRTmJLwgo2zx8FHtKZf5IfOqzjmxmRjMQTrlNgoGW3sxq
-	EjBxEGvzuF3kBvg=
-X-Received: by 2002:a05:690e:1517:b0:65e:40ee:a431 with SMTP id
- 956f58d0204a3-65ec99868d0mr1275095d50.52.1779402873955; Thu, 21 May 2026
- 15:34:33 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779413140; x=1780017940;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hA2gvcZ3PxG/BnJk7WhvBYIZEP6nJl42pt/2zxF+RLk=;
+        b=fA9DYcK3TGxAjluufdw5ypDbxTrkqgTlni6yslj/XOzBsOwb66RUXD6yeWNW6ITRlg
+         Pz5tSAa+Lqmu1O5Cv1grgYistsFJPz3LhBqOpeD8SYuDHsbCub9iNHSXaKo+R1GKWKiN
+         TP430MDaefhzkMUx0PFWMvGPaQOjyl6GF4pYVNTo3NA8m4sraFmLn+8lxrrDQrmxasAV
+         x+rXRb6SrUwhvlTbUerrn9Yn5ekDeepjb/fKY7D4Wwla0p4KYG1mKQuh/RLcVozwrX17
+         y/CNaGnIsRU1DYnxFhkVrT0xY7uArOxQWxk+XuAEQv41KatFUVSe5mYT5agGcJiE0Ht5
+         0m3A==
+X-Gm-Message-State: AOJu0YwjmC3stBP3oNgffQSUvUtO0NttikkrHLKp9qph41tMaNLrmx60
+	+DydFrpVVXi5mWbiAPmWOnbEEQGC8V3tsyNWgqEiHD1AJ/+ibOvjPdGuZ3UaT9YxSqvfrZQV5Tn
+	FydFWaIc=
+X-Gm-Gg: Acq92OFnmguNFzR93S2/5FgNlNmIcS3XuiyUkTOnhC5VOqn0EaeqiQW+cUOCM3QHxhI
+	sCdVvCymGAwdNXbil5aJ2accuY9fZMZJZUoA/gKMB0+Qmx+87wM5IN7B/mru6f5PlAOqPVlEWRK
+	P7ZG/bRFqvYULgY6IbVNKmUKcOOPLxnujTGJXIPIg+8IEsihDolPx0KWOLl3CG59F+3f1FqhR+E
+	O4B4CtNmTnV3U7mHtCbkYL0SHdJZHfU3zxERk8/yiLsYmGqPbcEEW1oZ6yVw2BoBxC6merieHvu
+	BqJoCYw2Q0Cb4Ax8LSnp6Ij9+K5HFybHGj0yQYJFZXZzaOaEKVfuVu0kNqbImlhvvyqmgdQ10/o
+	dqpW3PVRWVPxH/NE2uPxWHjkrQEa60XooxVG/4jmQXDcZOEn01wr5gnLrg83Qn1skPhXZPmvRki
+	9XYKrHQIuj0n1jHR0tgSsfJeIY0cFw
+X-Received: by 2002:a05:6820:498b:b0:694:a2c9:2d50 with SMTP id 006d021491bc7-69d7ece3888mr708153eaf.59.1779413139688;
+        Thu, 21 May 2026 18:25:39 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:569b:86c6:c367:5139])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69d83a4eee4sm121768eaf.10.2026.05.21.18.25.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2026 18:25:39 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+Date: Thu, 21 May 2026 20:25:29 -0500
+Subject: [PATCH] iio: humidity: ens210: remove compiler warning workaround
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260521223044.61410-1-m32285159@gmail.com>
-In-Reply-To: <20260521223044.61410-1-m32285159@gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Thu, 21 May 2026 17:34:23 -0500
-X-Gm-Features: AVHnY4IWr00nwYBqHWzduwUXjYpr2hGNOE4ybzeM8MEKsXILmHHBCSaIMEtkugY
-Message-ID: <CAKqfh0GKRViR-_rW8=JSm+Ui2DubqUGBaLo_Ho=NN-=zVoptJg@mail.gmail.com>
-Subject: Re: [PATCH v7] iio: imu: kmx61: Use guard(mutex)() over manual locking
-To: jic23@kernel.org
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260521-iio-humidity-ens210-remove-hack-v1-1-9528ac1b384b@baylibre.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXNQQ6CMBBA0auQWTtJ29ASvYpxUcpIB0NrOkA0h
+ Ltbdfk2/+8gVJgELs0OhTYWzqlCnxoI0aeRkIdqMMo4ZY1G5oxxnXng5Y2UxGiFhea8EUYfHtg
+ F6117drbtAtTKs9CdX7/D9fa3rP1EYflm4Tg+7UE1U4MAAAA=
+X-Change-ID: 20260521-iio-humidity-ens210-remove-hack-7c5a6496547c
+To: Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ David Lechner <dlechner@baylibre.com>
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1710; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=meNlnmmcCErRmtN5Q8uakEi614HtX8GhsUthztF+AeI=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqD7CLamtm2lN/Csp2zizg2L4IAAZQLddI4kk1c
+ IiufwMQ3A6JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCag+wiwAKCRDCzCAB/wGP
+ wF+XB/4sDrBd7LGuFHAYXYRco83eA0WmtcQbAM8GP6AVJf4LtchXth2sDtCCcz9Im0q6UIL0mQT
+ BJQ6ExlWIRjJC/dnqAaMUeaKYNwRUf5k9bbaKm6wb58C8PEUhcgFQkdqL388VEYzMI1cMyzd5jW
+ hObn7UzcKmFcSFU+2yMI5dX4RaVNMaTniLcow2c8g4ZcoRe0KYe+tamdkbVolk1e5lFU8XrQKkm
+ IDuPFV1LNC6zFeAt2VxuafF7CKRLM43TSlb3bc18NDR0BBVs5wi4l53wxkYNLUoexZ7pxfUq26f
+ Bzf+D7bm6vM8DK0Qg6iKn7F1t4/jpFj5NthGkTfUevjBBioF
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-On Thu, May 21, 2026 at 5:30=E2=80=AFPM Maxwell Doose <m32285159@gmail.com>=
- wrote:
->
-> Include linux/cleanup.h to take advantage of new macros.
->
-> Replace manual mutex_lock() and mutex_unlock() calls across the file
-> with guard(mutex)() and scoped_guard() where appropriate to simplify
-> error paths and eliminate manual locking calls.
->
-> Add new helper function kmx61_read_for_each_active_channel() to mitigate
-> certain style issues and to prevent notifying that the IRQ is finished
-> whilst holding the lock.
->
-> Update certain returns, and add default case to return -EINVAL in
-> kmx61_read_raw().
->
-> Remove now-redundant gotos and ret variables, as the new RAII macros
-> make them unneeded.
->
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
-> ---
->  drivers/iio/imu/kmx61.c | 129 +++++++++++++++++++++-------------------
->  1 file changed, 67 insertions(+), 62 deletions(-)
->
-[snip]
+Rewrite IIO_CHAN_INFO_RAW case to avoid needing to add unreachable code
+to work around a compiler warning.
 
-Crap, forgot the whole changelog.
+When scoped_guard() was first introduced, compilers could not see when
+it returned unconditionally from inside the hidden for loop. This has
+since been fixed in the macro definition. So removing the `return
+-EINVAL` should be enough. Still, we can improve readability, decrease
+indentation and avoid the hidden for loop by rewriting the case without
+scoped_guard().
 
-v2:
-- Remove redundant blank line per Andy.
-- Put kmx61_set_mode() function call in kmx61_runtime_suspend() on one
-  line per Andy.
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+ drivers/iio/humidity/ens210.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-v3:
-- Add dedicated scope for guards.
+diff --git a/drivers/iio/humidity/ens210.c b/drivers/iio/humidity/ens210.c
+index 22ad208e6aa6..49543fc389bf 100644
+--- a/drivers/iio/humidity/ens210.c
++++ b/drivers/iio/humidity/ens210.c
+@@ -149,15 +149,16 @@ static int ens210_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_RAW:
+-		scoped_guard(mutex, &data->lock) {
+-			ret = ens210_get_measurement(
+-				indio_dev, channel->type == IIO_TEMP, val);
+-			if (ret)
+-				return ret;
+-			return IIO_VAL_INT;
+-		}
+-		return -EINVAL; /* compiler warning workaround */
++	case IIO_CHAN_INFO_RAW: {
++		guard(mutex)(&data->lock);
++
++		ret = ens210_get_measurement(indio_dev, channel->type == IIO_TEMP,
++					     val);
++		if (ret)
++			return ret;
++
++		return IIO_VAL_INT;
++	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (channel->type == IIO_TEMP) {
+ 			*val = 15;
 
-v4:
-- Fix certain scoping in switch-case blocks.
-- Remove stray ret variable.
-- Used scoped_guard() in kmx61_trigger_handler() instead of guard()().
+---
+base-commit: e1a29334a9c043defe7a9363fa76d399d3fdfbec
+change-id: 20260521-iio-humidity-ens210-remove-hack-7c5a6496547c
 
-v5:
-- Added new helper function kmx61_read_for_each_active_channel() per
-  Jonathan's suggestion.
-- Add default case to return -EINVAL in kmx61_read_raw() per Andy's
-  suggestion.
-- Add blank lines between guard(mutex)() calls and regular code per
-  Andy's suggestion.
-- Change last return statement of kmx61_write_event_config() to be 0
-  per Jonathan's suggestion.
+Best regards,
+--  
+David Lechner <dlechner@baylibre.com>
 
-v6:
-- Rebased onto TOCTOU fix per Jonathan's suggestion.
-       - (note: now dependent on said commit, link below)
-       - link: https://lore.kernel.org/linux-iio/CAKqfh0GHVtAS6Uw3Bjo+B0PCp=
-cfT8FogqEPCmt2x59zhmmh1Kg@mail.gmail.com/T/#t
-
-v7:
- - Remove some unneeded parentheses.
- - Remove stray whitespace.
- - Fix up return value (from return ret; to return 0;) since we won't
-ever return anything other than 0 from that return statement now.
-
-Note:
- Will save the dev_get_drvdata() patch for later.
-
-best regards,
-max
