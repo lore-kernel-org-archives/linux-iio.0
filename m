@@ -1,42 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7679839B493;
-	Fri, 22 May 2026 15:02:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 125C03603D8;
+	Fri, 22 May 2026 15:05:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779462129; cv=none; b=CgHBlwZtRk0fYN0kdWiff84al+vcImBOReVTXu9Xd6g4pVMJXhyktP/zMYdJz3vrlvZXo+K4vN3TAkrFnReCaqhbRghiSD4JB0/4nLGTYonlhXDPOiDltklwQoEFS9kUfKO84Ns/Gu3n3rbNYru+flPVhtPc9HXuV6ECDvIHFdQ=
+	t=1779462328; cv=none; b=Ygya+ksaQPRGdRa8lu1yT75YS/cDcBl1cnLj+Lcf6zJ1fGfDc6MAakCfaiilUDKokLEHWwcZYufmn3qCgSpSBwbDvysxxXmBowQgsmFs370Mk24KevEdVZkCUjcODXIH1SK5bU32b/ne2FgiwuOB9/scaQ2Gy3bTFPlT6YdJ+U0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779462129; c=relaxed/simple;
-	bh=AsLdi8xqpRHq/uiVDVBwje0EejhxCD0acrrUQhpLu14=;
+	s=arc-20240116; t=1779462328; c=relaxed/simple;
+	bh=Ybz0geEtcPpUdrhYwHGCiqOijU+0CfH318psp3FIeaM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IYhGjf9M+dex6N4DehI4vt3T8cNp5CYgkFeMKae8xt9ztfDBwFaKSg/1iFy/UY6gKBtNvgGIZNz/nWXDJ2C0sRL3R1aomUMl/+qMnlyL8/UUHhSxYj1Aj8hqorXqeg8sM0pyCVytVOBTvtd2QnQ+NNB5Cf0CPvNeKVWqYZAuZ7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bBhfBhaL; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=F+GMI/NJfVsqswo8RA/jGJueLyZYSeI75+Gus9YG0umRya/1sjH1hYTNdOw4ZUpipvMZsY0D6nOJCaSQbfVDkct/xEP/BaFEtB2rG9i0QbOsvAYLqKOtrtKYOWviZWFldy2cC8IZ0ICQvuL003O7PJvOd8T/BmUntabzdKe0mTE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oNLVjrSP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bBhfBhaL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE5E51F00A3D;
-	Fri, 22 May 2026 15:02:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oNLVjrSP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A8511F000E9;
+	Fri, 22 May 2026 15:05:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779462127;
-	bh=nmKZA/eTBYmZdhgEqSsXDeAbeGcmrMGoMlMJX9Z9mKw=;
+	s=k20260515; t=1779462326;
+	bh=lH7d0WILS/uMZVZCW7jnVb9ulWfo73WxoGRa8wTNFtI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=bBhfBhaL5lK/oNDjn7XyHdO1Ytf8G2xwe1d4Yh1M2GRMTzSjIFgklwHPEvGy76oqA
-	 JkLjkHKzKffey1B45tc/jCDDk/2knUyGqMBb9oRijHj9kAhVKki1I/bdoYOUiN9R6g
-	 X8glHT8lfMhGss1JQdQ7gZkl7MwO6GH61fCMmWX7V7/EYQdh0/qz6n0r1xQE0uRJTd
-	 EfqZK7XI188QzGUx0fjBuEdrKCFCUrLM+48NXQfK5aYOTfCdSisE9PhTj6x8+L1YnW
-	 Wp2qrrbsjWT9YPqbnAJ8knCBvIdqzf9M/U+yae1slegH6Q1GHARtSa0BluY/KGoZ66
-	 f4THVITfWOZdQ==
-Date: Fri, 22 May 2026 16:01:58 +0100
+	b=oNLVjrSPo+cvk9uDe2UPWymoR8jhQFisnEgItuGFaJFhnXn2WVytdRL7FpUm26F8x
+	 EsLicAGkobS1VJfU0AWwyuGQ8LjCG1hzdXY+HM7Jok3QSyftK0PVbIyGIxBmORqycz
+	 8Zm7mOXPzsRUytCceDIxxKMl0CHq/cehRlS9418o+eHIJQvmxqejlVng5y0bmXDRun
+	 dMMvW373h0Fz6bUumWi0thnsXhQtMw95B84CZSfymwFxawC5s9W+GlULeOM44ppw7Y
+	 6I6E0aJJEGGKP4JbjJfB29TFVfS/LndZei7Th3zbtONz3HKyqCbPJ5y3+Kphi8AxYQ
+	 AnAdgGPHNVciQ==
+Date: Fri, 22 May 2026 16:05:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- hcazarim@yahoo.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Salah Triki <salah.triki@gmail.com>
-Subject: Re: [PATCH] iio: potentiostat: lmp91000: fix NULL deref in probe by
- reordering setup
-Message-ID: <20260522160158.43cd1645@jic23-huawei>
-In-Reply-To: <20260520185142.34015-1-sozdayvek@gmail.com>
-References: <20260520185142.34015-1-sozdayvek@gmail.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: "Alexander A. Klimov" <grandmaster@al2klimov.de>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Alexandru Ardelean
+ <alexandru.ardelean@analog.com>, Mircea Caprioru
+ <mircea.caprioru@analog.com>, "open list:IIO SUBSYSTEM AND DRIVERS"
+ <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: dac: ad5686: update of_match_table
+Message-ID: <20260522160517.766c42f0@jic23-huawei>
+In-Reply-To: <ba4tnwmwcqkovyq67ootyqxyqhzk4xd3crohdpv6so7nidjdgb@kgv5zi6aw2nw>
+References: <20260520175748.537850-1-grandmaster@al2klimov.de>
+	<ba4tnwmwcqkovyq67ootyqxyqhzk4xd3crohdpv6so7nidjdgb@kgv5zi6aw2nw>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,106 +51,51 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 20 May 2026 23:51:41 +0500
-Stepan Ionichev <sozdayvek@gmail.com> wrote:
+On Thu, 21 May 2026 09:18:24 +0100
+Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-> lmp91000_probe() calls iio_trigger_set_immutable() with
-> iio_channel_cb_get_iio_dev(data->cb_buffer) before data->cb_buffer is
-> assigned. The struct is zero-initialised by devm_iio_device_alloc(), so
-> cb_buffer is NULL on entry, and iio_channel_cb_get_iio_dev() does an
-> unconditional cb_buffer->indio_dev which dereferences NULL.
+> On 26/05/20 07:57PM, Alexander A. Klimov wrote:
+> > When AD5673R/AD5677R support was added, of_match_table wasn't updated,
+> > so these two devices couldn't be probed based on device tree contents
+> > until now. I fixed this.
+> > 
+> > Fixes: 477bd010c20e ("iio: dac: ad5686: Add support for AD5673R/AD5677R")
+> > Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+> > ---
+> >  drivers/iio/dac/ad5696-i2c.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+> > index d3327bca0e07..fb118a02f76e 100644
+> > --- a/drivers/iio/dac/ad5696-i2c.c
+> > +++ b/drivers/iio/dac/ad5696-i2c.c
+> > @@ -91,7 +91,9 @@ static const struct of_device_id ad5686_of_match[] = {
+> >  	{ .compatible = "adi,ad5337r" },
+> >  	{ .compatible = "adi,ad5338r" },
+> >  	{ .compatible = "adi,ad5671r" },
+> > +	{ .compatible = "adi,ad5673r" },
+> >  	{ .compatible = "adi,ad5675r" },
+> > +	{ .compatible = "adi,ad5677r" },
+> >  	{ .compatible = "adi,ad5691r" },
+> >  	{ .compatible = "adi,ad5692r" },
+> >  	{ .compatible = "adi,ad5693" },
+> > -- 
+> > 2.54.0
+> >   
 > 
-> Reorder probe to acquire cb_buffer first (handling -EPROBE_DEFER) and
-> only then set the immutable trigger, register the trigger, set up the
-> triggered buffer, and register the iio device. Move the cb_buffer
-> release to the end of the cleanup chain so a late failure properly
-> unwinds in reverse order.
+> I am aware of this, but it is going to conflict with:
+> https://lore.kernel.org/linux-iio/20260505-ad5686-fixes-v6-0-c2d5f7be32be@analog.com/
 > 
-> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+> This is also to be handled by follow up work:
+> https://lore.kernel.org/all/20260422-ad5313r-iio-support-v1-1-ed7dca001d1b@analog.com/
+> https://lore.kernel.org/all/20260422-ad5313r-iio-support-v1-9-ed7dca001d1b@analog.com/
+> 
+> checkpatch would complain about this, once the dt-binding needs to come first.
+> 
 
-Hi Stephan
+I'll assume for now the fix will show up as part of Rodrigo's work.
 
-Make sure to check the list before sending out a patch.
-+CC Salah who is working on a fix for the same thing.
+Thanks
 
 Jonathan
-
-> ---
->  drivers/iio/potentiostat/lmp91000.c | 36 +++++++++++++----------------
->  1 file changed, 16 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-> index eccc2a343..7a938a023 100644
-> --- a/drivers/iio/potentiostat/lmp91000.c
-> +++ b/drivers/iio/potentiostat/lmp91000.c
-> @@ -330,17 +330,27 @@ static int lmp91000_probe(struct i2c_client *client)
->  	if (ret)
->  		return ret;
->  
-> +	data->cb_buffer = iio_channel_get_all_cb(dev, &lmp91000_buffer_cb,
-> +						 indio_dev);
-> +	if (IS_ERR(data->cb_buffer)) {
-> +		if (PTR_ERR(data->cb_buffer) == -ENODEV)
-> +			return -EPROBE_DEFER;
-> +		return PTR_ERR(data->cb_buffer);
-> +	}
-> +
-> +	data->adc_chan = iio_channel_cb_get_channels(data->cb_buffer);
-> +
->  	ret = iio_trigger_set_immutable(iio_channel_cb_get_iio_dev(data->cb_buffer),
->  					data->trig);
->  	if (ret) {
->  		dev_err(dev, "cannot set immutable trigger.\n");
-> -		return ret;
-> +		goto error_release_cb;
->  	}
->  
->  	ret = iio_trigger_register(data->trig);
->  	if (ret) {
->  		dev_err(dev, "cannot register iio trigger.\n");
-> -		return ret;
-> +		goto error_release_cb;
->  	}
->  
->  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> @@ -349,35 +359,21 @@ static int lmp91000_probe(struct i2c_client *client)
->  	if (ret)
->  		goto error_unreg_trigger;
->  
-> -	data->cb_buffer = iio_channel_get_all_cb(dev, &lmp91000_buffer_cb,
-> -						 indio_dev);
-> -
-> -	if (IS_ERR(data->cb_buffer)) {
-> -		if (PTR_ERR(data->cb_buffer) == -ENODEV)
-> -			ret = -EPROBE_DEFER;
-> -		else
-> -			ret = PTR_ERR(data->cb_buffer);
-> -
-> -		goto error_unreg_buffer;
-> -	}
-> -
-> -	data->adc_chan = iio_channel_cb_get_channels(data->cb_buffer);
-> -
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
-> -		goto error_unreg_cb_buffer;
-> +		goto error_unreg_buffer;
->  
->  	return 0;
->  
-> -error_unreg_cb_buffer:
-> -	iio_channel_release_all_cb(data->cb_buffer);
-> -
->  error_unreg_buffer:
->  	iio_triggered_buffer_cleanup(indio_dev);
->  
->  error_unreg_trigger:
->  	iio_trigger_unregister(data->trig);
->  
-> +error_release_cb:
-> +	iio_channel_release_all_cb(data->cb_buffer);
-> +
->  	return ret;
->  }
->  
 
