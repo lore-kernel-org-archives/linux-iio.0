@@ -1,136 +1,172 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC2EB3FE364
-	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 10:24:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779445446; cv=pass; b=g4UydCCTYfBFW/2CR8fbKJ+TT8ffHK7yfvSBCtdaqJw6FjhJP/v+LxJw5JnY1NLaMOJSfc6BB8D5kORagAA5ysGv5ghi0wm6Xe536ZJB29GdpCVuKj5fMNKEXyJmeOikqK5U3yp+OyUCUhjh3hgQmY9L8sglfBZWHWFqNDO9dkc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779445446; c=relaxed/simple;
-	bh=v5GwrhelJJ/3l5w2rDv3/n4baXipN5VTVL/HS15r4ms=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gYpuydLUhEnf/fS1s4psmkQ6TmOMkko9GIYrWl2Wq1SMq2VQ1cw+6hdBl2X5s3K4i9YT0Hqoce3taqN0BmIzuP9IG7RmMoa1f67A3cWm6aDbm8lHyehMfCILNWBRnwLimSdscZ3m6/+yt0e5ZkFnfE/Qfvr/cFaz1XfAhEg+azc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FVjcu9K+; arc=pass smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C43A13CDBD8;
+	Fri, 22 May 2026 10:47:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779446856; cv=none; b=KpdiCFJH5W+41+A1NE5yO68YioUmAWIRGW8A87uECjHEOVDB8HbaFdG0quhSo1YoPIn9MFKU0lgcn1UTDgTn09DWNh0OScKId1kGHkudI1Fi8Vs9M/qJrLWUA7x8+9dHyQZrZI4SbV+12hFI1CuQuqiZb339mCKWalS0IRWVrC8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779446856; c=relaxed/simple;
+	bh=QNdletnnGNblfetjlRW6ZCm9/bq4IaOYIpJ8Y2ip6so=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=g6VdhHle3D/sbh9M+LLq0ILBL+hGlO9xdB6EaR7yNpIT73JRPxMxT9VPVy0xYnSK0fpbBpHonxlc284vkt41nHrMwPaj/udsjs3srF/Ghtah5Nw9LUayeHH5DxNspG7Smb1UP+mxVl2KR5HrIy6ObHJbSEAPKlr02SlfIu5nfto=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NqoOW6Ru; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FVjcu9K+"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-43d734223e4so4742756f8f.0
-        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 03:24:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779445443; cv=none;
-        d=google.com; s=arc-20240605;
-        b=HyN7iy2iQ0Lbo/xm5ajVQvdIizCdm9+VlQ+PvqFbH6CWZTm0fgB8khtx53RJhHjJ99
-         /pxiXomILR+zaktZ+iOfhIVE13ZvtRLashLQDkOuUahUgSA2Ecc0jZHfog0KAp0TcEta
-         ZeB+P6fu2t+8b63rUiK4qbir2JFl8Glnyc6D6dbu1eJ3bAE2t10Vd1Zl16Kqgoaw1PgP
-         ROpcFyC/RMz50euAgyru+IEcERTz9wKPe8sXqId4VBVbZsMMmbt4WFHy5Dw+XKcFBlaZ
-         kgyk2j7MZ2Of8JAJAwFstlOt+hYOwmREc59B8b2NK6TdNvTPNr3yv/dfrxnKz5moNcZ3
-         c0hQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=ygbcmNbrdiFRKD+baIo/dQK8ZsOo1LhA+R4J1dUZcB8=;
-        fh=lTWyhOvLmUXysuCgm8fajOCf9U9jbThvmlzKRXt/2mg=;
-        b=cgNAfFqb5V9TU5QU88Iqad5/xBBtIAE6QhVnrdZuNkkjVuKgCZXhgpoPYWhy3VTK/p
-         NrPHEdruyctajSW2Lmap2Yiv0t/KkXfIomNi8lfiNXYfGOM6BP2KA0Duiavz/ofvWsCR
-         le97s/4JyXoGop5FmrJyWYfiYXPAlB6QUvXTg3uS2uk0sezxrq5LBtRNV+SSUztVQ9Xz
-         7Gm564qhm4kUqgfzgkDZ54Pvkte9E19owWCxuPebTPUqN3qXn0Ere1eR2ZfYtjSQAPUF
-         jgVBzXmG1q4NJooWQljjUdbgAZFelXYKww6WtG7kzI6APBmtXJLHwfqJ8bDuhxfHBHAW
-         VNUw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779445443; x=1780050243; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ygbcmNbrdiFRKD+baIo/dQK8ZsOo1LhA+R4J1dUZcB8=;
-        b=FVjcu9K+ry7yOmTT0mBpCvku8nlr8OvDdvmo6piGmKF8bxEUEosmsh4o+K+WLPDHkx
-         ypqQTJCOVcvEUAmpCfjBZVqYtk+QooG/m6oPinzMgy7i6hccJJojs3J5E89sCp9e3E3s
-         p3z2sFLOHfM4EkObHfqgHJc/pU4ieXGjQESRmnGrSDRxM6CN3AXMAyG7Lrj0Da8Ur4DX
-         G8O81UfS5ef8KFBkXI0akJF+twNy5tfUnfUeuYkOBkzHY55OzuG1c0CpExkmziSHdFZh
-         o8aMfJwcyBw0mGqJsqSuzls4WHzdRaXJ7IqN43C0MgNZksLpZ1us7kwi87eXj8yMAHnO
-         Knvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779445443; x=1780050243;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ygbcmNbrdiFRKD+baIo/dQK8ZsOo1LhA+R4J1dUZcB8=;
-        b=b+5pOmskChjwJfaTjBm3y1DTwEFpWid7CLmm8gAfTdbXyMP0aB2qSulW/yjeG+Jkjm
-         3M7O0WdRH8wdS/BBTWnFAoR4T5/ErOw2Zltj8uXXywGcMSMd1cCFiYYb88RW9Aq1CoMu
-         QVNAm/F1Cu8msE+MM94aODjwWqEyqsGNdkOPMHiUXGfsHviiTlbh2Wy4ONgS7bJgp+ON
-         DEIY8cRAYIAF4abiRgyImN7taSh2VGUcHExKi/Eg+eiC0KK2jwWHixBJDnIFSH9QS9eQ
-         hcwOXjhmQxx5OeKZ/Zg5t+BfFv0x/ME3X6H727xcuZm1kBKHP5PMFVY5b+lqhYr8Lyfd
-         F/OA==
-X-Gm-Message-State: AOJu0YzKwVaKaI5rUabI6VbZXmiygvBsjvYaPMdW5czHiQ+QieSBkJIz
-	icgOWwiUJjmO7dd9KVsQGsgdS6eDsn3NbTxL4PmhdOzVjh+rxMyS800fD2NIK4bVGMPONanuomb
-	HVBymAZ/Zy6w1pri6IHVjey+fxsOLCEFz6C+PvGE=
-X-Gm-Gg: Acq92OG8kxO1DjxJ5uLc6+DXV7//d2cGyK5nINXcBkhIUQNDSLkRwx3tAkMKt9dF4t+
-	RXmSpi7ffdqO6FER0ZiMv6jMyaennvEcit1dAlHjP+8r3fOkLKRefB2Ch33HrX4BHUGsVmE+50m
-	DlUQF2S5G4OKKHmjD9lx1SxuELDA0N+VCOSpYBxQa/a27cW8dyUVA43NawnLlmwg5mMa2BcVGRT
-	awKlg6kiQQbpABN1iz1Pbup930yZQh9elmXum+Wanb+ts0JBsjlYUUHok6x27xXI7GrEoKOgURf
-	9BYPxy6IFvlXtXgpR/4fwiadfNe1b/iIOAM1qcQVZvhoX8J7enM27INSuB/lj/GK0bKvtXqnwRa
-	cpxrtIxjiXzdhOpwFkQxmsSp5szz2Ckt7n24N5k/vToTTlaxzTPFXcidXF0MKTVuq5CG9vt4pYB
-	2D1cZ3kA==
-X-Received: by 2002:a05:6000:1889:b0:45e:8edc:dacc with SMTP id
- ffacd0b85a97d-45ea31ce398mr10796730f8f.27.1779445442961; Fri, 22 May 2026
- 03:24:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NqoOW6Ru"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1BE51F000E9;
+	Fri, 22 May 2026 10:47:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779446854;
+	bh=K7QkYbeKzf0diPzwFSy35esfS3DNOr7gU6+VWzSEYXw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=NqoOW6Ru5ewCnOZl4JPJNgROCMEbS2VYkGBvVV05HDjXUsmqvcZ/btGQX2aIUXrZ6
+	 8QvFlJ315J+uyGU+OY/HXdSDD6BJuriRtn0dMGKo2uVGcnnnaUJo8fs1OjHKP53H4M
+	 EvzTHTxJGlL4TywdE8zamWHjSZS8anCKmxL0wVDNTVz/YhoNaMG9+Fr7MEC7C2tlgJ
+	 SUWW/WdDiTNa1GIBkEwmxo62oWLLcoOtPIlSs7cVo2RVrUWpGFRDOpwsb9GfFhwGPg
+	 j6lLTBi7b/KDSfXbKVacEfpPmNc7ECF8OBYo2FuJbZXHkykbB/S7pAxQOv4YdRYD1r
+	 35AZXSnBLBsZA==
+Date: Fri, 22 May 2026 11:47:22 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Amit Kucheria
+ <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J.
+ Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>,
+ Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+ linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
+ <kamal.wadhwa@oss.qualcomm.com>, David Collins
+ <david.collins@oss.qualcomm.com>, Anjelique Melendez
+ <anjelique.melendez@oss.qualcomm.com>, Neil Armstrong
+ <neil.armstrong@linaro.org>, Stephan Gerhold <stephan.gerhold@linaro.org>
+Subject: Re: [PATCH 1/2] iio: adc: qcom-spmi-adc5-gen3: Share SDAM0 IRQ with
+ ADC_TM auxiliary driver
+Message-ID: <20260522114722.49b6055e@jic23-huawei>
+In-Reply-To: <6c876a92-e572-4cb9-8c31-bbf681a4770b@oss.qualcomm.com>
+References: <20260515-gen3_adc_tm-v1-0-39ba29f9b4ab@oss.qualcomm.com>
+	<20260515-gen3_adc_tm-v1-1-39ba29f9b4ab@oss.qualcomm.com>
+	<20260515145450.3b1e9c3d@jic23-huawei>
+	<6c876a92-e572-4cb9-8c31-bbf681a4770b@oss.qualcomm.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <19e4f066d51.4e6bc94b96251.5845269359367162045@zohomail.in>
-In-Reply-To: <19e4f066d51.4e6bc94b96251.5845269359367162045@zohomail.in>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Fri, 22 May 2026 12:23:52 +0200
-X-Gm-Features: AVHnY4LFGVjBSFD60N0_q5EU-1uKbuiei4cZUvjL_emm4YkCeTH4vmGPfWuCtm0
-Message-ID: <CALoEA-xYF-1Hf07JDVqbOGNXujLXWR9b7qW14RT9ZPwpmx9cjw@mail.gmail.com>
-Subject: Re: [PATCH] iio: trigger: fix memory leak in viio_trigger_alloc()
-To: Ashwin Gundarapu <linuxuser509@zohomail.in>
-Cc: linux-iio <linux-iio@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 22 May 2026 at 11:44, Ashwin Gundarapu <linuxuser509@zohomail.in> wrote:
->
-> From: Ashwin Gundarapu <linuxuser509@zohomail.in>
-> Date: Fri, 22 May 2026 14:34:46 +0530
-> Subject: [PATCH] iio: trigger: fix memory leak in viio_trigger_alloc()
->
-> Replace direct kfree() with put_device() in the error path after
-> device_initialize() has been called.
->
-> The direct kfree() bypasses the reference counting mechanism,
-> causing memory leak and potential use-after-free.
->
-> Signed-off-by: Ashwin Gundarapu <linuxuser509@zohomail.in>
-> ---
->  drivers/iio/industrialio-trigger.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 17781c12bc85..9c72e7ae996c 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -598,7 +598,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
->  free_descs:
->         irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
->  free_trig:
-> -       kfree(trig);
-> +       put_device(&trig->dev);
->         return NULL;
+On Thu, 21 May 2026 16:16:17 +0530
+Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
 
-IMO calling put_device() on an uninitialized struct device would cause a
-panic, as there are multiple goto statements that jump to this section
-before the struct is initialized. Additionally (as Sashiko points out), this
-patch introduces a double free issue - the IRQs are freed after jumping
-to the free_descs label, and then they would be freed again due to
-put_device() being called and a subsequently triggered cleanup.
+> Hi Jonathan,
+> 
+> On 5/15/2026 7:24 PM, Jonathan Cameron wrote:
+> > On Fri, 15 May 2026 14:23:44 +0530
+> > Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+> >   
+> >> The SDAM0 IRQ can be triggered for both EOC (end of conversion) events for
+> >> immediate ADC reads done in this driver and for threshold violation events,
+> >> based on ADC_TM thresholds configured from the auxiliary ADC_TM driver on
+> >> TM channels on the first SDAM.
+> >>
+> >> At present, this interrupt is handled only in the ISR in the main ADC driver.
+> >> When the ISR is triggered for an ADC_TM event, this driver notifies the ADC_TM
+> >> driver by calling a notifier callback exposed from it for this purpose.
+> >>
+> >> To simplify the interrupt handling in both drivers, share the interrupt between
+> >> the drivers. With this, ADC_TM interrupts on SDAM0 will be handled directly in
+> >> the ADC_TM driver, so remove the notifier callback and all TM interrupt
+> >> handling in the main ADC ISR.
+> >>
+> >> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+> >> ---  
+> > 
+> > Some stuff from Sashiko on this one:
+> > https://sashiko.dev/#/patchset/20260515-gen3_adc_tm-v1-0-39ba29f9b4ab%40oss.qualcomm.com
+> > 
+> > Given I assume you didn't see the warning (I'm fairly sure the bots analysis is correct
+> > as we've been busy fixing similar cases all cycle), can I just check, have you tested
+> > this on latest upstream?  
+> 
+> I had tested on a build based on top of Linux 7.1-rc2 and verified the driver's basic
+> functionality, but I think I overlooked the warning from the interrupt management code,
+> sorry about the miss.
+> 
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> > 
+> >   
+> >>  drivers/iio/adc/qcom-spmi-adc5-gen3.c         | 52 +++++----------------------
+> >>  include/linux/iio/adc/qcom-adc5-gen3-common.h |  2 --
+> >>  2 files changed, 8 insertions(+), 46 deletions(-)
+> >>
+> >> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> >> index f8168a14b907..a819c3e627a0 100644
+> >> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> >> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c  
+> >   
+> >>  static int adc5_gen3_probe(struct platform_device *pdev)
+> >>  {
+> >>  	struct device *dev = &pdev->dev;
+> >> @@ -818,7 +782,7 @@ static int adc5_gen3_probe(struct platform_device *pdev)
+> >>  	}
+> >>  
+> >>  	ret = devm_request_irq(dev, adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq,
+> >> -			       adc5_gen3_isr, 0,
+> >> +			       adc5_gen3_isr, IRQF_ONESHOT | IRQF_SHARED,  
+> > 
+> > Sashikio points out that IRQF_ONESHOT is never correct for a non threaded
+> > interrupt.  The point of that flag is to ensure we don't handle another interrupt
+> > until the thread is done. If there isn't a thread then it doesn't do anything
+> > (other than omit a warning!)  
+> 
+> I tried at first keeping only the IRQF_SHARED flag here, but it seems that
+> shared interrupts need to agree on the ONESHOT flag configuration, else the
+> second interrupt's IRQ request call fails.
+> 
+> And the ADC_TM interrupt needs to be ONESHOT, since we don't want that interrupt to
+> be rearmed before we have notified the thermal framework from the threaded
+> part of the handler. So I had to add the IRQF_ONESHOT here too, though it is
+> not useful here.
+That's an interesting corner case.  Maybe the warning needs to be more refined?
+(I don't think it checks for shared?)
 
-https://sashiko.dev/#/patchset/19e4f066d51.4e6bc94b96251.5845269359367162045%40zohomail.in
+> 
+> I think it's best to use a threaded IRQ handler in this driver too. I don't really
+> see any meaningful way to split the actions in the interrupt handler here into a primary
+> handler and a threaded handler, so is it fine if I just make the primary handler NULL
+> and move all the ISR functionality into the threaded handler part ?
 
--- 
-Kind regards
+That's fine by me.  Just add some comments on why.
 
-CJD
+J
+> 
+> Thanks,
+> Jishnu
+> 
+> 
+> >   
+> >>  			       adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq_name,
+> >>  			       adc);
+> >>  	if (ret)
+> >> diff --git a/include/linux/iio/adc/qcom-adc5-gen3-common.h b/include/linux/iio/adc/qcom-adc5-gen3-common.h
+> >> index 6303eaa6640b..39cbfcbdb101 100644
+> >> --- a/include/linux/iio/adc/qcom-adc5-gen3-common.h
+> >> +++ b/include/linux/iio/adc/qcom-adc5-gen3-common.h
+> >> @@ -205,7 +205,5 @@ int adc5_gen3_get_scaled_reading(struct device *dev,
+> >>  int adc5_gen3_therm_code_to_temp(struct device *dev,
+> >>  				 struct adc5_channel_common_prop *common_props,
+> >>  				 u16 code, int *val);
+> >> -void adc5_gen3_register_tm_event_notifier(struct device *dev,
+> >> -					  void (*handler)(struct auxiliary_device *));
+> >>  
+> >>  #endif /* QCOM_ADC5_GEN3_COMMON_H */
+> >>  
+> >   
+> 
+
