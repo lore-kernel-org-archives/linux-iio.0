@@ -1,139 +1,176 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDAD840B6F9;
-	Fri, 22 May 2026 12:37:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5974737C105
+	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 12:38:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779453457; cv=none; b=Easp9wVuWrxAAyPPpW0jmouK3/Yuc8a5PCFjN+IeDgoMK0MBOCpXvdMzs2eYUjf+d6Uu5UsXEk3znyEEIIoLR61W5/XIgZrJQ/uYXNxtCtPy50HjPgGNzTKjErUm4/yMGRqXB8hbyy6nobDqWzSwmAK0MOBRIKjvfY4nPe5dQFU=
+	t=1779453540; cv=none; b=CAwaI4QKVBOd5WklHebnWNzWymZnOlV4x+EPhAaXNbuwG1Z9jP1x/k8vV+FJZV77aaUjgC0AbWUCPkJruOhcoVbNt1f0fj+Njbb7D7zvi2+HQgO1Yl1zrV2JWIJuzCMRVqVUfiiKkv3hhmGGlJYtZDTXyVAXvBr9nQ5AE/NlJZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779453457; c=relaxed/simple;
-	bh=kyZLM8mX+6fCKQR3e9HXxZJV9mzcyLquP37oVSsMXxU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ehFeEcUPTzMhnO35jSe3bjl5o671pYkKLuZZcunOZTqEEIAzjnAKV3WtCBWdoeizzWajNGsaIGFs+5d7DFPoKCufAp8Au8x3RExTAvvqzxtVoi5oIdgE0y9hMZhsHhSA5029PwD9RyYry0yvO8wmtQG1OJk8vZE7T/PWWJ8FnC0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WVCJEQNk; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779453540; c=relaxed/simple;
+	bh=Qe+U4HO7WD8KknELE7AjHe+LqmBJ+B1Rtp/U1kePi/c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hrBwmTEc3j5MzTH2lB/1iuzLV9GmIm7it6Kch2PYovxlPY7v/1Mbch8xpuFih+Nl35X+RHajWCMiM9syEkkmOi7IEpla2J2EggHWydhFJsYE+HHYy0L/y71E6fBqV5MUuqq+HusIvPwyF3YL1036gQ2WjU9u+AK36rgNLl+COl8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q887/Xbp; arc=none smtp.client-ip=209.85.167.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WVCJEQNk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40BA41F00A3D;
-	Fri, 22 May 2026 12:37:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779453445;
-	bh=ZBa76dVyp6A/Ye0EBnSGPY0gOoXHjp/hgN/7v21MD4U=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=WVCJEQNkpBTByY7kg/1Xd/a3wqxEocyQ5QrXc6OnuIgGl/RiaBVjjjyJWsAuLebVC
-	 ChwBLnaNE2CjFvl/1ShAQDHwyQGtYkxVixf0UuVj5Z6ik+1dCXopLLqHtK2cvmFcfW
-	 HsIEwkJw4Djex5klox+a5NGGanltVwKXWIqw8umqGT87C7Qvb58zcmc0rqkXyYuUoy
-	 pFCgYQj8D/9GI4HzB827vAIcN2WVw4/V4BkCpY5cf0q1DP9V9CH539Toa1V//MXBJs
-	 POhdJTE7F9W5O+dwzklcrHs8zxrRiF+HD5b09pA/xGkspAsK4QV/qmD3jN+LfrBmG6
-	 pxvZjlyHeVQpA==
-Date: Fri, 22 May 2026 13:37:17 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: humidity: ens210: remove compiler warning
- workaround
-Message-ID: <20260522133717.32772423@jic23-huawei>
-In-Reply-To: <CAKqfh0Gwon4X2aCoDSNNBg7wXnKfbh69kj1R2HopKv=jHwfL-g@mail.gmail.com>
-References: <20260521-iio-humidity-ens210-remove-hack-v1-1-9528ac1b384b@baylibre.com>
-	<CAKqfh0Gwon4X2aCoDSNNBg7wXnKfbh69kj1R2HopKv=jHwfL-g@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q887/Xbp"
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5aa2c25c632so1872415e87.1
+        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 05:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779453537; x=1780058337; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Tnfk/VbrXKWZP8/5WpIT3Z2vqg/BP7hHVgXBgV215sA=;
+        b=q887/Xbp2Jg3CNQknKgj6q4gmCcLYdMh86TvnFQM2t8S7jv5GfR3idTji/XsaTkw9l
+         CPq+r4rJB8YPIL/k83qS+wp3uSdLRf6+B0HrH8fXhyMscQ+cxMK5tA+RI9e0rzAC4hgD
+         fzl6z85A1hxyZKhbkTsuEcZsBfz8h/3U/ntzI3GmJdVHudJ5firFN/BT1mc0GPzf02V4
+         vazsD9GimzinylTK8K8QvbMQepqEkJ+M4+NtyjmLHjpbmFgZxuG1tpiOtDhODT+W5czI
+         hO1SS0Wq8ANVXejr1GOQDOoH3c/P5PZHNX012O93OItHnq/kGvXJhjvl973VPKjd9g1q
+         6Ayw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779453537; x=1780058337;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Tnfk/VbrXKWZP8/5WpIT3Z2vqg/BP7hHVgXBgV215sA=;
+        b=BsLMQStelTBDrp+Q2b5jo19Dj3lwig0K/F3svtyzDwspAcfpo30mj4ctOXrUQGQiGs
+         zSItndITf3Sj6YXMe0jYFn4EvOXBscu4kQm03SGuTbnZLErUmENHCzZFS4XQqDSOQ3I0
+         eyE4kwqAdIz9mJIX5UfVC/1IjLibmY1Cr+DQFR/nPTPqCBSVJilzcx0S4Cg2DWGJ+961
+         8NveeXfHrqEd8JNq/gszdO7qI2iS+hBe4Qz1Z0M4PXndk89RdV/ElQtH9SzYlIagk+Vi
+         W1y9mkQbnA5OxOhioR7nmEeWr4nCrigxbtFJZHF+z54/dduCcb5PzS83LQTgUSrAYl1O
+         QKCA==
+X-Forwarded-Encrypted: i=1; AFNElJ8j+ZytwCwoOceURDCk/RWMsb6rsysWCIMkmP8v+71WhAeiDkas1By5nORNAwlNZLR6/2S4K3uk5Cw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzKtSRB5ASwxiOAQt/KODjt/lIGRKYfGu43INXpUdXoM2DZzHao
+	wC9Y+gIlWxh2ZHMQtA1oA8RgZJNAkdiAwyQNvrA7DU8MhnWHj4emanUd
+X-Gm-Gg: Acq92OE8e8z9dWrseYH089ddwV6ZRq6Jn4+892lUw2SC+528CoojSiRIVXHnnZvC4KW
+	vedMwlumzdHvNtjG/Ut5EHqdAdk+WsNvZLMXcDmMAODAVtrQIVvW/Kow3q/zsP5L5zbPN4Sj8Q8
+	z3pp87qcBvslhPBKdYkLMTD3G/85rN1Lql7+G0qpkbR9CmY2FSVh6SOXD6lUWBvHfcwXFapPNlc
+	qElHTMl1p4hgGDbwXrsTMKtoSghZzPbzirrJZYtPUawWhxQE82SzmATWSpyQr6dEjc654QkP8mV
+	JFgeuhE5EG+8iA3rApXP/iQnUcBRXn17DKVGBWaypOZLdbKiFlttvy93LAhcmq3nKtLrrJ+vVqN
+	cg6QBZLtZ7kOomwmF0WkiF/bHrPEquT+sX01bgEIlrhElrVlYRJ1l/jYcOh49EFQ0d8JFpLfN3B
+	2T8KKaE4OwShdhkAJ7CaL9y0nrWeztayhWFdgv/25s+CD0vJSIE0LMgry5lfjZAnOc7YaZSmmiK
+	rCmfIhE
+X-Received: by 2002:a05:6512:31c5:b0:5a8:f04d:573a with SMTP id 2adb3069b0e04-5aa3232b465mr1276360e87.17.1779453537271;
+        Fri, 22 May 2026 05:38:57 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa32cbaaf2sm404364e87.33.2026.05.22.05.38.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 May 2026 05:38:56 -0700 (PDT)
+Message-ID: <0d58842a-aa5c-4d12-9435-3264070038cc@gmail.com>
+Date: Fri, 22 May 2026 15:38:55 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: pressure: rohm-bm1390: notify trigger on all
+ error paths
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stepan Ionichev <sozdayvek@gmail.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20260517160801.269-1-sozdayvek@gmail.com>
+ <20260518094238.1986-1-sozdayvek@gmail.com>
+ <20260518161516.53f21777@jic23-huawei>
+ <61d9cec3-6aed-416f-9604-94fe94cb2e3b@gmail.com>
+ <20260520120822.351aa58f@jic23-huawei>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20260520120822.351aa58f@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, 22 May 2026 00:25:08 -0500
-Maxwell Doose <m32285159@gmail.com> wrote:
+On 20/05/2026 14:08, Jonathan Cameron wrote:
+> On Tue, 19 May 2026 08:48:13 +0300
+> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+> 
+>> Thanks Jonathan,
+>>
+>> Your post give me something to think about ;)
+> 
+> This is a can of worms.  More below.
+> 
+> I'm unconcerned as long as (and ideally someone should check it)
+> we can get of being stuck by unbind/rebind of driver.  Anything
+> else is best effort.
+> 
+> 
+>>
+>> On 18/05/2026 18:15, Jonathan Cameron wrote:
+>>> On Mon, 18 May 2026 14:42:38 +0500
+>>> Stepan Ionichev <sozdayvek@gmail.com> wrote:
+>>>    
+>>>> bm1390_trigger_handler() returns from three error paths without
+>>>> calling iio_trigger_notify_done(). The success path at the end
+>>>> does, so on a single transient regmap or read failure the trigger
+>>>> use_count is never decremented, and the !atomic_read(&trig->use_count)
+>>>> guard in iio_trigger_poll_chained() drops every subsequent dispatch.
+>>>> The buffered-data flow stays wedged until the trigger is detached.
+>>>>
+>>>> Funnel all returns through a single done label that calls
+>>>> iio_trigger_notify_done() and reports the outcome via IRQ_RETVAL().
+>>>>
+>>>> Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
+>>>> Cc: stable@vger.kernel.org
+>>>> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+>>>
+>>> These error path 'fixes' are fixes for hardware failure - so if anything
+>>> they are hardending  against a possible error condition. I don't mind
+>>> that bit it's not a bug to not do this so fixes tag an stable are not
+>>> appropriate for any of these.
+>>>
+>>> Note however that hardening against these conditions is not this simple.
+>>> It takes careful analysis of exactly how the hardware behaves and what
+>>> each error condition 'might' mean.  Whilst they are probably harmless
+>>> I'm also very dubious about taking them without comprehensive testing
+>>> on the particular device.
+>>>    
+>>>> ---
 
-> Hi David,
->=20
-> On Thu, May 21, 2026 at 8:26=E2=80=AFPM David Lechner <dlechner@baylibre.=
-com> wrote:
-> >
-> > Rewrite IIO_CHAN_INFO_RAW case to avoid needing to add unreachable code
-> > to work around a compiler warning.
-> >
-> > When scoped_guard() was first introduced, compilers could not see when
-> > it returned unconditionally from inside the hidden for loop. This has
-> > since been fixed in the macro definition. So removing the `return
-> > -EINVAL` should be enough. Still, we can improve readability, decrease
-> > indentation and avoid the hidden for loop by rewriting the case without
-> > scoped_guard().
-> >
-> > Signed-off-by: David Lechner <dlechner@baylibre.com>
-> > ---
-> >  drivers/iio/humidity/ens210.c | 19 ++++++++++---------
-> >  1 file changed, 10 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/iio/humidity/ens210.c b/drivers/iio/humidity/ens21=
-0.c
-> > index 22ad208e6aa6..49543fc389bf 100644
-> > --- a/drivers/iio/humidity/ens210.c
-> > +++ b/drivers/iio/humidity/ens210.c
-> > @@ -149,15 +149,16 @@ static int ens210_read_raw(struct iio_dev *indio_=
-dev,
-> >         int ret;
-> >
-> >         switch (mask) {
-> > -       case IIO_CHAN_INFO_RAW:
-> > -               scoped_guard(mutex, &data->lock) {
-> > -                       ret =3D ens210_get_measurement(
-> > -                               indio_dev, channel->type =3D=3D IIO_TEM=
-P, val);
-> > -                       if (ret)
-> > -                               return ret;
-> > -                       return IIO_VAL_INT;
-> > -               }
-> > -               return -EINVAL; /* compiler warning workaround */
-> > +       case IIO_CHAN_INFO_RAW: {
-> > +               guard(mutex)(&data->lock);
-> > +
-> > +               ret =3D ens210_get_measurement(indio_dev, channel->type=
- =3D=3D IIO_TEMP,
-> > +                                            val);
-> > +               if (ret)
-> > +                       return ret;
-> > +
-> > +               return IIO_VAL_INT;
-> > +       }
-> >         case IIO_CHAN_INFO_SCALE:
-> >                 if (channel->type =3D=3D IIO_TEMP) {
-> >                         *val =3D 15;
-> > =20
->=20
-> I'm questioning how that initial commit got merged at all, they
-> could've just used guard()() with {} (the kind of thing to make me
-> want to take a look at this file even further!). Visually looks good
-> to me but will follow-up later with rb if it all checks out.
+//snip
 
-The guard stuff was fairly new at the time so we were still working out what
-patterns make sense. Took a little while for consensus to emerge!
+>>>>    
+>>>> @@ -639,7 +642,8 @@ static irqreturn_t bm1390_trigger_handler(int irq, void *p)
+>>>>    		ret = bm1390_pressure_read(data, &data->buf.pressure);
+>>>>    		if (ret) {
+>>>>    			dev_warn(data->dev, "sample read failed %d\n", ret);
+>>>> -			return IRQ_NONE;
+>>>> +			handled = false;
+>>>> +			goto done;
+>>>
+>>> Hopefully all this stuff is unrelated to the trigger.  For these it is fair to
+>>> ack the trigger and the interrupt.  Curiously the driver does it partly for the
+>>> next one (IRQ_HANDLED).
+>>
+>> I would keep the IRQ_NONE here because, if we keep constantly failing
+>> the reads, then the bus is likely to be unerliable - and disabling the
+>> useless IRQ is probably very sane thing to do. It should help debugging.
+>> What comes to acking the trigger - I am starting to agree with Stepan,
+>> we should probably ack the trigger in any case. If we don't ack the
+>> trigger, then the IRQ_NONE does not serve the purpose it is intended for.
+> 
+> The interrupt that we'd get spurious detection on here would not be the device
+> one it would be the software emulated one deep in the iio trigger stuff.
+> 
+> Might still be useful for debug. Anyone fancy hacking an error in and reporting
+> back what we actually get from the debug hardware?  (with that trigger acked
+> as you suggest?)
 
-Anyhow patch is obviously correct and a cleanup so applied to the testing
-branch of iio.git.  Happy to add tags etc for next few days
-(or drop it if I'm missing something!)
+No promises but I'll see if I can try out something next week...
 
-Jonathan
+Yours,
+	-- Matti
 
->=20
-> best regards,
-> max
->=20
->=20
-> > ---
-> > base-commit: e1a29334a9c043defe7a9363fa76d399d3fdfbec
-> > change-id: 20260521-iio-humidity-ens210-remove-hack-7c5a6496547c
-> >
-> > Best regards,
-> > --
-> > David Lechner <dlechner@baylibre.com>
-> >
-> > =20
->=20
+-- 
+---
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
+~~ When things go utterly wrong vim users can always type :help! ~~
