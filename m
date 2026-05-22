@@ -1,48 +1,57 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DEA33E556D;
-	Fri, 22 May 2026 13:34:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F0753FA5DA;
+	Fri, 22 May 2026 13:38:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779456904; cv=none; b=hl9fMta0gnq71MQ2Dl0WhsnbrjlHf6Voudqo0g9hPAVaCwyLjrsVajduYu7dogUR46MO0KTisy4H74xFHdT9Yu4EzTdItdQetLkYiWtmW54GQmUA3uFxpzRx+ZofEX2AZziGuCWwy3qQu/2fL4DggSNA11vLtRaz+9lA8mA6NnQ=
+	t=1779457124; cv=none; b=Yh3S3KoS6sEbzjiJts/T6ZG1j4Uw6bz17aK04wTMvcMi11ZDBCZesghrpciJyWfKxFfvTF3t8YvHwrKgq7cFN8SJzUQjL/DvKcssTtyZM9TLkPoiI9H3l7yk0N116E5eY6NGRe+xfn+sXZo8vwsVFh7bL/2RRrs7V2AEkuUSMiE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779456904; c=relaxed/simple;
-	bh=7rruZx45tOPyVbdYIEsjc7Q/7/0lV10rxnT99HlP53c=;
+	s=arc-20240116; t=1779457124; c=relaxed/simple;
+	bh=VTIq37iy9DUOokRQnz3PLEP+l6B+THmSP5B+u2rjDgM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mdZFMRzlfE12Uynj1PAgmMGuozayrIM4uU+14OUiNdpRefmwYdG1XWrXocut/vzNxxF3Juw3yPjjCTSt8ihXbydL/Myw2aAKNL9KiXBAa1FKxdaeJ1oP+VpPxwctNL2YVcQAh/EYAQhXkhbu3i/et0F7xHVj+hiNoJaF41MNCF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oWILQPjH; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=rn7aI0UqVsymVvuFR4Nj+ErXbsTsQ3jLz0tucwDjCiZqW7z53qNUma3QSgHtBwUk1sJYXTuRqGwQzeRz2OCpx0p6Axb3tAx27yP5ZkSHO0TKPdN75sjVPx1LFCWcZG70KX67uSqE9/vw7IbyL7T4/6l0cS+HvPwMXqDvfBJy62Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ipeDJUhq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oWILQPjH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AED41F000E9;
-	Fri, 22 May 2026 13:34:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ipeDJUhq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACCAB1F000E9;
+	Fri, 22 May 2026 13:38:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779456893;
-	bh=3GpTXQIXIHdMrFeuYp7k+gWxfIegiInUYwig+1FPbQ4=;
+	s=k20260515; t=1779457120;
+	bh=2sEt+pfVTqi62XRpqK9+If4oDJrLR/RRwahq5GJ1eB4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oWILQPjH30t19XFBTZUxvvzjTtdFz5oHPyPHr4+rJbwiv0L52s8FhhsnWka/o9UEW
-	 6CeCsPShxgudQVL+GQY2S+o05CR+gtp1+ocxuIsOCuunFOu4utbzmClHJtj7QfJcjH
-	 OI0RdlbKdxsCqPouShkmykPOUi7KUjGDu9pZJuo56tzTRwg2tBS8BUbMYRL4BSEK7u
-	 bDFRIA2LHL77rL2HL8BpwwdQc+7/TSeFXRxNtph9Nt9gD7ZN9q/jOYehrOBOE3usWa
-	 7s7FIWArjhMN1dOPkUbs+2McVfRyPzgbq407Ap3+XWAMKb5QsnudE0mHnVq8755zQd
-	 aXdajXhuGbS9Q==
-Date: Fri, 22 May 2026 14:34:44 +0100
+	b=ipeDJUhqXzLNXV3/kjrZjDcIBrdBMJrwhEHGT2yPJuyIrzQGmgeY0+FCUspfdVakj
+	 tKtadiizz3RYaUAl/qxmetY8aUqVwRKhcKNnc1UI81X9WPjCQRGX6uGy833WAmoo/v
+	 pNs2OGjecBi4w8XzEExuumnilUumrLyq9oDY2pxIVNPb3cpXP7UZ/fukc76kkcUo0P
+	 mg2BrZCa+bsYI8JnwmJqXAVkVk/Fh+gS7rXE2XYI9rK2/aMGjNny/SRXRLUZoUk2zU
+	 052gpvCVoi3e4HmokXZA8wMezUzWEmpRXkWs489liV+CIW+dh1/Jh3ozRFoy42sjMZ
+	 GV2/wMk0o5l7w==
+Date: Fri, 22 May 2026 14:38:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Liviu Stan <liviu.stan@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Antoniu
- Miclaus <antoniu.miclaus@analog.com>, Francesco Lavra
- <flavra@baylibre.com>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux@analog.com>,
- <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 8/8] iio: temperature: ltc2983: Add support for
- ADT7604
-Message-ID: <20260522143444.4582e370@jic23-huawei>
-In-Reply-To: <20260521164323.770626-9-liviu.stan@analog.com>
-References: <20260521164323.770626-1-liviu.stan@analog.com>
-	<20260521164323.770626-9-liviu.stan@analog.com>
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, "Sa,
+ Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
+ <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+ "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+ "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH v12 5/6] iio: adc: ad4691: add oversampling support
+Message-ID: <20260522143827.013a985c@jic23-huawei>
+In-Reply-To: <LV9PR03MB8414E63DA5C2C22A46E98215F70F2@LV9PR03MB8414.namprd03.prod.outlook.com>
+References: <20260519-ad4692-multichannel-sar-adc-driver-v12-0-5b335162aa51@analog.com>
+	<20260519-ad4692-multichannel-sar-adc-driver-v12-5-5b335162aa51@analog.com>
+	<LV9PR03MB8414CA3DB26235605C9323E5F70E2@LV9PR03MB8414.namprd03.prod.outlook.com>
+	<20260522121628.21bf03f9@jic23-huawei>
+	<LV9PR03MB8414E63DA5C2C22A46E98215F70F2@LV9PR03MB8414.namprd03.prod.outlook.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,110 +62,89 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 21 May 2026 19:43:01 +0300
-Liviu Stan <liviu.stan@analog.com> wrote:
+On Fri, 22 May 2026 11:38:55 +0000
+"Sabau, Radu bogdan" <Radu.Sabau@analog.com> wrote:
 
-> The ADT7604 shares the same die as the LTC2984. It repurposes the
-> custom RTD sensor type (18) as a copper trace resistance sensor
-> and the custom thermistor type (27) as a leak detector, and
-> removes thermocouple, diode and direct ADC sensor types.
+> > -----Original Message-----
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Friday, May 22, 2026 2:16 PM  
 > 
-> Two new software sensor type values are introduced
-> (LTC2983_SENSOR_COPPER_TRACE = 32, LTC2983_SENSOR_LEAK_DETECTOR = 33)
-> that map to the hardware register values 18 and 27 respectively.
-> Dedicated structs (ltc2983_copper_trace, ltc2983_leak_detector) and
-> parser functions are added rather than extending the existing RTD and
-> thermistor paths, as the hardware configuration bits are fully
-> hardcoded and several RTD/thermistor properties would need to be
-> explicitly forbidden or ignored.
+> ...
 > 
-> Custom RTD (type 18) becomes the copper trace sensor. Sensor
-> configuration bits are hardcoded to 0b1001 per the datasheet.
-> Two variants are supported via the adi,copper-trace-sub-ohm DT
-> property: sub-ohm traces (< 1 ohm) have bits 17:0 cleared with no
-> excitation current or custom table; standard traces (> 1 ohm) have
-> a required resistance-to-temperature table.
+> > > >
+> > > > +	iio_for_each_active_channel(indio_dev, bit) {
+> > > > +		ret = regmap_write(st->regmap,
+> > > > AD4691_ACC_DEPTH_IN(bit), st->osr[bit]);  
+> > >
+> > > Unfortunately enough, I think a v13 will come, too...
+> > >
+> > > Had a look again on what Sashiko had to say, and seeing the sampling  
+> > frequency  
+> > > shared_by_all comment again made me have a deeper look see how the  
+> > code could  
+> > > be commented so he wouldn't complain about this anymore, and...
+> > >
+> > > Perhaps he is a bit right after all. I found a section stating that in standard
+> > > sequencer mode (which the driver uses right now), all the channels actually  
+> > use  
+> > > the ACC_DEPTH_IN0 for osr, and so changing ACC_DEPTH_INn for other  
+> > channels  
+> > > doesn't really do much. And so I tested this selecting both voltage0 and  
+> > voltage1  
+> > > for sampling with osr4 for voltage0 and osr1 for voltage1 and with a 100kHz  
+> > osc freq  
+> > > indeed DR fell after approximately 80us which points out both channels were  
+> > actually  
+> > > using OSR of 4. Perhaps the OSR should be shared by all and therefore the
+> > > sampling frequency would also be shared by all, right?  
+> > 
+> > I kind of lost track on the modes. What are the chances we later move to or
+> > add
+> > support for a mode where the different OSRs do matter?  If that's a possibility
+> > we should avoid ABI change by allowing for it from the start.
+> > 
+> > Then if we are in this mode, they'll have separate controls but change any,
+> > changes
+> > them all, if we are in a different mode that connection breaks.
+> > If that's the case, just throw in a comment saying something to the effect this
+> > may change.
+> > 
+> > It's not wrong ABI to do this, it's just less intuitive for users which is why
+> > we prefer the shared_by stuff where there isn't a disadvantage.  That is at
+> > most
+> > a hint to what actually happens.   A simple example is where different
+> > channels have one OSR field but they aren't the same - i.e. channel 1 is twice
+> > the OSR of channel 2.  Hence we can't share the attribute but any change
+> > effects
+> > both.
+> >   
 > 
-> Custom thermistor (type 27) becomes the leak detector. Sensor
-> configuration bits are hardcoded to 0b001. The custom table uses
-> a resolution of 16 instead of 64, and is specified via the
-> required adi,custom-leak-detector DT property.
+> Hi Jonathan,
 > 
-> Both sensor types expose an IIO_RESISTANCE channel reading from
-> the resistance result register bank (0x0060-0x00AF). Added a
-> "base" parameter to the LTC2983_RESULT_ADDR macro and a "base_reg"
-> parameter to the ltc2983_chan_read function so we can read from
-> both result register banks. The resistance register encodes the
-> measured resistance with 10 fractional bits, so dividing by 1024
-> gives ohms. Since the sense resistor is specified in ohms, the
-> output is in ohms for both sensor types and a single 1/1024
-> scale applies to both. For > 1 ohm copper traces and for leak
-> detectors, a secondary channel also appears: IIO_TEMP
-> (millidegrees Celsius) for copper trace and IIO_COVERAGE (percent)
-> for leak detector.
+> I don't think a mode where different OSR will matter will be added in the future. Better
+> yet, this advanced sequencer functionality is not really mode dependent and is actually
+> something that allows you to manually rearrange channels and samples in the
+> sequence, and unless this functionality is active (it is not by default nor is it used by
+> the driver, since we use the standard sequencer).
 > 
-> The ltc2983_chip_info struct is extended with a u64 supported_sensors
-> bitmask using BIT_ULL() to safely represent the new sensor type bits
-> 32 and 33 on 32-bit builds. A LTC2983_SENSOR_NUM sentinel is added
-> to the enum so that the bounds check uses >= LTC2983_SENSOR_NUM
-> rather than hardcoding the last sensor type.
+> Personally, I don't see any reason to have this advanced sequencer stuff implemented
+> since DR is only falling at the end of the sequence no matter if it is standard config or not,
+> the only "disadvantage" to say so is that the standard sequencer uses the same OSR field
+> for all channels. But that advanced sequencer stuff would only complicate the buffer
+> enable/disable functions even more, which I don't think it's worth the effort.
 > 
-> Tested on EVAL-ADT7604-AZ connected to Raspberry Pi 5 via SPI.
-> 
-> Signed-off-by: Liviu Stan <liviu.stan@analog.com>
+> So, with this in mind. Letting the driver use standard sequencer would ultimately mean
+> that the osr would be the same for all the channels, and then effective rate the same for
+> all channels, which I suggest having it like that from initial driver patch to the end, so no
+> ABI change mid-patch series. This change will simplify the driver.
 
-The sashiko comment about the completion race looks real to me.
-Can you take a look at that. Might be some odd reason why we can't
-reinit_completion() before triggering the capture but that would
-be very unusual.
+Ok.  Thanks for the analysis.  It may well be that those fancy sequencer things are
+only really useful for very specific use cases we won't see in Linux.
 
-Otherwise just two really small things I missed in earlier reviews.
-If everything else was ready to go I'd have tweaked these whilst
-applying but seems you'll be doing a v4 so over to you!
+So I'm fine with following the simple path!
 
 Jonathan
 
->  drivers/iio/temperature/ltc2983.c | 413 ++++++++++++++++++++++++++++--
->  1 file changed, 394 insertions(+), 19 deletions(-)
 > 
-> diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-> index 326f843f4271..e2ffeee026ee 100644
-> --- a/drivers/iio/temperature/ltc2983.c
-> +++ b/drivers/iio/temperature/ltc2983.c
+> Radu
 
-> @@ -186,17 +188,44 @@ enum {
->  	LTC2983_SENSOR_SENSE_RESISTOR = 29,
->  	LTC2983_SENSOR_DIRECT_ADC = 30,
->  	LTC2983_SENSOR_ACTIVE_TEMP = 31,
-> +	/* Sensor types for some parts only; map to RTD_CUSTOM/THERMISTOR_CUSTOM in HW */
-> +	LTC2983_SENSOR_COPPER_TRACE = 32,
-> +	LTC2983_SENSOR_LEAK_DETECTOR = 33,
-> +	LTC2983_SENSOR_NUM,
-
-That's a terminating entry so no trailing comma.  It always has to be last.
-
->  };
-
->  static const struct spi_device_id ltc2983_id_table[] = {
-> @@ -1707,6 +2080,7 @@ static const struct spi_device_id ltc2983_id_table[] = {
->  	{ "ltc2984", (kernel_ulong_t)&ltc2984_chip_info_data },
->  	{ "ltc2986", (kernel_ulong_t)&ltc2986_chip_info_data },
->  	{ "ltm2985", (kernel_ulong_t)&ltm2985_chip_info_data },
-> +	{ "adt7604", (kernel_ulong_t)&adt7604_chip_info_data },
-
-As below.
-
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(spi, ltc2983_id_table);
-> @@ -1716,6 +2090,7 @@ static const struct of_device_id ltc2983_of_match[] = {
->  	{ .compatible = "adi,ltc2984", .data = &ltc2984_chip_info_data },
->  	{ .compatible = "adi,ltc2986", .data = &ltc2986_chip_info_data },
->  	{ .compatible = "adi,ltm2985", .data = &ltm2985_chip_info_data },
-> +	{ .compatible = "adi,adt7604", .data = &adt7604_chip_info_data },
-
-Oops I missed this before. Alphabetical order. 
-
-Jonathan
-
->  	{ }
