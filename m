@@ -1,138 +1,370 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAEFC477995
-	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 14:25:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779459938; cv=pass; b=IJJj0S7ATe+gzkbRMALk2+GStKUlOw9YxJ/ocoar/o4JouVeM2JvX1WkqdLqrbKGz0jAqL7wMQWWJPeQjQc1mkKYew6wIjm8TnwvrubgDr6X9jCoEfmWcRBnxaVg+eClG4ZgzC05MWo8qWqCcr5cKLmzVWRo4uXX+wbwt9BhQcQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779459938; c=relaxed/simple;
-	bh=v7FBgLFkkzz3pOhe8g+ktG1pnnMIsllDx21K56evHWs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=HT8ErZbq4lX9EyNx/9qUJ467LiO4DkrQHcikfwu66ihiMCStMDo7HztiPk94NHFDonE2apddiZlAYe3ga9B4Gx0i10xT5EN70x4RPCHj6EVJRWtRZ4YtRQDQBYfAHjjw4FkUHDsXoMvcGPrYntPGQoSerxCGeN9jLMWd4ZR+okQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XPPtep1I; arc=pass smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A4823630AD;
+	Fri, 22 May 2026 14:37:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779460651; cv=none; b=ngP37lCslA7yODmr294j/TuHZqh40sYWdmmtRL93zHwOdaW4JBQ1onXlJ641F4c+wrJSxqZKOQVfGCB9EGud9KaZKKVNqvoX5FsLUcRcZAbu/WK+F5ePMVbPBLQBgggfLGRt7rc5MlawflqfPOlQmYNVFCxuo2p1E9NBuxUPe34=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779460651; c=relaxed/simple;
+	bh=7LRvogyE2DbiqEqreTDiXtNf9rIpO8JT1auuOTSw3t4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Q6h4+Mv0Baexe/VQx93umBr+r2047DiTa2POPlUfsMcjv6rn3BxQxI8TaiRTiZB5nLrg16h2rpg4lg0MMdLSd4Ng0OQr1lSpejfrZbnh4tzKWs4T/TJO7TftX7pEaGXbn2L4heTmfHosegKx2b0LE9f/2Cc0efVnidjvgSEAk2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iJ5SfAZd; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XPPtep1I"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-45e9f4a3510so1477468f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 07:25:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779459935; cv=none;
-        d=google.com; s=arc-20240605;
-        b=gtuyg5OAxrrdKfEgLsRmWkeexxDolSfAOYez2gowRoXvVpgaIMv7hpzMoHKiQqEhIv
-         iukRdvqHyrl3xhsaTH2oulvcWQ8Jsk5vZwvJJLwWKCTacsz6/fMVl2/0+ajJZgqGM5V8
-         HWejnlNK2c0XdY2UXxQbkzytRFUR7GXl/L4THmpva70TghQVZPkt3Z8uNzpCE7EW3llG
-         2eQDnx8emm/BwXhsbPGlfULPbRbHZVfA5HPWwoAKLkxhAMci/fhRedBRK5HtQn6NXX+i
-         WFgG4ZK2zdmMr2ExNYHjocI8i7wdljd2sN9/q0kIZVlJqN1GE8KImAOuLjmtBgxGpStW
-         L0QQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=wxoIgSFrZs9f+YtoGBBHnxJcqNFM/1egt5gJfatubYE=;
-        fh=OWEd6ugQzjMJEOruWTQq+drVRuwezcboStR7x4B8moY=;
-        b=afAAN3+C7OLHWSmr22iiFm0Ht7tH2mxcWU8Zj4ShbeE297HFQ6xK07P15IqMq4tvcE
-         Cj8KXTOV34wi7kP4mnMykP8b2jPfm2B1OP1buMBtvexA3JXO5sjvMlXb3vo9LxMbbdS4
-         iGR43Ia6GVDf5i11iZ8IB0AzaDFiiknTNQeHT/0drHq+qXeTqfzA2xm4ESBEDLjfaMF/
-         lYjT7dpjDD47gPR2D6I5RpXXSjds3FGi0R1Zw53y7Zu31vaH4QOMuc2cgjVNFUiDZeqT
-         HYXEjy48yTy35opyFc6xKIQg0G/e5plp8mIZWUirDkDMm0tnLL/m1kZaOIgZzNQaTIqk
-         eYMA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779459935; x=1780064735; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=wxoIgSFrZs9f+YtoGBBHnxJcqNFM/1egt5gJfatubYE=;
-        b=XPPtep1IZYxdKiIVUfpD/2OJ/sFLUtpq2N4lJWzajSfpp5zmHfPa5pJBtNCgdujSs1
-         oqdFCefaPTupPCYXXKY0Lcz6QpwvE2HJZgnQ1X0z3uk6Uc7rp1R9aig881oOWAA5oclP
-         0zGXReOi54lttFxzLjTKz5oc5/AUtLkjUb6ZSUGs9jbrUBLa7hBUMxw0uKonBAD1MmIe
-         TtMMnDT6kAZFyMnaR0+BGj4hhlfkHP87FNqYSgiEdlEFpSjQ5UYQ1Cr0omBQU9tO5drV
-         n9vE7+Hut1mcGOzqm2BCDzOwacb0tiiXbqIzGbwr4LR9E2qBxbx3SySAUTImGZ7D6Kls
-         C2Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779459935; x=1780064735;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wxoIgSFrZs9f+YtoGBBHnxJcqNFM/1egt5gJfatubYE=;
-        b=ObD0TBMoPoxJt0CPzoF1bDiUuGbjffLG/Jxrmtf/SrBMXDNskWji+5EFNtR0TDOxei
-         Mv5hYvDu9bnJClA9vcXOBf2qrntfo8C5ZoNg1mEdzKqQ6SFbETwWhctRO8UoylrxzjA+
-         6FOr83W+CMIlEHRnB3I4yjGhzIBIeHDLxx8pX3nnVjqAt77nImiyaDoSLtqxjKyN37RU
-         OtyfZNlXRdtlMAgQ5kg/SjGocg9CWcChqS/tVHeSgwRcDhiLjp3mLobyupzz1P+VjcQg
-         Mbj+IKAlPyu4OGH8qOanrrf7hJ6BqG+xkeNepkCiWnWM9fTNNJYNuVVynH64Yco2ZWlb
-         LqUQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/2L0gxdfdxYuIvxSYuRAThdxRE9zlY1VXOwx+I4r3CovE9xaz2FKk0ECPMzdu4IYHwqMtNwC0kxP0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwtYYA+lFxydktmbPt66ZKmgjWYLJvya9zFxzm7awwy6Qhd6ETQ
-	y7Cjlofh0qCr/tDHfqkKCuDJXU9VEnEWc7B8n23+fKUMCmDWszgsJm+t/D7B2jXD9fuRQ92ZvMi
-	cqivF9B3F7JrLXSlDmCmy3RQb/MEZYxg=
-X-Gm-Gg: Acq92OHRc/qJknSQ8ktiWELxSTVyNo9J3GG3GvLwhGyCNG39DAFrBSYlTGx1pw5+TgW
-	uGZ4oksMkZ0uFBGZSvYdwp7vbuLKymWOLtK+pPRWJWqPFOMX55ZWttxrHAMsbFZZ7suX2xPUlPz
-	0p7yBwBlxsNN7o+sXHaC6Pjifh5s2YAqNQXvaxeuwEM+zoSTOjwLBCFQ8B8MQQ6kxqG+p6I72wI
-	vkphsvTsdi56jUiNRZPMaSrsovKE1DK154cHBEqtfBwCsEh7ef+nqZUZRwU0Ga3FHn5Yz8HZJE2
-	Wi9hmBBeU0IHgXr8MEeRBnsOnk29IWEusC5Q/yDWLnvGPV/j+Iaj6wMZV/nduIOOuxNm+SByw79
-	kjkvkfVBr6O0cJcTYCqtkwwcDHp+sbAVAi+bHA5VW1YUC5w2/fnJcFnJLBQswhfN+YUwwPlkD7n
-	WMNzrt1Q==
-X-Received: by 2002:a05:6000:1848:b0:45e:8866:e58d with SMTP id
- ffacd0b85a97d-45eb3687eaemr5912539f8f.11.1779459934969; Fri, 22 May 2026
- 07:25:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iJ5SfAZd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 210FF1F000E9;
+	Fri, 22 May 2026 14:37:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779460649;
+	bh=ZkBxG7dAs5Dbu50nlO3YiIMXGT1N8myPKjIk5UYE76k=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=iJ5SfAZdKty5IpIOZD2nGQLELfwOgcAW3IHmcg8zAs/vWdIUUVvUAW3WRNM+NoaYt
+	 SnCDtSC9bdujxY4UfImzASP8wKrcqALG9B3a7NrfWt85JRU7VpIZ9VGgfa1L8MKM6J
+	 prMI0zQRB7BAoP8bxYuMh9Flxz51jSdsPFb9CSq+qTOk/iS/4J1hSsZSsddU4YduGl
+	 HevrpKYRVFB8ZTsyQTSioKOtgHxiNg9HfeBkXJUCeTV1yToO7406Y5e6SqvbnfJO37
+	 X+SRnavR6QHOzOuODj91I+2zo7J4Gw1q6tXoe/uLHCuoZ4yspOEe3S34HgaI1BN39y
+	 QvAXoY8otH5MQ==
+Date: Fri, 22 May 2026 15:37:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+ Rishi Gupta <gupt21@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: light: veml3328: add support for new device
+Message-ID: <20260522153719.4fc1d932@jic23-huawei>
+In-Reply-To: <20260520-veml3328-v2-2-a57f0d9e28d4@gmail.com>
+References: <20260520-veml3328-v2-0-a57f0d9e28d4@gmail.com>
+	<20260520-veml3328-v2-2-a57f0d9e28d4@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260521-opt3001-cleanup-v3-0-820169dec8c3@gmail.com>
- <20260521-opt3001-cleanup-v3-7-820169dec8c3@gmail.com> <20260522151252.4a8ac373@jic23-huawei>
-In-Reply-To: <20260522151252.4a8ac373@jic23-huawei>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Fri, 22 May 2026 16:25:24 +0200
-X-Gm-Features: AVHnY4Lidra8qXJhy0BjBn-Pom_btnsWCmP5v-ODJZRaYZi7yzSwTHsYhXjrGKk
-Message-ID: <CALoEA-yoM07pApwmhi0PrEZkuAf=GAd0EifUN60=EWWzJt_tXA@mail.gmail.com>
-Subject: Re: [PATCH v3 7/7] iio: light: opt3001: add comment to mutex
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Alexander Koch <mail@alexanderkoch.net>, 
-	Michael Hornung <mhornung.linux@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Maxwell Doose <m32285159@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 22 May 2026 at 16:13, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Thu, 21 May 2026 11:55:44 +0200
-> Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
->
-> > From: Joshua Crofts <joshua.crofts1@gmail.com>
-> >
-> > Add comment to mutex per checkpatch.pl report.
-> >
-> > No functional change.
-> >
-> > Reviewed-by: Maxwell Doose <m32285159@gmail.com>
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> > ---
-> >  drivers/iio/light/opt3001.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-> > index ac1c7ba5679867f6b814894680e317615f2e373b..9d24d7a23ef00d160fdae737b6ea1943576a3fcf 100644
-> > --- a/drivers/iio/light/opt3001.c
-> > +++ b/drivers/iio/light/opt3001.c
-> > @@ -103,6 +103,7 @@ struct opt3001_chip_info {
-> >  struct opt3001 {
-> >       struct i2c_client       *client;
-> >
-> > +     /* Mutex for ensuring one executed command at a time */
->
-> The device uses a 'register' type control scheme rather than
-> command based. So I'm not sure what intended meaning of this is.
-> I'd say something like
+On Wed, 20 May 2026 23:15:38 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-Of course, no clue how I got the idea of it being command based.
-Must've mixed up the files...
+> Add support for the Vishay VEML3328 RGB/IR light sensor communicating
+> via I2C (SMBus compatible).
+> 
+> Also add a new entry for said driver into Kconfig and Makefile.
+> 
+> Assisted-by: Gemini:3.1-Pro
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
---
-Kind regards
+Hi Joshua,
 
-CJD
+Sashiko did a really good job on this. I'm always amazed at how much it
+understands of how these attributes are used.
+
+https://sashiko.dev/#/patchset/20260520-veml3328-v2-0-a57f0d9e28d4%40gmail.com
+
+My biggest comment is I'd look at making the scale from integration / gain
+calculations something that is precomputed that you just look up.
+You can have separate ones for light and intensity channels or be a little
+cheeky and just use the light one for everything - given intensity doesn't
+have fixed units as such we can scale by the extra factors in the illuminance
+calculation and not worry about what they are.
+
+
+> diff --git a/drivers/iio/light/veml3328.c b/drivers/iio/light/veml3328.c
+> new file mode 100644
+> index 000000000000..fdfa8fd1666b
+> --- /dev/null
+> +++ b/drivers/iio/light/veml3328.c
+> @@ -0,0 +1,416 @@
+
+> +
+> +#define VEML3328_CHAN_SPEC(_color, _addr) { \
+> +	.type = IIO_INTENSITY, \
+> +	.modified = 1, \
+> +	.channel2 = IIO_MOD_LIGHT_##_color, \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME) | \
+> +				   BIT(IIO_CHAN_INFO_SCALE), \
+> +	.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME) | \
+> +					     BIT(IIO_CHAN_INFO_SCALE), \
+> +	.address = _addr, \
+> +}
+> +
+> +static const struct iio_chan_spec veml3328_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),
+
+Sashiko is kind of right and kind of wrong on this.
+As it is shared by all, BIT(IIO_CHAN_INFO_SCALE)
+should be here.  It won't have a function affect as we don't verify
+they all have it and as long as one does the file will get created.
+So this is more about consistency than correctness.
+
+Raises more questions though.  Is it correct scale? I think not.
+Looks like you have scaling for the intensity channels returning
+different values from the light one. 
+
+So I think the above INTENSITY should move IIO_CHAN_INFO_SCALE
+to .info_mask_shared_by_type and equivalent for the available.
+
+
+
+
+> +		.address = VEML3328_REG_DATA_G,
+> +	},
+> +	VEML3328_CHAN_SPEC(CLEAR, VEML3328_REG_DATA_C),
+> +	VEML3328_CHAN_SPEC(RED, VEML3328_REG_DATA_R),
+> +	VEML3328_CHAN_SPEC(GREEN, VEML3328_REG_DATA_G),
+> +	VEML3328_CHAN_SPEC(BLUE, VEML3328_REG_DATA_B),
+> +	VEML3328_CHAN_SPEC(IR, VEML3328_REG_DATA_IR),
+> +};
+> +
+> +/* scale values per datasheet */
+> +static const int veml3328_scale_vals[][2] = {
+Sashiko wins again. Whilst we don't get a nice standard unit for
+IIO_INTENSITY channels for _raw * _scale, the expectation is that
+for the same input light intensity this should remain constant.
+I.e. If _scale value double _raw should halve.
+
+I assume these are x0.5 x1 x2 and x4 gains applied. Those will
+result in _raw changing by those factors, therefore to get a stable
+output these should be inverted.  
+
+	{ 2, 0 },
+	{ 1, 0 },
+	{ 0, 500000 },
+	{ 0, 250000 },
+
+Make sure you test _raw * _scale is stable as a result.
+
+> +	{ 0, 500000 },
+> +	{ 1, 0 },
+> +	{ 2, 0 },
+> +	{ 4, 0 },
+> +};
+> +
+> +/* integration times in microseconds */
+> +static const int veml3328_it_times[][2] = {
+> +	{ 0, 50 * USEC_PER_MSEC },
+> +	{ 0, 100 * USEC_PER_MSEC },
+> +	{ 0, 200 * USEC_PER_MSEC },
+> +	{ 0, 400 * USEC_PER_MSEC },
+> +};
+> +
+
+> +
+> +static int veml3328_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	struct veml3328_data *data = iio_priv(indio_dev);
+> +	struct regmap *regmap = data->regmap;
+> +	struct device *dev = regmap_get_device(regmap);
+> +	unsigned int reg_val;
+> +	int ret;
+> +	int reg;
+> +
+> +	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(dev, pm);
+> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> +	if (ret)
+> +		return ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = regmap_read(regmap, chan->address, &reg_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		*val = reg_val;
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		ret = regmap_read(regmap, VEML3328_REG_CONF, &reg_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		reg = FIELD_GET(VEML3328_CONF_IT_MASK, reg_val);
+> +		if (reg >= ARRAY_SIZE(veml3328_it_times))
+> +			return -EINVAL;
+> +
+> +		*val = veml3328_it_times[reg][0];
+> +		*val2 = veml3328_it_times[reg][1];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = regmap_read(regmap, VEML3328_REG_CONF, &reg_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (chan->type == IIO_LIGHT) {
+> +			int it_inx, gain_inx;
+> +			int it_us, scale_u;
+> +
+> +			it_inx = FIELD_GET(VEML3328_CONF_IT_MASK, reg_val);
+> +			gain_inx = FIELD_GET(VEML3328_CONF_GAIN_MASK, reg_val);
+> +
+> +			if (it_inx >= ARRAY_SIZE(veml3328_it_times) ||
+> +			    gain_inx >= ARRAY_SIZE(veml3328_scale_vals))
+> +				return -EINVAL;
+> +
+> +			it_us = veml3328_it_times[it_inx][1];
+> +
+> +			/*
+> +			 * Equation for calculating ambient light scale:
+> +			 * Scale = 0.384 * (50000 / Current_IT) * (1x / Current_Gain)
+
+Good. This has the inverses missing for the intensity channels.
+
+As I note below, there are quite a few accesses to what is basically a 4x4 array
+of values based on selection of gain and selection of integration time.
+
+I'd be tempted to precompute them and make all these paths look ups.
+
+
+> +			 */
+> +			scale_u = 384 * USEC_PER_MSEC;
+> +			scale_u = scale_u  * 50000 / it_us;
+> +
+> +			switch (gain_inx) {
+> +			case 0:
+> +				scale_u *= 2;
+> +				break;
+> +			case 1:
+> +				break;
+> +			case 2:
+> +				scale_u /= 2;
+> +				break;
+> +			case 3:
+> +				scale_u /= 4;
+> +				break;
+> +			default:
+> +				return -EINVAL;
+> +			}
+> +
+> +			*val = 0;
+> +			*val2 = scale_u;
+> +
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		}
+> +
+> +		reg = FIELD_GET(VEML3328_CONF_GAIN_MASK, reg_val);
+> +		if (reg >= ARRAY_SIZE(veml3328_scale_vals))
+> +			return -EINVAL;
+> +
+> +		*val = veml3328_scale_vals[reg][0];
+> +		*val2 = veml3328_scale_vals[reg][1];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+I would  flip the logic and do this one out of line.  It's shorter!
+
+Mind you it should still be taking integration time into account to
+achieve a stable value whatever the integration time (assuming we don't
+hit limits).
+
+
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int veml3328_read_avail(struct iio_dev *indio_dev,
+> +			       struct iio_chan_spec const *chan,
+> +			       const int **vals, int *type, int *length,
+> +			       long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*length = ARRAY_SIZE(veml3328_it_times) * 2;
+> +		*vals = (const int *)veml3328_it_times;
+> +		*type = IIO_VAL_INT_PLUS_MICRO;
+> +		return IIO_AVAIL_LIST;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+As mentioned else where this needs to work for both light and intensity
+channels and incorporate the affect of integration time.
+
+> +		*length = ARRAY_SIZE(veml3328_scale_vals) * 2;
+> +		*vals = (const int *)veml3328_scale_vals;
+> +		*type = IIO_VAL_INT_PLUS_MICRO;
+> +		return IIO_AVAIL_LIST;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int veml3328_write_raw(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      int val, int val2, long mask)
+> +{
+> +	struct veml3328_data *data = iio_priv(indio_dev);
+> +	struct regmap *regmap = data->regmap;
+> +	struct device *dev = regmap_get_device(regmap);
+> +	int ret;
+> +	int i;
+> +
+> +	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(dev, pm);
+> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> +	if (ret)
+> +		return ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		if (val != 0)
+> +			return -EINVAL;
+> +
+> +		for (i = 0; i < ARRAY_SIZE(veml3328_it_times); i++) {
+> +			if (veml3328_it_times[i][1] == val2)
+> +				break;
+> +		}
+> +
+> +		if (i == ARRAY_SIZE(veml3328_it_times))
+> +			return -EINVAL;
+> +
+> +		return regmap_update_bits(regmap, VEML3328_REG_CONF,
+> +					  VEML3328_CONF_IT_MASK,
+> +					  FIELD_PREP(VEML3328_CONF_IT_MASK, i));
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+
+So this is always a bit of a pain to handle, but you need to take the
+integration time into account.
+
+Also this currently applies to the IIO_LIGHT channel as well so you need
+to handle that as well which means reversing the maths above to find the
+right gain for the current integration time.  There are only 16 options so
+I'd be tempted to precompute them all. 
+
+
+
+> +		for (i = 0; i < ARRAY_SIZE(veml3328_scale_vals); i++) {
+> +			if (val == veml3328_scale_vals[i][0] &&
+> +			    val2 == veml3328_scale_vals[i][1])
+> +				break;
+> +		}
+> +
+> +		if (i == ARRAY_SIZE(veml3328_scale_vals))
+> +			return -EINVAL;
+> +
+> +		return regmap_update_bits(regmap, VEML3328_REG_CONF,
+> +					  VEML3328_CONF_GAIN_MASK,
+> +					  FIELD_PREP(VEML3328_CONF_GAIN_MASK, i));
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+
+> 
+
