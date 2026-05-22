@@ -1,130 +1,170 @@
-Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
+Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7AEB392806
-	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 05:20:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB0BB379C4D
+	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 05:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.53
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779427255; cv=pass; b=Fdx6h8r5+cbz44mdIiiVjvHv9G919ksBHbBE4hVbBV8DGdhD864Xa0zTeALqhO1nmUOImHrIObRfRuh208tZqvBUDDgaj6k9JupPF9aUYsNbzhxI2dV91b7+gwFZRaAqIBYnfYl6AluG9MA1xVtcMYxnTN2xAhSI5UlFNJ43Myg=
+	t=1779427607; cv=pass; b=E1VnXWm0QzK7kMf7qf/C9VYDhWdI8EJ1U8SphiCiVdTgXjCXZXYPUHafQvQPgLaPZoRT4TIWespxx0y4+7KchUPDBHj3Unmnnfgx7rtbvVm6oaVp3fEF+ldFG6WxWQyVULs64yrvEbw8EX0x8k+nL7WdsaRuekYJJXuMC+Wh20w=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779427255; c=relaxed/simple;
-	bh=2YdI/r/z3tOyjcNlH+ate8q+SfjvzA5JtCeL0rJ9ysA=;
+	s=arc-20240116; t=1779427607; c=relaxed/simple;
+	bh=+BBccyAHcRtQ6Qwu8z7bTYO4TH4WWVTe93LCAGz5K9E=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bhikxPmAKv0fBOJrSh6u1RzqyPJ0S40sFgWiTjuGnidapg0hJoS9x8jZqGkP9zBREtv1OmlopW6o4qe/mJGjvtfCZW1/UZF6ADX/ljqLNwROx5+KVxPXbBjx4alkJFGACbLZP/Gor1vZ7wsyeOVAPFwU8zJNhfIw8uYSEwOCNnc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=flzqDMHi; arc=pass smtp.client-ip=74.125.224.49
+	 To:Cc:Content-Type; b=Z284FJs9w9Qu4DrYTAlim9ASHAxf2c4eZA+NZUf4N8CMMzDWYHG0R/W6FqF3qjfNeGpK6uEz+celoVyFUvZjyYwYV1A3TbjYlZ+LSJ7ZZIyV1J2z/dd2jqk09QSTBgbcDmAyaepmAzVZZX56ojHN906565n7YOYv+OPY+M8Vp88=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K/2NKgBx; arc=pass smtp.client-ip=74.125.224.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="flzqDMHi"
-Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-65c0bda7f15so6940749d50.0
-        for <linux-iio@vger.kernel.org>; Thu, 21 May 2026 22:20:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779427251; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K/2NKgBx"
+Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-65c37eafcbeso7391649d50.1
+        for <linux-iio@vger.kernel.org>; Thu, 21 May 2026 22:26:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779427603; cv=none;
         d=google.com; s=arc-20240605;
-        b=cd4Ww+bsbPXD9C44c/wnMHmnXPOnoK9X8xahpbddZ32VoyD/PAaaR/0ocgcC1HyQ5z
-         ODmaBPAsKrImMT+bzau1Az37pnJj0F/TAhv1cM0Wnw3QUgBs/8cZtmmog7WlVpaIIkBE
-         wyVbsxTkoSsazDr/E+DaZVC1iD1CArKJTaGPZdNY8TUkxXYMa+eT780uvTOZfWpfNrqS
-         kyc3d4j0QhkM5unoJwttpMzuHhsjxsncL1kb5JIoD55jr6neiGkPssR0tVHIFvCPm4NP
-         JexFolWdlCdjiJHUp0Eg5OIUwxpHgKX2ncKOlb1WCuWgd95Vcl5xKDdoGnrRqOx5NNpe
-         +LHA==
+        b=Txmc3no0sI+6cqpxQCwLWNhx3jS7TlIrR9mV8chtJVY1JMvZtP+nyOIDtgiVUi9/5+
+         6OjAYGHRQdbL8gXTIk2eDnosdqiDVp4bkCGdydlNSWWrkyM+GplP2Z3x7gLPfQZ2GCWu
+         3vID0fSfIfnYAeSz26WKfbGBgZXL67gER6M+dhrXqH729GgXb9VEzp3ZrLUb/54163CK
+         D6owX0HZ/ePYiYiwOJD8uLr9mMLFr90q0uW+DmM2tSFIpU3X6h1LBaKLqJRPWu/fdIGb
+         NrURK7r1Y13vEx+qgUkuZ7T0/6sRW/H/Eso/SpVVOY++Kcm3Ekd6zR6CQnFD4C42R7vr
+         ceIQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=2YdI/r/z3tOyjcNlH+ate8q+SfjvzA5JtCeL0rJ9ysA=;
-        fh=AlTK8TmVMDgLihFF274z1Li6yv0bmpN/J9yTEtRd2HQ=;
-        b=DbbWBfchK38LU7nE4rO3VUHJvKR1a9JuPohmn8aYIOsz341EpavFFlOAfgPzigdii2
-         LcBarQkFyYWK2B3iJdCnz3TtrFpdnt5Mbipvc+A5oCe+cvojkG4+ems3+4ubeOQHfwzj
-         /X2l9wGhk3noo+Ing3xBBQrjtmnj/uo3dng5wIIbM7zH5Jhca3/mQ2Su6z0QnbT72FCN
-         ZVTcVpGP3uBZfLtYbt5lxpcDG9m1bDboSePoo/2gsV+9Xr96hB63woKA8hhabTpkfsmr
-         ulK1AY4nX2dH044nz3BmHYkJ0tyYNo/zIm8v3fECpwqF0Exb2MSIMlENTFKTyWZAFBDE
-         WGbA==;
+        bh=wxAjNFf+5Hga9WfHjd2IVBV4xnV7RFbXS0JGXLCdaG8=;
+        fh=4P/CDjhjpBFQ2fAhQLgsczO7z5dEKUU6A1Ybdaa5S8Y=;
+        b=ZdEjn5fwmDJhHRnFEmtIYYcsw0CXhtSvOJPVQhTeW5I/DEBTnuiEvNV+Dwz/WuQ91Y
+         6j0a9+ZuvuVaiiT27mDWCeYlexzY6qBZHTRMwcnxX6kEG/8uZQNPcplP1Z8FCHXHohHV
+         RrpL0HdgxiDlH9eRfZ5E1H0qJpSy5gr8/pUNagi1VA+CtGtOdS/ukhH6bztZ6XoDO7oL
+         y5MiztK6Eqjt6eALpYkwe63ngRJj2L0eRfFYmZHBloQR1eB1coTmD7AA9SQgmSNF/zps
+         NIYnbZzT8VrPqm5+SNMk8Rt+c8aj3T33EPtDPuedKGvZGwbxe7HrR8LFR1kUJ5YRurB5
+         Y6qw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779427251; x=1780032051; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779427603; x=1780032403; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2YdI/r/z3tOyjcNlH+ate8q+SfjvzA5JtCeL0rJ9ysA=;
-        b=flzqDMHiBmYOMqHqG0AH82DUcPWIRfH/e8tUcfrhEs5H+DbU8gEp2WmW39TtF951Nz
-         WxcSwly3Yo7aBAwnLB9D24ZSQOUYXHZabRaIYeu2x9oHkMQuONvO+gOyX3e5NDKeR7Nk
-         LTT7DThS93rrttc2qCJVlGLsyMRtc1ZRPLZjZ2LbJNA7CMJN1+P+FCxN2CMKpafOoUGu
-         8HztBgOxSjtDU4NORv0g8t80HuhPZMxL+diJk3N7rT7sm4m/VkfL8R+S2StD3KHFGwMA
-         VZflwQjKsYIxynB6VzhgAUsNmkmystCCfKhdM8gjmyZgQHVj3xeVkebnW3myO8WcR7uB
-         Gikg==
+        bh=wxAjNFf+5Hga9WfHjd2IVBV4xnV7RFbXS0JGXLCdaG8=;
+        b=K/2NKgBxdoKwxCdJY7yw3x/i23HbVa87322umUW6xI0lBkEUr+jzBWknmx0emszSti
+         t6L+CHWGuZyLv+4E4FYs65RqMb7bnBTBKdLzB/rvyHzoDrFd/XszFOKy9li0S3L8cZpd
+         AQkREUjRRjHZXyTCoZWVipdFeTilTls1Io65qCaooU/bHLDjKVph1tjHdEjgLs6myGM+
+         4wVqZiHZ3s/atHOzqXcRQaOmYdhCsJlxxmvTzQW6prn7rCL6LV+O+hyc9PW45pb7lf+m
+         pvZKBddL55c78t8d4WJFyMxuaQ2qxt1OD5OHR2BD3q1TBihzMrhQnhziEcf6RrS9D2u3
+         5qhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779427251; x=1780032051;
+        d=1e100.net; s=20251104; t=1779427603; x=1780032403;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=2YdI/r/z3tOyjcNlH+ate8q+SfjvzA5JtCeL0rJ9ysA=;
-        b=GPBZji0EEB9DIiCGeXz0a6RO/HOWji8F6iAjwAhnB06jr/ktAdVCsihQb49fNae5tA
-         XqkI01babuYX6ZuLU/9ixJVmO7aJ/jiObWNrU2FXTlTeevHJf5BKHMKeBT8qVdX5v+XQ
-         ZwcDnhZpv/yoWMfi8mxWjwa6kCeHr6AMWka06R74rfw57qo3cZRaDnq0e2cZuw/2Edva
-         EOtuGBlrubdkaDsQWjW+92D7jonmNDy9JEynmDXsEkw1qBW2mt+rgvf5Ne4FWKCa9jrq
-         R5IWrXjuIUesoYnd95C08Br1TzqQk4vRjJn5HoVQa77daPAkCZE8orMyrVA348r4esHa
-         bhow==
-X-Forwarded-Encrypted: i=1; AFNElJ9zjU/Qu58o8+Cl00jXso7Ep/rXE43y/HU2FPmcHjzKFUdV+uQ9NTj6Nkx+/d1OBkBeuu+bqQuq7Ec=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzmnaTwdyBWc5E0OQlHJ/an/BNi8bk8yydzSxHVR6YSNMZA/Gis
-	GZwuxc1Blr/OhO6lSz3f/ZdIoyEKLQv6bgM58bXb6mHXoqNy5X5vZzCMhGF7ifKIWJ6ajJWKInQ
-	FzM/RRwlp/rEIKP3ThoYhN6nHQ2pPKak=
-X-Gm-Gg: Acq92OHDlCfnnlouUWGpV70lexLjm7oULtYbrphYwNPh3NfbLxaVFZ7MQ44c8IA+ZzU
-	aUe6qpsM1jRynDO1vIg2Heh6xn5djE78rvVIRUubnXhiVI8buQypOomFDHs64+ddkh8HeyR3HSj
-	1il/mjMTW88c7LNZKBwBMMsAPc0CL9W5Eibo8StkenGRkJyfy6QsOxmbdbIEXBWBEfO0zGGP9FA
-	31VYwGLx/ovnbA2O4pK0AgRo9MxFD45aGuxAxnFTEF4inSiiRK+gUAmd0rxrLxe2lnujseKTKyx
-	mUTe
-X-Received: by 2002:a05:690e:158c:10b0:65e:39d1:d9f4 with SMTP id
- 956f58d0204a3-65ec961e095mr1918344d50.9.1779427251503; Thu, 21 May 2026
- 22:20:51 -0700 (PDT)
+        bh=wxAjNFf+5Hga9WfHjd2IVBV4xnV7RFbXS0JGXLCdaG8=;
+        b=KPR2BNrSnsoNgdnkaTDJ5SUlnhHkJ02/oZMGv9Wj857A/W+BT8hbqOX8Ff17cwuMAl
+         SzrfCVIppUQnjz2eBTh89b9HiQWuoiNiAB8EQHvmGBiF9VktjLbuJURyB8Ba/GB/mQIl
+         4rBdEyI8NP/jXPjNMGM3VX4gFvflz0aj/kPJx/25TwulG0vguz6iaDBGBZw7J5B2sN0d
+         dVbvVIl6oC02lq7y7+8138ok+gbxMPF7G9zmKLWC3KoJ8EElpeDXiU3hWQFPX9VhEXh9
+         YrJ1USgrQZrTlPgcqe56ERCM13CZTMkNtJKWZ2YCCf+7H7vKhEQn1dn69rKOgd7+Y3Hc
+         s7/g==
+X-Forwarded-Encrypted: i=1; AFNElJ+eG+KrK1MgGIlwdhrr4+RvVGCviQUVKq78iaVrUCVyoHa8zjWvAxsoWjANWunylRzTCliQfHybQc4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyRSEMguTRDqzkl/lc7YIJccvR/3JieI/Z93uGbqHPfSoq0uFHD
+	C8qFlUe9tWKL36rzR0CL6p+I0LTLx15PRtbhfIF6SGAZUydRyg6q9UAAcIhBosCTprN3ts26/qa
+	3cnvAr4X16/+lsa67LAdNPq6W8Qpv0UU=
+X-Gm-Gg: Acq92OFfFOu8IuyIQ+zOxoNHa2k98Ol8XtgWm83GcIrKkm2XgNuqx18r+JT5tdIk1rT
+	lF0baoUdoQ3Idma9D1n3jHk8fGKbSKjyBHL3ANzgjRqUpkqU5LiFFBcqY/J+T+JqavV0dW8jmVB
+	o+fzzSyPTxDzaA+3ItOiupShN+CcsHe0IegkHRO6bacXex5wI5PZ58foXDJsvnFBktAmHP2aKmm
+	mZ81wXs3zLlVvdC0fV8wLmHPa+tBA+rihPd82HpspX1jmKze/Y3NfEGV7VLuGkVeJb48OmMJO8S
+	pKWg
+X-Received: by 2002:a05:690e:d58:b0:65c:477a:2ad7 with SMTP id
+ 956f58d0204a3-65ec980d0d6mr2446703d50.25.1779427602699; Thu, 21 May 2026
+ 22:26:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260521-opt3001-cleanup-v3-0-820169dec8c3@gmail.com>
- <20260521-opt3001-cleanup-v3-5-820169dec8c3@gmail.com> <CAKqfh0GeFG7Jw8==fjve9oZ=xy4AnitzF6z84iTLtNKB4wLLHA@mail.gmail.com>
- <CALoEA-w7mjwABNsUVGWbW8FbA6qRvwThjKVC4_85-T0k7rkn1w@mail.gmail.com>
-In-Reply-To: <CALoEA-w7mjwABNsUVGWbW8FbA6qRvwThjKVC4_85-T0k7rkn1w@mail.gmail.com>
+References: <20260521-iio-humidity-ens210-remove-hack-v1-1-9528ac1b384b@baylibre.com>
+In-Reply-To: <20260521-iio-humidity-ens210-remove-hack-v1-1-9528ac1b384b@baylibre.com>
 From: Maxwell Doose <m32285159@gmail.com>
-Date: Fri, 22 May 2026 00:19:16 -0500
-X-Gm-Features: AVHnY4J0cIO-07v8O-mspqOcRpVC33BWLRqjdJi_sG8Z95yx6OD1j8tARa1bGO4
-Message-ID: <CAKqfh0H5uaQ3AOODBOtT844JLRunVhm11Mxv9Hrgcd7kWs+-mg@mail.gmail.com>
-Subject: Re: [PATCH v3 5/7] iio: light: opt3001: prefer dev_err_probe()
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Alexander Koch <mail@alexanderkoch.net>, 
-	Michael Hornung <mhornung.linux@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
+Date: Fri, 22 May 2026 00:25:08 -0500
+X-Gm-Features: AVHnY4JvJEtHT3B8WoD8xfLnYC1PsJKyd-twWnqIdmIAtHji-kIm3xcvrI-8EJk
+Message-ID: <CAKqfh0Gwon4X2aCoDSNNBg7wXnKfbh69kj1R2HopKv=jHwfL-g@mail.gmail.com>
+Subject: Re: [PATCH] iio: humidity: ens210: remove compiler warning workaround
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 22, 2026 at 12:07=E2=80=AFAM Joshua Crofts <joshua.crofts1@gmai=
-l.com> wrote:
+Hi David,
+
+On Thu, May 21, 2026 at 8:26=E2=80=AFPM David Lechner <dlechner@baylibre.co=
+m> wrote:
 >
-> On Fri, 22 May 2026 at 03:49, Maxwell Doose <m32285159@gmail.com> wrote:
-> > Ah, but all of the above don't seem like _probe() functions. I'm not
-> > an expert on dev_err_probe() but I'm pretty sure it's only for use (or
-> > at least, designed for use) in _probe() functions. Only function where
-> > I know it's 100% fine in is the one below.
+> Rewrite IIO_CHAN_INFO_RAW case to avoid needing to add unreachable code
+> to work around a compiler warning.
 >
-> Hi Max,
+> When scoped_guard() was first introduced, compilers could not see when
+> it returned unconditionally from inside the hidden for loop. This has
+> since been fixed in the macro definition. So removing the `return
+> -EINVAL` should be enough. Still, we can improve readability, decrease
+> indentation and avoid the hidden for loop by rewriting the case without
+> scoped_guard().
 >
-> Actually if you have any functions that are *only* called in _probe(), th=
-en
-> it is okay to move them to dev_err_probe(), you just have to ensure
-> you're not calling dev_err_probe() twice - once in the function and
-> once at the call site.
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> ---
+>  drivers/iio/humidity/ens210.c | 19 ++++++++++---------
+>  1 file changed, 10 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/iio/humidity/ens210.c b/drivers/iio/humidity/ens210.=
+c
+> index 22ad208e6aa6..49543fc389bf 100644
+> --- a/drivers/iio/humidity/ens210.c
+> +++ b/drivers/iio/humidity/ens210.c
+> @@ -149,15 +149,16 @@ static int ens210_read_raw(struct iio_dev *indio_de=
+v,
+>         int ret;
+>
+>         switch (mask) {
+> -       case IIO_CHAN_INFO_RAW:
+> -               scoped_guard(mutex, &data->lock) {
+> -                       ret =3D ens210_get_measurement(
+> -                               indio_dev, channel->type =3D=3D IIO_TEMP,=
+ val);
+> -                       if (ret)
+> -                               return ret;
+> -                       return IIO_VAL_INT;
+> -               }
+> -               return -EINVAL; /* compiler warning workaround */
+> +       case IIO_CHAN_INFO_RAW: {
+> +               guard(mutex)(&data->lock);
+> +
+> +               ret =3D ens210_get_measurement(indio_dev, channel->type =
+=3D=3D IIO_TEMP,
+> +                                            val);
+> +               if (ret)
+> +                       return ret;
+> +
+> +               return IIO_VAL_INT;
+> +       }
+>         case IIO_CHAN_INFO_SCALE:
+>                 if (channel->type =3D=3D IIO_TEMP) {
+>                         *val =3D 15;
 >
 
-Ahh, interesting, I never knew that. Thanks for letting me know,
-that's cool. I guess it's more flexible than I thought.
+I'm questioning how that initial commit got merged at all, they
+could've just used guard()() with {} (the kind of thing to make me
+want to take a look at this file even further!). Visually looks good
+to me but will follow-up later with rb if it all checks out.
 
 best regards,
 max
 
 
-> --
-> Kind regards
+> ---
+> base-commit: e1a29334a9c043defe7a9363fa76d399d3fdfbec
+> change-id: 20260521-iio-humidity-ens210-remove-hack-7c5a6496547c
 >
-> CJD
+> Best regards,
+> --
+> David Lechner <dlechner@baylibre.com>
+>
+>
