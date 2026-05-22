@@ -1,61 +1,61 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FDDB38C2C3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0247839DBF1
 	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 12:34:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779453265; cv=none; b=lnMsBJUHEksLBVpAJNSRqjDaqSPSdbo4TvUokFpquJUwiYFUbcTa9dcfbE813KjfZkZJ9WNdoSFn2BDvGPhZwxMwNvxJu7AoBe+4NzogXsJpciMoZOy+5vKAIXZRFYcFHTzKo1afAEERMFqNPOWw5Hi0A3OeV7sXDt0pMij0+cc=
+	t=1779453266; cv=none; b=hU/AvVZrwZS8A2fF3KL9NsIlb2PLbH4/nY6bTvTKMIZOYuNw8E1i9GnzSdUMgSI0XGjwgyvjKIMsYyW1PPz8yuQdlFD2DKtVvcCg60ENeErp46OxgyfJ3W4wYHBUWFMBcLCE4hniI/kjFt6Et28zMh7OY8QiQzr9JnctKARHtPI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779453265; c=relaxed/simple;
-	bh=upzag8qhKi6aKvj4oazaakxR+C2DYD1uVCnLUQ1r2A0=;
+	s=arc-20240116; t=1779453266; c=relaxed/simple;
+	bh=i+te5LxeNXfjJjKfGqFDIuk1wWeRe58/ljtNFiAjvXo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WqVN7kanURQzyMe4YzpKcAKoXw2Psd3Rcbkgk/oVKvsgSIDW4cfxB3oUsK1X62BVim1Pw7AjEcKWIQEG1D5/iMUaO0G69ZxXhfh3Ha5jZ4yoLVA07Tr7yK0VoPj0BkmjQUQHm1x2d6fqJp/Ox5kCQe0R8UhBdAklxNAoYs8nVq8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D+6pZCds; arc=none smtp.client-ip=209.85.128.46
+	 MIME-Version; b=JZ93/SBFZg6qNVbqQmvZHNwGlG/NPV8KMKhrXe/5oNxcvqvvLhBtZuDM+vSTs57eDalqUDRje0ZgmBnguOcEFEUExZtuQ4DzzW/88OQQBdX2t9OMFYdmS5PsNg+GOo/pVAUbPs/J5O2eCdi5SBc6R1G9z3mfriQrOpudmpAhZq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tuj2fWvC; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D+6pZCds"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-49041e84237so6929625e9.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tuj2fWvC"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48e8132c6d0so46799115e9.1
         for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 05:34:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20251104; t=1779453263; x=1780058063; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2YX8b4V19qziyTb596TiLv9FQnlA5Iy1jj595uzVils=;
-        b=D+6pZCdsXOS0cpj6yowI3HnZjIccV8iJFxOXzYtbzP8h5ZZQgQsRq2xpoi0P379KcT
-         gPlM0Dv6bYsRQT5v4eGG76FqAZQtHLYLH4gTkIlKxID9GWS6dh+y1MauLd+2augTsdga
-         trF5jlM7Ctn3gC1FMT4MO37AobNuMNCYwrWqPaItrnrurZScHp9T7rU3gWZl6JfQWmKg
-         Xstok02zfIHDBFLehM7Z4FAYABqJip3higQ7Hh/36wYNyTSmrC69NOU4KZDbo0+ADmhe
-         2TGR9D5+LwIlPNotxAj+xyqnhGM27HxxlAid8JgxpMwJZytQgzp2j4DjOtDVf1IJgxFp
-         2Ogg==
+        bh=tlnYnPb7deSBfYn8dj/YiBzt8a6SjFibSLJrCP9deBQ=;
+        b=Tuj2fWvCrblpDw6DzOn+JrtpsGHojLlJEgJ+9bdAJi/U0MW7d7+xQCgtS6jS9m4Iz5
+         9H5s9Zw+lk7VB68yICT9dMoiCjhPtf7EtDM4kJhFi7mzCYlTQ/Hc/LEhMFwswQEKnyGT
+         51OEGQcYMWhDrpcVLxPkhYo5pEedJWnscNESbcQlncoDrzGcaWhIpbL1I8m/Xxf7uABI
+         BIDDaCvEBO6IcROMWSrOGQdsYMUy3iKxfipA2q7eS9wla8zHERhfSyl5CidSq73c6QwJ
+         pApmSRXUwUliGCSkUFO6y4C2YloJl260lVVjLLrVov3C+uBb4vVqqdxCOL4QFt/eBu4H
+         XbwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20251104; t=1779453263; x=1780058063;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=2YX8b4V19qziyTb596TiLv9FQnlA5Iy1jj595uzVils=;
-        b=f9+BCDHuL131njyt4PenegtcYSOYfQAneP7DrQorUyD7TrYgMCtiSqO7ZBcaqHUSBW
-         W3pYnmVLtdm4G1Aw8f6nfyscaYS9D6aPleirauMZgSWwFJ9kqNoFlqljbUXcvQrI0iIm
-         THHOjMWQyjsej4f4zMqjyBGGV0St/Y9HpzynLjQ2PE2VFOl3qUHAZK5vGPIktNiyslGd
-         0ypzZW+CCOSk9tZUvgizoUyVCAjZuP/us3IYJGNmDKJ6oFZsSGeMy01OGDRztwvBjSj/
-         WM64yOK3JUUyyn999860EdhSILoEuIYnaqadiDxAtLeYc6hw/p1ZagC24829/axOaVuU
-         5n4A==
-X-Forwarded-Encrypted: i=1; AFNElJ8qRU2Z8PrDNkit5dVkuABW28oThq9AO/g9MtLO30nk+vuvWvsZEl7QT8i3nJpEiv60Y4DDbHzGIyQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzUgj/g8zaVaGF6Xb71nU6g96w6KG+4Wx+ZckDg6+4kFPR695KA
-	k1Dtt2m75Zy2VPFzlXbZAonGht5/55l71uayNnICAiMK5m4A5BhCuG0b
-X-Gm-Gg: Acq92OHxYZkbUljRPMVimYaN9LIVtjJaf/4tPs5c1QDMNTkySPBctR2tvSdE1uPHofB
-	BmNKZq9EkL3cLInr6AvvoCWJxamdL8yLXkkkO85Q0VQCDiO33ktDc6RwdbQwmNfQvrUfpwncLYl
-	hfgdwbaGi+n+IdmDpNCJEl5AwcAN2P6k0KWYKv44oYfVK6KUxhtexbD6bufz5aOhezB6g9v06Qm
-	GotBrlJTBKm21btxE08jHIzL64zEqPWaj0bdUo5f+ctkZMMM29rp0iSV4IHRS0hEVy2J03IkIYJ
-	CPBwtvgOFMIzUGsXz5/xA659kSA28IL7Yh5/QurYR/z74Ir9CcOmMB7lYGR+FN7CWWClLbkWS0s
-	8XIckmmdRiPDrXU/ffe4riEcqzKO6RokBmGefNG0OjHZXyYDBn8KdLSvzgS0/RTU612q10ey7q9
-	IMhJDgQ7uuSD0q662b95Sgro3SJBAT1Gk7p4usbYeGe9cUfT9k21yY
-X-Received: by 2002:a05:600c:8b85:b0:48a:534a:eed8 with SMTP id 5b1f17b1804b1-49042260287mr39772245e9.1.1779453262348;
-        Fri, 22 May 2026 05:34:22 -0700 (PDT)
+        bh=tlnYnPb7deSBfYn8dj/YiBzt8a6SjFibSLJrCP9deBQ=;
+        b=Si8szGltqV633SmfvLfm42v/CMkRHSfaNngul0iDWj58tw4F5HAS5da7pWzTN8U8W/
+         WRI0iHdFlTwGtr4ClQvXS6Mmbf58Ind6ybamktwSjkECQgbNhzJFIpjUyu3OLcVc2g5q
+         0v6tIj5d/rJve6JP9cbCfujHjB769JU2CilnCiTzkvoeQiG8bAaBBwgSgt0f0vNLI7jc
+         1iQRblcVTpvDPeh6N8hl3BIJV7d8R2KkskK2JZqq5XvOuvmi7vVwHlw7wL4JH/sFZ5Bp
+         uZAN6HTQOpRVqLVbJTvlImt3cXQs7LtrsnAwZV2GJR2zVhh7qrqzRFTsgDK6yw9CLTpK
+         f6gw==
+X-Forwarded-Encrypted: i=1; AFNElJ8k20YzFr2Yibbq37fxhUexNyXanrHIqFu/Pdl7YAKfVlq2W0ZwWX4e72FsFu8oEcEDqAXeSuL3kSg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwBZKpolnjoBVyQaFyTfzbjV/saxkEYWMrlocwOGutuAi+O2o5z
+	uylMHvcWdW9Bq7eahY3kVqIZv+me0XmxGwQBrPcrFnTh9ksDN7EmWc2X
+X-Gm-Gg: Acq92OGtKjbS8JvcwvhQ/S426JNuZlxuULsirHa9FoGxZNe68lm9TEVrr5Kix5Z6dg0
+	zSLlXcWwWGHw5EVZS8x2xm5ybTpL3pti5NRZptYFPQFN0YGSYCuIWR5a8rL+CkvZCcMABeDSwKH
+	XokHCwvLrJ8Xh9SWq6tNbwxdAVQtb78AtqVtbx419roPcd8zkfADqARF8Bz/kqagb1wf8Qnn4VM
+	DH9b06T9pB9sZVlpcsdF6vGkTJUkjyTivhX/P+1AVbnZc+PVRF/JaXRJcaUq6jXk9ADFgiYPm6i
+	J7FqOaOwHvxEHKGoRe0U9aW+9Pf0BfYxEtnMUfu/vLLHg+uEURTpBi+ou910H6nM5a43jQJsJmF
+	642M17nSIS8vgHCczdwzQvB+B3PFywBU1e+a4FgHVlTO0Zow2/YmE7LUs/cl2y5ihpr2cp/75Xy
+	AACfaQ8mGEgM3GUpmCTtmQABX6dothtrhM/D1VJVFCflboXA/dZnK4KZ5a49n1Vf0=
+X-Received: by 2002:a05:600c:4fd0:b0:48e:82b4:b54 with SMTP id 5b1f17b1804b1-490426d1ebbmr44443135e9.23.1779453263098;
+        Fri, 22 May 2026 05:34:23 -0700 (PDT)
 Received: from aldo-conte-t14.tailf68ad9.ts.net ([217.61.173.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49042af0ac1sm14760175e9.31.2026.05.22.05.34.21
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49042af0ac1sm14760175e9.31.2026.05.22.05.34.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 22 May 2026 05:34:22 -0700 (PDT)
 From: Aldo Conte <aldocontelk@gmail.com>
@@ -68,9 +68,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH v3 1/8] iio: tcs3472: power down chip on probe failure
-Date: Fri, 22 May 2026 14:34:12 +0200
-Message-ID: <20260522123420.45495-2-aldocontelk@gmail.com>
+Subject: [PATCH v3 2/8] iio: tcs3472: sort headers alphabetically
+Date: Fri, 22 May 2026 14:34:13 +0200
+Message-ID: <20260522123420.45495-3-aldocontelk@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260522123420.45495-1-aldocontelk@gmail.com>
 References: <20260522123420.45495-1-aldocontelk@gmail.com>
@@ -82,92 +82,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-If tcs3472_probe() fails after enabling the chip (by writing PON | AEN
-to the ENABLE register), the error paths return without powering down
-the device.
+Sort the #include directives in alphabetical order in preparation for
+adding new headers in upcoming patches.
 
-Add an 'error_powerdown' label at the end of the cleanup chain that
-calls tcs3472_powerdown() to power down the chip. The existing label
-cascade is rerouted to fall through to the new label.
+No functional change.
 
-Move tcs3472_powerdown() above tcs3472_probe() so the probe can call
-it without a forward declaration.
-
-Found by code inspection while reviewing the probe error paths in
-preparation for the devm_ conversion.
-
-Fixes: eb869ade30a6 ("iio: Add tcs3472 color light sensor driver")
+Suggested-by: Andy Shevchenko <andy@kernel.org>
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
 ---
 v3:
-- New patch: extracted bug fix from devm conversion.
+- No changes.
 
- drivers/iio/light/tcs3472.c | 38 +++++++++++++++++++------------------
- 1 file changed, 20 insertions(+), 18 deletions(-)
+ drivers/iio/light/tcs3472.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
-index 12429a3261b3..849ca7885d71 100644
+index 849ca7885d71..1803bb882804 100644
 --- a/drivers/iio/light/tcs3472.c
 +++ b/drivers/iio/light/tcs3472.c
-@@ -440,6 +440,23 @@ static const struct iio_info tcs3472_info = {
- 	.attrs = &tcs3472_attribute_group,
- };
+@@ -13,16 +13,16 @@
+  * TODO: wait time
+  */
  
-+static int tcs3472_powerdown(struct tcs3472_data *data)
-+{
-+	int ret;
-+	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
-+
-+	mutex_lock(&data->lock);
-+
-+	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
-+					data->enable & ~enable_mask);
-+	if (!ret)
-+		data->enable &= ~enable_mask;
-+
-+	mutex_unlock(&data->lock);
-+
-+	return ret;
-+}
-+
- static int tcs3472_probe(struct i2c_client *client)
- {
- 	struct tcs3472_data *data;
-@@ -513,7 +530,7 @@ static int tcs3472_probe(struct i2c_client *client)
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 		tcs3472_trigger_handler, NULL);
- 	if (ret < 0)
--		return ret;
-+		goto error_powerdown;
+-#include <linux/module.h>
+-#include <linux/i2c.h>
+ #include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
+ #include <linux/pm.h>
  
- 	if (client->irq) {
- 		ret = request_threaded_irq(client->irq, NULL,
-@@ -536,23 +553,8 @@ static int tcs3472_probe(struct i2c_client *client)
- 		free_irq(client->irq, indio_dev);
- buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
--	return ret;
--}
--
--static int tcs3472_powerdown(struct tcs3472_data *data)
--{
--	int ret;
--	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
--
--	mutex_lock(&data->lock);
--
--	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
--		data->enable & ~enable_mask);
--	if (!ret)
--		data->enable &= ~enable_mask;
--
--	mutex_unlock(&data->lock);
--
-+error_powerdown:
-+	tcs3472_powerdown(data);
- 	return ret;
- }
++#include <linux/iio/buffer.h>
++#include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include <linux/iio/events.h>
+ #include <linux/iio/trigger_consumer.h>
+-#include <linux/iio/buffer.h>
+ #include <linux/iio/triggered_buffer.h>
  
+ #define TCS3472_DRV_NAME "tcs3472"
 -- 
 2.54.0
 
