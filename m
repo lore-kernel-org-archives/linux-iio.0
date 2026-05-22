@@ -1,102 +1,119 @@
-Received: from sender-pp-o92.zoho.in (sender-pp-o92.zoho.in [103.117.158.92])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D2BF3E9C18;
-	Fri, 22 May 2026 11:46:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=103.117.158.92
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779450368; cv=pass; b=E6/80tMKbnThADMpapnBk5YoazokEFK7zTqhigl2K9Bswo1rQZFHnPqblTT1uUYTAVmw7ql8FAfTZMqJdaiAaKhqQ/bRtAkwCiUpUFTbCT6tgAcbnUfjHEvdMGCifLWf50XcXr1NzNIgcFjkUcW93yetkC6dInfYRoDVWfRkdg8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779450368; c=relaxed/simple;
-	bh=/55F72ANKetUpObqAmrYGs8Bq0YitJFVF2vrkf5KfKc=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:Subject:MIME-Version:
-	 Content-Type; b=ms5EO9JOgEdmDDyUtSPh3bBH/P1zKt8lCtQXdCc6skkjHgs4unUel2K2XbTy+0+lBIl/34Gm4dnCuWnvGcg1cb2QO3XXDfaiywYGeO2cPUmELEL7ClqcffWaYolU3UUciKfc+JHvNoaABjUgEbQ1/2u4G7sI5F+f2aKvUYXoqMU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zohomail.in; spf=pass smtp.mailfrom=zohomail.in; dkim=pass (1024-bit key) header.d=zohomail.in header.i=linuxuser509@zohomail.in header.b=NR+PdhKk; arc=pass smtp.client-ip=103.117.158.92
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zohomail.in
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zohomail.in
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B14A265CD9;
+	Fri, 22 May 2026 11:46:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779450398; cv=none; b=PxfmTmp7QZ0fN2JxcbcXq8opEvLjt4EM1B7GUThqnEGbZZAglA9NJgebV5udeAKYzwVV70kCduaSz0d02Kw+JZLcBppqjgTf24a/Of3RPygS7WUNbgPvPjIsKfjX12EzQLSxBbwS5jspxZmK4SG2HOH7L+xeCwxj9RyaHC37BpA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779450398; c=relaxed/simple;
+	bh=g6vD/koq/YQFvJ1hHOoVO2KTYjPZ3MlR5w8GxczYSGI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=lNLAOTxU9Rfw1zVfBVnlIQogHP6paJFLQ390s4FbGEx0QIxUICbmPlCC4IK2NjM2bABAbUZ6UeCODx7Ne0EVCZNhWhK13L6a0AKF6FB9+s+o2p0c8o6OJG5lLXcLv1D4q1ovdIZbuXqxDNlB/jZxwKluIhQUX1AzWImRDJQftu8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NG9+ntPn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=zohomail.in header.i=linuxuser509@zohomail.in header.b="NR+PdhKk"
-ARC-Seal: i=1; a=rsa-sha256; t=1779450360; cv=none; 
-	d=zohomail.in; s=zohoarc; 
-	b=SvjWzvJGOIsIwwEcVeSwYUyfRUYSOYkwQveM4tdui+bWryi9CD3uQFEBeGSNScpG6mjKJoZhQiIalX5hMDbnpz9Gcl6ULD0oBuZWc8CBpyJcIxantysYgAc3yhV3DWcv/hVeuSo3mOHlN0Y6IUib+wYQaCRyURsYBzDZNuc0uiA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-	t=1779450360; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=C8xCtW6Ww7fh3DCy2f5N5crFG0XXFz7tXBy9CDQahQw=; 
-	b=Bl9F5gORiQAYHg2ZFYrEUTdP5XpyMW9iTh6Qb8Qds5hmMeEDyvR+00T7fguVZL6itFqr6pIUcaFidNTx4P+UzdqpHsfrRs1TFKtTFzkvSIgxRzd+PlA92ODY6276chnkFvJfkQDA3kp0ExBnyo1kl0rDfCQg+NCzb1Qr0nJgbuY=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-	dkim=pass  header.i=zohomail.in;
-	spf=pass  smtp.mailfrom=linuxuser509@zohomail.in;
-	dmarc=pass header.from=<linuxuser509@zohomail.in>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1779450360;
-	s=zoho; d=zohomail.in; i=linuxuser509@zohomail.in;
-	h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=C8xCtW6Ww7fh3DCy2f5N5crFG0XXFz7tXBy9CDQahQw=;
-	b=NR+PdhKkUSIvDSAH7P/ZIks4z1TOfTZqD+W7zQ8Z10BWxKOpn2q2+CevIWphaRNe
-	ufNkBNW3EArSWtZzG32rMJSnvelDvjHnNyKYANnM2wEOBO+q6/qQJwoZR33L4oKJ9GZ
-	4QHhzGvan5RRyrmcl0h1mKFR6ZW+wwO0aUCMwx6w=
-Received: from mail.zoho.in by mx.zoho.in
-	with SMTP id 1779450355425551.7817282345422; Fri, 22 May 2026 17:15:55 +0530 (IST)
-Received: from  [106.219.3.73] by mail.zoho.in
-	with HTTP;Fri, 22 May 2026 17:15:55 +0530 (IST)
-Date: Fri, 22 May 2026 17:15:55 +0530
-From: Ashwin Gundarapu <linuxuser509@zohomail.in>
-To: "linux-iio" <linux-iio@vger.kernel.org>
-Cc: "linux-kernel" <linux-kernel@vger.kernel.org>
-Message-ID: <19e4f819ed9.2157dac799522.5155742748768717789@zohomail.in>
-In-Reply-To: 
-Subject: [PATCH v2] iio: trigger: fix memory leak in viio_trigger_alloc()
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NG9+ntPn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27CAE1F000E9;
+	Fri, 22 May 2026 11:46:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779450393;
+	bh=SRSNrMsPebt6Vg+4fLWYKnEZZvhbUhBLws7+1vBhpKs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=NG9+ntPn5mUtEzY2YjQtDl4PqoXUyUc0Gf32aEgat1UwjtU0bEOUCItf09wZXKgv6
+	 yTagpqs7DFwZqUj1UCeqSM8FDcdkP66jubFjKfIlqKP5D4dTL3LyyFguU6oU++9QYA
+	 IZfV7iugGDjN+dGN5EL11yvONhyy2HSb2bUs2fZcg7vO8siGs7qvYG+0/iTiEk0+fm
+	 uZca7hCIVHPlqPcYqvrRkx4IOpT5X97HHmLcoNOEG0MLwo6F4aa9xUuTbew9zs2mub
+	 hHL+Zh+v+57gCHtII0hawlFahVq4GNlNsyHtVvAHZCKlXmnuCIjy4imVLgQpX3W5iX
+	 5suOGNIRxoIsQ==
+Date: Fri, 22 May 2026 12:46:20 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v12 3/6] iio: adc: ad4691: add triggered buffer support
+Message-ID: <20260522124620.35b03d73@jic23-huawei>
+In-Reply-To: <20260519-ad4692-multichannel-sar-adc-driver-v12-3-5b335162aa51@analog.com>
+References: <20260519-ad4692-multichannel-sar-adc-driver-v12-0-5b335162aa51@analog.com>
+	<20260519-ad4692-multichannel-sar-adc-driver-v12-3-5b335162aa51@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, 19 May 2026 15:20:24 +0300
+Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
-From: Ashwin Gundarapu <linuxuser509@zohomail.in>
-Date: Fri, 22 May 2026 17:11:00 +0530
-Subject: [PATCH] iio: trigger: fix memory leak in viio_trigger_alloc()
+> From: Radu Sabau <radu.sabau@analog.com>
+>=20
+> Add buffered capture support using the IIO triggered buffer framework.
+>=20
+> CNV Burst Mode: the GP pin identified by interrupt-names in the device
+> tree is configured as DATA_READY output. The IRQ handler stops
+> conversions and fires the IIO trigger; the trigger handler executes a
+> pre-built SPI message that reads all active channels from the AVG_IN
+> accumulator registers and then resets accumulator state and restarts
+> conversions for the next cycle.
+>=20
+> Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
+> reads the previous result and starts the next conversion (pipelined
+> N+1 scheme). At preenable time a pre-built, optimised SPI message of
+> N+1 transfers is constructed (N channel reads plus one NOOP to drain
+> the pipeline). The trigger handler executes the message in a single
+> spi_sync() call and collects the results. An external trigger (e.g.
+> iio-trig-hrtimer) is required to drive the trigger at the desired
+> sample rate.
+>=20
+> Both modes share the same trigger handler and push a complete scan =E2=80=
+=94
+> one big-endian 16-bit (__be16) slot per active channel, densely packed
+> in scan_index order, followed by a timestamp.
+>=20
+> The CNV Burst Mode sampling frequency (PWM period) is exposed as a
+> buffer-level attribute via IIO_DEVICE_ATTR.
+>=20
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+I didn't spot anything in my read through and most of what Sashiko
+is commenting on is wrong or not a driver specific problem
+(the trigger leak is a core problem)
 
-Separate error paths for before/after device_initialize().
+One small thing Sashiko did pick up on though that I think could be a littl=
+e nicer.
+You may well already have this in hand as I know you are checking there
+as well!
 
-The free_trig label was used for both early errors (before
-device_initialize) and late errors (after device_initialize).
+> +static void ad4691_read_scan(struct iio_dev *indio_dev, s64 ts)
+> +{
+> +	struct ad4691_state *st =3D iio_priv(indio_dev);
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	spi_sync(st->spi, &st->scan_msg);
 
-Replace the unified kfree() with:
-- kfree() for early errors (free_trig)
-- put_device() for late errors (free_descs)
+One thing from sashiko. If this fails we shouldn't push data and we should
+make it clear somewhere (rate limited print or similar).
 
-This prevents put_device() on an uninitialized device and
-ensures proper reference counting cleanup.
-
-Signed-off-by: Ashwin Gundarapu <linuxuser509@zohomail.in>
----
- drivers/iio/industrialio-trigger.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 9c72e7ae996c..39208c65e6c1 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -597,9 +597,11 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
- 
- free_descs:
- 	irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
--free_trig:
- 	put_device(&trig->dev);
- 	return NULL;
-+free_trig:
-+	kfree(trig);
-+	return NULL;
- }
- 
- /**
---
-2.43.0
-
-
+> +
+> +	/*
+> +	 * rx_buf pointers in scan_xfers point directly into scan.vals, so no
+> +	 * copy is needed. The scan_msg already includes a STATE_RESET at the
+> +	 * end (appended in preenable), so no explicit reset is needed here.
+> +	 */
+> +	iio_push_to_buffers_with_ts(indio_dev, st->vals, sizeof(st->vals), ts);
+> +}
