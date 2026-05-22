@@ -1,166 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9F5C3D45EA;
-	Fri, 22 May 2026 13:51:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B852400E1B
+	for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 13:55:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779457922; cv=none; b=W3TgyeYZJsVCfAVtJ0tveVINw0rfFhHLyWyg50KzCJ2IDbnN+WhAFiHN1qtjygmk9P4IevgkbCdFFakD+veIUR85ByllcgTzxKZLyJ1aM+8apojm625ovXoAF+RpYpSfgteDcn5Vbgxs55VOSKTgdvxIQtmp8bJ4c1PejJQZQ/A=
+	t=1779458123; cv=none; b=HigHadjvT/GSMJYGXi/1JuRsrFWe545fM0aOuMcw8ZU9gS/E0qoVB5rzxvEpFP0RGDjJFxPG0OTHghZ2Z9R3zKgAjDMyzUmOwZjWu4aU6lh+Q/PyhE6s+ZOK1B1v7qjtLPe15bqIMJBCxAq64PcDnk6u3XsCbWjeP9TohJ5FUKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779457922; c=relaxed/simple;
-	bh=0lU2q4HUF+V+3/xape5kbwRjuxtQP3pyZQY7oeJ6Suc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=E4UmdBLmcgRFSb32rG4mVgW/sGb9R2czKTELV+p0wVmpsHBO7uW9bnLIiRubwxa17y9AVKvNcZYywn2JLN+A+nJIxAAdfhV6VnPhkAITSh1cKH5yaO2+qUkkczNFSAbunZAzya+PolTDiy9wL58CjVfkNFvjAmj2L/IYzjpHYyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WhFZiTR5; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WhFZiTR5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7282B1F000E9;
-	Fri, 22 May 2026 13:51:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779457912;
-	bh=XF3NIYP11UdOCrfOes/zoYPQBdawQPSXvEPNb9lLPGo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=WhFZiTR5sXjUQTdvZNcGAoV5myYXRwPnPPtXw8DOd5flHxNn2cB5YWa1vi/RJVzgo
-	 RiLcSwj/2DBDoVi8WCsUtlw7b46S+Jxm42O/OretdeuaF/46wmkoi6ErVEhaP9+8wx
-	 Wu4OE0cMlzh1C7wlmq7kNlqoYWb2/9XA32OEmfS62KclrmG9Ha0rDLRl6BeMl5cBQt
-	 rPgjsPafJHq/X489JVJh/3/mklriWghdUloHe/wyktmch2iN35T4/UrDghPBP9ZN77
-	 D1Qj5J+5JVHUupbojxx4yQEfmXl6z5F4NdEkEwuXu34ogoAmoZyggSDL8XmSvMT7bX
-	 xdg83PEnl0EZQ==
-Date: Fri, 22 May 2026 14:51:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- <u.kleine-koenig@baylibre.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: adc: ad_sigma_delta: fix
- clear_pending_event for registerless devices
-Message-ID: <20260522145143.1e651c12@jic23-huawei>
-In-Reply-To: <20260521-ad_sigma_delta-fix-v4-2-bfb3df3e36da@analog.com>
-References: <20260521-ad_sigma_delta-fix-v4-0-bfb3df3e36da@analog.com>
-	<20260521-ad_sigma_delta-fix-v4-2-bfb3df3e36da@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1779458123; c=relaxed/simple;
+	bh=p6FsAScfvmI00LgYGoLuomprcquQsIoplyeLI0inSTQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=m7cPabxN+5RyMap2jj86i+X0lqZmZIHALa48B4rS8K24pJtja9Kg60mLUjfj3fpgv3IpIt60EkGCemxd6XoFsoCqlkqImpLiU9Bk4j1k3+JdwULS8jahvsp8uM7KKn2jtdPobCLtu/pBB/av5V3Pn4Fghb/PsdRfZQMh0LU9vdc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vs1-f46.google.com with SMTP id ada2fe7eead31-631333ee9e4so2268224137.0
+        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 06:55:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779458120; x=1780062920;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=j30cmgYlFN4mDEmlnYqRmgElSbQTzkiiS0OsZr3i+6I=;
+        b=ZRzLusC80SwrgchE+n1zOKynMWsLI/p+EwmVlzMv+ptP7/Z2uX7ORUfFc1+DFO7JQh
+         SjO2is8WMye0JyEbu8erhuq/ywjvs0o9cPrgeWeSLfeifrKao9zkamru91b8NGnYDjM9
+         9cBaIKWM58Tp5d4Ir6mekablmZPLWvf6p+7/aSMMyxUwrFyaDuG+gXNJQ786qG+IZA5b
+         7Kh3Umq0uWfN+flN6l4pE9vRx5q+g6lDw0GL+iCADFUJiXAhowuL4xdT+XrzQda19COW
+         N2LDUAsYNrMGs5pbNoBjHYMJqzxljsuOwIEjoNSrBOGdMsf2biitIeBSm5GlJ0tJEwEs
+         8Ing==
+X-Forwarded-Encrypted: i=1; AFNElJ+XBXGQ+AmJGr0AX0BmYGlFRes0muWetkSuz+vouat1IuOb+17Y0GLq4KQaVA18oFCe374LDh8TuMY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxP/9vXUSwTWBAAcdFLCHGAhcdOFDWyn2X5W/RTUgvrxZv+8HCU
+	TjzPHu/DECwx7RaCc9tDf3YOCBoCFSzBM5M8qlEnwNKIiM66JjbkOJ5AqA43ag64diA=
+X-Gm-Gg: Acq92OGyCRsCiGz1s5Xv6iET3TiwweUllGegk7AANUXepvmiABQOM+xp/g1v8mgMOME
+	tn8HjZBK8dHQZz+wNFSijeOVWkytZ96p0euCIYGvKdQZoW9JnUe3QwhnrJK4q10u2lInnMr5u1I
+	kZyL6YzyNlLH685PJVSR8S5543jeo/Z1hALq7G5jZnR5oalSGG32+FsOflcuqXoGV/L9mUmC5xd
+	xAHJj8O4QWgbeHP9j1H4dfU0A3Z/0qn9sLpsLTLGk6AVHwM72l6oVAW14Co5eRNs5Ln6Ya1UXgm
+	nMrrqt4vUnppUj1uCMtKDcFAdSp99UhDzgY4RQ7DwfF2K/jbVfgZKcYhQKtqBnTwfJtpkX2yAO6
+	Gkdb3fbEk8euIoKluJs9tnnxEyed4mQtTJ/eZDPA7qzDSvbnw3DzfvmFvYKMn/RhX2vIu+feBoF
+	FJqCR6DJ6mOMHoctnzMBsOiQfrYEp4M6VAdkwfPiRAFVuVlHxiKDeBEejsupph4QdIvz95SLeEp
+	tA=
+X-Received: by 2002:a05:6102:c89:b0:65a:fcea:5a4 with SMTP id ada2fe7eead31-67c749055f5mr1751137137.4.1779458119690;
+        Fri, 22 May 2026 06:55:19 -0700 (PDT)
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com. [209.85.221.178])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-9617383b1a2sm1638491241.4.2026.05.22.06.55.19
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 May 2026 06:55:19 -0700 (PDT)
+Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-57513733658so2501966e0c.3
+        for <linux-iio@vger.kernel.org>; Fri, 22 May 2026 06:55:19 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ9/6D30VSmffuhknLEElC+jMukKkb9s0/fytEymhbfhTyjaCdcEZjaGXjgFPHddC9oARwN7Ygok5PM=@vger.kernel.org
+X-Received: by 2002:a05:6102:c89:b0:608:94e4:1c00 with SMTP id
+ ada2fe7eead31-67c7490526cmr1691949137.2.1779458118939; Fri, 22 May 2026
+ 06:55:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20260410163530.383818-1-cosmin-gabriel.tanislav.xa@renesas.com> <20260410163530.383818-10-cosmin-gabriel.tanislav.xa@renesas.com>
+In-Reply-To: <20260410163530.383818-10-cosmin-gabriel.tanislav.xa@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 22 May 2026 15:55:07 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWiJEnpfLs=cQ-j_VaFxMhLuV6YLsvqpE4bvCmT_madQQ@mail.gmail.com>
+X-Gm-Features: AVHnY4LbuOPf1FKjHR7ZFR3fWcySVRSaw7vpgkocdsWUrZ7gBa__02wKZRL9zBo
+Message-ID: <CAMuHMdWiJEnpfLs=cQ-j_VaFxMhLuV6YLsvqpE4bvCmT_madQQ@mail.gmail.com>
+Subject: Re: [PATCH v2 09/10] arm64: dts: renesas: r9a09g077: add MTU3 support
+To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
+	Thomas Gleixner <tglx@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-clk@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 21 May 2026 13:30:49 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
+On Fri, 10 Apr 2026 at 18:37, Cosmin Tanislav
+<cosmin-gabriel.tanislav.xa@renesas.com> wrote:
+> The Renesas RZ/T2H (R9A09G077) SoC has an MTU3 block.
+>
+> Add support for it.
+>
+> Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 
-> From: Radu Sabau <radu.sabau@analog.com>
->=20
-> ad_sigma_delta_clear_pending_event() falls through to the status register
-> read path for devices with has_registers =3D false and no rdy_gpiod. For
-> such devices, ad_sd_read_reg() skips the address byte entirely and clocks
-> raw MISO bytes with no address phase =E2=80=94 making it byte-for-byte id=
-entical
-> to reading conversion data. If a pending conversion result is present,
-> this partially consumes it and corrupts the data stream for the subsequent
-> ad_sd_read_reg() call in ad_sigma_delta_single_conversion().
->=20
-> Furthermore, with num_resetclks =3D 0 on these devices, data_read_len
-> evaluates to 0. If the clocked byte has bit 7 clear, pending_event is set
-> and the code attempts memset(data + 2, 0xff, 0 - 1), overflowing to
-> SIZE_MAX and corrupting the heap.
->=20
-> Fix by returning 0 immediately when neither rdy_gpiod nor has_registers
-> is set. This is safe because the IRQ is requested with IRQF_NO_AUTOEN and
-> IRQ_DISABLE_UNLAZY, which keeps the hardware IRQ line unmasked even while
-> software-disabled. Any falling edge from a completed conversion is latched
-> by the IRQ controller.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v7.2.
 
-David raised this on v2.
+Gr{oetje,eeting}s,
 
-This sounds suspiciously like we are in implementation defined territory.
-IIRC if an irq is disabled, whether the interrupt is latched is down
-to whether the irq controller happens to do so. There is no hard rule on th=
-is
-or way to detect whether it will or not.
+                        Geert
 
-https://lore.kernel.org/all/io53lznz3qp3jd5rohqsjhosnmdzd6d44sdbwu5jcfrs3rz=
-2a2@orquwgflrtyc/
-Was I think the most recent detailed thread on this.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Uwe - you were driving that discussion can you sanity check what we have
-here if you have a moment?  Thanks!
-
-
-
-
-> When ad_sd_enable_irq() is subsequently called the
-> latched edge fires immediately, and the existing ad_sd_read_reg() call in
-> ad_sigma_delta_single_conversion() reads the complete stale result from
-> the beginning with no prior partial clock corruption.
->=20
-> The same heap corruption is reachable on any device with rdy_gpiod set
-> but num_resetclks =3D 0: if the GPIO indicates a pending event, the drain
-> path executes memset(data + 2, 0xff, 0 - 1) regardless of has_registers.
-> Add an explicit data_read_len =3D=3D 0 guard after the pending event chec=
-k to
-> cover this path.
->=20
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
->  drivers/iio/adc/ad_sigma_delta.c | 21 +++++++++++++++++++--
->  1 file changed, 19 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_=
-delta.c
-> index 651ade67ad2e..d4ded8d6b211 100644
-> --- a/drivers/iio/adc/ad_sigma_delta.c
-> +++ b/drivers/iio/adc/ad_sigma_delta.c
-> @@ -262,11 +262,16 @@ static int ad_sigma_delta_clear_pending_event(struc=
-t ad_sigma_delta *sigma_delta
-> =20
->  	/*
->  	 * Read R=CC=85D=CC=85Y=CC=85 pin (if possible) or status register to c=
-heck if there is an
-> -	 * old event.
-> +	 * old event. For devices with neither an RDY GPIO nor registers,
-> +	 * ad_sd_read_reg() transmits no address byte and clocks raw MISO bytes,
-> +	 * which is indistinguishable from reading conversion data and would
-> +	 * partially consume a pending result. Skip the check for such devices;
-> +	 * IRQ_DISABLE_UNLAZY ensures any pending falling edge is latched and
-> +	 * fires naturally on the next ad_sd_enable_irq() call.
->  	 */
->  	if (sigma_delta->rdy_gpiod) {
->  		pending_event =3D gpiod_get_value(sigma_delta->rdy_gpiod);
-> -	} else {
-> +	} else if (sigma_delta->info->has_registers) {
->  		unsigned int status_reg;
-> =20
->  		ret =3D ad_sd_read_reg(sigma_delta, AD_SD_REG_STATUS, 1, &status_reg);
-> @@ -274,11 +279,23 @@ static int ad_sigma_delta_clear_pending_event(struc=
-t ad_sigma_delta *sigma_delta
->  			return ret;
-> =20
->  		pending_event =3D !(status_reg & AD_SD_REG_STATUS_RDY);
-> +	} else {
-> +		return 0;
->  	}
-> =20
->  	if (!pending_event)
->  		return 0;
-> =20
-> +	/*
-> +	 * With num_resetclks =3D 0, data_read_len is 0 and the drain sequence
-> +	 * below would compute memset(data + 2, 0xff, 0 - 1), underflowing to
-> +	 * SIZE_MAX and corrupting the heap. There is no safe way to drain the
-> +	 * stale result without knowing the data register size, so return 0 and
-> +	 * let the latched IRQ edge fire on the next ad_sd_enable_irq() call.
-> +	 */
-> +	if (!data_read_len)
-> +		return 0;
-> +
->  	/*
->  	 * In general the size of the data register is unknown. It varies from
->  	 * device to device, might be one byte longer if CONTROL.DATA_STATUS is
->=20
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
