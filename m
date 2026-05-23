@@ -1,73 +1,72 @@
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com [209.85.221.177])
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49B01A23A4
-	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 18:19:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8718F2DCBE3
+	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 18:28:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779560344; cv=none; b=o1EpAnShQD49BFUWP1Azusb6cjJCZG0Buq48M/0Ur9VJHKXmG9CZinsYOsUurpasXRiZqxuCNrYewo42MUtRcmIVc86m4GEAR3vCDPF28o7NPXN4j/SYMOdGRTKoBjmPushGMNFMYeBLcWVreg1At+BoPfK8o9OSz4PnIFEOqv8=
+	t=1779560891; cv=none; b=KWVPFZJbKmHF/ibilK3GMwf4MjrJXnuv9rotqfkRafMB1NtLjoVEOt/3tAopStlcsbCBmp9Dr/3DXfnzImXsB1xnEsXenHtAWsc1zNXL9pV5At0MOKjIwMSq/x64Me4lseY1eQDpxMnnQwCMUf94uS1ZClz5VCTBrB7Emcc2Wus=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779560344; c=relaxed/simple;
-	bh=TXlBbCeRQpAYKjtSbtq8dWRX7Lp+ozqkl0FyiHx88e8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rinWgMUStop0vjnBzpjZwgb3Mpk/OroY4C0J4qTS4cWKmv28o7zgkga5N3hIOZ2eRJu4mo7hDYpQWxyIFMPDPM1D00aKgY4eJv9SkKOBS9tiz5ijjyoYoKi/PXes5GyNjJR1XT23pWFZ3EqIbiDW3AABzCG6ZBSnM0AFRXR7vhE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i+EnmcTv; arc=none smtp.client-ip=209.85.221.177
+	s=arc-20240116; t=1779560891; c=relaxed/simple;
+	bh=nZaVnh/OlERIInqGCAv8xTshgr42sAt10OyrBuKWrOU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=QqsbxtvzFBL4pO9/0TsUjhQWCfq9S3ZVF3MKvhHmNsuaCeHRKCnh+yGqe22OFtsxVCgTiVOxtEg8ArtT72o+jsuuYWkg+5Y9DwqXIExKrw9mKaJHnzOM1rN9qX+/v3VjN4dvqbHd33b3ju43h8fq8jh58ihprJS97FMN+tTaHC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QS/O7V1h; arc=none smtp.client-ip=209.85.221.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i+EnmcTv"
-Received: by mail-vk1-f177.google.com with SMTP id 71dfb90a1353d-5771954bcd0so6012535e0c.0
-        for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 11:19:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QS/O7V1h"
+Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-5873983d19eso1614574e0c.2
+        for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 11:28:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779560342; x=1780165142; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779560888; x=1780165688; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=tyeD0OdnYGf6nkKpDLnXOKcxqGSyQT6SnIZ/nCi0uWs=;
-        b=i+EnmcTvgLIilzrh0/PBcZTth+drSVmgu62bT0CNo0hZcypp9y4Wyqhj9tMSiaVgZ4
-         JBEbj3E+OA3kG41IOG/E9523++16KG6d0kLGXRNi8K5S73GpK0MYohcUwSeYCsOfHp+f
-         qM3pbqUmN0mFbDyHWcR9NTo8lrLqNhs5efV5TqjdnVJY/XD6LLViheabVKs5VEw4aPRp
-         GYrUsqpRXsW660zgqDZBuO5VILSuyHyYhigVNC3SZbCQfI/gMwFNCKArYI16tu0j0Rur
-         p8gJ+JVA/IGCPG3jh2ZVrPFStfJuQwBjP4XoD/YtQoypjI0X1AUqX0gpdOmdASr0IMDe
-         VKvQ==
+        bh=o498sRAJSIJ+FtL0naElfrtr5FUCGg3qCQLRHFME+8k=;
+        b=QS/O7V1h8++xacZysZZOU+FRn7tLtW1fIWt8Qlfobli3b5KwBsmAOkNpZ3bW456Qc4
+         UlPabp1X4fy/p5eM1YzuI455JJTK2mGPR/bfNdIVwOjMTlXHM+OJCW8XctovGT1M8t0A
+         Ih9e/PiLrcaoDNZbF4oRdJIBJoDhhi/5cDaQ3iVSK52y/HuqysKI2BPiEbTUc3zJYXto
+         HaycaasTrt4Ld2f2m7lhgR+eGuObZKwUdVOenVsAwRHHcVnq5Cd9BcFV04MeNN1mP7gK
+         5ZuMgvxkbwIxN3+b1XMeBhnQwKA8Yg+y/pNabyeOlywT1Wnt0L/PSg9HjEq5v16awvn4
+         +aKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779560342; x=1780165142;
+        d=1e100.net; s=20251104; t=1779560888; x=1780165688;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tyeD0OdnYGf6nkKpDLnXOKcxqGSyQT6SnIZ/nCi0uWs=;
-        b=WAu3NXFX2N3fY64Llm/8g9n1iEc2ERUA/nOiM+1PrU3rqLto8DEul8x2FYhjycA2XI
-         jc1TORFDfDI6w7SwjcXGXjlZ9EVSm3lhfppl+BhU3sjgwLojsO/jzKyemDHYojXdQ2xZ
-         OuIjRBKFC0lYlflgmwN2OgVHuR/wP0wfpSjKHA7nHEQ1LXc2rEQg0QJOsJP2M0V1CwIc
-         d1Ug1/JyfE0vAgUm21uKMEMOyqV8yJZx7QqbSr9OBSgIbqPJg0VLl2xrijr2PArt1OTx
-         DKxPA7KwxCN/T6I9NzjZTxs08kKeU0STnmkCkkY4lKGTqajtvUu77lG7FwN2eVWQbDJX
-         /QkA==
-X-Forwarded-Encrypted: i=1; AFNElJ8KdeWjavfRK9rtT9sa7fgtFcr4HawWmveCHnl5EWrbNYkj2fSwKQqSMge98ZIO1Mt5Pz7jOHCheno=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyN56doBr8yiBg2sWWpp4Ux8mbh/3YrFxxTwAnValURPpsly4B4
-	B+HmPCdKx5c5JFUUcfAXgrxbKZ7Curu7b94e+mcXbn4Om+Vphhwbur04
-X-Gm-Gg: Acq92OElWKS+fblSMJVIZpedrgg5VrQiwvTvrqHqPmx2Czb2Dg8tQAJAFgf2287rryh
-	RRSTW2C+Fegqlelip7qxUEyvThJJeA0ZRf0g29aM8RA1kh+yu+18hVomDJzrx1+D+Cx2UnPZ54D
-	6tvX353n0iU8ERVERQNXoOV8XYQpAt2PX78xNW2v0cfSU1sAaReYkJRXu1hVOFQDLitpZ59LeH0
-	jYZJNFKf57qR0LkogjEBUihjVxaHuowB7g8X80PU2DTkVX3dXfDzX9OCa5dlVw43yyn6/uhIMY6
-	BcBDyejOf8TrqkrsqjDOO3drpAG7NE7S7iQCLi3VJnuHhR+eC/lhz85z5f14AFam4QgeMusW73i
-	M8KwM5jmgFuPyznPfBqzYJLhvjr5UnegOQdPAdL+AOU1p104FhB1ri/6ch2XFJOETEg92qEYbw6
-	VgGXoZ3Ev9WVYn1ADN/VbtMPRZZMf7VA==
-X-Received: by 2002:a05:6122:924:b0:56d:451b:e4dd with SMTP id 71dfb90a1353d-5866395de75mr4709856e0c.12.1779560341744;
-        Sat, 23 May 2026 11:19:01 -0700 (PDT)
+        bh=o498sRAJSIJ+FtL0naElfrtr5FUCGg3qCQLRHFME+8k=;
+        b=U4kOuDiJ6bBESS4Gy9JYfBCVrzo3pVnqkv3msyhs364a0HM6/2vZNcE41plqXCNyW7
+         fOBJ188p6XL43X3bGMashCx2Ml2uSXISXtEjI/CbNzf9phDh/YbvFHnkioIvYANtR77e
+         kLE4l1I2K10KigndZeH6z6M/MlPmII5tWl2Xqm5pXRb6QPieuO1mcM8PrchhPyOrq806
+         9hv8D6D0FjFBQ3dg2byPNgClpdT71G5oTzCvaG5YSnN6DCnHCqj81lrlou+CUIO7PEci
+         dTN+RVGqXypqByUFo13+JFkagCGjdwfwDpHJWz/DaQ+jym0h6q7M16kcsYSBEM4k6qy5
+         JUhw==
+X-Forwarded-Encrypted: i=1; AFNElJ9896jY18qaCsxkOXnhQDCYbQpMKyRtuuWBY0KVXqipve0uaB5mDroNlSwQjs4K2zm/wnYv301RIjE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw9VXBAnSFuCtiB5CosWHKkuZIuat+j0jmdZCYkoQ0wcRhjJK4u
+	oEIXzpMutqJIXtfOL/sxpgmgk1gx7RHpv93Th+VhwMiEF0W4ow3l+FMK
+X-Gm-Gg: Acq92OHWXdCePitOq81UWCKMuLHjw8SzI4r29ep9/n4uaLQo9cX1ksD/Jig8Ss3OZtn
+	myUzRMdlQDoFTgsE+FvAbSUQe4q7aRnZ9P4jzKSOpf8yCDSlazrU6u4qb/wyWsbHmkPIEq7XDmm
+	Sh+VL4cvA0RlRSVDfOiXzqxFY1dQMUnJmDAH/Uiit0FVASfTLD+wOpXmWZXKRis+alJIB4Wv0yM
+	ysq2SQbnXIs/uF/LBdlDrfM5y8/2BQ0YSEk2D658PyUCwRGxeLUV+uhLXOzvtlRCrXqCwwZ8XzO
+	CU9w5Wnsk1MLk1yDqcMae9NrkfXSwwn/cdcEZv5d1RTbyp5IY1o0gn+EgIXNfG+xurJp21RMoDk
+	fpltT1JGIPHFeQmxIqG6SdOBi4UP4u3AnWEJOSLAxxAlWN0RX+p3Wty/XFr9GUNusmpSyp34bZs
+	5e5nrL523XbO8Y1pen6UzNW3Cwrkqhlw==
+X-Received: by 2002:a05:6122:6608:b0:56c:d5cd:1e7c with SMTP id 71dfb90a1353d-5865fbfd0f5mr4771397e0c.5.1779560888452;
+        Sat, 23 May 2026 11:28:08 -0700 (PDT)
 Received: from i-use-arch-btw ([2600:1006:b017:e193:bca5:670c:e4c:71ed])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-586f889e7e3sm6493090e0c.15.2026.05.23.11.19.00
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-586f25d708bsm6870334e0c.1.2026.05.23.11.28.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 May 2026 11:19:01 -0700 (PDT)
+        Sat, 23 May 2026 11:28:08 -0700 (PDT)
 From: Maxwell Doose <m32285159@gmail.com>
-To: jic23@kernel.org
-Cc: Maxwell Doose <m32285159@gmail.com>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
+To: jic23@kernel.org,
+	m32285159@gmail.com
+Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
 	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v5] iio: chemical: sps30: Replace manual locking with RAII locking
-Date: Sat, 23 May 2026 13:15:36 -0500
-Message-ID: <20260523181536.5254-2-m32285159@gmail.com>
+Subject: [PATCH v4] iio: chemical: scd30: Replace manual locking with RAII locking
+Date: Sat, 23 May 2026 13:25:32 -0500
+Message-ID: <20260523182531.10146-2-m32285159@gmail.com>
 X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -77,134 +76,157 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace manual mutex_lock() and mutex_unlock() calls with the much newer
-guard(mutex)() and scoped_guard() macros to enable RAII patterns,
-modernize the driver, and to increase readability.
+scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
+calls. Replace them with the newer guard(mutex)() for cleaner RAII
+patterns and to improve maintainability.
 
-Move mutex locking into sps30_do_meas() and tune it up to use guard()(),
-as every caller takes the lock anyways.
+Add new helper function scd30_trigger_handler_helper_locked() containing
+the critical section for scd30_trigger_handler(). After moving
+scd30_trigger_handler()'s critical section into the new helper, tune up
+control logic to return ret early and not memcpy() if it's an error
+condition.
+
+In addition, small refactor to replace "?:" operator with regular
+if/else returns.
 
 Signed-off-by: Maxwell Doose <m32285159@gmail.com>
 ---
-v2:
- - Switch over some scoped_guard()s to guard(mutex)() per David's
+ v2:
+ - Fix callback issue as noted by Jonathan v1.
+ - Refactor critical section of scd30_trigger_handler() into helper
+   called scd30_trigger_handler_helper_locked().
+ - Revert removal of goto in scd30_trigger_handler().
+
+ v3:
+ - Tune up helper to return early on failure condition per Jonathan's
    suggestion.
- - Remove redundant whitespace per Andy's suggestion.
- - Add new wrapper sps30_do_meas() per Andy's suggestion (see commit
-   message).
- - Add Joshua's RB
-   (link: https://lore.kernel.org/linux-iio/CAKqfh0FWig8mRR-xhvnfcFeSinR6RySyPaf9Gbpb6WU+diiiUQ@mail.gmail.com/T/#t)
 
-v3:
- - Remove sps30_do_meas() wrapper per Andy's suggestion.
- - Remove Joshua's RB (major changes).
+ v4:
+ - Forgot to commit changes listed in v3, now fixed.
 
-v4:
- - Move mutex locking into sps30_do_meas().
+ drivers/iio/chemical/scd30_core.c | 68 ++++++++++++++++++++-----------
+ 1 file changed, 44 insertions(+), 24 deletions(-)
 
-v5:
- - Tune up commit message to be more specific about sps30_do_meas()
-   locking.
- - Fix up some stray whitespace.
-
- drivers/iio/chemical/sps30.c | 24 ++++++++++--------------
- 1 file changed, 10 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-index a934bf0298dd..8e15baa31423 100644
---- a/drivers/iio/chemical/sps30.c
-+++ b/drivers/iio/chemical/sps30.c
-@@ -5,6 +5,7 @@
-  * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-  */
- 
-+#include <linux/cleanup.h>
- #include <linux/crc8.h>
- #include <linux/delay.h>
- #include <linux/i2c.h>
-@@ -69,6 +70,8 @@ static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
- {
- 	int i, ret;
- 
-+	guard(mutex)(&state->lock);
-+
- 	if (state->state == RESET) {
- 		ret = state->ops->start_meas(state);
- 		if (ret)
-@@ -111,9 +114,7 @@ static irqreturn_t sps30_trigger_handler(int irq, void *p)
- 		aligned_s64 ts;
- 	} scan;
+diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
+index a665fcb78806..8dbba9a7c426 100644
+--- a/drivers/iio/chemical/scd30_core.c
++++ b/drivers/iio/chemical/scd30_core.c
+@@ -368,11 +368,13 @@ static ssize_t calibration_auto_enable_show(struct device *dev, struct device_at
+ 	int ret;
+ 	u16 val;
  
 -	mutex_lock(&state->lock);
- 	ret = sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
+-	ret = scd30_command_read(state, CMD_ASC, &val);
 -	mutex_unlock(&state->lock);
- 	if (ret)
- 		goto err;
- 
-@@ -136,7 +137,6 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_PROCESSED:
- 		switch (chan->type) {
- 		case IIO_MASSCONCENTRATION:
--			mutex_lock(&state->lock);
- 			/* read up to the number of bytes actually needed */
- 			switch (chan->channel2) {
- 			case IIO_MOD_PM1:
-@@ -152,7 +152,6 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
- 				ret = sps30_do_meas(state, data, 4);
- 				break;
- 			}
--			mutex_unlock(&state->lock);
- 			if (ret)
- 				return ret;
- 
-@@ -197,9 +196,9 @@ static ssize_t start_cleaning_store(struct device *dev,
- 	if (kstrtoint(buf, 0, &val) || val != 1)
- 		return -EINVAL;
- 
--	mutex_lock(&state->lock);
 +	guard(mutex)(&state->lock);
+ 
+-	return ret ?: sysfs_emit(buf, "%d\n", val);
++	ret = scd30_command_read(state, CMD_ASC, &val);
++	if (ret)
++		return ret;
 +
- 	ret = state->ops->clean_fan(state);
--	mutex_unlock(&state->lock);
++	return sysfs_emit(buf, "%d\n", val);
+ }
+ 
+ static ssize_t calibration_auto_enable_store(struct device *dev, struct device_attribute *attr,
+@@ -387,11 +389,13 @@ static ssize_t calibration_auto_enable_store(struct device *dev, struct device_a
  	if (ret)
  		return ret;
  
-@@ -215,9 +214,9 @@ static ssize_t cleaning_period_show(struct device *dev,
- 	__be32 val;
+-	mutex_lock(&state->lock);
+-	ret = scd30_command_write(state, CMD_ASC, val);
+-	mutex_unlock(&state->lock);
++	guard(mutex)(&state->lock);
+ 
+-	return ret ?: len;
++	ret = scd30_command_write(state, CMD_ASC, val);
++	if (ret)
++		return ret;
++
++	return len;
+ }
+ 
+ static ssize_t calibration_forced_value_show(struct device *dev, struct device_attribute *attr,
+@@ -402,11 +406,13 @@ static ssize_t calibration_forced_value_show(struct device *dev, struct device_a
+ 	int ret;
+ 	u16 val;
+ 
+-	mutex_lock(&state->lock);
+-	ret = scd30_command_read(state, CMD_FRC, &val);
+-	mutex_unlock(&state->lock);
++	guard(mutex)(&state->lock);
+ 
+-	return ret ?: sysfs_emit(buf, "%d\n", val);
++	ret = scd30_command_read(state, CMD_FRC, &val);
++	if (ret)
++		return ret;
++
++	return sysfs_emit(buf, "%d\n", val);
+ }
+ 
+ static ssize_t calibration_forced_value_store(struct device *dev, struct device_attribute *attr,
+@@ -424,11 +430,13 @@ static ssize_t calibration_forced_value_store(struct device *dev, struct device_
+ 	if (val < SCD30_FRC_MIN_PPM || val > SCD30_FRC_MAX_PPM)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&state->lock);
+-	ret = scd30_command_write(state, CMD_FRC, val);
+-	mutex_unlock(&state->lock);
++	guard(mutex)(&state->lock);
+ 
+-	return ret ?: len;
++	ret = scd30_command_write(state, CMD_FRC, val);
++	if (ret)
++		return ret;
++
++	return len;
+ }
+ 
+ static IIO_DEVICE_ATTR_RO(sampling_frequency_available, 0);
+@@ -579,24 +587,36 @@ static irqreturn_t scd30_irq_thread_handler(int irq, void *priv)
+ 	return IRQ_HANDLED;
+ }
+ 
++/* Meant ONLY for scd30_trigger_handler() */
++static int scd30_trigger_handler_helper_locked(struct iio_dev *indio_dev,
++					       int *scan_data, int arr_size)
++{
++	struct scd30_state *state = iio_priv(indio_dev);
++	int ret;
++
++	guard(mutex)(&state->lock);
++
++	if (!iio_trigger_using_own(indio_dev))
++		ret = scd30_read_poll(state);
++	else
++		ret = scd30_read_meas(state);
++	if (ret)
++		return ret;
++	memcpy(scan_data, state->meas, arr_size);
++	return 0;
++}
++
+ static irqreturn_t scd30_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct scd30_state *state = iio_priv(indio_dev);
+ 	struct {
+ 		int data[SCD30_MEAS_COUNT];
+ 		aligned_s64 ts;
+ 	} scan = { };
  	int ret;
  
 -	mutex_lock(&state->lock);
-+	guard(mutex)(&state->lock);
-+
- 	ret = state->ops->read_cleaning_period(state, &val);
+-	if (!iio_trigger_using_own(indio_dev))
+-		ret = scd30_read_poll(state);
+-	else
+-		ret = scd30_read_meas(state);
+-	memcpy(scan.data, state->meas, sizeof(state->meas));
 -	mutex_unlock(&state->lock);
++	ret = scd30_trigger_handler_helper_locked(indio_dev, scan.data, sizeof(scan.data));
  	if (ret)
- 		return ret;
- 
-@@ -238,12 +237,11 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
- 	    (val > SPS30_AUTO_CLEANING_PERIOD_MAX))
- 		return -EINVAL;
- 
--	mutex_lock(&state->lock);
-+	guard(mutex)(&state->lock);
-+
- 	ret = state->ops->write_cleaning_period(state, cpu_to_be32(val));
--	if (ret) {
--		mutex_unlock(&state->lock);
-+	if (ret)
- 		return ret;
--	}
- 
- 	msleep(20);
- 
-@@ -256,8 +254,6 @@ static ssize_t cleaning_period_store(struct device *dev, struct device_attribute
- 		dev_warn(dev,
- 			 "period changed but reads will return the old value\n");
- 
--	mutex_unlock(&state->lock);
--
- 	return len;
- }
+ 		goto out;
  
 -- 
 2.54.0
