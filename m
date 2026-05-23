@@ -1,91 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mta.al2klimov.de (mta.al2klimov.de [162.55.223.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEF4932E692
-	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 09:20:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 585CB2BFC60;
+	Sat, 23 May 2026 11:45:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.55.223.79
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779528023; cv=none; b=SOf1xB/Q+qfJq1p1Af2FK4SOGPIM7wbvyjCGOkjCy7DQo8vL/Lna4cYeg6sOFGx2nPwLWs4NXDkdLiTfLpSdqr4tolvh6kbY32hkKp2CbOnAjPbzM8CT+KuWM68zx3M0pKm1572ONWBFpYnWbyvQUgJsonBC1GrIO03tAPUCQ+o=
+	t=1779536733; cv=none; b=BqjZ1RAAAHdN+eJ5VcuWwtfZM8wBr4yhypPjNMjOf4E8Xvu/IxbZOvgu1LiokIil9XtiOX7Lv/o9z544DACIPQ6not3rRt8WYFWz3qAqmyp1r3zDgKHMTIUCrVJ2nHHA7DCrqAzaMyLyFboht+hxTbTs/hmOipNQcMlNKsi+F24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779528023; c=relaxed/simple;
-	bh=t+aytgWJYWMrIeGAWf/uE60NzkgJIffFPhmKzk31inM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=k4UcgfyZ3WIODa+jAcwe5bpwPgBSFCt07t89NkViR7bubtm3EoPG98U88NstvkybPUyQopb1yfjPuWsDUuqSZGglKZRU6cbMDUy10/Ky8DaNbs8YkwaPYjnTjnbqe6N5R6d6dOIcPwcC59HzD8UhWQYONkKpEfOoUNdpTu+LfS8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cfxBsi7J; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779536733; c=relaxed/simple;
+	bh=NLCDKnRJ6sWNAIoKR5b+/Gi+XrYUm3tMWoWcFlelzg0=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version; b=QvoVpQeGmU0bBjMJIiNk/tRXh90/6lXHmVNGJfwYlRX6K6J70jYajO8H8SE8LUXIlR7G+G4Fig+U7TTS3ORT5kIEc1c7UrvGbmjVyntlQdSohm0Ds+2mniS+2KLAwzMtdHflvJ4VuZRW1IapBhS9UHhRGWbrCF//7P3LyxYV55w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=al2klimov.de; spf=pass smtp.mailfrom=al2klimov.de; dkim=pass (2048-bit key) header.d=al2klimov.de header.i=@al2klimov.de header.b=efiRCArb; arc=none smtp.client-ip=162.55.223.79
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=al2klimov.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=al2klimov.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cfxBsi7J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9DA21F00ACF
-	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 09:20:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779528022;
-	bh=t+aytgWJYWMrIeGAWf/uE60NzkgJIffFPhmKzk31inM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=cfxBsi7J9fsxEfsgvFmd2NVs986Q+ome4emmk8XKBW0g0Vb4bFRCXh3k/gEInSN8Q
-	 wEXuaXm6WH4wWD/NmykWGGJpFREKgCOdeQKCh67hcMtBLIaQX8g4xf6Fj0YJaJrb6E
-	 0KkeYumHzBE0gW2aIVVaoAPL6MsNZAVaieL5jDJ98UnLoSi/slwePbTpTNRRuCtkdo
-	 oilPK8HHNaAyy21qLXJqkYqQiaNjU/7QbTVFL/kKpraNgzZP4FeFSD6emYDCnGFOJs
-	 r6bIrTI6lLYD5KEOFKQaAN034CwriA+B+X8bZ8PfjNeuBeHNwWRDanNTFWv/061nE7
-	 oe3vN4O5udvEQ==
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-3938cc204a7so61827801fa.1
-        for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 02:20:22 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ941Qsp6LfwTsLOXFDh4toDIWiVpmPDfGznfgOISRPLw7NXvDvh1kYUpgMn/szZ7M/dJ3Lcc9zzsYM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YylhEH3AxeLHrJGMpXQ0awl+VGVpgW5yFzfrobuZCHDUQNKz8Nk
-	28CUDPwuLZDA2banmO9LE+wkeObnKmFSLwdtKGcxmogR6oAMDbeEffNM6KKHxpkO1R7Rj6Xgt3Q
-	T6WRFvari7JqAeL2+Z1tsVcu8y1BkjoY=
-X-Received: by 2002:a05:6512:61a:b0:5a8:ee42:c131 with SMTP id
- 2adb3069b0e04-5aa323cbd13mr1605975e87.34.1779528021498; Sat, 23 May 2026
- 02:20:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=al2klimov.de header.i=@al2klimov.de header.b="efiRCArb"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; s=default; bh=NLCDKnRJ6sWN
+	AIoKR5b+/Gi+XrYUm3tMWoWcFlelzg0=; h=date:subject:to:from;
+	d=al2klimov.de; b=efiRCArbgz4cnEbi4Npe6k8DYtsPb146gYAvdbM7CCVtwkN92zQ9
+	3Fi+KRQ+p5/UkLLhMnN9m8Cy78Sa3QTGXcqpAvfTIwIhKhBGFI8Its0JBXnRRltyAOjLZ/
+	jxk6JDSb27mbuB1L/kRlRsns1hiT4El5Tb2m+siIVS/DkV3yIyjZGvNuMHJGeZ1by07JbI
+	PLuoQVF+dl0101Wrb8pH6mUtHT25AfUBOyL+FYw/ACD7aMStyelXjm8658b3uR1FUXuXZP
+	nAm0hKkx5+MOYlSBA0HPcn/MdydOCo480F1QvpU3DgxeWobtRW9MHxiCWAUMIhv17np6nw
+	XsiNARUV/w==
+Received: from cachy-ak (2a02-2455-18e9-e011-4d8a-aad2-c25c-50e5.dyn6.pyur.net [2a02:2455:18e9:e011:4d8a:aad2:c25c:50e5])
+	by mta.al2klimov.de (OpenSMTPD) with ESMTPSA id 460fbb46 (TLSv1.3:TLS_CHACHA20_POLY1305_SHA256:256:NO);
+	Sat, 23 May 2026 11:45:28 +0000 (UTC)
+From: "Alexander A. Klimov" <grandmaster@al2klimov.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	"Alexander A. Klimov" <grandmaster@al2klimov.de>,
+	David Heidelberg <david@ixit.cz>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] iio: light: al3010: read both ALS ADC registers again
+Date: Sat, 23 May 2026 13:44:57 +0200
+Message-ID: <20260523114505.73601-1-grandmaster@al2klimov.de>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260513-scmi-client-probe-log-v1-0-00b47b1be009@oss.qualcomm.com>
- <20260513-scmi-client-probe-log-v1-5-00b47b1be009@oss.qualcomm.com> <CAD++jL=6ikpC-BqVqP1Ev5HC37fw=K_n6rP96AxKi0jdVcyvmw@mail.gmail.com>
-In-Reply-To: <CAD++jL=6ikpC-BqVqP1Ev5HC37fw=K_n6rP96AxKi0jdVcyvmw@mail.gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Sat, 23 May 2026 11:20:05 +0200
-X-Gmail-Original-Message-ID: <CAD++jLkCiZVOWYcN3yqLu6fOqjQhSkM0aZAbzVuoL-5hj+Lnzw@mail.gmail.com>
-X-Gm-Features: AVHnY4IWSrFsqHQpeusKv0ApoYMxulT_ZRdAj0wPbeYFZEu1mlSyB-OxmXrnTAU
-Message-ID: <CAD++jLkCiZVOWYcN3yqLu6fOqjQhSkM0aZAbzVuoL-5hj+Lnzw@mail.gmail.com>
-Subject: Re: [PATCH 5/5] pinctrl: pinctrl-scmi: Log number of pins, groups, functions
-To: Alex Tran <alex.tran@oss.qualcomm.com>
-Cc: Jyoti Bhayana <jbhayana@google.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Sudeep Holla <sudeep.holla@kernel.org>, 
-	Cristian Marussi <cristian.marussi@arm.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Viresh Kumar <viresh.kumar@linaro.org>, 
-	Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, arm-scmi@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, 
-	linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sat, May 23, 2026 at 11:18=E2=80=AFAM Linus Walleij <linusw@kernel.org> =
-wrote:
-> On Wed, May 13, 2026 at 6:44=E2=80=AFPM Alex Tran <alex.tran@oss.qualcomm=
-.com> wrote:
->
-> > The SCMI pinctrl driver does not currently log the number of pins,
-> > groups, and functions discovered from firmware. This information is
-> > useful for confirming the firmware exposed pinctrl resources during
-> > debugging.
-> >
-> > Log these counts after a successful probe to align with the existing
-> > SCMI client driver logging pattern.
-> >
-> > Signed-off-by: Alex Tran <alex.tran@oss.qualcomm.com>
->
-> Other kernel maintainers want a minimalist dmesg, but not me,
-> so I just applied this.
->
-> If someone is upset about the noise they can send a patch
-> changing it to dev_dbg().
+al3010_read_raw() used to read two adjacent registers
+until the driver was modernized using the regmap framework.
+That cleanup accidentally replaced the 16-bit word read
+with a single byte read. I'm reverting latter.
 
-Ah scratch that, Andy made a fair point that it is available
-in debugfs anyway so I dropped the patch.
+Fixes: 0e5e21e23dd6 ("iio: light: al3010: Implement regmap support")
+Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+---
+ v2: use __le16, not uint16_t
 
-Yours,
-Linus Walleij
+ drivers/iio/light/al3010.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/light/al3010.c b/drivers/iio/light/al3010.c
+index 0932fa2b49fa..1800776d725e 100644
+--- a/drivers/iio/light/al3010.c
++++ b/drivers/iio/light/al3010.c
+@@ -111,7 +111,8 @@ static int al3010_read_raw(struct iio_dev *indio_dev,
+ 			   int *val2, long mask)
+ {
+ 	struct al3010_data *data = iio_priv(indio_dev);
+-	int ret, gain, raw;
++	int ret, gain;
++	__le16 raw;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -120,11 +121,12 @@ static int al3010_read_raw(struct iio_dev *indio_dev,
+ 		 * - low byte of output is stored at AL3010_REG_DATA_LOW
+ 		 * - high byte of output is stored at AL3010_REG_DATA_LOW + 1
+ 		 */
+-		ret = regmap_read(data->regmap, AL3010_REG_DATA_LOW, &raw);
++		ret = regmap_bulk_read(data->regmap, AL3010_REG_DATA_LOW,
++				       &raw, sizeof(raw));
+ 		if (ret)
+ 			return ret;
+ 
+-		*val = raw;
++		*val = le16_to_cpu(raw);
+ 
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+-- 
+2.54.0
