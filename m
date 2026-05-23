@@ -1,47 +1,79 @@
-Received: from mta.al2klimov.de (mta.al2klimov.de [162.55.223.79])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31C9F389107;
-	Sat, 23 May 2026 11:45:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.55.223.79
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8FBD39A04D
+	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 13:45:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779536759; cv=none; b=mR3xkcD3ySlzmMbRJtet3Pybf+GgrSKk+Z8MSKXzDtYj1hkORG7Gdt65DnIJX1LM5vsAAKe4ZaF6uC5yjRpEVeLp2NEj0IuGdyvV3aglKmqsS6uffDMABB6IQUC9HdGi98RZ3Xw7OQYmDwBsLrJoJYBxhkira1cVMdUcAZnfDWE=
+	t=1779543959; cv=none; b=GbR755SF6fu9kdemZeVHbFOOctTlNMQeMdee9ZmAmQS/WanPFbyEgPQ/64xSCoY8dJCi+o8kG18z0GfLhVpr8fP0zE0EhhREeASHw3KZAIEbRqjTFLx7WJT/J3Eo9UN7j0G964t3aElHQirhBYwkOJDSYxg5TWfmx2CQS+WmRrc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779536759; c=relaxed/simple;
-	bh=RhvNeUq6ka1FwLzlHsoNgKC02NYaXOKpyuGJBTZNN7Y=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Mgegs8LHfZl4/wM7jdQPnntJEvp6SfzOQuAAGU1jK7MWMiG2aJZLXObcy5DkRbLey1B/WoU76RLREy7XXsWfMy25kLxjfgLYu3qrV6Wv971PHmHMxdNJl59W6X5E78+FsYbmoo6lxbuCl8uFTxEGYTV8qkG3Jp91z7LZA316WlA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=al2klimov.de; spf=pass smtp.mailfrom=al2klimov.de; dkim=pass (2048-bit key) header.d=al2klimov.de header.i=@al2klimov.de header.b=G+IrPa4W; arc=none smtp.client-ip=162.55.223.79
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=al2klimov.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=al2klimov.de
+	s=arc-20240116; t=1779543959; c=relaxed/simple;
+	bh=etupZFY96r1dtlFQQSxz6ZsKD4arOhkSz20hQ8jJhWg=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=ZGmzUoYyYkJAmfNWT5lBNdVrDjpqM8eIsRaZI5lks13wC0lG//+qYkq1cwJ2xL++Ev9EOd/X+nl7zu+p/eWgKs8bzXUTW22baDD60Wsg1tl14FVPVuG37rWMfRTK1OKkl6mC+Pw0tHm6/coeu84esY5FIeZPO8ZBnEzT2JOANpI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UG3+/lTX; arc=none smtp.client-ip=209.85.208.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=al2klimov.de header.i=@al2klimov.de header.b="G+IrPa4W"
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; s=default; bh=RhvNeUq6ka1F
-	wLzlHsoNgKC02NYaXOKpyuGJBTZNN7Y=; h=references:in-reply-to:date:
-	subject:to:from; d=al2klimov.de; b=G+IrPa4WkkHA0jMgv4Iexfm7OZKdke6DzgI
-	whTm9Ts+GEtApYfIicYzwgHftDpUXsy3I8ae95pj+yTI8jer8kgDFLv+gxmLzedq/k/ycE
-	x0zYmBjiC5V5dJD6apU71II+eLjYC4YRw7kYIzrmpfUdqDTCzjkvAbPEI/yoXQxso2PZjE
-	/MBdFwW2dWL3Jt2Tio9HJZstDmqNp0nXMcZZyNM+m3Kq6J+JiL2EIiRQ1pdXI0oXiqoxlt
-	g0AQUJGD9ZZyx31D2XREX1l9V/E4NlRjGvQX65RpuPEnUWiL5hHk0YZiM8SQQZcTTXR9+v
-	Lwl8yPEYM/jm/Cqo4qfgq7yjbtQ==
-Received: from cachy-ak (2a02-2455-18e9-e011-4d8a-aad2-c25c-50e5.dyn6.pyur.net [2a02:2455:18e9:e011:4d8a:aad2:c25c:50e5])
-	by mta.al2klimov.de (OpenSMTPD) with ESMTPSA id 3a2d0a78 (TLSv1.3:TLS_CHACHA20_POLY1305_SHA256:256:NO);
-	Sat, 23 May 2026 11:45:55 +0000 (UTC)
-From: "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	"Alexander A. Klimov" <grandmaster@al2klimov.de>,
-	David Heidelberg <david@ixit.cz>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] iio: light: al3320a: read both ALS ADC registers again
-Date: Sat, 23 May 2026 13:44:58 +0200
-Message-ID: <20260523114505.73601-2-grandmaster@al2klimov.de>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260523114505.73601-1-grandmaster@al2klimov.de>
-References: <20260523114505.73601-1-grandmaster@al2klimov.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UG3+/lTX"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-38e8232b28dso8190461fa.3
+        for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 06:45:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779543955; x=1780148755; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=etupZFY96r1dtlFQQSxz6ZsKD4arOhkSz20hQ8jJhWg=;
+        b=UG3+/lTXETW3Cz/ZigpKdS1MYhn/HsSovqeKK6iq4nmeasliunfrQtx0hIDclJYEHO
+         ZaE8DGxx+WdSgBsgEDUz12LRuFJjGg7VkI2wUKzRtKF23Z61lXOX0Bfewd9JNUb1S2sz
+         7IY4HUZnKiJk0f6rXMAHBSgojkrCDC4HSpYHD4WnYPUJBfmiLTSZ9NNA2FlvtTCLIop9
+         3yS2n4JuOOzAgsEUomhDK/F+A3IVgJhbbIUyOpFpdQR/+XtqrNljfQBrmulqBydsgdN6
+         TIvykyHVIxiVLYjo7VLN3wzxK+qb+8XNNRVB2FiL6yxMihyo80YUAS9B27HYzez9INs7
+         0oFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779543955; x=1780148755;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=etupZFY96r1dtlFQQSxz6ZsKD4arOhkSz20hQ8jJhWg=;
+        b=RpBBJwLa7/uyxuqe3FmphdNKgFhlwE7hgsYBr7JD1682houTTCpnqxPGCk/Y5k1047
+         va/93u+v9ieRWxzbEcX26FofpHQmYpo8ZZtcSsMB5Jg+pUGUukCKUeEL+B9nTYZGpfgt
+         3nqIhIednsqluSPjs7yoDMwt47vB9Som7qhWBiRf0I0Xpn2UE2n2IsoKK3ksqzfXGhVE
+         m9THSUxzA5gId0QXLyvLXCFhD7X6Ordo64AzX4OaSGf8lQjex+O7sz+Q2TdHAm8Y2FTr
+         1IUC7QZr56xTsCJCBcbpsUofQ/9kf8m6YS2+uwxHbhgGUM3h/ZsLks4OM6TdzOMiet0a
+         Mp7w==
+X-Forwarded-Encrypted: i=1; AFNElJ8X/d8nNndAqUo+QHmmDXtqiin++OtBe7caI8Jz2PuoD3bYgQntRuuJpQX4BPlWvf8QZ4CwOMNLCaE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxFo+OS9ogndFFywb6/o9ZEfNrlVGDypw5c0NnKwGjJX7aaFYnj
+	og1gZDq5wNaNCK8R3HL8mFKU5rzqH0DJ8eDFF7OU27kQauBe4WmdkZxM
+X-Gm-Gg: Acq92OH4RjjRUAJVv+8wApg2g+VwrUuntOXe59tCGC1UGaCsnbk6Zal67WeoajVti2g
+	moZmu8M4yVlPRzE3JTraXEYj5SCKKldXBX1Lm/Z9MUPh8fzHWLsCG+7zVcVPutly8KfrGT9gutI
+	VERXms8lr86WjE91CyvFvZMuFTPBLxcfV7mNLzXjR8N+SCZ5yX2lkNaumxZgVnLMjrHe4OByx0G
+	7GsaLCSzu/Hlu5i5mnLnF/Wv3gChj55HsBmNrkeZd5W+GXLNfrE52XxoKnQj+f/2T8SmidFLL98
+	SwQ3zN7c2qXqSN4MCQbEagsjs9TIoi7gxWQu2ykVqOP8zOmOuTMw3wLSFBSFUYemN533EZykM5w
+	yb2rdM64LN8CBR8DBBauZhInJo2G4J3FVl6xED7GyAt1T2JFW2//Vvzfgmq1cGVX+uflBe13qY1
+	EKtpCE4ZZtfhT9r4QYW7ovDwJzaFml0SDWsEM2k+MF0N0dV+k/5KnO+lYQQQ==
+X-Received: by 2002:a2e:a593:0:b0:38e:2183:2287 with SMTP id 38308e7fff4ca-395d8d28ba9mr12231531fa.6.1779543954292;
+        Sat, 23 May 2026 06:45:54 -0700 (PDT)
+Received: from localhost.localdomain ([213.230.112.147])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-395dcc0a4cdsm9985841fa.19.2026.05.23.06.45.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 May 2026 06:45:53 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: jic23@kernel.org
+Cc: salah.triki@gmail.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	hcazarim@yahoo.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Stepan Ionichev <sozdayvek@gmail.com>
+Subject: Re: [PATCH] iio: potentiostat: lmp91000: fix NULL deref in probe by reordering setup
+Date: Sat, 23 May 2026 18:45:46 +0500
+Message-Id: <20260523134546.4910-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
+In-Reply-To: <20260520185142.34015-1-sozdayvek@gmail.com>
+References: <20260520185142.34015-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -50,47 +82,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-al3320a_read_raw() used to read two adjacent registers
-until the driver was modernized using the regmap framework.
-That cleanup accidentally replaced the 16-bit word read
-with a single byte read. I'm reverting latter.
+Sorry for the duplication -- I'll drop this one. Looking forward to
+Salah's version.
 
-Fixes: 1850e6ae7f91 ("iio: light: al3320a: Implement regmap support")
-Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
----
- v2: use __le16, not uint16_t
-
- drivers/iio/light/al3320a.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
-index 63f5a85912fc..f40b8b36f22d 100644
---- a/drivers/iio/light/al3320a.c
-+++ b/drivers/iio/light/al3320a.c
-@@ -135,7 +135,8 @@ static int al3320a_read_raw(struct iio_dev *indio_dev,
- 			    int *val2, long mask)
- {
- 	struct al3320a_data *data = iio_priv(indio_dev);
--	int ret, gain, raw;
-+	int ret, gain;
-+	__le16 raw;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -144,11 +145,12 @@ static int al3320a_read_raw(struct iio_dev *indio_dev,
- 		 * - low byte of output is stored at AL3320A_REG_DATA_LOW
- 		 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
- 		 */
--		ret = regmap_read(data->regmap, AL3320A_REG_DATA_LOW, &raw);
-+		ret = regmap_bulk_read(data->regmap, AL3320A_REG_DATA_LOW,
-+				       &raw, sizeof(raw));
- 		if (ret)
- 			return ret;
- 
--		*val = raw;
-+		*val = le16_to_cpu(raw);
- 
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--- 
-2.54.0
+Stepan
