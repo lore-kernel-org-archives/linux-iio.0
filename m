@@ -1,135 +1,134 @@
-Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com [209.85.217.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D86026F476
-	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 18:05:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779559509; cv=pass; b=Q1NszzVZuF2dJNA9cFtb3tUZ+XvPwyY9Ka2ACLyt7/6qKyIomjFdUI+MH09sZfh9xkg1efYpycIi79M0hMcj+VlNNJqVlbaHGhJWqCK1seBGGvF5MLvceR1qEucS1Ucr3XZtF4Dsj5t7WQyTU4EWFcyyz3gfhGU/G8kJX6DjR+s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779559509; c=relaxed/simple;
-	bh=pCf8JfX66t768yvJI2x3Z9KDInicyj8gkOg2QVJdCzA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NaZXq+pwcgEQT080SOJmJJ3XwlEn5n8Qda6Rg3wO+IUKRqLqhYEbHtFE9EvhUtXIhF27bW7ikk7HL60inSQyxOZbNrSf8T6qvisVsR95fNnUrh8ryMfk35X65vEAgTGUzzP3hdVL+XemxZxDMQM6GXJjKzPsZl6+eNi2nYkpKhM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qKv0+ulb; arc=pass smtp.client-ip=74.125.224.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 789083090C1
+	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 18:11:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779559874; cv=none; b=Bhhn4YHbs3YlJgL2EVzFQeEtuW4BmOt3FgDvFY0xCDhAw4HL95DjQZIv3HGNoA7mZUWGdD85N2GBr4CHSuh4DuVy0UtSe0/ypVS4cw1MNNL+hGw0ApgYKXbz6ILtS1gKTYKXgX9dBZ0tpxdZbtXvHP1fHgNuOYkGLPVKDKjzsRw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779559874; c=relaxed/simple;
+	bh=NBWQelWLIr7h5UIsUW5fcrgUxD4JimHxlxbsVlf9ReY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RTffJAJti5cH1G2pEXImsZVB6Gv40F1El+p5IPtvsRgyPYJkMMX7z2cZhTOscTacDmcqcv4SQxZUS3yoRxorYM5mvJt+Gs6WjTDO9YtJlQgbzsaZIKTSG9vBikCXFpWt0qcR7FeuuUli0Gh2mJl0N+acz5jPXr4zLwELRhlKjDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sd/RLjyK; arc=none smtp.client-ip=209.85.217.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qKv0+ulb"
-Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-65e15fb394bso5930265d50.2
-        for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 11:05:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779559507; cv=none;
-        d=google.com; s=arc-20240605;
-        b=cXVYv81kvKVC94yJp+CIDPn22jQ5RS517x/Hu3hqtM2lItjOxsdRYueQ4nnpjGLfcf
-         Ni3T1Lc6ilkj4zSsARqDGyYht2uuvg1q5TTck6HFazBLO1JAP62IdCtAfT2geh+rC6/7
-         Gc21YwU/IGveXHKT5y1LyV1rv6VXR1CCJ1w+O8xoFQpsz5HFQFOi4O7BVEbRR8I5NXs4
-         3pWXM31QTX1HzOYZ40jtdBFeqHYdf1xvM5tvZYJy9zr2ivNtDE6PUiKrW4mh4JFlf/JJ
-         xQ/uvu5+z+yl+XLCQFfDCMWYLS6ig1APkAihdYdRtAPbIO5+uF9tgGVhNg8DC2rT6XIi
-         6oMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=b2E8cU1g4qhYlwVS5DUr8m1PDv5GVSB/Ee16C5FdCCE=;
-        fh=RsYC4d/K6UoReVthaasuxNaQ5eNYAH8rWG6DYVuVNes=;
-        b=BPn2IbMAxk2aobfD2IDqDRjrX5R/y3sRop8eH1Q+XtlZUeg+hbB47FEt1p6iPu5u1E
-         5qokRSLnVN5lvz56TAmWnxgUJINFG/uxbeRVq88KtVh4kvpwPuqKvsLO7dA/xPYbXI6S
-         j805PLiORFICn2OgdnA/PKya6FOQRr2hYfDHXjBWdgrejEfwH+Hl/ZCwv4k6PthKiagz
-         pNraJmGSjihRKpVIRY1Q2TSXl/Um3Az4HA2RutbSYrbfgdvWpAuIZA2lUfsP2hlwNjDi
-         jjz619wMAUkRiq+wfnBKK24WcQA6JJ+s8Szd8KIWDJ6DvZj03mDJEFITKDuL4P7a7L5R
-         jywA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sd/RLjyK"
+Received: by mail-vs1-f44.google.com with SMTP id ada2fe7eead31-6312d29596cso6330770137.1
+        for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 11:11:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779559507; x=1780164307; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=b2E8cU1g4qhYlwVS5DUr8m1PDv5GVSB/Ee16C5FdCCE=;
-        b=qKv0+ulbTBhAT3ehZ9gzdcOcuXXRnyF2jviFZ6LxJUNaxFni2nR8TAGsd36bUOTouI
-         dv4K6Imjyd+z9Xa5doe0pyr8Z3d/Eusy+xEYjiD7asoFP0sjDFkIqrjm7JdBUcHWzxAy
-         YdmNFCKf45WTfyfo2g1bQbTXtyRwrbNThCuE+OWiDNiq8tb2EgapPCyAoIysfsY9XLpC
-         Bvrfdx0OckuyPEES2KjYg6l+aiCkOg73h5XLwiq4Tc6WfNovcatzcWq0OnBx79he6STm
-         oibCIuvln/gDlPv1CDgjPKdT6NGy+pHy9Q/y9kyMEm7ASXBdiOSS7V9Px8weZmK0ZBJp
-         kC6A==
+        d=gmail.com; s=20251104; t=1779559871; x=1780164671; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8FTv60XZ8C6uv713dJk+1qHB/fuZySWXNjFpDMBsqbo=;
+        b=sd/RLjyKFnex7YokwEDIjGBc19/D4r0+qGWnHNRdnSnQRFlrrM6HmqOQhz7VpFtQgv
+         lwB0xlwRnbt9dHqRwoqkxDRp0Ug9wwSPjWCboHVwigguqFgfurJ9OtLucRrOWw35XRge
+         xmpSjUnCo/C6jYQ6Udbva9IMhl2dBb42+lIT+NMChseveiR9SpXZuumCjCKQzmuXwz9k
+         oA3c36lTE5Fnp7ASzXqNreYX3alGWGRdWQ7vmhln8kKIjMgBZ94Ks9Z4NAwUYZkYcYti
+         MD9etvOg5Sr8AMc1XSrgTpfTDCjYAyDevEEALmx7qh6VU02r9FD4m4lrjb5l5/2u1bwp
+         e5Aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779559507; x=1780164307;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=b2E8cU1g4qhYlwVS5DUr8m1PDv5GVSB/Ee16C5FdCCE=;
-        b=r24569vkOx2k4ZHOFENQ1myqfWNtXytJW1Mg5hILwbt19BUsJ4bsd8dqbbFnXEneyd
-         CqnYSOISRpUJeNNMQTfThVUCvN9SJLLwHP5gH7YQFnvivWu5Z7s1VvoOMT4Wm/6LCA2P
-         52gEh1u4+3ZRdz52kfNCpRBFjv/Jk1FOZCWtaMVt6rCpoixKxEXhfu0gzhJbMXg98Ic2
-         WREGuxDWGdzvgsXdgX54rc6xzag/QZyq+8HXYLnYk1xSdfSwCAeKaX5QHVtR48iL+UlR
-         YqyjrPyjJdgiBBS3GDrJGn4urpMQ0s+YHbHX5bRydD6zK9m8XthE26qjUboZSJX+W1Vc
-         57hw==
-X-Forwarded-Encrypted: i=1; AFNElJ9tgPQlz8iLsM65Gw4/JT+PFnsOylWtzlkOTWGw0snipLn7q3WTkgq39AnZaXLSkWyqpqj2DaOtTcI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyBnOfEw7huQ/RRvDOKM/Xx5Ufa8LKuXLZ9uW+Hj+JFzrZJblLP
-	EOR+lH07DehZCuLlUBt2TjZRDoqvv6L6ZA9oUjbV/s85lRO1PhXJbTWuHV+XhHw8cVjCGXlp9Jt
-	q80T0lEcOm/WMKQNpTFfp7J8HSrLg+mc=
-X-Gm-Gg: Acq92OG3zZE2hociZex6InlSmXESuzau+I2zl1W8rtYkSR3Q3W06RII+k7RgoXrc82D
-	s0v8VTISz0xEs+00oAG0on+FOXwRSTJFR5Oa8JtaEvUoAM/BqdfkD8f4/akuC61/6j/0ChDnqCq
-	PLNete1mqyjzVJT8e4IkvTzQpaegIWFbU1kD5+vhhfgy5Exo2DgddJLWp6kp1+zKKzn2NkuDRoX
-	9f2nWk85YL2FFXGEwza9zKMXLGTxbp1CT6KOnUalRvACwJFWaTcbQotrQ2zKnWwlCDBCKpyw8/A
-	KiqEyhDpSmBONdW/o9ANOBBwh+vBtHTfzp0FsN8tOQifar8TUBLuMab3WdBdig==
-X-Received: by 2002:a05:690e:43db:b0:64e:db50:37fa with SMTP id
- 956f58d0204a3-65ec9929a77mr6060823d50.47.1779559507578; Sat, 23 May 2026
- 11:05:07 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779559871; x=1780164671;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8FTv60XZ8C6uv713dJk+1qHB/fuZySWXNjFpDMBsqbo=;
+        b=VrCTej/gUwu6tFs9XXps0RYSJMsNcUZamFn9+oIkYRHiDIrsK8GGWyqsadCaEyUeIB
+         /4P/V5iva8RDy58JqDvfAF/sE9I22OsR8Fic1AnCvj51FsIn9w6rw77AFakbhZD2iue1
+         XE3YFXDEtGfjY1SeYb7K1msidURZ5I4T75aMA2DYjtZm4+boaMw/++KXUGu6lUhUVm2h
+         lzCALeBktSM5eCLy8CWXIs9MWd2/zQ8TuQO59jYLWSB7mzlcTpdSdExtOLT/oj1yRKzk
+         /BBmzZaMQYPNLrFc/WnxqJZxHsV1qlK5UZRH5RJ874WzLXpM4IyFiNHvwgnxq1cUAdB6
+         2KAQ==
+X-Forwarded-Encrypted: i=1; AFNElJ83rb0w+T92qe51NL6IADGn9GY9tN2a4tXWpoubgBiziYvSLUZuRC2y0M4SX3NF5n8Z4NW7b2ynNe0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyEgTTzpk6kqPaZkj9zFaK/8vSDTvMTnnWOj4FrpCPeAl4Bfs/z
+	3PbEeY/qILgqs1QVYXq6B/uxDZoISdLtFH2LuVlMhq89MdOLGAmUEG/F
+X-Gm-Gg: Acq92OEg581BseWq8VhghuFe3e5hTsxlKyHwpThTw80zoa465IOMvlFaYpDULdCJ19G
+	kMxncekWhxKB/4b3aDdau+xyTfJxMQYutfYQNnQDTVOgF7Agl5G7JxcTId7Q/lDY6t9QDwIFIhg
+	rJvhDV9EbX7XWT3wPkrsQnE9pqxvKSclIrjFEd697/buwzTqcutJT9gyP4C4mcMPKxaXIWgv/dE
+	fJwk612N1vo8wj1khDcJ/2bkCHfriwMMClfqaY/g1wgmLnXcPtHMJcfYf/FUJ9qJ+jZzkWYP/aL
+	egnghj7DGC/EnUeXmWNAtWFHvDPO9qkcrI5IP9qA9lz7w0+gkC8H3rrebrfDMNi97GO1j9Z5VvH
+	Vk+eIyJp3XDqRvEy5zxSglfC6kekHk46qW0tAG/p4T3c7km4lmhN1Cn28Aycs+nLR8E7B3Z5DjD
+	Q0/7bkCZsbs0v8/9QVZzyz7fsZzGGkVOL7
+X-Received: by 2002:a05:6102:c07:b0:643:80f1:33d1 with SMTP id ada2fe7eead31-67c75870a04mr4870153137.13.1779559871070;
+        Sat, 23 May 2026 11:11:11 -0700 (PDT)
+Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-96173b6d3a4sm5606279241.12.2026.05.23.11.11.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 May 2026 11:11:09 -0700 (PDT)
+Date: Sat, 23 May 2026 15:11:28 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: matheus.feitosa@usp.br
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, LucasRabaquim <lucas.rabaquim@usp.br>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3] iio: light: tsl2591: simplify tsl2591_persist
+ functions via lookup table
+Message-ID: <ahHt0BgZimUSuJDQ@debian-BULLSEYE-live-builder-AMD64>
+References: <20260522182058.199762-1-matheus.feitosa@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260523045610.30925-1-m32285159@gmail.com>
-In-Reply-To: <20260523045610.30925-1-m32285159@gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Sat, 23 May 2026 13:03:31 -0500
-X-Gm-Features: AVHnY4KtFZU3lE1KjNxHpAJ0gRbES8bPM7gZHZ3yDU5dnGIoFPlE8J9lsWCrLaU
-Message-ID: <CAKqfh0EBD_xRr7PbYrt4RWky=AfqSEE8ife8g7W0GJmMi1_+0g@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: chemical: scd30: Replace manual locking with RAII locking
-To: jic23@kernel.org
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260522182058.199762-1-matheus.feitosa@usp.br>
 
-On Fri, May 22, 2026 at 11:57=E2=80=AFPM Maxwell Doose <m32285159@gmail.com=
-> wrote:
->
-> scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
-> calls. Replace them with the newer guard(mutex)() for cleaner RAII
-> patterns and to improve maintainability.
->
-> Add new helper function scd30_trigger_handler_helper_locked() containing
-> the critical section for scd30_trigger_handler(). After moving
-> scd30_trigger_handler()'s critical section into the new helper, tune up
-> control logic to return ret early and not memcpy() if it's an error
-> condition.
->
-> In addition, small refactor to replace "?:" operator with regular
-> if/else returns.
->
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+Hello Matheus, Lucas.
+
+On 05/22, matheus.feitosa@usp.br wrote:
+> From: Matheus Silveira <matheus.feitosa@usp.br>
+> 
+> Replace switch statements with an indexed lookup table for
+> persist cycle conversions.
+> 
+> Both functions contain redundant switch statements. This
+> reduces code duplication and makes future updates to
+> TSL2591_PRST_ALS_INT_CYCLE_* definitions easier to maintain
+> by keeping the mapping in a single place.
+> 
+> Signed-off-by: Matheus Silveira <matheus.feitosa@usp.br>
+> Co-developed-by: LucasRabaquim <lucas.rabaquim@usp.br>
+> Signed-off-by: LucasRabaquim <lucas.rabaquim@usp.br>
+Do the above tags got the expected name strings?
+Maybe you wanted 'Lucas Rabaquim' instead of 'LucasRabaquim' ?
+
 > ---
->  v2:
->  - Fix callback issue as noted by Jonathan v1.
->  - Refactor critical section of scd30_trigger_handler() into helper
->    called scd30_trigger_handler_helper_locked().
->  - Revert removal of goto in scd30_trigger_handler().
->
->  v3:
->  - Tune up helper to return early on failure condition per Jonathan's
->    suggestion.
->
->  drivers/iio/chemical/scd30_core.c | 66 ++++++++++++++++++++-----------
->  1 file changed, 42 insertions(+), 24 deletions(-)
->
-[snip]
+> Changes in V3:
+>  - Remove struct persist_entry and replace the struct
+>    list with an array of u8 values
+>  - Remove the loop from tsl2591_persist_cycle_to_lit()
+>    as suggested by Andy Shevchenko
+>  - Align tsl2591_persist_lit_to_cycle() with
+>    tsl2591_als_time_to_fval()
+>  - Keep the loop in tsl2591_persist_lit_to_cycle()
+>    as suggested during discussion by David Lechner
+> ---
+>  drivers/iio/light/tsl2591.c | 95 +++++++++++--------------------------
+>  1 file changed, 29 insertions(+), 66 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
+...
+>  static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
+>  {
+...
+> +	int i;
+Can now use in-loop declarations.
+> +
+> +	for (i = 0; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
+Hmm, TSL2591_PRST_ALS_INT_CYCLE_0 is not an index of tsl2591_persist_table.
+Maybe start looking from index 1?
++	for (unsigned int i = 1; i < ARRAY_SIZE(tsl2591_persist_table); i++) {
 
-Disregard, I'm losing my marbles haha. Apparently I forgot to commit
-my changes...will fix very shortly.
+> +		if (als_persist == tsl2591_persist_table[i])
+> +			return i;
+>  	}
+> +
+> +	return -EINVAL;
+>  }
 
-best regards,
-max
+With the above nit and double check of tag names,
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
