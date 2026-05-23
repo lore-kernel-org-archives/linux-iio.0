@@ -1,72 +1,72 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA5B324B22
-	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 18:44:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3356E175A8B
+	for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 18:44:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779561877; cv=none; b=EzgSNHAsXFhPfti2HdjnlaDQc0DEKJKdxFldBB6rQodtYiBs9mW+OR3tdoThPIJee6cpO0lYGn1j5vqm7QJoR13vn1vaSw+5BlI+JZs0Uz5P13c0yxYFYmNiNpjS2EmOVKaVAyhCxJDI2dDaPEvucH6qzlP7JMXv8L3N53WfEH0=
+	t=1779561899; cv=none; b=fGZ6THInWk/p80SORMrtKnzS+3zzhQnccJHgTwyZ15cR9sI97/ocFwZWAKDz6S545nedgKkQ7mQhWzdrMD2OA6qYnCHNC13IFFE0g0z7ypbkH/wBECWd37qTkMCZJDjlYcpOFrDBuoEBIssB1aoebkq7ab8M7JlKOpDHqIOipkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779561877; c=relaxed/simple;
-	bh=2yTx6C0f/mTYMA5A8f+aRJ7WSq3MtvQikrfp6DLbPzc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Yqd91MfMjSDX9qciyc0DJQTV1HoimSjWEW9rBo/649XsEMov3KFUCNiLv4abIUmdszL74Id0zjbbwImLeMJWFSJmeHPFT+GW2AADw2VsKjqD1wqfN4oey4RZkDyKNSKKinEI3RpZ9yBFywHSl6dODx9T8VtX9t+ciCC8Aeyd9Ho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H23qASHw; arc=none smtp.client-ip=209.85.128.50
+	s=arc-20240116; t=1779561899; c=relaxed/simple;
+	bh=aZX97VakabAxsxLccILXtqkt7HHyEK+J2G5b3K8x48E=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=gRlns0kmM8pAfr4comIDWU86GXnuJo7bLB9LDaG9baXN4VntNS2N4KwbjO1q4A5b7InPihzmnwzbBv/5f0N2R4uhfVly0Tb+wQts7PfcHvMh1XPQh8vbUupXtCgymCnoWLrChx8leKZ2aUVVSI12BCaidDM09c/KAB8+QGy7tfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=duoe1KNJ; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H23qASHw"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4903ff574c5so1027585e9.2
-        for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 11:44:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="duoe1KNJ"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-48fde653997so7452345e9.2
+        for <linux-iio@vger.kernel.org>; Sat, 23 May 2026 11:44:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779561875; x=1780166675; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779561897; x=1780166697; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HxOghcmNcfA/iUZNdF8b+429qOk9rwvNrnW9Yx5aklU=;
-        b=H23qASHwVSNGa14L8aHAQf71e4KrIxSZZ3M/OBBPINdmnSvB+sQRM8VUVgPrc2MCQ1
-         ho4di2lG+p+Pnn+vls5mrFUHEh66zc5nOyPJFGvI42A4ZMYKSwjMxIC5cauKOdP5gKG7
-         GNb4qnF6VkS+TBaaYSt0sqdQND4GLRLd0col93IZ7iHFn5izBthTkunPJR9PxauCSSUk
-         F5fYhVuWILVg9355KPHTQ/XWLpS6ldkZOx2FyHJ/YSlL9UatOonXKQN2bwON6LVNjhB2
-         vBxpb1ZqFjzugbcRZKXGgn3z7dp8uvRMdL1q+zZIQ4//DTH6JWar6zU+LEcPJKfIsswS
-         1AyQ==
+        bh=S1c7FctDRupy5mSh8TGaJMMBl/TrHx/xxuC9OcBfoes=;
+        b=duoe1KNJofrdaIS6kaxqT0X5E2VRUHlW2/G2xwCiF9lzEZEw0A4sCywjMZaechOlpj
+         WRpcOX8IWUDdxhkVW3uBY0sIJQNYCIJHe1zgRFHkITVWGy3JUMUx8MwUgf0eP7fAGA9S
+         olFl4iKYhCP6a03fpL4a1qcM8ejazRdY036wvWml/23D072wkkMTSr9KvA7hjhUjPoia
+         +8petBPGfi91YBXHQtP6XVlpg0SvMnDJJ81yyu/TdUx5g8u0EkVf8ainjF1BJfKcGACd
+         9Al1sbPsg0p1VUXBPTrjk6eIUGG3g6IS+GGEyvkY+13mLmHc2uqwiJHoYuLYKAsIWFr2
+         SFeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779561875; x=1780166675;
+        d=1e100.net; s=20251104; t=1779561897; x=1780166697;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HxOghcmNcfA/iUZNdF8b+429qOk9rwvNrnW9Yx5aklU=;
-        b=onjoajHafjwHi4ObgjWKSNkCBgp4k4jA1t8NNEZLgN26CipUMhA9ghFvQorSmQOuhD
-         7Dz/HH/XHZgmuajwyVG9JAYELLAWqoMWfqAKmiu88F20V/vyK0If7ZcgIsEhgZe6IGYN
-         nRBZFw+z1VSWECt6hKNievSdZxhag+tyPCSJUF96CB/z05HFgKXThXT1q9MRN4g8rzot
-         Bf2tjnheh5W4+FDsnj7eX9BqDzOyUs73lzru5GxPTc8qqB1T+PNgRI5COmOXt8AY9lYB
-         FdAjrKYwp5GDiG1e5Y89V+KBmSgjjTiWM1erPyv2/Q0jShsUmF1/+5XVyqRAHPseeS72
-         V0hg==
-X-Forwarded-Encrypted: i=1; AFNElJ/r5OnYLDYynSf3VrgNVXB0aENQUFcmpCN9dGBvlTAS6xdSzj6GNi/+6Vo9vTIMwW+dfqHcYoDEZvw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz7XxR0NeYtc6ynd9k/YLOSsJTxl7YJDUWHLGygxUz1cmiMp2Y1
-	9IK/pTDhOCaRa+faT4S4zTz4cbKlxO0fLnK9JHZPzF/V40BDf31aIN7G
-X-Gm-Gg: Acq92OFGWuhsyRyjOX7SS2ovcQCmyuGUKwEHg1tNDf4m2FgjZKhDHYF5oDSANtHSiAb
-	rICgfYcx2sfhqoEv/6gjmEX8L9rDcxxkBH7aAAXvZUOADgzGSX1/r4Hzf8B8HZHuoaYKy+BZEF/
-	5E/TwDZ/syoT7UXhWUbQhgEGw3Z5rMviMpXtMbYsbPTmArdBfUPxtma+VkmkVA/As2SxAowzFfP
-	QPOX4rcvr2GLThPQa8KAjCkioYpX8nzTbG05mKV6biw85BlVVvY3ILNYT4BjHoQjhrhgsuQ6K3w
-	6+nClEi57hxy7Tp1t3vcgThQGKF2A3hMnooK5G+5mmEQMxRN0gPVxsQfv6SMQiCy5J6yRKLXs30
-	pgJIqKOKwkodAI0GxIEkv1fHG1UZ00uLYd7+GiOj90Gs09becsO3eIbmnLqNc2Gx9GUGXCLgSJr
-	dvK9p8DlTVFbppqdN9KpWoi2vth8jv0nKsRsljUazLrlAZ
-X-Received: by 2002:a05:600c:444b:b0:489:1fa8:b895 with SMTP id 5b1f17b1804b1-49042486a39mr56029925e9.2.1779561874651;
-        Sat, 23 May 2026 11:44:34 -0700 (PDT)
+        bh=S1c7FctDRupy5mSh8TGaJMMBl/TrHx/xxuC9OcBfoes=;
+        b=ILvZOya3+9ydjEtlrXxVJKB/gOJ4fIxB3hFPdHbhN5CC9cm54hifan1jMUmxvngsYL
+         3VTUacxreX94n9/76D3i0cQmA4n6gl5Lkf+UzR1n84WF5tWD/y0TX8y5McsyHQ4psr0m
+         NNQ5ObmCGbRyVI4KVTPFWL+6s3GL/6vnf4r0w0DR8D2ls7tlpxGuhD0ch+9tHm0ijHQJ
+         o3owPocSTXyFehRuFq/vurvGrzrxTIir2P2KowRZI/PhpFY9KpvkR5p6YqL7J/Gn3M5/
+         irxAGI5A0MOlnQ9GZaDv8XO6eS9fN7p+eKUjov4iVNH6DTEBPb2PbjJuFlyhz0K+z1Oq
+         KezQ==
+X-Forwarded-Encrypted: i=1; AFNElJ88SeOc58IEHy7Uz6Fj4McLpQoDvWNFewHiJvG41Xy3DRzlTOEpcIS1JVNIgVa4vhkmI8/kmAw5vpM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynXG3jxSnwj9rD0Ui/BBXZuy2t+J+lXiKrIXfGwp1yKu9Y5FAN
+	buDPmmtYRQFDDzs+nUTYzAkIiv2MIIHFb0Pozkm8YWRQRu8C/HQdkq7H
+X-Gm-Gg: Acq92OH6yNYccVy7zw0OO7g+++Ba5Q7M2EWJpbxXleLxNz6fiSBDCz4ZKQsVYswXm37
+	1uajrU32BxPlZd5NWXjkZkI7LAT3VbUjvXx/19rjc4cRRjyJ8yzsCUkI5HNGeaYevqSnWclNRS3
+	qcCyjR0dtfFtQa94/jUe6MaQoY4BA03zdo4yHlLOm4ysCHAoqk0jmm9WAaTtKFeYYzrRRhPWT8T
+	DeprjWEP3IBfxT7moUd0Hhegwo/V8ILWFM/XNc5jCtv8VNmuxsSG8xWqQhY3iUPjR6yzXSls+F9
+	wp9gJP2ifaUYVFk6MgGRD2c4R6xe0092WIuYqJHY7Rc+Uw2hFGBqGYnIYJp1CTbV5lYvj7z8G1G
+	lUDts9x04hNLOOiI93JES4wZV0GqsZ4oMjR5AWpyANR/zYuhRuZY9QlrDNRM4m1653QMnQkd3HF
+	iAmWJgVzLSX4+tSsD4siOqmdQE0HJPeJX62cjvxJrKbHr8gXsQOckryxQ=
+X-Received: by 2002:a05:600c:4fc9:b0:48e:6db5:76e6 with SMTP id 5b1f17b1804b1-490424884aamr49788885e9.2.1779561896396;
+        Sat, 23 May 2026 11:44:56 -0700 (PDT)
 Received: from localhost.localdomain ([94.158.61.193])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490454ea134sm148505855e9.8.2026.05.23.11.44.33
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4904527dbf3sm120966255e9.6.2026.05.23.11.44.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 May 2026 11:44:34 -0700 (PDT)
+        Sat, 23 May 2026 11:44:56 -0700 (PDT)
 From: Stepan Ionichev <sozdayvek@gmail.com>
 To: wbg@kernel.org
-Cc: o.rempel@pengutronix.de,
-	kernel@pengutronix.de,
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	andy@kernel.org,
 	sozdayvek@gmail.com
-Subject: [PATCH] counter: interrupt-cnt: use devm_mutex_init()
-Date: Sat, 23 May 2026 23:44:18 +0500
-Message-Id: <20260523184418.7586-1-sozdayvek@gmail.com>
+Subject: [PATCH] counter: ti-eqep: balance pm_runtime on devm_clk_get_enabled() failure
+Date: Sat, 23 May 2026 23:44:48 +0500
+Message-Id: <20260523184448.7609-1-sozdayvek@gmail.com>
 X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -76,33 +76,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-interrupt_cnt_probe() calls mutex_init() but neither this driver
-nor the counter core issues a matching mutex_destroy() on unbind,
-so the lock debug state is leaked.
+ti_eqep_probe() calls pm_runtime_enable() and pm_runtime_get_sync()
+before devm_clk_get_enabled(). If the clk call fails, the function
+returns directly via dev_err_probe(), leaving runtime PM enabled
+and the usage counter incremented.
 
-Switch to devm_mutex_init() so the mutex is torn down in the same
-devm scope it was set up in.
+Route the clk error through the same err_pm cleanup as counter_add()
+so the runtime PM state is unwound on every failure path.
 
 Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
 ---
- drivers/counter/interrupt-cnt.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/counter/ti-eqep.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-index e6100b5fb..cd475382a 100644
---- a/drivers/counter/interrupt-cnt.c
-+++ b/drivers/counter/interrupt-cnt.c
-@@ -233,7 +233,9 @@ static int interrupt_cnt_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
+diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+index d21c157e5..6b79a50fd 100644
+--- a/drivers/counter/ti-eqep.c
++++ b/drivers/counter/ti-eqep.c
+@@ -548,17 +548,22 @@ static int ti_eqep_probe(struct platform_device *pdev)
+ 	pm_runtime_get_sync(dev);
  
--	mutex_init(&priv->lock);
-+	ret = devm_mutex_init(dev, &priv->lock);
-+	if (ret)
-+		return ret;
+ 	clk = devm_clk_get_enabled(dev, NULL);
+-	if (IS_ERR(clk))
+-		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
++	if (IS_ERR(clk)) {
++		err = PTR_ERR(clk);
++		dev_err_probe(dev, err, "failed to enable clock\n");
++		goto err_pm;
++	}
  
- 	ret = devm_counter_add(dev, counter);
- 	if (ret < 0)
+ 	err = counter_add(counter);
+-	if (err < 0) {
+-		pm_runtime_put_sync(dev);
+-		pm_runtime_disable(dev);
+-		return err;
+-	}
++	if (err < 0)
++		goto err_pm;
+ 
+ 	return 0;
++
++err_pm:
++	pm_runtime_put_sync(dev);
++	pm_runtime_disable(dev);
++	return err;
+ }
+ 
+ static void ti_eqep_remove(struct platform_device *pdev)
 -- 
 2.43.0
 
