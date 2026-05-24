@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D42E391E5B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FB043921EC;
 	Sun, 24 May 2026 10:35:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779618940; cv=none; b=laJK1Ldqu5KKS/kgmnkPvN5/eafP7hOVEXl7INm3fFvDmo3bJB6zRzDn9q7XmALFyLRaKrkA09im0Tc9211fzHHww7/gPtGv20jPTZSdUU7eek2RBTtlgxAjHIwi6vVHXOGdEYZzN4SfShCy7xUIoEXIVAN+DkoDcDHFxgszV3E=
+	t=1779618940; cv=none; b=uk46lFtMdV5N1fKwlXVgnQkIhjoWXMqSAZc0eRuQ8IRkhTsNUqG0HVb0EvidXPsFt5ErXxoxAC/xPq0ymCgXm7x8Qbv8Upz28TJHwyNzH1dP8jy/a6DR3IGXCi+quVhgswzxb0hxNMNxOHn2Abj0vz2xlH7NPU+dPjDxJv+DLE4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1779618940; c=relaxed/simple;
-	bh=BTfw4ErnUQlufZ6+Ud+aw9Xar0RlSj6UdoqRtZhXHSA=;
+	bh=vCCVBPrrpCyOW1pPOsJh6jvf99OH3fFh5OwBpgLkL+k=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=EWO+PItQ8+8+2gbVfZh1itAt9Ada2yI/dfEHtHKUcNXikeVtcvHtEeEShLOp2xZ2yBLXLK4++0bjBL97lP8NlS4q8jmAUrNm/lu04uzpzgAe1G7qtE9RLtxXSVQFIs31XrotcrAt5yNNMGqWrT7ijNAcENqKdXKSWSHqto6S7Gw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eFgECLP7; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=uIWyB8UMIHV6yLE8GGpukKLBLFD8jGzmV9y9gmZ7LsWZDVvJc+yoH6PaeTSpw8yiQtu2HsftOqrg1R09agkBZdBo1aDaMctW++aMBhLC3xunDxAQRNuBkdmPuRYMKvJi8XTekLfErQUFmO+73VG3Jy5fD6zo20juhpbsuDlzPOU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e110cpvR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eFgECLP7"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C5010C32786;
-	Sun, 24 May 2026 10:35:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e110cpvR"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0E25FC2BCB8;
+	Sun, 24 May 2026 10:35:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779618939;
-	bh=BTfw4ErnUQlufZ6+Ud+aw9Xar0RlSj6UdoqRtZhXHSA=;
+	s=k20201202; t=1779618940;
+	bh=vCCVBPrrpCyOW1pPOsJh6jvf99OH3fFh5OwBpgLkL+k=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=eFgECLP7wrmDhOEwFfyE2WgS4Oa3P497mxf1n1BxjCIY8Sw4heoHTVU4GLtz0QdcX
-	 Og23KtsxaWh2V1p/JuaDxpiuJ3mY+CzSMXXks1b0R0jUYW1AXi91y97IoxyQWh57Wk
-	 v3CAOeE+2HKuu5DGICC8em8NTejadEo447Fa7WDa0pngPwTu9uaEMDQ9QVQ103cnPF
-	 Mgwj+9LKmv1npc6CpstuiaSdQA/UQqvj4cKDT9FDcq3R2iTK50DNo9/HuEcb/9v1Zb
-	 rWTghExRZHQwOvdBsd1P0K5rB6WtsjSvfaJc0591RSL++DYLZaxUX8kWDoMAna2obw
-	 VMsDSzFdUyJhQ==
+	b=e110cpvRHbYMLAp5/LbQq+/2jenHsK0Z/9z/hzZB4qh3ZdWaOGSEutPe5aL3znvsu
+	 /wLkFDX2d+NU2P/FzSVuHYIZmsH+jmkX274ELEbCIkoA6JEiCzOFTkkdwZ11cIw6he
+	 NiX0+S55nbJMvWecZChvZ0VdaPJfkraCrgsp83STpqZQk5DaR8TkHxvZRSXvDJYG0v
+	 /1PNwMyYlwmCZKreNqYHXA8R+KfS0PNNUXhPbb3SNtFFAALIeA3eGNNn2dlsmZo8Xf
+	 lY0jYsCYgODp/4annumw5wvXZO2FLQ5YiqKxobzsDSFFNDe1V4dw0ZyaNfAHQYECZI
+	 Dh+YzTO1UNBiw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD73CD5BB1;
-	Sun, 24 May 2026 10:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0450ECD5BC7;
+	Sun, 24 May 2026 10:35:40 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 24 May 2026 11:35:24 +0100
-Subject: [PATCH v14 07/12] iio: test: iio-test-format: add test case for
- decimal format
+Date: Sun, 24 May 2026 11:35:28 +0100
+Subject: [PATCH v14 11/12] docs: iio: add documentation for adf41513 driver
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,8 +39,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260524-adf41513-iio-driver-v14-7-06824d9c15f4@analog.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260524-adf41513-iio-driver-v14-11-06824d9c15f4@analog.com>
 References: <20260524-adf41513-iio-driver-v14-0-06824d9c15f4@analog.com>
 In-Reply-To: <20260524-adf41513-iio-driver-v14-0-06824d9c15f4@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -60,11 +59,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779618938; l=6587;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779618938; l=9329;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=0lpyDhmAFr7NU6uTBMJtxvjRKP6i/Gy9oeerjG9/EKc=;
- b=Dt1oyxnv5JlaLCqGr0nXBRk/upfLLkby7Cz36CgKaqd7oQIdx0GYlnZoCimUqlQ1MM4VvdZoh
- BB3Ncl1q2HXCSgVPsVwhGbpjYTDyFCgDF0HF6Llx1XNQPrv+wIljXim
+ bh=AvtUh1Q2wOSppdZq2ewDKuAEItFf+BjGvoFJPXHGb4k=;
+ b=JsufrXplz3vqpCLcyBFO87aGqPpGbzXsPJu5u4RGzSpSKimRDNFuSdEa9nNJQmr0Es5fSa47K
+ ts9cUppoU48A7YbhHiVNpatyiuYLBA3Iqf2Q94bOGKFyopXyZBAPHXJ
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -74,159 +73,246 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add iio_test_iio_format_value_decimal_64() kunit test case for decimal
-value formatting, exploring different scales types. Also, the same
-iio_val_s64_to_s32s() macro used to populate local array is used in
-iio_test_iio_format_value_integer_64().
+Add documentation for ADF41513 driver, which describes the device
+driver files and shows how userspace may consume the ABI for various
+tasks.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/test/iio-test-format.c | 97 +++++++++++++++++++++++++++++---------
- 1 file changed, 75 insertions(+), 22 deletions(-)
+ Documentation/iio/adf41513.rst | 199 +++++++++++++++++++++++++++++++++++++++++
+ Documentation/iio/index.rst    |   1 +
+ MAINTAINERS                    |   1 +
+ 3 files changed, 201 insertions(+)
 
-diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
-index 872dd8582003..1920dee3bfb0 100644
---- a/drivers/iio/test/iio-test-format.c
-+++ b/drivers/iio/test/iio-test-format.c
-@@ -200,56 +200,108 @@ static void iio_test_iio_format_value_multiple(struct kunit *test)
- static void iio_test_iio_format_value_integer_64(struct kunit *test)
- {
- 	int values[2];
--	s64 value;
- 	char *buf;
- 	int ret;
+diff --git a/Documentation/iio/adf41513.rst b/Documentation/iio/adf41513.rst
+new file mode 100644
+index 000000000000..244453cce6f6
+--- /dev/null
++++ b/Documentation/iio/adf41513.rst
+@@ -0,0 +1,199 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++===============
++ADF41513 driver
++===============
++
++This driver supports Analog Devices' ADF41513 and similar SPI PLL frequency
++synthesizers.
++
++1. Supported devices
++====================
++
++* `ADF41510 <https://www.analog.com/ADF41510>`_
++* `ADF41513 <https://www.analog.com/ADF41513>`_
++
++The ADF41513 is an ultralow noise frequency synthesizer that can be used to
++implement local oscillators (LOs) as high as 26.5 GHz in the upconversion and
++downconversion sections of wireless receivers and transmitters. The ADF41510
++is a similar device that supports frequencies up to 10 GHz.
++
++Both devices support integer-N and fractional-N operation modes, providing
++excellent phase noise performance and flexible frequency generation
++capabilities.
++
++Key Features:
++
++- **ADF41510**: 1 GHz to 10 GHz frequency range
++- **ADF41513**: 1 GHz to 26.5 GHz frequency range
++- Integer-N and fractional-N operation modes
++- Ultra-low phase noise (-235 dBc/Hz integer-N, -231 dBc/Hz fractional-N)
++- High maximum PFD frequency (250 MHz integer-N, 125 MHz fractional-N)
++- 25-bit fixed modulus or 49-bit variable modulus fractional modes
++- Programmable charge pump currents with 16x range
++- Digital lock detect functionality
++- Phase resync capability for consistent output phase
++
++2. Device attributes
++====================
++
++The ADF41513 driver provides the following IIO extended attributes for
++frequency control and monitoring:
++
++Each IIO device has a device folder under ``/sys/bus/iio/devices/iio:deviceX``,
++where X is the IIO index of the device. Under these folders reside a set of
++device files that provide access to the synthesizer's functionality.
++
++The following table shows the ADF41513 related device files:
++
+++--------------------------------------+-------------------------------------------------------+
++| Device file                          | Description                                           |
+++======================================+=======================================================+
++| out_altvoltage0_frequency            | RF output frequency control and readback (Hz)         |
+++--------------------------------------+-------------------------------------------------------+
++| out_altvoltage0_frequency_resolution | Target frequency resolution control (Hz)              |
+++--------------------------------------+-------------------------------------------------------+
++| out_altvoltage0_powerdown            | Power management control (0=active, 1=power down)     |
+++--------------------------------------+-------------------------------------------------------+
++| out_altvoltage0_phase                | RF output phase adjustment and readback (radians)     |
+++--------------------------------------+-------------------------------------------------------+
++
++2.1 Frequency Control
++----------------------
++
++The ``out_altvoltage0_frequency`` attribute controls the RF output frequency
++with sub-Hz precision. The driver automatically selects between integer-N and
++fractional-N modes to achieve the requested frequency with the best possible
++phase noise performance.
++
++**Supported ranges:**
++
++- **ADF41510**: 1,000,000,000 Hz to 10,000,000,000 Hz (1 GHz to 10 GHz)
++- **ADF41513**: 1,000,000,000 Hz to 26,500,000,000 Hz (1 GHz to 26.5 GHz)
++
++The frequency is specified in Hz, for sub-Hz precision use decimal notation.
++For example, 12.102 GHz would be written as "12102000000.000000".
++
++2.2 Frequency Resolution Control
++--------------------------------
++
++The ``out_altvoltage0_frequency_resolution`` attribute controls the target
++frequency resolution that the driver attempts to achieve. This affects the
++choice between integer-N and fractional-N modes, including fixed modulus
++(25-bit) and variable modulus (49-bit) fractional-N modes:
++
++- **Integer-N**: Resolution = :math:`f_{PFD}` (same as PFD frequency)
++- **Fixed modulus**: Resolution = :math:`f_{PFD} / 2^{25}` (~3 Hz with 100 MHz PFD)
++- **Variable modulus**: Resolution = :math:`f_{PFD} / 2^{49}` (µHz resolution possible)
++
++Default resolution is 1 Hz (1,000,000 µHz).
++
++2.3 Phase adjustment
++--------------------
++
++The ``out_altvoltage0_phase`` attribute allows adjustment of the output phase
++in radians. Setting this attribute enables phase adjustment. It can be set
++from 0 to :math:`2\pi` radians. Reading this attribute returns the current
++phase offset of the output signal. To create a consistent phase relationship
++with the reference signal, the phase resync feature needs to be enabled by
++setting a non-zero value to the ``adi,phase-resync-period-ns`` device property,
++which triggers a phase resynchronization after locking is achieved.
++
++3. Operating modes
++==================
++
++3.1 Integer-N Mode
++------------------
++
++When the requested frequency can be achieved as an integer multiple of the PFD
++frequency (within the specified resolution tolerance), the driver automatically
++selects integer-N mode for optimal phase noise performance.
++
++In integer-N mode:
++
++- Phase noise: -235 dBc/Hz normalized floor
++- Frequency resolution: :math:`f_{PFD}` (same as PFD frequency)
++- Maximum PFD frequency: 250 MHz
++- Bleed current: Disabled
++
++3.2 Fractional-N Mode
++---------------------
++
++When sub-integer frequency steps are required, the driver automatically selects
++fractional-N mode using either fixed or variable modulus.
++
++**Fixed Modulus (25-bit)**:
++
++- Used when variable modulus is not required
++- Resolution: :math:`f_{PFD} / 2^{25}`
++- Simpler implementation, faster settling
++
++**Variable Modulus (49-bit)**:
++
++- Used for maximum resolution requirements
++- Resolution: :math:`f_{PFD} / 2^{49}` (theoretical)
++- Exact frequency synthesis capability
++
++In fractional-N mode:
++
++- Phase noise: -231 dBc/Hz normalized floor
++- Maximum PFD frequency: 125 MHz
++- Bleed current: Automatically enabled and optimized
++- Dithering: Enabled to reduce fractional spurs
++
++3.3 Automatic Mode Selection
++----------------------------
++
++The driver automatically selects the optimal operating mode based on:
++
++1. **Frequency accuracy requirements**: Determined by ``frequency_resolution`` setting
++2. **Phase noise optimization**: Integer-N preferred when possible
++3. **PFD frequency constraints**: Different limits for integer vs fractional modes
++4. **Prescaler selection**: Automatic 4/5 vs 8/9 prescaler selection based on frequency
++
++4. Usage examples
++=================
++
++4.1 Basic Frequency Setting
++----------------------------
++
++Set output frequency to 12.102 GHz:
++
++.. code-block:: bash
++
++    root:/sys/bus/iio/devices/iio:device0> echo 12102000000 > out_altvoltage0_frequency
++
++Read current frequency:
++
++.. code-block:: bash
++
++    root:/sys/bus/iio/devices/iio:device0> cat out_altvoltage0_frequency
++    12101999999.582767
++
++4.2 High Resolution Frequency Control
++-------------------------------------
++
++Configure for sub-Hz resolution and set a precise frequency:
++
++.. code-block:: bash
++
++    # Set resolution to 0.1 Hz (100,000 µHz)
++    root:/sys/bus/iio/devices/iio:device0> echo 0.1 > out_altvoltage0_frequency_resolution
++
++    # Set frequency to 12.102 GHz (1 µHz precision)
++    root:/sys/bus/iio/devices/iio:device0> echo 12102000000 > out_altvoltage0_frequency
++    root:/sys/bus/iio/devices/iio:device0> cat out_altvoltage0_frequency
++    12101999999.980131
++
++4.3 Monitor Lock Status
++-----------------------
++
++When lock detect GPIO is configured, check if PLL is locked:
++
++.. code-block:: bash
++
++    # Read frequency - will return error if not locked
++    root:/sys/bus/iio/devices/iio:device0> cat out_altvoltage0_frequency
++
++If the PLL is not locked, the frequency read will return ``-EBUSY`` (Device or
++resource busy).
+diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+index 007e0a1fcc5a..b02b879b053a 100644
+--- a/Documentation/iio/index.rst
++++ b/Documentation/iio/index.rst
+@@ -31,6 +31,7 @@ Industrial I/O Kernel Drivers
+    ad7625
+    ad7944
+    ade9000
++   adf41513
+    adis16475
+    adis16480
+    adis16550
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6d695913e717..33168d20ca48 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1668,6 +1668,7 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
++F:	Documentation/iio/adf41513.rst
+ F:	drivers/iio/frequency/adf41513.c
  
- 	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
- 
--	value = 24;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_to_s32s(24, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "24\n");
- 
--	value = -24;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_to_s32s(-24, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-24\n");
- 
--	value = 0;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_to_s32s(0, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0\n");
- 
--	value = UINT_MAX;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_to_s32s(UINT_MAX, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "4294967295\n");
- 
--	value = -((s64)UINT_MAX);
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_to_s32s(-((s64)UINT_MAX), values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-4294967295\n");
- 
--	value = LLONG_MAX;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_to_s32s(LLONG_MAX, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854775807\n");
- 
--	value = LLONG_MIN;
--	values[0] = lower_32_bits(value);
--	values[1] = upper_32_bits(value);
-+	iio_val_s64_to_s32s(LLONG_MIN, values);
- 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036854775808\n");
- }
- 
-+static void iio_test_iio_format_value_decimal_64(struct kunit *test)
-+{
-+	int values[2];
-+	char *buf;
-+	int ret;
-+
-+	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
-+
-+	/* DECIMAL64_MILLI: positive >= 1, value 1.234 */
-+	iio_val_s64_to_s32s(1234, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.234\n");
-+
-+	/* DECIMAL64_MICRO: positive >= 1, value 3.141592 */
-+	iio_val_s64_to_s32s(3141592, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "3.141592\n");
-+
-+	/* DECIMAL64_MILLI: positive < 1, value 0.042 */
-+	iio_val_s64_to_s32s(42, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.042\n");
-+
-+	/* DECIMAL64_MILLI: negative <= -1, value -1.234 */
-+	iio_val_s64_to_s32s(-1234, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-1.234\n");
-+
-+	/* DECIMAL64_MILLI: negative > -1, value -0.123 */
-+	iio_val_s64_to_s32s(-123, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.123\n");
-+
-+	/* DECIMAL64_MILLI: zero */
-+	iio_val_s64_to_s32s(0, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MILLI, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000\n");
-+
-+	/* DECIMAL64_NANO: value 1.000000001 */
-+	iio_val_s64_to_s32s(1000000001, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.000000001\n");
-+
-+	/* DECIMAL64_MICRO: large value using upper 32 bits */
-+	iio_val_s64_to_s32s(5000000000000042LL, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "5000000000.000042\n");
-+
-+	/* limits */
-+	iio_val_s64_to_s32s(LLONG_MAX, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372.036854775807\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036.854775807\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854.775807\n");
-+
-+	iio_val_s64_to_s32s(LLONG_MIN, values);
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372.036854775808\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036.854775808\n");
-+	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_MICRO, ARRAY_SIZE(values), values);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372036854.775808\n");
-+}
-+
- static struct kunit_case iio_format_test_cases[] = {
- 		KUNIT_CASE(iio_test_iio_format_value_integer),
- 		KUNIT_CASE(iio_test_iio_format_value_fixedpoint),
-@@ -257,6 +309,7 @@ static struct kunit_case iio_format_test_cases[] = {
- 		KUNIT_CASE(iio_test_iio_format_value_fractional_log2),
- 		KUNIT_CASE(iio_test_iio_format_value_multiple),
- 		KUNIT_CASE(iio_test_iio_format_value_integer_64),
-+		KUNIT_CASE(iio_test_iio_format_value_decimal_64),
- 		{ }
- };
- 
+ ANALOG DEVICES INC ADF4377 DRIVER
 
 -- 
 2.43.0
