@@ -1,117 +1,179 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 902D13909AC
-	for <linux-iio@vger.kernel.org>; Sun, 24 May 2026 08:54:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 648D934DCE6;
+	Sun, 24 May 2026 10:17:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779612845; cv=none; b=ASBo8H4xLACvrr/dt/7FFELYp3eXuCSqNxVjTMV1Ve2C4m/OBKjPYWFy8TS1ioYEygoC9kGLve7SKIdJj5EX9O3a76M0pvZLDSKPOyjUI/thU4vA11vf62dxp5tIjabZzkajfGBug1T1ffTtPthUrmijOCedfnnU1ZfUbPZAU7c=
+	t=1779617842; cv=none; b=Q5Pwgx0JWtGh53lLi8fgzaVv+jsoyDb+PqkM+LUOD87YfTA9KLBCewN3cqUBGkxRga7xuPZlYxP8YPK1gPg0KYDKWKY2noKSgi46wX850wYWMioPcaDA/R1iIle3YANzwI65nRtnIekw6XKULOEhGr1DpiK3Q3p6hB4oHJwGeTM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779612845; c=relaxed/simple;
-	bh=KoZohLAP7FkG0DiqRHfnK9gUGT1fB3petwusbNr1K2A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WCXhisxPvr7gQTT8H+R+a+yE05o6pyMnO18uWAO+D85cVsus3tTMxaQauA+gOK40mFM1vEy1dwTjwsblx8spUc9ODgxr3i+uRw2QE3EUzhpR+h69/iwGSH3d17JDeUAxJEQ0Emg+HSRR98xBFfRz1ZLzP2EpK8GkooMPXqiJpeI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cVypAtYq; arc=none smtp.client-ip=209.85.210.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779617842; c=relaxed/simple;
+	bh=sozbFnZE06HXVGyPt4hxloW6TUpU5oiYQiQjPnx2WLk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=GlK/AJZrs03G7q6q+Bj9AFU1ohh/MkBdBLl+vlYqib05KTHG3igBPV06evHvlrUWmhlC5JDq/ZVjwF0GGYjQsNeu7y/F5xcj+Pc9bOQCNYa6TDupAQ/4FjZXxE05+uYaLLFrnwPTjgRJUby1Jjfxi3n2/ryAHzYB64qUEUeobms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iESgotFm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cVypAtYq"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-83537a80ab6so5996179b3a.1
-        for <linux-iio@vger.kernel.org>; Sun, 24 May 2026 01:54:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779612844; x=1780217644; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LU/cOHKYJiwHIi210zVuGwmaJ7REyB2Sgsxuvm9SfTg=;
-        b=cVypAtYq0H3iaxgMjzULJipOh4J4C4aXmwdu/PiyIyQmy8YS5xAAS/DT8/cxh2bBu6
-         qrexfovdHBXPynz2/3RsSvwC9ZwNp1XvC4INqbmMhXPLieyl0kKIJ+KDOgGycTKagDby
-         V4tMF//E+2h+I2LrEMdr1zlxLTxeAFTU0Ad9ALCLQgvZKDyEf9gMCzzpwposYHQi4l3y
-         GE2LXKakOgbH6WqK8w8nEUBzGd39L60jmXCLsSk9pBBaxWrcdX4nauSzuV6clgqXXEaJ
-         gb1pdH7Q+zriQQ9DhEouz+zUYEfpqjwB4hsJDaSAQ/b+PSe+Zmlq+G5Ds0Yem9bJ9+uH
-         mI3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779612844; x=1780217644;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=LU/cOHKYJiwHIi210zVuGwmaJ7REyB2Sgsxuvm9SfTg=;
-        b=iYwpEJrnfLsAkIZ4B2JxdijD7yrYTW//gSiTi0FcwWJGxb0MyywQy02s0dmTtdklUI
-         nR7yGCjVErrdFbmpL6fOc9t4UPYN7B6w91x7WTN1P1b/ZYKfDPN/w1rAVk4X1KfTKVib
-         QSf+7gdFzCVJkUG43pid1fyaRb30SkjJYgGyGB/7k2uWqamqXFbFy18s9QHzEnaKVtqq
-         aam1/5Du3XaCxWRJxRXrVS96pKAXIEe3U4XQ6q1PxOdmcYsm79Ld2EfPRxLHV5pZEZ05
-         895Lw7to/tF5yhlF1By3edrDg8lq6DMw4N5KMk222uECVKXV0dGTm21GkEmLdZD7HtBL
-         PRgw==
-X-Forwarded-Encrypted: i=1; AFNElJ/aw2RASBBa49EoOZRcxufYR4DkWbOyqO58WJIqQhLLSBG+vX8k6tU2ANJhvj8czUuBD50838NJ9m4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwLDKU2OYSbaupWwAoUMRRpgz31bLGHU8e9KlgcK66AaSpe94HE
-	+t3tY+ZcIVQLbzNVq/3RXSXU/GGkeTDcv1urDlbvhTfu9vAuoFXFG3gb
-X-Gm-Gg: Acq92OEEjv/GCrCB1pZA9UWwQOvdbOa2ssjAq4+rqWeQ8tx8Wn0bePBV2h1A53xMROl
-	E6+dg7Pg6oEybTe0zRvIXYtv+QRr9glXyuwLy4a1f/Jxhd9fTGvSzoVMOfW8JDAumxUgFTFSUfZ
-	sa6FjVjutmqI0LjpBkKh+du2zPFpGsvzyyG795KSiLDBETXlbg+GmZdBEK0vCrFY9T5jp8io6ln
-	o9Yx1OvVIKS9VO08dBYabjC4ZVvJHtKw+Ostk8cwexdKHKH9zTvz/ubXGTUTGv5Tbz60PPn64+M
-	AY/iDJa2OVsrZ5ADmL5yY1vq+A8/gkNX3r7a26FkO+fwYgv486SIGrHQu60kVvD8cdwV8bS3u8i
-	pvc1BLz12utzFA6xcsMzR8lYMnnp+keADuiNx0TWMUjwIecpBpMIDRuhsROvJxv2+QAS8BPXTdc
-	cFXro8oksi8noEK288KjlCmU0/b9bJw0nyRY1f71wogE0pQeEO8xCUxilNzGix9NbrKjWu+kJul
-	T5F7S4bTbRWtDCZSbLNDRsMnfKuva7NwqKiRQ==
-X-Received: by 2002:a05:6a00:3d11:b0:839:dd77:3501 with SMTP id d2e1a72fcca58-8415f11f2d9mr10041656b3a.1.1779612843893;
-        Sun, 24 May 2026 01:54:03 -0700 (PDT)
-Received: from DESKTOP-G3E0OSP.localdomain ([112.172.255.242])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84164ea4de4sm6353116b3a.35.2026.05.24.01.54.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 May 2026 01:54:03 -0700 (PDT)
-From: Jinseob Kim <kimjinseob88@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jinseob Kim <kimjinseob88@gmail.com>
-Subject: [PATCH RFC v2 7/7] MAINTAINERS: add Open Sensor Fusion IIO driver
-Date: Sun, 24 May 2026 17:53:12 +0900
-Message-ID: <20260524085312.15369-8-kimjinseob88@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260524085312.15369-1-kimjinseob88@gmail.com>
-References: <20260524085312.15369-1-kimjinseob88@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iESgotFm"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 07E85C2BCB8;
+	Sun, 24 May 2026 10:17:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779617842;
+	bh=sozbFnZE06HXVGyPt4hxloW6TUpU5oiYQiQjPnx2WLk=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=iESgotFmvB6jmJdUjEys5J5l8lfqCpkM7830GooWasJw+Wt0+pA0v3+9SnxTgfKis
+	 wxx1qDk+1HL+6leflybyPK5/aOYsmTEqgfU7qVEcNGGzwGeoq0VXSb6Zqxsssruz++
+	 MfD7y2986vGmrB7yrvwWsyNzwf6A4rQMfr2ojZR2ILTfvOCw1hk2mpBQLxxAYOn5WD
+	 +zqmHcgniob0c7OAUxnTfpUyi0vpKaZHw7lZxcrbDj8W1OpNQJs5HWoZelB9NBcg5f
+	 DaYid3E62fa+XxE5itposCf6B4/G1GKdcMnhV3Lx+r0z6kaFSL5Dcm9bxoBHVK2u5I
+	 W5OzOSLFGYmKw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65C1CD5BB1;
+	Sun, 24 May 2026 10:17:21 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Sun, 24 May 2026 11:17:01 +0100
+Subject: [PATCH v7 1/8] iio: dac: ad5686: refactor include headers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260524-ad5686-fixes-v7-1-b6bf395d08bd@analog.com>
+References: <20260524-ad5686-fixes-v7-0-b6bf395d08bd@analog.com>
+In-Reply-To: <20260524-ad5686-fixes-v7-0-b6bf395d08bd@analog.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>, 
+ Greg Kroah-Hartman <gregkh@suse.de>, 
+ Michael Auchter <michael.auchter@ni.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779617840; l=2872;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=poBTgs/vqszB17NX9Jl2Qq8zDSw7aFqp3htw7xmIt6E=;
+ b=zx1Gzw8ONp2R6Z6FT0/Btffsm4uZxB9DLlZrsmPmzDSSseuj2C/mqSuhYfDzAGxPtz8trGg4H
+ Tp26Ck9C3pFCUA6vtma7uPEH50jfCmAPk6yh8FAFQbi7L+9391ZiIgx
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-Add file patterns for the driver, binding, and protocol reference.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+Apply IWYU principle, replacing unused/generic headers for
+specific/missing headers. The resulting include directive lists are sorted
+accordingly.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/iio/dac/ad5686-spi.c |  9 +++++++--
+ drivers/iio/dac/ad5686.c     | 13 ++++++-------
+ drivers/iio/dac/ad5686.h     |  5 ++---
+ drivers/iio/dac/ad5696-i2c.c | 10 +++++++---
+ 4 files changed, 22 insertions(+), 15 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c2c6d7927..9238701f4 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19977,6 +19977,15 @@ F:	Documentation/networking/oa-tc6-framework.rst
- F:	drivers/net/ethernet/oa_tc6.c
- F:	include/linux/oa_tc6.h
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index df8619e0c092..cec784b617e6 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -8,11 +8,16 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
  
-+OPEN SENSOR FUSION IIO DRIVER
-+M:	Jinseob Kim <kimjinseob88@gmail.com>
-+L:	linux-iio@vger.kernel.org
-+L:	devicetree@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/imu/opensensorfusion,osf-uart.yaml
-+F:	Documentation/iio/open-sensor-fusion-protocol-v0.rst
-+F:	drivers/iio/opensensorfusion/
+-#include "ad5686.h"
+-
++#include <linux/array_size.h>
++#include <linux/errno.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/spi/spi.h>
+ 
++#include <asm/byteorder.h>
 +
- OPEN FIRMWARE AND FLATTENED DEVICE TREE
- M:	Rob Herring <robh@kernel.org>
- M:	Saravana Kannan <saravanak@kernel.org>
++#include "ad5686.h"
++
+ static int ad5686_spi_write(struct ad5686_state *st,
+ 			    u8 cmd, u8 addr, u16 val)
+ {
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index a7213bc6b156..ae1ef52b62a2 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -5,17 +5,16 @@
+  * Copyright 2011 Analog Devices Inc.
+  */
+ 
+-#include <linux/interrupt.h>
+-#include <linux/fs.h>
+-#include <linux/device.h>
++#include <linux/array_size.h>
++#include <linux/bitops.h>
++#include <linux/errno.h>
++#include <linux/export.h>
++#include <linux/kstrtox.h>
+ #include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/sysfs.h>
+ 
+ #include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+ 
+ #include "ad5686.h"
+ 
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index 36e16c5c4581..d08160e7fad9 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -8,10 +8,9 @@
+ #ifndef __DRIVERS_IIO_DAC_AD5686_H__
+ #define __DRIVERS_IIO_DAC_AD5686_H__
+ 
+-#include <linux/types.h>
+-#include <linux/cache.h>
++#include <linux/bits.h>
+ #include <linux/mutex.h>
+-#include <linux/kernel.h>
++#include <linux/types.h>
+ 
+ #include <linux/iio/iio.h>
+ 
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index d3327bca0e07..20f04b74d831 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -7,10 +7,14 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
+ 
+-#include "ad5686.h"
+-
+-#include <linux/module.h>
++#include <linux/errno.h>
+ #include <linux/i2c.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++
++#include <asm/byteorder.h>
++
++#include "ad5686.h"
+ 
+ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
+ {
+
 -- 
 2.43.0
+
 
