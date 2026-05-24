@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC8FA38F658;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEE253911B8;
 	Sun, 24 May 2026 10:35:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779618939; cv=none; b=F4haujFaVjG/vCTbKjbWaqKPNo6SLWYxaCxgIzJXUboRSSyF7NBPvLTBpmnPGDb71LciaMOr7e24pRlG7bqiX1pZyN6U8uFyhG/yjmox1n5CAUaE1o7a2ZBrVrjrU4Lc6zN7REteqNjWLUq9UrXDQ12+VRISEBl17edzQ87Ko4Q=
+	t=1779618939; cv=none; b=qB2Srk6gwTm9W2GfHthIMmziSq271RIbrRX9c8WC9dfcJNhGE5hsOt/n/6WHW0V+wAMHK5QRPRNY78f2mInBsUZQa3QCJIYRYBkYwheNt5obhSolWI9ETutlwqLaVnma09sT964V2mqhM4PKKRzlhJZI40alu4cT5Z6fOXhCnXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1779618939; c=relaxed/simple;
-	bh=fEpQ52qwEX2E5hNxyn7ssHZ/AkOROrSM19L+xOMsKpE=;
+	bh=CORvr0UdfFniwScEKu2H4oM/0Asr8GBcGggS48OKTBQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=tGzHmY4nvDXXuxSQMHf7yVfeOCJnXaMVGeVKhExEUeyKwq1j3eEpzIcj0Q2CiQX7+LLPAr4dHIreaPMDnDvUHmZe/bQMXECBuc+NM9vFGsB8u6PfZgy+OqxfVF6m4qPRJqTTZ3MVLCe1cmHUq/2aLfLqX4mJ1wj0ldEMJrrBre4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZQepbM3O; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=EdNgX10IgPoeL5IZ3AUCqVLVOOe+vpudqH0m09grGYThi+IEro4cjNinKzeCKXZoGZs0ZDgun9FM9dWqJqv3leadYhY9hQFJIMIyGhqIDeE8fn7SYr1xry58PtlSLg2MpREztSsMtqVzwW0ngWghuU608E8vJp8jwgxY6gO+qe0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tldxYBra; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZQepbM3O"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8A8CBC2BCC7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tldxYBra"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 94204C2BCC9;
 	Sun, 24 May 2026 10:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1779618939;
-	bh=fEpQ52qwEX2E5hNxyn7ssHZ/AkOROrSM19L+xOMsKpE=;
+	bh=CORvr0UdfFniwScEKu2H4oM/0Asr8GBcGggS48OKTBQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ZQepbM3O0ZgBRhWr6X/n0TfT9/1QcA2vDVhAQLpxFlGhA7w/ffTXBNiR5O3pe+GeI
-	 cyZ4L9JlPakyXEDrY+mKG4rVHFUhIoWOBRDRRIgS36rO/Z1HxojwpzPN8m9I62jBxZ
-	 3eGgRtbxW1MQ2xs11ZOVTFEQsHZpWcijR8XI3G6t/BsJeH8c2ryBFcshvUAw0FbD/N
-	 ZEbjBcZh3ve3J5j3rH1s4v/RHpGOB9yWU8k4MPWM5oDJDUFiUa3Dd1tXK3M/jdiORQ
-	 F3jeNQu6uNSHXH+E2p1hzgj8uJVISk79WDyfAasvbrZaTRN0AY8p+5GzpfYfe4HsaC
-	 VeSudqOKzdO4A==
+	b=tldxYBraD+ZRljEUHZ+htX8s4lbwQyMS9nGaFCELUOKbDdhyeP99Aa5470WuCnA4R
+	 CqDPZSkVBwcU/I1r3D5GdIl8aWtp26QXHyGipcwUXiKzpF6E+AA6xEvogDWwnRoGfk
+	 b6jc5YDDKq0mmLpFrgFcLc4p1vCsHDYziaqmKICb17cA1qGnML5FO7t8cq/y0wXCW9
+	 0qPDxGt7G/B8890WmGu24HwbPBBx2HiihIYqvIfBDeFXd1PGoB9Wz0v7aJHB47wmWE
+	 lVl5IjIxcBT+c4j3ZFP3628Ie8lvmIqibxO/XxLvauNhbVUDtB2tZwFcyGxWO5gzXD
+	 I48Dwq1+8g/3Q==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758F4CD5BB1;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83425CD5BC9;
 	Sun, 24 May 2026 10:35:39 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 24 May 2026 11:35:19 +0100
-Subject: [PATCH v14 02/12] lib: kstrtox: add local
- _parse_integer_limit_init() helper
+Date: Sun, 24 May 2026 11:35:20 +0100
+Subject: [PATCH v14 03/12] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260524-adf41513-iio-driver-v14-2-06824d9c15f4@analog.com>
+Message-Id: <20260524-adf41513-iio-driver-v14-3-06824d9c15f4@analog.com>
 References: <20260524-adf41513-iio-driver-v14-0-06824d9c15f4@analog.com>
 In-Reply-To: <20260524-adf41513-iio-driver-v14-0-06824d9c15f4@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -60,11 +60,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779618938; l=2791;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779618938; l=4931;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=UxUL9EGcYZLlZrE68BZiyyEJoU0744KsS7KUqiWM08U=;
- b=XEe/ZsJtxx7p3Xh8mIq6R0eAnYwC+N5/ll9mzNpjifP1PQhy+bPzRMs61Dtkk+7biiIUSP0x0
- KgtKG9yxHeNCh+zB2XJF+7knAW1xDp3jrzXBWoEh8DoCuEAr62+cgCx
+ bh=Pr5+NBfQy2PXMwkQMZ2Ccvc7BauaEGWsUrxgWkFdXyQ=;
+ b=YAMwck6udsPaY1M75aI8QepsV5GHwyG8JaanUI/sTZN38CvT615i0Q/qD912vOMI8V73GE2yQ
+ 6uw74rQnkGyBfq+/kgHuibRggK0ATQ2X9Mg0P86NXI2N2eYMblVE7qj
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -74,81 +74,149 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add parsing helper that accepts an initial value for the accumulated
-result when parsing an 64-bit integer. It reuses current implementation
-for _parse_integer_limit(), which now consumes the new function with
-init = 0. The diff algorithm would have the documentation header and
-prototype of _parse_integer_limit() moved around so it is adjusted
-according to guidelines.
+Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+precision). After the decimal point, digits beyond the specified scale
+are ignored.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- lib/kstrtox.c | 41 ++++++++++++++++++++++++++++-------------
- 1 file changed, 28 insertions(+), 13 deletions(-)
+ include/linux/kstrtox.h |   3 ++
+ lib/kstrtox.c           | 100 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 103 insertions(+)
 
+diff --git a/include/linux/kstrtox.h b/include/linux/kstrtox.h
+index 6ea897222af1..bec2fc17bde0 100644
+--- a/include/linux/kstrtox.h
++++ b/include/linux/kstrtox.h
+@@ -97,6 +97,9 @@ int __must_check kstrtou8(const char *s, unsigned int base, u8 *res);
+ int __must_check kstrtos8(const char *s, unsigned int base, s8 *res);
+ int __must_check kstrtobool(const char *s, bool *res);
+ 
++int __must_check kstrtoudec64(const char *s, unsigned int scale, u64 *res);
++int __must_check kstrtodec64(const char *s, unsigned int scale, s64 *res);
++
+ int __must_check kstrtoull_from_user(const char __user *s, size_t count, unsigned int base, unsigned long long *res);
+ int __must_check kstrtoll_from_user(const char __user *s, size_t count, unsigned int base, long long *res);
+ int __must_check kstrtoul_from_user(const char __user *s, size_t count, unsigned int base, unsigned long *res);
 diff --git a/lib/kstrtox.c b/lib/kstrtox.c
-index 97be2a39f537..bd63c55b8490 100644
+index bd63c55b8490..ab43d16659ce 100644
 --- a/lib/kstrtox.c
 +++ b/lib/kstrtox.c
-@@ -39,23 +39,15 @@ const char *_parse_integer_fixup_radix(const char *s, unsigned int *base)
- 	return s;
+@@ -17,6 +17,7 @@
+ #include <linux/export.h>
+ #include <linux/kstrtox.h>
+ #include <linux/math64.h>
++#include <linux/overflow.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
+ 
+@@ -407,6 +408,105 @@ int kstrtobool(const char *s, bool *res)
  }
+ EXPORT_SYMBOL(kstrtobool);
  
--/*
-- * Convert non-negative integer string representation in explicitly given radix
-- * to an integer. A maximum of max_chars characters will be converted.
-- *
-- * Return number of characters consumed maybe or-ed with overflow bit.
-- * If overflow occurs, result integer (incorrect) is still returned.
-- *
-- * Don't you dare use this function.
-- */
--noinline
--unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned long long *p,
--				  size_t max_chars)
-+static unsigned int _parse_integer_limit_init(const char *s, unsigned int base,
-+					      unsigned long long init,
-+					      unsigned long long *p,
-+					      size_t max_chars)
- {
- 	unsigned long long res;
- 	unsigned int rv;
- 
--	res = 0;
-+	res = init;
- 	rv = 0;
- 	while (max_chars--) {
- 		unsigned int c = *s;
-@@ -87,6 +79,29 @@ unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned lon
- 	return rv;
- }
- 
-+/**
-+ * _parse_integer_limit() - Convert integer string representation to an integer
-+ *			    limiting the number of characters parsed.
-+ * @s: The start of the string.
-+ * @base: The number base to use.
-+ * @p: Where to write the result of the conversion.
-+ * @max_chars: Maximum amount of characters to consume.
-+ *
-+ * Convert non-negative integer string representation in explicitly given radix
-+ * to an integer. A maximum of max_chars characters will be converted.
-+ *
-+ * Avoid using this function directly, consider kstrto*() functions instead.
-+ *
-+ * Return: Number of characters consumed maybe or-ed with overflow bit.
-+ *	   If overflow occurs, result integer (incorrect) is still returned.
-+ */
-+noinline
-+unsigned int _parse_integer_limit(const char *s, unsigned int base,
-+				  unsigned long long *p, size_t max_chars)
++static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
 +{
-+	return _parse_integer_limit_init(s, base, 0, p, max_chars);
++	u64 _res = 0;
++	unsigned int rv_int, rv_frac;
++
++	rv_int = _parse_integer(s, 10, &_res);
++	if (rv_int & KSTRTOX_OVERFLOW)
++		return -ERANGE;
++	s += rv_int;
++
++	if (*s == '.')
++		s++; /* skip decimal point */
++
++	rv_frac = _parse_integer_limit_init(s, 10, _res, &_res, scale);
++	if (rv_frac & KSTRTOX_OVERFLOW)
++		return -ERANGE;
++	s += rv_frac;
++
++	if (!rv_int && !rv_frac && !isdigit(*s))
++		return -EINVAL; /* no digits at all */
++
++	while (isdigit(*s)) /* truncate digits */
++		s++;
++
++	if (*s == '\n')
++		s++;
++	if (*s)
++		return -EINVAL;
++
++	if (_res && (scale > (19 + rv_frac) || /* log10(2^64) = 19.26 */
++	    check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
++		return -ERANGE;
++
++	*res = _res;
++	return 0;
 +}
 +
- noinline
- unsigned int _parse_integer(const char *s, unsigned int base, unsigned long long *p)
- {
++/**
++ * kstrtoudec64() - Convert a string to an unsigned 64-bit value that represents
++ *		    a scaled decimal number.
++ * @s: The start of the string. The string must be null-terminated, and may also
++ *  include a single newline before its terminating null. The first character
++ *  may also be a plus sign, but not a minus sign. Digits beyond the specified
++ *  scale are ignored.
++ * @scale: The number of digits to the right of the decimal point. For example,
++ *  a scale of 2 would mean the number is represented with two decimal places,
++ *  so "123.45" would be represented as 12345.
++ * @res: Where to write the result of the conversion on success.
++ *
++ * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
++ */
++noinline
++int kstrtoudec64(const char *s, unsigned int scale, u64 *res)
++{
++	if (s[0] == '+')
++		s++;
++	return _kstrtoudec64(s, scale, res);
++}
++EXPORT_SYMBOL(kstrtoudec64);
++
++/**
++ * kstrtodec64() - Convert a string to a signed 64-bit value that represents a
++ *		   scaled decimal number.
++ * @s: The start of the string. The string must be null-terminated, and may also
++ *  include a single newline before its terminating null. The first character
++ *  may also be a plus sign or a minus sign. Digits beyond the specified scale
++ *  are ignored.
++ * @scale: The number of digits to the right of the decimal point. For example,
++ *  a scale of 5 would mean the number is represented with five decimal places,
++ *  so "-3.141592" would be represented as -314159.
++ * @res: Where to write the result of the conversion on success.
++ *
++ * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
++ */
++noinline
++int kstrtodec64(const char *s, unsigned int scale, s64 *res)
++{
++	u64 tmp;
++	int rv;
++
++	if (s[0] == '-') {
++		rv = _kstrtoudec64(s + 1, scale, &tmp);
++		if (rv < 0)
++			return rv;
++		if ((s64)-tmp > 0)
++			return -ERANGE;
++		*res = -tmp;
++	} else {
++		rv = kstrtoudec64(s, scale, &tmp);
++		if (rv < 0)
++			return rv;
++		if ((s64)tmp < 0)
++			return -ERANGE;
++		*res = tmp;
++	}
++	return 0;
++}
++EXPORT_SYMBOL(kstrtodec64);
++
+ /*
+  * Since "base" would be a nonsense argument, this open-codes the
+  * _from_user helper instead of using the helper macro below.
 
 -- 
 2.43.0
