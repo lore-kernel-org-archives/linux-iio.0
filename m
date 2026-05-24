@@ -1,63 +1,63 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C77315785
-	for <linux-iio@vger.kernel.org>; Sun, 24 May 2026 19:29:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DDA7318B9D
+	for <linux-iio@vger.kernel.org>; Sun, 24 May 2026 19:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779650997; cv=none; b=swlwqn8wCavjILmWmSHlTrIevno+BsAwHsb6kCtEXFoyeyFXpFhxW1SFxIpW8581oZZ1wcFLMfbSvwDzisBzZK9JhqDyjsN7a3K7Z0LWU6gzyZktjZPSxsbAQy4MYdTwQsqD1GQXxm/1mmDr30eXzzhaCTi+D4iLzUCnqD9O8ZE=
+	t=1779651001; cv=none; b=Wv+YGfXS8jN/yTG4PN5FxwRPQEsPy8ct/jzbhVrHEgYlvkUtuL2el2F6DD0Nb0XifAD8gFNxREyNgdkjKIpFzH5gvgYYyiIGj7fsFLv0Il7Q2IcBsg3xg8nTUIIwTJRqyoEJZXh37DUeoPxsHZRNR18PdFBL3xMXRyzXeBdzNG8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779650997; c=relaxed/simple;
-	bh=8aonlBzK6La32zoQta17/FxpJmctPYAGec2/N5xnkqE=;
+	s=arc-20240116; t=1779651001; c=relaxed/simple;
+	bh=pQ1EFI9ESAITUd9lLEvf9rZSrin8cseneVJ1umhYv5U=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=C1VahGhy/xlgBOcTMXxaxX1vsdMqUne3It5b2Y+Byqd57lJZy0l4wN39WieJ6xyC2u63fo6sx/FOClz+Iim92v+GdFCecRczt0O91vunGAKNM8GEJmv6pDEQmKD+3OqwLiNpxG5BljlS2jpHQfe3Gu58/syTWOJVCo+rDCxlgtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lCpnWarh; arc=none smtp.client-ip=209.85.214.179
+	 MIME-Version; b=Ws/XsxX8fLjDeplkRNbPcIY9H97gMtIMW9ZjTVl+a0wzhu8B0zGIE1rOj8Nj29TOjjHOBfcXxXhH/zB/ieSzVzM/NL/4Ypx28oWF1h8RpmlG5U9wvzjVurTEXQ3EkMov8LcZD761Mg9D9PzLAFcXdDTH0xKOOdVKor2l99mYKw8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gk++VWne; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lCpnWarh"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2b4650d5f5cso36714645ad.0
-        for <linux-iio@vger.kernel.org>; Sun, 24 May 2026 12:29:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gk++VWne"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2ba0714574fso48600415ad.2
+        for <linux-iio@vger.kernel.org>; Sun, 24 May 2026 12:29:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779650994; x=1780255794; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779650999; x=1780255799; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+FkDvC/ErgcT2CVjGwqZhVxkScGNhYlOoSdsG0KrLjc=;
-        b=lCpnWarhF6oXxixfUCy52LRXLqNlU8biw12HMHjCBHfB+0MlrItYAi4htcfxSRKyS+
-         Ozb7AxL8i1LAJem/4SclzZx0TQIxcduyRMp8liZ9saLxQf9I6xWl+u15iK42TC0JEieG
-         AoHm85swwvbMCtVjfaqrp1IQTd7vpUGQCT3c0g5RX8GbYpTo5wpkRIKGyGdYjDPFIFyk
-         fLaUZ6qeIIWLXOG+x8LAH7VMX0YICzOFNnwd87WRkUfpX5nR1IfefLSgixc3smfaD+rz
-         eD+xHclnUgIooadjIhjri8xk+OmRhNPOVK8yBJlrhdwKWCil0QzU5ni4RmfzSmykivix
-         lEmA==
+        bh=cN4KSgEdZHf7ZNFG2UIquoLWy1GgHCXl9gVEesFCl1s=;
+        b=gk++VWnej7oDqYxm+oghLuz1QBo40AV0qYbksibsoEAsPiQ0pa7fsT6zLp79kxmzRx
+         501LU6A/GDFUx5o4bA1i7ZGb+bIyCsEiFLb378SncCqENy4DXt2Txg+SetEuF6fTO6h2
+         qOeXqtzO3+chCqmp+bqDkViGtvsOsgS3Zzi5IRwR/6whB4RKuu1QVsRJriJtXLTP6dF9
+         g+7B1T8wpA5ejyo9LLkNLa6k2PybULhfjFe9T6ugpC0exb4R75qPoZyrMafWTOdRm0yF
+         EI9oBDsqijH2Yr5jGpvUufU7Ig4qd9RRWr5V7KpDVpKu9eAwND4VadPVUwcYEi+a6k/r
+         Pz3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779650994; x=1780255794;
+        d=1e100.net; s=20251104; t=1779650999; x=1780255799;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=+FkDvC/ErgcT2CVjGwqZhVxkScGNhYlOoSdsG0KrLjc=;
-        b=U+iR1s8uGdhnlsR/zbEyZKRKWNP1N530tVJePj8Dr/tt2oUIyojElWIMYpuW6EmAd+
-         uKgNKdrx1RakwTEP1oiEExA8TUcGHEaKiwiE5VINvKMw8IF6z39AIGF1eSFnF6UYoK2q
-         CHqOkNJFZZ9xGBuP4Ec1i2LPNaQUbFF5jwju1533Fwwjm8jPClqLs4wpbcca7iHris+6
-         9cSWgfgTub7d8y6milshcz0Ti5YUxLVljM0TQfwSywFWf4iA8AQwwZZC3MkEXFMEOzdE
-         DT/aWbnQsoQACiG7e7gPzGdGOAO/Y5deYQ9HmsS1ckGjz5SLk4PGKoRs7RkYXZX6kc/5
-         HM3w==
-X-Forwarded-Encrypted: i=1; AFNElJ9OsZOhPQw0kjATVkQpdWmaN+s4azVtOUn84k/1ZtU6qng0zipbvMPiVwnZmQZRuFG+wvjI/B3rqrU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzRyGS1eK0ac/DGjAAtAGVxqW3PzsSkUaTU6dvFKSRt9bCwzXYt
-	M+23wGw7z89cJqqvohcufYaUQ0tSelFTvv+vrfWB64tsJZEcDXRuO5sW
-X-Gm-Gg: Acq92OGbnJHXcrBliK3Mg/SAJXr7sFPLr/HI9apNQorQmu6qLEzmpkp6lUUq5IO6O8+
-	oktudzhlccspXaVkFUEgSI/RKESbdhuc821XbEqNvCcjJ6zdFxBtTqI459lCMNXmX4hmq71zNfv
-	Z+h31bPdGX1TE3NAFRcK2dC9/0/1BNQN+tUKkNGX0+7IEIsTY5BvqSbv8/JVCknN3v0oIK9vfpf
-	kyWhYPmx9UBO3EWJZJYz7rPU1IzpKORpMTtquoCyXGsFIZlD2hd0H9K8iaJVToq0Bjklxug370Y
-	flKz19JazIfwGV3EsoWBwUVPzuG6plNoUdBWLUVKhSduc+DJliG5Nid+NA5l2tm0SxrPG5vzoUn
-	s9f9muOin03pKe7xMY6/N6cYy8YJPXk3TV4dmeHNrI64yxYbtuDJLyQzmvPFdo3BP+Uje7NyFz6
-	S1VmXU4+XEDLfOAoFAIQvxknr6rQlCkXYgFF6UdQTnA6472F/r
-X-Received: by 2002:a17:902:db07:b0:2ba:3e50:e3f5 with SMTP id d9443c01a7336-2beb0634c8amr135686415ad.30.1779650994470;
-        Sun, 24 May 2026 12:29:54 -0700 (PDT)
+        bh=cN4KSgEdZHf7ZNFG2UIquoLWy1GgHCXl9gVEesFCl1s=;
+        b=pSz3a+k+0TR9J1NUaOySJ6rC22VnXSRQ3ZxgN8C9WqgbGTUgw8Tr2AONsXceXf/7LY
+         DIl7ZhUYTDDbQrVdj8Fw1AddhC447U1t1Ewph/bGrESKlYinAbokk6xXJcrb1IvDPVdw
+         RKygq5MKXsv+blzlIAo419BQfVI1d9qP+xZuKx05/NrrhgmXWZU0sksGRDmb1VjkXvN3
+         +MWwNbXAjRsg/bi85nwfT3SW1FXQlnqX7INpWmlRyWeUmNkN5HLr2cc0Wcd+S9bdOgMm
+         zi6sq8KNcpbWOIdM60NlaHlwQD9dZNl3HiHoiI7E1iBsGfDp0mA2x7ojq6+2w+nH0q0f
+         O5Eg==
+X-Forwarded-Encrypted: i=1; AFNElJ8d4d+atIf7ZnEhib9+UaU/dyMezhgnx3hFEfb8cnpd947d5rSSBpSDM2TQ/Io9lajBE1PVFsdfaFc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzZO4pHH7w8CvLkVNdAuWu2VlSSmLcxUCD/fWR+bZ3bDW1Fymc4
+	41hqXFAnevmw0z1kHYKz9ynGFGxYy4oJ5Idf7Mj5L3jcu+romJthgECS
+X-Gm-Gg: Acq92OG8TyUKxScb18W9x1fxcriRBc2UfUw52zIk0CPxy/WjCy9mx0p01XsBVGF+Yf3
+	AEVzwRsFsRxRRgEG0qNS931/kT6eL5hCgh9N9L0mlF7IWBv4X4QeqTH0Tj5AQM9KZH4xHQQJiFW
+	JudfSotDiCWo7rFafuMkJlAzP/ityUx1AKTuiydMJAdxYCoMalB+/Czgac2B405qGJRbgQ2eyNv
+	3hUj+QHybRauQh6RxmRJdLb+LErZ5ryzD4D6Sg9sD2xADEBzuTa6NIG39p5m/E/DT8UQvf3ihiC
+	0ZJn2gbP6IEZcoKANIYWN7MTki6N6mFmflrBErTRvyAkGUO8O28jU6iPjdlS5ANRXUXZ+0aKj4C
+	lH0VNsSYRxV+KacvcyH9v797F1zxuinih2KDPsDW97hZxrlHmYiPnjGn1qwBlbVLBp1Y/Hy2k7B
+	8+s67FNZjXZFK1g2E00ROiESz6kN+EkxZaQwlgG7IDXy/0QnHi
+X-Received: by 2002:a17:903:1a70:b0:2bc:d1ec:9f09 with SMTP id d9443c01a7336-2beb06be3d4mr123690205ad.40.1779650998794;
+        Sun, 24 May 2026 12:29:58 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2beb58c3168sm72555465ad.58.2026.05.24.12.29.50
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2beb58c3168sm72555465ad.58.2026.05.24.12.29.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 May 2026 12:29:53 -0700 (PDT)
+        Sun, 24 May 2026 12:29:58 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jikos@kernel.org,
@@ -71,9 +71,9 @@ Cc: dlechner@baylibre.com,
 	linux-input@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 31/36] iio: magnetometer: hid-sensor-magn-3d: drop hid_sensor_remove_trigger() using devm API
-Date: Mon, 25 May 2026 00:59:38 +0530
-Message-Id: <20260524192943.1196773-2-sanjayembedded@gmail.com>
+Subject: [PATCH v4 32/36] iio: orientation: hid-sensor-incl-3d: drop hid_sensor_remove_trigger() using devm API
+Date: Mon, 25 May 2026 00:59:39 +0530
+Message-Id: <20260524192943.1196773-3-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260524192943.1196773-1-sanjayembedded@gmail.com>
 References: <20260524192943.1196773-1-sanjayembedded@gmail.com>
@@ -95,25 +95,25 @@ teardown path.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 10 +++-------
+ drivers/iio/orientation/hid-sensor-incl-3d.c | 10 +++-------
  1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index 22c7b24e2e3a..3019de46731a 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -516,8 +516,8 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
+index 21a32f506046..55d3e8d83f6b 100644
+--- a/drivers/iio/orientation/hid-sensor-incl-3d.c
++++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
+@@ -349,8 +349,8 @@ static int hid_incl_3d_probe(struct platform_device *pdev)
  
- 	atomic_set(&magn_state->magn_flux_attributes.data_ready, 0);
+ 	atomic_set(&incl_state->common_attributes.data_ready, 0);
  
 -	ret = hid_sensor_setup_trigger(indio_dev, name,
--				       &magn_state->magn_flux_attributes);
+-					&incl_state->common_attributes);
 +	ret = devm_hid_sensor_setup_trigger(dev, indio_dev, name,
-+					    &magn_state->magn_flux_attributes);
- 	if (ret < 0) {
++					    &incl_state->common_attributes);
+ 	if (ret) {
  		dev_err(dev, "trigger setup failed\n");
  		return ret;
-@@ -526,7 +526,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
+@@ -359,7 +359,7 @@ static int hid_incl_3d_probe(struct platform_device *pdev)
  	ret = iio_device_register(indio_dev);
  	if (ret) {
  		dev_err(dev, "device register failed\n");
@@ -121,28 +121,28 @@ index 22c7b24e2e3a..3019de46731a 100644
 +		return ret;
  	}
  
- 	magn_state->callbacks.send_event = magn_3d_proc_event;
-@@ -543,8 +543,6 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
+ 	incl_state->callbacks.send_event = incl_3d_proc_event;
+@@ -377,8 +377,6 @@ static int hid_incl_3d_probe(struct platform_device *pdev)
  
  error_iio_unreg:
  	iio_device_unregister(indio_dev);
 -error_remove_trigger:
--	hid_sensor_remove_trigger(&magn_state->magn_flux_attributes);
+-	hid_sensor_remove_trigger(&incl_state->common_attributes);
  	return ret;
  }
  
-@@ -553,11 +551,9 @@ static void hid_magn_3d_remove(struct platform_device *pdev)
+@@ -387,11 +385,9 @@ static void hid_incl_3d_remove(struct platform_device *pdev)
  {
  	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct magn_3d_state *magn_state = iio_priv(indio_dev);
+-	struct incl_3d_state *incl_state = iio_priv(indio_dev);
  
- 	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_COMPASS_3D);
+ 	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_INCLINOMETER_3D);
  	iio_device_unregister(indio_dev);
--	hid_sensor_remove_trigger(&magn_state->magn_flux_attributes);
+-	hid_sensor_remove_trigger(&incl_state->common_attributes);
  }
  
- static const struct platform_device_id hid_magn_3d_ids[] = {
+ static const struct platform_device_id hid_incl_3d_ids[] = {
 -- 
 2.34.1
 
