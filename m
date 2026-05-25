@@ -1,65 +1,65 @@
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA72623C4FA
-	for <linux-iio@vger.kernel.org>; Mon, 25 May 2026 01:39:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B46F326158B
+	for <linux-iio@vger.kernel.org>; Mon, 25 May 2026 01:39:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779673200; cv=none; b=YrqCutJqnjGJetzdk3MBbk3UDWRq+8Ndn91qvK7aAeZkRc9or9DPZFOJo9B6+xnx1TF5SV0jYsSgiRQYy58mNb6PlASd9HF1lIYtw1uXG9MHNX9A4YvI9WeSLz+5C8vbjc621Oie5HJDDFQsCa4jdCpR5r74GZdw7mwYUd5DngI=
+	t=1779673200; cv=none; b=MDrlOcwxFEN/XWokPLJ7GUKzBEj2GkSQTt1FOA+6nhTlUfoicJ1HOaRWaZl8sUCtlhXdk2xuDiLNrGb9hjybJPpGWBDn5WGONt4FecIeX7+dOItZzpy4CLtohz3ev2YqJzbh1CFXLLSg8FHY7vRW6SflLnf6K5U/SBs8yMXcwl0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1779673200; c=relaxed/simple;
-	bh=a5s5z+cub3SAmh1xynpckVoWZ22C7+19bL3gHnAgtKo=;
+	bh=kT7iBeb9XCkWmH0M5c7AuCVAJn+S9r0mo1T4JiYsl94=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Rx3pr2Au1o0CjqWzkJbASHcVzsnju2XypJFBH6Iu9CUpa51hUJ3aai6oxFbJjO78g+PstnRQUapNS87PeNsGQH9t6Ejw074uGgZXVov0Yk2gUaJ6WyOLDNMgE6xzuleS399CnETQ6yGY1pXTf3mJbqGEvp7IWAbIEQWpdqLZNy4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=FKTSMYWG; arc=none smtp.client-ip=209.85.210.41
+	 In-Reply-To:To:Cc; b=APQ1BuplZiH5L6D9OwXyojXkfDe6j/13vvONeiBwBkvMaZuM0CoS1kPnLQEtPgQplcq5M5gJkZSsE8gH3+crMXwxJGrF2yqdHuVUH6blVdnBfXf157fcqYNDcV4Mj8ZCrRm2/hLbrwWX2KJwlakJbzHH65V4QIGedMMQfDgmR/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=nFrE+iYB; arc=none smtp.client-ip=209.85.210.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="FKTSMYWG"
-Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-7de7c57b52cso8103871a34.3
-        for <linux-iio@vger.kernel.org>; Sun, 24 May 2026 18:39:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="nFrE+iYB"
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7dcd17e19b6so5104643a34.1
+        for <linux-iio@vger.kernel.org>; Sun, 24 May 2026 18:39:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1779673192; x=1780277992; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1779673191; x=1780277991; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=FkaH77BKXkVbsk7oK6FTHGHPATCcUs5m7bHAn/ge5ys=;
-        b=FKTSMYWGLQZXd/2EW8n8yhjRCTpaukSWMPmBfwktwQ/FxJVQd4zVGr1h8sDgjBfPV4
-         uQ0oFJOh0z5GT0h9bgBdLnZN/uLhKJgUszWYovelPMlfu8qM+I8PvGInp2zRGYmBf5nR
-         xyHAhgBHpiqUH72rUZtJ+e1+Cfgpg+DuLf8NWoy9jKK5J1RvEBxl8deOqodAL5DTieBZ
-         pAcH3ouBd2/MBXFm+Ym39rmIGJaeB59ktvE3HI8v0dY57X4layyhKaI/svue/B7uaZga
-         /Z8ZCs9CSQYZOscyUPbpp+NgmPJOG6JDsR0TvtnUI2bUaROWgEIPPGF/Cr8CFS1TYod2
-         o52Q==
+        bh=qcM+8coPu4v1e9MEXIssy6i1P2Q9YXTHeGPSK4NKRC4=;
+        b=nFrE+iYBX03JaMl9k2r4PCbkrxktH0RQZaYzOc+FDcwUrsKMn8ZztIev7CVKjJuKa3
+         u3iEunhFYjFmdZ08CniwTBD3H964lhVFbMKqardflLZ0XmWCxm6JDemfTVniMRrZg4eV
+         TWkl2X8k/IB4DAYBUaJ06zZ75urtExQqDChpqLCNxCdwaBK/x3c38vSoQbFNUgOLVesm
+         Rqh9x8Mcne2VroDLP+2PICRjEE1682HtOnmkbAm9O2Casr5BFTtzdoh375SJou208feJ
+         U3MoHaAD8l1uOvFlVdX4YBKlFd73Q0J98BP5L5ob0hKdayEX6fjXwHwyOsNbu7EBhyvK
+         oksw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779673192; x=1780277992;
+        d=1e100.net; s=20251104; t=1779673191; x=1780277991;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=FkaH77BKXkVbsk7oK6FTHGHPATCcUs5m7bHAn/ge5ys=;
-        b=HFdhAymF9X+nYJm0WYSZaWIPOIbHwE5stn7OiIPz1iP1HbfZcjTKCbm6uRMijrw7vk
-         8RtFODFs2HuMv+Nn0wOkJorM4+FjdK6uAE9AKpD0eFTKcyffdUcV5UUfPGgJKnI4xbnN
-         dnCXFpDiPDf6pzAb3D85JaZS5UrSfeI5sPCAQBvKcAWWzzh2ehEFWvU3cQ0Ra4FlAdLl
-         o2D7rODjadJFsLUgHCbnOPcT54rWQDs3sitXkQiXEbYu9VqQN8Uol6+B+1ZH/M65qsbc
-         EvQea24gp/NR9E39WN8EtrDp4cyWGTibMC0/dLmIjD1RgmSM2J9la8Q5SmFNUX0YQI6o
-         akDw==
-X-Gm-Message-State: AOJu0YxDynTsSYENyQA8klfgpSm3fbnvXb+o/5x8FqYiDiSlsjkFfIad
-	YBJtTt5+3XT6Dc9sveNw74CAOBS33ezbeVeiTrL/MpbsvAcxkAW/q0/nICHs7DPlDAE=
-X-Gm-Gg: Acq92OE8TztjJiKRqQKEKvGT784UUfb0AnfcrM3DvWhgwZmeBITvPAnosDoIare6/bZ
-	lfCDXoL7o/JuDpN7PFMRhqQDe8STvyv1q2fDV/vzTt6SpyrGi42cBtqRR91NXujlDKmwSlf/HfN
-	BrjolVgcMqD+OSXuGo5SlD+0oucrE2YBkD5EUMzk+Dk+vWwS3T3u5sAL1B/1ATcR46eEXEBIzQW
-	iGW5MOpJRnuUFVB9p2gqOmbfxQKIfTWiPap32GoKq5pt29tyuJpIGbajFeQb6uFtPaVil+Sv31V
-	7muH8W0Z0qn43vmKmX59uH673+TAwKj4/KteQcQBg403WZTnNd8MydnT7JGW8gzC5+mP3fW97oU
-	s66b2cIflLJOhEK92Ymk7f67tQnCQ6M3ELB5CtFICy+EHX1LMMBTw1A4G7jDrF6zqDSkssXywAr
-	iwYRExAZCpMLwVscSX0cSaEn5dIyHO
-X-Received: by 2002:a05:6830:67eb:b0:7e3:d199:3164 with SMTP id 46e09a7af769-7e5fedf1913mr8821807a34.11.1779673192588;
-        Sun, 24 May 2026 18:39:52 -0700 (PDT)
+        bh=qcM+8coPu4v1e9MEXIssy6i1P2Q9YXTHeGPSK4NKRC4=;
+        b=PRcPnCqWgUvWwAqwm7Zdeq1cyLUMzrzKa8LCSRdvrA4BQ8mnjgVgsYucF/G226utpd
+         RBrfonskm+xZdSI5Xw+yNFwb9STlnyT5inhYqhNM+rzHRAGzS1/vLKp1yKuRCYrEKtYp
+         bKBi6GtCk/l+C0gq4Rpxn6MEXYH/M4feuQUTESEvtY3nS0wEN1164TWLyhKIDKahEWAw
+         mj9kraCkPzN6g1FcKbXlGy113uWf1wnaA2st8TGGuli1nUpDRA4cAStgopgqg6aC9Cxp
+         d3LLDaPhgGMaxcEzyZAUaWpeXFpv59/euXiAhBUi+LMy4vCtc7Ju4cAgILjSACouLSNn
+         o7XQ==
+X-Gm-Message-State: AOJu0YymHWqiqneSYa6ItRPMGzsqHruINSkRMQJBKWaObRZvetIZeUdg
+	AWqFx96iNR8HtSRkoCCZzmlC/d/A0xHVPOLCkOfd+pGuKeVzTgNDhPQNiWKDm//wyww=
+X-Gm-Gg: Acq92OFpEtM5t4pfj79G+r/YyK1Q7+tOyXg/9qndbTp5EnjU7qdTLrJxnsOKgKWjwQd
+	6PmiZrl2fdgx0kTw28DjN0JDeHM3DK9m1k2uQAOgj3h0PbmC6MTh1I2L0mRjhPBuLtrvQDBiIdb
+	jrbXwdzD7AH633Ym+7LO90Xy+awHy69l4ocpK84gWYBS55enwcQupbf1t8vLJhT4H9bq6Od5J00
+	IhB0z9qFLQUruNUjj+F8oNhqroOzdekImhbck4nlsidj9bS0pztuk1i8DV4VFS/GDMNxsbPhRPe
+	/l8rf01z7wjoZmlrkpsMPzijO8AGMKb9tqoNJ29C+jEejnI/N4MpJE0e/Z5rbxQoOYZ0H9vIHn2
+	y/nEUnrPDjxvZo+n3De1P8wb+0mTMZc4RKeCiRIh8g23vOiB1ApnlI/e96gztQXXyW6sZLRuIz1
+	4nCjCf6UTREQw7rHoq9PT/oSo2bb+2
+X-Received: by 2002:a05:6830:6d0c:b0:7dc:d99c:c441 with SMTP id 46e09a7af769-7e5fedc8241mr7219838a34.8.1779673190623;
+        Sun, 24 May 2026 18:39:50 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:713b:3006:84c3:c1bb])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e6060b2dffsm6250206a34.0.2026.05.24.18.39.50
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e6060b2dffsm6250206a34.0.2026.05.24.18.39.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 May 2026 18:39:51 -0700 (PDT)
+        Sun, 24 May 2026 18:39:50 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
-Date: Sun, 24 May 2026 20:38:37 -0500
-Subject: [PATCH v2 5/9] iio: adc: cc10001_adc: simplify timestamp channel
+Date: Sun, 24 May 2026 20:38:36 -0500
+Subject: [PATCH v2 4/9] iio: adc: at91_adc: simplify timestamp channel
  definition
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260524-iio-timestamp-cleanup-v2-5-c37c9408b7f7@baylibre.com>
+Message-Id: <20260524-iio-timestamp-cleanup-v2-4-c37c9408b7f7@baylibre.com>
 References: <20260524-iio-timestamp-cleanup-v2-0-c37c9408b7f7@baylibre.com>
 In-Reply-To: <20260524-iio-timestamp-cleanup-v2-0-c37c9408b7f7@baylibre.com>
 To: Jyoti Bhayana <jbhayana@google.com>, 
@@ -87,15 +87,15 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-stm32@st-md-mailman.stormreply.com, chrome-platform@lists.linux.dev, 
  David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1345; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=a5s5z+cub3SAmh1xynpckVoWZ22C7+19bL3gHnAgtKo=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqE6g/yjb213zQLbMwk6iuHebY91dnjXtb+FUCD
- vvtjZPSn4+JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCahOoPwAKCRDCzCAB/wGP
- wPwgB/kBmXUguncTbHCacyEQoFcxVZzlf/TOYZUKfnV2TLLum71flgDtMY1b0gdyXRmp3fM/OyK
- GuIvva8ImnHI+QUy7DVup2FJijaxuRZL4liv8BzuDmz+jrk+tGdFxjou/iziU5yzpsxn3h0UReg
- crutlwGxtN4TM7gBRUBqtvDGeGuTAtMiyHz3lJidkFemL9Vnwdy11RXMoLo6xpspnIby3loNKcM
- rwkb03JkzYTPV90rUuc1zVI4NWRdGhcSJ6QcGg25nQV8e+pjnmj4ZPxBeI518VkgGwI2bg+ySOG
- 7EkIojBOcPvtAZMyAu4+KQxGhDwPFUmM2l1bB+pLFJTdoSgq
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1388; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=kT7iBeb9XCkWmH0M5c7AuCVAJn+S9r0mo1T4JiYsl94=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqE6g4ZzvN+pLtbr0EtlFMYHDp7WfJxXmMKDzwC
+ v9MYmHcbzCJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCahOoOAAKCRDCzCAB/wGP
+ wM4kB/4oMi3qMB93dUQsrGEQKP3Ylxt+25M4VOOtJqdg7N8vJaJ1C6Lmi5F/KK6qCauA/lzIV4X
+ si8btQlgwRRXDQ6XKwu3cWj/ai0R3djV9ReHCVfEGuiQQ0tUgB2QROHEnXiC0F4tBS6FWCVUlYJ
+ I6DBZOM1nFp9tt6ap6GXFJ3BcwoZ7V/n5Z3GOC+N2BdEyABMsqK6hVrc8Db1ksyYyjbzIhaETVj
+ tIJsfrSn2JjVJ5299p8Gm7hdyOXXZh/t2uRbe9QEeahWGaTwcNWvv9HlO4izEY1uM+pkipAIoh7
+ Sdf1+Nlh+iWCpQuVbssgfyPaZxlw0P8K6guLhv28vVycI7U5
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
@@ -105,37 +105,39 @@ less verbose and mistake-prone.
 
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- drivers/iio/adc/cc10001_adc.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/iio/adc/at91_adc.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
-index 2c51b90b7101..d42b747325aa 100644
---- a/drivers/iio/adc/cc10001_adc.c
-+++ b/drivers/iio/adc/cc10001_adc.c
-@@ -262,7 +262,7 @@ static const struct iio_info cc10001_adc_info = {
- static int cc10001_adc_channel_init(struct iio_dev *indio_dev,
- 				    unsigned long channel_map)
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 6e1930f7c65d..f610ad729bf3 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -481,7 +481,7 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
+ static int at91_adc_channel_init(struct iio_dev *idev)
  {
+ 	struct at91_adc_state *st = iio_priv(idev);
 -	struct iio_chan_spec *chan_array, *timestamp;
 +	struct iio_chan_spec *chan_array;
- 	unsigned int bit, idx = 0;
+ 	int bit, idx = 0;
+ 	unsigned long rsvd_mask = 0;
  
- 	indio_dev->num_channels = bitmap_weight(&channel_map,
-@@ -289,13 +289,7 @@ static int cc10001_adc_channel_init(struct iio_dev *indio_dev,
+@@ -519,14 +519,8 @@ static int at91_adc_channel_init(struct iio_dev *idev)
+ 		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
  		idx++;
  	}
- 
--	timestamp = &chan_array[idx];
+-	timestamp = chan_array + idx;
+-
 -	timestamp->type = IIO_TIMESTAMP;
 -	timestamp->channel = -1;
 -	timestamp->scan_index = idx;
 -	timestamp->scan_type.sign = 's';
 -	timestamp->scan_type.realbits = 64;
 -	timestamp->scan_type.storagebits = 64;
++
 +	chan_array[idx] = IIO_CHAN_SOFT_TIMESTAMP(idx);
  
- 	indio_dev->channels = chan_array;
- 
+ 	idev->channels = chan_array;
+ 	return idev->num_channels;
 
 -- 
 2.43.0
