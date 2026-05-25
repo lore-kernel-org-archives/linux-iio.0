@@ -1,128 +1,163 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97C6E349CE9
-	for <linux-iio@vger.kernel.org>; Mon, 25 May 2026 16:13:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EA443F5BD7;
+	Mon, 25 May 2026 16:30:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779725586; cv=none; b=CCLKCb00eQIghJ2OjUqbku613+XUCGZ9mqh3bssUTz/g28m8l//Ew6bbiTlkPEr2FHeNSoCL46GNdyBf6yqz1xcsNnVIp0GDkexaa16y/65TNj3erPOerLv/Ik3H5RpuRh25O9PnPrSw6kLWuPHkrHmlb7DLSrn2zv5kqluEX9k=
+	t=1779726611; cv=none; b=AQvpAKmYPwELDfUaJMxslejVFCY54skgWsk1F951HQ0sPYwQ9mRCG0XNOe0IFWDgx700ZTj9vLS/RbqVNPljwHu8lKQz0pBRAbkQ4aNJE2cvr28A1XkgkICB6nluQBpQZXQdUG6BBwC64dlKo6u2UaZrl+VIVGRNfy2mqLOCuy4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779725586; c=relaxed/simple;
-	bh=s5w53t4HZEfOpMWOAkkPTvlM5cQcOCdRUzSMehtyGEQ=;
+	s=arc-20240116; t=1779726611; c=relaxed/simple;
+	bh=+UxIrZYQCZEEiS7KeSOLtxAWKDIemVLC311YUWDD9NY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PBgwXSfg+kMi5Gdpiwqhefc5hhJVTs+19WZqxeNyr9QSOxemWOTmdT1gpCHGr3wvWsmkNaEq/I+h4NV2XK2x43WSZIrU0q8mwT1rjT74mjFuQ2eMmSxdcOrM2/zgrO7MpnnDqFa1svfehs0DFGRFJo3EKl9AK5POkxJKrh6H5f8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kS1DMu6i; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=rRY6MIYqTCVyniUTnt6RDhBoTTmrGE/pc301vXIqOtLlPOpqECEnAPNhLDixLa2fV68Huoe26aD1X05yDLXY83yU7XcrWCZDaNJkNxjGPyO++RJqITsuSSNdlu3Ujlclh5R1y8VbtBQG19XDA9LyNuvIJ0NK80kvBP/EYPySCHw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hNb4uZSk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kS1DMu6i"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-43d75312379so8147466f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 25 May 2026 09:13:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779725583; x=1780330383; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=PrUkFmsyhM+H1pzZoLfPMsL3Oa/eAQefGicPa01J8aw=;
-        b=kS1DMu6iT6wKVRxaPin7EgPS7Cw9/Pt3WcjoUuYVh9fpumC5IoI/6d1RkxVJfBuVtS
-         VWVIpYdKK5RzWqtObG8JD5M91ESXgm9MROtxzeVHJu4FkMcK/tRAPBJOt++CjlF8bOrJ
-         viTwzjeTTdLZ14eluw9HcGFfMkic6lDfqgfzxKVuFzQ+Joa5uDV30/AP6Nr0Hwx/4urj
-         k37EdlUQoyANmWVkoQRyMKjYhnppCQZddKZK23UH4Fl61SX7QuBjSQAfOmN+mb7TwtJi
-         hwL4PW0fyWVAsCsxD0n9l7gWFKnuFKAn5MLjiZHnFXsbvq65wC/xV2LmM3nAbrJ6LGb9
-         CIjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779725583; x=1780330383;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PrUkFmsyhM+H1pzZoLfPMsL3Oa/eAQefGicPa01J8aw=;
-        b=KfAfEpY663MKC6vixyfYf0WOqdmRm6CfY172X4/Rw2JUWN8ClHWl0hKGmbA1se2pD8
-         I/tw5JZrBATaGfCSr/u82aMH93YtBQ5CZahL25PTf4U8IctO/52idTksDM6HZQxkyKAT
-         eLO5jBp2ksvL8zQSF8BFjw1HvBEs3cFe0Z1lY1RjjcZRF1mqxoSClZ3RiulWwoIkb9/O
-         bFclFjJIwDs/y/y0noM2Tj8XsL9GGULA4t/BvtF6y/nmSf2wpqGvugzQWPlUOP1ywjuX
-         KMi7tsprSxy+MdBggCxyovIW3olYDRvLJvMzCFoVSY8p1jqC6aHhzFnrKxwZDBciceUm
-         u4Lw==
-X-Forwarded-Encrypted: i=1; AFNElJ8bufpEM0t2byZ2T8TZjQOulcf8K4iqrJmGV7O7xnFwD3E1b9GYK4IbfiUe3M8tYdOchfhfEH02q30=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxtMsvt8pY+40EuFOsvSYenqL4ozq3XZyMyiiKEt2ibiGhqN06R
-	TfyBt3EB9nENZIh8dmeWyeJI03AZpQ0uVXNK+G6dzpxgv3Zncr0zjAQH
-X-Gm-Gg: Acq92OHmBZqt1XobThnSXz3PVsoJ43GLC60xnPC09THyacP4n45GRfLs3IeddZ3VhT/
-	EY22KmVC06B2ChX3R90ZlZVlGXERUTucVsumJFECZMI+m7VEbiNrycNDD2V9SU1xENDazJckzAf
-	vdBqm7b0ZUysHXOWbd9APOBEtN3xZD/2ibZlb3StP9S8gBhWuXkYJlp6lBjgi9jTuU9xUYF46rQ
-	hZ+UpyjGAukPkujGca3fmVINP/3PTu7MVGMdv0PmhgDONkeylxOF8GWWKttW9FIGDbL6sTOesGa
-	jUFT2Hm7ItQBW2IQb8L9AqJASsEfD2Me9Cur5bLnQcLodhU7JeXYeaHiBjfE54IJAQUf9MbosNR
-	4kbYSFV/1NBd4kHNKkVUyXv0Zc9Qqc65eu65rJAxdskJm2fgy02gJCPMfHE267Vq7kW10Uzmt5N
-	QphkTKhnuhXLvXHfkHuuKUJhr3s3Y15/qXuw==
-X-Received: by 2002:a05:6000:1889:b0:45e:8edc:dacc with SMTP id ffacd0b85a97d-45ea31ce398mr31640895f8f.27.1779725582779;
-        Mon, 25 May 2026 09:13:02 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45eb6d47b82sm28136573f8f.19.2026.05.25.09.13.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2026 09:13:01 -0700 (PDT)
-Date: Mon, 25 May 2026 19:12:57 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hNb4uZSk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A8471F000E9;
+	Mon, 25 May 2026 16:30:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779726607;
+	bh=7e4ZjPZTzdJ7a9vb91nzCeyvVjuclLuvDc6BQmWdQRU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=hNb4uZSkYgaa7z+NOOVNswqhmvL0sto1/BW92/7A0PCsitvkCNDEE/IqWczRrstTu
+	 cPVqHJSqnY4uPhcyFC65BTLNGRoujQQCIBF5wqFIYstIfQebYILF53K0iAPUW8AYeE
+	 dRmcWb6+MZweGAhfCAvawH0B64aQoVKc4SOiQ+/UX6z5HdC0HkUiAv9R3/i0pPTI5w
+	 X72+lD+rX+WkfDv72k952vCturPts5k+JYofr3qm4cOOvQuhwZ7HtIocQVE+Q45/Xc
+	 yEXBQSgi4Qk4+g5jErOy8ROfdp2y9hFFbzW+rUyVRKEj1RS8O9Tnjw5zCbD5u+GU2j
+	 aNZMfrUIDMSxw==
+Date: Mon, 25 May 2026 17:30:02 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Janani Sunil <janani.sunil@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: core: fix uninitialized data in debugfs
-Message-ID: <ahR1CUxzMkYDwVvO@stanley.mountain>
-References: <ahP3S9nOYN3pG-Fp@stanley.mountain>
- <CAKqfh0H0Z0xr4bAjctr9h95QTuEUTF1eCgBsRZVHn_KrkZZX3g@mail.gmail.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
+Message-ID: <20260525-dedicator-strut-6f7618a92180@spud>
+References: <20260519-ad5529r-driver-v3-0-267c0731aa68@analog.com>
+ <20260519-ad5529r-driver-v3-1-267c0731aa68@analog.com>
+ <20260522180207.63b725fb@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="6uUOUNcFd2y0rFek"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKqfh0H0Z0xr4bAjctr9h95QTuEUTF1eCgBsRZVHn_KrkZZX3g@mail.gmail.com>
+In-Reply-To: <20260522180207.63b725fb@jic23-huawei>
 
-On Mon, May 25, 2026 at 08:17:28AM -0500, Maxwell Doose wrote:
-> Hi Dan,
-> 
-> On Mon, May 25, 2026 at 2:19 AM Dan Carpenter <error27@gmail.com> wrote:
-> >
-> > If *ppos is non-zero then simple_write_to_buffer() will not initialize
-> > the start of buf[].  Non zero values for *ppos aren't going to work
-> > anyway.  Test for them at the start of the function and return -EINVAL.
-> >
-> > Fixes: 6d5dd486c715 ("iio: core: make use of simple_write_to_buffer()")
-> > Signed-off-by: Dan Carpenter <error27@gmail.com>
+
+--6uUOUNcFd2y0rFek
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, May 22, 2026 at 06:02:07PM +0100, Jonathan Cameron wrote:
+> On Tue, 19 May 2026 17:42:58 +0200
+> Janani Sunil <janani.sunil@analog.com> wrote:
+>=20
+> > Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
+> > buffered voltage output digital-to-analog converter (DAC) with an
+> > integrated precision reference.
+>=20
+> Note that I'm seeing this as Changes Requested in the DT-binding patchwork
+> but didn't see any replies.
+>=20
+> Seems I didn't get the sashiko reply - nor did the IIO patchwork.
+> Hopefully Janani did!
+> https://patchwork.kernel.org/project/devicetree/patch/20260519-ad5529r-dr=
+iver-v3-1-267c0731aa68@analog.com/
+
+The sashiko stuff is per subsystem or something, so dt stuff only goes
+to us and the submitters. I think that's kinda stupid but also probably
+required to avoid pissing people off. There's quite a bit of noise
+generated by it, especially with it repeating the same incorrect stuff
+on every version.
+
+>=20
+> >=20
+> > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 > > ---
-> > The original copy_from_user() code was better:
-> > https://staticthinking.wordpress.com/2026/05/23/simple_write_to_buffer-is-complicated/
-> > ---
-> >  drivers/iio/industrialio-core.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> 
-> Codewise looks good but often times people will prefer
-> 
-> if (*ppos || count >= sizeof(buf))
-> 
-> over
-> 
-> if (*ppos != 0 || count >= sizeof(buf))
+> >  .../devicetree/bindings/iio/dac/adi,ad5529r.yaml   | 217 +++++++++++++=
+++++++++
+> >  MAINTAINERS                                        |   7 +
+> >  2 files changed, 224 insertions(+)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml=
+ b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
+> > new file mode 100644
+> > index 000000000000..eb66f6ca063d
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
+> > @@ -0,0 +1,217 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/dac/adi,ad5529r.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Analog Devices AD5529R 16-Channel 12/16-bit High Voltage DAC
+> > +
+> > +maintainers:
+> > +  - Janani Sunil <janani.sunil@analog.com>
+> > +
+> > +description: |
+> > +  The AD5529R is a 16-channel, 12-bit or 16-bit, high voltage, buffere=
+d voltage output
+>=20
+> Long line. Check the wrap.
+>=20
+> > +  digital-to-analog converter (DAC) with an integrated precision refer=
+ence.
+> > +  The device operates from unipolar and bipolar supplies. It is guaran=
+teed
+> > +  monotonic and has built-in rail-to-rail output buffers that can sour=
+ce or
+> > +  sink up to 25mA.
+> > +
+> > +  Specifications:
+> > +  * 16 independent 12-bit or 16-bit DAC channels
+> > +  * Independently programmable output ranges: 0V to 5V, 0V to 10V, 0V =
+to 20V,
+> > +    0V to 40V, =B15V, =B110V, =B115V, and =B120V
+> > +  * The device supports SPI communication with Mode 0 and Mode 3.
+> > +  * 4.096V precision reference, 12ppm/=B0C maximum
+> > +  * Built-in function generation: Toggle, Sinusoidal Dither, and Ramp =
+waveforms
+> > +  * Multiplexer for output voltage, load current sense and die tempera=
+ture
+> > +
+> > +  Datasheet: https://www.analog.com/media/en/technical-documentation/d=
+ata-sheets/ad5529r.pdf
+> > +
+>=20
+> > +patternProperties:
+> > +  "^channel@([0-9]|1[0-5])$":
+>=20
+> Sashiko commented that this should be hex.  Why the forcing to decimal?
+>=20
 
-In this context, I feel like either is acceptable since zero
-represents the number zero.  I have a blog about that which I have
-been trying to promote.  #SEO
+--6uUOUNcFd2y0rFek
+Content-Type: application/pgp-signature; name="signature.asc"
 
-https://staticthinking.wordpress.com/2024/02/20/when-to-use-0/
+-----BEGIN PGP SIGNATURE-----
 
-> 
-> Regardless,
-> 
-> Reviewed-by: Maxwell Doose <m32285159@gmail.com>
-> 
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCahR5CgAKCRB4tDGHoIJi
+0tLtAQD2NkZ3SKvwFKlYRM6tkItnO0qro7viL1UlnWD1XTzOKAEA2QVFNfAlYphU
+rSUGx+kylIOdUu3kU2WYXyI0bqasvQU=
+=TboO
+-----END PGP SIGNATURE-----
 
-Thanks.  And you're other comments with regards to -EINVAL and
--ENOSPC are obviously correct.
-
-regards,
-dan carpenter
-
+--6uUOUNcFd2y0rFek--
